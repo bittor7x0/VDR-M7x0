@@ -1,0 +1,101 @@
+Common subdirectories: ./libsi and ../vdr-1.4.3/libsi
+Common subdirectories: ./PLUGINS and ../vdr-1.4.3/PLUGINS
+diff -uN ./remote.c ../vdr-1.4.3/remote.c
+--- ./remote.c	2006-05-12 14:40:15.000000000 +0200
++++ ../vdr-1.4.3/remote.c	2006-09-26 20:50:43.512245400 +0200
+@@ -22,6 +22,7 @@
+ #define REPEATTIMEOUT  1000 // ms
+ 
+ eKeys cRemote::keys[MaxKeys];
++bool cRemote::disabled = false;
+ int cRemote::in = 0;
+ int cRemote::out = 0;
+ cTimeMs cRemote::repeatTimeout;
+@@ -180,7 +181,7 @@
+             out = 0;
+          if ((k & k_Repeat) != 0)
+             repeatTimeout.Set(REPEATTIMEOUT);
+-         return k;
++         return disabled ? kNone : k;
+          }
+       else if (!WaitMs || !keyPressed.TimedWait(mutex, WaitMs) && repeatTimeout.TimedOut())
+          return kNone;
+diff -uN ./remote.h ../vdr-1.4.3/remote.h
+--- ./remote.h	2006-04-17 10:59:48.000000000 +0200
++++ ../vdr-1.4.3/remote.h	2006-09-26 20:50:43.514245096 +0200
+@@ -30,6 +30,7 @@
+   static cCondVar keyPressed;
+   static const char *plugin;
+   char *name;
++  static bool disabled;
+ protected:
+   cRemote(const char *Name);
+   const char *GetSetup(void);
+@@ -43,6 +44,8 @@
+   const char *Name(void) { return name; }
+   static void SetLearning(cRemote *Learning) { learning = Learning; }
+   static bool IsLearning() { return learning != NULL; }
++  static void Disable() { disabled = true; }
++  static void Enable() { disabled = false; }
+   static void Clear(void);
+   static bool Put(eKeys Key, bool AtFront = false);
+   static bool PutMacro(eKeys Key);
+diff -uN ./svdrp.c ../vdr-1.4.3/svdrp.c
+--- ./svdrp.c	2006-08-12 11:09:55.000000000 +0200
++++ ../vdr-1.4.3/svdrp.c	2006-09-26 20:53:29.441020392 +0200
+@@ -187,6 +187,8 @@
+   "    it returns the current channel number and name.",
+   "CLRE\n"
+   "    Clear the entire EPG list.",
++  "CTRL <on|off>\n"
++  "    Enable/Disable Input devices.",
+   "DELC <number>\n"
+   "    Delete channel.",
+   "DELR <number>\n"
+@@ -537,6 +539,26 @@
+   Reply(250, "EPG data cleared");
+ }
+ 
++void cSVDRP::CmdCTRL(const char *Option)
++{
++  if (*Option) {
++    if (!strcasecmp( Option, "on" )) {
++      cRemote::Enable();
++      Reply(250, "Input Control enabled");
++      }
++    else {
++      if (!strcasecmp( Option, "off" )) {
++        cRemote::Disable();
++        Reply(250, "Input Control disabled");
++        }
++      else
++        Reply(250, "Illegal Command %s", Option);
++      }
++    }
++  else
++    Reply(250, "Parameter missing");
++}
++
+ void cSVDRP::CmdDELC(const char *Option)
+ {
+   if (*Option) {
+@@ -1504,6 +1526,7 @@
+   s = skipspace(s);
+   if      (CMD("CHAN"))  CmdCHAN(s);
+   else if (CMD("CLRE"))  CmdCLRE(s);
++  else if (CMD("CTRL"))  CmdCTRL(s);
+   else if (CMD("DELC"))  CmdDELC(s);
+   else if (CMD("DELR"))  CmdDELR(s);
+   else if (CMD("DELT"))  CmdDELT(s);
+diff -uN ./svdrp.h ../vdr-1.4.3/svdrp.h
+--- ./svdrp.h	2006-08-06 10:51:09.000000000 +0200
++++ ../vdr-1.4.3/svdrp.h	2006-09-26 20:50:43.532242360 +0200
+@@ -56,6 +56,7 @@
+   void PrintHelpTopics(const char **hp);
+   void CmdCHAN(const char *Option);
+   void CmdCLRE(const char *Option);
++  void CmdCTRL(const char *Option);
+   void CmdDELC(const char *Option);
+   void CmdDELR(const char *Option);
+   void CmdDELT(const char *Option);
+Common subdirectories: ./symbols and ../vdr-1.4.3/symbols

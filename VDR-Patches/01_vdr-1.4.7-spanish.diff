@@ -1,0 +1,171 @@
+diff -Naur vdr-m7x0-orig/i18n.c vdr-m7x0/i18n.c
+--- vdr-m7x0-orig/i18n.c	2007-07-14 20:33:22.000000000 +0200
++++ vdr-m7x0/i18n.c	2007-07-21 13:34:48.000000000 +0200
+@@ -2300,7 +2300,7 @@
+     "",//TODO
+     "VPS-tallennus on alkamassa!",
+     "Wkrótce nagranie VPS!",
+-    "",//TODO
++    "¡Grabación VPS pendiente!",
+     "",//TODO
+     "strax VPS inspelning...",
+     "Urmeazã o înregistrare VPS!",
+@@ -2520,7 +2520,7 @@
+     "",//TODO
+     "Tallennustilan puute estää tallennuksen!",
+     "Brak miejsca na dysku do nagrywania!",
+-    "",//TODO
++    "¡No hay suficiente espacio para grabar!",
+     "",//TODO
+     "Otillräcklingt diskutrymme för inspelning!",
+     "Insuficient spaþiul pe disc pentru înregistrare!",
+@@ -3754,7 +3754,7 @@
+     "",// TODO
+     "vain PID:it",
+     "tylko PID-y",
+-    "",// TODO
++    "Sólo PIDs",
+     "",// TODO
+     "bara PIDs",
+     "Numai PID-uri",
+@@ -4480,7 +4480,7 @@
+     "",// TODO
+     "Kanava käynnistettäessä",
+     "Pocz±tkowy kana³",
+-    "",// TODO
++    "Canal inicial",
+     "",// TODO
+     "Kanal vid uppstart",
+     "Canalul de pornire",
+@@ -4502,7 +4502,7 @@
+     "",// TODO
+     "Äänenvoimakkuus käynnistettäessä",
+     "Pocz±tkowa g³o¶no¶æ",
+-    "",// TODO
++    "Volumen inicial",
+     "",// TODO
+     "Ljudstyrka vid uppstart",
+     "Volumul la pornire",
+@@ -4524,7 +4524,7 @@
+     "",// TODO
+     "edellinen",
+     "jak ostatnio",
+-    "",// TODO
++    "como antes",
+     "",// TODO
+     "som förut",
+     "ca mai înainte",
+@@ -5343,7 +5343,7 @@
+     "",// TODO
+     "Seuraava",
+     "Dalej",
+-    "",// TODO
++    "Siguiente",
+     "",// TODO
+     "Nästa",
+     "Urmãtor",
+@@ -5453,7 +5453,7 @@
+     "",// TODO
+     "Edellinen kanava",
+     "Poprzedni kana³",
+-    "",// TODO
++    "Canal anterior",
+     "",// TODO
+     "Förra kanalen",
+     "Canal anterior",
+@@ -6126,6 +6126,72 @@
+     "Ingen titel",
+     "Bez názvu",
+   },
++  { "Setup.DVB$Hot Standby",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Apagado rápido",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.DVB$TV mode",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Modo TV",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.DVB$VCR mode",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Modo VCR",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { NULL }
+   };
+ 
+diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
+--- vdr-m7x0-orig/menu.c	2007-07-14 20:33:22.000000000 +0200
++++ vdr-m7x0/menu.c	2007-07-21 13:29:31.000000000 +0200
+@@ -2340,8 +2340,8 @@
+ //M7X0 BEGIN GA
+ 
+   //m7x0 auto aspect
+-  videoFormatTexts[0] = tr("4:3");
+-  videoFormatTexts[1] = tr("16:9");
++  videoFormatTexts[0] = "4:3";
++  videoFormatTexts[1] = "16:9";
+   videoFormatTexts[2] = tr("auto");
+ 
+   updateChannelsTexts[0] = tr("no");
+@@ -2363,7 +2363,7 @@
+ 
+   Add(new cMenuEditIntItem( tr("Setup.DVB$Primary DVB interface"), &data.PrimaryDVB, 1, cDevice::NumDevices()));
+   //m7x0 HotStandby
+-  Add(new cMenuEditBoolItem(tr("Setup.DVB$Hot Standby"),	   &data.HotStandby, "off", "on"));
++  Add(new cMenuEditBoolItem(tr("Setup.DVB$Hot Standby"),	   &data.HotStandby, tr("no"), tr("yes")));
+   //m7x0 TvMode fbas svideo
+   Add(new cMenuEditBoolItem(tr("Setup.DVB$TV mode"),		   &data.TvMode, "fbas", "svideo"));
+   //m7x0 VCRMode fbas svideo
