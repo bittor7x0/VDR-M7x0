@@ -1,0 +1,6 @@
+
+Die vier Dateien mit der Endung .rsa sind RSA-Schlüssel,
+die freundlicherweise von Siemens (http://siemens.com/) unter
+   http://gigaset.siemens.com/shc/0,1935,hq_en_0_122501_rArNrNrNrN,00.html
+zur Verfügung gestellt wurden.
+ 

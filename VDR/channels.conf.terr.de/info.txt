@@ -1,0 +1,11 @@
+Sendelisten für das VDR-Projekt M740AV -> open7x0.org
+
+In diesem Verzeichnis befinden sich weitere Dateien mit den Senderlsiten
+für die verschiedenen Sendegebiete. Die passende Datei muss einfach in das
+VDR kopiert und nach 'channels.conf' umbennant werden.
+
+Quelle der einzelnen Senderdateien ist
+   http://www.vdr-wiki.de/wiki/index.php/DVB-T_channels.conf
+wobei die Parameter im 3. Feld auf Auto-Erkennung (Wert 999) gesetzt wurden.
+
+Lemmi, 2006-02-26, open7x0 at cle-mens.de, http://open7x0.org

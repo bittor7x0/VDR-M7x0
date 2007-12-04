@@ -1,0 +1,481 @@
+#!/bin/bash
+copyright="(c) Lemmi, m740av (at) cle-mens.de, 2007-05-04, GPL2"
+
+###############################################################################
+###############################################################################
+###                                                                         ###
+###  WARNUNG:                                                               ###
+###  Dieses Programm befindet sich noch in der Experimentierphase!          ###
+###  Daher ist es wahrscheinlich, dass es fehlerhafte WSW-Dateien erzeugt,  ###
+###  die die Geräte der Serie 'Siemens Gigaset M7x0' zerstören können.      ###
+###                                                                         ###
+###############################################################################
+###############################################################################
+
+#
+#------------------------------------------------------------------------------
+# setup
+
+LC_ALL=POSIX
+
+#----- my path
+BASE="${0%/*}"
+
+#----- path for rsa files
+RSA="$BASE/rsa"
+
+#----- path for local binaries
+BIN="$BASE/bin-i386"
+[[ -d $BIN ]] || BIN="$BASE"
+
+#----- box support
+if [[ -f /etc/fw-info ]]
+then
+    # vdr firmware
+    BIN="$BASE/bin-m7x0-vdr"
+    [[ -d $BIN ]] || BIN=/sbin
+    [[ -d $RSA ]] || RSA=/usr/lib/rsa
+
+elif  [[ -f /etc/lemmi-settings.conf ]]
+then
+    # andere m7x0 firmware
+    BIN="$BASE/bin-m7x0-static"
+fi
+
+#----- commands
+CMD_MKCRAMFS="$BIN/mkcramfs -bb"
+CMD_MKJFFS2="$BIN/mkfs.jffs2 -b"
+CMD_RSAENCODE="$BIN/rsaencode"
+
+#----- some more stuff
+WSW=
+temp=`mktemp -d /tmp/gen-wsw.$$.XXXXXXXX` || exit 1
+
+#
+#------------------------------------------------------------------------------
+# help
+
+function help_exit()
+{
+    cat <<- ---EOT--- >&2
+
+	Usage: ${0##*/} [option]...  new_wsw_file
+	   or: ${0##*/} [option]...  name  new_wsw_file
+	   or: ${0##*/} [option]...  name  dir_of_new_wsw_file
+
+	  new_wsw_file: extension '.wsw' appended if missed.
+
+	  Options:
+
+	    -h  --help                print this help
+	    -v  --verbose             be verbose
+	    -q  --quiet               be quiet
+
+	    -4  --m740 --m740av       generate a M740-wsw (default)
+	    -5  --m750 --m750s        generate a M750-wsw
+
+	    -r  --rootfs path         cramfs or dir containing root file system
+	    -d  --data path           jffs2 or dir containing data system
+	    -e  --etc file            use 'file' for etc area
+	    -B  --boot-sector file    use 'file' as boot sector (use with care!)
+	    -k  --kernel file         use 'file' as kernel
+	    -K  --rescue-kernel file  use 'file' as rescue kernel
+	    -R  --rescue-rootfs path  cramfs or dir containing rescue root file system
+
+	        --enable-boot-sector  this option enables the --boot-sector option
+	        --enable-rescue       this option enables both --rescue-* options above
+
+	    The options from -r to -R are printed in file content order.
+	    The upper case options -EBKR signal unusal WSW parts
+	    and should be used with care, because they can damage a M7x0-box.
+
+	$copyright
+
+	---EOT---
+
+    rm -rf $temp
+    exit 1
+}
+
+((!$#)) && help_exit
+
+function info_exit()
+{
+    {
+	echo ""
+	while (($#)); do echo "${0##*/}: $1"; shift; done
+	#echo "${0##*/}: try '${0##*/} --help' for more help"
+	echo ""
+    } >&2
+    rm -rf $temp
+    rm -f "$WSW"
+    exit 1
+}
+
+#
+#------------------------------------------------------------------------------
+# getopt
+
+args=`getopt -n "${0##*/}" \
+        -l help,verbose,quiet,m740,m740av,m750,m750s \
+        -l rootfs:,data:,etc:,boot-sector:,kernel:,rescue-kernel:,rescue-rootfs: \
+        -l enable-boot-sector,enable-rescue \
+        -o hvq45r:d:e:B:k:K:R: \
+        -- "$@"`
+if (( $? )); then
+    echo "${0##*/}: try option -h or --help for more help" >&2
+    exit 1
+fi
+
+eval set -- $args
+
+#
+#------------------------------------------------------------------------------
+# analyse options
+
+quiet=0
+verbose=0
+mode=m740
+rootfs=
+data=
+etc=
+boot_sector=
+kernel=
+rescue_kernel=
+rescue_rootfs=
+enable_boot_sector=0
+enable_rescue=0
+ok=0
+
+scan_opt=1
+
+while (( $# && scan_opt ))
+do
+    [[ "$1" = "" ]] && shift && continue
+    case "$1" in
+	--)			scan_opt=0 ;;
+
+	-h|--help)		help_exit ;;
+	-q|--quiet)		quiet=1 verbose=0 ;;
+	-v|--verbose)		quiet=0 verbose=1 ;;
+
+	-4|--m740|--m740av)	mode=m740 ;;
+	-5|--m750|--m750s)	mode=m750 ;;
+
+	-r|--rootfs)		ok=1; shift; rootfs="$1" ;;
+	-d|--data)		ok=1; shift; data="$1" ;;
+	-e|--etc)		ok=1; shift; etc="$1" ;;
+	-B|--boot-sector)	ok=1; shift; boot_sector="$1" ;;
+	-k|--kernel)		ok=1; shift; kernel="$1" ;;
+	-K|--rescue-kernel)	ok=1; shift; rescue_kernel="$1" ;;
+	-R|--rescue-rootfs)	ok=1; shift; rescue_rootfs="$1" ;;
+
+	--enable-boot-sector)	enable_boot_sector=1 ;;
+	--enable-rescue)	enable_rescue=1 ;;
+
+	*)			echo "${0##*/}: INTERNAL ERROR 'option': $1" >&2
+				exit 1 ;;
+    esac
+    shift
+done
+
+#----- verbose
+
+if ((verbose))
+then
+    VOUT=/dev/stdout
+    VERR=/dev/stderr
+    echo "${0##*/}: BIN=$BIN"
+    echo "${0##*/}: RSA=$RSA"
+else
+    VOUT=/dev/null
+    VERR=/dev/null
+fi
+
+#----- param
+
+if (( $# == 1 ))
+then
+    NAME="${1##*/}"
+    NAME="${NAME%.wsw}"
+    NAME="${NAME:0:63}"
+else
+    NAME="${1:0:63}"
+fi
+[[ $NAME = "" ]] \
+	&& info_exit "missing wsw name"
+
+WSW="$2"
+[[ $WSW = "" ]] && WSW="$1"
+[[ -d $WSW ]] && WSW="$WSW/${1##*/}"
+[[ ${WSW##*.} != "wsw" ]] && WSW="$WSW.wsw"
+
+#----- semantic check
+
+(( $# > 2 )) \
+	&& info_exit "to much parameters: $*"
+
+((!ok)) \
+	&& info_exit "At least one of the following options is needed:" \
+		     "   --kernel --rootfs --data --etc" \
+		     "   --boot-sector --rescue-kernel --rescue-rootfs"
+
+((!enable_rescue)) && [[ $rescue_kernel != "" || $rescue_rootfs != "" ]] \
+	&& info_exit "--enable-rescue is needed for --rescue-kernel and --rescue-rootfs"
+
+((!enable_boot_sector)) && [[ $boot_sector != "" ]] \
+	&& info_exit "--enable-boot-sector is needed for --boot-sector"
+
+[[ $kernel != "" && ! -f $kernel ]] \
+	&& info_exit "file not found: $kernel"
+
+[[ $rootfs != "" && ! -f $rootfs && ! -d $rootfs ]] \
+	&& info_exit "file or directory not found: $rootfs"
+
+[[ $data != "" && ! -f $data && ! -d $data ]] \
+	&& info_exit "file or directory not found: $data"
+
+[[ $etc != "" && ! -f $etc ]] \
+	&& info_exit "file not found: $etc"
+
+[[ $boot_sector != "" && ! -f $boot_sector ]] \
+	&& info_exit "file not found: $boot_sector"
+
+[[ $rescue_kernel != "" && ! -f $rescue_kernel ]] \
+	&& info_exit "file not found: $rescue_kernel"
+
+[[ $rescue_rootfs != "" && ! -f $rescue_rootfs && ! -d $rescue_rootfs ]] \
+	&& info_exit "file or directory not found: $rescue_rootfs"
+
+#
+#------------------------------------------------------------------------------
+# mapping
+
+case $mode in
+    m750)
+	wsw_signature=M750S
+
+	  map_rootfs="00-7f"
+	    map_data="80-bb"
+	     map_etc="bc-bf"
+	    map_boot="c0-c0"
+          map_kernel="c1-cc"
+        map_r_kernel="cd-d7"
+        map_r_rootfs="d8-ff"
+	;;
+
+    *)
+	wsw_signature=M740AV
+
+	  map_rootfs="00-5f"
+	    map_data="60-bb"
+	     map_etc="bc-bf"
+	    map_boot="c0-c0"
+          map_kernel="c1-cc"
+        map_r_kernel="cd-d7"
+        map_r_rootfs="d8-ff"
+	;;
+esac
+
+function gen_mapping() # map list
+{
+    local len=0 p n1 n2
+    for ((p=1;p<=$#;p++))
+    do
+	let n1=16#${!p:0:2}
+	let n2=16#${!p:3:2}
+	let len+=n2-n1+1
+	#echo "${!p} -> $n1..$n2" >&2
+    done
+    printf "`printf "\\%03o\\%03o" $((len>>8&255)) $((len&255))`"
+    for ((p=1;p<=$#;p++))
+    do
+	let n1=16#${!p:0:2}
+	let n2=16#${!p:3:2}
+	while ((n1<=n2))
+	do
+	    printf "`printf "\\%03o" $n1`"
+	    let n1+=1
+	done
+    done
+    echo $len >$temp/blocklen
+}
+
+mapping_list=
+
+#
+#------------------------------------------------------------------------------
+# function pack_rootfs()
+
+function pack_rootfs() # name file map
+{
+    local name="$1"
+    local rfs="$2"
+    local map="$3"
+    local remove_rfs=0
+
+    if [[ $rfs != "" && -d $rfs ]]
+    then
+	((!quiet)) && echo "${0##*/}: create a cramfs from $rfs"
+	local cramfs=$temp/cramfs
+	$CMD_MKCRAMFS $rfs $cramfs >$VOUT || info_exit "mkcramfs failed"
+	rfs=$cramfs
+	remove_rfs=1
+    fi
+
+    if [[ $rfs != "" && -f $rfs ]]
+    then
+	((!quiet)) && echo "${0##*/}: store $name to wsw"
+	mapping_list="$mapping_list $map"
+	local n1 n2 maxsize
+	let n1=16#${map:0:2}
+	let n2=16#${map:3:2}
+	let maxsize=(n2-n1+1)*16#10000
+	local size=`stat -c%s "$rfs"`
+	(( size > maxsize )) \
+	    && info_exit "$name to large ($size Bytes, max=$maxsize, diff=$((size-maxsize)))" \
+			 "   -> $rfs"
+	((!quiet)) && echo "${0##*/}: $name usage: $((size*100/maxsize))% ($((maxsize-size)) bytes free)"
+	{
+	    cat $rfs
+	    (( size < maxsize )) && dd if=/dev/zero bs=$((maxsize-size)) count=1 2>$VERR \
+		| tr '\0' '\377'
+	} >>$WSW
+    fi
+    ((remove_rfs)) && rm -f "$rfs"
+}
+
+#
+#------------------------------------------------------------------------------
+# function pack_data()
+
+function pack_data() # name file map
+{
+    local name="$1"
+    local file="$2"
+    local map="$3"
+
+    local remove_file=0 n1 n2 datasize
+
+    let n1=16#${map:0:2}
+    let n2=16#${map:3:2}
+    let datasize=(n2-n1+1)*16#10000
+
+    if [[ $file != "" && -d $file ]]
+    then
+	((!quiet)) && echo "${0##*/}: create a jffs2 from $file"
+	jffs2=$temp/jffs2
+	$CMD_MKJFFS2 -d "$file" -o $jffs2 --pad=$datasize || info_exit "mkjffs2 failed"
+	file=$jffs2
+	remove_file=1
+    fi
+
+    if [[ $file != "" && -f $file ]]
+    then
+	((!quiet)) && echo "${0##*/}: store $name to wsw"
+	mapping_list="$mapping_list $map"
+	local size=`stat -c%s "$file"`
+	(( size != datasize )) && info_exit "wrong $name size ($size Bytes but not $datasize)" "   -> $file"
+	cat $file >>$WSW
+    fi
+    ((remove_file)) && rm -f file
+}
+
+#
+#------------------------------------------------------------------------------
+# function pack_bin()
+
+function pack_bin() # name file map
+{
+    local name="$1"
+    local file="$2"
+    local map="$3"
+
+    if [[ $file != "" && -f $file ]]
+    then
+	((!quiet)) && echo "${0##*/}: store $name to wsw"
+	mapping_list="$mapping_list $map"
+	local n1 n2 maxsize
+	let n1=16#${map:0:2}
+	let n2=16#${map:3:2}
+	let maxsize=(n2-n1+1)*16#10000
+	size=`stat -c%s "$file"`
+	(( size > maxsize )) && info_exit "$name to large ($size Bytes, max=$maxsize)" "   -> $file"
+	((!quiet)) && echo "${0##*/}: $name usage: $((size*100/maxsize))%"
+	{
+	    cat $file
+	    (( size < maxsize )) && dd if=/dev/zero bs=$((maxsize-size)) count=1 2>$VERR \
+		| tr '\0' '\377'
+	} >>$WSW
+    fi
+}
+
+#
+#------------------------------------------------------------------------------
+# generate wsw header
+
+((!quiet)) && echo "${0##*/}: create WSW-Header: $wsw_signature, $NAME"
+
+{
+    echo -n "WSW /$/," | tr / '\0'
+    dd if=/dev/zero bs=1 count=$((16#480-8)) 2>$VERR
+    d=`date +%s`
+    printf "`printf "\\%03o\\%03o\\%03o\\%03o" $((d>>24&255)) $((d>>16&255)) $((d>>8&255)) $((d&255))`"
+    dd if=/dev/zero bs=$((16#588-16#484)) count=1 2>$VERR
+} >"$WSW"
+
+[[ -f $WSW ]] || info_exit "can't create WSW file: $WSW"
+
+echo -n "$wsw_signature" | dd bs=1 "of=$WSW" seek=$((16#400)) conv=notrunc 2>$VERR
+echo -n "$NAME" | dd bs=1 "of=$WSW" seek=$((16#440)) conv=notrunc 2>$VERR
+
+#
+#------------------------------------------------------------------------------
+# pack wsw
+
+#---------------------------------------------------------------
+# function	name		file/dir	map
+#---------------------------------------------------------------
+pack_rootfs	rootfs		"$rootfs"	 "$map_rootfs"
+pack_data	data		"$data"		 "$map_data"
+pack_bin	etc		"$etc"		 "$map_etc"
+pack_bin	boot-sector	"$boot_sector"	 "$map_boot"
+pack_bin	kernel		"$kernel"	 "$map_kernel"
+pack_bin	rescue-kernel	"$rescue_kernel" "$map_r_kernel"
+pack_rootfs	rescue-rootfs	"$rescue_rootfs" "$map_r_rootfs"
+#---------------------------------------------------------------
+
+#
+#------------------------------------------------------------------------------
+# write mapping and sign wsw
+
+((!quiet)) && echo "${0##*/}: write mapping '$mapping_list'"
+gen_mapping $mapping_list | dd bs=1 "of=$WSW" seek=$((16#486)) conv=notrunc 2>$VERR
+
+[[ -f $WSW ]] || info_exit "can't create WSW file: $WSW"
+
+wswsize=`stat -c%s "$WSW"`
+blocklen=`cat $temp/blocklen`
+let goodsize=16#588+blocklen*16#10000
+(( wswsize != goodsize )) && info_exit "wrong WSW size: wanted=$goodsize but not $wswsize"
+
+((!quiet)) && echo "${0##*/}: sign wsw"
+md5="`dd "if=$WSW" bs=1024 skip=1 2>$VERR | md5sum`"
+((verbose)) && echo "${0##*/}: MD5: $md5"
+
+{
+    /bin/echo -en "\054"
+    echo "$md5" | "$CMD_RSAENCODE" "$RSA/private1.rsa" || info_exit "sign #1 failed"
+} | dd "of=$WSW" bs=1 seek=7 conv=notrunc 2>$VERR
+
+{
+    /bin/echo -en "\201"
+    echo "$md5" | "$CMD_RSAENCODE" "$RSA/private2.rsa" || info_exit "sign #2 failed"
+} | dd "of=$WSW" bs=1 seek=67 conv=notrunc 2>$VERR
+
+#
+#------------------------------------------------------------------------------
+# clean
+
+rm -rf $temp
+
