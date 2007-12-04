@@ -1,0 +1,115 @@
+diff -Naur showrecinfo-0.0.1-orig/i18n.c showrecinfo-0.0.1/i18n.c
+--- showrecinfo-0.0.1-orig/i18n.c	2005-06-01 19:40:25.000000000 +0200
++++ showrecinfo-0.0.1/i18n.c	2007-07-08 12:03:54.000000000 +0200
+@@ -19,7 +19,32 @@
+     "",// TODO Norsk
+     "",
+     "",// TODO Polski
+-    "",// TODO Español
++    "Mostrar información de grabación",// Español
++    "",// TODO ÅëëçíéêÜ (Greek)
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++    "",// TODO ÀãááÚØÙ (Russian)
++    "",// TODO Hrvatski (Croatian)
++#if VDRVERSNUM && VDRVERSNUM >= 10313
++    "", // Eesti
++#if VDRVERSNUM >= 10316
++    "", // Dansk
++#endif
++#endif
++  },
++  { "Shows detailed information about recordings",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// Italiano Sean Carlos 2005.01.16
++    "",// TODO Nederlands
++    "",// TODO Portugues
++    "",// Francais Patrice Staudt 4.1.2005
++    "",// TODO Norsk
++    "",
++    "",// TODO Polski
++    "Mostrar información detallada de grabaciones",// Español
+     "",// TODO ÅëëçíéêÜ (Greek)
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -44,7 +69,7 @@
+     "",// TODO
+     "Laajennoksella ei ole infotekstiä!",
+     "",// TODO
+-    "",// TODO
++    "¡Este plugin no tiene información de texto!",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -69,7 +94,7 @@
+     "",// TODO
+     "Piilota valinta päävalikosta",
+     "",// TODO
+-    "",// TODO
++    "Ocultar entrada del menú principal",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+diff -Naur showrecinfo-0.0.1-orig/Makefile showrecinfo-0.0.1/Makefile
+--- showrecinfo-0.0.1-orig/Makefile	2005-06-01 20:17:54.000000000 +0200
++++ showrecinfo-0.0.1/Makefile	2007-07-30 11:02:24.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+ 
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -68,7 +68,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur showrecinfo-0.0.1-orig/showrecinfo.c showrecinfo-0.0.1/showrecinfo.c
+--- showrecinfo-0.0.1-orig/showrecinfo.c	2005-06-05 17:01:48.000000000 +0200
++++ showrecinfo-0.0.1/showrecinfo.c	2007-07-08 11:59:09.000000000 +0200
+@@ -26,7 +26,7 @@
+   cPluginShowrecinfo(void);
+   virtual ~cPluginShowrecinfo();
+   virtual const char *Version(void) { return VERSION; }
+-  virtual const char *Description(void) { return DESCRIPTION; }
++  virtual const char *Description(void) { return tr(DESCRIPTION); }
+   virtual const char *CommandLineHelp(void);
+   virtual bool ProcessArgs(int argc, char *argv[]);
+   virtual bool Initialize(void);

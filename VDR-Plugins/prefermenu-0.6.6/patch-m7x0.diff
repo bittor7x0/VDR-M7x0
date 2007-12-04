@@ -1,0 +1,204 @@
+diff -Naur prefermenu-0.6.6-orig/i18n.c prefermenu-0.6.6/i18n.c
+--- prefermenu-0.6.6-orig/i18n.c	2006-05-04 22:03:32.000000000 +0200
++++ prefermenu-0.6.6/i18n.c	2007-06-16 13:15:28.000000000 +0200
+@@ -35,7 +35,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Canal", // ES
+     "Czatoma", // HU
+     "", // TODO
+     "", // TODO
+@@ -57,7 +57,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Posición X", // ES
+     "X helyzet", // HU
+     "", // TODO
+     "", // TODO
+@@ -79,7 +79,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Posición Y", // ES
+     "Y helyzet", // HU
+     "", // TODO
+     "", // TODO
+@@ -101,7 +101,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Ancho", // ES
+     "Szélesség", // HU
+     "", // TODO
+     "", // TODO
+@@ -123,7 +123,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Añadir canal", // ES
+     "Adj csatornát hozza", // HU
+     "", // TODO
+     "", // TODO
+@@ -145,7 +145,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Borrar canal", // ES
+     "Fok csatornát", // HU
+     "", // TODO
+     "", // TODO
+@@ -168,7 +168,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Opacidad fondo", // ES
+     "", // TODO
+   },
+   { "Selected channel opacity",
+@@ -181,7 +181,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Opacidad canal seleccionado", // ES
+     "", // TODO
+   },
+   { "Border opacity",
+@@ -194,7 +194,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Opacidad borde", // ES
+     "Alpha szegély", // HU
+   },
+ */
+@@ -208,7 +208,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Ordenar por", // ES
+     "", // TODO
+   },
+   { "None",
+@@ -221,7 +221,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Ninguno", // ES
+     "", // TODO
+   },
+   { "Name",
+@@ -234,7 +234,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Nombre", // ES
+     "", // TODO
+   },
+   { "As entered",
+@@ -247,7 +247,7 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
+-    "", // TODO
++    "Según entró", // ES
+     "", // TODO
+   },
+   { "Close on switch",
+@@ -260,7 +260,20 @@
+     "", // TODO
+     "", // TODO
+     "", // TODO
++    "Cerrar al cambiar", // ES
++    "", // TODO
++  },
++  { "Number of channels",
++    "", // TODO
++    "", // TODO
++    "", // ITALIAN
++    "", // TODO
++    "", // TODO
++    "",
++    "", // TODO
++    "", // TODO
+     "", // TODO
++    "Número de canales", // ES
+     "", // TODO
+   },
+ 
+diff -Naur prefermenu-0.6.6-orig/Makefile prefermenu-0.6.6/Makefile
+--- prefermenu-0.6.6-orig/Makefile	2006-05-04 21:59:17.000000000 +0200
++++ prefermenu-0.6.6/Makefile	2007-06-16 20:09:24.000000000 +0200
+@@ -16,12 +16,12 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -46,6 +46,7 @@
+ endif
+ 
+ DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
++DEFINES += -D_GNU_SOURCE
+ 
+ ### The object files (add further files here):
+ 
+@@ -58,7 +59,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -71,7 +72,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur prefermenu-0.6.6-orig/prefermenu.h prefermenu-0.6.6/prefermenu.h
+--- prefermenu-0.6.6-orig/prefermenu.h	2006-05-06 15:20:52.000000000 +0200
++++ prefermenu-0.6.6/prefermenu.h	2007-07-08 11:49:13.000000000 +0200
+@@ -14,12 +14,12 @@
+   cPluginPrefermenu(void);
+   virtual ~cPluginPrefermenu();
+   virtual const char *Version(void) { return VERSION; }
+-  virtual const char *Description(void) { return DESCRIPTION; }
++  virtual const char *Description(void) { return tr(DESCRIPTION); }
+   virtual const char *CommandLineHelp(void);
+   virtual bool ProcessArgs(int argc, char *argv[]);
+   virtual bool Start(void);
+   virtual void Housekeeping(void);
+-  virtual const char *MainMenuEntry(void) { return MAINMENUENTRY; }
++  virtual const char *MainMenuEntry(void) { return tr(MAINMENUENTRY); }
+   virtual cOsdObject *MainMenuAction(void);
+   virtual cMenuSetupPage *SetupMenu(void);
+   virtual bool SetupParse(const char *Name, const char *Value);

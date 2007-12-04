@@ -1,0 +1,1 @@
+     The "Red" button in the "Setup/EPG" menu can be used to force an EPG scan on a single DVB card system. If pressed, and the primary DVB device is currently not recording or replaying, it will loop through the transponders once and then switch back to the original channel. Any user activity during the EPG scan will also stop the scan and bring back the original channel.

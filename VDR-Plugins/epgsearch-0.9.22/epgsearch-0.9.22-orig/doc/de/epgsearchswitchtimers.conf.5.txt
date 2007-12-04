@@ -1,0 +1,53 @@
+epgsearchswitchtimers.conf(Epgsearch Version 0.9.epgsearchswitchtimers.conf(5)
+
+
+
+NAME
+       epgsearchswitchtimer.conf - Die gespeicherten Umschalttimer
+
+BESCHREIBUNG
+       In epgsearch kann man über das Programmenü und die Suchtimer Umschalt-
+       timer anlegen, die einem zu beginn der Sendung auf die Sendung hin-
+       weisen oder gleich umschalten.
+
+       Die Umschalttimer werden in dieser Datei gespeichert.
+
+FORMAT
+       Der allgemeine Feldtrenner ist ':'.
+
+       Folgende Felder sind möglich:
+
+        1 - Kanal
+        2 - Event ID
+        3 - Startzeit
+        4 - Vorlaufzeit
+        5 - Nur ankündigen
+
+BEISPIELE
+        S19.2E-1-1089-12060:52221:1153322700:1:0
+
+SIEHE AUCH
+       epgsearch(1)
+
+AUTOR (man pages)
+       Mike Constabel <epgsearch (at) constabel (dot) net>
+
+FEHLER MELDEN
+       Fehlerberichte bitte im Bugtracker.
+
+       <http://www.vdr-developer.org/mantisbt/>
+
+       Mailinglist:
+
+       <http://www.vdr-developer.org/mailman/listinfo/epgsearch>
+
+COPYRIGHT und LIZENZ
+       Copyright © 2005 - 2007 Christian Wieninger
+
+       Dieses Dokument wird unter den Bedingungen der Gnu Public License (GPL)
+       veröffentlicht. Alle Angaben sind nach bestem Wissen, aber natürlich
+       ohne Gewähr (no warranty in any kind).
+
+
+
+perl v5.8.8                       2007-05-02     epgsearchswitchtimers.conf(5)

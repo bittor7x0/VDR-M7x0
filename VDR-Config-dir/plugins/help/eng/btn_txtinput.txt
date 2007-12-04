@@ -1,0 +1,13 @@
+
+      Up - Crsr up
+      Down - Crsr down
+      Left - Decrement
+      Right - Increment
+      Ok - Accept
+      Menu - Menu off
+      Back - Discard
+      Red - ABC/abc
+      Green - Ins/Ovr
+      Yellow - Delete
+      Blue - ---
+      0..9 - Numeric inp.

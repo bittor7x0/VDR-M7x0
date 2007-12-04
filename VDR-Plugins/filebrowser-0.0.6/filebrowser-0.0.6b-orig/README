@@ -1,0 +1,106 @@
+------------
+Description:
+------------
+
+This plugin is a filebrowser with user-defined commands to execute on files.
+Commands run asynchronously, so you can have longer tasks without the need of at and friends while being able to see current output and to kill them if appropriate.
+
+-------------
+Installation:
+-------------
+
+There are no special requirements.
+Then build as usual.
+Tested with vdr 1.4.0, you shouldn't try lower versions
+
+--------------
+Configuration:
+--------------
+
+Configuration files are located in a directory named "filebrowser" in your plugin configuration directory, i.e. /var/lib/vdr/plugins/filebrowser.
+Example configuration files are provided in this package in directory "examples", which also contains some scripts that could be used as commands.
+To the config files:
+
+* commands.conf *
+A file defining commands to be run on files, roughly based on vdr's original commands.conf syntax: 
+Columns are separated by colons, first column is the name of the command. When it ends with a question mark, you will be asked whether you really want to execute this command.
+The second column contains a filename pattern, that you only see commands useful in current context. If this starts with an exclamation mark, it will be treated as a shell script that returns 0 if it matches and anything other if it doesn't. %f is replaced with the filename to be checked (escape sequences from below apply, %! analogue). As this results in loading your shell and running a command for every file and defined command, consider using othercommands.conf (see below) to move away seldom used commands.
+The third column contains the command to be executed, where following expansions are made:
+  %f: current file
+  %d: if available, a destination file must be choosed, which is inserted 
+      here
+  %D: if available, a destination file must be choosed, with the possibility 
+      to create a new one
+  %m: expands to currently marked files, separated by a space. If no file is 
+      marked, current file is used
+  %M: the same as %m, but this will change some time - don't use it
+  %%: %
+  %:: :
+The fourth (facultative) column contains flags.
+Following are recognized at the moment:
+  b: Don't switch to the output of this command (it is available via "Threads"-command)
+  s: Execute command synchronously - beware, this may yield to a non-responsive osd for a while!
+  r: Remove thread from list automaticially if it had no errors
+The fifth (facultative) column may contain an access code, only numbers are supported!
+
+Examples:
+Remove?:*:rm -rf %m:s:12345
+Move:*.c:mv %m %D:br
+Recode:+(*.ogg|*.mp3):recode %d %M
+
+* order.conf *
+A file to reorder commands. Usually you will see internal commands first, then commands from commands.conf and then a command to show the thread list.
+To reorder, just insert the names of the commands in this file, one per line.
+To remove a certain command prefix its name with a minus sign (-).
+Attention: Internal command names are localized, so your order.conf needs to be changed when you switch from english to french, and again when you switch from french to german.
+Attention2: For custom commands, remove the question mark and escaped colons.
+Commands not mentioned in order.conf are appended to ordered commands.
+
+Example (uses commands.conf-snippet from above):
+Remove        #shows remove first
+Threads       #an internal command to see currently executing commands
+Mark          #an internal command
+-Unmark       #Hide an internal command
+%---          #Reorder the command "---", escape first minus sign
+
+Please note that those comments aren't supported in order.conf at the time!
+
+* sources.conf *
+Define sources in the style of many other plugins to switch your virtual root at runtime.
+First field specifies source's name, second the path. Escaping rules from above apply.
+The third (facultative) field specifies a file filter.
+
+Example
+All%: (note the escaped colon!):/
+Home:/home:*.doc
+Temp:/tmp
+
+* othercommands.conf *
+You have the possibility to move commands into their own submenu.
+Apart from reducing the need to "scroll" with the color keys, it keeps cost of command-matching low (especially with shell-matched commands) for they are checked not until you open this menu.
+Syntax is like in order.conf, you still define your commands in commands.conf, this file determines which (named) commands are moved to the menu.
+Both Attention and Attention2 from above apply.
+
+Example
+Mark all # move this commands to the menu
+Threads
+Sources
+
+Please note that those comments aren't supported in othersources.conf at the time!
+
+* Setup parameters *
+Here we have two:
+  Show full path: Show the full path in title, default is to show current dirname
+  Show hidden files: Determines whether to show hidden files or not 
+                     (default: no)
+
+------
+Usage:
+------
+When selecting the plugin, you can browse your files as you would do it with mp3/mplayer and friends. The only difference is that entering a directory is considered opening a new menu, so pressing back will send you to the parent directory and not to main menu as in some plugins.
+I think that enhanches user experience.
+You can execute commands using the color keys of your remote, if there are more than 4, you have to "scroll" using the blue key (it's shown as ">>"). That will be improved by opening a menu with commands some time (See HISTORY->TODO).
+Usually, commands are run against the current file, but you can also mark/unmark files and execute a command for more files. Note that this only works when the command is configured to use marked files (see section Configuration above).
+When a command is executed, you will see the output in a scrolling text menu. The menu tries to scroll to the bottom automaticially, that you see the most recent lines of output. So if you want to scroll up to inspect currently invisible lines, you should pause updates (yellow key) to prevent
+automated scrolling after the next update. Pressing the blue key kills the command, Back closes the output menu (but the command is still running if it was not killed).
+This output menu is available for every started command when selecting command "Threads" in the browsing menu. This menu also enables you to kill a runnig command, or to remove a finished command from the list.

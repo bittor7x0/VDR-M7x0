@@ -1,0 +1,54 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Petri Hintukainen <phintuka@users.sourceforge.net>
+
+Project's homepage:          http://phivdr.dyndns.org/vdr/
+
+Latest version available at: http://phivdr.dyndns.org/vdr/
+
+Description:
+
+  Simple autotimer plugin for vdr.
+
+  This plugin creates timers for matching EPG events.
+  Rules are specified in autotimer.spec file (example file is included 
+  in plugin package).
+  autotimer.spec file must be stored in vdr plugin's config directory
+  (by default /video/plugins/).
+  
+  Fast EPG search for current and next events is done every time 
+  EPG events have been changed, so autotimer catches events on 
+  channels without full EPG (when there are only current and next 
+  event information available).
+
+  Full EPG search is done after startup and every 24 hours.
+
+  Full scan can be "forced" by selecting plugin setup menu entry.
+
+
+TODO
+
+  Avoid recording same program twice in case of re-transmissions
+
+
+Example autotimer.spec file
+
+ 
+CHANNELNUMBER IS 1-40 AND 
+{
+    TITLE CONTAINS "Movie" OR
+    INFO CONTAINS "Comedy" OR
+    INFO CONTAINS "Action" OR
+    {
+        TITLE CONTAINS "FST" AND
+        TITLE CONTAINS "Strömsö" AND
+        CHANNELNUMBER IS 1
+    } OR
+    {
+        TITLE IS "Simpsonit" AND
+        CHANNELNUMBER IS 5
+	FOLDER "Simpsonit"
+	TITLE "%SUBTITLE%"
+    } OR
+    TITLE IS "South Park" FOLDER "Cartoons" TITLE "South Park: %SUBTITLE%"
+}

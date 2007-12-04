@@ -1,0 +1,46 @@
+epgsearchtemplates.conf(5) Epgsearch Version 0.9.22 epgsearchtemplates.conf(5)
+
+
+
+NAME
+       epgsearchtemplates.conf - Searchtimer templates
+
+DESCRIPTION
+       In epgsearch searchtimer templates can be created for easy creating new
+       searchtimers.
+
+       These templates are saved in this file.
+
+SYNTAX
+       This file has the same syntax as the epgsearch.conf.
+
+       So please refer to epgsearch.conf, see "epgsearch.conf(5)".
+
+SEE ALSO
+       epgsearch(1), "epgsearch.conf(5)"
+
+AUTHOR (man pages)
+       Mike Constabel <epgsearch (at) constabel (dot) net>
+
+REPORT BUGS
+       Bug reports (german):
+
+       <http://www.vdr-developer.org/mantisbt/>
+
+       Mailing list:
+
+       <http://www.vdr-developer.org/mailman/listinfo/epgsearch>
+
+COPYRIGHT and LICENSE
+       Copyright (c) 2005-2007 Christian Wieninger
+
+       <http://www.cwieninger.de.vu/>
+
+       This  is free software.  You may redistribute copies of it under the
+       terms of the GNU General Public License
+       <http://www.gnu.org/licenses/gpl.html>.  There is NO WARRANTY, to the
+       extent permitted by law.
+
+
+
+perl v5.8.8                       2007-05-02        epgsearchtemplates.conf(5)

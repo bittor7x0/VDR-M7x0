@@ -1,0 +1,62 @@
+diff -Naur mlist-0.0.3-orig/i18n.c mlist-0.0.3/i18n.c
+--- mlist-0.0.3-orig/i18n.c	2006-05-13 20:25:31.000000000 +0200
++++ mlist-0.0.3/i18n.c	2007-08-05 18:31:21.000000000 +0200
+@@ -18,7 +18,7 @@
+     "",// Norsk
+     "",// suomi
+     "",// Polski
+-    "",// Español
++    "Muestra historial de mensajes",// Español
+     "",// ÅëëçíéêÜ
+     "",// Svenska
+     "",// Romaneste
+@@ -38,7 +38,7 @@
+     "",// Norsk
+     "",// suomi
+     "",// Polski
+-    "",// Español
++    "Historial de mensajes",// Español
+     "",// ÅëëçíéêÜ
+     "",// Svenska
+     "",// Romaneste
+@@ -58,7 +58,7 @@
+     "",// Norsk
+     "",// suomi
+     "",// Polski
+-    "",// Español
++    "Borrar",// Español
+     "",// ÅëëçíéêÜ
+     "",// Svenska
+     "",// Romaneste
+@@ -78,7 +78,7 @@
+     "",// Norsk
+     "",// suomi
+     "",// Polski
+-    "",// Español
++    "Ocultar entrada en menú principal",// Español
+     "",// ÅëëçíéêÜ
+     "",// Svenska
+     "",// Romaneste
+diff -Naur mlist-0.0.3-orig/Makefile mlist-0.0.3/Makefile
+--- mlist-0.0.3-orig/Makefile	2006-04-30 20:02:35.000000000 +0200
++++ mlist-0.0.3/Makefile	2007-07-31 17:56:26.000000000 +0200
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -70,7 +70,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

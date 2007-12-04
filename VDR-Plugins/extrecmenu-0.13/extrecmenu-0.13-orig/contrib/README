@@ -1,0 +1,14 @@
+getlength.c
+-------------------------------------------------------------------------------
+Creates a length.vdr from an index.vdr
+Compile with 'gcc getlength.c -o getlength'
+
+isodetect.c
+-------------------------------------------------------------------------------
+Checks, if a dvd is in the drive. Used optionally by dvdarchive.sh
+Compile with 'gcc isodetect.c -o isodetect'
+
+vdr-1.3.43-extrecmenu.diff
+-------------------------------------------------------------------------------
+A patch to replace VDR's recordings menu with the plugin
+Apply with 'patch < vdr-1.3.43.extrecmenu.diff'

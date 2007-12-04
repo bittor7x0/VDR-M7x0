@@ -1,0 +1,13 @@
+VDR Plugin 'osdimage' TODO
+--------------------------
+
+Probable Long-term goals:
+ - Full-screen-view for the 256-color-mode
+ - Make it possible to enter the picture-directory in the setup-menu 
+ - support different aspect ratios in 16-color-mode (selectable in the setup)
+ - multi-picture-view
+ - zooming
+ - alternative quantizing-engine (faster and/or better quality)
+ - more OSD-Info (i.e. EXIF)
+ - jump to pictures by entering the respective number
+ - evaluate the ENV-variables in the passed parameter

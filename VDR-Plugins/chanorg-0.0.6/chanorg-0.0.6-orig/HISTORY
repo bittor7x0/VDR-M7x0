@@ -1,0 +1,73 @@
+#Francais, for English, see below
+#
+v0.0.6
+  Correction pour la compilation sous vdr 1.3.18/19
+  Correction pour la mise a jour des timers d'une chaine déplacée
+
+v0.0.5
+  Correction pour la compilation sous vdr 1.3.15
+  Rectification de l'oublie d'internationalisation de l'entree principale du menu....(merci a tous ceux qui me l'ont fait remarquer!)
+  Ajout de la langue Russe (merci a son auteur, dont je ne peux malheureusement pas recopier le nom, du a un probleme de page de caractere....Je pourrais ecrire son email si il m'en donne l'autorisation)
+  Ajout du nom de la chaine dans la barre de titre lors de l'affectation a un groupe, merci a Thomas de m'avoir signale ca
+
+v0.0.4a
+  Ajout de la langue allemande (faite par Thomas, merci a lui)
+
+v0.0.4
+  Ajout du README et du HISTORY en Anglais
+  Correction du probleme de compilation avec vdr-1.3.13 (merci a joebar pour l'info)
+  Ajout de la langue italienne (faite par kikko77, merci a lui)
+
+v0.0.3a
+  Correction de bug lors de l'edition du nom de groupe, merci ECLiPSE
+
+v0.0.3
+  Correction de bug : Ajouter + de 4 groupe en une seule session creait des doublons dans le channels.conf et le rendait inutilisable
+  Correction de bug : Mise a jour des timers : le premier timer etait duplique sur l'ensemble des timers present
+
+v0.0.2
+  Gestion des timers
+  Tri Alphabetique Croissant,Decroissant
+  Tri par Transpondeur Croissant, Decroissant
+  Tri d'un groupe Vide ok
+  Deplacement de groupe entier
+  Confirmation en sortie
+  
+v0.0.1
+  Premiere version
+#English
+#
+v0.0.6
+        Correcting compilation issues under vdr 1.3.18/19
+	Correcting bug when moving a channel which have a timer on it
+
+v0.0.5
+        Correcting compilation issues under vdr 1.3.15
+        Correcting lack of main menu's entry internationalization (thanks to all who point this to me!)
+        Adding russian translation (thanks to its author, who I can't unfortunatly write down the name due to a codepage problem....I can write down his email if he gives me the permition!)
+	Adding channel name in title bar when selecting group to affect to. Thanks to Thomas for pointing out that.
+
+v0.0.4a
+	Adding German translation (made by Thomas, thanks to him)
+v0.0.4	
+	Adding English README and HISTORY
+	Correcting compilation issue with vdr-1.3.13(thanks to joebar for reporting this one)
+	Adding Italian translation (made by kikko77, thanks to him)
+
+v0.0.3a
+	Correcting bug when editing group name, thanks to ECLiPSE
+
+v0.0.3
+	Correcting bug: Adding more than 4 groups in the same "session" make some double line in channels.conf and make it unusuable
+	Correcting bug: Update timers : All timers get breaked with first timer duplated to all others.
+
+v0.0.2
+        Timer auto management
+	Order by Alphabetical up and down
+        Order by Frequency up and down
+	Correcting bug when trying to order an empty group
+	Moving the whole group instead of just the declaration line
+	Confirm on exit (Ok twice to confirm your modifications)
+
+v0.0.1
+	First version

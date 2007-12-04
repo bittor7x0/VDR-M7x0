@@ -1,0 +1,31 @@
+This is a Skin vor vdr based on sources of skin for reelbox.
+I made some changes, because the original is for patched vdr.
+Som parts only needed for the original reelbox-plugin are removed.
+
+Known problem are:
+
+- only for memory-modded dvb-cards
+  if unmodded card is used, vdr will not fallback to default skin
+- last menuitem is not really redrawed, if "Use small font"
+  is set to "skin dependent"
+- not all Displys are new, some from clssic-vdr-skin
+
+
+I have found no COPYRIGHT, only the following
+from Homepage http://www.reel-multimedia.com/german/entwickler/d-svn2.htm
+_______________________________________________________________________________
+Öffentlicher (anonymer) Subversion Zugang (nur-Lese-Zugriff)
+
+Die Sourcen für die ReelVDR Distribution können von jederman
+über den anonymen SVN-Zugang (svnserver) heruntergeladen werden.
+Die Softwareteile, die wir wegen Verschwiegenheitsabkommen (NDA)
+nicht öffentlich zur Verfügung stellen können, liegen vorkompliliert
+im SVN vor.
+
+Dazu ist auf der Konsole folgender Befehl einzugeben:
+
+svn co svn://anonymous@reelbox.org/home/reelbox
+
+Falls nach einem Paßwort gefragt wird ist dieses frei zu lassen und einfach mit der Enter-Taste zu bestätigen.
+Anmerkung: Unix Datei- und Verzeichnisnamen unterscheiden Groß-Kleinschreibung. Der Pfad zum Repository *muß* in Kleinbuchstaben angegeben werden.
+_______________________________________________________________________________

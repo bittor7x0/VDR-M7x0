@@ -1,0 +1,40 @@
+epgsearchtemplates.conf(5) Epgsearch Version 0.9.22 epgsearchtemplates.conf(5)
+
+
+
+NAME
+       epgsearchtemplates.conf - Die gespeicherten Suchtimer-Vorlagen
+
+BESCHREIBUNG
+       Für die Suchtimer können Vorlagen angelegt werden. Diese werden hier
+       gespeichert.
+
+FORMAT
+       Diese Datei hat dasselbe Format wie die Datei epgsearch.conf. Für den
+       Aufbau verweise ich auf "epgsearch.conf(5)".
+
+SIEHE AUCH
+       epgsearch(1)
+
+AUTOR (man pages)
+       Mike Constabel <epgsearch (at) constabel (dot) net>
+
+FEHLER MELDEN
+       Fehlerberichte bitte im Bugtracker.
+
+       <http://www.vdr-developer.org/mantisbt/>
+
+       Mailinglist:
+
+       <http://www.vdr-developer.org/mailman/listinfo/epgsearch>
+
+COPYRIGHT und LIZENZ
+       Copyright © 2005 - 2007 Christian Wieninger
+
+       Dieses Dokument wird unter den Bedingungen der Gnu Public License (GPL)
+       veröffentlicht. Alle Angaben sind nach bestem Wissen, aber natürlich
+       ohne Gewähr (no warranty in any kind).
+
+
+
+perl v5.8.8                       2007-05-02        epgsearchtemplates.conf(5)

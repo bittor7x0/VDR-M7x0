@@ -1,0 +1,64 @@
+diff -Naur epgsearch-0.9.22-orig/Makefile epgsearch-0.9.22/Makefile
+--- epgsearch-0.9.22-orig/Makefile	2007-03-21 21:05:00.000000000 +0100
++++ epgsearch-0.9.22/Makefile	2007-08-01 16:57:56.000000000 +0200
+@@ -34,9 +34,9 @@
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -69,7 +69,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ #INCLUDES += -I$(VDRDIR)/include
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+@@ -124,7 +124,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(CXXFLAGS) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) $(OBJS2:%.o=%.c) $(OBJS3:%.o=%.c) $(OBJS4:%.o=%.c)> $@
+diff -Naur epgsearch-0.9.22-orig/searchtimer_thread.c epgsearch-0.9.22/searchtimer_thread.c
+--- epgsearch-0.9.22-orig/searchtimer_thread.c	2007-03-27 19:51:09.000000000 +0200
++++ epgsearch-0.9.22/searchtimer_thread.c	2007-07-15 13:28:55.000000000 +0200
+@@ -192,10 +192,13 @@
+          // for thread safeness we work with a copy of the current searches,
+          // because SVDRP would not work if the main thread would be locked 
+          cSearchExts* localSearchExts = SearchExts.Clone(); 
++    
++         //m7x0: take care of m_Actice too, otherwise we get a segfault
++         //on thread cancel
+          cSearchExt *searchExt = localSearchExts->First();
+          // reset announcelist
+          announceList.Clear();
+-         while (searchExt) 
++         while (searchExt && m_Active)
+          {
+             if (!searchExt->useAsSearchTimer)
+             {
+@@ -384,7 +387,10 @@
+             }
+             searchExt = localSearchExts->Next(searchExt);
+          }
+-         if (localSearchExts) delete localSearchExts;
++         if (localSearchExts) {
++            delete localSearchExts;
++            dsyslog("EPGSearch DEBUG: Delete clone on exit!");
++         }
+ 
+          if (pOutdatedTimers)
+          {

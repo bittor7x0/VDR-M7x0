@@ -1,0 +1,162 @@
+<!--
+-   (c) 2005,2006 by Ralf Dotzert
+-   Mini-VDR Configuration File
+-->
+<setup sysconfigPre="get-info --eval --config >/tmp/sysconfig.txt" sysconfigPost="eval `get-info --eval --file`; cat /tmp/sysconfig.txt >>$CONFFILE_CONFIG ; dump-fw-config" sysconfigFile="/tmp/sysconfig.txt" bootLinux="/sbin/reboot" VDRlibDirCMD="env | grep PLUGIN_PATH | cut -d= -f2">
+    <plugins sysconfig="CONFIG_VDR_PLUGINS">
+        <plugin name="epgsearch" info="EPG zeigt Wiederholungen" active="yes" />
+        <plugin name="solitaire" info="Kartenspiel Solitaire" active="yes" />
+        <plugin name="setup" info="Gigaset 7x0 Setup" active="yes" protected="yes" />
+        <plugin name="sleeptimer" info="Shutdown" active="yes" />
+        <plugin name="streamdev-server" info="Streaming Server" active="yes" />
+        <plugin name="osdteletext" info="Teletext Dekoder für das OSD" active="yes" />
+        <plugin name="admin" info="admin" active="no" />
+        <plugin name="fepg" info="fepg" active="no" />
+        <plugin name="filebrowser" info="filebrowser" active="no" />
+        <plugin name="skinsoppalusikka" info="skinsoppalusikka" active="no" />
+        <plugin name="sudoku" info="sudoku" active="no" />
+        <plugin name="surfer" info="surfer" active="no" />
+        <plugin name="femon" info="Anzeige Signalstärke/Qualität" active="yes" />
+        <plugin name="vdrcd" param="-c /dev/dvd -c /media/dvd -c /media/cdfs" info="AutoPlay Funktion" active="yes" />
+        <plugin name="autotimeredit" param="-f /etc/vdradmin/vdradmind.at -p" info="Autotimer-Edit" active="yes" />
+        <plugin name="prefermenu" info="Bevorzugte Kanäle" active="yes" />
+        <plugin name="osdpip" info="Bild in Bild" active="yes" />
+        <plugin name="image" param="-C /usr/bin/imageplugin.sh -m /usr/bin/mount.sh" info="Bildbetrachter Plugin" active="yes" />
+        <plugin name="osdimage" param="--directory /video0/media/photos/vdr" info="Bildern über OSD" active="yes" />
+        <plugin name="freecell" info="Das Kartenspiel Freecell" active="yes" />
+        <plugin name="osddemo" info="Demo On-Screen-Display" active="no" />
+        <plugin name="tvonscreen" param="-v /etc/vdradmin/vdradmind.at" info="EPG Programmzeitschrift" active="yes" />
+        <plugin name="hello" info="Ein &apos;hello&apos; Plugin" active="no" />
+        <plugin name="vdrc" info="Linux Commander OSD" active="yes" />
+        <plugin name="newsticker" info="Newsticker" active="yes" />
+        <plugin name="status" info="Osd-Status" active="no" />
+        <plugin name="pim" info="PIM-Kalender Plugin" active="yes" />
+        <plugin name="channelscan" info="Sender Suchlauf" active="yes" />
+        <plugin name="taste" info="Sendungen-Keywords sperren" active="yes" />
+        <plugin name="text2skin" info="Skin-Plugin für VDR" active="yes" />
+        <plugin name="mp3" info="Spielt MP3-Dateien ab" active="yes" />
+        <plugin name="streamdev-client" info="Streaming Client" active="no" />
+        <plugin name="sysinfo" info="Systeminformationen" active="yes" />
+        <plugin name="console" info="Textkonsole auf dem Fernseher" active="yes" />
+        <plugin name="tvtv" info="TvTv im OSD" active="yes" />
+        <plugin name="clock" info="Uhr" active="yes" />
+        <plugin name="skincurses" info="VDR-Skin für Konsole" active="yes" />
+        <plugin name="games" info="Verschiedene Spiele" active="yes" />
+        <plugin name="playlist" info="Verw.von Playlisten" active="yes" />
+        <plugin name="vcd" param="--vcd=/dev/dvd" info="VideoCD Plugin" active="yes" />
+        <plugin name="yaepg" info="Weitere EPG-Ansicht" active="yes" />
+        <plugin name="undelete" info="Wiederh. gelöschter Aufnahmen" active="yes" />
+        <plugin name="pilot" info="Zapping Co-Pilot" active="yes" />
+        <plugin name="director" info="Zeigt Multifeed Kanäle" active="yes" />
+        <plugin name="timeline" info="Zeitleiste" active="yes" />
+        <plugin name="wapd" info="wapd" active="yes" />
+    </plugins>
+    <menus>
+        <menu name="Informationen zur Konfiguration">
+            <entry name="Konfig name" sysconfig="CONFIG_NAME" type="text" value="" help1="Ein freier Text, der diese Konfiguration beschreibt."/>
+            <entry name="Zeitzone" sysconfig="CONFIG_TIMEZONE" type="text" value="CET-1CDT,M3.5.0,M10.5.0" help1="Standard Zeitzone, in der die Anwendungen laufen sollen."/>
+            <entry name="Zeitserver" sysconfig="CONFIG_NETDATE_PARAM" type="text" value="ntp1.ptb.de" help1="Ist dieser Parameter nicht leer, dann wird 'netdate' gestartet."/>
+            <entry name="Video mode TV" sysconfig="CONFIG_VIDEO_TV_MODE" type="selection" value="undef" help1="Video-Modus fuer den TV-Ausgang (SCART)">
+                <value>undef</value>
+                <value>svideo</value>
+                <value>fbas</value>
+            </entry>
+            <entry name="Video mode VCR" sysconfig="CONFIG_VIDEO_VCR_MODE" type="selection" value="undef" help1="Video-Modus fuer den VCR-Ausgang (SCART)">
+                <value>undef</value>
+                <value>svideo</value>
+                <value>fbas</value>
+            </entry>
+            <entry name="LED Helligkeit" sysconfig="CONFIG_LED_BRIGHTNESS" type="number" value="40" help1="Dieser Wert gibt die LED-Helligkeit der aeusseren beiden LEDs an." />
+            <entry name="System Logging" sysconfig="CONFIG_LOG_KMSG" type="bool" value="no" help1="Logging von /proc/kmsg via Port 12002 aktivieren?"/>
+            <entry name="USB Automount" sysconfig="CONFIG_USB_AUTO_MOUNT" type="text" value="" help1="Dieser Parameter legt die USB-Laufwerke fest, die automatisch gemountet werden."/>
+        </menu>
+        <menu name="Netzwerk" >
+            <entry name="Netzwerkmodus" sysconfig="CONFIG_NET_MODE" type="selection" value="undef" help1="Hiermit wird der Netzwerkmodus einegstellt.">
+                <value>undef</value>
+                <value>dhcp</value>
+                <value>ip</value>
+                <value>off</value>
+            </entry>
+            <entry name="MAC Adresse" sysconfig="CONFIG_MAC" type="hex" value="" />
+            <entry name="Hostname" sysconfig="CONFIG_HOSTNAME" type="text" value="" help1="Rechnername des Box (DNS)."/>
+            <entry name="IP-Adresse" sysconfig="CONFIG_IP" type="ip" value="" help1="IP-Adresse der Box."/>
+            <entry name="Mask" sysconfig="CONFIG_NETMASK" type="ip" value="" help1="Netzwerkmaske der Box"/>
+            <entry name="Gateway" sysconfig="CONFIG_GATEWAY" type="ip" value="" help1="Gateway Adresse"/>
+            <entry name="Nameserver" sysconfig="CONFIG_NAMESERVER" type="text" value="" help1="Eine mit Leerzeichen getrennte Liste der DNS-Server."/>
+            <entry name="Such-Postfixe" sysconfig="CONFIG_SEARCH" type="text" value="" help1="Eine mit Leerzeichen getrennte Liste der Such-Postfixe."/>
+        </menu>
+        <menu name="Mail">
+            <entry name="Mailserver" sysconfig="CONFIG_MAIL_SERVER" type="text" value="" help1="Dieser Parameter legt den SMTP-Server fest" />
+            <entry name="Absender" sysconfig="CONFIG_MAIL_FROM" type="text" value="" help1="Legt den Absender fest, wenn keiner übergeben wurde."/>
+            <entry name="Antwort an" sysconfig="CONFIG_MAIL_REPLY" type="text" value="" help1="Dieser Parameter legt die Antwortadresse (Reply-To:) fest."/>
+        </menu>
+        <menu name="Menüs">
+            <entry name="Startmenu" sysconfig="CONFIG_STARTMENU_MODE" type="selection" value="normal" help1="Anzeigeart des Startmenus." >
+                <value>normal</value>
+                <value>fast</value>
+                <value>off</value>	    
+	    </entry>
+            <entry name="Startmenu Timer" sysconfig="CONFIG_STARTMENU_WAIT" type="number" value="30" help1="Wartezeit in Sekunden an, bis die Standardkonfiguration startet" />
+            <entry name="Startmenu Timer Short" sysconfig="CONFIG_STARTMENU_SHORT_WAIT" type="number" value="5" help1="Kurze Wartezeit in Sekunden" />
+            <entry name="Haltmneu" sysconfig="CONFIG_HALTMENU_ENABLED" type="bool" value="yes" help1="Mit dieser Option wird das Shutdown-Menu aktiviert."/>
+            <entry name="Haltmenu Timer" sysconfig="CONFIG_HALTMENU_WAIT" type="number" value="5" help1="Wartezeit bis zum automatischn Shutdown" />
+            <entry name="Haltmenu Screensaver" sysconfig="CONFIG_MENU_HIDE" type="number" value="90" help1="Falls >0, dann werden die Menus durch einen schwarzen Bildschirm" />
+        </menu>
+        <menu name="VDR">
+	    <menu name="Aktiviere Plugins" help1="Aktiviere und Deaktiviere Plugins" help2="setup_actplugins.hlp" system="ActPlugins" />
+            <entry name="Aufnahmeverzeichniss" sysconfig="CONFIG_VDR_VIDEO_PATH" type="text" value="MiniVDR" />
+            <entry name="Pfad für das EPG" sysconfig="CONFIG_VDR_EPG_PATH" type="text" value="" />
+            <entry name="Anzahl der log Dateien" sysconfig="CONFIG_VDR_N_LOG_BACKUP" type="number" value="3" />
+            <entry name="Standart VDR Konfiguration" sysconfig="CONFIG_VDR_STANDARD" type="selection" value="vdr1" help1="Standart VDR Konfiguration" >
+                <value>vdr1</value>	    
+                <value>vdr2</value>	    
+                <value>vdr3</value>	    
+                <value>vdr4</value>	    
+	    </entry>
+            <entry name="Logging für VDR1" sysconfig="CONFIG_VDR1_LOG" type="selection" value="none">
+                <value>file</value>
+                <value>net</value>
+                <value>both</value>
+                <value>none</value>
+            </entry>
+	    <entry name="Name VDR2" sysconfig="CONFIG_VDR2_NAME" type="text" value="" />
+            <entry name="Pfad zum VDR2" sysconfig="CONFIG_VDR2_PATH" type="text" value="*" />
+            <entry name="Starter für VDR2" sysconfig="CONFIG_VDR2_STARTER" type="text" value="" />
+            <entry name="Config Pfad für VDR2" sysconfig="CONFIG_VDR2_CONFIG_PATH" type="text" value="*" />
+            <entry name="Logging für VDR2" sysconfig="CONFIG_VDR2_LOG" type="selection" value="none">
+                <value>file</value>
+                <value>net</value>
+                <value>both</value>
+                <value>none</value>
+            </entry>
+	    <entry name="Name VDR3" sysconfig="CONFIG_VDR3_NAME" type="text" value="" />
+            <entry name="Pfad zum VDR3" sysconfig="CONFIG_VDR3_PATH" type="text" value="*" />
+            <entry name="Starter für VDR3" sysconfig="CONFIG_VDR3_STARTER" type="text" value="" />
+            <entry name="Config Pfad für VDR3" sysconfig="CONFIG_VDR3_CONFIG_PATH" type="text" value="*" />
+            <entry name="Logging für VDR3" sysconfig="CONFIG_VDR3_LOG" type="selection" value="none">
+                <value>file</value>
+                <value>net</value>
+                <value>both</value>
+                <value>none</value>
+            </entry>
+	    <entry name="Name VDR4" sysconfig="CONFIG_VDR4_NAME" type="text" value="" />
+            <entry name="Pfad zum VDR4" sysconfig="CONFIG_VDR4_PATH" type="text" value="*" />
+            <entry name="Starter für VDR4" sysconfig="CONFIG_VDR4_STARTER" type="text" value="" />
+            <entry name="Config Pfad für VDR4" sysconfig="CONFIG_VDR4_CONFIG_PATH" type="text" value="*" />
+            <entry name="Logging für VDR4" sysconfig="CONFIG_VDR4_LOG" type="selection" value="none">
+                <value>file</value>
+                <value>net</value>
+                <value>both</value>
+                <value>none</value>
+            </entry>
+	</menu>
+        <menu name="BoxAmp">
+            <entry name="Pfad zu BoxAmp" sysconfig="CONFIG_BOXAMP_PATH" type="text" value="" />
+            <entry name="Pfad zu dem MP3s" sysconfig="CONFIG_BOXAMP_MP3_PATH" type="text" value="" />
+            <entry name="Zusätzliche Optionen" sysconfig="CONFIG_BOXAMP_OPTIONS" type="text" value="" />
+        </menu>
+        <menu name="Kindersicherung">
+            <entry name="Geheimcode (0000=AUS)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" />
+        </menu>
+    </menus>
+</setup>

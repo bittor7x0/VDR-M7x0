@@ -1,0 +1,115 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Frank Schmirler <vdrdev@schmirler.de> 
+Project's homepage:          http://vdr.schmirler.de/
+
+Latest version available at: http://vdr.schmirler.de/
+
+See the file COPYING for license information.
+
+Description:
+------------
+With this plugin you can import the EPG of a remote VDR. It can either
+use SVDRP or streamdev's VTP to download the EPG.
+
+Requirements:
+-------------
+- plugin svdrpservice >= 0.0.2 (available via http://vdr.schmirler.de)
+
+Known issues:
+------------
+1) VTP does not always deliver the expected events for "LSTE now" and
+"LSTE next".
+
+2) In VDR 1.3.39 up to 1.4.1-2 there's an issue when adding EPG to a
+channel which had no EPG previously. The new EPG entries won't show
+up whenever they are internally addressed "by channel". The complete
+EPG dump contains all entries, so they will become available after
+the next VDR restart.  Usually this problem will affect only those of
+you who start with an empty epg.data and whenever you have added a
+new channel. In the patches subdirectory you will find a fix for this
+problem.
+
+Installation:
+-------------
+- cd VDR/PLUGINS/src
+- tar xzf vdr-epgsync-<VERSION>.tgz
+- ln -sf epgsync-<VERSION> epgsync
+
+If you didn't do that already (otherwise svdrpservice.h is missing):
+- tar xzf vdr-svdrpservice-<VERSION>.tgz
+- ln -sf svdrpservice-<VERSION> svdrpservice
+
+Now compile and install epgsync (and svdrpservice) as usual and add
+both plugins to the script starting your VDR (e.g. runvdr). No options
+required, so simply append:
+
+  -Pepgsync -Psvdrpservice
+
+Check the svdrphosts.conf (or streamdevhosts.conf) file on the remote
+VDR: The IP of the VDR running epgsync must be listed or otherwise the
+connection will be refused.
+
+Configuration:
+--------------
+Before you can connect you have to configure the IP address of the
+remote VDR. So you have to enter the plugin's setup menu first. It
+offers the following options:
+
+- Hide mainmenu entry: The mainmenu entry of epgsync allows you to
+trigger an epgsync at any time. If you don't need this or if you are
+using a keymakro to call the mainmenu entry you can hide it with this
+option.
+- Server IP: Enter the IP of the remote VDR
+- Server port: Defaults to 2001 (SVDRP). If you prefer VTP, its default
+port is 2004
+- Connection attempts: Defines how often epgsync will try to establish
+the connection to the server. For most users the default 1 should be
+sufficient. However if e.g. the client uses WOL to wake the server it
+might not be available immediately. The first retry will be after 1
+second. The delay will be doubled after each attempt.
+- Update "now" and "next" first: Enable this option if you want to import the "What's on now/next" entries first. It uses the SVDRP commands "LSTE now" and "LSTE next". Especially useful for those who start with an empty epg.data file.
+- Sync channel by channel: Determines how the EPG is downloaded. See
+notes below.
+- EPG sync on startup: Start syncinc when the plugin is started.
+
+Recommended settings
+--------------------
+The quick answer for the impatient:
+
+Use "Sync channel by channel: no" if
+- you connect to VTP port
+- or need to be fast
+Use "Sync channel by channel: yes" if
+- you connect to SVDRP port
+- or encounter bandwidth related problems with "no"
+- or want to share the SVDRP connection with other local plugins
+
+Use "Update now and next first: yes" if
+- you start VDR with an empty epg.data
+- or you selected "Sync channel by channel: yes"
+Use "Update now and next first: no" otherwise
+
+The long answer:
+
+With "Sync channel by channel: no", epgsync will issue "LSTE" without
+any arguments. The complete EPG information of the remote VDR will be
+downloaded in one piece. This is fast, so the remote SVDRP port won't
+be blocked too long. On the other hand it will temporarily allocate
+quite a bit of memory. Besides it will request a dedicated svdrpservice
+connection. This is ok for VTP as the VTP server can handle multiple
+connections at a time. With SVDRP it might be an issue if there are
+more local plugins which want to connect to the same SVDRP server. As
+the SVDRP server processes only one connection, either epgsync or the
+other plugins will win - which ever is first. The other might timeout.
+
+"Sync channel by channel: yes" is the "economy mode". It takes
+considerably longer but the connection can be shared with other local
+plugins. I had no problem running e.g. remoteosd at the same time.
+In this mode, epgsync loops through all channels starting with the
+first. If a schedule is available for a channel "LSTE <channel id>"
+is sent, the reply is processed and the thread sleeps for a few millis.
+Note that in this mode epgsync won't import the EPG of a channel
+which does not have a local schedule. To always get the EPG of all
+channels you should configure "Update now and next first: yes". This
+will import the results of "LSTE now" and "LSTE next" beforehand.

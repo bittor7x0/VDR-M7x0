@@ -1,0 +1,2237 @@
+diff -Naur reelchannelscan-0.4.3-orig/channelscan.c reelchannelscan-0.4.3/channelscan.c
+--- reelchannelscan-0.4.3-orig/channelscan.c	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/channelscan.c	2007-07-25 12:40:30.000000000 +0200
+@@ -115,14 +115,6 @@
+ 
+ bool cPluginChannelscan::Service(const char *Id, void *Data)
+ {
+-  #ifdef REELVDR
+-  if (Id && strcmp(Id,"SelectChannelsMenu")==0)
+-  {
+-     sSelectChannelsMenu * serviceData = (sSelectChannelsMenu *) Data;
+-     serviceData->pSelectMenu = new cMenuSelectChannelList();
+-     return true;
+-  }
+-  #endif // REELVDR
+ 
+   if (Id && strcmp(Id,"AutoScan")==0)
+   {
+diff -Naur reelchannelscan-0.4.3-orig/csmenu.c reelchannelscan-0.4.3/csmenu.c
+--- reelchannelscan-0.4.3-orig/csmenu.c	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/csmenu.c	2007-08-01 11:42:06.000000000 +0200
+@@ -16,7 +16,12 @@
+ 
+ #include <iostream>
+ 
+-#include <linux/dvb/frontend.h> 
++#ifdef VDRO7OVERSION
++ #include "m7x0_dvb/frontend.h"
++#else
++ #include <linux/dvb/frontend.h>
++#endif
++
+ #include <vdr/interface.h>
+ #include <vdr/diseqc.h> 
+ #include <vdr/menu.h> 
+@@ -26,7 +31,13 @@
+ 
+ 
+ #define CHNUMWIDTH 16
+-#define DVBFRONTEND "/dev/dvb/adapter%d/frontend0"
++
++#ifdef VDRO7OVERSION
++ #define DVBFRONTEND "/dev/ost/frontend%d"
++#else
++ #define DVBFRONTEND "/dev/dvb/adapter%d/frontend0"
++#endif
++
+ #define POLLDELAY 1
+ #define MENUDELAY 3
+ 
+@@ -68,12 +79,7 @@
+ 
+ cMenuChannelscan::cMenuChannelscan(int CurrentChannelNr)
+ :cOsdMenu(tr("Channelscan"), CHNUMWIDTH)
+-{
+-
+-#ifdef REELVDR
+-  ::Setup.LiveBuffer=0;
+-#endif
+-  
++{  
+   data = Setup;
+   cTransponders::Create();
+   
+@@ -328,12 +334,8 @@
+ 
+    //Check this 
+    SetInfoBar();
+-
+-#ifdef REELVDR
+-   SetHelp(tr("Button$Start"), NULL, NULL, tr("Channel sel.") );
+-#else 
++ 
+    SetHelp(tr("Button$Start"), NULL, NULL, NULL);
+-#endif
+    
+    SetCurrent(Get(current));
+    Display();
+@@ -399,14 +401,7 @@
+   bool oldExpertSettings = expertSettings;
+ 
+   eOSState state = cOsdMenu::ProcessKey(Key);
+-  
+-  #ifdef REELVDR 
+-  if (state == osUser1) 
+-  {
+-     return AddSubMenu(new cMenuSelectChannelList); 
+-  }
+-  #endif // REELVDR 
+-
++ 
+   if (HadSubMenu && !HasSubMenu())
+   {
+      Set(); 
+@@ -451,11 +446,7 @@
+                Set();
+             }
+             break;
+-#ifdef REELVDR
+-        case kBlue: 
+-             return AddSubMenu(new cMenuSelectChannelList);     
+-             break;
+-#endif 
++ 
+         default: state = osContinue;
+      }
+   } 
+@@ -587,6 +578,13 @@
+ void cMenuScanActive::Setup()
+ {
+   int num_tv=0,num_radio=0;
++  uint displayChanLines;
++  
++  if(scp->type == SAT){
++    displayChanLines = 8;
++  }else{
++    displayChanLines = 10;
++    }
+ 
+   Clear();
+   mutexNames.Lock();
+@@ -600,11 +598,11 @@
+   num_tv=tvChannelNames.size();
+   num_radio=radioChannelNames.size();
+ 
+-  if (tvChannelNames.size() > 10)
+-     tv+=tvChannelNames.size()-10;
++  if (tvChannelNames.size() > displayChanLines)
++     tv+=tvChannelNames.size()-displayChanLines;
+ 
+-  if (radioChannelNames.size() > 10)
+-     radio+=radioChannelNames.size()-10;
++  if (radioChannelNames.size() > displayChanLines)
++     radio+=radioChannelNames.size()-displayChanLines;
+ 
+   /// Display channel names 
+   while (1)
+@@ -622,14 +620,14 @@
+       ++radio;
+      }
+   }
+-  int nameLines = tvChannelNames.size() > radioChannelNames.size() ? tvChannelNames.size() : radioChannelNames.size();
++  uint nameLines = tvChannelNames.size() > radioChannelNames.size() ? tvChannelNames.size() : radioChannelNames.size();
+ 
+-  if (nameLines>10)
+-     nameLines=10;
++  if (nameLines>displayChanLines)
++     nameLines=displayChanLines;
+ 
+   mutexNames.Unlock();
+ 
+-  AddBlankLineItem(11 - nameLines);
++  AddBlankLineItem((displayChanLines + 1) - nameLines);
+ 
+   char buffer[50];
+ 
+@@ -654,7 +652,7 @@
+      {
+         snprintf(buffer,sizeof(buffer), tr("Retrieving transponder list from %s"), 
+         cTransponders::GetInstance().Position().c_str());
+-        Add(new cMenuStatusBar(100, Scan->GetCurrentTransponderNr()*2, 0, true));
++        Add(new cMenuStatusBar(100, Scan->GetCurrentTransponderNr()*2, 0, true, 0));
+           //cMenuStatusBar(int Total, int Current, int Channel, bool BarOnly)
+      }
+      else if (cMenuChannelscan::scanState == ssGetChannels)
+@@ -663,13 +661,17 @@
+        {
+           snprintf(buffer,sizeof(buffer), tr("Scanning %s (%iMHz)\t%s"), cTransponders::GetInstance().Position().c_str(), 
+              Scan->GetCurrentFrequency(),tr(txts[cMenuChannelscanSetup::SetupServiceType]));
+-          Add(new cMenuStatusBar(transponderNum_, Scan->GetCurrentTransponderNr(), Scan->GetCurrentChannelNumber()));
++          Add(new cMenuStatusBar(transponderNum_, Scan->GetCurrentTransponderNr(), Scan->GetCurrentChannelNumber(), 0));
++	  Add(new cMenuStatusBar(200,Scan->getSignal(),200, 1));
++	  Add(new cMenuStatusBar(20 ,Scan->getSNR(),20, 3));
+        }
+        else
+        {
+           snprintf(buffer,sizeof(buffer), tr("Scanning %s (%.3fMHz)\t%s"), tr(cTransponders::GetInstance().Position().c_str()), 
+              Scan->GetCurrentFrequency()/(1000.0*1000),tr(txts[cMenuChannelscanSetup::SetupServiceType]));
+-         Add(new cMenuStatusBar(transponderNum_, Scan->GetCurrentTransponderNr(), Scan->GetCurrentChannelNumber()));
++          Add(new cMenuStatusBar(transponderNum_, Scan->GetCurrentTransponderNr(), Scan->GetCurrentChannelNumber(), 0));
++	  Add(new cMenuStatusBar(150,Scan->getSignal(),150, 1));
++	  Add(new cMenuStatusBar(25 ,Scan->getBER(),25, 2));
+        }
+      }
+      Add(new cMenuInfoItem(buffer));
+@@ -805,49 +807,6 @@
+   // call cMenuChannels if kOk 
+   DeleteDummy();
+ 
+-#ifdef DEBUG_CHANNELSCAN
+-
+-   #include <sstream> 
+-   #include <fstream> 
+-   #include <vector> 
+-   #include <string> 
+-
+-   typedef vector<string>::const_iterator constIter;
+-   std::ofstream outfile("/tmp/tv.txt");
+-   cout << " atempt to write " << dataChannelList.size() << " entries to /tmp/tv.txt \n";
+-   constIter it = tvChannelList.begin();
+-   while (it != tvChannelList.end())
+-   {
+-     outfile << it - tvChannelList.begin() << ": " << *it << endl;
+-     ++it;
+-   }
+-
+-   outfile.close();
+-   outfile.open("/tmp/radio.txt");
+-   cout << " atempt to write " << dataChannelList.size() << " entries to /tmp/radio.txt \n";
+-   it = radioChannelList.begin();
+-   while (it != radioChannelList.end())
+-   {
+-     outfile << it - radioChannelList.begin() << ": " << *it << endl;
+-     ++it;
+-   }
+-
+-   outfile.close();
+-   outfile.open("/tmp/data.txt");
+-   cout << " atempt to write " << dataChannelList.size() << " entries to /tmp/data.txt \n";
+-   it = dataChannelList.begin();
+-   while (it != dataChannelList.end())
+-   {
+-     outfile << it - dataChannelList.begin() << ": " << *it << endl;
+-     ++it;
+-   }
+-   outfile.close();
+-  
+-   tvChannelList.clear();
+-   radioChannelList.clear();
+-   dataChannelList.clear();
+-#endif
+-
+   Channels.DecBeingEdited();
+ 
+   cChannel *channel = Channels.GetByNumber(1);
+@@ -966,7 +925,7 @@
+ 
+ // --- cMenuStatusBar ----------------------------------------------------
+ 
+-cMenuStatusBar::cMenuStatusBar(int Total, int Current, int Channel, bool BarOnly)
++cMenuStatusBar::cMenuStatusBar(int Total, int Current, int Channel, int Mode, bool BarOnly)
+ {
+    int barWidth = 50;
+    int percent;
+@@ -1003,7 +962,15 @@
+      l = asprintf(&tmp,"%s\t  %d / %d", buffer, Current, Total);
+    */
+    else 
+-     l = asprintf(&tmp,"%s\t  %d / %d  (CH: %d)", buffer, Current, Total, Channel);
++     if(Mode == 0)
++        l = asprintf(&tmp,"%s\t  %d / %d  (CH: %d)", buffer, Current, Total, Channel);
++     if(Mode == 1)
++        l = asprintf(&tmp,"%s\t  %d / %d  (SIGNAL)", buffer, Current, Total);
++     if(Mode == 2)
++        l = asprintf(&tmp,"%s\t  %d / %d  (BER)", buffer, Current, Total);
++     if(Mode == 3)
++        l = asprintf(&tmp,"%s\t  %d / %d  (SNR)", buffer, Current, Total);
++
+ 
+    SetText(strndup(tmp,l), false);
+    SetSelectable(false);
+@@ -1040,224 +1007,3 @@
+    SetSelectable(false);
+    free(buffer);
+ }
+-
+-#ifdef REELVDR 
+-// --- Class cMenuChannelsItem  ------------------------------------------------
+-
+-cMenuChannelsItem::cMenuChannelsItem(cDirectoryEntry *Entry)
+-{
+-   entry_ = Entry;
+-   char *buffer = NULL;
+-   isDir_ = false;
+-   if (Entry->IsDirectory())
+-   {
+-      isDir_ = true;
+-      asprintf(&buffer, "\x82 %s", Entry->Title());
+-   }
+-   else 
+-   {
+-      asprintf(&buffer,"     %s", Entry->Title());
+-   }
+-   
+-   SetText(buffer, true);
+-   free(buffer);
+-}
+-
+-cMenuChannelsItem::~cMenuChannelsItem()
+-{
+-  
+-}
+-
+-//
+-// --- Class cMenuChannelscan ------------------------------------------------
+-
+-cMenuSelectChannelList::cMenuSelectChannelList()
+-:cOsdMenu(tr("Channel lists"), 10)
+-{
+-  helpKeys_ = -1;
+-  level_ = current_ = 0;  
+-  DirectoryFiles.Load();
+-  // debug // 
+-  //DumpDir();
+-  Set();
+-  hasTimers_ = Timers.Count();
+-}
+-
+-void cMenuSelectChannelList::Set()
+-{    
+-  if (Current() >= 0)
+-    current_ = Current();
+-
+-  Clear();  
+-    
+-  for (cDirectoryEntry *d = DirectoryFiles.First(); d; d = DirectoryFiles.Next(d))
+-  {
+-     cMenuChannelsItem *item = new cMenuChannelsItem(d);
+-     Add(item);
+-  } 
+-  
+-  SetCurrent(Get(current_));
+-
+-  SetHelp(NULL, NULL, NULL, NULL);
+-  Display();
+-}
+-
+-cMenuSelectChannelList::~cMenuSelectChannelList()
+-{
+-}
+-
+-bool cMenuSelectChannelList::ChangeChannelList()
+-{
+-  cMenuChannelsItem *ci = (cMenuChannelsItem *)Get(Current());
+-
+-  if (ci && !ci->IsDirectory() && ci->FileName())
+-  {
+-     // new thread? 
+-     string buff = "cp -f ";
+-     buff += ci->FileName();
+-     buff += " ";
+-     buff +=  setup::FileNameFactory("link");
+-
+-     system (buff.c_str()); 
+-     bool ret =  Channels.Reload(setup::FileNameFactory("link").c_str());
+-     return ret;
+-
+-  }
+-  return false;
+-} 
+-
+-
+-
+-eOSState cMenuSelectChannelList::ProcessKey(eKeys Key)
+-{
+-  
+-  if (Key == kBack)
+-  {
+-    Key = kNone;
+-
+-    if (level_>0) 
+-    {
+-       Open(true); // back 
+-       Set();
+-       return osUnknown;
+-    }
+-    else 
+-    {
+-      return osBack;
+-    }
+-  }
+-  else 
+-  {
+-    current_ = 0;
+-  }
+-    
+-  eOSState state = cOsdMenu::ProcessKey(Key);
+-
+-  if (state == osUnknown) 
+-  {
+-     switch (Key) 
+-     {
+-       case kOk:     
+-       case kRed: if (DirState() == 1) // if no directory
+-                  {
+-                     if (ChangeChannelList())
+-                     {
+-                        Skins.Message(mtInfo, tr("Changes Done"));
+-                        if (hasTimers_ > 0)
+-                           Skins.Message(mtInfo, tr("Please check your Timers!"));
+-                         return osBack;
+-                     }
+-                     else 
+-                     {
+-                        Skins.Message(mtError, tr("Changes failed"));
+-                     }
+-                  }
+-                  else if (DirState() == 2)
+-                  { 
+-                     Open();
+-                     Set();
+-                  }
+-                  else if (DirState() == 0) // if directory 
+-                  {  
+-                     Open(true);  // back 
+-                     Set();
+-                  }
+-                  
+-            break;
+-
+-       //case kYellow: state = Delete(); Set(); break;
+-       // case kBlue: return AddSubMenu(new cMenuBrowserCommands); ; Set(); break; /// make Commands Menu
+-       // Don`t forget Has || Had Submenus check 
+-       default: break;
+-     }
+-  }
+-
+-  state = osUnknown;
+-  return state;
+-}
+-
+-int cMenuSelectChannelList::DirState()
+-{
+-   cMenuChannelsItem *ci = (cMenuChannelsItem *)Get(Current());
+-   return  ci?ci->IsDirectory()?2:1:0;
+-}
+-eOSState cMenuSelectChannelList::Open(bool Back)
+-{
+-  if (!Back)
+-  {
+-    level_++;
+-  }
+-  else 
+-  {
+-    level_--;
+-    DirectoryFiles.Load(Back); 
+-    return osUnknown;
+-  }
+-    
+-  cMenuChannelsItem *ci = (cMenuChannelsItem *)Get(Current());
+-
+-  if (ci && ci->FileName())
+-  {
+-     string fname = ci->FileName();
+-     if (Back)
+-     {
+-        DirectoryFiles.Load(Back); 
+-        return osUnknown;
+-     }
+-     else 
+-     {
+-        DirectoryFiles.Load(fname);
+-        return osUnknown;
+-     }
+-  }
+-  return osUnknown;
+-} 
+-
+-eOSState cMenuSelectChannelList::Delete() // backup active list
+-{
+-  cMenuChannelsItem *ci = (cMenuChannelsItem *)Get(Current());
+-  if (ci) 
+-  {
+-    if (Interface->Confirm(tr("Delete channel list?")))
+-    {
+-      if (unlink(ci->FileName()) != 0)
+-      {
+-        int errnr = errno; 
+-        esyslog ("ERROR [channelscan]: can`t delete file %s errno: %d", ci->FileName(), errnr);
+-      }
+-    }
+-  }
+-  string tmp = "";
+-  DirectoryFiles.Load(tmp);  // reload current directory 
+-  return osUnknown;
+-}
+-
+-void cMenuSelectChannelList::DumpDir()
+-{
+-   for (cDirectoryEntry *d = DirectoryFiles.First(); d; d = DirectoryFiles.Next(d))
+-   { 
+-      printf (" d->Entry: %s, Dir? %s %s  \n",d->Title(), d->IsDirectory()?"YES":"NO", d->FileName());
+-   }
+-}
+-
+-#endif
+diff -Naur reelchannelscan-0.4.3-orig/csmenu.h reelchannelscan-0.4.3/csmenu.h
+--- reelchannelscan-0.4.3-orig/csmenu.h	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/csmenu.h	2007-07-25 12:40:30.000000000 +0200
+@@ -25,7 +25,7 @@
+ 
+ #include "scan.h"
+ #include "transponders.h"
+-#include "dirfiles.h"
++//#include "dirfiles.h"
+ 
+ 
+ 
+@@ -172,7 +172,6 @@
+   virtual eOSState ProcessKey(eKeys Key);
+ };
+ 
+-#ifndef REELVDR
+ // --- Class cMenuEditSrcItem  ----------------------------------------------------
+ 
+ class cMenuEditSrcItem : public cMenuEditIntItem {
+@@ -184,7 +183,6 @@
+   cMenuEditSrcItem(const char *Name, int *Value);
+   eOSState ProcessKey(eKeys Key);
+ };
+-#endif
+ 
+ // --- Class cMenuScanInfoItem   ----------------------------------------------------
+ class cMenuScanInfoItem : public cOsdItem {
+@@ -198,7 +196,7 @@
+   int total;
+   int part;
+ public:
+-  cMenuStatusBar(int total, int current, int channelNr, bool BarOnly = false);
++  cMenuStatusBar(int total, int current, int channelNr, int mode, bool BarOnly = false);
+   int LiteralCentStat(char **str);
+ };
+ 
+@@ -210,43 +208,5 @@
+   cMenuInfoItem(const char *text, bool boolValue);
+ };
+ 
+-#ifdef REELVDR
+-// --- Class cMenuChannelsItem   ----------------------------------------------------
+-
+-class cMenuChannelsItem : public cOsdItem {
+-private:
+-  cDirectoryEntry *entry_;
+-  bool isDir_;
+-public:
+-  cMenuChannelsItem(cDirectoryEntry *Entry);
+-  ~cMenuChannelsItem();
+-  const char *FileName(void) { return entry_->FileName(); }
+-  bool IsDirectory(void) { return entry_->IsDirectory(); }
+-};
+-
+-// --- cMenuSelectChannelList  ----------------------------------------------------
+-
+-class cMenuSelectChannelList : public cOsdMenu  {
+-private:
+-  int helpKeys_;
+-  int level_;
+-  int current_;
+-  int hasTimers_;
+-  std::string oldDir_;
+-  int DirState();
+-  bool ChangeChannelList();
+-  eOSState Open(bool Back = false);
+-public:
+-  virtual eOSState ProcessKey(eKeys Key);
+-  cMenuSelectChannelList();
+-  ~cMenuSelectChannelList(); 
+-  const char **ChannelLists();
+-  void Set();
+-  eOSState Store();
+-  eOSState Delete();
+-  void DumpDir();
+-};
+-#endif // REELVDR 
+-
+ #endif // __CSMENU_H
+ 
+diff -Naur reelchannelscan-0.4.3-orig/dirfiles.c reelchannelscan-0.4.3/dirfiles.c
+--- reelchannelscan-0.4.3-orig/dirfiles.c	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/dirfiles.c	1970-01-01 01:00:00.000000000 +0100
+@@ -1,200 +0,0 @@
+-/***************************************************************************
+- *   Copyright (C) 2005 by Reel Multimedia                                 *
+- *                                                                         *
+- *                                                                         *
+- *   This program is free software; you can redistribute it and/or modify  *
+- *   it under the terms of the GNU General Public License as published by  *
+- *   the Free Software Foundation; either version 2 of the License, or     *
+- *   (at your option) any later version.                                   *
+- *                                                                         *
+- *   This program is distributed in the hope that it will be useful,       *
+- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+- *   GNU General Public License for more details.                          *
+- *                                                                         *
+- *   You should have received a copy of the GNU General Public License     *
+- *   along with this program; if not, write to the                         *
+- *   Free Software Foundation, Inc.,                                       *
+- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+- *
+- *************************************************************************** 
+- *   
+- *   channelscan: A plugin for VDR 
+- *
+- ***************************************************************************/
+-
+-#include <string>
+-
+-#include <stdlib.h>
+-#include <stdio.h>
+-#include <sys/types.h>
+-#include <dirent.h>
+-
+-#include <vdr/channels.h>
+-#include <vdr/device.h>
+-#include <vdr/submenu.h> // Filefactory
+-
+-#include "transponders.h"
+-#include "channelscan.h"
+-#include "csmenu.h"
+-#include "debug.h"
+-
+-
+-using std::string;
+-using std::cout;
+-using std::endl;
+-
+-#define DIRFILE   ?'d':'f'
+-
+-cDirectoryFiles DirectoryFiles;
+-
+-// -- Class cDirectoryEntry --------------------------------------
+-cDirectoryEntry::cDirectoryEntry(const std::string& FileName, bool IsDir)
+-{
+-  fileName_ = FileName;
+-  titleBuffer_ = fileName_.substr(FileName.find_last_of('/')+1);
+-  isDirectory_ = IsDir;
+-  toEdit_ = false; // Backup or New
+-  StripEnding(); // einstelbar? 
+-}
+-
+-void cDirectoryEntry::StripEnding()
+-{
+-  string::size_type pos =  titleBuffer_.find_last_of('.');
+-  if (pos != titleBuffer_.npos)
+-  {
+-     printf (" errase ending:  %s  \t", titleBuffer_.c_str());
+-     titleBuffer_.erase(pos);
+-     printf ("errased:   %s  \n", titleBuffer_.c_str());
+-  }
+-}
+-
+-int cDirectoryEntry::Compare(const cListObject &ListObject) const
+-{
+-   cDirectoryEntry *de = (cDirectoryEntry *)&ListObject;
+-   // printf ("Compare -- %c - %s vs. %d - %s \n", IsDirectory()DIRFILE, Title(), de->IsDirectory()DIRFILE, de->Title());
+-   if (de->IsDirectory() == IsDirectory()) 
+-   {
+-      string title = Title();
+-      int ret = strcasecmp(title.c_str(),  de->Title());
+-      //printf ("Compare %s vs. %s returns %d \n", Title(), de->Title(), ret);
+-      return ret;
+-   }
+-   return IsDirectory()?-100:100;
+-}
+-
+-// ----------- Class cDirectoryFiles ------------------------
+-
+-cDirectoryFiles::cDirectoryFiles()
+-{ 
+-}
+-
+-/*
+-cDirectoryFiles::~cDirectoryFiles()
+-{ 
+-    printf (" Destroy ~cDirectoryFiles \n");
+-    for (cDirectoryEntry *de = First(); de; de = Next(de))
+-    {
+-       if (de->ToEdit())
+-       {
+-         
+-       }
+-          
+-    }
+-  
+-} */
+-
+-bool cDirectoryFiles::Load(bool oldPath)
+-{
+-      printf (" Load( bool ) \"%s\"\n", oldPath?"Back":"Channels");
+-
+-   if (!oldPath)
+-   {
+-      path_ = setup::FileNameFactory("channels");
+-      printf (" Load(\"%s\"\n", path_.c_str());
+-      return Load(path_);
+-   }
+-   else 
+-   {
+-      printf (" Load(\"%s\"\n", oldPath_.c_str());
+-      string tmp =  oldPath_; 
+-      oldPath_ = string(oldPath_, oldPath_.find_last_of('/'));
+-      return Load(tmp);
+-   }
+-}
+-
+-bool cDirectoryFiles::Load(string& Path)
+-{
+-  
+-  printf (" Load (%s) \n", Path.c_str());
+-
+-  Clear();
+-
+-  DIR *dirp;
+-  struct dirent *dp;
+-  struct stat buf;
+-  if (!Path.empty())
+-  {
+-     oldPath_ = path_;
+-     path_ = Path;
+-  }
+-  else  // relaod 
+-  {
+-    Path = path_;
+-    printf (" Reload (%s) \n", Path.c_str());
+-  }
+-
+-
+-  if ((dirp = opendir(Path.c_str())) == NULL) 
+-  {
+-     printf (" Load () error open %s \n", Path.c_str());
+-     esyslog (" error open %s ", Path.c_str());
+-     return false;
+-  }
+-          
+-  while ((dp = readdir(dirp)) != NULL)
+-  {
+-     printf ("  readdir: %s, \n",dp->d_name);
+-     string dName = dp->d_name;
+-     if (dName.find('.') == 0) 
+-         continue;
+-
+-     string path = Path + "/" + dName;
+-
+-     if (stat(path.c_str(), &buf) != 0)
+-     {
+-        int err = errno;
+-        printf (" Error: %s errno %d ", path.c_str(), err);
+-        if (errno == ENOENT)
+-           printf(" :No such file or directory \n");
+-        else 
+-           printf ("\n");
+-     }
+-
+-     if (S_ISDIR(buf.st_mode))
+-     {
+-        //printf (" Add DIR new dirEntry %s, \t",dp->d_name);
+-        //printf ("Path: %s\n", path.c_str());
+-        Add (new cDirectoryEntry(path, true));
+-     }
+-     if (S_ISREG(buf.st_mode))
+-     {
+-        printf (" Add FILE new dirEntry %s, isFile \t",dp->d_name);
+-        if (dName.find(".conf") != string::npos ) 
+-        {
+-          //  printf ("Path: %s\n", path.c_str());
+-           Add(new cDirectoryEntry(path, false));
+-        }
+-        else 
+-        {
+-          isyslog("Channelscan: no (channels).config file %s \n", dName.c_str());
+-        }
+-        
+-    }
+-  }
+-
+-  closedir(dirp);
+-  Sort();
+-  return true;
+-}
+-
+diff -Naur reelchannelscan-0.4.3-orig/dirfiles.h reelchannelscan-0.4.3/dirfiles.h
+--- reelchannelscan-0.4.3-orig/dirfiles.h	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/dirfiles.h	1970-01-01 01:00:00.000000000 +0100
+@@ -1,138 +0,0 @@
+-/***************************************************************************
+- *   Copyright (C) 2005 by Reel Multimedia                                 *
+- *                                                                         *
+- *                                                                         *
+- *   This program is free software; you can redistribute it and/or modify  *
+- *   it under the terms of the GNU General Public License as published by  *
+- *   the Free Software Foundation; either version 2 of the License, or     *
+- *   (at your option) any later version.                                   *
+- *                                                                         *
+- *   This program is distributed in the hope that it will be useful,       *
+- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+- *   GNU General Public License for more details.                          *
+- *                                                                         *
+- *   You should have received a copy of the GNU General Public License     *
+- *   along with this program; if not, write to the                         *
+- *   Free Software Foundation, Inc.,                                       *
+- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+- *
+- *************************************************************************** 
+- *   
+- *   channelscan: plugin for VDR 
+- *
+- ***************************************************************************/
+-
+-#ifndef __DIRFILES_H
+-#define __DIRFILES_H
+-
+-#include <errno.h>
+-
+-#include <vdr/plugin.h>
+-#include <vdr/thread.h>
+-#include <vector>
+-#include <string>
+-
+-
+-#undef  DBG
+-#undef  ERR
+-#define DBG " Channelscan DEBUG: -- "
+-#define ERR " Channelscan ERROR: -- "
+-
+-#ifdef DEBUG_CHANNELSCAN
+-#  undef DLOG 
+-#  define DLOG(x...) dsyslog(x)
+-#else
+-# define DLOG(x...)
+-#endif
+-
+-// -- Class cDirectoryEntry --------------------------------------
+-
+-class cDirectoryEntry : public cListObject
+-{
+-private:
+-  std::string fileName_;
+-  std::string titleBuffer_;
+-  std::string name_;
+-  std::string setEdit_;
+-  bool isDirectory_;
+-  bool toEdit_;
+-  int level_;
+-public: 
+-  cDirectoryEntry(const std::string& FileName, bool IsDir);
+-  ~cDirectoryEntry() { }; 
+-  void StripEnding();
+-  const char *Title() const; 
+-  const char *FileName() const;
+-  bool IsDirectory() const;
+-  int Level() const;
+-  int Compare(const cListObject &ListObject) const;
+-  void SetEdit(); 
+-  bool ToEdit() const;
+-
+-  // returns the directory name
+-};
+-
+-// -- inline definitions cDirectoryEntry --------------------------------------
+-
+-inline const char *cDirectoryEntry::Title() const
+-{ 
+-  return titleBuffer_.c_str();
+-}
+-
+-inline const char *cDirectoryEntry::FileName() const
+-{
+-  return fileName_.c_str();
+-}
+-
+-inline int cDirectoryEntry::Level() const
+-{
+-  return level_;
+-}
+-
+-inline bool cDirectoryEntry::IsDirectory() const
+-{
+-  return isDirectory_;
+-}
+-inline void cDirectoryEntry::SetEdit()
+-{
+-  toEdit_ = true;;
+-}
+-inline bool cDirectoryEntry::ToEdit() const
+-{
+-  return toEdit_;
+-}
+-
+-
+-// -- Class cDirectoryFiles --------------------------------------
+-
+-class cDirectoryFiles : public cList<cDirectoryEntry>
+-{ 
+-private:
+-  std::string path_;
+-  std::string oldPath_;
+-public:
+-  cDirectoryFiles();
+-  ~cDirectoryFiles() { };
+-  bool Load(bool oldDir = false);
+-  bool Load(std::string& Path);
+-  void DumpEntries();
+-};
+-
+-extern cDirectoryFiles DirectoryFiles;
+-
+-// -- inline definitions cDirectoryEntry --------------------------------------
+-
+-inline void cDirectoryFiles::DumpEntries()
+-{
+-    printf  ("\n\n ***  Dump cDirectoryEntry: \"%s\"  ***\n", path_.c_str());
+-    for (cDirectoryEntry *de = First(); de; de = Next(de))
+-    {
+-       //printf (" -- %c - e:%s, t:%s\n", de->IsDirectory()?'d':'f', de->Entry(), de->Title());
+-       printf (" -- %c - t:%s\n", de->IsDirectory()?'d':'f', de->Title());
+-    }
+-}
+-
+-
+-#endif // __DIRFILES_H
+-
+diff -Naur reelchannelscan-0.4.3-orig/filter.c reelchannelscan-0.4.3/filter.c
+--- reelchannelscan-0.4.3-orig/filter.c	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/filter.c	2007-08-01 11:42:39.000000000 +0200
+@@ -1,5 +1,10 @@
+ 
+-#include <linux/dvb/frontend.h>
++#ifdef VDRO7OVERSION
++ #include "m7x0_dvb/frontend.h"
++#else
++ #include <linux/dvb/frontend.h>
++#endif
++
+ #include <map>
+ #include <vector>
+ #include <utility>
+@@ -232,10 +237,7 @@
+   for (int i=0; i<MAXFILTERS; i++)
+     pmtPid[i] = 0;
+   numPmtEntries = 0;
+-  Set(0x00, 0x00);  // PAT
+-#ifdef REELVDR
+-  Set(0x1fff, 0x42);  // decrease latency
+-#endif 
++  Set(0x00, 0x00);  // PAT 
+   endofScan=false;
+   SetStatus(false);
+   pit=pnum=0;
+@@ -522,9 +524,6 @@
+   numSid=0;
+   numUsefulSid=0;
+   Set(0x11, 0x42);  // SDT
+-#ifdef REELVDR
+-  Set(0x1fff, 0x42);
+-#endif
+   AddServiceType = cMenuChannelscanSetup::SetupServiceType;
+ }
+ 
+@@ -714,9 +713,6 @@
+   found_ = endofScan = false;
+   Set(0x10, 0x40);  // NIT
+   //Set(0x10, 0x41);  // other NIT
+-#ifdef REELVDR
+-  Set(0x1fff, 0x42);  // decrease latency
+-#endif
+   vector<int> tmp(64,0);
+   sectionSeen_ = tmp;
+ }
+diff -Naur reelchannelscan-0.4.3-orig/filter.h reelchannelscan-0.4.3/filter.h
+--- reelchannelscan-0.4.3-orig/filter.h	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/filter.h	2007-07-25 12:40:30.000000000 +0200
+@@ -18,11 +18,7 @@
+ 
+ #define CMAXPMTENTRIES 256
+ #define CMAXSIDENTRIES 256
+-#ifdef REELVDR
+-#define MAXFILTERS 10 // FPGA has enough PID filters
+-#else
+ #define MAXFILTERS 6
+-#endif
+ #define FILTERTIMEOUT 10
+ 
+ extern std::map<int, cTransponder *> transponderMap;
+@@ -86,13 +82,8 @@
+   virtual void SetStatus(bool On);
+   };
+ 
+-
+-#ifdef REELVDR 
+-#define MAXNITS 256
+-#endif
+ #define MAXNETWORKNAME 256
+ 
+-
+ class NitFilter : public cFilter {
+ private:
+   class cNit {
+diff -Naur reelchannelscan-0.4.3-orig/i18n.c reelchannelscan-0.4.3/i18n.c
+--- reelchannelscan-0.4.3-orig/i18n.c	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/i18n.c	2007-08-05 18:57:19.000000000 +0200
+@@ -19,13 +19,13 @@
+     "", // Norsk
+     "Kanavahaku DVB-transpondereille",// FI
+     "", // Polski
+-    "", // Espaёol
++    "Buscar transponders de canales DVB", // Espaёol
+     "", // Хыычэщъм (Greek)
+     "", // Svenska
+     "", // Romaneste
+     "", // Magyar
+     "", // Catalр
+-    "", // Русский (Russian)
++    "Поиск каналов", // Русский (Russian)
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -41,13 +41,13 @@
+     "",
+     "Hakutapa",
+     "",
++    "Modo bњsqueda",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Режим поиска",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -63,13 +63,13 @@
+     "",
+     "haetaan transponderilta",
+     "",
++    "buscando transponder",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "сканирование транспондера",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -85,13 +85,13 @@
+     "",
+     "",
+     "",
++    "Buscando satщlites configurados",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Сканирование настроенных спутников",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -107,13 +107,13 @@
+     "",
+     "DiSEqC-kytkin",
+     "",
++    "DiSEqC",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "DiSEqC",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -129,13 +129,13 @@
+     "",
+     "FEC",
+     "",
++    "FEC",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "FEC",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -151,13 +151,13 @@
+     "",
+     "ei",
+     "",
++    "Ninguno",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Нет",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -173,13 +173,13 @@
+     "",
+     "auto",
+     "",
++    "Auto",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Авто",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -195,13 +195,13 @@
+     "",
+     "automaattinen",
+     "",
++    "Automсtica",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Авто",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -217,13 +217,13 @@
+     "",
+     "manuaalinen",
+     "",
++    "Manual",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Ручной",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -239,7 +239,7 @@
+     "",
+     "Kanavahaku",
+     "",
+-    "",
++    "Buscar canales",
+     "",
+     "",
+     "",
+@@ -261,13 +261,13 @@
+     "",
+     "",
+     "",
++    "Bњsq. detallada",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Полный поиск",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -283,13 +283,13 @@
+     "",
+     "Sijainti",
+     "",
++    "Posiciѓn",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Позиция",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -305,13 +305,13 @@
+     "",
+     "",
+     "",
++    "Error en sintonizador",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Ошибка тюнера",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -327,13 +327,13 @@
+     "",
+     "Haetaan transponderilta",
+     "",
++    "Buscando transponder",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Сканирование транспондера",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -349,13 +349,13 @@
+     "",
+     "Tфmфnhetkiset kanavat",
+     "",
++    "canales en lista actual",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "каналов в списке",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -371,13 +371,13 @@
+     "",
+     "TV-kanavat",
+     "",
++    "CANALES TV",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "КАНАЛЫ ТВ",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -393,13 +393,13 @@
+     "",
+     "Uusia kanavia ei lіydetty",
+     "",
++    "Ningњn nuevo canal encontrado",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Нет новых каналов",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -415,13 +415,13 @@
+     "",
+     "Haku keskeytetty",
+     "",
++    "Bњsqueda cancelada por el usuario",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Поиск прерван пользователем",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -438,13 +438,13 @@
+     "",
+     "TV-kanavat                      Radio",
+     "",
++    "CANALES TV                      RADIO",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "КАНАЛЫ ТВ                       РАДИО",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -460,7 +460,7 @@
+     "",
+     "Symbolinopeus",
+     "",
+-    "",
++    "Sэmbolo tipo",
+     "",
+     "",
+     "",
+@@ -482,7 +482,7 @@
+     "",
+     "Taajuus",
+     "",
+-    "",
++    "Frequencia",
+     "",
+     "",
+     "",
+@@ -504,13 +504,13 @@
+     "",
+     "Haku kфynnissф %s.\tOdota hetkinen...",
+     "",
++    "Buscando %s\tPor favor, espere",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Производится поиск\tЖдите",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -526,13 +526,13 @@
+     "",
+     "Haku kфynnissф %s.\tOdota hetkinen...",
+     "",
++    "Buscando %s (%iMHz) \tPor favor, espere",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Поиск %s (%iMHz) \tЖдите",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -548,13 +548,13 @@
+     "",
+     "Haku kфynnissф %s.\tOdota hetkinen...",
+     "",
++    "Buscando %s (%.3fMHz) \tPor favor, espere",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Поиск %s (%.3fMHz) \tЖдите",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -570,13 +570,13 @@
+     "",
+     "",
+     "",
++    "Cambiar",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Выбрать",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -592,13 +592,13 @@
+     "",
+     "Aloita",
+     "",
++    "Iniciar",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Пуск",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -614,13 +614,13 @@
+     "",
+     "",
+     "",
++    "Guardar",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Сохранить",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -636,13 +636,13 @@
+     "",
+     "",
+     "",
++    "Borrar",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Удалить",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -658,13 +658,13 @@
+     "",
+     "",
+     "",
++    "Nuevo",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Новый",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -680,13 +680,13 @@
+     "",
+     "vain radio",
+     "",
++    "Sѓlo radio",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Только радио",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -702,13 +702,13 @@
+     "",
+     "vain TV",
+     "",
++    "Sѓlo TV",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Только ТВ",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -724,13 +724,13 @@
+     "",
+     "radio + TV",
+     "",
++    "Radio + TV",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Радио + ТВ",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -746,13 +746,13 @@
+     "",
+     "radio + TV + NVOD",
+     "",
++    "Radio + TV + NVOD",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Радио + ТВ + NVOD",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -768,13 +768,13 @@
+     "",
+     "Haettavat palvelut",
+     "",
++    "Tipo de servicio",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Виды сервисов",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -790,13 +790,13 @@
+     "",
+     "pффllф",
+     "",
++    "activado",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "включен",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -812,13 +812,13 @@
+     "",
+     "pois",
+     "",
++    "desactivado",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "выключен",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -834,13 +834,13 @@
+     "",
+     "Uudet kanavat lisфtty",
+     "",
++    "Nuevos canales aёadidos",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Добавлено новых каналов",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -856,13 +856,13 @@
+     "",
+     "",
+     "",
++    "Frequencia (kHz)",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Частота (кГц)",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -878,13 +878,13 @@
+     "",
+     "",
+     "",
++    "Frequencia (MHz)",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Частота (МГц)",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -900,13 +900,13 @@
+     "",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
++    "Experto",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
+-    "",                                                                                                     
+-    "",                                                                                                     
++    "Эксперт",                                                                                                     
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -922,13 +922,13 @@
+     "",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
++    "Lista canales",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
+     "",                                                                                                     
+-    "",                                                                                                     
+-    "",                                                                                                     
++    "Список каналов",                                                                                              
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -944,13 +944,13 @@
+     "",
+     "",
+     "",
++    "DVB-S - Satщlite",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "DVB-S - Спутник",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -966,13 +966,13 @@
+     "",
+     "",
+     "",
++    "DVB-C - Cable",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "DVB-C - Кабель",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -988,13 +988,13 @@
+     "",
+     "",
+     "",
++    "DVB-T - Terrestre",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "DVB-T - Эфир",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -1010,13 +1010,13 @@
+     "",
+     "",
+     "",
++    "Pulse OK para continuar",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Нажмите ОК чтобы продолжить",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -1032,13 +1032,13 @@
+     "",
+     "",
+     "",
++    "Pulse OK para terminar o Exit para escanear otra vez",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Нажмите ОК чтобы закончить или для нового поиска",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -1054,13 +1054,13 @@
+     "",
+     "Vakio",
+     "",
++    "Estсndar",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Стандартный",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -1076,13 +1076,13 @@
+     "",
+     "Laaja",
+     "",
++    "Ampliado",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Расширенный",
+     "",
+     "", // Eesti
+     "", // Dansk
+@@ -1098,13 +1098,13 @@
+     "",
+     "",
+     "",
++    "Recibiendo lista de transponders desde %s",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Получаю список транспондеров от %s",
+     "", // Hrvatski (Croatian)
+     "", // Eesti
+     "", // Dansk
+@@ -1120,13 +1120,13 @@
+     "",
+     "",
+     "",
++    "Terrestre",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Эфир",
+     "",
+     "", // Eesti
+     "", // Dansk
+@@ -1142,13 +1142,13 @@
+     "",
+     "",
+     "",
++    "Cable",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Кабель",
+     "",
+     "", // Eesti
+     "", // Dansk
+@@ -1164,13 +1164,13 @@
+     "",
+     "",
+     "",
++    "Ejecutando servicios en transponder: %i / %i",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Активные сервисы на транспондере: %i / %i",
+     "",
+     "", // Eesti
+     "", // Dansk
+@@ -1186,13 +1186,13 @@
+     "",
+     "",
+     "",
++    "Buscando %s (%iMHz)\t%s",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Поиск %s (%iMHz)\t%s",
+     "",
+     "", // Eesti
+     "", // Dansk
+@@ -1208,13 +1208,13 @@
+     "",
+     "",
+     "",
++    "Buscando %s (%.3fMHz)\t%s",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Поиск %s (%.3fMHz)\t%s",
+     "",
+     "", // Eesti
+     "", // Dansk
+@@ -1230,13 +1230,13 @@
+     "",
+     "",
+     "",
++    "Cambios realizados",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Изменения сохранены",
+     "",
+     "", // Eesti
+     "", // Dansk
+@@ -1252,13 +1252,13 @@
+     "",
+     "",
+     "",
++    "Cambios errѓneos",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Изменения не сохранены",
+     "",
+     "", // Eesti
+     "", // Dansk
+@@ -1274,13 +1274,13 @@
+     "",
+     "",
+     "",
++    "Listas de canales",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Списки каналов",
+     "",
+     "", // Eesti
+     "", // Dansk
+@@ -1296,13 +1296,13 @@
+     "",
+     "",
+     "",
++    "ЁCompruebe sus programaciones!",
+     "",
+     "",
+     "",
+     "",
+     "",
+-    "",
+-    "",
++    "Проверьте пожалуйста таймеры!",
+     "",
+     "", // Eesti
+     "", // Dansk
+diff -Naur reelchannelscan-0.4.3-orig/Makefile reelchannelscan-0.4.3/Makefile
+--- reelchannelscan-0.4.3-orig/Makefile	2007-05-19 16:09:31.000000000 +0200
++++ reelchannelscan-0.4.3/Makefile	2007-08-01 11:39:38.000000000 +0200
+@@ -8,9 +8,6 @@
+ # By default the main source file also carries this name.
+ #
+ 
+-# if REELVDR is defined, some hardware and software dependencies will be 
+-# aktivated for REELBOX lite
+-
+ 
+ ### The version number of this plugin (taken from the main source file):
+ VERSION = $(shell grep 'static const char \*VERSION *=' channelscan.h | awk '{ print $$6 }' | sed -e 's/[";]//g')
+@@ -22,19 +19,17 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+ 
+ -include $(VDRDIR)/Make.config
+ 
+-ifdef REELVDR
++
+ PLUGIN = channelscan
+-else
+-PLUGIN = reelchannelscan
+-endif
++#PLUGIN = reelchannelscan
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+@@ -50,11 +45,11 @@
+ INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
+ 
+ #DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRDIR=\"$(VDRDIR)\" -DDEBUG_CHANNELSCAN 
+-DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRDIR=\"$(VDRDIR)\" -DNDEBUG
++DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRDIR=\"$(VDRDIR)\" -DNDEBUG -DDEBUG_CHANNELSCAN
+ 
+-ifdef REELVDR
+-  DEFINES += -DREELVDR 
+-endif
++# Compiled for VDR-M7x0 Siemens Gigaset from open7x0.org
++# Comment following line in other cases
++DEFINES += -DVDRO7OVERSION
+ 
+ ifeq ($(shell test -f $(VDRDIR)/PLUGINS/src/rotor/rotor.h; echo $$?),0)
+   DEFINES += -DHAVE_ROTOR 
+@@ -66,11 +61,7 @@
+ 
+ ### The object files (add further files here):
+ 
+-ifdef REELVDR
+-OBJS = channelscan.o csmenu.o dirfiles.o filter.o i18n.o scan.o transponders.o  
+-else
+ OBJS = channelscan.o csmenu.o filter.o i18n.o scan.o transponders.o  
+-endif
+  
+ ### Implicit rules:
+ 
+diff -Naur reelchannelscan-0.4.3-orig/README reelchannelscan-0.4.3/README
+--- reelchannelscan-0.4.3-orig/README	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/README	2007-07-25 12:40:30.000000000 +0200
+@@ -7,12 +7,7 @@
+   	Klaus Heppenheimer <klaus@reel-multimedia.com>
+         Georg Acher        <acher@baycom.de>   
+ 
+-Project's homepage: http://www.reel-multimedia.com
+-
+-To contact the authors please use our development forum at
+-	http://www.reel-multimedia.com/forum/board.php?boardid=186
+-
+-Latest version available at: http://reel-multimedia.com/german/entwickler/d-plugins.html
++Ported to open7x0
+ 
+ See the file COPYING for license information.
+ 
+diff -Naur reelchannelscan-0.4.3-orig/scan.c reelchannelscan-0.4.3/scan.c
+--- reelchannelscan-0.4.3-orig/scan.c	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/scan.c	2007-08-01 11:44:37.000000000 +0200
+@@ -8,7 +8,13 @@
+ 
+ 
+ #include <time.h>
+-#include <linux/dvb/frontend.h>
++
++#ifdef VDRO7OVERSION
++ #include "m7x0_dvb/frontend.h"
++#else
++ #include <linux/dvb/frontend.h>
++#endif
++
+ #include <sys/ioctl.h>
+ #include <vdr/device.h>
+ #include <vdr/sources.h>
+@@ -18,8 +24,8 @@
+ #include <stdio.h>
+ #include "debug.h"
+ 
+-#define SCAN_DELAY 20
+-#define DVBS_LOCK_TIMEOUT 4000
++#define SCAN_DELAY 30
++#define DVBS_LOCK_TIMEOUT 8000
+ 
+ //bool scanning_on_receiving_device = false;
+ 
+@@ -150,7 +156,11 @@
+     scanning_on_receiving_device=true;
+ 
+     char buffer[265];
+-    snprintf(buffer,sizeof(buffer),"/dev/dvb/adapter%d/frontend0", cardnr);
++    #ifdef VDRO7OVERSION
++       snprintf(buffer,sizeof(buffer),"/dev/ost/frontend%d", cardnr);
++    #else
++       snprintf(buffer,sizeof(buffer),"/dev/dvb/adapter%d/frontend0", cardnr);
++    #endif
+ 
+     fd_frontend = open(buffer,O_RDONLY | O_NONBLOCK);
+     if (fd_frontend<=0)
+@@ -164,20 +174,27 @@
+ }
+ 
+ //-------------------------------------------------------------------------
+-uint16_t cScan::getSignal()
++uint32_t cScan::getSignal()
+ {
+-  uint16_t value = 0;
++  uint32_t value = 0;
+   CHECK(ioctl(fd_frontend, FE_READ_SIGNAL_STRENGTH, &value));
+   return value;
+ }
+ 
+-uint16_t cScan::getSNR()
++uint32_t cScan::getSNR()
+ {
+-  uint16_t value = 0;
++  uint32_t value = 0;
+   CHECK(ioctl(fd_frontend, FE_READ_SNR, &value));
+   return value;
+ }
+ 
++uint32_t cScan::getBER()
++{
++  uint32_t value = 0;
++  CHECK(ioctl(fd_frontend, FE_READ_BER, &value));
++  return value;
++}
++
+ uint16_t cScan::getStatus()
+ {
+   fe_status_t value;
+@@ -285,7 +302,6 @@
+ 
+   NFilter = NULL;
+ 
+-  
+   // display 100% in status bar 
+   //while (initalscan &&  transponderNr < 100 && cMenuChannelscan::scanning) 
+   while (transponderNr < 100 && cMenuChannelscan::scanState == ssGetTransponders) 
+@@ -332,6 +348,7 @@
+   }
+   else if (cDevice::GetDevice(cardnr)->HasLock(DVBS_LOCK_TIMEOUT))
+   {
++     dsyslog("DEBUG SAT: SNR = %d : BER = %d : SIGNAL = %d)", getSNR(), getBER(), getSignal());
+      if (cMenuChannelscan::scanState == ssGetTransponders) {
+        ScanNitServices();
+      }
+@@ -373,16 +390,17 @@
+        esyslog(ERR "SwitchChannel(c)  failed");
+ 
+      DLOG("%i Tune %i \n",retries,frequency);
+-     usleep(1500*1000);
++     usleep(1500*2000);
+      if (lastLocked)
+         sleep(2); // avoid false lock
+-
++     
+      for(m=0;m<(detailedSearch&1?8:2);m++)
+      {
+         response=getStatus();
+         DLOG("%i RESPONSE %x\n",retries,response);
+-            
+-        if (response&0x10==0x10) {// Lock
++        dsyslog("DEBUG TER: SNR = %d : BER = %d : SIGNAL = %d)", getSNR(), getBER(), getSignal());    
++        
++	if (response&0x10==0x10) {// Lock
+           break;
+         }
+ 
+@@ -399,8 +417,8 @@
+      if (device->HasLock(timeout))
+      {
+         DLOG(DBG "  ------ HAS LOCK ------");
+-        ScanServices();
+-        lastLocked=1;
++	ScanServices();
++	lastLocked=1;
+         return;
+      }
+      lastLocked=0;
+diff -Naur reelchannelscan-0.4.3-orig/scan.h reelchannelscan-0.4.3/scan.h
+--- reelchannelscan-0.4.3-orig/scan.h	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/scan.h	2007-07-25 12:40:30.000000000 +0200
+@@ -80,10 +80,12 @@
+   SdtFilter *SFilter;
+   PatFilter *PFilter;
+   cEitFilter *EFilter;
+-
+-  uint16_t getSignal(void);
+-  uint16_t getSNR(void);
++/*
++  uint32_t getSignal(void);
++  uint32_t getSNR(void);
++  uint32_t getBER(void);
+   uint16_t getStatus(void);
++  */
+ protected:
+   virtual void Action(void);
+ public:
+@@ -99,6 +101,13 @@
+   ///< GetCurrentTransponderNr returns the channel number according to frequencies 
+   int GetCurrentFrequency() { return frequency; }
+   void GetFoundNum(int &current, int &total) {current=foundNum; total=abs(totalNum<200)?totalNum:0;};
++
++
++  uint32_t getSignal(void);
++  uint32_t getSNR(void);
++  uint32_t getBER(void);
++  uint16_t getStatus(void);
++
+ };
+ 
+ #endif //_SCAN__H
+diff -Naur reelchannelscan-0.4.3-orig/TODO reelchannelscan-0.4.3/TODO
+--- reelchannelscan-0.4.3-orig/TODO	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/TODO	2007-07-25 12:40:30.000000000 +0200
+@@ -1,8 +1,10 @@
+ TODO LIST
+ ---------
+ 
+-- Scaning of all source types C/T/S if available.
+ - Loop Scan 
++- remove all printf stuff and honor syslogd
++- improve display for m750s
+ 
+ BUGS
+ ====
++
+diff -Naur reelchannelscan-0.4.3-orig/transponders.c reelchannelscan-0.4.3/transponders.c
+--- reelchannelscan-0.4.3-orig/transponders.c	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/transponders.c	2007-08-01 11:45:05.000000000 +0200
+@@ -9,10 +9,12 @@
+ #include "transponders.h"
+ #include <vdr/plugin.h>
+ #include <vdr/sources.h>
+-#ifdef REELVDR 
+-#include <vdr/submenu.h> // setup::
++
++#ifdef VDRO7OVERSION
++ #include "m7x0_dvb/frontend.h"
++#else
++ #include <linux/dvb/frontend.h>
+ #endif
+-#include <linux/dvb/frontend.h>
+ 
+ #define SAT_TPL "Sat.tpl"
+ 
+@@ -574,30 +576,3 @@
+    return true;
+ }
+ 
+-#ifndef REELVDR 
+-
+-namespace setup
+-{
+-  string FileNameFactory(string FileType)
+-  {
+-    string configDir = cPlugin::ConfigDirectory();
+-    string::size_type pos = configDir.find("plugin");
+-    configDir.erase(pos-1);
+-
+-    cout << " Config Dir : " << configDir  <<  endl;
+-
+-    if (FileType == "configDirecory") // vdr config base directory
+-    {
+-       cout << "DEBUG [setup]: ConfigDirectory   " << configDir <<   endl;
+-    }
+-    else if (FileType == "setup") // returns plugins/setup dir; change to  "configDir"
+-    {
+-       cout << " Config Dir : " << configDir  << "/plugins/setup" <<  endl; 
+-       configDir += "/plugins/setup";
+-    }
+-
+-    return configDir;
+-  }
+-}
+-
+-#endif 
+diff -Naur reelchannelscan-0.4.3-orig/transponders.h reelchannelscan-0.4.3/transponders.h
+--- reelchannelscan-0.4.3-orig/transponders.h	2007-05-19 15:50:09.000000000 +0200
++++ reelchannelscan-0.4.3/transponders.h	2007-07-25 12:40:30.000000000 +0200
+@@ -29,15 +29,6 @@
+ 
+ #include "debug.h"
+ 
+-#ifndef REELVDR
+-
+-namespace setup
+-{
+-  std::string FileNameFactory(std::string Filename);
+-}
+-
+-#endif
+-
+ typedef struct {
+     int card;
+     int type;

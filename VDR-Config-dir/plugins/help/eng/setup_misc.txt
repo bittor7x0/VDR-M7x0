@@ -1,0 +1,12 @@
+Min. event timeout = 30
+Min. user inactivity = 120
+
+     If the command line option '-s' has been set, VDR will automatically shutdown the computer if the next timer event is at least MinEventTimeout minutes in the future, and the user has been inactive for at least MinUserInactivity minutes. Setting MinUserInac tivity to 0 disables the automatic shutdown, while still retaining the possibility to manually shutdown the computer.
+
+SVDRP timeout = 300
+
+     The time (in seconds) of inactivity on an open SVDRP connection after which the connection is automatically closed. Default is 300, a value of 0 means no timeout.
+
+Zap Timeout = 3
+
+     The time (in seconds) until a channel counts as "previous" for switching with '0'

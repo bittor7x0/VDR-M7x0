@@ -1,0 +1,5 @@
+#!/bin/bash
+#send power off to VDR
+
+echo sim 0 00 POWER eggtimer > /dev/tcp/127.0.0.1/8765
+

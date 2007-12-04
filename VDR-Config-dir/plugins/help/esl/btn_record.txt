@@ -1,0 +1,12 @@
+
+      Arriba - Cursor arriba
+      Abajo - Cursor abajo
+      Izquierda - Página arriba
+      Derecha - Página abajo
+      Ok - Seleccionar
+      MENU - Salir del menú
+      EXIT - Salir al menú VDR
+      Rojo - Reproducir
+      Verde - Rebobinar
+      Amarillo - Borrar
+      Azul - Información

@@ -1,0 +1,50 @@
+#Francais, for English version, see below
+#
+VDR Plugin ChanOrg : Channel Organizer
+
+Ce plugin permet de :
+  Gerer des groupes (ligne :@XX ABCDEF du channels.conf) :
+	Creation de groupe
+	Supression de groupe
+	Modification de groupe (Modification du nom ABCDEF et du numero de la premiere chaine du groupe @XX)
+	Deplacement de groupe
+  	Trier le contenu d'un groupe par :
+                  -Ordre Alphabetique croissant
+		  -Ordre Alphabetique decroissant
+		  -Frequence de transpondeur croissante
+                  -Frequence de transpondeur decroissante
+
+  Gerer les chaines (attention, ce plugin NE PERMET PAS de supprimer ou de creer une chaine...)
+        Deplacement (AVANT/APRES)
+	Affectation a un groupe (le dernier groupe selectionne est sauvegarde et automatiquement reselectionne lors de la prochaine affectation)
+	Zapper sur une chaine pour la visualiser avant de la deplacer/affecter
+
+Une fois sa liste de chaine reorganisee, une pression sur Ok demande confirmation pour appliquer les changement et ferme le menu (la sauvegarde dans le channels.conf est laissee au soin de VDR)
+
+Sad
+
+
+#English Version
+#
+VDR Chanorg Plugin : Channel Organizer
+
+With this plugin, you can :
+   Manager your groups (line :@XX ABCDEF of channels.conf file):
+         Create new groups
+         Delete groups
+         Edit your group's parameters (like ABCDEF name or the number of the first channel in your group, represented by the @XX channels.conf parameter)
+         Move your group, directly before or after an other group
+         Order the channels into one group by: 
+              -Alphabetical order up
+              -Alphabetical order down
+              -Frequency up
+              -Frequency down
+   Manage channels (YOU CAN CREATE OR DELETE channels with this plugin...use great vdr channel menu for that):
+         Move a single channel (BEFORE/AFTER)
+         Affect this channel into a group (this channel becaume the first channel in the group list... just order the group after affecting all channels)
+         View the channel you want to move to check if it's the rigth one
+
+When you have done ordering your channels list, just press Ok. The plugin whill ask you if you are sure and really want to do that, so just press again Ok and your modification are applied to your cChannels list in memory and let VDR saving the channels.conf file (if you press any other key, your modifications will be totaly discarded) 
+
+
+Sad

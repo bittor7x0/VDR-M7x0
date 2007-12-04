@@ -1,0 +1,158 @@
+diff -Naur aide-0.0.3-orig/aide.h aide-0.0.3/aide.h
+--- aide-0.0.3-orig/aide.h	2004-11-02 22:51:31.000000000 +0100
++++ aide-0.0.3/aide.h	2007-08-01 10:24:56.000000000 +0200
+@@ -3,7 +3,7 @@
+ 
+ #include <vdr/plugin.h>
+ 
+-static const char *VERSION        = "0.0.2";
++static const char *VERSION        = "0.0.3";
+ static const char *DESCRIPTION    = "VDR Help";
+ static const char *MAINMENUENTRY  = "Help";
+ 
+diff -Naur aide-0.0.3-orig/aidei18n.c aide-0.0.3/aidei18n.c
+--- aide-0.0.3-orig/aidei18n.c	2004-11-06 12:40:37.000000000 +0100
++++ aide-0.0.3/aidei18n.c	2007-08-01 10:24:56.000000000 +0200
+@@ -19,7 +19,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Ayuda VDR", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -38,7 +38,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Ayuda", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -57,7 +57,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Temas de ayuda disponibles:", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -76,7 +76,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Imagen", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -95,7 +95,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    " %sPlugin : %s", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -114,7 +114,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    " %sVersión : %s", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -133,7 +133,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    " %sPor : %s", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+diff -Naur aide-0.0.3-orig/aideplayer.c aide-0.0.3/aideplayer.c
+--- aide-0.0.3-orig/aideplayer.c	2004-11-03 22:37:28.000000000 +0100
++++ aide-0.0.3/aideplayer.c	2007-08-01 10:43:47.000000000 +0200
+@@ -1,5 +1,11 @@
+ #include "aideplayer.h"
+-#include <linux/dvb/video.h>
++
++#ifdef VDRO7OVERSION
++ #include "m7x0_dvb/video.h"
++#else
++ #include <linux/dvb/video.h>
++#endif
++
+ #include <vdr/plugin.h>
+ 
+ cAidePlayer::cAidePlayer(void)
+diff -Naur aide-0.0.3-orig/Makefile aide-0.0.3/Makefile
+--- aide-0.0.3-orig/Makefile	2004-11-03 22:40:28.000000000 +0100
++++ aide-0.0.3/Makefile	2007-08-01 10:33:29.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+ 
+@@ -40,10 +40,14 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
++# Compiled for VDR-M7x0 Siemens Gigaset from open7x0.org
++# Comment following line in other cases
++DEFINES += -DVDRO7OVERSION
++
+ ### The object files (add further files here):
+ 
+ OBJS = $(PLUGIN).o menuaide.o affichageaide.o aideplayer.o aidei18n.o
+@@ -55,7 +59,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -68,7 +72,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

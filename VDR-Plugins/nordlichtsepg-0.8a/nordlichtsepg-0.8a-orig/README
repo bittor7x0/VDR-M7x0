@@ -1,0 +1,67 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:         Martin Prochnow <nordlicht@martins-kabuff.de>
+
+Project's homepage: http://martins-kabuff.de/nordlichtsepg.html
+
+See the file COPYING for license information.
+
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	!!! You need VDR >= 1.3.31 to compile this plugin !!!
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Nordlicht's EPG
+------------------------------------------------------------------------------
+This plugin provides an EPG (Electronic Program Guide) similar to VDR's
+"What's on now?"-menu. Unlike this it also shows channels without epg-infos.
+You can browse the epg with an adjustable step width. It is also possible to
+set a time at the setup which you can jump to by keypress, with the keys 1-7
+you can jumpo 1-7 days forward. You can enter a time to jump to instantly.
+A bargraph at the "What's on now?"-view shows the progress of the running
+program. Timers are marked with a clock-icon, recording timers with a 
+'REC'-icon. It is possible, also for channels without epg-infos, to set and
+delete timers.
+
+Thanks to Rolf Ahrenberg for the finnish translation.
+
+Controls:
+------------------------------------------------------------------------------
+Normal keymap:
+OK/Info		- shows program info for selected channel, possibility to
+		  set and delete timers or switch to this channel
+Red		- jumps to set time
+Green		- actual time - step width
+Yellow		- actual time + step width
+Blue		- switch to selected channel ("What's on now?"-view)
+		  jump to "What's on now'-view?" (while browsing)
+1-7		- jumps 1-7 days forward from the actual time
+0		- prompts for entering a time to which is jumped instantly
+
+Alternative keymap:
+OK/Info		- switch to selected channel ("What's on now?"-view)
+Red		- jump to "What's on now'-view?" (while browsing)
+Green		- actual time - step width
+Yellow		- actual time + step width
+Blue		- shows program info for selected channel, possibility to
+		  set and delete timers or switch to this channel
+1-7		- jumps 1-7 days forward from the actual time
+0		- prompts for entering a time to which is jumped instantly
+
+Setup options:
+------------------------------------------------------------------------------
+* Hide main menu entry		- should the plugin be shown at main menu
+* Step width (min)		- step width in minutes for browsing
+* Switch with Ok		- select alternative keymap
+* Jump to			- time to jump to
+* Keep display after switching	- should the display kept on after switching
+* Show channel groups		- should the channel groups be shown
+* Hide encrypted channels	- should encrypted channels be hidden
+* Hide radio channels		- should radio channels be hidden
+* Is Enigma theme used		- activate adjustments for the Enigma theme
+* Show channel numbers		- should the channel numbers be shown
+
+Copyright-Information:
+------------------------------------------------------------------------------
+The code for patching fonts is from Christian Wieninger's Epgsearch-Plugin
+(http://www.cwieninger.de.vu). The icons are from Torsten Kunkel's
+Wareagle-Icon-Patch (http://vdr.sjur.de).

@@ -1,0 +1,652 @@
+diff -Naur pin-0.1.9-orig/i18n.c pin-0.1.9/i18n.c
+--- pin-0.1.9-orig/i18n.c	2007-05-19 14:42:28.000000000 +0200
++++ pin-0.1.9/i18n.c	2007-06-17 14:29:11.000000000 +0200
+@@ -29,7 +29,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Bloqueo niños", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -49,7 +49,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Código PIN: ", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -69,7 +69,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Saltar canal protegido silenciosamente", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -89,7 +89,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+         "", // Polski
+-		"", // Español
++		"Tiempo inactividad PIN [min]", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -109,7 +109,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Ignorando PIN no válido", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -129,7 +129,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Primero active la protección PIN", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -149,7 +149,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Grabación protegida, primero introduzca el PIN", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -169,7 +169,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"ya protegido", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -189,7 +189,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"añadido a la lista de protección", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -209,7 +209,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Grabación protegida", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -229,7 +229,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"canal protegido", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -249,7 +249,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"emisión protegida", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -269,7 +269,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Protección PIN activada", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -289,7 +289,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Bloqueo para niños", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -309,7 +309,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Borrar", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -329,7 +329,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Añadir", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -349,7 +349,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Canales protegidos", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -369,7 +369,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Emisiones protegidas", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -389,7 +389,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Plugins protegidos", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -409,7 +409,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Añadir canal actual a la lista de protección", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -429,7 +429,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Añadir emisión actual a la lista de protección", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -449,7 +449,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Editar canales bloqueados", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -469,7 +469,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Editar emisiones bloqueadas", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -489,7 +489,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Editar plugins bloqueados", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -509,7 +509,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Editar menús bloqueados", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -529,7 +529,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Bloquear configuración", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -549,7 +549,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Desbloquear configuración", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -569,7 +569,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Activar bloqueo para niños", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -589,7 +589,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"¿Borrar entrada?", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -609,7 +609,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Editar", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -629,7 +629,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Canal", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -649,7 +649,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Bloqueo activo", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -669,7 +669,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"ya está en la lista", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -689,7 +689,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Canales protegidos", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -709,7 +709,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Emisiones protegidas", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -729,7 +729,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"expresión regular", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -749,7 +749,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Palabra clave", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -769,7 +769,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"incluye", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -789,7 +789,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"exacto", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -809,7 +809,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"empieza con", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -829,7 +829,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Título", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -849,7 +849,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"siempre", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -869,7 +869,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"inteligente", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -889,7 +889,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"nunca", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -909,7 +909,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Autoprotección de grabaciones", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -929,7 +929,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"está protegido", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -949,7 +949,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Abrir menú despues de pedir el PIN", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -969,7 +969,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"¡La grabación ya estaba protegida!", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -989,7 +989,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"¡Ahora la grabación está protegida!", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1009,7 +1009,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"¡La grabación no estaba protegida!", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1029,7 +1029,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"¡Protección de grabación borrada!", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1049,7 +1049,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"¡Establezca primero un código PIN!", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1069,7 +1069,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Introduzca primero el código PIN", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1089,7 +1089,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"bloqueado", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1109,7 +1109,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"desbloqueado", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1129,7 +1129,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"On/Off", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1149,7 +1149,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"¡Código no válido!", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1169,7 +1169,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Código aceptado", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1189,7 +1189,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Establezca su código PIN: ", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1209,7 +1209,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Código PIN configurado correctamente", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1229,7 +1229,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Protecciones de menú", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1249,7 +1249,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Ocultar menús protegidos", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1269,7 +1269,7 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Ocultar plugins protegidos", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+@@ -1289,7 +1289,27 @@
+ 		"", // Norsk
+ 		"", // Suomi
+ 		"", // Polski
+-		"", // Español
++		"Ocultar grabaciones protegidas", // Español
++		"", // Ellinika
++		"", // Svenska
++		"", // Romaneste
++		"", // Magyar
++		"", // Catala
++		"", // Russian
++		"", // Croatian
++	},
++   {
++		"Search mode", // English
++		"", // Deutsch
++		"", // Slovenski
++		"", // Italiano
++		"", // Nederlands
++		"", // Português
++		"", // Français
++		"", // Norsk
++		"", // Suomi
++		"", // Polski
++		"Modo de búsqueda", // Español
+ 		"", // Ellinika
+ 		"", // Svenska
+ 		"", // Romaneste
+diff -Naur pin-0.1.9-orig/Makefile pin-0.1.9/Makefile
+--- pin-0.1.9-orig/Makefile	2007-02-12 20:23:14.000000000 +0100
++++ pin-0.1.9/Makefile	2007-07-30 10:59:36.000000000 +0200
+@@ -21,13 +21,13 @@
+ 
+ CXX      ?= g++
+ #CXXFLAGS ?= -ggdb -O2 -Wall -Woverloaded-virtual
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ FSKCHKDIR = /usr/bin
+ 
+@@ -46,7 +46,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -D__EXCL_PLUGINS='""$(EXCLUDEPLUGINS)""'
+ 
+@@ -62,7 +62,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -80,11 +80,11 @@
+ fskcheck: $(CMDOBJS)
+ 	$(CXX) $(CXXFLAGS) $(CMDOBJS) -o $@
+ 	@strip $@
+-	@cp $@ $(FSKCHKDIR)
++	@cp -f $@ $(FSKCHKDIR)
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

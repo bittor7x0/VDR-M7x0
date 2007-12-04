@@ -1,0 +1,18 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Peter Juszack <vdr@unterbrecher.de>
+
+Project's homepage:          http://www.wi-bw.tfh-wildau.de/~pjuszack/digicam
+			     Further releases may also be found at http://www.unterbrecher.de
+	    
+Latest version available at: http://www.wi-bw.tfh-wildau.de/~pjuszack/digicam
+
+See the file COPYING for license information.
+
+Description:
+
+This is a plugins for the Video Disc Recorder (VDR). It provides a channellist 
+which only contains channels with VPID = 0 (usually radio channels).
+
+I wrote this plugin to 'enable' the RADIO-key on my remote control.
+ 

@@ -1,0 +1,12 @@
+SLOF = 11700
+
+     The switching frequency (in MHz) between low and high LOF
+
+Low LNB frequency = 9750
+High LNB frequency = 10600
+
+     The LNB's low and high local oscillator frequencies (in MHz, these have no meaning for DVB-C receivers)
+
+Use DiSEqC = no
+
+     Generally turns DiSEqC support on or off.

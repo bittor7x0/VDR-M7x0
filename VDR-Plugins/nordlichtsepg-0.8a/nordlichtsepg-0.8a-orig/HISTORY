@@ -1,0 +1,60 @@
+VDR Plugin 'nordlichtsepg' Revision History
+-------------------------------------------
+
+2006-03-21: Version 0.8a
+- fixed wrong display of progressbar with enigma theme
+- while browsing the progressbar is kept displayed if the current event is
+  still running at the browsed-to time
+
+2006-03-17: Version 0.8
+- changed appearance of progress bars
+- removed none-working kInfo-handling
+
+2006-02-25: Version 0.7
+- added option to switch with Ok; see README
+- timers are now set instantly, timer-edit-menu is only shown for channels
+  without event info (because there are no reasonable values)
+- added option to delete timers
+
+2006-02-17: Version 0.6
+- added the possibility to enter a time to jump to instantly; see README
+- added option to hide radio channels
+- if the time you defined in the setup to jump to by pressing 'red' is before
+  the current time, it now jumps to this time at the following day
+- if a timer for an event overlaps with other because of the margins, timer
+  markers are also shown for this events - fixed; the markers are now shown
+  only if there is a timer for the time browsed to
+- timer markers are now shown instantly if a timer was set
+- small icons for timer- and recording-marker adjusted
+
+2005-11-24: Version 0.5
+- timer-/recordings-markers also shown for channels without epg-infos
+- it is able to set timers at channels without epg-infos
+- it is now possible to edit to values if a timer is set (thanks to 
+  Chistian Wieninger and HFlor@vdrportal for solving this problem)
+- added adjustments for Enigma theme (thanks to Andreas Brugger)
+- revised the README
+
+2005-11-15: Version 0.4
+- moved the position of the timer-/recording-marker (again)
+- now all channels are listed even if there are no epg-infos
+- added finish translation (thanks to Rolf Ahrenberg)
+- added option to show channel groups
+- added option to hide encrypted channels
+
+2005-09-14: Version 0.3
+- fixed spaces if small font is used
+- progress bar now without spaces
+- added recording-marker
+- using icons for timer- and recording-marker
+
+2005-09-09: Version 0.2
+- moved the position of the timer-marker
+- 20:15 as jump-preset
+- 'Jump' replaced with the adjusted time
+- you can switch the channel with 'blue' at the "Whats on now?"-view
+- with 1..7 you can jump from the current time 1..7 days forward
+- you can choose if the display should be kept on after switching
+
+2005-09-07: Version 0.1
+- Initial revision.

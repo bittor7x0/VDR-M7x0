@@ -1,0 +1,82 @@
+VDR Plugin 'filebrowser' Revision History
+-----------------------------------------
+
+2007-03-19: Version 0.0.6b
+- Now allowing comments and empty lines in config files (thanks to Tobias Grimm for providing a patch)
+- Fixed possible lockup while doing housekeeping (thanks to  Christian Jacobsen)
+- Fixed crash on malformed entries in config files
+- Fixed crash on huge output strings - now the buffer is emptied if its size exeeds 1MB, more renders vdr unresponsive (pointed out by Ronny Kornexl)
+
+2006-08-07: Version 0.0.6
+- Fixed Makefile for APIVERSION
+- Added the possibility to set a pin for certain commands (suggested by Ronny Kornexl, UI inspired by mailbox plugin)
+- Changed the demo for reusing filebrowser in other plugins (developers/filebrowserdemo) to build a static library, avoiding possible filename clashes
+- Fixed automatic scolling in thread's output menu
+- Fixed confirmation for commands that use a destination (%d or %D)
+
+2006-04-10: Version 0.0.5
+- Andreas Brachold fixed some memleaks in the patch for the image plugin and integrated it into upstream - thanks
+- Stefan Huelswitt added Service() functions for mp3 and mplayer plugins (needs version >= 0.9.15pre5) - thanks
+  You can play files that are located in a directory in {mplayer,mp3}sources.conf, so you may need to add appropriate entries there
+- Removed patches for image and mp3/mplayer plugins (see above)
+- Start menuothercommands if available when receiving kOk on a file (not dir) (suggested by Ronny Kornexl)
+- Crash when selecting nonexistent source and switching to another (existing) one (thanks to Ronny Kornexl)
+- Crash when selecting OtherCommands on empty directory
+- Automatic removal wil remove only some commands that was marked for automatic removal
+
+2006-01-27: Version 0.0.4
+- Added some #ifdefs for simple recycling of filebrowser's classes in other plugins - refer to developers/filebrowserdemo/README on how to do this (thanks to Gerhard Steiner)
+- Superseded the possibility to change the base directory via setup menu by sources command to protect system files (inspired by Andreas Leipelt)
+- Changed file pattern matching not to treat beginning period specially
+- Use ksh-style file pattern matching - refer to http://www.gnu.org/software/libc/manual/html_node/Wildcard-Matching.html#index-ksh-843 on how to use this
+- Possibility to define filters in sources.conf
+- Added possibility to call plugins
+    image
+    mplayer
+    mp3
+  via filebrowser.
+  You need to apply appropriate patches to the plugins (or ask their maintainers to add them to upstream)
+
+2006-01-24: Version 0.0.3b
+
+- Fixed possible segfault while parsing config files (thanks to Ronny Kornexl)
+
+2006-01-22: Version 0.0.3
+
+- Fixed running threads not being killed properly when vdr shuts down
+- Added number keys for menuothercommands
+- Possibility to pause/resume commands
+- Show full path in title, add possibility to turn this off (suggested by Ronny Kornexl)
+- Changed sort order to have [..] as first entry in all cases (thanks to Ronny Kornexl)
+- Use IFS[0] instead of hardcoded blank for separating commandline arguments
+- Added a flag (r) to have threads removed automaticially (if they ended without error)
+- File view is updated when a thread finishes
+- Fixed some idiocy concerning my use of fork/exec - fixes threads not showing up as finished and some other weird ones
+- No need to patch vdr sources any more (vdr >= 1.3.38)
+
+2005-11-29: Version 0.0.2
+
+- Add a flag to execute commands synchronously (s) or without opening a menu (b)
+- Possibility to remove commands by precending them with a minus sign in order.conf
+- Add a cCommand that shows a menu with other commands
+- Add sources.conf and a possibility to switch sources
+- Possiblity to determine whether a command matches via script - when file pattern starts with '!',
+  try to call the remainer, replace %f, %! and %%
+- Always use single quotes for quoting filenames (don't forget to remove your quotes in commands.conf!)
+- Update threads' stati in thread list asynchrously
+- Fixed a bug that prevented patterns with full paths (eg. /mnt/*)
+
+2005-01-08: Version 0.0.1
+
+- Initial revision.
+
+TODO (no special order):
+
+- Have a bit more green areas in the code
+- Write copy/move/remove cCommands to have a nicer ui and progress display for them
+- Collect scripts for use in browser - your creativity is wanted here!
+- Find memory leaks and race conditions
+- Fill i18n.h:
+  grep --no-filename --only-matching tr\(\"[^\"]*\"\) *.c  | sort -u
+
+Patches are welcome!

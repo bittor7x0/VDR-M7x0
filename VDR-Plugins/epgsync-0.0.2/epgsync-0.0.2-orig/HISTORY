@@ -1,0 +1,10 @@
+VDR Plugin 'epgsync' Revision History
+-----------------------------------------
+
+2006-09-25: Version 0.0.2
+- Fixed segfault when svdrpservice plugin encountered a problem while syncing (reported by greenman@vdrportal)
+- Now running as a low priority thread to get rid of (or at least reduce) the impact epgsync had in some environments (thanks to Artur Skawina)
+
+2006-07-24: Version 0.0.1
+
+- Initial revision.
