@@ -1,0 +1,31 @@
+VDR Plugin 'sleeptimer' Revision History
+----------------------------------------
+2006-01-22: Version 0.7
+  - Fixed language support in Sleep-Timer menu, earlier only German 
+    was supported (Thanks to Mika Karjunen)
+
+2004-07-18: Version 0.6
+  - Made sleeptimer compile and work with VDR 1.3.x (Thanks to 
+    Klaus Schmidinger)
+
+2004-04-02: Version 0.5
+
+ - Enter absolut shutdown time (Thanks to Michael Maucher)
+   Note: if VDRs Version is below 1.3.7 you have to patch VDR for this. Look 
+   at the "patches" directory.
+
+2004-03-08: Version 0.4
+
+ - Don't display shutdown warning while shutting down (Thanks to Tobias Grimm)
+
+2004-02-22: Version 0.3
+
+- Bugfix in parameter parsing (Thanks to Andreas Brachold)
+
+2003-09-11: Version 0.2
+
+- Some language fixes.
+
+2003-05-12: Version 0.1
+
+- Initial revision.

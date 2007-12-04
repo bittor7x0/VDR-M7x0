@@ -1,0 +1,805 @@
+diff -Naur undelete-0.0.6-orig/i18n.c undelete-0.0.6/i18n.c
+--- undelete-0.0.6-orig/i18n.c	2005-11-17 21:05:05.000000000 +0100
++++ undelete-0.0.6/i18n.c	2007-06-10 13:50:35.000000000 +0200
+@@ -19,7 +19,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Grabaciones borradas",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -37,7 +37,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Borrar línea",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -55,7 +55,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Botones de ayuda",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -72,7 +72,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  -m        --visible_in_mainmenu     Muestra el plugin en el menú principal\n  -M        --hide_in_mainmenu        Oculta el plugin en el menú principal\n                                      Inicia el Plugin en el menú de configuración\n  -n Name   --mainmenu_name=Name      Selecciona Name para el menú principal\n                                      (establecer también -m)\n  -c        --confirm_purge_rec       mostrar confirmación para eliminar grabación\n  -C        --not_confirm_purge_rec   eliminar grabación sin confirmación\n  -d        --confirm_purge_dir       mostrar confirmación para eliminar directorio\n  -D        --not_confirm_purge_dir   eliminar directorio sin confirmación\n  -e        --confirm_purge_all       mostrar confirmación para eliminar todo\n  -E        --not_confirm_purge_all   eliminar todo sin confirmación\n  -s        --confirm_salvage_rec     mostrar confirmación para recuperar grabación\n  -S        --not_confirm_salvage_rec recuperar grabación sin confirmación\n  -t        --confirm_salvage_dir     mostrar confirmación para recuperar directorio\n  -T        --not_confirm_salvage_dir recuperar directorio sin confirmación\n  -u        --confirm_salvage_all     mostrar confirmación para recuperar todo\n  -U        --not_confirm_salvage_all recuperar todo sin confirmación\n  -v        --verbose                 Activar registro más completo\n  -V        --noverbose               Desactivar registro más completo\n            --nosetup_commandline     Ocultar el 'Parámetro línea de comandos'\n                                      ocultar en menu-configuración\n  @config-file                        También leer parámetros de este archivo\n  nota: grabación significa grabaciones borradas (no mostrar en VDR)",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -90,7 +90,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Eliminar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -108,7 +108,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Recuperar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -125,7 +125,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Recuperación de grabaciones",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -143,7 +143,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "desconocido",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -160,7 +160,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "botón",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -177,7 +177,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Mostrar botones",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -194,7 +194,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "ninguno",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -211,7 +211,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Abrir",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -228,7 +228,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Abrir/Resumen",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -245,7 +245,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Eliminar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -262,7 +262,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Eliminar todo",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -279,7 +279,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Recuperar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -296,7 +296,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Recuperar todo",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -313,7 +313,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Resumen",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -330,7 +330,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Elegir botón 1",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -347,7 +347,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Elegir botón 2",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -364,7 +364,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "arriba",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -381,7 +381,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "arriba y abajo",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -398,7 +398,24 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Usuario",// Español
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Summary",
++    "Inhalt",
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "Contenu",
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Resumen",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -415,7 +432,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "<--1",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -432,7 +449,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "2-->",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -449,7 +466,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Mostrar botones",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -466,7 +483,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Por favor, espere",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -483,7 +500,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Preparando lista de grabación...",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -500,7 +517,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Eliminar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -517,7 +534,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Eliminar todo",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -534,7 +551,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Eliminar todas las grabaciones ...",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -551,7 +568,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Recuperar todas las grabaciones ...",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -568,7 +585,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Recuperar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -585,7 +602,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Recuperar todo",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -602,7 +619,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Botón para %s y %s son los mismos.",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -619,7 +636,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¡Existe una grabación con el mismo nombre!",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -636,7 +653,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Botón\tFunción",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -653,7 +670,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Botón numérico",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -670,7 +687,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "OK",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -687,7 +704,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Botones asignados",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -704,7 +721,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Recuperar grabaciones",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -721,7 +738,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Eliminar todas las grabaciones?",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -738,7 +755,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Eliminar grabación?",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -755,7 +772,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Eliminar grabaciones del directorio?",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -772,7 +789,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Recuperar todas las grabaciones?",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -789,7 +806,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Recuperar grabación?",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -806,7 +823,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Recuperar grabaciones del directorio?",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -823,7 +840,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  ** Botones especiales **",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -840,7 +857,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Cambiar la configuración de botones",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -857,7 +874,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmación eliminar todo",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -874,7 +891,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmación eliminar grabaciones",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -891,7 +908,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmación eliminar directorios",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -908,7 +925,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmación recuperar todo",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -925,7 +942,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmación recuperar grabaciones",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -942,7 +959,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmación recuperar directorios",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -959,7 +976,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Número de líneas para eliminar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -976,7 +993,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Número de líneas para recuperar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -993,7 +1010,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Mostrar grabaciones borradas ahora",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1010,7 +1027,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Líneas internas",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1027,7 +1044,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Botón para función-%s",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1044,7 +1061,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Nombre para el menú principal",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1061,7 +1078,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Elegir con número y",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1078,7 +1095,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Función para OK",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1095,7 +1112,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Parámetro línea de comandos",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1112,7 +1129,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Posición de la línea eliminar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1129,7 +1146,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Posición de la línea recuperar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1146,7 +1163,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Seleccionar",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1163,7 +1180,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Modo registro completo",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1180,7 +1197,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Mostrar en menú principal",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1197,7 +1214,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Error leyendo el último número de archivo",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1214,7 +1231,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Error accediendo al archivo vdr %03d",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1231,7 +1248,92 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Error accediendo al archivo índice",// Español
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Open",// English
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Abrir",// Español
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Red",// English
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Rojo",// Español
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Green",// English
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Verde",// Español
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Yellow",// English
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Amarillo",// Español
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Blue",// English
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Azul",// Español
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+diff -Naur undelete-0.0.6-orig/Makefile undelete-0.0.6/Makefile
+--- undelete-0.0.6-orig/Makefile	2005-11-16 18:39:18.000000000 +0100
++++ undelete-0.0.6/Makefile	2007-07-30 11:06:56.000000000 +0200
+@@ -20,9 +20,9 @@
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ VDRVERSNUM = $(shell grep 'define VDRVERSNUM ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+@@ -41,7 +41,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -79,7 +79,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -92,7 +92,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

@@ -1,0 +1,227 @@
+diff -Naur sleeptimer-0.7-orig/i18n.c sleeptimer-0.7/i18n.c
+--- sleeptimer-0.7-orig/i18n.c	2006-03-15 06:10:00.000000000 +0100
++++ sleeptimer-0.7/i18n.c	2007-07-02 19:34:41.000000000 +0200
+@@ -19,7 +19,7 @@
+     "",// Norsk
+     "Ei aktiivinen",// Suomi
+     "",// Polski
+-    "",// Español
++    "No activo",// Español
+     "",// Greek
+     "",// svenska
+     "",// Romaneste
+@@ -35,7 +35,7 @@
+     "",// TODO
+     "Peruuta %d minuutin ajastin?",// Suomi
+     "",// TODO
+-    "",// TODO
++    "Desactivar apagado automático en %d minutos",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -51,7 +51,7 @@
+     "",// TODO
+     "Keskeytä ajastin",// Suomi
+     "",// TODO
+-    "",// TODO
++    "¿Cancelar apagado automático?",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -67,7 +67,7 @@
+     "",// TODO
+     "Aktivoi ajastin %i:%0.2i?",// Suomi
+     "",// TODO
+-    "",// TODO
++    "¿Activar apagado automático a las %i:%0.2i?",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -83,7 +83,7 @@
+     "",// TODO
+     "Aktivoi %d minuutin ajastin?",// Suomi
+     "",// TODO
+-    "",// TODO
++    "¿Activar apagado automático en %d minutos?",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -99,7 +99,7 @@
+     "",// TODO
+     "Ajastin",// Suomi
+     "",// TODO
+-    "",// TODO
++    "Apagado automático",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -115,7 +115,7 @@
+     "",// TODO
+     "Toiminto",// Suomi
+     "",// TODO
+-    "",// TODO
++    "Acción",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -131,7 +131,7 @@
+     "",// TODO
+     "Ajastin aktivoituu noin minuutin kuluttua",// Suomi
+     "",// TODO
+-    "",// TODO
++    "Apagado automático en un minuto",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -147,7 +147,7 @@
+     "",
+     "Sammutusaika", // Suomi
+     "",
+-    "",
++    "Apagar-Hora",// Español
+     "",
+     "",
+     "",
+@@ -163,11 +163,27 @@
+     "",
+     "Sammutus minuutteina",
+     "",
++    "Apagar-Minutos",// Español
+     "",
+     "",
+     "",
+     "",
+-    "",
++  },
++  { "Sleep-Timer for VDR",// English
++    "Sleep-Timer für VDR",// Deutch
++    "",// Slovenski
++    "",// Italiano
++    "",// Nederlands
++    "",// Português
++    "",// Francais
++    "",// Norsk
++    "",// Suomi
++    "",// Polski
++    "Apagado automático para VDR",// Español
++    "",// Greek
++    "",// svenska
++    "",// Romaneste
++    "",// Magyar
+   },
+   { NULL }
+   };
+diff -Naur sleeptimer-0.7-orig/Makefile sleeptimer-0.7/Makefile
+--- sleeptimer-0.7-orig/Makefile	2006-06-07 18:16:07.000000000 +0200
++++ sleeptimer-0.7/Makefile	2007-08-01 13:57:56.000000000 +0200
+@@ -20,13 +20,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -44,10 +44,14 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
++# Compiled for VDR-M7x0 Siemens Gigaset from open7x0.org
++# Comment following line in other cases
++DEFINES += -DVDRO7OVERSION
++
+ ### The object files (add further files here):
+ 
+ OBJS = $(PLUGIN).o i18n.o
+@@ -59,7 +63,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -72,7 +76,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur sleeptimer-0.7-orig/sleeptimer.c sleeptimer-0.7/sleeptimer.c
+--- sleeptimer-0.7-orig/sleeptimer.c	2006-06-07 18:18:12.000000000 +0200
++++ sleeptimer-0.7/sleeptimer.c	2007-08-01 16:52:11.000000000 +0200
+@@ -9,6 +9,7 @@
+ #include <vdr/plugin.h>
+ #include <vdr/interface.h>
+ #include <vdr/device.h>
++#include <vdr/player.h>
+ #include "i18n.h"
+ 
+ static const char *VERSION        = "0.7";
+@@ -121,9 +122,14 @@
+ 		if(sleepat <= time_now()) {
+ 			isyslog("sleeptimer: timeout");
+ 			if(Method == 0) {
++			   #ifdef VDRO7OVERSION
++				cControl::Shutdown();
++				cRemote::Put(kPower);
++			   #else
+ 				isyslog("sleeptimer: executing \"%s\"", Command);
+ 				if(SystemExec(Command) == -1)
+ 					isyslog("sleeptimer: errror while executing \"%s\"!", Command);
++			   #endif
+ 			}
+ 			if(Method == 1) {
+ 				isyslog("sleeptimer: muting audio");
+@@ -149,12 +155,12 @@
+   cPluginSleeptimer(void);
+   virtual ~cPluginSleeptimer();
+   virtual const char *Version(void) { return VERSION; }
+-  virtual const char *Description(void) { return DESCRIPTION; }
++  virtual const char *Description(void) { return tr(DESCRIPTION); }
+   virtual const char *CommandLineHelp(void);
+   virtual bool ProcessArgs(int argc, char *argv[]);
+   virtual bool Start(void);
+   virtual void Housekeeping(void);
+-  virtual const char *MainMenuEntry(void) { return MAINMENUENTRY; }
++  virtual const char *MainMenuEntry(void) { return tr(MAINMENUENTRY); }
+   virtual cOsdObject *MainMenuAction(void);
+   virtual cMenuSetupPage *SetupMenu(void);
+   virtual bool SetupParse(const char *Name, const char *Value);
+@@ -223,7 +229,7 @@
+ 	return true;
+ }
+ 
+-MainMenu::MainMenu(void) : cOsdMenu("Sleep Timer", 20) {
++MainMenu::MainMenu(void) : cOsdMenu(tr("Sleep-Timer"), 20) {
+ 	char buf[80];
+ 
+ 	if(!sleepat)
+@@ -263,7 +269,7 @@
+ 						char buf[80];
+             int tmp, Std, Min;
+             tmp = s2i(Min, Std, Shutdown_Time);
+-            snprintf(buf, sizeof(buf), tr("Activate Sleep-Timer at %i:%0.2i?"), Std, Min);
++            snprintf(buf, sizeof(buf), tr("Activate Sleep-Timer at %i:%02i?"), Std, Min);
+             
+ 						if(Interface->Confirm(buf)) {
+               sleepat = tmp;

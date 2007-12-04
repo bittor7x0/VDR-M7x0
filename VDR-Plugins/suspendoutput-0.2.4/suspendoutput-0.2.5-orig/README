@@ -1,0 +1,37 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Petri Hintukainen <phintuka@users.sourceforge.net>
+
+Project's homepage:          http://phivdr.dyndns.org/vdr/
+
+Latest version available at: http://phivdr.dyndns.org/vdr/
+
+See the file COPYING for license information.
+
+Description:
+
+   Suspend vdr output (display still image instead of live video).
+
+   Suspending live TV releases current channel (DVB card) for 
+   recording(s) and saves some CPU time with software decoders.
+
+   Blanking display while replay is paused can avoid burning the 
+   image on tube.
+
+
+Options:
+
+   -m        --menu         Show suspend/resume entry in main menu (default)
+   -M        --nomenu       Don't show entry in main menu
+   -t MIN    --timer=MIN    Suspend output after MIN minutes of inactivity
+                            (default: 120 minutes)
+   -T        --notimer      Disable inactivity timer
+   -p        --paused       Allow timer to suspend output when replay 
+                            is paused
+   -l        --logo         Show VDR logo when suspended
+   -b        --blank        Blank screen when suspended
+
+
+VDR Logo
+
+   The VDR logo was designed by Jan Grell.
