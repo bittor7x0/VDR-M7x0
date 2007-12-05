@@ -1,0 +1,94 @@
+'VDR-Games Plugin' Revision History
+-----------------------------------
+
+2002-11-01: Version 0.0.1
+initial revision.
+
+2002-11-01: Version 0.1.0
+display current score
+implemented pause button
+
+2002-11-01: Version 0.1.1
+display current level
+fixed restart bug
+prevent falling through of first piece
+
+2002-11-02: Version 0.1.2
+fixed to late initialization of random generator
+avoid crash when pressing "menu" while playing
+game ends when stack reaches top
+display game over message
+terminate cleanly if in pause mode
+
+2002-11-09: Version 0.1.3
+many general code clean/speed ups
+implemented key repeating
+key repeat on/off setup menu
+colorful pieces implemented
+color mode setup menue
+fixed overwriting of game over by new (last) piece
+show pause mode
+new handling of x/y position setup menu
+
+2002-11-19: Version 0.2.0
+start/stop code rewritten
+minor code cleaning for stable release
+
+2002-12-30: Version 0.2.1
+SDL Output support added (for development & debuging)
+
+2003-04-06: Version 0.4.0
+changed plugin name to "vdr games"
+added snake game
+added tron game
+implemented laucher menu
+completely rewritten SDL key handling to avoid #ifdef pollution
+major source reorganisation for better code sharing between the games
+
+2003-04-21: Version 0.4.1
+added DVB include path to default include path
+changed internal plugin class names
+removed "Colors" setup parameter
+added "Computer Skill" setup parameter
+print usage for SDL version
+added TicTacToe game
+fixed bug in Tron AI, that let it crash unexpectedly
+unified OSD size calculation
+
+2003-07-12: Version 0.4.2
+speed optimised snake
+added DisplayPixelSet() function to OSD functions
+replaced game specific header files with a prototype factory
+fixed missleading logging of wrong Setup Options
+fixed race condition when closing the OSD
+added minesweeper game
+fixed Segfault when pressing [ESC] in SDL version
+generally slowed down game speed
+
+2003-09-13: Version 0.6.0
+splitted drawing code into backend dependent/independent
+removed "make SDL=1" (gets autodetected now)
+color handling rewritten completely (makes schemes possible)
+moved each game into its own subdirectory
+added game over message to minesweeper
+seperated score/level/status display from field display
+common message box for pause, game over, ...
+implemented font render engine (partly stolen from vdr)
+removed font code from SDL backend (avoids SDL_ttf dependency)
+fixed long standing rect_fill() drawing code
+source code completely restructured
+major faceliftings for all games
+implemented menu factory macros for launcher.cpp
+
+2004-05-23: Version 0.6.1
+updated to work with vdr >1.3.7 (thx Sascha Volkenandt)
+fixed compile error by adding -D_GUN_SOURCE (thx Manfred Schmidt-Voigt)
+
+2005-06-27: Version 0.6.2
+fixed compile error with gcc 3.4.3 (thx Ronny Kornexl)
+fixed crash when entering main menu a second time
+updated README regarding URL and email
+
+2006-04-30: Version 0.6.3
+fixed broken compilation for vdr > 1.3.47 (thx Ronny Kornexl)
+avoid hoging cpu in SDL version by usleeping in mainloop

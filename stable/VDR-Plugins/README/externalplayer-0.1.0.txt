@@ -1,0 +1,16 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Felix Hädicke <felixhaedicke@web.de>
+
+Project's homepage:          http://sourceforge.net/projects/externalplayer
+
+Latest version available at: http://sourceforge.net/projects/externalplayer
+
+See the file COPYING for license information.
+
+Description:
+This can be used to launch external players from main menu.
+
+You have to create a configuration file "externalplayer.conf". Put this file
+to the vdr plugin configuration directory. For most distributions, this is
+/video/plugins

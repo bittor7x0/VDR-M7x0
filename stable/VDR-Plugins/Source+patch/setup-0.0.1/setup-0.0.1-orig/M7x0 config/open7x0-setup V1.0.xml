@@ -1,0 +1,184 @@
+<!--
+-   Mini-VDR Configuration File
+-   (c) 2005,2006 by Ralf Dotzert
+-
+-
+-   Example:
+-
+-  <setup sysconfigFile="/etc/sysconfig"> 
+-         bootLinux="/sbin/reboot" 
+-         VDRlibDir="/usr/lib/vdr/plugins" 
+-    <plugins sysconfig="PLUGINLIST">
+-         <plugin name="setup" info="Minivdr-Setup" active="yes" />
+-         <plugin name="vdrcd" param="-c /dev/dvd -c /media/dvd -c /media/cdfs" info="VDR CD"/>
+-         ...
+-    </plugin>
+-    <menus>
+-       <menu name="VDR-Einstellungen">
+-         <menu name="Edit VDR-Menü" system="VDRMenu" />
+-         <menu name="OSD" system="OSD" />
+-         <menu name="EPG" system="EPG" />
+-         <menu name="DVB" system="DVB" />
+-         <menu name="LNB" system="LNB" />
+-         <menu name="CICAM" system="CICAM" />
+-         <menu name="Aufnahme" system="Record" />
+-         <menu name="Wiedergabe" system="Replay" />
+-         <menu name="Sonstiges" system="Misc" />
+-         <menu name="Aktiviere Plugins" system="ActPlugins" />
+-         <menu name="Plugins-Setup" system="Plugins" />
+-         <menu name="BigPatch-Setup" system="BigPatch" /> -- Wenn der Bigpatch angwendet wurde --
+-         <menu name="LiveBuffer-Setup" system="LiveBuffer" /> -- Wenn der LiveBuffer-Patch angewendet wurde --
+-       </menu>
+-    <menu name="Netzwerk" help1="Netzwerkeinstellungen" help2="network.hlp" command="/etc/init.d/network restart">
+-       <entry name="Benutze DHCP" sysconfig="USE_DHCP" type="bool" value="true" command="/etc/init.d/network restart/>
+-       <entry name="IP-Adresse" sysconfig="IP" type="ip" value="192.168.0.111" />
+-        ...
+-    </menu>
+-    <menu name="Sonstiges">
+-        <entry name="Ramddisk im MB" sysconfig="RAMDISK" type="number" value="16" />
+-        <menu name="SubMenu">
+-          <entry ... />
+-        </menu>
+-    </menu>
+-   </menus>
+-  </setup>
+-->
+<setup sysconfigFile="/pc1/vdrRootFS/conf-M740AV2-0001E3FA8FD3/plugins/setup/fw-config.txt" bootLinux="/sbin/reboot" VDRlibDir="/pc1/vdrRootFS/PLUGINS\lib">
+    <plugins sysconfig="CONFIG_VDR_PLUGINS">
+        <plugin name="epgsearch" info="EPG zeigt Wiederholungen" active="yes" />
+        <plugin name="solitaire" info="Kartenspiel Solitaire" active="yes" />
+        <plugin name="setup" info="Minivdr-Setup" active="yes" protected="yes" />
+        <plugin name="sleeptimer" info="Shutdown" active="yes" />
+        <plugin name="streamdev-server" info="Streaming Server" active="yes" />
+        <plugin name="osdteletext" info="Teletext Dekoder für das OSD" active="yes" />
+        <plugin name="admin" info="admin" active="no" />
+        <plugin name="fepg" info="fepg" active="no" />
+        <plugin name="filebrowser" info="filebrowser" active="no" />
+        <plugin name="skinsoppalusikka" info="skinsoppalusikka" active="no" />
+        <plugin name="sudoku" info="sudoku" active="no" />
+        <plugin name="surfer" info="surfer" active="no" />
+        <plugin name="alcd" info="Activy300 LCD Display" active="no" />
+        <plugin name="lcdproc" info="Alphanummerische Displays" active="no" />
+        <plugin name="vbox" info="Anrufbeantworter Plugin" active="yes" />
+        <plugin name="rotor" info="Ansteuerung Rotor" active="yes" />
+        <plugin name="femon" info="Anzeige Signalstärke/Qualität" active="yes" />
+        <plugin name="vdrcd" param="-c /dev/dvd -c /media/dvd -c /media/cdfs" info="AutoPlay Funktion" active="yes" />
+        <plugin name="autotimeredit" param="-f /etc/vdradmin/vdradmind.at -p" info="Autotimer-Edit" active="yes" />
+        <plugin name="prefermenu" info="Bevorzugte Kanäle" active="yes" />
+        <plugin name="osdpip" info="Bild in Bild" active="yes" />
+        <plugin name="image" param="-C /usr/bin/imageplugin.sh -m /usr/bin/mount.sh" info="Bildbetrachter Plugin" active="yes" />
+        <plugin name="osdimage" param="--directory /video0/media/photos/vdr" info="Bildern über OSD" active="yes" />
+        <plugin name="burn" param="-D /dev/sr0 -d /video0 -i /video0/convert/dvd/" info="Brennt Filme auf DVD" active="yes" />
+        <plugin name="remote" info="DVB Karten Fernbedienung" active="no" protected="yes" />
+        <plugin name="dvdselect" info="DVD Laufwerke einhängen" active="yes" />
+        <plugin name="dvd" info="DVD Spieler Plugin" active="yes" />
+        <plugin name="freecell" info="Das Kartenspiel Freecell" active="yes" />
+        <plugin name="osddemo" info="Demo On-Screen-Display" active="no" />
+        <plugin name="tvonscreen" param="-v /etc/vdradmin/vdradmind.at" info="EPG Programmzeitschrift" active="yes" />
+        <plugin name="hello" info="Ein &apos;hello&apos; Plugin" active="no" />
+        <plugin name="screenshot" info="Erstellt Screenshots" active="yes" />
+        <plugin name="graphlcd" param="-d ks0108" info="GraphLCD" active="yes" />
+        <plugin name="graphtft" param="-d /dev/fb0" info="GraphTFT" active="no" />
+        <plugin name="radio" info="Hintergrundbild für Radiosender" active="yes" />
+        <plugin name="chanorg" info="Kanäle sortieren" active="yes" />
+        <plugin name="vdrc" info="Linux Commander OSD" active="yes" />
+        <plugin name="sky" info="Mpeg2 Encoder Plugin" active="yes" />
+        <plugin name="newsticker" info="Newsticker" active="yes" />
+        <plugin name="status" info="Osd-Status" active="no" />
+        <plugin name="pim" info="PIM-Kalender Plugin" active="yes" />
+        <plugin name="channelscan" info="Sender Suchlauf" active="yes" />
+        <plugin name="taste" info="Sendungen-Keywords sperren" active="yes" />
+        <plugin name="mlcd" info="Siemens Multitainer LC-Display" active="no" />
+        <plugin name="text2skin" info="Skin-Plugin für VDR" active="yes" />
+        <plugin name="mp3" info="Spielt MP3-Dateien ab" active="yes" />
+        <plugin name="mplayer" info="Spielt diverse Videoformate" active="yes" />
+        <plugin name="streamdev-client" info="Streaming Client" active="no" />
+        <plugin name="sysinfo" info="Systeminformationen" active="yes" />
+        <plugin name="console" info="Textkonsole auf dem Fernseher" active="yes" />
+        <plugin name="tvtv" info="TvTv im OSD" active="yes" />
+        <plugin name="clock" info="Uhr" active="yes" />
+        <plugin name="skincurses" info="VDR-Skin für Konsole" active="yes" />
+        <plugin name="games" info="Verschiedene Spiele" active="yes" />
+        <plugin name="playlist" info="Verw.von Playlisten" active="yes" />
+        <plugin name="vcd" param="--vcd=/dev/dvd" info="VideoCD Plugin" active="yes" />
+        <plugin name="yaepg" info="Weitere EPG-Ansicht" active="yes" />
+        <plugin name="undelete" info="Wiederh. gelöschter Aufnahmen" active="yes" />
+        <plugin name="pilot" info="Zapping Co-Pilot" active="yes" />
+        <plugin name="director" info="Zeigt Multifeed Kanäle" active="yes" />
+        <plugin name="timeline" info="Zeitleiste" active="yes" />
+        <plugin name="wapd" info="wapd" active="yes" />
+    </plugins>
+    <menus>
+        <menu name="VDR-Einstellungen">
+            <menu name="OSD" help1="Einstellungen zum On Screen Display" help2="setup_osd.hlp" system="OSD" />
+            <menu name="EPG" help1="Einstellungen zum Electronic Prgramming Guide" help2="setup_epg.hlp" system="EPG" />
+            <menu name="DVB" help1="Einstellungen zur DVB-Karte" help2="setup_dvb.hlp" system="DVB" />
+            <menu name="LNB" help2="setup_lnb.hlp" system="LNB" />
+            <menu name="CICAM" help2="setup_cicam.hlp" system="CICAM" />
+            <menu name="Aufnahme" help2="setup_record.hlp" system="Record" />
+            <menu name="Wiedergabe" help2="setup_replay.hlp" system="Replay" />
+            <menu name="Sonstiges" help2="setup_misc.hlp" system="Misc" />
+            <menu name="Aktiviere Plugins" help1="Aktiviere und Deaktiviere Plugins" help2="setup_actplugins.hlp" system="ActPlugins" />
+            <menu name="Plugins-Setup" help1="Plugins konfigurieren" system="Plugins" />
+        </menu>
+        <menu name="Informationen zur Konfiguration">
+            <entry name="Konfig name" sysconfig="CONFIG_NAME" type="text" value="Lemmi-1" />
+            <entry name="Erzeugt am" sysconfig="CONFIG_CREATION_TIME" type="text" value="2007-01-09 00:00:00" />
+            <entry name="Zuletzt benutzt am" sysconfig="CONFIG_LAST_USAGE_TIME" type="text" value="2007-01-11 23:57:09" />
+        </menu>
+        <menu name="Datum und Zeit">
+            <entry name="Zeitzone" sysconfig="CONFIG_TIMEZONE" type="text" value="CET-1CDT,M3.5.0,M10.5.0" />
+            <entry name="Zeitserver" sysconfig="CONFIG_NETDATE_PARAM" type="text" value="ntp1.ptb.de" />
+        </menu>
+        <menu name="Video und LED">
+            <entry name="Video mode TV" sysconfig="CONFIG_VIDEO_TV_MODE" type="text" value="svideo" />
+            <entry name="Video mode VCR" sysconfig="CONFIG_VIDEO_VCR_MODE" type="text" value="svideo" />
+        </menu>
+        <menu name="System">
+            <entry name="Logging" sysconfig="CONFIG_LOG_KMSG" type="bool" value="no" />
+        </menu>
+        <menu name="Netzwerk" >
+            <entry name="Netzwerkmodus" sysconfig="CONFIG_NET_MODE" type="selection" value="ip">
+                <value>undef</value>
+                <value>dhcp</value>
+                <value>ip</value>
+                <value>off</value>
+            </entry>
+            <entry name="MAC Adresse" sysconfig="CONFIG_MAC" type="hex" value="E8:B5:5E:65:B9" />
+            <entry name="Hostname" sysconfig="CONFIG_HOSTNAME" type="text" value="TiniVDR" />
+            <entry name="IP-Adresse" sysconfig="CONFIG_IP" type="ip" value="192.168.1.200" />
+            <entry name="Mask" sysconfig="CONFIG_NETMASK" type="ip" value="192.168.1.1" />
+            <entry name="Gateway" sysconfig="CONFIG_GATEWAY" type="ip" value="192.168.1.1" />
+            <entry name="Nameserver" sysconfig="CONFIG_NAMESERVER" type="ip" value="192.168.1.1" />
+            <entry name="CONFIG_SEARCH" sysconfig="CONFIG_SEARCH" type="text" value="MiniVDR" />
+        </menu>
+        <menu name="Mail">
+            <entry name="Mailserver" sysconfig="CONFIG_MAIL_SERVER" type="text" value="MiniVDR" />
+            <entry name="Absender" sysconfig="CONFIG_MAIL_FROM" type="text" value="MiniVDR" />
+            <entry name="Antwort an" sysconfig="CONFIG_MAIL_REPLY" type="text" value="MiniVDR" />
+        </menu>
+        <menu name="VDR">
+            <entry name="USB Automount" sysconfig="CONFIG_USB_AUTO_MOUNT" type="text" value="" />
+            <entry name="Pfad zum VDR" sysconfig="CONFIG_VDR_PATH" type="text" value="MiniVDR" />
+            <entry name="Starter" sysconfig="CONFIG_VDR_STARTER" type="text" value="" />
+            <entry name="Aufnahmeverzeichniss" sysconfig="CONFIG_VDR_VIDEO_PATH" type="text" value="MiniVDR" />
+            <entry name="Pfad für das EPG" sysconfig="CONFIG_VDR_EPG_PATH" type="text" value="" />
+            <entry name="Logging" sysconfig="CONFIG_VDR_LOG" type="selection" value="none">
+                <value>file</value>
+                <value>net</value>
+                <value>both</value>
+                <value>none</value>
+            </entry>
+            <entry name="Größe des Puffers für logging" sysconfig="CONFIG_VDR_LOG_BUFSIZE" type="numtext" value="0" />
+            <entry name="Anzahl der log Dateien" sysconfig="CONFIG_VDR_N_LOG_BACKUP" type="numtext" value="3" />
+        </menu>
+        <menu name="BoxAmp">
+            <entry name="Pfad zu BoxAmp" sysconfig="CONFIG_BOXAMP_PATH" type="text" value="" />
+            <entry name="Pfad zu dem MP3s" sysconfig="CONFIG_BOXAMP_MP3_PATH" type="text" value="" />
+            <entry name="Zusätzliche Optionen" sysconfig="CONFIG_BOXAMP_OPTIONS" type="text" value="" />
+        </menu>
+        <menu name="Kindersicherung">
+            <entry name="Geheimcode (0000=AUS)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" />
+        </menu>
+    </menus>
+</setup>

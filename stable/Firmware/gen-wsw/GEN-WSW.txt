@@ -1,0 +1,190 @@
+
+###############################################################################
+#####        (c) Lemmi, m740av (at) cle-mens.de, 2007-04-03, GPL2         #####
+###############################################################################
+
+
+*******************************************************************************
+*******************************************************************************
+***                                                                         ***
+***  WARNUNG:                                                               ***
+***  Dieses Programm befindet sich noch in der Experimentierphase!          ***
+***  Daher ist es wahrscheinlich, dass es fehlerhafte WSW-Dateien erzeugt,  ***
+***  die die Geräte der Serie 'Siemens Gigaset M7x0' zerstören können.      ***
+***                                                                         ***
+*******************************************************************************
+*******************************************************************************
+
+Das Script 'gen-wsw' erzeugt aus einer oder mehreren Quellen eine WSW-Datei,
+die automatisch signiert wird. Die Zieldatei wird durch einen normalen
+Parameter angegeben und die Quellen durch Optionen.
+
+------------------------------------------------------------------------------
+
+Usage: gen-wsw [option]...  new_wsw_file
+   or: gen-wsw [option]...  name  new_wsw_file
+   or: gen-wsw [option]...  name  dir_of_new_wsw_file
+
+  new_wsw_file: extension '.wsw' appended if missed.
+
+  Options:
+
+    -h  --help                print this help
+    -v  --verbose             be verbose
+    -q  --quiet               be quiet
+
+    -4  --m740 --m740av       generate a M740-wsw (default)
+    -5  --m750 --m750s        generate a M750-wsw
+
+    -r  --rootfs path         cramfs or dir containing root file system
+    -d  --data path           jffs2 or dir containing data system
+    -e  --etc file            use 'file' for etc area
+    -B  --boot-sector file    use 'file' as boot sector (use with care!)
+    -k  --kernel file         use 'file' as kernel
+    -K  --rescue-kernel file  use 'file' as rescue kernel
+    -R  --rescue-rootfs path  cramfs or dir containing rescue root file system
+
+        --enable-boot-sector  this option enables the --boot-sector option
+        --enable-rescue       this option enables both --rescue-* options above
+
+    The options from -r to -R are printed in file content order.
+    The upper case options -EBKR signal unusal WSW parts
+    and should be used with care, because they can damage a M7x0-box.
+
+------------------------------------------------------------------------------
+
+Es werden ein oder zwei Parameter erwartet, die keine Optionen sind.
+
+Mit dem ersten Parameter wird ein Name festgelegt, von dem die ersten 63
+Zeichen in die erzeugte WSW-Datei geschrieben werden. Üblicherweise wird
+der Firmware-Name angegeben.
+
+Der zweite Parameter legt die Ausgabe-Datei fest. Handelt es sich dabei um ein
+Verzeichnis, dann wird an den gegebenen Pfadnamen der erste Parameter ab dem
+letzen Slash '/' angehängt. Zusätzlich wird die Bezeichnung '.wsw' automatisch
+ans Ende angehängt, wenn sie nicht bereits angegeben wurde.
+
+Wird nur ein Parameter angegeben oder ist der 2. Parameter leer, dann wird
+der einzige Parameter sowohl für den Namen als auch Ausgabe-Datei verwendet.
+Für den Namen werden allerdings nur Zeichen nach dem letzten '/' verwendet.
+
+Die WSW-Datei wird in der folgenden Reihenfolge angeordnet, wobei die
+build-in-Hilfe die Optionen in derselben Reihenfolge ausgibt:
+
+	---------------------------------------------
+	 Segment	M740AV Größe	M750S Größe
+	---------------------------------------------
+	 WSW-header	 1416 Bytes	  1416 Bytes
+	 rootfs		96*64 KiB	128*64 KiB
+	 data		92*64 KiB	 60*64 KiB
+	 etc		 4*64 KiB	  4*64 KiB
+	 boot-sector	   64 KiB	    64 KiB
+	 kernel		12*64 KiB	 12*64 KiB
+	 rescue-kernel	11*64 KiB	 11*64 KiB
+	 rescue-rootfs	40*64 KiB	 40*64 KiB
+	---------------------------------------------
+
+Der Aufbau entspricht dem des Flash-RAMs der Boxen.
+Weitere Details:
+    - http://www.open7x0.org/wiki/Flash-RAM
+    - http://www.open7x0.org/wiki/WSW-Header
+    - http://www.open7x0.org/wiki/WSW-Datei
+
+------------------------------------------------------------------------------
+
+Optionen:
+
+-h --help
+    Die obige Hilfe wird ausgegeben.
+
+-v --verbose
+    Es werden besonders viele Informationen ausgegeben.
+
+-q --quiet
+    Es werden nur Fehlermeldungen ausgegeben.
+    
+-4 --m740
+    Es wird eine WSW-Datei für die M740AV erzeugt. (Voreinstellung)
+
+-5 --m750
+    Es wird eine WSW-Datei für die M750S erzeugt.
+
+-r --rootfs path
+    Ist 'path' ein Verzeichnis, dann wird aus allen Dateien des Verzeichnisses
+    eine cramfs-Datei mit dem 'root file system' erzeugt. Die erzeugt Datei
+    wird danach so wie eine angegebene Datei behandelt.
+    
+    Ist 'path' eine Datei, dann sollte es eine Big-Endian-CRAMFS-Datei sein.
+    Der Inhalt der Datei wird nicht überprüft. Die Datei darf nicht größer
+    als der vorgesehene Länge sein. Fehlende Zeichen werden aber mit
+    Null-Bytes aufgefüllt.
+
+-d --data path
+    Ist 'path' ein Verzeichnis, dann wird aus allen Dateien des Verzeichnisses
+    ein jffs2-Datei mit korrekter Länge erzeugt. Die erzeugt Datei wird danach
+    so wie eine angegebene Datei behandelt.
+    
+    Ist 'path' eine Datei, dann sollte es eine Big-Endian-JFFS2-Datei sein.
+    Der Inhalt der Datei wird nicht überprüft. Die Datei muss die korrekte
+    Länge besitzen.
+
+-e --etc file
+    Die angegebene Datei 'file' enthält eine Datenbereich, der für den
+    /var/etc-SPeicher verwendet wird. Der Inhalt der Datei wird nicht
+    überprüft. Die Datei darf nicht größer als der vorgesehene Länge sein.
+    Fehlende Zeichen werden aber mit Null-Bytes aufgefüllt.
+
+-B --boot-sector file
+    Die angegebene Datei 'file' enthält den Boot-Sector. Der Inhalt der Datei
+    wird nicht überprüft. Die Datei darf nicht größer als der vorgesehene
+    Länge sein. Fehlende Zeichen werden aber mit Null-Bytes aufgefüllt. 
+
+    ***** Ein falscher Boot-Sektor macht die Box unbrauchbar. *****
+
+    Diese Option kann aus Sicherheitsgründen nur dann verwendet werden,
+    wenn auch die Option --enable-boot-sector verwendet wird.
+
+-k --kernel file
+    Die angegebene Datei 'file' enthält den Linux-Kernel. Diese muss die korrekte
+    Länge besitzen. Der Inhalt der Datei wird nicht überprüft.
+
+-K --rescue-kernel file
+    Die angegebene Datei 'file' enthält den Linux-Kernel, der für das
+    Rettungssystem verwendet wird. Diese Datei muss die korrekte Länge
+    besitzen. Der Inhalt wird nicht überprüft.
+
+    Diese Option kann aus Sicherheitsgründen nur dann verwendet werden,
+    wenn auch die Option --enable-rescue verwendet wird.
+
+-R --rescue-rootfs path
+
+    Ist 'path' ein Verzeichnis, dann wird aus allen Dateien des Verzeichnisses
+    eine cramfs-Datei mit dem 'root file system' erzeugt. Die erzeugt Datei
+    wird danach so wie eine angegebene Datei behandelt.
+    
+    Ist 'path' eine Datei, dann sollte es eine Big-Endian-CRAMFS-Datei sein.
+    Der Inhalt der Datei wird nicht überprüft. Die Datei darf nicht größer
+    als der vorgesehene Länge sein. Fehlende Zeichen werden aber mit
+    Null-Bytes aufgefüllt. Die Datei wird für das Rettungssystem verwendet.
+
+    Diese Option kann aus Sicherheitsgründen nur dann verwendet werden,
+    wenn auch die Option --enable-rescue verwendet wird.
+
+--enable-boot-sector
+    Mit dieser Option wird die Option --boot-sector aktiviert. Damit soll
+    das versehentlich Erzeugen eines Boot-Sektors erschwert werden.
+
+--enable-rescue
+    Mit dieser Option werden die beiden anderen Optionen --rescue-kernel
+    und --rescue-rootfs aktiviert. Damit soll das versehentlich Erzeugen eines
+    Rettungssystemes erschwert werden.
+
+------------------------------------------------------------------------------
+
+EXIT-STATUS:
+
+    0: Die WSW-Datei wurde korrekt zusammengestellt und signiert.
+    1: Es ist ein Fehler aufgetreten und eine evtl. erzeugte WSW-Datei ist
+       ungültig.
+
+------------------------------------------------------------------------------

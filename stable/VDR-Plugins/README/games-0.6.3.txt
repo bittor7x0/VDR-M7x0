@@ -1,0 +1,57 @@
+This is the "OSD Games Collection plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Clemens Kirchgatterer <clemens@1541.org>
+
+Project's homepage:          http://www.1541.org
+
+Latest version available at: http://www.1541.org
+
+See the file COPYING for license information.
+
+Description: OSD Games Collection
+
+------------------------------------------------------------------------------
+
+This is the new vdr OSD games collection formaly known as the tetris plugin.
+The collection currently contains Tetris, Tron, TicTacToe, Snake and
+Minesweeper, more to come. ;-)
+
+The plugin will be built as a "Stand Alone SDL" program, when it finds
+"sdl-config" in your $PATH. Very handy for debugging and testing.
+
+I would like to hear your opinion, feature request or suggestions and also
+will be very pleased to receive your patches, betterments or new game
+implementations.
+
+------------------------------------------------------------------------------
+
+Keys:
+
+                     LEFT  ->  move left
+                    RIGHT  ->  move right
+                       UP  ->  move up / rotate piece (tetris)
+                     DOWN  ->  move down / drop piece (tetris)
+                     BACK  ->  quit game
+                       OK  ->  pause/restart
+              NUMBER KEYS  ->  1 - show, 2 - place enigma, 3 - mark mine
+
+Setup:
+
+               Block Size  ->  in pixels multiplied with 4
+  X-Position & Y-Position  ->  cartesian coordinates of OSD (0,0 = centered)
+           Computer Skill  ->  level of AI smartness for computer enemy
+               Key Repeat  ->  send repeated keycodes, when key is held down
+
+------------------------------------------------------------------------------
+
+Credits:
+
+Most games are based on simple Open Source versions of their famose originals.
+I have rewritten, changed, removed and/or added large parts of the source.
+Nevertheless I used code from the following people, so my thanks go to:
+
+Justin Todd     (Snake)
+Franko Kulaga   (Tetris)
+Rhett D. Jacobs (Tron)
+Aaron Rogers    (TicTacToe)
+Gerard Monells  (Minesweeper)

@@ -1,0 +1,18 @@
+CHANNELNUMBER IS 1-40 AND 
+{
+    TITLE CONTAINS "Movie" OR
+    INFO CONTAINS "Comedy" OR
+    INFO CONTAINS "Action" OR
+    {
+        TITLE CONTAINS "FST" AND
+        TITLE CONTAINS "Strömsö" AND
+        CHANNELNUMBER IS 1
+    } OR
+    {
+        TITLE IS "Simpsonit" AND
+        CHANNELNUMBER IS 5
+	FOLDER "Simpsonit"
+	TITLE "%SUBTITLE%"
+    } OR
+    TITLE IS "South Park" FOLDER "Cartoons" TITLE "South Park: %SUBTITLE%"
+}

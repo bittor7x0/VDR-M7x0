@@ -1,0 +1,56 @@
+epgsearchswitchtimers.conf(Epgsearch Version 0.9.epgsearchswitchtimers.conf(5)
+
+
+
+NAME
+       epgsearchswitchtimer.conf - The list of switchtimer
+
+DESCRIPTION
+       In epgsearch switchtimer can be created via the program menu or the
+       searchtimers. These switchtimer can switch the channel at the beginning
+       of the event or only inform you about the start via OSD.
+
+       The switchtimers are saved in this file.
+
+SYNTAX
+       The delimiter is ':'.
+
+       This fields are possible:
+
+        1 - Channel
+        2 - Event ID
+        3 - Start time
+        4 - Minutes to switch before event
+        5 - Only inform via OSD
+
+EXAMPLE
+        S19.2E-1-1089-12060:52221:1153322700:1:0
+
+SEE ALSO
+       epgsearch(1)
+
+AUTHOR (man pages)
+       Mike Constabel <epgsearch (at) constabel (dot) net>
+
+REPORT BUGS
+       Bug reports (german):
+
+       <http://www.vdr-developer.org/mantisbt/>
+
+       Mailing list:
+
+       <http://www.vdr-developer.org/mailman/listinfo/epgsearch>
+
+COPYRIGHT and LICENSE
+       Copyright (c) 2005-2007 Christian Wieninger
+
+       <http://www.cwieninger.de.vu/>
+
+       This  is free software.  You may redistribute copies of it under the
+       terms of the GNU General Public License
+       <http://www.gnu.org/licenses/gpl.html>.  There is NO WARRANTY, to the
+       extent permitted by law.
+
+
+
+perl v5.8.8                       2007-05-02     epgsearchswitchtimers.conf(5)

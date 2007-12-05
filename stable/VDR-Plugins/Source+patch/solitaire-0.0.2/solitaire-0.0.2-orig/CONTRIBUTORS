@@ -1,0 +1,16 @@
+Special thanks go to the following persons (if you think your name is missing
+here, please send an email to 
+
+Sascha Volkenandt (sascha@akv-soft.de):
+	for making the great freecell-plugin, that sourcecode I modified.
+
+Rolf Ahrenberg
+	for keeping Sascha up-to-date with finnish translations for the
+	freecell-plugin :-)
+
+Thomas Guenther
+	for making the plugin work with VDR 1.3.18+ 
+
+Guy Roussin
+	for telling me a bug with card-loss when taking a card from the
+	"open pile" and lay it back with "ok"

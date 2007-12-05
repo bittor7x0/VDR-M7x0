@@ -1,0 +1,284 @@
+diff -Naur eggtimer-0.9.5-orig/eggtimer.conf.es eggtimer-0.9.5/eggtimer.conf.es
+--- eggtimer-0.9.5-orig/eggtimer.conf.es	1970-01-01 01:00:00.000000000 +0100
++++ eggtimer-0.9.5/eggtimer.conf.es	2007-07-14 10:39:31.000000000 +0200
+@@ -0,0 +1,38 @@
++# Plantillas para el plugin eggtimer
++# ---------------------------------------------------------------------------------------------
++#
++# Desde la versión 0.9.2 todas las plantillas deben empezar con un prefijo para determinar
++# el tipo de temporizador que define la plantilla. Los prefijos son MESSAGE, COMMAND y SWITCH
++
++# Plantillas para mostrar un mensaje OSD
++#
++# MESSAGE;tiempo;nombre;mensaje
++#
++# tiempo:  valor en minutos, segundos, fecha/hora o now.
++#          Ejemplos: 5min, 30sec, 20:00, now
++#
++#	   El tiempo estará asociado a la fecha de hoy o la fecha del día siguiente
++#	   de establecer el temporizador.
++# nombre:  título de la plantilla para seleccionarla en el menú eggtimer (máx. 20 caracteres)
++# mensaje: mensaje a mostrar cuando la cuenta atrás finalice (máx. 30 caracteres)
++MESSAGE;4min;Té negro;Temporizador: El té está listo
++MESSAGE;3min;Té verde;Temporizador: El té está listo
++MESSAGE;30sec;30 Segundos;Se ha superado su tiempo
++
++# Plantillas para programar comandos
++#
++# COMMAND;tiempo;títulocomando
++#
++# tiempo	: ver temporizadores MESSAGE
++# títulocomando	: título del comando que está en commands.conf
++COMMAND;now;Apagar VDR
++
++# Plantillas para cambiar de canal
++#
++# SWITCH;tiempo;tChanneldID;nombre
++#
++# tiempo	: ver temporizadores MESSAGE
++# tChannelID	: Identificador del canal VDR
++# nombre	: título de la plantilla para seleccionarla en el menú eggtimer (máx. 20 caracteres)
++SWITCH;20:00;T:27500:161:84;Noticias del día
++SWITCH;19:30;T:27500:162:88;Vídeos musicales
+diff -Naur eggtimer-0.9.5-orig/i18n.c eggtimer-0.9.5/i18n.c
+--- eggtimer-0.9.5-orig/i18n.c	2006-09-28 12:37:40.000000000 +0200
++++ eggtimer-0.9.5/i18n.c	2007-07-13 20:02:04.000000000 +0200
+@@ -13,7 +13,7 @@
+     "", // TODO /*Norsk*/
+     "Munakello", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Temporizador", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -37,7 +37,7 @@
+     "", // TODO /*Norsk*/
+     "Munakello", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Temporizador para VDR", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -61,7 +61,7 @@
+     "", // TODO /*Norsk*/
+     "Munakello: hälytys!", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Temporizador: tiempo superado", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -85,7 +85,7 @@
+     "", // TODO /*Norsk*/
+     "Pysäytä munakello", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Detener temporizador", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -109,7 +109,7 @@
+     "", // TODO /*Norsk*/
+     "Mallipohja", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Plantilla", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -133,7 +133,7 @@
+     "", // TODO /*Norsk*/
+     "viesti", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Mensaje OSD", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -157,7 +157,7 @@
+     "", // TODO /*Norsk*/
+     "kanavanvaihto", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Cambiar de canal", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -181,7 +181,7 @@
+     "", // TODO /*Norsk*/
+     "Aseta munakellon hälytys", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Establecer temporizador", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -205,7 +205,7 @@
+     "", // TODO /*Norsk*/
+     "Hälytystoiminto", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Acción", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -229,7 +229,7 @@
+     "", // TODO /*Norsk*/
+     "Peruuta", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Cancelar", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -253,7 +253,7 @@
+     "", // TODO /*Norsk*/
+     "Aseta hälytys", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Modo de tiempo", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -277,7 +277,7 @@
+     "", // TODO /*Norsk*/
+     "sekuntteina", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Segundos", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -301,7 +301,7 @@
+     "", // TODO /*Norsk*/
+     " Sekunnit", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    " Segundos", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -325,7 +325,7 @@
+     "", // TODO /*Norsk*/
+     " Päivä", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    " Fecha", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -349,7 +349,7 @@
+     "", // TODO /*Norsk*/
+     " Kello", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    " Hora", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -373,7 +373,7 @@
+     "", // TODO /*Norsk*/
+     "päivä/kello", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Fecha/Hora", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -397,7 +397,7 @@
+     "", // TODO /*Norsk*/
+     "minuutteina", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Minutos", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -421,7 +421,7 @@
+     "", // TODO /*Norsk*/
+     " Minuutit", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    " Minutos", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -445,7 +445,7 @@
+     "", // TODO /*Norsk*/
+     " Kanava", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    " Canal", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -470,7 +470,7 @@
+     "", // TODO /*Norsk*/
+     "Munakello: kanavanvaihto epäonnistui", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Temporizador: no puede cambiar de canal", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -495,7 +495,7 @@
+     "", // TODO /*Norsk*/
+     " Komento", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    " Comando", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -520,7 +520,7 @@
+     "", // TODO /*Norsk*/
+     "Munakello: komentoa ei löydetä", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Temporizador: comando no encontrado", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -545,7 +545,7 @@
+     "", // TODO /*Norsk*/
+     "Suorita komento", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Ejecutar comando", /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+diff -Naur eggtimer-0.9.5-orig/Makefile eggtimer-0.9.5/Makefile
+--- eggtimer-0.9.5-orig/Makefile	2006-09-28 12:37:40.000000000 +0200
++++ eggtimer-0.9.5/Makefile	2007-07-15 10:55:07.000000000 +0200
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -39,7 +39,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -67,7 +67,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

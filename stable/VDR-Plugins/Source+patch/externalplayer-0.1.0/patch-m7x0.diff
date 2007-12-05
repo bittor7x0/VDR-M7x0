@@ -1,0 +1,51 @@
+diff -Naur externalplayer-0.1.0-orig/externalplayer-i18n.c externalplayer-0.1.0/externalplayer-i18n.c
+--- externalplayer-0.1.0-orig/externalplayer-i18n.c	2005-10-08 12:56:28.000000000 +0200
++++ externalplayer-0.1.0/externalplayer-i18n.c	2007-08-05 18:22:19.000000000 +0200
+@@ -19,7 +19,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Reproductores externos",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+diff -Naur externalplayer-0.1.0-orig/Makefile externalplayer-0.1.0/Makefile
+--- externalplayer-0.1.0-orig/Makefile	2005-10-07 09:36:26.000000000 +0200
++++ externalplayer-0.1.0/Makefile	2007-07-31 17:48:27.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -68,7 +68,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(VDRVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

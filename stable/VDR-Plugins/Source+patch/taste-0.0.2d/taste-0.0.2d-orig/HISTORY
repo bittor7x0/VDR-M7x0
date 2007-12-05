@@ -1,0 +1,15 @@
+VDR Plugin 'taste' Revision History
+-----------------------------------
+
+2004-11-19: Version 0.0.2c
+
+- added missing translation entry
+- fixed copy constructor of keyword class
+- fixed language count for VDR < 1.3.16 and < 1.3.13
+- supporting ignore case
+- supporting regular expressions
+- fixed loop when first or last channel was not acceptable
+
+2004-11-04: Version 0.0.1
+
+- Initial revision.

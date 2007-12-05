@@ -1,0 +1,15 @@
+
+     Up - Play
+     Down - Pause
+     Left - Search back
+     Right - Search forward
+     Ok - Progress disp.
+     Menu - Menu on
+     Back - Recordings menu
+     Red - Jump
+     Green - Skip -60s
+     Yellow - Skip +60s
+     Blue - Stop
+     0..9 - Editing
+
+     In a numerical input field (like the response to a CAM enquiry) the keys 0..9 are used to enter the data, and the Left key can be used to delete the last entered digit.

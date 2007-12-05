@@ -1,0 +1,58 @@
+noannounce.conf(5)         Epgsearch Version 0.9.22         noannounce.conf(5)
+
+
+
+NAME
+       noannounce.conf - list of events that have been marked to not be
+       announced via OSD
+
+DESCRIPTION
+       This file contains a list of events that have been marked to not be
+       announced via OSD by the search timer background thread.
+
+       If the user presses one of the keys 'Ok', '0', ... '9' while the
+       announcement of an event is displayed, he will be asked if further
+       announcements of this event should be disabled for ever (user hit '0'
+       or 'Ok') or for the next 'x' days (user hit '1' to '9'). After pressing
+       'Ok' again, this setting will be stored.
+
+FORMAT
+       Events are stored one per line, where the fields are separated with
+       ':'.
+
+       The following fields exists:
+
+         1 - title
+         2 - short text
+         3 - channel ID
+         4 - start time
+         5 - next announce time
+
+SEE ALSO
+       epgsearch(1)
+
+AUTHOR (man pages)
+       Mike Constabel <epgsearch (at) constabel (dot) net>
+
+REPORT BUGS
+       Bug reports (german):
+
+       <http://www.vdr-developer.org/mantisbt/>
+
+       Mailing list:
+
+       <http://www.vdr-developer.org/mailman/listinfo/epgsearch>
+
+COPYRIGHT and LICENSE
+       Copyright (c) 2005-2007 Christian Wieninger
+
+       <http://www.cwieninger.de.vu/>
+
+       This  is free software.  You may redistribute copies of it under the
+       terms of the GNU General Public License
+       <http://www.gnu.org/licenses/gpl.html>.  There is NO WARRANTY, to the
+       extent permitted by law.
+
+
+
+perl v5.8.8                       2007-05-02                noannounce.conf(5)

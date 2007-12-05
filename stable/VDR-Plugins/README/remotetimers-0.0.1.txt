@@ -1,0 +1,125 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Frank Schmirler <vdrdev@schmirler.de> 
+Project's homepage:          http://vdr.schmirler.de/
+
+Latest version available at: http://vdr.schmirler.de/
+
+See the file COPYING for license information.
+
+Description:
+------------
+With the remotetimers plugin you can add/edit/remove timers on both,
+the local (client) VDR and a remote (server) VDR. You can even move
+timers between both VDRs. As it's not much fun to add timers without
+EPG, the plugin also comes with its own schedule menu.
+
+Requirements:
+-------------
+- plugin svdrpservice (available via http://vdr.schmirler.de)
+
+Installation:
+-------------
+Straightforward:
+- cd VDR/PLUGINS/src
+- tar xzf vdr-remotetimers-<VERSION>.tgz
+- ln -sf remotetimers-<VERSION> remotetimers
+
+If you didn't do that already (otherwise svdrpservice.h is missing):
+- tar xzf vdr-svdrpservice-<VERSION>.tgz
+- ln -sf svdrpservice-<VERSION> svdrpservice
+
+If you want to replace the VDR mainmenus "Schedule" or "Timers" by
+the respective plugin menus, you must apply the MainMenuHooks patch
+to VDR before compiling remotetimers. The MainMenuHooks patch is
+included in the patches directory of the remottimers sources. See the
+patch file for more information and instructions.
+
+Now compile and install remotetimers (and svdrpservice) as usual and add
+both plugins to the script starting your VDR (e.g. runvdr). No options
+required, so simply append:
+
+  -Premotetimers -Psvdrpservice
+
+Check the svdrphosts.conf (or streamdevhosts.conf) file on the remote
+VDR: The IP of the VDR running remotetimers must be listed or otherwise
+the connection will be refused.
+
+Configuration:
+--------------
+Before you can connect you have to configure the IP address of the
+remote VDR. So you have to enter the plugin's setup menu first. It
+offers the following options:
+
+- Hide mainmenu entry
+Should be obvious ;-)
+
+- Replace mainmenu "Schedule"
+When enabled, each call to the local VDR Schedule menu will give you
+the remotetimers Schedule menu instead. Only available if MainMenuHooks
+patch has been applied to VDR before compiling remotetimers.
+
+- Replace mainmenu "Timers"
+Dito for Timers menu.
+
+- Server IP
+IP address of SVDRP server. Leave empty or enter "0.0.0.0" if you want
+to use the default IP configured in the svdrpservice plugin.
+
+- Server port
+SVDRP port on server (usually 2001). Enter "0" if you want to use the
+default port from svdrpservice.
+
+*** Defaults for new timers ***
+
+- Location
+Determines if by default new timers will be created on the local or on
+the remote VDR.
+
+- User ID
+Select the user ID new timers should get by default. Use the special
+value "0" to indicate a timer which is always visible, i.e. belongs to
+everyone.
+
+*** Settings for "Timers" menu ***
+
+- Filter for user ID
+If set to "0", all timers will be shown. Otherwise only those timers are
+visible which belong to the same user ID or to everyone (user ID "0").
+
+Usage:
+------
+The remotetimers menus are more or less a copy of the original VDR
+menus. So it should be quite clear how things work. Here are the
+differences:
+
+- Edit timers menu (the one where you can change day, time, ...)
+The menu has two additional menu items: The location of the timer (local
+or remote) and a user ID field.
+
+The purpose of the location field should be obvious. When editing an
+existing timer, you can use it to move a timer from the local to the
+remote VDR or vice versa. Note that you cannot move a running timer.
+It has to be stopped first.
+
+If you have a lot of timers, you can use the user ID to keep things
+clearer. The plugin's timers list can filter by user ID. A timer with
+ID 0 is always visible. Use other IDs if you want to filter by e.g.
+user, client machine or maybe even genre.
+
+- Timers menu (list of all timers)
+Looks almost like VDR's original timers menu. A letter in front of the
+channel number indicates if this entry refers to a local or a remote
+timer. Hit the number keys to change the current user ID filter. With
+"0" all timers will be listed. Otherwise the menu title will show you
+which user ID filter currently applies.
+
+- Schedule menus
+Work and look exactly like the originals. Of course remote timer matches
+are flagged, too. Note that there's no user ID filter in the schedule
+menus. You will always see all timer matches.
+
+Credits:
+--------
+Thanks to Klaus Schmidinger and everyone who contributed to those parts
+of the menu code I copied from VDR.

@@ -1,0 +1,128 @@
+
+###############################################################################
+#####        (c) Lemmi, m740av (at) cle-mens.de, 2007-04-03, GPL2         #####
+###############################################################################
+
+
+Das Script 'gen-template' erzeugt eine WSW-Datei ohne koinkreten Inhalt als
+template. Das Ertgevnis ist ühnluch wie bei 'gen-wsw', nur das die WSW-Datei
+mit lauter Nullen gefüllt ist und aaancith signiert wird. Die Zieldatei wird
+durch einen normalen Parameter angegeben und die Quellen durch Optionen.
+
+------------------------------------------------------------------------------
+
+Usage: gen-wsw-template [option]...  new_wsw_file
+   or: gen-wsw-template [option]...  name  new_wsw_file
+   or: gen-wsw-template [option]...  name  dir_of_new_wsw_file
+
+  new_wsw_file: extension '.wsw' appended if missed.
+
+  Options:
+
+    -h  --help           print this help
+    -v  --verbose        be verbose
+    -q  --quiet          be quiet
+
+    -4  --m740 --m740av  generate a M740-wsw (default)
+    -5  --m750 --m750s   generate a M750-wsw
+
+    -r  --rootfs         insert a rootfs template
+    -d  --data           insert a data template
+    -e  --etc file       insert a /var/etc template
+    -B  --boot-sector    insert a boot sector template
+    -k  --kernel         insert a kernel template
+    -K  --rescue-kernel  insert a rescue kernel template
+    -R  --rescue-rootfs  insert a rescue rootfs template
+
+    -H  --only-header    generate only the WSW-Header
+
+    The options from -r to -R are printed in file content order.
+    The upper case options -EBKR signal unusal WSW parts
+    and should be used with care, because they can damage a M7x0-box.
+
+    Usage: gen-wsw [option]...  new_wsw_file
+       or: gen-wsw [option]...  name  new_wsw_file
+       or: gen-wsw [option]...  name  dir_of_new_wsw_file
+
+------------------------------------------------------------------------------
+
+Es werden ein oder zwei Parameter erwartet, die keine Optionen sind.
+
+Mit dem ersten Parameter wird ein Name festgelegt, von dem die ersten 63
+Zeichen in die erzeugte WSW-Datei geschrieben werden. Üblicherweise wird
+der Firmware-Name angegeben.
+
+Der zweite Parameter legt die Ausgabe-Datei fest. Handelt es sich dabei um ein
+Verzeichnis, dann wird an den gegebenen Pfadnamen der erste Parameter ab dem
+letzen Slash '/' angehängt. Zusätzlich wird die Bezeichnung '.wsw' automatisch
+ans Ende angehängt, wenn sie nicht bereits angegeben wurde.
+
+Wird nur ein Parameter angegeben oder ist der 2. Parameter leer, dann wird
+der einzige Parameter sowohl für den Namen als auch Ausgabe-Datei verwendet.
+Für den Namen werden allerdings nur Zeichen nach dem letzten '/' verwendet.
+
+Die WSW-Datei wird in der folgenden Reihenfolge angeordnet, wobei die
+build-in-Hilfe die Optionen in derselben Reihenfolge ausgibt:
+
+	---------------------------------------------
+	 Segment	M740AV Größe	M750S Größe
+	---------------------------------------------
+	 WSW-header	 1416 Bytes	  1416 Bytes
+	 rootfs		96*64 KiB	128*64 KiB
+	 data		92*64 KiB	 60*64 KiB
+	 etc		 4*64 KiB	  4*64 KiB
+	 boot-sector	   64 KiB	    64 KiB
+	 kernel		12*64 KiB	 12*64 KiB
+	 rescue-kernel	11*64 KiB	 11*64 KiB
+	 rescue-rootfs	40*64 KiB	 40*64 KiB
+	---------------------------------------------
+
+Der Aufbau entspricht dem des Flash-RAMs der Boxen.
+Weitere Details:
+    - http://www.open7x0.org/wiki/Flash-RAM
+    - http://www.open7x0.org/wiki/WSW-Header
+    - http://www.open7x0.org/wiki/WSW-Datei
+
+------------------------------------------------------------------------------
+
+Optionen:
+
+-h --help
+    Die obige Hilfe wird ausgegeben.
+
+-v --verbose
+    Es werden besonders viele Informationen ausgegeben.
+
+-q --quiet
+    Es werden nur Fehlermeldungen ausgegeben.
+    
+-4 --m740
+    Es wird eine WSW-Datei für die M740AV erzeugt. (Voreinstellung)
+
+-5 --m750
+    Es wird eine WSW-Datei für die M750S erzeugt.
+
+-k --kernel
+    Das WSW-Template wird so aufgebaut, dass es einen Kernel aufnehmen kann.
+
+-r --rootfs
+    Das WSW-Template wird so aufgebaut, dass es einen Kernel aufnehmen kann.
+
+-d --data
+
+-E --etc file
+-B --boot-sector
+-K --rescue-kernel
+-R --rescue-rootfs
+
+-H --only-header
+
+------------------------------------------------------------------------------
+
+EXIT-STATUS:
+
+    0: Die WSW-Datei wurde korrekt zusammengestellt und signiert.
+    1: Es ist ein Fehler aufgetreten und eine evtl. erzeugte WSW-Datei ist
+       ungültig.
+
+------------------------------------------------------------------------------

@@ -1,0 +1,105 @@
+diff -Naur skinreel-0.0.1-orig/i18n.c skinreel-0.0.1/i18n.c
+--- skinreel-0.0.1-orig/i18n.c	2005-12-08 23:05:31.000000000 +0100
++++ skinreel-0.0.1/i18n.c	2007-06-17 12:40:40.000000000 +0200
+@@ -19,7 +19,7 @@
+         "", // Norsk
+         "", // Suomi
+         "", // Polski
+-        "", // Español
++        "Ajustes de imagen", // Español
+         "", // Ellinika
+         "", // Svenska
+         "", // Romaneste
+@@ -39,7 +39,7 @@
+         "", // Norsk
+         "", // Suomi
+         "", // Polski
+-        "", // Español
++        "Contraste", // Español
+         "", // Ellinika
+         "", // Svenska
+         "", // Romaneste
+@@ -59,7 +59,7 @@
+         "", // Norsk
+         "", // Suomi
+         "", // Polski
+-        "", // Español
++        "Color", // Español
+         "", // Ellinika
+         "", // Svenska
+         "", // Romaneste
+@@ -79,7 +79,7 @@
+         "", // Norsk
+         "", // Suomi
+         "", // Polski
+-        "", // Español
++        "Brillo", // Español
+         "", // Ellinika
+         "", // Svenska
+         "", // Romaneste
+@@ -99,7 +99,7 @@
+         "", // Norsk
+         "", // Suomi
+         "", // Polski
+-        "", // Español
++        "Contraste", // Español
+         "", // Ellinika
+         "", // Svenska
+         "", // Romaneste
+diff -Naur skinreel-0.0.1-orig/Makefile skinreel-0.0.1/Makefile
+--- skinreel-0.0.1-orig/Makefile	2005-12-08 23:48:08.000000000 +0100
++++ skinreel-0.0.1/Makefile	2007-07-30 11:03:17.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+ 
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -55,7 +55,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -68,7 +68,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

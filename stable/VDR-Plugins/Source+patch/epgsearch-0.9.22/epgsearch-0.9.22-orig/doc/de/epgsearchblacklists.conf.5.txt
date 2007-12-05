@@ -1,0 +1,53 @@
+epgsearchblacklists.conf(5)Epgsearch Version 0.9.22epgsearchblacklists.conf(5)
+
+
+
+NAME
+       epgsearchblacklists.conf - Die gespeicherten Auschlusslisten-Suchtimer
+
+BESCHREIBUNG
+       In epgsearch können Ausschlusslisten (Blacklists) angelegt werden.
+
+       Dies sind im Grunde normale Suchtimer die in der Datei epgsearchblack-
+       lists.conf gespeichert werden. Zu jedem Suchtimer kann man dann einen
+       oder mehrere Einträge aus der Ausschlussliste auswählen.
+
+       Funktion
+
+       Suchtimer "Krimi" verwendet Ausschlusssuchtimer "Tatort"
+
+       Ausschlusssuchtimer "Tatort" sucht "Tatort"
+
+       Es werden alle Krimis gesucht und anschliessend wird nachgesehen ob ein
+       Ergebnisse auf den Ausschlusssuchtimer zutrifft. Dieses wird dann ver-
+       worfen.
+
+FORMAT
+       Diese Datei hat dasselbe Format wie die Datei epgsearch.conf. Für den
+       Aufbau verweise ich auf "epgsearch.conf(5)".
+
+SIEHE AUCH
+       epgsearch(1)
+
+AUTOR (man pages)
+       Mike Constabel <epgsearch (at) constabel (dot) net>
+
+FEHLER MELDEN
+       Fehlerberichte bitte im Bugtracker.
+
+       <http://www.vdr-developer.org/mantisbt/>
+
+       Mailinglist:
+
+       <http://www.vdr-developer.org/mailman/listinfo/epgsearch>
+
+COPYRIGHT und LIZENZ
+       Copyright © 2005 - 2007 Christian Wieninger
+
+       Dieses Dokument wird unter den Bedingungen der Gnu Public License (GPL)
+       veröffentlicht. Alle Angaben sind nach bestem Wissen, aber natürlich
+       ohne Gewähr (no warranty in any kind).
+
+
+
+perl v5.8.8                       2007-05-02       epgsearchblacklists.conf(5)

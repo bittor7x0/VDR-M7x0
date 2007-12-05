@@ -1,0 +1,14 @@
+diff -Naur timersync-0.1.0-orig/Makefile timersync-0.1.0/Makefile
+--- timersync-0.1.0-orig/Makefile	2007-03-31 17:30:16.000000000 +0200
++++ timersync-0.1.0/Makefile	2007-06-16 20:15:28.000000000 +0200
+@@ -22,8 +22,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:

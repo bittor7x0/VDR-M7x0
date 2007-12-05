@@ -1,0 +1,10 @@
+     Hay cuatro maneras de seleccionar un canal:
+
+         -   Si no hay ningún menú activo, presione el botón "arriba" o "abajo" para cambiar al canal siguiente o anterior.
+         -   Presione el botón "MENU" para activar el menú "VDR", seleccione "canales" y busque por la lista con los botones "arriba" y "abajo"; Para cambiar al canal seleccionado pulse "ok".
+         -   Marque directamente el número del canal con los botones numéricos ('0'...'9'); si no se presiona ningún botón después de un segundo, los dígitos recogidos hasta ahora definirán el número de canal.
+         -   Sub-menús de "EPG": Desde la ficha del Programa presionando el botón "azul". En los menús "ahora", "después" se debe presionar "0" (para cambiar las acciones de los botones de colores) y el botón "azul" para cambiar de canal.
+
+     Presionando el botón "0" en el modo normal de visionado (sin menús) cambia al canal anterior. Un canal se considera "anterior" si se ha estado activo por lo menos 3 segundos.
+
+     Después de cambiar a un canal diferente. El número y el nombre del canal, así la hora actual, se mostraran en la información del canal exhibida en pantalla. Si está disponible la información del programa "actual/siguiente", será mostrada en la línea inferior. Esta exhibición desaparece automáticamente después de cinco segundos, o si se presiona el botón "ok". Para mostrar la información del canal sin hacer ningún cambio entre canales pulse "ok".

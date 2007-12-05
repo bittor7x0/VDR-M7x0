@@ -1,0 +1,24 @@
+v0.0.3 : modified by Vyacheslav Dikonov (sdiconov@mail.ru)
+  Multilanguage support, Russian and English translations.
+  Able to choose help files depending on OSD language  
+  New format of help files (see README)
+  Removed native plugin UI (not themeable and redundant for this version). 
+  This version supports only 2-level deep menu browsing and .mpg pictures.   
+  Russian, English and German user manuals for OSD browsing.
+v0.0.2 :
+  Gestion ameliorer de la longueur des lignes... on ne coupe plus un mot!
+  Affichage OSD ameliorer avec Entete, Corps et Pied de Page (voir README)
+  Le bouton bleu permet de fermer le StillImage et l'OSD
+v0.0.1 :
+  Premiere version "utilisable"
+  Gestion "simple" de la longueur des chaines a afficher en mode texte
+  Affichage de StillImage mpg d'aide
+v0.0.0d :
+  Premier essai d'une StillImage mpg, suppression de toute la partie tag devenue inutile
+v0.0.0c : 
+  Premier essai de traitement de tag <img> et d'affichage de .xpm dans l'OSD
+v0.0.0b : 
+  Premier essai en OSD
+
+v0.0.0a : 
+  Premier test... en mode texte

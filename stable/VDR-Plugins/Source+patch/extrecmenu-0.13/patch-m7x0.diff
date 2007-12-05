@@ -1,0 +1,992 @@
+diff -Naur extrecmenu-0.13-orig/contrib/MainMenuHooks-v1_0.patch extrecmenu-0.13/contrib/MainMenuHooks-v1_0.patch
+--- extrecmenu-0.13-orig/contrib/MainMenuHooks-v1_0.patch	1970-01-01 01:00:00.000000000 +0100
++++ extrecmenu-0.13/contrib/MainMenuHooks-v1_0.patch	2007-06-12 20:27:29.000000000 +0200
+@@ -0,0 +1,155 @@
++This is a "patch" for the Video Disk Recorder (VDR).
++
++* Authors:
++Tobias Grimm <vdr at e-tobi dot net>
++Martin Prochnow <nordlicht at martins-kabuff dot de>  
++Frank Schmirler <vdrdev at schmirler dot de>
++Christian Wieninger <cwieninger at gmx dot de>
++
++* Description:
++This patch allows plugins to replace the VDR mainmenus "Schedule",
++"Channels", "Timers" and "Recordings" by a different implementation.
++
++The patch is based on a suggestion of Christian Wieninger back in 2006.
++(http://www.linuxtv.org/pipermail/vdr/2006-March/008234.html). It is
++meant to be an interim solution for VDR 1.4 until (maybe) VDR 1.5
++introduces an official API for this purpose.
++
++* Installation
++Change into the VDR source directory, then issue
++  patch -p1 < path/to/MainMenuHooks-v1_0.patch
++and recompile.
++
++* Notes for plugin authors
++The following code sample shows the required plugin code for replacing
++the original Schedule menu:
++
++bool cMyPlugin::Service(const char *Id, void *Data)
++{
++  cOsdMenu **menu = (cOsdMenu**) Data;
++  if (MySetup.replaceSchedule &&
++            strcmp(Id, "MainMenuHooksPatch-v1.0::osSchedule") == 0) {
++    if (menu)
++      *menu = (cOsdMenu*) MainMenuAction();
++    return true;
++  }
++  return false;
++}
++
++A plugin can replace more than one menu at a time. Simply replace the
++call to MainMenuAction() in the sample above by appropriate code).
++
++Note that a plugin *should* offer a setup option which allows the user
++to enable or disable the replacement. "Disabled" would be a reasonable
++default setting. By testing for define MAINMENUHOOKSVERSNUM, a plugin
++can leave the setup option out at compiletime.
++
++In case there is an internal problem when trying to open the replacement
++menu, it is safe to return true even though Data is NULL. However an
++OSD message should indicate the problem to the user.
++
++Feel free to ship this patch along with your plugin. However if you
++think you need to modify the patch, we'd encourage you to contact the
++authors first or at least use a service id which differs in more than
++just the version number.
++
++--- vdr-1.4.5/menu.c.orig	2007-02-07 08:23:49.000000000 +0100
+++++ vdr-1.4.5/menu.c	2007-02-20 11:05:34.000000000 +0100
++@@ -2792,15 +2792,30 @@
++ 
++   // Initial submenus:
++ 
+++  cOsdMenu *menu = NULL;
++   switch (State) {
++-    case osSchedule:   AddSubMenu(new cMenuSchedule); break;
++-    case osChannels:   AddSubMenu(new cMenuChannels); break;
++-    case osTimers:     AddSubMenu(new cMenuTimers); break;
++-    case osRecordings: AddSubMenu(new cMenuRecordings(NULL, 0, true)); break;
++-    case osSetup:      AddSubMenu(new cMenuSetup); break;
++-    case osCommands:   AddSubMenu(new cMenuCommands(tr("Commands"), &Commands)); break;
+++    case osSchedule:
+++        if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osSchedule", &menu))
+++            menu = new cMenuSchedule;
+++        break;
+++    case osChannels:
+++        if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osChannels", &menu))
+++            menu = new cMenuChannels;
+++        break;
+++    case osTimers:
+++        if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osTimers", &menu))
+++            menu = new cMenuTimers;
+++        break;
+++    case osRecordings:
+++        if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osRecordings", &menu))
+++            menu = new cMenuRecordings(NULL, 0, true);
+++        break;
+++    case osSetup:      menu = new cMenuSetup; break;
+++    case osCommands:   menu = new cMenuCommands(tr("Commands"), &Commands); break;
++     default: break;
++     }
+++  if (menu)
+++      AddSubMenu(menu);
++ }
++ 
++ cOsdObject *cMenuMain::PluginOsdObject(void)
++@@ -2927,13 +2942,34 @@
++   eOSState state = cOsdMenu::ProcessKey(Key);
++   HadSubMenu |= HasSubMenu();
++ 
+++  cOsdMenu *menu = NULL;
++   switch (state) {
++-    case osSchedule:   return AddSubMenu(new cMenuSchedule);
++-    case osChannels:   return AddSubMenu(new cMenuChannels);
++-    case osTimers:     return AddSubMenu(new cMenuTimers);
++-    case osRecordings: return AddSubMenu(new cMenuRecordings);
++-    case osSetup:      return AddSubMenu(new cMenuSetup);
++-    case osCommands:   return AddSubMenu(new cMenuCommands(tr("Commands"), &Commands));
+++    case osSchedule:
+++        if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osSchedule", &menu))
+++            menu = new cMenuSchedule;
+++        else
+++            state = osContinue;
+++        break;
+++    case osChannels:
+++        if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osChannels", &menu))
+++            menu = new cMenuChannels;
+++        else
+++            state = osContinue;
+++        break;
+++    case osTimers:
+++        if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osTimers", &menu))
+++            menu = new cMenuTimers;
+++        else
+++            state = osContinue;
+++        break;
+++    case osRecordings:
+++        if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osRecordings", &menu))
+++            menu = new cMenuRecordings;
+++        else
+++            state = osContinue;
+++        break;
+++    case osSetup:      menu = new cMenuSetup; break;
+++    case osCommands:   menu = new cMenuCommands(tr("Commands"), &Commands); break;
++     case osStopRecord: if (Interface->Confirm(tr("Stop recording?"))) {
++                           cOsdItem *item = Get(Current());
++                           if (item) {
++@@ -2985,6 +3021,8 @@
++                default:      break;
++                }
++     }
+++  if (menu)
+++      return AddSubMenu(menu);
++   if (!HasSubMenu() && Update(HadSubMenu))
++      Display();
++   if (Key != kNone) {
++--- vdr-1.4.5/config.h.orig	2007-02-20 11:55:40.000000000 +0100
+++++ vdr-1.4.5/config.h	2007-02-20 11:56:43.000000000 +0100
++@@ -35,6 +35,8 @@
++ // plugins to work with newer versions of the core VDR as long as no
++ // VDR header files have changed.
++ 
+++#define MAINMENUHOOKSVERSNUM 1.0
+++
++ #define MAXPRIORITY 99
++ #define MAXLIFETIME 99
++ 
+diff -Naur extrecmenu-0.13-orig/extrecmenu.c extrecmenu-0.13/extrecmenu.c
+--- extrecmenu-0.13-orig/extrecmenu.c	2007-02-03 21:13:28.000000000 +0100
++++ extrecmenu-0.13/extrecmenu.c	2007-06-12 20:27:29.000000000 +0200
+@@ -137,7 +137,15 @@
+ 
+ bool cPluginExtrecmenu::Service(const char *Id,void *Data)
+ {
+- return false;
++  if (mysetup.ReplaceOrgRecMenu && strcmp(Id, "MainMenuHooksPatch-v1.0::osRecordings") == 0) {
++    if (Data == NULL)
++      return true;
++    cOsdMenu **menu = (cOsdMenu**) Data;
++    if (menu)
++      *menu = (cOsdMenu*) MainMenuAction();
++    return true;
++  }
++  return false;
+ }
+ 
+ const char **cPluginExtrecmenu::SVDRPHelpPages(void)
+diff -Naur extrecmenu-0.13-orig/i18n.c extrecmenu-0.13/i18n.c
+--- extrecmenu-0.13-orig/i18n.c	2007-02-04 11:48:03.000000000 +0100
++++ extrecmenu-0.13/i18n.c	2007-06-12 20:27:29.000000000 +0200
+@@ -15,7 +15,7 @@
+     "",
+     "Laajennettu tallennevalikko",
+     "",
+-    "",
++    "Menú extendido grabaciones",
+     "",
+     "",
+     "",
+@@ -37,7 +37,7 @@
+     "",
+     "Avaa",
+     "",
+-    "",
++    "Abrir",
+     "",
+     "",
+     "",
+@@ -59,7 +59,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Volver",
+     "",
+     "",
+     "",
+@@ -81,7 +81,7 @@
+     "",
+     "Peruuta",
+     "",
+-    "",
++    "Cancelar",
+     "",
+     "",
+     "",
+@@ -103,7 +103,7 @@
+     "",
+     "Toista",
+     "",
+-    "",
++    "Reproducir",
+     "",
+     "",
+     "",
+@@ -125,7 +125,7 @@
+     "",
+     "Komennot",
+     "",
+-    "",
++    "Comandos",
+     "",
+     "",
+     "",
+@@ -147,7 +147,7 @@
+     "",
+     "Alkuun",
+     "",
+-    "",
++    "Rebobinar",
+     "",
+     "",
+     "",
+@@ -169,7 +169,7 @@
+     "",
+     "Luo",
+     "",
+-    "",
++    "Crear",
+     "",
+     "",
+     "",
+@@ -191,7 +191,7 @@
+     "",
+     "Muokkaa",
+     "",
+-    "",
++    "Editar",
+     "",
+     "",
+     "",
+@@ -213,7 +213,7 @@
+     "",
+     "Nimeä",
+     "",
+-    "",
++    "Renombrar",
+     "",
+     "",
+     "",
+@@ -235,7 +235,7 @@
+     "",
+     "Siirrä",
+     "",
+-    "",
++    "Mover",
+     "",
+     "",
+     "",
+@@ -257,7 +257,7 @@
+     "",
+     "Poista",
+     "",
+-    "",
++    "Eliminar",
+     "",
+     "",
+     "",
+@@ -279,7 +279,7 @@
+     "",
+     "Tiedot",
+     "",
+-    "",
++    "Info",
+     "",
+     "",
+     "",
+@@ -301,7 +301,7 @@
+     "",
+     "Uusi kansio",
+     "",
+-    "",
++    "Nueva carpeta",
+     "",
+     "",
+     "",
+@@ -323,7 +323,7 @@
+     "",
+     "Nimeä",
+     "",
+-    "",
++    "Renombrar",
+     "",
+     "",
+     "",
+@@ -345,7 +345,7 @@
+     "",
+     "Näytä tallenteen päiväys",
+     "",
+-    "",
++    "Mostrar fecha de grabación",
+     "",
+     "",
+     "",
+@@ -367,7 +367,7 @@
+     "",
+     "Näytä tallenteen ajankohta",
+     "",
+-    "",
++    "Mostrar hora de grabación",
+     "",
+     "",
+     "",
+@@ -389,7 +389,7 @@
+     "",
+     "Näytä tallenteen kesto",
+     "",
+-    "",
++    "Mostrar duración de la grabación",
+     "",
+     "",
+     "",
+@@ -411,7 +411,7 @@
+     "",
+     "Piilota valinta päävalikosta",
+     "",
+-    "",
++    "Ocultar entrada en menú principal",
+     "",
+     "",
+     "",
+@@ -433,7 +433,7 @@
+     "",
+     "Korvaa alkuperäinen tallennevalikko",
+     "",
+-    "",
++    "Sustituir menú original de grabaciones",
+     "",
+     "",
+     "",
+@@ -455,7 +455,7 @@
+     "",
+     "Merkitse uudet tallenteet symbolilla",
+     "",
+-    "",
++    "Mostrar alternativa para nueva marca",
+     "",
+     "",
+     "",
+@@ -477,7 +477,7 @@
+     "",
+     "Laita DVD %s asemaan",
+     "",
+-    "",
++    "Introduzca el DVD %s",
+     "",
+     "",
+     "",
+@@ -499,7 +499,7 @@
+     "",
+     "DVD:n avaaminen epäonnistui!",
+     "",
+-    "",
++    "¡Error montando el DVD!",
+     "",
+     "",
+     "",
+@@ -521,7 +521,7 @@
+     "",
+     "Tallennetta ei löydy DVD:ltä!",
+     "",
+-    "",
++    "¡Grabación no encontrada en el DVD!",
+     "",
+     "",
+     "",
+@@ -543,7 +543,7 @@
+     "",
+     "'dvdarchive.sh'-skriptiä ei löydetä!",
+     "",
+-    "",
++    "¡Script 'dvdarchive.sh' no encontrado!",
+     "",
+     "",
+     "",
+@@ -565,7 +565,7 @@
+     "",
+     "[juurihakemisto]",
+     "",
+-    "",
++    "[dir base]",
+     "",
+     "",
+     "",
+@@ -587,7 +587,7 @@
+     "",
+     "Asemassa ei ole DVD-levyä!",
+     "",
+-    "",
++    "¡Ningún DVD en la unidad!",
+     "",
+     "",
+     "",
+@@ -609,7 +609,7 @@
+     "",
+     "Tiedostojen [0-9]*.vdr linkittäminen epäonnistui!",
+     "",
+-    "",
++    "¡Error enlazando [0-9]*.vdr!",
+     "",
+     "",
+     "",
+@@ -631,7 +631,7 @@
+     "",
+     "Sudo tai mount --bind / umount -komento epäonnistui (VFAT)!",
+     "",
+-    "",
++    "Error sudo o mount --bind / umount (sistema vfat)",
+     "",
+     "",
+     "",
+@@ -653,7 +653,7 @@
+     "",
+     "Lisätiedot",
+     "",
+-    "",
++    "Detalles",
+     "",
+     "",
+     "",
+@@ -675,7 +675,7 @@
+     "",
+     "DVD-laajennosta ei löydy!",
+     "",
+-    "",
++    "¡El plugin DVD no está instalado!",
+     "",
+     "",
+     "",
+@@ -697,7 +697,7 @@
+     "",
+     "Nimeäminen/siirto epäonnistui!",
+     "",
+-    "",
++    "¡Fallo al Renombrar/Mover!",
+     "",
+     "",
+     "",
+@@ -719,7 +719,7 @@
+     "",
+     "Virheellinen tiedoston nimi!",
+     "",
+-    "",
++    "¡Nombre de archivo no válido!",
+     "",
+     "",
+     "",
+@@ -741,7 +741,7 @@
+     "",
+     "Siirto omaan alihakemistoon ei ole sallittu!",
+     "",
+-    "",
++    "¡No se puede mover a su propio subdirectorio!",
+     "",
+     "",
+     "",
+@@ -763,7 +763,7 @@
+     "",
+     "Tallenteet järjestetään nimen mukaan",
+     "",
+-    "",
++    "Ordenar por nombre",
+     "",
+     "",
+     "",
+@@ -785,7 +785,7 @@
+     "",
+     "Tallenteet järjestetään päivämäärän mukaan",
+     "",
+-    "",
++    "Ordenar por fecha",
+     "",
+     "",
+     "",
+@@ -807,7 +807,7 @@
+     "",
+     "Näytä uusien tallenteiden lukumäärä",
+     "",
+-    "",
++    "Mostrar nº nuevas grabaciones en dir",
+     "",
+     "",
+     "",
+@@ -829,7 +829,7 @@
+     "",
+     "Järjestys",
+     "",
+-    "",
++    "Ordenación",
+     "",
+     "",
+     "",
+@@ -851,7 +851,7 @@
+     "",
+     "nouseva",
+     "",
+-    "",
++    "ascendente",
+     "",
+     "",
+     "",
+@@ -873,7 +873,7 @@
+     "",
+     "laskeva",
+     "",
+-    "",
++    "descendente",
+     "",
+     "",
+     "",
+@@ -895,7 +895,7 @@
+     "",
+     "Siirry viimeksi toistettuun tallenteeseen",
+     "",
+-    "",
++    "Ir a la última grabación reproducida",
+     "",
+     "",
+     "",
+@@ -917,7 +917,7 @@
+     "",
+     "Avaa laajennos toiston loputtua",
+     "",
+-    "",
++    "Ir al plugin después de reproducir",
+     "",
+     "",
+     "",
+@@ -939,7 +939,7 @@
+     "",
+     "Tallenteiden siirto on jo käynnissä!",
+     "",
+-    "",
++    "¡Mover grabaciones ya está en proceso!",
+     "",
+     "",
+     "",
+@@ -961,7 +961,7 @@
+     "",
+     "Tallenteiden siirto käynnissä",
+     "",
+-    "",
++    "Mover grabaciones en proceso",
+     "",
+     "",
+     "",
+@@ -983,7 +983,7 @@
+     "",
+     "Rajoita tallenteiden siirtokaistaa",
+     "",
+-    "",
++    "Limitar ancho de banda para mover",
+     "",
+     "",
+     "",
+@@ -1005,7 +1005,7 @@
+     "",
+     "Kohdepartitio täynnä - yritetäänkö silti?",
+     "",
+-    "",
++    "Partición destino completa ¿probar de todos modos?",
+     "",
+     "",
+     "",
+@@ -1027,7 +1027,7 @@
+     "",
+     "Polku",
+     "",
+-    "",
++    "Ruta",
+     "",
+     "",
+     "",
+@@ -1049,7 +1049,7 @@
+     "",
+     "Koko",
+     "",
+-    "",
++    "Tamaño",
+     "",
+     "",
+     "",
+@@ -1071,7 +1071,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Usar menú info de grabaciones VDR",
+     "",
+     "",
+     "",
+diff -Naur extrecmenu-0.13-orig/Makefile extrecmenu-0.13/Makefile
+--- extrecmenu-0.13-orig/Makefile	2006-06-11 16:18:14.000000000 +0200
++++ extrecmenu-0.13/Makefile	2007-06-16 20:06:05.000000000 +0200
+@@ -22,8 +22,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -74,7 +74,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur extrecmenu-0.13-orig/mymenusetup.c extrecmenu-0.13/mymenusetup.c
+--- extrecmenu-0.13-orig/mymenusetup.c	2007-02-03 21:11:32.000000000 +0100
++++ extrecmenu-0.13/mymenusetup.c	2007-06-12 20:27:29.000000000 +0200
+@@ -42,7 +42,9 @@
+  sortingtypetexts[1]=tr("descending");
+  
+  Add(new cMenuEditBoolItem(tr("Hide main menu entry"),&hidemainmenuentry));
++#ifdef MAINMENUHOOKSVERSNUM
+  Add(new cMenuEditBoolItem(tr("Replace original recordings menu"),&replaceorgrecmenu));
++#endif
+  Add(new cMenuEditStraItem(tr("Sorting"),&descendsorting,2,sortingtypetexts));
+  Add(new cMenuEditBoolItem(tr("Show recording date"),&showrecdate));
+  Add(new cMenuEditBoolItem(tr("Show recording time"),&showrectime));
+diff -Naur extrecmenu-0.13-orig/scripts/correct_videodirs.sh extrecmenu-0.13/scripts/correct_videodirs.sh
+--- extrecmenu-0.13-orig/scripts/correct_videodirs.sh	1970-01-01 01:00:00.000000000 +0100
++++ extrecmenu-0.13/scripts/correct_videodirs.sh	2007-01-31 10:45:23.000000000 +0100
+@@ -0,0 +1,158 @@
++#!/bin/bash
++#
++# Version 1.2 2007-01-31
++#
++# Example:
++# correct_videodirs.sh <basis videodir> <path to .rec>
++#
++# correct_videodirs.sh /video0 /video0/hitec/Doku/%Die_stille_Revolution_der_Mechatronik/2004-04-23.15\:25.50.99.rec
++#
++# In rwrapper.sh:
++#
++#      move)
++#        correct_videodirs.sh /video0 "$3"
++#        ;;
++#    rename)
++#        correct_videodirs.sh /video0 "$3"
++#        ;;
++#
++#
++# Author: Mike Constabel <vejoun @ toppoint.de>
++#                        <vejoun @ vdrportal>
++#
++# Warning: Use it at your own risk, don't blame me if you loose recordings.
++# I never loose something, but nothing is 100%. ;-)
++#
++# HISTORY:
++# --------
++#
++# 31.01.2007 Version 1.2
++#
++# - Fixes info about rwrapper.sh, use $3 instead of $2,
++#   thanks to Christian Jacobsen
++# - Use --target-directory instead of -t, the ln from Suse doesn't know -t,
++#   thanks to Christian Jacobsen
++#
++# 23.06.2006 Version 1.1
++#
++# - first public release
++#
++
++VIDEODIR="${1/%\/}" # basisdir without trailing slash
++VPATH="${2/%\/}" # .rec without trailing slash
++
++VDIRSIZE=${#VIDEODIR}
++
++[ $# -ne 2 ]              && { echo -e "Script needs two parameters. See example inside the script."; exit 1; }
++[ -z "$VIDEODIR" ]        && { echo -e "Missing first parameter."; exit 1; }
++[ -d "$VPATH" ]           || { echo -e "$VPATH is not a directory!"; exit 1; }
++[ -n "${VPATH/*\.rec/}" ] && { echo -e "$VPATH is not a \".rec\" directory!"; exit 1; }
++
++# Search all ???.vdr in VPATH
++VDRFILES="$(find "$VPATH" -name "???.vdr" -printf "%P " -type f)"
++
++# loop for every ???.vdr in VPATH
++for VDRFILE in $VDRFILES
++do
++
++  # Check if it is a file
++  if [ ! -e "$VPATH/$VDRFILE" -a ! -L "$VPATH/$VDRFILE" ]; then
++    echo -e "Error!\n$VPATH/$VDRFILE\nis not a file nor a link!"
++    exit 1
++  fi
++
++  # Check if file is a link, continue if not
++  if [ ! -L "$VPATH/$VDRFILE" ]; then
++    continue
++  fi
++
++  # check if this ???.vdr is already ready
++  for i in $FERTIG; do
++    if [ "$i" = "$VDRFILE" ]; then
++      echo "$i already correct."
++      continue 2
++    fi
++  done
++
++  # split the source path
++  # example:
++  # QFILE=/home/vdr1/v0/hitec/Doku/%Die_stille_Revolution_der_Mechatronik/2004-04-23.15:25.50.99.rec/001.vdr
++  # QDIR=hitec/Doku/%Die_stille_Revolution_der_Mechatronik/2004-04-23.15:25.50.99.rec
++  # QPART=home/vdr1/v0
++  QFILE="$VPATH/$VDRFILE"
++  SIZE=${#QFILE}
++  QDIR=${QFILE:${VDIRSIZE}+1:${SIZE}-${VDIRSIZE}-9}
++  QPART=${QFILE:1:${VDIRSIZE}-1}
++
++  # calculate the target path
++  # same as above, but ZFILE is the dereferenced link from ???.vdr
++  ZFILE=$(find "$VPATH/$VDRFILE" -printf "%l")
++  SIZE=${#ZFILE}
++  ZDIR=${ZFILE:${VDIRSIZE}+1:${SIZE}-${VDIRSIZE}-9}
++  ZPART=${ZFILE:1:${VDIRSIZE}-1}
++
++  # remove double slashes
++  QDIR="${QDIR//\/\///}"
++  ZDIR="${ZDIR//\/\///}"
++
++  # Check if pathname is equal, continue with loop if yes
++  [ "$QDIR" = "$ZDIR" ] && continue
++
++  [ -z "$QDIR" ] && { echo -e "QDIR ist zero!"; exit 1; }
++  [ -z "$ZDIR" ] && { echo -e "ZDIR ist zero!"; exit 1; }
++
++  echo
++  echo "$QDIR != $ZDIR"
++  echo "Directorys differs, i'll try to correct them..."
++  echo "Create path /${ZPART}/${QDIR}"
++
++  # create new target dir
++  mkdir -p "/${ZPART}/${QDIR}"
++
++  if [ $(stat --format=%d "/${ZPART}/${ZDIR}/") -ne $(stat --format=%d "/${ZPART}/${QDIR}/") ]; then
++  	echo "Source and target are on different mountpoints! Not moving anything."
++  	exit 1
++  fi
++
++  # find all files in old target dir...
++  FILES=$(find "/${ZPART}/${ZDIR}" -type f -printf "%P ")
++
++  [ -z "$FILES" ] && { echo -e "FILES is empty!"; exit 1; }
++
++  echo "Now moving files..."
++  
++  # ... and move them to the new target dir
++  for i in $FILES
++  do
++    mv -v "/${ZPART}/${ZDIR}/${i}" "/${ZPART}/${QDIR}/${i}" || { echo "mv -v /${ZPART}/${ZDIR}/${i} /${ZPART}/${QDIR}/${i} exited with error!"; exit 1; }
++  done
++
++  # remove old target dir, rmdir removes only empty dirs
++  echo "Remove old directory /${ZPART}/${ZDIR}..."
++  rmdir -p "/${ZPART}/${ZDIR}"
++
++  echo "Create new links..."
++
++  # create new links
++  for i in $FILES; do
++    cd "/${QPART}/${QDIR}/"
++    if [ -L "/${QPART}/${QDIR}/${i}" ]; then
++      echo "Change link /${QPART}/${QDIR}/${i}"
++      ln -f -s --target-directory="/${QPART}/${QDIR}/" "/${ZPART}/${QDIR}/${i}"
++      FERTIG="${FERTIG} "$i
++    else
++      echo "Error: /${QPART}/${QDIR}/${i} is no link"
++    fi
++  done
++
++  echo
++
++done
++
++if [ -n "$FERTIG" ]; then
++  exit 2
++fi
++
++exit 0
++
++#EOF
+diff -Naur extrecmenu-0.13-orig/scripts/dvdarchive.sh extrecmenu-0.13/scripts/dvdarchive.sh
+--- extrecmenu-0.13-orig/scripts/dvdarchive.sh	2006-06-10 19:09:05.000000000 +0200
++++ extrecmenu-0.13/scripts/dvdarchive.sh	2007-05-05 17:12:53.000000000 +0200
+@@ -1,13 +1,13 @@
+-#!/bin/bash
++#!/bin/sh
+ #
+-# Version 2.1 2006-06-02
++# Version 2.3-beta 2006-07-14
+ #
+-# Author:	Mike Constabel
+-# VDR-Portal:	vejoun
+-# EMail:	vejoun @ toppoint.de
+-# WWW:          http://www.constabel.net/vdr/scripts.htm
++# Author:		Mike Constabel
++# VDR-Portal.de:	vejoun
++# EMail:		vejoun at toppoint dot de
++# WWW:          	http://www.constabel.net/vdr/scripts.de.htm
+ #
+-# ---> CONFIGURATION AT LINE 79 <---
++# ---> CONFIGURATION AT LINE 83 <---
+ #
+ # MANUAL:
+ # -------
+@@ -35,7 +35,7 @@
+ # You find isodetect.c in the extrecmenu plugin source package.
+ #
+ # 4.
+-# Tools needed:   mount, awk, find, test, stat
++# Tools needed:   mount, awk, find, test, stat, sed
+ # Optional tools: isodetect
+ #
+ # 5.
+@@ -59,42 +59,59 @@
+ #
+ # HISTORY:
+ # --------
+-# 2.1 - Fixed bug in testing if dvd is mounted
+-#     - more DEBUG=1 output
++# 2006-07-14: Version 2.3-beta
+ #
+-# 2.0 - more logging
+-#     - check if mountpoint and device exists
+-#     - Debug Log in file $DEBUGLOG if $DEBUG is 1, for easier error reporting
+-#
+-# 1.9 - use "sudo mount --bind" for mounting if filesystem is vfat
+-#     - automatic fallback to 'sudo' and 'mount --bind' if filesystem is vfat
+-#     - mounting more failure tolerant
+-#     - added MANUAL part in script
+-#     - length.vdr creation, you must not use it ;)
+-#
+-# 1.8 - remove sudo, is not necessary
+-#     - on mount, if already mounted try to umount first
+-#     - logging per syslog, see $SYSLOG
++# - should be compatible with ash, busybox
++#   stays beta until someone confirm this or 2.4 comes        
++#
++# 2006-06-13: Version 2.2      
++#
++# - at mount, if third parameter is not given, take last part of path     
++#
++# Version 2.1
++#
++# - Fixed bug in testing if dvd is mounted
++# - more DEBUG=1 output   
++#
++# Version 2.0
++#
++# - more logging
++# - check if mountpoint and device exists    
++# - Debug Log in file $DEBUGLOG if $DEBUG is 1, for easier error reporting    
++#
++# Version 1.9
++#
++# - use "sudo mount --bind" for mounting if filesystem is vfat 
++# - automatic fallback to 'sudo' and 'mount --bind' if filesystem is vfat    
++# - mounting more failure tolerant    
++# - added MANUAL part in script    
++# - length.vdr creation, you must not use it ;)    
++#
++# Version 1.8
++#
++# - remove sudo, is not necessary
++# - on mount, if already mounted try to umount first    
++# - logging per syslog, see $SYSLOG    
+ #
+ # CONFIGURATION
+ # -------------
+ #<Configuration>
+ 
+ # Mountpoint, the same as in fstab
+-MOUNTPOINT="/media/cdrom" # no trailing '/'
++MOUNTPOINT="/media/brenner" # no trailing '/'
+ 
+ # Eject DVD for exit-codes 2 and 3 (no or wrong dvd). 1 = yes, 0 = no.
+-EJECTWRONG=0
++EJECTWRONG=1
+ 
+ # Eject DVD after unmounting. 1 = yes, 0 = no.
+ EJECTUMOUNT=0
+ 
+ # Log warnings/errors in syslog. 1 = yes, 0 = no.
+-SYSLOG=0
++SYSLOG=1
+ 
+ # Create a length.vdr after mounting the dvd for the played recording. 1 = yes, 0 = no.
+ # Only for non-vfat and with index.vdr only on dvd.
+-GETLENGTH=0
++GETLENGTH=1
+ 
+ # Put debug infos in file $DEBUGLOG. Only if $DEBUG=1.
+ DEBUG=0
+@@ -105,7 +122,8 @@
+ # No changes needed after this mark
+ 
+ # Remove trailing slash
+-MOUNTPOINT=${MOUNTPOINT/%\/}
++MOUNTPOINT="$(echo "${MOUNTPOINT}" | sed -e 's/\/$//')"
++
+ if [ -L "$MOUNTPOINT" ]; then
+ 	MOUNTPOINTT="$(find "$MOUNTPOINT" -printf "%l")"
+ else
+@@ -123,6 +141,10 @@
+ REC="$2"
+ NAME="$3"
+ 
++if [ "$ACTION" = "mount" -a -z "$NAME" ]; then
++	NAME="basename ${REC})"
++fi
++
+ # function to print help
+ call() {
+ 	echo -e "\nScript $0 needs three parameters for mount and two for umount. The first must be mount or umount, the second is the full path.\n"
+@@ -167,8 +189,8 @@
+ 
+ # Some checks before doing something
+ [ "$ACTION" = "mount" -o "$ACTION" = "umount" ] || { call; exit 10; }
+-[ -z "$REC" ] && { call; exit 10; }
+-[ "$ACTION" = mount -a -z "$NAME" ] && { call; exit 10; }
++[ -z "$REC" -o ! -d "$REC" ] && { call; exit 10; }
++[ "$ACTION" = "mount" -a -z "$NAME" ] && { call; exit 10; }
+ [ ! -d "$MOUNTPOINT" ] && { log error "Mountpoint $MOUNTPOINT doesn't exist"; exit 10; }
+ [ ! -e "$DEVICE" ] && { log error "Device $DEVICE doesn't exist"; exit 10; }
+ 
+@@ -187,8 +209,7 @@
+ 	if mount | egrep -q " $MOUNTPOINTT "; then
+ 		# check if dvd is in use
+ 		if mount | egrep -q "^$DEVICET"; then
+-			log error "dvd in use (at: check if dvd is in use)"
+-			exit 1
++			log warning "dvd in use (at: check if dvd is in use)"
+ 		fi
+ 		# if already mountet, try to umount
+ 		log warning "dvd already mounted, try to umount"
+@@ -216,10 +237,14 @@
+ 	if [ "$(stat -f -c %T "$REC")" != "vfat" ]; then
+ 		# link index.vdr if not exist
+ 		if [ ! -e "${REC}/index.vdr" ]; then
+-			cp -s "${DIR}/index.vdr" "${REC}/" || { log error "could not link index.vdr (at: link index.vdr from dvd to disk)"; }
++			ln -s "${DIR}/index.vdr" "${REC}/index.vdr" || { log error "could not link index.vdr (at: link index.vdr from dvd to disk)"; }
+ 		fi
+ 		# link [0-9]*.vdr files
+-		cp -s "${DIR}"/[0-9]*.vdr "${REC}/"
++		#cp -s "${DIR}"/[0-9]*.vdr "${REC}/"
++		#find "${DIR}"/ -name "[0-9]*.vdr" -exec ln -s "${REC}/$(basename "{}")"
++		for FILE in "${DIR}/"[0-9]*.vdr; do
++			ln -s "$FILE" "${REC}/$(basename "$FILE")"
++		done
+ 		# error while linking [0-9]*.vdr files?
+ 		if [ $? -ne 0 ]; then
+ 			log error "error while linking [0-9]*.vdr"

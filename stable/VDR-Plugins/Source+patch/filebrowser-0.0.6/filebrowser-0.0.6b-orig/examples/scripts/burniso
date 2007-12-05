@@ -1,0 +1,16 @@
+#!/bin/bash
+
+CDSIZE=846720
+
+if [ ! -f "$1" ]; then
+  echo "$1" is no file!
+  exit 1
+fi
+
+if [[ `du "$1" | sed -e 's/[\t ].*$//'` -gt $CDSIZE ]]; then
+  echo Writing DVD-Image $1
+  growisofs -dvd-compat -Z "/dev/dvd=$1"
+else
+  echo Writing CD-Image $1
+  cdrecord dev=/dev/hdb driveropts=burnfree "$1"
+fi

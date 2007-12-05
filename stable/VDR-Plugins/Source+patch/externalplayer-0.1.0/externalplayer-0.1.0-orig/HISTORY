@@ -1,0 +1,23 @@
+VDR Plugin 'externalplayer' Revision History
+--------------------------------------------
+
+2005-09-26: Version 0.0.1
+
+- Initial revision.
+
+2005-10-08: Version 0.1.0
+
+- Moved class declaration from externalplayer.c to externalplayer.h.
+- Moved classes cControlExternalplayer and cRemotesDisable from
+  externalplayer-player.c/.h to externalplayer-control.c/.h and
+  externalplayer-remotes.c/.h.
+- Changed way to shut down player.
+- Rewrode of cRemotesDisable class. No need to know lirc/rcu device
+  names any more.
+- Added configuartion file support (new files externalplayer-remotes.c/.h).
+- Created example configuration.
+- Changed MainMenuAction if more than one playe exists in configuration.
+  (new classes cOsdExternalplayer and cOsdItemExternalplayer in
+  externalplayer.c).
+- Added slave mode.
+- Added i18n support.

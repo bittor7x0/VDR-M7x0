@@ -1,0 +1,20 @@
+VDR Plugin 'osdimage' README
+----------------------------
+
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Andreas Brugger <brougs78@gmx.net>
+
+Project's homepage:          http://home.pages.at/brougs78
+
+Latest version available at: http://home.pages.at/brougs78
+
+See the file COPYING for license information.
+
+Short Description:           Overlays "cinema-bars" over the live picture
+
+ - keys Up/Down toggles top/bottom bar
+ - keys Right/Left increase/decrease barheight of actual visible bar(s)
+ - key  '0' close/open screen
+ - keys Ok/Back/Blue exit plugin
+ 

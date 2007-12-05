@@ -1,0 +1,50 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Petri Hintukainen <phintuka@users.sourceforge.net>
+
+Project's homepage:          http://phivdr.dyndns.org/vdr/
+
+Latest version available at: http://phivdr.dyndns.org/vdr/
+
+See the file COPYING for license information.
+
+
+Description:
+
+  This plugin synchronizes timers between client VDR and server VDR.
+
+  All recordings are done at server, but all timers are visible 
+  in both VDR instances.
+
+  NOTE: LOADING THIS PLUGIN WILL DISABLE RECORDING !
+
+  Plugin should be loaded only at client side. At startup it checks
+  if it is running at server and refuses to start.
+
+  Timers are periodically read from server using SVDRP. All changes 
+  to timers are immediately committed to server. Whole process is totally 
+  invisible to user, and in user point of view there are no differences 
+  compared to browsing timer list or EPG at the server.
+
+Limitations:
+
+  If timer is currently recording it can't be edited or removed.
+
+  If timer is edited at server while it is being edited at client, 
+  changes made at client are lost.
+
+Requirements:
+
+  vdr-svdrpservice plugin 0.0.2 or later (version 0.0.3 recommended)
+  from http://vdr.schmirler.de/
+
+Configuration:
+
+  With svdrpservice version 0.0.2 it is necessarily to define 
+  VDR server address for synctimers plugin:
+
+     -P"synctimers --server=1.2.3.4:2001"
+
+  With svdrpservice version 0.0.3 server address can be configured in 
+  svdrpservice plugin setup manu.
+

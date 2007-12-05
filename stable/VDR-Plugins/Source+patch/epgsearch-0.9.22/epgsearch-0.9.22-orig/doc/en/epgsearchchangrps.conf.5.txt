@@ -1,0 +1,52 @@
+epgsearchchangrps.conf(5)  Epgsearch Version 0.9.22  epgsearchchangrps.conf(5)
+
+
+
+NAME
+       epgsearchchangrps.conf - Channel groups
+
+DESCRIPTION
+       You can define channel groups in epgsearch which can be used in
+       searchtimers.
+
+       In this file the groups will be saved.
+
+SYNTAX
+       Each line contains one channel group. The line begins with the group
+       name, after the name, split by '|', the list of channels.
+
+EXAMPLE
+       (Lines are shortened for clean displaying)
+
+        Private|S19.2E-133-33-46|S19.2E-133-33-51
+        ProsiebenSat.1|S19.2E-133-33-46|S19.2E-133-33-47
+        RTL World|S19.2E-1-1089-12003||S19.2E-1-1089-12090
+
+SEE ALSO
+       epgsearch(1)
+
+AUTHOR (man pages)
+       Mike Constabel <epgsearch (at) constabel (dot) net>
+
+REPORT BUGS
+       Bug reports (german):
+
+       <http://www.vdr-developer.org/mantisbt/>
+
+       Mailing list:
+
+       <http://www.vdr-developer.org/mailman/listinfo/epgsearch>
+
+COPYRIGHT and LICENSE
+       Copyright (c) 2005-2007 Christian Wieninger
+
+       <http://www.cwieninger.de.vu/>
+
+       This  is free software.  You may redistribute copies of it under the
+       terms of the GNU General Public License
+       <http://www.gnu.org/licenses/gpl.html>.  There is NO WARRANTY, to the
+       extent permitted by law.
+
+
+
+perl v5.8.8                       2007-05-02         epgsearchchangrps.conf(5)

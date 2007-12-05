@@ -1,0 +1,31 @@
+--- menu.c.org	2006-02-20 16:20:18.000000000 +0100
++++ menu.c	2006-03-13 14:27:33.000000000 +0100
+@@ -2897,7 +2897,11 @@
+ 		       break;
+     case osChannels:   AddSubMenu(new cMenuChannels); break;
+     case osTimers:     AddSubMenu(new cMenuTimers); break;
+-    case osRecordings: AddSubMenu(new cMenuRecordings(NULL, 0, true)); break;
++    case osRecordings: {
++		        cPlugin *p = cPluginManager::GetPlugin("extrecmenu");
++    		        (p && !p->SetupParse("IsOrgRecMenu", "0")) ? AddSubMenu((cOsdMenu *)p->MainMenuAction()) : AddSubMenu(new cMenuRecordings(NULL, 0, true));
++		       }
++		       break;
+     case osSetup:      AddSubMenu(new cMenuSetup); break;
+     case osCommands:   AddSubMenu(new cMenuCommands(tr("Commands"), &Commands)); break;
+     default: break;
+@@ -3044,7 +3048,14 @@
+ 		       break;
+     case osChannels:   return AddSubMenu(new cMenuChannels);
+     case osTimers:     return AddSubMenu(new cMenuTimers);
+-    case osRecordings: return AddSubMenu(new cMenuRecordings);
++    case osRecordings: {
++			cPlugin *p = cPluginManager::GetPlugin("extrecmenu");
++            	        if (p && !p->SetupParse("IsOrgRecMenu", "0"))
++			    return AddSubMenu((cOsdMenu *)p->MainMenuAction());
++			else
++			    return AddSubMenu(new cMenuRecordings);
++		       }
++		       break;
+     case osSetup:      return AddSubMenu(new cMenuSetup);
+     case osCommands:   return AddSubMenu(new cMenuCommands(tr("Commands"), &Commands));
+     case osStopRecord: if (Interface->Confirm(tr("Stop recording?"))) {

@@ -1,0 +1,102 @@
+diff -Naur vdr-m7x0-orig/config.c vdr-m7x0/config.c
+--- vdr-m7x0-orig/config.c	2007-07-22 14:46:20.000000000 +0200
++++ vdr-m7x0/config.c	2007-07-22 15:37:59.000000000 +0200
+@@ -260,6 +260,7 @@
+   VideoFormat = 0;
+   UpdateChannels = 5;
+   UseDolbyDigital = 1;
++  UseDolbyInRecordings = 1;
+   ChannelInfoPos = 0;
+   ChannelInfoTime = 5;
+   OSDLeft = 54;
+@@ -435,6 +436,7 @@
+   else if (!strcasecmp(Name, "VideoFormat"))         VideoFormat        = atoi(Value);
+   else if (!strcasecmp(Name, "UpdateChannels"))      UpdateChannels     = atoi(Value);
+   else if (!strcasecmp(Name, "UseDolbyDigital"))     UseDolbyDigital    = atoi(Value);
++  else if (!strcasecmp(Name, "UseDolbyInRecordings")) UseDolbyInRecordings = atoi(Value);
+   else if (!strcasecmp(Name, "ChannelInfoPos"))      ChannelInfoPos     = atoi(Value);
+   else if (!strcasecmp(Name, "ChannelInfoTime"))     ChannelInfoTime    = atoi(Value);
+   else if (!strcasecmp(Name, "OSDLeft"))             OSDLeft            = atoi(Value);
+@@ -517,6 +519,7 @@
+   Store("VideoFormat",        VideoFormat);
+   Store("UpdateChannels",     UpdateChannels);
+   Store("UseDolbyDigital",    UseDolbyDigital);
++  Store("UseDolbyInRecordings", UseDolbyInRecordings);
+   Store("ChannelInfoPos",     ChannelInfoPos);
+   Store("ChannelInfoTime",    ChannelInfoTime);
+   Store("OSDLeft",            OSDLeft);
+diff -Naur vdr-m7x0-orig/config.h vdr-m7x0/config.h
+--- vdr-m7x0-orig/config.h	2007-07-22 14:46:24.000000000 +0200
++++ vdr-m7x0/config.h	2007-07-22 15:37:59.000000000 +0200
+@@ -244,6 +244,7 @@
+   int VideoFormat;
+   int UpdateChannels;
+   int UseDolbyDigital;
++  int UseDolbyInRecordings;
+   int ChannelInfoPos;
+   int ChannelInfoTime;
+   int OSDLeft, OSDTop, OSDWidth, OSDHeight;
+diff -Naur vdr-m7x0-orig/i18n.c vdr-m7x0/i18n.c
+--- vdr-m7x0-orig/i18n.c	2007-07-22 14:46:20.000000000 +0200
++++ vdr-m7x0/i18n.c	2007-07-22 15:42:14.000000000 +0200
+@@ -3700,6 +3700,28 @@
+     "Anvend Dolby Digital",
+     "Pou¾ívat zvuk v Dolby Digital",
+   },
++  { "Setup.Recording$Record Dolby Digital",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Grabar Dolby Digital",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Setup.DVB$Update channels",
+     "Kanäle aktualisieren",
+     "Posodobi kanale",
+diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
+--- vdr-m7x0-orig/menu.c	2007-07-22 14:46:34.000000000 +0200
++++ vdr-m7x0/menu.c	2007-07-22 15:44:07.000000000 +0200
+@@ -2866,6 +2866,7 @@
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Use episode name"),          &data.UseSubtitle));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Use VPS"),                   &data.UseVps));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$VPS margin (s)"),            &data.VpsMargin, 0));
++  Add(new cMenuEditBoolItem(tr("Setup.Recording$Record Dolby Digital"),      &data.UseDolbyInRecordings));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Mark instant recording"),    &data.MarkInstantRecord));
+   Add(new cMenuEditStrItem( tr("Setup.Recording$Name instant recording"),     data.NameInstantRecord, sizeof(data.NameInstantRecord), tr(FileNameChars)));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Instant rec. time (min)"),   &data.InstantRecordTime, 1, MAXINSTANTRECTIME));
+diff -Naur vdr-m7x0-orig/recorder.c vdr-m7x0/recorder.c
+--- vdr-m7x0-orig/recorder.c	2007-07-14 20:33:22.000000000 +0200
++++ vdr-m7x0/recorder.c	2007-07-22 15:37:59.000000000 +0200
+@@ -170,7 +170,7 @@
+ }
+ 
+ cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids)
+-:cReceiver(Ca, Priority, VPid, APids, Setup.UseDolbyDigital ? DPids : NULL, SPids)
++:cReceiver(Ca, Priority, VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids)
+ #ifndef DISABLE_RINGBUFFER_IN_RECEIVER
+ ,cThread("recording")
+ #endif
+@@ -191,7 +191,7 @@
+   ringBuffer->SetTimeouts(0, 500);
+   ringBuffer->SetLimits(TS_SIZE, TS_SIZE * 1024);
+ #endif
+-  remux = new cRemux(VPid, APids, Setup.UseDolbyDigital ? DPids : NULL, SPids, true);
++  remux = new cRemux(VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids, true);
+   writer = new cFileWriter(FileName, remux);
+ }
+ 

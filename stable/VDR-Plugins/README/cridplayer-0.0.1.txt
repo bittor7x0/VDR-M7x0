@@ -1,0 +1,17 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Andreas Koch <andreas _@_ open7x0.org>
+
+Project's homepage:          http://www.open7x0.org
+
+Latest version available at: http://www.open7x0.org
+
+See the file COPYING for license information.
+
+Description:
+Little player for CRID recordings with:
+- VDR multiuser resuming
+- setting/jumping to marks while replaying
+- trickspeed
+- configurable base path for browsing through the filesystem (default /var/media)
+- configurable start/stop margin for recordings sharing on fmpg file (default 300 s.)

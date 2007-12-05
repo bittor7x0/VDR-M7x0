@@ -1,0 +1,15 @@
+VDR Plugin 'quicktimer' Revision History
+---------------------------------------
+
+2005-09-02: Version 0.1.0
+
+- Initial revision.
+
+2006-04-30: Version 0.1.1
+
+- Updated for VDR 1.4.0
+
+2007-03-11: Version 0.1.2
+
+- Makefile updated
+- Homepage changed

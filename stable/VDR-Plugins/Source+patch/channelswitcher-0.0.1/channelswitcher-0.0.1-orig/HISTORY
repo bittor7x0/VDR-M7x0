@@ -1,0 +1,10 @@
+0.0.1b
+ Modification du comportement... Refuse de changer de channels.conf si une programmation est prevue...
+ Merci a takodz
+0.0.1a
+ Modification du comportement lors de la selection d'une liste de chaine
+    (sleep(OSDMessageTime) puis return osBack; )
+    Merci a perso && a takodz
+
+0.0.1
+version de base

@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="epgsearch" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="libepgsearch.a" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Debug/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="/usr/local/src/VDR/include" />
+				</Compiler>
+				<MakeCommands>
+					<Build command="cd /usr/local/src/VDR;$make -f /usr/local/src/VDR/Makefile plugins" />
+					<CompileFile command="$make -f $makefile $file" />
+					<Clean command="$make -f $makefile clean$target" />
+					<DistClean command="$make -f $makefile distclean$target" />
+				</MakeCommands>
+			</Target>
+			<Target title="Release">
+				<Option output="libepgsearch.a" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Release/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="/usr/local/src/VDR/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="/usr/local/src/VDR/include" />
+		</Compiler>
+		<Unit filename="afuzzy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="afuzzy.h" />
+		<Unit filename="blacklist.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="blacklist.h" />
+		<Unit filename="changrp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="changrp.h" />
+		<Unit filename="conflictcheck.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="conflictcheck.h" />
+		<Unit filename="conflictcheck_thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="conflictcheck_thread.h" />
+		<Unit filename="conflictcheckonly.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="createcats.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="distance.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="distance.h" />
+		<Unit filename="epgsearch.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="epgsearch.h" />
+		<Unit filename="epgsearchcats.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="epgsearchcats.h" />
+		<Unit filename="epgsearchcfg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="epgsearchcfg.h" />
+		<Unit filename="epgsearchext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="epgsearchext.h" />
+		<Unit filename="epgsearchonly.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="epgsearchservices.h" />
+		<Unit filename="epgsearchsetup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="epgsearchsetup.h" />
+		<Unit filename="epgsearchsvdrp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="epgsearchtools.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="epgsearchtools.h" />
+		<Unit filename="i18n.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="i18n.h" />
+		<Unit filename="log.h" />
+		<Unit filename="mail.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mail.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mainmenushortcut.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mainmenushortcut.h" />
+		<Unit filename="md5.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="md5.h" />
+		<Unit filename="menu_blacklistedit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_blacklistedit.h" />
+		<Unit filename="menu_blacklists.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_blacklists.h" />
+		<Unit filename="menu_commands.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_commands.h" />
+		<Unit filename="menu_conflictcheck.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_conflictcheck.h" />
+		<Unit filename="menu_deftimercheckmethod.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_deftimercheckmethod.h" />
+		<Unit filename="menu_dirselect.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_dirselect.h" />
+		<Unit filename="menu_event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_event.h" />
+		<Unit filename="menu_favorites.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_favorites.h" />
+		<Unit filename="menu_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_main.h" />
+		<Unit filename="menu_myedittimer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_myedittimer.h" />
+		<Unit filename="menu_quicksearch.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_quicksearch.h" />
+		<Unit filename="menu_recsdone.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_recsdone.h" />
+		<Unit filename="menu_search.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_search.h" />
+		<Unit filename="menu_searchactions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_searchactions.h" />
+		<Unit filename="menu_searchedit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_searchedit.h" />
+		<Unit filename="menu_searchresults.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_searchresults.h" />
+		<Unit filename="menu_searchtemplate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_searchtemplate.h" />
+		<Unit filename="menu_switchtimers.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_switchtimers.h" />
+		<Unit filename="menu_templateedit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_templateedit.h" />
+		<Unit filename="menu_timersdone.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_timersdone.h" />
+		<Unit filename="menu_whatson.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_whatson.h" />
+		<Unit filename="noannounce.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="noannounce.h" />
+		<Unit filename="quickepgsearch.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="rcfile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="rcfile.h" />
+		<Unit filename="recdone.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="recdone.h" />
+		<Unit filename="recstatus.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="recstatus.h" />
+		<Unit filename="searchtimer_thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="searchtimer_thread.h" />
+		<Unit filename="services.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="services.h" />
+		<Unit filename="svdrpclient.h" />
+		<Unit filename="switchtimer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="switchtimer.h" />
+		<Unit filename="switchtimer_thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="switchtimer_thread.h" />
+		<Unit filename="templatefile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="templatefile.h" />
+		<Unit filename="timer_thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="timer_thread.h" />
+		<Unit filename="timerdone.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="timerdone.h" />
+		<Unit filename="uservars.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="uservars.h" />
+		<Unit filename="varparser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="varparser.h" />
+		<Extensions>
+			<code_completion />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

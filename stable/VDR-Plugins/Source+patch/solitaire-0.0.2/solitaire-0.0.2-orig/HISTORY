@@ -1,0 +1,11 @@
+VDR Plugin 'solitaire' Revision History
+--------------------------------------
+
+2004-09-07: Version 0.0.1
+- Initial revision.
+
+2005-03-21: Version 0.0.2
+- Fixed a bug with a card-loss on the "open stack". Thanks to Guy Roussin for reporting the bug.
+- Fixed a bug to lay back a card to the "open stack"
+- New card-layout that should not flicker so much
+- Added finnish translation supported from Rolf Ahrenberg. Thanks to him.

@@ -1,0 +1,36 @@
+# Vorlagen fuer das Eggtimer plugin:
+# ----------------------------------------------------------------------------------------------
+#
+# Vorlagen fuer OSD-Eggtimer
+#
+# MESSAGE;zeit;name;nachricht
+#
+# zeit:  Minuten, Sekunden, Uhrzeit oder now (jetzt). Beispiele:
+#	 5min, 30sec, 20:00, now
+#		
+#	 Eine Uhrzeit wird mit dem aktuellen Datum verknuepft bzw. mit dem Datum des folgenden
+#	 Tages, falls die Zeit schon vorbei ist
+# name:  Name der Vorlage, der bei der Auswahl angezeigt wird (max. 20 Zeichen)
+# nachricht: Nachricht fuer das OSD, wenn der Eggtimer abgelaufen ist (max. 30 Zeichen)
+#
+MESSAGE;4min;Schwarzer Tee;Eggtimer: Der Tee ist fertig
+MESSAGE;3min;Gruener Tee tea;Eggtimer: Der Tee ist fertig
+MESSAGE;30sec;30 Sekunden;Die Zeit ist um
+#
+# Vorlagen fuer Befehl-Eggtimer
+#
+# COMMAND;zeit;Kommandotitel
+#
+# zeit		: see MESSAGE timer
+# Kommandotitel	: Titel eine Befehls aus VDRs commands.conf (muss exakt stimmen)
+COMMAND;now;VDR ausschalten
+#
+# Vorlagen fuer Umschalt-Eggtimers
+#
+# SWITCH;zeit;tChanneldID;name
+#
+# zeit		: siehe MESSAGE timer
+# tChannelID	: VDR channel descriptor
+# name		: Name der Vorlage, der bei der Auswahl angezeigt wird (max. 20 Zeichen)
+SWITCH;20:00;S19.2E-1-1101-28106:2:46:59556;Tagesschau
+SWITCH;19:30;S19.2E-1-1101-28106:2:46:59556;Brandenburg Aktuell

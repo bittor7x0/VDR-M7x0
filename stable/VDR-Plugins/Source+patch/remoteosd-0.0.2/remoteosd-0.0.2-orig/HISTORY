@@ -1,0 +1,14 @@
+VDR Plugin 'remoteosd' Revision History
+---------------------------------------
+
+2007-03-07: Version 0.0.2
+- New option: tune channel on server
+- Support for MainMenuHooks patch. Plugin may replace the VDR mainmenus Schedule and Timers
+- Close remote menu when the local menu has been closed by menu key
+- OSD message if server is not reachable
+- Support for svdrpservice-0.0.3 default IP/port
+- Code cleanup
+
+2006-06-01: Version 0.0.1
+
+- Initial revision.

@@ -1,0 +1,20 @@
+
+      1..9 - Seleccionar canal
+      0 - Canal anteriormente visualizado
+      Arriba - Canal +
+      Abajo - Canal -
+      Izquierda - Volumen -
+      Derecha - Volumen +
+      Ok - Información del canal
+      MENU - Mostrar menú
+      EPG - Guía electrónica de programación
+      INFO - Infomación del programa emitido
+      Mute - Silencio
+      Pause/Play - Pausar en Directo y ver en Diferido
+      Stop - Parar pausa o tv en Diferido
+      FastFwd - Avanzar
+      FastRew - Rebobinar
+      Rojo - Iniciar gabación
+      Verde - Selección de audio
+      Amarillo - Menú "Grabaciones"
+      Azul - Menú "Programaciones"

@@ -1,0 +1,6 @@
+VDR Channel Switcher
+Permet de basculer facilement entre different channels.conf
+Le plugin recherche dans le repertoire de configuration les differents fichiers channels.conf.ABCDEF et peuple le menu ChannelSwitcher avec les differents ABCDEF qu'il a trouve.
+Il suffit d'en selectionner un pour basculer dessus!
+
+remarque : il se peut qu'il y ai des petits probleme avec le parametre UpdateChannels, pour le modifier et surtout pour le mettre a 0, desactive le plugin!

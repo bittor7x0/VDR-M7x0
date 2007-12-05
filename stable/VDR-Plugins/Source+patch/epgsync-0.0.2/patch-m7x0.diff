@@ -1,0 +1,116 @@
+diff -Naur epgsync-0.0.2-orig/i18n.c epgsync-0.0.2/i18n.c
+--- epgsync-0.0.2-orig/i18n.c	2006-07-18 23:23:30.000000000 +0200
++++ epgsync-0.0.2/i18n.c	2007-06-23 10:49:46.000000000 +0200
+@@ -11,7 +11,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Sincronizar EPG",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -35,7 +35,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Importar EPG de otro VDR",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -59,7 +59,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Ocultar en el menú principal",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -83,7 +83,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"IP Servidor",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -107,7 +107,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Puerto Servidor",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -131,7 +131,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Intentos conexión",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -155,7 +155,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Primero actualizar \"ahora\" y \"después\"",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -179,7 +179,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Sinc. canal por canal",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -203,7 +203,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Sinc. EPG al inicio",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -227,7 +227,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"EpgSync: No se puede conectar al Servidor",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+diff -Naur epgsync-0.0.2-orig/Makefile epgsync-0.0.2/Makefile
+--- epgsync-0.0.2-orig/Makefile	2006-07-15 15:02:33.000000000 +0200
++++ epgsync-0.0.2/Makefile	2007-06-16 20:05:43.000000000 +0200
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -67,7 +67,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

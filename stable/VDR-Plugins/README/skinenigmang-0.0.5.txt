@@ -1,0 +1,388 @@
+This is the "EnigmaNG" skin for the Video Disk Recorder (VDR).
+
+Written by:                  Andreas Mair (andreas AT vdr - developer DOT org)
+
+Project's homepage:          http://andreas.vdr-developer.org/enigmang
+
+Latest version available at: http://andreas.vdr-developer.org/enigmang
+
+See the file COPYING for license information.
+
+
+Requirements
+------------
+
+- VDR version >= 1.4.0.
+
+- Logo pack from http://andreas.vdr-developer.org/enigmang
+
+
+Description
+-----------
+
+"EnigmaNG" is a standalone skin based on the "Enigma" text2skin addon.
+
+
+Compile time configuration
+--------------------------
+
+There are some configuration items you need to set before running
+"make plugins" in "Make.config":
+
+SKINENIGMA_HAVE_EPGSEARCH = 1
+If you are using the epgsearch plugin and want to see the number of
+timer conflicts in the main menu's info area.
+NOTE: This requires the sources of the epgsearch Plugin beside the
+EnigmaNG sources!
+
+SKINENIGMA_NO_MENULOGO = 1
+This turns usage of logos in the main menu complete. This might also
+improve the performance of the menus. EXPERIMENTAL!!!
+
+HAVE_IMAGEMAGICK = 1
+If you have installed ImageMagick and want to use images in event's
+and recording's details.
+
+SKINENIGMA_USE_PLUGIN_MAILBOX = 1
+If you use the mailbox plugin this will include support for it.
+NOTE: this can also be defined if you don't know if the mailbox
+plugin will be used because it has no compile time requirements.
+
+SKINENIGMA_DISABLE_ANIMATED_TEXT = 1
+Disable any code that is used for scrolling or blinking text.
+NOTE: this is only useful if you want to save some bytes because you
+can disable them in the setup too.
+
+SKINENIGMA_FONTS =
+Set the descriptions for fonts you've patched in VDR. These fonts then
+can be selected in EnigmaNG setup.
+
+HAVE_FREETYPE = 1
+If you have installed FreeType2 and want to use TrueTypeFonts.
+
+
+Patches
+-------
+
+In the patches directory you'll find patches that might be of interest
+to you before compiling. Just check it out!
+Every patch (*.diff) has a corresponding description (*.txt). Read it
+for more information.
+
+
+Installation
+------------
+
+> cd /put/your/path/here/VDR/PLUGINS/src
+> tar -xzf /put/your/path/here/vdr-skinenigmang-X.Y.Z.tgz
+> ln -s skinenigmang-X.Y.Z skinenigmang
+OR (for CVS checkout):
+> ln -s EnigmaNG skinenigmang
+> cd skinenigmang
+
+> cp -df themes/*.theme /path/to/vdrconf/themes/
+> cd /put/your/path/here/VDR
+> make
+> make plugins
+> ./vdr -P skinenigmang
+
+
+Update
+------
+
+That's the same procedure as "Installation" but you have to remove
+some things before:
+
+- Link to old sources
+> cd /put/your/path/here/VDR/PLUGINS/src
+> rm -f skinenigmang
+
+- Old themes (only if you didn't change/add them!)
+> cd /path/to/vdrconf/themes/
+> rm -f EnigmaNG-*.theme
+
+
+Options
+-------
+
+  -f path, --fonts=path
+      Path to the TrueTypeFonts (*.ttf) (Default: <logodir>/fonts).
+
+  -i path, --epgimages=path
+      Path to the epgimages (Default: <logodir>/epgimages).
+
+  -l path, --logodir=path
+      Path to the logos (Default: <vdrconfdir>/plugins/skinenigmang).
+
+
+Usage
+-----
+
+In VDR go to the OSD settings menu and select the skin "EnigmaNG"
+
+
+Setup Options
+-------------
+
+* General
+- Try 8bpp single area
+  If you don't want to use a single 8bpp area for the OSD you can disable
+  it here. If this option is enabled this will not ensure that a single
+  area is used, but EnigmaNG will try to use it. If your output deviice
+  can handle that area (e.g. softdevice) it will be used. Otherwise multiple
+  areas are used.
+  This option might be useful for 4MB modded DVB cards because they say they
+  can handle the 8bpp single area but the OSD will be slower. If you own such
+  a card you may want to play with that option and see if you can increase
+  OSD speed.
+  NOTE: after commit the settings you have to fully close and re-open the OSD
+  to make the change affect.
+
+- Show info area in main menu
+  This info area is shown in the main menu and it will show the current/next
+  timers and the number of timer conflicts (if SKINENIGMA_HAVE_EPGSEARCH has
+  been defined).
+
+- Show auxiliary information (top/bottom)
+  Here you can set where you want to have the auxiliary information
+  when you open an event's or recording's info screen. This information
+  includes for a recording its channel, size, priority, lifetime, audio
+  languages and some values that selected plugins (epgsearch, VDRAdmin-AM,
+  pin) have set. For an event the audio languages are shown.
+
+- Show recording's size (never/use size.vdr only/always)
+  This setting controls if a recording's size is shown in the recording's
+  details.
+    never             - never show the size
+    use size.vdr only - only show the size if size.vdr exists in the
+                        recording's directory. The first line of size.vdr is
+                        read and has to be the recording's size in megabytes
+                        (MB). You can create size.vdr by adding a line like
+                              du -sm | cut -f1 >"$2/size.vdr"
+                        to your VDR's recording script's "after" and "edited"
+                        sections.
+    always            - This will also use size.vdr if available. Otherwise
+                        it will calculate the size itself.
+
+- Full title width
+  If enabled the titlebar in the channel info will be drawn above the channel
+  logo. This has no effect if channel logos are disabled.
+
+- Show remaining/elapsed time (elapsed/remaining/percent)
+  Here you can set if you want to read the number of minutes an event is
+  already running (preceded by "+") or the number of minutes an event will
+  run (preceded by "-") or the percent the event has been running in the
+  channel info.
+
+- Show VPS
+  Hide or show VPS information in channel info and event info.
+  
+- Show progressbar
+  This replaces progressbars shown with pipes (e.g. [||  ]) by a graphical
+  progressbar.
+
+* Logos & Symbols
+
+- Show symbols
+  Here you can enable or disable the large symbols shown in top right corner
+  of the main menu, the recordings info and the event info and the "background"
+  symbol of the mode symbol when replaying recordings.
+
+- Show symbols in menu
+- Show symbols in replay
+- Show symbols in messages
+- Show symbols in audio
+  If "Show Symbols" is set to "yes" you can enable or disable symbols for each OSD.
+
+- Show symbols in lists
+  This replaces "T", "t", "V"... in the EPG views symbols.
+
+- Show marker in lists
+  If enabled a small circle is drawn in front of the selected item in lists.
+
+- Show flags
+  If enabled graphical flags are drawn for the audio channel languages if the
+  requested flag file exists. Else language's abbreviation is drawn.
+
+- Show mail icon (never/only if new mail present/always)
+  (NOTE: only visible if mailbox plugin support is compiled in and plugin is loaded!)
+  Enables mail icon in channel info.
+
+- Show event/recording images
+  Enable or disable images in the right top corner in an event's or recording's
+  info. The recording's image must be named "Cover-Enigma.xpm" in the recording's
+  directory. An event's image must be named "<eventid>.xpm" and must be stored in
+  the directory given with the "--epgimages" option.
+  If imagemagick support is compiled in you can use different image extensions,
+  see below.
+
+- Resize images (pixel algo/ratio algo/zoom image)
+  (NOTE: only visible if Imagemagick support is compiled in!)
+  The algorithm to use for resizing. Please ask the Imagemagick documentation if
+  you want to know how the algorithms work.
+
+- Image width (80 - 180)
+  (NOTE: only visible if Imagemagick support is compiled in!)
+  The width for event/recording images.
+
+- Image height (80 - 144)
+  (NOTE: only visible if Imagemagick support is compiled in!)
+  The height for event/recording images.
+
+- Image format (xpm/jpg/png)
+  (NOTE: only visible if Imagemagick support is compiled in!)
+  The extension to use for event/recording images.
+
+- Show channel logos
+  Hide or show channel logos in channel info.
+
+- Identify channel by (name/data)
+  Here you can choose if the channel logo should be searched by the channel's
+  name (e.g. "YLETV2" -> "YLETV2.xpm") or by the channel's unique id (e.g.
+  "T-8438-4097-33.xpm").
+  NOTE: the available logo packs are named by channel name only!
+
+- Channel logo cache size
+  The number of logos/symbols to keep in the cache.
+
+* Animated Text
+  NOTE: only visible if SKINENIGMA_DISABLE_ANIMATED_TEXT is not set
+
+- Enable
+  This option enables scrolling of long lines and blinking of some text.
+
+- Scroll OSD title
+  Scroll title of OSDs?
+
+- Scroll info area
+  Scroll a timer's title in the main menu's info area?
+
+- Scroll active list items
+  Scroll long columns of the active line in the menu?
+
+- Scroll other items
+  Scroll items in other areas?
+  At the moment these areas cover the title and subtitle in the EPGs and
+  recordings details and the message in the message OSD.
+
+- Scoll behaviour (to the left/left and right)
+  Text can either scroll from the left to right and then start again at the
+  left or it can scroll from the left to the right and then back from the
+  right to the left (ping pong).
+
+- Scroll delay (ms) (50 - 1000)
+  The number of milliseconds to wait before the scrolling text is moved.
+
+- Scroll pause (ms) (500 - 2000)
+  The number of milliseconds to wait at the left or right side of the text
+  before scrolling again.
+
+- Blink pause (ms) (500 - 2000)
+  The number of milliseconds to wait for blinking text.
+
+* Fonts
+  If you've set the VDR OSD option "Use small font" to "skin dependent" then
+  you can set your prefered fonts for various areas. If you've patched additional
+  fonts into VDR you need to set the SKINENIGMA_FONTS define (see above) to see
+  them in the list of available fonts.
+
+- OSD title
+- Messages
+- Date
+- Help keys
+- Channelinfo: title
+- Channelinfo: subtitle
+- Channelinfo: language
+- List items
+- Info area: timers title
+- Info area: timers text
+- Info area: warning title
+- Info area: warning text
+- Details: title
+- Details: subtitle
+- Details: date
+- Details: text
+- Replay: times
+- Fixed Font
+  Set the font for the named area.
+  If you have set HAVE_FREETYPE you can set the TrueTypeFont to use by pressing
+  the blue key. Then you can select one of the TrueTypeFonts found in EnigmaNG's
+  font directory (see above) and set it's size and width.
+
+* EPGSearch 
+  NOTE: only visible if epgsearch support is compiled in
+
+- Number of Reruns (0 - 10)
+  The number of reruns to show in an event's info.
+
+- Use Subtitle for reruns (never/if exists/always)
+  If set to "never" all events will match that _contain_ the current event's
+  title in their title, e.g. if title is "Brisant" it will also find
+  "Brisant Classix".
+  If set to "if exists" it will use the subtitle to find reruns if the
+  current event contains a subtitle. This will also require a full title match,
+  e.g. if title is "Brisant" and subtitle is "Boulevard Magazin" it will find
+  only events with title and subtitle beeing exactly "Brisant" and "Boulevard
+  Magazin". It won't find events named "Brisant Classix" or "Brisant" without
+  subtitle.
+  If set to "always" it will always use the subtitle even if it's empty. As a
+  sideeffect also the event titles must match exactly, e.g. if title is
+  "Tagesschau" it will only find events named "Tagesschau" and not "Tagesschau
+  vor 30 Jahren".
+
+- Show timer conflicts
+  Enable or disable showing the number of timer conflicts in the main menu's
+  info area.
+  
+
+Notes
+-----
+
+- Only XPM format is supported for channel logos: 80x80 pixels and
+  13 colors (6 colors on DXR3) or less recommended.
+
+- If you'll add new channels logos on the fly, remember to flush the
+  channel logo cache.
+
+
+Credits
+-------
+
+- Rolf Ahrenberg for the Soppalusikka skin where I've lent some code.
+  http://www.saunalahti.fi/~rahrenbe/vdr/soppalusikka/
+
+- Andreas Burger for the original "Enigma" for Text2Skin and his Text2Skin patches.
+  http://brougs78.vdr-developer.org/
+  http://www.vdr-portal.de/board/thread.php?threadid=28730
+  http://www.vdr-wiki.de/wiki/index.php/Entwicklung_-_Tipps_und_Tricks
+
+- Sascha Volkenandt for Text2Skin where I've lent some code.
+  http://linux.kompiliert.net/
+
+- Speedbomb for the hqlogos.
+  http://www.speedbomb.de/hobby/myhtpc/index.php?view=logos
+
+- zulu @vdr-portal.de for some symbols.
+  http://www.vdr-portal.de/board/thread.php?postid=514251#post514251
+
+- Thomas @vdr-portal.de for some logos.
+  http://senderlogos.vdr-developer.org/
+
+- FrankJepsen @vdr-portal.de for some logos.
+  http://www.vdr-portal.de/board/thread.php?postid=531412#post531412
+
+- chrisz @vdr-portal.de for some radio logos and original Enigma themes.
+  WomensLike: http://www.vdr-portal.de/board/thread.php?threadid=59651
+  WineRed:    http://www.vdr-portal.de/board/thread.php?threadid=59416
+  AppleGreen: http://www.vdr-portal.de/board/thread.php?threadid=59427
+  YellowSun:  http://www.vdr-portal.de/board/thread.php?postid=581117
+
+- skiller2k1 @vdr-portal.de for Comedy Central logo.
+  http://www.vdr-portal.de/board/thread.php?postid=567887#post567887
+
+- uwe @vdr-portal.de for themes (Blue, Blue2, Blue3 and CoolBlue).
+  http://www.vdr-portal.de/board/thread.php?postid=615540#post615540
+
+- Morone @vdr-portal.de for MoBuntu theme.
+  http://www.vdr-portal.de/board/thread.php?postid=619867#post619867
+// vim:et:sw=2:ts=2:

@@ -1,0 +1,29 @@
+osdtest256 - 256 color test for the Video Disk Recorder (VDR)
+=============================================================
+
+Version:                      0.1.0
+
+Written by:                   Oliver Endriss <o.endriss@gmx.de>
+
+Latest version available at:  http://endriss.escape.bei.t-online.de/vdr
+
+Requirements:                 VDR 1.3.9 or later
+                              full-featured card with 4 MByte SDRAM
+                              Firmware with 4 MByte support
+
+Distributed under GPL, see the file COPYING for license information.
+
+
+Description:
+------------
+This plugin displays a grey/red/green/blue/grey test pattern on the OSD.
+
+To make it work, you need
+o a full-featured card with 4 MByte SDRAM
+o recent firmware with 4 MB support (261c or later)
+o a patched VDR/dvbosd.c (MAXOSDMEMORY set to 1000000):
+  #define MAXOSDMEMORY  1000000
+
+Have fun,
+
+Oliver
