@@ -1,3 +1,0 @@
-     Si el canal actual proporciona diversas pistas de audio (normalmente para idiomas distintos), el botón verde se usara para la selección de uno u otro. Puede haber dos pistas de audio diferentes por canal, Normalmente un canal difunde la lengua típica del país más la banda de sonido original de la película.
-
-     Las grabaciones realizadas de estos canales contendrán ambas pistas audio, cuando reproduzca una grabación podrá seleccionar de igual manera la pista audio deseada.
