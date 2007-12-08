@@ -1,0 +1,20 @@
+VDR Plugin 'newsticker' Revision History
+-------------------------------------
+
+2003-11-22: Version 0.0.1
+
+- Initial revision.
+
+2003-11-26: Version 0.0.2
+
+- Now using wget
+- Added support for local files
+
+2003-11-26: Version 0.0.3
+
+- Added an option to control the output folder
+
+2005-01-01: Version 0.0.4
+
+- Added support for VDR >= 1.3.17 (thanks to Thomas Günter)
+- The colors of the ticker can be changed in the setup menu. (thanks to Zwer2k)
