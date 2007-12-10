@@ -1,0 +1,924 @@
+diff -Naur clock-0.0.6-orig/clock.c clock-0.0.6/clock.c
+--- clock-0.0.6-orig/clock.c	Wed Dec 05 17:12:17 2007
++++ clock-0.0.6/clock.c	Mon Dec 10 11:37:27 2007
+@@ -23,6 +23,9 @@
+ 
+ // Global variables
+ 
++bool      ClockActive = false;
++
++int       HideMenuEntry = 1;
+ int       TimeWidth  = Setup.OSDWidth;
+ int       TimeHeight = Setup.OSDHeight;
+ int       XOffset    = 100;
+@@ -76,13 +79,12 @@
+ class cOSDClock : public cThread, public cOsdObject{
+ private:
+   cOsd *osd;
+-  eKeys LastKey;
+   bool running, shutdown;
+   tColor ColorH, ColorM, ColorS, ColorForeGround, ColorBackGround;
+   int r;
+   void DrawArrow(double width, double len, tColor col, double ang, cEnhancedBitmap &img);
+   void DrawScale(int r, tColor col, cEnhancedBitmap &Analog);
+-  void cOSDClock::DrawModernSec(int r, int sec, tColor col, cEnhancedBitmap &Analog);
++  void DrawModernSec(int r, int sec, tColor col, cEnhancedBitmap &Analog);
+   void DrawPoint(double x, double y, int r, tColor col, cEnhancedBitmap &Analog);
+   tColor getColor(int color);
+   static cBitmap bmClock;
+@@ -413,7 +415,6 @@
+     } // while running
+   shutdown = true;
+   delete osd;
+-  cRemote::Put(LastKey);
+ }
+ 
+ 
+@@ -421,9 +422,9 @@
+ {
+   if (Key != kNone)
+     {
++      ClockActive = false;
+       if (AlarmTime == -1)
+ 	Alarm = false;
+-      if (Key != kOk) LastKey = Key;
+       return (osEnd);
+     }
+   return (osContinue);
+@@ -435,6 +436,7 @@
+ class cMenuSetupClock : public cMenuSetupPage {
+ private:
+   char Color[16][32];
++  int newHideMainMenuEntry;
+   int newSize;
+   int newShowSec;
+   int newShowAlarm;
+@@ -465,6 +467,7 @@
+ cMenuSetupClock::cMenuSetupClock(void)
+ {
+   cSetup data;
++  newHideMainMenuEntry = HideMenuEntry;
+   newSize       = Size;
+   newShowSec    = ShowSec;
+   newShowAlarm  = ShowAlarm;
+@@ -501,6 +504,7 @@
+     }
+ 
+   int current = Current();
++  Add(new cMenuEditBoolItem( tr("Hide main menu entry"),         &newHideMainMenuEntry));
+   Add(new cMenuEditIntItem(  tr("x Position"),                   &newXOffset,    0, Setup.OSDWidth - x));
+   Add(new cMenuEditIntItem(  tr("y Position"),                   &newYOffset,    0, Setup.OSDHeight - y));
+   Add(new cMenuEditStraItem( tr("Type of the clock"),            &newType,       7, ClockType));
+@@ -539,6 +543,7 @@
+ 
+ void cMenuSetupClock::Store(void)
+ {
++  SetupStore("HideMenuEntry",    HideMenuEntry    = newHideMainMenuEntry);
+   SetupStore("XOffset",    XOffset    = newXOffset);
+   SetupStore("YOffset",    YOffset    = newYOffset);
+   SetupStore("ShowSec",    ShowSec    = newShowSec);
+@@ -571,13 +576,13 @@
+   cPluginClock(void);
+   virtual ~cPluginClock();
+   virtual const char *Version(void) { return VERSION; }
+-  virtual const char *Description(void) { return DESCRIPTION; }
++  virtual const char *Description(void) { return tr(DESCRIPTION); }
+   virtual const char *CommandLineHelp(void);
+   virtual bool ProcessArgs(int argc, char *argv[]);
+   virtual bool Initialize(void);
+   virtual bool Start(void);
+   virtual void Housekeeping(void);
+-  virtual const char *MainMenuEntry(void) { return MAINMENUENTRY; }
++  virtual const char *MainMenuEntry(void);
+   virtual cOsdObject *MainMenuAction(void);
+   virtual cMenuSetupPage *SetupMenu(void);
+   virtual bool SetupParse(const char *Name, const char *Value);
+@@ -625,10 +630,24 @@
+   // Perform any cleanup or other regular tasks.
+ }
+ 
++const char *cPluginClock::MainMenuEntry(void) {
++  if (HideMenuEntry)
++     return NULL;
++  else
++     return tr(MAINMENUENTRY);
++}
++
+ cOsdObject *cPluginClock::MainMenuAction(void)
+ {
+-  // Perform the action when selected from the main VDR menu.
+-  return new cOSDClock();
++    // Perform the action when selected from the main VDR menu.
++    if (ClockActive) {
++        ClockActive = false;
++        return NULL;
++    }
++    else {
++        ClockActive = true;
++        return new cOSDClock();
++    }
+ }
+ 
+ cMenuSetupPage *cPluginClock::SetupMenu(void)
+@@ -642,7 +661,8 @@
+ {
+   // Parse your own setup parameters and store their values.
+ 
+-  if      (!strcasecmp(Name, "XOffset"))          XOffset    = atoi(Value);
++  if      (!strcasecmp(Name, "HideMenuEntry"))    HideMenuEntry    = atoi(Value);
++  else if (!strcasecmp(Name, "XOffset"))          XOffset    = atoi(Value);
+   else if (!strcasecmp(Name, "YOffset"))          YOffset    = atoi(Value);
+   else if (!strcasecmp(Name, "ShowSec"))          ShowSec    = atoi(Value);
+   else if (!strcasecmp(Name, "ShowAlarm"))        ShowAlarm  = atoi(Value);
+diff -Naur clock-0.0.6-orig/HISTORY clock-0.0.6/HISTORY
+--- clock-0.0.6-orig/HISTORY	Wed Dec 05 17:12:17 2007
++++ clock-0.0.6/HISTORY	Mon Dec 10 11:37:27 2007
+@@ -1,5 +1,18 @@
+ VDR Plugin 'clock' Revision History
+ ----------------------------------
++2007-05-20: Version 0.0.6patched
++- Fixed segmention fault if user key is pressed again with clock shown.
++- Updated i18n.c for VDR 1.3.42 and higher.
++- Added option "Hide main menu entry".
++- Fixed Compiler fault by adding patch reported on VDR-Portal
++  see http://vdr-portal.de/board/thread.php?threadid=57401
++- Added english and german translations for description and main menu entry 
++- Known Problem: If mainmenu is opened during the clock is shown on screen,
++                 user key or Menuentry must pressed two times for open the
++		 clock again.
++
++2004-08-09: Version 0.0.6
++- Adapted to VDR 1.4.x
+ 
+ 2004-08-09: Version 0.0.5b1
+ - Adapted to VDR 1.3.x (tanks to Alexander Hans)
+diff -Naur clock-0.0.6-orig/i18n.c clock-0.0.6/i18n.c
+--- clock-0.0.6-orig/i18n.c	Wed Dec 05 17:12:17 2007
++++ clock-0.0.6/i18n.c	Mon Dec 10 12:54:39 2007
+@@ -19,13 +19,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Reloj",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÇÐáë",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Offset",
+     "Abstand vom linken Rand",
+@@ -37,13 +41,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Distancia desde la izquierda",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÀÐáâÞïÝØÕ Þâ ÛÕÒÞÓÞ ÚàÐï",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Show Seconds",
+     "Sekunden anzeigen",
+@@ -55,13 +63,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Mostrar segundos",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "¿ÞÚÐ×Ðâì áÕÚãÝÔë",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Type of the clock",
+     "Art der Uhr",
+@@ -73,13 +85,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Tipo de reloj",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "²ØÔ çÐáÞÒ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Length of sec arrow [%]",
+     "Länge des Sekundenzeigers [%]",
+@@ -91,13 +107,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Longitud del segundero [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "´ÛØÝÐ áÕÚãÝÔÝÞÙ áâàÕÛÚØ [%]",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Length of min arrow [%]",
+     "Länge des Minutenzeigers [%]",
+@@ -109,13 +129,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Longitud del minutero [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "´ÛØÝÐ ÜØÝãâÝÞÙ áâàÕÛÚØ [%]",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Length of hour arrow [%]",
+     "Länge des Stundenzeigers [%]",
+@@ -127,13 +151,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Longitud aguja de las horas [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "´ÛØÝÐ  çÐáÞÒÞÙ áâàÕÛÚØ [%]",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Width of sec arrow [%]",
+     "Breite des Sekundenzeigers [%]",
+@@ -145,13 +173,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Ancho del segundero [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÈØàØÝÐ áÕÚãÝÔÝÞÙ áâàÕÛÚØ [%]",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Width of min arrow [%]",
+     "Breite des Minutenzeigers [%]",
+@@ -163,13 +195,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Ancho del minutero [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÈØàØÝÐ ÜØÝãâÝÞÙ áâàÕÛÚØ [%]",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Width of hour arrow [%]",
+     "Breite des Stundenzeigers [%]",
+@@ -181,13 +217,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Ancho de la aguja de las horas [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÈØàØÝÐ çÐáÞÒÞÙ áâàÕÛÚØ [%]",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Analog clock size",
+     "Größe der Analogen Uhr",
+@@ -199,13 +239,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Tamaño del reloj analógico",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÀÐ×ÜÕà áâàÕÛÞçÝëå çÐáÞÒ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Transparent",
+     "Transparent",
+@@ -217,13 +261,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Transparencia",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "¿àÞ×àÐçÝëÕ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "White",
+     "Weiss",
+@@ -235,13 +283,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Blanco",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "±ÕÛëÕ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Background color",
+     "Hintergrundfarbe",
+@@ -253,13 +305,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color del fondo",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÆÒÕâ ×ÐÔÝÕÓÞ äÞÝÐ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Black",
+     "Schwarz",
+@@ -271,13 +327,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Negro",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÇñàÝëÙ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Hour arrow color",
+     "Farbe des Stundenzeigers",
+@@ -289,13 +349,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color de la aguja de las horas",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÆÒÕâ çÐáÞÒÞÙ áâàÕÛÚØ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Red",
+     "Rot",
+@@ -307,13 +371,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Rojo",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ºàÐáÝëÙ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Green",
+     "Grün",
+@@ -325,13 +393,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
++    "Verde",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
+-    "·ÕÛñÝëÙ",// TODO  
++    "·ÕÛñÝëÙ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Yellow",
+     "Gelb",
+@@ -343,13 +415,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Amarillo",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "¶ñÛâëÙ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Blue",
+     "Blau",
+@@ -361,13 +437,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Azul",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÁØÝØÙ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Seconds arrow color",
+     "Farbe des Sekundenzeigers",
+@@ -379,13 +459,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color del segundero",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÆÒÕâ áÕÚãÝÔÝÞÙ áâàÕÛÚØ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Minutes arrow color",
+     "Farbe des Minutenzeigers",
+@@ -397,13 +481,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color del minutero",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÆÒÕâ ÜØÝãâÝÞÙ áâàÕÛÚØ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Foreground color",
+     "Vordergrund Farbe",
+@@ -415,13 +503,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color de primer plano",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÆÒÕâ ßÕàÕÔÝÕÓÞ äÞÝÐ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Arrow color",
+     "Zeigerfarbe",
+@@ -433,13 +525,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color de las agujas",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÆÒÕâ áâàÕÛÞÚ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Digital",
+     "Digital",
+@@ -451,13 +547,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Digital",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÆëäàÞÒëÕ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Analog",
+     "Analog",
+@@ -469,13 +569,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Analógico",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ÁâàÕÛÞçÝëÕ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Internet time",
+     "Internet Zeit",
+@@ -487,13 +591,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Tiempo de Internet",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "¸ÝâÕàÝÕâ ÒàÕÜï",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Tea clock",
+     "Teekocher",
+@@ -505,13 +613,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Pausa para el café",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "²àÕÜï ÔÛï çÐï",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "It's tea time",
+     "Es ist Tee Zeit!",
+@@ -523,13 +635,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Es la hora de la pausa para el café",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "²àÕÜï çÐï!",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Time till tea",
+     "Zeit bis der Tee fertig ist",
+@@ -541,13 +657,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Tiempo hasta el café",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "²àÕÜï ×ÐÒÐàÚØ çÐï",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "Show Countdown",
+     "Countdown anzeigen",
+@@ -559,13 +679,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Mostrar cuenta atras",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "¾ÑàÐâÝëÙ Þâçñâ ÒàÕÜÕÝØ",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "FullScreen",
+     "FullScreen",
+@@ -577,13 +701,17 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Pantalla completa",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "²Õáì àÐ×ÜÕà",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { "x Position",
+     "x Position",
+@@ -595,31 +723,83 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Posición X",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "x ¿Þ×ØæØï",// TODO
+-  },
+-  { "y Position",
+-    "y Position",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "y Position",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "y ¿Þ×ØæØï",// TODO
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
++  },
++  { "y Position", // English
++    "y Position", // German
++    "", // Slovenski
++    "", // Italian
++    "", // Nederlands
++    "", // Português
++    "y Position", // Français
++    "", // Norsk
++    "", // Finnish
++    "", // Polski
++    "Posición Y", // Español
++    "", // ÅëëçíéêÜ (Greek)
++    "", // Svenska
++    "", // Romaneste
++    "", // Magyar
++    "", // Català
++    "y ¿Þ×ØæØï", // ÀãááÚØÙ (Russian)
++    "", // Hrvatski (Croatian)
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
++  },
++  { "A Simple Clock",
++    "Eine einfache Uhr",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "Un reloj sencillo",// Español
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
++  },
++  { "Hide main menu entry", // English
++    "Hauptmenüeintrag verstecken", // Deutsch
++    "", // Slovenski
++    "Nascondi voce menù", // Italiano
++    "", // Nederlands
++    "", // Português
++    "Masquer dans le menu principal", // Français
++    "", // Norsk
++    "Piilota valinta päävalikosta", // suomi
++    "", // Polski
++    "Ocultar en el menú principal", // Español
++    "", // ÅëëçíéêÜ (Greek)
++    "", // Svenska
++    "", // Romaneste
++    "", // Magyar
++    "", // Català
++    "ÁÚàëâì ÚÞÜÐÝÔã Ò ÓÛÐÒÝÞÜ ÜÕÝî", // ÀãááÚØÙ (Russian)
++    "", // Hrvatski (Croatian)
++    "Peida valik peamenüüs", // Eesti
++    "", // Dansk
++    "", // Èesky (Czech)
+   },
+   { NULL }
+   };
+diff -Naur clock-0.0.6-orig/Makefile clock-0.0.6/Makefile
+--- clock-0.0.6-orig/Makefile	Wed Dec 05 17:12:17 2007
++++ clock-0.0.6/Makefile	Mon Dec 10 11:37:27 2007
+@@ -20,12 +20,13 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+ 
++-include $(VDRDIR)/Make.config
+ 
+ ### The version number of VDR's plugin API (taken from VDR's "config.h"):
+  
+@@ -56,7 +57,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -66,10 +67,10 @@
+ ### Targets:
+ 
+ all: libvdr-$(PLUGIN).so
+-	@install -d ../../man
++
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+@@ -81,3 +82,4 @@
+ 
+ clean:
+ 	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
++	@-rm -f ../../man/$(PLUGIN).man
+diff -Naur clock-0.0.6-orig/README clock-0.0.6/README
+--- clock-0.0.6-orig/README	Wed Dec 05 17:12:17 2007
++++ clock-0.0.6/README	Mon Dec 10 11:37:27 2007
+@@ -24,3 +24,5 @@
+ 
+ The clock will be disabled as soon as you press any other button.
+ Otherwise there would be a mess in the OSD. 
++
++The "Hide main menu entry" opton is normaly set to "yes" as default.

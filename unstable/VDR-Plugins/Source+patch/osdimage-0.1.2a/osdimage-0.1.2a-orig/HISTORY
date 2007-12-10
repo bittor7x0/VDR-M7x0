@@ -1,0 +1,16 @@
+VDR Plugin 'osdimage' Revision History
+--------------------------------------
+
+2004.10.27: Version 0.1.0 - Initial release
+
+2004.10.30: Version 0.1.1 - Bugfix release
+ - Fixed comilation problems due to namespace std and Magick
+ - Dropped usage of round in cOSDImageBitmap::CalcNewPicSize
+ - Changed the "--ignore-case"-option of the sort-call to "-f" for older
+   sort-versions
+	
+2004.10.05: Version 0.1.2 - Bugfix release
+ - Using full 720x576 Pixels of the OSD now (only relevant for 256-color mode)
+ - Replaced calls of the <vector>.at()-function due to lack of that function
+   in older gcc's
+	

@@ -1,0 +1,119 @@
+VDR Plugin 'osdimage' README
+----------------------------
+
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Andreas Brugger <brougs78@gmx.net>
+
+Project's homepage:          http://home.pages.at/brougs78
+
+Latest version available at: http://home.pages.at/brougs78
+
+See the file COPYING for license information.
+
+Short Description:           Views Pictures on the OSD
+
+
+================================================================================
+
+
+Ok, this is my first attempt of writing a plugin for the VDR (the software we
+all love so much ... thank you Klaus). Actually it is also my first C++-program
+so please keep that in mind, if you're planning to tear of my head for the bad
+coding-style. ;-)
+
+So what's it all about? There are several of people out there, who have an OSD,
+which is capable of 256-color at fullscreen. So I thought it would be a nice
+idea to use that for viewing pictures. After some promissing tests I tried to
+put it all together and write a plugin ... and there it is.
+I also thought that propably pictures in 16 colors wouldn't look that bad on
+standard-TVs, so I added that possibility. Therefor also the unmodded DVB-cards
+are capable of using this plugin (don't know about the DXR3). But if you own
+a LCD-TV or Plasma-TV I don't think you want to violate your eyes with that. ;-)
+
+You can look at the homepage
+	'http://home.pages.at/brougs78/comparison/index.htm',
+which shows some examples. But like I said, on standard TV's it should look
+better than on a monitor.
+
+
+Requirements:
+-------------
+
+ - VDR ... of course. It should compile for VDR >= v1.3.7
+ - ImageMagick (I guess at least v6, I use v6.1.1)
+   This library is used for resizing, rotating and (optionally) for quantizing
+   the images.
+ - The linux-tools 'find' and 'sort'. I think every "not too old"-version should
+   do just fine.
+ - Netpbm OPTIONAL - you have to activate it in the MAKEFILE (I use 10.22)
+   The tools bmptopnm, ppmquant and ppmtobmp are needed, if you plan to use
+	Netpbm for quantizing the images.
+  
+   Pro: better (my optinion) qualitiy, at least for the quantization with 15
+		colors.
+   Contra: much slower than ImageMagick. Quantizing for 256 colors is painfully
+      slow on my VDR (approx. 18 seconds), but it's acceptable for the 16-color-
+	   mode (approx. 3 seconds), where the quality of quantizing is more
+		important. So I recommend
+	   using Netpbm for the latter.
+	
+	If you are using Netpbm the plugin will create temp-pictures in the directory
+	'/tmp' so you have to ensure that it exists and VDR has the right to read and
+	write	into this directory.
+
+
+Installation:
+-------------
+
+Like the majority of all other plugins. Just type
+	make plugins
+in the VDR-source-directory and add the plugin to your VDR-start-script:
+	-P 'OSDImage --directory <directory where the pictures are located>' or
+	-P 'OSDImage -d <directory where the pictures are located>'
+
+It is only possible to add one directory, so if you have more than one directory
+I recommend you make a "master-dir" where you link to other dirs.
+Mounting of CD- or DVD-drives is also not supported, so if you're planning to
+watch pictures from one of those it is best to use an automounter.
+BTW, bash-variables in the path are not evaluated (it's on my TODO).
+
+
+Features:
+---------
+
+ - Viewing pictures ;-)
+ - Slideshow (interval configurable via the setup-menu)
+ - changeable alpha-values for picture, background and text-area
+ - supports two different quantizer
+ - autmatically determines the capability of the OSD-providing hardware
+   for selection of 256- or 16-color-mode
+
+
+Key-assignment:
+---------------
+
+In the picture-selection-mode:
+ - LEFT, RIGHT,   traditional navigation mode
+   UP, DOWN
+ - OK on [..]		jump to the parent-directory
+      on [xyz]		enter the directory [xyz]
+		on pic.jpg	generate playlist for all the pictures in the current
+						directory (without the subdirs) and show the selected one
+ - EXIT				back to the main menu
+ - RED				generate playlist for all the pictures in the current
+						directory (including the subdirs) and show the first one
+ - BLUE				end the plugin
+						
+In the picture-viewing-mode:
+ - DOWN, UP			previous, next picture
+ - LEFT, RIGHT		jump 10 pictures down or up in the picture-list
+ - EXIT				end the plugin
+ - RED				rotate back to initial state (orientation like in the picture-
+ 						file)
+ - GREEN				rotate 90° counter-clockwise
+ - YELLOW			rotate 90° clockwise
+ - BLUE				start slide-show, which automatically switches to the next
+ 						picture in the playlist and stops at the end of the list
+						(the timeout can be adjusted in teh setup-menu)
+

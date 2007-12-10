@@ -1,0 +1,19 @@
+VDR Plugin 'osdimage' CREDITS
+-----------------------------
+
+While developing this plugin I received a lot of direct and indirect support
+from different people, which I want to thank here:
+
+ - Martin Strasser
+   for getting me started with C++
+ - Sascha Volkenandt
+   I took several code-parts of his plugins
+ - Andreas Weinberger
+   Since I use his skin 'lightblue256' (really like it ... any plans on further
+	development? ;-) ) I tried to use some design-parts for the plugin to make
+	it "fit in".
+ - Patrick Fischer
+   for helping me debug the
+ - The people at vdr-portal for helping me adopting the plugin to various
+   linux-configurations
+	
