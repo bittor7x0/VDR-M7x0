@@ -1,0 +1,4 @@
+uclibc_build_env:	:branches/experimental
+vdr-m7x0:		:branches/gambler-unstable
+vdr-m7x0-PLUGINS:	:branches/unstable
+vdr-htdocs:		:branches/testing
