@@ -1,0 +1,1010 @@
+diff -Naur setup.orig/common.h setup/common.h
+--- setup.orig/common.h	2007-12-11 17:18:03.000000000 +0100
++++ setup/common.h	2007-12-12 17:14:15.000000000 +0100
+@@ -1,15 +1,20 @@
+-/*
+- * common.h: The 'setup' plugin
+- *
+- * See the README file for copyright information and how to reach the author.
+- *
+- * $Id$
+- */
++/*
++ * common.h: The 'setup' plugin
++ *
++ * See the README file for copyright information and how to reach the author.
++ *
++ * $Id$
++ */
++
++#ifndef SETUP_COMMON_H
++#define SETUP_COMMON_H
++
++#include <vdr/tools.h>
++
++#define STR_YES "YES"
++#define STR_NO "NO"
++
+ 
+-#ifndef SETUP_COMMON_H
+-#define SETUP_COMMON_H
+-
+-#include <vdr/tools.h>
+ 
+ #ifdef DEBUG
+ #define debug(x...) dsyslog("open 7x0 Setup: " x);
+@@ -19,4 +24,6 @@
+ #define error(x...) esyslog("open 7x0 Setup: " x);
+ #endif
+ 
+-#endif // __SKINSOPPALUSIKKA_COMMON_H
++
++
++#endif // __SKINSOPPALUSIKKA_COMMON_H
+diff -Naur setup.orig/config.cpp setup/config.cpp
+--- setup.orig/config.cpp	2007-12-11 17:18:03.000000000 +0100
++++ setup/config.cpp	2007-12-12 16:58:48.000000000 +0100
+@@ -111,27 +111,43 @@
+ 			dsyslog("Error while opening pipe! Execute '%s' faild! Could not find plugin path", tmp);
+ 		}
+ 		debug("We found plugin path: %s", _libDir);
+-		//_libDir="/media/pc1/vdrRootFS/PLUGINS/lib";
++		
+ 
+         if( (tmp =root->Attribute("sysconfigPre"))==NULL)
+           _sysconfigPre=Util::Strdupnew("get-info --eval --config >/tmp/sysconfig.txt");
+-        else
+-          _sysconfigPre=Util::Strdupnew(tmp);
+-
++        else {
++		  if ( tmp[0] == '/' ){
++			_sysconfigPre=Util::Strdupnew(tmp);
++		  }else {
++			asprintf(&_sysconfigPre, "%s/setup/%s", cPlugin::ConfigDirectory(),tmp);
++		  }
++		}
+         if( (tmp =root->Attribute("sysconfigPost"))==NULL)
+           _sysconfigPost=Util::Strdupnew("eval `get-info --eval --file`; cat /tmp/sysconfig.txt >>$CONFFILE_CONFIG ; dump-fw-config");
+-        else
+-          _sysconfigPost=Util::Strdupnew(tmp);
+-		
++        else{
++		  if ( tmp[0] == '/' ) {
++			_sysconfigPost=Util::Strdupnew(tmp);
++		  }else {
++			asprintf(&_sysconfigPost, "%s/setup/%s", cPlugin::ConfigDirectory(),tmp);
++		  }          
++		}
+ 		//read sysconfig
+ 		//excecute pre sysconfig command
+   		debug("sysconfigPre: %s",_sysconfigPre);
+   		ok = system(_sysconfigPre);
+-  		if( ok == 0) {//Load sysconfig
+-  			if ((ok=_sysconfig.LoadFile(sysconfigFile)) != true)
+-  				{
+-  					DEBUG2("Could not load sysconfig:%s",sysconfigFile);
+-  				}
++  		if( ok == 0) {//Load sysconfig			
++		    if ( sysconfigFile && sysconfigFile[0]=='/') {
++				ok=_sysconfig.LoadFile(sysconfigFile);
++				if (!ok) debug("Could not load sysconfig:%s",sysconfigFile);
++			}else {
++				char *tmp=NULL;
++				asprintf(&tmp, "%s/setup/%s", cPlugin::ConfigDirectory(),sysconfigFile);
++				ok=_sysconfig.LoadFile(tmp);
++				if (!ok) debug("Could not load sysconfig:%s",tmp);
++				free((void*)tmp);
++				
++			}			  		
++			
+   	  	} else{
+     		DEBUG4("%s: Could not execute sysconfigPre: %s, errno=%d\n", DBG_PREFIX, _sysconfigPre, ok);	
+   		}
+@@ -205,7 +221,7 @@
+   root.SetAttribute("sysconfigPre",  _sysconfigPre);
+   root.SetAttribute("sysconfigPost", _sysconfigPost);
+   root.SetAttribute("bootLinux", _bootLinux);
+-  root.SetAttribute("VDRlibDirCMD", _libDirCMD);
++  root.SetAttribute("VDRlibDirCmd", _libDirCMD);
+   
+   TiXmlElement *plugins=savePlugins();
+ 
+diff -Naur setup.orig/HISTORY setup/HISTORY
+--- setup.orig/HISTORY	2007-12-11 17:18:03.000000000 +0100
++++ setup/HISTORY	2007-12-12 17:08:13.000000000 +0100
+@@ -1,83 +1,87 @@
+-VDR Plugin 'setup' Revision History
+------------------------------------
+-2006-03-06
+-- do not use std::vector
+-
+-
+-2006-03-05
+-- handle missing channellists /etc/vdr/channels/*.conf
+-- when changing channel lists delete timers with unknown channel
+-- correct behaviour if menucommandpatch was applied
+-- Show title of current Submenu
+-
+-
+-
+-2006-01-15: Version 0.2.3
+-- Now Reload Channel-List if Channel-List was changed
+-- patched for vdr Version 1.3.38
+-
+-2005-10-12: Version 0.2.2
+-- fixed bug, know do not hide other buttons if help button is shown.
+-- know compatible with BIG-PATCH,
+-- Supports all VDR System Menu Commands are extracted during buidl process
+-  If BIGPATCH was applied, then the new System-Command "LiveBuffer", "BigPatch"
+-  are supported
+-
+-
+-2005-10-06: Version 0.2.1
+--  fixed Bug: Know changes are saved again in sysConfigFile
+-
+-2005-10-03: Version 0.2.0
+--  Added Setup Menü for plugin. Allowing to edit Menusuffix and Entry-Prefix)
+--  Changed minivdr-setup.xml format
+-   all <menu>..</menu> tags are now within a <menus>..</menus> tag
+-   New system attribute values for the Menu Tags:
+-       VDRMenu     ( specifies the position of "Edit Vdr Menu")
+-       ActPlugins  ( specifies the position of Activate Plugins-Menu)
+--  Added new type "Ip" for Entry holding IP-Addresses Digits and dots.
+--  Added new attribut "help1" Entry and Menu in minivdr-setup.xml
+--  Added new attribut "help2" Entry and Menu in minivdr-setup.xml
+--  The file sysconfig will now be created if it does not exist
+--  removed attribute "bootVDR", now using standard vdr Rebot mechanism
+--  Configurationfiles (minivdr-setup.xml and vdr-menu.xml) are now stored
+-   "PluginConfigDirectory/setup"
+-
+-2005-06-19: Version 0.1.0
+-- changed interaction with user, now the setup plugin behaves as usually known by VDR Users.
+-  By pressing the OK Button the user may switch back to the previous menu.
+-- fixed bug, if Directory <VDR-Configdir>/channels or <VDR-Configdir>/channels/*.conf are missing
+-- do not remove plugins from "minivdr-setup.xml", when plugin is not in system
+-- Allows to edit Plugin-Parameters
+-- Support executing User Defined commands when walking through MiniVDR Setup Menu
+-  specify new command attribute within menu tag
+-- Know supports VDR Standard Setup Menu within Setup-Plugin Menu
+-- Support paging plugin in Menu Acivate/Deactivbate Plugins
+-
+-2005-02-26: Version 0.0.5
+-- Added new Attributes in minivdr-setup.xml to configure system dependent pathes
+-- improved edit menu handling
+-- fixed crash, when no network modules were found
+-- now add also network modules in subdirectories
+-- Show name of plugin in Pluginmenu
+-
+-2005-01-28: Version 0.0.4
+-- Added Creation of new Menus
+-- Added Editing of Menu-name
+-- Added deltion of menu
+-
+-2005-01-23: Version 0.0.3
+-- Added new entry types:
+-    hex     - hexvalues in the form of AB:FF:12
+-    numtext - String holding only digits
+-- Added new feature ChildLock
+-- Added SubMenu Patch for VDR
+-- Added SubMenu Edit-Menu
+-
+-2005-01-05: Version 0.0.2
+-- first released version
+-- Enable/Disable Plugins
+-- Added Menu / SubMenus
+-
+-2004-12-05: Version 0.0.1
+-
+-- Initial revision.
++VDR Plugin 'setup' Revision History
++-----------------------------------
++2007-12-11 - zjuanma@yahoo.es
++- Patched for VDR-NG (M7x0). 
++- Supports multiple configurations file (i18n)
++
++2006-03-06
++- do not use std::vector
++
++
++2006-03-05
++- handle missing channellists /etc/vdr/channels/*.conf
++- when changing channel lists delete timers with unknown channel
++- correct behaviour if menucommandpatch was applied
++- Show title of current Submenu
++
++
++
++2006-01-15: Version 0.2.3
++- Now Reload Channel-List if Channel-List was changed
++- patched for vdr Version 1.3.38
++
++2005-10-12: Version 0.2.2
++- fixed bug, know do not hide other buttons if help button is shown.
++- know compatible with BIG-PATCH,
++- Supports all VDR System Menu Commands are extracted during buidl process
++  If BIGPATCH was applied, then the new System-Command "LiveBuffer", "BigPatch"
++  are supported
++
++
++2005-10-06: Version 0.2.1
++-  fixed Bug: Know changes are saved again in sysConfigFile
++
++2005-10-03: Version 0.2.0
++-  Added Setup Menü for plugin. Allowing to edit Menusuffix and Entry-Prefix)
++-  Changed minivdr-setup.xml format
++   all <menu>..</menu> tags are now within a <menus>..</menus> tag
++   New system attribute values for the Menu Tags:
++       VDRMenu     ( specifies the position of "Edit Vdr Menu")
++       ActPlugins  ( specifies the position of Activate Plugins-Menu)
++-  Added new type "Ip" for Entry holding IP-Addresses Digits and dots.
++-  Added new attribut "help1" Entry and Menu in minivdr-setup.xml
++-  Added new attribut "help2" Entry and Menu in minivdr-setup.xml
++-  The file sysconfig will now be created if it does not exist
++-  removed attribute "bootVDR", now using standard vdr Rebot mechanism
++-  Configurationfiles (minivdr-setup.xml and vdr-menu.xml) are now stored
++   "PluginConfigDirectory/setup"
++
++2005-06-19: Version 0.1.0
++- changed interaction with user, now the setup plugin behaves as usually known by VDR Users.
++  By pressing the OK Button the user may switch back to the previous menu.
++- fixed bug, if Directory <VDR-Configdir>/channels or <VDR-Configdir>/channels/*.conf are missing
++- do not remove plugins from "minivdr-setup.xml", when plugin is not in system
++- Allows to edit Plugin-Parameters
++- Support executing User Defined commands when walking through MiniVDR Setup Menu
++  specify new command attribute within menu tag
++- Know supports VDR Standard Setup Menu within Setup-Plugin Menu
++- Support paging plugin in Menu Acivate/Deactivbate Plugins
++
++2005-02-26: Version 0.0.5
++- Added new Attributes in minivdr-setup.xml to configure system dependent pathes
++- improved edit menu handling
++- fixed crash, when no network modules were found
++- now add also network modules in subdirectories
++- Show name of plugin in Pluginmenu
++
++2005-01-28: Version 0.0.4
++- Added Creation of new Menus
++- Added Editing of Menu-name
++- Added deltion of menu
++
++2005-01-23: Version 0.0.3
++- Added new entry types:
++    hex     - hexvalues in the form of AB:FF:12
++    numtext - String holding only digits
++- Added new feature ChildLock
++- Added SubMenu Patch for VDR
++- Added SubMenu Edit-Menu
++
++2005-01-05: Version 0.0.2
++- first released version
++- Enable/Disable Plugins
++- Added Menu / SubMenus
++
++2004-12-05: Version 0.0.1
++
++- Initial revision.
+diff -Naur setup.orig/M7x0 config/local-conf setup/M7x0 config/local-conf
+--- setup.orig/M7x0 config/local-conf	1970-01-01 01:00:00.000000000 +0100
++++ setup/M7x0 config/local-conf	2007-12-11 18:10:31.000000000 +0100
+@@ -0,0 +1,53 @@
++#!/bin/bash
++
++#Default options
++CONF_DIR=.
++CONF_FILES=( rc.local.conf rc.conf ) 
++OPTION=
++DATA_FILE=/tmp/conf.tmp
++
++GREP_CMD=grep
++SED_CMD=sed
++
++#### Main loop
++
++if [ $# -eq "0" ]  # Script invoked with no command-line args?
++then
++  echo "Usage: `basename $0` -r|-w [-f file] [-c config_dir]"
++  exit 2        # Exit and explain usage, if no argument(s) given.
++fi  
++
++while getopts "wrf:c:" opt
++do
++  case $opt in
++    w | r   ) OPTION=$opt;;
++    f       ) DATA_FILE=$OPTARG;; 
++    c       ) CONF_DIR=$OPTARG;;
++    *       ) exit 2;;
++  esac
++done
++
++if [ "$OPTION" = "w" ] ; then
++        for f in ${CONF_FILES[@]} ; do
++                #Delete file
++                `cat /dev/null > $CONF_DIR/$f`
++
++                `$GREP_CMD "^$f--" $DATA_FILE | $SED_CMD "s/^$f--//" >> $CONF_DIR/$f`
++        done
++else
++        if [ "$OPTION" = "r" ] ; then
++                #Delete temp file 
++                `cat /dev/null > $DATA_FILE`
++
++                for f in  ${CONF_FILES[@]} ; do
++
++                        `$GREP_CMD "^[^#].*=" $CONF_DIR/$f | $SED_CMD -e "s/^/$f--/" -e "s/#.*$//" >> $DATA_FILE`
++echo
++
++                done 
++        else
++                echo "Error: -r or -w option not found"
++                exit 2
++        fi
++fi
++
+diff -Naur setup.orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x0-setup_esl.xml
+--- setup.orig/M7x0 config/open7x0-setup_esl.xml	1970-01-01 01:00:00.000000000 +0100
++++ setup/M7x0 config/open7x0-setup_esl.xml	2007-12-12 17:11:01.000000000 +0100
+@@ -0,0 +1,51 @@
++<!--
++-   open7x0-VDR Configuration File
++-   based on Minisetup by Ralf Dotzert
++-->
++<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/usb2/vdr/conf/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /usb2/vdr/conf/plugins/setup" sysconfigPost="/usb2/vdr/conf/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /usb2/vdr/plugins/setup" bootLinux="/sbin/reboot" VDRlibDirCmd="/usb2/vdr/PLUGINS/lib">
++    <plugins sysconfig="CONFIG_VDR_PLUGINS">
++        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
++        <plugin name="streamplayer" info="streamplayer" active="NO" />
++        <plugin name="rssreader" info="rssreader" active="NO" />
++        <plugin name="launcher" info="launcher" active="NO" />
++    </plugins>
++    <menus>
++        <menu name="Configuración general">
++            <entry name="Montar discos USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="NO" help1="Montar los discos USB" />
++            <entry name="Montar directorios en Red" sysconfig="rc.local.conf--do_net_mount" type="bool" value="YES" help1="Montar los directorios en Red" />
++            <entry name="Tiempo de arranque" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="299" help1="Valor en segundos del tiempo de arranque del VDR cuando hay una grabacion programada." />
++        </menu>
++        <menu name="Configuración de directorios">
++            <entry name="Directorio ficheros de configuración" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Directorio donde se encuentra los ficheros de configuración. NO DEBE SER MODIFICADO" />
++            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="text" value='&quot;/media/LACIE/vdr&quot;' help1="Directorio donde se almacenan las grabaciones" />
++            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/usr/lib/vdr&quot;' help1="Directorio donde se encuentran los plugins. NO DEBE SER MODIFICADO" />
++        </menu>
++        <menu name="Configuración EPG">
++            <entry name="Fichero EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Fichero donde se almacena la información de EPG." />
++            <entry name="EPG directa" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="YES" help1="Determina si la EPG se almacena inmediatamente o sólo cuando se apaga el VDR" />
++        </menu>
++        <menu name="Configuración Red">
++            <entry name="Modo configuración" sysconfig="rc.conf--net" type="selection" value="inet" help1="Modo de configuración de la dirección IP.">
++                <value>dhcp</value>
++                <value>inet</value>
++            </entry>
++            <entry name="Dirección IP" sysconfig="rc.conf--ip" type="ip" value="192.168.2.10" help1="Dirección IP del M7XX" />
++            <entry name="Máscara de Red" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Máscara de Red" />
++            <entry name="Puerta de Enlace" sysconfig="rc.conf--gateway" type="ip" value="192.168.2.12" help1="Dirección IP de la puerta de Enlace. Si no se usa valor NO" />
++            <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value="pic_tool -s get-mac" help1="Define el comando con el que se obtiene la dirección MAC. NO DEBE SER MODIFICADO" />
++            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre del M7XX (DNS). Por defecto lo toma del fichero /etc/hostname. NO DEBE SER MODIFICADO" />
++        </menu>
++        <menu name="Servicios">
++            <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="NO" help1="Arrancar servidor inetd (ftp,telnet)" />
++            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />
++        </menu>
++        <menu name="Menu de arranque">
++            <entry name="Habilitar" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Habilitar menu de arranque" />
++            <entry name="Opción por defecto" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Opción por defecto del menu de arranque" />
++            <entry name="Modo de video" sysconfig="rc.local.conf--bootmenu_video_mode" type="selection" value="0" help1="0 = fbase, 1 = svideo">
++                <value>0</value>
++                <value>1</value>
++            </entry>
++        </menu>
++    </menus>
++</setup>
+diff -Naur setup.orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/open7x0-setup.xml
+--- setup.orig/M7x0 config/open7x0-setup.xml	2007-12-11 17:18:03.000000000 +0100
++++ setup/M7x0 config/open7x0-setup.xml	2007-12-12 17:10:50.000000000 +0100
+@@ -1,162 +1,51 @@
+ <!--
+--   (c) 2005,2006 by Ralf Dotzert
+--   Mini-VDR Configuration File
++-   open7x0-VDR Configuration File
++-   based on Minisetup by Ralf Dotzert
+ -->
+-<setup sysconfigPre="get-info --eval --config >/tmp/sysconfig.txt" sysconfigPost="eval `get-info --eval --file`; cat /tmp/sysconfig.txt >>$CONFFILE_CONFIG ; dump-fw-config" sysconfigFile="/tmp/sysconfig.txt" bootLinux="/sbin/reboot" VDRlibDirCMD="env | grep PLUGIN_PATH | cut -d= -f2">
++<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/usb2/vdr/conf/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /usb2/vdr/conf/plugins/setup" sysconfigPost="/usb2/vdr/conf/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /usb2/vdr/plugins/setup" bootLinux="/sbin/reboot" VDRlibDirCmd="/usb2/vdr/PLUGINS/lib">
+     <plugins sysconfig="CONFIG_VDR_PLUGINS">
+-        <plugin name="epgsearch" info="EPG zeigt Wiederholungen" active="yes" />
+-        <plugin name="solitaire" info="Kartenspiel Solitaire" active="yes" />
+-        <plugin name="setup" info="Gigaset 7x0 Setup" active="yes" protected="yes" />
+-        <plugin name="sleeptimer" info="Shutdown" active="yes" />
+-        <plugin name="streamdev-server" info="Streaming Server" active="yes" />
+-        <plugin name="osdteletext" info="Teletext Dekoder für das OSD" active="yes" />
+-        <plugin name="admin" info="admin" active="no" />
+-        <plugin name="fepg" info="fepg" active="no" />
+-        <plugin name="filebrowser" info="filebrowser" active="no" />
+-        <plugin name="skinsoppalusikka" info="skinsoppalusikka" active="no" />
+-        <plugin name="sudoku" info="sudoku" active="no" />
+-        <plugin name="surfer" info="surfer" active="no" />
+-        <plugin name="femon" info="Anzeige Signalstärke/Qualität" active="yes" />
+-        <plugin name="vdrcd" param="-c /dev/dvd -c /media/dvd -c /media/cdfs" info="AutoPlay Funktion" active="yes" />
+-        <plugin name="autotimeredit" param="-f /etc/vdradmin/vdradmind.at -p" info="Autotimer-Edit" active="yes" />
+-        <plugin name="prefermenu" info="Bevorzugte Kanäle" active="yes" />
+-        <plugin name="osdpip" info="Bild in Bild" active="yes" />
+-        <plugin name="image" param="-C /usr/bin/imageplugin.sh -m /usr/bin/mount.sh" info="Bildbetrachter Plugin" active="yes" />
+-        <plugin name="osdimage" param="--directory /video0/media/photos/vdr" info="Bildern über OSD" active="yes" />
+-        <plugin name="freecell" info="Das Kartenspiel Freecell" active="yes" />
+-        <plugin name="osddemo" info="Demo On-Screen-Display" active="no" />
+-        <plugin name="tvonscreen" param="-v /etc/vdradmin/vdradmind.at" info="EPG Programmzeitschrift" active="yes" />
+-        <plugin name="hello" info="Ein &apos;hello&apos; Plugin" active="no" />
+-        <plugin name="vdrc" info="Linux Commander OSD" active="yes" />
+-        <plugin name="newsticker" info="Newsticker" active="yes" />
+-        <plugin name="status" info="Osd-Status" active="no" />
+-        <plugin name="pim" info="PIM-Kalender Plugin" active="yes" />
+-        <plugin name="channelscan" info="Sender Suchlauf" active="yes" />
+-        <plugin name="taste" info="Sendungen-Keywords sperren" active="yes" />
+-        <plugin name="text2skin" info="Skin-Plugin für VDR" active="yes" />
+-        <plugin name="mp3" info="Spielt MP3-Dateien ab" active="yes" />
+-        <plugin name="streamdev-client" info="Streaming Client" active="no" />
+-        <plugin name="sysinfo" info="Systeminformationen" active="yes" />
+-        <plugin name="console" info="Textkonsole auf dem Fernseher" active="yes" />
+-        <plugin name="tvtv" info="TvTv im OSD" active="yes" />
+-        <plugin name="clock" info="Uhr" active="yes" />
+-        <plugin name="skincurses" info="VDR-Skin für Konsole" active="yes" />
+-        <plugin name="games" info="Verschiedene Spiele" active="yes" />
+-        <plugin name="playlist" info="Verw.von Playlisten" active="yes" />
+-        <plugin name="vcd" param="--vcd=/dev/dvd" info="VideoCD Plugin" active="yes" />
+-        <plugin name="yaepg" info="Weitere EPG-Ansicht" active="yes" />
+-        <plugin name="undelete" info="Wiederh. gelöschter Aufnahmen" active="yes" />
+-        <plugin name="pilot" info="Zapping Co-Pilot" active="yes" />
+-        <plugin name="director" info="Zeigt Multifeed Kanäle" active="yes" />
+-        <plugin name="timeline" info="Zeitleiste" active="yes" />
+-        <plugin name="wapd" info="wapd" active="yes" />
++        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
++        <plugin name="streamplayer" info="streamplayer" active="NO" />
++        <plugin name="rssreader" info="rssreader" active="NO" />
++        <plugin name="launcher" info="launcher" active="NO" />
+     </plugins>
+     <menus>
+-        <menu name="Informationen zur Konfiguration">
+-            <entry name="Konfig name" sysconfig="CONFIG_NAME" type="text" value="" help1="Ein freier Text, der diese Konfiguration beschreibt."/>
+-            <entry name="Zeitzone" sysconfig="CONFIG_TIMEZONE" type="text" value="CET-1CDT,M3.5.0,M10.5.0" help1="Standard Zeitzone, in der die Anwendungen laufen sollen."/>
+-            <entry name="Zeitserver" sysconfig="CONFIG_NETDATE_PARAM" type="text" value="ntp1.ptb.de" help1="Ist dieser Parameter nicht leer, dann wird 'netdate' gestartet."/>
+-            <entry name="Video mode TV" sysconfig="CONFIG_VIDEO_TV_MODE" type="selection" value="undef" help1="Video-Modus fuer den TV-Ausgang (SCART)">
+-                <value>undef</value>
+-                <value>svideo</value>
+-                <value>fbas</value>
+-            </entry>
+-            <entry name="Video mode VCR" sysconfig="CONFIG_VIDEO_VCR_MODE" type="selection" value="undef" help1="Video-Modus fuer den VCR-Ausgang (SCART)">
+-                <value>undef</value>
+-                <value>svideo</value>
+-                <value>fbas</value>
+-            </entry>
+-            <entry name="LED Helligkeit" sysconfig="CONFIG_LED_BRIGHTNESS" type="number" value="40" help1="Dieser Wert gibt die LED-Helligkeit der aeusseren beiden LEDs an." />
+-            <entry name="System Logging" sysconfig="CONFIG_LOG_KMSG" type="bool" value="no" help1="Logging von /proc/kmsg via Port 12002 aktivieren?"/>
+-            <entry name="USB Automount" sysconfig="CONFIG_USB_AUTO_MOUNT" type="text" value="" help1="Dieser Parameter legt die USB-Laufwerke fest, die automatisch gemountet werden."/>
+-        </menu>
+-        <menu name="Netzwerk" >
+-            <entry name="Netzwerkmodus" sysconfig="CONFIG_NET_MODE" type="selection" value="undef" help1="Hiermit wird der Netzwerkmodus einegstellt.">
+-                <value>undef</value>
++        <menu name="Configuración general">
++            <entry name="Montar discos USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="NO" help1="Montar los discos USB" />
++            <entry name="Montar directorios en Red" sysconfig="rc.local.conf--do_net_mount" type="bool" value="YES" help1="Montar los directorios en Red" />
++            <entry name="Tiempo de arranque" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="299" help1="Valor en segundos del tiempo de arranque del VDR cuando hay una grabacion programada." />
++        </menu>
++        <menu name="Configuración de directorios">
++            <entry name="Directorio ficheros de configuración" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Directorio donde se encuentra los ficheros de configuración. NO DEBE SER MODIFICADO" />
++            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="text" value='&quot;/media/LACIE/vdr&quot;' help1="Directorio donde se almacenan las grabaciones" />
++            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/usr/lib/vdr&quot;' help1="Directorio donde se encuentran los plugins. NO DEBE SER MODIFICADO" />
++        </menu>
++        <menu name="Configuración EPG">
++            <entry name="Fichero EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Fichero donde se almacena la información de EPG." />
++            <entry name="EPG directa" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="YES" help1="Determina si la EPG se almacena inmediatamente o sólo cuando se apaga el VDR" />
++        </menu>
++        <menu name="Configuración Red">
++            <entry name="Modo configuración" sysconfig="rc.conf--net" type="selection" value="inet" help1="Modo de configuración de la dirección IP.">
+                 <value>dhcp</value>
+-                <value>ip</value>
+-                <value>off</value>
+-            </entry>
+-            <entry name="MAC Adresse" sysconfig="CONFIG_MAC" type="hex" value="" />
+-            <entry name="Hostname" sysconfig="CONFIG_HOSTNAME" type="text" value="" help1="Rechnername des Box (DNS)."/>
+-            <entry name="IP-Adresse" sysconfig="CONFIG_IP" type="ip" value="" help1="IP-Adresse der Box."/>
+-            <entry name="Mask" sysconfig="CONFIG_NETMASK" type="ip" value="" help1="Netzwerkmaske der Box"/>
+-            <entry name="Gateway" sysconfig="CONFIG_GATEWAY" type="ip" value="" help1="Gateway Adresse"/>
+-            <entry name="Nameserver" sysconfig="CONFIG_NAMESERVER" type="text" value="" help1="Eine mit Leerzeichen getrennte Liste der DNS-Server."/>
+-            <entry name="Such-Postfixe" sysconfig="CONFIG_SEARCH" type="text" value="" help1="Eine mit Leerzeichen getrennte Liste der Such-Postfixe."/>
+-        </menu>
+-        <menu name="Mail">
+-            <entry name="Mailserver" sysconfig="CONFIG_MAIL_SERVER" type="text" value="" help1="Dieser Parameter legt den SMTP-Server fest" />
+-            <entry name="Absender" sysconfig="CONFIG_MAIL_FROM" type="text" value="" help1="Legt den Absender fest, wenn keiner übergeben wurde."/>
+-            <entry name="Antwort an" sysconfig="CONFIG_MAIL_REPLY" type="text" value="" help1="Dieser Parameter legt die Antwortadresse (Reply-To:) fest."/>
+-        </menu>
+-        <menu name="Menüs">
+-            <entry name="Startmenu" sysconfig="CONFIG_STARTMENU_MODE" type="selection" value="normal" help1="Anzeigeart des Startmenus." >
+-                <value>normal</value>
+-                <value>fast</value>
+-                <value>off</value>	    
+-	    </entry>
+-            <entry name="Startmenu Timer" sysconfig="CONFIG_STARTMENU_WAIT" type="number" value="30" help1="Wartezeit in Sekunden an, bis die Standardkonfiguration startet" />
+-            <entry name="Startmenu Timer Short" sysconfig="CONFIG_STARTMENU_SHORT_WAIT" type="number" value="5" help1="Kurze Wartezeit in Sekunden" />
+-            <entry name="Haltmneu" sysconfig="CONFIG_HALTMENU_ENABLED" type="bool" value="yes" help1="Mit dieser Option wird das Shutdown-Menu aktiviert."/>
+-            <entry name="Haltmenu Timer" sysconfig="CONFIG_HALTMENU_WAIT" type="number" value="5" help1="Wartezeit bis zum automatischn Shutdown" />
+-            <entry name="Haltmenu Screensaver" sysconfig="CONFIG_MENU_HIDE" type="number" value="90" help1="Falls >0, dann werden die Menus durch einen schwarzen Bildschirm" />
+-        </menu>
+-        <menu name="VDR">
+-	    <menu name="Aktiviere Plugins" help1="Aktiviere und Deaktiviere Plugins" help2="setup_actplugins.hlp" system="ActPlugins" />
+-            <entry name="Aufnahmeverzeichniss" sysconfig="CONFIG_VDR_VIDEO_PATH" type="text" value="MiniVDR" />
+-            <entry name="Pfad für das EPG" sysconfig="CONFIG_VDR_EPG_PATH" type="text" value="" />
+-            <entry name="Anzahl der log Dateien" sysconfig="CONFIG_VDR_N_LOG_BACKUP" type="number" value="3" />
+-            <entry name="Standart VDR Konfiguration" sysconfig="CONFIG_VDR_STANDARD" type="selection" value="vdr1" help1="Standart VDR Konfiguration" >
+-                <value>vdr1</value>	    
+-                <value>vdr2</value>	    
+-                <value>vdr3</value>	    
+-                <value>vdr4</value>	    
+-	    </entry>
+-            <entry name="Logging für VDR1" sysconfig="CONFIG_VDR1_LOG" type="selection" value="none">
+-                <value>file</value>
+-                <value>net</value>
+-                <value>both</value>
+-                <value>none</value>
++                <value>inet</value>
+             </entry>
+-	    <entry name="Name VDR2" sysconfig="CONFIG_VDR2_NAME" type="text" value="" />
+-            <entry name="Pfad zum VDR2" sysconfig="CONFIG_VDR2_PATH" type="text" value="*" />
+-            <entry name="Starter für VDR2" sysconfig="CONFIG_VDR2_STARTER" type="text" value="" />
+-            <entry name="Config Pfad für VDR2" sysconfig="CONFIG_VDR2_CONFIG_PATH" type="text" value="*" />
+-            <entry name="Logging für VDR2" sysconfig="CONFIG_VDR2_LOG" type="selection" value="none">
+-                <value>file</value>
+-                <value>net</value>
+-                <value>both</value>
+-                <value>none</value>
++            <entry name="Dirección IP" sysconfig="rc.conf--ip" type="ip" value="192.168.2.10" help1="Dirección IP del M7XX" />
++            <entry name="Máscara de Red" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Máscara de Red" />
++            <entry name="Puerta de Enlace" sysconfig="rc.conf--gateway" type="ip" value="192.168.2.12" help1="Dirección IP de la puerta de Enlace. Si no se usa valor NO" />
++            <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value="pic_tool -s get-mac" help1="Define el comando con el que se obtiene la dirección MAC. NO DEBE SER MODIFICADO" />
++            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre del M7XX (DNS). Por defecto lo toma del fichero /etc/hostname. NO DEBE SER MODIFICADO" />
++        </menu>
++        <menu name="Servicios">
++            <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="NO" help1="Arrancar servidor inetd (ftp,telnet)" />
++            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />
++        </menu>
++        <menu name="Menu de arranque">
++            <entry name="Habilitar" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Habilitar menu de arranque" />
++            <entry name="Opción por defecto" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Opción por defecto del menu de arranque" />
++            <entry name="Modo de video" sysconfig="rc.local.conf--bootmenu_video_mode" type="selection" value="0" help1="0 = fbase, 1 = svideo">
++                <value>0</value>
++                <value>1</value>
+             </entry>
+-	    <entry name="Name VDR3" sysconfig="CONFIG_VDR3_NAME" type="text" value="" />
+-            <entry name="Pfad zum VDR3" sysconfig="CONFIG_VDR3_PATH" type="text" value="*" />
+-            <entry name="Starter für VDR3" sysconfig="CONFIG_VDR3_STARTER" type="text" value="" />
+-            <entry name="Config Pfad für VDR3" sysconfig="CONFIG_VDR3_CONFIG_PATH" type="text" value="*" />
+-            <entry name="Logging für VDR3" sysconfig="CONFIG_VDR3_LOG" type="selection" value="none">
+-                <value>file</value>
+-                <value>net</value>
+-                <value>both</value>
+-                <value>none</value>
+-            </entry>
+-	    <entry name="Name VDR4" sysconfig="CONFIG_VDR4_NAME" type="text" value="" />
+-            <entry name="Pfad zum VDR4" sysconfig="CONFIG_VDR4_PATH" type="text" value="*" />
+-            <entry name="Starter für VDR4" sysconfig="CONFIG_VDR4_STARTER" type="text" value="" />
+-            <entry name="Config Pfad für VDR4" sysconfig="CONFIG_VDR4_CONFIG_PATH" type="text" value="*" />
+-            <entry name="Logging für VDR4" sysconfig="CONFIG_VDR4_LOG" type="selection" value="none">
+-                <value>file</value>
+-                <value>net</value>
+-                <value>both</value>
+-                <value>none</value>
+-            </entry>
+-	</menu>
+-        <menu name="BoxAmp">
+-            <entry name="Pfad zu BoxAmp" sysconfig="CONFIG_BOXAMP_PATH" type="text" value="" />
+-            <entry name="Pfad zu dem MP3s" sysconfig="CONFIG_BOXAMP_MP3_PATH" type="text" value="" />
+-            <entry name="Zusätzliche Optionen" sysconfig="CONFIG_BOXAMP_OPTIONS" type="text" value="" />
+-        </menu>
+-        <menu name="Kindersicherung">
+-            <entry name="Geheimcode (0000=AUS)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" />
+         </menu>
+     </menus>
+ </setup>
+diff -Naur setup.orig/Makefile setup/Makefile
+--- setup.orig/Makefile	2007-12-11 17:18:03.000000000 +0100
++++ setup/Makefile	2007-12-11 17:47:47.000000000 +0100
+@@ -1,7 +1,7 @@
+ #
+ # Makefile for a Video Disk Recorder plugin
+ #
+-# $Id$
++# $Id: Makefile 43 2007-05-15 06:20:51Z hape $
+ 
+ # Debugging on/off 
+ # OPEN7x0_Setup_DEBUG = 1
+@@ -56,7 +56,7 @@
+ #just for TESTING VDR SUBmenu
+ INCLUDES += -I$(VDRDIR)
+ 
+-DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRVERSION="\"$(VDRVERSION)\"" 
++DEFINES += -DDEBUG -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRVERSION="\"$(VDRVERSION)\"" 
+ 
+ 
+ ifdef BIGPATCH_INSTALLED
+diff -Naur setup.orig/plugins.cpp setup/plugins.cpp
+--- setup.orig/plugins.cpp	2007-12-11 17:18:03.000000000 +0100
++++ setup/plugins.cpp	2007-12-11 17:33:24.000000000 +0100
+@@ -15,6 +15,7 @@
+ #include "plugins.h"
+ #include "util.h"
+ #include "debug.h"
++#include "common.h"
+ 
+ 
+ /**
+@@ -127,8 +128,8 @@
+ //----------------------------------------------------------------------------
+ //----------------------------------------------------------------------------
+ //----------------------------------------------------------------------------
+-const char * Plugin::_trueStr ="yes";
+-const char * Plugin::_falseStr = "no";
++const char * Plugin::_trueStr =STR_YES;
++const char * Plugin::_falseStr = STR_NO;
+ 
+ /**
+  * Constructor 
+diff -Naur setup.orig/setupmenu.cpp setup/setupmenu.cpp
+--- setup.orig/setupmenu.cpp	2007-12-11 17:18:03.000000000 +0100
++++ setup/setupmenu.cpp	2007-12-12 16:35:11.000000000 +0100
+@@ -18,6 +18,7 @@
+ #include "plugins.h"
+ #include "debug.h"
+ #include "i18n.h"
++#include "common.h"
+ //#include "setupsetup.h"
+ #include "setupsystemmenu.h"
+ 
+@@ -64,7 +65,7 @@
+         free(title);
+     }
+     else
+-       Add(new cMenuEditBoolItem(_plugins->Get(i)->GetInfo(), _plugins->Get(i)->GetActiveRef(), tr("no"), tr("yes")));
++       Add(new cMenuEditBoolItem(_plugins->Get(i)->GetInfo(), _plugins->Get(i)->GetActiveRef(), tr(STR_NO), tr(STR_YES)));
+   }
+   if( current == -1 && _plugins->GetNr() >0)
+     current=0;
+@@ -522,7 +523,7 @@
+       switch( e->GetType() )
+       {
+         case Util::BOOL:
+-          Add(new cMenuEditBoolItem(nohk(e->GetName()), e->GetValueBoolRef(), tr("no"), tr("yes")));
++          Add(new cMenuEditBoolItem(nohk(e->GetName()), e->GetValueBoolRef(), tr(STR_NO), tr(STR_YES)));
+              break;
+         case Util::NUMBER:
+           Add(new cMenuEditIntItem(nohk(e->GetName()), e->GetValueNumberRef(), 0, 999999999));
+@@ -624,8 +625,10 @@
+                         _editItem=false;
+                       }
+                       break;
+-              case kRed:
+-                        {
++              case kRed:                        
++                        break;
++              case kGreen:
++					{
+                           char *help = NULL;
+                           if(n->GetType() == MenuNode::ENTRY)
+                             help = GetLongHelp(n->GetMenuEntry()->GetHelp2());
+@@ -641,8 +644,6 @@
+ 
+                         }
+                         break;
+-              case kGreen:
+-                        break;
+               case kYellow:
+                         break;
+               case kBlue:
+@@ -696,12 +697,14 @@
+     SetStatus(tmp);
+     free(tmp);
+     status=system(cmd);
+-    if( status == -1 )
++    if( status == -1 ) {
+       DEBUG3("%s: fork of command %s failed\n", DBG_PREFIX, cmd);
++    }
+     else
+     {
+-      if( WEXITSTATUS(status) != 0)
++      if( WEXITSTATUS(status) != 0) {
+         DEBUG4("%s: executing of command %s returned=%d\n", DBG_PREFIX, cmd, WEXITSTATUS(status));
++      }
+     }
+   }
+ }
+@@ -718,16 +721,40 @@
+ cSetupMenu::cSetupMenu() : cOsdMenu(tr("Gigaset Firmware setup - open7x0.org (based on setup plugin by minivdr.de)"))
+ {
+    char *configFile=NULL;
++   char *langs=NULL,*lang=NULL;
++   int loaded=0;
+    SetCols(20);
+ 	
+-	//Load config file
+-   asprintf(&configFile, "%s/setup/open7x0-setup.xml", cPlugin::ConfigDirectory());
+-
+-   debug("cSetupMenu.constr: Load config file %s", configFile);
+-
+-  _config    = new Config( configFile );
+-   free(configFile);
+-
++   //Get languages
++   langs  = Util::Strdupnew(I18nLanguageCode(Setup.OSDLanguage));      
++   lang = strtok(langs,",");
++   while (lang != NULL) {
++	  asprintf(&configFile, "%s/setup/open7x0-setup_%s.xml", cPlugin::ConfigDirectory(),lang);
++	  debug("cSetupMenu.constr: Load config file %s", configFile);
++	  _config = new Config( configFile );
++	  free(configFile);
++	  if ( _config!= NULL && _config->LoadFile() == true ) {
++		loaded=1;
++		break;
++	  }else if (_config != NULL) {
++		debug("cSetupMenu.constr: error loading config file");
++		delete _config;
++	  }
++      lang = strtok(NULL,",");
++   }
++   if ( langs ) free(langs);
++   
++   //Default language
++   if ( !loaded ) {
++      asprintf(&configFile, "%s/setup/open7x0-setup.xml", cPlugin::ConfigDirectory());
++	  debug("cSetupMenu.constr: Load config file %s", configFile);
++	  _config = new Config( configFile );
++	  free(configFile);
++	  if ( _config!= NULL && _config->LoadFile() == true ) {
++		loaded=1;		
++	  }
++   }   
++			
+ 	//Check for child lock
+   _number    = 0;
+   _error     = false;
+@@ -735,7 +762,7 @@
+   _childLockEntered = NULL;
+   _childLockEnteredHidden = NULL;
+   
+-  if( _config!= NULL && _config->LoadFile() == true)
++  if( loaded )
+   {
+     if(_config->GetChildLock() != NULL && strcmp(_config->GetChildLock(), "0000") != 0)
+     {//Ask for childlock code
+@@ -995,17 +1022,19 @@
+       long len = ftell(fp);
+       fseek(fp, 0L, SEEK_SET);
+       int byteRead=0;
+-      if( (result=(char*) malloc(len+1)) == NULL)
++      if( (result=(char*) malloc(len+1)) == NULL){
+         DEBUG3("%s: can not allocate buffer for Helpfile: %s\n", DBG_PREFIX, helpfile );
+-      else
+-        if( (byteRead=fread(result, 1, len, fp)) == -1)
++      }else
++        if( (byteRead=fread(result, 1, len, fp)) == -1){
+           DEBUG3("%s: can not read file: Helpfile: %s\n", DBG_PREFIX, helpfile);
++	}
+       else
+         result[byteRead] = '\0';
+       fclose(fp);
+     }
+-    else
++    else{
+       DEBUG4("%s: can not open Helpfile: %s, %s\n", DBG_PREFIX, helpfile, strerror(errno));
++    }
+     free(helpfile);
+   }
+   return(result);
+diff -Naur setup.orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
+--- setup.orig/setupsystemmenu.cpp	2007-12-11 17:18:03.000000000 +0100
++++ setup/setupsystemmenu.cpp	1970-01-01 01:00:00.000000000 +0100
+@@ -1,188 +0,0 @@
+-/***********************************************************
+- * Header file holding Class Definitions from <VDR>/menu.c *
+- *                                                         *
+- * This file is generated automaticly!                     *
+- * Do not make changes!                                    *
+- *                                                         *
+- ***********************************************************/
+-
+-// Headers included by <VDR>/menu.c
+-#include "menu.h"
+-#include <ctype.h>
+-#include <limits.h>
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include "channels.h"
+-#include "config.h"
+-#include "cutter.h"
+-#include "eitscan.h"
+-#include "i18n.h"
+-#include "interface.h"
+-#include "plugin.h"
+-#include "recording.h"
+-#include "remote.h"
+-#include "sources.h"
+-#include "status.h"
+-#include "themes.h"
+-#include "timers.h"
+-#include "transfer.h"
+-#include "videodir.h"
+-
+-// local headers needed
+-#include "setupsystemmenu.h"
+-#include "setupmenu.h"
+-#include "debug.h"
+-// ************************************
+-// SetupClasses defined in <VDR>/menu.c
+-// ************************************
+-
+-class cMenuSetupBase : public cMenuSetupPage {
+-protected:
+-  cSetup data;
+-  virtual void Store(void);
+-public:
+-  cMenuSetupBase(void);
+-  };
+-
+-
+-class cMenuSetupOSD : public cMenuSetupBase {
+-private:
+-  const char *useSmallFontTexts[3];
+-  int numSkins;
+-  int originalSkinIndex;
+-  int skinIndex;
+-  const char **skinDescriptions;
+-  cThemes themes;
+-  int themeIndex;
+-  virtual void Set(void);
+-public:
+-  cMenuSetupOSD(void);
+-  virtual ~cMenuSetupOSD();
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupEPG : public cMenuSetupBase {
+-private:
+-  int originalNumLanguages;
+-  int numLanguages;
+-  void Setup(void);
+-public:
+-  cMenuSetupEPG(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupDVB : public cMenuSetupBase {
+-private:
+-  int originalNumAudioLanguages;
+-  int numAudioLanguages;
+-  void Setup(void);
+-  const char *videoDisplayFormatTexts[3];
+-  const char *videoFormatTexts[3];
+-  const char *updateChannelsTexts[6];
+-public:
+-  cMenuSetupDVB(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupLNB : public cMenuSetupBase {
+-private:
+-  void Setup(void);
+-public:
+-  cMenuSetupLNB(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupCICAM : public cMenuSetupBase {
+-private:
+-  eOSState Menu(void);
+-  eOSState Reset(void);
+-public:
+-  cMenuSetupCICAM(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupRecord : public cMenuSetupBase {
+-public:
+-  cMenuSetupRecord(void);
+-  };
+-
+-
+-class cMenuSetupReplay : public cMenuSetupBase {
+-protected:
+-  virtual void Store(void);
+-public:
+-  cMenuSetupReplay(void);
+-  };
+-
+-
+-class cMenuSetupMisc : public cMenuSetupBase {
+-public:
+-  cMenuSetupMisc(void);
+-  };
+-
+-
+-class cMenuSetupPlugins : public cMenuSetupBase {
+-public:
+-  cMenuSetupPlugins(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-//############################################################################
+-// cSetupSystemMenu
+-//############################################################################
+-cSetupSystemMenu::cSetupSystemMenu()
+-{
+-}
+-cSetupSystemMenu::~cSetupSystemMenu()
+-{
+-}
+-// Get SystemMenu
+-cOsdMenu *cSetupSystemMenu::GetSystemMenu(const char *sysCommand, Config  *config)
+-{
+- cOsdMenu *menu=NULL;
+- if( sysCommand != NULL)
+- {
+-    if( strcmp(sysCommand, "ActPlugins") == 0)
+-        menu =new cSetupPluginMenu(config);
+-//    else
+-//      if(strcmp(sysCommand, "VDRMenu") == 0)
+-//        menu = new cSetupVdrMenu(tr("Menu Edit"));
+-    else
+-      if(strcmp(sysCommand, "OSD") == 0)
+-         menu = new cMenuSetupOSD;
+-    else
+-      if(strcmp(sysCommand, "EPG") == 0)
+-         menu = new cMenuSetupEPG;
+-    else
+-      if(strcmp(sysCommand, "DVB") == 0)
+-         menu = new cMenuSetupDVB;
+-    else
+-      if(strcmp(sysCommand, "LNB") == 0)
+-         menu = new cMenuSetupLNB;
+-    else
+-      if(strcmp(sysCommand, "CICAM") == 0)
+-         menu = new cMenuSetupCICAM;
+-    else
+-      if(strcmp(sysCommand, "Record") == 0)
+-         menu = new cMenuSetupRecord;
+-    else
+-      if(strcmp(sysCommand, "Replay") == 0)
+-         menu = new cMenuSetupReplay;
+-    else
+-      if(strcmp(sysCommand, "Misc") == 0)
+-         menu = new cMenuSetupMisc;
+-    else
+-      if(strcmp(sysCommand, "Plugins") == 0)
+-         menu = new cMenuSetupPlugins;
+-   else
+-      DEBUG3("%s: <menu System=%s> not known\n", DBG_PREFIX, sysCommand);
+-  }
+-  return (menu);
+-}
+diff -Naur setup.orig/util.cpp setup/util.cpp
+--- setup.orig/util.cpp	2007-12-11 17:18:03.000000000 +0100
++++ setup/util.cpp	2007-12-11 17:33:24.000000000 +0100
+@@ -14,6 +14,7 @@
+ #include <ctype.h>
+ #include "util.h"
+ #include "debug.h"
++#include "common.h"
+ 
+ #define NUL '\0'
+ 
+@@ -38,8 +39,8 @@
+ 
+ static const char *trueStr="true";
+ static const char *falseStr="false";
+-static const char *yesStr="yes";
+-static const char *noStr="no";
++static const char *yesStr=STR_YES;
++static const char *noStr=STR_NO;
+ 
+ 
+ char * Util::Strdupnew( const char  *str )
