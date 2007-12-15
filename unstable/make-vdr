@@ -1,0 +1,34 @@
+#!/bin/sh
+
+vdr=VDR-NG
+bin=`pwd`/ToolChain-bin
+
+# Update VDR-NG from SVN
+if [[ ! -d "$vdr" ]]
+then
+	echo "CHECKOUT: $vdr"
+	svn checkout -q "svn://open7x0.org/vdr-m7x0/branches/gambler-unstable" "$vdr"
+fi
+
+# Check ToolChain dir
+if [[ ! -d "$bin" ]]
+then
+    echo "script: ToolChain bin dir not found: $bin" 1>&2
+    exit 1
+fi
+
+# Patching VDR
+if [[ ! -f "$vdr/HISTORY-liemikuutio" ]]
+then
+	./patching ./VDR-NG ./VDR-EM-files/VDR-Patches
+fi
+
+# Compiling VDR
+export PATH="$bin:$PATH"
+( cd $vdr; make )
+
+if [[ -x $vdr/vdr ]]
+then
+    cp -p $vdr/vdr .
+    mips-linux-uclibc-strip vdr
+fi
