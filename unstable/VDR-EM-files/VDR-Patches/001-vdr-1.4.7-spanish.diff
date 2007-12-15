@@ -1,0 +1,48 @@
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2007-12-15 11:14:11.000000000 +0100
++++ VDR-NG/i18n.c	2007-12-15 11:37:02.000000000 +0100
+@@ -668,7 +668,7 @@
+     "Av/På",
+     "Päällä/Pois",
+     "W³/Wy³",
+-    "On/Off",
++    "Activo/Desactivo",
+     "Aíïé÷/Këåéóôü",
+     "På/Av",
+     "Act./Inact.",
+@@ -2123,7 +2123,7 @@
+     "Filnavn",
+     "Tiedosto",
+     "Plik",
+-    "Fichero",
++    "Archivo",
+     "Áñ÷åßï",
+     "Filnamn",
+     "Fiºier",
+@@ -4282,7 +4282,7 @@
+     "Maksimal størrelse på videofiler (MB)",
+     "Suurin tiedostokoko (Mt)",
+     "Maksymalny rozmiar pliku (MB)",
+-    "Tamaño máximo de fichero (MB)",
++    "Tamaño máximo de archivo (MB)",
+     "Ìİãéóôï ìİãåèïò áñ÷åßïõ (MB)",
+     "Maximal filstorlek för inspelning (MB)",
+     "Dimensiune maximã a fiºierului video (MB)",
+@@ -4304,7 +4304,7 @@
+     "Splitt redigerte filer",
+     "Jaottele muokatut tallenteet",
+     "Dziel edytowane pliki",
+-    "Partir ficheros editados",
++    "Partir archivos editados",
+     "Äéáìİëéóìüò åğåîåñãáóìİíùí áñ÷åßùí",
+     "Dela upp redigerade filer",
+     "Separare fiºiere montate",
+@@ -4569,7 +4569,7 @@
+     "ManTirOnsTorFreLørSøn",
+     "Ma Ti Ke To Pe La Su ",
+     "PonWto¦roCzwPi±SobNie",
+-    "LunMarMieJueVieSabDom",
++    "LunMarMiéJueVieSábDom",
+     "ÄåõÔñßÔåôĞİìĞáñÓÜâKõñ",
+     "MånTisOnsTorFreLörSön",
+     "LunMarMieJoiVinSâmDum",
