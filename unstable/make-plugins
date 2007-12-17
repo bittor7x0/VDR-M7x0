@@ -1,0 +1,52 @@
+#!/bin/sh
+
+vdr=VDR-NG
+plugins=VDR-Plugins/Source+patch
+vdr_plugins=$vdr/PLUGINS/src
+bin=`pwd`/ToolChain-bin
+
+# Update PLUGINS from SVN
+if [[ ! -d "$plugins" ]]
+then
+	echo "Update: $plugins"
+	svn update "$plugins"
+fi
+
+# Check ToolChain dir
+if [[ ! -d "$bin" ]]
+then
+    echo "script: ToolChain bin dir not found: $bin" 1>&2
+    exit 1
+fi
+
+
+#Patching plugins
+for dp in `ls $plugins `; do
+	if [ -d $plugins/$dp ] ; then
+		for dps in `ls $plugins/$dp/`; do
+			if [ -d $plugins/$dp/$dps ] ; then
+        dptarget=`echo $dps | cut -d'-' -f1`
+        
+        #Clean patch
+        rm -rf $vdr_plugins/$dptarget/
+				mkdir $vdr_plugins/$dptarget/
+
+        #Copy plugin				
+				cp -rf $plugins/$dp/$dps/* $vdr_plugins/$dptarget/	
+				find $vdr_plugins/$dptarget/ '(' -name '.svn'  ')' -exec rm -rf {} \; 2> /dev/null
+				
+				#Patch
+				./patching $vdr_plugins/$dptarget/ $plugins/$dp
+				
+			fi
+		done
+	fi
+done;
+
+# Compiling PLUGINS
+export PATH="$bin:$PATH"
+( cd $vdr; make plugins )
+
+
+
+
