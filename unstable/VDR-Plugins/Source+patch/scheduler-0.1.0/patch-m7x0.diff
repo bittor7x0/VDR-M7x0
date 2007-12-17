@@ -1,0 +1,176 @@
+diff -Naur scheduler-0.1.0-orig/po/es_ES.po scheduler/po/es_ES.po
+--- scheduler-0.1.0-orig/po/es_ES.po	2007-10-28 14:31:57.000000000 +0100
++++ scheduler/po/es_ES.po	2007-12-17 16:36:33.000000000 +0100
+@@ -16,61 +16,61 @@
+ "Content-Transfer-Encoding: 8bit\n"
+ 
+ msgid "Start"
+-msgstr ""
++msgstr "Inicio"
+ 
+ msgid "Current output"
+-msgstr ""
++msgstr "Salida actual"
+ 
+ msgid "Log entries"
+-msgstr ""
++msgstr "Entradas de log"
+ 
+ msgid "Hide main menu entry"
+-msgstr ""
++msgstr "Ocultar en menú principal"
+ 
+ msgid "Task settings"
+-msgstr ""
++msgstr "Configuración Tarea"
+ 
+ msgid "End"
+-msgstr ""
++msgstr "Fin"
+ 
+ msgid "Start and end"
+-msgstr ""
++msgstr "Inicio y fin"
+ 
+ msgid "Description"
+-msgstr ""
++msgstr "Descripción"
+ 
+ msgid "Command"
+-msgstr ""
++msgstr "Comando"
+ 
+ msgid "Minute"
+-msgstr ""
++msgstr "Minuto"
+ 
+ msgid "Hour"
+-msgstr ""
++msgstr "Hora"
+ 
+ msgid "Day of week"
+-msgstr ""
++msgstr "Día de la semana"
+ 
+ msgid "Day"
+-msgstr ""
++msgstr "Día"
+ 
+ msgid "Month"
+-msgstr ""
++msgstr "Mes"
+ 
+ msgid "Wakeup VDR"
+-msgstr ""
++msgstr "Reiniciar VDR"
+ 
+ msgid "OSD announce"
+-msgstr ""
++msgstr "Anuncio mediantes OSD"
+ 
+ msgid "Save ... logs"
+-msgstr ""
++msgstr "Guardar ... logs"
+ 
+ msgid "Next executions:"
+-msgstr ""
++msgstr "Proximas ejecuciones:"
+ 
+ msgid "Tasks"
+-msgstr ""
++msgstr "Tareas"
+ 
+ #, fuzzy
+ msgid "Button$Stop"
+@@ -82,34 +82,34 @@
+ 
+ #, c-format
+ msgid "%s currently running"
+-msgstr ""
++msgstr "%s ejecutandose actualmente"
+ 
+ msgid "Delete task?"
+-msgstr ""
++msgstr "Borrar tarea?"
+ 
+ msgid "Abort this task?"
+-msgstr ""
++msgstr "Abortar esta tarea?"
+ 
+ msgid "Execute this task?"
+-msgstr ""
++msgstr "Ejecutar esta tarea?"
+ 
+ msgid "Job scheduler and manager"
+-msgstr ""
++msgstr "Planificador de ejecuciones"
+ 
+ msgid "Job scheduler"
+-msgstr ""
++msgstr "Planificador"
+ 
+ #, c-format
+ msgid "'%s' still runs!"
+-msgstr ""
++msgstr "'%s' todavía ejecutandose!"
+ 
+ msgid "Output"
+-msgstr ""
++msgstr "Salida"
+ 
+ #, c-format
+ msgid "%s started"
+-msgstr ""
++msgstr "%s iniciado"
+ 
+ #, c-format
+ msgid "%s finished"
+-msgstr ""
++msgstr "%s terminado"
+diff -Naur scheduler-0.1.0-orig/task.c scheduler/task.c
+--- scheduler-0.1.0-orig/task.c	2007-10-28 14:36:21.000000000 +0100
++++ scheduler/task.c	2007-12-17 16:10:43.000000000 +0100
+@@ -167,11 +167,16 @@
+   time_start->tm_sec = 0; 
+ 
+   // read specs
+-  cValueSpec minuteValues(string(minute), 0, 59);
+-  cValueSpec hourValues(string(hour), 0, 23);
+-  cValueSpec dayofmonthValues(string(dayofmonth), 1, 31);
+-  cValueSpec dayofweekValues(string(dayofweek), 0, 6);
+-  cValueSpec monthValues(string(month), 1, 12);
++  string aux = string(minute);
++  cValueSpec minuteValues(aux, 0, 59);
++  aux = string(hour);
++  cValueSpec hourValues(aux, 0, 23);
++  aux = string(dayofmonth);
++  cValueSpec dayofmonthValues(aux, 1, 31);
++  aux = string(dayofweek);
++  cValueSpec dayofweekValues(aux, 0, 6);
++  aux = string(month);
++  cValueSpec monthValues(aux, 1, 12);
+ 
+   return minuteValues.Matches(time_start->tm_min) &&
+     hourValues.Matches(time_start->tm_hour) &&
+@@ -193,11 +198,16 @@
+   int startYear = time_start->tm_year;
+ 
+   // read specs
+-  cValueSpec minuteValues(string(minute), 0, 59);
+-  cValueSpec hourValues(string(hour), 0, 23);
+-  cValueSpec dayofmonthValues(string(dayofmonth), 1, 31);
+-  cValueSpec dayofweekValues(string(dayofweek), 0, 6);
+-  cValueSpec monthValues(string(month), 1, 12);
++  string aux = string(minute);
++  cValueSpec minuteValues(aux, 0, 59);
++  aux = string(hour);
++  cValueSpec hourValues(aux, 0, 23);
++  aux = string(dayofmonth);
++  cValueSpec dayofmonthValues(aux, 1, 31);
++  aux = string(dayofweek);
++  cValueSpec dayofweekValues(aux, 0, 6);
++  aux = string(month);
++  cValueSpec monthValues(aux, 1, 12);
+ 
+   do
+     {
