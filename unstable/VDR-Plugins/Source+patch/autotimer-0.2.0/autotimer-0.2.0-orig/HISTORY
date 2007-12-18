@@ -1,0 +1,22 @@
+VDR Plugin 'autotimer' Revision History
+---------------------------------------
+
+2007-03-11: Version 0.2.0
+
+- Homepage changed
+- Do not create timers in past
+- Added silent mode
+- Extended rules langauge
+- Memory leak in ScanEPG fixed
+- Support recording folders
+- Support timer priority
+- Support renaming recordings
+
+2006-06-02: Version 0.1.0
+
+- Updated for vdr-1.4.0
+- Configuration file for autotimers
+
+2004-09-25: Version 0.0.1
+
+- Initial revision

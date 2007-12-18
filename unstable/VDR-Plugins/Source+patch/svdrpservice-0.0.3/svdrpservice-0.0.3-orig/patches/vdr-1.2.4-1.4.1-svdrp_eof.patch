@@ -1,0 +1,16 @@
+--- svdrp.c.orig	2006-07-16 11:39:16.000000000 +0200
++++ svdrp.c	2006-07-23 12:47:30.078132728 +0200
+@@ -1575,8 +1575,11 @@
+               isyslog("lost connection to SVDRP client");
+               Close();
+               }
+-           else
+-              break;
++           else {
++              isyslog("SVDRP client closed connection");
++              file.Close();
++              DELETENULL(PUTEhandler);
++              }
+            }
+      if (Setup.SVDRPTimeout && time(NULL) - lastActivity > Setup.SVDRPTimeout) {
+         isyslog("timeout on SVDRP connection");

@@ -1,0 +1,274 @@
+diff -Naur freecell-0.0.2-orig/cards.c freecell-0.0.2/cards.c
+--- freecell-0.0.2-orig/cards.c	2004-08-14 14:02:55.000000000 +0200
++++ freecell-0.0.2/cards.c	2007-06-04 20:58:44.000000000 +0200
+@@ -52,7 +52,11 @@
+ 	mX = X;
+ 	mY = Y;
+ 	mStacked = Stacked;
++#if VDRVERSNUM >= 10318
++	mSeed = cTimeMs::Now();
++#else
+ 	mSeed = time_ms();
++#endif
+ }
+ 
+ cCardStack::~cCardStack() {
+diff -Naur freecell-0.0.2-orig/i18n.c freecell-0.0.2/i18n.c
+--- freecell-0.0.2-orig/i18n.c	2004-08-14 14:02:55.000000000 +0200
++++ freecell-0.0.2/i18n.c	2007-06-04 20:58:44.000000000 +0200
+@@ -11,7 +11,7 @@
+ 		"",											// Norsk
+ 		"Vapaakenttä",					// suomi
+ 		"",											// Polski
+-		"",											// Español
++		"Freecell",										// Español
+ 		"",											// Ellinika / Greek
+ 		"",											// Svenska
+ 		"",											// Romaneste
+@@ -31,7 +31,7 @@
+ 		"",											// Norsk
+ 		"Korttipeliklassikko",	// suomi
+ 		"",											// Polski
+-		"",											// Español
++		"El conocido juego de cartas",								// Español
+ 		"",											// Ellinika / Greek
+ 		"",											// Svenska
+ 		"",											// Romaneste
+@@ -51,7 +51,7 @@
+ 		"",											// Norsk
+ 		"Voitit!",							// suomi
+ 		"",											// Polski
+-		"",											// Español
++		"¡Ganaste!",										// Español
+ 		"",											// Ellinika / Greek
+ 		"",											// Svenska
+ 		"",											// Romaneste
+@@ -71,7 +71,7 @@
+ 		"",											// Norsk
+ 		"Valitse pino",					// Suomi
+ 		"",											// Polski
+-		"",											// Español
++		"Seleccionar montón",									// Español
+ 		"",											// Ellinika
+ 		"",											// Svenska
+ 		"",											// Romaneste
+@@ -91,7 +91,7 @@
+ 		"",											// Norsk
+ 		"Käynnistä uusi peli painamalla 'OK'",// suomi
+ 		"",											// Polski
+-		"",											// Español
++		"Pulse OK para iniciar un nuevo juego",							// Español
+ 		"",											// Ellinika
+ 		"",											// Svenska
+ 		"",											// Romaneste
+@@ -132,7 +132,14 @@
+ 		"'Sininen': Käynnistä uusi peli\n\n" 
+ 		"Paina 'OK' jatkaaksesi peliä",// suomi
+ 		"",											// Polski
+-		"",											// Español
++		"Este es el Freecell, un juego de cartas para el Video Disk Recorder.\n\n"
++		"Arriba/Abajo: Saltar celdas/montones\n"
++		"Izquierda/Derecha: Mover mano/cartas\n"
++		"OK: Coger carta o montón\n"
++		"Arriba/Abajo: Selecc./Deselecc. cartas\n"
++		"OK: Confirmar selección de montón\n"
++		"Azul: Iniciar nuevo juego\n\n"
++		"Pulse OK para volver al juego", // Español
+ 		"",											// Ellinika
+ 		"",											// Svenska
+ 		"",											// Romaneste
+diff -Naur freecell-0.0.2-orig/Makefile freecell-0.0.2/Makefile
+--- freecell-0.0.2-orig/Makefile	2004-03-21 01:54:39.000000000 +0100
++++ freecell-0.0.2/Makefile	2007-07-30 10:54:44.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+ 
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include -I.
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR) -I.
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -54,7 +54,7 @@
+ 	DEFINES  += -DTOOLBOX_DEBUG -DDEBUG
+ 	CXXFLAGS += -g
+ else
+-	CXXFLAGS += -O2
++	CXXFLAGS += -fPIC -O2
+ endif
+ 
+ ### Implicit rules:
+@@ -64,7 +64,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -77,7 +77,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur freecell-0.0.2-orig/tools/list.h freecell-0.0.2/tools/list.h
+--- freecell-0.0.2-orig/tools/list.h	2004-02-11 13:33:26.000000000 +0100
++++ freecell-0.0.2/tools/list.h	2007-06-04 20:58:44.000000000 +0200
+@@ -90,22 +90,22 @@
+ 	T &SetNextCurrent  ();
+ 	T &SetPrevCurrent  ();
+ 
+-	friend cTBList<T> &operator+= <> (cTBList<T> &list1, const cTBList<T> &list2);
+-	friend cTBList<T> &operator+= <> (cTBList<T> &list, const T &element);
++//	friend cTBList<T> &operator+= <> (cTBList<T> &list1, const cTBList<T> &list2);
++//	friend cTBList<T> &operator+= <> (cTBList<T> &list, const T &element);
+ 
+-	friend cTBList<T> operator+ <> (const cTBList<T> &list1, const cTBList<T> &list2);
+-	friend cTBList<T> operator+ <> (const T &element, const cTBList<T> &list);
+-	friend cTBList<T> operator+ <> (const cTBList<T> &list, const T &element);
++//	friend cTBList<T> operator+ <> (const cTBList<T> &list1, const cTBList<T> &list2);
++//	friend cTBList<T> operator+ <> (const T &element, const cTBList<T> &list);
++//	friend cTBList<T> operator+ <> (const cTBList<T> &list, const T &element);
+ 
+ 	/*friend cSource &operator<< <> (cSource &dest, const cTBList<T> &list);
+-	friend cSource &operator>> <> (cSource &dest, cTBList<T> &list);*/
++//	friend cSource &operator>> <> (cSource &dest, cTBList<T> &list);*/
+ };
+ 
+ // Template Implementation (inline funcs)
+ 
+ template<class T>
+ inline int cTBList<T>::Find (const T & i) {
+-	cTBList<T>::cItem *item = m_First;
++	typename cTBList<T>::cItem *item = m_First;
+ 	int index = 0;
+ 
+ 	while (item && (item->Data != i)) {
+@@ -203,7 +203,7 @@
+ 
+ template<class T>
+ typename cTBList<T>::cItem *cTBList<T>::NewItem (cTBList<T>::cItem *pBefore, cTBList<T>::cItem *pAfter) const {
+-	cTBList<T>::cItem *item = new cTBList<T>::cItem;
++	typename cTBList<T>::cItem *item = new typename cTBList<T>::cItem;
+ 
+ 	item->Next = pAfter;
+ 	item->Prev = pBefore;
+@@ -235,7 +235,7 @@
+ 	if ((int)idx == m_CurPos)
+ 		return m_Current;
+ 
+-	cTBList<T>::cItem *item;
++	typename cTBList<T>::cItem *item;
+ 	int dist = idx - m_CurPos;
+ 	bool direct;
+ 
+@@ -271,7 +271,7 @@
+ 
+ template<class T>
+ T &cTBList<T>::Prepend () {
+-	cTBList<T>::cItem *item = NewItem(NULL, m_First);
++	typename cTBList<T>::cItem *item = NewItem(NULL, m_First);
+ 
+ 	m_First = m_Current = item;
+ 	if (!m_Last)
+@@ -285,7 +285,7 @@
+ 
+ template<class T>
+ T &cTBList<T>::Append () {
+-	cTBList<T>::cItem *item = NewItem(m_Last, NULL);
++	typename cTBList<T>::cItem *item = NewItem(m_Last, NULL);
+ 
+ 	m_Last = m_Current = item;
+ 	if (!m_First)
+@@ -317,13 +317,13 @@
+ 		return true;
+ 	}
+ 
+-	cTBList<T>::cItem *nextItem = Locate(idx);
++	typename cTBList<T>::cItem *nextItem = Locate(idx);
+ 	if (!nextItem)
+ 		return false;
+ 
+-	cTBList<T>::cItem *prevItem = nextItem->Prev;
++	typename cTBList<T>::cItem *prevItem = nextItem->Prev;
+ 
+-	cTBList<T>::cItem *item = NewItem(prevItem, nextItem);
++	typename cTBList<T>::cItem *item = NewItem(prevItem, nextItem);
+ 	item->Data = i;
+ 
+ 	m_CurPos = idx;
+@@ -338,7 +338,7 @@
+ 	if (!m_Current)
+ 		return NULL;
+ 
+-	cTBList<T>::cItem *item = m_Current;
++	typename cTBList<T>::cItem *item = m_Current;
+ 	if (item == m_First) {
+ 		if (m_First = item->Next)
+ 			m_First->Prev = NULL;
+@@ -370,7 +370,7 @@
+ 		if (Find(i) == -1)
+ 			return false;
+ 
+-	cTBList<T>::cItem *item = Unlink();
++	typename cTBList<T>::cItem *item = Unlink();
+ 	if (!item)
+ 		return false;
+ 
+@@ -383,7 +383,7 @@
+ 	if (!Locate(idx))
+ 		return false;
+ 
+-	cTBList<T>::cItem *item = Unlink();
++	typename cTBList<T>::cItem *item = Unlink();
+ 	if (!item)
+ 		return false;
+ 
+@@ -412,13 +412,13 @@
+ 
+ template<class T>
+ void cTBList<T>::Clear () {
+-	cTBList<T>::cItem *item = m_First;
++	typename cTBList<T>::cItem *item = m_First;
+ 
+ 	m_First = m_Last = m_Current = NULL;
+ 	m_Count = 0;
+ 	m_CurPos = -1;
+ 
+-	cTBList<T>::cItem *Prev;
++	typename cTBList<T>::cItem *Prev;
+ 	while (item) {
+ 		Prev = item;
+ 		item = item->Next;

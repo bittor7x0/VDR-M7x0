@@ -1,0 +1,10 @@
+# Templates for the eggtimer plugin
+# -------------------------------------------------------------------------------------
+# For format description see the sample file eggtimer.conf
+#
+#
+MESSAGE;4min;Musta tee;Munakello: tee on valmis!
+MESSAGE;3min;Vihreä tee;Munakello: tee on valmis!
+#
+COMMAND;now;Komento 1
+#

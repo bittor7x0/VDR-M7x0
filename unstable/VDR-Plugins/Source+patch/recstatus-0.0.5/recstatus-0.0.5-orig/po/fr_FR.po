@@ -1,0 +1,44 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Jean-Claude Repetto <jc@repetto.org>, 2001
+# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+# Gregoire Favre <greg@magma.unil.ch>, 2003
+# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
+"POT-Creation-Date: 2007-08-31 15:51+0200\n"
+"PO-Revision-Date: 2007-08-18 21:11+0200\n"
+"Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: recstatus.c:14
+#, fuzzy
+msgid "recording status monitor"
+msgstr "Status d'enregistrement"
+
+#: recstatus.c:15 recstatus.c:83
+msgid "Recording status"
+msgstr "Status d'enregistrement"
+
+#: recstatus.c:91
+msgid "device with decoder"
+msgstr "La carte a un décodeur"
+
+#: recstatus.c:91
+msgid "primary device"
+msgstr "Carte primaire"
+
+#: recstatus.c:93
+msgid "Device"
+msgstr "Carte"
+
+#: recstatus.c:111
+msgid "no current recordings"
+msgstr "pas d'enregistrement actuellement"

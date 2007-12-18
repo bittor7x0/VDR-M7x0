@@ -1,0 +1,73 @@
+--- svdrpext.c.orig	2006-06-04 17:38:11.073460456 +0200
++++ svdrpext.c	2006-06-01 00:14:08.000000000 +0200
+@@ -18,6 +18,29 @@
+ static const char *VERSION        = "0.0.1";
+ static const char *DESCRIPTION    = "Extensions to the SVDRP command set";
+ 
++cString strpescape(const char *s)
++{
++  char *buffer;
++  const char *p = s;
++  char *t = NULL;
++  while (*p) {
++        if (*p == '%') {
++           if (!t) {
++              buffer = MALLOC(char, 2 * strlen(s) + 1);
++              t = buffer + (p - s);
++              s = strcpy(buffer, s);
++              }
++           *t++ = '%';
++           }
++        if (t)
++           *t++ = *p;
++        p++;
++        }
++  if (t)
++     *t = 0;
++  return cString(s, t != NULL);
++}
++
+ class cPluginSvdrpExt : public cPlugin {
+ private:
+   // Add any member variables or functions you may need here.
+@@ -148,7 +171,7 @@
+   ReplyCode = 920;
+   if (strcasecmp(Command, "OSDT") == 0) {
+ 	  if (status->title)
+-		  return status->title;
++		  return strpescape(status->title);
+   }
+   else if (strcasecmp(Command, "OSDI") == 0) {
+ 	  int maxitems = (*Option) ? strtol(Option, NULL, 10) : 0;
+@@ -188,7 +211,8 @@
+ 					  item = status->items.Next(item);
+ 				  }
+ 			  } // while (item && index < last)
+-			  return cString(buffer, true);
++			  //return cString(buffer, true);
++			  return strpescape(buffer);
+ 
+ 		  } // if (status->items.Count() > 0)
+ 
+@@ -204,17 +228,17 @@
+ 	  const char *yellow = status->yellow;
+ 	  const char *blue = status->blue;
+ 	  if (red || green || yellow || blue)
+-		  return cString::sprintf("R:%s\r\nG:%s\r\nY:%s\r\nB:%s",
++		  return strpescape(cString::sprintf("R:%s\r\nG:%s\r\nY:%s\r\nB:%s",
+ 				  red ? red : "", green ? green : "",
+-				  yellow ? yellow : "", blue ? blue : "");
++				  yellow ? yellow : "", blue ? blue : ""));
+   }
+   else if (strcasecmp(Command, "OSDM") == 0) {
+ 	  if (status->message)
+-		  return status->message;
++		  return strpescape(status->message);
+   }
+   else if (strcasecmp(Command, "OSDX") == 0) {
+ 	  if (status->text)
+-		  return status->text;
++		  return strpescape(status->text);
+   }
+   else {
+ 	  return NULL;

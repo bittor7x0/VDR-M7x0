@@ -1,0 +1,177 @@
+diff -Naur skinsoppalusikka-1.0.5-orig/config.c skinsoppalusikka-1.0.5/config.c
+--- skinsoppalusikka-1.0.5-orig/config.c	2007-10-12 03:20:00.000000000 +0200
++++ skinsoppalusikka-1.0.5/config.c	2007-11-01 11:08:49.000000000 +0100
+@@ -14,7 +14,7 @@
+ cSoppalusikkaConfig SoppalusikkaConfig;
+ 
+ cSoppalusikkaConfig::cSoppalusikkaConfig()
+-: usesinglearea(0), showauxinfo(1), showlogo(0), showvps(1),
++: usesinglearea(1), showauxinfo(1), showlogo(0), showvps(1),
+   showsymbols(0), showprogressbar(1), cachesize(50), usechannelid(0)
+ {
+   memset(logodir, 0, sizeof(logodir));
+diff -Naur skinsoppalusikka-1.0.5-orig/i18n.c skinsoppalusikka-1.0.5/i18n.c
+--- skinsoppalusikka-1.0.5-orig/i18n.c	2007-10-12 03:20:00.000000000 +0200
++++ skinsoppalusikka-1.0.5/i18n.c	2007-11-01 11:08:49.000000000 +0100
+@@ -85,7 +85,7 @@
+     "", // Norsk
+     "Stereo", // suomi (Finnish)
+     "Stereo", // Polski
+-    "Estereo", // Español
++    "Estéreo", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "Stereo", // Svenska
+     "", // Românã
+@@ -217,7 +217,7 @@
+     "", // Norsk
+     "Tunnista kanava", // suomi (Finnish)
+     "Rozpoznaj kana³ po", // Polski
+-    "Identificar el canal por...", // Español
++    "Identificar el canal por", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "Identifiera kanal med", // Svenska
+     "", // Românã
+@@ -283,7 +283,7 @@
+     "", // Norsk
+     "Välimuistin koko kanavalogoille", // suomi (Finnish)
+     "Rozmiar cache dla logo kana³u", // Polski
+-    "Tamaño de la cache de los logos", // Español
++    "Tamaño de la caché para logos", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "Cachestorlek för logotyper", // Svenska
+     "", // Românã
+@@ -305,7 +305,7 @@
+     "", // Norsk
+     "Tyhjennä", // suomi (Finnish)
+     "Opró¿nij cache", // Polski
+-    "Limpiar la cache", // Español
++    "Limpiar la caché", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "Töm cachen", // Svenska
+     "", // Românã
+@@ -327,7 +327,7 @@
+     "", // Norsk
+     "Tyhjennetään välimuistia...", // suomi (Finnish)
+     "Opró¿niam cache logo kana³u...", // Polski
+-    "Limpiando la cache...", // Español
++    "Limpiando caché de logos...", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "Tömmer cachen...", // Svenska
+     "", // Românã
+@@ -349,7 +349,7 @@
+     "", // Norsk
+     "Kielet", // suomi (Finnish)
+     "Jêzyki", // Polski
+-    "Lenguajes", // Español
++    "Idiomas", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "Språk", // Svenska
+     "", // Românã
+@@ -459,7 +459,7 @@
+     "", // Norsk
+     "Näytä VPS kanavatiedossa", // suomi (Finnish)
+     "", // Polski
+-    "", // Español
++    "Mostrar VPS en info del canal", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Românã
+@@ -471,6 +471,7 @@
+     "", // Dansk
+     "", // Èesky (Czech)
+   },
++#ifndef VDRO7OVERSION
+   { "Use single area (8bpp)", // English
+     "Ein Bildbereich benutzen (8bpp)", // Deutsch
+     "", // Slovenski
+@@ -481,7 +482,7 @@
+     "", // Norsk
+     "Käytä yksittäistä kuva-aluetta (8bpp)", // suomi (Finnish)
+     "", // Polski
+-    "", // Español
++    "Sólo usar un área (8bpp)", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Românã
+@@ -493,5 +494,6 @@
+     "", // Dansk
+     "", // Èesky (Czech)
+   },
++#endif
+   { NULL }
+ };
+diff -Naur skinsoppalusikka-1.0.5-orig/Makefile skinsoppalusikka-1.0.5/Makefile
+--- skinsoppalusikka-1.0.5-orig/Makefile	2007-10-12 03:20:00.000000000 +0200
++++ skinsoppalusikka-1.0.5/Makefile	2007-11-01 11:08:49.000000000 +0100
+@@ -7,7 +7,7 @@
+ #SKINSOPPALUSIKKA_DEBUG = 1
+ 
+ # Strip debug symbols?  Set eg. to /bin/true if not
+-STRIP = strip
++STRIP = mips-linux-strip
+ 
+ # The official name of this plugin.
+ # This name will be used in the '-P...' option of VDR to load the plugin.
+@@ -26,8 +26,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -49,6 +49,10 @@
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
++# Compiled for VDR-M7x0 Siemens Gigaset from open7x0.org
++# Comment following line in other cases
++DEFINES += -DVDRO7OVERSION
++
+ ifdef SKINSOPPALUSIKKA_DEBUG
+ DEFINES += -DDEBUG
+ endif
+diff -Naur skinsoppalusikka-1.0.5-orig/skinsoppalusikka.c skinsoppalusikka-1.0.5/skinsoppalusikka.c
+--- skinsoppalusikka-1.0.5-orig/skinsoppalusikka.c	2007-10-12 03:20:00.000000000 +0200
++++ skinsoppalusikka-1.0.5/skinsoppalusikka.c	2007-11-01 11:13:56.000000000 +0100
+@@ -198,7 +198,9 @@
+ 
+   Clear();
+ 
++#ifndef VDRO7OVERSION
+   Add(new cMenuEditBoolItem(   tr("Use single area (8bpp)"),     &data.usesinglearea));
++#endif
+   Add(new cMenuEditBoolItem(   tr("Show auxiliary information"), &data.showauxinfo));
+   Add(new cMenuEditBoolItem(   tr("Show progressbar"),           &data.showprogressbar));
+   Add(new cMenuEditBoolItem(   tr("Show symbols"),               &data.showsymbols));
+diff -Naur skinsoppalusikka-1.0.5-orig/soppalusikka.c skinsoppalusikka-1.0.5/soppalusikka.c
+--- skinsoppalusikka-1.0.5-orig/soppalusikka.c	2007-10-12 03:20:00.000000000 +0200
++++ skinsoppalusikka-1.0.5/soppalusikka.c	2007-11-01 11:12:44.000000000 +0100
+@@ -171,6 +171,9 @@
+ private:
+   cOsd *osd;
+   bool islogo;
++
++  time_t lastTime; //Last time on info bar
++
+   int x0, x1;
+   int xt0, xt1, xt2, xt3, xt4, xt5, xt6, xt7, xt8, xt9;
+   int xb0, xb1, xb2, xb3, xb4, xb5, xb6;
+@@ -553,8 +556,13 @@
+ void cSkinSoppalusikkaDisplayChannel::Flush(void)
+ {
+   cString date = DayDateTime();
++  time_t now = time(NULL);
+   // draw updated date string
+-  osd->DrawText(xt3, yt0, date, Theme.Color(clrChannelNumberDateFg), Theme.Color(clrChannelNumberDateBg), cFont::GetFont(fontSml), xt4 - xt3, yt2 - yt0, taRight);
++  if (now != lastTime) { //Update date only if the second value has changed to avoid OSD flushes
++     osd->DrawText(xt3, yt0, date, Theme.Color(clrChannelNumberDateFg), Theme.Color(clrChannelNumberDateBg), cFont::GetFont(fontSml), xt4 - xt3, yt2 - yt0, taRight);
++     lastTime = now;
++  };
++
+   osd->Flush();
+ }
+ 

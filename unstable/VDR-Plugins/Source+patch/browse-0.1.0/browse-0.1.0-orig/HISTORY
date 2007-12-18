@@ -1,0 +1,21 @@
+VDR Plugin 'browse' Revision History
+------------------------------------
+
+2004-06-26: Version 0.0.1
+
+- Initial revision.
+
+
+2006-05-18: Version 0.0.2
+
+- Added support for numerical input; can now jump to a specific channel.
+- User can now see the numerical input.
+- Updated Makefile for VDR 1.4.0
+
+
+2007-04-22: Version 0.1.0
+
+- Major rewrite, many bugfixes
+- Added setup menu
+- Looks better on PAL TVs
+- Updated Makefile

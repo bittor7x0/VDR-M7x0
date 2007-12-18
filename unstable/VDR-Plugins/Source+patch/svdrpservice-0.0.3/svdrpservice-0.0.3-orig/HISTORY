@@ -1,0 +1,26 @@
+VDR Plugin 'svdrpservice' Revision History
+-----------------------------------------
+
+2007-03-06: Version 0.0.3
+- Dynamic buffer size
+- New setup options: default server IP and port
+- Silent change of service interface: serverIP and serverPort are now
+  in/out params
+- Connection handle was not reset to -1 when disconnecting a shared
+  connection which is still in use
+- Non-blocking connect
+
+2006-07-24: Version 0.0.2
+- Added locking. svdrpservice is now threadsafe
+- Must use cFile::FileReady instead of cFile::Ready. Otherwise a
+  command may return without delivering the reply
+- Check if connection still exists before trying to delete it
+- Fixed EOF handling
+- Increased read timeout to 1500ms
+- Improved logging
+- Use SVDRPSERVICE_DEBUG instead of DEBUG to enable debugging
+- Include patch for VDR 1.4.1-1 and older to fix problem with svdrp
+  server ignoring client side close
+
+2006-06-01: Version 0.0.1
+- Initial revision.

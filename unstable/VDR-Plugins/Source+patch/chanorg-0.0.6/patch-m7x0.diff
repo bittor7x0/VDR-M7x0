@@ -1,0 +1,958 @@
+diff -Naur chanorg-0.0.6-orig/chan-menu.c chanorg-0.0.6/chan-menu.c
+--- chanorg-0.0.6-orig/chan-menu.c	2005-01-26 19:06:13.000000000 +0100
++++ chanorg-0.0.6/chan-menu.c	2007-06-04 20:55:22.000000000 +0200
+@@ -14,37 +14,37 @@
+ 
+ void cGroupMove::Setup()
+ {
+-	cChannel *tmp=ChanOrg.OrgChans.First();
++	cChannel *tmp=pChanOrg->OrgChans.First();
+         Clear();
+ 	cChannel *last=new cChannel();
+ #if VDRVERSNUM<10315
+ 	last->SetName(tr(":End"));
+-	ChanOrg.OrgChans.NewChannel(last,last->Name(),0,0,0,0);
++	pChanOrg->OrgChans.NewChannel(last,last->Name(),0,0,0,0);
+ #else
+ 	last->SetName(tr(":End"),"","");
+-	ChanOrg.OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
++	pChanOrg->OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
+ #endif
+-	ChanOrg.OrgChans.Last()->Parse(last->Name());
+-	ChanOrg.OrgChans.ReNumber();
++	pChanOrg->OrgChans.Last()->Parse(last->Name());
++	pChanOrg->OrgChans.ReNumber();
+ 	int j=0;
+-	if (ChanOrg.OrgChans.First()->GroupSep() && tmp!=ToMove)
++	if (pChanOrg->OrgChans.First()->GroupSep() && tmp!=ToMove)
+ 	{
+-		Add(new cOsdItem(ChanOrg.OrgChans.First()->Name(),osUser1));
+-		Group[j]=ChanOrg.OrgChans.First();
++		Add(new cOsdItem(pChanOrg->OrgChans.First()->Name(),osUser1));
++		Group[j]=pChanOrg->OrgChans.First();
+ 		j++;
+ 	}
+ 	int i=0;
+-	while ((i=ChanOrg.OrgChans.GetNextGroup(i))>0)
++	while ((i=pChanOrg->OrgChans.GetNextGroup(i))>0)
+ 	{
+-		tmp=ChanOrg.OrgChans.Get(i);
++		tmp=pChanOrg->OrgChans.Get(i);
+ 		Group[j]=tmp;
+-		if (tmp != ToMove && tmp->Index()!=ChanOrg.OrgChans.GetNextGroup(ToMove->Index()))
++		if (tmp != ToMove && tmp->Index()!=pChanOrg->OrgChans.GetNextGroup(ToMove->Index()))
+ 		{
+ 		Add(new cOsdItem(tmp->Name(),osUser1));
+ 		j++;
+ 		}
+ 	}
+-	SetCurrent(Get(ChanOrg.LastAffect));
++	SetCurrent(Get(pChanOrg->LastAffect));
+ 	Display();
+ }
+ 
+@@ -59,9 +59,9 @@
+ 	{
+ 		case osUser1 : 
+ 			MoveGroup(Group[Current()]);
+-			ChanOrg.OrgChans.Del(ChanOrg.OrgChans.Last());
+-			ChanOrg.OrgChans.ReNumber();
+-			ChanOrg.ReDraw=true;
++			pChanOrg->OrgChans.Del(pChanOrg->OrgChans.Last());
++			pChanOrg->OrgChans.ReNumber();
++			pChanOrg->ReDraw=true;
+ 			return osBack;
+ 			break;
+ 		default:break;
+@@ -78,16 +78,16 @@
+ 	while (move && (!move->GroupSep() || move==ToMove) )
+ 	{
+ 		movelist[i]=move;
+-		move=ChanOrg.OrgChans.Next(move);
++		move=pChanOrg->OrgChans.Next(move);
+ 		i++;
+ 	}
+ 	nbr=i;
+ 	for (int j=0;j<nbr;j++)
+ 	{
+ 		if (movelist[j]->Index() > chan->Index())
+-		ChanOrg.OrgChans.Move(movelist[j],chan);
++		pChanOrg->OrgChans.Move(movelist[j],chan);
+ 		else
+-		ChanOrg.OrgChans.Move(movelist[j]->Index(),chan->Index()-1);
++		pChanOrg->OrgChans.Move(movelist[j]->Index(),chan->Index()-1);
+ 	}
+ }
+ 
+@@ -111,17 +111,17 @@
+ 	switch(Key)
+ 	{
+ 		case kOk : 
+-			   ChanOrg.LastAffect = Current();
++			   pChanOrg->LastAffect = Current();
+ 			   if (chan->Number()>Group[Current()]->Number())
+ 			   {
+-				ChanOrg.OrgChans.Move(chan,ChanOrg.OrgChans.Next(Group[Current()]));
++				pChanOrg->OrgChans.Move(chan,pChanOrg->OrgChans.Next(Group[Current()]));
+ 			   }
+ 			   else
+ 			   {
+-			   ChanOrg.OrgChans.Move(chan,Group[Current()]);
++			   pChanOrg->OrgChans.Move(chan,Group[Current()]);
+ 			   }
+-			   ChanOrg.OrgChans.ReNumber();
+-			   ChanOrg.ReDraw=true;
++			   pChanOrg->OrgChans.ReNumber();
++			   pChanOrg->ReDraw=true;
+ 			   return osBack;
+ 			   break;
+ 		default : break;
+@@ -133,22 +133,22 @@
+ {
+ 	Clear();
+ 	int j=0;
+-	if (ChanOrg.OrgChans.First()->GroupSep())
++	if (pChanOrg->OrgChans.First()->GroupSep())
+ 	{
+-		Add(new cOsdItem(ChanOrg.OrgChans.First()->Name(),osUser1));
+-		Group[j]=ChanOrg.OrgChans.First();	
++		Add(new cOsdItem(pChanOrg->OrgChans.First()->Name(),osUser1));
++		Group[j]=pChanOrg->OrgChans.First();	
+ 		j++;
+ 	}
+ 	int i=0;
+ 	cChannel *tmp;
+-	while ((i=ChanOrg.OrgChans.GetNextGroup(i))>0)
++	while ((i=pChanOrg->OrgChans.GetNextGroup(i))>0)
+ 	{
+ 		tmp=GetByIndex(i);
+ 		Group[j]=tmp;
+ 		Add(new cOsdItem(tmp->Name(),osUser1));
+ 		j++;
+ 	}
+-	SetCurrent(Get(ChanOrg.LastAffect));
++	SetCurrent(Get(pChanOrg->LastAffect));
+ 	Display();
+ }
+ 
+@@ -203,7 +203,7 @@
+ 				   {
+ 				           Edit();
+ 				   }
+-				   ChanOrg.ReDraw=true;
++				   pChanOrg->ReDraw=true;
+ 				   return osBack;
+ 				   break;
+ 			default :break;
+@@ -216,6 +216,7 @@
+ 
+ cChanOrgMenu::cChanOrgMenu(void) : cOsdMenu(tr("Channels Organizer"),20)
+ {
++	pChanOrg = new cPluginChanOrg();
+ 	ClearMarks();
+ 	SaveTimers();
+ 	MakeChannelsList();
+@@ -224,48 +225,48 @@
+ 
+ cChanOrgMenu::~cChanOrgMenu(void)
+ {
+-	delete &ChanOrg;
++	delete pChanOrg;
+ }
+ 
+ void cChanOrgMenu::TriAlphaCroiss(cChannel *start,cChannel *stop)
+ {
+ 	if (start->Index()+1>=stop->Index()) return;
+ 	bool DelLast=false;
+-	if (stop==ChanOrg.OrgChans.Last())
++	if (stop==pChanOrg->OrgChans.Last())
+ 	{
+ 		cChannel *last=new cChannel();
+ #if VDRVERSNUM<10315
+ 		last->SetName(":Last");
+-		ChanOrg.OrgChans.NewChannel(last,last->Name(),0,0,0,0);
++		pChanOrg->OrgChans.NewChannel(last,last->Name(),0,0,0,0);
+ #else
+ 		last->SetName(":Last","","");
+-		ChanOrg.OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
++		pChanOrg->OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
+ #endif
+-		ChanOrg.OrgChans.Last()->Parse(last->Name());
+-		ChanOrg.OrgChans.ReNumber();
+-		stop=ChanOrg.OrgChans.Last();
++		pChanOrg->OrgChans.Last()->Parse(last->Name());
++		pChanOrg->OrgChans.ReNumber();
++		stop=pChanOrg->OrgChans.Last();
+ 		DelLast=true;
+ 	}
+ 	bool cont=false;
+-	cChannel *chan = ChanOrg.OrgChans.Next(start);
+-	cChannel *tmp = ChanOrg.OrgChans.Next(chan);
+-	while (chan && ((start==ChanOrg.OrgChans.Last())? (tmp!=NULL) :(tmp!=stop)))
++	cChannel *chan = pChanOrg->OrgChans.Next(start);
++	cChannel *tmp = pChanOrg->OrgChans.Next(chan);
++	while (chan && ((start==pChanOrg->OrgChans.Last())? (tmp!=NULL) :(tmp!=stop)))
+ 	{
+ 	 if ( ( strcasecmp(chan->Name(),tmp->Name()) ) > 0) 
+ 	 {
+-		ChanOrg.OrgChans.Move(chan,tmp);
++		pChanOrg->OrgChans.Move(chan,tmp);
+ 		cont=true;
+ 	 }
+ 	else chan=tmp;
+-	tmp=ChanOrg.OrgChans.Next(chan);
++	tmp=pChanOrg->OrgChans.Next(chan);
+ 	}
+-	ChanOrg.OrgChans.ReNumber();
++	pChanOrg->OrgChans.ReNumber();
+ 	chan=NULL;
+ 	tmp=NULL;
+ 	if (DelLast)
+ 	{
+-		ChanOrg.OrgChans.Del(ChanOrg.OrgChans.Last());
+-		stop=ChanOrg.OrgChans.Last();
++		pChanOrg->OrgChans.Del(pChanOrg->OrgChans.Last());
++		stop=pChanOrg->OrgChans.Last();
+ 	}
+ 	if (cont) TriAlphaCroiss(start,stop);
+ }
+@@ -274,41 +275,41 @@
+ {
+ 	if (start->Index()+1>=stop->Index()) return;
+ 	bool DelLast=false;
+-	if (stop==ChanOrg.OrgChans.Last())
++	if (stop==pChanOrg->OrgChans.Last())
+ 	{
+ 		cChannel *last=new cChannel();
+ #if VDRVERSNUM<10315
+ 		last->SetName(":Last");
+-		ChanOrg.OrgChans.NewChannel(last,last->Name(),0,0,0,0);
++		pChanOrg->OrgChans.NewChannel(last,last->Name(),0,0,0,0);
+ #else
+ 		last->SetName(":Last","","");
+-		ChanOrg.OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
++		pChanOrg->OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
+ #endif
+-		ChanOrg.OrgChans.Last()->Parse(last->Name());
+-		ChanOrg.OrgChans.ReNumber();
+-		stop=ChanOrg.OrgChans.Last();
++		pChanOrg->OrgChans.Last()->Parse(last->Name());
++		pChanOrg->OrgChans.ReNumber();
++		stop=pChanOrg->OrgChans.Last();
+ 		DelLast=true;
+ 	}
+ 	bool cont=false;
+-	cChannel *chan = ChanOrg.OrgChans.Next(start);
+-	cChannel *tmp = ChanOrg.OrgChans.Next(chan);
+-	while (chan && ((start==ChanOrg.OrgChans.Last())? (tmp!=NULL) :(tmp!=stop)))
++	cChannel *chan = pChanOrg->OrgChans.Next(start);
++	cChannel *tmp = pChanOrg->OrgChans.Next(chan);
++	while (chan && ((start==pChanOrg->OrgChans.Last())? (tmp!=NULL) :(tmp!=stop)))
+ 	{
+ 	 if ( ( strcasecmp(chan->Name(),tmp->Name()) ) < 0) 
+ 	 {
+-		ChanOrg.OrgChans.Move(chan,tmp);
++		pChanOrg->OrgChans.Move(chan,tmp);
+ 		cont=true;
+ 	 }
+ 	else chan=tmp;
+-	tmp=ChanOrg.OrgChans.Next(chan);
++	tmp=pChanOrg->OrgChans.Next(chan);
+ 	}
+-	ChanOrg.OrgChans.ReNumber();
++	pChanOrg->OrgChans.ReNumber();
+ 	chan=NULL;
+ 	tmp=NULL;
+ 	if (DelLast)
+ 	{
+-		ChanOrg.OrgChans.Del(ChanOrg.OrgChans.Last());
+-		stop=ChanOrg.OrgChans.Last();
++		pChanOrg->OrgChans.Del(pChanOrg->OrgChans.Last());
++		stop=pChanOrg->OrgChans.Last();
+ 	}
+ 	if (cont) TriAlphaDec(start,stop);
+ }
+@@ -317,41 +318,41 @@
+ {
+ 	if (start->Index()+1>=stop->Index()) return;
+ 	bool DelLast=false;
+-	if (stop==ChanOrg.OrgChans.Last())
++	if (stop==pChanOrg->OrgChans.Last())
+ 	{
+ 		cChannel *last=new cChannel();
+ #if VDRVERSNUM<10315
+ 		last->SetName(":Last");
+-		ChanOrg.OrgChans.NewChannel(last,last->Name(),0,0,0,0);
++		pChanOrg->OrgChans.NewChannel(last,last->Name(),0,0,0,0);
+ #else
+ 		last->SetName(":Last","","");
+-		ChanOrg.OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
++		pChanOrg->OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
+ #endif
+-		ChanOrg.OrgChans.Last()->Parse(last->Name());
+-		ChanOrg.OrgChans.ReNumber();
+-		stop=ChanOrg.OrgChans.Last();
++		pChanOrg->OrgChans.Last()->Parse(last->Name());
++		pChanOrg->OrgChans.ReNumber();
++		stop=pChanOrg->OrgChans.Last();
+ 		DelLast=true;
+ 	}
+ 	bool cont=false;
+-	cChannel *chan = ChanOrg.OrgChans.Next(start);
+-	cChannel *tmp = ChanOrg.OrgChans.Next(chan);
+-	while (chan && ((start==ChanOrg.OrgChans.Last())? (tmp!=NULL) :(tmp!=stop)))
++	cChannel *chan = pChanOrg->OrgChans.Next(start);
++	cChannel *tmp = pChanOrg->OrgChans.Next(chan);
++	while (chan && ((start==pChanOrg->OrgChans.Last())? (tmp!=NULL) :(tmp!=stop)))
+ 	{
+ 	 if (  chan->Frequency() > tmp->Frequency()) 
+ 	 {
+-		ChanOrg.OrgChans.Move(chan,tmp);
++		pChanOrg->OrgChans.Move(chan,tmp);
+ 		cont=true;
+ 	 }
+ 	else chan=tmp;
+-	tmp=ChanOrg.OrgChans.Next(chan);
++	tmp=pChanOrg->OrgChans.Next(chan);
+ 	}
+-	ChanOrg.OrgChans.ReNumber();
++	pChanOrg->OrgChans.ReNumber();
+ 	chan=NULL;
+ 	tmp=NULL;
+ 	if (DelLast)
+ 	{
+-		ChanOrg.OrgChans.Del(ChanOrg.OrgChans.Last());
+-		stop=ChanOrg.OrgChans.Last();
++		pChanOrg->OrgChans.Del(pChanOrg->OrgChans.Last());
++		stop=pChanOrg->OrgChans.Last();
+ 	}
+ 	if (cont) TriTranspCroiss(start,stop);
+ }
+@@ -360,61 +361,61 @@
+ {
+ 	if (start->Index()+1>=stop->Index()) return;
+ 	bool DelLast=false;
+-	if (stop==ChanOrg.OrgChans.Last())
++	if (stop==pChanOrg->OrgChans.Last())
+ 	{
+ 		cChannel *last=new cChannel();
+ #if VDRVERSNUM<10315
+ 		last->SetName(":Last");
+-		ChanOrg.OrgChans.NewChannel(last,last->Name(),0,0,0,0);
++		pChanOrg->OrgChans.NewChannel(last,last->Name(),0,0,0,0);
+ #else
+ 		last->SetName(":Last","","");
+-		ChanOrg.OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
++		pChanOrg->OrgChans.NewChannel(last,last->Name(),last->ShortName(),last->Provider(),0,0,0,0);
+ #endif
+-		ChanOrg.OrgChans.Last()->Parse(last->Name());
+-		ChanOrg.OrgChans.ReNumber();
+-		stop=ChanOrg.OrgChans.Last();
++		pChanOrg->OrgChans.Last()->Parse(last->Name());
++		pChanOrg->OrgChans.ReNumber();
++		stop=pChanOrg->OrgChans.Last();
+ 		DelLast=true;
+ 	}
+ 	bool cont=false;
+-	cChannel *chan = ChanOrg.OrgChans.Next(start);
+-	cChannel *tmp = ChanOrg.OrgChans.Next(chan);
+-	while (chan && ((start==ChanOrg.OrgChans.Last())? (tmp!=NULL) :(tmp!=stop)))
++	cChannel *chan = pChanOrg->OrgChans.Next(start);
++	cChannel *tmp = pChanOrg->OrgChans.Next(chan);
++	while (chan && ((start==pChanOrg->OrgChans.Last())? (tmp!=NULL) :(tmp!=stop)))
+ 	{
+ 	 if ( chan->Frequency()<tmp->Frequency()) 
+ 	 {
+-		ChanOrg.OrgChans.Move(chan,tmp);
++		pChanOrg->OrgChans.Move(chan,tmp);
+ 		cont=true;
+ 	 }
+ 	else chan=tmp;
+-	tmp=ChanOrg.OrgChans.Next(chan);
++	tmp=pChanOrg->OrgChans.Next(chan);
+ 	}
+-	ChanOrg.OrgChans.ReNumber();
++	pChanOrg->OrgChans.ReNumber();
+ 	chan=NULL;
+ 	tmp=NULL;
+ 	if (DelLast)
+ 	{
+-		ChanOrg.OrgChans.Del(ChanOrg.OrgChans.Last());
+-		stop=ChanOrg.OrgChans.Last();
++		pChanOrg->OrgChans.Del(pChanOrg->OrgChans.Last());
++		stop=pChanOrg->OrgChans.Last();
+ 	}
+ 	if (cont) TriTranspDec(start,stop);
+ }
+ 
+ void cChanOrgMenu::MakeChannelsList(void)
+ {
+-  ChanOrg.OrgChans.cList<cChannel>::Clear();
++  pChanOrg->OrgChans.cList<cChannel>::Clear();
+   for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
+ 	  if (!channel->GroupSep() || *channel->Name())
+ 	  {
+ 		 
+ #if VDRVERSNUM<10315
+-		 ChanOrg.OrgChans.NewChannel(channel,channel->Name(),channel->Nid(),channel->Tid(),channel->Sid(),channel->Rid());
++		 pChanOrg->OrgChans.NewChannel(channel,channel->Name(),channel->Nid(),channel->Tid(),channel->Sid(),channel->Rid());
+ #else
+-		 ChanOrg.OrgChans.NewChannel(channel,channel->Name(),channel->ShortName(),channel->Provider(),channel->Nid(),channel->Tid(),channel->Sid(),channel->Rid());
++		 pChanOrg->OrgChans.NewChannel(channel,channel->Name(),channel->ShortName(),channel->Provider(),channel->Nid(),channel->Tid(),channel->Sid(),channel->Rid());
+ #endif
+ #if VDRVERSNUM>10317
+-		 ChanOrg.OrgChans.Last()->Parse(*channel->ToText());
++		 pChanOrg->OrgChans.Last()->Parse(*channel->ToText());
+ #else
+-		 ChanOrg.OrgChans.Last()->Parse(channel->ToText());
++		 pChanOrg->OrgChans.Last()->Parse(channel->ToText());
+ #endif
+ 	  }
+       }
+@@ -422,8 +423,8 @@
+ 
+ void cChanOrgMenu::Draw(void)
+ {
+-ChanOrg.ReDraw=false;
+-cChannel *chan=ChanOrg.OrgChans.First();
++pChanOrg->ReDraw=false;
++cChannel *chan=pChanOrg->OrgChans.First();
+ char *buff;
+ int i = Current();
+ Clear();
+@@ -439,7 +440,7 @@
+ 		asprintf(&buff,"%i : %s",chan->Number(),chan->Name());
+ 		Add(new cOsdItem(buff,osUser1));
+ 	}
+-	chan=ChanOrg.OrgChans.Next(chan);
++	chan=pChanOrg->OrgChans.Next(chan);
+ }
+ SetCurrent(Get(i));
+ if (i>=0)
+@@ -451,26 +452,26 @@
+ 	chan=GetByIndex(0);
+ }
+ if (chan) chan->GroupSep()? SetHelp(tr("Del Group"),tr("Edit Group"),tr("Sort Group"),tr("Move")) : SetHelp (tr("Add Group"),tr("Affect"),tr("Zap"),tr("Move"));
+-ChanOrg.OrgChans.ReNumber();
++pChanOrg->OrgChans.ReNumber();
+ Display();
+ }
+ 
+ cChannel *cAffect::GetByIndex(int Index)
+ {
+-cChannel *chan=ChanOrg.OrgChans.First();
++cChannel *chan=pChanOrg->OrgChans.First();
+ 	for(int i=0;i!=Index;i++)
+ 	{
+-		chan=ChanOrg.OrgChans.Next(chan);
++		chan=pChanOrg->OrgChans.Next(chan);
+ 	}
+ 	return chan;
+ }
+ 
+ cChannel *cChanOrgMenu::GetByIndex(int Index)
+ {
+-cChannel *chan=ChanOrg.OrgChans.First();
++cChannel *chan=pChanOrg->OrgChans.First();
+ 	for(int i=0;i!=Index;i++)
+ 	{
+-		chan=ChanOrg.OrgChans.Next(chan);
++		chan=pChanOrg->OrgChans.Next(chan);
+ 	}
+ 	return chan;
+ }
+@@ -486,24 +487,24 @@
+ 	CurChan->SetName(name,"","");
+ #endif
+ 	CurChan->Parse(name);
+-	ChanOrg.OrgChans.ReNumber();
++	pChanOrg->OrgChans.ReNumber();
+ }
+ 
+ void cGroup::Insert(void)
+ {
+ 	int num=CurChan->Number();
+-	cChannel *channel=ChanOrg.OrgChans.Last();
++	cChannel *channel=pChanOrg->OrgChans.Last();
+ #if VDRVERSNUM<10315
+-	ChanOrg.OrgChans.NewChannel(channel,channel->Name(),channel->Nid(),channel->Tid(),channel->Sid(),channel->Rid());
++	pChanOrg->OrgChans.NewChannel(channel,channel->Name(),channel->Nid(),channel->Tid(),channel->Sid(),channel->Rid());
+ #else
+-	ChanOrg.OrgChans.NewChannel(channel,channel->Name(),channel->ShortName(),channel->Provider(),channel->Nid(),channel->Tid(),channel->Sid(),channel->Rid());
++	pChanOrg->OrgChans.NewChannel(channel,channel->Name(),channel->ShortName(),channel->Provider(),channel->Nid(),channel->Tid(),channel->Sid(),channel->Rid());
+ #endif
+-	for (int i=ChanOrg.OrgChans.Count();i>Pos;i--)
++	for (int i=pChanOrg->OrgChans.Count();i>Pos;i--)
+ 	{
+-		ChanOrg.OrgChans.Move(i-1,i); 
++		pChanOrg->OrgChans.Move(i-1,i); 
+ 	}
+ 	char *name;
+-	CurChan=ChanOrg.OrgChans.Prev(CurChan);
++	CurChan=pChanOrg->OrgChans.Prev(CurChan);
+ 	if (Num==0) asprintf(&name,":%s",Name);
+ 	else asprintf(&name,":@%i %s",Num,Name);
+ #if VDRVERSNUM<10315
+@@ -513,7 +514,7 @@
+ #endif
+ 	CurChan->SetNumber(num);
+ 	CurChan->Parse(name);
+-	ChanOrg.OrgChans.ReNumber();
++	pChanOrg->OrgChans.ReNumber();
+ }
+ 
+ void cChanOrgMenu::SaveTimers()
+@@ -521,13 +522,13 @@
+ 	int i=0;
+ 	for (cTimer *t = Timers.First(); t; t= Timers.Next(t))
+ 	{
+-		ChanOrg.Tmr.Add(new cTimer(*t));
++		pChanOrg->Tmr.Add(new cTimer(*t));
+ #if VDRVERSNUM>10317
+-		ChanOrg.Tmr.Last()->Parse((const char *)t->ToText(false));
+-		asprintf(&ChanOrg.TmrChan[i],"%s",*t->ToText(true));
++		pChanOrg->Tmr.Last()->Parse((const char *)t->ToText(false));
++		asprintf(&pChanOrg->TmrChan[i],"%s",*t->ToText(true));
+ #else
+-		ChanOrg.Tmr.Last()->Parse(t->ToText(false));
+-		asprintf(&ChanOrg.TmrChan[i],"%s",t->ToText(true));
++		pChanOrg->Tmr.Last()->Parse(t->ToText(false));
++		asprintf(&pChanOrg->TmrChan[i],"%s",t->ToText(true));
+ #endif
+ 		i++;
+ 	}
+@@ -537,10 +538,10 @@
+ {
+ 	int i=0;
+ 	Timers.cList<cTimer>::Clear();
+-	for (cTimer *t = ChanOrg.Tmr.First(); t; t = ChanOrg.Tmr.Next(t))
++	for (cTimer *t = pChanOrg->Tmr.First(); t; t = pChanOrg->Tmr.Next(t))
+ 	{
+ 		Timers.Add(new cTimer(*t));
+-		Timers.Last()->Parse(ChanOrg.TmrChan[i]);
++		Timers.Last()->Parse(pChanOrg->TmrChan[i]);
+ 		i++;
+ 	}
+ }
+@@ -549,8 +550,8 @@
+ eOSState cChanOrgMenu::ProcessKey(eKeys Key)
+ {
+ 	eOSState state = cOsdMenu::ProcessKey(Key);
+-	cChannel *chan=ChanOrg.OrgChans.First();
+-	char totext[255];
++	cChannel *chan=pChanOrg->OrgChans.First();
++	char totext[512];
+ 	if (!HasSubMenu())
+ 	{
+ 	switch(state)
+@@ -572,7 +573,7 @@
+ 						strcpy(totext,chan->ToText());
+ #endif
+ 						Channels.Last()->Parse(totext);
+-						chan=ChanOrg.OrgChans.Next(chan);
++						chan=pChanOrg->OrgChans.Next(chan);
+ 					}
+ 					Channels.ReNumber();
+ #if VDRVERSNUM>10317
+@@ -601,7 +602,7 @@
+ 			default : break;
+ 			}
+ 		case osUnknown:
+-			if (ChanOrg.ReDraw) Draw();
++			if (pChanOrg->ReDraw) Draw();
+ 			switch(Key)
+ 			{
+ 			case kBlue:
+@@ -610,8 +611,8 @@
+ 					if ( (Marked != Current()) && Marked!=Current()+1    )
+ 
+ 					{
+-						ChanOrg.OrgChans.Move(Marked,Current()<=Marked ? Current()+1 : Current() );
+-						ChanOrg.OrgChans.ReNumber();
++						pChanOrg->OrgChans.Move(Marked,Current()<=Marked ? Current()+1 : Current() );
++						pChanOrg->OrgChans.ReNumber();
+ 					}
+ 				MarkMove=false;
+ 				Marked=0;
+@@ -634,7 +635,7 @@
+ 				{
+ 					//Tri Transp Dec
+ 					Skins.Message(mtStatus,tr("Sorting"));
+-					TriTranspDec(GetByIndex(Current()),ChanOrg.OrgChans.GetNextGroup(Current())>0? GetByIndex(ChanOrg.OrgChans.GetNextGroup(Current())):ChanOrg.OrgChans.Last());
++					TriTranspDec(GetByIndex(Current()),pChanOrg->OrgChans.GetNextGroup(Current())>0? GetByIndex(pChanOrg->OrgChans.GetNextGroup(Current())):pChanOrg->OrgChans.Last());
+ 					Skins.Message(mtStatus,tr("Sort done"));
+ 					sleep(Setup.OSDMessageTime);
+ 					Skins.Message(mtStatus,"");
+@@ -651,15 +652,15 @@
+ 					   }
+ 					   else if (!MarkMove && !MarkTri)
+ 						   {
+-					   	   ChanOrg.OrgChans.Del( GetByIndex(Current()) );
+-						   ChanOrg.OrgChans.ReNumber();
++					   	   pChanOrg->OrgChans.Del( GetByIndex(Current()) );
++						   pChanOrg->OrgChans.ReNumber();
+ 						   Draw();
+ 						   }
+ 				    	   else
+ 					   {
+ 						   //Tri Alpha Croiss
+ 						Skins.Message(mtStatus,tr("Sorting"));
+-						TriAlphaCroiss(GetByIndex(Current()),ChanOrg.OrgChans.GetNextGroup(Current())>0? GetByIndex(ChanOrg.OrgChans.GetNextGroup(Current())):ChanOrg.OrgChans.Last());
++						TriAlphaCroiss(GetByIndex(Current()),pChanOrg->OrgChans.GetNextGroup(Current())>0? GetByIndex(pChanOrg->OrgChans.GetNextGroup(Current())):pChanOrg->OrgChans.Last());
+ 						Skins.Message(mtStatus,tr("Sort done"));
+ 						sleep(Setup.OSDMessageTime);
+ 						Skins.Message(mtStatus,"");
+@@ -673,8 +674,8 @@
+ 				   {
+ 					if ( Marked!=Current() && Marked+1!=Current())
+ 					{
+-						ChanOrg.OrgChans.Move(Marked,Current()<=Marked ? Current() : Current()-1 );
+-						ChanOrg.OrgChans.ReNumber();
++						pChanOrg->OrgChans.Move(Marked,Current()<=Marked ? Current() : Current()-1 );
++						pChanOrg->OrgChans.ReNumber();
+ 					}
+ 					MarkMove=false;
+ 					Marked=0;
+@@ -685,7 +686,7 @@
+ 					if (MarkTri)
+ 					{
+ 					Skins.Message(mtStatus,tr("Sorting"));
+-					TriTranspCroiss(GetByIndex(Current()),ChanOrg.OrgChans.GetNextGroup(Current())>0? GetByIndex(ChanOrg.OrgChans.GetNextGroup(Current())):ChanOrg.OrgChans.Last());
++					TriTranspCroiss(GetByIndex(Current()),pChanOrg->OrgChans.GetNextGroup(Current())>0? GetByIndex(pChanOrg->OrgChans.GetNextGroup(Current())):pChanOrg->OrgChans.Last());
+ 					Skins.Message(mtStatus,tr("Sort done"));
+ 					sleep(Setup.OSDMessageTime);
+ 					Skins.Message(mtStatus,"");
+@@ -701,7 +702,7 @@
+ 				   }
+ 				   else 
+ 				   {
+-					   cDevice::PrimaryDevice()->SwitchChannel(Channels.GetByChannelID(ChanOrg.OrgChans.Get(Current())->GetChannelID()),true);
++					   cDevice::PrimaryDevice()->SwitchChannel(Channels.GetByChannelID(pChanOrg->OrgChans.Get(Current())->GetChannelID()),true);
+ 				   }
+ 				   break;
+ 			case kGreen : 
+@@ -717,7 +718,7 @@
+ 				   {
+ 					   //Tri Alpha Dec
+ 					   Skins.Message(mtStatus,tr("Sorting"));
+-					   TriAlphaDec(GetByIndex(Current()),ChanOrg.OrgChans.GetNextGroup(Current())>0? GetByIndex(ChanOrg.OrgChans.GetNextGroup(Current())):ChanOrg.OrgChans.Last());
++					   TriAlphaDec(GetByIndex(Current()),pChanOrg->OrgChans.GetNextGroup(Current())>0? GetByIndex(pChanOrg->OrgChans.GetNextGroup(Current())):pChanOrg->OrgChans.Last());
+ 					   Skins.Message(mtStatus,tr("Sort done"));
+ 					   sleep(Setup.OSDMessageTime);
+ 					   Skins.Message(mtStatus,"");
+diff -Naur chanorg-0.0.6-orig/chanorg.c chanorg-0.0.6/chanorg.c
+--- chanorg-0.0.6-orig/chanorg.c	2004-07-22 00:55:45.000000000 +0200
++++ chanorg-0.0.6/chanorg.c	2007-06-04 20:55:22.000000000 +0200
+@@ -1,13 +1,13 @@
+ #include "chanorg.h"
+ #include "chan-menu.h"
+ 
+-cPluginChanOrg ChanOrg;
++cPluginChanOrg *pChanOrg;
+ 
+ void cPluginChanOrg::Debug(void)
+ {
+-	cChannel *chan=ChanOrg.OrgChans.First();
++	cChannel *chan=pChanOrg->OrgChans.First();
+ 		fprintf(stderr,"Chaine Index %i %s\n",chan->Index(),chan->Name());
+-	while ((chan=ChanOrg.OrgChans.Next(chan)))
++	while ((chan=pChanOrg->OrgChans.Next(chan)))
+ 	{
+ 		fprintf(stderr,"Chaine Index %i %s\n",chan->Index(),chan->Name());
+ 	}
+diff -Naur chanorg-0.0.6-orig/chanorg.h chanorg-0.0.6/chanorg.h
+--- chanorg-0.0.6-orig/chanorg.h	2005-01-26 19:07:03.000000000 +0100
++++ chanorg-0.0.6/chanorg.h	2007-07-08 11:32:39.000000000 +0200
+@@ -20,7 +20,7 @@
+   cPluginChanOrg(void);
+   virtual ~cPluginChanOrg(void);
+   virtual const char *Version(void) { return VERSION; }
+-  virtual const char *Description(void) { return DESCRIPTION; }
++  virtual const char *Description(void) { return tr(DESCRIPTION); }
+   virtual const char *CommandLineHelp(void);
+   virtual bool ProcessArgs(int argc, char *argv[]);
+   virtual bool Initialize(void);
+@@ -33,6 +33,6 @@
+   void Debug(void);
+ };
+ 
+-extern cPluginChanOrg ChanOrg;
++extern cPluginChanOrg *pChanOrg;
+ 
+ #endif //__AIDE_H
+diff -Naur chanorg-0.0.6-orig/i18n.c chanorg-0.0.6/i18n.c
+--- chanorg-0.0.6-orig/i18n.c	2005-01-26 19:10:28.000000000 +0100
++++ chanorg-0.0.6/i18n.c	2007-06-04 20:55:22.000000000 +0200
+@@ -12,7 +12,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Organizador de Canales",
+     "",
+     "",
+     "",
+@@ -31,7 +31,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Elegir grupo para",
+     "",
+     "",
+     "",
+@@ -50,7 +50,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Grupo",
+     "",
+     "",
+     "",
+@@ -69,7 +69,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Nombre",
+     "",
+     "",
+     "",
+@@ -88,7 +88,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Número",
+     "",
+     "",
+     "",
+@@ -107,7 +107,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Borrar Grupo",
+     "",
+     "",
+     "",
+@@ -126,7 +126,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Editar Grupo",
+     "",
+     "",
+     "",
+@@ -145,7 +145,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Ordenar Grupo",
+     "",
+     "",
+     "",
+@@ -164,7 +164,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Mover",
+     "",
+     "",
+     "",
+@@ -183,7 +183,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Añadir Grupo",
+     "",
+     "",
+     "",
+@@ -202,7 +202,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Asignar",
+     "",
+     "",
+     "",
+@@ -221,7 +221,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Cambiar",
+     "",
+     "",
+     "",
+@@ -240,7 +240,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Cancelar",
+     "",
+     "",
+     "",
+@@ -259,7 +259,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Antes",
+     "",
+     "",
+     "",
+@@ -278,7 +278,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Después",
+     "",
+     "",
+     "",
+@@ -297,7 +297,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Ordenar",
+     "",
+     "",
+     "",
+@@ -316,7 +316,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Ordenación completa",
+     "",
+     "",
+     "",
+@@ -335,7 +335,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Mover antes grupo",
+     "",
+     "",
+     "",
+@@ -354,7 +354,7 @@
+     "",
+     "",
+     "",
+-    "",
++    ":Final",
+     "",
+     "",
+     "",
+@@ -373,7 +373,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Alpha Arriba",
+     "",
+     "",
+     "",
+@@ -392,7 +392,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Alpha Abajo",
+     "",
+     "",
+     "",
+@@ -411,7 +411,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Transp Arriba",
+     "",
+     "",
+     "",
+@@ -430,7 +430,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Transp Abajo",
+     "",
+     "",
+     "",
+@@ -449,7 +449,7 @@
+   "",
+   "",
+   "",
+-  "",
++  "¿Aplicar cambios?",
+   "",
+     "",
+     "",
+diff -Naur chanorg-0.0.6-orig/Makefile chanorg-0.0.6/Makefile
+--- chanorg-0.0.6-orig/Makefile	2004-07-15 21:11:19.000000000 +0200
++++ chanorg-0.0.6/Makefile	2007-07-30 10:50:01.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+ 
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -55,7 +55,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -68,7 +68,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

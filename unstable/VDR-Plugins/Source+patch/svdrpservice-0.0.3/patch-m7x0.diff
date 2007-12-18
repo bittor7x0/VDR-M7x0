@@ -1,0 +1,80 @@
+diff -Naur svdrpservice-0.0.3-orig/i18n.c svdrpservice-0.0.3/i18n.c
+--- svdrpservice-0.0.3-orig/i18n.c	2007-02-17 15:17:02.000000000 +0100
++++ svdrpservice-0.0.3/i18n.c	2007-07-08 11:54:23.000000000 +0200
+@@ -11,7 +11,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Servidor IP por defecto",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -35,7 +35,31 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Puerto servidor por defecto",// Español
++	"",// TODO ÅëëçíéêÜ (Greek)
++	"",// TODO Svenska
++	"",// TODO Romaneste
++	"",// TODO Magyar
++	"",// TODO Català
++	"",// TODO ÀãááÚØÙ (Russian)
++	"",// TODO Hrvatski (Croatian)
++	"",// TODO Eesti
++	"",// TODO Dansk
++#if VDRVERSNUM && VDRVERSNUM > 1334
++	"",// TODO Èesky (Czech)
++#endif
++},
++{	"SVDRP client",
++	"",// TODO Deutsch
++	"",// TODO Slovenski
++	"",// TODO Italiano
++	"",// TODO Nederlands
++	"",// TODO Portugues
++	"",// TODO Francais
++	"",// TODO Norsk
++	"",// TODO Finnish
++	"",// TODO Polski
++	"Cliente SVDRP",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+diff -Naur svdrpservice-0.0.3-orig/Makefile svdrpservice-0.0.3/Makefile
+--- svdrpservice-0.0.3-orig/Makefile	2007-02-17 15:23:47.000000000 +0100
++++ svdrpservice-0.0.3/Makefile	2007-06-16 20:15:16.000000000 +0200
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -78,7 +78,7 @@
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+ #	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur svdrpservice-0.0.3-orig/svdrpservice.c svdrpservice-0.0.3/svdrpservice.c
+--- svdrpservice-0.0.3-orig/svdrpservice.c	2007-02-23 23:00:57.000000000 +0100
++++ svdrpservice-0.0.3/svdrpservice.c	2007-07-08 11:54:37.000000000 +0200
+@@ -30,7 +30,7 @@
+   cPluginSvdrpService(void);
+   virtual ~cPluginSvdrpService();
+   virtual const char *Version(void) { return VERSION; }
+-  virtual const char *Description(void) { return DESCRIPTION; }
++  virtual const char *Description(void) { return tr(DESCRIPTION); }
+   virtual const char *CommandLineHelp(void);
+   virtual bool ProcessArgs(int argc, char *argv[]);
+   virtual bool Initialize(void);

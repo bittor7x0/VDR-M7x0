@@ -1,0 +1,57 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Frank Schmirler <vdrdev@schmirler.de>
+
+Project's homepage:          http://vdr.schmirler.de/
+
+Latest version available at: http://vdr.schmirler.de/
+
+See the file COPYING for license information.
+
+Description:
+------------
+Extensions to the SVDRP command set.
+
+Currently only some OSD related commands required by the remoteosd
+plugin have been implemented.
+
+Command overview:
+-----------------
+All the OSD commands return the current contents of the OSD as indicated
+by the VDR status interface. On success the response code is 920. If
+the requested information is currently unavailable (e.g. OSD is closed)
+930 is returned.
+
+The following OSD commands are available:
+- OSDT (title)
+- OSDM (message / status line)
+- OSDH (color button titles)
+- OSDI items_per_page (list of items)
+- OSDX (text block)
+
+Compatibility:
+--------------
+This plugin should also work with VDR 1.3 if you have at least 1.3.30.
+Up until VDR 1.3.44 there's a bug in the SVDRP code. You can either
+patch VDR or patch the plugin to work around the problem.
+
+This is the patch for VDR:
+
+diff -ruN vdr-1.3.44/svdrp.c vdr-1.3.45/svdrp.c
+--- vdr-1.3.44/svdrp.c	2006-01-14 17:08:20.000000000 +0100
++++ vdr-1.3.45/svdrp.c	2006-03-26 11:14:13.000000000 +0200
+@@ -1358,7 +1358,7 @@
+            int ReplyCode = 900;
+            cString s = plugin->SVDRPCommand(cmd, option, ReplyCode);
+            if (s)
+-              Reply(abs(ReplyCode), *s);
++              Reply(abs(ReplyCode), "%s", *s);
+            else
+               Reply(500, "Command unrecognized: \"%s\"", cmd);
+            }
+
+If you decide to patch the plugin instead, proceede as follows:
+- cd VDR/PLUGINS/src/svdrpext
+- patch -p0 < patches/svdrpext-escape.patch
+
+Now recompile and install the svdrpext plugin.

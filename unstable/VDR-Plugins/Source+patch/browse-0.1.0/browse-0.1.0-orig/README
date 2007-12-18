@@ -1,0 +1,42 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Alex Lasnier <alexlasnier@yahoo.com>
+
+Project's homepage:          http://fepg2.f2g.net
+
+Latest version available at: http://fepg2.f2g.net
+
+See the file COPYING for license information.
+
+
+
+Description
+-----------
+Browse is a plugin for VDR that allows the user to browse Now/Next
+EPG data in a small window while watching the current program. 
+
+
+Controls
+--------
+
+Up ...... Move up by one channel
+Down .... Move down by one channel
+Left .... What's on now
+Right ... What's on next
+Green ... Open/Close the info window; displays info about the 
+          currently selected event
+Back .... Exit without changing the channel
+Ok ...... Changes to selected channel
+
+
+Notes
+-----
+  
+
+- You might find it usefull to add the following line (or something similar) 
+  to keymacros.conf
+  ...
+  User2   @browse
+  ...
+  This way you can access browse with the press of a button
+
