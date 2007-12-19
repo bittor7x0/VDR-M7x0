@@ -3,6 +3,7 @@
 vdr=VDR-NG
 plugins=VDR-Plugins/Source+patch
 vdr_plugins=$vdr/PLUGINS/src
+vdr_plugins_lib=$vdr/PLUGINS/lib
 bin=`pwd`/ToolChain-bin
 
 # Update PLUGINS from SVN
@@ -46,6 +47,12 @@ done;
 # Compiling PLUGINS
 export PATH="$bin:$PATH"
 ( cd $vdr; make plugins )
+
+
+#Strip
+for libvdr in `ls $vdr_plugins_lib ` ; do 
+  mips-linux-uclibc-strip $vdr_plugins_lib/$libvdr
+done;
 
 
 
