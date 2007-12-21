@@ -1,0 +1,35 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Petri Hintukainen <phintuka@users.sourceforge.net>
+
+Project's homepage:          http://phivdr.dyndns.org/vdr/
+
+Latest version available at: http://phivdr.dyndns.org/vdr/
+
+See the file COPYING for license information.
+
+Description:
+
+  Create timers by entering channel, day and start time.
+
+  Creating timers from TV magazines is fast and does not require 
+  browsing EPG.
+
+  VDR EPG must contain information for the event 
+  (start time, end time and event name are taken from EPG).
+
+Usage:
+
+  1) Select "Create timer" from vdr main menu.
+
+  2) If channel is wrong, press "Up" and change 
+     channel. Move back to Start Time.
+
+  3) Enter last number of day (ex. if date is 21/8/2004 press 1),
+     or press Down if day is correct.
+
+  4) Enter start time of program (or any time at middle of program).
+     When enough digits have been entered you should see name 
+     of the program on next line.
+
+  5) Press "Red" or Ok to create the timer.

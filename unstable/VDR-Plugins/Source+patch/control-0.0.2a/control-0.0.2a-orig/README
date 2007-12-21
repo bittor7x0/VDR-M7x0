@@ -1,0 +1,54 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Jan Rieger <vdr@ricomp.de>
+
+Project's homepage:          ricomp.de/vdr
+
+Latest version available at: ricomp.de/vdr
+
+See the file COPYING for license information.
+
+
+
+Description
+-----------
+
+The 'control' plugin brings the ability to VDR to control
+the hole OSD over a telnet client.
+
+To reach this, 'control' listens on a network socket
+(default is port 2002). If a client wants to connect, VDR
+checks if that client is allowed to connect to VDR (see in
+the documentation of VDR about the svdrphosts.conf file for
+more info). If the connection is etablished, 'control'
+sends the curent OSD state to the client. Also all key
+stroks at the client side are redirected to VDR.
+
+
+
+Installation
+------------
+
+Decompress the current version of the 'control' plugin to the
+directory in wich your VDR plugins are installed (e.g.
+/usr/local/src/VDR/PLUGINS/src):
+
+cd /usr/local/src/VDR/PLUGINS/src
+tar -xzvf vdr-control-x.x.x.tgz
+ln -s control-x.x.x control
+
+
+Then go back to the VDR directory and build your plugins:
+
+cd ../../..
+make plugins
+
+
+Now you can use the plugin
+
+./vdr -Pcontrol
+
+Or, if you want to use an other network port (e.g. port 2005):
+
+./vdr -P"control -p 2005"
+

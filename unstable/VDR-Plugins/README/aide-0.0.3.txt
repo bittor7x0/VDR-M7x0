@@ -1,0 +1,73 @@
+VDR-Aide "0.0.3"
+
+This is a modification and expansion of the original vdr-aide plugin written by Sad. 
+My intention was to make an OSD help browser for VDR immediately available for
+real use. I am not an experienced developer and cannot maintain this plugin
+separately as a fork. The removed code can easily be readded and some clean-up
+would be desirable. So I return all changes as a contribution to the original 
+maintainer.
+
+The most important step for me was to make the code support multiple languages
+and provide some basic help data to show (available in separate packages). 
+In order to support multilingual help I had to change the file format.  
+
+
+New format of help files:
+
+The plugin directory ($VDRConf/plugins/help) has subdirectories for each
+language supported by VDR. They are named with 3-letter language codes
+(see aidei18n.c). Each language subdirectory can store arbitrary number 
+of index files (.aide extension), text (.txt) and MPEG picture (.mpg) 
+data files.
+
+
+Index files:
+
+An index file consists of "name=value" lines and group delimiters. Any
+line without a "=" sign in the middle or ":" in the first position will be 
+ignored. The index files can store help item names that cannot be safely used 
+as filenames due to mutual incompatibilities of the 8-bit codepages used by VDR.
+
+A sample of index file contents:
+------------------------------------
+VDR  Help file v 1.0                    # Comments
+
+:Keys		                   	# This is a group delimeter
+Recoding mode keys=btn_record		# Everything beyond the equal sign
+Help item2=path2			# is a path to the help text. Note
+					# that there is no extension. 
+------------------------------------
+
+If there is an identically named file, but with .mpg extemsion, the "StillImage"
+button appears on screen letting the user to view the picture. 
+
+
+Text files:
+
+Leading spaces in the text lines set the left margin, so you can use it for some
+primitive formatting. All text is wrapped at Setup.OSDWidth/10 point. Decresing
+the OSD width parameter helps if your favourite skin makes OSD window too narrow. 
+
+If a text file has a header like this then the module info will be shown together 
+with the text.
+
+-----------------------------------
+:HEADER
+NAME=PLUGNAME
+VERSION=PlugVersion
+AUTOR=NomDeLAuteur
+:BODY
+
+TITLE
+
+    Indented line 
+    
+    loooooooooooooooooooooooooooong liiiiiiiiiiiiiiine ... will be wrapped
+-----------------------------------
+
+Last but not least there are Russian, English and German user manuals for 
+vdr-aide. Hope that other languages will catch up.
+
+
+Vyacheslav Dikonov <sdiconov@mail.ru>
+November 2004

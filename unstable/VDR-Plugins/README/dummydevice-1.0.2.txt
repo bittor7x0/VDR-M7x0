@@ -1,0 +1,21 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Petri Hintukainen <Petri.Hintukainen@hut.fi>
+
+Project's homepage:          http://www.hut.fi/u/phintuka/vdr/
+
+Latest version available at: http://www.hut.fi/u/phintuka/vdr/
+
+See the file COPYING for license information.
+
+Description:
+
+  Output device that does nothing. All data is silently discarded.
+  
+  This plugin can be used to run vdr as recording server
+  without any output devices.
+
+
+Requirements:
+
+  vdr-1.2.0 or later (tested with 1.4.0).

@@ -1,0 +1,73 @@
+Dies ist ein "Plugin" für den Video Disk Recorder (VDR).
+
+Geschrieben von:  Martin Prochnow <nordlicht@martins-kabuff.de>
+
+Projekt-Homepage: http://martins-kabuff.de/nordlichtsepg.html
+
+Lizenz-Informationen befinden sich in der Datei COPYING
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!! Es wird VDR >= 1.3.31 benötigt, um das Plugin zu kompilieren !!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Nordlichts EPG
+------------------------------------------------------------------------------
+Dieses Plugin bietet eine Ansicht ähnlich dem "Was läuft jetzt?"-Menü des VDR.
+Im Gegensatz zu diesem werden auch Sender ohne EPG-Infos angezeigt. Man kann
+mit einer einstellbaren Schrittweite durch das EPG blättern. Weiterhin kann
+zu einer im Setup eingestellten Zeit per Knopfdruck gesprungen werden, mit
+1-7 springt man 1-7 Tage vorwärts. Man kann eine Zeit eingeben, zu der dann
+direkt gesprungen wird. Mit einer Balkengrafik wird in der "Was läuft jetzt?"-
+Ansicht der Fortschritt des laufende Programmes angezeigt. Gesetzte Timer 
+werden mit einem Wecker-Symbol angezeigt, aufzeichende Timer durch ein 'REC'-
+Symbol. Es können, auch für Sender ohne EPG-Infos, Timer gesetzt und gelöscht
+werden.
+
+Danke an Rolf Ahrenberg für die finnische Übersetzung.
+
+Bedienung:
+------------------------------------------------------------------------------
+Normale Belegung:
+OK/Info		- zeigt Programminformationen zum ausgewählten Kanal, Timer
+		  setzen oder löschen und Umschalten zu diesem Kanal möglich
+Red		- springt zu der eingestellten Zeit
+Green		- aktuelle Zeit - Schrittweite
+Yellow		- aktuelle Zeit + Schrittweite
+Blue		- Umschalten zu ausgewählten Kanal ("Was läuft jetzt?"-Ansicht)
+		  Springen zur "Was läuft jetzt?"-Ansicht (beim Blättern)
+1-7		- springt 1-7 Tage von der aktuellen Zeit vorwärts
+0		- Eingabe einer Zeit, zu der direkt gesprungen wird
+
+Alternative Belegung:
+OK/Info		- Umschalten zu ausgewählten Kanal
+Red		- Springen zur "Was läuft jetzt?"-Ansicht (beim Blättern)
+Green		- aktuelle Zeit - Schrittweite
+Yellow		- aktuelle Zeit + Schrittweite
+Blue		- zeigt Programminformationen zum ausgewählten Kanal, Timer
+		  setzen oder löschen und Umschalten zu diesem Kanal möglich
+1-7		- springt 1-7 Tage von der aktuellen Zeit vorwärts
+0		- Eingabe einer Zeit, zu der direkt gesprungen wird
+
+Einstellungsmöglichkeiten:
+------------------------------------------------------------------------------
+* Eintrag im Hauptmenü verstecken	- soll das Plugin im Hauptmenü
+					  angezeigt werden
+* Schrittweite (min)			- Schrittweite in Minuten für das
+					  Blättern durchs EPG
+* Springe zu				- Zeit, zu der gesprungen werden soll
+* Anzeige nicht beenden nach Umschalten	- soll die Anzeige nach dem Umschalten
+					  nicht beendet werden
+* Kanalgruppen anzeigen			- sollen die Kanalgruppen angezeigt
+					  werden
+* Verschlüsselte Kanäle verstecken	- sollen verschlüsselte Kanäle
+					  versteckt werden
+* Wird Enigma-Theme benutzt		- Anpassungen für das Enigma-Theme
+                                          aktivieren
+* Kanalnummern anzeigen			- sollen die Kanalnummern angezeigt
+                                          werden
+
+Copyright-Information:
+------------------------------------------------------------------------------
+Der Code für das Patchen der Fonts ist aus Christian Wieningers Epgsearch-
+Plugin (http://www.cwieninger.de.vu). Die Icons sind aus Torsten Kunkels
+Wareagle-Icon-Patch (http://vdr.sjur.de).

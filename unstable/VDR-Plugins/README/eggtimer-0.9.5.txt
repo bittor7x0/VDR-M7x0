@@ -1,0 +1,37 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Peter Juszack <vdr@unterbrecher.de>
+
+Project's homepage:          http://turku.wi-bw.tfh-wildau.de/~pjuszack/digicam
+
+Latest version available at: http://turku.wi-bw.tfh-wildau.de/~pjuszack/digicam/download/vdr-eggtimer-0.9.3.tgz
+
+See the file COPYING for license information.
+
+Description:
+
+This is a plugin for the Video Disc Recorder (VDR). It can be used to be reminded to certain things
+you will maybe forget when watching TV. You can also let it switch to a channel or execute
+a command from VDRs commands.conf at a certain point of time.
+Examples: tea is ready, switch to a channel, shutdown VDR after recording ...
+
+INSTALL
+
+Installation as usual. Untar the archive into VDRs plugins source directory. Create symlink and 
+type make plugins.
+To load the plugin edit your vdr startscript and add -Peggtimer. The plugin has no commandline parameters.
+
+You may copy the sample file eggtimer.conf into VDRs plugins configuration directory. You may wish to edit 
+the file to fit your needs. You can define templates there. See the sample file eggtimer.conf for syntax.
+
+USAGE
+
+When VDR is running you can start the plugin via the main menu. You will see a menu. You can choose a template and
+may also modify the settings below. After hitting RED or OK the countdown will start.
+The plugin will repeat an OSD info message when time is over. You can stop the clock at every time via the main menu.
+
+NOTICE
+
+Use it at your own risk. Bug reports and feature requests are welcome.
+
+Have fun
