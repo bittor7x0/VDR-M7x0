@@ -9,8 +9,7 @@ bin=`pwd`/ToolChain-bin
 # Update VDR-NG and plugins from SVN open7x0.org from SVN open7x0.org
 if [[ ! -d "$vdr" ]]
 then
-	echo "CHECKOUT: $vdr"
-	svn checkout -q "svn://open7x0.org/vdr-m7x0/branches/gambler-unstable" "$vdr"
+	./make-vdr
 
 	echo "CHECKOUT: $vdr_plugins"
         rm -rf $vdr_plugins/
