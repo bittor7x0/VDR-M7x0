@@ -1,0 +1,27 @@
+
+Plugin for the Video Disk Recorder (VDR)
+----------------------------------------
+
+Written by:                  Jörg Wendel 
+Mail:                        vdr@jwendel.de
+
+Project's homepage:          www.jwendel.de
+Latest version available at: www.jwendel.de
+
+See the file COPYING for license information.
+
+Description: 
+-------------
+
+The plugin implements an interface for shell scripts via 'System Message Queues' for VDR.
+About this interface can display status information or user requests.
+
+
+Installation:
+-------------
+
+Compilation is done the usual way by calling 'make plugins' from the VDR source
+directory. Add the parameter '-Pmessage' to load the plugin when starting VDR.
+
+
+You can to find two examples in the scripts confirm.sh and info.sh about the command 'send'.

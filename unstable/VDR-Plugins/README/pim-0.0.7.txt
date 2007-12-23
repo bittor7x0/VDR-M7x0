@@ -1,0 +1,112 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Achim Tuffentsammer <a.tuffentsammer@web.de>
+
+Project's homepage:          http://pim.vdr-developer.org/
+
+Latest version available at: http://pim.vdr-developer.org/
+
+See the file COPYING for license information.
+
+
+Note: Changes from version 0.0.6 to 0.0.7 provided by Torsten Weigelt.
+
+ 
+Description:
+------------
+
+This is a plugin for VDR to display a month-based calendar.
+You can browse the months by pressing +/- buttons.
+Use the up/down/left/right buttons to move the cursor around.
+If you hit the first/last day of a month and continue to
+move the cursor, the calendar will jump to the previous/next
+month.
+
+A day will be displayed in green color if there's any event for
+this day. Press OK to see a list of all events for this day.
+
+Press BLUE to see a list of all events.
+
+In either of these lists you can edit / insert / delete events
+like in VDR's timer menu. The lists are sorted by type
+(weekly -> fixed -> yearly) and then by date in these groups.
+
+Events will be stored in a textfile which is located in your
+vdr-etc-directory and is called plugins/pimEvents.conf.
+If no file exists it will be created if necessary.
+
+Of course you can edit the text file manually. Make sure to use
+the right format (see below) for the entrys or the plugin / VDR
+may crash.
+
+Format of the config file:
+
+F:dd.mm.yyyy:description:X	for an event on a fixed day
+W:3:description:X		for a repeating event on day 3 (Mo = 1 ...)
+Y:dd.mm.:description:X		for a yearly event (like birthdays).
+
+'X' can be a value from -1 to 30 describing the number of days before the
+date of the event. vdr will inform you about events these days before depending
+on the configuration. With -1 no reminding will be done. Press OK while
+the reminder is displayed to suppress displaying the event until next
+time happen (saved in pimEvents.marks). Marking works only if check was
+not started automatic or by SVDRP CHECK.
+
+Since version 0.0.7 the format of the file pimEvents.conf has changed.
+The value 'X' = reminder days was added. If you update from an older version,
+the file will be read in normaly but with no reminders for the events.
+If you plan to revert to a plugin version less then 0.0.7 then it will work
+also, but reminder days will be ignored (and removed after event changes).
+
+There exist some SVDRP commands:
+
+CHECK  = display all actual events. Same as the automatic check but without
+         looking for the global reminder setup options.
+DISP   = same as CHECK but without using entries in file pimEvents.marks.
+REMOVE = remove all old calendar entries before today.
+
+Plugin setup options:
+
+- "OSD Offset hor." / "OSD Offset vert."
+  Position of the calendar view on screen.
+- "Week starts with"
+  Defines if the week should start with Monday or Sunday.
+- "Show calendar weeks"
+  Show calender week numbers.
+- "Preview months"
+  Show first/last days from previous/next month in calender view (lightgrey).
+- "Use invers event color"
+  For days with events or today the background is colored instead of
+  the day number.
+- "Reminder mode"
+  Show reminders. Can be:
+  'off'             - never show automatic reminders
+  'on'              - always show reminders at vdr start
+                      (with 10 seconds delay).
+                      No remind if vdr was started by a recording timer.
+  'at time'         - same as 'on' but only after time has reached.
+                      If vdr was started before this time, he wait until
+                      the time is reached before displaying events.
+  'at time (daily)' - same as 'at time' but will continue on next days.
+                      Works also if vdr was started by a recording timer.
+                      (May be useful with activity check for 7x24h
+                       vdr systems).
+- "Reminder time"
+  Time to remind. Only valid if "Reminder mode" = 'at time'/'at time (daily)'.
+- "Remind delay (seconds)"
+  Wait these number of seconds before reminders are shown.
+- "Check user activity"
+  If the remind should be done depending on the "Reminder mode"
+  configuration, the vdr can wait for some user activity (Keys: Ch/Vol/Play)
+  before reminding. Can be:
+  'off'     - never wait for user activity (display immediately)
+  'on'      - always wait for user activity
+  'at time' - wait for user activity only for
+              "Reminder mode" = 'at time'/'at time (daily)'
+
+After changing "Reminder mode" or "Reminder time" the automatic search
+thread will be restarted if the new "Reminder mode" is a time based one.
+Next check is done if the next (future) check time is reached.
+
+And now have fun!
+

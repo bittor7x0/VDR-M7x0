@@ -1,0 +1,28 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Christian Wieninger <cwieninger at gmx dot de>
+
+Project's homepage:          URL
+
+Latest version available at: URL
+
+See the file COPYING for license information.
+
+Description: A simple OSD to manage the channels for the noEPG
+patch. Press 'ok' on each channel to toggle between 'noEPG' and
+'EPG'. 
+
+This plugin should give a temporary solution to the problem, that the
+keys '2', '5' an '8' are reserved for channel selection in the
+channels menu since vdr-1.3.38. So the previous function of the patch
+cannot be applied here.
+
+I have added a modified patches against vdr that only adds the
+noepg functionality to VDR without the menu changes in the channels
+menu.
+Note: If you already have applied the liemikuutio patch then please use the correspondig noepg patch for this.
+
+Have fun
+
+Christian
+

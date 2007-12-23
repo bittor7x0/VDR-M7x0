@@ -1,0 +1,29 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  cHrIsZ (crystl@arcor.de)
+					
+
+Project's homepage:          http://home.arcor.de/crystl/ 
+
+Latest version available at: 0.0.3b
+
+See the file COPYING for license information.
+
+Description:
+
+The plugin shows the actual results and classifications of 1. Bundesliga.
+
+Prerequisite:
+	Internet connection.
+
+Installation:
+
+	cd /usr/local/src/VDR/PLUGINS/src
+	tar xzvf vdr-fussball-x.x.x.tgz
+	ln -s fussball-x.x.x fussball
+	cd ../..
+	make plugins
+
+Copy the contents of the folder "/scripte" to "/usr/local/bin/".
+
+
