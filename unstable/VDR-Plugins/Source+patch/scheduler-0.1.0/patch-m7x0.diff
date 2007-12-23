@@ -1,7 +1,307 @@
-diff -Naur scheduler-0.1.0-orig/po/es_ES.po scheduler/po/es_ES.po
---- scheduler-0.1.0-orig/po/es_ES.po	2007-10-28 14:31:57.000000000 +0100
-+++ scheduler/po/es_ES.po	2007-12-17 16:36:33.000000000 +0100
-@@ -16,61 +16,61 @@
+diff -Naur scheduler-0.1.0-orig/i18n-generated.h scheduler-0.1.0/i18n-generated.h
+--- scheduler-0.1.0-orig/i18n-generated.h	2007-12-22 11:12:27.000000000 +0100
++++ scheduler-0.1.0/i18n-generated.h	2007-12-23 11:04:41.000000000 +0100
+@@ -44,7 +44,7 @@
+     "",
+     "Oletusnäyttö",
+     "",
+-    "",
++    "Inicio",
+     "",
+     "",
+     "",
+@@ -79,7 +79,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Salida actual",
+     "",
+     "",
+     "",
+@@ -114,7 +114,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Entradas del registro",
+     "",
+     "",
+     "",
+@@ -149,7 +149,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Ocultar entrada del menú principal",
+     "",
+     "",
+     "",
+@@ -184,7 +184,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Configurar tarea",
+     "",
+     "",
+     "",
+@@ -219,7 +219,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Final",
+     "",
+     "",
+     "",
+@@ -254,7 +254,7 @@
+     "",
+     "Vakio",
+     "",
+-    "",
++    "Inicio y final",
+     "",
+     "",
+     "",
+@@ -289,7 +289,7 @@
+     "",
+     "Kuvaus",
+     "",
+-    "",
++    "Descripción",
+     "",
+     "",
+     "",
+@@ -324,7 +324,7 @@
+     "",
+     "Komennot",
+     "",
+-    "",
++    "Comando",
+     "ÅããñáöÞ",
+     "Inspelning",
+     "",
+@@ -359,7 +359,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Minuto",
+     "",
+     "",
+     "",
+@@ -394,7 +394,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Hora",
+     "",
+     "",
+     "",
+@@ -429,7 +429,7 @@
+     "",
+     "Viikonpäivä",
+     "",
+-    "",
++    "Día de la semana",
+     "",
+     "",
+     "",
+@@ -464,7 +464,7 @@
+     "",
+     "Päivä",
+     "",
+-    "",
++    "Día",
+     "",
+     "",
+     "",
+@@ -499,7 +499,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Mes",
+     "",
+     "",
+     "",
+@@ -534,7 +534,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Despertar VDR",
+     "",
+     "",
+     "",
+@@ -569,7 +569,7 @@
+     "",
+     "Muistuta uudelleen",
+     "",
+-    "",
++    "Aviso OSD",
+     "",
+     "",
+     "",
+@@ -604,7 +604,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Guardar ... registros",
+     "",
+     "",
+     "",
+@@ -639,7 +639,7 @@
+     "",
+     "valittu",
+     "",
+-    "",
++    "Próximas ejecuciones:",
+     "",
+     "",
+     "",
+@@ -674,7 +674,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Tareas",
+     "",
+     "",
+     "",
+@@ -709,7 +709,7 @@
+     "Konfigurasjon",
+     "Testaa",
+     "Nastawy",
+-    "Configuración",
++    "Detener",
+     "Ñõèìéóåéò",
+     "Inställningar",
+     "Configuraþie",
+@@ -744,7 +744,7 @@
+     "Konfigurasjon",
+     "Testaa",
+     "Nastawy",
+-    "Configuración",
++    "Iniciar",
+     "Ñõèìéóåéò",
+     "Inställningar",
+     "Configuraþie",
+@@ -779,7 +779,7 @@
+     "",
+     "Nyt menossa!",
+     "",
+-    "",
++    "%s ejecutándose actualmente",
+     "",
+     "",
+     "",
+@@ -814,7 +814,7 @@
+     "",
+     "Poistetaanko ajastin?",
+     "",
+-    "",
++    "¿Borrar tarea?",
+     "",
+     "",
+     "",
+@@ -849,7 +849,7 @@
+     "",
+     "Suorita haku",
+     "",
+-    "",
++    "¿Cancelar esta tarea?",
+     "",
+     "",
+     "",
+@@ -884,7 +884,7 @@
+     "",
+     "Suorita haku",
+     "",
+-    "",
++    "¿Ejecutar esta tarea?",
+     "",
+     "",
+     "",
+@@ -919,7 +919,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Administrar y programar tareas",
+     "",
+     "",
+     "",
+@@ -954,7 +954,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Programador de tareas",
+     "",
+     "",
+     "",
+@@ -989,7 +989,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "¡'%s' ejecutándose todavía!",
+     "",
+     "",
+     "",
+@@ -1024,7 +1024,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Salida",
+     "",
+     "",
+     "",
+@@ -1059,7 +1059,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "%s iniciado",
+     "",
+     "",
+     "",
+@@ -1094,7 +1094,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "%s finalizado",
+     "",
+     "",
+     "",
+diff -Naur scheduler-0.1.0-orig/po/es_ES.po scheduler-0.1.0/po/es_ES.po
+--- scheduler-0.1.0-orig/po/es_ES.po	2007-12-22 11:12:27.000000000 +0100
++++ scheduler-0.1.0/po/es_ES.po	2007-12-23 11:01:35.000000000 +0100
+@@ -1,115 +1,115 @@
+ # VDR plugin language source file.
+ # Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+ # This file is distributed under the same license as the VDR package.
+-# Ruben Nunez Francisco <ruben.nunez@tang-it.com>, 2002
++# bittor from open7x0.org <bittor7x0 _at_ gmail.com>
+ #
+ msgid ""
+ msgstr ""
+ "Project-Id-Version: VDR 1.5.7\n"
+ "Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
+ "POT-Creation-Date: 2007-10-28 14:31+0100\n"
+-"PO-Revision-Date: 2007-08-14 20:21+0200\n"
+-"Last-Translator: Ruben Nunez Francisco <ruben.nunez@tang-it.com>\n"
++"PO-Revision-Date: 2007-12-07 19:31+0200\n"
++"Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
+ "Language-Team: <vdr@linuxtv.org>\n"
+ "MIME-Version: 1.0\n"
+ "Content-Type: text/plain; charset=ISO-8859-15\n"
  "Content-Transfer-Encoding: 8bit\n"
  
  msgid "Start"
@@ -14,23 +314,23 @@ diff -Naur scheduler-0.1.0-orig/po/es_ES.po scheduler/po/es_ES.po
  
  msgid "Log entries"
 -msgstr ""
-+msgstr "Entradas de log"
++msgstr "Entradas del registro"
  
  msgid "Hide main menu entry"
 -msgstr ""
-+msgstr "Ocultar en menú principal"
++msgstr "Ocultar entrada del menú principal"
  
  msgid "Task settings"
 -msgstr ""
-+msgstr "Configuración Tarea"
++msgstr "Configurar tarea"
  
  msgid "End"
 -msgstr ""
-+msgstr "Fin"
++msgstr "Final"
  
  msgid "Start and end"
 -msgstr ""
-+msgstr "Inicio y fin"
++msgstr "Inicio y final"
  
  msgid "Description"
 -msgstr ""
@@ -62,19 +362,19 @@ diff -Naur scheduler-0.1.0-orig/po/es_ES.po scheduler/po/es_ES.po
  
  msgid "Wakeup VDR"
 -msgstr ""
-+msgstr "Reiniciar VDR"
++msgstr "Despertar VDR"
  
  msgid "OSD announce"
 -msgstr ""
-+msgstr "Anuncio mediantes OSD"
++msgstr "Aviso OSD"
  
  msgid "Save ... logs"
 -msgstr ""
-+msgstr "Guardar ... logs"
++msgstr "Guardar ... registros"
  
  msgid "Next executions:"
 -msgstr ""
-+msgstr "Proximas ejecuciones:"
++msgstr "Próximas ejecuciones:"
  
  msgid "Tasks"
 -msgstr ""
@@ -82,37 +382,43 @@ diff -Naur scheduler-0.1.0-orig/po/es_ES.po scheduler/po/es_ES.po
  
  #, fuzzy
  msgid "Button$Stop"
-@@ -82,34 +82,34 @@
+-msgstr "Configuración"
++msgstr "Detener"
+ 
+ #, fuzzy
+ msgid "Button$Start"
+-msgstr "Configuración"
++msgstr "Iniciar"
  
  #, c-format
  msgid "%s currently running"
 -msgstr ""
-+msgstr "%s ejecutandose actualmente"
++msgstr "%s ejecutándose actualmente"
  
  msgid "Delete task?"
 -msgstr ""
-+msgstr "Borrar tarea?"
++msgstr "¿Borrar tarea?"
  
  msgid "Abort this task?"
 -msgstr ""
-+msgstr "Abortar esta tarea?"
++msgstr "¿Cancelar esta tarea?"
  
  msgid "Execute this task?"
 -msgstr ""
-+msgstr "Ejecutar esta tarea?"
++msgstr "¿Ejecutar esta tarea?"
  
  msgid "Job scheduler and manager"
 -msgstr ""
-+msgstr "Planificador de ejecuciones"
++msgstr "Administrar y programar tareas"
  
  msgid "Job scheduler"
 -msgstr ""
-+msgstr "Planificador"
++msgstr "Programador de tareas"
  
  #, c-format
  msgid "'%s' still runs!"
 -msgstr ""
-+msgstr "'%s' todavía ejecutandose!"
++msgstr "¡'%s' ejecutándose todavía!"
  
  msgid "Output"
 -msgstr ""
@@ -126,10 +432,10 @@ diff -Naur scheduler-0.1.0-orig/po/es_ES.po scheduler/po/es_ES.po
  #, c-format
  msgid "%s finished"
 -msgstr ""
-+msgstr "%s terminado"
-diff -Naur scheduler-0.1.0-orig/task.c scheduler/task.c
---- scheduler-0.1.0-orig/task.c	2007-10-28 14:36:21.000000000 +0100
-+++ scheduler/task.c	2007-12-17 16:10:43.000000000 +0100
++msgstr "%s finalizado"
+diff -Naur scheduler-0.1.0-orig/task.c scheduler-0.1.0/task.c
+--- scheduler-0.1.0-orig/task.c	2007-12-22 11:12:27.000000000 +0100
++++ scheduler-0.1.0/task.c	2007-12-23 10:48:00.000000000 +0100
 @@ -167,11 +167,16 @@
    time_start->tm_sec = 0; 
  
