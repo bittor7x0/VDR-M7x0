@@ -1,0 +1,31 @@
+--- webif.mk.orig	2007-12-12 21:15:28.000000000 +0100
++++ webif.mk	2007-12-24 16:55:33.000000000 +0100
+@@ -39,17 +39,17 @@
+ CLEAN_RULES += clean-webif
+ DISTCLEAN_RULES += distclean-webif
+ 
+-ifneq ($(and $(filter y,$(CONFIG_WEBIF)), $(wildcard $(WEBIF_DIR))),)
+-$(info Updating webif download ...)
+-webif_svn_changed := $(call svn_changed, $(WEBIF_DIR))
+-
+-ifeq ($(webif_svn_changed),0)
+-$(info webif is up to date)
+-else
+-$(info $(webif_svn_changed) file(s) updated)
+-webif_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded)
+-endif
+-endif
++#ifneq ($(and $(filter y,$(CONFIG_WEBIF)), $(wildcard $(WEBIF_DIR))),)
++#$(info Updating webif download ...)
++#webif_svn_changed := $(call svn_changed, $(WEBIF_DIR))
++
++#ifeq ($(webif_svn_changed),0)
++#$(info webif is up to date)
++#else
++#$(info $(webif_svn_changed) file(s) updated)
++#webif_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded)
++#endif
++#endif
+ 
+ #
+ # download webif

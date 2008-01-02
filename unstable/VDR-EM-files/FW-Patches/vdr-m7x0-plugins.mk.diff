@@ -1,0 +1,31 @@
+--- vdr-m7x0-plugins.mk.orig	2007-12-12 21:15:28.000000000 +0100
++++ vdr-m7x0-plugins.mk	2007-12-24 16:54:55.000000000 +0100
+@@ -64,17 +64,17 @@
+ VDR-PLUGINS_LIBNAMES = $(foreach plug,$(CONFIG_VDR-PLUGINS-LIBS), \
+    libvdr-$(plug).so.$(VDR-PLUGINS_APIVERSION))
+ 
+-ifneq ($(and $(CONFIG_VDR-PLUGINS), $(wildcard $(VDR-PLUGINS_DIR))),)
+-$(info Updating vdr plugins download ...)
+-vdr-plugins_svn_changed := $(call svn_changed,$(VDR-PLUGINS_DIR))
+-
+-ifeq ($(vdr-plugins_svn_changed),0)
+-$(info vdr plugins are up to date)
+-else
+-$(info $(vdr-plugins_svn_changed) file(s) updated)
+-vdr-plugins_tmp := $(shell $(call vdr-plugins_touch_stagefiles,downloaded))
+-endif
+-endif
++#ifneq ($(and $(CONFIG_VDR-PLUGINS), $(wildcard $(VDR-PLUGINS_DIR))),)
++#$(info Updating vdr plugins download ...)
++#vdr-plugins_svn_changed := $(call svn_changed,$(VDR-PLUGINS_DIR))
++
++#ifeq ($(vdr-plugins_svn_changed),0)
++#$(info vdr plugins are up to date)
++#else
++#$(info $(vdr-plugins_svn_changed) file(s) updated)
++#vdr-plugins_tmp := $(shell $(call vdr-plugins_touch_stagefiles,downloaded))
++#endif
++#endif
+ 
+ #
+ # download vdr-plugins

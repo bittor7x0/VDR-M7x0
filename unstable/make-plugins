@@ -4,7 +4,6 @@ vdr=VDR-NG
 plugins=VDR-Plugins/Source+patch
 vdr_plugins=$vdr/PLUGINS/src
 vdr_plugins_lib=$vdr/PLUGINS/lib
-bin=`pwd`/ToolChain-bin
 
 # Update VDR-NG and plugins from SVN open7x0.org from SVN open7x0.org
 if [[ ! -d "$vdr" ]]
@@ -25,13 +24,6 @@ then
 	svn update "$plugins"
 fi
 
-# Check ToolChain dir
-if [[ ! -d "$bin" ]]
-then
-    echo "script: ToolChain bin dir not found: $bin" 1>&2
-    exit 1
-fi
-
 # Patching plugins
 for dp in `ls $plugins `; do
 	if [ -d $plugins/$dp ] ; then
@@ -39,14 +31,14 @@ for dp in `ls $plugins `; do
 			if [ -d $plugins/$dp/$dps ] ; then
 			        dptarget=`echo $dps | cut -d'-' -f1`
 
-			        # Clean patch
+				# Clean patch
 			        rm -rf $vdr_plugins/$dptarget/
 				mkdir $vdr_plugins/$dptarget/
 
-			        # Copy plugin				
-				cp -rf $plugins/$dp/$dps/* $vdr_plugins/$dptarget/	
+				# Copy plugin
+				cp -rf $plugins/$dp/$dps/* $vdr_plugins/$dptarget/
 				find $vdr_plugins/$dptarget/ '(' -name '.svn'  ')' -exec rm -rf {} \; 2> /dev/null
-				
+
 				# Patching plugins
 				./patching $vdr_plugins/$dptarget/ $plugins/$dp
 			fi
@@ -55,7 +47,6 @@ for dp in `ls $plugins `; do
 done;
 
 # Compiling plugins
-export PATH="$bin:$PATH"
 ( cd $vdr; make plugins )
 
 # Stripping plugins

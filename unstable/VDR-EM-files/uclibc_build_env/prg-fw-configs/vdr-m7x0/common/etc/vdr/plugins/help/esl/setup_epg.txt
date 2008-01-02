@@ -1,0 +1,33 @@
+Tiempo de exploración de EPG (h)= 5
+
+     Tiempo  total (en horas) de inactividad por parte del usuario, antes de que el sistema realice una actualización de la EPG de las cadenas, en los sistemas donde solo existe  una única tarjeta DVB. El valor "0" desactiva la actualización de las EPGs.
+
+Nivel de corrección de EPG = 2
+
+     Algunas cadenas de TV transmiten datos extraños en el formato de la EPG. El VDR intenta fijar estos problemas según el nivel configurado.
+
+    0 – No corrige la EPG
+    1 – Corrige los datos básicos de texto (título, episodio y descripción extendida).
+    2 – Corrige los espacios en blanco innecesarios, los guiones y los caracteres que no son estándar.
+
+    Por defecto la opción activada es la "2"
+    Hay que tener en cuenta que después de cambiar este parámetro,  los datos actuales de la EPG seguirán sin ningún cambio - solamente los datos nuevos recibidos, serán los que se corrijan según la opción habilitada. Reinicia el VDR para asegurar que todos los datos de la EPG se actualizan al nuevo formato.
+    
+Mostrar datos antiguos de EPG = 0
+
+    Tiempo (en  minutos) que se mantiene la información de la EPG antigua  en el menú "Programación".
+    
+Ajustar reloj de sistema = no
+
+    Establece si la hora del sistema, se debe actualizar automáticamente con la hora recibida por los datos de la señal DVB.
+    
+    Solo funcionara si el usuario actual del sistema VDR, dispone de los permisos necesarios para ajustar el cambio de  hora en el sistema. También será necesario ajustar, el  "transponder del que tomar la hora" por el cual se establecerá la hora (no todos los canales transmiten la información horaria correctamente).
+    
+transponder del que tomar la hora = -
+
+    La frecuencia del transponder, es la que se utilizara para fijar la hora del sistema. En las opciones del menú,  dispones de una la lista completa de los canales, aunque varios de ellos se reciben por un mismo "transponder". Cuando se selecciona un canal, se graba la configuración y vuelve otra vez a abrir las opciones, puede ocurrir que el canal seleccionado sea diferente al que hayas fijado,  ya que se cojera  automáticamente el primer canal que aparece en el fichero 'channels.conf' y que coincida que está en el mismo "transponder". Recuerda que para que se establezca la hora del sistema des de un "transponder",  tiene que estar activada la opción "Ajustar reloj de sistema".
+    
+Idiomas preferidos = 0
+
+    Algunos canales de TV difunden los datos de EPG en varios idiomas. Esta opción nos permite establecer el idioma que queramos en cada caso. Por defecto, o si no existen los idiomas predefinidos en la difusión, se aceptara cualquier idioma y en los datos de la EPG se mostrara el primer idioma recibido de la secuencia de datos. Si se pone como opción cualquier valor diferente a cero, la página del menú contendrá la opción de "Preferred language" esta opción, nos permite seleccionar los idiomas preferidos individualmente. Si los datos actuales de la EPG se reciben en diversos idiomas, se elegirá automáticamente un idioma según el orden que esté puesto.
+    

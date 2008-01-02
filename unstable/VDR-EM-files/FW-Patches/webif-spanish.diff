@@ -1,0 +1,497 @@
+diff -Naur webif-orig/i18n.c webif/i18n.c
+--- webif-orig/i18n.c	2008-01-01 12:57:52.000000000 +0100
++++ webif/i18n.c	2008-01-01 14:07:47.000000000 +0100
+@@ -24,220 +24,289 @@
+ const char wochentage[7][15]={"Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"};
+ 
+ const tI18nPhrase i18n[]={
+-		{	"English",		// #0
+-			"Deutsch"
++		{	"English",			// #0
++			"Deutsch",
++			"Español"
+ 		},		
+ // Here comes the Alpha-2 Code as described in ISO 639-1:
+ // http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+-		{	"en",			// #1
+-			"de"
+-		},
+-// A suitable charactrer set.
+-		{	"iso8859-15",	// #2
+-		    "iso8859-15"
++		{	"en",				// #1
++			"de",
++			"es"
++		},
++// A suitable character set.
++		{	"iso8859-15",			// #2
++			"iso8859-15",
++			"iso8859-15"
+ 		},
+ // Please fill in the Alpha-3 Code as described in ISO 639-2:
+ // http://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
+ // Currently not used, but hey, who knows...
+-		{	"eng",			// #3
+-		    "ger"
++		{	"eng",				// #3
++			"ger",
++			"spa"
+ 		},
+ // First: the menus			
+-		{	"Start",		// #4
+-			"Start"
+-		},
+-		{	"Schedule",		// #5
+-		    "Programm"
+-		},
+-		{	"Channels",		// #6
+-		    "Kanäle"
+-		},
+-		{	"Timers",		// #7
+-		    "Timer"
+-		},
+-		{	"Recordings",	// #8
+-		    "Aufzeichnungen"
+-		},
+-		{	"Setup",
+-			"Einstellungen"	// #9
+-		},
+-		{	"This & That",	// #10
+-			"Dies & Das"
+-		},
+-		{	"Help",			// #11
+-			"Hilfe"
++		{	"Start",			// #4
++			"Start",
++			"Inicio"
++		},
++		{	"Schedule",			// #5
++			"Programm",
++			"Guía de Programación"
++		},
++		{	"Channels",			// #6
++			"Kanäle",
++			"Canales"
++		},
++		{	"Timers",			// #7
++			"Timer",
++			"Programaciones"
++		},
++		{	"Recordings",			// #8
++			"Aufzeichnungen",
++			"Grabaciones"
++		},
++		{	"Setup",			// #9
++			"Einstellungen",
++			"Configuración"
++		},
++		{	"This & That",			// #10
++			"Dies & Das",
++			"Este y Ese"
++		},
++		{	"Help",				// #11
++			"Hilfe",
++			"Ayuda"
+ 		},
+ 							// #12
+ 		{	"Important information: This webinterface is still under construction. It is not completed nor error-free.",
+-			"Wichtiger Hinweis: das Webinterface befindet sich noch in einer sehr frühen Phase. Weder ist es vollständig noch fehlerfrei. Zur Diskussion steht im open7x0.org Forum ein eigenes <a href=\"http://www.open7x0.org/arena/forumdisplay.php?fid=67\" target=\"_blank\">Unterforum</a> bereit."
++			"Wichtiger Hinweis: das Webinterface befindet sich noch in einer sehr frühen Phase. Weder ist es vollständig noch fehlerfrei. Zur Diskussion steht im open7x0.org Forum ein eigenes <a href=\"http://www.open7x0.org/arena/forumdisplay.php?fid=67\" target=\"_blank\">Unterforum</a> bereit.",
++			"Información importante: El interfaz web está todavía en construcción y no está libre de errores."
+ 		},					// #13
+ 		{	"<p><b>Failed to open a SVDRP connection to the local VDR. Possible Reasons:\n\n<ul><li>The VDR is not running.</li>\n<li>The SVDRP connection is still in use by another client like vdradmin-AM</li>\n<li>An error occured while processing an earlier request and now the SVDRP connection is blocked.</li></ul>\n\nPlease check if the VDR is running or try it again later.</b></p>\n",
+-			"<p><b>Es konnte keine SVDRP-Verbindung zum VDR aufgebaut werden. Typische Gr&uuml;nde daf&uuml;r:\n\n<ul><li>Der VDR wurde nicht gestartet bzw. l&auml;uft nicht mehr.</li>\n<li>Die SVDRP-Verbindung wird von einem anderen Client verwendet, z.B. vdradmin-AM</li>\n<li>Es gab bei einer fr&uuml;heren Abfrage einen Fehler und die SVDRP-Verbindung ist blockiert.</li></ul>\n\nBitte &uuml;berpr&uuml;fen sie, dass der VDR l&auml;uft und versuchen sie es ggf. sp&auml;ter noch einmal.</b></p>\n"
++			"<p><b>Es konnte keine SVDRP-Verbindung zum VDR aufgebaut werden. Typische Gr&uuml;nde daf&uuml;r:\n\n<ul><li>Der VDR wurde nicht gestartet bzw. l&auml;uft nicht mehr.</li>\n<li>Die SVDRP-Verbindung wird von einem anderen Client verwendet, z.B. vdradmin-AM</li>\n<li>Es gab bei einer fr&uuml;heren Abfrage einen Fehler und die SVDRP-Verbindung ist blockiert.</li></ul>\n\nBitte &uuml;berpr&uuml;fen sie, dass der VDR l&auml;uft und versuchen sie es ggf. sp&auml;ter noch einmal.</b></p>\n",
++			"<p><b>No se puede abrir una conexión SVDRP con el VDR local. Posibles motivos:\n\n<ul><li>El VDR no se está ejecutando.</li>\n<li>La conexión SVDRP está todavía en uso por otro cliente como vdradmin-AM</li>\n<li>Se ha producido un error mientras se procesó una petición anterior y ahora la conexión SVDRP está bloqueada.</li></ul>\n\nPor favor, compruebe si el VDR se está ejecutando o inténtelo más tarde.</b></p>\n"
+ 		},					// #14
+ 		{	"EPG ist not avaible, please try again later. If the problem persists, this channel either has no EPG or it is broken. Feel free to get in touch with someone who is in charge for this channel.",
+-			"EPG ist nicht verf&uuml;gbar. Bitte versuchen sie es sp&auml;ter nocheinmal. Falls dieses Problem &uuml;ber l&auml;ngere Zeit besteht, wenden sie sich bitte an den Sender."
++			"EPG ist nicht verf&uuml;gbar. Bitte versuchen sie es sp&auml;ter nocheinmal. Falls dieses Problem &uuml;ber l&auml;ngere Zeit besteht, wenden sie sich bitte an den Sender.",
++			"EPG no disponible, por favor inténtelo más tarde. Si el problema persiste, éste canal no tiene EPG o funciona incorrectamente. Puede ponerse en contacto con algún responsable de éste canal."
+ 		},					// #15
+ 		{	"An error occured, maybe with the translation of a phrase.",
+-			"Ein Fehler ist aufgetreten, wahrscheinlich konnte eine Übersetzung nicht gefunden werden"
++			"Ein Fehler ist aufgetreten, wahrscheinlich konnte eine Übersetzung nicht gefunden werden",
++			"Ocurrió un error debido a la traducción de alguna frase."
+ 		},					// #16
+ 		{	"List of available recordings.",					
+-			"Liste der aktuell verfügbaren Aufzeichnungen."
++			"Liste der aktuell verfügbaren Aufzeichnungen.",
++			"Lista de grabaciones disponibles."
+ 		},
+-		{	"Homepage",			// #
+-			"Startseite"
+-		},
+-		{	"You are watching",	// #
+-			"Sie sehen zur Zeit"
+-		},
+-		{	"Channel List",		// #
+-			"Kanalliste"
++		{	"Homepage",			// #17
++			"Startseite",
++			"Página inicial"
++		},
++		{	"You are watching",		// #18
++			"Sie sehen zur Zeit",
++			"Tú estás viendo"
++		},
++		{	"Channel List",			// #19
++			"Kanalliste",
++			"Lista del canal"
+ 		},						
+-		{	"channel number",	// #
+-			"Programmplatz"
+-		},
+-		{	"channel name",		// #
+-			"Sendername"
+-		},
+-		{	"multiplex",		// #
+-			"Bouquet"
+-		},
+-		{	"more infos",		// #
+-			"mehr Infos"
+-		},
+-		{	"live stream",		// #
+-			"Live-Stream"
+-		},
+-		{	"frequency",		// #
+-			"Frequenz"
+-		},
+-		{	"parameters",		// #
+-			"Parameter"
+-		},
+-		{	"source",			// #
+-			"Quelle"
+-		},
+-		{	"conditional access ID",	// #
+-			"Conditional Access ID"
+-		},
+-		{	"service ID",		// #
+-			"Service-ID"
+-		},
+-		{	"network ID",		// #
+-			"Netzwerk-ID"
+-		},
+-		{	"transport stream ID",		// #
+-			"Transponder-ID"
+-		},
+-		{	"radio ID",			// #
+-			"Radio-ID"
+-		},
+-		{	"summary",			// #
+-			"Übersicht"
+-		},
+-		{	"edit list",		// #
+-			"Liste bearbeiten"
+-		},
+-		{	"watch TV",			// #
+-			"Fernsehen"
+-		},
+-		{	"pause",				// #
+-			"Pause"
+-		},
+-		{	"full screen",		// #
+-			"Vollbild"
+-		},
+-		{	"mute",				// #
+-			"Stummschalten"
+-		},
+-		{	"switch",			// #
+-			"umschalten"
+-		},
+-		{	"Now on TV",		// #
+-			"Das läuft jetzt im TV"
+-		},
+-		{	"channel",			// #
+-			"Sender"
+-		},
+-		{	"record",			// #
+-			"aufzeichnen"
+-		},
+-		{	"from",				// #
+-			"von"
+-		},
+-		{	"to",				// #
+-			"bis"
+-		},
+-		{	"runtime",			// #
+-			"Dauer"
+-		},
+-		{	"approx.",			// #
+-			"ca."
+-		},
+-		{	"minutes",			// #
+-			"Minuten"
+-		},
+-		{	"date",				// #
+-			"Datum"
+-		},
+-		{	"recording",		// #
+-			"Aufzeichnung"
+-		},
+-		{	"program",			// #
+-			"Sendung"
+-		},
+-		{	"Setup Webinterface",	// #
+-			"Einstellungen Webinterface"
+-		},
+-		{	"Setup VDR",		// #
+-			"Einstellungen VDR"
+-		},
+-		{	"Setup BoxAmp",		// #
+-			"Einstellungen BoxAmp"
+-		},
+-		{	"Network shares",	// #
+-			"Netzlaufwerke"
+-		},
+-		{	"Webinterface",		// #
+-			"Webinterface"
+-		},
+-		{	"default language",	// #
+-			"Voreingestellte Sprache"
+-		},
+-		{	"auto",				// #
+-			"automatisch"
+-		},
+-		{   "BoxAmp path",		// #
+-			"BoxAmp-Verzeichnis"
+-		},
+-		{	"Path to audio files",  //#
+-			"Audio-Basisverzeichnis"
+-		},
+-		{	"Options",			// #
+-			"Optionen"
+-		},
+-		{	"Terminate automatically",	// #
+-			"Automatisch beenden"
+-		},
+-		{	"for",				// #
+-			"für"
+-		},
+-		{	"Time",				// #
+-			"Uhrzeit"
+-		},
+-		{	"create timer",		// #
+-			"Timer erstellen"
+-		},
+-		{	"Timer added!",		// #
+-			"Timer hinzugefügt!"
+-		},
+-		{	"Failed to add timer!",	// #
+-			"Timer konnte nicht hinzugefügt werden!"
+-		},
+-		{	"new timer",		// #
+-			"Neuer Timer"
+-		},
+-		{   "edit timer",		// #
+-			"Timer bearbeiten"
++		{	"channel number",		// #20
++			"Programmplatz",
++			"Número del canal"
++		},
++		{	"channel name",			// #21
++			"Sendername",
++			"Nombre del canal"
++		},
++		{	"multiplex",			// #22
++			"Bouquet",
++			"Multiplex"
++		},
++		{	"more infos",			// #23
++			"mehr Infos",
++			"más info"
++		},
++		{	"live stream",			// #24
++			"Live-Stream",
++			"Stream directo"
++		},
++		{	"frequency",			// #25
++			"Frequenz",
++			"Frecuencia"
++		},
++		{	"parameters",			// #26
++			"Parameter",
++			"Parámetros"
++		},
++		{	"source",			// #27
++			"Quelle",
++			"Fuente"
++		},
++		{	"conditional access ID",	// #28
++			"Conditional Access ID",
++			"ID acceso condicional"
++		},
++		{	"service ID",			// #29
++			"Service-ID",
++			"ID del servicio"
++		},
++		{	"network ID",			// #30
++			"Netzwerk-ID",
++			"ID de la red"
++		},
++		{	"transport stream ID",		// #31
++			"Transponder-ID",
++			"ID del transponder"
++		},
++		{	"radio ID",			// #32
++			"Radio-ID",
++			"ID de la radio"
++		},
++		{	"summary",			// #33
++			"Übersicht",
++			"Resumen"
++		},
++		{	"edit list",			// #34
++			"Liste bearbeiten",
++			"Editar lista"
++		},
++		{	"watch TV",			// #35
++			"Fernsehen",
++			"Ver TV"
++		},
++		{	"pause",			// #36
++			"Pause",
++			"Pausa"
++		},
++		{	"full screen",			// #37
++			"Vollbild",
++			"Pantalla completa"
++		},
++		{	"mute",				// #38
++			"Stummschalten",
++			"Silenciar"
++		},
++		{	"switch",			// #39
++			"umschalten",
++			"cambiar"
++		},
++		{	"Now on TV",			// #40
++			"Das läuft jetzt im TV",
++			"Ahora en TV"
++		},
++		{	"channel",			// #41
++			"Sender",
++			"Canal"
++		},
++		{	"record",			// #42
++			"aufzeichnen",
++			"grabar"
++		},
++		{	"from",				// #43
++			"von",
++			"desde"
++		},
++		{	"to",				// #44
++			"bis",
++			"hasta"
++		},
++		{	"runtime",			// #45
++			"Dauer",
++			"Duración"
++		},
++		{	"approx.",			// #46
++			"ca.",
++			"aprox."
++		},
++		{	"minutes",			// #47
++			"Minuten",
++			"minutos"
++		},
++		{	"date",				// #48
++			"Datum",
++			"Fecha"
++		},
++		{	"recording",			// #49
++			"Aufzeichnung",
++			"Grabación"
++		},
++		{	"program",			// #50
++			"Sendung",
++			"Emisión"
++		},
++		{	"Setup Webinterface",		// #51
++			"Einstellungen Webinterface",
++			"Configurar interfaz web"
++		},
++		{	"Setup VDR",			// #52
++			"Einstellungen VDR",
++			"Configurar VDR"
++		},
++		{	"Setup BoxAmp",			// #53
++			"Einstellungen BoxAmp",
++			"Configurar BoxAmp"
++		},
++		{	"Network shares",		// #54
++			"Netzlaufwerke",
++			"Recursos de red"
++		},
++		{	"Webinterface",			// #55
++			"Webinterface",
++			"Interfaz web"
++		},
++		{	"default language",		// #56
++			"Voreingestellte Sprache",
++			"Idioma por defecto"
++		},
++		{	"auto",				// #57
++			"automatisch",
++			"automático"
++		},
++		{	"BoxAmp path",			// #58
++			"BoxAmp-Verzeichnis",
++			"Ruta BoxAmp"
++		},
++		{	"Path to audio files",  	// #59
++			"Audio-Basisverzeichnis",
++			"Ruta a archivos de música"
++		},
++		{	"Options",			// #60
++			"Optionen",
++			"Opciones"
++		},
++		{	"Terminate automatically",	// #61
++			"Automatisch beenden",
++			"Terminar automáticamente"
++		},
++		{	"for",				// #62
++			"für",
++			"para"
++		},
++		{	"Time",				// #63
++			"Uhrzeit",
++			"Duración"
++		},
++		{	"create timer",			// #64
++			"Timer erstellen",
++			"Crear programación"
++		},
++		{	"Timer added!",			// #65
++			"Timer hinzugefügt!",
++			"¡Programación añadida!"
++		},
++		{	"Failed to add timer!",		// #66
++			"Timer konnte nicht hinzugefügt werden!",
++			"¡Añadir programación ha fallado!"
++		},
++		{	"new timer",			// #67
++			"Neuer Timer",
++			"Nueva programación"
++		},
++		{	"edit timer",			// #68
++			"Timer bearbeiten",
++			"Editar programación"
+ 		}
+ };
+ 
+diff -Naur webif-orig/i18n.h webif/i18n.h
+--- webif-orig/i18n.h	2008-01-01 12:57:52.000000000 +0100
++++ webif/i18n.h	2007-12-07 20:41:27.000000000 +0100
+@@ -17,7 +17,7 @@
+ #ifndef __I18N_H__
+ #define __I18N_H__
+ 
+-#define I18NNUM 2
++#define I18NNUM 3
+ 
+ extern int langID;
+ extern char acceptedLang[3];

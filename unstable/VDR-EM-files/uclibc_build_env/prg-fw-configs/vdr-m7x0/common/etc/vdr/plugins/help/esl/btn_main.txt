@@ -1,0 +1,13 @@
+
+      1..9 - Seleccionar sub-menú correspondiente
+      Arriba - Cursor arriba
+      Abajo - Cursor abajo
+      Izquierda - Página arriba
+      Derecha - Página abajo
+      Ok - Seleccionar
+      MENU - Salir del menú
+      EXIT - Salir del menú
+      Rojo - Grabar
+      Verde - Lenguaje
+      Amarillo - Pausar en directo
+      Azul - Continuar última reproducción / Parar
