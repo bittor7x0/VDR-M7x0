@@ -1,0 +1,29 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Drazen Dupor <drazen.dupor@dupor.com>, 2004
+# Dino Ravnic <dino.ravnic@fer.hr>, 2004
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
+"POT-Creation-Date: 2007-09-01 21:47+0200\n"
+"PO-Revision-Date: 2007-09-01 21:43+0200\n"
+"Last-Translator: Drazen Dupor <drazen.dupor@dupor.com>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: launcher.c:16
+msgid "A plugin to launch other plugins"
+msgstr ""
+
+#: launcher.c:17 launcher.c:60
+msgid "Plugins"
+msgstr ""
+
+#: launcher.c:166
+msgid "This plugin has no info text!"
+msgstr ""

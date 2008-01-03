@@ -1,0 +1,33 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Tomas Prybil <tomas@prybil.se>, 2002
+# Jan Ekholm <chakie@infa.abo.fi>, 2003
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
+"POT-Creation-Date: 2007-09-01 15:46+0200\n"
+"PO-Revision-Date: 2007-09-01 15:40+0200\n"
+"Last-Translator: Tomas Prybil <tomas@prybil.se>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: noepgmenu.c:22
+msgid "a menu for noEPG patch"
+msgstr ""
+
+#: noepgmenu.c:23 noepgmenu.c:188
+msgid "noEPG channels"
+msgstr ""
+
+#: noepgmenu.c:233
+msgid "too many channels!"
+msgstr ""
+
+#: noepgmenu.c:345
+msgid "Hide main menu entry"
+msgstr ""

@@ -1,0 +1,85 @@
+diff -Naur message-0.0.1-orig/Makefile message-0.0.1/Makefile
+--- message-0.0.1-orig/Makefile	2007-12-10 18:29:48.000000000 +0100
++++ message-0.0.1/Makefile	2007-12-23 12:44:31.000000000 +0100
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual -ggdb
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual -ggdb
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+ 
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -77,7 +77,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur message-0.0.1-orig/README message-0.0.1/README
+--- message-0.0.1-orig/README	2007-12-10 18:29:48.000000000 +0100
++++ message-0.0.1/README	2007-12-23 12:43:53.000000000 +0100
+@@ -1,5 +1,5 @@
+ 
+-Plugin für den Video Disk Recorder (VDR)
++Plugin for the Video Disk Recorder (VDR)
+ ----------------------------------------
+ 
+ Written by:                  Jörg Wendel 
+@@ -10,20 +10,18 @@
+ 
+ See the file COPYING for license information.
+ 
+-Beschreibung: 
++Description: 
+ -------------
+ 
+-Das Plugin implementiert eine Schnittstelle für Shell-Skripte via 'System Message Queues' zum VDR. Über 
+-diese Schnittstelle können Statusinformationen angezeigt oder User Bestätigungen eingeholt werden.
++The plugin implements an interface for shell scripts via 'System Message Queues' for VDR.
++About this interface can display status information or user requests.
+ 
+ 
+ Installation:
+ -------------
+ 
+-Wie immer 'make plugins' im VDR source Pfad, in's Plugin Verzeichnis kopieren
+-und den vdr mit -Pmessage starten.
++Compilation is done the usual way by calling 'make plugins' from the VDR source
++directory. Add the parameter '-Pmessage' to load the plugin when starting VDR.
+ 
+ 
+-Als Interface zu den Skripten dient das Tool send, einen Überblick zu den Möglichen Optionen 
+-erhält man mit 'send' an der Kommandozeile. Zwei Anwendungsbeispiele sind in den Skripten
+-confirm.sh und info.sh zu finden.
++You can to find two examples in the scripts confirm.sh and info.sh about the command 'send'.

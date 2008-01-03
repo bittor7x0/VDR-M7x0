@@ -1,0 +1,95 @@
+diff -Nru vdr-1.5.9/channels.c vdr-1.5.9-patched/channels.c
+--- vdr-1.5.9/channels.c	2007-07-21 16:55:01.000000000 +0200
++++ vdr-1.5.9-patched/channels.c	2007-09-01 16:00:43.000000000 +0200
+@@ -7,6 +7,7 @@
+  * $Id: channels.c 1.54 2007/07/21 14:55:01 kls Exp $
+  */
+ 
++#include "config.h"
+ #include "channels.h"
+ #include <linux/dvb/frontend.h>
+ #include <ctype.h>
+@@ -1062,6 +1063,17 @@
+   return NULL;
+ }
+ 
++//TK
++bool cChannels::keinEPGScan(tChannelID kanalID)
++{
++  bool rc=false;
++
++  if (strstr(::Setup.noEPG,kanalID.ToString())!=NULL){
++    rc=true;
++  }
++  return rc;
++}
++
+ cString ChannelString(const cChannel *Channel, int Number)
+ {
+   char buffer[256];
+diff -Nru vdr-1.5.9/channels.h vdr-1.5.9-patched/channels.h
+--- vdr-1.5.9/channels.h	2007-07-21 16:58:36.000000000 +0200
++++ vdr-1.5.9-patched/channels.h	2007-09-01 16:00:43.000000000 +0200
+@@ -252,6 +252,7 @@
+       ///< modification has been made, and 2 if the user has made a modification.
+       ///< Calling this function resets the 'modified' flag to 0.
+   cChannel *NewChannel(const cChannel *Transponder, const char *Name, const char *ShortName, const char *Provider, int Nid, int Tid, int Sid, int Rid = 0);
++  bool keinEPGScan(tChannelID kanalID);//TK
+   };
+ 
+ extern cChannels Channels;
+diff -Nru vdr-1.5.9/config.c vdr-1.5.9-patched/config.c
+--- vdr-1.5.9/config.c	2007-08-12 14:09:37.000000000 +0200
++++ vdr-1.5.9-patched/config.c	2007-09-01 16:00:43.000000000 +0200
+@@ -284,6 +284,7 @@
+   CurrentDolby = 0;
+   InitialChannel = 0;
+   InitialVolume = -1;
++  strcpy(noEPG, "");
+ }
+ 
+ cSetup& cSetup::operator= (const cSetup &s)
+@@ -448,6 +449,7 @@
+   else if (!strcasecmp(Name, "NextWakeupTime"))      NextWakeupTime     = atoi(Value);
+   else if (!strcasecmp(Name, "MultiSpeedMode"))      MultiSpeedMode     = atoi(Value);
+   else if (!strcasecmp(Name, "ShowReplayMode"))      ShowReplayMode     = atoi(Value);
++  else if (!strcasecmp(Name, "noEPG"))               strn0cpy(noEPG, Value, 999);
+   else if (!strcasecmp(Name, "ResumeID"))            ResumeID           = atoi(Value);
+   else if (!strcasecmp(Name, "CurrentChannel"))      CurrentChannel     = atoi(Value);
+   else if (!strcasecmp(Name, "CurrentVolume"))       CurrentVolume      = atoi(Value);
+@@ -531,6 +533,7 @@
+   Store("CurrentDolby",       CurrentDolby);
+   Store("InitialChannel",     InitialChannel);
+   Store("InitialVolume",      InitialVolume);
++  Store("noEPG",              noEPG);
+ 
+   Sort();
+ 
+diff -Nru vdr-1.5.9/config.h vdr-1.5.9-patched/config.h
+--- vdr-1.5.9/config.h	2007-08-19 18:02:50.000000000 +0200
++++ vdr-1.5.9-patched/config.h	2007-09-01 16:00:43.000000000 +0200
+@@ -258,6 +258,7 @@
+   int ShowReplayMode;
+   int ResumeID;
+   int CurrentChannel;
++  char noEPG[999];
+   int CurrentVolume;
+   int CurrentDolby;
+   int InitialChannel;
+diff -Nru vdr-1.5.9/eit.c vdr-1.5.9-patched/eit.c
+--- vdr-1.5.9/eit.c	2007-07-28 15:16:43.000000000 +0200
++++ vdr-1.5.9-patched/eit.c	2007-09-01 16:00:43.000000000 +0200
+@@ -35,6 +35,13 @@
+   if (!channel)
+      return; // only collect data for known channels
+ 
++ //TK
++   tChannelID kanalID;
++   kanalID=channel->GetChannelID();
++   if (Channels.keinEPGScan(kanalID)){
++     return;
++   }
++
+   cSchedule *pSchedule = (cSchedule *)Schedules->GetSchedule(channel, true);
+ 
+   bool Empty = true;

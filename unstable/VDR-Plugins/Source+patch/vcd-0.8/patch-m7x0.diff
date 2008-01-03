@@ -1,0 +1,47 @@
+diff -Naur vcd-0.8-orig/Makefile vcd-0.8/Makefile
+--- vcd-0.8-orig/Makefile	2007-12-07 18:19:37.000000000 +0100
++++ vcd-0.8/Makefile	2007-12-24 13:27:02.000000000 +0100
+@@ -15,10 +15,10 @@
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB/include
+-VDRDIR = ../../..
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
+ VDRINC = $(VDRDIR)/include
+-LIBDIR = ../../lib
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+@@ -60,7 +60,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -73,7 +73,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur vcd-0.8-orig/player.c vcd-0.8/player.c
+--- vcd-0.8-orig/player.c	2007-12-07 19:42:58.000000000 +0100
++++ vcd-0.8/player.c	2007-12-24 13:24:52.000000000 +0100
+@@ -162,7 +162,7 @@
+      int sp = (Speeds[nts] > 0) ? Mult / Speeds[nts] : -Speeds[nts] * Mult;
+      if (sp > MAX_VIDEO_SLOWMOTION)
+         sp = MAX_VIDEO_SLOWMOTION;
+-     DeviceTrickSpeed(sp);
++     DeviceTrickSpeed(sp, playMode==pmFast||playDir==pdForward);
+      }
+ }
+ 

@@ -1,0 +1,213 @@
+VDR Plugin 'extrecmenu' Revision History
+----------------------------------------
+
+2007-10-22: Version 1.1
+- fixed an issue with starting an editing process; thank to Andreas Mair for
+  the patch
+- new marker ('*') is shown despite the setup option 'Show alternative to new
+  marker' is on and 'Patch font' is off; fixed; thanks to Saxman2k from
+  vdr-portal.de for reporting
+- added option to switch off cutter queue
+
+2007-10-07: Version 1.0
+- it is now possible to cancel a moving-between-filesystems-process
+- applied changes for MainMenuHooksPatch
+- added MainMenuHooksPatch to contrib/-dir; removed old one, which is now
+  obsolete
+- free disk space is shown for the filesystem of the current directory (can be
+  switched of in plugin's setup menu)
+- added support for hidding PIN-protected recordings in co-work with PIN-Plugin
+- added queue for moving recordings between filesystems
+- added cutter queue
+- added #ifdef's to switch of font patching for vdr >= 1.5.3
+- added setup option to switch of font patching
+
+2007-02-04: Version 0.13
+- added two setup option to adjust the plugin behaviour to whose of VDR's
+  recording menu (jumping to last replayed recording, call plugin after
+  replay ends) 
+- only editing of recordings, that are cutted, is prevented now
+- moving recordings between filesystems is now possible; includes:
+  * check for enough free disk space on target filesystem
+  * switch to limit bandwith (a.t.m. 2MBytes/sec)
+  * prevent editing of recordings that are moved
+  * marker for recordings, that are moved
+- added marker for cutting and moving recording entries
+- added marker to title bar for cutting and moving recordings
+- recording info menu shows additional informations (name, path, channel,
+  size, lifetime, priority)
+- added setup option to select between plugin's and VDR's recording info menu
+- dvd.vdr is ignored, as long as a 001.vdr is present
+- fixed following issue (again): if there are more then one recording with the
+  same name, only one of it is shown if all recording details are hidden
+
+2006-12-31: Version 0.12c
+- dvd id for archive dvd would be first read out when the corresponding entry
+  is selected; this should prevent delays while opening the plugin
+- removed the setup option "show dvd id" because of this 
+
+2006-12-04: Version 0.12b
+- type of sorting (ascending/descending) selectable at the setup menu of the
+  plugin
+- 'Blue' also closes the info menu for a recording
+
+2006-06-19: Version 0.12a
+- fixed a bug if you compiled the plugin with support for the PIN-plugin;
+  thanks to Thiemo Gehrke for reporting
+- fixed another bug with editing recordings if VDR is compiled with VFAT=1 or
+  started with the option --vfat; based upon a patch of berndm from
+  vdr-portal.de
+
+2006-06-11: Version 0.12
+- reworked layout
+- added possibility to set sorting mode for each directory
+- if you use the PIN-plugin, ExtRecMenu works together with it to protect
+  recordings
+- fixed a very annoying bug which prevent renaming and moving recordings which
+  have special chars in their names if VDR is compiled with VFAT=1 or startet
+  with the option --vfat
+
+2006-05-28: Version 0.11
+- added czech translation; thanks to Vladimír Bárta
+- added missing dialog for video dvds
+- added more meaningful error messages
+- avoid empty names and names starting with . or .. while editing
+- free space display in title bar is now updated immediately
+- switched off editing of recordings and directories while a cut is in progress
+- switched off resume by 'Play' or 'Menu'->'Blue' for archive dvd recordings
+- changed back the behaviour if replay ends; plugin has to open to unmount
+  archive dvds
+- removed setup option "While opening jump to last replayed recording"; its
+  implemention interfers with the following one
+- after renaming a recording, the selection bar now stays at this renamed list
+  entry
+- the parameters 'move' and 'rename' for the '-r'-option of VDR have now the
+  following format: move/rename oldname newname
+- fixed hopefully all problems in connection with renaming and moving
+  directories
+- plugins closes if there are no recordings - fixed
+
+2006-05-02: Version 0.10
+- made changes to Makefile for APIVERSION (VDR >= 1.3.47)
+- changed myReplayControl; suggested by Thomas Günther
+- added display of free disk space to the title bar
+- fixed adjustments for BigPatch/CmdSubMenu-patch; thanks to Thomas Günther
+  for the patch
+- renaming/moving directories is now possible
+- fixed escaping of parameters for dvdarchive.sh
+- changed behaviour if the replay of a recording ends, plugins will not open
+- 'Play' and 'Menu'->'Blue' for resuming a replay work now; BUT: the replay
+  isn't done with the plugin if you start replaying this way, means if you stop
+  the replay you come to VDR's recordings menu
+- switched off editing of details (priority and lifetime) of archive dvd
+  recordings to avoid trouble with the dir name that identifies it on the media
+- added option to mark last replayed recording while opening the plugin
+- added possibilty to include video dvds into the recordings hierarchy; see
+  README
+- introduced new parameters for the '-r'-option if VDR: move, rename and delete
+
+2006-04-17: Version 0.9a
+- fixed #ifdef's for JumpPlay-patch in myreplaycontrol.c; thanks to Thomas
+  Günther for reporting
+- include fixed 'dvdarchive.sh', umount wasn't possible; thanks to Mase from
+  vdr-portal.de for reporting
+- added support for CmdSubMenu-patch, it should now be possible to use sub
+  menus if you patched your VDR with BigPatch or CmdSubMenu-patch
+
+2006-04-10: Version 0.9
+- removed myDvbPlayer, use VDR's cDvbPlayer instead
+- made adjustments to work with BigPatch-VDRs (JumpPlay-patch)
+- added option for sort recordings
+- moved editing of priority and lifetime to its own submenu
+- removed option to select alternative dvd marker, the icon is now default
+- added default values for setup options
+- moved content of patches/ and tools/ to contrib/ and added a small README
+- new version of 'dvdarchive.sh'; thanks to vejoun from vdr-portal.de
+- fixed problem with archive dvd recordings at the base dir; thanks to Mase
+  from vdr-portal.de for reporting
+
+2006-03-31: Version 0.8a
+- fixed problem when open the plugin while replaying a archive dvd; thanks to
+  Monroe from vdr-portal.de for reporting
+- new version of 'dvdarchive.sh'; thanks to vejoun from vdr-portal.de
+- updated finnish translation; thanks to Rolf Ahrenberg
+
+2006-03-29: Version 0.8
+- added some logging
+- added option to hide the "new recordings column"
+- added possibility to edit lifetime and priority at the rename menu
+- changed alternative new marker, it marks now the recordings that are not
+  "rewinded", if turned of the behaviour is like that of VDR's recordings
+  menu
+- added support for a file length.vdr, containing the length of a recording as
+  a string
+- new version of 'dvdarchive.sh'; thanks to vejoun from vdr-portal.de
+- added two small tools (in tools/); isodetect to check for a dvd in drive
+  (optionally used by 'dvdarchive.sh'); getlength to create a length.vdr
+- updated error messages, more detailed now
+- fixed quoting of the parameters for dvdarchive.sh to avoid problems with
+  filenames containing a '
+- fixed unnecessary calls of 'dvdarchive.sh'; thanks to vejoun from
+  vdr-portal.de for reporting
+
+2006-03-25: Version 0.7
+- added frensh translation; thanks to Patrice Staudt
+- added finnish translation; thanks to Rolf Ahrenberg
+- several bugfixes:
+  * if there are more then one recording with the same name, only one of it is
+    shown if the recording details are hidden; thanks to Monroe from
+    vdr-portal.de for reporting
+  * recording list entry (not the recording itselfs!) is deleted, if it is
+    moved to the same place; thanks to Monroe from vdr-portal.de for reporting
+  * if a recording was deleted, the selection bar jumps to the first list entry
+  * some people reported problems with wrong recording dates using LinVDR
+- revised rename-recording-menu; thanks to Monroe from vdr-portal.de for
+  suggesting
+- revised move-recording-menu - it is now more obvious; thanks to Monroe from
+  vdr-portal.de for suggesting
+- added option to show an alternative new marker - it's only useful for german
+  speaking users because this icon shows 'NEU'; suggestions for an
+  international version are welcome, you have 22x22 pixels for it
+- added the functionality of the DVDArchive- and the DVDShowArchive-patch
+  for VDR
+- thanks to vejoun from vdr-portal.de for the script 'dvdarchive.sh'
+
+2006-03-17: Version 0.6a
+- fixed problem with open directories
+
+2006-03-16: Version 0.6
+- after the replay of a recording ended, the menu jumps now to the last
+  replayed recording
+- recording commands like in VDR's recordings menu now work
+- start to write some documentation in README
+
+2006-03-13: Version 0.5
+- improved updating of moved or renamed recordings - updating should be faster
+  now
+- added patch and option to replace VDR's recordings menu; thanks to 'egal'
+  from vdr-portal.de
+- fixed the settings of tabs
+- month of a recording was shown the wrong way - fixed
+
+2006-03-13: Version 0.4
+- add option to hide main menu entry
+- set tabs depending on the shown recordings details - looks more fancy and
+  there is more space for the recording names
+- fixed a possible memory leak
+
+2006-03-12: Version 0.3
+- details for directories are shown now (# of entries, # of new entries)
+- option to shown the length of a recording
+- option to hide recording date, time and/or length
+
+2006-03-11: Version 0.2
+- implemented own dvbplayercontrol-class so that people who haved patch their
+  vdr with the JumpPlay-patch can compile the plugin
+- 'Info' while replaying opens recording info
+- option 'Info' added to recordings list to show the description of a
+  recording
+- details (date and time) for recordings are shown now
+
+2006-03-09: Version 0.1
+- Initial revision
+

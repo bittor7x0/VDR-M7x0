@@ -1,0 +1,152 @@
+
+                                The Proxy-Plugin
+
+
+
+Written by:                  Udo Richter <udo_richter@gmx.de>
+
+Project's homepage:          http://urichter.cjb.net/vdr/
+
+See the file COPYING for license information.
+
+
+About
+-----
+
+Proxy is a plugin that loads a plugin. The proxy plugin acts as a wrapper 
+that encapsulates a VDR plugin and passes through all interfaces. To make 
+this actually useful, the proxy plugin can modify the behavior of plugins, 
+like changing the menu entry, group several plugins in one sub menu and 
+load/unload plugins while VDR is running. This works even though proxy 
+is 'just' a plugin, and does not require any patches to VDR.
+
+All this is rather tricky, because VDR plugins usually are not designed to
+do things like this, and proxy will always be incompatibe to some plugins.
+Use proxy at your own risk. See section 'Compatibility' for details.
+
+The proxy plugin was written on VDR versions 1.3.23 - 1.3.47, but will
+probably work on older and newer VDR versions too.
+
+
+Installing
+----------
+
+Extract and compile like other plugins:
+
+   cd vdr-x.x.xx/PLUGINS/src
+   tar xzf vdr-proxy-x.x.x.tgz
+   ln -s proxy-x.x.x proxy
+   cd ../..
+   make plugins
+
+If you encounter errors regarding #include linux/dvb, add this to your 
+VDR global Make.config or to a local Make.config in the proxy folder:
+
+   INCLUDES += -I/path/to/DVB/driver/include
+
+Proxy will accept some switches and a plugin name on command line. For 
+example, if your VDR command line has been like this before:
+
+   vdr -P someplugin -P "someother -foo"
+   
+... you can use proxy like this:
+
+   vdr -P "proxy someplugin" -P "proxy someother -foo"
+
+The general format is -P "proxy [proxy-options] plugin [plugin-options]".
+
+The following command line options are available:
+
+--menu-hide, -h
+    Hides the main menu entry of the plugin. The main menu action is still
+    available to other plugins
+
+--menu-name name, -n name
+    Overrides the menu name of the plugin. This also allows to un-hide
+    main menu actions of plugins that dont show their main menu.
+
+--menu-group name, -g name
+    Put this plugin into the menu group 'name'. All plugins of the same 
+    group will share one main menu entry, opening a sub-menu that contains
+    the actual plugins of this group.
+
+--suspended, -s
+    Load this plugin in suspended state. Only the proxy is loaded at 
+    startup, the actual plugin wont be loaded until it gets 'resumed'. 
+    Suspended plugins can be resumed by selecting the main menu entry 
+    or by resuming the plugin in the proxy setup menu.
+
+--hide-on-suspend, -i
+    By default, suspended plugins do have a main menu entry, and proxy 
+    resumes the plugin on first access. By giving this option, the 
+    suspended plugin doesnt have a main menu entry. You have to use the 
+    proxy plugin setup menu to resume this plugin.
+
+--suspend-on-error, -e
+    On VDR start, all plugin errors will cause VDR to stop. With this 
+    option, proxy will keep the plugin in suspended state instead, so VDR 
+    can start normally.
+
+
+Plugins loaded by proxy will show their usual setup page as long as they 
+are running.
+
+The proxy plugin adds an additional setup menu page, and a dummy setup 
+entry for each menu group. The proxy setup page allows suspending and 
+resuming of most plugins loaded with proxy. For some plugins, suspending 
+is denied automatically. 
+
+Suspended plugins will be unloaded from memory, and can even be updated to 
+newer versions while VDR is running.
+
+
+SVDRP control interface
+-----------------------
+
+The proxy plugin can suspend and resume plugins on SVDRP commands. These 
+commands are available:
+
+   PLUG proxy RSUM <plugin>
+      Resumes the given plugin if it is not running.
+      
+   PLUG proxy SUSP <plugin>
+      Suspends the given plugin if it is running.
+
+   PLUG proxy RELD <plugin>
+      Suspends and resumes the given plugin.
+
+
+Compatibility
+-------------
+
+The proxy plugin goes far beyond what actually is intended plugin behavior.
+Although proxy should work more or less with most plugins, all proxified 
+plugins should be tested throughly. Some general hints on compatibility 
+issues that will cause trouble:
+
+General issues:
+
+- Cross-plugin communication. If two plugins directly access each other,
+  using nonstandard interfaces, there's a high risk of crashes. Simple 
+  invocations of the main menu action of other plugins, and using the 
+  Service() interface should work though.
+
+- Plugin interface extensions. Plugins that depend on VDR patches to the
+  plugin system to enhance plugin capabilities wont work, because VDR
+  has no direct access to the real plugin.
+
+Suspend/Resume issues:
+
+- Skins, receiver devices, display devices, remote plugins, audio plugins:
+  These plugins cannot be suspended safely. Proxy tries to detect them
+  automatically and denies suspending for them. Otherwise, VDR will
+  likely crash.
+
+- Incomplete termination: Plugins that dont terminate well may cause a 
+  crash when unloaded from memory.
+
+- Initialization and destruction order is not the same as VDR default, 
+  especially if the plugin depends on VDR internal state. Some plugins
+  may require a channel change after resuming to be fully working.
+
+

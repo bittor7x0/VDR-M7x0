@@ -1,0 +1,903 @@
+diff -Naur extrecmenu-1.1-orig/contrib/NFS-workaround.patch extrecmenu-1.1/contrib/NFS-workaround.patch
+--- extrecmenu-1.1-orig/contrib/NFS-workaround.patch	1970-01-01 01:00:00.000000000 +0100
++++ extrecmenu-1.1/contrib/NFS-workaround.patch	2007-12-23 20:23:48.000000000 +0100
+@@ -0,0 +1,27 @@
++diff -Naur extrecmenu-1.1-orig/tools.c extrecmenu-1.1/tools.c
++--- extrecmenu-1.1-orig/tools.c	2007-08-28 18:40:36.000000000 +0200
+++++ extrecmenu-1.1/tools.c	2007-12-23 20:22:57.000000000 +0100
++@@ -109,11 +109,23 @@
++     
++     if(rename(OldName,NewName)==-1)
++     {
+++      asprintf(&buf,"mv \"%s\" \"%s\"", OldName, NewName);
++       remove(NewName); // remove created directory
+++      if (int ret=system(buf) != 0) // NFS workaround
+++      {
++       Skins.Message(mtError,tr("Rename/Move failed!"));
++       esyslog("[extrecmenu] MoveRename() - rename() - %s",strerror(errno));
+++        esyslog("[extrecmenu] NFS workaround failed- %s, ret=%d",buf,ret);
+++
+++        free(buf);
++       return false;
++     }
+++      else
+++      {
+++        isyslog("[extrecmenu] NFS workaround succeed- %s",buf);
+++        free(buf);
+++      }
+++    }
++ 
++     cThreadLock RecordingsLock(&Recordings);
++     Recordings.DelByName(OldName);
+diff -Naur extrecmenu-1.1-orig/i18n.c extrecmenu-1.1/i18n.c
+--- extrecmenu-1.1-orig/i18n.c	2007-10-18 20:48:02.000000000 +0200
++++ extrecmenu-1.1/i18n.c	2007-12-23 20:24:52.000000000 +0100
+@@ -15,7 +15,7 @@
+     "",
+     "Laajennettu tallennevalikko",
+     "",
+-    "",
++    "Menú extendido grabaciones",
+     "",
+     "",
+     "",
+@@ -37,7 +37,7 @@
+     "",
+     "Avaa",
+     "",
+-    "",
++    "Abrir",
+     "",
+     "",
+     "",
+@@ -61,7 +61,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Volver",
+     "",
+     "",
+     "",
+@@ -81,7 +81,7 @@
+     "",
+     "Peruuta",
+     "",
+-    "",
++    "Cancelar",
+     "",
+     "",
+     "",
+@@ -103,7 +103,7 @@
+     "",
+     "Toista",
+     "",
+-    "",
++    "Reproducir",
+     "",
+     "",
+     "",
+@@ -125,7 +125,7 @@
+     "",
+     "Komennot",
+     "",
+-    "",
++    "Órdenes",
+     "",
+     "",
+     "",
+@@ -147,7 +147,7 @@
+     "",
+     "Alkuun",
+     "",
+-    "",
++    "Rebobinar",
+     "",
+     "",
+     "",
+@@ -169,7 +169,7 @@
+     "",
+     "Luo",
+     "",
+-    "",
++    "Crear",
+     "",
+     "",
+     "",
+@@ -191,7 +191,7 @@
+     "",
+     "Muokkaa",
+     "",
+-    "",
++    "Editar",
+     "",
+     "",
+     "",
+@@ -213,7 +213,7 @@
+     "",
+     "Nimeä",
+     "",
+-    "",
++    "Renombrar",
+     "",
+     "",
+     "",
+@@ -235,7 +235,7 @@
+     "",
+     "Siirrä",
+     "",
+-    "",
++    "Mover",
+     "",
+     "",
+     "",
+@@ -257,7 +257,7 @@
+     "",
+     "Poista",
+     "",
+-    "",
++    "Borrar",
+     "",
+     "",
+     "",
+@@ -279,7 +279,7 @@
+     "",
+     "Tiedot",
+     "",
+-    "",
++    "Info",
+     "",
+     "",
+     "",
+@@ -301,7 +301,7 @@
+     "",
+     "Uusi kansio",
+     "",
+-    "",
++    "Nuevo directorio",
+     "",
+     "",
+     "",
+@@ -323,7 +323,7 @@
+     "",
+     "Nimeä",
+     "",
+-    "",
++    "Renombrar",
+     "",
+     "",
+     "",
+@@ -345,7 +345,7 @@
+     "",
+     "Näytä tallenteen päiväys",
+     "",
+-    "",
++    "Mostrar fecha de grabación",
+     "",
+     "",
+     "",
+@@ -367,7 +367,7 @@
+     "",
+     "Näytä tallenteen ajankohta",
+     "",
+-    "",
++    "Mostrar hora de grabación",
+     "",
+     "",
+     "",
+@@ -389,7 +389,7 @@
+     "",
+     "Näytä tallenteen kesto",
+     "",
+-    "",
++    "Mostrar duración de la grabación",
+     "",
+     "",
+     "",
+@@ -411,7 +411,7 @@
+     "",
+     "Piilota valinta päävalikosta",
+     "",
+-    "",
++    "Ocultar entrada en menú principal",
+     "",
+     "",
+     "",
+@@ -433,7 +433,7 @@
+     "",
+     "Korvaa alkuperäinen tallennevalikko",
+     "",
+-    "",
++    "Sustituir menú original de grabaciones",
+     "",
+     "",
+     "",
+@@ -455,7 +455,7 @@
+     "",
+     "Merkitse uudet tallenteet symbolilla",
+     "",
+-    "",
++    "Mostrar alternativa para nueva marca",
+     "",
+     "",
+     "",
+@@ -477,7 +477,7 @@
+     "",
+     "Laita DVD %s asemaan",
+     "",
+-    "",
++    "Introduzca el DVD %s",
+     "",
+     "",
+     "",
+@@ -499,7 +499,7 @@
+     "",
+     "DVD:n avaaminen epäonnistui!",
+     "",
+-    "",
++    "¡Error montando el DVD!",
+     "",
+     "",
+     "",
+@@ -521,7 +521,7 @@
+     "",
+     "Tallennetta ei löydy DVD:ltä!",
+     "",
+-    "",
++    "¡Grabación no encontrada en el DVD!",
+     "",
+     "",
+     "",
+@@ -543,7 +543,7 @@
+     "",
+     "'dvdarchive.sh'-skriptiä ei löydetä!",
+     "",
+-    "",
++    "¡Script 'dvdarchive.sh' no encontrado!",
+     "",
+     "",
+     "",
+@@ -565,7 +565,7 @@
+     "",
+     "[juurihakemisto]",
+     "",
+-    "",
++    "[dir base]",
+     "",
+     "",
+     "",
+@@ -587,7 +587,7 @@
+     "",
+     "Asemassa ei ole DVD-levyä!",
+     "",
+-    "",
++    "¡Ningún DVD en la unidad!",
+     "",
+     "",
+     "",
+@@ -609,7 +609,7 @@
+     "",
+     "Tiedostojen [0-9]*.vdr linkittäminen epäonnistui!",
+     "",
+-    "",
++    "¡Error enlazando [0-9]*.vdr!",
+     "",
+     "",
+     "",
+@@ -631,7 +631,7 @@
+     "",
+     "Sudo tai mount --bind / umount -komento epäonnistui (VFAT)!",
+     "",
+-    "",
++    "Error sudo o mount --bind / umount (sistema vfat)",
+     "",
+     "",
+     "",
+@@ -653,7 +653,7 @@
+     "",
+     "Lisätiedot",
+     "",
+-    "",
++    "Detalles",
+     "",
+     "",
+     "",
+@@ -675,7 +675,7 @@
+     "",
+     "DVD-laajennosta ei löydy!",
+     "",
+-    "",
++    "¡El plugin DVD no está instalado!",
+     "",
+     "",
+     "",
+@@ -697,7 +697,7 @@
+     "",
+     "Virheellinen tiedoston nimi!",
+     "",
+-    "",
++    "¡Nombre de archivo no válido!",
+     "",
+     "",
+     "",
+@@ -719,7 +719,7 @@
+     "",
+     "Siirto omaan alihakemistoon ei ole sallittu!",
+     "",
+-    "",
++    "¡No se puede mover a su propio subdirectorio!",
+     "",
+     "",
+     "",
+@@ -741,7 +741,7 @@
+     "",
+     "Tallenteet järjestetään nimen mukaan",
+     "",
+-    "",
++    "Ordenar por nombre",
+     "",
+     "",
+     "",
+@@ -763,7 +763,7 @@
+     "",
+     "Tallenteet järjestetään päivämäärän mukaan",
+     "",
+-    "",
++    "Ordenar por fecha",
+     "",
+     "",
+     "",
+@@ -785,7 +785,7 @@
+     "",
+     "Näytä uusien tallenteiden lukumäärä",
+     "",
+-    "",
++    "Mostrar nº nuevas grabaciones de un dir.",
+     "",
+     "",
+     "",
+@@ -807,7 +807,7 @@
+     "",
+     "Järjestys",
+     "",
+-    "",
++    "Ordenación",
+     "",
+     "",
+     "",
+@@ -829,7 +829,7 @@
+     "",
+     "nouseva",
+     "",
+-    "",
++    "ascendente",
+     "",
+     "",
+     "",
+@@ -851,7 +851,7 @@
+     "",
+     "laskeva",
+     "",
+-    "",
++    "descendente",
+     "",
+     "",
+     "",
+@@ -873,7 +873,7 @@
+     "",
+     "Siirry viimeksi toistettuun tallenteeseen",
+     "",
+-    "",
++    "Ir a la última grabación reproducida",
+     "",
+     "",
+     "",
+@@ -895,7 +895,7 @@
+     "",
+     "Avaa laajennos toiston loputtua",
+     "",
+-    "",
++    "Ir al plugin después de reproducir",
+     "",
+     "",
+     "",
+@@ -917,7 +917,7 @@
+     "",
+     "Tallenteiden siirto käynnissä",
+     "",
+-    "",
++    "Mover grabaciones en proceso",
+     "",
+     "",
+     "",
+@@ -939,7 +939,7 @@
+     "",
+     "Rajoita tallenteiden siirtokaistaa",
+     "",
+-    "",
++    "Limitar ancho de banda para mover",
+     "",
+     "",
+     "",
+@@ -961,7 +961,7 @@
+     "",
+     "Kohdepartitio täynnä - yritetäänkö silti?",
+     "",
+-    "",
++    "Partición destino completa ¿probar de todos modos?",
+     "",
+     "",
+     "",
+@@ -983,7 +983,7 @@
+     "",
+     "Polku",
+     "",
+-    "",
++    "Ruta",
+     "",
+     "",
+     "",
+@@ -1005,7 +1005,7 @@
+     "",
+     "Koko",
+     "",
+-    "",
++    "Tamaño",
+     "",
+     "",
+     "",
+@@ -1027,7 +1027,7 @@
+     "",
+     "Käytä alkuperäistä tallenteen tiedot -valikkoa",
+     "",
+-    "",
++    "Usar menú info de grabaciones VDR",
+     "",
+     "",
+     "",
+@@ -1049,7 +1049,7 @@
+     "",
+     "Tallenne on lisätty leikkausjonoon",
+     "",
+-    "",
++    "Grabación añadida a la cola de edición",
+     "",
+     "",
+     "",
+@@ -1071,7 +1071,7 @@
+     "",
+     "Tallenne on jo leikkausjonossa!",
+     "",
+-    "",
++    "¡La grabación ya está en la cola de edición!",
+     "",
+     "",
+     "",
+@@ -1093,7 +1093,7 @@
+     "",
+     "Leikkausjono ei ole tyhjä",
+     "",
+-    "",
++    "La cola de edición no está vacía",
+     "",
+     "",
+     "",
+@@ -1115,7 +1115,7 @@
+     "",
+     "Tallenteiden siirto käynnissä",
+     "",
+-    "",
++    "Mover grabaciones en proceso",
+     "",
+     "",
+     "",
+@@ -1137,7 +1137,7 @@
+     "",
+     "Peruutetaanko siirto?",
+     "",
+-    "",
++    "¿Cancelar mover?",
+     "",
+     "",
+     "",
+@@ -1159,7 +1159,7 @@
+     "",
+     "Käytä paikattua kirjasinta",
+     "",
+-    "",
++    "Parchear fuente",
+     "",
+     "",
+     "",
+@@ -1181,7 +1181,7 @@
+     "",
+     "Näytä vapaa levytila jokaisella tiedostojärjestelmällä",
+     "",
+-    "",
++    "Mostrar espacio libre para cada sistema de archivos",
+     "",
+     "",
+     "",
+@@ -1203,7 +1203,7 @@
+     "",
+     "Tiedostojärjestelmän tietojen lukeminen epäonnistui",
+     "",
+-    "",
++    "No puede obtenerse información del sistema de archivos",
+     "",
+     "",
+     "",
+@@ -1225,7 +1225,7 @@
+     "",
+     "Nimeäminen/siirto epäonnistui!",
+     "",
+-    "",
++    "¡Fallo al Renombrar/Mover!",
+     "",
+     "",
+     "",
+@@ -1247,7 +1247,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Usar cola de edición",
+     "",
+     "",
+     "",
+diff -Naur extrecmenu-1.1-orig/Makefile extrecmenu-1.1/Makefile
+--- extrecmenu-1.1-orig/Makefile	2007-07-31 17:01:34.000000000 +0200
++++ extrecmenu-1.1/Makefile	2007-12-23 20:24:52.000000000 +0100
+@@ -23,8 +23,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -75,7 +75,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur extrecmenu-1.1-orig/scripts/correct_videodirs.sh extrecmenu-1.1/scripts/correct_videodirs.sh
+--- extrecmenu-1.1-orig/scripts/correct_videodirs.sh	1970-01-01 01:00:00.000000000 +0100
++++ extrecmenu-1.1/scripts/correct_videodirs.sh	2007-12-23 20:24:52.000000000 +0100
+@@ -0,0 +1,158 @@
++#!/bin/bash
++#
++# Version 1.2 2007-01-31
++#
++# Example:
++# correct_videodirs.sh <basis videodir> <path to .rec>
++#
++# correct_videodirs.sh /video0 /video0/hitec/Doku/%Die_stille_Revolution_der_Mechatronik/2004-04-23.15\:25.50.99.rec
++#
++# In rwrapper.sh:
++#
++#      move)
++#        correct_videodirs.sh /video0 "$3"
++#        ;;
++#    rename)
++#        correct_videodirs.sh /video0 "$3"
++#        ;;
++#
++#
++# Author: Mike Constabel <vejoun @ toppoint.de>
++#                        <vejoun @ vdrportal>
++#
++# Warning: Use it at your own risk, don't blame me if you loose recordings.
++# I never loose something, but nothing is 100%. ;-)
++#
++# HISTORY:
++# --------
++#
++# 31.01.2007 Version 1.2
++#
++# - Fixes info about rwrapper.sh, use $3 instead of $2,
++#   thanks to Christian Jacobsen
++# - Use --target-directory instead of -t, the ln from Suse doesn't know -t,
++#   thanks to Christian Jacobsen
++#
++# 23.06.2006 Version 1.1
++#
++# - first public release
++#
++
++VIDEODIR="${1/%\/}" # basisdir without trailing slash
++VPATH="${2/%\/}" # .rec without trailing slash
++
++VDIRSIZE=${#VIDEODIR}
++
++[ $# -ne 2 ]              && { echo -e "Script needs two parameters. See example inside the script."; exit 1; }
++[ -z "$VIDEODIR" ]        && { echo -e "Missing first parameter."; exit 1; }
++[ -d "$VPATH" ]           || { echo -e "$VPATH is not a directory!"; exit 1; }
++[ -n "${VPATH/*\.rec/}" ] && { echo -e "$VPATH is not a \".rec\" directory!"; exit 1; }
++
++# Search all ???.vdr in VPATH
++VDRFILES="$(find "$VPATH" -name "???.vdr" -printf "%P " -type f)"
++
++# loop for every ???.vdr in VPATH
++for VDRFILE in $VDRFILES
++do
++
++  # Check if it is a file
++  if [ ! -e "$VPATH/$VDRFILE" -a ! -L "$VPATH/$VDRFILE" ]; then
++    echo -e "Error!\n$VPATH/$VDRFILE\nis not a file nor a link!"
++    exit 1
++  fi
++
++  # Check if file is a link, continue if not
++  if [ ! -L "$VPATH/$VDRFILE" ]; then
++    continue
++  fi
++
++  # check if this ???.vdr is already ready
++  for i in $FERTIG; do
++    if [ "$i" = "$VDRFILE" ]; then
++      echo "$i already correct."
++      continue 2
++    fi
++  done
++
++  # split the source path
++  # example:
++  # QFILE=/home/vdr1/v0/hitec/Doku/%Die_stille_Revolution_der_Mechatronik/2004-04-23.15:25.50.99.rec/001.vdr
++  # QDIR=hitec/Doku/%Die_stille_Revolution_der_Mechatronik/2004-04-23.15:25.50.99.rec
++  # QPART=home/vdr1/v0
++  QFILE="$VPATH/$VDRFILE"
++  SIZE=${#QFILE}
++  QDIR=${QFILE:${VDIRSIZE}+1:${SIZE}-${VDIRSIZE}-9}
++  QPART=${QFILE:1:${VDIRSIZE}-1}
++
++  # calculate the target path
++  # same as above, but ZFILE is the dereferenced link from ???.vdr
++  ZFILE=$(find "$VPATH/$VDRFILE" -printf "%l")
++  SIZE=${#ZFILE}
++  ZDIR=${ZFILE:${VDIRSIZE}+1:${SIZE}-${VDIRSIZE}-9}
++  ZPART=${ZFILE:1:${VDIRSIZE}-1}
++
++  # remove double slashes
++  QDIR="${QDIR//\/\///}"
++  ZDIR="${ZDIR//\/\///}"
++
++  # Check if pathname is equal, continue with loop if yes
++  [ "$QDIR" = "$ZDIR" ] && continue
++
++  [ -z "$QDIR" ] && { echo -e "QDIR ist zero!"; exit 1; }
++  [ -z "$ZDIR" ] && { echo -e "ZDIR ist zero!"; exit 1; }
++
++  echo
++  echo "$QDIR != $ZDIR"
++  echo "Directorys differs, i'll try to correct them..."
++  echo "Create path /${ZPART}/${QDIR}"
++
++  # create new target dir
++  mkdir -p "/${ZPART}/${QDIR}"
++
++  if [ $(stat --format=%d "/${ZPART}/${ZDIR}/") -ne $(stat --format=%d "/${ZPART}/${QDIR}/") ]; then
++  	echo "Source and target are on different mountpoints! Not moving anything."
++  	exit 1
++  fi
++
++  # find all files in old target dir...
++  FILES=$(find "/${ZPART}/${ZDIR}" -type f -printf "%P ")
++
++  [ -z "$FILES" ] && { echo -e "FILES is empty!"; exit 1; }
++
++  echo "Now moving files..."
++  
++  # ... and move them to the new target dir
++  for i in $FILES
++  do
++    mv -v "/${ZPART}/${ZDIR}/${i}" "/${ZPART}/${QDIR}/${i}" || { echo "mv -v /${ZPART}/${ZDIR}/${i} /${ZPART}/${QDIR}/${i} exited with error!"; exit 1; }
++  done
++
++  # remove old target dir, rmdir removes only empty dirs
++  echo "Remove old directory /${ZPART}/${ZDIR}..."
++  rmdir -p "/${ZPART}/${ZDIR}"
++
++  echo "Create new links..."
++
++  # create new links
++  for i in $FILES; do
++    cd "/${QPART}/${QDIR}/"
++    if [ -L "/${QPART}/${QDIR}/${i}" ]; then
++      echo "Change link /${QPART}/${QDIR}/${i}"
++      ln -f -s --target-directory="/${QPART}/${QDIR}/" "/${ZPART}/${QDIR}/${i}"
++      FERTIG="${FERTIG} "$i
++    else
++      echo "Error: /${QPART}/${QDIR}/${i} is no link"
++    fi
++  done
++
++  echo
++
++done
++
++if [ -n "$FERTIG" ]; then
++  exit 2
++fi
++
++exit 0
++
++#EOF
+diff -Naur extrecmenu-1.1-orig/scripts/dvdarchive.sh extrecmenu-1.1/scripts/dvdarchive.sh
+--- extrecmenu-1.1-orig/scripts/dvdarchive.sh	2006-06-10 19:09:06.000000000 +0200
++++ extrecmenu-1.1/scripts/dvdarchive.sh	2007-12-23 20:24:52.000000000 +0100
+@@ -1,13 +1,13 @@
+-#!/bin/bash
++#!/bin/sh
+ #
+-# Version 2.1 2006-06-02
++# Version 2.3-beta 2006-07-14
+ #
+-# Author:	Mike Constabel
+-# VDR-Portal:	vejoun
+-# EMail:	vejoun @ toppoint.de
+-# WWW:          http://www.constabel.net/vdr/scripts.htm
++# Author:		Mike Constabel
++# VDR-Portal.de:	vejoun
++# EMail:		vejoun at toppoint dot de
++# WWW:          	http://www.constabel.net/vdr/scripts.de.htm
+ #
+-# ---> CONFIGURATION AT LINE 79 <---
++# ---> CONFIGURATION AT LINE 83 <---
+ #
+ # MANUAL:
+ # -------
+@@ -35,7 +35,7 @@
+ # You find isodetect.c in the extrecmenu plugin source package.
+ #
+ # 4.
+-# Tools needed:   mount, awk, find, test, stat
++# Tools needed:   mount, awk, find, test, stat, sed
+ # Optional tools: isodetect
+ #
+ # 5.
+@@ -59,42 +59,59 @@
+ #
+ # HISTORY:
+ # --------
+-# 2.1 - Fixed bug in testing if dvd is mounted
+-#     - more DEBUG=1 output
++# 2006-07-14: Version 2.3-beta
+ #
+-# 2.0 - more logging
+-#     - check if mountpoint and device exists
+-#     - Debug Log in file $DEBUGLOG if $DEBUG is 1, for easier error reporting
+-#
+-# 1.9 - use "sudo mount --bind" for mounting if filesystem is vfat
+-#     - automatic fallback to 'sudo' and 'mount --bind' if filesystem is vfat
+-#     - mounting more failure tolerant
+-#     - added MANUAL part in script
+-#     - length.vdr creation, you must not use it ;)
+-#
+-# 1.8 - remove sudo, is not necessary
+-#     - on mount, if already mounted try to umount first
+-#     - logging per syslog, see $SYSLOG
++# - should be compatible with ash, busybox
++#   stays beta until someone confirm this or 2.4 comes        
++#
++# 2006-06-13: Version 2.2      
++#
++# - at mount, if third parameter is not given, take last part of path     
++#
++# Version 2.1
++#
++# - Fixed bug in testing if dvd is mounted
++# - more DEBUG=1 output   
++#
++# Version 2.0
++#
++# - more logging
++# - check if mountpoint and device exists    
++# - Debug Log in file $DEBUGLOG if $DEBUG is 1, for easier error reporting    
++#
++# Version 1.9
++#
++# - use "sudo mount --bind" for mounting if filesystem is vfat 
++# - automatic fallback to 'sudo' and 'mount --bind' if filesystem is vfat    
++# - mounting more failure tolerant    
++# - added MANUAL part in script    
++# - length.vdr creation, you must not use it ;)    
++#
++# Version 1.8
++#
++# - remove sudo, is not necessary
++# - on mount, if already mounted try to umount first    
++# - logging per syslog, see $SYSLOG    
+ #
+ # CONFIGURATION
+ # -------------
+ #<Configuration>
+ 
+ # Mountpoint, the same as in fstab
+-MOUNTPOINT="/media/cdrom" # no trailing '/'
++MOUNTPOINT="/media/brenner" # no trailing '/'
+ 
+ # Eject DVD for exit-codes 2 and 3 (no or wrong dvd). 1 = yes, 0 = no.
+-EJECTWRONG=0
++EJECTWRONG=1
+ 
+ # Eject DVD after unmounting. 1 = yes, 0 = no.
+ EJECTUMOUNT=0
+ 
+ # Log warnings/errors in syslog. 1 = yes, 0 = no.
+-SYSLOG=0
++SYSLOG=1
+ 
+ # Create a length.vdr after mounting the dvd for the played recording. 1 = yes, 0 = no.
+ # Only for non-vfat and with index.vdr only on dvd.
+-GETLENGTH=0
++GETLENGTH=1
+ 
+ # Put debug infos in file $DEBUGLOG. Only if $DEBUG=1.
+ DEBUG=0
+@@ -105,7 +122,8 @@
+ # No changes needed after this mark
+ 
+ # Remove trailing slash
+-MOUNTPOINT=${MOUNTPOINT/%\/}
++MOUNTPOINT="$(echo "${MOUNTPOINT}" | sed -e 's/\/$//')"
++
+ if [ -L "$MOUNTPOINT" ]; then
+ 	MOUNTPOINTT="$(find "$MOUNTPOINT" -printf "%l")"
+ else
+@@ -123,6 +141,10 @@
+ REC="$2"
+ NAME="$3"
+ 
++if [ "$ACTION" = "mount" -a -z "$NAME" ]; then
++	NAME="basename ${REC})"
++fi
++
+ # function to print help
+ call() {
+ 	echo -e "\nScript $0 needs three parameters for mount and two for umount. The first must be mount or umount, the second is the full path.\n"
+@@ -167,8 +189,8 @@
+ 
+ # Some checks before doing something
+ [ "$ACTION" = "mount" -o "$ACTION" = "umount" ] || { call; exit 10; }
+-[ -z "$REC" ] && { call; exit 10; }
+-[ "$ACTION" = mount -a -z "$NAME" ] && { call; exit 10; }
++[ -z "$REC" -o ! -d "$REC" ] && { call; exit 10; }
++[ "$ACTION" = "mount" -a -z "$NAME" ] && { call; exit 10; }
+ [ ! -d "$MOUNTPOINT" ] && { log error "Mountpoint $MOUNTPOINT doesn't exist"; exit 10; }
+ [ ! -e "$DEVICE" ] && { log error "Device $DEVICE doesn't exist"; exit 10; }
+ 
+@@ -187,8 +209,7 @@
+ 	if mount | egrep -q " $MOUNTPOINTT "; then
+ 		# check if dvd is in use
+ 		if mount | egrep -q "^$DEVICET"; then
+-			log error "dvd in use (at: check if dvd is in use)"
+-			exit 1
++			log warning "dvd in use (at: check if dvd is in use)"
+ 		fi
+ 		# if already mountet, try to umount
+ 		log warning "dvd already mounted, try to umount"
+@@ -216,10 +237,14 @@
+ 	if [ "$(stat -f -c %T "$REC")" != "vfat" ]; then
+ 		# link index.vdr if not exist
+ 		if [ ! -e "${REC}/index.vdr" ]; then
+-			cp -s "${DIR}/index.vdr" "${REC}/" || { log error "could not link index.vdr (at: link index.vdr from dvd to disk)"; }
++			ln -s "${DIR}/index.vdr" "${REC}/index.vdr" || { log error "could not link index.vdr (at: link index.vdr from dvd to disk)"; }
+ 		fi
+ 		# link [0-9]*.vdr files
+-		cp -s "${DIR}"/[0-9]*.vdr "${REC}/"
++		#cp -s "${DIR}"/[0-9]*.vdr "${REC}/"
++		#find "${DIR}"/ -name "[0-9]*.vdr" -exec ln -s "${REC}/$(basename "{}")"
++		for FILE in "${DIR}/"[0-9]*.vdr; do
++			ln -s "$FILE" "${REC}/$(basename "$FILE")"
++		done
+ 		# error while linking [0-9]*.vdr files?
+ 		if [ $? -ne 0 ]; then
+ 			log error "error while linking [0-9]*.vdr"

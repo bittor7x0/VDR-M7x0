@@ -1,0 +1,21 @@
+VDR Plugin 'noepgmenu' Revision History
+---------------------------------------
+2007-09-01: Version 0.0.4
+- support for vdr>1.5.7
+- added updated patches for vdr>1.5.7
+
+2006-04-27: Version 0.0.3a
+- updated the noepg-patch for vdr-1.3.48-liemikuutio, thanks to Ronny Kornexl
+  for providing the patch
+
+2006-04-25: Version 0.0.3
+- update for vdr-1.3.47 (->APIVERSION)
+- prevent adding to many many channels
+- updated the noepg-patch for vdr-1.3.48 to run without rejects
+
+2006-02-02: Version 0.0.2
+- bug fix: malformed setup.conf entry after deleting a channel from noepg
+
+2006-01-31: Version 0.0.1
+
+- Initial revision.

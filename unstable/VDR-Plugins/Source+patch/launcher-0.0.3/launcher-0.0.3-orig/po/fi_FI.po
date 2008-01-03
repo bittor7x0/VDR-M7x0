@@ -1,0 +1,31 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Hannu Savolainen <hannu@opensound.com>, 2002
+# Jaakko Hyvätti <jaakko@hyvatti.iki.fi>, 2002
+# Niko Tarnanen <niko.tarnanen@hut.fi>, 2003
+# Rolf Ahrenberg <rahrenbe@cc.hut.fi>, 2003
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
+"POT-Creation-Date: 2007-09-01 21:47+0200\n"
+"PO-Revision-Date: 2007-09-01 21:43+0200\n"
+"Last-Translator: Rolf Ahrenberg <rahrenbe@cc.hut.fi>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: launcher.c:16
+msgid "A plugin to launch other plugins"
+msgstr "Laajennos laajennoksille"
+
+#: launcher.c:17 launcher.c:60
+msgid "Plugins"
+msgstr "Laajennokset"
+
+#: launcher.c:166
+msgid "This plugin has no info text!"
+msgstr "Laajennoksella ei ole infotekstiä!"

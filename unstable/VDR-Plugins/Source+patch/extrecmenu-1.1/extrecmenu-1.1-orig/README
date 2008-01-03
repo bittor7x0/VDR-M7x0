@@ -1,0 +1,126 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:         Martin Prochnow (nordlicht@martins-kabuff.de)
+Project's homepage: http://martins-kabuff.de/extrecmenu_en.html
+
+See the file COPYING for license information.
+
+I want to thank to following contributors:
+- Mike Constabel <mike@constabel.net> for the skript dvdarchive.sh
+- Rolf Ahrenberg <rahrenbe@cc.hut.fi> for the finnish translation
+- Patrice Staudt <staudt@engsystem.net> for the frensh translation
+- Vladimír Bárta <vladimir.barta@k2atmitec.cz> for the czech translation
+
+-------------------------------------------------------------------------------
+Description
+-------------------------------------------------------------------------------
+The EXTended RECordings MENU plugin provides additional functions to VDR's
+recordings menu:
+
+* renaming recordings and directories
+* moving recordings and directories, also between different filesystems
+* adjustable display of recording's length, date and size
+* directories are always shown on top of the list
+* reworked layout using icons for showing the status of list entries
+  (directory, new recording, moving recording/directory, cutting recording,
+  dvd archiv entry)
+* extended recordings info menu, shows name, path, channel, size, lifetime and
+  priority of the recording
+* free disk space is shown for the filesystem of the current directory
+* sorting by name or date, adjustable for each directory; type of sorting will
+  be stored
+* ascending/descending sorting
+* extends VDR's '-r'-option commands with 'move' and 'rename'
+* functionality of the DVDArchive-patch (see below)
+* protecting recordings in co-work with the PIN-plugin
+* a cutter queue
+
+-------------------------------------------------------------------------------
+Installation
+-------------------------------------------------------------------------------
+Installation of the plugin itselfs is like any other plugin installation. Check
+the Makefile if you use the PIN-plugin. You have to place the script
+'dvdarchive.sh' from the scripts/-directory within your $PATH (maybe adjust the
+permissions) for the DVDArchive-patch functionality. See the top of
+'dvdarchive.sh' for the adjustments you maybe have to take.
+
+If your /video-directory is a nfs mount, you have to mount it with the option
+'hard' to make renaming and moving of recordings work.
+
+Check the options at the setup menu of the plugin. They are self-explaining.
+
+There is a patch for VDR in contrib/ for replacing VDR's recordings menu with
+this plugin. You have to set the corresponding option at the setup menu of the
+plugin!
+
+-------------------------------------------------------------------------------
+Handling
+-------------------------------------------------------------------------------
+
+Editing
+-------------------------------------------------------------------------------
+Renaming: Press 'Yellow', then 'Red'. Type in/edit the name. By pressing 'Ok'
+renaming will be executed.
+
+Moving: Press 'Yellow', then 'Green'. Now you are at the base directory of the
+/video-directory-hierarchy. 'Ok' opens sub-directories, with 'Yellow' you can
+create new dirs. With 'Blue' moving to the selected dir will be executed.
+
+Details: Select a recording, press 'Yellow', then 'Blue'. In this menu you can
+edit the lifetime and priority of the selected recording. Editing the details
+of archive dvd entries is not possible, because this would change the name by
+which the recording is found on the disc.
+
+Cutter queue
+-------------------------------------------------------------------------------
+With the build-in cutter queue you don't have to wait until an editing process
+ended before you can start a new one. It only works, if you start the editing
+process from a replay that was started in the plugin.
+
+Canceling of editing or move processes
+-------------------------------------------------------------------------------
+Mark the entry, press 'Yellow'.
+
+Sort recordings
+-------------------------------------------------------------------------------
+All directories are sorted by date by default. To change the sorting, simply
+press '0'. Ascending or descending sorting is selectable at plugin's setup
+menu.
+
+-------------------------------------------------------------------------------
+DVDArchive-patch functionality
+-------------------------------------------------------------------------------
+Burn the entire directory, that contains the recording, to a dvd and label it
+with an identifier (a number or anything else). At least the *.rec-folder has
+to be on the dvd, because the recording is identified by this. You can of
+course burn more than one recording to a dvd.
+
+Now you can delete the video data files (001.vdr, 002.vdr, ...) from your hard
+disc. Leave the index.vdr and info.vdr at the dir. index.vdr is needed if you
+want the length of the recording displayed. You can also use 'getlength' from
+the tools/-directory to create a length.vdr, containing the length of the
+recording. If you do this, you can also delete index.vdr.
+
+Create a new file dvd.vdr, that contains the identifier of the dvd. If you now
+call the plugin and select such a recording entry you are asked to insert this
+dvd. It will be mounted by the plugin and the replay starts from the dvd. After
+replay ends, the dvd is unmountet instantly.
+
+You can also include normal video dvds to your recordings hierarchy. Create a
+folder with the name of the dvd. In this folder, create another one with
+following name scheme: DD-MM-YY.hh.mm.pr.li.rec. The letters have following
+meanings: DD - day (01-31), MM - month (01-12), YY - year (00-99), hh - hour
+(00-23), mm - minutes (00-59), pr - priority (00-99), li - lifetime (00-99).
+(Example: 01-01-06.20.15.50.99.rec) You must use this name scheme, so that VDR
+identifies the folder as a recording. Now create in this folder a file dvd.vdr.
+The first column contains the dvd id, in the second column write 0000 (or
+anything else, its only important that there is a second column). This
+identifies the dvd as a video dvd. If you now select such a recording in the
+list you are asked to insert the dvd and after confirming this the DVD-plugin
+is started to play the video dvd.
+
+-------------------------------------------------------------------------------
+Do you like this plugin? Support the developer! Go to the project homepage and
+make a donation over the PayPal button.
+-------------------------------------------------------------------------------
+
