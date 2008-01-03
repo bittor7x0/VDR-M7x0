@@ -133,7 +133,7 @@ diff -Naur webif-orig/i18n.c webif/i18n.c
 +		},
 +		{	"You are watching",		// #18
 +			"Sie sehen zur Zeit",
-+			"Tú estás viendo"
++			"Estás viendo"
 +		},
 +		{	"Channel List",			// #19
 +			"Kanalliste",
