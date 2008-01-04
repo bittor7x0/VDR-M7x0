@@ -1,4 +1,4 @@
-epgsearch(5)            Epgsearch Version 0.9.24.beta13           epgsearch(5)
+epgsearch(5)            Epgsearch Version 0.9.24.beta15           epgsearch(5)
 
 
 
@@ -996,4 +996,4 @@ COPYRIGHT and LICENSE
 
 
 
-perl v5.8.8                       2007-11-11                      epgsearch(5)
+perl v5.8.8                       2007-11-24                      epgsearch(5)
