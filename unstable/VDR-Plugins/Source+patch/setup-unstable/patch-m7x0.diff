@@ -1,66 +1,6 @@
-diff -Naur setup-orig/.cdtproject setup/.cdtproject
---- setup-orig/.cdtproject	2008-01-06 13:14:50.000000000 +0100
-+++ setup/.cdtproject	1970-01-01 01:00:00.000000000 +0100
-@@ -1,56 +0,0 @@
--<?xml version="1.0" encoding="UTF-8"?>
--<?eclipse-cdt version="2.0"?>
--
--<cdtproject id="org.eclipse.cdt.make.core.make">
--<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
--<data>
--<item id="scannerConfiguration">
--<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
--<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
--<buildOutputProvider>
--<openAction enabled="true" filePath=""/>
--<parser enabled="true"/>
--</buildOutputProvider>
--<scannerInfoProvider id="specsFile">
--<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
--<parser enabled="true"/>
--</scannerInfoProvider>
--</profile>
--<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
--<buildOutputProvider>
--<openAction enabled="false" filePath=""/>
--<parser enabled="true"/>
--</buildOutputProvider>
--<scannerInfoProvider id="makefileGenerator">
--<runAction arguments="-f ${project_name}_scd.mk" command="make" useDefault="true"/>
--<parser enabled="false"/>
--</scannerInfoProvider>
--</profile>
--<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfile">
--<buildOutputProvider>
--<openAction enabled="false" filePath=""/>
--<parser enabled="true"/>
--</buildOutputProvider>
--<scannerInfoProvider id="specsFile">
--<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
--<parser enabled="false"/>
--</scannerInfoProvider>
--</profile>
--<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfile">
--<buildOutputProvider>
--<openAction enabled="false" filePath=""/>
--<parser enabled="true"/>
--</buildOutputProvider>
--<scannerInfoProvider id="specsFile">
--<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
--<parser enabled="false"/>
--</scannerInfoProvider>
--</profile>
--</item>
--<item id="org.eclipse.cdt.core.pathentry">
--<pathentry kind="src" path=""/>
--<pathentry kind="out" path=""/>
--<pathentry kind="con" path="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO"/>
--</item>
--</data>
--</cdtproject>
 diff -Naur setup-orig/common.h setup/common.h
---- setup-orig/common.h	2008-01-06 13:14:50.000000000 +0100
-+++ setup/common.h	2007-12-26 22:27:13.000000000 +0100
+--- setup-orig/common.h	2008-01-06 22:34:36.000000000 +0100
++++ setup/common.h	2008-01-06 13:22:05.000000000 +0100
 @@ -1,15 +1,20 @@
 -/*
 - * common.h: The 'setup' plugin
@@ -102,8 +42,8 @@ diff -Naur setup-orig/common.h setup/common.h
 +
 +#endif // __SKINSOPPALUSIKKA_COMMON_H
 diff -Naur setup-orig/config.cpp setup/config.cpp
---- setup-orig/config.cpp	2008-01-06 13:14:50.000000000 +0100
-+++ setup/config.cpp	2007-12-26 22:27:13.000000000 +0100
+--- setup-orig/config.cpp	2008-01-06 22:34:36.000000000 +0100
++++ setup/config.cpp	2008-01-06 13:22:05.000000000 +0100
 @@ -111,27 +111,43 @@
  			dsyslog("Error while opening pipe! Execute '%s' faild! Could not find plugin path", tmp);
  		}
@@ -169,145 +109,9 @@ diff -Naur setup-orig/config.cpp setup/config.cpp
    
    TiXmlElement *plugins=savePlugins();
  
-diff -Naur setup-orig/.dependencies setup/.dependencies
---- setup-orig/.dependencies	1970-01-01 01:00:00.000000000 +0100
-+++ setup/.dependencies	2007-12-27 00:20:40.000000000 +0100
-@@ -0,0 +1,132 @@
-+setup.o: setup.cpp ../../../include/vdr/plugin.h \
-+  ../../../include/vdr/i18n.h ../../../include/vdr/menuitems.h \
-+  ../../../include/vdr/osdbase.h ../../../include/vdr/config.h \
-+  ../../../include/vdr/tools.h ../../../include/vdr/osd.h \
-+  ../../../include/vdr/font.h ../../../include/vdr/skins.h \
-+  ../../../include/vdr/channels.h ../../../include/vdr/sources.h \
-+  ../../../include/vdr/thread.h ../../../include/vdr/epg.h \
-+  ../../../include/vdr/keys.h ../../../include/vdr/recording.h \
-+  ../../../include/vdr/timers.h ../../../include/vdr/ringbuffer.h \
-+  ../../../include/vdr/themes.h \
-+  ../../../include/vdr/vdr-o7o-api-version.h setupmenu.h \
-+  ../../../include/vdr/menu.h ../../../include/vdr/ci.h \
-+  ../../../include/vdr/device.h ../../../include/vdr/eit.h \
-+  ../../../include/vdr/filter.h ../../../include/vdr/nit.h \
-+  ../../../include/vdr/pat.h ../../../include/vdr/sdt.h \
-+  ../../../include/vdr/sections.h ../../../include/vdr/spu.h \
-+  ../../../include/vdr/dvbplayer.h ../../../include/vdr/player.h \
-+  ../../../include/vdr/recorder.h ../../../include/vdr/receiver.h \
-+  ../../../include/vdr/remux.h ../../../include/m7x0_dvb/dmx.h \
-+  ../../../include/vdr/interface.h ../../../include/vdr/remote.h \
-+  ../../../include/vdr/svdrp.h config.h tinystr.h tinyxml.h plugins.h \
-+  common.h sysconfig.h menus.h util.h i18n.h
-+i18n.o: i18n.cpp i18n.h ../../../include/vdr/i18n.h
-+menus.o: menus.cpp ../../../include/vdr/device.h \
-+  ../../../include/vdr/channels.h ../../../include/vdr/config.h \
-+  ../../../include/vdr/i18n.h ../../../include/vdr/tools.h \
-+  ../../../include/vdr/sources.h ../../../include/vdr/thread.h \
-+  ../../../include/vdr/ci.h ../../../include/vdr/eit.h \
-+  ../../../include/vdr/filter.h ../../../include/vdr/nit.h \
-+  ../../../include/vdr/pat.h ../../../include/vdr/ringbuffer.h \
-+  ../../../include/vdr/sdt.h ../../../include/vdr/sections.h \
-+  ../../../include/vdr/spu.h menus.h common.h util.h \
-+  ../../../include/vdr/timers.h ../../../include/vdr/epg.h tinystr.h \
-+  tinyxml.h sysconfig.h config.h plugins.h debug.h \
-+  ../../../include/vdr/plugin.h ../../../include/vdr/menuitems.h \
-+  ../../../include/vdr/osdbase.h ../../../include/vdr/osd.h \
-+  ../../../include/vdr/font.h ../../../include/vdr/skins.h \
-+  ../../../include/vdr/keys.h ../../../include/vdr/recording.h \
-+  ../../../include/vdr/themes.h \
-+  ../../../include/vdr/vdr-o7o-api-version.h
-+setupmenu.o: setupmenu.cpp ../../../include/vdr/menuitems.h \
-+  ../../../include/vdr/osdbase.h ../../../include/vdr/config.h \
-+  ../../../include/vdr/i18n.h ../../../include/vdr/tools.h \
-+  ../../../include/vdr/osd.h ../../../include/vdr/font.h \
-+  ../../../include/vdr/skins.h ../../../include/vdr/channels.h \
-+  ../../../include/vdr/sources.h ../../../include/vdr/thread.h \
-+  ../../../include/vdr/epg.h ../../../include/vdr/keys.h \
-+  ../../../include/vdr/recording.h ../../../include/vdr/timers.h \
-+  ../../../include/vdr/ringbuffer.h ../../../include/vdr/themes.h \
-+  setupmenu.h ../../../include/vdr/menu.h ../../../include/vdr/ci.h \
-+  ../../../include/vdr/device.h ../../../include/vdr/eit.h \
-+  ../../../include/vdr/filter.h ../../../include/vdr/nit.h \
-+  ../../../include/vdr/pat.h ../../../include/vdr/sdt.h \
-+  ../../../include/vdr/sections.h ../../../include/vdr/spu.h \
-+  ../../../include/vdr/dvbplayer.h ../../../include/vdr/player.h \
-+  ../../../include/vdr/recorder.h ../../../include/vdr/receiver.h \
-+  ../../../include/vdr/remux.h ../../../include/m7x0_dvb/dmx.h \
-+  ../../../include/vdr/interface.h ../../../include/vdr/remote.h \
-+  ../../../include/vdr/svdrp.h config.h tinystr.h tinyxml.h plugins.h \
-+  common.h sysconfig.h menus.h util.h debug.h \
-+  ../../../include/vdr/plugin.h \
-+  ../../../include/vdr/vdr-o7o-api-version.h i18n.h setupsystemmenu.h
-+config.o: config.cpp ../../../include/vdr/plugin.h \
-+  ../../../include/vdr/i18n.h ../../../include/vdr/menuitems.h \
-+  ../../../include/vdr/osdbase.h ../../../include/vdr/config.h \
-+  ../../../include/vdr/tools.h ../../../include/vdr/osd.h \
-+  ../../../include/vdr/font.h ../../../include/vdr/skins.h \
-+  ../../../include/vdr/channels.h ../../../include/vdr/sources.h \
-+  ../../../include/vdr/thread.h ../../../include/vdr/epg.h \
-+  ../../../include/vdr/keys.h ../../../include/vdr/recording.h \
-+  ../../../include/vdr/timers.h ../../../include/vdr/ringbuffer.h \
-+  ../../../include/vdr/themes.h \
-+  ../../../include/vdr/vdr-o7o-api-version.h tinystr.h tinyxml.h config.h \
-+  plugins.h common.h sysconfig.h menus.h util.h debug.h
-+plugins.o: plugins.cpp ../../../include/vdr/plugin.h \
-+  ../../../include/vdr/i18n.h ../../../include/vdr/menuitems.h \
-+  ../../../include/vdr/osdbase.h ../../../include/vdr/config.h \
-+  ../../../include/vdr/tools.h ../../../include/vdr/osd.h \
-+  ../../../include/vdr/font.h ../../../include/vdr/skins.h \
-+  ../../../include/vdr/channels.h ../../../include/vdr/sources.h \
-+  ../../../include/vdr/thread.h ../../../include/vdr/epg.h \
-+  ../../../include/vdr/keys.h ../../../include/vdr/recording.h \
-+  ../../../include/vdr/timers.h ../../../include/vdr/ringbuffer.h \
-+  ../../../include/vdr/themes.h \
-+  ../../../include/vdr/vdr-o7o-api-version.h plugins.h common.h util.h \
-+  debug.h
-+sysconfig.o: sysconfig.cpp ../../../include/vdr/plugin.h \
-+  ../../../include/vdr/i18n.h ../../../include/vdr/menuitems.h \
-+  ../../../include/vdr/osdbase.h ../../../include/vdr/config.h \
-+  ../../../include/vdr/tools.h ../../../include/vdr/osd.h \
-+  ../../../include/vdr/font.h ../../../include/vdr/skins.h \
-+  ../../../include/vdr/channels.h ../../../include/vdr/sources.h \
-+  ../../../include/vdr/thread.h ../../../include/vdr/epg.h \
-+  ../../../include/vdr/keys.h ../../../include/vdr/recording.h \
-+  ../../../include/vdr/timers.h ../../../include/vdr/ringbuffer.h \
-+  ../../../include/vdr/themes.h \
-+  ../../../include/vdr/vdr-o7o-api-version.h sysconfig.h debug.h util.h \
-+  common.h
-+util.o: util.cpp util.h ../../../include/vdr/tools.h \
-+  ../../../include/vdr/timers.h ../../../include/vdr/channels.h \
-+  ../../../include/vdr/config.h ../../../include/vdr/i18n.h \
-+  ../../../include/vdr/sources.h ../../../include/vdr/thread.h \
-+  ../../../include/vdr/epg.h debug.h ../../../include/vdr/plugin.h \
-+  ../../../include/vdr/menuitems.h ../../../include/vdr/osdbase.h \
-+  ../../../include/vdr/osd.h ../../../include/vdr/font.h \
-+  ../../../include/vdr/skins.h ../../../include/vdr/keys.h \
-+  ../../../include/vdr/recording.h ../../../include/vdr/ringbuffer.h \
-+  ../../../include/vdr/themes.h \
-+  ../../../include/vdr/vdr-o7o-api-version.h common.h
-+setupsystemmenu.o: setupsystemmenu.cpp ../../../menu.h ../../../ci.h \
-+  ../../../thread.h ../../../tools.h ../../../device.h \
-+  ../../../channels.h ../../../config.h ../../../i18n.h \
-+  ../../../sources.h ../../../eit.h ../../../filter.h ../../../nit.h \
-+  ../../../pat.h ../../../ringbuffer.h ../../../sdt.h ../../../sections.h \
-+  ../../../spu.h ../../../epg.h ../../../osdbase.h ../../../osd.h \
-+  ../../../font.h ../../../skins.h ../../../keys.h ../../../recording.h \
-+  ../../../timers.h ../../../themes.h ../../../dvbplayer.h \
-+  ../../../player.h ../../../menuitems.h ../../../recorder.h \
-+  ../../../receiver.h ../../../remux.h ../../../m7x0_dvb/dmx.h \
-+  ../../../iconpatch.h config.h tinystr.h tinyxml.h plugins.h common.h \
-+  ../../../include/vdr/tools.h sysconfig.h menus.h util.h \
-+  ../../../include/vdr/timers.h ../../../cutter.h ../../../eitscan.h \
-+  i18n.h ../../../include/vdr/i18n.h ../../../interface.h \
-+  ../../../remote.h ../../../svdrp.h ../../../plugin.h \
-+  ../../../vdr-o7o-api-version.h ../../../shutdown.h ../../../status.h \
-+  ../../../transfer.h ../../../videodir.h setupsystemmenu.h \
-+  ../../../include/vdr/menu.h ../../../include/vdr/interface.h \
-+  setupmenu.h debug.h ../../../include/vdr/plugin.h
-+tinystr.o: tinystr.cpp tinyxml.h tinystr.h
-+tinyxml.o: tinyxml.cpp tinyxml.h tinystr.h
-+tinyxmlerror.o: tinyxmlerror.cpp tinyxml.h tinystr.h
-+tinyxmlparser.o: tinyxmlparser.cpp tinyxml.h tinystr.h
 diff -Naur setup-orig/HISTORY setup/HISTORY
---- setup-orig/HISTORY	2008-01-06 13:14:50.000000000 +0100
-+++ setup/HISTORY	2007-12-26 22:27:13.000000000 +0100
+--- setup-orig/HISTORY	2008-01-06 22:34:36.000000000 +0100
++++ setup/HISTORY	2008-01-06 13:22:05.000000000 +0100
 @@ -1,83 +1,87 @@
 -VDR Plugin 'setup' Revision History
 ------------------------------------
@@ -480,7 +284,7 @@ diff -Naur setup-orig/HISTORY setup/HISTORY
 +
 +- Initial revision.
 diff -Naur setup-orig/M7x0 config/fw-config.txt setup/M7x0 config/fw-config.txt
---- setup-orig/M7x0 config/fw-config.txt	2008-01-06 13:14:50.000000000 +0100
+--- setup-orig/M7x0 config/fw-config.txt	2008-01-06 22:34:36.000000000 +0100
 +++ setup/M7x0 config/fw-config.txt	1970-01-01 01:00:00.000000000 +0100
 @@ -1,729 +0,0 @@
 -##########################################################################
@@ -1214,7 +1018,7 @@ diff -Naur setup-orig/M7x0 config/fw-config.txt setup/M7x0 config/fw-config.txt
 -
 diff -Naur setup-orig/M7x0 config/local-conf setup/M7x0 config/local-conf
 --- setup-orig/M7x0 config/local-conf	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/local-conf	2007-12-26 22:27:13.000000000 +0100
++++ setup/M7x0 config/local-conf	2008-01-06 13:22:05.000000000 +0100
 @@ -0,0 +1,51 @@
 +#!/bin/ash
 +
@@ -1269,7 +1073,7 @@ diff -Naur setup-orig/M7x0 config/local-conf setup/M7x0 config/local-conf
 +
 diff -Naur setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 config/open7x0-setup_eng.xml
 --- setup-orig/M7x0 config/open7x0-setup_eng.xml	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup_eng.xml	2007-12-26 22:27:13.000000000 +0100
++++ setup/M7x0 config/open7x0-setup_eng.xml	2008-01-06 13:22:05.000000000 +0100
 @@ -0,0 +1,51 @@
 +<!--
 +-   open7x0-VDR Configuration File
@@ -1324,7 +1128,7 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 config/open7x
 +</setup>
 diff -Naur setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x0-setup_esl.xml
 --- setup-orig/M7x0 config/open7x0-setup_esl.xml	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup_esl.xml	2008-01-06 13:12:41.000000000 +0100
++++ setup/M7x0 config/open7x0-setup_esl.xml	2008-01-06 13:22:05.000000000 +0100
 @@ -0,0 +1,51 @@
 +<!--
 +-   open7x0-VDR Configuration File
@@ -1378,7 +1182,7 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x
 +    </menus>
 +</setup>
 diff -Naur setup-orig/M7x0 config/open7x0-setup V1.0.xml setup/M7x0 config/open7x0-setup V1.0.xml
---- setup-orig/M7x0 config/open7x0-setup V1.0.xml	2008-01-06 13:14:50.000000000 +0100
+--- setup-orig/M7x0 config/open7x0-setup V1.0.xml	2008-01-06 22:34:36.000000000 +0100
 +++ setup/M7x0 config/open7x0-setup V1.0.xml	1970-01-01 01:00:00.000000000 +0100
 @@ -1,184 +0,0 @@
 -<!--
@@ -1566,8 +1370,8 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup V1.0.xml setup/M7x0 config/open7
 -    </menus>
 -</setup>
 diff -Naur setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/open7x0-setup.xml
---- setup-orig/M7x0 config/open7x0-setup.xml	2008-01-06 13:14:50.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup.xml	2008-01-06 13:13:09.000000000 +0100
+--- setup-orig/M7x0 config/open7x0-setup.xml	2008-01-06 22:34:36.000000000 +0100
++++ setup/M7x0 config/open7x0-setup.xml	2008-01-06 13:22:05.000000000 +0100
 @@ -1,162 +1,51 @@
  <!--
 --   (c) 2005,2006 by Ralf Dotzert
@@ -1772,8 +1576,8 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/open7x0-se
      </menus>
  </setup>
 diff -Naur setup-orig/Makefile setup/Makefile
---- setup-orig/Makefile	2008-01-06 13:14:50.000000000 +0100
-+++ setup/Makefile	2008-01-06 13:14:01.000000000 +0100
+--- setup-orig/Makefile	2008-01-06 22:34:36.000000000 +0100
++++ setup/Makefile	2008-01-06 13:48:07.000000000 +0100
 @@ -1,7 +1,7 @@
  #
  # Makefile for a Video Disk Recorder plugin
@@ -1796,13 +1600,13 @@ diff -Naur setup-orig/Makefile setup/Makefile
  
  setupsystemmenu.cpp:  $(VDRDIR)/menu.c
  	@echo "Extracting class definitions from VDR's menu.c for standard Setup"
-+        @chmod +x ./getVdrSetupMenu.pl
++	@chmod +x ./getVdrSetupMenu.pl
  	@./getVdrSetupMenu.pl $(VDRDIR)/menu.c
  
  	
 diff -Naur setup-orig/plugins.cpp setup/plugins.cpp
---- setup-orig/plugins.cpp	2008-01-06 13:14:50.000000000 +0100
-+++ setup/plugins.cpp	2007-12-27 18:50:07.000000000 +0100
+--- setup-orig/plugins.cpp	2008-01-06 22:34:36.000000000 +0100
++++ setup/plugins.cpp	2008-01-06 13:22:05.000000000 +0100
 @@ -15,6 +15,7 @@
  #include "plugins.h"
  #include "util.h"
@@ -1834,102 +1638,9 @@ diff -Naur setup-orig/plugins.cpp setup/plugins.cpp
      }
    } 
    //HaPe: Add " around the string
-diff -Naur setup-orig/.project setup/.project
---- setup-orig/.project	2008-01-06 13:14:50.000000000 +0100
-+++ setup/.project	1970-01-01 01:00:00.000000000 +0100
-@@ -1,82 +0,0 @@
--<?xml version="1.0" encoding="UTF-8"?>
--<projectDescription>
--	<name>vdr setup</name>
--	<comment></comment>
--	<projects>
--	</projects>
--	<buildSpec>
--		<buildCommand>
--			<name>org.eclipse.cdt.make.core.makeBuilder</name>
--			<triggers>clean,full,incremental,</triggers>
--			<arguments>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.build.arguments</key>
--					<value></value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.core.errorOutputParser</key>
--					<value>org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.VCErrorParser;</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.enableAutoBuild</key>
--					<value>false</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.environment</key>
--					<value></value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.enableFullBuild</key>
--					<value>true</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.build.target.inc</key>
--					<value>all</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.enabledIncrementalBuild</key>
--					<value>true</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.build.target.clean</key>
--					<value>clean</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.build.command</key>
--					<value>make</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.enableCleanBuild</key>
--					<value>true</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.append_environment</key>
--					<value>true</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.useDefaultBuildCmd</key>
--					<value>true</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.build.target.auto</key>
--					<value>all</value>
--				</dictionary>
--				<dictionary>
--					<key>org.eclipse.cdt.make.core.stopOnError</key>
--					<value>false</value>
--				</dictionary>
--			</arguments>
--		</buildCommand>
--		<buildCommand>
--			<name>org.eclipse.cdt.make.core.ScannerConfigBuilder</name>
--			<arguments>
--			</arguments>
--		</buildCommand>
--	</buildSpec>
--	<natures>
--		<nature>org.eclipse.cdt.core.cnature</nature>
--		<nature>org.eclipse.cdt.make.core.makeNature</nature>
--		<nature>org.eclipse.cdt.make.core.ScannerConfigNature</nature>
--		<nature>org.eclipse.cdt.core.ccnature</nature>
--	</natures>
--</projectDescription>
-diff -Naur setup-orig/.settings/org.eclipse.cdt.core.prefs setup/.settings/org.eclipse.cdt.core.prefs
---- setup-orig/.settings/org.eclipse.cdt.core.prefs	2008-01-06 13:14:50.000000000 +0100
-+++ setup/.settings/org.eclipse.cdt.core.prefs	1970-01-01 01:00:00.000000000 +0100
-@@ -1,3 +0,0 @@
--#Tue Jan 16 19:06:27 CET 2007
--eclipse.preferences.version=1
--indexerId=org.eclipse.cdt.core.fastIndexer
 diff -Naur setup-orig/setupmenu.cpp setup/setupmenu.cpp
---- setup-orig/setupmenu.cpp	2008-01-06 13:14:50.000000000 +0100
-+++ setup/setupmenu.cpp	2007-12-27 00:40:50.000000000 +0100
+--- setup-orig/setupmenu.cpp	2008-01-06 22:34:36.000000000 +0100
++++ setup/setupmenu.cpp	2008-01-06 13:52:42.000000000 +0100
 @@ -18,6 +18,7 @@
  #include "plugins.h"
  #include "debug.h"
@@ -2095,60 +1806,200 @@ diff -Naur setup-orig/setupmenu.cpp setup/setupmenu.cpp
    }
    return(result);
 diff -Naur setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
---- setup-orig/setupsystemmenu.cpp	2008-01-06 13:14:50.000000000 +0100
-+++ setup/setupsystemmenu.cpp	2007-12-27 00:20:39.000000000 +0100
-@@ -8,11 +8,13 @@
- 
- // Headers included by <VDR>/menu.c
- #include "menu.h"
-+#include "iconpatch.h"
- #include <ctype.h>
- #include <limits.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
-+#include <math.h>
- #include "channels.h"
- #include "config.h"
- #include "cutter.h"
-@@ -22,6 +24,7 @@
- #include "plugin.h"
- #include "recording.h"
- #include "remote.h"
-+#include "shutdown.h"
- #include "sources.h"
- #include "status.h"
- #include "themes.h"
-@@ -79,7 +82,7 @@
-   int originalNumAudioLanguages;
-   int numAudioLanguages;
-   void Setup(void);
+--- setup-orig/setupsystemmenu.cpp	2008-01-06 22:34:36.000000000 +0100
++++ setup/setupsystemmenu.cpp	1970-01-01 01:00:00.000000000 +0100
+@@ -1,188 +0,0 @@
+-/***********************************************************
+- * Header file holding Class Definitions from <VDR>/menu.c *
+- *                                                         *
+- * This file is generated automaticly!                     *
+- * Do not make changes!                                    *
+- *                                                         *
+- ***********************************************************/
+-
+-// Headers included by <VDR>/menu.c
+-#include "menu.h"
+-#include <ctype.h>
+-#include <limits.h>
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include "channels.h"
+-#include "config.h"
+-#include "cutter.h"
+-#include "eitscan.h"
+-#include "i18n.h"
+-#include "interface.h"
+-#include "plugin.h"
+-#include "recording.h"
+-#include "remote.h"
+-#include "sources.h"
+-#include "status.h"
+-#include "themes.h"
+-#include "timers.h"
+-#include "transfer.h"
+-#include "videodir.h"
+-
+-// local headers needed
+-#include "setupsystemmenu.h"
+-#include "setupmenu.h"
+-#include "debug.h"
+-// ************************************
+-// SetupClasses defined in <VDR>/menu.c
+-// ************************************
+-
+-class cMenuSetupBase : public cMenuSetupPage {
+-protected:
+-  cSetup data;
+-  virtual void Store(void);
+-public:
+-  cMenuSetupBase(void);
+-  };
+-
+-
+-class cMenuSetupOSD : public cMenuSetupBase {
+-private:
+-  const char *useSmallFontTexts[3];
+-  int numSkins;
+-  int originalSkinIndex;
+-  int skinIndex;
+-  const char **skinDescriptions;
+-  cThemes themes;
+-  int themeIndex;
+-  virtual void Set(void);
+-public:
+-  cMenuSetupOSD(void);
+-  virtual ~cMenuSetupOSD();
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupEPG : public cMenuSetupBase {
+-private:
+-  int originalNumLanguages;
+-  int numLanguages;
+-  void Setup(void);
+-public:
+-  cMenuSetupEPG(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupDVB : public cMenuSetupBase {
+-private:
+-  int originalNumAudioLanguages;
+-  int numAudioLanguages;
+-  void Setup(void);
 -  const char *videoDisplayFormatTexts[3];
-+  const char *videoDisplayFormatTexts[2];
-   const char *videoFormatTexts[3];
-   const char *updateChannelsTexts[6];
- public:
-@@ -108,6 +111,8 @@
- 
- 
- class cMenuSetupRecord : public cMenuSetupBase {
-+private:
-+  const char *RecordingsSortModeTexts[MAXSORTMODES];
- public:
-   cMenuSetupRecord(void);
-   };
-@@ -122,6 +127,8 @@
- 
- 
- class cMenuSetupMisc : public cMenuSetupBase {
-+private:
-+  const char *channelFilterTexts[3];
- public:
-   cMenuSetupMisc(void);
-   };
+-  const char *videoFormatTexts[3];
+-  const char *updateChannelsTexts[6];
+-public:
+-  cMenuSetupDVB(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupLNB : public cMenuSetupBase {
+-private:
+-  void Setup(void);
+-public:
+-  cMenuSetupLNB(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupCICAM : public cMenuSetupBase {
+-private:
+-  eOSState Menu(void);
+-  eOSState Reset(void);
+-public:
+-  cMenuSetupCICAM(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-class cMenuSetupRecord : public cMenuSetupBase {
+-public:
+-  cMenuSetupRecord(void);
+-  };
+-
+-
+-class cMenuSetupReplay : public cMenuSetupBase {
+-protected:
+-  virtual void Store(void);
+-public:
+-  cMenuSetupReplay(void);
+-  };
+-
+-
+-class cMenuSetupMisc : public cMenuSetupBase {
+-public:
+-  cMenuSetupMisc(void);
+-  };
+-
+-
+-class cMenuSetupPlugins : public cMenuSetupBase {
+-public:
+-  cMenuSetupPlugins(void);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+-
+-//############################################################################
+-// cSetupSystemMenu
+-//############################################################################
+-cSetupSystemMenu::cSetupSystemMenu()
+-{
+-}
+-cSetupSystemMenu::~cSetupSystemMenu()
+-{
+-}
+-// Get SystemMenu
+-cOsdMenu *cSetupSystemMenu::GetSystemMenu(const char *sysCommand, Config  *config)
+-{
+- cOsdMenu *menu=NULL;
+- if( sysCommand != NULL)
+- {
+-    if( strcmp(sysCommand, "ActPlugins") == 0)
+-        menu =new cSetupPluginMenu(config);
+-//    else
+-//      if(strcmp(sysCommand, "VDRMenu") == 0)
+-//        menu = new cSetupVdrMenu(tr("Menu Edit"));
+-    else
+-      if(strcmp(sysCommand, "OSD") == 0)
+-         menu = new cMenuSetupOSD;
+-    else
+-      if(strcmp(sysCommand, "EPG") == 0)
+-         menu = new cMenuSetupEPG;
+-    else
+-      if(strcmp(sysCommand, "DVB") == 0)
+-         menu = new cMenuSetupDVB;
+-    else
+-      if(strcmp(sysCommand, "LNB") == 0)
+-         menu = new cMenuSetupLNB;
+-    else
+-      if(strcmp(sysCommand, "CICAM") == 0)
+-         menu = new cMenuSetupCICAM;
+-    else
+-      if(strcmp(sysCommand, "Record") == 0)
+-         menu = new cMenuSetupRecord;
+-    else
+-      if(strcmp(sysCommand, "Replay") == 0)
+-         menu = new cMenuSetupReplay;
+-    else
+-      if(strcmp(sysCommand, "Misc") == 0)
+-         menu = new cMenuSetupMisc;
+-    else
+-      if(strcmp(sysCommand, "Plugins") == 0)
+-         menu = new cMenuSetupPlugins;
+-   else
+-      DEBUG3("%s: <menu System=%s> not known\n", DBG_PREFIX, sysCommand);
+-  }
+-  return (menu);
+-}
 diff -Naur setup-orig/util.cpp setup/util.cpp
---- setup-orig/util.cpp	2008-01-06 13:14:50.000000000 +0100
-+++ setup/util.cpp	2007-12-26 22:27:13.000000000 +0100
+--- setup-orig/util.cpp	2008-01-06 22:34:36.000000000 +0100
++++ setup/util.cpp	2008-01-06 13:22:07.000000000 +0100
 @@ -14,6 +14,7 @@
  #include <ctype.h>
  #include "util.h"
