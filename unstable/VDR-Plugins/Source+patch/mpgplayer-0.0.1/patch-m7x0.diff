@@ -1,0 +1,57 @@
+diff -Naur mpgplayer-0.0.1-orig/mpgplayer_i18n.c mpgplayer-0.0.1/mpgplayer_i18n.c
+--- mpgplayer-0.0.1-orig/mpgplayer_i18n.c	Sun Jan 06 11:55:06 2008
++++ mpgplayer-0.0.1/mpgplayer_i18n.c	Tue Jan 15 18:14:52 2008
+@@ -33,7 +33,7 @@
+   },
+   {
+      "A player for Mpg-PS-Recordings",
+-     "Ein Player fï¿½r Mpg PS Aufnahmen",
++     "Ein Player für Mpg PS Aufnahmen",
+      "",
+      "",
+      "",
+@@ -56,7 +56,7 @@
+   },
+   {
+      "Cannot open directory",
+-     "Kann Verzeichnis nicht ï¿½ffnen",
++     "Kann Verzeichnis nicht öffnen",
+      "",
+      "",
+      "",
+@@ -79,7 +79,7 @@
+   },
+   {
+      "Cannot delete running recording",
+-     "Kann laufende Aufnahme nicht lï¿½schen",
++     "Kann laufende Aufnahme nicht löschen",
+      "",
+      "",
+      "",
+@@ -88,7 +88,7 @@
+      "",
+      "",
+      "",
+-     "No puedo borrar grabaciï¿½n actual",
++     "No puedo borrar grabación actual",
+      "",
+      "",
+      "",
+@@ -102,7 +102,7 @@
+   },
+   {
+      "Cannot delete recording",
+-     "Kann Aufnahme nicht lï¿½schen",
++     "Kann Aufnahme nicht löschen",
+      "",
+      "",
+      "",
+@@ -111,7 +111,7 @@
+      "",
+      "",
+      "",
+-     "No puedo borrar grabaciï¿½n",
++     "No puedo borrar grabación",
+      "",
+      "",
+      "",
