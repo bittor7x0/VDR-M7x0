@@ -1,0 +1,15 @@
+VDR Plugin 'channellists' Revision History
+------------------------------------------
+
+2008-01-15: Version 0.0.2
+
+- Fixed miscellaneous bugs.
+- Added submenus for copying, renaming and saving a channellist.
+- Added setup option "Hide main menu entry".
+- Added an argument for the svdrp command RELOAD
+  RELOAD /path/to/channels.conf
+  with no argument RELOAD reloads the current channels.conf
+
+2007-12-30: Version 0.0.1
+
+- Initial revision.

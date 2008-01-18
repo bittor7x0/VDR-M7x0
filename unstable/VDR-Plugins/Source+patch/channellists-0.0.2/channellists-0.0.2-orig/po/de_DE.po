@@ -1,0 +1,61 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2008-01-16 01:23+0100\n"
+"PO-Revision-Date: 2008-01-16 01:22+0100\n"
+"Last-Translator: Klaus Schmidinger <kls@cadsoft.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Manage your channellists"
+msgstr "Verwalte deine Kanallisten"
+
+msgid "Channellists"
+msgstr "Kanallisten"
+
+msgid "Hide main menu entry"
+msgstr "Hauptmenüeintrag verstecken"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "An error occurs, see syslog..."
+msgstr "Ein Fehler ist aufgetreten, siehe syslog..."
+
+msgid "Could not create dir"
+msgstr "Kann Verzeichnis nicht erstellen"
+
+msgid "Switch current channellist?"
+msgstr "Aktuelle Kanalliste wechseln?"
+
+msgid "Rename"
+msgstr "Umbenennen"
+
+msgid "Copy"
+msgstr "Kopieren"
+
+msgid "Delete channellist?"
+msgstr "Kanalliste löschen?"
+
+msgid "Save"
+msgstr "Sichern"
+
+msgid "Button$Rename"
+msgstr "Umbenennen"
+
+msgid "Button$Copy"
+msgstr "Kopieren"
+
+msgid "Button$Delete"
+msgstr "Löschen"
+
+msgid "Button$Save"
+msgstr "Sichern"
