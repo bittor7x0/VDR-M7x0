@@ -1,117 +1,97 @@
 diff -Naur setup-orig/common.h setup/common.h
---- setup-orig/common.h	2008-01-06 22:34:36.000000000 +0100
-+++ setup/common.h	2008-01-06 13:22:05.000000000 +0100
-@@ -1,15 +1,20 @@
--/*
-- * common.h: The 'setup' plugin
-- *
-- * See the README file for copyright information and how to reach the author.
-- *
-- * $Id$
-- */
-+/*
-+ * common.h: The 'setup' plugin
-+ *
-+ * See the README file for copyright information and how to reach the author.
-+ *
-+ * $Id$
-+ */
-+
-+#ifndef SETUP_COMMON_H
-+#define SETUP_COMMON_H
-+
-+#include <vdr/tools.h>
-+
+--- setup-orig/common.h	2008-01-18 21:05:01.000000000 +0100
++++ setup/common.h	2008-01-18 21:11:49.000000000 +0100
+@@ -11,6 +11,11 @@
+ 
+ #include <vdr/tools.h>
+ 
 +#define STR_YES "YES"
 +#define STR_NO "NO"
 +
- 
--#ifndef SETUP_COMMON_H
--#define SETUP_COMMON_H
--
--#include <vdr/tools.h>
- 
++
++
  #ifdef DEBUG
  #define debug(x...) dsyslog("open 7x0 Setup: " x);
+ #define error(x...) esyslog("open 7x0 Setup: " x);
 @@ -19,4 +24,6 @@
  #define error(x...) esyslog("open 7x0 Setup: " x);
  #endif
  
--#endif // __SKINSOPPALUSIKKA_COMMON_H
 +
 +
-+#endif // __SKINSOPPALUSIKKA_COMMON_H
+ #endif // __SKINSOPPALUSIKKA_COMMON_H
 diff -Naur setup-orig/config.cpp setup/config.cpp
---- setup-orig/config.cpp	2008-01-06 22:34:36.000000000 +0100
-+++ setup/config.cpp	2008-01-06 13:22:05.000000000 +0100
-@@ -111,27 +111,43 @@
- 			dsyslog("Error while opening pipe! Execute '%s' faild! Could not find plugin path", tmp);
- 		}
- 		debug("We found plugin path: %s", _libDir);
--		//_libDir="/media/pc1/vdrRootFS/PLUGINS/lib";
-+		
+--- setup-orig/config.cpp	2008-01-18 21:05:01.000000000 +0100
++++ setup/config.cpp	2008-01-18 21:03:50.000000000 +0100
+@@ -85,7 +85,7 @@
  
-         if( (tmp =root->Attribute("sysconfigPre"))==NULL)
-           _sysconfigPre=Util::Strdupnew("get-info --eval --config >/tmp/sysconfig.txt");
--        else
--          _sysconfigPre=Util::Strdupnew(tmp);
--
-+        else {
-+		  if ( tmp[0] == '/' ){
-+			_sysconfigPre=Util::Strdupnew(tmp);
-+		  }else {
-+			asprintf(&_sysconfigPre, "%s/setup/%s", cPlugin::ConfigDirectory(),tmp);
-+		  }
-+		}
-         if( (tmp =root->Attribute("sysconfigPost"))==NULL)
-           _sysconfigPost=Util::Strdupnew("eval `get-info --eval --file`; cat /tmp/sysconfig.txt >>$CONFFILE_CONFIG ; dump-fw-config");
--        else
--          _sysconfigPost=Util::Strdupnew(tmp);
--		
-+        else{
-+		  if ( tmp[0] == '/' ) {
-+			_sysconfigPost=Util::Strdupnew(tmp);
-+		  }else {
-+			asprintf(&_sysconfigPost, "%s/setup/%s", cPlugin::ConfigDirectory(),tmp);
-+		  }          
-+		}
- 		//read sysconfig
- 		//excecute pre sysconfig command
-   		debug("sysconfigPre: %s",_sysconfigPre);
-   		ok = system(_sysconfigPre);
--  		if( ok == 0) {//Load sysconfig
--  			if ((ok=_sysconfig.LoadFile(sysconfigFile)) != true)
--  				{
--  					DEBUG2("Could not load sysconfig:%s",sysconfigFile);
--  				}
-+  		if( ok == 0) {//Load sysconfig			
-+		    if ( sysconfigFile && sysconfigFile[0]=='/') {
-+				ok=_sysconfig.LoadFile(sysconfigFile);
-+				if (!ok) debug("Could not load sysconfig:%s",sysconfigFile);
-+			}else {
-+				char *tmp=NULL;
-+				asprintf(&tmp, "%s/setup/%s", cPlugin::ConfigDirectory(),sysconfigFile);
-+				ok=_sysconfig.LoadFile(tmp);
-+				if (!ok) debug("Could not load sysconfig:%s",tmp);
-+				free((void*)tmp);
-+				
-+			}			  		
-+			
-   	  	} else{
-     		DEBUG4("%s: Could not execute sysconfigPre: %s, errno=%d\n", DBG_PREFIX, _sysconfigPre, ok);	
-   		}
-@@ -205,7 +221,7 @@
-   root.SetAttribute("sysconfigPre",  _sysconfigPre);
-   root.SetAttribute("sysconfigPost", _sysconfigPost);
-   root.SetAttribute("bootLinux", _bootLinux);
--  root.SetAttribute("VDRlibDirCMD", _libDirCMD);
-+  root.SetAttribute("VDRlibDirCmd", _libDirCMD);
-   
-   TiXmlElement *plugins=savePlugins();
+ 		//Read command to get plugin path from XML
+         if( (tmp =root->Attribute("VDRlibDirCmd"))==NULL)
+-          _libDirCMD = Util::Strdupnew("env | grep PLUGIN_PATH | cut -d= -f2");
++          _libDirCMD = Util::Strdupnew("grep '^vdr_plugindirs' /etc/rc.local.conf | cut -d= -f2");
+         else
+           _libDirCMD = Util::Strdupnew(tmp);
+           
+@@ -417,17 +417,17 @@
+  * and set the state within the plugin list
+  * @return true on success
+  */
+-bool Config::readVdrLib()
++bool Config::readVdrLibDir(const char* libDir)
+ {
+   bool ok =true;
+-  DIR           *dir = opendir(_libDir);
++  DIR           *dir = opendir(libDir);
+   struct dirent *entry = NULL;
+   char          *module=NULL;
+   char          *tmp=NULL;
+   char          *prefix ="libvdr-";
+   char          *suffix = NULL;
+ 
+-	debug("config:ReadVdrLib");
++  debug("config:ReadVdrLib %s",libDir);
+   //accept only dynamic Link libs with the current vdr version
+   asprintf(&suffix, ".so.%s", APIVERSION);
+   if( dir !=NULL)
+@@ -468,6 +468,24 @@
+   if( suffix != NULL) free(suffix);
+   return(ok);
+ }
++ 
++bool Config::readVdrLib()
++{
++  bool result =true;  
++  char *ldir = Util::Strdupnew(_libDir);
++  char *delim = " ";
++  char *dir;
++  
++  dir = strtok(ldir,delim);
++  
++  while ( dir ) {
++	result = readVdrLibDir(dir)  && result;
++	dir = strtok(NULL,delim);
++  }
++  
++  if (ldir) delete (ldir);  
++  return(result);
++}
+ 
+ char * Config::GetBootLinux( )
+ {
+diff -Naur setup-orig/config.h setup/config.h
+--- setup-orig/config.h	2008-01-18 21:05:01.000000000 +0100
++++ setup/config.h	2008-01-18 20:40:25.000000000 +0100
+@@ -58,6 +58,7 @@
+     void                dumpXMLError(const char* errStr);
+     bool                readVdrLib();
+     void                prepareSysConfig();
++    bool Config::readVdrLibDir(const char* libDir);
+ };
+ 
  
 diff -Naur setup-orig/HISTORY setup/HISTORY
---- setup-orig/HISTORY	2008-01-06 22:34:36.000000000 +0100
-+++ setup/HISTORY	2008-01-06 13:22:05.000000000 +0100
+--- setup-orig/HISTORY	2008-01-18 21:05:01.000000000 +0100
++++ setup/HISTORY	2008-01-12 14:09:02.000000000 +0100
 @@ -1,83 +1,87 @@
 -VDR Plugin 'setup' Revision History
 ------------------------------------
@@ -283,742 +263,9 @@ diff -Naur setup-orig/HISTORY setup/HISTORY
 +2004-12-05: Version 0.0.1
 +
 +- Initial revision.
-diff -Naur setup-orig/M7x0 config/fw-config.txt setup/M7x0 config/fw-config.txt
---- setup-orig/M7x0 config/fw-config.txt	2008-01-06 22:34:36.000000000 +0100
-+++ setup/M7x0 config/fw-config.txt	1970-01-01 01:00:00.000000000 +0100
-@@ -1,729 +0,0 @@
--##########################################################################
--##########            VDR Configuration,  2007-01-21            ##########
--##########################################################################
--#
--# Diese Datei enthaelt die aktuellen Einstellungen dieser VDR-Firmware.
--#
--##########################################################################
--#
--# Diese Datei wird bei Systemstart ausgewertet und anschliessend
--# neu geschrieben. Daher werden auch nicht erwarteten Parameter und alle
--# Kommentare entfernt.
--#
--# Weitere Details:
--#	http://www.open7x0.org/wiki/VDR_Konfigurations-Parameter
--#
--# Lemmi, VDR Firmware for M740AV, 2007-01-21 23:31
--#
--##########################################################################
--
--
--#----- Informationen zur Konfiguration
--
--
--#PARAMETER: CONFIG_NAME str
--#
--# Ein freier Text, der diese Konfiguration beschreibt. Der Text
--# wird in Menus angezeigt, sollte nicht laenger als 30 Zeichen
--# sein und darf keine Sonderzeichen wie z.B. Umlaute enthalten.
--#
--# Die Voreinstellung ist eine leere Zeichenkette.
--#
--CONFIG_NAME = Wavebox Migration
--
--#PARAMETER: CONFIG_CREATION_TIME num 0 0 2147483647
--#
--# Wann wurde diese Konfiguration erzeugt?
--# (Anzahl der Sekunden seit dem 1.1.1970 UTC)
--#
--CONFIG_CREATION_TIME = 1169422559
--
--#PARAMETER: CONFIG_LAST_USAGE_TIME num 0 0 2147483647
--#
--# Wann wurde diese Konfiguration zuletzt verwendet?
--# (Anzahl der Sekunden seit dem 1.1.1970 UTC)
--#
--CONFIG_LAST_USAGE_TIME = 25
--
--
--#----- Datum und Zeit
--
--
--#PARAMETER: CONFIG_TIMEZONE str CET-1CDT,M3.5.0,M10.5.0
--#
--# Standard Zeitzone, in der die Anwendungen laufen sollen.
--# Die Voreinstellung ist 'CET-1CDT,M3.5.0,M10.5.0'.
--#
--CONFIG_TIMEZONE = CET-1CDT,M3.5.0,M10.5.0
--
--#PARAMETER: CONFIG_NETDATE_PARAM str
--#
--# Ist dieser Parameter nicht leer, dann wird 'netdate' gestartet
--# um die Zeit der M740av mit einem Time-Server zu synchronisieren.
--# Eine typische Einstellung ist 'ntp1.ptb.de ntp2.ptb.de'
--#
--# Die Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_NETDATE_PARAM = 
--
--
--#----- Video und LED
--
--
--#PARAMETER: CONFIG_VIDEO_TV_MODE key undef svideo fbas
--#
--# Video-Modus fuer den TV-Ausgang (SCART). Die Voreinstellung 'undef' ist dabei
--# ein Hinweis fuer die Wavebox-Migration, dass der Modus noch nicht gesetzt wurde.
--#
--CONFIG_VIDEO_TV_MODE = fbas
--
--#PARAMETER: CONFIG_VIDEO_VCR_MODE key undef svideo fbas
--#
--# Video-Modus fuer den VCR-Ausgang (SCART). Die Voreinstellung 'undef' ist dabei
--# ein Hinweis fuer die Wavebox-Migration, dass der Modus noch nicht gesetzt wurde.
--#
--CONFIG_VIDEO_VCR_MODE = fbas
--
--#PARAMETER: CONFIG_LED_BRIGHTNESS num 40 0 100
--#
--# Dieser Wert gibt die LED-Helligkeit der aeusseren beiden LEDs an, wenn diese von
--# der Lemmi Firmware angesteuert werden.
--#
--# Der Wert von 0 bedeutet, dass moeglichst alle LEDs, auch die mittler LED, aus
--# bleiben. Werte zwischen 1 und 40 legen die Helligkeit fest. Wert >40 machen
--# erhoehen die Helligkeit nicht mehr. Sie haben aber einen Effekt auf das
--# Zeitverhalten beim Dimmen.
--#
--# Zum Testen kann bei angehaltenem Boot-Menu das Kommando 'picctl dimm-led 0 x 2
--# 0x11' verwendet werden. Fuer 'x' sind dann Werte zwischen 1 und 100 einzutragen.
--#
--# Die Voreinstellung ist '40'.
--#
--CONFIG_LED_BRIGHTNESS = 40
--
--
--#----- System-Logging
--
--
--#PARAMETER: CONFIG_LOG_KMSG key no yes
--#
--# Logging von /proc/kmsg via Port 12002 aktivieren? (no/yes)
--# Die Voreinstellung ist 'no'.
--#
--CONFIG_LOG_KMSG = no
--
--
--#----- USB
--
--
--#PARAMETER: CONFIG_USB_AUTO_MOUNT str
--#
--# Dieser Parameter legt die USB-Laufwerke fest, die automatisch mit dem
--# Systemstart geladen werden. Es wird eine mir Lerrzeichen getrennte
--# Zeichenkette erwartet, wobei Gross-/Kleinschreibung unerheblich ist.
--#
--# Die USB-Platten (oder Sticks) werden den Ports zugeordnet und heissen 'usb1'
--# und 'usb2'. Fuer jede dieser Platten werden bis zu 26 Partitonen vom Typ
--# 'ext2/3' und 'FAT' unterstuetzt. Die erste gueltige Partition erhaelt den
--# Kennbuchstaben 'a', die naechste 'b' und so fort.
--#
--# Die Angabe 'usb1 usb2c' bedeutet nun, das alle Partition auf der USB-Platte
--# an Port #1 und die dritte Partition auf der USB-Platte an Port #2 automatisch
--# geladen werden soll. Die Prefixe 'usb' duerfen uebrigens weggelassen werden,
--# so dass 'usb1 usb2c' kuerzer als '1 2c' geschrieben werden darf.
--#
--# Eine leere Zeichenkette (die Voreinstellung) oder das Kennwort 'ALL'
--# bedeuten, dass alle erkannten USB-Partitionen gemounted werden.
--#
--CONFIG_USB_AUTO_MOUNT = 
--
--
--#----- Netzwerk
--
--
--#PARAMETER: CONFIG_NET_MODE key undef dhcp ip off
--#
--# Hiermit wird der Netzwerkmodus einegstellt:
--# * undef: Ein Hinweis fuer die Wavebox-Migration, dass der
--# Modus noch nicht gesetzt wurde. Es wird aber DHCP verwendet.
--# * dhcp: DHCP wird verwendet.
--# * ip: Die IP-Werte der Parameter CONFIG_IP und CONFIG_NETMASK
--# sollen verwendet werden. Wird erkannt, dass einer der beiden
--# Werte ungueltig ist, dann wird ersatzweise DHCP verwendet.
--# * off: Kein Netzwerk initialisieren.
--#
--# Die Voreinstellung ist 'undef'.
--#
--CONFIG_NET_MODE = ip
--
--#PARAMETER: CONFIG_MAC str
--#
--# Dieser Parameter dient nur zu Information,
--# da die MAC automatisch ermittelt wird.
--#
--CONFIG_MAC = 00:01:e3:fa:8f:d3
--
--#PARAMETER: CONFIG_HOSTNAME str
--#
--# Rechnername des Box (DNS).
--# Die Voreinstellung ist eine leere Zeichenkette.
--#
--CONFIG_HOSTNAME = M740AV2
--
--#PARAMETER: CONFIG_IP str
--#
--# IP-Adresse der Box.
--# Die Voreinstellung ist eine leere Zeichenkette.
--#
--CONFIG_IP = 10.10.11.251
--
--#PARAMETER: CONFIG_NETMASK str
--#
--# Netzwerkmaske der Box, die passen zur
--# IP-Adresse (CONFIG_IP) gesetzt werden muss.
--# Die Voreinstellung ist eine leere Zeichenkette.
--#
--CONFIG_NETMASK = 255.255.255.0
--
--#PARAMETER: CONFIG_GATEWAY str
--#
--# Gateway Adresse, die aus dem Bereich der
--# Netzwerkmaske (CONFIG_NETMASK) stammen muss.
--# Die Voreinstellung ist eine leere Zeichenkette.
--#
--CONFIG_GATEWAY = 10.10.11.252
--
--#PARAMETER: CONFIG_NAMESERVER str
--#
--# Eine mit Leerzeichen getrennte Liste der DNS-Server. Aus diesen Informationen
--# werden die 'nameserver' Eintraege der Datei /etc/resolv.conf erzeugt.
--#
--# Die Voreinstellung ist eine leere Zeichenkette.
--#
--CONFIG_NAMESERVER = 10.10.11.252
--
--#PARAMETER: CONFIG_SEARCH str
--#
--# Eine mit Leerzeichen getrennte Liste der Such-Postfixe. Aus diesen
--# Informationen werden die 'search' Eintraege der Datei /etc/resolv.conf erzeugt.
--#
--# Die Voreinstellung ist eine leere Zeichenkette.
--#
--CONFIG_SEARCH = 
--
--
--#----- Mail
--
--
--#PARAMETER: CONFIG_MAIL_SERVER str
--#
--# Das Mail-Programm 'mini_sendmail' kann Mails an einen MTA (Mail Transfer Agent)
--# weitergeben. Als User-Frontend gibt es das Script 'mail', welches automatisch
--# die Werte CONFIG_MAIL_SERVER, CONFIG_MAIL_FROM und CONFIG_MAIL_REPLY als
--# Voreinstellung verwendet. Weitere Programm moegen dieses auch tun.
--#
--# Dieser Parameter legt den SMTP-Server fest, an dem die Mails weitergeleitet
--# werden. Ohne Angabe verwendet das Script 'mail' den Server 'smtp'.
--#
--CONFIG_MAIL_SERVER = 
--
--#PARAMETER: CONFIG_MAIL_FROM str
--#
--# Das Mail-Programm 'mini_sendmail' kann Mails an einen MTA (Mail Transfer Agent)
--# weitergeben. Als User-Frontend gibt es das Script 'mail', welches automatisch
--# die Werte CONFIG_MAIL_SERVER, CONFIG_MAIL_FROM und CONFIG_MAIL_REPLY als
--# Voreinstellung verwendet. Weitere Programm moegen dieses auch tun.
--#
--# Dieser Parameter legt den Absender fest. Ohne Angabe verwendet das Script
--# 'mail' den Namen des angemeldeten Nutzers und den Rechnernamen, den das
--# Kommando 'hostname -f' liefert, also z.B. 'root@m740av.local'.
--#
--CONFIG_MAIL_FROM = 
--
--#PARAMETER: CONFIG_MAIL_REPLY str
--#
--# Das Mail-Programm 'mini_sendmail' kann Mails an einen MTA (Mail Transfer Agent)
--# weitergeben. Als User-Frontend gibt es das Script 'mail', welches automatisch
--# die Werte CONFIG_MAIL_SERVER, CONFIG_MAIL_FROM und CONFIG_MAIL_REPLY als
--# Voreinstellung verwendet. Weitere Programm moegen dieses auch tun.
--#
--# Dieser Parameter legt die Antwortadresse ("Reply-To:") fest. Dieses koennte
--# wichtig sein, weil die Box keine Mails empfangen kann. Ohne Angabe wird keine
--# Antwortadresse angegeben.
--#
--CONFIG_MAIL_REPLY = 
--
--
--#----- Menüs
--
--
--#PARAMETER: CONFIG_STARTMENU_MODE key normal fast off
--#
--# Mit dieser Option wird festgelegt, ob das Start-Menu beim Systemstart
--# angezeigt werden soll. In der Einstellung 'off' wird es nicht angezeigt.
--#
--# In den anderen beiden Einstellungen wird es angezeigt, wobei nach einer
--# gewissen Zeit der VDR gemaess Parameter CONFIG_VDR_STANDARD gestartet wird.
--# In der Einstellung 'fast' wird CONFIG_STARTMENU_SHORT_WAIT Sekunden und in
--# der Einstellung 'normal' wird CONFIG_STARTMENU_WAIT Sekunden gewartet.
--#
--# Unabhaengig von dieser Einstellung wird das Start-Menu bei einem
--# Firmware-Wechsel oder bei Problemen angezeigt.
--#
--# Die Voreinstellung ist 'normal'.
--#
--CONFIG_STARTMENU_MODE = normal
--
--#PARAMETER: CONFIG_STARTMENU_WAIT num 30 5 300
--#
--# Diese Option zeigt nur Wirkung bei aktiviertem Boot-Menu. Sie
--# gibt die Wartezeit in Sekunden an, bis die Standardkonfiguration
--# (siehe CONFIG_START_MODE) automatisch gestartet wird. Dieses ist
--# wichtig fuer den Timer-gesteuerten Start der Box.
--#
--# Die Voreinstellung ist '30'.
--#
--CONFIG_STARTMENU_WAIT = 30
--
--#PARAMETER: CONFIG_STARTMENU_SHORT_WAIT num 5 5 300
--#
--# Es gibt Situationen, da soll das Boot-Menu nur kurz
--# aktiviert werden, bevor der Auto-Start durchgefuehrt wird.
--# Dieswer Paramweter gibt die Wartezeit in Sekunden an.
--#
--# Die Voreinstellung ist '5'.
--#
--CONFIG_STARTMENU_SHORT_WAIT = 5
--
--#PARAMETER: CONFIG_HALTMENU_ENABLED key yes no
--#
--# Mit dieser Option wird das Shutdown-Menu aktiviert. Im Shutdown-Menu
--# kann der Benutzer nach der Verwendung des VDRs oder der wavebox
--# nochmals eingreifen, bevor das System entgueltig abgeschaltet wird.
--#
--# Beachtet bitte auch den Parameter CONFIG_SET_VIDEO_MODE. In dessen
--# Voreinstellung 'interactive' wird das Shutdown-Menu nur angezeigt,
--# wenn eine interaktive Eingabe erforderlich ist.
--#
--# Die Voreinstellung ist 'yes'.
--#
--CONFIG_HALTMENU_ENABLED = yes
--
--#PARAMETER: CONFIG_HALTMENU_WAIT num 30 5 300
--#
--# Diese Option zeigt nur Wirkung bei aktiviertem Shutdown-Menu. Sie gibt die
--# Wartezeit in Sekunden an, bis der automatische Shutdown ausgeloest wird.
--#
--# Die Voreinstellung ist '30'.
--#
--CONFIG_HALTMENU_WAIT = 5
--
--#PARAMETER: CONFIG_MENU_HIDE num 90 0 600
--#
--# Falls >0, dann werden die Menus durch einen schwarzen Bildschirm
--# ersetzt, wenn die angegebene Anzahl von Sekunden keine Benutzereingabe
--# erfolgte. Die Zeitbeginnt erst nach dem Ende eines evtl. Count-Downs.
--#
--# Die Voreinstellung ist '90'.
--#
--CONFIG_MENU_HIDE = 90
--
--
--#----- VDR
--
--
--#PARAMETER: CONFIG_VDR_STANDARD key vdr1 vdr2 vdr3 vdr4
--#
--# Neben dem internen VDR (VDR #1) werden 3 externe VDR (#2 bis #4)
--# unterstuetzt. Mit diesem Parameter wird entschieden, welches dieser vier
--# Varianten der Standard-VDR ist und u.a. bei Timer-Aufnahmen aufgerufen wird.
--#
--# Die Voreinstellung ist 'vdr1', der interne VDR.
--#
--CONFIG_VDR_STANDARD = vdr4
--
--#PARAMETER: CONFIG_VDR1_LOG key none net
--#
--# Wohin soll das Logging des internen VDRs (VDR1) geschrieben werden:
--#
--# * none: Es wird kein Logging durchgefuehrt.
--# * net: Die Log-Ausgabe wird via stdin2tcp an TCP Port 12007 ausgegeben.
--#
--# Die Voreinstellung ist 'file'. Diese Einstellung gilt fuer den internen VDR.
--#
--CONFIG_VDR1_LOG = none
--
--#PARAMETER: CONFIG_VDR_VIDEO_PATH str
--#
--# Dieser Parameter legt den Pfad zum VDR-Aufnahme-Verzeichnis fuer die drei
--# externen Konfigurationen VDR #2, #3 und #4 fest, z.B: "/media/usb1a/vdr/videos"
--# oder "videos". Ohne Pfadangabe wird der jeweilige VDR_PATH verwendet.
--#
--# Beginnt die Pfadangabe nicht mit einem Schraegstrich ('/'), dann wird der Pfad
--# relativ zu CONFIG_VDR_PATH interpretiert.
--#
--# Diese Einstellung gilt gemeinsam fuer die drei externen VDR #2 bis #4. Die
--# Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_VDR_VIDEO_PATH = /media/pc2/vdrVideo
--
--#PARAMETER: CONFIG_VDR_EPG_PATH str
--#
--# Dieser Parameter legt den Pfad zum VDR-EPG-Verzeichnis fuer die drei externen
--# Konfigurationen VDR #2, #3 und #4 fest, z.B: "/media/usb1a/vdr/epg" oder "epg".
--# Ohne Pfadangabe wird das errechnete Konfigurationsverzeichnis verwendet.
--#
--# Beginnt die Pfadangabe nicht mit einem Schraegstrich ('/'), dann wird der Pfad
--# relativ zu CONFIG_VDR_PATH interpretiert.
--#
--# Diese Einstellung gilt gemeinsam fuer die drei externen VDR #2 bis #4. Die
--# Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_VDR_EPG_PATH = 
--
--#PARAMETER: CONFIG_VDR_N_LOG_BACKUP num 3 0 20
--#
--# Der VDR erzeugt bei jedem Aufruf eine Log-Datei, wenn durch den
--# Parameter CONFIG_VDR_LOG die Ausgabe auf Datei aktiviert ist.
--#
--# Fuer spaetere Analysen ist es evtl. wichtig, dass eine solche
--# Log-Datei nicht sofort wieder ueberschrieben wird. Daher koennen
--# zirkulaere Sicherheitskopien der Log-Datei erstellt werden. Mit
--# diesem Parameter wird die Anzahl der Sicherheitskopien eingestellt.
--#
--# Diese Einstellung gilt gemeinsam fuer die drei externen VDR #2 bis
--# #4. Die Voreinstellung ist '3'.
--#
--CONFIG_VDR_N_LOG_BACKUP = 20
--
--
--#----- VDR #2
--
--
--#PARAMETER: CONFIG_VDR2_NAME str
--#
--# Neben dem internen VDR (VDR #1) werden 3 externe VDR (#2 bis #4)
--# unterstuetzt. Um diese externe VDR auseinander zuhalten, kann
--# ihnen ein Name zugewiesen werden. Dieser Parameter legt den Namen
--# von VDR #2 fest. Der Name sollte maximal 30 Zeichen lang sein.
--#
--# Die Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_VDR2_NAME = intern, mit Video
--
--#PARAMETER: CONFIG_VDR2_PATH str
--#
--# Dieser Parameter legt den Pfad zum VDR-Verzeichnis oder zum VDR-Programm fuer
--# den VDR #2 (VDR #1 ist der interne VDR, ab #2 sind es die exteren VDRs) fest.
--# Enthaelt die Parameterangabe den Namen eines Verzeichnisses, dann wird
--# automatisch das Dateiname 'vdr' ergaenzt.
--#
--# Dieser Parameter wird auch fuer die VDR-Installation durch ein o7o-Archiv
--# verwendet und sollte daher definitiv auf das VDR-Programm zeigen. Moechte man
--# seinen VDR anders, z.B. ueber ein eigenes Script, starten, dann kann dieses
--# Script mit dem Parameter CONFIG_VDR_STARTER angegeben werden.
--#
--# Der besondere Wert 'Stern' ('*') bedeutet, dass der interne VDR verwendet
--# werden soll, wobei Starter und Konfigurationsverzeichnis aus den den beiden
--# Parametern CONFIG_VDR2_STARTER und CONFIG_VDR2_CONFIG_PATH ermittelt wird.
--#
--# Die Voreinstellung ist die leere Zeichenkette, die bedeutet, dass kein VDR
--# installiert ist. Beispiel: "/media/usb1a/vdr" oder "/media/pc2/vdr/vdr-prog".
--#
--CONFIG_VDR2_PATH = *
--
--#PARAMETER: CONFIG_VDR2_STARTER str
--#
--# Ist dieser Parameter nicht leer und existiert das angegebene Script, dann
--# wird der VDR nicht direkt aufgerufen, sondern ersatzweise dieses
--# Start-Script. Damit hat man die Aufruf-Kontrolle des VDR und kann u.a. die
--# Plugins konfigurieren. Diese Einstellung gilt fuer den VDR #2.
--#
--# Pfadangaben, die nicht mit einem '/' beginnen, werden relativ zum
--# Verzeichnis von CONFIG_VDR2_PATH interpretiert.
--#
--# Bei jedem VDR-Start wird die Datei 'vdr-starter.template' angelegt bzw.
--# ueberschrieben, die als Vorlage fuer ein eigenes Start-Script dienen kann.
--#
--# Die Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_VDR2_STARTER = 
--
--#PARAMETER: CONFIG_VDR2_CONFIG_PATH str
--#
--# Dieser Parameter legt den Pfad zum VDR-Aufnahme-Verzeichnis
--# fuer den VDR #2 fest.
--#
--# Pfadangaben, die nicht mit einem '/' beginnen, werden relativ
--# zum Verzeichnis von CONFIG_VDR2_PATH interpretiert.
--#
--# In der Voreinstellung ohne Pfadangabe wird ein Unterverzeichnis
--# von CONFIG_VDR2_PATH verwendet, welches den Hostnamen und die
--# MAC beruecksichtigt, damit mehrere Boxen mit gemeinsamen
--# VDR-Verzeichnis eigene Konfigurationsverzeichnisse erhalten.
--#
--# Der besondere Wert 'Stern' ('*') bedeutet, dass die
--# Kofiguration des internen VDRs verwendet werden soll.
--#
--# Beispiel: "/media/usb1a/vdr-config" oder "conf-wohnzimmer".
--#
--CONFIG_VDR2_CONFIG_PATH = *
--
--#PARAMETER: CONFIG_VDR2_LOG key file net both none
--#
--# Wohin soll das Logging des VDR geschrieben werden:
--#
--# * file: Die Log-Ausgabe wird in die Datei vdr.log geschrieben.
--# * net: Die Log-Ausgabe wird via stdin2tcp an TCP Port 12007 ausgegeben.
--# * both: Sowohl 'file' als auch 'net' werden aktiviert.
--# * none: Es wird kein Logging durchgefuehrt. Diese Einstellung gilt fuer
--# den VDR #2.
--#
--# Die Voreinstellung ist 'file'.
--#
--CONFIG_VDR2_LOG = file
--
--
--#----- VDR #3
--
--
--#PARAMETER: CONFIG_VDR3_NAME str
--#
--# Neben dem internen VDR (VDR #1) werden 3 externe VDR (#2 bis #4)
--# unterstuetzt. Um diese externe VDR auseinander zuhalten, kann
--# ihnen ein Name zugewiesen werden. Dieser Parameter legt den Namen
--# von VDR #3 fest. Der Name sollte maximal 30 Zeichen lang sein.
--#
--# Die Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_VDR3_NAME = Programm+Plugins intern, Konfig extern
--
--#PARAMETER: CONFIG_VDR3_PATH str
--#
--# Dieser Parameter legt den Pfad zum VDR-Verzeichnis oder zum VDR-Programm fuer
--# den VDR #3 (VDR #1 ist der interne VDR, ab #2 sind es die exteren VDRs) fest.
--# Enthaelt die Parameterangabe den Namen eines Verzeichnisses, dann wird
--# automatisch das Dateiname 'vdr' ergaenzt.
--#
--# Dieser Parameter wird auch fuer die VDR-Installation durch ein o7o-Archiv
--# verwendet und sollte daher definitiv auf das VDR-Programm zeigen. Moechte man
--# seinen VDR anders, z.B. ueber ein eigenes Script, starten, dann kann dieses
--# Script mit dem Parameter CONFIG_VDR_STARTER angegeben werden.
--#
--# Der besondere Wert 'Stern' ('*') bedeutet, dass der interne VDR verwendet
--# werden soll, wobei Starter und Konfigurationsverzeichnis aus den den beiden
--# Parametern CONFIG_VDR3_STARTER und CONFIG_VDR3_CONFIG_PATH ermittelt wird.
--#
--# Die Voreinstellung ist die leere Zeichenkette, die bedeutet, dass kein VDR
--# installiert ist. Beispiel: "/media/usb1a/vdr" oder "/media/pc2/vdr/vdr-prog".
--#
--CONFIG_VDR3_PATH = *
--
--#PARAMETER: CONFIG_VDR3_STARTER str
--#
--# Ist dieser Parameter nicht leer und existiert das angegebene Script, dann
--# wird der VDR nicht direkt aufgerufen, sondern ersatzweise dieses
--# Start-Script. Damit hat man die Aufruf-Kontrolle des VDR und kann u.a. die
--# Plugins konfigurieren. Diese Einstellung gilt fuer den VDR #3.
--#
--# Pfadangaben, die nicht mit einem '/' beginnen, werden relativ zum
--# Verzeichnis von CONFIG_VDR3_PATH interpretiert.
--#
--# Bei jedem VDR-Start wird die Datei 'vdr-starter.template' angelegt bzw.
--# ueberschrieben, die als Vorlage fuer ein eigenes Start-Script dienen kann.
--#
--# Die Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_VDR3_STARTER = 
--
--#PARAMETER: CONFIG_VDR3_CONFIG_PATH str
--#
--# Dieser Parameter legt den Pfad zum VDR-Aufnahme-Verzeichnis
--# fuer den VDR #3 fest.
--#
--# Pfadangaben, die nicht mit einem '/' beginnen, werden relativ
--# zum Verzeichnis von CONFIG_VDR3_PATH interpretiert.
--#
--# In der Voreinstellung ohne Pfadangabe wird ein Unterverzeichnis
--# von CONFIG_VDR3_PATH verwendet, welches den Hostnamen und die
--# MAC beruecksichtigt, damit mehrere Boxen mit gemeinsamen
--# VDR-Verzeichnis eigene Konfigurationsverzeichnisse erhalten.
--#
--# Der besondere Wert 'Stern' ('*') bedeutet, dass die
--# Kofiguration des internen VDRs verwendet werden soll.
--#
--# Beispiel: "/media/usb1a/vdr-config" oder "conf-wohnzimmer".
--#
--CONFIG_VDR3_CONFIG_PATH = /media/pc1/vdrRootFS/vdr/conf-M740AV2-0001e3fa8fd3
--
--#PARAMETER: CONFIG_VDR3_LOG key file net both none
--#
--# Wohin soll das Logging des VDR geschrieben werden:
--#
--# * file: Die Log-Ausgabe wird in die Datei vdr.log geschrieben.
--# * net: Die Log-Ausgabe wird via stdin2tcp an TCP Port 12007 ausgegeben.
--# * both: Sowohl 'file' als auch 'net' werden aktiviert.
--# * none: Es wird kein Logging durchgefuehrt. Diese Einstellung gilt fuer
--# den VDR #3.
--#
--# Die Voreinstellung ist 'file'.
--#
--CONFIG_VDR3_LOG = file
--
--
--#----- VDR #4
--
--
--#PARAMETER: CONFIG_VDR4_NAME str
--#
--# Neben dem internen VDR (VDR #1) werden 3 externe VDR (#2 bis #4)
--# unterstuetzt. Um diese externe VDR auseinander zuhalten, kann
--# ihnen ein Name zugewiesen werden. Dieser Parameter legt den Namen
--# von VDR #4 fest. Der Name sollte maximal 30 Zeichen lang sein.
--#
--# Die Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_VDR4_NAME = Programm+Plugins+Konfig extern
--
--#PARAMETER: CONFIG_VDR4_PATH str
--#
--# Dieser Parameter legt den Pfad zum VDR-Verzeichnis oder zum VDR-Programm fuer
--# den VDR #4 (VDR #1 ist der interne VDR, ab #2 sind es die exteren VDRs) fest.
--# Enthaelt die Parameterangabe den Namen eines Verzeichnisses, dann wird
--# automatisch das Dateiname 'vdr' ergaenzt.
--#
--# Dieser Parameter wird auch fuer die VDR-Installation durch ein o7o-Archiv
--# verwendet und sollte daher definitiv auf das VDR-Programm zeigen. Moechte man
--# seinen VDR anders, z.B. ueber ein eigenes Script, starten, dann kann dieses
--# Script mit dem Parameter CONFIG_VDR_STARTER angegeben werden.
--#
--# Der besondere Wert 'Stern' ('*') bedeutet, dass der interne VDR verwendet
--# werden soll, wobei Starter und Konfigurationsverzeichnis aus den den beiden
--# Parametern CONFIG_VDR4_STARTER und CONFIG_VDR4_CONFIG_PATH ermittelt wird.
--#
--# Die Voreinstellung ist die leere Zeichenkette, die bedeutet, dass kein VDR
--# installiert ist. Beispiel: "/media/usb1a/vdr" oder "/media/pc2/vdr/vdr-prog".
--#
--CONFIG_VDR4_PATH = /media/pc1/vdrRootFS/vdr
--
--#PARAMETER: CONFIG_VDR4_STARTER str
--#
--# Ist dieser Parameter nicht leer und existiert das angegebene Script, dann
--# wird der VDR nicht direkt aufgerufen, sondern ersatzweise dieses
--# Start-Script. Damit hat man die Aufruf-Kontrolle des VDR und kann u.a. die
--# Plugins konfigurieren. Diese Einstellung gilt fuer den VDR #4.
--#
--# Pfadangaben, die nicht mit einem '/' beginnen, werden relativ zum
--# Verzeichnis von CONFIG_VDR4_PATH interpretiert.
--#
--# Bei jedem VDR-Start wird die Datei 'vdr-starter.template' angelegt bzw.
--# ueberschrieben, die als Vorlage fuer ein eigenes Start-Script dienen kann.
--#
--# Die Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_VDR4_STARTER = 
--
--#PARAMETER: CONFIG_VDR4_CONFIG_PATH str
--#
--# Dieser Parameter legt den Pfad zum VDR-Aufnahme-Verzeichnis
--# fuer den VDR #4 fest.
--#
--# Pfadangaben, die nicht mit einem '/' beginnen, werden relativ
--# zum Verzeichnis von CONFIG_VDR4_PATH interpretiert.
--#
--# In der Voreinstellung ohne Pfadangabe wird ein Unterverzeichnis
--# von CONFIG_VDR4_PATH verwendet, welches den Hostnamen und die
--# MAC beruecksichtigt, damit mehrere Boxen mit gemeinsamen
--# VDR-Verzeichnis eigene Konfigurationsverzeichnisse erhalten.
--#
--# Der besondere Wert 'Stern' ('*') bedeutet, dass die
--# Kofiguration des internen VDRs verwendet werden soll.
--#
--# Beispiel: "/media/usb1a/vdr-config" oder "conf-wohnzimmer".
--#
--CONFIG_VDR4_CONFIG_PATH = 
--
--#PARAMETER: CONFIG_VDR4_LOG key file net both none
--#
--# Wohin soll das Logging des VDR geschrieben werden:
--#
--# * file: Die Log-Ausgabe wird in die Datei vdr.log geschrieben.
--# * net: Die Log-Ausgabe wird via stdin2tcp an TCP Port 12007 ausgegeben.
--# * both: Sowohl 'file' als auch 'net' werden aktiviert.
--# * none: Es wird kein Logging durchgefuehrt. Diese Einstellung gilt fuer
--# den VDR #4.
--#
--# Die Voreinstellung ist 'file'.
--#
--CONFIG_VDR4_LOG = file
--
--
--#----- BoxAmp
--
--
--#PARAMETER: CONFIG_BOXAMP_PATH str
--#
--# Dieser Parameter legt den Pfad zum BoxAmp-Verzeichnis oder zum BoxAmp-Programm
--# fest. Ohne Angabe wird davon ausgegangen, dass kein BoxAmp installiert ist.
--#
--# Enthaelt die Parameterangabe den Namen eines Verzeichnisses, dann wird
--# automatisch das Dateiname 'boxamp' ergaenzt.
--#
--# Die Voreinstellung ist die leere Zeichenkette. Beispiele: "/media/usb1a/mp3"
--# oder "/media/pc2/mp3/boxamp".
--#
--CONFIG_BOXAMP_PATH = /media/USB-HDD-1/mp3Player/boxamp
--
--#PARAMETER: CONFIG_BOXAMP_MP3_PATH str
--#
--# Dieser Parameter legt das mp3-Basisverzeichnis fuer den
--# BoxAmp fest. Der BoxAMp spielt nur mp3-Dateien aus dem
--# angegeben Verzeichnis und aus dessen Unterverzeichnissen ab.
--#
--# Die Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_BOXAMP_MP3_PATH = /pc1
--
--#PARAMETER: CONFIG_BOXAMP_OPTIONS str
--#
--# Mit Diesem Parameter koennen dem Programm
--# BoxAmp zusaetzliche Optiknen uebergeben werden.
--#
--# Die Voreinstellung ist die leere Zeichenkette.
--#
--CONFIG_BOXAMP_OPTIONS = -d
--
--
--#----- Gedächnis
--
--
--#PARAMETER: CONFIG_LAST_WSW_PATH str
--#
--# Bei der Installation eines Updates ([WSW-Datei]]) wird hier der komplette
--# Pfad der Datei eingetragen, damit dort die naechste WSW-Suche beginnen kann.
--#
--# Die Voreinstellung ist eine leere Zeichenkette.
--#
--CONFIG_LAST_WSW_PATH = 
--
--#PARAMETER: CONFIG_LAST_O7O_PATH str
--#
--# Bei der Ausfuehrung eines [o7o-Archiv|o7o-Archives]] wird hier der kpomplette
--# Pfad der Datei eingetragen, damit dort die naechste o7o-Suche beginnen kann.
--#
--# Die Voreinstellung ist eine leere Zeichenkette.
--#
--CONFIG_LAST_O7O_PATH = 
--
--#PARAMETER: CONFIG_WB_MIGRATION_DONE key no yes
--#
--# Die Firmware kann beim Systemstart versuchen, fehlende Einstellungen aus den
--# Wavebox-Einstellungen zu migrieren. Dieses ist vor allen beim ersten Start einer
--# neuen Konfiguration wichtig.
--#
--# In der Voreinstellung 'no' wird diese Migration ausgefuehrt. Es reicht aber die
--# einmalige Migration, so dass dieser Parameter dann automatisch auf 'yes' gesetzt
--# wird, um ab dem naechsten Systemstart die dann unnoetige Analyse auszulassen.
--#
--CONFIG_WB_MIGRATION_DONE = yes
--
 diff -Naur setup-orig/M7x0 config/local-conf setup/M7x0 config/local-conf
 --- setup-orig/M7x0 config/local-conf	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/local-conf	2008-01-06 13:22:05.000000000 +0100
++++ setup/M7x0 config/local-conf	2008-01-12 14:09:02.000000000 +0100
 @@ -0,0 +1,51 @@
 +#!/bin/ash
 +
@@ -1071,22 +318,40 @@ diff -Naur setup-orig/M7x0 config/local-conf setup/M7x0 config/local-conf
 +        fi
 +fi
 +
+diff -Naur setup-orig/M7x0 config/local-plugins setup/M7x0 config/local-plugins
+--- setup-orig/M7x0 config/local-plugins	1970-01-01 01:00:00.000000000 +0100
++++ setup/M7x0 config/local-plugins	2008-01-18 21:06:56.000000000 +0100
+@@ -0,0 +1,3 @@
++#!/bin/sh
++
++grep '^vdr_plugindirs' /etc/rc.local.conf | cut -d= -f2 | sed 's/^\"//' | sed 's/\"$//'
 diff -Naur setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 config/open7x0-setup_eng.xml
 --- setup-orig/M7x0 config/open7x0-setup_eng.xml	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup_eng.xml	2008-01-06 13:22:05.000000000 +0100
-@@ -0,0 +1,51 @@
++++ setup/M7x0 config/open7x0-setup_eng.xml	2008-01-18 21:09:00.000000000 +0100
+@@ -0,0 +1,62 @@
 +<!--
 +-   open7x0-VDR Configuration File
 +-   based on Minisetup by Ralf Dotzert
 +-->
-+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="/sbin/reboot" VDRlibDirCmd="/usr/lib/vdr">
-+    <plugins sysconfig="CONFIG_VDR_PLUGINS">
++<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCmd="/etc/vdr/plugins/setup/local-plugins">
++    <plugins sysconfig="rc.local.conf--vdr_pluginopts">
 +        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
++        <plugin name="rssreader" info="rssreader" active="YES" />
++        <plugin name="epgsearch" info="epgsearch" active="YES" />
++        <plugin name="pilot" info="pilot" active="YES" />
++        <plugin name="recstatus" info="recstatus" active="YES" />
++        <plugin name="showrecinfo" info="showrecinfo" active="YES" />
++        <plugin name="noepgmenu" info="noepgmenu" active="YES" />
++        <plugin name="skinenigmang" info="skinenigmang" active="YES" />
++        <plugin name="scheduler" info="scheduler" active="YES" />
++        <plugin name="pilotskin" info="pilotskin" active="YES" />
++        <plugin name="status" info="status" active="YES" />
++        <plugin name="osdteletext" info="osdteletext" active="YES" />
 +        <plugin name="streamplayer" info="streamplayer" active="NO" />
-+        <plugin name="rssreader" info="rssreader" active="NO" />
 +        <plugin name="launcher" info="launcher" active="NO" />
 +    </plugins>
 +    <menus>
++        <menu name="Manager plugins" help1="Enable and disable plugins" system="ActPlugins" />        
 +        <menu name="General Configuration">
 +            <entry name="Mount USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Mount usb disk" />
 +            <entry name="Mount Network" sysconfig="rc.local.conf--do_net_mount" type="bool" value="YES" help1="Mount network shared directories" />
@@ -1128,33 +393,44 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 config/open7x
 +</setup>
 diff -Naur setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x0-setup_esl.xml
 --- setup-orig/M7x0 config/open7x0-setup_esl.xml	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup_esl.xml	2008-01-06 13:22:05.000000000 +0100
-@@ -0,0 +1,51 @@
++++ setup/M7x0 config/open7x0-setup_esl.xml	2008-01-18 21:09:05.000000000 +0100
+@@ -0,0 +1,62 @@
 +<!--
 +-   open7x0-VDR Configuration File
 +-   based on Minisetup by Ralf Dotzert
 +-->
-+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCmd="/usr/lib/vdr">
-+    <plugins sysconfig="CONFIG_VDR_PLUGINS">
++<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCmd="/etc/vdr/plugins/setup/local-plugins">
++    <plugins sysconfig="rc.local.conf--vdr_pluginopts">
 +        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
++        <plugin name="rssreader" info="rssreader" active="YES" />
++        <plugin name="epgsearch" info="epgsearch" active="YES" />
++        <plugin name="pilot" info="pilot" active="YES" />
++        <plugin name="recstatus" info="recstatus" active="YES" />
++        <plugin name="showrecinfo" info="showrecinfo" active="YES" />
++        <plugin name="noepgmenu" info="noepgmenu" active="YES" />
++        <plugin name="skinenigmang" info="skinenigmang" active="YES" />
++        <plugin name="scheduler" info="scheduler" active="YES" />
++        <plugin name="pilotskin" info="pilotskin" active="YES" />
++        <plugin name="status" info="status" active="YES" />
++        <plugin name="osdteletext" info="osdteletext" active="YES" />
 +        <plugin name="streamplayer" info="streamplayer" active="NO" />
-+        <plugin name="rssreader" info="rssreader" active="NO" />
 +        <plugin name="launcher" info="launcher" active="NO" />
 +    </plugins>
 +    <menus>
++        <menu name="Gestionar plugins" help1="Activar y desactivar plugins" system="ActPlugins" />
 +        <menu name="Configuración general">
 +            <entry name="Montar discos USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Montar los discos USB" />
-+            <entry name="Montar directorios en Red" sysconfig="rc.local.conf--do_net_mount" type="bool" value="YES" help1="Montar los directorios en Red" />
-+            <entry name="Tiempo de arranque" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="302" help1="Valor en segundos del tiempo de arranque del VDR cuando hay una grabacion programada." />
++            <entry name="Montar directorios en Red" sysconfig="rc.local.conf--do_net_mount" type="bool" value="NO" help1="Montar los directorios en Red" />
++            <entry name="Tiempo de arranque" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="298" help1="Valor en segundos del tiempo de arranque del VDR cuando hay una grabacion programada." />
 +        </menu>
 +        <menu name="Configuración de directorios">
 +            <entry name="Directorio ficheros de configuración" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Directorio donde se encuentra los ficheros de configuración. NO DEBE SER MODIFICADO" />
-+            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="text" value='&quot;/media/LACIE/vdr&quot;' help1="Directorio donde se almacenan las grabaciones" />
-+            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr_ng&quot;' help1="Directorio donde se encuentran los plugins. NO DEBE SER MODIFICADO" />
++            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="text" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
++            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorio donde se encuentran los plugins. NO DEBE SER MODIFICADO" />
 +        </menu>
 +        <menu name="Configuración EPG">
 +            <entry name="Fichero EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Fichero donde se almacena la información de EPG." />
-+            <entry name="EPG directa" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="Determina si la EPG se almacena inmediatamente o sólo cuando se apaga el VDR" />
++            <entry name="EPG directa" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="YES" help1="Determina si la EPG se almacena inmediatamente o sólo cuando se apaga el VDR" />
 +        </menu>
 +        <menu name="Configuración Red">
 +            <entry name="Modo configuración" sysconfig="rc.conf--net" type="selection" value="inet" help1="Modo de configuración de la dirección IP.">
@@ -1163,7 +439,7 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x
 +            </entry>
 +            <entry name="Dirección IP" sysconfig="rc.conf--ip" type="ip" value="192.168.2.100" help1="Dirección IP del M7XX" />
 +            <entry name="Máscara de Red" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Máscara de Red" />
-+            <entry name="Puerta de Enlace" sysconfig="rc.conf--gateway" type="ip" value='&quot;NO&quot;' help1="Dirección IP de la puerta de Enlace. Si no se usa valor NO" />
++            <entry name="Puerta de Enlace" sysconfig="rc.conf--gateway" type="ip" value='&quot;192.168.2.1&quot;' help1="Dirección IP de la puerta de Enlace. Si no se usa valor NO" />
 +            <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="Define el comando con el que se obtiene la dirección MAC. NO DEBE SER MODIFICADO" />
 +            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre del M7XX (DNS). Por defecto lo toma del fichero /etc/hostname. NO DEBE SER MODIFICADO" />
 +        </menu>
@@ -1172,7 +448,7 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x
 +            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />
 +        </menu>
 +        <menu name="Menu de arranque">
-+            <entry name="Habilitar" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="YES" help1="Habilitar menu de arranque" />
++            <entry name="Habilitar" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Habilitar menu de arranque" />
 +            <entry name="Opción por defecto" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Opción por defecto del menu de arranque" />
 +            <entry name="Modo de video" sysconfig="rc.local.conf--bootmenu_video_mode" type="selection" value="0" help1="0 = fbase, 1 = svideo">
 +                <value>0</value>
@@ -1182,7 +458,7 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x
 +    </menus>
 +</setup>
 diff -Naur setup-orig/M7x0 config/open7x0-setup V1.0.xml setup/M7x0 config/open7x0-setup V1.0.xml
---- setup-orig/M7x0 config/open7x0-setup V1.0.xml	2008-01-06 22:34:36.000000000 +0100
+--- setup-orig/M7x0 config/open7x0-setup V1.0.xml	2008-01-18 21:05:01.000000000 +0100
 +++ setup/M7x0 config/open7x0-setup V1.0.xml	1970-01-01 01:00:00.000000000 +0100
 @@ -1,184 +0,0 @@
 -<!--
@@ -1370,8 +646,8 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup V1.0.xml setup/M7x0 config/open7
 -    </menus>
 -</setup>
 diff -Naur setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/open7x0-setup.xml
---- setup-orig/M7x0 config/open7x0-setup.xml	2008-01-06 22:34:36.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup.xml	2008-01-06 13:22:05.000000000 +0100
+--- setup-orig/M7x0 config/open7x0-setup.xml	2008-01-18 21:05:01.000000000 +0100
++++ setup/M7x0 config/open7x0-setup.xml	2008-01-12 14:09:02.000000000 +0100
 @@ -1,162 +1,51 @@
  <!--
 --   (c) 2005,2006 by Ralf Dotzert
@@ -1576,8 +852,8 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/open7x0-se
      </menus>
  </setup>
 diff -Naur setup-orig/Makefile setup/Makefile
---- setup-orig/Makefile	2008-01-06 22:34:36.000000000 +0100
-+++ setup/Makefile	2008-01-06 13:48:07.000000000 +0100
+--- setup-orig/Makefile	2008-01-18 21:05:01.000000000 +0100
++++ setup/Makefile	2008-01-12 14:09:02.000000000 +0100
 @@ -1,7 +1,7 @@
  #
  # Makefile for a Video Disk Recorder plugin
@@ -1605,8 +881,8 @@ diff -Naur setup-orig/Makefile setup/Makefile
  
  	
 diff -Naur setup-orig/plugins.cpp setup/plugins.cpp
---- setup-orig/plugins.cpp	2008-01-06 22:34:36.000000000 +0100
-+++ setup/plugins.cpp	2008-01-06 13:22:05.000000000 +0100
+--- setup-orig/plugins.cpp	2008-01-18 21:05:01.000000000 +0100
++++ setup/plugins.cpp	2008-01-12 14:09:02.000000000 +0100
 @@ -15,6 +15,7 @@
  #include "plugins.h"
  #include "util.h"
@@ -1639,8 +915,8 @@ diff -Naur setup-orig/plugins.cpp setup/plugins.cpp
    } 
    //HaPe: Add " around the string
 diff -Naur setup-orig/setupmenu.cpp setup/setupmenu.cpp
---- setup-orig/setupmenu.cpp	2008-01-06 22:34:36.000000000 +0100
-+++ setup/setupmenu.cpp	2008-01-06 13:52:42.000000000 +0100
+--- setup-orig/setupmenu.cpp	2008-01-18 21:05:01.000000000 +0100
++++ setup/setupmenu.cpp	2008-01-12 14:09:02.000000000 +0100
 @@ -18,6 +18,7 @@
  #include "plugins.h"
  #include "debug.h"
@@ -1806,7 +1082,7 @@ diff -Naur setup-orig/setupmenu.cpp setup/setupmenu.cpp
    }
    return(result);
 diff -Naur setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
---- setup-orig/setupsystemmenu.cpp	2008-01-06 22:34:36.000000000 +0100
+--- setup-orig/setupsystemmenu.cpp	2008-01-18 21:05:01.000000000 +0100
 +++ setup/setupsystemmenu.cpp	1970-01-01 01:00:00.000000000 +0100
 @@ -1,188 +0,0 @@
 -/***********************************************************
@@ -1998,8 +1274,8 @@ diff -Naur setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
 -  return (menu);
 -}
 diff -Naur setup-orig/util.cpp setup/util.cpp
---- setup-orig/util.cpp	2008-01-06 22:34:36.000000000 +0100
-+++ setup/util.cpp	2008-01-06 13:22:07.000000000 +0100
+--- setup-orig/util.cpp	2008-01-18 21:05:01.000000000 +0100
++++ setup/util.cpp	2008-01-12 14:09:02.000000000 +0100
 @@ -14,6 +14,7 @@
  #include <ctype.h>
  #include "util.h"
