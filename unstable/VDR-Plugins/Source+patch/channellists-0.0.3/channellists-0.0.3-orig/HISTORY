@@ -1,0 +1,21 @@
+VDR Plugin 'channellists' Revision History
+------------------------------------------
+2008-01-18: Version 0.0.3
+- Added command line argument:
+  -s SCRIPT,   --script=SCRIPT      path to update script (default: channellists-update.sh
+- Added Red-Button switch "Rename <> Script"
+- Added Green-Button switch "Copy <> Script"
+- Added script for loading a new channels.conf from linowsat.
+- Renamed svdrp command RELOAD to LOAD.
+- Some code cleaning.
+
+2008-01-15: Version 0.0.2
+- Fixed miscellaneous bugs.
+- Added submenus for copying, renaming and saving a channellist.
+- Added setup option "Hide main menu entry".
+- Added argument for the svdrp command RELOAD
+  RELOAD /path/to/channels.conf
+  with no argument RELOAD reloads the current channels.conf.
+
+2007-12-30: Version 0.0.1
+- Initial revision.

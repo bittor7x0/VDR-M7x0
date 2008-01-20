@@ -1,0 +1,12 @@
+VDR Plugin 'scheduler' Revision History
+-------------------------------------
+
+2008-01-18: Version 0.1.1
+
+- Korrekturen für gcc-4.3alpha und 64 bit-Systeme, Danke an Grégoire Favre
+- Spanische Übersetzung, Danke an Bittor Corl
+- Korrekturen für die Übersetzung auf open7x0, Danke an zjuanma
+
+2007-10-03: Version 0.1.0
+
+- Erste Version.
