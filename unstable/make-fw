@@ -76,6 +76,10 @@ cp -Trf "$vdr_em_files/$vdr_version" "$tmp"
 
 # Creating plugins dirs
 echo "Creating plugins dirs"
+[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/channelscan/" ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/channelscan/"
+[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/channelscan/"   ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/channelscan/"
+[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/channelscan/"  ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/channelscan/"
+
 for dp in `ls $vdr_em_plugins `; do
 	dptarget=`echo $dp | cut -d'-' -f1`
 	[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/$dptarget/" ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/$dptarget/"
