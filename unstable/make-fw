@@ -1,93 +1,101 @@
 #!/bin/sh
+###############################################################################
+# This script to generate a alternative version of VDR-NG-FW from open7x0.org #
+###############################################################################
 
-vdr_fw=VDR-NG-FW
 
-vdr=$vdr_fw/build/vdr-m7x0/branches/gambler-unstable
-vdr_patches=VDR-EM-files/VDR-Patches
 
-vdr_plugins=$vdr_fw/build/vdr-m7x0-PLUGINS/branches/unstable
-vdr_plugins_patches=VDR-Plugins/Source+patch
+###################
+# Variables setup #
+###################
 
-vdr_em_files=VDR-EM-files/uclibc_build_env
-vdr_em_patches=VDR-EM-files/FW-Patches
+# Path of script
+BASE="${0%/*}"
 
-webif=$vdr_fw/build/webif
+# Version to generate
+#   lite: Minimal install
+#   pro:  Maximal install
+vdr_version="pro"
 
-#tmp=`mktemp -d ./temp.$$.XXXXXXXX` || exit 1
-tmp=temp
+# Local paths
+vdr_fw="$BASE/VDR-NG-FW"
+vdr_fw_orig="$vdr_fw.orig"
+vdr_em_addons="$BASE/Addons"
+vdr_em_files="$vdr_em_addons/Files"
+vdr_em_patches="$vdr_em_addons/Patches"
+vdr_em_plugins="$BASE/VDR-Plugins/Source+patch"
 
-# Update VDR-EM
-echo "Update VDR-EM"
-svn update
+# SVN branch from assembla VDR-EM
+svn_em="http://svn2.assembla.com/svn/VDR-M7x0/unstable"
 
-# Update VDR-NG FW
-if [[ ! -d "$vdr_fw" ]]
+# SVN branches from open7x0.org
+svn_o7o="svn://open7x0.org/uclibc_build_env/branches/experimental"
+
+# Path for temporal directory
+tmp=`mktemp -d ./tmp-XXXXXXXXXX` || exit 1
+
+
+#########################
+# Update/Checkout files #
+#########################
+
+# Update/Checkout VDR-EM
+if [[ -d "./.svn" ]]
 then
-	echo "Checkout $vdr_fw"
-	svn checkout -q "svn://open7x0.org/uclibc_build_env/branches/experimental" "$vdr_fw"
-
-	# Patching files of firmware
-	patch -p0 -d $vdr_fw/configs/busybox/1.6.1 < $vdr_em_patches/busybox.config.diff
-	patch -p0 -d $vdr_fw/buildin/usbautomounter < $vdr_em_patches/usbautomounter.diff
-
-	# No download patchs
-	patch -p0 -d $vdr_fw/make-incs < $vdr_em_patches/vdr-m7x0.mk.diff
-	patch -p0 -d $vdr_fw/make-incs < $vdr_em_patches/vdr-m7x0-plugins.mk.diff
-	patch -p0 -d $vdr_fw/make-incs < $vdr_em_patches/webif.mk.diff
-
-	# Checkout VDR
-	echo "Checkout $vdr"
-	svn checkout -q "svn://open7x0.org/vdr-m7x0/branches/gambler-unstable" "$vdr"
-
-	echo "Patching VDR"
-	./patching ./$vdr $vdr_patches
-
-	# Checkout open7x0.org plugins
-	echo "Checkout $vdr_plugins"
-        rm -rf $vdr_plugins
-	mkdir -p $vdr_plugins
-	svn checkout -q "svn://open7x0.org/vdr-m7x0-PLUGINS/branches/unstable" "$vdr_plugins"
-	rm -rf "$vdr_plugins/sharedlibs"
-
-	# Checkout webif
-	echo "Checkout $webif"
-	svn checkout -q "svn://open7x0.org/vdr-htdocs/branches/testing" "$webif"
-
-	# Spanish translation for webif
-	patch -p1 -d $webif/webapp/inc < $vdr_em_patches/webif-spanish.diff
-
-	for dp in `ls $vdr_plugins_patches `; do
-		if [ -d $vdr_plugins_patches/$dp ] ; then
-			for dps in `ls $vdr_plugins_patches/$dp/`; do
-				if [ -d $vdr_plugins_patches/$dp/$dps ] ; then
-				        dptarget=`echo $dps | cut -d'-' -f1`
-
-				        # Clean patch
-				        rm -rf $vdr_plugins/$dptarget/
-					mkdir $vdr_plugins/$dptarget/
-
-				        # Copy plugin
-					cp -rf $vdr_plugins_patches/$dp/$dps/* $vdr_plugins/$dptarget/
-					find $vdr_plugins/$dptarget/ '(' -name '.svn'  ')' -exec rm -rf {} \; 2> /dev/null
-
-					# Patching plugins
-					./patching $vdr_plugins/$dptarget/ $vdr_plugins_patches/$dp
-				fi
-			done
-		fi
-	done;
-
-	# Setup of firmware
-	echo "Setup"
-	rm -rf "$tmp"
-	mkdir -p "$tmp"
-	cp -rf $vdr_em_files/* $tmp/
-	find $tmp/ '(' -name '.svn'  ')' -exec rm -rf {} \; 2> /dev/null
-	cp -rf $tmp/* $vdr_fw/
-	cp -rf $vdr_em_files/.config $vdr_fw/
-	rm -rf "$tmp"
+	echo "Update VDR-EM"
+	svn update
+else
+	rm -f "./make-fw"
+	echo "Checkout VDR-EM"
+	svn checkout -q "$svn_em" "./"
+	echo "Run this script again"
+	rm -rf $temp
+	exit 0
 fi
 
-# Compiling firmware
-#cd $vdr_fw
-#make
+# Checkout VDR-o7o
+if [[ ! -d "$vdr_fw_orig" ]]
+then
+	echo "Checkout VDR-o7o original"
+	svn checkout -q "$svn_o7o" "$vdr_fw_orig"
+elif [[ -d "$vdr_fw" ]]
+then
+	echo "Update VDR-o7o final"
+	svn update "$vdr_fw"
+fi
+
+############################
+# Creating VDR-EM Firmware #
+############################
+
+# Copy original files to temporal dir
+echo "Copying files to temporal dir"
+cp -Trf "$vdr_fw_orig" "$tmp"
+cp -Trf "$vdr_em_files/common" "$tmp"
+cp -Trf "$vdr_em_files/$vdr_version" "$tmp"
+
+# Creating plugins dirs
+echo "Creating plugins dirs"
+for dp in `ls $vdr_em_plugins `; do
+	dptarget=`echo $dp | cut -d'-' -f1`
+	[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/$dptarget/" ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/$dptarget/"
+	[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/$dptarget/"   ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/$dptarget/"
+	[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/$dptarget/"  ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/$dptarget/"
+done;
+
+# Patch firmware
+echo "Patching Firmware"
+$tmp/patches/patch-kernel.sh "$tmp" "$vdr_em_patches/common"
+$tmp/patches/patch-kernel.sh "$tmp" "$vdr_em_patches/$vdr_version"
+
+# Copy temporal dir to final dir
+echo ""
+echo "Copying temporal dir to final dir"
+[[ ! -d "$vdr_fw" ]] && mkdir -p "$vdr_fw"
+cp -Trf "$tmp" "$vdr_fw"
+
+# Clean temp dir
+rm -rf "$tmp"
+echo "Now you can edit config files in \"$vdr_fw\" and later run \"make\""
+exit 0
+

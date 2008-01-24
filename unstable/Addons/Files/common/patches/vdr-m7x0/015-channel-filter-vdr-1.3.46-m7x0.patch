@@ -1,0 +1,192 @@
+diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
+--- VDR-NG-orig/channels.c	2007-12-15 11:51:27.000000000 +0100
++++ VDR-NG/channels.c	2007-12-15 12:03:43.000000000 +0100
+@@ -861,6 +861,15 @@
+     }
+   };
+ 
++bool cChannel::Filtered(void)
++{
++  switch(Setup.ChannelFilter) {
++    case 1:    return (groupSep || vpid != 0);
++    case 2:    return (groupSep || vpid == 0);
++    default:   return true;
++  } 
++}
++
+ // -- cChannels --------------------------------------------------------------
+ 
+ cChannels Channels;
+diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
+--- VDR-NG-orig/channels.h	2007-12-15 11:51:27.000000000 +0100
++++ VDR-NG/channels.h	2007-12-15 12:03:43.000000000 +0100
+@@ -216,6 +216,7 @@
+   void SetCaDescriptors(int Level);
+   void SetLinkChannels(cLinkChannels *LinkChannels);
+   void SetRefChannel(cChannel *RefChannel);
++  bool Filtered(void);
+   };
+ 
+ class cChannels : public cRwLock, public cConfig<cChannel> {
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	2007-12-15 12:00:57.000000000 +0100
++++ VDR-NG/config.c	2007-12-15 12:03:43.000000000 +0100
+@@ -280,6 +280,7 @@
+   CurrentChannel = -1;
+   CurrentVolume = MAXVOLUME;
+   CurrentDolby = 0;
++  ChannelFilter = 0;
+   InitialChannel = 0;
+   InitialVolume = -1;
+   ShowRecDate = 1;
+@@ -457,6 +458,7 @@
+   else if (!strcasecmp(Name, "CurrentChannel"))      CurrentChannel     = atoi(Value);
+   else if (!strcasecmp(Name, "CurrentVolume"))       CurrentVolume      = atoi(Value);
+   else if (!strcasecmp(Name, "CurrentDolby"))        CurrentDolby       = atoi(Value);
++  else if (!strcasecmp(Name, "ChannelFilter"))       ChannelFilter      = atoi(Value);
+   else if (!strcasecmp(Name, "InitialChannel"))      InitialChannel     = atoi(Value);
+   else if (!strcasecmp(Name, "InitialVolume"))       InitialVolume      = atoi(Value);
+   else if (!strcasecmp(Name, "ShowRecDate"))         ShowRecDate        = atoi(Value);
+@@ -541,6 +543,7 @@
+   Store("CurrentChannel",     CurrentChannel);
+   Store("CurrentVolume",      CurrentVolume);
+   Store("CurrentDolby",       CurrentDolby);
++  Store("ChannelFilter",      ChannelFilter);
+   Store("InitialChannel",     InitialChannel);
+   Store("InitialVolume",      InitialVolume);
+   Store("ShowRecDate",        ShowRecDate);
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	2007-12-15 12:00:57.000000000 +0100
++++ VDR-NG/config.h	2007-12-15 12:03:43.000000000 +0100
+@@ -260,6 +260,7 @@
+   int CurrentChannel;
+   int CurrentVolume;
+   int CurrentDolby;
++  int ChannelFilter;
+   int InitialChannel;
+   int InitialVolume;
+   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;
+diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
+--- VDR-NG-orig/device.c	2007-12-15 11:51:27.000000000 +0100
++++ VDR-NG/device.c	2007-12-15 12:03:43.000000000 +0100
+@@ -820,7 +820,7 @@
+      cChannel *channel;
+      while ((channel = Channels.GetByNumber(n, Direction)) != NULL) {
+            // try only channels which are currently available
+-           if (PrimaryDevice()->ProvidesChannel(channel, Setup.PrimaryLimit) || /* PrimaryDevice()->CanReplay() && */ GetDevice(channel, 0))
++           if (channel->Filtered() && (PrimaryDevice()->ProvidesChannel(channel, Setup.PrimaryLimit) || /* PrimaryDevice()->CanReplay() && */ GetDevice(channel, 0)))
+               break;
+            n = channel->Number() + Direction;
+            }
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2007-12-15 12:00:57.000000000 +0100
++++ VDR-NG/i18n.c	2007-12-15 12:03:43.000000000 +0100
+@@ -4608,6 +4608,63 @@
+     "",// TODO
+     ""// TODO
+   },
++  { "Setup.Miscellaneous$Filter channels",
++    "",// TODO
++    "",// TODO
++    "Filtra canali",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Filtrar canales",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Filtra canals",
++    "",// TODO
++    "",// hrv TODO
++  },
++  { "Tv only",
++    "",// TODO
++    "",// TODO
++    "Solo Tv",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Sólo Tv",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Només Tv",
++    "",// TODO
++    "",// hrv TODO
++  },
++  { "Radio only",
++    "",// TODO
++    "",// TODO
++    "Solo Radio",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Sólo Radio",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Només Radio",
++    "",// TODO
++    "",// hrv TODO
++  },
+   // The days of the week:
+   { "MTWTFSS",
+     "MDMDFSS",
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2007-12-15 12:00:57.000000000 +0100
++++ VDR-NG/menu.c	2007-12-15 12:05:57.000000000 +0100
+@@ -428,7 +428,7 @@
+   cMenuChannelItem *currentItem = NULL;
+   Clear();
+   for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
+-      if (!channel->GroupSep() || cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && *channel->Name()) {
++      if ((!channel->GroupSep() || cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && *channel->Name()) && ( channel == currentChannel || channel->Filtered() )) {
+          cMenuChannelItem *item = new cMenuChannelItem(channel);
+          Add(item);
+          if (channel == currentChannel)
+@@ -3048,6 +3048,8 @@
+ // --- cMenuSetupMisc --------------------------------------------------------
+ 
+ class cMenuSetupMisc : public cMenuSetupBase {
++private:
++  const char *channelFilterTexts[3];
+ public:
+   cMenuSetupMisc(void);
+   };
+@@ -3055,10 +3057,14 @@
+ cMenuSetupMisc::cMenuSetupMisc(void)
+ {
+   SetSection(tr("Miscellaneous"));
++  channelFilterTexts[0] = tr("no");
++  channelFilterTexts[1] = tr("Tv only");
++  channelFilterTexts[2] = tr("Radio only");
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. event timeout (min)"),   &data.MinEventTimeout));
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. user inactivity (min)"), &data.MinUserInactivity));
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$SVDRP timeout (s)"),          &data.SVDRPTimeout));
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Zap timeout (s)"),            &data.ZapTimeout));
++  Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
+   Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
+   Add(new cMenuEditBoolItem( tr("Setup.Miscellaneous$Abort when Plugin fails to load"),    &data.AbortWhenPluginFails));
+@@ -3614,7 +3620,7 @@
+   if (Direction) {
+      while (Channel) {
+            Channel = Direction > 0 ? Channels.Next(Channel) : Channels.Prev(Channel);
+-           if (Channel && !Channel->GroupSep() && (cDevice::PrimaryDevice()->ProvidesChannel(Channel, Setup.PrimaryLimit, NULL, true) || cDevice::GetDevice(Channel, 0, NULL, true)))
++           if (Channel && Channel->Filtered() && !Channel->GroupSep() && (cDevice::PrimaryDevice()->ProvidesChannel(Channel, Setup.PrimaryLimit, NULL, true) || cDevice::GetDevice(Channel, 0, NULL, true)))
+               return Channel;
+            }
+      }

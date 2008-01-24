@@ -1,0 +1,1 @@
+     El menú "Plugins" se utiliza para acceder y gestionar los plugins instalados en VDR. Cuando hablamos de plugins nos referimos a pequeños programas que, una vez instalados, interactúan con VDR dándole nuevas funcionalidades y mejoras.

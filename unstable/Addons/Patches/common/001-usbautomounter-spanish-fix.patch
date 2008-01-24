@@ -1,0 +1,12 @@
+diff -Naur uclibc_build_env_orig/buildin/usbautomounter/display.c uclibc_build_env/buildin/usbautomounter/display.c
+--- uclibc_build_env_orig/buildin/usbautomounter/display.c	2008-01-20 18:11:32.000000000 +0100
++++ uclibc_build_env/buildin/usbautomounter/display.c	2008-01-21 20:33:45.000000000 +0100
+@@ -112,7 +112,7 @@
+ 		"",
+ 		"",
+ 		"",
+-		"Disco %s demasiado tiempo sin comprobar",
++		"Mucho tiempo sin comprobar disco %s",
+ 		"",
+ 		"",
+ 		"",

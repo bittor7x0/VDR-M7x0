@@ -1,0 +1,20 @@
+--- slin_m740/drivers/net/natsemi.c.orig	2007-12-23 17:10:04.000000000 +0100
++++ slin_m740/drivers/net/natsemi.c	2007-12-23 17:29:38.000000000 +0100
+@@ -1305,14 +1305,14 @@
+ 	 * to the correct settings.
+ 	 */
+ 
+-	/* DRTH: 2: start tx if 64 bytes are in the fifo
+-	 * FLTH: 0x10: refill with next packet if 512 bytes are free
++	/* DRTH: 0x2f: start tx if 1504 bytes are in the fifo
++	 * FLTH: 0x09: refill with next packet if 288 bytes are free
+ 	 * MXDMA: 0: up to 256 byte bursts.
+ 	 * 	MXDMA must be <= FLTH
+ 	 * ECRETRY=1
+ 	 * ATP=1
+ 	 */
+-	np->tx_config = TxAutoPad | TxCollRetry | TxMxdma_256 | (0x1002);
++	np->tx_config = TxAutoPad | TxCollRetry | TxMxdma_256 | (0x092f);
+ 	writel(np->tx_config, ioaddr + TxConfig);
+ 
+ 	/* DRTH 0x10: start copying to memory if 128 bytes are in the fifo

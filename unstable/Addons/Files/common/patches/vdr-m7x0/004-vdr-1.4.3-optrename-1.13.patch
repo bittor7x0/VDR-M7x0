@@ -1,0 +1,108 @@
+diff -Naur vdr-m7x0-orig/i18n.c vdr-m7x0/i18n.c
+--- vdr-m7x0-orig/i18n.c	2007-07-21 13:45:37.000000000 +0200
++++ vdr-m7x0/i18n.c	2007-07-21 13:49:35.000000000 +0200
+@@ -6412,6 +6412,50 @@
+     "",//TODO
+     "",//TODO
+   },
++  { "est. bit-rate",
++    "Bitrate ca.",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Bitrate est.",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "%s:\t%.2f MBit/s (Video+Audio)",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "%s:\t%.2f MBit/s (Vídeo+Audio)",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
+   { "Delete marks information?",
+     "Marks löschen?",
+     "",//TODO
+diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
+--- vdr-m7x0-orig/menu.c	2007-07-21 13:45:37.000000000 +0200
++++ vdr-m7x0/menu.c	2007-07-21 13:48:52.000000000 +0200
+@@ -1955,21 +1955,29 @@
+      }
+ 
+   cIndexFile *index = new cIndexFile(recording->FileName(), false);
++  int lastIndex = 0;
+   if (index) {
+-     asprintf(&buffer, "%s:\t%s", tr("Length"), *IndexToHMSF(index->Last()));
++     lastIndex = index->Last();
++     asprintf(&buffer, "%s:\t%s", tr("Length"), *IndexToHMSF(lastIndex));
+      Add(new cOsdItem(buffer,              osUnknown, false));
+      free(buffer);
+      }
+   delete index;
+ 
+   int dirSize = DirSizeMB(recording->FileName());
+-  if (dirSize > 9999)
++  if (dirSize > 1023)
+      asprintf(&buffer, "%s:\t%.2f GB", tr("Size"), dirSize / 1024.0);
+   else
+      asprintf(&buffer, "%s:\t%d MB", tr("Size"), dirSize);
+   Add(new cOsdItem(buffer,                 osUnknown, false));
+   free(buffer);
+ 
++  if (lastIndex) {
++     asprintf (&buffer, tr("%s:\t%.2f MBit/s (Video+Audio)"), tr("est. bit-rate"), (float)dirSize/lastIndex*FRAMESPERSEC*8);
++     Add(new cOsdItem(buffer,                 osUnknown, false));
++     free(buffer);
++     }
++
+   Add(new cOsdItem("",                     osUnknown, false));
+ 
+   isMarks = marks.Load(recording->FileName()) && marks.Count();
+diff -Naur vdr-m7x0-orig/recording.c vdr-m7x0/recording.c
+--- vdr-m7x0-orig/recording.c	2007-07-21 13:45:32.000000000 +0200
++++ vdr-m7x0/recording.c	2007-07-21 13:47:18.000000000 +0200
+@@ -917,8 +917,15 @@
+            fileName = strdup(newFileName);
+            free(name);
+            name = strdup(newName);
++#ifdef SORTRECORDINGSVERSNUM
++           for (int i = 0; i < MAXSORTMODES; i++) {
++              free(sortBuffer[i]);
++              sortBuffer[i] = NULL;
++           }
++#else
+            free(sortBuffer);
+            sortBuffer = NULL;
++#endif
+            free(titleBuffer);
+            titleBuffer = NULL;
+            }

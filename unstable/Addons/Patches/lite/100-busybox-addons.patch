@@ -1,0 +1,39 @@
+diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_build_env/configs/busybox/1.6.1/busybox.config
+--- uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config	2008-01-20 18:11:41.000000000 +0100
++++ uclibc_build_env/configs/busybox/1.6.1/busybox.config	2008-01-22 20:09:08.000000000 +0100
+@@ -43,7 +43,7 @@
+ # CONFIG_FEATURE_FULL_LIBBUSYBOX is not set
+ # CONFIG_FEATURE_SHARED_BUSYBOX is not set
+ CONFIG_LFS=y
+-# CONFIG_BUILD_AT_ONCE is not set
++CONFIG_BUILD_AT_ONCE=y
+ 
+ #
+ # Debugging Options
+@@ -233,7 +233,7 @@
+ #
+ # Common options for cp and mv
+ #
+-# CONFIG_FEATURE_PRESERVE_HARDLINKS is not set
++CONFIG_FEATURE_PRESERVE_HARDLINKS=y
+ 
+ #
+ # Common options for ls, more and telnet
+@@ -441,7 +441,7 @@
+ # CONFIG_MDEV is not set
+ # CONFIG_FEATURE_MDEV_CONF is not set
+ # CONFIG_FEATURE_MDEV_EXEC is not set
+-# CONFIG_MKSWAP is not set
++CONFIG_MKSWAP=y
+ # CONFIG_FEATURE_MKSWAP_V0 is not set
+ CONFIG_MORE=y
+ CONFIG_FEATURE_USE_TERMIOS=y
+@@ -454,7 +454,7 @@
+ # CONFIG_RDATE is not set
+ CONFIG_READPROFILE=y
+ # CONFIG_SETARCH is not set
+-# CONFIG_SWAPONOFF is not set
++CONFIG_SWAPONOFF=y
+ CONFIG_SWITCH_ROOT=y
+ CONFIG_UMOUNT=y
+ CONFIG_FEATURE_UMOUNT_ALL=y

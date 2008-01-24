@@ -1,0 +1,46 @@
+diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk uclibc_build_env/make-incs/vdr-m7x0-plugins.mk
+--- uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk	2008-01-20 18:11:33.000000000 +0100
++++ uclibc_build_env/make-incs/vdr-m7x0-plugins.mk	2008-01-24 19:41:53.000000000 +0100
+@@ -23,9 +23,12 @@
+ VDR-PLUGINS_DEPS = $(BASE_BUILD_STAGEFILE) $(VDR_INSTALLED) $(TOP_DIR)/.config
+ 
+ VDR-PLUGINS_SVN_URL := svn://open7x0.org/vdr-m7x0-PLUGINS
++VDR-PLUGINS_EXTRA_SVN_URL := http://svn2.assembla.com/svn/VDR-M7x0/unstable/VDR-Plugins/Source+patch
+ VDR-PLUGINS_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS
++VDR-PLUGINS_EXTRA_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS-extra
+ VDR-PLUGINS_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/common
+ VDR-PLUGINS_CONF_$(CONFIG_M7X0_TYPE)_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/$(CONFIG_M7X0_TYPE)
++VDR-PLUGINS_BRANCH := branches/`echo $(CONFIG_VDR-PLUGINS) | cut -d'/' -f1`
+ 
+ vdr-plugins_rules = \
+    $(foreach plugin,$(CONFIG_VDR-PLUGINS), \
+@@ -83,6 +86,21 @@
+ 
+ $(call vdr-plugins_rules,downloaded):
+ 	$(SVN) co $(VDR-PLUGINS_SVN_URL) $(VDR-PLUGINS_DIR)
++	$(SVN) co $(VDR-PLUGINS_EXTRA_SVN_URL) $(VDR-PLUGINS_EXTRA_DIR)
++	(for dp in `ls $(VDR-PLUGINS_EXTRA_DIR)`; do \
++		if [ -d $(VDR-PLUGINS_EXTRA_DIR)/$$dp ] ; then \
++			for dps in `ls $(VDR-PLUGINS_EXTRA_DIR)/$$dp/`; do \
++				if [ -d $(VDR-PLUGINS_EXTRA_DIR)/$$dp/$$dps ] ; then \
++					dptarget=`$(ECHO) $$dps | $(CUT) -d'-' -f1` ; \
++					$(RM) -rf $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ ; \
++					$(MKDIR) -p $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ ; \
++					$(CP) -rf $(VDR-PLUGINS_EXTRA_DIR)/$$dp/$$dps/* $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ ; \
++					$(FIND) $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ '(' -name '.svn'  ')' -exec $(RM) -rf {} \; 2> /dev/null ; \
++					$(PATCHES_DIR)/patch-kernel.sh $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ $(VDR-PLUGINS_EXTRA_DIR)/$$dp ; \
++				fi ; \
++			done ; \
++		fi ; \
++	done)
+ 	$(call vdr-plugins_touch_stagefiles,downloaded)
+ 
+ #
+@@ -121,6 +139,7 @@
+ 
+ $(FILELIST_DIR)/vdr-plugins.lst: $(call vdr-plugins_rules,installed)
+ 	($(ECHO)   "usr/lib/vdr       -                 d 755 0 0 - - - - -"; \
++	 $(ECHO)   "etc/plugins-lib   -                 d 755 0 0 - - - - -"; \
+ 	for lib in $(VDR-PLUGINS_LIBNAMES) ; do \
+ 		$(ECHO) "usr/lib/vdr/$$lib usr/lib/vdr/$$lib f 755 0 0 - - - - -"; \
+ 		$(ECHO) "usr/lib/vdr/$$lib -                 s   - - - - - - - -"; \

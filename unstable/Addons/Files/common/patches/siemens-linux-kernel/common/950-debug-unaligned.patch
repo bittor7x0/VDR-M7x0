@@ -1,0 +1,13 @@
+--- slin_m740/arch/mips/kernel/unaligned.c.orig	2007-12-23 11:20:41.000000000 +0100
++++ slin_m740/arch/mips/kernel/unaligned.c	2007-12-23 11:23:52.000000000 +0100
+@@ -420,6 +420,10 @@
+ 	if ((current->thread.mflags & MF_FIXADE) == 0)
+ 		goto sigbus;
+ 
++	if (!user_mode(regs)) 
++	{
++		printk("Kernel unaligned access at %08lx\n",regs->cp0_epc);
++	}
+ 	/*
+ 	 * Do branch emulation only if we didn't forward the exception.
+ 	 * This is all so but ugly ...

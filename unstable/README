@@ -1,3 +1,2 @@
-ToolChain-bin	ToolChain without 270-pthread-cancel-wrap.patch for compatibility with VDR shutdown patch
-VDR-EM-files	Files and patches for VDR-EM
+Addons		New files with extra packs and patches for VDR-EM
 VDR-Plugins	All plugins that work with VDR-EM

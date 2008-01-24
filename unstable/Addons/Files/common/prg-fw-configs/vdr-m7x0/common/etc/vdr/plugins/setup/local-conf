@@ -1,0 +1,51 @@
+#!/bin/ash
+
+#Default options
+CONF_DIR=.
+CONF_FILES="rc.local.conf rc.conf" 
+OPTION=
+DATA_FILE=/tmp/conf.tmp
+
+GREP_CMD=grep
+SED_CMD=sed
+
+#### Main loop
+
+set -- $(getopt  wr:f:c "$*")
+if	[ $? -ne 0 ]
+then	print >&2 "Usage: $0 -w|-r [-f output] [-c dir]"
+	exit 1
+fi
+for o
+do	case "$o" in
+	-w | -r) shift; OPTION=$o ;;
+	-f)	shift; DATA_FILE=$1; shift;;
+	-c)	shift; CONF_DIR=$1; shift;;
+	--)	shift; break;;
+	esac
+done
+
+if [ "$OPTION" = "-w" ] ; then
+        for f in `echo $CONF_FILES` ; do
+                #Delete file
+                `cat /dev/null > $CONF_DIR/$f`
+
+                `$GREP_CMD "^$f--" $DATA_FILE | $SED_CMD "s/^$f--//" >> $CONF_DIR/$f`
+        done
+else
+        if [ "$OPTION" = "-r" ] ; then
+                #Delete temp file 
+                `cat /dev/null > $DATA_FILE`
+
+                for f in  `echo $CONF_FILES` ; do
+
+                        `$GREP_CMD "^[^#].*=" $CONF_DIR/$f | $SED_CMD -e "s/^/$f--/" -e "s/#.*$//" >> $DATA_FILE`
+echo
+
+                done 
+        else
+                echo "Error: -r or -w option not found"
+                exit 2
+        fi
+fi
+

@@ -1,0 +1,62 @@
+<!--
+-   open7x0-VDR Configuration File
+-   based on Minisetup by Ralf Dotzert
+-->
+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCmd="/etc/vdr/plugins/setup/local-plugins">
+    <plugins sysconfig="rc.local.conf--vdr_pluginopts">
+        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
+        <plugin name="rssreader" info="rssreader" active="YES" />
+        <plugin name="epgsearch" info="epgsearch" active="YES" />
+        <plugin name="pilot" info="pilot" active="YES" />
+        <plugin name="recstatus" info="recstatus" active="YES" />
+        <plugin name="showrecinfo" info="showrecinfo" active="YES" />
+        <plugin name="noepgmenu" info="noepgmenu" active="YES" />
+        <plugin name="skinenigmang" info="skinenigmang" active="YES" />
+        <plugin name="scheduler" info="scheduler" active="YES" />
+        <plugin name="pilotskin" info="pilotskin" active="YES" />
+        <plugin name="status" info="status" active="YES" />
+        <plugin name="osdteletext" info="osdteletext" active="YES" />
+        <plugin name="streamplayer" info="streamplayer" active="NO" />
+        <plugin name="launcher" info="launcher" active="NO" />
+    </plugins>
+    <menus>
+        <menu name="Gestionar plugins" help1="Activar y desactivar plugins" system="ActPlugins" />
+        <menu name="Configuración general">
+            <entry name="Montar discos USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Montar los discos USB" />
+            <entry name="Montar directorios en Red" sysconfig="rc.local.conf--do_net_mount" type="bool" value="NO" help1="Montar los directorios en Red" />
+            <entry name="Tiempo de arranque" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="298" help1="Valor en segundos del tiempo de arranque del VDR cuando hay una grabacion programada." />
+        </menu>
+        <menu name="Configuración de directorios">
+            <entry name="Directorio ficheros de configuración" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Directorio donde se encuentra los ficheros de configuración. NO DEBE SER MODIFICADO" />
+            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="text" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
+            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorio donde se encuentran los plugins. NO DEBE SER MODIFICADO" />
+        </menu>
+        <menu name="Configuración EPG">
+            <entry name="Fichero EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Fichero donde se almacena la información de EPG." />
+            <entry name="EPG directa" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="YES" help1="Determina si la EPG se almacena inmediatamente o sólo cuando se apaga el VDR" />
+        </menu>
+        <menu name="Configuración Red">
+            <entry name="Modo configuración" sysconfig="rc.conf--net" type="selection" value="inet" help1="Modo de configuración de la dirección IP.">
+                <value>dhcp</value>
+                <value>inet</value>
+            </entry>
+            <entry name="Dirección IP" sysconfig="rc.conf--ip" type="ip" value="192.168.2.100" help1="Dirección IP del M7XX" />
+            <entry name="Máscara de Red" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Máscara de Red" />
+            <entry name="Puerta de Enlace" sysconfig="rc.conf--gateway" type="ip" value='&quot;192.168.2.1&quot;' help1="Dirección IP de la puerta de Enlace. Si no se usa valor NO" />
+            <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="Define el comando con el que se obtiene la dirección MAC. NO DEBE SER MODIFICADO" />
+            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre del M7XX (DNS). Por defecto lo toma del fichero /etc/hostname. NO DEBE SER MODIFICADO" />
+        </menu>
+        <menu name="Servicios">
+            <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Arrancar servidor inetd (ftp,telnet)" />
+            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />
+        </menu>
+        <menu name="Menu de arranque">
+            <entry name="Habilitar" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Habilitar menu de arranque" />
+            <entry name="Opción por defecto" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Opción por defecto del menu de arranque" />
+            <entry name="Modo de video" sysconfig="rc.local.conf--bootmenu_video_mode" type="selection" value="0" help1="0 = fbase, 1 = svideo">
+                <value>0</value>
+                <value>1</value>
+            </entry>
+        </menu>
+    </menus>
+</setup>

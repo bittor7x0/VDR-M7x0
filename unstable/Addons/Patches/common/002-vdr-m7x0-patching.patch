@@ -1,0 +1,25 @@
+diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0.mk uclibc_build_env/make-incs/vdr-m7x0.mk
+--- uclibc_build_env_orig/make-incs/vdr-m7x0.mk	2008-01-20 18:11:33.000000000 +0100
++++ uclibc_build_env/make-incs/vdr-m7x0.mk	2008-01-21 20:46:30.000000000 +0100
+@@ -26,6 +26,7 @@
+ VDR_DIR := $(BUILD_DIR)/vdr-m7x0
+ VDR_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/common
+ VDR_CONF_$(CONFIG_M7X0_TYPE)_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/$(CONFIG_M7X0_TYPE)
++VDR_PATCHES_DIR := $(PATCHES_DIR)/vdr-m7x0
+ 
+ VDR_BRANCH_DIR = $(VDR_DIR)/$(or $(strip $(filter trunk,$(CONFIG_VDR_TREE))), \
+                                  branches/$(CONFIG_VDR_TREE))
+@@ -76,11 +77,12 @@
+ 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_local_downloaded
+ 
+ #
+-# compile vdr
++# patch and compile vdr
+ #
+ 
+ $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_compiled: $$(VDR_DEPS) \
+         $(STAGEFILES_DIR)/.vdr_$(filter local_,$(CONFIG_VDR_TREE)_)downloaded
++	$(PATCHES_DIR)/patch-kernel.sh $(VDR_BRANCH_DIR) $(VDR_PATCHES_DIR)
+ 	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) clean
+ 	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) all
+ 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_compiled

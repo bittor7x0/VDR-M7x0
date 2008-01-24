@@ -1,0 +1,32 @@
+diff -Naur uclibc_build_env_orig/make-incs/webif.mk uclibc_build_env/make-incs/webif.mk
+--- uclibc_build_env_orig/make-incs/webif.mk	2008-01-20 18:11:33.000000000 +0100
++++ uclibc_build_env/make-incs/webif.mk	2008-01-21 20:53:06.000000000 +0100
+@@ -30,6 +30,7 @@
+ WEBIF_SVN := svn://open7x0.org/vdr-htdocs
+ WEBIF_DIR := $(BUILD_DIR)/webif
+ WEBIF_TC_FILE := $(WEBIF_DIR)/linux-mips-uclibc.tc
++WEBIF_PATCHES_DIR := $(PATCHES_DIR)/webif
+ 
+ LASTDIR := `pwd`
+ 
+@@ -80,10 +81,19 @@
+ $(STAGEFILES_DIR)/.webapp_downloaded: $(STAGEFILES_DIR)/.webif_unpacked
+ 	$(SVN) co $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
+ 	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
++
++#
++# patch webif
++#
++
++$(STAGEFILES_DIR)/.webif_patched: $(STAGEFILES_DIR)/.webapp_downloaded
++	$(PATCHES_DIR)/patch-kernel.sh $(WEBIF_DIR) $(WEBIF_PATCHES_DIR)
++	$(TOUCH) $(STAGEFILES_DIR)/.webif_patched
++
+ #
+ # compile webif
+ #
+-$(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded
++$(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webif_patched
+ 	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
+ 	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS) >> $(WEBIF_TC_FILE)
+ 	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CFLAGS) >> $(WEBIF_TC_FILE)

@@ -1,0 +1,7 @@
+     Con el  menú "Ordenes" de VDR, podemos ejecutar cualquier comando del sistema que este definido dentro del fichero "commands.conf". Este menú solo nos aparecerá si existe un archivo "commands.conf", valido y que además contenga por lo menos un comando definido, al principio del programa.
+     
+     ¡Esta característica la podemos utilizar para hacer cualquier cosa, como comprobar si tenemos correo nuevo, o mirar la temperatura de la CPU o mostrar tú nombre!. Solo se necesita incorporar la definición del comando en el fichero "commands.conf" y asignar una acción a realizar. Normalmente esta acción suele ser un Shell Script o un script en Perl. Cualquier cosa que el comando escriba en la "stdout", cuando finalice su ejecución automáticamente se mostrara en la pantalla. La pantalla utilizará un tipo de fuente "fija" para poder ajustar el formato de salida. Para poder evitar los mensajes de error que van a la "stderr", las definiciones de los comandos, se deben volver a dirigir el "stderr" a la "stdout".
+     
+     ¡ Precaución !
+     LOS COMANDOS QUE SE DEFINIAN EN EL FICHERO commands.conf SE EJECUTARÁN CON EL MISMO USUARIO CON EL QUE SE ESTÁ EJECUTANDO VDR. TEN MUCHO CUIDADO A LA HORA DE DEFINIR ESTOS COMANDOS Y ASEGURATE DE QUE NO PROVOCAN NINGÚN DAÑO A TU SISTEMA, ESPECÍFICAMENTE SI EJECUTAS EL PROGRAMA CON UN USUARIO CON DEMASIADOS PRIVILEGIOS (POR EJEMPLO root).
+ 
