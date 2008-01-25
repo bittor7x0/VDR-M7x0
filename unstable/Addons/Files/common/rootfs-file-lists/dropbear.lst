@@ -1,0 +1,4 @@
+usr/sbin/dropbearmulti    usr/sbin/dropbearmulti    f 755 0 0 - - - - -
+usr/sbin/dropbearmulti    -                         s   - - - - - - - -
+usr/sbin/dropbear         dropbearmulti             l 777 0 0 - - - - -
+usr/sbin/dropbearkey      dropbearmulti             l 777 0 0 - - - - -

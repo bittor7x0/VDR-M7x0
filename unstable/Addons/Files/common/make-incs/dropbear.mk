@@ -17,7 +17,13 @@
 #
 
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-DROPBEAR_DEPS = $(BASE_BUILD_STAGEFILE)
+DROPBEAR_DEPS = $(BASE_BUILD_STAGEFILE) $(ZLIB_INSTALLED)
+
+ifeq ($(CONFIG_DROPBEAR),y)
+ifneq ($(CONFIG_ZLIB),y)
+   $(error dependency error: dropbear needs zlib enabled)
+endif
+endif
 
 DROPBEAR_VERSION := 0.50
 DROPBEAR_PATCHES_DIR := $(PATCHES_DIR)/dropbear/$(DROPBEAR_VERSION)
@@ -90,8 +96,6 @@ $(STAGEFILES_DIR)/.dropbear_compiled: $(STAGEFILES_DIR)/.dropbear_configured
 $(STAGEFILES_DIR)/.dropbear_installed: $(STAGEFILES_DIR)/.dropbear_compiled
 	$(CP) $(DROPBEAR_DIR)/dropbearmulti $(TARGET_ROOT)/usr/sbin/dropbearmulti
 	chmod 755 $(TARGET_ROOT)/usr/sbin/dropbearmulti
-	ln -s $(TARGET_ROOT)/usr/sbin/dropbearmulti $(TARGET_ROOT)/usr/sbin/dropbear
-	ln -s $(TARGET_ROOT)/usr/sbin/dropbearmulti $(TARGET_ROOT)/usr/sbin/dropbearkey
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_installed
 
 

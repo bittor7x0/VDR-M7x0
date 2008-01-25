@@ -12,7 +12,7 @@ fi
 # Patching VDR
 if [[ ! -f "$vdr/HISTORY-liemikuutio" ]]
 then
-	./patching ./VDR-NG ./VDR-EM-files/VDR-Patches
+	./patching ./VDR-NG ./Addons/Files/common/patches/vdr-m7x0
 fi
 
 # Compiling VDR

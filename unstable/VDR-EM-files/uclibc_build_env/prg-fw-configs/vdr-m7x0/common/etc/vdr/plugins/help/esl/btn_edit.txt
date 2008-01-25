@@ -1,6 +1,0 @@
-
-     0 - Cambia la Marca de Edición. Si no existe ninguna entonces la crea. Si ya existía una marca (muestra un triangulo en Rojo) entonces la borra.
-     4,6 - Mover la Marca de Edición hacia Adelante o hacia Atrás. Primero tienes que saltar a la marca de edición para poder moverla.
-     7,9 - Ir a la marca Anterior o Posterior. Una vez que saltemos a la marca se quedará en modo Pausa.
-     8 - Posiciona la reproducción justo 3 segundos antes de la Marca de inicio Anterior o Posterior y empieza la reproducción.
-     2 - Comienza el proceso actual de corte.

@@ -9,7 +9,7 @@
 targetdir=${1-.}
 patchdir=${2-../patches}
 shift 2
-patchpattern=${@-*.diff*}
+patchpattern=${@-*.[patch|diff]*}
 
 if [ ! -d "${targetdir}" ] ; then
     echo "Aborting.  '${targetdir}' is not a directory."
