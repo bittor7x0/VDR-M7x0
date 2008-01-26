@@ -2,7 +2,7 @@
 -   open7x0-VDR Configuration File
 -   based on Minisetup by Ralf Dotzert
 -->
-<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCmd="/etc/vdr/plugins/setup/local-plugins">
+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
     <plugins sysconfig="rc.local.conf--vdr_pluginopts">
         <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
         <plugin name="rssreader" info="rssreader" active="YES" />

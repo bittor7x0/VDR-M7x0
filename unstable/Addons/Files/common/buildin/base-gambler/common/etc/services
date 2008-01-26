@@ -1,0 +1,6 @@
+ftp		21/tcp
+ssh		22/tcp			# SSH Remote Login Protocol
+ssh		22/udp			# SSH Remote Login Protocol
+telnet		23/tcp
+www		80/tcp		http	# WorldWideWeb HTTP
+www		80/udp			# HyperText Transfer Protocol

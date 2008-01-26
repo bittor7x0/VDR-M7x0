@@ -19,10 +19,10 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 DVBSNOOP_DEPS = $(BASE_BUILD_STAGEFILE)
 
-DVBSNOOP_VERSION := 1.4.00
+DVBSNOOP_VERSION := 1.4.50
 DVBSNOOP_PATCHES_DIR := $(PATCHES_DIR)/dvbsnoop/$(DVBSNOOP_VERSION)
 
-#http://easynews.dl.sourceforge.net/sourceforge/dvbsnoop/dvbsnoop-1.4.00.tar.gz
+#http://easynews.dl.sourceforge.net/sourceforge/dvbsnoop/dvbsnoop-1.4.50.tar.gz
 DVBSNOOP_FILE := dvbsnoop-$(DVBSNOOP_VERSION).tar.gz
 DVBSNOOP_DLFILE := $(DOWNLOAD_DIR)/$(DVBSNOOP_FILE)
 DVBSNOOP_URL := http://easynews.dl.sourceforge.net/sourceforge/dvbsnoop/$(DVBSNOOP_FILE)

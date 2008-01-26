@@ -46,10 +46,10 @@ then
 	svn update
 else
 	rm -f "./make-fw"
+	rm -rf "$tmp"
 	echo "Checkout VDR-EM"
 	svn checkout -q "$svn_em" "./"
 	echo "Run this script again"
-	rm -rf $temp
 	exit 0
 fi
 
@@ -76,7 +76,8 @@ cp -Trf "$vdr_em_files/$vdr_version" "$tmp"
 
 # Creating plugins dirs
 echo "Creating plugins dirs"
-[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/channelscan/" ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/channelscan/"
+
+
 [[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/channelscan/"   ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/channelscan/"
 [[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/channelscan/"  ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/channelscan/"
 
