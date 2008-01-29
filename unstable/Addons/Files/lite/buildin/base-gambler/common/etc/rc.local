@@ -1,0 +1,33 @@
+#!/bin/ash
+
+[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+
+echo -n 'starting local stuff:'
+
+if [ X"${do_usb_mount}" != X"NO" ] ; then
+	echo -n ' usb-mount'
+	ln -sf /sbin/usbautomounter /var/tmp/hotplug
+	/sbin/usbautomounter mount
+fi
+
+if [ X"${do_net_mount}" != X"NO" ] ; then
+    echo -n ' net-mount'
+    ash /etc/rc.netmount
+fi
+
+if [ X"${runvdr}" != X"NO" ]; then
+    echo -n ' vdr' 
+    export ${runvdr_vars}
+    ash ${runvdr} &
+fi
+
+
+for bpath in ${bind_paths} ; do
+	echo -n " Binding ${bpath}"
+	mount -o bind /rw-flash${bpath} ${bpath}
+done
+
+# put here your optional stuff
+
+
+echo ' '

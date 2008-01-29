@@ -1,7 +1,7 @@
-diff -Naur vdr-htdocs-orig/webapp/inc/i18n.c vdr-htdocs/webapp/inc/i18n.c
---- vdr-htdocs-orig/webapp/inc/i18n.c	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/inc/i18n.c	2008-01-26 12:53:24.000000000 +0100
-@@ -21,223 +21,320 @@
+diff -Naur vdr-htdocs/webapp/inc/i18n.c vdr-htdocs-ES+FR/webapp/inc/i18n.c
+--- vdr-htdocs/webapp/inc/i18n.c	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/inc/i18n.c	2008-01-29 16:48:19.000000000 +0100
+@@ -21,223 +21,396 @@
  int langID=-1;
  char acceptedLang[3]="";
  int numOfPhrases=69;
@@ -13,7 +13,8 @@ diff -Naur vdr-htdocs-orig/webapp/inc/i18n.c vdr-htdocs/webapp/inc/i18n.c
 -			"Deutsch"
 +		{	"English",			// #0
 +			"Deutsch",
-+			"Español"
++			"Español",
++			"Français"
  		},		
  // Here comes the Alpha-2 Code as described in ISO 639-1:
  // http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
@@ -25,10 +26,12 @@ diff -Naur vdr-htdocs-orig/webapp/inc/i18n.c vdr-htdocs/webapp/inc/i18n.c
 -		    "iso8859-15"
 +		{	"en",				// #1
 +			"de",
-+			"es"
++			"es",
++			"fr"
 +		},
 +// A suitable character set.
 +		{	"iso8859-15",			// #2
++			"iso8859-15",
 +			"iso8859-15",
 +			"iso8859-15"
  		},
@@ -39,7 +42,8 @@ diff -Naur vdr-htdocs-orig/webapp/inc/i18n.c vdr-htdocs/webapp/inc/i18n.c
 -		    "ger"
 +		{	"eng",				// #3
 +			"ger",
-+			"spa"
++			"spa",
++			"fra"
  		},
  // First: the menus			
 -		{	"Start",		// #4
@@ -67,62 +71,72 @@ diff -Naur vdr-htdocs-orig/webapp/inc/i18n.c vdr-htdocs/webapp/inc/i18n.c
 -			"Hilfe"
 +		{	"Start",			// #4
 +			"Start",
-+			"Inicio"
++			"Inicio",
++			"Lancement"
 +		},
 +		{	"Schedule",			// #5
 +			"Programm",
-+			"Guía de Programación"
++			"Guía de Programación",
++			"Programmation"
 +		},
 +		{	"Channels",			// #6
 +			"Kanäle",
-+			"Canales"
++			"Canales",
++			"Chaînes"
 +		},
 +		{	"Timers",			// #7
 +			"Timer",
-+			"Programaciones"
++			"Programaciones",
++			"Enregistrements programmés"
 +		},
 +		{	"Recordings",			// #8
 +			"Aufzeichnungen",
-+			"Grabaciones"
++			"Grabaciones",
++			"Enregistrements"
 +		},
 +		{	"Setup",			// #9
 +			"Einstellungen",
-+			"Configuración"
++			"Configuración",
++			"Configuration"
 +		},
-+		{	"This & That",			// #10
-+			"Dies & Das",
-+			"Este y Ese"
++		{	"Web Links",			// #10
++			"Web Links",
++			"Enlaces Web",
++			"Web Links"
 +		},
 +		{	"Help",				// #11
 +			"Hilfe",
-+			"Ayuda"
++			"Ayuda",
++			"Aide"
  		},
  							// #12
  		{	"Important information: This webinterface is still under construction. It is not completed nor error-free.",
 -			"Wichtiger Hinweis: das Webinterface befindet sich noch in einer sehr frühen Phase. Weder ist es vollständig noch fehlerfrei. Zur Diskussion steht im open7x0.org Forum ein eigenes <a href=\"http://www.open7x0.org/arena/forumdisplay.php?fid=67\" target=\"_blank\">Unterforum</a> bereit."
 +			"Wichtiger Hinweis: das Webinterface befindet sich noch in einer sehr frühen Phase. Weder ist es vollständig noch fehlerfrei. Zur Diskussion steht im open7x0.org Forum ein eigenes <a href=\"http://www.open7x0.org/arena/forumdisplay.php?fid=67\" target=\"_blank\">Unterforum</a> bereit.",
-+			"Información importante: El interfaz web está todavía en construcción y no está libre de errores."
++			"Información importante: El interfaz web está todavía en construcción y no está libre de errores.",
++			"Information importante: cette accès web est en chantier. Il n'est ni complet ni exempt de défaut"
  		},					// #13
  		{	"<p><b>Failed to open a SVDRP connection to the local VDR. Possible Reasons:\n\n<ul><li>The VDR is not running.</li>\n<li>The SVDRP connection is still in use by another client like vdradmin-AM</li>\n<li>An error occured while processing an earlier request and now the SVDRP connection is blocked.</li></ul>\n\nPlease check if the VDR is running or try it again later.</b></p>\n",
 -			"<p><b>Es konnte keine SVDRP-Verbindung zum VDR aufgebaut werden. Typische Gr&uuml;nde daf&uuml;r:\n\n<ul><li>Der VDR wurde nicht gestartet bzw. l&auml;uft nicht mehr.</li>\n<li>Die SVDRP-Verbindung wird von einem anderen Client verwendet, z.B. vdradmin-AM</li>\n<li>Es gab bei einer fr&uuml;heren Abfrage einen Fehler und die SVDRP-Verbindung ist blockiert.</li></ul>\n\nBitte &uuml;berpr&uuml;fen sie, dass der VDR l&auml;uft und versuchen sie es ggf. sp&auml;ter noch einmal.</b></p>\n"
 +			"<p><b>Es konnte keine SVDRP-Verbindung zum VDR aufgebaut werden. Typische Gr&uuml;nde daf&uuml;r:\n\n<ul><li>Der VDR wurde nicht gestartet bzw. l&auml;uft nicht mehr.</li>\n<li>Die SVDRP-Verbindung wird von einem anderen Client verwendet, z.B. vdradmin-AM</li>\n<li>Es gab bei einer fr&uuml;heren Abfrage einen Fehler und die SVDRP-Verbindung ist blockiert.</li></ul>\n\nBitte &uuml;berpr&uuml;fen sie, dass der VDR l&auml;uft und versuchen sie es ggf. sp&auml;ter noch einmal.</b></p>\n",
-+			"<p><b>No se puede abrir una conexión SVDRP con el VDR local. Posibles motivos:\n\n<ul><li>El VDR no se está ejecutando.</li>\n<li>La conexión SVDRP está todavía en uso por otro cliente como vdradmin-AM</li>\n<li>Se ha producido un error mientras se procesó una petición anterior y ahora la conexión SVDRP está bloqueada.</li></ul>\n\nPor favor, compruebe si el VDR se está ejecutando o inténtelo más tarde.</b></p>\n"
++			"<p><b>No se puede abrir una conexión SVDRP con el VDR local. Posibles motivos:\n\n<ul><li>El VDR no se está ejecutando.</li>\n<li>La conexión SVDRP está todavía en uso por otro cliente como vdradmin-AM</li>\n<li>Se ha producido un error mientras se procesó una petición anterior y ahora la conexión SVDRP está bloqueada.</li></ul>\n\nPor favor, compruebe si el VDR se está ejecutando o inténtelo más tarde.</b></p>\n",
++			"<p><b>Echec d'accès par connection SVDRP au logiciel VDR. Raisons possibles:\n\n<ul><li>VDR n'est pas démarré.</li><li>La connexion SVDRP est encore utilisée par un autre client comme \"vdradmin\".</li><li>la connexion SVDRP est bloqué suite à une erreur précédente</li></ul>\n\nVérifier que VDR est bien lancé ou essayer ultérieurement.</b></p>\n"
  		},					// #14
  		{	"EPG ist not avaible, please try again later. If the problem persists, this channel either has no EPG or it is broken. Feel free to get in touch with someone who is in charge for this channel.",
 -			"EPG ist nicht verf&uuml;gbar. Bitte versuchen sie es sp&auml;ter nocheinmal. Falls dieses Problem &uuml;ber l&auml;ngere Zeit besteht, wenden sie sich bitte an den Sender."
 +			"EPG ist nicht verf&uuml;gbar. Bitte versuchen sie es sp&auml;ter nocheinmal. Falls dieses Problem &uuml;ber l&auml;ngere Zeit besteht, wenden sie sich bitte an den Sender.",
-+			"EPG no disponible, por favor inténtelo más tarde. Si el problema persiste, éste canal no tiene EPG o funciona incorrectamente. Puede ponerse en contacto con algún responsable de éste canal."
++			"EPG no disponible, por favor inténtelo más tarde. Si el problema persiste, éste canal no tiene EPG o funciona incorrectamente. Puede ponerse en contacto con algún responsable de éste canal.",
++			"L'EPG (guide des programmes) n'est pas disponible, merci d'essayer ultérieurement. Si le problème persiste, cette chaîne n'a pas de guide des programmes ou il engendre des erreurs. Vous pouvez peut-être essayer de prendre contact avec un responsable de cette chaîne."
  		},					// #15
  		{	"An error occured, maybe with the translation of a phrase.",
 -			"Ein Fehler ist aufgetreten, wahrscheinlich konnte eine Übersetzung nicht gefunden werden"
 +			"Ein Fehler ist aufgetreten, wahrscheinlich konnte eine Übersetzung nicht gefunden werden",
-+			"Ocurrió un error debido a la traducción de alguna frase."
++			"Ocurrió un error debido a la traducción de alguna frase.",
++			"Erreur, peut-être due à un absence de traduction pour une phrase"
  		},					// #16
  		{	"List of available recordings.",					
 -			"Liste der aktuell verfügbaren Aufzeichnungen."
-+			"Liste der aktuell verfügbaren Aufzeichnungen.",
-+			"Lista de grabaciones disponibles."
- 		},
+-		},
 -		{	"Homepage",			// #
 -			"Startseite"
 -		},
@@ -131,17 +145,24 @@ diff -Naur vdr-htdocs-orig/webapp/inc/i18n.c vdr-htdocs/webapp/inc/i18n.c
 -		},
 -		{	"Channel List",		// #
 -			"Kanalliste"
++			"Liste der aktuell verfügbaren Aufzeichnungen.",
++			"Lista de grabaciones disponibles.",
++			"Liste des enregistrements disponibles"
++		},
 +		{	"Homepage",			// #17
 +			"Startseite",
-+			"Página inicial"
++			"Página inicial",
++			"Page d'accueil"
 +		},
 +		{	"You are watching",		// #18
 +			"Sie sehen zur Zeit",
-+			"Estás viendo"
++			"Estás viendo",
++			"Vous regardez"
 +		},
 +		{	"Channel List",			// #19
 +			"Kanalliste",
-+			"Lista del canal"
++			"Lista del canal",
++			"Liste des chaînes"
  		},						
 -		{	"channel number",	// #
 -			"Programmplatz"
@@ -192,8 +213,91 @@ diff -Naur vdr-htdocs-orig/webapp/inc/i18n.c vdr-htdocs/webapp/inc/i18n.c
 -			"Fernsehen"
 -		},
 -		{	"pause",				// #
--			"Pause"
--		},
++		{	"channel number",		// #20
++			"Programmplatz",
++			"Número del canal",
++			"Numéro de chaîne"
++		},
++		{	"channel name",			// #21
++			"Sendername",
++			"Nombre del canal",
++			"Nom de chaîne"
++		},
++		{	"multiplex",			// #22
++			"Bouquet",
++			"Multiplex",
++			"Bouquet ou multiplex"
++		},
++		{	"more infos",			// #23
++			"mehr Infos",
++			"más info",
++			"Plus d'informations"
++		},
++		{	"live stream",			// #24
++			"Live-Stream",
++			"Stream directo",
++			"Direct"
++		},
++		{	"frequency",			// #25
++			"Frequenz",
++			"Frecuencia",
++			"Fréquence"
++		},
++		{	"parameters",			// #26
++			"Parameter",
++			"Parámetros",
++			"Paramètres"
++		},
++		{	"source",			// #27
++			"Quelle",
++			"Fuente",
++			"Source"
++		},
++		{	"conditional access ID",	// #28
++			"Conditional Access ID",
++			"ID acceso condicional",
++			"Identifiant d'accès conditionnel"
++		},
++		{	"service ID",			// #29
++			"Service-ID",
++			"ID del servicio",
++			"Identifiant de service"
++		},
++		{	"network ID",			// #30
++			"Netzwerk-ID",
++			"ID de la red",
++			"Identifiant de réseau"
++		},
++		{	"transport stream ID",		// #31
++			"Transponder-ID",
++			"ID del transponder",
++			"Identifiant du transpondeur"
++		},
++		{	"radio ID",			// #32
++			"Radio-ID",
++			"ID de la radio",
++			"Identifiant de radio"
++		},
++		{	"summary",			// #33
++			"Übersicht",
++			"Resumen",
++			"Résumé"
++		},
++		{	"edit list",			// #34
++			"Liste bearbeiten",
++			"Editar lista",
++			"Edition de la liste"
++		},
++		{	"watch TV",			// #35
++			"Fernsehen",
++			"Ver TV",
++			"Regarder le direct"
++		},
++		{	"pause",			// #36
++			"Pause",
++			"Pausa",
+ 			"Pause"
+ 		},
 -		{	"full screen",		// #
 -			"Vollbild"
 -		},
@@ -286,250 +390,220 @@ diff -Naur vdr-htdocs-orig/webapp/inc/i18n.c vdr-htdocs/webapp/inc/i18n.c
 -		},
 -		{	"new timer",		// #
 -			"Neuer Timer"
--		},
--		{   "edit timer",		// #
--			"Timer bearbeiten"
-+		{	"channel number",		// #20
-+			"Programmplatz",
-+			"Número del canal"
-+		},
-+		{	"channel name",			// #21
-+			"Sendername",
-+			"Nombre del canal"
-+		},
-+		{	"multiplex",			// #22
-+			"Bouquet",
-+			"Multiplex"
-+		},
-+		{	"more infos",			// #23
-+			"mehr Infos",
-+			"más info"
-+		},
-+		{	"live stream",			// #24
-+			"Live-Stream",
-+			"Stream directo"
-+		},
-+		{	"frequency",			// #25
-+			"Frequenz",
-+			"Frecuencia"
-+		},
-+		{	"parameters",			// #26
-+			"Parameter",
-+			"Parámetros"
-+		},
-+		{	"source",			// #27
-+			"Quelle",
-+			"Fuente"
-+		},
-+		{	"conditional access ID",	// #28
-+			"Conditional Access ID",
-+			"ID acceso condicional"
-+		},
-+		{	"service ID",			// #29
-+			"Service-ID",
-+			"ID del servicio"
-+		},
-+		{	"network ID",			// #30
-+			"Netzwerk-ID",
-+			"ID de la red"
-+		},
-+		{	"transport stream ID",		// #31
-+			"Transponder-ID",
-+			"ID del transponder"
-+		},
-+		{	"radio ID",			// #32
-+			"Radio-ID",
-+			"ID de la radio"
-+		},
-+		{	"summary",			// #33
-+			"Übersicht",
-+			"Resumen"
-+		},
-+		{	"edit list",			// #34
-+			"Liste bearbeiten",
-+			"Editar lista"
-+		},
-+		{	"watch TV",			// #35
-+			"Fernsehen",
-+			"Ver TV"
-+		},
-+		{	"pause",			// #36
-+			"Pause",
-+			"Pausa"
-+		},
 +		{	"full screen",			// #37
 +			"Vollbild",
-+			"Pantalla completa"
++			"Pantalla completa",
++			"Plein écran"
 +		},
 +		{	"mute",				// #38
 +			"Stummschalten",
-+			"Silenciar"
++			"Silenciar",
++			"Muet"
 +		},
 +		{	"switch",			// #39
 +			"umschalten",
-+			"cambiar"
++			"cambiar",
++			"Basculer"
 +		},
 +		{	"Now on TV",			// #40
 +			"Das läuft jetzt im TV",
-+			"Ahora en TV"
++			"Ahora en TV",
++			"En direct"
 +		},
 +		{	"channel",			// #41
 +			"Sender",
-+			"Canal"
++			"Canal",
++			"chaîne"
 +		},
 +		{	"record",			// #42
 +			"aufzeichnen",
-+			"grabar"
++			"grabar",
++			"enregistrement"
 +		},
 +		{	"from",				// #43
 +			"von",
-+			"desde"
-+		},
++			"desde",
++			"de"
+ 		},
+-		{   "edit timer",		// #
+-			"Timer bearbeiten"
 +		{	"to",				// #44
 +			"bis",
-+			"hasta"
++			"hasta",
++			"à"
 +		},
 +		{	"runtime",			// #45
 +			"Dauer",
-+			"Duración"
++			"Duración",
++			"durée"
 +		},
 +		{	"approx.",			// #46
 +			"ca.",
-+			"aprox."
++			"aprox.",
++			"approximativement"
 +		},
 +		{	"minutes",			// #47
 +			"Minuten",
-+			"minutos"
++			"minutos",
++			"minutes"
 +		},
 +		{	"date",				// #48
 +			"Datum",
-+			"Fecha"
++			"Fecha",
++			"date"
 +		},
 +		{	"recording",			// #49
 +			"Aufzeichnung",
-+			"Grabación"
++			"Grabación",
++			"enregistrement"
 +		},
 +		{	"program",			// #50
 +			"Sendung",
-+			"Emisión"
++			"Emisión",
++			"émission"
 +		},
 +		{	"Setup Webinterface",		// #51
 +			"Einstellungen Webinterface",
-+			"Configurar interfaz web"
++			"Configurar interfaz web",
++			"Configuration de l'interface web"
 +		},
 +		{	"Setup VDR",			// #52
 +			"Einstellungen VDR",
-+			"Configurar VDR"
++			"Configurar VDR",
++			"Configuration de VDR"
 +		},
 +		{	"Setup BoxAmp",			// #53
 +			"Einstellungen BoxAmp",
-+			"Configurar BoxAmp"
++			"Configurar BoxAmp",
++			"Configuration de BoxAmp"
 +		},
 +		{	"Network shares",		// #54
 +			"Netzlaufwerke",
-+			"Recursos de red"
++			"Recursos de red",
++			"Partitions réseau"
 +		},
 +		{	"Webinterface",			// #55
 +			"Webinterface",
-+			"Interfaz web"
++			"Interfaz web",
++			"Interface web"
 +		},
 +		{	"default language",		// #56
 +			"Voreingestellte Sprache",
-+			"Idioma por defecto"
++			"Idioma por defecto",
++			"langue par défaut"
 +		},
 +		{	"auto",				// #57
 +			"automatisch",
-+			"automático"
++			"automático",
++			"automatique"
 +		},
 +		{	"BoxAmp path",			// #58
 +			"BoxAmp-Verzeichnis",
-+			"Ruta BoxAmp"
++			"Ruta BoxAmp",
++			"Répertoire de BoxAmp"
 +		},
 +		{	"Path to audio files",  	// #59
 +			"Audio-Basisverzeichnis",
-+			"Ruta a archivos de música"
++			"Ruta a archivos de música",
++			"Répertoire des fichiers audio"
 +		},
 +		{	"Options",			// #60
 +			"Optionen",
-+			"Opciones"
++			"Opciones",
++			"Options"
 +		},
 +		{	"Terminate automatically",	// #61
 +			"Automatisch beenden",
-+			"Terminar automáticamente"
++			"Terminar automáticamente",
++			"Terminaison automatique"
 +		},
 +		{	"for",				// #62
 +			"für",
-+			"para"
++			"para",
++			"pour"
 +		},
 +		{	"Time",				// #63
 +			"Uhrzeit",
-+			"Duración"
++			"Duración",
++			"Heure"
 +		},
 +		{	"create timer",			// #64
 +			"Timer erstellen",
-+			"Crear programación"
++			"Crear programación",
++			"création d'un enregistrement programmé"
 +		},
 +		{	"Timer added!",			// #65
 +			"Timer hinzugefügt!",
-+			"¡Programación añadida!"
++			"¡Programación añadida!",
++			"Enregistrement programmé!"
 +		},
 +		{	"Failed to add timer!",		// #66
 +			"Timer konnte nicht hinzugefügt werden!",
-+			"¡Añadir programación ha fallado!"
++			"¡Añadir programación ha fallado!",
++			"Erreur de programmation de l'enregistrement!"
 +		},
 +		{	"new timer",			// #67
 +			"Neuer Timer",
-+			"Nueva programación"
++			"Nueva programación",
++			"Nouvel enregistrement programmé"
 +		},
 +		{	"edit timer",			// #68
 +			"Timer bearbeiten",
-+			"Editar programación"
++			"Editar programación",
++			"modification d'un enregistrement"
 +		},
 +		{	"Sunday",			// #69
 +			"Sonntag",
-+			"Domingo"
++			"Domingo",
++			"Dimanche"
 +		},
 +		{	"Monday",			// #70
 +			"Montag",
-+			"Lunes"
++			"Lunes",
++			"Lundi"
 +		},
 +		{	"Tuesday",			// #71
 +			"Dienstag",
-+			"Martes"
++			"Martes",
++			"Mardi"
 +		},
 +		{	"Wednesday",			// #72
 +			"Mittwoch",
-+			"Miércoles"
++			"Miércoles",
++			"Mercredi"
 +		},
 +		{	"Thursday",			// #73
 +			"Donnerstag",
-+			"Jueves"
++			"Jueves",
++			"Jeudi"
 +		},
 +		{	"Friday",			// #74
 +			"Freitag",
-+			"Viernes"
++			"Viernes",
++			"Vendredi"
 +		},
 +		{	"Saturday",			// #75
 +			"Samstag",
-+			"Sábado"
++			"Sábado",
++			"Samedi"
  		}
  };
  
-diff -Naur vdr-htdocs-orig/webapp/inc/i18n.h vdr-htdocs/webapp/inc/i18n.h
---- vdr-htdocs-orig/webapp/inc/i18n.h	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/inc/i18n.h	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/inc/i18n.h vdr-htdocs-ES+FR/webapp/inc/i18n.h
+--- vdr-htdocs/webapp/inc/i18n.h	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/inc/i18n.h	2008-01-29 16:16:16.000000000 +0100
 @@ -17,7 +17,7 @@
  #ifndef __I18N_H__
  #define __I18N_H__
  
 -#define I18NNUM 2
-+#define I18NNUM 3
++#define I18NNUM 4
  
  extern int langID;
  extern char acceptedLang[3];
-diff -Naur vdr-htdocs-orig/webapp/www/channels.kl1 vdr-htdocs/webapp/www/channels.kl1
---- vdr-htdocs-orig/webapp/www/channels.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/channels.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/channels.kl1 vdr-htdocs-ES+FR/webapp/www/channels.kl1
+--- vdr-htdocs/webapp/www/channels.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/channels.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -41,7 +41,7 @@
  getConfig();
  
@@ -548,9 +622,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/channels.kl1 vdr-htdocs/webapp/www/channel
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs-orig/webapp/www/index.kl1 vdr-htdocs/webapp/www/index.kl1
---- vdr-htdocs-orig/webapp/www/index.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/index.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/index.kl1 vdr-htdocs-ES+FR/webapp/www/index.kl1
+--- vdr-htdocs/webapp/www/index.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/index.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -46,7 +46,7 @@
  getConfig();
  
@@ -569,9 +643,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/index.kl1 vdr-htdocs/webapp/www/index.kl1
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs-orig/webapp/www/now-next.kl1 vdr-htdocs/webapp/www/now-next.kl1
---- vdr-htdocs-orig/webapp/www/now-next.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/now-next.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/now-next.kl1 vdr-htdocs-ES+FR/webapp/www/now-next.kl1
+--- vdr-htdocs/webapp/www/now-next.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/now-next.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -90,7 +90,7 @@
    }
  }
@@ -581,9 +655,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/now-next.kl1 vdr-htdocs/webapp/www/now-nex
  <head>
  <%
    refresh=next_time-now+60;
-diff -Naur vdr-htdocs-orig/webapp/www/program.kl1 vdr-htdocs/webapp/www/program.kl1
---- vdr-htdocs-orig/webapp/www/program.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/program.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/program.kl1 vdr-htdocs-ES+FR/webapp/www/program.kl1
+--- vdr-htdocs/webapp/www/program.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/program.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -64,7 +64,7 @@
  getConfig();
  
@@ -611,9 +685,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/program.kl1 vdr-htdocs/webapp/www/program.
  	    }
  	    io_printf(out,"<tr><td><b>%02d:%02d%s</b></td><td>%s</td><td>\n",timeptr.tm_hour,timeptr.tm_min,isTimerStr[isTimerInt],T);
  	    io_printf(out,"<div class=\"box_right\"><img src=\"/img/timer16.png\" alt=\"%s\" /></a></div>\n",tr("create timer"));
-diff -Naur vdr-htdocs-orig/webapp/www/recordings.kl1 vdr-htdocs/webapp/www/recordings.kl1
---- vdr-htdocs-orig/webapp/www/recordings.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/recordings.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/recordings.kl1 vdr-htdocs-ES+FR/webapp/www/recordings.kl1
+--- vdr-htdocs/webapp/www/recordings.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/recordings.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -54,7 +54,7 @@
  
  %>
@@ -632,9 +706,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/recordings.kl1 vdr-htdocs/webapp/www/recor
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs-orig/webapp/www/rss.kl1 vdr-htdocs/webapp/www/rss.kl1
---- vdr-htdocs-orig/webapp/www/rss.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/rss.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/rss.kl1 vdr-htdocs-ES+FR/webapp/www/rss.kl1
+--- vdr-htdocs/webapp/www/rss.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/rss.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -75,8 +75,8 @@
    for (i=0;i<max_recs;i++) {
      struct tm t=*localtime(&recs[i].start);
@@ -646,9 +720,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/rss.kl1 vdr-htdocs/webapp/www/rss.kl1
      if (httpPort==80) {
        io_printf(out,"  <link>http://%s/recordings.kl1</link>\n",myip);
      } else {
-diff -Naur vdr-htdocs-orig/webapp/www/settings-boxamp.kl1 vdr-htdocs/webapp/www/settings-boxamp.kl1
---- vdr-htdocs-orig/webapp/www/settings-boxamp.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/settings-boxamp.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/settings-boxamp.kl1 vdr-htdocs-ES+FR/webapp/www/settings-boxamp.kl1
+--- vdr-htdocs/webapp/www/settings-boxamp.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/settings-boxamp.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -35,7 +35,7 @@
  getConfig();
  readBOXAMPCONF();
@@ -667,9 +741,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/settings-boxamp.kl1 vdr-htdocs/webapp/www/
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs-orig/webapp/www/settings-fstab.kl1 vdr-htdocs/webapp/www/settings-fstab.kl1
---- vdr-htdocs-orig/webapp/www/settings-fstab.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/settings-fstab.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/settings-fstab.kl1 vdr-htdocs-ES+FR/webapp/www/settings-fstab.kl1
+--- vdr-htdocs/webapp/www/settings-fstab.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/settings-fstab.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -35,7 +35,7 @@
  getConfig();
  
@@ -688,9 +762,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/settings-fstab.kl1 vdr-htdocs/webapp/www/s
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs-orig/webapp/www/settings.kl1 vdr-htdocs/webapp/www/settings.kl1
---- vdr-htdocs-orig/webapp/www/settings.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/settings.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/settings.kl1 vdr-htdocs-ES+FR/webapp/www/settings.kl1
+--- vdr-htdocs/webapp/www/settings.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/settings.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -45,7 +45,7 @@
  getConfig();
  
@@ -709,9 +783,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/settings.kl1 vdr-htdocs/webapp/www/setting
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs-orig/webapp/www/settings-vdr.kl1 vdr-htdocs/webapp/www/settings-vdr.kl1
---- vdr-htdocs-orig/webapp/www/settings-vdr.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/settings-vdr.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/settings-vdr.kl1 vdr-htdocs-ES+FR/webapp/www/settings-vdr.kl1
+--- vdr-htdocs/webapp/www/settings-vdr.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/settings-vdr.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -35,7 +35,7 @@
  getConfig();
  
@@ -730,9 +804,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/settings-vdr.kl1 vdr-htdocs/webapp/www/set
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs-orig/webapp/www/timers.kl1 vdr-htdocs/webapp/www/timers.kl1
---- vdr-htdocs-orig/webapp/www/timers.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/timers.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/timers.kl1 vdr-htdocs-ES+FR/webapp/www/timers.kl1
+--- vdr-htdocs/webapp/www/timers.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/timers.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -61,7 +61,7 @@
  getConfig();
  
@@ -751,9 +825,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/timers.kl1 vdr-htdocs/webapp/www/timers.kl
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs-orig/webapp/www/watchit.kl1 vdr-htdocs/webapp/www/watchit.kl1
---- vdr-htdocs-orig/webapp/www/watchit.kl1	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/watchit.kl1	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/watchit.kl1 vdr-htdocs-ES+FR/webapp/www/watchit.kl1
+--- vdr-htdocs/webapp/www/watchit.kl1	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/watchit.kl1	2008-01-29 16:16:04.000000000 +0100
 @@ -59,7 +59,7 @@
    channelNum=getChannel(NULL);
  }
@@ -772,9 +846,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/watchit.kl1 vdr-htdocs/webapp/www/watchit.
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs-orig/webapp/www/weblinks_de.html vdr-htdocs/webapp/www/weblinks_de.html
---- vdr-htdocs-orig/webapp/www/weblinks_de.html	1970-01-01 01:00:00.000000000 +0100
-+++ vdr-htdocs/webapp/www/weblinks_de.html	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/weblinks_de.html vdr-htdocs-ES+FR/webapp/www/weblinks_de.html
+--- vdr-htdocs/webapp/www/weblinks_de.html	1970-01-01 01:00:00.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/weblinks_de.html	2008-01-29 16:16:04.000000000 +0100
 @@ -0,0 +1,47 @@
 +<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 +<html lang="de">
@@ -824,9 +898,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/weblinks_de.html vdr-htdocs/webapp/www/web
 +</body>
 +</html>
 \ No hay ningÃºn carÃ¡cter de nueva lÃ­nea al final del fichero
-diff -Naur vdr-htdocs-orig/webapp/www/weblinks_en.html vdr-htdocs/webapp/www/weblinks_en.html
---- vdr-htdocs-orig/webapp/www/weblinks_en.html	1970-01-01 01:00:00.000000000 +0100
-+++ vdr-htdocs/webapp/www/weblinks_en.html	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/weblinks_en.html vdr-htdocs-ES+FR/webapp/www/weblinks_en.html
+--- vdr-htdocs/webapp/www/weblinks_en.html	1970-01-01 01:00:00.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/weblinks_en.html	2008-01-29 16:16:04.000000000 +0100
 @@ -0,0 +1,47 @@
 +<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 +<html lang="en">
@@ -876,9 +950,9 @@ diff -Naur vdr-htdocs-orig/webapp/www/weblinks_en.html vdr-htdocs/webapp/www/web
 +</body>
 +</html>
 \ No hay ningÃºn carÃ¡cter de nueva lÃ­nea al final del fichero
-diff -Naur vdr-htdocs-orig/webapp/www/weblinks_es.html vdr-htdocs/webapp/www/weblinks_es.html
---- vdr-htdocs-orig/webapp/www/weblinks_es.html	1970-01-01 01:00:00.000000000 +0100
-+++ vdr-htdocs/webapp/www/weblinks_es.html	2008-01-26 12:53:24.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/weblinks_es.html vdr-htdocs-ES+FR/webapp/www/weblinks_es.html
+--- vdr-htdocs/webapp/www/weblinks_es.html	1970-01-01 01:00:00.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/weblinks_es.html	2008-01-29 16:16:04.000000000 +0100
 @@ -0,0 +1,47 @@
 +<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 +<html lang="es">
@@ -928,9 +1002,61 @@ diff -Naur vdr-htdocs-orig/webapp/www/weblinks_es.html vdr-htdocs/webapp/www/web
 +</body>
 +</html>
 \ No hay ningÃºn carÃ¡cter de nueva lÃ­nea al final del fichero
-diff -Naur vdr-htdocs-orig/webapp/www/weblinks.html vdr-htdocs/webapp/www/weblinks.html
---- vdr-htdocs-orig/webapp/www/weblinks.html	2008-01-26 12:51:09.000000000 +0100
-+++ vdr-htdocs/webapp/www/weblinks.html	1970-01-01 01:00:00.000000000 +0100
+diff -Naur vdr-htdocs/webapp/www/weblinks_fr.html vdr-htdocs-ES+FR/webapp/www/weblinks_fr.html
+--- vdr-htdocs/webapp/www/weblinks_fr.html	1970-01-01 01:00:00.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/weblinks_fr.html	2008-01-29 16:16:04.000000000 +0100
+@@ -0,0 +1,47 @@
++<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
++<html lang="en">
++<head>
++<title>Homepage - open7x0 VDR-FW</title>
++<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
++<meta http-equiv="Content-Style-Type" content="text/css" />
++<link rel="stylesheet" type="text/css" href="/open7x0.css" />
++</head>
++<body>
++<div class="head">
++VDR-FW Homepage
++</div>
++<div class="navigation"><div class="nav">
++<ul>
++ <li><a href="index.kl1">Homepage</a></li>
++ <li><a href="program.kl1">Schedule</a></li>
++ <li><a href="channels.kl1">Channels</a></li>
++ <li><a href="timers.kl1">Timers</a></li>
++ <li><a href="recordings.kl1">Recordings</a></li>
++ <li><a href="settings.kl1">Settings</a></li>
++ <li class="act"><a href="weblinks.html">Weblinks</a></li>
++</ul>
++<span id="navclear"></span>
++</div>
++<div class="liniefett"></div>
++</div>
++
++<div class="content">
++ <p class="big">Weblinks to Open7x0 VDR-FW for the Siemens Gigaset 740AV / 750S Receivers</p>
++
++ <h2><a href="http://open7x0.org/arena/" target="_weblink">open7x0.org Forum</a></h2>
++ <p>Official Forum of VDR Firmware, which also contains a
++ <a href="http://www.open7x0.org/arena/forumdisplay.php?fid=67" target="_weblink">Subforum</a> to
++ discuss about this Webfrontend.<br />
++ <a href="http://open7x0.org/arena/" target="_weblink"><b>open7x0.org/area/</b></a></p>
++
++ <h2><a href="http://open7x0.org/wiki/" target="_weblinks">open7x0.org Wiki</a></h2>
++ <p>Wiki of VDR-Firmware.<br />
++ <a href="http://open7x0.org/wiki/" target="_weblinks"><b>open7x0.org/wiki/</b></a></p>
++
++</div>
++
++<div class="foot">
++        <p>(C) 2006-07 open7x0-team</p>
++</div>
++</body>
++</html>
+\ No hay ningÃºn carÃ¡cter de nueva lÃ­nea al final del fichero
+diff -Naur vdr-htdocs/webapp/www/weblinks.html vdr-htdocs-ES+FR/webapp/www/weblinks.html
+--- vdr-htdocs/webapp/www/weblinks.html	2008-01-29 16:14:43.000000000 +0100
++++ vdr-htdocs-ES+FR/webapp/www/weblinks.html	1970-01-01 01:00:00.000000000 +0100
 @@ -1,47 +0,0 @@
 -<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 -<html lang="de">
