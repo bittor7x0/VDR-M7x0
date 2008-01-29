@@ -15,7 +15,7 @@ BASE="${0%/*}"
 # Version to generate
 #   lite: Minimal install
 #   pro:  Maximal install
-vdr_version="lite"
+vdr_version="pro"
 
 # Local paths
 vdr_fw="$BASE/VDR-NG-FW"
