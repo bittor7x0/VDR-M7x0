@@ -1,0 +1,14 @@
+#!/bin/ash
+
+# Disable extentions
+echo 0 > /proc/fs/cifs/LinuxExtensionsEnabled
+
+while read netshare mountpoint fstype mountopts ignore ; do
+	if [ -n "${netshare###*}" -a -n "${mountopts##*noauto*}" -a \
+			! -e "${mountpoint}" -a \( "${fstype}" = "nfs" -o \
+			"${fstype}" = "cifs" \) ] ; then
+		mkdir -p "${mountpoint}"
+		mount -t ${fstype} -o ${mountopts} "${netshare}" \
+			 "${mountpoint}" || rmdir -p "${mountpoint}"
+	fi
+done < /etc/fstab

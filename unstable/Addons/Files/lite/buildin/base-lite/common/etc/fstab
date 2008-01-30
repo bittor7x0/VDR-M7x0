@@ -1,0 +1,21 @@
+# only used for net mounts
+# <network share> <mount point> <fstype> <mount options> <ignored> <ignored>
+# 
+# fstype may be nfs or cifs 
+# smbfs is not longer support use cifs instead 
+# cifs is unsupport as well but remains in firmware
+#
+# Examples:
+# NFS:
+# 192.168.1.1:/video	/var/media/video 	nfs 	nolock	0	0
+#
+# CIFS:
+# \\\\192.168.1.1\\video 	/var/media/video 	cifs 	user=joe,pass=loser	0	0
+#
+# CIFS-Direct:
+# \\\\192.168.1.1\\video 	/var/media/video 	cifs 	user=joe,pass=loser,direct 	0	0
+#
+# Remarks
+# 1. for cifs shares used as video dir the CIFS-Direct form should be used
+# 2. nolock for nfs exports is need otherwise mount hangs
+# 3. cifs should never be used, it's a broken fs and degrades performance

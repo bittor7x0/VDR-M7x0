@@ -1,0 +1,39 @@
+<!--
+-   open7x0-VDR Configuration File
+-   based on Minisetup by Ralf Dotzert
+-->
+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
+    <plugins sysconfig="rc.local.conf--vdr_pluginopts">
+        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
+        <plugin name="rssreader" info="rssreader" active="YES" />
+        <plugin name="epgsearch" info="epgsearch" active="YES" />
+        <plugin name="pilot" info="pilot" active="YES" />
+        <plugin name="recstatus" info="recstatus" active="YES" />
+        <plugin name="showrecinfo" info="showrecinfo" active="YES" />
+        <plugin name="noepgmenu" info="noepgmenu" active="YES" />
+        <plugin name="skinenigmang" info="skinenigmang" active="YES" />
+        <plugin name="scheduler" info="scheduler" active="YES" />
+        <plugin name="pilotskin" info="pilotskin" active="YES" />
+        <plugin name="status" info="status" active="YES" />
+        <plugin name="osdteletext" info="osdteletext" active="YES" />
+        <plugin name="streamplayer" info="streamplayer" active="NO" />
+        <plugin name="launcher" info="launcher" active="NO" />
+    </plugins>
+    <menus>
+        <menu name="Gestionar plugins" help1="Activar y desactivar plugins" system="ActPlugins" />
+        <menu name="Configuración general">
+            <entry name="Montar discos USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Montar los discos USB" />
+            <entry name="Montar directorios en Red" sysconfig="rc.local.conf--do_net_mount" type="bool" value="NO" help1="Montar los directorios en Red" />
+            <entry name="Tiempo de arranque" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Valor en segundos del tiempo de arranque del VDR cuando hay una grabacion programada." />
+        </menu>
+        <menu name="Configuración de directorios">
+            <entry name="Directorio ficheros de configuración" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Directorio donde se encuentra los ficheros de configuración. NO DEBE SER MODIFICADO" />
+            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="text" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
+            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorio donde se encuentran los plugins. NO DEBE SER MODIFICADO" />
+        </menu>
+        <menu name="Configuración EPG">
+            <entry name="Fichero EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Fichero donde se almacena la información de EPG." />
+            <entry name="EPG directa" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="Determina si la EPG se almacena inmediatamente o sólo cuando se apaga el VDR" />
+        </menu>
+    </menus>
+</setup>

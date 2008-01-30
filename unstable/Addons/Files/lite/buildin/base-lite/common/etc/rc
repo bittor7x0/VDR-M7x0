@@ -1,0 +1,33 @@
+#!/bin/ash
+
+[ -f /etc/rc.conf ] && source /etc/rc.conf
+
+if [ X"${syslogd_flags}" != X"NO" ]; then
+    mv /rw-flash/log/messages* /var/log
+    echo 'starting syslogd'
+    syslogd ${syslogd_flags}		
+fi
+
+echo -n 'loading modules ...'
+[ -f /etc/rc.modules ] && ash /etc/rc.modules
+echo ' done';
+
+if [ X"${pic_tool_flags}" != X"NO" ]; then
+    echo -n 'execute pic_tool'
+    pic_tool ${pic_tool_flags}
+    echo ' done';
+fi
+
+echo -n 'starting lo';
+ifconfig lo 127.0.0.1
+
+if [ X"${lircd_flags}" != X"NO" ]; then
+    echo ' '
+    echo -n 'lircd daemon';		lircd ${lircd_flags}
+fi
+
+echo ' '
+
+[ -f /etc/rc.local ] && ash /etc/rc.local
+
+exit 0

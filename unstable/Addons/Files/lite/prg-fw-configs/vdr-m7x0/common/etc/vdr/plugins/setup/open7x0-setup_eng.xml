@@ -1,0 +1,39 @@
+<!--
+-   open7x0-VDR Configuration File
+-   based on Minisetup by Ralf Dotzert
+-->
+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
+    <plugins sysconfig="rc.local.conf--vdr_pluginopts">
+        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
+        <plugin name="rssreader" info="rssreader" active="YES" />
+        <plugin name="epgsearch" info="epgsearch" active="YES" />
+        <plugin name="pilot" info="pilot" active="YES" />
+        <plugin name="recstatus" info="recstatus" active="YES" />
+        <plugin name="showrecinfo" info="showrecinfo" active="YES" />
+        <plugin name="noepgmenu" info="noepgmenu" active="YES" />
+        <plugin name="skinenigmang" info="skinenigmang" active="YES" />
+        <plugin name="scheduler" info="scheduler" active="YES" />
+        <plugin name="pilotskin" info="pilotskin" active="YES" />
+        <plugin name="status" info="status" active="YES" />
+        <plugin name="osdteletext" info="osdteletext" active="YES" />
+        <plugin name="streamplayer" info="streamplayer" active="NO" />
+        <plugin name="launcher" info="launcher" active="NO" />
+    </plugins>
+    <menus>
+        <menu name="Manager plugins" help1="Enable and disable plugins" system="ActPlugins" />
+        <menu name="General Configuration">
+            <entry name="Mount USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Mount usb disk" />
+            <entry name="Mount Network" sysconfig="rc.local.conf--do_net_mount" type="bool" value="NO" help1="Mount network shared directories" />
+            <entry name="Start time" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Start time" />
+        </menu>
+        <menu name="Directories">
+            <entry name="Configuration" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Configuration files. NOT MODIFY" />
+            <entry name="Videos" sysconfig="rc.local.conf--vdr_videodirs" type="text" value='&quot;/media/LACIE/vdr&quot;' help1="Videos directory" />
+            <entry name="Plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr_ng&quot;' help1="Plugins Directories. NOT MODIFY" />
+        </menu>
+        <menu name="EPG Configuration">
+            <entry name="EPG File" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="EPG file" />
+            <entry name="EPG direct" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="EPG direct" />
+        </menu>
+    </menus>
+</setup>
