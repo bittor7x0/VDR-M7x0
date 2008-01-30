@@ -1,0 +1,34 @@
+VDR Plugin 'chanman' Revision History
+-------------------------------------
+
+2007-11-20: Version 0.0.1
+
+- Initial revision.
+With this version is possible to select a channel first by selecting the section, the ":" row in channels.conf, and secondly selecting the channel in that section.
+
+2007-12-03: Version 0.0.2
+
+With this version is possible to select cahnnel by Groups, Alphabetically and by Providers.
+
+2007-12-09: Version 0.0.3
+
+An adjustment on the management on alphabetic order, new visualization of channel and internazionalization.
+
+2007-12-14: Version 0.0.4
+2 New ordering: By Source and Name, by Source and Provider.
+"0" key inverts order of the Second menu (experimental), and in the first menu jumps between first, last, and different sources (if there are any). 
+
+2007-12-20: Version 0.0.5
+Icons + Type sort 
+
+2007-12-23: Version 0.0.5a
+Bug IconPatch (If you want to use IconPatch you have to change "config.h")
+
+2007-12-23: Version 0.0.5b
+Bug First Group not present!
+
+2008-01-24: Version 0.0.6
+Pressing key "0" in group sort it alpabetically.
+Pressing key 1-9 in the first menu works as in a mobile phone (eg. 1-->"ABC", 2-->"DEF", etc.)
+In the setup if you want you can setup the old style (change by number).
+Bugfix on setup (now you really use the setting you change).

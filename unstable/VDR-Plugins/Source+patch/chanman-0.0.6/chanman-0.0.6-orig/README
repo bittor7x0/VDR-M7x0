@@ -1,0 +1,20 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  RINALDO Giancarlo <rinaldo@dipmat.unime.it>
+Advice and suggestions:      BRUNO Luigi     
+
+Project's homepage:          http://www.messinalug.org/vdr-chanman/
+
+Latest version available at: http://www.messinalug.org/vdr-chanman/
+
+See the file COPYING for license information.
+
+Description: This plugin simplifies the choice of a channel by a multilevel menu.
+
+Installation: make plugins (is enough!) 
+
+Execute: ./vdr  -Pchanman
+
+Remark : If you like Icons then change config.h and uncomment the line
+//#define ICONPATCH
+
