@@ -1,6 +1,6 @@
 diff -Naur -x .svn osdteletext-orig/common.h osdteletext/common.h
 --- osdteletext-orig/common.h	1970-01-01 01:00:00.000000000 +0100
-+++ osdteletext/common.h	2008-01-27 21:05:04.000000000 +0100
++++ osdteletext/common.h	2008-01-30 21:44:15.000000000 +0100
 @@ -0,0 +1,22 @@
 +/*
 + * common.h: OSDTELETEXT plugin for the Video Disk Recorder
@@ -26,7 +26,7 @@ diff -Naur -x .svn osdteletext-orig/common.h osdteletext/common.h
 +
 diff -Naur -x .svn osdteletext-orig/hamm.c osdteletext/hamm.c
 --- osdteletext-orig/hamm.c	1970-01-01 01:00:00.000000000 +0100
-+++ osdteletext/hamm.c	2008-01-27 21:05:04.000000000 +0100
++++ osdteletext/hamm.c	2008-01-30 21:44:15.000000000 +0100
 @@ -0,0 +1,313 @@
 +/*
 + *  libzvbi - Error correction functions
@@ -343,7 +343,7 @@ diff -Naur -x .svn osdteletext-orig/hamm.c osdteletext/hamm.c
 +}
 diff -Naur -x .svn osdteletext-orig/hamm.h osdteletext/hamm.h
 --- osdteletext-orig/hamm.h	1970-01-01 01:00:00.000000000 +0100
-+++ osdteletext/hamm.h	2008-01-27 21:05:04.000000000 +0100
++++ osdteletext/hamm.h	2008-01-30 21:44:15.000000000 +0100
 @@ -0,0 +1,205 @@
 +/*
 + *  libzvbi - Error correction functions
@@ -551,8 +551,8 @@ diff -Naur -x .svn osdteletext-orig/hamm.h osdteletext/hamm.h
 +
 +#endif /* __ZVBI3_HAMM_H__ */
 diff -Naur -x .svn osdteletext-orig/i18n.c osdteletext/i18n.c
---- osdteletext-orig/i18n.c	2008-01-11 23:51:20.000000000 +0100
-+++ osdteletext/i18n.c	2008-01-27 21:05:04.000000000 +0100
+--- osdteletext-orig/i18n.c	2008-01-31 19:53:47.000000000 +0100
++++ osdteletext/i18n.c	2008-01-30 21:44:15.000000000 +0100
 @@ -37,7 +37,7 @@
      "",               //Norwegian
      "ei löydy",       //Finnish
@@ -591,7 +591,7 @@ diff -Naur -x .svn osdteletext-orig/i18n.c osdteletext/i18n.c
      "",                          //Romanian
 diff -Naur -x .svn osdteletext-orig/macros.h osdteletext/macros.h
 --- osdteletext-orig/macros.h	1970-01-01 01:00:00.000000000 +0100
-+++ osdteletext/macros.h	2008-01-27 21:05:04.000000000 +0100
++++ osdteletext/macros.h	2008-01-30 21:44:15.000000000 +0100
 @@ -0,0 +1,99 @@
 +/*
 + *  libzvbi - Useful macros
@@ -693,8 +693,8 @@ diff -Naur -x .svn osdteletext-orig/macros.h osdteletext/macros.h
 +
 +#endif /* __ZVBI3_MACROS_H__ */
 diff -Naur -x .svn osdteletext-orig/Makefile osdteletext/Makefile
---- osdteletext-orig/Makefile	2008-01-11 23:51:20.000000000 +0100
-+++ osdteletext/Makefile	2008-01-27 21:05:04.000000000 +0100
+--- osdteletext-orig/Makefile	2008-01-31 19:53:47.000000000 +0100
++++ osdteletext/Makefile	2008-01-30 21:44:15.000000000 +0100
 @@ -51,7 +51,7 @@
  
  ### The object files (add further files here):
@@ -705,8 +705,8 @@ diff -Naur -x .svn osdteletext-orig/Makefile osdteletext/Makefile
  ### Implicit rules:
  
 diff -Naur -x .svn osdteletext-orig/menu.c osdteletext/menu.c
---- osdteletext-orig/menu.c	2008-01-11 23:51:20.000000000 +0100
-+++ osdteletext/menu.c	2008-01-27 21:05:04.000000000 +0100
+--- osdteletext-orig/menu.c	2008-01-31 19:53:46.000000000 +0100
++++ osdteletext/menu.c	2008-01-30 21:44:15.000000000 +0100
 @@ -577,7 +577,7 @@
     t.Start();
     #endif
@@ -726,8 +726,8 @@ diff -Naur -x .svn osdteletext-orig/menu.c osdteletext/menu.c
        s->read(cache, sizeof(cache), fd);
        s->close(fd);
 diff -Naur -x .svn osdteletext-orig/osdteletext.c osdteletext/osdteletext.c
---- osdteletext-orig/osdteletext.c	2008-01-11 23:51:20.000000000 +0100
-+++ osdteletext/osdteletext.c	2008-01-27 21:05:04.000000000 +0100
+--- osdteletext-orig/osdteletext.c	2008-01-31 19:53:46.000000000 +0100
++++ osdteletext/osdteletext.c	2008-01-30 21:44:15.000000000 +0100
 @@ -193,7 +193,6 @@
     channelStatus=new ChannelStatus();
     if (ttSetup.OSDheight<=100)  ttSetup.OSDheight=Setup.OSDHeight;
@@ -737,8 +737,8 @@ diff -Naur -x .svn osdteletext-orig/osdteletext.c osdteletext/osdteletext.c
  }
  
 diff -Naur -x .svn osdteletext-orig/txtfont.c osdteletext/txtfont.c
---- osdteletext-orig/txtfont.c	2008-01-11 23:51:20.000000000 +0100
-+++ osdteletext/txtfont.c	2008-01-27 21:05:04.000000000 +0100
+--- osdteletext-orig/txtfont.c	2008-01-31 19:53:47.000000000 +0100
++++ osdteletext/txtfont.c	2008-01-30 21:44:15.000000000 +0100
 @@ -1,4 +1,5 @@
  #include "txtfont.h"
 +#include "common.h"
@@ -867,8 +867,8 @@ diff -Naur -x .svn osdteletext-orig/txtfont.c osdteletext/txtfont.c
      }
      
 diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
---- osdteletext-orig/txtrecv.c	2008-01-11 23:51:20.000000000 +0100
-+++ osdteletext/txtrecv.c	2008-01-27 21:05:04.000000000 +0100
+--- osdteletext-orig/txtrecv.c	2008-01-31 19:53:46.000000000 +0100
++++ osdteletext/txtrecv.c	2008-01-31 16:50:47.000000000 +0100
 @@ -13,6 +13,9 @@
  #include "txtrecv.h"
  #include "tables.h"
@@ -955,15 +955,18 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
     if (Device->IsPrimaryDevice()) {
  
  /*#ifdef OSDTELETEXT_REINSERTION_PATCH
-@@ -559,7 +587,7 @@
+@@ -559,9 +587,9 @@
  // Do not run the receiver in the backround all the time.
  // It is started only if the usere opens the teletext OSD
  // To save CPU Time
 -//      CheckDeleteReceiver();
 +      CheckDeleteReceiver();
  //but we will clean the chae here as we only have a limited storage
- 		Storage::instance()->cleanUp();
+-		Storage::instance()->cleanUp();
++//		Storage::instance()->cleanUp();
  // M7x0 end
+    
+       if (ChannelNumber) {
 @@ -576,23 +604,23 @@
              TPid=channel->Tpid();
              chan=channel->GetChannelID();
@@ -1095,8 +1098,8 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
        {
        if (TxtPage) {
 diff -Naur -x .svn osdteletext-orig/txtrecv.h osdteletext/txtrecv.h
---- osdteletext-orig/txtrecv.h	2008-01-11 23:51:20.000000000 +0100
-+++ osdteletext/txtrecv.h	2008-01-27 21:05:04.000000000 +0100
+--- osdteletext-orig/txtrecv.h	2008-01-31 19:53:46.000000000 +0100
++++ osdteletext/txtrecv.h	2008-01-30 21:44:15.000000000 +0100
 @@ -18,7 +18,7 @@
  
  #include <stdio.h>
@@ -1153,8 +1156,8 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.h osdteletext/txtrecv.h
  // M7x0 end   
     cTxtStatus(void);
 diff -Naur -x .svn osdteletext-orig/txtrender.c osdteletext/txtrender.c
---- osdteletext-orig/txtrender.c	2008-01-11 23:51:20.000000000 +0100
-+++ osdteletext/txtrender.c	2008-01-27 21:05:04.000000000 +0100
+--- osdteletext-orig/txtrender.c	2008-01-31 19:53:47.000000000 +0100
++++ osdteletext/txtrender.c	2008-01-30 21:44:15.000000000 +0100
 @@ -15,7 +15,7 @@
  
  #include <strings.h>
@@ -1204,8 +1207,8 @@ diff -Naur -x .svn osdteletext-orig/txtrender.c osdteletext/txtrender.c
                      if (ttc&0x20) {
                          // real graphics code, remember for HoldMosaics
 diff -Naur -x .svn osdteletext-orig/txtrender.h osdteletext/txtrender.h
---- osdteletext-orig/txtrender.h	2008-01-11 23:51:20.000000000 +0100
-+++ osdteletext/txtrender.h	2008-01-27 21:05:04.000000000 +0100
+--- osdteletext-orig/txtrender.h	2008-01-31 19:53:47.000000000 +0100
++++ osdteletext/txtrender.h	2008-01-30 21:44:15.000000000 +0100
 @@ -17,6 +17,7 @@
  #define OSDTELETEXT_TXTRENDER_H_
  
