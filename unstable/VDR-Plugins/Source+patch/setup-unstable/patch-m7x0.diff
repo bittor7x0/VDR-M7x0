@@ -1,6 +1,66 @@
-diff -Naur setup-orig/common.h setup/common.h
---- setup-orig/common.h	2007-12-15 18:15:54.000000000 +0100
-+++ setup/common.h	2008-01-26 22:00:19.000000000 +0100
+diff -Naur -x .svn setup-orig/.cdtproject setup/.cdtproject
+--- setup-orig/.cdtproject	2008-01-31 20:49:01.000000000 +0100
++++ setup/.cdtproject	1970-01-01 01:00:00.000000000 +0100
+@@ -1,56 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<?eclipse-cdt version="2.0"?>
+-
+-<cdtproject id="org.eclipse.cdt.make.core.make">
+-<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+-<data>
+-<item id="scannerConfiguration">
+-<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
+-<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
+-<buildOutputProvider>
+-<openAction enabled="true" filePath=""/>
+-<parser enabled="true"/>
+-</buildOutputProvider>
+-<scannerInfoProvider id="specsFile">
+-<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+-<parser enabled="true"/>
+-</scannerInfoProvider>
+-</profile>
+-<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
+-<buildOutputProvider>
+-<openAction enabled="false" filePath=""/>
+-<parser enabled="true"/>
+-</buildOutputProvider>
+-<scannerInfoProvider id="makefileGenerator">
+-<runAction arguments="-f ${project_name}_scd.mk" command="make" useDefault="true"/>
+-<parser enabled="false"/>
+-</scannerInfoProvider>
+-</profile>
+-<profile id="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfile">
+-<buildOutputProvider>
+-<openAction enabled="false" filePath=""/>
+-<parser enabled="true"/>
+-</buildOutputProvider>
+-<scannerInfoProvider id="specsFile">
+-<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+-<parser enabled="false"/>
+-</scannerInfoProvider>
+-</profile>
+-<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfile">
+-<buildOutputProvider>
+-<openAction enabled="false" filePath=""/>
+-<parser enabled="true"/>
+-</buildOutputProvider>
+-<scannerInfoProvider id="specsFile">
+-<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+-<parser enabled="false"/>
+-</scannerInfoProvider>
+-</profile>
+-</item>
+-<item id="org.eclipse.cdt.core.pathentry">
+-<pathentry kind="src" path=""/>
+-<pathentry kind="out" path=""/>
+-<pathentry kind="con" path="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO"/>
+-</item>
+-</data>
+-</cdtproject>
+diff -Naur -x .svn setup-orig/common.h setup/common.h
+--- setup-orig/common.h	2008-01-31 20:49:01.000000000 +0100
++++ setup/common.h	2008-01-30 21:44:16.000000000 +0100
 @@ -11,6 +11,11 @@
  
  #include <vdr/tools.h>
@@ -20,9 +80,9 @@ diff -Naur setup-orig/common.h setup/common.h
 +
 +
  #endif // __SKINSOPPALUSIKKA_COMMON_H
-diff -Naur setup-orig/config.cpp setup/config.cpp
---- setup-orig/config.cpp	2007-12-15 18:15:54.000000000 +0100
-+++ setup/config.cpp	2008-01-26 22:17:22.000000000 +0100
+diff -Naur -x .svn setup-orig/config.cpp setup/config.cpp
+--- setup-orig/config.cpp	2008-01-31 20:49:01.000000000 +0100
++++ setup/config.cpp	2008-01-30 21:44:16.000000000 +0100
 @@ -84,8 +84,8 @@
            _bootLinux=Util::Strdupnew(tmp);
  
@@ -80,9 +140,9 @@ diff -Naur setup-orig/config.cpp setup/config.cpp
  
  char * Config::GetBootLinux( )
  {
-diff -Naur setup-orig/config.h setup/config.h
---- setup-orig/config.h	2007-12-15 18:15:54.000000000 +0100
-+++ setup/config.h	2008-01-26 22:00:19.000000000 +0100
+diff -Naur -x .svn setup-orig/config.h setup/config.h
+--- setup-orig/config.h	2008-01-31 20:49:01.000000000 +0100
++++ setup/config.h	2008-01-30 21:44:16.000000000 +0100
 @@ -58,6 +58,7 @@
      void                dumpXMLError(const char* errStr);
      bool                readVdrLib();
@@ -91,9 +151,9 @@ diff -Naur setup-orig/config.h setup/config.h
  };
  
  
-diff -Naur setup-orig/HISTORY setup/HISTORY
---- setup-orig/HISTORY	2007-12-15 18:15:54.000000000 +0100
-+++ setup/HISTORY	2008-01-26 22:00:19.000000000 +0100
+diff -Naur -x .svn setup-orig/HISTORY setup/HISTORY
+--- setup-orig/HISTORY	2008-01-31 20:49:01.000000000 +0100
++++ setup/HISTORY	2008-01-30 21:44:16.000000000 +0100
 @@ -1,83 +1,87 @@
 -VDR Plugin 'setup' Revision History
 ------------------------------------
@@ -265,9 +325,9 @@ diff -Naur setup-orig/HISTORY setup/HISTORY
 +2004-12-05: Version 0.0.1
 +
 +- Initial revision.
-diff -Naur setup-orig/i18n.cpp setup/i18n.cpp
---- setup-orig/i18n.cpp	2007-12-15 18:15:54.000000000 +0100
-+++ setup/i18n.cpp	2008-01-26 22:06:23.000000000 +0100
+diff -Naur -x .svn setup-orig/i18n.cpp setup/i18n.cpp
+--- setup-orig/i18n.cpp	2008-01-31 20:49:01.000000000 +0100
++++ setup/i18n.cpp	2008-01-30 21:44:16.000000000 +0100
 @@ -1166,6 +1166,48 @@
      "",
      "",
@@ -317,8 +377,8 @@ diff -Naur setup-orig/i18n.cpp setup/i18n.cpp
  
  { NULL }
  };
-diff -Naur setup-orig/M7x0 config/fw-config.txt setup/M7x0 config/fw-config.txt
---- setup-orig/M7x0 config/fw-config.txt	2007-12-15 18:15:54.000000000 +0100
+diff -Naur -x .svn setup-orig/M7x0 config/fw-config.txt setup/M7x0 config/fw-config.txt
+--- setup-orig/M7x0 config/fw-config.txt	2008-01-31 20:49:01.000000000 +0100
 +++ setup/M7x0 config/fw-config.txt	1970-01-01 01:00:00.000000000 +0100
 @@ -1,729 +0,0 @@
 -##########################################################################
@@ -1050,9 +1110,9 @@ diff -Naur setup-orig/M7x0 config/fw-config.txt setup/M7x0 config/fw-config.txt
 -#
 -CONFIG_WB_MIGRATION_DONE = yes
 -
-diff -Naur setup-orig/M7x0 config/local-conf setup/M7x0 config/local-conf
+diff -Naur -x .svn setup-orig/M7x0 config/local-conf setup/M7x0 config/local-conf
 --- setup-orig/M7x0 config/local-conf	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/local-conf	2008-01-26 22:00:19.000000000 +0100
++++ setup/M7x0 config/local-conf	2008-01-30 21:44:16.000000000 +0100
 @@ -0,0 +1,51 @@
 +#!/bin/ash
 +
@@ -1105,17 +1165,17 @@ diff -Naur setup-orig/M7x0 config/local-conf setup/M7x0 config/local-conf
 +        fi
 +fi
 +
-diff -Naur setup-orig/M7x0 config/local-plugins setup/M7x0 config/local-plugins
+diff -Naur -x .svn setup-orig/M7x0 config/local-plugins setup/M7x0 config/local-plugins
 --- setup-orig/M7x0 config/local-plugins	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/local-plugins	2008-01-26 22:00:19.000000000 +0100
++++ setup/M7x0 config/local-plugins	2008-01-30 21:44:16.000000000 +0100
 @@ -0,0 +1,3 @@
 +#!/bin/sh
 +
 +grep '^vdr_plugindirs' /etc/rc.local.conf | cut -d= -f2 | sed 's/^\"//' | sed 's/\"$//'
-diff -Naur setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 config/open7x0-setup_eng.xml
+diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 config/open7x0-setup_eng.xml
 --- setup-orig/M7x0 config/open7x0-setup_eng.xml	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup_eng.xml	2008-01-26 22:17:30.000000000 +0100
-@@ -0,0 +1,62 @@
++++ setup/M7x0 config/open7x0-setup_eng.xml	2008-01-31 20:34:04.000000000 +0100
+@@ -0,0 +1,66 @@
 +<!--
 +-   open7x0-VDR Configuration File
 +-   based on Minisetup by Ralf Dotzert
@@ -1162,7 +1222,11 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 config/open7x
 +            <entry name="Network Mask" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Network mask" />
 +            <entry name="Gateway" sysconfig="rc.conf--gateway" type="ip" value='&quot;NO&quot;' help1="Gatewary IP address. default NO" />
 +            <entry name="MAC Address" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="NOT MODIFY" />
-+            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="M7XX Name (DNS). default /etc/hostname. NOT MODIFY" />
++            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="M7XX Name (DNS). default /etc/hostname. NOT MODIFY" />  
++        <menu name="USB HardDisk Configuration">
++            <entry name="Device stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB Device to stop. Ex: /dev/sda. Only 1 device" />
++            <entry name="Inactivity time" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Inactivity time to stop USB Hard disk" />
++        </menu>
 +        </menu>
 +        <menu name="Services">
 +            <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />
@@ -1178,10 +1242,10 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 config/open7x
 +        </menu>
 +    </menus>
 +</setup>
-diff -Naur setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x0-setup_esl.xml
+diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x0-setup_esl.xml
 --- setup-orig/M7x0 config/open7x0-setup_esl.xml	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup_esl.xml	2008-01-26 22:17:35.000000000 +0100
-@@ -0,0 +1,62 @@
++++ setup/M7x0 config/open7x0-setup_esl.xml	2008-01-31 20:32:06.000000000 +0100
+@@ -0,0 +1,66 @@
 +<!--
 +-   open7x0-VDR Configuration File
 +-   based on Minisetup by Ralf Dotzert
@@ -1230,6 +1294,10 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x
 +            <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="Define el comando con el que se obtiene la dirección MAC. NO DEBE SER MODIFICADO" />
 +            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre del M7XX (DNS). Por defecto lo toma del fichero /etc/hostname. NO DEBE SER MODIFICADO" />
 +        </menu>
++        <menu name="Configuración discos USB">
++            <entry name="Dispositivo a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivo USB a detener. Ejm: /dev/sda. Solo 1 único dispositivo" />
++            <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Tiempo de inactividad para detener el disco USB" />
++        </menu>
 +        <menu name="Servicios">
 +            <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Arrancar servidor inetd (ftp,telnet)" />
 +            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />
@@ -1244,8 +1312,8 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x
 +        </menu>
 +    </menus>
 +</setup>
-diff -Naur setup-orig/M7x0 config/open7x0-setup V1.0.xml setup/M7x0 config/open7x0-setup V1.0.xml
---- setup-orig/M7x0 config/open7x0-setup V1.0.xml	2007-12-15 18:15:54.000000000 +0100
+diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup V1.0.xml setup/M7x0 config/open7x0-setup V1.0.xml
+--- setup-orig/M7x0 config/open7x0-setup V1.0.xml	2008-01-31 20:49:01.000000000 +0100
 +++ setup/M7x0 config/open7x0-setup V1.0.xml	1970-01-01 01:00:00.000000000 +0100
 @@ -1,184 +0,0 @@
 -<!--
@@ -1432,8 +1500,8 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup V1.0.xml setup/M7x0 config/open7
 -        </menu>
 -    </menus>
 -</setup>
-diff -Naur setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/open7x0-setup.xml
---- setup-orig/M7x0 config/open7x0-setup.xml	2007-12-15 18:15:54.000000000 +0100
+diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/open7x0-setup.xml
+--- setup-orig/M7x0 config/open7x0-setup.xml	2008-01-31 20:49:01.000000000 +0100
 +++ setup/M7x0 config/open7x0-setup.xml	1970-01-01 01:00:00.000000000 +0100
 @@ -1,162 +0,0 @@
 -<!--
@@ -1598,9 +1666,9 @@ diff -Naur setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/open7x0-se
 -        </menu>
 -    </menus>
 -</setup>
-diff -Naur setup-orig/Makefile setup/Makefile
---- setup-orig/Makefile	2007-12-15 18:15:54.000000000 +0100
-+++ setup/Makefile	2008-01-26 22:00:19.000000000 +0100
+diff -Naur -x .svn setup-orig/Makefile setup/Makefile
+--- setup-orig/Makefile	2008-01-31 20:49:01.000000000 +0100
++++ setup/Makefile	2008-01-30 21:44:16.000000000 +0100
 @@ -1,7 +1,7 @@
  #
  # Makefile for a Video Disk Recorder plugin
@@ -1627,9 +1695,9 @@ diff -Naur setup-orig/Makefile setup/Makefile
  	@./getVdrSetupMenu.pl $(VDRDIR)/menu.c
  
  	
-diff -Naur setup-orig/plugins.cpp setup/plugins.cpp
---- setup-orig/plugins.cpp	2007-12-15 18:15:54.000000000 +0100
-+++ setup/plugins.cpp	2008-01-26 22:00:19.000000000 +0100
+diff -Naur -x .svn setup-orig/plugins.cpp setup/plugins.cpp
+--- setup-orig/plugins.cpp	2008-01-31 20:49:01.000000000 +0100
++++ setup/plugins.cpp	2008-01-30 21:44:16.000000000 +0100
 @@ -15,6 +15,7 @@
  #include "plugins.h"
  #include "util.h"
@@ -1661,9 +1729,102 @@ diff -Naur setup-orig/plugins.cpp setup/plugins.cpp
      }
    } 
    //HaPe: Add " around the string
-diff -Naur setup-orig/setupmenu.cpp setup/setupmenu.cpp
---- setup-orig/setupmenu.cpp	2007-12-15 18:15:54.000000000 +0100
-+++ setup/setupmenu.cpp	2008-01-26 22:00:19.000000000 +0100
+diff -Naur -x .svn setup-orig/.project setup/.project
+--- setup-orig/.project	2008-01-31 20:49:01.000000000 +0100
++++ setup/.project	1970-01-01 01:00:00.000000000 +0100
+@@ -1,82 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<projectDescription>
+-	<name>vdr setup</name>
+-	<comment></comment>
+-	<projects>
+-	</projects>
+-	<buildSpec>
+-		<buildCommand>
+-			<name>org.eclipse.cdt.make.core.makeBuilder</name>
+-			<triggers>clean,full,incremental,</triggers>
+-			<arguments>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.build.arguments</key>
+-					<value></value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.core.errorOutputParser</key>
+-					<value>org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.VCErrorParser;</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.enableAutoBuild</key>
+-					<value>false</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.environment</key>
+-					<value></value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.enableFullBuild</key>
+-					<value>true</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.build.target.inc</key>
+-					<value>all</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.enabledIncrementalBuild</key>
+-					<value>true</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.build.target.clean</key>
+-					<value>clean</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.build.command</key>
+-					<value>make</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.enableCleanBuild</key>
+-					<value>true</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.append_environment</key>
+-					<value>true</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.useDefaultBuildCmd</key>
+-					<value>true</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.build.target.auto</key>
+-					<value>all</value>
+-				</dictionary>
+-				<dictionary>
+-					<key>org.eclipse.cdt.make.core.stopOnError</key>
+-					<value>false</value>
+-				</dictionary>
+-			</arguments>
+-		</buildCommand>
+-		<buildCommand>
+-			<name>org.eclipse.cdt.make.core.ScannerConfigBuilder</name>
+-			<arguments>
+-			</arguments>
+-		</buildCommand>
+-	</buildSpec>
+-	<natures>
+-		<nature>org.eclipse.cdt.core.cnature</nature>
+-		<nature>org.eclipse.cdt.make.core.makeNature</nature>
+-		<nature>org.eclipse.cdt.make.core.ScannerConfigNature</nature>
+-		<nature>org.eclipse.cdt.core.ccnature</nature>
+-	</natures>
+-</projectDescription>
+diff -Naur -x .svn setup-orig/.settings/org.eclipse.cdt.core.prefs setup/.settings/org.eclipse.cdt.core.prefs
+--- setup-orig/.settings/org.eclipse.cdt.core.prefs	2008-01-31 20:49:01.000000000 +0100
++++ setup/.settings/org.eclipse.cdt.core.prefs	1970-01-01 01:00:00.000000000 +0100
+@@ -1,3 +0,0 @@
+-#Tue Jan 16 19:06:27 CET 2007
+-eclipse.preferences.version=1
+-indexerId=org.eclipse.cdt.core.fastIndexer
+diff -Naur -x .svn setup-orig/setupmenu.cpp setup/setupmenu.cpp
+--- setup-orig/setupmenu.cpp	2008-01-31 20:49:01.000000000 +0100
++++ setup/setupmenu.cpp	2008-01-30 21:44:16.000000000 +0100
 @@ -18,6 +18,7 @@
  #include "plugins.h"
  #include "debug.h"
@@ -1828,8 +1989,8 @@ diff -Naur setup-orig/setupmenu.cpp setup/setupmenu.cpp
      free(helpfile);
    }
    return(result);
-diff -Naur setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
---- setup-orig/setupsystemmenu.cpp	2007-12-15 18:15:54.000000000 +0100
+diff -Naur -x .svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
+--- setup-orig/setupsystemmenu.cpp	2008-01-31 20:49:01.000000000 +0100
 +++ setup/setupsystemmenu.cpp	1970-01-01 01:00:00.000000000 +0100
 @@ -1,188 +0,0 @@
 -/***********************************************************
@@ -2020,9 +2181,9 @@ diff -Naur setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
 -  }
 -  return (menu);
 -}
-diff -Naur setup-orig/util.cpp setup/util.cpp
---- setup-orig/util.cpp	2007-12-15 18:15:54.000000000 +0100
-+++ setup/util.cpp	2008-01-26 22:00:19.000000000 +0100
+diff -Naur -x .svn setup-orig/util.cpp setup/util.cpp
+--- setup-orig/util.cpp	2008-01-31 20:49:01.000000000 +0100
++++ setup/util.cpp	2008-01-30 21:44:16.000000000 +0100
 @@ -14,6 +14,7 @@
  #include <ctype.h>
  #include "util.h"
