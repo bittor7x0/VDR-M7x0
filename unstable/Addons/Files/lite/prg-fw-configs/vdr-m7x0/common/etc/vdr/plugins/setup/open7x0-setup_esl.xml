@@ -34,5 +34,9 @@
             <entry name="Fichero EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Fichero donde se almacena la información de EPG." />
             <entry name="EPG directa" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="Determina si la EPG se almacena inmediatamente o sólo cuando se apaga el VDR" />
         </menu>
+        <menu name="Configuración discos USB">
+            <entry name="Dispositivo a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivo USB a detener. Ejm: /dev/sda. Solo 1 único dispositivo" />
+            <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Tiempo de inactividad para detener el disco USB" />
+        </menu>
     </menus>
 </setup>

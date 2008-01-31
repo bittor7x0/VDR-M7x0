@@ -34,5 +34,9 @@
             <entry name="EPG File" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="EPG file" />
             <entry name="EPG direct" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="EPG direct" />
         </menu>
+        <menu name="USB HardDisk Configuration">
+            <entry name="Device stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB Device to stop. Ex: /dev/sda. Only 1 device" />
+            <entry name="Inactivity time" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Inactivity time to stop USB Hard disk" />
+        </menu>
     </menus>
 </setup>
