@@ -46,6 +46,10 @@
             <entry name="MAC Address" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="NOT MODIFY" />
             <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="M7XX Name (DNS). default /etc/hostname. NOT MODIFY" />
         </menu>
+        <menu name="USB HardDisk Configuration">
+            <entry name="Device stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB Device to stop. Ex: /dev/sda. Only 1 device" />
+            <entry name="Inactivity time" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Inactivity time to stop USB Hard disk" />
+        </menu>
         <menu name="Services">
             <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />
             <entry name="Web server" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Start administration web" />

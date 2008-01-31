@@ -46,6 +46,10 @@
             <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="Define el comando con el que se obtiene la dirección MAC. NO DEBE SER MODIFICADO" />
             <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre del M7XX (DNS). Por defecto lo toma del fichero /etc/hostname. NO DEBE SER MODIFICADO" />
         </menu>
+        <menu name="Configuración discos USB">
+            <entry name="Dispositivo a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivo USB a detener. Ejm: /dev/sda. Solo 1 único dispositivo" />
+            <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Tiempo de inactividad para detener el disco USB" />
+        </menu>
         <menu name="Servicios">
             <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Arrancar servidor inetd (ftp,telnet)" />
             <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />
