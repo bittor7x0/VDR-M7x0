@@ -47,6 +47,14 @@ for bpath in ${bind_paths} ; do
 	mount -o bind /rw-flash${bpath} ${bpath}
 done
 
+
+#Spindown HD                                    
+if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X ] ; then
+    echo -n ' starting spindown'                                               
+    /usr/sbin/spindown -d ${hd_spindown_time} +${hd_spindown_dev}              
+fi  
+
+
 # put here your optional stuff
 
 

@@ -34,6 +34,12 @@ fi
 
 echo ' '
 
+#Spindown hd                                                                                    
+if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X ] ; then                   
+    echo -n ' starting scsi-spin'
+    /usr/sbin/scsi-spin -d -f ${hd_spindown_dev}
+fi  
+
 if [ -x "${fw_update_file}" ] ; then
     umount /etc || umount -l /etc
     umount /rw-flash || umount -l /rw-flash
