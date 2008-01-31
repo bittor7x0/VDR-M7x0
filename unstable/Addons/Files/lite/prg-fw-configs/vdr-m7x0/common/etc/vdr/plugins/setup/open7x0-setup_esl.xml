@@ -23,7 +23,6 @@
         <menu name="Gestionar plugins" help1="Activar y desactivar plugins" system="ActPlugins" />
         <menu name="Configuración general">
             <entry name="Montar discos USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Montar los discos USB" />
-            <entry name="Montar directorios en Red" sysconfig="rc.local.conf--do_net_mount" type="bool" value="NO" help1="Montar los directorios en Red" />
             <entry name="Tiempo de arranque" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Valor en segundos del tiempo de arranque del VDR cuando hay una grabacion programada." />
         </menu>
         <menu name="Configuración de directorios">

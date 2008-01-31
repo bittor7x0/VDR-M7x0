@@ -1,0 +1,57 @@
+#!/bin/ash
+
+[ -f /etc/rc.conf ] && source /etc/rc.conf
+hostname ${hostname}
+if [ X"${syslogd_flags}" != X"NO" ]; then
+    mv /rw-flash/log/messages* /var/log
+    echo 'starting syslogd'
+    syslogd ${syslogd_flags}		
+fi
+
+echo -n 'loading modules ...'
+[ -f /etc/rc.modules ] && ash /etc/rc.modules
+echo ' done';
+
+if [ X"${pic_tool_flags}" != X"NO" ]; then
+    echo -n 'execute pic_tool'
+    pic_tool ${pic_tool_flags}
+    echo ' done';
+fi
+
+echo -n 'starting network:'
+
+echo -n ' lo';
+ifconfig lo 127.0.0.1
+
+ifconfig ${if} hw ether `${mac_cmd}`
+if [ X"${net}" = X"DHCP" ]; then
+    echo -n ' dhcp';
+    ifconfig ${if} 0.0.0.0
+    udhcpc -b -i ${if} -s ${dhcp_script}
+else
+    echo -n " ${if}";
+    ifconfig ${if} ${ip} netmask ${netmask}
+fi
+
+echo ' '
+
+if [ X"${gateway}" != X"NO" ]; then
+    echo 'setup default gateway';
+    route add default gw ${gateway} ${if}
+fi
+
+echo -n 'standard daemons:'
+
+if [ X"${inetd}" != X"NO" ]; then
+    echo -n ' inetd';		inetd /etc/inetd.conf
+fi
+
+if [ X"${lircd_flags}" != X"NO" ]; then
+    echo -n ' lircd';		lircd ${lircd_flags}
+fi
+
+echo ' '
+
+[ -f /etc/rc.local ] && ash /etc/rc.local
+
+exit 0

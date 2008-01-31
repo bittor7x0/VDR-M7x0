@@ -23,7 +23,6 @@
         <menu name="Manager plugins" help1="Enable and disable plugins" system="ActPlugins" />
         <menu name="General Configuration">
             <entry name="Mount USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Mount usb disk" />
-            <entry name="Mount Network" sysconfig="rc.local.conf--do_net_mount" type="bool" value="NO" help1="Mount network shared directories" />
             <entry name="Start time" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Start time" />
         </menu>
         <menu name="Directories">

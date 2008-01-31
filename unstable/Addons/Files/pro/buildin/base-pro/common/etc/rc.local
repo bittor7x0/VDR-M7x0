@@ -1,0 +1,53 @@
+#!/bin/ash
+
+[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+
+echo -n 'starting local stuff:'
+
+if [ X"${do_usb_mount}" != X"NO" ] ; then
+	echo -n ' usb-mount'
+	ln -sf /sbin/usbautomounter /var/tmp/hotplug
+	/sbin/usbautomounter mount
+fi
+
+if [ X"${do_net_mount}" != X"NO" ] ; then
+    echo -n ' net-mount'
+    ash /etc/rc.netmount
+fi
+
+if [ X"${bootmenu_start}" != X"NO" ] ; then
+    alarm=`cat /etc/bootmenu/next_alarm`
+    #logger awk '{print strftime("%F %T",${alarm})}'
+
+    if [ ${alarm} -eq 0 ] ; then
+        pic_tool -s alarm clear
+    else
+        pic_tool -s alarm set $(( ${alarm} - ${vdr_startup_time} ))
+    fi
+
+    echo -n ' bootmenu'
+    export VDR_TV_MODE=${bootmenu_video_mode}
+    `/usr/bin/bootmenu -s ${bootmenu_default} ${bootmenu_config}` &
+else
+    if [ X"${runvdr}" != X"NO" ]; then
+        echo -n ' vdr' 
+        export ${runvdr_vars}
+        ash ${runvdr} &
+    fi
+fi
+
+
+if [ X"${webif_start}" != X"NO" ]; then
+    echo -n ' starting webif'
+    /usr/sbin/webifd
+fi
+
+for bpath in ${bind_paths} ; do
+	echo -n " Binding ${bpath}"
+	mount -o bind /rw-flash${bpath} ${bpath}
+done
+
+# put here your optional stuff
+
+
+echo ' '

@@ -1,0 +1,40 @@
+#!/bin/ash
+
+[ -f /etc/rc.local.halt ] && ash /etc/rc.local.halt
+
+[ -f /etc/rc.conf ] && source /etc/rc.conf
+
+echo -n 'stopping daemons:'
+if [ X"${lircd_flags}" != X"NO" ]; then
+    echo -n ' lircd'
+    killall -15 lircd  
+fi
+
+if [ X"${inetd}" != X"NO" ]; then
+    echo -n ' inetd'
+    kill -15 `cat /var/run/inetd.pid`
+fi
+
+pic_tool -s time systopic
+
+if [ X"${syslogd_flags}" != X"NO" ]; then
+    echo -n ' syslogd'
+    kill -15 `cat /var/run/syslogd.pid`
+    mv /var/log/messages* /rw-flash/log
+fi 
+
+sync
+umount -a -l
+# be careful /proc might not be available anymore
+/usr/sbin/pic_tool shutdown 3
+/usr/bin/killall5 -15
+/bin/sleep 1
+/usr/bin/killall5 -9
+/bin/sleep 10
+# should never be reached
+/usr/sbin/pic_tool shutdown 1 wait
+# should really never be reached
+while true; do
+      echo "Point reached never should be..."
+      /bin/sleep 10
+done
