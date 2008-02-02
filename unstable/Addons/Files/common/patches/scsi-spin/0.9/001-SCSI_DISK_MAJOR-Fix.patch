@@ -1,0 +1,12 @@
+--- scsi-spin-0.9/major.h.ori	2008-02-02 11:10:55.000000000 +0100
++++ scsi-spin-0.9/major.h	2008-02-02 11:09:25.000000000 +0100
+@@ -181,6 +181,9 @@
+ 	return SCSI_BLK_MAJOR(m);
+ }
+ 
++#define SCSI_DISK8_MAJOR	128
++#define SCSI_DISK15_MAJOR	135
++
+ /*
+  * Tests for IDE devices
+  */

@@ -69,6 +69,10 @@ echo "Copying files to temporal dir"
 cp -Trf "$vdr_fw_orig" "$tmp"
 cp -Trf "$vdr_em_files/common" "$tmp"
 cp -Trf "$vdr_em_files/$vdr_version" "$tmp"
+cp -rf "$tmp/base-gambler/m740" "$tmp/buildin/base-lite"
+cp -rf "$tmp/base-gambler/m750s" "$tmp/buildin/base-lite"
+cp -rf "$tmp/base-gambler/m740" "$tmp/buildin/base-pro"
+cp -rf "$tmp/base-gambler/m750s" "$tmp/buildin/base-pro"
 
 # Creating plugins dirs
 echo "Creating plugins dirs"
