@@ -1,12 +1,32 @@
---- scsi-spin-0.9/major.h.ori	2008-02-02 11:10:55.000000000 +0100
-+++ scsi-spin-0.9/major.h	2008-02-02 11:09:25.000000000 +0100
-@@ -181,6 +181,9 @@
- 	return SCSI_BLK_MAJOR(m);
- }
+diff -Naur scsi-spin-0.9-orig/scsi-spin.c scsi-spin-0.9/scsi-spin.c
+--- scsi-spin-0.9-orig/scsi-spin.c	2007-02-01 21:40:59.000000000 +0100
++++ scsi-spin-0.9/scsi-spin.c	2008-02-05 20:19:05.000000000 +0100
+@@ -34,9 +34,7 @@
  
-+#define SCSI_DISK8_MAJOR	128
-+#define SCSI_DISK15_MAJOR	135
-+
- /*
-  * Tests for IDE devices
+ #define SCSI_DISK_MAJOR(M) ((M) == SCSI_DISK0_MAJOR || \
+ 			    ((M) >= SCSI_DISK1_MAJOR && \
+-			     (M) <= SCSI_DISK7_MAJOR) || \
+-			    ((M) >= SCSI_DISK8_MAJOR && \
+-			     (M) <= SCSI_DISK15_MAJOR))
++			     (M) <= SCSI_DISK7_MAJOR) )
+ 
+ #define SCSI_BLK_MAJOR(M) \
+   (SCSI_DISK_MAJOR(M) || \
+@@ -44,11 +42,14 @@
+ 
+ /* define USE_SG_IO to send commands using scsi generic interface
   */
+-#define USE_SG_IO
++/*#define USE_SG_IO*/
++
+ 
+-#ifdef USE_SG_IO
+-int opt_oldioctl = 0;
+ int opt_verbose = 0;
++int opt_oldioctl = 0;
++#ifdef USE_SG_IO
++
++
+ 
+ const char* SENSE_KEY_STR[16] = {
+     "NO SENSE",

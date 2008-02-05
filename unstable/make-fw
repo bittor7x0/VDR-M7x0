@@ -69,10 +69,8 @@ echo "Copying files to temporal dir"
 cp -Trf "$vdr_fw_orig" "$tmp"
 cp -Trf "$vdr_em_files/common" "$tmp"
 cp -Trf "$vdr_em_files/$vdr_version" "$tmp"
-cp -rf "$tmp/base-gambler/m740" "$tmp/buildin/base-lite"
-cp -rf "$tmp/base-gambler/m750s" "$tmp/buildin/base-lite"
-cp -rf "$tmp/base-gambler/m740" "$tmp/buildin/base-pro"
-cp -rf "$tmp/base-gambler/m750s" "$tmp/buildin/base-pro"
+cp -rf "$tmp/buildin/base-gambler/m740" "$tmp/buildin/base-$vdr_version"
+cp -rf "$tmp/buildin/base-gambler/m750s" "$tmp/buildin/base-$vdr_version"
 
 # Creating plugins dirs
 echo "Creating plugins dirs"
@@ -94,32 +92,32 @@ $tmp/patches/patch-kernel.sh "$tmp" "$vdr_em_patches/$vdr_version"
 
 # Copy temporal dir to final dir
 echo ""
-echo "Copying temporal dir to final dir"
 
 if [[ -d "$vdr_fw" ]]
 then
 	echo "Cleaning VDR-o7o final"
+	( cd $vdr_fw; make distclean)
 #	rm -rf $vdr_fw/buildin/base
 #	rm -rf $vdr_fw/buildin/base-gambler
 #	rm -rf $vdr_fw/make-incs
 #	rm -rf $vdr_fw/patches
 #	rm -rf $vdr_fw/prg-fw-configs
 #	rm -rf $vdr_fw/rootfs-file-lists
-	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.bash*
-	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.busybox*
-	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.dropbear*
-	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.spindown*
-	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.vdr*
-	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.web*
+#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.bash*
+#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.busybox*
+#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.dropbear*
+#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.spindown*
+#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.vdr*
+#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.web*
 	rm  -f $vdr_fw/*.ofi
-	rm  -f $vdr_fw/*.wsw
-	rm  -f $vdr_fw/*.img
+#	rm  -f $vdr_fw/*.wsw
+#	rm  -f $vdr_fw/*.img
 else
 	mkdir -p "$vdr_fw"
 fi
 
+echo "Copying temporal dir to final dir"
 cp -Trf "$tmp" "$vdr_fw"
-touch $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.*
 
 # Clean temp dir
 rm -rf "$tmp"

@@ -61,7 +61,7 @@ $(STAGEFILES_DIR)/.scsi-spin_unpacked: $(SCSI-SPIN_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.scsi-spin_patched: $(STAGEFILES_DIR)/.scsi-spin_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(TARGET_ROOT)/usr/include/linux $(SCSI-SPIN_PATCHES_DIR)
+	$(PATCHES_DIR)/patch-kernel.sh $(SCSI-SPIN_DIR) $(SCSI-SPIN_PATCHES_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.scsi-spin_patched
 
 #

@@ -26,7 +26,7 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk uclibc_build_env/
 +					dptarget=`$(ECHO) $$dps | $(CUT) -d'-' -f1` ; \
 +					$(RM) -rf $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ ; \
 +					$(MKDIR) -p $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ ; \
-+					$(CP) -rf $(VDR-PLUGINS_EXTRA_DIR)/$$dp/$$dps/* $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ ; \
++					$(CP) -Trf $(VDR-PLUGINS_EXTRA_DIR)/$$dp/$$dps $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget ; \
 +					$(FIND) $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ '(' -name '.svn'  ')' -exec $(RM) -rf {} \; 2> /dev/null ; \
 +					$(PATCHES_DIR)/patch-kernel.sh $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/$$dptarget/ $(VDR-PLUGINS_EXTRA_DIR)/$$dp ; \
 +				fi ; \

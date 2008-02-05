@@ -36,7 +36,7 @@ for dp in `ls $plugins `; do
 				mkdir $vdr_plugins/$dptarget/
 
 				# Copy plugin
-				cp -rf $plugins/$dp/$dps/* $vdr_plugins/$dptarget/
+				cp -Trf $plugins/$dp/$dps $vdr_plugins/$dptarget
 				find $vdr_plugins/$dptarget/ '(' -name '.svn'  ')' -exec rm -rf {} \; 2> /dev/null
 
 				# Patching plugins
