@@ -49,10 +49,11 @@
         <menu name="Configuración discos USB">
             <entry name="Dispositivo a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivo USB a detener. Ejm: /dev/sda. Solo 1 único dispositivo" />
             <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Tiempo de inactividad para detener el disco USB" />
+            <entry name="Activar SWAP" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Activar swap en particion. Ejm: /dev/sdb2. Solo 1 único dispositivo" />
         </menu>
         <menu name="Servicios">
             <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Arrancar servidor inetd (ftp,telnet)" />
-            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />
+            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />            
         </menu>
         <menu name="Menu de arranque">
             <entry name="Habilitar" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Habilitar menu de arranque" />

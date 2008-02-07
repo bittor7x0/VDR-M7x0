@@ -49,10 +49,16 @@ done
 
 
 #Spindown HD                                    
-if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X ] ; then
+if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X"NO" ] && [ X"${hd_spindown_dev}" != X ] ; then
     echo -n ' starting spindown'                                               
     /usr/sbin/spindown -d ${hd_spindown_time} +${hd_spindown_dev}              
 fi  
+
+#Swap                                   
+if [ X"${hd_swap_dev}" != X"NO" ] && [ X"${hd_swap_dev}" != X ] ; then
+    echo -n ' setting up swap'                                               
+    /sbin/swapon ${hd_spindown_dev}              
+fi
 
 
 # put here your optional stuff
