@@ -1,15 +1,33 @@
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
---- VDR-NG-orig/i18n.c	2007-12-15 11:14:11.000000000 +0100
-+++ VDR-NG/i18n.c	2007-12-15 11:37:02.000000000 +0100
+--- VDR-NG-orig/i18n.c	2008-02-09 16:38:19.000000000 +0100
++++ VDR-NG/i18n.c	2008-02-09 16:41:12.000000000 +0100
 @@ -668,7 +668,7 @@
      "Av/Pε",
      "Pδδllδ/Pois",
      "W³/Wy³",
 -    "On/Off",
-+    "Activo/Desactivo",
++    "Activo/Desact.",
      "Aνοιχ/Kλειστό",
      "Pε/Av",
      "Act./Inact.",
+@@ -690,7 +690,7 @@
+     "",// TODO
+     "Ajastin",
+     "Timer",
+-    "Programa",
++    "Programar",
+     "",// TODO
+     "Timer",
+     "Timer",
+@@ -756,7 +756,7 @@
+     "Spill av",
+     "Toista",
+     "Odtwσrz",
+-    "Play",
++    "Reproducir",
+     "Αναπαραγωγή",
+     "Spela upp",
+     "Redare",
 @@ -2123,7 +2123,7 @@
      "Filnavn",
      "Tiedosto",
