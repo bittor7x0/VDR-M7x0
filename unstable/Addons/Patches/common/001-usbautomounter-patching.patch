@@ -1,0 +1,39 @@
+diff -Naur uclibc_build_env_orig/make-incs/usbautomounter.mk uclibc_build_env/make-incs/usbautomounter.mk
+--- uclibc_build_env_orig/make-incs/usbautomounter.mk	Wed Sep 05 18:10:24 2007
++++ uclibc_build_env/make-incs/usbautomounter.mk	Wed Feb 13 17:08:41 2008
+@@ -26,6 +26,7 @@
+ 
+ USBAUTOMOUNTER_DIR := $(BUILDIN_DIR)/usbautomounter
+ USBAUTOMOUNTER_BUILDDIR := $(BUILD_DIR)/usbautomounter
++USBAUTOMOUNTER_PATCHES_DIR := $(PATCHES_DIR)/usbautomounter
+ USBAUTOMOUNTER_INSTALLED = $(STAGEFILES_DIR)/.usbautomounter_installed
+ 
+ PACKS_RULES_$(CONFIG_USBAUTOMOUNTER) += $(USBAUTOMOUNTER_INSTALLED)
+@@ -42,10 +43,18 @@
+ 	$(TOUCH) $(STAGEFILES_DIR)/.usbautomounter_copied
+ 
+ #
++# patch usbautomounter
++#
++
++$(STAGEFILES_DIR)/.usbautomounter_patched: $(STAGEFILES_DIR)/.usbautomounter_copied
++	$(PATCHES_DIR)/patch-kernel.sh $(USBAUTOMOUNTER_DIR) $(USBAUTOMOUNTER_PATCHES_DIR)
++	$(TOUCH) $(STAGEFILES_DIR)/.usbautomounter_patched
++
++#
+ # compile usbautomounter
+ #
+ 
+-$(STAGEFILES_DIR)/.usbautomounter_compiled: $(STAGEFILES_DIR)/.usbautomounter_copied
++$(STAGEFILES_DIR)/.usbautomounter_compiled: $(STAGEFILES_DIR)/.usbautomounter_patched
+ 	$(UCLIBC_ENV) $(MAKE) -C $(USBAUTOMOUNTER_BUILDDIR) $(UCLIBC_ENV) \
+ 		PREFIX=$(TARGET_ROOT) all
+ 	$(TOUCH) $(STAGEFILES_DIR)/.usbautomounter_compiled
+@@ -70,6 +79,7 @@
+ 
+ distclean-usbautomounter:
+ 	-$(RM) -f $(STAGEFILES_DIR)/.usbautomounter_copied
++	-$(RM) -f $(STAGEFILES_DIR)/.usbautomounter_patched
+ 	-$(RM) -f $(STAGEFILES_DIR)/.usbautomounter_compiled
+ 	-$(RM) -f $(STAGEFILES_DIR)/.usbautomounter_installed
+ 

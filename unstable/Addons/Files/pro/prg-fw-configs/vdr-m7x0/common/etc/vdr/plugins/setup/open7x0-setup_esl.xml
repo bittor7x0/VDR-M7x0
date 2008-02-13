@@ -4,20 +4,68 @@
 -->
 <setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
     <plugins sysconfig="rc.local.conf--vdr_pluginopts">
-        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
-        <plugin name="rssreader" info="rssreader" active="YES" />
+        <plugin name="aide" info="aide" active="YES" />
+        <plugin name="autotimer" info="autotimer" active="NO" />
+        <plugin name="browse" info="browse" active="NO" />
+        <plugin name="chanman" info="chanman" active="NO" />
+        <plugin name="channellists" info="channellists" active="YES" />
+        <plugin name="channelswitcher" info="channelswitcher" active="NO" />
+        <plugin name="chanorg" info="chanorg" active="NO" />
+        <plugin name="cinebars" info="cinebars" active="YES" />
+        <plugin name="clock" info="clock" active="NO" />
+        <plugin name="control" info="control" active="NO" />
+        <plugin name="dummydevice" info="dummydevice" active="NO" />
+        <plugin name="eggtimer" info="eggtimer" active="NO" />
         <plugin name="epgsearch" info="epgsearch" active="YES" />
-        <plugin name="pilot" info="pilot" active="YES" />
-        <plugin name="recstatus" info="recstatus" active="YES" />
-        <plugin name="showrecinfo" info="showrecinfo" active="YES" />
-        <plugin name="noepgmenu" info="noepgmenu" active="YES" />
-        <plugin name="skinenigmang" info="skinenigmang" active="YES" />
-        <plugin name="scheduler" info="scheduler" active="YES" />
-        <plugin name="pilotskin" info="pilotskin" active="YES" />
-        <plugin name="status" info="status" active="YES" />
-        <plugin name="osdteletext" info="osdteletext" active="YES" />
-        <plugin name="streamplayer" info="streamplayer" active="NO" />
+        <plugin name="epgsync" info="epgsync" active="NO" />
+        <plugin name="extrecmenu" info="extrecmenu" active="NO" />
+        <plugin name="fepg" info="fepg" active="NO" />
+        <plugin name="freecell" info="freecell" active="NO" />
+        <plugin name="fritzbox" info="fritzbox" active="NO" />
+        <plugin name="fussball" info="fussball" active="NO" />
+        <plugin name="games" info="games" active="NO" />
+        <plugin name="ircviewer" info="ircviewer" active="NO" />
         <plugin name="launcher" info="launcher" active="NO" />
+        <plugin name="message" info="message" active="NO" />
+        <plugin name="mlist" info="mlist" active="NO" />
+        <plugin name="mpgplayer" info="mpgplayer" active="YES" />
+        <plugin name="newsticker" info="newsticker" active="NO" />
+        <plugin name="noepgmenu" info="noepgmenu" active="NO" />
+        <plugin name="nordlichtsepg" info="nordlichtsepg" active="NO" />
+        <plugin name="osdimage" info="osdimage" active="NO" />
+        <plugin name="osdserver" info="osdserver" active="NO" />
+        <plugin name="osdteletext" info="osdteletext" active="YES" />
+        <plugin name="osdtest256" info="osdtest256" active="NO" />
+        <plugin name="pilot" info="pilot" active="NO" />
+        <plugin name="pilotskin" info="pilotskin" active="YES" />
+        <plugin name="pim" info="pim" active="NO" />
+        <plugin name="pin" info="pin" active="NO" />
+        <plugin name="prefermenu" info="prefermenu" active="NO" />
+        <plugin name="proxy" info="proxy" active="NO" />
+        <plugin name="quicktimer" info="quicktimer" active="NO" />
+        <plugin name="radioinfo" info="radioinfo" active="NO" />
+        <plugin name="radiolist" info="radiolist" active="NO" />
+        <plugin name="recstatus" info="recstatus" active="NO" />
+        <plugin name="remoteosd" info="remoteosd" active="NO" />
+        <plugin name="remotetimers" info="remotetimers" active="NO" />
+        <plugin name="rssreader" info="rssreader" active="NO" />
+        <plugin name="scheduler" info="scheduler" active="NO" />
+        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
+        <plugin name="showrecinfo" info="showrecinfo" active="NO" />
+        <plugin name="skinenigmang" info="skinenigmang" active="YES" />
+        <plugin name="skinreel" info="skinreel" active="NO" />
+        <plugin name="skinsoppalusikka" info="skinsoppalusikka" active="NO" />
+        <plugin name="solitaire" info="solitaire" active="NO" />
+        <plugin name="spider" info="spider" active="NO" />
+        <plugin name="sudoku" info="sudoku" active="NO" />
+        <plugin name="suspendoutput" info="suspendoutput" active="NO" />
+        <plugin name="svdrpext" info="svdrpext" active="NO" />
+        <plugin name="svdrpservice" info="svdrpservice" active="NO" />
+        <plugin name="taste" info="taste" active="NO" />
+        <plugin name="timersync" info="timersync" active="NO" />
+        <plugin name="undelete" info="undelete" active="NO" />
+        <plugin name="wapd" info="wapd" active="NO" />
+        <plugin name="zaphistory" info="zaphistory" active="NO" />
     </plugins>
     <menus>
         <menu name="Gestionar plugins" help1="Activar y desactivar plugins" system="ActPlugins" />
@@ -47,21 +95,24 @@
             <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre del M7XX (DNS). Por defecto lo toma del fichero /etc/hostname. NO DEBE SER MODIFICADO" />
         </menu>
         <menu name="Configuración discos USB">
-            <entry name="Dispositivo a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivo USB a detener. Ejm: /dev/sda. Solo 1 único dispositivo" />
+            <entry name="Dispositivo a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivo USB a detener. Ej.: /dev/sda. Solo 1 único dispositivo" />
             <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Tiempo de inactividad para detener el disco USB" />
-            <entry name="Activar SWAP" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Activar swap en particion. Ejm: /dev/sdb2. Solo 1 único dispositivo" />
+            <entry name="Activar SWAP" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Activar swap en particion. Ej.: /dev/sdb2. Solo 1 único dispositivo" />
         </menu>
         <menu name="Servicios">
             <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Arrancar servidor inetd (ftp,telnet)" />
-            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />            
+            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />
         </menu>
-        <menu name="Menu de arranque">
-            <entry name="Habilitar" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Habilitar menu de arranque" />
-            <entry name="Opción por defecto" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Opción por defecto del menu de arranque" />
-            <entry name="Modo de video" sysconfig="rc.local.conf--bootmenu_video_mode" type="selection" value="0" help1="0 = fbase, 1 = svideo">
+        <menu name="Menú de arranque">
+            <entry name="Habilitar" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Habilitar menú de arranque" />
+            <entry name="Opción por defecto" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Opción por defecto del menú de arranque" />
+            <entry name="Modo de vídeo" sysconfig="rc.local.conf--bootmenu_video_mode" type="selection" value="0" help1="0 = fbase, 1 = svideo">
                 <value>0</value>
                 <value>1</value>
             </entry>
+        </menu>
+        <menu name="Control parental">
+            <entry name="Código secreto (0000=DES)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" />
         </menu>
     </menus>
 </setup>

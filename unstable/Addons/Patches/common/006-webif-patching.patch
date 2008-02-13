@@ -30,3 +30,11 @@ diff -Naur uclibc_build_env_orig/make-incs/webif.mk uclibc_build_env/make-incs/w
  	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
  	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS) >> $(WEBIF_TC_FILE)
  	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CFLAGS) >> $(WEBIF_TC_FILE)
+@@ -119,6 +129,7 @@
+ 
+ distclean-webif:
+ 	-$(RM) -f $(STAGEFILES_DIR)/.webif_unpacked
++	-$(RM) -f $(STAGEFILES_DIR)/.webif_patched
+ 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
+ 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
+ 	-$(RM) -f $(STAGEFILES_DIR)/.webapp_downloaded

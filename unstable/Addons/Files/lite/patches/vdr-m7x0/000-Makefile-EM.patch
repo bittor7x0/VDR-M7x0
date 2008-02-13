@@ -6,7 +6,7 @@ diff -Naur vdr-m7x0-orig/Makefile vdr-m7x0/Makefile
  
  builddate.h: $(OBJS:%.o=%.c)
 -	@echo "#define VDRM7X0VERSION \"Preview `date -u +"%F %H:%M"` (o7o subversion revision `svnversion | cut -d ":" -f 2`)\"" > builddate.h
-+	@echo "#define VDRM7X0VERSION \"Edición Mejorada 0.3 BETA (o7o SVN `svnversion | cut -d ":" -f 2`)\"" > builddate.h
++	@echo "#define VDRM7X0VERSION \"Edición Mejorada Lite 0.3 BETA (o7o SVN `svnversion | cut -d ":" -f 2`)\"" > builddate.h
  
  # Implicit rules:
  

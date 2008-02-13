@@ -1,0 +1,56 @@
+#!/bin/ash
+KILL="killall -15"
+VDR_FLAGS="-c ${vdr_confdir} -L /var/vdr/lib -v /var/vdr/video0 -s \
+  ${vdr_shutdown}"
+
+mkdir -p /var/vdr
+mkdir -p /var/vdr/lib
+
+my_pid=$$
+echo $my_pid > /var/run/runvdr.pid
+
+# EPG Data
+
+if [ "${vdr_epgfile}" != "-" ] ; then
+    if [ "${vdr_epgdirect}" = "NO" ] ; then
+        [ -f ${vdr_epgfile} ] && mv ${vdr_epgfile} /var/vdr/epg.data
+    else
+        ln -sf ${vdr_epgfile} /var/vdr/epg.data
+    fi
+    VDR_EPGOPT="-E /var/vdr/epg.data"
+else
+    VDR_EPGOPT="-E-"
+fi
+
+# Video dirs
+
+if [ -d "${vdr_videodirs%% *}" ] ; then
+    vdirn=0
+    for vdir in ${vdr_videodirs} ; do
+        [ -d ${vdir} ] && ln -sf ${vdir} /var/vdr/video${vdirn}
+        vdirn=$(( ${vdirn} + 1 ))
+    done
+else
+    # fallback no video dir defined or first not exists
+    mkdir -p /var/vdr/video.flash
+    ln -sf /var/vdr/video.flash /var/vdr/video0
+fi
+
+while (true) do
+    rm -f /var/vdr/lib/*
+    for plugdir in ${vdr_plugindirs} ; do
+	for plug in ${plugdir}/libvdr*.so.* ; do
+    	    [ -f ${plug} ] && ln -sf ${plug} /var/vdr/lib/`basename ${plug}`
+	done
+    done
+    ${vdr_bin} ${VDR_EPGOPT} ${VDR_FLAGS} ${vdr_pluginopts} ${vdr_stumode}
+    if [ $? -eq 0 -o $? -eq 2 ]; then 
+        break
+    fi
+    echo "restarting VDR"
+    $KILL $vdr_bin
+    sleep 1
+done
+
+rm -f /var/run/runvdr.pid
+exit 0

@@ -1,0 +1,12 @@
+diff -Naur vdr-m7x0-orig/Makefile vdr-m7x0/Makefile
+--- vdr-m7x0-orig/Makefile	2007-04-28 18:11:23.000000000 +0200
++++ vdr-m7x0/Makefile	2007-04-29 20:57:33.000000000 +0200
+@@ -106,7 +106,7 @@
+ 	@echo "font files created."
+ 
+ builddate.h: $(OBJS:%.o=%.c)
+-	@echo "#define VDRM7X0VERSION \"Preview `date -u +"%F %H:%M"` (o7o subversion revision `svnversion | cut -d ":" -f 2`)\"" > builddate.h
++	@echo "#define VDRM7X0VERSION \"Edición Mejorada Pro 0.3 BETA (o7o SVN `svnversion | cut -d ":" -f 2`)\"" > builddate.h
+ 
+ # Implicit rules:
+ 

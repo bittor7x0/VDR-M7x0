@@ -25,6 +25,9 @@ if [ X"${runvdr}" != X"NO" ]; then
             trys=$(( ${trys} + 1 ))
             sleep 1
      done
+
+     [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && mv /var/vdr/epg.data ${vdr_epgfile}
+
      export VDR_TV_MODE=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
      export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
 fi
@@ -37,16 +40,17 @@ fi
 
 echo ' '
 
-#Swapoff
-echo -n ' Swapoff'
-/sbin/swapoff -a
+# Swapoff
+if [ X"${hd_swap_dev}" != X"NO" ] && [ X"${hd_swap_dev}" != X ] ; then
+    echo -n ' Swapoff'
+    /sbin/swapoff -a
+fi
 
-
-#Spindown hd                                                                                    
-if [ X"${hd_spindown_dev}" != X"NO" ] && [ X"${hd_spindown_dev}" != X ] ; then                   
+# Spindown hd
+if [ X"${hd_spindown_dev}" != X"NO" ] && [ X"${hd_spindown_dev}" != X ] ; then
     echo -n ' starting scsi-spin'
     /usr/sbin/scsi-spin -d -f ${hd_spindown_dev}
-fi 
+fi
 
 if [ -x "${fw_update_file}" ] ; then
     umount /etc || umount -l /etc
