@@ -14,10 +14,11 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk uclibc_build_env/
  
  vdr-plugins_rules = \
     $(foreach plugin,$(CONFIG_VDR-PLUGINS), \
-@@ -83,6 +86,21 @@
+@@ -83,6 +86,22 @@
  
  $(call vdr-plugins_rules,downloaded):
  	$(SVN) co $(VDR-PLUGINS_SVN_URL) $(VDR-PLUGINS_DIR)
++	$(RM) -rf $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/.svn
 +	$(SVN) co $(VDR-PLUGINS_EXTRA_SVN_URL) $(VDR-PLUGINS_EXTRA_DIR)
 +	(for dp in `ls $(VDR-PLUGINS_EXTRA_DIR)`; do \
 +		if [ -d $(VDR-PLUGINS_EXTRA_DIR)/$$dp ] ; then \
@@ -36,7 +37,7 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk uclibc_build_env/
  	$(call vdr-plugins_touch_stagefiles,downloaded)
  
  #
-@@ -121,6 +139,7 @@
+@@ -121,6 +140,7 @@
  
  $(FILELIST_DIR)/vdr-plugins.lst: $(call vdr-plugins_rules,installed)
  	($(ECHO)   "usr/lib/vdr       -                 d 755 0 0 - - - - -"; \
@@ -44,3 +45,11 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk uclibc_build_env/
  	for lib in $(VDR-PLUGINS_LIBNAMES) ; do \
  		$(ECHO) "usr/lib/vdr/$$lib usr/lib/vdr/$$lib f 755 0 0 - - - - -"; \
  		$(ECHO) "usr/lib/vdr/$$lib -                 s   - - - - - - - -"; \
+@@ -138,6 +158,7 @@
+ 
+ clean-vdr-plugins:
+ 	-$(RM) -rf $(VDR-PLUGINS_DIR)
++	-$(RM) -rf $(VDR-PLUGINS_EXTRA_DIR)
+ 
+ distclean-vdr-plugins:
+ 	-$(RM) -f $(STAGEFILES_DIR)/.vdr-plugins_*

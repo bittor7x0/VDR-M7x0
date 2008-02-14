@@ -30,7 +30,14 @@ diff -Naur uclibc_build_env_orig/make-incs/webif.mk uclibc_build_env/make-incs/w
  	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
  	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS) >> $(WEBIF_TC_FILE)
  	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CFLAGS) >> $(WEBIF_TC_FILE)
-@@ -119,6 +129,7 @@
+@@ -113,12 +123,11 @@
+ .PHONY: clean-webif distclean-webif
+ 
+ clean-webif:
+-	(if [ -f $(WEBIF_DIR)/src ] ; then \
+-		$(CD) $(WEBIF_DIR) && env PATH="$(PREFIX_BIN):$(PATH)" $(MAKE) clean ; \
+-	fi );
++	-$(RM) -rf $(WEBIF_DIR)
  
  distclean-webif:
  	-$(RM) -f $(STAGEFILES_DIR)/.webif_unpacked

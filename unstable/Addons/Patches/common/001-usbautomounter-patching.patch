@@ -17,7 +17,7 @@ diff -Naur uclibc_build_env_orig/make-incs/usbautomounter.mk uclibc_build_env/ma
 +#
 +
 +$(STAGEFILES_DIR)/.usbautomounter_patched: $(STAGEFILES_DIR)/.usbautomounter_copied
-+	$(PATCHES_DIR)/patch-kernel.sh $(USBAUTOMOUNTER_DIR) $(USBAUTOMOUNTER_PATCHES_DIR)
++	$(PATCHES_DIR)/patch-kernel.sh $(USBAUTOMOUNTER_BUILDDIR) $(USBAUTOMOUNTER_PATCHES_DIR)
 +	$(TOUCH) $(STAGEFILES_DIR)/.usbautomounter_patched
 +
 +#
