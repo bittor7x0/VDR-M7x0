@@ -4,7 +4,7 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0.mk uclibc_build_env/make-inc
 @@ -26,6 +26,7 @@
  VDR_DIR := $(BUILD_DIR)/vdr-m7x0
  VDR_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/common
- VDR_CONF_$(CONFIG_M7X0_TYPE)_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/$(CONFIG_M7X0_TYPE)
+ VDR_CONF_SYSTYPE_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/$(CONFIG_M7X0_TYPE)
 +VDR_PATCHES_DIR := $(PATCHES_DIR)/vdr-m7x0
  
  VDR_BRANCH_DIR = $(VDR_DIR)/$(or $(strip $(filter trunk,$(CONFIG_VDR_TREE))), \

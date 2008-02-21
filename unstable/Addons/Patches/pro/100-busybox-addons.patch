@@ -1,16 +1,7 @@
-diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_build_env/configs/busybox/1.6.1/busybox.config
---- uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config	2008-01-20 18:11:41.000000000 +0100
-+++ uclibc_build_env/configs/busybox/1.6.1/busybox.config	2008-01-22 20:02:38.000000000 +0100
-@@ -43,7 +43,7 @@
- # CONFIG_FEATURE_FULL_LIBBUSYBOX is not set
- # CONFIG_FEATURE_SHARED_BUSYBOX is not set
- CONFIG_LFS=y
--# CONFIG_BUILD_AT_ONCE is not set
-+CONFIG_BUILD_AT_ONCE=y
- 
- #
- # Debugging Options
-@@ -110,7 +110,7 @@
+diff -Naur uclibc_build_env_orig/configs/busybox/1.9.1/busybox.config uclibc_build_env/configs/busybox/1.9.1/busybox.config
+--- uclibc_build_env_orig/configs/busybox/1.9.1/busybox.config	2008-01-20 18:11:41.000000000 +0100
++++ uclibc_build_env/configs/busybox/1.9.1/busybox.config	2008-01-22 20:02:38.000000000 +0100
+@@ -122,7 +122,7 @@
  # CONFIG_UNCOMPRESS is not set
  # CONFIG_UNLZMA is not set
  # CONFIG_FEATURE_LZMA_FAST is not set
@@ -19,7 +10,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  
  #
  # Common options for cpio and tar
-@@ -186,7 +186,7 @@
+@@ -196,7 +196,7 @@
  CONFIG_FEATURE_MV_LONG_OPTIONS=y
  CONFIG_NICE=y
  CONFIG_NOHUP=y
@@ -28,20 +19,21 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  CONFIG_PRINTENV=y
  CONFIG_PRINTF=y
  CONFIG_PWD=y
-@@ -217,23 +217,23 @@
+@@ -229,24 +229,24 @@
  CONFIG_FEATURE_TR_CLASSES=y
  CONFIG_FEATURE_TR_EQUIV=y
  CONFIG_TRUE=y
 -# CONFIG_TTY is not set
 +CONFIG_TTY=y
  CONFIG_UNAME=y
+ CONFIG_UNEXPAND=y
+ CONFIG_FEATURE_UNEXPAND_LONG_OPTIONS=y
  CONFIG_UNIQ=y
  CONFIG_USLEEP=y
 -# CONFIG_UUDECODE is not set
 -# CONFIG_UUENCODE is not set
 +CONFIG_UUDECODE=y
 +CONFIG_UUENCODE=y
- CONFIG_WATCH=y
  CONFIG_WC=y
  # CONFIG_FEATURE_WC_LARGE is not set
 -# CONFIG_WHO is not set
@@ -58,7 +50,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  
  #
  # Common options for ls, more and telnet
-@@ -356,12 +356,12 @@
+@@ -378,12 +378,12 @@
  CONFIG_FEATURE_SHADOWPASSWDS=y
  CONFIG_USE_BB_SHADOW=y
  CONFIG_USE_BB_PWD_GRP=y
@@ -77,7 +69,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  CONFIG_GETTY=y
  # CONFIG_FEATURE_UTMP is not set
  # CONFIG_FEATURE_WTMP is not set
-@@ -380,9 +380,9 @@
+@@ -405,9 +405,9 @@
  #
  # Linux Ext2 FS Progs
  #
@@ -89,25 +81,25 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  
  #
  # Linux Module Utilities
-@@ -431,7 +431,7 @@
+@@ -456,7 +456,7 @@
  # CONFIG_MKFS_MINIX is not set
  # CONFIG_FEATURE_MINIX2 is not set
  CONFIG_GETOPT=y
 -# CONFIG_HEXDUMP is not set
 +CONFIG_HEXDUMP=y
+ # CONFIG_HD is not set
+ # CONFIG_FEATURE_HEXDUMP_REVERSE is not set
  # CONFIG_HWCLOCK is not set
- # CONFIG_FEATURE_HWCLOCK_LONG_OPTIONS is not set
- # CONFIG_FEATURE_HWCLOCK_ADJTIME_FHS is not set
-@@ -441,7 +441,7 @@
- # CONFIG_MDEV is not set
+@@ -469,7 +469,7 @@
  # CONFIG_FEATURE_MDEV_CONF is not set
  # CONFIG_FEATURE_MDEV_EXEC is not set
+ # CONFIG_FEATURE_MDEV_LOAD_FIRMWARE is not set
 -# CONFIG_MKSWAP is not set
 +CONFIG_MKSWAP=y
  # CONFIG_FEATURE_MKSWAP_V0 is not set
  CONFIG_MORE=y
  CONFIG_FEATURE_USE_TERMIOS=y
-@@ -451,10 +451,10 @@
+@@ -480,10 +480,10 @@
  CONFIG_FEATURE_MOUNT_FLAGS=y
  CONFIG_FEATURE_MOUNT_FSTAB=y
  CONFIG_PIVOT_ROOT=y
@@ -120,7 +112,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  CONFIG_SWITCH_ROOT=y
  CONFIG_UMOUNT=y
  CONFIG_FEATURE_UMOUNT_ALL=y
-@@ -474,7 +474,7 @@
+@@ -503,7 +503,7 @@
  CONFIG_CROND=y
  # CONFIG_DEBUG_CROND_OPTION is not set
  # CONFIG_FEATURE_CROND_CALL_SENDMAIL is not set
@@ -129,7 +121,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  # CONFIG_DC is not set
  # CONFIG_DEVFSD is not set
  # CONFIG_DEVFSD_MODLOAD is not set
-@@ -507,7 +507,7 @@
+@@ -536,7 +536,7 @@
  CONFIG_READAHEAD=y
  # CONFIG_RUNLEVEL is not set
  # CONFIG_RX is not set
@@ -138,9 +130,9 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  # CONFIG_SETSID is not set
  # CONFIG_TASKSET is not set
  # CONFIG_FEATURE_TASKSET_FANCY is not set
-@@ -519,8 +519,8 @@
- #
+@@ -550,8 +550,8 @@
  # CONFIG_FEATURE_IPV6 is not set
+ # CONFIG_FEATURE_PREFER_IPV4_ADDRESS is not set
  # CONFIG_VERBOSE_RESOLUTION_ERRORS is not set
 -# CONFIG_ARP is not set
 -# CONFIG_ARPING is not set
@@ -149,7 +141,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  # CONFIG_DNSD is not set
  CONFIG_ETHER_WAKE=y
  # CONFIG_FAKEIDENTD is not set
-@@ -595,7 +595,7 @@
+@@ -635,7 +635,7 @@
  # CONFIG_FEATURE_TFTP_PUT is not set
  # CONFIG_FEATURE_TFTP_BLOCKSIZE is not set
  # CONFIG_DEBUG_TFTP is not set
@@ -158,9 +150,9 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  # CONFIG_FEATURE_TRACEROUTE_VERBOSE is not set
  # CONFIG_FEATURE_TRACEROUTE_SOURCE_ROUTE is not set
  # CONFIG_FEATURE_TRACEROUTE_USE_ICMP is not set
-@@ -607,10 +607,10 @@
- # CONFIG_FEATURE_UDHCP_DEBUG is not set
+@@ -649,10 +649,10 @@
  # CONFIG_FEATURE_RFC3397 is not set
+ CONFIG_UDHCPC_SLACK_FOR_BUGGY_SERVERS=80
  # CONFIG_VCONFIG is not set
 -# CONFIG_WGET is not set
 -# CONFIG_FEATURE_WGET_STATUSBAR is not set
@@ -173,7 +165,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.6.1/busybox.config uclibc_bui
  # CONFIG_ZCIP is not set
  
  #
-@@ -682,9 +682,9 @@
+@@ -730,9 +730,9 @@
  CONFIG_SYSLOGD=y
  CONFIG_FEATURE_ROTATE_LOGFILE=y
  CONFIG_FEATURE_REMOTE_LOG=y

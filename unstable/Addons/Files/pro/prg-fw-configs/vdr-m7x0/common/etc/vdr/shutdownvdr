@@ -1,0 +1,17 @@
+#!/bin/ash
+
+# need for startup time
+[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+
+if [ X"${bootmenu_start}" != X"NO" ] ; then
+	echo $1 >/etc/bootmenu/next_alarm
+fi
+
+if [ $1 -eq 0 ] ; then
+    pic_tool alarm clear
+else
+    pic_tool alarm set $(( $1 - ${vdr_startup_time} ))
+fi
+
+halt
+exit 0

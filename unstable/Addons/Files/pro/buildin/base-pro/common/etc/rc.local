@@ -47,17 +47,16 @@ for bpath in ${bind_paths} ; do
 	mount -o bind /rw-flash${bpath} ${bpath}
 done
 
-
-#Spindown HD                                    
+# Spindown HD
 if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X"NO" ] && [ X"${hd_spindown_dev}" != X ] ; then
-    echo -n ' starting spindown'                                               
-    /usr/sbin/spindown -d ${hd_spindown_time} +${hd_spindown_dev}              
-fi  
+    echo -n ' starting spindown'
+    /usr/sbin/spindown -d ${hd_spindown_time} +${hd_spindown_dev}
+fi
 
-#Swap                                   
+# Swap
 if [ X"${hd_swap_dev}" != X"NO" ] && [ X"${hd_swap_dev}" != X ] ; then
-    echo -n ' setting up swap'                                               
-    /sbin/swapon ${hd_spindown_dev}              
+    echo -n ' setting up swap'
+    /sbin/swapon ${hd_spindown_dev}
 fi
 
 

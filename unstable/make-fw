@@ -40,25 +40,29 @@ tmp=`mktemp -d ./tmp-XXXXXXXXXX` || exit 1
 #########################
 
 # Update/Checkout VDR-EM
-if [[ -d "./.svn" ]]
+if [[ -d "$BASE/.svn" ]]
 then
 	echo "Update VDR-EM"
 	svn update
 else
-	rm -f "./make-fw"
+	rm -f "$BASE/make-fw"
 	rm -rf "$tmp"
 	echo "Checkout VDR-EM"
-	svn checkout -q "$svn_em" "./"
+	svn checkout -q "$svn_em" "$BASE"
 	echo "Run this script again"
 	exit 0
 fi
 
-# Checkout VDR-o7o
-if [[ ! -d "$vdr_fw_orig" ]]
+# Update/Checkout VDR-o7o
+if [[ -d "$vdr_fw_orig/.svn" ]]
 then
+	echo "Update VDR-o7o original"
+	svn update "$vdr_fw_orig"
+else
 	echo "Checkout VDR-o7o original"
 	svn checkout -q "$svn_o7o" "$vdr_fw_orig"
 fi
+
 
 ############################
 # Creating VDR-EM Firmware #
@@ -69,21 +73,8 @@ echo "Copying files to temporal dir"
 cp -Trf "$vdr_fw_orig" "$tmp"
 cp -Trf "$vdr_em_files/common" "$tmp"
 cp -Trf "$vdr_em_files/$vdr_version" "$tmp"
-cp -rf "$tmp/buildin/base-gambler/m740" "$tmp/buildin/base-$vdr_version"
+cp -rf "$tmp/buildin/base-gambler/m740"  "$tmp/buildin/base-$vdr_version"
 cp -rf "$tmp/buildin/base-gambler/m750s" "$tmp/buildin/base-$vdr_version"
-
-# Creating plugins dirs
-echo "Creating plugins dirs"
-
-[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/channelscan/"   ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/channelscan/"
-[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/channelscan/"  ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/channelscan/"
-
-for dp in `ls $vdr_em_plugins `; do
-	dptarget=`echo $dp | cut -d'-' -f1`
-	[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/$dptarget/" ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/common/$dptarget/"
-	[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/$dptarget/"   ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m740/$dptarget/"
-	[[ ! -d "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/$dptarget/"  ]] && mkdir -p "$tmp/prg-fw-configs/vdr-m7x0-plugins/m750s/$dptarget/"
-done;
 
 # Patch firmware
 echo "Patching Firmware"
@@ -96,22 +87,13 @@ echo ""
 if [[ -d "$vdr_fw" ]]
 then
 	echo "Cleaning VDR-o7o final"
-	( cd $vdr_fw; make distclean)
-#	rm -rf $vdr_fw/buildin/base
-#	rm -rf $vdr_fw/buildin/base-gambler
-#	rm -rf $vdr_fw/make-incs
-#	rm -rf $vdr_fw/patches
-#	rm -rf $vdr_fw/prg-fw-configs
-#	rm -rf $vdr_fw/rootfs-file-lists
-#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.bash*
-#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.busybox*
-#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.dropbear*
-#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.spindown*
-#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.vdr*
-#	rm  -f $vdr_fw/m7x0_xtc_uclibc_Linux-i686/stagefiles/.web*
+	( cd $vdr_fw; make distclean )
 	rm  -f $vdr_fw/*.ofi
-#	rm  -f $vdr_fw/*.wsw
-#	rm  -f $vdr_fw/*.img
+	rm -rf $vdr_fw/buildin/base-$vdr_version
+	rm -rf $vdr_fw/make-incs
+	rm -rf $vdr_fw/patches
+	rm -rf $vdr_fw/prg-fw-configs
+	rm -rf $vdr_fw/rootfs-file-lists
 else
 	mkdir -p "$vdr_fw"
 fi
@@ -123,4 +105,3 @@ cp -Trf "$tmp" "$vdr_fw"
 rm -rf "$tmp"
 echo "Now you can edit config files in \"$vdr_fw\" and later run \"make\""
 exit 0
-

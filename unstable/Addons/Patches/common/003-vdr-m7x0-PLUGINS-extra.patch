@@ -9,7 +9,7 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk uclibc_build_env/
  VDR-PLUGINS_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS
 +VDR-PLUGINS_EXTRA_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS-extra
  VDR-PLUGINS_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/common
- VDR-PLUGINS_CONF_$(CONFIG_M7X0_TYPE)_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/$(CONFIG_M7X0_TYPE)
+ VDR-PLUGINS_CONF_SYSTYPE_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/$(CONFIG_M7X0_TYPE)
 +VDR-PLUGINS_BRANCH := branches/`$(ECHO) $(CONFIG_VDR-PLUGINS) | cut -d'/' -f1`
  
  vdr-plugins_rules = \
