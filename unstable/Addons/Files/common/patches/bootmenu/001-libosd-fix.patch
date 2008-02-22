@@ -1,7 +1,7 @@
-diff -Naur bootmenu-orig\bootmenu.cpp bootmenu\bootmenu.cpp
---- bootmenu-orig\bootmenu.cpp	Sat Dec 15 20:55:12 2007
-+++ bootmenu\bootmenu.cpp	Fri Feb 22 18:01:36 2008
-@@ -81,7 +81,7 @@
+diff -Naur bootmenu-orig/bootmenu.cpp bootmenu/bootmenu.cpp
+--- bootmenu-orig/bootmenu.cpp	Sat Dec 15 20:55:12 2007
++++ bootmenu/bootmenu.cpp	Fri Feb 22 18:01:36 2008
+@@ -72,7 +72,7 @@
  		filename = argv[optind];
      } 
  		
@@ -10,7 +10,7 @@ diff -Naur bootmenu-orig\bootmenu.cpp bootmenu\bootmenu.cpp
    		syslog(LOG_ERR, "Can not init libosd");
    	} else {	
  			
-@@ -98,7 +98,7 @@
+@@ -87,7 +87,7 @@
  		}
  			
  		delete menu;
