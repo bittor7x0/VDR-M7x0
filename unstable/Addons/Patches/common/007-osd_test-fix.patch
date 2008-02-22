@@ -1,0 +1,20 @@
+diff -Naur uclibc_build_env_orig/buildin/libosd/tests/osd_test.c uclibc_build_env/buildin/libosd/tests/osd_test.c
+--- uclibc_build_env_orig/buildin/libosd/tests/osd_test.c	Fri Jan 25 12:37:00 2008
++++ uclibc_build_env/buildin/libosd/tests/osd_test.c	Fri Feb 22 17:57:34 2008
+@@ -62,7 +62,7 @@
+ 	struct osd_progress_bar bar;
+ 	int i;
+ 	int val;
+-	if (libosd_init()) {
++	if (libosd_init(1)) {
+ 		PRINT_ERROR("Cannot init libosd");
+ 		return 1;
+ 	}
+@@ -98,6 +98,6 @@
+ 		}
+ 	}
+ 	sleep(10);
+-	libosd_deinit();
++	libosd_deinit(0,0);
+ 	return 0;
+ }
