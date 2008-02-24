@@ -1,0 +1,68 @@
+diff -Naur VDR-NG-orig/shutdown.c VDR-NG/shutdown.c
+--- VDR-NG-orig/shutdown.c	2008-02-17 12:35:22.000000000 +0100
++++ VDR-NG/shutdown.c	2008-02-17 12:53:03.000000000 +0100
+@@ -14,6 +14,7 @@
+ #include <stdlib.h>
+ #include <sys/types.h>
+ #include <sys/wait.h>
++#include<sys/stat.h>
+ #include "channels.h"
+ #include "config.h"
+ #include "cutter.h"
+@@ -86,6 +87,7 @@
+   shutdownCommand = NULL;
+   exitCode = -1;
+   emergencyExitRequested = false;
++  checkSignalFile = false;
+ }
+ 
+ cShutdownHandler::~cShutdownHandler()
+@@ -120,13 +122,27 @@
+   shutdownCommand = ShutdownCommand ? strdup(ShutdownCommand) : NULL;
+ }
+ 
++bool cShutdownHandler::DoExit(void) { 
++    if ( exitCode >=0 ) return true;
++    if ( checkSignalFile ) {
++      struct stat buf;
++      if ( (stat ( "/tmp/shutdown.signal", &buf ) == 0) ) {
++        isyslog("Found /tmp/shutdown.signal");
++        return true;
++      }      
++    }
++    return false; 
++}
++
+ void cShutdownHandler::CallShutdownCommand(time_t WakeupTime, int Channel, const char *File, bool UserShutdown)
+ {
+   time_t Delta = WakeupTime ? WakeupTime - time(NULL) : 0;
+   cString cmd = cString::sprintf("%s %ld %ld %d \"%s\" %d", shutdownCommand, WakeupTime, Delta, Channel, *strescape(File, "\"$"), UserShutdown);
+   isyslog("executing '%s'", *cmd);
+-  if (SystemExec(cmd, true) == 0)
++  if (SystemExec(cmd, true) == 0) {
++     checkSignalFile = true;
+      Setup.NextWakeupTime = WakeupTime; // Remember this wakeup time for comparison on reboot
++  }
+ }
+ 
+ void cShutdownHandler::SetUserInactiveTimeout(int Seconds, bool Force)
+diff -Naur VDR-NG-orig/shutdown.h VDR-NG/shutdown.h
+--- VDR-NG-orig/shutdown.h	2008-02-17 12:35:22.000000000 +0100
++++ VDR-NG/shutdown.h	2008-02-17 12:53:03.000000000 +0100
+@@ -47,6 +47,7 @@
+        ///< Exit code, if VDR exit was requested, or -1 if not requested.
+   bool emergencyExitRequested;
+        ///< The requested exit is an emergency exit.
++  bool checkSignalFile;
+ public:
+   cCountdown countdown;
+   cShutdownHandler(void);
+@@ -54,7 +55,7 @@
+   void Exit(int ExitCode) { exitCode = ExitCode; }
+        ///< Set VDR exit code and initiate end of VDR main loop.
+        ///< This will exit VDR without any confirmation.
+-  bool DoExit(void) { return exitCode >= 0; }
++  bool DoExit(void) ;
+        ///< Check if an exit code was set, and VDR should exit.
+   int GetExitCode(void) { return exitCode >= 0 ? exitCode : 0; }
+        ///< Get the currently set exit code of VDR.

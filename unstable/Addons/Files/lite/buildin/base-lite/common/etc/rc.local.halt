@@ -17,11 +17,14 @@ done
 if [ X"${runvdr}" != X"NO" ]; then
      echo -n ' vdr'
      trys=0
-     while [ -e /var/run/runvdr.pid -a ${trys} -le 60 ] ; do
-	    [ $(( ${trys} % 20 )) -eq 0 ] && killall -15 vdr
+     while [ -e /var/run/runvdr.pid -a ${trys} -le 20 ] ; do
+	    touch '/tmp/shutdown.signal'
+	    [ $(( ${trys} % 4 )) -eq 0 ] && killall -15 vdr
             trys=$(( ${trys} + 1 ))
             sleep 1
      done
+
+     [ -f /var/run/runvdr.pid ] && rm -f /var/run/runvdr.pid
 
      [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && mv /var/vdr/epg.data ${vdr_epgfile}
 
