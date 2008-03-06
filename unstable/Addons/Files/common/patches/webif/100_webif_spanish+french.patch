@@ -1,6 +1,6 @@
 diff -Naur vdr-htdocs/webapp/inc/i18n.c vdr-htdocs-ES/webapp/inc/i18n.c
---- vdr-htdocs/webapp/inc/i18n.c	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/inc/i18n.c	Thu Mar 06 13:34:15 2008
+--- vdr-htdocs/webapp/inc/i18n.c	2008-03-06 21:19:27.000000000 +0100
++++ vdr-htdocs-ES/webapp/inc/i18n.c	2008-03-06 21:20:53.000000000 +0100
 @@ -20,292 +20,494 @@
  
  int langID=-1;
@@ -740,7 +740,7 @@ diff -Naur vdr-htdocs/webapp/inc/i18n.c vdr-htdocs-ES/webapp/inc/i18n.c
 +			"FileView",
 +			"Ver archivos",
 +			""
-+		}
++		},
 +		{	" update ",			// #91
 +			" update ",
 +			" actualizar ",
@@ -749,8 +749,8 @@ diff -Naur vdr-htdocs/webapp/inc/i18n.c vdr-htdocs-ES/webapp/inc/i18n.c
  };
  
 diff -Naur vdr-htdocs/webapp/inc/i18n.h vdr-htdocs-ES/webapp/inc/i18n.h
---- vdr-htdocs/webapp/inc/i18n.h	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/inc/i18n.h	Thu Mar 06 12:00:34 2008
+--- vdr-htdocs/webapp/inc/i18n.h	2008-03-06 21:19:27.000000000 +0100
++++ vdr-htdocs-ES/webapp/inc/i18n.h	2008-03-06 21:21:10.000000000 +0100
 @@ -17,7 +17,7 @@
  #ifndef __I18N_H__
  #define __I18N_H__
@@ -760,9 +760,18 @@ diff -Naur vdr-htdocs/webapp/inc/i18n.h vdr-htdocs-ES/webapp/inc/i18n.h
  
  extern int langID;
  extern char acceptedLang[3];
+@@ -28,7 +28,7 @@
+ extern const char checked[2][7];
+ extern const char selected[2][8];
+ extern const char weekdays[I18NNUM][7][15];
+-extern const char shortWeekdays[7][4];
++extern const char shortWeekdays[I18NNUM][7][4];
+ extern const int startOfWeek[I18NNUM];
+ 
+ const char *tr(const char *s);
 diff -Naur vdr-htdocs/webapp/www/channels.kl1 vdr-htdocs-ES/webapp/www/channels.kl1
---- vdr-htdocs/webapp/www/channels.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/channels.kl1	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/channels.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/channels.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -41,7 +41,7 @@
  getConfig();
  
@@ -782,8 +791,8 @@ diff -Naur vdr-htdocs/webapp/www/channels.kl1 vdr-htdocs-ES/webapp/www/channels.
  <span id="navclear"></span>
  </div>
 diff -Naur vdr-htdocs/webapp/www/index.kl1 vdr-htdocs-ES/webapp/www/index.kl1
---- vdr-htdocs/webapp/www/index.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/index.kl1	Thu Mar 06 12:29:34 2008
+--- vdr-htdocs/webapp/www/index.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/index.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -46,12 +46,12 @@
  getConfig();
  
@@ -825,8 +834,8 @@ diff -Naur vdr-htdocs/webapp/www/index.kl1 vdr-htdocs-ES/webapp/www/index.kl1
  
    close_svdrp();
 diff -Naur vdr-htdocs/webapp/www/now-next.kl1 vdr-htdocs-ES/webapp/www/now-next.kl1
---- vdr-htdocs/webapp/www/now-next.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/now-next.kl1	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/now-next.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/now-next.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -90,7 +90,7 @@
    }
  //}
@@ -855,8 +864,8 @@ diff -Naur vdr-htdocs/webapp/www/now-next.kl1 vdr-htdocs-ES/webapp/www/now-next.
    }
    close_svdrp();
 diff -Naur vdr-htdocs/webapp/www/program.kl1 vdr-htdocs-ES/webapp/www/program.kl1
---- vdr-htdocs/webapp/www/program.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/program.kl1	Thu Mar 06 13:28:07 2008
+--- vdr-htdocs/webapp/www/program.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/program.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -65,16 +65,16 @@
  getConfig();
  
@@ -905,8 +914,8 @@ diff -Naur vdr-htdocs/webapp/www/program.kl1 vdr-htdocs-ES/webapp/www/program.kl
          io_printf(out,"<tr><td><b>%02d:%02d%s</b></td><td>%s</td><td style=\"width:70px;\">\n",timeptr.tm_hour,timeptr.tm_min,isTimerStr[isTimerInt],T);
  //	    io_printf(out,"<div class=\"box_right\"><img src=\"/img/timer16.png\" alt=\"%s\" /></a></div>\n",tr("create timer"));
 diff -Naur vdr-htdocs/webapp/www/recordings.kl1 vdr-htdocs-ES/webapp/www/recordings.kl1
---- vdr-htdocs/webapp/www/recordings.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/recordings.kl1	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/recordings.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/recordings.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -54,7 +54,7 @@
  
  %>
@@ -926,8 +935,8 @@ diff -Naur vdr-htdocs/webapp/www/recordings.kl1 vdr-htdocs-ES/webapp/www/recordi
  <span id="navclear"></span>
  </div>
 diff -Naur vdr-htdocs/webapp/www/rss.kl1 vdr-htdocs-ES/webapp/www/rss.kl1
---- vdr-htdocs/webapp/www/rss.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/rss.kl1	Thu Mar 06 13:28:03 2008
+--- vdr-htdocs/webapp/www/rss.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/rss.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -59,7 +59,7 @@
  <channel>
   <title><% io_printf(out,tr("Recordings")); %> VDR</title>
@@ -955,8 +964,8 @@ diff -Naur vdr-htdocs/webapp/www/rss.kl1 vdr-htdocs-ES/webapp/www/rss.kl1
        io_printf(out,"  <link>http://%s/recordings.kl1</link>\n",myip);
      } else {
 diff -Naur vdr-htdocs/webapp/www/settings-boxamp.kl1 vdr-htdocs-ES/webapp/www/settings-boxamp.kl1
---- vdr-htdocs/webapp/www/settings-boxamp.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/settings-boxamp.kl1	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/settings-boxamp.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/settings-boxamp.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -35,7 +35,7 @@
  getConfig();
  readBOXAMPCONF();
@@ -994,8 +1003,8 @@ diff -Naur vdr-htdocs/webapp/www/settings-boxamp.kl1 vdr-htdocs-ES/webapp/www/se
  </body>
  </html>
 diff -Naur vdr-htdocs/webapp/www/settings-fstab.kl1 vdr-htdocs-ES/webapp/www/settings-fstab.kl1
---- vdr-htdocs/webapp/www/settings-fstab.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/settings-fstab.kl1	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/settings-fstab.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/settings-fstab.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -35,7 +35,7 @@
  getConfig();
  
@@ -1032,48 +1041,9 @@ diff -Naur vdr-htdocs/webapp/www/settings-fstab.kl1 vdr-htdocs-ES/webapp/www/set
  </div>
  </body>
  </html>
-diff -Naur vdr-htdocs/webapp/www/settings-vdr.kl1 vdr-htdocs-ES/webapp/www/settings-vdr.kl1
---- vdr-htdocs/webapp/www/settings-vdr.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/settings-vdr.kl1	Thu Mar 06 12:00:35 2008
-@@ -35,7 +35,7 @@
- getConfig();
- 
- %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
--<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
-+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<% io_printf(out,tr("en")); %>" lang="<% io_printf(out,tr("en")); %>">
- <head>
- <title><% io_printf(out,tr("Setup VDR")); %> - open7x0 VDR-FW</title>
- <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
-@@ -54,7 +54,7 @@
-  <li><a href="timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
-  <li><a href="recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
-  <li class="act"><a href="settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
-- <li><a href="weblinks.html"><% io_printf(out,i18n[10][langID]); %></a></li>
-+ <% io_printf(out,"<li><a href=\"weblinks_%s.html\">%s</a></li>",tr("en"),i18n[10][langID]); %>
- </ul>
- <span id="navclear"></span>
- </div>
-@@ -65,7 +65,7 @@
-  <li class="act"><a href="settings-vdr.kl1"><% io_printf(out,"VDR"); %></a></li>
-  <li><a href="settings-boxamp.kl1"><% io_printf(out,"BoxAmp"); %></a></li>
-  <li><a href="settings-fstab.kl1"><% io_printf(out,tr("Network shares")); %></a></li>
-- <li><a href="view.kl1">FileView</a></li>
-+ <li><a href="view.kl1"><% io_printf(out,tr("FileView")); %></a></li>
- </ul>
- </div>
- </div>
-@@ -75,7 +75,7 @@
- </div>
- 
- <div class="foot">
--        <p>(C) 2006-07 open7x0-team</p>
-+        <p>(C) 2006-08 open7x0-team</p>
- </div>
- </body>
- </html>
 diff -Naur vdr-htdocs/webapp/www/settings.kl1 vdr-htdocs-ES/webapp/www/settings.kl1
---- vdr-htdocs/webapp/www/settings.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/settings.kl1	Thu Mar 06 13:04:46 2008
+--- vdr-htdocs/webapp/www/settings.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/settings.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -45,7 +45,7 @@
  getConfig();
  
@@ -1110,9 +1080,48 @@ diff -Naur vdr-htdocs/webapp/www/settings.kl1 vdr-htdocs-ES/webapp/www/settings.
  </form>
  </div>
  
+diff -Naur vdr-htdocs/webapp/www/settings-vdr.kl1 vdr-htdocs-ES/webapp/www/settings-vdr.kl1
+--- vdr-htdocs/webapp/www/settings-vdr.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/settings-vdr.kl1	2008-03-06 21:20:53.000000000 +0100
+@@ -35,7 +35,7 @@
+ getConfig();
+ 
+ %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
++<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<% io_printf(out,tr("en")); %>" lang="<% io_printf(out,tr("en")); %>">
+ <head>
+ <title><% io_printf(out,tr("Setup VDR")); %> - open7x0 VDR-FW</title>
+ <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+@@ -54,7 +54,7 @@
+  <li><a href="timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
+  <li><a href="recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
+  <li class="act"><a href="settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
+- <li><a href="weblinks.html"><% io_printf(out,i18n[10][langID]); %></a></li>
++ <% io_printf(out,"<li><a href=\"weblinks_%s.html\">%s</a></li>",tr("en"),i18n[10][langID]); %>
+ </ul>
+ <span id="navclear"></span>
+ </div>
+@@ -65,7 +65,7 @@
+  <li class="act"><a href="settings-vdr.kl1"><% io_printf(out,"VDR"); %></a></li>
+  <li><a href="settings-boxamp.kl1"><% io_printf(out,"BoxAmp"); %></a></li>
+  <li><a href="settings-fstab.kl1"><% io_printf(out,tr("Network shares")); %></a></li>
+- <li><a href="view.kl1">FileView</a></li>
++ <li><a href="view.kl1"><% io_printf(out,tr("FileView")); %></a></li>
+ </ul>
+ </div>
+ </div>
+@@ -75,7 +75,7 @@
+ </div>
+ 
+ <div class="foot">
+-        <p>(C) 2006-07 open7x0-team</p>
++        <p>(C) 2006-08 open7x0-team</p>
+ </div>
+ </body>
+ </html>
 diff -Naur vdr-htdocs/webapp/www/timers.kl1 vdr-htdocs-ES/webapp/www/timers.kl1
---- vdr-htdocs/webapp/www/timers.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/timers.kl1	Thu Mar 06 13:17:21 2008
+--- vdr-htdocs/webapp/www/timers.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/timers.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -71,7 +71,7 @@
  }
  
@@ -1141,8 +1150,8 @@ diff -Naur vdr-htdocs/webapp/www/timers.kl1 vdr-htdocs-ES/webapp/www/timers.kl1
      io_printf(out,">%s</input>&nbsp;&nbsp;",weekdays[langID][i%7]);
    }
 diff -Naur vdr-htdocs/webapp/www/view.kl1 vdr-htdocs-ES/webapp/www/view.kl1
---- vdr-htdocs/webapp/www/view.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/view.kl1	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/view.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/view.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -141,7 +141,7 @@
    }
  } else {
@@ -1171,8 +1180,8 @@ diff -Naur vdr-htdocs/webapp/www/view.kl1 vdr-htdocs-ES/webapp/www/view.kl1
  </div>
  </div>
 diff -Naur vdr-htdocs/webapp/www/watchit.kl1 vdr-htdocs-ES/webapp/www/watchit.kl1
---- vdr-htdocs/webapp/www/watchit.kl1	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/watchit.kl1	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/watchit.kl1	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/watchit.kl1	2008-03-06 21:20:53.000000000 +0100
 @@ -59,7 +59,7 @@
    channelNum=getChannel(NULL);
  }
@@ -1191,61 +1200,9 @@ diff -Naur vdr-htdocs/webapp/www/watchit.kl1 vdr-htdocs-ES/webapp/www/watchit.kl
  </ul>
  <span id="navclear"></span>
  </div>
-diff -Naur vdr-htdocs/webapp/www/weblinks.html vdr-htdocs-ES/webapp/www/weblinks.html
---- vdr-htdocs/webapp/www/weblinks.html	Wed Jan 30 17:59:28 2008
-+++ vdr-htdocs-ES/webapp/www/weblinks.html	Thu Jan 01 01:00:00 1970
-@@ -1,47 +0,0 @@
--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
--<html lang="de">
--<head>
--<title>Startseite - open7x0 VDR-FW</title>
--<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
--<meta http-equiv="Content-Style-Type" content="text/css" />
--<link rel="stylesheet" type="text/css" href="/open7x0.css" />
--</head>
--<body>
--<div class="head">
--VDR-FW Startseite
--</div>
--<div class="navigation"><div class="nav">
--<ul>
-- <li><a href="index.kl1">Start</a></li>
-- <li><a href="program.kl1">Programm</a></li>
-- <li><a href="channels.kl1">Kan&auml;le</a></li>
-- <li><a href="timers.kl1">Timer</a></li>
-- <li><a href="recordings.kl1">Aufzeichnungen</a></li>
-- <li><a href="settings.kl1">Einstellungen</a></li>
-- <li class="act"><a href="weblinks.html">Weblinks</a></li>
--</ul>
--<span id="navclear"></span>
--</div>
--<div class="liniefett"></div>
--</div>
--
--<div class="content">
-- <p class="big">Weblinks zur Open7x0 VDR-FW f&uuml;r die Siemens Gigaset 740AV / 750S Receiver</p>
--
-- <h2><a href="http://open7x0.org/arena/" target="_weblink">open7x0.org Forum</a></h2>
-- <p>Offizielles Forum zur VDR-Firmware, enth&auml;lt auch ein
-- <a href="http://www.open7x0.org/arena/forumdisplay.php?fid=67" target="_weblink">Unterforum</a> zur
-- Diskussion &uuml;ber dieses Webfrontend.<br />
-- <a href="http://open7x0.org/arena/" target="_weblink"><b>open7x0.org/area/</b></a></p>
--
-- <h2><a href="http://open7x0.org/wiki/" target="_weblinks">open7x0.org Wiki</a></h2>
-- <p>Wiki zur VDR-Firmware.<br />
-- <a href="http://open7x0.org/wiki/" target="_weblinks"><b>open7x0.org/wiki/</b></a></p>
--
--</div>
--
--<div class="foot">
--        <p>(C) 2006-08 open7x0-team</p>
--</div>
--</body>
--</html>
-\ No newline at end of file
 diff -Naur vdr-htdocs/webapp/www/weblinks_de.html vdr-htdocs-ES/webapp/www/weblinks_de.html
---- vdr-htdocs/webapp/www/weblinks_de.html	Thu Jan 01 01:00:00 1970
-+++ vdr-htdocs-ES/webapp/www/weblinks_de.html	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/weblinks_de.html	1970-01-01 01:00:00.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/weblinks_de.html	2008-03-06 21:20:53.000000000 +0100
 @@ -0,0 +1,47 @@
 +<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 +<html lang="de">
@@ -1294,10 +1251,10 @@ diff -Naur vdr-htdocs/webapp/www/weblinks_de.html vdr-htdocs-ES/webapp/www/webli
 +</div>
 +</body>
 +</html>
-\ No newline at end of file
+\ No hay ningún carácter de nueva línea al final del fichero
 diff -Naur vdr-htdocs/webapp/www/weblinks_en.html vdr-htdocs-ES/webapp/www/weblinks_en.html
---- vdr-htdocs/webapp/www/weblinks_en.html	Thu Jan 01 01:00:00 1970
-+++ vdr-htdocs-ES/webapp/www/weblinks_en.html	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/weblinks_en.html	1970-01-01 01:00:00.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/weblinks_en.html	2008-03-06 21:20:53.000000000 +0100
 @@ -0,0 +1,47 @@
 +<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 +<html lang="en">
@@ -1346,10 +1303,10 @@ diff -Naur vdr-htdocs/webapp/www/weblinks_en.html vdr-htdocs-ES/webapp/www/webli
 +</div>
 +</body>
 +</html>
-\ No newline at end of file
+\ No hay ningún carácter de nueva línea al final del fichero
 diff -Naur vdr-htdocs/webapp/www/weblinks_es.html vdr-htdocs-ES/webapp/www/weblinks_es.html
---- vdr-htdocs/webapp/www/weblinks_es.html	Thu Jan 01 01:00:00 1970
-+++ vdr-htdocs-ES/webapp/www/weblinks_es.html	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/weblinks_es.html	1970-01-01 01:00:00.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/weblinks_es.html	2008-03-06 21:20:53.000000000 +0100
 @@ -0,0 +1,47 @@
 +<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 +<html lang="es">
@@ -1398,10 +1355,10 @@ diff -Naur vdr-htdocs/webapp/www/weblinks_es.html vdr-htdocs-ES/webapp/www/webli
 +</div>
 +</body>
 +</html>
-\ No newline at end of file
+\ No hay ningún carácter de nueva línea al final del fichero
 diff -Naur vdr-htdocs/webapp/www/weblinks_fr.html vdr-htdocs-ES/webapp/www/weblinks_fr.html
---- vdr-htdocs/webapp/www/weblinks_fr.html	Thu Jan 01 01:00:00 1970
-+++ vdr-htdocs-ES/webapp/www/weblinks_fr.html	Thu Mar 06 12:00:35 2008
+--- vdr-htdocs/webapp/www/weblinks_fr.html	1970-01-01 01:00:00.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/weblinks_fr.html	2008-03-06 21:20:53.000000000 +0100
 @@ -0,0 +1,47 @@
 +<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 +<html lang="en">
@@ -1450,4 +1407,56 @@ diff -Naur vdr-htdocs/webapp/www/weblinks_fr.html vdr-htdocs-ES/webapp/www/webli
 +</div>
 +</body>
 +</html>
-\ No newline at end of file
+\ No hay ningún carácter de nueva línea al final del fichero
+diff -Naur vdr-htdocs/webapp/www/weblinks.html vdr-htdocs-ES/webapp/www/weblinks.html
+--- vdr-htdocs/webapp/www/weblinks.html	2008-03-06 21:19:26.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/weblinks.html	1970-01-01 01:00:00.000000000 +0100
+@@ -1,47 +0,0 @@
+-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+-<html lang="de">
+-<head>
+-<title>Startseite - open7x0 VDR-FW</title>
+-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+-<meta http-equiv="Content-Style-Type" content="text/css" />
+-<link rel="stylesheet" type="text/css" href="/open7x0.css" />
+-</head>
+-<body>
+-<div class="head">
+-VDR-FW Startseite
+-</div>
+-<div class="navigation"><div class="nav">
+-<ul>
+- <li><a href="index.kl1">Start</a></li>
+- <li><a href="program.kl1">Programm</a></li>
+- <li><a href="channels.kl1">Kan&auml;le</a></li>
+- <li><a href="timers.kl1">Timer</a></li>
+- <li><a href="recordings.kl1">Aufzeichnungen</a></li>
+- <li><a href="settings.kl1">Einstellungen</a></li>
+- <li class="act"><a href="weblinks.html">Weblinks</a></li>
+-</ul>
+-<span id="navclear"></span>
+-</div>
+-<div class="liniefett"></div>
+-</div>
+-
+-<div class="content">
+- <p class="big">Weblinks zur Open7x0 VDR-FW f&uuml;r die Siemens Gigaset 740AV / 750S Receiver</p>
+-
+- <h2><a href="http://open7x0.org/arena/" target="_weblink">open7x0.org Forum</a></h2>
+- <p>Offizielles Forum zur VDR-Firmware, enth&auml;lt auch ein
+- <a href="http://www.open7x0.org/arena/forumdisplay.php?fid=67" target="_weblink">Unterforum</a> zur
+- Diskussion &uuml;ber dieses Webfrontend.<br />
+- <a href="http://open7x0.org/arena/" target="_weblink"><b>open7x0.org/area/</b></a></p>
+-
+- <h2><a href="http://open7x0.org/wiki/" target="_weblinks">open7x0.org Wiki</a></h2>
+- <p>Wiki zur VDR-Firmware.<br />
+- <a href="http://open7x0.org/wiki/" target="_weblinks"><b>open7x0.org/wiki/</b></a></p>
+-
+-</div>
+-
+-<div class="foot">
+-        <p>(C) 2006-08 open7x0-team</p>
+-</div>
+-</body>
+-</html>
+\ No hay ningún carácter de nueva línea al final del fichero
