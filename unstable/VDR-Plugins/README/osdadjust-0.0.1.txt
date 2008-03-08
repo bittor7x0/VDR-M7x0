@@ -1,0 +1,67 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Marc Wernecke <zulu@zulu-entertainment.de>
+
+Project's homepage:          http://www.zulu-entertainment.de
+
+Latest version available at: http://www.zulu-entertainment.de
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+See the file COPYING for more information.
+
+
+
+Description
+------------
+OSDAdjust is a plugin for VDR that provides a graphical way to adjust size and position for the OSD on screen.
+The idea for this Plugin is based on the Screen Setup from vdr-fepg-0.3.1 but the code is rebuild from scratch.
+The plugin is able to generate some test pattern to adjust brightness, contrast, color or position for your display.
+One of these pattern is borrow from the VDR plugin osdtest256. The others are selfmade and if you think
+the color or something else is wrong - please contact me.
+
+Requirements
+-------------
+VDR >= 1.4.5
+
+
+Installation
+-------------
+Theres nothing special about it. Install it like any other standard
+plugin (unpack, soft link, make plugins).
+
+
+Controls for the OSD setup screen
+----------------------------------
+Up/Down           Adjust Height
+Left/Right        Adjust Width
+1-9               Move Rectangle
+5                 Center Rectangle
+0                 Reset Values
+Back              Exit without saving
+Ok                Save and Exit
+Red               Show/Toggle Test Patterns
+Green             Show/Hide Grid with the Test Patterns
+Yellow            Toggle Foreground Color <-> Background Color
+Blue              Back from Test Patterns to Screen Setup
+
+
+Test pattern
+-------------
+Colorbars         Colored bars (white, yellow, cyan, green, magenta, red, blue, black)
+                  on a gray50 background. With or without grid.
+
+Graybars          Bars in decadic steps from gray100 (white) to gray10 on a gray00 (black) background.
+                  With or without grid.
+
+Bluge             Test pattern to adjust brightness, contrast and gamma.
+                  Left side  - two vertical bars (gray20, gray10)
+                  Right side - four horizontal bars (white, gray75, gray50, gray25)
+                  Background is black.
+
+Osdtest256        One fullsize area with 8 bit color depth showing 256 colors.
+                  This is automatically skipped if the area could not created.
+
+Color             Current background color. With or without grid.
