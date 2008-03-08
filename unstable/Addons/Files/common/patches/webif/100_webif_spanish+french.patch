@@ -1,13 +1,13 @@
 diff -Naur vdr-htdocs/webapp/inc/i18n.c vdr-htdocs-ES/webapp/inc/i18n.c
 --- vdr-htdocs/webapp/inc/i18n.c	2008-03-06 21:19:27.000000000 +0100
-+++ vdr-htdocs-ES/webapp/inc/i18n.c	2008-03-06 21:20:53.000000000 +0100
-@@ -20,292 +20,494 @@
++++ vdr-htdocs-ES/webapp/inc/i18n.c	2008-03-08 19:09:00.000000000 +0100
+@@ -20,292 +20,504 @@
  
  int langID=-1;
  char acceptedLang[3]="";
 -int numOfPhrases=88;
 -const char wochentage[7][15]={"Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"};
-+int numOfPhrases=92;
++int numOfPhrases=94;
  const char checked[2][7]={"","checked"};
  const char selected[2][8]={"","selected"};
  
@@ -184,7 +184,7 @@ diff -Naur vdr-htdocs/webapp/inc/i18n.c vdr-htdocs-ES/webapp/inc/i18n.c
 +		},
 +		{	"Channel List",			// #19
 +			"Kanalliste",
-+			"Lista del canal",
++			"Lista de canales",
 +			"Liste des chaînes"
  		},						
 -		{	"channel number",	// #
@@ -745,6 +745,16 @@ diff -Naur vdr-htdocs/webapp/inc/i18n.c vdr-htdocs-ES/webapp/inc/i18n.c
 +			" update ",
 +			" actualizar ",
 +			""
++		},
++		{	"Not finished yet!",		// #92
++			"Noch nicht fertig!",
++			"¡No acabado todavía!",
++			""
++		},
++		{	"file",				// #93
++			"Datei",
++			"Archivo",
++			""
  		}
  };
  
@@ -769,6 +779,95 @@ diff -Naur vdr-htdocs/webapp/inc/i18n.h vdr-htdocs-ES/webapp/inc/i18n.h
  extern const int startOfWeek[I18NNUM];
  
  const char *tr(const char *s);
+diff -Naur vdr-htdocs/webapp/www/channels-edit.kl1 vdr-htdocs-ES/webapp/www/channels-edit.kl1
+--- vdr-htdocs/webapp/www/channels-edit.kl1	1970-01-01 01:00:00.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/channels-edit.kl1	2008-03-08 19:11:13.000000000 +0100
+@@ -0,0 +1,85 @@
++<%!
++/*
++* 
++* This source-code is licensed under GPL v2.
++* See ../../LICENSE for details
++* 
++* (c) Christian Kelinski <k@kille.cx>
++* Please checkout the README file!
++* 
++* Originally written for the open7x0.org VDR-FW project:
++* www.open7x0.org
++* 
++* You will need the KLONE web application development framework
++* from www.koanlogic.com Version 2.
++* 
++*/
++
++#include <klapp_conf.h>
++#include <time.h>
++
++time_t now;
++
++#include "i18n.h"
++#include "misc.h"
++#include "channels.h"
++#include "svdrp_comm.h"
++#include "svdrp_parse.h"
++
++%><%
++channelList * channels;
++int max_channels=1;
++int i=0;
++
++header_t *header = request_get_header(request);
++if (header_get_field(header,"Accept-Language")!=NULL) {
++  field_t *field=header_get_field(header,"Accept-Language");
++  strncpy(acceptedLang,field->value,2);
++  acceptedLang[2]='\0';
++}
++
++getConfig();
++
++%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
++<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<% io_printf(out,tr("en")); %>" lang="<% io_printf(out,tr("en")); %>">
++<head>
++<title><% io_printf(out,tr("Channel List")); %> - open7x0 VDR-FW</title>
++<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
++<meta http-equiv="Content-Style-Type" content="text/css" />
++<link rel="stylesheet" type="text/css" href="open7x0.css" />
++</head>
++<body>
++<div class="head">
++<% io_printf(out,tr("Channel List")); %>
++</div>
++<div class="navigation"><div class="nav">
++<ul>
++ <li><a href="index.kl1"><% io_printf(out,i18n[4][langID]); %></a></li>
++ <li><a href="program.kl1"><% io_printf(out,i18n[5][langID]); %></a></li>
++ <li class="act"><a href="channels.kl1"><% io_printf(out,i18n[6][langID]); %></a></li>
++ <li><a href="timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
++ <li><a href="recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
++ <li><a href="settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
++<% io_printf(out,"<li><a href=\"weblinks_%s.html\">%s</a></li>",tr("en"),i18n[10][langID]); %>
++</ul>
++<span id="navclear"></span>
++</div>
++<div class="liniefett"></div>
++<div class="nav2">
++<ul>
++ <li><a href="channels.kl1"><% io_printf(out,tr("summary")); %></a></li>
++ <li class="act"><a href="channels-edit.kl1"><% io_printf(out,tr("edit list")); %></a></li>
++ <li><a href="watchit.kl1"><% io_printf(out,tr("watch TV")); %></a></li>
++</ul>
++</div>
++</div>
++
++<div class="content">
++<p><% io_printf(out,tr("Not finished yet!")); %></p>
++</div>
++
++<div class="foot">
++        <p>(C) 2006-08 open7x0-team</p>
++</div>
++</body>
++</html>
 diff -Naur vdr-htdocs/webapp/www/channels.kl1 vdr-htdocs-ES/webapp/www/channels.kl1
 --- vdr-htdocs/webapp/www/channels.kl1	2008-03-06 21:19:26.000000000 +0100
 +++ vdr-htdocs-ES/webapp/www/channels.kl1	2008-03-06 21:20:53.000000000 +0100
@@ -1004,7 +1103,7 @@ diff -Naur vdr-htdocs/webapp/www/settings-boxamp.kl1 vdr-htdocs-ES/webapp/www/se
  </html>
 diff -Naur vdr-htdocs/webapp/www/settings-fstab.kl1 vdr-htdocs-ES/webapp/www/settings-fstab.kl1
 --- vdr-htdocs/webapp/www/settings-fstab.kl1	2008-03-06 21:19:26.000000000 +0100
-+++ vdr-htdocs-ES/webapp/www/settings-fstab.kl1	2008-03-06 21:20:53.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/settings-fstab.kl1	2008-03-08 18:14:16.000000000 +0100
 @@ -35,7 +35,7 @@
  getConfig();
  
@@ -1023,7 +1122,7 @@ diff -Naur vdr-htdocs/webapp/www/settings-fstab.kl1 vdr-htdocs-ES/webapp/www/set
  </ul>
  <span id="navclear"></span>
  </div>
-@@ -65,7 +65,7 @@
+@@ -65,17 +65,17 @@
   <li><a href="settings-vdr.kl1"><% io_printf(out,"VDR"); %></a></li>
   <li><a href="settings-boxamp.kl1"><% io_printf(out,"BoxAmp"); %></a></li>
   <li class="act"><a href="settings-fstab.kl1"><% io_printf(out,tr("Network shares")); %></a></li>
@@ -1032,7 +1131,10 @@ diff -Naur vdr-htdocs/webapp/www/settings-fstab.kl1 vdr-htdocs-ES/webapp/www/set
  </ul>
  </div>
  </div>
-@@ -75,7 +75,7 @@
+ 
+ <div class="content">
+-<p>Noch nicht fertig!</p>
++<p><% io_printf(out,tr("Not finished yet!")); %></p>
  </div>
  
  <div class="foot">
@@ -1043,7 +1145,7 @@ diff -Naur vdr-htdocs/webapp/www/settings-fstab.kl1 vdr-htdocs-ES/webapp/www/set
  </html>
 diff -Naur vdr-htdocs/webapp/www/settings.kl1 vdr-htdocs-ES/webapp/www/settings.kl1
 --- vdr-htdocs/webapp/www/settings.kl1	2008-03-06 21:19:26.000000000 +0100
-+++ vdr-htdocs-ES/webapp/www/settings.kl1	2008-03-06 21:20:53.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/settings.kl1	2008-03-08 18:03:58.000000000 +0100
 @@ -45,7 +45,7 @@
  getConfig();
  
@@ -1076,13 +1178,13 @@ diff -Naur vdr-htdocs/webapp/www/settings.kl1 vdr-htdocs-ES/webapp/www/settings.
  %>
  </select>
 -<p><input type="submit" value=" update " /></p>
-+<p><input type="submit" value="<% io_printf(out,tr("update")); %>" /></p>
++<p><input type="submit" value="<% io_printf(out,tr(" update ")); %>" /></p>
  </form>
  </div>
  
 diff -Naur vdr-htdocs/webapp/www/settings-vdr.kl1 vdr-htdocs-ES/webapp/www/settings-vdr.kl1
 --- vdr-htdocs/webapp/www/settings-vdr.kl1	2008-03-06 21:19:26.000000000 +0100
-+++ vdr-htdocs-ES/webapp/www/settings-vdr.kl1	2008-03-06 21:20:53.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/settings-vdr.kl1	2008-03-08 18:14:08.000000000 +0100
 @@ -35,7 +35,7 @@
  getConfig();
  
@@ -1101,7 +1203,7 @@ diff -Naur vdr-htdocs/webapp/www/settings-vdr.kl1 vdr-htdocs-ES/webapp/www/setti
  </ul>
  <span id="navclear"></span>
  </div>
-@@ -65,7 +65,7 @@
+@@ -65,17 +65,17 @@
   <li class="act"><a href="settings-vdr.kl1"><% io_printf(out,"VDR"); %></a></li>
   <li><a href="settings-boxamp.kl1"><% io_printf(out,"BoxAmp"); %></a></li>
   <li><a href="settings-fstab.kl1"><% io_printf(out,tr("Network shares")); %></a></li>
@@ -1110,7 +1212,10 @@ diff -Naur vdr-htdocs/webapp/www/settings-vdr.kl1 vdr-htdocs-ES/webapp/www/setti
  </ul>
  </div>
  </div>
-@@ -75,7 +75,7 @@
+ 
+ <div class="content">
+-<p>Noch nicht fertig!</p>
++<p><% io_printf(out,tr("Not finished yet!")); %></p>
  </div>
  
  <div class="foot">
@@ -1151,7 +1256,7 @@ diff -Naur vdr-htdocs/webapp/www/timers.kl1 vdr-htdocs-ES/webapp/www/timers.kl1
    }
 diff -Naur vdr-htdocs/webapp/www/view.kl1 vdr-htdocs-ES/webapp/www/view.kl1
 --- vdr-htdocs/webapp/www/view.kl1	2008-03-06 21:19:26.000000000 +0100
-+++ vdr-htdocs-ES/webapp/www/view.kl1	2008-03-06 21:20:53.000000000 +0100
++++ vdr-htdocs-ES/webapp/www/view.kl1	2008-03-08 18:20:32.000000000 +0100
 @@ -141,7 +141,7 @@
    }
  } else {
@@ -1179,6 +1284,15 @@ diff -Naur vdr-htdocs/webapp/www/view.kl1 vdr-htdocs-ES/webapp/www/view.kl1
  </ul>
  </div>
  </div>
+@@ -199,7 +199,7 @@
+ if ((stat(fileMapping[fileNum].file,&status))>=0) {
+   io_printf(out,"<table><tr><td><span>&nbsp;</span><br /><a href=\"view.kl1?save=%s\"><img src=\"/img/floppy16.png\" border=\"0\"></a>",fileMapping[fileNum].name);
+   io_printf(out,"&nbsp;<a href=\"view.kl1?print=%s\" target=\"_blank\"><img src=\"/img/printer16.png\" border=\"0\"></a></td>",fileMapping[fileNum].name);
+-  io_printf(out,"<td><span>File</span><br />%s</td><td><span>Date</span><br />%s</td></tr></table>\n<pre>\n",fileMapping[fileNum].file,ctime(&status.st_mtime));
++  io_printf(out,"<td><span>%s</span><br />%s</td><td><span>%s</span><br />%s</td></tr></table>\n<pre>\n",tr("file"),fileMapping[fileNum].file,tr("date"),ctime(&status.st_mtime));
+ 
+   FILE *f = fopen(fileMapping[fileNum].file,"r");
+   if (f) {
 diff -Naur vdr-htdocs/webapp/www/watchit.kl1 vdr-htdocs-ES/webapp/www/watchit.kl1
 --- vdr-htdocs/webapp/www/watchit.kl1	2008-03-06 21:19:26.000000000 +0100
 +++ vdr-htdocs-ES/webapp/www/watchit.kl1	2008-03-06 21:20:53.000000000 +0100

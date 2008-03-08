@@ -1,6 +1,297 @@
+diff -Naur osdadjust-0.0.1-orig/i18n.c osdadjust-0.0.1/i18n.c
+--- osdadjust-0.0.1-orig/i18n.c	2008-02-11 21:43:05.000000000 +0100
++++ osdadjust-0.0.1/i18n.c	2008-03-08 19:45:57.000000000 +0100
+@@ -18,7 +18,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Ajustar OSD", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -40,7 +40,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Ajustar OSD Tamaño y posición", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -62,7 +62,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Opciones generales", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -84,7 +84,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Ocultar entrada en menú principal", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -106,7 +106,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Ocultar texto de ayuda", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -128,7 +128,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Silenciar al abrir", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -150,7 +150,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Color de fondo", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -172,7 +172,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Color de primer plano", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -194,7 +194,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Grosor de la línea", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -216,7 +216,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Salto de anchura", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -238,7 +238,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Tamaño y posición", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -260,7 +260,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Mostrar rejilla", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -283,7 +283,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Resolución", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -306,7 +306,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Proporción de aspecto", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -328,7 +328,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Formato de vídeo", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -350,7 +350,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Pulse 1-9 para mover,", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -372,7 +372,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Arriba/Abajo e Izquierda/Derecha para redimensionar,", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -394,7 +394,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Ok para guardar, Volver para cancelar.", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -416,7 +416,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "¡La anchura debe ser un múltiplo de 8!", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -438,7 +438,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Derecha", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -460,7 +460,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Abajo", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -482,7 +482,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Transparente", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -504,7 +504,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Transparente 50", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -526,7 +526,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Negro", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -548,7 +548,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Rojo", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -570,7 +570,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Verde", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -592,7 +592,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Amarillo", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -614,7 +614,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Magenta", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -636,7 +636,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Azul", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -658,7 +658,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Cian", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -680,7 +680,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Blanco", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -702,7 +702,7 @@
+     "", // Norsk
+     "", // suomi
+     "", // Polski
+-    "", // Español
++    "Gris", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
 diff -Naur osdadjust-0.0.1-orig/Makefile osdadjust-0.0.1/Makefile
 --- osdadjust-0.0.1-orig/Makefile	2008-02-08 22:20:30.000000000 +0100
-+++ osdadjust-0.0.1/Makefile	2008-03-08 15:00:47.000000000 +0100
++++ osdadjust-0.0.1/Makefile	2008-03-08 19:24:49.000000000 +0100
 @@ -20,8 +20,8 @@
  
  ### The directory environment:
@@ -32,7 +323,7 @@ diff -Naur osdadjust-0.0.1-orig/Makefile osdadjust-0.0.1/Makefile
  	@-rm -rf $(TMPDIR)/$(ARCHIVE)
 diff -Naur osdadjust-0.0.1-orig/po/es_ES.po osdadjust-0.0.1/po/es_ES.po
 --- osdadjust-0.0.1-orig/po/es_ES.po	2008-02-11 21:44:04.000000000 +0100
-+++ osdadjust-0.0.1/po/es_ES.po	2008-03-08 15:34:18.000000000 +0100
++++ osdadjust-0.0.1/po/es_ES.po	2008-03-08 19:24:49.000000000 +0100
 @@ -1,7 +1,7 @@
  # VDR plugin language source file.
  # Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
