@@ -1,0 +1,55 @@
+Description = Black
+clrBackground = EE3e4044 #496DCC 
+clrAltBackground = EE25252a #393D8C
+clrTitleBg = EE37383a #5f6064 #4158BC
+clrLogoBg = EE3e4044 #575758 #496DAC
+clrBottomBg = EE37383a #5f6064 #1D2F7D
+
+clrBotProgBarBg = FF808080
+clrBotProgBarFg = EE9cea6d #C4C400
+
+clrMenuTxtFg = FFDDDDDD
+clrTitleFg = FFDDDDDD
+clrTitleShadow = FF000000
+
+clrSymbolActive = FF90ec58 #C4C400
+clrSymbolInactive = FF808080
+clrSymbolRecord = FFC40000
+clrSymbolRecordBg = FFDDDDDD
+clrSymbolTimerActive = FF0000C4
+clrSymbolVpsActive = FF90ec58 #C4C400
+clrSymbolRecActive = FFC40000
+clrSymbolRunActive = FF90ec58 #00C400
+
+clrButtonRedFg = FFDDDDDD
+clrButtonRedBg = E8C40000
+clrButtonGreenFg = FF111111
+clrButtonGreenBg = E800C400
+clrButtonYellowFg = FF111111
+clrButtonYellowBg = E8C4C400
+clrButtonBlueFg = FFDDDDDD
+clrButtonBlueBg = E80000C4
+
+clrMessageStatusFg = FF111111
+clrMessageStatusBg = E89cff70 #C4C400
+clrMessageInfoFg = FF111111
+clrMessageInfoBg = E89cff70 #C4C400
+clrMessageWarningFg = FF111111
+clrMessageWarningBg = E8C4C400
+clrMessageErrorFg = FF111111
+clrMessageErrorBg = E8d2544d #C4C400
+
+clrVolumeBar = FF33CC33
+clrVolumeBarMute = EE496DCC
+
+clrMenuItemSelectableFg = FFDDDDDD
+clrMenuItemNotSelectableFg = FFAFAFCF
+
+clrReplayCurrent = EE8d8d93 #C3CAFA
+clrReplayTotal = EE8d8d93 #C3CAFA
+clrReplayModeJump = EE8d8d93 #C3CAFA
+clrReplayBarAreaBg = EE5c5d61 #496DCC
+clrReplayProgressSeen = EE33CC33
+clrReplayProgressRest = EE515255 #496DCC
+clrReplayProgressSelected = EE1d1e38 #292D5C
+clrReplayProgressMark = EE292D5C

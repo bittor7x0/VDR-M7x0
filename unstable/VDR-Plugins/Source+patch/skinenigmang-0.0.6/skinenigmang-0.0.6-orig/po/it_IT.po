@@ -1,0 +1,375 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Alberto Carraro <bertocar@tin.it>, 2001
+# Antonio Ospite <ospite@studenti.unina.it>, 2003
+# Sean Carlos <seanc@libero.it>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
+"POT-Creation-Date: 2008-03-09 06:37+0100\n"
+"PO-Revision-Date: 2008-03-09 01:09+0100\n"
+"Last-Translator: Gringo <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Sunday"
+msgstr "Domenica"
+
+msgid "Monday"
+msgstr "Lunedì"
+
+msgid "Tuesday"
+msgstr "Martedì"
+
+msgid "Wednesday"
+msgstr "mercoledì"
+
+msgid "Thursday"
+msgstr "Giovedì"
+
+msgid "Friday"
+msgstr "Venerdì"
+
+msgid "Saturday"
+msgstr "Sabato"
+
+msgid "*** Invalid Channel ***"
+msgstr "*** Canale non valido ***"
+
+msgid "en_US"
+msgstr "it_IT"
+
+msgid "WARNING"
+msgstr "ATTENZIONE"
+
+msgid "Timer conflict"
+msgstr "Conflitto timer"
+
+msgid "Timer conflicts"
+msgstr "Conflitti timer"
+
+msgid "TIMERS"
+msgstr "TIMER"
+
+msgid "min"
+msgstr "min"
+
+msgid "Languages"
+msgstr "Lingue"
+
+msgid "RERUNS OF THIS SHOW"
+msgstr "REPLICHE DI QUESTO SPETTACOLO"
+
+msgid "Size"
+msgstr "Dim."
+
+msgid "Auxiliary information"
+msgstr "Informazione ausiliare"
+
+msgid "Mute"
+msgstr "Muto"
+
+msgid "Volume"
+msgstr "Volume"
+
+msgid "EnigmaNG"
+msgstr "EnigmaNG"
+
+msgid "TrueType Font"
+msgstr "Car. TrueType"
+
+msgid "No TTF support!"
+msgstr "Nessun supporto TTF!"
+
+msgid "Default OSD Font"
+msgstr "Car. OSD pred."
+
+msgid "Default Fixed Size Font"
+msgstr "Car. dim. fissa pred."
+
+msgid "Default Small Font"
+msgstr "Car. piccolo pred."
+
+msgid "General"
+msgstr "Generale"
+
+msgid "Logos & Symbols"
+msgstr "Loghi e simboli"
+
+msgid "Animated Text"
+msgstr "Testo animato"
+
+msgid "Fonts"
+msgstr "Caratteri"
+
+msgid "EPGSearch"
+msgstr "EPGSearch"
+
+msgid "elapsed"
+msgstr "trascorso"
+
+msgid "remaining"
+msgstr "rimasto"
+
+msgid "percent"
+msgstr "percentuale"
+
+msgid "never"
+msgstr "mai"
+
+msgid "use size.vdr only"
+msgstr "usa solo size.vdr"
+
+msgid "always"
+msgstr "sempre"
+
+msgid "Last line"
+msgstr "Ultima riga"
+
+msgid "Help buttons"
+msgstr "Tasti aiuto"
+
+msgid "Free last line"
+msgstr "Ultima riga libera"
+
+msgid "Try 8bpp single area"
+msgstr "Prova area singola a 8bpp"
+
+msgid "Show info area in main menu"
+msgstr "Mostra area info nel menu"
+
+msgid "Show auxiliary information"
+msgstr "Mostra info ausiliare"
+
+msgid "Show recording's size"
+msgstr "Mostra dimensione reg."
+
+msgid "Full title width"
+msgstr "Lunghezza titolo completo"
+
+msgid "Show remaining/elapsed time"
+msgstr "Mostra tempo rimasto/trascorso"
+
+msgid "Show VPS"
+msgstr "Mostra VPS"
+
+msgid "Show progressbar"
+msgstr "Mostra barra avanzamento"
+
+msgid "Dynamic OSD size"
+msgstr "Dimensione OSD dinamica"
+
+msgid "Show messages in menu on"
+msgstr "Mostra messaggi nel menu"
+
+msgid "pixel algo"
+msgstr "algoritmo pixel"
+
+msgid "ratio algo"
+msgstr "algoritmo medio"
+
+msgid "zoom image"
+msgstr "ingrandisci immagine"
+
+msgid "only if new mail present"
+msgstr "solo se presenti nuove email"
+
+msgid "Flushing channel logo cache..."
+msgstr "Pulizia cache logo canale..."
+
+msgid "Show symbols"
+msgstr "Mostra simboli"
+
+msgid "  Show symbols in menu"
+msgstr "  Mostra simboli menu"
+
+msgid "  Show symbols in replay"
+msgstr "  Mostra simboli esecuzione"
+
+msgid "  Show symbols in messages"
+msgstr "  Mostra simboli messaggi"
+
+msgid "  Show symbols in audio"
+msgstr "  Mostra simboli audio"
+
+msgid "Show symbols in lists"
+msgstr "Mostra simboli elenchi"
+
+msgid "Show marker in lists"
+msgstr "Mostra indicatore elenchi"
+
+msgid "Show status symbols"
+msgstr "Mostra simboli stato"
+
+msgid "  Show flags"
+msgstr "  Mostra segni"
+
+msgid "  Show WSS mode symbols"
+msgstr "  Mostra simboli mod. WSS"
+
+msgid "  Show mail icon"
+msgstr "  Mostra icona email"
+
+msgid "Show event/recording images"
+msgstr "Mostra immagini evento/reg."
+
+msgid "  Resize images"
+msgstr "  Ridimensiona immagini"
+
+msgid "  Image width"
+msgstr "  Larghezza immagine"
+
+msgid "  Image height"
+msgstr "  Altezza immagine"
+
+msgid "  Image format"
+msgstr "  Formato immagine"
+
+msgid "Show channel logos"
+msgstr "Mostra loghi canali"
+
+msgid "  Identify channel by"
+msgstr "  Identifica canale per"
+
+msgid "name"
+msgstr "nome"
+
+msgid "data"
+msgstr "dati"
+
+msgid "Channel logo cache size"
+msgstr "Dim. cache logo canale"
+
+msgid "Button$Flush cache"
+msgstr "Pulisci cache"
+
+msgid "left and right"
+msgstr "sinistra e destra"
+
+msgid "to the left"
+msgstr "verso la sinistra"
+
+msgid "Enable"
+msgstr "Abilita"
+
+msgid "  Scroll OSD title"
+msgstr "  Scorri titolo OSD"
+
+msgid "  Scroll info area"
+msgstr "  Scorri info area"
+
+msgid "  Scroll active list items"
+msgstr "  Scorri elenco valori attivi"
+
+msgid "  Scroll other items"
+msgstr "  Scorri altri valori"
+
+msgid "  Scoll behaviour"
+msgstr "  Modalità scorrimento"
+
+msgid "  Scroll delay (ms)"
+msgstr "  Ritardo scorrimento (ms)"
+
+msgid "  Scroll pause (ms)"
+msgstr "  Pausa scorrimento (ms)"
+
+msgid "  Blink pause (ms)"
+msgstr "  Pausa lampeggiante (ms)"
+
+msgid "Name"
+msgstr "Nome"
+
+msgid "Width"
+msgstr "Ampiezza"
+
+msgid "No TrueType fonts installed!"
+msgstr "Nessun carattere TrueType installato!"
+
+msgid "Fixed Font"
+msgstr "Carattere fisso"
+
+msgid "Button$Set"
+msgstr "Imposta"
+
+msgid "OSD title"
+msgstr "Titolo OSD"
+
+msgid "Messages"
+msgstr "Messaggi"
+
+msgid "Date"
+msgstr "Data"
+
+msgid "Help keys"
+msgstr "Tasti aiuto"
+
+msgid "Channelinfo: title"
+msgstr "Info canale: titolo"
+
+msgid "Channelinfo: subtitle"
+msgstr "Info canale: sottotitolo"
+
+msgid "Channelinfo: language"
+msgstr "Info canale: lingua"
+
+msgid "List items"
+msgstr "Elenco valori"
+
+msgid "Info area: timers title"
+msgstr "Info area: titoli timer"
+
+msgid "Info area: timers text"
+msgstr "Info area: testo timer"
+
+msgid "Info area: warning title"
+msgstr "Info area: titolo avviso"
+
+msgid "Info area: warning text"
+msgstr "Info area: testo avviso"
+
+msgid "Details: title"
+msgstr "Dettagli: titolo"
+
+msgid "Details: subtitle"
+msgstr "Dettagli: sottotitolo"
+
+msgid "Details: date"
+msgstr "Dettagli: data"
+
+msgid "Details: text"
+msgstr "Dettagli: testo"
+
+msgid "Replay: times"
+msgstr "Riproduzione: volte"
+
+msgid "if exists"
+msgstr "se esiste"
+
+msgid "Number of Reruns"
+msgstr "Numero di repliche"
+
+msgid "Use Subtitle for reruns"
+msgstr "Utilizza sottotitolo per repliche"
+
+msgid "Show timer conflicts"
+msgstr "Mostra conflitti timer"
+
+msgid "EnigmaNG skin"
+msgstr "Interfaccia EnigmaNG"
+
+msgid "Channel:"
+msgstr "Canale:"
+
+msgid "Search pattern:"
+msgstr "Modello di ricerca:"
+
+msgid "Timer check"
+msgstr "Verifica timer"
+
+msgid "No timer check"
+msgstr "Nessuna verifica timer"

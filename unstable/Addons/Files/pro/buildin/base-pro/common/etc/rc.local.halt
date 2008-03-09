@@ -27,7 +27,13 @@ if [ X"${runvdr}" != X"NO" ]; then
             sleep 1
      done
 
-     [ -f /var/run/runvdr.pid ] && rm -f /var/run/runvdr.pid
+     if [ -f /var/run/runvdr.pid ] ; then
+            rm -f /var/run/runvdr.pid
+            vdr_pid=`cat /var/run/vdr.pid`
+            kill -KILL $vdr_pid
+     fi
+
+     rm -f /var/run/vdr.pid
 
      [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && mv /var/vdr/epg.data ${vdr_epgfile}
 
