@@ -25,9 +25,12 @@ if [ X"${runvdr}" != X"NO" ]; then
      done
 
      if [ -f /var/run/runvdr.pid ] ; then
+            pid_file=`cat /var/run/runvdr.pid`
+            kill -KILL $pid_file
             rm -f /var/run/runvdr.pid
-            vdr_pid=`cat /var/run/vdr.pid`
-            kill -KILL $vdr_pid
+
+            pid_file=`cat /var/run/vdr.pid`
+            kill -KILL $pid_file
      fi
 
      rm -f /var/run/vdr.pid
