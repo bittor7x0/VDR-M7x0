@@ -1,0 +1,20 @@
+A continuación se muestran las teclas y la función que tienen durante la reproducción de una Grabación.
+
+     "Arriba" -	Continúa la reproducción, después de haber realizado una Pausa o haber utilizado los modos de Avanzar o Retroceder.
+     
+     "Abajo" - Para la reproducción en la posición actual. Pulsando otra vez continua la reproducción.
+     
+     "Azul" - Para la reproducción y guarda la posición actual, de modo que podremos salir de la reproducción y la próxima vez que volvamos a reproducir se continuará exáctamente desde este punto.
+     
+     "Izquierda" / "Derecha" - La reproducción Avanzará o Retrocederá a mayor velocidad; pulsando otra vez se recuperará la velocidad normal. Si nos encontrásemos en modo Pausa, la reproducción se hará a velocidad lenta y pulsando otra vez se volverá al modo Pausa. Si mantenemos pulsado el botón Izquierda se mantendrá la función (ir más rápido o lento) hasta que dejemos de pulsarlo. 
+     
+     Si tenemos la opción de Multi Speed Mode activa en el menú de configuración entonces la función de este botón cambia pasando a ofrecer tres velocidades de rapidez o lentitud, pudiendo cambiar entre ellas mediante la pulsación del botón respectivo varias veces.
+     
+     "Rojo" - Saltar a una posición específica. Introducir el punto en el tiempo (hora) al cual se quiere saltar y pulsar las teclas de Izq. o Dcha. para saltar de forma relativa a la posición actual, arriba para saltar a una posición absoluta y abajo para saltar y a la vez hacer una Pausa a una posición absoluta.
+     
+     "Verde" / "Amarillo" - Avanzar o Retroceder 60 segundos. Si se mantiene pulsado el botón entonces repetirá la función hasta que se libere.
+     
+     "OK" - Muestra una ventana informativa sobre la reproducción, donde podremos ver cuanto tiempo llevamos reproducido, cuanto queda, la hora, fecha y título de la grabación. Pulsando otra vez el botón Ok quita la ventana.
+     
+     "Atrás" - Para la reproducción y muestra otra vez el menú de Grabaciones. Esta opción se usa típicamente para navegar entre la lista de las diferentes grabaciones e ir reproduciendolas. 
+     

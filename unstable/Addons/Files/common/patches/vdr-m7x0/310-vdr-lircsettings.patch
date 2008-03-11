@@ -1,0 +1,170 @@
+--- VDR-NG-orig/config.c	Tue Mar 11 11:48:37 2008
++++ VDR-NG/config.c	Tue Mar 11 13:21:13 2008
+@@ -336,6 +336,9 @@
+   JumpSecondsRepeat = 120;
+   JumpFramesRepeat = 15;
+   AbortWhenPluginFails = 0;
++  LircRepeatDelay = 350;
++  LircRepeatFreq = 100;
++  LircRepeatTimeout = 500;
+ }
+ 
+ cSetup& cSetup::operator= (const cSetup &s)
+@@ -522,6 +525,9 @@
+   else if (!strcasecmp(Name, "JumpSecondsRepeat"))   JumpSecondsRepeat  = atoi(Value);
+   else if (!strcasecmp(Name, "JumpFramesRepeat"))    JumpFramesRepeat   = atoi(Value);
+   else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
++  else if (!strcasecmp(Name, "LircRepeatDelay"))     LircRepeatDelay    = atoi(Value);
++  else if (!strcasecmp(Name, "LircRepeatFreq"))      LircRepeatFreq     = atoi(Value);
++  else if (!strcasecmp(Name, "LircRepeatTimeout"))   LircRepeatTimeout  = atoi(Value);
+   else
+      return false;
+   return true;
+@@ -615,6 +621,9 @@
+   Store("JumpSecondsRepeat",  JumpSecondsRepeat);
+   Store("JumpFramesRepeat",   JumpFramesRepeat);
+   Store("AbortWhenPluginFails", AbortWhenPluginFails);
++  Store("LircRepeatDelay",    LircRepeatDelay);
++  Store("LircRepeatFreq",     LircRepeatFreq);
++  Store("LircRepeatTimeout",  LircRepeatTimeout);
+ 
+   Sort();
+ 
+--- VDR-NG-orig/config.h	Tue Mar 11 11:48:37 2008
++++ VDR-NG/config.h	Tue Mar 11 13:21:47 2008
+@@ -293,6 +293,9 @@
+   int RecordingsSortDirsFirst;
+   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
+   int AbortWhenPluginFails;
++  int LircRepeatDelay;
++  int LircRepeatFreq;
++  int LircRepeatTimeout;
+   int __EndData__;
+   cSetup(void);
+   cSetup& operator= (const cSetup &s);
+--- VDR-NG-orig/i18n.c	Tue Mar 11 11:48:38 2008
++++ VDR-NG/i18n.c	Tue Mar 11 13:34:40 2008
+@@ -4871,6 +4871,69 @@
+     "",// TODO
+     ""// TODO
+   },
++  { "Setup.Miscellaneous$Lirc repeat delay",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Lirc repetir retraso",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.Miscellaneous$Lirc repeat freq",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Lirc repetir frecuencia",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.Miscellaneous$Lirc repeat timeout",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Lirc repetir tiempo de espera",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Setup.Miscellaneous$Filter channels",
+     "",// TODO
+     "",// TODO
+--- VDR-NG-orig/lirc.c	Fri Sep 14 17:43:46 2007
++++ VDR-NG/lirc.c	Tue Mar 11 13:15:17 2008
+@@ -12,6 +12,7 @@
+ #include "lirc.h"
+ #include <netinet/in.h>
+ #include <sys/socket.h>
++#include "config.h"
+ 
+ #define REPEATDELAY 350 // ms
+ #define REPEATFREQ 100 // ms
+@@ -127,7 +128,7 @@
+               continue;
+               }
+            if (count == 0) {
+-              if (strcmp(KeyName, LastKeyName) == 0 && FirstTime.Elapsed() < REPEATDELAY)
++              if (strcmp(KeyName, LastKeyName) == 0 && FirstTime.Elapsed() < (unsigned int)Setup.LircRepeatDelay)
+                  continue; // skip keys coming in too fast
+               if (repeat)
+                  Put(LastKeyName, false, true);
+@@ -139,18 +140,18 @@
+ //M7X0 END AK
+               }
+            else {
+-              if (LastTime.Elapsed() < REPEATFREQ)
++              if (LastTime.Elapsed() < (unsigned int)Setup.LircRepeatFreq)
+                  continue; // repeat function kicks in after a short delay (after last key instead of first key)
+-              if (FirstTime.Elapsed() < REPEATDELAY)
++              if (FirstTime.Elapsed() < (unsigned int)Setup.LircRepeatDelay)
+                  continue; // skip keys coming in too fast (for count != 0 as well)
+               repeat = true;
+-              timeout = REPEATDELAY;
++              timeout = Setup.LircRepeatDelay;
+               }
+            LastTime.Set();
+            Put(KeyName, repeat);
+            }
+         else if (repeat) { // the last one was a repeat, so let's generate a release
+-           if (LastTime.Elapsed() >= REPEATTIMEOUT) {
++           if (LastTime.Elapsed() >= (unsigned int)Setup.LircRepeatTimeout) {
+               Put(LastKeyName, false, true);
+               repeat = false;
+               *LastKeyName = 0;
+--- VDR-NG-orig/menu.c	Tue Mar 11 11:48:39 2008
++++ VDR-NG/menu.c	Tue Mar 11 13:36:32 2008
+@@ -3194,6 +3194,9 @@
+   Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
+   Add(new cMenuEditBoolItem( tr("Setup.Miscellaneous$Abort when Plugin fails to load"),    &data.AbortWhenPluginFails));
++  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Lirc repeat delay"),          &data.LircRepeatDelay, 0, 1000));
++  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Lirc repeat freq"),           &data.LircRepeatFreq, 0, 1000));
++  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Lirc repeat timeout"),        &data.LircRepeatTimeout, 0, 5000));
+ }
+ 
+ // --- cMenuSetupPluginItem --------------------------------------------------

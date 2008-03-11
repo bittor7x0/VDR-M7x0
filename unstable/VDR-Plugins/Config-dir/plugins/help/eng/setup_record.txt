@@ -1,0 +1,57 @@
+Margin at start = 2
+Margin at stop = 10
+
+     Defines how many minutes before the official start time of a broadcast VDR shall start recording, and how long after the official end time it shall stop recording. These margins are added automatically to timers that are created from the EPG data.
+
+Primary limit = 0
+
+     The minimum priority a timer must have to be allowed to use the primary DVB interface, or to force another timer with higher priority to use the primary DVB interface. This is mainly useful for recordings that should take place only when there is nothing e lse to do, but should never keep the user from viewing stuff on the primary interface. On systems with only one DVB card, timers with a priority below PrimaryLimit will never execute.
+
+Default priority = 50
+Default lifetime = 99
+
+     The default Priority and Lifetime values used when creating a new timer event. A Lifetime value of 99 means that this recording will never be deleted automatically.
+
+Pause priority = 10
+Pause lifetime = 1
+
+     The Priority and Lifetime values used when pausing live video.
+
+Use episode name = yes
+
+     Repeating timers use the EPG's 'Episode name' information to create recording file names in a hierarchical structure (for instance to gather all episodes of a series in a common subdirectory). This parameter can be used to control this.
+
+       no - don't use the 'Episode name'
+       yes - use it (and create subdirectories)
+
+Use VPS = 0
+
+     Defines whether a timer that is created from an EPG entry (by pressing the "Record" (red) button in the "Schedules" or "What's on now/next?" menu) will automatically use VPS if the event it is created for has a VPS time.
+
+VPS margin = 120
+
+     Defines how many seconds before a VPS controlled timer is scheduled to start, VDR will make sure that one of the DVB devices is tuned to the transponder that timer shall record from. This is necessary for the "Running Status" information that is broadcast in the EPG data to be seen by VDR.
+
+Mark instant recording = yes
+
+     Defines whether an "instant recording" (started by pressing the "Red" button in the "VDR" menu) will be marked with a '@' character to make it distinguishable from timer recordings in the "Recordings" menu.
+
+Name instant recording = TITLE EPISODE
+
+     Defines how to name an instant recording. If the keywords TITLE and/or EPISODE are present, they will be replaced with the title and episode information from the EPG data at the time of recording (if that data is available). If this parameter is empty, the channel name will be used by default.
+
+Instant rec. time = 180
+
+     Defines the duration of an instant recording in minutes. Default is 180 minutes (3 hours). The stop time of an instant recording can be modified at any time by editing the respective timer in the "Timers" menu.
+
+Record Dolby Digital = yes
+
+     Turns recording of the Dolby Digital audio channels on or off. This may be useful if you don't have the equipment to replay Dolby Digital audio and want to save disk space.
+
+Max. video file size = 2000
+
+     The maximum size of a single recorded video file in MB. The valid range is 100...2000. Default is 2000, but you may want to use smaller values if you are planning on archiving a recording to CD.
+
+Split edited files = no
+
+     During the actual editing process VDR writes the result into files that may grow up to MaxVideoFileSize. If you prefer to have each marked sequence stored in a separate file (named 001.vdr, 002.vdr, ...) you can set this option to 'yes'.

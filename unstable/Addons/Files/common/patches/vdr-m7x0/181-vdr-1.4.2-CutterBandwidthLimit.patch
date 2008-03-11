@@ -1,0 +1,67 @@
+--- vdr-1.4.2-1-orig/cutter.c	2006-09-08 00:15:09.000000000 +0300
++++ vdr-1.4.2-1/cutter.c	2006-09-08 14:38:39.000000000 +0300
+@@ -14,6 +14,18 @@
+ #include "videodir.h"
+ 
++
+ // --- cCuttingThread --------------------------------------------------------
+ 
++#ifndef CUTTER_MAX_BANDWIDTH
++#  define CUTTER_MAX_BANDWIDTH MEGABYTE(10) // 10 MB/s
++#endif
++#ifndef CUTTER_REL_BANDWIDTH
++#  define CUTTER_REL_BANDWIDTH 75 // %
++#endif
++#ifndef CUTTER_PRIORITY
++#  define CUTTER_PRIORITY sched_get_priority_min(SCHED_OTHER)
++#endif
++#define CUTTER_TIMESLICE   100   // ms
++
+ class cCuttingThread : public cThread {
+ private:
+@@ -61,4 +73,15 @@
+ void cCuttingThread::Action(void)
+ {
++  {
++    sched_param tmp;
++    tmp.sched_priority = CUTTER_PRIORITY;
++    if(!pthread_setschedparam(pthread_self(), SCHED_OTHER, &tmp))
++      printf("cCuttingThread::Action: cant set priority\n");
++  }
++
++  int bytes = 0;
++  int __attribute__((unused)) burst_size = CUTTER_MAX_BANDWIDTH * CUTTER_TIMESLICE / 1000; // max bytes/timeslice 
++  cTimeMs __attribute__((unused)) t;
++
+   cMark *Mark = fromMarks.First();
+   if (Mark) {
+@@ -171,4 +194,29 @@
+                  LastMark = true;
+               }
++
++	   bytes += Length;
++	   if(bytes >= burst_size) {
++	     int elapsed = t.Elapsed();
++	     int sleep = 0;
++	     
++#if CUTTER_REL_BANDWIDTH > 0 &&  CUTTER_REL_BANDWIDTH < 100
++	     // stay under max. relative bandwidth
++
++	     sleep = (elapsed * 100 / CUTTER_REL_BANDWIDTH) - elapsed;
++	     //if(sleep<=0 && elapsed<=2) sleep = 1; 
++	     //if(sleep) esyslog("cutter: relative bandwidth limit, sleep %d ms (chunk %dk / %dms)", sleep, burst_size/1024, CUTTER_TIMESLICE);
++#endif
++	     // stay under max. absolute bandwidth
++	     if(elapsed < CUTTER_TIMESLICE) {
++	       sleep = max(CUTTER_TIMESLICE - elapsed, sleep);
++	       //if(sleep) esyslog("cutter: absolute bandwidth limit, sleep %d ms (chunk %dk / %dms)", sleep, burst_size/1024, CUTTER_TIMESLICE);
++	     }
++
++	     if(sleep>0)
++	       cCondWait::SleepMs(sleep);
++	     t.Set();
++	     bytes = 0;
++	   }
++
+            }
+      Recordings.TouchUpdate();

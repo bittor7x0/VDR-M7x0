@@ -1,0 +1,15 @@
+
+      Up - Crsr up
+      Down - Crsr down
+      Left - Page up
+      Right - Page down
+      Ok - Switch
+      Menu - Menu off
+      Back - VDR menu
+      Red - Edit
+      Green - New
+      Yellow - Delete
+      Blue - Mark
+      0..9 - Sort
+
+    In the "Channels" menu the '0' key switches the sort mode through "by number", "by name" and "by provider".

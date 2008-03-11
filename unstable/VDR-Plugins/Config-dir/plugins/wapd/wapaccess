@@ -1,0 +1,6 @@
+# 'wapaccess' controls user based access. The format is similar to apache's
+# htpasswd file format and holds lines in the form 'user:passwdhash'. Apache's
+# htpasswd utility can be used to create and edit the 'wapaccess' file.
+
+# user: root - pass: l1nux
+root:Nb7yi3Z5eu.kY
