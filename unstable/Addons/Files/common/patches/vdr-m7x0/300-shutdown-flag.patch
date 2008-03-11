@@ -5,7 +5,7 @@ diff -Naur VDR-NG-orig/shutdown.c VDR-NG/shutdown.c
  #include <stdlib.h>
  #include <sys/types.h>
  #include <sys/wait.h>
-+#include<sys/stat.h>
++#include <sys/stat.h>
  #include "channels.h"
  #include "config.h"
  #include "cutter.h"
