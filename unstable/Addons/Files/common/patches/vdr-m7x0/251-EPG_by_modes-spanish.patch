@@ -15,7 +15,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
-+    "Modos Canal EPG",
++    "Modos EPG por canal",
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
@@ -37,7 +37,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
-+    "Canal Modo por defecto",
++    "Modo por defecto para canales",
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
@@ -59,7 +59,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
-+    "Canal Modo inverso",
++    "Modo inverso para canales",
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
@@ -81,7 +81,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
-+    "Canal Límite",
++    "Límite para canales",
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
@@ -235,7 +235,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
-+    "Sólo Ahora y Después",
++    "Ahora y Después",
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO

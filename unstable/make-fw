@@ -94,12 +94,15 @@ then
 	rm -rf $vdr_fw/patches
 	rm -rf $vdr_fw/prg-fw-configs
 	rm -rf $vdr_fw/rootfs-file-lists
+	rm -rf $vdr_fw/build/vdr-m7x0-PLUGINS-extra
 else
 	mkdir -p "$vdr_fw"
 fi
 
 echo "Copying temporal dir to final dir"
 cp -Trf "$tmp" "$vdr_fw"
+mkdir -p "$vdr_fw/build/vdr-m7x0-PLUGINS-extra"
+cp -Trf "$vdr_em_plugins" "$vdr_fw/build/vdr-m7x0-PLUGINS-extra"
 
 # Clean temp dir
 rm -rf "$tmp"
