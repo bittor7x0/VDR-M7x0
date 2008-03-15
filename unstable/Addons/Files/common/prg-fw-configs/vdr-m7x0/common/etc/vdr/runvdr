@@ -43,9 +43,7 @@ while (true) do
     	    [ -f ${plug} ] && ln -sf ${plug} /var/vdr/lib/`basename ${plug}`
 	done
     done
-    ${vdr_bin} ${VDR_EPGOPT} ${VDR_FLAGS} ${vdr_pluginopts} ${vdr_stumode} \
-        & echo $! > /var/run/vdr.pid
-    wait $!
+    ${vdr_bin} ${VDR_EPGOPT} ${VDR_FLAGS} ${vdr_pluginopts} ${vdr_stumode}
     if [ $? -eq 0 -o $? -eq 2 ]; then 
         break
     fi
