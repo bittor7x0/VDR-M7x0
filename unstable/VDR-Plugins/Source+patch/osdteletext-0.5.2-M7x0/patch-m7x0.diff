@@ -1,6 +1,6 @@
 diff -Naur -x .svn osdteletext-orig/common.h osdteletext/common.h
 --- osdteletext-orig/common.h	1970-01-01 01:00:00.000000000 +0100
-+++ osdteletext/common.h	2008-01-30 21:44:15.000000000 +0100
++++ osdteletext/common.h	2008-03-17 20:15:12.000000000 +0100
 @@ -0,0 +1,22 @@
 +/*
 + * common.h: OSDTELETEXT plugin for the Video Disk Recorder
@@ -26,7 +26,7 @@ diff -Naur -x .svn osdteletext-orig/common.h osdteletext/common.h
 +
 diff -Naur -x .svn osdteletext-orig/hamm.c osdteletext/hamm.c
 --- osdteletext-orig/hamm.c	1970-01-01 01:00:00.000000000 +0100
-+++ osdteletext/hamm.c	2008-01-30 21:44:15.000000000 +0100
++++ osdteletext/hamm.c	2008-03-17 20:15:12.000000000 +0100
 @@ -0,0 +1,313 @@
 +/*
 + *  libzvbi - Error correction functions
@@ -343,7 +343,7 @@ diff -Naur -x .svn osdteletext-orig/hamm.c osdteletext/hamm.c
 +}
 diff -Naur -x .svn osdteletext-orig/hamm.h osdteletext/hamm.h
 --- osdteletext-orig/hamm.h	1970-01-01 01:00:00.000000000 +0100
-+++ osdteletext/hamm.h	2008-01-30 21:44:15.000000000 +0100
++++ osdteletext/hamm.h	2008-03-17 20:15:12.000000000 +0100
 @@ -0,0 +1,205 @@
 +/*
 + *  libzvbi - Error correction functions
@@ -550,15 +550,48 @@ diff -Naur -x .svn osdteletext-orig/hamm.h osdteletext/hamm.h
 +VBI3_END_DECLS
 +
 +#endif /* __ZVBI3_HAMM_H__ */
+diff -Naur -x .svn osdteletext-orig/HISTORY osdteletext/HISTORY
+--- osdteletext-orig/HISTORY	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/HISTORY	2008-03-17 20:24:24.000000000 +0100
+@@ -1,6 +1,11 @@
+ VDR Plugin 'teletextosd' Revision History
+ -----------------------------------------
+ 
++2008-01-31: version 0.5.2 open7x0 by zjuanma
++- Implemented Level 1.5 decoder for diacritical marks in many languages.
++  At the moment it's only for some characters in spanish, but is ready for fast implementation in other languages.
++- Caching index pages in background when changing the channel.
++
+ 2007-11-06: version 0.5.1 open7x0
+ - changes to work with the special vdr version for the Siemens Gigaset
+ - default cache path is now /tmp/vtx
 diff -Naur -x .svn osdteletext-orig/i18n.c osdteletext/i18n.c
---- osdteletext-orig/i18n.c	2008-01-31 19:53:47.000000000 +0100
-+++ osdteletext/i18n.c	2008-01-30 21:44:15.000000000 +0100
+--- osdteletext-orig/i18n.c	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/i18n.c	2008-03-17 20:42:00.000000000 +0100
+@@ -27,7 +27,7 @@
+     "Pàgina",     //Catalan
+     "ÁâàÐÝØæÐ",   //Russian
+   },              
+-  { "not found until now",      //English
++  { "not found until now, searching",      //English
+     "noch nicht gefunden", //German
+     "",               //Slovenian
+     "non trovata",    //Italian
 @@ -37,7 +37,7 @@
      "",               //Norwegian
      "ei löydy",       //Finnish
      "",               //Polish
 -    "no encontrada",  //Spanish
 +    "no disponible todavía, buscando ...",  //Spanish
+     "",               //Greek
+     "",               //Swedish
+     "",               //Romanian
+@@ -55,7 +55,7 @@
+     "",               //Norwegian
+     "Teksti-TV",      //Finnish
+     "",               //Polish
+-    "Teletexto (OSD)",//Spanish
++    "Teletexto",      //Spanish
      "",               //Greek
      "",               //Swedish
      "",               //Romanian
@@ -571,7 +604,68 @@ diff -Naur -x .svn osdteletext-orig/i18n.c osdteletext/i18n.c
      "",                  //Greek
      "",                  //Swedish
      "",                  //Romanian
-@@ -397,7 +397,7 @@
+@@ -243,6 +243,60 @@
+     "Tecla blava",        //Catalan
+     "ÁØÝïï ÚÝÞßÚÐ",       //Russian
+   },
++  { "Play",               //English
++    "",                   //German
++    "",                   //Slovenian
++    "",                   //Italian
++    "",                   //Dutch
++    "",                   //Portuguese
++    "",                   //French
++    "",                   //Norwegian
++    "",                   //Finnish
++    "",                   //Polish
++    "Reproducir",         //Spanish
++    "",                   //Greek
++    "",                   //Swedish
++    "",                   //Romanian
++    "",                   //Hugarian
++    "",                   //Catalan
++    "",                   //Russian
++  },
++  { "FastFwd",            //English
++    "",                   //German
++    "",                   //Slovenian
++    "",                   //Italian
++    "",                   //Dutch
++    "",                   //Portuguese
++    "",                   //French
++    "",                   //Norwegian
++    "",                   //Finnish
++    "",                   //Polish
++    "Avance rápido",      //Spanish
++    "",                   //Greek
++    "",                   //Swedish
++    "",                   //Romanian
++    "",                   //Hugarian
++    "",                   //Catalan
++    "",                   //Russian
++  },
++  { "FastRew",            //English
++    "",                   //German
++    "",                   //Slovenian
++    "",                   //Italian
++    "",                   //Dutch
++    "",                   //Portuguese
++    "",                   //French
++    "",                   //Norwegian
++    "",                   //Finnish
++    "",                   //Polish
++    "Retroceso rápido",   //Spanish
++    "",                   //Greek
++    "",                   //Swedish
++    "",                   //Romanian
++    "",                   //Hugarian
++    "",                   //Catalan
++    "",                   //Russian
++  },
+   { "Channel (press OK): ",        //English
+     "Sender (OK drücken): ",       //German
+     "",                            //Slovenian
+@@ -397,7 +451,7 @@
      "",                          //Norwegian
      "Pystykeskitys",             //Finnish
      "",                          //Polish
@@ -580,7 +674,7 @@ diff -Naur -x .svn osdteletext-orig/i18n.c osdteletext/i18n.c
      "",                          //Greek
      "",                          //Swedish
      "",                          //Romanian
-@@ -415,7 +415,7 @@
+@@ -415,7 +469,7 @@
      "",                          //Norwegian
      "Vaakakeskitys",             //Finnish
      "",                          //Polish
@@ -591,7 +685,7 @@ diff -Naur -x .svn osdteletext-orig/i18n.c osdteletext/i18n.c
      "",                          //Romanian
 diff -Naur -x .svn osdteletext-orig/macros.h osdteletext/macros.h
 --- osdteletext-orig/macros.h	1970-01-01 01:00:00.000000000 +0100
-+++ osdteletext/macros.h	2008-01-30 21:44:15.000000000 +0100
++++ osdteletext/macros.h	2008-03-17 20:15:12.000000000 +0100
 @@ -0,0 +1,99 @@
 +/*
 + *  libzvbi - Useful macros
@@ -693,8 +787,8 @@ diff -Naur -x .svn osdteletext-orig/macros.h osdteletext/macros.h
 +
 +#endif /* __ZVBI3_MACROS_H__ */
 diff -Naur -x .svn osdteletext-orig/Makefile osdteletext/Makefile
---- osdteletext-orig/Makefile	2008-01-31 19:53:47.000000000 +0100
-+++ osdteletext/Makefile	2008-01-30 21:44:15.000000000 +0100
+--- osdteletext-orig/Makefile	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/Makefile	2008-03-17 20:15:12.000000000 +0100
 @@ -51,7 +51,7 @@
  
  ### The object files (add further files here):
@@ -705,8 +799,8 @@ diff -Naur -x .svn osdteletext-orig/Makefile osdteletext/Makefile
  ### Implicit rules:
  
 diff -Naur -x .svn osdteletext-orig/menu.c osdteletext/menu.c
---- osdteletext-orig/menu.c	2008-01-31 19:53:46.000000000 +0100
-+++ osdteletext/menu.c	2008-01-30 21:44:15.000000000 +0100
+--- osdteletext-orig/menu.c	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/menu.c	2008-03-17 20:15:12.000000000 +0100
 @@ -577,7 +577,7 @@
     t.Start();
     #endif
@@ -726,8 +820,17 @@ diff -Naur -x .svn osdteletext-orig/menu.c osdteletext/menu.c
        s->read(cache, sizeof(cache), fd);
        s->close(fd);
 diff -Naur -x .svn osdteletext-orig/osdteletext.c osdteletext/osdteletext.c
---- osdteletext-orig/osdteletext.c	2008-01-31 19:53:46.000000000 +0100
-+++ osdteletext/osdteletext.c	2008-01-30 21:44:15.000000000 +0100
+--- osdteletext-orig/osdteletext.c	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/osdteletext.c	2008-03-17 20:26:39.000000000 +0100
+@@ -23,7 +23,7 @@
+ #include "txtrecv.h"
+ #include "setup.h"
+ 
+-static const char *VERSION        = "0.5.1 M7x0";
++static const char *VERSION        = "0.5.2 M7x0";
+ static const char *DESCRIPTION    = "Displays teletext on the OSD";
+ static const char *MAINMENUENTRY  = "Teletext (OSD)";
+ 
 @@ -193,7 +193,6 @@
     channelStatus=new ChannelStatus();
     if (ttSetup.OSDheight<=100)  ttSetup.OSDheight=Setup.OSDHeight;
@@ -737,8 +840,8 @@ diff -Naur -x .svn osdteletext-orig/osdteletext.c osdteletext/osdteletext.c
  }
  
 diff -Naur -x .svn osdteletext-orig/txtfont.c osdteletext/txtfont.c
---- osdteletext-orig/txtfont.c	2008-01-31 19:53:47.000000000 +0100
-+++ osdteletext/txtfont.c	2008-01-30 21:44:15.000000000 +0100
+--- osdteletext-orig/txtfont.c	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/txtfont.c	2008-03-17 20:15:12.000000000 +0100
 @@ -1,4 +1,5 @@
  #include "txtfont.h"
 +#include "common.h"
@@ -867,8 +970,8 @@ diff -Naur -x .svn osdteletext-orig/txtfont.c osdteletext/txtfont.c
      }
      
 diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
---- osdteletext-orig/txtrecv.c	2008-01-31 19:53:46.000000000 +0100
-+++ osdteletext/txtrecv.c	2008-01-31 16:50:47.000000000 +0100
+--- osdteletext-orig/txtrecv.c	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/txtrecv.c	2008-03-17 20:15:12.000000000 +0100
 @@ -13,6 +13,9 @@
  #include "txtrecv.h"
  #include "tables.h"
@@ -1098,8 +1201,8 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
        {
        if (TxtPage) {
 diff -Naur -x .svn osdteletext-orig/txtrecv.h osdteletext/txtrecv.h
---- osdteletext-orig/txtrecv.h	2008-01-31 19:53:46.000000000 +0100
-+++ osdteletext/txtrecv.h	2008-01-30 21:44:15.000000000 +0100
+--- osdteletext-orig/txtrecv.h	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/txtrecv.h	2008-03-17 20:15:12.000000000 +0100
 @@ -18,7 +18,7 @@
  
  #include <stdio.h>
@@ -1156,8 +1259,8 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.h osdteletext/txtrecv.h
  // M7x0 end   
     cTxtStatus(void);
 diff -Naur -x .svn osdteletext-orig/txtrender.c osdteletext/txtrender.c
---- osdteletext-orig/txtrender.c	2008-01-31 19:53:47.000000000 +0100
-+++ osdteletext/txtrender.c	2008-01-30 21:44:15.000000000 +0100
+--- osdteletext-orig/txtrender.c	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/txtrender.c	2008-03-17 20:15:12.000000000 +0100
 @@ -15,7 +15,7 @@
  
  #include <strings.h>
@@ -1207,8 +1310,8 @@ diff -Naur -x .svn osdteletext-orig/txtrender.c osdteletext/txtrender.c
                      if (ttc&0x20) {
                          // real graphics code, remember for HoldMosaics
 diff -Naur -x .svn osdteletext-orig/txtrender.h osdteletext/txtrender.h
---- osdteletext-orig/txtrender.h	2008-01-31 19:53:47.000000000 +0100
-+++ osdteletext/txtrender.h	2008-01-30 21:44:15.000000000 +0100
+--- osdteletext-orig/txtrender.h	2008-01-12 12:27:50.000000000 +0100
++++ osdteletext/txtrender.h	2008-03-17 20:15:12.000000000 +0100
 @@ -17,6 +17,7 @@
  #define OSDTELETEXT_TXTRENDER_H_
  

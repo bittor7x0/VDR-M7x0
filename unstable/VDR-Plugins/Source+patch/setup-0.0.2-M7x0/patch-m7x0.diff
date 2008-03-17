@@ -1,5 +1,5 @@
 diff -Naur -x .svn setup-orig/.cdtproject setup/.cdtproject
---- setup-orig/.cdtproject	2008-01-31 20:49:01.000000000 +0100
+--- setup-orig/.cdtproject	2007-12-15 18:15:54.000000000 +0100
 +++ setup/.cdtproject	1970-01-01 01:00:00.000000000 +0100
 @@ -1,56 +0,0 @@
 -<?xml version="1.0" encoding="UTF-8"?>
@@ -59,8 +59,8 @@ diff -Naur -x .svn setup-orig/.cdtproject setup/.cdtproject
 -</data>
 -</cdtproject>
 diff -Naur -x .svn setup-orig/common.h setup/common.h
---- setup-orig/common.h	2008-01-31 20:49:01.000000000 +0100
-+++ setup/common.h	2008-01-30 21:44:16.000000000 +0100
+--- setup-orig/common.h	2007-12-15 18:15:54.000000000 +0100
++++ setup/common.h	2008-03-17 20:59:57.000000000 +0100
 @@ -11,6 +11,11 @@
  
  #include <vdr/tools.h>
@@ -81,8 +81,8 @@ diff -Naur -x .svn setup-orig/common.h setup/common.h
 +
  #endif // __SKINSOPPALUSIKKA_COMMON_H
 diff -Naur -x .svn setup-orig/config.cpp setup/config.cpp
---- setup-orig/config.cpp	2008-01-31 20:49:01.000000000 +0100
-+++ setup/config.cpp	2008-01-30 21:44:16.000000000 +0100
+--- setup-orig/config.cpp	2007-12-15 18:15:54.000000000 +0100
++++ setup/config.cpp	2008-03-17 20:59:57.000000000 +0100
 @@ -84,8 +84,8 @@
            _bootLinux=Util::Strdupnew(tmp);
  
@@ -141,8 +141,8 @@ diff -Naur -x .svn setup-orig/config.cpp setup/config.cpp
  char * Config::GetBootLinux( )
  {
 diff -Naur -x .svn setup-orig/config.h setup/config.h
---- setup-orig/config.h	2008-01-31 20:49:01.000000000 +0100
-+++ setup/config.h	2008-01-30 21:44:16.000000000 +0100
+--- setup-orig/config.h	2007-12-15 18:15:54.000000000 +0100
++++ setup/config.h	2008-03-17 20:59:57.000000000 +0100
 @@ -58,6 +58,7 @@
      void                dumpXMLError(const char* errStr);
      bool                readVdrLib();
@@ -152,8 +152,8 @@ diff -Naur -x .svn setup-orig/config.h setup/config.h
  
  
 diff -Naur -x .svn setup-orig/HISTORY setup/HISTORY
---- setup-orig/HISTORY	2008-01-31 20:49:01.000000000 +0100
-+++ setup/HISTORY	2008-01-30 21:44:16.000000000 +0100
+--- setup-orig/HISTORY	2007-12-15 18:15:54.000000000 +0100
++++ setup/HISTORY	2008-03-17 21:07:31.000000000 +0100
 @@ -1,83 +1,87 @@
 -VDR Plugin 'setup' Revision History
 ------------------------------------
@@ -240,11 +240,11 @@ diff -Naur -x .svn setup-orig/HISTORY setup/HISTORY
 -- Initial revision.
 +VDR Plugin 'setup' Revision History
 +-----------------------------------
-+2007-12-11 - zjuanma@yahoo.es
-+- Patched for VDR-NG (M7x0). 
++2007-12-11: Version 0.0.2 open7x0 by zjuanma@yahoo.es
++- Patched for VDR-NG (M7x0).
 +- Supports multiple configurations file (i18n)
 +
-+2006-03-06
++2006-03-06: Version 0.0.1 open7x0 by HaPe
 +- do not use std::vector
 +
 +
@@ -326,8 +326,8 @@ diff -Naur -x .svn setup-orig/HISTORY setup/HISTORY
 +
 +- Initial revision.
 diff -Naur -x .svn setup-orig/i18n.cpp setup/i18n.cpp
---- setup-orig/i18n.cpp	2008-01-31 20:49:01.000000000 +0100
-+++ setup/i18n.cpp	2008-01-30 21:44:16.000000000 +0100
+--- setup-orig/i18n.cpp	2007-12-15 18:15:54.000000000 +0100
++++ setup/i18n.cpp	2008-03-17 20:59:57.000000000 +0100
 @@ -1166,6 +1166,48 @@
      "",
      "",
@@ -378,7 +378,7 @@ diff -Naur -x .svn setup-orig/i18n.cpp setup/i18n.cpp
  { NULL }
  };
 diff -Naur -x .svn setup-orig/M7x0 config/fw-config.txt setup/M7x0 config/fw-config.txt
---- setup-orig/M7x0 config/fw-config.txt	2008-01-31 20:49:01.000000000 +0100
+--- setup-orig/M7x0 config/fw-config.txt	2007-12-15 18:15:54.000000000 +0100
 +++ setup/M7x0 config/fw-config.txt	1970-01-01 01:00:00.000000000 +0100
 @@ -1,729 +0,0 @@
 -##########################################################################
@@ -1112,7 +1112,7 @@ diff -Naur -x .svn setup-orig/M7x0 config/fw-config.txt setup/M7x0 config/fw-con
 -
 diff -Naur -x .svn setup-orig/M7x0 config/local-conf setup/M7x0 config/local-conf
 --- setup-orig/M7x0 config/local-conf	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/local-conf	2008-01-30 21:44:16.000000000 +0100
++++ setup/M7x0 config/local-conf	2008-03-17 20:59:57.000000000 +0100
 @@ -0,0 +1,51 @@
 +#!/bin/ash
 +
@@ -1167,15 +1167,15 @@ diff -Naur -x .svn setup-orig/M7x0 config/local-conf setup/M7x0 config/local-con
 +
 diff -Naur -x .svn setup-orig/M7x0 config/local-plugins setup/M7x0 config/local-plugins
 --- setup-orig/M7x0 config/local-plugins	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/local-plugins	2008-01-30 21:44:16.000000000 +0100
++++ setup/M7x0 config/local-plugins	2008-03-17 20:59:57.000000000 +0100
 @@ -0,0 +1,3 @@
 +#!/bin/sh
 +
 +grep '^vdr_plugindirs' /etc/rc.local.conf | cut -d= -f2 | sed 's/^\"//' | sed 's/\"$//'
 diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 config/open7x0-setup_eng.xml
 --- setup-orig/M7x0 config/open7x0-setup_eng.xml	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup_eng.xml	2008-01-31 20:34:04.000000000 +0100
-@@ -0,0 +1,66 @@
++++ setup/M7x0 config/open7x0-setup_eng.xml	2008-03-17 21:02:13.000000000 +0100
+@@ -0,0 +1,62 @@
 +<!--
 +-   open7x0-VDR Configuration File
 +-   based on Minisetup by Ralf Dotzert
@@ -1223,10 +1223,6 @@ diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 confi
 +            <entry name="Gateway" sysconfig="rc.conf--gateway" type="ip" value='&quot;NO&quot;' help1="Gatewary IP address. default NO" />
 +            <entry name="MAC Address" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="NOT MODIFY" />
 +            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="M7XX Name (DNS). default /etc/hostname. NOT MODIFY" />  
-+        <menu name="USB HardDisk Configuration">
-+            <entry name="Device stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB Device to stop. Ex: /dev/sda. Only 1 device" />
-+            <entry name="Inactivity time" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Inactivity time to stop USB Hard disk" />
-+        </menu>
 +        </menu>
 +        <menu name="Services">
 +            <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />
@@ -1244,8 +1240,8 @@ diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup_eng.xml setup/M7x0 confi
 +</setup>
 diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 config/open7x0-setup_esl.xml
 --- setup-orig/M7x0 config/open7x0-setup_esl.xml	1970-01-01 01:00:00.000000000 +0100
-+++ setup/M7x0 config/open7x0-setup_esl.xml	2008-01-31 20:32:06.000000000 +0100
-@@ -0,0 +1,66 @@
++++ setup/M7x0 config/open7x0-setup_esl.xml	2008-03-17 21:01:56.000000000 +0100
+@@ -0,0 +1,62 @@
 +<!--
 +-   open7x0-VDR Configuration File
 +-   based on Minisetup by Ralf Dotzert
@@ -1294,10 +1290,6 @@ diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 confi
 +            <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="Define el comando con el que se obtiene la dirección MAC. NO DEBE SER MODIFICADO" />
 +            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre del M7XX (DNS). Por defecto lo toma del fichero /etc/hostname. NO DEBE SER MODIFICADO" />
 +        </menu>
-+        <menu name="Configuración discos USB">
-+            <entry name="Dispositivo a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivo USB a detener. Ejm: /dev/sda. Solo 1 único dispositivo" />
-+            <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Tiempo de inactividad para detener el disco USB" />
-+        </menu>
 +        <menu name="Servicios">
 +            <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Arrancar servidor inetd (ftp,telnet)" />
 +            <entry name="Servidor Web" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Arrancar servidor web de administración" />
@@ -1313,7 +1305,7 @@ diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup_esl.xml setup/M7x0 confi
 +    </menus>
 +</setup>
 diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup V1.0.xml setup/M7x0 config/open7x0-setup V1.0.xml
---- setup-orig/M7x0 config/open7x0-setup V1.0.xml	2008-01-31 20:49:01.000000000 +0100
+--- setup-orig/M7x0 config/open7x0-setup V1.0.xml	2007-12-15 18:15:54.000000000 +0100
 +++ setup/M7x0 config/open7x0-setup V1.0.xml	1970-01-01 01:00:00.000000000 +0100
 @@ -1,184 +0,0 @@
 -<!--
@@ -1501,7 +1493,7 @@ diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup V1.0.xml setup/M7x0 conf
 -    </menus>
 -</setup>
 diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/open7x0-setup.xml
---- setup-orig/M7x0 config/open7x0-setup.xml	2008-01-31 20:49:01.000000000 +0100
+--- setup-orig/M7x0 config/open7x0-setup.xml	2007-12-15 18:15:54.000000000 +0100
 +++ setup/M7x0 config/open7x0-setup.xml	1970-01-01 01:00:00.000000000 +0100
 @@ -1,162 +0,0 @@
 -<!--
@@ -1667,8 +1659,8 @@ diff -Naur -x .svn setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/op
 -    </menus>
 -</setup>
 diff -Naur -x .svn setup-orig/Makefile setup/Makefile
---- setup-orig/Makefile	2008-01-31 20:49:01.000000000 +0100
-+++ setup/Makefile	2008-01-30 21:44:16.000000000 +0100
+--- setup-orig/Makefile	2007-12-15 18:15:54.000000000 +0100
++++ setup/Makefile	2008-03-17 20:59:57.000000000 +0100
 @@ -1,7 +1,7 @@
  #
  # Makefile for a Video Disk Recorder plugin
@@ -1696,8 +1688,8 @@ diff -Naur -x .svn setup-orig/Makefile setup/Makefile
  
  	
 diff -Naur -x .svn setup-orig/plugins.cpp setup/plugins.cpp
---- setup-orig/plugins.cpp	2008-01-31 20:49:01.000000000 +0100
-+++ setup/plugins.cpp	2008-01-30 21:44:16.000000000 +0100
+--- setup-orig/plugins.cpp	2007-12-15 18:15:54.000000000 +0100
++++ setup/plugins.cpp	2008-03-17 20:59:57.000000000 +0100
 @@ -15,6 +15,7 @@
  #include "plugins.h"
  #include "util.h"
@@ -1730,7 +1722,7 @@ diff -Naur -x .svn setup-orig/plugins.cpp setup/plugins.cpp
    } 
    //HaPe: Add " around the string
 diff -Naur -x .svn setup-orig/.project setup/.project
---- setup-orig/.project	2008-01-31 20:49:01.000000000 +0100
+--- setup-orig/.project	2007-12-15 18:15:54.000000000 +0100
 +++ setup/.project	1970-01-01 01:00:00.000000000 +0100
 @@ -1,82 +0,0 @@
 -<?xml version="1.0" encoding="UTF-8"?>
@@ -1816,15 +1808,27 @@ diff -Naur -x .svn setup-orig/.project setup/.project
 -	</natures>
 -</projectDescription>
 diff -Naur -x .svn setup-orig/.settings/org.eclipse.cdt.core.prefs setup/.settings/org.eclipse.cdt.core.prefs
---- setup-orig/.settings/org.eclipse.cdt.core.prefs	2008-01-31 20:49:01.000000000 +0100
+--- setup-orig/.settings/org.eclipse.cdt.core.prefs	2007-12-15 18:15:54.000000000 +0100
 +++ setup/.settings/org.eclipse.cdt.core.prefs	1970-01-01 01:00:00.000000000 +0100
 @@ -1,3 +0,0 @@
 -#Tue Jan 16 19:06:27 CET 2007
 -eclipse.preferences.version=1
 -indexerId=org.eclipse.cdt.core.fastIndexer
+diff -Naur -x .svn setup-orig/setup.cpp setup/setup.cpp
+--- setup-orig/setup.cpp	2007-12-15 18:15:54.000000000 +0100
++++ setup/setup.cpp	2008-03-17 21:06:10.000000000 +0100
+@@ -15,7 +15,7 @@
+ //#include "setupsetup.h"
+ #include "i18n.h"
+ 
+-static const char *VERSION        = "0.0.1";
++static const char *VERSION        = "0.0.2";
+ static const char *DESCRIPTION    = "open7x0-Setup (based on Minivdr-Setup)";
+ static const char *MAINMENUENTRY  = "Gigaset 7x0 Firmware Setup";
+ 
 diff -Naur -x .svn setup-orig/setupmenu.cpp setup/setupmenu.cpp
---- setup-orig/setupmenu.cpp	2008-01-31 20:49:01.000000000 +0100
-+++ setup/setupmenu.cpp	2008-01-30 21:44:16.000000000 +0100
+--- setup-orig/setupmenu.cpp	2007-12-15 18:15:54.000000000 +0100
++++ setup/setupmenu.cpp	2008-03-17 20:59:57.000000000 +0100
 @@ -18,6 +18,7 @@
  #include "plugins.h"
  #include "debug.h"
@@ -1990,7 +1994,7 @@ diff -Naur -x .svn setup-orig/setupmenu.cpp setup/setupmenu.cpp
    }
    return(result);
 diff -Naur -x .svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
---- setup-orig/setupsystemmenu.cpp	2008-01-31 20:49:01.000000000 +0100
+--- setup-orig/setupsystemmenu.cpp	2007-12-15 18:15:54.000000000 +0100
 +++ setup/setupsystemmenu.cpp	1970-01-01 01:00:00.000000000 +0100
 @@ -1,188 +0,0 @@
 -/***********************************************************
@@ -2182,8 +2186,8 @@ diff -Naur -x .svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
 -  return (menu);
 -}
 diff -Naur -x .svn setup-orig/util.cpp setup/util.cpp
---- setup-orig/util.cpp	2008-01-31 20:49:01.000000000 +0100
-+++ setup/util.cpp	2008-01-30 21:44:16.000000000 +0100
+--- setup-orig/util.cpp	2007-12-15 18:15:54.000000000 +0100
++++ setup/util.cpp	2008-03-17 20:59:57.000000000 +0100
 @@ -14,6 +14,7 @@
  #include <ctype.h>
  #include "util.h"
