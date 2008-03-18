@@ -23,6 +23,7 @@ vdr_fw_orig="$vdr_fw.orig"
 vdr_em_addons="$BASE/Addons"
 vdr_em_files="$vdr_em_addons/Files"
 vdr_em_patches="$vdr_em_addons/Patches"
+vdr_em_delete="$vdr_em_addons/Delete"
 vdr_em_plugins="$BASE/VDR-Plugins/Source+patch"
 
 # SVN branch from assembla VDR-EM
@@ -80,6 +81,20 @@ cp -rf "$tmp/buildin/base-gambler/m750s" "$tmp/buildin/base-$vdr_version"
 echo "Patching Firmware"
 $tmp/patches/patch-kernel.sh "$tmp" "$vdr_em_patches/common"
 $tmp/patches/patch-kernel.sh "$tmp" "$vdr_em_patches/$vdr_version"
+
+# Delete files and dirs
+for delete in `cat "$vdr_em_delete/common.lst"`; do
+	if [ -e $delete ] ; then
+		echo "Delete " $delete
+		rm -rf $delete
+	fi
+done
+for delete in `cat "$vdr_em_delete/$vdr_version.lst"`; do
+	if [ -e $delete ] ; then
+		echo "Delete " $delete
+		rm -rf $delete
+	fi
+done
 
 # Copy temporal dir to final dir
 echo ""
