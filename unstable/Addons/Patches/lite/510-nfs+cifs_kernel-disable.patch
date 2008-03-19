@@ -1,0 +1,87 @@
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	Fri Jan 25 12:37:18 2008
++++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	Wed Mar 19 12:12:45 2008
+@@ -634,9 +634,9 @@
+ #
+ # CONFIG_CODA_FS is not set
+ # CONFIG_INTERMEZZO_FS is not set
+-CONFIG_NFS_FS=y
+-CONFIG_NFS_V3=y
+-CONFIG_NFS_DIRECTIO=y
++# CONFIG_NFS_FS is not set
++# CONFIG_NFS_V3 is not set
++# CONFIG_NFS_DIRECTIO is not set
+ # CONFIG_ROOT_NFS is not set
+ # CONFIG_NFSD is not set
+ # CONFIG_NFSD_V3 is not set
+@@ -644,7 +644,7 @@
+ CONFIG_SUNRPC=y
+ CONFIG_LOCKD=y
+ CONFIG_LOCKD_V4=y
+-CONFIG_CIFS=m
++# CONFIG_CIFS is not set
+ # CONFIG_CIFS_STATS is not set
+ # CONFIG_CIFS_POSIX is not set
+ # CONFIG_SMB_FS is not set
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	Fri Jan 25 12:37:18 2008
++++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	Wed Mar 19 12:13:41 2008
+@@ -634,9 +634,9 @@
+ #
+ # CONFIG_CODA_FS is not set
+ # CONFIG_INTERMEZZO_FS is not set
+-CONFIG_NFS_FS=y
+-CONFIG_NFS_V3=y
+-CONFIG_NFS_DIRECTIO=y
++# CONFIG_NFS_FS is not set
++# CONFIG_NFS_V3 is not set
++# CONFIG_NFS_DIRECTIO is not set
+ # CONFIG_ROOT_NFS is not set
+ # CONFIG_NFSD is not set
+ # CONFIG_NFSD_V3 is not set
+@@ -644,7 +644,7 @@
+ CONFIG_SUNRPC=y
+ CONFIG_LOCKD=y
+ CONFIG_LOCKD_V4=y
+-CONFIG_CIFS=m
++# CONFIG_CIFS is not set
+ # CONFIG_CIFS_STATS is not set
+ # CONFIG_CIFS_POSIX is not set
+ # CONFIG_SMB_FS is not set
+diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
+--- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	Wed Feb 20 09:23:21 2008
++++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	Wed Mar 19 12:44:35 2008
+@@ -57,7 +57,6 @@
+ DISTCLEAN_RULES += distclean-siemens-linux-kernel
+ 
+ SIEMENS-LINUX-KERNEL_MODLST := \
+-   lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
+    lib/modules/2.4.21-xfs/kernel/fs/ext3/ext3.o \
+    lib/modules/2.4.21-xfs/kernel/fs/fat/fat.o \
+    lib/modules/2.4.21-xfs/kernel/fs/jbd/jbd.o \
+@@ -68,7 +67,6 @@
+    lib/modules/2.4.21-xfs \
+    lib/modules/2.4.21-xfs/kernel \
+    lib/modules/2.4.21-xfs/kernel/fs \
+-   lib/modules/2.4.21-xfs/kernel/fs/cifs \
+    lib/modules/2.4.21-xfs/kernel/fs/ext3 \
+    lib/modules/2.4.21-xfs/kernel/fs/fat \
+    lib/modules/2.4.21-xfs/kernel/fs/jbd \
+@@ -81,7 +79,6 @@
+ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked: \
+       $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/*.patch) \
+       $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_M7X0_TYPE)/*.patch) \
+-      $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/cifs-fs.tar.bz2 \
+       $$(SIEMENS-LINUX-KERNEL_DEPS) $(SIEMENS-LINUX-KERNEL_CONFIG)
+ 	-$(RM) -rf $(SIEMENS-LINUX-KERNEL_DIR)
+ 	$(BZCAT) $(SIEMENS-GPL-SRC_DLFILE) | $(TAR) -C $(BUILD_DIR) \
+@@ -97,9 +94,6 @@
+ 
+ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_patched: \
+       $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked
+-# CIFS for 2.4er kernel (it's much easier to handle as smbfs and faster)
+-	$(BZCAT) $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/cifs-fs.tar.bz2 | \
+-		 $(TAR) -C $(SIEMENS-LINUX-KERNEL_DIR) -f -
+ # Needed patches to get kernel compiling
+ 	$(PATCHES_DIR)/patch-kernel.sh $(SIEMENS-LINUX-KERNEL_DIR) \
+ 		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common

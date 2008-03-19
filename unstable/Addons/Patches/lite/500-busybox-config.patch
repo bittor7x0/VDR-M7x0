@@ -80,7 +80,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.9.1/busybox.config uclibc_bui
  CONFIG_FEATURE_START_STOP_DAEMON_LONG_OPTIONS=y
  CONFIG_WHICH=y
  
-@@ -469,7 +469,7 @@
+@@ -469,21 +469,21 @@
  # CONFIG_FEATURE_MDEV_CONF is not set
  # CONFIG_FEATURE_MDEV_EXEC is not set
  # CONFIG_FEATURE_MDEV_LOAD_FIRMWARE is not set
@@ -89,7 +89,16 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.9.1/busybox.config uclibc_bui
  # CONFIG_FEATURE_MKSWAP_V0 is not set
  CONFIG_MORE=y
  CONFIG_FEATURE_USE_TERMIOS=y
-@@ -483,7 +483,7 @@
+ CONFIG_MOUNT=y
+ # CONFIG_FEATURE_MOUNT_HELPERS is not set
+-CONFIG_FEATURE_MOUNT_NFS=y
+-CONFIG_FEATURE_MOUNT_CIFS=y
++# CONFIG_FEATURE_MOUNT_NFS is not set
++# CONFIG_FEATURE_MOUNT_CIFS is not set
+ CONFIG_FEATURE_MOUNT_FLAGS=y
+-CONFIG_FEATURE_MOUNT_FSTAB=y
++# CONFIG_FEATURE_MOUNT_FSTAB is not set
+ CONFIG_PIVOT_ROOT=y
  # CONFIG_RDATE is not set
  CONFIG_READPROFILE=y
  # CONFIG_SETARCH is not set

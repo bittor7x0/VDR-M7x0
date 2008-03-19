@@ -82,20 +82,6 @@ echo "Patching Firmware"
 $tmp/patches/patch-kernel.sh "$tmp" "$vdr_em_patches/common"
 $tmp/patches/patch-kernel.sh "$tmp" "$vdr_em_patches/$vdr_version"
 
-# Delete files and dirs
-for delete in `cat "$vdr_em_delete/common.lst"`; do
-	if [ -e $delete ] ; then
-		echo "Delete " $delete
-		rm -rf $delete
-	fi
-done
-for delete in `cat "$vdr_em_delete/$vdr_version.lst"`; do
-	if [ -e $delete ] ; then
-		echo "Delete " $delete
-		rm -rf $delete
-	fi
-done
-
 # Copy temporal dir to final dir
 echo ""
 
@@ -118,6 +104,20 @@ echo "Copying temporal dir to final dir"
 cp -Trf "$tmp" "$vdr_fw"
 mkdir -p "$vdr_fw/build/vdr-m7x0-PLUGINS-extra"
 cp -Trf "$vdr_em_plugins" "$vdr_fw/build/vdr-m7x0-PLUGINS-extra"
+
+# Delete files and dirs
+for delete in `cat "$vdr_em_delete/common.lst"`; do
+	if [ -e $delete ] ; then
+		echo "Delete " $delete
+		rm -rf $delete
+	fi
+done
+for delete in `cat "$vdr_em_delete/$vdr_version.lst"`; do
+	if [ -e $delete ] ; then
+		echo "Delete " $delete
+		rm -rf $delete
+	fi
+done
 
 # Clean temp dir
 rm -rf "$tmp"

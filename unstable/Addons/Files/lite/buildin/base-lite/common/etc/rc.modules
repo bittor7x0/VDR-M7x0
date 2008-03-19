@@ -37,6 +37,5 @@ insmod /lib/modules/2.4.21-xfs/kernel/fs/fat/fat.o
 insmod /lib/modules/2.4.21-xfs/kernel/fs/vfat/vfat.o
 insmod /lib/modules/2.4.21-xfs/kernel/fs/jbd/jbd.o
 insmod /lib/modules/2.4.21-xfs/kernel/fs/ext3/ext3.o
-insmod /lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o
 
 exit 0
