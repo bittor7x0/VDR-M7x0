@@ -44,7 +44,7 @@ while (true) do
 	done
     done
     ${vdr_bin} ${VDR_EPGOPT} ${VDR_FLAGS} ${vdr_pluginopts} ${vdr_stumode}
-    if [ $? -eq 0 -o $? -eq 2 ]; then 
+    if [ $? != 1 ]; then 
         break
     fi
     echo "restarting VDR"
