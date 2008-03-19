@@ -6,7 +6,7 @@
     <plugins sysconfig="rc.local.conf--vdr_pluginopts">
         <plugin name="aide" info="aide" active="YES" />
         <plugin name="autotimer" info="autotimer" active="NO" />
-        <plugin name="blink" info="blink" active="YES" />
+        <plugin name="blink" info="blink" active="NO" />
         <plugin name="browse" info="browse" active="NO" />
         <plugin name="chanman" info="chanman" active="NO" />
         <plugin name="channellists" info="channellists" active="YES" />
@@ -84,6 +84,7 @@
             <entry name="Mount USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Mount usb disk" />
             <entry name="Mount Network" sysconfig="rc.local.conf--do_net_mount" type="bool" value="YES" help1="Mount network shared directories" />
             <entry name="Start time" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="302" help1="Start time" />
+            <entry name="Options" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 2" help1="Add options for VDR" />
         </menu>
         <menu name="Directories">
             <entry name="Configuration" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Configuration files. NOT MODIFY" />

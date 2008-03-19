@@ -43,8 +43,8 @@ while (true) do
     	    [ -f ${plug} ] && ln -sf ${plug} /var/vdr/lib/`basename ${plug}`
 	done
     done
-    ${vdr_bin} ${VDR_EPGOPT} ${VDR_FLAGS} ${vdr_pluginopts} ${vdr_stumode}
-    if [ $? != 1 ]; then 
+    ${vdr_bin} ${VDR_EPGOPT} ${VDR_FLAGS} ${vdr_pluginopts} ${vdr_stumode} ${vdr_options}
+    if [ $? != 1 ]; then
         break
     fi
     echo "restarting VDR"
