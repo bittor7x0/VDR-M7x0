@@ -810,6 +810,15 @@ diff -Naur -x .svn osdteletext-orig/menu.c osdteletext/menu.c
     StorageHandle fd;
     // Take a look if there is a xxx-00 page
     Storage *s=Storage::instance();
+@@ -614,7 +614,7 @@
+       Display::HoldFlush();
+       ShowPageNumber();
+       char str[80];
+-      snprintf(str,80, "%s %3x-%02x %s",tr("Page"),currentPage, currentSubPage,tr("not found until now"));
++      snprintf(str,80, "%s %3x-%02x %s",tr("Page"),currentPage, currentSubPage,tr("not found until now, searching"));
+       Display::DrawMessage(str);
+       Display::ReleaseFlush();
+ 
 @@ -633,7 +633,7 @@
  
     Storage *s=Storage::instance();
