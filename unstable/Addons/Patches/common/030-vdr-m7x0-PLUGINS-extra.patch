@@ -19,7 +19,7 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk uclibc_build_env/
  $(call vdr-plugins_rules,downloaded):
  	$(SVN) co $(VDR-PLUGINS_SVN_URL) $(VDR-PLUGINS_DIR)
 +	$(RM) -rf $(VDR-PLUGINS_DIR)/$(VDR-PLUGINS_BRANCH)/.svn
-+	$(SVN) update $(VDR-PLUGINS_EXTRA_SVN_URL) $(VDR-PLUGINS_EXTRA_DIR)
++	$(SVN) co $(VDR-PLUGINS_EXTRA_SVN_URL) $(VDR-PLUGINS_EXTRA_DIR)
 +	(for dp in `ls $(VDR-PLUGINS_EXTRA_DIR)`; do \
 +		if [ -d $(VDR-PLUGINS_EXTRA_DIR)/$$dp ] ; then \
 +			for dps in `ls $(VDR-PLUGINS_EXTRA_DIR)/$$dp/`; do \

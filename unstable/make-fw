@@ -106,20 +106,24 @@ mkdir -p "$vdr_fw/build/vdr-m7x0-PLUGINS-extra"
 cp -Trf "$vdr_em_plugins" "$vdr_fw/build/vdr-m7x0-PLUGINS-extra"
 
 # Delete files and dirs
-for delete in `cat "$vdr_em_delete/common.lst"`; do
+echo ""
+for delete in `cat "$vdr_em_delete/common.lst" | tr -d '\r' `; do
 	if [ -e $delete ] ; then
-		echo "Delete " $delete
+		echo "Delete" $delete
 		rm -rf $delete
 	fi
 done
-for delete in `cat "$vdr_em_delete/$vdr_version.lst"`; do
+for delete in `cat "$vdr_em_delete/$vdr_version.lst" | tr -d '\r' `; do
 	if [ -e $delete ] ; then
-		echo "Delete " $delete
+		echo "Delete" $delete
 		rm -rf $delete
 	fi
 done
 
 # Clean temp dir
 rm -rf "$tmp"
+echo ""
+echo ""
 echo "Now you can edit config files in \"$vdr_fw\" and later run \"make\""
+echo ""
 exit 0
