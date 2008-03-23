@@ -6,10 +6,6 @@
 
 tty0::wait:/bin/ash /etc/rc.mini
 
-#----- console -----
-
-ttyS0::respawn:/sbin/getty 115200 ttyS0
-
 #----- system halt -----
 
 tty0::shutdown:/etc/rc.halt

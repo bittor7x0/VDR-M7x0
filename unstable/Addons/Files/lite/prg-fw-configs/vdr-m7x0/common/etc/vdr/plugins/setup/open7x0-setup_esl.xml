@@ -81,29 +81,29 @@
     <menus>
         <menu name="Gestionar plugins" help1="Activar y desactivar plugins" system="ActPlugins" />
         <menu name="Configuración general">
-            <entry name="Montar discos USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Montar los discos USB" />
-            <entry name="Tiempo de arranque" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Valor en segundos del tiempo de arranque del VDR cuando hay una grabacion programada." />
-            <entry name="Opciones" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0 -p 0" help1="Añadir opciones al VDR" />
+            <entry name="Montar discos USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Montar los discos duros USB al inicio" />
+            <entry name="Tiempo de inicio" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Segundos para iniciar VDR antes de una grab. programada" />
+            <entry name="Opciones del VDR" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0 -p 0" help1="Opciones pasadas al ejecutar el VDR (Ver documentación)" />
         </menu>
         <menu name="Configuración de directorios">
-            <entry name="Directorio ficheros de configuración" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Directorio donde se encuentra los ficheros de configuración. NO DEBE SER MODIFICADO" />
+            <entry name="Dir. archivos configuración" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Directorio donde están los archivos de configuración" />
             <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="text" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
-            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorio donde se encuentran los plugins. NO DEBE SER MODIFICADO" />
+            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorios separados por espacios donde están los plugins" />
         </menu>
-        <menu name="Configuración EPG">
-            <entry name="Fichero EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Fichero donde se almacena la información de EPG." />
-            <entry name="EPG directa" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="Determina si la EPG se almacena inmediatamente o sólo cuando se apaga el VDR" />
+        <menu name="Configuración de la EPG">
+            <entry name="Archivo EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Archivo donde se almacena la información de la EPG" />
+            <entry name="EPG inmediata" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="Guardar inmediatamente la EPG o sólo al apagar el VDR" />
         </menu>
-        <menu name="Configuración discos USB">
-            <entry name="Dispositivo a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivo USB a detener. Ej.: /dev/sda. Solo 1 único dispositivo" />
-            <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Tiempo de inactividad para detener el disco USB" />
-            <entry name="Activar SWAP" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Activar swap en particion. Ej.: /dev/sdb2. Solo 1 único dispositivo" />
+        <menu name="Configuración de discos USB">
+            <entry name="Dispositivo a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivo USB a detener. Ej.: /dev/sda (Sólo 1 dispositivo)" />
+            <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="300" help1="Tiempo de inactividad para detener el disco duro USB" />
+            <entry name="Activar swap" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Activar swap en partición. Ej.: /dev/sdb2 (Sólo 1 dispositivo)" />
         </menu>
         <menu name="Servicios">
-            <entry name="Activar syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="Registro del sistema" />
+            <entry name="Activar servicio syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="Registro del sistema. Dejarlo vacío para activarlo" />
         </menu>
         <menu name="Control parental">
-            <entry name="Código secreto (0000=DES)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" />
+            <entry name="Código secreto (0000=DES)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" help1="Código para proteger el acceso a la configuración del FW" />
         </menu>
     </menus>
 </setup>
