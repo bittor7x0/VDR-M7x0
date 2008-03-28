@@ -49,7 +49,7 @@ for dp in `ls $plugins `; do
 				find $vdr_plugins/$dptarget/ '(' -name '.svn'  ')' -exec rm -rf {} \; 2> /dev/null
 
 				# Patching plugins
-				./patching $vdr_plugins/$dptarget/ $plugins/$dp
+				./VDR-NG-FW/patches/patch-kernel.sh $vdr_plugins/$dptarget/ $plugins/$dp
 			fi
 		done
 	fi

@@ -9,9 +9,12 @@ diff -Naur uclibc_build_env_orig/make-incs/webif.mk uclibc_build_env/make-incs/w
  
  LASTDIR := `pwd`
  
-@@ -80,10 +81,19 @@
+@@ -78,12 +79,21 @@
+ #
+ 
  $(STAGEFILES_DIR)/.webapp_downloaded: $(STAGEFILES_DIR)/.webif_unpacked
- 	$(SVN) co $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
+-	$(SVN) co $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
++	$(SVN) co -r 70 $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
  	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
 +
 +#
