@@ -5,7 +5,7 @@ hostname ${hostname}
 if [ X"${syslogd_flags}" != X"NO" ]; then
     mv /rw-flash/log/messages* /var/log
     echo 'starting syslogd'
-    syslogd ${syslogd_flags}		
+    syslogd ${syslogd_flags}
 fi
 
 echo -n 'loading modules ...'

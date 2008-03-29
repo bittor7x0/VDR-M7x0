@@ -1,0 +1,13 @@
+diff -Naur VDR-NG-EM-orig/vdr.c VDR-NG-EM/vdr.c
+--- VDR-NG-EM-orig/vdr.c	2008-03-23 13:01:54.000000000 +0100
++++ VDR-NG-EM/vdr.c	2008-03-29 12:17:03.000000000 +0100
+@@ -174,7 +174,8 @@
+ 
+ static void SignalHandler(int signum)
+ {
+-  isyslog("caught signal %d", signum);
++// DON'T EVER DO THIS OR ZOU END UP WITH A SIGHANDLER RACE
++//  isyslog("caught signal %d", signum);
+   switch (signum) {
+     case SIGPIPE:
+          break;

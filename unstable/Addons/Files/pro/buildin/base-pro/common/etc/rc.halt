@@ -7,7 +7,7 @@
 echo -n 'stopping daemons:'
 if [ X"${lircd_flags}" != X"NO" ]; then
     echo -n ' lircd'
-    killall -15 lircd  
+    kill -15 `cat /var/run/lircd.pid`
 fi
 
 if [ X"${inetd}" != X"NO" ]; then

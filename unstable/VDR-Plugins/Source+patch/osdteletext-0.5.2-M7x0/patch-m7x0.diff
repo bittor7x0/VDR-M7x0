@@ -604,6 +604,42 @@ diff -Naur -x .svn osdteletext-orig/i18n.c osdteletext/i18n.c
      "",                  //Greek
      "",                  //Swedish
      "",                  //Romanian
+@@ -163,7 +163,7 @@
+     "",                   //Norwegian
+     "Punainen näppäin",   //Finnish
+     "",                   //Polish
+-    "Tecla roja",         //Spanish
++    "Botón rojo",         //Spanish
+     "",                   //Greek
+     "",                   //Swedish
+     "",                   //Romanian
+@@ -199,7 +199,7 @@
+     "",                   //Norwegian
+     "Vihreä näppäin",     //Finnish
+     "",                   //Polish
+-    "Tecla verde",        //Spanish
++    "Botón verde",        //Spanish
+     "",                   //Greek
+     "",                   //Swedish
+     "",                   //Romanian
+@@ -217,7 +217,7 @@
+     "",                   //Norwegian
+     "Keltainen näppäin",  //Finnish
+     "",                   //Polish
+-    "Tecla amarilla",     //Spanish
++    "Botón amarillo",     //Spanish
+     "",                   //Greek
+     "",                   //Swedish
+     "",                   //Romanian
+@@ -235,7 +235,7 @@
+     "",                   //Norwegian
+     "Sininen näppäin",    //Finnish
+     "",                   //Polish
+-    "Tecla azul",         //Spanish
++    "Botón azul",         //Spanish
+     "",                   //Greek
+     "",                   //Swedish
+     "",                   //Romanian
 @@ -243,6 +243,60 @@
      "Tecla blava",        //Catalan
      "ÁØÝïï ÚÝÞßÚÐ",       //Russian
@@ -665,6 +701,26 @@ diff -Naur -x .svn osdteletext-orig/i18n.c osdteletext/i18n.c
    { "Channel (press OK): ",        //English
      "Sender (OK drücken): ",       //German
      "",                            //Slovenian
+@@ -271,7 +325,7 @@
+     "",                      //Norwegian
+     "Näytä kello",           //Finnish
+     "",                      //Polish
+-    "Visualiza el reloj",    //Spanish
++    "Mostrar la hora",       //Spanish
+     "",                      //Greek
+     "",                      //Swedish
+     "",                      //Romanian
+@@ -342,8 +396,8 @@
+     "Mise a jour des pages",              //French
+     "",                                   //Norwegian
+     "Automaattinen sivupäivitys",         //Finnish
+-    "Actualización páginas automática",   //Polish
+-    "",                                   //Spanish
++    "",                                   //Polish
++    "Actualización páginas automática",   //Spanish
+     "",                                   //Greek
+     "",                                   //Swedish
+     "",                                   //Romanian
 @@ -397,7 +451,7 @@
      "",                          //Norwegian
      "Pystykeskitys",             //Finnish
@@ -683,6 +739,15 @@ diff -Naur -x .svn osdteletext-orig/i18n.c osdteletext/i18n.c
      "",                          //Greek
      "",                          //Swedish
      "",                          //Romanian
+@@ -433,7 +487,7 @@
+     "",                                       //Norwegian
+     "Teksti-TV (OSD)",                        //Finnish
+     "",                                       //Polish
+-    "Visualiza el teletexto en el OSD",       //Spanish
++    "Muestra el teletexto en el OSD",         //Spanish
+     "",                                       //Greek
+     "",                                       //Swedish
+     "",                                       //Romanian
 diff -Naur -x .svn osdteletext-orig/macros.h osdteletext/macros.h
 --- osdteletext-orig/macros.h	1970-01-01 01:00:00.000000000 +0100
 +++ osdteletext/macros.h	2008-03-17 20:15:12.000000000 +0100
