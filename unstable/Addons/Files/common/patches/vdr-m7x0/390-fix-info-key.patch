@@ -1,0 +1,12 @@
+--- VDR-NG-orig/vdr.c	2008-03-30 11:11:09.000000000 +0200
++++ VDR-NG/vdr.c	2008-03-30 11:11:50.000000000 +0200
+@@ -998,7 +998,9 @@
+                      cRemote::Put(kSchedule, true);
+                      }
+                   }
++               key = kNone;
+                }
++
+                break;
+           // Direct main menu functions:
+           #define DirectMainFunction(function)\
