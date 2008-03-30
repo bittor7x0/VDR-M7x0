@@ -1338,7 +1338,7 @@ diff -Naur vdr-htdocs/webapp/www/weblinks_de.html vdr-htdocs-ES/webapp/www/webli
 + <li><a href="timers.kl1">Timer</a></li>
 + <li><a href="recordings.kl1">Aufzeichnungen</a></li>
 + <li><a href="settings.kl1">Einstellungen</a></li>
-+ <li class="act"><a href="weblinks.html">Weblinks</a></li>
++ <li class="act"><a href="weblinks_de.html">Weblinks</a></li>
 +</ul>
 +<span id="navclear"></span>
 +</div>
@@ -1390,7 +1390,7 @@ diff -Naur vdr-htdocs/webapp/www/weblinks_en.html vdr-htdocs-ES/webapp/www/webli
 + <li><a href="timers.kl1">Timers</a></li>
 + <li><a href="recordings.kl1">Recordings</a></li>
 + <li><a href="settings.kl1">Settings</a></li>
-+ <li class="act"><a href="weblinks.html">Weblinks</a></li>
++ <li class="act"><a href="weblinks_en.html">Weblinks</a></li>
 +</ul>
 +<span id="navclear"></span>
 +</div>
@@ -1442,7 +1442,7 @@ diff -Naur vdr-htdocs/webapp/www/weblinks_es.html vdr-htdocs-ES/webapp/www/webli
 + <li><a href="timers.kl1">Programaciones</a></li>
 + <li><a href="recordings.kl1">Grabaciones</a></li>
 + <li><a href="settings.kl1">Configuraci&oacute;n</a></li>
-+ <li class="act"><a href="weblinks.html">Enlaces Web</a></li>
++ <li class="act"><a href="weblinks_es.html">Enlaces Web</a></li>
 +</ul>
 +<span id="navclear"></span>
 +</div>
@@ -1494,7 +1494,7 @@ diff -Naur vdr-htdocs/webapp/www/weblinks_fr.html vdr-htdocs-ES/webapp/www/webli
 + <li><a href="timers.kl1">Timers</a></li>
 + <li><a href="recordings.kl1">Recordings</a></li>
 + <li><a href="settings.kl1">Settings</a></li>
-+ <li class="act"><a href="weblinks.html">Weblinks</a></li>
++ <li class="act"><a href="weblinks_fr.html">Weblinks</a></li>
 +</ul>
 +<span id="navclear"></span>
 +</div>
