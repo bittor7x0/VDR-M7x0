@@ -18,6 +18,9 @@ if [ X"${pic_tool_flags}" != X"NO" ]; then
     echo ' done';
 fi
 
+echo -n 'starting lo';
+ifconfig lo 127.0.0.1
+
 if [ X"${lircd_flags}" != X"NO" ]; then
     echo ' '
     echo -n 'lircd daemon';		lircd ${lircd_flags}
