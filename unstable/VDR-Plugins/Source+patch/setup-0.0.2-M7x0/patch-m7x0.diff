@@ -1,6 +1,6 @@
 diff -Naur -x svn setup-orig/common.h setup/common.h
 --- setup-orig/common.h	2008-03-31 18:06:37.000000000 +0200
-+++ setup/common.h	2008-03-31 18:22:33.000000000 +0200
++++ setup/common.h	2008-04-01 17:33:11.000000000 +0200
 @@ -11,6 +11,11 @@
  
  #include <vdr/tools.h>
@@ -22,7 +22,7 @@ diff -Naur -x svn setup-orig/common.h setup/common.h
  #endif // __SKINSOPPALUSIKKA_COMMON_H
 diff -Naur -x svn setup-orig/config.cpp setup/config.cpp
 --- setup-orig/config.cpp	2008-03-31 18:06:37.000000000 +0200
-+++ setup/config.cpp	2008-03-31 18:22:33.000000000 +0200
++++ setup/config.cpp	2008-04-01 17:33:11.000000000 +0200
 @@ -84,8 +84,8 @@
            _bootLinux=Util::Strdupnew(tmp);
  
@@ -82,7 +82,7 @@ diff -Naur -x svn setup-orig/config.cpp setup/config.cpp
  {
 diff -Naur -x svn setup-orig/config.h setup/config.h
 --- setup-orig/config.h	2008-03-31 18:06:37.000000000 +0200
-+++ setup/config.h	2008-03-31 18:22:33.000000000 +0200
++++ setup/config.h	2008-04-01 17:33:11.000000000 +0200
 @@ -58,6 +58,7 @@
      void                dumpXMLError(const char* errStr);
      bool                readVdrLib();
@@ -93,7 +93,7 @@ diff -Naur -x svn setup-orig/config.h setup/config.h
  
 diff -Naur -x svn setup-orig/HISTORY setup/HISTORY
 --- setup-orig/HISTORY	2008-03-31 18:06:37.000000000 +0200
-+++ setup/HISTORY	2008-03-31 18:22:33.000000000 +0200
++++ setup/HISTORY	2008-04-01 17:33:11.000000000 +0200
 @@ -1,83 +1,87 @@
 -VDR Plugin 'setup' Revision History
 ------------------------------------
@@ -267,7 +267,7 @@ diff -Naur -x svn setup-orig/HISTORY setup/HISTORY
 +- Initial revision.
 diff -Naur -x svn setup-orig/i18n.cpp setup/i18n.cpp
 --- setup-orig/i18n.cpp	2008-03-31 18:06:37.000000000 +0200
-+++ setup/i18n.cpp	2008-03-31 18:22:33.000000000 +0200
++++ setup/i18n.cpp	2008-04-01 17:33:11.000000000 +0200
 @@ -1166,6 +1166,48 @@
      "",
      "",
@@ -1600,7 +1600,7 @@ diff -Naur -x svn setup-orig/M7x0 config/open7x0-setup.xml setup/M7x0 config/ope
 -</setup>
 diff -Naur -x svn setup-orig/Makefile setup/Makefile
 --- setup-orig/Makefile	2008-03-31 18:06:37.000000000 +0200
-+++ setup/Makefile	2008-03-31 18:22:33.000000000 +0200
++++ setup/Makefile	2008-04-01 17:33:11.000000000 +0200
 @@ -1,7 +1,7 @@
  #
  # Makefile for a Video Disk Recorder plugin
@@ -1629,7 +1629,7 @@ diff -Naur -x svn setup-orig/Makefile setup/Makefile
  	
 diff -Naur -x svn setup-orig/plugins.cpp setup/plugins.cpp
 --- setup-orig/plugins.cpp	2008-03-31 18:06:37.000000000 +0200
-+++ setup/plugins.cpp	2008-03-31 18:22:33.000000000 +0200
++++ setup/plugins.cpp	2008-04-01 17:33:12.000000000 +0200
 @@ -15,6 +15,7 @@
  #include "plugins.h"
  #include "util.h"
@@ -1663,7 +1663,7 @@ diff -Naur -x svn setup-orig/plugins.cpp setup/plugins.cpp
    //HaPe: Add " around the string
 diff -Naur -x svn setup-orig/setup.cpp setup/setup.cpp
 --- setup-orig/setup.cpp	2008-03-31 18:06:37.000000000 +0200
-+++ setup/setup.cpp	2008-03-31 18:22:33.000000000 +0200
++++ setup/setup.cpp	2008-04-01 17:33:12.000000000 +0200
 @@ -15,7 +15,7 @@
  //#include "setupsetup.h"
  #include "i18n.h"
@@ -1675,7 +1675,7 @@ diff -Naur -x svn setup-orig/setup.cpp setup/setup.cpp
  
 diff -Naur -x svn setup-orig/setupmenu.cpp setup/setupmenu.cpp
 --- setup-orig/setupmenu.cpp	2008-03-31 18:06:37.000000000 +0200
-+++ setup/setupmenu.cpp	2008-03-31 18:27:49.000000000 +0200
++++ setup/setupmenu.cpp	2008-04-01 17:34:47.000000000 +0200
 @@ -18,6 +18,7 @@
  #include "plugins.h"
  #include "debug.h"
@@ -1710,7 +1710,7 @@ diff -Naur -x svn setup-orig/setupmenu.cpp setup/setupmenu.cpp
  cSetupVdrMenu::cSetupVdrMenu(const char *title): cOsdMenu(title, 25)
  {
    _startIndex           =0;
-@@ -522,7 +524,7 @@
+@@ -522,14 +524,14 @@
        switch( e->GetType() )
        {
          case Util::BOOL:
@@ -1719,6 +1719,14 @@ diff -Naur -x svn setup-orig/setupmenu.cpp setup/setupmenu.cpp
               break;
          case Util::NUMBER:
            Add(new cMenuEditIntItem(nohk(e->GetName()), e->GetValueNumberRef(), 0, 999999999));
+              break;
+         case Util::TEXT:
+           Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
+-                                      " aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789-+.#~_/:"));
++                                      " aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789-+.#~_/:\"\'"));
+              break;
+          case Util::NUMBER_TEXT:
+            Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
 @@ -624,8 +626,10 @@
                          _editItem=false;
                        }
@@ -1851,7 +1859,7 @@ diff -Naur -x svn setup-orig/setupmenu.cpp setup/setupmenu.cpp
    return(result);
 diff -Naur -x svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
 --- setup-orig/setupsystemmenu.cpp	2008-03-31 18:06:37.000000000 +0200
-+++ setup/setupsystemmenu.cpp	2008-03-31 18:22:33.000000000 +0200
++++ setup/setupsystemmenu.cpp	2008-04-01 17:33:12.000000000 +0200
 @@ -8,20 +8,24 @@
  
  // Headers included by <VDR>/menu.c
@@ -1914,7 +1922,7 @@ diff -Naur -x svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
    };
 diff -Naur -x svn setup-orig/util.cpp setup/util.cpp
 --- setup-orig/util.cpp	2008-03-31 18:06:37.000000000 +0200
-+++ setup/util.cpp	2008-03-31 18:22:33.000000000 +0200
++++ setup/util.cpp	2008-04-01 17:33:12.000000000 +0200
 @@ -14,6 +14,7 @@
  #include <ctype.h>
  #include "util.h"
