@@ -6,7 +6,7 @@ diff -Naur VDR-NG-EM-orig/vdr.c VDR-NG-EM/vdr.c
  static void SignalHandler(int signum)
  {
 -  isyslog("caught signal %d", signum);
-+// DON'T EVER DO THIS OR ZOU END UP WITH A SIGHANDLER RACE
++// DON'T EVER DO THIS OR YOU END UP WITH A SIGHANDLER RACE
 +//  isyslog("caught signal %d", signum);
    switch (signum) {
      case SIGPIPE:

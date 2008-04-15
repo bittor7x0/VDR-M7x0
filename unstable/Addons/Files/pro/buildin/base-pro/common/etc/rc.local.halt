@@ -35,25 +35,25 @@ if [ X"${runvdr}" != X"NO" ]; then
      export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
 fi
 
+# Swapoff
+if [ X"${hd_swap_dev}" != X"NO" ] ; then
+    echo -n ' Swapoff'
+    /sbin/swapoff -a
+fi
+
 if [ X"${do_usb_mount}" != X"NO" ] ; then
     echo -n ' usb-mount'
     rm -f /var/tmp/hotplug
     /sbin/usbautomounter umount
 fi
 
-echo ' '
-
-# Swapoff
-if [ X"${hd_swap_dev}" != X"NO" ] && [ X"${hd_swap_dev}" != X ] ; then
-    echo -n ' Swapoff'
-    /sbin/swapoff -a
-fi
-
 # Spindown hd
-if [ X"${hd_spindown_dev}" != X"NO" ] && [ X"${hd_spindown_dev}" != X ] ; then
+if [ X"${hd_spindown_dev}" != X"NO" ] ; then
     echo -n ' starting scsi-spin'
     /usr/sbin/scsi-spin -d -f ${hd_spindown_dev}
 fi
+
+echo ' '
 
 if [ -x "${fw_update_file}" ] ; then
     umount /etc || umount -l /etc
