@@ -38,7 +38,7 @@ fi
 # Swapoff
 if [ X"${hd_swap_dev}" != X"NO" ] ; then
     echo -n ' Swapoff'
-    /sbin/swapoff -a
+    /sbin/swapoff ${hd_swap_dev}
 fi
 
 if [ X"${do_usb_mount}" != X"NO" ] ; then
