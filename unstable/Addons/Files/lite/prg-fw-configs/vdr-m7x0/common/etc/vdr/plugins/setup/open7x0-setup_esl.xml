@@ -4,79 +4,78 @@
 -->
 <setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
     <plugins sysconfig="rc.local.conf--vdr_pluginopts">
-        <plugin name="aide" info="aide" active="YES" />
-        <plugin name="autotimer" info="autotimer" active="NO" />
-        <plugin name="blink" info="blink" active="NO" />
-        <plugin name="browse" info="browse" active="NO" />
-        <plugin name="chanman" info="chanman" active="NO" />
-        <plugin name="channellists" info="channellists" active="YES" />
-        <plugin name="channelscan" info="channelscan" active="YES" />
-        <plugin name="channelswitcher" info="channelswitcher" active="NO" />
-        <plugin name="chanorg" info="chanorg" active="NO" />
-        <plugin name="cinebars" info="cinebars" active="NO" />
-        <plugin name="clock" info="clock" active="NO" />
-        <plugin name="conflictcheckonly" info="conflictcheckonly" active="YES" />
-        <plugin name="control" info="control" active="NO" />
-        <plugin name="cridplayer" info="cridplayer" active="NO" />
-        <plugin name="dummydevice" info="dummydevice" active="NO" />
-        <plugin name="eggtimer" info="eggtimer" active="NO" />
-        <plugin name="epgsearch" info="epgsearch" active="YES" />
-        <plugin name="epgsearchonly" info="epgsearchonly" active="YES" />
-        <plugin name="epgsync" info="epgsync" active="NO" />
-        <plugin name="extrecmenu" info="extrecmenu" active="NO" />
-        <plugin name="fepg" info="fepg" active="NO" />
-        <plugin name="filebrowser" info="filebrowser" active="NO" />
-        <plugin name="freecell" info="freecell" active="NO" />
-        <plugin name="fritzbox" info="fritzbox" active="NO" />
-        <plugin name="fussball" info="fussball" active="NO" />
-        <plugin name="games" info="games" active="NO" />
-        <plugin name="hdspace" info="hdspace" active="NO" />
-        <plugin name="ircviewer" info="ircviewer" active="NO" />
-        <plugin name="launcher" info="launcher" active="NO" />
-        <plugin name="message" info="message" active="NO" />
-        <plugin name="mlist" info="mlist" active="NO" />
-        <plugin name="mpgplayer" info="mpgplayer" active="NO" />
-        <plugin name="newsticker" info="newsticker" active="NO" />
-        <plugin name="noepgmenu" info="noepgmenu" active="NO" />
-        <plugin name="nordlichtsepg" info="nordlichtsepg" active="NO" />
-        <plugin name="osdadjust" info="osdadjust" active="NO" />
-        <plugin name="osdimage" info="osdimage" active="NO" />
-        <plugin name="osdserver" info="osdserver" active="NO" />
-        <plugin name="osdteletext" info="osdteletext" active="YES" />
-        <plugin name="osdtest256" info="osdtest256" active="NO" />
-        <plugin name="pilot" info="pilot" active="NO" />
-        <plugin name="pilotskin" info="pilotskin" active="NO" />
-        <plugin name="pim" info="pim" active="NO" />
-        <plugin name="pin" info="pin" active="NO" />
-        <plugin name="prefermenu" info="prefermenu" active="NO" />
-        <plugin name="proxy" info="proxy" active="NO" />
-        <plugin name="quickepgsearch" info="quickepgsearch" active="NO" />
-        <plugin name="quicktimer" info="quicktimer" active="NO" />
-        <plugin name="radioinfo" info="radioinfo" active="NO" />
-        <plugin name="radiolist" info="radiolist" active="NO" />
-        <plugin name="recstatus" info="recstatus" active="NO" />
-        <plugin name="remoteosd" info="remoteosd" active="NO" />
-        <plugin name="remotetimers" info="remotetimers" active="NO" />
-        <plugin name="rssreader" info="rssreader" active="NO" />
-        <plugin name="scheduler" info="scheduler" active="NO" />
-        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
-        <plugin name="showrecinfo" info="showrecinfo" active="NO" />
-        <plugin name="skinenigmang" info="skinenigmang" active="YES" />
-        <plugin name="skinreel" info="skinreel" active="NO" />
-        <plugin name="skinsoppalusikka" info="skinsoppalusikka" active="NO" />
-        <plugin name="sleeptimer" info="sleeptimer" active="NO" />
-        <plugin name="solitaire" info="solitaire" active="NO" />
-        <plugin name="spider" info="spider" active="NO" />
-        <plugin name="streamdev" info="streamdev" active="NO" />
-        <plugin name="sudoku" info="sudoku" active="NO" />
-        <plugin name="suspendoutput" info="suspendoutput" active="NO" />
-        <plugin name="svdrpext" info="svdrpext" active="NO" />
-        <plugin name="svdrpservice" info="svdrpservice" active="NO" />
-        <plugin name="taste" info="taste" active="NO" />
-        <plugin name="timersync" info="timersync" active="NO" />
-        <plugin name="undelete" info="undelete" active="NO" />
-        <plugin name="wapd" info="wapd" active="NO" />
-        <plugin name="zaphistory" info="zaphistory" active="NO" />
+        <plugin name="aide" info="Ayuda del VDR" active="YES" />
+        <plugin name="autotimer" info="Programador automático" active="NO" />
+        <plugin name="blink" info="Controlar LED M7x0" active="NO" />
+        <plugin name="browse" info="Navegador EPG" active="NO" />
+        <plugin name="chanman" info="Administrador canales" active="NO" />
+        <plugin name="channellists" info="Lista de canales" active="YES" />
+        <plugin name="channelscan" info="Buscar canales" active="YES" />
+        <plugin name="channelswitcher" info="Intercambio de canales" active="NO" />
+        <plugin name="chanorg" info="Organizador de canales" active="NO" />
+        <plugin name="cinebars" info="Bandas de cine" active="NO" />
+        <plugin name="clock" info="Reloj" active="NO" />
+        <plugin name="conflictcheckonly" info="Conflictos de programación" active="YES" />
+        <plugin name="control" info="Controlar VDR con telnet" active="NO" />
+        <plugin name="cridplayer" info="Reproductor CRID" active="NO" />
+        <plugin name="dummydevice" info="Dispositivo vacío" active="NO" />
+        <plugin name="eggtimer" info="Temporizador" active="NO" />
+        <plugin name="epgsearch" info="Buscar en la EPG" active="YES" />
+        <plugin name="epgsearchonly" info="Acceso a Buscar en la EPG" active="YES" />
+        <plugin name="epgsync" info="Sincronizar EPG" active="NO" />
+        <plugin name="extrecmenu" info="Menú extendido grabaciones" active="NO" />
+        <plugin name="fepg" info="EPG gráfico" active="NO" />
+        <plugin name="filebrowser" info="Explorador de archivos" active="NO" />
+        <plugin name="freecell" info="Freecell (juego cartas)" active="NO" />
+        <plugin name="fritzbox" info="Llamadas FRITZ!Box" active="NO" />
+        <plugin name="fussball" info="Resultados de Bundesliga" active="NO" />
+        <plugin name="games" info="Colección de juegos" active="NO" />
+        <plugin name="hdspace" info="Controlar espacio disco" active="NO" />
+        <plugin name="ircviewer" info="Visor IRC" active="NO" />
+        <plugin name="launcher" info="Agrupar otros plugins" active="NO" />
+        <plugin name="message" info="Enviar mensajes al VDR" active="NO" />
+        <plugin name="mlist" info="Historial de mensajes" active="NO" />
+        <plugin name="mpgplayer" info="Reproductor MPEG PS" active="NO" />
+        <plugin name="newsticker" info="Noticias RSS" active="NO" />
+        <plugin name="nordlichtsepg" info="EPG extendida" active="NO" />
+        <plugin name="osdadjust" info="Ajustar OSD" active="NO" />
+        <plugin name="osdimage" info="Visor de imágenes" active="NO" />
+        <plugin name="osdserver" info="Servidor OSD" active="NO" />
+        <plugin name="osdteletext" info="Teletexto" active="YES" />
+        <plugin name="osdtest256" info="Calibrar colores TV" active="NO" />
+        <plugin name="pilot" info="Navegador EPG Pilot" active="NO" />
+        <plugin name="pilotskin" info="Navegador EPG PilotSkin" active="NO" />
+        <plugin name="pim" info="Calendario" active="NO" />
+        <plugin name="pin" info="Control parental" active="NO" />
+        <plugin name="prefermenu" info="Canales preferidos" active="NO" />
+        <plugin name="proxy" info="Proxy de otros plugins" active="NO" />
+        <plugin name="quickepgsearch" info="Búsqueda rápida en EPG" active="NO" />
+        <plugin name="quicktimer" info="Programador rápido" active="NO" />
+        <plugin name="radioinfo" info="Información radios" active="NO" />
+        <plugin name="radiolist" info="Canales de radio" active="NO" />
+        <plugin name="recstatus" info="Estado de grabación" active="NO" />
+        <plugin name="remoteosd" info="Menú remoto" active="NO" />
+        <plugin name="remotetimers" info="Programaciones remotas" active="NO" />
+        <plugin name="rssreader" info="Lector RSS" active="NO" />
+        <plugin name="scheduler" info="Programador de tareas" active="NO" />
+        <plugin name="setup" info="Configurar firmware" active="YES" protected="YES" />
+        <plugin name="showrecinfo" info="Info de grabaciones" active="NO" />
+        <plugin name="skinenigmang" info="Piel EnigmaNG" active="NO" />
+        <plugin name="skinreel" info="Piel Reel" active="NO" />
+        <plugin name="skinsoppalusikka" info="Piel Soppalusikka" active="NO" />
+        <plugin name="sleeptimer" info="Apagado automático" active="NO" />
+        <plugin name="solitaire" info="Juego del solitario" active="NO" />
+        <plugin name="spider" info="Juego Spider" active="NO" />
+        <plugin name="streamdev-server" info="Servidor de streaming" active="NO" />
+        <plugin name="sudoku" info="Juego Sudoku" active="NO" />
+        <plugin name="suspendoutput" info="Suspender salida TV" active="NO" />
+        <plugin name="svdrpext" info="Extensiones para SVDRP" active="NO" />
+        <plugin name="svdrpservice" info="Servicio SVDRP" active="NO" />
+        <plugin name="taste" info="Lista negra de canales" active="NO" />
+        <plugin name="timersync" info="Sincronizar programaciones" active="NO" />
+        <plugin name="undelete" info="Recuperar grabaciones borradas" active="NO" />
+        <plugin name="wapd" info="Control remoto por WAP" active="NO" />
+        <plugin name="zaphistory" info="Histórico de Zapping" active="NO" />
     </plugins>
     <menus>
         <menu name="Gestionar plugins" help1="Activar y desactivar plugins" system="ActPlugins" />
