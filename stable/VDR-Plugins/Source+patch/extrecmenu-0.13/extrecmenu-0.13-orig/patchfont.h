@@ -1,1 +1,0 @@
-void PatchFont(eDvbFont DvbFont);

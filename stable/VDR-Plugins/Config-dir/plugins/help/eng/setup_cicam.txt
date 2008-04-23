@@ -1,3 +1,0 @@
-CICAM DVBn m
-
-     Defines the "Conditional Access" capabilities of the DVB card 'n'. Each DVB card can provide up to two CICAM methods ('m' = [1, 2]).
