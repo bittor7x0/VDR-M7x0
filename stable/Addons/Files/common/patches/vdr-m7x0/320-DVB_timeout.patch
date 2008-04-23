@@ -1,0 +1,18 @@
+diff -Naur VDR-NG-EM-orig/dvbdevice.c VDR-NG-EM/dvbdevice.c
+--- VDR-NG-EM-orig/dvbdevice.c	Mon Oct 01 11:36:10 2007
++++ VDR-NG-EM/dvbdevice.c	Wed Mar 12 13:04:40 2008
+@@ -47,11 +47,11 @@
+ 
+ //M7X0 BEGIN AK
+ #define DVBS_TUNE_TIMEOUT  9000 //ms
+-#define DVBS_LOCK_TIMEOUT  3000 //ms
++#define DVBS_LOCK_TIMEOUT  2000 //ms
+ #define DVBC_TUNE_TIMEOUT  9000 //ms
+-#define DVBC_LOCK_TIMEOUT  3000 //ms
++#define DVBC_LOCK_TIMEOUT  2000 //ms
+ #define DVBT_TUNE_TIMEOUT  9000 //ms
+-#define DVBT_LOCK_TIMEOUT  3000 //ms
++#define DVBT_LOCK_TIMEOUT  2000 //ms
+ 
+ 
+ // Taken from gambler

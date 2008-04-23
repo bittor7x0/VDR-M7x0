@@ -1,0 +1,49 @@
+diff -Naur newsticker-0.0.4/Makefile newsticker/Makefile
+--- newsticker-0.0.4/Makefile	2007-12-08 12:04:03.000000000 +0100
++++ newsticker/Makefile	2007-12-08 12:10:49.000000000 +0100
+@@ -16,11 +16,10 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual -Wno-deprecated
++CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+ VDRDIR = ../../..
+ LIBDIR = ../../lib
+ TMPDIR = /tmp
+@@ -29,9 +28,9 @@
+ 
+ -include $(VDRDIR)/Make.config
+ 
+-### The version number of VDR (taken from VDR's "config.h"):
++### The version number of VDR's plugin API (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' $(VDRDIR)/config.h)
+ 
+ ### The name of the distribution archive:
+ 
+@@ -69,7 +68,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur newsticker-0.0.4/news.c newsticker/news.c
+--- newsticker-0.0.4/news.c	2007-12-08 12:04:03.000000000 +0100
++++ newsticker/news.c	2007-12-08 12:10:49.000000000 +0100
+@@ -180,7 +180,7 @@
+ 			MyConfigDir = cPlugin::ConfigDirectory(plugin_Name);
+ 		if(!MyConfigDir)
+ 			dsyslog("Error getting the config directory!");
+-		sprintf(tmpSystem, "wget -O %s/newsticker.rdf -o %s/newsticker.log -T 5 %s",MyConfigDir, MyConfigDir, url);
++		sprintf(tmpSystem, "wget -O %s/newsticker.rdf  %s",MyConfigDir, url);
+ 		//dsyslog("newsticker: %s" , tmpSystem);
+ 		 
+ 		int dow_i = system (tmpSystem);

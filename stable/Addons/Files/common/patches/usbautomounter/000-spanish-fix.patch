@@ -1,0 +1,12 @@
+diff -Naur usbautomounter-orig/display.c usbautomounter/display.c
+--- usbautomounter-orig/display.c	Mon Oct 22 22:04:12 2007
++++ usbautomounter/display.c	Wed Feb 13 16:34:05 2008
+@@ -112,7 +112,7 @@
+ 		"",
+ 		"",
+ 		"",
+-		"Disco %s demasiado tiempo sin comprobar",
++		"Mucho tiempo sin comprobar disco %s",
+ 		"",
+ 		"",
+ 		"",

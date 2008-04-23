@@ -1,0 +1,266 @@
+diff -Naur channelswitcher-0.0.1-orig/channelmenu.c channelswitcher-0.0.1/channelmenu.c
+--- channelswitcher-0.0.1-orig/channelmenu.c	2004-07-04 18:10:00.000000000 +0200
++++ channelswitcher-0.0.1/channelmenu.c	2007-06-04 20:22:36.000000000 +0200
+@@ -3,7 +3,7 @@
+ #include <dirent.h>
+ 
+ 
+-cSwitchMenu::cSwitchMenu(cSwitcher &SwitcherPlug) : cOsdMenu(tr("Channels.conf SwitcherPlug"),20)
++cSwitchMenu::cSwitchMenu(cSwitcher &SwitcherPlug) : cOsdMenu(tr("Channels.conf Switcher"),20)
+ {
+ 	switcher=&SwitcherPlug;
+ 	cOsdItem *item= new cOsdItem("Defaut",osUser3);
+@@ -51,7 +51,7 @@
+ 			time = Timers.First();
+ 			if ( time )
+ 			{
+-				Skins.Message(mtError,"Programmation en cours...");
++				Skins.Message(mtError,tr("Programming in progress..."));
+ 				sleep(Setup.OSDMessageTime);
+ 				Skins.Message(mtStatus,"");
+ 				return osBack;
+@@ -59,7 +59,7 @@
+ 			Setup.UpdateChannels=0;
+ 			asprintf(&ToLoad,"%s/../channels.conf%s",cPlugin::ConfigDirectory(),switcher->List[Current()]);
+ 			Channels.Load(ToLoad);
+-			asprintf(&ToLoad,"channels.conf%s actif",switcher->List[Current()]);
++			asprintf(&ToLoad,tr("channels.conf%s active"),switcher->List[Current()]);
+ 			Skins.Message(mtStatus,ToLoad);
+ 			sleep(Setup.OSDMessageTime);
+ 			Skins.Message(mtStatus,"");
+diff -Naur channelswitcher-0.0.1-orig/channelswitcher.c channelswitcher-0.0.1/channelswitcher.c
+--- channelswitcher-0.0.1-orig/channelswitcher.c	2004-07-04 14:46:52.000000000 +0200
++++ channelswitcher-0.0.1/channelswitcher.c	2007-06-04 20:22:36.000000000 +0200
+@@ -1,4 +1,5 @@
+ #include <vdr/plugin.h>
++#include "i18n.h"
+ #include "channelswitcher.h"
+ #include "channelmenu.h"
+ 
+@@ -24,6 +25,7 @@
+ 
+ bool cSwitcher::Initialize(void)
+ {
++	RegisterI18n(Phrases);
+ 	SaveSetup=Setup.UpdateChannels;
+ 	return true;
+ }
+diff -Naur channelswitcher-0.0.1-orig/channelswitcher.h channelswitcher-0.0.1/channelswitcher.h
+--- channelswitcher-0.0.1-orig/channelswitcher.h	2004-06-15 01:11:31.000000000 +0200
++++ channelswitcher-0.0.1/channelswitcher.h	2007-07-08 11:31:53.000000000 +0200
+@@ -3,7 +3,7 @@
+ #include <vdr/plugin.h>
+ 
+ static const char *VERSION        = "0.0.1";
+-static const char *DESCRIPTION    = "Channel.conf Switcher";
++static const char *DESCRIPTION    = "Channels.conf Switcher";
+ static const char *MAINMENUENTRY  = "Channel Switcher";
+ 
+ class cSwitcher: public cPlugin
+@@ -14,8 +14,8 @@
+ 		cSwitcher(void);
+ 		~cSwitcher(void);
+ 		virtual const char *Version(void) {return VERSION; }
+-		virtual const char *Description(void) {return DESCRIPTION; }
+-		virtual const char *MainMenuEntry(void) { return MAINMENUENTRY; }
++		virtual const char *Description(void) {return tr(DESCRIPTION); }
++		virtual const char *MainMenuEntry(void) { return tr(MAINMENUENTRY); }
+ 		virtual cOsdObject *MainMenuAction(void);
+ 		virtual bool Initialize(void);
+ 		int SaveSetup;
+diff -Naur channelswitcher-0.0.1-orig/i18n.c channelswitcher-0.0.1/i18n.c
+--- channelswitcher-0.0.1-orig/i18n.c	1970-01-01 01:00:00.000000000 +0100
++++ channelswitcher-0.0.1/i18n.c	2007-06-04 20:22:36.000000000 +0200
+@@ -0,0 +1,101 @@
++#include "i18n.h"
++
++const tI18nPhrase Phrases[] = {
++  { "Channels.conf Switcher",	/*English*/
++    "",	/*Deutsch*/
++    "", // TODO /*Slovenski*/
++    "", // TODO /*Italiano*/
++    "", // TODO /*Nederlands*
++    "", // TODO /*Português*/
++    "Channels.conf SwitcherPlug", // /*Français*/
++    "", // TODO /*Norsk*/
++    "", /*suomi*/
++    "", // TODO /*Polski*/
++    "Intercambio de Channels.conf", // /*Español*/
++    "", // TODO /*Ellinika*/
++    "", // TODO /*Svenska*/
++    "", // TODO /*Romaneste*/
++    "", // TODO /*Magyar*/
++    "", // TODO /*Català*/
++#if VDRVERSNUM > 10341
++    "", // TODO /*Russian*/
++    "", // TODO /*Hrvatski*/
++    "", // TODO /*Eesti*/
++    "", // TODO /*Dansk*/
++    "", // TODO /*Eesky*/
++#endif
++  },
++  { "Programming in progress...", /*English*/
++    "",  /*Deutsch*/
++    "", // TODO /*Slovenski*/
++    "", // TODO /*Italiano*/
++    "", // TODO /*Nederlands*
++    "", // TODO /*Português*/
++    "Programmation en cours...", // /*Français*/
++    "", // TODO /*Norsk*/
++    "", /*suomi*/
++    "", // TODO /*Polski*/
++    "Programación en curso...", // /*Español*/
++    "", // TODO /*Ellinika*/
++    "", // TODO /*Svenska*/
++    "", // TODO /*Romaneste*/
++    "", // TODO /*Magyar*/
++    "", // TODO /*Català*/
++#if VDRVERSNUM > 10341
++    "", // TODO /*Russian*/
++    "", // TODO /*Hrvatski*/
++    "", // TODO /*Eesti*/
++    "", // TODO /*Dansk*/
++    "", // TODO /*Eesky*/
++#endif
++  },
++  { "channels.conf%s active",	/*English*/
++    "",	/*Deutsch*/
++    "", // TODO /*Slovenski*/
++    "", // TODO /*Italiano*/
++    "", // TODO /*Nederlands*
++    "", // TODO /*Português*/
++    "channels.conf%s actif", // /*Français*/
++    "", // TODO /*Norsk*/
++    "", /*suomi*/
++    "", // TODO /*Polski*/
++    "channels.conf%s activo", // /*Español*/
++    "", // TODO /*Ellinika*/
++    "", // TODO /*Svenska*/
++    "", // TODO /*Romaneste*/
++    "", // TODO /*Magyar*/
++    "", // TODO /*Català*/
++#if VDRVERSNUM > 10341
++    "", // TODO /*Russian*/
++    "", // TODO /*Hrvatski*/
++    "", // TODO /*Eesti*/
++    "", // TODO /*Dansk*/
++    "", // TODO /*Eesky*/
++#endif
++  },
++  { "Channel Switcher", /*English*/
++    "",  /*Deutsch*/
++    "", // TODO /*Slovenski*/
++    "", // TODO /*Italiano*/
++    "", // TODO /*Nederlands*
++    "", // TODO /*Português*/
++    "Channel Switcher", // /*Français*/
++    "", // TODO /*Norsk*/
++    "", /*suomi*/
++    "", // TODO /*Polski*/
++    "Intercambio de Canales", // /*Español*/
++    "", // TODO /*Ellinika*/
++    "", // TODO /*Svenska*/
++    "", // TODO /*Romaneste*/
++    "", // TODO /*Magyar*/
++    "", // TODO /*Català*/
++#if VDRVERSNUM > 10341
++    "", // TODO /*Russian*/
++    "", // TODO /*Hrvatski*/
++    "", // TODO /*Eesti*/
++    "", // TODO /*Dansk*/
++    "", // TODO /*Eesky*/
++#endif
++  },
++  { NULL }
++};
+diff -Naur channelswitcher-0.0.1-orig/i18n.h channelswitcher-0.0.1/i18n.h
+--- channelswitcher-0.0.1-orig/i18n.h	1970-01-01 01:00:00.000000000 +0100
++++ channelswitcher-0.0.1/i18n.h	2007-06-04 20:22:36.000000000 +0200
+@@ -0,0 +1,23 @@
++/*
++ * See the README file for copyright information and how to reach the author.
++ */
++
++ 
++/*
++
++File	: i18n.c
++
++Description
++-----------------------------------------------------------------
++Internationalisation file for channelswitcher plugin
++
++*/
++
++#ifndef ___I18N_H
++#define ___I18N_H
++
++#include <vdr/i18n.h>
++
++extern const tI18nPhrase Phrases[];
++
++#endif				//___I18N_H
+diff -Naur channelswitcher-0.0.1-orig/Makefile channelswitcher-0.0.1/Makefile
+--- channelswitcher-0.0.1-orig/Makefile	2004-06-14 04:05:05.000000000 +0200
++++ channelswitcher-0.0.1/Makefile	2007-06-16 20:02:58.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+ 
+@@ -40,13 +40,13 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+ ### The object files (add further files here):
+ 
+-OBJS = $(PLUGIN).o channelmenu.o
++OBJS = $(PLUGIN).o i18n.o channelmenu.o
+ 
+ ### Implicit rules:
+ 
+@@ -55,7 +55,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -68,7 +68,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

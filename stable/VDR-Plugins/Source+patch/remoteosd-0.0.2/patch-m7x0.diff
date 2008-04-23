@@ -1,0 +1,148 @@
+diff -Naur remoteosd-0.0.2-orig/i18n.c remoteosd-0.0.2/i18n.c
+--- remoteosd-0.0.2-orig/i18n.c	Wed Dec 05 17:12:17 2007
++++ remoteosd-0.0.2/i18n.c	Mon Dec 10 16:21:26 2007
+@@ -11,7 +11,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Menú Remoto",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -35,7 +35,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Muestra el menú de un VDR remoto",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -59,7 +59,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Ocultar en el menú principal",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -83,7 +83,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Reemplazar el menú principal \"Programación\"",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -107,7 +107,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Reemplazar el menú principal \"Programaciones\"",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -129,7 +129,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Servidor IP",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -153,7 +153,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Puerto del servidor",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -177,7 +177,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Sintonizar canal del servidor",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -201,7 +201,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Número de líneas por página",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -225,7 +225,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Tema del menú remoto",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -249,7 +249,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"OSD remoto ya en uso. ¿Continuar de todas formas?",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+@@ -273,7 +273,7 @@
+ 	"",// TODO Norsk
+ 	"",// TODO Finnish
+ 	"",// TODO Polski
+-	"",// TODO Español
++	"Menú remoto no disponible. Fallo en la conexión",// Español
+ 	"",// TODO ÅëëçíéêÜ (Greek)
+ 	"",// TODO Svenska
+ 	"",// TODO Romaneste
+diff -Naur remoteosd-0.0.2-orig/Makefile remoteosd-0.0.2/Makefile
+--- remoteosd-0.0.2-orig/Makefile	Wed Dec 05 17:12:17 2007
++++ remoteosd-0.0.2/Makefile	Mon Dec 10 11:37:27 2007
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -69,7 +69,7 @@
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+ #	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur remoteosd-0.0.2-orig/remoteosd.c remoteosd-0.0.2/remoteosd.c
+--- remoteosd-0.0.2-orig/remoteosd.c	Wed Dec 05 17:12:17 2007
++++ remoteosd-0.0.2/remoteosd.c	Mon Dec 10 11:37:27 2007
+@@ -108,6 +108,10 @@
+ {
+   if (!strcasecmp(Name, "HideMainMenuEntry"))
+ 	  RemoteOsdSetup.hideMainMenuEntry = atoi(Value);
++  else if (!strcasecmp(Name, "ReplaceSchedule"))
++	  RemoteOsdSetup.replaceSchedule = atoi(Value);
++  else if (!strcasecmp(Name, "ReplaceTimers"))
++	  RemoteOsdSetup.replaceTimers = atoi(Value);
+   else if (!strcasecmp(Name, "ServerIp"))
+ 	  strn0cpy(RemoteOsdSetup.serverIp, Value, sizeof(RemoteOsdSetup.serverIp));
+   else if (!strcasecmp(Name, "ServerPort"))

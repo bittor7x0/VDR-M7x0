@@ -1,0 +1,93 @@
+diff -Naur fussball-0.0.3b-orig/Makefile fussball-0.0.3b/Makefile
+--- fussball-0.0.3b-orig/Makefile	2006-08-11 17:12:28.000000000 +0200
++++ fussball-0.0.3b/Makefile	2007-12-23 20:04:29.000000000 +0100
+@@ -20,9 +20,9 @@
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -76,7 +76,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur fussball-0.0.3b-orig/README fussball-0.0.3b/README
+--- fussball-0.0.3b-orig/README	2006-08-11 17:20:18.000000000 +0200
++++ fussball-0.0.3b/README	2007-12-23 20:16:49.000000000 +0100
+@@ -5,16 +5,16 @@
+ 
+ Project's homepage:          http://home.arcor.de/crystl/ 
+ 
+-Latest version available at: 0.0.3
++Latest version available at: 0.0.3b
+ 
+ See the file COPYING for license information.
+ 
+ Description:
+ 
+-Das Plugin zeigt die aktuellen Ergebnisse, und Live Tabelle, der 1. Bundesliga an.
++The plugin shows the actual results and classifications of 1. Bundesliga.
+ 
+-Vorraussetzung:
+-	Internet Verbindung.
++Prerequisite:
++	Internet connection.
+ 
+ Installation:
+ 
+@@ -24,7 +24,6 @@
+ 	cd ../..
+ 	make plugins
+ 
+-Den Inhalt des Ordners "/scripte" nach
+-"/usr/local/bin/" kopieren.
++Copy the contents of the folder "/scripte" to "/usr/local/bin/".
+ 
+ 
+diff -Naur fussball-0.0.3b-orig/scripte/ergebnisse.sh fussball-0.0.3b/scripte/ergebnisse.sh
+--- fussball-0.0.3b-orig/scripte/ergebnisse.sh	2006-08-10 22:07:48.000000000 +0200
++++ fussball-0.0.3b/scripte/ergebnisse.sh	2007-12-23 20:04:29.000000000 +0100
+@@ -1,7 +1,6 @@
+ #!/bin/sh
+ 
+ BULIURL="http://linpop.zdf.de/sport/buli/head.php"
+-SORT=/usr/local/bin/sort.pl
+ 
+ GET="wget -O - -q"
+ 
+@@ -21,4 +20,4 @@
+   fi
+ done
+ 
+-echo $CONTENT | $SORT > /tmp/ergebnisse.txt
+\ No hay ningún carácter de nueva línea al final del fichero
++echo $CONTENT > /tmp/ergebnisse.txt
+\ No hay ningún carácter de nueva línea al final del fichero
+diff -Naur fussball-0.0.3b-orig/scripte/sort.pl fussball-0.0.3b/scripte/sort.pl
+--- fussball-0.0.3b-orig/scripte/sort.pl	2006-03-18 17:07:08.000000000 +0100
++++ fussball-0.0.3b/scripte/sort.pl	1970-01-01 01:00:00.000000000 +0100
+@@ -1,12 +0,0 @@
+-#!/usr/bin/perl
+-
+-
+-my ( $bez, $stand, $dummy);
+-while(<STDIN>)
+-{
+-        $bez   = $_;
+-        chomp($bez);
+-        $stand = <STDIN>;
+-        $dummy = <STDIN>;
+-        printf "%-25s %s", $bez, $stand;
+-}

@@ -1,0 +1,39 @@
+diff -Naur recstatus-0.0.5-orig/Makefile recstatus-0.0.5/Makefile
+--- recstatus-0.0.5-orig/Makefile	2007-01-15 12:50:41.000000000 +0100
++++ recstatus-0.0.5/Makefile	2007-07-30 11:00:51.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -68,7 +68,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

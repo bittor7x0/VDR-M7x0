@@ -1,0 +1,129 @@
+VDR Plugin 'fEPG' Revision History
+----------------------------------
+
+2004-05-03: Version 0.0.1
+
+- Initial revision.
+
+
+2004-05-17: Version 0.0.2
+
+- The description text in the info window is now properly centered.
+- Draw seperator and box around selected event after the text, this
+  prevents minor esthetic problems.
+- Events can now have both 'starting before' and 'finishing after' arrows.
+- Fixed a problem with the function WrapText: when a token that was too
+  wide was split with a '-', there would be a letter missing in the second
+  part of the word.
+- Checking to see if the selected event is current before switching channels
+  (When Ok button is pressed) now works properly.
+- Better text alignment in the cells.
+- Can no longer input numerical data or exit the EPG while the info window
+  is open.
+- No more warnings when compiling.
+- The description text in the info window is now truncated if too long to fit.
+- Many minor esthetic problems fixed.
+- Fixed a problem where the EPG would freeze(until green button was pressed)
+  when the user attempted to get info on a cell with 'No Info'.
+- Program no longer crashes when user moves past the end of the channel list.
+- Added the start time as a prefix when the event doesn't start at :00 or :30.
+
+
+2004-07-01: Version 0.0.3
+
+- Added setup menu; allows user to set which keys to use.
+
+
+2004-07-03: Version 0.1.0
+
+- fEPG now works with VDR 1.3.x
+- Removed the prefix 'k' from the key names in the setup menu.
+- Reorganization of the source code.
+- Fixed a problem with left/right scrolling when kLeft and kRight were not set
+  as Left and Right keys.
+
+
+2004-07-05: Version 0.1.1
+
+- User can now set custom colors and transparency in the plugin menu.
+- Default colors modified.
+- User can set whether or not the audio is muted when the plugin launches.
+- Fixed VDR 1.2.x compatibility issues.
+- Fix a crash when user tried to switch to a channel with 'No Info'.
+- Better vertical alignment in the cells with 2 rows of text.
+
+
+2004-07-08: Version 0.1.2
+
+- Fixed an esthetic problem with the info window when the channel number is 
+  longer than 3 characters.
+- The function to12time no longer returns 0:xx with time input of type 
+  00:xx (ie, 12:xx am).
+- The text in the info window can now be centered; setup through plugin menu.
+- Better handling of numerical input; no longer limited to 3 digit channel 
+  numbers.
+- User can now set remote timeout in setup menu.
+- firstTime is updated when clock goes from x:59 to x+1:00 or from x:29 to x:30
+- The current time is updated even if there is no user activity. 
+
+
+2004-07-16: Version 0.1.3
+
+- Fixed the 'starting before' arrows; they didn't appear for events starting
+  0:30 before times[0].
+- Can no longer switch channels while recording: prevents crash.
+- The info window no longer disappears when the current time is updated.
+- Numerical input is no longer accepted when the info window is open.
+- If mute is turned off while the EPG is open, it will not be turned on when exiting.
+- Added ability to schedule recordings.
+- Added a 'confirm recording' dialog.
+- Fixed: When time was x:59 (or x:29) user could not scroll back to x:30 (or x:00).
+- Fixed the way fEPG stores and retrieves key values.
+- Removed any lingering DOS formatting in the source files.
+
+
+2004-09-05: Version 0.2.0
+
+- Added visual cues on numerical input.
+- Fixed bugs associated with new features introduces in v.0.1.3
+- Displays only short channel names.
+
+
+2006-05-18: Version 0.2.1
+
+- VDR version 1.2.x no longer supported
+- Updated makefile for VDR 1.4.0
+- Cleaned-up source code
+- Long channel names are now truncated
+- Non-standard start times are no longer displayed if event has start time before
+  time of the first cell.
+
+
+2007-07-17: Version 0.3.0
+
+- Major rewrite
+- Fixed a memory leak
+- Background now gets darker before info window or dialog is opened
+- No more segfault when attempting to show info for an event with no description.
+- Updated Makefile
+- Fixed issues with setup menu
+- Improved layout of setup menu
+- Centering text in info window is now default behavior
+- 'Mute on open' is now off by default 
+- Behavior of page up/down slightly modified.
+- Channels can now be listed in ascending or descending order
+- Cleaned up key processing (based on 2D's modifications)
+- User can now select 12h or 24h time formats
+- Now drawing proper arrows instead of < and > (thanks to 2D)
+- Main menu entry can be hidden
+- User can now jump back/forward by any number of hours
+
+
+2007-08-04: Version 0.3.1
+
+- Added support for PAL
+- New graphical tool to adjust grid size and position on screen
+- Text is now properly centered within cells
+- New default colors
+- Changed menu text 'Transparency' to the more accurate 'Opacity'
+

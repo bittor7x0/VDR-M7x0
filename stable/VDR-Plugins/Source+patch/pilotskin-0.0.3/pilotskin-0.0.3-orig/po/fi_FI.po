@@ -1,0 +1,59 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Hannu Savolainen <hannu@opensound.com>, 2002
+# Jaakko Hyv‰tti <jaakko@hyvatti.iki.fi>, 2002
+# Niko Tarnanen <niko.tarnanen@hut.fi>, 2003
+# Rolf Ahrenberg <rahrenbe@cc.hut.fi>, 2003
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <nouche.1er@gmail.com>\n"
+"POT-Creation-Date: 2007-08-21 23:48+0200\n"
+"PO-Revision-Date: 2007-08-21 23:24+0200\n"
+"Last-Translator: Rolf Ahrenberg <rahrenbe@cc.hut.fi>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: pilotskin.c:21
+msgid "A zapping co-pilot"
+msgstr ""
+
+#: pilotskin.c:22
+msgid "Pilotskin"
+msgstr ""
+
+#: pilotskinosd.c:562
+msgid "AutoTimer"
+msgstr ""
+
+#: pilotskinosd.c:562
+msgid "Button$Close"
+msgstr ""
+
+#: pilotskinosd.c:562
+msgid "Button$Record"
+msgstr ""
+
+#: pilotskinosd.c:562
+msgid "Search"
+msgstr ""
+
+#: pilotskinsetup.c:19
+msgid "Close on OK"
+msgstr "Sulje painamalla OK"
+
+#: pilotskinsetup.c:20
+msgid "Hide main menu entry"
+msgstr "Piilota valinta p‰‰valikosta"
+
+#: pilotskinsetup.c:20
+msgid "no"
+msgstr ""
+
+#: pilotskinsetup.c:20
+msgid "yes"
+msgstr ""

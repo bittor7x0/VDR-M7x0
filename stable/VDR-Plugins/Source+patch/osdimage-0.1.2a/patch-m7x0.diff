@@ -1,0 +1,796 @@
+diff -Naur osdimage-0.1.2a-orig/bitmap.c osdimage-0.1.2a/bitmap.c
+--- osdimage-0.1.2a-orig/bitmap.c	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/bitmap.c	Mon Dec 10 11:37:27 2007
+@@ -6,7 +6,7 @@
+ //#include "loadingFailed256.xpm"
+ 
+ 
+-using namespace Magick;
++//using namespace Magick;
+ 
+ 
+ cOSDImageBitmap::cOSDImageBitmap()
+diff -Naur osdimage-0.1.2a-orig/bitmap.h osdimage-0.1.2a/bitmap.h
+--- osdimage-0.1.2a-orig/bitmap.h	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/bitmap.h	Mon Dec 10 11:37:27 2007
+@@ -9,13 +9,13 @@
+ #include "definitions.h"
+ #include "osdimage.h"
+ #include <vdr/osd.h>
+-#include <Magick++.h>
++//#include <Magick++.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string>
+ 
+ 
+-using namespace Magick;
++//using namespace Magick;
+ 
+ 
+ class cOSDImageBitmap
+diff -Naur osdimage-0.1.2a-orig/definitions.h osdimage-0.1.2a/definitions.h
+--- osdimage-0.1.2a-orig/definitions.h	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/definitions.h	Mon Dec 10 11:37:27 2007
+@@ -17,9 +17,13 @@
+ 
+ // commands do read the directory-content
+ //-iname '*.bmp' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.tiff' -o -iname '*.png' -o -iname '*.xpm'
+-#define FIND_DIRS "find '%s' -follow -type d -maxdepth 1 | sort -f"
+-#define FIND_FILES "find '%s' -follow -type f -maxdepth 1 %s | sort -f"
+-#define FIND_PICS "find '%s' -follow  -type f %s | sort -f"
++//#define FIND_DIRS "find '%s' -follow -type d -maxdepth 1 | sort -f"
++//#define FIND_DIRS "find '%s' -follow -type d | sort -f"
++#define FIND_DIRS "ls -lA '%s' |grep ^d|cut -b 57-100 | sort -f"
++//#define FIND_FILES "find '%s' -follow -type f -maxdepth 1 %s | sort -f"
++#define FIND_FILES "ls '%s'|grep .xpm|awk '{print \"%s/\" $0}'| sort -f"
++
++#define FIND_PICS "find '%s' -follow  -type f |grep .xpm | sort -f"
+ #define DIR_UP ".."
+ 
+ // Netpbm-stuff
+diff -Naur osdimage-0.1.2a-orig/i18n.c osdimage-0.1.2a/i18n.c
+--- osdimage-0.1.2a-orig/i18n.c	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/i18n.c	Mon Dec 10 16:16:22 2007
+@@ -11,9 +11,8 @@
+ 
+ const tI18nPhrase Phrases[] =
+ {
+-	{  "OSD Image",
+-		"OSD Image",
+-		"",// TODO
++	{  "OSD Image Gigaset M7x0",
++		"OSD Image Gigaset M7x0",
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -22,6 +21,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
++		"Imagen OSD Gigaset M7x0",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -39,7 +39,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Visor de imagenes OSD",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -57,7 +57,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Mostrar todo",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -75,7 +75,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Salir",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -93,7 +93,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Alpha-value de la imagen",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -111,7 +111,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Alpha-value del fondo",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -129,7 +129,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Alpha-value del area de texto",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -147,7 +147,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Intervalo entre imagenes ",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -165,7 +165,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Directorio",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -183,7 +183,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Cargando",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -201,7 +201,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Rotando imagen cw",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -219,7 +219,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Rotando imagen ccw",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -237,7 +237,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Restaurando rotación",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -255,7 +255,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Imagenes no encontradas",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -273,7 +273,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"!Imagenes no encontradas o directorio no valido!",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -291,7 +291,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Error al cargar la imagen",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -309,7 +309,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"Activar interpolacion",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -327,7 +327,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"si",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -345,7 +345,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"no",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+@@ -363,7 +363,7 @@
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+-		"",// TODO
++		"",// Español
+ 		"",// TODO
+ 		"",// TODO
+ 		"",// TODO
+diff -Naur osdimage-0.1.2a-orig/Makefile osdimage-0.1.2a/Makefile
+--- osdimage-0.1.2a-orig/Makefile	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/Makefile	Mon Dec 10 11:37:27 2007
+@@ -4,7 +4,7 @@
+ 
+ 
+ # optional
+-#DEBUG = 1
++DEBUG = 1
+ #HAVE_NETPBM = 1 #recommended for 16-color-OSD
+ 
+ 
+@@ -27,19 +27,23 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+ VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
++### The version number of VDR (taken from VDR's "config.h"):
++
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++
+ ### The name of the distribution archive:
+ 
+ ARCHIVE = $(PLUGIN)-$(VERSION)
+@@ -50,7 +54,7 @@
+ -include $(VDRDIR)/Make.config
+ 
+ # Add Magick++-linker-info
+-LIBS += $(shell Magick++-config --ldflags --libs)
++#LIBS += $(shell Magick++-config --ldflags --libs)
+ 
+ ifdef HAVE_NETPBM
+ 	DEFINES += -DHAVE_NETPBM
+@@ -60,7 +64,7 @@
+ 	DEFINES += -DDEBUG
+ endif
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -70,7 +74,8 @@
+ 
+ ### The object files (add further files here):
+ 
+-OBJS = bitmap.o menu.o viewer.o setup.o i18n.o $(PLUGIN).o
++#OBJS = bitmap.o menu.o viewer.o setup.o i18n.o $(PLUGIN).o
++OBJS = menu.o viewer.o setup.o i18n.o $(PLUGIN).o
+ 
+ ### Implicit rules:
+ 
+@@ -79,7 +84,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -92,7 +97,8 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++#	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur osdimage-0.1.2a-orig/menu.c osdimage-0.1.2a/menu.c
+--- osdimage-0.1.2a-orig/menu.c	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/menu.c	Mon Dec 10 11:37:27 2007
+@@ -11,29 +11,30 @@
+ 
+ cOSDImageMenu::cOSDImageMenu(sFiles &pics) : cOsdMenu(tr("OSD Image Viewer"))
+ {
+-	list<CoderInfo> coderList;
++//	list<CoderInfo> coderList;
+ 
+ 	
+ 	myPics = &pics;
+ 
+ 	// determine the supported file-formats of ImageMagick
+ 	// get list (all readable, don't care about writeable, don't care about multi-frame support) 
+-	coderInfoList(&coderList, CoderInfo::TrueMatch, CoderInfo::AnyMatch, CoderInfo::AnyMatch);
++//	coderInfoList(&coderList, CoderInfo::TrueMatch, CoderInfo::AnyMatch, CoderInfo::AnyMatch);
+ 	
+-	list<CoderInfo>::iterator entry = coderList.begin();
++//	list<CoderInfo>::iterator entry = coderList.begin();
+ 
+-	supportedFormats = "-iname '*." + entry->name() + "'";
+-	entry++;
+-	
+-	while( entry != coderList.end() )
+-	{
+-		supportedFormats += " -o -iname '*." + entry->name() + "'";
+-		entry ++;
+-	}
+-
+-#ifdef DEBUG
+-	printf("Support for %d file-extension available via ImageMagick\n", coderList.size() );
+-#endif
++//	supportedFormats = ".xpm.tgz";
++//	supportedFormats = "-iname '*." + entry->name() + "'";
++//	entry++;
++//	
++//	while( entry != coderList.end() )
++//	{
++//		supportedFormats += " -o -iname '*." + entry->name() + "'";
++//		entry ++;
++//	}
++
++//#ifdef DEBUG
++//	dsyslog("Support for %d file-extension available via ImageMagick\n", coderList.size() );
++//#endif
+ 	
+ 	// Test directory	
+ 	if (ScanDir(browsing) )
+@@ -169,8 +170,10 @@
+ 	FILE *p;
+ 	char buf[256];
+ 	bool ret;
++	cReadLine ReadLine;
+ #ifdef DEBUG
+-	int time = time_ms(), dt;
++//	int time = time_ms(), dt;
++	int time = timeMs.Elapsed(), dt;
+ #endif
+ 				
+ 	
+@@ -182,7 +185,7 @@
+ 	{
+ 		// Scan the directories
+ #ifdef DEBUG
+-		printf("Generating Browse-List for '%s'\n", myPics->CurPath() );
++		dsyslog("Generating Browse-List for '%s'\n", myPics->CurPath() );
+ #endif
+ 
+ 		// Add [..] for returning to parent dir
+@@ -196,17 +199,21 @@
+ 		// Scan the dirs
+ 
+ 		asprintf(&cmd, FIND_DIRS, myPics->CurPath() );
++#ifdef DEBUG
++		dsyslog("CMD: %s", cmd );
++#endif
+ 		p = popen(cmd, "r");
+ 
+ 		if (p)
+ 		{
+-			while ( (line = readline(p) ) !=  NULL)
++//			while ( (line = readline(p) ) !=  NULL)
++			while ( (line = ReadLine.Read(p) ) !=  NULL)
+ 			{
+-				if (strcmp(line, myPics->CurPath() ) > 0)
+-				{
+-					strcpy(buf, line + strlen(myPics->CurPath() ) + 1);
+-					myPics->files.push_back(buf);
+-				}
++//				if (strcmp(line, myPics->CurPath() ) > 0)
++//				{
++//					strcpy(buf, line + strlen(myPics->CurPath() ) + 1);
++					myPics->files.push_back(line);
++//				}
+ 			}
+ 
+ 			pclose(p);
+@@ -215,7 +222,7 @@
+ 		}
+ 		else
+ 		{
+-			printf("Error while opening pipe!\n");
++			dsyslog("Error while opening pipe!\n");
+ 			ret = false;
+ 		}
+ 
+@@ -229,24 +236,28 @@
+ 	{
+ 		// Scan only the current dir
+ #ifdef DEBUG
+-		if (scan == currentPics) printf("Generating Pic-List for '%s' (without subdirs)\n", myPics->CurPath() );
++		if (scan == currentPics) dsyslog("Generating Pic-List for '%s' (without subdirs)\n", myPics->CurPath() );
+ #endif
+-		asprintf(&cmd, FIND_FILES, myPics->CurPath(), supportedFormats.c_str() );
++		asprintf(&cmd, FIND_FILES, myPics->CurPath(), myPics->CurPath() );
+ 	}
+ 	else // scan = allPics
+ 	{
+ 		// Scan the dir including the subdirs
+ #ifdef DEBUG
+-		printf("Generating Pic-List for '%s' (including subdirs)\n", myPics->CurPath() );
++		dsyslog("Generating Pic-List for '%s' (including subdirs)\n", myPics->CurPath() );
+ #endif
+-		asprintf(&cmd, FIND_PICS, myPics->CurPath(), supportedFormats.c_str() );
++		asprintf(&cmd, FIND_PICS, myPics->CurPath() );
+ 	}
+ 
++#ifdef DEBUG
++		dsyslog("CMD: %s", cmd );
++#endif
+ 	p = popen(cmd, "r");
+ 
+ 	if (p)
+ 	{
+-		while ( (line = readline(p) ) !=  NULL)
++//		while ( (line = readline(p) ) !=  NULL)
++		while ( (line = ReadLine.Read(p) ) !=  NULL)
+ 		{
+ 			strcpy(buf, line + strlen(myPics->CurPath() ) + 1);
+ 			myPics->files.push_back(buf);
+@@ -258,18 +269,20 @@
+ 	}
+ 	else
+ 	{
+-		printf("Error while opening pipe!\n");
++		dsyslog("Error while opening pipe!\n");
+ 		ret = false;
+ 	}
+ 
+ #ifdef DEBUG
+-	dt = time_ms() - time;
+-	printf("Generating file-list & sorting it: %dms\n", dt);
++//	dt = time_ms() - time;
++	dt = timeMs.Elapsed() - time;
++	
++	dsyslog("Generating file-list & sorting it: %dms\n", dt);
+ #endif
+ 
+ 	if (myPics->Size() == 0)
+ 	{
+-		printf("No pictures found or bad directory\n");
++		dsyslog("No pictures found or bad directory\n");
+ 		ret = false;
+ 	}
+ 	
+diff -Naur osdimage-0.1.2a-orig/menu.h osdimage-0.1.2a/menu.h
+--- osdimage-0.1.2a-orig/menu.h	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/menu.h	Mon Dec 10 11:37:27 2007
+@@ -9,10 +9,11 @@
+ #include "definitions.h"
+ //#include "i18n.h"
+ #include <vdr/osd.h>
++#include <vdr/tools.h>
+ #include <vdr/menuitems.h>
+ #include <vdr/menu.h>
+ #include <vdr/skins.h>
+-#include <Magick++.h>
++//#include <Magick++.h>
+ #include <stdio.h>
+ //#include <vector>
+ //#include <string.h>
+@@ -45,7 +46,8 @@
+ private:
+ 	sFiles *myPics;
+ 	bool validRootDir;
+-	string supportedFormats;
++//	string supportedFormats;
++	cTimeMs	timeMs;
+ };
+ 
+ #endif
+diff -Naur osdimage-0.1.2a-orig/osdimage.c osdimage-0.1.2a/osdimage.c
+--- osdimage-0.1.2a-orig/osdimage.c	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/osdimage.c	Mon Dec 10 11:37:27 2007
+@@ -58,7 +58,7 @@
+ 					}
+ 					
+ #ifdef DEBUG
+-					printf("picture-directory: '%s'\n", buf.c_str() );
++					dsyslog("picture-directory: '%s'\n", buf.c_str() );
+ #endif			
+ 	
+ 					myPics.PushDir(buf);
+@@ -67,20 +67,23 @@
+ 				}
+ 				else
+ 				{
+-					printf("OSDImage-plugin: You have to specify a proper picture-directory (see help)\n");
+-					
+-					return false;
++					dsyslog("OSDimage-plugin: You have an invalidate picture-directory take default '/var/media'");
++					buf.assign("/var/media");
++					myPics.PushDir(buf);
++					return true;
+ 				}
+ 			default:
+-				printf("OSDimage-plugin: You have to specify a picture-directory (see help)\n");
+-				
+-				return false;
++				dsyslog("OSDimage-plugin: You have not specify a picture-directory take default '/var/media'");
++				buf.assign("/var/media");
++				myPics.PushDir(buf);
++				return true;
+ 		}
+ 	}
+ 	
+-	printf("OSDimage-plugin: You have to specify a picture-directory (see help)\n");	
+-	
+-	return false;
++	dsyslog("OSDimage-plugin: You have not specify a picture-directory take default '/var/media'");	
++	buf.assign("/var/media");
++	myPics.PushDir(buf);
++	return true;
+ }
+ 
+ bool cPluginOSDImage::Start(void)
+diff -Naur osdimage-0.1.2a-orig/osdimage.h osdimage-0.1.2a/osdimage.h
+--- osdimage-0.1.2a-orig/osdimage.h	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/osdimage.h	Mon Dec 10 11:37:27 2007
+@@ -21,9 +21,9 @@
+ //#include <vdr/interface.h>
+ 
+ 
+-static const char *VERSION        = "0.1.2";
++static const char *VERSION        = "0.1.2a";
+ static const char *DESCRIPTION    = "OSD Image Viewer";
+-static const char *MAINMENUENTRY  = "OSD Image";
++static const char *MAINMENUENTRY  = "OSD Image Gigaset M7x0";
+ 
+ 
+ // --- cPluginOSDImage --------------------------------------------------------
+diff -Naur osdimage-0.1.2a-orig/setup.c osdimage-0.1.2a/setup.c
+--- osdimage-0.1.2a-orig/setup.c	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/setup.c	Mon Dec 10 11:37:27 2007
+@@ -17,7 +17,7 @@
+ 	slideShowDelay = 5;
+ 	quantizer = 0; // use ImageMagick as default
+ 	dither = true;
+-	have256colors = false;
++	have256colors = true;
+ }
+ 
+ 
+diff -Naur osdimage-0.1.2a-orig/viewer.c osdimage-0.1.2a/viewer.c
+--- osdimage-0.1.2a-orig/viewer.c	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/viewer.c	Mon Dec 10 11:37:27 2007
+@@ -3,7 +3,7 @@
+ #include "viewer.h"
+ 
+ 
+-cOSDImageBitmap image;
++//cOSDImageBitmap image;
+ extern bool showMenu;
+ int slideShowTime, slideShowDelta;
+ 
+@@ -44,6 +44,9 @@
+ 			hPicArea = OSDHeight - 3 * FONTSIZE;
+ 			PicLeft = OSDLeft;
+ 			PicTop = OSDTop + 3 * FONTSIZE / 2;
++#ifdef DEBUG
++			dsyslog("Size of picture area: %dx%d@8bpp (256colors)\n", wPicArea, hPicArea);
++#endif
+ 			
+ 			// initialize the colors
+ 			quantizeColors = (1 << 8) - 4; // We have to spare 4 colors
+@@ -55,7 +58,7 @@
+ 			myColors.picBG = 0x0053587B | (OSDImageSetup.backgroundAlpha << 24);
+ 	
+ #ifdef DEBUG
+-			printf("256-color-OSD available. Nice ;-)\n");
++			dsyslog("256-color-OSD available. Nice ;-)\n");
+ #endif
+ 
+ 			osd->SetAreas(areas, sizeof(areas) / sizeof(tArea) );
+@@ -136,9 +139,9 @@
+ 			hPicArea = hPicAreaNew;
+ 
+ #ifdef DEBUG
+-			printf("No 256-color-OSD available. We have to make some compromises.\n");
+-			printf("Size of picture area: %dx%d@4bpp (16colors)\n", wPicArea, hPicArea);
+-			printf("OSD-memory-usage: %d of %d Bytes\n", MAXOSDMEM - (maxPicMem - wPicArea * hPicArea), MAXOSDMEM);
++			dsyslog("No 256-color-OSD available. We have to make some compromises.\n");
++			dsyslog("Size of picture area: %dx%d@4bpp (16colors)\n", wPicArea, hPicArea);
++			dsyslog("OSD-memory-usage: %d of %d Bytes\n", MAXOSDMEM - (maxPicMem - wPicArea * hPicArea), MAXOSDMEM);
+ #endif
+ 
+ 			tArea areas [] = {
+@@ -148,7 +151,7 @@
+ 			};
+ 
+ 			eOsdError status = osd->SetAreas(areas, sizeof(areas) / sizeof(tArea) );
+-			printf("Set areas: %d\n", status);
++			dsyslog("Set areas: %d\n", status);
+ 		}
+ 			
+ 		//osd->DrawRectangle(0, 0, OSDMAXWIDTH - 1, OSDMAXHEIGHT - 1, clrTransparent);
+@@ -162,7 +165,7 @@
+ 	}
+ 	else
+ 	{
+-		printf("osdimage: Error creating OSD!\n");
++		dsyslog("osdimage: Error creating OSD!\n");
+ 	}
+ }
+ 
+@@ -235,21 +238,21 @@
+ 			case kRed:
+ 				slideShow = false;
+ 				ViewInfo(tr("Resetting rotation") );
+-				image.Rotate0();
++//				image.Rotate0();
+ 				break;
+ 			case kGreen:
+ 				slideShow = false;
+ 				ViewInfo(tr("Rotating picture ccw") );
+-				image.RotateCCW();
++//				image.RotateCCW();
+ 				break;
+ 			case kYellow:
+ 				slideShow = false;
+ 				ViewInfo(tr("Rotating picture cw") );
+-				image.RotateCW();
++//				image.RotateCW();
+ 				break;
+ 			case kBlue:
+ 				slideShow = !slideShow;
+-				slideShowTime = time_ms();
++				slideShowTime = timeMs.Elapsed();
+ 				break;
+ 			case kBack:
+ 				slideShow = false;
+@@ -261,7 +264,7 @@
+ 			case kNone:
+ 				if (slideShow)
+ 				{
+-					slideShowDelta = (time_ms() - slideShowTime) / 1000; // [ms]->[s]
++					slideShowDelta = (timeMs.Elapsed() - slideShowTime) / 1000; // [ms]->[s]
+ 
+ 					if (slideShowDelta >= OSDImageSetup.slideShowDelay)
+ 					{
+@@ -272,7 +275,7 @@
+ 							ViewInfo(tr("Loading") );
+ 							Load();
+ 
+-							slideShowTime = time_ms();
++							slideShowTime = timeMs.Elapsed();
+ 							break;
+ 						}
+ 						else
+@@ -311,17 +314,17 @@
+ void cOSDImageViewer::Load(void)
+ {
+ #ifdef DEBUG
+-	int time = time_ms(), dt;
++	int time = timeMs.Elapsed(), dt;
+ #endif
+ 
+ 
+ 	// actually load the Image
+-	image.Load(myPics->CurPicPath() );
++	//image.Load(myPics->CurPicPath() );
+ 
+ #ifdef DEBUG
+-	dt = time_ms() - time;
+-	printf("Viewing picture %d/%d: '%s'\n", myPics->curPic + 1, myPics->Size(), myPics->CurPicPath() );
+-	printf("\t- Loading: %dms\n", dt);
++	dt = timeMs.Elapsed() - time;
++	dsyslog("Viewing picture %d/%d: '%s'\n", myPics->curPic + 1, myPics->Size(), myPics->CurPicPath() );
++	dsyslog("\t- Loading: %dms\n", dt);
+ #endif
+ }
+ 
+@@ -330,13 +333,44 @@
+ {
+ 	int wPic, hPic;
+ 	int xOff, yOff, xText;
++	cBitmap bmp(8, 8, 1);
++	char *szPic = NULL;
++	
++#ifdef DEBUG
++	int time = timeMs.Elapsed(), dt;
++#endif
+ 
++	asprintf(&szPic,"%s",myPics->CurPicPath());
+ 	
+-	cBitmap bmp(8, 8, 1);
++	if (strcmp(".xpm", szPic + strlen(szPic )-4) == 0)
++	{
++		bmp.LoadXpm(myPics->CurPicPath());
++	} else {
++		//extract picture
++		char *cmd = NULL;
++		asprintf(&cmd, "tar -xOz -f \"%s\" >>/tmp/OSDimage.xpm", myPics->CurPicPath());	
++#ifdef DEBUG
++		dsyslog("Extract: %s", cmd );
++#endif
++		system(cmd);
++		//cBitmap bmp(8, 8, 1);
++		bmp.LoadXpm("/tmp/OSDimage.xpm");
++		//delete tmp picture
++		system("rm /tmp/OSDimage.xpm");
++	}
++	wPic = bmp.Width();
++	hPic = bmp.Height();
++
++	//image.Render(bmp, wPicArea, hPicArea, quantizeColors, OSDImageSetup.quantizer, OSDImageSetup.dither, myColors, OSDImageSetup.picAlpha);
++	//wPic = image.Width();
++	//hPic = image.Height();
++
++#ifdef DEBUG
++	dt = timeMs.Elapsed() - time;
++	dsyslog("Viewing picture %d/%d: '%s'\n", myPics->curPic + 1, myPics->Size(), myPics->CurPicPath() );
++	dsyslog("\t- Loading: %dms\n", dt);
++#endif
+ 	
+-	image.Render(bmp, wPicArea, hPicArea, quantizeColors, OSDImageSetup.quantizer, OSDImageSetup.dither, myColors, OSDImageSetup.picAlpha);
+-	wPic = image.Width();
+-	hPic = image.Height();
+ 	xOff = PicLeft + (wPicArea - wPic) / 2;
+ 	yOff = PicTop + (hPicArea - hPic) / 2;
+ 	xText = OSDLeft;
+diff -Naur osdimage-0.1.2a-orig/viewer.h osdimage-0.1.2a/viewer.h
+--- osdimage-0.1.2a-orig/viewer.h	Wed Dec 05 17:12:17 2007
++++ osdimage-0.1.2a/viewer.h	Mon Dec 10 11:37:27 2007
+@@ -4,7 +4,9 @@
+ #define _OSDIMAGE_VIEWER_H_
+ 
+ #include "definitions.h"
+-#include "bitmap.h"
++//#include "bitmap.h"
++#include "osdimage.h"
++
+ #include <vdr/plugin.h>
+ //#include <vdr/osd.h>
+ #include <stdio.h>
+@@ -45,6 +47,7 @@
+ 	int wPicArea, hPicArea, wTxtArea;
+ 	bool slideShow;
+ 	int quantizeColors;
++	cTimeMs	timeMs;
+ };
+ 
+ #endif

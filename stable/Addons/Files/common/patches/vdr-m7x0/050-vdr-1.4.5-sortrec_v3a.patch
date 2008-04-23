@@ -1,0 +1,446 @@
+diff -Naur vdr-m7x0-orig/config.c vdr-m7x0/config.c
+--- vdr-m7x0-orig/config.c	2007-07-14 21:01:37.000000000 +0200
++++ vdr-m7x0/config.c	2007-07-14 21:04:05.000000000 +0200
+@@ -251,6 +251,8 @@
+   UseVps = 0;
+   VpsMargin = 120;
+   RecordingDirs = 1;
++  RecordingsSortMode = 0;
++  RecordingsSortDirsFirst = 0;
+   HotStandby = 0;
+   TvMode = 0;
+   VCRMode = 0;
+@@ -423,6 +425,8 @@
+   else if (!strcasecmp(Name, "UseVps"))              UseVps             = atoi(Value);
+   else if (!strcasecmp(Name, "VpsMargin"))           VpsMargin          = atoi(Value);
+   else if (!strcasecmp(Name, "RecordingDirs"))       RecordingDirs      = atoi(Value);
++  else if (!strcasecmp(Name, "RecordingsSortMode"))  RecordingsSortMode = atoi(Value);
++  else if (!strcasecmp(Name, "RecordingsSortDirsFirst")) RecordingsSortDirsFirst = atoi(Value);
+   else if (!strcasecmp(Name, "HotStandby"))          HotStandby         = atoi(Value);
+   else if (!strcasecmp(Name, "TvMode"))              TvMode             = atoi(Value);
+   else if (!strcasecmp(Name, "VCRMode"))             VCRMode            = atoi(Value);
+@@ -502,6 +506,8 @@
+   Store("UseVps",             UseVps);
+   Store("VpsMargin",          VpsMargin);
+   Store("RecordingDirs",      RecordingDirs);
++  Store("RecordingsSortMode", RecordingsSortMode);
++  Store("RecordingsSortDirsFirst", RecordingsSortDirsFirst);
+   Store("HotStandby", 	      HotStandby);
+   Store("TvMode", 	      TvMode);
+   Store("VCRMode", 	      VCRMode);
+diff -Naur vdr-m7x0-orig/config.h vdr-m7x0/config.h
+--- vdr-m7x0-orig/config.h	2007-07-14 21:01:37.000000000 +0200
++++ vdr-m7x0/config.h	2007-07-14 21:02:57.000000000 +0200
+@@ -259,6 +259,8 @@
+   int InitialChannel;
+   int InitialVolume;
+   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;
++  int RecordingsSortMode;
++  int RecordingsSortDirsFirst;
+   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
+   int __EndData__;
+   cSetup(void);
+diff -Naur vdr-m7x0-orig/i18n.c vdr-m7x0/i18n.c
+--- vdr-m7x0-orig/i18n.c	2007-07-14 21:01:53.000000000 +0200
++++ vdr-m7x0/i18n.c	2007-07-14 21:02:57.000000000 +0200
+@@ -6632,6 +6632,160 @@
+     "",
+     "",
+   },
++  { "Setup.Recording$Sort recordings by",
++    "Aufnahmen sortieren nach",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Ordenar grabaciones por",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.Recording$Sort directories before recordings",
++    "Verzeichnisse vor Aufnahmen einsortieren",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Ordenar dirs antes que grabaciones",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "main dir alphabetically, subdirs flexible",
++    "Alphabet für Haupt-, flexibel für Unterverzeichnisse",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "dir alfabéticamente, subdirs flexible",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "main dir by date, subdirs flexible",
++    "Datum für Haupt-, flexibel für Unterverzeichnisse",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "dir por fecha, subdirs flexible",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "all alphabetically",
++    "alles alphabetisch",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "todo alfabéticamente",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "all by date",
++    "alles nach Datum",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "todo por fecha",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Sorting",
++    "Sortierung",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Ordenando",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { NULL }
+   };
+ 
+diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
+--- vdr-m7x0-orig/menu.c	2007-07-14 21:01:53.000000000 +0200
++++ vdr-m7x0/menu.c	2007-07-14 21:02:57.000000000 +0200
+@@ -2285,18 +2285,30 @@
+   eOSState state = cOsdMenu::ProcessKey(Key);
+ 
+   if (state == osUnknown) {
++     char *buffer = NULL;
++     const char *RecordingsSortModeTexts[MAXSORTMODES];
++     RecordingsSortModeTexts[0] = tr("main dir alphabetically, subdirs flexible");
++     RecordingsSortModeTexts[1] = tr("main dir by date, subdirs flexible");
++     RecordingsSortModeTexts[2] = tr("all alphabetically");
++     RecordingsSortModeTexts[3] = tr("all by date");
++
+      switch (Key) {
+        case kOk:     return Play();
+        case kRed:    return (helpKeys > 1 && RecordingCommands.Count()) ? Commands() : Play();
+        case kGreen:  return Rewind();
+        case kYellow: return Delete();
+        case kBlue:   return Info();
+-       case k0:      DirOrderState = !DirOrderState;
++       case k0:      Setup.RecordingsSortMode = ++Setup.RecordingsSortMode % MAXSORTMODES;
+                      Set(true);
++                     asprintf(&buffer, "%s %d: %s", tr("Sorting"), Setup.RecordingsSortMode, RecordingsSortModeTexts[Setup.RecordingsSortMode]);
++                     Skins.Message(mtStatus, buffer);
++                     free(buffer);
+                      return osContinue;
+-       case k8:      return Rename();
+-       case k9:
+        case k1...k7: return Commands(Key);
++       case k8:      return Rename();
++       case k9:      Recordings.ToggleSortOrder();
++                     Set(true);
++                     return osContinue;
+        case kNone:   if (Recordings.StateChanged(recordingsState))
+                         Set(true);
+                      break;
+@@ -2796,12 +2808,19 @@
+ // --- cMenuSetupRecord ------------------------------------------------------
+ 
+ class cMenuSetupRecord : public cMenuSetupBase {
++private:
++  const char *RecordingsSortModeTexts[MAXSORTMODES];
+ public:
+   cMenuSetupRecord(void);
+   };
+ 
+ cMenuSetupRecord::cMenuSetupRecord(void)
+ {
++  RecordingsSortModeTexts[0] = tr("main dir alphabetically, subdirs flexible");
++  RecordingsSortModeTexts[1] = tr("main dir by date, subdirs flexible");
++  RecordingsSortModeTexts[2] = tr("all alphabetically");
++  RecordingsSortModeTexts[3] = tr("all by date");
++
+   SetSection(tr("Recording"));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Margin at start (min)"),     &data.MarginStart));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Margin at stop (min)"),      &data.MarginStop));
+@@ -2821,6 +2840,8 @@
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show date"),                 &data.ShowRecDate));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show time"),                 &data.ShowRecTime));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show length"),               &data.ShowRecLength));
++  Add(new cMenuEditStraItem(tr("Setup.Recording$Sort recordings by"),        &data.RecordingsSortMode, MAXSORTMODES, RecordingsSortModeTexts));
++  Add(new cMenuEditBoolItem(tr("Setup.Recording$Sort directories before recordings"), &data.RecordingsSortDirsFirst));
+ }
+ 
+ // --- cMenuSetupReplay ------------------------------------------------------
+diff -Naur vdr-m7x0-orig/README.sortrec vdr-m7x0/README.sortrec
+--- vdr-m7x0-orig/README.sortrec	1970-01-01 01:00:00.000000000 +0100
++++ vdr-m7x0/README.sortrec	2007-07-14 21:02:57.000000000 +0200
+@@ -0,0 +1,34 @@
++Sort Recordings patch for VDR
++-----------------------------
++
++This patch changes the sort behaviour of the recordings menu. There
++are now four sorting modes:
++
++mode   behaviour
++       main directory     sub directories
++--------------------------------------------------------------------------
++  0    alphabetically     if special character(*) is found alphabetically,
++                          else by date
++  1    by date            if special character(*) is found alphabetically,
++                          else by date
++  2    alphabetically     alphabetically
++  3    by date            by date
++
++(*) if a subdirectory name ends with one of ".-$ª·" (dot, hyphen, dollar sign, 
++    ASCII-170 or ASCII-183) it is sorted alphabetically in sort mode 0 and 1
++
++Sort mode 0 with none of the special characters at the end of any subdir 
++corresponds to the default sorting mode of the original VDR.
++
++The sorting mode can be switched through in the recording menu with the '0' key 
++(0->1->2->3->0->...), a default for startup can be set in the setup->recordings menu.
++
++Additionally the sort order (ascending/descending) can be toggled by the '9' key
++(which is always set to ascending after a restart)
++
++If you like the to see subdirectories before recordings you can select to put 
++directories first in the setup->recordings menu. 
++
++If you would like the sorting to ignore a leading '%' as they appear before cutted 
++recordings this can be achived by setting the environment variable LC_COLLATE properly
++(eg. LC_COLLATE=de_DE@euo in runvdr for germany).
+diff -Naur vdr-m7x0-orig/recording.c vdr-m7x0/recording.c
+--- vdr-m7x0-orig/recording.c	2007-07-14 21:01:53.000000000 +0200
++++ vdr-m7x0/recording.c	2007-07-14 21:02:57.000000000 +0200
+@@ -500,7 +500,10 @@
+ {
+   resume = RESUME_NOT_INITIALIZED;
+   titleBuffer = NULL;
+-  sortBuffer = NULL;
++  for (int i = 0; i < MAXSORTMODES; i++) {
++     sortBuffer[i] = NULL;
++     lastDirsFirst[i] = -1;
++  }
+   fileName = NULL;
+   name = NULL;
+   fileSizeMB = -1; // unknown
+@@ -557,7 +560,10 @@
+   fileSizeMB = -1; // unknown
+   deleted = 0;
+   titleBuffer = NULL;
+-  sortBuffer = NULL;
++  for (int i = 0; i < MAXSORTMODES; i++) {
++     sortBuffer[i] = NULL;
++     lastDirsFirst[i] = -1;
++  }
+   fileName = strdup(FileName);
+   FileName += strlen(VideoDirectory) + 1;
+   char *p = strrchr(FileName, '/');
+@@ -652,7 +658,9 @@
+ cRecording::~cRecording()
+ {
+   free(titleBuffer);
+-  free(sortBuffer);
++  for (int i = 0; i < MAXSORTMODES; i++) {
++     free(sortBuffer[i]);
++  }
+   free(fileName);
+   free(name);
+   delete info;
+@@ -673,22 +681,34 @@
+            }
+         t++;
+         }
+-  if (s1 && s2)
++
++  if (s1 && s2) {
++    if (Setup.RecordingsSortDirsFirst)
++      *s1 = 'b';
++
++    if ((Setup.RecordingsSortMode <= 1 && s1 != s && !strchr(".-$ª·", *(s1 - 1))) ||
++        (Setup.RecordingsSortMode == 1 && s1 == s) ||
++        (Setup.RecordingsSortMode == 3))	    
+      memmove(s1 + 1, s2, t - s2 + 1);
++  }
++
+   return s;
+ }
+ 
+ char *cRecording::SortName(void) const
+ {
+-  if (!sortBuffer) {
+-     char *s = StripEpisodeName(strdup(FileName() + strlen(VideoDirectory) + 1));
++  if (!sortBuffer[Setup.RecordingsSortMode] ||
++        lastDirsFirst[Setup.RecordingsSortMode] != Setup.RecordingsSortDirsFirst) {
++     free(sortBuffer[Setup.RecordingsSortMode]);
++     lastDirsFirst[Setup.RecordingsSortMode] = Setup.RecordingsSortDirsFirst;
++     char *s = StripEpisodeName(strdup(FileName() + strlen(VideoDirectory)));
+      strreplace(s, '/', 'a'); // some locales ignore '/' when sorting
+      int l = strxfrm(NULL, s, 0) + 1;
+-     sortBuffer = MALLOC(char, l);
+-     strxfrm(sortBuffer, s, l);
++     sortBuffer[Setup.RecordingsSortMode] = MALLOC(char, l);
++     strxfrm(sortBuffer[Setup.RecordingsSortMode], s, l);
+      free(s);
+      }
+-  return sortBuffer;
++  return sortBuffer[Setup.RecordingsSortMode];
+ }
+ 
+ int cRecording::GetResume(void) const
+@@ -703,9 +723,7 @@
+ int cRecording::Compare(const cListObject &ListObject) const
+ {
+   cRecording *r = (cRecording *)&ListObject;
+-  if (DirOrderState)
+-     return strcasecmp(FileName(), r->FileName());
+-  return strcasecmp(SortName(), r->SortName());
++  return Recordings.GetSortOrder() * strcasecmp(SortName(), r->SortName());
+ }
+ 
+ const char *cRecording::FileName(void) const
+@@ -947,6 +965,7 @@
+   deleted = Deleted;
+   lastUpdate = 0;
+   state = 0;
++  SortOrder = 1;
+ }
+ 
+ cRecordings::~cRecordings()
+diff -Naur vdr-m7x0-orig/recording.h vdr-m7x0/recording.h
+--- vdr-m7x0-orig/recording.h	2007-07-14 21:01:17.000000000 +0200
++++ vdr-m7x0/recording.h	2007-07-14 21:02:57.000000000 +0200
+@@ -68,12 +68,16 @@
+   bool Write(FILE *f, const char *Prefix = "") const;
+   };
+ 
++#define SORTRECORDINGSVERSNUM 3
++#define MAXSORTMODES 4 
++
+ class cRecording : public cListObject {
+   friend class cRecordings;
+ private:
+   mutable int resume;
+   mutable char *titleBuffer;
+-  mutable char *sortBuffer;
++  mutable char *sortBuffer[MAXSORTMODES];
++  mutable char lastDirsFirst[MAXSORTMODES];
+   mutable char *fileName;
+   mutable char *name;
+   mutable int fileSizeMB;
+@@ -117,6 +121,7 @@
+   bool deleted;
+   time_t lastUpdate;
+   int state;
++  int SortOrder;
+   const char *UpdateFileName(void);
+   void Refresh(bool Foreground = false);
+   void ScanVideoDir(const char *DirName, bool Foreground = false, int LinkLevel = 0);
+@@ -147,6 +152,8 @@
+   void AddByName(const char *FileName, bool TriggerUpdate = true);
+   void DelByName(const char *FileName);
+   int TotalFileSizeMB(void); ///< Only for deleted recordings!
++  void ToggleSortOrder(void) { SortOrder *= -1; }
++  const int GetSortOrder(void) { return SortOrder; }
+   };
+ 
+ extern cRecordings Recordings;

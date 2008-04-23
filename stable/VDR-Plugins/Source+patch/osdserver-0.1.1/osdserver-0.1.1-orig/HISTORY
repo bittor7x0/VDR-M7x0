@@ -1,0 +1,28 @@
+VDR Plugin 'osdserver' Revision History
+---------------------------------------
+
+2007-10-07: Version 0.1.1
+- Fix stupid bug with menu.GetCurrent
+
+2007-10-06: Version 0.1.0
+- EnterLocal and LeaveLocal for local variables
+- _Focus pseudo variable
+- Configurable listening port
+- osdserverhosts.conf
+- Bug fixes
+
+2007-07-21: Version 0.0.2
+- Event system extended to support all keys
+- Event system extended to events on all OSD objects
+- Events: blur, focus, edit, close
+- Quote chars are \r \n \t \" \' \\
+- Support single and double quotes
+- OsdItem: SetSelectable / SetUnSelectable, -unselectable, SetText
+- OsdMenu: SetColorKeyText, SetColumns
+- OsdEditStrItem
+- OsdEditIntItem
+- OsdEditListItem
+- Message command returns proper "301 timeout" instead of "300 Message timeout"
+
+2006-11-22: Version 0.0.1
+- Milestone 1 - very basic menus and messages

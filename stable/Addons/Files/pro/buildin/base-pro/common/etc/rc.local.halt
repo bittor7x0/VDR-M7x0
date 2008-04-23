@@ -1,0 +1,64 @@
+#!/bin/ash
+[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+
+echo -n 'stopping local stuff:'
+
+# put optional stuff after
+
+if [ X"${webif_start}" != X"NO" ]; then
+    echo -n ' stoping webif'
+    killall webifd
+fi
+
+# put optional stuff before
+
+for bpath in ${bind_paths} ; do
+        echo -n " Umount binding ${bpath}"
+        umount ${bpath} || umount -l ${bpath}
+done
+
+if [ X"${runvdr}" != X"NO" ]; then
+     echo -n ' vdr'
+     trys=0
+     while [ -e /var/run/runvdr.pid -a ${trys} -le 20 ] ; do
+	    touch '/tmp/shutdown.signal'
+	    [ $(( ${trys} % 5 )) -eq 0 ] && killall -15 vdr
+            trys=$(( ${trys} + 1 ))
+            sleep 1
+     done
+
+     [ -f /var/run/runvdr.pid ] && killall -9 vdr
+
+     [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && mv /var/vdr/epg.data ${vdr_epgfile}
+
+     export VDR_TV_MODE=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+     export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+fi
+
+# Swapoff
+if [ X"${hd_swap_dev}" != X"NO" ] ; then
+    echo -n ' Swapoff'
+    /sbin/swapoff ${hd_swap_dev}
+fi
+
+if [ X"${do_usb_mount}" != X"NO" ] ; then
+    echo -n ' usb-mount'
+    rm -f /var/tmp/hotplug
+    /sbin/usbautomounter umount
+fi
+
+# Spindown hd
+if [ X"${hd_spindown_dev}" != X"NO" ] ; then
+    echo -n ' starting scsi-spin'
+    /usr/sbin/scsi-spin -d -f ${hd_spindown_dev}
+fi
+
+echo ' '
+
+if [ -x "${fw_update_file}" ] ; then
+    umount /etc || umount -l /etc
+    umount /rw-flash || umount -l /rw-flash
+    ${fw_update_file}
+fi
+
+avswctl -tv vcr

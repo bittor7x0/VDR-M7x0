@@ -1,0 +1,63 @@
+diff -Naur VDR-NG-EM-orig/vdr.c VDR-NG-EM/vdr.c
+--- VDR-NG-EM-orig/vdr.c	Wed Mar 12 10:43:51 2008
++++ VDR-NG-EM/vdr.c	Wed Mar 12 17:51:09 2008
+@@ -207,15 +207,6 @@
+ 
+   setlocale(LC_ALL, "");
+ 
+-// M7X0 BEGIN AK
+-// Move it here to fix segfault for too early kill
+-// Signal handlers:
+-
+-  if (signal(SIGHUP,  SignalHandler) == SIG_IGN) signal(SIGHUP,  SIG_IGN);
+-  if (signal(SIGINT,  SignalHandler) == SIG_IGN) signal(SIGINT,  SIG_IGN);
+-  if (signal(SIGTERM, SignalHandler) == SIG_IGN) signal(SIGTERM, SIG_IGN);
+-  if (signal(SIGPIPE, SignalHandler) == SIG_IGN) signal(SIGPIPE, SIG_IGN);
+-
+   // Command line options:
+ 
+ #define DEFAULTSVDRPPORT 2001
+@@ -742,17 +733,24 @@
+   else
+      cDevice::PrimaryDevice()->SetVolume(Setup.CurrentVolume, true);
+ 
++  // Signal handlers:
++
++  if (signal(SIGHUP,  SignalHandler) == SIG_IGN) signal(SIGHUP,  SIG_IGN);
++  if (signal(SIGINT,  SignalHandler) == SIG_IGN) signal(SIGINT,  SIG_IGN);
++  if (signal(SIGTERM, SignalHandler) == SIG_IGN) signal(SIGTERM, SIG_IGN);
++  if (signal(SIGPIPE, SignalHandler) == SIG_IGN) signal(SIGPIPE, SIG_IGN);
++  if (WatchdogTimeout > 0)
++     if (signal(SIGALRM, Watchdog)   == SIG_IGN) signal(SIGALRM, SIG_IGN);
++
+ // M7X0 BEGIN AK
+ // more here hopefully speed up start a bit
+  // Recordings:
+ 
+   Recordings.Update();
+   DeletedRecordings.Update();
++// M7X0 END AK
+ 
+   // Watchdog:
+-  if (WatchdogTimeout > 0)
+-     if (signal(SIGALRM, Watchdog)   == SIG_IGN) signal(SIGALRM, SIG_IGN);
+-// M7X0 END AK
+ 
+   if (WatchdogTimeout > 0) {
+      dsyslog("setting watchdog timer to %d seconds", WatchdogTimeout);
+@@ -1351,6 +1349,15 @@
+      esyslog("emergency exit requested - shutting down");
+ 
+ Exit:
++
++//M7X0 BEGIN AK
++  // Reset all signal handlers to default before Interface gets deleted:
++  signal(SIGHUP,  SIG_DFL);
++  signal(SIGINT,  SIG_DFL);
++  signal(SIGTERM, SIG_DFL);
++  signal(SIGPIPE, SIG_DFL);
++  signal(SIGALRM, SIG_DFL);
++//M7X0 END AK
+ 
+   PluginManager.StopPlugins();
+   cRecordControls::Shutdown();

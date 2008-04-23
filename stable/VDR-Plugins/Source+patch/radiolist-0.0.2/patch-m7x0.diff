@@ -1,0 +1,62 @@
+diff -Naur radiolist-0.0.2-orig/i18n.c radiolist-0.0.2/i18n.c
+--- radiolist-0.0.2-orig/i18n.c	2006-09-28 12:48:05.000000000 +0200
++++ radiolist-0.0.2/i18n.c	2007-06-05 19:29:20.000000000 +0200
+@@ -11,7 +11,7 @@
+     "", // TODO /*Norsk*/
+     "", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Canales de Radio", // /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -35,7 +35,7 @@
+     "", // TODO /*Norsk*/
+     "", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Ocultar en menú principal", // /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+@@ -59,7 +59,7 @@
+     "", // TODO /*Norsk*/
+     "", /*suomi*/
+     "", // TODO /*Polski*/
+-    "", // TODO /*Español*/
++    "Mostrar Separadores Canal", // /*Español*/
+     "", // TODO /*Ellinika*/
+     "", // TODO /*Svenska*/
+     "", // TODO /*Romaneste*/
+diff -Naur radiolist-0.0.2-orig/Makefile radiolist-0.0.2/Makefile
+--- radiolist-0.0.2-orig/Makefile	2006-09-28 12:48:05.000000000 +0200
++++ radiolist-0.0.2/Makefile	2007-06-17 12:06:00.000000000 +0200
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -39,7 +39,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -67,7 +67,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

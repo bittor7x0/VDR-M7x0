@@ -1,0 +1,55 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Christian Wieninger <cwieninger@gmx.de>
+
+See the file COPYING for license information.
+
+Description:
+
+This is a little plugin, that allows you to select and start other
+plugins, even if there are not shown in the main menu. You can also
+access the setup menu of a plugin. If available you can also display 
+a little man page about the plugin. This is useful, if a plugin has
+a comlicated interface with many different keys for usage, like the
+dvd plugin.
+I´ ve written this, first as a little programming exercise and second,
+because I'm a little lazy :-)
+Some plugins are not used very often and have eventually a setup entry
+to hide them in the main menu. If one wants to use them now, its a
+little bit annoying to jump through the menus, enable them, use
+them and reverse the whole thing.
+
+The plugin shows a list of all other plugins and launches the selected
+plugin with the "OK" key or "Red" key. With the "Blue" key one can
+open the setup menu for the corresponding plugin. The "Green" key
+shows the 'man' page of a plugin, if availabe (see below).
+
+To exclude a plugin from the list (for example because it's already
+listed in the main menu) one can give a
+commandline argument '-x' when starting vdr:
+
+...
+-'Plauncher -x plugin1 -x plugin2'
+...
+
+This excludes plugin1 and plugin2 from the list. 
+
+To use the 'man' pages put a file pluginname.info (e.g. dvd.info) 
+in your VDR config directory, usually the directory 'plugins' in 
+your video dir. This file should be a simple ASCII file, describing 
+the usage of a plugin.
+
+Build the plugin as usual:
+
+1. Extract in to your PLUGIN/src directory.
+2. Make a link to the directory
+3. Compile the plugins
+
+Known Bugs:
+- the games plugin uses the same mechanism to call its
+'subplugins' as this plugin. This leads to a problem when starting 
+this plugin from within this launcher plugin. One has to start it twice :-(
+
+
+Christian Wieninger
+ 

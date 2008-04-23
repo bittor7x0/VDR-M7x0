@@ -1,0 +1,13 @@
+
+      Up - Crsr up
+      Down - Crsr down
+      Left - Page up
+      Right - Page down
+      Ok - Play
+      Menu - Menu off
+      Back - VDR menu
+      Red - Play/Commands
+      Green - Rewind
+      Yellow - Delete
+      Blue - Summary
+      0..9 - Exec cmd

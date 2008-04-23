@@ -1,0 +1,28 @@
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2008-02-14 22:04:12.000000000 +0100
++++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2008-03-21 18:41:21.000000000 +0100
+@@ -515,8 +515,8 @@
+ #
+ CONFIG_VT=y
+ # CONFIG_VT_CONSOLE is not set
+-CONFIG_SERIAL=y
+-CONFIG_SERIAL_CONSOLE=y
++# CONFIG_SERIAL is not set
++# CONFIG_SERIAL_CONSOLE is not set
+ # CONFIG_SERIAL_EXTENDED is not set
+ # CONFIG_SERIAL_NONSTANDARD is not set
+ CONFIG_UNIX98_PTYS=y
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2008-02-14 22:04:12.000000000 +0100
++++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2008-03-21 18:41:21.000000000 +0100
+@@ -515,8 +515,8 @@
+ #
+ CONFIG_VT=y
+ # CONFIG_VT_CONSOLE is not set
+-CONFIG_SERIAL=y
+-CONFIG_SERIAL_CONSOLE=y
++# CONFIG_SERIAL is not set
++# CONFIG_SERIAL_CONSOLE is not set
+ # CONFIG_SERIAL_EXTENDED is not set
+ # CONFIG_SERIAL_NONSTANDARD is not set
+ CONFIG_UNIX98_PTYS=y

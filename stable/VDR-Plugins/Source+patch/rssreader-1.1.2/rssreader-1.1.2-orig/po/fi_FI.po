@@ -1,0 +1,63 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Rolf Ahrenberg
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: Rolf Ahrenberg\n"
+"POT-Creation-Date: 2007-08-28 23:51+0300\n"
+"PO-Revision-Date: 2007-08-12 18:35+0300\n"
+"Last-Translator: Rolf Ahrenberg\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "RSS item"
+msgstr "RSS-artikkeli"
+
+msgid "<no date available>"
+msgstr "<päivämäärä ei ole saatavilla>"
+
+msgid "<no title available>"
+msgstr "<otsikko ei ole saatavilla>"
+
+msgid "<no description available>"
+msgstr "<kuvaus ei ole saatavilla>"
+
+msgid "<no link available>"
+msgstr "<linkki ei ole saatavilla>"
+
+msgid "Select RSS item"
+msgstr "Valitse RSS-artikkeli"
+
+msgid "Select RSS stream"
+msgstr "Valitse RSS-virta"
+
+msgid "Can't parse RSS stream!"
+msgstr "RSS-virtaa ei pystytä tulkkaamaan!"
+
+msgid "Can't download RSS stream!"
+msgstr "RSS-virtaa ei pystytä vastaanottamaan!"
+
+msgid "Unknown error!"
+msgstr "Tuntematon virhe!"
+
+msgid "RSS Reader for OSD"
+msgstr "RSS-lukija kuvaruutunäytölle"
+
+msgid "RSS Reader"
+msgstr "RSS-lukija"
+
+msgid "Hide main menu entry"
+msgstr "Piilota valinta päävalikosta"
+
+msgid "Hide non-existent elements"
+msgstr "Piilota tyhjät elementit"
+
+msgid "Use HTTP proxy server"
+msgstr "Käytä HTTP-välityspalvelinta"
+
+msgid "HTTP proxy server"
+msgstr "HTTP-välityspalvelimen osoite"

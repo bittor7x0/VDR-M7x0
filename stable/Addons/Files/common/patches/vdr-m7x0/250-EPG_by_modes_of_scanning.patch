@@ -1,0 +1,696 @@
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	Thu Mar 13 12:01:05 2008
++++ VDR-NG/config.c	Thu Mar 13 12:03:51 2008
+@@ -277,6 +277,11 @@
+   EPGScanTimeout = 5;
+   EPGBugfixLevel = 3;
+   EPGLinger = 0;
++//M7X0 BEGIN AK
++  EPGDefaultMode = 0;
++  EPGInvDefaultMode = 2;
++  EPGChannelNoLimit = 30;
++//M7X0 END AK
+   SVDRPTimeout = 300;
+   ZapTimeout = 3;
+   PrimaryLimit = 0;
+@@ -462,6 +467,11 @@
+   else if (!strcasecmp(Name, "EPGScanTimeout"))      EPGScanTimeout     = atoi(Value);
+   else if (!strcasecmp(Name, "EPGBugfixLevel"))      EPGBugfixLevel     = atoi(Value);
+   else if (!strcasecmp(Name, "EPGLinger"))           EPGLinger          = atoi(Value);
++//M7X0 BEGIN AK
++  else if (!strcasecmp(Name, "EPGDefaultMode"))      EPGDefaultMode     = atoi(Value);
++  else if (!strcasecmp(Name, "EPGInvDefaultMode"))   EPGInvDefaultMode  = atoi(Value);
++  else if (!strcasecmp(Name, "EPGChannelNoLimit"))   EPGChannelNoLimit  = atoi(Value);
++//M7X0 END AK
+   else if (!strcasecmp(Name, "SVDRPTimeout"))        SVDRPTimeout       = atoi(Value);
+   else if (!strcasecmp(Name, "ZapTimeout"))          ZapTimeout         = atoi(Value);
+   else if (!strcasecmp(Name, "PrimaryLimit"))        PrimaryLimit       = atoi(Value);
+@@ -554,6 +564,11 @@
+   Store("EPGScanTimeout",     EPGScanTimeout);
+   Store("EPGBugfixLevel",     EPGBugfixLevel);
+   Store("EPGLinger",          EPGLinger);
++//M7X0 BEGIN AK
++  Store("EPGDefaultMode",     EPGDefaultMode);
++  Store("EPGInvDefaultMode",  EPGInvDefaultMode);
++  Store("EPGChannelNoLimit",  EPGChannelNoLimit);
++//M7X0 END AK
+   Store("SVDRPTimeout",       SVDRPTimeout);
+   Store("ZapTimeout",         ZapTimeout);
+   Store("PrimaryLimit",       PrimaryLimit);
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	Thu Mar 13 12:01:05 2008
++++ VDR-NG/config.h	Thu Mar 13 12:07:52 2008
+@@ -246,6 +246,11 @@
+   int EPGScanTimeout;
+   int EPGBugfixLevel;
+   int EPGLinger;
++//M7X0 BEGIN AK
++  int EPGDefaultMode;
++  int EPGInvDefaultMode;
++  int EPGChannelNoLimit;
++//M7X0 END AK
+   int SVDRPTimeout;
+   int ZapTimeout;
+   int PrimaryLimit;
+diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
+--- VDR-NG-orig/eit.c	Thu Mar 13 12:01:05 2008
++++ VDR-NG/eit.c	Thu Mar 13 12:25:15 2008
+@@ -13,6 +13,9 @@
+ 
+ #include "eit.h"
+ #include "epg.h"
++//M7X0 BEGIN AK
++#include "epgmode.h"
++//M7X0 END AK
+ #include "i18n.h"
+ #include "libsi/section.h"
+ #include "libsi/descriptor.h"
+@@ -31,6 +34,12 @@
+      return;
+ 
+   tChannelID channelID(Source, getOriginalNetworkId(), getTransportStreamId(), getServiceId());
++//M7X0 BEGIN AK
++  eEpgMode em = EpgModes.GetModeByChannelID(&channelID)->GetMode();
++  if (em == emNone || em == emForeign ||
++        (em == emNowNext && Tid != 0x4e && Tid != 0x4f))
++     return;
++//M7X0 END AK
+   cChannel *channel = Channels.GetByChannelID(channelID, true);
+   if (!channel)
+      return; // only collect data for known channels
+diff -Naur VDR-NG-orig/eitscan.c VDR-NG/eitscan.c
+--- VDR-NG-orig/eitscan.c	Tue Jun 12 12:57:36 2007
++++ VDR-NG/eitscan.c	Thu Mar 13 12:27:18 2008
+@@ -10,6 +10,9 @@
+ #include "eitscan.h"
+ #include <stdlib.h>
+ #include "channels.h"
++//M7X0 BEGIN AK
++#include "epgmode.h"
++//M7X0 END AK
+ #include "dvbdevice.h"
+ #include "skins.h"
+ #include "transfer.h"
+@@ -45,16 +48,27 @@
+ 
+ class cScanList : public cList<cScanData> {
+ public:
+-  void AddTransponders(cList<cChannel> *Channels);
++//M7X0 BEGIN AK
++  void AddTransponders(cList<cChannel> *Channels, bool checkEpgMode);
++//M7X0 END AK
+   void AddTransponder(const cChannel *Channel);
+   };
+ 
+-void cScanList::AddTransponders(cList<cChannel> *Channels)
++//M7X0 BEGIN AK
++void cScanList::AddTransponders(cList<cChannel> *Channels, bool checkEpgMode)
+ {
+-  for (cChannel *ch = Channels->First(); ch; ch = Channels->Next(ch))
+-      AddTransponder(ch);
++  for (cChannel *ch = Channels->First(); ch; ch = Channels->Next(ch)) {
++      if (checkEpgMode) {
++         tChannelID cid = ch->GetChannelID();
++         if (EpgModes.GetModeByChannelID(&cid)->GetMode() < emForeign)
++            AddTransponder(ch);
++         }
++      else
++         AddTransponder(ch);
++      }
+   Sort();
+ }
++//M7X0 END AK
+ 
+ void cScanList::AddTransponder(const cChannel *Channel)
+ {
+@@ -131,15 +145,17 @@
+      time_t now = time(NULL);
+      if (now - lastScan > ScanTimeout && now - lastActivity > ActivityTimeout) {
+         if (Channels.Lock(false, 10)) {
++//M7X0 BEGIN AK
+            if (!scanList) {
+               scanList = new cScanList;
+-              scanList->AddTransponders(&Channels);
++              scanList->AddTransponders(&Channels, true);
+               if (transponderList) {
+-                 scanList->AddTransponders(transponderList);
++                 scanList->AddTransponders(transponderList, false);
+                  delete transponderList;
+                  transponderList = NULL;
+                  }
+               }
++//M7X0 END AK
+            bool AnyDeviceSwitched = false;
+            for (int i = 0; i < cDevice::NumDevices(); i++) {
+                cDevice *Device = cDevice::GetDevice(i);
+diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
+--- VDR-NG-orig/epg.c	Thu Mar 13 12:01:05 2008
++++ VDR-NG/epg.c	Thu Mar 13 12:33:55 2008
+@@ -11,6 +11,9 @@
+  */
+ 
+ #include "epg.h"
++//M7X0 BEGIN AK
++#include "epgmode.h"
++//M7X0 END AK
+ #include <ctype.h>
+ #include <time.h>
+ #include "libsi/si.h"
+@@ -856,6 +859,10 @@
+ 
+ void cSchedule::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtTime) const
+ {
++//M7X0 BEGIN AK
++  if (EpgModes.GetModeByChannelID(&channelID)->GetMode() >= emNoSave)
++     return;
++//M7X0 END AK
+   cChannel *channel = Channels.GetByChannelID(channelID, true);
+   if (channel) {
+      fprintf(f, "%sC %s %s\n", Prefix, *channel->GetChannelID().ToString(), channel->Name());
+@@ -900,12 +907,28 @@
+               if (*s) {
+                  tChannelID channelID = tChannelID::FromString(s);
+                  if (channelID.Valid()) {
+-                    cSchedule *p = Schedules->AddSchedule(channelID);
++//M7X0 BEGIN AK
++                    eEpgMode em = EpgModes.GetModeByChannelID(&channelID)->GetMode();
++                    cSchedule *p;
++                    if (em < emNowNext)
++                       p = Schedules->AddSchedule(channelID);
++                    else
++                       p = new cSchedule(channelID);
++
+                     if (p) {
+-                       if (!cEvent::Read(f, p))
++                       if (!cEvent::Read(f, p)) {
++                          if (em >= emNowNext)
++                             delete p;
+                           return false;
+-                       p->Sort();
+-                       Schedules->SetModified(p);
++                          }
++
++                       if (em >= emNowNext) {
++                          delete p;
++                       } else {
++                          p->Sort();
++                          Schedules->SetModified(p);
++                          }
++//M7X0 END AK
+                        }
+                     }
+                  else {
+diff -Naur VDR-NG-orig/epgmode.c VDR-NG/epgmode.c
+--- VDR-NG-orig/epgmode.c	Thu Jan 01 01:00:00 1970
++++ VDR-NG/epgmode.c	Sun Feb 17 15:53:58 2008
+@@ -0,0 +1,125 @@
++/*
++ * Extends vdr epg by modes of scanning.
++ *
++ * Copyright (C) 2008 Andreas Koch - the open7x0.org group
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
++ *
++ * The author can be reached at andreas@open7x0.org
++ *
++ * The project's page is at http://www.open7x0.org
++ *
++ * $Id$
++ *
++ */
++#include <stdio.h>
++#include <string.h>
++#include "epgmode.h"
++#include "channels.h"
++#include "tools.h"
++
++
++eEpgMode cEpgMode::GetMode(bool replaceDefault) const
++{
++  if (!replaceDefault || mode > emInvDefault)
++     return mode;
++
++  eEpgMode em = mode;
++  cChannel *channel = Channels.GetByChannelID(channelID, true);
++  if (channel && channel->Number() > Setup.EPGChannelNoLimit)
++     em = em == emDefault ? emInvDefault : emDefault;
++  if (em == emDefault)
++     return eEpgMode(Setup.EPGDefaultMode + emFull);
++  return eEpgMode(Setup.EPGInvDefaultMode + emFull);
++}
++
++
++bool cEpgMode::Parse(char *s) {
++
++  compactspace(s);
++  char *p = s + strcspn(s," \t");
++  if (!*p)
++     return false;
++
++  *p++ = 0;
++  compactspace(s);
++  compactspace(p);
++  channelID = tChannelID::FromString(s);
++  mode = eEpgMode(atoi(p));
++  return true;
++}
++
++bool cEpgMode::Save(FILE *f) const {
++  return fprintf(f,"%s %d\n",*channelID.ToString(),mode) > 0;
++}
++
++void cEpgModes::Cleanup(void) {
++  cEpgMode *cur = First();
++  while (cur) {
++        if (!cur->Valid()) {
++           cEpgMode *next = Next(cur);
++           Del(cur);
++           cur = next;
++           continue;
++           }
++        // Check for duplicates
++        cEpgMode  *oth = Next(cur);
++        while (oth) {
++              cEpgMode *next = Next(oth);
++              if (*cur == *oth) {
++                 Del(oth);
++                 }
++              oth = next;
++              }
++        cur = Next(cur);
++        }
++}
++
++cEpgMode *cEpgModes::GetModeByChannelID(const tChannelID *ChannelID)
++{
++  mutex.Lock();
++  for (cEpgMode *cur = First(); cur; cur = Next(cur)) {
++      if (*cur == *ChannelID) {
++         mutex.Unlock();
++         return cur;
++         }
++      }
++
++  cEpgMode *cur = new cEpgMode(ChannelID);
++  Add(cur);
++  mutex.Unlock();
++  return cur;
++}
++
++bool cEpgModes::Load(const char* FileName)
++{
++  mutex.Lock();
++  bool r = cConfig<cEpgMode>::Load(FileName);
++  Cleanup();
++  mutex.Unlock();
++  return r;
++}
++
++bool cEpgModes::Save(void)
++{
++  mutex.Lock();
++  Cleanup();
++  bool r = cConfig<cEpgMode>::Save();
++  mutex.Unlock();
++  return r;
++}
++
++cEpgModes EpgModes;
+diff -Naur VDR-NG-orig/epgmode.h VDR-NG/epgmode.h
+--- VDR-NG-orig/epgmode.h	Thu Jan 01 01:00:00 1970
++++ VDR-NG/epgmode.h	Sun Feb 17 15:53:58 2008
+@@ -0,0 +1,72 @@
++/*
++ * Extends vdr epg by modes of scanning.
++ *
++ * Copyright (C) 2008 Andreas Koch - the open7x0.org group
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
++ *
++ * The author can be reached at andreas@open7x0.org
++ *
++ * The project's page is at http://www.open7x0.org
++ *
++ * $Id$
++ *
++ */
++
++#ifndef __EPGMODE_H
++#define __EPGMODE_H
++#include "config.h"
++#include "channels.h"
++#include "thread.h"
++#include "tools.h"
++
++
++enum eEpgMode { emDefault, emInvDefault, emFull, emForeign,
++    emNoSave, emNowNext, emNone};
++
++class cEpgMode : public cListObject {
++private:
++  eEpgMode mode;
++  tChannelID channelID;
++public:
++  cEpgMode(void) { mode = emDefault; }
++  cEpgMode(const tChannelID *ChannelID, eEpgMode Mode = emDefault)
++    { channelID = *ChannelID; mode = Mode; }
++  eEpgMode GetMode(bool replaceDefault = true) const;
++  void SetMode(eEpgMode Mode) { mode = Mode; }
++  bool Valid(void) const
++   { return channelID.Valid() && mode >= emDefault && mode <= emNone &&
++          Channels.GetByChannelID(channelID); }
++  bool operator== (const tChannelID &ChannelID) const
++      { return channelID == ChannelID; }
++  bool operator== (const cEpgMode &arg) const
++      { return channelID == arg.channelID; }
++  bool Parse(char *s);
++  bool Save(FILE *f) const;
++};
++
++class cEpgModes : public cConfig<cEpgMode> {
++private:
++  cMutex mutex;
++  void Cleanup(void);
++public:
++  cEpgMode *GetModeByChannelID(const tChannelID *ChannelID);
++  bool Load(const char *FileName = NULL);
++  bool Save(void);
++};
++
++extern cEpgModes EpgModes;
++#endif
+diff -Naur VDR-NG-orig/Makefile VDR-NG/Makefile
+--- VDR-NG-orig/Makefile	Thu Mar 13 12:01:02 2008
++++ VDR-NG/Makefile	Thu Mar 13 12:59:27 2008
+@@ -41,7 +41,7 @@
+ SILIB    = $(LSIDIR)/libsi.a
+ 
+ OBJS = audio.o channels.o ci.o config.o cutter.o device.o diseqc.o dvbdevice.o dvbosd.o\
+-       dvbplayer.o dvbspu.o eit.o eitscan.o epg.o filter.o font.o i18n.o interface.o keys.o\
++       dvbplayer.o dvbspu.o eit.o eitscan.o epg.o epgmode.o filter.o font.o i18n.o interface.o keys.o\
+        lirc.o menu.o menuitems.o nit.o osdbase.o osd.o pat.o player.o plugin.o rcu.o\
+        receiver.o recorder.o recording.o remote.o remux.o ringbuffer.o sdt.o sections.o shutdown.o\
+        skinclassic.o skins.o skinsttng.o sources.o spu.o status.o svdrp.o themes.o thread.o\
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	Thu Mar 13 12:01:06 2008
++++ VDR-NG/menu.c	Thu Mar 13 13:35:49 2008
+@@ -19,6 +19,9 @@
+ #include "config.h"
+ #include "cutter.h"
+ #include "eitscan.h"
++//M7X0 BEGIN AK
++#include "epgmode.h"
++//M7X0 END AK
+ #include "i18n.h"
+ #include "interface.h"
+ #include "plugin.h"
+@@ -2735,11 +2738,12 @@
+ }
+ 
+ // --- cMenuSetupEPG ---------------------------------------------------------
+-
++//M7X0 BEGIN AK
+ class cMenuSetupEPG : public cMenuSetupBase {
+ private:
+   int originalNumLanguages;
+   int numLanguages;
++  const char *epgModeStr[5];
+   void Setup(void);
+ public:
+   cMenuSetupEPG(void);
+@@ -2772,6 +2776,21 @@
+   Add(new cMenuEditIntItem( tr("Setup.EPG$Preferred languages"),       &numLanguages, 0, I18nNumLanguages));
+   for (int i = 0; i < numLanguages; i++)
+      Add(new cMenuEditStraItem(tr("Setup.EPG$Preferred language"),     &data.EPGLanguages[i], I18nNumLanguages, I18nLanguages()));
++
++  epgModeStr[0] = tr("Setup.EPG$Full EPG");
++  epgModeStr[1] = tr("Setup.EPG$Foreign EPG");
++  epgModeStr[2] = tr("Setup.EPG$Do not save");
++  epgModeStr[3] = tr("Setup.EPG$Now and Next only");
++  epgModeStr[4] = tr("Setup.EPG$No EPG");
++
++  Add(new cMenuEditStraItem(tr("Setup.EPG$Channel Default Mode"),
++                             &data.EPGDefaultMode,
++                             5, epgModeStr));
++  Add(new cMenuEditStraItem(tr("Setup.EPG$Channel Inverse Mode"),
++                             &data.EPGInvDefaultMode,
++                             5, epgModeStr));
++  Add(new cMenuEditIntItem(tr("Setup.EPG$Channel Limit"),&data.EPGChannelNoLimit));
++
+   Add(new cMenuEditIntItem(tr("Setup.EPG$Period for double EPG search(min)"),         &data.DoubleEpgTimeDelta));
+   Add(new cMenuEditBoolItem(tr("Setup.EPG$extern double Epg entry"),         &data.DoubleEpgAction, tr("adjust"), tr("delete")));
+   Add(new cMenuEditBoolItem(tr("Setup.EPG$Mix intern and extern EPG"),         &data.MixEpgAction));
+@@ -2780,6 +2799,7 @@
+   SetCurrent(Get(current));
+   Display();
+ }
++//M7X0 END AK
+ 
+ eOSState cMenuSetupEPG::ProcessKey(eKeys Key)
+ {
+@@ -2828,6 +2848,76 @@
+   return state;
+ }
+ 
++//M7X0 BEGIN AK
++// --- cMenuSetupEPGMode -----------------------------------------------------
++
++
++class cMenuSetupEPGMode : public cMenuSetupPage {
++private:
++  class clModeItem : public cListObject {
++    public:
++      eEpgMode epgVal;
++      cEpgMode *epgMode;
++  };
++  cList<clModeItem> modes;
++  void Set(void);
++  const char *epgModeStr[7];
++protected:
++  virtual void Store(void);
++public:
++  cMenuSetupEPGMode(void) { Set(); }
++};
++
++void cMenuSetupEPGMode::Set(void)
++{
++  SetSection(tr("EPG Channel Modes"));
++
++  epgModeStr[0] = tr("Setup.EPG$Default Mode");
++  epgModeStr[1] = tr("Setup.EPG$Inverse Mode");
++  epgModeStr[2] = tr("Setup.EPG$Full EPG");
++  epgModeStr[3] = tr("Setup.EPG$Foreign EPG");
++  epgModeStr[4] = tr("Setup.EPG$Do not save");
++  epgModeStr[5] = tr("Setup.EPG$Now and Next only");
++  epgModeStr[6] = tr("Setup.EPG$No EPG");
++
++  char buffer[256];
++  for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
++      if (!channel->GroupSep()) {
++         snprintf(buffer,256, "%d %s - %s", channel->Number(),
++                  channel->Provider(), channel->Name());
++         buffer[255] = 0;
++         clModeItem *modeIt = new clModeItem;
++         tChannelID chID = channel->GetChannelID();
++         modeIt->epgMode = EpgModes.GetModeByChannelID(&chID);
++         modeIt->epgVal = modeIt->epgMode->GetMode(false);
++         modes.Add(modeIt);
++         cMenuEditStraItem *item = new cMenuEditStraItem(buffer,
++                                         (int *)&modeIt->epgVal,7, epgModeStr);
++         Add(item);
++         }
++       else {
++         snprintf(buffer,256, "---\t%s ----------------------------------------------------------------", channel->Name());
++         buffer[255] = 0;
++         Add(new cOsdItem(buffer, osUnknown, false));
++         }
++     }
++  Display();
++}
++
++void cMenuSetupEPGMode::Store(void)
++{
++  bool changed = false;
++  for (clModeItem *it = modes.First(); it; it = modes.Next(it)) {
++      if (it->epgVal != it->epgMode->GetMode(false)) {
++         changed = true;
++         it->epgMode->SetMode(it->epgVal);
++         }
++      }
++  if (changed)
++     EpgModes.Save();
++}
++//M7X0 END AK
++
+ // --- cMenuSetupDVB ---------------------------------------------------------
+ 
+ class cMenuSetupDVB : public cMenuSetupBase {
+@@ -3273,15 +3363,18 @@
+   SetHasHotkeys();
+   Add(new cOsdItem(hk(tr("OSD")),           osUser1));
+   Add(new cOsdItem(hk(tr("EPG")),           osUser2));
+-  Add(new cOsdItem(hk(tr("DVB")),           osUser3));
+-  Add(new cOsdItem(hk(tr("LNB")),           osUser4));
+-  Add(new cOsdItem(hk(tr("CICAM")),         osUser5));
+-  Add(new cOsdItem(hk(tr("Recording")),     osUser6));
+-  Add(new cOsdItem(hk(tr("Replay")),        osUser7));
+-  Add(new cOsdItem(hk(tr("Miscellaneous")), osUser8));
++//M7X0 BEGIN AK
++  Add(new cOsdItem(hk(tr("EPG Channel Modes")), osUser3));
++  Add(new cOsdItem(hk(tr("DVB")),           osUser4));
++  Add(new cOsdItem(hk(tr("LNB")),           osUser5));
++  Add(new cOsdItem(hk(tr("CICAM")),         osUser6));
++  Add(new cOsdItem(hk(tr("Recording")),     osUser7));
++  Add(new cOsdItem(hk(tr("Replay")),        osUser8));
++  Add(new cOsdItem(hk(tr("Miscellaneous")), osUser9));
+   if (cPluginManager::HasPlugins())
+-  Add(new cOsdItem(hk(tr("Plugins")),       osUser9));
+-  Add(new cOsdItem(hk(tr("Restart")),       osUser10));
++  Add(new cOsdItem(hk(tr("Plugins")),       osUser10));
++  Add(new cOsdItem(hk(tr("Restart")),       (eOSState) (osUser10 + 1)));
++//M7X0 END AK
+ }
+ 
+ eOSState cMenuSetup::Restart(void)
+@@ -3299,16 +3392,19 @@
+   eOSState state = cOsdMenu::ProcessKey(Key);
+ 
+   switch (state) {
++//M7X0 BEGIN AK
+     case osUser1: return AddSubMenu(new cMenuSetupOSD);
+     case osUser2: return AddSubMenu(new cMenuSetupEPG);
+-    case osUser3: return AddSubMenu(new cMenuSetupDVB);
+-    case osUser4: return AddSubMenu(new cMenuSetupLNB);
+-    case osUser5: return AddSubMenu(new cMenuSetupCICAM);
+-    case osUser6: return AddSubMenu(new cMenuSetupRecord);
+-    case osUser7: return AddSubMenu(new cMenuSetupReplay);
+-    case osUser8: return AddSubMenu(new cMenuSetupMisc);
+-    case osUser9: return AddSubMenu(new cMenuSetupPlugins);
+-    case osUser10: return Restart();
++    case osUser3: return AddSubMenu(new cMenuSetupEPGMode);
++    case osUser4: return AddSubMenu(new cMenuSetupDVB);
++    case osUser5: return AddSubMenu(new cMenuSetupLNB);
++    case osUser6: return AddSubMenu(new cMenuSetupCICAM);
++    case osUser7: return AddSubMenu(new cMenuSetupRecord);
++    case osUser8: return AddSubMenu(new cMenuSetupReplay);
++    case osUser9: return AddSubMenu(new cMenuSetupMisc);
++    case osUser10: return AddSubMenu(new cMenuSetupPlugins);
++    case osUser10 + 1: return Restart();
++//M7X0 BEGIN AK
+     default: ;
+     }
+   if (Setup.OSDLanguage != osdLanguage) {
+diff -Naur VDR-NG-orig/sections.c VDR-NG/sections.c
+--- VDR-NG-orig/sections.c	Tue Jun 12 12:57:36 2007
++++ VDR-NG/sections.c	Sun Feb 17 15:53:46 2008
+@@ -144,8 +144,9 @@
+ 
+ void cSectionHandler::SetStatus(bool On)
+ {
+-  Lock();
++// M7X0 BEGIN AK
+   if (on != On) {
++     Lock();
+      if (!On || device->HasLock()) {
+         statusCount++;
+         for (cFilter *fi = filters.First(); fi; fi = filters.Next(fi)) {
+@@ -158,8 +159,9 @@
+         }
+      else
+         waitForLock = On;
++     Unlock();
+      }
+-  Unlock();
++// M7X0 END AK
+ }
+ 
+ void cSectionHandler::Action(void)
+diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
+--- VDR-NG-orig/vdr.c	Thu Mar 13 12:01:03 2008
++++ VDR-NG/vdr.c	Thu Mar 13 17:31:14 2008
+@@ -86,6 +86,7 @@
+ #include "videodir.h"
+ //M7X0 BEGIN AK
+ #include "builddate.h"
++#include "epgmode.h"
+ //M7X0 END AK
+ 
+ #define MINCHANNELWAIT     10 // seconds to wait between failed channel switchings
+@@ -623,6 +624,25 @@
+      EXIT(2);
+ 
+   cFont::SetCode(I18nCharSets()[Setup.OSDLanguage]);
++
++  // EPG data:
++//M7X0 BEGIN AK
++  EpgModes.Load(AddDirectory(ConfigDirectory, "epgmodes.conf"));
++//M7X0 END AK
++  if (EpgDataFileName) {
++     const char *EpgDirectory = NULL;
++     if (DirectoryOk(EpgDataFileName)) {
++        EpgDirectory = EpgDataFileName;
++        EpgDataFileName = DEFAULTEPGDATAFILENAME;
++        }
++     else if (*EpgDataFileName != '/' && *EpgDataFileName != '.')
++        EpgDirectory = VideoDirectory;
++     if (EpgDirectory)
++        cSchedules::SetEpgDataFileName(AddDirectory(EpgDirectory, EpgDataFileName));
++     else
++        cSchedules::SetEpgDataFileName(EpgDataFileName);
++     cSchedules::Read();
++     }
+   
+   if(Setup.HotStandby)
+     setIaMode(0);
+@@ -709,25 +729,6 @@
+   if (AudioCommand)
+      new cExternalAudio(AudioCommand);
+ 
+-// M7X0 BEGIN AK
+-// Move here
+-// EPG data:
+-
+-  if (EpgDataFileName) {
+-     const char *EpgDirectory = NULL;
+-     if (DirectoryOk(EpgDataFileName)) {
+-        EpgDirectory = EpgDataFileName;
+-        EpgDataFileName = DEFAULTEPGDATAFILENAME;
+-        }
+-     else if (*EpgDataFileName != '/' && *EpgDataFileName != '.')
+-        EpgDirectory = VideoDirectory;
+-     if (EpgDirectory)
+-        cSchedules::SetEpgDataFileName(AddDirectory(EpgDirectory, EpgDataFileName));
+-     else
+-        cSchedules::SetEpgDataFileName(EpgDataFileName);
+-     cSchedules::Read();
+-     }
+-// M7X0 END AK
+   // Channel:
+ 
+   if (!cDevice::WaitForAllDevicesReady(DEVICEREADYTIMEOUT))

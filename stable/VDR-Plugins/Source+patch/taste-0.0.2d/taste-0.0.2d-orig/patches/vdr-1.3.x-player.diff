@@ -1,0 +1,12 @@
+--- player.c.orig	2004-11-16 20:10:27.661038144 +0100
++++ player.c	2004-11-16 16:58:04.149918576 +0100
+@@ -88,6 +88,8 @@
+ 
+ void cControl::Shutdown(void)
+ {
+-  delete control;
++  cControl *c = control;
+   control = NULL;
++  if (c)
++     delete c;
+ }

@@ -1,0 +1,14 @@
+diff -Naur fritzbox-0.0.9/Makefile fritzbox-open7x0.org/Makefile
+--- fritzbox-0.0.9/Makefile	2007-08-26 19:47:57.000000000 +0200
++++ fritzbox-open7x0.org/Makefile	2007-10-03 16:15:27.000000000 +0200
+@@ -22,8 +22,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:

@@ -1,0 +1,129 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Olivier JACQUES
+
+Project's homepage:          http://famillejacques.free.fr/vdr/pilot/
+
+See the file COPYING for license information.
+
+Description:
+-----------
+Pilot is a plugin for VDR that brings the ability to fastly browse 
+the EPG information (Extended Program Guide) without being forced
+to switch to a channel.
+It makes it easy to see what is going on on other channels while still
+looking at the current channel.
+
+Installation:
+------------
+- Type "make plugins" at VDR directory level
+- Edit the keymacros.conf file:
+  cd "VDR_CONFIG_DIR"
+  vi keymacros.conf
+----------------keymacros.conf
+Blue      Timers
+Red       @pilot
+----------------
+  Please check VDR manual (man 5 vdr) for more informations on keymacros.conf
+
+Customization:
+-------------
+Pilot plugin can be tuned to your own preferences.
+Go in Configuration/Plugins/pilot/ to access the setup menu.
+Origin X   : X coordinate of the menu
+Origin Y   : Y coordinate of the menu
+Width      : Width of the menu
+Red        : Change this to change appearance of the menu (default is blue menu)
+Green      :
+Blue       :
+Background opacity      : Background's window opacity
+Text opacity            : Text's opacity
+Border opacity          : Border's opacity
+Close on OK             : Close the Pilot plugin when pressing OK button (in addition to 
+                          switch to the selected channel). 
+			  Otherwise, switch to the channel but keep the pilot opened.
+
+Usage:
+-----
+UP  : go one channel up
+DOWN: go one channel down
+OK  : switch to the selected channel
+BACK: exit Pilot plugin
+
+Files:
+-----
+Configuration settings (color) are stored in VDR's setup.conf
+
+VDR Plugin 'pilot' Revision History
+-----------------------------------
+2006-05-04: Version 0.0.9
+  - Maintenance release for vdr-1.4.0
+    Provided by Ronny Kornexl
+    
+2005-01-17: Version 0.0.8
+  - Maintenance release for vdr-1.3.18 (and up?)
+    Provided by free-x and Thomas Gunther
+
+2004-11-16: Version 0.0.7
+  - Maintenance release for vdr-1.3.{8,9,10,11,12,13,14,15,16}
+    From ThomasD on vdrportal. Note tha version below 1.3.8
+    are no more supported starting from this release.
+  - Fixed color issues with previous patch
+  - Still transparency issues (will check that later)
+
+2004-03-17: Version 0.0.6
+  - Added support to vdr-1.3.6. Should still work with 1.2.6 
+    and up (not tested). Thanks to the guys at vdrportal.de
+  
+2004-01-20: Version 0.0.5
+  - vdr-1.3.x and vdr-1.2.x compliant, using VDRVERSNUM define
+  - Finish translation by Rolf Ahrenberg
+  - Added missing languages in i18n.h (vdr-1.3.2): to be filled!
+
+2004-01-07: Version 0.0.4
+  - EPG browsing is no more limited to current and next event. You
+    can scroll through all the existing EPG of a channel.
+    Yellow: scroll back in time
+    Blue: scroll to the future
+  - Fixed a crash when several adjascent groups where presents in 
+    channels.conf. Thanks to Sebastian Kemper for reporting this.
+
+2003-07-01: Version 0.0.3c
+  - Changed the way red/green buttons are displayed for DXR3 users.
+    They should now be displayed properly, on the upper left of the
+    pilot OSD. Thanks to Frank Scherthan for providing a patch.
+
+2003-06-30: Version 0.0.3b
+  - Fixed several DXR3's color (thanks to Frank Scherthan for reporting 
+    this). Needs testing.
+  - Fixed a continuus channel switching bug when using Ch+/Ch- keys
+    (reported by Christian Jacobsen).
+   
+2003-06-26: Version 0.0.3
+  - Added a limited color version for DXR3 users (accessible from setup
+    menu). Thanks to Frank Scherthan for providing a patch.
+  - Added detailed info for current program (Red key) and following program
+    (Green key). Those keys are visible only if the information is 
+    present. The detailed info can be scrolled up/down and closed with
+    the Red or Back keys.
+  - On channel group change (left/right keys), group + first channel of
+    the group is displayed, instead of having to actually switch to the
+    group.
+    
+2003-06-17: Version 0.0.2
+  - Added direct channel selection with 0-9 keys
+  - Added possibility to choose channel group with left/right keys
+  - Fix a bug when switching one channel down while being on the first channel
+  
+2003-06-16: Version 0.0.1 - Initial release
+   
+To do:
+-----
+- Provide complete information on one program (current and following)
+
+Contact:
+-------
+I am watching VDR's mailing list 
+(http://www.linuxtv.org/mailinglists/vdr/), so you can always contact 
+me there. I also try to look at http://www.vdrportal.de on a regular 
+basis and understand the german posts :) But I'll answer in english!

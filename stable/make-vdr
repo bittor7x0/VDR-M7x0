@@ -1,0 +1,34 @@
+#!/bin/sh
+
+vdr=VDR-NG
+TC_bin=`pwd`/VDR-NG-FW/m7x0_xtc_uclibc_Linux-i686/bin
+
+if [[ ! -d "$TC_bin" ]]
+then
+    echo "ToolChain-bin dir not found: $TC_bin" 1>&2
+    exit 1
+else
+    export PATH="$TC_bin:$PATH"
+fi
+
+# Update VDR-NG from SVN
+if [[ ! -d "$vdr" ]]
+then
+	echo "CHECKOUT: $vdr"
+	svn checkout -r 242 -q "svn://open7x0.org/vdr-m7x0/branches/gambler-unstable" "$vdr"
+fi
+
+# Patching VDR
+if [[ ! -f "$vdr/HISTORY-liemikuutio" ]]
+then
+	./VDR-NG-FW/patches/patch-kernel.sh ./VDR-NG ./Addons/Files/common/patches/vdr-m7x0
+fi
+
+# Compiling VDR
+( cd $vdr; make )
+
+if [[ -x $vdr/vdr ]]
+then
+    cp -p $vdr/vdr .
+    mips-linux-uclibc-strip vdr
+fi

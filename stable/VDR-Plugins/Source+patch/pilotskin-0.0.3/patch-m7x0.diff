@@ -1,0 +1,233 @@
+diff -Naur pilotskin-0.0.3-orig/i18n.c pilotskin-0.0.3/i18n.c
+--- pilotskin-0.0.3-orig/i18n.c	2007-08-21 23:56:04.000000000 +0200
++++ pilotskin-0.0.3/i18n.c	2007-12-23 16:51:21.000000000 +0100
+@@ -37,7 +37,7 @@
+     "", // TODO
+     "Kanavapilotti", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Pilotskin", // Español
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -57,7 +57,7 @@
+     "", // TODO
+     "Kanavapilotti ohjelmaoppaalle", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Un copiloto para el zapping", // Español
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -77,7 +77,7 @@
+     "", // TODO
+     "Sulje painamalla OK", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Cerrar al OK", // Español
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -117,7 +117,107 @@
+     "", // TODO
+     "", // FINNISH
+     "", // TODO
++    "Cerrar", // Español
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++#if VDRVERSNUM>10301
++    "", // TODO
++#endif
++  },
++  { "AutoTimer", // English
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "AutoProgramador", // Español
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++#if VDRVERSNUM>10301
++    "", // TODO
++#endif
++  },
++  { "Button$Record", // English
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "Grabar", // Español
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++#if VDRVERSNUM>10301
++    "", // TODO
++#endif
++  },
++  { "Search", // English
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "Buscar", // Español
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++#if VDRVERSNUM>10301
++    "", // TODO
++#endif
++  },
++  { "no", // English
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "no", // Español
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++#if VDRVERSNUM>10301
++    "", // TODO
++#endif
++  },
++  { "yes", // English
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
++    "", // TODO
+     "", // TODO
++    "sí", // Español
+     "", // TODO
+     "", // TODO
+     "", // TODO
+diff -Naur pilotskin-0.0.3-orig/Makefile pilotskin-0.0.3/Makefile
+--- pilotskin-0.0.3-orig/Makefile	2007-08-21 23:21:05.000000000 +0200
++++ pilotskin-0.0.3/Makefile	2007-12-23 16:54:26.000000000 +0100
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -104,7 +104,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur pilotskin-0.0.3-orig/po/es_ES.po pilotskin-0.0.3/po/es_ES.po
+--- pilotskin-0.0.3-orig/po/es_ES.po	2007-08-21 23:48:18.000000000 +0200
++++ pilotskin-0.0.3/po/es_ES.po	2007-12-23 16:55:48.000000000 +0100
+@@ -1,15 +1,15 @@
+ # VDR plugin language source file.
+ # Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+ # This file is distributed under the same license as the VDR package.
+-# Ruben Nunez Francisco <ruben.nunez@tang-it.com>, 2002
++# bittor from open7x0.org <bittor7x0 _at_ gmail.com>, 2007
+ #
+ msgid ""
+ msgstr ""
+ "Project-Id-Version: VDR 1.5.7\n"
+ "Report-Msgid-Bugs-To: <nouche.1er@gmail.com>\n"
+ "POT-Creation-Date: 2007-08-21 23:48+0200\n"
+-"PO-Revision-Date: 2007-08-21 23:24+0200\n"
+-"Last-Translator: Ruben Nunez Francisco <ruben.nunez@tang-it.com>\n"
++"PO-Revision-Date: 2007-11-18 20:09+0200\n"
++"Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
+ "Language-Team: <vdr@linuxtv.org>\n"
+ "MIME-Version: 1.0\n"
+ "Content-Type: text/plain; charset=ISO-8859-15\n"
+@@ -17,31 +17,31 @@
+ 
+ #: pilotskin.c:21
+ msgid "A zapping co-pilot"
+-msgstr ""
++msgstr "Un copiloto para el zapping"
+ 
+ #: pilotskin.c:22
+ msgid "Pilotskin"
+-msgstr ""
++msgstr "Pilotskin"
+ 
+ #: pilotskinosd.c:562
+ msgid "AutoTimer"
+-msgstr ""
++msgstr "AutoProgramador"
+ 
+ #: pilotskinosd.c:562
+ msgid "Button$Close"
+-msgstr ""
++msgstr "Cerrar"
+ 
+ #: pilotskinosd.c:562
+ msgid "Button$Record"
+-msgstr ""
++msgstr "Grabar"
+ 
+ #: pilotskinosd.c:562
+ msgid "Search"
+-msgstr ""
++msgstr "Buscar"
+ 
+ #: pilotskinsetup.c:19
+ msgid "Close on OK"
+-msgstr ""
++msgstr "Cerrar al OK"
+ 
+ #: pilotskinsetup.c:20
+ msgid "Hide main menu entry"
+@@ -49,8 +49,8 @@
+ 
+ #: pilotskinsetup.c:20
+ msgid "no"
+-msgstr ""
++msgstr "no"
+ 
+ #: pilotskinsetup.c:20
+ msgid "yes"
+-msgstr ""
++msgstr "sí"

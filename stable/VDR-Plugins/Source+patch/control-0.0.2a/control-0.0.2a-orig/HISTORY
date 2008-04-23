@@ -1,0 +1,22 @@
+VDR Plugin 'control' Revision History
+--------------------------------------
+
+2004-06-20: Version 0.0.2
+
+- Implemented the telnet protocol to support all kinds of
+  clients ;-)
+- All OSD elements are rearranged if the client window
+  size changes (doesn't work with the MS Windows Telnet
+  because this client doesn't send window size changes).
+- Fixed a bug in displaying MenuText that shows infos like
+  recording summary or the result of a command.
+- Using now all tabulators to position the text correctly
+  on the client side.
+- Texts are shortened if they are too long for the client
+  size.
+
+
+
+2003-05-22: Version 0.0.1
+
+- Initial revision.

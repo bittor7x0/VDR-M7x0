@@ -1,0 +1,23 @@
+diff -Naur radioinfo-0.0.4-orig/Makefile radioinfo-0.0.4/Makefile
+--- radioinfo-0.0.4-orig/Makefile	2006-05-20 18:56:38.000000000 +0200
++++ radioinfo-0.0.4/Makefile	2007-06-16 20:09:55.000000000 +0200
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -67,7 +67,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

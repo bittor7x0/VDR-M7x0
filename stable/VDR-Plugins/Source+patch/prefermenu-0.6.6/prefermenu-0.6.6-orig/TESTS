@@ -1,0 +1,14 @@
+Tests to do to validate the plugin:
+
+Setup:
+- Start without prefermenu.conf file
+- Check that all prefered channels are loaded
+- Check that all setup parameters are saved and restored properly
+- Check that all "Sort By" options are available
+- Check that the default order (unordered) is preserved in prefermenu.conf file
+- Add one channel, check that it is saved in prefermenu.conf
+- Remove one channel, check that it is removed in prefermenu.conf
+- Remove one channel in VDR, marked as prefered. Open prefermenu plugin. Check that channel is removed from the prefered channels.
+
+OSD:
+- Check that all "Sort By" options are displayed properly

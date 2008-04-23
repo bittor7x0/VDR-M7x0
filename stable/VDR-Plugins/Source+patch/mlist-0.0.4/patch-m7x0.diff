@@ -1,0 +1,97 @@
+diff -Naur mlist-0.0.4-orig/i18n.c mlist-0.0.4/i18n.c
+--- mlist-0.0.4-orig/i18n.c	2007-07-22 16:23:18.000000000 +0200
++++ mlist-0.0.4/i18n.c	2007-12-23 16:29:28.000000000 +0100
+@@ -18,7 +18,7 @@
+     "",// Norsk
+     "",// suomi
+     "",// Polski
+-    "",// Español
++    "Muestra historial de mensajes",// Español
+     "",// ÅëëçíéêÜ
+     "",// Svenska
+     "",// Romaneste
+@@ -38,7 +38,7 @@
+     "",// Norsk
+     "",// suomi
+     "",// Polski
+-    "",// Español
++    "Historial de mensajes",// Español
+     "",// ÅëëçíéêÜ
+     "",// Svenska
+     "",// Romaneste
+@@ -58,7 +58,7 @@
+     "",// Norsk
+     "",// suomi
+     "",// Polski
+-    "",// Español
++    "Borrar",// Español
+     "",// ÅëëçíéêÜ
+     "",// Svenska
+     "",// Romaneste
+@@ -78,7 +78,7 @@
+     "",// Norsk
+     "",// suomi
+     "",// Polski
+-    "",// Español
++    "Ocultar entrada en menú principal",// Español
+     "",// ÅëëçíéêÜ
+     "",// Svenska
+     "",// Romaneste
+diff -Naur mlist-0.0.4-orig/Makefile mlist-0.0.4/Makefile
+--- mlist-0.0.4-orig/Makefile	2007-08-12 20:34:42.000000000 +0200
++++ mlist-0.0.4/Makefile	2007-12-23 16:29:28.000000000 +0100
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -104,7 +104,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur mlist-0.0.4-orig/po/es_ES.po mlist-0.0.4/po/es_ES.po
+--- mlist-0.0.4-orig/po/es_ES.po	1970-01-01 01:00:00.000000000 +0100
++++ mlist-0.0.4/po/es_ES.po	2007-12-23 16:31:30.000000000 +0100
+@@ -0,0 +1,31 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <vdr@joachim-wilke.de>\n"
++"POT-Creation-Date: 2007-08-12 19:37+0200\n"
++"PO-Revision-Date: 2007-11-18 20:09+0200\n"
++"Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: mlist.c:20
++msgid "Displays the message history"
++msgstr "Muestra historial de mensajes"
++
++#: mlist.c:21
++msgid "Message History"
++msgstr "Historial de mensajes"
++
++#: mlist.c:53
++msgid "Hide mainmenu entry"
++msgstr "Ocultar entrada en menú principal"
++
++#: mlist.c:86
++msgid "Delete"
++msgstr "Borrar"

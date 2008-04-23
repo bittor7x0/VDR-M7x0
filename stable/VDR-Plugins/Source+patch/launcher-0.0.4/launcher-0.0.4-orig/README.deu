@@ -1,0 +1,55 @@
+Ein "plugin" für den Video Disk Recorder (VDR).
+
+von:                  Christian Wieninger <cwieninger@gmx.de>
+
+Bitte Datei COPYING für Lizenz-Informationen beachten.
+
+Beschreibung:
+
+Dies ist ein kleines Plugin, das den Start anderer Plugins erlaubt,
+selbst wenn diese im Hauptmenu ausgeblendet sind. Man kann ebenso das
+Setup-Menu eines Plugins aufrufen. Falls vorhanden, kann man ausserdem
+eine kleine man page zum Plugin aufrufen. Das ist hilfreich, wenn ein
+Plugin eine komplizierte Bedienung mit vielen verschiedenen 
+Tastenbelegungen hat, wie z.B. das DVD Plugin.
+
+Ich habe diese Plugin geschrieben, einerseits als kleine
+Programmierübung, andererseits wegen meiner Faulheit :-)
+
+Manche Plugins werden nicht häufig benutzt und haben deshalb
+evtl. einen Setup-Eintrag um diese auszublenden. Will man diese nun
+benutzen, nervt es etwas, durch die Menus zu springen, sie
+einzuschalten, zu verwenden und das ganze wieder rückgängig zu machen
+
+Das Plugin zeigt eine Liste aller anderen Plugins und ruft das
+ausgewählte Plugin mit "OK" oder Taste "Rot" auf. Mit Taste "Blau"
+kann man das zugehörige Setup-Menu rufen. Die Taste "Grün" zeigt die
+'man' page zum Plugin, falls vorhanden (siehe unten).
+
+Um Plugins aus der Liste auszuschließen (weil diese z.B. bereits im
+Hauptmenu stehen) , kann man einen Parameter '-x' übergeben:
+
+...
+-'Plauncher -x plugin1 -x plugin2'
+...
+
+Damit wird plugin1 und plugin2 aus der Liste ausgeschlossen.
+
+Um die 'man' pages zu verwenden muss eine Datei mit Namen
+pluginname.info (z.B. dvd.info) im VDR Config-Verzeichnis liegen, 
+normalerweise unter plugins im video-Verzeichnis. Diese Datei 
+sollte eine einfache ASCII-Datei sein, die die Bedienung des
+Plugins beschreibt.
+
+Compilieren wie üblich:
+
+1. Extrahieren in PLUGIN/src Verzeichnis.
+2. Link erstellen.
+3. Compilieren
+
+Bekannte Fehler:
+- das games plugin verwendet den gleichen Mechanismus zum Start seiner
+'Unterplugins', was zu einem Problem führt, wenn es innerhalb dieses
+Launcher-Plugins gestartet wird. Man muss es zweimal aufrufen :-(
+
+Christian Wieninger

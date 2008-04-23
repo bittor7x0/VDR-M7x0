@@ -1,0 +1,36 @@
+Video Disk Recorder User's Manual
+Version 1.2
+
+Navigating through the On Screen Menus=navigation
+The "Schedule" Menu=epg
+Scan EPG=epg_scan
+Selecting a Channel=channel_select
+Switching through channel groups=channel_groups
+Selecting language specific audio track=channel_audio
+Programming the Timer=timer
+Pausing live video=record_timeshifting
+Instant Recording=record_instant
+Editing a Recording=edit
+Processing Recordings=edit_external
+Replaying a Recording=playback
+Replay Control=playback_control
+Executing system commands=oscommands
+:Keys
+Normal=btn_watch
+VDR=btn_main
+Channels=btn_channels
+Timers=btn_timers
+Edit/New=btn_txtinput
+Recordings=btn_record
+Replay=btn_playback
+Edit recording=btn_edit
+Additional=btn_extra
+:Setup
+OSD=setup_menu
+EPG=setup_epg
+DVB=setup_dvb
+LNB=setup_lnb
+CICAM=setup_cicam
+Recording=setup_record
+Replay=setup_playback
+Miscellaneous=setup_misc

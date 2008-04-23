@@ -1,0 +1,129 @@
+diff -Naur control-0.0.2a-orig/gateway.c control-0.0.2a/gateway.c
+--- control-0.0.2a-orig/gateway.c	2004-07-02 21:24:22.000000000 +0200
++++ control-0.0.2a/gateway.c	2006-01-12 15:57:37.000000000 +0100
+@@ -102,7 +102,12 @@
+ 
+       uint64 Command = 0;
+       uint i = 0;
++#if VDRVERSNUM >= 10318
++      cTimeMs timeout;
++      timeout.Set(100);
++#else
+       int t0 = time_ms();
++#endif
+       while (_active && i < sizeof(Command)) {
+ 
+         uchar ch;
+@@ -131,7 +136,11 @@
+           // of their codes, so we'll need to wait some 100ms to see if
+           // there is more coming up - or whether this really is the 'ESC'
+           // key (if somebody knows how to clean this up, please let me know):
++#if VDRVERSNUM >= 10318
++          if (Command == 0x1B && !timeout.TimedOut())
++#else
+           if (Command == 0x1B && time_ms() - t0 < 100)
++#endif
+             continue;
+ 
+           if (Command) {
+diff -Naur control-0.0.2a-orig/Makefile control-0.0.2a/Makefile
+--- control-0.0.2a-orig/Makefile	2004-07-02 21:24:22.000000000 +0200
++++ control-0.0.2a/Makefile	2007-07-30 10:50:59.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+ 
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -54,7 +54,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+@@ -74,7 +74,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+diff -Naur control-0.0.2a-orig/state.c control-0.0.2a/state.c
+--- control-0.0.2a-orig/state.c	2004-07-02 21:24:22.000000000 +0200
++++ control-0.0.2a/state.c	2006-01-12 15:57:37.000000000 +0100
+@@ -69,7 +69,11 @@
+ // The given DVB device has started recording Name. Name is the name of the
+ // recording, without any directory path.
+ // If Name is NULL, the recording has ended.
++#if VDRVERSNUM >= 10338
++void cCtrlState::Recording(const cDevice *Device, const char *Name, const char *FileName, bool On) {
++#else
+ void cCtrlState::Recording(const cDevice *Device, const char *Name) {
++#endif	
+ //printf("Recording %i, %s", Device->CardIndex(), Name );
+ }
+ 
+@@ -79,7 +83,11 @@
+ // recording, without any directory path. In case of a player that can't provide
+ // a name, Name can be a string that identifies the player type (like, e.g., "DVD").
+ // If Name is NULL, the replay has ended.
++#if VDRVERSNUM >= 10338
++void cCtrlState::Replaying(const cControl *Control, const char *Name, const char *FileName, bool On) {
++#else
+ void cCtrlState::Replaying(const cControl *Control, const char *Name) {
++#endif	
+ //printf("Replaying %s", Name );
+ }
+ 
+diff -Naur control-0.0.2a-orig/state.h control-0.0.2a/state.h
+--- control-0.0.2a-orig/state.h	2004-07-02 21:24:22.000000000 +0200
++++ control-0.0.2a/state.h	2006-01-12 15:57:37.000000000 +0100
+@@ -60,8 +60,13 @@
+ // cStatus
+ protected:
+   virtual void ChannelSwitch(const cDevice *Device, int ChannelNumber);
++#if VDRVERSNUM >= 10338
++  virtual void Recording(const cDevice *Device, const char *Name, const char *FileName, bool On);
++  virtual void Replaying(const cControl *Control, const char *Name, const char *FileName, bool On);
++#else
+   virtual void Recording(const cDevice *Device, const char *Name);
+   virtual void Replaying(const cControl *Control, const char *Name);
++#endif
+   virtual void SetVolume(int Volume, bool Absolute);
+   virtual void OsdClear();
+   virtual void OsdTitle(const char *Title);

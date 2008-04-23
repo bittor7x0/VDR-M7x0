@@ -1,0 +1,89 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Thomas Günther <tom@toms-cafe.de>
+
+Project's homepage:          http://toms-cafe.de/vdr/sudoku
+
+Latest version available at: http://toms-cafe.de/vdr/sudoku
+
+See the file COPYING for license information.
+
+
+Requirements:
+-------------
+
+- VDR >= 1.3.47
+
+
+Description:
+------------
+
+'Sudoku' is a VDR plugin to generate and solve Number Place puzzles, so called
+Sudokus.
+
+A Sudoku puzzle consists of 9 x 9 cells subdivided into 9 regions with 3 x 3
+cells. The rules are simple. There have to be the numbers from 1 to 9 in every
+row, column and region. In the beginning some numbers are given. These cells are
+painted with cyan background color. The aim of the puzzle is to find the missing
+numbers. There is only one solution of a Sudoku puzzle.
+
+The Sudoku puzzles are generated on-the-fly. The number of givens can be set in
+the plugin's setup page down to a minimum of 26 givens. The generation of
+puzzles with less than 26 givens takes too long. By default the cells with
+givens are symmetrically ordered. But this can be disabled in the setup.
+
+To solve difficult Sudoku puzzles some hints can be used. Incorrect cells are
+red and cells with ambiguous numbers are magenta. These hints can be disabled in
+the setup. With the green key a cell can be marked. A marked cell has green
+background color. With the yellow key the cursor is moved to the next free cell
+with minimal possible numbers. The red key set the next possible number for the
+current cell.
+
+Each time the plugin is started from the main menu the same puzzle is shown. A
+new puzzle is only generated on VDR startup or if it has been requested by
+pressing the blue key. This key has two functions. If no numbers are set a new
+puzzle is generated. Otherwise all numbers are reset so that only the givens are
+shown.
+
+
+Setup:
+------
+
+- Givens count            Givens count of the generated puzzles (26-81).
+                          Default is 36.
+- Symmetric givens        Cells with givens are symmetrically ordered (yes/no).
+                          Default is yes.
+- Mark errors             Incorrect cells are marked with red color (yes/no).
+                          Default is yes.
+- Mark ambiguous numbers  Cells with ambiguous numbers are marked with magenta
+                          color (yes/no).
+                          Default is yes.
+- Clear marks on reset    Unmark all cells when the puzzle is reset (yes/no).
+                          Default is no.
+- Transparency (%)        Set the transparency of the menu (0-100).
+                          Default is 50.
+
+
+Keys:
+-----
+
+- Left/Right/Up/Down      Move the cursor in the puzzle.
+- 1-9                     Set the number in the current cell.
+- 0                       Remove the number from the current cell.
+- Green                   Mark/unmark the current cell.
+- Yellow                  Move the cursor to the next free cell with minimal
+                          possible numbers.
+- Red                     Set the next possible number for the current cell -
+                          reset the number if greater numbers are not possible.
+- Blue                    Reset the puzzle (if some numbers set).
+                          Start a new puzzle (if no numbers set).
+- Back                    Quit the plugin.
+
+
+Cell colors:
+------------
+
+- Cyan                    Givens
+- Green                   Marked cells
+- Red                     Incorrect cells
+- Magenta                 Ambiguous numbers

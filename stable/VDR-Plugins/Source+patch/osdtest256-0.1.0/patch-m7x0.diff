@@ -1,0 +1,94 @@
+diff -Naur osdtest256-0.1.0-orig/Makefile osdtest256-0.1.0/Makefile
+--- osdtest256-0.1.0-orig/Makefile	2004-06-12 13:40:23.000000000 +0200
++++ osdtest256-0.1.0/Makefile	2007-07-30 10:58:38.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -31,7 +31,7 @@
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+ 
+-VDRVERSION = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
++APIVERSION = $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
+ 
+ ### The name of the distribution archive:
+ 
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -55,7 +55,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -68,7 +68,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur osdtest256-0.1.0-orig/osdtest256.c osdtest256-0.1.0/osdtest256.c
+--- osdtest256-0.1.0-orig/osdtest256.c	2004-06-13 08:23:43.000000000 +0200
++++ osdtest256-0.1.0/osdtest256.c	2007-05-05 15:53:35.000000000 +0200
+@@ -29,19 +29,27 @@
+   if (osd)
+   {
+       tArea Area = { 0, 0, 599, 499, 8 };
++      if (osd->CanHandleAreas(&Area, 1) != oeOk)
++      {
++          // Set 1MB area
++          Area.x2 = 359;
++          Area.y2 = 251;
++      }
+       osd->SetAreas(&Area, 1);
+-      osd->DrawRectangle(0, 0, 599, 499, clrGray50);
++      osd->DrawRectangle(0, 0, Area.x2, Area.y2, clrGray50);
+ 
++      int w = Area.Width() / 60;
++      int h = Area.Height() / 5;
+       for (int i = 0; i < 60; i++)
+-          osd->DrawRectangle(10*i,  0,10*(i+1), 99, 0xff000000+0x040404*(60-i));
++          osd->DrawRectangle(w*i,  0,w*(i+1), h-1, 0xff000000+0x040404*(60-i));
+       for (int i = 0; i < 60; i++)
+-          osd->DrawRectangle(10*i,100,10*(i+1),199, 0xff000000+((15+i*4)<<16));
++          osd->DrawRectangle(w*i,  h,w*(i+1),2*h-1, 0xff000000+((15+i*4)<<16));
+       for (int i = 0; i < 60; i++)
+-          osd->DrawRectangle(10*i,200,10*(i+1),299, 0xff000000+((15+(60-i)*4)<<8));
++          osd->DrawRectangle(w*i,2*h,w*(i+1),3*h-1, 0xff000000+((15+(60-i)*4)<<8));
+       for (int i = 0; i < 60; i++)
+-          osd->DrawRectangle(10*i,300,10*(i+1),399, 0xff000000+(15+i*4));
++          osd->DrawRectangle(w*i,3*h,w*(i+1),4*h-1, 0xff000000+(15+i*4));
+       for (int i = 0; i < 60; i++)
+-          osd->DrawRectangle(10*i,400,10*(i+1),499, 0xff000000+0x040404*(60-i));
++          osd->DrawRectangle(w*i,4*h,w*(i+1),5*h-1, 0xff000000+0x040404*(60-i));
+ 
+       osd->Flush();
+   }

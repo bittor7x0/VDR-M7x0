@@ -1,0 +1,42 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:    Helmut Eisenhut alias Forum Member Shelli at open7x0.org (contact via PN at the forum)
+based on the CridPlayer-Plugin from Andreas Koch (open7x0.org) (Thanks a lot to Andreas for his great work and effort)
+
+Project's homepage:          URL
+
+Latest version available at: URL
+
+See the file COPYING for license information.
+
+
+
+Description:
+
+replays MPEG PS stream files
+
+mpeg files have to end with extension .mpg (e.g. movie.mpg)
+can replay files larger then 2GB
+needs no index file, in fact cannot use it :(
+can replay a file while a second program (e.g. VLC) streams into the same file (e.g.for watching DVD's) (you will need a working NFS or samba share for that)
+can display an info file (same place and name as mpg file but with extension .txt, e.g. movie.mpg -> movie.txt)
+
+
+
+Limitations:
+
+replay always starts at the beginning
+at the end of the file the replay restarts from beginning
+can only skip forth and back in small or large steps (colored keys)
+progress bar available, but no valid time infos yet
+
+
+
+TODO (in my personal ranking):
+
+implement resume functionality
+stop at the end of file
+more/better OSD informations
+implement player for MPEG TS streams
+delete functionality
+???

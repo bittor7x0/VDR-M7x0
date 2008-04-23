@@ -1,0 +1,432 @@
+                        The OSDServer Plugin
+
+
+Written by:                    Udo Richter <udo_richter@gmx.de>
+
+Project's homepage:            http://www.udo-richter.de/vdr/osdserver.html
+                               http://www.udo-richter.de/vdr/osdserver.en.html
+
+See the file COPYING for license information.
+
+
+OSDServer provides VDR OSD access to external programs and scripts through a
+TCP/IP socket connection, just like an X server does. The connection protocol
+is designed for easy interpretation by script languages and shell scripts.
+
+The examples folder contains a hello world sample in perl and in shell script
+using netcat. OSDServer by default listens for commands on port 2010
+
+
+Installing
+----------
+
+Just as every other plugin. If you're compiling VDR yourself, check the VDR
+documentation for details. If you're using a VDR distribution, check the
+distribution documentation on how to build plugin packages.
+
+You can put an osdserverhosts.conf file into your /video/plugins folder (or 
+equivalent), to specify IP addresses that are allowed to connect to osdserver.
+The format of the file is the same as for VDR's svdrphosts.conf. If the 
+osdserverhosts.conf file is not present, the content of the svdrphosts.conf is
+automatically used instead.
+
+
+Starting
+--------
+
+Just as any plugin. See VDR documentation or distribution documentation.
+
+Osdserver accepts one command line option, the -p or --port option, to set
+a listening port for osdserver. The default port number is 2010.
+
+
+The language
+------------
+
+OSDServer accepts commands on TCP/IP socket 2010. Each command is one line 
+of text. Command format looks like this:
+
+[Varname = ] [Object.] Command [Parameters]
+
+Everything is case-insensitive. Some commands return objects, these can be
+assigned to variable names for later use. Some commands are global, some are
+object-local. Parameters are evaluated shell-like, separated by whitespace.
+
+Whitespace except newlines can be preserved by ''-quotes or ""-quotes. Also,
+the respective other quote char will be ignored. The parser understands
+the following escape sequences everywhere:
+
+  \\  \"  \'  \r  \n  \t
+
+In other words, the following strings are the same single parameter:
+"An 29\" display is rockin' cool"
+'An 29" display is rockin\' cool'
+"An 29\" display is rockin\' cool"
+'An 29\" display is rockin\' cool'
+
+Flags start with -. Flags and parameters can be mixed in any order. Note that 
+"-flag" is the same as -flag. If you need to set a non-flag parameter that 
+matches a known flag, you can use -- as end-of-flags marker. 
+
+If you want to use locally inserted strings as parameter, you will have to 
+quote the characters ' " \ TAB CR LF, and put either '' or "" around it. And 
+you may want to prepend "--" just for safety.
+
+
+Variables
+---------
+
+When creating objects, the resulting object can be 'assigned' to a variable 
+name like this:
+
+  varname = NEW object-type
+
+There's no need to declare a variable name, just use it. Valid variable names
+start with a character from a-z and can continue with a-z,0-9,_ to any length.
+
+Each object has exactly one variable name. If no name is assigned, or if the 
+name gets re-used with a different object, the object will automatically have 
+a name _xxx with an unique number xxx. 
+
+With the ENTERLOCAL and LEAVELOCAL commands, the state of the variable names
+can be preserved and restored. LEAVELOCAL will delete all local variables, and
+restores locally overwritten variable names to its original object.
+
+Variables starting with _ are special variables. _xxx with a number xxx are
+automatically named objects (see above), and _FOCUS always refers to the 
+currently visible OSD object (menu or similar, not menu item). This allows 
+for example to call _FOCUS.ADDSUBMENU without knowing the currently visible 
+menu. However this will fail if no menu is visible!
+
+
+Return codes
+------------
+
+All reply lines start with a 3-digit decimal number and a whitespace. The
+first digit is the category:
+
+1xx Debugging messages
+2xx End-of-reply messages
+3xx Simple data return
+4xx Error messages
+5xx Quoted text return, single line
+6xx Unquoted text return, multiline
+
+Each server reply can be identified by its code. Several mixed reply lines
+are possible. 
+
+The reply always contains exactly one 2xx line at the end, after which the 
+server will start listening for new commands, except after 202 Good Bye. 
+
+3xx lines are usually several space-separated fields of names or numbers.
+
+Quoted text mode returns the characters ' " \ TAB CR LF as quoted strings like
+\' \" \\ \t \r \n. This is very convenient to feed the output back into new
+commands: Just remove the leading 5xx code, put '' or "" around it, and you 
+can use it as parameter. For safety, you may want to put -- before it.
+
+Unquoted text returns everything as it is, just with 6xx before it. If there
+are line breaks in the text, there will be several 6xx lines in the output.
+
+
+After connecting
+----------------
+
+After connecting, OSDServer sends a welcome message like this:
+
+  201 Welcome to OSDServer version x.x.x, VDR version x.x.x.
+
+The first expected command is "VERSION x.y". This identifies the protocol 
+version, for future changes. Currently, only 0.1 is supported.
+
+Later OSDServer versions may decide to not accept the client due to 
+incompatibility or enable some compatibility mode matching your protocol 
+version.
+
+After that, any command is accepted.
+
+
+
+Global commands
+---------------
+
+These commands are not related to an object.
+
+
+QUIT
+  Guess what.
+
+
+IDLE
+  does nothing.
+
+
+MESSAGE [-info|-warn|-error] -queue [-timeout #] [-seconds #] message
+MESSAGE [-info|-warn|-error] [-seconds #] message
+MESSAGE -status message
+MESSAGE -statusclear
+  Issue OSD message. Defaults to -info messages. With -queue, use VDR message
+  queue system with specified queue timeout. Without -queue, show message
+  immediately. The message is shown the specified number of seconds. With
+  -status, show the message until -statusclear is used again.
+
+  -info, -warn and -error return a key event, "300 Message keyOk" for example.
+  With -queue, a "301 timeout" is also possible.
+  
+  See also: List of available keys
+
+
+object = NEW object parameters...
+  Create a new object variable. See individual objects for details.
+  See also: menu.ADD object
+  See also: menu.ADDNEW object
+  See also: menu.ADDSUBMENU menu
+
+
+DELETE variable
+  Destroy an previously allocated object. Note: Re-assigning a new object
+  to an old variable does NOT delete the old object!
+  All objects are deleted on disconnect.
+  Deleting a menu also deletes all menu items of that menu.
+  See also: variable.DELETE
+
+
+ENTERLOCAL
+  Enter a new local variable context. All existing variables will be available
+  in the new context, but the old context will be preserved as it is. This
+  allows to re-use variable names and clean up all remains with LEAVELOCAL.
+  See also: LEAVELOCAL
+
+
+LEAVELOCAL
+  Leave the local variable context. All objects that were created in this 
+  context will be deleted. Any objects that were overwritten by objects with
+  same name will be restored to their old name. Basically, the variables are
+  just as they were at the ENTERLOCAL command. Exception: Deleting an object 
+  that was allocated before ENTERLOCAL will not restore it on LEAVELOCAL.
+  See also: ENTERLOCAL
+
+
+
+All objects
+-----------
+
+The following commands can be applied to all object types:
+
+object.ENABLEEVENT events...
+  Enables an event on the given OSD menu or menu item.
+
+  The events can be:
+  close:
+    On menus: Menu got closed
+  edit:
+    On menu items: Item got edited.
+  focus:
+    On menus: Menu got visible, or submenu got closed
+    On menu items: Item got selected
+  blur:
+    On menus: Menu lost focus, or submenu got opened
+    On menu items: Item got de-selected
+  keyXXXXX:
+    On menus: Key got pressed
+    On menu items: Key got pressed on this item
+  
+  Key events will only work for certain keys, like keyOk, keyRed, keyGreen,
+  keyYellow, keyBlue. Keys that are handled by VDR will not cause an event.
+  
+  See also: list of available keys
+  See also: menu.SLEEPEVENT
+  
+  
+object.DELETE
+  Deletes the object.
+  See also: DELETE object
+
+
+
+Menu objects
+------------
+
+These represent OSD menus and sub-menus. Menus and menu items are not 
+instantly displayed after creation. Instead, all changes are collected until 
+a menu.SHOW command 'pushes' any changes to the VDR OSD, to increase 
+performance and improve visual appearance.
+
+After menu.SHOW, the menus and menu items are 'live' until the menu or the 
+menu items are edited by commands again. Editing returns menu and items 
+into 'dirty' state just like new menus and items. Menu.SHOW will make all
+changes visible again and will bring menu and items back into 'live' mode.
+
+Important: 'dirty' objects will forget all actions by the user. If you pick a
+new current menu item, the old item stays selected until menu.SHOW is called.
+If however the user moves the cursor just in that moment, the action will be
+lost. So make sure taht you call menu.SHOW soon after editing anything.
+
+
+menu = NEW MENU Title
+  Create a new OSD menu. (Doesnt display yet)
+
+
+menu.ADD menuitem
+  Add a menu item to the end of the menu.
+  
+
+menuitem = menu.ADDNEW object parameters...
+  Convenient shortcut for menuitem = NEW object, followed by menu.ADD menuitem.
+  
+
+menu.ADDSUBMENU othermenu
+  Open the specified othermenu as sub-menu of menu, so that the back button
+  will return to menu.
+
+
+menu.SETCOLORKEYTEXT [-red x] [-green x] [-yellow x] [-blue x]
+menu.SETCOLORKEYTEXT red green yellow blue
+  Set the color button messages of the menu.
+  If set to an empty string, the color button may be hidden by the skin.
+
+
+menu.SETCOLUMNS columns...
+  Set (up to 5) tab-stop columns for the menu. For simple osditem objects,
+  these columns can be reached by inserting \t into the text string.
+  Edit items use the first column to separate the description from the value.
+
+
+menu.SETCURRENT number
+  Set menu item number as currently selected item. 0 is the first item.
+
+
+menu.GETCURRENT
+  Get currently selected menu item. Returns something like "302 4 myitem" if
+  the menu item "myitem" in line 5 is currently selected. If nothing is
+  selected, "302 -1" is returned.
+
+
+menu.SHOW
+  Actually push menu to display. All changes to menus are hold back until
+  SHOW is called.
+
+
+menu.SENDSTATE state
+  Let menu return VDR eOSState. Currently supported:
+  osEnd
+    Close the whole menu tree      
+  osBack
+    Return back one menu level
+  osContinue
+    Continue to be open, and do not time-out close the menu.
+
+
+menu.SLEEPEVENT [-timeout #|-timeoutms #]
+  Wait for the next enabled event to happen, for specified time in seconds or
+  miliseconds. Also reports events of the menu items.
+  Menu must be visible for this. Returns "300 object event" or "301 timeout".
+  The returned object is either the menu or the menu item.
+  
+  See also: object.ENABLEEVENT
+
+
+
+All menu items
+--------------
+
+menuitem.SETCURRENT
+  Make this menu item the currently selected item of the menu
+  See also: menu.SETCURRENT
+
+
+
+OSD items
+---------
+
+OSD items can be used as separators, as text display, and as selectable menu 
+item.
+
+menuitem = NEW OSDITEM [-unselectable] text
+  Create a new OSD menu item with text.
+  If -unselectable, the item can't be focused.
+
+
+osditem.SETUNSELECTABLE
+  Make this item un-selectable.
+  
+
+osditem.SETSELECTABLE
+  Make this item selectable again.
+  
+
+osditem.SETTEXT
+  Change the text of this item.
+
+
+
+String edit items
+-----------------
+
+String edit items allow single line text input.
+  
+edititem = NEW EDITSTRITEM description value
+  Create a new OSD menu edit item
+
+
+edititem.GETVALUE [-quoted]
+  Return the current value of the edit item.
+  Returns either "500 value" with -quoted, or "600 value" without.
+  See also: Return codes
+  
+
+
+Integer edit items
+------------------
+
+Integer items allow editable number input.
+  
+intitem = NEW EDITINTITEM [-min x] [-max x] [-minstring x] [-maxstring x] 
+                          description value
+  Create a new OSD menu integer item.
+  If -min or -max is specified, limit the range respectively.
+  If -minstring or -maxstring is specified, show these strings instead of the
+  minimum or maximum value.
+
+
+intitem.GETVALUE
+  Return the current value of the integer item, always as number.
+  Returns "500 value".
+
+
+
+List edit items
+---------------
+
+List edit items allow to pick one entry in a list of entries.
+
+listitem = NEW EDITLISTITEM [-select x | -selectname x] description listitems..
+  Create a new OSD menu list item. One of the list of items can be picked.
+  The default item can be picked numerically (0..n-1) with -select, or
+  by item text with -selectname.
+
+
+listitem.GETVALUE [-name] [-quoted]
+  Returns the currently selected list item, either as number (0..n-1), 
+  or as text, if -name is specified. 
+  Returns either "500 value" with -quoted, or "600 value" without.
+  See also: Return codes
+
+
+
+Available key events
+--------------------
+
+keyUp keyDown keyMenu keyOk keyBack keyLeft keyRight keyRed keyGreen keyYellow
+keyBlue key0 key1 key2 key3 key4 key5 key6 key7 key8 key9 keyInfo keyPlay 
+keyPause keyStop keyRecord keyFastFwd keyFastRew keyNext keyPrev keyPower
+keyChannel+ keyChannel- keyPrevChannel keyVolume+ keyVolume- keyMute keyAudio
+keySchedule keyChannels keyTimers keyRecordings keySetup keyCommands keyUser1
+keyUser2 keyUser3 keyUser4 keyUser5 keyUser6 keyUser7 keyUser8 keyUser9 keyNone
+
+For all of the above keys, there are also keyXXXX|Repeat, keyXXXX|Release and
+keyXXXX|Repeat|Release.
+
+Messages may return any of these keys. The event system will only support
+a few of them, most are handled by VDR automatically.
+

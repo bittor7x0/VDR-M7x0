@@ -1,0 +1,57 @@
+VDR Plugin 'pim' Revision History
+---------------------------------
+
+2004-05-07: Version 0.0.1
+
+- Initial revision.
+
+2004-08-09: Version 0.0.2
+
+- repeat cursor-events (inspired from games plugin)
+
+2004-11-24: Version 0.0.3
+
+- Changed order of include-Statements - VDR-includes come last
+  (problems with STL under gcc 2.95)
+- bugfix for translation
+- make OSD-includes version-dependent for VDR < 1.3.7
+
+2004-12-13: Version 0.0.4
+
+- bugfix setup parsing (thanks to C.Y.M. from the mailing list)
+- new setup option to indicate whether the week starts with Monday or Sunday
+
+2005-01-17: Version 0.0.5
+
+- added finnish translation (thanks to Rolf Ahrenberg)
+- added support for VDR 1.3.18
+- fix for gcc 3.4 (thanks to miracolix from vdrportal.de)
+
+2006-05-11: Version 0.0.6
+
+- added APIVERSION to support VDR 1.4
+
+2007-08-31: Version 0.0.7 (Torsten Weigelt)
+
+- Remove usage of external calendar program. The dates are calculated
+  internal now.
+- Add general reminder setup option (off/on/special time)
+- Reminders are displayed sorted (the most next comes first).
+- vdr can wait for some actions (Ch/Vol/Play) before displaying events .
+- Each event can be setup with a different number of days to remind before.
+- Event input enhanced (only these values changeable that are required
+  for the type of the event).
+- If <Ok> is pressed while the event reminder is displayed on OSD
+  (auto mode), then this event will be not displayed until happend
+  (saved in pimEvents.marks).
+- Add SVDRP commands CHECK, DISP and REMOVE.
+- Calender week display updated (configurable).
+- Place cursor at today at startup and on first / last valid day on
+  month switch.
+- Show last/first days of previous/next month in grey for actual month
+  (configurable).
+- Use invers colors for days with events and today (configurable).
+- Event lists are sorted by type (weekly -> fixed -> yearly) and then by
+  date in these groups
+- different small changes / cleanup
+

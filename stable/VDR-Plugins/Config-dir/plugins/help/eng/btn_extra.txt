@@ -1,0 +1,29 @@
+     If your remote control provides additional keys, they can be used for the following functions:
+
+        Play - resume normal replay
+        Pause - pause replay or live video
+        Stop - stop replay
+        Record - instant recording
+        FastFwd - fast forward
+        FastRew - fast rewind
+
+        Ch annel+ - channel up
+        Ch annel- - channel down
+
+        Power - shutdown
+
+        Volume+ - volume up
+        Volume- - volume down
+        Mute - mute
+
+        Schedule, Channels, Timers, Recordings, Setup, Commands - directly access the VDR main menu functions
+
+     User1...9 additional user defined keys for macro functions (defined in 'keymacros.conf').
+
+     Note that in normal viewing mode (no OSD active) the color keys can have user defined functionality, as configured in 'keymacros.conf'.
+
+     The default assignment is
+
+        Red - Recordings menu
+        Green - Schedule menu
+        Blue - Timers menu

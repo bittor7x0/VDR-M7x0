@@ -1,0 +1,70 @@
+
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Jörg Wendel (horchi@vdr-portal)
+Project's homepage:          http://www.jwendel.de
+Latest version available at: http://www.jwendel.de
+See the file COPYING for license information.
+
+PIN Plugin:
+-----------
+Das Plugin ist eine Kindersicherung für Aufnahmen, Kanäle, Sendungen, Plugins und Shell-Skripten.
+Der bis zu 5-stellige numerische PIN kann im Plugin-Setup Menü eingestellt werden.
+Das freischalten mittels des PIN Codes erfolgt über den Menüpunkt 'Kindersicherung' im Hauptmenü.
+Der Code wird nach jedem Neustart zurückgesetzt. Die Sperre kann jederzeit mit dem entsprechenden 
+Menüpunktes oder auch automatisch nach einer einstellbaren Zeit aktiviert werden.
+
+Es werden Aufnahmen in deren Ordner sich die Datei 'protection.fsk' befindet geschützt. 
+Hierzu 'Aufnahmen->Befehle' - 'FSK Schutz hinzufügen' oder 'FSK Schutz entfernen' wählen. 
+Plugin, Kanal- und Sendungs-Sperren werden über das Plugin-Menü verwaltet.
+
+Zum Schutz von Shell-Skripten dient das Tool fskcheck, dieses stellt ein Shell-Interface zum 
+PIN Plugin dar. Hierüber kann aus einem Skript bzw. von der Kommandozeile abgefragt werden ob die
+Kindersicherung gerade aktiviert ist. Auch OSD Meldungen können mittels fskcheck angezeigt werden. 
+Ein Beispiel Skript hierzu ist im Ordner scripts enthalten.
+
+Es werden VDR Versionen ab 1.3.47 bis 1.4.3 unterstützt, wobei für die nicht aktuellen Versionen 
+vermutlich einige rejects beim patchen manuell aufgelöst werden müssen.
+
+Installation:
+-------------
+
+ Plugin in .../VDR/PLUGINS/src/ 
+ auspacken und den Link anlegen.
+
+ Ggf. dir Zeile EXCLUDEPLUGINS im Makefile anpassen, die hier aufgelisteten Plugins werden nicht 
+ in der Sperrliste aufgefÃ¼hrt und lassen sich somit auch nicht sperren.
+
+ PIN-Patch auf den VDR anwenden. 
+
+   cd /usr/src/VDR
+   cat PLUGINS/src/pin/patches/vdr<version>.diff | patch
+   make clean-plugins
+   make clean
+   make [REMOTE=LIRC ...]
+  
+ und (linvdr) nach /usr/bin/... kopieren. Bei anderen Distributionen entsprechend.
+
+   Nun ALLE Plugins neu gegen den gepatchten VDR übersezten.
+
+   make plugins
+
+ und (linvdr) nach /usr/lib/vdr/plugins/.. kopieren. Bei anderen Distributionen in das entsprechende Verzeichnis.
+
+ Nun noch das Skript fskprotect.sh und das tool fskcheck in den Suchpfad (PATH) z.B.: '/usr/local/bin' oder '/usr/bin' 
+ kopieren und in die Konfigurationsdatei reccmd.conf eintragen. 
+
+    Beispiel:
+
+    cp -p /usr/src/VDR/PLUGINS/src/pin/scripts/*.sh /usr/bin
+    cp -p /usr/src/VDR/PLUGINS/src/pin/fskcheck /usr/bin
+    echo 'FSK Schutz hinzufügen: /usr/bin/fskprotect.sh protect'   >> /etc/vdr/reccmds.conf
+    echo 'FSK Schutz entfernen:  /usr/bin/fskprotect.sh unprotect' >> /etc/vdr/reccmds.conf
+
+ Bitte die beiden unteren Zeilen nicht so in die reccmds.conf eintragen sondern auf der Kommandozeile ausführen ;) !
+
+ Beim scheiden einer Aufnahme wird diese vom VDR umkopiert, diese Kopie ist nun nicht gesperrt!
+ Um die Sperre automatisch zu übernehmen erweitert man das beim Start des VDR mit der Option -r angegebene 
+ Skript (meist noadcall.sh) am Ende um den Code aus scripts/cut.sh.
+
+

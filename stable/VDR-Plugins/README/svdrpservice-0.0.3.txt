@@ -1,0 +1,101 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Frank Schmirler <vdrdev@schmirler.de>
+
+Project's homepage:          http://vdr.schmirler.de/
+
+Latest version available at: http://vdr.schmirler.de/
+
+See the file COPYING for license information.
+
+Description:
+------------
+This plugin offers SVDRP connections as a service to other plugins.
+Connecting to streamdev's VTP server port is possible, too. VTP provides
+a subset of the SVDRP commands but in contrast to SVDRP it can handle
+multiple connections at a time.
+
+There's no reason to load this plugin if no other plugin relies on it.
+
+If you are a developer and your plugin needs connections to a remote
+SVDRP server, you might want to take a closer look at it. In particular
+as long as an SVDRP server cannot interact with multiple connections at
+a time, you will be able to share connections with other local plugins.
+
+Configuration:
+--------------
+In the plugin setup you can configure a default server IP and a default
+port, so you don't have to enter these values in the setup of all
+plugins which use svdrpservice. Still you can override the default
+settings in every plugin.
+
+The default IP is used when the target IP of a new connection is either
+an empty string or the special IP 0.0.0.0. Likewise default port is used
+instead of destination port 0. If defaults have been used when opening
+a connection, the service call will return the actual values to the
+caller.
+
+Known issue:
+------------
+VDR 1.4.1-2 fixes a bug in the SVDRP server code which was introduced
+in VDR 1.2.2. The server ignored client side closes of the connection.
+The svdrpclient plugin is likely to trigger that bug as it will
+disconnect if the server doesn't reply in time. In the patches
+subdirectory you will find a patch for VDR 1.4.1-1 and older.
+
+Usage:
+------
+Include the header file "svdrpservice.h" if you want to use svdrpservice
+in your plugin. Call the "Service" method to interact with svdrpservice.
+There are two services available:
+1. SvdrpConnection gets or releases an SVDRP server connection
+2. SvdrpCommand sends a command and returns the results
+
+Typically your plugin will require the following code snippets:
+
+// include the svdrpservice header file
+#include "../svdrpservice/svdrpservice.h"
+
+// get the svdrpservice plugin
+cPlugin *svdrpservice = cPluginManager::GetPlugin("svdrpservice");
+if (svdrpservice == NULL) // TODO: ERROR
+
+// get a connection handle. This will open the connection to the server
+// or for a shared connection simply add a referer to the existing one.
+SvdrpConnection_v1_0 conn;
+conn.serverIp = "192.168.0.1"; // you must not use 127.0.0.1
+                               // use "0.0.0.0" or "" for setup default
+conn.serverPort = 2001;        // 2001 for SVDRP, 2004 for VTP
+                               // 0 to use svdrpservice setup default
+conn.shared = true;            // share connection with others
+conn.handle = -1;              // Handle < 0: get me a handle
+SvdrpService->Service("SvdrpConnection-v1.0", &conn);
+if (conn.handle < 0) // TODO: ERROR
+
+// if defaults have been used, conn now contains the actual values
+dsyslog("Connected to %s:%hu", *conn.serverIp, conn.serverPort);
+
+// now you can send your commands
+SvdrpCommand_v1_0 cmd;
+cmd.handle = conn.handle;
+cmd.command = "STAT\r\n";
+SvdrpService->Service("SvdrpCommand-v1.0", &cmd);
+
+// Check the response code. A code below 100 (currently only 0 is used)
+// indicates a local problem (e.g. timeout while talking to the server).
+#define EXPECTED 250
+if (cmd.responseCode != EXPECTED) // TODO: ERROR
+
+// Step through the reply
+for (cLine *line = cmd.reply.First(); line; line = cmd.reply.Next(line))
+   ...
+
+// Finally release the connection (handle >= 0). This will close the
+// SVDRP connection unless an other plugin still uses it.
+SvdrpService->Service("SvdrpConnection-v1.0", &conn);
+
+Debugging:
+----------
+Compile with SVDRPSERVICE_DEBUG=syslog if you want to see the commands
+and replies in the log. Use SVDRPSERVICE_DEBUG=stderr (actually any
+value will do) to get output on the terminal where you started vdr.

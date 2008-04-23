@@ -1,0 +1,43 @@
+Collected by:                Andreas Mair (andreas AT vdr - developer DOT org)
+
+Project's homepage:          http://andreas.vdr-developer.org/enigmang
+
+Latest version available at: http://andreas.vdr-developer.org/enigmang
+
+See the file COPYING for license information.
+
+
+Description
+-----------
+These are logos needed for the EnigmaNG skin for VDR.
+
+
+Installation
+------------
+
+To use the logos you have to extract the archive in your
+VDR's plugins configuration directory:
+
+> cd /path/to/vdrconf/plugins/
+> tar xzf skinenigmang-logos-xpm-hi-20070214.tgz
+
+This will create a new directory "skinenigmang".
+
+
+Credits
+-------
+
+- Speedbomb for the hqlogos.
+  http://www.speedbomb.de/hobby/myhtpc/index.php?view=logos
+
+- zulu @vdr-portal.de for some symbols.
+  http://www.vdr-portal.de/board/thread.php?postid=514251#post514251
+
+- Thomas @vdr-portal.de for some logos.
+  http://senderlogos.vdr-developer.org/
+
+- FrankJepsen @vdr-portal.de for some logos.
+  http://www.vdr-portal.de/board/thread.php?postid=531412#post531412
+
+- skiller2k @vdr-portal.de for Comedy Central logo.
+  http://www.vdr-portal.de/board/thread.php?postid=567887#post567887

@@ -1,0 +1,17 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Joachim Wilke <vdr@joachim-wilke.de>
+
+Project's homepage:          http://joachim-wilke.de/
+
+Latest version available at: http://joachim-wilke.de/vdr-mlist.htm
+
+See the file COPYING for license information.
+
+Description:
+The Plugin displays a list of all shown OSD-Messages since VDR start up.
+
+Note to translators:
+If you translate this plugin to your language, please do so in creating 
+a language.po file from the *.pot template file located in the po/ subdir 
+after compiling the plugin. 

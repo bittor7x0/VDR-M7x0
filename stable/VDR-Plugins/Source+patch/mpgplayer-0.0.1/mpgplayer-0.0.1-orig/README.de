@@ -1,0 +1,41 @@
+Ein "plugin" für den Video Disk Recorder (VDR).
+
+von Helmut Eisenhut alias Forum Member Shelli bei open7x0.org (dort erreichbar per PN)
+basierend auf dem CridPlayer-Plugin von Andreas Koch (open7x0.org) (Vielen Dank an Andreas für seine tolle Arbeit und seinen Einsatz)
+
+Project's homepage:          URL
+
+Latest version available at: URL
+
+See the file COPYING for license information.
+
+
+
+Beschreibung:
+
+gibt MPEG PS stream Dateien wieder
+
+mpg file muss mit .mpg enden (zB movie.mpg)
+spielt auch Dateien grösser 2GB ab
+benötigt kein Index file 
+kann Dateien wiedergeben während ein anderes Programm (zB VLC) in die gleiche Datei schreibt (kann man DVD's gucken!) (braucht dann auch eine fkt NFS oder samba Freigabe)
+kann eine Textdatei anzeigen (gleicher Ort und Name aber mit .txt endend, zB movie.mpg und movie.txt)
+
+
+
+Einschränkungen:
+
+Wiedergabe startet immer am Anfang
+am Ende der Wiedergabe startet die Wiedergabe von vorne
+kann nur vorwärts/rückwärts in kleinen/grossen Schritten springen (farbige Tasten)
+Fortschrittsbalken zeigt Position in Datei an, aber Zeitangaben enthalten noch keine gültigen Informationen
+
+
+
+TODO: (in meiner persöhnlichen Reichenfolge)
+
+Resume-Funktion implementieren
+Stop bei Erreichen des Dateiendes
+Mehr gültige Anzeigen im OSD
+auch MPEG TS Stream Dateien abspielen
+Lösch Funktion implementieren

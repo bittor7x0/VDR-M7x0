@@ -1,0 +1,87 @@
+diff -Naur chanman-0.0.6-orig/#config.h# chanman-0.0.6/#config.h#
+--- chanman-0.0.6-orig/#config.h#	Sun Dec 30 19:47:00 2007
++++ chanman-0.0.6/#config.h#	Thu Jan 01 01:00:00 1970
+@@ -1,3 +0,0 @@
+-// Configuration file
+-// If you use iconpatch uncomment the following line
+-//#define ICONPATCH
+diff -Naur chanman-0.0.6-orig/i18n.c chanman-0.0.6/i18n.c
+--- chanman-0.0.6-orig/i18n.c	Sun Dec 30 19:47:00 2007
++++ chanman-0.0.6/i18n.c	Wed Jan 30 18:48:41 2008
+@@ -19,7 +19,7 @@
+     "",// TODO
+     "",
+     "",// TODO
+-    "",// TODO
++    "Grupo",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -41,7 +41,7 @@
+     "",// TODO
+     "",
+     "",// TODO
+-    "",// TODO
++    "Nombre",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -63,7 +63,7 @@
+     "",// TODO
+     "",
+     "",// TODO
+-    "",// TODO
++    "Ori+Nombre",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -85,7 +85,7 @@
+     "",// TODO
+     "",
+     "",// TODO
+-    "",// TODO
++    "Emisor",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -107,7 +107,7 @@
+     "",// TODO
+     "",
+     "",// TODO
+-    "",// TODO
++    "Ori+Emisor",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -129,7 +129,7 @@
+     "",// TODO
+     "",
+     "",// TODO
+-    "",// TODO
++    "Máx. elementos por orden alfabético",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -151,7 +151,7 @@
+     "",// TODO
+     "",
+     "",// TODO
+-    "",// TODO
++    "Mostrar : 1) Emisor; 2) ID Canal",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+diff -Naur chanman-0.0.6-orig/Makefile chanman-0.0.6/Makefile
+--- chanman-0.0.6-orig/Makefile	Sun Dec 30 19:47:00 2007
++++ chanman-0.0.6/Makefile	Wed Jan 30 17:35:55 2008
+@@ -22,8 +22,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:

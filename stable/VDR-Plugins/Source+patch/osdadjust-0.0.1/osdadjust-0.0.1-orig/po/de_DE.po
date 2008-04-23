@@ -1,0 +1,140 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2008-02-11 21:43+0100\n"
+"PO-Revision-Date: 2008-02-11 21:43+0100\n"
+"Last-Translator: Klaus Schmidinger <kls@cadsoft.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: menu.c:26
+msgid "Transparent"
+msgstr "Transparent"
+
+#: menu.c:27
+msgid "Transparent 50"
+msgstr "Transparent 50"
+
+#: menu.c:28
+msgid "Black"
+msgstr "Schwarz"
+
+#: menu.c:29
+msgid "Red"
+msgstr "Rot"
+
+#: menu.c:30
+msgid "Green"
+msgstr "Grün"
+
+#: menu.c:31
+msgid "Yellow"
+msgstr "Gelb"
+
+#: menu.c:32
+msgid "Magenta"
+msgstr "Magenta"
+
+#: menu.c:33
+msgid "Blue"
+msgstr "Blau"
+
+#: menu.c:34
+msgid "Cyan"
+msgstr "Cyan"
+
+#: menu.c:35
+msgid "White"
+msgstr "Weiss"
+
+#: menu.c:36
+msgid "Gray"
+msgstr "Grau"
+
+#: menu.c:57
+msgid "Size and Position"
+msgstr "Größe und Position"
+
+#: menu.c:58
+msgid "Video Format"
+msgstr "Bildformat"
+
+#: menu.c:62
+msgid "General Options"
+msgstr "Generelle Optionen"
+
+#: menu.c:63
+msgid "Hide main menu entry"
+msgstr "Hauptmenüeintrag verstecken"
+
+#: menu.c:64
+msgid "Hide help text"
+msgstr "Hilfe verstecken"
+
+#: menu.c:65
+msgid "Mute on open"
+msgstr "Stumm beim öffnen"
+
+#: menu.c:66
+msgid "Background color"
+msgstr "Hintergrund Farbe"
+
+#: menu.c:67
+msgid "Foreground color"
+msgstr "Vordergrund Farbe"
+
+#: menu.c:68
+msgid "Line thickness"
+msgstr "Linienstärke"
+
+#: menu.c:69
+msgid "Gauge"
+msgstr "Sprungweite"
+
+#: menu.c:73
+msgid "Aspect Ratio"
+msgstr "Seitenverhältnis"
+
+#: menu.c:74
+msgid "Show grid"
+msgstr "Gitter einblenden"
+
+#: osdadjust.c:15
+msgid "Adjust OSD Size and Position"
+msgstr "Anpassen von OSD Größe und Position"
+
+#: osdadjust.c:16
+msgid "OSD adjust"
+msgstr "OSD anpassen"
+
+#: screenmenu.c:577
+msgid "Press 1-9 to move,"
+msgstr "Drücke 1-9 zum verschieben,"
+
+#: screenmenu.c:578
+msgid "Up/Down & Left/Right to resize,"
+msgstr "Auf/Ab & Links/Rechts zum ändern,"
+
+#: screenmenu.c:579
+msgid "Ok to save, Back to cancel."
+msgstr "Ok speichert, Zurück bricht ab."
+
+#: screenmenu.c:586
+msgid "Bottom"
+msgstr "Unten"
+
+#: screenmenu.c:592
+msgid "Right"
+msgstr "Rechts"
+
+#: screenmenu.c:605
+msgid "Width must be a multiple of 8!"
+msgstr "Breite muss ein Vielfaches von 8 sein!"

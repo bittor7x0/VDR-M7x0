@@ -1,0 +1,35 @@
+diff -Naur VDR-NG-EM-orig/eitscan.c VDR-NG-EM/eitscan.c
+--- VDR-NG-EM-orig/eitscan.c	Tue Jun 12 12:57:36 2007
++++ VDR-NG-EM/eitscan.c	Wed Mar 12 13:31:12 2008
+@@ -177,8 +177,12 @@
+            if (!scanList->Count() || !AnyDeviceSwitched) {
+               delete scanList;
+               scanList = NULL;
+-              if (lastActivity == 0) // this was a triggered scan
+-                 Activity();
++//M7X0 BEGIN AK
++              // if (lastActivity == 0) // this was a triggered scan
++              // Lets do this always on scan complete. We should not keep
++              // scanning up all the time.
++              Activity();
++//M7X0 BEGIN AK
+               }
+            Channels.Unlock();
+            }
+diff -Naur VDR-NG-EM-orig/eitscan.h VDR-NG-EM/eitscan.h
+--- VDR-NG-EM-orig/eitscan.h	Tue Jun 12 12:57:36 2007
++++ VDR-NG-EM/eitscan.h	Wed Mar 12 13:30:45 2008
+@@ -20,9 +20,12 @@
+ 
+ class cEITScanner {
+ private:
++//M7X0 BEGIN AK
++// Increase timeouts.
+   enum { ActivityTimeout = 60,
+-         ScanTimeout = 20
++         ScanTimeout = 30
+        };
++//M7X0 END AK
+   time_t lastScan, lastActivity;
+   cDevice *currentDevice;
+   int currentChannel;

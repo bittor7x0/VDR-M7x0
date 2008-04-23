@@ -1,0 +1,19 @@
+VDR Plugin 'launcher' Revision History
+--------------------------------------
+
+2008-01-18: Version 0.0.4
+- spanish translation, thanks to Bittor Corl
+
+2007-09-02: Version 0.0.3
+- support for vdr>1.5.7
+
+2004-06-25: Version 0.0.2a
+- Added finish translation (thanks to Rolf Ahrenberg)
+- Moved "Interface->Confirm" in Skins.Message(mtInfo,
+  tr(...)) in 1.3.11 version (thanks to LordZodiac)  
+
+2004-06-24: Version 0.0.2 
+            Added info page support
+2004-05-02: Version 0.0.1
+
+- Initial revision.

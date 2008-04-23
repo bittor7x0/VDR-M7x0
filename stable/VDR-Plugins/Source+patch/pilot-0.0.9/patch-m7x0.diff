@@ -1,0 +1,229 @@
+diff -Naur pilot-0.0.9-orig/i18n.h pilot-0.0.9/i18n.h
+--- pilot-0.0.9-orig/i18n.h	Wed Dec 05 17:12:17 2007
++++ pilot-0.0.9/i18n.h	Mon Sep 03 16:49:50 2007
+@@ -47,7 +47,7 @@
+     "", // TODO
+     "Kanavapilotti", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Pilot", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -69,7 +69,7 @@
+     "", // TODO
+     "Kanavapilotti ohjelmaoppaalle", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Un copiloto del zapping", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -91,7 +91,7 @@
+     "", // TODO
+     "Punainen", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Rojo", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -113,7 +113,7 @@
+     "", // TODO
+     "Vihreä", // FINNISH                                                                            
+     "", // TODO
+-    "", // TODO
++    "Verde", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -135,7 +135,7 @@
+     "", // TODO
+     "Sininen", // FINNISH                                                                            
+     "", // TODO
+-    "", // TODO
++    "Azul", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -157,7 +157,7 @@
+     "", // TODO
+     "Kanava", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Canal", // ESPAÑOL
+     "Czatoma", // HU
+     "", // TODO
+     "", // TODO
+@@ -179,7 +179,7 @@
+     "", // TODO
+     "Vaakasijainti", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Posición X", // ESPAÑOL
+     "X helyzet", // HU
+     "", // TODO
+     "", // TODO
+@@ -201,7 +201,7 @@
+     "", // TODO
+     "Pystysijainti", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Posición Y", // ESPAÑOL
+     "Y helyzet", // HU
+     "", // TODO
+     "", // TODO
+@@ -223,7 +223,7 @@
+     "", // TODO
+     "Leveys", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Ancho", // ESPAÑOL
+     "Szélesség", // HU
+     "", // TODO
+     "", // TODO
+@@ -245,7 +245,7 @@
+     "", // TODO
+     "Lisää kanava", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Añadir Canal", // ESPAÑOL
+     "Adj csatornát hozza", // HU
+     "", // TODO
+     "", // TODO
+@@ -267,7 +267,7 @@
+     "", // TODO
+     "Poista kanava", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Borrar Canal", // ESPAÑOL
+     "Fok csatornát", // HU
+     "", // TODO
+     "", // TODO
+@@ -289,7 +289,7 @@
+     "", // TODO
+     "Taustan läpinäkyvyys", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Opacidad del fondo", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -311,7 +311,7 @@
+     "", // TODO
+     "Tekstin läpinäkyvyys", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Opacidad del Texto", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -333,7 +333,7 @@
+     "", // TODO
+     "Reunan läpinäkyvyys", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Opacidad del contorno", // ESPAÑOL
+     "Alpha szegély", // HU
+     "", // TODO
+     "", // TODO
+@@ -355,7 +355,7 @@
+     "", // TODO
+     "Järjestä", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Ordenar por", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -377,7 +377,7 @@
+     "", // TODO
+     "ei", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Nada", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -399,7 +399,7 @@
+     "", // TODO
+     "nimen mukaan", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Nombre", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -421,7 +421,7 @@
+     "", // TODO
+     "syötteen mukaan", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -443,7 +443,7 @@
+     "", // TODO
+     "Sulje painamalla OK", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Cerrar al pulsar OK", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -465,7 +465,7 @@
+     "", // TODO
+     "Kanavien määrä", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Número de canales", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+@@ -487,7 +487,7 @@
+     "", // TODO
+     "Käytä DXR3-moodia", // FINNISH
+     "", // TODO
+-    "", // TODO
++    "Uso de DXR3", // ESPAÑOL
+     "", // TODO
+     "", // TODO
+     "", // TODO
+diff -Naur pilot-0.0.9-orig/Makefile pilot-0.0.9/Makefile
+--- pilot-0.0.9-orig/Makefile	Wed Dec 05 17:12:17 2007
++++ pilot-0.0.9/Makefile	Mon Dec 10 11:37:27 2007
+@@ -16,12 +16,12 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -54,7 +54,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -67,7 +67,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

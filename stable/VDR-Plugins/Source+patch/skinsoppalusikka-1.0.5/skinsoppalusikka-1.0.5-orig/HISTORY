@@ -1,0 +1,145 @@
+VDR Skin 'Soppalusikka' Revision History
+------------------------------------------
+
+2006-02-26: Version 0.0.1
+
+- Initial revision.
+
+2006-03-01: Version 0.0.2
+
+- Added command line option (-l) to specify channel logo directory.
+- Renamed default theme to Blueberry.
+- Modified to compile with thread poisoning patch (Thanks to Ville Skyttä).
+
+2006-03-08: Version 0.0.3
+
+- Fixed overlapping between textscroller and scrollbar.
+- Functionized strcatrealloc() and strncatrealloc().
+- Added audio language descriptions if available.
+- Added active [REC] symbol into menu title bar.
+- Added color coding to [REC] symbol in channel info window:
+  clrChannelSymbolRecord,   recording on current channel,
+  clrChannelSymbolActive,   recording on another channel,
+  clrChannelSymbolInactive, no recording.
+- Skin themes updated.
+- Added tags stripping of the auxiliary information field.
+- Added date string into replay display.
+
+2006-03-12: Version 0.0.4
+
+- Added Estonian translation (Thanks to Arthur Konovalov).
+- Some minor changes and updated README.
+
+2006-03-19: Version 0.0.5
+
+- Updated German translation (Thanks to Thomas Günther).
+- Added option to show/hide auxiliary information of recordings.
+
+2006-03-26: Version 0.0.6
+
+- Updated for vdr-1.3.45.
+- Fixed typos in audio tracks code (Thanks to Sebastian Kemper).
+- Added Spanish translation (Thanks to Luis Palacios).
+- Fixed compiling on AMD64 platform (Thanks to Mirco Günther and
+  Jörg Bornkessel).
+- Fixed date string in title bar (Thanks to Frank Krömmelbein for reporting
+  this one).
+- Added DXR3 logos from the enElchi-0.7.1 skin.
+- Modified tags stripping of the auxiliary information field.
+- Added VPS info for current event in channel info window.
+
+2006-04-02: Version 0.0.7
+
+- Fixed VPS time string in event info menu (Thanks to Sebastian Kemper for
+  reporting this one).
+- Updated theme files.
+- Added new setup options to de/activate plugin features.
+- Added event symbols into schedule menu and new indicator symbol into
+  recordings menu. Running event symbol is based on Wareagle icon patch
+  and thanks to Mikko Salo for providing other new symbols.
+- Fixed crash bug while flushing logo cache.
+- Fixed logo directory location after flushing logo cache.
+
+2006-04-09: Version 0.1.0
+
+- Updated German translation (Thanks to Jörg Bornkessel).
+- Updated Estonian translation (Thanks to Arthur Konovalov).
+- Updated Spanish translation (Thanks to Luis Palacios).
+- Added missing include for isdigit().
+- Modified the channel info to show the VPS time of following event only if
+  'Use small fonts' is set to 'skin dependent'.
+- Fixed background of color buttons, if menu doesn't use any labels.
+
+2006-04-16: Version 0.2.0
+
+- Updated for vdr-1.3.46.
+- Fixed missing background of progressbar and event symbols if they're in
+  the first column (Thanks to Christian Wieninger for reporting this one).
+- Modified detection of event symbols.
+- Modified the parsing of the auxiliary information field to filter out
+  all irrelevant data added by EPGSearch or VDRAdmin.
+- Added Polish translation (Thanks to Jaroslaw Swierczynski).
+- Added Swedish translation (Thanks to Jan Ekholm).
+
+2006-04-20: Version 0.3.0
+
+- Updated for vdr-1.3.47.
+- Fixed background size of progressbar and event symbols (Thanks to
+  Christian Wieninger for reporting this one).
+- Added a small gap in front of the event symbols.
+- Modified event symbols.
+
+2006-04-23: Version 0.4.0
+
+- Fixed VPS event times in channel info (Thanks to Frank Krömmelbein
+  for reporting this one).
+- Added new setup option to show/hide VPS time in channel info.
+- Modified coordinates in channel info window.
+- Added STRIP option for Makefile (Thanks to Ville Skyttä).
+- Modified APIVERSION code in Makefile.
+
+2006-04-30: Version 1.0.0
+
+- Updated for vdr-1.4.0.
+- Modified APIVERSION code in Makefile.
+
+2006-06-06: Version 1.0.1
+
+- Added French translation (Thanks to Michaël Nival).
+- Added support for the pin plugin.
+
+2006-09-17: Version 1.0.2
+
+- Added two new themes (Thanks to Eclipse and Dieter Fauth).
+- Added "--remove-destination" to the 'cp' command in Makefile.
+
+2007-01-12: Version 1.0.3
+
+- Minor logo update.
+
+2007-04-20: Version 1.0.4
+
+- Logo update (Thanks to Mikko Salo).
+- Added setup option to use a single 8 bpp OSD area.
+- Updated EPGSearch auxiliary information parsing.
+- Added Hungarian translation (Thanks to Füley István).
+
+2007-09-12: Version 1.0.5
+
+- Backported from 1.1.2.
+
+2007-08-14: Version 1.1.0
+
+- Updated for vdr-1.5.7.
+- Minor logo update.
+- Updated French translation (Thanks to neptunvasja @ VDRPortal).
+
+2007-08-19: Version 1.1.1
+
+- Updated for vdr-1.5.8.
+
+2007-09-12: Version 1.1.2
+
+- Cleaned up translations.
+- Fixed date string in channel info.
+- Removed logos.

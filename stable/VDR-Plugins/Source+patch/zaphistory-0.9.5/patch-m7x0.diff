@@ -1,0 +1,23 @@
+diff -Naur zaphistory-0.9.5-orig/Makefile zaphistory-0.9.5/Makefile
+--- zaphistory-0.9.5-orig/Makefile	2006-09-28 12:33:12.000000000 +0200
++++ zaphistory-0.9.5/Makefile	2007-06-16 20:17:33.000000000 +0200
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -68,7 +68,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

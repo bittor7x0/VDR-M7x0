@@ -1,0 +1,13 @@
+diff -Naur usbautomounter-orig/usbautomounter.c usbautomounter/usbautomounter.c
+--- usbautomounter-orig/usbautomounter.c	Thu Feb 21 17:15:10 2008
++++ usbautomounter/usbautomounter.c	Thu Feb 21 18:31:32 2008
+@@ -663,8 +663,7 @@
+ 					(part->tab_entry->mounter_flags & (VOL_UNCLEAN_MOUNTED | VOL_UNCLEAN))) {
+ 				part->flags |= PART_FS_UNCLEAN;
+ 			}
+-			if ((part->flags & (PART_FS_UNCLEAN | PART_FS_HAS_ERROR |
+-					PART_FS_MOUNT_INTERVAL)) && !part->dev_mounted) {
++			if ((part->flags & (PART_FS_UNCLEAN | PART_FS_HAS_ERROR)) && !part->dev_mounted) {
+ 				handle_fsck_case(cont, part);
+ 			}
+ 

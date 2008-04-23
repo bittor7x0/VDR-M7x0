@@ -1,0 +1,138 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Frank Schmirler <vdrdev@schmirler.de>
+
+Project's homepage:          http://vdr.schmirler.de/
+
+Latest version available at: http://vdr.schmirler.de/
+
+See the file COPYING for license information.
+
+Description:
+------------
+Display the menu of a remote VDR as submenu item of your local VDR menu.
+
+Requirements:
+-------------
+Local (client) VDR:
+- plugin remoteosd
+- plugin svdrpservice
+Remote (server) VDR:
+- plugin svdrpext
+
+All three plugins are available at http://vdr.schmirler.de
+
+The plugins should also work with VDR 1.3 if you have at least 1.3.30.
+To get them compiled for 1.3 you have to replace APIVERSION by
+VDRVERSION in the Makefiles. Up to 1.3.44 you might also need to patch
+the svdrpext plugin (check its README for details).
+
+Installation on client VDR:
+---------------------------
+Straightforward:
+- cd VDR/PLUGINS/src
+- tar xzf vdr-remoteosd-<VERSION>.tgz
+- ln -sf remoteosd-<VERSION> remoteosd
+
+If you didn't do that already (otherwise svdrpservice.h is missing):
+- tar xzf vdr-svdrpservice-<VERSION>.tgz
+- ln -sf svdrpservice-<VERSION> svdrpservice
+
+If you want to replace the VDR mainmenus "Schedule" or "Timers" by
+the respective remote menus, you must apply the MainMenuHooks patch
+to VDR before compiling remoteosd. The MainMenuHooks patch is included
+in the patches directory of the remoteosd sources. See the patch file
+for more information and instructions.
+
+Now compile and install remoteosd (and svdrpservice) as usual and add
+both plugins to the script starting your VDR (e.g. runvdr). No options
+required, so simply append:
+
+  -Premoteosd -Psvdrpservice
+
+Installation on server VDR:
+---------------------------
+Just about the same:
+- cd VDR/PLUGINS/src
+- tar xzf vdr-svdrpext-<VERSION>.tgz
+- ln -sf svdrpext-<VERSION> svdrpext
+
+Compile, install and add the following parameter to the startup script:
+
+  -Psvdrpext
+
+Check your svdrphosts.conf file: The clients must be listed or otherwise
+the SVDRP connection will be refused.
+
+Configuration:
+--------------
+Before you can connect you have to configure the IP address of the
+remote VDR, unless your svdrpservice plugin has been told about a
+default IP.
+
+The remoteosd setup menu offers the following options:
+
+- Hide mainmenu entry
+Keeps your girl friend off the server menu ;-)
+
+- Replace mainmenu "Schedule"
+When enabled, each call to the local VDR Schedule menu will give you
+the remote Schedule menu instead. Only available if MainMenuHooks patch
+has been applied to VDR before compiling remoteosd.
+
+- Replace mainmenu "Timers"
+Dito for Timers menu.
+
+- Server IP
+IP address of SVDRP server. Leave empty or enter 0.0.0.0 if you want to
+use the default IP configured in the svdrpservice plugin.
+
+- Server port
+SVDRP port on server (usually 2001). Enter 0 if you want to use the
+default port from svdrpservice.
+
+- Tune server channel
+Tries to tune the server to the same channel the client is currently
+viewing. So when entering e.g. the remote schedules menu, the expected
+channel will be highlighted. Usually this option makes sense only if
+you are running a headless server. In this case I recommend to install
+the dummydevice plugin on the server. Otherwise the server might not
+be able to switch channels as expected.
+
+- Number of lines per page
+This parameter controls how a long list of items is split into pages.
+The special value 0 uses the client's idea of the OSD size. However the
+server OSD size determines how many items you skip when hitting a "Page
+Up/Down" key. You might want to adjust the number of lines if client
+and server have different OSD sizes. If the client can display more
+items than the server, you should enter the server's size. If however
+the server can show more items, you should consider to reduce its OSD
+size in menu Setup -> OSD.
+
+- Remote menu theme
+Some skins support themes. If you want to avoid ambiguities, remoteosd
+can use a different theme while you're in the remote menu. As the new
+theme is loaded while the OSD menu is open, not all colors of the new
+theme might show up. It depends on the way the actual skin implements
+themes. The ST:TNG theme for example will not change the color of the
+frame.
+
+It's not a bug... 
+-----------------
+Limitations of the VDR SVDRP interface 
+- An SVDRP connection is used to retrieve the OSD status of the remote
+VDR. Currently, SVDRP cannot interact with multiple clients at a time.
+As long as the SVDRP port on the server is busy, the remoteosd client
+will not work. The menu will be closed after a short timeout. The other
+way round, remoteosd will block the SVDRP port as long as its menu is
+open. The SVDRP connection will be established whenever you open the
+remoteosd mainmenu entry and it will be closed when leaving it.
+- VDR polls for new SVDRP connections about once every second. You will
+notice a delay of up to one second until the menu will show up.
+
+Limitations of the VDR status interface
+- Viewing a schedule entry, you will only see the text body. VDR does
+not export the corresponding title and subtitle.
+- The status interface doesn't tell you if an item is selectable or not.
+Therefore serverside scrolling is required (which is slow) and on the
+client you don't get the different color for non-selectable items.

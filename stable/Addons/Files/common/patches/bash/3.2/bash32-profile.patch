@@ -1,0 +1,14 @@
+--- bash-3.2-orig/profile	1970-01-01 01:00:00.000000000 +0100
++++ bash-3.2/profile	2008-01-19 20:26:03.000000000 +0100
+@@ -0,0 +1,11 @@
++umask 002
++if [[ -h $HOME/.bash_history ]]
++then
++    dir=`readlink $HOME/.bash_history`
++    [[ ${HOME:0:1} != / ]] && dir="$HOME/$dir"
++    mkdir -p ${dir%/*}
++fi
++
++export TERMINFO=/usr/share/terminfo
++export PS1="$USER@\h:\w # "
++export TZ=CET-1CEST,M3.5.0,M10.5.0/03:00:00

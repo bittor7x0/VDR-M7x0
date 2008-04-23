@@ -1,0 +1,16 @@
+VDR Plugin 'fussball' Revision History
+--------------------------------------
+
+2006-08-11: Version 0.0.3b
+- Formatierung der Tabelle geändert
+
+2006-08-11: Version 0.0.3
+- APIVERSION hinzugefügt
+- sort.pl zur besseren Anzeige der Ergebnisse
+
+2006-02-18: Version 0.0.2
+- Fussball Ergebnisse der 1. Bundesliga werden angezeigt.
+- Skript Tabelle.sh wurde ein wenig verändert.
+
+2006-02-11: Version 0.0.1
+- Initial revision.

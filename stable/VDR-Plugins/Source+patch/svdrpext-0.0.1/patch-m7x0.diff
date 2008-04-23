@@ -1,0 +1,23 @@
+diff -Naur svdrpext-0.0.1-orig/Makefile svdrpext-0.0.1/Makefile
+--- svdrpext-0.0.1-orig/Makefile	2006-06-04 17:14:24.000000000 +0200
++++ svdrpext-0.0.1/Makefile	2007-06-16 20:15:01.000000000 +0200
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -69,7 +69,7 @@
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+ #	@cp $@ $(LIBDIR)/$@.$(VDRVERSION)
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

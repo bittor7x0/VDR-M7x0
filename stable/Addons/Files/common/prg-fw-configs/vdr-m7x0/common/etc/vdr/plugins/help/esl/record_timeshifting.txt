@@ -1,0 +1,4 @@
+     Si quiere poner en 'Pausa' la Emisión actual que esta viendo, simplemente pulse "Menu" y luego el botón "Amarillo" o pulsa directamente el botón de "Pausa". El VDR empezará a grabar la emisión en Directo. En cuanto tengamos la imagen Pausada ya nos podremos ir a hacer aquello que nos había interrumpido.
+   
+     Cuando volvamos podremos pulsar el botón "Arriba" / "Play" para continuar viendo la emisión en el punto donde la dejamos. La grabación instantánea que ha empezado VDR usará los parámetros de "Prioridad en modo pausa" y "Duración en modo pausa", el tiempo de grabación será igual que para cualquier otra grabación inmediata. Por defecto grabará 3 horas (que deberían ser suficientes para cualquier difusión normal).
+     

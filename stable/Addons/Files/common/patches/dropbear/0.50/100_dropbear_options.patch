@@ -1,0 +1,70 @@
+diff -Naur dropbear-0.50-orig/options.h dropbear-0.50/options.h
+--- dropbear-0.50-orig/options.h	2007-08-08 17:39:37.000000000 +0200
++++ dropbear-0.50/options.h	2008-01-12 20:08:13.000000000 +0100
+@@ -51,7 +51,7 @@
+ #define DROPBEAR_SMALL_CODE
+ 
+ /* Enable X11 Forwarding - server only */
+-#define ENABLE_X11FWD
++//#define ENABLE_X11FWD
+ 
+ /* Enable TCP Fowarding */
+ /* 'Local' is "-L" style (client listening port forwarded via server)
+@@ -64,7 +64,7 @@
+ #define ENABLE_SVR_REMOTETCPFWD
+ 
+ /* Enable Authentication Agent Forwarding - server only for now */
+-#define ENABLE_AGENTFWD
++//#define ENABLE_AGENTFWD
+ 
+ /* Encryption - at least one required.
+  * RFC Draft requires 3DES and recommends AES128 for interoperability.
+@@ -72,10 +72,10 @@
+  * (eg AES256 as well as AES128) will result in a minimal size increase.*/
+ #define DROPBEAR_AES128_CBC
+ #define DROPBEAR_3DES_CBC
+-#define DROPBEAR_AES256_CBC
+-#define DROPBEAR_BLOWFISH_CBC
+-#define DROPBEAR_TWOFISH256_CBC
+-#define DROPBEAR_TWOFISH128_CBC
++//#define DROPBEAR_AES256_CBC
++//#define DROPBEAR_BLOWFISH_CBC
++//#define DROPBEAR_TWOFISH256_CBC
++//#define DROPBEAR_TWOFISH128_CBC
+ 
+ /* Message Integrity - at least one required.
+  * RFC Draft requires sha1 and recommends sha1-96.
+@@ -90,8 +90,8 @@
+  * If you disable MD5, Dropbear will fall back to SHA1 fingerprints,
+  * which are not the standard form. */
+ #define DROPBEAR_SHA1_HMAC
+-#define DROPBEAR_SHA1_96_HMAC
+-#define DROPBEAR_MD5_HMAC
++//#define DROPBEAR_SHA1_96_HMAC
++//#define DROPBEAR_MD5_HMAC
+ 
+ /* Hostkey/public key algorithms - at least one required, these are used
+  * for hostkey as well as for verifying signatures with pubkey auth.
+@@ -112,11 +112,11 @@
+ /* #define DSS_PROTOK */
+ 
+ /* Whether to do reverse DNS lookups. */
+-#define DO_HOST_LOOKUP
++//#define DO_HOST_LOOKUP
+ 
+ /* Whether to print the message of the day (MOTD). This doesn't add much code
+  * size */
+-#define DO_MOTD
++//#define DO_MOTD
+ 
+ /* The MOTD file path */
+ #ifndef MOTD_FILENAME
+@@ -204,7 +204,7 @@
+  * OpenSSH), set the path below. If the path isn't defined, sftp will not
+  * be enabled */
+ #ifndef SFTPSERVER_PATH
+-#define SFTPSERVER_PATH "/usr/libexec/sftp-server"
++//#define SFTPSERVER_PATH "/usr/libexec/sftp-server"
+ #endif
+ 
+ /* This is used by the scp binary when used as a client binary. If you're

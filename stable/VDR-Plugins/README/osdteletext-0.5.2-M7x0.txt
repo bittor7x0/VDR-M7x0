@@ -1,0 +1,99 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+!!!!! Special version for open7x0.org. Will not work with normal PC based VDR !!!!!!
+
+Written by:                  Marcel Wiesweg <marcel.wiesweg@gmx.de>
+
+Project's homepage:          http://www.wiesweg-online.de/linux/vdr
+
+Latest version available at: http://www.wiesweg-online.de/linux/vdr
+
+See the file COPYING for license information.
+
+Description:
+
+Osd-Teletext displays the teletext directly on the OSD.
+Both sound and video are played in the background. 
+
+
+Keys:
+     1,...,9: insert page number
+     Up:      page+
+     Down:    page-
+     Right:   sub page+
+     Left:    sub page-
+     Back:    close teletext plugin
+     
+   All other user interaction ("Actions") is configurably assigned to the other
+   available keys.
+   You can e.g. configure that you jump to page 100 when you press Red.
+   In this example, the Action "Jump to 100" is assigned to key "Red".
+   Have a look at the plugin's setup page to learn the current assignment
+   and adapt it to your needs.
+   
+   Available Keys: Blue, Red, Yellow, Green, Play, Stop, FastFwd, FastRwd
+   Actions: "Zoom", "Half page", "Switch channel", "Switch background",
+            "Jump to..." a specific page.
+            
+   Description of the actions:
+     Zoom:          Zoom to upper half/lower half/back to full page
+     Half Page:     Reduce OSD window to the lower half of the screen and display upper half/lower half/back to full size
+     Switch channel:Show pages of a channel different from the one currently tuned to.
+                    This does _not_ include any tuning or channel switching with vdr's core. 
+                    You must have tuned to the channel chosen some time before so that the pages have been stored on disk.
+                    When you press the key associated with that action, you are asked for the channel number.
+                    Press OK after you entered it with the number keys.
+     Jump to...:    Jumps to the page you configure.
+     Switch background: Changes the in the setup configurable background color immediately
+                        to black and back to your degree of transparency.
+                        
+   How to configure the key bindings:
+   In the plugins setup menu, you can assign one of actions to each key.
+   You can choose freely which actions you need, you are not forced to assign
+   an action to a key at all if you do not need it.
+   If you select "Jump to...", specify the page number in the line immediately below.
+   
+   
+Other Setup options:
+   Background transparency: 
+               number between 0 (transparent) and 255 (black). Default is 127 (also used by VDR)
+   Show Clock: Toggles whether an additional clock is drawn approximately every second.
+               The clock shows the current system time, not any time broadcast via teletext.
+               Let VDR set the system time from a transponder to have the exact time.
+   Auto-update pages: 
+               Continuously checks whether a page has changed and updates it if yes.
+   OSD width, OSD height: 
+               Adjusts the width and height of the OSD independent from VDR's settings.
+               The valid range is 40 to 56 for the width and 12 to 21 for the height.
+   Minimum user inactivity: 
+               Sets a timeout (in minutes) for user inactivity. When this timespan has elapsed
+               and the user did not press any keys, the plugin will be closed. Set to 0 to disable this.
+               Note that disabling timeout will also effectively disable VDR's auto-shutdown feature
+               as long as the plugin is active.
+   Key bindings:      See above.
+   
+Command line options:
+   A few settings are given on the command line rather than in the setup menu.
+   Available options:
+   
+     -d        --directory=DIR    The directory where the temporary
+                                  files will be stored.
+                                  (standard value: /tmp/vtx)
+                                  Ensure that the directory exists and is writable.
+     -n        --max-cache=NUM    Maximum size in megabytes of cache used
+                                  to store the pages on the harddisk.
+                                  (standard value: 10 MB)
+     -s        --cache-system=SYS Set the cache system to be used.
+                                  Choose "legacy" for the traditional
+                                  one-file-per-page system.
+                                  Default is "packed" for the 
+                                  one-file-for-a-few-pages system.
+
+Colors:
+  On all sorts of output devices which are not limited as to color depth
+  the original teletext colors will be displayed. (Only difference: Cyan is used instead of 
+  white to make reading easier).
+  On the classic full-featured DVB card and other limited devices, the colors will be reduced to four.
+  The mapping is currently optimized for German ARD, ZDF and RTL. If you are for some reason
+  really and definitely not satisfied with my choices, edit colormapping.h and recompile.
+

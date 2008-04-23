@@ -1,0 +1,203 @@
+--- vdr-1.4.2-1-orig/cutter.h	2006-09-08 00:15:09.000000000 +0300
++++ vdr-1.4.2-1/cutter.h	2006-09-08 14:38:31.000000000 +0300
+@@ -12,4 +12,5 @@
+ 
+ class cCuttingThread;
++class cMutex;
+ 
+ class cCutter {
+@@ -19,4 +20,5 @@
+   static bool error;
+   static bool ended;
++  static cMutex *cutterLock;
+ public:
+   static bool Start(const char *FileName);
+--- vdr-1.4.2-1-orig/cutter.c	2006-09-08 00:15:09.000000000 +0300
++++ vdr-1.4.2-1/cutter.c	2006-09-08 14:38:39.000000000 +0300
+@@ -180,11 +228,53 @@
+ // --- cCutter ---------------------------------------------------------------
+ 
++#define WAIT_BEFORE_NEXT_CUT   (10*1000)  // 10 seconds
++
++#define CUTTER_QUEUE
++#define CUTTER_AUTO_DELETE
++
++class cStringListObject : public cListObject {
++  public:
++    cStringListObject(const char *s) { str = strdup(s); }
++    ~cStringListObject() { free(str); }
++
++    const char *Value() { return str; }
++    operator const char * () { return str; }
++
++  private:  
++    char *str;
++};
++
+ char *cCutter::editedVersionName = NULL;
+ cCuttingThread *cCutter::cuttingThread = NULL;
+ bool cCutter::error = false;
+ bool cCutter::ended = false;
++cMutex *cCutter::cutterLock = new cMutex();
++
++static uint64 /*cCutter::*/lastCuttingEndTime = 0;
++static cList<cStringListObject> /**cCutter::*/cutterQueue /*= new cList<cStringListObject>*/;
+ 
+ bool cCutter::Start(const char *FileName)
+ {
++  cMutexLock(cutterLock);
++
++#ifdef CUTTER_QUEUE
++  if(FileName) {
++    /* Add file to queue.
++     * If cutter is still active, next cutting will be started 
++     * when vdr.c:main calls cCutter::Active and previous cutting has 
++     * been stopped > 10 s before 
++     */
++    cutterQueue.Add(new cStringListObject(FileName));
++  }
++
++  if (cuttingThread) 
++    return true;
++
++  /* cut next file from queue */
++  if(!(cutterQueue.First()))
++    return false;
++  FileName = cutterQueue.First()->Value();
++#endif
++
+   if (!cuttingThread) {
+      error = false;
+@@ -192,4 +282,17 @@
+      cRecording Recording(FileName);
+      const char *evn = Recording.PrefixFileName('%');
++
++     if(!(Recordings.GetByName(FileName))) {
++       // Should _not_ remove any cutted recordings 
++       // (original recording already deleted ?)
++       // so, just pop item from queue and return.
++       esyslog("can't cut non-existing recording %s", FileName);
++#ifdef CUTTER_QUEUE
++       cutterQueue.Del(cutterQueue.First());       
++       return true; // might be already queued recording
++#else
++       return false;
++#endif
++     }
+      if (evn && RemoveVideoFile(evn) && MakeDirs(evn, true)) {
+         // XXX this can be removed once RenameVideoFile() follows symlinks (see videodir.c)
+@@ -217,4 +320,6 @@
+ void cCutter::Stop(void)
+ {
++  cMutexLock(cutterLock);
++
+   bool Interrupted = cuttingThread && cuttingThread->Active();
+   const char *Error = cuttingThread ? cuttingThread->Error() : NULL;
+@@ -228,9 +333,17 @@
+      RemoveVideoFile(editedVersionName); //XXX what if this file is currently being replayed?
+      Recordings.DelByName(editedVersionName);
++#ifdef CUTTER_QUEUE
++     cutterQueue.Del(cutterQueue.First());
++#endif
+      }
++#ifdef CUTTER_QUEUE
++  lastCuttingEndTime = cTimeMs::Now();
++#endif
+ }
+ 
+ bool cCutter::Active(void)
+ {
++  cMutexLock(cutterLock);
++
+   if (cuttingThread) {
+      if (cuttingThread->Active())
+@@ -243,5 +356,34 @@
+      editedVersionName = NULL;
+      ended = true;
++#ifdef CUTTER_AUTO_DELETE
++     /* Remove original (if cutting was successful) */
++     if(!error) {
++       cRecording *recording = Recordings.GetByName(*cutterQueue.First());
++       if (!recording) {
++	 esyslog("ERROR: Can't found '%s' after editing process", cutterQueue.First()->Value());
++       } else {
++	 if (recording->Delete()) {
++	   //Recordings.Del(recording);
++           //cReplayControl::ClearLastReplayed(ri->FileName());
++           Recordings.DelByName(recording->FileName());
++	 } else {
++	   esyslog("ERROR: Can't delete '%s' after editing process", cutterQueue.First()->Value());
++	 }
++       }
+      }
++    lastCuttingEndTime = cTimeMs::Now();
++#endif
++#ifdef CUTTER_QUEUE
++     cutterQueue.Del(cutterQueue.First());
++#endif
++     }
++#ifdef CUTTER_QUEUE
++  if(!cuttingThread && cutterQueue.First()) {
++    /* start next cutting from queue*/
++    if(cTimeMs::Now() > lastCuttingEndTime + WAIT_BEFORE_NEXT_CUT)
++      Start(NULL);
++  }
++#endif
++
+   return false;
+ }
+@@ -249,4 +391,5 @@
+ bool cCutter::Error(void)
+ {
++  cMutexLock(cutterLock);
+   bool result = error;
+   error = false;
+@@ -256,4 +399,5 @@
+ bool cCutter::Ended(void)
+ {
++  cMutexLock(cutterLock);
+   bool result = ended;
+   ended = false;
+--- vdr-1.4.2-1-orig/i18n.c	2007-07-28 15:01:16.000000000 +0200
++++ vdr-1.4.2-1/i18n.c	2007-07-28 15:05:47.000000000 +0200
+@@ -7003,6 +7003,28 @@
+     "",// TODO
+     "",// TODO
+   },
++  { "Cutter already running - Add to cutting queue?",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Edición ya en proceso - ¿Añadir a cola de espera?",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { NULL }
+   };
+ 
+--- vdr-1.4.2-1-orig/menu.c	2006-09-08 00:15:09.000000000 +0300
++++ vdr-1.4.2-1/menu.c	2006-09-08 14:38:32.000000000 +0300
+@@ -4087,5 +4304,9 @@
+   if (fileName) {
+      Hide();
++#if 0
+      if (!cCutter::Active()) {
++#else
++     if (!cCutter::Active() || Interface->Confirm(tr("Cutter already running - Add to cutting queue?"))) {
++#endif
+         if (!marks.Count())
+            Skins.Message(mtError, tr("No editing marks defined!"));
