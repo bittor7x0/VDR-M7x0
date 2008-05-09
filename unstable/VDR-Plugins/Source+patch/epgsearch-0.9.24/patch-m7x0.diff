@@ -1,0 +1,46 @@
+diff -Naur epgsearch-0.9.24-orig/epgsearchtools.h epgsearch-0.9.24/epgsearchtools.h
+--- epgsearch-0.9.24-orig/epgsearchtools.h	2008-05-01 14:29:43.000000000 +0200
++++ epgsearch-0.9.24/epgsearchtools.h	2008-05-09 20:25:47.000000000 +0200
+@@ -90,7 +90,7 @@
+ #define ICON_VPS               0x93
+ #else
+ // previous WAREAGLE icons
+-#define ICON_REC               0xF9
++#define ICON_REC               0xE4
+ #define ICON_RUNNING           0xFB
+ #define ICON_CLOCK             0xFD
+ #define ICON_CLOCK_HALF        0x74
+diff -Naur epgsearch-0.9.24-orig/Makefile epgsearch-0.9.24/Makefile
+--- epgsearch-0.9.24-orig/Makefile	2008-04-13 20:53:42.000000000 +0200
++++ epgsearch-0.9.24/Makefile	2008-05-09 20:24:23.000000000 +0200
+@@ -34,9 +34,9 @@
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../../../DVB
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -69,7 +69,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ #INCLUDES += -I$(VDRDIR)/include
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+@@ -128,7 +128,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(CXXFLAGS) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) $(OBJS2:%.o=%.c) $(OBJS3:%.o=%.c) $(OBJS4:%.o=%.c)> $@

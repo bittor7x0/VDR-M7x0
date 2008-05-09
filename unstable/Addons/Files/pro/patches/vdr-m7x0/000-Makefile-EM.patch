@@ -1,12 +1,7 @@
-diff -Naur vdr-m7x0-orig/Makefile vdr-m7x0/Makefile
---- vdr-m7x0-orig/Makefile	2007-04-28 18:11:23.000000000 +0200
-+++ vdr-m7x0/Makefile	2007-04-29 20:57:33.000000000 +0200
-@@ -106,7 +106,7 @@
- 	@echo "font files created."
- 
- builddate.h: $(OBJS:%.o=%.c)
--	@echo "#define VDRM7X0VERSION \"Preview `date -u +"%F %H:%M"` (o7o subversion revision `svnversion | cut -d ":" -f 2`)\"" > builddate.h
-+	@echo "#define VDRM7X0VERSION \"EdiciÛn Mejorada Pro 0.3 BETA (o7o SVN `svnversion | cut -d ":" -f 2`)\"" > builddate.h
- 
- # Implicit rules:
- 
+diff -Naur VDR-NG-orig/o7o-version VDR-NG/o7o-version
+--- VDR-NG-orig/o7o-version	2008-05-09 21:08:54.000000000 +0200
++++ VDR-NG/o7o-version	2008-05-09 22:40:35.000000000 +0200
+@@ -1 +1 @@
+-pre 0.0.2 gambler-unstable
+\ No hay ning√∫n car√°cter de nueva l√≠nea al final del fichero
++EdiciÛn Mejorada Pro Pre-0.4 BETA

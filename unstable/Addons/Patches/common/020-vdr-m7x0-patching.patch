@@ -1,6 +1,6 @@
 diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0.mk uclibc_build_env/make-incs/vdr-m7x0.mk
---- uclibc_build_env_orig/make-incs/vdr-m7x0.mk	2008-01-20 18:11:33.000000000 +0100
-+++ uclibc_build_env/make-incs/vdr-m7x0.mk	2008-01-21 20:46:30.000000000 +0100
+--- uclibc_build_env_orig/make-incs/vdr-m7x0.mk	2008-02-21 20:54:34.000000000 +0100
++++ uclibc_build_env/make-incs/vdr-m7x0.mk	2008-05-09 23:07:37.000000000 +0200
 @@ -26,6 +26,7 @@
  VDR_DIR := $(BUILD_DIR)/vdr-m7x0
  VDR_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/common
@@ -14,21 +14,29 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0.mk uclibc_build_env/make-inc
  
  $(STAGEFILES_DIR)/.vdr_downloaded:
 -	$(SVN) co $(VDR_SVN_URL) $(VDR_DIR)
-+	$(SVN) co -r 242 $(VDR_SVN_URL) $(VDR_DIR)
++	$(SVN) co -r 250 $(VDR_SVN_URL) $(VDR_DIR)
  	$(TOUCH) $(STAGEFILES_DIR)/.vdr_downloaded
  
  $(STAGEFILES_DIR)/.vdr_local_downloaded: $(CONFIG_VDR_LOCAL_PATH)/*.c \
-@@ -76,11 +77,12 @@
+@@ -76,11 +77,20 @@
  	$(TOUCH) $(STAGEFILES_DIR)/.vdr_local_downloaded
  
  #
--# compile vdr
-+# patch and compile vdr
++# patch vdr
++#
++
++$(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_patched: \
++        $(STAGEFILES_DIR)/.vdr_$(filter local_,$(CONFIG_VDR_TREE)_)downloaded
++	$(PATCHES_DIR)/patch-kernel.sh $(VDR_BRANCH_DIR) $(VDR_PATCHES_DIR)
++	$(TOUCH) $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_patched
++
++#
+ # compile vdr
  #
  
  $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_compiled: $$(VDR_DEPS) \
-         $(STAGEFILES_DIR)/.vdr_$(filter local_,$(CONFIG_VDR_TREE)_)downloaded
-+	$(PATCHES_DIR)/patch-kernel.sh $(VDR_BRANCH_DIR) $(VDR_PATCHES_DIR)
+-        $(STAGEFILES_DIR)/.vdr_$(filter local_,$(CONFIG_VDR_TREE)_)downloaded
++        $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_patched
  	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) clean
  	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) all
  	$(TOUCH) $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_compiled
