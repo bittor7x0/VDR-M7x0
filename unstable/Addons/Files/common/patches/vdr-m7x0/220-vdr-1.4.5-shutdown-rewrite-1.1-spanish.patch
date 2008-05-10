@@ -1,0 +1,149 @@
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2007-12-15 12:11:32.000000000 +0100
++++ VDR-NG/i18n.c	2007-12-15 13:42:36.000000000 +0100
+@@ -1362,6 +1362,28 @@
+     "Optagelse igang - genstart alligevel?",
+     "Systém je zaneprázdnìn - pøesto restartovat?",
+   },
++  { "Editing - restart anyway?",
++    "Schnitt läuft - trotzdem neu starten?",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Editando - ¿reiniciar igualmente?",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
+   { "Recording - shut down anyway?",
+     "Aufnahme läuft - trotzdem ausschalten?",
+     "Snemanje - zares izklopi?",
+@@ -1428,6 +1450,116 @@
+     "Tryk vilkårlig tast for at annullere sluk",
+     "Jakákoliv klávesa zru¹í vypnutí",
+   },
++  { "Press any key to cancel restart",
++    "Taste drücken, um Neustart abzubrechen",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Pulse una tecla para interrumpir reiniciar",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "VDR will shut down later - press Power to force",
++    "VDR schaltet später aus - Power zum erzwingen",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "VDR sammuu myöhemmin - pakota virtakytkimellä",
++    "",//TODO
++    "VDR se apagará más tarde - pulse Apagar para forzar",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "VDR will shut down in %s minutes",
++    "VDR wird in %s Minuten ausschalten",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "VDR sammuu %s minuutin kuluttua",
++    "",//TODO
++    "VDR se apagará en %s minutos",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Editing - shut down anyway?",
++    "Schnitt läuft - trotzdem ausschalten?",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Leikkaus kesken - sammutetaanko?",
++    "",//TODO
++    "Editando - ¿apagar igualmente?",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Plugin %s wakes up in %ld min, continue?",
++    "Plugin %s wacht in %ld Min auf, weiter?",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Laajennos %s herää %ld minuutin kuluttua - sammutetaanko?",
++    "",//TODO
++    "El plugin %s iniciará en %ld min, ¿continuar?",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
+   // Channel parameters:
+   { "Name",
+     "Name",

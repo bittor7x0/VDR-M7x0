@@ -23,7 +23,7 @@ fi
 
 if [ X"${bootmenu_start}" != X"NO" ] ; then
     alarm=`cat /etc/bootmenu/next_alarm`
-    #logger awk '{print strftime("%F %T",${alarm})}'
+#    logger awk '{print strftime("%F %T",${alarm})}'
 
     if [ ${alarm} -eq 0 ] ; then
         pic_tool -s alarm clear
@@ -32,8 +32,8 @@ if [ X"${bootmenu_start}" != X"NO" ] ; then
     fi
 
     echo -n ' bootmenu'
-    export VDR_TV_MODE=${bootmenu_video_mode}
-    `/usr/bin/bootmenu -s ${bootmenu_default} ${bootmenu_config}` &
+    export VDR_TV_MODE=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+    `/usr/bin/bootmenu -t ${alarm} -s ${bootmenu_default} ${bootmenu_config}` &
 else
     if [ X"${runvdr}" != X"NO" ]; then
         echo -n ' vdr' 
