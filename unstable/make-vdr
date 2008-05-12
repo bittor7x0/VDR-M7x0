@@ -21,6 +21,7 @@ fi
 # Patching VDR
 if [[ ! -f "$vdr/HISTORY-liemikuutio" ]]
 then
+	./VDR-NG-FW/patches/patch-kernel.sh ./VDR-NG ./Addons/Files/pro/patches/vdr-m7x0
 	./VDR-NG-FW/patches/patch-kernel.sh ./VDR-NG ./Addons/Files/common/patches/vdr-m7x0
 fi
 
