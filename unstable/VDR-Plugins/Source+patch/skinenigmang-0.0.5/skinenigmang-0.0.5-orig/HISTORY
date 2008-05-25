@@ -1,0 +1,126 @@
+VDR Skin 'EnigmaNG' Revision History
+------------------------------------------
+
+2007-07-02: Version 0.0.5
+- Reworked font handling in menu OSD a little bit to (hopefully) fix crashes with plugins that patch fonts.
+- Updated Nederlands translation (Provided by dorpsgek @vdr-portal.de).
+- Don't make info area in mainmenu too small (Requested by vdrchuck @vdr-portal.de).
+- Save and restore TTF FixedFont (Reported by zulu @vdr-portal.de).
+- Updated Italian translation (Provided by Gringo).
+- Updated French translation (Provided by Pat @vdr-portal.de).
+
+2007-06-25: Version 0.0.5rc3
+- Updated Finnish translation (Submitted by Rolf Ahrenberg).
+- Added quickepgsearch, sport and music plugins in main menu logos (Submitted by zulu @vdr-portal.de).
+- Reworked debug() and error().
+- Use required width of date for calculation of logo area with.
+- Don't let vector for text effects grow when moving through lists in menus.
+- Added internal translation of long weeksdays (Requested and translated by Pat @vdr-portal.de).
+- Support TrueTypeFonts again with VDR >=v1.5.4 (TTF width setup disabled).
+- Read OSD size from VDR's cOsd as suggested in VDR and Avards plugin.
+- Minor bugfixes and enhancements.
+
+2007-06-18: Version 0.0.5rc2
+- Added Italian translation (Submitted by Gringo).
+- Changed logging to only report missing channel logos once.
+- Use MAXFONTNAME and MAXFONTSIZE as introduced in VDR 1.5.3.
+- Recognize VDR >=1.5.3 and disable HAVE_FREETYPE.
+- Fixed font initialization.
+- Updated MoBuntu theme (Submitted by Morone @vdr-portal.de).
+- Set correct editable width for OSD text inputs (Reported by Brougs78 @vdr-portal.de).
+- Fixed calculation of bottom line in channel info (Reported by CKone @vdr-portal.de).
+- Hide "Set" button in fonts setup if TTF support disabled.
+- Fixed crash in TTF setup if no TrueType fonts were found (Reported by pat @vdr-portal.de).
+- Set correct title in setup submenus (Reported by pat @vdr-portal.de).
+- Minor bugfixes.
+
+2007-06-11: Version 0.0.5rc
+- Fixed possible crash in recording's details.
+- Added MoBuntu theme (Submitted by Morone @vdr-portal.de).
+- Added Blue, Blue2, Blue3 and Coolblue theme (Submitted by Uwe @vdr-portal.de).
+- Added support for TrueTypeFonts (based on graphtft and text2skin plugins).
+- Added support for new epgsearch tags.
+- Updated French translation. (Submitted by pat @vdr-portal.de)
+- Changed size calculation for scrollbars.
+- Add setup options to individually set the fonts to use. See README for details.
+- Set used colors for every area in menu OSD when using multiple areas.
+- Reworked multiple areas mode in menu OSD.
+- Do not disable logos/symbols/flags if 4bpp single area is configured in setup.
+- Replaced setup options "One area (if possible)" and "Bpp in single area" by option "Try 8bpp single areas".
+- Unified appearance of error/info/status messages in all OSDs.
+- Added setup option to selectively enable scrolling text.
+- Added setup option to selectively enable logos in the different OSDs.
+- Added text effects (e.g. scrolling and blinking) for selected text.
+- Removed clrMenuHighlight, clrMessageBorder, clrMenuItemCurrentFg, clrMenuEventTitle, clrMenuEventShortText, clrMenuScrollbarTotal and clrMenuScrollbarShown in themes.
+- Fixed height of title/subtitle box in EPG & recording details.
+- Recognize mediamanager plugin in mainmenu logos.
+- Don't cut info line in EPG & recording details at logo area's left edge.
+- Updated Russian translation (Submitted by neptunvasja @vdr-portal.de).
+- Added Dutch translation (Submitted by dorpsgek @vdr-portal.de).
+- Various bugfixes and graphical changes.
+
+2007-04-02: Version 0.0.4
+- Changed text color in themes for green and yellow buttons.
+- Fixed false colors problem after theme changes.
+- Updated Finnish translation. (Submitted by Rolf Ahrenberg)
+- Updated French translation. (Submitted by pat @vdr-portal.de)
+- Do not overwrite status messages in mainmenu with list items.
+- New setup option that replaces SKINENIGMA_FULL_CHANNELINFO_TITLE define.
+- Disable logos/symbols/flags if 4bpp single area is configured in setup. (Will eventually replace SKINENIGMA_NO_MENULOGO define)
+- Added support for mailbox plugin; shows mail symbol in channel info (Based on patch by triple955 @vdr-portal.de).
+- Introduced new HAVE_IMAGEMAGICK define to enable non-xpm images in event's and recording's details.
+- Fixed "blinking" date in channel info (Reported by several people).
+- Changed background for recording symbol in channel info to white (Suggested by gromit @vdr-portal.de).
+- Long channel group names are no longer drawn at the right side of the date (Reported by several people).
+- New setup option for displaying a recording's size and use size.vdr (Suggested by vejoun @vdr-portal.de).
+- Show stop time of running timers in info area in main menu. (Suggested by viking @vdr-portal.de)
+- Updated Russian translation. (Submitted by neptunvasja @vdr-portal.de)
+- New defines "ListProgressBarGap" & "ListProgressBarBorder" to customize the progressbar in lists:
+   * "ListProgressBarGap" sets the gap above/below the progressbar (relative to the font's height).
+   * "ListProgressBarBorder" sets the border's width.
+- Added fallback to "classic" skin if any of the OSD menus fails to open.
+- Fix possible NULL pointer accesses.
+- Fixed compiler error with certain gcc versions.
+- Minor bugfixes and graphical changes.
+
+2007-03-06: Version 0.0.3
+- New command line option "-l" to set the logo path.
+- Added support for epgsearch's timer check auxiliary info in a recording's info.
+- Reorganized setup menu.
+- Don't use small font in a recording's replay info.
+- Show channel name and number in recording's info.
+- Don't use small font for description in event and recording info.
+- Added setup options for epgsearch features.
+- Use location set at "Channel info position" to display channel info.
+- Fixed transparent group titles in menus. (Reported by several users)
+- New (temporary) compile time option SKINENIGMA_FULL_CHANNELINFO_TITLE.
+- Fixed duration and elapsed/remaining time displaying in channel info.
+- Enhanced setup option "Show remaining/elapsed time".
+- Enhanced setup option "Show Symbols".
+- Changed alignment in bottom line of channel info.
+- New setup option to hide language flags; shows language name in channel info. (Suggested by balta @vdr-portal.de)
+- Redraw date in main menu and channel info only if time changed. (Based on suggestion by Hanspeter)
+- Changed detection for main menu; it now must start with "VDR  -  ". (Based on patch by triple955 @vdr-portal.de)
+- Fixed problems with floating text. (Patch by triple955 @vdr-portal.de)
+- Localized full weekday name.
+- Added new setup option for 8bpp or 4bpp single area.
+- Added Russian translation (Submitted by SergArb @vdr-portal.de).
+- Log "LOGO NOT FOUND" errors to syslog (Requested by Der_Pit).
+- Changed a false 4bpp area to 2bpp.
+- Corrected brackets (Reported by Sebastian Werner).
+- Many other fixes and graphical changes.
+
+2007-02-19: Version 0.0.2
+- Fixed problems in replay OSD when not using small font (Reported by several people).
+- Only display reruns of current event in EPG info if there are more than two reruns.
+- New setup option to enable/disable trying a single 8bpp OSD area.
+- Completed French translation (Submitted by Patrice Staudt).
+- Completed Finnish translation (Patch by rofafor @vdr-portal.de).
+- Changed defines: HAVE_EPGSEARCH to SKINENIGMA_HAVE_EPGSEARCH and NO_MENULOGO to SKINENIGMA_NO_MENULOGO (Patch by rofafor @vdr-portal.de).
+- Fixed crash if loading channel logos by channel id (Reported by zulu @vdr-portal.de).
+- Fixed gcc warning (Reported by zulu @vdr-portal.de).
+- Renamed theme WomansLike to WomenLike.
+- Some smaller fixes.
+
+2007-02-14: Version 0.0.1
+- Initial release.
