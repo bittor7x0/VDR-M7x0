@@ -1,0 +1,52 @@
+diff -Naur playlist-0.0.2-orig/Makefile playlist-0.0.2/Makefile
+--- playlist-0.0.2-orig/Makefile	2006-04-24 00:10:40.000000000 +0200
++++ playlist-0.0.2/Makefile	2008-04-25 13:59:39.000000000 +0200
+@@ -16,7 +16,7 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### Allow user defined options to overwrite defaults:
+ 
+@@ -24,9 +24,9 @@
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### The version number of VDR (taken from VDR's "config.h"):
+@@ -43,7 +43,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ DEFINES += -D_GNU_SOURCE
+@@ -83,7 +83,7 @@
+ 
+ # Dependencies:
+ 
+-MAKEDEP = g++ -MM -MG
++MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+ 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+@@ -96,7 +96,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist:	clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

@@ -1,0 +1,59 @@
+diff -Naur VDR-NG-RootFS-orig/tools.h VDR-NG-RootFS/tools.h
+--- VDR-NG-RootFS-orig/tools.h	2008-05-09 21:08:54.000000000 +0200
++++ VDR-NG-RootFS/tools.h	2008-04-25 14:44:59.000000000 +0200
+@@ -49,10 +49,10 @@
+ #define putIntUnaligned(a,b) put_unaligned((int32_t) (b), (int32_t *)(a))
+ #define getIntUnaligned(a) get_unaligned((int32_t *) (a))
+ 
+-// Syslog reactivated
+-#define esyslog(a...) void( (SysLogLevel > 0) ? syslog_with_tid(LOG_ERR,   a) : void() )
+-#define isyslog(a...) void( (SysLogLevel > 1) ? syslog_with_tid(LOG_INFO,  a) : void() )
+-#define dsyslog(a...) void( (SysLogLevel > 2) ? syslog_with_tid(LOG_DEBUG, a) : void() )
++// m7x0 does not support syslog correct yet
++#define esyslog(a...) void( (SysLogLevel > 0) ? void(fprintf(stderr,a)), void(fprintf(stderr,"\n")), void(fflush(stderr)) : void() )
++#define isyslog(a...) void( (SysLogLevel > 1) ? void(fprintf(stderr,a)), void(fprintf(stderr,"\n")), void(fflush(stderr)) : void() )
++#define dsyslog(a...) void( (SysLogLevel > 2) ? void(fprintf(stderr,a)), void(fprintf(stderr,"\n")), void(fflush(stderr)) : void() )
+ 
+ // Errno should survive this
+ #define LOG_ERROR       {  int __errno_save = errno; \
+@@ -70,11 +70,6 @@
+                            errno = __errno_save; }
+ 
+ 
+-
+-#if 0
+-#define LOG_ERROR         { esyslog("ERROR (%s,%d): %m", __FILE__, __LINE__); }
+-#define LOG_ERROR_STR(s)  { esyslog("ERROR: %s: %m", s); }
+-#endif
+ #define SECSINDAY  86400
+ 
+ #define KILOBYTE(n) ((n) * 1024)
+diff -Naur VDR-NG-RootFS-orig/vdr.c VDR-NG-RootFS/vdr.c
+--- VDR-NG-RootFS-orig/vdr.c	2008-04-25 14:40:25.000000000 +0200
++++ VDR-NG-RootFS/vdr.c	2008-04-25 14:41:21.000000000 +0200
+@@ -515,9 +515,9 @@
+ 
+   // Log file:
+ //M7X0 BEGIN AK
+-   // Syslog reactivated
+-  if (SysLogLevel > 0)
+-     openlog("vdr", LOG_CONS, SysLogTarget); // LOG_PID doesn't work as expected under NPTL
++//Syslog not supported yet
++ /* if (SysLogLevel > 0)
++     openlog("vdr", LOG_CONS, SysLogTarget); // LOG_PID doesn't work as expected under NPTL */
+ //M7X0 END AK
+ 
+ 
+@@ -1395,9 +1395,9 @@
+   if (ShutdownHandler.EmergencyExitRequested())
+      esyslog("emergency exit!");
+ //M7X0 BEGIN AK
+-  //Syslog  reactivated
+-  if (SysLogLevel > 0)
+-     closelog();
++//Syslog not supported yet
++/*  if (SysLogLevel > 0)
++     closelog();*/
+ //M7X0 END AK
+   if (HasStdin)
+      tcsetattr(STDIN_FILENO, TCSANOW, &savedTm);

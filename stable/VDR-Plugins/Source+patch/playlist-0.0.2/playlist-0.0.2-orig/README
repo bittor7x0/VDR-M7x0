@@ -1,0 +1,24 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                           Hardy Flor <HFlor@web.de>
+
+Project's homepage (vdr):             www.cadsoft.de/people/kls/vdr
+Project's homepage (playlist):        www.fast-info.de/vdr/playlist
+
+See the file COPYING for license information.
+
+playlist-plugin version 0.0.2rc3
+
+hier kommt noch was ...
+
+TODO:
+
+- Komandozeilenoptionen und Konfigurationsdatei fehlen noch
+- Markierung in Aufnameauswahl
+- Verschiebung in Liste genauer Prüfen (z.Z. kann man Verzeichnisse verschieben --> ist aber nicht gut!)
+- Aufnahmenanzeige nicht im richtigen Verzeichnis bei vorheriger Auswahl eines Verzeichnisses mit Unterverzeichnissen
+- Aufnahmenanzeige enthält doppelte Einträge
+- auf roter taste standartwert anzeigen
+- Option für Wiedergabe im Detail-Ansicht 
+x neue Playlist ohne inhalt auch namen-dialog schließen
+- Wenn nur 1 Verzeichniss in PL -> Name für PL übernehmen
