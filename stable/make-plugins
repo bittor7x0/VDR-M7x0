@@ -22,7 +22,7 @@ then
 	echo "CHECKOUT: $vdr_plugins"
         rm -rf $vdr_plugins/
 	mkdir $vdr_plugins/
-	svn checkout -q "svn://open7x0.org/vdr-m7x0-PLUGINS/branches/stable" "$vdr_plugins"
+	svn checkout -q "svn://open7x0.org/vdr-m7x0-PLUGINS/branches/unstable" "$vdr_plugins"
 	rm -rf "$vdr_plugins/sharedlibs"
 fi
 
