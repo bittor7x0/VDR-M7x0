@@ -44,7 +44,7 @@ if  [ ${SYSTEMTYPE} = m750s ] ; then
 else
 	insmod /lib/modules/2.4.21-xfs/tainted/tda10046.o
 	echo "tda10046.o"
-	insmod /lib/modules/2.4.21-xfs/tainted/tuner.o
+	insmod /lib/modules/2.4.21-xfs/tainted/tuner.o TUNER0_TYPE=2 TUNER1_TYPE=2
 	echo "tuner.o"
 	insmod /lib/modules/2.4.21-xfs/tainted/demux.o enable_ts_serial1=1 \
 		dvr_mem_r=1536 dvr_mem_w=1536
