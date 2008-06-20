@@ -41,10 +41,10 @@ if [ X"${gateway}" != X"NO" ]; then
 fi
 
 db_key=/etc/dropbear/dropbear_dss_host_key
-[[ ! -f $db_key ]] && dropbearkey -t dss -f $db_key
+[ ! -f $db_key ] && dropbearkey -t dss -f $db_key
 
 db_key=/etc/dropbear/dropbear_rsa_host_key
-[[ ! -f $db_key ]] && dropbearkey -t rsa -f $db_key
+[ ! -f $db_key ] && dropbearkey -t rsa -f $db_key
 
 echo -n 'standard daemons:'
 
