@@ -46,6 +46,12 @@ if [ X"${do_usb_mount}" != X"NO" ] ; then
     /sbin/usbautomounter umount
 fi
 
+if [ X"${osddebug}" != X"NO" ] ; then
+    [ -f /rw-flash/.nodebug ] && rm /rw-flash/.nodebug
+else
+    touch /rw-flash/.nodebug
+fi
+
 # Spindown hd
 if [ X"${hd_spindown_dev}" != X"NO" ] ; then
     echo -n ' starting scsi-spin'
@@ -60,4 +66,4 @@ if [ -x "${fw_update_file}" ] ; then
     ${fw_update_file}
 fi
 
-avswctl -tv vcr
+/usr/sbin/avswctl -tv vcr

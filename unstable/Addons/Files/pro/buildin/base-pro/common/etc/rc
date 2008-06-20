@@ -1,43 +1,47 @@
 #!/bin/ash
 
+if [ X"${OSDLOG}" = X"YES" ]; then
+    source /etc/rc.debug
+fi
+
 [ -f /etc/rc.conf ] && source /etc/rc.conf
 hostname ${hostname}
 if [ X"${syslogd_flags}" != X"NO" ]; then
     mv /rw-flash/log/messages* /var/log
-    echo 'starting syslogd'
+    echo -n "starting syslogd ... "
     syslogd ${syslogd_flags}
+    echo "Done"
 fi
 
-echo -n 'loading modules ...'
+echo -n "loading modules ... "
 [ -f /etc/rc.modules ] && ash /etc/rc.modules
-echo ' done';
+echo "Done";
 
 if [ X"${pic_tool_flags}" != X"NO" ]; then
-    echo -n 'execute pic_tool'
+    echo -n "execute pic_tool ... "
     pic_tool ${pic_tool_flags}
-    echo ' done';
+    echo "Done"
 fi
 
-echo -n 'starting network:'
+echo -n "starting network:"
 
-echo -n ' lo';
+echo "lo";
 ifconfig lo 127.0.0.1
 
 ifconfig ${if} hw ether `${mac_cmd}`
 if [ X"${net}" = X"DHCP" ]; then
-    echo -n ' dhcp';
+    echo "dhcp";
     ifconfig ${if} 0.0.0.0
     udhcpc -b -i ${if} -s ${dhcp_script}
 else
-    echo -n " ${if}";
+    echo "${if} - ${ip} - ${netmask}";
     ifconfig ${if} ${ip} netmask ${netmask}
 fi
 
-echo ' '
-
 if [ X"${gateway}" != X"NO" ]; then
-    echo 'setup default gateway';
+    echo -n "setup default gateway ... ${gateway} - ${if}";
     route add default gw ${gateway} ${if}
+    echo "Done"
 fi
 
 db_key=/etc/dropbear/dropbear_dss_host_key
@@ -46,17 +50,15 @@ db_key=/etc/dropbear/dropbear_dss_host_key
 db_key=/etc/dropbear/dropbear_rsa_host_key
 [ ! -f $db_key ] && dropbearkey -t rsa -f $db_key
 
-echo -n 'standard daemons:'
+echo -n "standard daemons:"
 
 if [ X"${inetd}" != X"NO" ]; then
-    echo -n ' inetd';		inetd /etc/inetd.conf
+    echo "inetd";		inetd /etc/inetd.conf
 fi
 
 if [ X"${lircd_flags}" != X"NO" ]; then
-    echo -n ' lircd';		lircd ${lircd_flags}
+    echo "lircd";		lircd ${lircd_flags}
 fi
-
-echo ' '
 
 [ -f /etc/rc.local ] && ash /etc/rc.local
 

@@ -1,42 +1,70 @@
 #!/bin/ash
 
 # Load DV-Modules 
+if [ X"${OSDLOG}" != X"YES" ]; then
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_bios.o
+    insmod /lib/modules/2.4.21-xfs/tainted/iic_int.o
+    insmod /lib/modules/2.4.21-xfs/tainted/pic16f73.o
+    /usr/sbin/pic_tool led link on led outer on
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_osd.o
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_av.o
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000    
+else
+    source /etc/rc.debug
+fi
 
-insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
-insmod /lib/modules/2.4.21-xfs/tainted/emma_bios.o
-insmod /lib/modules/2.4.21-xfs/tainted/emma_osd.o
-insmod /lib/modules/2.4.21-xfs/tainted/emma_av.o
 insmod /lib/modules/2.4.21-xfs/tainted/emma_teletext.o
-insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000
-insmod /lib/modules/2.4.21-xfs/tainted/iic_int.o
+echo "emma_teletext.o"
 insmod /lib/modules/2.4.21-xfs/tainted/dvbdev.o
-insmod /lib/modules/2.4.21-xfs/tainted/pic16f73.o
+echo "dvbdev.o"
 insmod /lib/modules/2.4.21-xfs/tainted/lirc_dev_s.o
+echo "lirc_dev_s.o"
 insmod /lib/modules/2.4.21-xfs/tainted/pds5002cl.o
+echo "pds5002cl.o"
+
+# switch tv back for debug output
+
+if [ X"${OSDLOG}" = X"YES" ]; then
+    /usr/sbin/avswctl -tv fbas
+fi
 
 #select tuner 
 
 if  [ ${SYSTEMTYPE} = m750s ] ; then
 	insmod /lib/modules/2.4.21-xfs/tainted/tda10086.o TDA10086_NO_PRINT=1
+	echo "tda10086.o"
 	insmod /lib/modules/2.4.21-xfs/tainted/tuner.o TUNER0_TYPE=4
+	echo "tuner.o"
 	insmod /lib/modules/2.4.21-xfs/tainted/demux.o enable_ts_serial0=1 \
 		dvr_mem_r=1536 dvr_mem_w=1536 ac3_delay_bytes=0 ac3_delay_ms=0
+	echo "demux.o"
 	insmod /lib/modules/2.4.21-xfs/tainted/video.o pip=1 blank_mode=1
+	echo "video.o"
 else
 	insmod /lib/modules/2.4.21-xfs/tainted/tda10046.o
+	echo "tda10046.o"
 	insmod /lib/modules/2.4.21-xfs/tainted/tuner.o
+	echo "tuner.o"
 	insmod /lib/modules/2.4.21-xfs/tainted/demux.o enable_ts_serial1=1 \
 		dvr_mem_r=1536 dvr_mem_w=1536
+	echo "demux.o"
 	insmod /lib/modules/2.4.21-xfs/tainted/video.o blank_mode=1
+	echo "video.o"
 fi
 
 
 # load default kernel modules
 
 insmod /lib/modules/2.4.21-xfs/kernel/fs/fat/fat.o
+echo "fat.o"
 insmod /lib/modules/2.4.21-xfs/kernel/fs/vfat/vfat.o
+echo "vfat.o"
 insmod /lib/modules/2.4.21-xfs/kernel/fs/jbd/jbd.o
+echo "jbd.o"
 insmod /lib/modules/2.4.21-xfs/kernel/fs/ext3/ext3.o
+echo "ext3.o"
 insmod /lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o
+echo "cifs.o"
 
 exit 0

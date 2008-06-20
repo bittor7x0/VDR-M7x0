@@ -1,32 +1,34 @@
 #!/bin/ash
 
+if [ X"${OSDLOG}" = X"YES" ]; then
+    source /etc/rc.debug
+fi
+
 [ -f /etc/rc.conf ] && source /etc/rc.conf
 
 if [ X"${syslogd_flags}" != X"NO" ]; then
     mv /rw-flash/log/messages* /var/log
-    echo 'starting syslogd'
+    echo -n "starting syslogd ... "
     syslogd ${syslogd_flags}
+    echo "Done"
 fi
 
-echo -n 'loading modules ...'
+echo -n "loading modules ... "
 [ -f /etc/rc.modules ] && ash /etc/rc.modules
-echo ' done';
+echo "Done";
 
 if [ X"${pic_tool_flags}" != X"NO" ]; then
-    echo -n 'execute pic_tool'
+    echo -n "execute pic_tool ... "
     pic_tool ${pic_tool_flags}
-    echo ' done';
+    echo "Done"
 fi
 
-echo -n 'starting lo';
+echo -n "starting loopback";
 ifconfig lo 127.0.0.1
 
 if [ X"${lircd_flags}" != X"NO" ]; then
-    echo ' '
-    echo -n 'lircd daemon';		lircd ${lircd_flags}
+    echo -n "lircd daemon";		lircd ${lircd_flags}
 fi
-
-echo ' '
 
 [ -f /etc/rc.local ] && ash /etc/rc.local
 

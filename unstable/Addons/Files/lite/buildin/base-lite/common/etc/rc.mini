@@ -1,35 +1,40 @@
-#!/bin/ash
+#!/bin/ash 
 
 # mount proc
-echo -n "Mounting /proc ... "
+echo -n "Mounting /proc ... " 
 # don't touch this, nothing will run otherwise
 # busybox uses /proc/self/exe to execute applets
 # and does not search path in that case, even if proc ist not
 # mountet... so do this as early as possible
-/bin/mount -t proc proc /proc
-echo "Done"
+/bin/mount -t proc proc /proc 
+echo "Done" 
 
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin
 export SYSTEMTYPE=`cat /etc/systemtype`
 
-echo -n 'Mounting /dev/pts ... '
-mount -t devpts devpts /dev/pts
-echo 'Done'
-
-# mount var
-echo -n "Mounting /var ... "
-mount -n -t tmpfs tmpfs /var 
-mkdir -p /var/tmp /var/run /var/log /var/media /var/lock
-touch /var/media/.ignore
-
-chmod 1777 /var/tmp
-chmod 755 /var/run /var/log /var/media /var/lock
-echo "Done"
-
 # mount rw parts
-echo -n "Mounting /rw-flash ... "
+echo -n "Mounting /rw-flash ... " 
 mount -n -t jffs2 /dev/mtdblock2 /rw-flash
-echo "Done"
+echo "Done" 
+
+# check for  firststart, factory reset or .nodebug flag
+# something went realy bad so enter osd debug mode
+if [ -d /rw-flash/SI -o ! -d /rw-flash/etc -o ! -f /rw-flash/.nodebug ]; then
+    export OSDLOG="YES"
+
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_bios.o
+    insmod /lib/modules/2.4.21-xfs/tainted/iic_int.o
+    insmod /lib/modules/2.4.21-xfs/tainted/pic16f73.o
+    /usr/sbin/pic_tool led link on led outer on
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_osd.o
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_av.o
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000
+    
+    /usr/sbin/avswctl -tv fbas
+    /bin/echo "Enter osd debugging mode" |  /usr/bin/osddrrawtext -a 8 -c 1 -b 0xFFFF0000
+    source /etc/rc.debug    
+fi
 
 # Factory reset 
 echo -n "Factory reset: "
@@ -54,14 +59,29 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
 	mkdir /rw-flash/log
 	[ -f /var/tmp/flash_content.etc ] && mv /var/tmp/flash_content.etc \
 		/rw-flash/etc/flash_content
-	echo "Done"
+	echo "Done" 
 else
-	echo "Skipped"
+	echo "Skipped" 
 fi
+
+# mount pts
+echo -n 'Mounting /dev/pts ... '
+mount -t devpts devpts /dev/pts
+echo 'Done' 
+
+# mount var
+echo -n "Mounting /var ... " 
+mount -n -t tmpfs tmpfs /var 
+mkdir -p /var/tmp /var/run /var/log /var/media /var/lock
+touch /var/media/.ignore
+
+chmod 1777 /var/tmp
+chmod 755 /var/run /var/log /var/media /var/lock
+echo "Done" 
 
 echo -n "Binding /etc ... "
 mount -o bind /rw-flash/etc /etc
-echo "Done"
+echo "Done" 
 
 [ -f /etc/rc ] && ash /etc/rc 
 
