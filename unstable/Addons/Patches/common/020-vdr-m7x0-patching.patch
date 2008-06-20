@@ -1,6 +1,6 @@
 diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0.mk uclibc_build_env/make-incs/vdr-m7x0.mk
---- uclibc_build_env_orig/make-incs/vdr-m7x0.mk	2008-02-21 20:54:34.000000000 +0100
-+++ uclibc_build_env/make-incs/vdr-m7x0.mk	2008-05-10 18:54:27.000000000 +0200
+--- uclibc_build_env_orig/make-incs/vdr-m7x0.mk	Wed Feb 20 09:23:20 2008
++++ uclibc_build_env/make-incs/vdr-m7x0.mk	Fri Jun 20 10:02:10 2008
 @@ -26,6 +26,7 @@
  VDR_DIR := $(BUILD_DIR)/vdr-m7x0
  VDR_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/common
@@ -9,6 +9,15 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0.mk uclibc_build_env/make-inc
  
  VDR_BRANCH_DIR = $(VDR_DIR)/$(or $(strip $(filter trunk,$(CONFIG_VDR_TREE))), \
                                   branches/$(CONFIG_VDR_TREE))
+@@ -64,7 +65,7 @@
+ #
+ 
+ $(STAGEFILES_DIR)/.vdr_downloaded:
+-	$(SVN) co $(VDR_SVN_URL) $(VDR_DIR)
++	$(SVN) co -r 253 $(VDR_SVN_URL) $(VDR_DIR)
+ 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_downloaded
+ 
+ $(STAGEFILES_DIR)/.vdr_local_downloaded: $(CONFIG_VDR_LOCAL_PATH)/*.c \
 @@ -76,11 +77,14 @@
  	$(TOUCH) $(STAGEFILES_DIR)/.vdr_local_downloaded
  
