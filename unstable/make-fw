@@ -61,7 +61,7 @@ then
 	svn update "$vdr_fw_orig"
 else
 	echo "Checkout VDR-o7o original"
-	svn checkout -q "$svn_o7o" "$vdr_fw_orig"
+	svn checkout -q -r 337 "$svn_o7o" "$vdr_fw_orig"
 fi
 
 
