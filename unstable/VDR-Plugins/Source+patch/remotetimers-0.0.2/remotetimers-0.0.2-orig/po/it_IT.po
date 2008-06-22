@@ -1,0 +1,92 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <vdrdev@schmirler.de>\n"
+"POT-Creation-Date: 2008-03-17 21:18+0100\n"
+"PO-Revision-Date: 2008-03-17 21:18+0100\n"
+"Last-Translator: Gringo <vdr-italian@tiscali.it>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Remote timers not available"
+msgstr "Timer remoti non disponibili"
+
+msgid "Location"
+msgstr "Posizione"
+
+msgid "local"
+msgstr "locale"
+
+msgid "remote"
+msgstr "remoto"
+
+msgid "User ID"
+msgstr "ID utente"
+
+msgid "Timer is recording - can't move it to server"
+msgstr "Timer in registrazione - impossibile spostarlo al server"
+
+msgid "RL"
+msgstr "RL"
+
+#, c-format
+msgid "Timers - User %d"
+msgstr "Timer - Utente %d"
+
+msgid "Edit timers on remote VDR"
+msgstr "Modifica timer su VDR remoto"
+
+msgid "Remote Timers"
+msgstr "Timer remoti"
+
+msgid "Hide mainmenu entry"
+msgstr "Nascondi voce nel menu principale"
+
+msgid "Replace mainmenu \"Schedule\""
+msgstr "Sostituisci \"Programmi\" nel menu principale"
+
+msgid "Replace mainmenu \"Timers\""
+msgstr "Sostituisci \"Timer\" nel menu principale"
+
+msgid "Server IP"
+msgstr "IP server"
+
+msgid "Server port"
+msgstr "Porta server"
+
+msgid "Defaults for new timers"
+msgstr "Valori predefiniti per i nuovi timer"
+
+msgid "Settings for \"Timers\" menu"
+msgstr "Impostazioni per il menu \"Timer\""
+
+msgid "Filter for user ID"
+msgstr "Filtra per ID utente"
+
+msgid "Updated remote timers list"
+msgstr "Aggiornato elenco timer remoti"
+
+msgid "Timers are being edited remotely - please try again"
+msgstr "I timer sono stati modificati da remoto - per favore prova ancora"
+
+msgid "Timer is recording - please deactivate it first"
+msgstr "Timer in registrazione - per favore disattivarlo prima"
+
+msgid "Timer already defined"
+msgstr "Timer già definito"
+
+msgid "Timers modified remotely - please check remote timers"
+msgstr "Timer modificati da remoto - per favore verifica i timer remoti"
+
+msgid "Unexpected error - please check remote timers"
+msgstr "Errore inatteso - per favore verifica i timer remoti"
+
+msgid "Lost SVDRP connection - please check remote timers"
+msgstr "Connessione SVDRP fallita - per favore verifica i timer remoti"

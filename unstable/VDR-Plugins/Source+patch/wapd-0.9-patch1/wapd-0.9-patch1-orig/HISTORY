@@ -1,0 +1,97 @@
+VDR Plugin 'wapd' Revision History
+-----------------------------------
+
+2008-02-16: Version 0.9 patch1
+
+- Patches contributed by Ville Skyttä <ville.skytta@iki.fi>:
+  * More finnish tranlations.
+  * Code fixes.
+  * Added missing HTTP headers.
+- Minor bug fixes.
+- Added browsing within schedule entries.
+- Added browsing within recording entries.
+
+2008-01-20: Version 0.9
+
+- Upgraded source to compile under VDR version >=1.4.4
+- Added compatibility to API changes in VDR
+- Italian translations contributed by Gringo (see i18n.c)
+- Contents an navigation links are now put into one page.
+- Links now support "accesskeys" 0-9*# to make navigation more
+  comfortable.
+
+2005-12-25: Version 0.8
+
+- Added compatibility to API changes (patches by Ville Skyttä)
+- Removed compatibility with older versions
+- Fixed displayed title/text of recordings
+
+2005-01-25: Version 0.7a
+
+- Fixed gmtime and strtok function calls (patch by Ville Skyttä)
+- Added wmlescaping '\n' => '<br/>'
+
+2005-01-25: Version 0.7
+
+- Simplified plugin numbering based on an idea of Nicolas Huillard :)
+- Improved compliance of http headers (patch by Ville Skyttä)
+- Fixed bug when title is missing in EPG (patch by Ville Skyttä) 
+- Added compatibility to API changes (cString) in VDR version 1.3.18
+  (patch by Ville Skyttä)
+- Added Content-Length to http header
+- Added 'wappasswd' utility
+
+2004-08-31: Version 0.0.6d
+
+- Added encoding into wml prologue (some wml browsers require it)
+
+2004-08-11: Version 0.0.6c
+
+- Added missing wml escaping for editing recordings
+
+2004-06-22: Version 0.0.6b
+
+- Bugfixes in wml escaping.
+- Fixed bugs in 1.2.6 branch
+- Added schedule now/next for 1.2.6 branch
+
+2004-06-20: Version 0.0.6
+
+- Added compatibility with VDR version 1.2.6
+  (Schedule now/next is not implemented yet!)
+
+2004-06-16: Version 0.0.5c
+
+- Some more little bugfixes.
+
+2004-06-15: Version 0.0.5b
+
+- Fixed missing wml escaping.
+
+2004-06-15: Version 0.0.5
+
+- Added user/password authentication.
+- Changed host based access control from svdrp.hosts to wapd's own waphosts.
+- More finnish translations contributed by Rolf Ahrenberg.
+
+2004-06-10: Version 0.0.4
+
+- Finnish translation contributed by Rolf Ahrenberg.
+- Added editing/saving of channels.
+- Added wml escaping of special characters.
+- Added more texts in i18n.c
+
+2004-06-06: Version 0.0.3
+
+- Added editing/saving of timers.
+- Added language selection.
+
+2004-06-04: Version 0.0.2
+
+- Changed wml output to list Schedule, Channels etc. without tables, based on
+  an idea of Jan Ekholm.
+- Added input fields for editing timers.
+
+2004-05-31: Version 0.0.1
+
+- Pre release.

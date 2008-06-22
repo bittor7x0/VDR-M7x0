@@ -1,0 +1,90 @@
+diff -ur vdr-1.4.7/eit.c vdr-1.4.7-ratings/eit.c
+--- vdr-1.4.7/eit.c	2006-10-09 12:14:36.000000000 -0400
++++ vdr-1.4.7-ratings/eit.c	2008-02-21 18:23:35.000000000 -0500
+@@ -146,6 +146,10 @@
+                  break;
+             case SI::ParentalRatingDescriptorTag:
+                  break;
++            case 0x89:
++                 if (d->getLength() == 4)
++                    pEvent->SetRating(d->getData().TwoBytes(2));
++                 break;                  
+             case SI::PDCDescriptorTag: {
+                  SI::PDCDescriptor *pd = (SI::PDCDescriptor *)d;
+                  time_t now = time(NULL);
+diff -ur vdr-1.4.7/epg.c vdr-1.4.7-ratings/epg.c
+--- vdr-1.4.7/epg.c	2006-10-28 05:12:42.000000000 -0400
++++ vdr-1.4.7-ratings/epg.c	2008-02-21 18:29:00.000000000 -0500
+@@ -112,6 +112,7 @@
+   startTime = 0;
+   duration = 0;
+   vps = 0;
++  rating = 0x1800;
+   SetSeen();
+ }
+ 
+@@ -257,7 +258,7 @@
+ void cEvent::Dump(FILE *f, const char *Prefix, bool InfoOnly) const
+ {
+   if (InfoOnly || startTime + duration + Setup.EPGLinger * 60 >= time(NULL)) {
+-     fprintf(f, "%sE %u %ld %d %X %X\n", Prefix, eventID, startTime, duration, tableID, version);
++     fprintf(f, "%sE %u %ld %d %X %X %.4hX\n", Prefix, eventID, startTime, duration, tableID, version, rating);
+      if (!isempty(title))
+         fprintf(f, "%sT %s\n", Prefix, title);
+      if (!isempty(shortText))
+@@ -322,8 +323,9 @@
+                           int Duration;
+                           unsigned int TableID = 0;
+                           unsigned int Version = 0xFF; // actual value is ignored
+-                          int n = sscanf(t, "%u %ld %d %X %X", &EventID, &StartTime, &Duration, &TableID, &Version);
+-                          if (n >= 3 && n <= 5) {
++                          uint16_t Rating = 0x1800;
++                          int n = sscanf(t, "%u %ld %d %X %X %hX", &EventID, &StartTime, &Duration, &TableID, &Version, &Rating);
++                          if (n >= 3 && n <= 6) {
+                              Event = (cEvent *)Schedule->GetEvent(EventID, StartTime);
+                              cEvent *newEvent = NULL;
+                              if (Event)
+@@ -336,6 +338,7 @@
+                                 Event->SetTableID(TableID);
+                                 Event->SetStartTime(StartTime);
+                                 Event->SetDuration(Duration);
++                                Event->SetRating(Rating);
+                                 if (newEvent)
+                                    Schedule->AddEvent(newEvent);
+                                 }
+diff -ur vdr-1.4.7/epg.h vdr-1.4.7-ratings/epg.h
+--- vdr-1.4.7/epg.h	2006-10-07 09:47:19.000000000 -0400
++++ vdr-1.4.7-ratings/epg.h	2008-02-21 18:32:27.000000000 -0500
+@@ -19,6 +19,8 @@
+ 
+ #define MAXEPGBUGFIXLEVEL 3
+ 
++#define VDR_RATINGS_PATCHED
++
+ enum eDumpMode { dmAll, dmPresent, dmFollowing, dmAtTime };
+ 
+ struct tComponent {
+@@ -66,6 +68,7 @@
+   int duration;            // Duration of this event in seconds
+   time_t vps;              // Video Programming Service timestamp (VPS, aka "Programme Identification Label", PIL)
+   time_t seen;             // When this event was last seen in the data stream
++  uint16_t rating;         // Dish/BEV Parental Rating
+ public:
+   cEvent(tEventID EventID);
+   ~cEvent();
+@@ -85,6 +88,7 @@
+   int Duration(void) const { return duration; }
+   time_t Vps(void) const { return vps; }
+   time_t Seen(void) const { return seen; }
++  uint16_t Rating(void) const { return rating; }
+   bool SeenWithin(int Seconds) const { return time(NULL) - seen < Seconds; }
+   bool HasTimer(void) const;
+   bool IsRunning(bool OrAboutToStart = false) const;
+@@ -104,6 +108,7 @@
+   void SetDuration(int Duration);
+   void SetVps(time_t Vps);
+   void SetSeen(void);
++  void SetRating(uint16_t Rating) { rating = Rating; }
+   cString ToDescr(void) const;
+   void Dump(FILE *f, const char *Prefix = "", bool InfoOnly = false) const;
+   bool Parse(char *s);

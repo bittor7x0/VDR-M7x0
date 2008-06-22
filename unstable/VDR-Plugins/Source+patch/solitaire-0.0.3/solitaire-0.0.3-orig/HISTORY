@@ -1,0 +1,17 @@
+VDR Plugin 'solitaire' Revision History
+--------------------------------------
+
+2004-09-07: Version 0.0.1
+- Initial revision.
+
+2005-03-21: Version 0.0.2
+- Fixed a bug with a card-loss on the "open stack". Thanks to Guy Roussin for reporting the bug.
+- Fixed a bug to lay back a card to the "open stack"
+- New card-layout that should not flicker so much
+- Added finnish translation supported from Rolf Ahrenberg. Thanks to him.
+
+2007-07-02: Version 0.0.3
+- patch from Thomas Guenther <tom@toms-cafe.de> to correct problems compiling with "tools/list.h"
+- patch from <unknown> Adds -fPIC to Makefile to fix potential FTBFS.
+- Fix from Andreas Jochens <aj@andaco.de>, to compile the plugin with gcc-3.4 (adapted from freecell plugin).
+- Fixed warning in "tools/list.h"

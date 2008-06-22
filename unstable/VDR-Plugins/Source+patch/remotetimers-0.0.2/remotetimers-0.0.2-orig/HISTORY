@@ -1,0 +1,17 @@
+VDR Plugin 'remotetimers' Revision History
+------------------------------------------
+
+2008-03-28: Version 0.0.2
+
+- Updated the menu parts copied from VDR to 1.6.0
+- Gettext support for VDR 1.5.7+
+  Credits to Udo Richter for his po218n.pl backward compatibility script
+- API change for VDR 1.5.3+ (thanks to Dr.Nop@vdrportal)
+- Svdrpservice no longer needs to be loaded before remotetimers
+- Ignore recording flag when verifying that a timer hasn't been modified
+- Removed duplicate check when deleting timer
+- Italian translations (thanks to Gringo <vdr-italian@tiscali.it>)
+
+2007-03-13: Version 0.0.1
+
+- Initial revision.

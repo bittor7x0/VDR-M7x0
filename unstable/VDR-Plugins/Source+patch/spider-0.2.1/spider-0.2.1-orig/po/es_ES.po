@@ -1,0 +1,97 @@
+# Spanish translations for vdr-spider package.
+# Copyright (C) 2007-2008 Thomas Günther <tom@toms-cafe.de>
+# This file is distributed under the same license as the vdr-spider package.
+# bittor from open7x0.org, 2007.
+#
+# $Id: es_ES.po 129 2008-03-29 00:06:39Z tom $
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-spider 0.1.4\n"
+"Report-Msgid-Bugs-To: <tom@toms-cafe.de>\n"
+"POT-Creation-Date: 2008-03-26 00:41+0100\n"
+"PO-Revision-Date: 2007-09-23 14:56+0200\n"
+"Last-Translator: bittor from open7x0.org\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Only complete suits are allowed to remove"
+msgstr "Sólo puede eliminar los palos completos"
+
+msgid "No cards left"
+msgstr "No dejó cartas"
+
+msgid "Deal not allowed with empty piles"
+msgstr "Reparto no permitido con montones vacíos"
+
+msgid ""
+"Congratulations!\n"
+"Press OK to start a new game"
+msgstr ""
+"¡Felicidades!\n"
+"Pulse OK para iniciar un nuevo juego"
+
+msgid "Mini (one deck)"
+msgstr "Mini (una baraja)"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Custom"
+msgstr ""
+
+msgid "Shrink height"
+msgstr ""
+
+msgid "Shrink width"
+msgstr ""
+
+msgid "Shrink width and height"
+msgstr ""
+
+msgid "Reduce colors"
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Variation"
+msgstr "Variación"
+
+#. TRANSLATORS: note the leading blank!
+msgid " Deck count"
+msgstr ""
+
+#. TRANSLATORS: note the leading blank!
+msgid " Pile count"
+msgstr ""
+
+#. TRANSLATORS: note the leading blank!
+msgid " Deal count"
+msgstr ""
+
+msgid "OSD position left"
+msgstr ""
+
+msgid "OSD position top"
+msgstr ""
+
+msgid "OSD width"
+msgstr ""
+
+msgid "OSD height"
+msgstr ""
+
+msgid "OSD error compensation"
+msgstr ""
+
+msgid "Hide top row"
+msgstr ""
+
+msgid "Spider Arachnid - the best patience game"
+msgstr "Spider Arachnid - mejor juego paciencia"
+
+msgid "Spider Arachnid"
+msgstr "Spider Arachnid"

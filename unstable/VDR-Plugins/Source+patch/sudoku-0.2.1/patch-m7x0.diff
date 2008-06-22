@@ -1,0 +1,222 @@
+diff -Naur sudoku-0.2.1-orig/i18n.cpp sudoku-0.2.1/i18n.cpp
+--- sudoku-0.2.1-orig/i18n.cpp	2008-04-06 04:01:00.000000000 +0200
++++ sudoku-0.2.1/i18n.cpp	2008-06-21 10:24:28.000000000 +0200
+@@ -89,7 +89,7 @@
+     "", // Norsk / Norwegian
+     "Uusi ristikko", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Generar un nuevo rompecabezas", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -111,7 +111,7 @@
+     "", // Norsk / Norwegian
+     "Lataa ristikko", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Cargar un rompecabezas", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -133,7 +133,7 @@
+     "", // Norsk / Norwegian
+     "Tallenna ristikko", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Guardar el rompecabezas", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -155,7 +155,7 @@
+     "", // Norsk / Norwegian
+     "Tyhjennä ristikko", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Reiniciar el rompecabezas", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -177,7 +177,7 @@
+     "", // Norsk / Norwegian
+     "Asetukset", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Abrir menú de opciones", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -199,7 +199,7 @@
+     "", // Norsk / Norwegian
+     "Poistu", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Salir", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -221,7 +221,7 @@
+     "", // Norsk / Norwegian
+     "Tallennetut ristikot", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Lista Sudoku", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -243,7 +243,7 @@
+     "", // Norsk / Norwegian
+     "Lataa", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Cargar", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -265,7 +265,7 @@
+     "", // Norsk / Norwegian
+     "Takaisin", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Volver", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -287,7 +287,7 @@
+     "", // Norsk / Norwegian
+     "Ristikon tiedot", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Editar lista Sudoku", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -309,7 +309,7 @@
+     "", // Norsk / Norwegian
+     "Kuvaus", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Descripción", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -419,7 +419,7 @@
+     "", // Norsk / Norwegian
+     "Näytä mahdolliset kuviona", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Mostrar posibles números como patrón", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+@@ -441,7 +441,7 @@
+     "", // Norsk / Norwegian
+     "Näytä mahdolliset numeroina", // suomi / Finnish
+     "", // Polski / Polish
+-    "", // Español / Spanish
++    "Mostrar posibles números como dígitos", // Español / Spanish
+     "", // ÅëëçíéêÜ / Greek
+     "", // Svenska / Swedish
+     "", // Românã / Romanian
+diff -Naur sudoku-0.2.1-orig/Makefile sudoku-0.2.1/Makefile
+--- sudoku-0.2.1-orig/Makefile	2008-03-22 03:00:00.000000000 +0100
++++ sudoku-0.2.1/Makefile	2008-06-20 21:54:19.000000000 +0200
+@@ -39,8 +39,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+diff -Naur sudoku-0.2.1-orig/po/es_ES.po sudoku-0.2.1/po/es_ES.po
+--- sudoku-0.2.1-orig/po/es_ES.po	2008-03-22 03:00:00.000000000 +0100
++++ sudoku-0.2.1/po/es_ES.po	2008-06-21 10:23:44.000000000 +0200
+@@ -18,37 +18,37 @@
+ "Content-Transfer-Encoding: 8bit\n"
+ 
+ msgid "Generate a new puzzle"
+-msgstr ""
++msgstr "Generar un nuevo rompecabezas"
+ 
+ msgid "Load a puzzle"
+-msgstr ""
++msgstr "Cargar un rompecabezas"
+ 
+ msgid "Save the puzzle"
+-msgstr ""
++msgstr "Guardar el rompecabezas"
+ 
+ msgid "Reset the puzzle"
+-msgstr ""
++msgstr "Reiniciar el rompecabezas"
+ 
+ msgid "Open setup menu"
+-msgstr ""
++msgstr "Abrir menú de opciones"
+ 
+ msgid "Exit"
+-msgstr ""
++msgstr "Salir"
+ 
+ msgid "Sudoku list"
+-msgstr ""
++msgstr "Lista Sudoku"
+ 
+ msgid "Button$Load"
+-msgstr ""
++msgstr "Cargar"
+ 
+ msgid "Button$Back"
+-msgstr ""
++msgstr "Volver"
+ 
+ msgid "Edit sudoku list"
+-msgstr ""
++msgstr "Editar lista Sudoku"
+ 
+ msgid "Description"
+-msgstr ""
++msgstr "Descripción"
+ 
+ msgid ""
+ "Congratulations!\n"
+@@ -70,10 +70,10 @@
+ msgstr "Marcar números ambiguos"
+ 
+ msgid "Show possible numbers as pattern"
+-msgstr ""
++msgstr "Mostrar posibles números como patrón"
+ 
+ msgid "Show possible numbers as digits"
+-msgstr ""
++msgstr "Mostrar posibles números como dígitos"
+ 
+ msgid "Clear marks on reset"
+ msgstr "Quitar marcas al reiniciar"
+diff -Naur sudoku-0.2.1-orig/tools/Makefile sudoku-0.2.1/tools/Makefile
+--- sudoku-0.2.1-orig/tools/Makefile	2008-03-22 03:00:00.000000000 +0100
++++ sudoku-0.2.1/tools/Makefile	2008-06-21 10:28:39.000000000 +0200
+@@ -33,7 +33,7 @@
+                       ../sudoku.cpp)
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -g -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual
+ DEFINES  += -D_GNU_SOURCE -DVERSION=\"$(VERSION)\"
+ 
+ ifdef STATIC_LINK
+@@ -44,6 +44,10 @@
+     DEFINES += -DWITH_TEST
+ endif
+ 
++### Allow user defined options to overwrite defaults:
++
++-include $(VDRDIR)/Make.config
++
+ ### Targets:
+ 
+ all: $(PROGRAM)

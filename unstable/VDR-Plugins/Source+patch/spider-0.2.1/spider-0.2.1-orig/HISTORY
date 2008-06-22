@@ -1,0 +1,49 @@
+VDR plug-in 'Spider-Arachnid' Revision History
+----------------------------------------------
+
+2005-05-12: Version 0.1.0
+
+- Initial revision.
+
+2005-05-16: Version 0.1.1
+
+- Fixed compilation with woody
+- Improved cover.xpm
+- Reduced flickering on VDR >= 1.3.7
+
+2006-04-25: Version 0.1.2
+
+- Removed compatibility to VDR < 1.3.47.
+- Added support for APIVERSION define in Makefile.
+- Added placeholders for Czech language texts - hoping for real language texts.
+
+2007-02-23: Version 0.1.3
+
+- Added Spanish language texts (thanks to bittor from open7x0.org).
+
+2007-06-23: Version 0.1.4
+
+- Fixed compilation with VDR-1.5.4.
+- Fixed compiler warnings with gcc-4.1.2.
+- Updated FSF address in the license information.
+- Improved copyright and license information in the header of all source files.
+
+2007-09-26: Version 0.2.0
+
+- Renamed *.c files to C++ suffix *.cpp.
+- Added namespaces.
+- Added gettext support (VDR >= 1.5.7).
+- Resume the last game.
+- Customizable width and height.
+- OSD error compensation (shrink width/height or reduce colors).
+- Added setup option to hide the top row.
+- Set normal variation (two decks and 10 piles) as standard, together with
+  "shrink height" and "hide top row".
+- Added user-defined variations.
+- Improved key handling.
+- Updated German language texts.
+
+2008-03-29: Version 0.2.1
+
+- Generating translation files without line numbers.
+- Added Italian language texts (thanks to Diego Pierotto).

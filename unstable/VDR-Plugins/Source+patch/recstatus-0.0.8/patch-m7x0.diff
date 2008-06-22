@@ -1,0 +1,144 @@
+diff -Naur recstatus-0.0.8-orig/i18n-generated.h recstatus-0.0.8/i18n-generated.h
+--- recstatus-0.0.8-orig/i18n-generated.h	2008-02-15 17:58:51.000000000 +0100
++++ recstatus-0.0.8/i18n-generated.h	2008-06-22 12:21:12.000000000 +0200
+@@ -43,7 +43,7 @@
+     "",
+     "Tallennusten tila",
+     "",
+-    "Estado de la grabación",
++    "Estado de la grabación en dispositivos DVB",
+     "",
+     "",
+     "",
+@@ -113,7 +113,7 @@
+     "",
+     "dekooderi",
+     "",
+-    "Decodificador",
++    "dispositivo con decodificador",
+     "",
+     "",
+     "",
+@@ -148,7 +148,7 @@
+     "",
+     "ensisijainen",
+     "",
+-    "Dispositivo principal",
++    "dispositivo principal",
+     "",
+     "",
+     "",
+@@ -253,7 +253,7 @@
+     "",
+     "DVB-kortit",
+     "",
+-    "",
++    "Lista de dispositivos DVB",
+     "",
+     "",
+     "",
+@@ -288,7 +288,7 @@
+     "",
+     "Yhtäaikaisia tallennuksia",
+     "",
+-    "actualmente no hay grabaciones",
++    "Número de grabaciones concurrentes",
+     "",
+     "",
+     "",
+diff -Naur recstatus-0.0.8-orig/Makefile recstatus-0.0.8/Makefile
+--- recstatus-0.0.8-orig/Makefile	2008-02-03 13:06:06.000000000 +0100
++++ recstatus-0.0.8/Makefile	2008-06-20 21:51:20.000000000 +0200
+@@ -16,13 +16,13 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../..
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -40,7 +40,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ 
+ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+ 
+@@ -102,7 +102,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur recstatus-0.0.8-orig/po/es_ES.po recstatus-0.0.8/po/es_ES.po
+--- recstatus-0.0.8-orig/po/es_ES.po	2008-02-03 13:22:26.000000000 +0100
++++ recstatus-0.0.8/po/es_ES.po	2008-06-22 12:12:13.000000000 +0200
+@@ -1,15 +1,15 @@
+ # VDR plugin language source file.
+ # Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+ # This file is distributed under the same license as the VDR package.
+-# Ruben Nunez Francisco <ruben.nunez@tang-it.com>, 2002
++# bittor from open7x0.org <bittor7x0 _at_ gmail.com>, 2008
+ #
+ msgid ""
+ msgstr ""
+ "Project-Id-Version: VDR 1.5.7\n"
+ "Report-Msgid-Bugs-To: <vdr@constabel.net>\n"
+ "POT-Creation-Date: 2008-02-03 13:19+0100\n"
+-"PO-Revision-Date: 2007-08-18 21:11+0200\n"
+-"Last-Translator: Ruben Nunez Francisco <ruben.nunez@tang-it.com>\n"
++"PO-Revision-Date: 2008-06-22 12:10+0200\n"
++"Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
+ "Language-Team: <vdr@linuxtv.org>\n"
+ "MIME-Version: 1.0\n"
+ "Content-Type: text/plain; charset=ISO-8859-15\n"
+@@ -18,7 +18,7 @@
+ #: recstatus.c:14
+ #, fuzzy
+ msgid "Recording status of dvb devices"
+-msgstr "Estado de la grabación"
++msgstr "Estado de la grabación en dispositivos DVB"
+ 
+ #: recstatus.c:15 recstatus.c:83
+ msgid "Recording status"
+@@ -26,11 +26,11 @@
+ 
+ #: recstatus.c:91 recstatus.c:272
+ msgid "device with decoder"
+-msgstr "Decodificador"
++msgstr "dispositivo con decodificador"
+ 
+ #: recstatus.c:91 recstatus.c:272
+ msgid "primary device"
+-msgstr "Dispositivo principal"
++msgstr "dispositivo principal"
+ 
+ #: recstatus.c:93 recstatus.c:273 recstatus.c:308
+ msgid "Device"
+@@ -43,9 +43,9 @@
+ 
+ #: recstatus.c:265
+ msgid "List of DVB devices"
+-msgstr ""
++msgstr "Lista de dispositivos DVB"
+ 
+ #: recstatus.c:303
+ #, fuzzy
+ msgid "Number of concurrent recordings"
+-msgstr "actualmente no hay grabaciones"
++msgstr "Número de grabaciones concurrentes"

@@ -1,0 +1,23 @@
+diff -Naur remotetimers-0.0.2-orig/Makefile remotetimers-0.0.2/Makefile
+--- remotetimers-0.0.2-orig/Makefile	2008-03-28 12:07:34.000000000 +0100
++++ remotetimers-0.0.2/Makefile	2008-06-22 12:39:00.000000000 +0200
+@@ -20,8 +20,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+@@ -104,7 +104,7 @@
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
++	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

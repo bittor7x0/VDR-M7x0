@@ -1,0 +1,97 @@
+# Italian translations for vdr-spider package.
+# Copyright (C) 2007-2008 Thomas Günther <tom@toms-cafe.de>
+# This file is distributed under the same license as the vdr-spider package.
+# Diego Pierotto <vdr-italian@tiscali.it>, 2007.
+#
+# $Id: it_IT.po 128 2008-03-28 22:28:49Z tom $
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-spider 0.2.1\n"
+"Report-Msgid-Bugs-To: <tom@toms-cafe.de>\n"
+"POT-Creation-Date: 2008-03-26 00:41+0100\n"
+"PO-Revision-Date: 2008-03-26 00:41+0100\n"
+"Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Only complete suits are allowed to remove"
+msgstr "Solo i colori completi possono essere rimossi"
+
+msgid "No cards left"
+msgstr "Nessuna carta rimasta"
+
+msgid "Deal not allowed with empty piles"
+msgstr "Operazione non permessa con i mucchi vuoti"
+
+msgid ""
+"Congratulations!\n"
+"Press OK to start a new game"
+msgstr ""
+"Complimenti!\n"
+"Premi OK per iniziare una nuova partita"
+
+msgid "Mini (one deck)"
+msgstr "Mini (un mazzo)"
+
+msgid "Normal"
+msgstr "Normale"
+
+msgid "Custom"
+msgstr "Personalizzata"
+
+msgid "Shrink height"
+msgstr "Ridimensiona altezza"
+
+msgid "Shrink width"
+msgstr "Ridimensiona larghezza"
+
+msgid "Shrink width and height"
+msgstr "Ridimensiona larghezza e altezza"
+
+msgid "Reduce colors"
+msgstr "Riduci colori"
+
+msgid "Reset"
+msgstr "Reimposta"
+
+msgid "Variation"
+msgstr "Variante"
+
+#. TRANSLATORS: note the leading blank!
+msgid " Deck count"
+msgstr " Conteggio mazzo"
+
+#. TRANSLATORS: note the leading blank!
+msgid " Pile count"
+msgstr " Conteggio mucchio"
+
+#. TRANSLATORS: note the leading blank!
+msgid " Deal count"
+msgstr " Conteggio mano"
+
+msgid "OSD position left"
+msgstr "Posizione sinistra OSD"
+
+msgid "OSD position top"
+msgstr "Posizione superiore OSD"
+
+msgid "OSD width"
+msgstr "Larghezza OSD"
+
+msgid "OSD height"
+msgstr "Altezza OSD"
+
+msgid "OSD error compensation"
+msgstr "Compensazione errore OSD"
+
+msgid "Hide top row"
+msgstr "Nascondi riga superiore"
+
+msgid "Spider Arachnid - the best patience game"
+msgstr "Ragno Aracnide - il migliore gioco di pazienza"
+
+msgid "Spider Arachnid"
+msgstr "Ragno Aracnide"

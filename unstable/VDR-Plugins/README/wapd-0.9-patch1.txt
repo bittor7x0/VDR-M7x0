@@ -1,0 +1,151 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Thomas Heiligenmann <thomas@heiligenmann.de>
+
+Project's homepage:          http://vdr.heiligenmann.de/
+
+Latest version available at: http://vdr.heiligenmann.de/download/
+
+See the file ''gpl-2.0.txt'' for license information.
+
+Description:                 This plugin implements remote control per WAP.
+
+------------------------------------------------------------------------------
+
+
+This plugin lets VDR listen to WAP requests to allow remote control by WML
+enabled browsers - eg. mobile devices - and is called "WAP daemon" or "wapd".
+
+The plugin however answers no WAP requests directly - it provides a http
+daemon serving WML content. Normally your mobile device is preconfigured to
+talk to your provider's WAP gateway which will then convert the WAP requests
+into HTTP requests sent via the internet to your VDR box and vice versa.
+
+If you are interested to setup a WAP gateway by yourself have a look at the
+"Open Source WAP and SMS gateway" under http://www.kannel.org/
+
+
+------------------------------------------------------------------------------
+Installation:
+------------------------------------------------------------------------------
+
+The plugin was developed and tested under VDR version 1.4.4. It may compile
+under older 1.4.# versions. Some features are disabled under VDR 1.5.#
+versions and haven't been upgraded yet.
+
+Extract the downloaded file into VDRs plugin source directory and create a
+symlink:
+
+    cd /path/to/VDR/PLUGINS/src
+    tar xzf vdr-wapd-#.#.tgz
+    ln -s wapd-#.# wapd
+
+Compilation is done the usual way by calling ''make plugins'' from the VDR
+source directory. Add the parameter ''-Pwapd'' to load the plugin when
+starting VDR.
+
+
+------------------------------------------------------------------------------
+Files:
+------------------------------------------------------------------------------
+
+The plugin needs 2 files under ''/video/plugins'' (default):
+
+''waphosts'' controls host based access and is similar to ''svdrphosts.conf''
+
+''wapaccess'' controls user based access. The format is similar to apache's
+''htpasswd'' file format and holds lines in the form ''user:passwdhash''.
+Apache's ''htpasswd'' utility can be used to create and edit the ''wapaccess''
+file. You can also take the utility ''wappasswd'' described below.
+
+
+------------------------------------------------------------------------------
+Invocation:
+------------------------------------------------------------------------------
+
+Call
+
+    /path/to/vdr -P"wapd" [...]
+
+to load the plugin. It will listen on port 8888 (default) for incoming
+requests. You can use the command line option ''-p/--port'' to select another
+port:
+
+    /path/to/vdr -P"wapd -p 4711" [...]
+    /path/to/vdr -P"wapd --port=4711" [...]
+
+
+------------------------------------------------------------------------------
+Navigation:
+------------------------------------------------------------------------------
+
+The WML pages sent by the plugin are oriented at VDR's OSD as close as
+possible. Point your WML browser to the following URL:
+
+    http://your-vdr-machine:8888
+
+The start page offers these links:
+
+    1 Schedule
+    2 Channels
+    3 Timers
+    4 Recordings
+    5 Language
+    6 Image
+
+Navigation links to subsequent menus are provided at the bottom of the page.
+"Accesskeys" are supported to make navigation more comfortable:
+    1..9: select list entries
+    *:    selects the previous page in a list
+    #:    selects the next page in a list
+    0:    moves up in menu hierarchy
+  Schedule enty:
+    *:    moves to previous entry
+    #:    moves to next entry
+  Channels:
+    *:    switches to the selected channel
+    #:    saves changes made to the selected channel
+  Timers:
+    *:    toggles the selected timer on/off
+    #:    saves changes made to the selected timer
+  Recordings:
+    *:    moves to previous entry
+    #:    moves to next entry
+
+Paging through lists will loop if "Scroll wraps" is enabled in VDR's OSD
+setup. For each list menu the plugin keeps the last selected page in mind.
+
+If you create/edit a timer VDR will accept the following formats to assign the
+recording date:
+
+    - a single number (1..31) - to define the day within the month
+    - an ISO formatted date string (YYYY-MM-DD) -
+    - VDR's weekday string (MTWTFSS) - to define repeating events
+
+Use ''HHMM'' to define recording start and stop time.
+
+Language settings are the same as selected in the OSD.
+
+Selecting ''Image'' grabs the TV screen and sends a 128x128 jpeg image. Your
+WML browser may be able to show this directly or call an external image
+application (see your mobile phone specs).
+
+------------------------------------------------------------------------------
+Utilities:
+------------------------------------------------------------------------------
+
+After compilation of the plugin you'll also find an executable ''wappasswd''
+in the source directory. It will help maintaining the ''wapaccess'' file and
+you may want to copy it to a directory contained in $PATH.
+
+To create a new ''wapaccess'' file with a new user simply type:
+
+    [/path/to/]wappasswd username password > /video/plugins/wapaccess
+
+To add a new user to ''wapaccess'' type:
+
+    [/path/to/]wappasswd username password >> /video/plugins/wapaccess
+
+To delete a user from ''wapaccess'' use your favourite text editor and remove
+the line ''username:passwordhash''.
+

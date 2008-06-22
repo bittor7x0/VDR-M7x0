@@ -1,0 +1,56 @@
+VDR Plugin 'recstatus' Revision History
+---------------------------------------
+
+2008-02-15: Version 0.0.8
+
+- Now the i18n system should be really 1.4.x compatible.
+
+- Updated languages italien, finnish, french
+
+2008-01-01: Version 0.0.8-beta1
+
+- added SVDRP interface with the following command:
+
+  * RECSTAT
+        Print all devices with there Recordingstats.
+
+  Thanks to Kron from vdrportal.de.
+
+- added SVDRP command RECNUMBER
+
+  * RECNUMBER
+        Print number of concurrent recordings for all devices.
+
+  Thanks to All-Ex from vdrportal.de.
+
+2007-12-31: Version 0.0.7
+
+- added Italian translation, thanks to Diego from vdr-italia.phpbb24.com
+
+2007-12-30: Version 0.0.6
+
+- added finnish translation, thanks to Ville Skyttä
+
+2007-09-03: Version 0.0.5
+
+- full support for new i18n system in vdr>=1.5.7, but also fully backwards
+  compatible. Thanks to Christian Wieninger.
+
+2007-01-15: Version 0.0.4
+
+- added spanish translation, thanks to bittor from open7x0.org
+
+2006-08-31: Version 0.0.3
+
+- updated french translation, thanks to Patrice Staudt
+
+2006-08-31: Version 0.0.2
+
+- display if a device has a decoder and/or is the primary device
+- made changes to Makefile for APIVERSION (VDR >= 1.3.47)
+- made changes for >= vdr-1.3.38
+- added french translation
+
+2005-11-03: Version 0.0.1.beta1
+
+- Initial revision.

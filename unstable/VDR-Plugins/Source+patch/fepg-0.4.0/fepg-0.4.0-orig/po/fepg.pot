@@ -1,0 +1,200 @@
+# VDR plugin language source file.
+# Copyright (C) 2008 Alex Lasnier <alex@fepg.org>
+# This file is distributed under the same license as the fEPG package.
+# Alex Lasnier <alex@fepg.org>, 2008
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: fEPG 0.4.0\n"
+"Report-Msgid-Bugs-To: alex@fepg.org\n"
+"POT-Creation-Date: 2008-02-02 15:02-0500\n"
+"PO-Revision-Date: 2008-02-02 15:02-0500\n"
+"Last-Translator: Alex Lasnier <alex@fepg.org>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "OSD Error"
+msgstr ""
+
+msgid "Grid Color"
+msgstr ""
+
+msgid "Channels Color"
+msgstr ""
+
+msgid "A Graphical EPG"
+msgstr ""
+
+msgid "Not enough OSD memory for PAL mode, using NTSC"
+msgstr ""
+
+msgid "Trying to draw grid with NULL channel. Aborting."
+msgstr ""
+
+msgid "No Info"
+msgstr ""
+
+msgid "Start : "
+msgstr ""
+
+msgid "End : "
+msgstr ""
+
+msgid "Critique"
+msgstr ""
+
+msgid "Rating"
+msgstr ""
+
+msgid "Duration"
+msgstr ""
+
+msgid "Time Left"
+msgstr ""
+
+msgid "Channel"
+msgstr ""
+
+msgid "Cannot switch channels"
+msgstr ""
+
+msgid "Really record this event?"
+msgstr ""
+
+msgid "General Options"
+msgstr ""
+
+msgid "Mute On Open"
+msgstr ""
+
+msgid "Center Info Text"
+msgstr ""
+
+msgid "Hide Main Menu Entry"
+msgstr ""
+
+msgid "Channel Order"
+msgstr ""
+
+msgid "ascending"
+msgstr ""
+
+msgid "descending"
+msgstr ""
+
+msgid "Input Timeout (ms)"
+msgstr ""
+
+msgid "12h"
+msgstr ""
+
+msgid "24h"
+msgstr ""
+
+msgid "Time Format"
+msgstr ""
+
+msgid "Time Interval (min)"
+msgstr ""
+
+msgid "Size and Position"
+msgstr ""
+
+msgid "TV Mode"
+msgstr ""
+
+msgid "Number of Rows"
+msgstr ""
+
+msgid "Number of Columns"
+msgstr ""
+
+msgid "Font Size"
+msgstr ""
+
+msgid "normal"
+msgstr ""
+
+msgid "small"
+msgstr ""
+
+msgid "Setup Display..."
+msgstr ""
+
+msgid "Key Configuration"
+msgstr ""
+
+msgid "Channel Up"
+msgstr ""
+
+msgid "Channel Down"
+msgstr ""
+
+msgid "Scroll Right"
+msgstr ""
+
+msgid "Scroll Left"
+msgstr ""
+
+msgid "Get Info"
+msgstr ""
+
+msgid "Page Up"
+msgstr ""
+
+msgid "Page Down"
+msgstr ""
+
+msgid "Exit"
+msgstr ""
+
+msgid "Select"
+msgstr ""
+
+msgid "Record"
+msgstr ""
+
+msgid "Color Configuration"
+msgstr ""
+
+msgid "Opacity"
+msgstr ""
+
+msgid "Darken background"
+msgstr ""
+
+msgid "Open Color Setup..."
+msgstr ""
+
+msgid "Display Setup"
+msgstr ""
+
+msgid "Unknown"
+msgstr ""
+
+msgid "Ok"
+msgstr ""
+
+msgid "Too Many Areas"
+msgstr ""
+
+msgid "Too Many Colors"
+msgstr ""
+
+msgid "Bpp Not Supported"
+msgstr ""
+
+msgid "Areas Overlap"
+msgstr ""
+
+msgid "Wrong Alignment"
+msgstr ""
+
+msgid "Out Of Memory"
+msgstr ""
+
+msgid "Wrong Area Size"
+msgstr ""

@@ -1,0 +1,199 @@
+# VDR plugin language source file.
+# Copyright (C) 2008 Alex Lasnier <alex@fepg.org>
+# This file is distributed under the same license as the fEPG package.
+# Alex Lasnier <alex@fepg.org>, 2008
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fEPG 0.4.0\n"
+"Report-Msgid-Bugs-To: alex@fepg.org\n"
+"POT-Creation-Date: 2008-02-02 15:02-0500\n"
+"PO-Revision-Date: 2008-02-02 15:02-0500\n"
+"Last-Translator: Alex Lasnier <alex@fepg.org>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "OSD Error"
+msgstr "Erreur OSD"
+
+msgid "Grid Color"
+msgstr "Couleur de la grille"
+
+msgid "Channels Color"
+msgstr "Couleur des chaînes"
+
+msgid "A Graphical EPG"
+msgstr "Affichage graphique de l'EPG"
+
+msgid "Not enough OSD memory for PAL mode, using NTSC"
+msgstr "Mémoire OSD insuffisante pour le mode PAL"
+
+msgid "Trying to draw grid with NULL channel. Aborting."
+msgstr "Chaîne NULL. Incapable de dessiner la grille."
+
+msgid "No Info"
+msgstr "Aucune info"
+
+msgid "Start : "
+msgstr "Début : "
+
+msgid "End : "
+msgstr "Fin : "
+
+msgid "Critique"
+msgstr "Critique"
+
+msgid "Rating"
+msgstr "Classification"
+
+msgid "Duration"
+msgstr "Durée"
+
+msgid "Time Left"
+msgstr "Temps restant"
+
+msgid "Channel"
+msgstr "Chaîne"
+
+msgid "Cannot switch channels"
+msgstr "Impossible de changer de chaîne"
+
+msgid "Really record this event?"
+msgstr "Enregistrer cet événement?"
+
+msgid "General Options"
+msgstr "Options générales"
+
+msgid "Mute On Open"
+msgstr "Coupure du son en ouvrant"
+
+msgid "Center Info Text"
+msgstr "Centrer le texte d'info"
+
+msgid "Hide Main Menu Entry"
+msgstr "Masquer dans le menu principal"
+
+msgid "Channel Order"
+msgstr "Ordre des chaînes"
+
+msgid "ascending"
+msgstr "croissant"
+
+msgid "descending"
+msgstr "décroissant"
+
+msgid "Input Timeout (ms)"
+msgstr ""
+
+msgid "12h"
+msgstr "12h"
+
+msgid "24h"
+msgstr "24h"
+
+msgid "Time Format"
+msgstr "Format horaire"
+
+msgid "Time Interval (min)"
+msgstr "Intervalle horaire (min)"
+
+msgid "Size and Position"
+msgstr "Dimension et position"
+
+msgid "TV Mode"
+msgstr "Format vidéo"
+
+msgid "Number of Rows"
+msgstr "Nombre de lignes"
+
+msgid "Number of Columns"
+msgstr "Nombre de colonnes"
+
+msgid "Font Size"
+msgstr "Taille des caractères"
+
+msgid "normal"
+msgstr "normale"
+
+msgid "small"
+msgstr "petite"
+
+msgid "Setup Display..."
+msgstr "Configurer l'affichage..."
+
+msgid "Key Configuration"
+msgstr "Configuration des touches"
+
+msgid "Channel Up"
+msgstr "Défiler vers le haut"
+
+msgid "Channel Down"
+msgstr "Défiler vers le bas"
+
+msgid "Scroll Right"
+msgstr "Défiler à droite"
+
+msgid "Scroll Left"
+msgstr "Défiler à gauche"
+
+msgid "Get Info"
+msgstr "Voir Info"
+
+msgid "Page Up"
+msgstr "Défiler d'une page vers le haut"
+
+msgid "Page Down"
+msgstr "Défiler d'une page vers le bas"
+
+msgid "Exit"
+msgstr "Revenir en arrière"
+
+msgid "Select"
+msgstr "Sélectionner"
+
+msgid "Record"
+msgstr "Enregistrer"
+
+msgid "Color Configuration"
+msgstr "Configuration des couleurs"
+
+msgid "Opacity"
+msgstr "Opacité"
+
+msgid "Darken background"
+msgstr "Assombrir l'arrière-plan"
+
+msgid "Open Color Setup..."
+msgstr "Configurer les couleurs..."
+
+msgid "Display Setup"
+msgstr "Configuration de l'affichage"
+
+msgid "Unknown"
+msgstr "Inconnu"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid "Too Many Areas"
+msgstr "Trop de régions"
+
+msgid "Too Many Colors"
+msgstr "Trop de couleurs"
+
+msgid "Bpp Not Supported"
+msgstr "Bpp pas supporté"
+
+msgid "Areas Overlap"
+msgstr "Régions superposées"
+
+msgid "Wrong Alignment"
+msgstr "Mauvais alignement"
+
+msgid "Out Of Memory"
+msgstr "Mémoire insuffisante"
+
+msgid "Wrong Area Size"
+msgstr "Région de mauvaise dimensions"

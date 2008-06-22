@@ -1,0 +1,51 @@
+VDR plug-in 'Sudoku' Revision History
+-------------------------------------
+
+2005-10-28: Version 0.1.0
+
+- Initial revision.
+
+2005-11-04: Version 0.1.1
+
+- Fixed compiler warnings with gcc-4.0 (thanks to Ville Skyttä for reporting
+  this).
+- Added Finnish language texts (thanks to Ville Skyttä).
+- Added setup option whether or not all cells are unmarked when the puzzle is
+  reset.
+
+2006-04-25: Version 0.1.2
+
+- Removed compatibility to VDR < 1.3.47.
+- Added support for APIVERSION define in Makefile.
+- Added placeholders for Czech language texts - hoping for real language texts.
+
+2007-02-23: Version 0.1.3
+
+- Added Spanish language texts (thanks to bittor from open7x0.org).
+
+2008-03-22: Version 0.2.0
+
+- Added gettext support (VDR >= 1.5.7).
+- Fixed compiler warnings with gcc-4.1.2.
+- Updated FSF address in the license information.
+- Improved copyright and license information in the header of all source files.
+- Fixed (un)marking the cell on the bottom right.
+- Show possible numbers as pattern.
+- Show possible numbers as digits (VDR >= 1.5.4).
+- Paint numbers with a larger font (VDR >= 1.5.4).
+- Changed the background color of marked cells to darkgreen.
+- Added commands menu.
+- Added commands to load and save puzzles from/to the sudoku-list file.
+- Added setup to commands menu.
+- Fixed height of info window for spanish text.
+- Updated German language texts.
+- Added Italian language texts (thanks to Diego Pierotto).
+- Margined output of text into the info window.
+
+2008-04-06: Version 0.2.1
+
+- Fixed crash after exit command (thanks to Ville Skyttä for reporting this).
+- Updated Finnish language texts (thanks to Ville Skyttä).
+- Updated Italian language texts (thanks to Diego Pierotto).
+- Set default values for "Show possible numbers as pattern/digits" to No,
+  because of problems with DXR3 (thanks to Ville Skyttä for reporting this).

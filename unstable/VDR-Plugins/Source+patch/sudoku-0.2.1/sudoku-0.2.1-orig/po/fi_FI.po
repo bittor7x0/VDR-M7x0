@@ -1,0 +1,88 @@
+# Finnish translations for vdr-sudoku package.
+# Copyright (C) 2007-2008 Thomas Günther <tom@toms-cafe.de>
+# This file is distributed under the same license as the vdr-sudoku package.
+# Ville Skyttä <ville.skytta@iki.fi>, 2005, 2008.
+#
+# $Id: fi_FI.po 125 2008-03-23 13:46:23Z tom $
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-sudoku 0.2.1\n"
+"Report-Msgid-Bugs-To: <tom@toms-cafe.de>\n"
+"POT-Creation-Date: 2008-03-21 13:07+0100\n"
+"PO-Revision-Date: 2008-03-22 13:39+0200\n"
+"Last-Translator: Ville Skyttä <ville.skytta@iki.fi>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Generate a new puzzle"
+msgstr "Uusi ristikko"
+
+msgid "Load a puzzle"
+msgstr "Lataa ristikko"
+
+msgid "Save the puzzle"
+msgstr "Tallenna ristikko"
+
+msgid "Reset the puzzle"
+msgstr "Tyhjennä ristikko"
+
+msgid "Open setup menu"
+msgstr "Asetukset"
+
+msgid "Exit"
+msgstr "Poistu"
+
+msgid "Sudoku list"
+msgstr "Tallennetut ristikot"
+
+msgid "Button$Load"
+msgstr "Lataa"
+
+msgid "Button$Back"
+msgstr "Takaisin"
+
+msgid "Edit sudoku list"
+msgstr "Ristikon tiedot"
+
+msgid "Description"
+msgstr "Kuvaus"
+
+msgid ""
+"Congratulations!\n"
+"Press OK to start a new puzzle"
+msgstr ""
+"Onnittelut!\n"
+"Valitse 'OK' aloittaaksesi uuden ristikon"
+
+msgid "Givens count"
+msgstr "Annettujen numeroiden lukumäärä"
+
+msgid "Symmetric givens"
+msgstr "Järjestä annetut symmetrisesti"
+
+msgid "Mark errors"
+msgstr "Merkitse virheet"
+
+msgid "Mark ambiguous numbers"
+msgstr "Merkitse epävarmat"
+
+msgid "Show possible numbers as pattern"
+msgstr "Näytä mahdolliset kuviona"
+
+msgid "Show possible numbers as digits"
+msgstr "Näytä mahdolliset numeroina"
+
+msgid "Clear marks on reset"
+msgstr "Poista merkinnät aloitettaessa"
+
+msgid "Transparency (%)"
+msgstr "Läpinäkyvyys (%)"
+
+msgid "Sudoku - generate and solve Number Place puzzles"
+msgstr "Sudoku-numeroristikot"
+
+msgid "Sudoku"
+msgstr "Sudoku"

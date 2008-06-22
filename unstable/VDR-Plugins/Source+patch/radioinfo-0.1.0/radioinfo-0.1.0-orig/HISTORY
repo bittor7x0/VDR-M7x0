@@ -1,0 +1,48 @@
+VDR Plugin 'radioinfo' Revision History
+---------------------------------------
+
+2006-05-18: Version 0.0.1
+
+- Initial revision.
+
+
+2006-05-23: Version 0.0.2
+
+- Updated header graphics
+- Main menu entry is no longer displayed
+- Now works on systems with multiple devices
+- No longer showing garbage text on last line (for some providers)
+- Added plugin setup menu
+- Fixed: on some devices the osd did not update properly
+- Channels with no vPID and no aPID no longer cause the plugin to crash
+- Removed some unecessary NULL checks
+- Header text is now properly centered
+
+
+2006-06-29: Version 0.0.3
+
+- The plugin no longer segfaults when the channel is changed by other means
+  than direct user input
+- Fixed some problems that occur when debug messages are turned off
+- Changed default OSD update time to 2 seconds
+
+
+2007-01-15: Version 0.0.4
+
+- Cleaned up device handling
+- Now works with VDR 1.5.0
+
+
+2007-10-24: Version 0.1.0
+
+- Restructured some of the classes
+- Removed some unnecessary string copying in cRadioInfoOsd
+- cRadioInfoFilter is now a singleton
+- Cleaned up source code
+- Many minor fixes and improvements
+- Better multithreading
+- Nicer handling of automatic OSD start (using multilevel OSD introduced
+  in VDR 1.5.10)
+- Changed names of config variables
+
+

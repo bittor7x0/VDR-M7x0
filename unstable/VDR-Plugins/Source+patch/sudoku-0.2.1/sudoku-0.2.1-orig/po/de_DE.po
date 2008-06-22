@@ -1,0 +1,88 @@
+# German translations for vdr-sudoku package.
+# Copyright (C) 2007-2008 Thomas Günther <tom@toms-cafe.de>
+# This file is distributed under the same license as the vdr-sudoku package.
+# Thomas Günther <tom@toms-cafe.de>, 2005, 2008.
+#
+# $Id: de_DE.po 136 2008-04-06 02:01:00Z tom $
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-sudoku 0.2.1\n"
+"Report-Msgid-Bugs-To: <tom@toms-cafe.de>\n"
+"POT-Creation-Date: 2008-03-21 13:07+0100\n"
+"PO-Revision-Date: 2008-03-21 13:07+0100\n"
+"Last-Translator: Thomas Günther <tom@toms-cafe.de>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Generate a new puzzle"
+msgstr "Neues Puzzle erzeugen"
+
+msgid "Load a puzzle"
+msgstr "Puzzle laden"
+
+msgid "Save the puzzle"
+msgstr "Puzzle speichern"
+
+msgid "Reset the puzzle"
+msgstr "Puzzle zurücksetzen"
+
+msgid "Open setup menu"
+msgstr "Einstellungsmenü öffnen"
+
+msgid "Exit"
+msgstr "Beenden"
+
+msgid "Sudoku list"
+msgstr "Sudoku-Liste"
+
+msgid "Button$Load"
+msgstr "Laden"
+
+msgid "Button$Back"
+msgstr "Zurück"
+
+msgid "Edit sudoku list"
+msgstr "Sudoku-Liste bearbeiten"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid ""
+"Congratulations!\n"
+"Press OK to start a new puzzle"
+msgstr ""
+"Herzlichen Glückwunsch!\n"
+"OK startet ein neues Puzzle"
+
+msgid "Givens count"
+msgstr "Anzahl vorgegebener Zahlen"
+
+msgid "Symmetric givens"
+msgstr "Vorgegebene Zahlen symmetrisch anordnen"
+
+msgid "Mark errors"
+msgstr "Fehler markieren"
+
+msgid "Mark ambiguous numbers"
+msgstr "Unklare Zahlen markieren"
+
+msgid "Show possible numbers as pattern"
+msgstr "Mögliche Zahlen als Muster anzeigen"
+
+msgid "Show possible numbers as digits"
+msgstr "Mögliche Zahlen als Ziffern anzeigen"
+
+msgid "Clear marks on reset"
+msgstr "Markierungen löschen beim Reset"
+
+msgid "Transparency (%)"
+msgstr "Transparenz (%)"
+
+msgid "Sudoku - generate and solve Number Place puzzles"
+msgstr "Sudoku - Erzeugen und Lösen von Zahlenpuzzles"
+
+msgid "Sudoku"
+msgstr "Sudoku"

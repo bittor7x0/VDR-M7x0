@@ -1,0 +1,31 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Alex Lasnier <alexlasnier@yahoo.com>
+
+Project's homepage:          http://fepg2.f2g.net
+
+Latest version available at: http://fepg2.f2g.net
+
+See the file COPYING for license information.
+
+
+
+Description
+-----------
+This plugins provides addition information about radio channels 
+through the OSD. It is designed with north american providers in
+mind but will probably work for others as well.
+
+The plugin will automatically launch when a radio channel is detected.
+
+
+Notes
+-----
+- If you often see "No Info" try incresing "Max. retries for info"
+  in the plugin's setup menu
+
+- If you only see "No Info" try turning off "Use quick PID detection"
+
+- As of version 0.1.0 the names of the configuration variables have changed
+  please update your settings
+

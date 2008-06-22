@@ -1,0 +1,144 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Jean-Claude Repetto <jc@repetto.org>, 2001
+# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+# Gregoire Favre <greg@magma.unil.ch>, 2003
+# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2008-02-11 21:43+0100\n"
+"PO-Revision-Date: 2008-02-28 19:29+0100\n"
+"Last-Translator: NIVAL Michaël <mnival@club-internet.fr>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: menu.c:26
+msgid "Transparent"
+msgstr "Transparent"
+
+#: menu.c:27
+msgid "Transparent 50"
+msgstr "Transparent 50"
+
+#: menu.c:28
+msgid "Black"
+msgstr "Noir"
+
+#: menu.c:29
+msgid "Red"
+msgstr "Rouge"
+
+#: menu.c:30
+msgid "Green"
+msgstr "Vert"
+
+#: menu.c:31
+msgid "Yellow"
+msgstr "Jaune"
+
+#: menu.c:32
+msgid "Magenta"
+msgstr "Magenta"
+
+#: menu.c:33
+msgid "Blue"
+msgstr "Bleu"
+
+#: menu.c:34
+msgid "Cyan"
+msgstr "Cyan"
+
+#: menu.c:35
+msgid "White"
+msgstr "Blanc"
+
+#: menu.c:36
+msgid "Gray"
+msgstr "Gris"
+
+#: menu.c:57
+msgid "Size and Position"
+msgstr "Taille et Position"
+
+#: menu.c:58
+msgid "Video Format"
+msgstr "Format Video"
+
+#: menu.c:62
+msgid "General Options"
+msgstr "Options Générales"
+
+#: menu.c:63
+msgid "Hide main menu entry"
+msgstr "Invisible dans le menu principal"
+
+#: menu.c:64
+msgid "Hide help text"
+msgstr "Masquer l'aide contextuelle"
+
+#: menu.c:65
+msgid "Mute on open"
+msgstr "Muet à l'ouverture"
+
+#: menu.c:66
+msgid "Background color"
+msgstr "Couleur de l'arrière plan"
+
+#: menu.c:67
+msgid "Foreground color"
+msgstr "Couleur du premier plan"
+
+#: menu.c:68
+msgid "Line thickness"
+msgstr "Épaisseur de ligne"
+
+#: menu.c:69
+msgid "Gauge"
+msgstr "Gauge"
+
+#: menu.c:73
+msgid "Aspect Ratio"
+msgstr "Aspect Ratio"
+
+#: menu.c:74
+msgid "Show grid"
+msgstr "Afficher la grille"
+
+#: osdadjust.c:15
+msgid "Adjust OSD Size and Position"
+msgstr "Ajuster Taille et Position de l'OSD"
+
+#: osdadjust.c:16
+msgid "OSD adjust"
+msgstr "Ajuster OSD"
+
+#: screenmenu.c:577
+msgid "Press 1-9 to move,"
+msgstr "Presser 1-9 pour déplacer,"
+
+#: screenmenu.c:578
+msgid "Up/Down & Left/Right to resize,"
+msgstr "Haut/Bas & Gauche/Droite pour redimensionner"
+
+#: screenmenu.c:579
+msgid "Ok to save, Back to cancel."
+msgstr "Ok pour sauvegarder, Retour pour annuler."
+
+#: screenmenu.c:586
+msgid "Bottom"
+msgstr "Bouton"
+
+#: screenmenu.c:592
+msgid "Right"
+msgstr "Droite"
+
+#: screenmenu.c:605
+msgid "Width must be a multiple of 8!"
+msgstr "La largeur doit être un multiple de 8 !"
+

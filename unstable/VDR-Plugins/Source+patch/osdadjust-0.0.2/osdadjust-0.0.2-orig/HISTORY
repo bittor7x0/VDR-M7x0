@@ -1,0 +1,11 @@
+VDR Plugin 'osdadjust' Revision History
+----------------------------------
+
+2008-04-07: Version 0.0.2
+- Fixed resetting of OSD size on plugin start
+- 8bit test pattern now work also with vdr-1.4.7
+- Added french translation - thanks to Michaël Nival
+
+2008-02-11: Version 0.0.1
+- Initial revision.
+- New graphical tool to adjust grid size and position on screen.

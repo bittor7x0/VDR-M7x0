@@ -1,0 +1,36 @@
+VDR Plugin 'mlist' Revision History
+-----------------------------------
+
+2006-04-17: Version 0.0.1
+
+- Initial revision.
+
+2006-04-23: Version 0.0.2
+
+- Adapted the Makefile according to the changes in VDR 1.3.47
+- Added backward compatibility to VDR < 1.3.34 (patched by TomG)
+- Added backward compatibility for APIVERSION in Makefile
+- Implemented SVDRP-Commands LSTM (to list messages) and DELM (to clear
+  the list). A VDR with version >= 1.3.31 is required for this
+  
+2006-05-13: Version 0.0.3
+
+- Added a setup option to hide the mainmenu entry
+
+2007-08-19: Version 0.0.4
+
+- Added support for gettext (VDR >= 1.5.7)
+- Added turkish translation
+  (provided by Oktay Yolgecen)
+
+2008-03-02: Version 0.0.5
+
+- Modified support for gettext (VDR >= 1.5.8)
+- Rearranged targets in the makefile
+- Modified cPluginMlist::SVDRPCommand() to avoid compiler complaint
+  "error: conversion from `cString' to `bool' is ambiguous"
+- added italian translation (provided by Diego)
+- removed compatibility for old VDR versions (i18n-handling, UTF8-handling)
+  This is in preparation for a stable plugin release 1.0.0 for VDR 1.6. Please
+  report release-critical bugs as soon as possible. Further, translation 
+  contributions (.po-files) are appreciated.
