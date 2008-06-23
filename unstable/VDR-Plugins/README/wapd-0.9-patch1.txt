@@ -49,7 +49,7 @@ starting VDR.
 Files:
 ------------------------------------------------------------------------------
 
-The plugin needs 2 files under ''/video/plugins'' (default):
+The plugin needs 2 files under ''/video/plugins/wapd'' (default):
 
 ''waphosts'' controls host based access and is similar to ''svdrphosts.conf''
 
