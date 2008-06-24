@@ -33,16 +33,16 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc -o ! -f /rw-flash/.nodebug ]; then
     
     /usr/sbin/avswctl -tv fbas
     /bin/echo "Enter osd debugging mode" |  /usr/bin/osddrrawtext -a 8 -c 1 -b 0xFFFF0000
-    source /etc/rc.debug    
+    source /etc/rc.debug
 fi
 
-# Factory reset 
+# Factory reset
 echo -n "Factory reset: "
 if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
 	[ -f /rw-flash/etc/flash_content ] && mv /rw-flash/etc/flash_content \
 		/var/tmp/flash_content.etc
 	if [ ${SYSTEMTYPE} = m740 ] ; then
-		cp /rw-flash/flash_content /var/tmp 
+		cp /rw-flash/flash_content /var/tmp
 		rm -rf /rw-flash/* /rw-flash/.[a-zA-Z1-9]*
 		mv /var/tmp/flash_content /rw-flash
 	fi
@@ -59,30 +59,30 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
 	mkdir /rw-flash/log
 	[ -f /var/tmp/flash_content.etc ] && mv /var/tmp/flash_content.etc \
 		/rw-flash/etc/flash_content
-	echo "Done" 
+	echo "Done"
 else
-	echo "Skipped" 
+	echo "Skipped"
 fi
 
 # mount pts
-echo -n 'Mounting /dev/pts ... '
+echo -n "Mounting /dev/pts ... "
 mount -t devpts devpts /dev/pts
-echo 'Done' 
+echo "Done"
 
 # mount var
-echo -n "Mounting /var ... " 
-mount -n -t tmpfs tmpfs /var 
+echo -n "Mounting /var ... "
+mount -n -t tmpfs tmpfs /var
 mkdir -p /var/tmp /var/run /var/log /var/media /var/lock
 touch /var/media/.ignore
 
 chmod 1777 /var/tmp
 chmod 755 /var/run /var/log /var/media /var/lock
-echo "Done" 
+echo "Done"
 
 echo -n "Binding /etc ... "
 mount -o bind /rw-flash/etc /etc
-echo "Done" 
+echo "Done"
 
-[ -f /etc/rc ] && ash /etc/rc 
+[ -f /etc/rc ] && ash /etc/rc
 
 exit 0

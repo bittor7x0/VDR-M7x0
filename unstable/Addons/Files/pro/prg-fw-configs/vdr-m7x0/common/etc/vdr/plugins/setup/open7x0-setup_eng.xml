@@ -119,6 +119,9 @@
             <entry name="Enabled" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="YES" help1="Enable boot menu" />
             <entry name="Default option" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Default option" />
         </menu>
+        <menu name="Debug">
+            <entry name="Show OSD messages" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Show debug messages in OSD at startup" />
+        </menu>
         <menu name="Parental control">
             <entry name="Secret code (0000=DIS)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" />
         </menu>

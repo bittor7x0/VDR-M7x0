@@ -98,8 +98,9 @@
             <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="300" help1="Tiempo de inactividad para detener el disco duro USB" />
             <entry name="Activar swap" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Activar swap en partición. Ej.: /dev/sdb2 (Sólo 1 dispositivo)" />
         </menu>
-        <menu name="Servicios">
+        <menu name="Depuración">
             <entry name="Activar servicio syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="Registro del sistema. Dejarlo vacío para activarlo" />
+            <entry name="Mostrar mensajes en OSD" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Mostrar en el OSD la info de procesos al arrancar" />
         </menu>
         <menu name="Control parental">
             <entry name="Código secreto (0000=DES)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" help1="Código para proteger el acceso a la configuración del FW" />

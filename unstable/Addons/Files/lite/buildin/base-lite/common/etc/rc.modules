@@ -9,7 +9,7 @@ if [ X"${OSDLOG}" != X"YES" ]; then
     /usr/sbin/pic_tool led link on led outer on
     insmod /lib/modules/2.4.21-xfs/tainted/emma_osd.o
     insmod /lib/modules/2.4.21-xfs/tainted/emma_av.o
-    insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000    
+    insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000
 else
     source /etc/rc.debug
 fi

@@ -99,8 +99,9 @@
             <entry name="Inactivity time" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Inactivity time to stop USB Hard disk" />
             <entry name="Enable SWAP" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Enable swap in partition. Ex.: /dev/sdb2. Only 1 device" />
         </menu>
-        <menu name="Services">
+        <menu name="Debug">
             <entry name="Enable syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="System log daemon" />
+            <entry name="Show OSD messages" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Show debug messages in OSD at startup" />
         </menu>
         <menu name="Parental control">
             <entry name="Secret code (0000=DIS)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" />
