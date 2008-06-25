@@ -6,7 +6,6 @@ if [ X"${OSDLOG}" != X"YES" ]; then
     insmod /lib/modules/2.4.21-xfs/tainted/emma_bios.o
     insmod /lib/modules/2.4.21-xfs/tainted/iic_int.o
     insmod /lib/modules/2.4.21-xfs/tainted/pic16f73.o
-    /usr/sbin/pic_tool led link on led outer on
     insmod /lib/modules/2.4.21-xfs/tainted/emma_osd.o
     insmod /lib/modules/2.4.21-xfs/tainted/emma_av.o
     insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000
