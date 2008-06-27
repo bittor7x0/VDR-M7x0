@@ -1,6 +1,7 @@
 #!/bin/ash
 
-# Load DV-Modules 
+# Load DV-Modules
+
 if [ X"${OSDLOG}" != X"YES" ]; then
     insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
     insmod /lib/modules/2.4.21-xfs/tainted/emma_bios.o
@@ -28,7 +29,7 @@ if [ X"${OSDLOG}" = X"YES" ]; then
     /usr/sbin/avswctl -tv fbas
 fi
 
-#select tuner 
+# select tuner
 
 if  [ ${SYSTEMTYPE} = m750s ] ; then
 	insmod /lib/modules/2.4.21-xfs/tainted/tda10086.o TDA10086_NO_PRINT=1

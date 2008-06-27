@@ -44,20 +44,8 @@ if [ X"${gateway}" != X"NO" ]; then
     echo "Done"
 fi
 
-db_key=/etc/dropbear/dropbear_dss_host_key
-[ ! -f $db_key ] && dropbearkey -t dss -f $db_key
-
-db_key=/etc/dropbear/dropbear_rsa_host_key
-[ ! -f $db_key ] && dropbearkey -t rsa -f $db_key
-
-echo -n "standard daemons:"
-
-if [ X"${inetd}" != X"NO" ]; then
-    echo "inetd";		inetd /etc/inetd.conf
-fi
-
 if [ X"${lircd_flags}" != X"NO" ]; then
-    echo "lircd";		lircd ${lircd_flags}
+    echo "lircd daemon";		lircd ${lircd_flags}
 fi
 
 [ -f /etc/rc.local ] && ash /etc/rc.local

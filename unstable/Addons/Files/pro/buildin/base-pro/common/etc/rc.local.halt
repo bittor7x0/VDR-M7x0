@@ -5,12 +5,14 @@ echo -n 'stopping local stuff:'
 
 # put optional stuff after
 
-if [ X"${webif_start}" != X"NO" ]; then
-    echo -n ' stoping webif'
-    killall webifd
-fi
+
 
 # put optional stuff before
+
+if [ X"${webif_start}" != X"NO" ]; then
+    echo -n ' stopping webif'
+    killall webifd
+fi
 
 for bpath in ${bind_paths} ; do
         echo -n " Umount binding ${bpath}"
@@ -34,7 +36,6 @@ if [ X"${runvdr}" != X"NO" ]; then
      export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
 fi
 
-# Swapoff
 if [ X"${hd_swap_dev}" != X"NO" ] ; then
     echo -n ' Swapoff'
     /sbin/swapoff ${hd_swap_dev}
@@ -46,16 +47,15 @@ if [ X"${do_usb_mount}" != X"NO" ] ; then
     /sbin/usbautomounter umount
 fi
 
+if [ X"${hd_spindown_dev}" != X"NO" ] ; then
+    echo -n ' starting scsi-spin'
+    /usr/sbin/scsi-spin -d -f ${hd_spindown_dev}
+fi
+
 if [ X"${osddebug}" != X"NO" ] ; then
     [ -f /rw-flash/.nodebug ] && rm /rw-flash/.nodebug
 else
     touch /rw-flash/.nodebug
-fi
-
-# Spindown hd
-if [ X"${hd_spindown_dev}" != X"NO" ] ; then
-    echo -n ' starting scsi-spin'
-    /usr/sbin/scsi-spin -d -f ${hd_spindown_dev}
 fi
 
 echo ' '

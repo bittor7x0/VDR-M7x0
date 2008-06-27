@@ -4,12 +4,6 @@
 
 echo -n 'starting local stuff:'
 
-# Swap
-if [ X"${hd_swap_dev}" != X"NO" ] ; then
-    echo -n ' setting up swap'
-    /sbin/swapon ${hd_swap_dev}
-fi
-
 if [ X"${do_usb_mount}" != X"NO" ] ; then
 	echo -n ' usb-mount'
 	ln -sf /sbin/usbautomounter /var/tmp/hotplug
@@ -23,16 +17,15 @@ fi
 
 if [ X"${bootmenu_start}" != X"NO" ] ; then
     alarm=`cat /etc/bootmenu/next_alarm`
-#    logger awk '{print strftime("%F %T",${alarm})}'
 
     if [ ${alarm} -eq 0 ] ; then
-        pic_tool -s alarm clear
+        pic_tool alarm clear
     else
-        pic_tool -s alarm set $(( ${alarm} - ${vdr_startup_time} ))
+        pic_tool alarm set $(( ${alarm} - ${vdr_startup_time} ))
     fi
 
     echo -n ' bootmenu'
-    export VDR_TV_MODE=${bootmenu_video_mode}
+    export VDR_TV_MODE=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
     `/usr/bin/bootmenu -s ${bootmenu_default} ${bootmenu_config}` &
 else
     if [ X"${runvdr}" != X"NO" ]; then
@@ -42,6 +35,15 @@ else
     fi
 fi
 
+db_key=/etc/dropbear/dropbear_dss_host_key
+[ ! -f $db_key ] && /usr/sbin/dropbearkey -t dss -f $db_key
+
+db_key=/etc/dropbear/dropbear_rsa_host_key
+[ ! -f $db_key ] && /usr/sbin/dropbearkey -t rsa -f $db_key
+
+if [ X"${inetd}" != X"NO" ]; then
+    echo "inetd";		inetd /etc/inetd.conf
+fi
 
 if [ X"${webif_start}" != X"NO" ]; then
     echo -n ' starting webif'
@@ -53,7 +55,11 @@ for bpath in ${bind_paths} ; do
 	mount -o bind /rw-flash${bpath} ${bpath}
 done
 
-# Spindown HD
+if [ X"${hd_swap_dev}" != X"NO" ] ; then
+    echo -n ' setting up swap'
+    /sbin/swapon ${hd_swap_dev}
+fi
+
 if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X"NO" ] ; then
     echo -n ' starting spindown'
     /usr/sbin/spindown -d ${hd_spindown_time} +${hd_spindown_dev}
