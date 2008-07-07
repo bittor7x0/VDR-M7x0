@@ -5,7 +5,7 @@ diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk uclibc_build_env/
  VDR-PLUGINS_DEPS = $(BASE_BUILD_STAGEFILE) $(VDR_INSTALLED) $(TOP_DIR)/.config
  
  VDR-PLUGINS_SVN_URL := svn://open7x0.org/vdr-m7x0-PLUGINS
-+VDR-PLUGINS_EXTRA_SVN_URL := http://svn2.assembla.com/svn/VDR-M7x0/unstable/VDR-Plugins/Source+patch
++VDR-PLUGINS_EXTRA_SVN_URL := http://svn.assembla.com/svn/VDR-M7x0/unstable/VDR-Plugins/Source+patch
  VDR-PLUGINS_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS
 +VDR-PLUGINS_EXTRA_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS-extra
  VDR-PLUGINS_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/common

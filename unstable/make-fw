@@ -27,7 +27,7 @@ vdr_em_delete="$vdr_em_addons/Delete"
 vdr_em_plugins="$BASE/VDR-Plugins/Source+patch"
 
 # SVN branch from assembla VDR-EM
-svn_em="http://svn2.assembla.com/svn/VDR-M7x0/unstable"
+svn_em="http://svn.assembla.com/svn/VDR-M7x0/unstable"
 
 # SVN branches from open7x0.org
 svn_o7o="svn://open7x0.org/uclibc_build_env/branches/experimental"
