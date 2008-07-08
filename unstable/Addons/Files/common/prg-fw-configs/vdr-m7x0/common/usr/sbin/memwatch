@@ -1,0 +1,97 @@
+#!/bin/ash
+# (c) Lemmi, m740av (at) cle-mens.de, 2007-01-27, GPL2
+# Adapted to VDR-NG with ash shell by bittor
+
+def_time=60 # in minutes
+STAT="MEMSTAT in KB: tot=%5d, free=%5d, cached=%5d, used=%5d, act=%5d, inact=%5d"
+
+if [ $# = 4 ] && [ $1 = "--doit" ] && [ -d "$2" ] && [ $3 = "--time" ]
+then
+    echo "${0##*/}: START: log every $4 sec into $2"
+    PS="ps fvax"
+    [ -h /bin/ps ] && PS="ps" # busybox ps
+    while true
+    do
+	log="$2/`date '+%F-%H%M'`.log"
+	{
+	    eval `awk ' /^[A-Z]/ { printf("%s=%s\n",gensub(/:/,"",g,$1),$2) }' /proc/meminfo`
+	    printf "\n${STAT}\n" \
+		${MemTotal} ${MemFree} ${Cached} $((MemTotal-MemFree-Cached)) ${Active} ${Inactive}
+
+	    echo -e "\n/proc/meminfo"
+	    cat /proc/meminfo
+
+	    echo -e "\n/proc/modules"
+	    cat /proc/modules
+
+	    echo -e "\n/proc/slabinfo"
+	    cat /proc/slabinfo
+
+	    echo -e "\ndf"
+	    df -h /var
+
+	    echo -e "\nps"
+	    ${PS}
+	} > "${log}"
+
+	let date=`date +%s`
+	let wait=$(($4-(date+$4)%$4))
+	sleep ${wait}
+    done
+fi
+
+if [ $# != 1 ] && [ $# != 2 ]
+then
+    echo "usage: ${0##*/} -s|-1|-c [sleep_minutes]" >&2
+    echo "   or: ${0##*/} log_directory [sleep_minutes]  (def=${def_time} min)" >&2
+    exit 1
+fi
+
+time=${def_time}
+[ $2 != "" ] && let time=$2
+
+if [ $1 = "-c" ]
+then
+    last=""
+    while true
+    do
+	eval `awk ' /^[A-Z]/ { printf("%s=%s\n",gensub(/:/,"",g,$1),$2) }' /proc/meminfo`
+	if [ ${last} != "${MemFree},${Cached}" ]
+	then
+	    last="${MemFree},${Cached}"
+	    printf "`date +%T`: ${STAT}\n" \
+		${MemTotal} ${MemFree} ${Cached} $((MemTotal-MemFree-Cached)) ${Active} ${Inactive}
+	fi
+	sleep 3
+    done
+fi
+
+if [ $1 = "-s" ] || [ $1 = "-1" ]
+then
+    let time=60*time
+    while true
+    do
+	eval `awk ' /^[A-Z]/ { printf("%s=%s\n",gensub(/:/,"",g,$1),$2) }' /proc/meminfo`
+	printf "`date +%T`: ${STAT}\n" \
+		${MemTotal} ${MemFree} ${Cached} $((MemTotal-MemFree-Cached)) ${Active} ${Inactive}
+
+	[ $1 = "-s" ] || exit 0
+
+	let date=`date +%s`
+	let wait=$((${time}-(date+${time})%${time}))
+	sleep ${wait}
+    done
+fi
+
+if [ ! -d "$1" ]
+then
+    echo "${0##*/}: not a directory: log_directory" >&2
+    exit 1
+fi
+
+
+echo "${0##*/}: START: log every ${time} min into $1"
+let time=60*time
+ 
+nohup "$0" --doit "$1" --time ${time} >"$1/${0##*/}.log" 2>&1 &
+echo $! >"/var/run/${0##*/}.pid"

@@ -31,6 +31,12 @@ if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X"NO" ] ; t
     /usr/sbin/spindown -d ${hd_spindown_time} +${hd_spindown_dev}
 fi
 
+if [ X"${memwatch}" != X"NO" ] && [ -d ${memwatch_dir} ] ; then
+    memwatch_dest="${memwatch_dir}/`date +%F-%H%M`"
+    mkdir -p ${memwatch_dest}
+    /usr/sbin/memwatch "${memwatch_dest}" ${memwatch_interval}
+fi
+
 
 # put here your optional stuff
 

@@ -120,6 +120,9 @@
         </menu>
         <menu name="Depuración">
             <entry name="Mostrar mensajes en OSD" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Mostrar en el OSD la info de procesos al arrancar" />
+            <entry name="Monitor de memoria" sysconfig="rc.local.conf--memwatch" type="bool" value="NO" help1="Guardar registros del uso de memoria" />
+            <entry name="Mon. memoria - Intervalo" sysconfig="rc.local.conf--memwatch_interval" type="number" value="60" help1="Intervalo de minutos en el que guardar registros de memoria" />
+            <entry name="Mon. memoria - Directorio" sysconfig="rc.local.conf--memwatch_dir" type="text" value='&quot;/var/media/disk-volume-0/memwatch&quot;' help1="Directorio donde guardar los registros de memoria" />
         </menu>
         <menu name="Control parental">
             <entry name="Código secreto (0000=DES)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" help1="Código para proteger el acceso a la configuración del FW" />
