@@ -1,0 +1,24 @@
+diff -Naur usbautomounter-orig/usbautomounter.c usbautomounter/usbautomounter.c
+--- usbautomounter-orig/usbautomounter.c	2008-02-14 22:04:04.000000000 +0100
++++ usbautomounter/usbautomounter.c	2008-07-12 15:55:44.000000000 +0200
+@@ -663,8 +663,7 @@
+ 					(part->tab_entry->mounter_flags & (VOL_UNCLEAN_MOUNTED | VOL_UNCLEAN))) {
+ 				part->flags |= PART_FS_UNCLEAN;
+ 			}
+-			if ((part->flags & (PART_FS_UNCLEAN | PART_FS_HAS_ERROR |
+-					PART_FS_MOUNT_INTERVAL)) && !part->dev_mounted) {
++			if ((part->flags & (PART_FS_UNCLEAN | PART_FS_HAS_ERROR)) && !part->dev_mounted) {
+ 				handle_fsck_case(cont, part);
+ 			}
+ 
+@@ -759,6 +758,10 @@
+ 	part = cont->part_list.first;
+ 	while (part) {
+ 		struct partition *tmp_part = part->next;
++		if ((part->flags & PART_FS_MOUNT_INTERVAL) && !part->dev_mounted) {
++			handle_fsck_case(cont, part);
++		}
++
+ 		if ((part->flags & PART_FS_CLEAN_UNKNOWN) &&
+ 				(part->tab_entry->mounter_flags & VOL_UNCLEAN)) {
+ 			part->tab_entry->mounter_flags &= ~VOL_UNCLEAN;
