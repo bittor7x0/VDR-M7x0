@@ -38,8 +38,8 @@ diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
    int LircRepeatDelay;
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 --- VDR-NG-orig/i18n.c	2008-07-13 10:48:55.000000000 +0200
-+++ VDR-NG/i18n.c	2008-07-13 11:02:23.000000000 +0200
-@@ -5092,6 +5092,27 @@
++++ VDR-NG/i18n.c	2008-07-13 13:53:24.000000000 +0200
+@@ -5092,6 +5092,48 @@
      "som før",
      "jako naposledy",
    },
@@ -54,6 +54,27 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "Mostrar mensaje cancelar al apagar",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Shutdowning VDR",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Apagando el VDR",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -80,12 +101,13 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Lirc repeat delay"),          &data.LircRepeatDelay, 0, 1000));
 diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
 --- VDR-NG-orig/vdr.c	2008-07-13 10:48:55.000000000 +0200
-+++ VDR-NG/vdr.c	2008-07-13 12:46:39.000000000 +0200
-@@ -1142,6 +1142,12 @@
++++ VDR-NG/vdr.c	2008-07-13 13:52:46.000000000 +0200
+@@ -1142,6 +1142,13 @@
  		    cControl::Shutdown();
  		    break;
  		}
 +		if(!Setup.ShutdownMessage){
++		    Skins.Message(mtInfo, tr("Shutdowning VDR"));
 +		    ShutdownHandler.DoShutdown(true);
 +		    ShutdownHandler.SetUserInactive();
 +		    ShutdownHandler.SetRetry(SHUTDOWNRETRY);
