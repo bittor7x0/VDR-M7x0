@@ -15,7 +15,7 @@ fi
 if [[ ! -d "$vdr" ]]
 then
 	echo "CHECKOUT: $vdr"
-	svn checkout -r 253 -q "svn://open7x0.org/vdr-m7x0/branches/gambler-unstable" "$vdr"
+	svn checkout -r 254 -q "svn://open7x0.org/vdr-m7x0/branches/gambler-unstable" "$vdr"
 fi
 
 # Patching VDR
