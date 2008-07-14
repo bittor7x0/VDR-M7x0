@@ -1,6 +1,6 @@
 diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
---- VDR-NG-orig/config.c	2008-07-13 10:48:55.000000000 +0200
-+++ VDR-NG/config.c	2008-07-13 11:05:58.000000000 +0200
+--- VDR-NG-orig/config.c	Mon Jul 14 08:59:55 2008
++++ VDR-NG/config.c	Mon Jul 14 09:00:26 2008
 @@ -335,6 +335,7 @@
    JumpSeconds = 60;
    JumpSecondsRepeat = 120;
@@ -26,8 +26,8 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    Store("ExitOnFailure",      ExitOnFailure);
    Store("LircRepeatDelay",    LircRepeatDelay);
 diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
---- VDR-NG-orig/config.h	2008-07-13 10:48:55.000000000 +0200
-+++ VDR-NG/config.h	2008-07-13 11:06:14.000000000 +0200
+--- VDR-NG-orig/config.h	Mon Jul 14 08:59:55 2008
++++ VDR-NG/config.h	Mon Jul 14 09:00:26 2008
 @@ -292,6 +292,7 @@
    int RecordingsSortMode;
    int RecordingsSortDirsFirst;
@@ -37,8 +37,8 @@ diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
    int ExitOnFailure;
    int LircRepeatDelay;
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
---- VDR-NG-orig/i18n.c	2008-07-13 10:48:55.000000000 +0200
-+++ VDR-NG/i18n.c	2008-07-13 13:53:24.000000000 +0200
+--- VDR-NG-orig/i18n.c	Mon Jul 14 08:59:55 2008
++++ VDR-NG/i18n.c	Mon Jul 14 09:00:26 2008
 @@ -5092,6 +5092,48 @@
      "som før",
      "jako naposledy",
@@ -89,8 +89,8 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Abbrechen wenn Plugin nicht lädt",
      "",// TODO
 diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
---- VDR-NG-orig/menu.c	2008-07-13 10:48:55.000000000 +0200
-+++ VDR-NG/menu.c	2008-07-13 11:02:33.000000000 +0200
+--- VDR-NG-orig/menu.c	Mon Jul 14 08:59:56 2008
++++ VDR-NG/menu.c	Mon Jul 14 09:00:27 2008
 @@ -3255,6 +3255,7 @@
    Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
    Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
@@ -100,19 +100,24 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Exit on video stream failure"), &data.ExitOnFailure));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Lirc repeat delay"),          &data.LircRepeatDelay, 0, 1000));
 diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
---- VDR-NG-orig/vdr.c	2008-07-13 10:48:55.000000000 +0200
-+++ VDR-NG/vdr.c	2008-07-13 13:52:46.000000000 +0200
-@@ -1142,6 +1142,13 @@
- 		    cControl::Shutdown();
- 		    break;
- 		}
-+		if(!Setup.ShutdownMessage){
-+		    Skins.Message(mtInfo, tr("Shutdowning VDR"));
-+		    ShutdownHandler.DoShutdown(true);
-+		    ShutdownHandler.SetUserInactive();
-+		    ShutdownHandler.SetRetry(SHUTDOWNRETRY);
-+		    break;
-+		}
-                 // Check for activity, request power button again if active:
-                 //if (!ShutdownHandler.ConfirmShutdown(false) && Skins.Message(mtWarning, tr("VDR will shut down later - press Power to force"), SHUTDOWNFORCEPROMPT) != kPower) {
-                 if (!ShutdownHandler.ConfirmShutdown(false)){
+--- VDR-NG-orig/vdr.c	Mon Jul 14 08:59:54 2008
++++ VDR-NG/vdr.c	Mon Jul 14 09:03:55 2008
+@@ -1151,6 +1151,7 @@
+                    ShutdownHandler.SetUserInactive();
+                    break;
+                    }
++		   if(Setup.ShutdownMessage){
+                 // No activity or power button pressed twice - ask for confirmation:
+                 if (!ShutdownHandler.ConfirmShutdown(true)) {
+                    // Non-confirmed background activity - set VDR to be non-interactive and power down later:
+@@ -1161,6 +1162,10 @@
+                 if (!Interface->Confirm(tr("Press any key to cancel shutdown"), SHUTDOWNCANCELROMPT, true))
+                    // If final question was canceled, continue to be active:
+                    break;
++		   }
++		   else
++                Skins.Message(mtInfo, tr("Shutdowning VDR"));
++
+                 // Ok, now call the shutdown script:
+                 ShutdownHandler.DoShutdown(true);
+                 // Set VDR to be non-interactive and power down again later:
