@@ -4,7 +4,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
 @@ -341,6 +341,9 @@
    JumpFramesRepeat = 15;
    AbortWhenPluginFails = 0;
-   ExitOnFailure = 1;
+   EmergencyExit = 1;
 +  LircRepeatDelay = 350;
 +  LircRepeatFreq = 100;
 +  LircRepeatTimeout = 500;
@@ -14,7 +14,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
 @@ -532,6 +535,9 @@
    else if (!strcasecmp(Name, "JumpFramesRepeat"))    JumpFramesRepeat   = atoi(Value);
    else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
-   else if (!strcasecmp(Name, "ExitOnFailure"))       ExitOnFailure      = atoi(Value);
+   else if (!strcasecmp(Name, "EmergencyExit"))       EmergencyExit      = atoi(Value);
 +  else if (!strcasecmp(Name, "LircRepeatDelay"))     LircRepeatDelay    = atoi(Value);
 +  else if (!strcasecmp(Name, "LircRepeatFreq"))      LircRepeatFreq     = atoi(Value);
 +  else if (!strcasecmp(Name, "LircRepeatTimeout"))   LircRepeatTimeout  = atoi(Value);
@@ -24,7 +24,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
 @@ -630,6 +636,9 @@
    Store("JumpFramesRepeat",   JumpFramesRepeat);
    Store("AbortWhenPluginFails", AbortWhenPluginFails);
-   Store("ExitOnFailure",      ExitOnFailure);
+   Store("EmergencyExit",      EmergencyExit);
 +  Store("LircRepeatDelay",    LircRepeatDelay);
 +  Store("LircRepeatFreq",     LircRepeatFreq);
 +  Store("LircRepeatTimeout",  LircRepeatTimeout);
@@ -37,7 +37,7 @@ diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
 @@ -298,6 +298,9 @@
    int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
    int AbortWhenPluginFails;
-   int ExitOnFailure;
+   int EmergencyExit;
 +  int LircRepeatDelay;
 +  int LircRepeatFreq;
 +  int LircRepeatTimeout;
@@ -51,7 +51,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "",// TODO
      "",// TODO
    },
-+  { "Setup.Miscellaneous$Lirc repeat delay",
++  { "Setup.Miscellaneous$LIRC repeat delay",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -61,28 +61,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-+    "Lirc repetir retraso",
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+  },
-+  { "Setup.Miscellaneous$Lirc repeat freq",
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "Lirc repetir frecuencia",
++    "LIRC repetir retraso",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -93,7 +72,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +  },
-+  { "Setup.Miscellaneous$Lirc repeat timeout",
++  { "Setup.Miscellaneous$LIRC repeat freq",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -103,7 +82,28 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-+    "Lirc repetir tiempo de espera",
++    "LIRC repetir frecuencia",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.Miscellaneous$LIRC repeat timeout",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "LIRC repetir tiempo de espera",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -166,10 +166,10 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
 @@ -3282,6 +3282,9 @@
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
    Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Abort when Plugin fails to load"), &data.AbortWhenPluginFails));
-   Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Exit on video stream failure"), &data.ExitOnFailure));
-+  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Lirc repeat delay"),          &data.LircRepeatDelay, 0, 1000));
-+  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Lirc repeat freq"),           &data.LircRepeatFreq, 0, 1000));
-+  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Lirc repeat timeout"),        &data.LircRepeatTimeout, 0, 5000));
+   Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Emergency exit"),             &data.EmergencyExit));
++  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat delay"),          &data.LircRepeatDelay, 0, 1000));
++  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat freq"),           &data.LircRepeatFreq, 0, 1000));
++  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat timeout"),        &data.LircRepeatTimeout, 0, 5000));
  }
  
  // --- cMenuSetupPluginItem --------------------------------------------------

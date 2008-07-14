@@ -1,49 +1,49 @@
 diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
---- VDR-NG-orig/config.c	2008-04-17 10:27:01.000000000 +0200
-+++ VDR-NG/config.c	2008-04-17 11:03:02.000000000 +0200
-@@ -340,6 +340,7 @@
+--- VDR-NG-orig/config.c	Mon Jul 14 09:09:56 2008
++++ VDR-NG/config.c	Mon Jul 14 09:14:46 2008
+@@ -336,6 +336,7 @@
    JumpSecondsRepeat = 120;
    JumpFramesRepeat = 15;
    AbortWhenPluginFails = 0;
-+  ExitOnFailure = 1;
++  EmergencyExit = 1;
  }
  
  cSetup& cSetup::operator= (const cSetup &s)
-@@ -530,6 +531,7 @@
+@@ -522,6 +523,7 @@
    else if (!strcasecmp(Name, "JumpSecondsRepeat"))   JumpSecondsRepeat  = atoi(Value);
    else if (!strcasecmp(Name, "JumpFramesRepeat"))    JumpFramesRepeat   = atoi(Value);
    else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
-+  else if (!strcasecmp(Name, "ExitOnFailure"))       ExitOnFailure      = atoi(Value);
++  else if (!strcasecmp(Name, "EmergencyExit"))       EmergencyExit      = atoi(Value);
    else
       return false;
    return true;
-@@ -627,6 +629,7 @@
+@@ -615,6 +617,7 @@
    Store("JumpSecondsRepeat",  JumpSecondsRepeat);
    Store("JumpFramesRepeat",   JumpFramesRepeat);
    Store("AbortWhenPluginFails", AbortWhenPluginFails);
-+  Store("ExitOnFailure",      ExitOnFailure);
++  Store("EmergencyExit",      EmergencyExit);
  
    Sort();
  
 diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
---- VDR-NG-orig/config.h	2008-04-17 10:27:01.000000000 +0200
-+++ VDR-NG/config.h	2008-04-17 10:44:33.000000000 +0200
-@@ -297,6 +297,7 @@
+--- VDR-NG-orig/config.h	Mon Jul 14 09:09:56 2008
++++ VDR-NG/config.h	Mon Jul 14 09:14:51 2008
+@@ -293,6 +293,7 @@
    int RecordingsSortDirsFirst;
    int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
    int AbortWhenPluginFails;
-+  int ExitOnFailure;
++  int EmergencyExit;
    int __EndData__;
    cSetup(void);
    cSetup& operator= (const cSetup &s);
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
---- VDR-NG-orig/i18n.c	2008-04-17 10:27:01.000000000 +0200
-+++ VDR-NG/i18n.c	2008-04-17 10:53:59.000000000 +0200
-@@ -5245,6 +5245,27 @@
+--- VDR-NG-orig/i18n.c	Mon Jul 14 09:09:57 2008
++++ VDR-NG/i18n.c	Mon Jul 14 09:22:19 2008
+@@ -5113,6 +5113,27 @@
      "",// TODO
      "",// TODO
    },
-+  { "Setup.Miscellaneous$Exit on video stream failure",
++  { "Setup.Miscellaneous$Emergency exit",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -53,7 +53,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-+    "Salir con fallos en stream de vídeo",
++    "Salida de emergencia",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -68,25 +68,33 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "",// TODO
      "",// TODO
 diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
---- VDR-NG-orig/menu.c	2008-04-17 10:27:01.000000000 +0200
-+++ VDR-NG/menu.c	2008-04-17 11:03:09.000000000 +0200
-@@ -3281,6 +3281,7 @@
+--- VDR-NG-orig/menu.c	Mon Jul 14 09:09:58 2008
++++ VDR-NG/menu.c	Mon Jul 14 09:26:06 2008
+@@ -3256,6 +3256,7 @@
    Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
    Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Abort when Plugin fails to load"), &data.AbortWhenPluginFails));
-+  Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Exit on video stream failure"), &data.ExitOnFailure));
++  Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Emergency exit"),             &data.EmergencyExit));
  }
  
  // --- cMenuSetupPluginItem --------------------------------------------------
-diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
---- VDR-NG-orig/remux.c	2008-05-09 21:08:54.000000000 +0200
-+++ VDR-NG/remux.c	2008-04-17 10:51:05.000000000 +0200
-@@ -1517,7 +1517,7 @@
+diff -Naur VDR-NG-orig/shutdown.c VDR-NG/shutdown.c
+--- VDR-NG-orig/shutdown.c	Tue Apr 08 10:06:16 2008
++++ VDR-NG/shutdown.c	Mon Jul 14 09:18:11 2008
+@@ -95,9 +95,13 @@
  
- cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure)
+ void cShutdownHandler::RequestEmergencyExit(void)
  {
--  exitOnFailure = ExitOnFailure;
-+  exitOnFailure = Setup.ExitOnFailure;
-   isRadio = VPid == 0 || VPid == 1 || VPid == 0x1FFF;
-   numUPTerrors = 0;
-   synced = false;
+-  esyslog("initiating emergency exit");
+-  emergencyExitRequested = true;
+-  Exit(1);
++  if (Setup.EmergencyExit) {
++     esyslog("initiating emergency exit");
++     emergencyExitRequested = true;
++     Exit(1);
++     }
++  else
++     dsyslog("emergency exit request ignored according to setup");
+ }
+ 
+ void cShutdownHandler::CheckManualStart(int ManualStart)
