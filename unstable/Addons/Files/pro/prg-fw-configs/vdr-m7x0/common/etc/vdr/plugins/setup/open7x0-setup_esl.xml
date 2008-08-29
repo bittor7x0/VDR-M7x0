@@ -96,7 +96,7 @@
         </menu>
         <menu name="Configuración de Red">
             <entry name="Tipo de Red" sysconfig="rc.conf--net" type="selection" value="inet" help1="Establecer tipo de dirección IP: Fija (inet) o Dinámica (dhcp)">
-                <value>dhcp</value>
+                <value>DHCP</value>
                 <value>inet</value>
             </entry>
             <entry name="Dirección IP" sysconfig="rc.conf--ip" type="ip" value="192.168.2.100" help1="Dirección IP fija del M7X0" />

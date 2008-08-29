@@ -97,7 +97,7 @@
         </menu>
         <menu name="Network Configuration">
             <entry name="Mode" sysconfig="rc.conf--net" type="selection" value="inet" help1="Configuration IP mode. DHCP/INET">
-                <value>dhcp</value>
+                <value>DHCP</value>
                 <value>inet</value>
             </entry>
             <entry name="IP Address" sysconfig="rc.conf--ip" type="ip" value="192.168.2.100" help1="IP Address M7XX" />
