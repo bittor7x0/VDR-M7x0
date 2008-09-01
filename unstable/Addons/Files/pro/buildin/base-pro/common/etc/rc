@@ -32,7 +32,7 @@ ifconfig ${if} hw ether `${mac_cmd}`
 if [ X"${net}" = X"DHCP" ]; then
     echo "dhcp";
     ifconfig ${if} 0.0.0.0
-    udhcpc -b -i ${if} -s ${dhcp_script}
+    udhcpc -i ${if} ${dhcp_flags}
 else
     echo "${if} - ${ip} - ${netmask}";
     ifconfig ${if} ${ip} netmask ${netmask}

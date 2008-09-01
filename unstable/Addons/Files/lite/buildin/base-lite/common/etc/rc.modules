@@ -54,15 +54,4 @@ else
 fi
 
 
-# load default kernel modules
-
-insmod /lib/modules/2.4.21-xfs/kernel/fs/fat/fat.o
-echo "fat.o"
-insmod /lib/modules/2.4.21-xfs/kernel/fs/vfat/vfat.o
-echo "vfat.o"
-insmod /lib/modules/2.4.21-xfs/kernel/fs/jbd/jbd.o
-echo "jbd.o"
-insmod /lib/modules/2.4.21-xfs/kernel/fs/ext3/ext3.o
-echo "ext3.o"
-
 exit 0

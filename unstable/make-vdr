@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 vdr=VDR-NG
 TC_bin=`pwd`/VDR-NG-FW/m7x0_xtc_uclibc_`uname`-`uname -m`/bin

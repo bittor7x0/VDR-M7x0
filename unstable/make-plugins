@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 vdr=VDR-NG
 plugins=VDR-Plugins/Source+patch

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ###############################################################################
 # This script to generate a alternative version of VDR-NG-FW from open7x0.org #
 ###############################################################################
@@ -58,10 +58,10 @@ fi
 if [[ -d "$vdr_fw_orig/.svn" ]]
 then
 	echo "Update VDR-o7o original"
-	svn update -r 339 "$vdr_fw_orig"
+	svn update -r 373 "$vdr_fw_orig"
 else
 	echo "Checkout VDR-o7o original"
-	svn checkout -q -r 339 "$svn_o7o" "$vdr_fw_orig"
+	svn checkout -q -r 373 "$svn_o7o" "$vdr_fw_orig"
 fi
 
 

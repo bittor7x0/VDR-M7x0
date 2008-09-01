@@ -1,4 +1,5 @@
 ./VDR-NG-FW/patches/busybox/1.6.1/200-mount-cifs.patch
 ./VDR-NG-FW/patches/busybox/1.9.1/300_mount_cifs.patch
+./VDR-NG-FW/patches/busybox/1.11.2/300_mount_cifs.patch
 ./VDR-NG-FW/patches/siemens-linux-kernel/common/300-cifs_24.patch
 ./VDR-NG-FW/patches/siemens-linux-kernel/common/cifs-fs.tar.bz2
