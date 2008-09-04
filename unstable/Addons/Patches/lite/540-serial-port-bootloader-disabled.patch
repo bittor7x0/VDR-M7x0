@@ -1,0 +1,95 @@
+diff -Naur uclibc_build_env_orig/buildin/bootloader/kernel_args.h uclibc_build_env/buildin/bootloader/kernel_args.h
+--- uclibc_build_env_orig/buildin/bootloader/kernel_args.h	Tue Sep 02 12:39:16 2008
++++ uclibc_build_env/buildin/bootloader/kernel_args.h	Thu Sep 04 11:45:11 2008
+@@ -21,19 +21,17 @@
+  * $Id: kernel_args.h 362 2008-08-17 17:14:52Z andreas $
+  *
+  */
+-#define KERNEL_ARGS_COUNT 4
++#define KERNEL_ARGS_COUNT 3
+ 
+ char *kernel_args_m740[] = {
+   "vmlinux",
+   "root=/dev/mtdblock1",
+-  "console=ttyS0,115200N8",
+   "mtdparts=phys:6m(root),5888k(app),256k(prod),1536k(boot),-(rescue)"
+ };
+ 
+ char *kernel_args_m750[] = {
+   "vmlinux",
+   "root=/dev/mtdblock1",
+-  "console=ttyS0,115200N8",
+   "mtdparts=phys:8m(root),3840k(app),256k(prod),1536k(boot),-(rescue)"
+ };
+ 
+diff -Naur uclibc_build_env_orig/buildin/bootloader/simple_serial.c uclibc_build_env/buildin/bootloader/simple_serial.c
+--- uclibc_build_env_orig/buildin/bootloader/simple_serial.c	Tue Sep 02 12:39:16 2008
++++ uclibc_build_env/buildin/bootloader/simple_serial.c	Thu Sep 04 12:22:51 2008
+@@ -25,67 +25,20 @@
+ #include "bootdefs.h"
+ #include "simple_serial.h"
+ 
+-#define UART_BASE (KSEG0 + 0x32001000)
+-#define UART_TX ((volatile u32 *)UART_BASE)
+-#define UART_RX ((volatile u32 *)UART_BASE)
+-#define UART_LINE_STATUS ((volatile u32 *)(UART_BASE + 0x50))
+-
+ void serial_put_char(u8 c) 
+ {
+-  while (((*UART_LINE_STATUS) & 0x20) == 0)
+-    ;
+-    
+-  *UART_TX = c;
+ }
+ 
+ void serial_put_string(const char *s) 
+ {
+-  while (*s) {
+-    if (*s != '\n') {
+-       serial_put_char(*s);
+-    } else {
+-      serial_put_char('\r');
+-      serial_put_char('\n');
+-    }
+-    s++;
+-  }
+ }
+ 
+ static inline void serial_put_num(unsigned long n, int len, int base) 
+ {
+-  char digits[] = "0123456789ABCDEF";
+-  char str[33];
+-  int i;
+-  str[32] = 0;
+-  i = 31;
+-  
+-  if (len <= 0)
+-    len = 1;
+-  while (n) {
+-    str[i] = digits[n % base];
+-    n /= base;
+-    i--;
+-    len--;
+-  }
+-  
+-  while (len > 0) {
+-    str[i] = '0';
+-    len --;
+-    i--;
+-    }
+-    
+-  serial_put_string(str + i + 1);
+ }
+ 
+ void serial_put_num_dec(long n, int len, int sign) {
+-  if (sign && n < 0) {
+-    n = -n;
+-    serial_put_char('-');
+-    len--;
+-  }
+-  serial_put_num((unsigned long)n, len, 10);
+ }
+ 
+ void serial_put_num_hex(unsigned long n, int len) {
+-  serial_put_num(n, len, 16);
+ }
