@@ -44,7 +44,7 @@ tmp=`mktemp -d ./tmp-XXXXXXXXXX` || exit 1
 if [[ -d "$BASE/.svn" ]]
 then
 	echo "Update VDR-EM"
-	svn update
+	svn update -q
 else
 	rm -f "$BASE/make-fw"
 	rm -rf "$tmp"
@@ -58,7 +58,7 @@ fi
 if [[ -d "$vdr_fw_orig/.svn" ]]
 then
 	echo "Update VDR-o7o original"
-	svn update -r 373 "$vdr_fw_orig"
+	svn update -q -r 373 "$vdr_fw_orig"
 else
 	echo "Checkout VDR-o7o original"
 	svn checkout -q -r 373 "$svn_o7o" "$vdr_fw_orig"

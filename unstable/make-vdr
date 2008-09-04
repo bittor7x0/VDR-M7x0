@@ -11,10 +11,13 @@ else
     export PATH="$TC_bin:$PATH"
 fi
 
-# Update VDR-NG from SVN
-if [[ ! -d "$vdr" ]]
+# Update/Checkout VDR-M7x0 from SVN-o7o
+if [[ -d "$vdr/.svn" ]]
 then
-	echo "CHECKOUT: $vdr"
+	echo "Update VDR-M7x0 original"
+	svn update -r 254 -q "svn://open7x0.org/vdr-m7x0/branches/gambler-unstable" "$vdr"
+else
+	echo "Checkout VDR-M7x0 original"
 	svn checkout -r 254 -q "svn://open7x0.org/vdr-m7x0/branches/gambler-unstable" "$vdr"
 fi
 

@@ -30,7 +30,7 @@ fi
 if [[ ! -d "$plugins" ]]
 then
 	echo "Update: $plugins"
-	svn update "$plugins"
+	svn update -q "$plugins"
 fi
 
 # Patching plugins
