@@ -48,8 +48,9 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_CIFS_STATS is not set
  # CONFIG_CIFS_POSIX is not set
  # CONFIG_SMB_FS is not set
---- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2008-08-30 19:36:31.000000000 +0200
-+++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2008-08-30 20:36:43.000000000 +0200
+diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
+--- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2008-08-31 15:46:46.000000000 +0200
++++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2008-09-06 11:19:57.000000000 +0200
 @@ -56,16 +56,6 @@
  CLEAN_RULES += clean-siemens-linux-kernel
  DISTCLEAN_RULES += distclean-siemens-linux-kernel
@@ -85,8 +86,16 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # Needed patches to get kernel compiling
  	$(PATCHES_DIR)/patch-kernel.sh $(SIEMENS-LINUX-KERNEL_DIR) \
  		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common
-@@ -207,11 +193,6 @@
+@@ -199,19 +185,9 @@
+ # generate rootfs file list
+ #
  
+-siemens-linux-kernel_lst_dir = \
+-  $(ECHO) "$(1)       -                 d 755 0 0 - - - - -";
+-
+-siemens-linux-kernel_lst_mod = \
+-  $(ECHO) "$(1) $(M7X0_KERNEL_DIR)/$(1) f 755 0 0 - - - - -";
+-
  $(FILELIST_DIR)/siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst: \
        $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed
 -	($(foreach dir,$(SIEMENS-LINUX-KERNEL_DIRLST),\
@@ -94,6 +103,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
 -	 $(foreach mod,$(SIEMENS-LINUX-KERNEL_MODLST),\
 -		$(call siemens-linux-kernel_lst_mod,$(mod)))) \
 -			> $(FILELIST_DIR)/siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst
++	$(TOUCH) $(FILELIST_DIR)/siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst
  
  .PHONY: clean-siemens-linux-kernel distclean-siemens-linux-kernel
  

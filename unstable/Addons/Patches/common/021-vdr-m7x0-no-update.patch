@@ -1,0 +1,23 @@
+diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0.mk uclibc_build_env/make-incs/vdr-m7x0.mk
+--- uclibc_build_env_orig/make-incs/vdr-m7x0.mk	2008-09-04 19:48:58.000000000 +0200
++++ uclibc_build_env/make-incs/vdr-m7x0.mk	2008-09-06 11:45:44.000000000 +0200
+@@ -39,19 +39,6 @@
+ CLEAN_RULES += clean-vdr
+ DISTCLEAN_RULES += distclean-vdr
+ 
+-ifneq ($(and $(filter y,$(CONFIG_VDR)), $(wildcard $(VDR_DIR)), \
+-       $(subst local,,$(CONFIG_VDR_TREE))),)
+-$(info Updating vdr download ...)
+-vdr_svn_changed := $(call svn_changed, $(VDR_DIR))
+-
+-ifeq ($(vdr_svn_changed),0)
+-$(info vdr is up to date)
+-else
+-$(info $(vdr_svn_changed) file(s) updated)
+-vdr_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.vdr_downloaded)
+-endif
+-endif
+-
+ ifeq ($(filter y,$(CONFIG_VDR)),y)
+ ifeq ($(CONFIG_VDR_TREE),)
+ $(error you need to configure an vdr svn tree)
