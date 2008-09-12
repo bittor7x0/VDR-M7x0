@@ -1,6 +1,198 @@
+diff -Naur wapd-0.9-patch1-orig/i18n.c wapd-0.9-patch1/i18n.c
+--- wapd-0.9-patch1-orig/i18n.c	Tue Sep 02 08:57:32 2008
++++ wapd-0.9-patch1/i18n.c	Mon Aug 18 17:36:36 2008
+@@ -37,7 +37,7 @@
+     "",
+     "VDR:n kauko-ohjaus (WAP)",
+     "",
+-    "",
++    "Control remoto por WAP",
+     "",
+     "",
+     "",
+@@ -58,7 +58,7 @@
+     "",
+     "Tallenna",
+     "",
+-    "",
++    "Guardar",
+     "",
+     "",
+     "",
+@@ -79,7 +79,7 @@
+     "",
+     "ei nimeä",
+     "",
+-    "",
++    "sin título",
+     "",
+     "",
+     "",
+@@ -100,7 +100,7 @@
+     "",
+     "ei alaotsikkoa",
+     "",
+-    "",
++    "sin subtítulo",
+     "",
+     "",
+     "",
+@@ -121,7 +121,7 @@
+     "",
+     "ei kuvausta",
+     "",
+-    "",
++    "sin descripción",
+     "",
+     "",
+     "",
+@@ -142,7 +142,7 @@
+     "",
+     "Kuvausta ei saatavilla.",
+     "",
+-    "",
++    "Sin descripción disponible.",
+     "",
+     "",
+     "",
+@@ -163,7 +163,7 @@
+     "",
+     "Virhe tallenteen ID:ssä.",
+     "",
+-    "",
++    "Error grabando ID.",
+     "",
+     "",
+     "",
+@@ -184,7 +184,7 @@
+     "",
+     "Tapahtumaa \"%s\" ei löydy.",
+     "",
+-    "",
++    "Evento \"%s\" no encontrado.",
+     "",
+     "",
+     "",
+@@ -205,7 +205,7 @@
+     "",
+     "Virhe tapahtuman \"%s\" ID:ssä.",
+     "",
+-    "",
++    "Error en ID evento \"%s\".",
+     "",
+     "",
+     "",
+@@ -226,7 +226,7 @@
+     "",
+     "Ohjelmistoa ei saatavilla.",
+     "",
+-    "",
++    "Ningún programa disponible.",
+     "",
+     "",
+     "",
+@@ -247,7 +247,7 @@
+     "",
+     "Kanavaa \"%s\" ei määritelty.",
+     "",
+-    "",
++    "Canal \"%d\" no definido.",
+     "",
+     "",
+     "",
+@@ -268,7 +268,7 @@
+     "",
+     "EPG-tieto ei saatavilla.",
+     "",
+-    "",
++    "No se pueden obtener datos EPG.",
+     "",
+     "",
+     "",
+@@ -289,7 +289,7 @@
+     "",
+     "Kanavaa \"%s\" ei löydy.",
+     "",
+-    "",
++    "Canal \"%d\" no encontrado.",
+     "",
+     "",
+     "",
+@@ -310,7 +310,7 @@
+     "",
+     "Kanavia ei määritelty.",
+     "",
+-    "",
++    "Ningún canal definido.",
+     "",
+     "",
+     "",
+@@ -331,7 +331,7 @@
+     "",
+     "Ajastinta \"%s\" ei löydy.",
+     "",
+-    "",
++    "Programación \"%d\" no encontrada.",
+     "",
+     "",
+     "",
+@@ -352,7 +352,7 @@
+     "",
+     "Ajastimia ei määritelty.",
+     "",
+-    "",
++    "Ninguna programación definida.",
+     "",
+     "",
+     "",
+@@ -373,7 +373,7 @@
+     "",
+     "Tallenteita ei ole saatavilla.",
+     "",
+-    "",
++    "Ninguna grabación disponible.",
+     "",
+     "",
+     "",
+@@ -394,7 +394,7 @@
+     "",
+     "Parametrit",
+     "",
+-    "",
++    "Parámetros",
+     "",
+     "",
+     "",
+@@ -499,7 +499,7 @@
+     "",
+     "Kuva",
+     "",
+-    "",
++    "Imagen",
+     "",
+     "",
+     "",
+@@ -520,7 +520,7 @@
+     "",
+     "Kuva ei saatavilla.",
+     "",
+-    "",
++    "Imagen no disponible",
+     "",
+     "",
+     "",
+@@ -541,7 +541,7 @@
+     "",
+     "Kuvan koko on liian suuri.",
+     "",
+-    "",
++    "Tamaño de Imagen demasiado grande",
+     "",
+     "",
+     "",
 diff -Naur wapd-0.9-patch1-orig/Makefile wapd-0.9-patch1/Makefile
---- wapd-0.9-patch1-orig/Makefile	2008-01-16 16:29:10.000000000 +0100
-+++ wapd-0.9-patch1/Makefile	2008-06-21 09:50:45.000000000 +0200
+--- wapd-0.9-patch1-orig/Makefile	Tue Sep 02 08:57:32 2008
++++ wapd-0.9-patch1/Makefile	Thu Sep 04 13:26:34 2008
 @@ -16,12 +16,12 @@
  ### The C++ compiler and options:
  
@@ -27,8 +219,8 @@ diff -Naur wapd-0.9-patch1-orig/Makefile wapd-0.9-patch1/Makefile
  wappasswd: wappasswd.c
  	$(CXX) $(CXXFLAGS) $(LIBS) -o wappasswd wappasswd.c
 diff -Naur wapd-0.9-patch1-orig/README wapd-0.9-patch1/README
---- wapd-0.9-patch1-orig/README	2008-06-08 11:13:22.000000000 +0200
-+++ wapd-0.9-patch1/README	2008-06-21 09:52:11.000000000 +0200
+--- wapd-0.9-patch1-orig/README	Tue Sep 02 08:57:32 2008
++++ wapd-0.9-patch1/README	Thu Sep 04 13:26:34 2008
 @@ -49,7 +49,7 @@
  Files:
  ------------------------------------------------------------------------------
@@ -39,8 +231,8 @@ diff -Naur wapd-0.9-patch1-orig/README wapd-0.9-patch1/README
  ''waphosts'' controls host based access and is similar to ''svdrphosts.conf''
  
 diff -Naur wapd-0.9-patch1-orig/wapd.c wapd-0.9-patch1/wapd.c
---- wapd-0.9-patch1-orig/wapd.c	2008-01-13 13:30:24.000000000 +0100
-+++ wapd-0.9-patch1/wapd.c	2008-06-21 09:52:55.000000000 +0200
+--- wapd-0.9-patch1-orig/wapd.c	Tue Sep 02 08:57:32 2008
++++ wapd-0.9-patch1/wapd.c	Thu Sep 04 13:26:34 2008
 @@ -85,8 +85,8 @@
  bool cPluginWapd::Start(void)
  {

@@ -1,6 +1,315 @@
+diff -Naur clock-1.0.0-orig/i18n.c clock-1.0.0/i18n.c
+--- clock-1.0.0-orig/i18n.c	Tue Sep 02 08:57:42 2008
++++ clock-1.0.0/i18n.c	Mon Aug 18 16:51:24 2008
+@@ -36,7 +36,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Reloj",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -54,7 +54,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Distancia desde la izquierda",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -72,7 +72,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Mostrar segundos",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -90,7 +90,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Tipo de reloj",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -108,7 +108,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Longitud del segundero [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -126,7 +126,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Longitud del minutero [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -144,7 +144,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Longitud aguja de las horas [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -162,7 +162,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Ancho del segundero [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -180,7 +180,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Ancho del minutero [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -198,7 +198,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Ancho de la aguja de las horas [%]",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -216,7 +216,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Tamaño del reloj analógico",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -234,7 +234,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Transparencia",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -252,7 +252,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Blanco",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -270,7 +270,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color del fondo",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -288,7 +288,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Negro",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -306,7 +306,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color de la aguja de las horas",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -324,7 +324,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Rojo",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -342,7 +342,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Verde",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -360,7 +360,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Amarillo",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -378,7 +378,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Azul",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -396,7 +396,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color del segundero",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -414,7 +414,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color del minutero",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -432,7 +432,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color de primer plano",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -450,7 +450,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Color de las agujas",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -468,7 +468,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Digital",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -486,7 +486,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Analógico",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -504,7 +504,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Hora de Internet",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -522,7 +522,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Pausa para el café",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -540,7 +540,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Es la hora de la pausa para el café",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -558,7 +558,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Tiempo hasta el café",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -576,7 +576,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Mostrar cuenta atras",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -594,7 +594,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Pantalla completa",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -612,7 +612,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Posición X",// Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -630,7 +630,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Posición Y", // Español
+     "",// TODO
+     "",// TODO
+     "",// TODO
 diff -Naur clock-1.0.0-orig/Makefile clock-1.0.0/Makefile
---- clock-1.0.0-orig/Makefile	2008-01-22 10:25:15.000000000 +0100
-+++ clock-1.0.0/Makefile	2008-06-22 12:44:58.000000000 +0200
+--- clock-1.0.0-orig/Makefile	Tue Sep 02 08:57:42 2008
++++ clock-1.0.0/Makefile	Thu Sep 04 13:35:56 2008
 @@ -20,8 +20,8 @@
  
  ### The directory environment:
