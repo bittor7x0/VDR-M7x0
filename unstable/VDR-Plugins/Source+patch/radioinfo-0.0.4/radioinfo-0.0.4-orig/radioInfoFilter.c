@@ -11,14 +11,6 @@
 #include "config.h"
 
 
-///////////////////////////////////////////////////////////////////////////////
-
-
-cRadioInfoFilter* cRadioInfoFilter::instance = NULL;
-
-
-///////////////////////////////////////////////////////////////////////////////
-
 
 cRadioInfoFilter::cRadioInfoFilter()
 {
@@ -27,7 +19,7 @@ cRadioInfoFilter::cRadioInfoFilter()
   numOfRetries = 0;
   attachedDevice = NULL;
   
-  if (config.quickDetect)
+  if (config.QUICK_DETECT)
   {
     DEBUG_MSG("RadioInfoFilter Fast PID Detection Enabled.");
     Set(0x20, 0x02); 
@@ -38,21 +30,9 @@ cRadioInfoFilter::cRadioInfoFilter()
     DEBUG_MSG("RadioInfoFilter Thorough PID Detection Enabled.");
     Set(0x00, 0x00);
   }
+  
 }
 
-
-//-----------------------------------------------------------------------------
-
-cRadioInfoFilter* cRadioInfoFilter::Instance(void)
-{
-  if (!instance)
-    instance = new cRadioInfoFilter();
-    
-  return instance;
-}
-
-
-//-----------------------------------------------------------------------------
 
 void cRadioInfoFilter::Attach(cDevice* device)
 {
@@ -67,9 +47,6 @@ void cRadioInfoFilter::Attach(cDevice* device)
   }
 }
 
-
-//-----------------------------------------------------------------------------
-
 void cRadioInfoFilter::Detach(void)
 {
   if (attachedDevice) 
@@ -81,8 +58,6 @@ void cRadioInfoFilter::Detach(void)
 }
   
 
-//-----------------------------------------------------------------------------
-
 void cRadioInfoFilter::SetStatus(bool On)
 {
   numOfRetries = 0;
@@ -90,18 +65,18 @@ void cRadioInfoFilter::SetStatus(bool On)
 }
 
 
-//-----------------------------------------------------------------------------  
+  
 
 void cRadioInfoFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
 {
   DEBUG_MSG("radioInfoFilter Receiving Data.");
   
   numOfRetries++;
-  if (numOfRetries > config.maxRetries)
+  if (numOfRetries > config.MAX_RETRIES)
   {
     DEBUG_MSG("RadioInfoFilter unable to find info PID");
     SetStatus(false);
-    cPluginRadioinfo::currentRadioInfo->FoundInfoPid(-1);
+    currentRadioInfo->foundInfoPid(-1);
     return;
   }
 
@@ -138,8 +113,8 @@ void cRadioInfoFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int 
       {
         if (stream.getStreamType() == 5) 
         {
-          DEBUG_MSG("Found Info PID %d", stream.getPid());
-          cPluginRadioinfo::currentRadioInfo->FoundInfoPid(stream.getPid());
+          fprintf(stderr,"RadioInfo: Found Info PID %d\n", stream.getPid());
+          currentRadioInfo->foundInfoPid(stream.getPid());
           SetStatus(false);
         }
       }
@@ -149,5 +124,5 @@ void cRadioInfoFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int 
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
+
 

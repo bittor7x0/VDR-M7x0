@@ -1,3 +1,15 @@
+diff -Naur fepg-0.4.0-orig/fepgOsd.h fepg-0.4.0/fepgOsd.h
+--- fepg-0.4.0-orig/fepgOsd.h	2008-07-08 20:27:27.000000000 +0200
++++ fepg-0.4.0/fepgOsd.h	2008-09-13 20:38:24.000000000 +0200
+@@ -33,7 +33,7 @@
+   int Width(const char* str) const;
+   void Text(int x, int y, const char* str, tColor fg, tColor bg);
+   void Fill(int x1, int y1, int x2, int y2, tColor c);
+-  void Darken(int x1, int y1, int x2, int x2, int d = 2, tColor c = clrBlack);
++  void Darken(int x1, int y1, int x2, int y2, int d = 2, tColor c = clrBlack);
+   void DarkenBg(void);
+   
+   void UpdateSelTime(void);
 diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 --- fepg-0.4.0-orig/i18n.c	1970-01-01 01:00:00.000000000 +0100
 +++ fepg-0.4.0/i18n.c	2008-09-12 20:45:58.000000000 +0200

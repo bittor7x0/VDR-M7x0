@@ -87,7 +87,7 @@ diff -Naur -x svn setup-orig/config.h setup/config.h
      void                dumpXMLError(const char* errStr);
      bool                readVdrLib();
      void                prepareSysConfig();
-+    bool Config::readVdrLibDir(const char* libDir);
++    bool readVdrLibDir(const char* libDir);
  };
  
  
@@ -1627,6 +1627,31 @@ diff -Naur -x svn setup-orig/Makefile setup/Makefile
  	@./getVdrSetupMenu.pl $(VDRDIR)/menu.c
  
  	
+diff -Naur -x svn setup-orig/menus.h setup/menus.h
+--- setup-orig/menus.h	2008-07-08 20:27:33.000000000 +0200
++++ setup/menus.h	2008-09-13 20:45:22.000000000 +0200
+@@ -103,7 +103,7 @@
+   public:
+     MenuEntryValueList();
+     ~MenuEntryValueList();
+-    MenuEntryValueList const &MenuEntryValueList::operator =(MenuEntryValueList const &right   );
++    MenuEntryValueList const &operator =(MenuEntryValueList const &right   );
+     void copy(MenuEntryValueList const &other);
+     void destroy();
+     void Add(const char *value);
+@@ -134,9 +134,9 @@
+     MenuEntry();
+     ~MenuEntry();
+     void destroy();
+-    bool MenuEntry::AddEntry( TiXmlNode *node  );
+-    bool MenuEntry::AddSubEntry( TiXmlNode *node  );
+-    bool MenuEntry::AddSelectionValues( TiXmlNode *node, const char *selection);
++    bool AddEntry( TiXmlNode *node  );
++    bool AddSubEntry( TiXmlNode *node  );
++    bool AddSelectionValues( TiXmlNode *node, const char *selection);
+     TiXmlNode *SaveXml( );
+     void SetSysconfigName(const char* nam);
+     const char*GetSysconfigName();
 diff -Naur -x svn setup-orig/plugins.cpp setup/plugins.cpp
 --- setup-orig/plugins.cpp	2008-03-31 18:06:37.000000000 +0200
 +++ setup/plugins.cpp	2008-04-01 17:33:12.000000000 +0200
@@ -1661,6 +1686,44 @@ diff -Naur -x svn setup-orig/plugins.cpp setup/plugins.cpp
      }
    } 
    //HaPe: Add " around the string
+diff -Naur -x svn setup-orig/plugins.h setup/plugins.h
+--- setup-orig/plugins.h	2008-07-08 20:27:33.000000000 +0200
++++ setup/plugins.h	2008-09-13 20:44:35.000000000 +0200
+@@ -34,20 +34,20 @@
+     bool operator< (Plugin &param);
+     bool operator> (Plugin &param);
+     void Print();
+-    const char* Plugin::GetName();
+-    const char* Plugin::GetInfo();
+-    const char* Plugin::GetParameter();
+-    void Plugin::SetName(const char* name);
+-    void Plugin::SetInfo(const char* info);
+-    void Plugin::SetParameter(const char* parameter);
+-    void Plugin::SetActive(int flag);
+-    void Plugin::SetProtect(bool protect);
+-    int  Plugin::GetActive();
+-    int  *Plugin::GetActiveRef();
+-    void Plugin::SetInSystem(bool flag);
+-    bool Plugin::GetInSystem();
+-    bool Plugin::GetProtect();
+-    const char* Plugin::GetActiveString();
++    const char* GetName();
++    const char* GetInfo();
++    const char* GetParameter();
++    void SetName(const char* name);
++    void SetInfo(const char* info);
++    void SetParameter(const char* parameter);
++    void SetActive(int flag);
++    void SetProtect(bool protect);
++    int  GetActive();
++    int  *GetActiveRef();
++    void SetInSystem(bool flag);
++    bool GetInSystem();
++    bool GetProtect();
++    const char* GetActiveString();
+ };
+ 
+ class Plugins  : public cList<Plugin> 
 diff -Naur -x svn setup-orig/setup.cpp setup/setup.cpp
 --- setup-orig/setup.cpp	2008-03-31 18:06:37.000000000 +0200
 +++ setup/setup.cpp	2008-04-01 17:33:12.000000000 +0200
@@ -1860,13 +1923,16 @@ diff -Naur -x svn setup-orig/setupmenu.cpp setup/setupmenu.cpp
 diff -Naur -x svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
 --- setup-orig/setupsystemmenu.cpp	2008-03-31 18:06:37.000000000 +0200
 +++ setup/setupsystemmenu.cpp	2008-04-01 17:33:12.000000000 +0200
-@@ -8,20 +8,24 @@
+@@ -6,6 +6,8 @@
+  *                                                         *
+  ***********************************************************/
  
++#define MAXSORTMODES 4 
++
  // Headers included by <VDR>/menu.c
  #include "menu.h"
-+#include "iconpatch.h"
  #include <ctype.h>
- #include <limits.h>
+@@ -13,15 +15,18 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <string.h>
@@ -1885,7 +1951,7 @@ diff -Naur -x svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
  #include "sources.h"
  #include "status.h"
  #include "themes.h"
-@@ -67,6 +71,7 @@
+@@ -67,6 +72,7 @@
  private:
    int originalNumLanguages;
    int numLanguages;
@@ -1893,7 +1959,7 @@ diff -Naur -x svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
    void Setup(void);
  public:
    cMenuSetupEPG(void);
-@@ -79,7 +84,7 @@
+@@ -79,7 +85,7 @@
    int originalNumAudioLanguages;
    int numAudioLanguages;
    void Setup(void);
@@ -1902,7 +1968,7 @@ diff -Naur -x svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
    const char *videoFormatTexts[3];
    const char *updateChannelsTexts[6];
  public:
-@@ -108,6 +113,8 @@
+@@ -108,6 +114,8 @@
  
  
  class cMenuSetupRecord : public cMenuSetupBase {
@@ -1911,7 +1977,7 @@ diff -Naur -x svn setup-orig/setupsystemmenu.cpp setup/setupsystemmenu.cpp
  public:
    cMenuSetupRecord(void);
    };
-@@ -122,6 +129,8 @@
+@@ -122,6 +130,8 @@
  
  
  class cMenuSetupMisc : public cMenuSetupBase {

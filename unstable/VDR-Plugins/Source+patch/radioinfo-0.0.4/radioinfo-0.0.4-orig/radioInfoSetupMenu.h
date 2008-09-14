@@ -4,16 +4,13 @@
 #include <vdr/plugin.h>
 
 
-///////////////////////////////////////////////////////////////////////////////
-
-
 class cRadioInfoSetupMenu : public cMenuSetupPage 
 {
 private:
-  int newMaxRetries;
-  int newQuickDetect;
-  int newOsdDelay;
-  int newScanDelay; 
+  int  newMAX_RETRIES;
+  int  newQUICK_DETECT;
+  int  newDELAY;
+  int  newSCAN_DELAY; 
   
 protected:
   virtual void Store(void);
@@ -21,9 +18,6 @@ protected:
 public:
   cRadioInfoSetupMenu(void);
 };
-
-
-///////////////////////////////////////////////////////////////////////////////
 
 
 #endif //___RADIOINFOSETUPMENU_H

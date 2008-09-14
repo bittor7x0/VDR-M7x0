@@ -4,32 +4,37 @@
 
 #include <vdr/receiver.h>
 #include <vdr/thread.h>
-#include "radioInfoData.h"
-
-
-///////////////////////////////////////////////////////////////////////////////
-
+#include "sRadioInfo.h"
 
 class cRadioInfoReceiver : public cReceiver
 {
 private:
-  cRadioInfoData* radioInfoData;
-  time_t lastScan;
+  sRadioInfo* radioInfo;
+  long lastScan;
+  int iPid;
   cDevice* attachedDevice;
    
 public:
-  cRadioInfoReceiver(int Pid, tChannelID ChannelID, cRadioInfoData* Rid);
+#if VDRVERSNUM >= 10500
+  cRadioInfoReceiver(int Pid, tChannelID ChannelID, sRadioInfo* Ri);
+#else
+  cRadioInfoReceiver(int Pid, int Ca, sRadioInfo* Ri);
+#endif
   
   void Attach(cDevice* device);
   void Detach(void);
   
 protected:
+  //virtual void Activate(bool On);
   virtual void Receive(uchar *Data, int Length);
    
 };
 
 
-///////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 
 #endif //__RADIOINFORECEIVER_H

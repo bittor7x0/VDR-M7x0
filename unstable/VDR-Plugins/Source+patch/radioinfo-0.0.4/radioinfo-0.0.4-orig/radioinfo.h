@@ -7,19 +7,29 @@
 #include <vdr/receiver.h>
 
 #include "radioInfoReceiver.h" 
+#include "radioInfoFilter.h"
 #include "radioInfoOsd.h"
-#include "radioInfoData.h"
+#include "sRadioInfo.h"
 
 
-///////////////////////////////////////////////////////////////////////////////
 
 
 class cPluginRadioinfo : public cPlugin, cStatus 
 {
 private:
+  // Add any member variables or functions you may need here.
+  
   cRadioInfoOsd* radioInfoOsd;
   cRadioInfoReceiver* radioInfoReceiver;
-  cRadioInfoData radioInfoData;
+  cRadioInfoFilter* radioInfoFilter;
+  sRadioInfo* radioInfo;
+    
+  void showOsd(void);
+  void hideOsd(void);
+  void resetInfo(void);
+  
+  
+  bool wantsOsd;
   
   cChannel* currentChannel;
   cDevice*  currentDevice;
@@ -42,18 +52,23 @@ public:
   virtual bool Service(const char *Id, void *Data = NULL);
   virtual const char **SVDRPHelpPages(void);
   virtual cString SVDRPCommand(const char *Command, const char *Option, int &ReplyCode);
-
-  void FoundInfoPid(int Pid);
-  static cPluginRadioinfo* currentRadioInfo;
-   
+  
+  void foundInfoPid(int Pid);
+  
 protected:
   virtual void ChannelSwitch(const cDevice* Device, int ChannelNumber);
+  virtual void OsdClear(void);
   
-  //friend class cRadioInfoOsd;
-};
+  
+  friend class cRadioInfoOsd;
+  friend class cRadioFilter;
+  };
 
 
-///////////////////////////////////////////////////////////////////////////////
+
+extern cPluginRadioinfo* currentRadioInfo;
+
+
 
 
 #endif //__RADIOINFO_H

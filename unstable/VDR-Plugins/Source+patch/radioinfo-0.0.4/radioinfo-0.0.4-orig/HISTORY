@@ -32,17 +32,3 @@ VDR Plugin 'radioinfo' Revision History
 - Cleaned up device handling
 - Now works with VDR 1.5.0
 
-
-2007-10-24: Version 0.1.0
-
-- Restructured some of the classes
-- Removed some unnecessary string copying in cRadioInfoOsd
-- cRadioInfoFilter is now a singleton
-- Cleaned up source code
-- Many minor fixes and improvements
-- Better multithreading
-- Nicer handling of automatic OSD start (using multilevel OSD introduced
-  in VDR 1.5.10)
-- Changed names of config variables
-
-

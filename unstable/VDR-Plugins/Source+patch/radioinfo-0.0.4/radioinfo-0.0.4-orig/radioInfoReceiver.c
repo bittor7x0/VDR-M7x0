@@ -1,22 +1,25 @@
+#include <vdr/receiver.h>
+
 #include "radioInfoReceiver.h"  
+#include "sRadioInfo.h"
 #include "tools.h"  
 #include "radioinfo.h"
 #include "config.h"
 
 
-///////////////////////////////////////////////////////////////////////////////
-
-
-cRadioInfoReceiver::cRadioInfoReceiver(int Pid, tChannelID ChannelID, cRadioInfoData* Rid) : cReceiver(ChannelID, -1, Pid)
+#if VDRVERSNUM >= 10500
+cRadioInfoReceiver::cRadioInfoReceiver(int Pid, tChannelID ChannelID, sRadioInfo* Ri) : cReceiver(ChannelID, -1, Pid)
+#else
+cRadioInfoReceiver::cRadioInfoReceiver(int Pid, int Ca, sRadioInfo* Ri) : cReceiver(Ca, -1, Pid)
+#endif
 {
   DEBUG_MSG("RadioInfoReceiver Created.");
-  radioInfoData = Rid;
+  radioInfo = Ri;
   lastScan = 0;
+  iPid = Pid;
   attachedDevice = NULL;
 }
 
-
-//-----------------------------------------------------------------------------
 
 void cRadioInfoReceiver::Attach(cDevice* device)
 {
@@ -32,8 +35,6 @@ if (!attachedDevice)
 }
 
 
-//-----------------------------------------------------------------------------
-
 void cRadioInfoReceiver::Detach(void)
 {
   if (attachedDevice) 
@@ -45,15 +46,13 @@ void cRadioInfoReceiver::Detach(void)
 }
 
 
-//-----------------------------------------------------------------------------
-
 void cRadioInfoReceiver::Receive(uchar *Data, int Length) 
 {
-  if (time(NULL) - lastScan <= config.scanDelay)  return;
+  if (time(NULL) - lastScan <= config.SCAN_DELAY)  return;
   
   DEBUG_MSG("Updating Info");
   
-#if 0
+  /*
   fprintf(stderr,">>> DATA length=%d\n", Length);
   for (int i=13; i<Length && Data[i] != 0xFF; i++)
     fprintf(stderr,"%02X ", Data[i]);
@@ -65,9 +64,9 @@ void cRadioInfoReceiver::Receive(uchar *Data, int Length)
     fprintf(stderr,"%c", Data[i]);
     
   fprintf(stderr, "\n");
-#endif
+  */
   
-  radioInfoData->Lock();
+  radioInfo->updating = true;
   
   if (Length < 13) return;
   
@@ -89,24 +88,25 @@ void cRadioInfoReceiver::Receive(uchar *Data, int Length)
     switch (line)
     {
       case 0:
-        radioInfoData->title[p] = c;
+        radioInfo->title[p] = c;
         break;
         
       case 1:
-        radioInfoData->artist[p] = c; 
+        radioInfo->artist[p] = c; 
         break;
          
       case 2:
-        radioInfoData->extra1[p] = c; 
+        radioInfo->extra1[p] = c; 
         break;
          
       case 3:
-        radioInfoData->extra2[p] = c;
+        radioInfo->extra2[p] = c;
         break;
         
       case 4:
-        radioInfoData->extra3[p] = c;
+        radioInfo->extra3[p] = c;
         break;
+    
     }
     
     p++;
@@ -119,11 +119,11 @@ void cRadioInfoReceiver::Receive(uchar *Data, int Length)
     }
   }
   
-  radioInfoData->Unlock();
+  radioInfo->updating = false;
   
   lastScan = time(NULL); 
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
+
 

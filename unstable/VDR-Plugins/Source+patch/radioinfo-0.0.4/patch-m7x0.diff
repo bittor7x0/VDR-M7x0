@@ -1,6 +1,6 @@
-diff -Naur radioinfo-0.1.0-orig/Makefile radioinfo-0.1.0/Makefile
---- radioinfo-0.1.0-orig/Makefile	2007-10-25 06:02:01.000000000 +0200
-+++ radioinfo-0.1.0/Makefile	2008-06-20 21:51:08.000000000 +0200
+diff -Naur radioinfo-0.0.4-orig/Makefile radioinfo-0.0.4/Makefile
+--- radioinfo-0.0.4-orig/Makefile	2006-05-20 18:56:38.000000000 +0200
++++ radioinfo-0.0.4/Makefile	2007-06-16 20:09:55.000000000 +0200
 @@ -20,8 +20,8 @@
  
  ### The directory environment:

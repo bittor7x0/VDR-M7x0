@@ -6,34 +6,24 @@
  * $Id$
  */
 
-
+#include <vdr/plugin.h>
+#include <vdr/status.h>
+#include <vdr/receiver.h>
 #include <vdr/remote.h>
 
+#include "radioInfoOsd.h"
+#include "radioInfoReceiver.h" 
 #include "radioInfoFilter.h"
-#include "radioInfoData.h"
+#include "sRadioInfo.h"
 #include "radioinfo.h" 
 #include "tools.h"
 #include "config.h"
 #include "radioInfoSetupMenu.h"
 
-#if VDRVERSNUM < 10510
-#error This version of RadioInfo only works with VDR 1.5.10 or above.
-#endif 
 
-
-///////////////////////////////////////////////////////////////////////////////
-
-
-static const char *VERSION        = "0.1.0";
+static const char *VERSION        = "0.0.4";
 static const char *DESCRIPTION    = "Provides extra information for radio channels";
 static const char *MAINMENUENTRY  = NULL;
-
-cPluginRadioinfo* cPluginRadioinfo::currentRadioInfo = NULL;
-
-sRadioInfoConfig config;
-
-
-///////////////////////////////////////////////////////////////////////////////
 
 
 cPluginRadioinfo::cPluginRadioinfo(void)
@@ -41,39 +31,41 @@ cPluginRadioinfo::cPluginRadioinfo(void)
   // Initialize any member variables here.
   // DON'T DO ANYTHING ELSE THAT MAY HAVE SIDE EFFECTS, REQUIRE GLOBAL
   // VDR OBJECTS TO EXIST OR PRODUCE ANY OUTPUT!
-
+  //radioInfoMonitor = NULL;
   radioInfoOsd      = NULL;
   radioInfoReceiver = NULL;
+  radioInfoFilter   = NULL;
   
   currentChannel = NULL;
   currentDevice  = NULL;
   
+  radioInfo = new sRadioInfo;
+  radioInfo->updating = true;
+  
+  wantsOsd = false;
+  
   currentRadioInfo = this;
 
-  config.maxRetries  = 30;
-  config.quickDetect = true;
-  config.osdDelay    = 2;
-  config.scanDelay   = 5; 
+  config.MAX_RETRIES  = 30;
+  config.QUICK_DETECT = true;
+  config.DELAY        = 2;
+  config.SCAN_DELAY   = 5; 
 }
-
-
-//-----------------------------------------------------------------------------
 
 cPluginRadioinfo::~cPluginRadioinfo()
 {
   // Clean up after yourself!    
-  delete radioInfoOsd;
-  delete radioInfoReceiver;
+  if (radioInfoOsd)      delete radioInfoOsd;
+  if (radioInfoReceiver) delete radioInfoReceiver;
+  if (radioInfoFilter)   delete radioInfoFilter;
+  if (radioInfo)         delete radioInfo;
 }
 
-//-----------------------------------------------------------------------------
 
 const char* cPluginRadioinfo::Version(void)       { return VERSION; }
 const char* cPluginRadioinfo::Description(void)   { return DESCRIPTION; }
 const char* cPluginRadioinfo::MainMenuEntry(void) { return MAINMENUENTRY; }
 
-
-//-----------------------------------------------------------------------------
 
 const char *cPluginRadioinfo::CommandLineHelp(void)
 {
@@ -81,60 +73,55 @@ const char *cPluginRadioinfo::CommandLineHelp(void)
   return NULL;
 }
 
-
-//-----------------------------------------------------------------------------
-
 bool cPluginRadioinfo::ProcessArgs(int argc, char *argv[])
 {
   // Implement command line argument processing here if applicable.
   return true;
 }
 
-
-//-----------------------------------------------------------------------------
-
 bool cPluginRadioinfo::Initialize(void)
 {
+    
   return true;
 }
-
-
-//-----------------------------------------------------------------------------
 
 bool cPluginRadioinfo::Start(void)
 {
   // Start any background activities the plugin shall perform. 
   // Initialize any background activities the plugin shall perform.
   
+  radioInfoFilter = new cRadioInfoFilter;
+  
   return true;
 }
-
-
-//-----------------------------------------------------------------------------
 
 void cPluginRadioinfo::Stop(void)
 {
   // Stop any background activities the plugin shall perform.
 }
 
-
-//-----------------------------------------------------------------------------
-
 void cPluginRadioinfo::Housekeeping(void)
 {
   // Perform any cleanup or other regular tasks.
 }
 
-
-//-----------------------------------------------------------------------------
-
 cOsdObject *cPluginRadioinfo::MainMenuAction(void)
 {
-  return NULL;
+  // Perform the action when selected from the main VDR menu.
+  if (wantsOsd)
+  { 
+    if (!radioInfoOsd)
+      radioInfoOsd = new cRadioInfoOsd(&radioInfoOsd, radioInfo);
+    else {
+      DEBUG_MSG("Trying to create osd, one already exists");
+    }
+      
+    wantsOsd = false;
+    return radioInfoOsd;
+  }
+  else
+    return NULL;
 }
-
-
-//-----------------------------------------------------------------------------
 
 cMenuSetupPage *cPluginRadioinfo::SetupMenu(void)
 {
@@ -142,24 +129,18 @@ cMenuSetupPage *cPluginRadioinfo::SetupMenu(void)
   return new cRadioInfoSetupMenu;
 }
 
-
-//-----------------------------------------------------------------------------
- 
 bool cPluginRadioinfo::SetupParse(const char *Name, const char *Value)
 { 
   // Parse your own setup parameters and store their values.
-  if      (!strcasecmp(Name, "maxRetries"))   config.maxRetries  = atoi(Value);
-  else if (!strcasecmp(Name, "quickDetect"))  config.quickDetect = atoi(Value);
-  else if (!strcasecmp(Name, "osdDelay"))     config.osdDelay    = atoi(Value);
-  else if (!strcasecmp(Name, "scanDelay"))    config.scanDelay   = atoi(Value);
+  if      (!strcasecmp(Name, "MAX_RETRIES"))   config.MAX_RETRIES  = atoi(Value);
+  else if (!strcasecmp(Name, "QUICK_DETECT"))  config.QUICK_DETECT = atoi(Value);
+  else if (!strcasecmp(Name, "DELAY"))         config.DELAY        = atoi(Value);
+  else if (!strcasecmp(Name, "SCAN_DELAY"))    config.SCAN_DELAY   = atoi(Value);
   
   else return false;
   
   return true;
 }
-
-
-//-----------------------------------------------------------------------------
 
 bool cPluginRadioinfo::Service(const char *Id, void *Data)
 {
@@ -167,17 +148,11 @@ bool cPluginRadioinfo::Service(const char *Id, void *Data)
   return false;
 }
 
-
-//-----------------------------------------------------------------------------
-
 const char **cPluginRadioinfo::SVDRPHelpPages(void)
 {
   // Return help text for SVDRP commands this plugin implements
   return NULL;
 }
-
-
-//-----------------------------------------------------------------------------
 
 cString cPluginRadioinfo::SVDRPCommand(const char *Command, const char *Option, int &ReplyCode)
 {
@@ -186,14 +161,16 @@ cString cPluginRadioinfo::SVDRPCommand(const char *Command, const char *Option, 
 }
 
 
-//-----------------------------------------------------------------------------
-
 void cPluginRadioinfo::ChannelSwitch(const cDevice *Device, int ChannelNumber)
 {  
-  if (currentDevice && Device != currentDevice) return;
-
   if (ChannelNumber)
-  { 
+  {
+    if (radioInfoReceiver)
+    { 
+      delete radioInfoReceiver;
+      radioInfoReceiver = NULL;
+    }
+  
     const cChannel* chan = Channels.GetByNumber(ChannelNumber);
 		 		
 		// Is it a radio channel?
@@ -202,48 +179,70 @@ void cPluginRadioinfo::ChannelSwitch(const cDevice *Device, int ChannelNumber)
       currentChannel = (cChannel*) chan;
       currentDevice  = (cDevice*)  Device;
   
-		  radioInfoData.Reset();
+		  resetInfo();
 		   
 		  // Find Info PID
-      cRadioInfoFilter::Instance()->Attach(currentDevice);
+      radioInfoFilter->Attach(currentDevice);
       
-      if (radioInfoOsd) {
-        DEBUG_MSG("OSD already exits; this shoudn't happen!");
-        return;	
-      }
-      
-      radioInfoOsd = new cRadioInfoOsd(&radioInfoData);	    
+      // Ready for OSD
+		  wantsOsd = true;
+		  
 		}
 		else // Not a radio channel
-		{      
-
+		{
+		  wantsOsd = false;
+		  if (radioInfoOsd)
+		    hideOsd();
 		}
   }
   else // About to switch channel
   {
-    cRadioInfoFilter::Instance()->Detach();
+    radioInfoFilter->Detach();
     
     if (radioInfoReceiver) {
-      radioInfoReceiver->Detach();
-      delete radioInfoReceiver;
-      radioInfoReceiver = NULL;    
+      radioInfoReceiver->Detach();    
     }
     
-    if (radioInfoOsd) {
-      delete radioInfoOsd;
-      radioInfoOsd = NULL;
-    }   
-      
     currentChannel = NULL;
     currentDevice  = NULL;
   }
-  
+
 }
 
 
-//-----------------------------------------------------------------------------
+void cPluginRadioinfo::OsdClear(void) 
+{ 
+  if (wantsOsd) { 
+    showOsd(); 
+  }
+}
 
-void cPluginRadioinfo::FoundInfoPid(int Pid)
+
+void cPluginRadioinfo::showOsd(void)
+{
+  DEBUG_MSG("Opening OSD");
+  //TODO: Some devices need the screen cleared; use something like
+  //      cDevice::PrimaryDevice()->StillPicture(const uchar *Data, int Length); 
+  cRemote::CallPlugin("radioinfo"); 
+}
+
+
+void cPluginRadioinfo::hideOsd(void)
+{
+  DEBUG_MSG("Closing OSD");
+  
+  if (radioInfoOsd) {
+    radioInfoOsd->ProcessKey(kMenu, false); // called to restore main menu
+  }
+
+  cRemote::CallPlugin("radioinfo"); // Hide menu
+ 
+  // Note: do not delete radioInfoOsd here
+}
+
+
+
+void cPluginRadioinfo::foundInfoPid(int Pid)
 {  
   if (Pid != -1)
   {
@@ -251,19 +250,40 @@ void cPluginRadioinfo::FoundInfoPid(int Pid)
 
     if (radioInfoReceiver) { DEBUG_MSG("Receiver already exits; this shoudn't happen!"); }
     
-    radioInfoReceiver = new cRadioInfoReceiver(Pid, currentChannel->GetChannelID(), &radioInfoData);
-
+    #if VDRVERSNUM >= 10500    
+      radioInfoReceiver = new cRadioInfoReceiver(Pid, currentChannel->GetChannelID(), radioInfo);
+    #else
+      radioInfoReceiver = new cRadioInfoReceiver(Pid, currentChannel->Ca(), radioInfo);
+    #endif
+    
     radioInfoReceiver->Attach(currentDevice);
   }
+  
   else // No PID found
   {
     //TODO: If no PID is found perhaps the program should periodically retry to find one.
+  
   }
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
+
+void cPluginRadioinfo::resetInfo(void)
+{
+  if (radioInfo)
+  {
+    radioInfo->updating = true;
+    strcpy(radioInfo->title, "No Info");
+    radioInfo->artist[0] = '\0';
+    radioInfo->extra1[0] = '\0';
+    radioInfo->extra2[0] = '\0';
+    radioInfo->extra3[0] = '\0';
+    radioInfo->updating = false;  
+  }
+}
+
+
+sRadioInfoConfig config;
 
 
 VDRPLUGINCREATOR(cPluginRadioinfo); // Don't touch this!
-

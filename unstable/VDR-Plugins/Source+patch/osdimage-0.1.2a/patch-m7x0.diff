@@ -512,6 +512,23 @@ diff -Naur osdimage-0.1.2a-orig/menu.h osdimage-0.1.2a/menu.h
  #include <stdio.h>
  //#include <vector>
  //#include <string.h>
+@@ -32,12 +33,12 @@
+    cOSDImageMenu(sFiles &pics);
+ 	~cOSDImageMenu();
+ 
+-	//void cOSDImageMenu::Show();
+-	eOSState cOSDImageMenu::ProcessKey(eKeys Key);
++	//void Show();
++	eOSState ProcessKey(eKeys Key);
+ 	
+-	bool cOSDImageMenu::ScanDir(eScanMode scan);
++	bool ScanDir(eScanMode scan);
+ 	
+-	void cOSDImageMenu::View(char *selectItem = NULL);
++	void View(char *selectItem = NULL);
+ 	
+ 	//void SetShowMenu(bool status) { showMenu = status; }
+ 	//bool GetShowMenu(void) { return showMenu; }
 @@ -45,7 +46,8 @@
  private:
  	sFiles *myPics;
@@ -786,6 +803,21 @@ diff -Naur osdimage-0.1.2a-orig/viewer.h osdimage-0.1.2a/viewer.h
  #include <vdr/plugin.h>
  //#include <vdr/osd.h>
  #include <stdio.h>
+@@ -31,10 +33,10 @@
+ 	~cOSDImageViewer();
+ 	virtual void Show();
+ 	virtual eOSState ProcessKey(eKeys Key);
+-	void cOSDImageViewer::Load(void);
+-	void cOSDImageViewer::ViewPicture(void);
+-	void cOSDImageViewer::ViewBackground(void);
+-	void cOSDImageViewer::ViewInfo(const char *info = "");
++	void Load(void);
++	void ViewPicture(void);
++	void ViewBackground(void);
++	void ViewInfo(const char *info = "");
+ 	
+ private:
+ 	cOsd *osd;
 @@ -45,6 +47,7 @@
  	int wPicArea, hPicArea, wTxtArea;
  	bool slideShow;
