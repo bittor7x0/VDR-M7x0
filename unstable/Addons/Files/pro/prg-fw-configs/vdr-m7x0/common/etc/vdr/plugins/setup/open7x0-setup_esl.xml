@@ -111,8 +111,9 @@
             <entry name="Activar swap" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Activar swap en partición. Ej.: /dev/sdb2 (Sólo 1 dispositivo)" />
         </menu>
         <menu name="Servicios">
-            <entry name="Iniciar servicio inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Iniciar el servicio inetd (ftp, telnet y ssh)" />
+            <entry name="Iniciar servicio inetd" sysconfig="rc.local.conf--inetd" type="bool" value="YES" help1="Iniciar el servicio inetd (ftp, telnet y ssh)" />
             <entry name="Iniciar interfaz web" sysconfig="rc.local.conf--webif_start" type="bool" value="NO" help1="Iniciar el interfaz web para la administración remota" />
+            <entry name="Iniciar servicio ntp" sysconfig="rc.conf--netdate" type="bool" value="NO" help1="Iniciar el servicio para sincronizar la hora por red" />
         </menu>
         <menu name="Menú de inicio">
             <entry name="Activar menú de inicio" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Activar el menú de inicio" />

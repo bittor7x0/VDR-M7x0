@@ -96,6 +96,7 @@ $(STAGEFILES_DIR)/.dropbear_compiled: $(STAGEFILES_DIR)/.dropbear_configured
 $(STAGEFILES_DIR)/.dropbear_installed: $(STAGEFILES_DIR)/.dropbear_compiled
 	$(CP) $(DROPBEAR_DIR)/dropbearmulti $(TARGET_ROOT)/usr/sbin/dropbearmulti
 	chmod 755 $(TARGET_ROOT)/usr/sbin/dropbearmulti
+	$(MKDIR) -p $(TARGET_ROOT)/etc/dropbear
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_installed
 
 

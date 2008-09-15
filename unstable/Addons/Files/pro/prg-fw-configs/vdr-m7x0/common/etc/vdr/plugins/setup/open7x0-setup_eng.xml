@@ -112,8 +112,9 @@
             <entry name="Enable SWAP" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Enable swap in partition. Ex.: /dev/sdb2. Only 1 device" />
         </menu>
         <menu name="Services">
-            <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />
-            <entry name="Web server" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Start administration web" />
+            <entry name="Start inetd daemon" sysconfig="rc.local.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />
+            <entry name="Start web server" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Start administration web" />
+            <entry name="Start ntp daemon" sysconfig="rc.conf--netdate" type="bool" value="NO" help1="Start daemon for network time update" />
         </menu>
         <menu name="Boot menu">
             <entry name="Enabled" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="YES" help1="Enable boot menu" />

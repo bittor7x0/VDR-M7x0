@@ -44,6 +44,12 @@ if [ X"${gateway}" != X"NO" ]; then
     echo "Done"
 fi
 
+if [ X"${netdate}" != X"NO" ]; then
+    echo -n "network time protocol daemon"
+    /usr/sbin/ntpd
+    echo "Done"
+fi
+
 if [ X"${lircd_flags}" != X"NO" ]; then
     echo "lircd daemon";		lircd ${lircd_flags}
 fi
