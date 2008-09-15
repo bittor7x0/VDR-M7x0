@@ -40,10 +40,11 @@ DISTCLEAN_RULES += distclean-openntpd
 # download openntpd
 #
 
-$(OPENNTPD_DLFILE):
+$(OPENNTPD_DLFILE): $(TC_INIT_RULE)
 	(if [ ! -f $(OPENNTPD_DLFILE) ] ; then \
 	$(WGET) $(OPENNTPD_URL) -O $(OPENNTPD_DLFILE) ; \
 	fi );
+	$(TOUCH) $(OPENNTPD_DLFILE)
 
 #
 # unpack openntpd

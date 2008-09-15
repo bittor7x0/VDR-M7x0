@@ -40,10 +40,11 @@ DISTCLEAN_RULES += distclean-scsi-spin
 # download scsi-spin
 #
 
-$(SCSI-SPIN_DLFILE):
+$(SCSI-SPIN_DLFILE): $(TC_INIT_RULE)
 	(if [ ! -f $(SCSI-SPIN_DLFILE) ] ; then \
 	$(WGET) $(SCSI-SPIN_URL) -O $(SCSI-SPIN_DLFILE) ; \
 	fi );
+	$(TOUCH) $(SCSI-SPIN_DLFILE)
 
 #
 # unpack scsi-spin

@@ -40,10 +40,11 @@ DISTCLEAN_RULES += distclean-spindown
 # download spindown
 #
 
-$(SPINDOWN_DLFILE):
+$(SPINDOWN_DLFILE): $(TC_INIT_RULE)
 	(if [ ! -f $(SPINDOWN_DLFILE) ] ; then \
 	$(WGET) $(SPINDOWN_URL) -O $(SPINDOWN_DLFILE) ; \
 	fi );
+	$(TOUCH) $(SPINDOWN_DLFILE)
 
 #
 # unpack spindown

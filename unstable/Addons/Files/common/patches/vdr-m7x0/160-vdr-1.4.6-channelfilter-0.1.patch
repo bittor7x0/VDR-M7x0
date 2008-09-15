@@ -1,6 +1,6 @@
-diff -Naur vdr-m7x0-orig/channels.h vdr-m7x0/channels.h
---- vdr-m7x0-orig/channels.h	2007-07-01 21:01:50.000000000 +0200
-+++ vdr-m7x0/channels.h	2007-07-01 21:02:14.000000000 +0200
+diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
+--- VDR-NG-orig/channels.h	2008-09-15 20:49:38.000000000 +0200
++++ VDR-NG/channels.h	2008-09-15 20:50:38.000000000 +0200
 @@ -184,6 +184,8 @@
    int Tid(void) const { return tid; }
    int Sid(void) const { return sid; }
@@ -10,10 +10,10 @@ diff -Naur vdr-m7x0-orig/channels.h vdr-m7x0/channels.h
    int Number(void) const { return number; }
    void SetNumber(int Number) { number = Number; }
    bool GroupSep(void) const { return groupSep; }
-diff -Naur vdr-m7x0-orig/i18n.c vdr-m7x0/i18n.c
---- vdr-m7x0-orig/i18n.c	2007-07-01 21:01:50.000000000 +0200
-+++ vdr-m7x0/i18n.c	2007-07-01 21:02:14.000000000 +0200
-@@ -3861,6 +3861,72 @@
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2008-09-15 20:49:38.000000000 +0200
++++ VDR-NG/i18n.c	2008-09-15 20:50:38.000000000 +0200
+@@ -4015,6 +4015,72 @@
      "tilf. ny transp.",
      "pøidat nové transpondéry",
    },
@@ -86,10 +86,10 @@ diff -Naur vdr-m7x0-orig/i18n.c vdr-m7x0/i18n.c
    { "Setup.DVB$Audio languages",  // note the plural
      "Audio-Sprachen",
      "Jeziki za zvok",
-diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
---- vdr-m7x0-orig/menu.c	2007-07-01 21:01:50.000000000 +0200
-+++ vdr-m7x0/menu.c	2007-07-01 21:03:02.000000000 +0200
-@@ -376,7 +376,11 @@
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2008-09-15 20:49:38.000000000 +0200
++++ VDR-NG/menu.c	2008-09-15 20:56:57.000000000 +0200
+@@ -380,7 +380,11 @@
              asprintf(&buffer, "%d\t%c %-30s", channel->Number(), ICON_TV_VERSCHL, channel->Name());
          }
       else
@@ -102,7 +102,7 @@ diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
       }
    else
       asprintf(&buffer, "---\t%s ----------------------------------------------------------------", channel->Name());
-@@ -394,6 +398,8 @@
+@@ -398,6 +402,8 @@
    void Setup(void);
    cChannel *GetChannel(int Index);
    void Propagate(void);
@@ -111,7 +111,7 @@ diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
  protected:
    eOSState Number(eKeys Key);
    eOSState Switch(void);
-@@ -411,6 +417,7 @@
+@@ -415,6 +421,7 @@
  :cOsdMenu(tr("Channels"), CHNUMWIDTH)
  {
    number = 0;
@@ -119,7 +119,7 @@ diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
    Setup();
    Channels.IncBeingEdited();
  }
-@@ -426,17 +433,35 @@
+@@ -430,17 +437,35 @@
    if (!currentChannel)
       currentChannel = Channels.GetByNumber(cDevice::CurrentChannel());
    cMenuChannelItem *currentItem = NULL;
@@ -128,13 +128,13 @@ diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
    Clear();
 +
    for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
--      if ((!channel->GroupSep() || cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && *channel->Name()) && ( channel == currentChannel || channel->Filtered() )) {
+-      if ((!channel->GroupSep() || (cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && *channel->Name()) && ( channel == currentChannel || channel->Filtered() ))) {
 -         cMenuChannelItem *item = new cMenuChannelItem(channel);
 -         Add(item);
 -         if (channel == currentChannel)
 -            currentItem = item;
 -         }
-+       if ((!channel->GroupSep() || cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && ( channel == currentChannel || channel->Filtered() ))
++       if ((!channel->GroupSep() || (cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && ( channel == currentChannel || channel->Filtered() )))
 +            && *channel->Name()  //Channel must have a name
 + 	    && (channel->GroupSep() || //Do not filter Groupseperators
 +             	(  !(onlyTV      && !channel->IsTV()     ) 
@@ -161,7 +161,7 @@ diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
    SetCurrent(currentItem);
    SetHelp(tr("Button$Edit"), tr("Button$New"), tr("Button$Delete"), tr("Button$Mark"));
    Display();
-@@ -481,6 +506,11 @@
+@@ -485,6 +510,11 @@
    return osContinue;
  }
  
@@ -173,7 +173,7 @@ diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
  eOSState cMenuChannels::Switch(void)
  {
    if (HasSubMenu())
-@@ -582,8 +612,27 @@
+@@ -586,8 +616,27 @@
      default:
           if (state == osUnknown) {
              switch (Key) {
@@ -203,9 +203,9 @@ diff -Naur vdr-m7x0-orig/menu.c vdr-m7x0/menu.c
                case kOk:     return Switch();
                case kRed:    return Edit();
                case kGreen:  return New();
-diff -Naur vdr-m7x0-orig/README.channelfilterpatch vdr-m7x0/README.channelfilterpatch
---- vdr-m7x0-orig/README.channelfilterpatch	1970-01-01 01:00:00.000000000 +0100
-+++ vdr-m7x0/README.channelfilterpatch	2007-07-01 21:02:14.000000000 +0200
+diff -Naur VDR-NG-orig/README.channelfilterpatch VDR-NG/README.channelfilterpatch
+--- VDR-NG-orig/README.channelfilterpatch	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/README.channelfilterpatch	2008-09-15 20:50:38.000000000 +0200
 @@ -0,0 +1,27 @@
 +This patch filters the channel list on demand. 
 +A additional column of channel attributes is also added:

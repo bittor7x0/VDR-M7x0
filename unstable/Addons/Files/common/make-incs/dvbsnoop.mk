@@ -40,10 +40,11 @@ DISTCLEAN_RULES += distclean-dvbsnoop
 # download dvbsnoop
 #
 
-$(DVBSNOOP_DLFILE):
+$(DVBSNOOP_DLFILE): $(TC_INIT_RULE)
 	(if [ ! -f $(DVBSNOOP_DLFILE) ] ; then \
 	$(WGET) $(DVBSNOOP_URL) -O $(DVBSNOOP_DLFILE) ; \
 	fi );
+	$(TOUCH) $(DVBSNOOP_DLFILE)
 
 #
 # unpack dvbsnoop

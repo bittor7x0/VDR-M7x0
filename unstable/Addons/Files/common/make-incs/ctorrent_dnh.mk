@@ -40,10 +40,11 @@ DISTCLEAN_RULES += distclean-ctorrent_dnh
 # download ctorrent_dnh
 #
 
-$(CTORRENT_DNH_DLFILE):
+$(CTORRENT_DNH_DLFILE): $(TC_INIT_RULE)
 	(if [ ! -f $(CTORRENT_DNH_DLFILE) ] ; then \
 	$(WGET) $(CTORRENT_DNH_URL) -O $(CTORRENT_DNH_DLFILE) ; \
 	fi );
+	$(TOUCH) $(CTORRENT_DNH_DLFILE)
 
 #
 # unpack ctorrent_dnh

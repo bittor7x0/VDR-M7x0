@@ -46,10 +46,11 @@ DISTCLEAN_RULES += distclean-dropbear
 # download dropbear
 #
 
-$(DROPBEAR_DLFILE):
+$(DROPBEAR_DLFILE): $(TC_INIT_RULE)
 	(if [ ! -f $(DROPBEAR_DLFILE) ] ; then \
 	$(WGET) $(DROPBEAR_URL) -O $(DROPBEAR_DLFILE) ; \
 	fi );
+	$(TOUCH) $(DROPBEAR_DLFILE)
 
 #
 # unpack dropbear
