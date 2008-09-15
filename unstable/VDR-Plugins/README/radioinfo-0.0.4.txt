@@ -26,6 +26,5 @@ Notes
 
 - If you only see "No Info" try turning off "Use quick PID detection"
 
-- As of version 0.1.0 the names of the configuration variables have changed
-  please update your settings
+
 
