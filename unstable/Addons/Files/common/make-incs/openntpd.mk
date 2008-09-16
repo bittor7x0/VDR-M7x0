@@ -91,7 +91,7 @@ $(STAGEFILES_DIR)/.openntpd_compiled: $(STAGEFILES_DIR)/.openntpd_configured
 $(STAGEFILES_DIR)/.openntpd_installed: $(STAGEFILES_DIR)/.openntpd_compiled
 	$(CP) $(OPENNTPD_DIR)/ntpd $(TARGET_ROOT)/usr/sbin/ntpd
 	chmod 755 $(TARGET_ROOT)/usr/sbin/ntpd
-	$(MKDIR) -p $(TARGET_ROOT)/etc/ssmtp
+	$(MKDIR) -p $(TARGET_ROOT)/etc/ntp
 	$(CP) $(OPENNTPD_DIR)/ntpd.conf $(TARGET_ROOT)/etc/ntp/ntpd.conf
 	$(TOUCH) $(STAGEFILES_DIR)/.openntpd_installed
 
