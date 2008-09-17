@@ -23,7 +23,7 @@ if [ X"${syslogd_flags}" != X"NO" ]; then
     mv /var/log/messages* /rw-flash/log
 fi 
 
-sync
+/bin/sync
 umount -a -l
 # be careful /proc might not be available anymore
 /usr/sbin/pic_tool shutdown 3

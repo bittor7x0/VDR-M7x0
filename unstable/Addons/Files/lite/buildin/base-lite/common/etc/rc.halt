@@ -10,7 +10,7 @@ if [ X"${lircd_flags}" != X"NO" ]; then
     kill -15 `cat /var/run/lircd.pid`
 fi
 
-pic_tool -s time systopic
+pic_tool time systopic
 
 if [ X"${syslogd_flags}" != X"NO" ]; then
     echo -n ' syslogd'
@@ -18,7 +18,7 @@ if [ X"${syslogd_flags}" != X"NO" ]; then
     mv /var/log/messages* /rw-flash/log
 fi 
 
-sync
+/bin/sync
 umount -a -l
 # be careful /proc might not be available anymore
 /usr/sbin/pic_tool shutdown 3
