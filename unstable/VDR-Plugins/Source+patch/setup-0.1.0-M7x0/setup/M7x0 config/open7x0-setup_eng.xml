@@ -1,0 +1,48 @@
+<!--
+-   open7x0-VDR Configuration File
+-   based on Minisetup by Ralf Dotzert
+-->
+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="/etc/vdr/rebootvdr" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
+    <plugins sysconfig="rc.local.conf--vdr_pluginopts" protected="setup">
+    </plugins>
+    <menus>
+        <menu name="Manager plugins" help1="Enable and disable plugins" system="ActPlugins" />        
+        <menu name="General Configuration">
+            <entry name="Mount USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Mount usb disk" />
+            <entry name="Mount Network" sysconfig="rc.local.conf--do_net_mount" type="bool" value="YES" help1="Mount network shared directories" />
+            <entry name="Start time" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="302" help1="Start time" />
+        </menu>
+        <menu name="Directories">
+            <entry name="Configuration" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Configuration files. NOT MODIFY" />
+            <entry name="Videos" sysconfig="rc.local.conf--vdr_videodirs" type="text" value='&quot;/media/LACIE/vdr&quot;' help1="Videos directory" />
+            <entry name="Plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr_ng&quot;' help1="Plugins Directories. NOT MODIFY" />
+        </menu>
+        <menu name="EPG Configuration">
+            <entry name="EPG File" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="EPG file" />
+            <entry name="EPG direct" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="EPG direct" />
+        </menu>
+        <menu name="Network Configuration">
+            <entry name="Mode" sysconfig="rc.conf--net" type="selection" value="inet" help1="Configuration IP mode. DHCP/INET">
+                <value>dhcp</value>
+                <value>inet</value>
+            </entry>
+            <entry name="IP Address" sysconfig="rc.conf--ip" type="ip" value="192.168.2.100" help1="IP Address M7XX" />
+            <entry name="Network Mask" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Network mask" />
+            <entry name="Gateway" sysconfig="rc.conf--gateway" type="ip" value='&quot;NO&quot;' help1="Gatewary IP address. default NO" />
+            <entry name="MAC Address" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="NOT MODIFY" />
+            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="M7XX Name (DNS). default /etc/hostname. NOT MODIFY" />  
+        </menu>
+        <menu name="Services">
+            <entry name="Inetd" sysconfig="rc.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />
+            <entry name="Web server" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Start administration web" />
+        </menu>
+        <menu name="Boot menu">
+            <entry name="Enabled" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="YES" help1="Enable boot menu" />
+            <entry name="Default option" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Default option" />
+            <entry name="Video mode" sysconfig="rc.local.conf--bootmenu_video_mode" type="selection" value="0" help1="0 = fbase, 1 = svideo">
+                <value>0</value>
+                <value>1</value>
+            </entry>
+        </menu>
+    </menus>
+</setup>
