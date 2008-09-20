@@ -1,6 +1,6 @@
-diff -Naur newsticker-0.0.4/Makefile newsticker/Makefile
---- newsticker-0.0.4/Makefile	2007-12-08 12:04:03.000000000 +0100
-+++ newsticker/Makefile	2007-12-08 12:10:49.000000000 +0100
+diff -Naur newsticker-0.0.4-orig/Makefile newsticker-0.0.4/Makefile
+--- newsticker-0.0.4-orig/Makefile	2008-07-08 20:27:24.000000000 +0200
++++ newsticker-0.0.4/Makefile	2008-09-20 13:53:15.000000000 +0200
 @@ -16,11 +16,10 @@
  ### The C++ compiler and options:
  
@@ -35,10 +35,21 @@ diff -Naur newsticker-0.0.4/Makefile newsticker/Makefile
  
  dist: clean
  	@-rm -rf $(TMPDIR)/$(ARCHIVE)
-diff -Naur newsticker-0.0.4/news.c newsticker/news.c
---- newsticker-0.0.4/news.c	2007-12-08 12:04:03.000000000 +0100
-+++ newsticker/news.c	2007-12-08 12:10:49.000000000 +0100
-@@ -180,7 +180,7 @@
+diff -Naur newsticker-0.0.4-orig/news.c newsticker-0.0.4/news.c
+--- newsticker-0.0.4-orig/news.c	2008-07-08 20:27:24.000000000 +0200
++++ newsticker-0.0.4/news.c	2008-09-20 13:53:30.000000000 +0200
+@@ -6,7 +6,9 @@
+  * $Id: news.c 0.0.1 2003/11/22 ew $
+  */
+  
+-#include "news.h"
++#include "news.h"
++
++using std::ifstream;
+ 
+ int ifindchar(int start,char* str,char c)
+ {
+@@ -180,7 +182,7 @@
  			MyConfigDir = cPlugin::ConfigDirectory(plugin_Name);
  		if(!MyConfigDir)
  			dsyslog("Error getting the config directory!");
@@ -47,3 +58,29 @@ diff -Naur newsticker-0.0.4/news.c newsticker/news.c
  		//dsyslog("newsticker: %s" , tmpSystem);
  		 
  		int dow_i = system (tmpSystem);
+diff -Naur newsticker-0.0.4-orig/news.h newsticker-0.0.4/news.h
+--- newsticker-0.0.4-orig/news.h	2008-07-08 20:27:24.000000000 +0200
++++ newsticker-0.0.4/news.h	2008-09-20 13:53:30.000000000 +0200
+@@ -20,8 +20,8 @@
+ #include <netinet/in.h>
+ #include <netdb.h>
+ #include <unistd.h>
+-#include <iostream.h>
+-#include <fstream.h>
++#include <iostream>
++#include <fstream>
+ 
+ #define INT_SIZEOFBUF 300 * 1024 // Buffer 200Kb 
+ 
+diff -Naur newsticker-0.0.4-orig/newsticker.c newsticker-0.0.4/newsticker.c
+--- newsticker-0.0.4-orig/newsticker.c	2008-07-08 20:27:24.000000000 +0200
++++ newsticker-0.0.4/newsticker.c	2008-09-20 13:53:30.000000000 +0200
+@@ -98,7 +98,7 @@
+   void Show(void) {Start(); }
+   eOSState ProcessKey(eKeys Key);
+   int scrollMessage(char* message, int speed, int position, cOsd *osd, tColor ColorFg, tColor ColorBg, eDvbFont font);
+-  cOsd* cOSDNewsticker::createOSDLine(int row, eDvbFont font);
++  cOsd* createOSDLine(int row, eDvbFont font);
+   };
+ 
+ cOSDNewsticker::cOSDNewsticker(void)
