@@ -2,22 +2,8 @@
 -   open7x0-VDR Configuration File
 -   based on Minisetup by Ralf Dotzert
 -->
-<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="pic_tool reboot 3 10" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
-    <plugins sysconfig="rc.local.conf--vdr_pluginopts">
-        <plugin name="setup" info="Gigaset 7x0 Setup" active="YES" protected="YES" />
-        <plugin name="rssreader" info="rssreader" active="YES" />
-        <plugin name="epgsearch" info="epgsearch" active="YES" />
-        <plugin name="pilot" info="pilot" active="YES" />
-        <plugin name="recstatus" info="recstatus" active="YES" />
-        <plugin name="showrecinfo" info="showrecinfo" active="YES" />
-        <plugin name="noepgmenu" info="noepgmenu" active="YES" />
-        <plugin name="skinenigmang" info="skinenigmang" active="YES" />
-        <plugin name="scheduler" info="scheduler" active="YES" />
-        <plugin name="pilotskin" info="pilotskin" active="YES" />
-        <plugin name="status" info="status" active="YES" />
-        <plugin name="osdteletext" info="osdteletext" active="YES" />
-        <plugin name="streamplayer" info="streamplayer" active="NO" />
-        <plugin name="launcher" info="launcher" active="NO" />
+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="/etc/vdr/rebootvdr" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
+    <plugins sysconfig="rc.local.conf--vdr_pluginopts" protected="setup">
     </plugins>
     <menus>
         <menu name="Manager plugins" help1="Enable and disable plugins" system="ActPlugins" />        
