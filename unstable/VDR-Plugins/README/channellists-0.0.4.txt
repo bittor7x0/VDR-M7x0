@@ -58,8 +58,9 @@ Commandline Option:
 Setup Options:
 --------------
 - Hide main menu entry:    Hides the plugin main menu entry
-- Button Red:              Switch between Rename and Script
-- Button Green:            Switch between Copy and Script
+- Action after switch:     ...ing channellist can be Channels, Menu, back or none
+- Button Red:              can be Rename or Script
+- Button Green:            can be Copy or Script
 
 SVDRP:
 ------
