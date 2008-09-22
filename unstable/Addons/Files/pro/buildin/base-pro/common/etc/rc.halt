@@ -26,22 +26,22 @@ fi
 /bin/sync
 umount -a -l
 
-if [ X"$1" != X"reboot" ]; then                  
-    ACTION="shutdown 3"                          
-    ACTION2="shutdown 1 wait"                    
-else                                             
-    ACTION="reboot 3 10"                         
-    ACTION2="reboot 3 10"                        
-fi                                               
-                                                 
+if [ X"$1" != X"reboot" ]; then
+    action1="shutdown 3"
+    action2="shutdown 1 wait"
+else
+    action1="reboot 3 10"
+    action2="reboot 3 10"
+fi
+
 # be careful /proc might not be available anymore
-/usr/sbin/pic_tool $ACTION                       
-/usr/bin/killall5 -15                        
-/bin/sleep 1                                 
-/usr/bin/killall5 -9                         
-/bin/sleep 10                                
-# should never be reached                    
-/usr/sbin/pic_tool $ACTION2      
+/usr/sbin/pic_tool ${action1}
+/usr/bin/killall5 -15
+/bin/sleep 1
+/usr/bin/killall5 -9
+/bin/sleep 10
+# should never be reached
+/usr/sbin/pic_tool ${action2}
 # should really never be reached
 while true; do
       echo "Point reached never should be..."
