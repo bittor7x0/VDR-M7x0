@@ -1,0 +1,5 @@
+#!/bin/ash
+
+ash /etc/rc.halt reboot
+
+exit 0
