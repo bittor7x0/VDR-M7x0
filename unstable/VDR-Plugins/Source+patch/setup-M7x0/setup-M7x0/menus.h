@@ -103,7 +103,7 @@ class MenuEntryValueList
   public:
     MenuEntryValueList();
     ~MenuEntryValueList();
-    MenuEntryValueList const &MenuEntryValueList::operator =(MenuEntryValueList const &right   );
+    MenuEntryValueList const &operator =(MenuEntryValueList const &right   );
     void copy(MenuEntryValueList const &other);
     void destroy();
     void Add(const char *value);
@@ -134,9 +134,9 @@ public:
     MenuEntry();
     ~MenuEntry();
     void destroy();
-    bool MenuEntry::AddEntry( TiXmlNode *node  );
-    bool MenuEntry::AddSubEntry( TiXmlNode *node  );
-    bool MenuEntry::AddSelectionValues( TiXmlNode *node, const char *selection);
+    bool AddEntry( TiXmlNode *node  );
+    bool AddSubEntry( TiXmlNode *node  );
+    bool AddSelectionValues( TiXmlNode *node, const char *selection);
     TiXmlNode *SaveXml( );
     void SetSysconfigName(const char* nam);
     const char*GetSysconfigName();

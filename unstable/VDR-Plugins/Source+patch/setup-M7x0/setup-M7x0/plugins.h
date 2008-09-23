@@ -34,20 +34,20 @@ public:
     bool operator< (Plugin &param);
     bool operator> (Plugin &param);
     void Print();
-    const char* Plugin::GetName();
-    const char* Plugin::GetInfo();
-    const char* Plugin::GetParameter();
-    void Plugin::SetName(const char* name);
-    void Plugin::SetInfo(const char* info);
-    void Plugin::SetParameter(const char* parameter);
-    void Plugin::SetActive(int flag);
-    void Plugin::SetProtect(bool protect);
-    int  Plugin::GetActive();
-    int  *Plugin::GetActiveRef();
-    void Plugin::SetInSystem(bool flag);
-    bool Plugin::GetInSystem();
-    bool Plugin::GetProtect();
-    const char* Plugin::GetActiveString();
+    const char* GetName();
+    const char* GetInfo();
+    const char* GetParameter();
+    void SetName(const char* name);
+    void SetInfo(const char* info);
+    void SetParameter(const char* parameter);
+    void SetActive(int flag);
+    void SetProtect(bool protect);
+    int  GetActive();
+    int  *GetActiveRef();
+    void SetInSystem(bool flag);
+    bool GetInSystem();
+    bool GetProtect();
+    const char* GetActiveString();
 };
 
 class Plugins  : public cList<Plugin> 
