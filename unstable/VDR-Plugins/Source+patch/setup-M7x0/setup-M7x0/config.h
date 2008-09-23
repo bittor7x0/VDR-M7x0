@@ -58,7 +58,7 @@ private:
     void                dumpXMLError(const char* errStr);
     bool                readVdrLib();
     void                prepareSysConfig();
-    bool Config::readVdrLibDir(const char* libDir);
+    bool                readVdrLibDir(const char* libDir);
 };
 
 
