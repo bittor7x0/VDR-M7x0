@@ -13,7 +13,7 @@
  
  $(STAGEFILES_DIR)/.vdr_downloaded: $(TC_INIT_RULE)
 -	$(SVN) co $(VDR_SVN_URL) $(VDR_DIR)
-+	$(SVN) co -r 302 $(VDR_SVN_URL) $(VDR_DIR)
++	$(SVN) co -r 310 $(VDR_SVN_URL) $(VDR_DIR)
  	$(TOUCH) $(STAGEFILES_DIR)/.vdr_downloaded
  
  $(STAGEFILES_DIR)/.vdr_local_downloaded: $(CONFIG_VDR_LOCAL_PATH)/*.c \
