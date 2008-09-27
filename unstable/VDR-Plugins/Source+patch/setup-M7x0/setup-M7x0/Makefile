@@ -129,4 +129,4 @@ dist: clean
 	@echo Distribution package created as $(PACKAGE).tgz
 
 clean:
-	@-rm -f $(OBJS) $(MAIN) $(DEPFILE) *.so *.tgz core* setupsystemmenu.cpp *~
+	@-rm -f $(OBJS) $(MAIN) $(DEPFILE) *.so *.tgz core* *~
