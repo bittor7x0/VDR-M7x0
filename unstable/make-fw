@@ -74,8 +74,8 @@ echo "Copying files to temporal dir"
 cp -Trf "$vdr_fw_orig" "$tmp"
 cp -Trf "$vdr_em_files/common" "$tmp"
 cp -Trf "$vdr_em_files/$vdr_version" "$tmp"
-cp -rf "$tmp/buildin/base-gambler/m740"  "$tmp/buildin/base-$vdr_version"
-cp -rf "$tmp/buildin/base-gambler/m750s" "$tmp/buildin/base-$vdr_version"
+cp -rf "$tmp/buildin/base/m740"  "$tmp/buildin/base-$vdr_version"
+cp -rf "$tmp/buildin/base/m750s" "$tmp/buildin/base-$vdr_version"
 
 # Patch firmware
 echo "Patching Firmware"
