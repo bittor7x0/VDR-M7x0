@@ -15,10 +15,10 @@ fi
 if [[ -d "$vdr/.svn" ]]
 then
 	echo "Update VDR-M7x0 original"
-	svn update -r 320 -q "svn://open7x0.org/vdr-m7x0/branches/andreas-unstable" "$vdr"
+	svn update -r 323 -q "svn://open7x0.org/vdr-m7x0/branches/andreas-unstable" "$vdr"
 else
 	echo "Checkout VDR-M7x0 original"
-	svn checkout -r 320 -q "svn://open7x0.org/vdr-m7x0/branches/andreas-unstable" "$vdr"
+	svn checkout -r 323 -q "svn://open7x0.org/vdr-m7x0/branches/andreas-unstable" "$vdr"
 fi
 
 # Patching VDR

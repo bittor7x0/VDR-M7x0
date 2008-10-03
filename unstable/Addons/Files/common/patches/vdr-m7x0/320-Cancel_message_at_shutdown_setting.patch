@@ -5,7 +5,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    JumpSeconds = 60;
    JumpSecondsRepeat = 120;
    JumpFramesRepeat = 15;
-+  ShutdownMessage = 1;
++  ShutdownMessage = 0;
    AbortWhenPluginFails = 0;
    EmergencyExit = 1;
    LircRepeatDelay = 350;
