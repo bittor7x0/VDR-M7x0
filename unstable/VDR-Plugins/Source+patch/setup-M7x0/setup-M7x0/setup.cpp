@@ -15,7 +15,7 @@
 //#include "setupsetup.h"
 #include "i18n.h"
 
-static const char *VERSION        = "0.0.2";
+static const char *VERSION        = "0.1.0";
 static const char *DESCRIPTION    = "open7x0-Setup (based on Minivdr-Setup)";
 static const char *MAINMENUENTRY  = "Gigaset 7x0 Firmware Setup";
 
