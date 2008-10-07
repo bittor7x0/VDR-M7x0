@@ -4,3 +4,4 @@ ssh		22/udp			# SSH Remote Login Protocol
 telnet		23/tcp
 www		80/tcp		http	# WorldWideWeb HTTP
 www		80/udp			# HyperText Transfer Protocol
+ntp		123/udp
