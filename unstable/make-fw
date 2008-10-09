@@ -120,6 +120,15 @@ for delete in `cat "$vdr_em_delete/$vdr_version.lst" | tr -d '\r' `; do
 	fi
 done
 
+############################
+# Get SVN versions         #
+############################
+svn_em_version=`svn status -v COPYING |  awk '{print $1}' | sort -u`
+svn_em_o7o=`svn status -v "$vdr_fw_orig" |  awk '{print $1}' | sort -u`
+
+echo em svn_$svn_em_version >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
+echo o7o svn_$svn_em_o7o >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
+
 # Clean temp dir
 rm -rf "$tmp"
 echo ""
