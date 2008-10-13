@@ -58,10 +58,10 @@ fi
 if [[ -d "$vdr_fw_orig/.svn" ]]
 then
 	echo "Update VDR-o7o original"
-	svn update -q -r 381 "$vdr_fw_orig"
+	svn update -q -r 383 "$vdr_fw_orig"
 else
 	echo "Checkout VDR-o7o original"
-	svn checkout -q -r 381 "$svn_o7o" "$vdr_fw_orig"
+	svn checkout -q -r 383 "$svn_o7o" "$vdr_fw_orig"
 fi
 
 
@@ -120,14 +120,12 @@ for delete in `cat "$vdr_em_delete/$vdr_version.lst" | tr -d '\r' `; do
 	fi
 done
 
-############################
-# Get SVN versions         #
-############################
-svn_em_version=`svn status -v COPYING |  awk '{print $1}' | sort -u`
-svn_em_o7o=`svn status -v "$vdr_fw_orig" |  awk '{print $1}' | sort -u`
+# Set SVN versions
+svn_em_version=" em subversion revision `svnversion`"
+svn_o7o_version="o7o subversion revision `svnversion \"$vdr_fw_orig\"`"
 
-echo em svn_$svn_em_version >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
-echo o7o svn_$svn_em_o7o >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
+echo $svn_em_version  >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
+echo $svn_o7o_version >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
 
 # Clean temp dir
 rm -rf "$tmp"
