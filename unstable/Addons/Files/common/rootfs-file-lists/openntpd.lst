@@ -1,2 +1,4 @@
-usr/sbin/ntpd    usr/sbin/ntpd    f 755 0 0 - - - - -
-usr/sbin/ntpd    -                s   - - - - - - - -
+usr/sbin/ntpd     usr/sbin/ntpd     f 755 0 0 - - - - -
+usr/sbin/ntpd     -                 s   - - - - - - - -
+etc/ntp           -                 d 755 0 0 - - - - -
+etc/ntp/ntpd.conf etc/ntp/ntpd.conf f 664 0 0 - - - - -
