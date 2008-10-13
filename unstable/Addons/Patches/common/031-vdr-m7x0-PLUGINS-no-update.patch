@@ -1,0 +1,22 @@
+diff -Naur uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk uclibc_build_env/make-incs/vdr-m7x0-plugins.mk
+--- uclibc_build_env_orig/make-incs/vdr-m7x0-plugins.mk	2008-10-03 21:52:13.000000000 +0200
++++ uclibc_build_env/make-incs/vdr-m7x0-plugins.mk	2008-10-13 10:43:14.000000000 +0200
+@@ -67,18 +67,6 @@
+ VDR-PLUGINS_LIBNAMES = $(foreach plug,$(CONFIG_VDR-PLUGINS-LIBS), \
+    libvdr-$(plug).so.$(VDR-PLUGINS_APIVERSION))
+ 
+-ifneq ($(and $(CONFIG_VDR-PLUGINS), $(wildcard $(VDR-PLUGINS_DIR))),)
+-$(info Updating vdr plugins download ...)
+-vdr-plugins_svn_changed := $(call svn_changed,$(VDR-PLUGINS_DIR))
+-
+-ifeq ($(vdr-plugins_svn_changed),0)
+-$(info vdr plugins are up to date)
+-else
+-$(info $(vdr-plugins_svn_changed) file(s) updated)
+-vdr-plugins_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_downloaded)
+-endif
+-endif
+-
+ #
+ # download vdr-plugins
+ #

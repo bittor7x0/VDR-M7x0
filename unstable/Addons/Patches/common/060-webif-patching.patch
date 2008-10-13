@@ -14,7 +14,7 @@ diff -Naur uclibc_build_env_orig/make-incs/webif.mk uclibc_build_env/make-incs/w
  
  $(STAGEFILES_DIR)/.webapp_downloaded: $(STAGEFILES_DIR)/.webif_unpacked
 -	$(SVN) co $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
-+	$(SVN) co -r 70 $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
++	$(SVN) co -r 72 $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
  	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
 +
 +#
