@@ -1,7 +1,7 @@
-diff -Naur hlcutter-orig/config.c hlcutter/config.c
---- hlcutter-orig/config.c	Fri Feb 22 17:04:17 2008
-+++ hlcutter/config.c	Fri Feb 22 17:10:15 2008
-@@ -268,7 +268,9 @@
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	2008-10-11 12:28:09.000000000 +0200
++++ VDR-NG/config.c	2008-10-12 20:07:02.000000000 +0200
+@@ -315,7 +315,9 @@
    OSDMessageTime = 1;
    UseSmallFont = 1;
    MaxVideoFileSize = MAXVIDEOFILESIZE;
@@ -10,8 +10,8 @@ diff -Naur hlcutter-orig/config.c hlcutter/config.c
 +  HardLinkCutter = 0;
    MinEventTimeout = 30;
    MinUserInactivity = 300;
-   MultiSpeedMode = 0;
-@@ -437,7 +439,9 @@
+   NextWakeupTime = 0;
+@@ -502,7 +504,9 @@
    else if (!strcasecmp(Name, "OSDMessageTime"))      OSDMessageTime     = atoi(Value);
    else if (!strcasecmp(Name, "UseSmallFont"))        UseSmallFont       = atoi(Value);
    else if (!strcasecmp(Name, "MaxVideoFileSize"))    MaxVideoFileSize   = atoi(Value);
@@ -20,8 +20,8 @@ diff -Naur hlcutter-orig/config.c hlcutter/config.c
 +  else if (!strcasecmp(Name, "HardLinkCutter"))      HardLinkCutter     = atoi(Value);
    else if (!strcasecmp(Name, "MinEventTimeout"))     MinEventTimeout    = atoi(Value);
    else if (!strcasecmp(Name, "MinUserInactivity"))   MinUserInactivity  = atoi(Value);
-   else if (!strcasecmp(Name, "MultiSpeedMode"))      MultiSpeedMode     = atoi(Value);
-@@ -513,7 +517,9 @@
+   else if (!strcasecmp(Name, "NextWakeupTime"))      NextWakeupTime     = atoi(Value);
+@@ -596,7 +600,9 @@
    Store("OSDMessageTime",     OSDMessageTime);
    Store("UseSmallFont",       UseSmallFont);
    Store("MaxVideoFileSize",   MaxVideoFileSize);
@@ -30,11 +30,11 @@ diff -Naur hlcutter-orig/config.c hlcutter/config.c
 +  Store("HardLinkCutter",     HardLinkCutter);
    Store("MinEventTimeout",    MinEventTimeout);
    Store("MinUserInactivity",  MinUserInactivity);
-   Store("MultiSpeedMode",     MultiSpeedMode);
-diff -Naur hlcutter-orig/config.h hlcutter/config.h
---- hlcutter-orig/config.h	Fri Feb 22 17:04:17 2008
-+++ hlcutter/config.h	Fri Feb 22 17:10:15 2008
-@@ -249,7 +249,9 @@
+   Store("NextWakeupTime",     NextWakeupTime);
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	2008-10-11 12:28:09.000000000 +0200
++++ VDR-NG/config.h	2008-10-12 20:07:02.000000000 +0200
+@@ -274,7 +274,9 @@
    int OSDMessageTime;
    int UseSmallFont;
    int MaxVideoFileSize;
@@ -42,12 +42,12 @@ diff -Naur hlcutter-orig/config.h hlcutter/config.h
    int SplitEditedFiles;
 +  int HardLinkCutter;
    int MinEventTimeout, MinUserInactivity;
+   time_t NextWakeupTime;
    int MultiSpeedMode;
-   int ShowReplayMode;
-diff -Naur hlcutter-orig/cutter.c hlcutter/cutter.c
---- hlcutter-orig/cutter.c	Fri Feb 22 17:04:16 2008
-+++ hlcutter/cutter.c	Fri Feb 22 17:10:15 2008
-@@ -74,6 +74,7 @@
+diff -Naur VDR-NG-orig/cutter.c VDR-NG/cutter.c
+--- VDR-NG-orig/cutter.c	2008-10-11 12:28:09.000000000 +0200
++++ VDR-NG/cutter.c	2008-10-12 20:07:02.000000000 +0200
+@@ -91,6 +91,7 @@
       Mark = fromMarks.Next(Mark);
       int FileSize = 0;
       int CurrentFileNumber = 0;
@@ -55,7 +55,7 @@ diff -Naur hlcutter-orig/cutter.c hlcutter/cutter.c
       int LastIFrame = 0;
       toMarks.Add(0);
       toMarks.Save();
-@@ -91,12 +92,92 @@
+@@ -108,12 +109,92 @@
  
             // Read one frame:
  
@@ -154,7 +154,7 @@ diff -Naur hlcutter-orig/cutter.c hlcutter/cutter.c
                if (fromFile) {
                   int len = ReadFrame(fromFile, buffer,  Length, sizeof(buffer));
                   if (len < 0) {
-@@ -113,15 +194,12 @@
+@@ -130,15 +211,12 @@
                   break;
                   }
                }
@@ -171,7 +171,7 @@ diff -Naur hlcutter-orig/cutter.c hlcutter/cutter.c
                   toFile = toFileName->NextFile();
                   if (!toFile) {
                      error = "toFile 1";
-@@ -131,12 +209,12 @@
+@@ -148,12 +226,12 @@
                   }
                LastIFrame = 0;
  
@@ -186,19 +186,19 @@ diff -Naur hlcutter-orig/cutter.c hlcutter/cutter.c
                error = "safe_write";
                break;
                }
-@@ -171,7 +249,7 @@
+@@ -188,7 +266,7 @@
                      }
                   }
                else
 -                 LastMark = true;
 +                 LastMark = true; // After last cut-out: Write on until next I-frame, then exit
                }
-            }
-      Recordings.TouchUpdate();
-diff -Naur hlcutter-orig/i18n.c hlcutter/i18n.c
---- hlcutter-orig/i18n.c	Fri Feb 22 17:04:18 2008
-+++ hlcutter/i18n.c	Fri Feb 22 17:14:35 2008
-@@ -4315,6 +4315,50 @@
+ 
+ 	   bytes += Length;
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2008-10-11 12:28:09.000000000 +0200
++++ VDR-NG/i18n.c	2008-10-12 20:10:44.000000000 +0200
+@@ -4652,6 +4652,50 @@
      "Max. video filstørrelse (MB)",
      "Maximální velikost nahrávky (MB)",
    },
@@ -224,7 +224,7 @@ diff -Naur hlcutter-orig/i18n.c hlcutter/i18n.c
 +    "",// TODO
 +    "",// TODO
 +  },
-+  { "Setup.Recording$Hard Link Cutter",
++  { "Setup.Cutter$Hard Link Cutter",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -249,22 +249,28 @@ diff -Naur hlcutter-orig/i18n.c hlcutter/i18n.c
    { "Setup.Recording$Split edited files",
      "Editierte Dateien aufteilen",
      "Razdeli urejene datoteke",
-diff -Naur hlcutter-orig/menu.c hlcutter/menu.c
---- hlcutter-orig/menu.c	Fri Feb 22 17:04:12 2008
-+++ hlcutter/menu.c	Fri Feb 22 17:11:46 2008
-@@ -2817,7 +2817,9 @@
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2008-10-11 12:28:09.000000000 +0200
++++ VDR-NG/menu.c	2008-10-12 20:09:59.000000000 +0200
+@@ -3181,6 +3181,7 @@
    Add(new cMenuEditStrItem( tr("Setup.Recording$Name instant recording"),     data.NameInstantRecord, sizeof(data.NameInstantRecord), tr(FileNameChars)));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Instant rec. time (min)"),   &data.InstantRecordTime, 1, MAXINSTANTRECTIME));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Max. video file size (MB)"), &data.MaxVideoFileSize, MINVIDEOFILESIZE, MAXVIDEOFILESIZE));
 +  Add(new cMenuEditIntItem( tr("Setup.Recording$Max. recording size (GB)"),  &data.MaxRecordingSize, MINRECORDINGSIZE, MAXRECORDINGSIZE));
    Add(new cMenuEditBoolItem(tr("Setup.Recording$Split edited files"),        &data.SplitEditedFiles));
-+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Hard Link Cutter"),          &data.HardLinkCutter));
    Add(new cMenuEditBoolItem(tr("Setup.Recording$Show date"),                 &data.ShowRecDate));
    Add(new cMenuEditBoolItem(tr("Setup.Recording$Show time"),                 &data.ShowRecTime));
-   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show length"),               &data.ShowRecLength));
-diff -Naur hlcutter-orig/README-HLCUTTER hlcutter/README-HLCUTTER
---- hlcutter-orig/README-HLCUTTER	Thu Jan 01 01:00:00 1970
-+++ hlcutter/README-HLCUTTER	Fri Feb 22 17:10:15 2008
+@@ -3202,6 +3203,7 @@
+   Add(new cMenuEditBoolItem(tr("Setup.Cutter$Auto delete original record"),  &data.CutterAutoDelete));
+   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum MB per second"),        &data.CutterMaxBandwidth, 1, 60));
+   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum bandwidth used in %"),  &data.CutterRelBandwidth, 1, 100));
++  Add(new cMenuEditBoolItem(tr("Setup.Cutter$Hard Link Cutter"),             &data.HardLinkCutter));
+ }
+ 
+ // --- cMenuSetupReplay ------------------------------------------------------
+diff -Naur VDR-NG-orig/README-HLCUTTER VDR-NG/README-HLCUTTER
+--- VDR-NG-orig/README-HLCUTTER	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/README-HLCUTTER	2008-10-12 20:07:02.000000000 +0200
 @@ -0,0 +1,117 @@
 +
 +                    VDR-HLCUTTER README
@@ -383,10 +389,10 @@ diff -Naur hlcutter-orig/README-HLCUTTER hlcutter/README-HLCUTTER
 +
 +
 +SetBrokenLink may get lost on rare cases, this needs some more thoughts.
-diff -Naur hlcutter-orig/recorder.c hlcutter/recorder.c
---- hlcutter-orig/recorder.c	Mon Sep 17 12:49:52 2007
-+++ hlcutter/recorder.c	Fri Feb 22 17:10:15 2008
-@@ -88,7 +88,7 @@
+diff -Naur VDR-NG-orig/recorder.c VDR-NG/recorder.c
+--- VDR-NG-orig/recorder.c	2008-10-11 12:28:09.000000000 +0200
++++ VDR-NG/recorder.c	2008-10-12 20:07:02.000000000 +0200
+@@ -89,7 +89,7 @@
  bool cFileWriter::NextFile(void)
  {
    if (recordFile && pictureType == I_FRAME) { // every file shall start with an I_FRAME
@@ -395,10 +401,10 @@ diff -Naur hlcutter-orig/recorder.c hlcutter/recorder.c
          recordFile = fileName->NextFile();
          fileSize = 0;
          }
-diff -Naur hlcutter-orig/recording.c hlcutter/recording.c
---- hlcutter-orig/recording.c	Fri Feb 22 17:04:10 2008
-+++ hlcutter/recording.c	Fri Feb 22 17:10:15 2008
-@@ -1697,6 +1697,16 @@
+diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
+--- VDR-NG-orig/recording.c	2008-10-11 12:28:09.000000000 +0200
++++ VDR-NG/recording.c	2008-10-12 20:07:02.000000000 +0200
+@@ -1733,6 +1733,16 @@
    return NULL;
  }
  
@@ -415,10 +421,10 @@ diff -Naur hlcutter-orig/recording.c hlcutter/recording.c
  cUnbufferedFile *cFileName::NextFile(void)
  {
    return SetOffset(fileNumber + 1);
-diff -Naur hlcutter-orig/recording.h hlcutter/recording.h
---- hlcutter-orig/recording.h	Fri Feb 22 17:04:10 2008
-+++ hlcutter/recording.h	Fri Feb 22 17:10:16 2008
-@@ -198,7 +198,15 @@
+diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
+--- VDR-NG-orig/recording.h	2008-10-11 12:28:09.000000000 +0200
++++ VDR-NG/recording.h	2008-10-12 20:07:02.000000000 +0200
+@@ -206,7 +206,15 @@
  // may be slightly higher because we stop recording only before the next
  // 'I' frame, to have a complete Group Of Pictures):
  #define MAXVIDEOFILESIZE 2000 // MB
@@ -435,7 +441,7 @@ diff -Naur hlcutter-orig/recording.h hlcutter/recording.h
  
  class cIndexFile {
  private:
-@@ -251,6 +259,8 @@
+@@ -259,6 +267,8 @@
    void Close(void);
    int Unlink(void);
    cUnbufferedFile *SetOffset(int Number, int Offset = 0);
@@ -444,9 +450,9 @@ diff -Naur hlcutter-orig/recording.h hlcutter/recording.h
    cUnbufferedFile *NextFile(void);
    };
  
-diff -Naur hlcutter-orig/videodir.c hlcutter/videodir.c
---- hlcutter-orig/videodir.c	Tue Jun 12 12:57:36 2007
-+++ hlcutter/videodir.c	Fri Feb 22 17:10:16 2008
+diff -Naur VDR-NG-orig/videodir.c VDR-NG/videodir.c
+--- VDR-NG-orig/videodir.c	2008-10-04 09:45:06.000000000 +0200
++++ VDR-NG/videodir.c	2008-10-12 20:07:02.000000000 +0200
 @@ -19,6 +19,9 @@
  #include "recording.h"
  #include "tools.h"
@@ -457,12 +463,10 @@ diff -Naur hlcutter-orig/videodir.c hlcutter/videodir.c
  const char *VideoDirectory = VIDEODIR;
  
  class cVideoDirectory {
-@@ -166,6 +169,120 @@
- bool RemoveVideoFile(const char *FileName)
- {
+@@ -168,6 +171,120 @@
    return RemoveFileOrDir(FileName, true);
-+}
-+
+ }
+ 
 +static bool StatNearestDir(const char *FileName, struct stat *Stat)
 +{
 +  cString Name(FileName);
@@ -575,12 +579,14 @@ diff -Naur hlcutter-orig/videodir.c hlcutter/videodir.c
 +        }
 +     }
 +  return true;
- }
- 
++}
++
  bool VideoFileSpaceAvailable(int SizeMB)
-diff -Naur hlcutter-orig/videodir.h hlcutter/videodir.h
---- hlcutter-orig/videodir.h	Tue Jun 12 12:57:36 2007
-+++ hlcutter/videodir.h	Fri Feb 22 17:10:16 2008
+ {
+   cVideoDirectory Dir;
+diff -Naur VDR-NG-orig/videodir.h VDR-NG/videodir.h
+--- VDR-NG-orig/videodir.h	2008-10-04 09:45:06.000000000 +0200
++++ VDR-NG/videodir.h	2008-10-12 20:07:02.000000000 +0200
 @@ -19,6 +19,7 @@
  int CloseVideoFile(cUnbufferedFile *File);
  bool RenameVideoFile(const char *OldName, const char *NewName);

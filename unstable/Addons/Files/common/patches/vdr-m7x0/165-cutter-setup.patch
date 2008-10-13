@@ -1,0 +1,98 @@
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2008-10-04 09:47:11.000000000 +0200
++++ VDR-NG/i18n.c	2008-10-06 20:51:09.000000000 +0200
+@@ -2973,6 +2973,28 @@
+     "Optagelse",
+     "Nahrávání",
+   },
++  { "Cutter",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Opciones de edición",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Replay",
+     "Wiedergabe",
+     "Predvajanje",
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2008-10-04 09:47:11.000000000 +0200
++++ VDR-NG/menu.c	2008-10-09 19:57:24.000000000 +0200
+@@ -3134,6 +3134,18 @@
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Sort directories before recordings"), &data.RecordingsSortDirsFirst));
+ }
+ 
++// --- cMenuSetupCutter ------------------------------------------------------
++
++class cMenuSetupCutter : public cMenuSetupBase {
++public:
++  cMenuSetupCutter(void);
++  };
++
++cMenuSetupCutter::cMenuSetupCutter(void)
++{
++  SetSection(tr("Cutter"));
++}
++
+ // --- cMenuSetupReplay ------------------------------------------------------
+ 
+ class cMenuSetupReplay : public cMenuSetupBase {
+@@ -3284,11 +3296,12 @@
+   Add(new cOsdItem(hk(tr("LNB")),           osUser5));
+   Add(new cOsdItem(hk(tr("CICAM")),         osUser6));
+   Add(new cOsdItem(hk(tr("Recording")),     osUser7));
+-  Add(new cOsdItem(hk(tr("Replay")),        osUser8));
+-  Add(new cOsdItem(hk(tr("Miscellaneous")), osUser9));
++  Add(new cOsdItem(hk(tr("Cutter")),        osUser8));
++  Add(new cOsdItem(hk(tr("Replay")),        osUser9));
++  Add(new cOsdItem(hk(tr("Miscellaneous")), osUser10));
+   if (cPluginManager::HasPlugins())
+-  Add(new cOsdItem(hk(tr("Plugins")),       osUser10));
+-  Add(new cOsdItem(hk(tr("Restart")),       (eOSState) (osUser10 + 1)));
++  Add(new cOsdItem(hk(tr("Plugins")),       osUser11));
++  Add(new cOsdItem(hk(tr("Restart")),       (eOSState) (osUser11 + 1)));
+ //M7X0 END AK
+ }
+ 
+@@ -3315,10 +3328,11 @@
+     case osUser5: return AddSubMenu(new cMenuSetupLNB);
+     case osUser6: return AddSubMenu(new cMenuSetupCICAM);
+     case osUser7: return AddSubMenu(new cMenuSetupRecord);
+-    case osUser8: return AddSubMenu(new cMenuSetupReplay);
+-    case osUser9: return AddSubMenu(new cMenuSetupMisc);
+-    case osUser10: return AddSubMenu(new cMenuSetupPlugins);
+-    case osUser10 + 1: return Restart();
++    case osUser8: return AddSubMenu(new cMenuSetupCutter);
++    case osUser9: return AddSubMenu(new cMenuSetupReplay);
++    case osUser10: return AddSubMenu(new cMenuSetupMisc);
++    case osUser11: return AddSubMenu(new cMenuSetupPlugins);
++    case osUser11 + 1: return Restart();
+ //M7X0 BEGIN AK
+     default: ;
+     }
+diff -Naur VDR-NG-orig/osdbase.h VDR-NG/osdbase.h
+--- VDR-NG-orig/osdbase.h	2008-10-04 09:47:11.000000000 +0200
++++ VDR-NG/osdbase.h	2008-10-04 11:23:10.000000000 +0200
+@@ -44,6 +44,7 @@
+                 osUser8,
+                 osUser9,
+                 osUser10,
++                osUser11,
+               };
+ 
+ class cOsdItem : public cListObject {

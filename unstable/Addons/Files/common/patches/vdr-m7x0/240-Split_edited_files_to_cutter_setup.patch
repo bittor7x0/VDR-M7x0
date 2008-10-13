@@ -1,0 +1,31 @@
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2008-10-12 20:10:44.000000000 +0200
++++ VDR-NG/i18n.c	2008-10-12 20:16:51.000000000 +0200
+@@ -4696,7 +4696,7 @@
+     "",// TODO
+     "",// TODO
+   },
+-  { "Setup.Recording$Split edited files",
++  { "Setup.Cutter$Split edited files",
+     "Editierte Dateien aufteilen",
+     "Razdeli urejene datoteke",
+     "Dividi i file modificati",
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2008-10-12 20:09:59.000000000 +0200
++++ VDR-NG/menu.c	2008-10-12 20:16:15.000000000 +0200
+@@ -3182,7 +3182,6 @@
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Instant rec. time (min)"),   &data.InstantRecordTime, 1, MAXINSTANTRECTIME));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Max. video file size (MB)"), &data.MaxVideoFileSize, MINVIDEOFILESIZE, MAXVIDEOFILESIZE));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Max. recording size (GB)"),  &data.MaxRecordingSize, MINRECORDINGSIZE, MAXRECORDINGSIZE));
+-  Add(new cMenuEditBoolItem(tr("Setup.Recording$Split edited files"),        &data.SplitEditedFiles));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show date"),                 &data.ShowRecDate));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show time"),                 &data.ShowRecTime));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show length"),               &data.ShowRecLength));
+@@ -3200,6 +3199,7 @@
+ cMenuSetupCutter::cMenuSetupCutter(void)
+ {
+   SetSection(tr("Cutter"));
++  Add(new cMenuEditBoolItem(tr("Setup.Cutter$Split edited files"),           &data.SplitEditedFiles));
+   Add(new cMenuEditBoolItem(tr("Setup.Cutter$Auto delete original record"),  &data.CutterAutoDelete));
+   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum MB per second"),        &data.CutterMaxBandwidth, 1, 60));
+   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum bandwidth used in %"),  &data.CutterRelBandwidth, 1, 100));

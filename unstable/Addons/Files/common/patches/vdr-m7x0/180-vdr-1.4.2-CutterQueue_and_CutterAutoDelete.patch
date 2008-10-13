@@ -1,26 +1,51 @@
---- vdr-1.4.2-1-orig/cutter.h	2006-09-08 00:15:09.000000000 +0300
-+++ vdr-1.4.2-1/cutter.h	2006-09-08 14:38:31.000000000 +0300
-@@ -12,4 +12,5 @@
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	2008-10-04 09:47:11.000000000 +0200
++++ VDR-NG/config.c	2008-10-09 20:21:57.000000000 +0200
+@@ -259,6 +259,7 @@
+   RecordingDirs = 1;
+   RecordingsSortMode = 0;
+   RecordingsSortDirsFirst = 0;
++  CutterAutoDelete = 1;
+   HotStandby = 0;
+   TvMode = 0;
+   VCRMode = 0;
+@@ -443,6 +444,7 @@
+   else if (!strcasecmp(Name, "RecordingDirs"))       RecordingDirs      = atoi(Value);
+   else if (!strcasecmp(Name, "RecordingsSortMode"))  RecordingsSortMode = atoi(Value);
+   else if (!strcasecmp(Name, "RecordingsSortDirsFirst")) RecordingsSortDirsFirst = atoi(Value);
++  else if (!strcasecmp(Name, "CutterAutoDelete"))    CutterAutoDelete   = atoi(Value);
+   else if (!strcasecmp(Name, "HotStandby"))          HotStandby         = atoi(Value);
+   else if (!strcasecmp(Name, "TvMode"))              TvMode             = atoi(Value);
+   else if (!strcasecmp(Name, "VCRMode"))             VCRMode            = atoi(Value);
+@@ -534,6 +536,7 @@
+   Store("RecordingDirs",      RecordingDirs);
+   Store("RecordingsSortMode", RecordingsSortMode);
+   Store("RecordingsSortDirsFirst", RecordingsSortDirsFirst);
++  Store("CutterAutoDelete",   CutterAutoDelete);
+   Store("HotStandby", 	      HotStandby);
+   Store("TvMode", 	      TvMode);
+   Store("VCRMode", 	      VCRMode);
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	2008-10-04 09:47:11.000000000 +0200
++++ VDR-NG/config.h	2008-10-09 20:22:26.000000000 +0200
+@@ -272,6 +272,7 @@
+   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;
+   int RecordingsSortMode;
+   int RecordingsSortDirsFirst;
++  int CutterAutoDelete;
+   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
+   int AbortWhenPluginFails;
+   int __EndData__;
+diff -Naur VDR-NG-orig/cutter.c VDR-NG/cutter.c
+--- VDR-NG-orig/cutter.c	2008-10-09 20:12:40.000000000 +0200
++++ VDR-NG/cutter.c	2008-10-09 20:37:23.000000000 +0200
+@@ -182,13 +182,54 @@
  
- class cCuttingThread;
-+class cMutex;
- 
- class cCutter {
-@@ -19,4 +20,5 @@
-   static bool error;
-   static bool ended;
-+  static cMutex *cutterLock;
- public:
-   static bool Start(const char *FileName);
---- vdr-1.4.2-1-orig/cutter.c	2006-09-08 00:15:09.000000000 +0300
-+++ vdr-1.4.2-1/cutter.c	2006-09-08 14:38:39.000000000 +0300
-@@ -180,11 +228,53 @@
  // --- cCutter ---------------------------------------------------------------
  
 +#define WAIT_BEFORE_NEXT_CUT   (10*1000)  // 10 seconds
 +
 +#define CUTTER_QUEUE
-+#define CUTTER_AUTO_DELETE
 +
 +class cStringListObject : public cListObject {
 +  public:
@@ -68,8 +93,10 @@
 +
    if (!cuttingThread) {
       error = false;
-@@ -192,4 +282,17 @@
-      cRecording Recording(FileName);
+      ended = false;
+@@ -200,6 +241,19 @@
+      if (First) Recording.SetStartTime(Recording.start+((First->position/FRAMESPERSEC+30)/60)*60);
+      
       const char *evn = Recording.PrefixFileName('%');
 +
 +     if(!(Recordings.GetByName(FileName))) {
@@ -86,14 +113,18 @@
 +     }
       if (evn && RemoveVideoFile(evn) && MakeDirs(evn, true)) {
          // XXX this can be removed once RenameVideoFile() follows symlinks (see videodir.c)
-@@ -217,4 +320,6 @@
+         // remove a possible deleted recording with the same name to avoid symlink mixups:
+@@ -225,6 +279,8 @@
+ 
  void cCutter::Stop(void)
  {
 +  cMutexLock(cutterLock);
 +
    bool Interrupted = cuttingThread && cuttingThread->Active();
    const char *Error = cuttingThread ? cuttingThread->Error() : NULL;
-@@ -228,9 +333,17 @@
+   delete cuttingThread;
+@@ -236,11 +292,19 @@
+         esyslog("ERROR: '%s' during editing process", Error);
       RemoveVideoFile(editedVersionName); //XXX what if this file is currently being replayed?
       Recordings.DelByName(editedVersionName);
 +#ifdef CUTTER_QUEUE
@@ -111,31 +142,33 @@
 +
    if (cuttingThread) {
       if (cuttingThread->Active())
-@@ -243,5 +356,34 @@
+         return true;
+@@ -251,12 +315,42 @@
+      free(editedVersionName);
       editedVersionName = NULL;
       ended = true;
-+#ifdef CUTTER_AUTO_DELETE
-+     /* Remove original (if cutting was successful) */
-+     if(!error) {
-+       cRecording *recording = Recordings.GetByName(*cutterQueue.First());
-+       if (!recording) {
-+	 esyslog("ERROR: Can't found '%s' after editing process", cutterQueue.First()->Value());
-+       } else {
-+	 if (recording->Delete()) {
-+	   //Recordings.Del(recording);
-+           //cReplayControl::ClearLastReplayed(ri->FileName());
-+           Recordings.DelByName(recording->FileName());
-+	 } else {
-+	   esyslog("ERROR: Can't delete '%s' after editing process", cutterQueue.First()->Value());
-+	 }
-+       }
++     if(Setup.CutterAutoDelete){
++        /* Remove original (if cutting was successful) */
++        if(!error) {
++          cRecording *recording = Recordings.GetByName(*cutterQueue.First());
++          if (!recording) {
++             esyslog("ERROR: Can't found '%s' after editing process", cutterQueue.First()->Value());
++          } else {
++             if (recording->Delete()) {
++	        //Recordings.Del(recording);
++                //cReplayControl::ClearLastReplayed(ri->FileName());
++                Recordings.DelByName(recording->FileName());
++             } else {
++                esyslog("ERROR: Can't delete '%s' after editing process", cutterQueue.First()->Value());
++             }
++          }
++        }
++        lastCuttingEndTime = cTimeMs::Now();
       }
-+    lastCuttingEndTime = cTimeMs::Now();
-+#endif
 +#ifdef CUTTER_QUEUE
 +     cutterQueue.Del(cutterQueue.First());
 +#endif
-+     }
++  }
 +#ifdef CUTTER_QUEUE
 +  if(!cuttingThread && cutterQueue.First()) {
 +    /* start next cutting from queue*/
@@ -146,21 +179,73 @@
 +
    return false;
  }
-@@ -249,4 +391,5 @@
+ 
  bool cCutter::Error(void)
  {
 +  cMutexLock(cutterLock);
    bool result = error;
    error = false;
-@@ -256,4 +399,5 @@
+   return result;
+@@ -264,6 +358,7 @@
+ 
  bool cCutter::Ended(void)
  {
 +  cMutexLock(cutterLock);
    bool result = ended;
    ended = false;
---- vdr-1.4.2-1-orig/i18n.c	2007-07-28 15:01:16.000000000 +0200
-+++ vdr-1.4.2-1/i18n.c	2007-07-28 15:05:47.000000000 +0200
-@@ -7003,6 +7003,28 @@
+   return result;
+diff -Naur VDR-NG-orig/cutter.h VDR-NG/cutter.h
+--- VDR-NG-orig/cutter.h	2008-10-04 09:45:06.000000000 +0200
++++ VDR-NG/cutter.h	2008-10-09 20:13:25.000000000 +0200
+@@ -11,6 +11,7 @@
+ #define __CUTTER_H
+ 
+ class cCuttingThread;
++class cMutex;
+ 
+ class cCutter {
+ private:
+@@ -18,6 +19,7 @@
+   static cCuttingThread *cuttingThread;
+   static bool error;
+   static bool ended;
++  static cMutex *cutterLock;
+ public:
+   static bool Start(const char *FileName);
+   static void Stop(void);
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2008-10-06 20:51:09.000000000 +0200
++++ VDR-NG/i18n.c	2008-10-09 20:24:37.000000000 +0200
+@@ -2995,6 +2995,28 @@
+     "",// TODO
+     "",// TODO
+   },
++  { "Setup.Cutter$Auto delete original record",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Auto borrar grabación original",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Replay",
+     "Wiedergabe",
+     "Predvajanje",
+@@ -7157,6 +7179,28 @@
      "",// TODO
      "",// TODO
    },
@@ -189,15 +274,26 @@
    { NULL }
    };
  
---- vdr-1.4.2-1-orig/menu.c	2006-09-08 00:15:09.000000000 +0300
-+++ vdr-1.4.2-1/menu.c	2006-09-08 14:38:32.000000000 +0300
-@@ -4087,5 +4304,9 @@
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2008-10-09 19:57:24.000000000 +0200
++++ VDR-NG/menu.c	2008-10-11 10:24:17.000000000 +0200
+@@ -3144,6 +3144,7 @@
+ cMenuSetupCutter::cMenuSetupCutter(void)
+ {
+   SetSection(tr("Cutter"));
++  Add(new cMenuEditBoolItem(tr("Setup.Cutter$Auto delete original record"),  &data.CutterAutoDelete));
+ }
+ 
+ // --- cMenuSetupReplay ------------------------------------------------------
+@@ -4745,7 +4746,11 @@
+ {
    if (fileName) {
       Hide();
-+#if 0
-      if (!cCutter::Active()) {
-+#else
++#ifdef CUTTER_QUEUE
 +     if (!cCutter::Active() || Interface->Confirm(tr("Cutter already running - Add to cutting queue?"))) {
++#else
+      if (!cCutter::Active()) {
 +#endif
          if (!marks.Count())
             Skins.Message(mtError, tr("No editing marks defined!"));
+         else if (!cCutter::Start(fileName))
