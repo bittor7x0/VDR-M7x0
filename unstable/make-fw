@@ -121,8 +121,8 @@ for delete in `cat "$vdr_em_delete/$vdr_version.lst" | tr -d '\r' `; do
 done
 
 # Set SVN versions
-svn_em_version=" em subversion revision `svnversion`"
-svn_o7o_version="o7o subversion revision `svnversion \"$vdr_fw_orig\"`"
+svn_em_version=" em subversion revision `svnversion | cut -d ":" -f 2`"
+svn_o7o_version="o7o subversion revision `svnversion \"$vdr_fw_orig\" | cut -d ":" -f 2`"
 
 echo $svn_em_version  >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
 echo $svn_o7o_version >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
