@@ -72,7 +72,10 @@ $(STAGEFILES_DIR)/.openntpd_patched: $(STAGEFILES_DIR)/.openntpd_unpacked
 $(STAGEFILES_DIR)/.openntpd_configured: $(STAGEFILES_DIR)/.openntpd_patched
 	($(CD) $(OPENNTPD_DIR) ; $(UCLIBC_ENV) \
 		$(OPENNTPD_DIR)/configure \
-			--host=$(TARGET) --with-privsep-user=root)
+			--prefix=$(TARGET_ROOT)/usr \
+			--host=$(TARGET) \
+			--sysconfdir=/etc/ntp \
+			--with-privsep-user=root)
 	$(TOUCH) $(STAGEFILES_DIR)/.openntpd_configured
 
 #
