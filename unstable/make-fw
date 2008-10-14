@@ -24,7 +24,6 @@ vdr_em_addons="$BASE/Addons"
 vdr_em_files="$vdr_em_addons/Files"
 vdr_em_patches="$vdr_em_addons/Patches"
 vdr_em_delete="$vdr_em_addons/Delete"
-vdr_em_plugins="$BASE/VDR-Plugins/Source+patch"
 
 # SVN branch from assembla VDR-EM
 svn_em="http://svn.assembla.com/svn/VDR-M7x0/unstable"
@@ -95,15 +94,12 @@ then
 	rm -rf $vdr_fw/patches
 	rm -rf $vdr_fw/prg-fw-configs
 	rm -rf $vdr_fw/rootfs-file-lists
-	rm -rf $vdr_fw/build/vdr-m7x0-PLUGINS-extra
 else
 	mkdir -p "$vdr_fw"
 fi
 
 echo "Copying temporal dir to final dir"
 cp -Trf "$tmp" "$vdr_fw"
-mkdir -p "$vdr_fw/build/vdr-m7x0-PLUGINS-extra"
-cp -Trf "$vdr_em_plugins" "$vdr_fw/build/vdr-m7x0-PLUGINS-extra"
 
 # Delete files and dirs
 echo ""
