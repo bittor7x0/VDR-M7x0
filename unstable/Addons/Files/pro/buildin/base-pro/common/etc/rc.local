@@ -4,6 +4,11 @@
 
 echo -n 'starting local stuff:'
 
+if [ X"${hd_swap_dev}" != X"NO" ] ; then
+    echo -n ' setting up swap'
+    /sbin/swapon ${hd_swap_dev}
+fi
+
 if [ X"${do_usb_mount}" != X"NO" ] ; then
 	echo -n ' usb-mount'
 	ln -sf /sbin/usbautomounter /var/tmp/hotplug
@@ -54,11 +59,6 @@ for bpath in ${bind_paths} ; do
 	echo -n " Binding ${bpath}"
 	mount -o bind /rw-flash${bpath} ${bpath}
 done
-
-if [ X"${hd_swap_dev}" != X"NO" ] ; then
-    echo -n ' setting up swap'
-    /sbin/swapon ${hd_swap_dev}
-fi
 
 if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X"NO" ] ; then
     echo -n ' starting spindown'

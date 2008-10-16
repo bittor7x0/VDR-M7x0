@@ -36,16 +36,16 @@ if [ X"${runvdr}" != X"NO" ]; then
      export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
 fi
 
-if [ X"${hd_swap_dev}" != X"NO" ] ; then
-    echo -n ' Swapoff'
-    /sbin/swapoff ${hd_swap_dev}
-fi
-
 if [ X"${do_usb_mount}" != X"NO" ] ; then
     echo -n ' usb-mount'
     rm -f /var/tmp/hotplug
     /bin/sync
     /sbin/usbautomounter umount
+fi
+
+if [ X"${hd_swap_dev}" != X"NO" ] ; then
+    echo -n ' Swapoff'
+    /sbin/swapoff ${hd_swap_dev}
 fi
 
 if [ X"${hd_spindown_dev}" != X"NO" ] ; then
