@@ -111,7 +111,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Una EPG Gr√°fica",
++    "Una EPG Gr·fica",
 +    "",
 +    "",
 +    "",
@@ -146,7 +146,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "√Åreas de Overlap",
++    "¡reas superpuestas",
 +    "",
 +    "",
 +    "",
@@ -181,7 +181,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Bpp no esta soportado",
++    "Bpp no est· soportado",
 +    "",
 +    "",
 +    "",
@@ -216,7 +216,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "No se pueden intercambiar canales",
++    "No se puede cambiar de canal",
 +    "",
 +    "",
 +    "",
@@ -251,7 +251,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Centrar el texto de Informaci√≥n",
++    "Centrar el texto de informaciÛn",
 +    "",
 +    "",
 +    "",
@@ -356,7 +356,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Orden de Canales",
++    "Orden de canales",
 +    "",
 +    "",
 +    "",
@@ -461,7 +461,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Configuraci√≥n de colores",
++    "ConfiguraciÛn de colores",
 +    "",
 +    "",
 +    "",
@@ -496,7 +496,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Cr√≠tica",
++    "CrÌtica",
 +    "",
 +    "",
 +    "",
@@ -566,7 +566,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Configuraci√≥n de Pantalla",
++    "ConfiguraciÛn de pantalla",
 +    "",
 +    "",
 +    "",
@@ -601,7 +601,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Duraci√≥n",
++    "DuraciÛn",
 +    "",
 +    "",
 +    "",
@@ -636,7 +636,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Finalizar :",
++    "Finalizar : ",
 +    "",
 +    "",
 +    "",
@@ -706,7 +706,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Tama√±o de la fuente",
++    "TamaÒo de la fuente",
 +    "",
 +    "",
 +    "",
@@ -776,7 +776,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Obtener Informaci√≥n",
++    "Obtener informaciÛn",
 +    "",
 +    "",
 +    "",
@@ -811,7 +811,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Color de la cuadr√≠cula",
++    "Color de la cuadrÌcula",
 +    "",
 +    "",
 +    "",
@@ -846,7 +846,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Ocultar la entrada en el Menu principal",
++    "Ocultar entrada del menu principal",
 +    "",
 +    "",
 +    "",
@@ -916,7 +916,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Configuraci√≥n de clave",
++    "ConfiguraciÛn de teclas",
 +    "",
 +    "",
 +    "",
@@ -986,7 +986,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Sin Informaci√≥n",
++    "Sin InformaciÛn",
 +    "",
 +    "",
 +    "",
@@ -1056,7 +1056,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "N√∫mero de Columnas",
++    "N˙mero de columnas",
 +    "",
 +    "",
 +    "",
@@ -1091,7 +1091,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "N√∫mero de Filas",
++    "N˙mero de filas",
 +    "",
 +    "",
 +    "",
@@ -1231,7 +1231,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Abrir Configuraci√≥n de Colores",
++    "Abrir configuraciÛn de colores...",
 +    "",
 +    "",
 +    "",
@@ -1301,7 +1301,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Bajar una p√°gina",
++    "Bajar una p·gina",
 +    "",
 +    "",
 +    "",
@@ -1336,7 +1336,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Subir una p√°gina",
++    "Subir una p·gina",
 +    "",
 +    "",
 +    "",
@@ -1371,7 +1371,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Valoraci√≥n",
++    "ValoraciÛn",
 +    "",
 +    "",
 +    "",
@@ -1406,7 +1406,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "¬øRealmente desea grabar este evento?",
++    "øDesea realmente grabar este evento?",
 +    "",
 +    "",
 +    "",
@@ -1581,7 +1581,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Configurando Display...",
++    "ConfiguraciÛn de pantalla...",
 +    "",
 +    "",
 +    "",
@@ -1616,7 +1616,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Tama√±o y Posici√≥n",
++    "TamaÒo y posiciÛn",
 +    "",
 +    "",
 +    "",
@@ -1651,7 +1651,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Comenzar :",
++    "Comienzo: ",
 +    "",
 +    "",
 +    "",
@@ -1826,7 +1826,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Demasiadas √Åreas",
++    "Demasiadas ·reas",
 +    "",
 +    "",
 +    "",
@@ -1861,7 +1861,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Demasiados Colores",
++    "Demasiados colores",
 +    "",
 +    "",
 +    "",
@@ -1896,7 +1896,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Intentando dibujar cuadr√≠cula con canal NULL. Abortando",
++    "Se intentÛ dibujar cuadrÌcula con canal NULL. Abortando",
 +    "",
 +    "",
 +    "",
@@ -2001,7 +2001,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Tama√±o de √°rea erroneo",
++    "TamaÒo de ·rea incorrecto",
 +    "",
 +    "",
 +    "",
@@ -2141,7 +2141,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "peque√±a",
++    "pequeÒa",
 +    "",
 +    "",
 +    "",
@@ -2228,37 +2228,37 @@ diff -Naur fepg-0.4.0-orig/po/es_ES.po fepg-0.4.0/po/es_ES.po
 +msgstr "Error OSD"
 +
 +msgid "Grid Color"
-+msgstr "Color de la cuadr√≠cula"
++msgstr "Color de la cuadrÌcula"
 +
 +msgid "Channels Color"
 +msgstr "Color de los canales"
 +
 +msgid "A Graphical EPG"
-+msgstr "Una EPG Gr√°fica"
++msgstr "Una EPG Gr·fica"
 +
 +msgid "Not enough OSD memory for PAL mode, using NTSC"
 +msgstr "No hay suficiente memoria OSD para modo PAL, usando NTSC"
 +
 +msgid "Trying to draw grid with NULL channel. Aborting."
-+msgstr "Intentando dibujar cuadr√≠cula con canal NULL. Abortando"
++msgstr "Se intentÛ dibujar cuadrÌcula con canal NULL. Abortando"
 +
 +msgid "No Info"
-+msgstr "Sin Informaci√≥n"
++msgstr "Sin InformaciÛn"
 +
 +msgid "Start : "
-+msgstr "Comenzar :"
++msgstr "Comienzo: "
 +
 +msgid "End : "
-+msgstr "Finalizar :"
++msgstr "Fin: "
 +
 +msgid "Critique"
-+msgstr "Cr√≠tica"
++msgstr "CrÌtica"
 +
 +msgid "Rating"
-+msgstr "Valoraci√≥n"
++msgstr "ValoraciÛn"
 +
 +msgid "Duration"
-+msgstr "Duraci√≥n"
++msgstr "DuraciÛn"
 +
 +msgid "Time Left"
 +msgstr "Tiempo restante"
@@ -2267,10 +2267,10 @@ diff -Naur fepg-0.4.0-orig/po/es_ES.po fepg-0.4.0/po/es_ES.po
 +msgstr "Canal"
 +
 +msgid "Cannot switch channels"
-+msgstr "No se pueden intercambiar canales"
++msgstr "No se puede cambiar de canal"
 +
 +msgid "Really record this event?"
-+msgstr "¬øRealmente desea grabar este evento?"
++msgstr "øDesea realmente grabar este evento?"
 +
 +msgid "General Options"
 +msgstr "Opciones generales"
@@ -2279,13 +2279,13 @@ diff -Naur fepg-0.4.0-orig/po/es_ES.po fepg-0.4.0/po/es_ES.po
 +msgstr "Silenciar al abrir"
 +
 +msgid "Center Info Text"
-+msgstr "Centrar el texto de Informaci√≥n"
++msgstr "Centrar el texto de informaciÛn"
 +
 +msgid "Hide Main Menu Entry"
-+msgstr "Ocultar la entrada en el Menu principal"
++msgstr "Ocultar entrada del menu principal"
 +
 +msgid "Channel Order"
-+msgstr "Orden de Canales"
++msgstr "Orden de canales"
 +
 +msgid "ascending"
 +msgstr "ascendente"
@@ -2309,31 +2309,31 @@ diff -Naur fepg-0.4.0-orig/po/es_ES.po fepg-0.4.0/po/es_ES.po
 +msgstr "Intervalo de tiempo (min)"
 +
 +msgid "Size and Position"
-+msgstr "Tama√±o y Posici√≥n"
++msgstr "TamaÒo y posiciÛn"
 +
 +msgid "TV Mode"
 +msgstr "Modo TV"
 +
 +msgid "Number of Rows"
-+msgstr "N√∫mero de Filas"
++msgstr "N˙mero de filas"
 +
 +msgid "Number of Columns"
-+msgstr "N√∫mero de Columnas"
++msgstr "N˙mero de columnas"
 +
 +msgid "Font Size"
-+msgstr "Tama√±o de la fuente"
++msgstr "TamaÒo de la fuente"
 +
 +msgid "normal"
 +msgstr "normal"
 +
 +msgid "small"
-+msgstr "peque√±a"
++msgstr "pequeÒa"
 +
 +msgid "Setup Display..."
-+msgstr "Configurando Display..."
++msgstr "ConfiguraciÛn de pantalla..."
 +
 +msgid "Key Configuration"
-+msgstr "Configuraci√≥n de clave"
++msgstr "ConfiguraciÛn de teclas"
 +
 +msgid "Channel Up"
 +msgstr "Subir un canal"
@@ -2348,13 +2348,13 @@ diff -Naur fepg-0.4.0-orig/po/es_ES.po fepg-0.4.0/po/es_ES.po
 +msgstr "Desplazamiento a la izquierda"
 +
 +msgid "Get Info"
-+msgstr "Obtener Informaci√≥n"
++msgstr "Obtener informaciÛn"
 +
 +msgid "Page Up"
-+msgstr "Subir una p√°gina"
++msgstr "Subir una p·gina"
 +
 +msgid "Page Down"
-+msgstr "Bajar una p√°gina"
++msgstr "Bajar una p·gina"
 +
 +msgid "Exit"
 +msgstr "Salir"
@@ -2366,19 +2366,19 @@ diff -Naur fepg-0.4.0-orig/po/es_ES.po fepg-0.4.0/po/es_ES.po
 +msgstr "Grabar"
 +
 +msgid "Color Configuration"
-+msgstr "Configuraci√≥n de colores"
++msgstr "ConfiguraciÛn de colores"
 +
 +msgid "Opacity"
 +msgstr "Opacidad"
 +
 +msgid "Darken background"
-+msgstr "Fondo oscurecido"
++msgstr "Oscurecer fondo"
 +
 +msgid "Open Color Setup..."
-+msgstr "Abrir Configuraci√≥n de Colores"
++msgstr "Abrir configuraciÛn de colores..."
 +
 +msgid "Display Setup"
-+msgstr "Configuraci√≥n de Pantalla"
++msgstr "ConfiguraciÛn de pantalla"
 +
 +msgid "Unknown"
 +msgstr "Desconocido"
@@ -2387,16 +2387,16 @@ diff -Naur fepg-0.4.0-orig/po/es_ES.po fepg-0.4.0/po/es_ES.po
 +msgstr "Aceptar"
 +
 +msgid "Too Many Areas"
-+msgstr "Demasiadas √Åreas"
++msgstr "Demasiadas ·reas"
 +
 +msgid "Too Many Colors"
-+msgstr "Demasiados Colores"
++msgstr "Demasiados colores"
 +
 +msgid "Bpp Not Supported"
-+msgstr "Bpp no esta soportado"
++msgstr "Bpp no est· soportado"
 +
 +msgid "Areas Overlap"
-+msgstr "√Åreas de Overlap"
++msgstr "SuperposiciÛn de ·reas"
 +
 +msgid "Wrong Alignment"
 +msgstr "Alineamiento incorrecto"
@@ -2405,4 +2405,4 @@ diff -Naur fepg-0.4.0-orig/po/es_ES.po fepg-0.4.0/po/es_ES.po
 +msgstr "Sin memoria"
 +
 +msgid "Wrong Area Size"
-+msgstr "Tama√±o de √°rea erroneo"
++msgstr "TamaÒo de ·rea incorrecto"
