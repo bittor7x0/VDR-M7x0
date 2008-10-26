@@ -1,0 +1,22 @@
+#!/bin/ash
+[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+
+trys=0
+n=1
+while [ -e /var/run/runvdr.pid -a ${trys} -le 20 ] ; do
+    if [ $(( ${trys} % 5 )) -eq 0 ] ; then
+        echo "Try n#" ${n}
+        n=$(( ${n} + 1 ))
+        killall -15 vdr
+    fi
+    trys=$(( ${trys} + 1 ))
+    sleep 1
+done
+
+[ -f /var/run/runvdr.pid ] && killall -9 vdr
+
+[ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && mv /var/vdr/epg.data ${vdr_epgfile}
+
+export VDR_TV_MODE=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+
