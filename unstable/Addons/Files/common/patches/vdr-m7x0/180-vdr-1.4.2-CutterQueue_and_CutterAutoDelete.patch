@@ -289,10 +289,10 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
  {
    if (fileName) {
       Hide();
-+#ifdef CUTTER_QUEUE
-+     if (!cCutter::Active() || Interface->Confirm(tr("Cutter already running - Add to cutting queue?"))) {
-+#else
++#if 0
       if (!cCutter::Active()) {
++#else
++     if (!cCutter::Active() || Interface->Confirm(tr("Cutter already running - Add to cutting queue?"))) {
 +#endif
          if (!marks.Count())
             Skins.Message(mtError, tr("No editing marks defined!"));
