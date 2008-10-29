@@ -72,6 +72,7 @@ $(STAGEFILES_DIR)/.ctorrent_dnh_patched: $(STAGEFILES_DIR)/.ctorrent_dnh_unpacke
 $(STAGEFILES_DIR)/.ctorrent_dnh_configured: $(STAGEFILES_DIR)/.ctorrent_dnh_patched
 	($(CD) $(CTORRENT_DNH_DIR) ; $(UCLIBC_ENV) \
 		$(CTORRENT_DNH_DIR)/configure \
+			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET))
 	$(TOUCH) $(STAGEFILES_DIR)/.ctorrent_dnh_configured
 

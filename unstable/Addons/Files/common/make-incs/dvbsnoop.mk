@@ -72,6 +72,7 @@ $(STAGEFILES_DIR)/.dvbsnoop_patched: $(STAGEFILES_DIR)/.dvbsnoop_unpacked
 $(STAGEFILES_DIR)/.dvbsnoop_configured: $(STAGEFILES_DIR)/.dvbsnoop_patched
 	($(CD) $(DVBSNOOP_DIR) ; $(UCLIBC_ENV) \
 		$(DVBSNOOP_DIR)/configure \
+			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			CPPFLAGS=-I/usr/src/linux-headers-`uname -r`/include)
 	$(TOUCH) $(STAGEFILES_DIR)/.dvbsnoop_configured

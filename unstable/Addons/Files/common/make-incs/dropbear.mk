@@ -78,7 +78,9 @@ $(STAGEFILES_DIR)/.dropbear_patched: $(STAGEFILES_DIR)/.dropbear_unpacked
 $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
 	($(CD) $(DROPBEAR_DIR) ; $(UCLIBC_ENV) \
 		$(DROPBEAR_DIR)/configure \
-			--host=$(TARGET))
+			--prefix=$(TARGET_ROOT)/usr \
+			--host=$(TARGET) \
+			--sysconfdir=/etc/dropbear)
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_configured
 
 #

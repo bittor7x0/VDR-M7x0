@@ -72,6 +72,7 @@ $(STAGEFILES_DIR)/.spindown_patched: $(STAGEFILES_DIR)/.spindown_unpacked
 $(STAGEFILES_DIR)/.spindown_configured: $(STAGEFILES_DIR)/.spindown_patched
 	($(CD) $(SPINDOWN_DIR) ; $(UCLIBC_ENV) \
 		$(SPINDOWN_DIR)/configure \
+			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET))
 	$(TOUCH) $(STAGEFILES_DIR)/.spindown_configured
 
