@@ -50,13 +50,25 @@ case $1 in
 	    echo "Ha de guardar la configuración primero."
 	    exit 5
 	else
-	    tar -C / -xf $conf_tar
-	    if [ $? -eq 0 ]; then
-		echo "Configuración cargada correctamente desde $conf_tar"
-		echo "Algunas configuraciones no se aplicarán hasta que no reinicie VDR."
+
+	    if [ -f /var/run/runvdr.pid ]; then
+		echo "VDR se reiniciará ahora para aplicar la nueva configuración"
+
+		# No se puede imprimir nada a partir de aqui o recibiremos SIGPIPE
+		{
+		    kill-vdr
+
+		    tar -C / -xf $conf_tar
+		    
+		    if [ ! $? -eq 0 ]; then
+			logger -s user.warning "Ocurrió un error al intentar recuperar la configuración"
+		    fi
+		    
+		    start-vdr
+		} > /dev/null 2>&1 &
+		
 	    else
-		echo "Ocurrió un error al intentar recuperar la configuración"
-		exit 6
+		tar -C / -xf $conf_tar
 	    fi
 	fi
 
