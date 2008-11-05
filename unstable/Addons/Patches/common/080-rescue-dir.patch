@@ -1,0 +1,11 @@
+diff -Naur uclibc_build_env_orig/rootfs-file-lists/base.lst uclibc_build_env/rootfs-file-lists/base.lst
+--- uclibc_build_env_orig/rootfs-file-lists/base.lst	2008-08-31 15:46:44.000000000 +0200
++++ uclibc_build_env/rootfs-file-lists/base.lst	2008-10-25 10:29:08.000000000 +0200
+@@ -329,6 +329,7 @@
+ media         /var/media      l 777 0 0   -    - - -  -
+ proc          -               d 755 0 0   -    - - -  -
+ root          -               d 755 0 0   -    - - -  -
++rescue        -               d 755 0 0   -    - - -  -
+ home          -               d 755 0 0   -    - - -  -
+ sbin          -               d 755 0 0   -    - - -  -
+ tmp           /var/tmp        l 777 0 0   -    - - -  -

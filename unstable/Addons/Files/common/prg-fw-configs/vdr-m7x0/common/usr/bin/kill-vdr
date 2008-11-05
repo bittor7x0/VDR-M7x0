@@ -3,9 +3,10 @@
 
 trys=0
 n=1
+echo "Killing VDR"
 while [ -e /var/run/runvdr.pid -a ${trys} -le 20 ] ; do
     if [ $(( ${trys} % 5 )) -eq 0 ] ; then
-        echo "Try n#" ${n}
+        echo "Try n#${n}"
         n=$(( ${n} + 1 ))
         killall -15 vdr
     fi

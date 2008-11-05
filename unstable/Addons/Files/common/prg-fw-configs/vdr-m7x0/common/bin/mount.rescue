@@ -1,0 +1,8 @@
+#!/bin/ash
+
+umount.rescue
+
+echo ">> mount /rescue + /rescue/var" >&2
+mount -nrt cramfs /dev/mtdblock5 /rescue
+mount -nt tmpfs tmpfs /rescue/var
+mkdir -p /rescue/var/etc

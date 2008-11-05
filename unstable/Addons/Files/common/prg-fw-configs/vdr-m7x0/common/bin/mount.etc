@@ -1,0 +1,10 @@
+#!/bin/ash
+
+(( is-mounted "/rw-flash" )) && exit 0
+umount.etc
+
+echo ">> mount /rw-flash" >&2
+mount -n -t jffs2 /dev/mtdblock2 /rw-flash
+
+echo ">> mount /etc" >&2
+mount -o bind /rw-flash/etc /etc
