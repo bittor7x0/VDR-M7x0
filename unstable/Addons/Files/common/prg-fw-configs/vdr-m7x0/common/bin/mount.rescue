@@ -4,6 +4,7 @@ umount.rescue
 
 echo ">> mount /rescue" >&2
 mount -nrt cramfs /dev/mtdblock5 /rescue
+
 echo ">> mount /rescue/var" >&2
 mount -nt tmpfs tmpfs /rescue/var
 mkdir -p /rescue/var/etc
