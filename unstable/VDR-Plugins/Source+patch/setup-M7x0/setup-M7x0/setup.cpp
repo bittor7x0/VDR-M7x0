@@ -16,8 +16,8 @@
 #include "i18n.h"
 
 static const char *VERSION        = "0.1.0";
-static const char *DESCRIPTION    = "open7x0-Setup (based on Minivdr-Setup)";
-static const char *MAINMENUENTRY  = "Gigaset 7x0 Firmware Setup";
+static const char *DESCRIPTION    = "VDR-NG Firmware Setup";
+static const char *MAINMENUENTRY  = "Firmware Setup";
 
 //holds setup configuration
 //not needed for open7x0 setup

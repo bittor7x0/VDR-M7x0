@@ -116,7 +116,8 @@ for delete in `cat "$vdr_em_delete/$vdr_version.lst" | tr -d '\r' `; do
 	fi
 done
 
-# Set SVN versions
+# Get and set SVN versions
+echo "Getting and setting SVN versions to fw-version"
 svn_em_version=" em subversion revision `svnversion | cut -d \":\" -f 2`"
 svn_o7o_version="o7o subversion revision `svnversion \"$vdr_fw_orig\" | cut -d \":\" -f 2`"
 
@@ -124,6 +125,7 @@ echo $svn_em_version  >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
 echo $svn_o7o_version >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
 
 # Clean temp dir
+echo "Cleaning temporal dir"
 rm -rf "$tmp"
 echo ""
 echo ""

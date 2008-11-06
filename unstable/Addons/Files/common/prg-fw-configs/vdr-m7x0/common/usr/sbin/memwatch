@@ -5,8 +5,7 @@
 def_time=60 # in minutes
 STAT="MEMSTAT in KB: tot=%5d, free=%5d, cached=%5d, used=%5d, act=%5d, inact=%5d"
 
-if [ $# = 4 ] && [ $1 = "--doit" ] && [ -d "$2" ] && [ $3 = "--time" ]
-then
+if [ $# = 4 ] && [ $1 = "--doit" ] && [ -d "$2" ] && [ $3 = "--time" ]; then
     echo "${0##*/}: START: log every $4 sec into $2"
     PS="ps fvax"
     [ -h /bin/ps ] && PS="ps" # busybox ps
@@ -40,8 +39,7 @@ then
     done
 fi
 
-if [ $# != 1 ] && [ $# != 2 ]
-then
+if [ $# != 1 ] && [ $# != 2 ]; then
     echo "usage: ${0##*/} -s|-1|-c [sleep_minutes]" >&2
     echo "   or: ${0##*/} log_directory [sleep_minutes]  (def=${def_time} min)" >&2
     exit 1
@@ -50,14 +48,12 @@ fi
 time=${def_time}
 [ $2 != "" ] && let time=$2
 
-if [ $1 = "-c" ]
-then
+if [ $1 = "-c" ]; then
     last=""
     while true
     do
 	eval `awk ' /^[A-Z]/ { printf("%s=%s\n",gensub(/:/,"",g,$1),$2) }' /proc/meminfo`
-	if [ ${last} != "${MemFree},${Cached}" ]
-	then
+	if [ ${last} != "${MemFree},${Cached}" ]; then
 	    last="${MemFree},${Cached}"
 	    printf "`date +%T`: ${STAT}\n" \
 		${MemTotal} ${MemFree} ${Cached} $((MemTotal-MemFree-Cached)) ${Active} ${Inactive}
@@ -66,8 +62,7 @@ then
     done
 fi
 
-if [ $1 = "-s" ] || [ $1 = "-1" ]
-then
+if [ $1 = "-s" ] || [ $1 = "-1" ]; then
     let time=60*time
     while true
     do
@@ -83,8 +78,7 @@ then
     done
 fi
 
-if [ ! -d "$1" ]
-then
+if [ ! -d "$1" ]; then
     echo "${0##*/}: not a directory: log_directory" >&2
     exit 1
 fi

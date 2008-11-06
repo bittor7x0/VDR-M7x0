@@ -719,7 +719,7 @@ void cSetupGenericMenu::ExecuteCommand( const char * cmd )
 //#############################################################################################
 
 
-cSetupMenu::cSetupMenu() : cOsdMenu(tr("Gigaset Firmware setup - open7x0.org (based on setup plugin by minivdr.de)"))
+cSetupMenu::cSetupMenu() : cOsdMenu(tr("VDR-NG Firmware Setup"))
 {
    char *configFile=NULL;
    char *langs=NULL,*lang=NULL;
