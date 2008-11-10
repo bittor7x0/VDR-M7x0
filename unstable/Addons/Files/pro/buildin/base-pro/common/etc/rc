@@ -46,7 +46,7 @@ fi
 
 if [ X"${netdate}" != X"NO" ]; then
     echo -n "network time protocol daemon"
-    /usr/sbin/ntpd
+    /usr/sbin/ntpd -s
     echo "Done"
 fi
 
