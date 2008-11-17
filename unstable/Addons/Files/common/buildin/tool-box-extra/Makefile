@@ -58,7 +58,9 @@ $(SPRGS) $(PRGS): $$($$@_OBJS)
 
 install: $(SPRGS) $(PRGS)
 	-@$(MKDIR) -p $(SBINDIR)
+   ifneq ($(strip $(SPRGS)),)
 	@$(CP) $(SPRGS) $(SBINDIR)
+   endif
 	-@$(MKDIR) -p $(BINDIR)
 	@$(CP) $(PRGS) $(BINDIR)
 
