@@ -1,0 +1,11 @@
+diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
+--- VDR-NG-orig/dvbdevice.c	Thu Oct 16 15:11:43 2008
++++ VDR-NG/dvbdevice.c	Wed Nov 19 10:48:20 2008
+@@ -2695,6 +2695,7 @@
+     if(settv){
+       SetVolumeDevice(IsMute() ? 0 : CurrentVolume());
+       SetTvMode(Setup.TvMode);
++      SetVCRMode(Setup.VCRMode);
+       SetVideoFormat(eVideoFormat(Setup.VideoFormat));
+     }else{
+       int avs = open("/dev/avswitch", O_WRONLY);
