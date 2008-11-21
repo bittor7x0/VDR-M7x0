@@ -339,8 +339,8 @@ bool Config::loadPlugins(TiXmlNode *node)
     plugin = strtok(str_plugins," \"-");
 
     while ( plugin != NULL ) {
-      _activePlugins.AddPlugin(plugin+1, NULL,  plugin+1, true, _activePlugins.checkProtected(plugin+1),false);
-      plugin = strtok(NULL," \"-");
+      _activePlugins.AddPlugin(plugin+2, NULL,  plugin+2, true, _activePlugins.checkProtected(plugin+2),false);
+      plugin = strtok(NULL," \"");
     }
     delete []str_plugins;
   }
