@@ -336,7 +336,7 @@ bool Config::loadPlugins(TiXmlNode *node)
   
   if ( loaded_plugins != NULL && strlen(loaded_plugins)>0) {
     str_plugins =  Util::Strdupnew(loaded_plugins);
-    plugin = strtok(str_plugins," \"-");
+    plugin = strtok(str_plugins," \"");
 
     while ( plugin != NULL ) {
       _activePlugins.AddPlugin(plugin+2, NULL,  plugin+2, true, _activePlugins.checkProtected(plugin+2),false);
