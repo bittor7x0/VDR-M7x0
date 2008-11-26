@@ -5,34 +5,49 @@ set -o nounset
 . /etc/rc.local.conf
 
 first_video_dir=`echo $vdr_videodirs | cut -d ' ' -f 1`
-conf_tar=$first_video_dir/vdr_conf.tar
 
 usage_and_exit () {
-    echo "$0 guarda o recupera la configuración de VDR en un archivo tar dentro del directorio de grabaciones"
-    echo "Uso: $0 [save|load|info]"
+    echo "Uso: $0 [save|load|info] [archivo]"
+    echo
+    echo "$0 guarda (o recupera) la configuración de VDR en (o desde) un archivo"
+    echo
+    echo "Si no existe el argumento 'archivo' se usa un nombre de archivo fijo"
+    echo "y se guarda en el directorio de grabaciones configurado."
     exit 1
 }
 
-if [ ! $# -eq 1 ]; then
-    usage_and_exit
-fi
+case $# in
+    1)
+	conf_tar="$first_video_dir/vdr_conf.vcf"
+	vcf_dir="$first_video_dir"
 
-if [ ! -d "$first_video_dir" ]; then
-    echo "No existe el directorio de grabaciones $first_video_dir"
-    echo "Revise la configuración en:"
-    echo "   Configurar firmware Gigaset 7x0 > Configuración de directorios > Directorio de grabaciones"
-    exit 2
-fi
+	if [ ! -d "$first_video_dir" ]; then
+	    echo "No existe el directorio de grabaciones $first_video_dir"
+	    echo "Revise la configuración en:"
+	    echo "   Configurar firmware Gigaset 7x0 > Configuración de directorios > Directorio de grabaciones"
+	    exit 2
+	fi
+
+	;;
+    2)
+	conf_tar="$2"
+	vcf_dir=$(basename "$conf_tar")
+	;;
+    *)
+	usage_and_exit	
+esac
 
 case $1 in
     save)
-	if [ ! -w $first_video_dir ]; then
-	    echo "No se puede escribir en el directorio de grabaciones $first_video_dir"
-	    echo "Revise la configuración en:"
-	    echo "   Configurar firmware m7x0 > Configuración de discos > Directorio de grabaciones"
+	if [ ! -w "$vcf_dir" ]; then
+	    echo "No se puede escribir en el directorio $vcf_dir"
+	    if [ "$vcf_dir" = "$first_video_dir" ]; then
+		echo "Configure un directorio correcto en:"
+		echo "   Configurar firmware m7x0 > Configuración de discos > Directorio de grabaciones"
+	    fi
 	    exit 3
 	else
-	    tar -cf $conf_tar $vdr_confdir/setup.conf $vdr_confdir/svdrphosts.conf $vdr_confdir/timers.conf $vdr_confdir/channels.conf $vdr_confdir/plugins/streamdevhosts.conf $vdr_confdir/plugins/epgsearch/*.conf /etc/rc.local.conf /etc/resolv.conf /etc/rc.conf /etc/webif.conf /etc/fstab 2> /tmp/tar_backup.$$.err
+	    tar -cf "$conf_tar" $vdr_confdir/setup.conf $vdr_confdir/svdrphosts.conf $vdr_confdir/timers.conf $vdr_confdir/channels.conf $vdr_confdir/plugins/streamdevhosts.conf $vdr_confdir/plugins/epgsearch/*.conf /etc/rc.local.conf /etc/resolv.conf /etc/rc.conf /etc/webif.conf /etc/fstab 2> /tmp/tar_backup.$$.err
 	    if [ $? -eq 0 ]; then
 		echo "Configuración guardada correctamente en $conf_tar"
 		rm /tmp/tar_backup.$$.err
@@ -45,7 +60,7 @@ case $1 in
 	fi
 	;;
     load)
-	if [ ! -r $conf_tar ]; then
+	if [ ! -r "$conf_tar" ]; then
 	    echo "No existe el archivo $conf_tar del que recuperar la configuración."
 	    echo "Ha de guardar la configuración primero."
 	    exit 5
@@ -58,7 +73,7 @@ case $1 in
 		{
 		    kill-vdr
 
-		    tar -C / -xf $conf_tar
+		    tar -C / -xf "$conf_tar"
 		    
 		    if [ ! $? -eq 0 ]; then
 			logger -s user.warning "Ocurrió un error al intentar recuperar la configuración"
@@ -68,21 +83,21 @@ case $1 in
 		} > /dev/null 2>&1 &
 		
 	    else
-		tar -C / -xf $conf_tar
+		tar -C / -xf "$conf_tar"
 	    fi
 	fi
 
 	;;
     info)
-	if [ ! -r $conf_tar ]; then
+	if [ ! -r "$conf_tar" ]; then
 	    echo "No existe el archivo $conf_tar del que recuperar la configuración"
 	    exit 7
 	else
 	    echo "Configuración guardada en:"
-	    ls -lh $conf_tar
+	    ls -lh "$conf_tar"
 	    echo
 	    echo "Contenido del archivo:"
-	    tar -tf $conf_tar	
+	    tar -tf "$conf_tar"
 	fi
 	;;
     *)
