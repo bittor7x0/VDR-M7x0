@@ -5,7 +5,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    JumpSecondsRepeat = 120;
    JumpFramesRepeat = 15;
    AbortWhenPluginFails = 0;
-+  EmergencyExit = 1;
++  EmergencyExit = 0;
  }
  
  cSetup& cSetup::operator= (const cSetup &s)
