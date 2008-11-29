@@ -47,7 +47,8 @@ case $1 in
 	    fi
 	    exit 3
 	else
-	    tar -cf "$conf_tar" $vdr_confdir/setup.conf $vdr_confdir/svdrphosts.conf $vdr_confdir/timers.conf $vdr_confdir/channels.conf $vdr_confdir/plugins/streamdevhosts.conf $vdr_confdir/plugins/epgsearch/*.conf /etc/rc.local.conf /etc/resolv.conf /etc/rc.conf /etc/webif.conf /etc/fstab 2> /tmp/tar_backup.$$.err
+	    file_list=`ls $vdr_confdir/setup.conf $vdr_confdir/svdrphosts.conf $vdr_confdir/timers.conf $vdr_confdir/channels.conf $vdr_confdir/plugins/streamdevhosts.conf $vdr_confdir/plugins/epgsearch/*.conf /etc/rc.local.conf /etc/resolv.conf /etc/rc.conf /etc/webif.conf /etc/fstab 2> /dev/null`
+	    tar -cf "$conf_tar" $file_list 2> /tmp/tar_backup.$$.err
 	    if [ $? -eq 0 ]; then
 		echo "Configuración guardada correctamente en $conf_tar"
 		rm /tmp/tar_backup.$$.err
