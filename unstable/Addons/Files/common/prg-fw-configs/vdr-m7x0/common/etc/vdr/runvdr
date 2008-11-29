@@ -27,7 +27,7 @@ fi
 if [ -d "${vdr_videodirs%% *}" ] ; then
     vdirn=0
     for vdir in ${vdr_videodirs} ; do
-        [ -d ${vdir} ] && ln -sf ${vdir} /var/vdr/video${vdirn}
+        [ -d ${vdir} ] && ln -sfn ${vdir} /var/vdr/video${vdirn}
         vdirn=$(( ${vdirn} + 1 ))
     done
 else
