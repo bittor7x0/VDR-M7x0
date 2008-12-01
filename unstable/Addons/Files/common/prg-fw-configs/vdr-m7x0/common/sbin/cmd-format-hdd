@@ -1,0 +1,93 @@
+#!/bin/ash
+
+{
+# The maximum partition size is 200 GB
+size_part_max=$((200*1024))
+
+# Kill VDR
+/usr/bin/svdrpsend 127.0.0.1 2001 "MESG Cerrando el VDR"
+/usr/bin/kill-vdr
+
+# Messages in OSD enabled
+source /etc/rc.debug
+
+# Umount disks
+/sbin/usbautomounter umount
+
+# Get disks available in the system
+disks=`grep -v "[0-9]$" /proc/partitions \
+       |awk '{a=a+1;if (a>2) print $4}'`
+
+echo -n "Formateando discos duros"
+
+for disk in ${disks} ; do
+	dev_disk="/dev/${disk}"
+	size_MiB=`fdisk -l ${dev_disk} | grep  "^Disk ${dev_disk}:" | awk '{print $5/1048576}'`
+	partitions=$((${size_MiB}/${size_part_max}+1))
+	new_size_MiB=$((${size_MiB}/${partitions}))
+
+	echo ""
+	echo "Encontrado disco ${dev_disk} de ${size_MiB} MiB"
+	echo "Se crearán ${partitions} particiones de ${new_size_MiB} MiB"
+	echo "Eliminando particiones anteriores"
+	/bin/echo -e "d\n1\nd\n2\nd\n3\nd\n4\nw" | fdisk ${dev_disk} >/dev/null 2>/dev/null
+
+	n_part=1
+	vdr_videodirs=""
+	partition_size="+${new_size_MiB}M"
+
+	while [ ${n_part} -le ${partitions} ] ; do
+		dev_partition=${dev_disk}${n_part}
+		part_options=""
+
+		# Last partition
+		[ ${n_part} -eq ${partitions} ] && partition_size="\n"
+
+		# First partition
+		[ ${n_part} -lt 4 ] && part_options="n\np\n${n_part}\n\n${partition_size}\nt\n83\nw\n"
+
+		# Second and third partition
+		[ ${n_part} -eq 2 ] || [ ${n_part} -eq 3 ] && part_options="n\np\n${n_part}\n\n${partition_size}\nt\n${n_part}\n83\nw\n"
+
+		# Fourth partition
+		[ ${n_part} -eq 4 ] && part_options="n\ne\n\n\nn\n\n${partition_size}\nt\n$((${n_part}+1))\n83\nw\n"
+
+		# Higher than the fourth partition
+		[ ${n_part} -gt 4 ] && part_options="n\n\n${partition_size}\nt\n$((${n_part}+1))\n83\nw\n"
+
+		# Higher or equal to the fourth partition is n_part+1
+		[ ${n_part} -ge 4 ] && dev_partition=${dev_disk}$((${n_part}+1))
+
+		echo ""
+		echo "Creando partición ${dev_partition}"
+		/bin/echo -e "${part_options}" | fdisk ${dev_disk} >/dev/null 2>/dev/null
+
+		# Format partition
+		echo "Formateando partición ${dev_partition}"
+		/sbin/mke2fs -b 4096 -i 65536 -m 1 ${dev_partition}
+
+		# Set 1 month interval check and label
+		label="vdr${n_part}"
+		vdr_videodirs="${vdr_videodirs} /media/${label}"
+		echo "Comprobaciones mensuales y etiqueta ${label}"
+		/sbin/tune2fs -i 1m -c 0 -L ${label} ${dev_partition}
+
+		# Optimize directories
+		echo "Optimizar directorios ${dev_partition}"
+		/sbin/e2fsck -fD ${dev_partition}
+
+		n_part=$(( ${n_part} + 1 ))
+	done
+done
+
+# Set video dirs in config file
+echo ""
+echo "Estableciendo directorios de grabación"
+sed -i -e "s,^vdr_videodirs=.*,vdr_videodirs=\"${vdr_videodirs## }\",g" /etc/rc.local.conf
+
+# Reboot in 10 seconds
+echo ""
+echo "Reiniciando el equipo en 10 segundos"
+sleep 10
+/etc/vdr/rebootvdr
+} > /dev/null 2>&1 &
