@@ -1,0 +1,130 @@
+diff -urdN -x '*.rej' -x '*.orig' -x '*.o' vdr-1.4.0/eit.c vdr-1.4.0.w_epgfix/eit.c
+--- vdr-1.4.0/eit.c	2006-04-29 13:38:37.000000000 +0200
++++ vdr-1.4.0.w_epgfix/eit.c	2006-05-14 14:04:56.000000000 +0200
+@@ -30,6 +30,8 @@
+   if (!CheckCRCAndParse())
+      return;
+
++  static int offset, lastSource, lastONID, lastTSID, lastSID;
++
+   tChannelID channelID(Source, getOriginalNetworkId(), getTransportStreamId(), getServiceId());
+   cChannel *channel = Channels.GetByChannelID(channelID, true);
+   if (!channel)
+@@ -40,6 +42,18 @@
+      return;
+
+   cSchedule *pSchedule = (cSchedule *)Schedules->GetSchedule(channel, true);
++  if (!pSchedule ||
++      lastSource != Source ||
++      lastONID != getOriginalNetworkId() ||
++      lastTSID != getTransportStreamId() ||
++      lastSID != getServiceId())
++    offset = 0;
++
++  lastSource = Source;
++  lastONID = getOriginalNetworkId();
++  lastTSID = getTransportStreamId();
++  lastSID = getServiceId();
++
+
+   bool Empty = true;
+   bool Modified = false;
+@@ -55,7 +69,7 @@
+       SegmentEnd = SiEitEvent.getStartTime() + SiEitEvent.getDuration();
+       cEvent *newEvent = NULL;
+       cEvent *rEvent = NULL;
+-      cEvent *pEvent = (cEvent *)pSchedule->GetEvent(SiEitEvent.getEventId(), SiEitEvent.getStartTime());
++      cEvent *pEvent = (cEvent *)pSchedule->GetEvent(SiEitEvent.getEventId(), SiEitEvent.getStartTime()+offset, SiEitEvent.getDuration());
+       if (!pEvent) {
+          // If we don't have that event yet, we create a new one.
+          // Otherwise we copy the information into the existing event anyway, because the data might have changed.
+@@ -66,6 +80,18 @@
+       else {
+          // We have found an existing event, either through its event ID or its start time.
+          pEvent->SetSeen();
++         //-----------------------------------------------------------------------------------------------------
++         // w_epgfix: some stations have different event IDs and/or StartTime and/or Duration for the same event.
++         // therefore we try to find them by StartTime + offset, or if this fails by event ID
++         // If the event is shifted by some minutes, all following events on the same Schedule will be shifted
++         // or will have different duration
++         if (Tid <= pEvent->TableID() && pEvent->TableID() != 0x00) {
++            offset = SiEitEvent.getStartTime() + SiEitEvent.getDuration() - pEvent->EndTime();
++         //   pEvent->SetEventID(SiEitEvent.getEventId());
++            if (offset > 900 || offset < -900)
++              offset = 0; //do not allow more than 15min StartTime offset
++            }
++         //-----------------------------------------------------------------------------------------------------
+          // If the existing event has a zero table ID it was defined externally and shall
+          // not be overwritten.
+          if (pEvent->TableID() == 0x00) {
+diff -urdN -x '*.rej' -x '*.orig' -x '*.o' vdr-1.4.0/epg.c vdr-1.4.0.w_epgfix/epg.c
+--- vdr-1.4.0/epg.c	2006-05-14 14:04:49.000000000 +0200
++++ vdr-1.4.0.w_epgfix/epg.c	2006-05-14 14:25:00.000000000 +0200
+@@ -323,7 +323,7 @@
+                           unsigned int Version = 0xFF; // actual value is ignored
+                           int n = sscanf(t, "%u %ld %d %X %X", &EventID, &StartTime, &Duration, &TableID, &Version);
+                           if (n >= 3 && n <= 5) {
+-                             Event = (cEvent *)Schedule->GetEvent(EventID, StartTime);
++                             Event = (cEvent *)Schedule->GetEvent(EventID, StartTime, Duration);
+                              cEvent *newEvent = NULL;
+                              if (Event)
+                                 DELETENULL(Event->components);
+@@ -710,14 +710,41 @@
+   return p;
+ }
+
+-const cEvent *cSchedule::GetEvent(tEventID EventID, time_t StartTime) const
++const cEvent *cSchedule::GetEvent(tEventID EventID, time_t StartTime, int Duration) const
+ {
+   // Returns the event info with the given StartTime or, if no actual StartTime
+   // is given, the one with the given EventID.
+-  if (StartTime > 0) // 'StartTime < 0' is apparently used with NVOD channels
+-     return eventsHashStartTime.Get(StartTime);
+-  else
+-     return eventsHashID.Get(EventID);
++  //-------------------- w_epgfix.patch ----------------------
++  // Returns either the event info with
++  // a) the one with the given StartTime be found,
++  // b) the Event found -10/+15min around StartTime and a simmilar Duration
++  // c) the given EventID or, if that one can't
++  // d) NULL if none of them found)
++  if (StartTime > 0) { // 'StartTime < 0' is apparently used with NVOD channels
++     cEvent *p = eventsHashStartTime.Get(StartTime);
++
++     if (p) {
++        return p;
++     // given offset was wrong; let's search a little bit around;
++     } else {
++        for (p = events.First(); p; p = events.Next(p)) {
++           if (p &&
++                (p->StartTime() >= StartTime - 10*60 &&
++                 p->StartTime() <= StartTime + 15*60) &&
++                (Duration == 0 ||
++                  (Duration >= (p->Duration() - (p->Duration()/ 5) - 1) &&
++                   Duration <= (p->Duration() + (p->Duration()/ 5) + 1))
++                ) )
++              return p;
++        }
++     }
++
++//     return eventsHashStartTime.Get(StartTime);
++  }
++//  else
++/* If the program gets here, no event has been found by its StartTime.
++   So let's try it by EventID. */
++  return eventsHashID.Get(EventID);
+ }
+
+ const cEvent *cSchedule::GetEventAround(time_t Time) const
+diff -urdN -x '*.rej' -x '*.orig' -x '*.o' vdr-1.4.0/epg.h vdr-1.4.0.w_epgfix/epg.h
+--- vdr-1.4.0/epg.h	2006-03-25 13:39:39.000000000 +0100
++++ vdr-1.4.0.w_epgfix/epg.h	2006-05-14 14:04:56.000000000 +0200
+@@ -143,7 +143,7 @@
+   const cList<cEvent> *Events(void) const { return &events; }
+   const cEvent *GetPresentEvent(void) const;
+   const cEvent *GetFollowingEvent(void) const;
+-  const cEvent *GetEvent(tEventID EventID, time_t StartTime = 0) const;
++  const cEvent *GetEvent(tEventID EventID, time_t StartTime = 0, int Duration = 0) const;
+   const cEvent *GetEventAround(time_t Time) const;
+   void Dump(FILE *f, const char *Prefix = "", eDumpMode DumpMode = dmAll, time_t AtTime = 0) const;
+   static bool Read(FILE *f, cSchedules *Schedules);
