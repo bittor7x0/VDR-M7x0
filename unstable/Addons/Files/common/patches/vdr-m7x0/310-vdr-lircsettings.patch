@@ -4,7 +4,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
 @@ -341,6 +341,9 @@
    JumpFramesRepeat = 15;
    AbortWhenPluginFails = 0;
-   EmergencyExit = 1;
+   EmergencyExit = 0;
 +  LircRepeatDelay = 350;
 +  LircRepeatFreq = 100;
 +  LircRepeatTimeout = 500;
