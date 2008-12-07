@@ -1,5 +1,6 @@
---- uclibc_build_env_orig/configs/busybox/1.11.2/busybox.config	2008-08-30 19:36:33.000000000 +0200
-+++ uclibc_build_env/configs/busybox/1.11.2/busybox.config	2008-08-30 20:48:22.000000000 +0200
+diff -Naur uclibc_build_env_orig/configs/busybox/1.11.2/busybox.config uclibc_build_env/configs/busybox/1.11.2/busybox.config
+--- uclibc_build_env_orig/configs/busybox/1.11.2/busybox.config	2008-08-31 15:46:53.000000000 +0200
++++ uclibc_build_env/configs/busybox/1.11.2/busybox.config	2008-12-07 14:57:52.000000000 +0100
 @@ -77,15 +77,15 @@
  CONFIG_PASSWORD_MINLEN=6
  CONFIG_MD5_SIZE_VS_SPEED=2
@@ -23,15 +24,6 @@
  CONFIG_FEATURE_VERBOSE_CP_MESSAGE=y
  CONFIG_FEATURE_COPYBUF_KB=4
  # CONFIG_MONOTONIC_SYSCALL is not set
-@@ -167,7 +167,7 @@
- CONFIG_DU=y
- CONFIG_FEATURE_DU_DEFAULT_BLOCKSIZE_1K=y
- CONFIG_ECHO=y
--CONFIG_FEATURE_FANCY_ECHO=y
-+# CONFIG_FEATURE_FANCY_ECHO is not set
- CONFIG_ENV=y
- CONFIG_FEATURE_ENV_LONG_OPTIONS=y
- CONFIG_EXPAND=y
 @@ -177,7 +177,7 @@
  CONFIG_FALSE=y
  CONFIG_FOLD=y
