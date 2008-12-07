@@ -5,7 +5,6 @@
 size_part_max=$((200*1024))
 
 # Kill VDR
-/usr/bin/svdrpsend 127.0.0.1 2001 "MESG Cerrando el VDR"
 /usr/bin/kill-vdr
 
 # Messages in OSD enabled

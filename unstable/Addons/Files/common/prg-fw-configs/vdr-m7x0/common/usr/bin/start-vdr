@@ -1,5 +1,5 @@
 #!/bin/ash
-[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+source /etc/rc.local.conf
 
 export ${runvdr_vars}
 ash ${runvdr} &

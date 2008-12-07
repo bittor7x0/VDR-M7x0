@@ -1,9 +1,11 @@
 #!/bin/ash
-[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+source /etc/rc.local.conf
+
+/usr/bin/svdrpsend 127.0.0.1 2001 "MESG Cerrando el VDR"
+echo "Killing VDR"
 
 trys=0
 n=1
-echo "Killing VDR"
 while [ -e /var/run/runvdr.pid -a ${trys} -le 20 ] ; do
     if [ $(( ${trys} % 5 )) -eq 0 ] ; then
         echo "Try n#${n}"

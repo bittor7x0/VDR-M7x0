@@ -1,0 +1,15 @@
+#!/bin/ash
+
+{
+# Kill VDR
+/usr/bin/kill-vdr
+
+# Umount disks with fsck
+/sbin/usbautomounter umount fsck
+
+# Mount disks
+/sbin/usbautomounter mount
+
+# Start VDR
+/usr/bin/start-vdr
+} > /dev/null 2>&1 &
