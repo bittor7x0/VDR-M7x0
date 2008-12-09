@@ -4,11 +4,11 @@
 # Kill VDR
 /usr/bin/kill-vdr
 
-# Umount disks with fsck
-/sbin/usbautomounter umount fsck
+# Umount disks
+/sbin/usbautomounter umount
 
-# Mount disks
-/sbin/usbautomounter mount
+# Mount disks with fsck
+/sbin/usbautomounter mount fsck
 
 # Start VDR
 /usr/bin/start-vdr
