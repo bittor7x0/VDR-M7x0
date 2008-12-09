@@ -1,0 +1,54 @@
+--- VDR-NG-orig/menu.c	2008-12-09 16:56:36.000000000 +0100
++++ VDR-NG/menu.c	2008-12-09 17:23:45.000000000 +0100
+@@ -3940,14 +3940,30 @@
+          if (group < 0) {
+             cChannel *channel = Channels.GetByNumber(cDevice::CurrentChannel());
+             if (channel)
+-               group = channel->Index();
++            {
++	            if(channel->Index()>0)
++	                    group=Channels.GetPrevGroup(channel->Index());
++                    if(group<0)
++                            group = channel->Index();
++            }
+             }
+          if (group >= 0) {
+             int SaveGroup = group;
+-            if (NORMALKEY(Key) == kRight || NORMALKEY(Key) == kNext)
++            if (NORMALKEY(Key) == kRight || NORMALKEY(Key) == kNext){
+                group = Channels.GetNextGroup(group) ;
+-            else
+-               group = Channels.GetPrevGroup(group < 1 ? 1 : group);
++	       if(group<0)
++		       group=Channels.GetNextGroup(-1);
++            }
++            else{
++        	    if(group>0)
++                    {
++        	            group=Channels.GetPrevGroup(group);
++                            if(group<0)
++        	                    group=Channels.GetPrevGroup(Channels.Count());
++                    }
++                    else
++          	          group=Channels.GetPrevGroup(Channels.Count());
++            }
+             if (group < 0)
+                group = SaveGroup;
+             channel = Channels.Get(group);
+@@ -4004,8 +4020,14 @@
+     case kOk:
+          if (group >= 0) {
+             channel = Channels.Get(Channels.GetNextNormal(group));
+-            if (channel)
+-               NewChannel = channel;
++            while(channel&&(!channel->GroupSep())){
++	            if(cDevice::PrimaryDevice()->ProvidesChannel(channel,Setup.PrimaryLimit,NULL,true)||cDevice::GetDevice(channel,0,NULL,true))
++                    {
++	                    NewChannel = channel;
++                            break;
++                    }
++                    channel=Channels.Next(channel);
++            }
+             withInfo = true;
+             group = -1;
+             Refresh();
