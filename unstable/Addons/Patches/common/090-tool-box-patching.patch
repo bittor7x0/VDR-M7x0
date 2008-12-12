@@ -1,0 +1,38 @@
+--- uclibc_build_env_orig/make-incs/tool-box.mk	2008-12-12 00:13:09.000000000 +0100
++++ uclibc_build_env/make-incs/tool-box.mk	2008-12-12 00:19:53.000000000 +0100
+@@ -32,6 +32,7 @@
+ 
+ TOOL-BOX_DIR := $(BUILDIN_DIR)/tool-box
+ TOOL-BOX_BUILDDIR := $(BUILD_DIR)/tool-box
++TOOL-BOX_PATCHES_DIR := $(PATCHES_DIR)/tool-box
+ TOOL-BOX_INSTALLED = $(STAGEFILES_DIR)/.tool-box_installed
+ 
+ PACKS_RULES_$(CONFIG_TOOL-BOX) += $(TOOL-BOX_INSTALLED)
+@@ -47,11 +48,18 @@
+ 	$(CP) -RPp $(TOOL-BOX_DIR) $(TOOL-BOX_BUILDDIR)
+ 	$(TOUCH) $(STAGEFILES_DIR)/.tool-box_copied
+ 
++# patch tool-box
++#
++
++$(STAGEFILES_DIR)/.tool-box_patched: $(STAGEFILES_DIR)/.tool-box_copied
++	$(PATCHES_DIR)/patch-kernel.sh $(TOOL-BOX_BUILDDIR) $(TOOL-BOX_PATCHES_DIR)
++	$(TOUCH) $(STAGEFILES_DIR)/.tool-box_patched
++
+ #
+ # compile tool-box
+ #
+ 
+-$(STAGEFILES_DIR)/.tool-box_compiled: $(STAGEFILES_DIR)/.tool-box_copied
++$(STAGEFILES_DIR)/.tool-box_compiled: $(STAGEFILES_DIR)/.tool-box_patched
+ 	$(UCLIBC_ENV) $(MAKE) -C $(TOOL-BOX_BUILDDIR) $(UCLIBC_ENV) \
+ 		PREFIX=$(TARGET_ROOT)/usr all
+ 	$(TOUCH) $(STAGEFILES_DIR)/.tool-box_compiled
+@@ -76,6 +84,7 @@
+ 
+ distclean-tool-box:
+ 	-$(RM) -f $(STAGEFILES_DIR)/.tool-box_copied
++	-$(RM) -f $(STAGEFILES_DIR)/.tool-box_patched
+ 	-$(RM) -f $(STAGEFILES_DIR)/.tool-box_compiled
+ 	-$(RM) -f $(STAGEFILES_DIR)/.tool-box_installed
+ 
