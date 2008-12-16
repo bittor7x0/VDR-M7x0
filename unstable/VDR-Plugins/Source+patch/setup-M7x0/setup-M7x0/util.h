@@ -23,7 +23,7 @@ class Util{
 public:
     Util();
     ~Util();
-    enum Type { UNDEFINED,TEXT, NUMBER_TEXT, HEX, IP, BOOL, NUMBER, SELECTION};
+    enum Type { UNDEFINED,TEXT, NUMBER_TEXT, HEX, IP, BOOL, NUMBER, SELECTION, FILE, DIR};
     static char * Strdupnew(const char  *str);
     static char * Strdupnew(const char  *prefix, const char  *str);
     static char * Strdupnew( const char  *str, int size );

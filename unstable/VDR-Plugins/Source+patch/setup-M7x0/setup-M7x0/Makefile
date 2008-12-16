@@ -4,8 +4,8 @@
 # $Id: Makefile 43 2007-05-15 06:20:51Z hape $
 
 # Debugging on/off 
-#OPEN7x0_Setup_DEBUG = 1
-#DEBUG = -DDEBUG 
+OPEN7x0_Setup_DEBUG = 1
+DEBUG = -DDEBUG 
 
 
 # Strip debug symbols?  Set eg. to /bin/true if not
@@ -29,7 +29,7 @@ CXXFLAGS ?= -g -O2 -Wall -Woverloaded-virtual
 
 ### The directory environment:
 
-DVBDIR = ../../../../DVB
+DVBDIR ?= ../../../../DVB
 VDRDIR ?= ../../..
 LIBDIR ?= ../../lib
 TMPDIR = /tmp
@@ -61,22 +61,14 @@ INCLUDES += -I$(VDRDIR)
 DEFINES += $(DEBUG) -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRVERSION="\"$(VDRVERSION)\"" 
 
 
-ifdef BIGPATCH_INSTALLED
-        DEFINES += -DBIGPATCH_INSTALLED
-endif
-
-ifdef LIVEBUFFER_PATCH_INSTALLED
-        DEFINES += -DLIVEBUFFER_PATCH_INSTALLED
-endif
-
 ifdef OPEN7x0_Setup_DEBUG
 	DEFINES += -DDEBUG
 endif
 
 ### The object files (add further files here):
-#OBJS     = $(PLUGIN).o  i18n.o menus.o setupmenu.o setupsetup.o config.o plugins.o sysconfig.o util.o setupsystemmenu.o
-# removed setupsetup as we do not need it
-OBJS     = $(PLUGIN).o  i18n.o menus.o setupmenu.o config.o plugins.o sysconfig.o util.o setupsystemmenu.o tinystr.o tinyxml.o tinyxmlerror.o tinyxmlparser.o
+FILEBROWSER_OBJS = commands.o menu-filebrowser.o tools.o menu-accesscode.o  statebag.o
+
+OBJS     = $(PLUGIN).o $(FILEBROWSER_OBJS) menueditfileitem.o  i18n.o menus.o setupmenu.o config.o plugins.o sysconfig.o util.o setupsystemmenu.o tinystr.o tinyxml.o tinyxmlerror.o tinyxmlparser.o
 
 ### Implicit rules:
 

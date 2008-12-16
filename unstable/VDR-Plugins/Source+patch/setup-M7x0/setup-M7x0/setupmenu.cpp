@@ -19,6 +19,7 @@
 #include "i18n.h"
 #include "common.h"
 #include "setupsystemmenu.h"
+#include "menueditfileitem.h"
 
 
 
@@ -90,6 +91,7 @@ eOSState cSetupPluginMenu::ProcessKey( eKeys Key )
     {
             case kOk :
                         _config->SaveFile();
+                        debug("save1");
                         return osBack;
                         break;
 
@@ -210,253 +212,7 @@ eOSState cSetupPluginParameter::ProcessKey( eKeys Key )
 }
 
 
-//#################################################################################################
-//  cSetupVdrMenu
-//################################################################################################
 
-/** Removed as we du not uses the submenupatch
-static char *ALLOW_ALL_CHARS =" aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789-.\"";
-cSetupVdrMenu::cSetupVdrMenu(const char *title): cOsdMenu(title, 25)
-{
-  _startIndex           =0;
-  _createEditNodeIndex  =0;
-  
-  // Load Menu Configuration
-  char *menuXML = NULL;
-  asprintf(&menuXML, "%s/setup/vdr-menu.xml", cPlugin::ConfigDirectory());
-  _vdrSubMenu.LoadXml(menuXML);
-  free(menuXML);
-
-  _menuState  = UNDEFINED;
-  Set();
-}
-
-cSetupVdrMenu::~ cSetupVdrMenu( )
-{
-}
-
-void cSetupVdrMenu::Set( )
-{
-  int current = Current();
-  cSubMenuNode *node = NULL;
-  int nr = _vdrSubMenu.GetNrOfNodes();
-
-
-  Clear();
-
-  switch(_menuState)
-  {
-    case UNDEFINED:
-    case MOVE     :
-                for( int i=0; i<nr; i++)
-                {
-                    if((node = _vdrSubMenu.GetAbsNode(i)) != NULL)
-                    {
-                        char *tmp=createMenuName(node);
-                        Add(new cOsdItem(tmp));
-                        free(tmp);
-                    }
-                }
-                current=_createEditNodeIndex;
-                if( current >= nr)
-                    current = nr-1;
-                break;
-     case EDIT:
-                strncpy(_editTitle, _vdrSubMenu.GetAbsNode(_createEditNodeIndex)->GetName(), sizeof(_editTitle));
-                _editTitle[sizeof(_editTitle)]='\0';
-                Add(new cMenuEditStrItem(tr("change menu name"), _editTitle, sizeof(_editTitle), ALLOW_ALL_CHARS));
-                break;
-     case CREATE:
-                strncpy(_editTitle, "", sizeof(_editTitle));
-                Add(new cMenuEditStrItem(tr("change menu name"), _editTitle, sizeof(_editTitle), ALLOW_ALL_CHARS));
-                break;       
-     default:
-                break;
-  }
-    
-
-  SetCurrent(Get(current));
-
-  setHelp();
-  
-
-  Display();
-}
-
-
-
-
-eOSState cSetupVdrMenu::ProcessKey( eKeys Key )
-{
-    cSubMenuNode *node = NULL;
-    eOSState state = cOsdMenu::ProcessKey(Key);
-    if( HasSubMenu())
-      return state;
-
-    switch(Key)
-    {
-            case kRed:
-                      if(_menuState == UNDEFINED )
-                      {
-                          _menuState = CREATE;
-                          _createEditNodeIndex = Current();
-                          Set();
-                      }
-                      break;
-            case kGreen:
-                      if(_menuState == MOVE )
-                      {
-                        if( (node= _vdrSubMenu.GetAbsNode(Current()))!= NULL && node->GetType()== cSubMenuNode::MENU)
-                        {
-                          _vdrSubMenu.MoveMenu(_startIndex, Current(), cSubMenu::INTO);
-                          _menuState = UNDEFINED;
-                          _createEditNodeIndex = Current();
-                          SetStatus(NULL);
-                          Set();
-                        }
-                      }
-                      else
-                      if(_menuState == UNDEFINED )
-                      {
-                        if( (node= _vdrSubMenu.GetAbsNode(Current()))!= NULL && node->GetType()== cSubMenuNode::MENU)
-                        {
-                            _menuState = EDIT;
-                            _createEditNodeIndex = Current();
-                            Set();
-                        }
-                      }
-                      setHelp();
-                      break;
-           case kYellow:
-                      if(_menuState == MOVE )
-                      {
-                        _vdrSubMenu.MoveMenu(_startIndex, Current(), cSubMenu::BEFORE);
-                        _menuState = UNDEFINED;
-                        _createEditNodeIndex =Current();
-                        SetStatus(NULL);
-                        Set();
-                      }
-                      else
-                      if(_menuState == UNDEFINED )
-                      {
-                        if(Interface->Confirm(tr("Delete Menu?")))
-                        {
-                         _createEditNodeIndex = Current();
-                         _vdrSubMenu.DeleteMenu(_createEditNodeIndex);
-                          _menuState = UNDEFINED;
-                          Set();
-                        }
-                      }
-                      break;
-           case kBlue:
-                      if(_menuState == MOVE )
-                      {
-                        _vdrSubMenu.MoveMenu(_startIndex, Current(), cSubMenu::BEHIND);
-                         _createEditNodeIndex =Current();
-                        _menuState = UNDEFINED;
-                        SetStatus(NULL);
-                      }
-                      else
-                      if(_menuState == UNDEFINED )
-                      {
-                        _startIndex = Current();
-                         _createEditNodeIndex = _startIndex;
-                        _menuState = MOVE;
-                        SetStatus(tr("Up/Dn for new location - color key to move"));
-                      }
-                      Set();
-                      setHelp();
-                      break;
-
-          case kOk :
-                       switch (_menuState)
-                       {
-                        case UNDEFINED:
-                                    // Save Menus to file and exit submenu
-                                     state=osBack;
-                                    _vdrSubMenu.SetMenuSuffix(setupSetup._menuSuffix);
-                                    _vdrSubMenu.SaveXml();
-                                    break;
-                        case CREATE:
-                                    _vdrSubMenu.CreateMenu(_createEditNodeIndex, _editTitle);
-                                    _menuState = UNDEFINED;
-                                    Set();
-                                    break;
-                        case EDIT:
-                                    _vdrSubMenu.GetAbsNode(_createEditNodeIndex)->SetName(_editTitle);
-                                    _menuState = UNDEFINED;
-                                    Set();
-                                    break;
-
-                        default:
-                                    break;
-                       }
-                       break;
-            case kBack:
-                       if( _menuState == CREATE || _menuState==EDIT)
-                       {
-                         _menuState=UNDEFINED;
-                         Set();
-                         state=osContinue;
-                       }
-
-            case kDown:
-            case kUp:
-            case kRight:
-            case kLeft:
-                     if(_menuState == MOVE)
-                        setHelp();
-                     break;
-            default :
-                     break;
-    }
-    return state;
-}
-// --------------- Private Methods ---------------------
-void cSetupVdrMenu::setHelp( )
-{
-  cSubMenuNode *node = NULL;
-  
-  if( _menuState == MOVE)
-  {
-    if( (node= _vdrSubMenu.GetAbsNode(Current()))!= NULL && node->GetType()== cSubMenuNode::MENU)
-      SetHelp(NULL, tr("Into"), tr("Before"), tr("After"));
-    else
-      SetHelp(NULL, NULL, tr("Before"), tr("After"));
-  }
-  else
-    SetHelp(tr("Create"), tr("Edit"), tr("Delete"), tr("Move"));
-}
-
-char * cSetupVdrMenu::createMenuName( cSubMenuNode *node )
-{
-  char *prefix = NULL;
-  char *tmp=NULL;
-  int   level = node->GetLevel();
-
-  // Set Prefix
-  prefix = (char*) malloc(1);
-  prefix[0] = '\0';
-  for(int i=0; i<level; i++)
-    asprintf(&prefix, "|   %s", prefix);
-
-  
-  cSubMenuNode::Type type =node->GetType();
-  
-  if( type == cSubMenuNode::MENU)
-    asprintf(&tmp, "%s+%s", prefix, node->GetName());
-  else
-   if( type == cSubMenuNode::SYSTEM)
-    asprintf(&tmp, "%s %s",  prefix, tr(node->GetName()));
-   else
-    asprintf(&tmp, "%s %s",  prefix, node->GetName());
-
-  free(prefix);
-  
-  return(tmp);
-}
-
-*/
 
 //#################################################################################################
 //  cSetupGenericMenu
@@ -561,6 +317,11 @@ void cSetupGenericMenu::Set( )
                                        e->GetSelectionValues()) );
         }
              break;
+        case Util::FILE:          
+        case Util::DIR:
+          Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
+                                      " aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789-+.#~_/:\"\'"));
+             break;
         default:
                 break;
       }
@@ -597,8 +358,7 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
                            (n->GetType() == MenuNode::MENU ||
                             n->GetType() == MenuNode::MENUSYSTEM) )
                      {
-                        if(n->GetType() == MenuNode::MENU){
-  							debug("=============================> Create menu page");
+                        if(n->GetType() == MenuNode::MENU){  							
                           return(AddSubMenu(new cSetupGenericMenu(n->GetName(), n,  _config)));
                         }else{  // Menu "system"
                           cOsdMenu *menu = cSetupSystemMenu::GetSystemMenu(n->GetMenu()->GetSystem(), _config);
@@ -608,12 +368,10 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
                       }
                       else
                       {
-                        if(!_editItem) //close submenu only if we do not have edited an textitem
+                        if(!_editItem)//close submenu only if we do not have edited an textitem
                         {
-
                           state=osBack;
                           _config->SaveFile(); // Write New Configurationfile
-
                           for(int i=0;  i < _node->GetNr(); i++)
                           {
                             n = _node->GetNode(i);
@@ -622,7 +380,6 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
                           }
                           ExecuteCommand(_node->GetMenu()->GetCommand());
                         }
-  
                         _editItem=false;
                       }
                       break;
@@ -649,13 +406,31 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
                         break;
               case kBlue:
                         break;
+              case kLeft:
+                        
+              			if( !_editItem && n!= NULL &&
+                            n->GetType() == MenuNode::ENTRY &&
+                            n->GetMenuEntry()->GetType() == Util::FILE) {
+                            cOsdMenu *menu = cOsdMenuFilebrowserSetup::CreateFilebrowser("/",n->GetMenuEntry());
+                           	if(menu != NULL) return(AddSubMenu(menu));                         	                        	
+						}
+						if( !_editItem && n!= NULL &&
+                            n->GetType() == MenuNode::ENTRY &&
+                            n->GetMenuEntry()->GetType() == Util::DIR) {
+                            cOsdMenu *menu = cOsdMenuFilebrowserSetup::CreateDirectorybrowser("/",n->GetMenuEntry());
+                           	if(menu != NULL) return(AddSubMenu(menu));                         	                        	
+						}
+                        	                        					
+              			break;
               case kRight:
                         if( n!= NULL &&
                             n->GetType() == MenuNode::ENTRY &&
                             (n->GetMenuEntry()->GetType() == Util::TEXT ||
                             n->GetMenuEntry()->GetType() == Util::NUMBER_TEXT ||
                             n->GetMenuEntry()->GetType() == Util::HEX ||
-                            n->GetMenuEntry()->GetType() == Util::NUMBER 
+                            n->GetMenuEntry()->GetType() == Util::NUMBER ||
+                            n->GetMenuEntry()->GetType() == Util::FILE ||
+                            n->GetMenuEntry()->GetType() == Util::DIR
                             )
                           )
                            _editItem = true;
@@ -726,6 +501,7 @@ cSetupMenu::cSetupMenu() : cOsdMenu(tr("VDR-NG Firmware Setup"))
    int loaded=0;
    SetCols(20);
 	
+   
    //Get languages
    langs  = Util::Strdupnew(I18nLanguageCode(Setup.OSDLanguage));      
    lang = strtok(langs,",");

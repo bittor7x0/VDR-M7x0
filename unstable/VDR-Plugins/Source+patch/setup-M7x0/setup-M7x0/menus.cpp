@@ -652,31 +652,46 @@ Util::Type MenuEntry::GetType( )
  */
 void MenuEntry::SetValue(Util::Type type,const char * val )
 {
+  
+  
   _type = type;
   switch(_type)
   {
     case Util::BOOL: Util::isBool(val, _valueBool);
                      break;
 
-    case Util::TEXT: _valueText = Util::Strdupnew(val, VALUETEXTMAXLEN);
+    case Util::TEXT: if ( _valueText ) { delete[] _valueText; _valueText=NULL;}
+    				 _valueText = Util::Strdupnew(val, VALUETEXTMAXLEN);
                      _valueTextMaxLen = VALUETEXTMAXLEN;
                      break;
-    case Util::IP:   _valueIp = Util::Strdupnew(val, VALUEIPMAXLEN);
+    case Util::IP:  
+    				 if ( _valueIp ) { delete[] _valueIp; _valueIp=NULL;} 
+    				 _valueIp = Util::Strdupnew(val, VALUEIPMAXLEN);
                      _valueIpMaxLen = VALUEIPMAXLEN;
                      break;
-    case Util::NUMBER_TEXT: _valueText = Util::Strdupnew(val, VALUETEXTMAXLEN);
+    case Util::NUMBER_TEXT: 
+    				 if ( _valueText ) { delete[] _valueText; _valueText=NULL;}
+    				 _valueText = Util::Strdupnew(val, VALUETEXTMAXLEN);
                      _valueTextMaxLen = VALUETEXTMAXLEN;
                      break;
-    case Util::HEX:  _valueText = Util::Strdupnew(val, VALUETEXTMAXLEN);
+    case Util::HEX:  if ( _valueText ) { delete[] _valueText; _valueText=NULL;}
+    				 _valueText = Util::Strdupnew(val, VALUETEXTMAXLEN);
                      _valueTextMaxLen = VALUETEXTMAXLEN;
                      break;
     case Util::NUMBER: Util::isNumber(val, _valueNumber);
                       break;
     
     case Util::SELECTION:
+                     if ( _valueText ) { delete[] _valueText; _valueText=NULL;}
                      _valueText = Util::Strdupnew(val, VALUETEXTMAXLEN);
                      _valueTextMaxLen = VALUETEXTMAXLEN;
                       break;
+    case Util::FILE: 
+    case Util::DIR:
+                     if ( _valueText ) { delete[] _valueText; _valueText=NULL;}
+    				 _valueText = Util::Strdupnew(val, VALUETEXTMAXLEN);
+                     _valueTextMaxLen = VALUETEXTMAXLEN;
+                     break;                 
     case Util::UNDEFINED:
                  break;
   }
@@ -760,6 +775,9 @@ const char * MenuEntry::GetValueAsString( )
     case Util::SELECTION:
                    result=_selectionValues.GetSelectedValue();
                    break;
+    case Util::FILE:
+    case Util::DIR:   result   =_valueText;
+                       break;
     default:
                  result=Util::typeToStr(_type);
                  break;

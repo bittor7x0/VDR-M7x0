@@ -13,12 +13,12 @@
             <entry name="Tiempo de arranque" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="298" help1="Valor en segundos del tiempo de arranque del VDR cuando hay una grabacion programada." />
         </menu>
         <menu name="Configuración de directorios">
-            <entry name="Directorio ficheros de configuración" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Directorio donde se encuentra los ficheros de configuración. NO DEBE SER MODIFICADO" />
-            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="text" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
-            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorio donde se encuentran los plugins. NO DEBE SER MODIFICADO" />
+            <entry name="Directorio ficheros de configuración" sysconfig="rc.local.conf--vdr_confdir" type="directory" value='&quot;/etc/vdr&quot;' help1="Directorio donde se encuentra los ficheros de configuración. NO DEBE SER MODIFICADO" />
+            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="directory" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
+            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="directory" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorio donde se encuentran los plugins. NO DEBE SER MODIFICADO" />
         </menu>
         <menu name="Configuración EPG">
-            <entry name="Fichero EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Fichero donde se almacena la información de EPG." />
+            <entry name="Fichero EPG" sysconfig="rc.local.conf--vdr_epgfile" type="file" value='&quot;/etc/vdr/epg.data&quot;' help1="Fichero donde se almacena la información de EPG." />
             <entry name="EPG directa" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="YES" help1="Determina si la EPG se almacena inmediatamente o sólo cuando se apaga el VDR" />
         </menu>
         <menu name="Configuración Red">

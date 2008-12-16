@@ -13,12 +13,12 @@
             <entry name="Start time" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="302" help1="Start time" />
         </menu>
         <menu name="Directories">
-            <entry name="Configuration" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Configuration files. NOT MODIFY" />
-            <entry name="Videos" sysconfig="rc.local.conf--vdr_videodirs" type="text" value='&quot;/media/LACIE/vdr&quot;' help1="Videos directory" />
-            <entry name="Plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr_ng&quot;' help1="Plugins Directories. NOT MODIFY" />
+            <entry name="Configuration" sysconfig="rc.local.conf--vdr_confdir" type="directory" value='&quot;/etc/vdr&quot;' help1="Configuration files. NOT MODIFY" />
+            <entry name="Videos" sysconfig="rc.local.conf--vdr_videodirs" type="directory" value='&quot;/media/LACIE/vdr&quot;' help1="Videos directory" />
+            <entry name="Plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="directory" value='&quot;/var/media/disk-volume-3/vdr_ng&quot;' help1="Plugins Directories. NOT MODIFY" />
         </menu>
         <menu name="EPG Configuration">
-            <entry name="EPG File" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="EPG file" />
+            <entry name="EPG File" sysconfig="rc.local.conf--vdr_epgfile" type="file" value='&quot;/etc/vdr/epg.data&quot;' help1="EPG file" />
             <entry name="EPG direct" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="EPG direct" />
         </menu>
         <menu name="Network Configuration">

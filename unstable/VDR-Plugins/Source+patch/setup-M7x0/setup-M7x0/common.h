@@ -10,21 +10,21 @@
 #define SETUP_COMMON_H
 
 #include <vdr/tools.h>
-#include "vdr/plugin.h"
+#include <vdr/plugin.h>
 
 #define STR_YES "YES"
 #define STR_NO "NO"
 
 
 
-#ifdef DEBUG_H
-#define debug(x...) dsyslog("open 7x0 Setup: " x);
-#define info(x...) isyslog("open 7x0 Setup: " x);
-#define error(x...) esyslog("open 7x0 Setup: " x);
+#ifdef DEBUG
+#define debug(x...) dsyslog("setup: " x);
+#define info(x...) isyslog("setup: " x);
+#define error(x...) esyslog("setup: " x);
 #else
-#define debug(x...) ;
-#define info(x...) isyslog("open 7x0 Setup: " x);
-#define error(x...) esyslog("open 7x0 Setup: " x);
+#define debug(x...) dsyslog("setup: " x);
+#define info(x...) isyslog("setup: " x);
+#define error(x...) esyslog("setup: " x);
 #endif
 
 

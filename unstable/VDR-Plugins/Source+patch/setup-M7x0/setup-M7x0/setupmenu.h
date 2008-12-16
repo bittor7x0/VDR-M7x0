@@ -52,29 +52,6 @@ public:
 };
 
 
-/**
-class cSetupVdrMenu : public cOsdMenu
-{
-private:
-    enum MenuState { UNDEFINED, MOVE, CREATE, EDIT, DELETE};
-    cSubMenu _vdrSubMenu;
-    char     *createMenuName(cSubMenuNode *node);
-    void      setHelp();
-    MenuState _menuState;
-    
-    int       _startIndex;
-    int       _createEditNodeIndex;
-
-    char      _editTitle[35];
-public:
-    cSetupVdrMenu(const char *title);
-   
-    ~cSetupVdrMenu();
-    void  Set();
-    eOSState ProcessKey(eKeys Key);
-};
-*/
-
 class cSetupMenu : public cOsdMenu
 {
 private:

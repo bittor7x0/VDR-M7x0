@@ -34,6 +34,8 @@ static const char *hexStr="hex";
 static const char *ipStr="ip";
 static const char *numberStr="number";
 static const char *selectionStr="selection";
+static const char *fileStr="file";
+static const char *dirStr="directory";
 
 
 static const char *trueStr="true";
@@ -158,6 +160,12 @@ bool Util::isType( const char * string, Util::Type & type )
     if(strcmp(string , selectionStr) == 0 )
        type = Util::SELECTION;
     else
+    if(strcmp(string , fileStr) == 0 )
+       type = Util::FILE;
+    else      
+    if(strcmp(string , dirStr) == 0 )
+       type = Util::DIR;
+    else
       ok=false;
   }
   else
@@ -244,6 +252,9 @@ const char * Util::typeToStr( Type type )
     case SELECTION:
                     result =selectionStr;
                     break;
+    case FILE:		
+    				result =fileStr;
+    				break;
     case UNDEFINED:
                     result=undefStr;
                     break;
