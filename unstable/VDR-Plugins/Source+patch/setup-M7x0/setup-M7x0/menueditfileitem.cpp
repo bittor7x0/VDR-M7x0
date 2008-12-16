@@ -56,11 +56,12 @@ cOsdMenuFilebrowserSetup* cOsdMenuFilebrowserSetup::CreateDirectorybrowser(char*
 }
 
 // --- cSelectCommand ------------------------------------------------------ 
- cSelectCommand::cSelectCommand(MenuEntry *e) : cFilebrowserCommand(NULL)
+ cSelectCommand::cSelectCommand(MenuEntry *e,cFilebrowserStatebag* Statebag) : cFilebrowserCommand(NULL)
 /* Statebag isn't needed - but will want to pass it to 
  * the ctor if you need access to marked files etc. */
 {
   _e = e;
+  _Statebag = Statebag;
   /* Set a name */
   Name=strdup(tr("Select"));
 
@@ -76,12 +77,23 @@ bool cSelectCommand::Execute(cOsdMenu* Menu, char* DestinationFile, char* Curren
  * in ProcessKey
  */  
   if ( Menu && CurrentFile ) {
-	  char tmp[2048];
-	  snprintf(tmp,sizeof(char)*2048,"\"%s\"",CurrentFile);
-	  _e->SetValue(_e->GetType(),tmp);    
-	  
-	  debug ("Destination [%s] -- Current [%s] => value [%s]",DestinationFile,tmp,_e->GetValue());  
-		
+	  char tmp[8912];
+	  char tmp2[8912];
+	  tmp[0]=0;
+	  	  
+	  for(cStringContainer* i=_Statebag->GetSelectedFiles()->First(); i; i=_Statebag->GetSelectedFiles()->Next(i)){    	
+    	if (tmp[0]!=0) strcat(tmp," ");
+      	strcat(tmp,i->GetObject());
+      }
+      
+      if ( tmp[0] == 0 ) {
+      	snprintf(tmp2,sizeof(char)*8912,"\"%s\"",CurrentFile);
+	  }else {
+	  	snprintf(tmp2,sizeof(char)*8912,"\"%s\"",tmp);
+	  }
+	  	
+      debug ("Destination [%s] -- Current [%s] => value [%s]",DestinationFile,tmp2,_e->GetValue());  	
+      _e->SetValue(_e->GetType(),tmp2);    	
 	  //Repintar el menu
 	  Menu->Display();
 	  State=osBack;

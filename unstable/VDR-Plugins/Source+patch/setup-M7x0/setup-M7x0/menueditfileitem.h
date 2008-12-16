@@ -39,9 +39,10 @@ public:
 class cSelectCommand : public cFilebrowserCommand
 {
   private:
-  	MenuEntry *_e;  	
+  	MenuEntry *_e;
+  	cFilebrowserStatebag* _Statebag;  	
   public:
-    cSelectCommand(MenuEntry *e);
+    cSelectCommand(MenuEntry *e,cFilebrowserStatebag* Statebag);
     bool Execute(cOsdMenu* Menu, char* DestinationFile, char* CurrentFile);
     bool Matches(const char* Filename) { return true; }; 
 };
@@ -55,8 +56,12 @@ class cOsdMenuFilebrowserSetup : public cOsdMenuFilebrowser
   	
   public:
     cOsdMenuFilebrowserSetup(char* Directory,cFilebrowserStatebag* Statebag,MenuEntry *e,bool only_dir=false): cOsdMenuFilebrowser(Directory,Statebag) {
-    	_onlyDir = only_dir;
-    	Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cSelectCommand(e)));
+    	_onlyDir = only_dir;    	
+    	Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cSelectCommand(e,Statebag)));
+    	Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cFilebrowserMarkCommand(Statebag)));
+  		Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cFilebrowserUnmarkCommand(Statebag)));
+  		Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cFilebrowserMarkAllCommand(Statebag)));
+  		Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cFilebrowserUnmarkAllCommand(Statebag)));
     };
     
     bool MatchesFilter(dirent64* Entry);
