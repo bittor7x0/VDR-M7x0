@@ -13,12 +13,12 @@
             <entry name="Opciones del VDR" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0 -p 0" help1="Opciones pasadas al ejecutar el VDR (Ver documentación)" />
         </menu>
         <menu name="Configuración de directorios">
-            <entry name="Dir. archivos configuración" sysconfig="rc.local.conf--vdr_confdir" type="text" value='&quot;/etc/vdr&quot;' help1="Directorio donde están los archivos de configuración" />
-            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="text" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
-            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="text" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorios separados por espacios donde están los plugins" />
+            <entry name="Dir. archivos configuración" sysconfig="rc.local.conf--vdr_confdir" type="directory" value='&quot;/etc/vdr&quot;' help1="Directorio donde están los archivos de configuración" />
+            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="directory" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
+            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="directory" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorios separados por espacios donde están los plugins" />
         </menu>
         <menu name="Configuración de la EPG">
-            <entry name="Archivo EPG" sysconfig="rc.local.conf--vdr_epgfile" type="text" value='&quot;/etc/vdr/epg.data&quot;' help1="Archivo donde se almacena la información de la EPG" />
+            <entry name="Archivo EPG" sysconfig="rc.local.conf--vdr_epgfile" type="file" value='&quot;/etc/vdr/epg.data&quot;' help1="Archivo donde se almacena la información de la EPG" />
             <entry name="EPG inmediata" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="Guardar inmediatamente la EPG o sólo al apagar el VDR" />
         </menu>
         <menu name="Configuración de discos USB">
