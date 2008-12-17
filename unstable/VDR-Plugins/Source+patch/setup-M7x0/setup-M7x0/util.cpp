@@ -252,8 +252,11 @@ const char * Util::typeToStr( Type type )
     case SELECTION:
                     result =selectionStr;
                     break;
-    case FILE:		
+    case FILE:		    
     				result =fileStr;
+    				break;
+    case DIR:
+    				result = dirStr;
     				break;
     case UNDEFINED:
                     result=undefStr;
