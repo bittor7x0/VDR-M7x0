@@ -1,0 +1,31 @@
+Various parts of the IPv4 code allocate hash tables of a various sizes.
+This value is always used with a shift, and we want to reduce the size
+by 16.
+
+diff -Naur slin_m740_orig/net/ipv4/route.c slin_m740/net/ipv4/route.c
+--- slin_m740_orig/net/ipv4/route.c	Sat May 29 14:46:40 2004
++++ slin_m740/net/ipv4/route.c	Fri Dec 19 11:16:30 2008
+@@ -2512,7 +2512,7 @@
+ 	if (!ipv4_dst_ops.kmem_cachep)
+ 		panic("IP: failed to allocate ip_dst_cache\n");
+ 
+-	goal = num_physpages >> (26 - PAGE_SHIFT);
++	goal = num_physpages >> (30 - PAGE_SHIFT);
+ 
+ 	for (order = 0; (1UL << order) < goal; order++)
+ 		/* NOTHING */;
+diff -Naur slin_m740_orig/net/ipv4/tcp.c slin_m740/net/ipv4/tcp.c
+--- slin_m740_orig/net/ipv4/tcp.c	Sat May 29 14:46:40 2004
++++ slin_m740/net/ipv4/tcp.c	Fri Dec 19 11:19:55 2008
+@@ -2569,9 +2569,9 @@
+ 	 * The methodology is similar to that of the buffer cache.
+ 	 */
+ 	if (num_physpages >= (128 * 1024))
+-		goal = num_physpages >> (21 - PAGE_SHIFT);
++		goal = num_physpages >> (25 - PAGE_SHIFT);
+ 	else
+-		goal = num_physpages >> (23 - PAGE_SHIFT);
++		goal = num_physpages >> (27 - PAGE_SHIFT);
+ 
+ 	for(order = 0; (1UL << order) < goal; order++)
+ 		;
