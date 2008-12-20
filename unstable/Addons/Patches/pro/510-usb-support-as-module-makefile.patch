@@ -1,0 +1,25 @@
+diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
+--- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2008-08-31 15:46:46.000000000 +0200
++++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2008-12-20 12:32:39.000000000 +0100
+@@ -57,14 +57,19 @@
+ DISTCLEAN_RULES += distclean-siemens-linux-kernel
+ 
+ SIEMENS-LINUX-KERNEL_MODLST := \
+-   lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o 
++   lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
++   lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o \
++   lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o 
+ 
+ SIEMENS-LINUX-KERNEL_DIRLST := \
+    lib/modules \
+    lib/modules/2.4.21-xfs \
+    lib/modules/2.4.21-xfs/kernel \
+    lib/modules/2.4.21-xfs/kernel/fs \
+-   lib/modules/2.4.21-xfs/kernel/fs/cifs 
++   lib/modules/2.4.21-xfs/kernel/fs/cifs \
++   lib/modules/2.4.21-xfs/kernel/drivers \
++   lib/modules/2.4.21-xfs/kernel/drivers/usb \
++   lib/modules/2.4.21-xfs/kernel/drivers/usb/host 
+ 
+ #
+ # unpack siemens linux kernel

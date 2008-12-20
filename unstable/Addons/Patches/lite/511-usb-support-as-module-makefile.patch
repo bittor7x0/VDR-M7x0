@@ -1,0 +1,43 @@
+diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
+--- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2008-12-20 12:42:31.000000000 +0100
++++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2008-12-20 12:46:40.000000000 +0100
+@@ -56,6 +56,18 @@
+ CLEAN_RULES += clean-siemens-linux-kernel
+ DISTCLEAN_RULES += distclean-siemens-linux-kernel
+ 
++SIEMENS-LINUX-KERNEL_MODLST := \
++   lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o \
++   lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o 
++
++SIEMENS-LINUX-KERNEL_DIRLST := \
++   lib/modules \
++   lib/modules/2.4.21-xfs \
++   lib/modules/2.4.21-xfs/kernel \
++   lib/modules/2.4.21-xfs/kernel/drivers \
++   lib/modules/2.4.21-xfs/kernel/drivers/usb \
++   lib/modules/2.4.21-xfs/kernel/drivers/usb/host 
++
+ #
+ # unpack siemens linux kernel
+ #
+@@ -185,9 +197,19 @@
+ # generate rootfs file list
+ #
+ 
++siemens-linux-kernel_lst_dir = \
++  $(ECHO) "$(1)       -                 d 755 0 0 - - - - -";
++
++siemens-linux-kernel_lst_mod = \
++  $(ECHO) "$(1) $(M7X0_KERNEL_DIR)/$(1) f 755 0 0 - - - - -";
++
+ $(FILELIST_DIR)/siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst: \
+       $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed
+-	$(TOUCH) $(FILELIST_DIR)/siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst
++	($(foreach dir,$(SIEMENS-LINUX-KERNEL_DIRLST),\
++		$(call siemens-linux-kernel_lst_dir,$(dir))) \
++	 $(foreach mod,$(SIEMENS-LINUX-KERNEL_MODLST),\
++		$(call siemens-linux-kernel_lst_mod,$(mod)))) \
++			> $(FILELIST_DIR)/siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst
+ 
+ .PHONY: clean-siemens-linux-kernel distclean-siemens-linux-kernel
+ 
