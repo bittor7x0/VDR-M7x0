@@ -39,6 +39,13 @@
 int svdrp_socket=0;
 
 const char eod_pattern[]="^[0-9]{3} ";
+#ifdef VDR_NOT_LOCAL
+const char * server_ip="192.168.100.3";
+#else
+const char * server_ip="127.0.0.1";
+#endif
+const uint16_t server_port=2001;
+
 regex_t regbuf;
 
 void signal_handler(int sig) {
@@ -57,10 +64,11 @@ int open_svdrp() {
   signal(SIGPIPE,signal_handler);
 
   if (svdrp_socket==0) {
-  	dbg("Try to open SVDRP connection to 127.0.0.1 from pid [%d]",pid);
+    struct sockaddr_in svdrp_addr;
+  	dbg("Try to open SVDRP connection to %s:%d from pid [%d]",server_ip,server_port,pid);
   	svdrp_addr.sin_family = AF_INET;
-  	svdrp_addr.sin_port = htons(2001);
-  	inet_aton("127.0.0.1", &svdrp_addr.sin_addr);
+  	svdrp_addr.sin_port = htons(server_port);
+  	inet_aton(server_ip, &svdrp_addr.sin_addr);
 
   	// create tcp socket
   	if ((svdrp_socket=socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -78,11 +86,11 @@ int open_svdrp() {
   		warn("Error compiling the pattern!");
   		exit(1);
   	}
-    dbg("SVDRP connection to 127.0.0.1 established.");
+  	dbg("SVDRP connection to %s  established.",server_ip);
   	data=read_svdrp();
   	free(data);
   } else {
-  	dbg("SVDRP connection to 127.0.0.1 is already up.");
+  	dbg("SVDRP connection to %s is already up.",server_ip);
   }
   return 0;
 }
@@ -151,6 +159,8 @@ int write_svdrp(char *data) {
   }
 }
 
+#ifndef VDR_NOT_LOCAL
+
 void whatsmyip(char myip[16]) {
 int fd;
 int ret;
@@ -174,4 +184,13 @@ struct ifreq ifr;
   }
   strcpy(myip,inet_ntoa(((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr));
 }
+
+#else
+
+void whatsmyip(char myip[16]) {
+	dbg("VDR server not local");
+	strcpy(myip,server_ip);
+}
+
+#endif
 
