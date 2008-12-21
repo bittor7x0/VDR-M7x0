@@ -8,13 +8,15 @@
 *
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
+* 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar@hotmail.com>
 *
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 *
 */
 
-#include <netinet/in.h>
 #include <errno.h>
 #include <regex.h>
 #include <stdio.h>
@@ -36,8 +38,7 @@
 
 int svdrp_socket=0;
 
-//const char eod_pattern_start[]="^[0-9][0-9][0-9] .";
-const char eod_pattern[]="\n[0-9][0-9][0-9] .";
+const char eod_pattern[]="^[0-9]{3} ";
 regex_t regbuf;
 
 void signal_handler(int sig) {
@@ -48,7 +49,7 @@ void signal_handler(int sig) {
 	}
 }
 
-//Öffnet die Verbindung
+//Open the connection
 int open_svdrp() {
   char * data;
   pid_t pid;
@@ -73,7 +74,7 @@ int open_svdrp() {
   	}
 
   	//compile pattern for regexec later in a different function
-  	if (regcomp(&regbuf,eod_pattern,0)!=0) {
+  	if (regcomp(&regbuf,eod_pattern,REG_EXTENDED | REG_NOSUB | REG_NEWLINE)!=0) {
   		warn("Error compiling the pattern!");
   		exit(1);
   	}
@@ -106,6 +107,7 @@ int close_svdrp() {
 char * read_svdrp() {
   char * data;
   char buffer[SVDRP_BUFFER_SIZE]="";
+  int l=0; //current length without trailing 0
   int n=0;
   int eod_matches=1;
 
@@ -114,30 +116,26 @@ char * read_svdrp() {
   	return NULL;
   }
 
-  data=(char *)malloc(2);
-  strcpy(data,"");
-  if (data==NULL) {
-  	warn("Error (re)allocating memory for data!");
-  	exit(1);
-  }
-
-  while ( strcspn(data,"\n")==strlen(data) || eod_matches!=0 ) {
-    if ((n=recv(svdrp_socket,buffer,SVDRP_BUFFER_SIZE-1,0))>0) {
-      buffer[n]='\0';
-      char * tmp =(char *)realloc(data,(strlen(data)+n)*sizeof(char));
-      if (!tmp) {
-        warn("Reallocation failed. Old size is %d, new size should be %d",strlen(data),strlen(data)+n);
-        exit(1);
-      }
-      data=tmp;
-      strcat(data,buffer);
-      if (strlen(data)>4 && data[3]==' ') {
-        eod_matches=0;
-      } else {
-      	int offset=strlen(data)-n-5;
-      	if (offset<0) { offset=0; }
-        eod_matches=regexec(&regbuf,data+offset,0,NULL,0);
-      }
+  data=NULL;
+  while ( (n=recv(svdrp_socket,buffer,SVDRP_BUFFER_SIZE-1,0))>0 ) {
+    buffer[n]='\0';
+    char * tmp=realloc(data,l+n+1);
+    if (!tmp) {
+      warn("(Re)allocation failed. Old size is %d, new size should be %d",(data==NULL)?0:l+1,l+n+1);
+      exit(1);
+    }
+    if (data==NULL) {
+      tmp[0]='\0';
+    }
+    data=tmp;
+    strcat(data,buffer); 
+    l+=n;
+    if (eod_matches!=0) {
+      int offset=(l>n+5) ? l-n-5 : 0;
+      eod_matches=regexec(&regbuf,data+offset,0,NULL,0);
+    }
+    if ((eod_matches==0) && (data[l-1]=='\n')){
+      break;
     }
   }
   return data;

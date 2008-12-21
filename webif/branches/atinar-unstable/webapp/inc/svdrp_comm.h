@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -20,8 +23,6 @@
 #include <netinet/in.h>
 
 extern int svdrp_socket;
-struct sockaddr_in svdrp_addr;
-//char server_addr[1024], server_port[6], server_ip[16];
 
 //Öffnet die SVDRP-Verdindung
 int open_svdrp();
