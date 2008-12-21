@@ -1,0 +1,123 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+
+time_t now;
+
+#include "i18n.h"
+#include "misc.h"
+#include "channels.h"
+#include "svdrp_comm.h"
+#include "svdrp_parse.h"
+
+%><%
+channelList * channels;
+int max_channels=1;
+int i=0;
+
+header_t *header = request_get_header(request);
+if (header_get_field(header,"Accept-Language")!=NULL) {
+  field_t *field=header_get_field(header,"Accept-Language");
+  strncpy(acceptedLang,field->value,2);
+  acceptedLang[2]='\0';
+}
+
+getConfig();
+
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+<title><% io_printf(out,tr("Channel List")); %> - open7x0 VDR-FW</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<link rel="stylesheet" type="text/css" href="open7x0.css" />
+</head>
+<body>
+<div class="head">
+<% io_printf(out,tr("Channel List")); %>
+</div>
+<div class="navigation"><div class="nav">
+<ul>
+ <li><a href="index.kl1"><% io_printf(out,i18n[4][langID]); %></a></li>
+ <li><a href="program.kl1"><% io_printf(out,i18n[5][langID]); %></a></li>
+ <li class="act"><a href="channels.kl1"><% io_printf(out,i18n[6][langID]); %></a></li>
+ <li><a href="timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
+ <li><a href="recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
+ <li><a href="settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
+ <li><a href="http://www.open7x0.org/" target="_blank">open7x0.org</a></li>
+</ul>
+<span id="navclear"></span>
+</div>
+<div class="liniefett"></div>
+<div class="nav2">
+<ul>
+ <li class="act"><a href="channels.kl1"><% io_printf(out,tr("summary")); %></a></li>
+ <li><a href="channels-edit.kl1"><% io_printf(out,tr("edit list")); %></a></li>
+ <li><a href="watchit.kl1"><% io_printf(out,tr("watch TV")); %></a></li>
+</ul>
+</div>
+</div>
+
+<div class="content">
+
+<h2><% io_printf(out,tr("Channel List")); %></h2>
+
+<div style="margin-left:50px">
+<%
+/*  if (open_svdrp()!=0) {
+    io_printf(out,i18n[13][langID]);
+    exit(1);
+  }*/
+
+  io_printf(out,"<table class=\"list1\">\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n",tr("channel number"),tr("channel name"),tr("multiplex"),tr("more infos"),tr("live stream"));
+  channels=get_channel_list(&max_channels);
+  for (i=0;i<max_channels;i++) {
+	io_printf(out,"<tr>\n <td align=\"center\">%d</td>\n",channels[i].channel_num);
+	io_printf(out," <td><a href=\"watchit.kl1?channelnum=%d\"><b>%s</b></a></td>\n",channels[i].channel_num,channels[i].channelName);
+	io_printf(out," <td>%s</td>\n",channels[i].multiplexName);
+    io_printf(out," <td align=\"center\"><div class=\"infobox\"><img src=\"/img/info16.png\" alt=\"%s\" /><div>\n",tr("more infos"));
+    io_printf(out,"   <b>%s</b><br /><table><tr><td>ID</td><td>%s</td></tr>\n",channels[i].channelName,channels[i].channel_id);    	
+    io_printf(out,"   <tr><td>%s</td><td>%d</td></tr><tr><td>%s</td><td>%s</td></tr>\n",tr("frequency"),channels[i].frequency,tr("parameters"),channels[i].parameter);
+    io_printf(out,"   <tr><td>%s</td><td>%s</td></tr><tr><td>%s</td><td>%d</td></tr>\n",tr("source"),channels[i].source,tr("conditional access ID"),channels[i].caid);
+    io_printf(out,"   <tr><td>%s</td><td>%d</td></tr><tr><td>%s</td><td>%d</td></tr>\n",tr("service ID"),channels[i].sid,tr("network ID"),channels[i].nid);
+    io_printf(out,"   <tr><td>%s</td><td>%d</td></tr><tr><td>%s</td><td>%d</td></tr></table></div></div></td>\n",tr("transport stream ID"),channels[i].tid,tr("radio ID"),channels[i].rid);
+	char iconStr[6];
+    if (channels[i].vpid>1) {
+      strcpy(iconStr,"tv");
+    } else {
+      strcpy(iconStr,"radio");
+    }
+    io_printf(out," <td align=\"center\"><a href=\"watchit.kl1?channelnum=%d\"><img src=\"/img/%s16.png\" border=\"0\" alt=\"%s\" /></a></td>\n",channels[i].channel_num,iconStr,tr("live stream"));
+    io_printf(out,"</tr>\n");
+  }
+
+  free(channels);
+  close_svdrp();
+%>
+
+</table>
+</div>
+
+</div>
+
+<div class="foot">
+        <p>(C) 2006-08 open7x0-team</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+Wichtige Infos zum Webinterface passend zur VDR-FW des open7x0.org Projekts
+
+Inhaltsverzeichnis
+
+1  Stand der Entwicklung & Ausblick
+2  Voraussetzungen
+3  Übersetzung
+
+==============================================================================
+1  Stand der Entwicklung & Ausblick
+==============================================================================
+
+Zur Zeit ist das Webinterface noch in der Entwicklung, genauer in einer sehr
+frühen Phase. Bis jetzt ist nicht viel mehr möglich, als Infos über anstehende
+Aufnahmen/Timer, EPG (now & next), empfangbare Sender und Aufzeichnungen ein-
+zuholen. Bereits umgesetzt ist:
+* EPG anzeigen
+* Timer erstellen, bearbeiten und löschen
+* Senderliste anzeigen und den Livestream an den VLC übergeben
+* Liste von Aufnahmen anzeigen
+* einige Logfiles anzeigen
+
+Im späteren Verlauf der Entwicklung wird auch die Möglichkeit bestehen, Daten
+und Einstellungen zu verändern. Das heißt (ist aber nicht beschränkt auf)
+* Aufzeichnungen löschen
+* Senderliste bearbeiten
+* Konfiguration bearbeiten
+
+==============================================================================
+2  Voraussetzungen
+==============================================================================
+
+Im normalen Fall werden alle Voraussetzungen automatisch mit der Installation
+einer entsprechend vorbereiteten VDR-FW von open7x0.org erfüllt.
+
+In allen anderen fällen wird benötigt:
+* Das KLONE Framework von www.koanlogic.com in der Version 2
+* Ein C-Compiler für die Zielplattform (ANSI C99 kompatibel)
+* Auf der Zielplattform sollte ein VDR laufen. Es geht auch ohne (zB unter
+  Windows), macht aber keinen Sinn.
+
+==============================================================================
+3  Übersetzungen
+==============================================================================
+
+An dieser Stelle zunächst einen großen Danke an Bittor und Krako für die spa-
+nische bzw. französiche Übersetzung!
+
+* Achtung: da das Webinterface sich noch in einer frühen Phase befindet kann
+  es sein, dass die Arbeit an einer Übersetzung umsonst ist da sich noch sehr
+  viel ändern kann!
+
+Für eine Übersetzung müssen die Dateien i18n.h und i18n.c bearbeitet werden.
+
+Zunächst unbedingt im zum Projekt gehörigem Forum die Absicht bekannt geben.
+So kann sichergestellt werden, dass eine Übersetzung nicht bereits existiert
+bzw. es kann die arbeit an einer Übersetzung koordiniert werden.
+
+i18n.h: Die Konstante I18NNUM muss um eins erhöht werden
+i18n.c: Jede Phrase muss übersetzt werden, keine darf fehlen. Wenn die Phrase
+        nicht existiert oder leer ("") ist, wird einfach der englische Begriff
+        ausgegeben.
+
+Änderungen am Englischen Teil bitte nur in Abstimmung mit dem Entwickler,
+zZ Christian Kelinski <k@kille.cx>!

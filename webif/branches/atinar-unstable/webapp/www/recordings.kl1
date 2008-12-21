@@ -1,0 +1,138 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+
+time_t now;
+
+#include "misc.h"
+#include "i18n.h"
+#include "recordings.h"
+#include "svdrp_comm.h"
+#include "svdrp_parse.h"
+
+%><%
+recEntry * recs;
+int max_recs=1;
+int i=0;
+
+int sortBy=sortStart;
+int sortDirection=sortAsc;
+
+vars_t *args = request_get_args(request);
+if (vars_countn(args, "sort")>0) { sortBy=vars_get_value_i(args,"sort"); }
+if (vars_countn(args, "direction")>0) { sortDirection=vars_get_value_i(args,"direction"); }
+
+const char dirImg[2][10]={"up1.gif","down1.gif"};
+int whatArrow(int aDir) {
+  if (aDir<0) { return 1; } else { return 0; }
+}
+
+header_t *header = request_get_header(request);
+if (header_get_field(header,"Accept-Language")!=NULL) {
+  field_t *field=header_get_field(header,"Accept-Language");
+  strncpy(acceptedLang,field->value,2);
+  acceptedLang[2]='\0';
+}
+
+getConfig();
+
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+<title><% io_printf(out,i18n[8][langID]); %> - open7x0 VDR-FW</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<link rel="stylesheet" type="text/css" href="open7x0.css" />
+</head>
+<body>
+<div class="head">
+<% io_printf(out,i18n[8][langID]); %>
+</div>
+<div class="navigation"><div class="nav">
+<ul>
+ <li><a href="index.kl1"><% io_printf(out,i18n[4][langID]); %></a></li>
+ <li><a href="program.kl1"><% io_printf(out,i18n[5][langID]); %></a></li>
+ <li><a href="channels.kl1"><% io_printf(out,i18n[6][langID]); %></a></li>
+ <li><a href="timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
+ <li class="act"><a href="recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
+ <li><a href="settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
+ <li><a href="http://www.open7x0.org/" target="_blank">open7x0.org</a></li>
+</ul>
+<span id="navclear"></span>
+</div>
+<div class="liniefett"></div>
+<div class="nav2">
+<ul>
+ <li class="act"><a href="recordings.kl1"><% io_printf(out,tr("summary")); %></a></li>
+ <li><a href="/video/"><% io_printf(out,tr("browse")); %></a></li>
+</ul>
+</div>
+</div>
+
+<div class="content">
+
+<h2><% io_printf(out,i18n[8][langID]); %></h2>
+
+<div style="margin-left:50px">
+<table class="list1">
+<%
+
+  if (sortBy==sortStart) {
+    io_printf(out,"<tr><th><a href=\"recordings.kl1?sort=1&direction=%d\">%s<img src=\"/img/%s\" border=\"0\"></a></th>\n",sortDirection*-1,tr("date"),dirImg[whatArrow(sortDirection)]);
+  } else { io_printf(out,"<tr><th><a href=\"recordings.kl1?sort=1&direction=1\">%s</a></th>\n",tr("date")); }
+
+  if (sortBy==sortStart) {
+    io_printf(out," <th><a href=\"recordings.kl1?sort=1&direction=%d\">%s<img src=\"/img/%s\" border=\"0\"></a></th>\n",sortDirection*-1,tr("from"),dirImg[whatArrow(sortDirection)]);
+  } else { io_printf(out," <th><a href=\"recordings.kl1?sort=1&direction=1\">%s</a></th>\n",tr("from")); }
+
+  if (sortBy==sortTitle) {
+    io_printf(out," <th><a href=\"recordings.kl1?sort=4&direction=%d\">%s<img src=\"/img/%s\" border=\"0\"></a></th>\n",sortDirection*-1,tr("recording"),dirImg[whatArrow(sortDirection)]);
+  } else { io_printf(out," <th><a href=\"recordings.kl1?sort=4&direction=1\">%s</a></th>\n",tr("recording")); }
+
+/*  if (open_svdrp()!=0) {
+    io_printf(out,i18n[13][langID]);
+    exit(1);
+  }*/
+
+  recs=getRecList(&max_recs,sortBy,sortDirection);
+  for (i=0;i<max_recs;i++) {
+    struct tm t1=*localtime(&recs[i].start);
+
+    io_printf(out,"<tr>\n <td>%02d.%02d.%04d</td>\n",t1.tm_mday,1+t1.tm_mon,1900+t1.tm_year);
+
+	io_printf(out," <td>%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
+	io_printf(out," <td>%s</td>\n",recs[i].title);
+    io_printf(out,"</tr>\n");
+  }
+
+  free(recs);
+  close_svdrp();
+%>
+
+</table>
+</div>
+
+</div>
+
+<div class="foot">
+        <p>(C) 2006-08 open7x0-team</p>
+</div>
+</body>
+</html>

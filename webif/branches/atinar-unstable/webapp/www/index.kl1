@@ -1,0 +1,139 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+#include <mntent.h>
+#include <sys/vfs.h>
+
+time_t now;
+
+#include "i18n.h"
+#include "misc.h"
+#include "epg.h"
+#include "svdrp_comm.h"
+#include "svdrp_parse.h"
+
+#define MAX_STRING_SIZE 1024
+#define MAX_BUFFER_SIZE 8192
+#define MAX_LINE_SIZE 1024
+
+#define HOST = "127.0.0.1"
+#define PORT = 2001
+
+%><%
+char myip[16]="";
+whatsmyip(myip);
+
+header_t *header = request_get_header(request);
+if (header_get_field(header,"Accept-Language")!=NULL) {
+  field_t *field=header_get_field(header,"Accept-Language");
+  strncpy(acceptedLang,field->value,2);
+  acceptedLang[2]='\0';
+}
+
+getConfig();
+
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+<title><% io_printf(out,tr("Homepage")); %> - open7x0 VDR-FW</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<% io_printf(out,"<link rel=\"alternate\" type=\"application/rss+xml\" title=\"Aufzeichnungen VDR\" href=\"http://%s:%d/rss.kl1\" />",myip,httpPort); %>
+<link rel="stylesheet" type="text/css" href="open7x0.css" />
+</head>
+<body>
+<div class="head">
+VDR-FW <% io_printf(out,tr("Homepage")); %>
+</div>
+<div class="navigation"><div class="nav">
+<ul>
+ <li class="act"><a href="index.kl1"><% io_printf(out,i18n[4][langID]); %></a></li>
+ <li><a href="program.kl1"><% io_printf(out,i18n[5][langID]); %></a></li>
+ <li><a href="channels.kl1"><% io_printf(out,i18n[6][langID]); %></a></li>
+ <li><a href="timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
+ <li><a href="recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
+ <li><a href="settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
+ <li><a href="http://www.open7x0.org/" target="_blank">open7x0.org</a></li>
+</ul>
+<span id="navclear"></span>
+</div>
+<div class="liniefett"></div>
+</div>
+
+<div class="content">
+<%
+nowNextEntry * now_next=NULL;
+int max=0;
+
+	if (vdrRunning()) {
+
+		now_next=getNowNext(&max,getChannel(NULL));
+		if (now_next!=NULL) {
+			io_printf(out,"<h2>%s &raquo; %s <a href=\"watchit.kl1?channelnum=%d\"><img src=\"/img/tv16.png\" border=\"0\" alt=\"Live-Stream\"></a>&laquo;</h2>\n",tr("You are watching"),now_next[0].channelName,now_next[0].channelNum);
+			if (now_next[0].now_time==0) {
+				io_printf(out,"<p>%s</p>\n",i18n[14][langID]);
+			} else {
+				struct tm t1 = *localtime(&now_next[0].now_time);
+				struct tm t2 = *localtime(&now_next[0].next_time);
+				io_printf(out,"<table class=\"chan\">\n<tr><td class=\"nn\">now</td><td> %02d:%02d  <b>%s</b></td></tr>\n<tr><td class=\"nn\">next</td><td> %02d:%02d  <b>%s</b></td></tr></table>\n",t1.tm_hour,t1.tm_min,now_next[0].now_title,t2.tm_hour,t2.tm_min,now_next[0].next_title); // Das ist für Live-TV,chan_num,chan_name);
+			}
+		}
+
+		close_svdrp();
+		freeNowNextEntry(now_next,1);
+  
+	} else {
+		io_printf(out,"<p>%s</p>",tr("VDR not running!"));
+	}
+	
+	io_printf(out,"<h2>%s</h2>\n",tr("Free Space"));
+	
+	FILE *mountTable;
+	struct mntent *mountEntry;
+	int numFS=0;
+	mountTable = setmntent("/etc/mtab","r");
+	while ((mountEntry = getmntent(mountTable))) {
+		if (strncmp(mountEntry->mnt_dir,"/var/media/",10)==0) {
+			struct statfs s;
+			long blocksUsed;
+			long blocksPercent;
+			statfs(mountEntry->mnt_dir,&s);
+			if (s.f_blocks > 0) {
+				blocksUsed=s.f_blocks-s.f_bfree;
+				blocksPercent=(long)(blocksUsed*100.0/(blocksUsed+s.f_bavail)+0.5);
+				if (numFS==0) {
+					io_printf(out,"<table><tr><td class=\"nn\">&nbsp;&nbsp;&nbsp;&nbsp;Name</td><td class=\"nn\">&nbsp;&nbsp;&nbsp;&nbsp;Used [MB]</td><td class=\"nn\">&nbsp;&nbsp;&nbsp;&nbsp;Avaible [MB]</td><td class=\"nn\">&nbsp;&nbsp;&nbsp;&nbsp;Used %%</td></tr>\n");
+				}
+				io_printf(out,"<tr><td>&nbsp;&nbsp;&nbsp;%s</td><td>&nbsp;&nbsp;&nbsp;%d</td><td>&nbsp;&nbsp;&nbsp;%d</td><td>&nbsp;&nbsp;&nbsp;%d</td></tr>\n",(mountEntry->mnt_dir)+11,(long)(blocksUsed*(s.f_bsize/1048576.0)),(long)(s.f_bfree*(s.f_bsize/1048576.0)),blocksPercent);
+				numFS++;
+			}
+		}
+	}
+	endmntent(mountTable);
+	if (numFS==0) io_printf(out,"<p>%s</p>",tr("No media found!"));
+		else io_printf(out,"</table>\n");
+%>
+
+</div>
+
+<div class="foot">
+        <p>(C) 2006-08 open7x0-team</p>
+</div>
+</body>
+</html>

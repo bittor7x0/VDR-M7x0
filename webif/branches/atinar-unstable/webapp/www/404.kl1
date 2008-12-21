@@ -1,0 +1,182 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+#include <dirent.h>
+#include <stdio.h>
+#include <string.h>
+#include <u/libu.h>
+
+#include "i18n.h"
+#include "misc.h"
+#include "svdrp_comm.h"
+#include "svdrp_parse.h"
+#include "recordings.h"
+
+%><%
+char myip[16]="";
+whatsmyip(myip);
+
+char * pathStr=NULL;
+char * queryStr=NULL;
+parseRequestStr(request_get_client_request(request),&pathStr,&queryStr);
+
+
+header_t *header = request_get_header(request);
+if (header_get_field(header,"Accept-Language")!=NULL) {
+  field_t *field=header_get_field(header,"Accept-Language");
+  strncpy(acceptedLang,field->value,2);
+  acceptedLang[2]='\0';
+}
+
+getConfig();
+
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+<title><% io_printf(out,tr("Homepage")); %> - open7x0 VDR-FW</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<link rel="stylesheet" type="text/css" href="/open7x0.css" />
+</head>
+<body>
+<div class="head">
+VDR-FW <% io_printf(out,tr("Homepage")); %>
+</div>
+<div class="navigation"><div class="nav">
+<ul>
+ <li><a href="/index.kl1"><% io_printf(out,i18n[4][langID]); %></a></li>
+ <li><a href="/program.kl1"><% io_printf(out,i18n[5][langID]); %></a></li>
+ <li><a href="/channels.kl1"><% io_printf(out,i18n[6][langID]); %></a></li>
+ <li><a href="/timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
+ <li><a href="/recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
+ <li><a href="/settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
+ <li><a href="http://www.open7x0.org/" target="_blank">open7x0.org</a></li>
+</ul>
+<span id="navclear"></span>
+</div>
+<div class="liniefett"></div>
+<div class="nav2">
+<ul>
+ <li class="act"><a href="/recordings.kl1"><% io_printf(out,tr("summary")); %></a></li>
+ <li><a href="/video/"><% io_printf(out,tr("browse")); %></a></li>
+</ul>
+</div>
+</div>
+
+<div class="content">
+<h1><% io_printf(out,i18n[8][langID]); %></h1>
+
+<%
+if (strncmp(pathStr,"/video",6)!=0 && legalPath(pathStr)) {
+	io_printf(out,"<h1>404!</h1>\n");
+} else {
+	char * videoPath;
+  if (strlen(pathStr)>6) {
+  	videoPath=malloc(strlen(pathStr)+10);
+  	videoPath[0]='\0';
+  	strcpy(videoPath,"/var/vdr/video0");
+  	strcat(videoPath,pathStr+6);
+  } else {
+    videoPath=strdup("/var/vdr/video0");
+  }
+  
+  io_printf(out,"<div style=\"margin-left:30px;max-width:630px;\">\n<div class=\"fileView\"><a href=\"/video/\">&raquo;&nbsp;%s</a>\n",tr("Recordings"));
+  
+  if (strlen(videoPath)>16) {
+  	char * bc;
+  	char * bcPath=malloc(strlen(videoPath));
+  	char * s=strdup(videoPath);
+  	strcpy(bcPath,"/video/");
+  	for(bc=(char *)strtok(s+16,"/");bc!=0;bc=(char *)strtok(0,"/")) {
+  		strcat(bcPath,bc); strcat(bcPath,"/");
+  		if (strcmp(bc,"_")) {
+  			io_printf(out,"<a href=\"%s\">&raquo;&nbsp;%s</a>\n",bcPath,bc);
+  		}
+  	}
+  	free(bc); free(bcPath); free(s);
+  }
+  
+  io_printf(out,"</div>\n");
+
+	DIR *dir = opendir(videoPath); 
+	if (dir != 0) { 
+		struct dirent* dirE; 
+	  while(0 != (dirE = readdir(dir))) { 
+	  	char * p = dirE->d_name; 
+	    if ( (p[0] == '.' && (p[1] == 0 || (p[1] == '.' && p[2] == 0))) || dirE->d_type!=DT_DIR) 
+	      continue;
+	    time_t start;
+	    int numF=0, numD=0, size=0;
+	  	recEntry2 * info=mallocRE2(1);
+	    char * s=malloc(strlen(p)+strlen(videoPath)+3);	    
+	    
+	    strcpy(s,videoPath); 
+	    if (s[strlen(s)-1]!='/') {
+	    	strcat(s,"/"); 
+	    }
+	    strcat(s,p);
+
+	    switch (readRecDir(s,1,&numF,&numD,&size,info)) {
+	    	case 1:	
+	    			if (numF>0) {
+	    				io_printf(out,"<div class=\"recFolder\"><img src=\"/img/folder16.png\" width=\"16\" height=\"16\" />&nbsp;<a href=\"%s%s/_/\">%s</a>\n",pathStr,p,info[0].title); 
+	    				io_printf(out,"<div class=\"recFolderDetails\">%s: <b>%d</b>, %s <b>%s</b></div></div>\n",tr("Recordings"),numF,tr("recent one dating"),ctime(&info[0].start));
+	    			}
+	    	  break;
+	    	case 2: 
+	    			io_printf(out,"<div class=\"recFolder\"><img src=\"/img/rec16.png\" width=\"16\" height=\"16\" />&nbsp;<a href=\"%s%s\">%s</a>\n",pathStr,p,info[0].title);
+	    			io_printf(out,"<div class=\"recFolderDetails\"><p class=\"small\">%s <b>%s</b> %s <b>%s</b></p>\n",tr("from"),ctime(&info[0].start),tr("to"),ctime(&info[0].stop));
+	    			io_printf(out,"<p>%s</p></div></div>\n",info[0].desc);
+	    		break;
+	    	case 3: 
+	    			if (numF>0 || numD>0) {
+	    				if (info[0].title==NULL) info[0].title=strdup(p);
+	    				io_printf(out,"<div class=\"recFolder\"><img src=\"/img/folder16.png\" width=\"16\" height=\"16\" />&nbsp;<a href=\"%s%s\">%s</a>\n",pathStr,p,info[0].title);
+	    				io_printf(out,"<div class=\"recFolderDetails\">%s: <b>%d</b>",tr("Subfolders"),numD);
+	    				if (numF>0) io_printf(out,"%s: <b>%d</b>",tr("Recordings"),numF);
+	    				io_printf(out,"</div></div>\n");
+	    			}
+	    	  break;
+	    	default: warn("Unbekannter Rückgabewert von readRecDir!");
+	    }
+	    
+	    freeRE2(info,1); info=NULL;
+    	free(s); s=NULL;
+	  } 
+	}	else {
+		io_printf(out,"<p>Verzeichnis nicht gefunden!\n</p>");
+	}
+	free(videoPath);
+}
+
+%>
+
+</div>
+
+</div>
+
+<div class="foot">
+        <p>(C) 2006-08 open7x0-team</p>
+</div>
+</body>
+<%
+  free(pathStr);
+	free(queryStr);
+%>
+</html>

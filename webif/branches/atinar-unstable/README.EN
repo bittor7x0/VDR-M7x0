@@ -1,0 +1,54 @@
+Important information concerning the webinterface for the VDR-FW-projekt
+powered by open7x0.org.
+
+Content
+
+1  What's already done, what's to do
+2  Requirements
+3  Translations
+
+==============================================================================
+1  What's already done, what's to do
+==============================================================================
+
+The webinerface is still under hard development. Until now, theres few to do,
+you can get infos about timer, recordings and the EPG, in exact:
+* show EGA
+* add, edit und delete timers
+* show channellist and watch an livestream
+* show a list of recordings
+* take a look at some logfiles
+
+==============================================================================
+2  Requierements
+==============================================================================
+
+Normaly, you only need a up-to-date VDR-FW from open7x0.org.
+
+This means:
+* The KLONE framework from www.koanlogic.com in version 2.1 or newer
+* GCC compiler for the target-plattform
+* a VDR (the webinterface still works without a VDR, but it makes no sense)
+
+==============================================================================
+3  Translation
+==============================================================================
+
+First I like to thank Bittor and Kerenoc a lot for contribute to spanisch
+espectively french translation of this webinterace!
+
+* Attention: this webinterface ist still in a very early state of development.
+  Please be aware that there is a lot of work in progress so it's very likely
+  that some phares will change.
+
+For a transloation, the files i18n.h and i18n.c have to be edit.
+
+First of all, please inform the maintainer about your intention to translate
+parts of the webinterface so the your works is not done twice.
+
+i18n.h: The Konstante I18NNUM has to be increased by one for every new language
+i18n.c: Each phrase has to be translated. At least07.10.2008 the phrase has to be
+        empty (""). In this case, the english translation is shown.
+
+If you like to edit the english phrases, please infrom the maintainer Christian
+Kelinski <k@kille.cx) first!

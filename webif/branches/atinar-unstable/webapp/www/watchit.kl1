@@ -1,0 +1,208 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Hans-Peter Jochmann
+*     Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+
+#include "i18n.h"
+#include "misc.h"
+#include "channels.h"
+#include "svdrp_comm.h"
+#include "svdrp_parse.h"
+
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<%
+channelList * channels;
+int max_channels=0;
+int i=0;
+int channelNum=0;
+char myip[16]="";
+
+/*if (open_svdrp()!=0) {
+  io_printf(out,i18n[13][langID]);
+  exit(1);
+}*/
+
+channels=get_channel_list(&max_channels);
+
+whatsmyip(myip);
+vars_t *args = request_get_args(request);
+channelNum=vars_get_value_i(args,"channelnum");
+
+
+header_t *header = request_get_header(request);
+if (header_get_field(header,"Accept-Language")!=NULL) {
+  field_t *field=header_get_field(header,"Accept-Language");
+  strncpy(acceptedLang,field->value,2);
+  acceptedLang[2]='\0';
+}
+
+getConfig();
+
+if ((channelNum<1) || (channelNum>max_channels)) {
+  channelNum=getChannel(NULL);
+}
+%>
+<html lang="de">
+<head>
+<title>
+<%
+if ((channelNum>0) && (max_channels>0) && (channelNum<=max_channels)) {
+  io_printf(out,"%s: %s ",tr("live stream"),channels[channelNum-1].channelName);
+} else {
+  io_printf(out,"%s ",tr("watch TV"));
+}
+%>
+- open7x0 VDR-FW</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<link rel="stylesheet" type="text/css" href="open7x0.css" />
+<SCRIPT type="text/javascript"><!--
+function init(){
+    if( navigator.appName.indexOf("Microsoft Internet")==-1 )
+    {
+        updateVolume(0);
+    }
+    else if( document.readyState == 'complete' )
+    {
+        updateVolume(0);
+    }
+    else
+    {
+        /* Explorer loads plugins asynchronously */
+        document.onreadystatechange=function() {
+            if( document.readyState == 'complete' )
+            {
+                updateVolume(0);
+            }
+        }
+    }
+}
+function getVLC(name)
+{
+    if (window.document[name])
+    {
+        return window.document[name];
+    }
+    if (navigator.appName.indexOf("Microsoft Internet")==-1)
+    {
+        if (document.embeds && document.embeds[name])
+            return document.embeds[name];
+    }
+    else // if (navigator.appName.indexOf("Microsoft Internet")!=-1)
+    {
+        return document.getElementById(name);
+    }
+}
+function updateVolume(deltaVol)
+{
+    var vlc = getVLC("vlc");
+    vlc.audio.volume += deltaVol;
+    document.getElementById("volumeTextField").innerHTML = vlc.audio.volume+"%";
+};
+function doPlayOrPause()
+{
+    var vlc = getVLC("vlc");
+    if( vlc.playlist.isPlaying ){
+	document.getElementById("PlayPause").innerHTML = "<img src=\"/img/play16.png\">";
+	vlc.playlist.togglePause();
+    } else {
+	document.getElementById("PlayPause").innerHTML = "<img src=\"/img/pause16.png\">";
+	vlc.playlist.togglePause();
+    }
+
+};
+--></script>
+</head>
+<body>
+<div class="head">
+Open7x0 VDR-FW TV
+</div>
+<div class="navigation"><div class="nav">
+<ul>
+ <li><a href="index.kl1"><% io_printf(out,i18n[4][langID]); %></a></li>
+ <li><a href="program.kl1"><% io_printf(out,i18n[5][langID]); %></a></li>
+ <li class="act"><a href="channels.kl1"><% io_printf(out,i18n[6][langID]); %></a></li>
+ <li><a href="timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
+ <li><a href="recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
+ <li><a href="settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
+ <li><a href="http://www.open7x0.org/" target="_blank">open7x0.org</a></li>
+</ul>
+<span id="navclear"></span>
+</div>
+<div class="liniefett"></div>
+<div class="nav2">
+<ul>
+ <li><a href="channels.kl1"><% io_printf(out,tr("summary")); %></a></li>
+ <li><a href="channels-edit.kl1"><% io_printf(out,tr("edit list")); %></a></li>
+ <li class="act"><a href="watchit.kl1"><% io_printf(out,tr("watch TV")); %></a></li>
+</ul>
+</div>
+</div>
+
+<div class="content">
+<div style="float:left;align:center;max-width:200px;">
+<%
+  if ((channelNum>0) && (max_channels>0) && (channelNum<=max_channels) ) {
+    io_printf(out,"<h2>&raquo;%s&laquo;</h2>\n",channels[channelNum-1].channelName);
+  } else {
+	io_printf(out,"<h2>TV</h2>\n");
+  }
+  io_printf(out,"<form action=\"watchit.kl1\"><select name=\"channelnum\" size=\"1\">\n");
+  for (i=0;i<max_channels;i++) {
+    io_printf(out,"<option value=\"%d\">%d - %s</option>\n",channels[i].channel_num,channels[i].channel_num,channels[i].channelName);
+  }
+  close_svdrp();
+%>
+</select><br /><input type="submit" value=<% io_printf(out,"\" %s \"",tr("switch")); %>></form>
+<form><nobr>
+<button name="<% io_printf(out,tr("pause")); %>" type="button" onClick="doPlayOrPause();" id="PlayPause"><img src="/img/pause16.png"></button>
+<button name="<% io_printf(out,tr("full screen")); %>" type="button" onClick="alert('Das Vollbild beenden sie mit einem Doppelklick an einer beliebigen Stelle im Bild!');getVLC('vlc').video.toggleFullscreen();" id="Fullscreen"><img src="/img/fullscreen16.png"></button>
+<button name="<% io_printf(out,tr("mute")); %>" type="button" onClick='getVLC("vlc").audio.toggleMute();' id="Stumm"><img src="/img/mute16.png"></button>
+<button name="---" type="button" onClick='updateVolume(-10)' id="Vol down"><img src="/img/voldown16.png"></button>
+<button name="+++" type="button" onClick='updateVolume(+10)' id="Vol up"><img src="/img/volup16.png"></button>
+</nobr></form>
+<iframe src="now-next.kl1?chan=<% io_printf(out,"%d",channelNum); %>" style="min-height:450px;" name="now-next"></iframe>
+</div>
+<div align="center">
+<object classid="clsid:E23FE9C6-778E-49D4-B537-38FCDE4887D8" codebase="http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab" width="720" height="576" id="vlc" events="false">
+ <param name="showDisplay" value="true" />
+ <param name="autoLoop" value="false" />
+ <param name="autoPlay" value="true" />
+<%
+  if ((channelNum>-1) && (max_channels>-1)) {
+	if (channels[channelNum-1].vpid>1) {
+      io_printf(out,"<param name=\"src\" value=\"http://%s:3000/%d\" />",myip,channelNum);
+      io_printf(out,"<embed type=\"application/x-vlc-plugin\" progid=\"VideoLAN.VLCPlugin.2\" name=\"vlc\" autoplay=\"yes\" loop=\"no\" width=\"720px\" height=\"576px\"  events=\"True\" target=\"http://%s:3000/%d\" style=\"border: 1px solid grey\" />\n",myip,channelNum);
+	} else {
+	  io_printf(out,"<param name=\"src\" value=\"http://%s:3000/ES/%d\" />",myip,channelNum);		 
+      io_printf(out,"<embed type=\"application/x-vlc-plugin\" progid=\"VideoLAN.VLCPlugin.2\" name=\"vlc\" autoplay=\"yes\" loop=\"no\" width=\"720px\" height=\"576px\"  events=\"True\" target=\"http://%s:3000/ES/%d\" style=\"border: 1px solid grey\" />\n",myip,channelNum);
+	}
+  }
+  free(channels);
+%>
+</object>
+</div>
+</div>
+
+<div class="foot">
+        <p>(C) 2006-08 open7x0-team</p>
+</div>
+</body>
+</html>
