@@ -79,7 +79,7 @@ getConfig();
 
 <div class="content">
 
-<h2><% io_printf(out,"<h2>%s <a href=\"playlistch.kl1\"><img src=\"/img/tv16.png\" border=\"0\" alt=\"%s\" /></a></h2>",tr("Channel List"),tr("Playlist")); %></h2>
+<h2><% io_printf(out,"%s <a href=\"playlistch.kl1\"><img src=\"/img/tv16.png\" border=\"0\" alt=\"%s\" /></a>",tr("Channel List"),tr("Playlist")); %></h2>
 
 <div style="margin-left:50px">
 <%
