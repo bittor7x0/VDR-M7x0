@@ -28,9 +28,10 @@
 // --- cOsdMenuFilebrowserSetup ------------------------------------------------------
 bool cOsdMenuFilebrowserSetup::MatchesFilter(dirent64* Entry)
 {
-  
+    
   if ( _onlyDir ) {
-  	 return (Entry->d_type == DT_DIR ) ;
+  	 return !(!Statebag->ShowHiddenFiles && Entry->d_name[0]=='.' && strcmp(Entry->d_name, "..")!=0) 
+  	 		&& (Entry->d_type == DT_DIR || Entry->d_type == DT_UNKNOWN ) ;
   }
     
   return cOsdMenuFilebrowser::MatchesFilter(Entry);
