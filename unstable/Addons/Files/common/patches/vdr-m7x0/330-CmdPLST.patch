@@ -1,0 +1,109 @@
+--- VDR-NG-orig/svdrp.c	2008-11-28 21:49:42.000000000 +0100
++++ VDR-NG/svdrp.c	2008-11-28 02:27:53.000000000 +0100
+@@ -16,6 +16,7 @@
+ #include "svdrp.h"
+ #include <arpa/inet.h>
+ #include <ctype.h>
++#include <dirent.h>
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <netinet/in.h>
+@@ -24,6 +25,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <sys/socket.h>
++#include <sys/stat.h>
+ #include <sys/time.h>
+ #include <unistd.h>
+ #include "channels.h"
+@@ -278,6 +280,8 @@
+   "    at the position where any previous replay was stopped, or from the beginning\n"
+   "    by default. To control or stop the replay session, use the usual remote\n"
+   "    control keypresses via the HITK command.",
++  "PLST <number>\n"
++  "    List files in a recording, to generate a m3u playlist.",
+   "PLUG <name> [ help | main ] [ <command> [ <options> ]]\n"
+   "    Send a command to a plugin.\n"
+   "    The PLUG command without any parameters lists all plugins.\n"
+@@ -1401,6 +1405,73 @@
+      Reply(501, "Missing recording number");
+ }
+ 
++int isvideofile(const struct dirent * ent){
++   char *c;
++   char *c0=(char *)ent->d_name;
++   for (c=c0;c<c0+3;c++) if (!isdigit(*c)) return 0;
++   return (strcmp(c,".vdr")==0);
++}
++
++void cSVDRP::CmdPLST(const char *Option){
++   if (!*Option)
++     Reply(501, "Missing recording number");
++   else if (!isnumber(Option)) 
++     Reply(501, "Error in recording number \"%s\"", Option);
++   else {
++     cRecording *recording = Recordings.Get(strtol(Option, NULL, 10) - 1);
++     if (recording) {
++        struct stat st;
++        const char * dir = recording->FileName();
++        if (stat(dir, &st) == 0) {
++           if (S_ISDIR(st.st_mode)) {
++              int maxl = 2*strlen(dir)+9;
++              char *pathorlink;
++              char *path;
++              if ( (pathorlink = MALLOC(char, strlen(dir)+9))==NULL )
++                 Reply(451, "Not enough mem");
++              else if ( (path = MALLOC(char, maxl))==NULL )
++                 Reply(451, "Not enough mem");
++              else {
++                 struct dirent **namelist;
++                 int n = scandir(dir, &namelist, isvideofile, alphasort);
++                 if (n < 0)
++                    Reply(451, "Error %d in scandir", n);
++                 else if (n==0) 
++                    Reply(550, "No recording files found");
++                 else {
++                    int i;
++                    for (i=0;i<n;i++) {
++                       sprintf(pathorlink, "%s/%s", dir, namelist[i]->d_name);
++                       free(namelist[i]);
++                       if (lstat(pathorlink,&st)==0) {
++                          if (S_ISREG(st.st_mode)) {
++                             Reply((i==n-1) ? 215 : -215,"%s", pathorlink);
++                          } else if (S_ISLNK(st.st_mode)) {
++                             int pl = readlink(pathorlink, path, maxl-1);
++                             if ((pl>0) && (pl<maxl-1)) {
++                                path[pl] = 0;
++                                Reply((i==n-1) ? 215 : -215,"%s", path);
++                             } else {
++                                ; //TODO log error in readlink
++                             }
++                          } else {
++                             ; //TODO log type unknown
++                          }
++                       } else {
++                          ;//TODO  log error in lstat
++                       }
++                    }
++                    free(namelist);
++                 }
++              }
++              free(pathorlink);
++              free(path);
++           } else Reply(451, "Error %s not a dir", dir);
++        } else Reply(451, "Error stat(%s)", dir);
++     }
++   }
++}
++
+ void cSVDRP::CmdPLUG(const char *Option)
+ {
+   if (*Option) {
+@@ -1632,6 +1703,7 @@
+   else if (CMD("NEWT"))  CmdNEWT(s);
+   else if (CMD("NEXT"))  CmdNEXT(s);
+   else if (CMD("PLAY"))  CmdPLAY(s);
++  else if (CMD("PLST"))  CmdPLST(s);
+   else if (CMD("PLUG"))  CmdPLUG(s);
+   else if (CMD("PUTE"))  CmdPUTE(s);
+   else if (CMD("RENR"))  CmdRENR(s);
