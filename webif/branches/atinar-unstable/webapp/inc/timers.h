@@ -37,6 +37,7 @@ typedef struct timerEntry {
   char * newt;
 } timerEntry;
 
+void initTE(timerEntry * o);
 void freeTE(timerEntry * o, int max);
 timerEntry * getTimerList(int * max, int sortBy, int sortDirection);
 int checkForTimer(timerEntry * timerList, int maxTimer, int channelNum, time_t startTime, time_t endTime, int duration);

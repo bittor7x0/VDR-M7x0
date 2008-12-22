@@ -50,6 +50,16 @@ int compareTE(const void * a, const void * b) {
   }
 }
 
+// Assign default timer values
+void initTE(timerEntry * o) {
+	if (o==NULL) return;
+	o->active=1;
+	o->lifetime=99;
+	o->priority=50;
+	o->newt=NULL;
+}
+
+// Free timer list
 void freeTE(timerEntry * o,int max) {
 	if (o==NULL) return;
 	int i=0;
@@ -63,27 +73,20 @@ void freeTE(timerEntry * o,int max) {
 timerEntry * getTimerList(int * max, int sortBy, int sortDirection) {
   char * data;
   char * p;
-
-  char ret_code[10];
-
   timerEntry *timer;
   channelList * channels;
   int i=0;
-  char rc[20]="";
   int max_cl=-1;
 
   channels=get_channel_list(&max_cl);
   
-  timer=(timerEntry *)malloc(sizeof*timer);
+  timer=NULL;
   write_svdrp("LSTT\r");
   data=read_svdrp();
 
   for(p=(char *)strtok(data,"\r\n");p!=0;p=(char *)strtok(0,"\r\n")) {
-    parse_ret_code(p,ret_code);
-    sprintf(rc,"250-%d",i+1);
-    if (!strcmp(ret_code, "550")) {
-      i=0;
-    } else if ( !strcmp(ret_code, rc) || !strcmp(ret_code, "250") ) {
+    int code=atoi(p);
+    if ( code==250 ) {
       i++;
       timerEntry *tmp=(timerEntry *)realloc(timer,i*sizeof*timer);
       if (!tmp) {
@@ -91,9 +94,10 @@ timerEntry * getTimerList(int * max, int sortBy, int sortDirection) {
         exit(1);
       }
       timer=tmp;
-      timer[i-1].ID=i;
-      timer[i-1].newt=strdup(p+strlen(rc)+1);
-      parse_timer(p,strlen(rc)+1,&(timer[i-1].active),&(timer[i-1].channelNum),&(timer[i-1].type),timer[i-1].reg_timer,&(timer[i-1].start),&(timer[i-1].stop),&(timer[i-1].priority),&(timer[i-1].lifetime),timer[i-1].title);
+      timer[i-1].ID=strtol(p+4,&p,10);
+      p+=strspn(p," ");
+      timer[i-1].newt=strdup(p);
+      parse_timer(p,&(timer[i-1]));
       if (timer[i-1].channelNum>0 && timer[i-1].channelNum<max_cl) {
         strcpy(timer[i-1].channelName,channels[timer[i-1].channelNum-1].channelName);
         strcpy(timer[i-1].mux,channels[timer[i-1].channelNum-1].multiplexName);
@@ -105,7 +109,7 @@ timerEntry * getTimerList(int * max, int sortBy, int sortDirection) {
   }
 
   if (i>0 && sortBy!=0) {
-    //Timer schnell noch sortieren
+    //Quick sort timers
 	compareTE_sortBy=sortBy;
 	compareTE_sortDirection=sortDirection;
     qsort(timer,i,sizeof*timer,compareTE);
