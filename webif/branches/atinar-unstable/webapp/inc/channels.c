@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -47,6 +50,8 @@ channelList * get_channel_list(int * max) {
     sprintf(rc,"250-%d",i);
     if (!strcmp(ret_code, "550")) {
       *max=-1;
+      free(data);
+      free(channels);
       return NULL;
     } else if (!strcmp(ret_code,rc) || !strcmp(ret_code, "250")) {
     
