@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -94,7 +97,7 @@ char * strcatEx(char ** dest, const char * s) {
 	int size=0;
 	
 	if (*dest==NULL) { *dest=malloc(strlen(s)+2); strcpy(*dest,""); }
-	size=strlen(dest)+strlen(s);
+	size=strlen(*dest)+strlen(s);
 	
   char * tmp =(char *)realloc(*dest,size+2);
   if (!tmp) {
