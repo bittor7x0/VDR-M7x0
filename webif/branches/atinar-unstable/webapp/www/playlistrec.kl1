@@ -1,0 +1,92 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* Originally written for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "recording.h"
+
+#ifdef DEBUG
+void dbg_playlistrec_kl1(void) {
+	dbg("playlistrec.kl1");
+}
+#endif
+
+enum playlist_protocol_e {
+	HTTP,
+	FTP
+} protocol;
+
+%><%
+#ifdef DEBUG
+	dbg_playlistrec_kl1();
+#endif
+	char myip[16]="";
+	whatsmyip(myip);
+	vars_t *args = request_get_args(request);
+	int id=-1;
+	if (vars_countn(args,"id")>0) {
+		const char *arg_id=vars_get_value(args,"id");
+		errno=0;
+		id = (int)strtol(arg_id,NULL,10);
+		if (errno) {
+			warn("%d=strtol(%s,...) errno=%d",id,arg_id,errno);
+		}
+	}
+	if (id<0) {
+		response_set_status(response,HTTP_STATUS_NO_CONTENT);
+		warn("Invalid recording id=%d",id);
+		goto exit;
+	}
+	protocol=HTTP;
+	if (vars_countn(args,"protocol")>0) {
+		const char *arg_protocol=vars_get_value(args,"protocol");
+		if (strcmp(arg_protocol,"ftp")==0) {
+			protocol=FTP;
+		}
+	}
+
+	response_set_content_type(response,"audio/x-mpegurl");
+	io_printf(out, "#EXTM3U\n");
+	if (protocol==FTP){
+		const char *recdata=getRecData(session,id);
+		char *p=(char *)recdata;
+		int l;
+		io_printf(out, "#EXTM3U\n");
+		while(p && *p) {
+			p+=strspn(p,"\r\n ");
+			errno=0;
+			int code=(int)strtol(p,&p,10);
+			if (errno) {
+				warn("Bad format in recdata");
+				break;
+			}
+			p+=strspn(p,"- ");
+			l=strcspn(p,"\r\n");
+			if (code==215 ) {
+			   io_write(out,"ftp://",6);
+			   io_write(out,myip,strlen(myip));
+				io_write(out,p,l);
+				io_putc(out,'\n');
+			}
+			p+=l;
+		}
+	}
+	else {
+		io_printf(out,"http://%s/streamrec.kl1?id=%d",myip,id);
+	}
+exit:
+
+%>

@@ -95,7 +95,6 @@ getConfig();
 
 <h2><% io_printf(out,i18n[8][langID]); %></h2>
 
-<div style="margin-left:50px">
 <table class="list1">
 <%
 
@@ -111,10 +110,7 @@ getConfig();
     io_printf(out," <th><a href=\"recordings.kl1?sort=4&direction=%d\">%s<img src=\"/img/%s\" border=\"0\"></a></th>\n",sortDirection*-1,tr("recording"),dirImg[whatArrow(sortDirection)]);
   } else { io_printf(out," <th><a href=\"recordings.kl1?sort=4&direction=1\">%s</a></th>\n",tr("recording")); }
 
-/*  if (open_svdrp()!=0) {
-    io_printf(out,i18n[13][langID]);
-    exit(1);
-  }*/
+  io_printf(out," <th>%s</th>\n</tr>\n",tr("stream"));
 
   recs=getRecList(&max_recs,sortBy,sortDirection);
   for (i=0;i<max_recs;i++) {
@@ -123,15 +119,18 @@ getConfig();
     io_printf(out,"<tr>\n <td>%02d.%02d.%04d</td>\n",t1.tm_mday,1+t1.tm_mon,1900+t1.tm_year);
 	io_printf(out," <td>%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
 	io_printf(out," <td>%s</td>\n",recs[i].title);
+    if (recs[i].path!=NULL) {
+      io_printf(out," <td><a href=\"playlistrec.kl1?path=%s\"><img border=\"0\" alt=\"%s\" src=\"/img/tv16.png\"/></a></td>",recs[i].path,tr("stream"));
+    } else {
+      io_printf(out," <td><a href=\"playlistrec.kl1?id=%d\"><img border=\"0\" alt=\"%s\" src=\"/img/tv16.png\"/></a></td>",recs[i].ID,tr("stream"));
+    }
     io_printf(out,"</tr>\n");
   }
 
   freeRE(recs,max_recs);
   close_svdrp();
 %>
-
 </table>
-</div>
 
 </div>
 
