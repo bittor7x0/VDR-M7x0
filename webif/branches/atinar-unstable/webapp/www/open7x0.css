@@ -227,6 +227,8 @@ div.content iframe {
 
 table.list1 {
  font-size:10pt;
+ width:85%;
+ margin:0px auto;
 }
 
 table.list1 a {
