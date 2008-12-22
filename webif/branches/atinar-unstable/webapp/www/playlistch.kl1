@@ -1,0 +1,46 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* Originally written for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <dirent.h>
+#include <stdio.h>
+#include <string.h>
+#include <regex.h>
+
+#include "channels.h"
+
+void dbg_playlistch_kl1(void) { dbg("playlistch.kl1");}
+%><%
+dbg_playlistch_kl1();
+
+char myip[16]="";
+whatsmyip(myip);
+vars_t *args = request_get_args(request);
+response_set_content_type(response,"audio/x-mpegurl");
+io_printf(out, "#EXTM3U\n");
+const char * channelArg=NULL; 
+int nchannel=-1;
+int max_channels;
+channelList * channels = get_channel_list( &max_channels );
+if (vars_countn(args,"channelnum")>0) {
+	channelArg=vars_get_value(args,"channelnum");
+	nchannel=atoi(channelArg);
+}
+int i;
+for(i=0; i<max_channels; i++){
+	if ( channelArg==NULL || i==nchannel ) {
+		io_printf(out,"#EXTINF:0,%s\n",channels[i].channelName);
+		io_printf(out,"http://%s:%d/%d\n",myip,3000,channels[i].channel_num);
+	}
+}
+%>

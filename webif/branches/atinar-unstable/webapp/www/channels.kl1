@@ -10,6 +10,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -76,15 +79,10 @@ getConfig();
 
 <div class="content">
 
-<h2><% io_printf(out,tr("Channel List")); %></h2>
+<h2><% io_printf(out,"<h2>%s <a href=\"playlistch.kl1\"><img src=\"/img/tv16.png\" border=\"0\" alt=\"%s\" /></a></h2>",tr("Channel List"),tr("Playlist")); %></h2>
 
 <div style="margin-left:50px">
 <%
-/*  if (open_svdrp()!=0) {
-    io_printf(out,i18n[13][langID]);
-    exit(1);
-  }*/
-
   io_printf(out,"<table class=\"list1\">\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n",tr("channel number"),tr("channel name"),tr("multiplex"),tr("more infos"),tr("live stream"));
   channels=get_channel_list(&max_channels);
   for (i=0;i<max_channels;i++) {
