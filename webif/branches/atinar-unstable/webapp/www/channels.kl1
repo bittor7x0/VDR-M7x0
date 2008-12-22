@@ -81,7 +81,6 @@ getConfig();
 
 <h2><% io_printf(out,"%s <a href=\"playlistch.kl1\"><img src=\"/img/tv16.png\" border=\"0\" alt=\"%s\" /></a>",tr("Channel List"),tr("Playlist")); %></h2>
 
-<div style="margin-left:50px">
 <%
   io_printf(out,"<table class=\"list1\">\n<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n",tr("channel number"),tr("channel name"),tr("multiplex"),tr("more infos"),tr("live stream"));
   channels=get_channel_list(&max_channels);
@@ -110,7 +109,6 @@ getConfig();
 %>
 
 </table>
-</div>
 
 </div>
 

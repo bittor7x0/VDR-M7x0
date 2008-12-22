@@ -10,6 +10,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -107,7 +110,6 @@ int whatArrow(int aDir) {
 
 <h2><% io_printf(out,i18n[7][langID]); %></h2>
 
-<div style="margin-left:50px">
 <%
 if (!strcmp(altAction,"dele")) {
 /*  if (open_svdrp()!=0) {
@@ -371,8 +373,6 @@ if (!strcmp(action,"summary")) {
 }
 close_svdrp();
 %>
-
-</div>
 
 </div>
 

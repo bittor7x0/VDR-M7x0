@@ -10,6 +10,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -100,7 +103,7 @@ Programm / EPG
 <%
  if (channelNum<1) {
   io_printf(out,"<h2>%s</h2>\n",tr("Now on TV"));
-  io_printf(out,"<div style=\"margin-left:50px\">\n<table class=\"list1\">\n");
+  io_printf(out,"<table class=\"list1\">\n");
 	 
   io_printf(out,"<tr><th>%s</th><th colspan=\"2\">now</th><th colspan=\"2\">next</th></tr>\n",tr("channel"));
   now_next=getNowNext(&max,0);
@@ -204,7 +207,7 @@ Programm / EPG
   sprintf(cmd,"LSTE %d\r",channelNum);
   write_svdrp(cmd);
   data=read_svdrp();
-  io_printf(out,"<h2>%s %s &raquo;%s&laquo;</h2>\n<div style=\"margin-left:50px\">\n<table class=\"list1\">\n<tr><th>%s</th><th>%s</th><th>&nbsp;</th></tr>\n",tr("Schedule"),tr("for"),channels[channelNum-1].channelName,tr("Time"),tr("program")); 
+  io_printf(out,"<h2>%s %s &raquo;%s&laquo;</h2>\n<table class=\"list1\">\n<tr><th>%s</th><th>%s</th><th>&nbsp;</th></tr>\n",tr("Schedule"),tr("for"),channels[channelNum-1].channelName,tr("Time"),tr("program")); 
   for(p=(char *)strtok(data,"\r\n");p!=0;p=(char *)strtok(0,"\r\n")) {
   	parse_ret_code(p,ret_code);
   	if (!strcmp(ret_code,"550")) {
@@ -274,7 +277,6 @@ Programm / EPG
 %>
 
 </table>
-</div>
 
 </div>
 
