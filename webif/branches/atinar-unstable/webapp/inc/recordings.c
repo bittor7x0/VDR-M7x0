@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -28,8 +31,8 @@
 #include "channels.h"
 #include "epg.h"
 
-// Sortiert die Liste, die beiden nächsten Variablen geben an,
-// wonach und in welche Richtung sortiert wird.
+// Sort the list, using the field and direction 
+// specified by the next two variables.
 int compareRE_sortBy=0;
 int compareRE_sortDirection=1;
 int compareRE(const void * a, const void * b) {
@@ -41,27 +44,32 @@ int compareRE(const void * a, const void * b) {
   }
 }
 
+void freeRE(recEntry * o,int max) {
+	if (o==NULL) return;
+	int i=0;
+	for (i=0;i<max;i++) {
+		free(o[i].title);
+		free(o[i].path);
+	}
+	free(o);
+}
+
 recEntry * getRecList(int * max, int sortBy, int sortDirection) {
 char * data;
 char * p;
-
-char ret_code[10];
-
 recEntry *rec;
 int i=0;
-char rc[20]="";
-
+int code;
   
-  rec=(recEntry *)malloc(sizeof*rec);
+  rec=NULL;
   write_svdrp("LSTR\r");
   data=read_svdrp();
   
   for(p=(char *)strtok(data,"\r\n");p!=0;p=(char *)strtok(0,"\r\n")) {
-    parse_ret_code(p,ret_code);
-    sprintf(rc,"250-%d",i+1);
-    if (!strcmp(ret_code, "550")) {
-      i=0;
-    } else if (!strcmp(ret_code, rc) || !strcmp(ret_code, "250")) {
+    code=atoi(p);
+    if (code==550) {
+      break;
+    } else if (code==250) {
       i++;
       recEntry *tmp=(recEntry *)realloc(rec,i*sizeof*rec);
       if (!tmp) {
@@ -69,12 +77,12 @@ char rc[20]="";
         exit(1);
       }
       rec=tmp;
-      parse_rec(p,strlen(rc)+1,&(rec[i-1].seen),&(rec[i-1].direct),&(rec[i-1].cut),&(rec[i-1].start),rec[i-1].title,NULL);
+      parse_rec(p+4,&(rec[i-1]));
     }
   }  
   
   if (i>0 && sortBy!=0) {
-    //Aufnahmen schnell noch sortieren
+    //Quick sort recordings
 	compareRE_sortBy=sortBy;
 	compareRE_sortDirection=sortDirection;
     qsort(rec,i,sizeof*rec,compareRE);
@@ -92,6 +100,7 @@ recEntry2 * mallocRE2(int max) {
 }
 
 void freeRE2(recEntry2 * o,int max) {
+	if (o==NULL) return;
 	int i=0;
 	for (i=0;i<max;i++) {
 		free(o[i].title);
@@ -217,7 +226,7 @@ int readRecDir(const char * path, int round, int * numF, int * numD, int * size,
 	  	}
 		  if (*numF>0) {
 		  	strcpy(s2,s); strcat(s2,newestRec);
-		  	int * na; int * nb;
+		  	int na; int nb;
 		  	if (round==1) readRecDir(s2,round+1,&na,&nb,size,info);
 		  	free(s); free(s2);
 		  	if (*numF==1) return 2; else return 3;

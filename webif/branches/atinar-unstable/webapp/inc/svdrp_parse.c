@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -123,33 +126,39 @@ int makeTimerEx(char newt[256], int active, int channel_num, int type, char reg_
   return 0;
 }
 
-void parse_rec(char * line, int offset, int * seen, int * direct, int * cut, time_t * start_time, char title[50], char path[200]) {
-int ws_d=0,ws_u=0;
-char * r;
-char s[50];
-char datum[12]="";
-char uhrzeit[7]="";
-
-  r=line+offset;
-  ws_d=strcspn(r," ");
-  strncpy(datum,r,ws_d);
-  ws_u=strcspn(r+ws_d+1," ");
-  strncpy(uhrzeit,r+ws_d+1,ws_u);
-  if (uhrzeit[strlen(uhrzeit)-1]=='*') { uhrzeit[strlen(uhrzeit)-1]='\0'; *seen=0; } else { *seen=1; }
-  *direct=0; *cut=0;
-
+void parse_rec(char * line, struct recEntry * recording){
+  char * r=line;
+  int l;
   struct tm timeptr;
-  sprintf(s,"%s %c%c:%c%c:00",datum,uhrzeit[0],uhrzeit[1],uhrzeit[3],uhrzeit[4]);
-  if (!strptime(s,"%d.%m.%y %H:%M:%S",&timeptr)) { printf("Fehler bei der Datumskonvertierung!\n"); }
-  timeptr.tm_wday=0; timeptr.tm_yday=0;
-  timeptr.tm_isdst=-1;
-  *start_time=mktime(&timeptr);
-
-  switch (r[ws_u+ws_d+2]) {
-    case '@'  :strcpy(title,r+ws_u+ws_d+3); *direct=1; break;
-	case '%'  :strcpy(title,r+ws_u+ws_d+3); *cut=1; break;
-	default   :strcpy(title,r+ws_u+ws_d+2); break;
+  r+=strspn(r," ");
+  recording->ID=(int)strtol(r,&r,10);
+  r+=strspn(r," ");
+  r=strptime(r,"%d.%m.%y %H:%M",&timeptr);
+  if (r==NULL){ 
+    printf("Error converting recording date!\n");
+    recording->title=NULL;
+    recording->path=NULL;
+    return;
   }
+  timeptr.tm_sec=0;
+  timeptr.tm_isdst=-1;
+  recording->start=mktime(&timeptr);
+  recording->seen=(r[0]==' ');
+  r++;
+  r+=strspn(r," ");
+  l=strcspn(r,"/\n\r");
+  recording->title=strndup(r,l);
+  recording->direct=(strchr(recording->title,'@')==NULL) ? 0 : 1;
+  recording->cut=(strchr(recording->title,'%')==NULL) ? 0 : 1;
+  r+=l;
+  if (r[0]=='/') {    //Requires vdr patched to include path
+    l=strcspn(r,"\n\r");
+    recording->path=strndup(r,l);
+  }
+  else {
+    recording->path=NULL;
+  }
+  return;
 }
 
 void parse_timer(char * line, int offset, int * active, int * chan_id, int * type, char reg_timer[8], time_t * start_time, time_t * end_time, int * priority, int * lifetime, char title[100]) {

@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -18,6 +21,8 @@
 #define __SVDRP_PARSE_H__
 
 #include <netinet/in.h>
+#include "recordings.h"
+#include "timers.h"
 
 extern int margin_start;
 extern int margin_stop;
@@ -28,7 +33,7 @@ void parse_chan(char * line, int * chan_id, char chan_name[30]);
 
 void parse_215E(char * line, int offset, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version);
 
-void parse_rec(char * line, int offset, int * seen, int * direct, int * cut, time_t * start_time, char title[50], char path[200]);
+void parse_rec(char * line, struct recEntry * recording);
 
 void parse_timer(char * line, int offset, int * active, int * chan_id, int * type, char reg_timer[7], time_t * start_time, time_t * end_time, int * priority, int * lifetime, char title[50]);
 

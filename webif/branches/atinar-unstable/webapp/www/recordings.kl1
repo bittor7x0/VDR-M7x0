@@ -10,6 +10,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -26,7 +29,9 @@ time_t now;
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
+dbg_recordings_kl1(void) { dbg("recordings.kl1"); }
 %><%
+dbg_recordings_kl1();
 recEntry * recs;
 int max_recs=1;
 int i=0;
@@ -95,7 +100,7 @@ getConfig();
 <%
 
   if (sortBy==sortStart) {
-    io_printf(out,"<tr><th><a href=\"recordings.kl1?sort=1&direction=%d\">%s<img src=\"/img/%s\" border=\"0\"></a></th>\n",sortDirection*-1,tr("date"),dirImg[whatArrow(sortDirection)]);
+    io_printf(out,"<tr>\n <th><a href=\"recordings.kl1?sort=1&direction=%d\">%s<img src=\"/img/%s\" border=\"0\"></a></th>\n",sortDirection*-1,tr("date"),dirImg[whatArrow(sortDirection)]);
   } else { io_printf(out,"<tr><th><a href=\"recordings.kl1?sort=1&direction=1\">%s</a></th>\n",tr("date")); }
 
   if (sortBy==sortStart) {
@@ -116,13 +121,12 @@ getConfig();
     struct tm t1=*localtime(&recs[i].start);
 
     io_printf(out,"<tr>\n <td>%02d.%02d.%04d</td>\n",t1.tm_mday,1+t1.tm_mon,1900+t1.tm_year);
-
 	io_printf(out," <td>%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
 	io_printf(out," <td>%s</td>\n",recs[i].title);
     io_printf(out,"</tr>\n");
   }
 
-  free(recs);
+  freeRE(recs,max_recs);
   close_svdrp();
 %>
 
