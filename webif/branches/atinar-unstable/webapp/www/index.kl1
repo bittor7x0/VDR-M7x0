@@ -32,9 +32,6 @@ time_t now;
 #define MAX_BUFFER_SIZE 8192
 #define MAX_LINE_SIZE 1024
 
-#define HOST = "127.0.0.1"
-#define PORT = 2001
-
 %><%
 char myip[16]="";
 whatsmyip(myip);
