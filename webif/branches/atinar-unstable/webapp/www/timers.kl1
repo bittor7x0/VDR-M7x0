@@ -31,7 +31,13 @@ time_t now;
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
+#ifdef DEBUG
+void dbg_timers_kl1(void) { dbg("timers.kl1"); }
+#endif
 %><%
+#ifdef DEBUG
+dbg_timers_kl1();
+#endif
 const char * SUMMARY = "summary";
 const char * EDIT = "edit";
 const char * NEW = "new";
@@ -167,34 +173,24 @@ if (!strcmp(action,ADD)) {
         date=vars_get_value(args,"date");
       } else if (!strcmp(vars_get_value(args,"day"),"reg")) {
     	strcpy(reg_timer,"-------");
-        if (vars_countn(args,"mon")>0) { reg_timer[0]='M'; } else { reg_timer[0]='-'; }
-        if (vars_countn(args,"tue")>0) { reg_timer[1]='D'; } else { reg_timer[1]='-'; }
-        if (vars_countn(args,"wed")>0) { reg_timer[2]='M'; } else { reg_timer[2]='-'; }
-        if (vars_countn(args,"thu")>0) { reg_timer[3]='D'; } else { reg_timer[3]='-'; }
-        if (vars_countn(args,"fri")>0) { reg_timer[4]='F'; } else { reg_timer[4]='-'; }
-        if (vars_countn(args,"sat")>0) { reg_timer[5]='S'; } else { reg_timer[5]='-'; }
-        if (vars_countn(args,"sun")>0) { reg_timer[6]='S'; } else { reg_timer[6]='-'; }
-        reg_timer[7]='\0';
+        if (vars_countn(args,"mon")>0) { reg_timer[0]='M'; }
+        if (vars_countn(args,"tue")>0) { reg_timer[1]='D'; }
+        if (vars_countn(args,"wed")>0) { reg_timer[2]='M'; }
+        if (vars_countn(args,"thu")>0) { reg_timer[3]='D'; }
+        if (vars_countn(args,"fri")>0) { reg_timer[4]='F'; }
+        if (vars_countn(args,"sat")>0) { reg_timer[5]='S'; }
+        if (vars_countn(args,"sun")>0) { reg_timer[6]='S'; }
         type=2;
       }
     }
-  
-  const char * startH=NULL;
-  const char * startM=NULL;
-  const char * endH=NULL;
-  const char * endM=NULL;
-    if (vars_countn(args,"startHour")>0) { startH=vars_get_value(args,"startHour"); }
-    if (vars_countn(args,"startMin")>0)  { startM=vars_get_value(args,"startMin"); }
-    if (vars_countn(args,"endHour")>0)   { endH=vars_get_value(args,"endHour"); }
-    if (vars_countn(args,"endMin")>0)    { endM=vars_get_value(args,"endMin"); }
-  int lifetime=99;
-    if (vars_countn(args,"lifetime")>0) { lifetime=vars_get_value_i(args,"lifetime"); }
-  int priority=50;
-    if (vars_countn(args,"priority")>0) { priority=vars_get_value_i(args,"priority"); }
-  const char * title;
-    if (vars_countn(args,"title")>0) { title=vars_get_value(args,"title"); }
-  int addMargin=0;
-    if (vars_countn(args,"addMargin")>0) { addMargin=1; }
+  const char * startH= vars_get_value(args,"startHour"); 
+  const char * startM= vars_get_value(args,"startMin");
+  const char * endH  = vars_get_value(args,"endHour");
+  const char * endM  = vars_get_value(args,"endMin");
+  int lifetime= (vars_countn(args,"lifetime")>0) ? vars_get_value_i(args,"lifetime") : 99;
+  int priority= (vars_countn(args,"priority")>0) ? vars_get_value_i(args,"priority") : 50;
+  const char * title = vars_get_value(args,"title");
+  int addMargin= (vars_countn(args,"addMargin")>0);
     
   if ( (type==0) ||
 	   ( (type==1) && (!date) ) ||
@@ -346,14 +342,15 @@ if (!strcmp(action,SUMMARY)) {
   io_printf(out,"<th>&nbsp;</th></tr>\n");
   
   timers=getTimerList(&max_timers,sortBy,sortDirection);
+  char cdate[11];
   for (i=0;i<max_timers;i++) {
     struct tm t1=*localtime(&timers[i].start);
     struct tm t2=*localtime(&timers[i].stop);
- 
+    int l=strftime(cdate,11,"%d-%m-%Y",&t1);
     if (strlen(timers[i].reg_timer)==7) {
-      io_printf(out,"<tr>\n <td>%02d.%02d.%04d (%s)</td>\n",t1.tm_mday,1+t1.tm_mon,1900+t1.tm_year,timers[i].reg_timer);
+      io_printf(out,"<tr>\n <td>%s (%s)</td>\n",cdate,timers[i].reg_timer);
     } else {
-      io_printf(out,"<tr>\n <td>%02d.%02d.%04d</td>\n",t1.tm_mday,1+t1.tm_mon,1900+t1.tm_year);
+      io_printf(out,"<tr>\n <td>%s</td>\n",cdate);
     }
 	io_printf(out," <td>%s</a></td>\n",timers[i].channelName);
 	io_printf(out," <td>%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
