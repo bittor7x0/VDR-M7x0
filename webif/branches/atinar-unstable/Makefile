@@ -20,7 +20,14 @@
 KLONE_VERSION ?= 2.1.1rc9
 
 # klone configure arguments
-KLONE_CONF_ARGS = --disable-lib=openssl --disable-lib=z --disable_cxx # --prefix=$(DESTDIR) --libs=$(DESTDIR) --disable_libu_mini --disable_shared --disable_cxx
+KLONE_CONF_ARGS = --disable-lib=openssl --disable-lib=z --disable_cxx # --prefix=$(DESTDIR) --libs=$(DESTDIR) --disable_libu_mini --disable_shared
+
+# exclude svn control files
+KLONE_IMPORT_ARGS = -x */.svn/*
+
+# patch klone to include partial content responses
+KLONE_TARGET_PATCH_FILE = $(CURDIR)/klone-core-2.1.1rc9-atinar.patch 
+KLONE_HOST_PATCH_FILE= $(KLONE_TARGET_PATCH_FILE)
 
 # cross-compiling (see build/makl/tc/* for the list of supported platforms)
 # MAKL_PLATFORM ?=
