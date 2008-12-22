@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -34,12 +37,12 @@ typedef struct timerEntry {
   char * newt;
 } timerEntry;
 
+void freeTE(timerEntry * o, int max);
 timerEntry * getTimerList(int * max, int sortBy, int sortDirection);
 int checkForTimer(timerEntry * timerList, int maxTimer, int channelNum, time_t startTime, time_t endTime, int duration);
 int addTimer(const char * newt);
 int getTimerStrAt(int timerID, char timerStr[256]);
 int editTimer(int timerID, char * oldTimer, char * newTimer);
 int deleTimer(int timerID, char * timer);
-//int getChannel(char channelName[30]);
 
 #endif

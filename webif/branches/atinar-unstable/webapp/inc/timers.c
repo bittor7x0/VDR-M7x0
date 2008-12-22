@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -45,6 +48,15 @@ int compareTE(const void * a, const void * b) {
 	case 10:return (strcmp(((const timerEntry*)a)->mux,((const timerEntry*)b)->mux)*compareTE_sortDirection); break;
 	default: return 0; break;
   }
+}
+
+void freeTE(timerEntry * o,int max) {
+	if (o==NULL) return;
+	int i=0;
+	for (i=0;i<max;i++) {
+		free(o[i].newt);
+	}
+	free(o);
 }
 
 // Besorgt eine Liste von Timer vom VDR und sortiert sie

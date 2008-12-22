@@ -345,11 +345,6 @@ if (!strcmp(action,"summary")) {
 
   io_printf(out,"<th>&nbsp;</th></tr>\n");
   
-/*  if (open_svdrp()!=0) {
-    io_printf(out,i18n[13][langID]);
-    exit(1);
-  }*/
-
   timers=getTimerList(&max_timers,sortBy,sortDirection);
   for (i=0;i<max_timers;i++) {
     struct tm t1=*localtime(&timers[i].start);
@@ -369,7 +364,7 @@ if (!strcmp(action,"summary")) {
     io_printf(out,"</tr>\n");
   }
   io_printf(out,"</table>\n");
-  free(timers);
+  freeTE(timers,max_timers);
 }
 close_svdrp();
 %>
