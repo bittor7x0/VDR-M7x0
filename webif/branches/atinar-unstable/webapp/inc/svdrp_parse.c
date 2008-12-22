@@ -130,6 +130,7 @@ void parse_rec(char * line, struct recEntry * recording){
   char * r=line;
   int l;
   struct tm timeptr;
+
   r+=strspn(r," ");
   recording->ID=(int)strtol(r,&r,10);
   r+=strspn(r," ");
@@ -161,59 +162,60 @@ void parse_rec(char * line, struct recEntry * recording){
   return;
 }
 
-void parse_timer(char * line, int offset, int * active, int * chan_id, int * type, char reg_timer[8], time_t * start_time, time_t * end_time, int * priority, int * lifetime, char title[100]) {
-  int i=offset;
+void parse_timer(char * line, struct timerEntry * timer ){
+  char * r=line;
+  int l=0;
   int k=0;
   char s[50];
 
-  char tmp[8][100]={"","","","","","","",""};
-  for(k=0;k<8;k++) {
-    strncpy(tmp[k],line+i+k,strcspn(line+i+k,":"));
-    i+=strcspn(line+i+k,":");
-  }
-
-  if (active!=NULL) { *active=strtol(tmp[0],NULL,10); }
-  if (chan_id!=NULL) { *chan_id=strtol(tmp[1],NULL,10); }
-  if (strlen(tmp[2])==7) {
-    strcpy(reg_timer,tmp[2]);
-    if (type!=NULL) { *type=1; }
-    strcpy(tmp[2],"1970-01-02");
+  timer->active=strtol(r,&r,10); r++;
+  timer->channelNum=strtol(r,&r,10); r++;
+  l=strcspn(r,":");
+  if (l==7) {
+    strncpy(timer->reg_timer,r,l);
+    timer->reg_timer[l]='\0';
+    timer->type=1;
+    strcpy(s,"1970-01-02");
     time_t ttDate=time(NULL);
     for (k=0;k<7;k++) {
       struct tm next_rec=*localtime(&ttDate);
-      if (reg_timer[(next_rec.tm_wday+6)%7]!='-') {
-        sprintf(tmp[2],"%04d-%02d-%02d",1900+next_rec.tm_year,1+next_rec.tm_mon,next_rec.tm_mday);
+      if (timer->reg_timer[(next_rec.tm_wday+6)%7]!='-') {
+        strftime(s,sizeof(s)-1,"%Y-%m-%d",&next_rec);
         break;
       }
       ttDate+=86400;
     }
   } else {
-	if (type!=NULL) { *type=0; }
-    strcpy(reg_timer,"");
+    strncpy(s,r,l);
+    s[l]='\0';
+    timer->type=0;
+    strcpy(timer->reg_timer,"");
   }
-  if (start_time!=NULL) {
-	struct tm timeptr;
-	sprintf(s,"%s %c%c:%c%c:00",tmp[2],tmp[3][0],tmp[3][1],tmp[3][2],tmp[3][3]);
-	if (!strptime(s,"%Y-%m-%d %H:%M:%S",&timeptr)) { printf("Fehler bei der Datumskonvertierung!\n"); }
-	timeptr.tm_wday=0; timeptr.tm_yday=0;
+  r+=l+1;
+  l=4;
+  struct tm timeptr;
+  strcat(s," ");
+  char * h = s+strlen(s); 
+  time_t * t;
+  for (k=0;k<2;k++){
+    t=(k==0) ? &timer->start : &timer->stop;
+    strncpy(h,r,l);
+    h[l]='\0';
+    r+=l+1;
+    if (!strptime(s,"%Y-%m-%d %H%M",&timeptr)) { printf("Fehler bei der Datumskonvertierung!\n"); }
+    timeptr.tm_wday=0; 
+    timeptr.tm_yday=0;
     timeptr.tm_isdst=-1;
-    *start_time=mktime(&timeptr);
+    *t=mktime(&timeptr);
   }
-  if (end_time!=NULL) {
-	struct tm timeptr;
-	sprintf(s,"%s %c%c:%c%c:00",tmp[2],tmp[4][0],tmp[4][1],tmp[4][2],tmp[4][3]);
-	if (!strptime(s,"%Y-%m-%d %H:%M:%S",&timeptr)) { printf("Fehler bei der Datumskonvertierung!\n"); }
-	timeptr.tm_wday=0; timeptr.tm_yday=0;
-    timeptr.tm_isdst = -1;
-    *end_time=mktime(&timeptr);
-    if ( start_time!=NULL && *end_time<*start_time ) {
-      *end_time+=24*60*60;
-      timeptr=*localtime(end_time);
-    }
+  if ( timer->stop < timer->start) {
+    timer->stop+=24*60*60;
   }
-  if (priority!=NULL) { *priority=strtol(tmp[5],NULL,10); }
-  if (lifetime!=NULL) { *lifetime=strtol(tmp[6],NULL,10); }
-  if (title!=NULL) { strcpy(title,tmp[7]); }
+  timer->priority=strtol(r,&r,10); r++;
+  timer->lifetime=strtol(r,&r,10); r++;
+  l=sizeof(timer->title);
+  strncpy(timer->title,r,l-1);
+  timer->title[l-1]='\0';
 }
 
 void parse_channel(char * line, char channel_name[50], char channel_id[50]) {
