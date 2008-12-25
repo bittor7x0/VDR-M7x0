@@ -1,3 +1,4 @@
+diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
 --- VDR-NG-orig/svdrp.c	2008-11-28 21:49:42.000000000 +0100
 +++ VDR-NG/svdrp.c	2008-11-28 02:27:53.000000000 +0100
 @@ -16,6 +16,7 @@
@@ -107,3 +108,14 @@
    else if (CMD("PLUG"))  CmdPLUG(s);
    else if (CMD("PUTE"))  CmdPUTE(s);
    else if (CMD("RENR"))  CmdRENR(s);
+diff -Naur VDR-NG-orig/svdrp.h VDR-NG/svdrp.h
+--- VDR-NG-orig/svdrp.h	2008-11-28 21:49:42.000000000 +0100
++++ VDR-NG/svdrp.h	2008-11-29 00:01:15.000000000 +0100
+@@ -77,6 +77,7 @@
+   void CmdNEWT(const char *Option);
+   void CmdNEXT(const char *Option);
+   void CmdPLAY(const char *Option);
++  void CmdPLST(const char *Option);
+   void CmdPLUG(const char *Option);
+   void CmdPUTE(const char *Option);
+   void CmdRENR(const char *Option);
