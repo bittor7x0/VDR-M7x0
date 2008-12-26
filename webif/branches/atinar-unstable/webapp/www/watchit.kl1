@@ -11,6 +11,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -25,19 +28,20 @@
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
-%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<%
+#ifdef DEBUG
+dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
+#endif
+%><%
+#ifdef DEBUG
+dbg_watchit_kl1();
+#endif
+set_server_address(session,NULL,NULL);
+
 channelList * channels;
 int max_channels=0;
 int i=0;
 int channelNum=0;
 char myip[16]="";
-
-/*if (open_svdrp()!=0) {
-  io_printf(out,i18n[13][langID]);
-  exit(1);
-}*/
 
 channels=get_channel_list(&max_channels);
 
@@ -59,6 +63,7 @@ if ((channelNum<1) || (channelNum>max_channels)) {
   channelNum=getChannel(NULL);
 }
 %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html lang="de">
 <head>
 <title>

@@ -33,6 +33,8 @@ enum playlist_protocol_e {
 #ifdef DEBUG
 	dbg_playlistrec_kl1();
 #endif
+	set_server_address(session,NULL,NULL);
+	
 	char myip[16]="";
 	whatsmyip(myip);
 	vars_t *args = request_get_args(request);

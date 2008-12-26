@@ -41,6 +41,8 @@ void sig_handler(int sig){
 #ifdef DEBUG
 	dbg_streamrec_kl1();
 #endif
+	set_server_address(session,NULL,NULL);
+
 	vars_t *args = request_get_args(request);
 	const char *arg_id;
 	int id=-1; 

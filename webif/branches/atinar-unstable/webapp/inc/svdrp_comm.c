@@ -39,12 +39,10 @@
 int svdrp_socket=0;
 
 const char eod_pattern[]="^[0-9]{3} ";
-#ifdef VDR_NOT_LOCAL
-const char * server_ip="192.168.100.3";
-#else
-const char * server_ip="127.0.0.1";
-#endif
-const uint16_t server_port=2001;
+const char * default_server_ip="127.0.0.1";
+const uint16_t default_server_port=2001;
+char server_ip[16];
+uint16_t server_port=2001;
 
 regex_t regbuf;
 
@@ -55,6 +53,27 @@ void signal_handler(int sig) {
 		svdrp_socket=0;
 	}
 }
+
+//Set server ip and port
+void set_server_address(session_t * session, char aserver_ip[16], uint16_t * aserver_port) {
+	const char * sess_server_ip=session_get(session,"server_ip");
+	const char * sess_server_port=session_get(session,"server_port");
+	strncpy(server_ip,(sess_server_ip==NULL)?default_server_ip:sess_server_ip,15);
+	if (sess_server_port==NULL) {
+		server_port=default_server_port;
+	}
+	else {
+		errno=0;
+		server_port=(int)strtol(sess_server_port,NULL,10);
+		if (errno!=0) {
+			warn("Incorrect port %s set in session",sess_server_port);
+			server_port=default_server_port;
+		}
+	}
+	if( aserver_ip != NULL) strcpy(aserver_ip,server_ip);
+	if( aserver_port != NULL) (*aserver_port)=server_port;
+}
+
 
 //Open the connection
 int open_svdrp() {
@@ -159,38 +178,30 @@ int write_svdrp(char *data) {
   }
 }
 
-#ifndef VDR_NOT_LOCAL
-
 void whatsmyip(char myip[16]) {
-int fd;
-int ret;
-struct ifreq ifr;
+	if (strcmp(server_ip,default_server_ip)==0) {
+		int fd;
+		int ret;
+		struct ifreq ifr;
 
-  fd = socket(PF_INET, SOCK_DGRAM, 0);
-  if (fd == -1) {
-	perror("socket");
-	return;
-  }
+		fd = socket(PF_INET, SOCK_DGRAM, 0);
+		if (fd == -1) {
+			perror("socket");
+			return;
+		}
 
-  strcpy(ifr.ifr_name, "eth0");
-  ifr.ifr_addr.sa_family = AF_INET;
-  ret = ioctl(fd, SIOCGIFADDR, &ifr);
-
-  close(fd);
-
-  if (ret < 0) {
-	perror("ioctl");
-	return;
-  }
-  strcpy(myip,inet_ntoa(((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr));
+		strcpy(ifr.ifr_name, "eth0");
+		ifr.ifr_addr.sa_family = AF_INET;
+		ret = ioctl(fd, SIOCGIFADDR, &ifr);
+		close(fd);
+		if (ret < 0) {
+			perror("ioctl");
+			return;
+  		}
+		strcpy(myip,inet_ntoa(((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr));
+	}
+	else {
+		dbg("VDR server not local");
+		strcpy(myip,server_ip);
+	}
 }
-
-#else
-
-void whatsmyip(char myip[16]) {
-	dbg("VDR server not local");
-	strcpy(myip,server_ip);
-}
-
-#endif
-

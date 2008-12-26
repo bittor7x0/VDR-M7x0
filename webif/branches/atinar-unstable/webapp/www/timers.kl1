@@ -38,6 +38,8 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 #ifdef DEBUG
 dbg_timers_kl1();
 #endif
+set_server_address(session,NULL,NULL);
+
 const char * SUMMARY = "summary";
 const char * EDIT = "edit";
 const char * NEW = "new";
@@ -123,10 +125,6 @@ int whatArrow(int aDir) {
 
 <%
 if (!strcmp(altAction,DELE)) {
-/*  if (open_svdrp()!=0) {
-    io_printf(out,i18n[13][langID]);
-    exit(1);
-  }*/
   if ( (timerID>0) && (timerID<1000) && (newt) ) {
   	dbg("Try to del timer with ID %d (%s)",timerID,newt+5);
     if (deleTimer(timerID,newt+5)==0) {
@@ -137,15 +135,9 @@ if (!strcmp(altAction,DELE)) {
       action=EDIT;
     }
   }
-//  close_svdrp();
 }
 
 if (!strcmp(action,ADD)) {
-/*  if (open_svdrp()!=0) {
-    io_printf(out,i18n[13][langID]);
-    exit(1);
-  }*/
-  
   if ( (timerID>0) && (newt) && (oldTimer) ) {
 	if (editTimer(timerID,oldTimer+5,newt+5)==0) {
 	  io_printf(out,"<p><b>%s</b></p>\n",tr("Timer updated!"));
@@ -157,7 +149,6 @@ if (!strcmp(action,ADD)) {
   } else {  
     io_printf(out,"<p><b>%s</b></p>\n",tr("Failed to add timer!"));
   }
-//  close_svdrp();
   action=SUMMARY;
 } else if (!strcmp(action,NEW)) {
   int active=0; 

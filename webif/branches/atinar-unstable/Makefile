@@ -20,7 +20,9 @@
 KLONE_VERSION ?= 2.1.1rc9
 
 # klone configure arguments
-KLONE_CONF_ARGS = --disable-lib=openssl --disable-lib=z --disable_cxx # --prefix=$(DESTDIR) --libs=$(DESTDIR) --disable_libu_mini --disable_shared
+KLONE_CONF_ARGS = --disable-lib=openssl --disable-lib=z --disable_cxx
+ # --enable_debug --enable_libu_debug
+ # --prefix=$(DESTDIR) --libs=$(DESTDIR) --disable_libu_mini --disable_shared
 
 # exclude svn control files
 KLONE_IMPORT_ARGS = -x */.svn/*
@@ -45,8 +47,6 @@ SUBDIR ?= $(KLONE_APP_TOP)/webapp/inc/
 WEBAPP_CFLAGS ?= -I$(KLONE_APP_TOP) -I$(KLONE_SRC) -I$(SUBDIR) $(UCLIBC_CFLAGS)
 WEBAPP_LDADD ?= $(SUBDIR)svdrp_comm.o $(SUBDIR)svdrp_parse.o $(SUBDIR)channels.o $(SUBDIR)timers.o $(SUBDIR)misc.o $(SUBDIR)recordings.o $(SUBDIR)epg.o ${SUBDIR}i18n.o ${SUBDIR}conf.o ${SUBDIR}conf-i18n.o $(SUBDIR)recording.o
 WEBAPP_LDFLAGS ?=
-
-
 
 -include build/mk/klone-app.mk
 

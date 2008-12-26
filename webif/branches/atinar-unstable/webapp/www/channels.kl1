@@ -30,6 +30,8 @@ time_t now;
 #include "svdrp_parse.h"
 
 %><%
+set_server_address(session,NULL,NULL);
+
 channelList * channels;
 int max_channels=1;
 int i=0;

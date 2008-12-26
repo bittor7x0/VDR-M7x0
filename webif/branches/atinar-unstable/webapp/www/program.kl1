@@ -33,6 +33,7 @@
 #include "svdrp_parse.h"
 
 %><%
+set_server_address(session,NULL,NULL);
 
 const char isTimerStr[3][3]={""," t"," T"};
 int isTimerInt=0;
@@ -51,11 +52,6 @@ if (header_get_field(header,"Accept-Language")!=NULL) {
 
 vars_t *args = request_get_args(request);
 channelNum=vars_get_value_i(args,"chan");
-
-/*if (open_svdrp()!=0) {
-  io_printf(out,i18n[13][langID]);
-  warn("Can't establish connection to VDR via SVDRP. Exit.");
-}*/
 
 channelList * channels;
 int max_channels=1;

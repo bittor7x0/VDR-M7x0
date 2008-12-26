@@ -21,22 +21,26 @@
 #define __SVDRP_COMM_H__
 
 #include <netinet/in.h>
+#include "klone/session.h"
 
 extern int svdrp_socket;
 
-//Öffnet die SVDRP-Verdindung
+//Set server ip and port and return values if provided pointers
+void set_server_address(session_t * session, char aserver_ip[16], uint16_t * aserver_port);
+
+//Open the SVDRP connection
 int open_svdrp();
 
-//Schliesst die SVDRP-Verbindung
+//Close the SVDRP connection
 int close_svdrp();
 
-//Liest die Daten von der SVDRP-Verbundung
+//Read data from SVDRP connection
 char * read_svdrp();
 
-//Schreibt Daten in den SVDRP-Socket
+//Write data to the SVDRP connection
 int write_svdrp(char *data);
 
-//Gibt die eigene IP von eth0 zurürck
+//Return public server ip
 void whatsmyip(char myip[16]);
 
 #endif

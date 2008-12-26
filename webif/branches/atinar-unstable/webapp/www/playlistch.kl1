@@ -22,6 +22,7 @@
 void dbg_playlistch_kl1(void) { dbg("playlistch.kl1");}
 %><%
 dbg_playlistch_kl1();
+set_server_address(session,NULL,NULL);
 
 char myip[16]="";
 whatsmyip(myip);

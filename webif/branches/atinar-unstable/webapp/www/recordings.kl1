@@ -29,9 +29,15 @@ time_t now;
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
+#ifdef DEBUG
 dbg_recordings_kl1(void) { dbg("recordings.kl1"); }
+#endif
 %><%
+#ifdef DEBUG
 dbg_recordings_kl1();
+#endif
+set_server_address(session,NULL,NULL);
+
 recEntry * recs;
 int max_recs=1;
 int i=0;

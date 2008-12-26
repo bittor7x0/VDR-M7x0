@@ -32,7 +32,27 @@ time_t now;
 #define MAX_BUFFER_SIZE 8192
 #define MAX_LINE_SIZE 1024
 
+#ifdef DEBUG
+void dbg_index_kl1(void) { dbg("index.kl1"); }
+#endif
 %><%
+#ifdef DEBUG
+dbg_index_kl1();
+#endif
+char server_ip[16];
+uint16_t server_port;
+const char * rq_server_ip = request_get_arg(request,"server_ip");
+if (rq_server_ip!=NULL) { 
+	session_set(session,"server_ip",rq_server_ip);
+	//TODO validar
+}
+const char * rq_server_port = request_get_arg(request,"server_port");
+if (rq_server_port!=NULL) { 
+	session_set(session,"server_port", rq_server_port); 
+	//TODO validar
+}
+set_server_address(session,server_ip,&server_port);
+
 char myip[16]="";
 whatsmyip(myip);
 
@@ -126,6 +146,15 @@ int max=0;
 	if (numFS==0) io_printf(out,"<p>%s</p>",tr("No media found!"));
 		else io_printf(out,"</table>\n");
 %>
+
+	<h2>Seleccionar servidor</h2>
+	<form action="index.kl1" method="get">
+		<%
+		io_printf(out,"<span class=\"field\"><label for=\"server_ip\">IP</label><input name=\"server_ip\" value=\"%s\" length=\"15\" maxlength=\"15\"/></span><br/>", server_ip);
+		io_printf(out,"<span class=\"field\"><label for=\"server_port\">PORT</label><input name=\"server_port\" value=\"%d\" length=\"4\" maxlength=\"5\"/></span><br/>", server_port);
+		%>
+		<input type="submit" value="Submit"/>
+	</form>
 
 </div>
 

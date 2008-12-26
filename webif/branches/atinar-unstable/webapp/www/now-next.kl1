@@ -24,6 +24,8 @@
 #include "svdrp_parse.h"
 
 %><%
+set_server_address(session,NULL,NULL);
+
 time_t now;
 now=time(NULL);
 
@@ -47,16 +49,10 @@ long int now_time=-1;
 long int next_time=-1;
 long int refresh=0;
 
-/*if (open_svdrp()!=0) {
-  io_printf(out,"Hallo!");
-	//  exit(1);
-} else {*/
-
   // Get now & next for this chan
   sprintf(cmd,"LSTE %d now\r",channelNum);
   for (i=0;i<2;i++) {
     write_svdrp(cmd);
-//    free(data);
     data=read_svdrp();
     for(p=(char *)strtok(data,"\r\n");p!=0;p=(char *)strtok(0,"\r\n")) {
       parse_ret_code(p,ret_code);
