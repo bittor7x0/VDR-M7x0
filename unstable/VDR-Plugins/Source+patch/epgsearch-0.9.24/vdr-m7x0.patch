@@ -1,6 +1,36 @@
+diff -Naur epgsearch-0.9.24-orig/epgsearchonly.c epgsearch-0.9.24/epgsearchonly.c
+--- epgsearch-0.9.24-orig/epgsearchonly.c	2008-10-22 20:31:07.000000000 +0200
++++ epgsearch-0.9.24/epgsearchonly.c	2008-12-28 19:36:09.000000000 +0100
+@@ -49,7 +49,7 @@
+    "",				// TODO 
+    "Suoratoiminto EPGSearch-laajennoksen haulle",
+    "",				// TODO Polski
+-   "Acceso directo al menú de búsqueda EPGSearch",	// Español
++   "Acceso directo al menú de búsquedas en EPG",	// Español
+    "",				// TODO ÅëëçíéêÜ (Greek)
+    "",				// TODO Svenska
+    "",				// TODO Romaneste
+@@ -72,7 +72,7 @@
+    "",				// TODO
+    "Etsi ohjelmaoppaasta",
+    "",				// TODO
+-   "Buscar",
++   "Búsquedas en EPG",
+    "",				// TODO
+    "",				// TODO
+    "",				// TODO
+@@ -95,7 +95,7 @@
+    "",				// TODO 
+    "EpgSearch-laajennoksen hakutoiminto päävalikossa",
+    "",				// TODO Polski
+-   "Buscar EPG en menú principal",
++   "Búsquedas en EPG en menú principal",
+    "",				// TODO ÅëëçíéêÜ (Greek)
+    "",				// TODO Svenska
+    "",				// TODO Romaneste
 diff -Naur epgsearch-0.9.24-orig/epgsearchtools.h epgsearch-0.9.24/epgsearchtools.h
---- epgsearch-0.9.24-orig/epgsearchtools.h	2008-05-01 14:29:43.000000000 +0200
-+++ epgsearch-0.9.24/epgsearchtools.h	2008-05-09 20:25:47.000000000 +0200
+--- epgsearch-0.9.24-orig/epgsearchtools.h	2008-10-22 20:31:07.000000000 +0200
++++ epgsearch-0.9.24/epgsearchtools.h	2008-12-28 19:31:24.000000000 +0100
 @@ -90,7 +90,7 @@
  #define ICON_VPS               0x93
  #else
@@ -10,9 +40,138 @@ diff -Naur epgsearch-0.9.24-orig/epgsearchtools.h epgsearch-0.9.24/epgsearchtool
  #define ICON_RUNNING           0xFB
  #define ICON_CLOCK             0xFD
  #define ICON_CLOCK_HALF        0x74
+diff -Naur epgsearch-0.9.24-orig/i18n-generated.h epgsearch-0.9.24/i18n-generated.h
+--- epgsearch-0.9.24-orig/i18n-generated.h	2008-12-16 23:16:25.000000000 +0100
++++ epgsearch-0.9.24/i18n-generated.h	2008-12-28 19:33:27.000000000 +0100
+@@ -708,7 +708,7 @@
+     "",
+     "Etsi ohjelmaoppaasta",
+     "",
+-    "Búsquedas en la EPG",
++    "Búsquedas en EPG",
+     "",
+     "",
+     "",
+@@ -1163,7 +1163,7 @@
+     "",
+     "ennen seuraavia",
+     "",
+-    "antes 'Después'",
++    "antes de 'Después'",
+     "",
+     "",
+     "",
+@@ -1478,7 +1478,7 @@
+     "",
+     "Piilottaa valinnan päävalikosta. Suositellaan asetettavaksi päälle, jos laajennoksella korvataan alkuperäinen ohjelmaopas.",
+     "",
+-    "Oculta la entrada del menú principal y puede ser útil si este plugin sustituye a la entrada 'Guía de Programación' original.",
++    "Oculta la entrada del menú principal y puede ser útil si este plugin sustituye a la entrada 'Guía de programación' original.",
+     "",
+     "",
+     "",
+@@ -1548,7 +1548,7 @@
+     "",
+     "Päävalikossa sijaitsevan valinnan nimi, joka on oletuksena 'Ohjelmaopas'.",
+     "",
+-    "El nombre de la entrada para el menú principal, que por defecto es 'Guía de Programación'.",
++    "El nombre de la entrada para el menú principal, que por defecto es 'Guía de programación'.",
+     "",
+     "",
+     "",
+@@ -1618,7 +1618,7 @@
+     "",
+     "Korvaa alkuperäisen ohjelmaoppaan päävalikossa tällä laajennoksella, jos VDR on paikattu asianmukaisesti.",
+     "",
+-    "Aquí puede des/activar que éste plugin sustituya la entrada original 'Guía de Programación', pero sólo funciona cuando el VDR está parcheado para permitirlo.",
++    "Aquí puede des/activar que éste plugin sustituya la entrada original 'Guía de programación', pero sólo funciona cuando el VDR está parcheado para permitirlo.",
+     "",
+     "",
+     "",
+@@ -1688,7 +1688,7 @@
+     "",
+     "Valitsee oletusnäytöksi joko tämänhetkisen yleiskatsauksen tai valitun kanavan ohjelmiston.",
+     "",
+-    "Elija entre 'Ahora' y 'Guía de Programación' como menú inicial cuando se llama a este plugin.",
++    "Elija entre 'Ahora' y 'Guía de programación' como menú inicial cuando se llama a este plugin.",
+     "",
+     "",
+     "",
+@@ -2178,7 +2178,7 @@
+     "",
+     "Näyttää erottimet ohjelmistossa päivän vaihtuessa.",
+     "",
+-    "Muestra una línea de separación al cambiar de día en la 'Guía de Programación'.",
++    "Muestra una línea de separación al cambiar de día en la 'Guía de programación'.",
+     "",
+     "",
+     "",
+@@ -5258,7 +5258,7 @@
+     "",
+     "Määrittelee käyttäjätunnuksen, jos SMTP-palvelimelle pitää autentikoida.",
+     "",
+-    "Si ésta cuenta necesita autenticación SMTP, especifique el usuario.",
++    "Si esta cuenta necesita autenticación SMTP, especifique el usuario.",
+     "",
+     "",
+     "",
+@@ -5328,7 +5328,7 @@
+     "",
+     "Määrittelee salasanan, jos SMTP-palvelimelle pitää autentikoida.",
+     "",
+-    "Si ésta cuenta necesita autenticación SMTP, especifique la contraseña.",
++    "Si esta cuenta necesita autenticación SMTP, especifique la contraseña.",
+     "",
+     "",
+     "",
+@@ -6413,7 +6413,7 @@
+     "",
+     "vapaat kanavat",
+     "",
+-    "sin encriptar",
++    "sólo en abierto",
+     "",
+     "",
+     "",
+@@ -10473,7 +10473,7 @@
+     "",
+     "Ohjelmakuvaus voi sisältää ohjelmaoppaan kategoriatietoja ('lajityyppi', 'kategoria', 'valmistumisvuosi', ...), joita ulkoiset ohjelmaoppaat voivat tuottaa. Tällä asetuksella voit hakea myös niiden perusteella.",
+     "",
+-    "El resumen de una emisión puede contener información adicional como 'Género', 'Categoría', 'Año', ... llamada 'categorías EPG' en el EPGSearch. A menudo los proveedores EPG externos ofrecen esta información. Ésto permite refinar una búsqueda y otras funcionalidades atractivas, como buscar por el 'consejo del día'. Para usarlo, establecer a 'Sí'.",
++    "El resumen de una emisión puede contener información adicional como 'Género', 'Categoría', 'Año', ... llamada 'categorías EPG' en el EPGSearch. A menudo los proveedores EPG externos ofrecen esta información. Esto permite refinar una búsqueda y otras funcionalidades atractivas, como buscar por el 'consejo del día'. Para usarlo, establecer a 'Sí'.",
+     "",
+     "",
+     "",
+@@ -10543,7 +10543,7 @@
+     "",
+     "Jos valittua kategoriaa ei löydy ohjelmakuvauksesta, ei ohjelmaa normaalisti myöskään löydy hakutuloksista. Tällä asetuksella voit estää sen, mutta samalla voit saada huomattavan määrän halutuloksia.",
+     "",
+-    "Si una categoría seleccionada no es parte del resumen de una emisión, normalmente esta no incluye ese evento en los resultados de la búsqueda. Para evitarlo establezca esta opción a 'Sí', pero maneje esto con cuidado para evitar una gran cantidad de resultados.",
++    "Si una categoría seleccionada no es parte del resumen de una emisión, normalmente ésta no incluye ese evento en los resultados de la búsqueda. Para evitarlo establezca esta opción a 'Sí', pero maneje esto con cuidado para evitar una gran cantidad de resultados.",
+     "",
+     "",
+     "",
+@@ -11838,7 +11838,7 @@
+     "",
+     "Vapaat",
+     "",
+-    "sin encriptar",
++    "sólo en abierto",
+     "",
+     "",
+     "",
+@@ -12293,7 +12293,7 @@
+     "",
+     ">>> ei tietoja! <<<",
+     "",
+-    ">>> ¡sin información! <<<",
++    "   «sin información»  ",
+     "",
+     "",
+     "",
 diff -Naur epgsearch-0.9.24-orig/Makefile epgsearch-0.9.24/Makefile
---- epgsearch-0.9.24-orig/Makefile	2008-04-13 20:53:42.000000000 +0200
-+++ epgsearch-0.9.24/Makefile	2008-05-09 20:24:23.000000000 +0200
+--- epgsearch-0.9.24-orig/Makefile	2008-10-22 20:31:07.000000000 +0200
++++ epgsearch-0.9.24/Makefile	2008-12-28 19:31:32.000000000 +0100
 @@ -34,9 +34,9 @@
  
  ### The directory environment:
