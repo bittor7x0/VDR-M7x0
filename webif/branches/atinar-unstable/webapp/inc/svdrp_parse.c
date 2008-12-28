@@ -217,9 +217,12 @@ void parse_timer(char * line, struct timerEntry * timer ){
   }
   timer->priority=strtol(r,&r,10); r++;
   timer->lifetime=strtol(r,&r,10); r++;
-  l=sizeof(timer->title);
-  strncpy(timer->title,r,l-1);
-  timer->title[l-1]='\0';
+  l=strcspn(r,":");
+  int la=sizeof(timer->title);
+  if (l<la) la=l;
+  strncpy(timer->title,r,la-1);
+  timer->title[la-1]='\0';
+  //TODO parse aux
 }
 
 void parse_channel(char * line, char channel_name[50], char channel_id[50]) {
