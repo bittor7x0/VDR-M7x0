@@ -36,7 +36,7 @@ typedef struct timerEntry {
 	int active;
 	int ID;
 	char reg_timer[8];
-	char title[100]; //TODO Dynamic allocation
+	char * title;
 	char * aux;
 	int channelNum;
 	char channelName[50]; //TODO Remove
@@ -51,7 +51,6 @@ timerEntry * getTimerList(int * max, int sortBy, int sortDirection);
 int checkForTimer(timerEntry * timerList, int maxTimer, int channelNum, time_t startTime, time_t endTime, int duration);
 //TODO addTimer's return value inconsistent with editTimer and deleTimer
 int addTimer(const char * newt);
-int getTimerStrAt(int timerID, char timerStr[256]);
 int editTimer(int timerID, char * oldTimer, char * newTimer);
 int deleTimer(int timerID, char * timer);
 

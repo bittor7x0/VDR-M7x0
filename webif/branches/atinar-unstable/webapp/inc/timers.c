@@ -57,6 +57,7 @@ void initTE(timerEntry * o) {
 	o->active=1;
 	o->lifetime=99;
 	o->priority=50;
+	o->title=NULL;
 	o->aux=NULL;
 	o->newt=NULL;
 	o->channelName[0]='\0';
@@ -65,6 +66,7 @@ void initTE(timerEntry * o) {
 
 // Free timer entry
 void freeTE(timerEntry o) {
+	free(o.title);
 	free(o.aux);
 	free(o.newt);
 }
@@ -181,11 +183,10 @@ int addTimer(const char * newt) {
 	return ok;
 }
 
-int getTimerStrAt(int timerID, char timerStr[256]) {
+char * getTimerStrAt(int timerID) {
 	char * data;
 	char * p;
-	int retCode;
-	int result=1;
+	char * timerStr=NULL;
 
 	if ( (timerID>0) && (timerID<10000) ) {
 		if (asprintf(&p,"LSTT %d\r",timerID)<0){
@@ -195,18 +196,12 @@ int getTimerStrAt(int timerID, char timerStr[256]) {
 			free(p);
 			data=read_svdrp();
 			if (data!=NULL) {
-				for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-					retCode=atoi(p);
-					if (retCode>500) {
-						result=retCode-500+1;
-						break;
-					} else if (retCode==250) {
+				for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+					if (atoi(p)==250) {
 						p+=4;
 						p+=strcspn(p," "); //ID
 						p+=strspn(p," ");
-						strncpy(timerStr,p,255);
-						timerStr[255]=0;
-						result=0;
+						timerStr=strdup(p);
 						break;
 					}
 				}
@@ -214,16 +209,17 @@ int getTimerStrAt(int timerID, char timerStr[256]) {
 			}
 		}
 	}
-	return result;
+	return timerStr;
 }
 
 int deleTimer(int timerID, char * timer) {
 	char * data=NULL;
 	char * p=NULL;
-	char timerStr[256]="";
+	char * timerStr;
 	int ok=3;
   
-	if (getTimerStrAt(timerID,timerStr)==0) {
+	timerStr=getTimerStrAt(timerID);
+	if (timerStr!=NULL) {
 		if (strcmp(timer,timerStr)==0) {
 			if (asprintf(&p,"DELT %d\r",timerID)<0){
 				warn("Not enough memory for command in deleTimer");
@@ -247,6 +243,7 @@ int deleTimer(int timerID, char * timer) {
 			warn("Timer in list  (%d): [%s]",strlen(timerStr),timerStr);
 			ok=2;
 		}
+		free(timerStr);
 	} else {
 		ok=1;
 	}
@@ -256,10 +253,11 @@ int deleTimer(int timerID, char * timer) {
 int editTimer(int timerID, char * oldTimer, char * newTimer) {
 	char * data=NULL;
 	char * p=NULL;
-	char timerStr[256]="";
+	char * timerStr;
 	int ok=3;
 
-	if (getTimerStrAt(timerID,timerStr)==0) {
+	timerStr=getTimerStrAt(timerID);
+	if (timerStr!=NULL) {
 		if (strcmp(oldTimer,timerStr)==0) {
 			if (asprintf(&p,"MODT %d %s\r",timerID,newTimer)<0){
 				warn("Not enough memory for command in editTimer");
@@ -283,6 +281,7 @@ int editTimer(int timerID, char * oldTimer, char * newTimer) {
 			warn("Timer in list(%d): [%s]",strlen(timerStr),timerStr);
 			ok=2;
 		}
+		free(timerStr);
 	} else {
 		ok=1;
 	}

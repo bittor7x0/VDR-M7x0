@@ -298,7 +298,7 @@ if (!strcmp(action,ADD)) {
 		io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"addMargin\" value=\"0\">%s</input></td></tr>\n",tr("add start/stop margin"));
 	}
 	io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"priority\" maxlength=\"2\" size=\"3\" value=\"%d\"/></td></tr>\n<tr><td>%s</td><td><input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\" /></td></tr>\n",tr("priority"),timer.priority,tr("lifetime"),timer.lifetime);
-	io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"title\" maxlength=\"50\" size=\"50\" value=\"%s\" /></td></tr>\n<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\" %s \" /></td></tr>\n",tr("title"),timer.title,tr("check timer"));
+	io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"title\" size=\"70\" value=\"%s\" /></td></tr>\n<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\" %s \" /></td></tr>\n",tr("title"),timer.title,tr("check timer"));
   
 	if (timerID>0) {
 		io_printf(out,"<tr><td colspan=\"2\"><hr><b>%s</b></td></tr>\n",tr("- or -"));

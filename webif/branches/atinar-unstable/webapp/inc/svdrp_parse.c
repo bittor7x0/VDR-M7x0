@@ -170,7 +170,6 @@ void parse_timer(char * line, struct timerEntry * timer ){
 	char * c;
 	char * h;
 	int l;
-	int la;
 	int k;
 	char s[50];
 	struct tm timeptr;
@@ -229,12 +228,10 @@ void parse_timer(char * line, struct timerEntry * timer ){
 	timer->lifetime=strtol(r,&r,10); r++;
 	l=strcspn(r,":");
 
-	la=sizeof(timer->title)-1;
-	if (l<la) la=l;
-	strncpy(timer->title,r,la);
-	timer->title[la]='\0';
-	c=timer->title;
+	//TODO check ENOMEM
+	timer->title=strndup(r,l);
 	/* TODO? restore ':'
+	c=timer->title;
 	while (*c) {
 		if (*c=='|') 
 			*c=':';
