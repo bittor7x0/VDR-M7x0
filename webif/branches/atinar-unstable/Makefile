@@ -17,12 +17,12 @@
 -include Makefile.conf
 
 # klone version to use
-KLONE_VERSION ?= 2.1.1rc9
+KLONE_VERSION ?= 2.1.1
 
 # klone configure arguments
 KLONE_CONF_ARGS = --disable-lib=openssl --disable-lib=z --disable_cxx
- # --enable_debug --enable_libu_debug
- # --prefix=$(DESTDIR) --libs=$(DESTDIR) --disable_libu_mini --disable_shared
+# KLONE_CONF_ARGS += --enable_debug --enable_libu_debug
+# KLONE_CONF_ARGS += --prefix=$(DESTDIR) --libs=$(DESTDIR) --disable_libu_mini --disable_shared
 
 # exclude svn control files
 KLONE_IMPORT_ARGS = -x */.svn/*
