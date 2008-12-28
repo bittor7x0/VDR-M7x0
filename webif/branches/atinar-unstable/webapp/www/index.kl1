@@ -150,8 +150,8 @@ int max=0;
 	<h2>Seleccionar servidor</h2>
 	<form action="index.kl1" method="get">
 		<%
-		io_printf(out,"<span class=\"field\"><label for=\"server_ip\">IP</label><input name=\"server_ip\" value=\"%s\" length=\"15\" maxlength=\"15\"/></span><br/>", server_ip);
-		io_printf(out,"<span class=\"field\"><label for=\"server_port\">PORT</label><input name=\"server_port\" value=\"%d\" length=\"4\" maxlength=\"5\"/></span><br/>", server_port);
+		io_printf(out,"<span class=\"field\"><label for=\"server_ip\">IP</label>&nbsp;<input name=\"server_ip\" value=\"%s\" size=\"15\" maxlength=\"15\"/></span>", server_ip);
+		io_printf(out,"<span class=\"field\"><label for=\"server_port\">PORT</label>&nbsp;<input name=\"server_port\" value=\"%d\" size=\"4\" maxlength=\"5\"/></span>", server_port);
 		%>
 		<input type="submit" value="Submit"/>
 	</form>
