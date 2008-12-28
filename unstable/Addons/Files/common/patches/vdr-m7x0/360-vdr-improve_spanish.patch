@@ -1,0 +1,156 @@
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2008-10-03 19:35:38.000000000 +0200
++++ VDR-NG/i18n.c	2008-12-27 21:59:25.000000000 +0100
+@@ -183,7 +183,7 @@
+     "Programmer",
+     "Ohjelmisto",
+     "Program",
+-    "Guía de Programación",
++    "Guía de programación",
+     "Ğñüãñáììá",
+     "Program",
+     "Program (EPG)",
+@@ -227,7 +227,7 @@
+     "Timere",
+     "Ajastimet",
+     "Timery",
+-    "Programar grabaciones",
++    "Programaciones",
+     "×ñïíïğñïãñáììáôéóìïß",
+     "Timers",
+     "Timer-e",
+@@ -359,7 +359,7 @@
+     "Timer kommandoer",
+     "Ajastinkomennot",
+     "",// "Polski"
+-    "Comandos de programacion",
++    "Órdenes de programación",
+     "",// "ÅëëçíéêÜ", // Greek
+     "Timer kommandon",
+     "Comenzi timer",
+@@ -1460,7 +1460,7 @@
+     "",//TODO
+     "",//TODO
+     "",//TODO
+-    "Pulse una tecla para interrumpir reiniciar",
++    "Pulse una tecla para interrumpir reinicio",
+     "",//TODO
+     "",//TODO
+     "",//TODO
+@@ -2894,7 +2894,7 @@
+     "Programoversikt",
+     "Ohjelmaopas",
+     "EPG",
+-    "Guía de Programación",
++    "Guía de programación",
+     "Çëåêôñïíéêüò ïäçãüò ğñïãñÜììáôïò",
+     "EPG",
+     "EPG",
+@@ -4530,7 +4530,7 @@
+     "Opptaksmargin slutt (min)",
+     "Lopetusmarginaali (min)",
+     "Margines na koñcu (min)",
+-    "Acabar grabación después (min)",
++    "Acabar grabación después de (min)",
+     "Ğñüóèåôïò ÷ñüíïò óôü ôİëïò (ëåğôÜ)",
+     "Marginal för stopp (min)",
+     "Marjã la oprire (min)",
+@@ -4662,7 +4662,7 @@
+     "Bruk episodenavn",
+     "Käytä jakson nimeä",
+     "U¿ywaj nazwy epizodu",
+-    "Utilizar nombre de episodo",
++    "Utilizar nombre de episodio",
+     "×ñŞóç ïíüìáôïò åğåéóïäßïõ",
+     "Använd episodnamn",
+     "Utilizeazã numele episodului",
+@@ -5102,7 +5102,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "Mostrar mensaje cancelar al apagar",
++    "Mostrar mensaje de cancelación al apagar",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -5144,7 +5144,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "Detener si un Plugin falla al cargar",
++    "Detener si un plugin falla al cargar",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -5186,7 +5186,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "LIRC repetir retraso",
++    "LIRC retraso de repetición",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -5207,7 +5207,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "LIRC repetir frecuencia",
++    "LIRC frecuencia de repetición",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -5228,7 +5228,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "LIRC repetir tiempo de espera",
++    "LIRC tiempo de espera de repetición",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -5268,7 +5268,7 @@
+     "",// TODO
+     "",// TODO
+     "",// TODO
+-    "Sólo Tv",
++    "Sólo TV",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -5352,7 +5352,7 @@
+     "",// TODO
+     " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
+     " a±bcædeêfghijkl³mnñoópqrs¶tuvwxyz¼¿0123456789-.#~,/_@",
+-    " aábcçdeéfghiíjklmnñoópqrstuúvwxyz0123456789-.#~,/_@",
++    " aábcçdeéfghiíjklmnñoópqrstuúüvwxyz0123456789-.#~,/_@",
+     " áÜâãäåİæçŞèéßêëìíîïüğñóòôõıö÷øùş0123456789-.#~,/_@abcdefghijklmnopqrstuvwxyz",
+     " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
+     " aãâbcdefghiîjklmnopqrsºtşuvwxyz0123456789-.#~,/_@",
+@@ -5375,7 +5375,7 @@
+     "",//TODO
+     " 0\t-.#~,/_@1\tabcäå2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz9",
+     " 0\t-.#~,/_@1\tabc2±æ\tdef3ê\tghi4\tjkl5³\tmno6ñó\tpqrs7¶\ttuv8\twxyz9¼¿",
+-    " 0\t-.#~,/_@1\tabcáç2\tdefé3\tghií4\tjkl5\tmnoñó6\tpqrs7\ttuvú8\twxyz9",
++    " 0\t-.#~,/_@1\tabcáç2\tdefé3\tghií4\tjkl5\tmnoñó6\tpqrs7\ttuvúü8\twxyz9",
+     "",//TODO
+     " 0\t-.#~,/_@1\tabcåä2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz",
+     " 0\t-.#~,/_@1\taãâbc2\tdef3\tghiî4\tjkl5\tmno6\tpqrsº7\ttşuv8\twxyz9",
+@@ -6566,7 +6566,7 @@
+     " Stopp avspilling",
+     " Lopeta toisto",
+     " Zatrzymaj odtwarzanie",
+-    " Parar reprodución",
++    " Parar reproducción",
+     " Ôİëïò áíáğáñáãùãŞò",
+     " Avsluta uppspelning",
+     " Opreºte redarea",
+@@ -7248,7 +7248,7 @@
+     "",//TODO
+     "Poista tallenteen paluutiedot?",
+     "",//TODO
+-    "¿Borrar información reanudar?",
++    "¿Borrar información de continuación?",
+     "",//TODO
+     "",//TODO
+     "",//TODO

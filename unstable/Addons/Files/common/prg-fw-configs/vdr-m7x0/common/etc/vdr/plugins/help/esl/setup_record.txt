@@ -1,5 +1,5 @@
 Comenzar grabación antes (min) = 2
-Acabar grabación despues (min) = 10
+Acabar grabación después (min) = 10
 
      Define cuántos minutos antes y después de la hora oficial de un evento debe grabar VDR. Estos márgenes se agregan automáticamente a las programaciones que se realizan a través de los datos de la "Guía de programación".
 
@@ -8,7 +8,7 @@ Límite primario = 0
      El límite primario  una necesario en una programación para poder usar algún sintonizador DVB, o para forzar otra programación con una prioridad más alta a utilizar el sintonizador de DVB (En caso de estar los dos ocupados). Esto es principalmente útil para las grabaciones que se deben realizar solamente cuando no hay ninguna otra mas importante.
 
 Prioridad por defecto = 50
-Duración por defecto (dias) = 99
+Duración por defecto (días) = 99
 
      Los valores de prioridad y de duración por defecto se utilizarán al crear una nueva programación de un evento. Un valor de 99 en "duración por defecto" significa que esta grabación nunca se eliminará automáticamente.
 
@@ -17,7 +17,7 @@ Duración en modo pausa = 1
 
      Los valores de prioridad y duración en modo pausa se utilizarán cuando se pause la televisión en directo.
 
-Utilizar nombre de episodio = si
+Utilizar nombre de episodio = sí
 
      Repitiendo programaciones puede utilizar la información conocida a través de la EPG del "nombre del episodio" para crear una carpeta grabaciones con el mismo nombre y estructura jerárquica (por ejemplo recopilar todos los episodios de una serie en un subdirectorio común). Este parámetro utiliza para controlarlo.
 
@@ -27,7 +27,7 @@ Utilizar nombre de episodio = si
 
 Usar servicio VPS = 0
 
-     Define si una programación creada desde la "guía de programación" (presionando el botón "grabar" [rojo] en "programación" o en los submenús "ahora" y despues") utilizará automáticamente VPS si el acontecimiento a grabar tiene hora fijada por este servicio.
+     Define si una programación creada desde la "guía de programación" (presionando el botón "grabar" [rojo] en "programación" o en los submenús "ahora" y después") utilizará automáticamente VPS si el evento a grabar tiene hora fijada por este servicio.
 
 Margen VPS (sg) = 120
 
@@ -35,7 +35,7 @@ Margen VPS (sg) = 120
 
 Marcar grabaciones inmediatas = si
 
-     Define si la "grabación inmediata" (realizada al presionar el botón "rojo" cuando se esta viendo la televisión) será marcada con el carácter "@" para distinguirla de las grabaciones realizas por programación.
+     Define si la "grabación inmediata" (realizada al presionar el botón "Rojo" cuando se esta viendo la televisión) será marcada con el carácter "@" para distinguirla de las grabaciones realizas por programación.
 
 Nombrar grabaciones inmediatas = TITLE EPISODE
 
@@ -45,6 +45,6 @@ Tiempo de grabación inmediata (min) = 180
 
      Define la duración de una grabación inmediata en minutos. por defecto son 180 minutos (3 horas). El momento de finalización de una grabación inmediata puede ser modificado en cualquier momento corrigiendo la programación respectiva en el menú "Programaciones".
 
-Tamaño máximo de fichero (MB) = 2000
+Tamaño máximo de archivo (MB) = 2000
 
-     Es el tamaño máximo de un archivo de video, mostrado en MB. La franja válida es de 100 a 2000 MB. Por defecto 2000, pero puede utilizar valores más pequeños si se  está planeando grabar una "grabación" en CD.
+     Es el tamaño máximo de un archivo de vídeo, mostrado en MB. La franja válida es de 100 a 2000 MB. Por defecto 2000, pero puede utilizar valores más pequeños, por ejemplo si se está planeando almacenar una "grabación" en CD o para facilitar la edición de archivos.

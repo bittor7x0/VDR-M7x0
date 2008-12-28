@@ -9,6 +9,6 @@ SLOF = 11700
 Frecuencia inferior del LNB de = 9750
 Frecuencia superior del LNB = 10600
 
-     Frecuencias osciladoras locales superior e inferior del LNB (en Mhz), éste valor no tienen ningún significado para los receptores de DVB-T (solo M750S).
+     Frecuencias osciladoras locales superior e inferior del LNB (en Mhz). Estos valores no tienen ningún significado para los receptores de DVB-T (sólo M750S).
 
      

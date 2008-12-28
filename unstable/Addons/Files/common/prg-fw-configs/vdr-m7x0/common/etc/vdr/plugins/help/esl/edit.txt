@@ -1,6 +1,6 @@
      En modo reproducción, los botones siguientes se pueden utilizar para manipular y corregir marcas:
 
-        0 - Cambia la Marca de Edición. Si no existe ninguna entonces la crea. Si ya existía una marca (muestra un triangulo en Rojo) entonces la borra.
+        0 - Cambia la Marca de Edición. Si no existe ninguna entonces la crea. Si ya existía una marca (muestra un triangulo en rojo) entonces la borra.
         4,6 - Mover la Marca de Edición hacia Adelante o hacia Atrás. Primero tienes que saltar a la marca de edición para poder moverla.
         7,9 - Ir a la marca Anterior o Posterior. Una vez que saltemos a la marca se quedará en modo Pausa.
         8 - Posiciona la reproducción justo 3 segundos antes de la Marca de inicio Anterior o Posterior y empieza la reproducción.
@@ -12,6 +12,6 @@
 
      Deberá utilizar los botones descritos en la sección de Control de la reproducción para posicionarse al principio y al final de los anuncios, pulsar el botón '0' para poner las Marcas necesarias. Después de terminar de colocar las Marcas podrá usar los botones '7' y '9' para moverse entre ellas o quizá los botones '4' y '6' para ajustarlas con exactitud. Una vez que tenga colocadas correctamente todas las marcas pulse el botón '2' para iniciar el proceso de cortado, que se ejecutará como un proceso en el segundo plano.
 
-     Actualmente, las Marcas de Edición sólo pueden ponerse en I-frames, que típicamente ocurren cada 12 frames. Esto significa que la edición se puede hacer una granularidad aproximada de medio segundo. La marca “comienzo” marca el primer frame de la secuencia de video resultante, y la marca “final” marca el frame último de esa secuencia.
+     Actualmente, las Marcas de Edición sólo pueden ponerse en I-frames, que típicamente ocurren cada 12 frames. Esto significa que la edición se puede hacer una granularidad aproximada de medio segundo. La marca "comienzo" marca el primer frame de la secuencia de video resultante, y la marca "final" marca el frame último de esa secuencia.
 
-     Recuerde que una grabación editada (indicada por el carácter '%') nunca se borrará automáticamente del disco duro, aunque este se llene (incluso no importará que tiempo de vida (lifetime) tenga).
+     Recuerde que una grabación editada (indicada por el carácter '%') nunca se borrará automáticamente del disco duro, aunque este se llene (incluso no importará qué tiempo de vida (lifetime) tenga).

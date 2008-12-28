@@ -10,11 +10,11 @@
       EPG - Guía electrónica de programación
       INFO - Infomación del programa emitido
       Mute - Silencio
-      Pause/Play - Pausar en Directo y ver en Diferido
-      Stop - Parar pausa o tv en Diferido
-      FastFwd - Avanzar
-      FastRew - Rebobinar
-      Rojo - Iniciar gabación
+      Pause/Play - Pausar en directo y ver en diferido
+      Stop - Parar pausa o TV en diferido
+      >> - Avanzar
+      << - Rebobinar
+      Rojo - Iniciar grabación
       Verde - Selección de audio
       Amarillo - Menú "Grabaciones"
       Azul - Menú "Programaciones"

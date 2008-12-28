@@ -2,18 +2,18 @@ Manual de usuario de Video Disk Recorder
 Versión: vdr-rootfs [2006-12-12] para M740AV
 
 Navegar a través de los menús de pantalla=navigation
-El Menú "EPG"=epg
+El menú "Guía de programación"=epg
 Seleccionar un canal=channel_select
 Cambiar a través de grupos de canales=channel_groups
 Seleccionar un idioma de audio específico=channel_audio
 Programar una grabación=timer
-Pausar tv "en directo"=record_timeshifting
-Grabación instantanea=record_instant
+Pausar TV "en directo"=record_timeshifting
+Grabación instantánea=record_instant
 Editar una grabación=edit
 Proceso de grabaciones=edit_external
 Reproducir una grabación=playback
 Control de reproducción=playback_control
-Ejecutar comandos del sistema=oscommands
+Ejecutar órdenes del sistema=oscommands
 :Botones
 Visionado normal=btn_watch
 Menú VDR=btn_main
@@ -23,9 +23,9 @@ Editar/Nuevo=btn_txtinput
 Menú grabaciones=btn_record
 Reproducción=btn_playback
 Editar grabaciones=btn_edit
-:Configuración
+:Configuración VDR
 Menús en pantalla=setup_menu
-Guía de Programación=setup_epg
+Guía de programación=setup_epg
 DVB=setup_dvb
 LNB=setup_lnb
 CICAM=setup_cicam
