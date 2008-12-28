@@ -88,17 +88,18 @@ void make_timer(char newt[256], int active, int channel_num, time_t start_time, 
   sprintf(newt,"NEWT %d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:",active,channel_num,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);
 }
 
-int makeTimerEx(char newt[256], int active, int channel_num, int type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title) {
+int makeTimerEx(char newt[256], int active, int channel_num, enum timerType type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title) {
   char s[25]; 
   char * date;
   
-  if (type==2) {
+  if (type==REGULAR) {
 	time_t rawtime=time(NULL);
 	struct tm * today;
 	today=localtime(&rawtime); 
     date=malloc(12);    
     strftime(date,11,"%Y-%m-%d",today);
   } else {
+	//ONE_TIME
 	date=strdup(argDate);
   }
   
@@ -117,9 +118,10 @@ int makeTimerEx(char newt[256], int active, int channel_num, int type, char reg_
   
   struct tm t1=*localtime(&start_time);
   struct tm t2=*localtime(&end_time);
-  if (type==2) {
+  if (type==REGULAR) {
     sprintf(newt,"NEWT %d:%d:%s:%02d%02d:%02d%02d:%d:%d:%s:",active,channel_num,reg_timer,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);  
   } else {
+	//ONE_TIME
 	sprintf(newt,"NEWT %d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:",active,channel_num,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);
   }
   free(date);
@@ -174,7 +176,7 @@ void parse_timer(char * line, struct timerEntry * timer ){
   if (l==7) {
     strncpy(timer->reg_timer,r,l);
     timer->reg_timer[l]='\0';
-    timer->type=1;
+    timer->type=REGULAR; //Corrige error
     strcpy(s,"1970-01-02");
     time_t ttDate=time(NULL);
     for (k=0;k<7;k++) {
@@ -188,7 +190,7 @@ void parse_timer(char * line, struct timerEntry * timer ){
   } else {
     strncpy(s,r,l);
     s[l]='\0';
-    timer->type=0;
+    timer->type=ONE_TIME; //Corrige error
     strcpy(timer->reg_timer,"");
   }
   r+=l+1;
@@ -202,7 +204,9 @@ void parse_timer(char * line, struct timerEntry * timer ){
     strncpy(h,r,l);
     h[l]='\0';
     r+=l+1;
-    if (!strptime(s,"%Y-%m-%d %H%M",&timeptr)) { printf("Fehler bei der Datumskonvertierung!\n"); }
+    if (!strptime(s,"%Y-%m-%d %H%M",&timeptr)) { 
+    	printf("Error converting timer date!\n"); 
+    }
     timeptr.tm_wday=0; 
     timeptr.tm_yday=0;
     timeptr.tm_isdst=-1;

@@ -38,7 +38,7 @@ void parse_rec(char * line, struct recEntry * recording);
 void parse_timer(char * line, struct timerEntry * timer);
 
 void make_timer(char newt[256], int active, int channel_num, time_t start_time, time_t end_time, int priority, int lifetime, char title[100]);
-int makeTimerEx(char newt[256], int active, int channel_num, int type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title);
+int makeTimerEx(char newt[256], int active, int channel_num, enum timerType type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title);
 
 void parse_channel(char * line, char channel_name[50], char channel_id[50]);
 
