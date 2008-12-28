@@ -232,80 +232,84 @@ if (!strcmp(action,ADD)) {
   
 	
 } else if (!strcmp(action,EDIT)) {
-  struct timerEntry timer;
-  initTE(&timer);
-  channelList * channels;
-  int max_channels;
+	struct timerEntry timer;
+	initTE(&timer);
+	channelList * channels;
+	int max_channels;
   
-  channels=get_channel_list(&max_channels);
+	channels=get_channel_list(&max_channels);
   
-  if (newt) {
-    parse_timer(newt+5,&timer);    
-    io_printf(out,"<h1>%s</h1>\n<form action=\"/timers.kl1\">\n",tr("edit timer"));
-    if (timerID>0) {
-      io_printf(out,"<input type=\"hidden\" name=\"timerID\" value=\"%d\" />\n",timerID);
-      io_printf(out,"<input type=\"hidden\" name=\"timer\" value=\"%s\" />",newt);
-    }
-  } else {
-    io_printf(out,"<h1>%s</h1>\n<form action=\"/timers.kl1\">\n",tr("new timer"));
-  }
-  io_printf(out,"<input type=\"hidden\" name=\"a\" value=\"new\" />\n<table class=\"list1\" style=>\n");
-  io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"active\" value=\"1\" %s />%s</td></tr>\n",checked[timer.active],tr("active"));
-  io_printf(out,"<tr><td>%s</td><td><select name=\"sender\" size=\"1\">\n",tr("channel"));
-  for (i=0;i<max_channels;i++) {
-	io_printf(out,"<option value=\"%d\"",channels[i].channel_num);
-	if (timer.channelNum==i+1) { io_printf(out," selected"); }
-    io_printf(out,">%d - %s</option>\n",channels[i].channel_num,channels[i].channelName);
-  }  
-  io_printf(out,"</select></td></tr>\n<tr><td><input type=\"radio\" name=\"day\" value=\"once\"");
-  if (timer.type==REGULAR) { //Corrige error
-    io_printf(out," checked"); 
-    strcpy(timer.reg_timer,"-------"); 
-  }
-  io_printf(out,">%s</input></td><td><select name=\"date\" size=\"1\">\n",tr("one-time recording"));
-  time_t ttDate=time(NULL);
-  char cdate[11];
-  char cldate[11];
-  for(i=0;i<14;i++) {
-    struct tm date=*localtime(&ttDate);
-    strftime(cdate,11,"%Y-%m-%d",&date);
-    strftime(cldate,11,"%d/%m/%Y",&date);
-    io_printf(out,"<option value=\"%s\" %s>%s, %s</option>\n",cdate,selected[sameDay(ttDate,timer.start)],weekdays[langID][date.tm_wday],cldate);
-    if ( (sameDay(ttDate,timer.start)==1) && (timer.type==REGULAR) ) {  //Corrige error
-      timer.reg_timer[(date.tm_wday+6)%7]='x'; 
-      //weekdays[langID][date.tm_wday][0]; 
-    }
-    ttDate+=24*60*60;
-  } 
-  io_printf(out,"</select></td></tr>\n<tr><td><input type=\"radio\" name=\"day\" value=\"reg\"");
-  if (timer.type==REGULAR) { io_printf(out," checked"); }  //Corrige error
-  io_printf(out,">%s</input></td><td>",tr("regular recording"));
-  for(i=startOfWeek[langID];i<startOfWeek[langID]+7;i++) {
-    io_printf(out,"<input type=\"checkbox\" name=\"%s\" value=\"%d\"",shortWeekdays[i%7],(i%7));
-    if ( timer.reg_timer[(i+6)%7]!='-' ) { io_printf(out," checked"); }
-    io_printf(out,">%s</input>&nbsp;&nbsp;",weekdays[langID][i%7]);
-  }
-  struct tm start_date=*localtime(&timer.start);
-  io_printf(out,"</td></tr>\n<tr><td>%s</td><td><input type=\"text\" name=\"startHour\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;:&nbsp;<input type=\"text\" name=\"startMin\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;</td></tr>\n",tr("from"),start_date.tm_hour,start_date.tm_min);
-  struct tm end_date=*localtime(&timer.stop);
-  io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"endHour\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;:&nbsp;<input type=\"text\" name=\"endMin\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;</td></tr>\n",tr("to"),end_date.tm_hour,end_date.tm_min);
-  if (timerID==-1) {
-    io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"addMargin\" value=\"1\" checked>%s</input></td></tr>\n",tr("add start/stop margin"));
-  } else {
-    io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"addMargin\" value=\"0\">%s</input></td></tr>\n",tr("add start/stop margin"));
-  }
-  io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"priority\" maxlength=\"2\" size=\"3\" value=\"%d\"/></td></tr>\n<tr><td>%s</td><td><input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\" /></td></tr>\n",tr("priority"),timer.priority,tr("lifetime"),timer.lifetime);
-  io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"title\" maxlength=\"50\" size=\"50\" value=\"%s\" /></td></tr>\n<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\" %s \" /></td></tr>\n",tr("title"),timer.title,tr("check timer"));
+	if (newt) {
+		parse_timer(newt+5,&timer);    
+		io_printf(out,"<h1>%s</h1>\n<form action=\"/timers.kl1\">\n",tr("edit timer"));
+		if (timerID>0) {
+			io_printf(out,"<input type=\"hidden\" name=\"timerID\" value=\"%d\" />\n",timerID);
+			io_printf(out,"<input type=\"hidden\" name=\"timer\" value=\"%s\" />",newt);
+		}
+	} else {
+		io_printf(out,"<h1>%s</h1>\n<form action=\"/timers.kl1\">\n",tr("new timer"));
+	}
+	io_printf(out,"<input type=\"hidden\" name=\"a\" value=\"new\" />\n<table class=\"list1\" style=>\n");
+	io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"active\" value=\"1\" %s />%s</td></tr>\n",checked[timer.active],tr("active"));
+	io_printf(out,"<tr><td>%s</td><td><select name=\"sender\" size=\"1\">\n",tr("channel"));
+	for (i=0;i<max_channels;i++) {
+		io_printf(out,"<option value=\"%d\"",channels[i].channel_num);
+		if (timer.channelNum==i+1) { io_printf(out," selected"); }
+		io_printf(out,">%d - %s</option>\n",channels[i].channel_num,channels[i].channelName);
+	}  
+	io_printf(out,"</select></td></tr>\n<tr><td><input type=\"radio\" name=\"day\" value=\"once\"");
+	if (timer.type==ONE_TIME) {
+		io_printf(out," checked"); 
+		strcpy(timer.reg_timer,"-------"); 
+	}
+	io_printf(out,">%s</input></td><td><select name=\"date\" size=\"1\">\n",tr("one-time recording"));
+	time_t ttDate=time(NULL);
+	char cdate[11];
+	char cldate[11];
+	for(i=0;i<14;i++) {
+		struct tm date=*localtime(&ttDate);
+		strftime(cdate,11,"%Y-%m-%d",&date);
+		strftime(cldate,11,"%d/%m/%Y",&date);  //TODO i18n
+		io_printf(out,"<option value=\"%s\" %s>%s, %s</option>\n",cdate,selected[sameDay(ttDate,timer.start)],weekdays[langID][date.tm_wday],cldate);
+		if ( (sameDay(ttDate,timer.start)==1) && (timer.type==REGULAR) ) {  //Corrige error
+			timer.reg_timer[(date.tm_wday+6)%7]='x'; //TODO weekdays[langID][date.tm_wday][0]; 
+		}
+		ttDate+=24*60*60;
+	} 
+	io_printf(out,"</select></td></tr>\n<tr><td><input type=\"radio\" name=\"day\" value=\"reg\"");
+	if (timer.type==REGULAR) {  //Corrige error
+		io_printf(out," checked"); 
+	}
+	io_printf(out,">%s</input></td><td>",tr("regular recording"));
+	for(i=startOfWeek[langID];i<startOfWeek[langID]+7;i++) {
+		io_printf(out,"<input type=\"checkbox\" name=\"%s\" value=\"%d\"",shortWeekdays[i%7],(i%7));
+		if ( timer.reg_timer[(i+6)%7]!='-' ) {
+			io_printf(out," checked");
+		}
+		io_printf(out,">%s</input>&nbsp;&nbsp;",weekdays[langID][i%7]);
+	}
+	struct tm start_date=*localtime(&timer.start);
+	io_printf(out,"</td></tr>\n<tr><td>%s</td><td><input type=\"text\" name=\"startHour\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;:&nbsp;<input type=\"text\" name=\"startMin\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;</td></tr>\n",tr("from"),start_date.tm_hour,start_date.tm_min);
+	struct tm end_date=*localtime(&timer.stop);
+	io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"endHour\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;:&nbsp;<input type=\"text\" name=\"endMin\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;</td></tr>\n",tr("to"),end_date.tm_hour,end_date.tm_min);
+	if (timerID==-1) {
+		io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"addMargin\" value=\"1\" checked>%s</input></td></tr>\n",tr("add start/stop margin"));
+	} else {
+		io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"addMargin\" value=\"0\">%s</input></td></tr>\n",tr("add start/stop margin"));
+	}
+	io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"priority\" maxlength=\"2\" size=\"3\" value=\"%d\"/></td></tr>\n<tr><td>%s</td><td><input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\" /></td></tr>\n",tr("priority"),timer.priority,tr("lifetime"),timer.lifetime);
+	io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"title\" maxlength=\"50\" size=\"50\" value=\"%s\" /></td></tr>\n<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\" %s \" /></td></tr>\n",tr("title"),timer.title,tr("check timer"));
   
-  if (timerID>0) {
-    io_printf(out,"<tr><td colspan=\"2\"><hr><b>%s</b></td></tr>\n",tr("- or -"));
-    io_printf(out,"<tr><td colspan=\"2\"><input type=\"radio\" name=\"alt\" value=\"dele\">%s</input></td></tr>\n",tr("delete timer"));
-    io_printf(out,"<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\" %s \" /></td></tr>\n",tr(" execute "));
-  }
-  io_printf(out,"</table></form>\n");
+	if (timerID>0) {
+		io_printf(out,"<tr><td colspan=\"2\"><hr><b>%s</b></td></tr>\n",tr("- or -"));
+		io_printf(out,"<tr><td colspan=\"2\"><input type=\"radio\" name=\"alt\" value=\"dele\">%s</input></td></tr>\n",tr("delete timer"));
+		io_printf(out,"<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\" %s \" /></td></tr>\n",tr(" execute "));
+	}
+	io_printf(out,"</table></form>\n");
+	freeTE(timer);
   
 } else {
-  action=SUMMARY;
+	action=SUMMARY;
 }
 
 if (!strcmp(action,SUMMARY)) {
@@ -342,7 +346,7 @@ if (!strcmp(action,SUMMARY)) {
     struct tm t1=*localtime(&timers[i].start);
     struct tm t2=*localtime(&timers[i].stop);
     int l=strftime(cdate,11,"%d-%m-%Y",&t1);
-    if (strlen(timers[i].reg_timer)==7) {
+    if (timers[i].type==REGULAR) {
       io_printf(out,"<tr>\n <td>%s (%s)</td>\n",cdate,timers[i].reg_timer);
     } else {
       io_printf(out,"<tr>\n <td>%s</td>\n",cdate);
@@ -356,7 +360,7 @@ if (!strcmp(action,SUMMARY)) {
     io_printf(out,"</tr>\n");
   }
   io_printf(out,"</table>\n");
-  freeTE(timers,max_timers);
+  freeTimerList(timers,max_timers);
 }
 close_svdrp();
 %>

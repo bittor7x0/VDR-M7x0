@@ -28,23 +28,25 @@ enum timerType {
 
 //Channelliste kurz
 typedef struct timerEntry {
-  time_t start;
-  time_t stop;
-  enum timerType type;
-  int priority;
-  int lifetime;
-  int active;
-  int ID;
-  char reg_timer[8];
-  char title[100];
-  int channelNum;
-  char channelName[50];
-  char mux[50];
-  char * newt;
+ 	time_t start;
+	time_t stop;
+	enum timerType type;
+	int priority;
+	int lifetime;
+	int active;
+	int ID;
+	char reg_timer[8];
+	char title[100]; //TODO Dynamic allocation
+	char * aux;
+	int channelNum;
+	char channelName[50]; //TODO Remove
+	char mux[50];         //TODO Remove
+	char * newt;
 } timerEntry;
 
 void initTE(timerEntry * o);
-void freeTE(timerEntry * o, int max);
+void freeTE(timerEntry o);
+void freeTimerList(timerEntry * o, int max);
 timerEntry * getTimerList(int * max, int sortBy, int sortDirection);
 int checkForTimer(timerEntry * timerList, int maxTimer, int channelNum, time_t startTime, time_t endTime, int duration);
 //TODO addTimer's return value inconsistent with editTimer and deleTimer
