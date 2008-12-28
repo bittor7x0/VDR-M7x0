@@ -25,6 +25,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
+#include <u/libu.h>
 
 #include "svdrp_parse.h"
 
@@ -165,64 +166,82 @@ void parse_rec(char * line, struct recEntry * recording){
 }
 
 void parse_timer(char * line, struct timerEntry * timer ){
-  char * r=line;
-  int l=0;
-  int k=0;
-  char s[50];
+	char * r;
+	char * c;
+	char * h;
+	int l;
+	int la;
+	int k;
+	char s[50];
+	struct tm timeptr;
 
-  timer->active=strtol(r,&r,10); r++;
-  timer->channelNum=strtol(r,&r,10); r++;
-  l=strcspn(r,":");
-  if (l==7) {
-    strncpy(timer->reg_timer,r,l);
-    timer->reg_timer[l]='\0';
-    timer->type=REGULAR; //Corrige error
-    strcpy(s,"1970-01-02");
-    time_t ttDate=time(NULL);
-    for (k=0;k<7;k++) {
-      struct tm next_rec=*localtime(&ttDate);
-      if (timer->reg_timer[(next_rec.tm_wday+6)%7]!='-') {
-        strftime(s,sizeof(s)-1,"%Y-%m-%d",&next_rec);
-        break;
-      }
-      ttDate+=86400;
-    }
-  } else {
-    strncpy(s,r,l);
-    s[l]='\0';
-    timer->type=ONE_TIME; //Corrige error
-    strcpy(timer->reg_timer,"");
-  }
-  r+=l+1;
-  l=4;
-  struct tm timeptr;
-  strcat(s," ");
-  char * h = s+strlen(s); 
-  time_t * t;
-  for (k=0;k<2;k++){
-    t=(k==0) ? &timer->start : &timer->stop;
-    strncpy(h,r,l);
-    h[l]='\0';
-    r+=l+1;
-    if (!strptime(s,"%Y-%m-%d %H%M",&timeptr)) { 
-    	printf("Error converting timer date!\n"); 
-    }
-    timeptr.tm_wday=0; 
-    timeptr.tm_yday=0;
-    timeptr.tm_isdst=-1;
-    *t=mktime(&timeptr);
-  }
-  if ( timer->stop < timer->start) {
-    timer->stop+=24*60*60;
-  }
-  timer->priority=strtol(r,&r,10); r++;
-  timer->lifetime=strtol(r,&r,10); r++;
-  l=strcspn(r,":");
-  int la=sizeof(timer->title);
-  if (l<la) la=l;
-  strncpy(timer->title,r,la-1);
-  timer->title[la-1]='\0';
-  //TODO parse aux
+	//TODO check EINVAL, ERANGE
+	timer->active=strtol(line,&r,10); 
+	r++;
+	timer->channelNum=strtol(r,&r,10); 
+	r++;
+	l=strcspn(r,":");
+	if (l==7) {
+		strncpy(timer->reg_timer,r,l);
+		timer->reg_timer[l]='\0';
+		timer->type=REGULAR; //Corrige error
+		strcpy(s,"1970-01-02");
+		time_t ttDate=time(NULL);
+		for (k=0;k<7;k++) {
+			timeptr=*localtime(&ttDate);
+			if (timer->reg_timer[(timeptr.tm_wday+6)%7]!='-') {
+				strftime(s,sizeof(s)-1,"%Y-%m-%d",&timeptr);
+				break;
+			}
+			ttDate+=86400;
+		}
+	} else {
+		strncpy(s,r,l);
+		s[l]='\0';
+		timer->type=ONE_TIME; //Corrige error
+		strcpy(timer->reg_timer,"");
+	}
+	r+=l+1;
+	l=4;
+	strcat(s," ");
+	h = s+strlen(s); // Hour position
+	for (k=0;k<2;k++){
+		strncpy(h,r,2);
+		h[2]=':';
+		strncpy(h+3,r+2,2);
+		h[5]='\0';
+		r+=l+1;
+		if (!strptime(s,"%Y-%m-%d %H:%M",&timeptr)) { 
+			warn("Error converting timer date \"%s\"!\n",s); 
+		}
+		timeptr.tm_sec=0; 
+		timeptr.tm_isdst=-1;
+		if (k==0) {
+			timer->start=mktime(&timeptr);
+		} else {
+			timer->stop=mktime(&timeptr);
+		}
+	}
+	if ( timer->stop < timer->start) {
+		timer->stop+=24*60*60;
+	}
+	timer->priority=strtol(r,&r,10); r++;
+	timer->lifetime=strtol(r,&r,10); r++;
+	l=strcspn(r,":");
+
+	la=sizeof(timer->title)-1;
+	if (l<la) la=l;
+	strncpy(timer->title,r,la);
+	timer->title[la]='\0';
+	c=timer->title;
+	/* TODO? restore ':'
+	while (*c) {
+		if (*c=='|') 
+			*c=':';
+		c++;
+	}
+	*/
+	//TODO parse aux
 }
 
 void parse_channel(char * line, char channel_name[50], char channel_id[50]) {
