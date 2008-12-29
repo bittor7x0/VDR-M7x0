@@ -2,9 +2,9 @@
 
      Seleccione "Guía de programación" en el menú "VDR" y mostrará una lista de todas las emisiones próximas del canal actual.
 
-     Utilice "Arriba" y "Abajo" para moverse a través de esta lista, presione "OK" para mostrar información detallada sobre el programa seleccionado. Presione "OK"  o "EXIT" para volver al menú "EPG".
+     Utilice "Arriba" y "Abajo" para moverse a través de esta lista, presione "OK" para mostrar información detallada sobre el programa seleccionado. Presione "OK"  o "EXIT" para volver al menú "Guía de programación".
 
-     Desde el menú "Guía de programación", utilice el botón "Verde" para abrir el menú "Ahora", que muestra los programas que se estén emitiendo actualmente en todos los canales que difundan la información del programa por el transpondedor actual, o de los canales de los que haya desaparecido recientemente (VDR almacena toda la información que recopila en una lista interna). Cuanto más cambie entre los canales sin información, la lista más aumentará. El botón "Amarillo" abre el menú "Después", que muestra los programas que comenzarán después en todos los canales.
+     Desde el menú "Guía de programación", utilice el botón "Verde" para abrir el menú "Ahora", que muestra los programas que se estén emitiendo actualmente en todos los canales que difundan la información del programa por el transpondedor actual, o de los canales de los que haya desaparecido recientemente (VDR almacena toda la información que recopila en una lista interna). Cuanto más cambie entre los canales sin información, más aumentará la lista. El botón "Amarillo" abre el menú "Después", que muestra los programas que comenzarán después en todos los canales.
 
      Dentro de los menús "Ahora/Después", El botón "Verde" cambia su acción de "Ahora" a "Después", y el botón "Amarillo" le lleva al menú "Guía" del canal seleccionado actualmente en la lista.
 
