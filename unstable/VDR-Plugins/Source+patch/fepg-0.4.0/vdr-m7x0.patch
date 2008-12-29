@@ -846,7 +846,7 @@ diff -Naur fepg-0.4.0-orig/i18n.c fepg-0.4.0/i18n.c
 +    "",
 +    "",
 +    "",
-+    "Ocultar entrada del menu principal",
++    "Ocultar entrada del menú principal",
 +    "",
 +    "",
 +    "",
@@ -2282,7 +2282,7 @@ diff -Naur fepg-0.4.0-orig/po/es_ES.po fepg-0.4.0/po/es_ES.po
 +msgstr "Centrar el texto de información"
 +
 +msgid "Hide Main Menu Entry"
-+msgstr "Ocultar entrada del menu principal"
++msgstr "Ocultar entrada del menú principal"
 +
 +msgid "Channel Order"
 +msgstr "Orden de canales"
