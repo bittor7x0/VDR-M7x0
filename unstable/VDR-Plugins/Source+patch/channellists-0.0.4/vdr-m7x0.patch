@@ -6,7 +6,7 @@ diff -Naur channellists-0.0.4-orig/i18n.c channellists-0.0.4/i18n.c
      "", // suomi
      "", // Polski
 -    "", // Español
-+    "Lista de canales", // Español
++    "Canales presintonizados", // Español
      "", // ÅëëçíéêÜ (Greek)
      "", // Svenska
      "", // Romaneste
@@ -15,7 +15,7 @@ diff -Naur channellists-0.0.4-orig/i18n.c channellists-0.0.4/i18n.c
      "", // suomi
      "", // Polski
 -    "", // Español
-+    "Administra tu lista de canales", // Español
++    "Administra tus listas de canales", // Español
      "", // ÅëëçíéêÜ (Greek)
      "", // Svenska
      "", // Romaneste
@@ -230,11 +230,11 @@ diff -Naur channellists-0.0.4-orig/po/es_ES.po channellists-0.0.4/po/es_ES.po
  
  msgid "Manage your channellists"
 -msgstr ""
-+msgstr "Administra tu lista de canales"
++msgstr "Administra tus listas de canales"
  
  msgid "Channellists"
 -msgstr ""
-+msgstr "Lista de canales"
++msgstr "Canales presintonizados"
  
  msgid "Menu"
  msgstr "Menú"
