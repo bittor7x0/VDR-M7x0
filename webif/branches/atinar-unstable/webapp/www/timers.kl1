@@ -277,12 +277,12 @@ if (!strcmp(action,ADD)) {
 		ttDate+=24*60*60;
 	} 
 	io_printf(out,"</select></td></tr>\n<tr><td><input type=\"radio\" name=\"day\" value=\"reg\"");
-	if (timer.type==REGULAR) {  //Corrige error
+	if (timer.type==REGULAR) {  //TODO_KILLE
 		io_printf(out," checked"); 
 	}
 	io_printf(out,">%s</input></td><td>",tr("regular recording"));
 	for(i=startOfWeek[langID];i<startOfWeek[langID]+7;i++) {
-		io_printf(out,"<input type=\"checkbox\" name=\"%s\" value=\"%d\"",shortWeekdays[i%7],(i%7));
+		io_printf(out,"<input type=\"checkbox\" name=\"%s\" value=\"%d\"",shortWeekdays[langID][i%7],(i%7));
 		if ( timer.reg_timer[(i+6)%7]!='-' ) {
 			io_printf(out," checked");
 		}

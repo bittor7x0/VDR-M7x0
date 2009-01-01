@@ -32,7 +32,13 @@
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
+#ifdef DEBUG
+dbg_program_kl1(void) { dbg("program.kl1"); }
+#endif
 %><%
+#ifdef DEBUG
+dbg_program_kl1();
+#endif
 set_server_address(session,NULL,NULL);
 
 const char isTimerStr[3][3]={""," t"," T"};
@@ -193,24 +199,25 @@ Programm / EPG
   char * D=NULL;
   char * S=NULL;
   char * T=NULL;
-  char datum_str[10]="";
-  char now[10]="";
+  //TODO_KILLE space for trailinng 0 in datum_str and now.
   long int now_time=0;
   long int next_time=0;
   int duration=0;
   char newt[256]="";
+  int previous_yday=-1;
 
   sprintf(cmd,"LSTE %d\r",channelNum);
   write_svdrp(cmd);
   data=read_svdrp();
   io_printf(out,"<h2>%s %s &raquo;%s&laquo;</h2>\n<table class=\"list1\">\n<tr><th>%s</th><th>%s</th><th>&nbsp;</th></tr>\n",tr("Schedule"),tr("for"),channels[channelNum-1].channelName,tr("Time"),tr("program")); 
-  for(p=(char *)strtok(data,"\r\n");p!=0;p=(char *)strtok(0,"\r\n")) {
+  //TODO factorizar esto a parseEvent()
+  for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
   	parse_ret_code(p,ret_code);
   	if (!strcmp(ret_code,"550")) {
   		io_printf(out,"<p>%s</p>",i18n[14][langID]);
   		return;
   	} else if (!strcmp(ret_code,"215-D")) {
-  		D=strdup(p+6);
+  		D=strdup(p+6); //TODO Necesario duplicar?
   	} else if (!strcmp(ret_code,"215-S")) {
   		S=strdup(p+6);
   	} else if (!strcmp(ret_code,"215-T")) {
@@ -223,10 +230,9 @@ Programm / EPG
   			struct tm timeptr=*localtime(&now_time);
         isTimerInt=checkForTimer(timers,max_timers,channelNum,now_time,next_time,0);
         make_timer(newt,1,channelNum,now_time,next_time,50,99,T);
-        sprintf(now,"%02d.%02d.%04d",timeptr.tm_mday,timeptr.tm_mon+1,1900+timeptr.tm_year);
-        if (strcmp(datum_str,now)) {
-        	strcpy(datum_str,now); 
-        	io_printf(out,"<tr><td class=\"grey\" colspan=\"3\"><b>%s, %s</b></td></tr>\n",wochentage[timeptr.tm_wday],datum_str);
+        if (previous_yday!=timeptr.tm_yday) {
+        	previous_yday=timeptr.tm_yday;
+        	io_printf(out,"<tr><td class=\"grey\" colspan=\"3\"><b>%s %s</b></td></tr>\n",weekdays[langID][timeptr.tm_wday],formatDate(&timeptr));
         }
         io_printf(out,"<tr><td><b>%02d:%02d%s</b></td><td>%s</td><td style=\"width:70px;\">\n",timeptr.tm_hour,timeptr.tm_min,isTimerStr[isTimerInt],T);
 //	    io_printf(out,"<div class=\"box_right\"><img src=\"/img/timer16.png\" alt=\"%s\" /></a></div>\n",tr("create timer"));

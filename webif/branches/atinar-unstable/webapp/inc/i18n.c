@@ -20,21 +20,28 @@
 
 int langID=-1;
 char acceptedLang[3]="";
-int numOfPhrases=93;
-const char wochentage[7][15]={"Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"};
+int numOfPhrases=96;
+char cldate[11];
 
 // startOfWeek holds the index of the first weekday of the week.
 // for example 0=Sunday for US, 1=Monday for Germany and so on
 const int startOfWeek[I18NNUM]={0,1,1,1};
-const char shortWeekdays[7][4]={"sun","mon","tue","wed","thu","fri","sat"};
-const char weekdays[I18NNUM][7][15]={
-		{"Sunday" ,"Monday","Tuesday" ,"Wednesday","Tuesday"   ,"Friday" ,"Saturday"},
+const char * shortWeekdays[I18NNUM][7]={
+		{"Sun","Mon","Tue","Wed","Thu","Fri","Sat"},
+		{"Son","Mon","Die","Mit","Don","Fre","Sam"},
+		{"Dom","Lun","Mar","Mié","Jue","Vie","Sáb"},
+		{"Dim","Lun","Mar","Mer","Jeu","Ven","Sam"}
+};
+const char * weekdays[I18NNUM][7]={
+		{"Sunday" ,"Monday","Tuesday" ,"Wednesday","Thursday"   ,"Friday" ,"Saturday"},
 		{"Sonntag","Montag","Dienstag","Mittwoch" ,"Donnerstag","Freitag","Samstag"},
-		{"Domingo" ,"Lunes" ,"Martes"  ,"Miércoles","Jueves"    ,"Viernes" ,"Sábado"},
-		{"Dimanche","Lundi" ,"Mardi"   ,"Mercredi" ,"Jeudi"     ,"Vendredi","Samedi"}
+		{"Domingo" ,"Lunes" ,"Martes"  ,"Miércoles","Jueves"   ,"Viernes" ,"Sábado"},
+		{"Dimanche","Lundi" ,"Mardi"   ,"Mercredi" ,"Jeudi"    ,"Vendredi","Samedi"}
 };
 
-const tI18nPhrase i18n[]={
+const char * dateFormat[I18NNUM]={"%d/%m/%Y","%d.%m.%Y","%d/%m/%Y","%d-%m-%Y"};
+
+const char * i18n[][I18NNUM]={
 		{	"English",		// #0
 			"Deutsch",
 			"Español",
@@ -130,385 +137,410 @@ const tI18nPhrase i18n[]={
 		},					// #17
 		{	"Automatic (DHCP) or manuell configuration of IP address",
 			"IP-Adresse automatisch (DHCP) oder manuell konfigurieren",
-			"",
+			"Configuración automática (DHCP) o manual de la dirección IP",
 			""
 		},
 		{						// #18
 			"IP address",
 			"IP-Adresse",
-			"",
+			"Dirección IP",
 			""
 		},
 		{						// #19
 			"Subnet mask",
 			"Subnetzmaske",
-			"",
+			"Máscara de subred",
 			""
 		},
 		{
 			"Default Language",		// #20
 			"Standardeinstellung für die Sprache",
-			"",
+			"Idioma por defecto",
 			""
 		},
-		{	"Homepage",			// #
+		{	"Homepage",			// #21
 			"Startseite",
 			"Página inicial",
 			"Page d\'accueil"
 		},
-		{	"You are watching",	// #
+		{	"You are watching",	// #22
 			"Sie sehen zur Zeit",
 			"Estás viendo",
 			"Vous regardez"
 		},
-		{	"Channel List",		// #
+		{	"Channel List",		// #23
 			"Kanalliste",
 			"Lista de canales",
 			"Liste des chaînes"
 		},						
-		{	"channel number",	// #
+		{	"channel number",	// #24
 			"Programmplatz",
 			"Número del canal",
 			"Numéro de chaîne"
 		},
-		{	"channel name",		// #
+		{	"channel name",		// #25
 			"Sendername",
 			"Nombre del canal",
 			"Nom de chaîne"
 		},
-		{	"multiplex",		// #
+		{	"multiplex",		// #26
 			"Bouquet",
 			"Multiplex",
 			"Bouquet ou multiplex"
 		},
-		{	"more infos",		// #
+		{	"more infos",		// #27
 			"mehr Infos",
 			"más info",
 			"Plus d\'informations"
 		},
-		{	"live stream",		// #
+		{	"live stream",		// #28
 			"Live-Stream",
 			"Stream directo",
 			"Direct"
 		},
-		{	"frequency",		// #
+		{	"frequency",		// #29
 			"Frequenz",
 			"Frecuencia",
 			"Fréquence"
 		},
-		{	"parameters",		// #
+		{	"parameters",		// #30
 			"Parameter",
 			"Parámetros",
 			"Paramètres"
 		},
-		{	"source",			// #
+		{	"source",			// #31
 			"Quelle",
 			"Fuente",
 			"Source"
 		},
-		{	"conditional access ID",	// #
+		{	"conditional access ID",	// #32
 			"Conditional Access ID",
 			"ID acceso condicional",
 			"Identifiant d\'accès conditionnel"
 		},
-		{	"service ID",		// #
+		{	"service ID",		// #33
 			"Service-ID",
 			"ID del servicio",
 			"Identifiant de service"
 		},
-		{	"network ID",		// #
+		{	"network ID",		// #34
 			"Netzwerk-ID",
 			"ID de la red",
 			"Identifiant de réseau"
 		},
-		{	"transport stream ID",		// #
+		{	"transport stream ID",		// #35
 			"Transponder-ID",
 			"ID del transponder",
 			"Identifiant du transpondeur"
 		},
-		{	"radio ID",			// #
+		{	"radio ID",			// #36
 			"Radio-ID",
 			"ID de la radio",
 			"Identifiant de radio"
 		},
-		{	"summary",			// #
+		{	"summary",			// #37
 			"Übersicht",
 			"Resumen",
 			"Résumé"
 		},
-		{	"edit list",		// #
+		{	"edit list",		// #38
 			"Liste bearbeiten",
 			"Editar lista",
 			"Edition de la liste"
 		},
-		{	"watch TV",			// #
+		{	"watch TV",			// #39
 			"Fernsehen",
 			"Ver TV",
 			"Regarder le direct"
 		},
-		{	"pause",				// #
+		{	"pause",				// #40
 			"Pause",
 			"Pause",
 			"Pausa",
 		},
-		{	"full screen",		// #
+		{	"full screen",		// #41
 			"Vollbild",
 			"Pantalla completa",
 			"Plein écran"
 		},
-		{	"mute",				// #
+		{	"mute",				// #42
 			"Stummschalten",
 			"Silenciar",
 			"Muet"
 		},
-		{	"switch",			// #
+		{	"switch",			// #43
 			"umschalten",
 			"cambiar",
 			"Basculer"
 		},
-		{	"Now on TV",		// #
+		{	"Now on TV",		// #44
 			"Das läuft jetzt im TV",
 			"Ahora en TV",
 			"En direct"
 		},
-		{	"channel",			// #
+		{	"channel",			// #45
 			"Sender",
 			"Canal",
 			"chaîne"
 		},
-		{	"record",			// #
+		{	"record",			// #46
 			"aufzeichnen",
 			"grabar",
 			"enregistrement"
 		},
-		{	"from",				// #
+		{	"from",				// #47
 			"von",
-			"desde",
+			"Desde",
 			"de"
 		},
-		{	"to",				// #
+		{	"to",				// #48
 			"bis",
-			"hasta",
+			"Hasta",
 			"à"
 		},
-		{	"runtime",			// #
+		{	"runtime",			// #49
 			"Dauer",
 			"Duración",
 			"durée"
 		},
-		{	"approx.",			// #
+		{	"approx.",			// #50
 			"ca.",
 			"aprox.",
 			"approximativement"
 		},
-		{	"minutes",			// #
+		{	"minutes",			// #51
 			"Minuten",
 			"minutos",
 			"minutes"
 		},
-		{	"date",				// #
+		{	"date",				// #52
 			"Datum",
 			"Fecha",
 			"date"
 		},
-		{	"recording",		// #
+		{	"recording",		// #53
 			"Aufzeichnung",
 			"Grabación",
 			"enregistrement"
 		},
-		{	"program",			// #
+		{	"program",			// #54
 			"Sendung",
 			"Emisión",
 			"émission"
 		},
-		{	"Setup Webinterface",	// #
+		{	"Setup Webinterface",	// #55
 			"Einstellungen Webinterface",
 			"Configurar interfaz web",
 			"Configuration de l\'interface web"
 		},
-		{	"Setup VDR",		// #
+		{	"Setup VDR",		// #56
 			"Einstellungen VDR",
 			"Configurar VDR",
 			"Configuration de VDR"
 		},
-		{	"Setup BoxAmp",		// #
+		{	"Setup BoxAmp",		// #57
 			"Einstellungen BoxAmp",
 			"Configurar BoxAmp",
 			"Configuration de BoxAmp"
 		},
-		{	"Network shares",	// #
+		{	"Network shares",	// #58
 			"Netzlaufwerke",
 			"Recursos de red",
 			"Partitions réseau"
 		},
-		{	"Webinterface",		// #
+		{	"Webinterface",		// #59
 			"Webinterface",
 			"Interfaz web",
 			"Interface web"
 		},
-		{	"default language",	// #
+		{	"default language",	// #60
 			"Voreingestellte Sprache",
 			"Idioma por defecto",
 			"langue par défaut"
 		},
-		{	"auto",				// #
+		{	"auto",				// #61
 			"automatisch",
 			"automático",
 			"automatique"
 		},
-		{ "BoxAmp path",		// #
+		{ "BoxAmp path",		// #62
 			"BoxAmp-Verzeichnis",
 			"Ruta BoxAmp",
 			"Répertoire de BoxAmp"
 		},
-		{	"Path to audio files",  //#
+		{	"Path to audio files",  //#63
 			"Audio-Basisverzeichnis",
 			"Ruta a archivos de música",
 			"Répertoire des fichiers audio"
 		},
-		{	"Options",			// #
+		{	"Options",			// #64
 			"Optionen",
 			"Opciones",
 			"Options"
 		},
-		{	"Terminate automatically",	// #
+		{	"Terminate automatically",	// #65
 			"Automatisch beenden",
 			"Terminar automáticamente",
 			"Terminaison automatique"
 		},
-		{	"for",				// #
+		{	"for",				// #66
 			"für",
 			"para",
 			"pour"
 		},
-		{	"Time",				// #
+		{	"Time",				// #67
 			"Uhrzeit",
 			"Duración",
 			"Heure"
 		},
-		{	"create timer",		// #
+		{	"create timer",		// #68
 			"Timer erstellen",
 			"Crear programación",
 			"création d\'un enregistrement programmé"
 		},
-		{	"Timer added!",		// #
+		{	"Timer added!",		// #69
 			"Timer hinzugefügt!",
 			"¡Programación añadida!",
 			"Enregistrement programmé!"
 		},
-		{	"Failed to add timer!",	// #
+		{	"Failed to add timer!",	// #70
 			"Timer konnte nicht hinzugefügt werden!",
 			"¡Añadir programación ha fallado!",
 			"Erreur de programmation de l\'enregistrement!"
 		},
-		{	"new timer",		// #
+		{	"new timer",		// #71
 			"Neuer Timer",
 			"Nueva programación",
 			"Nouvel enregistrement programmé"
 		},
-		{ "edit timer",		// #
+		{ "edit timer",		// #72
 			"Timer bearbeiten",
 			"Editar programación",
 			"modification d\'un enregistrement"
 		},
-		{	"active",			// #
+		{	"active",			// #73
 			"aktiv",
 			"activar",
 			""
 		},
-		{	"one-time recording",	// #
+		{	"one-time recording",	// #74
 			"Einmalige Aufnahme",
 			"Grabar una vez",
 			""
 		},
-		{	"regular recording",	// #
+		{	"regular recording",	// #75
 			"Regelm&auml;&szlig;ige Aufnahme",
 			"Grabar como serie",
 			""
 		},
-		{	"add start/stop margin",	// #
+		{	"add start/stop margin",	// #76
 			"Vor-/Nachlaufzeit hinzuf&uuml;gen",
 			"Añadir tiempo antes/después",
 			""
 		},
-		{	"priority",		// #
+		{	"priority",		// #77
 			"Priorit&auml;t",
 			"Prioridad",
 			""
 		},
-		{	"lifetime",		// #
+		{	"lifetime",		// #78
 			"Lebensdauer",
 			"Tiempo duración",
 			""
 		},
-		{	"title",		// #
+		{	"title",		// #79
 			"Titel",
 			"Título",
 			""
 		},
-		{	"check timer",	// #
+		{	"check timer",	// #80
 			"Angaben pr&uuml;fen",
 			"Comprobar programación",
 			""
 		},
-		{	"yes",		// #
+		{	"yes",		// #81
 			"ja",
 			"sí",
 			"oui"
 		},
-		{	"no",		// #
+		{	"no",		// #82
 			"nein",
 			"no",
 			"non"
 		},
-		{	"add",	// #
+		{	"add",	// #83
 			"eintragen",
 			"añadir",
 			""
 		},
-		{	"download all",		//#
+		{	"download all",		//#84
 			"alle herunterladen",
 			"descargar todo",
 			""
 		}, 
-		{	"Timer updated!",	// #
+		{	"Timer updated!",	// #85
 			"Timer aktualisiert!",
 			"¡Programación actualizada!",
 			""
 		},
-		{	"Failed to update timer! Maybe it changed in the meantime?",	//#
+		{	//86
+			"Failed to update timer! Maybe it changed in the meantime?",	
 			"Timer konnte nicht aktualisiert werden! Evt. hat sich die Timerliste in der Zwischenzeit verändert?",
 			"¡Actualizar programación ha fallado! ¿Tal vez fue cambiada mientras tanto?",
 			""
 		},
-		{	"- or -",		//#
+		{	//87
+			"- or -",		
 			"- oder -",
 			"- o -",
 			""
 		},
-		{	"delete timer",	// #
+		{	//88
+			"delete timer",	
 			"Timer löschen",
 			"Borrar programación",
 			""
 		},
-		{	" execute ",	// #
+		{	//89
+			" execute ",	
 			" ausführen ",
 			" ejecutar ",
 			""
 		},
-		{	"Timer deleted!",	// #
+		{	//90
+			"Timer deleted!",
 			"Timer gelöscht!",
 			"¡Programación borrada!",
 			""
 		},
-		{	"Failed to delete timer!",	// #
+		{	//91
+			"Failed to delete timer!",
 			"Timer konnte nicht gelöscht werden!",
 			"¡Borrar programación ha fallado!",
 			""
 		},
-		{	"browse",
+		{	//92
+			"browse",
 			"schmökern",
+			"navegar",
+			""
+		},
+		{	//93
+			"Current server",
 			"",
+			"Servidor actual",
+			""
+		},
+		{	//94
+			"Choose server",
+			"",
+			"Seleccionar servidor",
+			""
+		},
+		{	//95
+			"IP port",
+			"",
+			"Puerto IP",
 			""
 		}
 };
@@ -528,9 +560,9 @@ int i=0;
     }
   }
   return s;
-//  return i18n[15][langID];
 }
 
-char * dateStr(time_t t) {
-	
+const char *formatDate(struct tm *timeptr){
+	strftime(cldate,11,dateFormat[langID],timeptr);
+	return cldate;
 }

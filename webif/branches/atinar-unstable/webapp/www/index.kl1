@@ -73,6 +73,9 @@ getConfig();
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <% io_printf(out,"<link rel=\"alternate\" type=\"application/rss+xml\" title=\"Aufzeichnungen VDR\" href=\"http://%s:%d/rss.kl1\" />",myip,httpPort); %>
 <link rel="stylesheet" type="text/css" href="open7x0.css" />
+<style type="text/css">
+	.field .name {color:#333;font-weight:bold;}
+</style>
 </head>
 <body>
 <div class="head">
@@ -94,6 +97,12 @@ VDR-FW <% io_printf(out,tr("Homepage")); %>
 </div>
 
 <div class="content">
+	<h2><%=tr("Current server")%></h2>
+		<p>
+			<span class="field"><span class="name"><%=tr("IP address")%></span>:&nbsp;<span class="value"><%=server_ip%></span></span>.
+			<span class="field"><span class="name"><%=tr("IP port")%></span>:&nbsp;<span class="value"><% io_printf(out,"%d",server_port); %></span></span>.
+		</p>
+
 <%
 nowNextEntry * now_next=NULL;
 int max=0;
@@ -147,13 +156,13 @@ int max=0;
 		else io_printf(out,"</table>\n");
 %>
 
-	<h2>Seleccionar servidor</h2>
+	<h2><%=tr("Choose server")%></h2>
 	<form action="index.kl1" method="get">
-		<%
-		io_printf(out,"<span class=\"field\"><label for=\"server_ip\">IP</label>&nbsp;<input name=\"server_ip\" value=\"%s\" size=\"15\" maxlength=\"15\"/></span>", server_ip);
-		io_printf(out,"<span class=\"field\"><label for=\"server_port\">PORT</label>&nbsp;<input name=\"server_port\" value=\"%d\" size=\"4\" maxlength=\"5\"/></span>", server_port);
-		%>
-		<input type="submit" value="Submit"/>
+		<p>
+			<span class="field"><label for="server_ip" class="name"><%=tr("IP address")%></label>&nbsp;<input name="server_ip" value="<%=server_ip%>" size="15" maxlength="15" class="value"/></span>
+			<span class="field"><label for="server_port" class="name"><%=tr("IP port")%></label>&nbsp;<input name="server_port" value="<% io_printf(out,"%d",server_port); %>" size="4" maxlength="5" class="value"/></span>
+			<input type="submit" value="Submit"/>
+		</p>
 	</form>
 
 </div>

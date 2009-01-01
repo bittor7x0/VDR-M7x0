@@ -24,14 +24,12 @@
 extern int langID;
 extern char acceptedLang[3];
 
-typedef char *tI18nPhrase[I18NNUM];
-extern const tI18nPhrase i18n[];
-extern const char wochentage[7][15];
-extern const char weekdays[I18NNUM][7][15];
-extern const char shortWeekdays[7][4];
+extern const char * i18n[][I18NNUM];
+extern const char * weekdays[I18NNUM][7];
+extern const char * shortWeekdays[I18NNUM][7];
+extern const char * dateFormat[I18NNUM]; //to use with strftime
 extern const int startOfWeek[I18NNUM];
 
 const char *tr(const char *s);
-char * dateStr(time_t t);
-
+const char *formatDate(struct tm *timeptr);
 #endif

@@ -36,12 +36,6 @@ whatsmyip(myip);
 const char dayStr[7][4]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 const char monthStr[12][4]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
-/*if (open_svdrp()!=0) {
-  max_recs=-1;
-  response_set_status(response,503);
-  exit(1);
-}*/
-
 recs=getRecList(&max_recs,sortStart,sortDesc);
 
 header_t *header = request_get_header(request);
@@ -73,9 +67,9 @@ response_set_content_type(response,"application/rss+xml");
 
   for (i=0;i<max_recs;i++) {
     struct tm t=*localtime(&recs[i].start);
-
-    io_printf(out," <item>\n  <title>[%s %02d.%02d.%04d, %02d:%02d] %s</title>\n",wochentage[t.tm_wday],t.tm_mday,1+t.tm_mon,1900+t.tm_year,t.tm_hour,t.tm_min,recs[i].title);
-    io_printf(out,"  <description>[%s %02d.%02d.%04d] %02d:%02d: %s</description>",wochentage[t.tm_wday],t.tm_mday,1+t.tm_mon,1900+t.tm_year,t.tm_hour,t.tm_min,recs[i].title);
+		const char * fd=formatDate(&t);
+    io_printf(out," <item>\n  <title>[%s %s, %02d:%02d] %s</title>\n",weekdays[langID][t.tm_wday],fd,t.tm_hour,t.tm_min,recs[i].title);
+    io_printf(out,"  <description>[%s %s] %02d:%02d: %s</description>",weekdays[langID][t.tm_wday],fd,t.tm_hour,t.tm_min,recs[i].title);
     if (httpPort==80) {
       io_printf(out,"  <link>http://%s/recordings.kl1</link>\n",myip);
     } else {

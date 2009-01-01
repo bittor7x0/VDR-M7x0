@@ -122,7 +122,7 @@ getConfig();
   for (i=0;i<max_recs;i++) {
     struct tm t1=*localtime(&recs[i].start);
 
-    io_printf(out,"<tr>\n <td>%02d.%02d.%04d</td>\n",t1.tm_mday,1+t1.tm_mon,1900+t1.tm_year);
+    io_printf(out,"<tr>\n <td>%s</td>\n",formatDate(&t1));
 	io_printf(out," <td>%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
 	io_printf(out," <td>%s</td>\n",recs[i].title);
     if (recs[i].path!=NULL) {
