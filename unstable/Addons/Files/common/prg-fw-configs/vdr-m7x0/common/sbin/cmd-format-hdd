@@ -63,7 +63,7 @@ for disk in ${disks} ; do
 
 		# Format partition
 		echo "Formateando partición ${dev_partition}"
-		/sbin/mke2fs -b 4096 -i 65536 -m 1 ${dev_partition}
+		/sbin/mke2fs -b 4096 -i 65536 -I 128 -m 1 ${dev_partition}
 
 		# Set 1 month interval check and label
 		label="vdr${n_part}"
