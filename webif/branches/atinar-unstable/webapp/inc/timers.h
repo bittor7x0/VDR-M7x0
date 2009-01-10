@@ -28,7 +28,6 @@ enum timerType {
 	REGULAR  = 2
 };
 
-//Channelliste kurz
 typedef struct timerEntry_s {
  	time_t start;
 	time_t stop;

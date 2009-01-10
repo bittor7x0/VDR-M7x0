@@ -33,7 +33,7 @@ typedef struct eventEntry_s {
   time_t time;
 } eventEntry;
 
-typedef struct nowNextEntry {
+typedef struct nowNextEntry_s {
   char   channelName[50];
   char   channelId[50];
   int    channelNum;
