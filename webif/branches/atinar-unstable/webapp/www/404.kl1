@@ -103,13 +103,13 @@ if (strncmp(pathStr,"/video",6)!=0 && legalPath(pathStr)) {
   	char * bcPath=malloc(strlen(videoPath));
   	char * s=strdup(videoPath);
   	strcpy(bcPath,"/video/");
-  	for(bc=(char *)strtok(s+16,"/");bc!=0;bc=(char *)strtok(0,"/")) {
+  	for(bc=strtok(s+16,"/");bc!=0;bc=strtok(0,"/")) {
   		strcat(bcPath,bc); strcat(bcPath,"/");
   		if (strcmp(bc,"_")) {
   			io_printf(out,"<a href=\"%s\">&raquo;&nbsp;%s</a>\n",bcPath,bc);
   		}
   	}
-  	free(bc); free(bcPath); free(s);
+  	free(bcPath); free(s);
   }
   
   io_printf(out,"</div>\n");
@@ -164,6 +164,8 @@ if (strncmp(pathStr,"/video",6)!=0 && legalPath(pathStr)) {
 	}
 	free(videoPath);
 }
+free(pathStr);
+free(queryStr);
 
 %>
 
@@ -171,12 +173,4 @@ if (strncmp(pathStr,"/video",6)!=0 && legalPath(pathStr)) {
 
 </div>
 
-<div class="foot">
-        <p>(C) 2006-08 open7x0-team</p>
-</div>
-</body>
-<%
-  free(pathStr);
-	free(queryStr);
-%>
-</html>
+<%@ include ../../components/post-content.kl1 %>
