@@ -21,6 +21,7 @@ KLONE_VERSION ?= 2.1.1
 
 # klone configure arguments
 KLONE_CONF_ARGS = --disable-lib=openssl --disable-lib=z --disable_cxx
+KLONE_CONF_ARGS += --enable_fs
 # KLONE_CONF_ARGS += --enable_debug --enable_libu_debug
 # KLONE_CONF_ARGS += --prefix=$(DESTDIR) --libs=$(DESTDIR) --disable_libu_mini --disable_shared
 
