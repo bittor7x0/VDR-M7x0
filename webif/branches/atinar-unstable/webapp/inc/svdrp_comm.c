@@ -77,109 +77,115 @@ void set_server_address(session_t * session, char aserver_ip[16], uint16_t * ase
 
 //Open the connection
 int open_svdrp() {
-  char * data;
-  pid_t pid;
-  pid=getpid();
-  signal(SIGPIPE,signal_handler);
+	char * data;
+	pid_t pid;
+	pid=getpid();
+	signal(SIGPIPE,signal_handler);
 
-  if (svdrp_socket==0) {
-    struct sockaddr_in svdrp_addr;
-  	dbg("Try to open SVDRP connection to %s:%d from pid [%d]",server_ip,server_port,pid);
-  	svdrp_addr.sin_family = AF_INET;
-  	svdrp_addr.sin_port = htons(server_port);
-  	inet_aton(server_ip, &svdrp_addr.sin_addr);
+	if (svdrp_socket==0) {
+		struct sockaddr_in svdrp_addr;
+		dbg("Try to open SVDRP connection to %s:%d from pid [%d]",server_ip,server_port,pid);
+		svdrp_addr.sin_family = AF_INET;
+		svdrp_addr.sin_port = htons(server_port);
+		inet_aton(server_ip, &svdrp_addr.sin_addr);
 
-  	// create tcp socket
-  	if ((svdrp_socket=socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-  		warn("Failed to create TCP Socket.");
-  		exit(errno);
-  	}
-  	// Connect to VDR
-  	if (connect(svdrp_socket, (struct sockaddr*)&svdrp_addr, sizeof(svdrp_addr)) < 0) {
-  		warn("Failed to connect to VDR.");
-  		exit(errno);
-  	}
+		// create tcp socket
+		if ((svdrp_socket=socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+			warn("Failed to create TCP Socket.");
+			exit(errno);
+		}
 
-  	//compile pattern for regexec later in a different function
-  	if (regcomp(&regbuf,eod_pattern,REG_EXTENDED | REG_NOSUB | REG_NEWLINE)!=0) {
-  		warn("Error compiling the pattern!");
-  		exit(1);
-  	}
-  	dbg("SVDRP connection to %s  established.",server_ip);
-  	data=read_svdrp();
-  	free(data);
-  } else {
-  	dbg("SVDRP connection to %s is already up.",server_ip);
-  }
-  return 0;
+		// Connect to VDR
+		if (connect(svdrp_socket, (struct sockaddr*)&svdrp_addr, sizeof(svdrp_addr)) < 0) {
+			warn("Failed to connect to VDR.");
+			close(svdrp_socket);
+			svdrp_socket=0;
+			return errno;
+		}
+
+		//compile pattern for regexec later in a different function
+		if (regcomp(&regbuf,eod_pattern,REG_EXTENDED | REG_NOSUB | REG_NEWLINE)!=0) {
+			warn("Error compiling the pattern!");
+			exit(1);
+		}
+		dbg("SVDRP connection to %s  established.",server_ip);
+		data=read_svdrp();
+		free(data);
+	} else {
+		dbg("SVDRP connection to %s is already up.",server_ip);
+	}
+	return 0;
 }
 
 int close_svdrp() {
-  char * data;
-  dbg("Try to close SVDRP connection.");
-  write_svdrp("QUIT\r");
-  data=read_svdrp();
-  free(data);
-  close(svdrp_socket);
-  svdrp_socket=0;
-  if (svdrp_socket==0) { 
-  	dbg("SVDRP connection closed."); 
-  	return 1; } 
-  else { 
-  	warn("Can't close SVDRP socket!"); 
-  	return 0; 
-  }
+	char * data;
+	dbg("Try to close SVDRP connection.");
+	if (write_svdrp("QUIT\r")<=0){
+		warn("Can't connect with SVDRP server!");
+		return 0;
+	}
+	data=read_svdrp();
+	free(data);
+	close(svdrp_socket);
+	svdrp_socket=0;
+	if (svdrp_socket==0) {
+		dbg("SVDRP connection closed.");
+		return 1;
+	} else {
+		warn("Can't close SVDRP socket!");
+		return 0;
+	}
 }
 
 char * read_svdrp() {
-  char * data;
-  char buffer[SVDRP_BUFFER_SIZE]="";
-  int l=0; //current length without trailing 0
-  int n=0;
-  int eod_matches=1;
+	char * data;
+	char buffer[SVDRP_BUFFER_SIZE]="";
+	int l=0; //current length without trailing 0
+	int n=0;
+	int eod_matches=1;
 
-  if (svdrp_socket==0) {
-  	warn("No socket found!");
-  	return NULL;
-  }
+	if (svdrp_socket==0) {
+		warn("No socket found!");
+		return NULL;
+	}
 
-  data=NULL;
-  while ( (n=recv(svdrp_socket,buffer,SVDRP_BUFFER_SIZE-1,0))>0 ) {
-    buffer[n]='\0';
-    char * tmp=realloc(data,l+n+1);
-    if (!tmp) {
-      warn("(Re)allocation failed. Old size is %d, new size should be %d",(data==NULL)?0:l+1,l+n+1);
-      exit(1);
-    }
-    if (data==NULL) {
-      tmp[0]='\0';
-    }
-    data=tmp;
-    strcat(data,buffer); 
-    l+=n;
-    if (eod_matches!=0) {
-      int offset=(l>n+5) ? l-n-5 : 0;
-      eod_matches=regexec(&regbuf,data+offset,0,NULL,0);
-    }
-    if ((eod_matches==0) && (data[l-1]=='\n')){
-      break;
-    }
-  }
-  return data;
+	data=NULL;
+	while ( (n=recv(svdrp_socket,buffer,SVDRP_BUFFER_SIZE-1,0))>0 ) {
+		buffer[n]='\0';
+		char * tmp=realloc(data,l+n+1);
+		if (!tmp) {
+			warn("(Re)allocation failed. Old size is %d, new size should be %d",(data==NULL)?0:l+1,l+n+1);
+			exit(1);
+		}
+		if (data==NULL) {
+			tmp[0]='\0';
+		}
+		data=tmp;
+		strcat(data,buffer);
+		l+=n;
+		if (eod_matches!=0) {
+			int offset=(l>n+5) ? l-n-5 : 0;
+			eod_matches=regexec(&regbuf,data+offset,0,NULL,0);
+		}
+		if ((eod_matches==0) && (data[l-1]=='\n')){
+			break;
+		}
+	}
+	return data;
 }
 
 int write_svdrp(char *data) {
 	dbg("Sending data to VDR [%s]",data);
-  if (open_svdrp()==0) {
-    return write(svdrp_socket,data,strlen(data)+1);
-  } else {
-    warn("Can't establish connection to VDR via SVDRP. Exit.");
-    return 0;
-  }
+	if (open_svdrp()==0) {
+		return write(svdrp_socket,data,strlen(data)+1);
+	} else {
+		warn("Can't establish connection to VDR via SVDRP. Exit.");
+		return 0;
+	}
 }
 
 void whatsmyip(char myip[16]) {
-	if (strcmp(server_ip,default_server_ip)==0) {
+	if (isVdrLocal()) {
 		int fd;
 		int ret;
 		struct ifreq ifr;
@@ -197,7 +203,7 @@ void whatsmyip(char myip[16]) {
 		if (ret < 0) {
 			perror("ioctl");
 			return;
-  		}
+		}
 		strcpy(myip,inet_ntoa(((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr));
 	}
 	else {
@@ -205,3 +211,8 @@ void whatsmyip(char myip[16]) {
 		strcpy(myip,server_ip);
 	}
 }
+
+int isVdrLocal(){
+	return (strcmp(server_ip,default_server_ip)==0);
+}
+

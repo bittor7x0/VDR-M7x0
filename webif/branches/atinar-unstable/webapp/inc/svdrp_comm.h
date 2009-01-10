@@ -43,4 +43,7 @@ int write_svdrp(char *data);
 //Return public server ip
 void whatsmyip(char myip[16]);
 
+//TODO Are vdr and webifd running in the same machine?
+int isVdrLocal();
+
 #endif

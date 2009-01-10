@@ -65,4 +65,55 @@ int fileExists(const char * fileName);
 int legalPath(char * pathName);
 int vdrRunning();
 
+enum sortField {
+	SF_NONE,
+	SF_START,
+	//SF_STOP,
+	SF_TYPE=3,
+	SF_TITLE,
+	SF_NUMBER,
+	SF_NAME,
+	SF_PRIORITY,
+	SF_LIFETIME,
+	SF_ACTIVE,
+	SF_MUX
+};
+
+enum sortDirection {
+	SD_DESC=-1,
+	SD_NONE,
+	SD_ASC=1
+};
+
+enum pageNumber {
+	PN_INDEX = 4,
+	PN_PROGRAMS,
+	PN_CHANNELS,
+	PN_TIMERS,
+	PN_RECORDINGS,
+	PN_SETTINGS,
+	PN_BROWSE=92,
+	PN_LINKS= 96
+};
+
+extern enum sortField sortBy;
+extern enum sortDirection sortDirection;
+extern enum pageNumber currentPage;
+
+extern const char * action;
+extern const char * SUMMARY;
+extern const char * EDIT;
+extern const char * NEW;
+extern const char * ADD;
+extern const char * DELE;
+extern const char * NOACTION;
+
+extern char server_ip[16];
+extern uint16_t server_port;
+extern char myip[16];
+extern char * newt;
+
+
+const char * sortClass(enum sortField sf);
+#define printLink(sf) io_printf(out,"%s?sort=%d&direction=%d",SCRIPT_NAME,sf,(sf==sortBy)?-sortDirection:1)
 #endif

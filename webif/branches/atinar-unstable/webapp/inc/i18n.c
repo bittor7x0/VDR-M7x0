@@ -20,8 +20,8 @@
 
 int langID=-1;
 char acceptedLang[3]="";
-int numOfPhrases=96;
-char cldate[11];
+int numOfPhrases=97;
+char cldate[20];
 
 // startOfWeek holds the index of the first weekday of the week.
 // for example 0=Sunday for US, 1=Monday for Germany and so on
@@ -520,9 +520,9 @@ const char * i18n[][I18NNUM]={
 			""
 		},
 		{	//92
-			"browse",
-			"schmökern",
-			"navegar",
+			"Browse",
+			"Schmökern",
+			"Navegar",
 			""
 		},
 		{	//93
@@ -541,6 +541,12 @@ const char * i18n[][I18NNUM]={
 			"IP port",
 			"",
 			"Puerto IP",
+			""
+		},
+		{	//96
+			"Links",
+			"",
+			"Enlaces",
 			""
 		}
 };
@@ -562,7 +568,15 @@ int i=0;
   return s;
 }
 
-const char *formatDate(struct tm *timeptr){
-	strftime(cldate,11,dateFormat[langID],timeptr);
+const char *formatDate(struct tm *timeptr, int addHour){
+	char * format;
+	if (!addHour || asprintf(&format,"%s %H:%M",dateFormat[langID])<0) {
+		format=(char *)dateFormat[langID];
+		addHour=0;
+	}
+	size_t l = strftime(cldate,sizeof cldate,(const char*)format,timeptr);
+	if (addHour) {
+		free(format);
+	}
 	return cldate;
 }

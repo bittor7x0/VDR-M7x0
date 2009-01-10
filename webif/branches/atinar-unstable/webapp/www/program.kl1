@@ -39,7 +39,6 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 #ifdef DEBUG
 dbg_program_kl1();
 #endif
-set_server_address(session,NULL,NULL);
 
 const char isTimerStr[3][3]={""," t"," T"};
 int isTimerInt=0;
@@ -49,241 +48,208 @@ int i=0;
 int max=0;
 int channelNum=0;
 
-header_t *header = request_get_header(request);
-if (header_get_field(header,"Accept-Language")!=NULL) {
-  field_t *field=header_get_field(header,"Accept-Language");
-  strncpy(acceptedLang,field->value,2);
-  acceptedLang[2]='\0';
-}
-
 vars_t *args = request_get_args(request);
 channelNum=vars_get_value_i(args,"chan");
 
-channelList * channels;
-int max_channels=1;
-channels=get_channel_list(&max_channels);
+channelList channels;
+getChannelList(&channels);
 
 int max_timers;
 timerEntry * timers;
-timers=getTimerList(&max_timers,0,0);
+timers=getTimerList(&channels,&max_timers,0,0);
 
-getConfig();
+currentPage=PN_PROGRAMS;
+%>
 
-%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
-<head>
-<title>Programm / EPG - open7x0 VDR-FW</title>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
-<link rel="stylesheet" type="text/css" href="open7x0.css" />
-</head>
-<body>
-<div class="head">
-Programm / EPG
-</div>
-<div class="navigation"><div class="nav">
-<ul>
- <li><a href="index.kl1"><% io_printf(out,i18n[4][langID]); %></a></li>
- <li class="act"><a href="program.kl1"><% io_printf(out,i18n[5][langID]); %></a></li>
- <li><a href="channels.kl1"><% io_printf(out,i18n[6][langID]); %></a></li>
- <li><a href="timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
- <li><a href="recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
- <li><a href="settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
- <li><a href="http://www.open7x0.org/" target="_blank">open7x0.org</a></li>
-</ul>
-<span id="navclear"></span>
-</div>
-<div class="liniefett"></div>
-<div class="nav2">
-<ul>
- <li class="act"><a href="program.kl1"><% io_printf(out,tr("summary")); %></a></li>
-</ul>
-</div>
-</div>
+<%@ include ../../components/pre-content.kl1 %>
 
 <div class="content">
 <%
- if (channelNum<1) {
-  io_printf(out,"<h2>%s</h2>\n",tr("Now on TV"));
-  io_printf(out,"<table class=\"list1\">\n");
-	 
-  io_printf(out,"<tr><th>%s</th><th colspan=\"2\">now</th><th colspan=\"2\">next</th></tr>\n",tr("channel"));
-  now_next=getNowNext(&max,0);
-  if (max>0) {
-   for (i=0;i<max;i++) {
-	 io_printf(out,"<tr><td><a class=\"black\" href=\"program.kl1?chan=%d\">%s</a></td>\n",now_next[i].channelNum,now_next[i].channelName);
-     char newt[256]="";
-	 struct tm *timeptr;
-     char * eT=NULL;
-	 eT=malloc(strlen(now_next[i].now_title)*2+1);
-	 u_htmlncpy(eT,now_next[i].now_title,strlen(now_next[i].now_title),HTMLCPY_ENCODE);
-	 if (now_next[i].now_time>0) {
-       long int end_time = now_next[i].now_time+now_next[i].now_duration;
-	   make_timer(newt,1,now_next[i].channelNum,now_next[i].now_time,end_time,50,99,now_next[i].now_title);
-	   isTimerInt=checkForTimer(timers,max_timers,now_next[i].channelNum,now_next[i].now_time,0,now_next[i].now_duration);
-	   timeptr = localtime(&now_next[i].now_time);
-	   io_printf(out,"<td><nobr><b>%02d:%02d%s</b></nobr></td><td><div class=\"box_right\"><a href=\"timers.kl1?a=add&timer=%s\" title=\"%s\"><img src=\"/img/rec16.png\" alt=\"%s\" /></a></div>",timeptr->tm_hour,timeptr->tm_min,isTimerStr[isTimerInt],newt,tr("record"),tr("record"));
-	   io_printf(out,"<div class=\"box_right\"><div class=\"infobox\">&nbsp;<img src=\"/img/info16.png\" alt=\"%s\" /><div>\n",tr("more infos"));
-       io_printf(out,"  <b>%s</b><br />",eT);
-       if (strlen(now_next[i].now_short)>0) {
-    	 char * eS=NULL;
-    	 eS=malloc(2*strlen(now_next[i].now_short));
-         if ( (eS) && (u_htmlncpy(eS,now_next[i].now_short,strlen(now_next[i].now_short),HTMLCPY_ENCODE)!=-1) ) {
-           io_printf(out,"  %s<br />\n",eS);
-         }
-         free(eS);
-       }
-       io_printf(out,"  %s <b>%02d:%02d</b>",tr("from"),timeptr->tm_hour,timeptr->tm_min);
-       timeptr=localtime(&end_time);
-       io_printf(out," %s <b>%02d:%02d</b> (%s: %s %d %s)\n  <p>",tr("to"),timeptr->tm_hour,timeptr->tm_min,tr("runtime"),tr("approx."),now_next[i].now_duration/60,tr("minutes"));
-	   if (strlen(now_next[i].now_desc)>0) {
-		 char * eD=NULL;
-		 eD=malloc(2*strlen(now_next[i].now_desc));
-		 if ( (eD) && (u_htmlncpy(eD,now_next[i].now_desc,strlen(now_next[i].now_desc),HTMLCPY_ENCODE)!=-1) ) {
-           io_printf(out,"%s",eD);
-		 }
-		 free(eD);
-	   }
-	   io_printf(out,"</p></div></div></div>\n  %s</td>\n",eT);
-	 } else {
-	   io_printf(out,"<td>&nbsp;</td><td>%s</td>",eT);
-	 }
-     
-     eT=realloc(eT,strlen(now_next[i].next_title)*2+1);
-	 u_htmlncpy(eT,now_next[i].next_title,strlen(now_next[i].next_title),HTMLCPY_ENCODE);
-	 if (now_next[i].next_time>0) {
-	   long int end_time = now_next[i].next_time+now_next[i].next_duration;
-	   make_timer(newt,1,now_next[i].channelNum,now_next[i].next_time,end_time,50,99,now_next[i].next_title);
-	   isTimerInt=checkForTimer(timers,max_timers,now_next[i].channelNum,now_next[i].next_time,0,now_next[i].next_duration);
-	   timeptr = localtime(&now_next[i].next_time);
-	   io_printf(out,"<td><nobr><b>%02d:%02d%s</b></nobr></td><td><div class=\"box_right\"><a href=\"timers.kl1?a=add&timer=%s\" title=\"%s\"><img src=\"/img/rec16.png\" alt=\"%s\" /></a></div>",timeptr->tm_hour,timeptr->tm_min,isTimerStr[isTimerInt],newt,tr("record"),tr("record"));
-	   io_printf(out,"<div class=\"box_right\"><div class=\"infobox\">&nbsp;<img src=\"/img/info16.png\" alt=\"%s\" /><div style=\"margin-left:-400px; width:400px;\">\n",tr("more infos"));
-	   io_printf(out,"  <b>%s</b><br />",eT);
-	   if (strlen(now_next[i].next_short)>0) {
-	     char * eS=NULL;
-	     eS=malloc(2*strlen(now_next[i].next_short));
-	     if ( (eS) && (u_htmlncpy(eS,now_next[i].next_short,strlen(now_next[i].next_short),HTMLCPY_ENCODE)!=-1) ) {
-	       io_printf(out,"  %s<br />\n",eS);
-	     }
-	     free(eS);
-	   }
-	   io_printf(out,"  %s <b>%02d:%02d</b>",tr("from"),timeptr->tm_hour,timeptr->tm_min);
-	   timeptr=localtime(&end_time);
-	   io_printf(out," %s <b>%02d:%02d</b> (%s: %s %d %s)\n   <p>",tr("to"),timeptr->tm_hour,timeptr->tm_min,tr("runtime"),tr("approx."),now_next[i].next_duration/60,tr("minutes"));
-	   if (strlen(now_next[i].next_desc)>0) {
-		 char * eD=NULL;
-		 eD=malloc(2*strlen(now_next[i].next_desc));
-		 if ( (eD) && (u_htmlncpy(eD,now_next[i].next_desc,strlen(now_next[i].next_desc),HTMLCPY_ENCODE)!=-1) ) {
-           io_printf(out,"%s",eD);
-		 }
-		 free(eD);
-	   }
-	   io_printf(out,"</p></div></div></div>\n  %s</td></tr>\n",eT);
-	 } else {
-	   io_printf(out,"<td>&nbsp;</td><td>%s</td>",eT);
-	   io_printf(out,"</tr>\n");
-	 }
-	 free(eT);
-   }
-  } else {
-    io_printf(out,"<p>%s</p>",i18n[14][langID]);	  
-  }
-  free(now_next);
- } else {
+if (channelNum<1) {
+	io_printf(out,"<h2>%s</h2>\n",tr("Now on TV"));
+	io_printf(out,"<table class=\"list1\">\n");
+	
+	io_printf(out,"<tr><th>%s</th><th colspan=\"2\">now</th><th colspan=\"2\">next</th></tr>\n",tr("channel"));
+	now_next=getNowNext(&channels,&max,0);
+	if (max>0) {
+		for (i=0;i<max;i++) {
+			io_printf(out,"<tr><td><a class=\"black\" href=\"program.kl1?chan=%d\">%s</a></td>\n",now_next[i].channelNum,now_next[i].channelName);
+			char newt[256]="";
+			struct tm *timeptr;
+			char * eT=NULL;
+			eT=malloc(strlen(now_next[i].now_title)*2+1);
+			u_htmlncpy(eT,now_next[i].now_title,strlen(now_next[i].now_title),HTMLCPY_ENCODE);
+			if (now_next[i].now_time>0) {
+				long int end_time = now_next[i].now_time+now_next[i].now_duration;
+				make_timer(newt,1,now_next[i].channelNum,now_next[i].now_time,end_time,50,99,now_next[i].now_title);
+				isTimerInt=checkForTimer(timers,max_timers,now_next[i].channelNum,now_next[i].now_time,0,now_next[i].now_duration);
+				timeptr = localtime(&now_next[i].now_time);
+				io_printf(out,"<td><nobr><b>%02d:%02d%s</b></nobr></td><td><div class=\"box_right\"><a href=\"timers.kl1?a=add&timer=%s\" title=\"%s\"><img src=\"/img/rec16.png\" alt=\"%s\" /></a></div>",timeptr->tm_hour,timeptr->tm_min,isTimerStr[isTimerInt],newt,tr("record"),tr("record"));
+				io_printf(out,"<div class=\"box_right\">");
+				io_printf(out,"<div class=\"infobox\">&nbsp;<img src=\"/img/info16.png\" alt=\"%s\" /><div class=\"shadow\"><div class=\"info\">\n",tr("more infos"));
+				io_printf(out,"  <b>%s</b><br />",eT);
+				if (strlen(now_next[i].now_short)>0) {
+					char * eS=NULL;
+					eS=malloc(2*strlen(now_next[i].now_short));
+					if ( (eS) && (u_htmlncpy(eS,now_next[i].now_short,strlen(now_next[i].now_short),HTMLCPY_ENCODE)!=-1) ) {
+						io_printf(out,"  %s<br />\n",eS);
+					}
+					free(eS);
+				}
+				io_printf(out,"  %s <b>%02d:%02d</b>",tr("from"),timeptr->tm_hour,timeptr->tm_min);
+				timeptr=localtime(&end_time);
+				io_printf(out," %s <b>%02d:%02d</b> (%s: %s %d %s)\n  <p>",tr("to"),timeptr->tm_hour,timeptr->tm_min,tr("runtime"),tr("approx."),now_next[i].now_duration/60,tr("minutes"));
+				if (strlen(now_next[i].now_desc)>0) {
+					char * eD=NULL;
+					eD=malloc(2*strlen(now_next[i].now_desc));
+					if ( (eD) && (u_htmlncpy(eD,now_next[i].now_desc,strlen(now_next[i].now_desc),HTMLCPY_ENCODE)!=-1) ) {
+						io_printf(out,"%s",eD);
+					}
+					free(eD);
+				}
+				io_printf(out,"</p></div></div></div>");
+				io_printf(out,"</div>\n  %s</td>\n",eT);
+			} else {
+				io_printf(out,"<td>&nbsp;</td><td>%s</td>",eT);
+			}
+			
+			eT=realloc(eT,strlen(now_next[i].next_title)*2+1);
+			u_htmlncpy(eT,now_next[i].next_title,strlen(now_next[i].next_title),HTMLCPY_ENCODE);
+			if (now_next[i].next_time>0) {
+				long int end_time = now_next[i].next_time+now_next[i].next_duration;
+				make_timer(newt,1,now_next[i].channelNum,now_next[i].next_time,end_time,50,99,now_next[i].next_title);
+				isTimerInt=checkForTimer(timers,max_timers,now_next[i].channelNum,now_next[i].next_time,0,now_next[i].next_duration);
+				timeptr = localtime(&now_next[i].next_time);
+				io_printf(out,"<td><nobr><b>%02d:%02d%s</b></nobr></td><td><div class=\"box_right\"><a href=\"timers.kl1?a=add&timer=%s\" title=\"%s\"><img src=\"/img/rec16.png\" alt=\"%s\" /></a></div>",timeptr->tm_hour,timeptr->tm_min,isTimerStr[isTimerInt],newt,tr("record"),tr("record"));
+				io_printf(out,"<div class=\"box_right\">");
+				io_printf(out,"<div class=\"infobox\">&nbsp;<img src=\"/img/info16.png\" alt=\"%s\" /><div class=\"shadow\"><div class=\"info\">\n",tr("more infos"));
+				io_printf(out,"  <b>%s</b><br />",eT);
+				if (strlen(now_next[i].next_short)>0) {
+					char * eS=NULL;
+					eS=malloc(2*strlen(now_next[i].next_short));
+					if ( (eS) && (u_htmlncpy(eS,now_next[i].next_short,strlen(now_next[i].next_short),HTMLCPY_ENCODE)!=-1) ) {
+						io_printf(out,"  %s<br />\n",eS);
+					}
+					free(eS);
+				}
+				io_printf(out,"  %s <b>%02d:%02d</b>",tr("from"),timeptr->tm_hour,timeptr->tm_min);
+				timeptr=localtime(&end_time);
+				io_printf(out," %s <b>%02d:%02d</b> (%s: %s %d %s)\n   <p>",tr("to"),timeptr->tm_hour,timeptr->tm_min,tr("runtime"),tr("approx."),now_next[i].next_duration/60,tr("minutes"));
+				if (strlen(now_next[i].next_desc)>0) {
+					char * eD=NULL;
+					eD=malloc(2*strlen(now_next[i].next_desc));
+					if ( (eD) && (u_htmlncpy(eD,now_next[i].next_desc,strlen(now_next[i].next_desc),HTMLCPY_ENCODE)!=-1) ) {
+						io_printf(out,"%s",eD);
+					}
+					free(eD);
+				}
+				io_printf(out,"</p></div></div></div>");
+				io_printf(out,"</div>\n  %s</td>\n",eT);
+			} else {
+				io_printf(out,"<td>&nbsp;</td><td>%s</td>",eT);
+				io_printf(out,"</tr>\n");
+			}
+			free(eT);
+		}
+	} else {
+		io_printf(out,"<p>%s</p>",i18n[14][langID]);		
+	}
+	free(now_next);
+	
+} else {
 
-// NEU ************************************************************************	 
-  char cmd[20]="";
-  char ret_code[10]="";
-  char * data;
-  char * p;
-  char * D=NULL;
-  char * S=NULL;
-  char * T=NULL;
-  //TODO_KILLE space for trailinng 0 in datum_str and now.
-  long int now_time=0;
-  long int next_time=0;
-  int duration=0;
-  char newt[256]="";
-  int previous_yday=-1;
+// NEU ************************************************************************	
+	char cmd[20]="";
+	char ret_code[10]="";
+	char * data;
+	char * p;
+	char * D=NULL;
+	char * S=NULL;
+	char * T=NULL;
+	//TODO_KILLE space for trailinng 0 in datum_str and now.
+	long int now_time=0;
+	long int next_time=0;
+	int duration=0;
+	char newt[256]="";
+	int previous_yday=-1;
 
-  sprintf(cmd,"LSTE %d\r",channelNum);
-  write_svdrp(cmd);
-  data=read_svdrp();
-  io_printf(out,"<h2>%s %s &raquo;%s&laquo;</h2>\n<table class=\"list1\">\n<tr><th>%s</th><th>%s</th><th>&nbsp;</th></tr>\n",tr("Schedule"),tr("for"),channels[channelNum-1].channelName,tr("Time"),tr("program")); 
-  //TODO factorizar esto a parseEvent()
-  for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-  	parse_ret_code(p,ret_code);
-  	if (!strcmp(ret_code,"550")) {
-  		io_printf(out,"<p>%s</p>",i18n[14][langID]);
-  		return;
-  	} else if (!strcmp(ret_code,"215-D")) {
-  		D=strdup(p+6); //TODO Necesario duplicar?
-  	} else if (!strcmp(ret_code,"215-S")) {
-  		S=strdup(p+6);
-  	} else if (!strcmp(ret_code,"215-T")) {
-  		T=strdup(p+6);
-  	} else if (!strcmp(ret_code,"215-E")) {
-  		parse_215E(p,6,NULL,&now_time,&duration,NULL,NULL);
-  		next_time=now_time+duration;
-  	} else if (!strcmp(ret_code,"215-e")) {
-  		if (now_time>0) {
-  			struct tm timeptr=*localtime(&now_time);
-        isTimerInt=checkForTimer(timers,max_timers,channelNum,now_time,next_time,0);
-        make_timer(newt,1,channelNum,now_time,next_time,50,99,T);
-        if (previous_yday!=timeptr.tm_yday) {
-        	previous_yday=timeptr.tm_yday;
-        	io_printf(out,"<tr><td class=\"grey\" colspan=\"3\"><b>%s %s</b></td></tr>\n",weekdays[langID][timeptr.tm_wday],formatDate(&timeptr));
-        }
-        io_printf(out,"<tr><td><b>%02d:%02d%s</b></td><td>%s</td><td style=\"width:70px;\">\n",timeptr.tm_hour,timeptr.tm_min,isTimerStr[isTimerInt],T);
-//	    io_printf(out,"<div class=\"box_right\"><img src=\"/img/timer16.png\" alt=\"%s\" /></a></div>\n",tr("create timer"));
-        io_printf(out,"<div class=\"box_right\"><a href=\"timers.kl1?a=edit&timer=%s\" title=\"%s\"><img src=\"/img/timer16.png\" alt=\"%s\" /></a></div>\n",newt,tr("create timer"),tr("create timer"));
-        io_printf(out,"<div class=\"box_right\"><a href=\"timers.kl1?a=add&timer=%s\" title=\"%s\"><img src=\"/img/rec16.png\" alt=\"%s\" /></a></div>\n",newt,tr("record"),tr("record"));
-        io_printf(out,"<div class=\"box_right\"><div class=\"infobox\">&nbsp;<img src=\"/img/info16.png\" alt=\"%s\" /><div style=\"margin-left:-400px; width:400px;\">\n",tr("more infos"));
-        io_printf(out,"  <b>%s</b><br />",T);
-        if (S) { 
-        	char * eS=NULL;
-        	eS=malloc(2*strlen(S));
-        	if ( (eS) && (u_htmlncpy(eS,S,strlen(S),HTMLCPY_ENCODE)!=-1) ) {
-        		io_printf(out,"  %s<br />\n",eS);
-        	}
-        	free(eS);
-        }
-        io_printf(out,"  %s <b>%02d:%02d</b>",tr("from"),timeptr.tm_hour,timeptr.tm_min);
-        timeptr=*localtime(&next_time);
-        io_printf(out," %s <b>%02d:%02d</b> (%s: %s %d %s)  <p>",tr("to"),timeptr.tm_hour,timeptr.tm_min,tr("runtime"),tr("approx."),duration/60,tr("minutes"));
-        if (D) { 
-        	char * eD=NULL;
-        	eD=malloc(2*strlen(D));
-        	if ( (eD) && (u_htmlncpy(eD,D,strlen(D),HTMLCPY_ENCODE)!=-1) ) {
-  	        io_printf(out,eD);
-        	}
-        	free(eD);
-        }		
-        io_printf(out,"</p></div></div></div></td></tr>\n");
-  		} else if (!strcmp(ret_code,"250")) {
-  			io_printf(out,"<tr><td>&nbsp;</td><td>%s</td><td>&nbsp;</td></tr>\n",T);
-  		} else {
-  			dbg("Unknown answer from svdrpd.");
-  		}
-  		free(D); free(S); free(T);
-  		D=NULL;  S=NULL;  T=NULL;
-  	}
-  } 
-  free(data);
+	sprintf(cmd,"LSTE %d\r",channelNum);
+	write_svdrp(cmd);
+	data=read_svdrp();
+	io_printf(out,"<h2>%s %s &raquo;%s&laquo;</h2>\n<table class=\"list1\">\n<tr><th>%s</th><th>%s</th><th>&nbsp;</th></tr>\n",tr("Schedule"),tr("for"),channels.entry[channelNum-1].channelName,tr("Time"),tr("program")); 
+	//TODO factorizar esto a parseEvent()
+	for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+		parse_ret_code(p,ret_code);
+		if (!strcmp(ret_code,"550")) {
+			io_printf(out,"<p>%s</p>",i18n[14][langID]);
+			return;
+		} else if (!strcmp(ret_code,"215-D")) {
+			D=strdup(p+6); //TODO Necesario duplicar?
+		} else if (!strcmp(ret_code,"215-S")) {
+			S=strdup(p+6);
+		} else if (!strcmp(ret_code,"215-T")) {
+			T=strdup(p+6);
+		} else if (!strcmp(ret_code,"215-E")) {
+			parse_215E(p+6,NULL,&now_time,&duration,NULL,NULL);
+			next_time=now_time+duration;
+		} else if (!strcmp(ret_code,"215-e")) {
+			if (now_time>0) {
+				struct tm timeptr=*localtime(&now_time);
+				isTimerInt=checkForTimer(timers,max_timers,channelNum,now_time,next_time,0);
+				make_timer(newt,1,channelNum,now_time,next_time,50,99,T);
+				if (previous_yday!=timeptr.tm_yday) {
+					previous_yday=timeptr.tm_yday;
+					io_printf(out,"<tr><td class=\"grey\" colspan=\"3\"><b>%s %s</b></td></tr>\n",weekdays[langID][timeptr.tm_wday],formatDate(&timeptr,0));
+				}
+				io_printf(out,"<tr><td><b>%02d:%02d%s</b></td><td>%s</td><td style=\"width:70px;\">\n",timeptr.tm_hour,timeptr.tm_min,isTimerStr[isTimerInt],T);
+//				io_printf(out,"<div class=\"box_right\"><img src=\"/img/timer16.png\" alt=\"%s\" /></a></div>\n",tr("create timer"));
+				io_printf(out,"<div class=\"box_right\"><a href=\"timers.kl1?a=edit&timer=%s\" title=\"%s\"><img src=\"/img/timer16.png\" alt=\"%s\" /></a></div>\n",newt,tr("create timer"),tr("create timer"));
+				io_printf(out,"<div class=\"box_right\"><a href=\"timers.kl1?a=add&timer=%s\" title=\"%s\"><img src=\"/img/rec16.png\" alt=\"%s\" /></a></div>\n",newt,tr("record"),tr("record"));
+				io_printf(out,"<div class=\"box_right\">");
+				io_printf(out,"<div class=\"infobox\">&nbsp;<img src=\"/img/info16.png\" alt=\"%s\" /><div class=\"shadow\"><div class=\"info\">\n",tr("more infos"));
+				io_printf(out,"  <b>%s</b><br />",T);
+				if (S) { 
+					char * eS=NULL;
+					eS=malloc(2*strlen(S));
+					if ( (eS) && (u_htmlncpy(eS,S,strlen(S),HTMLCPY_ENCODE)!=-1) ) {
+						io_printf(out,"  %s<br />\n",eS);
+					}
+					free(eS);
+				}
+				io_printf(out,"  %s <b>%02d:%02d</b>",tr("from"),timeptr.tm_hour,timeptr.tm_min);
+				timeptr=*localtime(&next_time);
+				io_printf(out," %s <b>%02d:%02d</b> (%s: %s %d %s)  <p>",tr("to"),timeptr.tm_hour,timeptr.tm_min,tr("runtime"),tr("approx."),duration/60,tr("minutes"));
+				if (D) { 
+					char * eD=NULL;
+					eD=malloc(2*strlen(D));
+					if ( (eD) && (u_htmlncpy(eD,D,strlen(D),HTMLCPY_ENCODE)!=-1) ) {
+						io_printf(out,eD);
+					}
+					free(eD);
+				}		
+				io_printf(out,"</p></div></div></div>");
+				io_printf(out,"</div></td></tr>\n");
+			} else if (!strcmp(ret_code,"250")) {
+				io_printf(out,"<tr><td>&nbsp;</td><td>%s</td><td>&nbsp;</td></tr>\n",T);
+			} else {
+				dbg("Unknown answer from svdrpd.");
+			}
+			free(D); free(S); free(T);
+			D=NULL;  S=NULL;  T=NULL;
+		}
+	} 
+	free(data);
 
-// NEU ************************************************************************	 
-	 
- }
+// NEU ************************************************************************	
+	
+}
 
- close_svdrp();
+close_svdrp();
 %>
 
 </table>
 
 </div>
 
-<div class="foot">
-        <p>(C) 2006-08 open7x0-team</p>
-</div>
-</body>
-</html>
+<%@ include ../../components/post-content.kl1 %>
+

@@ -30,7 +30,7 @@
 #include "svdrp_parse.h"
 
 #ifdef FOR_BUSYBOX
-  #include "scan_config.c"
+	#include "scan_config.c"
 #endif
 
 char vdr_setup[256];
@@ -39,133 +39,136 @@ int margin_start=5*60;
 int margin_stop=15*60;
 
 void parse_chan(char * line, int * chan_id, char chan_name[30]) {
-  char tmp[5]="";
-  int i=0;
+	char tmp[5]="";
+	int i=0;
 
-  i=strcspn(line+4," ");
-  strncpy(tmp,line+4,i);
-  *chan_id=strtol(tmp,NULL,10);
-  strcpy(chan_name,line+4+i+1);
+	i=strcspn(line+4," ");
+	strncpy(tmp,line+4,i);
+	*chan_id=strtol(tmp,NULL,10);
+	strcpy(chan_name,line+4+i+1);
 }
 
 int parse_ret_code(char * line, char ret_code[10]) {
-  long int i=0;
-  char s[4];
-
-  i=strcspn(line," ");
-  strncpy(ret_code,line,i);
-  ret_code[i]='\0';
-  strncpy(s,ret_code,3);
-  s[4]='\0';
-  i=strtol(s,NULL, 10);
-  if ( (i>99) && (i<1000)) {
-    return (int)i;
-  } else {
+	long int i=0;
+	char s[4];
+	
+	i=strcspn(line," ");
+	strncpy(ret_code,line,i);
+	ret_code[i]='\0';
+	strncpy(s,ret_code,3);
+	s[4]='\0';
+	i=strtol(s,NULL, 10);
+	if ( (i>99) && (i<1000)) {
+		return (int)i;
+	} else {
 	return 500;
-  }
+	}
 }
 
-void parse_215E(char * line, int offset, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version) {
-  int i=offset;
-  int k=0;
-
-  char tmp[5][50]={"","","","",""};
-  for(k=0;k<4;k++) {
-    strncpy(tmp[k],line+i+k,strcspn(line+i+k," "));
-    i+=strcspn(line+i+k," ");
-  }
-  if (event_id!=NULL) { *event_id=strtoul(tmp[0],NULL,10); }
-  if (start_time!=NULL) { *start_time=strtol(tmp[1],NULL,10); }
-  if (duration!=NULL) { *duration=strtol(tmp[2],NULL,10); }
-  if (table_id!=NULL) { *table_id=strtol(tmp[3],NULL,16); }
-  if (version!=NULL) { *version=strtol(tmp[4],NULL,16); }
+void parse_215E(char * line, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version) {
+	char * r=line;
+	int k=0;
+	int l;
+	
+	for(k=0;k<5;k++) { //TODO_KILLE 4 -> 5
+		r+=strspn(r," ");
+		l=strcspn(r," ");
+		switch (k) {
+			case 0: if (event_id  ) *event_id =strtoul(r,NULL,10); break;
+			case 1: if (start_time) *start_time=strtol(r,NULL,10); break;
+			case 2: if (duration  ) *duration  =strtol(r,NULL,10); break;
+			case 3: if (table_id  ) *table_id  =strtol(r,NULL,16); break;
+			case 4: if (version   ) *version   =strtol(r,NULL,16); break;
+		}
+		r+=l;
+	}
 }
 
-void make_timer(char newt[256], int active, int channel_num, time_t start_time, time_t end_time, int priority, int lifetime, char title[50]) {
-  time_t ts=start_time-margin_start;
-  time_t te=end_time+margin_stop;
-  struct tm t1=*localtime(&ts);
-  struct tm t2=*localtime(&te);
-  sprintf(newt,"NEWT %d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:",active,channel_num,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);
+void make_timer(char newt[256], int active, int channelNum, time_t start_time, time_t end_time, int priority, int lifetime, char title[50]) {
+	time_t ts=start_time-margin_start;
+	time_t te=end_time+margin_stop;
+	struct tm t1=*localtime(&ts);
+	struct tm t2=*localtime(&te);
+	sprintf(newt,"NEWT %d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:",active,channelNum,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);
 }
 
-int makeTimerEx(char newt[256], int active, int channel_num, enum timerType type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title) {
-  char s[25]; 
-  char * date;
-  
-  if (type==REGULAR) {
+int makeTimerEx(char newt[256], int active, int channelNum, enum timerType type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title) {
+	char s[25]; 
+	char * date;
+	
+	if (type==REGULAR) {
 	time_t rawtime=time(NULL);
 	struct tm * today;
 	today=localtime(&rawtime); 
-    date=malloc(12);    
-    strftime(date,11,"%Y-%m-%d",today);
-  } else {
+		date=malloc(12);    
+		strftime(date,11,"%Y-%m-%d",today);
+	} else {
 	//ONE_TIME
 	date=strdup(argDate);
-  }
-  
-  struct tm startTimePtr;
-  sprintf(s,"%s %s:%s:00",date,startH,startM);
-  if (!strptime(s,"%Y-%m-%d %H:%M:%S",&startTimePtr)) { return 1; }
-  startTimePtr.tm_wday=0; startTimePtr.tm_yday=0;  startTimePtr.tm_isdst=-1;
-  time_t start_time=mktime(&startTimePtr)-marginStart;
+	}
+	
+	struct tm startTimePtr;
+	sprintf(s,"%s %s:%s:00",date,startH,startM);
+	if (!strptime(s,"%Y-%m-%d %H:%M:%S",&startTimePtr)) { return 1; }
+	startTimePtr.tm_wday=0; startTimePtr.tm_yday=0;  startTimePtr.tm_isdst=-1;
+	time_t start_time=mktime(&startTimePtr)-marginStart;
 
-  struct tm endTimePtr;
-  sprintf(s,"%s %s:%s:00",date,endH,endM);
-  if (!strptime(s,"%Y-%m-%d %H:%M:%S",&endTimePtr)) { return 1; }
-  endTimePtr.tm_wday=0; endTimePtr.tm_yday=0;  endTimePtr.tm_isdst=-1;
-  time_t end_time=mktime(&endTimePtr)+marginEnd;
-  if (end_time<start_time) { end_time+=86400; }
-  
-  struct tm t1=*localtime(&start_time);
-  struct tm t2=*localtime(&end_time);
-  if (type==REGULAR) {
-    sprintf(newt,"NEWT %d:%d:%s:%02d%02d:%02d%02d:%d:%d:%s:",active,channel_num,reg_timer,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);  
-  } else {
+	struct tm endTimePtr;
+	sprintf(s,"%s %s:%s:00",date,endH,endM);
+	if (!strptime(s,"%Y-%m-%d %H:%M:%S",&endTimePtr)) { return 1; }
+	endTimePtr.tm_wday=0; endTimePtr.tm_yday=0;  endTimePtr.tm_isdst=-1;
+	time_t end_time=mktime(&endTimePtr)+marginEnd;
+	if (end_time<start_time) { end_time+=86400; }
+	
+	struct tm t1=*localtime(&start_time);
+	struct tm t2=*localtime(&end_time);
+	if (type==REGULAR) {
+		sprintf(newt,"NEWT %d:%d:%s:%02d%02d:%02d%02d:%d:%d:%s:",active,channelNum,reg_timer,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);  
+	} else {
 	//ONE_TIME
-	sprintf(newt,"NEWT %d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:",active,channel_num,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);
-  }
-  free(date);
-  return 0;
+	sprintf(newt,"NEWT %d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:",active,channelNum,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);
+	}
+	free(date);
+	return 0;
 }
 
-void parse_rec(char * line, struct recEntry * recording){
-  char * r=line;
-  int l;
-  struct tm timeptr;
-
-  r+=strspn(r," ");
-  recording->ID=(int)strtol(r,&r,10);
-  r+=strspn(r," ");
-  r=strptime(r,"%d.%m.%y %H:%M",&timeptr);
-  if (r==NULL){ 
-    printf("Error converting recording date!\n");
-    recording->title=NULL;
-    recording->path=NULL;
-    return;
-  }
-  timeptr.tm_sec=0;
-  timeptr.tm_isdst=-1;
-  recording->start=mktime(&timeptr);
-  recording->seen=(r[0]==' ');
-  r++;
-  r+=strspn(r," ");
-  l=strcspn(r,"/\n\r");
-  recording->title=strndup(r,l);
-  recording->direct=(strchr(recording->title,'@')==NULL) ? 0 : 1;
-  recording->cut=(strchr(recording->title,'%')==NULL) ? 0 : 1;
-  r+=l;
-  if (r[0]=='/') {    //Requires vdr patched to include path
-    l=strcspn(r,"\n\r");
-    recording->path=strndup(r,l);
-  }
-  else {
-    recording->path=NULL;
-  }
-  return;
+void parseRec(char * line, recEntry * const recording){
+	char * r=line;
+	int l;
+	struct tm timeptr;
+	
+	r+=strspn(r," ");
+	recording->ID=(int)strtol(r,&r,10);
+	r+=strspn(r," ");
+	r=strptime(r,"%d.%m.%y %H:%M",&timeptr);
+	if (r==NULL){ 
+		printf("Error converting recording date!\n");
+		recording->title=NULL;
+		recording->path=NULL;
+		return;
+	}
+	timeptr.tm_sec=0;
+	timeptr.tm_isdst=-1;
+	recording->start=mktime(&timeptr);
+	recording->seen=(r[0]==' ');
+	r++;
+	r+=strspn(r," ");
+	l=strcspn(r,"/\n\r");
+	recording->title=strndup(r,l);
+	recording->direct=(strchr(recording->title,'@')==NULL) ? 0 : 1;
+	recording->cut=(strchr(recording->title,'%')==NULL) ? 0 : 1;
+	r+=l;
+	if (r[0]=='/') {    //Requires vdr patched to include path
+		l=strcspn(r,"\n\r");
+		recording->path=strndup(r,l);
+	}
+	else {
+		recording->path=NULL;
+	}
+	return;
 }
 
-void parse_timer(char * line, struct timerEntry * timer ){
+void parseTimer(char * line, timerEntry * const timer ){
 	char * r;
 	char * c;
 	char * h;
@@ -241,8 +244,52 @@ void parse_timer(char * line, struct timerEntry * timer ){
 	//TODO parse aux
 }
 
-void parse_channel(char * line, char channel_name[50], char channel_id[50]) {
+void parseChannel(char * line, channelEntry * channel) {
+	char *r, *r2;
+	int k,l,l2;
 
+	r=line;
+	channel->channelNum=strtol(r,&r,10);
+	r+=strspn(r," ");
+	char *tmp[13];
+	for(k=0;k<13;k++) {
+		l=strcspn(r,":");
+		switch(k){
+			case  0:
+				r2=r;
+				l2=strcspn(r2,",;:");
+				channel->channelName=strndup(r2,l2);
+				r2+=l2+1;
+				if (r2[-1]!=':') {
+					l2=strcspn(r2,":");
+				} else {
+					l2=0;
+				}
+				channel->multiplexName=strndup(r2,l2);
+				break;
+			case  1:	channel->frequency=strtol(r,NULL,10); break;
+			case  2: channel->parameter=strndup(r,l); break;
+			case  3: channel->source=strndup(r,l);    break;
+			case  5: channel->vpid=strtol(r,NULL,10); break;
+			case  8: channel->caid=strtol(r,NULL,10); break;
+			case  9: channel->sid =strtol(r,NULL,10); break;
+			case 10: channel->nid =strtol(r,NULL,10); break;
+			case 11: channel->tid =strtol(r,NULL,10); break;
+			case 12: channel->rid =strtol(r,NULL,10); break;
+		}
+		r+=l+1;
+	}
+	if( channel->rid ){
+		if (asprintf(&channel->channelId,"%s-%d-%d-%d-%d",channel->source,channel->nid,channel->tid,channel->sid,channel->rid)<0) {
+			channel->channelId=NULL;
+			//TODO warn
+		}
+	} else {
+		if (asprintf(&channel->channelId,"%s-%d-%d-%d",channel->source,channel->nid,channel->tid,channel->sid)<0) {
+			channel->channelId=NULL;
+			//TODO warn
+		}
+	}
 }
 
 
@@ -251,80 +298,80 @@ void parse_channel(char * line, char channel_name[50], char channel_id[50]) {
 // Wandelt einzelne Hexzeichen (%xx) in ASCII-Zeichen
 // und kodierte Leerzeichen (+) in echte Leerzeichen um
 void hex2ascii(char *str)  {
-   int x, y;
-
-   for(x=0,y=0; str[y] != '\0'; ++x,++y) {
-      str[x] = str[y];
-      /* Ein Hexadezimales Zeichen? */
-      if(str[x] == '%')  {
-         str[x] = convert(&str[y+1]);
-         y += 2;
-      }
-      /* Ein Leerzeichen? */
-      else if( str[x] == '+')
-         str[x]=' ';
-   }
-   /* Geparsten String sauber terminieren */
-   str[x] = '\0';
+	int x, y;
+	
+	for(x=0,y=0; str[y] != '\0'; ++x,++y) {
+		str[x] = str[y];
+		/* Ein Hexadezimales Zeichen? */
+		if(str[x] == '%')  {
+			str[x] = convert(&str[y+1]);
+			y += 2;
+		}  else if( str[x] == '+') {
+			/* Ein Leerzeichen? */
+		  	str[x]=' ';
+		}
+	}
+	/* Geparsten String sauber terminieren */
+	str[x] = '\0';
 }
 
 // Funktion konvertiert einen String von zwei hexadezimalen
 // Zeichen und gibt das einzelne dafür stehende Zeichen zurück
 char convert(char *hex) {
-   char ascii;
-
-   /* erster Hexawert */
-   ascii =
-   (hex[0] >= 'A' ? ((hex[0] & 0xdf) - 'A')+10 : (hex[0] - '0'));
-
-   ascii <<= 4; /* Bitverschiebung schneller als ascii*=16 */
-   /* zweiter Hexawert */
-   ascii +=
-   (hex[1] >= 'A' ? ((hex[1] & 0xdf) - 'A')+10 : (hex[1] - '0'));
-   return ascii;
+	char ascii;
+	
+	/* erster Hexawert */
+	ascii =
+		(hex[0] >= 'A' ? ((hex[0] & 0xdf) - 'A')+10 : (hex[0] - '0'));
+	
+	ascii <<= 4; /* Bitverschiebung schneller als ascii*=16 */
+	/* zweiter Hexawert */
+	ascii +=
+		(hex[1] >= 'A' ? ((hex[1] & 0xdf) - 'A')+10 : (hex[1] - '0'));
+	return ascii;
 }
 
 void get_config_info() {
 
 #ifdef FOR_BUSYBOX
 
-  //***** WICHTIG: Tabelle ist im Feld 'name' alphabetisch zu sortieren,
-  //***** da eine binäre Suche verwendet wird.
+	//***** WICHTIG: Tabelle ist im Feld 'name' alphabetisch zu sortieren,
+	//***** da eine binäre Suche verwendet wird.
 
-  t_scan_config config_param[] =
-  {
-  // cnt, name,			default
-    { 0, "RELEVANT_VDR_CONFIG",	0 },
-    { 0, "TIMEZONE",		"CET-1CEST,M3.5.0,M10.5.0/03:00:00" },
+	t_scan_config config_param[] =
+	{
+	// cnt, name,			default
+		{ 0, "RELEVANT_VDR_CONFIG",	0 },
+		{ 0, "TIMEZONE",		"CET-1CEST,M3.5.0,M10.5.0/03:00:00" },
 
-    {0,0,0} // END OF TABLE
-  };
+		{0,0,0} // END OF TABLE
+	};
 
-  scan_config(config_param);
-  setenv("TZ",config_param[CONFIG_TIMEZONE].value,1);
+	scan_config(config_param);
+	setenv("TZ",config_param[CONFIG_TIMEZONE].value,1);
 
-  if (config_param[CONFIG_RELEVANT_VDR_CONFIG].value)
-  {
-    snprintf(vdr_setup,sizeof(vdr_setup),"%s/setup.conf",
+	if (config_param[CONFIG_RELEVANT_VDR_CONFIG].value)
+	{
+		snprintf(vdr_setup,sizeof(vdr_setup),"%s/setup.conf",
 		config_param[CONFIG_RELEVANT_VDR_CONFIG].value);
 
-    FILE *f = fopen(vdr_setup,"r");
-    if (f) {
-      while (!feof(f)) {
-	char buffer[256], param[sizeof(buffer)];
-        fgets(buffer,sizeof(buffer),f);
-        buffer[strlen(buffer)-1] = '\0';
-        const int i=strcspn(buffer,"=");
-        strncpy(param,buffer,i);
-        if (!strcmp(param,"MarginStart ")) {
-          margin_start=strtol(buffer+i+2,NULL,10)*60;
-        } else if (!strcmp(param,"MarginStop ")) {
-          margin_stop=strtol(buffer+i+2,NULL,10)*60;
-        }
-      }
-      fclose(f);
-    }
-  }
+		FILE *f = fopen(vdr_setup,"r");
+		if (f) {
+		  while (!feof(f)) {
+			char buffer[256], param[sizeof(buffer)];
+		    fgets(buffer,sizeof(buffer),f);
+		    buffer[strlen(buffer)-1] = '\0';
+		    const int i=strcspn(buffer,"=");
+		    strncpy(param,buffer,i);
+		    if (!strcmp(param,"MarginStart ")) {
+		      margin_start=strtol(buffer+i+2,NULL,10)*60;
+		    } else if (!strcmp(param,"MarginStop ")) {
+		      margin_stop=strtol(buffer+i+2,NULL,10)*60;
+		    }
+		  }
+		  fclose(f);
+		}
+	}
 
 #endif // FOR_BUSYBOX
 }

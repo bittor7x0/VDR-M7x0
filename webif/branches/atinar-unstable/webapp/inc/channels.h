@@ -17,27 +17,35 @@
 #ifndef __CHANNELS_H__
 #define __CHANNELS_H__
 
-//Channelliste kurz
-typedef struct channelList {
-  int  channel_num;       //Number to dial on remote control.
-  char channel_id[50];    //ID of the channel, currently unset!
-  char channelName[50];   //Name of the channel.
-  char multiplexName[25]; //Name of the multiplex if avaible.
-  int  frequency;         //Frequency (in Hz) of the multiplex.
-  char parameter[25];     //Paramter of the Channel.
-  char source[9];         //Source of the signal.
-  int  srate;             //Symbol rate, currently unset.
-  int  vpid;              //Video-PID, currently unset.
-  int  apid;              //Audio-PID, currently unset.
-  int  tpid;              //Teletext-PID, currently unset.
-  int  caid;              //Conditional Access-ID.
-  int  sid;               //Service-ID.
-  int  nid;               //Network-ID.
-  int  tid;               //Transport-stream-ID.
-  int  rid;               //Radio-ID.
+typedef struct channelEntry_s {
+	int  channelNum;        //Number to dial on remote control.
+	char *channelId;        //ID of the channel, currently unset!
+	char *channelName;      //Name of the channel.
+	char *multiplexName;    //Name of the multiplex if avaible.
+	int  frequency;         //Frequency (in Hz) of the multiplex.
+	char *parameter;        //Paramter of the Channel.
+	char *source;           //Source of the signal.
+	int  srate;             //Symbol rate, currently unset.
+	int  vpid;              //Video-PID, currently unset.
+	int  apid;              //Audio-PID, currently unset.
+	int  tpid;              //Teletext-PID, currently unset.
+	int  caid;              //Conditional Access-ID.
+	int  sid;               //Service-ID.
+	int  nid;               //Network-ID.
+	int  tid;               //Transport-stream-ID.
+	int  rid;               //Radio-ID.
+} channelEntry;
+
+typedef struct channelList_s {
+	int length;
+	channelEntry *entry;
 } channelList;
 
-channelList * get_channel_list(int * max);
+void initCE(channelEntry *entry);
+void freeCE(channelEntry *entry);
+void initCL(channelList  *list);
+void freeCL(channelList  *list);
+void getChannelList(channelList *list);
 int getChannel(char channelName[30]);
 
 #endif

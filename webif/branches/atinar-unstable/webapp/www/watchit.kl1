@@ -37,13 +37,12 @@ dbg_watchit_kl1();
 #endif
 set_server_address(session,NULL,NULL);
 
-channelList * channels;
-int max_channels=0;
+channelList channels;
 int i=0;
 int channelNum=0;
 char myip[16]="";
 
-channels=get_channel_list(&max_channels);
+getChannelList(&channels);
 
 whatsmyip(myip);
 vars_t *args = request_get_args(request);
@@ -59,7 +58,7 @@ if (header_get_field(header,"Accept-Language")!=NULL) {
 
 getConfig();
 
-if ((channelNum<1) || (channelNum>max_channels)) {
+if ((channelNum<1) || (channelNum>channels.length)) {
   channelNum=getChannel(NULL);
 }
 %>
@@ -68,8 +67,8 @@ if ((channelNum<1) || (channelNum>max_channels)) {
 <head>
 <title>
 <%
-if ((channelNum>0) && (max_channels>0) && (channelNum<=max_channels)) {
-  io_printf(out,"%s: %s ",tr("live stream"),channels[channelNum-1].channelName);
+if ((channelNum>0) && (channelNum<=channels.length)) {
+  io_printf(out,"%s: %s ",tr("live stream"),channels.entry[channelNum-1].channelName);
 } else {
   io_printf(out,"%s ",tr("watch TV"));
 }
@@ -164,14 +163,14 @@ Open7x0 VDR-FW TV
 <div class="content">
 <div style="float:left;align:center;max-width:200px;">
 <%
-  if ((channelNum>0) && (max_channels>0) && (channelNum<=max_channels) ) {
-    io_printf(out,"<h2>&raquo;%s&laquo;</h2>\n",channels[channelNum-1].channelName);
+  if ((channelNum>0) && (channelNum<=channels.length) ) {
+    io_printf(out,"<h2>&raquo;%s&laquo;</h2>\n",channels.entry[channelNum-1].channelName);
   } else {
 	io_printf(out,"<h2>TV</h2>\n");
   }
   io_printf(out,"<form action=\"watchit.kl1\"><select name=\"channelnum\" size=\"1\">\n");
-  for (i=0;i<max_channels;i++) {
-    io_printf(out,"<option value=\"%d\">%d - %s</option>\n",channels[i].channel_num,channels[i].channel_num,channels[i].channelName);
+  for (i=0;i<channels.length;i++) {
+    io_printf(out,"<option value=\"%d\">%d - %s</option>\n",channels.entry[i].channelNum,channels.entry[i].channelNum,channels.entry[i].channelName);
   }
   close_svdrp();
 %>
@@ -191,23 +190,21 @@ Open7x0 VDR-FW TV
  <param name="autoLoop" value="false" />
  <param name="autoPlay" value="true" />
 <%
-  if ((channelNum>-1) && (max_channels>-1)) {
-	if (channels[channelNum-1].vpid>1) {
-      io_printf(out,"<param name=\"src\" value=\"http://%s:3000/%d\" />",myip,channelNum);
-      io_printf(out,"<embed type=\"application/x-vlc-plugin\" progid=\"VideoLAN.VLCPlugin.2\" name=\"vlc\" autoplay=\"yes\" loop=\"no\" width=\"720px\" height=\"576px\"  events=\"True\" target=\"http://%s:3000/%d\" style=\"border: 1px solid grey\" />\n",myip,channelNum);
+
+if ((channelNum>0) && (channelNum<=channels.length)) {
+	if (channels.entry[channelNum-1].vpid>1) {
+		io_printf(out,"<param name=\"src\" value=\"http://%s:3000/%d\" />",myip,channelNum);
+		io_printf(out,"<embed type=\"application/x-vlc-plugin\" progid=\"VideoLAN.VLCPlugin.2\" name=\"vlc\" autoplay=\"yes\" loop=\"no\" width=\"720px\" height=\"576px\"  events=\"True\" target=\"http://%s:3000/%d\" style=\"border: 1px solid grey\" />\n",myip,channelNum);
 	} else {
-	  io_printf(out,"<param name=\"src\" value=\"http://%s:3000/ES/%d\" />",myip,channelNum);		 
-      io_printf(out,"<embed type=\"application/x-vlc-plugin\" progid=\"VideoLAN.VLCPlugin.2\" name=\"vlc\" autoplay=\"yes\" loop=\"no\" width=\"720px\" height=\"576px\"  events=\"True\" target=\"http://%s:3000/ES/%d\" style=\"border: 1px solid grey\" />\n",myip,channelNum);
+		io_printf(out,"<param name=\"src\" value=\"http://%s:3000/ES/%d\" />",myip,channelNum);		 
+		io_printf(out,"<embed type=\"application/x-vlc-plugin\" progid=\"VideoLAN.VLCPlugin.2\" name=\"vlc\" autoplay=\"yes\" loop=\"no\" width=\"720px\" height=\"576px\"  events=\"True\" target=\"http://%s:3000/ES/%d\" style=\"border: 1px solid grey\" />\n",myip,channelNum);
 	}
-  }
-  free(channels);
+}
+freeCL(&channels);
+
 %>
 </object>
 </div>
 </div>
 
-<div class="foot">
-        <p>(C) 2006-08 open7x0-team</p>
-</div>
-</body>
-</html>
+<%@ include ../../components/post-content.kl1 %>

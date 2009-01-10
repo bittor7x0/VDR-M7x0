@@ -27,7 +27,6 @@
 #include "svdrp_parse.h"
 #include "misc.h"
 #include "timers.h"
-#include "channels.h"
 
 // Compare two timerEntries using the field and order,
 // specified by this two variables.
@@ -52,23 +51,24 @@ int compareTE(const void * a, const void * b) {
 }
 
 // Assign default timer values
-void initTE(timerEntry * o) {
-	if (o==NULL) return;
-	o->active=1;
-	o->lifetime=99;
-	o->priority=50;
-	o->title=NULL;
-	o->aux=NULL;
-	o->newt=NULL;
-	o->channelName[0]='\0';
-	o->mux[0]='\0';
+void initTE(timerEntry * const entry) {
+	if (entry==NULL) return;
+	entry->active=1;
+	entry->lifetime=99;
+	entry->priority=50;
+	entry->title=NULL;
+	entry->aux=NULL;
+	entry->newt=NULL;
+	entry->channelName[0]='\0';
+	entry->mux[0]='\0';
 }
 
 // Free timer entry
-void freeTE(timerEntry o) {
-	free(o.title);
-	free(o.aux);
-	free(o.newt);
+void freeTE(timerEntry * const entry) {
+	free(entry->title);
+	free(entry->aux);
+	free(entry->newt);
+	initTE(entry);
 }
 
 // Free timer list
@@ -76,24 +76,23 @@ void freeTimerList(timerEntry * o,int max) {
 	if (o==NULL) return;
 	int i=0;
 	for (i=0;i<max;i++) {
-		freeTE(o[i]);
+		freeTE(&o[i]);
 	}
 	free(o);
 }
 
 // Retrieve a timer list from VDR and sort it
-timerEntry * getTimerList(int * max, int sortBy, int sortDirection) {
+timerEntry * getTimerList(channelList *channels, int * max, int sortBy, int sortDirection) {
 	char * data;
 	char * p;
 	timerEntry *timer;
-	channelList * channels;
 	int i=0;
-	int max_cl=-1;
 
-	channels=get_channel_list(&max_cl);
-  
 	timer=NULL;
-	write_svdrp("LSTT\r");
+	*max=0;
+	if (write_svdrp("LSTT\r")<=0){
+		return NULL;
+	}
 	data=read_svdrp();
 
 	for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
@@ -110,10 +109,10 @@ timerEntry * getTimerList(int * max, int sortBy, int sortDirection) {
 			tmp->ID=strtol(p+4,&p,10);
 			p+=strspn(p," ");
 			tmp->newt=strdup(p);
-			parse_timer(p,tmp);
-			if (tmp->channelNum>0 && tmp->channelNum<max_cl) {
-				strcpy(tmp->channelName,channels[tmp->channelNum-1].channelName);
-				strcpy(tmp->mux,channels[tmp->channelNum-1].multiplexName);
+			parseTimer(p,tmp);
+			if (tmp->channelNum>0 && tmp->channelNum<=channels->length) {
+				strcpy(tmp->channelName,channels->entry[tmp->channelNum-1].channelName);
+				strcpy(tmp->mux,channels->entry[tmp->channelNum-1].multiplexName);
 			}
 		}
 	}
@@ -125,7 +124,6 @@ timerEntry * getTimerList(int * max, int sortBy, int sortDirection) {
 		qsort(timer,i,sizeof*timer,compareTE);
 	} 
   
-	free(channels);
 	free(data);
 	*max=i;
 	return timer;
@@ -166,15 +164,19 @@ int addTimer(const char * newt) {
 	int ok=0;
   
 	if (asprintf(&p,"%s\r",newt)<0) {
+		warn("Not enough memory for command in addTimer");
 		return 0;
 	}  
-	write_svdrp(p);
+	ok=(write_svdrp(p)>0);
 	free(p);
+	if (!ok) {
+		return ok;
+	}
 	data=read_svdrp();
 	if (data!=NULL){
-		for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+		for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
 			if (atoi(p)==250) {
-				ok=1;
+				ok= ~0;
 				break;
 			}
 		}
@@ -192,8 +194,11 @@ char * getTimerStrAt(int timerID) {
 		if (asprintf(&p,"LSTT %d\r",timerID)<0){
 			warn("Not enough memory for command in getTimerStrAt");
 		} else {
-			write_svdrp(p);
+			int ok=(write_svdrp(p)>0);
 			free(p);
+			if (!ok) {
+				return NULL;
+			}
 			data=read_svdrp();
 			if (data!=NULL) {
 				for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
@@ -212,11 +217,11 @@ char * getTimerStrAt(int timerID) {
 	return timerStr;
 }
 
-int deleTimer(int timerID, char * timer) {
+int deleTimer(int timerID, const char * timer) {
 	char * data=NULL;
 	char * p=NULL;
 	char * timerStr;
-	int ok=3;
+	int error= ~0;
   
 	timerStr=getTimerStrAt(timerID);
 	if (timerStr!=NULL) {
@@ -224,37 +229,37 @@ int deleTimer(int timerID, char * timer) {
 			if (asprintf(&p,"DELT %d\r",timerID)<0){
 				warn("Not enough memory for command in deleTimer");
 			} else {
-				write_svdrp(p);
+				error=(write_svdrp(p)<=0);
 				free(p);
-				data=read_svdrp();
-				if (data!=NULL){
-					for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-						if (atoi(p)==250) {
-							ok=0;
-							break;
+				if (!error){
+					error= ~0;
+					data=read_svdrp();
+					if (data!=NULL){
+						for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+							if (atoi(p)==250) {
+								error=0;
+								break;
+							}
 						}
+						free(data);
 					}
-					free(data);
 				}
 			}
 		} else { 
 			warn("Error trying to delete a timer: there is no timer as specified!");
 			warn("Timer to delete(%d): [%s]",strlen(timer),   timer);
 			warn("Timer in list  (%d): [%s]",strlen(timerStr),timerStr);
-			ok=2;
 		}
 		free(timerStr);
-	} else {
-		ok=1;
 	}
-	return ok;
+	return error;
 }
 
-int editTimer(int timerID, char * oldTimer, char * newTimer) {
+int editTimer(int timerID, const char * oldTimer, const char * newTimer) {
 	char * data=NULL;
 	char * p=NULL;
 	char * timerStr;
-	int ok=3;
+	int error= ~0;
 
 	timerStr=getTimerStrAt(timerID);
 	if (timerStr!=NULL) {
@@ -262,28 +267,28 @@ int editTimer(int timerID, char * oldTimer, char * newTimer) {
 			if (asprintf(&p,"MODT %d %s\r",timerID,newTimer)<0){
 				warn("Not enough memory for command in editTimer");
 			} else {
-				write_svdrp(p);
+				error=(write_svdrp(p)<=0);
 				free(p);
-				data=read_svdrp();
-				if (data!=NULL){
-					for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-						if (atoi(p)==250) {
-							ok=0;
-							break;
-						}        
+				if (!error){
+					error= ~0;
+					data=read_svdrp();
+					if (data!=NULL){
+						for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+							if (atoi(p)==250) {
+								error=0;
+								break;
+							}        
+						}
+						free(data);
 					}
-					free(data);
 				}
 			}
 		} else {
 			warn("Error trying to edit a timer: there is no timer as specified!");
 			warn("Timer to edit(%d): [%s]",strlen(oldTimer),oldTimer);
 			warn("Timer in list(%d): [%s]",strlen(timerStr),timerStr);
-			ok=2;
 		}
 		free(timerStr);
-	} else {
-		ok=1;
 	}
-	return ok;
+	return error;
 }

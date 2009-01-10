@@ -81,7 +81,7 @@ recFragment * parseRecData(const char *recdata, int *fragnum, uint64_t *total_si
 			}
 			fragment=tmp;
 			tmp=&fragment[(*fragnum)-1];
-			tmp->path=strndup(p,(size_t)l);
+			tmp->path=strndup(p,l);
 			stat(tmp->path, &st);
 			tmp->size=st.st_size;
 			/*
@@ -129,8 +129,11 @@ const char * getRecData(session_t *session, int id) {
 			error("No hay memoria");
 			return NULL;
 		}
-		write_svdrp(cmd);
+		int error=(write_svdrp(cmd)<=0);
 		free(cmd);
+		if (error){
+			return NULL;
+		}
 		cmd=NULL;
 		recdata=read_svdrp();
 		close_svdrp();
@@ -146,50 +149,47 @@ const char * getRecData(session_t *session, int id) {
 	return recdata;
 }
 
-recFragment * getFragmentsDir(const char *recordingPath, int *fragnum, uint64_t *total_size){
-	const char filePattern[] = "^[0-9]{3}.vdr$";
-	regex_t regbuf;
-	recFragment * fragment=NULL;
-	(*fragnum)=0;
-	if (recordingPath==NULL){
+int isVideoFile(const struct dirent * ent){
+	char *c;
+	char *c0=(char *)ent->d_name;
+	for (c=c0;c<c0+3;c++) if (!isdigit(*c)) return 0;
+	return (strcmp(c,".vdr")==0);
+}
+
+recFragment * getFragmentsDir(const char *path, int *fragnum, uint64_t *total_size){
+	recFragment *fragment=NULL, *tmp;
+	*fragnum=0;
+	*total_size=0;
+	if (path==NULL){
 		return NULL;
 	}
-	if (regcomp(&regbuf,filePattern,REG_EXTENDED | REG_NOSUB ) == 0){
-		regex_t regbuf;
-		int i;
-		recFragment * tmp;
-		DIR *dir = opendir(recordingPath); 
-		struct stat st;
+	struct stat st;
 	
-		if (dir != NULL) { 
-			struct dirent* dirE; 
-			while((dirE = readdir(dir)) != NULL) { 
-				char * p = dirE->d_name; 
-				if ( regexec(&regbuf,p,0,NULL,0) == 0 ) { 
-					i=atoi(dirE->d_name);
-					if (i>(*fragnum)) { 
-						(*fragnum)=i;
-						recFragment * tmp=(recFragment*)realloc(fragment,(*fragnum)*sizeof*fragment);
-						if( tmp==NULL) {
-							break;
-						}
-						fragment=tmp;
-					}
-				}
+	if ( (stat(path, &st)==0) && S_ISDIR(st.st_mode)) {
+		struct dirent **namelist;
+		*fragnum = scandir(path, &namelist, isVideoFile, alphasort);
+		if (*fragnum<0) *fragnum=0;
+		if (*fragnum>0) {
+			int i;
+			fragment=(recFragment*)malloc((*fragnum)*sizeof*fragment);
+			if (fragment==NULL){
+				for (i=0;i<*fragnum;i++) free(namelist[i]);
+				free(namelist);
+				*fragnum=0;
+				return;
 			}
-			for(i=0;i<(*fragnum);i++){
+			for (i=0;i<*fragnum;i++) {
 				tmp=&fragment[i];
-				if (asprintf(&(tmp->path),"%s%3d.vdr",recordingPath,i) != -1){
-					errno=0;
-					stat(tmp->path, &st);
-					tmp->size=(errno) ? 0 : st.st_size;
-				}
-				else {
-					tmp->size=0;
+				tmp->path=NULL;
+				tmp->size=0;
+				if ((asprintf(&(tmp->path),"%s/%s",path,namelist[i]->d_name)!=-1) && (stat(tmp->path,&st)==0)) {
+					tmp->size=st.st_size;
+					(*total_size)+=tmp->size;
 				}				
-			} 
+				free(namelist[i]);
+			}
+			free(namelist);
 		}
-		regfree(&regbuf);
 	}
 	return fragment;
 }

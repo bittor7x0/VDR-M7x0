@@ -20,6 +20,8 @@
 #ifndef __TIMERS_H__
 #define __TIMERS_H__
 
+#include "channels.h"
+
 enum timerType {
 	UNDEFINED  = 0,
 	ONE_TIME = 1,
@@ -27,7 +29,7 @@ enum timerType {
 };
 
 //Channelliste kurz
-typedef struct timerEntry {
+typedef struct timerEntry_s {
  	time_t start;
 	time_t stop;
 	enum timerType type;
@@ -44,14 +46,14 @@ typedef struct timerEntry {
 	char * newt;
 } timerEntry;
 
-void initTE(timerEntry * o);
-void freeTE(timerEntry o);
+void initTE(timerEntry * const entry);
+void freeTE(timerEntry * const entry);
 void freeTimerList(timerEntry * o, int max);
-timerEntry * getTimerList(int * max, int sortBy, int sortDirection);
+timerEntry * getTimerList(channelList *channels, int *max, int sortBy, int sortDirection);
 int checkForTimer(timerEntry * timerList, int maxTimer, int channelNum, time_t startTime, time_t endTime, int duration);
 //TODO addTimer's return value inconsistent with editTimer and deleTimer
 int addTimer(const char * newt);
-int editTimer(int timerID, char * oldTimer, char * newTimer);
-int deleTimer(int timerID, char * timer);
+int editTimer(int timerID, const char * oldTimer, const char * newTimer);
+int deleTimer(int timerID, const char * timer);
 
 #endif

@@ -45,6 +45,7 @@ const int httpPort=80;
 const int ttOnce=0;
 const int ttPeriodic=1;
 
+//TODO deprecate
 const int sortNone=0;
 const int sortStart=1;
 const int sortStop=2;
@@ -63,6 +64,25 @@ const int sortDesc=-1;
 const char checked[2][8]={"","checked"};
 const char selected[2][9]={"","selected"};
 const char arStr[7][8]={"1.gif","43.png","169.png","1.gif","43.png","169.png","1.gif"};
+const char * cssSortClass[]={"sortdesc","sortnone","sortasc"};
+
+enum sortField sortBy;
+enum sortDirection sortDirection;
+enum pageNumber currentPage;
+
+const char * action = NULL;
+const char * SUMMARY = "summary";
+const char * EDIT = "edit";
+const char * NEW = "new";
+const char * ADD = "add";
+const char * DELE = "dele";
+const char * NOACTION = "";
+
+char server_ip[16];
+uint16_t server_port;
+
+char myip[16]="";
+char * newt=NULL;
 
 int parseRequestStr(const char * requestStr, char ** pathStr, char ** queryStr) {
 	int i=0,j=0,k=0;
@@ -207,3 +227,8 @@ int i=0;
     isM740AV=0; isM750S=1; isM750C=0;
   }
 }
+
+const char * sortClass(enum sortField sf){
+	return cssSortClass[((sf==sortBy)?sortDirection:SD_NONE)+1];
+}
+

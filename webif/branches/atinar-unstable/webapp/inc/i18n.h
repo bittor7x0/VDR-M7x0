@@ -31,5 +31,5 @@ extern const char * dateFormat[I18NNUM]; //to use with strftime
 extern const int startOfWeek[I18NNUM];
 
 const char *tr(const char *s);
-const char *formatDate(struct tm *timeptr);
+const char *formatDate(struct tm *timeptr,int addHour);
 #endif

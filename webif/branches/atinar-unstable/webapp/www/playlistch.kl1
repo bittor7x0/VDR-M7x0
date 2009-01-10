@@ -29,19 +29,18 @@ whatsmyip(myip);
 vars_t *args = request_get_args(request);
 response_set_content_type(response,"audio/x-mpegurl");
 io_printf(out, "#EXTM3U\n");
-const char * channelArg=NULL; 
 int nchannel=-1;
-int max_channels;
-channelList * channels = get_channel_list( &max_channels );
+channelList channels;
+getChannelList( &channels );
 if (vars_countn(args,"channelnum")>0) {
-	channelArg=vars_get_value(args,"channelnum");
-	nchannel=atoi(channelArg);
+	nchannel=vars_get_value_i(args,"channelnum");
 }
 int i;
-for(i=0; i<max_channels; i++){
-	if ( channelArg==NULL || i==nchannel ) {
-		io_printf(out,"#EXTINF:0,%s\n",channels[i].channelName);
-		io_printf(out,"http://%s:%d/%d\n",myip,3000,channels[i].channel_num);
+for(i=0; i<channels.length; i++){
+	if ( nchannel==-1 || i==nchannel ) {
+		io_printf(out,"#EXTINF:0,%d-%s\n",channels.entry[i].channelNum,channels.entry[i].channelName);
+		io_printf(out,"http://%s:%d/%d\n",myip,3000,channels.entry[i].channelNum);
 	}
 }
+freeCL(&channels);
 %>

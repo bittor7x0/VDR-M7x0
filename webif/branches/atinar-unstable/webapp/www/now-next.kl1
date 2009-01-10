@@ -54,7 +54,7 @@ long int refresh=0;
   for (i=0;i<2;i++) {
     write_svdrp(cmd);
     data=read_svdrp();
-    for(p=(char *)strtok(data,"\r\n");p!=0;p=(char *)strtok(0,"\r\n")) {
+    for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
       parse_ret_code(p,ret_code);
       if (!strcmp(ret_code,"550")) {
         now_time=-1;
@@ -64,8 +64,8 @@ long int refresh=0;
         switch (ret_code[4]) {
           case 'E':
             switch (i) {
-              case 0: parse_215E(p,6,NULL,&now_time,NULL,NULL,NULL); break;
-              case 1: parse_215E(p,6,NULL,&next_time,NULL,NULL,NULL); break;
+              case 0: parse_215E(p+6,NULL,&now_time,NULL,NULL,NULL); break;
+              case 1: parse_215E(p+6,NULL,&next_time,NULL,NULL,NULL); break;
             }
           break;
           case 'T':

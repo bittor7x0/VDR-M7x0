@@ -135,8 +135,4 @@ if ( (confFileID>=0) && (confFileID<numOfConfFiles) ) {
 %>
 </div>
 
-<div class="foot">
-        <p>(C) 2006-08 open7x0-team</p>
-</div>
-</body>
-</html>
+<%@ include ../../components/post-content.kl1 %>

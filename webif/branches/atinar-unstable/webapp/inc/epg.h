@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -18,10 +21,21 @@
 #define __EPG_H__
 
 #include <time.h>
+#include "channels.h"
+
+//TODO sustituir en nowNextEntry
+typedef struct eventEntry_s {
+  char   channelId[50];
+  int    channelNum;
+  char   *title;
+  char   *shortdesc;
+  char   *desc;
+  time_t time;
+} eventEntry;
 
 typedef struct nowNextEntry {
   char   channelName[50];
-  char   channel_id[50];
+  char   channelId[50];
   int    channelNum;
   char   now_title[100];
   char   now_short[100];
@@ -35,7 +49,8 @@ typedef struct nowNextEntry {
   int    next_duration;
 } nowNextEntry;
 
-nowNextEntry * getNowNext(int * max, int channelNum);
+void initNNE(nowNextEntry * now_next);
+nowNextEntry * getNowNext(channelList *channels,int *max,int channelNum);
 //int getChannel(char channelName[30]);
 
 #endif

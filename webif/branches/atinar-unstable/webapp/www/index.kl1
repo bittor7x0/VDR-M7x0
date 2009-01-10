@@ -10,6 +10,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -19,8 +22,6 @@
 #include <time.h>
 #include <mntent.h>
 #include <sys/vfs.h>
-
-time_t now;
 
 #include "i18n.h"
 #include "misc.h"
@@ -39,8 +40,6 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 #ifdef DEBUG
 dbg_index_kl1();
 #endif
-char server_ip[16];
-uint16_t server_port;
 const char * rq_server_ip = request_get_arg(request,"server_ip");
 if (rq_server_ip!=NULL) { 
 	session_set(session,"server_ip",rq_server_ip);
@@ -51,83 +50,46 @@ if (rq_server_port!=NULL) {
 	session_set(session,"server_port", rq_server_port); 
 	//TODO validar
 }
-set_server_address(session,server_ip,&server_port);
 
-char myip[16]="";
-whatsmyip(myip);
+currentPage=PN_INDEX;
+%>
 
-header_t *header = request_get_header(request);
-if (header_get_field(header,"Accept-Language")!=NULL) {
-  field_t *field=header_get_field(header,"Accept-Language");
-  strncpy(acceptedLang,field->value,2);
-  acceptedLang[2]='\0';
-}
-
-getConfig();
-
-%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
-<head>
-<title><% io_printf(out,tr("Homepage")); %> - open7x0 VDR-FW</title>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
-<% io_printf(out,"<link rel=\"alternate\" type=\"application/rss+xml\" title=\"Aufzeichnungen VDR\" href=\"http://%s:%d/rss.kl1\" />",myip,httpPort); %>
-<link rel="stylesheet" type="text/css" href="open7x0.css" />
-<style type="text/css">
-	.field .name {color:#333;font-weight:bold;}
-</style>
-</head>
-<body>
-<div class="head">
-VDR-FW <% io_printf(out,tr("Homepage")); %>
-</div>
-<div class="navigation"><div class="nav">
-<ul>
- <li class="act"><a href="index.kl1"><% io_printf(out,i18n[4][langID]); %></a></li>
- <li><a href="program.kl1"><% io_printf(out,i18n[5][langID]); %></a></li>
- <li><a href="channels.kl1"><% io_printf(out,i18n[6][langID]); %></a></li>
- <li><a href="timers.kl1"><% io_printf(out,i18n[7][langID]); %></a></li>
- <li><a href="recordings.kl1"><% io_printf(out,i18n[8][langID]); %></a></li>
- <li><a href="settings.kl1"><% io_printf(out,i18n[9][langID]); %></a></li>
- <li><a href="http://www.open7x0.org/" target="_blank">open7x0.org</a></li>
-</ul>
-<span id="navclear"></span>
-</div>
-<div class="liniefett"></div>
-</div>
+<%@ include ../../components/pre-content.kl1 %>
 
 <div class="content">
 	<h2><%=tr("Current server")%></h2>
 		<p>
-			<span class="field"><span class="name"><%=tr("IP address")%></span>:&nbsp;<span class="value"><%=server_ip%></span></span>.
-			<span class="field"><span class="name"><%=tr("IP port")%></span>:&nbsp;<span class="value"><% io_printf(out,"%d",server_port); %></span></span>.
+			<span class="field"><span class="label"><%=tr("IP address")%></span>:&nbsp;<span class="value"><%=server_ip%></span></span>.
+			<span class="field"><span class="label"><%=tr("IP port")%></span>:&nbsp;<span class="value"><% io_printf(out,"%d",server_port); %></span></span>.
 		</p>
 
 <%
 nowNextEntry * now_next=NULL;
+channelList channels;
 int max=0;
 
-	if (vdrRunning()) {
-
-		now_next=getNowNext(&max,getChannel(NULL));
-		if (now_next!=NULL) {
-			io_printf(out,"<h2>%s &raquo; %s <a href=\"watchit.kl1?channelnum=%d\"><img src=\"/img/tv16.png\" border=\"0\" alt=\"Live-Stream\"></a>&laquo;</h2>\n",tr("You are watching"),now_next[0].channelName,now_next[0].channelNum);
-			if (now_next[0].now_time==0) {
-				io_printf(out,"<p>%s</p>\n",i18n[14][langID]);
-			} else {
-				struct tm t1 = *localtime(&now_next[0].now_time);
-				struct tm t2 = *localtime(&now_next[0].next_time);
-				io_printf(out,"<table class=\"chan\">\n<tr><td class=\"nn\">now</td><td> %02d:%02d  <b>%s</b></td></tr>\n<tr><td class=\"nn\">next</td><td> %02d:%02d  <b>%s</b></td></tr></table>\n",t1.tm_hour,t1.tm_min,now_next[0].now_title,t2.tm_hour,t2.tm_min,now_next[0].next_title); // Das ist für Live-TV,chan_num,chan_name);
-			}
+getChannelList(&channels);
+if (channels.length>0) {
+	now_next=getNowNext(&channels,&max,getChannel(NULL));
+	if (now_next!=NULL) {
+		io_printf(out,"<h2>%s &raquo; %s <a href=\"watchit.kl1?channelnum=%d\"><img src=\"/img/tv16.png\" border=\"0\" alt=\"Live-Stream\"></a>&laquo;</h2>\n",tr("You are watching"),now_next[0].channelName,now_next[0].channelNum);
+		if (now_next[0].now_time==0) {
+			io_printf(out,"<p>%s</p>\n",i18n[14][langID]);
+		} else {
+			struct tm t1 = *localtime(&now_next[0].now_time);
+			struct tm t2 = *localtime(&now_next[0].next_time);
+			io_printf(out,"<table class=\"chan\">\n<tr><td class=\"nn\">now</td><td> %02d:%02d  <b>%s</b></td></tr>\n<tr><td class=\"nn\">next</td><td> %02d:%02d  <b>%s</b></td></tr></table>\n",t1.tm_hour,t1.tm_min,now_next[0].now_title,t2.tm_hour,t2.tm_min,now_next[0].next_title); // Das ist für Live-TV,chan_num,chan_name);
 		}
-
-		close_svdrp();
 		freeNowNextEntry(now_next,1);
-  
-	} else {
-		io_printf(out,"<p>%s</p>",tr("VDR not running!"));
+		//<div class="currentImage"><img style="width:400px;height:300px" src="currentimage.kl1?quality=80&sizex=400&sizey=300"/></div>
 	}
+} else {
+	io_printf(out,"<p>%s</p>",tr("VDR not running!"));
+}
+close_svdrp();
+  
 	
+if (isVdrLocal()){
 	io_printf(out,"<h2>%s</h2>\n",tr("Free Space"));
 	
 	FILE *mountTable;
@@ -152,23 +114,22 @@ int max=0;
 		}
 	}
 	endmntent(mountTable);
-	if (numFS==0) io_printf(out,"<p>%s</p>",tr("No media found!"));
-		else io_printf(out,"</table>\n");
+	if (numFS==0) 
+		io_printf(out,"<p>%s</p>",tr("No media found!"));
+	else 
+		io_printf(out,"</table>\n");
+}
 %>
 
 	<h2><%=tr("Choose server")%></h2>
 	<form action="index.kl1" method="get">
 		<p>
-			<span class="field"><label for="server_ip" class="name"><%=tr("IP address")%></label>&nbsp;<input name="server_ip" value="<%=server_ip%>" size="15" maxlength="15" class="value"/></span>
-			<span class="field"><label for="server_port" class="name"><%=tr("IP port")%></label>&nbsp;<input name="server_port" value="<% io_printf(out,"%d",server_port); %>" size="4" maxlength="5" class="value"/></span>
+			<span class="field"><label for="server_ip" class="label"><%=tr("IP address")%></label>&nbsp;<input name="server_ip" value="<%=server_ip%>" size="15" maxlength="15" class="value"/></span>
+			<span class="field"><label for="server_port" class="label"><%=tr("IP port")%></label>&nbsp;<input name="server_port" value="<% io_printf(out,"%d",server_port); %>" size="4" maxlength="5" class="value"/></span>
 			<input type="submit" value="Submit"/>
 		</p>
 	</form>
 
 </div>
 
-<div class="foot">
-        <p>(C) 2006-08 open7x0-team</p>
-</div>
-</body>
-</html>
+<%@ include ../../components/post-content.kl1 %>

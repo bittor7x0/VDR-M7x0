@@ -31,16 +31,17 @@ extern int margin_stop;
 
 void parse_chan(char * line, int * chan_id, char chan_name[30]);
 
-void parse_215E(char * line, int offset, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version);
+void parse_215E(char * line, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version);
 
-void parse_rec(char * line, struct recEntry * recording);
+void parseRec(char * line, recEntry * const recording);
 
-void parse_timer(char * line, struct timerEntry * timer);
+void parseTimer(char * line, timerEntry * const timer);
 
-void make_timer(char newt[256], int active, int channel_num, time_t start_time, time_t end_time, int priority, int lifetime, char title[100]);
-int makeTimerEx(char newt[256], int active, int channel_num, enum timerType type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title);
+void parseChannel(char * line, channelEntry * channel);
 
-void parse_channel(char * line, char channel_name[50], char channel_id[50]);
+void make_timer(char newt[256], int active, int channelNum, time_t start_time, time_t end_time, int priority, int lifetime, char title[100]);
+
+int makeTimerEx(char newt[256], int active, int channelNum, enum timerType type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title);
 
 int parse_ret_code(char * line, char ret_code[10]);
 

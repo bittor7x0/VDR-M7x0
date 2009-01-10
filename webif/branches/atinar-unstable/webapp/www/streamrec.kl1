@@ -13,6 +13,7 @@
 */
 
 #include <errno.h>
+#include <klone/utils.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -44,19 +45,21 @@ void sig_handler(int sig){
 	set_server_address(session,NULL,NULL);
 
 	vars_t *args = request_get_args(request);
-	const char *arg_id;
 	int id=-1; 
+	const char *path=NULL;
 	if (vars_countn(args,"id")>0) {
-		arg_id=vars_get_value(args,"id");
-		errno=0;
-		id = (int)strtol(arg_id,NULL,10);
-		if (errno) {
-			warn("%d=strtol(%s,...) errno=%d",id,arg_id,errno);
-		}
+		id=vars_get_value_i(args,"id");
 	}
-	info("Recording %d requested",id);
-	if (id<0){
-		warn("Invalid recording id=%s",arg_id);
+	if (id<0) {
+		if (vars_countn(args,"path")>0) {
+			path=vars_get_value(args,"path");
+			dbg("Recording %s requested",path);
+		}
+	} else {
+		dbg("Recording %d requested",id);
+	}
+	if (id<0 && path==NULL) {
+		warn("Invalid parameters");
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
 		return;
@@ -74,8 +77,14 @@ void sig_handler(int sig){
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGPIPE,&sa,&oldsa);
 
-	recFragment * fragment = parseRecData( getRecData(session, id), &fragnum, &total_size);
-	info("Total recording size= %lld bytes", total_size);
+	recFragment * fragment;
+	if (id>0) {
+		fragment=parseRecData( getRecData(session, id), &fragnum, &total_size);
+	} else {
+		fragment=getFragmentsDir(path, &fragnum, &total_size);
+	}
+		
+	dbg("Total recording size= %lld bytes", total_size);
 	if (fragment==NULL) {
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
@@ -84,7 +93,7 @@ void sig_handler(int sig){
 	}
 	field_t * range = request_get_field(request,"Range");
 	if (range){
-		info("Range requested \"%s\"",range->value);
+		dbg("Range requested \"%s\"",range->value);
 		if (strncmp(range->value,"bytes=",6)==0){
 			char *r = range->value+6;
 			use_range=~0;
@@ -161,6 +170,7 @@ void sig_handler(int sig){
 		char buffer[buflen];
 		for (i=fragini; i<fragnum && remaining>0 && !cancel; i++){
 			f=&fragment[i];
+			dbg("Fragment[%d] %lld %s",i,f->size,f->path);
 			FILE *fi = fopen(f->path,"rb");
 			if (f) {
 				int b=0;
@@ -176,12 +186,12 @@ void sig_handler(int sig){
 						b=io_write(out,buffer,b);
 						if (b<0) {
 							cancel=1;
-							info("Cancelado");
+							dbg("Cancelado");
 						}
 						else {
 							position+=b;
 							remaining-=b;
-							//dbg("Sent %d bytes, current position: %lld, remaining: %lld", b, position, remaining);
+							dbg("Sent %d bytes, current position: %lld, remaining: %lld", b, position, remaining);
 						}
 					}
 				}

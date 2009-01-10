@@ -16,7 +16,7 @@
 
 #include "klone/session.h"
 
-typedef struct recFragment {
+typedef struct recFragment_s {
   char * path;
   uint64_t size;
 } recFragment;
@@ -28,5 +28,7 @@ int whichFragment(recFragment * fragment, int fragnum, uint64_t seek, uint64_t *
 recFragment * parseRecData(const char *recdata, int *fragnum, uint64_t *total_size);
 
 const char * getRecData(session_t *session, int id);
+
+recFragment * getFragmentsDir(const char *recordingPath, int *fragnum, uint64_t *total_size);
 
 #endif
