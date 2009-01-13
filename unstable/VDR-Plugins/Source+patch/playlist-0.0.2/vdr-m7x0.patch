@@ -1,6 +1,1790 @@
+diff -Naur playlist-0.0.2-orig/i18n.c playlist-0.0.2/i18n.c
+--- playlist-0.0.2-orig/i18n.c	2009-01-13 21:21:58.000000000 +0100
++++ playlist-0.0.2/i18n.c	2009-01-13 21:27:12.000000000 +0100
+@@ -9,7 +9,942 @@
+ #include "i18n.h"
+ 
+ const tI18nPhrase Phrases[] = {
+-  { "Add",
++  { "Still unsupported...",
++    "kommt noch ...?",
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Aún no soportado...",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Error while accessing recording!",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Error al acceder a la grabación",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Recordings",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Grabaciones",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Open",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO NederlandsOptionPL$is:
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Abrir",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++  { "Mark",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Marcar",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++ { "Summary",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Resumen",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Delete",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Borrar",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Path",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Ruta",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "New",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Nueva",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "scanning recordings...",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "recorriendo grabaciones...",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Edit",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Editar",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Play",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Reproducir",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "no",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "no",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "yes",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "si",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Timer still recording - really delete?",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Grabación en curso - ¿borrar realmente?",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Up",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Arriba",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Down",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Abajo",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Ok",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Ok",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Back",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Atrás",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Left",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Izquierda",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Right",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Derecha",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Red",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Rojo",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Green",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Verde",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Yellow",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Amarillo",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Blue",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Azul",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Play",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Reproducir",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Pause",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Pausa",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Stop",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Parar",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Record",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Grabar",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "FastFwd",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Avance rápido",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "FastRew",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Retroceso rápido",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Power",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Encendido",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "ChanUp",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Canal siguiente",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "ChanDown",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Canal anterior",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "VolUp",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Subir volumen",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "VolDn",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Bajar volumen",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Mute",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Silenciar",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Schedule",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Programar",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Channels",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Canales",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Timers",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Programaciones",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Recordings",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Grabaciones",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Setup",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Configuración",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Commands",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Comandos",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "User1",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Usuario1",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "User2",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Usuario2",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "User3",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Usuario3",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "User4",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Usuario4",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "User5",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Usuario5",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "User6",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Usuario6",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "User7",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Usuario7",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "User8",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Usuario8",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "User9",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Usuario9",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "none",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "ninguno",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "Kbd",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "Teclado",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++{ "unknow",
++    "",// TODO Deutsch
++    "",// TODO Slovenski
++    "",// TODO Italiano
++    "",// TODO Nederlands
++    "",// TODO Português
++    "",// TODO Français
++    "",// TODO Norsk
++    "",// TODO suomi
++    "",// TODO Polski
++    "desconocido",
++    "",// TODO Ellinika
++    "",// TODO Svenska
++    "",// TODO Romaneste
++    "",// TODO Magyar
++    "",// TODO Català
++  },
++ { "Add",
+     "Hinzufügen",
+     "",// TODO Slovenski
+     "",// TODO Italiano
+@@ -19,7 +954,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Añadir",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -36,7 +971,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Opciones",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -53,7 +988,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Seleccionar",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -70,7 +1005,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Desmarcar",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -87,7 +1022,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Listas de reproducción",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -104,7 +1039,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Listas de reproducción",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -121,7 +1056,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Añadir la grabación seleccionada?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -138,7 +1073,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Borrar la grabación?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -155,7 +1090,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Descartar los cambios?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -172,7 +1107,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Mostrar lista",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -189,7 +1124,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Mostrar listas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -206,7 +1141,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "preparando visualización...",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -223,7 +1158,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "preparando visualización...",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -240,7 +1175,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmar opciones",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -257,7 +1192,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Crear lista",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -274,7 +1209,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Editar lista",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -291,7 +1226,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Editar grabación",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -308,7 +1243,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Borrar lista?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -325,7 +1260,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Borrar entrada?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -342,7 +1277,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Entrada borrada",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -359,7 +1294,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¡No existe la entrada!",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -376,7 +1311,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¡No existe la lista!",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -393,7 +1328,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "No se puede mover entre carpetas y no carpetas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -410,7 +1345,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Entrada no creada",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -427,7 +1362,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "La lista en uso por la reproducción en curso",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -444,7 +1379,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¡Existe una lista con este nombre!",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -461,7 +1396,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "[según Carpeta]",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -478,7 +1413,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "[según Playlist]",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -495,7 +1430,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "[según Setup]",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -512,7 +1447,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "primera nueva",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -529,7 +1464,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "primera posición",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -546,7 +1481,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "última reprod.",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -563,7 +1498,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "última posición",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -580,7 +1515,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "pregunta",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -597,7 +1532,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "selec. posición",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -614,7 +1549,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Carácter para carpetas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -631,7 +1566,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Carácter para grab. normales",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -648,7 +1583,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Carácter para grab. en carpetas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -665,7 +1600,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "    Confirmar borrar grabaciones",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -682,7 +1617,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmar borrar grabaciones",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -699,7 +1634,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Confirmar ver nueva grabación",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -716,7 +1651,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmar ver nueva grabación",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -733,7 +1668,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Borrar grabaciones ya reproducidas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -750,7 +1685,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Borrar grabaciones tras reproducción",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -767,7 +1702,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "El valor es:",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -784,7 +1719,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "En vista de detalle reproducir desde",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -801,7 +1736,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  En vista de detalle reproducir desde",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -818,7 +1753,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "En vista de playlist reproducir desde",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -835,7 +1770,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  En vista de playlist reproducir desde",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -852,7 +1787,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Ir al primer segmento de grabación",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -869,7 +1804,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Ir al primer segmento de la grabación",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -886,7 +1821,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Nombre",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -903,7 +1838,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Reprod. solo nuevas grabaciones",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -920,7 +1855,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Reprod. sólo nuevas grabaciones",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -937,7 +1872,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Quitar grabaciones ya reproducidas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -954,7 +1889,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Quitar grabaciones ya reproducidas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -971,7 +1906,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Buscar grabaciones en carpetas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -988,7 +1923,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Buscar grabaciones en carpetas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1005,7 +1940,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Buscar grabaciones en subcarpetas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1022,7 +1957,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Buscar grabaciones en subcarpetas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1039,7 +1974,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Borrar grabación:",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1056,7 +1991,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Reproducir siguiente grabación? ",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1073,7 +2008,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¡Reproduciendo la primera grabación! ¿Ir a la última?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1090,7 +2025,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¡Reproduciendo la última grabación! ¿Ir a la primera?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1107,7 +2042,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¡No hay nuevas grabaciones! Ir a la primera?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1124,7 +2059,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Reproducir la primera grabación nueva?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1141,7 +2076,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Reproduir la última grabación vista?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1158,7 +2093,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Guardar lista?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1175,7 +2110,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "tras confirmar",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1192,7 +2127,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "automático",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1209,7 +2144,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Ver última PL",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1226,7 +2161,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Ver listas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1243,7 +2178,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Editar",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1260,7 +2195,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "nueva PL vacía",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1277,7 +2212,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Reproducir",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1294,7 +2229,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Reprod. última",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1311,7 +2246,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Permitir borrado de grabaciones",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1328,7 +2263,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Cambiar carácter de identificación",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1345,7 +2280,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Ver opciones de listas por defecto",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1362,7 +2297,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Confirmar borrado de grabaciones",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1379,7 +2314,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "  Nombre en el menú Principal",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1396,7 +2331,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Ruta de almacenamiento de listas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1413,7 +2348,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Preferir params. de llamada",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1430,7 +2365,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Pulsar OK en listas para comenzar a",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1447,7 +2382,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Opciones de arranque del plugin",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1464,7 +2399,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Conservar la lista tras los cambios",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1481,7 +2416,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Log detallado",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1498,7 +2433,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Visible en el menú Principal",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1515,7 +2450,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Mostrar las listas",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1532,7 +2467,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Reproducir la última lista",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1549,7 +2484,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¡Desde esta posición en adelante no se encuentran grabaciones!",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1566,7 +2501,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "¿Reproducir la grabación seleccionada?",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
+@@ -1583,7 +2518,7 @@
+     "",// TODO Norsk
+     "",// TODO suomi
+     "",// TODO Polski
+-    "",// TODO Español
++    "Es:",
+     "",// TODO Ellinika
+     "",// TODO Svenska
+     "",// TODO Romaneste
 diff -Naur playlist-0.0.2-orig/Makefile playlist-0.0.2/Makefile
---- playlist-0.0.2-orig/Makefile	2006-04-24 00:10:40.000000000 +0200
-+++ playlist-0.0.2/Makefile	2008-04-25 13:59:39.000000000 +0200
+--- playlist-0.0.2-orig/Makefile	2009-01-13 21:21:58.000000000 +0100
++++ playlist-0.0.2/Makefile	2009-01-13 21:26:37.000000000 +0100
 @@ -16,7 +16,7 @@
  ### The C++ compiler and options:
  
@@ -50,3 +1834,15 @@ diff -Naur playlist-0.0.2-orig/Makefile playlist-0.0.2/Makefile
  
  dist:	clean
  	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur playlist-0.0.2-orig/menuplaylist.c playlist-0.0.2/menuplaylist.c
+--- playlist-0.0.2-orig/menuplaylist.c	2009-01-13 21:21:58.000000000 +0100
++++ playlist-0.0.2/menuplaylist.c	2009-01-13 21:27:25.000000000 +0100
+@@ -229,7 +229,7 @@
+ {
+   if (singleselect)
+     return osContinue;
+-  INFO("kommt noch ...?");
++  INFO(tr("Still unsupported..."));
+   return osContinue;
+ }
+ 
