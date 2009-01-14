@@ -15,7 +15,7 @@
 //#include "setupsetup.h"
 #include "i18n.h"
 
-static const char *VERSION        = "0.1.1";
+static const char *VERSION        = "0.1.2";
 static const char *DESCRIPTION    = "VDR-NG Firmware Setup";
 static const char *MAINMENUENTRY  = "Firmware Setup";
 

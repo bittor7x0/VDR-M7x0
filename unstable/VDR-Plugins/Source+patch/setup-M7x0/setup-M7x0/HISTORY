@@ -1,5 +1,9 @@
 VDR Plugin 'setup' Revision History
 -----------------------------------
+2009-01-14: version 0.1.2 open7x0 by zjuanma@yahoo.es
+- Añadido configuracion de name server (resolv.conf)
+2008-12   : version 0.1.1 open7x0 by zjuanma@yahoo.es
+- Añadido tipo directorio que usa para navegar la libreria del plugin filebrowser
 2008-09-18: Version 0.1.0 open7x0 by zjuanma@yahoo.es
 - VDR-NG (M7x0) only.
 - Get active plugins from /etc/rc.local.conf

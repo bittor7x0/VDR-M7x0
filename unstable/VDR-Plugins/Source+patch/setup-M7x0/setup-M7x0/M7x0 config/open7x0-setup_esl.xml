@@ -29,6 +29,8 @@
             <entry name="Dirección IP" sysconfig="rc.conf--ip" type="ip" value="192.168.2.100" help1="Dirección IP del M7XX" />
             <entry name="Máscara de Red" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Máscara de Red" />
             <entry name="Puerta de Enlace" sysconfig="rc.conf--gateway" type="ip" value='&quot;192.168.2.1&quot;' help1="Dirección IP de la puerta de Enlace. Si no se usa valor NO" />
+ 	    <entry name="DNS primario" sysconfig="resolv.conf--nameserver1" type="ip" value="192.168.2.1" help1="DNS primario" />                            
+            <entry name="DNS secundario" sysconfig="resolv.conf--nameserver2" type="ip" value="" help1="DNS secundario" />   
             <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="Define el comando con el que se obtiene la dirección MAC. NO DEBE SER MODIFICADO" />
             <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre del M7XX (DNS). Por defecto lo toma del fichero /etc/hostname. NO DEBE SER MODIFICADO" />
         </menu>
