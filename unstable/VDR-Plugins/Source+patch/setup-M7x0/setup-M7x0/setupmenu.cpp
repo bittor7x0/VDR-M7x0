@@ -319,7 +319,7 @@ void cSetupGenericMenu::Set( )
              break;
         case Util::FILE:          
         case Util::DIR:
-          Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
+          Add(new cMenuEditFileItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
                                       " aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789-+.#~_/:\"\'"));
              break;
         default:
@@ -407,20 +407,6 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
               case kBlue:
                         break;
               case kLeft:
-                        
-              			if( !_editItem && n!= NULL &&
-                            n->GetType() == MenuNode::ENTRY &&
-                            n->GetMenuEntry()->GetType() == Util::FILE) {
-                            cOsdMenu *menu = cOsdMenuFilebrowserSetup::CreateFilebrowser("/",n->GetMenuEntry());
-                           	if(menu != NULL) return(AddSubMenu(menu));                         	                        	
-						}
-						if( !_editItem && n!= NULL &&
-                            n->GetType() == MenuNode::ENTRY &&
-                            n->GetMenuEntry()->GetType() == Util::DIR) {
-                            cOsdMenu *menu = cOsdMenuFilebrowserSetup::CreateDirectorybrowser("/",n->GetMenuEntry());
-                           	if(menu != NULL) return(AddSubMenu(menu));                         	                        	
-						}
-                        	                        					
               			break;
               case kRight:
                         if( n!= NULL &&
@@ -428,12 +414,26 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
                             (n->GetMenuEntry()->GetType() == Util::TEXT ||
                             n->GetMenuEntry()->GetType() == Util::NUMBER_TEXT ||
                             n->GetMenuEntry()->GetType() == Util::HEX ||
-                            n->GetMenuEntry()->GetType() == Util::NUMBER ||
-                            n->GetMenuEntry()->GetType() == Util::FILE ||
-                            n->GetMenuEntry()->GetType() == Util::DIR
+                            n->GetMenuEntry()->GetType() == Util::NUMBER 
                             )
-                          )
+                          ) {
                            _editItem = true;
+                        }
+                         
+                        if( !_editItem && n!= NULL &&
+                            n->GetType() == MenuNode::ENTRY &&
+                            n->GetMenuEntry()->GetType() == Util::DIR) {
+                            cOsdMenu *menu = cOsdMenuFilebrowserSetup::CreateDirectorybrowser("/",n->GetMenuEntry());
+                           	if(menu != NULL) return(AddSubMenu(menu));                         	                        	
+						}   
+						
+						if( !_editItem && n!= NULL &&
+                            n->GetType() == MenuNode::ENTRY &&
+                            n->GetMenuEntry()->GetType() == Util::FILE) {
+                            cOsdMenu *menu = cOsdMenuFilebrowserSetup::CreateFilebrowser("/",n->GetMenuEntry());
+                           	if(menu != NULL) return(AddSubMenu(menu));                         	                        	
+						}
+						
                         break;
 
                 default :if( n!= NULL)
