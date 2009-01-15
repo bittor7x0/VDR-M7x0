@@ -948,5 +948,47 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 },
+{ "Loading configuration File",                        
+    "",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Cargando configuración",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Saving configuration File",                        
+    "",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Guardando configuración",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
 { NULL }
 };

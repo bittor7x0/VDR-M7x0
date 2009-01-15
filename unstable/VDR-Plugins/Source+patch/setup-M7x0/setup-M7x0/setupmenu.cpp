@@ -90,6 +90,7 @@ eOSState cSetupPluginMenu::ProcessKey( eKeys Key )
   switch(Key)
     {
             case kOk :
+                        SetStatus(tr("Saving configuration File"));
                         _config->SaveFile();
                         debug("save1");
                         return osBack;
@@ -218,7 +219,7 @@ eOSState cSetupPluginParameter::ProcessKey( eKeys Key )
 //  cSetupGenericMenu
 //		used to display a menupage, based on the data in the minivdr-setup.xml file
 //################################################################################################
-cSetupGenericMenu::cSetupGenericMenu(const char *title, MenuNode *node, Config  *config)  : cSetupMenu()
+cSetupGenericMenu::cSetupGenericMenu(const char *title, MenuNode *node, Config  *config)  : cSetupMenu(false)
 
 
 {
@@ -371,7 +372,8 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
                         if(!_editItem)//close submenu only if we do not have edited an textitem
                         {
                           state=osBack;
-                          _config->SaveFile(); // Write New Configurationfile
+                          SetStatus(tr("Saving configuration File"));
+                          _config->SaveFile(); // Write New Configurationfile                          
                           for(int i=0;  i < _node->GetNr(); i++)
                           {
                             n = _node->GetNode(i);
@@ -494,14 +496,17 @@ void cSetupGenericMenu::ExecuteCommand( const char * cmd )
 //#############################################################################################
 
 
-cSetupMenu::cSetupMenu() : cOsdMenu(tr("VDR-NG Firmware Setup"))
+cSetupMenu::cSetupMenu(bool load) : cOsdMenu(tr("VDR-NG Firmware Setup"))
 {
    char *configFile=NULL;
    char *langs=NULL,*lang=NULL;
    int loaded=0;
    SetCols(20);
 	
-   
+   _loaded_config = load;
+   	
+if (load) {
+   SetStatus(tr("Loading configuration File"));
    //Get languages
    langs  = Util::Strdupnew(I18nLanguageCode(Setup.OSDLanguage));      
    lang = strtok(langs,",");
@@ -530,8 +535,11 @@ cSetupMenu::cSetupMenu() : cOsdMenu(tr("VDR-NG Firmware Setup"))
 	  if ( _config!= NULL && _config->LoadFile() == true ) {
 		loaded=1;		
 	  }
-   }   
-			
+   }
+   SetStatus(NULL);   
+}else {
+	loaded = true;
+}	
 	//Check for child lock
   _number    = 0;
   _error     = false;
@@ -553,7 +561,8 @@ cSetupMenu::cSetupMenu() : cOsdMenu(tr("VDR-NG Firmware Setup"))
     }
     else//open without childlock
 	   debug("cSetupMenu.constr: Open config page");
-      Set();
+      if ( _loaded_config ) Set();
+    
   }
   else
   {//Error loading config file
@@ -566,7 +575,7 @@ cSetupMenu::cSetupMenu() : cOsdMenu(tr("VDR-NG Firmware Setup"))
 
 cSetupMenu::~cSetupMenu()
 {
-    delete _config;
+    if (_loaded_config) delete _config;
     delete []_childLockEntered;
     delete [] _childLockEnteredHidden;
 }

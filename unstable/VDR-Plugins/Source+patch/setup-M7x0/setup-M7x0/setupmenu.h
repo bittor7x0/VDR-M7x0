@@ -61,11 +61,12 @@ private:
    bool     _childLock;
    char *_childLockEntered;
    char *_childLockEnteredHidden;
+   bool     _loaded_config;
 
 protected:
    Config  *_config;
 public:
-    cSetupMenu();
+    cSetupMenu(bool load=true);
     ~cSetupMenu();
     void  Set();
     void  SetAskChildCode();
