@@ -55,7 +55,7 @@ diff -Naur vdr-m7x0-orig/i18n.c vdr-m7x0/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-+    "Detener si un Plugin falla al cargar",
++    "Detener si un plugin falla al cargar",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO

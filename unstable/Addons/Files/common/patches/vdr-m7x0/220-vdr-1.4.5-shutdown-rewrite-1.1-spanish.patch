@@ -15,7 +15,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "",//TODO
      "",//TODO
 -    "",//TODO
-+    "Pulse una tecla para interrumpir reiniciar",
++    "Pulse una tecla para interrumpir reinicio",
      "",//TODO
      "",//TODO
      "",//TODO

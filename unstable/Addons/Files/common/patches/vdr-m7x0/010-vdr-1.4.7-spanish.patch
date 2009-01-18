@@ -1,6 +1,33 @@
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
---- VDR-NG-orig/i18n.c	2008-02-09 16:38:19.000000000 +0100
-+++ VDR-NG/i18n.c	2008-02-09 16:41:12.000000000 +0100
+--- VDR-NG-orig/i18n.c	2009-01-17 17:36:34.000000000 +0100
++++ VDR-NG/i18n.c	2009-01-18 11:25:48.000000000 +0100
+@@ -183,7 +183,7 @@
+     "Programmer",
+     "Ohjelmisto",
+     "Program",
+-    "Guía de Programación",
++    "Guía de programación",
+     "Ğñüãñáììá",
+     "Program",
+     "Program (EPG)",
+@@ -227,7 +227,7 @@
+     "Timere",
+     "Ajastimet",
+     "Timery",
+-    "Programar grabaciones",
++    "Programaciones",
+     "×ñïíïğñïãñáììáôéóìïß",
+     "Timers",
+     "Timer-e",
+@@ -293,7 +293,7 @@
+     "Konfigurasjon",
+     "Asetukset",
+     "Ustawienia",
+-    "Configuración",
++    "Configuración VDR",
+     "Ñõèìéóåéò",
+     "Inställningar",
+     "Configuraşie",
 @@ -668,7 +668,7 @@
      "Av/På",
      "Päällä/Pois",
@@ -28,7 +55,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "ÁíáğáñáãùãŞ",
      "Spela upp",
      "Redare",
-@@ -2123,7 +2123,7 @@
+@@ -2255,7 +2255,7 @@
      "Filnavn",
      "Tiedosto",
      "Plik",
@@ -37,7 +64,34 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Áñ÷åßï",
      "Filnamn",
      "Fiºier",
+@@ -2873,7 +2873,7 @@
+     "Programoversikt",
+     "Ohjelmaopas",
+     "EPG",
+-    "Guía de Programación",
++    "Guía de programación",
+     "Çëåêôñïíéêüò ïäçãüò ğñïãñÜììáôïò",
+     "EPG",
+     "EPG",
+@@ -4150,7 +4150,7 @@
+     "Opptaksmargin slutt (min)",
+     "Lopetusmarginaali (min)",
+     "Margines na koñcu (min)",
+-    "Acabar grabación después (min)",
++    "Acabar grabación después de (min)",
+     "Ğñüóèåôïò ÷ñüíïò óôü ôİëïò (ëåğôÜ)",
+     "Marginal för stopp (min)",
+     "Marjã la oprire (min)",
 @@ -4282,7 +4282,7 @@
+     "Bruk episodenavn",
+     "Käytä jakson nimeä",
+     "U¿ywaj nazwy epizodu",
+-    "Utilizar nombre de episodo",
++    "Utilizar nombre de episodio",
+     "×ñŞóç ïíüìáôïò åğåéóïäßïõ",
+     "Använd episodnamn",
+     "Utilizeazã numele episodului",
+@@ -4414,7 +4414,7 @@
      "Maksimal størrelse på videofiler (MB)",
      "Suurin tiedostokoko (Mt)",
      "Maksymalny rozmiar pliku (MB)",
@@ -46,7 +100,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Ìİãéóôï ìİãåèïò áñ÷åßïõ (MB)",
      "Maximal filstorlek för inspelning (MB)",
      "Dimensiune maximã a fiºierului video (MB)",
-@@ -4304,7 +4304,7 @@
+@@ -4436,7 +4436,7 @@
      "Splitt redigerte filer",
      "Jaottele muokatut tallenteet",
      "Dziel edytowane pliki",
@@ -55,7 +109,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Äéáìİëéóìüò åğåîåñãáóìİíùí áñ÷åßùí",
      "Dela upp redigerade filer",
      "Separare fiºiere montate",
-@@ -4569,7 +4569,7 @@
+@@ -4701,7 +4701,7 @@
      "ManTirOnsTorFreLørSøn",
      "Ma Ti Ke To Pe La Su ",
      "PonWto¦roCzwPi±SobNie",
@@ -64,3 +118,30 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "ÄåõÔñßÔåôĞİìĞáñÓÜâKõñ",
      "MånTisOnsTorFreLörSön",
      "LunMarMieJoiVinSâmDum",
+@@ -4724,7 +4724,7 @@
+     "",// TODO
+     " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
+     " a±bcædeêfghijkl³mnñoópqrs¶tuvwxyz¼¿0123456789-.#~,/_@",
+-    " aábcçdeéfghiíjklmnñoópqrstuúvwxyz0123456789-.#~,/_@",
++    " aábcçdeéfghiíjklmnñoópqrstuúüvwxyz0123456789-.#~,/_@",
+     " áÜâãäåİæçŞèéßêëìíîïüğñóòôõıö÷øùş0123456789-.#~,/_@abcdefghijklmnopqrstuvwxyz",
+     " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
+     " aãâbcdefghiîjklmnopqrsºtşuvwxyz0123456789-.#~,/_@",
+@@ -4747,7 +4747,7 @@
+     "",//TODO
+     " 0\t-.#~,/_@1\tabcäå2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz9",
+     " 0\t-.#~,/_@1\tabc2±æ\tdef3ê\tghi4\tjkl5³\tmno6ñó\tpqrs7¶\ttuv8\twxyz9¼¿",
+-    " 0\t-.#~,/_@1\tabcáç2\tdefé3\tghií4\tjkl5\tmnoñó6\tpqrs7\ttuvú8\twxyz9",
++    " 0\t-.#~,/_@1\tabcáç2\tdefé3\tghií4\tjkl5\tmnoñó6\tpqrs7\ttuvúü8\twxyz9",
+     "",//TODO
+     " 0\t-.#~,/_@1\tabcåä2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz",
+     " 0\t-.#~,/_@1\taãâbc2\tdef3\tghiî4\tjkl5\tmno6\tpqrsº7\ttşuv8\twxyz9",
+@@ -5938,7 +5938,7 @@
+     " Stopp avspilling",
+     " Lopeta toisto",
+     " Zatrzymaj odtwarzanie",
+-    " Parar reprodución",
++    " Parar reproducción",
+     " Ôİëïò áíáğáñáãùãŞò",
+     " Avsluta uppspelning",
+     " Opreºte redarea",

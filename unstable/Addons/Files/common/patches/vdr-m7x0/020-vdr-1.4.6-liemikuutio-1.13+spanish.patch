@@ -385,7 +385,7 @@ diff -Nru vdr-1.4.6-vanilla/i18n.c vdr-1.4.6-liemikuutio/i18n.c
 +    "",//TODO
 +    "Poista tallenteen paluutiedot?",
 +    "",//TODO
-+    "¿Borrar información reanudar?",
++    "¿Borrar información de continuación?",
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO

@@ -37,7 +37,7 @@ diff -Naur vdr-m7x0-orig/i18n.c vdr-m7x0/i18n.c
 +    "Timer kommandoer",
 +    "Ajastinkomennot",
 +    "",// "Polski"
-+    "Comandos de programacion",
++    "Órdenes de programación",
 +    "",// "ÅëëçíéêÜ", // Greek
 +    "Timer kommandon",
 +    "Comenzi timer",
