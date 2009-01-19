@@ -30,6 +30,8 @@
             <entry name="IP Address" sysconfig="rc.conf--ip" type="ip" value="192.168.2.100" help1="IP Address M7XX" />
             <entry name="Network Mask" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Network mask" />
             <entry name="Gateway" sysconfig="rc.conf--gateway" type="ip" value='&quot;NO&quot;' help1="Gatewary IP address. default NO" />
+            <entry name="DNS 1" sysconfig="resolv.conf--nameserver1" type="ip" value="192.168.1.1" help1="DNS 1" />
+            <entry name="DNS 2" sysconfig="resolv.conf--nameserver2" type="ip" value="" help1="DNS 2" />
             <entry name="MAC Address" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="NOT MODIFY" />
             <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="M7XX Name (DNS). default /etc/hostname. NOT MODIFY" />
         </menu>

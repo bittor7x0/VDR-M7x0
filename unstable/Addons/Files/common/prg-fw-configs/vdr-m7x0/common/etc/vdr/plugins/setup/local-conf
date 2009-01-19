@@ -1,13 +1,61 @@
 #!/bin/ash
 
+#Special files
+RESOLV_CONF="resolv.conf"
+
 #Default options
 CONF_DIR=.
-CONF_FILES="rc.local.conf rc.conf" 
+CONF_FILES="rc.local.conf rc.conf $RESOLV_CONF" 
 OPTION=
 DATA_FILE=/tmp/conf.tmp
 
 GREP_CMD=grep
 SED_CMD=sed
+
+write_resolv()  
+{
+  # Load IPs
+	X=0 # Initialize counter to zero.	
+	for ELEMENT in `$GREP_CMD "^$2--nameserver.=" $DATA_FILE | $SED_CMD "s/^$2--nameserver.=//"`
+	do
+	  eval IP_$X=$ELEMENT
+	  X=$((${X} + 1))
+	done
+
+  # Write file
+	`cat /dev/null > $1.tmp`
+	Y=0
+	while read line
+	do
+          if [ "$X" != "$Y" ]  && [ `echo $line | $GREP_CMD -c "^nameserver"` -eq 1   ] ; then 
+            eval address="\$IP_$Y"
+            echo "nameserver ${address}"  >> $1.tmp
+            Y=$((${Y} + 1))
+          else
+            echo $line | $GREP_CMD -v "^nameserver"  >> $1.tmp
+	  fi
+	done < $1
+	
+	while [ "$X" != "$Y" ]  
+	do
+	  eval address="\$IP_$Y"                                                                  
+	  echo "nameserver ${address}"  >> $1.tmp                                                 
+	  Y=$((${Y} + 1))
+	done
+	
+	mv $1.tmp $1
+}
+
+read_resolv()
+{
+  X=1
+  for ELEMENT in `$GREP_CMD "^nameserver" $1 | head -2 | cut -d' ' -f2`
+  do
+    echo "$2--nameserver$X=$ELEMENT" >> $DATA_FILE
+    X=$((${X} + 1))
+  done
+}
+
 
 #### Main loop
 
@@ -25,27 +73,31 @@ do	case "$o" in
 	esac
 done
 
-if [ "$OPTION" = "-w" ] ; then
-        for f in `echo $CONF_FILES` ; do
-                #Delete file
-                `cat /dev/null > $CONF_DIR/$f`
-
-                `$GREP_CMD "^$f--" $DATA_FILE | $SED_CMD "s/^$f--//" >> $CONF_DIR/$f`
-        done
+if [ "$OPTION" = "-w" ] ; then  
+  for f in `echo $CONF_FILES` ; do    
+    if [ "$f" = $RESOLV_CONF ] ; then
+      write_resolv $CONF_DIR/$f $f
+    else           
+      #Delete file
+      `cat /dev/null > $CONF_DIR/$f`
+      `$GREP_CMD "^$f--" $DATA_FILE | $SED_CMD "s/^$f--//" >> $CONF_DIR/$f`
+    fi
+  done
 else
-        if [ "$OPTION" = "-r" ] ; then
-                #Delete temp file 
-                `cat /dev/null > $DATA_FILE`
+  if [ "$OPTION" = "-r" ] ; then        
+    #Delete temp file 
+    `cat /dev/null > $DATA_FILE`
 
-                for f in  `echo $CONF_FILES` ; do
-
-                        `$GREP_CMD "^[^#].*=" $CONF_DIR/$f | $SED_CMD -e "s/^/$f--/" -e "s/#.*$//" >> $DATA_FILE`
-echo
-
-                done 
-        else
-                echo "Error: -r or -w option not found"
-                exit 2
-        fi
+    for f in  `echo $CONF_FILES` ; do
+      if [ "$f" = $RESOLV_CONF ] ; then
+        read_resolv $CONF_DIR/$f $f
+      else
+        `$GREP_CMD "^[^#].*=" $CONF_DIR/$f | $SED_CMD -e "s/^/$f--/" -e "s/#.*$//" >> $DATA_FILE`
+      fi
+    done 
+  else
+    echo "Error: -r or -w option not found"
+    exit 2
+  fi
 fi
 
