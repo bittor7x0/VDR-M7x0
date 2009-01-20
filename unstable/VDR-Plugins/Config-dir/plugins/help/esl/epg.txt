@@ -1,20 +1,20 @@
-     El menú "EPG" ejecuta la "Guía Electrónica de Programación" (EPG) para VDR.
+     El menú "Guía de programación" abre la "Guía Electrónica de Programación" (EPG) para VDR.
 
-     Seleccione "EPG" en el menú "VDR" y mostrará una lista de todas las emisiones próximas del canal actual.
+     Seleccione "Guía de programación" en el menú "VDR" y mostrará una lista de todas las emisiones próximas del canal actual.
 
-     Utilice "Arriba" y "Abajo" para moverse a través de esta lista, presione "ok" para mostrar información detallada sobre el programa seleccionado. Presione "ok"  o "EXIT" para volver al menú "EPG".
+     Utilice "Arriba" y "Abajo" para moverse a través de esta lista, presione "OK" para mostrar información detallada sobre el programa seleccionado. Presione "OK"  o "EXIT" para volver al menú "Guía de programación".
 
-     Desde el menú "EPG", utilice el botón "verde" para abrir el menú "Ahora", que muestra los programas que se estén emitiendo actualmente en todos los canales que difundan la información del programa por el transpondedor actual, o de los canales de los que haya desaparecido recientemente (VDR almacena toda la información que recopila en una lista interna). Cuanto más cambie entre los canales sin información, la lista más aumentará. El botón "amarillo" abre el menú "Después", qué muestra los programas que comenzarán después en todos los canales.
+     Desde el menú "Guía de programación", utilice el botón "Verde" para abrir el menú "Ahora", que muestra los programas que se estén emitiendo actualmente en todos los canales que difundan la información del programa por el transpondedor actual, o de los canales de los que haya desaparecido recientemente (VDR almacena toda la información que recopila en una lista interna). Cuanto más cambie entre los canales sin información, más aumentará la lista. El botón "Amarillo" abre el menú "Después", que muestra los programas que comenzarán después en todos los canales.
 
-     Dentro de los menús "Ahora/Después", El botón "verde" cambia su acción de "Ahora"  a "Después", y el botón "amarillo" le lleva al menú "Guía" del canal seleccionado actualmente en la lista.
+     Dentro de los menús "Ahora/Después", El botón "Verde" cambia su acción de "Ahora" a "Después", y el botón "Amarillo" le lleva al menú "Guía" del canal seleccionado actualmente en la lista.
 
-     El botón "rojo" permite que programe inmediatamente la grabación del programa seleccionado. Una vez hecho esto, el botón "rojo" abre el menú “modificar programación” que está ya relleno, en él puede hacer cualquier modificación que desee aplicar. Observe que el tiempo de comienzo y de parada es aumentado por las guardas iniciales y las guardas finales (véase Configuración - Grabaciones) para asegurar que el programa se graba completamente en caso de que no se ajuste al principio y final publicados. Por supuesto, no hay ninguna garantía de  que los valores de las guardas sean suficientes, en el caso de que esta grabación sea realmente importante, puede agregar un margen adicional ;-)
+     El botón "Rojo" permite que programe inmediatamente la grabación del programa seleccionado. Una vez hecho esto, el botón "Rojo" abre el menú "modificar programación" que está ya relleno, en él puede hacer cualquier modificación que desee aplicar. Observe que el tiempo de comienzo y de fin es aumentado por las guardas iniciales y las guardas finales (véase Configuración VDR - Grabaciones) para asegurar que el programa se graba completamente en caso de que no se ajuste al principio y final publicados. Por supuesto, no hay ninguna garantía de que los valores de las guardas sean suficientes, en el caso de que esta grabación sea realmente importante, puede agregar un margen adicional ;-)
 
-     El botón "azul" se utiliza para activar el menú "search".
+     El botón "Azul" se utiliza para activar el menú "Búsquedas en EPG".
 
-     En estos menús los siguientes marcadores dan la información adicional sobre el estado de las programaciones:
+     En estos menús los siguientes marcadores dan la información adicional sobre el estado de las programaciones (caracteres o iconos dependiendo de si eligió mostrar iconos WarEagle):
 
-         t - hay una programación para este evento pero no lo cubre completamente (guardas)
-         T - hay una programación para este evento que lo cubre entero
-         V - este acontecimiento tiene una hora VPS diferente a su hora de comienzo
-         * - este es el evento que se esta emiendose actualmente ( La validez de la marca, depende si el sintonizador esta actualmente recibiendo el canal).
+         t (o icono de medio reloj) - hay una programación para este evento pero no lo cubre completamente (guardas)
+         T (o icono de reloj completo) - hay una programación para este evento que lo cubre entero
+         V - este evento tiene una hora VPS diferente a su hora de comienzo
+         * (o icono de persona corriendo) - este es el evento que se está emitiendo actualmente (la validez de la marca, depende de si el sintonizador está actualmente recibiendo el canal).

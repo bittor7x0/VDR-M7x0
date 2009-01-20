@@ -1,11 +1,11 @@
 
       1...9 - Situar cursor
-      0 - Ordenar por: "numero", "nombre" o "proveedor"
+      0 - Ordenar por: "número", "nombre" o "proveedor"
       Arriba - Cursor arriba
       Abajo - Cursor abajo
       Izquierda - Página arriba
       Derecha - Página abajo
-      Ok - Cambiar
+      OK - Cambiar
       MENU - Salir del menú
       EXIT - Salir al menú VDR
       Rojo - Modificar

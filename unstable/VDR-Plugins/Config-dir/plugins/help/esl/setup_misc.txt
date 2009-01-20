@@ -1,20 +1,20 @@
 Tiempo min. antes de un evento (m) = 30
 Tiempo min. de inactividad (m) = 120
 
-     El VDR automáticamente apagara el GigaSet si el siguiente evento tarda como mínimo al valor establecido en  "Tiempo min. antes de un evento (m)" y  el  usuario está inactivo durante los minutos especificados en "Tiempo min. de inactividad (m)".  Si se establece el valor "0" en "Tiempo min. de inactividad (m)" desactiva el apagado automático. Siempre estará disponible el apagado manual del GigaSet.
+     El VDR automáticamente apagará el GigaSet si el siguiente evento tarda como mínimo al valor establecido en "Tiempo min. antes de un evento (m)" y  el  usuario está inactivo durante los minutos especificados en "Tiempo mín. de inactividad (m)".  Si se establece el valor "0" en "Tiempo mín. de inactividad (m)" desactiva el apagado automático. Siempre estará disponible el apagado manual del GigaSet.
 
 Tiempo de espera de SVDRP (sg) = 300
       
-     Tiempo máximo (en segundos) de inactividad de una conexión abierta del SVDRP, pasado este tiempo la conexión se cerrara automáticamente. El valor establecido por defecto es de 300,  si se establece el valor a 0, no se desconectara nunca una sesión.
+     Tiempo máximo (en segundos) de inactividad de una conexión abierta del SVDRP, pasado este tiempo la conexión se cerrará automáticamente. El valor establecido por defecto es de 300,  si se establece el valor a 0, no se desconectará nunca una sesión.
   
 Considerar canal como visto (sg) = 3
 
      El tiempo (en segundos) que debe transcurrir hasta que un canal pasa a establecerse como "anterior", para poder ser activado al pulsar el botón "0".
      
-Initial channel = as before
+Canal inicial = como antes
 
-     Indica el canal que se sintonizará por primera vez cuando arranca VDR, por defecto "as before" (el último sintonizado antes de apagar)
+     Indica el canal que se sintonizará por primera vez cuando arranca VDR, por defecto "como antes" (el último sintonizado antes de apagar)
 
-Initial volume = as before
+Volumen inicial = como antes
 
-      Indica el volumen con el que se arrancará VDR, por defecto "as before" (el volumen utilizado antes de apagar) 
+      Indica el volumen con el que se arrancará VDR, por defecto "como antes" (el volumen utilizado antes de apagar) 

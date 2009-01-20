@@ -8,6 +8,6 @@
       MENU - Salir del menú
       EXIT - Salir del menú
       Rojo - Grabar
-      Verde - Lenguaje
+      Verde - Idioma de audio
       Amarillo - Pausar en directo
       Azul - Continuar última reproducción / Parar

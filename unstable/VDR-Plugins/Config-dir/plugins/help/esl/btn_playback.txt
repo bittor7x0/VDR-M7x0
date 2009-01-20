@@ -1,16 +1,16 @@
 
      Arriba - Reproducir
      Abajo - Pausar
-     Izquierda - Rebobinar / Volumen -
-     Derecha - Avanzar / Volumen +
+     Izquierda - Volumen -
+     Derecha - Volumen +
      Ok - Panel de control
      EXIT - Salir al menú grabaciones
      INFO - Infomación del programa reproducido
      Mute - Silencio
      Pause/Play - Pausar y reanudar la reproducción
      Stop - Parar la pausa o reproducción
-     FastFwd - Avanzar
-     FastRew - Rebobinar
+     >> - Avanzar
+     << - Rebobinar
      Rojo - Saltar a
      Verde - Saltar -60s
      Amarillo - Saltar +60s

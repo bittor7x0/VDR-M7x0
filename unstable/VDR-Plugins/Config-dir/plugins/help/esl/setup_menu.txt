@@ -1,65 +1,65 @@
 Idioma = Español
      
-     Establece el idioma que se utilizara para mostrar los textos del OSD.
+     Establece el idioma que se utilizará para mostrar los textos del OSD.
      
 Skin = Paneles ST:TNG
  
-     Establece el "Skin" que se utilizara para mostrar los menús del OSD.
+     Establece el "Skin" que se utilizará para mostrar los menús del OSD.
      
 Tema = Default
 
-     Establece el "Tema" que se utilizara sobre el "skin" actual. 
+     Establece el "Tema" que se utilizará sobre el "skin" actual. 
      
 Izquierda = 54
 Arriba = 45
 
-     La posición donde aparece el OSD. Los valores válidos son Izquierda=0… 672, Arriba=0… 567.
+     La posición donde aparece el OSD. Los valores válidos son Izquierda=0... 672, Arriba=0...567.
      
 Anchura = 624
 Altura = 486
       
      La anchura y altura que tendrá el OSD. Los valores válidos son: Anchura=480...672 y Altura=324...567. El valor de la anchura debe ser un numero múltiplo de 8.
      
-Duración de los mensajes (Sg) = 5
+Duración de los mensajes (sg) = 5
 
-     Tiempo total (en segundos) que permanecerá un mensaje informativo en el OSD. Los valores válidos son de 1… 60.     
+     Tiempo total (en segundos) que permanecerá un mensaje informativo en el OSD. Los valores válidos son de 1...60.     
 
-Usar letra pequeña = Según Skin
+Usar letra pequeña = según skin
 
      Establece cuando se debe utilizar el tamaño de letra pequeño.
      
           nunca - No utilizar nunca fuentes pequeñas
-          Según Skin - Utilizar cuando el "skin" actual, lo requiera.
-          siempre – Utilizar siempre fuentes pequeñas
+          según skin - Utilizar cuando el "skin" actual, lo requiera.
+          siempre - Utilizar siempre fuentes pequeñas
           
-posición para información de canal = abajo
+Posición para información de canal = abajo
 
-     La posición donde se mostrara la información sobre el canal activo en el OSD  ( "abajo"/ "arriba").
+     La posición donde se mostrará la información sobre el canal activo en el OSD  ( "abajo"/ "arriba").
      
 Tiempo de información de canal (sg) = 5
 
      Marca el tiempo (en sg) que se mostrará la información del canal después del cambio.
 
-Mostrar info al cambiar de canal = si
+Mostrar info al cambiar de canal = sí
 
-     Activa o desactiva que se muestre la información de las cadenas, cuando cambiamos de canal. Siempre podemos pulsar el botón de "Ok" para volver a ver esta información, (si estamos en el modo de visualización normal).
+     Activa o desactiva que se muestre la información de las cadenas, cuando cambiamos de canal. Siempre podemos pulsar el botón de "OK" para volver a ver esta información (si estamos en el modo de visualización normal).
      
-Auto-cerrar al solicitar info del canal = si
+Auto-cerrar al solicitar info del canal = sí
 
-     Si se activa, se cerrara automáticamente cualquier menú al solicitar la información del canal.
+     Si se activa, se cerrará automáticamente cualquier menú al solicitar la información del canal.
 
-Deslizar páginas enteras = si
+Deslizar páginas enteras = sí
      
      Esta opción nos permite movernos en sentido vertical mucho más rápido, cuando nos encontramos con grandes listados.
                
-Rotar arriba/abajo al deslizar= si
+Rotar arriba/abajo al deslizar= sí
 
-     Si se activa esta opción, cuando el cursor llegue al final de la lista volverá automaticamente al principio y viceversa.
+     Si se activa esta opción, cuando el cursor llegue al final de la lista volverá automáticamente al principio y viceversa.
      
 Cerrar al pulsar botón de menú = no
 
-     Si se activa, cualquier menú mostrado en pantalla se cerrará al pulsar el botón "MENU".
+     Si se activa, cualquier menú mostrado en pantalla se cerrará al pulsar el botón "MENÚ".
      
-Mostrar directorios de grabaciones = si
+Mostrar directorios de grabaciones = sí
 
-     Activa o desactiva que se muestre la ruta completa del fichero en el menú grabaciones. 
+     Activa o desactiva que se muestre la ruta completa del archivo en el menú Grabaciones. 
