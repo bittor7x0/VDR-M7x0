@@ -1,0 +1,973 @@
+diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
+--- weatherng-0.0.5-orig/i18n.c	2009-01-22 16:30:36.000000000 +0100
++++ weatherng/i18n.c	2009-01-22 16:06:49.000000000 +0100
+@@ -19,7 +19,7 @@
+     "",// TODO
+     "Sääennuste",
+     "",// TODO
+-    "",// TODO
++    "Previsión Meteorológica",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -37,7 +37,7 @@
+     "",// TODO
+     "Weather.com:in sääennusteet",
+     "",// TODO
+-    "",// TODO
++    "Weather.com: Previsión meteorológica",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -55,7 +55,7 @@
+     "",// TODO
+     "Sää",
+     "",// TODO
+-    "",// TODO
++    "Previsión",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -73,7 +73,7 @@
+     "",// TODO
+     "Virhe: Säätietoja ei saatavilla!",
+     "",// TODO
+-    "",// TODO
++    "No hay datos",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -91,7 +91,7 @@
+     "",// TODO
+     "Paina 'OK' päivittääksesi sääennusteet ja tutkakartat",
+     "",// TODO
+-    "",// TODO
++    "Pulsa OK para descargar información",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -109,7 +109,7 @@
+     "",// TODO
+     "Olethan muokannut weatherng.sh:n toimivaksi?",
+     "",// TODO
+-    "",// TODO
++    "has editado weather.sh?",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -127,7 +127,7 @@
+     "",// TODO
+     "Weatherng.sh:n sijainti:",
+     "",// TODO
+-    "",// TODO
++    "Path a weather.sh es :",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -145,7 +145,7 @@
+     "",// TODO
+     "Säätietojen sijainti:",
+     "",// TODO
+-    "",// TODO
++    "Path a weatherdata es :",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -163,7 +163,7 @@
+     "",// TODO
+     "Aurinko laskee: ",
+     "",// TODO
+-    "",// TODO
++    "Puesta de sol: ",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -181,7 +181,7 @@
+     "",// TODO
+     "Aurinko nousee:",
+     "",// TODO
+-    "",// TODO
++    "Amanecer: ",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -199,7 +199,7 @@
+     "",// TODO
+     "Säätila: ",
+     "",// TODO
+-    "",// TODO
++    "Previsión",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -217,7 +217,7 @@
+     "",// TODO
+     "Alin lämpötila: ",
+     "",// TODO
+-    "",// TODO
++    "Mínima",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -235,7 +235,7 @@
+     "",// TODO
+     "Ylin lämpötila: ",
+     "",// TODO
+-    "",// TODO
++    "Máxima",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -253,7 +253,7 @@
+     "",// TODO
+     "Sää: ",
+     "",// TODO
+-    "",// TODO
++    "Previsión para:",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -271,7 +271,7 @@
+     "",// TODO
+     "Tuulen suunta: ",
+     "",// TODO
+-    "",// TODO
++    "Dirección del viento:",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -289,7 +289,7 @@
+     "",// TODO
+     "Tuulen nopeus: ",
+     "",// TODO
+-    "",// TODO
++    "Viento:",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -307,7 +307,7 @@
+     "",// TODO
+     " km/h",
+     "",// TODO
+-    "",// TODO
++    " km/h",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -325,7 +325,7 @@
+     "",// TODO
+     "Ilmankosteus: ",
+     "",// TODO
+-    "",// TODO
++    "Humedad: ",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -343,7 +343,7 @@
+     "",// TODO
+     "Sateen tod.näk.: ",
+     "",// TODO
+-    "",// TODO
++    "Precipitación: ",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -361,7 +361,7 @@
+     "",// TODO
+     " %",
+     "",// TODO
+-    "",// TODO
++    " %",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -379,7 +379,7 @@
+     "",// TODO
+     "°C",
+     "",// TODO
+-    "",// TODO
++    "°C",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -397,7 +397,7 @@
+     "",// TODO
+     "Päivitä säätiedot käynnistettäessä",
+     "",// TODO
+-    "",// TODO
++    "Actualizar datos al arranque de VDR?",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -415,7 +415,7 @@
+     "",// TODO
+     "Tutkakuvan vaakakeskitys",
+     "",// TODO
+-    "",// TODO
++    "Posición imagen radar (izquierda)",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -433,7 +433,7 @@
+     "",// TODO
+     "Tutkakuvan pystykeskitys",
+     "",// TODO
+-    "",// TODO
++    "Posición imagen radar (arriba)",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -451,7 +451,7 @@
+     "",// TODO
+     "Tutkakuvan leveys",
+     "",// TODO
+-    "",// TODO
++    "Ancho imagen de radar",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -469,7 +469,7 @@
+     "",// TODO
+     "Tutkakuvan korkeus",
+     "",// TODO
+-    "",// TODO
++    "Alto imagen de radar",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -487,7 +487,7 @@
+     "",// TODO
+     "Näytä tutkakuvat 256 värillä",
+     "",// TODO
+-    "",// TODO
++    "Usar 256 colores para radarmaps",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -505,7 +505,7 @@
+     "",// TODO
+     "Käytä pieniä kirjasimia",
+     "",// TODO
+-    "",// TODO
++    "Usar fuentes pequeñas",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -685,7 +685,7 @@
+     "",// TODO
+     "Teema",
+     "",// TODO
+-    "",// TODO
++    "Tema",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -703,7 +703,7 @@
+     "",// TODO
+     "Korkeus",
+     "",// TODO
+-    "",// TODO
++    "Alto",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -757,7 +757,7 @@
+     "",// TODO
+     "Näytä symbolit invertoituna",
+     "",// TODO
+-    "",// TODO
++    "Invertir símbolos",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -775,7 +775,7 @@
+     "",// TODO
+     "Käytä pyöristettyjä kulmia",
+     "",// TODO
+-    "",// TODO
++    "Cantos redondeados",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -793,7 +793,7 @@
+     "",// TODO
+     "PÄIVÄ",
+     "",// TODO
+-    "",// TODO
++    "DIA",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -811,7 +811,7 @@
+     "",// TODO
+     "YÖ",
+     "",// TODO
+-    "",// TODO
++    "NOCHE",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -829,7 +829,7 @@
+     "",// TODO
+     "Maanantai",
+     "",// TODO
+-    "",// TODO
++    "Lunes",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -847,7 +847,7 @@
+     "",// TODO
+     "Tiistai",
+     "",// TODO
+-    "",// TODO
++    "Martes",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -865,7 +865,7 @@
+     "",// TODO
+     "Keskiviikko",
+     "",// TODO
+-    "",// TODO
++    "Miércoles",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -883,7 +883,7 @@
+     "",// TODO
+     "Torstai",
+     "",// TODO
+-    "",// TODO
++    "Jueves",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -901,7 +901,7 @@
+     "",// TODO
+     "Perjantai",
+     "",// TODO
+-    "",// TODO
++    "Viernes",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -919,7 +919,7 @@
+     "",// TODO
+     "Lauantai",
+     "",// TODO
+-    "",// TODO
++    "Sábado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -937,7 +937,7 @@
+     "",// TODO
+     "Sunnuntai",
+     "",// TODO
+-    "",// TODO
++    "Domingo",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -955,7 +955,7 @@
+     "",// TODO
+     "aurinkoista",
+     "",// TODO
+-    "",// TODO
++    "Soleado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -973,7 +973,7 @@
+     "",// TODO
+     "sateista",
+     "",// TODO
+-    "",// TODO
++    "Lluvia",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -991,7 +991,7 @@
+     "",// TODO
+     "ukkosta",
+     "",// TODO
+-    "",// TODO
++    "Truenos",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1009,7 +1009,7 @@
+     "",// TODO
+     "pilvistä",
+     "",// TODO
+-    "",// TODO
++    "Nublado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1027,7 +1027,7 @@
+     "",// TODO
+     "enimmäkseen pilvistä",
+     "",// TODO
+-    "",// TODO
++    "Parcialmente nublado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1045,7 +1045,7 @@
+     "",// TODO
+     "iltapäivällä ukkoskuuroja",
+     "",// TODO
+-    "",// TODO
++    "Tormenta eléctrica nocturna",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1063,7 +1063,7 @@
+     "",// TODO
+     "aamupäivällä ukkoskuuroja",
+     "",// TODO
+-    "",// TODO
++    "Tormenta eléctrica matinal",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1081,7 +1081,7 @@
+     "",// TODO
+     "kevyttä sadetta",
+     "",// TODO
+-    "",// TODO
++    "Lluvia ligera",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1099,7 +1099,7 @@
+     "",// TODO
+     "lumisadetta",
+     "",// TODO
+-    "",// TODO
++    "Nieve",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1117,7 +1117,7 @@
+     "",// TODO
+     "sadekuuroja",
+     "",// TODO
+-    "",// TODO
++    "Lluvias",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1135,7 +1135,7 @@
+     "",// TODO
+     "aamupäivällä sadekuuroja",
+     "",// TODO
+-    "",// TODO
++    "Lluvia matinal",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1153,7 +1153,7 @@
+     "",// TODO
+     "iltapäivällä sadekuuroja",
+     "",// TODO
+-    "",// TODO
++    "Lluvia nocturna",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1171,7 +1171,7 @@
+     "",// TODO
+     "hajanaisia sadekuuroja",
+     "",// TODO
+-    "",// TODO
++    "Chaparrones",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1189,7 +1189,7 @@
+     "",// TODO
+     "sadetta / ukkosta",
+     "",// TODO
+-    "",// TODO
++    "Lluvia / Truenos",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1207,7 +1207,7 @@
+     "",// TODO
+     "sadetta / tuulista",
+     "",// TODO
+-    "",// TODO
++    "Lluvia / Viento",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1225,7 +1225,7 @@
+     "",// TODO
+     "enimmäkseen selkeää",
+     "",// TODO
+-    "",// TODO
++    "Parcialmente despejado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1243,7 +1243,7 @@
+     "",// TODO
+     "utua",
+     "",// TODO
+-    "",// TODO
++    "Neblina",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1261,7 +1261,7 @@
+     "",// TODO
+     "sumua",
+     "",// TODO
+-    "",// TODO
++    "Niebla",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1279,7 +1279,7 @@
+     "",// TODO
+     "tuulista",
+     "",// TODO
+-    "",// TODO
++    "Viento",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1297,7 +1297,7 @@
+     "",// TODO
+     "poutaa",
+     "",// TODO
+-    "",// TODO
++    "Buen tiempo",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1315,7 +1315,7 @@
+     "",// TODO
+     "selkeää",
+     "",// TODO
+-    "",// TODO
++    "Claro",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1333,7 +1333,7 @@
+     "",// TODO
+     "tuulista",
+     "",// TODO
+-    "",// TODO
++    "Ventoso",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1351,7 +1351,7 @@
+     "",// TODO
+     "tihkua",
+     "",// TODO
+-    "",// TODO
++    "Llovizna",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1369,7 +1369,7 @@
+     "",// TODO
+     "hallaa",
+     "",// TODO
+-    "",// TODO
++    "Heladas",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1387,7 +1387,7 @@
+     "",// TODO
+     "enimmäkseen pilvistä",
+     "",// TODO
+-    "",// TODO
++    "Parcialmente nublado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1405,7 +1405,7 @@
+     "",// TODO
+     "osittain pilvistä",
+     "",// TODO
+-    "",// TODO
++    "Parcialmente nublado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1423,7 +1423,7 @@
+     "",// TODO
+     "enimmäkseen selkeää",
+     "",// TODO
+-    "",// TODO
++    "Mayoría clara",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1441,7 +1441,7 @@
+     "",// TODO
+     "ei tietoja",
+     "",// TODO
+-    "",// TODO
++    "N/D",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1459,7 +1459,7 @@
+     "",// TODO
+     "enimmäkseen aurinkoista",
+     "",// TODO
+-    "",// TODO
++    "Soleado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1477,7 +1477,7 @@
+     "",// TODO
+     "osittain pilvistä",
+     "",// TODO
+-    "",// TODO
++    "Parcialmente nublado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1495,7 +1495,7 @@
+     "",// TODO
+     "sadetta myöhemmin",
+     "",// TODO
+-    "",// TODO
++    "Lluvia por la tarde",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1513,7 +1513,7 @@
+     "",// TODO
+     "aamupäivällä pilvistä / iltapäivällä aurinkoista",
+     "",// TODO
+-    "",// TODO
++    "Mañana nubes / Tarde sol",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1532,7 +1532,7 @@
+     "",// TODO
+     "hajanaisia ukkosmyrskyjä",
+     "",// TODO
+-    "",// TODO
++    "Tormentas parciales",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1550,7 +1550,7 @@
+     "",// TODO
+     "pilvistä",
+     "",// TODO
+-    "",// TODO
++    "Nublado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1568,7 +1568,7 @@
+     "",// TODO
+     "sumua",
+     "",// TODO
+-    "",// TODO
++    "Niebla",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1586,7 +1586,7 @@
+     "",// TODO
+     "usvaa",
+     "",// TODO
+-    "",// TODO
++    "Niebla",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1604,7 +1604,7 @@
+     "",// TODO
+     "hernerokkasumua",
+     "",// TODO
+-    "",// TODO
++    "niebla",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1622,7 +1622,7 @@
+     "",// TODO
+     "myrskyä",
+     "",// TODO
+-    "",// TODO
++    "Tormenta",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1640,7 +1640,7 @@
+     "",// TODO
+     "lumisadetta",
+     "",// TODO
+-    "",// TODO
++    "Nieve",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1658,7 +1658,7 @@
+     "",// TODO
+     "kevyttä sadetta",
+     "",// TODO
+-    "",// TODO
++    "Lluvia ligera",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1676,7 +1676,7 @@
+     "",// TODO
+     "kevyttä lumisadetta",
+     "",// TODO
+-    "",// TODO
++    "Nieve ligera",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1694,7 +1694,7 @@
+     "",// TODO
+     "heikkoa lumisadetta",
+     "",// TODO
+-    "",// TODO
++    "Algo de nieve",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1712,7 +1712,7 @@
+     "",// TODO
+     "selkeää",
+     "",// TODO
+-    "",// TODO
++    "Despejado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1730,7 +1730,7 @@
+     "",// TODO
+     "kevyttä tihkua",
+     "",// TODO
+-    "",// TODO
++    "Llovizna",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1748,7 +1748,7 @@
+     "",// TODO
+     "hajanaista",
+     "",// TODO
+-    "",// TODO
++    "Tormentas",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1766,7 +1766,7 @@
+     "",// TODO
+     "paksua sumua",
+     "",// TODO
+-    "",// TODO
++    "Humo",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1784,7 +1784,7 @@
+     "",// TODO
+     "voimakasta lumisadetta",
+     "",// TODO
+-    "",// TODO
++    "Nieve debil",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1802,7 +1802,7 @@
+     "",// TODO
+     "tasaista",
+     "",// TODO
+-    "",// TODO
++    "constante",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1820,7 +1820,7 @@
+     "",// TODO
+     "alkavaa",
+     "",// TODO
+-    "",// TODO
++    "el aumento de ",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1838,7 +1838,7 @@
+     "",// TODO
+     "laantuvaa",
+     "",// TODO
+-    "",// TODO
++    "caída",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1856,7 +1856,7 @@
+     "",// TODO
+     "määrittelemätöntä",
+     "",// TODO
+-    "",// TODO
++    "Ilimitado",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1874,7 +1874,7 @@
+     "",// TODO
+     "todennäköisesti sadekuuroja",
+     "",// TODO
+-    "",// TODO
++    "Lluvias en los alrededores",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1892,7 +1892,7 @@
+     "",// TODO
+     "väistyvä täysikuu",
+     "",// TODO
+-    "",// TODO
++    "Media luna menguante",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1910,7 +1910,7 @@
+     "",// TODO
+     "alkava täysikuu",
+     "",// TODO
+-    "",// TODO
++    "Media luna creciente",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1928,7 +1928,7 @@
+     "",// TODO
+     "väistyvä uusikuu",
+     "",// TODO
+-    "",// TODO
++    "Gibosa iluminante",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1946,7 +1946,7 @@
+     "",// TODO
+     "väistyvä täysikuu",
+     "",// TODO
+-    "",// TODO
++    "Gibosa decreciente",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1964,7 +1964,7 @@
+     "",// TODO
+     "ukkosmyrskyjä",
+     "",// TODO
+-    "",// TODO
++    "Tormentas eléctricas aisladas",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1982,7 +1982,7 @@
+     "",// TODO
+     "ukkosmyrskyjä aikaisin",
+     "",// TODO
+-    "",// TODO
++    "Tormentas eléctricas aisladas pronto",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -2000,7 +2000,7 @@
+     "",// TODO
+     "kevyttä sadetta aikaisin",
+     "",// TODO
+-    "",// TODO
++    "Lluvia fina de mañana",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -2018,7 +2018,7 @@
+     "",// TODO
+     "sadekuuroja aikaisin",
+     "",// TODO
+-    "",// TODO
++    "Lluvias de mañana",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -2036,7 +2036,7 @@
+     "",// TODO
+     "pilvistä aikaisin",
+     "",// TODO
+-    "",// TODO
++    "Nublado de mañana",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -2054,7 +2054,7 @@
+     "",// TODO
+     "iltapäivällä kevyttä sadetta",
+     "",// TODO
+-    "",// TODO
++    "Lluvia debil por la tarde",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -2072,7 +2072,7 @@
+     "",// TODO
+     "aamupäivällä kevyttä sadetta",
+     "",// TODO
+-    "",// TODO
++    "Lluvia ligera por la mañana",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -2090,7 +2090,7 @@
+     "",// TODO
+     "kevyttä sadetta myöhään",
+     "",// TODO
+-    "",// TODO
++    "Lluvia ligera por la tarde",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -2108,7 +2108,7 @@
+     "",// TODO
+     "ajoittaisia sadekuuroja",
+     "",// TODO
+-    "",// TODO
++    "Pocas lluvias",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+diff -Naur -x .svn weatherng-0.0.5-orig/setup.c weatherng/setup.c
+--- weatherng-0.0.5-orig/setup.c	2009-01-22 16:30:36.000000000 +0100
++++ weatherng/setup.c	2009-01-22 16:19:10.000000000 +0100
+@@ -30,9 +30,9 @@
+ 	w_osdoffset_y = 0;
+ 	w_inverted = 1;
+ 	w_corner = 1;
+-	strcpy(st_data1,"GMXX0040");
+-	strcpy(st_data2,"GMXX0040");
+-	strcpy(st_data3,"GMXX0040");
++	strcpy(st_data1,"SPXX0050");
++	strcpy(st_data2,"SPXX0015");
++	strcpy(st_data3,"SPXX0016");
+ 	st_pic0=NULL;
+ 	st_pic1=NULL;
+ 	st_pic2=NULL;
