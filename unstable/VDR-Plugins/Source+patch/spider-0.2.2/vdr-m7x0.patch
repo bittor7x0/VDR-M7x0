@@ -1,0 +1,14 @@
+diff -Naur spider-0.2.2-orig/Makefile spider-0.2.2/Makefile
+--- spider-0.2.2-orig/Makefile	2008-03-29 03:01:00.000000000 +0100
++++ spider-0.2.2/Makefile	2008-06-20 21:53:31.000000000 +0200
+@@ -39,8 +39,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:

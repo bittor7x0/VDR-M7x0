@@ -1,0 +1,37 @@
+diff -Naur sudoku-0.3.4-orig/Makefile sudoku-0.3.4/Makefile
+--- sudoku-0.3.4-orig/Makefile	2008-03-22 03:00:00.000000000 +0100
++++ sudoku-0.3.4/Makefile	2009-01-22 20:46:25.000000000 +0100
+@@ -39,8 +39,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+diff -Naur sudoku-0.3.4-orig/tools/Makefile sudoku-0.3.4/tools/Makefile
+--- sudoku-0.3.4-orig/tools/Makefile	2008-11-23 04:03:00.000000000 +0100
++++ sudoku-0.3.4/tools/Makefile	2009-01-22 20:46:25.000000000 +0100
+@@ -34,7 +34,7 @@
+                       ../sudoku.cpp)
+ 
+ CXX      ?= g++
+-CXXFLAGS ?= -g -O2 -Wall -Woverloaded-virtual
++CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual
+ DEFINES  += -D_GNU_SOURCE -DVERSION=\"$(VERSION)\"
+ 
+ ifdef STATIC_LINK
+@@ -59,6 +59,10 @@
+ INSTALL_PROG = $(INSTALL)
+ INSTALL_DATA = $(INSTALL) -m u=rw,g=r,o=r
+ 
++### Allow user defined options to overwrite defaults:
++
++-include $(VDRDIR)/Make.config
++
+ ### Targets:
+ 
+ all: $(PROGRAM)
