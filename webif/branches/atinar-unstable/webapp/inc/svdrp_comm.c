@@ -82,7 +82,7 @@ int open_svdrp() {
 	pid=getpid();
 	signal(SIGPIPE,signal_handler);
 
-	if (svdrp_socket==0) {
+	if (svdrp_socket<1) {
 		struct sockaddr_in svdrp_addr;
 		dbg("Try to open SVDRP connection to %s:%d from pid [%d]",server_ip,server_port,pid);
 		svdrp_addr.sin_family = AF_INET;
@@ -90,14 +90,17 @@ int open_svdrp() {
 		inet_aton(server_ip, &svdrp_addr.sin_addr);
 
 		// create tcp socket
+		errno=0;
 		if ((svdrp_socket=socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-			warn("Failed to create TCP Socket.");
-			exit(errno);
+			perror("open_svdrp()");
+			svdrp_socket=0;
+			return errno;
 		}
 
 		// Connect to VDR
+		errno=0;
 		if (connect(svdrp_socket, (struct sockaddr*)&svdrp_addr, sizeof(svdrp_addr)) < 0) {
-			warn("Failed to connect to VDR.");
+			perror("open_svdrp()");
 			close(svdrp_socket);
 			svdrp_socket=0;
 			return errno;
@@ -117,24 +120,38 @@ int open_svdrp() {
 	return 0;
 }
 
-int close_svdrp() {
+void close_svdrp() {
 	char * data;
 	dbg("Try to close SVDRP connection.");
 	if (write_svdrp("QUIT\r")<=0){
 		warn("Can't connect with SVDRP server!");
-		return 0;
+		return;
 	}
 	data=read_svdrp();
 	free(data);
-	close(svdrp_socket);
-	svdrp_socket=0;
-	if (svdrp_socket==0) {
-		dbg("SVDRP connection closed.");
-		return 1;
-	} else {
-		warn("Can't close SVDRP socket!");
-		return 0;
+	errno=0;
+	if (shutdown(svdrp_socket,SHUT_RDWR)<0){
+		perror("close_svdrp()");
+		switch (errno) {
+			case EBADF:
+			case ENOTSOCK:
+				warn("Not a valid socket");
+				svdrp_socket=0;
+				return;
+			case ENOTCONN:
+				warn("Socket wasn't connected");
+				svdrp_socket=0;
+				return;
+			default:
+				break;
+		}
+		errno=0;
 	}
+	if (close(svdrp_socket)<0) {
+		perror("close_svdrp()");
+		errno=0;
+	}
+	svdrp_socket=0;
 }
 
 char * read_svdrp() {

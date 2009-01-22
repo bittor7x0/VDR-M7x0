@@ -26,6 +26,7 @@
 #include <math.h>
 #include <locale.h>
 #include <u/libu.h>
+#include <klone/ioprv.h>
 
 #include "misc.h"
 #include "i18n.h"
@@ -231,4 +232,18 @@ int i=0;
 const char * sortClass(enum sortField sf){
 	return cssSortClass[((sf==sortBy)?sortDirection:SD_NONE)+1];
 }
+
+char * encode_printf(io_t *out, const char * const fmt, const char * const s){
+	char * eS=NULL;
+	if ((s) && strlen(s)>0) {
+		eS=malloc(2*strlen(s));
+		if ( (eS) && (u_htmlncpy(eS,s,strlen(s),HTMLCPY_ENCODE)!=-1) ) {
+			io_printf(out,fmt,eS);
+		}
+	} else {
+		io_printf(out,fmt,"");
+	}
+	return eS;
+}
+
 

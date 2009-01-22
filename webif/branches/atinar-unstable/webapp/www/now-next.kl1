@@ -10,6 +10,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -22,105 +25,79 @@
 #include "misc.h"
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
+#include "epg.h"
+
+#ifdef DEBUG
+dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
+#endif
 
 %><%
-set_server_address(session,NULL,NULL);
 
-time_t now;
-now=time(NULL);
+#ifdef DEBUG
+dbg_now_next_kl1();
+#endif
 
 vars_t *args = request_get_args(request);
-int channelNum=0;
-channelNum=vars_get_value_i(args,"chan");
+int channelNum=vars_get_value_i(args,"chan");
+
+if (channelNum<1) {
+	warn("Invalid parameters");
+	response_set_status(response,HTTP_STATUS_NO_CONTENT);
+	return;
+}
+
+set_server_address(session,NULL,NULL);
+
+time_t now=time(NULL);
+long int refresh=0;
 
 getConfig();
 
-char * data;
-char * p;
-int i=0;
-char chan_name[30]="";
-char cmd[30]="";
-char ret_code[10]="";
-char * nowT=NULL;
-char * nextT=NULL;
-char * nowD=NULL;
-char * nextD=NULL;
-long int now_time=-1;
-long int next_time=-1;
-long int refresh=0;
-
-  // Get now & next for this chan
-  sprintf(cmd,"LSTE %d now\r",channelNum);
-  for (i=0;i<2;i++) {
-    write_svdrp(cmd);
-    data=read_svdrp();
-    for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-      parse_ret_code(p,ret_code);
-      if (!strcmp(ret_code,"550")) {
-        now_time=-1;
-      } else if (!strcmp(ret_code,"215")) {
-        if (i==0) { sprintf(cmd,"LSTE %d next\r",channelNum); free(data); }
-      } else if (strlen(ret_code)==5) {
-        switch (ret_code[4]) {
-          case 'E':
-            switch (i) {
-              case 0: parse_215E(p+6,NULL,&now_time,NULL,NULL,NULL); break;
-              case 1: parse_215E(p+6,NULL,&next_time,NULL,NULL,NULL); break;
-            }
-          break;
-          case 'T':
-            switch (i) {
-              case 0: nowT=strdup(p+6); break;
-              case 1: nextT=strdup(p+6); break;
-            }
-          break;
-          case 'D':
-            switch (i) {
-              case 0: nowD=strdup(p+6); break;
-              case 1: nextD=strdup(p+6); break;
-            }
-          break;
-        }
-      }
-    }
-  }
-//}
+// Get now & next for this chan
+nowNextList nnl;
+channelList channels;
+channelEntry channel;
+initCL(&channels);
+initCE(&channel);
+channel.channelNum=channelNum;
+channels.length=1;
+channels.entry=&channel;
+getNowNextList(&nnl,&channels);
+nowNextEntry *nne=nnl.entry;
+	
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
 <head>
 <%
-  refresh=next_time-now+60;
-  if (refresh>60 && (next_time>0) && (now_time>0) && (nowT) && (nextT) ) {
-    io_printf(out,"<meta http-equiv=\"refresh\" content=\"%d; URL=/now-next.kl1?chan=%d\" />\n",refresh,channelNum);
-  } else {
-    io_printf(out,"<meta http-equiv=\"refresh\" content=\"90; URL=/now-next.kl1?chan=%d\" />\n",channelNum);
-  }
+	refresh=nne->event[1].time-now+60;
+	if (refresh>60 && (nne->event[1].time>0) && (nne->event[0].time>0) && (nne->event[0].title) && (nne->event[1].title) ) {
+		io_printf(out,"<meta http-equiv=\"refresh\" content=\"%d; URL=/now-next.kl1?chan=%d\" />\n",refresh,channelNum);
+	} else {
+		io_printf(out,"<meta http-equiv=\"refresh\" content=\"90; URL=/now-next.kl1?chan=%d\" />\n",channelNum);
+	}
 %>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
 <link rel="stylesheet" type="text/css" href="open7x0.css" />
 </head>
 <body>
 <%
-  if (nowT) {
-	if (!nowD) { nowD=strdup(" "); }
-  	if (now_time>0) {
-      struct tm t = *localtime(&now_time);
-      io_printf(out,"<h3>%02d:%02d</h3><b>%s</b><p class=\"small\">%s</p>\n",t.tm_hour,t.tm_min,nowT,nowD);
-  	} else {
-  		io_printf(out,"<h3>now</h3><b>%s</b><p class=\"small\">%s</p>\n",nowT,nowD);  		
-  	}
-  }
-  if (nextT) {
-  	if (!nextD) { nextD=strdup(" "); }
-  	if (next_time>0) {
-  	  struct tm t = *localtime(&next_time);
-      io_printf(out,"<h3>%02d:%02d</h3><b>%s</b><p class=\"small\">%s</p>\n",t.tm_hour,t.tm_min,nextT,nextD);
-  	} else {
-  		io_printf(out,"<h3>next</h3><b>%s</b><p class=\"small\">%s</p>\n",nextT,nextD);		
-  	}
-  }
-  close_svdrp();
-  free(data); free(nowD); free(nowT); free(nextD); free(nextT);
+	int i;
+	for (i=0;i<2;i++){
+		if (nne->event[i].title) {
+			if (!nne->event[i].desc) { 
+				nne->event[i].desc=strdup(" ");
+			}
+			if (nne->event[i].time>0) {
+				struct tm t = *localtime(&nne->event[i].time);
+				io_printf(out,"<h3>%02d:%02d</h3><b>%s</b><p class=\"small\">%s</p>\n",t.tm_hour,t.tm_min,nne->event[i].title,nne->event[i].desc);
+			} else {
+				io_printf(out,"<h3>%s</h3><b>%s</b><p class=\"small\">%s</p>\n",(i==0)?tr("Now"):tr("next"),nne->event[i].title,nne->event[i].desc); 	
+			}
+		}
+	}
+	close_svdrp();
+	freeCE(&channel); //no realmente necesario a no ser que se asignen nombres.
+	freeNNL(&nnl);
 %>
 </body>
 </html>

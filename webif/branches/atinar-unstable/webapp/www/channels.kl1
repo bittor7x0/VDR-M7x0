@@ -49,7 +49,7 @@ getChannelList(&channels);
 char iconStr[6];
 for (i=0;i<channels.length;i++) {
 	io_printf(out,"<tr>\n\t<td align=\"center\">%d</td>\n",channels.entry[i].channelNum);
-	io_printf(out,"\t<td><a class=\"black\" href=\"watchit.kl1?channelnum=%d\"><b>%s</b></a></td>\n",channels.entry[i].channelNum,channels.entry[i].channelName);
+	io_printf(out,"\t<td><a class=\"strong\" href=\"watchit.kl1?channelnum=%d\">%s</a></td>\n",channels.entry[i].channelNum,channels.entry[i].channelName);
 	io_printf(out,"\t<td>%s</td>\n",channels.entry[i].multiplexName);
 	io_printf(out,"\t<td align=\"center\">");
 	io_printf(out,"\t<div class=\"infobox\"><img src=\"/img/info16.png\" alt=\"%s\" /><div class=\"shadow\"><div class=\"info\">\n",tr("more infos"));

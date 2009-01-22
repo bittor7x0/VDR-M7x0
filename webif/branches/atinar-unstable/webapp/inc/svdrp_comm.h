@@ -32,7 +32,7 @@ void set_server_address(session_t * session, char aserver_ip[16], uint16_t * ase
 int open_svdrp();
 
 //Close the SVDRP connection
-int close_svdrp();
+void close_svdrp();
 
 //Read data from SVDRP connection
 char * read_svdrp();

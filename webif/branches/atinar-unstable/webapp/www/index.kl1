@@ -36,7 +36,9 @@
 #ifdef DEBUG
 void dbg_index_kl1(void) { dbg("index.kl1"); }
 #endif
+
 %><%
+
 #ifdef DEBUG
 dbg_index_kl1();
 #endif
@@ -58,40 +60,59 @@ currentPage=PN_INDEX;
 
 <div class="content">
 	<h2><%=tr("Current server")%></h2>
-		<p>
-			<span class="field"><span class="label"><%=tr("IP address")%></span>:&nbsp;<span class="value"><%=server_ip%></span></span>.
-			<span class="field"><span class="label"><%=tr("IP port")%></span>:&nbsp;<span class="value"><% io_printf(out,"%d",server_port); %></span></span>.
-		</p>
+	<div class="section">
+		<form action="index.kl1" method="get">
+			<p>
+				<span class="field"><label for="server_ip" class="label"><%=tr("IP address")%></label>&nbsp;<input name="server_ip" value="<%=server_ip%>" size="15" maxlength="15" class="value"/></span>
+				<span class="field"><label for="server_port" class="label"><%=tr("IP port")%></label>&nbsp;<input name="server_port" value="<% io_printf(out,"%d",server_port); %>" size="4" maxlength="5" class="value"/></span>
+				<input type="submit" value="<%=tr("Change")%>"/>
+			</p>
+		</form>
 
 <%
-nowNextEntry * now_next=NULL;
-channelList channels;
-int max=0;
-
-getChannelList(&channels);
-if (channels.length>0) {
-	now_next=getNowNext(&channels,&max,getChannel(NULL));
-	if (now_next!=NULL) {
-		io_printf(out,"<h2>%s &raquo; %s <a href=\"watchit.kl1?channelnum=%d\"><img src=\"/img/tv16.png\" border=\"0\" alt=\"Live-Stream\"></a>&laquo;</h2>\n",tr("You are watching"),now_next[0].channelName,now_next[0].channelNum);
-		if (now_next[0].now_time==0) {
-			io_printf(out,"<p>%s</p>\n",i18n[14][langID]);
+channelEntry channel;
+if (getChannel(0,&channel)) {
+	channelList channels;
+	channels.length=1;
+	channels.entry=&channel;
+	nowNextList nnl;
+	getNowNextList(&nnl,&channels);
+	if (nnl.length>0) {
+		nowNextEntry *nne=&nnl.entry[0];
+		io_printf(out,"\t</div>\n\t<h2>%s &raquo; %s <a href=\"watchit.kl1?channelnum=%d\"><img src=\"/img/tv16.png\" border=\"0\" alt=\"Live-Stream\"></a>&laquo;</h2>\n"
+			,tr("You are watching"),channel.channelName,channel.channelNum);
+		io_printf(out,"\t<div class=\"section\">\n");
+		if (nne->event[0].time==0) {
+			io_printf(out,"\t\t<p>%s</p>\n",i18n[14][langID]);
 		} else {
-			struct tm t1 = *localtime(&now_next[0].now_time);
-			struct tm t2 = *localtime(&now_next[0].next_time);
-			io_printf(out,"<table class=\"chan\">\n<tr><td class=\"nn\">now</td><td> %02d:%02d  <b>%s</b></td></tr>\n<tr><td class=\"nn\">next</td><td> %02d:%02d  <b>%s</b></td></tr></table>\n",t1.tm_hour,t1.tm_min,now_next[0].now_title,t2.tm_hour,t2.tm_min,now_next[0].next_title); // Das ist für Live-TV,chan_num,chan_name);
+			struct tm t;
+			io_printf(out,"\t\t<ul>\n");
+			int i;
+			for (i=0;i<2;i++){
+				t = *localtime(&nne->event[i].time);
+				io_printf(out,"\t\t\t<li class=\"field\"><span class=\"label\">%s&nbsp;(%02d:%02d)</span>:<div class=\"value\">",(i==0)?tr("Now"):tr("Next"),t.tm_hour,t.tm_min);
+				char *eT=io_printf_infobox(out,&nne->event[i]);
+				io_printf(out,"%s</div></li>\n",eT);
+				free(eT);
+			}
+			io_printf(out,"\t\t</ul>\n");
 		}
-		freeNowNextEntry(now_next,1);
 		//<div class="currentImage"><img style="width:400px;height:300px" src="currentimage.kl1?quality=80&sizex=400&sizey=300"/></div>
+		io_printf(out,"\t</div>\n");
 	}
+	freeNNL(&nnl);
 } else {
-	io_printf(out,"<p>%s</p>",tr("VDR not running!"));
+	io_printf(out,"\t\t<p>%s</p>\n\t</div>",tr("VDR not running!"));
 }
+freeCE(&channel);
 close_svdrp();
   
 	
 if (isVdrLocal()){
-	io_printf(out,"<h2>%s</h2>\n",tr("Free Space"));
-	
+	%>
+	<h2><%=tr("Free Space")%></h2>
+	<div class="section">
+	<%
 	FILE *mountTable;
 	struct mntent *mountEntry;
 	int numFS=0;
@@ -106,29 +127,22 @@ if (isVdrLocal()){
 				blocksUsed=s.f_blocks-s.f_bfree;
 				blocksPercent=(long)(blocksUsed*100.0/(blocksUsed+s.f_bavail)+0.5);
 				if (numFS==0) {
-					io_printf(out,"<table><tr><td class=\"nn\">&nbsp;&nbsp;&nbsp;&nbsp;Name</td><td class=\"nn\">&nbsp;&nbsp;&nbsp;&nbsp;Used [MB]</td><td class=\"nn\">&nbsp;&nbsp;&nbsp;&nbsp;Avaible [MB]</td><td class=\"nn\">&nbsp;&nbsp;&nbsp;&nbsp;Used %%</td></tr>\n");
+					const char *used=tr("Used");
+					io_printf(out,"<table class=\"mount\"><tr><th>%s</th><th>%s [MB]</th><th>%s [MB]</th><th>%s %%</th></tr>\n",tr("Name"),used,tr("Available"),used);
 				}
-				io_printf(out,"<tr><td>&nbsp;&nbsp;&nbsp;%s</td><td>&nbsp;&nbsp;&nbsp;%d</td><td>&nbsp;&nbsp;&nbsp;%d</td><td>&nbsp;&nbsp;&nbsp;%d</td></tr>\n",(mountEntry->mnt_dir)+11,(long)(blocksUsed*(s.f_bsize/1048576.0)),(long)(s.f_bfree*(s.f_bsize/1048576.0)),blocksPercent);
+				io_printf(out,"<tr><td>%s</td><td>%d</td><td>%d</td><td>%d</td></tr>\n",(mountEntry->mnt_dir)+11,(long)(blocksUsed*(s.f_bsize/1048576.0)),(long)(s.f_bfree*(s.f_bsize/1048576.0)),blocksPercent);
 				numFS++;
 			}
 		}
 	}
 	endmntent(mountTable);
-	if (numFS==0) 
-		io_printf(out,"<p>%s</p>",tr("No media found!"));
-	else 
-		io_printf(out,"</table>\n");
+	if (numFS==0) {
+		io_printf(out,"<p>%s</p>\n</div>",tr("No media found!"));
+	} else {
+		io_printf(out,"</table>\n</div>");
+	}
 }
 %>
-
-	<h2><%=tr("Choose server")%></h2>
-	<form action="index.kl1" method="get">
-		<p>
-			<span class="field"><label for="server_ip" class="label"><%=tr("IP address")%></label>&nbsp;<input name="server_ip" value="<%=server_ip%>" size="15" maxlength="15" class="value"/></span>
-			<span class="field"><label for="server_port" class="label"><%=tr("IP port")%></label>&nbsp;<input name="server_port" value="<% io_printf(out,"%d",server_port); %>" size="4" maxlength="5" class="value"/></span>
-			<input type="submit" value="Submit"/>
-		</p>
-	</form>
 
 </div>
 

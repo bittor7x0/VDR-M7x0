@@ -29,8 +29,6 @@ extern int margin_stop;
 
 //svdrp_parse stellt Funktionen bereit, um die Zeilen einer Antwort zu parsen
 
-void parse_chan(char * line, int * chan_id, char chan_name[30]);
-
 void parse_215E(char * line, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version);
 
 void parseRec(char * line, recEntry * const recording);

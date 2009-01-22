@@ -26,20 +26,33 @@
 		<script type="text/javascript" src="/js/superfish.js"></script>
 		<script type="text/javascript" src="/js/supersubs.js"></script>
 		<script type="text/javascript">
-
-		// initialise plugins
-		jQuery(function(){
-			jQuery('ul.sf-menu').supersubs({
-				minWidth:   12,
-				maxWidth:   25,
-				extraWidth:  1
-			}).superfish({ 
-				pathClass:   'act',
-				pathLevels:   0
-			})
-		});
-
+			function confMenu()
+			{
+				$('ul.sf-menu')
+					.supersubs({minWidth:12,maxWidth:25,extraWidth:1})
+					.superfish({pathClass:'act',pathLevels:0});
+			};
 		</script>
+<%
+if (currentPage==PN_WATCHIT) {
+%>
+		<script type="text/javascript" src="/js/vlc.js"></script>
+		<script type="text/javascript">
+			jQuery(function(){
+				confMenu();
+				updateVolume(0)
+				}
+			);
+		</script>
+<%
+} else {
+%>
+		<script type="text/javascript">
+			jQuery(confMenu);
+		</script>
+<%
+}
+%>
 	</head>
 <body>
 	<div class="head">
@@ -62,7 +75,7 @@
 							<a href="watchit.kl1"><% io_printf(out,tr("watch TV")); %></a>
 						</li>
 						<li>
-							<a href="playlistch.kl1"><% io_printf(out,tr("Download M3U")); %></a>
+							<a href="playlistch.kl1"><% io_printf(out,tr("Download playlist")); %></a>
 						</li>
 					</ul>
 				</li>
@@ -73,7 +86,7 @@
 							<a href="timers.kl1"><% io_printf(out,tr(SUMMARY)); %></a>
 						</li>
 						<li<%= ((currentPage==PN_TIMERS) && (strcmp(EDIT,action)==0)) ? " class=\"act\"" : "" %>>
-							<a href="timers.kl1?a=edit"><% io_printf(out,tr("new timer")); %></a>
+							<a href="timers.kl1?a=edit"><% io_printf(out,tr("New timer")); %></a>
 						</li>
 					</ul>
 				</li>
@@ -81,10 +94,10 @@
 					<a href="browse.kl1"><%= i18n[PN_RECORDINGS][langID] %></a>
 					<ul>
 						<li<%= (currentPage==PN_RECORDINGS && sortBy==SF_START)? " class=\"act\"" : "" %>>
-							<a href="recordings.kl1?<% io_printf(out,"sort=%d&direction=1\">%s (%s)",SF_START,tr("summary"),tr("date")); %></a> 
+							<a href="recordings.kl1?<% io_printf(out,"sort=%d&direction=1\">%s (%s)",SF_START,tr("summary"),tr("Date")); %></a> 
 						</li>
 						<li<%= (currentPage==PN_RECORDINGS && sortBy==SF_TITLE)? " class=\"act\"" : "" %>>
-							<a href="recordings.kl1?<% io_printf(out,"sort=%d&direction=1\">%s (%s)",SF_TITLE,tr("summary"),tr("title")); %></a>
+							<a href="recordings.kl1?<% io_printf(out,"sort=%d&direction=1\">%s (%s)",SF_TITLE,tr("summary"),tr("Title")); %></a>
 						</li>
 						<li<%= (currentPage==PN_BROWSE)? " class=\"act\"" : "" %>>
 							<a href="browse.kl1"><%= i18n[PN_BROWSE][langID] %></a>

@@ -38,16 +38,6 @@ char vdr_setup[256];
 int margin_start=5*60;
 int margin_stop=15*60;
 
-void parse_chan(char * line, int * chan_id, char chan_name[30]) {
-	char tmp[5]="";
-	int i=0;
-
-	i=strcspn(line+4," ");
-	strncpy(tmp,line+4,i);
-	*chan_id=strtol(tmp,NULL,10);
-	strcpy(chan_name,line+4+i+1);
-}
-
 int parse_ret_code(char * line, char ret_code[10]) {
 	long int i=0;
 	char s[4];

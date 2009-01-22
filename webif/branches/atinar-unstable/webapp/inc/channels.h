@@ -41,11 +41,15 @@ typedef struct channelList_s {
 	channelEntry *entry;
 } channelList;
 
-void initCE(channelEntry *entry);
-void freeCE(channelEntry *entry);
-void initCL(channelList  *list);
-void freeCL(channelList  *list);
-void getChannelList(channelList *list);
-int getChannel(char channelName[30]);
+void initCE(channelEntry * const entry);
+void freeCE(channelEntry * const entry);
+void initCL(channelList  * const list);
+void freeCL(channelList  * const list);
+void getChannelList(channelList * const list);
+/*
+ * Retrieve channelName.
+ * If channelNum==0, retrieve current channel name.
+ */
+int getChannel(int channelNum, channelEntry * const channel);
 
 #endif

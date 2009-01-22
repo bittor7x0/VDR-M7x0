@@ -18,6 +18,7 @@
 #define __MISC_H__
 
 #include <time.h>
+#include <klone/io.h>
 
 extern int isM740AV;
 extern int isM750S;
@@ -92,9 +93,15 @@ enum pageNumber {
 	PN_TIMERS,
 	PN_RECORDINGS,
 	PN_SETTINGS,
+	PN_WATCHIT=39,
 	PN_BROWSE=92,
 	PN_LINKS= 96
 };
+
+typedef enum playlistType_e {
+	PL_M3U,
+	PL_XSPF
+} playlistType;
 
 extern enum sortField sortBy;
 extern enum sortDirection sortDirection;
@@ -115,5 +122,9 @@ extern char * newt;
 
 
 const char * sortClass(enum sortField sf);
+
+char * encode_printf(io_t *out, const char * const fmt, const char * const s);
+
 #define printLink(sf) io_printf(out,"%s?sort=%d&direction=%d",SCRIPT_NAME,sf,(sf==sortBy)?-sortDirection:1)
+
 #endif

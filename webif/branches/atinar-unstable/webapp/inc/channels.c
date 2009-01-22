@@ -27,7 +27,7 @@
 #include "svdrp_parse.h"
 #include "channels.h"
 
-void initCE(channelEntry *entry){
+void initCE(channelEntry * const entry){
 	entry->channelId=NULL;
 	entry->channelName=NULL;
 	entry->multiplexName=NULL;
@@ -35,7 +35,7 @@ void initCE(channelEntry *entry){
 	entry->source=NULL;
 }
 
-void freeCE(channelEntry *entry){
+void freeCE(channelEntry * const entry){
 	free(entry->channelId);
 	free(entry->channelName);
 	free(entry->multiplexName);
@@ -44,12 +44,12 @@ void freeCE(channelEntry *entry){
 	initCE(entry);
 }
 
-void initCL(channelList *list){
+void initCL(channelList * const list){
 	list->length=0;
 	list->entry=NULL;
 }
 
-void freeCL(channelList *list){
+void freeCL(channelList * const list){
 	int i;
 	for (i=0;i<list->length;i++){
 		freeCE(&(list->entry[i]));
@@ -60,7 +60,7 @@ void freeCL(channelList *list){
 }
 
 // Obtain the channel list from VDR
-void getChannelList(channelList * list) {
+void getChannelList(channelList * const list) {
 	list->length=0;
 	list->entry=NULL;
 	
@@ -85,19 +85,34 @@ void getChannelList(channelList * list) {
 	free(data);
 }
 
-// Holt den Programmplatz des aktuellen Senders, liefert -1 zurück falls es einen Fehler gab.
-int getChannel(char channelName[30]) {
-	char * data;
-	int chanNum=0;
-	char chanName[30]="";
+int getChannel(int channelNum, channelEntry * const channel) {
+	char cmd[10];
+	char *data;
+	char *r;
+	int l;
+	int code;
 
-	if (write_svdrp("CHAN\r")<=0){
-		return -1;
+	initCE(channel);
+	if (channelNum<1) {
+		sprintf(cmd,"CHAN\r");
+	} else {
+		sprintf(cmd,"CHAN %d\r",channelNum);
+	}
+	if (write_svdrp(cmd)<=0){
+		return 0;
 	}
 	data=read_svdrp();
-	parse_chan(data,&chanNum,chanName);
-	if (channelName!=NULL) {
-		strcpy(channelName,chanName);
+	if (data==NULL) {
+		return 0;
 	}
-	return chanNum;
+	code=strtol(data,&r,10);
+	if (code!=250) {
+		return 0;
+	}
+	r++;
+	channel->channelNum=strtol(r,&r,10);
+	r++;
+	l=strcspn(r,"\r\n");
+	channel->channelName=strndup(r,l);
+	return ~0;
 }

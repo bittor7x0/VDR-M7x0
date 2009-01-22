@@ -29,67 +29,72 @@
 #include "epg.h"
 #include "channels.h"
 
-void initNNE(nowNextEntry * now_next){
-	strcpy(now_next[0].now_title,"");
-	strcpy(now_next[0].now_desc,"");
-	strcpy(now_next[0].now_short,"");
-	now_next[0].now_time=0;
-	now_next[0].now_duration=0;
-	strcpy(now_next[0].next_title,"");
-	strcpy(now_next[0].next_desc,"");
-	strcpy(now_next[0].next_short,"");
-	now_next[0].next_time=0;
-	now_next[0].next_duration=0;
+void initEE(eventEntry * const event){
+	event->title=NULL;
+	event->desc=NULL;
+	event->shortdesc=NULL;
+	event->time=0;
+	event->duration=0;
 }
 
-void freeNowNextEntry(nowNextEntry * o,int max) {
-	int i=0;
-//	for (i=0;i<max;i++) {
-//	}
-	free(o);
+void freeEE(eventEntry * const event){
+	free(event->title);
+	free(event->desc);
+	free(event->shortdesc);
+	initEE(event);
+}
+	
+
+void initNNE(nowNextEntry * const nowNext){
+	int i;
+	for (i=0;i<2;i++) initEE(&nowNext->event[i]);
 }
 
-nowNextEntry * getNowNext(channelList *channels,int *max, int channelNum) {
-	//TODO quitar nombre del canal de nowNext y convertir en array de dos eventos.
+void freeNNE(nowNextEntry * const nowNext) {
+	int i;
+	for (i=0;i<2;i++) freeEE(&nowNext->event[i]);
+}
+
+void initNNL(nowNextList * const list){
+	list->entry=NULL;
+	list->length=0;
+}
+
+void freeNNL(nowNextList * const list){
+	int i;
+	for (i=0;i<list->length;i++){
+		freeNNE(&list->entry[i]);
+	}
+	free(list->entry);
+	initNNL(list);
+}
+
+void getNowNextList(nowNextList * const list, channelList const * const channels) {
 	char *p;
 	char cmd[20];
 	int pass=0;
-	;
-	nowNextEntry *now_next;
 	int i=0;
 	int k=0;
 	int error=0;
 	
-	*max=0;
+	initNNL(list);
 	if (channels->length<1){
-		return NULL;
+		return;
 	}
 	
-	if (channelNum>0) {
-		now_next=(nowNextEntry *)malloc(sizeof*now_next);
-		if (now_next==NULL){
-			return NULL;
-		}
-		strcpy(now_next[0].channelId,channels->entry[channelNum-1].channelId);
-		strcpy(now_next[0].channelName,channels->entry[channelNum-1].channelName);
-		now_next[0].channelNum=channelNum;
-		initNNE(now_next);
-	} else {
-		now_next=(nowNextEntry *)malloc(channels->length*sizeof*now_next);
-		if (now_next==NULL){
-			return NULL;
-		}
-		for(i=0;i<channels->length;i++) {
-			strcpy(now_next[i].channelId,channels->entry[i].channelId);
-			strcpy(now_next[i].channelName,channels->entry[i].channelName);
-			now_next[i].channelNum=i+1;
-			initNNE(&now_next[i]);
-		}
+	list->length=channels->length;
+	list->entry=(nowNextEntry *)malloc(list->length*sizeof(nowNextEntry));
+	if (list->entry==NULL){
+		list->length=0;
+		return;
+	}
+	for(i=0;i<list->length;i++) {
+		initNNE(&list->entry[i]);
 	}
 	
 	for(pass=0;pass<2;pass++) {
-		if (channelNum>0) {
-			sprintf(cmd,"LSTE %d %s\r",channelNum, (pass==0) ? "now" : "next");
+		if (channels->length==1) {
+			sprintf(cmd,"LSTE %d %s\r",channels->entry[0].channelNum, (pass==0) ? "now" : "next");
 		} else {
 			sprintf(cmd,"LSTE %s\r", (pass==0) ? "now" : "next");
 		}	
@@ -111,45 +116,50 @@ nowNextEntry * getNowNext(channelList *channels,int *max, int channelNum) {
 			if (code==215 && p[0]=='-') {
 				p++;
 				if (*p=='C') {
-					if (channelNum==0) {
+					if (channels->length>1) {
 						p+=2;
 						k=strcspn(p," ");
 						for(i=0;i<channels->length;i++) {
-							if (strncmp(now_next[i].channelId,p,k)==0) {  //TODO now_next -> channels
-								 break;
+							if (strncmp(channels->entry[i].channelId,p,k)==0) {
+								break;
 							}
 						}
 					}
+					initEE(&list->entry[i].event[pass]);
 				} else if (*p=='D') {
 					p+=2;
-					switch (pass) {
-						case 0 :strncpy(now_next[i].now_desc,p,500); break;
-						case 1 :strncpy(now_next[i].next_desc,p,500); break;
-					}
+					list->entry[i].event[pass].desc=strdup(p);
 				} else if (*p=='T') {
 					p+=2;
-					switch (pass) {
-						case 0 :strcpy(now_next[i].now_title,p); break;
-						case 1 :strcpy(now_next[i].next_title,p); break;
-					}
+					list->entry[i].event[pass].title=strdup(p);
 				} else if (*p=='S') {
 					p+=2;
-					switch (pass) {
-						case 0 :strcpy(now_next[i].now_short,p); break;
-						case 1 :strcpy(now_next[i].next_short,p); break;
-					}
+					list->entry[i].event[pass].shortdesc=strdup(p);
 				} else if (*p=='E') {
 					p+=2;
-					switch (pass) {
-						case 0: parse_215E(p,NULL,&(now_next[i].now_time),&(now_next[i].now_duration),NULL,NULL); break;
-						case 1: parse_215E(p,NULL,&(now_next[i].next_time),&(now_next[i].next_duration),NULL,NULL); break;
-					}
+					parse_215E(p,NULL,&(list->entry[i].event[pass].time),&(list->entry[i].event[pass].duration),NULL,NULL); 
+				} else if (*p=='e' && channels->length==1) {
+					break;
 				}
 			}
 		}
 		free(data);
 	}
-exit:
-	*max=channels->length;
-	return now_next;
 }
+
+char * io_printf_infobox(io_t *out, eventEntry * const ee){
+	char *eT;
+	struct tm *timeptr;
+	long int end_time = ee->time+ee->duration;
+	io_printf(out,"<div class=\"box_right\"><div class=\"infobox\">&nbsp;<img src=\"/img/info16.png\" alt=\"%s\" /><div class=\"shadow\"><div class=\"info\">\n",tr("more infos"));
+	eT=encode_printf(out,"  <b>%s</b><br />",ee->title);
+	free(encode_printf(out,"  %s<br />\n",ee->shortdesc));
+	timeptr=localtime(&ee->time);
+	io_printf(out,"  %s <nobr><b>%02d:%02d</b></nobr>",tr("from"),timeptr->tm_hour,timeptr->tm_min);
+	timeptr=localtime(&end_time);
+	io_printf(out," %s <nobr><b>%02d:%02d</b></nobr> (%s: %s %d %s)\n  <p>",tr("to"),timeptr->tm_hour,timeptr->tm_min,tr("runtime"),tr("approx."),ee->duration/60,tr("minutes"));
+	free(encode_printf(out,"%s",ee->desc));
+	io_printf(out,"</p></div></div></div></div>");
+	return eT;
+}
+

@@ -48,7 +48,7 @@ if (vars_countn(args, "direction")>0) { sortDirection=vars_get_value_i(args,"dir
 
 const char dirImg[2][10]={"up1.gif","down1.gif"};
 int whatArrow(int aDir) {
-  if (aDir<0) { return 1; } else { return 0; }
+	if (aDir<0) { return 1; } else { return 0; }
 }
 
 currentPage=PN_RECORDINGS;
@@ -61,40 +61,35 @@ currentPage=PN_RECORDINGS;
 <h2><% io_printf(out,i18n[8][langID]); %></h2>
 
 <table class="list1">
+	<col class="date" align="center"/>
+	<col class="hour" align="center"/>
+	<col class="content" align="left"/>
+	<thead>
+		<tr>
+			<th><a class="<%= sortClass(SF_START) %>" href="<% printLink(SF_START); %>"><%= tr("Date")     %></a></th>
+			<th><a class="<%= sortClass(SF_START) %>"href="<% printLink(SF_START); %>"><%= tr("Start")      %></a></th>
+			<th><a class="<%= sortClass(SF_TITLE) %>"href="<% printLink(SF_TITLE); %>"><%= tr("Title") %></a></th>
+		</tr>
+	</thead>
+	<tbody>
 <%
-
-  if (sortBy==SF_START) {
-    io_printf(out,"<tr>\n <th><a href=\"recordings.kl1?sort=1&direction=%d\">%s<img src=\"/img/%s\" border=\"0\"></a></th>\n",sortDirection*-1,tr("date"),dirImg[whatArrow(sortDirection)]);
-  } else { io_printf(out,"<tr><th><a href=\"recordings.kl1?sort=1&direction=1\">%s</a></th>\n",tr("date")); }
-
-  if (sortBy==SF_START) {
-    io_printf(out," <th><a href=\"recordings.kl1?sort=1&direction=%d\">%s<img src=\"/img/%s\" border=\"0\"></a></th>\n",sortDirection*-1,tr("from"),dirImg[whatArrow(sortDirection)]);
-  } else { io_printf(out," <th><a href=\"recordings.kl1?sort=1&direction=1\">%s</a></th>\n",tr("from")); }
-
-  if (sortBy==SF_TITLE) {
-    io_printf(out," <th><a href=\"recordings.kl1?sort=4&direction=%d\">%s<img src=\"/img/%s\" border=\"0\"></a></th>\n",sortDirection*-1,tr("recording"),dirImg[whatArrow(sortDirection)]);
-  } else { io_printf(out," <th><a href=\"recordings.kl1?sort=4&direction=1\">%s</a></th>\n",tr("recording")); }
-
-  io_printf(out," <th>%s</th>\n</tr>\n",tr("stream"));
-
-  recs=getRecList(&max_recs,sortBy,sortDirection);
-  for (i=0;i<max_recs;i++) {
-    struct tm t1=*localtime(&recs[i].start);
-
-    io_printf(out,"<tr>\n <td>%s</td>\n",formatDate(&t1,0));
-	io_printf(out," <td>%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
-	io_printf(out," <td>%s</td>\n",recs[i].title);
-    if (recs[i].path!=NULL) {
-      io_printf(out," <td><a href=\"playlistrec.kl1?path=%s\"><img border=\"0\" alt=\"%s\" src=\"/img/tv16.png\"/></a></td>",recs[i].path,tr("stream"));
-    } else {
-      io_printf(out," <td><a href=\"playlistrec.kl1?id=%d\"><img border=\"0\" alt=\"%s\" src=\"/img/tv16.png\"/></a></td>",recs[i].ID,tr("stream"));
-    }
-    io_printf(out,"</tr>\n");
-  }
-
-  freeRE(recs,max_recs);
-  close_svdrp();
+	recs=getRecList(&max_recs,sortBy,sortDirection);
+	close_svdrp();
+	for (i=0;i<max_recs;i++) {
+		struct tm t1=*localtime(&recs[i].start);
+		io_printf(out,"<tr>\n <td>%s</td>\n",formatDate(&t1,0));
+		io_printf(out," <td>%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
+		io_printf(out," <td><div class=\"box_right\"><a href=\"playlistrec.kl1?");
+		if (recs[i].path!=NULL) {
+			io_printf(out,"path=%s",recs[i].path);
+		} else {
+			io_printf(out,"id=%d",recs[i].ID);
+		}
+		io_printf(out,"\"><img border=\"0\" alt=\"%s\" src=\"/img/play16.png\"/></a></div>%s</td>\n</tr>\n",tr("Play"),recs[i].title);
+	}
+	freeRE(recs,max_recs);
 %>
+	</tbody>
 </table>
 
 </div>

@@ -21,36 +21,35 @@
 #define __EPG_H__
 
 #include <time.h>
+#include <klone/io.h>
 #include "channels.h"
 
-//TODO sustituir en nowNextEntry
 typedef struct eventEntry_s {
-  char   channelId[50];
-  int    channelNum;
-  char   *title;
-  char   *shortdesc;
-  char   *desc;
-  time_t time;
+	char   *title;
+	char   *shortdesc;
+	char   *desc;
+	time_t time;
+	int    duration;
 } eventEntry;
 
 typedef struct nowNextEntry_s {
-  char   channelName[50];
-  char   channelId[50];
-  int    channelNum;
-  char   now_title[100];
-  char   now_short[100];
-  char   now_desc[502];
-  time_t now_time;
-  int    now_duration;
-  char   next_title[100];
-  char   next_short[100];
-  char   next_desc[502];
-  time_t next_time;
-  int    next_duration;
+	eventEntry event[2];
 } nowNextEntry;
 
-void initNNE(nowNextEntry * now_next);
-nowNextEntry * getNowNext(channelList *channels,int *max,int channelNum);
-//int getChannel(char channelName[30]);
+typedef struct nowNextList_s {
+	int length;
+	nowNextEntry *entry;
+} nowNextList;
+
+void initEE(eventEntry * const event);
+void freeEE(eventEntry * const event);
+void initNNE(nowNextEntry * const nowNext);
+void freeNNE(nowNextEntry * const nowNext);
+void initNNL(nowNextList * const list);
+void freeNNL(nowNextList * const list);
+void getNowNextList(nowNextList * const list, channelList const * const channels);
+void freeNNL(nowNextList * const list);
+//Prints an infobox from the event and returns de encoded title
+char * io_printf_infobox(io_t *out, eventEntry * const ee);
 
 #endif
