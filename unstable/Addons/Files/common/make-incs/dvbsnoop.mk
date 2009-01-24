@@ -17,7 +17,7 @@
 #
 
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-DVBSNOOP_DEPS = $(BASE_BUILD_STAGEFILE)
+DVBSNOOP_DEPS = $(BASE_BUILD_STAGEFILE) $(LINUX_HEADERS_INSTALLED)
 
 DVBSNOOP_VERSION := 1.4.50
 DVBSNOOP_PATCHES_DIR := $(PATCHES_DIR)/dvbsnoop/$(DVBSNOOP_VERSION)
@@ -74,7 +74,7 @@ $(STAGEFILES_DIR)/.dvbsnoop_configured: $(STAGEFILES_DIR)/.dvbsnoop_patched
 		$(DVBSNOOP_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
-			CPPFLAGS=-I/usr/src/linux-headers-`uname -r`/include)
+			CPPFLAGS=-I$(BUILD_DIR)/m7x0-linux-headers/include)
 	$(TOUCH) $(STAGEFILES_DIR)/.dvbsnoop_configured
 
 #

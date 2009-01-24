@@ -1,0 +1,11 @@
+diff -Naur uclibc_build_env_orig/make-incs/linux-headers.mk uclibc_build_env/make-incs/linux-headers.mk
+--- uclibc_build_env_orig/make-incs/linux-headers.mk	2008-09-15 21:14:17.000000000 +0200
++++ uclibc_build_env/make-incs/linux-headers.mk	2009-01-24 20:32:09.000000000 +0100
+@@ -52,6 +52,7 @@
+ 
+ $(STAGEFILES_DIR)/.linux_headers_installed: $(STAGEFILES_DIR)/.linux_headers_unpacked
+ 	$(MKDIR) -p $(LINUX_HEADERS_INSTALL_DIR)
++	$(SVN) co svn://open7x0.org/vdr-m7x0/branches/andreas-unstable/m7x0_dvb $(LINUX_HEADERS_DIR)/include/linux/dvb
+ 	$(CP) -RPp $(LINUX_HEADERS_DIR)/include/* \
+ 		$(LINUX_HEADERS_INSTALL_DIR)
+ 	$(TOUCH) $(STAGEFILES_DIR)/.linux_headers_installed
