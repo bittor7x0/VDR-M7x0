@@ -1,0 +1,17 @@
+diff -Naur dvbsnoop-1.4.50-orig/src/dvb_api/dvb_api.h dvbsnoop-1.4.50/src/dvb_api/dvb_api.h
+--- dvbsnoop-1.4.50-orig/src/dvb_api/dvb_api.h	2006-01-02 20:24:00.000000000 +0100
++++ dvbsnoop-1.4.50/src/dvb_api/dvb_api.h	2009-01-24 17:19:04.000000000 +0100
+@@ -82,10 +82,10 @@
+ #define DVB_API_VERSION 3
+ 
+ #include <linux/dvb/dmx.h>
+-#define DEMUX_DEVICE_MASK    "/dev/dvb/adapter%d/demux%d"
+-#define DVR_DEVICE_MASK      "/dev/dvb/adapter%d/dvr%d"
++#define DEMUX_DEVICE_MASK    "/dev/ost/demux%d"
++#define DVR_DEVICE_MASK      "/dev/ost/dvr%d"
+ #include <linux/dvb/frontend.h> 
+-#define FRONTEND_DEVICE_MASK "/dev/dvb/adapter%d/frontend%d"
++#define FRONTEND_DEVICE_MASK "/dev/ost/frontend%d"
+ 
+ // adapter[0-4]/device[0-4]
+ #define DVB_STD_ADAPTER_NR	0
