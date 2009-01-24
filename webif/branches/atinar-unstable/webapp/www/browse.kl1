@@ -170,6 +170,8 @@ currentPage=PN_RECORDINGS;
 	char * videoPath;
 	if (strlen(pathStr)>0) {
 		if (asprintf(&videoPath,"/var/vdr/video0/%s",pathStr)<0){
+			warn("No hay memoria para videoPath");
+			videoPath=NULL;
 			//TODO 
 		}
 	} else {
@@ -183,20 +185,24 @@ currentPage=PN_RECORDINGS;
 	<%
 	if (strlen(pathStr)>0) {
 		char * bc;
-		char * bcPath=malloc(strlen(pathStr));
-		char * s=strdup(pathStr);
-		bcPath[0]=0;
-		for(bc=strtok(s,"/");bc!=0;bc=strtok(0,"/")) {
-			strcat(bcPath,bc);
-			if (strcmp(bc,"_")!=0) {
-				%>
-			<a href="browse.kl1?path=<%= bcPath %>">&raquo;&nbsp;<%= decodeName(bc,~0,NULL) %></a>
-				<%
+		char * bcPath=malloc(strlen(pathStr)+1);
+		if (bcPath!=NULL) {
+			char * s=strdup(pathStr);
+			if (s!=NULL){
+				bcPath[0]=0;
+				for(bc=strtok(s,"/");bc!=0;bc=strtok(0,"/")) {
+					strcat(bcPath,bc);
+					if (strcmp(bc,"_")!=0) {
+						%>
+					<a href="browse.kl1?path=<%= bcPath %>">&raquo;&nbsp;<%= decodeName(bc,~0,NULL) %></a>
+						<%
+					}
+					strcat(bcPath,"/");
+				}
+				free(s);
 			}
-			strcat(bcPath,"/");
+			free(bcPath);
 		}
-		free(bcPath);
-		free(s);
 	}
 	%>
 	</div>
