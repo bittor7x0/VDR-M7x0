@@ -1,0 +1,22 @@
+#!/bin/ash
+source /etc/rc.local.conf
+
+if [ X"$1" = X"off" ]; then
+    /usr/sbin/avswctl tv-vcr tv-off
+    exit 0
+fi
+
+vdr_tv_mode=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+vdr_vcr_mode=`grep -i VCRMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+vdr_video_format=`grep -i VideoFormat ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+
+tv_mode="fbas"
+[ X"${vdr_tv_mode}" = X"1" ] && tv_mode="svideo"
+
+vcr_mode="fbas"
+[ X"${vdr_vcr_mode}" = X"1" ] && vcr_mode="svideo"
+
+video_format="4:3"
+[ X"${vdr_video_format}" = X"1" ] && video_format="16:9"
+
+/usr/sbin/avswctl tv-${tv_mode} vcr-${vcr_mode} ${video_format}

@@ -34,7 +34,7 @@ echo "dvbdev.o"
 # switch tv back for debug output
 
 if [ X"${OSDLOG}" = X"YES" ]; then
-    /usr/sbin/avswctl -tv fbas
+    /usr/bin/set-video
 fi
 
 # select tuner

@@ -62,4 +62,4 @@ if [ -x "${fw_update_file}" ] ; then
     ${fw_update_file}
 fi
 
-/usr/sbin/avswctl -tv vcr
+/usr/bin/set-video off
