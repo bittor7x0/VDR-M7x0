@@ -25,12 +25,7 @@
 #include "conf-i18n.h"
 
 %><%
-header_t *header = request_get_header(request);
-if (header_get_field(header,"Accept-Language")!=NULL) {
-  field_t *field=header_get_field(header,"Accept-Language");
-  strncpy(acceptedLang,field->value,2);
-  acceptedLang[2]='\0';
-}
+config(session,request);
 
 vars_t *args = request_get_args(request);
 
@@ -47,7 +42,6 @@ if (vars_countn(args,"show")>0) {
 	showWhat=strdup("webif");
 }
 
-getConfig();
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">

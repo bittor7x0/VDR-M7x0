@@ -36,15 +36,7 @@ char * pathStr=NULL;
 char * queryStr=NULL;
 parseRequestStr(request_get_client_request(request),&pathStr,&queryStr);
 
-
-header_t *header = request_get_header(request);
-if (header_get_field(header,"Accept-Language")!=NULL) {
-  field_t *field=header_get_field(header,"Accept-Language");
-  strncpy(acceptedLang,field->value,2);
-  acceptedLang[2]='\0';
-}
-
-getConfig();
+config(session,request);
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">

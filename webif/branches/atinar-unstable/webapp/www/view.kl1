@@ -30,8 +30,8 @@ time_t now;
 #include "conf.h"
 
 %><%
-char myip[16]="";
-whatsmyip(myip);
+
+config(session,request);
 
 static struct __fileMapping {
   const char *name;
@@ -50,13 +50,6 @@ static struct __fileMapping {
   {"boxamp", "/etc/bootmenu/bm.local.boxamp.conf", "BoxAmp"}
 };
 const int maxFileMapping=10;
-
-header_t *header = request_get_header(request);
-if (header_get_field(header,"Accept-Language")!=NULL) {
-  field_t *field=header_get_field(header,"Accept-Language");
-  strncpy(acceptedLang,field->value,2);
-  acceptedLang[2]='\0';
-}
 
 vars_t *args = request_get_args(request);
 const char * viewFile=NULL;
@@ -92,8 +85,6 @@ if (viewFile!=NULL) {
   }
 } else { fileNum=0; }
 if ((action<1) || (action>4)) { action=1; }
-
-getConfig();
 
 if (action==3) {
   response_set_content_type(response, "application/octetstream");

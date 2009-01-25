@@ -1,6 +1,5 @@
-/*TODO clases semanticas*/
 body {
-	background-color:#223344;
+	background-color:#445;
 	color:black;
 	font-family:Verdana,Arial,Helvetica,sans-serif;
 	font-size:10pt;
@@ -32,9 +31,9 @@ width:95%;
 div.head {
 	background:#012 url(/img/logo-414.png) no-repeat scroll left top;
 	font-size:18pt;
-	height:106px;
+	height:150px;
 	position:relative;
-	margin:0;
+	margin:0 0 -36px; /* subir menu*/
 	padding:0;
 }
 div.head h1 {
@@ -43,7 +42,7 @@ div.head h1 {
 	font-size:110%;
 	position:absolute;
 	left:155px;
-	bottom:0px;
+	bottom:40px;
 	margin:0;
 	padding:0;
 }
@@ -69,6 +68,9 @@ width:100%;
 }
 div.section {
 	margin: 0 1em;
+}
+div.clearer {
+	clear:both;
 }
 table.list1 {
 	border-collapse:separate;
@@ -177,36 +179,107 @@ float:right;
 margin:0 0 0 5px;
 padding:0;
 }
-dic.section {
+div.section {
 	margin: 1em;
 }
+ul.recPath {
+	display:block;
+	float:left;
+	list-style-image:none;
+	list-style-position:inside;
+	list-style-type:none;
+	margin:0 0 1em -1em;
+	padding:0;
+}
+ul.recPath li.recDir {
+	display:block;
+	float:left;
+	border-right:7px solid #CCF;
+	padding:0 0.5em;
+}
+ul.recPath li.recDir:last {
+	border-right:none;
+}
+ul.recPath li.recDir a,
+ul.recPath li.recDir a:visited {
+	color:black;
+	font-weight:bold;
+	text-decoration: none;
+}
+ul.recPath li.recDir a:hover {
+	color:#333;
+	text-decoration: none;
+}
+div.recFolders {
+	clear:left;
+}
+div.recFolderWrapper {
+	display:inline-block;
+	vertical-align:top;
+	margin:5px 10px 5px 0px;
+	padding:0;
+	width:250px;
+	position:relative;
+}
+div.recFolderShadow {
+	margin:0;
+	padding:0;
+	position:relative;
+	background:url(/img/shadow1.png) repeat;
+	-moz-border-radius:5px;
+}
 div.recFolder {
-background-color:#FFE2C4;
-border:1px solid silver;
-font-size:10pt;
-margin:5px 2px 10px 1px;
-padding:4px;
+	background-color:#DCA;
+	border:1px solid #B0A080;
+	font-size:10pt;
+	margin:0;
+	padding:5px;
+	position:relative;
+	right:5px;
+	bottom:5px;
+	-moz-border-radius:5px;
 }
-div.recFolder a, div.recFolder a:link, div.recFolder a:visited {
-color:black;
-font-size:12pt;
-font-weight:bold;
-text-decoration:none;
+div.recFolderHeader {
+	display:block;
+	font-size:12pt;
+	font-weight:bold;
 }
-div.recFolder a:hover {
-color:black;
-font-size:12pt;
-font-weight:bold;
-max-width:480px;
-text-decoration:underline;
+div.recFolderHeader a, 
+div.recFolderHeader a:link, 
+div.recFolderHeader a:visited {
+	color:black;
+	font-size:12pt;
+	font-weight:bold;
+	text-decoration:none;
+}
+div.recFolderHeader a:hover {
+	color:#234;
+	font-size:12pt;
+	font-weight:bold;
 }
 div.recFolderDetails {
-background-color:white;
-border:medium none;
-font-size:9pt;
-margin:4px 0 0 3px;
-padding:2px 0 5px 4px;
-text-decoration:none;
+	border:medium none;
+	font-size:9pt;
+	margin:0;
+	padding:0;
+	overflow:auto;
+	text-decoration:none;
+	max-height:15em;
+	-moz-border-radius:5px;
+}
+div.recFolderDetails div.recInfo {
+	background-color:white;
+	padding:3px;
+	margin-bottom:1px;
+}
+div.recFolderFooter {
+	margin-top:5px;
+}
+div.recFolderFooter .field .label {
+	font-weight:normal;
+}
+div.recFolderFooter .field .value {
+	font-weight:bold;
 }
 div.fileView {
 background-color:#E0E0E0;
@@ -323,5 +396,56 @@ div.foot p {
 .field .label {
 	color:#333333;
 	font-weight:bold;
+}
+/* watchIt */
+#watchItControl {
+	float:left;
+	max-width:250px;
+}
+#watchItInfo {
+	min-height:450px;
+}
+#watchItVlc {
+	float:left;
+	margin-left:10px;
+}
+
+/*modificar superfish*/
+.sf-menu {
+	margin-left:10px!important;
+}
+.sf-menu li {
+	background-color:#334!important;
+	border-color:#445 #445 #2A2A3A #445!important;
+	border-width:1px 1px 2px 1px!important;
+	border-style:solid;
+	margin-right:1px!important;
+	-moz-border-radius-topleft: 10px!important;
+	-moz-border-radius-topright: 10px!important;
+}
+.sf-menu li:hover, 
+.sf-menu li.sfHover, 
+.sf-menu li.act {
+	background-color:#445!important;
+	border-color:#556 #556 #445 #556!important;
+}
+.sf-menu li li {
+	-moz-border-radius: 0px!important;
+	background-color:#556!important;
+	border: medium none!important;
+}
+.sf-menu a,
+.sf-menu a:visited {
+	color:#FFF!important;
+	text-decoration:none!important;
+	border:none!important;
+	background-color:transparent!important;
+}
+.sf-menu a:hover {
+}
+.sf-menu a:focus, 
+.sf-menu a:hover, 
+.sf-menu a:active {
+	color:#DDD!important;
 }
 

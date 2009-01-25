@@ -21,7 +21,7 @@
 #define __SVDRP_COMM_H__
 
 #include <netinet/in.h>
-#include "klone/session.h"
+#include <klone/session.h>
 
 extern int svdrp_socket;
 

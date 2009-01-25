@@ -120,27 +120,27 @@ char * strcatEx(char ** dest, const char * s) {
 	if (*dest==NULL) { *dest=malloc(strlen(s)+2); strcpy(*dest,""); }
 	size=strlen(*dest)+strlen(s);
 	
-  char * tmp =(char *)realloc(*dest,size+2);
-  if (!tmp) {
-    exit(1);
-  }
-  *dest=tmp;
+	char * tmp =(char *)realloc(*dest,size+2);
+	if (!tmp) {
+		exit(1);
+	}
+	*dest=tmp;
 
-  strcat(*dest,s);
-  return *dest;
+	strcat(*dest,s);
+	return *dest;
 }
 
 int isDST(time_t * aTime) {
-  struct tm t=*localtime(aTime);
-  if (t.tm_isdst>0) { return 1; } else { return 0; }
+	struct tm t=*localtime(aTime);
+	if (t.tm_isdst>0) { return 1; } else { return 0; }
 }
 
 int sameDay(time_t oneDate,time_t anotherDate) {
-  if ( (oneDate/86400)==(anotherDate/86400) ) { return 1; } else { return 0; }
+	if ( (oneDate/86400)==(anotherDate/86400) ) { return 1; } else { return 0; }
 }
 
 int sameString(const char * s1, const char * s2) {
-  if (strcmp(s1,s2)) { return 0; } else { return 1; }	
+	if (strcmp(s1,s2)) { return 0; } else { return 1; }	
 }
 
 int sameInt(const int i1, const int i2) {
@@ -152,11 +152,11 @@ int sameIntEx(const char * s, const int i) {
 }
 
 int fileExists(const char * fileName) {
-  struct stat status;
+	struct stat status;
 
-  if (( stat (fileName, &status)) < 0) { return 0; }
-  if (! S_ISREG(status.st_mode)) { return 0; } 
-  return 1;
+	if (( stat (fileName, &status)) < 0) { return 0; }
+	if (! S_ISREG(status.st_mode)) { return 0; } 
+	return 1;
 }
 
 int dirExists(const char * dirName) {
@@ -193,40 +193,51 @@ int vdrRunning() {
 	}
 }
 
-void getConfig() {
-int i=0;
-  readWEBIFCONF();
-
-  if ((webifConf.langID>-1) && (webifConf.langID<I18NNUM)) {
-	langID=webifConf.langID;  
-  } else {
-    if ((langID<0) || (langID>=I18NNUM)) {
-      for (i=0;i<I18NNUM;i++) {
-        if (strcmp(acceptedLang,i18n[1][i])==0) {
-          langID=i;
-        }
-      } 
-    }
-    if ((langID<0) || (langID>=I18NNUM)) {
-      langID=0;
-    }
-  }
-  setlocale(LC_ALL,"de_DE");
+void config(session_t *session, request_t *request) {
+	header_t *header = request_get_header(request);
+	if (header_get_field(header,"Accept-Language")!=NULL) {
+		field_t *field=header_get_field(header,"Accept-Language");
+		strncpy(acceptedLang,field->value,2);
+		acceptedLang[2]='\0';
+	}
+	readWEBIFCONF();
+	if ((webifConf.langID>-1) && (webifConf.langID<I18NNUM)) {
+		langID=webifConf.langID;  
+	} else {
+		int i=0;
+		if ((langID<0) || (langID>=I18NNUM)) {
+			for (i=0;i<I18NNUM;i++) {
+				if (strcmp(acceptedLang,i18n[1][i])==0) {
+					langID=i;
+				}
+			} 
+		}
+		if ((langID<0) || (langID>=I18NNUM)) {
+			langID=0;
+		}
+	}
+	setlocale(LC_ALL,"de_DE");
 // get systemtype from /etc/systemtype
-  boxSysType=sysNone;
-  char str[10];
-  FILE *f = fopen("/etc/systemtype","r");
-  if (f) {
-	fgets(str,sizeof(str),f);
-	fclose(f);
-  }
-  if (!strcmp(str,"m740")) {
-    boxSysType=sys740av;
-    isM740AV=1; isM750S=0; isM750C=0;
-  } else if (!strcmp(str,"m750s")) {
-    boxSysType=sys750s;
-    isM740AV=0; isM750S=1; isM750C=0;
-  }
+	boxSysType=sysNone;
+	isM740AV=1; 
+	isM750S=0; 
+	isM750C=0;
+	FILE *f = fopen("/etc/systemtype","r");
+	if (f) {
+		char str[10];
+		fgets(str,sizeof(str),f);
+		fclose(f);
+		if (!strcmp(str,"m740")) {
+			boxSysType=sys740av;
+			isM740AV=1;
+		} else if (!strcmp(str,"m750s")) {
+			boxSysType=sys750s;
+			isM750S=1;
+		}
+	}
+	
+	set_server_address(session,server_ip,&server_port);
+	whatsmyip(myip);
 }
 
 const char * sortClass(enum sortField sf){

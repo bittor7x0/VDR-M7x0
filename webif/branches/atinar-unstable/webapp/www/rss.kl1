@@ -27,27 +27,19 @@ time_t now;
 #include "svdrp_parse.h"
 
 %><%
+
+config(session,request);
+
 recEntry * recs;
 int max_recs=0;
 int i=0;
-char myip[16]="";
-whatsmyip(myip);
 
 const char dayStr[7][4]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 const char monthStr[12][4]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
 recs=getRecList(&max_recs,sortStart,sortDesc);
-
-header_t *header = request_get_header(request);
-if (header_get_field(header,"Accept-Language")!=NULL) {
-  field_t *field=header_get_field(header,"Accept-Language");
-  strncpy(acceptedLang,field->value,2);
-  acceptedLang[2]='\0';
-}
-
-getConfig();
-
 response_set_content_type(response,"application/rss+xml");
+
 %><?xml version="1.0" encoding="ISO-8859-1"?>
 <rss version="2.0">
 <channel>

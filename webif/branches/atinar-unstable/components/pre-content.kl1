@@ -1,38 +1,12 @@
 <%
 	if (action==NULL) action = NOACTION;
 	
-	header_t *header = request_get_header(request);
-	if (header_get_field(header,"Accept-Language")!=NULL) {
-		field_t *field=header_get_field(header,"Accept-Language");
-		strncpy(acceptedLang,field->value,2);
-		acceptedLang[2]='\0';
-	}
-	getConfig();
+	config(session, request);
 
-	set_server_address(session,server_ip,&server_port);
-
-	whatsmyip(myip);
-	
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= i18n[1][langID] %>" lang="<%= i18n[1][langID] %>">
-	<head>
-		<title><%= i18n[currentPage][langID] %> - open7x0 VDR-FW</title>
-		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
-		<meta http-equiv="Content-Style-Type" content="text/css" />
-		<link rel="stylesheet" type="text/css" href="/css/superfish.css" media="screen">
-		<link rel="stylesheet" type="text/css" href="/css/atinar.css" media="screen">
-		<script type="text/javascript" src="/js/jquery-1.2.6.min.js"></script>
-		<script type="text/javascript" src="/js/jquery.hoverIntent.min.js"></script>
-		<script type="text/javascript" src="/js/superfish.js"></script>
-		<script type="text/javascript" src="/js/supersubs.js"></script>
-		<script type="text/javascript">
-			function confMenu()
-			{
-				$('ul.sf-menu')
-					.supersubs({minWidth:12,maxWidth:25,extraWidth:1})
-					.superfish({pathClass:'act',pathLevels:0});
-			};
-		</script>
+<head>
+	<%@ include head-base.kl1 %>
 <%
 if (currentPage==PN_WATCHIT) {
 %>
@@ -47,76 +21,18 @@ if (currentPage==PN_WATCHIT) {
 <%
 } else {
 %>
-		<script type="text/javascript">
-			jQuery(confMenu);
-		</script>
+	<script type="text/javascript">
+		jQuery(confMenu);
+	</script>
 <%
 }
 %>
-	</head>
+</head>
 <body>
 	<div class="head">
 		<h1><%= i18n[currentPage][langID] %></h1>
 	</div>
-			<ul class="sf-menu">
-				<li<%= (currentPage==PN_INDEX)? " class=\"act\"" : "" %>>
-					<a href="index.kl1"><%= i18n[PN_INDEX][langID] %></a>
-				</li>
-				<li<%= (currentPage==PN_PROGRAMS)? " class=\"act\"" : "" %>>
-					<a href="program.kl1"><%= i18n[PN_PROGRAMS][langID] %></a>
-				</li>
-				<li<%= (currentPage==PN_CHANNELS)? " class=\"act\"" : "" %>>
-					<a href="channels.kl1"><%= i18n[PN_CHANNELS][langID] %></a>
-					<ul>
-						<li>
-							<a href="channels.kl1"><% io_printf(out,tr("summary")); %></a>
-						</li>
-						<li>
-							<a href="watchit.kl1"><% io_printf(out,tr("watch TV")); %></a>
-						</li>
-						<li>
-							<a href="playlistch.kl1"><% io_printf(out,tr("Download playlist")); %></a>
-						</li>
-					</ul>
-				</li>
-				<li<%= (currentPage==PN_TIMERS)? " class=\"act\"" : "" %>>
-					<a href="timers.kl1"><%= i18n[PN_TIMERS][langID] %></a>
-					<ul>
-						<li<%= ((currentPage==PN_TIMERS) && (strcmp(EDIT,action)!=0)) ? " class=\"act\"" : "" %>>
-							<a href="timers.kl1"><% io_printf(out,tr(SUMMARY)); %></a>
-						</li>
-						<li<%= ((currentPage==PN_TIMERS) && (strcmp(EDIT,action)==0)) ? " class=\"act\"" : "" %>>
-							<a href="timers.kl1?a=edit"><% io_printf(out,tr("New timer")); %></a>
-						</li>
-					</ul>
-				</li>
-				<li<%= (currentPage==PN_RECORDINGS || currentPage==PN_BROWSE)? " class=\"act\"" : "" %>>
-					<a href="browse.kl1"><%= i18n[PN_RECORDINGS][langID] %></a>
-					<ul>
-						<li<%= (currentPage==PN_RECORDINGS && sortBy==SF_START)? " class=\"act\"" : "" %>>
-							<a href="recordings.kl1?<% io_printf(out,"sort=%d&direction=1\">%s (%s)",SF_START,tr("summary"),tr("Date")); %></a> 
-						</li>
-						<li<%= (currentPage==PN_RECORDINGS && sortBy==SF_TITLE)? " class=\"act\"" : "" %>>
-							<a href="recordings.kl1?<% io_printf(out,"sort=%d&direction=1\">%s (%s)",SF_TITLE,tr("summary"),tr("Title")); %></a>
-						</li>
-						<li<%= (currentPage==PN_BROWSE)? " class=\"act\"" : "" %>>
-							<a href="browse.kl1"><%= i18n[PN_BROWSE][langID] %></a>
-						</li>
-					</ul>
-				</li>
-				<li<%= (currentPage==PN_SETTINGS)? " class=\"act\"" : "" %>>
-					<a href="settings.kl1"><%= i18n[PN_SETTINGS][langID] %></a>
-				</li>
-				<li>
-					<a href="#"><%= i18n[PN_LINKS][langID] %></a>
-					<ul>
-						<li><a href="http://www.open7x0.org/" target="_blank">open7x0.org</a></li>
-						<li><a href="http://vdr-m7x0.foroactivo.com.es/" target="_blank">vdr-m7x0.foroactivo.com.es</a></li>
-					</ul>
-				</li>
-			</ul>
-
-
+	<%@ include menu.kl1 %>
 
 
 

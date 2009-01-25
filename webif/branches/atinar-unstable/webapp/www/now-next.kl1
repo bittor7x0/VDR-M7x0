@@ -37,6 +37,8 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 dbg_now_next_kl1();
 #endif
 
+config(session,request);
+
 vars_t *args = request_get_args(request);
 int channelNum=vars_get_value_i(args,"chan");
 
@@ -46,12 +48,9 @@ if (channelNum<1) {
 	return;
 }
 
-set_server_address(session,NULL,NULL);
-
 time_t now=time(NULL);
 long int refresh=0;
 
-getConfig();
 
 // Get now & next for this chan
 nowNextList nnl;

@@ -19,6 +19,8 @@
 
 #include <time.h>
 #include <klone/io.h>
+#include <klone/session.h>
+#include <klone/request.h>
 
 extern int isM740AV;
 extern int isM750S;
@@ -61,7 +63,7 @@ int sameIntEx(const char * s, const int i);
 int parseRequestStr(const char * requestStr, char ** pathStr, char ** queryStr);
 char * strcatEx(char ** dest, const char * s);
 
-void getConfig();
+void config(session_t *session, request_t *request);
 int fileExists(const char * fileName);
 int legalPath(char * pathName);
 int vdrRunning();
