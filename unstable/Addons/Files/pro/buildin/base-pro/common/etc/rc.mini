@@ -19,7 +19,7 @@ echo "Done"
 
 # check for  firststart, factory reset or .nodebug flag
 # something went realy bad so enter osd debug mode
-if [ -d /rw-flash/SI -o ! -d /rw-flash/etc -o ! -f /rw-flash/.nodebug ]; then
+if [ -e /rw-flash/SI -o ! -d /rw-flash/etc -o ! -f /rw-flash/.nodebug ]; then
     export OSDLOG="YES"
 
     insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
@@ -29,7 +29,7 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc -o ! -f /rw-flash/.nodebug ]; then
     insmod /lib/modules/2.4.21-xfs/tainted/emma_osd.o
     insmod /lib/modules/2.4.21-xfs/tainted/emma_av.o
     insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000
-    
+
     /usr/bin/set-video
     /bin/echo "Enter osd debugging mode" |  /usr/bin/osddrrawtext -a 8 -c 1 -b 0xFFFF0000
     source /etc/rc.debug
@@ -37,7 +37,7 @@ fi
 
 # Factory reset
 echo -n "Factory reset: "
-if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
+if [ -e /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
 	[ -f /rw-flash/etc/flash_content ] && mv /rw-flash/etc/flash_content \
 		/var/tmp/flash_content.etc
 	if [ ${SYSTEMTYPE} = m740 ] ; then
@@ -58,6 +58,7 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
 	mkdir /rw-flash/log
 	[ -f /var/tmp/flash_content.etc ] && mv /var/tmp/flash_content.etc \
 		/rw-flash/etc/flash_content
+	touch /rw-flash/.wbx
 	echo "Done"
 else
 	echo "Skipped"

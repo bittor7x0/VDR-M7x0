@@ -1,10 +1,11 @@
 #!/bin/ash
-source /etc/rc.local.conf
 
 if [ X"$1" = X"off" ]; then
     /usr/sbin/avswctl tv-vcr tv-off
     exit 0
 fi
+
+source /etc/rc.local.conf
 
 vdr_tv_mode=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
 vdr_vcr_mode=`grep -i VCRMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`

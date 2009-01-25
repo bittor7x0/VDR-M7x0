@@ -15,6 +15,12 @@ if [ X"${do_usb_mount}" != X"NO" ] ; then
 	/sbin/usbautomounter mount
 fi
 
+if [ -f /rw-flash/.wbx ]; then
+    echo -n ' wavebox migration'
+    /usr/bin/wavebox-migration
+    rm -f /rw-flash/.wbx
+fi
+
 if [ X"${runvdr}" != X"NO" ]; then
     echo -n ' vdr' 
     export ${runvdr_vars}
@@ -32,6 +38,7 @@ if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X"NO" ] ; t
 fi
 
 if [ X"${memwatch}" != X"NO" ] && [ -d ${memwatch_dir} ] ; then
+    echo -n ' starting memwatch'
     memwatch_dest="${memwatch_dir}/`date +%F-%H%M`"
     mkdir -p ${memwatch_dest}
     /usr/sbin/memwatch "${memwatch_dest}" ${memwatch_interval}
