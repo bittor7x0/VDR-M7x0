@@ -61,7 +61,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-+    "LIRC retraso de repeticiÃ³n",
++    "LIRC retraso de repetición",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -82,7 +82,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-+    "LIRC frecuencia de repeticiÃ³n",
++    "LIRC frecuencia de repetición",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -103,7 +103,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-+    "LIRC tiempo de espera de repeticiÃ³n",
++    "LIRC tiempo de espera de repetición",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
