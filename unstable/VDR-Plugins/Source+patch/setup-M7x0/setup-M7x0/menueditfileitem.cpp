@@ -24,6 +24,8 @@
 #include <vdr/menuitems.h>
 #include <vdr/osdbase.h>
 #include <string>
+
+#define DEFAULT_PATH "/media"
  
 // --- cOsdMenuFilebrowserSetup ------------------------------------------------------
 bool cOsdMenuFilebrowserSetup::MatchesFilter(dirent64* Entry)
@@ -44,7 +46,7 @@ cOsdMenuFilebrowserSetup* cOsdMenuFilebrowserSetup::CreateFilebrowser(char* Base
 	Statebag->ShowFullPath = true;
 	//Set Base Directory - that is important
 	strcpy(Statebag->BaseDir, BaseDir);	
-	return new cOsdMenuFilebrowserSetup("/",Statebag,e,false);
+	return new cOsdMenuFilebrowserSetup(DEFAULT_PATH,Statebag,e,false);
 }
 cOsdMenuFilebrowserSetup* cOsdMenuFilebrowserSetup::CreateDirectorybrowser(char* BaseDir,MenuEntry *e) {
 	cFilebrowserStatebag* Statebag = new cFilebrowserStatebag();
@@ -53,7 +55,7 @@ cOsdMenuFilebrowserSetup* cOsdMenuFilebrowserSetup::CreateDirectorybrowser(char*
 	Statebag->ShowFullPath = true;
 	//Set Base Directory - that is important
 	strcpy(Statebag->BaseDir, BaseDir);	
-	return new cOsdMenuFilebrowserSetup("/",Statebag,e,true);
+	return new cOsdMenuFilebrowserSetup(DEFAULT_PATH,Statebag,e,true);
 }
 
 // --- cSelectCommand ------------------------------------------------------ 
