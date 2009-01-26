@@ -14,7 +14,7 @@ export SYSTEMTYPE=`cat /etc/systemtype`
 
 # mount rw parts
 echo -n "Mounting /rw-flash ... " 
-mount -n -t jffs2 /dev/mtdblock2 /rw-flash
+mount -o rw,noatime,nodiratime -n -t jffs2 /dev/mtdblock2 /rw-flash
 echo "Done" 
 
 # check for  firststart, factory reset or .nodebug flag
@@ -71,7 +71,7 @@ echo "Done"
 
 # mount var
 echo -n "Mounting /var ... "
-mount -n -t tmpfs tmpfs /var
+mount -o rw,noatime,nodiratime -n -t tmpfs tmpfs /var
 mkdir -p /var/tmp /var/run /var/log /var/media /var/lock
 touch /var/media/.ignore
 
