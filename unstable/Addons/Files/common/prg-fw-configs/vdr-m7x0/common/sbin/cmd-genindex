@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 
 directorio=$(grep "vdr_videodirs=" /etc/rc.local.conf |cut -d "=" -f2|cut -d'"' -f2)
 for i in $(find "$directorio" -iname *.mpg -o -iname *.mpeg|sed -e 's/ /#DEBIANJOKER#/g'); do
