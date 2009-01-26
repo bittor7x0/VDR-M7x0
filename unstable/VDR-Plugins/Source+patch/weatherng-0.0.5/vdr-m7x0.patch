@@ -1,12 +1,12 @@
 diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
---- weatherng-0.0.5-orig/i18n.c	2009-01-22 16:30:36.000000000 +0100
-+++ weatherng/i18n.c	2009-01-22 20:54:30.000000000 +0100
+--- weatherng-0.0.5-orig/i18n.c	2009-01-22 20:38:55.000000000 +0100
++++ weatherng/i18n.c	2009-01-26 23:55:51.000000000 +0100
 @@ -19,7 +19,7 @@
      "",// TODO
      "Sääennuste",
      "",// TODO
 -    "",// TODO
-+    "Previsión Meteorológica",
++    "Previsión meteorológica",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -51,7 +51,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "Olethan muokannut weatherng.sh:n toimivaksi?",
      "",// TODO
 -    "",// TODO
-+    "has editado weather.sh?",
++    "¿Has editado weather.sh?",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -60,7 +60,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "Weatherng.sh:n sijainti:",
      "",// TODO
 -    "",// TODO
-+    "Path a weather.sh es :",
++    "Path a weather.sh es: ",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -69,7 +69,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "Säätietojen sijainti:",
      "",// TODO
 -    "",// TODO
-+    "Path a weatherdata es :",
++    "Path a weatherdata es: ",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -123,7 +123,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "Sää: ",
      "",// TODO
 -    "",// TODO
-+    "Previsión para:",
++    "Previsión para: ",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -195,7 +195,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "Päivitä säätiedot käynnistettäessä",
      "",// TODO
 -    "",// TODO
-+    "Actualizar datos al arranque de VDR?",
++    "Actualizar datos al arranque de VDR",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -253,6 +253,87 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
+@@ -523,7 +523,7 @@
+     "",// TODO
+     "Klassinen",
+     "",// TODO
+-    "",// TODO
++    "Clásico",//
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -542,7 +542,7 @@
+     "enElchi",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "enElchi",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -560,7 +560,7 @@
+     "Moronimo",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Moronimo",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -578,7 +578,7 @@
+     "DeepBlue",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "DeepBlue",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -596,7 +596,7 @@
+     "Enigma",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Enigma",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -614,7 +614,7 @@
+     "SilverGreen",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "SilverGreen",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -632,7 +632,7 @@
+     "MoronimoMKII",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "MoronimoMKII",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -650,7 +650,7 @@
+     "MoronimoMKIII",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "MoronimoMKIII",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -668,7 +668,7 @@
+     "MoronimoMKIV",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "MoronimoMKIV",
+     "",// TODO
+     "",// TODO
+     "",// TODO
 @@ -685,7 +685,7 @@
      "",// TODO
      "Teema",
@@ -267,7 +348,25 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "Korkeus",
      "",// TODO
 -    "",// TODO
-+    "Alto",
++    "Altura",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -722,7 +722,7 @@
+     "Vaakakeskitys",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Desplazamiento horizontal",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -740,7 +740,7 @@
+     "Pystykeskitys",
+     "",// TODO
+     "",// TODO
+-    "",// TODO
++    "Desplazamiento vertical",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -456,7 +555,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "sadekuuroja",
      "",// TODO
 -    "",// TODO
-+    "Lluvias",
++    "Chubascos",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -465,7 +564,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "aamupäivällä sadekuuroja",
      "",// TODO
 -    "",// TODO
-+    "Lluvia matinal",
++    "Chubascos matinales",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -474,7 +573,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "iltapäivällä sadekuuroja",
      "",// TODO
 -    "",// TODO
-+    "Lluvia nocturna",
++    "Chubascos nocturnos",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -483,7 +582,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "hajanaisia sadekuuroja",
      "",// TODO
 -    "",// TODO
-+    "Chaparrones",
++    "Chubascos dispersos",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -519,7 +618,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "utua",
      "",// TODO
 -    "",// TODO
-+    "Neblina",
++    "Bruma",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -555,7 +654,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "selkeää",
      "",// TODO
 -    "",// TODO
-+    "Claro",
++    "Despejado",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -591,7 +690,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "enimmäkseen pilvistä",
      "",// TODO
 -    "",// TODO
-+    "Parcialmente nublado",
++    "Principalmente nublado",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -609,7 +708,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "enimmäkseen selkeää",
      "",// TODO
 -    "",// TODO
-+    "Mayoría clara",
++    "Principalmente despejado",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -627,7 +726,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "enimmäkseen aurinkoista",
      "",// TODO
 -    "",// TODO
-+    "Soleado",
++    "Principalmente soleado",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -663,7 +762,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "hajanaisia ukkosmyrskyjä",
      "",// TODO
 -    "",// TODO
-+    "Tormentas parciales",
++    "Tormentas eléctricas dispersas",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -672,7 +771,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "pilvistä",
      "",// TODO
 -    "",// TODO
-+    "Nublado",
++    "Encapotado",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -690,7 +789,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "usvaa",
      "",// TODO
 -    "",// TODO
-+    "Niebla",
++    "Niebla ligera",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -699,7 +798,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "hernerokkasumua",
      "",// TODO
 -    "",// TODO
-+    "niebla",
++    "Niebla densa (maze)",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -771,7 +870,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "hajanaista",
      "",// TODO
 -    "",// TODO
-+    "Tormentas",
++    "Nubes dispersas",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -789,7 +888,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "voimakasta lumisadetta",
      "",// TODO
 -    "",// TODO
-+    "Nieve debil",
++    "Nieve levantada por el viento",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -834,7 +933,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "todennäköisesti sadekuuroja",
      "",// TODO
 -    "",// TODO
-+    "Lluvias en los alrededores",
++    "Chubascos en los alrededores",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -843,7 +942,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "väistyvä täysikuu",
      "",// TODO
 -    "",// TODO
-+    "Media luna menguante",
++    "Nueva visible",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -861,7 +960,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "väistyvä uusikuu",
      "",// TODO
 -    "",// TODO
-+    "Gibosa iluminante",
++    "Gibada creciente",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -870,7 +969,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "väistyvä täysikuu",
      "",// TODO
 -    "",// TODO
-+    "Gibosa decreciente",
++    "Gibada menguante",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -879,7 +978,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "ukkosmyrskyjä",
      "",// TODO
 -    "",// TODO
-+    "Tormentas eléctricas aisladas",
++    "Tormentas eléctricas",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -888,7 +987,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "ukkosmyrskyjä aikaisin",
      "",// TODO
 -    "",// TODO
-+    "Tormentas eléctricas aisladas pronto",
++    "Tormentas eléctricas tempranas",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -906,7 +1005,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "sadekuuroja aikaisin",
      "",// TODO
 -    "",// TODO
-+    "Lluvias de mañana",
++    "Chubascos de mañana",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -924,7 +1023,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "iltapäivällä kevyttä sadetta",
      "",// TODO
 -    "",// TODO
-+    "Lluvia debil por la tarde",
++    "Lluvia ligera por la tarde",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -951,7 +1050,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "ajoittaisia sadekuuroja",
      "",// TODO
 -    "",// TODO
-+    "Pocas lluvias",
++    "Algunos chubascos",
      "",// TODO
      "",// TODO
      "",// TODO
