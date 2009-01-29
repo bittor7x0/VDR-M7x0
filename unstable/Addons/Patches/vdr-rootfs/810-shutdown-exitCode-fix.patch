@@ -1,0 +1,11 @@
+diff -Naur VDR-NG-orig/shutdown.c VDR-NG/shutdown.c
+--- VDR-NG-orig/shutdown.c	2009-01-29 21:10:30.000000000 +0100
++++ VDR-NG/shutdown.c	2009-01-29 21:09:55.000000000 +0100
+@@ -237,6 +237,7 @@
+ bool cShutdownHandler::DoShutdown(bool Force)
+ {
+   dsyslog("DEBUG: DoShutdown called");
++  exitCode = 1;
+   time_t Now = time(NULL);
+   cTimer *timer = Timers.GetNextActiveTimer();
+   cPlugin *Plugin = cPluginManager::GetNextWakeupPlugin();
