@@ -1538,17 +1538,6 @@ diff -Naur -x .svn rssreader-1.1.2-orig/ezxml.h rssreader/ezxml.h
 +#endif
 +
 +#endif // _EZXML_H
-diff -Naur -x .svn rssreader-1.1.2-orig/HISTORY rssreader/HISTORY
---- rssreader-1.1.2-orig/HISTORY	2009-01-07 10:43:59.000000000 +0100
-+++ rssreader/HISTORY	2009-01-07 10:58:00.000000000 +0100
-@@ -88,3 +88,7 @@
- 
- - Cleaned up translations.
- - Improved html tag stripping.
-+
-+2007-10-12: Version 1.1.3
-+- Version vdr-m740x
-+- Fix bug in html tag stripping.
 diff -Naur -x .svn rssreader-1.1.2-orig/http_error_codes.c rssreader/http_error_codes.c
 --- rssreader-1.1.2-orig/http_error_codes.c	1970-01-01 01:00:00.000000000 +0100
 +++ rssreader/http_error_codes.c	2008-12-18 18:20:34.000000000 +0100
@@ -3281,124 +3270,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/i18n-template.c rssreader/i18n-template.
 +  { NULL }
 +  };
 +#endif
-diff -Naur -x .svn rssreader-1.1.2-orig/Makefile rssreader/Makefile
---- rssreader-1.1.2-orig/Makefile	2009-01-07 10:43:59.000000000 +0100
-+++ rssreader/Makefile	2008-12-18 18:20:46.000000000 +0100
-@@ -4,7 +4,7 @@
- # $Id$
- 
- # Debugging on/off 
--#RSSREADER_DEBUG = 1
-+RSSREADER_DEBUG = 1
- 
- # Strip debug symbols?  Set eg. to /bin/true if not
- STRIP = strip
-@@ -26,14 +26,10 @@
- 
- ### The directory environment:
- 
--VDRDIR = ../../..
--LIBDIR = ../../lib
-+VDRDIR ?= ../../..
-+LIBDIR ?= ../../lib
- TMPDIR = /tmp
- 
--### Libraries
--
--LIBS = -lexpat -lcurl
--
- ### Allow user defined options to overwrite defaults:
- 
- -include $(VDRDIR)/Make.config
-@@ -49,7 +45,7 @@
- 
- ### Includes and Defines (add further entries here):
- 
--INCLUDES += -I$(VDRDIR)/include
-+INCLUDES += -I$(VDRDIR)/include -I/home/amoyse/Desktop/dev/vdr/ng/o7o_tc/m7x0_xtc_uclibc_Linux-i686/mips-linux/sys-include
- 
- DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
- 
-@@ -59,17 +55,24 @@
- 
- ### The object files (add further files here):
- 
--OBJS = rssreader.o parser.o menu.o config.o tools.o
-+OBJS =  http_error_codes.o http_fetcher.o ezxml.o rssreader.o parser.o menu.o config.o tools.o compatibility.o i18n.o
- 
- ### The main target:
- 
--all: libvdr-$(PLUGIN).so i18n
-+all: libvdr-$(PLUGIN).so 
-+#i18n
- 
- ### Implicit rules:
- 
- %.o: %.c
- 	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) $<
- 
-+
-+#i18n compatibility generator:
-+#i18n.c: i18n-template.c po2i18n.pl
-+#	./po2i18n.pl < i18n-template.c > i18n.c
-+
-+
- # Dependencies:
- 
- MAKEDEP = $(CXX) -MM -MG
-@@ -81,28 +84,28 @@
- 
- ### Internationalization (I18N):
- 
--PODIR     = po
--LOCALEDIR = $(VDRDIR)/locale
--I18Npo    = $(wildcard $(PODIR)/*.po)
--I18Nmo    = $(addsuffix .mo, $(foreach file, $(I18Npo), $(basename $(file))))
--I18Ndirs  = $(notdir $(foreach file, $(I18Npo), $(basename $(file))))
--I18Npot   = $(PODIR)/$(PLUGIN).pot
--
--%.mo: %.po
--	msgfmt -c -o $@ $<
--
--$(I18Npot): $(wildcard *.c)
--	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='Rolf Ahrenberg' -o $@ $(wildcard *.c)
--
--$(I18Npo): $(I18Npot)
--	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
--
--i18n: $(I18Npot) $(I18Nmo)
--	@mkdir -p $(LOCALEDIR)
--	for i in $(I18Ndirs); do\
--	    mkdir -p $(LOCALEDIR)/$$i/LC_MESSAGES;\
--	    cp $(PODIR)/$$i.mo $(LOCALEDIR)/$$i/LC_MESSAGES/vdr-$(PLUGIN).mo;\
--	    done
-+#PODIR     = po
-+#LOCALEDIR = $(VDRDIR)/locale
-+#I18Npo    = $(wildcard $(PODIR)/*.po)
-+#I18Nmo    = $(addsuffix .mo, $(foreach file, $(I18Npo), $(basename $(file))))
-+#I18Ndirs  = $(notdir $(foreach file, $(I18Npo), $(basename $(file))))
-+#I18Npot   = $(PODIR)/$(PLUGIN).pot
-+#
-+#%.mo: %.po
-+#	msgfmt -c -o $@ $<
-+#
-+#$(I18Npot): $(wildcard *.c)
-+#	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='Rolf Ahrenberg' -o $@ $(wildcard *.c)
-+#
-+#$(I18Npo): $(I18Npot)
-+#	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
-+#
-+#i18n: $(I18Npot) $(I18Nmo)
-+#	@mkdir -p $(LOCALEDIR)
-+#	for i in $(I18Ndirs); do\
-+#	    mkdir -p $(LOCALEDIR)/$$i/LC_MESSAGES;\
-+#	    cp $(PODIR)/$$i.mo $(LOCALEDIR)/$$i/LC_MESSAGES/vdr-$(PLUGIN).mo;\
-+#	    done
- 
- ### Targets:
- 
 diff -Naur -x .svn rssreader-1.1.2-orig/menu.c rssreader/menu.c
---- rssreader-1.1.2-orig/menu.c	2009-01-07 10:43:58.000000000 +0100
+--- rssreader-1.1.2-orig/menu.c	2009-01-29 17:00:20.000000000 +0100
 +++ rssreader/menu.c	2009-01-28 17:24:35.000000000 +0100
 @@ -66,7 +66,7 @@
             (*Title       || !RssConfig.hideelem) ? "\n\n" : "",
@@ -3430,7 +3303,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/menu.c rssreader/menu.c
    return osEnd;
  }
 diff -Naur -x .svn rssreader-1.1.2-orig/parser.c rssreader/parser.c
---- rssreader-1.1.2-orig/parser.c	2009-01-28 15:54:22.000000000 +0100
+--- rssreader-1.1.2-orig/parser.c	2009-01-29 17:00:20.000000000 +0100
 +++ rssreader/parser.c	2009-01-28 16:35:34.000000000 +0100
 @@ -6,21 +6,13 @@
   * $Id$
@@ -3448,7 +3321,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/parser.c rssreader/parser.c
 -
 -#include <expat.h>
 -#define LIBEXPAT_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
--#if LIBEXPAT_VERSION(XML_MAJOR_VERSION, XML_MINOR_VERSIcoON, XML_MICRO_VERSION) < LIBEXPAT_VERSION(1, 95, 8)
+-#if LIBEXPAT_VERSION(XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION) < LIBEXPAT_VERSION(1, 95, 8)
 -#warning "Expat XML parser library 1.95.8 or newer required!"
 -#endif
 +#include "http_fetcher.h"
@@ -3878,7 +3751,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/parser.c rssreader/parser.c
 +  debug("Encoding [%s]\n",encoding);
 +}  
 diff -Naur -x .svn rssreader-1.1.2-orig/parser.h rssreader/parser.h
---- rssreader-1.1.2-orig/parser.h	2009-01-07 10:43:59.000000000 +0100
+--- rssreader-1.1.2-orig/parser.h	2009-01-29 17:00:20.000000000 +0100
 +++ rssreader/parser.h	2009-01-28 16:01:52.000000000 +0100
 @@ -10,6 +10,10 @@
  #define __RSSREADER_PARSER_H
@@ -3936,302 +3809,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/parser.h rssreader/parser.h
  public:
    enum {
      RSS_PARSING_OK     =  0,
-diff -Naur -x .svn rssreader-1.1.2-orig/po/de_DE.po rssreader/po/de_DE.po
---- rssreader-1.1.2-orig/po/de_DE.po	2009-01-07 10:43:58.000000000 +0100
-+++ rssreader/po/de_DE.po	2008-12-18 18:20:34.000000000 +0100
-@@ -7,7 +7,7 @@
- msgstr ""
- "Project-Id-Version: VDR 1.5.7\n"
- "Report-Msgid-Bugs-To: Rolf Ahrenberg\n"
--"POT-Creation-Date: 2007-08-28 23:51+0300\n"
-+"POT-Creation-Date: 2007-12-22 13:05+0100\n"
- "PO-Revision-Date: 2007-08-12 21:33+0300\n"
- "Last-Translator: Walter Koch\n"
- "Language-Team: <vdr@linuxtv.org>\n"
-@@ -27,9 +27,6 @@
- msgid "<no description available>"
- msgstr "<keine Beschreibung vorhanden>"
- 
--msgid "<no link available>"
--msgstr "<kein Link vorhanden>"
--
- msgid "Select RSS item"
- msgstr "Auswahl RSS-Artikel"
- 
-@@ -62,3 +59,6 @@
- 
- msgid "HTTP proxy server"
- msgstr "HTTP Proxy Name"
-+
-+#~ msgid "<no link available>"
-+#~ msgstr "<kein Link vorhanden>"
-diff -Naur -x .svn rssreader-1.1.2-orig/po/es_ES.po rssreader/po/es_ES.po
---- rssreader-1.1.2-orig/po/es_ES.po	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/po/es_ES.po	2008-12-18 18:20:34.000000000 +0100
-@@ -0,0 +1,65 @@
-+# VDR plugin language source file.
-+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
-+# This file is distributed under the same license as the VDR package.
-+# Siegfried Düngler
-+# Walter Koch
-+msgid ""
-+msgstr ""
-+"Project-Id-Version: VDR 1.5.7\n"
-+"Report-Msgid-Bugs-To: Rolf Ahrenberg\n"
-+"POT-Creation-Date: 2007-12-22 19:09+0100\n"
-+"PO-Revision-Date: 2007-08-12 21:33+0300\n"
-+"Last-Translator: Walter Koch\n"
-+"Language-Team: <vdr@linuxtv.org>\n"
-+"MIME-Version: 1.0\n"
-+"Content-Type: text/plain; charset=ISO-8859-15\n"
-+"Content-Transfer-Encoding: 8bit\n"
-+
-+msgid "RSS item"
-+msgstr "RSS-Articulo"
-+
-+msgid "<no date available>"
-+msgstr "<Fecha no disponible>"
-+
-+msgid "<no title available>"
-+msgstr "<Título no disponible>"
-+
-+msgid "<no description available>"
-+msgstr "<Descripción no disponible>"
-+
-+#, fuzzy
-+msgid "Select RSS item"
-+msgstr "RSS-Articulo"
-+
-+msgid "Select RSS stream"
-+msgstr "Selecciona fuente RSS"
-+
-+#, fuzzy
-+msgid "Can't parse RSS stream!"
-+msgstr "Error leyendo datos RSS!"
-+
-+#, fuzzy
-+msgid "Can't download RSS stream!"
-+msgstr "Error descargando datos RSS!"
-+
-+msgid "Unknown error!"
-+msgstr "Error desconocido!"
-+
-+msgid "RSS Reader for OSD"
-+msgstr "Lector RSS para OSD"
-+
-+msgid "RSS Reader"
-+msgstr "Lector RSS"
-+
-+msgid "Hide main menu entry"
-+msgstr "Ocultar entrada en menú principal"
-+
-+msgid "Hide non-existent elements"
-+msgstr "Ocultar elementos vacíos"
-+
-+msgid "Use HTTP proxy server"
-+msgstr "Usar servidor proxy HTTP"
-+
-+#, fuzzy
-+msgid "HTTP proxy server"
-+msgstr "Usar servidor proxy HTTP"
-diff -Naur -x .svn rssreader-1.1.2-orig/po/fi_FI.po rssreader/po/fi_FI.po
---- rssreader-1.1.2-orig/po/fi_FI.po	2009-01-07 10:43:58.000000000 +0100
-+++ rssreader/po/fi_FI.po	2008-12-18 18:20:34.000000000 +0100
-@@ -6,7 +6,7 @@
- msgstr ""
- "Project-Id-Version: VDR 1.5.7\n"
- "Report-Msgid-Bugs-To: Rolf Ahrenberg\n"
--"POT-Creation-Date: 2007-08-28 23:51+0300\n"
-+"POT-Creation-Date: 2007-12-22 13:05+0100\n"
- "PO-Revision-Date: 2007-08-12 18:35+0300\n"
- "Last-Translator: Rolf Ahrenberg\n"
- "Language-Team: <vdr@linuxtv.org>\n"
-@@ -26,9 +26,6 @@
- msgid "<no description available>"
- msgstr "<kuvaus ei ole saatavilla>"
- 
--msgid "<no link available>"
--msgstr "<linkki ei ole saatavilla>"
--
- msgid "Select RSS item"
- msgstr "Valitse RSS-artikkeli"
- 
-@@ -61,3 +58,6 @@
- 
- msgid "HTTP proxy server"
- msgstr "HTTP-välityspalvelimen osoite"
-+
-+#~ msgid "<no link available>"
-+#~ msgstr "<linkki ei ole saatavilla>"
-diff -Naur -x .svn rssreader-1.1.2-orig/po/fr_FR.po rssreader/po/fr_FR.po
---- rssreader-1.1.2-orig/po/fr_FR.po	2009-01-07 10:43:59.000000000 +0100
-+++ rssreader/po/fr_FR.po	2008-12-18 18:20:34.000000000 +0100
-@@ -6,7 +6,7 @@
- msgstr ""
- "Project-Id-Version: VDR 1.5.7\n"
- "Report-Msgid-Bugs-To: Rolf Ahrenberg\n"
--"POT-Creation-Date: 2007-08-28 23:51+0300\n"
-+"POT-Creation-Date: 2007-12-22 13:05+0100\n"
- "PO-Revision-Date: 2007-08-12 21:33+0300\n"
- "Last-Translator: Patrice Staudt\n"
- "Language-Team: <vdr@linuxtv.org>\n"
-@@ -26,9 +26,6 @@
- msgid "<no description available>"
- msgstr "<pas de déscriptif disponible>"
- 
--msgid "<no link available>"
--msgstr "<pas de lien disponible>"
--
- msgid "Select RSS item"
- msgstr "Choix de article RSS"
- 
-@@ -61,3 +58,6 @@
- 
- msgid "HTTP proxy server"
- msgstr "Nom du proxy HTTP"
-+
-+#~ msgid "<no link available>"
-+#~ msgstr "<pas de lien disponible>"
-diff -Naur -x .svn rssreader-1.1.2-orig/po2i18n.pl rssreader/po2i18n.pl
---- rssreader-1.1.2-orig/po2i18n.pl	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/po2i18n.pl	2008-12-18 18:20:34.000000000 +0100
-@@ -0,0 +1,134 @@
-+#!/usr/bin/perl
-+
-+use strict;
-+use warnings;
-+
-+my @LANGS = (
-+  "en_US",
-+  "de_DE",
-+  "sl_SI",
-+  "it_IT",
-+  "nl_NL",
-+  "pt_PT",
-+  "fr_FR",
-+  "nn_NO",
-+  "fi_FI",
-+  "pl_PL",
-+  "es_ES",
-+  "el_GR",
-+  "sv_SE",
-+  "ro_RO",
-+  "hu_HU",
-+  "ca_ES",
-+  "ru_RU",
-+  "hr_HR",
-+  "et_EE",
-+  "da_DK",
-+  "cs_CZ",
-+  "tr_TR"
-+  );
-+
-+my %VERS = (
-+  "en_US" => 10200,
-+  "de_DE" => 10200,
-+  "sl_SI" => 10200,
-+  "it_IT" => 10200,
-+  "nl_NL" => 10200,
-+  "pt_PT" => 10200,
-+  "fr_FR" => 10200,
-+  "nn_NO" => 10200,
-+  "fi_FI" => 10200,
-+  "pl_PL" => 10200,
-+  "es_ES" => 10200,
-+  "el_GR" => 10200,
-+  "sv_SE" => 10200,
-+  "ro_RO" => 10200,
-+  "hu_HU" => 10200,
-+  "ca_ES" => 10200,
-+  "ru_RU" => 10302,
-+  "hr_HR" => 10307,
-+  "et_EE" => 10313,
-+  "da_DK" => 10316,
-+  "cs_CZ" => 10342,
-+  "tr_TR" => 10502
-+  );
-+
-+
-+my %strings;
-+
-+foreach my $lang (@LANGS) { $strings{$lang} = { }; }
-+
-+
-+sub LoadLanguage(*) {
-+    my ($lang) = @_;
-+    
-+    if (!open FILE, "<", "po/$lang.po") {
-+        return 0;   
-+    }
-+    
-+    my $msgid = "";
-+    while (<FILE>) {
-+        chomp;
-+        my $line = $_;
-+        
-+        if ($line =~ /^msgid "(.*)"$/) {
-+            $msgid = $1;
-+        } elsif ($line =~ /^msgstr "(.*)"$/) {
-+            my $msgstr = $1;
-+            $strings{$lang}->{$msgid} = $msgstr;
-+            $strings{"en_US"}->{$msgid} = $msgid;
-+        }
-+    }
-+    
-+    close FILE;
-+}
-+
-+
-+
-+foreach my $lang (@LANGS) { 
-+    LoadLanguage($lang);
-+}
-+
-+my @msgids = sort keys %{$strings{"en_US"}};
-+
-+
-+my $silent = 0;
-+
-+while (<>) {
-+    my $line = $_;
-+
-+    if ($line =~ /^\/\/ START I18N/) {
-+        print "// START I18N - automatically generated by po2i18n.pl\n";
-+        for my $msgid (@msgids) {
-+            next if $msgid eq "";
-+
-+            my $head = "  { ";
-+            my $endif = "";
-+            my $versnum = 10200;
-+            
-+            for my $lang (@LANGS) {
-+                if ($VERS{$lang} ne $versnum) {
-+                    $versnum = $VERS{$lang};
-+                    print $endif;
-+                    print "#if VDRVERSNUM >= $versnum\n";
-+                    $endif = "#endif\n";
-+                }
-+                my $msgstr = $strings{$lang}->{$msgid};
-+                $msgstr = "" if !defined $msgstr;
-+                
-+                print "$head\"$msgstr\",\n";
-+                $head = "    ";
-+            }
-+            print $endif;
-+            print "  },\n";
-+        }
-+        $silent = 1;
-+    }
-+
-+    if (!$silent) { print $line; }
-+
-+    if ($line =~ /^\/\/ END I18N/) { 
-+        print "// END I18N - automatically generated by po2i18n.pl\n";
-+        $silent = 0; 
-+    }    
-+}
 diff -Naur -x .svn rssreader-1.1.2-orig/rssreader.c rssreader/rssreader.c
---- rssreader-1.1.2-orig/rssreader.c	2009-01-07 10:43:58.000000000 +0100
+--- rssreader-1.1.2-orig/rssreader.c	2009-01-29 17:00:20.000000000 +0100
 +++ rssreader/rssreader.c	2009-01-07 10:45:30.000000000 +0100
 @@ -11,12 +11,12 @@
  #include "menu.h"
@@ -4261,7 +3840,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/rssreader.c rssreader/rssreader.c
  }
  
 diff -Naur -x .svn rssreader-1.1.2-orig/tools.c rssreader/tools.c
---- rssreader-1.1.2-orig/tools.c	2009-01-07 10:43:59.000000000 +0100
+--- rssreader-1.1.2-orig/tools.c	2009-01-29 17:00:20.000000000 +0100
 +++ rssreader/tools.c	2009-01-28 16:42:01.000000000 +0100
 @@ -6,23 +6,26 @@
   * $Id$
@@ -4433,7 +4012,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/tools.c rssreader/tools.c
  }
 +
 diff -Naur -x .svn rssreader-1.1.2-orig/tools.h rssreader/tools.h
---- rssreader-1.1.2-orig/tools.h	2009-01-07 10:43:59.000000000 +0100
+--- rssreader-1.1.2-orig/tools.h	2009-01-29 17:00:20.000000000 +0100
 +++ rssreader/tools.h	2009-01-28 16:37:15.000000000 +0100
 @@ -10,9 +10,14 @@
  #define __RSSREADER_TOOLS_H
