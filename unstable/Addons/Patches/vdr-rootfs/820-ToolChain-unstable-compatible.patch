@@ -1,0 +1,16 @@
+diff -Naur VDR-NG-orig/Make.config VDR-NG/Make.config
+--- VDR-NG-orig/Make.config	2009-01-30 11:41:07.000000000 +0100
++++ VDR-NG/Make.config	2009-01-29 21:21:47.000000000 +0100
+@@ -13,10 +13,10 @@
+ TARGETPREFIX	= mips-linux-uclibc-
+ 
+ CC		= $(TARGETPREFIX)gcc
+-CFLAGS		= -g -march=mips2 -mtune=vr4120 -O3 -msoft-float -Wall -mfix-vr4120 -fPIC
++CFLAGS		= -g -march=mips2 -mtune=vr4120 -O3 -msoft-float -Wall 
+ 
+ CXX		= $(TARGETPREFIX)g++
+-CXXFLAGS	= -g -march=mips2 -mtune=vr4120 -O3 -msoft-float -mfix-vr4120 -Wall -Woverloaded-virtual -fPIC
++CXXFLAGS	= -g -march=mips2 -mtune=vr4120 -O3 -msoft-float -Wall -Woverloaded-virtual 
+ 
+ LD		= $(TARGETPREFIX)ld
+ #LDFLAGS		= -static
