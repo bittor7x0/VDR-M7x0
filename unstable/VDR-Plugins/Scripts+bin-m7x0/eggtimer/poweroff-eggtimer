@@ -1,5 +1,5 @@
-#!/bin/bash
+#!/bin/ash
 #send power off to VDR
 
-echo sim 0 00 POWER eggtimer > /dev/tcp/127.0.0.1/8765
+/usr/bin/svdrpsend 127.0.0.1 2001 "hitk Power"
 
