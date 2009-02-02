@@ -1,6 +1,6 @@
 diff -Naur -x .svn rssreader-1.1.2-orig/compatibility.c rssreader/compatibility.c
 --- rssreader-1.1.2-orig/compatibility.c	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/compatibility.c	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/compatibility.c	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,259 @@
 +#include "compatibility.h"
 +
@@ -263,7 +263,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/compatibility.c rssreader/compatibility.
 +
 diff -Naur -x .svn rssreader-1.1.2-orig/compatibility.h rssreader/compatibility.h
 --- rssreader-1.1.2-orig/compatibility.h	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/compatibility.h	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/compatibility.h	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,98 @@
 +#ifndef __rssreader_compatibility_h__
 +#define __rssreader_compatibility_h__
@@ -365,8 +365,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/compatibility.h rssreader/compatibility.
 +
 diff -Naur -x .svn rssreader-1.1.2-orig/ezxml.c rssreader/ezxml.c
 --- rssreader-1.1.2-orig/ezxml.c	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/ezxml.c	2009-01-30 23:38:11.000000000 +0100
-@@ -0,0 +1,1000 @@
++++ rssreader/ezxml.c	2009-02-02 17:45:10.000000000 +0100
+@@ -0,0 +1,1004 @@
 +/* ezxml.c
 + *
 + * Copyright 2004-2006 Aaron Voisine <aaron@voisine.org>
@@ -524,6 +524,9 @@ diff -Naur -x .svn rssreader-1.1.2-orig/ezxml.c rssreader/ezxml.c
 +// s, returns a malloced string that must be freed.
 +char *ezxml_decode(char *s, char **ent, char t)
 +{
++	return s;
++	
++	/* JM comentado porque convierte a utf algunas entidades html, en el plugin rssreader
 +    char *e, *r = s, *m = s;
 +    long b, c, d, l;
 +
@@ -582,6 +585,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/ezxml.c rssreader/ezxml.c
 +        if (--s >= r && *s == ' ') *s = '\0'; // trim any trailing space
 +    }
 +    return r;
++    */
 +}
 +
 +// called when parser finds start of new tag
@@ -1369,7 +1373,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/ezxml.c rssreader/ezxml.c
 +#endif // EZXML_TEST
 diff -Naur -x .svn rssreader-1.1.2-orig/ezxml.h rssreader/ezxml.h
 --- rssreader-1.1.2-orig/ezxml.h	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/ezxml.h	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/ezxml.h	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,167 @@
 +/* ezxml.h
 + *
@@ -1539,8 +1543,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/ezxml.h rssreader/ezxml.h
 +
 +#endif // _EZXML_H
 diff -Naur -x .svn rssreader-1.1.2-orig/HISTORY rssreader/HISTORY
---- rssreader-1.1.2-orig/HISTORY	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/HISTORY	2009-01-30 23:38:11.000000000 +0100
+--- rssreader-1.1.2-orig/HISTORY	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/HISTORY	2009-02-02 17:42:19.000000000 +0100
 @@ -88,3 +88,7 @@
  
  - Cleaned up translations.
@@ -1551,7 +1555,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/HISTORY rssreader/HISTORY
 +- Fix bug in html tag stripping.
 diff -Naur -x .svn rssreader-1.1.2-orig/http_error_codes.c rssreader/http_error_codes.c
 --- rssreader-1.1.2-orig/http_error_codes.c	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/http_error_codes.c	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/http_error_codes.c	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,39 @@
 +/* http_error_codes.c - Error code declarations
 +
@@ -1594,7 +1598,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/http_error_codes.c rssreader/http_error_
 +char convertedError[128];
 diff -Naur -x .svn rssreader-1.1.2-orig/http_error_codes.h rssreader/http_error_codes.h
 --- rssreader-1.1.2-orig/http_error_codes.h	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/http_error_codes.h	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/http_error_codes.h	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,42 @@
 +/* http_error_codes.h - Error code definitions
 +
@@ -1640,7 +1644,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/http_error_codes.h rssreader/http_error_
 +#endif
 diff -Naur -x .svn rssreader-1.1.2-orig/http_fetcher.c rssreader/http_fetcher.c
 --- rssreader-1.1.2-orig/http_fetcher.c	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/http_fetcher.c	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/http_fetcher.c	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,816 @@
 +/* http_fetcher.c - HTTP handling functions
 +
@@ -2460,7 +2464,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/http_fetcher.c rssreader/http_fetcher.c
 +	}
 diff -Naur -x .svn rssreader-1.1.2-orig/http_fetcher.h rssreader/http_fetcher.h
 --- rssreader-1.1.2-orig/http_fetcher.h	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/http_fetcher.h	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/http_fetcher.h	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,160 @@
 +/* http_fetcher.h - HTTP handling functions
 +
@@ -2624,7 +2628,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/http_fetcher.h rssreader/http_fetcher.h
 +#endif
 diff -Naur -x .svn rssreader-1.1.2-orig/i18n.c rssreader/i18n.c
 --- rssreader-1.1.2-orig/i18n.c	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/i18n.c	2009-01-30 23:42:22.000000000 +0100
++++ rssreader/i18n.c	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,612 @@
 +/*
 + * i18n.c: Internationalization
@@ -3240,7 +3244,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/i18n.c rssreader/i18n.c
 +#endif
 diff -Naur -x .svn rssreader-1.1.2-orig/i18n.h rssreader/i18n.h
 --- rssreader-1.1.2-orig/i18n.h	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/i18n.h	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/i18n.h	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,18 @@
 +/*
 + * i18n.h: Internationalization
@@ -3262,7 +3266,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/i18n.h rssreader/i18n.h
 +#endif //_I18N__H
 diff -Naur -x .svn rssreader-1.1.2-orig/i18n-template.c rssreader/i18n-template.c
 --- rssreader-1.1.2-orig/i18n-template.c	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/i18n-template.c	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/i18n-template.c	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,17 @@
 +/*
 + * i18n.c: Internationalization
@@ -3282,8 +3286,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/i18n-template.c rssreader/i18n-template.
 +  };
 +#endif
 diff -Naur -x .svn rssreader-1.1.2-orig/Makefile rssreader/Makefile
---- rssreader-1.1.2-orig/Makefile	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/Makefile	2009-01-30 23:42:22.000000000 +0100
+--- rssreader-1.1.2-orig/Makefile	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/Makefile	2009-02-02 17:42:19.000000000 +0100
 @@ -26,14 +26,10 @@
  
  ### The directory environment:
@@ -3390,8 +3394,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/Makefile rssreader/Makefile
  ### Targets:
  
 diff -Naur -x .svn rssreader-1.1.2-orig/menu.c rssreader/menu.c
---- rssreader-1.1.2-orig/menu.c	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/menu.c	2009-01-30 23:42:22.000000000 +0100
+--- rssreader-1.1.2-orig/menu.c	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/menu.c	2009-02-02 17:42:19.000000000 +0100
 @@ -66,7 +66,7 @@
             (*Title       || !RssConfig.hideelem) ? "\n\n" : "",
             *Description  ? strdup(Description)   : RssConfig.hideelem ? "" : tr("<no description available>"),
@@ -3422,8 +3426,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/menu.c rssreader/menu.c
    return osEnd;
  }
 diff -Naur -x .svn rssreader-1.1.2-orig/parser.c rssreader/parser.c
---- rssreader-1.1.2-orig/parser.c	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/parser.c	2009-01-30 23:42:22.000000000 +0100
+--- rssreader-1.1.2-orig/parser.c	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/parser.c	2009-02-02 17:42:19.000000000 +0100
 @@ -6,21 +6,13 @@
   * $Id$
   */
@@ -3870,8 +3874,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/parser.c rssreader/parser.c
 +  debug("Encoding [%s]\n",encoding);
 +}  
 diff -Naur -x .svn rssreader-1.1.2-orig/parser.h rssreader/parser.h
---- rssreader-1.1.2-orig/parser.h	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/parser.h	2009-01-30 23:42:22.000000000 +0100
+--- rssreader-1.1.2-orig/parser.h	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/parser.h	2009-02-02 17:42:19.000000000 +0100
 @@ -10,6 +10,10 @@
  #define __RSSREADER_PARSER_H
  
@@ -3929,8 +3933,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/parser.h rssreader/parser.h
    enum {
      RSS_PARSING_OK     =  0,
 diff -Naur -x .svn rssreader-1.1.2-orig/po/de_DE.po rssreader/po/de_DE.po
---- rssreader-1.1.2-orig/po/de_DE.po	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/po/de_DE.po	2009-01-30 23:38:11.000000000 +0100
+--- rssreader-1.1.2-orig/po/de_DE.po	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/po/de_DE.po	2009-02-02 17:42:19.000000000 +0100
 @@ -7,7 +7,7 @@
  msgstr ""
  "Project-Id-Version: VDR 1.5.7\n"
@@ -3959,7 +3963,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/po/de_DE.po rssreader/po/de_DE.po
 +#~ msgstr "<kein Link vorhanden>"
 diff -Naur -x .svn rssreader-1.1.2-orig/po/es_ES.po rssreader/po/es_ES.po
 --- rssreader-1.1.2-orig/po/es_ES.po	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/po/es_ES.po	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/po/es_ES.po	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,65 @@
 +# VDR plugin language source file.
 +# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
@@ -4027,8 +4031,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/po/es_ES.po rssreader/po/es_ES.po
 +msgid "HTTP proxy server"
 +msgstr "Usar servidor proxy HTTP"
 diff -Naur -x .svn rssreader-1.1.2-orig/po/fi_FI.po rssreader/po/fi_FI.po
---- rssreader-1.1.2-orig/po/fi_FI.po	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/po/fi_FI.po	2009-01-30 23:38:11.000000000 +0100
+--- rssreader-1.1.2-orig/po/fi_FI.po	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/po/fi_FI.po	2009-02-02 17:42:19.000000000 +0100
 @@ -6,7 +6,7 @@
  msgstr ""
  "Project-Id-Version: VDR 1.5.7\n"
@@ -4056,8 +4060,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/po/fi_FI.po rssreader/po/fi_FI.po
 +#~ msgid "<no link available>"
 +#~ msgstr "<linkki ei ole saatavilla>"
 diff -Naur -x .svn rssreader-1.1.2-orig/po/fr_FR.po rssreader/po/fr_FR.po
---- rssreader-1.1.2-orig/po/fr_FR.po	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/po/fr_FR.po	2009-01-30 23:38:11.000000000 +0100
+--- rssreader-1.1.2-orig/po/fr_FR.po	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/po/fr_FR.po	2009-02-02 17:42:19.000000000 +0100
 @@ -6,7 +6,7 @@
  msgstr ""
  "Project-Id-Version: VDR 1.5.7\n"
@@ -4086,7 +4090,7 @@ diff -Naur -x .svn rssreader-1.1.2-orig/po/fr_FR.po rssreader/po/fr_FR.po
 +#~ msgstr "<pas de lien disponible>"
 diff -Naur -x .svn rssreader-1.1.2-orig/po2i18n.pl rssreader/po2i18n.pl
 --- rssreader-1.1.2-orig/po2i18n.pl	1970-01-01 01:00:00.000000000 +0100
-+++ rssreader/po2i18n.pl	2009-01-30 23:38:11.000000000 +0100
++++ rssreader/po2i18n.pl	2009-02-02 17:42:19.000000000 +0100
 @@ -0,0 +1,134 @@
 +#!/usr/bin/perl
 +
@@ -4223,8 +4227,8 @@ diff -Naur -x .svn rssreader-1.1.2-orig/po2i18n.pl rssreader/po2i18n.pl
 +    }    
 +}
 diff -Naur -x .svn rssreader-1.1.2-orig/rssreader.c rssreader/rssreader.c
---- rssreader-1.1.2-orig/rssreader.c	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/rssreader.c	2009-01-30 23:38:11.000000000 +0100
+--- rssreader-1.1.2-orig/rssreader.c	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/rssreader.c	2009-02-02 17:42:19.000000000 +0100
 @@ -11,12 +11,12 @@
  #include "menu.h"
  #include "config.h"
@@ -4253,9 +4257,9 @@ diff -Naur -x .svn rssreader-1.1.2-orig/rssreader.c rssreader/rssreader.c
  }
  
 diff -Naur -x .svn rssreader-1.1.2-orig/tools.c rssreader/tools.c
---- rssreader-1.1.2-orig/tools.c	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/tools.c	2009-01-30 23:42:22.000000000 +0100
-@@ -6,23 +6,26 @@
+--- rssreader-1.1.2-orig/tools.c	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/tools.c	2009-02-02 17:44:05.000000000 +0100
+@@ -6,133 +6,169 @@
   * $Id$
   */
  
@@ -4289,28 +4293,122 @@ diff -Naur -x .svn rssreader-1.1.2-orig/tools.c rssreader/tools.c
  
  static struct conv_table post_conv_table[] =
  {
-@@ -76,63 +79,81 @@
-   {"&lt;",     "<"},
-   {"&gt;",     ">"},
-   {"\n\n",     "\n"}, // let's also strip multiple linefeeds
+-  // 'to' field must be smaller than 'from'
+-  {"&#228;",   "\xc3\xa4"},
+-  {"&auml;",   "\xc3\xa4"},
++   // 'to' field must be smaller than 'from'
++  {"&amp;",    "&"},
++  {"&#039;",   "'"},
++  {"&#160;",   " "},
++  {"&#171;",   "\xc2\xab"},
++  {"&#176;",   "\xc2\xb0"},
++  {"&#180;",   "'"},
++  {"&#187;",   "\xc2\xbb"},
++  {"&#191;",   "\xc2\xbf"},  
++  {"&#193;",   "\xc3\x81"},
+   {"&#196;",   "\xc3\x84"},
+-  {"&Auml;",   "\xc3\x84"},
+-  {"&#246;",   "\xc3\xb6"},
+-  {"&ouml;",   "\xc3\xb6"},
+-  {"&#214;",   "\xc3\x96"},
+-  {"&Ouml;",   "\xc3\x96"},
+-  {"&#229;",   "\xc3\xa5"},
+   {"&#197;",   "\xc3\x85"},
++  {"&#201;",   "\xc3\x89"},
++  {"&#205;",   "\xc3\x8d"},
++  {"&#209;",   "\xc3\x91"},  
++  {"&#211;",   "\xc3\x93"},
++  {"&#214;",   "\xc3\x96"},
++  {"&#218;",   "\xc3\x9a"},
+   {"&#220;",   "\xc3\x9c"},
+-  {"&Uuml;",   "\xc3\x9c"},
+-  {"&#252;",   "\xc3\xbc"},
+-  {"&uuml;",   "\xc3\xbc"},
+-  {"&#223;",   "\xc3\x9f"},
+-  {"&szlig;",  "\xc3\x9f"},
++  {"&#223;",   "\xc3\x9f"},  
++  {"&#225;",   "\xc3\xa1"},
++  {"&#226;",   "\xc3\xa2"},
++  {"&#228;",   "\xc3\xa4"},
++  {"&#229;",   "\xc3\xa5"},
++  {"&#231;",   "\xc3\xa7"},  
++  {"&#233;",   "\xc3\xa9"},
+   {"&#234;",   "\xc3\xaa"},
+-  {"&#176;",   "\xc2\xb0"},
+-  {"&#8211;",  "-"},
+-  {"&ndash;",  "-"},
++  {"&#237;",   "\xc3\xad"},
++  {"&#241;",   "\xc3\xb1"},
++  {"&#243;",   "\xc3\xb3"},
++  {"&#246;",   "\xc3\xb6"},
++  {"&#250;",   "\xc3\xba"},
++  {"&#252;",   "\xc3\xbc"},
+   {"&#38;",    "&"},
+-  {"&amp;",    "&"},
+-  {"&#58;",    ":"},
+-  {"&#91;",    "["},
+-  {"&#93;",    "]"},
+   {"&#40;",    "'"},
+   {"&#41;",    "'"},
+-  {"&#039;",   "'"},
+-  {"&#180;",   "'"},
+-  {"&acute;",  "'"},
++  {"&#58;",    ":"},
++  {"&#60;",    "<"},
++  {"&#62;",    ">"},
++  {"&#8211;",  "-"},
+   {"&#8216;",  "'"},
+   {"&#8217;",  "'"},
+-  {"&#231;",   "\xc3\xa7"},
+-  {"&ccedil;", "\xc3\xa7"},
+-  {"&#233;",   "\xc3\xa9"},
+-  {"&eacute;", "\xc3\xa9"},
+-  {"&#226;",   "\xc3\xa2"},
+-  {"&acirc;",  "\xc3\xa2"},
+-  {"&#8364;",  "\xe2\x82\xac"},
+-  {"&euro;",   "\xe2\x82\xac"},
+-  {"&quot;",   "\""},
+   {"&#8220;",  "\""},
+   {"&#8221;",  "\""},
+   {"&#8222;",  "\""},
+-  {"&#160;",   " "},
+-  {"&nbsp;",   " "},
+-  {"&lt;",     "<"},
++  {"&#8364;",  "\xe2\x82\xac"},
++  {"&#91;",    "["},
++  {"&#93;",    "]"},  
++  {"&aacute;", "\xc3\xa1"},
++  {"&Aacute;", "\xc3\xa1"},
++  {"&acirc;",  "\xc3\xa2"},
++  {"&acute;",  "'"},  
++  {"&Auml;",   "\xc3\x84"},
++  {"&auml;",   "\xc3\xa4"},
 +  {"<br />",   "\n"},
-+  {"<br/>",   "\n"},
-+  {"&#225;","\xc3\xa1"},
-+  {"&aacute;","\xc3\xa1"},
-+  {"&#233;","\xc3\xa9"},
-+  {"&#243;","\xc3\xb3"},
-+  {"&#237;","\xc3\xad"},
-+  {"&#250;","\xc3\xba"},
-+  {"&#193;","\xc3\x81"},
-+  {"&#201;","\xc3\x89"},
-+  {"&#205;","\xc3\x8d"},
-+  {"&#211;","\xc3\x93"},
-+  {"&#218;","\xc3\x9a"},
-+  {"&#241;","\xc3\xb1"},
-+  {"&#209;","\xc3\x91"},  
-+  {"&#171;","\xc2\xab"},
-+  {"&#191;","\xc2\xbf"},  
-+  {"&#187;","\xc2\xbb"},
++  {"<br/>",    "\n"},
++  {"&ccedil;", "\xc3\xa7"},  
++  {"&Ccedil;", "\xc3\xa7"},  
++  {"&eacute;", "\xc3\xa9"},
++  {"&Eacute;", "\xc3\x89"},
++  {"&euro;",   "\xe2\x82\xac"},
+   {"&gt;",     ">"},
++  {"&iacute;", "\xc3\xad"},
++  {"&Iacute;", "\xc3\x8d"},
++  {"&lt;",     "<"},
++  {"&nbsp;",   " "},
++  {"&ndash;",  "-"},
+   {"\n\n",     "\n"}, // let's also strip multiple linefeeds
++  {"&ntilde;", "\xc3\xb1"},
++  {"&Ntilde;", "\xc3\x91"},     
++  {"&oacute;", "\xc3\xb3"},
++  {"&Oacute;", "\xc3\x93"},  
++  {"&Ouml;",   "\xc3\x96"},
++  {"&ouml;",   "\xc3\xb6"},
++  {"&quot;",   "\""},
++  {"&szlig;",  "\xc3\x9f"},
++  {"&uacute;", "\xc3\xba"},
++  {"&Uacute;", "\xc3\x9a"},
++  {"&Uuml;",   "\xc3\x9c"},
++  {"&uuml;",   "\xc3\xbc"},
 +  {NULL,NULL}
  };
  
@@ -4385,6 +4483,14 @@ diff -Naur -x .svn rssreader-1.1.2-orig/tools.c rssreader/tools.c
 +  int i=0;
 +  bool inTag = false;
 +  bool done = false;
++  //Convert encoding
++  cCharSetConv conv("UTF-8",DEFAULT_ENCONDING);
++  while(1) {
++    if ( post_conv_table[i].from == NULL && post_conv_table[i].to == NULL ) break;
++    replace_all(str,post_conv_table[i].from,conv.Convert(post_conv_table[i].to));
++    i++;
++  }
++  //strip html
 +  while(!done) {
 +	if(inTag) {
 +		// The previous line started an HTML tag
@@ -4416,17 +4522,12 @@ diff -Naur -x .svn rssreader-1.1.2-orig/tools.c rssreader/tools.c
 +			done = true;
 +	}
 +  }	
-+  cCharSetConv conv("UTF-8",DEFAULT_ENCONDING);
-+  while(1) {
-+    if ( post_conv_table[i].from == NULL && post_conv_table[i].to == NULL ) break;
-+    replace_all(str,post_conv_table[i].from,conv.Convert(post_conv_table[i].to));
-+    i++;
-+  }
++  
  }
 +
 diff -Naur -x .svn rssreader-1.1.2-orig/tools.h rssreader/tools.h
---- rssreader-1.1.2-orig/tools.h	2009-01-30 23:47:55.000000000 +0100
-+++ rssreader/tools.h	2009-01-30 23:42:22.000000000 +0100
+--- rssreader-1.1.2-orig/tools.h	2009-02-02 17:41:49.000000000 +0100
++++ rssreader/tools.h	2009-02-02 17:42:19.000000000 +0100
 @@ -10,9 +10,14 @@
  #define __RSSREADER_TOOLS_H
  
