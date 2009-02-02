@@ -5,7 +5,7 @@ for i in $(find "$directorio" -iname *.mpg -o -iname *.mpeg|sed -e 's/ /#DEBIANJ
         a=$(echo $i|sed -e 's/#DEBIANJOKER#/ /g')
         mpgdir=$(basename "$a"|sed -e 's/.[mM][pP][gG]//g' -e 's/.[mM][pP][eE][gG]//g')
         origen=$(echo "$a"|sed -e 's/.[mM][pP][gG]//g' -e 's/.[mM][pP][eE][gG]//g')
-        subdir=$(date -Iseconds|sed -e 's/T/./g' -e 's/:/./g' -e 's/+.*//g').99.rec
+        subdir=$(date -Iseconds|sed -e 's/T/./g' -e 's/:/./g' -e 's/+.*//g').50.99.rec
         if [ ! -e "$origen.index-generado" ]; then
                 touch "$origen.index-generado"
                 mkdir -p "$directorio/$mpgdir/$subdir"
