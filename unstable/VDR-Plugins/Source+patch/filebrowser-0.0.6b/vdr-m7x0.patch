@@ -1,7 +1,7 @@
 diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
---- filebrowser-0.0.6b-orig/i18n.h	2009-02-01 04:15:00.000000000 +0100
-+++ filebrowser-0.0.6b/i18n.h	2009-02-04 04:02:52.000000000 +0100
-@@ -20,25 +20,775 @@
+--- filebrowser-0.0.6b-orig/i18n.h	2009-02-04 04:39:22.000000000 +0100
++++ filebrowser-0.0.6b/i18n.h	2009-02-04 12:50:49.000000000 +0100
+@@ -20,25 +20,774 @@
  
  const tI18nPhrase Phrases[] = {
    { "Filebrowser",
@@ -508,7 +508,6 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Eesky*/
 +  },
 +  { "Running",
-+
 +    "", // TODO /*Deutsch*/
 +    "", // TODO /*Slovenski*/
 +    "", // TODO /*Italiano*/
