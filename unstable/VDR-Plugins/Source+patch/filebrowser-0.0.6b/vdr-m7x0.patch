@@ -1,7 +1,7 @@
 diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 --- filebrowser-0.0.6b-orig/i18n.h	2009-02-01 04:15:00.000000000 +0100
-+++ filebrowser-0.0.6b/i18n.h	2009-02-01 04:18:13.000000000 +0100
-@@ -20,25 +20,774 @@
++++ filebrowser-0.0.6b/i18n.h	2009-02-04 04:02:52.000000000 +0100
+@@ -20,25 +20,775 @@
  
  const tI18nPhrase Phrases[] = {
    { "Filebrowser",
@@ -77,7 +77,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Necesario Código de Acceso", // /*Español*/
++    "Código de acceso necesario", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -187,7 +187,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "¿Finalizar?", // /*Español*/
++    "¿Terminar?", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -209,7 +209,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Finalizado", // /*Español*/
++    "Terminar", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -363,7 +363,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Otro", // /*Español*/
++    "Otros", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -508,6 +508,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Eesky*/
 +  },
 +  { "Running",
++
 +    "", // TODO /*Deutsch*/
 +    "", // TODO /*Slovenski*/
 +    "", // TODO /*Italiano*/
@@ -517,7 +518,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Corriendo", // /*Español*/
++    "Ejecutandose", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -539,7 +540,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Hilos corriendo", // /*Español*/
++    "Procesos ejecutandose", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -583,7 +584,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Mostrar ruta completa en el título", // /*Español*/
++    "Mostrar la ruta completa en el título", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -605,7 +606,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Mostrar archivos ocultos", // /*Español*/
++    "Mostrar los archivos ocultos", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -627,7 +628,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Fuentes", // /*Español*/
++    "Directorios", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -649,7 +650,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Hilos", // /*Español*/
++    "Procesos", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
