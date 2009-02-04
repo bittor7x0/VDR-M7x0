@@ -14,10 +14,21 @@ else
     export PATH="$TC_bin:$PATH"
 fi
 
+while [ "$response" == "" ]; do
+	read -p "Firmware type?  1-PRO/LITE 2-ROOTFS [1] : " response
+	case "$response" in
+		2)
+			firmware_type="rootfs";
+			;;
+		*)
+			;;
+	esac;
+done
+
 # Update VDR-NG and plugins from SVN open7x0.org from SVN open7x0.org
 if [[ ! -d "$vdr" ]]
 then
-	./make-vdr
+	./make-vdr "$firmware_type"
 
 	echo "CHECKOUT: $vdr_plugins"
         rm -rf $vdr_plugins/
