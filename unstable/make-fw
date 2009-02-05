@@ -119,7 +119,7 @@ done
 # Get and set SVN versions
 echo ""
 echo "Getting and setting SVN versions to fw-version"
-svn_em_version=" em subversion revision `svnversion | cut -d \":\" -f 2`"
+svn_em_version="em subversion revision `svnversion \"$vdr_em_addons\" | cut -d \":\" -f 2`"
 svn_o7o_version="o7o subversion revision `svnversion \"$vdr_fw_orig\" | cut -d \":\" -f 2`"
 
 echo $svn_em_version  >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
