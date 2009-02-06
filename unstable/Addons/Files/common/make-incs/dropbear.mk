@@ -25,10 +25,10 @@ ifneq ($(CONFIG_ZLIB),y)
 endif
 endif
 
-DROPBEAR_VERSION := 0.50
+DROPBEAR_VERSION := 0.52
 DROPBEAR_PATCHES_DIR := $(PATCHES_DIR)/dropbear/$(DROPBEAR_VERSION)
 
-#http://matt.ucc.asn.au/dropbear/releases/dropbear-0.50.tar.bz2
+#http://matt.ucc.asn.au/dropbear/releases/dropbear-0.52.tar.bz2
 DROPBEAR_FILE := dropbear-$(DROPBEAR_VERSION).tar.bz2
 DROPBEAR_DLFILE := $(DOWNLOAD_DIR)/$(DROPBEAR_FILE)
 DROPBEAR_URL := http://matt.ucc.asn.au/dropbear/releases/$(DROPBEAR_FILE)
@@ -80,6 +80,8 @@ $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
 		$(DROPBEAR_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
+			--disable-lastlog \
+			--disable-wtmp \
 			--sysconfdir=/etc/dropbear)
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_configured
 
@@ -89,7 +91,7 @@ $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
 
 $(STAGEFILES_DIR)/.dropbear_compiled: $(STAGEFILES_DIR)/.dropbear_configured
 	$(UCLIBC_ENV) $(MAKE) \
-		-C $(DROPBEAR_DIR) PROGRAMS="dropbear dbclient dropbearkey scp" SCPPROGRESS=1 MULTI=1
+		-C $(DROPBEAR_DIR) PROGRAMS="dropbear dbclient dropbearkey scp" MULTI=1
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_compiled
 
 #

@@ -1,0 +1,76 @@
+diff -Naur dropbear-0.52-orig/options.h dropbear-0.52/options.h
+--- dropbear-0.52-orig/options.h	2008-11-11 15:13:50.000000000 +0100
++++ dropbear-0.52/options.h	2009-02-06 21:41:56.000000000 +0100
+@@ -51,7 +51,7 @@
+ #define DROPBEAR_SMALL_CODE
+ 
+ /* Enable X11 Forwarding - server only */
+-#define ENABLE_X11FWD
++//#define ENABLE_X11FWD
+ 
+ /* Enable TCP Fowarding */
+ /* 'Local' is "-L" style (client listening port forwarded via server)
+@@ -64,7 +64,7 @@
+ #define ENABLE_SVR_REMOTETCPFWD
+ 
+ /* Enable Authentication Agent Forwarding - server only for now */
+-#define ENABLE_AGENTFWD
++//#define ENABLE_AGENTFWD
+ 
+ 
+ /* Note: Both ENABLE_CLI_PROXYCMD and ENABLE_CLI_NETCAT must be set to
+@@ -84,10 +84,10 @@
+  * (eg AES256 as well as AES128) will result in a minimal size increase.*/
+ #define DROPBEAR_AES128
+ #define DROPBEAR_3DES
+-#define DROPBEAR_AES256
+-#define DROPBEAR_BLOWFISH
+-#define DROPBEAR_TWOFISH256
+-#define DROPBEAR_TWOFISH128
++//#define DROPBEAR_AES256
++//#define DROPBEAR_BLOWFISH
++//#define DROPBEAR_TWOFISH256
++//#define DROPBEAR_TWOFISH128
+ 
+ /* Enable "Counter Mode" for ciphers. This is more secure than normal
+  * CBC mode against certain attacks. This adds around 1kB to binary 
+@@ -107,8 +107,8 @@
+  * If you disable MD5, Dropbear will fall back to SHA1 fingerprints,
+  * which are not the standard form. */
+ #define DROPBEAR_SHA1_HMAC
+-#define DROPBEAR_SHA1_96_HMAC
+-#define DROPBEAR_MD5_HMAC
++//#define DROPBEAR_SHA1_96_HMAC
++//#define DROPBEAR_MD5_HMAC
+ 
+ /* Hostkey/public key algorithms - at least one required, these are used
+  * for hostkey as well as for verifying signatures with pubkey auth.
+@@ -129,11 +129,11 @@
+ /* #define DSS_PROTOK */
+ 
+ /* Whether to do reverse DNS lookups. */
+-#define DO_HOST_LOOKUP
++//#define DO_HOST_LOOKUP
+ 
+ /* Whether to print the message of the day (MOTD). This doesn't add much code
+  * size */
+-#define DO_MOTD
++//#define DO_MOTD
+ 
+ /* The MOTD file path */
+ #ifndef MOTD_FILENAME
+@@ -227,12 +227,12 @@
+  * OpenSSH), set the path below. If the path isn't defined, sftp will not
+  * be enabled */
+ #ifndef SFTPSERVER_PATH
+-#define SFTPSERVER_PATH "/usr/libexec/sftp-server"
++//#define SFTPSERVER_PATH "/usr/libexec/sftp-server"
+ #endif
+ 
+ /* This is used by the scp binary when used as a client binary. If you're
+  * not using the Dropbear client, you'll need to change it */
+-#define _PATH_SSH_PROGRAM "/usr/bin/dbclient"
++#define _PATH_SSH_PROGRAM "/usr/sbin/dbclient"
+ 
+ /* Whether to log commands executed by a client. This only logs the 
+  * (single) command sent to the server, not what a user did in a 
