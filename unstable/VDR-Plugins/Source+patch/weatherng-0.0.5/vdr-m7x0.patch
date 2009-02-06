@@ -1,6 +1,5 @@
-diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
---- weatherng-0.0.5-orig/i18n.c	2009-01-22 20:38:55.000000000 +0100
-+++ weatherng/i18n.c	2009-01-26 23:55:51.000000000 +0100
+--- weatherng-0.0.5-orig/i18n.c	2009-02-04 22:33:16.000000000 +0100
++++ weatherng/i18n.c	2009-02-06 13:25:56.000000000 +0100
 @@ -19,7 +19,7 @@
      "",// TODO
      "S‰‰ennuste",
@@ -258,76 +257,76 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "Klassinen",
      "",// TODO
 -    "",// TODO
-+    "Cl·sico",//
++    "Cl·sico",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -542,7 +542,7 @@
+@@ -541,7 +541,7 @@
+     "",// TODO
      "enElchi",
-     "",// TODO
      "",// TODO
 -    "",// TODO
 +    "enElchi",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -560,7 +560,7 @@
-     "Moronimo",
+@@ -559,7 +559,7 @@
      "",// TODO
+     "Moronimo",
      "",// TODO
 -    "",// TODO
 +    "Moronimo",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -578,7 +578,7 @@
-     "DeepBlue",
+@@ -577,7 +577,7 @@
      "",// TODO
+     "DeepBlue",
      "",// TODO
 -    "",// TODO
 +    "DeepBlue",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -596,7 +596,7 @@
-     "Enigma",
+@@ -595,7 +595,7 @@
      "",// TODO
+     "Enigma",
      "",// TODO
 -    "",// TODO
 +    "Enigma",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -614,7 +614,7 @@
-     "SilverGreen",
+@@ -613,7 +613,7 @@
      "",// TODO
+     "SilverGreen",
      "",// TODO
 -    "",// TODO
 +    "SilverGreen",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -632,7 +632,7 @@
-     "MoronimoMKII",
+@@ -631,7 +631,7 @@
      "",// TODO
+     "MoronimoMKII",
      "",// TODO
 -    "",// TODO
 +    "MoronimoMKII",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -650,7 +650,7 @@
-     "MoronimoMKIII",
+@@ -649,7 +649,7 @@
      "",// TODO
+     "MoronimoMKIII",
      "",// TODO
 -    "",// TODO
 +    "MoronimoMKIII",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -668,7 +668,7 @@
-     "MoronimoMKIV",
+@@ -667,7 +667,7 @@
      "",// TODO
+     "MoronimoMKIV",
      "",// TODO
 -    "",// TODO
 +    "MoronimoMKIV",
@@ -352,18 +351,18 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -722,7 +722,7 @@
-     "Vaakakeskitys",
+@@ -721,7 +721,7 @@
      "",// TODO
+     "Vaakakeskitys",
      "",// TODO
 -    "",// TODO
 +    "Desplazamiento horizontal",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -740,7 +740,7 @@
-     "Pystykeskitys",
+@@ -739,7 +739,7 @@
      "",// TODO
+     "Pystykeskitys",
      "",// TODO
 -    "",// TODO
 +    "Desplazamiento vertical",
@@ -384,7 +383,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "K‰yt‰ pyˆristettyj‰ kulmia",
      "",// TODO
 -    "",// TODO
-+    "Cantos redondeados",
++    "Bordes redondeados",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -559,24 +558,43 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1135,7 +1135,7 @@
+@@ -1135,16 +1135,16 @@
      "",// TODO
      "aamup‰iv‰ll‰ sadekuuroja",
      "",// TODO
--    "",// TODO
 +    "Chubascos matinales",
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1153,7 +1153,7 @@
+     "",// TODO
+     "",// TODO
+-    "",// TODO
+-    "ø‡ÿ“’‚!",                                                                                        
++    "ø‡ÿ“’‚!",
+   },
+-  { "PM Showers",                                                                                     
+-    "nachmittags Schauer",                                                                        
++  { "PM Showers",
++    "nachmittags Schauer",
+     "",// TODO
+     "",// TODO
+     "",// TODO
+@@ -1153,13 +1153,13 @@
      "",// TODO
      "iltap‰iv‰ll‰ sadekuuroja",
      "",// TODO
--    "",// TODO
 +    "Chubascos nocturnos",
      "",// TODO
      "",// TODO
      "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
+-    "ø‡ÿ“’‚!",                                                                                        
++    "ø‡ÿ“’‚!",
+   },
+   { "Scattered Showers",
+     "vereinzelt Schauer",
 @@ -1171,7 +1171,7 @@
      "",// TODO
      "hajanaisia sadekuuroja",
@@ -694,15 +712,22 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1405,7 +1405,7 @@
+@@ -1405,13 +1405,13 @@
      "",// TODO
      "osittain pilvist‰",
      "",// TODO
--    "",// TODO
 +    "Parcialmente nublado",
      "",// TODO
      "",// TODO
      "",// TODO
+     "",// TODO
+     "",// TODO
+-    "",// TODO
+-    "ø‡ÿ“’‚!",                                                                                        
++    "ø‡ÿ“’‚!",
+   },
+   { "M Clear",
+     "meist klar",
 @@ -1423,7 +1423,7 @@
      "",// TODO
      "enimm‰kseen selke‰‰",
@@ -829,7 +854,7 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1676,7 +1676,7 @@
+@@ -1676,14 +1676,14 @@
      "",// TODO
      "kevytt‰ lumisadetta",
      "",// TODO
@@ -838,7 +863,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1694,7 +1694,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Few Snow",
+     "wenig Schnee",
+     "",// TODO
+@@ -1694,14 +1694,14 @@
      "",// TODO
      "heikkoa lumisadetta",
      "",// TODO
@@ -847,7 +880,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1712,7 +1712,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  }, 
++  },
+     { "Clear",
+     "Klar",
+     "",// TODO
+@@ -1712,14 +1712,14 @@
      "",// TODO
      "selke‰‰",
      "",// TODO
@@ -856,7 +897,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1730,7 +1730,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },   
++  },
+     { "Light Drizzle",
+     "wenig Nieselregen",
+     "",// TODO
+@@ -1730,14 +1730,14 @@
      "",// TODO
      "kevytt‰ tihkua",
      "",// TODO
@@ -865,7 +914,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1748,7 +1748,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Scattered",
+     "vereinzelt",
+     "",// TODO
+@@ -1748,14 +1748,14 @@
      "",// TODO
      "hajanaista",
      "",// TODO
@@ -874,7 +931,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1766,7 +1766,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Smoke",
+     "dichter Nebel",
+     "",// TODO
+@@ -1766,14 +1766,14 @@
      "",// TODO
      "paksua sumua",
      "",// TODO
@@ -883,7 +948,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1784,7 +1784,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Drifting Snow",
+     "starkes Schneetreiben",
+     "",// TODO
+@@ -1784,14 +1784,14 @@
      "",// TODO
      "voimakasta lumisadetta",
      "",// TODO
@@ -892,7 +965,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1802,7 +1802,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "steady",
+     "",
+     "",// TODO
+@@ -1802,14 +1802,14 @@
      "",// TODO
      "tasaista",
      "",// TODO
@@ -901,7 +982,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1820,7 +1820,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "rising",
+     "",
+     "",// TODO
+@@ -1820,14 +1820,14 @@
      "",// TODO
      "alkavaa",
      "",// TODO
@@ -910,7 +999,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1838,7 +1838,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "falling",
+     "",
+     "",// TODO
+@@ -1838,14 +1838,14 @@
      "",// TODO
      "laantuvaa",
      "",// TODO
@@ -919,7 +1016,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1856,7 +1856,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Unlimited",
+     "",
+     "",// TODO
+@@ -1856,14 +1856,14 @@
      "",// TODO
      "m‰‰rittelem‰tˆnt‰",
      "",// TODO
@@ -928,7 +1033,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1874,7 +1874,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Showers in the Vicinity",
+     "",
+     "",// TODO
+@@ -1874,14 +1874,14 @@
      "",// TODO
      "todenn‰kˆisesti sadekuuroja",
      "",// TODO
@@ -937,7 +1050,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1892,7 +1892,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Waning Crescent",
+     "",
+     "",// TODO
+@@ -1892,14 +1892,14 @@
      "",// TODO
      "v‰istyv‰ t‰ysikuu",
      "",// TODO
@@ -946,7 +1067,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1910,7 +1910,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Waxing Crescent",
+     "",
+     "",// TODO
+@@ -1910,14 +1910,14 @@
      "",// TODO
      "alkava t‰ysikuu",
      "",// TODO
@@ -955,7 +1084,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1928,7 +1928,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Waxing Gibbous",
+     "",
+     "",// TODO
+@@ -1928,14 +1928,14 @@
      "",// TODO
      "v‰istyv‰ uusikuu",
      "",// TODO
@@ -964,7 +1101,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1946,7 +1946,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Waning Gibbous",
+     "",
+     "",// TODO
+@@ -1946,14 +1946,14 @@
      "",// TODO
      "v‰istyv‰ t‰ysikuu",
      "",// TODO
@@ -973,7 +1118,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1964,7 +1964,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "T-Storms",
+     "st¸rmisches Gewitter",
+     "",// TODO
+@@ -1964,14 +1964,14 @@
      "",// TODO
      "ukkosmyrskyj‰",
      "",// TODO
@@ -982,7 +1135,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -1982,7 +1982,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "T-Storms Early",
+     "zun‰chst schweres Gewitter",
+     "",// TODO
+@@ -1982,14 +1982,14 @@
      "",// TODO
      "ukkosmyrskyj‰ aikaisin",
      "",// TODO
@@ -991,7 +1152,15 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -2000,7 +2000,7 @@
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Light Rain Early",
+     "zun‰chst leichter Regen",
+     "",// TODO
+@@ -2000,14 +2000,14 @@
      "",// TODO
      "kevytt‰ sadetta aikaisin",
      "",// TODO
@@ -999,6 +1168,14 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
 +    "Lluvia fina de maÒana",
      "",// TODO
      "",// TODO
+     "",// TODO
+     "",// TODO
+     "",// TODO
+     "ø‡ÿ“’‚!",
+-  },  
++  },
+     { "Showers Early",
+     "zun‰chst Regenschauer",
      "",// TODO
 @@ -2018,7 +2018,7 @@
      "",// TODO
@@ -1054,9 +1231,68 @@ diff -Naur -x .svn weatherng-0.0.5-orig/i18n.c weatherng/i18n.c
      "",// TODO
      "",// TODO
      "",// TODO
-diff -Naur -x .svn weatherng-0.0.5-orig/setup.c weatherng/setup.c
---- weatherng-0.0.5-orig/setup.c	2009-01-22 16:30:36.000000000 +0100
-+++ weatherng/setup.c	2009-01-22 16:19:10.000000000 +0100
+@@ -2116,5 +2116,59 @@
+     "",// TODO
+     "ø‡ÿ“’‚!",
+   },
++      { "Weather station 1",
++      "",
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",
++      "",// TODO
++      "EstaciÛn meteorolÛgica 1",
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "ø‡ÿ“’‚!",
++  },
++      { "Weather station 2",
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "EstaciÛn meteorolÛgica 2",
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "ø‡ÿ“’‚!",
++  },
++      { "Weather station 3",
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "EstaciÛn meteorolÛgica 3",
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "",// TODO
++      "ø‡ÿ“’‚!",
++  },
+   { NULL }
+   };
+--- weatherng-0.0.5-orig/setup.c	2009-02-04 22:33:16.000000000 +0100
++++ weatherng/setup.c	2009-02-06 00:32:15.000000000 +0100
 @@ -30,9 +30,9 @@
  	w_osdoffset_y = 0;
  	w_inverted = 1;
