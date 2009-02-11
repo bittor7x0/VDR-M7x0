@@ -1,6 +1,5 @@
-diff -Naur dropbear-0.52-orig/options.h dropbear-0.52/options.h
 --- dropbear-0.52-orig/options.h	2008-11-11 15:13:50.000000000 +0100
-+++ dropbear-0.52/options.h	2009-02-06 21:41:56.000000000 +0100
++++ dropbear-0.52/options.h	2009-02-11 11:57:57.000000000 +0100
 @@ -51,7 +51,7 @@
  #define DROPBEAR_SMALL_CODE
  
@@ -74,3 +73,12 @@ diff -Naur dropbear-0.52-orig/options.h dropbear-0.52/options.h
  
  /* Whether to log commands executed by a client. This only logs the 
   * (single) command sent to the server, not what a user did in a 
+@@ -263,7 +263,7 @@
+ #define DEFAULT_IDLE_TIMEOUT 0
+ 
+ /* The default path. This will often get replaced by the shell */
+-#define DEFAULT_PATH "/usr/bin:/bin"
++#define DEFAULT_PATH "/sbin:/usr/sbin:/bin:/usr/bin"
+ 
+ /* Some other defines (that mostly should be left alone) are defined
+  * in sysoptions.h */
