@@ -1,6 +1,5 @@
-diff -Naur uclibc_build_env_orig/configs/busybox/1.13.1/busybox.config uclibc_build_env/configs/busybox/1.13.1/busybox.config
---- uclibc_build_env_orig/configs/busybox/1.13.1/busybox.config	Wed Dec 17 12:33:12 2008
-+++ uclibc_build_env/configs/busybox/1.13.1/busybox.config	Thu Dec 18 19:14:16 2008
+--- VDR-NG-FW.orig/configs/busybox/1.13.1/busybox.config	2009-02-10 18:24:04.000000000 +0100
++++ VDR-NG-FW/configs/busybox/1.13.1/busybox.config	2009-02-10 18:26:04.000000000 +0100
 @@ -129,7 +129,7 @@
  # CONFIG_UNCOMPRESS is not set
  CONFIG_UNLZMA=y
@@ -117,6 +116,15 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.13.1/busybox.config uclibc_bu
  # CONFIG_FEATURE_SWAPON_PRI is not set
  CONFIG_SWITCH_ROOT=y
  CONFIG_UMOUNT=y
+@@ -540,7 +540,7 @@
+ #
+ # Miscellaneous Utilities
+ #
+-# CONFIG_ADJTIMEX is not set
++CONFIG_ADJTIMEX=y
+ # CONFIG_BBCONFIG is not set
+ # CONFIG_CHAT is not set
+ # CONFIG_FEATURE_CHAT_NOFAIL is not set
 @@ -554,7 +554,7 @@
  CONFIG_CROND=y
  # CONFIG_FEATURE_CROND_D is not set
