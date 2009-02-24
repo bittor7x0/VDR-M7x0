@@ -78,6 +78,10 @@ if [ X"${memwatch}" != X"NO" ] && [ -d ${memwatch_dir} ] ; then
     /usr/sbin/memwatch "${memwatch_dest}" ${memwatch_interval}
 fi
 
+
+#Rescue keys
+/usr/bin/irexec -d /etc/lircrc
+
 # Stop serial console logging
 echo "0 4 1 7" > /proc/sys/kernel/printk
 

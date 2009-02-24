@@ -1,0 +1,15 @@
+begin
+prog = irexec
+button = HELP
+button = CHANNEL_UP
+config = /usr/bin/restart-vdr
+repeat = 5
+end
+ 
+begin
+prog = irexec
+button = HELP
+button = TV
+config = /etc/vdr/rebootvdr         
+repeat = 5
+end 

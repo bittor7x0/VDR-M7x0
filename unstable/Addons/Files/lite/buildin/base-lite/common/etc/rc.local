@@ -44,6 +44,8 @@ if [ X"${memwatch}" != X"NO" ] && [ -d ${memwatch_dir} ] ; then
     /usr/sbin/memwatch "${memwatch_dest}" ${memwatch_interval}
 fi
 
+#Rescue keys
+/usr/bin/irexec -d /etc/lircrc
 
 # put here your optional stuff
 
