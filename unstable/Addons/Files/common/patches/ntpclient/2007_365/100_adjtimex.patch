@@ -1,0 +1,654 @@
+diff -Naur ntpclient-2007-orig/Makefile ntpclient-2007/Makefile
+--- ntpclient-2007-orig/Makefile	2007-12-31 18:13:56.000000000 +0100
++++ ntpclient-2007/Makefile	2009-02-24 12:45:34.000000000 +0100
+@@ -11,7 +11,7 @@
+ CFLAGS += -O2
+ # CFLAGS += -DPRECISION_SIOCGSTAMP
+ CFLAGS += -DENABLE_DEBUG
+-CFLAGS += -DENABLE_REPLAY
++# CFLAGS += -DENABLE_REPLAY
+ # CFLAGS += -DUSE_OBSOLETE_GETTIMEOFDAY
+ 
+ LDFLAGS += -lrt
+@@ -21,9 +21,9 @@
+ test: ntpclient
+ 	./ntpclient -d -r <test.dat
+ 
+-ntpclient: ntpclient.o phaselock.o
++ntpclient: ntpclient.o
+ 
+-ntpclient.o phaselock.o: ntpclient.h
++ntpclient.o: ntpclient.h
+ 
+ adjtimex: adjtimex.o
+ 
+diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
+--- ntpclient-2007-orig/ntpclient.c	2008-01-01 03:16:10.000000000 +0100
++++ ntpclient-2007/ntpclient.c	2009-02-24 12:47:43.000000000 +0100
+@@ -55,6 +55,7 @@
+ #ifdef USE_OBSOLETE_GETTIMEOFDAY
+ #include <sys/time.h>
+ #endif
++# include <syslog.h>
+ 
+ #include "ntpclient.h"
+ 
+@@ -91,7 +92,7 @@
+ extern struct hostent *gethostbyname(const char *name);
+ extern int h_errno;
+ #define herror(hostname) \
+-	fprintf(stderr,"Error %d looking up hostname %s\n", h_errno,hostname)
++	syslog(LOG_CRIT,"Error %d looking up hostname %s\n", h_errno,hostname)
+ #endif
+ /* end configuration for host systems */
+ 
+@@ -134,6 +135,175 @@
+ 	char serv_addr[4];
+ };
+ 
++#define FREQFILE "/etc/ntp/adjustment"
++
++static struct timeval LastTime;
++static double LastDelay;
++static double CurrentOffset;
++ 
++void ReadAdjustment()
++{
++	FILE *fp=fopen(FREQFILE, "r");
++	if(fp)
++	{
++		int Temp=0;
++		fscanf(fp, "%d",&Temp);
++		struct timex txc;
++		txc.tick=Temp+10000;
++		Temp=0;
++		fscanf(fp, "%d",&Temp);
++		fclose(fp);
++		txc.freq=Temp;
++		if((txc.tick>=9000)&&(txc.tick<=11000)&&(txc.freq>=-3276800)&&(txc.freq<=3276800))
++		{
++			txc.modes=ADJ_FREQUENCY|ADJ_TICK;
++			adjtimex(&txc);
++		}
++	}
++}
++void WriteAdjustment(struct timex *txc)
++{
++	FILE *fp=fopen(FREQFILE, "w");
++	if(fp)
++	{
++		int Temp=txc->tick-10000;
++		fprintf(fp,"%d\n",Temp);
++		Temp=txc->freq;
++		fprintf(fp,"%d\n",Temp);
++		fclose(fp);
++	}
++}
++void AdjustAdjustment(double uspers)
++{
++	if(debug||(uspers>10)||(uspers<-10))
++		syslog(LOG_INFO,"adj freq by %gus/s", uspers);
++	struct timex txc;
++	txc.modes=0;
++	if(adjtimex(&txc)<0)
++	{
++		syslog(LOG_CRIT,"adjtimex");
++		txc.tick=10000;
++		txc.freq=0;
++	}
++	uspers+=((double)txc.tick)*100+((double)txc.freq)/65536;
++	txc.tick=uspers/100;
++	if(txc.tick>11000)
++		txc.tick=11000;
++	if(txc.tick<9000)
++		txc.tick=9000;
++	uspers-=txc.tick*100;
++	txc.freq=uspers*65536;
++	if((txc.freq>3276800)&&(txc.tick<11000))
++	{
++		txc.freq-=6553600;
++		txc.tick++;		
++	}
++	if((txc.freq<-3276800)&&(txc.tick>9000))
++	{
++		txc.freq+=6553600;
++		txc.tick--;		
++	}
++	if(txc.freq>3276800)
++		txc.freq=3276800;
++	if(txc.freq<-3276800)
++		txc.freq=-3276800;
++	txc.modes=ADJ_FREQUENCY|ADJ_TICK;
++	if(adjtimex(&txc)<0)
++		syslog(LOG_CRIT,"adjtimex");
++	WriteAdjustment(&txc);
++}
++void KillRemaining(void)
++{
++	struct timex txc;
++	txc.offset=0;
++	txc.modes=ADJ_OFFSET_SINGLESHOT;
++	if(adjtimex(&txc)<0)
++		syslog(LOG_CRIT,"adjtimex");
++}
++void AdjustTime(struct ntptime *NewTime,double Offset,int Live)
++{
++	double Remaining=0;
++	if(!LastTime.tv_sec)
++		KillRemaining();
++	struct timeval CurrentTime;
++	CurrentTime.tv_sec=NewTime->coarse-JAN_1970;
++	CurrentTime.tv_usec=USEC(NewTime->fine);
++	if((Offset<1)&&(Offset>-1))
++	{
++		struct timex txc;
++		txc.offset=Offset*1000000;
++		txc.modes=ADJ_OFFSET_SINGLESHOT;
++		if(adjtimex(&txc)<0)
++		{
++			syslog(LOG_CRIT,"adjtimex");
++			txc.offset=0;
++		}
++		Remaining=((double)txc.offset)/1000000;
++		if(debug)
++			syslog(LOG_INFO,"adj time by %gs (remaining %gs)",Offset,Remaining);
++	}
++	else
++	{
++		struct timex txc;
++		txc.offset=0;
++		if(LastTime.tv_sec)
++		{
++			txc.modes=ADJ_OFFSET_SINGLESHOT;
++			if(adjtimex(&txc)<0)
++			{
++				syslog(LOG_CRIT,"adjtimex");
++				txc.offset=0;
++			}
++		}
++		struct timespec tv_set;
++		tv_set.tv_sec=CurrentTime.tv_sec;
++		tv_set.tv_nsec=CurrentTime.tv_usec*1000;
++		if(clock_settime(CLOCK_REALTIME,&tv_set)<0)
++		{
++			syslog(LOG_CRIT,"clock_settime");
++			return;
++		}
++		Remaining=((double)txc.offset)/1000000;
++		time_t tval=CurrentTime.tv_sec;
++		char buf[80];
++		strftime(buf,sizeof(buf),"%H:%M:%S",localtime(&tval));
++		syslog(LOG_INFO,"set time to %s (offset %gs) (remaining %gs)",buf,Offset,Remaining);
++	}
++	if(!Live)
++		return;
++	double Delay=0;
++	if(LastTime.tv_sec)
++	{
++		CurrentOffset+=Offset-Remaining;
++		if((CurrentOffset<0.5)&&(CurrentOffset>-0.5)&&(CurrentTime.tv_sec-LastTime.tv_sec<1800))
++		{
++			if(debug)
++				syslog(LOG_INFO,"Last Delay: %gus/s Current Offset: %gs",LastDelay,CurrentOffset);
++			return;
++		}
++		Delay=(CurrentOffset*1000000)/(((double)(CurrentTime.tv_sec-LastTime.tv_sec))+((double)(CurrentTime.tv_usec-LastTime.tv_usec)/1000000));
++		if(LastDelay!=0)
++		{
++			if(((Delay>3)&&(LastDelay>Delay))||((Delay<-3)&&(LastDelay<Delay)))
++			{
++				AdjustAdjustment(Delay);
++				Delay=0;
++			}
++			if(((LastDelay>3)&&(Delay>LastDelay))||((LastDelay<-3)&&(Delay<LastDelay)))
++			{
++				AdjustAdjustment(LastDelay);
++				Delay=0;
++			}
++		}
++	}
++	LastDelay=Delay;
++	CurrentOffset=0;
++	LastTime.tv_sec=CurrentTime.tv_sec;
++	LastTime.tv_usec=CurrentTime.tv_usec;
++	if(debug)
++		syslog(LOG_INFO,"Last Delay: %gus/s Current Offset: %gs",LastDelay,CurrentOffset);
++}
++
+ /* prototypes for some local routines */
+ static void send_packet(int usd, u32 time_sent[2]);
+ static int rfc1305print(u32 *data, struct ntptime *arrival, struct ntp_control *ntpc, int *error);
+@@ -163,7 +333,7 @@
+ 	struct timex txc;
+ 	txc.modes = ADJ_FREQUENCY;
+ 	txc.freq = new_freq;
+-	if (__adjtimex(&txc) < 0) {
++	if (adjtimex(&txc) < 0) {
+ 		perror("adjtimex"); exit(1);
+ 	}
+ 	return txc.freq;
+@@ -236,9 +406,9 @@
+ #define POLL 4
+ #define PREC -6
+ 
+-	if (debug) fprintf(stderr,"Sending ...\n");
++	/*if (debug) fprintf(stderr,"Sending ...\n");*/
+ 	if (sizeof data != 48) {
+-		fprintf(stderr,"size error\n");
++		syslog(LOG_CRIT,"size error\n");
+ 		return;
+ 	}
+ 	memset(data,0,sizeof data);
+@@ -259,7 +429,7 @@
+ 	/* XXX broken */
+ 	struct timeval udp_arrival;
+ 	if ( ioctl(usd, SIOCGSTAMP, &udp_arrival) < 0 ) {
+-		perror("ioctl-SIOCGSTAMP");
++		syslog(LOG_CRIT, "ioctl-SIOCGSTAMP");
+ 		gettimeofday(&udp_arrival,NULL);
+ 	}
+ 	udp_arrival_ntp->coarse = udp_arrival.tv_sec + JAN_1970;
+@@ -274,7 +444,7 @@
+ {
+ 	struct sockaddr_in *sa_in=(struct sockaddr_in *)sa_source;
+ 	(void) sa_len;  /* not used */
+-	if (debug) {
++	/*if (debug) {
+ 		printf("packet of length %d received\n",data_len);
+ 		if (sa_source->sa_family==AF_INET) {
+ 			printf("Source: INET Port %d host %s\n",
+@@ -282,7 +452,7 @@
+ 		} else {
+ 			printf("Source: Address family %d\n",sa_source->sa_family);
+ 		}
+-	}
++	}*/
+ 	/* we could check that the source is the server we expect, but
+ 	 * Denis Vlasenko recommends against it: multihomed hosts get it
+ 	 * wrong too often. */
+@@ -354,7 +524,7 @@
+ 	xmttime.fine   = Data(11);
+ #undef Data
+ 
+-	if (debug) {
++	/*if (debug) {
+ 	printf("LI=%d  VN=%d  Mode=%d  Stratum=%d  Poll=%d  Precision=%d\n",
+ 		li, vn, mode, stratum, poll, prec);
+ 	printf("Delay=%.1f  Dispersion=%.1f  Refid=%u.%u.%u.%u\n",
+@@ -366,13 +536,13 @@
+ 	printf("Receive   %u.%.6u\n", rectime.coarse, USEC(rectime.fine));
+ 	printf("Transmit  %u.%.6u\n", xmttime.coarse, USEC(xmttime.fine));
+ 	printf("Our recv  %u.%.6u\n", arrival->coarse, USEC(arrival->fine));
+-	}
++	}*/
+ 	el_time=ntpdiff(&orgtime,arrival);   /* elapsed */
+ 	st_time=ntpdiff(&rectime,&xmttime);  /* stall */
+ 	skew1=ntpdiff(&orgtime,&rectime);
+ 	skew2=ntpdiff(&xmttime,arrival);
+-	freq=get_current_freq();
+-	if (debug) {
++	freq=0;//get_current_freq();
++	/*if (debug) {
+ 	printf("Total elapsed: %9.2f\n"
+ 	       "Server stall:  %9.2f\n"
+ 	       "Slop:          %9.2f\n",
+@@ -381,7 +551,7 @@
+ 	       "Frequency:     %9d\n"
+ 	       " day   second     elapsed    stall     skew  dispersion  freq\n",
+ 		(skew1-skew2)/2, freq);
+-	}
++	}*/
+ 
+ 	/* error checking, see RFC-4330 section 5 */
+ #ifdef ENABLE_DEBUG
+@@ -404,7 +574,7 @@
+ 
+ 	/* XXX should I do this if debug flag is set? */
+ 	if (ntpc->set_clock) { /* you'd better be root, or ntpclient will crash! */
+-		set_time(&xmttime);
++		AdjustTime(&xmttime,(skew1-skew2)/2000000,ntpc->live);
+ 	}
+ 
+ 	/* Not the ideal order for printing, but we want to be sure
+@@ -412,27 +582,30 @@
+ 	 * before we start the output, especially fflush() (which
+ 	 * could be slow).  Of course, if debug is turned on, speed
+ 	 * has gone down the drain anyway. */
+-	if (ntpc->live) {
++	/*if (ntpc->live) {
+ 		int new_freq;
+ 		new_freq = contemplate_data(arrival->coarse, (skew1-skew2)/2,
+ 			el_time+sec2u(disp), freq);
+ 		if (!debug && new_freq != freq) set_freq(new_freq);
+-	}
+-	printf("%d %.5d.%.3d  %8.1f %8.1f  %8.1f %8.1f %9d\n",
++	}*/
++	/*if (debug)
++	{
++		printf("%d %.5d.%.3d  %8.1f %8.1f  %8.1f %8.1f %9d\n",
+ 		arrival->coarse/86400, arrival->coarse%86400,
+ 		arrival->fine/4294967, el_time, st_time,
+ 		(skew1-skew2)/2, sec2u(disp), freq);
+-	fflush(stdout);
++		fflush(stdout);
++	}*/
+ 	*error = el_time-st_time;
+ 
+ 	return 0;
+ fail:
+ #ifdef ENABLE_DEBUG
+-	printf("%d %.5d.%.3d  rejected packet: %s\n",
++	syslog(LOG_CRIT, "%d %.5d.%.3d  rejected packet: %s ",
+ 		arrival->coarse/86400, arrival->coarse%86400,
+ 		arrival->fine/4294967, drop_reason);
+ #else
+-	printf("%d %.5d.%.3d  rejected packet\n",
++	syslog(LOG_CRIT, "%d %.5d.%.3d  rejected packet ",
+ 		arrival->coarse/86400, arrival->coarse%86400,
+ 		arrival->fine/4294967);
+ #endif
+@@ -449,7 +622,7 @@
+ 	}
+ 	if (ntpserver->h_length != 4) {
+ 		/* IPv4 only, until I get a chance to test IPv6 */
+-		fprintf(stderr,"oops %d\n",ntpserver->h_length);
++		syslog(LOG_CRIT,"oops %d\n",ntpserver->h_length);
+ 		exit(1);
+ 	}
+ 	memcpy(&(p->s_addr),ntpserver->h_addr_list[0],4);
+@@ -463,8 +636,8 @@
+ 	sa_rcvr.sin_addr.s_addr=htonl(interface);
+ 	sa_rcvr.sin_port=htons(port);
+ 	if(bind(usd,(struct sockaddr *) &sa_rcvr,sizeof sa_rcvr) == -1) {
+-		perror("bind");
+-		fprintf(stderr,"could not bind to udp port %d\n",port);
++		syslog(LOG_CRIT, "bind");
++		syslog(LOG_CRIT,"could not bind to udp port %d\n",port);
+ 		exit(1);
+ 	}
+ 	/* listen(usd,3); this isn't TCP; thanks Alexander! */
+@@ -479,9 +652,156 @@
+ 	memcpy(ntpc->serv_addr,&(sa_dest.sin_addr),4); /* XXX asumes IPv4 */
+ 	sa_dest.sin_port=htons(port);
+ 	if (connect(usd,(struct sockaddr *)&sa_dest,sizeof sa_dest)==-1)
+-		{perror("connect");exit(1);}
++		{syslog(LOG_CRIT, "connect");exit(1);}
+ }
++static int NewSocket(short int LocalPort,char *Server)
++{
++	int usd=socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
++	if(usd!=-1)
++	{
++		struct sockaddr_in sa;
++		memset(&sa,0,sizeof sa);
++		sa.sin_family=AF_INET;
++		sa.sin_addr.s_addr=htonl(INADDR_ANY);
++		sa.sin_port=htons(LocalPort);
++		if(bind(usd,(struct sockaddr *)&sa,sizeof sa)!=-1)
++		{
++			memset(&sa,0,sizeof sa);
++			sa.sin_family=AF_INET;
++			struct hostent *ntpserver=gethostbyname(Server);
++			if (ntpserver)
++			{
++				if(ntpserver->h_length==4)
++				{
++					sa.sin_addr.s_addr=((struct in_addr *)(ntpserver->h_addr))->s_addr;
++					sa.sin_port=htons(NTP_PORT);
++					if(connect(usd,(struct sockaddr *)&sa,sizeof sa)==-1)
++					{
++						syslog(LOG_CRIT, "connect");
++						close(usd);
++						usd=-1;
++					}
++				}
++				else
++				{
++					syslog(LOG_CRIT,"oops, server address length: %d",ntpserver->h_length);
++					close(usd);
++					usd=-1;
++				}
++			}
++			else
++			{
++				syslog(LOG_CRIT, "unknown host %s",Server);
++				close(usd);
++				usd=-1;
++			}
++		}
++		else
++		{
++			syslog(LOG_CRIT,"could not bind to udp port %d",LocalPort);
++			close(usd);
++			usd=-1;
++		}
++	}
++	else
++		syslog(LOG_CRIT,"not socket");
++	return usd; 
++}
++static void AdjustmentLoop(struct ntp_control *ntpc, short int LocalPort, char *Server)
++{
++        pid_t pid=fork();
++        if(pid<0)
++	{
++		syslog(LOG_CRIT,"could not fork");
++		return;
++        }
++        if(pid>0)
++		return;
++        pid_t sid=setsid();
++        if(sid<0)
++	{
++		syslog(LOG_CRIT,"could not setsid");
++		return;
++        }
++        close(STDIN_FILENO);
++        close(STDOUT_FILENO);
++        close(STDERR_FILENO);
++	
++	struct ntptime udp_arrival_ntp;
++	int usd=-1;
+ 
++	for(;;)
++	{
++		if(usd==-1)
++			usd=NewSocket(LocalPort,Server);
++		if(usd==-1)
++		{
++			sleep(ntpc->cycle_time);
++			continue;
++		}
++		send_packet(usd,ntpc->time_of_send);
++		fd_set fds;
++		FD_ZERO(&fds);
++		FD_SET(usd,&fds);
++		struct timeval to;
++		to.tv_sec=ntpc->cycle_time;
++		to.tv_usec=0;
++		int i=select(usd+1,&fds,NULL,NULL,&to);
++		if(i==0)
++		{
++			close(usd);
++			usd=-1;
++			syslog(LOG_CRIT, "no answer from server");
++			continue;
++		}
++		if(i==-1)
++		{
++			close(usd);
++			usd=-1;
++			if(errno!=EINTR)
++				syslog(LOG_CRIT, "select");
++			sleep(ntpc->cycle_time);
++			continue;
++		}
++		struct timespec to2;
++		to2.tv_sec=to.tv_sec;
++		to2.tv_nsec=to.tv_usec*1000;
++		struct sockaddr sa_xmit;
++		unsigned int sa_xmit_len=sizeof sa_xmit;
++		static u32 incoming_word[325];
++#define incoming ((char *) incoming_word)
++#define sizeof_incoming (sizeof incoming_word)
++		int pack_len=recvfrom(usd,incoming,sizeof_incoming,0,&sa_xmit,&sa_xmit_len);
++		if((pack_len<=0)||(((unsigned)pack_len)>sizeof_incoming))
++		{
++			close(usd);
++			usd=-1;
++			syslog(LOG_CRIT,"Ooops.  pack_len=%d",pack_len);
++			nanosleep(&to2,NULL);
++			continue;
++		}
++		if(check_source(pack_len, &sa_xmit, sa_xmit_len, ntpc)!=0)
++		{
++			close(usd);
++			usd=-1;
++			syslog(LOG_CRIT,"packet received from unknown port");
++			nanosleep(&to2,NULL);
++			continue;
++		}
++		get_packet_timestamp(usd, &udp_arrival_ntp);
++		int error=ntpc->goodness;
++		if (rfc1305print(incoming_word, &udp_arrival_ntp, ntpc, &error)!=0)
++		{
++			close(usd);
++			usd=-1;
++			syslog(LOG_CRIT,"bad packet");
++		}
++#undef incoming
++#undef sizeof_incoming
++		nanosleep(&to2,NULL);
++		continue;
++	}
++}
+ static void primary_loop(int usd, struct ntp_control *ntpc)
+ {
+ 	fd_set fds;
+@@ -494,7 +814,7 @@
+ #define incoming ((char *) incoming_word)
+ #define sizeof_incoming (sizeof incoming_word)
+ 
+-	if (debug) printf("Listening...\n");
++	/*if (debug) printf("Listening...\n");*/
+ 
+ 	probes_sent=0;
+ 	sa_xmit_len=sizeof sa_xmit;
+@@ -506,7 +826,7 @@
+ 		i=select(usd+1,&fds,NULL,NULL,&to);  /* Wait on read or error */
+ 		if ((i!=1)||(!FD_ISSET(usd,&fds))) {
+ 			if (i<0) {
+-				if (errno != EINTR) perror("select");
++				if (errno != EINTR) syslog(LOG_CRIT, "select");
+ 				continue;
+ 			}
+ 			if (to.tv_sec == 0) {
+@@ -523,15 +843,14 @@
+ 		                  &sa_xmit,&sa_xmit_len);
+ 		error = ntpc->goodness;
+ 		if (pack_len<0) {
+-			perror("recvfrom");
++			syslog(LOG_CRIT, "recvfrom");
+ 		} else if (pack_len>0 && (unsigned)pack_len<sizeof_incoming){
+ 			get_packet_timestamp(usd, &udp_arrival_ntp);
+ 			if (check_source(pack_len, &sa_xmit, sa_xmit_len, ntpc)!=0) continue;
+ 			if (rfc1305print(incoming_word, &udp_arrival_ntp, ntpc, &error)!=0) continue;
+ 			/* udp_handle(usd,incoming,pack_len,&sa_xmit,sa_xmit_len); */
+ 		} else {
+-			printf("Ooops.  pack_len=%d\n",pack_len);
+-			fflush(stdout);
++			syslog(LOG_CRIT,"Ooops.  pack_len=%d\n",pack_len);
+ 		}
+ 		/* best rollover option: specify -g, -s, and -l.
+ 		 * simpler rollover option: specify -s and -l, which
+@@ -574,7 +893,7 @@
+ 			last_fake_time=absolute;
+ 			simulated_freq = contemplate_data(absolute, skew, errorbar, freq);
+ 		} else {
+-			fprintf(stderr,"Replay input error\n");
++			syslog(LOG_CRIT,"Replay input error\n");
+ 			exit(2);
+ 		}
+ 	}
+@@ -600,6 +919,8 @@
+ int main(int argc, char *argv[]) {
+ 	int usd;  /* socket */
+ 	int c;
++	LastTime.tv_sec=0;
++	openlog("ntpclient", LOG_PID | LOG_NDELAY, LOG_DAEMON);
+ 	/* These parameters are settable from the command line
+ 	   the initializations here provide default behavior */
+ 	short int udp_local_port=0;   /* default of 0 means kernel chooses */
+@@ -609,7 +930,7 @@
+ 	ntpc.live=0;
+ 	ntpc.set_clock=0;
+ 	ntpc.probe_count=0;           /* default of 0 means loop forever */
+-	ntpc.cycle_time=600;          /* seconds */
++	ntpc.cycle_time=300;          /* seconds */
+ 	ntpc.goodness=0;
+ 	ntpc.cross_check=1;
+ 
+@@ -627,8 +948,8 @@
+ #endif
+ 			case 'f':
+ 				initial_freq = atoi(optarg);
+-				if (debug) printf("initial frequency %d\n",
+-						initial_freq);
++				/*if (debug) printf("initial frequency %d\n",
++						initial_freq);*/
+ 				set_freq(initial_freq);
+ 				break;
+ 			case 'g':
+@@ -673,16 +994,15 @@
+ 		exit(1);
+ 	}
+ 
+-	if (ntpc.set_clock && !ntpc.live && !ntpc.goodness && !ntpc.probe_count) {
+-		ntpc.probe_count = 1;
+-	}
++	if(ntpc.live)
++		ReadAdjustment();
+ 
+ 	/* respect only applicable MUST of RFC-4330 */
+ 	if (ntpc.probe_count != 1 && ntpc.cycle_time < MIN_INTERVAL) {
+ 		ntpc.cycle_time=MIN_INTERVAL;
+ 	}
+ 
+-	if (debug) {
++	/*if (debug) {
+ 		printf("Configuration:\n"
+ 		"  -c probe_count %d\n"
+ 		"  -d (debug)     %d\n"
+@@ -697,18 +1017,8 @@
+ 		ntpc.probe_count, debug, ntpc.goodness,
+ 		hostname, ntpc.cycle_time, ntpc.live, udp_local_port, min_delay,
+ 		ntpc.set_clock, ntpc.cross_check );
+-	}
+-
+-	/* Startup sequence */
+-	if ((usd=socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP))==-1)
+-		{perror ("socket");exit(1);}
+-
+-	setup_receive(usd, INADDR_ANY, udp_local_port);
+-
+-	setup_transmit(usd, hostname, NTP_PORT, &ntpc);
+-
+-	primary_loop(usd, &ntpc);
++	}*/
+ 
+-	close(usd);
++	AdjustmentLoop(&ntpc, udp_local_port, hostname);
+ 	return 0;
+ }
+diff -Naur ntpclient-2007-orig/ntpclient.h ntpclient-2007/ntpclient.h
+--- ntpclient-2007-orig/ntpclient.h	2007-12-30 22:41:04.000000000 +0100
++++ ntpclient-2007/ntpclient.h	2009-02-24 12:45:34.000000000 +0100
+@@ -6,7 +6,7 @@
+ #endif
+ 
+ /* global tuning parameter */
+-extern double min_delay;
++double min_delay = 800.0;  /* global, user-changeable, units are microseconds */
+ 
+ /* prototype for function defined in phaselock.c */
+ int contemplate_data(unsigned int absolute, double skew, double errorbar, int freq);

@@ -46,7 +46,7 @@ fi
 
 if [ X"${netdate}" != X"NO" ]; then
     echo -n "network time protocol daemon"
-    /usr/sbin/ntpd -s
+    /usr/sbin/ntpclient -l -s -h europe.pool.ntp.org
     echo "Done"
 fi
 
