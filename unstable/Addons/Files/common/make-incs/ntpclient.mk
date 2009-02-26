@@ -66,23 +66,10 @@ $(STAGEFILES_DIR)/.ntpclient_patched: $(STAGEFILES_DIR)/.ntpclient_unpacked
 	$(TOUCH) $(STAGEFILES_DIR)/.ntpclient_patched
 
 #
-# configure ntpclient
-#
-
-$(STAGEFILES_DIR)/.ntpclient_configured: $(STAGEFILES_DIR)/.ntpclient_patched
-#	($(CD) $(NTPCLIENT_DIR)
-# ; $(UCLIBC_ENV) \
-#		$(NTPCLIENT_DIR)/configure \
-#			--prefix=$(TARGET_ROOT)/usr \
-#			--host=$(TARGET) \
-#			--with-privsep-user=root)
-	$(TOUCH) $(STAGEFILES_DIR)/.ntpclient_configured
-
-#
 # compile ntpclient
 #
 
-$(STAGEFILES_DIR)/.ntpclient_compiled: $(STAGEFILES_DIR)/.ntpclient_configured
+$(STAGEFILES_DIR)/.ntpclient_compiled: $(STAGEFILES_DIR)/.ntpclient_patched
 	$(UCLIBC_ENV) $(MAKE) \
 		-C $(NTPCLIENT_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.ntpclient_compiled
@@ -113,7 +100,6 @@ clean-ntpclient:
 distclean-ntpclient:
 	-$(RM) -f $(STAGEFILES_DIR)/.ntpclient_unpacked
 	-$(RM) -f $(STAGEFILES_DIR)/.ntpclient_patched
-	-$(RM) -f $(STAGEFILES_DIR)/.ntpclient_configured
 	-$(RM) -f $(STAGEFILES_DIR)/.ntpclient_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.ntpclient_installed
 ifeq ($(DISTCLEAN_DLFILE),y)
