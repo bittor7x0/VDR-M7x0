@@ -1,0 +1,57 @@
+diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
+--- VDR-NG-orig/eit.c	2009-02-26 19:20:42.000000000 +0100
++++ VDR-NG/eit.c	2009-02-26 19:19:38.000000000 +0100
+@@ -328,7 +328,7 @@
+   time_t loctim = time(NULL);
+ 
+   int diff = abs(sattim - loctim);
+-  if (diff > 2) {
++  if (diff > 5) {
+      mutex.Lock();
+      if (abs(diff - lastDiff) < 3) {
+         isyslog("System Time = %s (%ld)", *TimeToString(loctim), loctim);
+diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
+--- VDR-NG-orig/vdr.c	2009-02-26 18:26:19.000000000 +0100
++++ VDR-NG/vdr.c	2009-02-26 19:39:51.000000000 +0100
+@@ -201,6 +201,7 @@
+ 
+ int main(int argc, char *argv[])
+ {
++	int TimeAdjust=0;
+   // Save terminal settings:
+ 
+   struct termios savedTm;
+@@ -313,6 +314,8 @@
+                 	break;
+ 		      }else{
+ 		        setIaMode(1);
++			if((!strcmp(optarg,"powerfail"))||(!strcmp(optarg,"unknown")))
++				TimeAdjust=1;
+ 			break;
+ 			}
+ 		    }
+@@ -727,6 +730,24 @@
+ 
+   if (!cDevice::WaitForAllDevicesReady(DEVICEREADYTIMEOUT))
+      dsyslog("not all devices ready after %d seconds", DEVICEREADYTIMEOUT);
++	if(TimeAdjust)
++	{
++		isyslog("Set time needed");
++		if((Setup.SetSystemTime)&&(Setup.TimeTransponder))
++		{
++			cChannel *channel=Channels.First();
++			while(channel)
++			{
++				if((!channel->GroupSep())&&(Setup.TimeSource==channel->Source())&&(ISTRANSPONDER(channel->Transponder(),Setup.TimeTransponder)))
++				{
++					Setup.CurrentChannel=channel->Number();
++					break;
++			        }
++			        channel=(cChannel *)channel->Next();
++			}
++		}
++	}
++	else
+   if (Setup.InitialChannel > 0)
+      Setup.CurrentChannel = Setup.InitialChannel;
+   if (Setup.InitialVolume >= 0)
