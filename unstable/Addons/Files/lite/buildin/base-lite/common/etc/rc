@@ -28,7 +28,8 @@ ifconfig lo 127.0.0.1
 echo "Done"
 
 if [ X"${lircd_flags}" != X"NO" ]; then
-    echo "lircd daemon";		lircd ${lircd_flags}
+    echo "lircd daemon"
+    lircd ${lircd_flags}
 fi
 
 [ -f /etc/rc.local ] && ash /etc/rc.local

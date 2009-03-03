@@ -46,12 +46,13 @@ fi
 
 if [ X"${netdate}" != X"NO" ]; then
     echo -n "network time protocol daemon"
-    /usr/sbin/ntpclient -l -s -h europe.pool.ntp.org
+    /usr/sbin/ntpclient -l -s -h ${netdate_server}
     echo "Done"
 fi
 
 if [ X"${lircd_flags}" != X"NO" ]; then
-    echo "lircd daemon";		lircd ${lircd_flags}
+    echo "lircd daemon"
+    lircd ${lircd_flags}
 fi
 
 [ -f /etc/rc.local ] && ash /etc/rc.local
