@@ -1,0 +1,66 @@
+diff -Naur dvbmon-0.0.1-orig/i18n.c dvbmon-0.0.1/i18n.c
+--- dvbmon-0.0.1-orig/i18n.c	2009-03-02 14:57:40.000000000 +0100
++++ dvbmon-0.0.1/i18n.c	2009-03-03 20:58:47.000000000 +0100
+@@ -19,7 +19,7 @@
+     "", // Norsk
+     "", // FI
+     "", // Polski
+-    "", // Español
++    "Monitor DVB", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -41,7 +41,7 @@
+     "", // Norsk
+     "Kanavahaku DVB-transpondereille",// FI
+     "", // Polski
+-    "Buscar transponders de canales DVB", // Español
++    "Monitor de señal para canales DVB", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -63,7 +63,7 @@
+     "", // Norsk
+     "", // FI
+     "", // Polski
+-    "", // Español
++    "Aceptar", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -85,7 +85,7 @@
+     "", // Norsk
+     "", // FI
+     "", // Polski
+-    "", // Español
++    "Freq+", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -107,7 +107,7 @@
+     "", // Norsk
+     "", // FI
+     "", // Polski
+-    "", // Español
++    "Freq-", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -129,7 +129,7 @@
+     "", // Norsk
+     "", // FI
+     "", // Polski
+-    "", // Español
++    "Auto", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste
+@@ -151,7 +151,7 @@
+     "", // Norsk
+     "", // FI
+     "", // Polski
+-    "", // Español
++    "Manualmente", // Español
+     "", // ÅëëçíéêÜ (Greek)
+     "", // Svenska
+     "", // Romaneste

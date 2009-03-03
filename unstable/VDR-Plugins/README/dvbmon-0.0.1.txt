@@ -1,0 +1,12 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Hannes Brunner
+
+Project's homepage:          http://www.open7x0.org/arena
+
+Latest version available at: http://www.open7x0.org/arena
+
+See the file COPYING for license information.
+
+Description:
+Monitor signal of DVB Channels.
