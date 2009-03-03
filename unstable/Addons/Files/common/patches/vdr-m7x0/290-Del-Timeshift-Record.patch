@@ -119,7 +119,15 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditBoolItem(tr("Setup.Recording$Use VPS"),                   &data.UseVps));
    Add(new cMenuEditIntItem( tr("Setup.Recording$VPS margin (s)"),            &data.VpsMargin, 0));
    Add(new cMenuEditBoolItem(tr("Setup.Recording$Record Dolby Digital"),      &data.UseDolbyInRecordings));
-@@ -4577,6 +4582,56 @@
+@@ -4485,6 +4490,7 @@
+ 
+ cRecordControl *cRecordControls::GetRecordControl(const char *FileName)
+ {
++ if(FileName)
+   for (int i = 0; i < MAXRECORDCONTROLS; i++) {
+       if (RecordControls[i] && strcmp(RecordControls[i]->FileName(), FileName) == 0)
+          return RecordControls[i];
+@@ -4577,6 +4583,56 @@
       currentReplayControl = NULL;
  }
  
@@ -176,7 +184,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
  void cReplayControl::SetRecording(const char *FileName, const char *Title)
  {
    free(fileName);
-@@ -4989,7 +5044,12 @@
+@@ -4989,7 +5045,12 @@
                             else
                                Show();
                             break;
