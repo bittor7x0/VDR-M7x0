@@ -1,0 +1,59 @@
+diff -Naurx .svn VDR-NG-orig/device.c VDR-NG/device.c
+--- VDR-NG-orig/device.c	2009-03-05 21:00:54.000000000 +0100
++++ VDR-NG/device.c	2009-03-05 21:08:21.000000000 +0100
+@@ -1076,7 +1076,8 @@
+   mute = !mute;
+   //XXX why is it necessary to use different sequences???
+   if (mute) {
+-     SetVolume(0, true);
++     SetVolumeDevice(0);
++     cStatus::MsgSetVolume(0, true);
+      Audios.MuteAudio(mute); // Mute external audio after analog audio
+      }
+   else {
+@@ -1103,13 +1104,15 @@
+ {
+   int OldVolume = volume;
+   volume = min(max(Absolute ? Volume : volume + Volume, 0), MAXVOLUME);
+-  SetVolumeDevice(volume);
+   Absolute |= mute;
+   cStatus::MsgSetVolume(Absolute ? volume : volume - OldVolume, Absolute);
+-  if (volume > 0) {
+-     mute = false;
+-     Audios.MuteAudio(mute);
+-     }
++  if(!(mute && volume<OldVolume)) { // effectively change volume
++    SetVolumeDevice(volume);
++    if (mute) {
++       mute = false;
++       Audios.MuteAudio(mute);
++       }
++    }  
+ }
+ 
+ void cDevice::ClrAvailableTracks(bool DescriptionsOnly, bool IdsOnly)
+diff -Naurx .svn VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
+--- VDR-NG-orig/dvbdevice.c	2009-03-05 21:00:54.000000000 +0100
++++ VDR-NG/dvbdevice.c	2009-03-05 21:07:42.000000000 +0100
+@@ -2680,11 +2680,13 @@
+ void cDvbDevice::SetTvSettings(bool settv){
+     dsyslog("DEBUG: set tv settings-> %d", settv);
+     if(settv){
++      Audios.MuteAudio(IsMute());
+       SetVolumeDevice(IsMute() ? 0 : CurrentVolume());
+       SetTvMode(Setup.TvMode);
+       SetVCRMode(Setup.VCRMode);
+       SetVideoFormat(eVideoFormat(Setup.VideoFormat));
+     }else{
++      Audios.MuteAudio(true);
+       int avs = open("/dev/avswitch", O_WRONLY);
+       if(avs== -1)
+         esyslog("m7x0 can not open /dev/avswitch");
+@@ -2693,7 +2695,6 @@
+       close(avs);
+     }
+ }
+-
+ //m7x0 TvMode fbas svideo
+ void cDvbDevice::SetTvMode(bool tvmode){
+     dsyslog("DEBUG: set tv mode -> %d", tvmode);
