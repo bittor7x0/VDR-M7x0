@@ -1,6 +1,6 @@
 diff -Naurx .svn VDR-NG-orig/device.c VDR-NG/device.c
---- VDR-NG-orig/device.c	2009-03-05 21:00:54.000000000 +0100
-+++ VDR-NG/device.c	2009-03-05 21:08:21.000000000 +0100
+--- VDR-NG-orig/device.c	2009-03-06 16:43:02.000000000 +0100
++++ VDR-NG/device.c	2009-03-06 16:31:22.000000000 +0100
 @@ -1076,7 +1076,8 @@
    mute = !mute;
    //XXX why is it necessary to use different sequences???
@@ -33,9 +33,17 @@ diff -Naurx .svn VDR-NG-orig/device.c VDR-NG/device.c
  
  void cDevice::ClrAvailableTracks(bool DescriptionsOnly, bool IdsOnly)
 diff -Naurx .svn VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
---- VDR-NG-orig/dvbdevice.c	2009-03-05 21:00:54.000000000 +0100
-+++ VDR-NG/dvbdevice.c	2009-03-05 21:07:42.000000000 +0100
-@@ -2680,11 +2680,13 @@
+--- VDR-NG-orig/dvbdevice.c	2009-03-06 16:43:09.000000000 +0100
++++ VDR-NG/dvbdevice.c	2009-03-06 16:34:15.000000000 +0100
+@@ -28,6 +28,7 @@
+ #include "receiver.h"
+ #include "status.h"
+ #include "transfer.h"
++#include "audio.h"
+ 
+ #define DO_REC_AND_PLAY_ON_PRIMARY_DEVICE 1
+ #define DO_MULTIPLE_RECORDINGS 1
+@@ -2680,11 +2681,13 @@
  void cDvbDevice::SetTvSettings(bool settv){
      dsyslog("DEBUG: set tv settings-> %d", settv);
      if(settv){
@@ -49,11 +57,3 @@ diff -Naurx .svn VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
        int avs = open("/dev/avswitch", O_WRONLY);
        if(avs== -1)
          esyslog("m7x0 can not open /dev/avswitch");
-@@ -2693,7 +2695,6 @@
-       close(avs);
-     }
- }
--
- //m7x0 TvMode fbas svideo
- void cDvbDevice::SetTvMode(bool tvmode){
-     dsyslog("DEBUG: set tv mode -> %d", tvmode);
