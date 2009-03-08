@@ -1,0 +1,12 @@
+diff -Naur uclibc_build_env_orig/rootfs-file-lists/lirc.lst uclibc_build_env/rootfs-file-lists/lirc.lst
+--- uclibc_build_env_orig/rootfs-file-lists/lirc.lst	2009-03-08 20:59:40.000000000 +0100
++++ uclibc_build_env/rootfs-file-lists/lirc.lst	2009-03-08 21:01:52.000000000 +0100
+@@ -1,2 +1,8 @@
+ usr/sbin/lircd        usr/sbin/lircd        f 755 0 0 - - - - -
+ usr/sbin/lircd        -                     s   - - - - - - - -
++usr/lib/liblirc_client.so.0.0.0 usr/lib/liblirc_client.so.0.0.0 f 755 0 0 - - - - -
++usr/lib/liblirc_client.so.0.0.0 -                     s   - - - - - - - -
++usr/lib/liblirc_client.so.0     liblirc_client.so.0.0.0         l 777 0 0 - - - - -
++usr/lib/liblirc_client.so       liblirc_client.so.0.0.0         l 777 0 0 - - - - -
++usr/bin/irexec    usr/bin/irexec    f 755 0 0 - - - - -
++usr/bin/irexec    -                    s   - - - - - - - -

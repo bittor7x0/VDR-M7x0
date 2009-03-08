@@ -1,7 +1,0 @@
-usr/lib/liblirc_client.so.0.0.0 usr/lib/liblirc_client.so.0.0.0 f 755 0 0 - - - - -
-usr/lib/liblirc_client.so.0.0.0 -                     s   - - - - - - - -
-usr/lib/liblirc_client.so.0	liblirc_client.so.0.0.0         l 777 0 0 - - - - -
-usr/lib/liblirc_client.so	liblirc_client.so.0.0.0         l 777 0 0 - - - - -
-usr/bin/irexec    usr/bin/irexec    f 755 0 0 - - - - -
-usr/bin/irexec    -                    s   - - - - - - - -
-
