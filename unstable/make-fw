@@ -57,10 +57,10 @@ fi
 if [[ -d "$vdr_fw_orig/.svn" ]]
 then
 	echo "Update VDR-o7o original"
-	svn update -q -r 388 "$vdr_fw_orig"
+	svn update -q -r 400 "$vdr_fw_orig"
 else
 	echo "Checkout VDR-o7o original"
-	svn checkout -q -r 388 "$svn_o7o" "$vdr_fw_orig"
+	svn checkout -q -r 400 "$svn_o7o" "$vdr_fw_orig"
 fi
 
 

@@ -49,26 +49,25 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_CIFS_POSIX is not set
  # CONFIG_SMB_FS is not set
 diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
---- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2008-08-31 15:46:46.000000000 +0200
-+++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2008-09-06 11:19:57.000000000 +0200
-@@ -56,16 +56,6 @@
- CLEAN_RULES += clean-siemens-linux-kernel
+--- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	Thu Jan 08 10:52:31 2009
++++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	Mon Mar 09 18:27:41 2009
+@@ -57,15 +57,12 @@
  DISTCLEAN_RULES += distclean-siemens-linux-kernel
  
--SIEMENS-LINUX-KERNEL_MODLST := \
--   lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o 
--
--SIEMENS-LINUX-KERNEL_DIRLST := \
--   lib/modules \
--   lib/modules/2.4.21-xfs \
--   lib/modules/2.4.21-xfs/kernel \
+ SIEMENS-LINUX-KERNEL_MODLST := \
+-   lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
+    lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o \
+    lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o 
+ SIEMENS-LINUX-KERNEL_DIRLST := \
+    lib/modules \
+    lib/modules/2.4.21-xfs \
+    lib/modules/2.4.21-xfs/kernel \
 -   lib/modules/2.4.21-xfs/kernel/fs \
--   lib/modules/2.4.21-xfs/kernel/fs/cifs 
--
- #
- # unpack siemens linux kernel
- #
-@@ -73,7 +63,6 @@
+-   lib/modules/2.4.21-xfs/kernel/fs/cifs \
+    lib/modules/2.4.21-xfs/kernel/drivers \
+    lib/modules/2.4.21-xfs/kernel/drivers/usb \
+    lib/modules/2.4.21-xfs/kernel/drivers/usb/host     
+@@ -76,7 +73,6 @@
  $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked: \
        $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/*.patch) \
        $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_M7X0_TYPE)/*.patch) \
@@ -76,7 +75,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
        $$(SIEMENS-LINUX-KERNEL_DEPS) $(SIEMENS-LINUX-KERNEL_CONFIG)
  	-$(RM) -rf $(SIEMENS-LINUX-KERNEL_DIR)
  	$(BZCAT) $(SIEMENS-GPL-SRC_DLFILE) | $(TAR) -C $(BUILD_DIR) \
-@@ -89,9 +78,6 @@
+@@ -92,9 +88,6 @@
  
  $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_patched: \
        $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked
@@ -86,24 +85,3 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  # Needed patches to get kernel compiling
  	$(PATCHES_DIR)/patch-kernel.sh $(SIEMENS-LINUX-KERNEL_DIR) \
  		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common
-@@ -199,19 +185,9 @@
- # generate rootfs file list
- #
- 
--siemens-linux-kernel_lst_dir = \
--  $(ECHO) "$(1)       -                 d 755 0 0 - - - - -";
--
--siemens-linux-kernel_lst_mod = \
--  $(ECHO) "$(1) $(M7X0_KERNEL_DIR)/$(1) f 755 0 0 - - - - -";
--
- $(FILELIST_DIR)/siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst: \
-       $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed
--	($(foreach dir,$(SIEMENS-LINUX-KERNEL_DIRLST),\
--		$(call siemens-linux-kernel_lst_dir,$(dir))) \
--	 $(foreach mod,$(SIEMENS-LINUX-KERNEL_MODLST),\
--		$(call siemens-linux-kernel_lst_mod,$(mod)))) \
--			> $(FILELIST_DIR)/siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst
-+	$(TOUCH) $(FILELIST_DIR)/siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst
- 
- .PHONY: clean-siemens-linux-kernel distclean-siemens-linux-kernel
- 
