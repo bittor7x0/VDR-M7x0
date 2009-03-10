@@ -32,165 +32,331 @@
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
+channelList channels;
+timerList_t timers;
+
+void printTimers(int channelNum, time_t startTime, int duration) {
+	int begin=0;
+	int end=0;
+	time_t endTime=startTime+duration;
+	boolean_t isStart, isEnd, anyMatch;
+	anyMatch=BT_FALSE;
+	if ( (timers.length>0) && (channelNum>0) && (startTime>0) && (duration>0) ) {
+		int i;
+		for (i=0;i<timers.length;i++) {
+			if (timers.entry[i].channelNum==channelNum) {
+				begin=timers.entry[i].start-startTime; //margen no cubierto al inicio
+				end  =endTime-timers.entry[i].stop;    //margen no cubierto al final
+				isStart=boolean(begin>=0);
+				isEnd=boolean(end>=0);
+				if ( ((begin<=0) && (end<=0)) 
+				|| ((begin<0) && (timers.entry[i].stop>startTime))
+				|| ((timers.entry[i].start<endTime) && (end<0)) ) {
+					if(!anyMatch){
+						anyMatch=BT_TRUE;
+						io_printf(out,"\n");
+					}
+					begin=(begin<=0) ? 0 : 100 * begin / duration;
+					end=  (end<=0)   ? 0 : 100 * end / duration;
+					io_printf(out,
+"							<div class=\"timer\" title=\"%s\">\n"
+"								<div class=\"progressbar\">\n"
+"									<div class=\"pb%s%s%s\" style=\"left:%d%%;right:%d%%;\">"
+										"&nbsp;"
+									"</div>\n"
+"								</div>\n"
+					,timers.entry[i].title
+					,(isStart) ? " pbstart":"",(isEnd) ? " pbend":""
+					,(timers.entry[i].active) ? " pbenabled":" pbdisabled"
+					,begin,end
+					);
+					io_printf(out,
+"								<a class=\"ui-icon ui-icon-edit\"href=\"timers.kl1?a=%d&timer=%s&timerId=%d\">%s</a>\n"
+"							</div>\n"
+					,PA_EDIT,timers.entry[i].timerStr,timers.entry[i].ID,tr("timerEdit")
+					);
+				}
+			}
+		}
+	}
+	io_printf(out,(anyMatch)?
+"\n						":
+"&nbsp;"
+	);
+}
+
 #ifdef DEBUG
 dbg_program_kl1(void) { dbg("program.kl1"); }
 #endif
 
 %><%
-#ifdef DEBUG
-dbg_program_kl1();
-#endif
+	#ifdef DEBUG
+	dbg_program_kl1();
+	#endif
 
-const char isTimerStr[3][3]={""," t"," T"};
-int isTimerInt=0;
+	int i=0;
+	int channelNum=0;
 
-int i=0;
-int channelNum=0;
+	vars_t *args = request_get_args(request);
+	channelNum=vars_get_value_i(args,"chan");
 
-vars_t *args = request_get_args(request);
-channelNum=vars_get_value_i(args,"chan");
+	config(session, request);
+	currentPage=PN_PROGRAMS;
+	printXhtmlHead(out,tr("schedule"),NULL);
+	printMenu(out);
 
-currentPage=PN_PROGRAMS;
-%>
+	io_printf(out,
+"		<div id=\"main\" class=\"content\">\n"
+	);
+	getChannelList(&channels,SF_NONE,SD_NONE);
+	getTimerList(&timers,&channels,SF_START,SD_ASC);
 
-<%@ include ../../components/pre-content.kl1 %>
+	boolean_t addTimer;
+	boolean_t isTv;
+	const char * Schedule=tr("schedule");
+	const char * Record=tr("record");
+	if (channelNum<1) {
+		nowNextList nnl;
+		getNowNextList(&nnl,&channels);
 
-<div class="content">
-<%
-channelList channels;
-getChannelList(&channels);
-
-int max_timers;
-timerEntry * timers;
-timers=getTimerList(&channels,&max_timers,0,0);
-
-if (channelNum<1) {
-	nowNextList nnl;
-	getNowNextList(&nnl,&channels);
-
-	io_printf(out,"<h2>%s</h2>\n",tr("Now on TV"));
-	io_printf(out,"<table class=\"list1\">\n");
-	
-	io_printf(out,"<tr><th>%s</th><th colspan=\"2\">%s</th><th colspan=\"2\">%s</th></tr>\n",tr("channel"),tr("Now"),tr("Next"));
-	nowNextEntry *nne;
-	channelEntry *ce;
-	eventEntry *ee;
-	char newt[256]="";
-	struct tm *timeptr;
-	int n;
-	if (nnl.length>0) {
-		for (i=0;i<nnl.length;i++) {
-			nne=&nnl.entry[i];
-			ce=&channels.entry[i];
-			io_printf(out,"<tr>\n\t<td><a class=\"strong\" href=\"program.kl1?chan=%d\">%s</a></td>\n",ce->channelNum,ce->channelName);
-			for (n=0;n<2;n++){
-				ee=&nne->event[n];
-				if (ee->time>0) {
-					long int end_time = ee->time+ee->duration;
-					make_timer(newt,1,ce->channelNum,ee->time,end_time,50,99,ee->title);
-					isTimerInt=checkForTimer(timers,max_timers,ce->channelNum,ee->time,0,ee->duration);
-					timeptr = localtime(&ee->time);
-					io_printf(out,"\n\t<td><nobr><b>%02d:%02d%s</b></nobr></td>",timeptr->tm_hour,timeptr->tm_min,isTimerStr[isTimerInt]);
-					io_printf(out,"\n\t<td><div class=\"box_right\">");
-					const char * record=tr("record");
-					io_printf(out,"<a href=\"timers.kl1?a=add&timer=%s\" title=\"%s\"><img src=\"/img/rec16.png\" alt=\"%s\" /></a>",newt,record,record);
-					io_printf(out,"</div>");
-					char * eT=io_printf_infobox(out,ee);
-					io_printf(out,"%s</td>\n",eT);
-					free(eT);
-				} else {
-					free(encode_printf(out,"<td>&nbsp;</td><td>%s</td>",ee->title));
+		io_printf(out,
+"			<h2>%s</h2>\n"
+			,tr("nowOnTv")
+		);
+		if (nnl.length>0) {
+			nowNextEntry *nne;
+			channelEntry *ce;
+			eventEntry *ee;
+			struct tm *timeptr;
+			int pcbegin;
+			int pcend;
+			const char *LiveStream=tr("liveStream");
+			io_printf(out,
+"			<table id=\"programs\" class=\"list1\">\n"
+"				<col class=\"channel\"/>\n"
+"				<col class=\"space\"/>\n"
+"				<colgroup id=\"colNow\" class=\"nowNext\">\n"
+"					<col class=\"hour\"/>\n"
+"					<col class=\"timers\"/>\n"
+"					<col class=\"pgName\"/>\n"
+"				</colgroup>\n"
+"				<col class=\"space\"/>\n"
+"				<colgroup id=\"colNext\" class=\"nowNext\">\n"
+"					<col class=\"hour\"/>\n"
+"					<col class=\"timers\"/>\n"
+"					<col class=\"pgName\"/>\n"
+"				</colgroup>\n"
+"				<thead>\n"
+"					<tr>"
+						"<th>%s</th>"
+						"<td class=\"space\"></td>"
+						"<th colspan=\"3\">%s</th>"
+						"<td class=\"space\"></td>"
+						"<th colspan=\"3\">%s</th>"
+					"</tr>\n"
+"				</thead>\n"
+"				<tbody>\n"
+					,tr("channel")
+					,tr("now")
+					,tr("next")
+			);
+			for (i=0;i<nnl.length;i++) {
+				nne=&nnl.entry[i];
+				ce=&channels.entry[i];
+				isTv=boolean(ce->vpid>1);
+				io_printf(out,
+"					<tr>\n"
+"						<td class=\"channel\">\n"
+"							<div class=\"boxRight\">"
+								"<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
+							"</div>\n"
+"							<a class=\"channel\" href=\"program.kl1?chan=%d\" title=\"%s\">%s</a>\n"
+"						</td>\n"
+					,(isTv)?"ui-icon-tv":"ui-icon-radio",ce->channelNum,LiveStream,LiveStream
+					,ce->channelNum,Schedule,ce->channelName
+				);
+				int n;
+				for (n=0;n<2;n++){
+					ee=&nne->event[n];
+					if (ee->time>0) {
+						long int end_time = ee->time+ee->duration;
+						char *timerStr=NULL;
+						addTimer=makeTimerStr(&timerStr,1,ce->channelNum,ee->time,end_time,50,99,ee->title);
+						timeptr = localtime(&ee->time);
+						io_printf(out,
+"						<td class=\"space\"></td>\n"
+"						<td class=\"hour\">%02d:%02d</td>\n"
+"						<td class=\"timers\">"
+						,timeptr->tm_hour,timeptr->tm_min
+						);
+						printTimers(ce->channelNum,ee->time,ee->duration);
+						io_printf(out,
+						"</td>\n"
+"						<td class=\"title\">\n"
+"							<div class=\"boxRight\">\n"
+"								<a class=\"recIt\" href=\"timers.kl1?a=%d&timer=%s\" title=\"%s\">\n"
+"									<img src=\"/img/rec16.png\" alt=\"%s\" />\n"
+"								</a>\n"
+"							</div>\n"
+"							<div class=\"boxRight infoLeft\">\n"
+							,PA_EDIT,timerStr,Record
+							,Record
+						);
+						printInfobox(out,8,ee);
+						io_printf(out,
+"							</div>\n"
+"							<div class=\"title\">%s</div>\n"
+"						</td>\n",(ee->title)?ee->title:"&nbsp;"
+						);
+						free(timerStr);
+					} else {
+						io_printf(out,
+"						<td class=\"space\"></td>\n"
+"						<td>&nbsp;</td>\n"
+"						<td class=\"timers\">&nbsp;</td>\n"
+"						<td class=\"title\">%s</td>\n",(ee->title)?ee->title:"&nbsp;"
+						);
+					}
 				}
+				io_printf(out,
+"					</tr>\n"
+				);
 			}
-			io_printf(out,"\n</tr>\n");
+			io_printf(out,
+"				</tbody>\n"   
+"			</table>\n"
+			);
+		} else {
+			io_printf(out,
+"			<div>%s</div>",tr("warnNoEPG"));
+
 		}
+		freeNNL(&nnl);
+		
 	} else {
-		io_printf(out,"<p>%s</p>",i18n[14][langID]);		
-	}
-	freeNNL(&nnl);
-	
-} else {
 
-// TODO generalizar nowNextList a eventList con numero de eventos por canal uno de {1=now,2={now,next},0=todos}
-// TODO chanelNum coincide siempre con idx+1?
-// NEU ************************************************************************	
-	char cmd[20]="";
-	char ret_code[10]="";
-	char * data;
-	char * p;
-	char * D=NULL;
-	char * S=NULL;
-	char * T=NULL;
-	//TODO_KILLE space for trailinng 0 in datum_str and now.
-	long int now_time=0;
-	long int next_time=0;
-	int duration=0;
-	char newt[256]="";
-	int previous_yday=-1;
+		// TODO generalizar nowNextList a eventList con numero de eventos por canal uno de {1=now,2={now,next},0=todos}
+		// TODO chanelNum coincide siempre con idx+1?
+		char *cmd;
+		char * data;
+		char * p;
+		eventEntry ee;
+		time_t next_time=0;
+		int previous_yday=-1;
+		int pcbegin;
+		int pcend;
 
-	sprintf(cmd,"LSTE %d\r",channelNum);
-	write_svdrp(cmd);
-	data=read_svdrp();
-	io_printf(out,"<h2>%s %s &raquo;%s&laquo;</h2>\n<table class=\"list1\">\n<tr><th>%s</th><th>%s</th><th>&nbsp;</th></tr>\n",tr("Schedule"),tr("for"),channels.entry[channelNum-1].channelName,tr("Time"),tr("program")); 
-	for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-		parse_ret_code(p,ret_code);
-		if (!strcmp(ret_code,"550")) {
-			io_printf(out,"<p>%s</p>",i18n[14][langID]);
-			return;
-		} else if (!strcmp(ret_code,"215-D")) {
-			D=strdup(p+6); //TODO Necesario duplicar?
-		} else if (!strcmp(ret_code,"215-S")) {
-			S=strdup(p+6);
-		} else if (!strcmp(ret_code,"215-T")) {
-			T=strdup(p+6);
-		} else if (!strcmp(ret_code,"215-E")) {
-			parse_215E(p+6,NULL,&now_time,&duration,NULL,NULL);
-			next_time=now_time+duration;
-		} else if (!strcmp(ret_code,"215-e")) {
-			if (now_time>0) {
-				struct tm timeptr=*localtime(&now_time);
-				isTimerInt=checkForTimer(timers,max_timers,channelNum,now_time,next_time,0);
-				make_timer(newt,1,channelNum,now_time,next_time,50,99,T);
-				if (previous_yday!=timeptr.tm_yday) {
-					previous_yday=timeptr.tm_yday;
-					io_printf(out,"<tr class=\"anotherday\"><td colspan=\"3\">%s %s</td></tr>\n",weekdays[langID][timeptr.tm_wday],formatDate(&timeptr,0));
+		initEE(&ee);
+		asprintf(&cmd,"LSTE %d\r",channelNum);
+		write_svdrp(cmd);
+		free(cmd);
+		data=read_svdrp();
+		io_printf(out,
+"			<h2>%s %s &raquo;%s&laquo;</h2>\n"
+"			<table id=\"programs\" class=\"list1\">\n"
+"				<col class=\"hour\"/>\n"
+"				<col class=\"timers\"/>\n"
+"				<col class=\"pgName\"/>\n"
+"				<thead>\n"
+"					<tr>"
+						"<th>%s</th>"
+						"<th class=\"timers\">%s</th>"
+						"<th>%s</th>"
+					"</tr>\n"
+"				</thead>\n"
+"				<tbody>\n"
+					,tr("schedule"),tr("for"),channels.entry[channelNum-1].channelName
+					,tr("time")
+					,tr("timers.")
+					,tr("program")
+		); 
+
+		const char * CreateTimer=tr("timerCreate");
+		int retCode;
+		for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+			retCode=strtol(p,&p,10);
+			if (retCode==550) {
+				io_printf(out,
+"			<div class=\"alert\">%s</div>",tr("warnNoEPG")
+				);
+				freeEE(&ee);
+				break;
+			} else if (retCode==215){
+				p++;
+				if (p[0]=='D') {
+					ee.desc=strdup(p+2);
+				} else if (p[0]=='S') {
+					ee.shortdesc=strdup(p+2);
+				} else if (p[0]=='T') {
+					ee.title=strdup(p+2);
+				} else if (p[0]=='E') {
+					parse_215E(p+2,NULL,&ee.time,&ee.duration,NULL,NULL);
+					next_time=ee.time+ee.duration;
+				} else if (p[0]=='e') {
+					if (ee.time>0) {
+						struct tm timeptr=*localtime(&ee.time);
+						char *timerStr=NULL;
+						addTimer=makeTimerStr(&timerStr,1,channelNum,ee.time,next_time,50,99,ee.title);
+						if (previous_yday!=timeptr.tm_yday) {
+							previous_yday=timeptr.tm_yday;
+							io_printf(out,
+"					<tr class=\"anotherDay\">"
+						"<td colspan=\"3\">%s %s</td>"
+					"</tr>\n"	,weekdays[langID][timeptr.tm_wday],formatDate(&timeptr,0)
+							);
+						}
+						io_printf(out,
+"					<tr>\n"
+"						<td class=\"hour\">%02d:%02d</td>\n"
+"						<td class=\"timers\">"
+							,timeptr.tm_hour,timeptr.tm_min
+						);
+						printTimers(channelNum,ee.time,ee.duration);
+						io_printf(out,
+						"</td>\n"
+						);
+						io_printf(out,
+"						<td>\n"
+"							<div class=\"boxRight\">\n"
+"								<a href=\"timers.kl1?a=%d&timer=%s\" title=\"%s\">\n"
+"									<img src=\"/img/rec16.png\" alt=\"%s\" />\n"
+"								</a>\n"
+"							</div>\n"
+"							<div class=\"boxRight infoLeft\">\n"
+							,PA_EDIT,timerStr,Record
+							,Record
+						);
+						printInfobox(out,7,&ee);
+						io_printf(out,
+"							</div>\n"
+"							<div class=\"title\">%s</div>\n"
+"						</td>\n"
+"					</tr>\n",(ee.title)?ee.title:""
+						);
+						free(timerStr);
+					} 
+					freeEE(&ee);
 				}
-				io_printf(out,"<tr><td><b>%02d:%02d%s</b></td><td>%s</td><td style=\"width:70px;\">\n",timeptr.tm_hour,timeptr.tm_min,isTimerStr[isTimerInt],T);
-				const char * createTimer=tr("Create timer");
-				io_printf(out,"<div class=\"box_right\"><a href=\"timers.kl1?a=edit&timer=%s\" title=\"%s\"><img src=\"/img/timer16.png\" alt=\"%s\" /></a></div>\n",newt,createTimer,createTimer);
-				io_printf(out,"<div class=\"box_right\"><a href=\"timers.kl1?a=add&timer=%s\" title=\"%s\"><img src=\"/img/rec16.png\" alt=\"%s\" /></a></div>\n",newt,tr("record"),tr("record"));
-				io_printf(out,"<div class=\"box_right\">");
-				io_printf(out,"<div class=\"infobox\">&nbsp;<img src=\"/img/info16.png\" alt=\"%s\" /><div class=\"shadow\"><div class=\"info\">\n",tr("more infos"));
-				io_printf(out,"  <b>%s</b><br />",T);
-				free(encode_printf(out,"  %s<br />\n",S));
-				io_printf(out,"  %s <b>%02d:%02d</b>",tr("from"),timeptr.tm_hour,timeptr.tm_min);
-				timeptr=*localtime(&next_time);
-				io_printf(out," %s <b>%02d:%02d</b> (%s: %s %d %s)  <p>",tr("to"),timeptr.tm_hour,timeptr.tm_min,tr("runtime"),tr("approx."),duration/60,tr("minutes"));
-				free(encode_printf(out,"%s",D));
-				io_printf(out,"</p></div></div></div>");
-				io_printf(out,"</div></td></tr>\n");
-			} else if (!strcmp(ret_code,"250")) {
-				io_printf(out,"<tr><td>&nbsp;</td><td>%s</td><td>&nbsp;</td></tr>\n",T);
-			} else {
-				dbg("Unknown answer from svdrpd.");
 			}
-			free(D); free(S); free(T);
-			D=NULL;  S=NULL;  T=NULL;
 		}
-	} 
-	free(data);
-
-// NEU ************************************************************************	
-	
-}
-
-freeCL(&channels);
-close_svdrp();
+		freeEE(&ee);
+		free(data);
+		io_printf(out,
+"				</tbody>\n"   
+"			</table>\n"
+		);
+		if (retCode==550) {
+			io_printf(out,
+"			<div class=\"alert\">%s</div>",tr("warnNoEPG")
+			);
+		}
+	}
+	freeTL(&timers);
+	freeCL(&channels);
+	close_svdrp();
+	io_printf(out,
+"		</div>\n"
+	);
+	printFooter(out);
 %>
-
-</table>
-
-</div>
-
-<%@ include ../../components/post-content.kl1 %>
 

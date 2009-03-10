@@ -18,62 +18,84 @@
 #include <klapp_conf.h>
 #include <time.h>
 
-time_t now;
-
 #include "i18n.h"
 #include "misc.h"
 #include "recordings.h"
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
+char pubDate[30];
+const char * const getPubDate(const struct tm *t){
+	strftime(pubDate,30,"%a, %d %b %Y %H:%M:%S %z",t);
+	return pubDate;
+}
+
 %><%
 
-config(session,request);
+	config(session,request);
 
-recEntry * recs;
-int max_recs=0;
-int i=0;
+	recList_t recs;
+	int i=0;
 
-const char dayStr[7][4]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-const char monthStr[12][4]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+	const char monthStr[12][4]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
-recs=getRecList(&max_recs,sortStart,sortDesc);
-response_set_content_type(response,"application/rss+xml");
+	getRecList(&recs,SF_START,SD_DESC);
+	close_svdrp();
+	response_set_content_type(response,"application/rss+xml");
+	char * httpBase;
+	if (httpPort==80) {
+		asprintf(&httpBase,"http://%s",myip);
+	} else {
+		asprintf(&httpBase,"http://%s:%d",myip,httpPort);
+	}
+	io_printf(out,
+"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
+"<rss version=\"2.0\">\n"
+"	<channel>\n"
+"		<title>%s VDR</title>\n"
+"		<description>%s</description>\n"
+"		<language>%s</language>\n"
+		,tr("recordings")
+		,tr("recordingList")
+		,alpha3[langID]
+	);
+	if (recs.length>0) {
+		io_printf(out,
+"		<pubDate>%s</pubDate>\n", getPubDate(localtime(&recs.entry[recs.length-1].start))
+		);
+	}
+	io_printf(out,
+"		<link>%s/</link>\n",httpBase
+	);
 
-%><?xml version="1.0" encoding="ISO-8859-1"?>
-<rss version="2.0">
-<channel>
- <title><% io_printf(out,tr("Recordings")); %> VDR</title>
- <description><% io_printf(out,i18n[16][langID]); %></description>
- <language>de-de</language>
-<%
-  if (max_recs>0) {
-    struct tm t=*localtime(&recs[0].start);
-    io_printf(out," <pubDate>%s, %02d %s %04d %02d:%02d:00 %s</pubDate>\n",dayStr[t.tm_wday],t.tm_mday,monthStr[t.tm_mon],1900+t.tm_year,t.tm_hour,t.tm_min,tzname[isDST(&recs[0].start)]);
-  }
-  if (httpPort==80) {
-    io_printf(out," <link>http://%s/</link>\n",myip);
-  } else {
-    io_printf(out," <link>http://%s:%d/</link>\n",myip,httpPort);	  
-  }
-
-  for (i=0;i<max_recs;i++) {
-    struct tm t=*localtime(&recs[i].start);
+	for (i=0;i<recs.length;i++) {
+		struct tm t=*localtime(&recs.entry[i].start);
 		const char * fd=formatDate(&t,0);
-    io_printf(out," <item>\n  <title>[%s %s, %02d:%02d] %s</title>\n",weekdays[langID][t.tm_wday],fd,t.tm_hour,t.tm_min,recs[i].title);
-    io_printf(out,"  <description>[%s %s] %02d:%02d: %s</description>",weekdays[langID][t.tm_wday],fd,t.tm_hour,t.tm_min,recs[i].title);
-    if (httpPort==80) {
-      io_printf(out,"  <link>http://%s/recordings.kl1</link>\n",myip);
-    } else {
-      io_printf(out,"  <link>http://%s:%d/recordings.kl1</link>\n",myip,httpPort);
-    }
-    io_printf(out,"  <guid isPermaLink=\"false\">%d%s</guid>\n",recs[i].start,recs[i].title);
-    io_printf(out,"  <pubDate>%s, %02d %s %04d %02d:%02d:00 %s</pubDate>\n </item>\n",dayStr[t.tm_wday],t.tm_mday,monthStr[t.tm_mon],1900+t.tm_year,t.tm_hour,t.tm_min,tzname[isDST(&recs[i].start)]);
-  }
-  free(recs);
-  close_svdrp();
+		io_printf(out,
+"		<item>\n"
+"			<title>%s</title>\n"
+"			<description>[%s %s] %02d:%02d: %s</description>\n"
+			,recs.entry[i].title
+			,weekdays[langID][t.tm_wday],fd,t.tm_hour,t.tm_min,recs.entry[i].title
+		);
+		io_printf(out,
+"			<link>%s/playlistrec.kl1?id=%d</link>\n"
+			,httpBase
+			,recs.entry[i].ID
+		);
+		io_printf(out,
+"			<guid isPermaLink=\"false\">%d</guid>\n"
+"			<pubDate>%s</pubDate>\n"
+"		</item>\n"
+			,recs.entry[i].ID
+			,getPubDate(		&t)
+		);
+	}
+	free(httpBase);
+	freeRL(&recs);
+	io_printf(out,
+"	</channel>\n"
+"</rss>\n"
+	);
 %>
-
-</channel>
-</rss>
 

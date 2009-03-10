@@ -28,218 +28,196 @@
 #include "misc.h"
 #include "timers.h"
 
-// Compare two timerEntries using the field and order,
-// specified by this two variables.
-int compareTE_sortBy=0;
-int compareTE_sortDirection=1;
+/*
+* Compare two timerEntries using the field and order,
+* specified by this two variables.
+*/
+sortField_t compareTE_sortBy=SF_NONE;
+sortDirection_t compareTE_sortDirection=SD_ASC;
 int compareTE(const void * a, const void * b) {
-	const timerEntry * ta=(const timerEntry *)a;
-	const timerEntry * tb=(const timerEntry *)b;
+	const timerEntry_t * ta=(const timerEntry_t *)a;
+	const timerEntry_t * tb=(const timerEntry_t *)b;
+	if (compareTE_sortDirection==SF_NONE) return 0;
 	switch (compareTE_sortBy) {
-		case 1: return compareTE_sortDirection * ( ta->start - tb->start );	
-		case 2: return compareTE_sortDirection * ( ta->stop - tb->stop );	
-		case 3: return compareTE_sortDirection * ( ta->type - tb->type );	
-		case 4: return compareTE_sortDirection * strcasecmp(ta->title,tb->title);
-		case 5: return compareTE_sortDirection * ( ta->channelNum - tb->channelNum );	
-		case 6: return compareTE_sortDirection * strcmp(ta->channelName,tb->channelName);
-		case 7: return compareTE_sortDirection * ( ta->priority - tb->priority );	
-		case 8: return compareTE_sortDirection * ( ta->lifetime - tb->lifetime );	
-		case 9: return compareTE_sortDirection * ( ta->active - tb->active );	
-		case 10:return compareTE_sortDirection * strcmp(ta->mux,tb->mux);
-		default: return 0;
+		case SF_TM_NUMBER:   return compareTE_sortDirection * ( ta->ID-tb->ID );
+		case SF_START:    return compareTE_sortDirection * ( ta->start - tb->start );	
+		case SF_TYPE:     return compareTE_sortDirection * ( ta->type - tb->type );	
+		case SF_TITLE:    return compareTE_sortDirection * strcasecmp(ta->title,tb->title);
+		case SF_CH_NUMBER:   return compareTE_sortDirection * ( ta->channelNum - tb->channelNum );	
+		case SF_NAME:     
+			return compareTE_sortDirection * (ta->channel && tb->channel ) ? strcmp(ta->channel->channelName,tb->channel->channelName) : 0;
+		case SF_PRIORITY: return compareTE_sortDirection * ( ta->priority - tb->priority );	
+		case SF_LIFETIME: return compareTE_sortDirection * ( ta->lifetime - tb->lifetime );	
+		case SF_ACTIVE:   return compareTE_sortDirection * ( ta->active - tb->active );	
+		case SF_MUX:
+			return compareTE_sortDirection * (ta->channel && tb->channel) ? strcmp(ta->channel->multiplexName,tb->channel->multiplexName) : 0;
+		default:          return 0;
 	}
 }
 
 // Assign default timer values
-void initTE(timerEntry * const entry) {
+void initTE(timerEntry_t * const entry) {
 	if (entry==NULL) return;
 	entry->active=1;
 	entry->lifetime=99;
 	entry->priority=50;
 	entry->title=NULL;
 	entry->aux=NULL;
-	entry->newt=NULL;
-	entry->channelName[0]='\0';
-	entry->mux[0]='\0';
+	entry->timerStr=NULL;
+	entry->channel=NULL;
+	strcpy(entry->reg_timer,"-------"); 
 }
 
 // Free timer entry
-void freeTE(timerEntry * const entry) {
+void freeTE(timerEntry_t * const entry) {
 	free(entry->title);
 	free(entry->aux);
-	free(entry->newt);
+	free(entry->timerStr);
 	initTE(entry);
 }
 
-// Free timer list
-void freeTimerList(timerEntry * o,int max) {
-	if (o==NULL) return;
-	int i=0;
-	for (i=0;i<max;i++) {
-		freeTE(&o[i]);
-	}
-	free(o);
+void initTL(timerList_t * const list){
+	list->length=0;
+	list->entry=NULL;
 }
 
+void freeTL(timerList_t * const list){
+	int i;
+	for (i=0;i<list->length;i++){
+		freeTE(&(list->entry[i]));
+	}
+	free(list->entry);
+	initTL(list);
+}
+
+
 // Retrieve a timer list from VDR and sort it
-timerEntry * getTimerList(channelList *channels, int * max, int sortBy, int sortDirection) {
+void getTimerList(timerList_t * const timers, channelList const * const channels, sortField_t sortBy, sortDirection_t sortDirection){
 	char * data;
 	char * p;
-	timerEntry *timer;
 	int i=0;
 
-	timer=NULL;
-	*max=0;
+	initTL(timers);
 	if (write_svdrp("LSTT\r")<=0){
-		return NULL;
+		return;
 	}
 	data=read_svdrp();
 
 	for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
 		if (atoi(p)==250) {
 			i++;
-			timerEntry *tmp=(timerEntry *)realloc(timer,i*sizeof*timer);
+			timerEntry_t *tmp=(timerEntry_t *)realloc(timers->entry,i*sizeof(timerEntry_t));
 			if (!tmp) {
-				warn("Reallocation failed. Old size is %d, new size should be %d",(i-1)*sizeof*timer,i*sizeof*timer);
+				warn("getTimerList:Reallocation failed.");
 				exit(1);
 			}
-			timer=tmp;
-			tmp=&(timer[i-1]);
+			timers->length=i;
+			timers->entry=tmp;
+			tmp=&(timers->entry[i-1]);
 			initTE(tmp);
 			tmp->ID=strtol(p+4,&p,10);
 			p+=strspn(p," ");
-			tmp->newt=strdup(p);
+			tmp->timerStr=strdup(p);
 			parseTimer(p,tmp);
 			if (tmp->channelNum>0 && tmp->channelNum<=channels->length) {
-				strcpy(tmp->channelName,channels->entry[tmp->channelNum-1].channelName);
-				strcpy(tmp->mux,channels->entry[tmp->channelNum-1].multiplexName);
+				tmp->channel = &channels->entry[tmp->channelNum-1];
 			}
 		}
 	}
+	free(data);
 
-	if (i>0 && sortBy!=0) {
+	if (timers->length>0 && sortBy!=SF_NONE) {
 		//Quick sort timers
 		compareTE_sortBy=sortBy;
 		compareTE_sortDirection=sortDirection;
-		qsort(timer,i,sizeof*timer,compareTE);
+		qsort(timers->entry,i,sizeof(timerEntry_t),compareTE);
 	} 
   
-	free(data);
-	*max=i;
-	return timer;
 }
 
-// Checks, if there is an timer for the time-slot on channelNum
-// descriped by startTime and endTime/duration onyl one of endTime an ddurtion is needed. 
-// If both are passed, the function uses endTime.
-// it returns:
-// 0  if no timer matches
-// 1  if theres a partial overlapping
-// 2  if it's full covered by a timer
-// -1 if theres a partial overlapping on a different channel (not implemented yet)
-// -2 if it's full covered by a timer on a different channel (not implemented yet)
-// -3 an error occured
-int checkForTimer(timerEntry * timerList, int maxTimer, int channelNum, time_t startTime, time_t endTime, int duration) {
-	if ( (!timerList) || (channelNum<1) || (maxTimer<1) || (startTime==0) || ( (endTime==0) && (duration==0) ) ) {
-		return 0;
-	} else {
-		if (endTime==0) { 
-			endTime=startTime+duration; 
-		}
-		int i;
-		for (i=0;i<maxTimer;i++) {
-			if (timerList[i].channelNum==channelNum) {
-				if ( (timerList[i].start<startTime) && (timerList[i].stop>endTime) ) { return 2; }
-				if ( (timerList[i].start<startTime) && (timerList[i].stop>startTime) ) { return 1; }
-				if ( (timerList[i].start<endTime) && (timerList[i].stop>endTime) ) { return 1; }
-			}
-		}
-		return 0;
-	}
-}
-
-int addTimer(const char * newt) {
-	char * data=NULL;
-	char * p=NULL;
-	int ok=0;
+boolean_t addTimer(const char * newTimerStr, char ** message) {
+	boolean_t result= BT_FALSE;
+	char * command=NULL;
   
-	if (asprintf(&p,"%s\r",newt)<0) {
-		warn("Not enough memory for command in addTimer");
-		return 0;
-	}  
-	ok=(write_svdrp(p)>0);
-	free(p);
-	if (!ok) {
-		return ok;
+	if (newTimerStr==NULL) {
+		return BT_FALSE;
 	}
-	data=read_svdrp();
-	if (data!=NULL){
-		for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-			if (atoi(p)==250) {
-				ok= ~0;
-				break;
+	if (asprintf(&command,"NEWT %s\r",newTimerStr)<0) {
+		warn("Not enough memory for command in addTimer");
+		exit(1);
+	} else {
+		int error=(write_svdrp(command)<=0);
+		free(command);
+		if (!error) {
+			char * data=read_svdrp();
+			if (data!=NULL){
+				char * p=data;
+				int code=strtol(p,&p,10);
+				result=boolean(code==250);
+				if (message && *p && *(++p)){
+					(*message)=strdup(p);
+				}
+				free(data);
 			}
 		}
-		free(data);
 	}
-	return ok;
+	return result;
 }
 
 char * getTimerStrAt(int timerID) {
-	char * data;
-	char * p;
+	char * command=NULL;
 	char * timerStr=NULL;
 
 	if ( (timerID>0) && (timerID<10000) ) {
-		if (asprintf(&p,"LSTT %d\r",timerID)<0){
+		if (asprintf(&command,"LSTT %d\r",timerID)<0){
 			warn("Not enough memory for command in getTimerStrAt");
+			exit(1);
 		} else {
-			int ok=(write_svdrp(p)>0);
-			free(p);
-			if (!ok) {
-				return NULL;
-			}
-			data=read_svdrp();
-			if (data!=NULL) {
-				for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-					if (atoi(p)==250) {
-						p+=4;
-						p+=strcspn(p," "); //ID
-						p+=strspn(p," ");
-						timerStr=strdup(p);
-						break;
+			int error=(write_svdrp(command)<=0);
+			free(command);
+			if (!error) {
+				char * data=read_svdrp();
+				if (data!=NULL) {
+					char * p;
+					for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+						if (atoi(p)==250) {
+							p+=4;
+							p+=strcspn(p," "); //ID
+							p+=strspn(p," ");
+							timerStr=strdup(p);
+							break;
+						}
 					}
+					free(data);
 				}
-				free(data);  //TODO_KILLE
 			}
 		}
 	}
 	return timerStr;
 }
 
-int deleTimer(int timerID, const char * timer) {
-	char * data=NULL;
-	char * p=NULL;
+boolean_t deleTimer(int timerID, const char * delTimerStr, char ** message) {
+	boolean_t result=BT_FALSE;
+	char * command=NULL;
 	char * timerStr;
-	int error= ~0;
   
 	timerStr=getTimerStrAt(timerID);
 	if (timerStr!=NULL) {
-		if (strcmp(timer,timerStr)==0) {
-			if (asprintf(&p,"DELT %d\r",timerID)<0){
+		if (strcmp(delTimerStr,timerStr)==0) {
+			if (asprintf(&command,"DELT %d\r",timerID)<0){
 				warn("Not enough memory for command in deleTimer");
+				exit(1);
 			} else {
-				error=(write_svdrp(p)<=0);
-				free(p);
+				int error=(write_svdrp(command)<=0);
+				free(command);
 				if (!error){
-					error= ~0;
-					data=read_svdrp();
+					char * data=read_svdrp();
 					if (data!=NULL){
-						for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-							if (atoi(p)==250) {
-								error=0;
-								break;
-							}
+						char * p=data;
+						int code=strtol(p,&p,10);
+						result=boolean(code==250);
+						if (message && *p && *(++p)){
+							(*message)=strdup(p);
 						}
 						free(data);
 					}
@@ -247,37 +225,42 @@ int deleTimer(int timerID, const char * timer) {
 			}
 		} else { 
 			warn("Error trying to delete a timer: there is no timer as specified!");
-			warn("Timer to delete(%d): [%s]",strlen(timer),   timer);
+			warn("Timer to delete(%d): [%s]",strlen(delTimerStr), delTimerStr);
 			warn("Timer in list  (%d): [%s]",strlen(timerStr),timerStr);
 		}
 		free(timerStr);
 	}
-	return error;
+	return result;
 }
 
-int editTimer(int timerID, const char * oldTimer, const char * newTimer) {
-	char * data=NULL;
-	char * p=NULL;
+boolean_t editTimer(int timerID, const char * oldTimerStr, const char * newTimerStr, char ** message) {
+	boolean_t result= BT_FALSE;
 	char * timerStr;
-	int error= ~0;
 
+	if ((oldTimerStr==NULL) || (newTimerStr==NULL)){
+		return BT_FALSE;
+	}
+	if (strcmp(oldTimerStr,newTimerStr)==0){
+		return BT_TRUE;
+	}
 	timerStr=getTimerStrAt(timerID);
 	if (timerStr!=NULL) {
-		if (strcmp(oldTimer,timerStr)==0) {
-			if (asprintf(&p,"MODT %d %s\r",timerID,newTimer)<0){
+		if (strcmp(oldTimerStr,timerStr)==0) {
+			char * command=NULL;
+			if (asprintf(&command,"MODT %d %s\r",timerID,newTimerStr)<0){
 				warn("Not enough memory for command in editTimer");
+				exit(1);
 			} else {
-				error=(write_svdrp(p)<=0);
-				free(p);
+				int error=(write_svdrp(command)<=0);
+				free(command);
 				if (!error){
-					error= ~0;
-					data=read_svdrp();
+					char * data=read_svdrp();
 					if (data!=NULL){
-						for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-							if (atoi(p)==250) {
-								error=0;
-								break;
-							}        
+						char * p=data;
+						int code=strtol(p,&p,10);
+						result=boolean(code==250);
+						if (message && *p && *(++p)){
+							(*message)=strdup(p);
 						}
 						free(data);
 					}
@@ -285,10 +268,11 @@ int editTimer(int timerID, const char * oldTimer, const char * newTimer) {
 			}
 		} else {
 			warn("Error trying to edit a timer: there is no timer as specified!");
-			warn("Timer to edit(%d): [%s]",strlen(oldTimer),oldTimer);
+			warn("Timer to edit(%d): [%s]",strlen(oldTimerStr),oldTimerStr);
 			warn("Timer in list(%d): [%s]",strlen(timerStr),timerStr);
 		}
 		free(timerStr);
 	}
-	return error;
+	return result;
 }
+

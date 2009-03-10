@@ -20,16 +20,26 @@
 #define I18NNUM 4
 
 #include <time.h>
+#include "misc.h"
+
+typedef const char * i18nVal_t[I18NNUM];
+
+typedef struct i18n_s {
+	const char * const key;
+	i18nVal_t val;
+} i18n_t;
 
 extern int langID;
 extern char acceptedLang[3];
 
-extern const char * const i18n[][I18NNUM];
+extern const i18nVal_t locale;
+extern const i18nVal_t alpha2;
+extern const i18nVal_t alpha3;
 extern const char * const weekdays[I18NNUM][7];
 extern const char * const shortWeekdays[I18NNUM][7];
-extern const char * const dateFormat[I18NNUM]; //to use with strftime
+extern const i18nVal_t dateFormat; //to use with strftime
 extern const int startOfWeek[I18NNUM];
 
 const char *tr(const char *s);
-const char *formatDate(struct tm *timeptr,int addHour);
+const char *formatDate(struct tm *timeptr,boolean_t addHour);
 #endif

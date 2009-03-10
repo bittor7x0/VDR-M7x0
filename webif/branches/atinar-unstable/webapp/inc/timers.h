@@ -21,38 +21,44 @@
 #define __TIMERS_H__
 
 #include "channels.h"
+#include "misc.h"
 
-enum timerType {
-	UNDEFINED  = 0,
-	ONE_TIME = 1,
-	REGULAR  = 2
-};
+typedef enum timerType_e {
+	TT_UNDEFINED  = 0,
+	TT_ONE_TIME = 1,
+	TT_REGULAR  = 2
+} timerType_t;
 
 typedef struct timerEntry_s {
+	int ID;
  	time_t start;
 	time_t stop;
-	enum timerType type;
+	time_t eventStart;
+	time_t eventStop;
+	timerType_t type;
 	int priority;
 	int lifetime;
 	int active;
-	int ID;
 	char reg_timer[8];
 	char * title;
 	char * aux;
 	int channelNum;
-	char channelName[50]; //TODO Remove
-	char mux[50];         //TODO Remove
-	char * newt;
-} timerEntry;
+	channelEntry const *channel;
+	char * timerStr;
+} timerEntry_t;
 
-void initTE(timerEntry * const entry);
-void freeTE(timerEntry * const entry);
-void freeTimerList(timerEntry * o, int max);
-timerEntry * getTimerList(channelList *channels, int *max, int sortBy, int sortDirection);
-int checkForTimer(timerEntry * timerList, int maxTimer, int channelNum, time_t startTime, time_t endTime, int duration);
-//TODO addTimer's return value inconsistent with editTimer and deleTimer
-int addTimer(const char * newt);
-int editTimer(int timerID, const char * oldTimer, const char * newTimer);
-int deleTimer(int timerID, const char * timer);
+typedef struct timerList_s {
+	int length;
+	timerEntry_t *entry;
+} timerList_t;
+
+void initTE(timerEntry_t * const entry);
+void freeTE(timerEntry_t * const entry);
+void initTL(timerList_t  * const list);
+void freeTL(timerList_t  * const list);
+void getTimerList(timerList_t * const timers, channelList const * const channels, sortField_t sortBy, sortDirection_t sortDirection);
+boolean_t addTimer(const char * newTimerStr, char ** message);
+boolean_t editTimer(int timerID, const char * oldTimerStr, const char * newTimerStr, char ** message);
+boolean_t deleTimer(int timerID, const char * delTimerStr, char ** message);
 
 #endif

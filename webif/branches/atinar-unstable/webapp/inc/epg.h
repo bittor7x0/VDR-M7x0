@@ -49,7 +49,7 @@ void initNNL(nowNextList * const list);
 void freeNNL(nowNextList * const list);
 void getNowNextList(nowNextList * const list, channelList const * const channels);
 void freeNNL(nowNextList * const list);
-//Prints an infobox from the event and returns de encoded title
-char * io_printf_infobox(io_t *out, eventEntry * const ee);
+void printInfo(io_t *out, const int ntabs, eventEntry * const ee);
+void printInfobox(io_t *out, const int ntabs, eventEntry * const ee);
 
 #endif

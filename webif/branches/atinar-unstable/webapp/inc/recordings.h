@@ -20,36 +20,47 @@
 #ifndef __RECORDINGS_H__
 #define __RECORDINGS_H__
 
+#include "misc.h"
+
 typedef struct recEntry_s {
-	int ID; //index+1
+	int ID;
 	time_t start;
 	int seen;
 	int direct;
 	int cut;
 	char * title;
 	char * path;
-} recEntry;
+} recEntry_t;
 
-typedef struct recEntry2_s {
+typedef struct recList_s {
+	int length;
+	recEntry_t *entry;
+} recList_t;
+
+
+typedef struct recInfo_s {
 	char * title;
 	char * subtitle;
 	char * desc;
+	char * channelId;
 	time_t start;
 	time_t stop;
 	int    duration;
-	char   channelName[50];
-	char   channelId[50];
-	int    channelNum;
 	int	 ar; // 0=?, 1=4:3, 2=16:9, 3=?:?, 4=HD4:3, 5=HD16:9, 6=HD?:?
 	char * audio;
-} recEntry2;
+} recInfo_t;
 
-recEntry * getRecList(int * max, int sortBy, int sortDirection);
+void initRE(recEntry_t * const entry);
+void freeRE(recEntry_t * const entry);
+void initRL(recList_t  * const list);
+void freeRL(recList_t  * const list);
+void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
+boolean_t editRec(int recId, const recInfo_t * oldInfo, const char * newName, char ** message);
+boolean_t deleRec(const int recId, const recInfo_t * oldInfo, char ** message);
 
-// returns 0 if its a dir with subdirs, 1 if its a repeating timer or 2 if its a dir with multiple recs, 3 if its a mix of 0 and 2
-int readRecDir(const char * path, int round, int * numF, int * numD, int * size, recEntry2 * info);
-recEntry2 * mallocRE2(int max);
-recEntry2 * readInfoVDR(const char * filename);
-void freeRE(recEntry * o, int max);
-void freeRE2(recEntry2 * o, int max);
+void initRI(recInfo_t * const info);
+void freeRI(recInfo_t * const info);
+boolean_t getRecInfo(recInfo_t * const info, const int recId);
+boolean_t parseRecInfo(recInfo_t * const info, char * const data, boolean_t fromFile);
+boolean_t readRecInfo(recInfo_t * const info, const char * filename);
 #endif

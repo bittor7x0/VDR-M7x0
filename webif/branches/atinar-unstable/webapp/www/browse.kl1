@@ -33,30 +33,30 @@
 #include "svdrp_parse.h"
 #include "recordings.h"
 
-enum readDirFlags {
-	RR_ERROR = 0x0001,
-	RR_INFO  = 0x0002,
-	RR_FILE  = 0x0004,
-	RR_DIRS  = 0x0008
+enum readDirFlags_e {
+	DF_ERROR = 0x0001,
+	DF_INFO  = 0x0002,
+	DF_DELE  = 0x0004,
+	DF_SERIE = 0x0008
 };
 
-int status=0;
-
-char urlencodedpath[512];
+const char *classIsRec[]={""," recFolderRec"};
+const char *classIsDel[]={""," recFolderDel"};
+const char *classIsEdt[]={""," recFolderEdt"};
 
 short htoi(unsigned char c) {
 	return (c>='0' && c<='9') ? c-'0' : (c>='a' && c<='f') ? c-'a'+10 : (c>='A' && c<='F') ? c-'A'+10 : 0;
 }
 
-char * decodeName(char *name, int inplace, int *edited){
+char * decodeName(char *name, boolean_t inplace, boolean_t *isEdt){
 	char *dname=(inplace) ? name : strdup(name);
 	char *s, *d;
 	s=d=dname;
 	if (s[0]=='%'){
-		if (edited) *edited=~0;
+		if (isEdt) *isEdt=BT_TRUE;
 		s++;
 	} else {
-		if (edited) *edited=0;
+		if (isEdt) *isEdt=BT_FALSE;
 	}
 	while (s[0]!=0) {
 		if (s[0]=='#' && isxdigit(s[1]) && isxdigit(s[2])) {
@@ -72,80 +72,126 @@ char * decodeName(char *name, int inplace, int *edited){
 	return dname;
 }
 
-void printRecDir(const char * path, int level, int * numF, int * numD) {
-	
+int printRecDir(char **io_str,const char * path, char * const pathEnc, int level, int * numF, int * numD) {
+	int result=0;
 	DIR *dir = opendir(path); 
 	if (dir == 0) {
-		status | RR_ERROR;
-		return;
+		result |= DF_ERROR;
+		return result;
 	}
 	struct dirent* dirE; 
+	recInfo_t info;
 	while(0 != (dirE = readdir(dir))) { 
 		const char* name = dirE->d_name; 
 		if (strcmp(name,"info.vdr")==0) {
-			recEntry2 * info;
+			result |= DF_INFO;
 			char *path2;
 			if (asprintf(&path2,"%s/%s",path,name)>0){
-	    		info=readInfoVDR(path2);
-	    		free(path2);
-	    		if (info!=NULL) {
-					io_printf(out,"<div class=\"recInfo\">");
-					u_urlncpy(urlencodedpath,path,strlen(path),URLCPY_ENCODE);
-					io_printf(out,"<a class=\"streamRec\" href=\"playlistrec.kl1?path=%s\"><img src=\"/img/play16.png\" width=\"16\" height=\"16\" alt='\%s\'/></a>",urlencodedpath,tr("play"));
-					io_printf(out,"<div class=\"recDate\">");
-					int minutes = (info->stop - info->start)/60;
-					io_printf(out,"<span class=\"recStart field\"><span class=\"label\">%s:</span> <span class=\"value\">%s</span></span> ",tr("Date"),formatDate(localtime(&info->start),1));
-					io_printf(out,"<span class=\"recDuration field\"><span class=\"label\">%s:</span> <span class=\"value\">%d&apos;</span></span>",tr("Duration"  ),minutes);
-					io_printf(out,"</div>");
-					if (info->desc!=NULL) {
-						io_printf(out,"<div class=\"recDesc\">%s</div>",info->desc);
+				initRI(&info);
+	    		if (readRecInfo(&info,path2)) {
+					u_urlncpy(pathEnc,path,strlen(path),URLCPY_ENCODE);
+					int minutes = (info.stop - info.start)/60;
+					io_printf(out,
+"							<div class=\"recInfo\">\n"
+"								<a class=\"ui-icon ui-icon-play\" href=\"playlistrec.kl1?path=%s\">%s</a>"
+								"<div class=\"recDate\">"
+									"<span class=\"recStart field\">"
+										"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%s</span>"
+									"</span> "
+									"<span class=\"recDuration field\">"
+										"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%d&#39;</span>"
+									"</span>"
+								"</div>\n"
+						,pathEnc
+						,tr("play")
+						,tr("date"),formatDate(localtime(&info.start),1)
+						,tr("runtime"),minutes
+					);
+					if (info.desc!=NULL) {
+						io_printf(out,
+"								<div class=\"recDesc\">"
+									"%s"
+								"</div>\n"
+						,info.desc);
 					}
-					io_printf(out,"</div>");
-	    			freeRE2(info,1);
-	    			status |= RR_INFO;
+					io_printf(out,
+"							</div>");
+	    			result |= DF_INFO;
 	    		}
+				freeRI(&info);
+	    		free(path2);
+			} else {
+				result |= DF_ERROR;
 			}
-			return;
+			return result;
 
 		} else if (dirE->d_type==DT_DIR) {
-			if ( (name[0]=='.' && (name[1]==0 || (name[1]=='.' && name[2]==0))) || (strcmp(name+(strlen(name)-4),".del")==0) ){
+			if ( (name[0]=='.' && (name[1]==0 || (name[1]=='.' && name[2]==0)))  ){
 				continue;
 			}
 			char *path2;
 			if (asprintf(&path2,"%s/%s",path,name)<0) {
-				//TODO
-				return;
+				result |= DF_ERROR;
+				return result;
 			}
 			if (strcmp(name,"_")==0) {
-				printRecDir(path2,level,numF,numD);
+				result |= DF_SERIE;
+				printRecDir(NULL,path2,pathEnc,level,numF,numD);
 			} else {
+				int isRec=(strcmp(name+(strlen(name)-4),".rec")==0);
+				int isDel=(strcmp(name+(strlen(name)-4),".del")==0);
 				if (level==0){
 					*numF=0; 
 					*numD=0;
-					io_printf(out,"<div class=\"recFolderWrapper\"><div class=\"recFolderShadow\"><div class=\"recFolder\">\n");
-					u_urlncpy(urlencodedpath,path2+16,strlen(path2+16),URLCPY_ENCODE);
-					int edited;
-					io_printf(out,"<div class=\"recFolderHeader\">\n");
-					char *dname=decodeName(name,0,&edited);
-					io_printf(out,"\t<img src=\"/img/rec16.png\" width=\"16\" height=\"16\" />&nbsp;");
-					if (strcmp(name+(strlen(name)-4),".rec")==0) {
-						io_printf(out,"%s\n",dname);
+					boolean_t isEdt;
+					char *dname=decodeName((char *)name,BT_FALSE,&isEdt);
+					io_printf(out,
+"				<div class=\"recFolderWrapper\">\n"
+"					<div class=\"recFolder%s%s%s\">\n"
+"						<div class=\"recFolderHeader\">\n"
+						,classIsRec[isRec],classIsDel[isDel],classIsEdt[isEdt]
+					);
+					if (isRec || isDel) {
+						io_printf(out,dname);
 					} else {
-						io_printf(out,"<a href=\"browse.kl1?path=%s\">%s</a>\n",urlencodedpath,dname);
+						u_urlncpy(pathEnc,path2+16,strlen(path2+16),URLCPY_ENCODE);
+						io_printf(out,
+							"<a href=\"browse.kl1?path=%s\">%s</a>"
+							,pathEnc,dname);
 					}
 					free(dname);
-					io_printf(out,"</div>\n");
-					io_printf(out,"\t\t<div class=\"recFolderDetails\">\n");
-					printRecDir(path2,level+1,numF,numD);
-					io_printf(out,"\t</div>\n\t<div class=\"recFolderFooter\">");
-    				if (*numD>0) io_printf(out,"<span class=\"field\"><span class=\"label\">%s:</span> <span class=\"value\">%d</span></span>",tr("Subfolders"),*numD);
-    				if (*numF>0) io_printf(out,"<span class=\"field\"><span class=\"label\">%s:</span> <span class=\"value\">%d</span></span>",tr("Recordings"),*numF);
-					io_printf(out,"</div></div></div></div>");
+					io_printf(out,
+"						</div>\n"
+"						<div class=\"recFolderDetails\">\n"
+					);
+					printRecDir(NULL,path2,pathEnc,level+1,numF,numD);
+					io_printf(out,
+"						</div>\n"
+"						<div class=\"recFolderFooter\">"
+					);
+    				if (*numD>0) {
+						io_printf(out,
+							"<span class=\"field\">"
+								"<span class=\"label\">%s:</span> <span class=\"value\">%d</span>"
+							"</span>",tr("subfolders"),*numD);
+					}
+    				if (*numF>0) {
+						io_printf(out,
+							"<span class=\"field\">"
+								"<span class=\"label\">%s:</span> <span class=\"value\">%d</span>"
+							"</span>",tr("recordings"),*numF);
+					}
+					io_printf(out,
+						"</div>\n"
+"					</div>\n"
+"				</div>"
+					);
 				} else {
-					if (strcmp(name+(strlen(name)-4),".rec")==0) {
+					if ( isRec || isDel ) {
 						*numF+=1;
+						if (isDel) result|=DF_DELE;
 						int na, nb;
-						printRecDir(path2,level+1,&na,&nb);
+						printRecDir(NULL,path2,pathEnc,level+1,&na,&nb);
 					} else {	
 						*numD+=1;
 					}
@@ -153,40 +199,28 @@ void printRecDir(const char * path, int level, int * numF, int * numD) {
 			}
 			free(path2);
 		}
-	} 
+	}
+	return result;
 }
+
+#ifdef DEBUG
+void dbg_browse_kl1(void) { dbg("browse.kl1"); }
+#endif
 
 %><%
 
+	#ifdef DEBUG
+	dbg_browse_kl1();
+	#endif
+
 	config(session, request);
-	currentPage=PN_RECORDINGS;
+	currentPage=PN_BROWSE;
+	printXhtmlHead(out,tr("browse"),NULL);
+	printMenu(out);
 
-%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%= i18n[1][langID] %>" lang="<%= i18n[1][langID] %>">
-<head>
-	<%@ include ../../components/head-base.kl1 %>
-	<script type="text/javascript">
-		jQuery(confMenu);
-	</script>
-</head>
-<body>
-	<div class="head">
-		<h1><%= i18n[currentPage][langID] %></h1>
-	</div>
-	<%@ include ../../components/menu.kl1 %>
-<%
- 
-vars_t *args = request_get_args(request);
-char * pathStr=strdup( (vars_countn(args, "path")>0) ? vars_get_value(args,"path") : "" );
-
-%>
-
-<div class="content">
-
-	<h2><% io_printf(out,i18n[8][langID]); %></h2>
-	<div class="section">
-
-<%
+	vars_t *args = request_get_args(request);
+	char pathEnc[1024];
+	char * pathStr=strdup( (vars_countn(args, "path")>0) ? vars_get_value(args,"path") : "" );
 	char * p;
 	for (p=pathStr+strlen(pathStr)-1;(p>=pathStr) && (*p=='/' || *p=='_');p--) {
 		*p=0;
@@ -201,46 +235,63 @@ char * pathStr=strdup( (vars_countn(args, "path")>0) ? vars_get_value(args,"path
 	} else {
 		videoPath=strdup("/var/vdr/video0");
 	}
-	%>
-  
-		<ul class="recPath">
-			<li class="recDir"><a href="browse.kl1"><%= tr("Recordings") %></a></li>
-			
-			<%
-			if (strlen(pathStr)>0) {
-				char * bc;
-				char * bcPath=malloc(strlen(pathStr)+2);
-				if (bcPath!=NULL) {
-					char * s=strdup(pathStr);
-					if (s!=NULL){
-						bcPath[0]=0;
-						for(bc=strtok(s,"/");bc!=0;bc=strtok(0,"/")) {
-							strcat(bcPath,bc);
-							if (strcmp(bc,"_")!=0) {
-								%>
-			<li class="recDir"><a href="browse.kl1?path=<%= bcPath %>"><%= decodeName(bc,~0,NULL) %></a></li>
-								<%
-							}
-							strcat(bcPath,"/");
-						}
-						free(s);
-					}
-					free(bcPath);
-				}
-			}
-			%>
-		</ul>	
-		<div class="recFolders">
-			<%
-			int numF, numD;
-			printRecDir(videoPath,0,&numF,&numD);
-			free(videoPath);
-			free(pathStr);
-			%>
-			<div class="clearer"></div>
-		</div>
-	</div>
-</div>
 
-<%@ include ../../components/post-content.kl1 %>
+	io_printf(out,
+"		<div id=\"main\" class=\"content\">\n"
+"			<h2>%s</h2>\n"
+"			<div class=\"section\">\n"
+"				<div class=\"recPathWrapper\">\n"
+"					<ul class=\"recPath\">\n"
+"						<li class=\"recDir\">"
+							"<a%s href=\"browse.kl1\">%s</a>"
+						"</li>\n"
+		,tr("recordings")
+		,classCurrent[boolean(strlen(pathStr)==0)],tr("recordings")
+	);
+				
+	if (strlen(pathStr)>0) {
+		char * bc;
+		char * bcPath=malloc(strlen(pathStr)+2);
+		if (bcPath!=NULL) {
+			char * s=strdup(pathStr);
+			if (s!=NULL){
+				bcPath[0]=0;
+				char *next=strtok(s,"/");
+				for(bc=next;bc!=0;bc=next) {
+					next=strtok(0,"/");
+					strcat(bcPath,bc);
+					if (strcmp(bc,"_")!=0) {
+						u_urlncpy(pathEnc,bcPath,strlen(bcPath),URLCPY_ENCODE);
+						io_printf(out,
+"					<li class=\"recDir\">"
+						"<a%s href=\"browse.kl1?path=%s\">%s</a>"
+					"</li>\n"
+						,classCurrent[boolean(!next)]
+						,pathEnc
+						,decodeName(bc,BT_TRUE,NULL));
+					}
+					strcat(bcPath,"/");
+				}
+				free(s);
+			}
+			free(bcPath);
+		}
+	}
+	io_printf(out,
+"					</ul>\n"
+"				</div>\n"
+"				<div class=\"recFolders\">\n"
+	);
+	int numF, numD;
+	printRecDir(NULL,videoPath,pathEnc,0,&numF,&numD);
+	free(videoPath);
+	free(pathStr);
+	io_printf(out,
+"					<div class=\"clearer\"></div>\n"
+"				</div>\n"
+"			</div>\n"
+"		</div>\n"
+	);
+	printFooter(out);
+%>
 

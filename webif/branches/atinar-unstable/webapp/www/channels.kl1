@@ -29,57 +29,145 @@ time_t now;
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
+#ifdef DEBUG
+void dbg_channels_kl1(void) { dbg("channels.kl1"); }
+#endif
+
 %><%
-channelList channels;
-int i=0;
 
-currentPage=PN_CHANNELS;
-%>
+	#ifdef DEBUG
+	dbg_channels_kl1();
+	#endif
 
-<%@ include ../../components/pre-content.kl1 %>
+	channelList channels;
+	int i=0;
 
-<div class="content">
+	vars_t *args = request_get_args(request);
+	sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_CH_NUMBER;
+	sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
 
-<h2><%= tr("Channel List") %> <a href="playlistch.kl1"><img src="/img/tv16.png" border="0" alt="<%= tr("Playlist") %>" /></a></h2>
-
-<table class="list1">
-<%
-io_printf(out,"<tr><th>%s</th><th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr>\n",tr("channel number"),tr("channel name"),tr("multiplex"),tr("more infos"),tr("live stream"));
-getChannelList(&channels);
-char iconStr[6];
-for (i=0;i<channels.length;i++) {
-	io_printf(out,"<tr>\n\t<td align=\"center\">%d</td>\n",channels.entry[i].channelNum);
-	io_printf(out,"\t<td><a class=\"strong\" href=\"watchit.kl1?channelnum=%d\">%s</a></td>\n",channels.entry[i].channelNum,channels.entry[i].channelName);
-	io_printf(out,"\t<td>%s</td>\n",channels.entry[i].multiplexName);
-	io_printf(out,"\t<td align=\"center\">");
-	io_printf(out,"\t<div class=\"infobox\"><img src=\"/img/info16.png\" alt=\"%s\" /><div class=\"shadow\"><div class=\"info\">\n",tr("more infos"));
-	io_printf(out,"\t\t<b>%s</b><br /><table>",channels.entry[i].channelName);
-	io_printf(out,"\t\t<tr><td>ID</td><td>%s</td></tr>\n",channels.entry[i].channelId);    	
-	io_printf(out,"\t\t<tr><td>%s</td><td>%d</td></tr>\n",tr("frequency"),channels.entry[i].frequency);
-	io_printf(out,"\t\t<tr><td>%s</td><td>%s</td></tr>\n",tr("parameters"),channels.entry[i].parameter);
-	io_printf(out,"\t\t<tr><td>%s</td><td>%d</td></tr>\n",tr("source"),channels.entry[i].source);
-	io_printf(out,"\t\t<tr><td>%s</td><td>%d</td></tr>\n",tr("conditional access ID"),channels.entry[i].caid);
-	io_printf(out,"\t\t<tr><td>%s</td><td>%d</td></tr>\n",tr("service ID"),channels.entry[i].sid);
-	io_printf(out,"\t\t<tr><td>%s</td><td>%d</td></tr>\n",tr("network ID"),channels.entry[i].nid);
-	io_printf(out,"\t\t<tr><td>%s</td><td>%d</td></tr>\n",tr("transport stream ID"),channels.entry[i].tid);
-	io_printf(out,"\t\t<tr><td>%s</td><td>%d</td></tr>\n",tr("radio ID"),channels.entry[i].rid);
-	io_printf(out,"</table></div></div></div>");
-	io_printf(out,"</td>\n");
-	if (channels.entry[i].vpid>1) {
-		strcpy(iconStr,"tv");
-	} else {
-		strcpy(iconStr,"radio");
+	config(session, request);
+	currentPage=PN_CHANNELS;
+	printXhtmlHead(out,tr("channels"),NULL);
+	printMenu(out);
+	const char *LiveStream=tr("liveStream");
+	const char *Frequency=tr("frequency");
+	const char *Parameters=tr("parameters");
+	const char *Source=tr("source");
+	const char *ConditionalAccessId=tr("conditionalAccessId");
+	const char *ServiceId=tr("serviceId");
+	const char *NetworkId=tr("networkId");
+	const char *TransportStreamId=tr("transportStreamId");
+	const char *RadioId=tr("radioId");
+	io_printf(out,
+"		<div id=\"main\" class=\"content\">\n"
+"			<h2>%s "
+				"<a href=\"playlistch.kl1\">"
+					"<img src=\"/img/tv16.png\" alt=\"%s\"/>"
+				"</a>"
+			"</h2>\n"
+		,tr("channels")
+		,tr("playlist")
+	);
+	getChannelList(&channels,sortBy,sortDirection);
+	close_svdrp();
+	int t;
+	boolean_t isTv;
+	const char *tableId[]={"tvChannels","radioChannels"};
+	for (t=0;t<2;t++){
+		io_printf(out,
+"			<table id=\"%s\" class=\"list1 channels\">\n"
+"				<caption>%s</caption>"
+"				<col class=\"number\"/>\n"
+"				<col class=\"channel\"/>\n"
+"				<col class=\"mux\"/>\n"
+"				<col class=\"ctrls\"/>\n"
+"				<thead>\n"
+"					<tr>\n"
+"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"						<th></th>\n"
+"					</tr>\n"
+"				</thead>\n"
+"				<tbody>\n"
+			,tableId[t]
+			,tr(tableId[t])
+			,sortClass(SF_CH_NUMBER),SF_CH_NUMBER,newSortDirection(SF_CH_NUMBER),"#"
+			,sortClass(SF_NAME),SF_NAME,newSortDirection(SF_NAME),tr("channel")
+			,sortClass(SF_MUX),SF_MUX,newSortDirection(SF_MUX),tr("channelMux")
+		);
+		for (i=0;i<channels.length;i++) {
+			isTv=boolean(channels.entry[i].vpid>1);
+			if (t==0 && !isTv ||t==1 && isTv) continue;
+			io_printf(out,
+"					<tr>\n"
+"						<td class=\"number\" >%d</td>\n"
+"						<td class=\"channel\">"
+							"<a class=\"channel\" href=\"watchit.kl1?channelnum=%d\">%s</a>"
+						"</td>\n"
+"						<td class=\"mux\">%s</td>\n"
+				,channels.entry[i].channelNum
+				,channels.entry[i].channelNum,channels.entry[i].channelName
+				,channels.entry[i].multiplexName
+			);
+			io_printf(out,
+"						<td class=\"ctrls\">\n"
+"							<div class=\"boxRight\">"
+"								<div class=\"infobox infoboxCssHover infoLeft\"><span class=\"ui-icon ui-icon-info\">%s</span>\n"
+"									<div class=\"infoWrapper infoCssHover\">\n"
+"										<div class=\"info\">\n"
+"											<table class=\"channelInfo\">\n"
+"												<caption>%s</caption>\n"
+				,tr("moreInfo")
+				,channels.entry[i].channelName
+			);
+			io_printf(out,
+"													<tr><th>Id</th><td>%s</td></tr>\n"
+"													<tr><th>%s</th><td>%d</td></tr>\n"
+"													<tr><th>%s</th><td>%s</td></tr>\n"
+"													<tr><th>%s</th><td>%d</td></tr>\n"
+"													<tr><th>%s</th><td>%d</td></tr>\n"
+"													<tr><th>%s</th><td>%d</td></tr>\n"
+"													<tr><th>%s</th><td>%d</td></tr>\n"
+"													<tr><th>%s</th><td>%d</td></tr>\n"
+"													<tr><th>%s</th><td>%d</td></tr>\n"
+"											</table>\n"
+				,channels.entry[i].channelId    	
+				,Frequency,channels.entry[i].frequency
+				,Parameters,channels.entry[i].parameter
+				,Source,channels.entry[i].source
+				,ConditionalAccessId,channels.entry[i].caid
+				,ServiceId,channels.entry[i].sid
+				,NetworkId,channels.entry[i].nid
+				,TransportStreamId,channels.entry[i].tid
+				,RadioId,channels.entry[i].rid
+			);
+			io_printf(out,
+"										</div>\n"
+"									</div>\n"
+"								</div>\n"
+"							</div>\n"
+			);
+			io_printf(out,
+"							<div class=\"boxRight\">"
+"								<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\">%s</a>\n"
+"							</div>\n"
+"						</td>\n"
+"					</tr>\n"
+				,(isTv)?"ui-icon-tv":"ui-icon-radio"
+				,channels.entry[i].channelNum
+				,LiveStream
+			);
+		}
+		io_printf(out,
+"				</table>\n"
+		);
 	}
-	io_printf(out," <td align=\"center\"><a href=\"watchit.kl1?channelnum=%d\"><img src=\"/img/%s16.png\" border=\"0\" alt=\"%s\" /></a></td>\n",channels.entry[i].channelNum,iconStr,tr("live stream"));
-	io_printf(out,"</tr>\n");
-}
-
-freeCL(&channels);
-close_svdrp();
+	freeCL(&channels);
+	io_printf(out,
+"				<div style=\"clear:both\"></div>"
+"			</div>\n"
+	);
+	printFooter(out);
 %>
-
-</table>
-
-</div>
-
-<%@ include ../../components/post-content.kl1 %>

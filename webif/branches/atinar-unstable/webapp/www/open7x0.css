@@ -27,7 +27,7 @@ div.main {
   margin-top:10px;
 }
 
-div.head {
+div.header {
  position:fixed;
  padding:35px 0px 0px 130px;
  top:0px;
@@ -549,30 +549,37 @@ a.black:hover { font-weight:bold; color:black; text-decoration:none; }
 a.black:active { font-weight:bold; color:black; text-decoration:none; }
 
 /* Fuﬂzeile */
-div.foot {
+div.footer {
  padding:4px 0px 4px 10px;
  background-color:rgb(255,96,0);
  clear:left;
  vertical-align:bottom;
 }
 
-div.foot p {
+div.footer p {
  margin:0;
  padding:0;
  font:bold 11px verdana, sans-serif;
 }
 
-div.foot .left {
+div.footer .left {
  float:left;
  width:40%;
 }
 
-div.foot .right {
+div.footer .right {
  text-align:right;
  margin-left:41%;
 }
 
-div.foot .bottom{
+div.footer .bottom{
  clear:both;
  text-align:right;
+}
+
+div.footer a,
+div.footer a:hover,
+div.footer a:visited {
+	text-decoration:none;
+	color:Black;
 }

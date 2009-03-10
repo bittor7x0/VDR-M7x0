@@ -19,6 +19,7 @@
 */
 
 #include <klapp_conf.h>
+#include <klone/utils.h>
 #include <time.h>
 
 #include "misc.h"
@@ -30,68 +31,289 @@
 #ifdef DEBUG
 dbg_recordings_kl1(void) { dbg("recordings.kl1"); }
 #endif
-%><%
-#ifdef DEBUG
-dbg_recordings_kl1();
-#endif
 
-recEntry * recs;
-int max_recs=1;
-int i=0;
-
-sortBy=SF_START;
-sortDirection=SD_ASC;
-
-vars_t *args = request_get_args(request);
-if (vars_countn(args, "sort")>0) { sortBy=vars_get_value_i(args,"sort"); }
-if (vars_countn(args, "direction")>0) { sortDirection=vars_get_value_i(args,"direction"); }
-
-const char dirImg[2][10]={"up1.gif","down1.gif"};
-int whatArrow(int aDir) {
-	if (aDir<0) { return 1; } else { return 0; }
+void printPlay(io_t *out, recEntry_t * const rec){
+		io_printf(out,
+"							<div class=\"boxRight\">\n"
+"								<a class=\"ui-icon ui-icon-play\" href=\"playlistrec.kl1?"
+		);
+		if (rec->path!=NULL) {
+			io_printf(out,
+								"path=%s\">",rec->path);
+		} else {
+			io_printf(out,
+								"id=%d\">",rec->ID);
+		}
+		io_printf(out,
+									"%s</a>\n"
+"							</div>\n"
+			,tr("play")
+		);
 }
 
-currentPage=PN_RECORDINGS;
-%>
+%><%
 
-<%@ include ../../components/pre-content.kl1 %>
+	#ifdef DEBUG
+	dbg_recordings_kl1();
+	#endif
 
-<div class="content">
+	config(session, request);
 
-<h2><% io_printf(out,i18n[8][langID]); %></h2>
+	vars_t *args = request_get_args(request);
+	
+	recInfo_t info;
+	initRI(&info);
+	int recId=(vars_countn(args,"recId")>0) ? vars_get_value_i(args,"recId") : -1;
+	const char *recName=vars_get_value(args,"recName");
+	info.title=(vars_countn(args,"title")>0) ? strdup(vars_get_value(args,"title")) : NULL;
+	info.subtitle=(vars_countn(args,"subtitle")>0) ? strdup(vars_get_value(args,"subtitle")) : NULL;
+	info.desc=(vars_countn(args,"desc")>0) ? strdup(vars_get_value(args,"desc")) : NULL;
+	sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
+	sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
 
-<table class="list1">
-	<col class="date" align="center"/>
-	<col class="hour" align="center"/>
-	<col class="content" align="left"/>
-	<thead>
-		<tr>
-			<th><a class="<%= sortClass(SF_START) %>" href="<% printLink(SF_START); %>"><%= tr("Date")     %></a></th>
-			<th><a class="<%= sortClass(SF_START) %>"href="<% printLink(SF_START); %>"><%= tr("Start")      %></a></th>
-			<th><a class="<%= sortClass(SF_TITLE) %>"href="<% printLink(SF_TITLE); %>"><%= tr("Title") %></a></th>
-		</tr>
-	</thead>
-	<tbody>
-<%
-	recs=getRecList(&max_recs,sortBy,sortDirection);
-	close_svdrp();
-	for (i=0;i<max_recs;i++) {
-		struct tm t1=*localtime(&recs[i].start);
-		io_printf(out,"<tr>\n <td>%s</td>\n",formatDate(&t1,0));
-		io_printf(out," <td>%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
-		io_printf(out," <td><div class=\"box_right\"><a href=\"playlistrec.kl1?");
-		if (recs[i].path!=NULL) {
-			io_printf(out,"path=%s",recs[i].path);
+	currentPage=PN_RECORDINGS;
+	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
+	printXhtmlHead(out,tr("recordings"),
+"		<script type=\"text/javascript\">\n"
+"			$(function(){\n"
+"				$('#delete').click(function (event){\n"
+"					if (!confirm('%s')){\n"
+"						event.preventDefault();\n"
+"					}\n"
+"				});\n"
+"			});\n"
+"		</script>\n"
+		,tr("recDeleteConfirm")
+	);
+	printMenu(out);
+	io_printf(out,
+"		<div id=\"main\" class=\"content\">\n"
+"			<h2>%s</h2>\n"
+			,tr("recordings")
+	);
+	if (currentAction==PA_DELETE) {
+		if ( (recId>0) && (recId<1000) 
+			/* TODO && (info.title) vacio en radio */
+		) {
+			dbg("Trying to delete recording with ID %d (%s)",recId,info.title);
+			char *message=NULL;
+			if (deleRec(recId,&info,&message)) {
+				io_printf(out,
+"			<div class=\"message\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recDeleteOk"),message);
+			} else {
+				io_printf(out,
+"			<div class=\"alert\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recDeleteErr"),message);
+			}
+			free(message);
 		} else {
-			io_printf(out,"id=%d",recs[i].ID);
+			io_printf(out,
+"			<div class=\"alert\">%s</div>\n",tr("recDeleteErr"));
 		}
-		io_printf(out,"\"><img border=\"0\" alt=\"%s\" src=\"/img/play16.png\"/></a></div>%s</td>\n</tr>\n",tr("Play"),recs[i].title);
+		currentAction=PA_SUMMARY;
 	}
-	freeRE(recs,max_recs);
+	if (currentAction==PA_EDIT) {
+		char htmlEncoded[2048];
+		int l;
+		freeRI(&info); //descartar posibles argumentos
+		if (recId>0 && getRecInfo(&info,recId)){
+			io_printf(out,
+"			<form action=\"/recordings.kl1\">\n");
+			io_printf(out,
+"				<input type=\"hidden\" name=\"recId\" value=\"%d\" />\n"
+"				<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n"
+"				<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n"
+				,recId
+				,sortBy
+				,sortDirection
+				);
+			io_printf(out,
+"				<table id=\"recEdit\" class=\"list1\">\n"
+"					<caption>%s</caption>\n"
+					,tr("recEdit")
+			);
+			if (recName!=NULL){
+				l=strlen(recName);
+				u_htmlncpy(htmlEncoded,recName,l,HTMLCPY_ENCODE);
+				io_printf(out,
+"					<tr>\n"
+"						<th>%s</th>\n"
+"						<td>\n"
+						,tr("name")
+				);
+				if (1){
+					recEntry_t rec;
+					initRE(&rec);
+					rec.ID=recId;
+					rec.title="";
+					printPlay(out,&rec);
+				}
+				io_printf(out,
+"							<input type=\"text\" name=\"recName\" value=\"%s\" size=\"%d\"/>\n"
+"							<input type=\"hidden\" name=\"oldName\" value=\"%s\"/>\n"
+"						</td>\n"
+"					</tr>\n"
+						,htmlEncoded
+						,5+(l>55)?55:l
+						,htmlEncoded
+				);
+			}
+			if (info.title!=NULL){
+				l=strlen(info.title);
+				u_htmlncpy(htmlEncoded,info.title,l,HTMLCPY_ENCODE);
+				io_printf(out,
+"					<tr>\n"
+"						<th>%s</th>\n"
+"						<td>\n"
+"							<textarea name=\"title\" cols=\"%d\" rows=\"%d\" class=\"readOnly\" readonly=\"readonly\">%s</textarea></td>\n"
+"						</td>\n"
+"					</tr>\n"
+						,tr("title")
+						,(l>60) ? 60 : l
+						,(l/60)+1
+						,htmlEncoded
+				);
+			}
+			if (info.subtitle!=NULL){
+				l=strlen(info.subtitle);
+				u_htmlncpy(htmlEncoded,info.subtitle,strlen(info.subtitle),HTMLCPY_ENCODE);
+				io_printf(out,
+"					<tr>\n"
+"						<th>%s</th>\n"
+"						<td>\n"
+"							<textarea name=\"subtitle\" cols=\"%d\" rows=\"%d\" class=\"readOnly\" readonly=\"readonly\">%s</textarea></td>\n"
+"						</td>\n"
+"					</tr>\n"
+						,tr("subtitle")
+						,(l>60) ? 60 : l
+						,(l/60)+1
+						,htmlEncoded
+				);
+			}
+			if (info.desc!=NULL){
+				l=strlen(info.desc);
+				u_htmlncpy(htmlEncoded,info.desc,strlen(info.desc),HTMLCPY_ENCODE);
+				io_printf(out,
+"					<tr>\n"
+"						<th>%s</th>\n"
+"						<td><textarea name=\"desc\" cols=\"%d\" rows=\"%d\" class=\"readOnly\" readonly=\"readonly\">%s</textarea></td>\n"
+"					</tr>\n"
+						,tr("desc")
+						,(l>60) ? 60 : l
+						,(l/60)+1
+						,htmlEncoded
+				);
+			}
+			io_printf(out,
+"					<tr class=\"buttons\">"
+						"<td colspan=\"2\">"
+			);
+			//if (info.title!=NULL) { TODO vacio en grabaciones de radio
+				io_printf(out,
+							"<button id=\"delete\" name=\"a\" type=\"submit\" value=\"%d\" "
+								"class=\"delete\">%s</button>"
+					,PA_DELETE,tr("recDelete")
+				);
+			//}
+			if (recName!=NULL) {
+				io_printf(out,
+							"<button id=\"confirm\" name=\"a\" type=\"submit\" value=\"%d\" "
+								"class=\"confirm\">%s</button>"
+						"</td>"
+					"</tr>\n"
+					,PA_CONFIRM,tr("accept")
+				);
+			}
+			io_printf(out,
+"				</table>\n"
+"			</form>\n"
+			);
+		} else {
+			io_printf(out,
+"			<div class=\"alert\">%s</div>\n"
+				,tr("recEditErr")
+			);
+			currentAction=PA_SUMMARY;
+		}
+	}
+	if (currentAction==PA_CONFIRM) {
+		const char *oldName=vars_get_value(args,"oldName");
+		if (recId>0 && oldName!=NULL && !sameString(oldName,recName)){
+			char *message=NULL;
+			if (editRec(recId,&info,recName,&message)){
+				io_printf(out,
+"			<div class=\"message\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recEditOk"),message);
+			} else {
+				io_printf(out,
+"			<div class=\"alert\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recEditErr"),message);
+			}
+			free(message);
+		}
+		currentAction=PA_SUMMARY;
+	}
+	if (currentAction==PA_SUMMARY) {
+		io_printf(out,
+"			<table id=\"recordings\" class=\"list1\">\n"
+"				<col class=\"number\"/>\n"
+"				<col class=\"date\"/>\n"
+"				<col class=\"hour\"/>\n"
+"				<col class=\"content\"/>\n"
+"				<thead>\n"
+"					<tr>\n"
+"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"					</tr>\n"
+"				</thead>\n"
+"				<tbody>\n"
+			,sortClass(SF_RC_NUMBER),SF_RC_NUMBER,newSortDirection(SF_RC_NUMBER),"#"
+			,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("date")
+			,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("start")
+			,sortClass(SF_TITLE),SF_TITLE,newSortDirection(SF_TITLE),tr("title")
+		);
+
+		recList_t recs;
+		int i=0;
+		getRecList(&recs,sortBy,sortDirection);
+		char urlEncodedTitle[2048];
+		for (i=0;i<recs.length;i++) {
+			struct tm t1=*localtime(&recs.entry[i].start);
+			io_printf(out,
+"					<tr>\n"
+"						<td class=\"number\" >%d</td>\n"
+"						<td class=\"date\">%s</td>\n"
+"						<td class=\"hour\">%02d:%02d</td>\n"
+				,recs.entry[i].ID
+				,formatDate(&t1,0)
+				,t1.tm_hour,t1.tm_min
+			);
+			u_urlncpy(urlEncodedTitle,recs.entry[i].title,strlen(recs.entry[i].title),URLCPY_ENCODE);
+			//TODO css
+			io_printf(out,
+"						<td class=\"content\">\n"
+"							<div class=\"boxRight\">\n"
+"								<a class=\"ui-icon ui-icon-edit\" href=\"recordings.kl1?sort=%d&direction=%d&a=%d&recId=%d&recName=%s\">%s</a>"
+"							</div>\n"
+								,sortBy,sortDirection,PA_EDIT,recs.entry[i].ID,urlEncodedTitle,tr("recEdit")
+			);
+			printPlay(out,&recs.entry[i]);
+			io_printf(out,
+"							<div class=\"title\">%s</div>\n"
+"						</td>\n"
+"					</tr>\n"
+						,recs.entry[i].title
+			);
+		}
+		freeRL(&recs);
+		io_printf(out,
+"				</tbody>\n"
+"			</table>\n"
+		);
+	}
+	io_printf(out,
+"		</div>\n"
+	);
+	close_svdrp();
+	freeRI(&info);
+	printFooter(out);
 %>
-	</tbody>
-</table>
-
-</div>
-
-<%@ include ../../components/post-content.kl1 %>

@@ -22,6 +22,65 @@
 #include <klone/session.h>
 #include <klone/request.h>
 
+typedef enum boolean_e {
+	BT_FALSE=0,
+	BT_TRUE=1 //importante positivo porque se usa como indice
+} boolean_t;
+
+typedef enum sortField_e {
+	SF_NONE,
+	SF_START,
+	SF_TYPE,
+	SF_TITLE,
+	SF_RC_NUMBER,
+	SF_CH_NUMBER,
+	SF_TM_NUMBER,
+	SF_NAME,
+	SF_PRIORITY,
+	SF_LIFETIME,
+	SF_ACTIVE,
+	SF_MUX
+} sortField_t;
+
+typedef enum sortDirection_e {
+	SD_DESC=-1,
+	SD_NONE,
+	SD_ASC=1
+} sortDirection_t;
+
+typedef enum pageNumber_e {
+	PN_INDEX,
+	PN_PROGRAMS,
+	PN_CHANNELS,
+	PN_TIMERS,
+	PN_RECORDINGS,
+	PN_SETTINGS,
+	PN_FILEVIEW,
+	PN_WATCHIT,
+	PN_BROWSE,
+	PN_LINKS
+} pageNumber_t;
+
+typedef enum pageAction_e {
+	PA_NOACTION,
+	PA_CONFIRM,
+	PA_CANCEL,
+	PA_SUMMARY,
+	PA_EDIT,
+	PA_NEW,
+	PA_ADD,
+	PA_DELETE,
+	PA_SHOW,
+	PA_PRINT,
+	PA_DOWNLOAD,
+	PA_DOWNLOAD_ALL
+} pageAction_t;
+
+typedef enum playlistType_e {
+	PL_M3U,
+	PL_XSPF
+} playlistType;
+
 extern int isM740AV;
 extern int isM750S;
 extern int isM750C;
@@ -33,100 +92,36 @@ extern const int sys750c;
 
 extern const int httpPort;
 
-extern const int ttOnce;
-extern const int ttPeriodic;
-
-extern const int sortNone;
-extern const int sortStart;
-extern const int sortStop;
-extern const int sortType;
-extern const int sortTitle;
-extern const int sortChannelNum;
-extern const int sortChannelName;
-extern const int sortPriority;
-extern const int sortLifetime;
-extern const int sortActive;
-extern const int sortMux;
-
-extern const int sortAsc;
-extern const int sortDesc;
-
-extern const char checked[2][8];
-extern const char selected[2][9];
-extern const char arStr[7][8];
-
-int isDST(time_t * aTime);
-int sameDay(time_t oneDate,time_t anotherDate);
-int sameString(const char * s1, const char * s2);
-int sameInt(const int i1, const int i2);
-int sameIntEx(const char * s, const int i);
-int parseRequestStr(const char * requestStr, char ** pathStr, char ** queryStr);
-char * strcatEx(char ** dest, const char * s);
-
-void config(session_t *session, request_t *request);
-int fileExists(const char * fileName);
-int legalPath(char * pathName);
-int vdrRunning();
-
-enum sortField {
-	SF_NONE,
-	SF_START,
-	//SF_STOP,
-	SF_TYPE=3,
-	SF_TITLE,
-	SF_NUMBER,
-	SF_NAME,
-	SF_PRIORITY,
-	SF_LIFETIME,
-	SF_ACTIVE,
-	SF_MUX
-};
-
-enum sortDirection {
-	SD_DESC=-1,
-	SD_NONE,
-	SD_ASC=1
-};
-
-enum pageNumber {
-	PN_INDEX = 4,
-	PN_PROGRAMS,
-	PN_CHANNELS,
-	PN_TIMERS,
-	PN_RECORDINGS,
-	PN_SETTINGS,
-	PN_WATCHIT=39,
-	PN_BROWSE=92,
-	PN_LINKS= 96
-};
-
-typedef enum playlistType_e {
-	PL_M3U,
-	PL_XSPF
-} playlistType;
-
-extern enum sortField sortBy;
-extern enum sortDirection sortDirection;
-extern enum pageNumber currentPage;
-
-extern const char * action;
-extern const char * SUMMARY;
-extern const char * EDIT;
-extern const char * NEW;
-extern const char * ADD;
-extern const char * DELE;
-extern const char * NOACTION;
-
+extern const char *checked[2];
+extern const char *selected[2];
+extern const char *arStr[7];
+extern const char *classCurrent[2];
+extern sortField_t sortBy;
+extern sortDirection_t sortDirection;
+extern pageNumber_t currentPage;
+extern pageAction_t currentAction;
 extern char server_ip[16];
 extern uint16_t server_port;
 extern char myip[16];
-extern char * newt;
 
+#define boolean(i) ((i)?BT_TRUE:BT_FALSE)
+#define newSortDirection(sf) (sf==sortBy)?-sortDirection:1
 
-const char * sortClass(enum sortField sf);
-
-char * encode_printf(io_t *out, const char * const fmt, const char * const s);
-
-#define printLink(sf) io_printf(out,"%s?sort=%d&direction=%d",SCRIPT_NAME,sf,(sf==sortBy)?-sortDirection:1)
+void config(session_t *session, request_t *request);
+boolean_t vdrRunning();
+boolean_t isDST(time_t * aTime);
+boolean_t sameDay(time_t oneDate,time_t anotherDate);
+boolean_t sameString(const char * s1, const char * s2);
+boolean_t sameInt(const int i1, const int i2);
+boolean_t sameIntEx(const char * s, const int i);
+boolean_t parseRequestStr(request_t *request, char ** pathStr, char ** queryStr);
+char * strcatEx(char ** dest, const char * s);
+boolean_t fileExists(const char * fileName);
+const char * sortClass(sortField_t sf);
+char * htmlEncode(const char * const s);
+boolean_t makeTime(time_t *time, const char * date, const char * hour, const char * min );
+void printXhtmlHead(io_t *out, const char *title, const char *headExtra, ...);
+void printMenu(io_t *out);
+void printFooter(io_t *out);
 
 #endif

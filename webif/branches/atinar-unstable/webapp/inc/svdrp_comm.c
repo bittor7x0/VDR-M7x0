@@ -171,7 +171,7 @@ char * read_svdrp() {
 		buffer[n]='\0';
 		char * tmp=realloc(data,l+n+1);
 		if (!tmp) {
-			warn("(Re)allocation failed. Old size is %d, new size should be %d",(data==NULL)?0:l+1,l+n+1);
+			warn("read_svdrp:Reallocation failed.");
 			exit(1);
 		}
 		if (data==NULL) {

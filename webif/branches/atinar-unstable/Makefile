@@ -46,7 +46,7 @@ SUBDIR ?= $(KLONE_APP_TOP)/webapp/inc/
 
 # additional CFLAGS, LDFLAGS and LDADD (optional, use absolute paths for LDADD)
 WEBAPP_CFLAGS ?= -I$(KLONE_APP_TOP) -I$(KLONE_SRC) -I$(SUBDIR) $(UCLIBC_CFLAGS)
-WEBAPP_LDADD ?= $(SUBDIR)svdrp_comm.o $(SUBDIR)svdrp_parse.o $(SUBDIR)channels.o $(SUBDIR)timers.o $(SUBDIR)misc.o $(SUBDIR)recordings.o $(SUBDIR)epg.o ${SUBDIR}i18n.o ${SUBDIR}conf.o ${SUBDIR}conf-i18n.o $(SUBDIR)recording.o
+WEBAPP_LDADD ?= $(SUBDIR)svdrp_comm.o $(SUBDIR)svdrp_parse.o $(SUBDIR)channels.o $(SUBDIR)timers.o $(SUBDIR)misc.o $(SUBDIR)recordings.o $(SUBDIR)epg.o ${SUBDIR}i18n.o ${SUBDIR}conf.o $(SUBDIR)recording.o
 WEBAPP_LDFLAGS ?=
 
 -include build/mk/klone-app.mk

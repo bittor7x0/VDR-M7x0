@@ -35,32 +35,15 @@
 
 char vdr_setup[256];
 
-int margin_start=5*60;
-int margin_stop=15*60;
-
-int parse_ret_code(char * line, char ret_code[10]) {
-	long int i=0;
-	char s[4];
-	
-	i=strcspn(line," ");
-	strncpy(ret_code,line,i);
-	ret_code[i]='\0';
-	strncpy(s,ret_code,3);
-	s[4]='\0';
-	i=strtol(s,NULL, 10);
-	if ( (i>99) && (i<1000)) {
-		return (int)i;
-	} else {
-	return 500;
-	}
-}
+int marginStart=5*60;
+int marginStop=15*60;
 
 void parse_215E(char * line, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version) {
 	char * r=line;
-	int k=0;
+	int k;
 	int l;
 	
-	for(k=0;k<5;k++) { //TODO_KILLE 4 -> 5
+	for(k=0;k<5;k++) {
 		r+=strspn(r," ");
 		l=strcspn(r," ");
 		switch (k) {
@@ -74,55 +57,23 @@ void parse_215E(char * line, unsigned int * event_id, long int * start_time, int
 	}
 }
 
-void make_timer(char newt[256], int active, int channelNum, time_t start_time, time_t end_time, int priority, int lifetime, char title[50]) {
-	time_t ts=start_time-margin_start;
-	time_t te=end_time+margin_stop;
+boolean_t makeTimerStr(char **timerStr, int active, int channelNum, time_t start, time_t stop, int priority, int lifetime, const char * title) {
+	time_t ts=start;//-marginStart;
+	time_t te=stop;//+marginStop;
 	struct tm t1=*localtime(&ts);
 	struct tm t2=*localtime(&te);
-	sprintf(newt,"NEWT %d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:",active,channelNum,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);
+	return (asprintf(timerStr,"%d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:"
+		,active
+		,channelNum
+		,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday
+		,t1.tm_hour,t1.tm_min
+		,t2.tm_hour,t2.tm_min
+		,priority
+		,lifetime
+		,title	)<1) ?  BT_FALSE : BT_TRUE;
 }
 
-int makeTimerEx(char newt[256], int active, int channelNum, enum timerType type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title) {
-	char s[25]; 
-	char * date;
-	
-	if (type==REGULAR) {
-	time_t rawtime=time(NULL);
-	struct tm * today;
-	today=localtime(&rawtime); 
-		date=malloc(12);    
-		strftime(date,11,"%Y-%m-%d",today);
-	} else {
-	//ONE_TIME
-	date=strdup(argDate);
-	}
-	
-	struct tm startTimePtr;
-	sprintf(s,"%s %s:%s:00",date,startH,startM);
-	if (!strptime(s,"%Y-%m-%d %H:%M:%S",&startTimePtr)) { return 1; }
-	startTimePtr.tm_wday=0; startTimePtr.tm_yday=0;  startTimePtr.tm_isdst=-1;
-	time_t start_time=mktime(&startTimePtr)-marginStart;
-
-	struct tm endTimePtr;
-	sprintf(s,"%s %s:%s:00",date,endH,endM);
-	if (!strptime(s,"%Y-%m-%d %H:%M:%S",&endTimePtr)) { return 1; }
-	endTimePtr.tm_wday=0; endTimePtr.tm_yday=0;  endTimePtr.tm_isdst=-1;
-	time_t end_time=mktime(&endTimePtr)+marginEnd;
-	if (end_time<start_time) { end_time+=86400; }
-	
-	struct tm t1=*localtime(&start_time);
-	struct tm t2=*localtime(&end_time);
-	if (type==REGULAR) {
-		sprintf(newt,"NEWT %d:%d:%s:%02d%02d:%02d%02d:%d:%d:%s:",active,channelNum,reg_timer,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);  
-	} else {
-	//ONE_TIME
-	sprintf(newt,"NEWT %d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:",active,channelNum,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday,t1.tm_hour,t1.tm_min,t2.tm_hour,t2.tm_min,priority,lifetime,title);
-	}
-	free(date);
-	return 0;
-}
-
-void parseRec(char * line, recEntry * const recording){
+void parseRec(char * line, recEntry_t * const recording){
 	char * r=line;
 	int l;
 	struct tm timeptr;
@@ -158,7 +109,7 @@ void parseRec(char * line, recEntry * const recording){
 	return;
 }
 
-void parseTimer(char * line, timerEntry * const timer ){
+void parseTimer(const char * line, timerEntry_t * const timer ){
 	char * r;
 	char * c;
 	char * h;
@@ -176,7 +127,7 @@ void parseTimer(char * line, timerEntry * const timer ){
 	if (l==7) {
 		strncpy(timer->reg_timer,r,l);
 		timer->reg_timer[l]='\0';
-		timer->type=REGULAR; //Corrige error
+		timer->type=TT_REGULAR;
 		strcpy(s,"1970-01-02");
 		time_t ttDate=time(NULL);
 		for (k=0;k<7;k++) {
@@ -190,8 +141,7 @@ void parseTimer(char * line, timerEntry * const timer ){
 	} else {
 		strncpy(s,r,l);
 		s[l]='\0';
-		timer->type=ONE_TIME; //Corrige error
-		strcpy(timer->reg_timer,"");
+		timer->type=TT_ONE_TIME;
 	}
 	r+=l+1;
 	l=4;
@@ -221,16 +171,7 @@ void parseTimer(char * line, timerEntry * const timer ){
 	timer->lifetime=strtol(r,&r,10); r++;
 	l=strcspn(r,":");
 
-	//TODO check ENOMEM
 	timer->title=strndup(r,l);
-	/* TODO? restore ':'
-	c=timer->title;
-	while (*c) {
-		if (*c=='|') 
-			*c=':';
-		c++;
-	}
-	*/
 	//TODO parse aux
 }
 
@@ -283,44 +224,6 @@ void parseChannel(char * line, channelEntry * channel) {
 }
 
 
-//Noch ein wenig was, um QUERY_STRING zu verarbeiten
-
-// Wandelt einzelne Hexzeichen (%xx) in ASCII-Zeichen
-// und kodierte Leerzeichen (+) in echte Leerzeichen um
-void hex2ascii(char *str)  {
-	int x, y;
-	
-	for(x=0,y=0; str[y] != '\0'; ++x,++y) {
-		str[x] = str[y];
-		/* Ein Hexadezimales Zeichen? */
-		if(str[x] == '%')  {
-			str[x] = convert(&str[y+1]);
-			y += 2;
-		}  else if( str[x] == '+') {
-			/* Ein Leerzeichen? */
-		  	str[x]=' ';
-		}
-	}
-	/* Geparsten String sauber terminieren */
-	str[x] = '\0';
-}
-
-// Funktion konvertiert einen String von zwei hexadezimalen
-// Zeichen und gibt das einzelne dafür stehende Zeichen zurück
-char convert(char *hex) {
-	char ascii;
-	
-	/* erster Hexawert */
-	ascii =
-		(hex[0] >= 'A' ? ((hex[0] & 0xdf) - 'A')+10 : (hex[0] - '0'));
-	
-	ascii <<= 4; /* Bitverschiebung schneller als ascii*=16 */
-	/* zweiter Hexawert */
-	ascii +=
-		(hex[1] >= 'A' ? ((hex[1] & 0xdf) - 'A')+10 : (hex[1] - '0'));
-	return ascii;
-}
-
 void get_config_info() {
 
 #ifdef FOR_BUSYBOX
@@ -347,19 +250,19 @@ void get_config_info() {
 
 		FILE *f = fopen(vdr_setup,"r");
 		if (f) {
-		  while (!feof(f)) {
-			char buffer[256], param[sizeof(buffer)];
-		    fgets(buffer,sizeof(buffer),f);
-		    buffer[strlen(buffer)-1] = '\0';
-		    const int i=strcspn(buffer,"=");
-		    strncpy(param,buffer,i);
-		    if (!strcmp(param,"MarginStart ")) {
-		      margin_start=strtol(buffer+i+2,NULL,10)*60;
-		    } else if (!strcmp(param,"MarginStop ")) {
-		      margin_stop=strtol(buffer+i+2,NULL,10)*60;
-		    }
-		  }
-		  fclose(f);
+			while (!feof(f)) {
+				char buffer[256], param[sizeof(buffer)];
+				fgets(buffer,sizeof(buffer),f);
+				buffer[strlen(buffer)-1] = '\0';
+				const int i=strcspn(buffer,"=");
+				strncpy(param,buffer,i);
+				if (!strcmp(param,"MarginStart ")) {
+					margin_start=strtol(buffer+i+2,NULL,10)*60;
+				} else if (!strcmp(param,"MarginStop ")) {
+					marginStop=strtol(buffer+i+2,NULL,10)*60;
+				}
+			}
+			fclose(f);
 		}
 	}
 

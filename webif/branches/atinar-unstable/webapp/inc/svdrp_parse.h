@@ -24,30 +24,26 @@
 #include "recordings.h"
 #include "timers.h"
 
-extern int margin_start;
-extern int margin_stop;
+//TODO  mover a conf
+extern int marginStart;
+extern int marginStop;
 
 //svdrp_parse stellt Funktionen bereit, um die Zeilen einer Antwort zu parsen
 
 void parse_215E(char * line, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version);
 
-void parseRec(char * line, recEntry * const recording);
+void parseRec(char * line, recEntry_t * const recording);
 
-void parseTimer(char * line, timerEntry * const timer);
+void parseTimer(const char * line, timerEntry_t * const timer);
 
 void parseChannel(char * line, channelEntry * channel);
 
-void make_timer(char newt[256], int active, int channelNum, time_t start_time, time_t end_time, int priority, int lifetime, char title[100]);
+boolean_t makeTimerStr(char **timerStr, int active, int channelNum, time_t start_time, time_t end_time
+	, int priority, int lifetime, const char *title);
 
-int makeTimerEx(char newt[256], int active, int channelNum, enum timerType type, char reg_timer[8], const char * argDate, const char * startH, const char * startM, const char * endH, const char * endM, int marginStart, int marginEnd, int priority, int lifetime, const char * title);
-
-int parse_ret_code(char * line, char ret_code[10]);
-
+//TODO mover a conf
 //Liest die VDR-FW Konfigurationsdatei (falls status auf einer M740AV läuft
 void get_config_info();
-
-void hex2ascii(char *str);
-char convert(char *hex);
 
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -30,289 +30,442 @@
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
-#ifdef DEBUG
-void dbg_timers_kl1(void) { dbg("timers.kl1"); }
-#endif
-%><%
-#ifdef DEBUG
-dbg_timers_kl1();
-#endif
 
-const char * SUMMARY = "summary";
-const char * EDIT = "edit";
-const char * NEW = "new";
-const char * ADD = "add";
-const char * DELE = "dele";
-const char * NOACTION = "";
-
-int i=0;
-
-sortBy=SF_START;
-sortDirection=SD_ASC;
-int timerID=-1;
-const char * argAction=NULL;
-const char * argAltAction=NULL;
-const char * altAction=NOACTION;
-const char * oldTimer=NULL;
-
-vars_t *args = request_get_args(request);
-if (vars_countn(args,"a")>0) { argAction=vars_get_value(args,"a"); }
-action = (argAction!=NULL) ? argAction : SUMMARY;
-if (vars_countn(args,"alt")>0) { argAltAction=vars_get_value(args,"alt"); }
-altAction = (argAltAction!=NULL) ? argAltAction : NOACTION;
-if (vars_countn(args,"timer")>0) { newt=(char *)vars_get_value(args,"timer");}
-if (vars_countn(args,"oldTimer")>0) { oldTimer=vars_get_value(args,"oldTimer");}
-if (vars_countn(args,"sort")>0) { sortBy=vars_get_value_i(args,"sort"); }
-if (vars_countn(args,"direction")>0) { sortDirection=vars_get_value_i(args,"direction"); }
-if (vars_countn(args,"timerID")>0) { timerID=vars_get_value_i(args,"timerID"); }
-
-currentPage=PN_CHANNELS;
- %>
-
-<%@ include ../../components/pre-content.kl1 %>
-
-<div class="content">
-
-<h2><% io_printf(out,i18n[7][langID]); %></h2>
-
-<%
-channelList channels;
-initCL(&channels);
-
-if (!strcmp(altAction,DELE)) {
-	if ( (timerID>0) && (timerID<1000) && (newt) ) {
-		dbg("Try to del timer with ID %d (%s)",timerID,newt+5);
-		if (deleTimer(timerID,newt+5)==0) {
-			io_printf(out,"<p><b>%s</b></p>\n",tr("Timer deleted!"));
-			action=SUMMARY;
-		} else {
-			io_printf(out,"<p><b>%s</b></p>\n",tr("Failed to delete timer!"));
-			action=EDIT;
-		}
-	}
-}
-
-if (!strcmp(action,ADD)) {
-	if ( (timerID>0) && (newt) && (oldTimer) ) {
-		if (editTimer(timerID,oldTimer+5,newt+5)==0) {
-			io_printf(out,"<p><b>%s</b></p>\n",tr("Timer updated!"));
-		} else {
-			io_printf(out,"<p><b>%s</b></p>\n",tr("Failed to update timer! Maybe it changed in the meantime?"));
-		}
-	} else if ( (newt) && (addTimer(newt))) {
-		io_printf(out,"<p><b>%s</b></p>\n",tr("Timer added!"));
-	} else {  
-		io_printf(out,"<p><b>%s</b></p>\n",tr("Failed to add timer!"));
-	}
-	action=SUMMARY;
-} else if (!strcmp(action,NEW)) {
-	int active=0; 
-	if (vars_countn(args,"active")>0) { active=vars_get_value_i(args,"active"); }
-	int chan_id=0;
-	if (vars_countn(args,"sender")>0) { chan_id=vars_get_value_i(args,"sender"); }
-	enum timerType type=UNDEFINED;
-	char reg_timer[8]="";
-	const char * date=NULL;
-	if (vars_countn(args,"day")>0) {
-		if (!strcmp(vars_get_value(args,"day"),"once")) {
-			type=ONE_TIME;
-				date=vars_get_value(args,"date");
-		} else if (!strcmp(vars_get_value(args,"day"),"reg")) {
-			strcpy(reg_timer,"-------");
-			if (vars_countn(args,"mon")>0) { reg_timer[0]='M'; }
-			if (vars_countn(args,"tue")>0) { reg_timer[1]='D'; }
-			if (vars_countn(args,"wed")>0) { reg_timer[2]='M'; }
-			if (vars_countn(args,"thu")>0) { reg_timer[3]='D'; }
-			if (vars_countn(args,"fri")>0) { reg_timer[4]='F'; }
-			if (vars_countn(args,"sat")>0) { reg_timer[5]='S'; }
-			if (vars_countn(args,"sun")>0) { reg_timer[6]='S'; }
-			type=REGULAR;
+char * parseTimerForm(vars_t *args){
+	char * timerStr=NULL;
+	timerEntry_t timer;
+	boolean_t result=BT_FALSE;		
+	initTE(&timer);
+	timer.active=(vars_countn(args,"active")>0) ? vars_get_value_i(args,"active") : 0;
+	timer.channelNum=(vars_countn(args,"channelNum")>0) ? vars_get_value_i(args,"channelNum") : 0;
+	timer.type=(vars_countn(args,"type")>0) ? vars_get_value_i(args,"type") : TT_ONE_TIME;
+	char * date=NULL;
+	if (timer.type==TT_ONE_TIME && vars_countn(args,"date")>0) {
+		date=strdup(vars_get_value(args,"date"));
+	} else {
+		size_t i;
+		for(i=0;i<vars_countn(args,"wday");i++){
+			int wday=vars_geti_value_i(args, "wday",i);
+			if (wday>6||wday<0){
+				//TODO warn
+			} else {
+				timer.reg_timer[(wday+6)%7]=weekdays[langID][wday][0]; 
+			}
 		}
 	}
 	const char * startH= vars_get_value(args,"startHour"); 
 	const char * startM= vars_get_value(args,"startMin");
 	const char * endH  = vars_get_value(args,"endHour");
 	const char * endM  = vars_get_value(args,"endMin");
-	int lifetime= (vars_countn(args,"lifetime")>0) ? vars_get_value_i(args,"lifetime") : 99;
-	int priority= (vars_countn(args,"priority")>0) ? vars_get_value_i(args,"priority") : 50;
-	const char * title = vars_get_value(args,"title");
-	int addMargin= (vars_countn(args,"addMargin")>0);
+	timer.lifetime= (vars_countn(args,"lifetime")>0) ? vars_get_value_i(args,"lifetime") : 99;
+	timer.priority= (vars_countn(args,"priority")>0) ? vars_get_value_i(args,"priority") : 50;
+	timer.title = strdup((vars_countn(args,"title")>0) ? vars_get_value(args,"title") : "");
+	boolean_t addMargin= boolean(vars_countn(args,"addMargin")>0);
 		
-	if ( (type==UNDEFINED) ||
-		( (type==ONE_TIME) && (!date) ) ||
-		( (type==REGULAR) && (strlen(reg_timer)<7) ) ||
+	if	( (timer.type==TT_UNDEFINED) ||
+		( (timer.type==TT_ONE_TIME) && (!date) ) ||
+		( (timer.type==TT_REGULAR) && (strlen(timer.reg_timer)<7) ) ||
 		( (!startH) || (!startM) || (!endH) || (!endM) ) ) 
 	{
 		io_printf(out,"Fatal Error!\n");
 	} else {
-		int ms=0; int me=0;
-		if (addMargin) { ms=margin_start; me=margin_stop; }
-		char newTimer[256];
-		if (makeTimerEx(newTimer,active,chan_id,type,reg_timer,date,startH,startM,endH,endM,ms,me,priority,lifetime,title)==0) {
-			if (timerID>0) {
-				io_printf(out,"<h2>%s</h2>\n",tr("Edit timer"));  
-			} else {
-				io_printf(out,"<h2>%s</h2>\n",tr("New timer"));
-			}
-			io_printf(out,"<table><tr><td>%s</td>\n",tr("active"));
-			if (active==1) {
-				io_printf(out,"<td><b>%s</b></td></tr>\n",tr("yes"));  
-			} else {
-				io_printf(out,"<td><b>%s</b></td></tr>\n",tr("no"));
-			}
-			io_printf(out,"<tr><td>%s</td><td><b>%d</b></td></tr>\n",tr("channel"),chan_id);
-			if (type==ONE_TIME) {
-				io_printf(out,"<tr><td>%s</td><td><b>%s</b></td></tr>\n",tr("one-time recording"),date);
-			} else {
-				//REGULAR
-				io_printf(out,"<tr><td>%s</td><td><b>%s</b></td></tr>\n",tr("regular recording"),reg_timer);
-			}
-			io_printf(out,"<tr><td>%s</td><td><b>%s:%s</b></td></tr>\n",tr("from"),startH,startM);
-			io_printf(out,"<tr><td>%s</td><td><b>%s:%s</b></td></tr>\n",tr("to"),endH,endM);
-			if (addMargin) {
-				io_printf(out,"<tr><td>%s</td><td><b>%s</b></td></tr>\n",tr("add start/stop margin"),tr("yes"));
-			} else {
-				io_printf(out,"<tr><td>%s</td><td><b>%s</b></td></tr>\n",tr("add start/stop margin"),tr("yes"));
-			}
-			io_printf(out,"<tr><td>%s</td><td><b>%d</b></td></tr>\n",tr("priority"),priority);
-			io_printf(out,"<tr><td>%s</td><td><b>%d</b></td></tr>\n",tr("lifetime"),lifetime);
-			io_printf(out,"<tr><td>%s</td><td><b>%s</b></td></tr>\n",tr("Title"),title);
-			if (timerID>0) {
-				io_printf(out,"<tr><td colspan=\"2\" align=\"right\"><a href=\"/timers.kl1?a=add&amp;timer=%s&amp;timerID=%d&amp;oldTimer=%s\">%s</a></td></tr></table>\n",newTimer,timerID,newt,tr("add"));
-			} else {
-				io_printf(out,"<tr><td colspan=\"2\" align=\"right\"><a href=\"/timers.kl1?a=add&amp;timer=%s\">%s</a></td></tr></table>\n",newTimer,tr("add"));
-			}
-		}   
-	}
+		if (timer.type==TT_REGULAR) {
+			//El dia no importa, solo las horas
+			time_t rawtime=time(NULL);
+			struct tm * today;
+			today=localtime(&rawtime); 
+			date=malloc(12);    
+			strftime(date,11,"%Y-%m-%d",today);
+		}
 		
-} else if (!strcmp(action,EDIT)) {
-	timerEntry timer;
-	initTE(&timer);
-	
-	if (channels.length==0){
-		getChannelList(&channels);
-	}
-	
-	if (newt) {
-		parseTimer(newt+5,&timer);    
-		io_printf(out,"<h1>%s</h1>\n<form action=\"/timers.kl1\">\n",tr("Edit timer"));
-		if (timerID>0) {
-			io_printf(out,"<input type=\"hidden\" name=\"timerID\" value=\"%d\" />\n",timerID);
-			io_printf(out,"<input type=\"hidden\" name=\"timer\" value=\"%s\" />",newt);
-		}
-	} else {
-		io_printf(out,"<h1>%s</h1>\n<form action=\"/timers.kl1\">\n",tr("New timer"));
-	}
-	io_printf(out,"<input type=\"hidden\" name=\"a\" value=\"new\" />\n<table class=\"list1\" style=>\n");
-	io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"active\" value=\"1\" %s />%s</td></tr>\n",checked[timer.active],tr("active"));
-	io_printf(out,"<tr><td>%s</td><td><select name=\"sender\" size=\"1\">\n",tr("channel"));
-	for (i=0;i<channels.length;i++) {
-		io_printf(out,"<option value=\"%d\"",channels.entry[i].channelNum);
-		if (timer.channelNum==i+1) { io_printf(out," selected=\"selected\""); }
-		io_printf(out,">%d - %s</option>\n",channels.entry[i].channelNum,channels.entry[i].channelName);
-	}  
-	io_printf(out,"</select></td></tr>\n<tr><td><input type=\"radio\" name=\"day\" value=\"once\"");
-	if (timer.type==ONE_TIME) {
-		io_printf(out," checked"); 
-		strcpy(timer.reg_timer,"-------"); 
-	}
-	io_printf(out,">%s</input></td><td><select name=\"date\" size=\"1\">\n",tr("one-time recording"));
-	time_t ttDate=time(NULL);
-	char cdate[11];
-	char cldate[11];
-	for(i=0;i<14;i++) {
-		struct tm date=*localtime(&ttDate);
-		strftime(cdate,11,"%Y-%m-%d",&date);
-		io_printf(out,"<option value=\"%s\" %s>%s, %s</option>\n",cdate,selected[sameDay(ttDate,timer.start)],weekdays[langID][date.tm_wday],formatDate(&date,0));
-		if ( (sameDay(ttDate,timer.start)==1) && (timer.type==REGULAR) ) {  //TODO_KILLE wrong timer.type value
-			timer.reg_timer[(date.tm_wday+6)%7]='x'; //TODO weekdays[langID][date.tm_wday][0]; 
-		}
-		ttDate+=24*60*60;
-	} 
-	io_printf(out,"</select></td></tr>\n<tr><td><input type=\"radio\" name=\"day\" value=\"reg\"");
-	if (timer.type==REGULAR) {  //TODO_KILLE wrong timer.type value
-		io_printf(out," checked"); 
-	}
-	io_printf(out,">%s</input></td><td>",tr("regular recording"));
-	for(i=startOfWeek[langID];i<startOfWeek[langID]+7;i++) {
-		io_printf(out,"<input type=\"checkbox\" name=\"%s\" value=\"%d\"",shortWeekdays[langID][i%7],(i%7));
-		if ( timer.reg_timer[(i+6)%7]!='-' ) {
-			io_printf(out," checked");
-		}
-		io_printf(out,">%s</input>&nbsp;&nbsp;",weekdays[langID][i%7]);
-	}
-	struct tm start_date=*localtime(&timer.start);
-	io_printf(out,"</td></tr>\n<tr><td>%s</td><td><input type=\"text\" name=\"startHour\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;:&nbsp;<input type=\"text\" name=\"startMin\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;</td></tr>\n",tr("from"),start_date.tm_hour,start_date.tm_min);
-	struct tm end_date=*localtime(&timer.stop);
-	io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"endHour\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;:&nbsp;<input type=\"text\" name=\"endMin\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;</td></tr>\n",tr("to"),end_date.tm_hour,end_date.tm_min);
-	if (timerID==-1) {
-		io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"addMargin\" value=\"1\" checked>%s</input></td></tr>\n",tr("add start/stop margin"));
-	} else {
-		io_printf(out,"<tr><td>&nbsp;</td><td><input type=\"checkbox\" name=\"addMargin\" value=\"0\">%s</input></td></tr>\n",tr("add start/stop margin"));
-	}
-	io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"priority\" maxlength=\"2\" size=\"3\" value=\"%d\"/></td></tr>\n<tr><td>%s</td><td><input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\" /></td></tr>\n",tr("priority"),timer.priority,tr("lifetime"),timer.lifetime);
-	io_printf(out,"<tr><td>%s</td><td><input type=\"text\" name=\"title\" size=\"70\" value=\"%s\" /></td></tr>\n<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\" %s \" /></td></tr>\n",tr("Title"),timer.title,tr("Check timer"));
-	
-	if (timerID>0) {
-		io_printf(out,"<tr><td colspan=\"2\"><hr><b>%s</b></td></tr>\n",tr("- or -"));
-		io_printf(out,"<tr><td colspan=\"2\"><input type=\"radio\" name=\"alt\" value=\"dele\">%s</input></td></tr>\n",tr("delete timer"));
-		io_printf(out,"<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\" %s \" /></td></tr>\n",tr(" execute "));
-	}
-	io_printf(out,"</table></form>\n");
-	freeTE(&timer);
-	
-} else {
-	action=SUMMARY;
-}
-
-if (strcmp(action,SUMMARY)==0) {
-	if (channels.length==0){
-		getChannelList(&channels);
-	}
-	
-	if (channels.length>0) {
-		timerEntry * timers;
-		int max_timers=1;
-		%>
-	<table class="list1">
-		<tr>
-			<th><a class="<%= sortClass(SF_START) %>" href="<% printLink(SF_START); %>"><%= tr("Date")      %></a></th>
-			<th><a class="<%= sortClass(SF_NAME)  %>" href="<% printLink(SF_NAME);  %>"><%= tr("channel")   %></a></th>
-			<th><a class="<%= sortClass(SF_START) %>" href="<% printLink(SF_START); %>"><%= tr("from")      %></a></th>
-			<th><a class="<%= sortClass(SF_START) %>" href="<% printLink(SF_START); %>"><%= tr("to")        %></a></th>
-			<th><a class="<%= sortClass(SF_TITLE) %>" href="<% printLink(SF_TITLE); %>"><%= tr("program")   %></a></th>
-			<th><a class="<%= sortClass(SF_MUX)   %>" href="<% printLink(SF_MUX);   %>"><%= tr("multiplex") %></a></th>
-			<th>&nbsp;</th>
-		</tr>
-		<%
-		timers=getTimerList(&channels,&max_timers,sortBy,sortDirection);
-		const char *editTimer=tr("Edit timer");
-		for (i=0;i<max_timers;i++) {
-			struct tm t1=*localtime(&timers[i].start);
-			struct tm t2=*localtime(&timers[i].stop);
-			if (timers[i].type==REGULAR) {
-				io_printf(out,"<tr>\n <td>%s (%s)</td>\n",formatDate(&t1,0),timers[i].reg_timer);
-			} else {
-				io_printf(out,"<tr>\n <td>%s</td>\n",formatDate(&t1,0));
+		if (makeTime(&timer.start,date,startH,startM) && makeTime(&timer.stop,date,endH,endM)){
+			if (addMargin){
+				timer.start-=marginStart;
+				timer.stop+=marginStop;
 			}
-			io_printf(out," <td>%s</a></td>\n",timers[i].channelName);
-			io_printf(out," <td>%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
-			io_printf(out," <td>%02d:%02d</td>\n",t2.tm_hour,t2.tm_min);
-			io_printf(out," <td>%s</td>\n",timers[i].title);
-			io_printf(out," <td>%s</td>\n",timers[i].mux);
-			io_printf(out," <td><a href=\"timers.kl1?a=edit&timer=NEWT %s&timerID=%d\"><img src=\"/img/edit16.png\" alt=\"%s\" /></a></td>\n",timers[i].newt,timers[i].ID,editTimer);
-			io_printf(out,"</tr>\n");
+			if (timer.stop<timer.start) {
+				timer.stop+=24*60*60; 
+			}
+			struct tm t1=*localtime(&timer.start);
+			struct tm t2=*localtime(&timer.stop);
+			result = (timer.type==TT_REGULAR) 
+				? (asprintf(&timerStr,"%d:%d:%s:%02d%02d:%02d%02d:%d:%d:%s:"
+					,timer.active
+					,timer.channelNum
+					,timer.reg_timer
+					,t1.tm_hour,t1.tm_min
+					,t2.tm_hour,t2.tm_min
+					,timer.priority
+					,timer.lifetime
+					,timer.title		)<1) ? BT_FALSE : BT_TRUE
+				: (asprintf(&timerStr,"%d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:"
+					,timer.active
+					,timer.channelNum
+					,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday
+					,t1.tm_hour,t1.tm_min
+					,t2.tm_hour,t2.tm_min
+					,timer.priority
+					,timer.lifetime
+					,timer.title		)<1) ? BT_FALSE : BT_TRUE;
 		}
-		io_printf(out,"</table>\n");
-		freeTimerList(timers,max_timers);
-	} else {
-		//TODO
+		free(date);
 	}
+	freeTE(&timer);
+	return timerStr;
 }
-freeCL(&channels);
-close_svdrp();
+
+#ifdef DEBUG
+void dbg_timers_kl1(void) { dbg("timers.kl1"); }
+#endif
+
+%><%
+
+	#ifdef DEBUG
+	dbg_timers_kl1();
+	#endif
+
+	config(session, request);
+
+	int i=0;
+
+	vars_t *args = request_get_args(request);
+	int timerID=(vars_countn(args,"timerID")>0) ? vars_get_value_i(args,"timerID") : -1;
+	const char * argTimerStr=(vars_countn(args,"timer")>0) ? vars_get_value(args,"timer") : NULL;
+	const char * oldTimerStr=(vars_countn(args,"oldTimerStr")>0) ? vars_get_value(args,"oldTimerStr") : NULL;
+	sortBy=(vars_countn(args,"sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
+	sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
+	currentPage=PN_TIMERS;
+	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
+	printXhtmlHead(out,tr("timers"),
+"		<script type=\"text/javascript\">\n"
+"			$(function(){\n"
+"				$('#delete').click(function (event){\n"
+"					if (!confirm('%s')){\n"
+"						event.preventDefault();\n"
+"					}\n"
+"				});\n"
+"			});\n"
+"		</script>\n"
+		,tr("timerDeleteConfirm")
+	);
+	printMenu(out);
+	io_printf(out,
+"		<div id=\"main\" class=\"content\">\n"
+"			<h2>%s</h2>\n"
+		,tr("timers")
+	);
+
+	channelList channels;
+	initCL(&channels);
+
+	if (currentAction==PA_DELETE) {
+		if ( (timerID>0) && (timerID<1000) && (oldTimerStr) ) {
+			char *message=NULL;
+			dbg("Trying to delete timer with ID %d (%s)",timerID,oldTimerStr);
+			if (deleTimer(timerID,oldTimerStr,&message)) {
+				io_printf(out,
+"			<div class=\"message\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("timerDeleteOk"),message
+				);
+				currentAction=PA_SUMMARY;
+			} else {
+				io_printf(out,
+"			<div class=\"alert\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("timerDeleteErr"),message
+				);
+				currentAction=PA_EDIT;
+			}
+			free(message);
+		}
+	}
+	if (currentAction==PA_ADD) {
+		char * timerStr = (argTimerStr==NULL) ? parseTimerForm(args) : (char *)argTimerStr;
+		char *message=NULL;
+		if ( (timerID>0) && (timerStr) && (oldTimerStr) ) {
+			if (editTimer(timerID,oldTimerStr,timerStr,&message)) {
+				io_printf(out,
+"			<div class=\"message\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("timerUpdateOk"),message
+				);
+			} else {
+				io_printf(out,
+"			<div class=\"alert\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("timerUpdateErr"),message
+				);
+			}
+		} else if ( (timerStr) && (addTimer(timerStr,&message))) {
+			io_printf(out,
+"		<div class=\"message\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("timerCreateOk"),message
+			);
+		} else {  
+			io_printf(out,
+"		<div class=\"alert\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("timerCreateErr"),message
+			);
+		}
+		currentAction=PA_SUMMARY;
+		if (timerStr && timerStr!=argTimerStr ){
+			free(timerStr);
+		}
+		free(message);
+	} else if (currentAction==PA_EDIT) {
+
+		timerEntry_t timer;
+		initTE(&timer);
+		
+		if (channels.length==0){
+			getChannelList(&channels,SF_NONE,SD_NONE);
+		}
+		
+		io_printf(out,
+"		<form action=\"/timers.kl1\">\n");
+		if (argTimerStr) {
+			parseTimer(argTimerStr,&timer);
+		}
+
+		if (timerID>0) {
+			io_printf(out,
+"			<input type=\"hidden\" name=\"timerID\" value=\"%d\" />\n"
+"			<input type=\"hidden\" name=\"oldTimerStr\" value=\"%s\" />"
+				,timerID
+				,(oldTimerStr!=NULL) ? oldTimerStr : argTimerStr
+				);
+		}
+		io_printf(out,
+"			<table id=\"timerEdit\" class=\"list1\">\n"
+"				<caption>%s</caption>\n"
+"				<tr>\n"
+"					<th>%s</th>\n"
+"					<td><input type=\"checkbox\" name=\"active\" value=\"1\" %s /></td>\n"
+"				</tr>\n"
+					,tr((timerID>0)?"timerEdit":"timerAdd")
+					,tr("active")
+					,checked[boolean(timer.active)]
+		);
+		io_printf(out,
+"				<tr>\n"
+"					<th>%s</th>\n"
+"					<td>\n"
+"						<select name=\"channelNum\" size=\"1\">\n",tr("channel"));
+		for (i=0;i<channels.length;i++) {
+			io_printf(out,
+"							<option value=\"%d\" %s>%d - %s</option>\n"
+				,channels.entry[i].channelNum
+				,selected[boolean(timer.channelNum==channels.entry[i].channelNum)]
+				,channels.entry[i].channelNum
+				,channels.entry[i].channelName
+			);
+		}  
+		io_printf(out,
+"						</select>\n"
+"					</td>\n"
+"				</tr>\n"
+"				<tr>\n"
+"					<th><input type=\"radio\" name=\"type\" value=\"%d\" %s>%s</input></th>"
+			,TT_ONE_TIME
+			,checked[boolean(timer.type==TT_ONE_TIME)]
+			,tr("oneTimeRecording")
+		);
+		io_printf(out,
+"					<td>\n"
+"						<select name=\"date\" size=\"1\">\n");
+		time_t tdate=time(NULL);
+		char cdate[11];
+		struct tm sdate;
+		boolean_t isThatDay=BT_FALSE;
+		boolean_t isAfterThatDay=BT_FALSE;
+		for(i=0;i<14;i++) {
+			sdate=*localtime(&tdate);
+			strftime(cdate,11,"%Y-%m-%d",&sdate);
+			if (!isAfterThatDay){
+				isThatDay=sameDay(tdate,timer.start);
+				isAfterThatDay=boolean(isThatDay||tdate>timer.start);
+			}
+			io_printf(out,
+"							<option value=\"%s\" %s>%s, %s</option>\n"
+				,cdate,selected[isThatDay],weekdays[langID][sdate.tm_wday],formatDate(&sdate,BT_FALSE));
+			if (isThatDay && (timer.type==TT_ONE_TIME)) { 
+				//marcar por si se cambia a regular
+				timer.reg_timer[(sdate.tm_wday+6)%7]=weekdays[langID][sdate.tm_wday][0]; 
+			}
+			isThatDay=BT_FALSE;
+			tdate+=24*60*60;
+		} 
+		io_printf(out,
+"						</select>\n"
+"					</td>\n"
+"				</tr>\n"
+"				<tr>\n"
+"					<th><input type=\"radio\" name=\"type\" value=\"%d\" %s>%s</input></th>\n"
+"					<td>"
+			,TT_REGULAR
+			,checked[boolean(timer.type==TT_REGULAR)]
+			,tr("regularRecording")
+		); 
+		for(i=startOfWeek[langID];i<startOfWeek[langID]+7;i++) {
+			io_printf(out,
+						"<input type=\"checkbox\" name=\"wday\" value=\"%d\" %s>%s</input>&nbsp;&nbsp;"
+				,(i%7)
+				,checked[boolean(timer.reg_timer[(i+6)%7]!='-')]
+				,weekdays[langID][i%7]
+			);
+		}
+
+		struct tm start_date=*localtime(&timer.start);
+		io_printf(out,
+					"</td>\n"
+"				</tr>\n"
+"				<tr>\n"
+"					<th>%s</th>\n"
+"					<td>"
+						"<input type=\"text\" name=\"startHour\" maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;:&nbsp;"
+						"<input type=\"text\" name=\"startMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;"
+					"</td>\n"
+"				</tr>\n",tr("start"),start_date.tm_hour,start_date.tm_min);
+		struct tm end_date=*localtime(&timer.stop);
+		io_printf(out,
+"				<tr>\n"
+"					<th>%s</th>\n"
+"					<td>"
+						"<input type=\"text\" name=\"endHour\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;:&nbsp;"
+						"<input type=\"text\" name=\"endMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;"
+					"</td>\n"
+"				</tr>\n",tr("end"),end_date.tm_hour,end_date.tm_min);
+		io_printf(out,
+"				<tr>\n"
+"					<th>&nbsp;</th>\n"
+"					<td>\n"
+"						<input type=\"checkbox\" name=\"addMargin\" value=\"%d\" %s>%s</input></td></tr>\n"
+			,boolean(timerID==-1)
+			,checked[boolean(timerID<1)]
+			,tr("addMargin")
+		);
+
+		io_printf(out,
+"				<tr>"
+					"<th>%s</th>"
+					"<td>"
+						"<input type=\"text\" name=\"priority\" maxlength=\"2\" size=\"3\" value=\"%d\"/>"
+					"</td>"
+				"</tr>\n",tr("priority"),timer.priority);
+		io_printf(out,
+"				<tr>"
+					"<th>%s</th>"
+					"<td>"
+						"<input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\" />"
+					"</td>"
+				"</tr>\n",tr("lifetime"),timer.lifetime);
+		io_printf(out,
+"				<tr>"
+					"<th>%s</th>"
+					"<td>"
+						"<input type=\"text\" name=\"title\" size=\"70\" value=\"%s\" />"
+					"</td>"
+				"</tr>\n",tr("title"),(timer.title)?timer.title:"");
+		io_printf(out,
+"				<tr class=\"buttons\">"
+					"<td colspan=\"2\">"
+						"<button id=\"delete\" name=\"a\" type=\"submit\" value=\"%d\" "
+							"class=\"delete\">%s</button>"
+						"<button id=\"confirm\" name=\"a\" type=\"submit\" value=\"%d\" "
+							"class=\"confirm\">%s</button>"
+					"</td>"
+				"</tr>\n"
+				,PA_DELETE,tr("timerDelete")
+				,PA_ADD,tr("accept"));
+		io_printf(out,
+"			</table>\n"
+"		</form>\n");
+		freeTE(&timer);
+		
+	} else {
+		currentAction=PA_SUMMARY;
+	}
+
+	if (currentAction==PA_SUMMARY) {
+		if (channels.length==0){
+			getChannelList(&channels,SF_NONE,SD_NONE);
+		}
+		
+		if (channels.length>0) {
+			timerList_t timers;
+			io_printf(out,
+"		<table id=\"timers\" class=\"list1\">\n"
+"			<col class=\"number\"/>\n"
+"			<col class=\"tmDate date\"/>\n"
+"			<col class=\"chName\"/>\n"
+"			<col class=\"tmStart hour\"/>\n"
+"			<col class=\"tmEnd hour\"/>\n"
+"			<col class=\"tmName\"/>\n"
+"			<col class=\"mxName\"/>\n"
+"			<col class=\"ctrls\"/>\n"
+"			<thead>\n"
+"				<tr>\n"
+"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"					<th>&nbsp;</th>\n"
+"				</tr>\n"
+"			</thead>\n"
+"			<tbody>\n"
+"				<tr>\n"
+				,sortClass(SF_TM_NUMBER),SF_TM_NUMBER,newSortDirection(SF_TM_NUMBER),"#"
+				,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("date")
+				,sortClass(SF_CH_NUMBER),SF_CH_NUMBER,newSortDirection(SF_CH_NUMBER),tr("channel")
+				,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("start")
+				,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("end")
+				,sortClass(SF_TITLE),SF_TITLE,newSortDirection(SF_TITLE),tr("program")
+				,sortClass(SF_MUX),SF_MUX,newSortDirection(SF_MUX),tr("channelMux")
+			);
+			getTimerList(&timers,&channels,sortBy,sortDirection);
+			const char *EditTimer=tr("timerEdit");
+			for (i=0;i<timers.length;i++) {
+				struct tm t1=*localtime(&timers.entry[i].start);
+				struct tm t2=*localtime(&timers.entry[i].stop);
+
+				io_printf(out,
+"				<tr>\n"
+"					<td class=\"number\">%d</td>\n",timers.entry[i].ID
+				);
+				if (timers.entry[i].type==TT_REGULAR) {
+					io_printf(out,
+"					<td class=\"date\">%s (%s)</td>\n",formatDate(&t1,0),timers.entry[i].reg_timer);
+				} else {
+					io_printf(out,
+"					<td class=\"date\">%s</td>\n",formatDate(&t1,0));
+				}
+
+				io_printf(out,
+"					<td><a class=\"strong\" href=\"program.kl1?chan=%d\">%s</a></td>\n"
+"					<td class=\"hour\">%02d:%02d</td>\n"
+"					<td class=\"hour\">%02d:%02d</td>\n"
+"					<td>%s</td>\n"
+"					<td>%s</td>\n"
+"					<td class=\"ctrls\">"
+						"<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&timer=%s&timerID=%d\">%s</a>"
+					"</td>\n"
+"				</tr>\n"
+					,(timers.entry[i].channel) ? timers.entry[i].channel->channelNum : 1
+					,(timers.entry[i].channel) ? timers.entry[i].channel->channelName : ""
+					,t1.tm_hour,t1.tm_min
+					,t2.tm_hour,t2.tm_min
+					,timers.entry[i].title
+					,(timers.entry[i].channel) ? timers.entry[i].channel->multiplexName : ""
+					,PA_EDIT,timers.entry[i].timerStr,timers.entry[i].ID
+					,EditTimer
+				);
+			}
+			io_printf(out,
+"			</tbody>\n"
+"		</table>\n"
+			);
+			freeTL(&timers);
+		} else {
+			//TODO
+		}
+	}
+	freeCL(&channels);
+	close_svdrp();
+io_printf(out,
+"	</div>\n");
+printFooter(out);
 %>
-
-</div>
-
-<%@ include ../../components/post-content.kl1 %>

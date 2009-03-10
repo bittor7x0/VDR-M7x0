@@ -43,7 +43,6 @@ void freeEE(eventEntry * const event){
 	free(event->shortdesc);
 	initEE(event);
 }
-	
 
 void initNNE(nowNextEntry * const nowNext){
 	int i;
@@ -75,7 +74,6 @@ void getNowNextList(nowNextList * const list, channelList const * const channels
 	int pass=0;
 	int i=0;
 	int k=0;
-	int error=0;
 	
 	initNNL(list);
 	if (channels->length<1){
@@ -147,19 +145,87 @@ void getNowNextList(nowNextList * const list, channelList const * const channels
 	}
 }
 
-char * io_printf_infobox(io_t *out, eventEntry * const ee){
-	char *eT;
-	struct tm *timeptr;
+void printInfo(io_t *out, const int ntabs, eventEntry * const ee){
+	struct tm startt,endt;
 	long int end_time = ee->time+ee->duration;
-	io_printf(out,"<div class=\"box_right\"><div class=\"infobox\">&nbsp;<img src=\"/img/info16.png\" alt=\"%s\" /><div class=\"shadow\"><div class=\"info\">\n",tr("more infos"));
-	eT=encode_printf(out,"  <b>%s</b><br />",ee->title);
-	free(encode_printf(out,"  %s<br />\n",ee->shortdesc));
-	timeptr=localtime(&ee->time);
-	io_printf(out,"  %s <nobr><b>%02d:%02d</b></nobr>",tr("from"),timeptr->tm_hour,timeptr->tm_min);
-	timeptr=localtime(&end_time);
-	io_printf(out," %s <nobr><b>%02d:%02d</b></nobr> (%s: %s %d %s)\n  <p>",tr("to"),timeptr->tm_hour,timeptr->tm_min,tr("runtime"),tr("approx."),ee->duration/60,tr("minutes"));
-	free(encode_printf(out,"%s",ee->desc));
-	io_printf(out,"</p></div></div></div></div>");
-	return eT;
+	char tabs[ntabs+1];
+	int t;
+	for(t=0;t<ntabs;t++) tabs[t]='\t';
+	tabs[ntabs]=0;
+	io_printf(out,
+"%s<div class=\"title\">%s</div>\n"
+		,tabs,ee->title
+	);
+	if (ee->shortdesc && strlen(ee->shortdesc)>0){
+		io_printf(out,
+"%s<div class=\"subtitle\">%s</div>\n"
+			,tabs,ee->shortdesc
+		);
+	}
+	startt=*localtime(&ee->time);
+	endt=*localtime(&end_time);
+		io_printf(out,
+"%s<div class=\"duration\">"
+			,tabs
+		);
+	io_printf(out
+		,tr("fromToFmt")
+		,startt.tm_hour,startt.tm_min,endt.tm_hour,endt.tm_min,ee->duration/60
+	);
+	io_printf(out,
+			"</div>\n"
+	);
+	if (ee->desc && strlen(ee->desc)>0){
+		io_printf(out,
+"%s<div class=\"desc\">\n"
+			,tabs
+		);
+		char *p=ee->desc;
+		int l;
+		char c;
+		for(;;){
+			l=strcspn(p,"|");
+			if (l==0) break;
+			c=p[l];
+			p[l]=0;
+			io_printf(out,
+"%s	<p>%s</p>\n"
+			,tabs,p
+			);
+			if(c==0) break;
+			p[l]=c;
+			p+=l;
+			p+=strspn(p,"|");
+		}
+		io_printf(out,
+"%s</div>\n"
+			,tabs
+		);
+	}
+}
+
+void printInfobox(io_t *out, const int ntabs, eventEntry * const ee){
+	char tabs[ntabs+1];
+	int t;
+	for(t=0;t<ntabs;t++) tabs[t]='\t';
+	tabs[ntabs]=0;
+	io_printf(out,
+"%s<div class=\"infobox infoboxCssHover\"><span class=\"ui-icon ui-icon-info\">%s</span>\n"
+"%s	<div class=\"infoWrapper\">\n"
+"%s		<div class=\"info\">\n"
+		,tabs
+		,tr("moreInfo")
+		,tabs
+		,tabs
+	);
+	printInfo(out,ntabs+3,ee);
+	io_printf(out,
+"%s		</div>\n"
+"%s	</div>\n"
+"%s</div>\n"
+		,tabs
+		,tabs
+		,tabs
+	);
 }
 

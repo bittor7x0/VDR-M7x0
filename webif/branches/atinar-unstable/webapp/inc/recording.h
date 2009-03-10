@@ -14,21 +14,29 @@
 #ifndef __RECORDING_H__
 #define __RECORDING_H__
 
-#include "klone/session.h"
+#include <klone/session.h>
+#include "misc.h"
 
-typedef struct recFragment_s {
+typedef struct fragmentEntry_s {
   char * path;
+  uint64_t start;
+  uint64_t end;
+  uint64_t currentPos;
   uint64_t size;
-} recFragment;
+} fragmentEntry_t;
 
-void freeRF(recFragment * fragment, int fragnum);
+typedef struct fragmentList_s {
+	int length;
+	int current;
+	uint64_t totalSize;
+	fragmentEntry_t *entry;
+} fragmentList_t;
 
-int whichFragment(recFragment * fragment, int fragnum, uint64_t seek, uint64_t *position);
-	
-recFragment * parseRecData(const char *recdata, int *fragnum, uint64_t *total_size);
-
-const char * getRecData(session_t *session, int id);
-
-recFragment * getFragmentsDir(const char *recordingPath, int *fragnum, uint64_t *total_size);
+void initFE(fragmentEntry_t *const entry);
+void freeFE(fragmentEntry_t *const entry);
+void initFL(fragmentList_t *const list);
+void freeFL(fragmentList_t *const list);
+boolean_t seekFragment(fragmentList_t *list, uint64_t totalPos);
+boolean_t getFragmentList(fragmentList_t * const list, const char *recPath, int recId);
 
 #endif

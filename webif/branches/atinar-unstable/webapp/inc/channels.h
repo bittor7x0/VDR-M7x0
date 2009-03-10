@@ -17,6 +17,8 @@
 #ifndef __CHANNELS_H__
 #define __CHANNELS_H__
 
+#include "misc.h"
+
 typedef struct channelEntry_s {
 	int  channelNum;        //Number to dial on remote control.
 	char *channelId;        //ID of the channel, currently unset!
@@ -45,11 +47,11 @@ void initCE(channelEntry * const entry);
 void freeCE(channelEntry * const entry);
 void initCL(channelList  * const list);
 void freeCL(channelList  * const list);
-void getChannelList(channelList * const list);
+void getChannelList(channelList * const list, sortField_t sortBy, sortDirection_t sortDirection);
 /*
  * Retrieve channelName.
  * If channelNum==0, retrieve current channel name.
  */
-int getChannel(int channelNum, channelEntry * const channel);
+boolean_t getChannel(int channelNum, channelEntry * const channel);
 
 #endif

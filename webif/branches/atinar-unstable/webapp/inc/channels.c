@@ -27,6 +27,26 @@
 #include "svdrp_parse.h"
 #include "channels.h"
 
+sortField_t compareCE_sortBy=SF_NONE;
+sortDirection_t compareCE_sortDirection=SD_ASC;
+int compareCE(const void * a, const void * b) {
+	const channelEntry *ca = (const channelEntry*)a;
+	const channelEntry *cb = (const channelEntry*)b;
+	int result;
+	switch (compareCE_sortBy) {
+		case SF_MUX:
+			result=strcasecmp(ca->multiplexName,cb->multiplexName)*compareCE_sortDirection;
+			if (result) return result;
+		case SF_NAME: 
+			result=strcasecmp(ca->channelName,cb->channelName)*compareCE_sortDirection;
+			if (result) return result;
+		case SF_CH_NUMBER: 
+			return (ca->channelNum-cb->channelNum)*compareCE_sortDirection;
+		default: 
+			return 0;
+	}
+}
+
 void initCE(channelEntry * const entry){
 	entry->channelId=NULL;
 	entry->channelName=NULL;
@@ -60,9 +80,8 @@ void freeCL(channelList * const list){
 }
 
 // Obtain the channel list from VDR
-void getChannelList(channelList * const list) {
-	list->length=0;
-	list->entry=NULL;
+void getChannelList(channelList * const list, sortField_t sortBy, sortDirection_t sortDirection) {
+	initCL(list);
 	
 	char *data, *p;
 	if (write_svdrp("LSTC\r")<=0){
@@ -74,7 +93,7 @@ void getChannelList(channelList * const list) {
 		if (atoi(p)==250){
 			channelEntry * tmp=(channelEntry *)realloc(list->entry,(list->length+1)*sizeof(channelEntry));
 			if (!tmp) {
-				warn("Reallocation failed.");
+				warn("getChannelList:Reallocation failed.");
 				exit(1);
 			}
 			list->entry=tmp;
@@ -83,9 +102,15 @@ void getChannelList(channelList * const list) {
 		}
 	}
 	free(data);
+	if (list->length>0 && sortBy!=SF_NONE) {
+		//Quick sort recordings
+		compareCE_sortBy=sortBy;
+		compareCE_sortDirection=sortDirection;
+		qsort(list->entry,list->length,sizeof(channelEntry),compareCE);
+	} 
 }
 
-int getChannel(int channelNum, channelEntry * const channel) {
+boolean_t getChannel(int channelNum, channelEntry * const channel) {
 	char cmd[10];
 	char *data;
 	char *r;
@@ -107,12 +132,12 @@ int getChannel(int channelNum, channelEntry * const channel) {
 	}
 	code=strtol(data,&r,10);
 	if (code!=250) {
-		return 0;
+		return BT_FALSE;
 	}
 	r++;
 	channel->channelNum=strtol(r,&r,10);
 	r++;
 	l=strcspn(r,"\r\n");
 	channel->channelName=strndup(r,l);
-	return ~0;
+	return BT_TRUE;
 }

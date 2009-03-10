@@ -28,13 +28,13 @@ void dbg_streamrec_kl1(void) {
 }
 #endif
 
-int cancel=0; //enabled after SIGPIPE has been received
+boolean_t cancel=BT_FALSE;
 
 void sig_handler(int sig){
 	dbg("Got signal [%s]",sig);
 	if( sig==SIGPIPE){
 		dbg("Broken pipe");
-		cancel=~0;
+		cancel=BT_TRUE;
 	}
 }
 
@@ -66,29 +66,19 @@ void sig_handler(int sig){
 	}
 	struct sigaction sa;
 	struct sigaction oldsa;
-	int fragnum;
-	uint64_t total_size;
 	uint64_t range_start=0;
 	uint64_t range_end=0;
-	int use_range=0;
+	boolean_t use_range=BT_FALSE;
 
 	/* Catch SIGPIPE signals */
 	sa.sa_handler=sig_handler;		
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGPIPE,&sa,&oldsa);
 
-	recFragment * fragment;
-	if (id>0) {
-		fragment=parseRecData( getRecData(session, id), &fragnum, &total_size);
-	} else {
-		fragment=getFragmentsDir(path, &fragnum, &total_size);
-	}
-		
-	dbg("Total recording size= %lld bytes", total_size);
-	if (fragment==NULL) {
+	fragmentList_t list;
+	if (!getFragmentList(&list,path,id)) {
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
-		fragnum=0;
 		goto exit;
 	}
 	field_t * range = request_get_field(request,"Range");
@@ -96,12 +86,12 @@ void sig_handler(int sig){
 		dbg("Range requested \"%s\"",range->value);
 		if (strncmp(range->value,"bytes=",6)==0){
 			char *r = range->value+6;
-			use_range=~0;
+			use_range=BT_TRUE;
 			errno=0;
-			range_start=(uint64_t)strtoll((const char *)r,&r,10);
-			if (errno || range_start>total_size){
-				warn("Invalid range start %s, range_start=%lld, total_size=%lld, errno=%d",r,range_start,total_size,errno);
-				use_range=0;
+			range_start=(uint64_t)strtoll(r,&r,10);
+			if (errno || range_start>list.totalSize){
+				warn("Invalid range start %s, range_start=%lld, total_size=%lld, errno=%d",r,range_start,list.totalSize,errno);
+				use_range=BT_FALSE;
 			}
 			else {
 				r+=strspn(r,"- ");
@@ -109,7 +99,7 @@ void sig_handler(int sig){
 					errno=0;
 					range_end=(uint64_t)strtoll((const char *)r,&r,10);
 					if (errno){
-						warn("Invalid range end %s, range_end=%lld, total_size=%lld, errno=%d",r,range_end,total_size,errno);
+						warn("Invalid range end %s, range_end=%lld, total_size=%lld, errno=%d",r,range_end,list.totalSize,errno);
 						range_end=0;
 					}
 				}
@@ -121,41 +111,30 @@ void sig_handler(int sig){
 		}
 	}
 	
-	int i;
-	int fragini=0;
-	ssize_t result;
-	recFragment *f;
-	uint64_t position;
-	
-	fragini=whichFragment(fragment,fragnum,range_start,&position);
-	if (fragini<0){
+	if (!seekFragment(&list,range_start)){
 		warn("Error: no fragment found for range_start=%lld",range_start);
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
-		freeRF(fragment,fragnum);
 		goto exit;
 	}
 	
 	response_set_field(response, "Accept-Ranges", "bytes");
 	if (use_range){
 		if (!range_end){
-			range_end=total_size-1;
+			range_end=list.totalSize-1;
 		}
 		response_set_status(response,HTTP_PARTIAL_CONTENT); //=206 requires klone-core patched
 		char *content_range;		
-		if (asprintf(&content_range,"bytes %lld-%lld/%lld",range_start,range_end,total_size)!=-1) {
+		if (asprintf(&content_range,"bytes %lld-%lld/%lld",range_start,range_end,list.totalSize)!=-1) {
 			response_set_field(response, "Content-Range", content_range);
 			free(content_range);
 		}
 	}
 	else {
 		response_set_status(response,HTTP_STATUS_OK);
-		range_end=total_size-1;
+		range_end=list.totalSize-1;
 	}
 	uint64_t remaining=(range_end-range_start+1);
-	if (range_start+remaining-1 != range_end){
-		warn( "Error: content_length trucated");
-	}
 	response_set_content_length(response,remaining);
 	response_set_content_type(response,"video/mpeg");
 
@@ -168,42 +147,46 @@ void sig_handler(int sig){
 		io_t * pio;
 		const int buflen=1024;
 		char buffer[buflen];
-		for (i=fragini; i<fragnum && remaining>0 && !cancel; i++){
-			f=&fragment[i];
-			dbg("Fragment[%d] %lld %s",i,f->size,f->path);
-			FILE *fi = fopen(f->path,"rb");
-			if (f) {
-				int b=0;
-				errno=0;
-				if (fseek(fi,position,SEEK_SET)!=0) {
-					warn("Error %d in fseek",errno);
-					position=0;
-				}
-				while(remaining>0 && !cancel && !feof(fi)) {
-					int len=(remaining>buflen)?buflen:(int)remaining;
-					b=fread(buffer,1,len,fi);
-					if (b>0) {
-						b=io_write(out,buffer,b);
-						if (b<0) {
-							cancel=1;
-							dbg("Cancelado");
-						}
-						else {
-							position+=b;
-							remaining-=b;
-							dbg("Sent %d bytes, current position: %lld, remaining: %lld", b, position, remaining);
+		int len,br,bw;
+		while (list.current<list.length && remaining>0 && !cancel){
+			fragmentEntry_t *f=&list.entry[list.current];
+			if (f->path!=NULL && f->size>0){
+				warn("Fragment[%d] %lld %lld",list.current,f->size,f->currentPos);
+				FILE *fi = fopen(f->path,"rb");
+				if (fi) {
+					errno=0;
+					if (fseek(fi,f->currentPos,SEEK_SET)!=0) {
+						warn("Wrong position %lld in fragment[&d].Error:%d",f->currentPos, list.current, errno);
+					}
+
+					while(remaining>0 && !cancel && !feof(fi) && !ferror(fi)) {
+						len=(remaining>buflen)?buflen:(int)remaining;
+						br=fread(buffer,1,len,fi);
+						if (br>0) {
+							bw=io_write(out,buffer,br);
+							if (bw<0) {
+								cancel=1;
+								dbg("Cancelado");
+							}
+							else {
+								if (bw<br){
+									warn("bw(%d)!=br(%d)",bw,br);
+								}
+								remaining-=bw;
+							}
 						}
 					}
+					fclose(fi);
 				}
-				fclose(fi);
 			}
-			position=0; //read following files from the start
+			list.current++;
 		}
+	}
+	if (remaining>0){
+		warn("Remaining %lld, should be 0", remaining);
 	}
 
 exit:
 	sigaction(SIGPIPE,&oldsa,NULL);
-	freeRF(fragment,fragnum);
-	info("2 session recid=%p",session_get(session,"recid"));
-	info("2 session recdata=%p",session_get(session,"recdata"));
+	freeFL(&list);
 %>

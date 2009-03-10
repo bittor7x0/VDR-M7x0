@@ -1,4 +1,4 @@
-/*
+	/*
 * 
 * This source-code is licensed under GPL v2.
 * See ../../LICENSE for details
@@ -23,50 +23,66 @@
 #define BOXAMPCONF "/etc/boxamp.conf"
 #define VDRCONF    "/etc/vdr/setup.conf"
 
-static struct __confFile {
-  const char *name;					// Name of the param
-  const char *label;				// unique ID
-  const char *defaultValue;	// defaultValue if needed
-  const char *options;			// if multiple choice enter the options here, seperatet by |
-  char *value;							// Value as read from the config file
-  int minValue;							// Min and Max Value if value is a number,
-  int maxValue;							// min and max length if value is a string, ignored otherwise
-  int notNull;							// 0 -> value may be NULL, 1 -> value should not be NULL, if no value avaible default value is uses, if no dfault value avaible, an error will be raised
-  int type;									// 0 -> String, 1 -> Integer, 2 -> IP-Adress
-  int readOK;								// 0 -> not yet read from conf file, 1 -> read from conf file
-  int writeOK;							// 0 -> not yet wrote to conf file, 1 -> already wrote to conf file
-} __confFile;
+#include "misc.h"
 
-static struct __confFileProperties {
+typedef enum confParamType_e {
+	PT_STRING,
+	PT_INTEGER,
+	PT_IPADDRESS
+} confParamType_t;
+
+typedef struct confParam_s {
+	const char *name;         // Name of the param
+	const char *i18nKey;        // key to i18n
+	const char *defaultValue; // defaultValue if needed
+	const char *options;      // if multiple choice enter the options here, seperatet by |
+	char *value;              // Value as read from the config file
+	int minValue;       // Min and Max Value if value is a number,
+	int maxValue;       // min and max length if value is a string, ignored otherwise.
+	boolean_t notNull;        // 0 -> value may be NULL, 1 -> value should not be NULL, if no value avaible default value is uses, if no dfault value avaible, an error will be raised
+	confParamType_t type;
+	boolean_t readOK;         // allready read from conf file
+	boolean_t writeOK;        // already written to conf file
+} confParam_t;
+
+typedef struct confFileProperties_s {
 	const char *name;
 	const char *longName;
 	const char *fileName;
 	const char *stringsEnclosedBy;
 	int	 numOfParams;
-	int  readOk;
+	boolean_t  readOk;
 	void *confData;
-}  _confFileProperties;
+} confFileProperties_t;
 
-typedef struct _webifConf {
-  int langID;
-} _webifConf;
+typedef struct webifConf_s {
+	int langID;
+} webifConf_t;
 
-typedef struct _boxampConf {
-  char path[256];
-  char audioPath[256];
-  char options[256];
-  int autoTerm;
-} _boxampConf;
+typedef struct boxampConf_s {
+	char path[256];
+	char audioPath[256];
+	char options[256];
+	int autoTerm;
+} boxampConf_t;
 
-extern _webifConf webifConf;
-extern _boxampConf boxampConf;
+typedef struct fileMapping_s {
+	const char *name;
+	const char *file;
+	const char *i18nKey;
+} fileMapping_t;
+
+extern webifConf_t webifConf;
+extern boxampConf_t boxampConf;
 extern const int numOfConfFiles;
-extern struct __confFileProperties confFileProperties[];
+extern confFileProperties_t confFileProperties[];
+extern const int maxFileMapping;
+extern fileMapping_t fileMapping[];
 
 
 int readConf(const char *name);
 int readWEBIFCONF();
-int writeWEBIFCONF(_webifConf * newConf);
+int writeWEBIFCONF(webifConf_t *newConf );
 int readBOXAMPCONF();
 
 #endif

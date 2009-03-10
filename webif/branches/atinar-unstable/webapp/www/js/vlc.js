@@ -1,56 +1,37 @@
-function init(){
-	if( navigator.appName.indexOf("Microsoft Internet")==-1 )
-	{
-		updateVolume(0);
+function getVlc(){
+	return $("#vlc")[0];
+}
+
+function updateVolume(deltaVol){
+	var vlc = getVlc();
+	if (vlc && vlc.audio){
+		vlc.audio.volume += deltaVol;
+		$("#VolumeText").text(vlc.audio.volume+"%");
 	}
-	else if( document.readyState == 'complete' )
-	{
-		updateVolume(0);
-	}
-	else
-	{
-		/* Explorer loads plugins asynchronously */
-		document.onreadystatechange=function() {
-			if( document.readyState == 'complete' )
-			{
-				updateVolume(0);
-			}
+}
+
+function doPlayOrPause(){
+	var vlc = getVlc();
+	if (vlc && vlc.playlist){
+		vlc.playlist.togglePause();
+		if( vlc.playlist.isPlaying ){
+			$("#PlayOrPause > img").attr("src","/img/pause16.png");
+		} else {
+			$("#PlayOrPause > img").attr("src","/img/play16.png");
 		}
 	}
 }
 
-function getVLC(name)
-{
-	if (window.document[name])
-	{
-		return window.document[name];
-	}
-	if (navigator.appName.indexOf("Microsoft Internet")==-1)
-	{
-		if (document.embeds && document.embeds[name])
-			return document.embeds[name];
-	}
-	else // if (navigator.appName.indexOf("Microsoft Internet")!=-1)
-	{
-		return document.getElementById(name);
+function doFullScreen(){
+	var vlc=getVlc();
+	if (vlc && vlc.video) {
+		vlc.video.toggleFullscreen();
 	}
 }
 
-function updateVolume(deltaVol)
-{
-	var vlc = getVLC("vlc");
-	vlc.audio.volume += deltaVol;
-	$("volumeTextField").text(vlc.audio.volume+"%");
-}
-
-function doPlayOrPause()
-{
-	var vlc = getVLC("vlc");
-	if( vlc.playlist.isPlaying ){
-		$("#PlayPause > img").attr("src","/img/play16.png");
-	} else {
-		$("#PlayPause > img").attr("src","/img/pause16.png");
+function doToggleMute(){
+	var vlc = getVlc();
+	if (vlc && vlc.audio){
+		vlc.audio.toggleMute();
 	}
-	vlc.playlist.togglePause();
 }
-
