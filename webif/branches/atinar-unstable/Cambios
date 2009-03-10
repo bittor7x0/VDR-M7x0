@@ -1,0 +1,16 @@
+2009-03-10
+* I18n optimizada mediante búsqueda binaria sobre claves breves.
+* Eliminado directorio components e implementada funcionalidad mediante procedimientos.
+* Incluida edición (renombrado/borrado) de grabaciones.
+* Simplificada edición/borrado de programaciones.
+* Mejorada pagina de inicio.
+* Mejorada presentacion de canales.
+* Visualización grafica de las programaciones sobre la vista de EPG.
+* Generación de HTML correctamente indentado.
+* Apariencia gráfica (iconos) especificada en CSS en lugar de en HTML.
+* Reestructuradas hojas de estilo CSS según medio.
+* Iniciada adaptación de clases CSS a jQuery-UI, de cara a permitir temas.
+* Corregidos algunos bugs en IE6. Pendiente de verificar en IE7.
+* Eliminado conf-i18n e integrada funcionalidad en i18n.
+* Completada la migración de todas las páginas al nuevo formato.
+* Iniciado este registro de cambios.
