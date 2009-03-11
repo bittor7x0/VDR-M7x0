@@ -47,7 +47,7 @@ diff -Naur epgsearch-0.9.24-orig/i18n-generated.h epgsearch-0.9.24/i18n-generate
      "",
      "Etsi ohjelmaoppaasta",
      "",
--    "Búsquedas en la EPG",
+-    "Buscar",
 +    "Búsquedas en EPG",
      "",
      "",
