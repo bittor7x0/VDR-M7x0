@@ -114,7 +114,7 @@ if (getChannel(0,&channel)) {
 "						<col class=\"hour\"/>\n"
 "						<col class=\"info\"/>\n"
 "					</colgroup>\n"
-"					<thead\n"
+"					<thead>\n"
 "						<tr>"
 							"<th colspan=\"2\" width=\"48%%\">%s</th>"
 							"<td class=\"space\" width=\"auto\"></td>"
