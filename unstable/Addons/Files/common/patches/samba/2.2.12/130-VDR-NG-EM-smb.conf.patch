@@ -1,0 +1,36 @@
+diff -Naur samba-2.2.12-orig/source/bin/smb.conf samba-2.2.12/source/bin/smb.conf
+--- samba-2.2.12-orig/source/bin/smb.conf	1970-01-01 01:00:00.000000000 +0100
++++ samba-2.2.12/source/bin/smb.conf	2009-03-11 15:06:36.000000000 +0100
+@@ -0,0 +1,32 @@
++[global]
++  workgroup=WORKGROUP
++  netbios name=m7x0
++  server string=VDR-NG-EM
++  client code page=850
++  character set=ISO8859-15
++  guest account=root
++  null passwords=yes
++  encrypt passwords=yes
++  security=share
++# security=user  
++
++
++[Media]
++  path=/var/media
++  comment=Storage
++  writable=yes
++  printable=no
++  browseable=yes
++  public=yes
++# public=no  
++# valid users=root
++
++[Root]
++  path=/
++  comment=Root file system
++  writable=yes
++  printable=no
++  browseable=yes
++  public=yes
++# public=no  
++# valid users=root
