@@ -1,7 +1,7 @@
-Index: D:/tmp/Logos/VDR-M7x0-plugins/epgsearch/searchtimer_thread.c
+Index: epgsearch-0.9.24-orig/searchtimer_thread.c
 ===================================================================
---- D:/tmp/Logos/VDR-M7x0-plugins/epgsearch/searchtimer_thread.c	(revisión: 177)
-+++ D:/tmp/Logos/VDR-M7x0-plugins/epgsearch/searchtimer_thread.c	(revisión: 178)
+--- epgsearch-0.9.24-orig/searchtimer_thread.c	(revisión: 177)
++++ epgsearch-0.9.24-orig/searchtimer_thread.c	(revisión: 178)
 @@ -734,6 +734,8 @@
           if (searchName) free(searchName);
           continue;
@@ -11,10 +11,10 @@ Index: D:/tmp/Logos/VDR-M7x0-plugins/epgsearch/searchtimer_thread.c
        LogFile.Log(3, "recording triggered from search timer %s", search->search);
        if (search->delAfterDays == 0) continue;
        time_t now = time(NULL);
-Index: D:/tmp/Logos/VDR-M7x0-plugins/epgsearch/epgsearchtools.c
+Index: epgsearch-0.9.24-orig/epgsearchtools.c
 ===================================================================
---- D:/tmp/Logos/VDR-M7x0-plugins/epgsearch/epgsearchtools.c	(revisión: 177)
-+++ D:/tmp/Logos/VDR-M7x0-plugins/epgsearch/epgsearchtools.c	(revisión: 178)
+--- epgsearch-0.9.24-orig/epgsearchtools.c	(revisión: 177)
++++ epgsearch-0.9.24-orig/epgsearchtools.c	(revisión: 178)
 @@ -450,33 +450,44 @@
     char* descr = strdup(aux);
     char* beginaux = strstr(descr, "<epgsearch>");
