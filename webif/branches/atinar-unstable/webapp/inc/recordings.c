@@ -196,7 +196,9 @@ void initRI(recInfo_t * const info){
 	info->subtitle=NULL;
 	info->desc=NULL;
 	info->channelId=NULL;
-	info->audio=NULL;
+	info->video=VT_UNKNOWN;
+	info->audio.length=0;
+	info->audio.entry=NULL;
 }
 
 void freeRI(recInfo_t * const info){
@@ -204,14 +206,18 @@ void freeRI(recInfo_t * const info){
 	free(info->subtitle);
 	free(info->desc);
 	free(info->channelId);
-	free(info->audio);
+	int i;
+	for (i=0;i<info->audio.length;i++) free(info->audio.entry[i]);
+	free(info->audio.entry);
 	initRI(info);
 }
 
 boolean_t parseRecInfo(recInfo_t * const info, char * const data, boolean_t fromFile){
 	initRI(info);
 	char *s;
-	boolean_t result=BT_TRUE; //TODO
+	boolean_t result=BT_TRUE;
+	audioList_t *al;
+	al=&info->audio;
 	for (s=strtok(data,"\r\n");s!=NULL;s=strtok(0,"\r\n")) {
 		if (!fromFile){
 			int code=strtol(s,&s,10);
@@ -222,39 +228,36 @@ boolean_t parseRecInfo(recInfo_t * const info, char * const data, boolean_t from
 			}
 		}
 		switch (s[0]) {
-			case 'C'	:	
-				info[0].channelId=strdup(s+2);
+			case 'C':
+				info->channelId=strdup(s+2);
 				break;
-			case 'E'	:	
-				parse_215E(s+2,NULL,&(info[0].start),&(info[0].duration),NULL,NULL);
-				info[0].stop=info[0].start+info[0].duration;
+			case 'E':
+				parse_215E(s+2,NULL,&(info->start),&(info->duration),NULL,NULL);
+				info->stop=info->start+info->duration;
 				break;
-			case 'T'	:	
-				info[0].title=strdup(s+2);
+			case 'T':
+				info->title=strdup(s+2);
 				break;
-			case 'D'	:	
-				info[0].desc=strdup(s+2);
+			case 'D':
+				info->desc=strdup(s+2);
 				break;
-			case 'S'	: 
-				info[0].subtitle=strdup(s+2);
+			case 'S': 
+				info->subtitle=strdup(s+2);
 				break;
-			case 'X'	:
+			case 'X': //components
 				switch(s[2]) {
-					case '1' :
-						if (s[5]=='1' || s[5]=='5') info[0].ar=1;
-						if (s[5]=='2' || s[5]=='3' || s[5]=='6' || s[5]=='7') info[0].ar=2;
-						if (s[5]=='4' || s[5]=='8') info[0].ar=3;
-						if (s[5]=='9' || s[5]=='D') info[0].ar=4;
-						if (s[5]=='A' || s[5]=='B' || s[5]=='E' || s[5]=='F') info[0].ar=5;
-						if (s[5]=='C' || s[5]=='0') info[0].ar=6;
+					case '1': //video
+						if (strchr("15" , s[5])) info->video=VT_SD43;
+						if (strchr("236", s[5])) info->video=VT_SD169;
+						if (strchr("48",  s[5])) info->video=VT_SD;
+						if (strchr("9D",  s[5])) info->video=VT_HD43;
+						if (strchr("ABEF",s[5])) info->video=VT_HD169;
+						if (strchr("C0",  s[5])) info->video=VT_HD;
 						break;
-					case '2'	:
-						if (info[0].audio==NULL) {
-							info[0].audio=strdup(s+7);
-						} else {
-							info[0].audio=realloc(info[0].audio,strlen(info[0].audio)+strlen(s)-4);
-							strcat(info[0].audio,", "); strcat(info[0].audio,s+7);
-						}
+					case '2': //audio
+						al->entry=realloc(al->entry,(al->length+1)*sizeof(char*));
+						al->entry[al->length]=strdup(s+7);
+						al->length++;
 						break;
 				}
 				break;

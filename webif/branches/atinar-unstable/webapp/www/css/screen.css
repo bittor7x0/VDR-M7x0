@@ -37,15 +37,15 @@ body {
 }
 #page{
 	background-color:#445;
-	padding: 30px 1px 10px;
+	padding: 0 1px 10px;
 	position:relative;
 	-moz-border-radius-topleft:5px;
 	-moz-border-radius-topright:5px;
 }
 #menu {
-	position:absolute;
+	position:relative;
 	top: -2.75em;
-	left:20px
+	margin:0 20px 0.25em;
 }
 #main {
 	clear:both;
@@ -222,6 +222,9 @@ table#timerEdit th {
 	text-align:left;
 	-moz-border-radius:0px;
 }	
+table#nowOnTv col.info {
+	width:20em;
+}
 table#nowOnTv tr:hover,
 table#recEdit tr:hover,
 table#timerEdit tr:hover {
@@ -241,9 +244,6 @@ table#programs colgroup.nowNext col.pgName{
 }
 table#programs col.pgName{
 	width:auto;
-}
-table#programs col.space {
-	width:3px;
 }
 table#tvChannels {
 }
@@ -265,7 +265,7 @@ table#recordings td.number {
 table.channels col.ctrls {
 	width:58px;
 }
-table#mount {
+table#partitionSpace {
 	max-width:50em;
 }
 col.date {
@@ -276,6 +276,9 @@ col.hour {
 }
 col.content {
 	width:auto;
+}
+col.space {
+	width:1em;
 }
 div.boxRight {
 	float:right;
@@ -403,7 +406,9 @@ div.infobox div.info {
 	text-decoration: none;
 }
 ul.recPath,
-ul.recPath li.recDir {
+ul.recPath li.recDir,
+.codeHead ul, 
+.codeHead ul li{
 	list-style-image:none;
 	list-style-position:inside;
 	list-style-type:none;
@@ -481,21 +486,56 @@ div.recFolderFooter .field {
 }
 div.code {
 	color:white;
-	background-color:#234;
-	border:1px solid #012;
+	background-color:#203040;
+	border:1px solid #001020;
 	padding:0;
 }
-div.code table {
+div.code div.codeHead {
 	color:white;
 	background-color:transparent;
 	border:0 none;
-	margin:5px;
+	padding:0.5em 5px;
+	overflow:auto;
 }
-div.code td {
-	border:0 none;
+div.code div.codeHead ul {
+	display:block;
+	margin:0 1em 0 0;
+	float:left;
 	margin:0;
-	padding:0 10px 0 0;
+	padding:0;
+}
+.codeHead ul li {
+	display:block;
+	float:left;
+	margin:0 0.5em 0.2em 0;
+	padding:0;
 	font-size:0.8em;
+}
+.codeHead ul li.action {
+	border:0 none;
+}
+.codeHead ul li.field {
+	border: 1px solid #283848;
+	-moz-border-radius:8px;
+}
+.codeHead .field .label,
+.codeHead .field .value {
+	display:block;
+	padding:0.2em 1em;
+}
+
+.codeHead .field .label {
+	color:#A0A0A0;
+	background-color:#142434;
+	border-bottom:1px solid #283848;
+	-moz-border-radius-topleft:8px;
+	-moz-border-radius-topright:8px;
+}
+.codeHead .field .value {
+	color:#A4A4A4;
+	background-color:#1C2C3C;
+	-moz-border-radius-bottomleft:8px;
+	-moz-border-radius-bottomright:8px;
 }
 div.code pre {
 	color:black;
@@ -503,6 +543,7 @@ div.code pre {
 	margin:0 5px 25px;
 	padding:5px 10px;
 	overflow:auto;
+	clear:left;
 	-moz-border-radius: 3px;
 }
 h2 {
@@ -520,6 +561,36 @@ h2 a,
 h2 a:visited {
 	color:black;
 }
+.eventSummary {
+	font-size:0.9em;
+	margin:3px;
+	padding:0.5em;
+	color:black;
+	background-color:white;
+	overflow:auto;
+	-moz-border-radius:3px;
+}
+.eventSummary h3 {
+	margin:1em 0 0.5em 0;
+	padding:2px 0 2px 5px;
+	font-weight:bold;
+	font-size:1.2em;
+	border-style:none none solid solid;
+	border-width:0 0 1px 8px;
+	border-color:#FF9A35;
+}
+.eventSummary h4 {
+	font-weight:bold;
+	font-size:1em;
+	padding:0 1em;
+	margin:0.2em 0;
+	background-color:#eee;
+ }
+ .eventSummary .desc p {
+	 font-size:0.9em;
+	 margin:0.1em 0;
+ }
+
 .ui-icon {
 	display:block;
 	margin:0;
@@ -553,6 +624,9 @@ h2 .ui-icon {
 .ui-icon-info{
 	background-image:url(/img/info16.png);
 }
+.ui-icon-download{
+	background-image:url(/img/floppy16.png);
+}
 a.channel,
 a.strong { 
 	font-weight:bold; 
@@ -571,6 +645,7 @@ textArea.readOnly {
 	background-color:transparent;
 	border:none;
 }
+	
 button {
 	-moz-border-radius:5px;
 }

@@ -43,8 +43,9 @@ typedef struct timerEntry_s {
 	char * title;
 	char * aux;
 	int channelNum;
-	channelEntry const *channel;
+	channelEntry_t const *channel;
 	char * timerStr;
+	int count; //to create different html id's in program.kl1
 } timerEntry_t;
 
 typedef struct timerList_s {
@@ -56,7 +57,7 @@ void initTE(timerEntry_t * const entry);
 void freeTE(timerEntry_t * const entry);
 void initTL(timerList_t  * const list);
 void freeTL(timerList_t  * const list);
-void getTimerList(timerList_t * const timers, channelList const * const channels, sortField_t sortBy, sortDirection_t sortDirection);
+void getTimerList(timerList_t * const timers, channelList_t const * const channels, sortField_t sortBy, sortDirection_t sortDirection);
 boolean_t addTimer(const char * newTimerStr, char ** message);
 boolean_t editTimer(int timerID, const char * oldTimerStr, const char * newTimerStr, char ** message);
 boolean_t deleTimer(int timerID, const char * delTimerStr, char ** message);

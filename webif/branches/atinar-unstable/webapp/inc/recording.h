@@ -21,13 +21,13 @@ typedef struct fragmentEntry_s {
   char * path;
   uint64_t start;
   uint64_t end;
-  uint64_t currentPos;
   uint64_t size;
 } fragmentEntry_t;
 
 typedef struct fragmentList_s {
 	int length;
-	int current;
+	int fragNum;
+	uint64_t fragPos;
 	uint64_t totalSize;
 	fragmentEntry_t *entry;
 } fragmentList_t;

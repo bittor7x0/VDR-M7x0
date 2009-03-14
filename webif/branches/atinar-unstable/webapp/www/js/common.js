@@ -43,16 +43,23 @@ jQuery.fn.minHeight = function(aHeight){
 	return this;
 };
 /*
+ * Called when document.ready.
  * Only presentation oriented code.
  * See pageNumber_e in misc.h
  */
 function initPage(pageNum){
 	confMenu();
+	$('a.newWindow').click(function(e){e.preventDefault();window.open($(this).attr('href'));});
 	switch(pageNum){
 		case 0: //index
 		case 1: //program
 		case 2: //channels
 			confInfobox();
 			break;
+		/* TODO se ha de llamar en load en lugar de en ready
+		case 7: //watchit
+			updateVolume(0);
+			break;
+		*/
 	}
 }

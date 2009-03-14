@@ -136,16 +136,17 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 	sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
 	currentPage=PN_TIMERS;
 	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
-	printXhtmlHead(out,tr("timers"),
-"		<script type=\"text/javascript\">\n"
-"			$(function(){\n"
-"				$('#delete').click(function (event){\n"
+	warn("currentAction:%d",currentAction);
+	printXhtmlHead(response,out,tr("timers"),
+"	<script type=\"text/javascript\">\n"
+"		$(function(){\n"
+"			$('#delete').click(function (event){\n"
 "					if (!confirm('%s')){\n"
-"						event.preventDefault();\n"
-"					}\n"
-"				});\n"
+"					event.preventDefault();\n"
+"				}\n"
 "			});\n"
-"		</script>\n"
+"		});\n"
+"	</script>\n"
 		,tr("timerDeleteConfirm")
 	);
 	printMenu(out);
@@ -155,7 +156,7 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 		,tr("timers")
 	);
 
-	channelList channels;
+	channelList_t channels;
 	initCL(&channels);
 
 	if (currentAction==PA_DELETE) {
@@ -213,27 +214,29 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 		}
 		
 		io_printf(out,
-"		<form action=\"/timers.kl1\">\n");
+"		<form action=\"/timers.kl1\" method=\"post\">\n");
 		if (argTimerStr) {
 			parseTimer(argTimerStr,&timer);
 		}
 
 		if (timerID>0) {
 			io_printf(out,
-"			<input type=\"hidden\" name=\"timerID\" value=\"%d\" />\n"
-"			<input type=\"hidden\" name=\"oldTimerStr\" value=\"%s\" />"
+"			<input type=\"hidden\" name=\"timerID\" value=\"%d\"/>\n"
+"			<input type=\"hidden\" name=\"oldTimerStr\" value=\"%s\"/>\n"
 				,timerID
 				,(oldTimerStr!=NULL) ? oldTimerStr : argTimerStr
 				);
 		}
+		const char *TimerEdit=tr((timerID>0)?"timerEdit":"timerAdd");
 		io_printf(out,
-"			<table id=\"timerEdit\" class=\"list1\">\n"
+"			<table id=\"timerEdit\" class=\"list1\" summary=\"%s\">\n"
 "				<caption>%s</caption>\n"
 "				<tr>\n"
 "					<th>%s</th>\n"
-"					<td><input type=\"checkbox\" name=\"active\" value=\"1\" %s /></td>\n"
+"					<td><input type=\"checkbox\" name=\"active\" value=\"1\"%s/></td>\n"
 "				</tr>\n"
-					,tr((timerID>0)?"timerEdit":"timerAdd")
+					,TimerEdit
+					,TimerEdit
 					,tr("active")
 					,checked[boolean(timer.active)]
 		);
@@ -256,7 +259,7 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 "					</td>\n"
 "				</tr>\n"
 "				<tr>\n"
-"					<th><input type=\"radio\" name=\"type\" value=\"%d\" %s>%s</input></th>"
+"					<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>"
 			,TT_ONE_TIME
 			,checked[boolean(timer.type==TT_ONE_TIME)]
 			,tr("oneTimeRecording")
@@ -291,7 +294,7 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 "					</td>\n"
 "				</tr>\n"
 "				<tr>\n"
-"					<th><input type=\"radio\" name=\"type\" value=\"%d\" %s>%s</input></th>\n"
+"					<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n"
 "					<td>"
 			,TT_REGULAR
 			,checked[boolean(timer.type==TT_REGULAR)]
@@ -299,7 +302,7 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 		); 
 		for(i=startOfWeek[langID];i<startOfWeek[langID]+7;i++) {
 			io_printf(out,
-						"<input type=\"checkbox\" name=\"wday\" value=\"%d\" %s>%s</input>&nbsp;&nbsp;"
+						"<input type=\"checkbox\" name=\"wday\" value=\"%d\"%s/>%s  "
 				,(i%7)
 				,checked[boolean(timer.reg_timer[(i+6)%7]!='-')]
 				,weekdays[langID][i%7]
@@ -314,7 +317,7 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 "					<th>%s</th>\n"
 "					<td>"
 						"<input type=\"text\" name=\"startHour\" maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;:&nbsp;"
-						"<input type=\"text\" name=\"startMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;"
+						"<input type=\"text\" name=\"startMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>"
 					"</td>\n"
 "				</tr>\n",tr("start"),start_date.tm_hour,start_date.tm_min);
 		struct tm end_date=*localtime(&timer.stop);
@@ -322,15 +325,15 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 "				<tr>\n"
 "					<th>%s</th>\n"
 "					<td>"
-						"<input type=\"text\" name=\"endHour\" maxlength=\"2\" size=\"3\" value=\"%02d\" />&nbsp;:&nbsp;"
-						"<input type=\"text\" name=\"endMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;"
+						"<input type=\"text\" name=\"endHour\" maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;:&nbsp;"
+						"<input type=\"text\" name=\"endMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>"
 					"</td>\n"
 "				</tr>\n",tr("end"),end_date.tm_hour,end_date.tm_min);
 		io_printf(out,
 "				<tr>\n"
 "					<th>&nbsp;</th>\n"
-"					<td>\n"
-"						<input type=\"checkbox\" name=\"addMargin\" value=\"%d\" %s>%s</input></td></tr>\n"
+"					<td><input type=\"checkbox\" name=\"addMargin\" value=\"%d\" %s/>%s</td>\n"
+"				</tr>\n"
 			,boolean(timerID==-1)
 			,checked[boolean(timerID<1)]
 			,tr("addMargin")
@@ -347,14 +350,14 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 "				<tr>"
 					"<th>%s</th>"
 					"<td>"
-						"<input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\" />"
+						"<input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\"/>"
 					"</td>"
 				"</tr>\n",tr("lifetime"),timer.lifetime);
 		io_printf(out,
 "				<tr>"
 					"<th>%s</th>"
 					"<td>"
-						"<input type=\"text\" name=\"title\" size=\"70\" value=\"%s\" />"
+						"<input type=\"text\" name=\"title\" size=\"70\" value=\"%s\"/>"
 					"</td>"
 				"</tr>\n",tr("title"),(timer.title)?timer.title:"");
 		io_printf(out,
@@ -383,31 +386,32 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 		}
 		
 		if (channels.length>0) {
+			char urlEnc[4096];
 			timerList_t timers;
 			io_printf(out,
-"		<table id=\"timers\" class=\"list1\">\n"
-"			<col class=\"number\"/>\n"
-"			<col class=\"tmDate date\"/>\n"
-"			<col class=\"chName\"/>\n"
-"			<col class=\"tmStart hour\"/>\n"
-"			<col class=\"tmEnd hour\"/>\n"
-"			<col class=\"tmName\"/>\n"
-"			<col class=\"mxName\"/>\n"
-"			<col class=\"ctrls\"/>\n"
-"			<thead>\n"
-"				<tr>\n"
-"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"					<th><a class=\"%s\" href=\"timers.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"					<th>&nbsp;</th>\n"
-"				</tr>\n"
-"			</thead>\n"
-"			<tbody>\n"
-"				<tr>\n"
+"			<table id=\"timers\" class=\"list1\" summary=\"%s\">\n"
+"				<col class=\"number\"/>\n"
+"				<col class=\"tmDate date\"/>\n"
+"				<col class=\"chName\"/>\n"
+"				<col class=\"tmStart hour\"/>\n"
+"				<col class=\"tmEnd hour\"/>\n"
+"				<col class=\"tmName\"/>\n"
+"				<col class=\"mxName\"/>\n"
+"				<col class=\"ctrls\"/>\n"
+"				<thead>\n"
+"					<tr>\n"
+"						<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+"						<th>&nbsp;</th>\n"
+"					</tr>\n"
+"				</thead>\n"
+"				<tbody>\n"
+				,tr("timerList")
 				,sortClass(SF_TM_NUMBER),SF_TM_NUMBER,newSortDirection(SF_TM_NUMBER),"#"
 				,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("date")
 				,sortClass(SF_CH_NUMBER),SF_CH_NUMBER,newSortDirection(SF_CH_NUMBER),tr("channel")
@@ -418,45 +422,51 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 			);
 			getTimerList(&timers,&channels,sortBy,sortDirection);
 			const char *EditTimer=tr("timerEdit");
+			const char *Schedule=tr("schedule");
+			channelEntry_t noChannel,*channel;
+			noChannel.channelNum=1;
+			noChannel.channelName="";
+			noChannel.multiplexName="";
 			for (i=0;i<timers.length;i++) {
 				struct tm t1=*localtime(&timers.entry[i].start);
 				struct tm t2=*localtime(&timers.entry[i].stop);
+				channel=(timers.entry[i].channel)?timers.entry[i].channel:&noChannel;
 
 				io_printf(out,
-"				<tr>\n"
-"					<td class=\"number\">%d</td>\n",timers.entry[i].ID
+"					<tr>\n"
+"						<td class=\"number\">%d</td>\n",timers.entry[i].ID
 				);
 				if (timers.entry[i].type==TT_REGULAR) {
 					io_printf(out,
-"					<td class=\"date\">%s (%s)</td>\n",formatDate(&t1,0),timers.entry[i].reg_timer);
+"						<td class=\"date\">%s (%s)</td>\n",formatDate(&t1,0),timers.entry[i].reg_timer);
 				} else {
 					io_printf(out,
-"					<td class=\"date\">%s</td>\n",formatDate(&t1,0));
+"						<td class=\"date\">%s</td>\n",formatDate(&t1,0));
 				}
-
 				io_printf(out,
-"					<td><a class=\"strong\" href=\"program.kl1?chan=%d\">%s</a></td>\n"
-"					<td class=\"hour\">%02d:%02d</td>\n"
-"					<td class=\"hour\">%02d:%02d</td>\n"
-"					<td>%s</td>\n"
-"					<td>%s</td>\n"
-"					<td class=\"ctrls\">"
-						"<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&timer=%s&timerID=%d\">%s</a>"
-					"</td>\n"
-"				</tr>\n"
-					,(timers.entry[i].channel) ? timers.entry[i].channel->channelNum : 1
-					,(timers.entry[i].channel) ? timers.entry[i].channel->channelName : ""
+"						<td><a class=\"channel\" href=\"program.kl1?chan=%d#timer%d_1\" title=\"%s\">%s</a></td>\n"
+"						<td class=\"hour\">%02d:%02d</td>\n"
+"						<td class=\"hour\">%02d:%02d</td>\n"
+"						<td>%s</td>\n"
+"						<td>%s</td>\n"
+					,channel->channelNum,timers.entry[i].ID,Schedule,channel->channelName
 					,t1.tm_hour,t1.tm_min
 					,t2.tm_hour,t2.tm_min
 					,timers.entry[i].title
-					,(timers.entry[i].channel) ? timers.entry[i].channel->multiplexName : ""
-					,PA_EDIT,timers.entry[i].timerStr,timers.entry[i].ID
-					,EditTimer
+					,channel->multiplexName
+				);
+				u_urlncpy(urlEnc,timers.entry[i].timerStr,strlen(timers.entry[i].timerStr),URLCPY_ENCODE);
+				io_printf(out,
+"						<td class=\"ctrls\">"
+							"<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&amp;timer=%s&amp;timerID=%d\" title=\"%s\">%s</a>"
+						"</td>\n"
+"					</tr>\n"
+					,PA_EDIT,urlEnc,timers.entry[i].ID,EditTimer,EditTimer
 				);
 			}
 			io_printf(out,
-"			</tbody>\n"
-"		</table>\n"
+"				</tbody>\n"
+"			</table>\n"
 			);
 			freeTL(&timers);
 		} else {
@@ -466,6 +476,6 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 	freeCL(&channels);
 	close_svdrp();
 io_printf(out,
-"	</div>\n");
+"		</div>\n");
 printFooter(out);
 %>

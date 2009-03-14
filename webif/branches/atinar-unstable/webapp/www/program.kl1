@@ -32,17 +32,19 @@
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
 
-channelList channels;
+channelList_t channels;
 timerList_t timers;
 
-void printTimers(int channelNum, time_t startTime, int duration) {
+void printTimers(int channelNum, time_t startTime, int duration,char urlEnc[]) {
 	int begin=0;
 	int end=0;
+
 	time_t endTime=startTime+duration;
 	boolean_t isStart, isEnd, anyMatch;
 	anyMatch=BT_FALSE;
 	if ( (timers.length>0) && (channelNum>0) && (startTime>0) && (duration>0) ) {
 		int i;
+		const char *TimerEdit=tr("timerEdit");
 		for (i=0;i<timers.length;i++) {
 			if (timers.entry[i].channelNum==channelNum) {
 				begin=timers.entry[i].start-startTime; //margen no cubierto al inicio
@@ -59,21 +61,22 @@ void printTimers(int channelNum, time_t startTime, int duration) {
 					begin=(begin<=0) ? 0 : 100 * begin / duration;
 					end=  (end<=0)   ? 0 : 100 * end / duration;
 					io_printf(out,
-"							<div class=\"timer\" title=\"%s\">\n"
+"							<div id=\"timer%d_%d\" class=\"timer\" title=\"%s\">\n"
 "								<div class=\"progressbar\">\n"
 "									<div class=\"pb%s%s%s\" style=\"left:%d%%;right:%d%%;\">"
 										"&nbsp;"
 									"</div>\n"
 "								</div>\n"
-					,timers.entry[i].title
+					,timers.entry[i].ID,++timers.entry[i].count,timers.entry[i].title
 					,(isStart) ? " pbstart":"",(isEnd) ? " pbend":""
 					,(timers.entry[i].active) ? " pbenabled":" pbdisabled"
 					,begin,end
 					);
+					u_urlncpy(urlEnc,timers.entry[i].timerStr,strlen(timers.entry[i].timerStr),URLCPY_ENCODE);
 					io_printf(out,
-"								<a class=\"ui-icon ui-icon-edit\"href=\"timers.kl1?a=%d&timer=%s&timerId=%d\">%s</a>\n"
+"								<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&amp;timer=%s&timerId=%d\" title=\"%s\">%s</a>\n"
 "							</div>\n"
-					,PA_EDIT,timers.entry[i].timerStr,timers.entry[i].ID,tr("timerEdit")
+					,PA_EDIT,urlEnc,timers.entry[i].ID,TimerEdit,TimerEdit
 					);
 				}
 			}
@@ -96,13 +99,15 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 
 	int i=0;
 	int channelNum=0;
+	char urlEnc[2048];
+
 
 	vars_t *args = request_get_args(request);
 	channelNum=vars_get_value_i(args,"chan");
 
 	config(session, request);
 	currentPage=PN_PROGRAMS;
-	printXhtmlHead(out,tr("schedule"),NULL);
+	printXhtmlHead(response,out,tr("schedule"),NULL);
 	printMenu(out);
 
 	io_printf(out,
@@ -114,9 +119,9 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 	boolean_t addTimer;
 	boolean_t isTv;
 	const char * Schedule=tr("schedule");
-	const char * Record=tr("record");
+	const char * TimerCreate=tr("timerCreate");
 	if (channelNum<1) {
-		nowNextList nnl;
+		nowNextList_t nnl;
 		getNowNextList(&nnl,&channels);
 
 		io_printf(out,
@@ -124,15 +129,15 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 			,tr("nowOnTv")
 		);
 		if (nnl.length>0) {
-			nowNextEntry *nne;
-			channelEntry *ce;
-			eventEntry *ee;
+			nowNextEntry_t *nne;
+			channelEntry_t *ce;
+			eventEntry_t *ee;
 			struct tm *timeptr;
 			int pcbegin;
 			int pcend;
 			const char *LiveStream=tr("liveStream");
 			io_printf(out,
-"			<table id=\"programs\" class=\"list1\">\n"
+"			<table id=\"programs\" class=\"list1\" summary=\"%s\">\n"
 "				<col class=\"channel\"/>\n"
 "				<col class=\"space\"/>\n"
 "				<colgroup id=\"colNow\" class=\"nowNext\">\n"
@@ -156,6 +161,7 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 					"</tr>\n"
 "				</thead>\n"
 "				<tbody>\n"
+					,Schedule
 					,tr("channel")
 					,tr("now")
 					,tr("next")
@@ -189,18 +195,16 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 "						<td class=\"timers\">"
 						,timeptr->tm_hour,timeptr->tm_min
 						);
-						printTimers(ce->channelNum,ee->time,ee->duration);
+						printTimers(ce->channelNum,ee->time,ee->duration,urlEnc);
+						u_urlncpy(urlEnc,timerStr,strlen(timerStr),URLCPY_ENCODE);
 						io_printf(out,
 						"</td>\n"
 "						<td class=\"title\">\n"
 "							<div class=\"boxRight\">\n"
-"								<a class=\"recIt\" href=\"timers.kl1?a=%d&timer=%s\" title=\"%s\">\n"
-"									<img src=\"/img/rec16.png\" alt=\"%s\" />\n"
-"								</a>\n"
+"								<a class=\"ui-icon ui-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 "							<div class=\"boxRight infoLeft\">\n"
-							,PA_EDIT,timerStr,Record
-							,Record
+							,PA_EDIT,urlEnc,TimerCreate,TimerCreate
 						);
 						printInfobox(out,8,ee);
 						io_printf(out,
@@ -235,12 +239,12 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 		
 	} else {
 
-		// TODO generalizar nowNextList a eventList con numero de eventos por canal uno de {1=now,2={now,next},0=todos}
+		// TODO generalizar nowNextList_t a eventList con numero de eventos por canal uno de {1=now,2={now,next},0=todos}
 		// TODO chanelNum coincide siempre con idx+1?
 		char *cmd;
 		char * data;
 		char * p;
-		eventEntry ee;
+		eventEntry_t ee;
 		time_t next_time=0;
 		int previous_yday=-1;
 		int pcbegin;
@@ -253,7 +257,7 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 		data=read_svdrp();
 		io_printf(out,
 "			<h2>%s %s &raquo;%s&laquo;</h2>\n"
-"			<table id=\"programs\" class=\"list1\">\n"
+"			<table id=\"programs\" class=\"list1\" summary=\"%s\">\n"
 "				<col class=\"hour\"/>\n"
 "				<col class=\"timers\"/>\n"
 "				<col class=\"pgName\"/>\n"
@@ -266,12 +270,12 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 "				</thead>\n"
 "				<tbody>\n"
 					,tr("schedule"),tr("for"),channels.entry[channelNum-1].channelName
+					,Schedule
 					,tr("time")
 					,tr("timers.")
 					,tr("program")
 		); 
 
-		const char * CreateTimer=tr("timerCreate");
 		int retCode;
 		for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
 			retCode=strtol(p,&p,10);
@@ -311,20 +315,19 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 "						<td class=\"timers\">"
 							,timeptr.tm_hour,timeptr.tm_min
 						);
-						printTimers(channelNum,ee.time,ee.duration);
+						printTimers(channelNum,ee.time,ee.duration,urlEnc);
 						io_printf(out,
 						"</td>\n"
 						);
+						
+						u_urlncpy(urlEnc,timerStr,strlen(timerStr),URLCPY_ENCODE);
 						io_printf(out,
 "						<td>\n"
 "							<div class=\"boxRight\">\n"
-"								<a href=\"timers.kl1?a=%d&timer=%s\" title=\"%s\">\n"
-"									<img src=\"/img/rec16.png\" alt=\"%s\" />\n"
-"								</a>\n"
+"								<a class=\"ui-icon ui-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 "							<div class=\"boxRight infoLeft\">\n"
-							,PA_EDIT,timerStr,Record
-							,Record
+							,PA_EDIT,urlEnc,TimerCreate,TimerCreate
 						);
 						printInfobox(out,7,&ee);
 						io_printf(out,

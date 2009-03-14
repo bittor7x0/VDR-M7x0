@@ -13,6 +13,7 @@
 */
 
 #include <errno.h>
+#include <fcntl.h>
 #include <klone/utils.h>
 #include <signal.h>
 #include <stdio.h>
@@ -143,29 +144,32 @@ void sig_handler(int sig){
 	io_flush(out);
 	
 	if (request_get_method(request)==HM_GET){
-		cancel=0;
-		io_t * pio;
-		const int buflen=1024;
-		char buffer[buflen];
+		cancel=BT_FALSE;
+//#define USE_IO_PIPE
+#ifndef USE_IO_PIPE
 		int len,br,bw;
-		while (list.current<list.length && remaining>0 && !cancel){
-			fragmentEntry_t *f=&list.entry[list.current];
+		enum { BUFSZ = 4096 };
+		char buffer[BUFSZ];
+#endif
+		while (list.fragNum<list.length && remaining>0 && !cancel){
+			fragmentEntry_t *f=&list.entry[list.fragNum];
 			if (f->path!=NULL && f->size>0){
-				warn("Fragment[%d] %lld %lld",list.current,f->size,f->currentPos);
+				warn("Fragment[%d] %lld %lld",list.fragNum,f->size,list.fragPos);
+#ifndef USE_IO_PIPE
 				FILE *fi = fopen(f->path,"rb");
 				if (fi) {
 					errno=0;
-					if (fseek(fi,f->currentPos,SEEK_SET)!=0) {
-						warn("Wrong position %lld in fragment[&d].Error:%d",f->currentPos, list.current, errno);
+					if (fseek(fi,list.fragPos,SEEK_SET)!=0) {
+						warn("Wrong position %lld in fragment[&d].Error:%d",list.fragPos,list.fragNum,errno);
 					}
 
 					while(remaining>0 && !cancel && !feof(fi) && !ferror(fi)) {
-						len=(remaining>buflen)?buflen:(int)remaining;
+						len=(remaining>BUFSZ)?BUFSZ:(int)remaining;
 						br=fread(buffer,1,len,fi);
 						if (br>0) {
 							bw=io_write(out,buffer,br);
 							if (bw<0) {
-								cancel=1;
+								cancel=BT_TRUE; //TODO necesario?
 								dbg("Cancelado");
 							}
 							else {
@@ -178,8 +182,35 @@ void sig_handler(int sig){
 					}
 					fclose(fi);
 				}
+#else
+				int fd=open(f->path,O_RDONLY);
+				if (fd>-1){
+					io_t *in;
+					int result=0;
+					if (io_fd_create(fd,IO_FD_CLOSE,&in)==0){
+						if (list.fragPos>0){
+							result=io_seek(in,list.fragPos);
+						}
+						if (result>-1){
+							ssize_t piped=io_pipe(out,in);
+							if (piped>-1){
+								remaining-=piped;
+							} else {
+								cancel=BT_TRUE;
+								warn("Error,piped=%lld",piped);
+							}
+						}
+						io_free(in);
+					} else {
+						perror("streamrec.kl1:io_fd_create()");
+					}
+				} else {
+					perror("streamrec.kl1:open()");
+				}
+#endif
 			}
-			list.current++;
+			list.fragNum++;
+			list.fragPos=0;
 		}
 	}
 	if (remaining>0){

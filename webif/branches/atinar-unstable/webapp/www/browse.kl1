@@ -44,35 +44,21 @@ const char *classIsRec[]={""," recFolderRec"};
 const char *classIsDel[]={""," recFolderDel"};
 const char *classIsEdt[]={""," recFolderEdt"};
 
-short htoi(unsigned char c) {
-	return (c>='0' && c<='9') ? c-'0' : (c>='a' && c<='f') ? c-'a'+10 : (c>='A' && c<='F') ? c-'A'+10 : 0;
-}
-
-char * decodeName(char *name, boolean_t inplace, boolean_t *isEdt){
-	char *dname=(inplace) ? name : strdup(name);
-	char *s, *d;
-	s=d=dname;
+char * vdrDecodeName(char *name, boolean_t inPlace, boolean_t *isEdt){
+	char *dname=(inPlace) ? name : strdup(name);
+	char *s;
+	s=name;
 	if (s[0]=='%'){
 		if (isEdt) *isEdt=BT_TRUE;
 		s++;
 	} else {
 		if (isEdt) *isEdt=BT_FALSE;
 	}
-	while (s[0]!=0) {
-		if (s[0]=='#' && isxdigit(s[1]) && isxdigit(s[2])) {
-			*d= htoi(s[1]) << 4 | htoi(s[2]);
-			s+=2;
-		} else if (d<=s){
-			*d=(*s=='_') ? ' ' : *s;
-		}
-		s++;
-		d++;
-	}
-	d[0]=0;
+	vdrDecode(dname,s);
 	return dname;
 }
 
-int printRecDir(char **io_str,const char * path, char * const pathEnc, int level, int * numF, int * numD) {
+int printRecDir(char **io_str,const char * path, char * const urlEnc, int level, int * numF, int * numD) {
 	int result=0;
 	DIR *dir = opendir(path); 
 	if (dir == 0) {
@@ -89,7 +75,7 @@ int printRecDir(char **io_str,const char * path, char * const pathEnc, int level
 			if (asprintf(&path2,"%s/%s",path,name)>0){
 				initRI(&info);
 	    		if (readRecInfo(&info,path2)) {
-					u_urlncpy(pathEnc,path,strlen(path),URLCPY_ENCODE);
+					u_urlncpy(urlEnc,path,strlen(path),URLCPY_ENCODE);
 					int minutes = (info.stop - info.start)/60;
 					io_printf(out,
 "							<div class=\"recInfo\">\n"
@@ -102,7 +88,7 @@ int printRecDir(char **io_str,const char * path, char * const pathEnc, int level
 										"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%d&#39;</span>"
 									"</span>"
 								"</div>\n"
-						,pathEnc
+						,urlEnc
 						,tr("play")
 						,tr("date"),formatDate(localtime(&info.start),1)
 						,tr("runtime"),minutes
@@ -136,15 +122,15 @@ int printRecDir(char **io_str,const char * path, char * const pathEnc, int level
 			}
 			if (strcmp(name,"_")==0) {
 				result |= DF_SERIE;
-				printRecDir(NULL,path2,pathEnc,level,numF,numD);
+				printRecDir(NULL,path2,urlEnc,level,numF,numD);
 			} else {
-				int isRec=(strcmp(name+(strlen(name)-4),".rec")==0);
-				int isDel=(strcmp(name+(strlen(name)-4),".del")==0);
+				boolean_t isRec=boolean(strcmp(name+(strlen(name)-4),".rec")==0);
+				boolean_t isDel=boolean(!isRec && strcmp(name+(strlen(name)-4),".del")==0);
 				if (level==0){
 					*numF=0; 
 					*numD=0;
 					boolean_t isEdt;
-					char *dname=decodeName((char *)name,BT_FALSE,&isEdt);
+					char *dname=vdrDecodeName((char *)name,BT_FALSE,&isEdt);
 					io_printf(out,
 "				<div class=\"recFolderWrapper\">\n"
 "					<div class=\"recFolder%s%s%s\">\n"
@@ -154,17 +140,17 @@ int printRecDir(char **io_str,const char * path, char * const pathEnc, int level
 					if (isRec || isDel) {
 						io_printf(out,dname);
 					} else {
-						u_urlncpy(pathEnc,path2+16,strlen(path2+16),URLCPY_ENCODE);
+						u_urlncpy(urlEnc,path2+16,strlen(path2+16),URLCPY_ENCODE);
 						io_printf(out,
 							"<a href=\"browse.kl1?path=%s\">%s</a>"
-							,pathEnc,dname);
+							,urlEnc,dname);
 					}
 					free(dname);
 					io_printf(out,
 "						</div>\n"
 "						<div class=\"recFolderDetails\">\n"
 					);
-					printRecDir(NULL,path2,pathEnc,level+1,numF,numD);
+					printRecDir(NULL,path2,urlEnc,level+1,numF,numD);
 					io_printf(out,
 "						</div>\n"
 "						<div class=\"recFolderFooter\">"
@@ -191,7 +177,7 @@ int printRecDir(char **io_str,const char * path, char * const pathEnc, int level
 						*numF+=1;
 						if (isDel) result|=DF_DELE;
 						int na, nb;
-						printRecDir(NULL,path2,pathEnc,level+1,&na,&nb);
+						printRecDir(NULL,path2,urlEnc,level+1,&na,&nb);
 					} else {	
 						*numD+=1;
 					}
@@ -215,11 +201,11 @@ void dbg_browse_kl1(void) { dbg("browse.kl1"); }
 
 	config(session, request);
 	currentPage=PN_BROWSE;
-	printXhtmlHead(out,tr("browse"),NULL);
+	printXhtmlHead(response,out,tr("browse"),NULL);
 	printMenu(out);
 
 	vars_t *args = request_get_args(request);
-	char pathEnc[1024];
+	char urlEnc[4096];
 	char * pathStr=strdup( (vars_countn(args, "path")>0) ? vars_get_value(args,"path") : "" );
 	char * p;
 	for (p=pathStr+strlen(pathStr)-1;(p>=pathStr) && (*p=='/' || *p=='_');p--) {
@@ -261,14 +247,14 @@ void dbg_browse_kl1(void) { dbg("browse.kl1"); }
 					next=strtok(0,"/");
 					strcat(bcPath,bc);
 					if (strcmp(bc,"_")!=0) {
-						u_urlncpy(pathEnc,bcPath,strlen(bcPath),URLCPY_ENCODE);
+						u_urlncpy(urlEnc,bcPath,strlen(bcPath),URLCPY_ENCODE);
 						io_printf(out,
 "					<li class=\"recDir\">"
 						"<a%s href=\"browse.kl1?path=%s\">%s</a>"
 					"</li>\n"
 						,classCurrent[boolean(!next)]
-						,pathEnc
-						,decodeName(bc,BT_TRUE,NULL));
+						,urlEnc
+						,vdrDecodeName(bc,BT_TRUE,NULL));
 					}
 					strcat(bcPath,"/");
 				}
@@ -283,7 +269,7 @@ void dbg_browse_kl1(void) { dbg("browse.kl1"); }
 "				<div class=\"recFolders\">\n"
 	);
 	int numF, numD;
-	printRecDir(NULL,videoPath,pathEnc,0,&numF,&numD);
+	printRecDir(NULL,videoPath,urlEnc,0,&numF,&numD);
 	free(videoPath);
 	free(pathStr);
 	io_printf(out,

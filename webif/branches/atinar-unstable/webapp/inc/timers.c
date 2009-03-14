@@ -66,6 +66,7 @@ void initTE(timerEntry_t * const entry) {
 	entry->timerStr=NULL;
 	entry->channel=NULL;
 	strcpy(entry->reg_timer,"-------"); 
+	entry->count=0;
 }
 
 // Free timer entry
@@ -92,7 +93,7 @@ void freeTL(timerList_t * const list){
 
 
 // Retrieve a timer list from VDR and sort it
-void getTimerList(timerList_t * const timers, channelList const * const channels, sortField_t sortBy, sortDirection_t sortDirection){
+void getTimerList(timerList_t * const timers, channelList_t const * const channels, sortField_t sortBy, sortDirection_t sortDirection){
 	char * data;
 	char * p;
 	int i=0;

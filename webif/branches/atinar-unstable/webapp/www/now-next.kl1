@@ -33,70 +33,89 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 
 %><%
 
-#ifdef DEBUG
-dbg_now_next_kl1();
-#endif
+	#ifdef DEBUG
+	dbg_now_next_kl1();
+	#endif
 
-config(session,request);
+	config(session,request);
 
-vars_t *args = request_get_args(request);
-int channelNum=vars_get_value_i(args,"chan");
+	vars_t *args = request_get_args(request);
+	int channelNum=vars_get_value_i(args,"chan");
 
-if (channelNum<1) {
-	warn("Invalid parameters");
-	response_set_status(response,HTTP_STATUS_NO_CONTENT);
-	return;
-}
-
-time_t now=time(NULL);
-long int refresh=0;
-
-
-// Get now & next for this chan
-nowNextList nnl;
-channelList channels;
-channelEntry channel;
-initCL(&channels);
-initCE(&channel);
-channel.channelNum=channelNum;
-channels.length=1;
-channels.entry=&channel;
-getNowNextList(&nnl,&channels);
-nowNextEntry *nne=nnl.entry;
-	
-%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
-<head>
-<%
-	refresh=nne->event[1].time-now+60;
-	if (refresh>60 && (nne->event[1].time>0) && (nne->event[0].time>0) && (nne->event[0].title) && (nne->event[1].title) ) {
-		io_printf(out,"<meta http-equiv=\"refresh\" content=\"%d; URL=/now-next.kl1?chan=%d\" />\n",refresh,channelNum);
-	} else {
-		io_printf(out,"<meta http-equiv=\"refresh\" content=\"90; URL=/now-next.kl1?chan=%d\" />\n",channelNum);
+	if (channelNum<1) {
+		warn("Invalid parameters");
+		response_set_status(response,HTTP_STATUS_NO_CONTENT);
+		return;
 	}
-%>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
-<link rel="stylesheet" type="text/css" href="open7x0.css" />
-</head>
-<body>
-<%
+
+	// Get now & next for this chan
+	nowNextList_t nnl;
+	channelList_t channels;
+	channelEntry_t channel;
+	initCL(&channels);
+	initCE(&channel);
+	channel.channelNum=channelNum;
+	channels.length=1;
+	channels.entry=&channel;
+	getNowNextList(&nnl,&channels);
+	close_svdrp();
+	nowNextEntry_t *nne=nnl.entry;
+	
+	//Header fields
+	response_set_content_type(response,"text/html; charset=ISO-8859-1");
+	long int waitSeconds=0;
+	char *refresh;
+	if ( (nne->event[1].time>0) && (nne->event[0].time>0) && (nne->event[0].title) && (nne->event[1].title) ) {
+		time_t now=time(NULL);
+		waitSeconds=nne->event[1].time-now+60;
+	}
+	if (waitSeconds<90){
+		waitSeconds=90;
+	}
+	asprintf(&refresh,"%ld;URL=/now-next.kl1?chan=%d",waitSeconds,channelNum);
+	response_set_field(response,"Refresh",refresh);
+	free(refresh);
+	
+	printDoctypeOpenHtml(out);
+	io_printf(out,
+"	<head>\n"
+"		<title>%s</title>\n"
+"		<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen.css\" media=\"screen\"/>\n"
+"	</head>\n"
+"	<body>\n"
+		,tr("program")
+	);
+
 	int i;
 	for (i=0;i<2;i++){
-		if (nne->event[i].title) {
-			if (!nne->event[i].desc) { 
-				nne->event[i].desc=strdup(" ");
-			}
-			if (nne->event[i].time>0) {
-				struct tm t = *localtime(&nne->event[i].time);
-				io_printf(out,"<h3>%02d:%02d</h3><b>%s</b><p class=\"small\">%s</p>\n",t.tm_hour,t.tm_min,nne->event[i].title,nne->event[i].desc);
+		eventEntry_t *ee=&nne->event[i];
+		if (ee->title) {
+			io_printf(out,
+"		<div class=\"eventSummary\">\n"
+			);
+			if (ee->time>0) {
+				struct tm t = *localtime(&ee->time);
+				io_printf(out,
+"			<h3>%02d:%02d</h3>\n",t.tm_hour,t.tm_min);
 			} else {
-				io_printf(out,"<h3>%s</h3><b>%s</b><p class=\"small\">%s</p>\n",(i==0)?tr("Now"):tr("next"),nne->event[i].title,nne->event[i].desc); 	
+				io_printf(out,
+"			<h3>%s</h3>\n",(i==0)?tr("Now"):tr("next")); 
 			}
+			io_printf(out,
+"			<h4>%s</h4>\n",(ee->title)?ee->title:"--"
+			);
+			printEventDesc(out,
+"			",ee->desc);	
+			io_printf(out,
+"		</div>\n"
+			);
 		}
 	}
-	close_svdrp();
+
 	freeCE(&channel); //no realmente necesario a no ser que se asignen nombres.
 	freeNNL(&nnl);
+	io_printf(out,
+"	</body>\n"
+"</html>\n"
+	);
 %>
-</body>
-</html>

@@ -37,6 +37,20 @@ typedef struct recList_s {
 	recEntry_t *entry;
 } recList_t;
 
+typedef enum videoType_e {
+	VT_UNKNOWN,
+	VT_SD43,
+	VT_SD169,
+	VT_SD,
+	VT_HD43,
+	VT_HD169,
+	VT_HD
+} videoType_t;
+
+typedef struct audioList_s {
+	int length;
+	char **entry;
+} audioList_t;
 
 typedef struct recInfo_s {
 	char * title;
@@ -46,8 +60,8 @@ typedef struct recInfo_s {
 	time_t start;
 	time_t stop;
 	int    duration;
-	int	 ar; // 0=?, 1=4:3, 2=16:9, 3=?:?, 4=HD4:3, 5=HD16:9, 6=HD?:?
-	char * audio;
+	videoType_t video;
+	audioList_t audio;
 } recInfo_t;
 
 void initRE(recEntry_t * const entry);

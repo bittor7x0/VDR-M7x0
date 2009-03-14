@@ -40,7 +40,7 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 
 	config(session, request);
 	currentPage=PN_WATCHIT;
-	printXhtmlHead(out,tr("channelWatch"),
+	printXhtmlHead(response,out,tr("channelWatch"),
 "		<script type=\"text/javascript\" src=\"/js/vlc.js\"></script>\n"
 "		<script type=\"text/javascript\">\n"
 "			$(window).load(function(){\n"
@@ -49,7 +49,7 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 "		</script>\n"
 	);
 	printMenu(out);
-	channelList channels;
+	channelList_t channels;
 	int i=0;
 	int channelNum=0;
 
@@ -59,7 +59,7 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 	getChannelList(&channels,SF_CH_NUMBER,SD_ASC);
 
 	if ((channelNum<1) || (channelNum>channels.length)) {
-		channelEntry channel;
+		channelEntry_t channel;
 		if (getChannel(0,&channel)){
 			channelNum=channel.channelNum;
 		}
@@ -82,7 +82,7 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 	const char *FullScreen=tr("fullScreen");
 	const char *Mute=tr("mute");
 	io_printf(out,
-"			<form action=\"watchit.kl1\">\n"
+"			<form action=\"watchit.kl1\" method=\"post\">\n"
 "				<select name=\"channelnum\" size=\"1\">\n");
 	for (i=0;i<channels.length;i++) {
 		io_printf(out,
@@ -101,24 +101,24 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 	io_printf(out,
 "				<p>\n"
 "					<button id=\"PlayOrPause\" name=\"%s\" type=\"button\" onClick=\"doPlayOrPause();return false;\">"
-						"<img src=\"/img/pause16.png\">"
+						"<img src=\"/img/pause16.png\"/>"
 					"</button>\n"
-"						<button id=\"FullScreen\" name=\"%s\" type=\"button\" onClick=\"doFullScreen();return false;\">"
-						"<img src=\"/img/fullscreen16.png\">"
+"					<button id=\"FullScreen\" name=\"%s\" type=\"button\" onClick=\"doFullScreen();return false;\">"
+						"<img src=\"/img/fullscreen16.png\"/>"
 					"</button>\n"
 "					<button id=\"Mute\" name=\"%s\" type=\"button\" onClick=\"doToggleMute();return false;\">"
-						"<img src=\"/img/mute16.png\">"
+						"<img src=\"/img/mute16.png\"/>"
 					"</button>\n"
 "					<button id=\"VolumeDown\" name=\"---\" type=\"button\" onClick=\"updateVolume(-10);return false;\">"
-						"<img src=\"/img/voldown16.png\">"
+						"<img src=\"/img/voldown16.png\"/>"
 					"</button>\n"
 "					<span id=\"VolumeText\">%%</span>\n"
 "					<button id=\"VolumeUp\" name=\"+++\" type=\"button\" onClick=\"updateVolume(+10);return false;\">"
-						"<img src=\"/img/volup16.png\">"
+						"<img src=\"/img/volup16.png\"/>"
 					"</button>\n"
 "				</p>\n"
 "			</form>\n"
-"			<iframe id=\"watchItInfo\" src=\"now-next.kl1?chan=%d\" name=\"now-next\"></iframe>\n"
+"			<iframe id=\"watchItInfo\" src=\"now-next.kl1?chan=%d\"></iframe>\n"
 "		</div>\n"
 		,Pause
 		,FullScreen
@@ -129,9 +129,9 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 		const char *context =(channels.entry[channelNum-1].vpid>1) ? "/" : "/ES/";
 		io_printf(out,
 "		<div id=\"watchItVlc\">\n"
-"			<object classid=\"clsid:E23FE9C6-778E-49D4-B537-38FCDE4887D8\""
-			"codebase=\"http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab\""
-			"width=\%d\" height=\"%d\" events=\"false\""
+"			<object classid=\"clsid:E23FE9C6-778E-49D4-B537-38FCDE4887D8\" "
+			"codebase=\"http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab\" "
+			"width=\"%d\" height=\"%d\" events=\"false\" "
 			"style=\"position:absolute;\">\n"
 "				<param name=\"showDisplay\" value=\"true\" />\n"
 "				<param name=\"autoLoop\" value=\"false\" />\n"

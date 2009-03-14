@@ -32,20 +32,18 @@
 dbg_recordings_kl1(void) { dbg("recordings.kl1"); }
 #endif
 
-void printPlay(io_t *out, recEntry_t * const rec){
+void printPlay(io_t *out, recEntry_t * const rec, char encoded[]){
 		io_printf(out,
 "							<div class=\"boxRight\">\n"
 "								<a class=\"ui-icon ui-icon-play\" href=\"playlistrec.kl1?"
 		);
 		if (rec->path!=NULL) {
-			io_printf(out,
-								"path=%s\">",rec->path);
+			u_urlncpy(encoded,rec->path,strlen(rec->path),URLCPY_ENCODE);
+			io_printf(out,"path=%s\">",encoded);
 		} else {
-			io_printf(out,
-								"id=%d\">",rec->ID);
+			io_printf(out,"id=%d\">",rec->ID);
 		}
-		io_printf(out,
-									"%s</a>\n"
+		io_printf(out,"%s</a>\n"
 "							</div>\n"
 			,tr("play")
 		);
@@ -61,6 +59,7 @@ void printPlay(io_t *out, recEntry_t * const rec){
 
 	vars_t *args = request_get_args(request);
 	
+	char encoded[4096];
 	recInfo_t info;
 	initRI(&info);
 	int recId=(vars_countn(args,"recId")>0) ? vars_get_value_i(args,"recId") : -1;
@@ -73,16 +72,16 @@ void printPlay(io_t *out, recEntry_t * const rec){
 
 	currentPage=PN_RECORDINGS;
 	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
-	printXhtmlHead(out,tr("recordings"),
-"		<script type=\"text/javascript\">\n"
-"			$(function(){\n"
-"				$('#delete').click(function (event){\n"
-"					if (!confirm('%s')){\n"
-"						event.preventDefault();\n"
-"					}\n"
-"				});\n"
+	printXhtmlHead(response,out,tr("recordings"),
+"	<script type=\"text/javascript\">\n"
+"		$(function(){\n"
+"			$('#delete').click(function (event){\n"
+"				if (!confirm('%s')){\n"
+"					event.preventDefault();\n"
+"				}\n"
 "			});\n"
-"		</script>\n"
+"		});\n"
+"	</script>\n"
 		,tr("recDeleteConfirm")
 	);
 	printMenu(out);
@@ -112,28 +111,27 @@ void printPlay(io_t *out, recEntry_t * const rec){
 		currentAction=PA_SUMMARY;
 	}
 	if (currentAction==PA_EDIT) {
-		char htmlEncoded[2048];
 		int l;
 		freeRI(&info); //descartar posibles argumentos
 		if (recId>0 && getRecInfo(&info,recId)){
 			io_printf(out,
-"			<form action=\"/recordings.kl1\">\n");
+"			<form action=\"/recordings.kl1\" method=\"post\">\n");
 			io_printf(out,
-"				<input type=\"hidden\" name=\"recId\" value=\"%d\" />\n"
-"				<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n"
-"				<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n"
+"				<input type=\"hidden\" name=\"recId\" value=\"%d\"/>\n"
+"				<input type=\"hidden\" name=\"sort\" value=\"%d\"/>\n"
+"				<input type=\"hidden\" name=\"direction\" value=\"%d\"/>\n"
 				,recId
 				,sortBy
 				,sortDirection
 				);
 			io_printf(out,
-"				<table id=\"recEdit\" class=\"list1\">\n"
+"				<table id=\"recEdit\" class=\"list1\" summary=\"\">\n"
 "					<caption>%s</caption>\n"
 					,tr("recEdit")
 			);
 			if (recName!=NULL){
 				l=strlen(recName);
-				u_htmlncpy(htmlEncoded,recName,l,HTMLCPY_ENCODE);
+				u_htmlncpy(encoded,recName,l,HTMLCPY_ENCODE);
 				io_printf(out,
 "					<tr>\n"
 "						<th>%s</th>\n"
@@ -145,21 +143,21 @@ void printPlay(io_t *out, recEntry_t * const rec){
 					initRE(&rec);
 					rec.ID=recId;
 					rec.title="";
-					printPlay(out,&rec);
+					printPlay(out,&rec,encoded);
 				}
 				io_printf(out,
 "							<input type=\"text\" name=\"recName\" value=\"%s\" size=\"%d\"/>\n"
 "							<input type=\"hidden\" name=\"oldName\" value=\"%s\"/>\n"
 "						</td>\n"
 "					</tr>\n"
-						,htmlEncoded
+						,encoded
 						,5+(l>55)?55:l
-						,htmlEncoded
+						,encoded
 				);
 			}
 			if (info.title!=NULL){
 				l=strlen(info.title);
-				u_htmlncpy(htmlEncoded,info.title,l,HTMLCPY_ENCODE);
+				u_htmlncpy(encoded,info.title,l,HTMLCPY_ENCODE);
 				io_printf(out,
 "					<tr>\n"
 "						<th>%s</th>\n"
@@ -170,12 +168,12 @@ void printPlay(io_t *out, recEntry_t * const rec){
 						,tr("title")
 						,(l>60) ? 60 : l
 						,(l/60)+1
-						,htmlEncoded
+						,encoded
 				);
 			}
 			if (info.subtitle!=NULL){
 				l=strlen(info.subtitle);
-				u_htmlncpy(htmlEncoded,info.subtitle,strlen(info.subtitle),HTMLCPY_ENCODE);
+				u_htmlncpy(encoded,info.subtitle,strlen(info.subtitle),HTMLCPY_ENCODE);
 				io_printf(out,
 "					<tr>\n"
 "						<th>%s</th>\n"
@@ -186,12 +184,12 @@ void printPlay(io_t *out, recEntry_t * const rec){
 						,tr("subtitle")
 						,(l>60) ? 60 : l
 						,(l/60)+1
-						,htmlEncoded
+						,encoded
 				);
 			}
 			if (info.desc!=NULL){
 				l=strlen(info.desc);
-				u_htmlncpy(htmlEncoded,info.desc,strlen(info.desc),HTMLCPY_ENCODE);
+				u_htmlncpy(encoded,info.desc,strlen(info.desc),HTMLCPY_ENCODE);
 				io_printf(out,
 "					<tr>\n"
 "						<th>%s</th>\n"
@@ -200,7 +198,7 @@ void printPlay(io_t *out, recEntry_t * const rec){
 						,tr("desc")
 						,(l>60) ? 60 : l
 						,(l/60)+1
-						,htmlEncoded
+						,encoded
 				);
 			}
 			io_printf(out,
@@ -252,17 +250,17 @@ void printPlay(io_t *out, recEntry_t * const rec){
 	}
 	if (currentAction==PA_SUMMARY) {
 		io_printf(out,
-"			<table id=\"recordings\" class=\"list1\">\n"
+"			<table id=\"recordings\" class=\"list1\" summary=\"\">\n"
 "				<col class=\"number\"/>\n"
 "				<col class=\"date\"/>\n"
 "				<col class=\"hour\"/>\n"
 "				<col class=\"content\"/>\n"
 "				<thead>\n"
 "					<tr>\n"
-"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
 "					</tr>\n"
 "				</thead>\n"
 "				<tbody>\n"
@@ -275,7 +273,6 @@ void printPlay(io_t *out, recEntry_t * const rec){
 		recList_t recs;
 		int i=0;
 		getRecList(&recs,sortBy,sortDirection);
-		char urlEncodedTitle[2048];
 		for (i=0;i<recs.length;i++) {
 			struct tm t1=*localtime(&recs.entry[i].start);
 			io_printf(out,
@@ -287,16 +284,20 @@ void printPlay(io_t *out, recEntry_t * const rec){
 				,formatDate(&t1,0)
 				,t1.tm_hour,t1.tm_min
 			);
-			u_urlncpy(urlEncodedTitle,recs.entry[i].title,strlen(recs.entry[i].title),URLCPY_ENCODE);
-			//TODO css
+			u_urlncpy(encoded,recs.entry[i].title,strlen(recs.entry[i].title),URLCPY_ENCODE);
 			io_printf(out,
 "						<td class=\"content\">\n"
 "							<div class=\"boxRight\">\n"
-"								<a class=\"ui-icon ui-icon-edit\" href=\"recordings.kl1?sort=%d&direction=%d&a=%d&recId=%d&recName=%s\">%s</a>"
+"								<a class=\"ui-icon ui-icon-edit\" href=\"recordings.kl1"
+									"?sort=%d"
+									"&amp;direction=%d"
+									"&amp;a=%d"
+									"&amp;recId=%d"
+									"&amp;recName=%s\">%s</a>\n"
 "							</div>\n"
-								,sortBy,sortDirection,PA_EDIT,recs.entry[i].ID,urlEncodedTitle,tr("recEdit")
+								,sortBy,sortDirection,PA_EDIT,recs.entry[i].ID,encoded,tr("recEdit")
 			);
-			printPlay(out,&recs.entry[i]);
+			printPlay(out,&recs.entry[i],encoded);
 			io_printf(out,
 "							<div class=\"title\">%s</div>\n"
 "						</td>\n"

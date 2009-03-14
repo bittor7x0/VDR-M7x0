@@ -30,26 +30,27 @@ typedef struct eventEntry_s {
 	char   *desc;
 	time_t time;
 	int    duration;
-} eventEntry;
+} eventEntry_t;
 
 typedef struct nowNextEntry_s {
-	eventEntry event[2];
-} nowNextEntry;
+	eventEntry_t event[2];
+} nowNextEntry_t;
 
 typedef struct nowNextList_s {
 	int length;
-	nowNextEntry *entry;
-} nowNextList;
+	nowNextEntry_t *entry;
+} nowNextList_t;
 
-void initEE(eventEntry * const event);
-void freeEE(eventEntry * const event);
-void initNNE(nowNextEntry * const nowNext);
-void freeNNE(nowNextEntry * const nowNext);
-void initNNL(nowNextList * const list);
-void freeNNL(nowNextList * const list);
-void getNowNextList(nowNextList * const list, channelList const * const channels);
-void freeNNL(nowNextList * const list);
-void printInfo(io_t *out, const int ntabs, eventEntry * const ee);
-void printInfobox(io_t *out, const int ntabs, eventEntry * const ee);
+void initEE(eventEntry_t * const event);
+void freeEE(eventEntry_t * const event);
+void initNNE(nowNextEntry_t * const nowNext);
+void freeNNE(nowNextEntry_t * const nowNext);
+void initNNL(nowNextList_t * const list);
+void freeNNL(nowNextList_t * const list);
+void getNowNextList(nowNextList_t * const list, channelList_t const * const channels);
+void freeNNL(nowNextList_t * const list);
+void printEventDesc(io_t *out, const char * const tabs, char * const desc);
+void printInfo(io_t *out, const int ntabs, eventEntry_t * const ee);
+void printInfobox(io_t *out, const int ntabs, eventEntry_t * const ee);
 
 #endif

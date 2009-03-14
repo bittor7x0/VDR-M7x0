@@ -36,7 +36,7 @@ void parseRec(char * line, recEntry_t * const recording);
 
 void parseTimer(const char * line, timerEntry_t * const timer);
 
-void parseChannel(char * line, channelEntry * channel);
+void parseChannel(char * line, channelEntry_t * channel);
 
 boolean_t makeTimerStr(char **timerStr, int active, int channelNum, time_t start_time, time_t end_time
 	, int priority, int lifetime, const char *title);

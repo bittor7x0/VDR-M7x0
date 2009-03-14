@@ -104,7 +104,7 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 		}
 	} else { 
 		currentPage=PN_FILEVIEW;
-		printXhtmlHead(out,tr("fileView"),NULL);
+		printXhtmlHead(response,out,tr("fileView"),NULL);
 		printMenu(out);
 
 		io_printf(out,
@@ -112,22 +112,22 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 		);
 		struct stat status;
 		if ((stat(fileMapping[fileNum].file,&status))>=0) {
+			const char *FileDownload=tr("fileDownload");
 			io_printf(out,
-"			<table>\n"
-"				<tr>\n"
-"					<td>\n"
-"						<span>&nbsp;</span><br/>"
-						"<a href=\"view.kl1?action=%d&fileNum=%d\">"
-							"<img src=\"/img/floppy16.png\" border=\"0\">"
-						"</a>&nbsp;"
-"					</td>"
-				,PA_DOWNLOAD,fileNum
+"			<div class=\"codeHead\">\n"
+"				<ul class=\"actions\">\n"
+"					<li class=\"action\">"
+						"<a class=\"ui-icon ui-icon-download\" href=\"view.kl1?action=%d&fileNum=%d\" title=\"%s\">%s</a>"
+					"</li>\n"
+"				</ul>\n"
+				,PA_DOWNLOAD,fileNum,FileDownload,FileDownload
 			);
 			io_printf(out,
-"					<td><span>%s</span><br />%s</td>\n"
-"					<td><span>%s</span><br />%s</td>\n"
-"				</tr>\n"
-"			</table>\n"
+"				<ul class=\"fields\">\n"
+"					<li class=\"field\"><span class=\"label\">%s</span><span class=\"value\">%s</span></li>\n"
+"					<li class=\"field\"><span class=\"label\">%s</span><span class=\"value\">%s</span></li>\n"
+"				</ul>\n"
+"			</div>\n"
 "			<pre>\n"
 				,tr("file"),fileMapping[fileNum].file
 				,tr("date"),ctime(&status.st_mtime)
@@ -136,8 +136,11 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 			FILE *f = fopen(fileMapping[fileNum].file,"r");
 			if (f) {
 				char buffer[1024];
+				char encoded[4096];
+				
 				while(fgets(buffer,1023,f)!=NULL) {
-					io_printf(out,"%s",buffer);
+					u_htmlncpy(encoded,buffer,strlen(buffer),HTMLCPY_ENCODE);
+					io_printf(out,encoded);
 				}
 				fclose(f);
 			}

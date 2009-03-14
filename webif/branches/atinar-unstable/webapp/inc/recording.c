@@ -25,8 +25,9 @@
 
 void initFE(fragmentEntry_t *const entry){
 	entry->path=NULL;
-	entry->currentPos=0;
 	entry->size=0;
+	entry->start=0;
+	entry->end=0;
 }
 
 void freeFE(fragmentEntry_t *const entry){
@@ -36,7 +37,8 @@ void freeFE(fragmentEntry_t *const entry){
 
 void initFL(fragmentList_t *const list){
 	list->length=0;
-	list->current=0;
+	list->fragNum=0;
+	list->fragPos=0;
 	list->entry=NULL;
 	list->totalSize=0;
 }
@@ -53,17 +55,16 @@ void freeFL(fragmentList_t *const list){
 boolean_t seekFragment(fragmentList_t *list, uint64_t pos){
 	fragmentEntry_t * f;
 	int i;
-	list->current=-1;
+	list->fragNum=-1;
 	for(i=0; i<list->length; i++){
 		f=&list->entry[i];
-		if (list->current==-1 && pos>=f->start && pos<=f->end ) {
-			f->currentPos=pos-f->start;
-			list->current=i;
-		} else {
-			f->currentPos=0;
+		if (pos>=f->start && pos<=f->end) {
+			list->fragPos=pos-f->start;
+			list->fragNum=i;
+			break;
 		}
 	}
-	return boolean(list->current>-1);
+	return boolean(list->fragNum>-1);
 }
 
 void getFragmentsFromSVDRP(fragmentList_t * const list, int recId){

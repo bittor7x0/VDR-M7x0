@@ -52,22 +52,22 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 
 	config(session, request);
 	currentPage=PN_INDEX;
-	printXhtmlHead(out,tr("homepage"),NULL);
+	printXhtmlHead(response,out,tr("homepage"),NULL);
 	printMenu(out);
 
 	io_printf(out,
 "		<div id=\"main\" class=\"content\">\n"
 "			<h2>%s</h2>\n"
 "			<div class=\"section\">\n"
-"				<form action=\"index.kl1\" method=\"get\">\n"
+"				<form action=\"index.kl1\" method=\"post\">\n"
 "					<p>"
 						"<span class=\"field\">"
-							"<label for=\"server_ip\" class=\"label\">%s</label>&nbsp;"
-							"<input name=\"server_ip\" value=\"%s\" size=\"15\" maxlength=\"15\" class=\"value\"/>"
+							"<label for=\"serverIp\" class=\"label\">%s</label>&nbsp;"
+							"<input id=\"serverIp\" name=\"server_ip\" value=\"%s\" size=\"15\" maxlength=\"15\" class=\"value\"/>"
 						"</span>"
 						"<span class=\"field\">"
-							"<label for=\"server_port\" class=\"label\">%s</label>&nbsp;"
-							"<input name=\"server_port\" value=\"%d\" size=\"4\" maxlength=\"5\" class=\"value\"/>"
+							"<label for=\"serverPort\" class=\"label\">%s</label>&nbsp;"
+							"<input id=\"serverPort\" name=\"server_port\" value=\"%d\" size=\"4\" maxlength=\"5\" class=\"value\"/>"
 						"</span>"
 						"<button id=\"changeServerConfirm\" type=\"submit\" name=\"a\" value=\"%d\" class=\"confirm\">%s</button>"
 					"</p>\n"
@@ -79,32 +79,33 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 		,server_port
 		,PA_CONFIRM,tr("change")
 	);
-channelEntry channel;
-if (getChannel(0,&channel)) {
-	channelList channels;
-	channels.length=1;
-	channels.entry=&channel;
-	nowNextList nnl;
-	getNowNextList(&nnl,&channels);
-	if (nnl.length>0) {
-		nowNextEntry *nne=&nnl.entry[0];
-		io_printf(out,
+	channelEntry_t channel;
+	if (getChannel(0,&channel)) {
+		channelList_t channels;
+		channels.length=1;
+		channels.entry=&channel;
+		nowNextList_t nnl;
+		getNowNextList(&nnl,&channels);
+		if (nnl.length>0) {
+			nowNextEntry_t *nne=&nnl.entry[0];
+			const char *LiveStream=tr("liveStream");
+			io_printf(out,
 "			</div>"
 "			<h2>"
-				"<a class=\"ui-icon ui-icon-tv\" href=\"watchit.kl1?channelnum=%d\">%s</a>"
+				"<a class=\"ui-icon ui-icon-tv\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
 				"%s &raquo;%s&laquo;"
 			"</h2>\n"
 "			<div class=\"section\">\n"
-			,channel.channelNum,tr("liveStream")
-			,tr("channelWatching"),channel.channelName
-		);
-		if (nne->event[0].time==0) {
-			io_printf(out,
-"				<div class=\"alert\">%s</div>\n",tr("warnNoEPG")
+				,channel.channelNum,LiveStream,LiveStream
+				,tr("channelWatching"),channel.channelName
 			);
-		} else {
-			io_printf(out,
-"				<table id=\"nowOnTv\" class=\"list1 programs\">\n"
+			if (nne->event[0].time==0) {
+				io_printf(out,
+"				<div class=\"alert\">%s</div>\n",tr("warnNoEPG")
+				);
+			} else {
+				io_printf(out,
+"				<table id=\"nowOnTv\" class=\"list1 programs\" summary=\"%s\">\n"
 "					<colgroup id=\"colNow\" class=\"nowNext\">\n"
 "						<col class=\"hour\"/>\n"
 "						<col class=\"info\"/>\n"
@@ -116,142 +117,144 @@ if (getChannel(0,&channel)) {
 "					</colgroup>\n"
 "					<thead>\n"
 "						<tr>"
-							"<th colspan=\"2\" width=\"48%%\">%s</th>"
-							"<td class=\"space\" width=\"auto\"></td>"
-							"<th colspan=\"2\" width=\"48%%\">%s</th>"
+							"<th colspan=\"2\">%s</th>"
+							"<td class=\"space\"></td>"
+							"<th colspan=\"2\">%s</th>"
 						"</tr>\n"
 "					</thead>\n"
 "					<tbody>\n"
 "						<tr>\n"
-				,tr("now")
-				,tr("next")
-			);
-			int n;
-			eventEntry *ee;
-			struct tm *t;
-			for (n=0;n<2;n++){
-				ee=&nne->event[n];
-				if(n>0){
-					io_printf(out,
+					,tr("nowOnTv")
+					,tr("now")
+					,tr("next")
+				);
+				int n;
+				eventEntry_t *ee;
+				struct tm *t;
+				for (n=0;n<2;n++){
+					ee=&nne->event[n];
+					if(n>0){
+						io_printf(out,
 "							<td class=\"space\"></td>\n"
-					);
-				}
-				if (ee->time>0) {
-					long int end_time = ee->time+ee->duration;
-					t = localtime(&ee->time);
-					io_printf(out,
+						);
+					}
+					if (ee->time>0) {
+						long int end_time = ee->time+ee->duration;
+						t = localtime(&ee->time);
+						io_printf(out,
 "							<td class=\"hour\">%02d:%02d</td>\n"
 "							<td class=\"info\">\n"
-						,t->tm_hour,t->tm_min
-					);
-					printInfo(out,7,ee);
-					io_printf(out,
+							,t->tm_hour,t->tm_min
+						);
+						printInfo(out,7,ee);
+						io_printf(out,
 "							</td>\n",(ee->title)?ee->title:"&nbsp;"
-					);
-				} else {
-					io_printf(out,
+						);
+					} else {
+						io_printf(out,
 "							<td class=\"info\" colspan=\"2\">"
 								"<div class=\"title\">%s</div>"
 							"</td>\n",(ee->title)?ee->title:"&nbsp;"
-					);
+						);
+					}
 				}
-			}
-			io_printf(out,
+				io_printf(out,
 "						</tr>\n"
-			);
-			io_printf(out,
+				);
+				io_printf(out,
 "					</tbody>\n"
 "				</table>\n"
-			);
-			/*
-			if (0){ //TODO pendiente de que funcione el comando SVDRP necesario
-				io_printf(out,
+				);
+				/*
+				if (0){ //TODO pendiente de que funcione el comando SVDRP necesario
+					io_printf(out,
 "				   <div class=\"currentImage\">"
 						"<img style=\"width:400px;height:300px\" src=\"currentimage.kl1?quality=80&sizex=400&sizey=300\"/>"
 					"</div>\n"
-				);
+					);
+				}
+				*/
 			}
-			*/
 			io_printf(out,
 "			</div>\n"
 			);
 		}
-	}
-	freeNNL(&nnl);
-} else {
-	io_printf(out,
+		freeNNL(&nnl);
+	} else {
+		io_printf(out,
 "				<p>%s</p>\n"
 "			</div>"
-			,tr("VDR not running!")
-	);
-}
-freeCE(&channel);
-close_svdrp();
-  
+				,tr("VDR not running!")
+		);
+	}
+	freeCE(&channel);
+	close_svdrp();
 	
-if (isVdrLocal()){
-	io_printf(out,
+		
+	if (isVdrLocal()){
+		io_printf(out,
 "			<h2>%s</h2>\n"
 "			<div class=\"section\">\n"
-		,tr("freeSpace")
-	);
-	FILE *mountTable;
-	struct mntent *mountEntry;
-	int numFS=0;
-	mountTable = setmntent("/etc/mtab","r");
-	while ((mountEntry = getmntent(mountTable))) {
-		if (strncmp(mountEntry->mnt_dir,"/var/media/",10)==0) {
-			struct statfs s;
-			long blocksUsed;
-			long blocksPercent;
-			statfs(mountEntry->mnt_dir,&s);
-			if (s.f_blocks > 0) {
-				blocksUsed=s.f_blocks-s.f_bfree;
-				blocksPercent=(long)(blocksUsed*100.0/(blocksUsed+s.f_bavail)+0.5);
-				if (numFS==0) {
-					io_printf(out,
-"				<table id=\"mount\" class=\"list1\">\n"
+			,tr("freeSpace")
+		);
+		FILE *mountTable;
+		struct mntent *mountEntry;
+		int numFS=0;
+		mountTable = setmntent("/etc/mtab","r");
+		while ((mountEntry = getmntent(mountTable))) {
+			if (strncmp(mountEntry->mnt_dir,"/var/media/",10)==0) {
+				struct statfs s;
+				long blocksUsed;
+				long blocksPercent;
+				statfs(mountEntry->mnt_dir,&s);
+				if (s.f_blocks > 0) {
+					blocksUsed=s.f_blocks-s.f_bfree;
+					blocksPercent=(long)(blocksUsed*100.0/(blocksUsed+s.f_bavail)+0.5);
+					if (numFS==0) {
+						io_printf(out,
+"				<table id=\"partitionSpace\" class=\"list1\" summary=\"%s\">\n"
 "					<tr>"
 						"<th>%s</th>"
 						"<th colspan=\"2\">%s</th>"
 						"<th>%s</th>"
 					"</tr>\n"
-						,tr("partition")
-						,tr("used")
-						,tr("available")
-					);
-				}
-				io_printf(out,
+							,tr("partitionSpace")
+							,tr("partition")
+							,tr("used")
+							,tr("available")
+						);
+					}
+					io_printf(out,
 "					<tr>"
 						"<td>%s</td>"
 						"<td>%d MB</td>"
 						"<td>%d %%</td>"
 						"<td>%d MB</td>"
 					"</tr>\n"
-					,(mountEntry->mnt_dir)+11
-					,(long)(blocksUsed*(s.f_bsize/1048576.0))
-					,blocksPercent
-					,(long)(s.f_bfree*(s.f_bsize/1048576.0))
-				);
-				numFS++;
+						,(mountEntry->mnt_dir)+11
+						,(long)(blocksUsed*(s.f_bsize/1048576.0))
+						,blocksPercent
+						,(long)(s.f_bfree*(s.f_bsize/1048576.0))
+					);
+					numFS++;
+				}
 			}
 		}
-	}
-	endmntent(mountTable);
-	if (numFS==0) {
-		io_printf(out,
+		endmntent(mountTable);
+		if (numFS==0) {
+			io_printf(out,
 "				<p>%s</p>\n"
-			,tr("noMediaErr")
-		);
-	} else {
-		io_printf(out,
+				,tr("noMediaErr")
+			);
+		} else {
+			io_printf(out,
 "				</table>\n"
-		);
+			);
+		}
 	}
-}
-io_printf(out,
+	io_printf(out,
 "			</div>\n"
 "		</div>\n"
-);
-printFooter(out);
+	);
+	printFooter(out);
 %>

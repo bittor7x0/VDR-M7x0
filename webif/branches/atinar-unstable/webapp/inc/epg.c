@@ -29,7 +29,7 @@
 #include "epg.h"
 #include "channels.h"
 
-void initEE(eventEntry * const event){
+void initEE(eventEntry_t * const event){
 	event->title=NULL;
 	event->desc=NULL;
 	event->shortdesc=NULL;
@@ -37,29 +37,29 @@ void initEE(eventEntry * const event){
 	event->duration=0;
 }
 
-void freeEE(eventEntry * const event){
+void freeEE(eventEntry_t * const event){
 	free(event->title);
 	free(event->desc);
 	free(event->shortdesc);
 	initEE(event);
 }
 
-void initNNE(nowNextEntry * const nowNext){
+void initNNE(nowNextEntry_t * const nowNext){
 	int i;
 	for (i=0;i<2;i++) initEE(&nowNext->event[i]);
 }
 
-void freeNNE(nowNextEntry * const nowNext) {
+void freeNNE(nowNextEntry_t * const nowNext) {
 	int i;
 	for (i=0;i<2;i++) freeEE(&nowNext->event[i]);
 }
 
-void initNNL(nowNextList * const list){
+void initNNL(nowNextList_t * const list){
 	list->entry=NULL;
 	list->length=0;
 }
 
-void freeNNL(nowNextList * const list){
+void freeNNL(nowNextList_t * const list){
 	int i;
 	for (i=0;i<list->length;i++){
 		freeNNE(&list->entry[i]);
@@ -68,7 +68,7 @@ void freeNNL(nowNextList * const list){
 	initNNL(list);
 }
 
-void getNowNextList(nowNextList * const list, channelList const * const channels) {
+void getNowNextList(nowNextList_t * const list, channelList_t const * const channels) {
 	char *p;
 	char cmd[20];
 	int pass=0;
@@ -81,7 +81,7 @@ void getNowNextList(nowNextList * const list, channelList const * const channels
 	}
 	
 	list->length=channels->length;
-	list->entry=(nowNextEntry *)malloc(list->length*sizeof(nowNextEntry));
+	list->entry=(nowNextEntry_t *)malloc(list->length*sizeof(nowNextEntry_t));
 	if (list->entry==NULL){
 		list->length=0;
 		return;
@@ -145,7 +145,36 @@ void getNowNextList(nowNextList * const list, channelList const * const channels
 	}
 }
 
-void printInfo(io_t *out, const int ntabs, eventEntry * const ee){
+void printEventDesc(io_t *out, const char * const tabs, char * const desc){
+	if (!desc || strlen(desc)==0) return;
+	char *p=desc;
+	int l;
+	char c;
+		io_printf(out,
+"%s<div class=\"desc\">\n"
+			,tabs
+		);
+	for(;;){
+		l=strcspn(p,"|");
+		if (l==0) break;
+		c=p[l];
+		p[l]=0;
+		io_printf(out,
+"%s	<p>%s</p>\n"
+		,tabs,p
+		);
+		if(c==0) break;
+		p[l]=c;
+		p+=l;
+		p+=strspn(p,"|");
+	}
+	io_printf(out,
+"%s</div>\n"
+		,tabs
+	);
+}
+
+void printInfo(io_t *out, const int ntabs, eventEntry_t * const ee){
 	struct tm startt,endt;
 	long int end_time = ee->time+ee->duration;
 	char tabs[ntabs+1];
@@ -173,38 +202,12 @@ void printInfo(io_t *out, const int ntabs, eventEntry * const ee){
 		,startt.tm_hour,startt.tm_min,endt.tm_hour,endt.tm_min,ee->duration/60
 	);
 	io_printf(out,
-			"</div>\n"
+"</div>\n"
 	);
-	if (ee->desc && strlen(ee->desc)>0){
-		io_printf(out,
-"%s<div class=\"desc\">\n"
-			,tabs
-		);
-		char *p=ee->desc;
-		int l;
-		char c;
-		for(;;){
-			l=strcspn(p,"|");
-			if (l==0) break;
-			c=p[l];
-			p[l]=0;
-			io_printf(out,
-"%s	<p>%s</p>\n"
-			,tabs,p
-			);
-			if(c==0) break;
-			p[l]=c;
-			p+=l;
-			p+=strspn(p,"|");
-		}
-		io_printf(out,
-"%s</div>\n"
-			,tabs
-		);
-	}
+	printEventDesc(out,tabs,ee->desc);
 }
 
-void printInfobox(io_t *out, const int ntabs, eventEntry * const ee){
+void printInfobox(io_t *out, const int ntabs, eventEntry_t * const ee){
 	char tabs[ntabs+1];
 	int t;
 	for(t=0;t<ntabs;t++) tabs[t]='\t';

@@ -46,7 +46,7 @@ const int httpPort=80;
 const char *checked[2]={""," checked=\"checked\""};
 const char *selected[2]={""," selected=\"selected\""};
 const char *arStr[7]={"1.gif","43.png","169.png","1.gif","43.png","169.png","1.gif"}; //TODO mover a css
-const char * cssSortClass[]={" sortdesc"," sortnone"," sortasc"};
+const char *cssSortClass[]={"sortdesc","sortnone","sortasc"};
 const char *classCurrent[2]={""," class=\"act\""};
 
 sortField_t sortBy;
@@ -213,6 +213,27 @@ char * htmlEncode(const char * const s){
 	return NULL;
 }
 
+short htoi(unsigned char c) {
+	return (c>='0' && c<='9') ? c-'0' : (c>='a' && c<='f') ? c-'a'+10 : (c>='A' && c<='F') ? c-'A'+10 : 0;
+}
+
+void vdrDecode(char *dst, char *src){
+	char *s, *d;
+	s=src;
+	d=dst;
+	while (s[0]!=0) {
+		if (s[0]=='#' && isxdigit(s[1]) && isxdigit(s[2])) {
+			*d= htoi(s[1]) << 4 | htoi(s[2]);
+			s+=2;
+		} else {
+			*d=(*s=='_') ? ' ' : *s;
+		}
+		s++;
+		d++;
+	}
+	d[0]=0;
+}
+
 boolean_t makeTime(time_t *time, const char * date, const char * hour, const char * min ){
 	boolean_t result=BT_FALSE;
 	struct tm timePtr;
@@ -230,29 +251,53 @@ boolean_t makeTime(time_t *time, const char * date, const char * hour, const cha
 	return result;
 }
 
-void printXhtmlHead(io_t *out, const char *title, const char *headExtra, ...){
+#define USE_XHTML
+
+void printDoctypeOpenHtml(io_t *out){
+#define USE_XHTML
+#ifdef USE_XHTML
 	io_printf(out,
 "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"%s\" lang=\"%s\">\n"
+		,alpha2[langID],alpha2[langID]
+	);
+#else
+	io_printf(out,
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n"
+"<html lang=\"%s\">\n"
+		,alpha2[langID]
+	);
+#endif
+}
+
+void printXhtmlHead(response_t *response,io_t *out, const char *title, const char *headExtra, ...){
+	response_set_content_type(response,"text/html; charset=ISO-8859-1");
+	response_set_field(response,"Content-Style-Type","text/css");
+	response_set_field(response,"Content-Script-Type", "text/javascript");
+	printDoctypeOpenHtml(out);
+#ifdef USE_XHTML
+	const char *lct=" /";
+#else
+	const char *lct="";
+#endif
+
+	io_printf(out,
 "<head>\n"
 "	<title>%s - open7x0 VDR-FW</title>\n"
-"	<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\" />\n"
-"	<meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />\n"
-"	<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\" />\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen.css\" media=\"screen\">\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/print.css\" media=\"print\">\n"
-"   <!--[if IE 5.0]>"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie50.css\" media=\"screen\">\n"
-"	<![endif]-->"
-"   <!--[if IE 5.5]>"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie55.css\" media=\"screen\">\n"
-"	<![endif]-->"
-"   <!--[if IE 6]>"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie6.css\" media=\"screen\">\n"
-"	<![endif]-->"
-"   <!--[if IE 7]>"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie7.css\" media=\"screen\">\n"
-"	<![endif]-->"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen.css\" media=\"screen\"%s>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/print.css\" media=\"print\"%s>\n"
+"	<!--[if IE 5.0]>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie50.css\" media=\"screen\"%s>\n"
+"	<![endif]-->\n"
+"	<!--[if IE 5.5]>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie55.css\" media=\"screen\"%s>\n"
+"	<![endif]-->\n"
+"	<!--[if IE 6]>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie6.css\" media=\"screen\"%s>\n"
+"	<![endif]-->\n"
+"	<!--[if IE 7]>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie7.css\" media=\"screen\"%s>\n"
+"	<![endif]-->\n"
 "	<script type=\"text/javascript\" src=\"/js/jquery-1.2.6.min.js\"></script>\n"
 "	<script type=\"text/javascript\" src=\"/js/jquery.hoverIntent.min.js\"></script>\n"
 "	<script type=\"text/javascript\" src=\"/js/superfish.js\"></script>\n"
@@ -263,9 +308,13 @@ void printXhtmlHead(io_t *out, const char *title, const char *headExtra, ...){
 "			initPage(%d);\n"
 "		});\n"
 "	</script>\n"
-		,alpha2[langID]
-		,alpha2[langID]
 		,title
+		,lct
+		,lct
+		,lct
+		,lct
+		,lct
+		,lct
 		,currentPage
 	);
 	if (headExtra) {
@@ -280,7 +329,7 @@ void printXhtmlHead(io_t *out, const char *title, const char *headExtra, ...){
 "<div id=\"page-div\">\n"
 "	<div id=\"page-top\">\n"
 "		<h1>%s</h1>\n"
-"	</div>"
+"	</div>\n"
 "	<div id=\"page\">\n"
 		,title
 	);
@@ -345,8 +394,8 @@ void printMenu(io_t *out){
 "				<a href=\"browse.kl1\">%s</a>\n"
 "				<ul>\n"
 "					<li%s><a href=\"browse.kl1\">%s</a></li>\n"
-"					<li%s><a href=\"recordings.kl1?sort=%d&direction=1\">%s (%s)</a></li>\n"
-"					<li%s><a href=\"recordings.kl1?sort=%d&direction=1\">%s (%s)</a></li>\n"
+"					<li%s><a href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s (%s)</a></li>\n"
+"					<li%s><a href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s (%s)</a></li>\n"
 "				</ul>\n"
 "			</li>\n"
 		,classCurrent[boolean(currentPage==PN_RECORDINGS || currentPage==PN_BROWSE)]
@@ -354,9 +403,9 @@ void printMenu(io_t *out){
 			,classCurrent[boolean(currentPage==PN_BROWSE)]
 			,tr("browse")
 			,classCurrent[boolean(currentPage==PN_RECORDINGS && sortBy==SF_TITLE)]
-			,SF_TITLE,Summary,tr("title")
+			,SF_TITLE,SD_ASC,Summary,tr("title")
 			,classCurrent[boolean(currentPage==PN_RECORDINGS && sortBy==SF_START)]
-			,SF_START,Summary,tr("date")
+			,SF_START,SD_DESC,Summary,tr("date")
 	);
 	/* TODO activar cuando realmente haga algo
 	io_printf(out,
@@ -389,7 +438,7 @@ void printMenu(io_t *out){
 	for(i=0;i<maxFileMapping;i++) {
 		if (fileExists(fileMapping[i].file)) {
 			io_printf(out,
-"					<li><a href=\"view.kl1?action=%d&fileNum=%d\">&bull;&nbsp;%s</a></li>\n"
+"					<li><a href=\"view.kl1?action=%d&amp;fileNum=%d\">&bull;&nbsp;%s</a></li>\n"
 					,PA_SHOW,i,tr(fileMapping[i].i18nKey));
 		}
 	}
@@ -405,12 +454,13 @@ void printMenu(io_t *out){
 "				</ul>\n"
 "			</li>\n"
 	);
+	//a.target is deprecated in html 4.01:
 	io_printf(out,
 "			<li>\n"
 "				<a href=\"#\">%s</a>\n"
 "				<ul>\n"
-"					<li><a href=\"http://www.open7x0.org/\" target=\"_blank\">open7x0.org</a></li>\n"
-"					<li><a href=\"http://vdr-m7x0.foroactivo.com.es/\" target=\"_blank\">vdr-m7x0.foroactivo.com.es</a></li>\n"
+"					<li><a class=\"newWindow\" href=\"http://www.open7x0.org/\">open7x0.org</a></li>\n"
+"					<li><a class=\"newWindow\" href=\"http://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a></li>\n"
 "				</ul>\n"
 "			</li>\n"
 "		</ul>\n"
@@ -429,6 +479,7 @@ void printFooter(io_t *out){
 "		<p>(C) 2006 open7x0-team</p>\n"
 "		<p>(C) 2008 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n"
 "	</div>\n"
+"</div>\n"
 "</body>\n"
 "</html>\n"
 	);

@@ -195,7 +195,15 @@ i18n_t i18n[]={
 		"Channel",
 		"Sender",
 		"Canal",
-		"chaîne"
+		"Chaîne"
+		}
+	},
+	{	"channelDetails",
+		{
+		"Channel details",
+		"",
+		"Detalles del canal",
+		""
 		}
 	},
 	{	"channelList",
@@ -236,6 +244,14 @@ i18n_t i18n[]={
 		"Programmplatz",
 		"Número del canal",
 		"Numéro de chaîne"
+		}
+	},
+	{	"channelPlaylistDownload",
+		{
+		"Download channel playlist",
+		"",
+		"Descargar lista de reproducción de canales",
+		""
 		}
 	},
 	{	"channelWatch",
@@ -347,6 +363,14 @@ i18n_t i18n[]={
 		"File",
 		"",
 		"Archivo",
+		""
+		}
+	},
+	{	"fileDownload",
+		{
+		"Download file",
+		"",
+		"Descargar archivo",
 		""
 		}
 	},
@@ -590,6 +614,14 @@ i18n_t i18n[]={
 		"Partition",
 		"",
 		"Partición",
+		""
+		}
+	},
+	{	"partitionSpace",
+		{
+		"Free space per partition",
+		"",
+		"Espacio libre por particion",
 		""
 		}
 	},
@@ -959,6 +991,14 @@ i18n_t i18n[]={
 		"Timer bearbeiten",
 		"Editar programación",
 		"Modification d\'un enregistrement"
+		}
+	},
+	{	"timerList",
+		{
+		"List of timers",					
+		"",
+		"Lista de programaciones",
+		""
 		}
 	},
 	{	"timerUpdateErr",

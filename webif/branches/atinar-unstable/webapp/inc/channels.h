@@ -9,6 +9,9 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
@@ -36,22 +39,22 @@ typedef struct channelEntry_s {
 	int  nid;               //Network-ID.
 	int  tid;               //Transport-stream-ID.
 	int  rid;               //Radio-ID.
-} channelEntry;
+} channelEntry_t;
 
 typedef struct channelList_s {
 	int length;
-	channelEntry *entry;
-} channelList;
+	channelEntry_t *entry;
+} channelList_t;
 
-void initCE(channelEntry * const entry);
-void freeCE(channelEntry * const entry);
-void initCL(channelList  * const list);
-void freeCL(channelList  * const list);
-void getChannelList(channelList * const list, sortField_t sortBy, sortDirection_t sortDirection);
+void initCE(channelEntry_t * const entry);
+void freeCE(channelEntry_t * const entry);
+void initCL(channelList_t  * const list);
+void freeCL(channelList_t  * const list);
+void getChannelList(channelList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
 /*
  * Retrieve channelName.
  * If channelNum==0, retrieve current channel name.
  */
-boolean_t getChannel(int channelNum, channelEntry * const channel);
+boolean_t getChannel(int channelNum, channelEntry_t * const channel);
 
 #endif

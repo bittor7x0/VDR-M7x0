@@ -20,6 +20,7 @@
 #include <time.h>
 #include <klone/io.h>
 #include <klone/session.h>
+#include <klone/response.h>
 #include <klone/request.h>
 
 typedef enum boolean_e {
@@ -105,7 +106,7 @@ extern uint16_t server_port;
 extern char myip[16];
 
 #define boolean(i) ((i)?BT_TRUE:BT_FALSE)
-#define newSortDirection(sf) (sf==sortBy)?-sortDirection:1
+#define newSortDirection(sf) ((sf==sortBy)?-sortDirection:1)
 
 void config(session_t *session, request_t *request);
 boolean_t vdrRunning();
@@ -119,8 +120,10 @@ char * strcatEx(char ** dest, const char * s);
 boolean_t fileExists(const char * fileName);
 const char * sortClass(sortField_t sf);
 char * htmlEncode(const char * const s);
+void vdrDecode(char *dst, char *src);
 boolean_t makeTime(time_t *time, const char * date, const char * hour, const char * min );
-void printXhtmlHead(io_t *out, const char *title, const char *headExtra, ...);
+void printDoctypeOpenHtml(io_t *out);
+void printXhtmlHead(response_t *response,io_t *out, const char *title, const char *headExtra, ...);
 void printMenu(io_t *out);
 void printFooter(io_t *out);
 

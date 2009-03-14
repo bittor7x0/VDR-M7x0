@@ -42,7 +42,7 @@
 
 	config(session, request);
 	currentPage=PN_SETTINGS;
-	printXhtmlHead(out,tr("setup"),NULL);
+	printXhtmlHead(response,out,tr("setup"),NULL);
 	printMenu(out);
 
 	io_printf(out,
@@ -67,7 +67,7 @@
 			);
 		} else {
 			io_printf(out,
-"		<form action=\"settings.kl1\" method=\"get\">\n"
+"		<form action=\"settings.kl1\" method=\"post\">\n"
 "			<input type=\"hidden\" name=\"update\" value=\"%s\" />\n"
 				,confFileProperties[confFileID].name
 			);

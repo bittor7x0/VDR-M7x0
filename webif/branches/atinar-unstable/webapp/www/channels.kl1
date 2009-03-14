@@ -39,7 +39,7 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 	dbg_channels_kl1();
 	#endif
 
-	channelList channels;
+	channelList_t channels;
 	int i=0;
 
 	vars_t *args = request_get_args(request);
@@ -48,8 +48,11 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 
 	config(session, request);
 	currentPage=PN_CHANNELS;
-	printXhtmlHead(out,tr("channels"),NULL);
+	printXhtmlHead(response,out,tr("channels"),NULL);
 	printMenu(out);
+	const char *tableId[]={"tvChannels","radioChannels"};
+	const char *ChannelDetails=tr("channelDetails");
+	const char *Schedule=tr("schedule");
 	const char *LiveStream=tr("liveStream");
 	const char *Frequency=tr("frequency");
 	const char *Parameters=tr("parameters");
@@ -61,22 +64,19 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 	const char *RadioId=tr("radioId");
 	io_printf(out,
 "		<div id=\"main\" class=\"content\">\n"
-"			<h2>%s "
-				"<a href=\"playlistch.kl1\">"
-					"<img src=\"/img/tv16.png\" alt=\"%s\"/>"
-				"</a>"
-			"</h2>\n"
-		,tr("channels")
+"			<h2><a class=\"ui-icon ui-icon-tv\" href=\"playlistch.kl1\" title=\"%s\">%s</a>%s</h2>\n"
+		,tr("channelPlaylistDownload")
 		,tr("playlist")
+		,tr("channels")
 	);
 	getChannelList(&channels,sortBy,sortDirection);
 	close_svdrp();
 	int t;
 	boolean_t isTv;
-	const char *tableId[]={"tvChannels","radioChannels"};
 	for (t=0;t<2;t++){
+		const char *Caption=tr(tableId[t]);
 		io_printf(out,
-"			<table id=\"%s\" class=\"list1 channels\">\n"
+"			<table id=\"%s\" class=\"list1 channels\" summary=\"%s\">\n"
 "				<caption>%s</caption>"
 "				<col class=\"number\"/>\n"
 "				<col class=\"channel\"/>\n"
@@ -84,15 +84,15 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 "				<col class=\"ctrls\"/>\n"
 "				<thead>\n"
 "					<tr>\n"
-"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&direction=%d\">%s</a></th>\n"
-"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
+"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
 "						<th></th>\n"
 "					</tr>\n"
 "				</thead>\n"
 "				<tbody>\n"
-			,tableId[t]
-			,tr(tableId[t])
+			,tableId[t],Caption
+			,Caption
 			,sortClass(SF_CH_NUMBER),SF_CH_NUMBER,newSortDirection(SF_CH_NUMBER),"#"
 			,sortClass(SF_NAME),SF_NAME,newSortDirection(SF_NAME),tr("channel")
 			,sortClass(SF_MUX),SF_MUX,newSortDirection(SF_MUX),tr("channelMux")
@@ -103,12 +103,10 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 			io_printf(out,
 "					<tr>\n"
 "						<td class=\"number\" >%d</td>\n"
-"						<td class=\"channel\">"
-							"<a class=\"channel\" href=\"watchit.kl1?channelnum=%d\">%s</a>"
-						"</td>\n"
+"						<td class=\"channel\"><a class=\"channel\" href=\"program.kl1?chan=%d\" title=\"%s\">%s</a></td>\n"
 "						<td class=\"mux\">%s</td>\n"
 				,channels.entry[i].channelNum
-				,channels.entry[i].channelNum,channels.entry[i].channelName
+				,channels.entry[i].channelNum,Schedule,channels.entry[i].channelName
 				,channels.entry[i].multiplexName
 			);
 			io_printf(out,
@@ -117,21 +115,22 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 "								<div class=\"infobox infoboxCssHover infoLeft\"><span class=\"ui-icon ui-icon-info\">%s</span>\n"
 "									<div class=\"infoWrapper infoCssHover\">\n"
 "										<div class=\"info\">\n"
-"											<table class=\"channelInfo\">\n"
+"											<table class=\"channelInfo\" summary=\"\">\n"
 "												<caption>%s</caption>\n"
 				,tr("moreInfo")
+				,ChannelDetails
 				,channels.entry[i].channelName
 			);
 			io_printf(out,
-"													<tr><th>Id</th><td>%s</td></tr>\n"
-"													<tr><th>%s</th><td>%d</td></tr>\n"
-"													<tr><th>%s</th><td>%s</td></tr>\n"
-"													<tr><th>%s</th><td>%d</td></tr>\n"
-"													<tr><th>%s</th><td>%d</td></tr>\n"
-"													<tr><th>%s</th><td>%d</td></tr>\n"
-"													<tr><th>%s</th><td>%d</td></tr>\n"
-"													<tr><th>%s</th><td>%d</td></tr>\n"
-"													<tr><th>%s</th><td>%d</td></tr>\n"
+"												<tr><th>Id</th><td>%s</td></tr>\n"
+"												<tr><th>%s</th><td>%d</td></tr>\n"
+"												<tr><th>%s</th><td>%s</td></tr>\n"
+"												<tr><th>%s</th><td>%d</td></tr>\n"
+"												<tr><th>%s</th><td>%d</td></tr>\n"
+"												<tr><th>%s</th><td>%d</td></tr>\n"
+"												<tr><th>%s</th><td>%d</td></tr>\n"
+"												<tr><th>%s</th><td>%d</td></tr>\n"
+"												<tr><th>%s</th><td>%d</td></tr>\n"
 "											</table>\n"
 				,channels.entry[i].channelId    	
 				,Frequency,channels.entry[i].frequency
@@ -151,13 +150,13 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 			);
 			io_printf(out,
 "							<div class=\"boxRight\">"
-"								<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\">%s</a>\n"
+"								<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 "						</td>\n"
 "					</tr>\n"
 				,(isTv)?"ui-icon-tv":"ui-icon-radio"
 				,channels.entry[i].channelNum
-				,LiveStream
+				,LiveStream,LiveStream
 			);
 		}
 		io_printf(out,

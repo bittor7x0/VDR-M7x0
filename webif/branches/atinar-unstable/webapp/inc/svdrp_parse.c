@@ -175,7 +175,7 @@ void parseTimer(const char * line, timerEntry_t * const timer ){
 	//TODO parse aux
 }
 
-void parseChannel(char * line, channelEntry * channel) {
+void parseChannel(char * line, channelEntry_t * channel) {
 	char *r, *r2;
 	int k,l,l2;
 
@@ -198,7 +198,7 @@ void parseChannel(char * line, channelEntry * channel) {
 				}
 				channel->multiplexName=strndup(r2,l2);
 				break;
-			case  1:	channel->frequency=strtol(r,NULL,10); break;
+			case  1: channel->frequency=strtol(r,NULL,10); break;
 			case  2: channel->parameter=strndup(r,l); break;
 			case  3: channel->source=strndup(r,l);    break;
 			case  5: channel->vpid=strtol(r,NULL,10); break;

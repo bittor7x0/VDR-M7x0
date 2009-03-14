@@ -30,8 +30,8 @@
 sortField_t compareCE_sortBy=SF_NONE;
 sortDirection_t compareCE_sortDirection=SD_ASC;
 int compareCE(const void * a, const void * b) {
-	const channelEntry *ca = (const channelEntry*)a;
-	const channelEntry *cb = (const channelEntry*)b;
+	const channelEntry_t *ca = (const channelEntry_t*)a;
+	const channelEntry_t *cb = (const channelEntry_t*)b;
 	int result;
 	switch (compareCE_sortBy) {
 		case SF_MUX:
@@ -47,7 +47,7 @@ int compareCE(const void * a, const void * b) {
 	}
 }
 
-void initCE(channelEntry * const entry){
+void initCE(channelEntry_t * const entry){
 	entry->channelId=NULL;
 	entry->channelName=NULL;
 	entry->multiplexName=NULL;
@@ -55,7 +55,7 @@ void initCE(channelEntry * const entry){
 	entry->source=NULL;
 }
 
-void freeCE(channelEntry * const entry){
+void freeCE(channelEntry_t * const entry){
 	free(entry->channelId);
 	free(entry->channelName);
 	free(entry->multiplexName);
@@ -64,12 +64,12 @@ void freeCE(channelEntry * const entry){
 	initCE(entry);
 }
 
-void initCL(channelList * const list){
+void initCL(channelList_t * const list){
 	list->length=0;
 	list->entry=NULL;
 }
 
-void freeCL(channelList * const list){
+void freeCL(channelList_t * const list){
 	int i;
 	for (i=0;i<list->length;i++){
 		freeCE(&(list->entry[i]));
@@ -80,7 +80,7 @@ void freeCL(channelList * const list){
 }
 
 // Obtain the channel list from VDR
-void getChannelList(channelList * const list, sortField_t sortBy, sortDirection_t sortDirection) {
+void getChannelList(channelList_t * const list, sortField_t sortBy, sortDirection_t sortDirection) {
 	initCL(list);
 	
 	char *data, *p;
@@ -91,7 +91,7 @@ void getChannelList(channelList * const list, sortField_t sortBy, sortDirection_
 	
 	for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
 		if (atoi(p)==250){
-			channelEntry * tmp=(channelEntry *)realloc(list->entry,(list->length+1)*sizeof(channelEntry));
+			channelEntry_t * tmp=(channelEntry_t *)realloc(list->entry,(list->length+1)*sizeof(channelEntry_t));
 			if (!tmp) {
 				warn("getChannelList:Reallocation failed.");
 				exit(1);
@@ -106,11 +106,11 @@ void getChannelList(channelList * const list, sortField_t sortBy, sortDirection_
 		//Quick sort recordings
 		compareCE_sortBy=sortBy;
 		compareCE_sortDirection=sortDirection;
-		qsort(list->entry,list->length,sizeof(channelEntry),compareCE);
+		qsort(list->entry,list->length,sizeof(channelEntry_t),compareCE);
 	} 
 }
 
-boolean_t getChannel(int channelNum, channelEntry * const channel) {
+boolean_t getChannel(int channelNum, channelEntry_t * const channel) {
 	char cmd[10];
 	char *data;
 	char *r;

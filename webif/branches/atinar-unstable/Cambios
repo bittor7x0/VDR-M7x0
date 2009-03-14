@@ -1,16 +1,25 @@
+2009-03-14
+* Eliminadas hojas css antiguas.
+* Adaptado now-next.kl1 al nuevo formato.
+* Parcheado u_urlncpy_encode en klone.
+* Substituidos META tags en head por encabezado HTTP.
+* Tooltip en todos los enlaces.
+* Corregidos errores de validacion de html.
+* Lista de audio como array y enumeracion para tipos de video en recInfo_t.
+
 2009-03-10
-* I18n optimizada mediante búsqueda binaria sobre claves breves.
+* I18n optimizada mediante busqueda binaria sobre claves breves.
 * Eliminado directorio components e implementada funcionalidad mediante procedimientos.
-* Incluida edición (renombrado/borrado) de grabaciones.
-* Simplificada edición/borrado de programaciones.
+* Incluida edicion (renombrado/borrado) de grabaciones.
+* Simplificada edicion/borrado de programaciones.
 * Mejorada pagina de inicio.
 * Mejorada presentacion de canales.
-* Visualización grafica de las programaciones sobre la vista de EPG.
-* Generación de HTML correctamente indentado.
-* Apariencia gráfica (iconos) especificada en CSS en lugar de en HTML.
-* Reestructuradas hojas de estilo CSS según medio.
-* Iniciada adaptación de clases CSS a jQuery-UI, de cara a permitir temas.
+* Visualizacion grafica de las programaciones sobre la vista de EPG.
+* Generacion de HTML correctamente indentado.
+* Apariencia grafica (iconos) especificada en CSS en lugar de en HTML.
+* Reestructuradas hojas de estilo CSS segun medio.
+* Iniciada adaptacion de clases CSS a jQuery-UI, de cara a permitir temas.
 * Corregidos algunos bugs en IE6. Pendiente de verificar en IE7.
 * Eliminado conf-i18n e integrada funcionalidad en i18n.
-* Completada la migración de todas las páginas al nuevo formato.
+* Completada la migracion de todas las paginas al nuevo formato.
 * Iniciado este registro de cambios.
