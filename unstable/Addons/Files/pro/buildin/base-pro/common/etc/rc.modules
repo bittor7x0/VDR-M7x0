@@ -34,6 +34,7 @@ insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o
 echo "ehci-hcd.o"
 insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o
 echo "usb-ohci.o"
+/bin/sleep 2
 
 # select tuner
 if  [ ${SYSTEMTYPE} = m750s ] ; then
