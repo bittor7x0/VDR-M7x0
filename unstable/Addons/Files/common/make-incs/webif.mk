@@ -15,6 +15,8 @@
 # The project's page is at http://www.open7x0.org
 #
 #
+
+# Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 WEBIF_DEPS = $(BASE_BUILD_STAGEFILE)
 
 KLONE_VERSION := 2.1.1
