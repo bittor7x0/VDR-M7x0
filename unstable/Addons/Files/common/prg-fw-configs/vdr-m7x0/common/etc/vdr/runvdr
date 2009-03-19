@@ -27,14 +27,14 @@ fi
 
 # Video dirs
 
-if [ -d "${vdr_videodirs%% *}" ] ; then
+if [ X"${vdr_videodirs}" != X"" ] ; then
     vdirn=0
     for vdir in ${vdr_videodirs} ; do
-        [ -d ${vdir} ] && ln -snf ${vdir} /var/vdr/video${vdirn}
+        ln -snf ${vdir} /var/vdr/video${vdirn}
         vdirn=$(( ${vdirn} + 1 ))
     done
 else
-    # fallback no video dir defined or first not exists
+    # fallback no video dir defined
     mkdir -p /var/vdr/video.flash
     ln -snf /var/vdr/video.flash /var/vdr/video0
 fi
