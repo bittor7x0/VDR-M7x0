@@ -52,7 +52,7 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 
 	config(session, request);
 	currentPage=PN_INDEX;
-	printXhtmlHead(response,out,tr("homepage"),NULL);
+	initHtmlPage(response,out,tr("homepage"),NULL);
 	printMenu(out);
 
 	io_printf(out,
@@ -92,7 +92,7 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 			io_printf(out,
 "			</div>"
 "			<h2>"
-				"<a class=\"ui-icon ui-icon-tv\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
+				"<a class=\"wi-icon wi-icon-tv\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
 				"%s &raquo;%s&laquo;"
 			"</h2>\n"
 "			<div class=\"section\">\n"
@@ -256,5 +256,5 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 "			</div>\n"
 "		</div>\n"
 	);
-	printFooter(out);
+	finishHtmlPage(out);
 %>

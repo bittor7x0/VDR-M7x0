@@ -1073,6 +1073,22 @@ i18n_t i18n[]={
 		"Configuration de VDR"
 		}
 	},
+	{	"volumeDown",
+		{
+		"Volume down",
+		"",
+		"Bajar volumen",
+		""
+		}
+	},
+	{	"volumeUp",
+		{
+		"Volume up",
+		"",
+		"Subir volumen",
+		""
+		}
+	},
 	{	"warnNoEPG",
 		{
 		"EPG ist not available, please try again later. If the problem persists, this channel either has no EPG or it is broken. Feel free to get in touch with someone who is in charge for this channel.",

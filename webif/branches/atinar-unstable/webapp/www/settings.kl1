@@ -42,7 +42,7 @@
 
 	config(session, request);
 	currentPage=PN_SETTINGS;
-	printXhtmlHead(response,out,tr("setup"),NULL);
+	initHtmlPage(response,out,tr("setup"),NULL);
 	printMenu(out);
 
 	io_printf(out,
@@ -111,5 +111,5 @@
 	}
 	io_printf(out,
 "	</div>\n");
-	printFooter(out);
+	finishHtmlPage(out);
 %>

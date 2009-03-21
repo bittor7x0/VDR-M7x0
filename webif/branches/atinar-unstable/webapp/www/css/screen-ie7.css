@@ -26,3 +26,13 @@ div.infobox div.info {
 	width:expresion(this.height>251px?250px:true);
 	height:expresion(this.height>451px?450px:true);
 }
+
+/*
+ * superfish
+ */
+.sf-menu li:hover {
+	visibility:inherit; /* fixes IE7 'sticky bug' */
+}
+.sf-menu a.sf-with-ul {
+	min-width:1px;
+}

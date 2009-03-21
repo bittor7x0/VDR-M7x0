@@ -58,6 +58,7 @@ void freeTE(timerEntry_t * const entry);
 void initTL(timerList_t  * const list);
 void freeTL(timerList_t  * const list);
 void getTimerList(timerList_t * const timers, channelList_t const * const channels, sortField_t sortBy, sortDirection_t sortDirection);
+void sortTimerList(timerList_t * const timers, sortField_t sortBy, sortDirection_t sortDirection);
 boolean_t addTimer(const char * newTimerStr, char ** message);
 boolean_t editTimer(int timerID, const char * oldTimerStr, const char * newTimerStr, char ** message);
 boolean_t deleTimer(int timerID, const char * delTimerStr, char ** message);

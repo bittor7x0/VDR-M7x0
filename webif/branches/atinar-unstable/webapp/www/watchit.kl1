@@ -40,13 +40,8 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 
 	config(session, request);
 	currentPage=PN_WATCHIT;
-	printXhtmlHead(response,out,tr("channelWatch"),
+	initHtmlPage(response,out,tr("channelWatch"),
 "		<script type=\"text/javascript\" src=\"/js/vlc.js\"></script>\n"
-"		<script type=\"text/javascript\">\n"
-"			$(window).load(function(){\n"
-"				updateVolume(0)}\n"
-"			);\n"
-"		</script>\n"
 	);
 	printMenu(out);
 	channelList_t channels;
@@ -78,9 +73,12 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 		io_printf(out,
 "			<h2>TV</h2>\n");
 	}
+	const char *Play=tr("play");
 	const char *Pause=tr("pause");
-	const char *FullScreen=tr("fullScreen");
+	const char *Fullscreen=tr("fullScreen");
 	const char *Mute=tr("mute");
+	const char *VolumeDown=tr("volumeDown");
+	const char *VolumeUp=tr("volumeUp");
 	io_printf(out,
 "			<form action=\"watchit.kl1\" method=\"post\">\n"
 "				<select name=\"channelnum\" size=\"1\">\n");
@@ -96,61 +94,63 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 	io_printf(out,
 "				</select><br />\n"
 "				<input type=\"submit\" value=\"%s\"/>\n"
+"			</form>\n"
 		,tr("switch")
 	);
 	io_printf(out,
-"				<p>\n"
-"					<button id=\"PlayOrPause\" name=\"%s\" type=\"button\" onClick=\"doPlayOrPause();return false;\">"
-						"<img src=\"/img/pause16.png\"/>"
-					"</button>\n"
-"					<button id=\"FullScreen\" name=\"%s\" type=\"button\" onClick=\"doFullScreen();return false;\">"
-						"<img src=\"/img/fullscreen16.png\"/>"
-					"</button>\n"
-"					<button id=\"Mute\" name=\"%s\" type=\"button\" onClick=\"doToggleMute();return false;\">"
-						"<img src=\"/img/mute16.png\"/>"
-					"</button>\n"
-"					<button id=\"VolumeDown\" name=\"---\" type=\"button\" onClick=\"updateVolume(-10);return false;\">"
-						"<img src=\"/img/voldown16.png\"/>"
-					"</button>\n"
-"					<span id=\"VolumeText\">%%</span>\n"
-"					<button id=\"VolumeUp\" name=\"+++\" type=\"button\" onClick=\"updateVolume(+10);return false;\">"
-						"<img src=\"/img/volup16.png\"/>"
-					"</button>\n"
-"				</p>\n"
-"			</form>\n"
-"			<iframe id=\"watchItInfo\" src=\"now-next.kl1?chan=%d\"></iframe>\n"
+"			<ul class=\"controls ui-widget ui-helper-clearfix\">\n"
+"				<li id=\"PlayOrPause\" class=\"control ui-state-default ui-corner-all\" >"
+					"<span class=\"ui-icon ui-icon-pause\">%s</span>"
+				"</li>\n"
+"				<li id=\"Fullscreen\" class=\"control ui-state-default ui-corner-all\" >"
+					"<span class=\"ui-icon ui-icon-arrow-4-diag\">%s</span>"
+				"</li>\n"
+"				<li id=\"Mute\" class=\"control ui-state-default ui-corner-all\" >"
+					"<span class=\"ui-icon ui-icon-volume-off\">%s</span>"
+				"</li>\n"
+"				<li id=\"VolumeDown\" class=\"control ui-state-default ui-corner-all\" >"
+					"<span class=\"wi-icon wi-icon-volume-down\">%s</span>"
+				"</li>\n"
+"				<li id=\"VolumeUp\" class=\"control ui-state-default ui-corner-all\" >"
+					"<span class=\"wi-icon wi-icon-volume-up\">%s</span>"
+				"</li>\n"
+"			</ul>\n"
+"			<div id=\"watchItInfoWrapper\">\n"
+"				<iframe id=\"watchItInfo\" src=\"now-next.kl1?chan=%d\"></iframe>\n"
+"			</div>\n"
 "		</div>\n"
 		,Pause
-		,FullScreen
+		,Fullscreen
 		,Mute
+		,VolumeDown
+		,VolumeUp
 		,channelNum
 	);
 	if ((channelNum>0) && (channelNum<=channels.length)) {
 		const char *context =(channels.entry[channelNum-1].vpid>1) ? "/" : "/ES/";
 		io_printf(out,
 "		<div id=\"watchItVlc\">\n"
-"			<object classid=\"clsid:E23FE9C6-778E-49D4-B537-38FCDE4887D8\" "
-			"codebase=\"http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab\" "
-			"width=\"%d\" height=\"%d\" events=\"false\" "
-			"style=\"position:absolute;\">\n"
+"			<!--[if !IE]>-->\n"
+"			<object	id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\">\n"	
+"			<!--<![endif]-->\n"
+"			<!--[if IE]>\n"
+"			<object	id=\"vlc\" width=\"%d\" height=\"%d\"\n"	
+"			classid=\"clsid:E23FE9C6-778E-49D4-B537-38FCDE4887D8\"\n"
+"			codebase=\"http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab\">\n"
+"			<![endif]-->\n"
 "				<param name=\"showDisplay\" value=\"true\" />\n"
 "				<param name=\"autoLoop\" value=\"false\" />\n"
 "				<param name=\"autoPlay\" value=\"true\" />\n"
 "				<param name=\"src\" value=\"http://%s:3000%s%d\" />\n"
-"				<param name=\"wmode\" value=\"transparent\"/>\n"
-"				<embed id=\"vlc\" name=\"vlc\" type=\"application/x-vlc-plugin\" progid=\"VideoLAN.VLCPlugin.2\" "	
-				"autoplay=\"yes\" loop=\"no\" width=\"%dpx\" height=\"%dpx\" events=\"True\" "
-				"target=\"http://%s:3000%s%d\" style=\"border: 1px solid grey\" />\n"
 "			</object>\n"
 "		</div>\n"
 "		<div class=\"clearer\"></div>\n"
 "	</div>\n"
 			,720, 576
-			,myip,context,channelNum
 			,720, 576
 			,myip,context,channelNum
 		);
 	}
 	freeCL(&channels);
-	printFooter(out);
+	finishHtmlPage(out);
 %>

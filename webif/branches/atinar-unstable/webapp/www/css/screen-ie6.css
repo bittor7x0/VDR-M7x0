@@ -29,3 +29,17 @@ div.infobox div.info {
 	width:25%;
 	height:450px;
 }
+
+/*
+ * superfish
+ */
+.sf-menu a.sf-with-ul {
+	min-width:1px;
+}
+.sf-sub-indicator {
+	top:1.05em;
+	background-position:-10px -100px;
+}
+.sf-shadow ul.sf-shadow-off {
+	background: transparent;
+}

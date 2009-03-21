@@ -48,7 +48,7 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 
 	config(session, request);
 	currentPage=PN_CHANNELS;
-	printXhtmlHead(response,out,tr("channels"),NULL);
+	initHtmlPage(response,out,tr("channels"),NULL);
 	printMenu(out);
 	const char *tableId[]={"tvChannels","radioChannels"};
 	const char *ChannelDetails=tr("channelDetails");
@@ -64,7 +64,7 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 	const char *RadioId=tr("radioId");
 	io_printf(out,
 "		<div id=\"main\" class=\"content\">\n"
-"			<h2><a class=\"ui-icon ui-icon-tv\" href=\"playlistch.kl1\" title=\"%s\">%s</a>%s</h2>\n"
+"			<h2><a class=\"wi-icon wi-icon-tv\" href=\"playlistch.kl1\" title=\"%s\">%s</a>%s</h2>\n"
 		,tr("channelPlaylistDownload")
 		,tr("playlist")
 		,tr("channels")
@@ -150,11 +150,11 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 			);
 			io_printf(out,
 "							<div class=\"boxRight\">"
-"								<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>\n"
+"								<a class=\"wi-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 "						</td>\n"
 "					</tr>\n"
-				,(isTv)?"ui-icon-tv":"ui-icon-radio"
+				,(isTv)?"wi-icon-tv":"wi-icon-radio"
 				,channels.entry[i].channelNum
 				,LiveStream,LiveStream
 			);
@@ -168,5 +168,5 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 "				<div style=\"clear:both\"></div>"
 "			</div>\n"
 	);
-	printFooter(out);
+	finishHtmlPage(out);
 %>

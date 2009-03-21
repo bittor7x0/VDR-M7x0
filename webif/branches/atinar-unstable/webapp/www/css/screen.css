@@ -1,7 +1,16 @@
+@import url('jquery-ui-1.7.css');
+@import url('superfish.css');
+
+/* General
+----------------------------------*/
+* {
+	margin:0;
+	padding:0;
+}
 body {
-	background-color:#012;
 	color:black;
-	font-family:/*Verdana,Arial,Helvetica,*/serif;
+	background-color:#012;
+	font-family:serif;
 	font-size:9pt;
 	font-size-adjust:none;
 	font-stretch:normal;
@@ -9,15 +18,88 @@ body {
 	font-variant:normal;
 	font-weight:normal;
 	line-height:normal;
+}
+div {
+	vertical-align:top;
+}
+a {
+	text-decoration:none;
+}
+img {
+	display:inline;
+	border:medium none;
+}
+h2 {
+	background-color:#78C4CF;
+	border-color:#3F8FAF;
+	border-style:solid;
+	border-width:1px;
+	font-size:1.3em;
+	margin:2em 10px 1em;
+	padding:0.2em 1em;
+	overflow:auto;
+	-moz-border-radius: 3px;
+}
+h2 a,
+h2 a:visited {
+	color:black;
+}
+ul.controls {
 	margin:0;
 	padding:0;
 }
+ul.controls li.control {
+	list-style-type:none;
+	list-style-image:none;
+	list-style-position:outside;
+}
+.control {
+	float:left;
+	margin:2px;
+	padding:4px 0;
+}
+div.boxRight {
+	float:right;
+	margin:0 3px;
+	padding:0;
+}
+/* Messages */
+.message,
+.alert {
+	width:70%;
+	margin:1em auto;
+	padding:0.5em;
+	font-weight:bold;
+	-moz-border-radius:3px;
+}
+.message {
+	color:#002F4F;
+	background-color:#A0D0D0;
+}
+.alert {
+	color:#AA0000;
+	background-color:#FFE8BF;
+}
+.message .response,
+.alert .response {
+	font-family:courier;
+	font-size:0.8em;
+}
+.message p,
+.message ul,
+.alert p,
+.alert ul {
+	margin:0.5em 0;
+}
+
+/* Page layout 
+------------------------------------------------------*/
 #page-div{
 	background-color:transparent;
 	padding:0 20px 20px;
 }
 #page-top {
-	background:transparent url(/img/logo-414.png) no-repeat scroll left top;
+	background:transparent url(images/logo-414.png) no-repeat scroll left top;
 	height:150px;
 	position:relative;
 	margin:0;
@@ -71,28 +153,10 @@ body {
 	text-decoration:none;
 	color:#000;
 }
-div {
-	margin:0;
-	vertical-align:top;
-}
-a {
-	text-decoration:none;
-}
-img {
-	display:inline;
-	border:medium none;
-}
 div.content {
 	/*overflow:auto; No funciona:recorta info*/ 
 	background-color:#fef;
 	padding:5px 5px 10px;
-}
-div.content iframe {
-border:medium none;
-height:100%;
-margin:0;
-padding:0;
-width:100%;
 }
 div.section {
 	margin: 0 10px;
@@ -100,35 +164,9 @@ div.section {
 div.clearer {
 	clear:both;
 }
-.message,
-.alert {
-	width:70%;
-	margin:1em auto;
-	padding:0.5em;
-	font-weight:bold;
-	-moz-border-radius:3px;
-}
-.message {
-	color:#002F4F;
-	background-color:#A0D0D0;
-}
-.message .response,
-.alert .response {
-	font-family:courier;
-	font-size:0.8em;
-}
-	
-.alert {
-	color:#AA0000;
-	background-color:#FFE8BF;
-}
-.message p,
-.message ul,
-.alert p,
-.alert ul {
-	margin:0.5em 0;
-}
 
+/* Table related 
+------------------------------------------------------------*/
 table.list1 {
 	background-color:#DDA;
 	border-collapse:separate;
@@ -175,13 +213,13 @@ table.list1 th a {
 	display:block;
 }
 table.list1 .sortasc {
-	background-image:url(/img/up3.png);
+	background-image:url(images/up3.png);
 }
 table.list1 .sortnone {
 	background:none;
 }
 table.list1 .sortdesc {
-	background-image:url(/img/down3.png);
+	background-image:url(images/down3.png);
 }
 table.list1 td {
 	border-color:#FFC #BB8 #BB8 #FFC;
@@ -208,6 +246,9 @@ table.list1 tr.anotherDay:hover td {
 	padding-left:2em;
 	color:#202020;
 	font-weight:bold;
+}
+table#partitionSpace {
+	max-width:50em;
 }
 table#recEdit,
 table#timerEdit {
@@ -245,10 +286,6 @@ table#programs colgroup.nowNext col.pgName{
 table#programs col.pgName{
 	width:auto;
 }
-table#tvChannels {
-}
-table#radioChannels {
-}
 table.channels {
 	float:left;
 	width:45%;
@@ -265,9 +302,6 @@ table#recordings td.number {
 table.channels col.ctrls {
 	width:58px;
 }
-table#partitionSpace {
-	max-width:50em;
-}
 col.date {
 	width:6em;
 }
@@ -280,14 +314,9 @@ col.content {
 col.space {
 	width:1em;
 }
-div.boxRight {
-	float:right;
-	margin:0 3px;
-	padding:0;
-}
-div.inlineBlock {
-	display:inline-block;
-}
+
+/* Info 
+----------------------------------*/
 .info {
 	font-size:0.9em;
 	color:black;
@@ -317,7 +346,7 @@ div.infobox {
 div.infobox div.infoWrapper {
 	position:absolute;
 	display:none;
-	background:url(/img/shadow1.png) repeat;
+	background:url(images/shadow1.png) repeat;
 	bottom:10px;
 	-moz-border-radius:2px;
 }
@@ -362,10 +391,66 @@ div.infobox div.info {
 	padding:1px;
 	-moz-border-radius:0;
 }
+
+/* Page specific
+-------------------------------------*/
+/* Program */
+table.list1 th.timers,
+table.list1 td.timers {
+	padding:0;
+}
+table.list1 td.timers {
+	vertical-align:top;
+}
+.timers .timer {
+	margin:0;
+	padding:0;
+	width:77px;
+	height:16px;
+	position:relative;
+}	
+.timers .timer .progressbar {
+	width:60px;
+	height:13px;
+	left:0;
+	top:3px;
+	position:absolute;
+}
+.timers .timer a.wi-icon-edit {
+	right:0!important;
+	position:absolute;
+}
+.progressbar .pb {
+	top:0px;
+	bottom:0px;
+	position:absolute;
+	border-width:1px;
+	border-style:solid dotted;
+}
+.progressbar .pbstart{
+	border-left-style:solid!important;
+	-moz-border-radius-topleft:3px;
+	-moz-border-radius-bottomleft:3px;
+}
+.progressbar .pbend{
+	border-right-style:solid!important;
+	-moz-border-radius-topright:3px;
+	-moz-border-radius-bottomright:3px;
+}
+.progressbar .pbenabled{
+	border-color:#609040;
+	background-color:#B0C070;
+}
+.progressbar .pbdisabled{
+	border-color:#B0C0A0;
+	background-color:#E0D8B0;
+}
+
+/* Browse */
 .recPathWrapper {
 	margin:0 0 1em 5px;
 	padding:0; 
-	background: transparent url(/img/shadow1.png) repeat scroll 0pt 0pt; 
+	background: transparent url(images/shadow1.png) repeat scroll 0pt 0pt; 
 	position: relative; 
 	float: left;
 	display: block; 
@@ -424,7 +509,7 @@ ul.recPath li.recDir,
 	padding:0;
 	width:250px;
 	position:relative;
-	background:url(/img/shadow1.png) repeat;
+	background:url(images/shadow1.png) repeat;
 	-moz-border-radius:5px;
 }
 .recFolder {
@@ -444,12 +529,12 @@ div.recFolderHeader {
 	font-weight:bold;
 	margin:5px;
 	padding-left: 20px;
-	background-image:url(/img/folder16.png);
+	background-image:url(images/folder16.png);
 	background-position:top left;
 	background-repeat:no-repeat;
 }
-div.recFolderDel div.recFolderHeader {
-	text-decoration:line-through!important;
+div.recFolderHeader .wi-icon {
+	display:none;
 }
 div.recFolderHeader a, 
 div.recFolderHeader a:link, 
@@ -457,6 +542,9 @@ div.recFolderHeader a:visited {
 	color:black;
 	font-weight:bold;
 	text-decoration:none;
+}
+div.recFolderDel div.recFolderHeader a {
+	text-decoration:line-through!important;
 }
 div.recFolderHeader a:hover {
 	color:#234;
@@ -484,58 +572,53 @@ div.recFolderFooter {
 div.recFolderFooter .field {
 	font-size:0.9em;
 }
+
+/* View */
 div.code {
-	color:white;
-	background-color:#203040;
-	border:1px solid #001020;
+	background-color:#8F9FAF;
 	padding:0;
 }
 div.code div.codeHead {
-	color:white;
-	background-color:transparent;
 	border:0 none;
 	padding:0.5em 5px;
 	overflow:auto;
 }
 div.code div.codeHead ul {
 	display:block;
-	margin:0 1em 0 0;
+	margin:0 0.5em 0 0;
 	float:left;
-	margin:0;
 	padding:0;
 }
-.codeHead ul li {
+.codeHead ul.fields li.field {
 	display:block;
 	float:left;
 	margin:0 0.5em 0.2em 0;
 	padding:0;
 	font-size:0.8em;
 }
-.codeHead ul li.action {
-	border:0 none;
-}
-.codeHead ul li.field {
-	border: 1px solid #283848;
-	-moz-border-radius:8px;
-}
 .codeHead .field .label,
 .codeHead .field .value {
 	display:block;
 	padding:0.2em 1em;
 }
-
+.codeHead .controls .control,
+.codeHead .field .label,
+.codeHead .field .value {
+	/*border:1px solid #283848;*/
+	border:none;
+}
 .codeHead .field .label {
-	color:#A0A0A0;
-	background-color:#142434;
-	border-bottom:1px solid #283848;
-	-moz-border-radius-topleft:8px;
-	-moz-border-radius-topright:8px;
+	color:#0F1F2F;
+	background-color:#708090;
+	-moz-border-radius-topleft:7px;
+	-moz-border-radius-topright:7px;
 }
 .codeHead .field .value {
-	color:#A4A4A4;
-	background-color:#1C2C3C;
-	-moz-border-radius-bottomleft:8px;
-	-moz-border-radius-bottomright:8px;
+	color:#182838;
+	background-color:#788898;
+	margin-top:-1px;
+	-moz-border-radius-bottomleft:7px;
+	-moz-border-radius-bottomright:7px;
 }
 div.code pre {
 	color:black;
@@ -546,20 +629,24 @@ div.code pre {
 	clear:left;
 	-moz-border-radius: 3px;
 }
-h2 {
-	background-color:#78C4CF;
-	border-color:#3F8FAF;
-	border-style:solid;
-	border-width:1px;
-	font-size:1.3em;
-	margin:2em 10px 1em;
-	padding:0.2em 1em;
-	overflow:auto;
-	-moz-border-radius: 3px;
+/* WatchIt */
+#nowNextBody #tabsSelector {
+	display:none;
 }
-h2 a,
-h2 a:visited {
-	color:black;
+#watchItControl {
+	float:left;
+	max-width:250px;
+}
+#watchItInfoWrapper,
+#watchItInfo {
+	min-height:450px;
+}
+#watchItInfoWrapper h3 {
+	display:none;
+}
+#watchItVlc {
+	float:left;
+	margin-left:10px;
 }
 .eventSummary {
 	font-size:0.9em;
@@ -591,42 +678,102 @@ h2 a:visited {
 	 margin:0.1em 0;
  }
 
-.ui-icon {
-	display:block;
-	margin:0;
-	padding:0;
-	width:16px;
-	height:16px;
-	background-repeat:no-repeat;
-	background-position:left top;
-	text-indent:-999em;
-	overflow:hidden;
+/* Icons
+----------------------------------*/
+.wi-icon { 
+	display: block; 
+	text-indent: -99999px; 
+	overflow: hidden; 
+	background-repeat: no-repeat; 
+	width: 16px; 
+	height: 16px; 
+	background-image: url(images/wi-icons_222222_80x64.png); 
 }
-h2 .ui-icon {
+.ui-widget-content .wi-icon {
+	background-image: url(images/wi-icons_222222_80x64.png); 
+}
+.ui-widget-header .wi-icon {
+	background-image: url(images/wi-icons_222222_80x64.png); 
+}
+.ui-state-default .wi-icon { 
+	background-image: url(images/wi-icons_888888_80x64.png); 
+}
+.ui-state-hover .wi-icon, 
+.ui-state-focus .wi-icon {
+	background-image: url(images/wi-icons_454545_80x64.png); 
+}
+.ui-state-active .wi-icon {
+	background-image: url(images/wi-icons_454545_80x64.png); 
+}
+.ui-state-highlight .wi-icon {
+	background-image: url(images/wi-icons_2e83ff_80x64.png); 
+}
+.ui-state-error .wi-icon, 
+.ui-state-error-text .wi-icon {
+	background-image: url(images/wi-icons_cd0a0a_80x64.png); 
+}
+.wi-icon-ar169 {
+	background-position: 0 0;
+}
+.wi-icon-ar43 {
+	background-position: -16px 0;
+}
+.wi-icon-edit {
+	background-position: -48px 0;
+}
+.wi-icon-floppy{
+	background-position: -64px 0;
+}
+.wi-icon-folder-rec{
+	background-position: 0 -16px;
+}
+.wi-icon-fullscreen{
+	background-position: -16px -16px;
+}
+.wi-icon-info{
+	background-position: -32px -16px;
+}
+.wi-icon-mute{
+	background-position: -48px -16px;
+}
+.wi-icon-pause {
+	background-position: -64px -16px;
+}
+.wi-icon-play {
+	background-position: 0 -32px;
+}
+.wi-icon-print{
+	background-positon: -16px -32px;
+}
+.wi-icon-radio {
+	background-position: -32px -32px;
+}
+.wi-icon-rec {
+	background-position: -48px -32px;
+}
+.wi-icon-timer {
+	background-position: -64px -32px;
+}
+.wi-icon-tv {
+	background-position: 0 -48px;
+}
+.wi-icon-volume-down {
+	background-position: -32px -48px;
+}
+.wi-icon-volume-up {
+	background-position: -48px -48px;
+}
+h2 .wi-icon {
 	float:left;
 	margin: 0 1em 1px 0;
 }
-.ui-icon-play {
-	background-image:url(/img/play16.png);
+.control .ui-icon,
+.control .wi-icon {
+	float:left;
+	margin:0 4px;
 }
-.ui-icon-edit {
-	background-image:url(/img/edit16.png);
-}
-.ui-icon-rec {
-	background-image:url(/img/rec16.png);
-}
-.ui-icon-tv {
-	background-image:url(/img/tv16.png);
-}
-.ui-icon-radio {
-	background-image:url(/img/radio16.png);
-}
-.ui-icon-info{
-	background-image:url(/img/info16.png);
-}
-.ui-icon-download{
-	background-image:url(/img/floppy16.png);
-}
+
+
 a.channel,
 a.strong { 
 	font-weight:bold; 
@@ -645,7 +792,15 @@ textArea.readOnly {
 	background-color:transparent;
 	border:none;
 }
-	
+.fromTo .hour {
+	font-weight:bold;
+	margin:0 0.2em;
+}
+th.hour,
+td.hour {
+	text-align:center;
+}
+
 button {
 	-moz-border-radius:5px;
 }
@@ -673,226 +828,4 @@ button.cancel {
 td button.cancel {
 	float:right;
 	margin-left:1em;
-}
-/* watchIt */
-#watchItControl {
-	float:left;
-	max-width:250px;
-}
-#watchItInfo {
-	min-height:450px;
-}
-#watchItVlc {
-	float:left;
-	margin-left:10px;
-}
-
-/* progressbar */
-table.list1 th.timers,
-table.list1 td.timers {
-	padding:0;
-}
-table.list1 td.timers {
-	vertical-align:top;
-}
-.timers .timer {
-	margin:0;
-	padding:0;
-	width:77px;
-	height:16px;
-	position:relative;
-}	
-.timers .timer .progressbar {
-	width:60px;
-	height:13px;
-	left:0;
-	top:3px;
-	position:absolute;
-}
-.timers .timer a.ui-icon-edit {
-	right:0!important;
-	position:absolute;
-}
-.progressbar .pb {
-	top:0px;
-	bottom:0px;
-	position:absolute;
-	border-width:1px;
-	border-style:solid dotted;
-}
-.progressbar .pbstart{
-	border-left-style:solid!important;
-	-moz-border-radius-topleft:3px;
-	-moz-border-radius-bottomleft:3px;
-}
-.progressbar .pbend{
-	border-right-style:solid!important;
-	-moz-border-radius-topright:3px;
-	-moz-border-radius-bottomright:3px;
-}
-.progressbar .pbenabled{
-	border-color:#609040;
-	background-color:#B0C070;
-}
-.progressbar .pbdisabled{
-	border-color:#B0C0A0;
-	background-color:#E0D8B0;
-}
-.fromTo .hour {
-	font-weight:bold;
-	margin:0 0.2em;
-}
-th.hour,
-td.hour {
-	text-align:center;
-}
-
-/*
- * superfish
- */
-
-.sf-menu, 
-.sf-menu * {
-	margin:			0;
-	padding:		0;
-	list-style:		none;
-}
-.sf-menu {
-	line-height:	1.0;
-	float:			left;
-	font-family:sans-serif;
-}
-.sf-menu ul {
-	position:		absolute;
-	top:			-999em;
-	width:			10em; /* left offset of submenus need to match (see below) */
-}
-.sf-menu ul li {
-	width:			100%;
-}
-.sf-menu li:hover {
-	visibility:		inherit; /* fixes IE7 'sticky bug' */
-}
-.sf-menu li {
-	float:			left;
-	position:		relative;
-	background-color:#334;
-	border-color:#445 #445 #2A2A3A #445;
-	border-width:1px 1px 2px 1px;
-	border-style:solid;
-	margin-right:1px!important;
-	-moz-border-radius-topleft:10px;
-	-moz-border-radius-topright:10px;
-}
-.sf-menu li li {
-	background-color:#556;
-	border: medium none;
-	-moz-border-radius: 0px;
-}
-.sf-menu li li li {
-	background:		#9AAEDB;
-}
-.sf-menu a {
-	display:		block;
-	position:		relative;
-	border-left:	1px solid #fff;
-	border-top:		1px solid #CFDEFF;
-	padding: 		.75em 1em;
-	text-decoration:none;
-}
-.sf-menu a, 
-.sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
-	color:#FFF;
-	text-decoration:none;
-	border:none;
-	background-color:transparent;
-}
-.sf-menu li:hover ul,
-.sf-menu li.sfHover ul {
-	left:			0;
-	top:			2.5em; /* match top ul list item height */
-	z-index:		99;
-}
-ul.sf-menu li:hover li ul,
-ul.sf-menu li.sfHover li ul {
-	top:			-999em;
-}
-ul.sf-menu li li:hover ul,
-ul.sf-menu li li.sfHover ul {
-	left:			10em; /* match ul width */
-	top:			0;
-}
-ul.sf-menu li li:hover li ul,
-ul.sf-menu li li.sfHover li ul {
-	top:			-999em;
-}
-ul.sf-menu li li li:hover ul,
-ul.sf-menu li li li.sfHover ul {
-	left:			10em; /* match ul width */
-	top:			0;
-}
-
-.sf-menu li:hover, 
-.sf-menu li.sfHover, 
-.sf-menu li.act {
-	background-color:#445;
-	border-color:#556 #556 #445 #556;
-}
-.sf-menu a:focus, 
-.sf-menu a:hover, 
-.sf-menu a:active {
-	color:#DDD;
-}
-
-/*** arrows **/
-.sf-menu a.sf-with-ul {
-	padding-right: 	2.25em;
-	min-width:		1px; /* trigger IE7 hasLayout so spans position accurately */
-}
-.sf-sub-indicator {
-	position:		absolute;
-	display:		block;
-	right:			.75em;
-	top:			1.05em; /* IE6 only */
-	width:			10px;
-	height:			10px;
-	text-indent: 	-999em;
-	overflow:		hidden;
-	background:		url('../img/arrows-ffffff.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
-}
-a > .sf-sub-indicator {  /* give all except IE6 the correct values */
-	top:			.8em;
-	background-position: 0 -100px; /* use translucent arrow for modern browsers*/
-}
-a:focus > .sf-sub-indicator,
-a:hover > .sf-sub-indicator,
-a:active > .sf-sub-indicator,
-li:hover > a > .sf-sub-indicator,
-li.sfHover > a > .sf-sub-indicator { /* arrow hovers for modern browsers*/
-	background-position: -10px -100px; 
-}
-
-/* point right for anchors in subs */
-.sf-menu ul .sf-sub-indicator { background-position:  -10px 0; }
-.sf-menu ul a > .sf-sub-indicator { background-position:  0 0; }
-/* apply hovers to modern browsers */
-.sf-menu ul a:focus > .sf-sub-indicator,
-.sf-menu ul a:hover > .sf-sub-indicator,
-.sf-menu ul a:active > .sf-sub-indicator,
-.sf-menu ul li:hover > a > .sf-sub-indicator,
-.sf-menu ul li.sfHover > a > .sf-sub-indicator {
-	background-position: -10px 0; /* arrow hovers for modern browsers*/
-}
-
-/*** shadows for all but IE6 ***/
-.sf-shadow ul {
-	background:	url('../img/shadow.png') no-repeat bottom right;
-	padding: 0 8px 9px 0;
-	-moz-border-radius-bottomleft: 17px;
-	-moz-border-radius-topright: 17px;
-	-webkit-border-top-right-radius: 17px;
-	-webkit-border-bottom-left-radius: 17px;
-}
-.sf-shadow ul.sf-shadow-off {
-	background: transparent;
 }

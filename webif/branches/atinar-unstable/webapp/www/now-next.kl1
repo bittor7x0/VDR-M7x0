@@ -62,7 +62,6 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 	nowNextEntry_t *nne=nnl.entry;
 	
 	//Header fields
-	response_set_content_type(response,"text/html; charset=ISO-8859-1");
 	long int waitSeconds=0;
 	char *refresh;
 	if ( (nne->event[1].time>0) && (nne->event[0].time>0) && (nne->event[0].title) && (nne->event[1].title) ) {
@@ -76,45 +75,69 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 	response_set_field(response,"Refresh",refresh);
 	free(refresh);
 	
-	printDoctypeOpenHtml(out);
+	initHtmlDoc(response,out);
 	io_printf(out,
 "	<head>\n"
 "		<title>%s</title>\n"
 "		<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen.css\" media=\"screen\"/>\n"
 "	</head>\n"
-"	<body>\n"
+"	<body id=\"nowNextBody\">\n"
+"		<div id=\"tabs\">\n"
 		,tr("program")
 	);
 
 	int i;
+	char *title[2];
 	for (i=0;i<2;i++){
+		title[i]=NULL;
 		eventEntry_t *ee=&nne->event[i];
 		if (ee->title) {
-			io_printf(out,
-"		<div class=\"eventSummary\">\n"
-			);
 			if (ee->time>0) {
 				struct tm t = *localtime(&ee->time);
-				io_printf(out,
-"			<h3>%02d:%02d</h3>\n",t.tm_hour,t.tm_min);
+				asprintf(&title[i],"%02d:%02d",t.tm_hour,t.tm_min);
 			} else {
-				io_printf(out,
-"			<h3>%s</h3>\n",(i==0)?tr("Now"):tr("next")); 
+				title[i]=strdup((i==0)?tr("Now"):tr("next")); 
 			}
+		}
+	}
+	io_printf(out,
+"			<ul id=\"tabsSelector\">\n"
+	);
+	int c=0;
+	for (i=0;i<2;i++){
+		if (title[i]){
 			io_printf(out,
-"			<h4>%s</h4>\n",(ee->title)?ee->title:"--"
+"				<li><a href=\"#tabs-%d\">%s</a></li>\n",c++,title[i]);
+		}
+	}
+	io_printf(out,
+"			</ul>\n"
+	);
+	c=0;
+	for (i=0;i<2;i++){
+		eventEntry_t *ee=&nne->event[i];
+		if (title[i]) {
+			io_printf(out,
+"			<div id=\"tabs-%d\" class=\"eventSummary\">\n",c++
+			);
+			io_printf(out,
+"				<h3>%s</h3>\n",title[i]);
+			io_printf(out,
+"				<h4>%s</h4>\n",(ee->title)?ee->title:"--"
 			);
 			printEventDesc(out,
-"			",ee->desc);	
+"				",ee->desc);	
 			io_printf(out,
-"		</div>\n"
+"			</div>\n"
 			);
 		}
 	}
+	for (i=0;i<2;i++) free(title[i]);
 
 	freeCE(&channel); //no realmente necesario a no ser que se asignen nombres.
 	freeNNL(&nnl);
 	io_printf(out,
+"		</tabs>\n"
 "	</body>\n"
 "</html>\n"
 	);

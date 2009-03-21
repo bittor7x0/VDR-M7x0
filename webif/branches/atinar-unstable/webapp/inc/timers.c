@@ -126,15 +126,18 @@ void getTimerList(timerList_t * const timers, channelList_t const * const channe
 		}
 	}
 	free(data);
+	sortTimerList(timers,sortBy,sortDirection);
+}
 
+void sortTimerList(timerList_t * const timers, sortField_t sortBy, sortDirection_t sortDirection){
 	if (timers->length>0 && sortBy!=SF_NONE) {
 		//Quick sort timers
 		compareTE_sortBy=sortBy;
 		compareTE_sortDirection=sortDirection;
-		qsort(timers->entry,i,sizeof(timerEntry_t),compareTE);
+		qsort(timers->entry,timers->length,sizeof(timerEntry_t),compareTE);
 	} 
-  
 }
+
 
 boolean_t addTimer(const char * newTimerStr, char ** message) {
 	boolean_t result= BT_FALSE;

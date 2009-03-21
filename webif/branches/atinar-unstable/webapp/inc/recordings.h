@@ -37,16 +37,6 @@ typedef struct recList_s {
 	recEntry_t *entry;
 } recList_t;
 
-typedef enum videoType_e {
-	VT_UNKNOWN,
-	VT_SD43,
-	VT_SD169,
-	VT_SD,
-	VT_HD43,
-	VT_HD169,
-	VT_HD
-} videoType_t;
-
 typedef struct audioList_s {
 	int length;
 	char **entry;

@@ -104,7 +104,7 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 		}
 	} else { 
 		currentPage=PN_FILEVIEW;
-		printXhtmlHead(response,out,tr("fileView"),NULL);
+		initHtmlPage(response,out,tr("fileView"),NULL);
 		printMenu(out);
 
 		io_printf(out,
@@ -115,9 +115,9 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 			const char *FileDownload=tr("fileDownload");
 			io_printf(out,
 "			<div class=\"codeHead\">\n"
-"				<ul class=\"actions\">\n"
-"					<li class=\"action\">"
-						"<a class=\"ui-icon ui-icon-download\" href=\"view.kl1?action=%d&fileNum=%d\" title=\"%s\">%s</a>"
+"				<ul class=\"controls ui-widget ui-helper-clearfix\">\n"
+"					<li class=\"control ui-state-default ui-corner-all\">"
+						"<a class=\"ui-icon ui-icon-disk\" href=\"view.kl1?action=%d&amp;fileNum=%d\" title=\"%s\">%s</a>"
 					"</li>\n"
 "				</ul>\n"
 				,PA_DOWNLOAD,fileNum,FileDownload,FileDownload
@@ -151,6 +151,6 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 		io_printf(out,
 "		</div>\n"
 		);
-		printFooter(out);
+		finishHtmlPage(out);
 	} 
 %>

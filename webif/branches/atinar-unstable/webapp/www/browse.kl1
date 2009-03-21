@@ -135,6 +135,7 @@ int printRecDir(char **io_str,const char * path, char * const urlEnc, int level,
 "				<div class=\"recFolderWrapper\">\n"
 "					<div class=\"recFolder%s%s%s\">\n"
 "						<div class=\"recFolderHeader\">\n"
+"							<span class=\"wi-icon wi-icon-folder-rec\"></span>"
 						,classIsRec[isRec],classIsDel[isDel],classIsEdt[isEdt]
 					);
 					if (isRec || isDel) {
@@ -201,7 +202,7 @@ void dbg_browse_kl1(void) { dbg("browse.kl1"); }
 
 	config(session, request);
 	currentPage=PN_BROWSE;
-	printXhtmlHead(response,out,tr("browse"),NULL);
+	initHtmlPage(response,out,tr("browse"),NULL);
 	printMenu(out);
 
 	vars_t *args = request_get_args(request);
@@ -278,6 +279,6 @@ void dbg_browse_kl1(void) { dbg("browse.kl1"); }
 "			</div>\n"
 "		</div>\n"
 	);
-	printFooter(out);
+	finishHtmlPage(out);
 %>
 

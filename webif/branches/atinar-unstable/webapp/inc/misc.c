@@ -45,7 +45,7 @@ const int httpPort=80;
 
 const char *checked[2]={""," checked=\"checked\""};
 const char *selected[2]={""," selected=\"selected\""};
-const char *arStr[7]={"1.gif","43.png","169.png","1.gif","43.png","169.png","1.gif"}; //TODO mover a css
+const char *videoTypeStr[7]={"unknown","sd43","sd169","sd","hd43","hd169","hd"}; //See videoType_t
 const char *cssSortClass[]={"sortdesc","sortnone","sortasc"};
 const char *classCurrent[2]={""," class=\"act\""};
 
@@ -251,54 +251,41 @@ boolean_t makeTime(time_t *time, const char * date, const char * hour, const cha
 	return result;
 }
 
-#define USE_XHTML
-
-void printDoctypeOpenHtml(io_t *out){
-#define USE_XHTML
-#ifdef USE_XHTML
+void initHtmlDoc(response_t *response,io_t *out){
+	response_set_content_type(response,"text/html; charset=ISO-8859-1");
+	response_set_field(response,"Content-Style-Type","text/css");
+	response_set_field(response,"Content-Script-Type","text/javascript");
 	io_printf(out,
 "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"%s\" lang=\"%s\">\n"
 		,alpha2[langID],alpha2[langID]
 	);
-#else
-	io_printf(out,
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n"
-"<html lang=\"%s\">\n"
-		,alpha2[langID]
-	);
-#endif
 }
 
-void printXhtmlHead(response_t *response,io_t *out, const char *title, const char *headExtra, ...){
-	response_set_content_type(response,"text/html; charset=ISO-8859-1");
-	response_set_field(response,"Content-Style-Type","text/css");
-	response_set_field(response,"Content-Script-Type", "text/javascript");
-	printDoctypeOpenHtml(out);
-#ifdef USE_XHTML
-	const char *lct=" /";
-#else
-	const char *lct="";
-#endif
-
+void initHtmlPage(response_t *response,io_t *out, const char *title, const char *headExtra, ...){
+	initHtmlDoc(response,out);
 	io_printf(out,
 "<head>\n"
 "	<title>%s - open7x0 VDR-FW</title>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen.css\" media=\"screen\"%s>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/print.css\" media=\"print\"%s>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen.css\" media=\"screen\" />\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/print.css\" media=\"print\" />\n"
 "	<!--[if IE 5.0]>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie50.css\" media=\"screen\"%s>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie50.css\" media=\"screen\" />\n"
 "	<![endif]-->\n"
 "	<!--[if IE 5.5]>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie55.css\" media=\"screen\"%s>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie55.css\" media=\"screen\" />\n"
 "	<![endif]-->\n"
 "	<!--[if IE 6]>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie6.css\" media=\"screen\"%s>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie6.css\" media=\"screen\" />\n"
 "	<![endif]-->\n"
 "	<!--[if IE 7]>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie7.css\" media=\"screen\"%s>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie7.css\" media=\"screen\" />\n"
 "	<![endif]-->\n"
-"	<script type=\"text/javascript\" src=\"/js/jquery-1.2.6.min.js\"></script>\n"
+"	<!--[if IE 8]>\n"
+"	<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen-ie8.css\" media=\"screen\" />\n"
+"	<![endif]-->\n"
+"	<script type=\"text/javascript\" src=\"/js/jquery-1.3.2.min.js\"></script>\n"
+"	<script type=\"text/javascript\" src=\"/js/jquery-ui-1.7.min.js\"></script>\n"
 "	<script type=\"text/javascript\" src=\"/js/jquery.hoverIntent.min.js\"></script>\n"
 "	<script type=\"text/javascript\" src=\"/js/superfish.js\"></script>\n"
 "	<script type=\"text/javascript\" src=\"/js/supersubs.js\"></script>\n"
@@ -309,12 +296,6 @@ void printXhtmlHead(response_t *response,io_t *out, const char *title, const cha
 "		});\n"
 "	</script>\n"
 		,title
-		,lct
-		,lct
-		,lct
-		,lct
-		,lct
-		,lct
 		,currentPage
 	);
 	if (headExtra) {
@@ -338,11 +319,6 @@ void printXhtmlHead(response_t *response,io_t *out, const char *title, const cha
 void printMenu(io_t *out){
 	int i;
 	int clock_id;
-#ifdef WEBIF_CRONO
-	clock_id=CLOCK_REALTIME;
-	struct timespec cronostart,cronoend;
-	clock_gettime(clock_id,&cronostart);
-#endif
 	const char *Summary=tr("summary");
 	io_printf(out,
 "		<ul id=\"menu\" class=\"sf-menu\">\n"
@@ -454,7 +430,7 @@ void printMenu(io_t *out){
 "				</ul>\n"
 "			</li>\n"
 	);
-	//a.target is deprecated in html 4.01:
+	//a.target is deprecated since html 4.01:
 	io_printf(out,
 "			<li>\n"
 "				<a href=\"#\">%s</a>\n"
@@ -466,13 +442,9 @@ void printMenu(io_t *out){
 "		</ul>\n"
 		,tr("links")
 	);
-#ifdef WEBIF_CRONO
-	clock_gettime(clock_id,&cronoend);
-	info("printMenu:time ellapsed %d secs, %f microsecs", cronoend.tv_sec-cronostart.tv_sec, (double)(cronoend.tv_nsec-cronostart.tv_nsec)/1000000.0);
-#endif
 }
 
-void printFooter(io_t *out){
+void finishHtmlPage(io_t *out){
 	io_printf(out,
 "	</div>\n"
 "	<div id=\"page-bottom\">\n"

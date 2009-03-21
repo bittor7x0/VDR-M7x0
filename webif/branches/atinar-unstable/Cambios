@@ -1,3 +1,12 @@
+2009-03-21
+* Incorporado tema jQuery-UI. Generado sprite con los iconos propios.
+* Actualizado jQuery de 1.2.6 a 1.3.2
+* Se muestran graficamente todas las coincidencias de timers regulares en la EPG (no solo la primera).
+* Iframe en watchit se transforma en tabs via javascript.
+* Movidas imagenes a subdirectorio de css.
+* Evento hover gestionado mediante javascript.
+* El enlace a la EPG desde la pagina de timers dirige directamente al timer en cuestion.
+
 2009-03-14
 * Eliminadas hojas css antiguas.
 * Adaptado now-next.kl1 al nuevo formato.

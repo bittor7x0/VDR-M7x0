@@ -35,9 +35,32 @@
 channelList_t channels;
 timerList_t timers;
 
+boolean_t intersects(timerEntry_t *timer, time_t pstart, time_t pend, int *mstart, int *mend){
+	boolean_t result=BT_FALSE;
+	*mstart=timer->start-pstart; //margen no cubierto al inicio
+	*mend  =pend-timer->stop;    //margen no cubierto al final
+	result=boolean( ((*mstart<=0) && (*mend<=0)) || ((*mstart<0) && (timer->stop>pstart)) || ((timer->start<pend) && (*mend<0)) );
+	if (timer->type==TT_REGULAR && timer->stop<pstart){
+		//Set regular timer to next date and reorder timers
+		struct tm sdate=*localtime(&timer->start);
+		int wday=(sdate.tm_wday+6)%7;
+		for(;;){
+			//TODO daylight savings?
+			wday=(wday+1)%7;
+			timer->start+=24*60*60;
+			timer->stop+=24*60*60;
+			if (timer->reg_timer[wday]!='-') {
+				sortTimerList(&timers,SF_START,SD_ASC);
+				break;
+			}
+		}
+	}
+	return result;
+}
+
 void printTimers(int channelNum, time_t startTime, int duration,char urlEnc[]) {
-	int begin=0;
-	int end=0;
+	int mstart=0;
+	int mend=0;
 
 	time_t endTime=startTime+duration;
 	boolean_t isStart, isEnd, anyMatch;
@@ -46,39 +69,33 @@ void printTimers(int channelNum, time_t startTime, int duration,char urlEnc[]) {
 		int i;
 		const char *TimerEdit=tr("timerEdit");
 		for (i=0;i<timers.length;i++) {
-			if (timers.entry[i].channelNum==channelNum) {
-				begin=timers.entry[i].start-startTime; //margen no cubierto al inicio
-				end  =endTime-timers.entry[i].stop;    //margen no cubierto al final
-				isStart=boolean(begin>=0);
-				isEnd=boolean(end>=0);
-				if ( ((begin<=0) && (end<=0)) 
-				|| ((begin<0) && (timers.entry[i].stop>startTime))
-				|| ((timers.entry[i].start<endTime) && (end<0)) ) {
-					if(!anyMatch){
-						anyMatch=BT_TRUE;
-						io_printf(out,"\n");
-					}
-					begin=(begin<=0) ? 0 : 100 * begin / duration;
-					end=  (end<=0)   ? 0 : 100 * end / duration;
-					io_printf(out,
+			if (timers.entry[i].channelNum==channelNum && intersects(&timers.entry[i],startTime,endTime,&mstart,&mend)) {
+				isStart=boolean(mstart>=0);
+				isEnd=boolean(mend>=0);
+				if(!anyMatch){
+					anyMatch=BT_TRUE;
+					io_printf(out,"\n");
+				}
+				mstart=(mstart<=0) ? 0 : 100 * mstart / duration;
+				mend=  (mend<=0)   ? 0 : 100 * mend / duration;
+				io_printf(out,
 "							<div id=\"timer%d_%d\" class=\"timer\" title=\"%s\">\n"
 "								<div class=\"progressbar\">\n"
 "									<div class=\"pb%s%s%s\" style=\"left:%d%%;right:%d%%;\">"
-										"&nbsp;"
-									"</div>\n"
+									"&nbsp;"
+								"</div>\n"
 "								</div>\n"
-					,timers.entry[i].ID,++timers.entry[i].count,timers.entry[i].title
-					,(isStart) ? " pbstart":"",(isEnd) ? " pbend":""
-					,(timers.entry[i].active) ? " pbenabled":" pbdisabled"
-					,begin,end
-					);
-					u_urlncpy(urlEnc,timers.entry[i].timerStr,strlen(timers.entry[i].timerStr),URLCPY_ENCODE);
-					io_printf(out,
-"								<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&amp;timer=%s&timerId=%d\" title=\"%s\">%s</a>\n"
+				,timers.entry[i].ID,++timers.entry[i].count,timers.entry[i].title
+				,(isStart) ? " pbstart":"",(isEnd) ? " pbend":""
+				,(timers.entry[i].active) ? " pbenabled":" pbdisabled"
+				,mstart,mend
+				);
+				u_urlncpy(urlEnc,timers.entry[i].timerStr,strlen(timers.entry[i].timerStr),URLCPY_ENCODE);
+				io_printf(out,
+"								<a class=\"wi-icon wi-icon-edit\" href=\"timers.kl1?a=%d&amp;timer=%s&amp;timerId=%d\" title=\"%s\">%s</a>\n"
 "							</div>\n"
-					,PA_EDIT,urlEnc,timers.entry[i].ID,TimerEdit,TimerEdit
-					);
-				}
+				,PA_EDIT,urlEnc,timers.entry[i].ID,TimerEdit,TimerEdit
+				);
 			}
 		}
 	}
@@ -107,7 +124,7 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 
 	config(session, request);
 	currentPage=PN_PROGRAMS;
-	printXhtmlHead(response,out,tr("schedule"),NULL);
+	initHtmlPage(response,out,tr("schedule"),NULL);
 	printMenu(out);
 
 	io_printf(out,
@@ -128,7 +145,11 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 "			<h2>%s</h2>\n"
 			,tr("nowOnTv")
 		);
-		if (nnl.length>0) {
+		if (nnl.length==0) {
+			io_printf(out,
+"				<div class=\"alert\">%s</div>\n",tr("warnNoEPG")
+			);
+		} else {
 			nowNextEntry_t *nne;
 			channelEntry_t *ce;
 			eventEntry_t *ee;
@@ -174,11 +195,11 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 "					<tr>\n"
 "						<td class=\"channel\">\n"
 "							<div class=\"boxRight\">"
-								"<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
+								"<a class=\"wi-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
 							"</div>\n"
 "							<a class=\"channel\" href=\"program.kl1?chan=%d\" title=\"%s\">%s</a>\n"
 "						</td>\n"
-					,(isTv)?"ui-icon-tv":"ui-icon-radio",ce->channelNum,LiveStream,LiveStream
+					,(isTv)?"wi-icon-tv":"wi-icon-radio",ce->channelNum,LiveStream,LiveStream
 					,ce->channelNum,Schedule,ce->channelName
 				);
 				int n;
@@ -201,7 +222,7 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 						"</td>\n"
 "						<td class=\"title\">\n"
 "							<div class=\"boxRight\">\n"
-"								<a class=\"ui-icon ui-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
+"								<a class=\"wi-icon wi-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 "							<div class=\"boxRight infoLeft\">\n"
 							,PA_EDIT,urlEnc,TimerCreate,TimerCreate
@@ -230,10 +251,6 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 "				</tbody>\n"   
 "			</table>\n"
 			);
-		} else {
-			io_printf(out,
-"			<div>%s</div>",tr("warnNoEPG"));
-
 		}
 		freeNNL(&nnl);
 		
@@ -255,7 +272,26 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 		write_svdrp(cmd);
 		free(cmd);
 		data=read_svdrp();
-		io_printf(out,
+
+		int retCode;
+		int cont=0;
+		for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+			retCode=strtol(p,&p,10);
+			if (retCode==215){
+				p++;
+				if (p[0]=='D') {
+					ee.desc=strdup(p+2);
+				} else if (p[0]=='S') {
+					ee.shortdesc=strdup(p+2);
+				} else if (p[0]=='T') {
+					ee.title=strdup(p+2);
+				} else if (p[0]=='E') {
+					parse_215E(p+2,NULL,&ee.time,&ee.duration,NULL,NULL);
+					next_time=ee.time+ee.duration;
+				} else if (p[0]=='e') {
+					if (ee.time>0) {
+						if (cont==0){
+							io_printf(out,
 "			<h2>%s %s &raquo;%s&laquo;</h2>\n"
 "			<table id=\"programs\" class=\"list1\" summary=\"%s\">\n"
 "				<col class=\"hour\"/>\n"
@@ -269,35 +305,14 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 					"</tr>\n"
 "				</thead>\n"
 "				<tbody>\n"
-					,tr("schedule"),tr("for"),channels.entry[channelNum-1].channelName
-					,Schedule
-					,tr("time")
-					,tr("timers.")
-					,tr("program")
-		); 
-
-		int retCode;
-		for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-			retCode=strtol(p,&p,10);
-			if (retCode==550) {
-				io_printf(out,
-"			<div class=\"alert\">%s</div>",tr("warnNoEPG")
-				);
-				freeEE(&ee);
-				break;
-			} else if (retCode==215){
-				p++;
-				if (p[0]=='D') {
-					ee.desc=strdup(p+2);
-				} else if (p[0]=='S') {
-					ee.shortdesc=strdup(p+2);
-				} else if (p[0]=='T') {
-					ee.title=strdup(p+2);
-				} else if (p[0]=='E') {
-					parse_215E(p+2,NULL,&ee.time,&ee.duration,NULL,NULL);
-					next_time=ee.time+ee.duration;
-				} else if (p[0]=='e') {
-					if (ee.time>0) {
+								,tr("schedule"),tr("for"),channels.entry[channelNum-1].channelName
+								,Schedule
+								,tr("time")
+								,tr("timers.")
+								,tr("program")
+							); 
+						}
+						cont++;
 						struct tm timeptr=*localtime(&ee.time);
 						char *timerStr=NULL;
 						addTimer=makeTimerStr(&timerStr,1,channelNum,ee.time,next_time,50,99,ee.title);
@@ -324,7 +339,7 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 						io_printf(out,
 "						<td>\n"
 "							<div class=\"boxRight\">\n"
-"								<a class=\"ui-icon ui-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
+"								<a class=\"wi-icon wi-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 "							<div class=\"boxRight infoLeft\">\n"
 							,PA_EDIT,urlEnc,TimerCreate,TimerCreate
@@ -344,11 +359,12 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 		}
 		freeEE(&ee);
 		free(data);
-		io_printf(out,
+		if (cont>0){
+			io_printf(out,
 "				</tbody>\n"   
 "			</table>\n"
-		);
-		if (retCode==550) {
+			);
+		} else {
 			io_printf(out,
 "			<div class=\"alert\">%s</div>",tr("warnNoEPG")
 			);
@@ -360,6 +376,6 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 	io_printf(out,
 "		</div>\n"
 	);
-	printFooter(out);
+	finishHtmlPage(out);
 %>
 

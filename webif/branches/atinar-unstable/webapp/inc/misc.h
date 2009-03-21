@@ -82,6 +82,16 @@ typedef enum playlistType_e {
 	PL_XSPF
 } playlistType;
 
+typedef enum videoType_e {
+	VT_UNKNOWN,
+	VT_SD43,
+	VT_SD169,
+	VT_SD,
+	VT_HD43,
+	VT_HD169,
+	VT_HD
+} videoType_t;
+
 extern int isM740AV;
 extern int isM750S;
 extern int isM750C;
@@ -95,7 +105,7 @@ extern const int httpPort;
 
 extern const char *checked[2];
 extern const char *selected[2];
-extern const char *arStr[7];
+extern const char *videoTypeStr[7];
 extern const char *classCurrent[2];
 extern sortField_t sortBy;
 extern sortDirection_t sortDirection;
@@ -122,9 +132,9 @@ const char * sortClass(sortField_t sf);
 char * htmlEncode(const char * const s);
 void vdrDecode(char *dst, char *src);
 boolean_t makeTime(time_t *time, const char * date, const char * hour, const char * min );
-void printDoctypeOpenHtml(io_t *out);
-void printXhtmlHead(response_t *response,io_t *out, const char *title, const char *headExtra, ...);
+void initHtmlDoc(response_t *response,io_t *out);
+void initHtmlPage(response_t *response,io_t *out, const char *title, const char *headExtra, ...);
 void printMenu(io_t *out);
-void printFooter(io_t *out);
+void finishHtmlPage(io_t *out);
 
 #endif
