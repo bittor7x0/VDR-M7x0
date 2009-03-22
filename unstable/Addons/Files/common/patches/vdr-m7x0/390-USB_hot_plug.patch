@@ -1,7 +1,7 @@
 diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
 --- VDR-NG-orig/tools.c	2009-02-21 10:21:05.000000000 +0100
-+++ VDR-NG/tools.c	2009-03-21 12:22:39.000000000 +0100
-@@ -559,11 +559,37 @@
++++ VDR-NG/tools.c	2009-03-22 16:49:28.000000000 +0100
+@@ -559,11 +559,47 @@
       LOG_ERROR_STR(FileName);
  }
  
@@ -19,8 +19,8 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
 +        {
 +           LastUpdateFileTime=0;
 +           FirstUpdateFileTime=time(NULL);
++           isyslog("VideoDirectory detected %s %ld file(%ld)",FileName,FirstUpdateFileTime,fs.st_mtime);
 +        }
-+        dsyslog("FirstUpdate %s %ld file(%ld)",FileName,FirstUpdateFileTime,fs.st_mtime);
 +        if(FirstUpdateFileTime>fs.st_mtime) 
 +           return FirstUpdateFileTime; 
 +     }
@@ -28,12 +28,22 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
 +  } 
 +  if(!strncmp(FileName,VideoDirectory,strlen(VideoDirectory)))
 +  { 
++     if(DirectoryOk(VideoDirectory,true))
++     {
++        if(!FirstUpdateFileTime) 
++        {
++           LastUpdateFileTime=0;
++           FirstUpdateFileTime=time(NULL);
++           isyslog("VideoDirectory detected %s %ld",FileName,FirstUpdateFileTime);
++        }
++        return FirstUpdateFileTime;     
++     }
 +     if(!LastUpdateFileTime)
 +     {
 +        FirstUpdateFileTime=0;
 +        LastUpdateFileTime=time(NULL);
-+     } 
-+     dsyslog("LastUpdate %s %ld",FileName,LastUpdateFileTime);
++        isyslog("VideoDirectory lost %s %ld",FileName,LastUpdateFileTime);
++     }
 +     return LastUpdateFileTime; 
 +  }
    return 0;

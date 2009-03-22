@@ -27,7 +27,7 @@ fi
 
 # Video dirs
 
-if [ X"${vdr_videodirs}" != X"" ] ; then
+if [ X"${vdr_videodirs}" != X" " ] ; then
     vdirn=0
     for vdir in ${vdr_videodirs} ; do
         ln -snf ${vdir} /var/vdr/video${vdirn}
