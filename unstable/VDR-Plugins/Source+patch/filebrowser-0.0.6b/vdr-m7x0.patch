@@ -33,7 +33,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Filebrowser", // /*Español*/
++    "Explorador de archivos", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -297,7 +297,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Nuevo fichero", // /*Español*/
++    "Nuevo archivo", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -341,7 +341,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "OK", // /*Español*/
++    "Aceptar", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -561,7 +561,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Seleccionar Destino", // /*Español*/
++    "Seleccionar destino", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -781,7 +781,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "¡Código erroneo!", // /*Español*/
++    "¡Código erróneo!", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/

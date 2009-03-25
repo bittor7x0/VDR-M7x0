@@ -59,7 +59,7 @@
      "Weatherng.sh:n sijainti:",
      "",// TODO
 -    "",// TODO
-+    "Path a weather.sh es: ",
++    "La ruta a weather.sh es: ",
      "",// TODO
      "",// TODO
      "",// TODO
@@ -68,7 +68,7 @@
      "S‰‰tietojen sijainti:",
      "",// TODO
 -    "",// TODO
-+    "Path a weatherdata es: ",
++    "La ruta a weatherdata es: ",
      "",// TODO
      "",// TODO
      "",// TODO
