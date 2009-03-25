@@ -17,7 +17,7 @@ done
 if [ X"${runvdr}" != X"NO" ]; then
      echo -n ' vdr'
      trys=0
-     while [ -e /var/run/runvdr.pid -a ${trys} -le 20 ] ; do
+     while [ -e /var/run/runvdr.pid -a ${trys} -le 30 ] ; do
 	    [ $(( ${trys} % 5 )) -eq 0 ] && killall -15 vdr
             trys=$(( ${trys} + 1 ))
             sleep 1

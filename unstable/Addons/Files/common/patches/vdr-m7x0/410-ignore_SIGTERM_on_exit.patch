@@ -1,0 +1,12 @@
+diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
+--- VDR-NG-orig/vdr.c	2009-03-24 17:35:38.000000000 +0100
++++ VDR-NG/vdr.c	2009-03-24 17:41:02.000000000 +0100
+@@ -1387,7 +1387,7 @@
+   // Reset all signal handlers to default before Interface gets deleted:
+   signal(SIGHUP,  SIG_DFL);
+   signal(SIGINT,  SIG_DFL);
+-  signal(SIGTERM, SIG_DFL);
++  signal(SIGTERM, SIG_IGN);
+   signal(SIGPIPE, SIG_DFL);
+   signal(SIGALRM, SIG_DFL);
+ //M7X0 END AK

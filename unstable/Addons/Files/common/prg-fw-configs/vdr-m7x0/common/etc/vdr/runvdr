@@ -1,5 +1,5 @@
 #!/bin/ash
-KILL="killall -15"
+KILL="killall -9"
 VDR_FLAGS="-c ${vdr_confdir} -L /var/vdr/lib -v /var/vdr/video0 -s \
   ${vdr_shutdown}"
 
@@ -45,7 +45,7 @@ while (true) do
  	ln -snf ${plug} /var/vdr/lib/`basename ${plug}`
     done
     ${vdr_bin} ${VDR_EPGOPT} ${VDR_FLAGS} ${vdr_pluginopts} ${vdr_stumode} ${vdr_options}
-    if [ $? != 1 ]; then
+    if [ $? -eq 0 -o $? -eq 2 -o $? -eq 137 ]; then
         break
     fi
     echo "restarting VDR"

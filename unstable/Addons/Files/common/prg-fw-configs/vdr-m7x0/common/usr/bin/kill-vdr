@@ -5,7 +5,7 @@ source /etc/rc.local.conf
 echo "Killing VDR"
 
 trys=0
-while [ -e /var/run/runvdr.pid -a ${trys} -le 20 ] ; do
+while [ -e /var/run/runvdr.pid -a ${trys} -le 30 ] ; do
     if [ $(( ${trys} % 5 )) -eq 0 ] ; then
         echo "Try n#$(( ${trys} / 5 + 1 ))"
         killall -15 vdr
