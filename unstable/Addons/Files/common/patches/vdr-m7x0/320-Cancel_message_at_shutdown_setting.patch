@@ -64,7 +64,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +  },
-+  { "Shutdowning VDR",
++  { "System shutdown",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -74,7 +74,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-+    "Apagando el VDR",
++    "Apagando el sistema",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -112,7 +112,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                     // If final question was canceled, continue to be active:
                     break;
 +		   } else
-+                Skins.Message(mtInfo, tr("Shutdowning VDR"));
++                Skins.Message(mtInfo, tr("System shutdown"));
 +
                  // Ok, now call the shutdown script:
                  ShutdownHandler.DoShutdown(true);
