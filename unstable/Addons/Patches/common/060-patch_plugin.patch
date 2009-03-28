@@ -1,0 +1,18 @@
+diff -Naur uclibc_build_env_orig/Makefile uclibc_build_env/Makefile
+--- uclibc_build_env_orig/Makefile	2009-03-28 10:12:22.000000000 +0100
++++ uclibc_build_env/Makefile	2009-03-28 20:18:28.000000000 +0100
+@@ -178,6 +178,14 @@
+ 	done
+ endef
+ 
++# patches a plugin from a given patch-dir. only vdr-m7x0-plugin.patch file is patched with patch -p1
++# usage: $(call patch_plugin, <dest dir>, <patchdir>)
++define patch_plugin
++	for patch_file in `$(FIND) $(2) -type f -iname 'vdr-m7x0-plugin.patch' | $(SORT)` ; do \
++		$(PATCH) -p1 -E -d $(1) < $$patch_file ; \
++	done
++endef
++
+ BASE_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.base_build
+ PACKS_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.packs_build
+ POST_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.post_build

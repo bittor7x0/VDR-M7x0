@@ -1,8 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 ###############################################################################
 # This script to generate a alternative version of VDR-NG-FW from open7x0.org #
 ###############################################################################
-
 
 
 ###################
@@ -24,6 +23,7 @@ vdr_em_addons="$BASE/Addons"
 vdr_em_files="$vdr_em_addons/Files"
 vdr_em_patches="$vdr_em_addons/Patches"
 vdr_em_delete="$vdr_em_addons/Delete"
+vdr_em_plugins="$BASE/VDR-Plugins"
 
 # SVN branch from assembla VDR-EM
 svn_em="http://svn.assembla.com/svn/VDR-M7x0/unstable"
@@ -33,6 +33,19 @@ svn_o7o="svn://open7x0.org/uclibc_build_env/branches/experimental"
 
 # Path for temporal directory
 tmp=`mktemp -d ./tmp-XXXXXXXXXX` || exit 1
+
+
+#############
+# Functions #
+#############
+
+# patches a package from a given patch-dir. all *.patch files are patched with patch -p1
+# usage: patch_package <dest dir> <patchdir>
+patch_package() {
+	for patch_file in `find $2 -type f -iname '*.patch' | sort` ; do \
+		patch -p1 -E -d $1 < $patch_file ; \
+	done
+}
 
 
 #########################
@@ -57,10 +70,10 @@ fi
 if [[ -d "$vdr_fw_orig/.svn" ]]
 then
 	echo "Update VDR-o7o original"
-	svn update -q -r 400 "$vdr_fw_orig"
+	svn update -q -r 402 "$vdr_fw_orig"
 else
 	echo "Checkout VDR-o7o original"
-	svn checkout -q -r 400 "$svn_o7o" "$vdr_fw_orig"
+	svn checkout -q -r 402 "$svn_o7o" "$vdr_fw_orig"
 fi
 
 
@@ -78,8 +91,8 @@ cp -rf "$tmp/buildin/base/m750s" "$tmp/buildin/base-$vdr_version"
 
 # Patch firmware
 echo "Patching Firmware"
-$tmp/patches/patch-kernel.sh "$tmp" "$vdr_em_patches/common"
-$tmp/patches/patch-kernel.sh "$tmp" "$vdr_em_patches/$vdr_version"
+patch_package "$tmp" "$vdr_em_patches/common"
+patch_package "$tmp" "$vdr_em_patches/$vdr_version"
 
 # Copy temporal dir to final dir
 echo ""
@@ -119,11 +132,13 @@ done
 # Get and set SVN versions
 echo ""
 echo "Getting and setting SVN versions to fw-version"
-svn_em_version="em subversion revision `svnversion \"$vdr_em_addons\" | cut -d \":\" -f 2`"
-svn_o7o_version="o7o subversion revision `svnversion \"$vdr_fw_orig\" | cut -d \":\" -f 2`"
+svn_em_version="Revisión EM `svnversion \"$vdr_em_addons\" | cut -d \":\" -f 2`"
+svn_o7o_version="Revisión TC-o7o `svnversion \"$vdr_fw_orig\" | cut -d \":\" -f 2`"
+svn_plugins_version="Revisión plugins `svnversion \"$vdr_em_plugins\" | cut -d \":\" -f 2`"
 
 echo $svn_em_version  >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
 echo $svn_o7o_version >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
+echo $svn_plugins_version >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
 
 # Clean temp dir
 echo "Cleaning temporal dir"
@@ -133,3 +148,4 @@ echo ""
 echo "Now you can edit config files in \"$vdr_fw\" and later run \"make\""
 echo ""
 exit 0
+

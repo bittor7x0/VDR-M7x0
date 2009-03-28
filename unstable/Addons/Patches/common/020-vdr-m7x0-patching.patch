@@ -28,7 +28,7 @@
  $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_compiled: $$(VDR_DEPS) \
          $(STAGEFILES_DIR)/.vdr_$(filter local_,$(CONFIG_VDR_TREE)_)downloaded
 +	(if [ ! -f $(VDR_BRANCH_DIR)/HISTORY-liemikuutio ] ; then \
-+	$(PATCHES_DIR)/patch-kernel.sh $(VDR_BRANCH_DIR) $(VDR_PATCHES_DIR) ; \
++	$(call patch_package, $(VDR_BRANCH_DIR), $(VDR_PATCHES_DIR)) ; \
 +	fi);
  	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) clean
  	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) all

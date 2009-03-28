@@ -1,5 +1,5 @@
---- VDR-NG-FW.orig/configs/busybox/1.13.1/busybox.config	2009-02-10 18:24:04.000000000 +0100
-+++ VDR-NG-FW/configs/busybox/1.13.1/busybox.config	2009-02-10 18:26:04.000000000 +0100
+--- VDR-NG-FW.orig/configs/busybox/1.13.3/busybox.config	2009-02-10 18:24:04.000000000 +0100
++++ VDR-NG-FW/configs/busybox/1.13.3/busybox.config	2009-02-10 18:26:04.000000000 +0100
 @@ -129,7 +129,7 @@
  # CONFIG_UNCOMPRESS is not set
  CONFIG_UNLZMA=y

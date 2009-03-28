@@ -62,7 +62,7 @@ $(STAGEFILES_DIR)/.spindown_unpacked: $(SPINDOWN_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.spindown_patched: $(STAGEFILES_DIR)/.spindown_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(SPINDOWN_DIR) $(SPINDOWN_PATCHES_DIR)
+	$(call patch_package, $(SPINDOWN_DIR), $(SPINDOWN_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.spindown_patched
 
 #

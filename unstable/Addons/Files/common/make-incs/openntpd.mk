@@ -62,7 +62,7 @@ $(STAGEFILES_DIR)/.openntpd_unpacked: $(OPENNTPD_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.openntpd_patched: $(STAGEFILES_DIR)/.openntpd_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(OPENNTPD_DIR) $(OPENNTPD_PATCHES_DIR)
+	$(call patch_package, $(OPENNTPD_DIR), $(OPENNTPD_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.openntpd_patched
 
 #

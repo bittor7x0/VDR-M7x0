@@ -1,6 +1,6 @@
-diff -Naur uclibc_build_env_orig/configs/busybox/1.13.1/busybox.config uclibc_build_env/configs/busybox/1.13.1/busybox.config
---- uclibc_build_env_orig/configs/busybox/1.13.1/busybox.config	Wed Dec 17 12:33:12 2008
-+++ uclibc_build_env/configs/busybox/1.13.1/busybox.config	Thu Dec 18 18:35:36 2008
+diff -Naur uclibc_build_env_orig/configs/busybox/1.13.3/busybox.config uclibc_build_env/configs/busybox/1.13.1/busybox.config
+--- uclibc_build_env_orig/configs/busybox/1.13.3/busybox.config	Wed Dec 17 12:33:12 2008
++++ uclibc_build_env/configs/busybox/1.13.3/busybox.config	Thu Dec 18 18:35:36 2008
 @@ -77,17 +77,17 @@
  #
  CONFIG_PASSWORD_MINLEN=6

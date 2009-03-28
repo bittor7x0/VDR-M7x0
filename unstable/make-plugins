@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/bin/sh
+
+###################
+# Variables setup #
+###################
 
 vdr=VDR-NG
 plugins=VDR-Plugins/Source+patch
@@ -6,6 +10,20 @@ vdr_plugins=$vdr/PLUGINS/src
 vdr_plugins_lib=$vdr/PLUGINS/lib
 TC_bin=`pwd`/VDR-NG-FW/m7x0_xtc_uclibc_`uname`-`uname -m`/bin
 
+
+#############
+# Functions #
+#############
+
+# patches a plugin from a given patch-dir. only vdr-m7x0-plugin.patch file is patched with patch -p1
+# usage: patch_plugin <dest dir> <patchdir>
+patch_plugin() {
+	for patch_file in `find $2 -type f -iname 'vdr-m7x0-plugin.patch' | sort` ; do \
+		patch -p1 -E -d $1 < $patch_file ; \
+	done
+}
+
+# Check ToolChain directory
 if [[ ! -d "$TC_bin" ]]
 then
     echo "ToolChain-bin dir not found: $TC_bin" 1>&2
@@ -60,7 +78,7 @@ for dp in `ls $plugins `; do
 				find $vdr_plugins/$dptarget/ '(' -name '.svn'  ')' -exec rm -rf {} \; 2> /dev/null
 
 				# Patching plugins
-				./VDR-NG-FW/patches/patch-kernel.sh $vdr_plugins/$dptarget/ $plugins/$dp
+				patch_plugin $vdr_plugins/$dptarget/ $plugins/$dp
 			fi
 		done
 	fi

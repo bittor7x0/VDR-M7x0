@@ -16,7 +16,7 @@
 +#
 +
 +$(STAGEFILES_DIR)/.tool-box_patched: $(STAGEFILES_DIR)/.tool-box_copied
-+	$(PATCHES_DIR)/patch-kernel.sh $(TOOL-BOX_BUILDDIR) $(TOOL-BOX_PATCHES_DIR)
++	$(call patch_package, $(TOOL-BOX_BUILDDIR), $(TOOL-BOX_PATCHES_DIR))
 +	$(TOUCH) $(STAGEFILES_DIR)/.tool-box_patched
 +
  #

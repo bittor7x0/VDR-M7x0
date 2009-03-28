@@ -1124,7 +1124,16 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
        s->close(fd);
     }         
  }
-@@ -542,7 +571,6 @@
+@@ -536,13 +565,15 @@
+    /*if (running)
+       Cancel(3);*/
+    if (receiver)
++   {
++      receiver->Stop();
+       delete receiver;
+ }
++}
+ 
  void cTxtStatus::ChannelSwitch(const cDevice *Device, int ChannelNumber)
  {
  
@@ -1132,7 +1141,7 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
     if (Device->IsPrimaryDevice()) {
  
  /*#ifdef OSDTELETEXT_REINSERTION_PATCH
-@@ -559,9 +587,9 @@
+@@ -559,9 +590,9 @@
  // Do not run the receiver in the backround all the time.
  // It is started only if the usere opens the teletext OSD
  // To save CPU Time
@@ -1144,7 +1153,7 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
  // M7x0 end
     
        if (ChannelNumber) {
-@@ -576,23 +604,23 @@
+@@ -576,23 +607,23 @@
              TPid=channel->Tpid();
              chan=channel->GetChannelID();
  // M7x0 start            
@@ -1173,7 +1182,7 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
            cDevice::PrimaryDevice()->AttachReceiver(receiver);
            dsyslog("osdteletext: Created teletext receiver on primary device TPid=%d", TPid);
        //primary device a DXR3 or similar
-@@ -604,7 +632,7 @@
+@@ -604,7 +635,7 @@
              pDevice = cDevice::GetDevice(i);
              if (pDevice && pDevice->ProvidesChannel(channel, Setup.PrimaryLimit) && pDevice->Receiving(true)) {
                 bFound = true;
@@ -1182,7 +1191,7 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
                 pDevice->AttachReceiver(receiver);
                 dsyslog("osdteletext: Created teletext receiver on device TPid=%d i=%d", TPid, i);
              }
-@@ -722,7 +750,7 @@
+@@ -722,7 +753,7 @@
  }
  */
  
@@ -1191,7 +1200,7 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
  #if VDRVERSNUM >= 10319
   : cReceiver(0, -1, TPid), 
  #else
-@@ -733,6 +761,7 @@
+@@ -733,6 +764,7 @@
     Storage::instance()->prepareDirectory(chan);
     // 10 ms timeout on getting TS frames
     buffer.SetTimeouts(0, 10);
@@ -1199,7 +1208,19 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
  }
  
  
-@@ -796,6 +825,7 @@
+@@ -748,6 +780,11 @@
+    delete TxtPage;
+ }
+ 
++void cTxtReceiver::Stop()
++{
++   Activate(false);
++}
++
+ void cTxtReceiver::Activate(bool On)
+ {
+   if (On) {
+@@ -796,6 +833,7 @@
  
  void cTxtReceiver::Action() {
  
@@ -1207,7 +1228,7 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
     while (running) {
        cFrame *frame=buffer.Get();
        if (frame) {
-@@ -803,9 +833,19 @@
+@@ -803,9 +841,19 @@
           
           for (int i=0; i < 4; i++) {
              if (Datai[4+i*46]==2 || Datai[4+i*46]==3) {
@@ -1228,7 +1249,7 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
              }
           }
           
-@@ -860,16 +900,22 @@
+@@ -860,16 +908,22 @@
     int hdr,mag,mag8,line;
     uchar *ptr;
     uchar flags,lang;
@@ -1252,7 +1273,7 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.c osdteletext/txtrecv.c
        unsigned char b1, b2, b3, b4;
        int pgno, subno;
        b1 = unham16 (ptr);    
-@@ -912,6 +958,21 @@
+@@ -912,6 +966,21 @@
        if (TxtPage) TxtPage->SetLine((int)line,(uchar *)ptr); 
        break;
        }
@@ -1312,18 +1333,21 @@ diff -Naur -x .svn osdteletext-orig/txtrecv.h osdteletext/txtrecv.h
  protected:
     virtual void Activate(bool On);
     virtual void Receive(uchar *Data, int Length);
-@@ -173,7 +177,9 @@
+@@ -173,8 +177,11 @@
     cRingTxtFrames buffer;
     bool running;
  public:
 -   cTxtReceiver(int TPid, tChannelID chan);
+-   virtual ~cTxtReceiver();
 +   cTxtReceiver(int TPid, tChannelID chan,bool find_first=false);
 +   inline void setFindFirst(bool f){ find_first = f; Activate(1);};
 +
-    virtual ~cTxtReceiver();
++   virtual ~cTxtReceiver();
++   virtual void Stop();
  };
  
-@@ -193,7 +199,7 @@
+ class cTxtStatus : public cStatus/*, public cThread*/ {
+@@ -193,7 +200,7 @@
     //virtual void Action();
  // M7x0 start
  public:

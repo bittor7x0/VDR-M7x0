@@ -62,7 +62,7 @@ $(STAGEFILES_DIR)/.ntpclient_unpacked: $(NTPCLIENT_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.ntpclient_patched: $(STAGEFILES_DIR)/.ntpclient_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(NTPCLIENT_DIR) $(NTPCLIENT_PATCHES_DIR)
+	$(call patch_package, $(NTPCLIENT_DIR), $(NTPCLIENT_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.ntpclient_patched
 
 #

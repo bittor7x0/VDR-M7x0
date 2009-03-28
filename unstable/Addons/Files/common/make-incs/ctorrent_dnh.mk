@@ -62,7 +62,7 @@ $(STAGEFILES_DIR)/.ctorrent_dnh_unpacked: $(CTORRENT_DNH_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.ctorrent_dnh_patched: $(STAGEFILES_DIR)/.ctorrent_dnh_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(CTORRENT_DNH_DIR) $(CTORRENT_DNH_PATCHES_DIR)
+	$(call patch_package, $(CTORRENT_DNH_DIR), $(CTORRENT_DNH_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.ctorrent_dnh_patched
 
 #

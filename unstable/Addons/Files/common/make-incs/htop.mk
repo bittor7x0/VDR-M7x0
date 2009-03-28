@@ -68,7 +68,7 @@ $(STAGEFILES_DIR)/.htop_unpacked: $(HTOP_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.htop_patched: $(STAGEFILES_DIR)/.htop_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(HTOP_DIR) $(HTOP_PATCHES_DIR)
+	$(call patch_package, $(HTOP_DIR), $(HTOP_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.htop_patched
 
 #

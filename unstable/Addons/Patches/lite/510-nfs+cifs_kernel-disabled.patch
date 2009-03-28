@@ -1,7 +1,7 @@
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	Fri Jan 25 12:37:18 2008
 +++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	Wed Mar 19 12:12:45 2008
-@@ -634,9 +634,9 @@
+@@ -638,9 +638,9 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set
@@ -14,7 +14,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_ROOT_NFS is not set
  # CONFIG_NFSD is not set
  # CONFIG_NFSD_V3 is not set
-@@ -644,7 +644,7 @@
+@@ -648,7 +648,7 @@
  CONFIG_SUNRPC=y
  CONFIG_LOCKD=y
  CONFIG_LOCKD_V4=y
@@ -26,7 +26,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	Fri Jan 25 12:37:18 2008
 +++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	Wed Mar 19 12:13:41 2008
-@@ -634,9 +634,9 @@
+@@ -638,9 +638,9 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set
@@ -39,7 +39,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_ROOT_NFS is not set
  # CONFIG_NFSD is not set
  # CONFIG_NFSD_V3 is not set
-@@ -644,7 +644,7 @@
+@@ -648,7 +648,7 @@
  CONFIG_SUNRPC=y
  CONFIG_LOCKD=y
  CONFIG_LOCKD_V4=y
@@ -83,5 +83,5 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
 -	$(BZCAT) $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/cifs-fs.tar.bz2 | \
 -		 $(TAR) -C $(SIEMENS-LINUX-KERNEL_DIR) -f -
  # Needed patches to get kernel compiling
- 	$(PATCHES_DIR)/patch-kernel.sh $(SIEMENS-LINUX-KERNEL_DIR) \
- 		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common
+ 	$(call patch_package, $(SIEMENS-LINUX-KERNEL_DIR), \
+ 		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common)

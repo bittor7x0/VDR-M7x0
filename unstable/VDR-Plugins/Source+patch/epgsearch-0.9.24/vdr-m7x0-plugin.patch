@@ -1,6 +1,6 @@
 diff -Naur epgsearch-0.9.24-orig/epgsearchonly.c epgsearch-0.9.24/epgsearchonly.c
---- epgsearch-0.9.24-orig/epgsearchonly.c	2008-10-22 20:31:07.000000000 +0200
-+++ epgsearch-0.9.24/epgsearchonly.c	2008-12-28 19:36:09.000000000 +0100
+--- epgsearch-0.9.24-orig/epgsearchonly.c	2008-07-08 20:27:14.000000000 +0200
++++ epgsearch-0.9.24/epgsearchonly.c	2009-03-28 19:34:44.000000000 +0100
 @@ -49,7 +49,7 @@
     "",				// TODO 
     "Suoratoiminto EPGSearch-laajennoksen haulle",
@@ -28,9 +28,178 @@ diff -Naur epgsearch-0.9.24-orig/epgsearchonly.c epgsearch-0.9.24/epgsearchonly.
     "",				// TODO Ελληνικά (Greek)
     "",				// TODO Svenska
     "",				// TODO Romaneste
+diff -Naur epgsearch-0.9.24-orig/epgsearchtools.c epgsearch-0.9.24/epgsearchtools.c
+--- epgsearch-0.9.24-orig/epgsearchtools.c	2008-07-08 20:27:14.000000000 +0200
++++ epgsearch-0.9.24/epgsearchtools.c	2009-03-28 19:34:55.000000000 +0100
+@@ -450,33 +450,44 @@
+    char* descr = strdup(aux);
+    char* beginaux = strstr(descr, "<epgsearch>");
+    char* endaux = strstr(descr, "</epgsearch>");
+-   if (!beginaux || !endaux) return NULL;
+-   strn0cpy(descr, beginaux + strlen("<epgsearch>"), endaux - (beginaux + strlen("<epgsearch>")) + 1);
+-   if (strcmp(name, "epgsearch") == 0) return descr; // full aux
++   if (!beginaux || !endaux) {
++      free(descr);
++      return NULL;
++      }
++   
++   beginaux +=  11;  // strlen("<epgsearch>");
++   endaux[0] = 0;
++   memmove(descr, beginaux, endaux - beginaux + 1);
++   
++   if (strcmp(name, "epgsearch") == 0) 
++      return descr; // full aux
+ 
++   int namelen = strlen(name);
+    char catname[100] = "";
+-   sprintf(catname, "<%s>", name);
+-
+-   char* cat = NULL;
+-   int iPosCat = FindIgnoreCase(descr, catname);
+-   if (iPosCat < 0) return NULL;
+-   cat = descr + iPosCat;
+-
++   catname[0] = '<';
++   memcpy(catname + 1, name, namelen);
++   catname[1 + namelen] = '>';
++   catname[2 + namelen] = 0;
++
++   char* cat = strcasestr(descr, catname);
++   if (!cat) {
++      free(descr);
++      return NULL;
++      }
++      
++   cat += namelen + 2;
+    char* end = strstr(cat, "</");
+-   int endpos = strlen(cat);
+-   if (end)
+-      endpos = end - cat;
+-   else
+-   {
++   if (!end) {
+       free(descr);	
+       return NULL;
+-   }
+-   cat[endpos] = 0;
+-	
+-   char* value = NULL;
+-   msprintf(&value, "%s", cat + strlen(name)+2);
+-   free(descr);
++      }
++   end[0] = 0;
++   
++   int catlen = end - cat + 1;
++   char* value = (char *) malloc(catlen);
++   memcpy(value, cat, catlen);
+    
++   free(descr);
+    return value;
+ }
+ 
+@@ -516,17 +527,13 @@
+    char *p = strcasestr(s, s1);
+    if (p) {
+       int of = p - s;
+-      int l  = 0;
+-      if (s)
+-        l = strlen(s);
+-      int l1 = 0;
+-      if (s1)
+-        l1 = strlen(s1);
++      int l  = strlen(s);
++      int l1 = strlen(s1);
+       int l2 = 0;
+       if (s2)
+         l2 = strlen(s2);
+       if (l2 > l1)
+-         s = (char *)realloc(s, strlen(s) + l2 - l1 + 1);
++         s = (char *)realloc(s, l + l2 - l1 + 1);
+       if (l2 != l1)
+          memmove(s + of + l2, s + of + l1, l - of - l1 + 1);
+       memcpy(s + of, s2, l2);
+@@ -895,21 +902,40 @@
+ 
+ char* FixSeparators(char* buffer, char sep)
+ {
+-   char tmp[5];
+-   sprintf(tmp, "%c\t", sep);
+-   buffer = strreplacei(buffer, tmp, "\t");
+-   sprintf(tmp, "%c \t", sep);
+-   buffer = strreplacei(buffer, tmp, "\t");
+-   sprintf(tmp, "%c ", sep);
+-   if (strstr(buffer, tmp) == buffer + strlen(buffer) - 2) buffer[strlen(buffer) - 2] = 0;
+-   if (buffer[strlen(buffer)-1] == sep) buffer[strlen(buffer) - 1] = 0;
+-
+-   sprintf(tmp, "\t%c", sep);
+-   buffer = strreplacei(buffer, tmp, "\t");
+-   sprintf(tmp, "\t %c", sep);
+-   buffer = strreplacei(buffer, tmp, "\t");
+-   sprintf(tmp, "\t  %c", sep);
+-   buffer = strreplacei(buffer, tmp, "\t");
++   int l = strlen(buffer);
++   char *dest = buffer;
++   for (int i = 0; i < l; i ++) {
++       char c = buffer[i];
++       int j = i;
++       if (c == sep) {
++          for (j = i + 1; (j < l) & (buffer[j] == ' '); j++)
++              ;
++            
++          if ((j < l) | (i + 1 < j)) {
++             switch (buffer[j]) {
++               case '\t':
++                 i = j;
++                 c = '\t';
++                 break;
++               case 0:
++                 i = j;
++                 c = 0;
++                 break;
++               }
++             }
++          }
++       if (c == '\t') {
++          for (; (j < l) & (buffer[j] == ' '); j++)
++              ;
++          if (j < l && buffer[j] == sep) {
++             buffer[j] = '\t';
++             i = j - 1;
++             continue;
++             }
++          }
++       *dest++ = c;
++       }
++   *dest = 0;
+    return buffer;
+ }
+ 
+@@ -933,15 +959,17 @@
+ 
+ int FindIgnoreCase(const string& expr, const string& query)
+ {
+-  icstring exprIC(expr.c_str());
+-  icstring queryIC(query.c_str());
+-  int pos = exprIC.find(queryIC);
+-  return pos;
++  const char *p = expr.c_str();
++  const char *r = strcasestr(p, query.c_str());
++  
++  if (!r)
++     return string::npos;
++  return r - p;
+ }
+ 
+ bool EqualsNoCase(const string& a, const string& b)
+ {
+-   return (FindIgnoreCase(a,b) == 0 && a.size() == b.size());
++   return strcasecmp(a.c_str(), b.c_str()) == 0;
+ }
+ 
+ string Strip(const string& input)
 diff -Naur epgsearch-0.9.24-orig/epgsearchtools.h epgsearch-0.9.24/epgsearchtools.h
---- epgsearch-0.9.24-orig/epgsearchtools.h	2008-10-22 20:31:07.000000000 +0200
-+++ epgsearch-0.9.24/epgsearchtools.h	2008-12-28 19:31:24.000000000 +0100
+--- epgsearch-0.9.24-orig/epgsearchtools.h	2008-07-08 20:27:14.000000000 +0200
++++ epgsearch-0.9.24/epgsearchtools.h	2009-03-28 19:34:44.000000000 +0100
 @@ -90,7 +90,7 @@
  #define ICON_VPS               0x93
  #else
@@ -41,8 +210,8 @@ diff -Naur epgsearch-0.9.24-orig/epgsearchtools.h epgsearch-0.9.24/epgsearchtool
  #define ICON_CLOCK             0xFD
  #define ICON_CLOCK_HALF        0x74
 diff -Naur epgsearch-0.9.24-orig/i18n-generated.h epgsearch-0.9.24/i18n-generated.h
---- epgsearch-0.9.24-orig/i18n-generated.h	2008-12-16 23:16:25.000000000 +0100
-+++ epgsearch-0.9.24/i18n-generated.h	2008-12-28 19:33:27.000000000 +0100
+--- epgsearch-0.9.24-orig/i18n-generated.h	2008-07-08 20:27:14.000000000 +0200
++++ epgsearch-0.9.24/i18n-generated.h	2009-03-28 19:34:44.000000000 +0100
 @@ -708,7 +708,7 @@
      "",
      "Etsi ohjelmaoppaasta",
@@ -170,8 +339,8 @@ diff -Naur epgsearch-0.9.24-orig/i18n-generated.h epgsearch-0.9.24/i18n-generate
      "",
      "",
 diff -Naur epgsearch-0.9.24-orig/Makefile epgsearch-0.9.24/Makefile
---- epgsearch-0.9.24-orig/Makefile	2008-10-22 20:31:07.000000000 +0200
-+++ epgsearch-0.9.24/Makefile	2008-12-28 19:31:32.000000000 +0100
+--- epgsearch-0.9.24-orig/Makefile	2008-07-08 20:27:14.000000000 +0200
++++ epgsearch-0.9.24/Makefile	2009-03-28 19:34:44.000000000 +0100
 @@ -34,9 +34,9 @@
  
  ### The directory environment:
@@ -203,3 +372,35 @@ diff -Naur epgsearch-0.9.24-orig/Makefile epgsearch-0.9.24/Makefile
  DEPFILE = .dependencies
  $(DEPFILE): Makefile
  	@$(MAKEDEP) $(CXXFLAGS) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) $(OBJS2:%.o=%.c) $(OBJS3:%.o=%.c) $(OBJS4:%.o=%.c)> $@
+diff -Naur epgsearch-0.9.24-orig/menu_whatson.c epgsearch-0.9.24/menu_whatson.c
+--- epgsearch-0.9.24-orig/menu_whatson.c	2008-07-08 20:27:14.000000000 +0200
++++ epgsearch-0.9.24/menu_whatson.c	2009-03-28 19:34:49.000000000 +0100
+@@ -200,7 +200,7 @@
+       strreplace(buffer, '|', '\t');
+ 
+       char* title = NULL; 
+-      msprintf(&title, "%s", event?event->Title():tr(">>> no info! <<<"));
++      title = strdup(event?event->Title():tr(">>> no info! <<<"));
+       title = strreplacei(title, ":", "%colon%"); // asume a title has the form "a?b:c", 
+       // we need to replace the colon to avoid misinterpretation the expression as a condition
+       buffer = strreplacei(buffer, "%title%", title);
+@@ -222,7 +222,6 @@
+       char* tmp = strdup(varExpr.Evaluate(event).c_str());
+       free(buffer);
+       buffer = tmp;
+-      
+       buffer = strreplacei(buffer, "$status$", szStatus);
+       buffer = strreplacei(buffer, "$t_status$", t);
+       buffer = strreplacei(buffer, "$v_status$", v);
+diff -Naur epgsearch-0.9.24-orig/searchtimer_thread.c epgsearch-0.9.24/searchtimer_thread.c
+--- epgsearch-0.9.24-orig/searchtimer_thread.c	2008-07-08 20:27:14.000000000 +0200
++++ epgsearch-0.9.24/searchtimer_thread.c	2009-03-28 19:34:55.000000000 +0100
+@@ -734,6 +734,8 @@
+          if (searchName) free(searchName);
+          continue;
+       }
++      free(searchID);
++      free(searchName);
+       LogFile.Log(3, "recording triggered from search timer %s", search->search);
+       if (search->delAfterDays == 0) continue;
+       time_t now = time(NULL);

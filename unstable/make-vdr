@@ -1,8 +1,27 @@
-#!/bin/bash
+#!/bin/sh
+
+###################
+# Variables setup #
+###################
 
 vdr=VDR-NG
 TC_bin=`pwd`/VDR-NG-FW/m7x0_xtc_uclibc_`uname`-`uname -m`/bin
 
+
+#############
+# Functions #
+#############
+
+# patches a package from a given patch-dir. all *.patch files are patched with patch -p1
+# usage: patch_package <dest dir> <patchdir>
+patch_package() {
+	for patch_file in `find $2 -type f -iname '*.patch' | sort` ; do \
+		patch -p1 -E -d $1 < $patch_file ; \
+	done
+}
+
+
+# Check ToolChain directory
 if [[ ! -d "$TC_bin" ]]
 then
     echo "ToolChain-bin dir not found: $TC_bin" 1>&2
@@ -24,9 +43,9 @@ fi
 # Patching VDR
 if [[ ! -f "$vdr/HISTORY-liemikuutio" ]]
 then
-	./VDR-NG-FW/patches/patch-kernel.sh ./VDR-NG ./Addons/Files/pro/patches/vdr-m7x0
-	./VDR-NG-FW/patches/patch-kernel.sh ./VDR-NG ./Addons/Files/common/patches/vdr-m7x0
-	[ "$1" == "rootfs" ] && ./VDR-NG-FW/patches/patch-kernel.sh ./VDR-NG ./Addons/Patches/vdr-rootfs
+	patch_package ./VDR-NG ./Addons/Files/pro/patches/vdr-m7x0
+	patch_package ./VDR-NG ./Addons/Files/common/patches/vdr-m7x0
+	[ "$1" == "rootfs" ] && patch_package ./VDR-NG ./Addons/Patches/vdr-rootfs
 fi
 
 # Compiling VDR

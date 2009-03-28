@@ -62,7 +62,7 @@ $(STAGEFILES_DIR)/.vsftpd_unpacked: $(VSFTPD_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.vsftpd_patched: $(STAGEFILES_DIR)/.vsftpd_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(VSFTPD_DIR) $(VSFTPD_PATCHES_DIR)
+	$(call patch_package, $(VSFTPD_DIR), $(VSFTPD_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.vsftpd_patched
 
 #

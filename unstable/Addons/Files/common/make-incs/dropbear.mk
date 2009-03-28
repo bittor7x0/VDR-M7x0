@@ -68,7 +68,7 @@ $(STAGEFILES_DIR)/.dropbear_unpacked: $(DROPBEAR_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.dropbear_patched: $(STAGEFILES_DIR)/.dropbear_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(DROPBEAR_DIR) $(DROPBEAR_PATCHES_DIR)
+	$(call patch_package, $(DROPBEAR_DIR), $(DROPBEAR_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_patched
 
 #

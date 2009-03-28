@@ -62,7 +62,7 @@ $(STAGEFILES_DIR)/.dvbsnoop_unpacked: $(DVBSNOOP_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.dvbsnoop_patched: $(STAGEFILES_DIR)/.dvbsnoop_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(DVBSNOOP_DIR) $(DVBSNOOP_PATCHES_DIR)
+	$(call patch_package, $(DVBSNOOP_DIR), $(DVBSNOOP_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.dvbsnoop_patched
 
 #

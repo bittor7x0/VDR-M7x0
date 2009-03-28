@@ -77,7 +77,7 @@ $(STAGEFILES_DIR)/.samba_unpacked: $(SAMBA_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.samba_patched: $(STAGEFILES_DIR)/.samba_unpacked
-	$(PATCHES_DIR)/patch-kernel.sh $(SAMBA_DIR) $(SAMBA_PATCHES_DIR)
+	$(call patch_package, $(SAMBA_DIR), $(SAMBA_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.samba_patched
 
 #
