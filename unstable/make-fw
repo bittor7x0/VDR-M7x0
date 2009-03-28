@@ -132,9 +132,9 @@ done
 # Get and set SVN versions
 echo ""
 echo "Getting and setting SVN versions to fw-version"
-svn_em_version="Revisión EM `svnversion \"$vdr_em_addons\" | cut -d \":\" -f 2`"
-svn_o7o_version="Revisión TC-o7o `svnversion \"$vdr_fw_orig\" | cut -d \":\" -f 2`"
-svn_plugins_version="Revisión plugins `svnversion \"$vdr_em_plugins\" | cut -d \":\" -f 2`"
+svn_em_version="Revisión EM `svnversion -c \"$vdr_em_addons\" | cut -d \":\" -f 2`"
+svn_o7o_version="Revisión TC-o7o `svnversion -c \"$vdr_fw_orig\" | cut -d \":\" -f 2`"
+svn_plugins_version="Revisión plugins `svnversion -c \"$vdr_em_plugins\" | cut -d \":\" -f 2`"
 
 echo $svn_em_version  >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
 echo $svn_o7o_version >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
