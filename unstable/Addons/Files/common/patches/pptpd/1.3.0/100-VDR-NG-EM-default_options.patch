@@ -1,0 +1,37 @@
+diff -Naur pptpd-1.3.0-orig/samples/chap-secrets pptpd-1.3.0/samples/chap-secrets
+--- pptpd-1.3.0-orig/samples/chap-secrets	2004-04-23 07:35:03.000000000 +0200
++++ pptpd-1.3.0/samples/chap-secrets	2009-04-02 14:20:04.000000000 +0200
+@@ -1,3 +1,3 @@
+ # Secrets for authentication using CHAP
+ # client	server	secret		IP addresses
+-#username	pptpd	password	*
++root            *       l1nux           *
+diff -Naur pptpd-1.3.0-orig/samples/options.pptpd pptpd-1.3.0/samples/options.pptpd
+--- pptpd-1.3.0-orig/samples/options.pptpd	2005-08-02 13:33:32.000000000 +0200
++++ pptpd-1.3.0/samples/options.pptpd	2009-04-02 14:18:54.000000000 +0200
+@@ -15,7 +15,7 @@
+ 
+ # Name of the local system for authentication purposes 
+ # (must match the second field in /etc/ppp/chap-secrets entries)
+-name pptpd
++usehostname
+ 
+ # Strip the domain prefix from the username before authentication.
+ # (applies if you use pppd with chapms-strip-domain patch)
+@@ -107,9 +107,14 @@
+ # (needed on some networks with Windows 9x/ME/XP clients, see posting to
+ # poptop-server on 14th April 2005 by Pawel Pokrywka and followups,
+ # http://marc.theaimsgroup.com/?t=111343175400006&r=1&w=2 )
+-novj
+-novjccomp
++#novj
++#novjccomp
+ 
+ # turn off logging to stderr, since this may be redirected to pptpd
+ nologfd
+ 
++ktune
++
++#direccionIPLocal:direccionIPqueAsignaremosAlCliente
++
++
