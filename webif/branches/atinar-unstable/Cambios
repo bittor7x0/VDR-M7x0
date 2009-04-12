@@ -1,3 +1,25 @@
+2009-04-12
+* Incorporada posibilidad de usar css/js externo.
+* Generalizado el ajuste de Posix para IE7.
+* Pagina de navegacion por grabaciones rediseñada.
+* Eliminada get_config_info de svdr_parse e implementada en conf.
+* Eliminada funcion vdrRunning.
+* Eliminada funcion readBOXAMPCONF.
+* Eliminada funcion htmlEncode.
+* Integrados todos los iconos en ui-icon.
+* Gestion de grabaciones en listado mediante formularios en lugar de enlaces.
+* Streaming de grabaciones simplificado. Ya no se solicita el listado completo
+  al SVDRP (comando PLST eliminado en SVDRP), solo el directorio (comando LSTR modificado).
+  Requiere recompilado del VDR.
+* Opciones de configuración operativas, completadas y traducidas.
+* Corregida generacion de listas XSPF (que vlc sigue sin soportar bien...)
+* Gestionar todos los flags de las programaciones (no solo active).
+* Resaltado de programaciones inactivas.
+* Distinguir convenientemente las referencias al servidor SVDRP 
+  de las referencias al propio servidor HTTP.
+* Eliminada funcion whatsmyip. La direccion del servidor se extrae del header 'Host' en el HttpRequest.
+* Tablas list2.
+
 2009-03-21
 * Incorporado tema jQuery-UI. Generado sprite con los iconos propios.
 * Actualizado jQuery de 1.2.6 a 1.3.2
