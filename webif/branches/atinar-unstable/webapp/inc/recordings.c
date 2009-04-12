@@ -42,21 +42,21 @@ int compareRE(const void * a, const void * b) {
 		case SF_START: 
 			return (ra->start-rb->start)*compareRE_sortDirection;
 		case SF_TITLE: 
-			return strcasecmp(ra->title,rb->title)*compareRE_sortDirection;
+			return strcasecmp(ra->name,rb->name)*compareRE_sortDirection;
 		case SF_RC_NUMBER:
-			return ra->ID-rb->ID;
+			return ra->id-rb->id;
 		default: 
 			return 0;
 	}
 }
 
 void initRE(recEntry_t * const entry){
-	entry->title=NULL;
+	entry->name=NULL;
 	entry->path=NULL;
 }
 
 void freeRE(recEntry_t * const entry){
-	free(entry->title);
+	free(entry->name);
 	free(entry->path);
 	initRE(entry);
 }
@@ -84,7 +84,7 @@ void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sort
 	int i=0;
 	int code;
 	
-	if (write_svdrp("LSTR\r")<=0) {
+	if (write_svdrp("LSTR path\r")<=0) {
 		return;
 	}
 	data=read_svdrp();
@@ -101,7 +101,7 @@ void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sort
 			}
 			list->length=i;
 			list->entry=tmp;
-			parseRec(p+4,&list->entry[i-1]);
+			parseRec(p+4,BT_TRUE,&list->entry[i-1]);
 		}
 	}  
 	free(data);
@@ -113,10 +113,13 @@ void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sort
 	} 
 }
 
-boolean_t isSameRec(int recId, const recInfo_t * oldInfo){
+boolean_t isSameRec(const recEntry_t *rec, const recInfo_t * oldInfo){
+	if (rec->path!=NULL && oldInfo->path!=NULL && strcmp(rec->path,oldInfo->path)==0){
+		return BT_TRUE;
+	}
 	recInfo_t info;
 	boolean_t result=BT_FALSE;
-	if (getRecInfo(&info,recId)) {
+	if (getRecInfo(rec,&info)) {
 		if (   sameString(info.title,oldInfo->title) 
 			&& sameString(info.subtitle,oldInfo->subtitle) 
 			&& sameString(info.desc,oldInfo->desc)) {
@@ -135,11 +138,11 @@ boolean_t isSameRec(int recId, const recInfo_t * oldInfo){
 	return result;
 }
 
-boolean_t editRec(int recId, const recInfo_t * oldInfo, const char * newName, char ** message) {
+boolean_t editRec(const recEntry_t *rec, const recInfo_t * oldInfo, char ** message) {
 	boolean_t result=BT_FALSE;
 	char *command;
-	if (isSameRec(recId,oldInfo)) {
-		if (asprintf(&command,"RENR %d %s\r",recId, newName)<0){
+	if (isSameRec(rec,oldInfo)) {
+		if (asprintf(&command,"RENR %d %s\r",rec->id, rec->name)<0){
 			warn("editRec: Out of memory");
 			exit(1);
 		} else {
@@ -163,12 +166,12 @@ boolean_t editRec(int recId, const recInfo_t * oldInfo, const char * newName, ch
 	return result;
 }
 
-boolean_t deleRec(int recId, const recInfo_t * oldInfo, char ** message) {
+boolean_t deleRec(const recEntry_t *rec, const recInfo_t * oldInfo, char ** message) {
 	boolean_t result=BT_FALSE;
 	recInfo_t info;
 	char *command;
-	if (isSameRec(recId,oldInfo)) {
-		if (asprintf(&command,"DELR %d\r",recId)<0){
+	if (isSameRec(rec,oldInfo)) {
+		if (asprintf(&command,"DELR %d\r",rec->id)<0){
 			warn("deleRec: Out of memory");
 			exit(1);
 		} else {
@@ -199,6 +202,7 @@ void initRI(recInfo_t * const info){
 	info->video=VT_UNKNOWN;
 	info->audio.length=0;
 	info->audio.entry=NULL;
+	info->path=NULL;
 }
 
 void freeRI(recInfo_t * const info){
@@ -209,6 +213,7 @@ void freeRI(recInfo_t * const info){
 	int i;
 	for (i=0;i<info->audio.length;i++) free(info->audio.entry[i]);
 	free(info->audio.entry);
+	free(info->path);
 	initRI(info);
 }
 
@@ -244,6 +249,9 @@ boolean_t parseRecInfo(recInfo_t * const info, char * const data, boolean_t from
 			case 'S': 
 				info->subtitle=strdup(s+2);
 				break;
+			case 'P':
+				info->path=strdup(s+2);
+				break;
 			case 'X': //components
 				switch(s[2]) {
 					case '1': //video
@@ -266,10 +274,15 @@ boolean_t parseRecInfo(recInfo_t * const info, char * const data, boolean_t from
 	return result;
 }
 
-boolean_t getRecInfo(recInfo_t * const info, const int recId){
+boolean_t getRecInfo(const recEntry_t *rec, recInfo_t * const info){
 	char * command=NULL;
-	if (recId>0) {
-		if (asprintf(&command,"LSTR %d\r",recId)<0){
+	if (rec==NULL) return BT_FALSE;
+	if (rec->path!=NULL) {
+		//TODO solo si es local
+		return readRecInfo(rec->path,info);
+	} else if (rec->id>0) {
+		warn("getRecInfo:no path present");
+		if (asprintf(&command,"LSTR %d\r",rec->id)<0){
 			warn("getRecInfo:Out of memory");
 			exit(1);
 		} else {
@@ -289,16 +302,19 @@ boolean_t getRecInfo(recInfo_t * const info, const int recId){
 	return BT_FALSE;
 }
 
-boolean_t readRecInfo(recInfo_t * const info, const char * filename){
+boolean_t readRecInfo(const char * recPath, recInfo_t * const info){
 	FILE *handle;
-	char s[513];
-	char * data=NULL;
-	int l=0;
-	
-	handle=fopen(filename,"r");
+	char *fileName;
+	asprintf(&fileName,"%s/info.vdr",recPath);
+	handle=fopen(fileName,"r");
+	free(fileName);
 	if (handle) {
+		enum {BUFSZ=513};
+		char s[BUFSZ];
+		char *data=NULL;
+		int l=0;
 		while (!feof(handle)) {
-			fgets(s,512,handle);
+			fgets(s,BUFSZ,handle);
 			int n=strlen(s);
 			data=realloc(data,l+n+1);
 			if (!data) {
@@ -310,11 +326,11 @@ boolean_t readRecInfo(recInfo_t * const info, const char * filename){
 			l+=n;
 		}
 		fclose(handle);
-	}
-	if (data!=NULL){
-		boolean_t result=parseRecInfo(info,data,BT_TRUE);
-		free(data);
-		return result;
+		if (data!=NULL){
+			boolean_t result=parseRecInfo(info,data,BT_TRUE);
+			free(data);
+			return result;
+		}
 	}
 	return BT_FALSE;
 }

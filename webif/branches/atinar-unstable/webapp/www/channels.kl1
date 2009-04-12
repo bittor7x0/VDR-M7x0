@@ -64,7 +64,7 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 	const char *RadioId=tr("radioId");
 	io_printf(out,
 "		<div id=\"main\" class=\"content\">\n"
-"			<h2><a class=\"wi-icon wi-icon-tv\" href=\"playlistch.kl1\" title=\"%s\">%s</a>%s</h2>\n"
+"			<h2><a class=\"ui-icon ui-icon-tv\" href=\"playlistch.kl1\" title=\"%s\">%s</a>%s</h2>\n"
 		,tr("channelPlaylistDownload")
 		,tr("playlist")
 		,tr("channels")
@@ -150,11 +150,11 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 			);
 			io_printf(out,
 "							<div class=\"boxRight\">"
-"								<a class=\"wi-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>\n"
+"								<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 "						</td>\n"
 "					</tr>\n"
-				,(isTv)?"wi-icon-tv":"wi-icon-radio"
+				,(isTv)?"ui-icon-tv":"ui-icon-radio"
 				,channels.entry[i].channelNum
 				,LiveStream,LiveStream
 			);

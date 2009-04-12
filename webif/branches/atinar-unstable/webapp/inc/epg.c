@@ -9,7 +9,7 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
-* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* Rewritten for http://vdr-m7x0.foroactivo.com.es by:
 * atinar <atinar1@hotmail.com>
 * 
 * You will need the KLONE web application development framework
@@ -174,13 +174,9 @@ void printEventDesc(io_t *out, const char * const tabs, char * const desc){
 	);
 }
 
-void printInfo(io_t *out, const int ntabs, eventEntry_t * const ee){
+void printInfo(io_t *out, const char * const tabs, eventEntry_t * const ee){
 	struct tm startt,endt;
 	long int end_time = ee->time+ee->duration;
-	char tabs[ntabs+1];
-	int t;
-	for(t=0;t<ntabs;t++) tabs[t]='\t';
-	tabs[ntabs]=0;
 	io_printf(out,
 "%s<div class=\"title\">%s</div>\n"
 		,tabs,ee->title
@@ -207,11 +203,12 @@ void printInfo(io_t *out, const int ntabs, eventEntry_t * const ee){
 	printEventDesc(out,tabs,ee->desc);
 }
 
-void printInfobox(io_t *out, const int ntabs, eventEntry_t * const ee){
-	char tabs[ntabs+1];
+void printInfobox(io_t *out, const char * const tabs, eventEntry_t * const ee){
+	int ntabs2=strlen(tabs)+3;
+	char tabs2[ntabs2];
 	int t;
-	for(t=0;t<ntabs;t++) tabs[t]='\t';
-	tabs[ntabs]=0;
+	for(t=0;t<ntabs2;t++) tabs2[t]='\t';
+	tabs2[ntabs2]=0;
 	io_printf(out,
 "%s<div class=\"infobox infoboxCssHover\"><span class=\"ui-icon ui-icon-info\">%s</span>\n"
 "%s	<div class=\"infoWrapper\">\n"
@@ -221,7 +218,7 @@ void printInfobox(io_t *out, const int ntabs, eventEntry_t * const ee){
 		,tabs
 		,tabs
 	);
-	printInfo(out,ntabs+3,ee);
+	printInfo(out,tabs2,ee);
 	io_printf(out,
 "%s		</div>\n"
 "%s	</div>\n"

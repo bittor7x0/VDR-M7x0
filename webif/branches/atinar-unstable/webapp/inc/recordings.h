@@ -23,12 +23,12 @@
 #include "misc.h"
 
 typedef struct recEntry_s {
-	int ID;
+	int id;
 	time_t start;
-	int seen;
-	int direct;
-	int cut;
-	char * title;
+	boolean_t seen;
+	boolean_t direct;
+	boolean_t cut;
+	char * name;
 	char * path;
 } recEntry_t;
 
@@ -42,29 +42,28 @@ typedef struct audioList_s {
 	char **entry;
 } audioList_t;
 
-typedef struct recInfo_s {
+typedef struct recInfo_s { //TODO =eventEntry
 	char * title;
 	char * subtitle;
 	char * desc;
 	char * channelId;
 	time_t start;
 	time_t stop;
-	int    duration;
+	int duration;
 	videoType_t video;
 	audioList_t audio;
+	char * path; //TODO deprecate
 } recInfo_t;
 
 void initRE(recEntry_t * const entry);
 void freeRE(recEntry_t * const entry);
 void initRL(recList_t  * const list);
 void freeRL(recList_t  * const list);
-void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
-boolean_t editRec(int recId, const recInfo_t * oldInfo, const char * newName, char ** message);
-boolean_t deleRec(const int recId, const recInfo_t * oldInfo, char ** message);
-
 void initRI(recInfo_t * const info);
 void freeRI(recInfo_t * const info);
-boolean_t getRecInfo(recInfo_t * const info, const int recId);
-boolean_t parseRecInfo(recInfo_t * const info, char * const data, boolean_t fromFile);
-boolean_t readRecInfo(recInfo_t * const info, const char * filename);
+void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
+boolean_t editRec(const recEntry_t *rec, const recInfo_t * oldInfo, char ** message);
+boolean_t deleRec(const recEntry_t *rec, const recInfo_t * oldInfo, char ** message);
+boolean_t getRecInfo(const recEntry_t *rec, recInfo_t * const info);
+boolean_t readRecInfo(const char * recPath, recInfo_t * const info);
 #endif

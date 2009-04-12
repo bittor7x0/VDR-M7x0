@@ -87,12 +87,12 @@ void printTimers(int channelNum, time_t startTime, int duration,char urlEnc[]) {
 "								</div>\n"
 				,timers.entry[i].ID,++timers.entry[i].count,timers.entry[i].title
 				,(isStart) ? " pbstart":"",(isEnd) ? " pbend":""
-				,(timers.entry[i].active) ? " pbenabled":" pbdisabled"
+				,(TIMER_ACTIVE(timers.entry[i])) ? " pbenabled":" pbdisabled"
 				,mstart,mend
 				);
 				u_urlncpy(urlEnc,timers.entry[i].timerStr,strlen(timers.entry[i].timerStr),URLCPY_ENCODE);
 				io_printf(out,
-"								<a class=\"wi-icon wi-icon-edit\" href=\"timers.kl1?a=%d&amp;timer=%s&amp;timerId=%d\" title=\"%s\">%s</a>\n"
+"								<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&amp;timer=%s&amp;timerId=%d\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 				,PA_EDIT,urlEnc,timers.entry[i].ID,TimerEdit,TimerEdit
 				);
@@ -195,11 +195,11 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 "					<tr>\n"
 "						<td class=\"channel\">\n"
 "							<div class=\"boxRight\">"
-								"<a class=\"wi-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
+								"<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
 							"</div>\n"
 "							<a class=\"channel\" href=\"program.kl1?chan=%d\" title=\"%s\">%s</a>\n"
 "						</td>\n"
-					,(isTv)?"wi-icon-tv":"wi-icon-radio",ce->channelNum,LiveStream,LiveStream
+					,(isTv)?"ui-icon-tv":"ui-icon-radio",ce->channelNum,LiveStream,LiveStream
 					,ce->channelNum,Schedule,ce->channelName
 				);
 				int n;
@@ -208,7 +208,7 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 					if (ee->time>0) {
 						long int end_time = ee->time+ee->duration;
 						char *timerStr=NULL;
-						addTimer=makeTimerStr(&timerStr,1,ce->channelNum,ee->time,end_time,50,99,ee->title);
+						addTimer=makeTimerStr(&timerStr,TF_ACTIVE,ce->channelNum,ee->time,end_time,50,99,ee->title);
 						timeptr = localtime(&ee->time);
 						io_printf(out,
 "						<td class=\"space\"></td>\n"
@@ -222,12 +222,13 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 						"</td>\n"
 "						<td class=\"title\">\n"
 "							<div class=\"boxRight\">\n"
-"								<a class=\"wi-icon wi-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
+"								<a class=\"ui-icon ui-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 "							<div class=\"boxRight infoLeft\">\n"
 							,PA_EDIT,urlEnc,TimerCreate,TimerCreate
 						);
-						printInfobox(out,8,ee);
+						printInfobox(out,
+"								",ee);
 						io_printf(out,
 "							</div>\n"
 "							<div class=\"title\">%s</div>\n"
@@ -315,13 +316,13 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 						cont++;
 						struct tm timeptr=*localtime(&ee.time);
 						char *timerStr=NULL;
-						addTimer=makeTimerStr(&timerStr,1,channelNum,ee.time,next_time,50,99,ee.title);
+						addTimer=makeTimerStr(&timerStr,TF_ACTIVE,channelNum,ee.time,next_time,50,99,ee.title);
 						if (previous_yday!=timeptr.tm_yday) {
 							previous_yday=timeptr.tm_yday;
 							io_printf(out,
 "					<tr class=\"anotherDay\">"
 						"<td colspan=\"3\">%s %s</td>"
-					"</tr>\n"	,weekdays[langID][timeptr.tm_wday],formatDate(&timeptr,0)
+					"</tr>\n"	,weekdays[langId][timeptr.tm_wday],formatDate(&timeptr,0)
 							);
 						}
 						io_printf(out,
@@ -339,12 +340,13 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 						io_printf(out,
 "						<td>\n"
 "							<div class=\"boxRight\">\n"
-"								<a class=\"wi-icon wi-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
+"								<a class=\"ui-icon ui-icon-rec\" href=\"timers.kl1?a=%d&amp;timer=%s\" title=\"%s\">%s</a>\n"
 "							</div>\n"
 "							<div class=\"boxRight infoLeft\">\n"
 							,PA_EDIT,urlEnc,TimerCreate,TimerCreate
 						);
-						printInfobox(out,7,&ee);
+						printInfobox(out,
+"								",&ee);
 						io_printf(out,
 "							</div>\n"
 "							<div class=\"title\">%s</div>\n"

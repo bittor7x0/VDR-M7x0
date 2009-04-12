@@ -23,11 +23,22 @@
 #include "channels.h"
 #include "misc.h"
 
+enum timerFlags_e { 
+	TF_NONE = 0x0000,
+	TF_ACTIVE = 0x0001,
+	TF_INSTANT = 0x0002,
+	TF_VPS = 0x0004,
+	TF_RECORDING = 0x0008,
+	TF_ALL = 0xFFFF
+};
+
 typedef enum timerType_e {
 	TT_UNDEFINED  = 0,
 	TT_ONE_TIME = 1,
 	TT_REGULAR  = 2
 } timerType_t;
+
+#define TIMER_ACTIVE(timer) boolean(timer.flags & TF_ACTIVE==TF_ACTIVE)
 
 typedef struct timerEntry_s {
 	int ID;
@@ -38,7 +49,7 @@ typedef struct timerEntry_s {
 	timerType_t type;
 	int priority;
 	int lifetime;
-	int active;
+	uint flags;
 	char reg_timer[8];
 	char * title;
 	char * aux;

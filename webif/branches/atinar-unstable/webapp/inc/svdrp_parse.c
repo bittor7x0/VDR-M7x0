@@ -18,7 +18,6 @@
 */
 
 #define _XOPEN_SOURCE
-#define _GNU_SOURCE
 
 //svdrp_parse stellt Funktionen bereit, um die Zeilen einer Antwort zu parsen
 #include <stdlib.h>
@@ -28,15 +27,6 @@
 #include <u/libu.h>
 
 #include "svdrp_parse.h"
-
-#ifdef FOR_BUSYBOX
-	#include "scan_config.c"
-#endif
-
-char vdr_setup[256];
-
-int marginStart=5*60;
-int marginStop=15*60;
 
 void parse_215E(char * line, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version) {
 	char * r=line;
@@ -57,13 +47,13 @@ void parse_215E(char * line, unsigned int * event_id, long int * start_time, int
 	}
 }
 
-boolean_t makeTimerStr(char **timerStr, int active, int channelNum, time_t start, time_t stop, int priority, int lifetime, const char * title) {
+boolean_t makeTimerStr(char **timerStr, uint flags, int channelNum, time_t start, time_t stop, int priority, int lifetime, const char * title) {
 	time_t ts=start;//-marginStart;
 	time_t te=stop;//+marginStop;
 	struct tm t1=*localtime(&ts);
 	struct tm t2=*localtime(&te);
 	return (asprintf(timerStr,"%d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:"
-		,active
+		,flags
 		,channelNum
 		,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday
 		,t1.tm_hour,t1.tm_min
@@ -73,39 +63,44 @@ boolean_t makeTimerStr(char **timerStr, int active, int channelNum, time_t start
 		,title	)<1) ?  BT_FALSE : BT_TRUE;
 }
 
-void parseRec(char * line, recEntry_t * const recording){
+void parseRec(char * line, boolean_t incpath, recEntry_t * const rec){
 	char * r=line;
 	int l;
 	struct tm timeptr;
 	
 	r+=strspn(r," ");
-	recording->ID=(int)strtol(r,&r,10);
+	rec->id=strtol(r,&r,10);
 	r+=strspn(r," ");
+	rec->path=NULL;
+	if ( incpath ) {    //Requires vdr patched to include path
+		l=strcspn(r," ");
+		if (r[0]!='/') {
+			warn( "VDR should be patched to return path");
+		} else {
+			rec->path=strndup(r,l);
+			r+=l;
+			r+=strspn(r," ");
+		}
+	}
 	r=strptime(r,"%d.%m.%y %H:%M",&timeptr);
 	if (r==NULL){ 
 		printf("Error converting recording date!\n");
-		recording->title=NULL;
-		recording->path=NULL;
+		rec->name=NULL;
+		free(rec->path);
+		rec->path=NULL;
 		return;
 	}
 	timeptr.tm_sec=0;
 	timeptr.tm_isdst=-1;
-	recording->start=mktime(&timeptr);
-	recording->seen=(r[0]==' ');
+	rec->start=mktime(&timeptr);
+	rec->seen=boolean(r[0]==' ');
 	r++;
 	r+=strspn(r," ");
 	l=strcspn(r,"/\n\r");
-	recording->title=strndup(r,l);
-	recording->direct=(strchr(recording->title,'@')==NULL) ? 0 : 1;
-	recording->cut=(strchr(recording->title,'%')==NULL) ? 0 : 1;
+	rec->name=strndup(r,l);
+	rec->direct=boolean(strchr(rec->name,'@')==NULL);
+	rec->cut=boolean(strchr(rec->name,'%')==NULL);
 	r+=l;
-	if (r[0]=='/') {    //Requires vdr patched to include path
-		l=strcspn(r,"\n\r");
-		recording->path=strndup(r,l);
-	}
-	else {
-		recording->path=NULL;
-	}
 	return;
 }
 
@@ -119,7 +114,7 @@ void parseTimer(const char * line, timerEntry_t * const timer ){
 	struct tm timeptr;
 
 	//TODO check EINVAL, ERANGE
-	timer->active=strtol(line,&r,10); 
+	timer->flags=(uint)strtol(line,&r,10); 
 	r++;
 	timer->channelNum=strtol(r,&r,10); 
 	r++;
@@ -222,50 +217,3 @@ void parseChannel(char * line, channelEntry_t * channel) {
 		}
 	}
 }
-
-
-void get_config_info() {
-
-#ifdef FOR_BUSYBOX
-
-	//***** WICHTIG: Tabelle ist im Feld 'name' alphabetisch zu sortieren,
-	//***** da eine binäre Suche verwendet wird.
-
-	t_scan_config config_param[] =
-	{
-	// cnt, name,			default
-		{ 0, "RELEVANT_VDR_CONFIG",	0 },
-		{ 0, "TIMEZONE",		"CET-1CEST,M3.5.0,M10.5.0/03:00:00" },
-
-		{0,0,0} // END OF TABLE
-	};
-
-	scan_config(config_param);
-	setenv("TZ",config_param[CONFIG_TIMEZONE].value,1);
-
-	if (config_param[CONFIG_RELEVANT_VDR_CONFIG].value)
-	{
-		snprintf(vdr_setup,sizeof(vdr_setup),"%s/setup.conf",
-		config_param[CONFIG_RELEVANT_VDR_CONFIG].value);
-
-		FILE *f = fopen(vdr_setup,"r");
-		if (f) {
-			while (!feof(f)) {
-				char buffer[256], param[sizeof(buffer)];
-				fgets(buffer,sizeof(buffer),f);
-				buffer[strlen(buffer)-1] = '\0';
-				const int i=strcspn(buffer,"=");
-				strncpy(param,buffer,i);
-				if (!strcmp(param,"MarginStart ")) {
-					margin_start=strtol(buffer+i+2,NULL,10)*60;
-				} else if (!strcmp(param,"MarginStop ")) {
-					marginStop=strtol(buffer+i+2,NULL,10)*60;
-				}
-			}
-			fclose(f);
-		}
-	}
-
-#endif // FOR_BUSYBOX
-}
-

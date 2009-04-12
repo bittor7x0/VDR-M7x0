@@ -37,7 +37,7 @@ h2 {
 	font-size:1.3em;
 	margin:2em 10px 1em;
 	padding:0.2em 1em;
-	overflow:auto;
+	/*overflow:auto;*/
 	-moz-border-radius: 3px;
 }
 h2 a,
@@ -57,6 +57,26 @@ ul.controls li.control {
 	float:left;
 	margin:2px;
 	padding:4px 0;
+}
+.control .ui-icon {
+	float:left;
+	margin:0 4px;
+}
+table.list1 tr .controls,
+table.list2 tr .controls {
+	float:none;
+}
+table.list1 tr .controls .control,
+table.list2 tr .controls .control {
+	display:block;
+	/*float:right;*/
+	margin:0 0px;
+	padding:0px 0;
+}
+table.list1 tr .controls .control .ui-icon,
+table.list2 tr .controls .control .ui-icon {
+	float:right;
+	margin:0 0px;
 }
 div.boxRight {
 	float:right;
@@ -167,7 +187,8 @@ div.clearer {
 
 /* Table related 
 ------------------------------------------------------------*/
-table.list1 {
+table.list1,
+table.list2 {
 	background-color:#DDA;
 	border-collapse:separate;
 	border-spacing:0px;
@@ -177,7 +198,19 @@ table.list1 {
 	-moz-border-radius-topleft:2px;
 	-moz-border-radius-topright:2px;
 }
-table.list1 caption {
+table.list2 {
+	border:2px solid #A09880;
+}	
+table.list2 th {
+	color: #000517;
+	background-color:#D0D0A0;
+	border-color:#FFC #BB8 #BB8 #FFC;
+	vertical-align:middle;
+	text-align:left;
+	-moz-border-radius:0px;
+}	
+table.list1 caption,
+table.list2 caption {
 	font-weight:bold;
 	font-size:1.2em;
 	text-align:left;
@@ -188,20 +221,31 @@ table.list1 caption {
 	background:transparent none;
 }
 table.list1 th, 
-table.list1 td {
+table.list1 td,
+table.list2 th,
+table.list2 td {
 	border-style:solid;
 	border-width:1px;
-	vertical-align:baseline;
+	vertical-align:top;
 }
 table.list1 th {
+	color:white;
 	background-color:#774;
 	border-color:#885 #663 #663 #885;
-	color:white;
 	font-weight:bold;
 	padding:1px 2px;
 	-moz-border-radius:3px;
 }
-table.list1 th a {
+table.list2 th {
+	color: #000517;
+	background-color:#D0D0A0;
+	border-color:#FFC #BB8 #BB8 #FFC;
+	vertical-align:middle;
+	text-align:left;
+	-moz-border-radius:0px;
+}	
+table.list1 th a,
+table.list2 th a {
 	display:block;
 	font-weight:bold;
 	margin:0;
@@ -221,7 +265,8 @@ table.list1 .sortnone {
 table.list1 .sortdesc {
 	background-image:url(images/down3.png);
 }
-table.list1 td {
+table.list1 td,
+table.list2 td {
 	border-color:#FFC #BB8 #BB8 #FFC;
 	color:#000517;
 	padding:1px 5px;
@@ -250,25 +295,13 @@ table.list1 tr.anotherDay:hover td {
 table#partitionSpace {
 	max-width:50em;
 }
-table#recEdit,
-table#timerEdit {
-	border:2px solid #A09880;
-}	
-table#recEdit th,
-table#timerEdit th {
-	color: #000517;
-	background-color:#D0D0A0;
-	border-color:#FFC #BB8 #BB8 #FFC;
-	vertical-align:middle;
-	text-align:left;
-	-moz-border-radius:0px;
-}	
 table#nowOnTv col.info {
 	width:20em;
 }
 table#nowOnTv tr:hover,
 table#recEdit tr:hover,
-table#timerEdit tr:hover {
+table#timerEdit tr:hover,
+table#cfgFile tr:hover {
 	background-color:transparent;
 }
 table#programs {
@@ -299,8 +332,16 @@ table.channels td.number,
 table#recordings td.number {
 	text-align:center;
 }
+table#recordings tr .controls {
+	float:left;
+	margin-right:2px;
+}
 table.channels col.ctrls {
 	width:58px;
+}
+table#cfgFile {
+	width:auto;
+	min-width:40em;
 }
 col.date {
 	width:6em;
@@ -416,7 +457,7 @@ table.list1 td.timers {
 	top:3px;
 	position:absolute;
 }
-.timers .timer a.wi-icon-edit {
+.timers .timer a.ui-icon-edit {
 	right:0!important;
 	position:absolute;
 }
@@ -444,6 +485,11 @@ table.list1 td.timers {
 .progressbar .pbdisabled{
 	border-color:#B0C0A0;
 	background-color:#E0D8B0;
+}
+
+/* Timers */
+table#timers tr.inactive * {
+	color:#606060;
 }
 
 /* Browse */
@@ -492,6 +538,10 @@ table.list1 td.timers {
 }
 ul.recPath,
 ul.recPath li.recDir,
+ul.recFolders,
+ul.recFolders li.recFolderWrapper,
+ul.recFolderFooter,
+ul.recFolderFooter li.field,
 .codeHead ul, 
 .codeHead ul li{
 	list-style-image:none;
@@ -505,6 +555,7 @@ ul.recPath li.recDir,
 .recFolderWrapper {
 	display:-moz-inline-stack;
 	display:inline-block;
+	vertical-align:top;
 	margin:5px 10px 5px 0px;
 	padding:0;
 	width:250px;
@@ -513,64 +564,90 @@ ul.recPath li.recDir,
 	-moz-border-radius:5px;
 }
 .recFolder {
-	background-color:#DCA;
-	border:1px solid #B0A080;
+	background-color:#DFCFAF;
+	border:1px solid #D0C0A0;
 	margin:0;
 	padding:0;
-	position:relative;
-	right:5px;
-	bottom:5px;
 	vertical-align:top;
 	-moz-border-radius:5px;
 }
-div.recFolderHeader {
+div.recFolder {
+	position:relative;
+	right:5px;
+	bottom:5px;
+}
+li.recFolder {
+	margin:5px;
+}
+li.recRec {
+	background-color:transparent;
+	border:none;
+	clear:left;
+	margin:1px;
+	overflow:hidden;
+}
+.recRecDel {
+	text-decoration:line-through!important;
+}
+.recFolder a, 
+.recFolder a:link, 
+.recFolder a:visited {
+	color:black;
+	text-decoration:none;
+}
+.recFolder .controls {
+	display:block;
+	margin:0;
+	padding:0;
+	float:left;
+}
+.recFolder .controls .control{
+	margin:0 3px 0 0;
+	padding:0;
+}
+.recFolder .controls .control .ui-icon {
+	float:left;
+	margin:0;
+}
+.recFolderHeader {
+	background-color:transparent;
 	display:block;
 	font-size:1.1em;
 	font-weight:bold;
 	margin:5px;
-	padding-left: 20px;
-	background-image:url(images/folder16.png);
-	background-position:top left;
-	background-repeat:no-repeat;
 }
-div.recFolderHeader .wi-icon {
-	display:none;
-}
-div.recFolderHeader a, 
-div.recFolderHeader a:link, 
-div.recFolderHeader a:visited {
-	color:black;
-	font-weight:bold;
-	text-decoration:none;
-}
-div.recFolderDel div.recFolderHeader a {
-	text-decoration:line-through!important;
-}
-div.recFolderHeader a:hover {
+.recFolderHeader a:hover {
 	color:#234;
 	font-weight:bold;
 }
-div.recFolderDetails {
+.recFolder .recFolderDetails,
+.recFolder .recFolders {
+	background-color:#EFE8C4;
 	border:medium none;
 	font-size:0.9em;
-	max-height:10em;
-	margin:5px;
+	margin:0 5px 5px;
 	padding:0;
-	overflow:auto;
 	text-decoration:none;
-	-moz-border-radius:5px;
+	-moz-border-radius:3px;
 }
-div.recFolderDetails div.recInfo {
-	background-color:#EFE8C4;
+div.recFolder > .recFolderDetails,
+div.recFolder > .recFolders {
+	clear:both;
+	min-height:5em;
+	max-height:15em;
+	overflow:auto;
+}
+.recFolderDetails div.recInfo {
 	padding:3px;
 	margin-bottom:1px;
 	-moz-border-radius:3px;
 }
-div.recFolderFooter {
+.recFolderFooter {
 	margin:5px;
 }
-div.recFolderFooter .field {
+.recFolderFooter .field {
 	font-size:0.9em;
+	display:inline;
 }
 
 /* View */
@@ -578,12 +655,12 @@ div.code {
 	background-color:#8F9FAF;
 	padding:0;
 }
-div.code div.codeHead {
+div.codeHead {
 	border:0 none;
 	padding:0.5em 5px;
-	overflow:auto;
+	overflow:hidden;
 }
-div.code div.codeHead ul {
+div.codeHead ul {
 	display:block;
 	margin:0 0.5em 0 0;
 	float:left;
@@ -601,10 +678,8 @@ div.code div.codeHead ul {
 	display:block;
 	padding:0.2em 1em;
 }
-.codeHead .controls .control,
 .codeHead .field .label,
 .codeHead .field .value {
-	/*border:1px solid #283848;*/
 	border:none;
 }
 .codeHead .field .label {
@@ -680,97 +755,45 @@ div.code pre {
 
 /* Icons
 ----------------------------------*/
-.wi-icon { 
-	display: block; 
-	text-indent: -99999px; 
-	overflow: hidden; 
-	background-repeat: no-repeat; 
-	width: 16px; 
-	height: 16px; 
-	background-image: url(images/wi-icons_222222_80x64.png); 
+.ui-icon-edit {
+	background-position: 0px -240px;
 }
-.ui-widget-content .wi-icon {
-	background-image: url(images/wi-icons_222222_80x64.png); 
+.ui-icon-floppy{
+	background-position: -16px -240px;
 }
-.ui-widget-header .wi-icon {
-	background-image: url(images/wi-icons_222222_80x64.png); 
+.ui-icon-print{
+	background-positon: -32px -240px;
 }
-.ui-state-default .wi-icon { 
-	background-image: url(images/wi-icons_888888_80x64.png); 
+.ui-icon-rec {
+	background-position: -48px -240px;
 }
-.ui-state-hover .wi-icon, 
-.ui-state-focus .wi-icon {
-	background-image: url(images/wi-icons_454545_80x64.png); 
+.ui-icon-timer {
+	background-position: -64px -240px;
 }
-.ui-state-active .wi-icon {
-	background-image: url(images/wi-icons_454545_80x64.png); 
+.ui-icon-tv {
+	background-position: -80px -240px;
 }
-.ui-state-highlight .wi-icon {
-	background-image: url(images/wi-icons_2e83ff_80x64.png); 
+.ui-icon-radio {
+	background-position: -96px -240px;
 }
-.ui-state-error .wi-icon, 
-.ui-state-error-text .wi-icon {
-	background-image: url(images/wi-icons_cd0a0a_80x64.png); 
+.ui-icon-folder-rec{
+	background-position: -112px -240px;
 }
-.wi-icon-ar169 {
-	background-position: 0 0;
+.ui-icon-volume-down {
+	background-position: -128px -240px;
 }
-.wi-icon-ar43 {
-	background-position: -16px 0;
+.ui-icon-volume-up {
+	background-position: -144px -240px;
 }
-.wi-icon-edit {
-	background-position: -48px 0;
+.ui-icon-ar169 {
+	background-position: -160px -240px;
 }
-.wi-icon-floppy{
-	background-position: -64px 0;
+.ui-icon-ar43 {
+	background-position: -176px -240px;
 }
-.wi-icon-folder-rec{
-	background-position: 0 -16px;
-}
-.wi-icon-fullscreen{
-	background-position: -16px -16px;
-}
-.wi-icon-info{
-	background-position: -32px -16px;
-}
-.wi-icon-mute{
-	background-position: -48px -16px;
-}
-.wi-icon-pause {
-	background-position: -64px -16px;
-}
-.wi-icon-play {
-	background-position: 0 -32px;
-}
-.wi-icon-print{
-	background-positon: -16px -32px;
-}
-.wi-icon-radio {
-	background-position: -32px -32px;
-}
-.wi-icon-rec {
-	background-position: -48px -32px;
-}
-.wi-icon-timer {
-	background-position: -64px -32px;
-}
-.wi-icon-tv {
-	background-position: 0 -48px;
-}
-.wi-icon-volume-down {
-	background-position: -32px -48px;
-}
-.wi-icon-volume-up {
-	background-position: -48px -48px;
-}
-h2 .wi-icon {
+h2 .ui-icon {
 	float:left;
 	margin: 0 1em 1px 0;
-}
-.control .ui-icon,
-.control .wi-icon {
-	float:left;
-	margin:0 4px;
 }
 
 
@@ -803,6 +826,7 @@ td.hour {
 
 button {
 	-moz-border-radius:5px;
+	-moz-box-sizing: content-box;
 }
 button.delete {
 	color:Yellow;

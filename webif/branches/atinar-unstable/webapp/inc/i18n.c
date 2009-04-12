@@ -18,7 +18,7 @@
 
 #include "i18n.h"
 
-int langID=-1;
+int langId=-1;
 char acceptedLang[3]="";
 char cldate[20];
 
@@ -76,16 +76,9 @@ const i18nVal_t dateFormat={
 	"%d-%m-%Y"
 };
 
-//TODO ordenar por key
+
+// Important: keep i18n ordered by key. Otherwise binary search will fail.
 i18n_t i18n[]={
-	{	"zzz", //Should be last after sorting. Don't touch it.
-		{
-		"",
-		"",
-		"",
-		""
-		}
-	},
 	{	"accept",
 		{
 		"Accept",
@@ -126,46 +119,6 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"baAudio",
-		{
-		"Path to audio files",
-		"Audio-Basisverzeichnis",
-		"Ruta a archivos de música",
-		"Répertoire des fichiers audio"
-		}
-	},
-	{	"baOptions",
-		{
-		"BoxAmp options",
-		"BoxAmp optionen",
-		"BoxAmp opciones",
-		"BoxAmp options"
-		}
-	},
-	{	"baPath",
-		{
-		"BoxAmp path",
-		"BoxAmp-Verzeichnis",
-		"Ruta BoxAmp",
-		"Répertoire de BoxAmp"
-		}
-	},
-	{	"baSetup",
-		{
-		"Setup BoxAmp",
-		"Einstellungen BoxAmp",
-		"Configuración BoxAmp",
-		"Configuration de BoxAmp"
-		}
-	},
-	{	"baTerm",
-		{
-		"Terminate automatically",
-		"Automatisch beenden",
-		"Terminar automáticamente",
-		"Terminaison automatique"
-		}
-	},
 	{	"bootMenu",
 		{
 		"Boot Menu",
@@ -179,6 +132,318 @@ i18n_t i18n[]={
 		"Browse",
 		"Schmökern",
 		"Navegar",
+		""
+		}
+	},
+	{	"cancel",
+		{
+		"Cancel",
+		"",
+		"Cancelar",
+		""
+		}
+	},
+	{	"cfgBa",
+		{
+		"Setup BoxAmp",
+		"Einstellungen BoxAmp",
+		"Configuración del BoxAmp",
+		"Configuration de BoxAmp"
+		}
+	},
+	{	"cfgBa.boxamp_bin",
+		{
+		"BoxAmp bin",
+		"",
+		"Ejecutable BoxAmp",
+		""
+		}
+	},
+	{	"cfgBa.boxamp_mp3dir",
+		{
+		"Path to audio files",
+		"Audio-Basisverzeichnis",
+		"Ruta a archivos de audio",
+		"Répertoire des fichiers audio"
+		}
+	},
+	{	"cfgBa.boxamp_opts",
+		{
+		"BoxAmp options",
+		"BoxAmp optionen",
+		"Opciones del BoxAmp",
+		"BoxAmp options"
+		}
+	},
+	{	"cfgBa.boxamp_path",
+		{
+		"BoxAmp path",
+		"BoxAmp-Verzeichnis",
+		"Ruta BoxAmp",
+		"Répertoire de BoxAmp"
+		}
+	},
+	{	"cfgBa.boxamp_startup_time",
+		{
+		"Start up time (sec.)",
+		"",
+		"Tiempo de inicio (seg.)",
+		""
+		}
+	},
+	{	"cfgBa.runboxamp",
+		{
+		"runboxamp path",
+		"",
+		"Ruta del runboxamp",
+		""
+		}
+	},
+	{	"cfgBa.runboxamp_vars",
+		{
+		"runboxamp vars",
+		"",
+		"Variables para runboxamp",
+		""
+		}
+	},
+	{	"cfgErrInvalidParamValueFmt",
+		{
+		"Invalid param value (%s)",
+		"",
+		"Valor del parámetro (%s) incorrecto",
+		""
+		}
+	},
+	{	"cfgErrParamNameValueMismatch",
+		{
+		"Mismatch between name and value numbers",
+		"",
+		"El número de nombres y valores de parámetros no coincide.",
+		""
+		}
+	},
+	{	"cfgFileChangeDisabledErr",
+		{
+		"Change of configuration is disabled.",
+		"",
+		"La modificación de la configuración está bloqueda.",
+		""
+		}
+	},
+	{	"cfgFileDoesNotExistFmt",
+		{
+		"Configuration file #%d ( %s ) doesn't exists",
+		"Konfigurationsdatei #%d ( %s ) nicht vorhanden",
+		"El archivo de configuración #%d ( %s ) no existe",
+		""
+		}
+	},
+	{	"cfgFileIsNew",
+		{
+		"Configuration file will be created now.",
+		"",
+		"El archivo de configuración se creará ahora.",
+		""
+		}
+	},
+	{	"cfgFileSaveErrFmt",
+		{
+		"Error saving configuration file %s .",
+		"",
+		"Ha habido algún error al guardar el archivo de configuración %s.",
+		""
+		}
+	},
+	{	"cfgFileSaveOkFmt",
+		{
+		"Configuration file %s saved.",
+		"",
+		"El archivo de configuración %s se ha guardado correctamente.",
+		""
+		}
+	},
+	{	"cfgRc",
+		{
+		"VDR Network configuration",
+		"VDR Einstellungen Netz",
+		"Configuración de red del VDR",
+		""
+		}
+	},
+	{	"cfgRc.dhcp_flags",
+		{
+		"DHCP client options",
+		"",
+		"Opciones para el cliente DHCP",
+		""
+		}
+	},
+	{	"cfgRc.gateway",
+		{
+		"Gateway",
+		"",
+		"",
+		""
+		}
+	},
+	{	"cfgRc.hostname",
+		{
+		"Cmd to obtain hostname",
+		"",
+		"Orden para obtener nombre de host",
+		""
+		}
+	},
+	{	"cfgRc.if",
+		{
+		"Network interface",
+		"",
+		"Interfaz de red",
+		""
+		}
+	},
+	{	"cfgRc.ip",
+		{
+		"IP address (if manual configuration)",
+		"IP-Adresse (bei manueller Konfiguration)",
+		"Dirección IP (si conf. manual)",
+		""
+		}
+	},
+	{	"cfgRc.lircd_flags",
+		{
+		"LIRC (Remote Control) server options",
+		"",
+		"Opciones para el servidor LIRC (Control Remoto)",
+		""
+		}
+	},
+	{	"cfgRc.mac_cmd",
+		{
+		"Cmd to obtain MAC address",
+		"",
+		"Orden para obtener dirección MAC",
+		""
+		}
+	},
+	{	"cfgRc.net",
+		{
+		"IP assignation",
+		"",
+		"Asignación de IP",
+		""
+		}
+	},
+	{	"cfgRc.netdate",
+		{
+		"Configure date using network server",
+		"",
+		"Configurar fecha usando un servidor en red",
+		""
+		}
+	},
+	{	"cfgRc.netdate_server",
+		{
+		"Date network server",
+		"",
+		"Servidor de fecha en red",
+		""
+		}
+	},
+	{	"cfgRc.netmask",
+		{
+		"Subnet mask (if manual configuration)",
+		"Subnetzmaske (bei manueller Konfiguration)",
+		"Máscara de red (si conf. manual)",
+		""
+		}
+	},
+	{	"cfgRc.pic_tool_flags",
+		{
+		"pic_tool flags",
+		"",
+		"Opciones para pic_tool",
+		""
+		}
+	},
+	{	"cfgRc.syslogd_flags",
+		{
+		"syslogd flags",
+		"",
+		"Opciones para syslogd",
+		""
+		}
+	},
+	{	"cfgWi",
+		{
+		"Setup Webinterface",
+		"Einstellungen Webinterface",
+		"Configuración del interfaz web",
+		"Configuration de l\'interface web"
+		}
+	},
+	{	"cfgWi.config_change_disabled",
+		{
+		"Disable configuration modification",
+		"",
+		"Impedir modificación de la configuración",
+		""
+		}
+	},
+	{	"cfgWi.config_view_disabled",
+		{
+		"Disable configuration view",
+		"",
+		"Impedir vista de la configuración",
+		""
+		}
+	},
+	{	"cfgWi.default language",
+		{
+		"Default Language",
+		"Voreingestellte Sprache",
+		"Idioma por defecto",
+		"Langue par défaut"
+		}
+	},
+	{	"cfgWi.playlist_type",
+		{
+		"Playlist type",
+		"",
+		"Tipo de listas de reproducción",
+		""
+		}
+	},
+	{	"cfgWi.rec_deletion_disabled",
+		{
+		"Disable recording deletion",
+		"",
+		"Impedir borrado de grabaciones",
+		""
+		}
+	},
+	{	"cfgWi.svdrp_ip",
+		{
+		"SVDRP server IP",
+		"",
+		"IP del servidor SVDRP",
+		""
+		}
+	},
+	{	"cfgWi.svdrp_port",
+		{
+		"SVDRP server port",
+		"",
+		"Puerto del servidor SVDRP",
+		""
+		}
+	},
+	{	"cfgWi.use_external_www_folder",
+		{
+		"Use external www folder",
+		"",
+		"Usar carpeta www externa",
 		""
 		}
 	},
@@ -286,22 +551,6 @@ i18n_t i18n[]={
 		"Identifiant d\'accès conditionnel"
 		}
 	},
-	{	"confIP",
-		{
-		"IP address (if manual configuration)",
-		"IP-Adresse (bei manueller Konfiguration)",
-		"Dirección IP (si conf. manual)",
-		""
-		}
-	},
-	{	"confNetmask",
-		{
-		"Subnet mask (if manual configuration)",
-		"Subnetzmaske (bei manueller Konfiguration)",
-		"Máscara de red (si conf. manual)",
-		""
-		}
-	},
 	{	"currentServer",
 		{
 		"Current server",
@@ -316,14 +565,6 @@ i18n_t i18n[]={
 		"Datum",
 		"Fecha",
 		""
-		}
-	},
-	{	"defaultLang",
-		{
-		"Default Language",
-		"Voreingestellte Sprache",
-		"Idioma por defecto",
-		"langue par défaut"
 		}
 	},
 	{	"desc",
@@ -478,6 +719,46 @@ i18n_t i18n[]={
 		"IP port",
 		"",
 		"Puerto IP",
+		""
+		}
+	},
+	{	"langBrowserDefined",
+		{
+		"Browser language",
+		"",
+		"Idioma del navegador",
+		""
+		}
+	},
+	{	"langEnglish",
+		{
+		"English",
+		"",
+		"Inglés",
+		""
+		}
+	},
+	{	"langFrench",
+		{
+		"French",
+		"Franzosich",
+		"Francés",
+		"Français"
+		}
+	},
+	{	"langGerman",
+		{
+		"German",
+		"Deutsch",
+		"Alemán",
+		""
+		}
+	},
+	{	"langSpanish",
+		{
+		"Spanish",
+		"Spanisch",
+		"Español",
 		""
 		}
 	},
@@ -689,14 +970,6 @@ i18n_t i18n[]={
 		"Identifiant de radio"
 		}
 	},
-	{	"rc",
-		{
-		"rc.conf",
-		"",
-		"",
-		""
-		}
-	},
 	{	"rc.local",
 		{
 		"rc.local.conf",
@@ -734,6 +1007,14 @@ i18n_t i18n[]={
 		"Record deleted",
 		"Aufzeichnen gelöscht",
 		"Grabación borrada",
+		""
+		}
+	},
+	{	"recDeletionDisabled",
+		{
+		"Recording deletion is disabled.",
+		"",
+		"El borrado de grabaciones está bloqueado",
 		""
 		}
 	},
@@ -807,6 +1088,14 @@ i18n_t i18n[]={
 		"Dauer",
 		"Duración",
 		"durée"
+		}
+	},
+	{	"saveConfig",
+		{
+		"Save configuration",
+		"",
+		"Guardar configuración",
+		""
 		}
 	},
 	{	"schedule",
@@ -1121,14 +1410,6 @@ i18n_t i18n[]={
 		"Interface web"
 		}
 	},
-	{	"webifSetup",
-		{
-		"Setup Webinterface",
-		"Einstellungen Webinterface",
-		"Configuración web",
-		"Configuration de l\'interface web"
-		}
-	},
 	{	"yes",
 		{
 		"Yes",
@@ -1158,45 +1439,20 @@ int i18nCompare(const void *a, const void *b){
 	return result;
 }
 
-
 const char *tr(const char *s) {
-	/*
-	if (i18n[0].key[0]=='z'){ 
-		info("Before sorting i18n. i18n[0].key:%s",i18n[0].key);
-		qsort(&i18n,i18nLength,sizeof(i18n_t),i18nCompare);
-		info("After sorting i18n. i18n[0].key:%s",i18n[0].key);
-	}
-	*/
 	i18n_t test = { s, { s,NULL,NULL,NULL}};
 	i18n_t *found=(i18n_t *)bsearch(&test,&i18n,i18nLength,sizeof(i18n_t),i18nCompare);
 	if (found==NULL) {
 		warn("i18n:Key %s not found",s);
 	}
-	if ((langID<0) || (langID>=I18NNUM)) {
-		langID=0;
-	}
-	const char * result = (found!=NULL) ? (strlen(found->val[langID])>0) ? found->val[langID] : found->val[0] : s;
+	const char * result = (found!=NULL) ? (strlen(found->val[langId])>0) ? found->val[langId] : found->val[0] : s;
 	return result;
-}
-
-const char *old_tr(const char *s) {
-	int i;
-	if ((langID<0) || (langID>=I18NNUM)) {
-		langID=0;
-	}
-	for (i=0;i<i18nLength;i++) {
-		const char *key = (i18n[i].key) ? i18n[i].key : i18n[i].val[0];	
-		if (strcmp(s,key)==0) {
-			return (strlen(i18n[i].val[langID])>0) ? i18n[i].val[langID] : s;
-		}
-	}
-	return s;
 }
 
 const char *formatDate(struct tm *timeptr, boolean_t addHour){
 	char * format;
-	if (!addHour || asprintf(&format,"%s %H:%M",dateFormat[langID])<0) {
-		format=(char *)dateFormat[langID];
+	if (!addHour || asprintf(&format,"%s %H:%M",dateFormat[langId])<0) {
+		format=(char *)dateFormat[langId];
 		addHour=0;
 	}
 	size_t l = strftime(cldate,sizeof cldate,(const char*)format,timeptr);

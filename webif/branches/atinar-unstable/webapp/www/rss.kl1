@@ -46,11 +46,8 @@ const char * const getPubDate(const struct tm *t){
 	close_svdrp();
 	response_set_content_type(response,"application/rss+xml");
 	char * httpBase;
-	if (httpPort==80) {
-		asprintf(&httpBase,"http://%s",myip);
-	} else {
-		asprintf(&httpBase,"http://%s:%d",myip,httpPort);
-	}
+	field_t *host=request_get_field(request,"Host");
+	asprintf(&httpBase,"http://%s",host->value);
 	io_printf(out,
 "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
 "<rss version=\"2.0\">\n"
@@ -60,7 +57,7 @@ const char * const getPubDate(const struct tm *t){
 "		<language>%s</language>\n"
 		,tr("recordings")
 		,tr("recordingList")
-		,alpha3[langID]
+		,alpha3[langId]
 	);
 	if (recs.length>0) {
 		io_printf(out,
@@ -70,28 +67,28 @@ const char * const getPubDate(const struct tm *t){
 	io_printf(out,
 "		<link>%s/</link>\n",httpBase
 	);
-
-	for (i=0;i<recs.length;i++) {
-		struct tm t=*localtime(&recs.entry[i].start);
+	recEntry_t *entry;
+	for (i=0,entry=recs.entry;i<recs.length;i++,entry++) {
+		struct tm t=*localtime(&entry->start);
 		const char * fd=formatDate(&t,0);
 		io_printf(out,
 "		<item>\n"
 "			<title>%s</title>\n"
 "			<description>[%s %s] %02d:%02d: %s</description>\n"
-			,recs.entry[i].title
-			,weekdays[langID][t.tm_wday],fd,t.tm_hour,t.tm_min,recs.entry[i].title
+			,entry->name
+			,weekdays[langId][t.tm_wday],fd,t.tm_hour,t.tm_min,entry->name
 		);
 		io_printf(out,
 "			<link>%s/playlistrec.kl1?id=%d</link>\n"
 			,httpBase
-			,recs.entry[i].ID
+			,entry->id
 		);
 		io_printf(out,
 "			<guid isPermaLink=\"false\">%d</guid>\n"
 "			<pubDate>%s</pubDate>\n"
 "		</item>\n"
-			,recs.entry[i].ID
-			,getPubDate(		&t)
+			,entry->id
+			,getPubDate(&t)
 		);
 	}
 	free(httpBase);

@@ -66,10 +66,10 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 	char *refresh;
 	if ( (nne->event[1].time>0) && (nne->event[0].time>0) && (nne->event[0].title) && (nne->event[1].title) ) {
 		time_t now=time(NULL);
-		waitSeconds=nne->event[1].time-now+60;
+		waitSeconds=nne->event[1].time-now;
 	}
-	if (waitSeconds<90){
-		waitSeconds=90;
+	if (waitSeconds<30){
+		waitSeconds=30;
 	}
 	asprintf(&refresh,"%ld;URL=/now-next.kl1?chan=%d",waitSeconds,channelNum);
 	response_set_field(response,"Refresh",refresh);

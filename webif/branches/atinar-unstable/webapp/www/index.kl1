@@ -39,14 +39,14 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 	dbg_index_kl1();
 	#endif
 	
-	const char * rq_server_ip = request_get_arg(request,"server_ip");
-	if (rq_server_ip!=NULL) { 
-		session_set(session,"server_ip",rq_server_ip);
+	const char * rqSvdrpServerIp = request_get_arg(request,"svdrpServerIp");
+	if (rqSvdrpServerIp!=NULL) { 
+		session_set(session,"svdrpServerIp",rqSvdrpServerIp);
 		//TODO validar
 	}
-	const char * rq_server_port = request_get_arg(request,"server_port");
-	if (rq_server_port!=NULL) { 
-		session_set(session,"server_port", rq_server_port); 
+	const char * rqSvdrpServerPort = request_get_arg(request,"svdrpServerPort");
+	if (rqSvdrpServerPort!=NULL) { 
+		session_set(session,"svdrpServerPort", rqSvdrpServerPort); 
 		//TODO validar
 	}
 
@@ -62,21 +62,21 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 "				<form action=\"index.kl1\" method=\"post\">\n"
 "					<p>"
 						"<span class=\"field\">"
-							"<label for=\"serverIp\" class=\"label\">%s</label>&nbsp;"
-							"<input id=\"serverIp\" name=\"server_ip\" value=\"%s\" size=\"15\" maxlength=\"15\" class=\"value\"/>"
+							"<label for=\"svdrpServerIp\" class=\"label\">%s</label>&nbsp;"
+							"<input id=\"svdrpServerIp\" name=\"svdrpServerIp\" value=\"%s\" size=\"15\" maxlength=\"15\" class=\"value\"/>"
 						"</span>"
 						"<span class=\"field\">"
-							"<label for=\"serverPort\" class=\"label\">%s</label>&nbsp;"
-							"<input id=\"serverPort\" name=\"server_port\" value=\"%d\" size=\"4\" maxlength=\"5\" class=\"value\"/>"
+							"<label for=\"svdrpServerPort\" class=\"label\">%s</label>&nbsp;"
+							"<input id=\"svdrpServerPort\" name=\"svdrpServerPort\" value=\"%d\" size=\"4\" maxlength=\"5\" class=\"value\"/>"
 						"</span>"
 						"<button id=\"changeServerConfirm\" type=\"submit\" name=\"a\" value=\"%d\" class=\"confirm\">%s</button>"
 					"</p>\n"
 "				</form>\n"
 		,tr("currentServer")
 		,tr("ipAddress")
-		,server_ip
+		,svdrpServerIp
 		,tr("ipPort")
-		,server_port
+		,svdrpServerPort
 		,PA_CONFIRM,tr("change")
 	);
 	channelEntry_t channel;
@@ -92,7 +92,7 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 			io_printf(out,
 "			</div>"
 "			<h2>"
-				"<a class=\"wi-icon wi-icon-tv\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
+				"<a class=\"ui-icon ui-icon-tv\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>"
 				"%s &raquo;%s&laquo;"
 			"</h2>\n"
 "			<div class=\"section\">\n"
@@ -146,7 +146,8 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 "							<td class=\"info\">\n"
 							,t->tm_hour,t->tm_min
 						);
-						printInfo(out,7,ee);
+						printInfo(out,
+"							",ee);
 						io_printf(out,
 "							</td>\n",(ee->title)?ee->title:"&nbsp;"
 						);

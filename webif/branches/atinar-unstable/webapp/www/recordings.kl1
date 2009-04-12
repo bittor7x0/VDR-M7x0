@@ -22,6 +22,7 @@
 #include <klone/utils.h>
 #include <time.h>
 
+#include "conf.h"
 #include "misc.h"
 #include "i18n.h"
 #include "recordings.h"
@@ -32,22 +33,23 @@
 dbg_recordings_kl1(void) { dbg("recordings.kl1"); }
 #endif
 
-void printPlay(io_t *out, recEntry_t * const rec, char encoded[]){
-		const char *Play=tr("play");
-		io_printf(out,
+void printPlay(io_t *out, recEntry_t * const rec, const char *hostAddr, char encoded[]){
+	const char *Play=tr("play");
+	io_printf(out,
 "							<div class=\"boxRight\">\n"
-"								<a class=\"ui-icon ui-icon-play\" href=\"playlistrec.kl1?"
-		);
-		if (rec->path!=NULL) {
-			u_urlncpy(encoded,rec->path,strlen(rec->path),URLCPY_ENCODE);
-			io_printf(out,"path=%s\"",encoded);
-		} else {
-			io_printf(out,"id=%d\"",rec->ID);
-		}
-		io_printf(out," title=\"%s\">%s</a>\n"
+"								<a class=\"ui-icon ui-icon-play\" href=\"http://%s/playlistrec.kl1?"
+		,hostAddr
+	);
+	if (rec->path!=NULL) {
+		u_urlncpy(encoded,rec->path,strlen(rec->path),URLCPY_ENCODE);
+		io_printf(out,"path=%s\"",encoded);
+	} else {
+		io_printf(out,"id=%d\"",rec->id);
+	}
+	io_printf(out," title=\"%s\">%s</a>\n"
 "							</div>\n"
-			,Play,Play
-		);
+		,Play,Play
+	);
 }
 
 %><%
@@ -59,20 +61,31 @@ void printPlay(io_t *out, recEntry_t * const rec, char encoded[]){
 	config(session, request);
 
 	vars_t *args = request_get_args(request);
-	
-	char encoded[4096];
-	recInfo_t info;
-	initRI(&info);
-	int recId=(vars_countn(args,"recId")>0) ? vars_get_value_i(args,"recId") : -1;
-	const char *recName=vars_get_value(args,"recName");
-	info.title=(vars_countn(args,"title")>0) ? strdup(vars_get_value(args,"title")) : NULL;
-	info.subtitle=(vars_countn(args,"subtitle")>0) ? strdup(vars_get_value(args,"subtitle")) : NULL;
-	info.desc=(vars_countn(args,"desc")>0) ? strdup(vars_get_value(args,"desc")) : NULL;
+	enum {ENCODEDSZ=4096};
+	char encoded[ENCODEDSZ];
+	recEntry_t rec;
+	initRE(&rec);
+	rec.id=(vars_countn(args,"id")>0) ? vars_get_value_i(args,"id") : -1;
+	rec.name=(char*)vars_get_value(args,"name");
+	rec.path=(char*)vars_get_value(args,"path");
 	sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
 	sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
 
 	currentPage=PN_RECORDINGS;
 	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
+	if (currentAction==PA_PLAY) {
+		response_set_content_type(response,"audio/x-mpegurl");
+		//response_set_content_type(response,"text/plain");
+		field_t *host=request_get_field(request,"Host");
+		if (rec.path!=NULL){
+			u_urlncpy(encoded,rec.path,strlen(rec.path),URLCPY_ENCODE);
+			io_printf(out,"http://%s/streamrec.kl1?path=%s",host->value,encoded);
+		} else {
+			//TODO comprobar >-1
+			io_printf(out,"http://%s/streamrec.kl1?id=%d",host->value,rec.id);
+		}
+		goto end;
+	}
 	initHtmlPage(response,out,tr("recordings"),
 "	<script type=\"text/javascript\">\n"
 "		$(function(){\n"
@@ -91,63 +104,67 @@ void printPlay(io_t *out, recEntry_t * const rec, char encoded[]){
 "			<h2>%s</h2>\n"
 			,tr("recordings")
 	);
+	const char *hostAddr=(isVdrLocal()) ? request_get_field(request,"Host")->value : svdrpServerIp;
 	if (currentAction==PA_DELETE) {
-		if ( (recId>0) && (recId<1000) 
-			/* TODO && (info.title) vacio en radio */
-		) {
-			dbg("Trying to delete recording with ID %d (%s)",recId,info.title);
-			char *message=NULL;
-			if (deleRec(recId,&info,&message)) {
+		if (webifConf.recDeletionDisabled) {
 				io_printf(out,
+"			<div class=\"alert\">%s</div>\n",tr("recDeletionDisabled"));
+		} else {
+			if (rec.id>0) {
+				dbg("Trying to delete recording with id %d (%s)",rec.id,rec.name);
+				char *message=NULL;
+				recInfo_t info;
+				initRI(&info);
+				info.title=(char *)vars_get_value(args,"title");
+				info.subtitle=(char *)vars_get_value(args,"subtitle");
+				info.desc=(char *)vars_get_value(args,"desc");
+				if (deleRec(&rec,&info,&message)) {
+					io_printf(out,
 "			<div class=\"message\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recDeleteOk"),message);
+				} else {
+					io_printf(out,
+"			<div class=\"alert\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recDeleteErr"),message);
+				}
+				free(message);
 			} else {
 				io_printf(out,
-"			<div class=\"alert\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recDeleteErr"),message);
-			}
-			free(message);
-		} else {
-			io_printf(out,
 "			<div class=\"alert\">%s</div>\n",tr("recDeleteErr"));
+			}
 		}
 		currentAction=PA_SUMMARY;
 	}
 	if (currentAction==PA_EDIT) {
 		int l;
-		freeRI(&info); //descartar posibles argumentos
-		if (recId>0 && getRecInfo(&info,recId)){
+		recInfo_t info;
+		initRI(&info);
+		if (getRecInfo(&rec,&info)){
 			io_printf(out,
 "			<form action=\"/recordings.kl1\" method=\"post\">\n");
 			io_printf(out,
-"				<input type=\"hidden\" name=\"recId\" value=\"%d\"/>\n"
+"				<input type=\"hidden\" name=\"id\" value=\"%d\"/>\n"
 "				<input type=\"hidden\" name=\"sort\" value=\"%d\"/>\n"
 "				<input type=\"hidden\" name=\"direction\" value=\"%d\"/>\n"
-				,recId
+				,rec.id
 				,sortBy
 				,sortDirection
 				);
 			io_printf(out,
-"				<table id=\"recEdit\" class=\"list1\" summary=\"\">\n"
+"				<table id=\"recEdit\" class=\"list2\" summary=\"\">\n"
 "					<caption>%s</caption>\n"
 					,tr("recEdit")
 			);
-			if (recName!=NULL){
-				l=strlen(recName);
-				u_htmlncpy(encoded,recName,l,HTMLCPY_ENCODE);
+			if (rec.name!=NULL){
 				io_printf(out,
 "					<tr>\n"
 "						<th>%s</th>\n"
 "						<td>\n"
 						,tr("name")
 				);
-				if (1){
-					recEntry_t rec;
-					initRE(&rec);
-					rec.ID=recId;
-					rec.title="";
-					printPlay(out,&rec,encoded);
-				}
+				printPlay(out,&rec,hostAddr,encoded);
+				l=strlen(rec.name);
+				u_htmlncpy(encoded,rec.name,l,HTMLCPY_ENCODE);
 				io_printf(out,
-"							<input type=\"text\" name=\"recName\" value=\"%s\" size=\"%d\"/>\n"
+"							<input type=\"text\" name=\"name\" value=\"%s\" size=\"%d\"/>\n"
 "							<input type=\"hidden\" name=\"oldName\" value=\"%s\"/>\n"
 "						</td>\n"
 "					</tr>\n"
@@ -206,14 +223,14 @@ void printPlay(io_t *out, recEntry_t * const rec, char encoded[]){
 "					<tr class=\"buttons\">"
 						"<td colspan=\"2\">"
 			);
-			//if (info.title!=NULL) { TODO vacio en grabaciones de radio
+			if (!webifConf.recDeletionDisabled) {
 				io_printf(out,
 							"<button id=\"delete\" name=\"a\" type=\"submit\" value=\"%d\" "
 								"class=\"delete\">%s</button>"
 					,PA_DELETE,tr("recDelete")
 				);
-			//}
-			if (recName!=NULL) {
+			}
+			if (rec.name!=NULL) {
 				io_printf(out,
 							"<button id=\"confirm\" name=\"a\" type=\"submit\" value=\"%d\" "
 								"class=\"confirm\">%s</button>"
@@ -226,6 +243,7 @@ void printPlay(io_t *out, recEntry_t * const rec, char encoded[]){
 "				</table>\n"
 "			</form>\n"
 			);
+			freeRI(&info);
 		} else {
 			io_printf(out,
 "			<div class=\"alert\">%s</div>\n"
@@ -235,10 +253,15 @@ void printPlay(io_t *out, recEntry_t * const rec, char encoded[]){
 		}
 	}
 	if (currentAction==PA_CONFIRM) {
+		recInfo_t info;
+		initRI(&info);
+		info.title=(char*)vars_get_value(args,"title");
+		info.subtitle=(char*)vars_get_value(args,"subtitle");
+		info.desc=(char*)vars_get_value(args,"desc");
 		const char *oldName=vars_get_value(args,"oldName");
-		if (recId>0 && oldName!=NULL && !sameString(oldName,recName)){
+		if (rec.id>0 && oldName!=NULL && !sameString(oldName,rec.name)){
 			char *message=NULL;
-			if (editRec(recId,&info,recName,&message)){
+			if (editRec(&rec,&info,&message)){
 				io_printf(out,
 "			<div class=\"message\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recEditOk"),message);
 			} else {
@@ -270,42 +293,68 @@ void printPlay(io_t *out, recEntry_t * const rec, char encoded[]){
 			,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("start")
 			,sortClass(SF_TITLE),SF_TITLE,newSortDirection(SF_TITLE),tr("title")
 		);
-
 		recList_t recs;
 		int i=0;
 		getRecList(&recs,sortBy,sortDirection);
 		const char *RecEdit=tr("recEdit");
-		for (i=0;i<recs.length;i++) {
-			struct tm t1=*localtime(&recs.entry[i].start);
+		const char *Play=tr("play");
+		recEntry_t *entry;
+		int l;
+		for (i=0,entry=recs.entry;i<recs.length;i++,entry++) {
+			struct tm t1=*localtime(&entry->start);
 			io_printf(out,
-"					<tr>\n"
+"					<tr class=\"rec\">\n"
 "						<td class=\"number\" >%d</td>\n"
 "						<td class=\"date\">%s</td>\n"
 "						<td class=\"hour\">%02d:%02d</td>\n"
-				,recs.entry[i].ID
+				,entry->id
 				,formatDate(&t1,0)
 				,t1.tm_hour,t1.tm_min
 			);
-			u_urlncpy(encoded,recs.entry[i].title,strlen(recs.entry[i].title),URLCPY_ENCODE);
 			io_printf(out,
 "						<td class=\"content\">\n"
-"							<div class=\"boxRight\">\n"
-"								<a class=\"wi-icon wi-icon-edit\" href=\"recordings.kl1"
-									"?sort=%d"
-									"&amp;direction=%d"
-									"&amp;a=%d"
-									"&amp;recId=%d"
-									"&amp;recName=%s\" title=\"%s\">%s</a>\n"
-"							</div>\n"
-								,sortBy,sortDirection,PA_EDIT,recs.entry[i].ID,encoded
-								,RecEdit,RecEdit
+"							<form action=\"/recordings.kl1\" method=\"get\">\n"
+"								<input type=\"hidden\" name=\"id\" value=\"%d\" />\n"
+"								<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n"
+"								<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n"
+								,entry->id
+								,sortBy
+								,sortDirection
 			);
-			printPlay(out,&recs.entry[i],encoded);
+			if (entry->path!=NULL) {
+				u_htmlncpy(encoded,entry->path,strlen(entry->path),HTMLCPY_ENCODE);
+				io_printf(out,
+"								<input type=\"hidden\" name=\"path\" value=\"%s\" />\n",encoded);
+			}
 			io_printf(out,
-"							<div class=\"title\">%s</div>\n"
+"								<div class=\"controls ui-widget ui-helper-clearfix\" >\n"
+			);
+			io_printf(out,
+"									<button class=\"control ui-state-default ui-corner-all\" name=\"a\" value=\"%d\">"
+										"<span class=\"ui-icon ui-icon-play\" title=\"%s\">%s</span>"
+									"</button>\n"
+									,PA_PLAY
+									,Play,Play
+			);
+			io_printf(out,
+"									<button class=\"control ui-state-default ui-corner-all\" name=\"a\" value=\"%d\">"
+										"<span class=\"ui-icon ui-icon-edit\" title=\"%s\">%s</span>"
+									"</button>\n"
+									,PA_EDIT
+									,RecEdit,RecEdit
+			);
+			io_printf(out,
+"								</div>\n"
+			);
+			l=strlen(entry->name);
+			u_htmlncpy(encoded,entry->name,l,HTMLCPY_ENCODE);
+			io_printf(out,
+"								<input type=\"text\" name=\"name\" class=\"name readOnly\" readonly=\"readonly\" value=\"%s\" "
+									"size=\"%d\"/>\n"
+"							</form>\n"
 "						</td>\n"
 "					</tr>\n"
-						,recs.entry[i].title
+								,encoded,l
 			);
 		}
 		freeRL(&recs);
@@ -318,6 +367,6 @@ void printPlay(io_t *out, recEntry_t * const rec, char encoded[]){
 "		</div>\n"
 	);
 	close_svdrp();
-	freeRI(&info);
 	finishHtmlPage(out);
+end:
 %>

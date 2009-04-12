@@ -23,27 +23,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/socket.h>
+//#include <arpa/inet.h>
+//#include <net/if.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
-#include <net/if.h>
-#include <sys/ioctl.h>
 #include <signal.h>
 #include <u/libu.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
 #include <sys/types.h>
 
+#include "conf.h"
 #include "svdrp_comm.h"
 
-#define SVDRP_BUFFER_SIZE 4096
+enum {SVDRP_BUFFER_SIZE=4096};
 
 int svdrp_socket=0;
+char svdrpServerIp[16];
+uint16_t svdrpServerPort;
 
 const char eod_pattern[]="^[0-9]{3} ";
-const char * default_server_ip="127.0.0.1";
-const uint16_t default_server_port=2001;
-char server_ip[16];
-uint16_t server_port=2001;
-
 regex_t regbuf;
 
 void signal_handler(int sig) {
@@ -55,23 +53,21 @@ void signal_handler(int sig) {
 }
 
 //Set server ip and port
-void set_server_address(session_t * session, char aserver_ip[16], uint16_t * aserver_port) {
-	const char * sess_server_ip=session_get(session,"server_ip");
-	const char * sess_server_port=session_get(session,"server_port");
-	strncpy(server_ip,(sess_server_ip==NULL)?default_server_ip:sess_server_ip,15);
-	if (sess_server_port==NULL) {
-		server_port=default_server_port;
+void setSvdrpServerAddress(session_t * session){
+	const char * sessSvdrpServerIp=session_get(session,"svdrpServerIp");
+	const char * sessSvdrpServerPort=session_get(session,"svdrpServerPort");
+	strncpy(svdrpServerIp,(sessSvdrpServerIp==NULL)?webifConf.svdrpIp:sessSvdrpServerIp,15);
+	if (sessSvdrpServerPort==NULL) {
+		svdrpServerPort=webifConf.svdrpPort;
 	}
 	else {
 		errno=0;
-		server_port=(int)strtol(sess_server_port,NULL,10);
+		svdrpServerPort=(int)strtol(sessSvdrpServerPort,NULL,10);
 		if (errno!=0) {
-			warn("Incorrect port %s set in session",sess_server_port);
-			server_port=default_server_port;
+			warn("Incorrect port %s set in session",sessSvdrpServerPort);
+			svdrpServerPort=webifConf.svdrpPort;
 		}
 	}
-	if( aserver_ip != NULL) strcpy(aserver_ip,server_ip);
-	if( aserver_port != NULL) (*aserver_port)=server_port;
 }
 
 
@@ -83,11 +79,11 @@ int open_svdrp() {
 	signal(SIGPIPE,signal_handler);
 
 	if (svdrp_socket<1) {
-		struct sockaddr_in svdrp_addr;
-		dbg("Try to open SVDRP connection to %s:%d from pid [%d]",server_ip,server_port,pid);
-		svdrp_addr.sin_family = AF_INET;
-		svdrp_addr.sin_port = htons(server_port);
-		inet_aton(server_ip, &svdrp_addr.sin_addr);
+		struct sockaddr_in svdrpServerAddr;
+		dbg("Try to open SVDRP connection to %s:%d from pid [%d]",svdrpServerIp,svdrpServerPort,pid);
+		svdrpServerAddr.sin_family = AF_INET;
+		svdrpServerAddr.sin_port = htons(svdrpServerPort);
+		inet_aton(svdrpServerIp, &svdrpServerAddr.sin_addr);
 
 		// create tcp socket
 		errno=0;
@@ -99,7 +95,7 @@ int open_svdrp() {
 
 		// Connect to VDR
 		errno=0;
-		if (connect(svdrp_socket, (struct sockaddr*)&svdrp_addr, sizeof(svdrp_addr)) < 0) {
+		if (connect(svdrp_socket, (struct sockaddr*)&svdrpServerAddr, sizeof(svdrpServerAddr)) < 0) {
 			perror("open_svdrp()");
 			close(svdrp_socket);
 			svdrp_socket=0;
@@ -111,11 +107,11 @@ int open_svdrp() {
 			warn("Error compiling the pattern!");
 			exit(1);
 		}
-		dbg("SVDRP connection to %s  established.",server_ip);
+		dbg("SVDRP connection to %s  established.",svdrpServerIp);
 		data=read_svdrp();
 		free(data);
 	} else {
-		dbg("SVDRP connection to %s is already up.",server_ip);
+		dbg("SVDRP connection to %s is already up.",svdrpServerIp);
 	}
 	return 0;
 }
@@ -201,35 +197,7 @@ int write_svdrp(char *data) {
 	}
 }
 
-void whatsmyip(char myip[16]) {
-	if (isVdrLocal()) {
-		int fd;
-		int ret;
-		struct ifreq ifr;
-
-		fd = socket(PF_INET, SOCK_DGRAM, 0);
-		if (fd == -1) {
-			perror("socket");
-			return;
-		}
-
-		strcpy(ifr.ifr_name, "eth0");
-		ifr.ifr_addr.sa_family = AF_INET;
-		ret = ioctl(fd, SIOCGIFADDR, &ifr);
-		close(fd);
-		if (ret < 0) {
-			perror("ioctl");
-			return;
-		}
-		strcpy(myip,inet_ntoa(((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr));
-	}
-	else {
-		dbg("VDR server not local");
-		strcpy(myip,server_ip);
-	}
-}
-
 int isVdrLocal(){
-	return (strcmp(server_ip,default_server_ip)==0);
+	return (strncmp(svdrpServerIp,"127.",4)==0);
 }
 

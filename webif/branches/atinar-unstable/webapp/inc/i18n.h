@@ -29,7 +29,7 @@ typedef struct i18n_s {
 	i18nVal_t val;
 } i18n_t;
 
-extern int langID;
+extern int langId;
 extern char acceptedLang[3];
 
 extern const i18nVal_t locale;

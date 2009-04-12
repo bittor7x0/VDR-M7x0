@@ -24,42 +24,17 @@
 #include "recordings.h"
 #include "timers.h"
 
-//TODO  mover a conf
-extern int marginStart;
-extern int marginStop;
-
 //svdrp_parse stellt Funktionen bereit, um die Zeilen einer Antwort zu parsen
 
 void parse_215E(char * line, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version);
 
-void parseRec(char * line, recEntry_t * const recording);
+void parseRec(char * line, boolean_t incpath, recEntry_t * const recording);
 
 void parseTimer(const char * line, timerEntry_t * const timer);
 
 void parseChannel(char * line, channelEntry_t * channel);
 
-boolean_t makeTimerStr(char **timerStr, int active, int channelNum, time_t start_time, time_t end_time
+boolean_t makeTimerStr(char **timerStr, uint flags, int channelNum, time_t start_time, time_t end_time
 	, int priority, int lifetime, const char *title);
-
-//TODO mover a conf
-//Liest die VDR-FW Konfigurationsdatei (falls status auf einer M740AV läuft
-void get_config_info();
-
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef FOR_BUSYBOX
-
- #include "scan_config.h"
-
-  //***** WICHTIG: Die Konstanten sind Indizes der folgenden Tabelle!
-
- enum {
-	CONFIG_RELEVANT_VDR_CONFIG,
-	CONFIG_TIMEZONE,
- };
-
- extern t_scan_config config_param[];
-
-#endif
 
 #endif

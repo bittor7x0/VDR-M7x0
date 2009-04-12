@@ -9,7 +9,7 @@
 * Originally written for the open7x0.org VDR-FW project:
 * www.open7x0.org
 * 
-* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* Rewritten for http://vdr-m7x0.foroactivo.com.es by:
 * atinar <atinar1@hotmail.com>
 * 
 * You will need the KLONE web application development framework
@@ -50,7 +50,7 @@ void freeNNL(nowNextList_t * const list);
 void getNowNextList(nowNextList_t * const list, channelList_t const * const channels);
 void freeNNL(nowNextList_t * const list);
 void printEventDesc(io_t *out, const char * const tabs, char * const desc);
-void printInfo(io_t *out, const int ntabs, eventEntry_t * const ee);
-void printInfobox(io_t *out, const int ntabs, eventEntry_t * const ee);
+void printInfo(io_t *out, const char * const tabs, eventEntry_t * const ee);
+void printInfobox(io_t *out, const char * const tabs, eventEntry_t * const ee);
 
 #endif

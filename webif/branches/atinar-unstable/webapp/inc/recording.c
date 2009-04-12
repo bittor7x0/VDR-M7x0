@@ -52,7 +52,7 @@ void freeFL(fragmentList_t *const list){
 	initFL(list);
 }
 
-boolean_t seekFragment(fragmentList_t *list, uint64_t pos){
+boolean_t seekFragment(fragmentList_t * const list, uint64_t pos){
 	fragmentEntry_t * f;
 	int i;
 	list->fragNum=-1;
@@ -67,57 +67,6 @@ boolean_t seekFragment(fragmentList_t *list, uint64_t pos){
 	return boolean(list->fragNum>-1);
 }
 
-void getFragmentsFromSVDRP(fragmentList_t * const list, int recId){
-	char *cmd=NULL;
-	if (asprintf(&cmd, "PLST %d\r", recId)==-1){
-		error("getFragmentsFromSVDRP:Out of memory");
-		exit(1);
-	}
-	int error=(write_svdrp(cmd)<=0);
-	free(cmd);
-	if (error){
-		return;
-	}
-	char *data=read_svdrp();
-	close_svdrp();
-	if (data!=NULL){
-		int l;
-		const char *p=data;
-		fragmentEntry_t * tmp,*f;
-		while(*p) {
-			p+=strspn(p,"\r\n ");
-			errno=0;
-			int code=(int)strtol(p,&p,10);
-			if (errno) {
-				warn("Bad format in data");
-				break;
-			}
-			p+=strspn(p,"- ");
-			l=strcspn(p,"\r\n");
-			if (code==215) {
-				tmp=(fragmentEntry_t*)realloc(list->entry,(list->length+1)*sizeof(fragmentEntry_t));
-				if( tmp==NULL) {
-					break;
-				}
-				list->entry=tmp;
-				f=&list->entry[list->length];
-				initFE(f);
-				f->path=strndup(p,l);
-				if (f->path==NULL){
-					break;
-				}
-				list->length++;
-			} else {
-				warn("Bad format in data: %s", data);
-				break;
-			}
-			p+=l;
-		}
-		free(data);
-	}
-}
-
-
 int isVideoFile(const struct dirent * ent){
 	char *c;
 	char *c0=(char *)ent->d_name;
@@ -125,57 +74,44 @@ int isVideoFile(const struct dirent * ent){
 	return (strcmp(c,".vdr")==0);
 }
 
-void getFragmentsFromDir(fragmentList_t * const list, const char *path){
-	struct stat st;
-	if ( (stat(path, &st)==0) && S_ISDIR(st.st_mode)) {
-		struct dirent **namelist;
-		list->length = scandir(path, &namelist, isVideoFile, alphasort);
-		if (list->length<0) list->length=0;
-		if (list->length>0) {
-			list->entry=(fragmentEntry_t*)malloc((list->length)*sizeof(fragmentEntry_t));
-			if (list->entry==NULL){
-				error("getFragmentsFromDir:Out of memory");
-				exit(1);
-			}
-			fragmentEntry_t *f;
-			int i;
-			for (i=0;i<list->length;i++) {
-				f=&list->entry[i];
-				initFE(f);
-				if (asprintf(&(f->path),"%s/%s",path,namelist[i]->d_name)==-1)  {
-					error("getFragmentsFromDir:Out of memory");
-					exit(1);
-				}				
-			}
-			for (i=0;i<list->length;i++) free(namelist[i]);
-			free(namelist);
-		}
-	}
-}
-
-boolean_t getFragmentList(fragmentList_t * const list, const char *recPath, int recId){
+boolean_t getFragmentList(fragmentList_t * const list, const char *recPath){
 	initFL(list);
-	if (recPath!=NULL) {
-		getFragmentsFromDir(list,recPath);
-	} else if (recId>0){
-		getFragmentsFromSVDRP(list,recId);
-	} else {
-		warn("RecPath or recId should be specified");
+	if (recPath==NULL) {
+		warn("RecPath should be specified");
 		return BT_FALSE;
 	}
 	struct stat st;
 	fragmentEntry_t *f;
 	int i;
-	for (i=0;i<list->length;i++) {
-		f=&list->entry[i];
-		if (f->path!=NULL && stat(f->path,&st)==0) {
-			f->size=st.st_size;
-			f->start=list->totalSize;
-			f->end=f->start+f->size-1;
-			list->totalSize=f->end+1;
-		} else {
-			//TODO warn()
-			freeFE(f);
+	if ( (stat(recPath, &st)==0) && S_ISDIR(st.st_mode)) {
+		struct dirent **namelist;
+		list->length = scandir(recPath, &namelist, isVideoFile, alphasort);
+		if (list->length<0) list->length=0;
+		if (list->length>0) {
+			list->entry=(fragmentEntry_t*)malloc((list->length)*sizeof(fragmentEntry_t));
+			if (list->entry==NULL){
+				error("getFragmentList:Out of memory");
+				exit(1);
+			}
+			for (i=0;i<list->length;i++) {
+				f=&list->entry[i];
+				initFE(f);
+				if (asprintf(&(f->path),"%s/%s",recPath,namelist[i]->d_name)==-1)  {
+					error("getFragmentsFromDir:Out of memory");
+					exit(1);
+				}				
+				if (stat(f->path,&st)==0) {
+					f->size=st.st_size;
+					f->start=list->totalSize;
+					f->end=f->start+f->size-1;
+					list->totalSize=f->end+1;
+				} else {
+					//TODO warn()
+					freeFE(f);
+				}
+			}
+			for (i=0;i<list->length;i++) free(namelist[i]);
+			free(namelist);
 		}
 	}
 	info("Number of fragments: %d. Total size %lld bytes",list->length,list->totalSize);

@@ -48,7 +48,6 @@ int compareTE(const void * a, const void * b) {
 			return compareTE_sortDirection * (ta->channel && tb->channel ) ? strcmp(ta->channel->channelName,tb->channel->channelName) : 0;
 		case SF_PRIORITY: return compareTE_sortDirection * ( ta->priority - tb->priority );	
 		case SF_LIFETIME: return compareTE_sortDirection * ( ta->lifetime - tb->lifetime );	
-		case SF_ACTIVE:   return compareTE_sortDirection * ( ta->active - tb->active );	
 		case SF_MUX:
 			return compareTE_sortDirection * (ta->channel && tb->channel) ? strcmp(ta->channel->multiplexName,tb->channel->multiplexName) : 0;
 		default:          return 0;
@@ -58,7 +57,7 @@ int compareTE(const void * a, const void * b) {
 // Assign default timer values
 void initTE(timerEntry_t * const entry) {
 	if (entry==NULL) return;
-	entry->active=1;
+	entry->flags=TF_ACTIVE;
 	entry->lifetime=99;
 	entry->priority=50;
 	entry->title=NULL;
@@ -137,7 +136,6 @@ void sortTimerList(timerList_t * const timers, sortField_t sortBy, sortDirection
 		qsort(timers->entry,timers->length,sizeof(timerEntry_t),compareTE);
 	} 
 }
-
 
 boolean_t addTimer(const char * newTimerStr, char ** message) {
 	boolean_t result= BT_FALSE;

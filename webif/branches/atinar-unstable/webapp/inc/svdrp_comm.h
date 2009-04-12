@@ -24,9 +24,11 @@
 #include <klone/session.h>
 
 extern int svdrp_socket;
+extern char svdrpServerIp[16];
+extern uint16_t svdrpServerPort;
 
 //Set server ip and port and return values if provided pointers
-void set_server_address(session_t * session, char aserver_ip[16], uint16_t * aserver_port);
+void setSvdrpServerAddress(session_t * session);
 
 //Open the SVDRP connection
 int open_svdrp();
@@ -39,9 +41,6 @@ char * read_svdrp();
 
 //Write data to the SVDRP connection
 int write_svdrp(char *data);
-
-//Return public server ip
-void whatsmyip(char myip[16]);
 
 //TODO Are vdr and webifd running in the same machine?
 int isVdrLocal();

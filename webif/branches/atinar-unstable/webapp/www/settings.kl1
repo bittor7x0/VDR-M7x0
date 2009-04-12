@@ -26,90 +26,182 @@
 #include "misc.h"
 #include "conf.h"
 
+#ifdef DEBUG
+dbg_settings_kl1(void) { dbg("settings.kl1"); }
+#endif
+
 %><%
+
+	#ifdef DEBUG
+	dbg_settings_kl1();
+	#endif
+	
 	vars_t *args = request_get_args(request);
 
-	int confFileID=-1;
-	const char * showWhat=NULL;
-	if (vars_countn(args,"show")>0) {
-		showWhat=vars_get_value(args,"show");
-		confFileID=readConf(showWhat);
-		if ( (confFileID<0) || (confFileID>=numOfConfFiles) ) { confFileID=-1; }
-	} else { 
-		confFileID=readConf("webif");
-		showWhat=strdup("webif");
-	}
-
+	cfgFileId_t cfgFileId=(vars_countn(args,"cfgFileId")>0)?vars_get_value_i(args,"cfgFileId"):CF_WEBIFCONF;
 	config(session, request);
 	currentPage=PN_SETTINGS;
+	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_NOACTION;
 	initHtmlPage(response,out,tr("setup"),NULL);
 	printMenu(out);
+	cfgParamList_t params;
+	cfgParam_t *param;
+	const cfgParamConfig_t *paramConfig;
+	initCfgParamList(&params);
+	boolean_t allParamsAreValid=BT_TRUE;
+	boolean_t showForm=boolean(!webifConf.configChangeDisabled);
 
 	io_printf(out,
 "		<div id=\"main\" class=\"content\">\n"
 	);
 
-	if (confFileID==-1) {
-		io_printf(out,
-"		<h2>%s</h2>\n"
-"		<p>%s</p>\n"
-			,tr("Konfigurationsdatei nicht vorhanden")
-			,tr("Die Konfigurationsdatei ist nicht vorhanden oder kann nicht gelesen werden.")
-		);
-	}
-	if ( (confFileID>=0) && (confFileID<numOfConfFiles) ) {
-		if (confFileProperties[confFileID].readOk==0) {
-			io_printf(out,
-"		<h2>%s</h2>\n"
-"		<p>%s <a href=\"\">%s</a> %s</p>\n"
-				,tr("Konfigurationsdatei nicht vorhanden")
-				,tr("Diese Konfigurationsdatei ist noch nicht vorhanden. Klicken sie"),tr("hier"),tr("um sie zu erstellen.")
-			);
-		} else {
-			io_printf(out,
-"		<form action=\"settings.kl1\" method=\"post\">\n"
-"			<input type=\"hidden\" name=\"update\" value=\"%s\" />\n"
-				,confFileProperties[confFileID].name
-			);
-			confParam_t * confData=confFileProperties[confFileID].confData;
-			int i;
-			for (i=0;i<confFileProperties[confFileID].numOfParams;i++) {
+	if (currentAction==PA_SAVE_CONFIG) {
+		if (webifConf.configChangeDisabled) {
 				io_printf(out,
-"			<h2>%s</h2>\n",tr(confData[i].i18nKey));
-				if (strlen(confData[i].options)>0) {
-					io_printf(out,
-"			<select name=\"%s\" size=\"1\" style=\"width:300px\">\n",confData[i].name);
-					int j=0;
-					char * s=strdup(confData[i].options);
-					char * option=NULL;
-					for(option=strtok(s,"|");option!=0;option=strtok(0,"|")) {
-						if (confData[i].type==1) {
-							io_printf(out,
-"				<option value=\"%d\" %s>%s</option>\n",j,selected[sameIntEx(confData[i].value,j)],option);
-						} else {
-							io_printf(out,
-"				<option value=\"%s\" %s>%s</option>\n",option,selected[sameString(option,confData[i].value)],option);	
-						}
-						j++;
+"			<div class=\"alert\">%s</div>\n",tr("cfgFileChangeDisabledErr"));
+		} else {
+			char argName[15];
+			for(params.length=0;;params.length++){
+				sprintf(argName,"paramName_%d",params.length);
+				if (!vars_countn(args,argName)) break;
+			}
+			if (params.length==0){
+				io_printf(out,
+"			<div class=\"alert\">%s</div>",tr("cfgErrParamNameValueMismatch")); 
+			} else {
+				params.entry=malloc(params.length*sizeof(cfgParam_t));
+				int i;
+				for (i=0,param=params.entry;i<params.length;i++,param++){
+					initCfgParam(param);
+					sprintf(argName,"paramName_%d",i);
+					param->name=strdup(vars_get_value(args,argName));
+					sprintf(argName,"paramValue_%d",i);
+					const char *argValue=vars_get_value(args,argName);
+					param->value=(argValue)?strdup(argValue):NULL;
+					paramConfig=getCfgParamConfig(cfgFileId,param);
+					if (paramConfig && paramConfig->validate!=NULL && !paramConfig->validate(paramConfig,param)){ 	
+						allParamsAreValid=BT_FALSE;
 					}
-					free(s);
-					io_printf(out,
-"			</select>\n");
-				} else {
-					io_printf(out,
-"			<input type=\"text\" name=\"%s\" value=\"%s\" size=\"40\" />\n",confData[i].name,confData[i].value);
 				}
 			}
+			if (allParamsAreValid) {
+				if (writeConf(cfgFileId,&params)){
+					io_printf(out,
+"			<div class=\"message\">");
+					io_printf(out,tr("cfgFileSaveOkFmt"),cfgFile[cfgFileId].fileName); 
+				} else {
+					io_printf(out,
+"			<div class=\"alert\">");
+					io_printf(out,tr("cfgFileSaveErrFmt"),cfgFile[cfgFileId].fileName); 
+				}
+				io_printf(out,"%s",
+			"</div>\n");
+				showForm=BT_TRUE;
+			}
+		}
+	} else {
+		boolean_t isNew;
+		if (!readConf(cfgFileId,&params,&isNew)) {
+			showForm=BT_FALSE;
 			io_printf(out,
-"			<p>"
-				"<button id=\"confirm\" name=\"a\" type=\"submit\" value=\"%d\" class=\"confirm\">%s</button>"
-			"</p>\n"
-"		</form>"
-				,PA_CONFIRM,tr("accept")
+"			<div class=\"alert\">"
 			);
+			io_printf(out,
+				tr("cfgFileDoesNotExistFmt"),cfgFileId,(cfgFileId>=0&&cfgFileId<cfgFileLength)?cfgFile[cfgFileId].fileName:"");
+			io_printf(out,
+			"</div>");
+		} else {
+			if (isNew){
+				io_printf(out,
+	"			<div class=\"message\">%s</div>", tr("cfgFileIsNew")
+				);
+			}
 		}
 	}
+	if (showForm) {
+		io_printf(out,
+"			<form action=\"settings.kl1\" method=\"post\">\n"
+"			<input type=\"hidden\" name=\"cfgFileId\" value=\"%d\" />\n"
+			,cfgFileId
+		);
+		io_printf(out,
+"				<table id=\"cfgFile\" class=\"list2\" summary=\"%s\">\n"
+"					<caption>%s</caption>\n"
+					,""
+					,tr(cfgFile[cfgFileId].i18nKey)
+		);
+		int i;
+		enum { ENCODEDSZ=1024, I18NKEYSZ=128 };
+		char encoded[ENCODEDSZ];
+		char i18nKey[I18NKEYSZ];
+		const char *paramI18n;
+		for (i=0;i<params.length;i++) {
+			const char * paramValue;
+			param=params.entry+i;
+			paramConfig=getCfgParamConfig(cfgFileId,param);
+			sprintf(i18nKey,"%s.%s",cfgFile[cfgFileId].i18nKey,param->name);
+			paramI18n=tr(i18nKey);
+			if (paramI18n==i18nKey) paramI18n=param->name;
+			io_printf(out,
+"					<tr>\n"
+"						<th>%s <input type=\"hidden\" name=\"paramName_%d\" value=\"%s\" /></th>\n"
+"						<td>\n"
+				,paramI18n,i,param->name
+			);
+			if (param->isValid){
+				paramValue=param->value;
+			} else {
+				io_printf(out,
+"							<p class=\"alert\">");
+				io_printf(out,tr("cfgErrInvalidParamValueFmt"),param->value);
+				io_printf(out,"</p>\n");
+				if (paramConfig && paramConfig->defaultValue){
+					paramValue=paramConfig->defaultValue;
+				}
+			};
+			if (param->comment) {
+				u_htmlncpy(encoded,param->comment,strlen(param->comment),HTMLCPY_ENCODE);
+				io_printf(out,
+"							<div class=\"boxRight\">\n"
+"								<div class=\"infobox infoboxCssHover infoLeft\"><span class=\"ui-icon ui-icon-info\"></span>\n"
+"									<div class=\"infoWrapper infoCssHover\">"
+										"<div class=\"info\">%s</div>"
+									"</div>\n"
+"								</div>\n"
+"							</div>\n"
+					,encoded
+				);
+			}
+			if (paramConfig && paramConfig->printInput!=NULL && paramConfig->printInput(out,
+"							",paramConfig,i,paramValue,encoded)){
+				;
+			} else {
+				char *valueNZ=(paramValue)?param->value:"";
+				u_htmlncpy(encoded,valueNZ,strlen(valueNZ),HTMLCPY_ENCODE);
+				io_printf(out,
+"							<input type=\"text\" name=\"paramValue_%d\" value=\"%s\" size=\"%d\" />\n"
+					,i,encoded,(paramValue!=NULL)?strlen(paramValue)+5:40
+				);
+			}
+			io_printf(out,
+"						</td>\n"
+"					</tr>\n"
+			);
+		}
+		io_printf(out,
+"					<tr class=\"buttons\">"
+						"<td colspan=\"2\">"
+							"<button id=\"confirm\" name=\"a\" type=\"submit\" value=\"%d\" "
+								"class=\"confirm\">%s</button>"
+						"</td>"
+					"</tr>\n"
+"				</table>\n"
+"			</form>\n"
+			,PA_SAVE_CONFIG,tr("saveConfig")
+		);
+	}
 	io_printf(out,
-"	</div>\n");
+"		</div>\n");
+	freeCfgParamList(&params);
 	finishHtmlPage(out);
 %>

@@ -24,7 +24,7 @@
 #include <u/libu.h>
 
 #include "i18n.h"
-#include "misc.h"
+#include "conf.h"
 #include "timers.h"
 #include "channels.h"
 #include "svdrp_comm.h"
@@ -36,7 +36,10 @@ char * parseTimerForm(vars_t *args){
 	timerEntry_t timer;
 	boolean_t result=BT_FALSE;		
 	initTE(&timer);
-	timer.active=(vars_countn(args,"active")>0) ? vars_get_value_i(args,"active") : 0;
+	timer.flags=0;
+	if (vars_countn(args,"active")>0){
+		timer.flags|=TF_ACTIVE;
+	}
 	timer.channelNum=(vars_countn(args,"channelNum")>0) ? vars_get_value_i(args,"channelNum") : 0;
 	timer.type=(vars_countn(args,"type")>0) ? vars_get_value_i(args,"type") : TT_ONE_TIME;
 	char * date=NULL;
@@ -49,7 +52,7 @@ char * parseTimerForm(vars_t *args){
 			if (wday>6||wday<0){
 				//TODO warn
 			} else {
-				timer.reg_timer[(wday+6)%7]=weekdays[langID][wday][0]; 
+				timer.reg_timer[(wday+6)%7]=weekdays[langId][wday][0]; 
 			}
 		}
 	}
@@ -77,20 +80,19 @@ char * parseTimerForm(vars_t *args){
 			date=malloc(12);    
 			strftime(date,11,"%Y-%m-%d",today);
 		}
-		
+		if ( (endH<startH) || (endH==startH)&&(endM<startM)) {
+			endH+=24; //mktime will normalize this
+		}
 		if (makeTime(&timer.start,date,startH,startM) && makeTime(&timer.stop,date,endH,endM)){
 			if (addMargin){
-				timer.start-=marginStart;
-				timer.stop+=marginStop;
-			}
-			if (timer.stop<timer.start) {
-				timer.stop+=24*60*60; 
+				timer.start-=vdrConf.marginStart;
+				timer.stop+=vdrConf.marginStop;
 			}
 			struct tm t1=*localtime(&timer.start);
 			struct tm t2=*localtime(&timer.stop);
 			result = (timer.type==TT_REGULAR) 
 				? (asprintf(&timerStr,"%d:%d:%s:%02d%02d:%02d%02d:%d:%d:%s:"
-					,timer.active
+					,timer.flags
 					,timer.channelNum
 					,timer.reg_timer
 					,t1.tm_hour,t1.tm_min
@@ -99,7 +101,7 @@ char * parseTimerForm(vars_t *args){
 					,timer.lifetime
 					,timer.title		)<1) ? BT_FALSE : BT_TRUE
 				: (asprintf(&timerStr,"%d:%d:%d-%02d-%02d:%02d%02d:%02d%02d:%d:%d:%s:"
-					,timer.active
+					,timer.flags
 					,timer.channelNum
 					,1900+t1.tm_year,t1.tm_mon+1,t1.tm_mday
 					,t1.tm_hour,t1.tm_min
@@ -136,7 +138,6 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 	sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
 	currentPage=PN_TIMERS;
 	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
-	warn("currentAction:%d",currentAction);
 	initHtmlPage(response,out,tr("timers"),
 "	<script type=\"text/javascript\">\n"
 "		$(function(){\n"
@@ -229,7 +230,7 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 		}
 		const char *TimerEdit=tr((timerID>0)?"timerEdit":"timerAdd");
 		io_printf(out,
-"			<table id=\"timerEdit\" class=\"list1\" summary=\"%s\">\n"
+"			<table id=\"timerEdit\" class=\"list2\" summary=\"%s\">\n"
 "				<caption>%s</caption>\n"
 "				<tr>\n"
 "					<th>%s</th>\n"
@@ -238,7 +239,7 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 					,TimerEdit
 					,TimerEdit
 					,tr("active")
-					,checked[boolean(timer.active)]
+					,checked[TIMER_ACTIVE(timer)]
 		);
 		io_printf(out,
 "				<tr>\n"
@@ -281,10 +282,10 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 			}
 			io_printf(out,
 "							<option value=\"%s\" %s>%s, %s</option>\n"
-				,cdate,selected[isThatDay],weekdays[langID][sdate.tm_wday],formatDate(&sdate,BT_FALSE));
+				,cdate,selected[isThatDay],weekdays[langId][sdate.tm_wday],formatDate(&sdate,BT_FALSE));
 			if (isThatDay && (timer.type==TT_ONE_TIME)) { 
 				//marcar por si se cambia a regular
-				timer.reg_timer[(sdate.tm_wday+6)%7]=weekdays[langID][sdate.tm_wday][0]; 
+				timer.reg_timer[(sdate.tm_wday+6)%7]=weekdays[langId][sdate.tm_wday][0]; 
 			}
 			isThatDay=BT_FALSE;
 			tdate+=24*60*60;
@@ -300,12 +301,12 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 			,checked[boolean(timer.type==TT_REGULAR)]
 			,tr("regularRecording")
 		); 
-		for(i=startOfWeek[langID];i<startOfWeek[langID]+7;i++) {
+		for(i=startOfWeek[langId];i<startOfWeek[langId]+7;i++) {
 			io_printf(out,
 						"<input type=\"checkbox\" name=\"wday\" value=\"%d\"%s/>%s  "
 				,(i%7)
 				,checked[boolean(timer.reg_timer[(i+6)%7]!='-')]
-				,weekdays[langID][i%7]
+				,weekdays[langId][i%7]
 			);
 		}
 
@@ -423,7 +424,8 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 			getTimerList(&timers,&channels,sortBy,sortDirection);
 			const char *EditTimer=tr("timerEdit");
 			const char *Schedule=tr("schedule");
-			channelEntry_t noChannel,*channel;
+			channelEntry_t noChannel;
+			const channelEntry_t *channel;
 			noChannel.channelNum=1;
 			noChannel.channelName="";
 			noChannel.multiplexName="";
@@ -433,8 +435,8 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 				channel=(timers.entry[i].channel)?timers.entry[i].channel:&noChannel;
 
 				io_printf(out,
-"					<tr>\n"
-"						<td class=\"number\">%d</td>\n",timers.entry[i].ID
+"					<tr%s>\n"
+"						<td class=\"number\">%d</td>\n",classActive[TIMER_ACTIVE(timers.entry[i])],timers.entry[i].ID
 				);
 				if (timers.entry[i].type==TT_REGULAR) {
 					io_printf(out,
@@ -458,7 +460,7 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 				u_urlncpy(urlEnc,timers.entry[i].timerStr,strlen(timers.entry[i].timerStr),URLCPY_ENCODE);
 				io_printf(out,
 "						<td class=\"ctrls\">"
-							"<a class=\"wi-icon wi-icon-edit\" href=\"timers.kl1?a=%d&amp;timer=%s&amp;timerID=%d\" title=\"%s\">%s</a>"
+							"<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&amp;timer=%s&amp;timerID=%d\" title=\"%s\">%s</a>"
 						"</td>\n"
 "					</tr>\n"
 					,PA_EDIT,urlEnc,timers.entry[i].ID,EditTimer,EditTimer

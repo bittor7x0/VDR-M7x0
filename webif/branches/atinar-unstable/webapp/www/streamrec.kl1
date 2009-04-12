@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 
 #include "recording.h"
+#include "recordings.h"
 
 #ifdef DEBUG
 void dbg_streamrec_kl1(void) { 
@@ -40,31 +41,20 @@ void sig_handler(int sig){
 }
 
 %><%
+
 #ifdef DEBUG
 	dbg_streamrec_kl1();
 #endif
-	set_server_address(session,NULL,NULL);
-
+	setSvdrpServerAddress(session);
 	vars_t *args = request_get_args(request);
-	int id=-1; 
-	const char *path=NULL;
-	if (vars_countn(args,"id")>0) {
-		id=vars_get_value_i(args,"id");
-	}
-	if (id<0) {
-		if (vars_countn(args,"path")>0) {
-			path=vars_get_value(args,"path");
-			dbg("Recording %s requested",path);
-		}
-	} else {
-		dbg("Recording %d requested",id);
-	}
-	if (id<0 && path==NULL) {
+	char *path=(vars_countn(args,"path")>0) ? strdup(vars_get_value(args,"path")): NULL;
+	if (path==NULL){
 		warn("Invalid parameters");
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
 		return;
 	}
+	dbg("Recording %s requested",path);
 	struct sigaction sa;
 	struct sigaction oldsa;
 	uint64_t range_start=0;
@@ -77,7 +67,7 @@ void sig_handler(int sig){
 	sigaction(SIGPIPE,&sa,&oldsa);
 
 	fragmentList_t list;
-	if (!getFragmentList(&list,path,id)) {
+	if (!getFragmentList(&list,path)) {
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
 		goto exit;
@@ -145,17 +135,13 @@ void sig_handler(int sig){
 	
 	if (request_get_method(request)==HM_GET){
 		cancel=BT_FALSE;
-//#define USE_IO_PIPE
-#ifndef USE_IO_PIPE
 		int len,br,bw;
 		enum { BUFSZ = 4096 };
 		char buffer[BUFSZ];
-#endif
 		while (list.fragNum<list.length && remaining>0 && !cancel){
 			fragmentEntry_t *f=&list.entry[list.fragNum];
 			if (f->path!=NULL && f->size>0){
-				warn("Fragment[%d] %lld %lld",list.fragNum,f->size,list.fragPos);
-#ifndef USE_IO_PIPE
+				dbg("Fragment[%d] %lld %lld",list.fragNum,f->size,list.fragPos);
 				FILE *fi = fopen(f->path,"rb");
 				if (fi) {
 					errno=0;
@@ -182,42 +168,13 @@ void sig_handler(int sig){
 					}
 					fclose(fi);
 				}
-#else
-				int fd=open(f->path,O_RDONLY);
-				if (fd>-1){
-					io_t *in;
-					int result=0;
-					if (io_fd_create(fd,IO_FD_CLOSE,&in)==0){
-						if (list.fragPos>0){
-							result=io_seek(in,list.fragPos);
-						}
-						if (result>-1){
-							ssize_t piped=io_pipe(out,in);
-							if (piped>-1){
-								remaining-=piped;
-							} else {
-								cancel=BT_TRUE;
-								warn("Error,piped=%lld",piped);
-							}
-						}
-						io_free(in);
-					} else {
-						perror("streamrec.kl1:io_fd_create()");
-					}
-				} else {
-					perror("streamrec.kl1:open()");
-				}
-#endif
 			}
 			list.fragNum++;
 			list.fragPos=0;
 		}
 	}
-	if (remaining>0){
-		warn("Remaining %lld, should be 0", remaining);
-	}
-
 exit:
+	free(path);
 	sigaction(SIGPIPE,&oldsa,NULL);
 	freeFL(&list);
 %>

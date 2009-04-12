@@ -39,7 +39,6 @@ typedef enum sortField_e {
 	SF_NAME,
 	SF_PRIORITY,
 	SF_LIFETIME,
-	SF_ACTIVE,
 	SF_MUX
 } sortField_t;
 
@@ -72,15 +71,17 @@ typedef enum pageAction_e {
 	PA_ADD,
 	PA_DELETE,
 	PA_SHOW,
+	PA_PLAY,
 	PA_PRINT,
 	PA_DOWNLOAD,
-	PA_DOWNLOAD_ALL
+	PA_DOWNLOAD_ALL,
+	PA_SAVE_CONFIG
 } pageAction_t;
 
 typedef enum playlistType_e {
 	PL_M3U,
 	PL_XSPF
-} playlistType;
+} playlistType_t;
 
 typedef enum videoType_e {
 	VT_UNKNOWN,
@@ -92,34 +93,29 @@ typedef enum videoType_e {
 	VT_HD
 } videoType_t;
 
-extern int isM740AV;
-extern int isM750S;
-extern int isM750C;
-extern int boxSysType;
-extern const int sysNone;
-extern const int sys740av;
-extern const int sys750s;
-extern const int sys750c;
+typedef enum systemType_e {
+	ST_UNKNOWN,
+	ST_M740AV,
+	ST_M750S,
+	ST_M750C
+} systemType_t;
 
-extern const int httpPort;
-
+extern systemType_t systemType;
 extern const char *checked[2];
 extern const char *selected[2];
 extern const char *videoTypeStr[7];
 extern const char *classCurrent[2];
+extern const char *classActive[2];
 extern sortField_t sortBy;
 extern sortDirection_t sortDirection;
 extern pageNumber_t currentPage;
 extern pageAction_t currentAction;
-extern char server_ip[16];
-extern uint16_t server_port;
-extern char myip[16];
 
 #define boolean(i) ((i)?BT_TRUE:BT_FALSE)
+#define isFlagSet(flag,flags) boolean((flag & flags) == flag )
 #define newSortDirection(sf) ((sf==sortBy)?-sortDirection:1)
 
 void config(session_t *session, request_t *request);
-boolean_t vdrRunning();
 boolean_t isDST(time_t * aTime);
 boolean_t sameDay(time_t oneDate,time_t anotherDate);
 boolean_t sameString(const char * s1, const char * s2);
@@ -129,7 +125,6 @@ boolean_t parseRequestStr(request_t *request, char ** pathStr, char ** queryStr)
 char * strcatEx(char ** dest, const char * s);
 boolean_t fileExists(const char * fileName);
 const char * sortClass(sortField_t sf);
-char * htmlEncode(const char * const s);
 void vdrDecode(char *dst, char *src);
 boolean_t makeTime(time_t *time, const char * date, const char * hour, const char * min );
 void initHtmlDoc(response_t *response,io_t *out);

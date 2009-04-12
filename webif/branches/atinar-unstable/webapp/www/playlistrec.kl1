@@ -12,6 +12,9 @@
 * 
 */
 
+#include <stdlib.h>
+#include <klone/http.h>
+
 #ifdef DEBUG
 void dbg_playlistrec_kl1(void) {
 	dbg("playlistrec.kl1");
@@ -19,16 +22,25 @@ void dbg_playlistrec_kl1(void) {
 #endif
 
 %><%
+
 #ifdef DEBUG
 	dbg_playlistrec_kl1();
 #endif
-	set_server_address(session,NULL,NULL);
-	
-	char myip[16]="";
-	whatsmyip(myip);
-	const char * query = request_get_query_string(request);
+	setSvdrpServerAddress(session);
 	response_set_content_type(response,"audio/x-mpegurl");
-	io_printf(out,"http://%s/streamrec.kl1?%s",myip,query);
+	//TODO xspf
+	const char *query = request_get_query_string(request);
+	field_t *host=request_get_field(request,"Host");
+	char *dquery=malloc(strlen(query)+1);
+	u_urlncpy(dquery,query,strlen(query),URLCPY_DECODE);
+	char *url;
+	asprintf(&url,"http://%s/streamrec.kl1?%s",host->value,dquery);
+	free(dquery);
+	char *eurl=malloc(3*strlen(url)+1);
+	u_urlncpy(eurl,url,strlen(url),URLCPY_ENCODE);
+	free(url);
+	io_write(out,eurl,strlen(eurl));
+	free(eurl);
 exit:
 
 %>

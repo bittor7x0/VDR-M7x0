@@ -47,6 +47,7 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 	channelList_t channels;
 	int i=0;
 	int channelNum=0;
+	const char *hostAddr=(isVdrLocal()) ? request_get_field(request,"Host")->value : svdrpServerIp;
 
 	vars_t *args = request_get_args(request);
 	channelNum=vars_get_value_i(args,"channelnum");
@@ -109,10 +110,10 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 					"<span class=\"ui-icon ui-icon-volume-off\">%s</span>"
 				"</li>\n"
 "				<li id=\"VolumeDown\" class=\"control ui-state-default ui-corner-all\" >"
-					"<span class=\"wi-icon wi-icon-volume-down\">%s</span>"
+					"<span class=\"ui-icon ui-icon-volume-down\">%s</span>"
 				"</li>\n"
 "				<li id=\"VolumeUp\" class=\"control ui-state-default ui-corner-all\" >"
-					"<span class=\"wi-icon wi-icon-volume-up\">%s</span>"
+					"<span class=\"ui-icon ui-icon-volume-up\">%s</span>"
 				"</li>\n"
 "			</ul>\n"
 "			<div id=\"watchItInfoWrapper\">\n"
@@ -148,7 +149,7 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 "	</div>\n"
 			,720, 576
 			,720, 576
-			,myip,context,channelNum
+			,hostAddr,context,channelNum
 		);
 	}
 	freeCL(&channels);

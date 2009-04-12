@@ -18,32 +18,37 @@
 #include <regex.h>
 
 #include "channels.h"
+#include "conf.h"
 #include "misc.h"
 #include "svdrp_comm.h"
 
+#ifdef DEBUG
 void dbg_playlistch_kl1(void) { dbg("playlistch.kl1");}
+#endif
 
 %><%
-	dbg_playlistch_kl1();
-	set_server_address(session,NULL,NULL);
 
-	char myip[16]="";
-	whatsmyip(myip);
+#ifdef DEBUG
+	dbg_playlistch_kl1();
+#endif
+	config(session, request);
 	vars_t *args = request_get_args(request);
 	int i;
 	int nchannel=-1;
-	playlistType type;
+	playlistType_t type;
 	channelList_t channels;
 	getChannelList(&channels,SF_CH_NUMBER,SD_ASC);
 	close_svdrp();
 	if (vars_countn(args,"channelnum")>0) {
 		nchannel=vars_get_value_i(args,"channelnum");
 	}
-	type=(vars_countn(args,"type")>0) ? vars_get_value_i(args,"type") : PL_M3U;
+	type=(vars_countn(args,"type")>0) ? vars_get_value_i(args,"type") : webifConf.playlistType;
 	//TODO m3u no soporta caracteres extendidos y xspf aparece vacio si se abre desde vlc !!!
+	const char *hostAddr=(isVdrLocal()) ? request_get_field(request,"Host")->value : svdrpServerIp;
 	switch (type) {
 		case PL_M3U:
 			response_set_content_type(response,"audio/x-mpegurl");
+			//response_set_content_type(response,"text/plain");
 			io_printf(out, 
 "#EXTM3U\n");
 			for(i=0; i<channels.length; i++){
@@ -52,29 +57,30 @@ void dbg_playlistch_kl1(void) { dbg("playlistch.kl1");}
 "#EXTINF:0,%.2d-%s\n"
 "http://%s:%d/%d\n"
 						,channels.entry[i].channelNum,channels.entry[i].channelName
-						,myip,3000,channels.entry[i].channelNum);
+						,hostAddr,3000,channels.entry[i].channelNum);
 				}
 			}
 			break;
 		default: 
-			response_set_content_type(response,"application/xspf+xml");
+			response_set_content_type(response,"application/xspf+xml; charset=ISO-8859-1");
+			//response_set_content_type(response,"text/plain; charset=ISO-8859-1");
 			io_printf(out,
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
 "<playlist version=\"1\" xmlns=\"http://xspf.org/ns/0/\" xmlns:vlc=\"http://www.videolan.org/vlc/playlist/ns/0/\">\n"
-"	<trackList>"
+"	<trackList>\n"
 			);
 			for(i=0; i<channels.length; i++){
 				if ( nchannel==-1 || i==nchannel ) {
 					io_printf(out,
 "		<track>\n"
 "			<location>http://%s:%d/%d</location>\n"
-						,myip,3000,channels.entry[i].channelNum
+						,hostAddr,3000,channels.entry[i].channelNum
 					);
 					io_printf(out,
 "			<extension application=\"http://www.videolan.org/vlc/playlist/0\">\n"
 "				<vlc:id>%d</vlc:id>\n"
 "			</extension>\n"
-						,channels.entry[i].channelNum-1
+						,i
 					);
 					io_printf(out,
 "			<title>%.2d-%s</title>\n",channels.entry[i].channelNum,channels.entry[i].channelName);
@@ -86,6 +92,21 @@ void dbg_playlistch_kl1(void) { dbg("playlistch.kl1");}
 			};
 			io_printf(out,
 "	</trackList>\n"
+			);
+			io_printf(out,
+"	<extension application=\"http://www.videolan.org/vlc/playlist/0\">\n"
+"		<vlc:node title=\"%s\">\n"
+				,tr("channels")
+			);
+			for(i=0; i<channels.length; i++){
+				if ( nchannel==-1 || i==nchannel ) {
+					io_printf(out,
+"			<vlc:item tid=\"%d\" />\n",i);
+				}
+			}
+			io_printf(out,
+"		</vlc:node>\n"
+"	</extension>\n"
 "</playlist>\n");
 			break;
 	}

@@ -47,7 +47,7 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 		currentAction=PA_SHOW;
 		fileNum=0;
 	}
-	if (fileNum<0||fileNum>=maxFileMapping){
+	if (fileNum<0||fileNum>=fileMappingLength){
 		//TODO error
 		currentAction=PA_SHOW;
 		fileNum=0;
@@ -59,12 +59,12 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 		response_set_content_type(response, "application/octetstream");
 		{
 		char *cd;
-		asprintf(&cd,"attachment; filename=\"%s.txt\"",fileMapping[fileNum].name);
+		asprintf(&cd,"attachment; filename=\"%s.txt\"",fileMapping[fileNum].fileName);
 		response_set_field(response,"Content-Disposition",cd);
 		free(cd);
 		}
 		//TODO ¿implementado en klone?
-		FILE *f = fopen(fileMapping[fileNum].file,"r");
+		FILE *f = fopen(fileMapping[fileNum].fileName,"r");
 		if (f) {
 			char buffer[1024];
 			while(fgets(buffer,1023,f)!=NULL) {
@@ -73,14 +73,14 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 			fclose(f);
 		}
 	} else if (currentAction==PA_DOWNLOAD_ALL) {
-		char *argumente[maxFileMapping+4];
+		char *argumente[fileMappingLength+4];
 		argumente[0]="tar";
 		argumente[1]="-czf";
 		argumente[2]="/var/tmp/files.tar.gz";
-		for (i=0;i<maxFileMapping;i++) {
-			argumente[3+i]=(char*)fileMapping[i].file;
+		for (i=0;i<fileMappingLength;i++) {
+			argumente[3+i]=(char*)fileMapping[i].fileName;
 		}
-		argumente[maxFileMapping+3]=NULL;
+		argumente[fileMappingLength+3]=NULL;
 		pid_t pid=0;
 		int status;
 		pid=fork();
@@ -91,6 +91,7 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 			waitpid(pid,NULL,0);
 			response_set_content_type(response, "application/gzip");
 			response_set_field(response,"Content-Disposition","attachment; filename=\"files.tar.gz\"");
+			//TODO kloned task:
 			FILE *f = fopen("/var/tmp/files.tar.gz","rb");
 			if (f) {
 				char buffer;
@@ -111,7 +112,7 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 "		<div id=\"main\" class=\"code\">\n"
 		);
 		struct stat status;
-		if ((stat(fileMapping[fileNum].file,&status))>=0) {
+		if ((stat(fileMapping[fileNum].fileName,&status))>=0) {
 			const char *FileDownload=tr("fileDownload");
 			io_printf(out,
 "			<div class=\"codeHead\">\n"
@@ -129,11 +130,11 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 "				</ul>\n"
 "			</div>\n"
 "			<pre>\n"
-				,tr("file"),fileMapping[fileNum].file
+				,tr("file"),fileMapping[fileNum].fileName
 				,tr("date"),ctime(&status.st_mtime)
 			);
 
-			FILE *f = fopen(fileMapping[fileNum].file,"r");
+			FILE *f = fopen(fileMapping[fileNum].fileName,"r");
 			if (f) {
 				char buffer[1024];
 				char encoded[4096];
