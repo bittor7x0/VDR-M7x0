@@ -88,7 +88,10 @@ dbg_settings_kl1(void) { dbg("settings.kl1"); }
 				if (writeConf(cfgFileId,&params)){
 					io_printf(out,
 "			<div class=\"message\">");
-					io_printf(out,tr("cfgFileSaveOkFmt"),cfgFile[cfgFileId].fileName); 
+					io_printf(out,tr("cfgFileSaveOkFmt"),cfgFile[cfgFileId].fileName);
+					if (cfgFileId==CF_WEBIFCONF){
+						webifConf.allreadySet=BT_FALSE;
+					}
 				} else {
 					io_printf(out,
 "			<div class=\"alert\">");
