@@ -490,7 +490,6 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 }
 boolean_t readWebifConf() {
 	if (webifConf.allreadySet) {
-		warn("WebifConf ya se ha configurado. Omitiendo readWebifConf");
 		return;
 	}
 	cfgParamList_t params;
