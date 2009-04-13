@@ -32,6 +32,6 @@ diff -Naur pptpd-1.3.0-orig/samples/options.pptpd pptpd-1.3.0/samples/options.pp
  
 +ktune
 +
-+#direccionIPLocal:direccionIPqueAsignaremosAlCliente
++:192.168.3.100
 +
 +
