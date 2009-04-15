@@ -1,0 +1,48 @@
+diff -Naur tool-box-orig/pic_ioctl.h tool-box/pic_ioctl.h
+--- tool-box-orig/pic_ioctl.h	2009-04-13 12:14:47.000000000 +0200
++++ tool-box/pic_ioctl.h	2009-04-13 13:39:08.000000000 +0200
+@@ -68,4 +68,6 @@
+ #define PIC_IOCTL_GET_VOLTAGE 0xe
+ #define PIC_IOCTL_SET_WD 0xf
+ #define PIC_IOCTL_GET_CHIP_NR 0x100
++
++#define TOUCH_FILE "/etc/fw-version"
+ #endif
+diff -Naur tool-box-orig/pic_tool.c tool-box/pic_tool.c
+--- tool-box-orig/pic_tool.c	2009-04-13 13:55:50.000000000 +0200
++++ tool-box/pic_tool.c	2009-04-13 18:28:30.000000000 +0200
+@@ -348,6 +348,7 @@
+ 	return -1;
+ }
+ 
++static int pic_get_start(int retrys, enum pic_start_mode *start_mode);
+ static int pic_time_to_sys(int retrys)
+ {
+ 	struct timeval tv;
+@@ -356,7 +357,17 @@
+ 
+ 	r = pic_get_time(retrys, &pic_time);
+ 	if (r < 0)
+-		return r;
++		pic_time=0;
++	enum pic_start_mode start_mode;
++	if(pic_get_start(retrys,&start_mode))
++		start_mode=pstm_powerfail;
++	if((!pic_time)||(start_mode==pstm_powerfail))
++	{
++		struct stat fs;
++		if(!stat(TOUCH_FILE,&fs))
++			if(fs.st_mtime>pic_time)
++				pic_time=fs.st_mtime;
++	}
+ 
+ 	tv.tv_sec = pic_time;
+ 	tv.tv_usec = 0;
+@@ -369,6 +380,7 @@
+ 
+ static int sys_time_to_pic(int retrys)
+ {
++	utime(TOUCH_FILE,NULL);
+ 	int now;
+ 	now = time(NULL);
+ 	if (now < 0) {
