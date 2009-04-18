@@ -76,6 +76,48 @@ void freeRL(recList_t * const list){
 	list->entry=NULL;
 }
 
+void parseRec(char * line, boolean_t incpath, recEntry_t * const rec){
+	char * r=line;
+	int l;
+	struct tm timeptr;
+	
+	r+=strspn(r," ");
+	rec->id=strtol(r,&r,10);
+	r+=strspn(r," ");
+	rec->path=NULL;
+	if ( incpath ) {    //Requires vdr patched to include path
+		//TODO cambiar SVDRP para enviar solo rutas relativas
+		if (r[15]!='/') { //16==strlen("/var/vdr/video0/")
+			warn( "VDR should be patched to return path");
+		} else {
+			r+=16;
+			l=strcspn(r," ");
+			rec->path=strndup(r,l);
+			r+=l;
+			r+=strspn(r," ");
+		}
+	}
+	r=strptime(r,"%d.%m.%y %H:%M",&timeptr);
+	if (r==NULL){ 
+		printf("Error converting recording date!\n");
+		rec->name=NULL;
+		free(rec->path);
+		rec->path=NULL;
+		return;
+	}
+	timeptr.tm_sec=0;
+	timeptr.tm_isdst=-1;
+	rec->start=mktime(&timeptr);
+	rec->seen=boolean(r[0]==' ');
+	r++;
+	r+=strspn(r," ");
+	l=strcspn(r,"/\n\r");
+	rec->name=strndup(r,l);
+	rec->direct=boolean(strchr(rec->name,'@')==NULL);
+	rec->cut=boolean(strchr(rec->name,'%')==NULL);
+	r+=l;
+	return;
+}
 
 void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection){
 	initRL(list);
@@ -250,7 +292,7 @@ boolean_t parseRecInfo(recInfo_t * const info, char * const data, boolean_t from
 				info->subtitle=strdup(s+2);
 				break;
 			case 'P':
-				info->path=strdup(s+2);
+				info->path=strdup(s+2+16);
 				break;
 			case 'X': //components
 				switch(s[2]) {
@@ -274,38 +316,10 @@ boolean_t parseRecInfo(recInfo_t * const info, char * const data, boolean_t from
 	return result;
 }
 
-boolean_t getRecInfo(const recEntry_t *rec, recInfo_t * const info){
-	char * command=NULL;
-	if (rec==NULL) return BT_FALSE;
-	if (rec->path!=NULL) {
-		//TODO solo si es local
-		return readRecInfo(rec->path,info);
-	} else if (rec->id>0) {
-		warn("getRecInfo:no path present");
-		if (asprintf(&command,"LSTR %d\r",rec->id)<0){
-			warn("getRecInfo:Out of memory");
-			exit(1);
-		} else {
-			int error=(write_svdrp(command)<=0);
-			free(command);
-			if (error) {
-				return BT_FALSE;
-			}
-			char * data=read_svdrp();
-			if (data!=NULL) {
-				boolean_t result=parseRecInfo(info,data,BT_FALSE);
-				free(data);
-				return result;
-			}
-		}
-	}
-	return BT_FALSE;
-}
-
 boolean_t readRecInfo(const char * recPath, recInfo_t * const info){
 	FILE *handle;
 	char *fileName;
-	asprintf(&fileName,"%s/info.vdr",recPath);
+	asprintf(&fileName,"/var/vdr/video0/%s/info.vdr",recPath);
 	handle=fopen(fileName,"r");
 	free(fileName);
 	if (handle) {
@@ -330,6 +344,33 @@ boolean_t readRecInfo(const char * recPath, recInfo_t * const info){
 			boolean_t result=parseRecInfo(info,data,BT_TRUE);
 			free(data);
 			return result;
+		}
+	}
+	return BT_FALSE;
+}
+
+boolean_t getRecInfo(const recEntry_t *rec, recInfo_t * const info){
+	char * command=NULL;
+	if (rec==NULL) return BT_FALSE;
+	if (rec->path!=NULL) {
+		//TODO solo si es local
+		return readRecInfo(rec->path,info);
+	} else if (rec->id>0) {
+		if (asprintf(&command,"LSTR %d\r",rec->id)<0){
+			warn("getRecInfo:Out of memory");
+			exit(1);
+		} else {
+			int error=(write_svdrp(command)<=0);
+			free(command);
+			if (error) {
+				return BT_FALSE;
+			}
+			char * data=read_svdrp();
+			if (data!=NULL) {
+				boolean_t result=parseRecInfo(info,data,BT_FALSE);
+				free(data);
+				return result;
+			}
 		}
 	}
 	return BT_FALSE;

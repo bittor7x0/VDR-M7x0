@@ -1451,9 +1451,9 @@ const char *tr(const char *s) {
 
 const char *formatDate(struct tm *timeptr, boolean_t addHour){
 	char * format;
-	if (!addHour || asprintf(&format,"%s %H:%M",dateFormat[langId])<0) {
+	if (!addHour || asprintf(&format,"%s %%H:%%M",dateFormat[langId])<0) {
 		format=(char *)dateFormat[langId];
-		addHour=0;
+		addHour=BT_FALSE;
 	}
 	size_t l = strftime(cldate,sizeof cldate,(const char*)format,timeptr);
 	if (addHour) {

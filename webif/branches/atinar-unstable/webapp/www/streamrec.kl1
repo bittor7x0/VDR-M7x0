@@ -47,14 +47,19 @@ void sig_handler(int sig){
 #endif
 	setSvdrpServerAddress(session);
 	vars_t *args = request_get_args(request);
-	char *path=(vars_countn(args,"path")>0) ? strdup(vars_get_value(args,"path")): NULL;
-	if (path==NULL){
+	if (vars_countn(args,"path")==0){
 		warn("Invalid parameters");
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
 		return;
 	}
-	dbg("Recording %s requested",path);
+	const char *pathrel=vars_get_value(args,"path");
+	if (strncmp(pathrel,"/var/vdr/video0/",16)==0){
+		warn("path %s deberia ser relativo", pathrel);
+		pathrel+=16;
+	}
+	if (pathrel[0]=='/') pathrel++;
+	dbg("Recording %s requested",pathrel);
 	struct sigaction sa;
 	struct sigaction oldsa;
 	uint64_t range_start=0;
@@ -67,7 +72,7 @@ void sig_handler(int sig){
 	sigaction(SIGPIPE,&sa,&oldsa);
 
 	fragmentList_t list;
-	if (!getFragmentList(&list,path)) {
+	if (!getFragmentList(&list,pathrel)) {
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
 		goto exit;
@@ -174,7 +179,6 @@ void sig_handler(int sig){
 		}
 	}
 exit:
-	free(path);
 	sigaction(SIGPIPE,&oldsa,NULL);
 	freeFL(&list);
 %>

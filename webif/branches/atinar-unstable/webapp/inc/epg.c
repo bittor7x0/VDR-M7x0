@@ -25,6 +25,7 @@
 
 #include "svdrp_comm.h"
 #include "svdrp_parse.h"
+#include "i18n.h"
 #include "misc.h"
 #include "epg.h"
 #include "channels.h"
@@ -189,10 +190,10 @@ void printInfo(io_t *out, const char * const tabs, eventEntry_t * const ee){
 	}
 	startt=*localtime(&ee->time);
 	endt=*localtime(&end_time);
-		io_printf(out,
+	io_printf(out,
 "%s<div class=\"duration\">"
-			,tabs
-		);
+		,tabs
+	);
 	io_printf(out
 		,tr("fromToFmt")
 		,startt.tm_hour,startt.tm_min,endt.tm_hour,endt.tm_min,ee->duration/60

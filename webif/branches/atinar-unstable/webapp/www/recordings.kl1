@@ -78,6 +78,7 @@ void printPlay(io_t *out, recEntry_t * const rec, const char *hostAddr, char enc
 		//response_set_content_type(response,"text/plain");
 		field_t *host=request_get_field(request,"Host");
 		if (rec.path!=NULL){
+			if (strncmp(rec.path,"/var/vdr/video0",16)==0) rec.path+=16;
 			u_urlncpy(encoded,rec.path,strlen(rec.path),URLCPY_ENCODE);
 			io_printf(out,"http://%s/streamrec.kl1?path=%s",host->value,encoded);
 		} else {

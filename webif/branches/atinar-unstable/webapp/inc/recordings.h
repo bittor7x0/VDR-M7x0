@@ -65,5 +65,4 @@ void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sort
 boolean_t editRec(const recEntry_t *rec, const recInfo_t * oldInfo, char ** message);
 boolean_t deleRec(const recEntry_t *rec, const recInfo_t * oldInfo, char ** message);
 boolean_t getRecInfo(const recEntry_t *rec, recInfo_t * const info);
-boolean_t readRecInfo(const char * recPath, recInfo_t * const info);
 #endif

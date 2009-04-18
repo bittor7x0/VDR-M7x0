@@ -37,6 +37,6 @@ void freeFE(fragmentEntry_t *const entry);
 void initFL(fragmentList_t *const list);
 void freeFL(fragmentList_t *const list);
 boolean_t seekFragment(fragmentList_t * const list, uint64_t totalPos);
-boolean_t getFragmentList(fragmentList_t * const list, const char *recPath);
+boolean_t getFragmentList(fragmentList_t * const list, const char * pathrel);
 
 #endif

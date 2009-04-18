@@ -1,3 +1,10 @@
+2009-04-18
+* Utilizar rutas relativas para las grabaciones.
+* Mostrar fechas al navegar por series.
+* Corregida navegacion por series.
+* Corregido error en formatDate cuando se muestra la hora.
+* parseRec movido de svdrp_parse a recordings.
+
 2009-04-12
 * Incorporada posibilidad de usar css/js externo.
 * Generalizado el ajuste de Posix para IE7.

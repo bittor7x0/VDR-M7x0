@@ -63,47 +63,6 @@ boolean_t makeTimerStr(char **timerStr, uint flags, int channelNum, time_t start
 		,title	)<1) ?  BT_FALSE : BT_TRUE;
 }
 
-void parseRec(char * line, boolean_t incpath, recEntry_t * const rec){
-	char * r=line;
-	int l;
-	struct tm timeptr;
-	
-	r+=strspn(r," ");
-	rec->id=strtol(r,&r,10);
-	r+=strspn(r," ");
-	rec->path=NULL;
-	if ( incpath ) {    //Requires vdr patched to include path
-		l=strcspn(r," ");
-		if (r[0]!='/') {
-			warn( "VDR should be patched to return path");
-		} else {
-			rec->path=strndup(r,l);
-			r+=l;
-			r+=strspn(r," ");
-		}
-	}
-	r=strptime(r,"%d.%m.%y %H:%M",&timeptr);
-	if (r==NULL){ 
-		printf("Error converting recording date!\n");
-		rec->name=NULL;
-		free(rec->path);
-		rec->path=NULL;
-		return;
-	}
-	timeptr.tm_sec=0;
-	timeptr.tm_isdst=-1;
-	rec->start=mktime(&timeptr);
-	rec->seen=boolean(r[0]==' ');
-	r++;
-	r+=strspn(r," ");
-	l=strcspn(r,"/\n\r");
-	rec->name=strndup(r,l);
-	rec->direct=boolean(strchr(rec->name,'@')==NULL);
-	rec->cut=boolean(strchr(rec->name,'%')==NULL);
-	r+=l;
-	return;
-}
-
 void parseTimer(const char * line, timerEntry_t * const timer ){
 	char * r;
 	char * c;

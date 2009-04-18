@@ -25,10 +25,9 @@
 #include "timers.h"
 
 //svdrp_parse stellt Funktionen bereit, um die Zeilen einer Antwort zu parsen
-
+//TODO eliminar y mover funciones a los sitios pertinentes.
 void parse_215E(char * line, unsigned int * event_id, long int * start_time, int * duration, int * table_id, int * version);
 
-void parseRec(char * line, boolean_t incpath, recEntry_t * const recording);
 
 void parseTimer(const char * line, timerEntry_t * const timer);
 

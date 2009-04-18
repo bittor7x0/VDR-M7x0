@@ -74,32 +74,33 @@ int isVideoFile(const struct dirent * ent){
 	return (strcmp(c,".vdr")==0);
 }
 
-boolean_t getFragmentList(fragmentList_t * const list, const char *recPath){
+boolean_t getFragmentList(fragmentList_t * const list, const char * pathrel){
 	initFL(list);
-	if (recPath==NULL) {
-		warn("RecPath should be specified");
+	if (pathrel==NULL) {
+		warn("Pathrel should be specified");
 		return BT_FALSE;
 	}
 	struct stat st;
 	fragmentEntry_t *f;
 	int i;
-	if ( (stat(recPath, &st)==0) && S_ISDIR(st.st_mode)) {
+	char * path;
+	if (strncmp(pathrel,"/var/vdr/video0/",16)==0){
+		warn("path %s deberia ser relativo", pathrel);
+		pathrel+=16;
+	}
+	if (pathrel[0]=='/')pathrel++;
+	crit_goto_if(asprintf(&path,"/var/vdr/video0/%s",pathrel)<0,outOfMemory);
+	if ( (stat(path, &st)==0) && S_ISDIR(st.st_mode)) {
 		struct dirent **namelist;
-		list->length = scandir(recPath, &namelist, isVideoFile, alphasort);
+		list->length = scandir(path, &namelist, isVideoFile, alphasort);
 		if (list->length<0) list->length=0;
 		if (list->length>0) {
 			list->entry=(fragmentEntry_t*)malloc((list->length)*sizeof(fragmentEntry_t));
-			if (list->entry==NULL){
-				error("getFragmentList:Out of memory");
-				exit(1);
-			}
+			crit_goto_if(list->entry==NULL,outOfMemory);
 			for (i=0;i<list->length;i++) {
 				f=&list->entry[i];
 				initFE(f);
-				if (asprintf(&(f->path),"%s/%s",recPath,namelist[i]->d_name)==-1)  {
-					error("getFragmentsFromDir:Out of memory");
-					exit(1);
-				}				
+				crit_goto_if(asprintf(&(f->path),"%s/%s",path,namelist[i]->d_name)<0,outOfMemory);
 				if (stat(f->path,&st)==0) {
 					f->size=st.st_size;
 					f->start=list->totalSize;
@@ -114,8 +115,12 @@ boolean_t getFragmentList(fragmentList_t * const list, const char *recPath){
 			free(namelist);
 		}
 	}
+	free(path);
 	info("Number of fragments: %d. Total size %lld bytes",list->length,list->totalSize);
 	return boolean(list->length>0 && list->totalSize>0);
+outOfMemory:
+	crit("getFragmentList:out of memory");
+	exit(1);
 }
 
 

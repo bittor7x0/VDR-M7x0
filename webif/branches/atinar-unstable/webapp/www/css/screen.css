@@ -494,12 +494,12 @@ table#timers tr.inactive * {
 
 /* Browse */
 .recPathWrapper {
+	display:-moz-inline-stack;
+	display:inline-block;
 	margin:0 0 1em 5px;
 	padding:0; 
 	background: transparent url(images/shadow1.png) repeat scroll 0pt 0pt; 
 	position: relative; 
-	float: left;
-	display: block; 
 	-moz-border-radius: 5px; 
 }
 .recPath {
