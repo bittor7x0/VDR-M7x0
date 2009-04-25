@@ -3,6 +3,8 @@ KILL="killall -9"
 VDR_FLAGS="-c ${vdr_confdir} -L /var/vdr/lib -v /var/vdr/video0 -s \
   ${vdr_shutdown}"
 
+export LC_ALL=es_ES
+
 mkdir -p /var/vdr
 mkdir -p /var/vdr/lib
 
