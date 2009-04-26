@@ -1,0 +1,118 @@
+diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
+--- VDR-NG-orig/svdrp.c	2009-04-25 22:13:01.000000000 +0200
++++ VDR-NG/svdrp.c	2009-04-25 22:34:18.000000000 +0200
+@@ -192,8 +192,9 @@
+   "    Enable/Disable Input devices.",
+   "DELC <number>\n"
+   "    Delete channel.",
+-  "DELR <number>\n"
+-  "    Delete the recording with the given number. Before a recording can be\n"
++  "DELR [<number> | <path>]\n"
++  "    Delete the recording with the given number or path. \n"
++  "    If a number is to be used, before a recording can be\n"
+   "    deleted, an LSTR command must have been executed in order to retrieve\n"
+   "    the recording numbers. The numbers don't change during subsequent DELR\n"
+   "    commands. CAUTION: THERE IS NO CONFIRMATION PROMPT WHEN DELETING A\n"
+@@ -229,9 +230,10 @@
+   "    only data for that channel is listed. 'now', 'next', or 'at <time>'\n"
+   "    restricts the returned data to present events, following events, or\n"
+   "    events at the given time (which must be in time_t form).",
+-  "LSTR [ <number> ]\n"
++  "LSTR [ <number> ] [path]\n"
+   "    List recordings. Without option, all recordings are listed. Otherwise\n"
+-  "    the information for the given recording is listed.",
++  "    the information for the given recording is listed. If the keyword 'path'\n ",
++  "    is given, the path (relative to /var/vdr/video0/) to the recording(s) is included.",
+   "LSTT [ <number> ] [ id ]\n"
+   "    List timers. Without option, all timers are listed. Otherwise\n"
+   "    only the given timer is listed. If the keyword 'id' is given, the\n"
+@@ -662,8 +664,9 @@
+ void cSVDRP::CmdDELR(const char *Option)
+ {
+   if (*Option) {
+-     if (isnumber(Option)) {
+-        cRecording *recording = Recordings.Get(strtol(Option, NULL, 10) - 1);
++     bool isNumber=isnumber(Option);
++     if (isNumber || Option[0]=='/') {
++        cRecording *recording = (isNumber) ? Recordings.Get(strtol(Option, NULL, 10) - 1) : Recordings.GetByName(Option);
+         if (recording) {
+            cRecordControl *rc = cRecordControls::GetRecordControl(recording->FileName());
+            if (!rc) {
+@@ -678,13 +681,13 @@
+               Reply(550, "Recording \"%s\" is in use by timer %d", Option, rc->Timer()->Index() + 1);
+            }
+         else
+-           Reply(550, "Recording \"%s\" not found%s", Option, Recordings.Count() ? "" : " (use LSTR before deleting)");
++           Reply(550, "Recording \"%s\" not found%s", Option, (!isNumber || Recordings.Count()) ? "" : " (use LSTR before deleting)");
+         }
+      else
+-        Reply(501, "Error in recording number \"%s\"", Option);
++        Reply(501, "Error in recording number or path \"%s\"", Option);
+      }
+   else
+-     Reply(501, "Missing recording number");
++     Reply(501, "Missing recording number or path");
+ }
+ 
+ void cSVDRP::CmdDELT(const char *Option)
+@@ -1067,14 +1070,34 @@
+ void cSVDRP::CmdLSTR(const char *Option)
+ {
+   bool recordings = Recordings.Update(true);
++  int recnum=0;
++  bool incpath=false;
+   if (*Option) {
+-     if (isnumber(Option)) {
+-        cRecording *recording = Recordings.Get(strtol(Option, NULL, 10) - 1);
++      const char *delim = " \t";
++      const char *p=Option;
++      p+=strspn(p,delim);
++      if (isdigit(p[0])){
++         errno=0;
++         recnum=strtol(p,(char **)&p,10);
++         if (errno){
++            Reply(501, "Error in recording number \"%s\"", Option);
++         }
++         p+=strspn(p,delim);
++      }
++      incpath=((*p) && (strcmp(p,"path")==0));
++   }
++   if (recnum>0) {
++      cRecording *recording = Recordings.Get(recnum - 1);
+         if (recording) {
+            FILE *f = fdopen(file, "w");
+            if (f) {
+               recording->Info()->Write(f, "215-");
+               fflush(f);
++              if (incpath) {
++                 const char *path=recording->FileName();
++                 if (strncmp(path,"/var/vdr/video0/",16)==0) path+=16;
++                 Reply(-215, "P %s", path);
++              }
+               Reply(215, "End of recording information");
+               // don't 'fclose(f)' here!
+               }
+@@ -1084,15 +1107,19 @@
+         else
+            Reply(550, "Recording \"%s\" not found", Option);
+         }
+-     else
+-        Reply(501, "Error in recording number \"%s\"", Option);
+-     }
+   else if (recordings) {
+      cRecording *recording = Recordings.First();
+      while (recording) {
++        if (incpath) {
++           const char *path=recording->FileName();
++           if (strncmp(path,"/var/vdr/video0/",16)==0) path+=16;
++           Reply(recording == Recordings.Last() ? 250 : -250, "%d %s %s", recording->Index() + 1, path, recording->Title(' ', true));
++           }
++        else {
+            Reply(recording == Recordings.Last() ? 250 : -250, "%d %s", recording->Index() + 1, recording->Title(' ', true));
+-           recording = Recordings.Next(recording);
+            }
++        recording = Recordings.Next(recording);
++        }
+      }
+   else
+      Reply(550, "No recordings available");
