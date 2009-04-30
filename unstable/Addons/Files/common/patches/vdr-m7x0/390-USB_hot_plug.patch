@@ -1,7 +1,43 @@
 diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
 --- VDR-NG-orig/tools.c	2009-02-21 10:21:05.000000000 +0100
 +++ VDR-NG/tools.c	2009-03-22 16:49:28.000000000 +0100
-@@ -559,11 +559,47 @@
+@@ -313,8 +313,6 @@
+         *UsedMB = int((statFs.f_blocks - statFs.f_bfree) / blocksPerMeg);
+      Free = int(statFs.f_bavail / blocksPerMeg);
+      }
+-  else
+-     LOG_ERROR_STR(Directory);
+   return Free;
+ }
+ 
+@@ -331,8 +329,6 @@
+      else if (LogErrors)
+         esyslog("ERROR: %s is not a directory", DirName);
+      }
+-  else if (LogErrors)
+-     LOG_ERROR_STR(DirName);
+   return false;
+ }
+ 
+@@ -457,8 +453,6 @@
+         }
+      return empty;
+      }
+-  else
+-     LOG_ERROR_STR(DirName);
+   return false;
+ }
+ 
+@@ -493,8 +487,6 @@
+            }
+      return size;
+      }
+-  else
+-     LOG_ERROR_STR(DirName);
+   return -1;
+ }
+ 
+@@ -559,11 +551,47 @@
       LOG_ERROR_STR(FileName);
  }
  
