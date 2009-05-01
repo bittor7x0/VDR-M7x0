@@ -1,6 +1,6 @@
 diff -Naur usbautomounter-orig/display.c usbautomounter/display.c
---- usbautomounter-orig/display.c	2009-04-29 12:36:55.000000000 +0200
-+++ usbautomounter/display.c	2009-04-29 14:31:29.000000000 +0200
+--- usbautomounter-orig/display.c	2009-05-01 16:08:50.000000000 +0200
++++ usbautomounter/display.c	2009-05-01 16:53:43.000000000 +0200
 @@ -25,6 +25,12 @@
  #include <stdio.h>
  #include <stdlib.h>
@@ -40,7 +40,7 @@ diff -Naur usbautomounter-orig/display.c usbautomounter/display.c
  
  int display_init(int autoboot)
  {
-+	if(useSVDRP)
++	if(useSVDRP>0)
 +	{
 +		get_vdr_config();
 +		i18n_init(-1);
@@ -56,7 +56,7 @@ diff -Naur usbautomounter-orig/display.c usbautomounter/display.c
  
  void display_deinit(void)
  {
-+	if(useSVDRP)
++	if(useSVDRP>0)
 +	{
 +		void CloseSVDRP();		
 +		i18n_deinit();
@@ -71,7 +71,7 @@ diff -Naur usbautomounter-orig/display.c usbautomounter/display.c
 +int LastBarTime=0;
  int display_update_bar(int value)
  {
-+	if(useSVDRP)
++	if(useSVDRP>0)
 +	{
 +		time_t Now=time(NULL);
 +		if(Now-LastBarTime<SVDRPBarMinTime)
@@ -93,7 +93,7 @@ diff -Naur usbautomounter-orig/display.c usbautomounter/display.c
  
  void display_msg(const char *txt)
  {
-+	if(useSVDRP)
++	if(useSVDRP>0)
 +	{
 +		LastBarTime=0;
 +		SendSVDRPMessage(txt);
@@ -249,35 +249,68 @@ diff -Naur usbautomounter-orig/display.c usbautomounter/display.c
 +	Buffer[MAXBUF-1]=0;
 +	return SendSVDRP(Buffer);
 +}
+diff -Naur usbautomounter-orig/setup.c usbautomounter/setup.c
+--- usbautomounter-orig/setup.c	2009-04-21 20:17:00.000000000 +0200
++++ usbautomounter/setup.c	2009-05-01 17:07:35.000000000 +0200
+@@ -296,6 +296,7 @@
+ 	free(conf->action_volume_lost);
+ }
+ 
++extern int useSVDRP;
+ int read_config_file(struct usbautomounter_config *conf)
+ {
+ 	FILE *conf_file;
+@@ -343,6 +344,12 @@
+ 		} else if (!strcasecmp(key, "FsckAsHotplug")) {
+ 			conf->fsck_as_hotplug = atoi(value);
+          free(value);
++		}
++		else if(!strcasecmp(key,"SVDRP"))
++		{
++			if(useSVDRP==0)
++				useSVDRP=atoi(value);
++			free(value);
+ 		} else {
+ 			SYSLOG_WARN("Unknown config file Entry '%s = %s'", key, value);
+ 			free(value);
 diff -Naur usbautomounter-orig/usbautomounter.c usbautomounter/usbautomounter.c
---- usbautomounter-orig/usbautomounter.c	2009-04-29 12:36:55.000000000 +0200
-+++ usbautomounter/usbautomounter.c	2009-04-29 13:09:37.000000000 +0200
-@@ -802,13 +802,16 @@
+--- usbautomounter-orig/usbautomounter.c	2009-05-01 16:03:42.000000000 +0200
++++ usbautomounter/usbautomounter.c	2009-05-01 16:46:15.000000000 +0200
+@@ -37,6 +37,7 @@
+ #include "config.h"
+ #include "display.h"
+ 
++int useSVDRP=0;
+ struct usbmounter_context {
+ 	int ashotplug;
+ 	int autoboot;
+@@ -805,11 +806,13 @@
  
  static void print_usage() {
  	fprintf(stderr, "usbautomounter " USB_MOUNTER_VERSION_STR "\n\n");
--	fprintf(stderr, "usbautomounter <command> [fsck]\n");
-+	fprintf(stderr, "usbautomounter <command> [fsck] [useSVDRP]\n");
+-	fprintf(stderr, "usbautomounter <command> [fsck|nofsck]\n");
++	fprintf(stderr, "usbautomounter <command> [fsck|nofsck] [SVDRP|noSVDRP]\n");
  	fprintf(stderr, "\t<command> := usb | mount | remount | umount\n");
  	fprintf(stderr, "\tusb | mount | remount\tmounts/remounts all usb storage devices\n");
  	fprintf(stderr, "\tumount\tumounts all mounted usb storage devices\n");
- 	fprintf(stderr, "\tfsck\toptional parameter for force fsck check\n");
-+	fprintf(stderr, "\tuseSVDRP\tuse SVDRP instead of osd\n");
+ 	fprintf(stderr, "\tfsck|nofsck\toptional, force or disable fsck check\n");
++	fprintf(stderr, "\tSVDRP|noSVDRP\tuse or disable SVDRP\n");
 +	fprintf(stderr, "\t\toptional, must be the last parameter\n");
  }
  
-+int useSVDRP=0;
  int main(int argc, char **argv)
- {
- 	if (argc < 2) {
-@@ -816,6 +819,10 @@
+@@ -819,6 +822,14 @@
  		return 1;
  	}
  
-+	if (argc>=3 && !strcasecmp(argv[2],"useSVDRP"))
++	if (argc>=3 && !strcasecmp(argv[2],"SVDRP"))
 +		useSVDRP=1;
-+	if (argc>=4 && !strcasecmp(argv[3],"useSVDRP"))
++	if (argc>=4 && !strcasecmp(argv[3],"SVDRP"))
 +		useSVDRP=1;
++	if (argc>=3 && !strcasecmp(argv[2],"noSVDRP"))
++		useSVDRP=-1;
++	if (argc>=4 && !strcasecmp(argv[3],"noSVDRP"))
++		useSVDRP=-1;
  	int force_fsck = 0;
  	if (argc >= 3 && !strcasecmp(argv[2],"fsck"))
  		force_fsck = 1;
