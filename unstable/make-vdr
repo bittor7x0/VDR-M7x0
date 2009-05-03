@@ -22,7 +22,7 @@ patch_package() {
 
 
 # Check ToolChain directory
-if [[ ! -d "$TC_bin" ]]
+if [ ! -d "$TC_bin" ]
 then
     echo "ToolChain-bin dir not found: $TC_bin" 1>&2
     exit 1
@@ -31,7 +31,7 @@ else
 fi
 
 # Update/Checkout VDR-M7x0 from SVN-o7o
-if [[ -d "$vdr/.svn" ]]
+if [ -d "$vdr/.svn" ]
 then
 	echo "Update VDR-M7x0 original"
 	svn update -r 348 -q "svn://open7x0.org/vdr-m7x0/branches/andreas-unstable" "$vdr"
@@ -41,17 +41,17 @@ else
 fi
 
 # Patching VDR
-if [[ ! -f "$vdr/HISTORY-liemikuutio" ]]
+if [ ! -f "$vdr/HISTORY-liemikuutio" ]
 then
 	patch_package ./VDR-NG ./Addons/Files/pro/patches/vdr-m7x0
 	patch_package ./VDR-NG ./Addons/Files/common/patches/vdr-m7x0
-	[ "$1" == "rootfs" ] && patch_package ./VDR-NG ./Addons/Patches/vdr-rootfs
+	[ "$1" = "rootfs" ] && patch_package ./VDR-NG ./Addons/Patches/vdr-rootfs
 fi
 
 # Compiling VDR
 ( cd $vdr; make )
 
-if [[ -x $vdr/vdr ]]
+if [ -x $vdr/vdr ]
 then
     cp -p $vdr/vdr .
     mips-linux-uclibc-strip vdr

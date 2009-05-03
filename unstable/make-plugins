@@ -24,7 +24,7 @@ patch_plugin() {
 }
 
 # Check ToolChain directory
-if [[ ! -d "$TC_bin" ]]
+if [ ! -d "$TC_bin" ]
 then
     echo "ToolChain-bin dir not found: $TC_bin" 1>&2
     exit 1
@@ -32,19 +32,16 @@ else
     export PATH="$TC_bin:$PATH"
 fi
 
-while [ "$response" == "" ]; do
-	read -p "Firmware type?  1-PRO/LITE 2-ROOTFS [1] : " response
-	case "$response" in
-		2)
-			firmware_type="rootfs";
-			;;
-		*)
-			;;
-	esac;
-done
+# Firmware type selection
+echo "Firmware type?  1-Pro/Lite 2-RootFS [Default: 1] : "
+read response
+if test "$response" = "2"
+then
+    firmware_type="rootfs"
+fi
 
 # Update VDR-NG and plugins from SVN open7x0.org from SVN open7x0.org
-if [[ ! -d "$vdr" ]]
+if [ ! -d "$vdr" ]
 then
 	./make-vdr "$firmware_type"
 
@@ -56,7 +53,7 @@ then
 fi
 
 # Update plugins from SVN
-if [[ ! -d "$plugins" ]]
+if [ ! -d "$plugins" ]
 then
 	echo "Update: $plugins"
 	svn update -q "$plugins"
