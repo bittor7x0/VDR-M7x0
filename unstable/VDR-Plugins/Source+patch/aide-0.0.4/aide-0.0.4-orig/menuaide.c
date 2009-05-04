@@ -68,8 +68,7 @@ if(d)
 				    } else { // Group entries in the Help menu
 					if ((strlen(buff)>1) && (buff[0]==':'))
 					{
-					    title=strtok(strtok(buff,":"),"\n"); //Remove 1st ":"
-					    asprintf(&title,"%s%s",title,":");
+					    title=strtok(buff,":");
 					    cOsdItem *item = new cOsdItem(title);
 					    item->SetSelectable(false);
 					    Add(item);

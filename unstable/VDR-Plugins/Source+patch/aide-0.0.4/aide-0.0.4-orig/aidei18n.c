@@ -12,7 +12,7 @@ const tI18nPhrase aidePhrases[] = {
   { "VDR Help", // English
     "VDR Hilfe", // Deutsch
     "", // Slovenski
-    "", // Italiano
+    "Aiuto VDR", // Italiano
     "", // Nederlands
     "", // Português
     "VDR Aide", // Français
@@ -31,7 +31,7 @@ const tI18nPhrase aidePhrases[] = {
   { "Help", // English
     "Hilfe", // Deutsch
     "", // Slovenski
-    "", // Italiano
+    "Aiuto", // Italiano
     "", // Nederlands
     "", // Português
     "Aide", // Français
@@ -50,7 +50,7 @@ const tI18nPhrase aidePhrases[] = {
   { "Available help topics:", // English
     "Die zugänglichen Themen:", // Deutsch
     "", // Slovenski
-    "", // Italiano
+    "Argomenti aiuto disponibili", // Italiano
     "", // Nederlands
     "", // Português
     "Liste des aides disponibles:", // Français
@@ -69,7 +69,7 @@ const tI18nPhrase aidePhrases[] = {
   { "StillImage", // English
     "Bild", // Deutsch
     "", // Slovenski
-    "", // Italiano
+    "Immagine", // Italiano
     "", // Nederlands
     "", // Português
     "", // Français
@@ -88,7 +88,7 @@ const tI18nPhrase aidePhrases[] = {
   { " %sPlugin : %s", // English
     "", // Deutsch
     "", // Slovenski
-    "", // Italiano
+    " %sPlugin : %s", // Italiano
     "", // Nederlands
     "", // Português
     "", // Français
@@ -107,7 +107,7 @@ const tI18nPhrase aidePhrases[] = {
   { " %sVersion : %s", // English
     "", // Deutsch
     "", // Slovenski
-    "", // Italiano
+    " %sVersione : %s", // Italiano
     "", // Nederlands
     "", // Português
     "", // Français
@@ -126,7 +126,7 @@ const tI18nPhrase aidePhrases[] = {
   { " %sBy : %s", // English
     "", // Deutsch
     "", // Slovenski
-    "", // Italiano
+    " %sDa : %s"", // Italiano
     "", // Nederlands
     "", // Português
     " %sPar : %s", // Français

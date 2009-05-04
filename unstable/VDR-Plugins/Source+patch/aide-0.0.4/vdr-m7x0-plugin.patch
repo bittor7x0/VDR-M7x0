@@ -1,18 +1,18 @@
-diff -Naur aide-0.0.3-orig/aide.h aide-0.0.3/aide.h
---- aide-0.0.3-orig/aide.h	2004-11-02 22:51:31.000000000 +0100
-+++ aide-0.0.3/aide.h	2007-08-01 10:24:56.000000000 +0200
+diff -Naur aide-0.0.4-orig/aide.h aide-0.0.4/aide.h
+--- aide-0.0.4-orig/aide.h	2004-11-02 22:51:31.000000000 +0100
++++ aide-0.0.4/aide.h	2007-08-01 10:24:56.000000000 +0200
 @@ -3,7 +3,7 @@
  
  #include <vdr/plugin.h>
  
 -static const char *VERSION        = "0.0.2";
-+static const char *VERSION        = "0.0.3";
++static const char *VERSION        = "0.0.4";
  static const char *DESCRIPTION    = "VDR Help";
  static const char *MAINMENUENTRY  = "Help";
  
-diff -Naur aide-0.0.3-orig/aidei18n.c aide-0.0.3/aidei18n.c
---- aide-0.0.3-orig/aidei18n.c	2004-11-06 12:40:37.000000000 +0100
-+++ aide-0.0.3/aidei18n.c	2007-08-01 10:24:56.000000000 +0200
+diff -Naur aide-0.0.4-orig/aidei18n.c aide-0.0.4/aidei18n.c
+--- aide-0.0.4-orig/aidei18n.c	2004-11-06 12:40:37.000000000 +0100
++++ aide-0.0.4/aidei18n.c	2007-08-01 10:24:56.000000000 +0200
 @@ -19,7 +19,7 @@
      "", // Norsk
      "", // suomi
@@ -76,9 +76,9 @@ diff -Naur aide-0.0.3-orig/aidei18n.c aide-0.0.3/aidei18n.c
      "", // Ελληνικά (Greek)
      "", // Svenska
      "", // Romaneste
-diff -Naur aide-0.0.3-orig/aideplayer.c aide-0.0.3/aideplayer.c
---- aide-0.0.3-orig/aideplayer.c	2004-11-03 22:37:28.000000000 +0100
-+++ aide-0.0.3/aideplayer.c	2007-08-01 10:43:47.000000000 +0200
+diff -Naur aide-0.0.4-orig/aideplayer.c aide-0.0.4/aideplayer.c
+--- aide-0.0.4-orig/aideplayer.c	2004-11-03 22:37:28.000000000 +0100
++++ aide-0.0.4/aideplayer.c	2007-08-01 10:43:47.000000000 +0200
 @@ -1,5 +1,11 @@
  #include "aideplayer.h"
 -#include <linux/dvb/video.h>
@@ -92,9 +92,9 @@ diff -Naur aide-0.0.3-orig/aideplayer.c aide-0.0.3/aideplayer.c
  #include <vdr/plugin.h>
  
  cAidePlayer::cAidePlayer(void)
-diff -Naur aide-0.0.3-orig/Makefile aide-0.0.3/Makefile
---- aide-0.0.3-orig/Makefile	2004-11-03 22:40:28.000000000 +0100
-+++ aide-0.0.3/Makefile	2007-08-01 10:33:29.000000000 +0200
+diff -Naur aide-0.0.4-orig/Makefile aide-0.0.4/Makefile
+--- aide-0.0.4-orig/Makefile	2004-11-03 22:40:28.000000000 +0100
++++ aide-0.0.4/Makefile	2007-08-01 10:33:29.000000000 +0200
 @@ -16,13 +16,13 @@
  ### The C++ compiler and options:
  
@@ -156,3 +156,15 @@ diff -Naur aide-0.0.3-orig/Makefile aide-0.0.3/Makefile
  
  dist: clean
  	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur aide-0.0.4-orig/README aide-0.0.4/README
+--- aide-0.0.4-orig/README	Mon May 04 08:59:10 2009
++++ aide-0.0.4/README	Mon May 04 09:04:57 2009
+@@ -30,7 +30,7 @@
+ 
+ Sad
+ 
+-VDR-Aide "0.0.3"
++VDR-Aide "0.0.4"
+ 
+ French is not one of the foreign languages I learned :( 
+ 

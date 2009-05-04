@@ -1,4 +1,4 @@
-VDR-Aide "0.0.3"
+VDR-Aide "0.0.4"
 
 This is a modification and expansion of the original vdr-aide plugin written by Sad. 
 My intention was to make an OSD help browser for VDR immediately available for
