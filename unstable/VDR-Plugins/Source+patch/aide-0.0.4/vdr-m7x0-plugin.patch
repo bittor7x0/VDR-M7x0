@@ -67,6 +67,15 @@ diff -Naur aide-0.0.4-orig/aidei18n.c aide-0.0.4/aidei18n.c
      "", // ÅëëçíéêÜ (Greek)
      "", // Svenska
      "", // Romaneste
+@@ -126,7 +126,7 @@
+   { " %sBy : %s", // English
+     "", // Deutsch
+     "", // Slovenski
+-    " %sDa : %s"", // Italiano
++    " %sDa : %s", // Italiano
+     "", // Nederlands
+     "", // Português
+     " %sPar : %s", // Français
 @@ -133,7 +133,7 @@
      "", // Norsk
      "", // suomi
