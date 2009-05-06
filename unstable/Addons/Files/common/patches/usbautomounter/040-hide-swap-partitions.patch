@@ -1,0 +1,12 @@
+diff -Naur usbautomounter-orig/fs_id_reader.c usbautomounter/fs_id_reader.c
+--- usbautomounter-orig/fs_id_reader.c	2009-05-04 10:39:10.000000000 +0200
++++ usbautomounter/fs_id_reader.c	2009-05-05 13:53:44.000000000 +0200
+@@ -42,6 +42,8 @@
+ 
+ static int read_fs_id(struct partition *part)
+ {
++	if(part->type==130) /*usbautomaounter don't touch swap partitions*/
++		return 1;
+ 	int i;
+ 	int r;
+ 

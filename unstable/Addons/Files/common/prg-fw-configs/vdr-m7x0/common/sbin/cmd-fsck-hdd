@@ -5,7 +5,7 @@
 /usr/bin/kill-vdr
 
 # Umount disks
-/sbin/usbautomounter umount nofsck
+/sbin/usbautomounter umount nofsck nolazy
 
 # Mount disks with fsck
 /sbin/usbautomounter mount fsck

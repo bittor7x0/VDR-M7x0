@@ -1,0 +1,183 @@
+diff -Naur usbautomounter-orig/mount.c usbautomounter/mount.c
+--- usbautomounter-orig/mount.c	2009-05-04 10:39:10.000000000 +0200
++++ usbautomounter/mount.c	2009-05-06 11:49:47.000000000 +0200
+@@ -259,6 +259,7 @@
+ 
+ 	flags = parse_mount_opts(mnt_flags, default_flags);
+ 
++	SYSLOG_INFO("mounting '%s' on '%s'",dev,mnt_point);
+ 	if (mount(dev, mnt_point, type, flags, NULL)) {
+ 		SYSLOG_ERR("Cannot mount '%s' to '%s'", dev, mnt_point);
+ 		rm_all_dirs_prefixed(mnt_prefix, mnt_point);
+@@ -268,9 +269,10 @@
+ 	return 0;
+ }
+ 
+-int do_umount(char *mnt_prefix, struct mounted *mounted)
++int do_umount(char *mnt_prefix, struct mounted *mounted, int lazy)
+ {
+ 	int r;
++	SYSLOG_INFO("unmounting '%s' on '%s'",mounted->dev,mounted->mountpoint);
+ 	if ((r = umount2(mounted->mountpoint, 0))) {
+ 		if (errno != EBUSY) {
+ 			SYSLOG_ERR("Cannot umount '%s' on '%s'", mounted->dev,
+@@ -279,6 +281,8 @@
+ 		}
+ 		SYSLOG_WARN("Mount point '%s' on '%s' busy try lazy umount.",
+ 				mounted->dev, mounted->mountpoint);
++		if(!lazy)
++			return r;
+ 		r = umount2(mounted->mountpoint, MNT_DETACH);
+ 		if (r && errno != EBUSY) {
+ 			SYSLOG_ERR("Lazy umount '%s' on '%s' failed", mounted->dev,
+@@ -291,23 +295,23 @@
+ 	return 0;
+ }
+ 
+-void do_umount_all(char *mnt_prefix, struct mounted_list *mounts)
++int do_umount_all(char *mnt_prefix, struct mounted_list *mounts, int lazy)
+ {
+ 	struct mounted *cur_mnt;
+ 	cur_mnt = mounts->last; /* Umount in reverse order */
++	int res=0;
+ 	while (cur_mnt) {
+-		do_umount(mnt_prefix, cur_mnt);
+-		mounts->last = cur_mnt->prev;
+-		if (mounts->last) {
+-			mounts->last->next =  NULL;
+-		} else {
+-			mounts->first = NULL;
++		if(do_umount(mnt_prefix,cur_mnt,lazy))
++		{
++			cur_mnt=cur_mnt->prev;
++			res++;
++			continue;
+ 		}
+-		free(cur_mnt->dev);
+-		free(cur_mnt->mountpoint);
+-		free(cur_mnt);
+-		cur_mnt = mounts->last;
++		struct mounted *prev=cur_mnt->prev;
++		delete_mounted(mounts,cur_mnt);
++		cur_mnt=prev;
+ 	}
++	return res;
+ }
+ 
+ struct mounted *get_mounted_by(struct mounted_list *mounts,
+diff -Naur usbautomounter-orig/mount.h usbautomounter/mount.h
+--- usbautomounter-orig/mount.h	2009-05-04 10:39:10.000000000 +0200
++++ usbautomounter/mount.h	2009-05-06 11:49:47.000000000 +0200
+@@ -45,7 +45,7 @@
+ 		const char *dev, const char *mountpoint);
+ int do_mount(char *mnt_prefix, char *dev, char *mnt_point, char *type,
+ 		const char *mnt_flags, int default_flags);
+-int do_umount(char *mnt_prefix, struct mounted *mounted);
+-void do_umount_all(char *mnt_prefix, struct mounted_list *mounts);
++int do_umount(char *mnt_prefix, struct mounted *mounted, int lazy);
++int do_umount_all(char *mnt_prefix, struct mounted_list *mounts, int lazy);
+ void delete_mounted(struct mounted_list *mounts, struct mounted *mounted);
+ #endif
+diff -Naur usbautomounter-orig/usbautomounter.c usbautomounter/usbautomounter.c
+--- usbautomounter-orig/usbautomounter.c	2009-05-06 16:23:16.000000000 +0200
++++ usbautomounter/usbautomounter.c	2009-05-06 16:30:40.000000000 +0200
+@@ -202,7 +202,7 @@
+ 			EXEC_SIMPLE(cont->conf.action_volume_lost, 2, cur_mounted->dev,
+ 					cur_mounted->mountpoint);
+ 
+-		do_umount(cont->conf.mount_prefix, cur_mounted);
++		do_umount(cont->conf.mount_prefix, cur_mounted, 1);
+ 
+ 		tmp = cur_mounted->prev;
+ 		delete_mounted(&cont->mounted_list, cur_mounted);
+@@ -667,7 +667,7 @@
+ 		cur_mnt = tmp_mnt;
+ 	}
+ 
+-	do_umount_all(cont->conf.mount_prefix, &cont->mounted_list);
++	do_umount_all(cont->conf.mount_prefix, &cont->mounted_list, 1);
+ 
+ 	part = cont->part_list.first;
+ 	while (part) {
+@@ -744,7 +744,7 @@
+ 	return 0;
+ }
+ 
+-static void umount_partitions(struct usbmounter_context *cont, int force_fsck)
++static int umount_partitions(struct usbmounter_context *cont, int force_fsck ,int lazy)
+ {
+ 	struct partition *part;
+ 	struct mounted *cur_mnt;
+@@ -767,7 +767,7 @@
+ 		cur_mnt = tmp_mnt;
+ 	}
+ 
+-	do_umount_all(cont->conf.mount_prefix, &cont->mounted_list);
++	int res=do_umount_all(cont->conf.mount_prefix, &cont->mounted_list, lazy);
+ 
+ 	part = cont->part_list.first;
+ 	while (part) {
+@@ -785,8 +785,9 @@
+ 		delete_partition(&cont->part_list, part);
+ 		part = tmp_part;
+ 	}
++	return res;
+ }
+-static int do_auto_umount_mounted(int force_fsck)
++static int do_auto_umount_mounted(int force_fsck, int lazy)
+ {
+ 	struct usbmounter_context context;
+ 	openlog("usbautomounter", LOG_PID | LOG_CONS, LOG_DAEMON);
+@@ -794,22 +795,23 @@
+ 	get_context(&context);
+ 	check_devs_mounted(&context);
+ 	umount_lost_volumes(&context);
+-	umount_partitions(&context, force_fsck);
++	int res=umount_partitions(&context, force_fsck, lazy);
+ 	write_mount_table(&context.conf, context.table_file, &context.table);
+ 	close_mount_table_file(context.table_file);
+ 	free_config(&context.conf);
+ 	SYSLOG_INFO("usb auto mounter finished");
+ 	closelog();
+-	return 0;
++	return res;
+ }
+ 
+ static void print_usage() {
+ 	fprintf(stderr, "usbautomounter " USB_MOUNTER_VERSION_STR "\n\n");
+-	fprintf(stderr, "usbautomounter <command> [fsck|nofsck]\n");
++	fprintf(stderr, "usbautomounter <command> [fsck|nofsck] [lazy]\n");
+ 	fprintf(stderr, "\t<command> := usb | mount | remount | umount\n");
+ 	fprintf(stderr, "\tusb | mount | remount\tmounts/remounts all usb storage devices\n");
+ 	fprintf(stderr, "\tumount\t\tumounts all mounted usb storage devices\n");
+ 	fprintf(stderr, "\tfsck|nofsck\toptional, force or disable filesystems check\n");
++	fprintf(stderr, "\tnolazy\t\toptional, not unmount busy devices\n");
+ }
+ 
+ int main(int argc, char **argv)
+@@ -819,6 +821,7 @@
+ 		return 1;
+ 	}
+ 
++	int lazy=1;
+ 	int force_fsck = 0;
+ 	int f;
+ 	for(f=2;f<argc;f++)
+@@ -827,6 +830,8 @@
+ 			force_fsck=1;
+ 		else if(!strcasecmp(argv[f],"nofsck"))
+ 			force_fsck=-1;
++		else if(!strcasecmp(argv[f],"nolazy"))
++			lazy=0;
+ 	}
+ 
+ 	if (!strcasecmp(argv[1],"mount")) {
+@@ -841,7 +846,7 @@
+ 	}
+ 
+ 	if (!strcasecmp(argv[1],"umount")) {
+-		return do_auto_umount_mounted(force_fsck);
++		return do_auto_umount_mounted(force_fsck,lazy);
+ 	}
+ 	return 1;
+ }
