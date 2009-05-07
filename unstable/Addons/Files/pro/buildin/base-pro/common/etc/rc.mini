@@ -40,7 +40,7 @@ echo -n "Factory reset: "
 if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
 	[ -f /rw-flash/etc/flash_content ] && mv /rw-flash/etc/flash_content \
 		/var/tmp/flash_content.etc
-	if [ ${SYSTEMTYPE} = m740 ] ; then
+	if [ ${SYSTEMTYPE} != m750s ] ; then
 		cp /rw-flash/flash_content /var/tmp
 		rm -rf /rw-flash/* /rw-flash/.[a-zA-Z1-9]*
 		mv /var/tmp/flash_content /rw-flash

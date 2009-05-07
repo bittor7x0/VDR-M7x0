@@ -1,0 +1,22 @@
+diff -Naur tool-box-orig/pic_tool.c tool-box/pic_tool.c
+--- tool-box-orig/pic_tool.c	2009-05-06 22:07:21.000000000 +0200
++++ tool-box/pic_tool.c	2009-05-07 20:12:27.000000000 +0200
+@@ -674,6 +674,8 @@
+ 
+ 	if (!strcasecmp(systype,"m740")) {
+ 		return !memcmp(buf + 16,"M740AV",6);
++	} else if (!strcasecmp(systype,"m750t")) {
++		return !memcmp(buf + 16,"M750T_EPG",9);
+ 	} else if (!strcasecmp(systype,"m750s")) {
+ 		return !memcmp(buf + 16,"M750AV",6);
+ 	}
+@@ -715,6 +717,9 @@
+ 	if (!strcasecmp(systype,"m740")) {
+ 		memcpy(buf + 16,"M740AV",6);
+ 		return;
++	} else if (!strcasecmp(systype,"m750t")) {
++		memcpy(buf + 16,"M750T_EPG",9);
++		return;
+ 	} else if (!strcasecmp(systype,"m750s")) {
+ 		memcpy(buf + 16,"M750AV",6);
+ 		return;

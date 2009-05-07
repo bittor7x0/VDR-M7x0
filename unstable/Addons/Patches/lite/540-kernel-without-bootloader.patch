@@ -1,0 +1,55 @@
+diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
+--- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2009-05-06 20:24:36.000000000 +0200
++++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2009-05-06 20:31:30.000000000 +0200
+@@ -26,10 +26,10 @@
+ SIEMENS-LINUX-KERNEL_DEPS = $(BASE_BUILD_STAGEFILE) $(SIEMENS-GPL-SRC_DLFILE) $(EGCS_INSTALLED)
+ 
+ ifeq ($(CONFIG_SIEMENS-LINUX-KERNEL),y)
+-ifneq ($(and $(CONFIG_EGCS),$(CONFIG_BOOTLOADER)),y)
++ifneq ($(CONFIG_EGCS),y)
+ # Siemens has chosen this old compiler for compiling the kernel not me.
+ # IMO this is irresponsible.
+-   $(error dependency error: siemens-linux-kernel needs egcs and booloader enabled)
++   $(error dependency error: siemens-linux-kernel needs egcs enabled)
+ endif
+ endif
+ 
+@@ -170,7 +170,7 @@
+ #
+ 
+ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed: \
+-      $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_compiled $(LZMA_BIN)
++      $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_compiled
+ 	$(MKDIR) -p $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)
+ 	$(CP) -f $(SIEMENS-LINUX-KERNEL_DIR)/vmlinux $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)
+ 	$(CAT) $(SIEMENS-LINUX-KERNEL_DIR)/System.map | $(SED) -e "s/^ffffffff//" > \
+@@ -180,8 +180,8 @@
+ 	$(PREFIX_BIN)/$(UCLIBC_OBJCOPY) --strip-all -O binary \
+ 		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux \
+ 		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
+-	-$(RM) -f $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.lzma
+-	$(LZMA_BIN) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
++	-$(RM) -f $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.gz
++	$(GZIP) -9 $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
+ 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
+ 		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) \
+ 		INSTALL_MOD_PATH=$(TARGET_ROOT)/$(M7X0_KERNEL_DIR) modules_install
+@@ -216,13 +216,11 @@
+ #
+ $(SIEMENS-LINUX-KERNEL-IMG): \
+       $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed \
+-      $(GEN_KERNEL_IMG_BIN) $(BOOTLOADER_BIN)
+-	$(TOUCH) dummy.bin
+-	$(GZIP) dummy.bin
+-	$(GEN_KERNEL_IMG_BIN) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.lzma \
+-		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/System.map dummy.bin.gz $(BOOTLOADER_BIN) \
+-		$(SIEMENS-LINUX-KERNEL-IMG) -$(CONFIG_M7X0_TYPE)
+-	$(RM) -f dummy.bin.gz
++      $(GEN_KERNEL_HEADER_BIN)
++	($(GEN_KERNEL_HEADER_BIN) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.gz \
++		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/System.map && \
++		cat $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.gz ) \
++	> $(SIEMENS-LINUX-KERNEL-IMG)
+ ifeq ($(strip $(HOST_BS)), OpenBSD)
+ 	@if	$(TEST) `$(STAT) -f b $(SIEMENS-LINUX-KERNEL-IMG)` \
+ 			-gt $(KERNEL_MAX_IMGSIZE); then \
