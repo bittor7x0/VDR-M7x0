@@ -1,0 +1,38 @@
+diff -Naur usbautomounter-orig/usbautomounter.c usbautomounter/usbautomounter.c
+--- usbautomounter-orig/usbautomounter.c	2009-05-07 14:13:24.000000000 +0200
++++ usbautomounter/usbautomounter.c	2009-05-07 14:13:04.000000000 +0200
+@@ -840,19 +840,30 @@
+ 			useSVDRP=-1;
+ 	}
+ 
++	int file=open("/var/usbautomounter",O_CREAT|O_WRONLY);
++	if(file!=-1)
++		if(flock(file,LOCK_EX))
++			SYSLOG_ERR("cannot lock usbautomounter access");
++			
++	int res=1;
+ 	if (!strcasecmp(argv[1],"mount")) {
+ 		int autoboot = 0;
+ 		if (argc >= 3 && !strcasecmp(argv[2],"alarm"))
+ 			autoboot = 1;
+-		return do_auto_all(0,autoboot,force_fsck);
++		res=do_auto_all(0,autoboot,force_fsck);
+ 	}
+ 	if (!strcasecmp(argv[1],"usb") ||
+ 			!strcasecmp(argv[1],"remount")) {
+-		return do_auto_all(1,0,force_fsck);
++		res=do_auto_all(1,0,force_fsck);
+ 	}
+ 
+ 	if (!strcasecmp(argv[1],"umount")) {
+-		return do_auto_umount_mounted(force_fsck,lazy);
++		res=do_auto_umount_mounted(force_fsck,lazy);
+ 	}
+-	return 1;
++	if(file!=-1)
++	{
++		flock(file,LOCK_UN);
++		close(file);
++	}
++	return res;
+ }
