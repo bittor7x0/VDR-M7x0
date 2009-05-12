@@ -235,6 +235,15 @@ diff -Naur usbautomounter-orig/usbautomounter.c usbautomounter/usbautomounter.c
  struct usbmounter_context {
  	int ashotplug;
  	int autoboot;
+@@ -476,7 +477,7 @@
+
+	snprintf(checker_bin, 128, "/sbin/fsck.%s",part->fstypename);
+	checker_bin[127] = 0;
+-	if (cont->ashotplug) {
++	if((cont->ashotplug)&&((useSVDRP<=0)||(!cont->conf.fsck_as_hotplug))) {
+		if (!cont->conf.fsck_as_hotplug)
+			return;
+
 @@ -806,12 +807,13 @@
  
  static void print_usage() {
