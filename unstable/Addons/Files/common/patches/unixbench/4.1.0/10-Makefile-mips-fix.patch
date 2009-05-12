@@ -1,0 +1,21 @@
+diff -Naur unixbench-4.1.0-orig/Makefile unixbench-4.1.0/Makefile
+--- unixbench-4.1.0-orig/Makefile	1999-07-29 00:05:02.000000000 +0200
++++ unixbench-4.1.0/Makefile	2009-03-07 10:06:00.000000000 +0100
+@@ -32,7 +32,7 @@
+ SHELL = /bin/sh
+ #HZ = ????  	   #(read from environment)
+ CFLAGS = -DTIME
+-CC=gcc
++#CC=gcc
+ 
+ ## For Linux 486/Pentium, GCC 2.7.x and 2.8.x
+ #OPTON = -O2 -fomit-frame-pointer -fforce-addr -fforce-mem -ffast-math \
+@@ -44,7 +44,7 @@
+ #	-m386 -malign-loops=1 -malign-jumps=1 -malign-functions=1
+ 
+ ## For Solaris 2, or general-purpose GCC 2.7.x
+-OPTON = -O2 -fomit-frame-pointer -fforce-addr -fforce-mem -ffast-math -Wall
++OPTON = -O2 -fomit-frame-pointer -fforce-addr -ffast-math -Wall
+ 
+ ## Very generic
+ #OPTON = -O

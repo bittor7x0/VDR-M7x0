@@ -1,0 +1,13 @@
+diff -Naur unixbench-4.1.0-orig/Makefile unixbench-4.1.0/Makefile
+--- unixbench-4.1.0-orig/Makefile	2009-03-07 10:06:00.000000000 +0100
++++ unixbench-4.1.0/Makefile	2009-05-09 11:24:57.000000000 +0200
+@@ -227,6 +227,9 @@
+ 	sh pgms/index.sh pgms/index.base results/log >> results/report
+ 	cat results/report
+ 
++strip:
++	$(STRIP) $(BINS)
++
+ clean:
+ 	rm -f $(BINS)
+ 
