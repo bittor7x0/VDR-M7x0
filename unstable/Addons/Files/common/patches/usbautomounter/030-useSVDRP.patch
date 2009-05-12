@@ -236,14 +236,32 @@ diff -Naur usbautomounter-orig/usbautomounter.c usbautomounter/usbautomounter.c
  	int ashotplug;
  	int autoboot;
 @@ -476,7 +477,7 @@
-
-	snprintf(checker_bin, 128, "/sbin/fsck.%s",part->fstypename);
-	checker_bin[127] = 0;
+ 
+ 	snprintf(checker_bin, 128, "/sbin/fsck.%s",part->fstypename);
+ 	checker_bin[127] = 0;
 -	if (cont->ashotplug) {
-+	if((cont->ashotplug)&&((useSVDRP<=0)||(!cont->conf.fsck_as_hotplug))) {
-		if (!cont->conf.fsck_as_hotplug)
-			return;
-
++	if((cont->ashotplug)&&((useSVDRP<=0)||(!cont->conf.fsck_as_hotplug))){
+ 		if (!cont->conf.fsck_as_hotplug)
+ 			return;
+ 
+@@ -621,7 +622,7 @@
+ 
+ out:
+ 	if (check_ret >= 0 && check_ret < 4) {
+-		if (!cont->ashotplug) {
++		if((!cont->ashotplug)||(useSVDRP>0)){
+ 			display_msg(tr("Check successful"));
+ 			sleep(2);
+ 		}
+@@ -636,7 +637,7 @@
+ 	} else {
+ 		SYSLOG_INFO("Device '%s' remains unclean after fsck",
+ 			part->devname);
+-		if (!cont->ashotplug) {
++		if((!cont->ashotplug)||(useSVDRP>0)){
+ 			display_msg(tr("Check failed"));
+ 			sleep(2);
+ 		}
 @@ -806,12 +807,13 @@
  
  static void print_usage() {
