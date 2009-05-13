@@ -1,6 +1,6 @@
 diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
---- VDR-NG-orig/svdrp.c	2009-04-25 22:13:01.000000000 +0200
-+++ VDR-NG/svdrp.c	2009-04-25 22:34:18.000000000 +0200
+--- VDR-NG-orig/svdrp.c	2009-05-12 23:51:37.000000000 +0200
++++ VDR-NG/svdrp.c	2009-05-12 23:03:39.000000000 +0200
 @@ -192,8 +192,9 @@
    "    Enable/Disable Input devices.",
    "DELC <number>\n"
@@ -18,15 +18,27 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
    "    restricts the returned data to present events, following events, or\n"
    "    events at the given time (which must be in time_t form).",
 -  "LSTR [ <number> ]\n"
-+  "LSTR [ <number> ] [path]\n"
++  "LSTR [ <number> | <path> ] [path]\n"
    "    List recordings. Without option, all recordings are listed. Otherwise\n"
 -  "    the information for the given recording is listed.",
 +  "    the information for the given recording is listed. If the keyword 'path'\n ",
-+  "    is given, the path (relative to /var/vdr/video0/) to the recording(s) is included.",
++  "    is given, the path to the recording(s) is included.",
    "LSTT [ <number> ] [ id ]\n"
    "    List timers. Without option, all timers are listed. Otherwise\n"
    "    only the given timer is listed. If the keyword 'id' is given, the\n"
-@@ -662,8 +664,9 @@
+@@ -293,8 +295,9 @@
+   "    format defined in vdr(5) for the 'epg.data' file.  A '.' on a line\n"
+   "    by itself terminates the input and starts processing of the data (all\n"
+   "    entered data is buffered until the terminating '.' is seen).",
+-  "RENR <number> <new name>\n"
+-  "    Rename recording. Number must be the Number as returned by LSTR command.",
++  "RENR [<number> | <path>] <new name>\n"
++  "    Rename recording. If a number is used, it must be the Number as \n"
++  "    returned by LSTR command.",
+   "SCAN\n"
+   "    Forces an EPG scan. If this is a single DVB device system, the scan\n"
+   "    will be done on the primary device unless it is currently recording.",
+@@ -662,8 +665,9 @@
  void cSVDRP::CmdDELR(const char *Option)
  {
    if (*Option) {
@@ -34,11 +46,11 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
 -        cRecording *recording = Recordings.Get(strtol(Option, NULL, 10) - 1);
 +     bool isNumber=isnumber(Option);
 +     if (isNumber || Option[0]=='/') {
-+        cRecording *recording = (isNumber) ? Recordings.Get(strtol(Option, NULL, 10) - 1) : Recordings.GetByName(Option);
++        cRecording *recording = (isNumber) ? Recordings.Get(strtol(Option, NULL, 10) - 1) : ::Recordings.GetByName(Option);
          if (recording) {
             cRecordControl *rc = cRecordControls::GetRecordControl(recording->FileName());
             if (!rc) {
-@@ -678,13 +681,13 @@
+@@ -678,13 +682,13 @@
                Reply(550, "Recording \"%s\" is in use by timer %d", Option, rc->Timer()->Index() + 1);
             }
          else
@@ -55,15 +67,34 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
  }
  
  void cSVDRP::CmdDELT(const char *Option)
-@@ -1067,14 +1070,34 @@
+@@ -1067,32 +1071,69 @@
  void cSVDRP::CmdLSTR(const char *Option)
  {
    bool recordings = Recordings.Update(true);
-+  int recnum=0;
-+  bool incpath=false;
-   if (*Option) {
+-  if (*Option) {
 -     if (isnumber(Option)) {
 -        cRecording *recording = Recordings.Get(strtol(Option, NULL, 10) - 1);
+-        if (recording) {
+-           FILE *f = fdopen(file, "w");
+-           if (f) {
+-              recording->Info()->Write(f, "215-");
+-              fflush(f);
+-              Reply(215, "End of recording information");
+-              // don't 'fclose(f)' here!
+-              }
+-           else
+-              Reply(451, "Can't open file connection");
+-           }
+-        else
+-           Reply(550, "Recording \"%s\" not found", Option);
+-        }
+-     else
+-        Reply(501, "Error in recording number \"%s\"", Option);
+-     }
++  int recnum=0;
++  char *recpath=NULL;
++  bool incpath=false;
++  if (*Option) {
 +      const char *delim = " \t";
 +      const char *p=Option;
 +      p+=strspn(p,delim);
@@ -74,31 +105,42 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
 +            Reply(501, "Error in recording number \"%s\"", Option);
 +         }
 +         p+=strspn(p,delim);
-+      }
++         } 
++      else if (p[0]=='/') {
++         int l = strcspn(p,delim);
++         recpath=strndup(p,l);
++         p+=l;
++         p+=strspn(p,delim);
++         }
 +      incpath=((*p) && (strcmp(p,"path")==0));
 +   }
-+   if (recnum>0) {
-+      cRecording *recording = Recordings.Get(recnum - 1);
-         if (recording) {
-            FILE *f = fdopen(file, "w");
-            if (f) {
-               recording->Info()->Write(f, "215-");
-               fflush(f);
-+              if (incpath) {
-+                 const char *path=recording->FileName();
-+                 if (strncmp(path,"/var/vdr/video0/",16)==0) path+=16;
-+                 Reply(-215, "P %s", path);
-+              }
-               Reply(215, "End of recording information");
-               // don't 'fclose(f)' here!
-               }
-@@ -1084,15 +1107,19 @@
-         else
-            Reply(550, "Recording \"%s\" not found", Option);
-         }
--     else
--        Reply(501, "Error in recording number \"%s\"", Option);
--     }
++   if (recnum>0 || recpath!=NULL ) {
++      cRecording *recording;
++      if (recpath==NULL) 
++         recording = Recordings.Get(recnum - 1);
++      else {
++         recording = Recordings.GetByName(recpath);
++         free(recpath);
++         }
++      if (recording) {
++         FILE *f = fdopen(file, "w");
++         if (f) {
++            recording->Info()->Write(f, "215-");
++            fflush(f);
++            if (incpath) {
++               const char *path=recording->FileName();
++               if (strncmp(path,"/var/vdr/video0/",16)==0) path+=16;
++               Reply(-215, "P %s", path);
++               }
++            Reply(215, "End of recording information");
++            // don't 'fclose(f)' here!
++            }
++         else
++            Reply(451, "Can't open file connection");
++         }
++      else
++         Reply(550, "Recording \"%s\" not found", Option);
++      }
    else if (recordings) {
       cRecording *recording = Recordings.First();
       while (recording) {
@@ -116,3 +158,86 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
       }
    else
       Reply(550, "No recordings available");
+@@ -1489,36 +1530,63 @@
+ 
+ void cSVDRP::CmdRENR(const char *Option)
+ {
+-  bool recordings = Recordings.Update(true);
+-  if (recordings) {
++  if (Recordings.Update(true)) {
+      if (*Option) {
+-        char *tail;
+-        int n = strtol(Option, &tail, 10);
+-        cRecording *recording = Recordings.Get(n - 1);
+-        if (recording && tail && tail != Option) {
+-           int priority = recording->priority;
+-           int lifetime = recording->lifetime;
+-           char *oldName = strdup(recording->Name());
+-           tail = skipspace(tail);
+-           if (recording->Rename(tail, &priority, &lifetime)) {
+-              Reply(250, "Renamed \"%s\" to \"%s\"", oldName, recording->Name());
+-              Recordings.ChangeState();
+-              Recordings.TouchUpdate();
++        int l = strcspn(Option," \t");
++        const char *newName=Option+l;
++        newName = skipspace(newName);
++        if (*newName){
++           char *recId=strndup(Option,l);
++           bool isNumber=isnumber(recId);
++           bool isOk=true;
++           cRecording *recording;
++           if (isNumber) {
++              errno=0;
++              recording = Recordings.Get(strtol(recId, NULL, 10) - 1);
++              if (errno) {
++                 Reply(501, "Wrong number %s", recId);
++                 isOk=false;
++                 }
++              }
++           else {
++              if (recId[0]=='/')
++                 recording = Recordings.GetByName(recId);
++              else {
++                 Reply(501, "Not a path %s", recId);
++                 isOk=false;
++                 }
++              }
++           free(recId);
++           if (isOk && recording){
++              if (strcmp(newName,recording->Name())) {
++                 int priority = recording->priority;
++                 int lifetime = recording->lifetime;
++                 char *oldName = strdup(recording->Name());
++                 if (recording->Rename(newName, &priority, &lifetime)) {
++                    Reply(250, "Renamed \"%s\" to \"%s\"", oldName, recording->Name());
++                    Recordings.ChangeState();
++                    Recordings.TouchUpdate();
++                    }
++                 else 
++                    Reply(501, "Renaming \"%s\" to \"%s\" failed", oldName, newName);
++                 free(oldName);
++                 }
++              else
++                 Reply(550, "Same name given");
+               }
+            else
+-              Reply(501, "Renaming \"%s\" to \"%s\" failed", oldName, tail);
+-           free(oldName);
++              if (!recording) Reply(501, "Recording not found");
+            }
+         else
+-          Reply(501, "Recording not found or wrong syntax");
++           Reply(501, "Missing new name");
+         }
+      else
+-        Reply(501, "Missing Input settings");
++        Reply(501, "No option given");
+      }
+   else
+      Reply(550, "No recordings available");
+ }
+-						
++
+ void cSVDRP::CmdSTAT(const char *Option)
+ {
+   if (*Option) {
