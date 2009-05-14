@@ -17,12 +17,6 @@ echo -n "loading modules ... "
 [ -f /etc/rc.modules ] && ash /etc/rc.modules
 echo "Done";
 
-if [ X"${pic_tool_flags}" != X"NO" ]; then
-    echo -n "execute pic_tool ... "
-    pic_tool ${pic_tool_flags}
-    echo "Done"
-fi
-
 echo -n "starting network:"
 
 echo "lo";

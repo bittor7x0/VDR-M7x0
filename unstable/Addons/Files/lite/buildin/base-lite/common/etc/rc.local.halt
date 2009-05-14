@@ -35,7 +35,7 @@ if [ X"${do_usb_mount}" != X"NO" ] ; then
     echo -n ' usb-mount'
     rm -f /var/tmp/hotplug
     /bin/sync
-    /sbin/usbautomounter umount
+    /sbin/usbautomounter umount noSVDRP
 fi
 
 if [ X"${hd_swap_dev}" != X"NO" ] ; then

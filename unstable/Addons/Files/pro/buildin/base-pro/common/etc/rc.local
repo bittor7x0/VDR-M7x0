@@ -9,12 +9,6 @@ if [ X"${hd_swap_dev}" != X"NO" ] ; then
     /sbin/swapon ${hd_swap_dev}
 fi
 
-if [ X"${do_usb_mount}" != X"NO" ] ; then
-	echo -n ' usb-mount'
-	ln -sf /sbin/usbautomounter /var/tmp/hotplug
-	/sbin/usbautomounter mount
-fi
-
 if [ X"${do_net_mount}" != X"NO" ] ; then
     echo -n ' net-mount'
     ash /etc/rc.netmount

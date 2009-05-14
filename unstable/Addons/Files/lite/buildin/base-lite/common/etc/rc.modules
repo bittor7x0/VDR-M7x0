@@ -1,5 +1,7 @@
 #!/bin/ash
 
+[ -f /etc/rc.conf ] && source /etc/rc.conf
+[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
 # Load DV-Modules
 if [ X"${OSDLOG}" != X"YES" ]; then
     insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
@@ -27,12 +29,22 @@ if [ X"${OSDLOG}" = X"YES" ]; then
     /usr/bin/set-video
 fi
 
+if [ X"${pic_tool_flags}" != X"NO" ]; then
+    echo -n "execute pic_tool ... "
+    pic_tool ${pic_tool_flags}
+    echo "Done"
+fi
+
+if [ X"${do_usb_mount}" != X"NO" ] ; then
+	echo -n ' usb-mount'
+	ln -sf /sbin/usbautomounter /var/tmp/hotplug
+fi
+
 # load default kernel modules
 insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o
 echo "ehci-hcd.o"
 insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o
 echo "usb-ohci.o"
-/bin/sleep 2
 
 # select tuner
 if  [ ${SYSTEMTYPE} = m750s ] ; then

@@ -9,12 +9,6 @@ if [ X"${hd_swap_dev}" != X"NO" ] ; then
     /sbin/swapon ${hd_swap_dev}
 fi
 
-if [ X"${do_usb_mount}" != X"NO" ] ; then
-	echo -n ' usb-mount'
-	ln -sf /sbin/usbautomounter /var/tmp/hotplug
-	/sbin/usbautomounter mount
-fi
-
 if [ -f /rw-flash/.wbx ]; then
     echo -n ' wavebox migration'
     /usr/bin/wavebox-migration

@@ -1,8 +1,6 @@
 #!/bin/ash
 
 {
-# Kill VDR
-/usr/bin/kill-vdr
 
 # Umount disks
 /sbin/usbautomounter umount nofsck nolazy
@@ -10,6 +8,4 @@
 # Mount disks with fsck
 /sbin/usbautomounter mount fsck
 
-# Start VDR
-/usr/bin/start-vdr
 } > /dev/null 2>&1 &
