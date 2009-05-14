@@ -102,7 +102,7 @@ diff -Naur usbautomounter-orig/display.c usbautomounter/display.c
  	int text_height;
  	text_height = font_get_line_height();
  	osd_draw_text_line(0, display_ctx.y_msg, OSD_WIDTH , text_height, txt,
-@@ -342,3 +395,97 @@
+@@ -342,3 +395,99 @@
  		TEXT_ALIGN_CENTER | TEXT_ALIGN_TOP);
  	osd_flush();
  }
@@ -198,7 +198,9 @@ diff -Naur usbautomounter-orig/display.c usbautomounter/display.c
 +	Buffer[MAXBUF-1]=0;
 +	if(!SendSVDRP(Buffer))
 +		return 0;
-+	return RecvSVDRP();
++	if(RecvSVDRP())
++		CloseSVDRP();
++	return 1;
 +}
 diff -Naur usbautomounter-orig/setup.c usbautomounter/setup.c
 --- usbautomounter-orig/setup.c	2009-05-04 10:39:10.000000000 +0200

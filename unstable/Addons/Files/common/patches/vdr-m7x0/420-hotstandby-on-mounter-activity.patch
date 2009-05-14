@@ -1,0 +1,78 @@
+diff -Naur vdr-m7x0-orig/shutdown.c vdr-m7x0/shutdown.c
+--- vdr-m7x0-orig/shutdown.c	2009-05-12 20:17:19.000000000 +0200
++++ vdr-m7x0/shutdown.c	2009-05-12 20:03:25.000000000 +0200
+@@ -14,6 +14,8 @@
+ #include <stdlib.h>
+ #include <sys/types.h>
+ #include <sys/wait.h>
++#include <sys/file.h>
++#include <errno.h>
+ #include "channels.h"
+ #include "config.h"
+ #include "cutter.h"
+@@ -26,6 +28,26 @@
+ 
+ cShutdownHandler ShutdownHandler;
+ 
++bool cUsbAutomounter::Active(void)
++{
++	int file=open("/var/usbautomounter",O_CREAT|O_WRONLY);
++	if(file!=-1)
++	{
++		if(flock(file,LOCK_EX|LOCK_NB))
++		{
++			if(errno==EWOULDBLOCK)
++			{
++				close(file);
++				return true;
++			}
++		}
++		else
++			flock(file,LOCK_UN);
++		close(file);
++	}
++	return false;
++}
++
+ cCountdown::cCountdown(void)
+ {
+   timeout = 0;
+@@ -165,6 +187,11 @@
+      //if (!Interactive || !Interface->Confirm(tr("Editing - shut down anyway?")))
+         return false;
+      }
++  if (cUsbAutomounter::Active()) {
++	setIaMode(0);
++	cDevice::PrimaryDevice()->SetTvSettings(0);
++        return false;
++     }
+ 
+   cTimer *timer = Timers.GetNextActiveTimer();
+   time_t Next = timer ? timer->StartTime() : 0;
+diff -Naur vdr-m7x0-orig/shutdown.h vdr-m7x0/shutdown.h
+--- vdr-m7x0-orig/shutdown.h	2009-05-12 20:17:02.000000000 +0200
++++ vdr-m7x0/shutdown.h	2009-05-12 20:19:23.000000000 +0200
+@@ -14,6 +14,11 @@
+ 
+ #include <time.h>
+ 
++class cUsbAutomounter {
++public:
++  static bool Active(void);
++};
++
+ class cCountdown {
+ private:
+   time_t timeout;      ///< 5-minute countdown timer
+diff -Naur vdr-m7x0-orig/vdr.c vdr-m7x0/vdr.c
+--- vdr-m7x0-orig/vdr.c	2009-05-12 20:17:19.000000000 +0200
++++ vdr-m7x0/vdr.c	2009-05-12 19:57:33.000000000 +0200
+@@ -1337,7 +1337,7 @@
+                ShutdownHandler.countdown.Cancel();
+             }
+ 
+-         if (!Interact && !cRecordControls::Active() && !cCutter::Active() && !Interface->HasSVDRPConnection() && (time(NULL) - cRemote::LastActivity()) > ACTIVITYTIMEOUT) {
++         if (!Interact && !cRecordControls::Active() && !cCutter::Active() && !cUsbAutomounter::Active() && !Interface->HasSVDRPConnection() && (time(NULL) - cRemote::LastActivity()) > ACTIVITYTIMEOUT) {
+             // Handle housekeeping tasks
+ 
+             // Shutdown:
