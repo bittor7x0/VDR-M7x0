@@ -55,7 +55,96 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "ÁíáğáñáãùãŞ",
      "Spela upp",
      "Redare",
-@@ -2255,7 +2255,7 @@
+@@ -1351,7 +1351,7 @@
+     "",//TODO
+     "",//TODO
+     "",//TODO
+-    "",//TODO
++    "Editando - ¿reiniciar igualmente?",
+     "",//TODO
+     "",//TODO
+     "",//TODO
+@@ -1417,7 +1417,7 @@
+     "Trykk en tast for ikke å slå av",
+     "Peru sammutus painamalla mitä tahansa näppäintä",
+     "Naci¶nij dowolny klawisz aby nie wy³±czaæ",
+-    "Pulse una tecla para interrumpir apagar",
++    "Pulse un botón para interrumpir apagado",
+     "Ğßåóå İíá ğëŞêôñï ãéÜ áêıñùäç ôåñìáôéóìïı",
+     "Tryck valfri knapp för att återkalla avstängningen",
+     "Apasã orice tastã pentru a anula închiderea",
+@@ -1439,7 +1439,7 @@
+     "",//TODO
+     "",//TODO
+     "",//TODO
+-    "",//TODO
++    "Pulse un botón para interrumpir reinicio",
+     "",//TODO
+     "",//TODO
+     "",//TODO
+@@ -1461,7 +1461,7 @@
+     "",//TODO
+     "VDR sammuu myöhemmin - pakota virtakytkimellä",
+     "",//TODO
+-    "",//TODO
++    "VDR se apagará más tarde - pulse Apagar para forzar",
+     "",//TODO
+     "",//TODO
+     "",//TODO
+@@ -1483,12 +1483,34 @@
+     "",//TODO
+     "VDR sammuu %s minuutin kuluttua",
+     "",//TODO
++    "VDR se apagará en %s minutos",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "VDR will go in HotStandby in %s minutes",
++    "",//TODO
++    "",//TODO
++    "",//TODO
+     "",//TODO
+     "",//TODO
+     "",//TODO
+     "",//TODO
+     "",//TODO
+     "",//TODO
++    "VDR hará un apagado rápido en %s minutos",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
+     "",//TODO
+     "",//TODO
+     "",//TODO
+@@ -1505,7 +1527,7 @@
+     "",//TODO
+     "Leikkaus kesken - sammutetaanko?",
+     "",//TODO
+-    "",//TODO
++    "Editando - ¿apagar igualmente?",
+     "",//TODO
+     "",//TODO
+     "",//TODO
+@@ -1527,7 +1549,7 @@
+     "",//TODO
+     "Laajennos %s herää %ld minuutin kuluttua - sammutetaanko?",
+     "",//TODO
+-    "",//TODO
++    "El plugin %s iniciará en %ld min, ¿continuar?",
+     "",//TODO
+     "",//TODO
+     "",//TODO
+@@ -2255,7 +2277,7 @@
      "Filnavn",
      "Tiedosto",
      "Plik",
@@ -64,7 +153,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Áñ÷åßï",
      "Filnamn",
      "Fiºier",
-@@ -2873,7 +2873,7 @@
+@@ -2873,7 +2895,7 @@
      "Programoversikt",
      "Ohjelmaopas",
      "EPG",
@@ -73,7 +162,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Çëåêôñïíéêüò ïäçãüò ğñïãñÜììáôïò",
      "EPG",
      "EPG",
-@@ -4150,7 +4150,7 @@
+@@ -4150,7 +4172,7 @@
      "Opptaksmargin slutt (min)",
      "Lopetusmarginaali (min)",
      "Margines na koñcu (min)",
@@ -82,7 +171,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Ğñüóèåôïò ÷ñüíïò óôü ôİëïò (ëåğôÜ)",
      "Marginal för stopp (min)",
      "Marjã la oprire (min)",
-@@ -4282,7 +4282,7 @@
+@@ -4282,7 +4304,7 @@
      "Bruk episodenavn",
      "Käytä jakson nimeä",
      "U¿ywaj nazwy epizodu",
@@ -91,7 +180,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "×ñŞóç ïíüìáôïò åğåéóïäßïõ",
      "Använd episodnamn",
      "Utilizeazã numele episodului",
-@@ -4414,7 +4414,7 @@
+@@ -4414,7 +4436,7 @@
      "Maksimal størrelse på videofiler (MB)",
      "Suurin tiedostokoko (Mt)",
      "Maksymalny rozmiar pliku (MB)",
@@ -100,7 +189,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Ìİãéóôï ìİãåèïò áñ÷åßïõ (MB)",
      "Maximal filstorlek för inspelning (MB)",
      "Dimensiune maximã a fiºierului video (MB)",
-@@ -4436,7 +4436,7 @@
+@@ -4436,7 +4458,7 @@
      "Splitt redigerte filer",
      "Jaottele muokatut tallenteet",
      "Dziel edytowane pliki",
@@ -109,7 +198,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Äéáìİëéóìüò åğåîåñãáóìİíùí áñ÷åßùí",
      "Dela upp redigerade filer",
      "Separare fiºiere montate",
-@@ -4701,7 +4701,7 @@
+@@ -4701,7 +4723,7 @@
      "ManTirOnsTorFreLørSøn",
      "Ma Ti Ke To Pe La Su ",
      "PonWto¦roCzwPi±SobNie",
@@ -118,7 +207,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "ÄåõÔñßÔåôĞİìĞáñÓÜâKõñ",
      "MånTisOnsTorFreLörSön",
      "LunMarMieJoiVinSâmDum",
-@@ -4724,7 +4724,7 @@
+@@ -4724,7 +4746,7 @@
      "",// TODO
      " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
      " a±bcædeêfghijkl³mnñoópqrs¶tuvwxyz¼¿0123456789-.#~,/_@",
@@ -127,7 +216,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      " áÜâãäåİæçŞèéßêëìíîïüğñóòôõıö÷øùş0123456789-.#~,/_@abcdefghijklmnopqrstuvwxyz",
      " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
      " aãâbcdefghiîjklmnopqrsºtşuvwxyz0123456789-.#~,/_@",
-@@ -4747,7 +4747,7 @@
+@@ -4747,7 +4769,7 @@
      "",//TODO
      " 0\t-.#~,/_@1\tabcäå2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz9",
      " 0\t-.#~,/_@1\tabc2±æ\tdef3ê\tghi4\tjkl5³\tmno6ñó\tpqrs7¶\ttuv8\twxyz9¼¿",
@@ -136,7 +225,61 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "",//TODO
      " 0\t-.#~,/_@1\tabcåä2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz",
      " 0\t-.#~,/_@1\taãâbc2\tdef3\tghiî4\tjkl5\tmno6\tpqrsº7\ttşuv8\twxyz9",
-@@ -5938,7 +5938,7 @@
+@@ -4770,7 +4792,7 @@
+     "Lære fjernkontrolltaster",
+     "Kaukosäätimen opettaminen",
+     "Nauka klawiszy pilota",
+-    "Aprendiendo teclas del mando",
++    "Aprendiendo botones del mando",
+     "ÅêìÜèçóç ğëŞêôñùí ôçëå÷åéñéóìïı",
+     "Inlärning av fjärrkontrollsknappar",
+     "Învãşare taste telecomandã",
+@@ -4814,7 +4836,7 @@
+     "Trykk en av tastene på fjernkontrollen",
+     "Paina mitä tahansa kaukosäätimen näppäintä",
+     "Naci¶nij dowolny klawisz na pilocie",
+-    "Pulse cualquier tecla en el mando",
++    "Pulse cualquier botón en el mando",
+     "Ğßåóå İíá ğëŞêôñï óôï ôçëå÷åéñéóôŞñéï",
+     "Tryck valfri tangent på fjärrkontrollen",
+     "Apãsaşi o tastã pe telecomandã",
+@@ -4858,7 +4880,7 @@
+     "Ikke trykk på noen av tastene...",
+     "Älä paina kaukosäätimen näppäimiä...",
+     "Nie naciskaj teraz ¿adnego klawisza...",
+-    "No pulse ninguna tecla...",
++    "No pulse ningún botón...",
+     "ÌŞí ğáôÜò ğëŞêôñá...",
+     "Tryck inte på någon knapp...",
+     "Nu apãsaşi nici o tastã...",
+@@ -4902,7 +4924,7 @@
+     "Trykk tasten for '%s'",
+     "Paina näppäintä toiminnolle '%s'",
+     "Naci¶nij klawisz dla '%s'",
+-    "Pulse la tecla para '%s'",
++    "Pulse un botón para '%s'",
+     "Ğßåóå ôï ğëŞêôñï ãéÜ '%s'",
+     "Tryck på knappen för '%s'",
+     "Apãsaşi tasta pentru '%s'",
+@@ -5012,7 +5034,7 @@
+     "",// TODO
+     "näppäimen puuttuessa paina 'Valikko'",
+     "(naci¶nij 'Menu' aby pomin±æ ten klawisz)",
+-    "Pulse 'Menú' para omitir esta tecla",
++    "Pulse 'Menú' para omitir este botón",
+     "Ğßåóå 'ìåíïı' ãéá ğñïóğİñáóç áõôïı ôïı ğëŞêôñïõ",
+     "(Tryck 'Meny' för att hoppa över knappen.)",
+     "Apãsaşi 'Meniu' pentru a sãri peste aceastã tastã",
+@@ -5034,7 +5056,7 @@
+     "Fase 3: Lagre tastekoder",
+     "Vaihe 3: Näppäinkoodien tallentaminen",
+     "Etap 3: Zapisywanie kodów klawiszy",
+-    "Fase 3: Guardando los códigos de teclas",
++    "Fase 3: Guardando los códigos de botones",
+     "Öáóç 3: ÁğïèŞêåõóç êùäéêşí",
+     "Fas 3: Spara knappkoder",
+     "Faza 3: Salvarea codurilor de taste",
+@@ -5938,7 +5960,7 @@
      " Stopp avspilling",
      " Lopeta toisto",
      " Zatrzymaj odtwarzanie",
