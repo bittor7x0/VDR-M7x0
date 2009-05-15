@@ -91,41 +91,42 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "",//TODO
      "",//TODO
      "",//TODO
-@@ -1483,12 +1483,34 @@
+@@ -1483,6 +1483,8 @@
      "",//TODO
      "VDR sammuu %s minuutin kuluttua",
      "",//TODO
 +    "VDR se apagará en %s minutos",
 +    "",//TODO
-+    "",//TODO
-+    "",//TODO
-+    "",//TODO
-+    "",//TODO
-+    "",//TODO
-+    "",//TODO
-+    "",//TODO
-+    "",//TODO
-+    "",//TODO
+     "",//TODO
+     "",//TODO
+     "",//TODO
+@@ -1492,6 +1494,26 @@
+     "",//TODO
+     "",//TODO
+     "",//TODO
 +  },
 +  { "VDR will go in HotStandby in %s minutes",
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
-     "",//TODO
-     "",//TODO
-     "",//TODO
-     "",//TODO
-     "",//TODO
-     "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
 +    "VDR hará un apagado rápido en %s minutos",
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
 +    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
      "",//TODO
      "",//TODO
-     "",//TODO
+   },
 @@ -1505,7 +1527,7 @@
      "",//TODO
      "Leikkaus kesken - sammutetaanko?",
@@ -162,7 +163,256 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Çëåêôñïíéêüò ïäçãüò ðñïãñÜììáôïò",
      "EPG",
      "EPG",
-@@ -4150,7 +4172,7 @@
+@@ -2885,6 +2907,248 @@
+     "EPG",
+     "EPG",
+   },
++  { "EPG Channel Modes",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Modos EPG por canal",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$Channel Default Mode",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Modo por defecto para canales",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$Channel Inverse Mode",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Modo inverso para canales",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$Channel Limit",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Límite para canales",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$Default Mode",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Por defecto",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$Do not save",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "No guardar",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$Foreign EPG",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "EPG externa",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$Full EPG",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "EPG completa",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$Inverse Mode",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Modo inverso",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$No EPG",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Sin EPG",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
++  { "Setup.EPG$Now and Next only",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Ahora y Después",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
+   { "DVB",
+     "DVB",
+     "DVB",
+@@ -4150,7 +4414,7 @@
      "Opptaksmargin slutt (min)",
      "Lopetusmarginaali (min)",
      "Margines na koñcu (min)",
@@ -171,7 +421,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Ðñüóèåôïò ÷ñüíïò óôü ôÝëïò (ëåðôÜ)",
      "Marginal för stopp (min)",
      "Marjã la oprire (min)",
-@@ -4282,7 +4304,7 @@
+@@ -4282,7 +4546,7 @@
      "Bruk episodenavn",
      "Käytä jakson nimeä",
      "U¿ywaj nazwy epizodu",
@@ -180,7 +430,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "×ñÞóç ïíüìáôïò åðåéóïäßïõ",
      "Använd episodnamn",
      "Utilizeazã numele episodului",
-@@ -4414,7 +4436,7 @@
+@@ -4414,7 +4678,7 @@
      "Maksimal størrelse på videofiler (MB)",
      "Suurin tiedostokoko (Mt)",
      "Maksymalny rozmiar pliku (MB)",
@@ -189,7 +439,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "ÌÝãéóôï ìÝãåèïò áñ÷åßïõ (MB)",
      "Maximal filstorlek för inspelning (MB)",
      "Dimensiune maximã a fiºierului video (MB)",
-@@ -4436,7 +4458,7 @@
+@@ -4436,7 +4700,7 @@
      "Splitt redigerte filer",
      "Jaottele muokatut tallenteet",
      "Dziel edytowane pliki",
@@ -198,7 +448,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "ÄéáìÝëéóìüò åðåîåñãáóìÝíùí áñ÷åßùí",
      "Dela upp redigerade filer",
      "Separare fiºiere montate",
-@@ -4701,7 +4723,7 @@
+@@ -4701,7 +4965,7 @@
      "ManTirOnsTorFreLørSøn",
      "Ma Ti Ke To Pe La Su ",
      "PonWto¦roCzwPi±SobNie",
@@ -207,7 +457,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "ÄåõÔñßÔåôÐÝìÐáñÓÜâKõñ",
      "MånTisOnsTorFreLörSön",
      "LunMarMieJoiVinSâmDum",
-@@ -4724,7 +4746,7 @@
+@@ -4724,7 +4988,7 @@
      "",// TODO
      " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
      " a±bcædeêfghijkl³mnñoópqrs¶tuvwxyz¼¿0123456789-.#~,/_@",
@@ -216,7 +466,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      " áÜâãäåÝæçÞèéßêëìíîïüðñóòôõýö÷øùþ0123456789-.#~,/_@abcdefghijklmnopqrstuvwxyz",
      " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
      " aãâbcdefghiîjklmnopqrsºtþuvwxyz0123456789-.#~,/_@",
-@@ -4747,7 +4769,7 @@
+@@ -4747,7 +5011,7 @@
      "",//TODO
      " 0\t-.#~,/_@1\tabcäå2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz9",
      " 0\t-.#~,/_@1\tabc2±æ\tdef3ê\tghi4\tjkl5³\tmno6ñó\tpqrs7¶\ttuv8\twxyz9¼¿",
@@ -225,7 +475,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "",//TODO
      " 0\t-.#~,/_@1\tabcåä2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz",
      " 0\t-.#~,/_@1\taãâbc2\tdef3\tghiî4\tjkl5\tmno6\tpqrsº7\ttþuv8\twxyz9",
-@@ -4770,7 +4792,7 @@
+@@ -4770,7 +5034,7 @@
      "Lære fjernkontrolltaster",
      "Kaukosäätimen opettaminen",
      "Nauka klawiszy pilota",
@@ -234,7 +484,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "ÅêìÜèçóç ðëÞêôñùí ôçëå÷åéñéóìïý",
      "Inlärning av fjärrkontrollsknappar",
      "Învãþare taste telecomandã",
-@@ -4814,7 +4836,7 @@
+@@ -4814,7 +5078,7 @@
      "Trykk en av tastene på fjernkontrollen",
      "Paina mitä tahansa kaukosäätimen näppäintä",
      "Naci¶nij dowolny klawisz na pilocie",
@@ -243,7 +493,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Ðßåóå Ýíá ðëÞêôñï óôï ôçëå÷åéñéóôÞñéï",
      "Tryck valfri tangent på fjärrkontrollen",
      "Apãsaþi o tastã pe telecomandã",
-@@ -4858,7 +4880,7 @@
+@@ -4858,7 +5122,7 @@
      "Ikke trykk på noen av tastene...",
      "Älä paina kaukosäätimen näppäimiä...",
      "Nie naciskaj teraz ¿adnego klawisza...",
@@ -252,7 +502,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "ÌÞí ðáôÜò ðëÞêôñá...",
      "Tryck inte på någon knapp...",
      "Nu apãsaþi nici o tastã...",
-@@ -4902,7 +4924,7 @@
+@@ -4902,7 +5166,7 @@
      "Trykk tasten for '%s'",
      "Paina näppäintä toiminnolle '%s'",
      "Naci¶nij klawisz dla '%s'",
@@ -261,7 +511,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Ðßåóå ôï ðëÞêôñï ãéÜ '%s'",
      "Tryck på knappen för '%s'",
      "Apãsaþi tasta pentru '%s'",
-@@ -5012,7 +5034,7 @@
+@@ -5012,7 +5276,7 @@
      "",// TODO
      "näppäimen puuttuessa paina 'Valikko'",
      "(naci¶nij 'Menu' aby pomin±æ ten klawisz)",
@@ -270,7 +520,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Ðßåóå 'ìåíïý' ãéá ðñïóðÝñáóç áõôïý ôïý ðëÞêôñïõ",
      "(Tryck 'Meny' för att hoppa över knappen.)",
      "Apãsaþi 'Meniu' pentru a sãri peste aceastã tastã",
-@@ -5034,7 +5056,7 @@
+@@ -5034,7 +5298,7 @@
      "Fase 3: Lagre tastekoder",
      "Vaihe 3: Näppäinkoodien tallentaminen",
      "Etap 3: Zapisywanie kodów klawiszy",
@@ -279,7 +529,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Öáóç 3: ÁðïèÞêåõóç êùäéêþí",
      "Fas 3: Spara knappkoder",
      "Faza 3: Salvarea codurilor de taste",
-@@ -5938,7 +5960,7 @@
+@@ -5938,7 +6202,7 @@
      " Stopp avspilling",
      " Lopeta toisto",
      " Zatrzymaj odtwarzanie",
