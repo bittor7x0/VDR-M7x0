@@ -1,7 +1,7 @@
 #!/bin/ash
 
-[ -f /etc/rc.conf ] && source /etc/rc.conf
 [ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+
 # Load DV-Modules
 if [ X"${OSDLOG}" != X"YES" ]; then
     insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
