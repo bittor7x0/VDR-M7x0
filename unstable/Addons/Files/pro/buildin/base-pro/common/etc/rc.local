@@ -47,7 +47,8 @@ db_key=/etc/dropbear/dropbear_rsa_host_key
 [ ! -f $db_key ] && /usr/sbin/dropbearkey -t rsa -f $db_key
 
 if [ X"${inetd}" != X"NO" ]; then
-    echo "inetd";		inetd /etc/inetd.conf
+    echo -n ' starting inetd';
+    inetd /etc/inetd.conf
 fi
 
 if [ X"${webif_start}" != X"NO" ]; then
@@ -72,9 +73,10 @@ if [ X"${memwatch}" != X"NO" ] && [ -d ${memwatch_dir} ] ; then
     /usr/sbin/memwatch "${memwatch_dest}" ${memwatch_interval}
 fi
 
-
-#Rescue keys
-/usr/bin/irexec -d /etc/lircrc
+if [ X"${rescue_keys}" != X"NO" ]; then
+    echo -n ' starting rescue keys'
+    /usr/bin/irexec -d /etc/lircrc
+fi
 
 # Stop serial console logging
 echo "0 4 1 7" > /proc/sys/kernel/printk

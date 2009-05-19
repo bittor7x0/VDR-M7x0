@@ -10,6 +10,6 @@ begin
 prog = irexec
 button = HELP
 button = TV
-config = /etc/vdr/rebootvdr         
+config = /etc/vdr/rebootvdr
 repeat = 5
-end 
+end

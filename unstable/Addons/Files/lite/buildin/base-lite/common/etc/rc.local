@@ -38,8 +38,10 @@ if [ X"${memwatch}" != X"NO" ] && [ -d ${memwatch_dir} ] ; then
     /usr/sbin/memwatch "${memwatch_dest}" ${memwatch_interval}
 fi
 
-#Rescue keys
-/usr/bin/irexec -d /etc/lircrc
+if [ X"${rescue_keys}" != X"NO" ]; then
+    echo -n ' starting rescue keys'
+    /usr/bin/irexec -d /etc/lircrc
+fi
 
 # put here your optional stuff
 

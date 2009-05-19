@@ -10,6 +10,7 @@
         <menu name="Configuración general">
             <entry name="Montar discos USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Montar los discos duros USB al inicio" />
             <entry name="Tiempo de inicio" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Segundos para iniciar VDR antes de una grab. programada" />
+            <entry name="Iniciar botones de rescate" sysconfig="rc.local.conf--rescue_keys" type="bool" value="NO" help1="Reinicia M7x0 con HELP+EXIT y el VDR con HELP+PIP" />
             <entry name="Opciones del VDR" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0 -p 0" help1="Opciones pasadas al ejecutar el VDR (Ver documentación)" />
         </menu>
         <menu name="Configuración de directorios">

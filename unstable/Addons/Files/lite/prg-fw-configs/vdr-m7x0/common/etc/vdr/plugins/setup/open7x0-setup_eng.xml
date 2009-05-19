@@ -10,6 +10,7 @@
         <menu name="General Configuration">
             <entry name="Mount USB" sysconfig="rc.local.conf--do_usb_mount" type="bool" value="YES" help1="Mount usb disk" />
             <entry name="Start time" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Start time" />
+            <entry name="Start rescue keys" sysconfig="rc.local.conf--rescue_keys" type="bool" value="NO" help1="M7x0 restart with HELP+EXIT and VDR with HELP+PIP" />
             <entry name="VDR Options" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0 -p 0" help1="Add options for VDR" />
         </menu>
         <menu name="Directories">
