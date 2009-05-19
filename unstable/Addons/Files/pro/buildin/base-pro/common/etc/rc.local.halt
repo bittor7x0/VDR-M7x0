@@ -44,13 +44,17 @@ if [ X"${do_usb_mount}" != X"NO" ] ; then
 fi
 
 if [ X"${hd_swap_dev}" != X"NO" ] ; then
-    echo -n ' Swapoff'
-    /sbin/swapoff ${hd_swap_dev}
+	for hd_swp_dev in ${hd_swap_dev} ; do
+		echo -n " setting down swap in ${hd_swp_dev}"
+		/sbin/swapoff ${hd_swp_dev}
+	done
 fi
 
 if [ X"${hd_spindown_dev}" != X"NO" ] ; then
-    echo -n ' starting scsi-spin'
-    /usr/sbin/scsi-spin -d -f ${hd_spindown_dev}
+	for hd_sd_dev in ${hd_spindown_dev} ; do
+		echo " starting scsi-spin in ${hd_sd_dev}"
+		/usr/sbin/scsi-spin -d -f ${hd_sd_dev}
+	done
 fi
 
 if [ X"${osddebug}" != X"NO" ] ; then

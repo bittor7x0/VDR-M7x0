@@ -34,12 +34,12 @@
             <entry name="DNS 1" sysconfig="resolv.conf--nameserver1" type="ip" value="192.168.1.1" help1="DNS 1" />
             <entry name="DNS 2" sysconfig="resolv.conf--nameserver2" type="ip" value="" help1="DNS 2" />
             <entry name="MAC Address" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="NOT MODIFY" />
-            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="M7XX Name (DNS). default /etc/hostname. NOT MODIFY" />
+            <entry name="Hostname" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="M7X0 Name (DNS). default /etc/hostname. NOT MODIFY" />
         </menu>
         <menu name="USB HardDisk Configuration">
-            <entry name="Device stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB Device to stop. Ex: /dev/sda. Only 1 device" />
+            <entry name="Devices to stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB devices to stop separated by spaces. Ex.: /dev/sda" />
             <entry name="Inactivity time" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Inactivity time to stop USB Hard disk" />
-            <entry name="Enable SWAP" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Enable swap in partition. Ex.: /dev/sdb2. Only 1 device" />
+            <entry name="Enable swap" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Swap partitions separated by spaces. Ex.: /dev/sdb2" />
         </menu>
         <menu name="Services">
             <entry name="Start inetd daemon" sysconfig="rc.local.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />

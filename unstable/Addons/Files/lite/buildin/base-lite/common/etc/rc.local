@@ -5,8 +5,10 @@
 echo -n 'starting local stuff:'
 
 if [ X"${hd_swap_dev}" != X"NO" ] ; then
-    echo -n ' setting up swap'
-    /sbin/swapon ${hd_swap_dev}
+	for hd_swp_dev in ${hd_swap_dev} ; do
+		echo " setting up swap in ${hd_swp_dev}"
+		/sbin/swapon ${hd_swp_dev}
+	done
 fi
 
 if [ -f /rw-flash/.wbx ]; then
@@ -26,9 +28,11 @@ for bpath in ${bind_paths} ; do
 	mount -o bind /rw-flash${bpath} ${bpath}
 done
 
-if [ X"${hd_spindown_time}" != X"NO" ] && [ X"${hd_spindown_dev}" != X"NO" ] ; then
-    echo -n ' starting spindown'
-    /usr/sbin/spindown -d ${hd_spindown_time} +${hd_spindown_dev}
+if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_time}" != X"NO" ] ; then
+	for hd_sd_dev in ${hd_spindown_dev} ; do
+		echo " starting spindown in ${hd_sd_dev}"
+		/usr/sbin/spindown -d ${hd_spindown_time} +${hd_sd_dev}
+	done
 fi
 
 if [ X"${memwatch}" != X"NO" ] && [ -d ${memwatch_dir} ] ; then
