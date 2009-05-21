@@ -39,6 +39,7 @@
         <menu name="Configuración de discos USB">
             <entry name="Dispositivos a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivos USB a detener separados por espacios. Ej.: /dev/sda" />
             <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="300" help1="Tiempo de inactividad para detener el disco duro USB" />
+            <entry name="Parar dispositivos al apagar" sysconfig="rc.local.conf--hd_spindown_shutdown" type="bool" value="NO" help1="Detener dispositivos al apagar el sistema" />
             <entry name="Activar swap" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Particiones swap separadas por espacios. Ej.: /dev/sdb2" />
         </menu>
         <menu name="Servicios">

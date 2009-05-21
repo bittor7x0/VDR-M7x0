@@ -25,6 +25,7 @@
         <menu name="USB HardDisk Configuration">
             <entry name="Devices to stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB devices to stop separated by spaces. Ex.: /dev/sda" />
             <entry name="Inactivity time" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Inactivity time to stop USB Hard disk" />
+            <entry name="Stop devices in shutdown" sysconfig="rc.local.conf--hd_spindown_shutdown" type="bool" value="NO" help1="Stop devices in system shutdown" />
             <entry name="Enable swap" sysconfig="rc.local.conf--hd_swap_dev" type="text" value="/dev/sdb2" help1="Swap partitions separated by spaces. Ex.: /dev/sdb2" />
         </menu>
         <menu name="Debug">

@@ -45,7 +45,7 @@ if [ X"${hd_swap_dev}" != X"NO" ] ; then
 	done
 fi
 
-if [ X"${hd_spindown_dev}" != X"NO" ] ; then
+if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_shutdown}" != X"NO" ] ; then
 	for hd_sd_dev in ${hd_spindown_dev} ; do
 		echo " starting scsi-spin in ${hd_sd_dev}"
 		/usr/sbin/scsi-spin -d -f ${hd_sd_dev}

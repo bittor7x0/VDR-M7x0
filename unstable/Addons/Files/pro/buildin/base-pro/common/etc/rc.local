@@ -70,7 +70,7 @@ if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_time}" != X"NO" ] ; then
 	done
 fi
 
-if [ X"${memwatch}" != X"NO" ] && [ -d ${memwatch_dir} ] ; then
+if [ X"${memwatch}" != X"NO" -a -d ${memwatch_dir} ] ; then
     echo -n ' starting memwatch'
     memwatch_dest="${memwatch_dir}/`date +%F-%H%M`"
     mkdir -p ${memwatch_dest}
