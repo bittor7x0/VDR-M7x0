@@ -1,0 +1,67 @@
+diff -Naur slin_m740_orig/drivers/usb/usb.c slin_m740/drivers/usb/usb.c
+--- slin_m740_orig/drivers/usb/usb.c	Mon May 23 15:42:28 2005
++++ slin_m740/drivers/usb/usb.c	Wed May 20 12:28:05 2009
+@@ -814,6 +814,7 @@
+ {
+ 	char *argv [3], **envp, *buf, *scratch;
+ 	int i = 0, value;
++	int InterfaceClass = -1, InterfaceSubClass = -1, InterfaceProtocol = -1;
+ 
+ 	if (!hotplug_path [0])
+ 		return;
+@@ -840,11 +841,6 @@
+ 		return;
+ 	}
+ 
+-	/* only one standardized param to hotplug command: type */
+-	argv [0] = hotplug_path;
+-	argv [1] = "usb";
+-	argv [2] = 0;
+-
+ 	/* minimal command environment */
+ 	envp [i++] = "HOME=/";
+ 	envp [i++] = "PATH=/sbin:/bin:/usr/sbin:/usr/bin";
+@@ -891,11 +887,15 @@
+ 	if (dev->descriptor.bDeviceClass == 0) {
+ 		int alt = dev->actconfig->interface [interface].act_altsetting;
+ 
++		InterfaceClass    = dev->actconfig->interface [interface].altsetting [alt].bInterfaceClass;
++		InterfaceSubClass = dev->actconfig->interface [interface].altsetting [alt].bInterfaceSubClass;
++		InterfaceProtocol = dev->actconfig->interface [interface].altsetting [alt].bInterfaceProtocol;
++		
+ 		envp [i++] = scratch;
+ 		scratch += sprintf (scratch, "INTERFACE=%d/%d/%d",
+-			dev->actconfig->interface [interface].altsetting [alt].bInterfaceClass,
+-			dev->actconfig->interface [interface].altsetting [alt].bInterfaceSubClass,
+-			dev->actconfig->interface [interface].altsetting [alt].bInterfaceProtocol)
++			InterfaceClass,
++			InterfaceSubClass,
++			InterfaceProtocol)
+ 			+ 1;
+ 	}
+ 	envp [i++] = 0;
+@@ -903,12 +903,20 @@
+ 
+ 	/* NOTE: user mode daemons can call the agents too */
+ 
+-	dbg ("kusbd: %s %s %d", argv [0], verb, dev->devnum);
+-	value = call_usermodehelper (argv [0], argv, envp);
++	/* Only usbautomounter is used for USB Mass Storage / SCSI (Interface 8/6/X) */
++	if( InterfaceClass == 8 && InterfaceSubClass == 6) {
++		argv [0] = "/sbin/usbautomounter";
++		argv [1] = "usb";
++		argv [2] = 0;
++
++		dbg ("kusbd: %s %s %d", argv [0], verb, dev->devnum);
++		value = call_usermodehelper (argv [0], argv, envp);
++		if (value != 0)
++			dbg ("kusbd policy returned 0x%x", value);
++	}
++
+ 	kfree (buf);
+ 	kfree (envp);
+-	if (value != 0)
+-		dbg ("kusbd policy returned 0x%x", value);
+ }
+ 
+ static void call_policy (char *verb, struct usb_device *dev)

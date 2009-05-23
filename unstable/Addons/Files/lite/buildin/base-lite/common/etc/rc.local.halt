@@ -31,12 +31,9 @@ if [ X"${runvdr}" != X"NO" ]; then
      export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
 fi
 
-if [ X"${do_usb_mount}" != X"NO" ] ; then
-    echo -n ' usb-mount'
-    rm -f /var/tmp/hotplug
-    /bin/sync
-    /sbin/usbautomounter umount noSVDRP
-fi
+echo -n ' usb-umount'
+/bin/sync
+/sbin/usbautomounter umount noSVDRP
 
 if [ X"${hd_swap_dev}" != X"NO" ] ; then
 	for hd_swp_dev in ${hd_swap_dev} ; do
