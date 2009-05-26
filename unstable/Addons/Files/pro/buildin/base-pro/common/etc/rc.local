@@ -42,14 +42,15 @@ else
     fi
 fi
 
-db_key=/etc/dropbear/dropbear_dss_host_key
-[ ! -f $db_key ] && /usr/sbin/dropbearkey -t dss -f $db_key
-
-db_key=/etc/dropbear/dropbear_rsa_host_key
-[ ! -f $db_key ] && /usr/sbin/dropbearkey -t rsa -f $db_key
-
 if [ X"${inetd}" != X"NO" ]; then
     echo -n ' starting inetd';
+
+    db_key=/etc/dropbear/dropbear_dss_host_key
+    [ ! -f $db_key ] && /usr/sbin/dropbearkey -t dss -f $db_key
+
+    db_key=/etc/dropbear/dropbear_rsa_host_key
+    [ ! -f $db_key ] && /usr/sbin/dropbearkey -t rsa -f $db_key
+
     inetd /etc/inetd.conf
 fi
 
