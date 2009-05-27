@@ -30,7 +30,7 @@ void dbg_streamrec_kl1(void) {
 }
 #endif
 
-boolean_t cancel=BT_FALSE;
+volatile sig_atomic_t cancel=BT_FALSE;
 
 void sig_handler(int sig){
 	dbg("Got signal [%s]",sig);
@@ -45,37 +45,30 @@ void sig_handler(int sig){
 #ifdef DEBUG
 	dbg_streamrec_kl1();
 #endif
-	setSvdrpServerAddress(session);
 	vars_t *args = request_get_args(request);
-	if (vars_countn(args,"path")==0){
+	rec_t rec;
+	initRecFromArgs(&rec,args);
+	if (!rec.path){
 		warn("Invalid parameters");
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
 		return;
 	}
-	const char *pathrel=vars_get_value(args,"path");
-	if (strncmp(pathrel,"/var/vdr/video0/",16)==0){
-		warn("path %s deberia ser relativo", pathrel);
-		pathrel+=16;
-	}
-	if (pathrel[0]=='/') pathrel++;
-	dbg("Recording %s requested",pathrel);
-	struct sigaction sa;
-	struct sigaction oldsa;
 	uint64_t range_start=0;
 	uint64_t range_end=0;
 	boolean_t use_range=BT_FALSE;
 
 	/* Catch SIGPIPE signals */
+	struct sigaction sa;
+	struct sigaction oldsa;
 	sa.sa_handler=sig_handler;		
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGPIPE,&sa,&oldsa);
 
 	fragmentList_t list;
-	if (!getFragmentList(&list,pathrel)) {
-		response_set_status(response,HTTP_STATUS_NO_CONTENT);
-		response_print_header(response);
-		goto exit;
+	if (!getFragmentList(&list,&rec)) {
+		returnHttpNoContent(response);
+		goto finish;
 	}
 	field_t * range = request_get_field(request,"Range");
 	if (range){
@@ -111,7 +104,7 @@ void sig_handler(int sig){
 		warn("Error: no fragment found for range_start=%lld",range_start);
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
-		goto exit;
+		goto finish;
 	}
 	
 	response_set_field(response, "Accept-Ranges", "bytes");
@@ -171,6 +164,9 @@ void sig_handler(int sig){
 							}
 						}
 					}
+					if (errno) {
+						warn(strerror(errno));
+					}
 					fclose(fi);
 				}
 			}
@@ -178,7 +174,9 @@ void sig_handler(int sig){
 			list.fragPos=0;
 		}
 	}
-exit:
+finish:
 	sigaction(SIGPIPE,&oldsa,NULL);
+	freeRec(&rec);
 	freeFL(&list);
+end:
 %>

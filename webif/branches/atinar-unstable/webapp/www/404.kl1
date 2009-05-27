@@ -21,24 +21,34 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "conf.h"
 
-int legalPath(char * pathStr) {
-	int result = 0;
-	if ( !pathStr || strncmp(pathStr,"/video",6)!=0 ) return 0;
-	char * videoPath;
-	if (asprintf(&videoPath,"/var/vdr/video0%s",pathStr+6)<0){
-		warn("No hay memoria para videoPath");
-	} else {
-		struct stat buf;
-		if (stat(videoPath,&buf)!=0){
-			warn("Error en stat");
-			result=0;
-		} else {
-			result=S_ISDIR(buf.st_mode);
+#define REMOVE_VIDEO(path) ((strncmp(path,"/video/",7)==0)?path+7:path+1)
+
+hostConf_t *isVideoPath(char *path) {
+	int found = BT_FALSE;
+	if (path){
+		char * fullpath;
+		int i;
+		hostConf_t *host;
+		for(i=0,host=webifConf.hosts;i<webifConf.hostsLength;i++,host++){
+			if (host->video0[0]){
+				crit_goto_if(asprintf(&fullpath,"%s/%s",host->video0,REMOVE_VIDEO(path))<0,outOfMemory);
+				struct stat buf;
+				if (stat(fullpath,&buf)!=0){
+					warn("Error en stat");
+				} else {
+					found=boolean(S_ISDIR(buf.st_mode));
+				}
+				free(fullpath);
+				if (found) return host;
+			}
 		}
-		free(videoPath);
 	}
-	return result;
+	return NULL;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
 }
 
 
@@ -48,21 +58,26 @@ void dbg_404_kl1(){ dbg("404.kl1"); }
 
 %><%
 
-#ifdef DEBUG
-dbg_404_kl1();
-#endif
+	#ifdef DEBUG
+	dbg_404_kl1();
+	#endif
 
-char * pathStr=NULL;
-char * queryStr=NULL;
-char * url;
-if (parseRequestStr(request,&pathStr,&queryStr) && legalPath(pathStr)) {
-	asprintf(&url,"/browse.kl1?path=%s",pathStr+6);
-} else {
-	//TODO agregar error
-	url=strdup("/index.kl1");
-}
-response_redirect(response,url);
-free(url);
-free(pathStr);
-free(queryStr);
+	char * path=NULL;
+	char * query=NULL;
+	char * url;
+	hostConf_t *host;
+	if (parseRequestStr(request,&path,&query) && (host=isVideoPath(path))!=NULL ) {
+		crit_goto_if(asprintf(&url,"/browse.kl1?path=%s&amp;hostId=%d",REMOVE_VIDEO(path),host->id)<0,outOfMemory);
+	} else {
+		warn("Unknown path %s",path);
+		crit_goto_if((url=strdup("/index.kl1"))==NULL,outOfMemory);
+	}
+	response_redirect(response,url);
+	free(url);
+	free(path);
+	free(query);
+	goto end;
+outOfMemory:
+	crit("Out of memory");
+end:
 %>

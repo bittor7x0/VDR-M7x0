@@ -23,13 +23,24 @@
 #include <time.h>
 #include <klone/io.h>
 #include "channels.h"
+#include "conf.h"
+
+enum eventFields_s{
+	EF_TITLE=1,
+	EF_SHORTDESC=2,
+	EF_DESC=4
+};
 
 typedef struct eventEntry_s {
+	int    my;
+	int    id;
 	char   *title;
 	char   *shortdesc;
 	char   *desc;
-	time_t time;
+	time_t start;
 	int    duration;
+	int    tableId;
+	int    version;
 } eventEntry_t;
 
 typedef struct nowNextEntry_s {
@@ -47,10 +58,13 @@ void initNNE(nowNextEntry_t * const nowNext);
 void freeNNE(nowNextEntry_t * const nowNext);
 void initNNL(nowNextList_t * const list);
 void freeNNL(nowNextList_t * const list);
-void getNowNextList(nowNextList_t * const list, channelList_t const * const channels);
+void parse215E(char * line, eventEntry_t * const event);
+boolean_t parseLineEvent(char c, char *s, eventEntry_t *const event);
+void getNowNextList(hostConf_t *vdrHost, nowNextList_t * const list, channelList_t const * const channels);
 void freeNNL(nowNextList_t * const list);
-void printEventDesc(io_t *out, const char * const tabs, char * const desc);
-void printInfo(io_t *out, const char * const tabs, eventEntry_t * const ee);
-void printInfobox(io_t *out, const char * const tabs, eventEntry_t * const ee);
+void printEventDesc(io_t *out, int ntabs, char * const desc, const char * const lineDelim, char * const aux);
+void printEvent(io_t *out, int ntabs, eventEntry_t * const event);
+void printEventInfobox(io_t *out, int ntabs, eventEntry_t * const event);
+void initEventFromArgs(eventEntry_t * const event, vars_t *args);
 
 #endif

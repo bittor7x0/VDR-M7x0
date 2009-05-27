@@ -105,8 +105,8 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 		}
 	} else { 
 		currentPage=PN_FILEVIEW;
-		initHtmlPage(response,out,tr("fileView"),NULL);
-		printMenu(out);
+		int ntabs=initHtmlPage(response,out,tr("fileView"),NULL);
+		printMenu(out,ntabs);
 
 		io_printf(out,
 "		<div id=\"main\" class=\"code\">\n"
@@ -152,6 +152,6 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 		io_printf(out,
 "		</div>\n"
 		);
-		finishHtmlPage(out);
+		finishHtmlPage(out,ntabs);
 	} 
 %>

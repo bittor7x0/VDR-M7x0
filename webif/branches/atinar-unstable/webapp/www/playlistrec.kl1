@@ -12,35 +12,16 @@
 * 
 */
 
-#include <stdlib.h>
-#include <klone/http.h>
-
-#ifdef DEBUG
-void dbg_playlistrec_kl1(void) {
-	dbg("playlistrec.kl1");
-}
-#endif
+#include "recordings.h"
 
 %><%
-
-#ifdef DEBUG
-	dbg_playlistrec_kl1();
-#endif
-	setSvdrpServerAddress(session);
-	response_set_content_type(response,"audio/x-mpegurl");
-	//TODO xspf
-	const char *query = request_get_query_string(request);
-	field_t *host=request_get_field(request,"Host");
-	char *dquery=malloc(strlen(query)+1);
-	u_urlncpy(dquery,query,strlen(query),URLCPY_DECODE);
-	char *url;
-	asprintf(&url,"http://%s/streamrec.kl1?%s",host->value,dquery);
-	free(dquery);
-	char *eurl=malloc(3*strlen(url)+1);
-	u_urlncpy(eurl,url,strlen(url),URLCPY_ENCODE);
-	free(url);
-	io_write(out,eurl,strlen(eurl));
-	free(eurl);
-exit:
-
+	config(session, request);
+	vars_t *args = request_get_args(request);
+	enum {AUXSZ=1024};
+	char aux[AUXSZ];
+	rec_t rec;
+	initRec(&rec);
+	initRecFromArgs(&rec,args);
+	printRecPlaylist(request,response,out,&rec,aux);
+	freeRec(&rec);
 %>

@@ -21,7 +21,7 @@
 #define __TIMERS_H__
 
 #include "channels.h"
-#include "misc.h"
+#include "conf.h"
 
 enum timerFlags_e { 
 	TF_NONE = 0x0000,
@@ -33,45 +33,57 @@ enum timerFlags_e {
 };
 
 typedef enum timerType_e {
-	TT_UNDEFINED  = 0,
+	TT_UNDEFINED = 0,
 	TT_ONE_TIME = 1,
-	TT_REGULAR  = 2
+	TT_REGULAR = 2
 } timerType_t;
 
-#define TIMER_ACTIVE(timer) boolean(timer.flags & TF_ACTIVE==TF_ACTIVE)
+enum timerFields_e {
+	TF_TITLE=1,
+	TF_AUX=2,
+	TF_CHANNEL=4,
+	TF_TIMER_STR=8,
+};
 
-typedef struct timerEntry_s {
-	int ID;
+typedef struct vdrTimer_s {
+	int my;
+	int id;
+	int hostId;
  	time_t start;
 	time_t stop;
-	time_t eventStart;
-	time_t eventStop;
+	//TODO time_t eventStart;
+	//TODO time_t eventStop;
 	timerType_t type;
 	int priority;
 	int lifetime;
 	uint flags;
-	char reg_timer[8];
-	char * title;
-	char * aux;
+	char wdays[8];
+	char *title;
+	char *aux;
 	int channelNum;
-	channelEntry_t const *channel;
-	char * timerStr;
+	channel_t const *channel;
+	char *timerStr;
 	int count; //to create different html id's in program.kl1
-} timerEntry_t;
+} vdrTimer_t;
 
 typedef struct timerList_s {
 	int length;
-	timerEntry_t *entry;
+	vdrTimer_t *entry;
 } timerList_t;
 
-void initTE(timerEntry_t * const entry);
-void freeTE(timerEntry_t * const entry);
-void initTL(timerList_t  * const list);
-void freeTL(timerList_t  * const list);
-void getTimerList(timerList_t * const timers, channelList_t const * const channels, sortField_t sortBy, sortDirection_t sortDirection);
-void sortTimerList(timerList_t * const timers, sortField_t sortBy, sortDirection_t sortDirection);
-boolean_t addTimer(const char * newTimerStr, char ** message);
-boolean_t editTimer(int timerID, const char * oldTimerStr, const char * newTimerStr, char ** message);
-boolean_t deleTimer(int timerID, const char * delTimerStr, char ** message);
+void initTimer(vdrTimer_t *const entry);
+boolean_t initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, io_t *out, int ntabs);
+void freeTimer(vdrTimer_t *const entry);
+void initTimerList(timerList_t *const list);
+void freeTimerList(timerList_t *const list);
+void getTimerList(timerList_t *const timers, channelList_t const *const channels, const sortField_t sortBy, const sortDirection_t sortDirection);
+boolean_t addTimer(hostConf_t *host, const char *newTimerStr, char **message);
+boolean_t editTimer(hostConf_t *host, int id, const char *oldTimerStr, const char *newTimerStr, char **message);
+boolean_t deleTimer(hostConf_t *host, int id, const char *delTimerStr, char **message);
+boolean_t parseTimer(const char *line, vdrTimer_t *const timer);
+char *makeRegularTimerStr(uint flags,int channelNum,const char *wdays,time_t start,time_t stop,int priority,int lifetime,char *title,const char *aux);
+char *makeOneTimeTimerStr(uint flags,int channelNum,time_t start,time_t stop,int priority,int lifetime,char *title,const char *aux);
+char *makeTimerStr(vdrTimer_t *const timer);
+
 
 #endif

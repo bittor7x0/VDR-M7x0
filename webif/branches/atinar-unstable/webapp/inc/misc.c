@@ -39,6 +39,7 @@ const char *videoTypeStr[7]={"unknown","sd43","sd169","sd","hd43","hd169","hd"};
 const char *cssSortClass[]={"sortdesc","sortnone","sortasc"};
 const char *classCurrent[2]={""," class=\"act\""};
 const char *classActive[2]={" class=\"inactive\""," class=\"active\""};
+const char *tabs="\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 
 systemType_t systemType=ST_UNKNOWN;
 sortField_t sortBy;
@@ -156,7 +157,6 @@ void config(session_t *session, request_t *request) {
 			systemType=ST_M750C;
 		}
 	}
-	setSvdrpServerAddress(session);
 }
 
 const char * sortClass(sortField_t sf){
@@ -170,19 +170,53 @@ short htoi(unsigned char c) {
 /*
  * Decode special chars as encoded by VDR: '#xx'
  */
-void vdrDecode(char *dst, char *src){
+void vdrDecode(char *dst, char *src, int l){
 	char *s, *d;
 	s=src;
 	d=dst;
-	while (s[0]) {
+	while (*s && l>0) {
 		if (s[0]=='#' && isxdigit(s[1]) && isxdigit(s[2])) {
 			*d= htoi(s[1]) << 4 | htoi(s[2]);
-			s+=2;
+			s+=3;
+			l-=3;
 		} else {
-			*d=(*s=='_') ? ' ' : *s;
+			*d=(*s=='_') ? ' ' : (*s=='/') ? '~' : *s;
+			s++;
+			l--;
+		}
+		d++;
+	}
+	d[0]=0;
+}
+
+
+void vdrEncode(char *dst, char *src, int l){
+	char *s, *d;
+	s=src;
+	d=dst;
+	while (*s && l>0) {
+		switch (*s) {
+			case '!': case '@': case '$': case '%': case '&': case '(': case ')':
+			case '+': case ',': case '-': case ';': case '=': 
+			case '0' ... '9'  : case 'a' ... 'z'  : case 'A' ... 'Z': 
+			case 'ä': case 'Ä': case 'ö': case 'Ö': case 'ü': case 'Ü': case 'ß':
+				*d=*s;
+				d++;
+				break;
+			case ' ': 
+				*d = '_'; 
+				d++;  
+				break;
+			case '~': 
+				*d = '/'; 
+				d++; 
+				break;
+			default:
+				sprintf(d, "#%02X", (unsigned char)s[0]);
+				d+=3;
 		}
 		s++;
-		d++;
+		l--;
 	}
 	d[0]=0;
 }
@@ -204,228 +238,180 @@ boolean_t makeTime(time_t *time, const char * date, const char * hour, const cha
 	return result;
 }
 
-void initHtmlDoc(response_t *response,io_t *out){
+void returnHttpNoContent(response_t *response){
+	response_set_status(response,HTTP_STATUS_NO_CONTENT);
+	response_print_header(response);
+}	
+
+int initHtmlDoc(response_t *response,io_t *out){
 	response_set_content_type(response,"text/html; charset=ISO-8859-1");
 	response_set_field(response,"Content-Style-Type","text/css");
 	response_set_field(response,"Content-Script-Type","text/javascript");
-	io_printf(out,
-"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"%s\" lang=\"%s\">\n"
-		,alpha2[langId],alpha2[langId]
-	);
+	io_printf(out,"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
+	io_printf(out,"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"%s\" lang=\"%s\">\n",alpha2[langId],alpha2[langId]);
+	return 1;
 }
 
-void initHtmlPage(response_t *response,io_t *out, const char *title, const char *headExtra, ...){
-	initHtmlDoc(response,out);
+int initHtmlPage(response_t *response,io_t *out, const char *title, const char *headExtra, ...){
+	int ntabs=initHtmlDoc(response,out);
 	const char * www=(webifConf.useExternalWwwFolder)?"/www2":"";
-	io_printf(out,
-"<head>\n"
-"	<title>%s - open7x0 VDR-FW</title>\n"
-		,title
-	);
-	io_printf(out,
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen.css\" media=\"screen\" />\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/print.css\" media=\"print\" />\n"
-"	<!--[if IE 5.0]>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie50.css\" media=\"screen\" />\n"
-"	<![endif]-->\n"
-"	<!--[if IE 5.5]>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie55.css\" media=\"screen\" />\n"
-"	<![endif]-->\n"
-"	<!--[if IE 6]>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie6.css\" media=\"screen\" />\n"
-"	<![endif]-->\n"
-"	<!--[if IE 7]>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie7.css\" media=\"screen\" />\n"
-"	<![endif]-->\n"
-"	<!--[if IE 8]>\n"
-"	<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie8.css\" media=\"screen\" />\n"
-"	<![endif]-->\n"
-	,www
-	,www
-	,www
-	,www
-	,www
-	,www
-	,www
-	);
-	io_printf(out,
-"	<script type=\"text/javascript\" src=\"%s/js/jquery-1.3.2.min.js\"></script>\n"
-"	<script type=\"text/javascript\" src=\"%s/js/jquery-ui-1.7.min.js\"></script>\n"
-"	<script type=\"text/javascript\" src=\"%s/js/jquery.hoverIntent.min.js\"></script>\n"
-"	<script type=\"text/javascript\" src=\"%s/js/superfish.js\"></script>\n"
-"	<script type=\"text/javascript\" src=\"%s/js/supersubs.js\"></script>\n"
-"	<script type=\"text/javascript\" src=\"%s/js/common.js\"></script>\n"
-	,www
-	,www
-	,www
-	,www
-	,www
-	,www
-	);
-	io_printf(out,
-"	<script type=\"text/javascript\">\n"
-"		$(function(){\n"
-"			initPage(%d);\n"
-"		});\n"
-"	</script>\n"
-		,currentPage
-	);
+	io_printf(out,"%.*s<head>\n",ntabs++,tabs);
+	io_printf(out,"%.*s<title>%s</title>\n",ntabs,tabs,title);
+	io_printf(out,"%.*s<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen.css\" media=\"screen\" />\n",ntabs,tabs,www);
+	io_printf(out,"%.*s<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/print.css\" media=\"print\" />\n",ntabs,tabs,www);
+	const char *ie[]={"5.0","5.5","6","7","8"};
+	int v;
+	for (v=0;v<(sizeof(ie)/sizeof(char*));v++){
+		io_printf(out,"%.*s<!--[if IE %s]>\n",ntabs++,tabs,ie[v]);
+		io_printf(out,"%.*s<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie50.css\" media=\"screen\" />\n",ntabs,tabs,www);
+		io_printf(out,"%.*s<![endif]-->\n",--ntabs,tabs);
+	}
+
+	io_printf(out,"%.*s<script type=\"text/javascript\" src=\"%s/js/jquery-1.3.2.min.js\"></script>\n",ntabs,tabs,www);
+	io_printf(out,"%.*s<script type=\"text/javascript\" src=\"%s/js/jquery-ui-1.7.min.js\"></script>\n",ntabs,tabs,www);
+	io_printf(out,"%.*s<script type=\"text/javascript\" src=\"%s/js/jquery.hoverIntent.min.js\"></script>\n",ntabs,tabs,www);
+	io_printf(out,"%.*s<script type=\"text/javascript\" src=\"%s/js/superfish.js\"></script>\n",ntabs,tabs,www);
+	io_printf(out,"%.*s<script type=\"text/javascript\" src=\"%s/js/supersubs.js\"></script>\n",ntabs,tabs,www);
+	io_printf(out,"%.*s<script type=\"text/javascript\" src=\"%s/js/common.js\"></script>\n",ntabs,tabs,www);
+
+	io_printf(out,"%.*s<script type=\"text/javascript\">\n",ntabs,tabs);
+	io_printf(out,"%.*s	$(function(){\n"                  ,ntabs,tabs);
+	io_printf(out,"%.*s		initPage(%d);\n"              ,ntabs,tabs,currentPage);
+	io_printf(out,"%.*s	});\n"                            ,ntabs,tabs);
+	io_printf(out,"%.*s</script>\n"                        ,ntabs,tabs);
+		
 	if (headExtra) {
 		va_list ap;
 		va_start(ap, headExtra); /* init variable list arguments */
 		io_vprintf(out, headExtra, ap);
 		va_end(ap);
 	}
-	io_printf(out,
-"</head>\n"
-"<body>\n"
-"<div id=\"page-div\">\n"
-"	<div id=\"page-top\">\n"
-"		<h1>%s</h1>\n"
-"	</div>\n"
-"	<div id=\"page\">\n"
-		,title
-	);
+	io_printf(out,"%.*s</head>\n",--ntabs,tabs);
+	io_printf(out,"%.*s<body>\n",ntabs++,tabs);
+	io_printf(out,"%.*s<div id=\"page-div\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<div id=\"page-top\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<h1>%s</h1>\n",ntabs,tabs,title);
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs); //page-top
+	io_printf(out,"%.*s<div id=\"page\">\n",ntabs++,tabs);
+	return ntabs;
 }
 
-void printMenu(io_t *out){
+void printMenu(io_t *out,int ntabs){
 	int i;
 	int clock_id;
 	const char *Summary=tr("summary");
-	io_printf(out,
-"		<ul id=\"menu\" class=\"sf-menu\">\n"
-	);
-	io_printf(out,
-"			<li%s><a href=\"index.kl1\">%s</a></li>\n"
-		,classCurrent[boolean(currentPage==PN_INDEX)]
-		,tr("start")
-	);
-	io_printf(out,
-"			<li%s><a href=\"program.kl1\">%s</a></li>\n"
-		,classCurrent[boolean(currentPage==PN_PROGRAMS)]
-		,tr("schedule")
-	);
-	io_printf(out,
-"			<li%s>\n"
-"				<a href=\"channels.kl1\">%s</a>\n"
-"				<ul>\n"
-"					<li%s><a href=\"channels.kl1\">%s</a></li>\n"
-"					<li%s><a href=\"watchit.kl1\">%s</a></li>\n"
-"					<li><a href=\"playlistch.kl1\">%s</a></li>\n"
-"				</ul>\n"
-"			</li>\n"
-		,classCurrent[boolean(currentPage==PN_CHANNELS)]
-		,tr("channels")
-			,classCurrent[boolean(currentPage==PN_CHANNELS)]
-			,Summary
-			,classCurrent[boolean(currentPage==PN_WATCHIT)]
-			,tr("channelWatch")
-			,tr("playlistDownload")
-	);
-	io_printf(out,
-"			<li%s>\n"
-"				<a href=\"timers.kl1\">%s</a>\n"
-"				<ul>\n"
-"					<li%s><a href=\"timers.kl1\">%s</a></li>\n"
-"					<li%s><a href=\"timers.kl1?a=%d\">%s</a></li>\n"
-"				</ul>\n"
-"			</li>\n"
-		,classCurrent[boolean(currentPage==PN_TIMERS)]
-		,tr("timers")
-			,classCurrent[boolean((currentPage==PN_TIMERS) && (currentAction!=PA_EDIT))]
-			,Summary
-			,classCurrent[boolean((currentPage==PN_TIMERS) && (currentAction==PA_EDIT))]
-			,PA_EDIT,tr("timerCreate")
-	);
-	io_printf(out,
-"			<li%s>\n"
-"				<a href=\"browse.kl1\">%s</a>\n"
-"				<ul>\n"
-"					<li%s><a href=\"browse.kl1\">%s</a></li>\n"
-"					<li%s><a href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s (%s)</a></li>\n"
-"					<li%s><a href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s (%s)</a></li>\n"
-"				</ul>\n"
-"			</li>\n"
-		,classCurrent[boolean(currentPage==PN_RECORDINGS || currentPage==PN_BROWSE)]
-		,tr("recordings")
-			,classCurrent[boolean(currentPage==PN_BROWSE)]
-			,tr("browse")
-			,classCurrent[boolean(currentPage==PN_RECORDINGS && sortBy==SF_TITLE)]
-			,SF_TITLE,SD_ASC,Summary,tr("title")
-			,classCurrent[boolean(currentPage==PN_RECORDINGS && sortBy==SF_START)]
-			,SF_START,SD_DESC,Summary,tr("date")
-	);
+	io_printf(out,"%.*s<ul id=\"menu\" class=\"sf-menu\">\n",ntabs++,tabs);
+
+	io_printf(out,"%.*s<li%s><a href=\"index.kl1\">%s</a></li>\n"
+		,ntabs,tabs,classCurrent[boolean(currentPage==PN_INDEX)],tr("start"));
+
+	io_printf(out,"%.*s<li%s><a href=\"program.kl1\">%s</a></li>\n"
+		,ntabs,tabs,classCurrent[boolean(currentPage==PN_PROGRAMS)],tr("schedule"));
+
+	io_printf(out,"%.*s<li%s>\n",ntabs++,tabs,classCurrent[boolean(currentPage==PN_CHANNELS)]);
+	io_printf(out,"%.*s<a href=\"channels.kl1\">%s</a>\n",ntabs,tabs,tr("channels"));
+	io_printf(out,"%.*s<ul>\n",ntabs++,tabs);
+	io_printf(out,"%.*s<li%s><a href=\"channels.kl1\">%s</a></li>\n"
+		,ntabs,tabs,classCurrent[boolean(currentPage==PN_CHANNELS)],Summary);
+	io_printf(out,"%.*s<li%s><a href=\"watchit.kl1\">%s</a></li>\n"
+		,ntabs,tabs,classCurrent[boolean(currentPage==PN_WATCHIT)],tr("channelWatch"));
+	io_printf(out,"%.*s<li><a href=\"playlistch.kl1?type=%d\">%s</a></li>\n"
+		,ntabs,tabs,webifConf.playlistType,tr("playlistDownload"));
+	io_printf(out,"%.*s</ul>\n",--ntabs,tabs);
+	io_printf(out,"%.*s</li>\n",--ntabs,tabs);
+		
+	io_printf(out,"%.*s<li%s>\n",ntabs++,tabs,classCurrent[boolean(currentPage==PN_TIMERS)]);
+	io_printf(out,"%.*s<a href=\"timers.kl1\">%s</a>\n",ntabs,tabs,tr("timers"));
+	io_printf(out,"%.*s<ul>\n",ntabs++,tabs);
+	io_printf(out,"%.*s<li%s><a href=\"timers.kl1\">%s</a></li>\n"
+		,ntabs,tabs,classCurrent[boolean((currentPage==PN_TIMERS) && (currentAction!=PA_EDIT))],Summary);
+	io_printf(out,"%.*s<li%s><a href=\"timers.kl1?a=%d\">%s</a></li>\n"
+		,ntabs,tabs,classCurrent[boolean((currentPage==PN_TIMERS) && (currentAction==PA_EDIT))],PA_EDIT,tr("timerCreate"));
+	io_printf(out,"%.*s</ul>\n",--ntabs,tabs);
+	io_printf(out,"%.*s</li>\n",--ntabs,tabs);
+		
+	io_printf(out,"%.*s<li%s>\n",ntabs++,tabs,classCurrent[boolean(currentPage==PN_RECORDINGS || currentPage==PN_BROWSE)]);
+	io_printf(out,"%.*s<a href=\"browse.kl1\">%s</a>\n",ntabs,tabs,tr("recordings"));
+	io_printf(out,"%.*s<ul>\n",ntabs++,tabs);
+	io_printf(out,"%.*s<li%s><a href=\"browse.kl1\">%s</a></li>\n"
+		,ntabs,tabs,classCurrent[boolean(currentPage==PN_BROWSE)],tr("browse"));
+	io_printf(out,"%.*s<li%s><a href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s (%s)</a></li>\n"
+		,ntabs,tabs,classCurrent[boolean(currentPage==PN_RECORDINGS && sortBy==SF_TITLE)],SF_TITLE,SD_ASC,Summary,tr("title"));
+	io_printf(out,"%.*s<li%s><a href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s (%s)</a></li>\n"
+		,ntabs,tabs,classCurrent[boolean(currentPage==PN_RECORDINGS && sortBy==SF_START)],SF_START,SD_DESC,Summary,tr("date"));
+	io_printf(out,"%.*s</ul>\n",--ntabs,tabs);
+	io_printf(out,"%.*s</li>\n",--ntabs,tabs);
+		
 	if (!webifConf.configChangeDisabled){
-		io_printf(out,
-"			<li%s>\n"
-"				<a href=\"settings.kl1\">%s</a>\n"
-"				<ul>\n"
-			,classCurrent[boolean(currentPage==PN_SETTINGS)]
-			,tr("setup")
-		);
+		io_printf(out,"%.*s<li%s>\n",ntabs++,tabs,classCurrent[boolean(currentPage==PN_SETTINGS)]);
+		io_printf(out,"%.*s<a href=\"settings.kl1\">%s</a>\n",ntabs,tabs,tr("setup"));
+		io_printf(out,"%.*s<ul>\n",ntabs++,tabs);
 		for (i=0;i<cfgFileLength;i++) {
-				io_printf(out,
-"					<li><a href=\"settings.kl1?cfgFileId=%d\">%s</a></li>\n"
-						,i,tr(cfgFile[i].i18nKey)
-				);
+			io_printf(out,"%.*s<li><a href=\"settings.kl1?cfgFileId=%d\">%s</a></li>\n",ntabs,tabs,i,tr(cfgFile[i].i18nKey));
 		}
-		io_printf(out,
-"				</ul>\n"
-"			</li>\n"
-		);
+		io_printf(out,"%.*s</ul>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</li>\n",--ntabs,tabs);
 	}
 	if (!webifConf.configViewDisabled){
-		io_printf(out,
-"			<li%s>\n"
-"				<a href=\"view.kl1\">%s</a>\n"
-"				<ul>\n"
-			,classCurrent[boolean(currentPage==PN_FILEVIEW)]
-			,tr("fileView")
-		);
+		io_printf(out,"%.*s<li%s>\n",ntabs++,tabs,classCurrent[boolean(currentPage==PN_FILEVIEW)]);
+		io_printf(out,"%.*s<a href=\"view.kl1\">%s</a>\n",ntabs,tabs,tr("fileView"));
+		io_printf(out,"%.*s<ul>\n",ntabs++,tabs);
 		for(i=0;i<fileMappingLength;i++) {
 			if (fileExists(fileMapping[i].fileName)) {
-				io_printf(out,
-"					<li><a href=\"view.kl1?action=%d&amp;fileNum=%d\">&bull;&nbsp;%s</a></li>\n"
-						,PA_SHOW,i,tr(fileMapping[i].i18nKey));
+				io_printf(out,"%.*s<li><a href=\"view.kl1?action=%d&amp;fileNum=%d\">&bull;&nbsp;%s</a></li>\n"
+					,ntabs,tabs,PA_SHOW,i,tr(fileMapping[i].i18nKey));
 			}
 		}
 		/*
-		io_printf(out,
-"					<li>"
-						"<a href=\"view.kl1?action=%d\">&bull;&nbsp;%s</a>"
-					"</li>\n"
-			,PA_DOWNLOAD_ALL,tr("downloadAll")
-		);
+		io_printf(out,"%.*s<li><a href=\"view.kl1?action=%d\">&bull;&nbsp;%s</a></li>\n"
+			,ntabs,tabs,PA_DOWNLOAD_ALL,tr("downloadAll"));
 		*/
-		io_printf(out,
-"				</ul>\n"
-"			</li>\n"
-		);
+		io_printf(out,"%.*s</ul>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</li>\n",--ntabs,tabs);
 	}
-	io_printf(out,
-"			<li>\n"
-"				<a href=\"#\">%s</a>\n"
-"				<ul>\n"
-"					<li><a class=\"newWindow\" href=\"http://www.open7x0.org/\">open7x0.org</a></li>\n"
-"					<li><a class=\"newWindow\" href=\"http://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a></li>\n"
-"				</ul>\n"
-"			</li>\n"
-"		</ul>\n"
-		,tr("links")
-	);
+	
+	io_printf(out,"%.*s<li>\n",ntabs++,tabs);
+	io_printf(out,"%.*s<a href=\"#\">%s</a>\n",ntabs,tabs,tr("links"));
+	io_printf(out,"%.*s<ul>\n",ntabs++,tabs);
+	io_printf(out,"%.*s<li><a class=\"newWindow\" href=\"http://www.open7x0.org/\">open7x0.org</a></li>\n",ntabs,tabs);
+	io_printf(out,"%.*s<li><a class=\"newWindow\" href=\"http://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a></li>\n",ntabs,tabs);
+	io_printf(out,"%.*s</ul>\n",--ntabs,tabs);
+	io_printf(out,"%.*s</li>\n",--ntabs,tabs);
+
+	io_printf(out,"%.*s</ul>\n",--ntabs,tabs);
 }
 
-void finishHtmlPage(io_t *out){
-	io_printf(out,
-"	</div>\n"
-"	<div id=\"page-bottom\">\n"
-"		<p>(C) 2006 open7x0-team</p>\n"
-"		<p>(C) 2008 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n"
-"	</div>\n"
-"</div>\n"
-"</body>\n"
-"</html>\n"
-	);
+void finishHtmlPage(io_t *out,int ntabs){
+	if (ntabs<4) {
+		warn("Indentacionn erronea, revisar markup");
+		ntabs=4;
+	}
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs); //page
+	io_printf(out,"%.*s<div id=\"page-bottom\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<p>(C) 2006 open7x0-team</p>\n",ntabs,tabs);
+	io_printf(out,"%.*s<p>(C) 2008 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n",ntabs,tabs);
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs); //page-bottom
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs); //page-div
+	io_printf(out,"%.*s</body>\n",--ntabs,tabs);
+	io_printf(out,"%.*s</html>\n",--ntabs,tabs);
+}
+
+
+void printMessage(io_t *out, int ntabs, const char *cssClass, const char *title, const char *message, char *const aux){
+	io_printf(out,"%.*s<div class=\"%s\">\n",ntabs++,tabs,cssClass);
+	if (title) io_printf(out,"%.*s<p>%s%s</p>\n",ntabs,tabs,title,(message && message[0])?":":"");
+	if (message && message[0]) {
+		if (aux){
+			int l=strlen(message);
+			u_htmlncpy(aux,message,l,HTMLCPY_ENCODE);
+			message=aux;
+		}
+		io_printf(out,"%.*s<p class=\"response\">%s</p>\n",ntabs,tabs,message);
+	}
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+}
+
+char *condstrdup(int isFlagSet,const char *s){
+	return (isFlagSet)?strdup(s):(char *)s;
 }
 

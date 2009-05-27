@@ -1,3 +1,32 @@
+2009-05-27
+* Posibilidad de limitar número de niveles mostrados en browse.kl1.
+* Opción para cerrar conexión SVDRP después de cada orden (para depuración con múltiples hosts).
+* openSvdrp, writeSvdrp y readSvdrp son funciones privadas ahora.
+* Funcion parseTimer reescrita con mayor control de errores.
+* writeSvdr retorna true solo si los bytes escritos son los esperados.
+* Descargar información de las grabaciones remotas en diferido usando Ajax.
+* Marcado de los punteros propios en las structs, para permitir utilizar referencias directas 
+  a los argumentos de las páginas, sin que sea obligatorio duplicar.
+* Funciones anidadas para la ordenación de listas sin depender de variables globales.
+* Cambiada gestión de SIGPIPE en svdrp_comm para acceder al host correcto sin variables globales.
+* Integrada en browse.kl1 la navegación por grabaciones remotas.
+* Gestión simultánea de varios hosts (VDRs o servidores de ficheros).
+* Eliminado svdrp_parse y recolocadas las rutinas que quedaban.
+* Identificacion de grabaciones sólo por path relativo (no se usa nunca el id).
+* Fusionados recEntry_t y recInfo_t.
+* recInfo_t delega en eventEntry_t.
+* Resaltar por CSS las grabaciones editadas.
+* Acciones mediante <form> en browse (evita repetir paths).
+* Eliminado espacio extra en <button> en FF.
+* Permitir borrar grabaciones desde listado.
+* Refactorizadas funciones de browse.kl1 a browse.c 
+* Funcionalidad completa en browse.kl1.
+* Modo de indentar html más eficiente.
+* Timers tienen que ser htmlEncoded porque aux puede incluir xml.
+* Agregar parametros a URLs para no asociar fichero kl1 con tipo mime.
+* Timers mantienen aux para no desligarse de epgsearch.
+* Cambiado tipo MIME para listas m3u a audio/mpegurl
+
 2009-04-18
 * Utilizar rutas relativas para las grabaciones.
 * Mostrar fechas al navegar por series.
@@ -8,7 +37,7 @@
 2009-04-12
 * Incorporada posibilidad de usar css/js externo.
 * Generalizado el ajuste de Posix para IE7.
-* Pagina de navegacion por grabaciones rediseÃ±ada.
+* Página de navegacion por grabaciones rediseñada.
 * Eliminada get_config_info de svdr_parse e implementada en conf.
 * Eliminada funcion vdrRunning.
 * Eliminada funcion readBOXAMPCONF.
@@ -18,7 +47,7 @@
 * Streaming de grabaciones simplificado. Ya no se solicita el listado completo
   al SVDRP (comando PLST eliminado en SVDRP), solo el directorio (comando LSTR modificado).
   Requiere recompilado del VDR.
-* Opciones de configuraciÃ³n operativas, completadas y traducidas.
+* Opciones de configuración operativas, completadas y traducidas.
 * Corregida generacion de listas XSPF (que vlc sigue sin soportar bien...)
 * Gestionar todos los flags de las programaciones (no solo active).
 * Resaltado de programaciones inactivas.

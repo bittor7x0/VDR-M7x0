@@ -20,6 +20,7 @@
 #ifndef __CONF_H__
 #define __CONF_H__
 
+#include <sys/types.h>
 #include "misc.h"
 
 typedef enum cfgFileId_e {
@@ -39,9 +40,9 @@ typedef struct cfgParam_s {
 } cfgParam_t;
 
 typedef struct cfgParamConfig_s cfgParamConfig_t;
-typedef boolean_t (*cfgParamValidate_t)(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param);
-typedef boolean_t (*cfgParamPrintInput_t)(io_t *out,const char * const tabs
-	,const cfgParamConfig_t * const paramConfig,int paramIdx,const char *paramValue,char * const encoded);
+typedef void (*cfgParamValidate_t)(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param);
+typedef boolean_t (*cfgParamPrintInput_t)(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
+	,int paramIdx,const char *paramValue,char * const aux);
 
 struct cfgParamConfig_s {
 	const char *name;         // Name of the param
@@ -51,10 +52,11 @@ struct cfgParamConfig_s {
 	int indexOffset;
 	cfgParamValidate_t validate; //function to validate a param
 	cfgParamPrintInput_t printInput; //function to print an input for the param in a form
-	boolean_t allreadySet;
+	boolean_t alreadySet;
 };
 
 typedef struct cfgParamConfigList_s {
+	boolean_t exclusive; //Ignore params not listed
 	int length;
 	cfgParamConfig_t * const entry;
 } cfgParamConfigList_t;
@@ -69,20 +71,41 @@ typedef struct cfgFile_s {
 	const char *fileName;
 } cfgFile_t;
 
+enum {
+	MAXHOSTS=3,
+	HOSTNUMCONFFIELDS=4
+};
+
+//TODO longitudes
+typedef struct hostConf_f {
+	int id;
+	char name[10];    //public name of the server
+	char ip[16];      //ip as seen by the webif server
+	uint16_t  port;   //port where SVDRP is listening
+	char video0[128]; //path to video0
+	boolean_t isVdr;  //VDR is running in host
+	int  socket;
+} hostConf_t;
+
 typedef struct webifConf_s {
-	boolean_t allreadySet;
+	boolean_t alreadySet;
+	time_t mtime; //st_mtime of conf file in last read
 	int langId;
-	char svdrpIp[16];
-	uint16_t svdrpPort;
+	hostConf_t hosts[MAXHOSTS]; 
+	int hostsLength;
+	int numVDRs;
 	playlistType_t playlistType;
 	boolean_t recDeletionDisabled;
 	boolean_t configChangeDisabled;
 	boolean_t configViewDisabled;
 	boolean_t useExternalWwwFolder;
+	boolean_t displayHostId; //display host id in recordings
+	int maxDepth; //maximum directory depth while browsing
+	boolean_t alwaysCloseSvdrp;  //always close SVDRP connection after each command
 } webifConf_t;
 
 typedef struct vdrConf_s { //TODO leer conf
-	boolean_t allreadySet;
+	boolean_t alreadySet;
 	int marginStart;
 	int marginStop;
 } vdrConf_t;
@@ -98,5 +121,10 @@ const cfgParamConfig_t *getCfgParamConfig(cfgFileId_t cfgFileId, cfgParam_t * co
 boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean_t *isNew);
 boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params);
 boolean_t readWebifConf();
+hostConf_t *getHost(int hostId);
+hostConf_t *getFirstVdrHost();
+boolean_t isHostLocal(hostConf_t *host);
+const char *getHostHttpAddr(hostConf_t *host,request_t *request);
+void printVDRSelect(io_t *out,int ntabs,const char * name,const int hostId);
 
 #endif

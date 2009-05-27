@@ -19,185 +19,196 @@
 
 #include <errno.h>
 #include <regex.h>
+#include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-//#include <arpa/inet.h>
-//#include <net/if.h>
 #include <netinet/in.h>
 #include <signal.h>
-#include <u/libu.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <klone/utils.h>
 
 #include "conf.h"
 #include "svdrp_comm.h"
 
-enum {SVDRP_BUFFER_SIZE=4096};
-
-int svdrp_socket=0;
-char svdrpServerIp[16];
-uint16_t svdrpServerPort;
-
-const char eod_pattern[]="^[0-9]{3} ";
-regex_t regbuf;
-
-void signal_handler(int sig) {
-	dbg("Got signal [%s]",sig);
-	if (svdrp_socket!=0) {
-		warn("Broken Pipe.");
-		svdrp_socket=0;
-	}
-}
-
-//Set server ip and port
-void setSvdrpServerAddress(session_t * session){
-	const char * sessSvdrpServerIp=session_get(session,"svdrpServerIp");
-	const char * sessSvdrpServerPort=session_get(session,"svdrpServerPort");
-	strncpy(svdrpServerIp,(sessSvdrpServerIp==NULL)?webifConf.svdrpIp:sessSvdrpServerIp,15);
-	if (sessSvdrpServerPort==NULL) {
-		svdrpServerPort=webifConf.svdrpPort;
-	}
-	else {
-		errno=0;
-		svdrpServerPort=(int)strtol(sessSvdrpServerPort,NULL,10);
-		if (errno!=0) {
-			warn("Incorrect port %s set in session",sessSvdrpServerPort);
-			svdrpServerPort=webifConf.svdrpPort;
-		}
-	}
-}
-
-
-//Open the connection
-int open_svdrp() {
-	char * data;
-	pid_t pid;
-	pid=getpid();
-	signal(SIGPIPE,signal_handler);
-
-	if (svdrp_socket<1) {
-		struct sockaddr_in svdrpServerAddr;
-		dbg("Try to open SVDRP connection to %s:%d from pid [%d]",svdrpServerIp,svdrpServerPort,pid);
-		svdrpServerAddr.sin_family = AF_INET;
-		svdrpServerAddr.sin_port = htons(svdrpServerPort);
-		inet_aton(svdrpServerIp, &svdrpServerAddr.sin_addr);
-
-		// create tcp socket
-		errno=0;
-		if ((svdrp_socket=socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-			perror("open_svdrp()");
-			svdrp_socket=0;
-			return errno;
-		}
-
-		// Connect to VDR
-		errno=0;
-		if (connect(svdrp_socket, (struct sockaddr*)&svdrpServerAddr, sizeof(svdrpServerAddr)) < 0) {
-			perror("open_svdrp()");
-			close(svdrp_socket);
-			svdrp_socket=0;
-			return errno;
-		}
-
-		//compile pattern for regexec later in a different function
-		if (regcomp(&regbuf,eod_pattern,REG_EXTENDED | REG_NOSUB | REG_NEWLINE)!=0) {
-			warn("Error compiling the pattern!");
-			exit(1);
-		}
-		dbg("SVDRP connection to %s  established.",svdrpServerIp);
-		data=read_svdrp();
-		free(data);
-	} else {
-		dbg("SVDRP connection to %s is already up.",svdrpServerIp);
-	}
-	return 0;
-}
-
-void close_svdrp() {
-	char * data;
-	dbg("Try to close SVDRP connection.");
-	if (write_svdrp("QUIT\r")<=0){
-		warn("Can't connect with SVDRP server!");
-		return;
-	}
-	data=read_svdrp();
-	free(data);
+void closeSocket(hostConf_t *host){
 	errno=0;
-	if (shutdown(svdrp_socket,SHUT_RDWR)<0){
-		perror("close_svdrp()");
+	if (shutdown(host->socket,SHUT_RDWR)<0){
+		warn(strerror(errno));
 		switch (errno) {
 			case EBADF:
 			case ENOTSOCK:
-				warn("Not a valid socket");
-				svdrp_socket=0;
-				return;
 			case ENOTCONN:
-				warn("Socket wasn't connected");
-				svdrp_socket=0;
+				host->socket=0;
 				return;
 			default:
 				break;
 		}
 		errno=0;
 	}
-	if (close(svdrp_socket)<0) {
-		perror("close_svdrp()");
+	if (close(host->socket)<0) {
+		warn(strerror(errno));
 		errno=0;
 	}
-	svdrp_socket=0;
+	host->socket=0;
 }
 
-char * read_svdrp() {
-	char * data;
-	char buffer[SVDRP_BUFFER_SIZE]="";
+void readSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
+	enum {BUFFERSZ=4096};
+	char buffer[BUFFERSZ]="";
 	int l=0; //current length without trailing 0
 	int n=0;
 	int eod_matches=1;
 
-	if (svdrp_socket==0) {
+	if (host->socket==0) {
 		warn("No socket found!");
-		return NULL;
+		return;
 	}
-
-	data=NULL;
-	while ( (n=recv(svdrp_socket,buffer,SVDRP_BUFFER_SIZE-1,0))>0 ) {
+	(*pdata)=NULL;
+	while ( (n=recv(host->socket,buffer,BUFFERSZ-1,0))>0 ) {
 		buffer[n]='\0';
-		char * tmp=realloc(data,l+n+1);
-		if (!tmp) {
-			warn("read_svdrp:Reallocation failed.");
-			exit(1);
-		}
-		if (data==NULL) {
-			tmp[0]='\0';
-		}
-		data=tmp;
-		strcat(data,buffer);
+		crit_goto_if(((*pdata)=realloc((*pdata),l+n+1))==NULL,outOfMemory);
+		(*pdata)[l]=0;
+		strcat((*pdata),buffer);
 		l+=n;
 		if (eod_matches!=0) {
 			int offset=(l>n+5) ? l-n-5 : 0;
-			eod_matches=regexec(&regbuf,data+offset,0,NULL,0);
+			eod_matches=regexec(eod_regex,(*pdata)+offset,0,NULL,0);
 		}
-		if ((eod_matches==0) && (data[l-1]=='\n')){
+		if ((eod_matches==0) && ((*pdata)[l-1]=='\n')){
 			break;
 		}
 	}
-	return data;
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
 }
 
-int write_svdrp(char *data) {
-	dbg("Sending data to VDR [%s]",data);
-	if (open_svdrp()==0) {
-		return write(svdrp_socket,data,strlen(data)+1);
+boolean_t openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
+	if (host->socket<1) {
+		struct sockaddr_in hostAddress;
+		dbg("Opening SVDRP connection to %s:%d",host->ip,host->port);
+		hostAddress.sin_family = AF_INET;
+		hostAddress.sin_port = htons(host->port);
+		inet_aton(host->ip, &hostAddress.sin_addr);
+
+		// create tcp socket
+		errno=0;
+		if ((host->socket=socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+			warn(strerror(errno));
+			host->socket=0;
+			return BT_FALSE;
+		}
+
+		// Connect to VDR
+		errno=0;
+		if (connect(host->socket, (struct sockaddr*)&hostAddress, sizeof(hostAddress)) < 0) {
+			warn(strerror(errno));
+			closeSocket(host);
+			return BT_FALSE;
+		}
+
+		readSvdrp(host,pdata,eod_regex);
+		if (strtol(*pdata,NULL,10)!=220){
+			warn("Unexpected SVDRP response: %s",*pdata);
+			//TODO cerrar mejor la conexion
+			closeSocket(host);
+		}
+		free(*pdata);
+		*pdata=NULL;
+		return boolean(host->socket>0);
 	} else {
-		warn("Can't establish connection to VDR via SVDRP. Exit.");
-		return 0;
+		return BT_TRUE;
 	}
 }
 
-int isVdrLocal(){
-	return (strncmp(svdrpServerIp,"127.",4)==0);
+void closeSvdrp(hostConf_t *host) {
+	if (host && host->isVdr && host->socket>0){
+		dbg("Closing SVDRP connection to %s:%d",host->ip,host->port);
+		free(execSvdrp(host,"QUIT"));
+		closeSocket(host);
+	}
+}
+
+void closeSvdrpAll() {
+	int h;
+	hostConf_t *host;
+	for (h=0,host=webifConf.hosts;h<webifConf.hostsLength;h++,host++){
+		if (host->isVdr && host->socket>0) {
+			closeSvdrp(host);
+		}
+	}
+}
+
+boolean_t writeSvdrp(hostConf_t *host, const char *cmd) {
+	dbg("Sending SVDRP cmd [%s]",cmd);
+	int l=strlen(cmd);
+	int w=write(host->socket,cmd,l+1);
+	if (w<l) warn("Written only %d bytes from %d",w,l);
+	return boolean(w>=l);
+}
+
+static jmp_buf execSvdrpContext;
+
+void signalHandler(int sig) {
+	dbg("Got signal [%s]",sig);
+	longjmp(execSvdrpContext,sig);
+}
+		
+char *execSvdrp(hostConf_t * const host, const char *cmd){
+	if (host && host->isVdr){
+		regex_t eod_regex; //regex to detect End Of Data
+
+		dbg("Executing SVDRP cmd [%s]",cmd);
+		boolean_t isQuit=boolean(strncmp(cmd,"QUIT",4)==0);
+		if (isQuit && host->socket<1){
+			warn("SVDRP connection already closed before QUIT");
+			return NULL;
+		}
+		if (regcomp(&eod_regex,"^[0-9]{3} ",REG_EXTENDED | REG_NOSUB | REG_NEWLINE)!=0) {
+			crit(strerror(errno));
+			exit(1);
+		}
+		sighandler_t oldSignalHandler=signal(SIGPIPE,signalHandler);
+		volatile char *data=NULL;
+		char *result=NULL;
+		if (setjmp(execSvdrpContext)!=0){
+			warn("Broken Pipe.");
+			free((char *)data);
+			data=NULL;
+			host->socket=0;
+		} else {
+			if (openSvdrp(host,(char **)&data,&eod_regex)) {
+				free((char *)data);
+				data=NULL;
+				if (writeSvdrp(host,cmd)) {
+					readSvdrp(host,(char **)&data,&eod_regex);
+					result=(char *)data;
+					data=NULL;
+				}
+				if (webifConf.alwaysCloseSvdrp && !isQuit){
+					if (writeSvdrp(host,"QUIT")) {
+						readSvdrp(host,(char **)&data,&eod_regex);
+						free((char *)data);
+						closeSocket(host);
+					}
+					data=NULL;
+				}
+			} else {
+				warn("Can't establish SVDRP connection");
+				return NULL;
+			}
+		}
+		signal(SIGPIPE,oldSignalHandler);
+		regfree(&eod_regex);
+		return result;
+	} else {
+		warn("Not a valid host [id=%d]", host->id);
+		return NULL;
+	}
 }
 

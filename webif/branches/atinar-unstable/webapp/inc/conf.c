@@ -11,13 +11,15 @@
 * 
 * Rewritten for http://vdr-m7x0.foroactivo.com.es by:
 * atinar <atinar1@hotmail.com>
-*
+* 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
 */
 
 #include <klone/utils.h>
+#include <regex.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -26,47 +28,56 @@
 #include "i18n.h"
 #include "misc.h"
 
+#define VIDEO0 "/var/vdr/video0"
+
 webifConf_t webifConf = {
-	BT_FALSE, //allreadySet
+	BT_FALSE, //alreadySet
+	0, //st_mtime of conf file in last read
 	-1, //langId
-	"127.0.0.1",
-	2001,
-	PL_M3U,
-	BT_FALSE, //disable rec deletion
-	BT_FALSE, //disable config
+	{	{0,"","127.0.0.1",2001,VIDEO0,BT_TRUE,0},
+		{1,"vdr2","192.168.100.1",2001,"",BT_TRUE,0},
+		{2,"vdr3","192.168.100.2",2001,"",BT_TRUE,0},
+	}, //hosts
+	1, //hostsLength
+	1, //numVDRs
+	PL_M3U, //playlistType
+	BT_FALSE, //recDeletionDisabled
+	BT_FALSE, //configChangeDisabled
+	BT_FALSE, //disable config view
 	BT_FALSE, //useExternalWwwFolder
+	BT_TRUE, //displayHostId
+	2, //maxDepth
+	BT_FALSE, //alwaysCloseSvdrp
 };
 
 vdrConf_t vdrConf = {
-	BT_FALSE, //allreadySet
+	BT_FALSE, //alreadySet
 	5*60, //marginStart
 	15*60 //marginStop
 };
 
-boolean_t validateCheckbox(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param){
-	if (paramConfig->options) {
-		//value==NULL => first option
-		const char *option=paramConfig->options;
-		int l;
-		l=strcspn(option,"|");
-		if (param->value==NULL){ //unchecked checkboxes aren't submitted
-			param->value=strndup(option,l);
-			return BT_TRUE;
-		}
-		if (option[l]!='|') {
-			warn("validateCheckbox:only one option");
-			return BT_FALSE;
-		}
+void validateCheckbox(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param){
+	const char *option=(paramConfig->options)?paramConfig->options:"false|true";
+	if (!strchr(option,'|')){
+		crit("validateCheckbox: wrong config, only one option");
+		exit(1);
+	}
+	param->isValid=BT_FALSE;
+	int l=strcspn(option,"|");
+	if (param->value==NULL || strncmp(option,param->value,l)==0){
+		//value==NULL => first option (unchecked checkboxes aren't submitted)
+		param->value=strndup(option,l);
+		param->isValid=BT_TRUE;
+	} else {
 		option+=l+1;
 		l=strcspn(option,"|");
-		if (option[l]=='|') warn("validateCheckbox:more than 2 options");
-		return boolean(param->value!=NULL && strncmp(option,param->value,l)==0);
+		if (option[l]=='|') warn("Mas de dos opciones");
+		param->isValid=boolean(param->value!=NULL && strncmp(option,param->value,l)==0);
 	}
-	return BT_FALSE;
 }
 
-boolean_t printCheckbox(io_t *out,const char * const tabs,const cfgParamConfig_t * const paramConfig
-	,int paramIdx,const char *paramValue,const char encoded[]
+boolean_t printCheckbox(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
+	,int paramIdx,const char *paramValue,const char aux[]
 ){
 	if (paramConfig->options) {
 		//value==first option => false
@@ -79,7 +90,7 @@ boolean_t printCheckbox(io_t *out,const char * const tabs,const cfgParamConfig_t
 			booleanValueSet=BT_TRUE;
 		}
 		if (option[l]!='|'){
-			warn("printCheckbox:only one option");
+			warn("Solo una opcion");
 			option=NULL;
 		} else {
 			option+=l+1;
@@ -90,34 +101,34 @@ boolean_t printCheckbox(io_t *out,const char * const tabs,const cfgParamConfig_t
 			}
 		}
 		if (!booleanValueSet) {
-			warn("printCheckbox:none of the options match the value");
+			warn("Ninguna opcion coincide");
 		}
-		io_printf(out,"%s<input type=\"checkbox\" name=\"paramValue_%d\" value=\"%.*s\"%s/>"
-			,tabs,paramIdx,(option)?l:4,(option)?option:"true",checked[booleanValue]
+		io_printf(out,"%.*s<input type=\"checkbox\" name=\"paramValue_%d\" value=\"%.*s\"%s/>\n"
+			,ntabs,tabs,paramIdx,(option)?l:4,(option)?option:"true",checked[booleanValue]
 		);
 		return BT_TRUE;
 	}
 	return BT_FALSE;
 }
 
-boolean_t printSelect(io_t *out,const char * const tabs,const cfgParamConfig_t * const paramConfig
-	,int paramIdx,const char *paramValue, char * const encoded
+boolean_t printSelect(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
+	,int paramIdx,const char *paramValue, char * const aux
 ){
 	if (paramConfig && paramConfig->options && strlen(paramConfig->options)>0) {
-		io_printf(out,"%s<select name=\"paramValue_%d\" size=\"1\">\n",tabs,paramIdx);
+		io_printf(out,"%.*s<select name=\"paramValue_%d\" size=\"1\">\n",ntabs,tabs,paramIdx);
 		const char * option=paramConfig->options;
 		int o=paramConfig->indexOffset;
 		for(;;) {
 			int l=strcspn(option,"|");
 			char *optionnt=strndup(option,l);
 			const char *optiontr=tr(optionnt);
-			u_htmlncpy(encoded,optiontr,strlen(optiontr),HTMLCPY_ENCODE);
+			u_htmlncpy(aux,optiontr,strlen(optiontr),HTMLCPY_ENCODE);
 			if (paramConfig->isIndex) {
-				io_printf(out,"%s	<option value=\"%d\" %s>%s</option>\n"
-				,tabs,o,selected[sameIntEx(paramValue,o)],encoded);
+				io_printf(out,"%.*s	<option value=\"%d\"%s>%s</option>\n"
+				,ntabs,tabs,o,selected[sameIntEx(paramValue,o)],aux);
 			} else {
-				io_printf(out,"%s	<option value=\"%s\"%s>%s</option>\n"
-				,tabs,optionnt,selected[sameString(paramValue,optionnt)],encoded);
+				io_printf(out,"%.*s	<option value=\"%s\"%s>%s</option>\n"
+				,ntabs,tabs,optionnt,selected[sameString(paramValue,optionnt)],aux);
 			}
 			free(optionnt);
 			option+=l;
@@ -125,20 +136,36 @@ boolean_t printSelect(io_t *out,const char * const tabs,const cfgParamConfig_t *
 			option++;
 			o++;
 		}
-		io_printf(out,"%s</select>\n",tabs);
+		io_printf(out,"%.*s</select>\n",ntabs,tabs);
 		return BT_TRUE;
 	}
 	return BT_FALSE;
 }
 
+boolean_t validateHostsStr(const char *hosts);
+
+void validateHostsField(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param){
+	param->isValid=validateHostsStr(param->value);
+}
+
+boolean_t printHostsField(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
+	,int paramIdx,const char *paramValue,const char aux[]
+){
+	io_printf(out,"%.*s<input type=\"text\" name=\"paramValue_%d\" value=\"%s\" size=\"50\"/>\n"
+		,ntabs,tabs,paramIdx,paramValue);
+	return BT_TRUE;
+}
+
 cfgParamConfig_t webifParamConfig[]={ //Keep sorted by name !!
+	{"always_close_svdrp","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
 	{"default language","0","langBrowserDefined|langEnglish|langGerman|langSpanish|langFrench",BT_TRUE,-1,NULL,(cfgParamPrintInput_t)printSelect,BT_FALSE},
+	{"display_host_id","true","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
 	{"config_change_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
 	{"config_view_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
+	{"hosts",",127.0.0.1,2001,/var/vdr/video0;",NULL,BT_FALSE,0,(cfgParamValidate_t)validateHostsField,(cfgParamPrintInput_t)printHostsField,BT_FALSE},
+	{"max_depth","1",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
 	{"playlist_type","M3U","M3U|XSPF",BT_TRUE,0,NULL,printSelect,BT_FALSE},
 	{"rec_deletion_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"svdrp_ip","127.0.0.1",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"svdrp_port","2001",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
 	{"use_external_www_folder","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
 };
 
@@ -187,10 +214,10 @@ cfgParamConfig_t boxampParamConfig[] = { //Keep sorted by name !!
 };
 
 cfgParamConfigList_t cfgParamConfig[] = { //Indexed by cfgFileId_t
-	{sizeof(webifParamConfig)/sizeof(cfgParamConfig_t),webifParamConfig},
-	{sizeof(rcParamConfig)/sizeof(cfgParamConfig_t),rcParamConfig},
-	{sizeof(vdrParamConfig)/sizeof(cfgParamConfig_t),vdrParamConfig},
-	{sizeof(boxampParamConfig)/sizeof(cfgParamConfig_t),boxampParamConfig}
+	{BT_TRUE,sizeof(webifParamConfig)/sizeof(cfgParamConfig_t),webifParamConfig},
+	{BT_FALSE,sizeof(rcParamConfig)/sizeof(cfgParamConfig_t),rcParamConfig},
+	{BT_FALSE,sizeof(vdrParamConfig)/sizeof(cfgParamConfig_t),vdrParamConfig},
+	{BT_FALSE,sizeof(boxampParamConfig)/sizeof(cfgParamConfig_t),boxampParamConfig}
 };
 
 const cfgFile_t fileMapping[] = {
@@ -260,6 +287,17 @@ const cfgParamConfig_t *getCfgParamConfig(cfgFileId_t cfgFileId, cfgParam_t * co
 	}
 	return NULL;
 }
+boolean_t isValidParamName(const char *name, int nameLength,cfgParamConfigList_t *configs){
+	if (configs->exclusive){
+		cfgParamConfig_t *config;
+		int i;
+		for (i=0,config=configs->entry;i<configs->length;i++,config++){
+			if (strncmp(name,config->name,nameLength)==0) return BT_TRUE;
+		}
+		return BT_FALSE;
+	} else
+		return BT_TRUE;
+}
 
 boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean_t *isNew) {
 	if (cfgFileId<CF_WEBIFCONF || cfgFileId>CF_BOXAMPCONF) return BT_FALSE;
@@ -270,7 +308,7 @@ boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean
 	initCfgParamList(params);
 	cfgParam_t *param;
 	*isNew=BT_TRUE;
-	for (i=0,config=configs->entry;i<configs->length;i++,config++) config->allreadySet=BT_FALSE;
+	for (i=0,config=configs->entry;i<configs->length;i++,config++) config->alreadySet=BT_FALSE;
 	if (f) {
 		enum {BUFSZ=256};
 		char buffer[BUFSZ];
@@ -283,13 +321,8 @@ boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean
 				if (s[l]=='='){
 					l2=l;
 					while (l2>0 && s[l2-1]==' ') l2--;
-					if (l2>0){
-						params->length++;
-						params->entry=realloc(params->entry, params->length*sizeof(cfgParam_t));
-						if (params->entry==NULL){
-							error("readConf:Out of memory");
-							exit(1);
-						}
+					if (l2>0 && isValidParamName(s,l2,configs)){
+						crit_goto_if((params->entry=realloc(params->entry, (++params->length)*sizeof(cfgParam_t)))==NULL,outOfMemory);
 						param=params->entry+params->length-1;
 						initCfgParam(param);
 						param->name=strndup(s,l2);
@@ -310,7 +343,7 @@ boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean
 						for (i=0,config=configs->entry;i<configs->length;i++,config++){
 							if (strcmp(config->name,param->name)==0){
 								param->configId=i;	
-								config->allreadySet=BT_TRUE;
+								config->alreadySet=BT_TRUE;
 								break;
 							}
 						}
@@ -322,21 +355,20 @@ boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean
 		*isNew=BT_FALSE;
 	}
 	for (i=0,config=configs->entry;i<configs->length;i++,config++){
-		if (config->allreadySet) continue;
-		params->length++;
-		params->entry=realloc(params->entry, params->length*sizeof(cfgParam_t));
-		if (params->entry==NULL){
-			error("readConf:Out of memory");
-			exit(1);
-		}
+		if (config->alreadySet) continue;
+		crit_goto_if((params->entry=realloc(params->entry, (++params->length)*sizeof(cfgParam_t)))==NULL,outOfMemory);
 		param=params->entry+params->length-1;
 		initCfgParam(param);
 		param->name=strdup(config->name);
 		param->value=(config->defaultValue)?strdup(config->defaultValue):NULL;
+		dbg("Asignado parametro por defecto [%s]=[%s]",param->name,param->value);
 		param->configId=i;
-		config->allreadySet=BT_TRUE;
+		config->alreadySet=BT_TRUE;
 	}
 	return boolean(params->length>0);
+outOfMemory:
+	crit("readConf:Out of memory");
+	exit(1);
 }
 
 FILE * tmpCfgFile(char tmpName[16]){
@@ -344,12 +376,12 @@ FILE * tmpCfgFile(char tmpName[16]){
 	errno=0;
 	int tfd=mkstemp(tmpName);
 	if (errno){
-		perror("writeConf");
+		warn(strerror(errno));
 		return NULL;
 	}
 	FILE *t = fdopen(tfd,"w");
 	if (errno){
-		perror("writeConf");
+		warn(strerror(errno));
 		unlink(tmpName);
 		close(tfd);
 		return NULL;
@@ -360,6 +392,7 @@ FILE * tmpCfgFile(char tmpName[16]){
 boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 	boolean_t result=BT_FALSE;
 	boolean_t isNew=BT_FALSE;
+	boolean_t exclusive=cfgParamConfig[cfgFileId].exclusive;
 	const char *fileName=cfgFile[cfgFileId].fileName;
 	errno=0;
 	FILE *f = fopen(fileName,"r");
@@ -368,7 +401,7 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 			isNew=BT_TRUE;
 			errno=0;
 		} else {
-			perror("writeConf");
+			warn(strerror(errno));
 			return BT_FALSE;
 		}
 	}
@@ -397,7 +430,7 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 			if (!s[0] || s[0]=='#'){ //write comments and empty lines unmodified
 				fputs(buffer,t);
 				if (errno){
-					perror("writeConf");
+					warn(strerror(errno));
 					errno=0;
 				}
 			} else {
@@ -422,19 +455,23 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 								break;
 							}
 						}
-						if (param && param->value){
-							paramValue=param->value;
-						}
-						if (paramComment) {
-							while (paramComment[0]==' ') paramComment++;
-							lc=strcspn(paramComment,"\n\r");
-							while (lc>0 && paramComment[lc]==' ') lc--;
-							fprintf(t,"%s=%s #%s\n",paramName,paramValue,paramComment);
+						if (exclusive && !param) {
+							dbg("param [%s] eliminado de conf [%s]", paramName, fileName);
 						} else {
-							fprintf(t,"%s=%s\n",paramName,paramValue);
+							if (param && param->value){
+								paramValue=param->value;
+							}
+							if (paramComment) {
+								while (paramComment[0]==' ') paramComment++;
+								lc=strcspn(paramComment,"\n\r");
+								while (lc>0 && paramComment[lc]==' ') lc--;
+								fprintf(t,"%s=%s #%s\n",paramName,paramValue,paramComment);
+							} else {
+								fprintf(t,"%s=%s\n",paramName,paramValue);
+							}
 						}
 						if (errno){
-							perror("writeConf");
+							warn(strerror(errno));
 							errno=0;
 						}
 						if (param) param->written=BT_TRUE;
@@ -458,7 +495,6 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 				errno=0;
 			} else {
 				warn(strerror(errno));
-				perror("writeConf");
 			}
 		}
 		if (!errno ){
@@ -466,14 +502,12 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 				rename(fileName,backupName);
 				if (errno){
 					warn(strerror(errno));
-					perror("writeConf");
 					errno=0;
 				}
 			}
 			rename(tmpName,fileName);
 			if (errno){
 				warn(strerror(errno));
-				perror("writeConf");
 				errno=0;
 				result=BT_FALSE;
 			} else {
@@ -481,15 +515,113 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 			}
 		}
 		if (errno) {
-			perror("writeConf");
+			warn(strerror(errno));
 			errno=0;
 		}
 		free(backupName);
 	}
 	return result;
 }
+
+
+boolean_t validateHostsStr(const char *hosts){
+	if (hosts==NULL) return BT_FALSE;
+	const char * pattern="^(([a-zA-Z0-9]*),([0-9.]*),([0-9]*),([a-zA-Z0-9./_]*);?)+$";
+	regex_t regex;
+	if (regcomp(&regex,pattern,REG_EXTENDED|REG_NOSUB)!=0) {
+		crit("Error compiling the pattern!");
+		exit(1);
+	}
+	boolean_t ok=(regexec(&regex,hosts,0,NULL,0)==0);
+	regfree(&regex);
+	return ok;
+}
+
+boolean_t parseHostsField(const char *hosts,boolean_t apply){
+	webifConf.hostsLength=0;
+	webifConf.numVDRs=0;
+	if (hosts==NULL) return BT_FALSE;
+	enum {MAXREGMATCH=HOSTNUMCONFFIELDS+1};
+	const char * pattern="([a-zA-Z0-9]*),([0-9.]*),([0-9]*),([a-zA-Z0-9./_]*);?";
+	regex_t regex;
+	if (regcomp(&regex,pattern,REG_EXTENDED)!=0) {
+		crit("Error compiling the pattern!");
+		exit(1);
+	}
+	regmatch_t regmatch[MAXREGMATCH];
+	boolean_t ok=BT_FALSE;
+	int err,m,so,l;
+	const char *t=hosts;
+	hostConf_t *host=webifConf.hosts;
+	while (t[0]) {
+		if ((err=regexec(&regex,t,MAXREGMATCH,regmatch,0))==0){
+			boolean_t isValid=BT_TRUE;
+			for (m=1;m<MAXREGMATCH && isValid;m++){
+				so=regmatch[m].rm_so;
+				l=regmatch[m].rm_eo-so;
+				if (so>=0 && l>=0) {
+					errno=0;
+					switch (m) {
+						case 1: strncpy(host->name,t+so,l); host->name[l]=0; break;
+						case 2: strncpy(host->ip,t+so,l); host->ip[l]=0; break;
+						case 3: host->port=strtol(t+so,NULL,10);break;
+						case 4: 
+							if (l>1 && t[so+l-1]=='/') l--;
+							strncpy(host->video0,t+so,l); host->video0[l]=0;
+							break;
+						default :
+							warn("Mas de HOSTNUMCONFFIELDS=%d detectados en cadena hosts",HOSTNUMCONFFIELDS);
+					};
+					if (errno) {
+						warn(strerror(errno));
+						isValid=BT_FALSE;
+						errno=0;
+					}
+				} else {
+					isValid=BT_FALSE;
+				}
+			}
+			if (isValid) {
+				host->id=webifConf.hostsLength;
+				host->isVdr=boolean(strlen(host->ip)>0 && host->port>0);
+				if (host->isVdr) webifConf.numVDRs++;
+				ok=BT_TRUE; //ok if there is at least one valid host
+				webifConf.hostsLength++;
+				host++;
+			}
+			if (regmatch[0].rm_eo>0) t+=regmatch[0].rm_eo; else break;
+		} else if (err==REG_NOMATCH){
+			break;
+		} else if (err==REG_ESPACE){
+			goto outOfMemory;
+		}
+	}
+	regfree(&regex);
+	return ok;
+outOfMemory:
+	crit("parseHostsField: out of memory");
+	exit(1);
+}
+
+time_t get_mtime(const char *fileName){
+	struct stat status;
+	if (stat(fileName,&status)==0){
+		return status.st_mtime;
+	} else {
+		warn(strerror(errno));
+		return 0;
+	}
+}
+
 boolean_t readWebifConf() {
-	if (webifConf.allreadySet) {
+	errno=0;
+	time_t current_mtime=get_mtime(cfgFile[CF_WEBIFCONF].fileName);
+	if (webifConf.mtime<current_mtime || errno){
+		webifConf.alreadySet=BT_FALSE;
+		errno=0;
+		dbg("webifConf desfasado [%.0f secs.]. Se vuelve a leer.", difftime(current_mtime,webifConf.mtime));
+	}
+	if (webifConf.alreadySet) {
 		return;
 	}
 	cfgParamList_t params;
@@ -502,17 +634,15 @@ boolean_t readWebifConf() {
 				errno=0;
 				webifConf.langId=strtol(param->value,NULL,10);
 				if (errno!=0 || webifConf.langId<-1 || webifConf.langId>=I18NNUM) webifConf.langId=-1;
-			} else if (strcmp(param->name,"svdrp_ip")==0) {
-				if (strlen(param->value)>15) {
-					//TODO warn
-				} else {
-					strcpy(webifConf.svdrpIp,param->value);
-				}
-			} else if (strcmp(param->name,"svdrp_port")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
-					webifConf.svdrpPort=strtol(param->value,NULL,10);
+			} else if (strcmp(param->name,"hosts")==0) {
+				if (!parseHostsField(param->value,BT_TRUE)){
+					warn("No hay ningun host valido configurado");
+					webifConf.hostsLength=1;
+					webifConf.hosts[0].name[0]=0;
+					strcpy(webifConf.hosts[0].ip,"127.0.0.1");
+					webifConf.hosts[0].port=2001;
+					strcpy(webifConf.hosts[0].video0,VIDEO0);
+					webifConf.hosts[0].isVdr=BT_TRUE;
 				}
 			} else if (strcmp(param->name,"playlist_type")==0) {
 				if (param->value==NULL || strlen(param->value)<1 ){
@@ -544,12 +674,74 @@ boolean_t readWebifConf() {
 				} else {
 					webifConf.useExternalWwwFolder=sameString(param->value,"true");
 				}
+			} else if (strcmp(param->name,"display_host_id")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.displayHostId=sameString(param->value,"true");
+				}
+			} else if (strcmp(param->name,"max_depth")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					errno=0;
+					webifConf.maxDepth=strtol(param->value,NULL,10);
+					if (errno){
+						warn("webifConf.maxDepth %s",strerror(errno));
+					}
+				}
+			} else if (strcmp(param->name,"always_close_svdrp")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.alwaysCloseSvdrp=sameString(param->value,"true");
+				}
 			}
 		}
 		freeCfgParamList(&params);
-		webifConf.allreadySet=BT_TRUE;
+		webifConf.alreadySet=BT_TRUE;
+		webifConf.mtime=current_mtime;
 		return BT_TRUE;
 	}
 	return BT_FALSE;
 }
 
+hostConf_t *getHost(int hostId){
+	return (hostId>=0 && hostId<webifConf.hostsLength) ? webifConf.hosts+hostId : NULL;
+}
+
+hostConf_t *getFirstVdrHost(){
+	hostConf_t *host;
+	int i;
+	for (i=0,host=webifConf.hosts;i<webifConf.hostsLength;i++,host++)
+		if (host->isVdr) return host;
+	return NULL;
+}
+
+boolean_t isHostLocal(hostConf_t *host){
+	return boolean(host!=NULL && strncmp(host->ip,"127.",4)==0);
+}
+
+const char *getHostHttpAddr(hostConf_t *host,request_t *request){
+	return (host==NULL)
+	? NULL
+	: (isHostLocal(host)) 
+		? request_get_field(request,"Host")->value 
+		: (host->name[0]) 
+			? host->name 
+			: host->ip;
+}
+
+void printVDRSelect(io_t *out,int ntabs,const char * name,const int hostId){
+	int i;
+	hostConf_t *host;
+	io_printf(out,"%.*s<select name=\"%s\" size=\"1\">\n",ntabs++,tabs,name);
+	for (i=0,host=webifConf.hosts;i<webifConf.hostsLength;i++,host++) {
+		if (host->isVdr){
+			io_printf(out,"%.*s<option value=\"%d\" %s>%d - %s</option>\n"
+				,ntabs,tabs,host->id,selected[boolean(host->id==hostId)]
+				,host->id,(host->name[0])?host->name:host->ip);
+		}
+	}
+	io_printf(out,"%.*s</select>\n",--ntabs,tabs);
+}

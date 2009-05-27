@@ -16,6 +16,7 @@
 
 #include <klone/session.h>
 #include "misc.h"
+#include "recordings.h"
 
 typedef struct fragmentEntry_s {
   char * path;
@@ -37,6 +38,6 @@ void freeFE(fragmentEntry_t *const entry);
 void initFL(fragmentList_t *const list);
 void freeFL(fragmentList_t *const list);
 boolean_t seekFragment(fragmentList_t * const list, uint64_t totalPos);
-boolean_t getFragmentList(fragmentList_t * const list, const char * pathrel);
+boolean_t getFragmentList(fragmentList_t * const list, const rec_t *rec);
 
 #endif

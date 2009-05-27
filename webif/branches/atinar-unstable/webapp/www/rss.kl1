@@ -25,7 +25,6 @@
 #include "misc.h"
 #include "recordings.h"
 #include "svdrp_comm.h"
-#include "svdrp_parse.h"
 
 char pubDate[30];
 const char * const getPubDate(const struct tm *t){
@@ -43,7 +42,7 @@ const char * const getPubDate(const struct tm *t){
 	const char monthStr[12][4]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
 	getRecList(&recs,SF_START,SD_DESC);
-	close_svdrp();
+	closeSvdrpAll();
 	response_set_content_type(response,"application/rss+xml");
 	char * httpBase;
 	field_t *host=request_get_field(request,"Host");
@@ -61,38 +60,38 @@ const char * const getPubDate(const struct tm *t){
 	);
 	if (recs.length>0) {
 		io_printf(out,
-"		<pubDate>%s</pubDate>\n", getPubDate(localtime(&recs.entry[recs.length-1].start))
+"		<pubDate>%s</pubDate>\n", getPubDate(localtime(&recs.entry[recs.length-1].event.start))
 		);
 	}
 	io_printf(out,
 "		<link>%s/</link>\n",httpBase
 	);
-	recEntry_t *entry;
-	for (i=0,entry=recs.entry;i<recs.length;i++,entry++) {
-		struct tm t=*localtime(&entry->start);
+	rec_t *rec;
+	for (i=0,rec=recs.entry;i<recs.length;i++,rec++) {
+		struct tm t=*localtime(&rec->event.start);
 		const char * fd=formatDate(&t,0);
 		io_printf(out,
 "		<item>\n"
 "			<title>%s</title>\n"
 "			<description>[%s %s] %02d:%02d: %s</description>\n"
-			,entry->name
-			,weekdays[langId][t.tm_wday],fd,t.tm_hour,t.tm_min,entry->name
+			,rec->name
+			,weekdays[langId][t.tm_wday],fd,t.tm_hour,t.tm_min,rec->name
 		);
 		io_printf(out,
 "			<link>%s/playlistrec.kl1?id=%d</link>\n"
 			,httpBase
-			,entry->id
+			,rec->id
 		);
 		io_printf(out,
 "			<guid isPermaLink=\"false\">%d</guid>\n"
 "			<pubDate>%s</pubDate>\n"
 "		</item>\n"
-			,entry->id
+			,rec->id
 			,getPubDate(&t)
 		);
 	}
 	free(httpBase);
-	freeRL(&recs);
+	freeRecList(&recs);
 	io_printf(out,
 "	</channel>\n"
 "</rss>\n"

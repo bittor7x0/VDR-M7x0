@@ -74,25 +74,31 @@ int isVideoFile(const struct dirent * ent){
 	return (strcmp(c,".vdr")==0);
 }
 
-boolean_t getFragmentList(fragmentList_t * const list, const char * pathrel){
+boolean_t getFragmentList(fragmentList_t * const list, const rec_t *rec){
 	initFL(list);
-	if (pathrel==NULL) {
-		warn("Pathrel should be specified");
+	if (rec->path==NULL) {
+		warn("Path should be specified");
+		return BT_FALSE;
+	}
+	hostConf_t *host=getHost(rec->hostId);
+	if (!host || !host->video0 || host->video0[0]!='/') {
+		warn("Recording host is not local or video0 not valid");
 		return BT_FALSE;
 	}
 	struct stat st;
 	fragmentEntry_t *f;
 	int i;
-	char * path;
-	if (strncmp(pathrel,"/var/vdr/video0/",16)==0){
-		warn("path %s deberia ser relativo", pathrel);
-		pathrel+=16;
+	char * fullpath;
+	if (rec->path[0]=='/'){
+		warn("Absolute recording path [%s]",rec->path);
+		fullpath=rec->path;
 	}
-	if (pathrel[0]=='/')pathrel++;
-	crit_goto_if(asprintf(&path,"/var/vdr/video0/%s",pathrel)<0,outOfMemory);
-	if ( (stat(path, &st)==0) && S_ISDIR(st.st_mode)) {
+	else {
+		crit_goto_if(asprintf(&fullpath,"%s/%s",host->video0,rec->path)<0,outOfMemory);
+	}
+	if ( (stat(fullpath, &st)==0) && S_ISDIR(st.st_mode)) {
 		struct dirent **namelist;
-		list->length = scandir(path, &namelist, isVideoFile, alphasort);
+		list->length = scandir(fullpath, &namelist, isVideoFile, alphasort);
 		if (list->length<0) list->length=0;
 		if (list->length>0) {
 			list->entry=(fragmentEntry_t*)malloc((list->length)*sizeof(fragmentEntry_t));
@@ -100,14 +106,14 @@ boolean_t getFragmentList(fragmentList_t * const list, const char * pathrel){
 			for (i=0;i<list->length;i++) {
 				f=&list->entry[i];
 				initFE(f);
-				crit_goto_if(asprintf(&(f->path),"%s/%s",path,namelist[i]->d_name)<0,outOfMemory);
+				crit_goto_if(asprintf(&(f->path),"%s/%s",fullpath,namelist[i]->d_name)<0,outOfMemory);
 				if (stat(f->path,&st)==0) {
 					f->size=st.st_size;
 					f->start=list->totalSize;
 					f->end=f->start+f->size-1;
 					list->totalSize=f->end+1;
 				} else {
-					//TODO warn()
+					warn(strerror(errno));
 					freeFE(f);
 				}
 			}
@@ -115,11 +121,10 @@ boolean_t getFragmentList(fragmentList_t * const list, const char * pathrel){
 			free(namelist);
 		}
 	}
-	free(path);
-	info("Number of fragments: %d. Total size %lld bytes",list->length,list->totalSize);
+	if (fullpath!=rec->path) free(fullpath);
 	return boolean(list->length>0 && list->totalSize>0);
 outOfMemory:
-	crit("getFragmentList:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 

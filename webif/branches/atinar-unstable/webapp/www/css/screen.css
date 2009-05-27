@@ -44,44 +44,13 @@ h2 a,
 h2 a:visited {
 	color:black;
 }
-ul.controls {
-	margin:0;
-	padding:0;
-}
-ul.controls li.control {
-	list-style-type:none;
-	list-style-image:none;
-	list-style-position:outside;
-}
-.control {
-	float:left;
-	margin:2px;
-	padding:4px 0;
-}
-.control .ui-icon {
-	float:left;
-	margin:0 4px;
-}
-table.list1 tr .controls,
-table.list2 tr .controls {
-	float:none;
-}
-table.list1 tr .controls .control,
-table.list2 tr .controls .control {
-	display:block;
-	/*float:right;*/
-	margin:0 0px;
-	padding:0px 0;
-}
-table.list1 tr .controls .control .ui-icon,
-table.list2 tr .controls .control .ui-icon {
-	float:right;
-	margin:0 0px;
-}
 div.boxRight {
 	float:right;
 	margin:0 3px;
 	padding:0;
+}
+textarea {
+	width: 100%;
 }
 /* Messages */
 .message,
@@ -185,6 +154,60 @@ div.clearer {
 	clear:both;
 }
 
+/* Controls
+------------------------------------------------------------*/
+.controls {
+	margin:0;
+	padding:0;
+}
+table.list1 tr .controls,
+table.list2 tr .controls {
+	float:none;
+}
+table#recordings tr .controls {
+	float:left;
+	margin-right:2px;
+}
+.recFolder .controls {
+	float:left;
+	margin-right:1px;
+}
+ul.controls li.control {
+	list-style-type:none;
+	list-style-image:none;
+	list-style-position:outside;
+}
+.control {
+	float:left;
+	margin:2px;
+	padding:4px 0;
+}
+button.control::-moz-focus-inner {
+	padding:0;
+	border:none;
+}
+tr .controls .control {
+	display:block;
+	margin:0 0px;
+	padding:0px 0;
+}
+.recFolder .controls .control {
+	margin:0;
+	padding:0;
+}
+.control .ui-icon {
+	float:left;
+	margin-right: 4px;
+}
+tr .controls .control .ui-icon {
+	float:right;
+	margin:0 0px;
+}
+.recFolder .controls .control .ui-icon {
+	margin-right:0;
+}
+
+
 /* Table related 
 ------------------------------------------------------------*/
 table.list1,
@@ -192,7 +215,7 @@ table.list2 {
 	background-color:#DDA;
 	border-collapse:separate;
 	border-spacing:0px;
-	margin:0 auto;
+	margin:0.5em auto;
 	width:85%;
 	empty-cells:show;
 	-moz-border-radius-topleft:2px;
@@ -332,10 +355,6 @@ table.channels td.number,
 table#recordings td.number {
 	text-align:center;
 }
-table#recordings tr .controls {
-	float:left;
-	margin-right:2px;
-}
 table.channels col.ctrls {
 	width:58px;
 }
@@ -432,6 +451,10 @@ div.infobox div.info {
 	padding:1px;
 	-moz-border-radius:0;
 }
+span.host {
+	font-size:0.9em;
+	color:#300;
+}
 
 /* Page specific
 -------------------------------------*/
@@ -493,7 +516,7 @@ table#timers tr.inactive * {
 }
 
 /* Browse */
-.recPathWrapper {
+#recPathWrapper {
 	display:-moz-inline-stack;
 	display:inline-block;
 	margin:0 0 1em 5px;
@@ -548,9 +571,9 @@ ul.recFolderFooter li.field,
 	list-style-position:inside;
 	list-style-type:none;
 }
-.recFolders {
+#recFoldersWrapper {
 	clear:left;
-	padding-left:5px;
+	margin-left:5px;
 }
 .recFolderWrapper {
 	display:-moz-inline-stack;
@@ -558,7 +581,7 @@ ul.recFolderFooter li.field,
 	vertical-align:top;
 	margin:5px 10px 5px 0px;
 	padding:0;
-	width:250px;
+	width:300px;
 	position:relative;
 	background:url(images/shadow1.png) repeat;
 	-moz-border-radius:5px;
@@ -577,7 +600,7 @@ div.recFolder {
 	bottom:5px;
 }
 li.recFolder {
-	margin:5px;
+	margin:2px;
 }
 li.recRec {
 	background-color:transparent;
@@ -589,25 +612,16 @@ li.recRec {
 .recRecDel {
 	text-decoration:line-through!important;
 }
+li.recRecEdt,
+div.recRecEdt .recFolderHeader {
+	font-style:italic!important;
+	margin-right:0.20em!important;
+}
 .recFolder a, 
 .recFolder a:link, 
 .recFolder a:visited {
 	color:black;
 	text-decoration:none;
-}
-.recFolder .controls {
-	display:block;
-	margin:0;
-	padding:0;
-	float:left;
-}
-.recFolder .controls .control{
-	margin:0 3px 0 0;
-	padding:0;
-}
-.recFolder .controls .control .ui-icon {
-	float:left;
-	margin:0;
 }
 .recFolderHeader {
 	background-color:transparent;
@@ -626,15 +640,20 @@ li.recRec {
 	border:medium none;
 	font-size:0.9em;
 	margin:0 5px 5px;
-	padding:0;
+	padding:0.1px;
 	text-decoration:none;
 	-moz-border-radius:3px;
 }
+.recFolder .recFolderDetailsPending {
+	background-image:url(images/ajax-loader.gif);
+	background-position:center center;
+	background-repeat:no-repeat;
+}
+
 div.recFolder > .recFolderDetails,
 div.recFolder > .recFolders {
-	clear:both;
 	min-height:5em;
-	max-height:15em;
+	max-height:10em;
 	overflow:auto;
 }
 .recFolderDetails div.recInfo {
@@ -710,7 +729,7 @@ div.code pre {
 }
 #watchItControl {
 	float:left;
-	max-width:250px;
+	width:250px;
 }
 #watchItInfoWrapper,
 #watchItInfo {
@@ -823,33 +842,38 @@ th.hour,
 td.hour {
 	text-align:center;
 }
-
 button {
 	-moz-border-radius:5px;
 	-moz-box-sizing: content-box;
 }
-button.delete {
-	color:Yellow;
-	background-color:Red;
-	border-color:Red;
+tr.buttons td {
+	text-align:left;
+}
+td button {
+	margin: 0 0.25em;
+	padding: 0 0.25em 0 0;
+}
+button .ui-icon {
 	float:left;
-	margin-right:1em;
 }
 button.confirm {
+	/*
 	color:White;
 	background-color:#5070F0;
 	border-color:#5070F0;
-}
-td button.confirm {
-	float:right;
-	margin-left:1em;
+	*/
 }
 button.cancel {
+	/*
 	color:White;
 	background-color:Orange;
 	border-color:Linen;
+	*/
 }
-td button.cancel {
-	float:right;
-	margin-left:1em;
+button.delete {
+	/*
+	color:Yellow;
+	background-color:Red;
+	border-color:Red;
+	*/
 }

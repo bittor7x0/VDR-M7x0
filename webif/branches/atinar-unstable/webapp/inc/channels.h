@@ -20,9 +20,10 @@
 #ifndef __CHANNELS_H__
 #define __CHANNELS_H__
 
-#include "misc.h"
+#include <klone/io.h>
+#include "conf.h"
 
-typedef struct channelEntry_s {
+typedef struct channel_s {
 	int  channelNum;        //Number to dial on remote control.
 	char *channelId;        //ID of the channel, currently unset!
 	char *channelName;      //Name of the channel.
@@ -39,22 +40,23 @@ typedef struct channelEntry_s {
 	int  nid;               //Network-ID.
 	int  tid;               //Transport-stream-ID.
 	int  rid;               //Radio-ID.
-} channelEntry_t;
+} channel_t;
 
 typedef struct channelList_s {
 	int length;
-	channelEntry_t *entry;
+	channel_t *channel;
 } channelList_t;
 
-void initCE(channelEntry_t * const entry);
-void freeCE(channelEntry_t * const entry);
-void initCL(channelList_t  * const list);
-void freeCL(channelList_t  * const list);
-void getChannelList(channelList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
+void initChannel(channel_t * const channel);
+void freeChannel(channel_t * const channel);
+void initChannelList(channelList_t  * const list);
+void freeChannelList(channelList_t  * const list);
+void getChannelList(hostConf_t *vdrHost, channelList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
 /*
  * Retrieve channelName.
  * If channelNum==0, retrieve current channel name.
  */
-boolean_t getChannel(int channelNum, channelEntry_t * const channel);
+boolean_t getChannel(hostConf_t *vdrHost, int channelNum, channel_t * const channel);
+void printChannelListSelect(io_t *out,int ntabs,const char * name,const channelList_t *const channels,int channelNum);
 
 #endif

@@ -21,28 +21,11 @@
 #define __SVDRP_COMM_H__
 
 #include <netinet/in.h>
-#include <klone/session.h>
+#include <klone/request.h>
+#include "conf.h"
 
-extern int svdrp_socket;
-extern char svdrpServerIp[16];
-extern uint16_t svdrpServerPort;
-
-//Set server ip and port and return values if provided pointers
-void setSvdrpServerAddress(session_t * session);
-
-//Open the SVDRP connection
-int open_svdrp();
-
-//Close the SVDRP connection
-void close_svdrp();
-
-//Read data from SVDRP connection
-char * read_svdrp();
-
-//Write data to the SVDRP connection
-int write_svdrp(char *data);
-
-//TODO Are vdr and webifd running in the same machine?
-int isVdrLocal();
+char *execSvdrp(hostConf_t *host,const char *cmd);
+void closeSvdrp(hostConf_t *host);
+void closeSvdrpAll();
 
 #endif

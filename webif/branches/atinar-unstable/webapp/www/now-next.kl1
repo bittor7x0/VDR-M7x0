@@ -24,7 +24,6 @@
 #include "i18n.h"
 #include "misc.h"
 #include "svdrp_comm.h"
-#include "svdrp_parse.h"
 #include "epg.h"
 
 #ifdef DEBUG
@@ -44,38 +43,43 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 
 	if (channelNum<1) {
 		warn("Invalid parameters");
-		response_set_status(response,HTTP_STATUS_NO_CONTENT);
-		return;
+		returnHttpNoContent(response);
+		goto end;
 	}
+	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
+	if (host==NULL){
+		warn("No host");
+		returnHttpNoContent(response);
+		goto end;
+	};
 
 	// Get now & next for this chan
 	nowNextList_t nnl;
 	channelList_t channels;
-	channelEntry_t channel;
-	initCL(&channels);
-	initCE(&channel);
+	channel_t channel;
+	initChannelList(&channels);
+	initChannel(&channel);
 	channel.channelNum=channelNum;
 	channels.length=1;
-	channels.entry=&channel;
-	getNowNextList(&nnl,&channels);
-	close_svdrp();
+	channels.channel=&channel;
+	getNowNextList(host,&nnl,&channels);
 	nowNextEntry_t *nne=nnl.entry;
 	
 	//Header fields
 	long int waitSeconds=0;
 	char *refresh;
-	if ( (nne->event[1].time>0) && (nne->event[0].time>0) && (nne->event[0].title) && (nne->event[1].title) ) {
+	if ( (nne->event[1].start>0) && (nne->event[0].start>0) && (nne->event[0].title) && (nne->event[1].title) ) {
 		time_t now=time(NULL);
-		waitSeconds=nne->event[1].time-now;
+		waitSeconds=nne->event[1].start-now;
 	}
-	if (waitSeconds<30){
-		waitSeconds=30;
+	if (waitSeconds<5){
+		waitSeconds=5;
 	}
 	asprintf(&refresh,"%ld;URL=/now-next.kl1?chan=%d",waitSeconds,channelNum);
 	response_set_field(response,"Refresh",refresh);
 	free(refresh);
 	
-	initHtmlDoc(response,out);
+	int ntabs=initHtmlDoc(response,out);
 	io_printf(out,
 "	<head>\n"
 "		<title>%s</title>\n"
@@ -92,8 +96,8 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 		title[i]=NULL;
 		eventEntry_t *ee=&nne->event[i];
 		if (ee->title) {
-			if (ee->time>0) {
-				struct tm t = *localtime(&ee->time);
+			if (ee->start>0) {
+				struct tm t = *localtime(&ee->start);
 				asprintf(&title[i],"%02d:%02d",t.tm_hour,t.tm_min);
 			} else {
 				title[i]=strdup((i==0)?tr("Now"):tr("next")); 
@@ -118,15 +122,16 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 		eventEntry_t *ee=&nne->event[i];
 		if (title[i]) {
 			io_printf(out,
-"			<div id=\"tabs-%d\" class=\"eventSummary\">\n",c++
-			);
+"			<div id=\"tabs-%d\" class=\"eventSummary\">\n",c++);
 			io_printf(out,
 "				<h3>%s</h3>\n",title[i]);
 			io_printf(out,
-"				<h4>%s</h4>\n",(ee->title)?ee->title:"--"
-			);
-			printEventDesc(out,
-"				",ee->desc);	
+"				<h4>%s</h4>\n",(ee->title)?ee->title:(ee->shortdesc && ee->desc)?ee->shortdesc:"--");
+			io_printf(out,
+"				<div class=\"desc\">\n");
+			printEventDesc(out,4,(ee->desc)?ee->desc:ee->shortdesc,"|",NULL);
+			io_printf(out,
+"				</div>\n");
 			io_printf(out,
 "			</div>\n"
 			);
@@ -134,11 +139,13 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 	}
 	for (i=0;i<2;i++) free(title[i]);
 
-	freeCE(&channel); //no realmente necesario a no ser que se asignen nombres.
+	freeChannel(&channel); //no realmente necesario a no ser que se asignen nombres.
 	freeNNL(&nnl);
 	io_printf(out,
 "		</tabs>\n"
 "	</body>\n"
 "</html>\n"
 	);
+end:
+	closeSvdrpAll();
 %>

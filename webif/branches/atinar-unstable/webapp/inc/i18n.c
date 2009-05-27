@@ -111,6 +111,14 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"aux",
+		{
+		"Aux.",
+		"",
+		"",
+		""
+		}
+	},
 	{	"available",
 		{
 		"Available",
@@ -383,6 +391,14 @@ i18n_t i18n[]={
 		"Configuration de l\'interface web"
 		}
 	},
+	{	"cfgWi.always_close_svdrp",
+		{
+		"Close SVDRP after each cmd (only debug)",
+		"",
+		"Cerrar SVDRP tras cada comando (sólo depuración)",
+		""
+		}
+	},
 	{	"cfgWi.config_change_disabled",
 		{
 		"Disable configuration modification",
@@ -407,6 +423,30 @@ i18n_t i18n[]={
 		"Langue par défaut"
 		}
 	},
+	{	"cfgWi.display_host_id",
+		{
+		"Display host id",
+		"",
+		"Mostrar id de host",
+		""
+		}
+	},
+	{	"cfgWi.hosts",
+		{
+		"Hosts",
+		"",
+		"",
+		""
+		}
+	},
+	{	"cfgWi.max_depth",
+		{
+		"Max. subdir depth",
+		"",
+		"Subniveles máximos en navegación",
+		""
+		}
+	},
 	{	"cfgWi.playlist_type",
 		{
 		"Playlist type",
@@ -420,22 +460,6 @@ i18n_t i18n[]={
 		"Disable recording deletion",
 		"",
 		"Impedir borrado de grabaciones",
-		""
-		}
-	},
-	{	"cfgWi.svdrp_ip",
-		{
-		"SVDRP server IP",
-		"",
-		"IP del servidor SVDRP",
-		""
-		}
-	},
-	{	"cfgWi.svdrp_port",
-		{
-		"SVDRP server port",
-		"",
-		"Puerto del servidor SVDRP",
 		""
 		}
 	},
@@ -1042,6 +1066,14 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"recErrNoValidPath",
+		{
+		"No valid recording path present!",	
+		"",
+		"¡No es una ruta válida de grabación!",
+		""
+		}
+	},
 	{	"record",
 		{
 		"Record",
@@ -1122,6 +1154,14 @@ i18n_t i18n[]={
 		"Configuration"
 		}
 	},
+	{	"shortdesc",
+		{
+		"Subtitle",
+		"Untertitel",
+		"Subtítulo",
+		""
+		}
+	},
 	{	"source",
 		{
 		"Source",
@@ -1151,14 +1191,6 @@ i18n_t i18n[]={
 		"Subfolders",
 		"",
 		"Subcarpetas",
-		""
-		}
-	},
-	{	"subtitle",
-		{
-		"Subtitle",
-		"Untertitel",
-		"Subtítulo",
 		""
 		}
 	},
@@ -1443,7 +1475,7 @@ const char *tr(const char *s) {
 	i18n_t test = { s, { s,NULL,NULL,NULL}};
 	i18n_t *found=(i18n_t *)bsearch(&test,&i18n,i18nLength,sizeof(i18n_t),i18nCompare);
 	if (found==NULL) {
-		warn("i18n:Key %s not found",s);
+		dbg("i18n:Key %s not found",s);
 	}
 	const char * result = (found!=NULL) ? (strlen(found->val[langId])>0) ? found->val[langId] : found->val[0] : s;
 	return result;

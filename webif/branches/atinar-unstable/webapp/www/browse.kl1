@@ -4,13 +4,7 @@
 * This source-code is licensed under GPL v2.
 * See ../../LICENSE for details
 * 
-* (c) Christian Kelinski <k@kille.cx>
-* Please checkout the README file!
-* 
-* Originally written for the open7x0.org VDR-FW project:
-* www.open7x0.org
-* 
-* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* Originally written for http://vdr-m7x0.foroactivo.com.es by:
 * atinar <atinar1@hotmail.com>
 * 
 * You will need the KLONE web application development framework
@@ -27,421 +21,12 @@
 #include <string.h>
 #include <u/libu.h>
 
-#include "epg.h"
-#include "i18n.h"
+#include "browse.h"
+#include "conf.h"
 #include "misc.h"
-#include "svdrp_comm.h"
-#include "svdrp_parse.h"
+#include "i18n.h"
 #include "recordings.h"
-
-enum readDirFlags_e { //also used to sort recordings
-	DF_ISREC   = 0x0001,
-	DF_EDITED  = 0x0002,
-	DF_DELETED = 0x0004,
-	DF_ISSERIE = 0x0008,
-	DF_HASRECS = 0x0010,
-	DF_ISDIR   = 0x0020,
-};
-const int flagsCompareMask=DF_ISDIR|DF_HASRECS|DF_ISREC|DF_EDITED;
-const char *classIsRec[]={""," recRecRec"};
-const char *classIsDel[]={""," recRecDel"};
-const char *classIsEdt[]={""," recRecEdt"};
-
-typedef struct recDir_s recDir_t;
-typedef struct recDirList_s {
-	int length;
-	recDir_t *entry;
-} recDirList_t;
-struct recDir_s {
-	char *name;
-	char *dname;
-	int flags;
-	int numRecs;
-	int numDirs;
-	int numDels;
-	recDirList_t subdirs;
-};
-
-void initRecDir(recDir_t *recDir){
-	recDir->name=NULL;
-	recDir->dname=NULL;
-	recDir->flags=0;
-	recDir->numRecs=0;
-	recDir->numDirs=0;
-	recDir->numDels=0;
-	recDir->subdirs.length=0;
-	recDir->subdirs.entry=NULL;
-}
-void freeRecDirList(recDirList_t *recDirList);
-void freeRecDir(recDir_t *recDir){
-	free(recDir->name);
-	free(recDir->dname);
-	freeRecDirList(&recDir->subdirs);
-	initRecDir(recDir); 
-}
-void freeRecDirList(recDirList_t *recDirList){
-	int i=0;
-	recDir_t *recDir;
-	for(i=0,recDir=recDirList->entry;i<recDirList->length;i++,recDir++){
-		freeRecDir(recDir);
-	}
-	free(recDirList->entry);
-}
-
-int compareRecDir(const void * a, const void * b) {
-	const recDir_t * ta=(const recDir_t *)a;
-	const recDir_t * tb=(const recDir_t *)b;
-	int taflags=ta->flags&flagsCompareMask;
-	int tbflags=tb->flags&flagsCompareMask;
-	return (taflags!=tbflags)
-	? taflags-tbflags
-	: strcmp((ta->dname)?ta->dname:ta->name,(tb->dname)?tb->dname:tb->name);
-}
-
-char * vdrDecodeName(char *name, boolean_t inPlace, boolean_t *isEdt){
-	char *dname=(inPlace) ? name : strdup(name);
-	char *s;
-	s=name;
-	if (s[0]=='%'){
-		if (isEdt) *isEdt=BT_TRUE;
-		s++;
-	} else {
-		if (isEdt) *isEdt=BT_FALSE;
-	}
-	vdrDecode(dname,s);
-	return dname;
-}
-
-boolean_t printRecInfo(io_t *out,const char * const tabs,const char * pathrel, char * const aux){
-	boolean_t result=BT_FALSE;
-	recInfo_t info;
-	initRI(&info);
-	if (readRecInfo(pathrel,&info)) {
-		int minutes = (info.stop - info.start)/60;
-		io_printf(out,
-"%s<div class=\"recInfo\">\n"
-"%s	<div class=\"recDate\">"
-		"<span class=\"recStart field\">"
-			"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%s</span>"
-		"</span> "
-		"<span class=\"recDuration field\">"
-			"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%d&#39;</span>"
-		"</span>\n"
-"%s	</div>\n"
-		,tabs
-		,tabs
-		,tr("date"),formatDate(localtime(&info.start),1)
-		,tr("runtime"),minutes
-		,tabs
-		);
-		if (info.desc!=NULL) {
-			char *tabs2;
-			asprintf(&tabs2,
-"%s	",tabs);
-			printEventDesc(out,tabs2,info.desc);
-			free(tabs2);
-		}
-		io_printf(out,
-"%s</div>\n",tabs);
-		result=BT_TRUE;
-	}
-	freeRI(&info);
-	return result;
-}
-
-void parseRecDir(const char * const path,recDir_t * const recDir) {
-	DIR *dir = opendir(path);
-	if (dir == 0) {
-		return;
-	}
-	struct dirent* dirE;
-	recDir_t *recDir2;
-	while(0 != (dirE = readdir(dir))) {
-		if (dirE->d_type==DT_DIR) {
-			const char* name = dirE->d_name; 
-			if ( (name[0]=='.' && (name[1]==0 || (name[1]=='.' && name[2]==0)))  ){
-				continue;
-			}
-			recDir->subdirs.length++;
-			recDir->subdirs.entry=(recDir_t *)realloc(recDir->subdirs.entry,recDir->subdirs.length*sizeof(recDir_t));
-			crit_goto_if(recDir->subdirs.entry==NULL,outOfMemory);
-			recDir2=recDir->subdirs.entry+(recDir->subdirs.length-1);
-			initRecDir(recDir2);
-			recDir2->name=strdup(name);
-			crit_goto_if(recDir2->name==NULL,outOfMemory);
-			boolean_t isRec=boolean(strcmp(name+(strlen(name)-4),".rec")==0);
-			boolean_t isDel=boolean(!isRec && strcmp(name+(strlen(name)-4),".del")==0);
-			boolean_t isEdt=BT_FALSE;
-			if ( isRec || isDel ) {
-				recDir2->flags|=DF_ISREC;
-				recDir->flags|=DF_HASRECS;
-				recDir->numRecs++;
-				if (isDel) {
-					recDir2->flags|=DF_DELETED;
-					recDir->numDels++;
-				}
-			} else {
-				recDir->flags |= DF_ISDIR;
-				if (strcmp(name,"_")==0) {
-					recDir->flags |= DF_ISSERIE;
-				} 
-				recDir2->dname=vdrDecodeName((char *)name,BT_FALSE,&isEdt);
-				char *path2;
-				crit_goto_if(asprintf(&path2,"%s/%s",path,name)<0,outOfMemory);
-				parseRecDir(path2,recDir2);
-				free(path2);
-				recDir->numRecs+=recDir2->numRecs;
-				recDir->numDels+=recDir2->numDels;
-				if (!isFlagSet(DF_HASRECS,recDir2->flags)){
-					recDir->numDirs+=recDir2->numDirs+1;
-				}
-			}
-		}
-	}
-	if (recDir->subdirs.length>0){
-		qsort(recDir->subdirs.entry,recDir->subdirs.length,sizeof(recDir_t),compareRecDir);
-		int i;
-		boolean_t allDeleted=BT_TRUE;
-		for (i=0,recDir2=recDir->subdirs.entry;i<recDir->subdirs.length;i++,recDir2++){
-			if (!isFlagSet(DF_DELETED,recDir2->flags)) {
-				allDeleted=BT_FALSE;
-				break;
-			}
-		}
-		if (allDeleted) {
-			recDir->flags|=DF_DELETED;
-		}
-	}
-	return;
-outOfMemory:
-	crit("parseRecDir:out of memory");
-	exit(1);
-}
-
-void printSubdirs(io_t *out,const char * const tabs,const char *const pathrel,recDir_t *recDir,char *const aux,int level);
-
-const char * getPrintName(recDir_t *recDir,char *const aux){
-	if (isFlagSet(DF_ISREC,recDir->flags)){
-		struct tm dates;
-		strptime(recDir->name,"%Y-%m-%d.%H.%M",&dates);
-		strcpy(aux,formatDate(&dates,BT_TRUE));
-		return aux;
-	} else {
-		return (recDir->dname!=NULL)?recDir->dname:recDir->name;
-	}
-}
-
-void printRecordingN(io_t *out,const char * const tabs,const char *const pathrel,recDir_t *recDir, char *const aux){
-	const char * const Play=tr("play");
-	u_urlncpy(aux,pathrel,strlen(pathrel),URLCPY_ENCODE);
-	io_printf(out,
-"%s<li class=\"recRec%s\">\n"
-"%s	<ul class=\"controls ui-widget ui-helper-clearfix\">\n"
-"%s		<li class=\"control ui-state-default ui-corner-all\">"
-	"<a href=\"playlistrec.kl1?path=%s\" class=\"ui-icon ui-icon-play\" title=\"%s\">%s</a>"
-"</li>\n"
-"%s	</ul>\n"
-	,tabs,classIsDel[isFlagSet(DF_DELETED,recDir->flags)]
-	,tabs
-	,tabs
-	,aux,Play,Play
-	,tabs
-	);
-	io_printf(out,
-"%s	%s\n"
-"%s</li>\n"
-	,tabs,getPrintName(recDir,aux)
-	,tabs
-	);
-}
-void printRecording0(io_t *out,const char * const tabs,const char *const pathrel,recDir_t *recDir, char *const aux){
-	const char * const Play=tr("play");
-	char *tabs2;
-	io_printf(out,
-"%s<li class=\"recFolderWrapper\">\n"
-"%s	<div class=\"recFolder%s\">\n"
-	,tabs
-	,tabs,classIsDel[isFlagSet(DF_DELETED,recDir->flags)]
-	);
-	u_urlncpy(aux,pathrel,strlen(pathrel),URLCPY_ENCODE);
-	io_printf(out,
-"%s		<div class=\"recFolderHeader\">\n"
-"%s			<ul class=\"controls ui-widget ui-helper-clearfix\">\n"
-"%s				<li class=\"control ui-state-default ui-corner-all\">"
-					"<a href=\"playlistrec.kl1?path=%s\" class=\"ui-icon ui-icon-play\" title=\"%s\">%s</a>"
-				"</li>\n"
-"%s			</ul>\n"
-	,tabs
-	,tabs
-	,tabs
-	,aux,Play,Play
-	,tabs
-	);
-	io_printf(out,
-"%s		%s\n"
-"%s		</div>\n"
-"%s		<div class=\"recFolderDetails\">\n"
-	,tabs,getPrintName(recDir,aux)
-	,tabs
-	,tabs
-	); 
-	crit_goto_if(asprintf(&tabs2,
-"%s			",tabs)<0,outOfMemory);
-	printRecInfo(out,tabs2,pathrel,aux);
-	free(tabs2);
-	io_printf(out,
-"%s		</div>\n"
-"%s	</div>\n"
-"%s</li>\n"
-	,tabs
-	,tabs
-	,tabs
-	);
-	return;
-outOfMemory:
-	crit("printRecording0:out of memory");
-	exit(1);
-}
-
-void printRecording(io_t *out,const char * const tabs,const char *const pathrel,recDir_t *recDir, char *const aux,int level){
-	if (level==0) 
-		printRecording0(out,tabs,pathrel,recDir,aux);
-	else
-		printRecordingN(out,tabs,pathrel,recDir,aux);
-}
-
-void printFolder(io_t *out,const char * const tabs,const char *const pathrel,recDir_t *recDir,char *const aux,int level){
-	const char * const Browse=tr("browse");
-	char *tabs2;
-	io_printf(out,(level==0)?
-"%s<li class=\"recFolderWrapper\"><div class=\"recFolder%s\">\n"
-	:
-"%s<li class=\"recFolder%s\">\n"
-	,tabs,classIsDel[isFlagSet(DF_DELETED,recDir->flags)]
-	);
-	u_urlncpy(aux,pathrel,strlen(pathrel),URLCPY_ENCODE);
-	io_printf(out,
-"%s	<div class=\"recFolderHeader\">\n"
-"%s		<ul class=\"controls ui-widget ui-helper-clearfix\">\n"
-"%s			<li class=\"control ui-state-default ui-corner-all\">"
-				"<a href=\"browse.kl1?path=%s\" class=\"ui-icon ui-icon-folder-rec\" title=\"%s\">%s</a>"
-			"</li>\n"
-"%s		</ul>\n"
-	,tabs
-	,tabs
-	,tabs
-	,aux,Browse,Browse
-	,tabs
-	);
-	io_printf(out,
-"%s		%s\n"
-"%s	</div>\n"
-	,tabs,getPrintName(recDir,aux)
-	,tabs
-	);
-	asprintf(&tabs2,
-"%s	",tabs);  
-	printSubdirs(out,tabs2,pathrel,recDir,aux,level+1);
-	free(tabs2);
-	if (level==0){
-		io_printf(out,
-"%s	<ul class=\"recFolderFooter\">\n",tabs);
-		if (recDir->numDirs>0) {
-			io_printf(out,
-"%s		<li class=\"field\"><span class=\"label\">%s:</span> <span class=\"value\">%d</span></li>\n",tabs,tr("subfolders"),recDir->numDirs);
-		}
-		if (recDir->numRecs>0) {
-			io_printf(out,
-"%s		<li class=\"field\"><span class=\"label\">%s:</span> <span class=\"value\">%d</span></li>\n",tabs,tr("recordings"),recDir->numRecs);
-		}
-		io_printf(out,
-"%s	</ul>\n",tabs
-		);
-	}
-	io_printf(out,(level==0) ?
-"%s	</div></li>\n"
-	:
-"%s</li>\n"
-	,tabs
-	);
-	return;
-outOfMemory:
-	crit("printFolder:out of memory");
-	exit(1);
-}
-
-char *getPath2(const char *const path,const char *const name){
-	char *path2;
-	if (strlen(path)==0){
-		path2=strdup(name);
-	}
-	else {
-		if (asprintf(&path2,"%s/%s",path,name)<0) path2=NULL;
-	}
-	return path2;
-}
-
-void printRecDir(io_t *out,const char * const tabs,const char *const pathrel,recDir_t *recDir,char *const aux,int level) {
-	const char * const Play=tr("play");
-	const char * const Browse=tr("browse");
-	if ( recDir->subdirs.length==0 && isFlagSet(DF_ISREC,recDir->flags)) {
-		printRecording(out,
-"			",pathrel,recDir,aux,level);
-	} else if ( recDir->subdirs.length==1 && isFlagSet(DF_ISREC,recDir->subdirs.entry[0].flags)) {
-		char *path2=getPath2(pathrel,recDir->subdirs.entry[0].name);
-		crit_goto_if(path2==NULL,outOfMemory);
-		printRecording(out,
-"			",path2,recDir,aux,level);
-		free(path2);
-	} else {
-		printFolder(out,
-"			",pathrel,recDir,aux,level);
-	}
-	return;
-outOfMemory:
-	crit("printRecDir:out of memory");
-	exit(1);
-}
-
-void printRecDirList(io_t *out,const char * const tabs,const char *const pathrel,recDirList_t *recDirList,char *const aux,int level) {
-	if (recDirList==NULL || recDirList->length<1) return;
-	io_printf(out,
-"%s<ul class=\"recFolders\">\n",tabs
-	);
-	char *tabs2;
-	crit_goto_if(asprintf(&tabs2,"%s	",tabs)<0,outOfMemory);
-	int i;
-	recDir_t *recDir;
-	for(i=0,recDir=recDirList->entry;i<recDirList->length;i++,recDir++){
-		char *path2=getPath2(pathrel,recDir->name);
-		crit_goto_if(path2==NULL,outOfMemory);
-		printRecDir(out,tabs2,path2,recDir,aux,level);
-		free(path2);
-	}
-	io_printf(out,
-"%s</ul>\n",tabs
-	);
-	return;
-outOfMemory:
-	crit("printRecDirList:out of memory");
-	exit(1);
-}
-
-void printSubdirs(io_t *out,const char * const tabs,const char *pathrel,recDir_t *recDir,char *const aux,int level){
-	if (pathrel[0]=='/') pathrel++;
-	if (isFlagSet(DF_ISSERIE,recDir->flags)){
-		char *path2;
-		crit_goto_if(asprintf(&path2,"%s/_",pathrel)<0,outOfMemory);
-		printRecDirList(out,tabs,path2,&recDir->subdirs.entry[0].subdirs,aux,level);
-		free(path2);
-	} else {
-		printRecDirList(out,tabs,pathrel,&recDir->subdirs,aux,level);
-	}
-	return;
-outOfMemory:
-	crit("printSubdirs:out of memory");
-	exit(1);
-}
+#include "svdrp_comm.h"
 
 #ifdef DEBUG
 void dbg_browse_kl1(void) { dbg("browse.kl1"); }
@@ -454,90 +39,124 @@ void dbg_browse_kl1(void) { dbg("browse.kl1"); }
 	#endif
 
 	config(session, request);
-	currentPage=PN_BROWSE;
-	initHtmlPage(response,out,tr("browse"),NULL);
-	printMenu(out);
-
 	vars_t *args = request_get_args(request);
 	enum {AUXSZ=4096};
 	char aux[AUXSZ];
-	recDir_t recDir;
-	initRecDir(&recDir);
-	char *path;
-	char *pathrel;
-	if (vars_countn(args, "path")>0){
-		const char *patharg=vars_get_value(args,"path");
-		if (patharg[0]=='/') patharg++;
-		crit_goto_if(asprintf(&path,"/var/vdr/video0/%s",patharg)<0,outOfMemory);
-		char * p;
-		for (p=path+strlen(path)-1;(p>=path) && (*p=='/' || *p=='_');p--) {
-			*p=0;
-		}
-		pathrel=path+16;
-	} else {
-		path=strdup("/var/vdr/video0");
-		crit_goto_if(path==NULL,outOfMemory);
-		pathrel=path+15;
+	currentPage=PN_BROWSE;
+	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_BROWSE;
+	
+	if (currentAction==PA_PLAY) {
+		rec_t rec;
+		initRec(&rec);
+		initRecFromArgs(&rec,args);
+		boolean_t ok=printRecPlaylist(request,response,out,&rec,aux);
+		freeRec(&rec);
+		if (ok) goto end;
 	}
-	io_printf(out,
-"		<div id=\"main\" class=\"content\">\n"
-"			<h2>%s</h2>\n"
-"			<div class=\"section\">\n"
-"				<div class=\"recPathWrapper\">\n"
-"					<ul class=\"recPath\">\n"
-"						<li class=\"recDir\">"
-							"<a%s href=\"browse.kl1\">%s</a>"
-						"</li>\n"
-		,tr("recordings")
-		,classCurrent[boolean(strlen(pathrel)==0)],tr("recordings")
+	
+	int ntabs=initHtmlPage(response,out,tr("recordings"),
+"		<script type=\"text/javascript\">\n"
+"			webif.messages.confirmDelete='%s';\n"
+"		</script>\n"
+		,tr("recDeleteConfirm")
 	);
-	if (strlen(pathrel)>0) {
-		char * bc;
-		char * bcPath=malloc(strlen(pathrel)+2);
-		if (bcPath!=NULL) {
-			char * s=strdup(pathrel);
-			if (s!=NULL){
-				bcPath[0]=0;
-				char *next=strtok(s,"/");
-				for(bc=next;bc!=0;bc=next) {
-					next=strtok(0,"/");
-					strcat(bcPath,bc);
-					if (strcmp(bc,"_")!=0) {
-						u_urlncpy(aux,bcPath,strlen(bcPath),URLCPY_ENCODE);
-						io_printf(out,
-"					<li class=\"recDir\">"
-						"<a%s href=\"browse.kl1?path=%s\">%s</a>"
-					"</li>\n"
-						,classCurrent[boolean(!next)]
-						,aux
-						,vdrDecodeName(bc,BT_TRUE,NULL));
-					}
-					strcat(bcPath,"/");
-				}
-				free(s);
+	printMenu(out,ntabs);
+	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("recordings"));
+	io_printf(out,"%.*s<div class=\"section\">\n",ntabs++,tabs);
+	
+	if (currentAction==PA_DELETE) {
+		if (webifConf.recDeletionDisabled) {
+			io_printf(out,"%.*s<div class=\"alert\">%s</div>\n",ntabs,tabs,tr("recDeletionDisabled"));
+		} else {
+			const char *path=vars_get_value(args,"path");
+			if (isValidRecPath(path)) {
+				rec_t rec;
+				initRec(&rec);
+				initRecFromArgs(&rec,args);
+				char *message=NULL;
+				if (deleRec(&rec,&message))
+					printMessage(out,ntabs,"message",tr("recDeleteOk"),message,aux);
+				else
+					printMessage(out,ntabs,"message",tr("recDeleteErr"),message,aux);
+				if (message) free(message);
+				freeRec(&rec);
+			} else {
+				printMessage(out,ntabs,"alert",tr("recErrNoValidPath"),NULL,NULL);
 			}
-			free(bcPath);
 		}
+		currentAction=PA_BROWSE;
 	}
-	io_printf(out,
-"					</ul>\n"
-"				</div>\n"
-	);
-	recDir.name=strdup(strlen(pathrel)>0?pathrel:tr("recordings"));
-	parseRecDir(path,&recDir);
-	printSubdirs(out,
-"				",pathrel,&recDir,aux,0);
-	free(path);
-	io_printf(out,
-"			</div>\n"
-"		</div>\n"
-	);
-	freeRecDir(&recDir);
-	finishHtmlPage(out);
+	if (currentAction==PA_EDIT) {
+		rec_t rec;
+		initRec(&rec);
+		initRecFromArgs(&rec,args);
+		getRecInfo(&rec);
+		io_printf(out,"%.*s<form action=\"/browse.kl1\" method=\"post\">\n",ntabs++,tabs);
+		if (vars_countn(args,"pl")>0)
+			io_printf(out,"%.*s<input type=\"hidden\" name=\"pl\" value=\"%d\"/>\n",ntabs,tabs,vars_get_value_i(args,"pl"));
+		printRecEditForm(out,ntabs,&rec,aux);
+		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
+		freeRec(&rec);
+		goto finish;
+	}
+	if (currentAction==PA_CONFIRM) {
+		rec_t rec;
+		initRec(&rec);
+		initRecFromArgs(&rec,args);
+		const char *oldName=vars_get_value(args,"oldName");
+		if (rec.path && oldName!=NULL && !sameString(oldName,rec.name)){
+			char *message=NULL;
+			if (editRec(&rec,&message))
+				printMessage(out,ntabs,"message",tr("recEditOk"),message,aux);
+			else 
+				printMessage(out,ntabs,"message",tr("recEditErr"),message,aux);
+			free(message);
+		}
+		freeRec(&rec);
+		currentAction=PA_BROWSE;
+	}
+	if (currentAction==PA_BROWSE){
+		const char *argpath=(vars_countn(args, "path")>0) ? vars_get_value(args,"path") : NULL;
+		char *path=NULL;
+		if (argpath) {
+			int l=strlen(argpath);
+			int pl=(vars_countn(args,"pl")>0) ? vars_get_value_i(args,"pl") : l;
+			if (pl>l) pl=l;
+			const char * c;
+			for (c=argpath+pl-1;(c>=argpath) && (*c=='/' || *c=='_');c--) pl--;
+			if (pl>0) {
+				if (argpath[0]=='/') {
+					argpath++;
+					pl--;
+				}
+				if (pl>0)
+				crit_goto_if((path=strndup(argpath,pl))==NULL,outOfMemory);
+			}
+		}
+		if (path && path[0]=='/') path++;
+
+		io_printf(out,"%.*s<div id=\"recPathWrapper\">\n",ntabs++,tabs);
+		printRecPathUl(out,ntabs,path,aux);
+		io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+
+		recDir_t rdir;
+		initRecDir(&rdir);
+		getRecDir(path,&rdir);
+		io_printf(out,"%.*s<div id=\"recFoldersWrapper\">\n",ntabs++,tabs);
+		printRecDirListUL(out,ntabs,path,(path)?strlen(path):0,&rdir,aux,0);
+		io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+		freeRecDir(&rdir);
+		free(path);
+	}
+finish:
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+	finishHtmlPage(out,ntabs);
 	goto end;
 outOfMemory:
 	crit("browse.kl1:out of memory");
 	exit(1);
 end:
+	closeSvdrpAll();
 %>
-

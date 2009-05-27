@@ -27,30 +27,10 @@
 #include "i18n.h"
 #include "recordings.h"
 #include "svdrp_comm.h"
-#include "svdrp_parse.h"
 
 #ifdef DEBUG
 dbg_recordings_kl1(void) { dbg("recordings.kl1"); }
 #endif
-
-void printPlay(io_t *out, recEntry_t * const rec, const char *hostAddr, char encoded[]){
-	const char *Play=tr("play");
-	io_printf(out,
-"							<div class=\"boxRight\">\n"
-"								<a class=\"ui-icon ui-icon-play\" href=\"http://%s/playlistrec.kl1?"
-		,hostAddr
-	);
-	if (rec->path!=NULL) {
-		u_urlncpy(encoded,rec->path,strlen(rec->path),URLCPY_ENCODE);
-		io_printf(out,"path=%s\"",encoded);
-	} else {
-		io_printf(out,"id=%d\"",rec->id);
-	}
-	io_printf(out," title=\"%s\">%s</a>\n"
-"							</div>\n"
-		,Play,Play
-	);
-}
 
 %><%
 
@@ -59,38 +39,26 @@ void printPlay(io_t *out, recEntry_t * const rec, const char *hostAddr, char enc
 	#endif
 
 	config(session, request);
-
 	vars_t *args = request_get_args(request);
-	enum {ENCODEDSZ=4096};
-	char encoded[ENCODEDSZ];
-	recEntry_t rec;
-	initRE(&rec);
-	rec.id=(vars_countn(args,"id")>0) ? vars_get_value_i(args,"id") : -1;
-	rec.name=(char*)vars_get_value(args,"name");
-	rec.path=(char*)vars_get_value(args,"path");
+	enum {AUXSZ=4096};
+	char aux[AUXSZ];
 	sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
 	sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
-
 	currentPage=PN_RECORDINGS;
 	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
+	
 	if (currentAction==PA_PLAY) {
-		response_set_content_type(response,"audio/x-mpegurl");
-		//response_set_content_type(response,"text/plain");
-		field_t *host=request_get_field(request,"Host");
-		if (rec.path!=NULL){
-			if (strncmp(rec.path,"/var/vdr/video0",16)==0) rec.path+=16;
-			u_urlncpy(encoded,rec.path,strlen(rec.path),URLCPY_ENCODE);
-			io_printf(out,"http://%s/streamrec.kl1?path=%s",host->value,encoded);
-		} else {
-			//TODO comprobar >-1
-			io_printf(out,"http://%s/streamrec.kl1?id=%d",host->value,rec.id);
-		}
-		goto end;
+		rec_t rec;
+		initRecFromArgs(&rec,args);
+		boolean_t ok=printRecPlaylist(request,response,out,&rec,aux);
+		freeRec(&rec);
+		if (ok) goto end;
 	}
-	initHtmlPage(response,out,tr("recordings"),
+	
+	int ntabs=initHtmlPage(response,out,tr("recordings"),
 "	<script type=\"text/javascript\">\n"
 "		$(function(){\n"
-"			$('#delete').click(function (event){\n"
+"			$('button.delete').click(function (event){\n"
 "				if (!confirm('%s')){\n"
 "					event.preventDefault();\n"
 "				}\n"
@@ -99,181 +67,52 @@ void printPlay(io_t *out, recEntry_t * const rec, const char *hostAddr, char enc
 "	</script>\n"
 		,tr("recDeleteConfirm")
 	);
-	printMenu(out);
-	io_printf(out,
-"		<div id=\"main\" class=\"content\">\n"
-"			<h2>%s</h2>\n"
-			,tr("recordings")
-	);
-	const char *hostAddr=(isVdrLocal()) ? request_get_field(request,"Host")->value : svdrpServerIp;
+	printMenu(out,ntabs);
+	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("recordings"));
+	
 	if (currentAction==PA_DELETE) {
 		if (webifConf.recDeletionDisabled) {
-				io_printf(out,
-"			<div class=\"alert\">%s</div>\n",tr("recDeletionDisabled"));
+			io_printf(out,"%.*s<div class=\"alert\">%s</div>\n",ntabs,tabs,tr("recDeletionDisabled"));
 		} else {
-			if (rec.id>0) {
-				dbg("Trying to delete recording with id %d (%s)",rec.id,rec.name);
-				char *message=NULL;
-				recInfo_t info;
-				initRI(&info);
-				info.title=(char *)vars_get_value(args,"title");
-				info.subtitle=(char *)vars_get_value(args,"subtitle");
-				info.desc=(char *)vars_get_value(args,"desc");
-				if (deleRec(&rec,&info,&message)) {
-					io_printf(out,
-"			<div class=\"message\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recDeleteOk"),message);
-				} else {
-					io_printf(out,
-"			<div class=\"alert\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recDeleteErr"),message);
-				}
-				free(message);
-			} else {
-				io_printf(out,
-"			<div class=\"alert\">%s</div>\n",tr("recDeleteErr"));
-			}
+			rec_t rec;
+			initRecFromArgs(&rec,args);
+			char *message=NULL;
+			if (deleRec(&rec,&message))
+				printMessage(out,ntabs,"message",tr("recDeleteOk"),message,aux);
+			else
+				printMessage(out,ntabs,"message",tr("recDeleteErr"),message,aux);
+			if (message) free(message);
+			freeRec(&rec);
 		}
-		currentAction=PA_SUMMARY;
 	}
 	if (currentAction==PA_EDIT) {
-		int l;
-		recInfo_t info;
-		initRI(&info);
-		if (getRecInfo(&rec,&info)){
-			io_printf(out,
-"			<form action=\"/recordings.kl1\" method=\"post\">\n");
-			io_printf(out,
-"				<input type=\"hidden\" name=\"id\" value=\"%d\"/>\n"
-"				<input type=\"hidden\" name=\"sort\" value=\"%d\"/>\n"
-"				<input type=\"hidden\" name=\"direction\" value=\"%d\"/>\n"
-				,rec.id
-				,sortBy
-				,sortDirection
-				);
-			io_printf(out,
-"				<table id=\"recEdit\" class=\"list2\" summary=\"\">\n"
-"					<caption>%s</caption>\n"
-					,tr("recEdit")
-			);
-			if (rec.name!=NULL){
-				io_printf(out,
-"					<tr>\n"
-"						<th>%s</th>\n"
-"						<td>\n"
-						,tr("name")
-				);
-				printPlay(out,&rec,hostAddr,encoded);
-				l=strlen(rec.name);
-				u_htmlncpy(encoded,rec.name,l,HTMLCPY_ENCODE);
-				io_printf(out,
-"							<input type=\"text\" name=\"name\" value=\"%s\" size=\"%d\"/>\n"
-"							<input type=\"hidden\" name=\"oldName\" value=\"%s\"/>\n"
-"						</td>\n"
-"					</tr>\n"
-						,encoded
-						,5+(l>55)?55:l
-						,encoded
-				);
-			}
-			if (info.title!=NULL){
-				l=strlen(info.title);
-				u_htmlncpy(encoded,info.title,l,HTMLCPY_ENCODE);
-				io_printf(out,
-"					<tr>\n"
-"						<th>%s</th>\n"
-"						<td>\n"
-"							<textarea name=\"title\" cols=\"%d\" rows=\"%d\" class=\"readOnly\" readonly=\"readonly\">%s</textarea></td>\n"
-"						</td>\n"
-"					</tr>\n"
-						,tr("title")
-						,(l>60) ? 60 : l
-						,(l/60)+1
-						,encoded
-				);
-			}
-			if (info.subtitle!=NULL){
-				l=strlen(info.subtitle);
-				u_htmlncpy(encoded,info.subtitle,strlen(info.subtitle),HTMLCPY_ENCODE);
-				io_printf(out,
-"					<tr>\n"
-"						<th>%s</th>\n"
-"						<td>\n"
-"							<textarea name=\"subtitle\" cols=\"%d\" rows=\"%d\" class=\"readOnly\" readonly=\"readonly\">%s</textarea></td>\n"
-"						</td>\n"
-"					</tr>\n"
-						,tr("subtitle")
-						,(l>60) ? 60 : l
-						,(l/60)+1
-						,encoded
-				);
-			}
-			if (info.desc!=NULL){
-				l=strlen(info.desc);
-				u_htmlncpy(encoded,info.desc,strlen(info.desc),HTMLCPY_ENCODE);
-				io_printf(out,
-"					<tr>\n"
-"						<th>%s</th>\n"
-"						<td><textarea name=\"desc\" cols=\"%d\" rows=\"%d\" class=\"readOnly\" readonly=\"readonly\">%s</textarea></td>\n"
-"					</tr>\n"
-						,tr("desc")
-						,(l>60) ? 60 : l
-						,(l/60)+1
-						,encoded
-				);
-			}
-			io_printf(out,
-"					<tr class=\"buttons\">"
-						"<td colspan=\"2\">"
-			);
-			if (!webifConf.recDeletionDisabled) {
-				io_printf(out,
-							"<button id=\"delete\" name=\"a\" type=\"submit\" value=\"%d\" "
-								"class=\"delete\">%s</button>"
-					,PA_DELETE,tr("recDelete")
-				);
-			}
-			if (rec.name!=NULL) {
-				io_printf(out,
-							"<button id=\"confirm\" name=\"a\" type=\"submit\" value=\"%d\" "
-								"class=\"confirm\">%s</button>"
-						"</td>"
-					"</tr>\n"
-					,PA_CONFIRM,tr("accept")
-				);
-			}
-			io_printf(out,
-"				</table>\n"
-"			</form>\n"
-			);
-			freeRI(&info);
-		} else {
-			io_printf(out,
-"			<div class=\"alert\">%s</div>\n"
-				,tr("recEditErr")
-			);
-			currentAction=PA_SUMMARY;
-		}
+		rec_t rec;
+		initRecFromArgs(&rec,args);
+		getRecInfo(&rec);
+		io_printf(out,"%.*s<form action=\"/recordings.kl1\" method=\"post\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<input type=\"hidden\" name=\"sort\" value=\"%d\"/>\n",ntabs,tabs,sortBy);
+		io_printf(out,"%.*s<input type=\"hidden\" name=\"direction\" value=\"%d\"/>\n",ntabs,tabs,sortDirection);
+		printRecEditForm(out,ntabs,&rec,aux);
+		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
+		freeRec(&rec);
+		goto end;
 	}
 	if (currentAction==PA_CONFIRM) {
-		recInfo_t info;
-		initRI(&info);
-		info.title=(char*)vars_get_value(args,"title");
-		info.subtitle=(char*)vars_get_value(args,"subtitle");
-		info.desc=(char*)vars_get_value(args,"desc");
+		rec_t rec;
+		initRecFromArgs(&rec,args);
 		const char *oldName=vars_get_value(args,"oldName");
-		if (rec.id>0 && oldName!=NULL && !sameString(oldName,rec.name)){
+		if (oldName!=NULL && !sameString(oldName,rec.name)){
 			char *message=NULL;
-			if (editRec(&rec,&info,&message)){
-				io_printf(out,
-"			<div class=\"message\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recEditOk"),message);
-			} else {
-				io_printf(out,
-"			<div class=\"alert\"><p>%s:</p><p class=\"response\">%s</p></div>\n",tr("recEditErr"),message);
-			}
+			if (editRec(&rec,&message))
+				printMessage(out,ntabs,"message",tr("recEditOk"),message,aux);
+			else 
+				printMessage(out,ntabs,"message",tr("recEditErr"),message,aux);
 			free(message);
 		}
-		currentAction=PA_SUMMARY;
+		freeRec(&rec);
 	}
-	if (currentAction==PA_SUMMARY) {
+	if (BT_TRUE){
 		io_printf(out,
 "			<table id=\"recordings\" class=\"list1\" summary=\"\">\n"
 "				<col class=\"number\"/>\n"
@@ -295,79 +134,55 @@ void printPlay(io_t *out, recEntry_t * const rec, const char *hostAddr, char enc
 			,sortClass(SF_TITLE),SF_TITLE,newSortDirection(SF_TITLE),tr("title")
 		);
 		recList_t recs;
-		int i=0;
 		getRecList(&recs,sortBy,sortDirection);
 		const char *RecEdit=tr("recEdit");
+		const char *RecDelete=tr("recDelete");
 		const char *Play=tr("play");
-		recEntry_t *entry;
-		int l;
-		for (i=0,entry=recs.entry;i<recs.length;i++,entry++) {
-			struct tm t1=*localtime(&entry->start);
+		rec_t *prec;
+		int i,l;
+		for (i=0,prec=recs.entry;i<recs.length;i++,prec++) {
+			struct tm t1=*localtime(&prec->event.start);
 			io_printf(out,
 "					<tr class=\"rec\">\n"
 "						<td class=\"number\" >%d</td>\n"
 "						<td class=\"date\">%s</td>\n"
 "						<td class=\"hour\">%02d:%02d</td>\n"
-				,entry->id
+				,prec->id
 				,formatDate(&t1,0)
 				,t1.tm_hour,t1.tm_min
 			);
 			io_printf(out,
 "						<td class=\"content\">\n"
 "							<form action=\"/recordings.kl1\" method=\"get\">\n"
-"								<input type=\"hidden\" name=\"id\" value=\"%d\" />\n"
 "								<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n"
 "								<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n"
-								,entry->id
 								,sortBy
 								,sortDirection
 			);
-			if (entry->path!=NULL) {
-				u_htmlncpy(encoded,entry->path,strlen(entry->path),HTMLCPY_ENCODE);
-				io_printf(out,
-"								<input type=\"hidden\" name=\"path\" value=\"%s\" />\n",encoded);
-			}
-			io_printf(out,
-"								<div class=\"controls ui-widget ui-helper-clearfix\" >\n"
-			);
-			io_printf(out,
-"									<button class=\"control ui-state-default ui-corner-all\" name=\"a\" value=\"%d\">"
-										"<span class=\"ui-icon ui-icon-play\" title=\"%s\">%s</span>"
-									"</button>\n"
-									,PA_PLAY
-									,Play,Play
-			);
-			io_printf(out,
-"									<button class=\"control ui-state-default ui-corner-all\" name=\"a\" value=\"%d\">"
-										"<span class=\"ui-icon ui-icon-edit\" title=\"%s\">%s</span>"
-									"</button>\n"
-									,PA_EDIT
-									,RecEdit,RecEdit
-			);
-			io_printf(out,
-"								</div>\n"
-			);
-			l=strlen(entry->name);
-			u_htmlncpy(encoded,entry->name,l,HTMLCPY_ENCODE);
+			printRecControls(out,8,prec,aux,Play,RecEdit,RecDelete);
+			l=strlen(prec->name);
+			u_htmlncpy(aux,prec->name,l,HTMLCPY_ENCODE);
 			io_printf(out,
 "								<input type=\"text\" name=\"name\" class=\"name readOnly\" readonly=\"readonly\" value=\"%s\" "
 									"size=\"%d\"/>\n"
 "							</form>\n"
 "						</td>\n"
 "					</tr>\n"
-								,encoded,l
+								,aux,l
 			);
 		}
-		freeRL(&recs);
+		freeRecList(&recs);
 		io_printf(out,
 "				</tbody>\n"
 "			</table>\n"
 		);
 	}
-	io_printf(out,
-"		</div>\n"
-	);
-	close_svdrp();
-	finishHtmlPage(out);
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+	finishHtmlPage(out,ntabs);
+	goto end;
+outOfMemory:
+	crit("recordings.kl1:out of memory");
+	exit(1);
 end:
+	closeSvdrpAll();
 %>

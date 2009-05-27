@@ -20,49 +20,60 @@
 #ifndef __RECORDINGS_H__
 #define __RECORDINGS_H__
 
+#include <klone/io.h>
+#include <klone/request.h>
+#include <klone/response.h>
+#include "epg.h"
 #include "misc.h"
 
-typedef struct recEntry_s {
-	int id;
-	time_t start;
-	boolean_t seen;
-	boolean_t direct;
-	boolean_t cut;
-	char * name;
-	char * path;
-} recEntry_t;
+enum recFields_e {
+	RF_NAME=1,
+	RF_PATH=2,
+};
 
-typedef struct recList_s {
-	int length;
-	recEntry_t *entry;
-} recList_t;
+enum recFlags_e {
+	RE_NEW=1,
+	RE_DIRECT=2,
+	RE_EDITED=4,
+	RE_DELETED=8,
+	RE_REMOTE_INFO_PENDING=16
+};
 
 typedef struct audioList_s {
 	int length;
 	char **entry;
 } audioList_t;
 
-typedef struct recInfo_s { //TODO =eventEntry
-	char * title;
-	char * subtitle;
-	char * desc;
-	char * channelId;
-	time_t start;
-	time_t stop;
-	int duration;
+typedef struct rec_s {
+	int my;
+	int hostId;
+	int id;
+	char * name;
+	char * path;
+	int flags;
+	eventEntry_t event;
 	videoType_t video;
 	audioList_t audio;
-	char * path; //TODO deprecate
-} recInfo_t;
+} rec_t;
 
-void initRE(recEntry_t * const entry);
-void freeRE(recEntry_t * const entry);
-void initRL(recList_t  * const list);
-void freeRL(recList_t  * const list);
-void initRI(recInfo_t * const info);
-void freeRI(recInfo_t * const info);
+typedef struct recList_s {
+	int length;
+	rec_t *entry;
+} recList_t;
+
+void initRec(rec_t * const rec);
+void initRecFromArgs(rec_t * const rec, vars_t *args);
+void freeRec(rec_t * const rec);
+void initRecList(recList_t  * const list);
+void freeRecList(recList_t  * const list);
 void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
-boolean_t editRec(const recEntry_t *rec, const recInfo_t * oldInfo, char ** message);
-boolean_t deleRec(const recEntry_t *rec, const recInfo_t * oldInfo, char ** message);
-boolean_t getRecInfo(const recEntry_t *rec, recInfo_t * const info);
+void sortRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
+boolean_t editRec(const rec_t *rec, char ** message);
+boolean_t deleRec(const rec_t *rec, char ** message);
+boolean_t getRecInfo(rec_t *rec);
+boolean_t printRecPlaylist(request_t *request, response_t *response, io_t *out, rec_t *rec, char * const aux);
+void printRecControls(io_t *out,int ntabs,const rec_t *rec,char *const aux,const char *Play,const char *Edit,const char *Delete);
+void printRecEditForm(io_t *out, int ntabs, rec_t *rec, char *const aux);
+#define isValidRecPath(path) (path && strlen(path)>4 && strcmp(path+strlen(path)-4,".rec")==0)
+
 #endif
