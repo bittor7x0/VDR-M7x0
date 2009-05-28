@@ -1,5 +1,8 @@
 #!/bin/ash
 
+# Load CIFS kernel module
+insmod /lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o
+
 # Disable extentions
 echo 0 > /proc/fs/cifs/LinuxExtensionsEnabled
 
