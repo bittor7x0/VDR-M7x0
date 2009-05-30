@@ -16,6 +16,52 @@ usage_and_exit () {
     exit 1
 }
 
+quote_grave_accent () {
+
+    sed 's/=`\(.*\)`/="`\1`"/g' $1 | sed 's/`\(.*\)`/\\`\1\\`/g'
+
+}
+    
+
+restore_configuration () {
+
+    mkdir /tmp/backup-$$
+    mkdir /tmp/work-$$
+
+    tar -C /tmp/backup-$$/ -xf "$conf_tar"
+    
+    if [ ! $? -eq 0 ]; then
+	logger -s user.warning "Ocurrió un error al intentar desempaquetar la configuración"
+    fi
+    for file in rc.conf rc.local.conf; do
+	quote_grave_accent /etc/$file > /tmp/work-$$/$file
+	quote_grave_accent /tmp/backup-$$/etc/$file > /tmp/work-$$/backup-$file
+    done
+    source /tmp/work-$$/rc.conf
+    source /tmp/work-$$/rc.local.conf
+    source /tmp/work-$$/backup-rc.conf
+    source /tmp/work-$$/backup-rc.local.conf
+    for file in rc.conf rc.local.conf; do
+	echo 'cat << ---EOT--- >' /tmp/backup-$$/etc/$file > /tmp/work-$$/$file.sh
+	awk -v FS== '
+                          /[a-z_]+=/ {print $1 "=\"${" $1 "}\""; next}
+                          {print}
+                        ' /tmp/work-$$/$file >> /tmp/work-$$/$file.sh
+	echo '---EOT---' >> /tmp/work-$$/$file.sh
+	source /tmp/work-$$/$file.sh
+    done
+    cp -a /tmp/backup-$$/etc /
+    
+    if [ ! $? -eq 0 ]; then
+	logger -s user.warning "Ocurrió un error al intentar recuperar la configuración"
+    else
+	logger -s user.info "Configuración recuperada correctamente"	
+    fi
+
+    rm -rf /tmp/work-$$ /tmp/backup-$$
+
+}
+
 case $# in
     1)
 	conf_tar="$first_video_dir/vdr_conf.vcf"
@@ -47,7 +93,8 @@ case $1 in
 	    fi
 	    exit 3
 	else
-	    file_list=`ls $vdr_confdir/setup.conf $vdr_confdir/svdrphosts.conf $vdr_confdir/timers.conf $vdr_confdir/channels.conf $vdr_confdir/plugins/streamdevhosts.conf $vdr_confdir/plugins/MainMenu.conf $vdr_confdir/epgmodes.conf $vdr_confdir/plugins/rssreader.conf $vdr_confdir/plugins/scheduler/tasks.conf $vdr_confdir/keymacros.conf $vdr_confdir/playlists*.conf $vdr_confdir/plugins/epgsearch/*.conf /etc/hosts /etc/rc.local.conf /etc/resolv.conf /etc/rc.conf /etc/samba/smb.conf /etc/ssmtp/ssmtp.conf /etc/ssmtp/revaliases /etc/ppp/chap-secrets /etc/ppp/options /etc/lircrc /etc/bootmenu/bm.local.boxamp.conf /etc/webif.conf /etc/fstab 2> /dev/null`
+	    cp /etc/fw-version /tmp
+	    file_list=`ls $vdr_confdir/setup.conf $vdr_confdir/svdrphosts.conf $vdr_confdir/timers.conf $vdr_confdir/channels.conf $vdr_confdir/plugins/streamdevhosts.conf $vdr_confdir/plugins/MainMenu.conf $vdr_confdir/epgmodes.conf $vdr_confdir/plugins/rssreader.conf $vdr_confdir/plugins/scheduler/tasks.conf $vdr_confdir/keymacros.conf $vdr_confdir/playlists*.conf $vdr_confdir/plugins/epgsearch/*.conf /etc/hosts /etc/rc.local.conf /etc/resolv.conf /etc/rc.conf /etc/samba/smb.conf /etc/ssmtp/ssmtp.conf /etc/ssmtp/revaliases /etc/ppp/chap-secrets /etc/ppp/options /etc/lircrc /etc/bootmenu/bm.local.boxamp.conf /etc/webif.conf /etc/fstab /tmp/fw-version 2> /dev/null`
 	    tar -cf "$conf_tar" $file_list 2> /tmp/tar_backup.$$.err
 	    if [ $? -eq 0 ]; then
 		echo "Configuración guardada correctamente en $conf_tar"
@@ -73,18 +120,13 @@ case $1 in
 		# No se puede imprimir nada a partir de aqui o recibiremos SIGPIPE
 		{
 		    kill-vdr
-
-		    tar -C / -xf "$conf_tar"
-		    
-		    if [ ! $? -eq 0 ]; then
-			logger -s user.warning "Ocurrió un error al intentar recuperar la configuración"
-		    fi
-		    
+		    restore_configuration
 		    start-vdr
+
 		} > /dev/null 2>&1 &
 		
 	    else
-		tar -C / -xf "$conf_tar"
+		restore_configuration
 	    fi
 	fi
 
