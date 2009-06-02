@@ -156,27 +156,27 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) \
  		INSTALL_MOD_PATH=$(TARGET_ROOT)/$(M7X0_KERNEL_DIR) modules_install
 +ifeq ($(CONFIG_PPTPD),y)
-+	( if [ X"`$(GREP) sha1\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" == X"" ] ; then \
++	(if [ X"`$(GREP) sha1\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" = X"" ] ; then \
 +		$(SED) -i 's/exit\ 0/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/crypto\/sha1.o\nexit\ 0/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules ; \
-+	fi );
-+	( if [ X"`$(GREP) arc4\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" == X"" ] ; then \
++	fi);
++	(if [ X"`$(GREP) arc4\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" = X"" ] ; then \
 +		$(SED) -i 's/exit\ 0/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/crypto\/arc4.o\nexit\ 0/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules ; \
-+	fi );
-+	( if [ X"`$(GREP) slhc\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" == X"" ] ; then \
++	fi);
++	(if [ X"`$(GREP) slhc\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" = X"" ] ; then \
 +		$(SED) -i 's/exit\ 0/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/slhc.o\nexit\ 0/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules ; \
-+	fi );
-+	( if [ X"`$(GREP) ppp_generic\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" == X"" ] ; then \
++	fi);
++	(if [ X"`$(GREP) ppp_generic\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" = X"" ] ; then \
 +		$(SED) -i 's/exit\ 0/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_generic.o\nexit\ 0/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules ; \
-+	fi );
-+	( if [ X"`$(GREP) ppp_async\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" == X"" ] ; then \
++	fi);
++	(if [ X"`$(GREP) ppp_async\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" = X"" ] ; then \
 +		$(SED) -i 's/exit\ 0/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_async.o\nexit\ 0/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules ; \
-+	fi );
-+	( if [ X"`$(GREP) ppp_deflate\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" == X"" ] ; then \
++	fi);
++	(if [ X"`$(GREP) ppp_deflate\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" = X"" ] ; then \
 +		$(SED) -i 's/exit\ 0/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_deflate.o\nexit\ 0/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules ; \
-+	fi );
-+	( if [ X"`$(GREP) ppp_mppe\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" == X"" ] ; then \
++	fi);
++	(if [ X"`$(GREP) ppp_mppe\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules`" = X"" ] ; then \
 +		$(SED) -i 's/exit\ 0/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_mppe.o\nexit\ 0/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.modules ; \
-+	fi );
++	fi);
 +endif
  	$(TOUCH) $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed
  

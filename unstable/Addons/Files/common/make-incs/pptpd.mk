@@ -94,12 +94,12 @@ $(STAGEFILES_DIR)/.pptpd_installed: $(STAGEFILES_DIR)/.pptpd_compiled
 	$(MKDIR) -p $(TARGET_ROOT)/etc/ppp
 	$(CP) $(PPTPD_DIR)/samples/options.pptpd $(TARGET_ROOT)/etc/ppp/options
 	$(CP) $(PPTPD_DIR)/samples/chap-secrets $(TARGET_ROOT)/etc/ppp/chap-secrets
-	( if [ X"`$(GREP) pptpctrl $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services`" == X"" ] ; then \
+	(if [ X"`$(GREP) pptpctrl $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services`" = X"" ] ; then \
 		$(SED) -i '$$apptpctrl\t1723/tcp' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services ; \
-	fi );
-	(if [ X"`$(GREP) pptpctrl $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" == X"" ] ; then \
+	fi);
+	(if [ X"`$(GREP) pptpctrl $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" = X"" ] ; then \
 		$(SED) -i '$$apptpctrl\tstream\ttcp\tnowait\troot\t/usr/sbin/pptpctrl ReservedToWriteCorrectNameAndAddressOfPeer 0 0 0 0 0 0 0' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf ; \
-	fi );
+	fi);
 	$(TOUCH) $(STAGEFILES_DIR)/.pptpd_installed
 
 

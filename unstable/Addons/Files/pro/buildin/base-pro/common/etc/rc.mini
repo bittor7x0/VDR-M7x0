@@ -72,7 +72,7 @@ echo "Done"
 # mount var
 echo -n "Mounting /var ... "
 mount -o rw,noatime,nodiratime -n -t tmpfs tmpfs /var
-mkdir -p /var/tmp /var/run/vsftpd /var/log /var/media /var/lock
+mkdir -p /var/tmp /var/run /var/log /var/media /var/lock
 touch /var/media/.ignore
 
 chmod 1777 /var/tmp

@@ -19,10 +19,10 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 VSFTPD_DEPS = $(BASE_BUILD_STAGEFILE)
 
-VSFTPD_VERSION := 2.1.0
+VSFTPD_VERSION := 2.1.2
 VSFTPD_PATCHES_DIR := $(PATCHES_DIR)/vsftpd/$(VSFTPD_VERSION)
 
-#ftp://vsftpd.beasts.org/users/cevans/vsftpd-2.1.0.tar.gz
+#ftp://vsftpd.beasts.org/users/cevans/vsftpd-2.1.2.tar.gz
 VSFTPD_FILE := vsftpd-$(VSFTPD_VERSION).tar.gz
 VSFTPD_DLFILE := $(DOWNLOAD_DIR)/$(VSFTPD_FILE)
 VSFTPD_URL := ftp://vsftpd.beasts.org/users/cevans/$(VSFTPD_FILE)
@@ -81,6 +81,18 @@ $(STAGEFILES_DIR)/.vsftpd_compiled: $(STAGEFILES_DIR)/.vsftpd_patched
 $(STAGEFILES_DIR)/.vsftpd_installed: $(STAGEFILES_DIR)/.vsftpd_compiled
 	$(CP) $(VSFTPD_DIR)/vsftpd $(TARGET_ROOT)/usr/sbin/vsftpd
 	chmod 755 $(TARGET_ROOT)/usr/sbin/vsftpd
+	$(CP) $(VSFTPD_DIR)/vsftpd-m7x0.conf $(TARGET_ROOT)/etc/vsftpd.conf
+	chmod 644 $(TARGET_ROOT)/etc/vsftpd.conf
+	(if [ X"`$(GREP) vsftpd $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" = X"" ] ; then \
+		$(SED) -i '$$aftp\tstream tcp nowait root /usr/sbin/vsftpd vsftpd' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf ; \
+	fi);
+	(if [ X"`$(GREP) nobody $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/passwd`" = X"" ] ; then \
+		$(SED) -i '$$anobody::3:3:ftp:/:/bin/ash' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/passwd ; \
+	fi);
+	(if [ X"`$(GREP) vsftpd $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.mini`" = X"" ] ; then \
+		$(SED) -i -e 's,^mkdir -p /var/tmp /var/run /var/log /var/media /var/lock,mkdir -p /var/tmp /var/run/vsftpd /var/log /var/media /var/lock,g' \
+			$(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.mini ; \
+	fi);
 	$(TOUCH) $(STAGEFILES_DIR)/.vsftpd_installed
 
 

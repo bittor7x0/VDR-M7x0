@@ -173,24 +173,24 @@ $(STAGEFILES_DIR)/.samba_installed: $(STAGEFILES_DIR)/.samba_compiled
 	$(MKDIR) -p $(TARGET_ROOT)/usr/share/samba
 	$(BZCAT) $(SAMBA_PATCHES_DIR)/samba.codepages.tar.bz2 | \
 		 $(TAR) -C $(TARGET_ROOT)/usr/share/samba/ -f -
-	( if [ X"`$(GREP) netbios-ns $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services`" == X"" ] ; then \
+	(if [ X"`$(GREP) netbios-ns $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services`" = X"" ] ; then \
 		$(SED) -i '$$anetbios-ns\t137/udp' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services ; \
-	fi );
-	(if [ X"`$(GREP) netbios-ns $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" == X"" ] ; then \
+	fi);
+	(if [ X"`$(GREP) netbios-ns $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" = X"" ] ; then \
 		$(SED) -i '$$anetbios-ns\tdgram\tudp\twait\troot\t/usr/sbin/nmbd nmbd' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf ; \
-	fi );
-	(if [ X"`$(GREP) netbios-ssn $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services`" == X"" ] ; then \
+	fi);
+	(if [ X"`$(GREP) netbios-ssn $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services`" = X"" ] ; then \
 		$(SED) -i '$$anetbios-ssn\t139/tcp' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services ; \
-	fi );
-	(if [ X"`$(GREP) netbios-ssn $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" == X"" ] ; then \
+	fi);
+	(if [ X"`$(GREP) netbios-ssn $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" = X"" ] ; then \
 		$(SED) -i '$$anetbios-ssn\tstream\ttcp\tnowait\troot\t/usr/sbin/smbd smbd' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf ; \
-	fi );
-	(if [ X"`$(GREP) microsoft-ds $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services`" == X"" ] ; then \
+	fi);
+	(if [ X"`$(GREP) microsoft-ds $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services`" = X"" ] ; then \
 		$(SED) -i '$$amicrosoft-ds\t445/tcp' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services ; \
-	fi );
-	(if [ X"`$(GREP) microsoft-ds $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" == X"" ] ; then \
+	fi);
+	(if [ X"`$(GREP) microsoft-ds $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" = X"" ] ; then \
 		$(SED) -i '$$amicrosoft-ds\tstream\ttcp\tnowait\troot\t/usr/sbin/smbd smbd' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf ; \
-	fi );
+	fi);
 	$(TOUCH) $(STAGEFILES_DIR)/.samba_installed
 
 $(FILELIST_DIR)/samba.lst: $(STAGEFILES_DIR)/.samba_installed
