@@ -149,7 +149,9 @@ bool Sysconfig::SaveFile( )
    {
      for(int i=0; i< _nr; i++)
      {
-       		fprintf(fp, "%s=%s\n", _variables[i].GetName(), _variables[i].GetValue());
+			string value = _variables[i].GetValue();
+			Util::trim(value," \t\n\"\r");
+       		fprintf(fp, "%s=\"%s\"\n", _variables[i].GetName(), value.c_str());
      }
      isyslog("Saved file [%s]",_filename);
      fclose(fp);
