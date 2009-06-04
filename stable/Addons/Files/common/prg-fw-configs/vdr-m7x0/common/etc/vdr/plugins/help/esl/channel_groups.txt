@@ -1,3 +1,0 @@
-     Si el archivo 'channels.conf' contiene los "separadores del grupo", puede cambiar a través de estos grupos presionando la tecla "izquierda" y "derecha" siempre que no esté abierto ningún menú. La exhibición del canal mostrará el nombre del grupo, y si presiona el botón "ok" mientras que está en exhibición el nombre de grupo, cambiará al primer canal de ese grupo.
-
-     Los grupos de canales son como usted decide que sean. Puede ordenar sus canales en cualquier tipo grupos: Por "ramo", por "lenguaje", por "género" o lo que usted prefiera.

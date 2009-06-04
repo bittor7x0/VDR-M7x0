@@ -1,5 +1,0 @@
-
-- Fully support the keyboard over telnet (function keys,...)
-- Support the possibility to learn the keyboard keys over
-  telnet.
-- Support for local TTY (-t broken at the moment).
