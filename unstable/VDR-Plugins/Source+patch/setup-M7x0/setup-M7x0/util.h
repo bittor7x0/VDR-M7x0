@@ -13,6 +13,9 @@
 #define UTIL_H
 #include <vdr/tools.h>
 #include <vdr/timers.h>
+#include <string>
+using namespace std;
+
 
 
 
@@ -27,6 +30,7 @@ public:
     static char * Strdupnew(const char  *str);
     static char * Strdupnew(const char  *prefix, const char  *str);
     static char * Strdupnew( const char  *str, int size );
+	static void trim(string& str,const string& drop=" \t\n\r" );
 //    static char * Strtrim(char *str);
     static bool isBool(const char *string, bool &flag);
     static bool isBool(const char *string, int  &flag);

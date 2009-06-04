@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 #include <vdr/menuitems.h>
+#include <vdr/shutdown.h>
 #include <string>
 
 #include "setupmenu.h"
@@ -695,6 +696,7 @@ eOSState cSetupMenu::StandardProcessKey( eKeys Key )
                         if (Interface->Confirm(cRecordControls::Active() ? tr("Recording - restart anyway?") : tr("Really restart?")))
                         {
                           cThread::EmergencyExit(true);
+                          ShutdownHandler.Exit(true);
                           return osEnd;
                         }
                         return osContinue;

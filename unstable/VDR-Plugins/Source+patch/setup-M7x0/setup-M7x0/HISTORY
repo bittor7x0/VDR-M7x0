@@ -1,5 +1,7 @@
 VDR Plugin 'setup' Revision History
 -----------------------------------
+2009-06-04: version 0.1.3 open7x0 by zjuanma@yahoo.es
+- Trim de las " en los valores de las variables.
 2009-01-14: version 0.1.2 open7x0 by zjuanma@yahoo.es
 - Añadido configuracion de name server (resolv.conf)
 2008-12   : version 0.1.1 open7x0 by zjuanma@yahoo.es

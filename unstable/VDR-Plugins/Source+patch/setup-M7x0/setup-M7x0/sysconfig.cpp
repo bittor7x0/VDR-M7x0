@@ -204,7 +204,9 @@ void Sysconfig::addLine(const char * line )
     	(val=strtok(NULL, "\0")) != NULL )
     {
 //      addVariable(Util::Strtrim(nam), Util::Strtrim(val));
-      addVariable(compactspace(nam), compactspace(val));
+	  string value = val;
+	  Util::trim(value,"\t \"");
+      addVariable(compactspace(nam), value.c_str());
     }
   }
   
