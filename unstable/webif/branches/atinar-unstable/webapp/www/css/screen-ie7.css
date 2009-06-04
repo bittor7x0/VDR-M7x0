@@ -1,0 +1,38 @@
+#main {
+	margin:20px auto;
+	width:97%;
+}
+.section {
+	height:1%;
+}
+.recPathWrapper {
+	height:1%;
+}
+.recPath .recDir {
+	height:1%;
+	display:inline;
+}
+.recFolderWrapper {
+	height:1%;
+	display:inline;
+}
+div.recFolderDetails {
+	height:expresion(this.height>10.5em?10em:true);
+}
+div.infobox div.info {
+	height:expresion(this.height>22.5em?22em:true);
+}
+#watchItControl {
+	width:expresion(this.height>251px?250px:true);
+	height:expresion(this.height>451px?450px:true);
+}
+
+/*
+ * superfish
+ */
+.sf-menu li:hover {
+	visibility:inherit; /* fixes IE7 'sticky bug' */
+}
+.sf-menu a.sf-with-ul {
+	min-width:1px;
+}

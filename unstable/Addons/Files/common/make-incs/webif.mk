@@ -29,7 +29,6 @@ ifeq ($(strip $(CONFIG_WEBIF_TREE)),)
 else
   WEBIF_BRANCH := $(or $(strip $(filter trunk,$(CONFIG_WEBIF_TREE))),branches/$(CONFIG_WEBIF_TREE))
 endif
-WEBIF_SVN := http://svn.assembla.com/svn/VDR-M7x0/webif
 WEBIF_DIR := $(BUILD_DIR)/webif
 WEBIF_TC_FILE := $(WEBIF_DIR)/linux-mips-uclibc.tc
 
@@ -40,18 +39,6 @@ FILE_LISTS_$(CONFIG_WEBIF) += webif.lst
 
 CLEAN_RULES += clean-webif
 DISTCLEAN_RULES += distclean-webif
-
-ifneq ($(and $(filter y,$(CONFIG_WEBIF)), $(wildcard $(WEBIF_DIR))),)
-$(info Updating webif download ...)
-webif_svn_changed := $(call svn_changed, $(WEBIF_DIR))
-
-ifeq ($(webif_svn_changed),0)
-$(info webif is up to date)
-else
-$(info $(webif_svn_changed) file(s) updated)
-webif_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded)
-endif
-endif
 
 #
 # download webif
@@ -80,7 +67,7 @@ $(STAGEFILES_DIR)/.webif_unpacked: $(KLONE_DLFILE)
 #
 
 $(STAGEFILES_DIR)/.webapp_downloaded: $(STAGEFILES_DIR)/.webif_unpacked
-	$(SVN) co $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
+	$(CP) -Trf ../webif/$(WEBIF_BRANCH) $(WEBIF_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
 
 #

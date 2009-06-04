@@ -24,7 +24,7 @@ vdr_em_files="$vdr_em_addons/Files"
 vdr_em_patches="$vdr_em_addons/Patches"
 vdr_em_delete="$vdr_em_addons/Delete"
 vdr_em_plugins="$BASE/VDR-Plugins"
-vdr_em_webif="$BASE/../webif"
+vdr_em_webif="$BASE/webif"
 
 # SVN branch from assembla VDR-EM
 svn_em="http://svn.assembla.com/svn/VDR-M7x0/unstable"
@@ -136,7 +136,7 @@ echo "Getting and setting SVN versions to fw-version"
 svn_em_version="SVN EM `svnversion -c \"$vdr_em_addons\" | cut -d \":\" -f 2`"
 svn_o7o_version="SVN TC-o7o `svnversion -c \"$vdr_fw_orig\" | cut -d \":\" -f 2`"
 svn_plugins_version="SVN plugins `svnversion -c \"$vdr_em_plugins\" | cut -d \":\" -f 2`"
-#[ "$vdr_version" = "pro" ] && svn_webif_version="SVN webif `svnversion -c \"$vdr_em_webif\" | cut -d \":\" -f 2`"
+[ "$vdr_version" = "pro" ] && svn_webif_version="SVN webif `svnversion -c \"$vdr_em_webif\" | cut -d \":\" -f 2`"
 
 echo $svn_em_version  >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version
 echo $svn_o7o_version >> $vdr_fw/buildin/base-$vdr_version/common/etc/fw-version

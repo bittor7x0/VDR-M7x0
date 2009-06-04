@@ -1,0 +1,112 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* Originally written for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <dirent.h>
+#include <stdio.h>
+#include <string.h>
+#include <regex.h>
+
+#include "channels.h"
+#include "conf.h"
+#include "misc.h"
+#include "svdrp_comm.h"
+
+#ifdef DEBUG
+void dbg_playlistch_kl1(void) { dbg("playlistch.kl1");}
+#endif
+
+%><%
+
+#ifdef DEBUG
+	dbg_playlistch_kl1();
+#endif
+	config(session, request);
+	vars_t *args = request_get_args(request);
+	int i;
+	int nchannel=-1;
+	playlistType_t type;
+	channelList_t channels;
+	channel_t *channel;
+	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
+	if (!host){
+		returnHttpNoContent(response);
+		goto end;
+	}
+	getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
+	if (vars_countn(args,"channelnum")>0) {
+		nchannel=vars_get_value_i(args,"channelnum");
+	}
+	type=(vars_countn(args,"type")>0) ? vars_get_value_i(args,"type") : webifConf.playlistType;
+	//TODO m3u no soporta caracteres extendidos y xspf aparece vacio si se abre desde vlc !!!
+	const char *hostAddr=getHostHttpAddr(host,request);
+	if (!hostAddr) {
+		//TODO
+	}
+	switch (type) {
+		case PL_M3U:
+			response_set_content_type(response,M3U_MIME_TYPE);
+			io_printf(out,"#EXTM3U\n");
+			for(i=0,channel=channels.channel;i<channels.length;i++,channel++){
+				if ( nchannel==-1 || i==nchannel ) {
+					io_printf(out,"#EXTINF:0,%.2d-%s\n",channel->channelNum,channel->channelName);
+					io_printf(out,"http://%s:%d/%d\n",hostAddr,3000,channel->channelNum);
+				}
+			}
+			break;
+		PL_XSPF: 
+			response_set_content_type(response,"application/xspf+xml; charset=ISO-8859-1");
+			//response_set_content_type(response,"text/plain; charset=ISO-8859-1");
+			io_printf(out,"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
+			io_printf(out,"<playlist version=\"1\" xmlns=\"http://xspf.org/ns/0/\" xmlns:vlc=\"http://www.videolan.org/vlc/playlist/ns/0/\">\n");
+
+			int ntabs=1;
+			io_printf(out,"%.*s<trackList>\n",ntabs++,tabs);
+			for(i=0,channel=channels.channel;i<channels.length;i++,channel++){
+				if (nchannel==-1 || i==nchannel) {
+					io_printf(out,"%.*s<track>\n",ntabs++,tabs);
+					io_printf(out,"%.*s<identifier>%d</identifier>\n",ntabs,tabs,channel->channelNum-1);
+					io_printf(out,"%.*s<title>%.2d-%s</title>\n",ntabs,tabs,channel->channelNum,channel->channelName);
+					io_printf(out,"%.*s<location>http://%s:%d/%d</location>\n"
+						,ntabs,tabs,hostAddr,3000,channel->channelNum);
+
+					io_printf(out,"%.*s<extension application=\"http://www.videolan.org/vlc/playlist/0\">\n",ntabs++,tabs);
+					io_printf(out,"%.*s<vlc:id>%d</vlc:id>\n",ntabs,tabs,i);
+					io_printf(out,"%.*s</extension>\n",--ntabs,tabs);
+
+					io_printf(out,"%.*s</track>\n",--ntabs,tabs);
+				}
+			};
+			io_printf(out,"%.*s</trackList>\n",--ntabs,tabs);
+
+			io_printf(out,"%.*s<extension application=\"http://www.videolan.org/vlc/playlist/0\">\n",ntabs++,tabs);
+			io_printf(out,"%.*s<vlc:node title=\"%s\">\n",ntabs++,tabs,tr("channels"));
+			for(i=0; i<channels.length; i++){
+				if (nchannel==-1 || i==nchannel) {
+					io_printf(out,"%.*s<vlc:item tid=\"%d\" />\n",ntabs,tabs,i);
+				}
+			}
+			io_printf(out,"%.*s</vlc:node>\n",--ntabs,tabs);
+			io_printf(out,"%.*s</extension>\n",--ntabs,tabs);
+
+			io_printf(out,"%.*s</playlist>\n",--ntabs,tabs);
+			break;
+		default:
+			warn("Unknown playlist type %d",type);
+			returnHttpNoContent(response);
+	}
+finish:
+	freeChannelList(&channels);
+end:
+	closeSvdrpAll();
+%>

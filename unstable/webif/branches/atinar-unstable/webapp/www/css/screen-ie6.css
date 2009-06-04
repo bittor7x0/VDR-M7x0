@@ -1,0 +1,45 @@
+#main {
+	height:1%;
+}
+.section {
+	height:1%;
+}
+.recPathWrapper {
+	float:none!important;
+	margin-left:0!important;
+}
+.recPath {
+	top:0;
+	left:0;
+}
+.recPath .recDir {
+	display:inline;
+}
+.recFolderWrapper {
+	height:1%;
+	display:inline;
+}
+div.recFolderDetails {
+	height:10em;
+}
+div.infobox div.info {
+	height:22em;
+}
+#watchItControl {
+	width:25%;
+	height:450px;
+}
+
+/*
+ * superfish
+ */
+.sf-menu a.sf-with-ul {
+	min-width:1px;
+}
+.sf-sub-indicator {
+	top:1.05em;
+	background-position:-10px -100px;
+}
+.sf-shadow ul.sf-shadow-off {
+	background: transparent;
+}

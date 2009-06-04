@@ -1,0 +1,413 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+#include <locale.h>
+#include <u/libu.h>
+
+#include "i18n.h"
+#include "conf.h"
+#include "timers.h"
+#include "channels.h"
+#include "svdrp_comm.h"
+
+
+char * parseTimerForm(vars_t *args,int ntabs){
+	char * timerStr=NULL;
+	vdrTimer_t timer;
+	if (initTimerFromArgs(&timer,args,out,ntabs)){
+		timerStr=makeTimerStr(&timer);
+		clearFlag(TF_TIMER_STR,timer.my);
+	}
+	freeTimer(&timer);
+	return timerStr;
+}
+
+#ifdef DEBUG
+void dbg_timers_kl1(void) { dbg("timers.kl1"); }
+#endif
+
+%><%
+
+	#ifdef DEBUG
+	dbg_timers_kl1();
+	#endif
+
+	config(session, request);
+
+	int i=0;
+	int l;
+	enum {AUXSZ=4096};
+	char aux[AUXSZ];
+
+	vars_t *args = request_get_args(request);
+	int timerId=(vars_countn(args,"timerId")>0) ? vars_get_value_i(args,"timerId") : 0;
+	const char * argTimerStr=(vars_countn(args,"timerStr")>0) ? vars_get_value(args,"timerStr") : NULL;
+	const char * oldTimerStr=(vars_countn(args,"oldTimerStr")>0) ? vars_get_value(args,"oldTimerStr") : NULL;
+	int hostId=vars_get_value_i(args,"hostId");
+	int oldHostId=vars_get_value_i(args,"oldHostId");
+	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(hostId) : NULL;
+	if (!host || !host->isVdr)
+		host=getFirstVdrHost();
+	sortBy=(vars_countn(args,"sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
+	sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
+	currentPage=PN_TIMERS;
+	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
+	int ntabs=initHtmlPage(response,out,tr("timers"),
+"		<script type=\"text/javascript\">\n"
+"			webif.messages.confirmDelete='%s';\n"
+"		</script>\n"
+		,tr("timerDeleteConfirm")
+	);
+	printMenu(out,ntabs);
+	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("timers"));
+
+	channelList_t channels;
+	initChannelList(&channels);
+
+	if (currentAction==PA_DELETE) {
+		if ( (timerId>0) && (timerId<1000) && (oldTimerStr) ) {
+			char *message=NULL;
+			if (deleTimer(host,timerId,oldTimerStr,&message)){
+				printMessage(out,ntabs,"message",tr("timerDeleteOk"),message,aux);
+				currentAction=PA_SUMMARY;
+			} else {
+				printMessage(out,ntabs,"alert",tr("timerDeleteErr"),message,aux);
+				currentAction=PA_EDIT;
+				argTimerStr=oldTimerStr;
+			}
+			free(message);
+		}
+	}
+	if (currentAction==PA_ADD) {
+		char *timerStr = (argTimerStr==NULL) ? parseTimerForm(args,ntabs) : (char *)argTimerStr;
+		char *message=NULL;
+		if ( (timerId>0) && (timerStr) && (oldTimerStr) && (hostId==oldHostId) ) {
+			if (editTimer(host,timerId,oldTimerStr,timerStr,&message)){
+				printMessage(out,ntabs,"message",tr("timerUpdateOk"),message,aux);
+			} else {
+				printMessage(out,ntabs,"alert",tr("timerUpdateErr"),message,aux);
+			}
+		} else if (timerStr) {
+			if (addTimer(host,timerStr,&message)){
+				printMessage(out,ntabs,"message",tr("timerCreateOk"),message,aux);
+				free(message); message=NULL;
+				if ( (timerId>0) && (timerId<1000) && (oldTimerStr) && hostId!=oldHostId){
+					hostConf_t *oldHost=getHost(oldHostId);
+					if (!oldHost || !oldHost->isVdr) {
+						message="Anterior host erroneo, no se puede eliminar programación";
+						printMessage(out,ntabs,"message",tr("timerDeleteOk"),message,NULL);
+						message=NULL;
+					} else if (deleTimer(oldHost,timerId,oldTimerStr,&message)){
+						printMessage(out,ntabs,"message",tr("timerDeleteOk"),message,aux);
+						currentAction=PA_SUMMARY;
+					} else {
+						printMessage(out,ntabs,"alert",tr("timerDeleteErr"),message,aux);
+						currentAction=PA_EDIT;
+						argTimerStr=oldTimerStr;
+					}
+				}
+			} else {
+				printMessage(out,ntabs,"alert",tr("timerCreateErr"),message,aux);
+			}
+		}
+		currentAction=PA_SUMMARY;
+		if (timerStr && timerStr!=argTimerStr ){
+			free(timerStr);
+		}
+		free(message);
+	} 
+	if (currentAction==PA_EDIT) {
+		vdrTimer_t timer;
+		initTimer(&timer);
+		if (argTimerStr) {
+			parseTimer(argTimerStr,&timer);
+		}
+		if (channels.length==0){
+			getChannelList(host,&channels,SF_NONE,SD_NONE);
+		}
+		io_printf(out,"%.*s"
+			"<form action=\"/timers.kl1\" method=\"post\">\n"
+			,ntabs++,tabs);
+
+		if (timerId>0) {
+			io_printf(out,"%.*s<input type=\"hidden\" name=\"timerId\" value=\"%d\"/>\n",ntabs,tabs,timerId);
+			const char * otstr = (oldTimerStr!=NULL) ? oldTimerStr : argTimerStr;
+			if (otstr) {
+				l=strlen(otstr);
+				u_htmlncpy(aux,otstr,l,HTMLCPY_ENCODE);
+				io_printf(out,"%.*s<input type=\"hidden\" name=\"oldTimerStr\" value=\"%s\"/>\n",ntabs,tabs,aux);
+			} else {
+				warn("timers.kl1: timerId asignado pero no hay timerStr");
+			} 
+		}
+		const char *TimerEdit=tr((timerId>0)?"timerEdit":"timerAdd");
+		io_printf(out,"%.*s<table id=\"timerEdit\" class=\"list2\" summary=\"%s\">\n",ntabs++,tabs,TimerEdit);
+		io_printf(out,"%.*s<caption>%s</caption>\n",ntabs,tabs,TimerEdit);
+
+		io_printf(out,"%.*s"
+			"<tr>"
+				"<th>%s</th>"
+				"<td><input type=\"checkbox\" name=\"active\" value=\"1\"%s/></td>"
+			"</tr>\n"
+			,ntabs,tabs,tr("active"),checked[isFlagSet(TF_ACTIVE,timer.flags)]
+		);
+
+		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("channel"));
+		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
+		printChannelListSelect(out,ntabs,"channelNum",&channels,timer.channelNum);
+		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+
+		if (webifConf.numVDRs>1){
+			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+			io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,"Host");
+			io_printf(out,"%.*s<td>\n",ntabs++,tabs);
+			printVDRSelect(out,ntabs,"hostId",(host)?host->id:0);
+			io_printf(out,"%.*s<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",ntabs,tabs,(host)?host->id:0);
+			io_printf(out,"%.*s</td>\n",--ntabs,tabs);
+			io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+		}
+
+		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n"
+			,ntabs,tabs,TT_ONE_TIME,checked[boolean(timer.type==TT_ONE_TIME)],tr("oneTimeRecording"));
+		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<select name=\"date\" size=\"1\">\n",ntabs++,tabs);
+		time_t tdate=time(NULL);
+		char cdate[11];
+		struct tm sdate;
+		boolean_t isThatDay=BT_FALSE;
+		boolean_t isAfterThatDay=BT_FALSE;
+		for(i=0;i<14;i++) {
+			sdate=*localtime(&tdate);
+			strftime(cdate,11,"%Y-%m-%d",&sdate);
+			if (!isAfterThatDay){
+				isThatDay=sameDay(tdate,timer.start);
+				isAfterThatDay=boolean(isThatDay||tdate>timer.start);
+			}
+			io_printf(out,"%.*s<option value=\"%s\" %s>%s, %s</option>\n"
+				,ntabs,tabs,cdate,selected[isThatDay],weekdays[langId][sdate.tm_wday],formatDate(&sdate,BT_FALSE));
+			if (isThatDay && (timer.type==TT_ONE_TIME)) { 
+				//marcar por si se cambia a regular
+				timer.wdays[(sdate.tm_wday+6)%7]=weekdays[langId][sdate.tm_wday][0]; 
+			}
+			isThatDay=BT_FALSE;
+			tdate+=24*60*60;
+		}
+		io_printf(out,"%.*s</select>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+
+		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n",ntabs,tabs
+			,TT_REGULAR,checked[boolean(timer.type==TT_REGULAR)],tr("regularRecording"));
+		io_printf(out,"%.*s<td>",ntabs++,tabs);
+		for(i=startOfWeek[langId];i<startOfWeek[langId]+7;i++) {
+			io_printf(out,"%.*s<input type=\"checkbox\" name=\"wday\" value=\"%d\"%s/>%s "
+				,ntabs,tabs,(i%7),checked[boolean(timer.wdays[(i+6)%7]!='-')],weekdays[langId][i%7]);
+		}
+		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+
+		struct tm start_date=*localtime(&timer.start);
+		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("start"));
+		io_printf(out,"%.*s"
+			"<td>"
+				"<input type=\"text\" name=\"startHour\" maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;:&nbsp;"
+				"<input type=\"text\" name=\"startMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>"
+			"</td>\n",ntabs,tabs,start_date.tm_hour,start_date.tm_min);
+		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+
+		struct tm end_date=*localtime(&timer.stop);
+		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("end"));
+		io_printf(out,"%.*s"
+			"<td>"
+				"<input type=\"text\" name=\"endHour\" maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;:&nbsp;"
+				"<input type=\"text\" name=\"endMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>"
+			"</td>\n",ntabs,tabs,end_date.tm_hour,end_date.tm_min);
+		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+
+		io_printf(out,"%.*s"
+			"<tr>"
+				"<th>&nbsp;</th>"
+				"<td><input type=\"checkbox\" name=\"addMargin\" value=\"%d\" %s/>%s</td>"
+			"</tr>\n"
+			,ntabs,tabs,boolean(timerId<1),checked[boolean(timerId<1)],tr("addMargin"));
+
+		io_printf(out,"%.*s"
+			"<tr>"
+				"<th>%s</th>"
+				"<td><input type=\"text\" name=\"priority\" maxlength=\"2\" size=\"3\" value=\"%d\"/></td>"
+			"</tr>\n"
+			,ntabs,tabs,tr("priority"),timer.priority);
+
+		io_printf(out,"%.*s"
+			"<tr>"
+				"<th>%s</th>"
+				"<td><input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\"/></td>"
+			"</tr>\n"
+			,ntabs,tabs,tr("lifetime"),timer.lifetime);
+
+		io_printf(out,"%.*s"
+			"<tr>"
+				"<th>%s</th>"
+				"<td><input type=\"text\" name=\"title\" size=\"70\" value=\"%s\"/></td>"
+			"</tr>\n"
+			,ntabs,tabs,tr("title"),(timer.title)?timer.title:"");
+
+		if (timer.aux) {
+			l=strlen(timer.aux);
+			u_htmlncpy(aux,timer.aux,l,HTMLCPY_ENCODE);
+			io_printf(out,"%.*s"
+				"<tr>"
+					"<th>%s</th>"
+					"<td><textarea name=\"aux\" spellcheck=\"false\" cols=\"%d\" rows=\"%d\">%s</textarea></td>"
+				"</tr>\n"
+				,ntabs,tabs,tr("aux"),(l>70)?70:l,l/70+2,aux);
+		}
+
+		io_printf(out,"%.*s<tr class=\"buttons\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<td colspan=\"2\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s"
+			"<button id=\"confirm\" class=\"confirm ui-state-default ui-corner-all\" name=\"a\" type=\"submit\" value=\"%d\" >"
+				"<span class=\"ui-icon ui-icon-check\">&nbsp;</span> %s"
+			"</button>\n"
+			,ntabs,tabs,PA_ADD,tr("accept"));
+		io_printf(out,"%.*s"
+			"<button id=\"delete\" class=\"delete ui-state-default ui-corner-all\" name=\"a\" type=\"submit\" value=\"%d\" >"
+				"<span class=\"ui-icon ui-icon-trash\">&nbsp;</span> %s"
+			"</button>\n"
+			,ntabs,tabs,PA_DELETE,tr("timerDelete"));
+		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+				
+		io_printf(out,"%.*s</table>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
+		freeTimer(&timer);
+		//currentAction=PA_SUMMARY;
+	}
+	if (currentAction==PA_SUMMARY) {
+		if (channels.length==0 && host){
+			getChannelList(host,&channels,SF_NONE,SD_NONE);
+		}
+		if (channels.length>0) {
+			timerList_t timers;
+			getTimerList(&timers,&channels,sortBy,sortDirection);
+			boolean_t printHost=boolean(webifConf.numVDRs>1);
+			io_printf(out,"%.*s<table id=\"timers\" class=\"list1\" summary=\"%s\">\n",ntabs++,tabs,tr("timerList"));
+			io_printf(out,"%.*s<col class=\"number\"/>\n",ntabs,tabs);
+			if (printHost) io_printf(out,"%.*s<col class=\"number\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"tmDate date\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"chName\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"tmStart hour\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"tmEnd hour\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"tmName\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"mxName\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"ctrls\"/>\n",ntabs,tabs);
+			
+			
+			io_printf(out,"%.*s<thead>\n",ntabs++,tabs);
+			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+			io_printf(out,"%.*s"
+				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+				,ntabs,tabs,sortClass(SF_TM_NUMBER),SF_TM_NUMBER,newSortDirection(SF_TM_NUMBER),"#");
+			if (printHost){
+				io_printf(out,"%.*s"
+					"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+					,ntabs,tabs,sortClass(SF_HOST),SF_HOST,newSortDirection(SF_HOST),"Host");
+			}
+			io_printf(out,"%.*s"
+				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+				,ntabs,tabs,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("date"));
+			io_printf(out,"%.*s"
+				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+				,ntabs,tabs,sortClass(SF_CH_NUMBER),SF_CH_NUMBER,newSortDirection(SF_CH_NUMBER),tr("channel"));
+			io_printf(out,"%.*s"
+				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+				,ntabs,tabs,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("start"));
+			io_printf(out,"%.*s"
+				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+				,ntabs,tabs,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("end"));
+			io_printf(out,"%.*s"
+				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+				,ntabs,tabs,sortClass(SF_TITLE),SF_TITLE,newSortDirection(SF_TITLE),tr("program"));
+			io_printf(out,"%.*s"
+				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
+				,ntabs,tabs,sortClass(SF_MUX),SF_MUX,newSortDirection(SF_MUX),tr("channelMux"));
+			io_printf(out,"%.*s<th>&nbsp;</th>\n",ntabs,tabs);
+			io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+			io_printf(out,"%.*s</thead>\n",--ntabs,tabs);
+
+			io_printf(out,"%.*s<tbody>\n",ntabs++,tabs);
+			const char *EditTimer=tr("timerEdit");
+			const char *Schedule=tr("schedule");
+			channel_t noChannel;
+			const channel_t *channel;
+			noChannel.channelNum=1;
+			noChannel.channelName="";
+			noChannel.multiplexName="";
+			const vdrTimer_t *timer;
+			for (i=0,timer=timers.entry;i<timers.length;i++,timer++) {
+				struct tm t1=*localtime(&timer->start);
+				struct tm t2=*localtime(&timer->stop);
+				channel=(timer->channel)?timer->channel:&noChannel;
+				io_printf(out,"%.*s<tr%s>\n",ntabs++,tabs,classActive[isFlagSet(TF_ACTIVE,timer->flags)]);
+				io_printf(out,"%.*s<td class=\"number\">%d</td>\n",ntabs,tabs,timer->id);
+				if (printHost) 
+					io_printf(out,"%.*s<td class=\"number\">%d</td>\n",ntabs,tabs,timer->hostId);
+				if (timer->type==TT_REGULAR) {
+					io_printf(out,"%.*s<td class=\"date\">%s (%.7s)</td>\n",ntabs,tabs,formatDate(&t1,0),timer->wdays);
+				} else {
+					io_printf(out,"%.*s<td class=\"date\">%s</td>\n",ntabs,tabs,formatDate(&t1,0));
+				}
+				io_printf(out,"%.*s"
+					"<td>"
+						"<a class=\"channel\" href=\"program.kl1?chan=%d#timer%d_1\" title=\"%s\">%s</a>"
+					"</td>\n",ntabs,tabs,channel->channelNum,timer->id,Schedule,channel->channelName);
+				io_printf(out,"%.*s<td class=\"hour\">%02d:%02d</td>\n",ntabs,tabs,t1.tm_hour,t1.tm_min);
+				io_printf(out,"%.*s<td class=\"hour\">%02d:%02d</td>\n",ntabs,tabs,t2.tm_hour,t2.tm_min);
+				io_printf(out,"%.*s<td>%s</td>\n",ntabs,tabs,timer->title);
+				io_printf(out,"%.*s<td>%s</td>\n",ntabs,tabs,channel->multiplexName);
+				u_urlncpy(aux,timer->timerStr,strlen(timer->timerStr),URLCPY_ENCODE);
+				io_printf(out,"%.*s"
+					"<td class=\"ctrls\">"
+						"<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&amp;timerId=%d&amp;timerStr=%s&amp;hostId=%d\" title=\"%s\">%s</a>"
+					"</td>\n",ntabs,tabs,PA_EDIT,timer->id,aux,timer->hostId,EditTimer,EditTimer);
+
+				io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+			}
+			io_printf(out,"%.*s</tbody>\n",--ntabs,tabs);
+			io_printf(out,"%.*s</table>\n",--ntabs,tabs);
+			freeTimerList(&timers);
+		} else {
+			//TODO
+		}
+	}
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+	finishHtmlPage(out,ntabs);
+	freeChannelList(&channels);
+	closeSvdrpAll();
+%>

@@ -1,0 +1,178 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+#include <string.h>
+
+#include "i18n.h"
+#include "misc.h"
+#include "conf.h"
+
+#ifdef DEBUG
+dbg_settings_kl1(void) { dbg("settings.kl1"); }
+#endif
+
+%><%
+
+	#ifdef DEBUG
+	dbg_settings_kl1();
+	#endif
+	
+	vars_t *args = request_get_args(request);
+
+	cfgFileId_t cfgFileId=(vars_countn(args,"cfgFileId")>0)?vars_get_value_i(args,"cfgFileId"):CF_WEBIFCONF;
+	config(session, request);
+	currentPage=PN_SETTINGS;
+	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_NOACTION;
+	int ntabs=initHtmlPage(response,out,tr("setup"),NULL);
+	printMenu(out,ntabs);
+	cfgParamList_t params;
+	cfgParam_t *param;
+	const cfgParamConfig_t *paramConfig;
+	initCfgParamList(&params);
+	boolean_t allParamsAreValid=BT_TRUE;
+	boolean_t showForm=boolean(!webifConf.configChangeDisabled);
+
+	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
+
+	if (currentAction==PA_SAVE_CONFIG) {
+		if (webifConf.configChangeDisabled) {
+			io_printf(out,"%.*s<div class=\"alert\">%s</div>\n",ntabs,tabs,tr("cfgFileChangeDisabledErr"));
+		} else {
+			char argName[15];
+			for(params.length=0;;params.length++){
+				sprintf(argName,"paramName_%d",params.length);
+				if (!vars_countn(args,argName)) break;
+			}
+			if (params.length==0){
+				io_printf(out,"%.*s<div class=\"alert\">%s</div>",ntabs,tabs,tr("cfgErrParamNameValueMismatch")); 
+			} else {
+				params.entry=malloc(params.length*sizeof(cfgParam_t));
+				int i;
+				for (i=0,param=params.entry;i<params.length;i++,param++){
+					initCfgParam(param);
+					sprintf(argName,"paramName_%d",i);
+					param->name=strdup(vars_get_value(args,argName));
+					sprintf(argName,"paramValue_%d",i);
+					const char *argValue=vars_get_value(args,argName);
+					param->value=(argValue)?strdup(argValue):NULL;
+					param->isValid=BT_TRUE;
+					paramConfig=getCfgParamConfig(cfgFileId,param);
+					if (paramConfig && paramConfig->validate!=NULL){
+						paramConfig->validate(paramConfig,param);
+					}
+					if (!param->isValid){
+						allParamsAreValid=BT_FALSE;
+					}
+				}
+			}
+			if (allParamsAreValid) {
+				if (writeConf(cfgFileId,&params)){
+					io_printf(out,"%.*s<div class=\"message\">",ntabs,tabs);
+					io_printf(out,tr("cfgFileSaveOkFmt"),cfgFile[cfgFileId].fileName);
+					if (cfgFileId==CF_WEBIFCONF){
+						webifConf.alreadySet=BT_FALSE;
+					}
+				} else {
+					io_printf(out,"%.*s<div class=\"alert\">",ntabs,tabs);
+					io_printf(out,tr("cfgFileSaveErrFmt"),cfgFile[cfgFileId].fileName); 
+				}
+				io_printf(out,"</div>\n");
+				showForm=BT_TRUE;
+			}
+		}
+	} else {
+		boolean_t isNew;
+		if (!readConf(cfgFileId,&params,&isNew)) {
+			showForm=BT_FALSE;
+			io_printf(out,"%.*s<div class=\"alert\">",ntabs,tabs);
+			io_printf(out,tr("cfgFileDoesNotExistFmt"),cfgFileId,(cfgFileId>=0&&cfgFileId<cfgFileLength)?cfgFile[cfgFileId].fileName:"");
+			io_printf(out,"</div>\n");
+		} else {
+			if (isNew){
+				io_printf(out,"%.*s<div class=\"message\">%s</div>\n",ntabs,tabs, tr("cfgFileIsNew"));
+			}
+		}
+	}
+	if (showForm) {
+		io_printf(out,"%.*s<form action=\"settings.kl1\" method=\"post\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<input type=\"hidden\" name=\"cfgFileId\" value=\"%d\" />\n",ntabs,tabs,cfgFileId);
+		io_printf(out,"%.*s<table id=\"cfgFile\" class=\"list2\" summary=\"%s\">\n",ntabs++,tabs,""); //TODO summary
+		io_printf(out,"%.*s<caption>%s</caption>\n",ntabs,tabs,tr(cfgFile[cfgFileId].i18nKey));
+		int i;
+		enum { AUXSZ=1024 };
+		char aux[AUXSZ];
+		const char *paramI18n;
+		for (i=0;i<params.length;i++) {
+			const char * paramValue;
+			param=params.entry+i;
+			paramConfig=getCfgParamConfig(cfgFileId,param);
+			//search by i18n key like "fileKey.paramName"
+			sprintf(aux,"%s.%s",cfgFile[cfgFileId].i18nKey,param->name);
+			paramI18n=tr(aux);
+			if (paramI18n==aux) paramI18n=param->name;
+			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+			io_printf(out,"%.*s<th>%s <input type=\"hidden\" name=\"paramName_%d\" value=\"%s\" /></th>\n",ntabs,tabs,paramI18n,i,param->name);
+			io_printf(out,"%.*s<td>\n",ntabs++,tabs);
+			if (param->isValid){
+				paramValue=param->value;
+			} else {
+				io_printf(out,"%.*s<p class=\"alert\">",ntabs,tabs);
+				io_printf(out,tr("cfgErrInvalidParamValueFmt"),param->value);
+				io_printf(out,"</p>\n");
+				if (paramConfig && paramConfig->defaultValue){
+					paramValue=paramConfig->defaultValue;
+				}
+			};
+			if (param->comment) {
+				u_htmlncpy(aux,param->comment,strlen(param->comment),HTMLCPY_ENCODE);
+				io_printf(out,"%.*s<div class=\"boxRight\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s<div class=\"infobox infoboxCssHover infoLeft\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s<span class=\"ui-icon ui-icon-info\"></span>\n",ntabs,tabs);
+				io_printf(out,"%.*s<div class=\"infoWrapper infoCssHover\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s<div class=\"info\">%s</div>\n",ntabs,tabs,aux);
+				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+			}
+			if (!paramConfig || !paramConfig->printInput || !paramConfig->printInput(out,7,paramConfig,i,paramValue,aux)){
+				char *valueNZ=(paramValue)?param->value:"";
+				u_htmlncpy(aux,valueNZ,strlen(valueNZ),HTMLCPY_ENCODE);
+				io_printf(out,"%.*s<input type=\"text\" name=\"paramValue_%d\" value=\"%s\" size=\"%d\" />\n"
+					,ntabs,tabs,i,aux,(paramValue!=NULL)?strlen(paramValue)+5:40);
+			}
+			io_printf(out,"%.*s</td>\n",--ntabs,tabs);
+			io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+		}
+		io_printf(out,"%.*s<tr class=\"buttons\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<td colspan=\"2\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<button id=\"confirm\" name=\"a\" type=\"submit\" value=\"%d\" class=\"confirm\">%s</button>\n"
+			,ntabs,tabs,PA_SAVE_CONFIG,tr("saveConfig"));
+		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+
+		io_printf(out,"%.*s</table>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
+	}
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+	freeCfgParamList(&params);
+	finishHtmlPage(out,ntabs);
+%>

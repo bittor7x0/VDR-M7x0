@@ -1,0 +1,88 @@
+* {
+	color:black;
+	background-color:transparent;
+	vertical-align:top;
+}
+body {
+	padding:1em;
+}
+body,
+table {
+	font-size:9pt;
+	font-family:sans-serif;
+	vertical-align:top;
+}
+#header {
+	display:none;
+}
+.sf-menu {
+	display:none;
+}
+#footer {
+	display:none;
+}
+h2 {
+	font-size:1.2em;
+	font-weight:bold;
+	text-decoration:underline;
+}
+table {
+	border-collapse:separate;
+	border-spacing:2px;
+	background-color:#CCC;
+	border:none;
+}
+th{
+	background-color:#AAA;
+	color:#FFF;
+}
+td{
+	background-color:#FFF;
+}
+th,
+td{
+	border:none;
+	padding: 2px;
+}
+table.list1 td * {
+	margin:0;
+	padding:0;
+}
+table#programs col.timers {
+	width:auto;
+}
+table#programs th.timers,
+table#programs td.timers {
+	display:none;
+}
+table#programs tr.anotherDay td {
+	text-align:center;
+	background-color: #CCC;
+}
+table#programs td > title {
+	display:none;
+}
+table#programs .boxRight {
+	display:block;
+	position:static;
+	margin:0;
+	padding:0;
+}
+table#programs .infobox {
+	display:block;
+	position:static;
+}
+table#programs .infobox .infoWrapper {
+	display:block;
+	position:static;
+	width:100%;
+}
+table#programs .infobox .infoWrapper info {
+	display:block;
+	position:static;
+}
+
+.boxRight img,
+.boxRight a {
+	display:none;
+}

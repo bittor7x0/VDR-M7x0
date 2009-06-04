@@ -1,0 +1,62 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* Originally written for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <klone/utils.h>
+#include <time.h>
+
+#include "conf.h"
+#include "misc.h"
+#include "i18n.h"
+#include "recordings.h"
+#include "svdrp_comm.h"
+
+#ifdef DEBUG
+dbg_recAjax_kl1(void) { dbg("recAjax.kl1"); }
+#endif
+
+%><%
+	#ifdef DEBUG
+	dbg_recAjax_kl1();
+	#endif
+
+	config(session, request);
+	vars_t *args = request_get_args(request);
+	enum {AUXSZ=4096};
+	char aux[AUXSZ];
+	rec_t rec;
+	initRec(&rec);
+	rec.my=0;
+	rec.event.my=0;
+	initRecFromArgs(&rec,args);
+	const char *cmd=vars_get_value(args,"cmd");
+
+	int ntabs=initHtmlDoc(response,out);
+	io_printf(out,"%.*s<body>\n",ntabs++,tabs);
+	if (cmd){
+		if (strcmp(cmd,"getInfo")==0){
+			if (getRecInfo(&rec)) {
+				printRecInfo(out,ntabs,&rec);
+			}
+		} else if (strcmp(cmd,"edit")==0){
+			io_printf(out,"%.*s<form method=\"post\">\n",ntabs++,tabs);
+			printRecEditForm(out,ntabs,&rec,aux);
+			io_printf(out,"%.*s</form>\n",--ntabs,tabs);
+		}
+	}
+	io_printf(out,"%.*s</body>\n",--ntabs,tabs);
+	io_printf(out,"</html>");
+	freeRec(&rec);
+	closeSvdrpAll();
+%>

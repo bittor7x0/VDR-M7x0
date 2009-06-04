@@ -1,0 +1,157 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include "i18n.h"
+#include "misc.h"
+#include "conf.h"
+
+#ifdef DEBUG
+void dbg_view_kl1(){ dbg("view.kl1"); }
+#endif
+
+%><%
+
+	#ifdef DEBUG
+	dbg_view_kl1();
+	#endif
+
+	config(session,request);
+
+	vars_t *args = request_get_args(request);
+	currentAction=(vars_countn(args,"action")>0)?vars_get_value_i(args,"action"):PA_SHOW;
+	int fileNum=(vars_countn(args,"fileNum")>0)?vars_get_value_i(args,"fileNum"):0;
+	if (currentAction<PA_SHOW||currentAction>=PA_DOWNLOAD_ALL){
+		//TODO error
+		currentAction=PA_SHOW;
+		fileNum=0;
+	}
+	if (fileNum<0||fileNum>=fileMappingLength){
+		//TODO error
+		currentAction=PA_SHOW;
+		fileNum=0;
+	}
+	
+	int i=0;
+
+	if (currentAction==PA_DOWNLOAD) {
+		response_set_content_type(response, "application/octetstream");
+		{
+		char *cd;
+		asprintf(&cd,"attachment; filename=\"%s.txt\"",fileMapping[fileNum].fileName);
+		response_set_field(response,"Content-Disposition",cd);
+		free(cd);
+		}
+		//TODO ¿implementado en klone?
+		FILE *f = fopen(fileMapping[fileNum].fileName,"r");
+		if (f) {
+			char buffer[1024];
+			while(fgets(buffer,1023,f)!=NULL) {
+				io_printf(out,"%s",buffer);
+			}
+			fclose(f);
+		}
+	} else if (currentAction==PA_DOWNLOAD_ALL) {
+		char *argumente[fileMappingLength+4];
+		argumente[0]="tar";
+		argumente[1]="-czf";
+		argumente[2]="/var/tmp/files.tar.gz";
+		for (i=0;i<fileMappingLength;i++) {
+			argumente[3+i]=(char*)fileMapping[i].fileName;
+		}
+		argumente[fileMappingLength+3]=NULL;
+		pid_t pid=0;
+		int status;
+		pid=fork();
+		if (pid==0) {
+			execvp("/bin/tar", argumente);
+		}
+		if (pid>0) {
+			waitpid(pid,NULL,0);
+			response_set_content_type(response, "application/gzip");
+			response_set_field(response,"Content-Disposition","attachment; filename=\"files.tar.gz\"");
+			//TODO kloned task:
+			FILE *f = fopen("/var/tmp/files.tar.gz","rb");
+			if (f) {
+				char buffer;
+				int bytesRead;
+				while(!feof(f)) {
+					buffer=fgetc(f);
+					io_putc(out,buffer);
+				}
+				fclose(f);
+			}
+		}
+	} else { 
+		currentPage=PN_FILEVIEW;
+		int ntabs=initHtmlPage(response,out,tr("fileView"),NULL);
+		printMenu(out,ntabs);
+
+		io_printf(out,
+"		<div id=\"main\" class=\"code\">\n"
+		);
+		struct stat status;
+		if ((stat(fileMapping[fileNum].fileName,&status))>=0) {
+			const char *FileDownload=tr("fileDownload");
+			io_printf(out,
+"			<div class=\"codeHead\">\n"
+"				<ul class=\"controls ui-widget ui-helper-clearfix\">\n"
+"					<li class=\"control ui-state-default ui-corner-all\">"
+						"<a class=\"ui-icon ui-icon-disk\" href=\"view.kl1?action=%d&amp;fileNum=%d\" title=\"%s\">%s</a>"
+					"</li>\n"
+"				</ul>\n"
+				,PA_DOWNLOAD,fileNum,FileDownload,FileDownload
+			);
+			io_printf(out,
+"				<ul class=\"fields\">\n"
+"					<li class=\"field\"><span class=\"label\">%s</span><span class=\"value\">%s</span></li>\n"
+"					<li class=\"field\"><span class=\"label\">%s</span><span class=\"value\">%s</span></li>\n"
+"				</ul>\n"
+"			</div>\n"
+"			<pre>\n"
+				,tr("file"),fileMapping[fileNum].fileName
+				,tr("date"),ctime(&status.st_mtime)
+			);
+
+			FILE *f = fopen(fileMapping[fileNum].fileName,"r");
+			if (f) {
+				char buffer[1024];
+				char encoded[4096];
+				
+				while(fgets(buffer,1023,f)!=NULL) {
+					u_htmlncpy(encoded,buffer,strlen(buffer),HTMLCPY_ENCODE);
+					io_printf(out,encoded);
+				}
+				fclose(f);
+			}
+			io_printf(out,
+"			</pre>\n"
+			);
+		}
+		io_printf(out,
+"		</div>\n"
+		);
+		finishHtmlPage(out,ntabs);
+	} 
+%>

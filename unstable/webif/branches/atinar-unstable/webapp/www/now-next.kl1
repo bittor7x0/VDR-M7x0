@@ -1,0 +1,151 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+
+#include "i18n.h"
+#include "misc.h"
+#include "svdrp_comm.h"
+#include "epg.h"
+
+#ifdef DEBUG
+dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
+#endif
+
+%><%
+
+	#ifdef DEBUG
+	dbg_now_next_kl1();
+	#endif
+
+	config(session,request);
+
+	vars_t *args = request_get_args(request);
+	int channelNum=vars_get_value_i(args,"chan");
+
+	if (channelNum<1) {
+		warn("Invalid parameters");
+		returnHttpNoContent(response);
+		goto end;
+	}
+	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
+	if (host==NULL){
+		warn("No host");
+		returnHttpNoContent(response);
+		goto end;
+	};
+
+	// Get now & next for this chan
+	nowNextList_t nnl;
+	channelList_t channels;
+	channel_t channel;
+	initChannelList(&channels);
+	initChannel(&channel);
+	channel.channelNum=channelNum;
+	channels.length=1;
+	channels.channel=&channel;
+	getNowNextList(host,&nnl,&channels);
+	nowNextEntry_t *nne=nnl.entry;
+	
+	//Header fields
+	long int waitSeconds=0;
+	char *refresh;
+	if ( (nne->event[1].start>0) && (nne->event[0].start>0) && (nne->event[0].title) && (nne->event[1].title) ) {
+		time_t now=time(NULL);
+		waitSeconds=nne->event[1].start-now;
+	}
+	if (waitSeconds<5){
+		waitSeconds=5;
+	}
+	asprintf(&refresh,"%ld;URL=/now-next.kl1?chan=%d",waitSeconds,channelNum);
+	response_set_field(response,"Refresh",refresh);
+	free(refresh);
+	
+	int ntabs=initHtmlDoc(response,out);
+	io_printf(out,
+"	<head>\n"
+"		<title>%s</title>\n"
+"		<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen.css\" media=\"screen\"/>\n"
+"	</head>\n"
+"	<body id=\"nowNextBody\">\n"
+"		<div id=\"tabs\">\n"
+		,tr("program")
+	);
+
+	int i;
+	char *title[2];
+	for (i=0;i<2;i++){
+		title[i]=NULL;
+		eventEntry_t *ee=&nne->event[i];
+		if (ee->title) {
+			if (ee->start>0) {
+				struct tm t = *localtime(&ee->start);
+				asprintf(&title[i],"%02d:%02d",t.tm_hour,t.tm_min);
+			} else {
+				title[i]=strdup((i==0)?tr("Now"):tr("next")); 
+			}
+		}
+	}
+	io_printf(out,
+"			<ul id=\"tabsSelector\">\n"
+	);
+	int c=0;
+	for (i=0;i<2;i++){
+		if (title[i]){
+			io_printf(out,
+"				<li><a href=\"#tabs-%d\">%s</a></li>\n",c++,title[i]);
+		}
+	}
+	io_printf(out,
+"			</ul>\n"
+	);
+	c=0;
+	for (i=0;i<2;i++){
+		eventEntry_t *ee=&nne->event[i];
+		if (title[i]) {
+			io_printf(out,
+"			<div id=\"tabs-%d\" class=\"eventSummary\">\n",c++);
+			io_printf(out,
+"				<h3>%s</h3>\n",title[i]);
+			io_printf(out,
+"				<h4>%s</h4>\n",(ee->title)?ee->title:(ee->shortdesc && ee->desc)?ee->shortdesc:"--");
+			io_printf(out,
+"				<div class=\"desc\">\n");
+			printEventDesc(out,4,(ee->desc)?ee->desc:ee->shortdesc,"|",NULL);
+			io_printf(out,
+"				</div>\n");
+			io_printf(out,
+"			</div>\n"
+			);
+		}
+	}
+	for (i=0;i<2;i++) free(title[i]);
+
+	freeChannel(&channel); //no realmente necesario a no ser que se asignen nombres.
+	freeNNL(&nnl);
+	io_printf(out,
+"		</tabs>\n"
+"	</body>\n"
+"</html>\n"
+	);
+end:
+	closeSvdrpAll();
+%>

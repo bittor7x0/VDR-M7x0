@@ -1,0 +1,43 @@
+diff -Naur klone-core-2.1.1/klone/http.h klone-core-2.1.1-atinar/klone/http.h
+--- klone-core-2.1.1/klone/http.h	2007-11-09 23:06:26.000000000 +0100
++++ klone-core-2.1.1-atinar/klone/http.h	2009-03-14 14:34:31.000000000 +0100
+@@ -31,6 +31,8 @@
+     /**< request accepted but processing not completed */
+     HTTP_STATUS_NO_CONTENT                = 204,
+     /**< no body returned */
++    HTTP_PARTIAL_CONTENT                  = 206,
++    /**< partial content returned */
+     HTTP_STATUS_MOVED_PERMANENTLY         = 301,
+     /**< resource relocated permanently */
+     HTTP_STATUS_MOVED_TEMPORARILY         = 302,
+diff -Naur klone-core-2.1.1/src/libhttp/http.c klone-core-2.1.1-atinar/src/libhttp/http.c
+--- klone-core-2.1.1/src/libhttp/http.c	2008-07-11 17:45:18.000000000 +0200
++++ klone-core-2.1.1-atinar/src/libhttp/http.c	2009-03-14 14:34:48.000000000 +0100
+@@ -50,6 +50,7 @@
+     { HTTP_STATUS_CREATED               , "Created"                 },
+     { HTTP_STATUS_ACCEPTED              , "Accepted"                },
+     { HTTP_STATUS_NO_CONTENT            , "No Content"              },
++    { HTTP_PARTIAL_CONTENT              , "Partial Content"         },
+     { HTTP_STATUS_BAD_REQUEST           , "Bad Request"             },
+     { HTTP_STATUS_UNAUTHORIZED          , "Unauthorized"            },
+     { HTTP_STATUS_FORBIDDEN             , "Forbidden"               },
+diff -Naur klone-core-2.1.1/src/libutils/utils.c klone-core-2.1.1-atinar/src/libutils/utils.c
+--- klone-core-2.1.1/src/libutils/utils.c	2008-04-08 14:53:49.000000000 +0200
++++ klone-core-2.1.1-atinar/src/libutils/utils.c	2009-03-14 14:44:24.000000000 +0100
+@@ -312,6 +312,7 @@
+ static ssize_t u_urlncpy_encode(char *d, const char *s, size_t slen)
+ {
+     const char hexc[] = "0123456789ABCDEF";
++	const char reserved[] = "-_.~/:?=&"; //!*'();@+$,[]#%"; 
+     ssize_t wr = 0;
+     unsigned char c;
+ 
+@@ -324,7 +325,7 @@
+         if(c == ' ') {
+             *d++ = '+';
+             wr++;
+-        } else if(isalnum(c) || c == '_' || c == '-' || c == '.') {
++        } else if ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9') || strchr(reserved,c)) {
+             *d++ = c;
+             wr++;
+         } else {

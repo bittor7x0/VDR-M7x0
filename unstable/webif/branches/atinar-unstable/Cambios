@@ -1,0 +1,92 @@
+2009-05-27
+* Posibilidad de limitar número de niveles mostrados en browse.kl1.
+* Opción para cerrar conexión SVDRP después de cada orden (para depuración con múltiples hosts).
+* openSvdrp, writeSvdrp y readSvdrp son funciones privadas ahora.
+* Funcion parseTimer reescrita con mayor control de errores.
+* writeSvdr retorna true solo si los bytes escritos son los esperados.
+* Descargar información de las grabaciones remotas en diferido usando Ajax.
+* Marcado de los punteros propios en las structs, para permitir utilizar referencias directas 
+  a los argumentos de las páginas, sin que sea obligatorio duplicar.
+* Funciones anidadas para la ordenación de listas sin depender de variables globales.
+* Cambiada gestión de SIGPIPE en svdrp_comm para acceder al host correcto sin variables globales.
+* Integrada en browse.kl1 la navegación por grabaciones remotas.
+* Gestión simultánea de varios hosts (VDRs o servidores de ficheros).
+* Eliminado svdrp_parse y recolocadas las rutinas que quedaban.
+* Identificacion de grabaciones sólo por path relativo (no se usa nunca el id).
+* Fusionados recEntry_t y recInfo_t.
+* recInfo_t delega en eventEntry_t.
+* Resaltar por CSS las grabaciones editadas.
+* Acciones mediante <form> en browse (evita repetir paths).
+* Eliminado espacio extra en <button> en FF.
+* Permitir borrar grabaciones desde listado.
+* Refactorizadas funciones de browse.kl1 a browse.c 
+* Funcionalidad completa en browse.kl1.
+* Modo de indentar html más eficiente.
+* Timers tienen que ser htmlEncoded porque aux puede incluir xml.
+* Agregar parametros a URLs para no asociar fichero kl1 con tipo mime.
+* Timers mantienen aux para no desligarse de epgsearch.
+* Cambiado tipo MIME para listas m3u a audio/mpegurl
+
+2009-04-18
+* Utilizar rutas relativas para las grabaciones.
+* Mostrar fechas al navegar por series.
+* Corregida navegacion por series.
+* Corregido error en formatDate cuando se muestra la hora.
+* parseRec movido de svdrp_parse a recordings.
+
+2009-04-12
+* Incorporada posibilidad de usar css/js externo.
+* Generalizado el ajuste de Posix para IE7.
+* Página de navegacion por grabaciones rediseñada.
+* Eliminada get_config_info de svdr_parse e implementada en conf.
+* Eliminada funcion vdrRunning.
+* Eliminada funcion readBOXAMPCONF.
+* Eliminada funcion htmlEncode.
+* Integrados todos los iconos en ui-icon.
+* Gestion de grabaciones en listado mediante formularios en lugar de enlaces.
+* Streaming de grabaciones simplificado. Ya no se solicita el listado completo
+  al SVDRP (comando PLST eliminado en SVDRP), solo el directorio (comando LSTR modificado).
+  Requiere recompilado del VDR.
+* Opciones de configuración operativas, completadas y traducidas.
+* Corregida generacion de listas XSPF (que vlc sigue sin soportar bien...)
+* Gestionar todos los flags de las programaciones (no solo active).
+* Resaltado de programaciones inactivas.
+* Distinguir convenientemente las referencias al servidor SVDRP 
+  de las referencias al propio servidor HTTP.
+* Eliminada funcion whatsmyip. La direccion del servidor se extrae del header 'Host' en el HttpRequest.
+* Tablas list2.
+
+2009-03-21
+* Incorporado tema jQuery-UI. Generado sprite con los iconos propios.
+* Actualizado jQuery de 1.2.6 a 1.3.2
+* Se muestran graficamente todas las coincidencias de timers regulares en la EPG (no solo la primera).
+* Iframe en watchit se transforma en tabs via javascript.
+* Movidas imagenes a subdirectorio de css.
+* Evento hover gestionado mediante javascript.
+* El enlace a la EPG desde la pagina de timers dirige directamente al timer en cuestion.
+
+2009-03-14
+* Eliminadas hojas css antiguas.
+* Adaptado now-next.kl1 al nuevo formato.
+* Parcheado u_urlncpy_encode en klone.
+* Substituidos META tags en head por encabezado HTTP.
+* Tooltip en todos los enlaces.
+* Corregidos errores de validacion de html.
+* Lista de audio como array y enumeracion para tipos de video en recInfo_t.
+
+2009-03-10
+* I18n optimizada mediante busqueda binaria sobre claves breves.
+* Eliminado directorio components e implementada funcionalidad mediante procedimientos.
+* Incluida edicion (renombrado/borrado) de grabaciones.
+* Simplificada edicion/borrado de programaciones.
+* Mejorada pagina de inicio.
+* Mejorada presentacion de canales.
+* Visualizacion grafica de las programaciones sobre la vista de EPG.
+* Generacion de HTML correctamente indentado.
+* Apariencia grafica (iconos) especificada en CSS en lugar de en HTML.
+* Reestructuradas hojas de estilo CSS segun medio.
+* Iniciada adaptacion de clases CSS a jQuery-UI, de cara a permitir temas.
+* Corregidos algunos bugs en IE6. Pendiente de verificar en IE7.
+* Eliminado conf-i18n e integrada funcionalidad en i18n.
+* Completada la migracion de todas las paginas al nuevo formato.
+* Iniciado este registro de cambios.
