@@ -1,0 +1,118 @@
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	Tue Jun 02 11:34:57 2009
++++ VDR-NG/config.c	Wed Jun 03 13:05:10 2009
+@@ -321,7 +321,6 @@
+   HardLinkCutter = 0;
+   MinEventTimeout = 30;
+   MinUserInactivity = 300;
+-  NextWakeupTime = 0;
+   MultiSpeedMode = 0;
+   ShowReplayMode = 0;
+   ResumeID = 0;
+@@ -516,7 +515,6 @@
+   else if (!strcasecmp(Name, "HardLinkCutter"))      HardLinkCutter     = atoi(Value);
+   else if (!strcasecmp(Name, "MinEventTimeout"))     MinEventTimeout    = atoi(Value);
+   else if (!strcasecmp(Name, "MinUserInactivity"))   MinUserInactivity  = atoi(Value);
+-  else if (!strcasecmp(Name, "NextWakeupTime"))      NextWakeupTime     = atoi(Value);
+   else if (!strcasecmp(Name, "MultiSpeedMode"))      MultiSpeedMode     = atoi(Value);
+   else if (!strcasecmp(Name, "ShowReplayMode"))      ShowReplayMode     = atoi(Value);
+   else if (!strcasecmp(Name, "ResumeID"))            ResumeID           = atoi(Value);
+@@ -618,7 +616,6 @@
+   Store("HardLinkCutter",     HardLinkCutter);
+   Store("MinEventTimeout",    MinEventTimeout);
+   Store("MinUserInactivity",  MinUserInactivity);
+-  Store("NextWakeupTime",     NextWakeupTime);
+   Store("MultiSpeedMode",     MultiSpeedMode);
+   Store("ShowReplayMode",     ShowReplayMode);
+   Store("ResumeID",           ResumeID);
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	Tue Jun 02 11:34:57 2009
++++ VDR-NG/config.h	Wed Jun 03 13:05:18 2009
+@@ -279,7 +279,6 @@
+   int SplitEditedFiles;
+   int HardLinkCutter;
+   int MinEventTimeout, MinUserInactivity;
+-  time_t NextWakeupTime;
+   int MultiSpeedMode;
+   int ShowReplayMode;
+   int ResumeID;
+diff -Naur VDR-NG-orig/shutdown.c VDR-NG/shutdown.c
+--- VDR-NG-orig/shutdown.c	Tue Jun 02 11:35:01 2009
++++ VDR-NG/shutdown.c	Wed Jun 03 13:05:44 2009
+@@ -126,11 +126,9 @@
+      dsyslog("emergency exit request ignored according to setup");
+ }
+ 
+-void cShutdownHandler::CheckManualStart(int ManualStart)
++void cShutdownHandler::CheckManualStart()
+ {
+-  time_t Delta = Setup.NextWakeupTime ? Setup.NextWakeupTime - time(NULL) : 0;
+-
+-  if (!Setup.NextWakeupTime || abs(Delta) > ManualStart) {
++  if (getIaMode()) {
+      // Apparently the user started VDR manually
+      dsyslog("assuming manual start of VDR");
+      // Set inactive after MinUserInactivity
+@@ -138,7 +136,8 @@
+      }
+   else {
+      // Set inactive from now on
+-     dsyslog("scheduled wakeup time in %ld minutes, assuming automatic start of VDR", Delta / 60);
++     cDevice::PrimaryDevice()->SetTvSettings(0);
++     dsyslog("assuming automatic start of VDR");
+      SetUserInactive();
+      }
+ }
+@@ -157,10 +156,8 @@
+   int Status = SystemExec(cmd, true);
+   if (!WIFEXITED(Status) || WEXITSTATUS(Status))
+      esyslog("SystemExec() failed with status %d", Status);
+-  else {
+-     Setup.NextWakeupTime = WakeupTime; // Remember this wakeup time for comparison on reboot
++  else
+      Setup.Save();
+-     }
+ }
+ 
+ void cShutdownHandler::SetUserInactiveTimeout(int Seconds, bool Force)
+diff -Naur VDR-NG-orig/shutdown.h VDR-NG/shutdown.h
+--- VDR-NG-orig/shutdown.h	Tue Jun 02 11:35:02 2009
++++ VDR-NG/shutdown.h	Tue Jun 02 17:02:12 2009
+@@ -67,9 +67,9 @@
+        ///< Returns true if an emergency exit was requested.
+   void RequestEmergencyExit(void);
+        ///< Requests an emergency exit of the VDR main loop.
+-  void CheckManualStart(int ManualStart);
+-       ///< Check whether the next timer is in ManualStart time window.
+-       ///< If yes, assume non-interactive use.
++  void CheckManualStart();
++       ///< Check whether the interactive mode is started.
++       ///< If no, assume non-interactive use.
+   void SetShutdownCommand(const char *ShutdownCommand);
+        ///< Set the command string for shutdown command.
+   void CallShutdownCommand(time_t WakeupTime, int Channel, const char *File, bool UserShutdown);
+diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
+--- VDR-NG-orig/vdr.c	Tue Jun 02 11:35:02 2009
++++ VDR-NG/vdr.c	Tue Jun 02 16:56:24 2009
+@@ -96,7 +96,6 @@
+ #define SHUTDOWNFORCEPROMPT 5 // seconds to wait in user prompt to allow forcing shutdown
+ #define SHUTDOWNCANCELROMPT 5 // seconds to wait in user prompt to allow canceling shutdown
+ #define RESTARTCANCELPROMPT 5 // seconds to wait in user prompt before restarting on SIGHUP
+-#define MANUALSTART       600 // seconds the next timer must be in the future to assume manual start
+ #define CHANNELSAVEDELTA  600 // seconds before saving channels.conf after automatic modifications
+ #define LASTCAMMENUTIMEOUT  3 // seconds to run the main loop 'fast' after a CAM menu has been closed
+                               // in order to react on a possible new CAM menu as soon as possible
+@@ -680,12 +679,9 @@
+         }
+      }
+ 
+-     if(!getIaMode())
+-        cDevice::PrimaryDevice()->SetTvSettings(0);
+-
+   // Check for timers in automatic start time window:
+ 
+-  ShutdownHandler.CheckManualStart(MANUALSTART);
++  ShutdownHandler.CheckManualStart();
+ 
+   // User interface:
+ 
