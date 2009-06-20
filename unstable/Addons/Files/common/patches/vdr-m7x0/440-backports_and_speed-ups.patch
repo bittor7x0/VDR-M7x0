@@ -1,0 +1,1925 @@
+Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
+
+VDR 1.7.7 backports applied in this patch:
+* The new Setup parameter "Channel entry timeout" can be used to customize the time
+  since the last keypress until a numerically entered channel number is considered
+  complete, and the channel is switched (suggested by Helmut Auer). Setting this
+  parameter to 0 turns off the automatic channel switching, and the user will
+  have to confirm the entry by pressing the "Ok" key.
+* Removed the compile time option VFAT to allow users of precompiled binary
+  distributions to have full control over whether or not to use the --vfat option
+  at runtime (suggested by Michael Nork).
+* Modified handling invalid characters in VFAT mode.
+* Made MAXFRAMESIZE a multiple of TS_SIZE to avoid breaking up TS packets.
+* Improved logging system time changes to avoid problems on slow systems under
+  heavy load (suggested by Helmut Auer).
+* All logging now goes to LOG_ERR, because some systems split error, info and
+  debug messages into separate files, which repeatedly caused extra efforts to
+  find out when incomplete log excerpts were attached to problem reports in
+  the past.
+* Running the thread that removes deleted recordings at a low priority to (maybe)
+  avoid stuttering replay in case the thread is run during replay.
+* Reduced the number of time(NULL) calls in vdr.c's main loop to a single call
+  (thanks to Tobias Bratfisch).
+* Improved numdigits(), isnumber() and strreplace() (thanks to Tobias Bratfisch).
+* Made skipspace() an inline function (suggested by Tobias Bratfisch) and changed
+  it to handle the most common case of 'no leading space' very fast, and avoid
+  calling isspace(), which made the whole function a lot faster.
+* Fixed a problem with characters >0x7F in the modified version of skipspace()
+  (thanks to Marco Schlüßler).
+* Ignoring "repeat" and "release" keys in the time search entry mode during replay,
+  to avoid inadvertently leaving it in case a key is pressed too long (suggested
+  by Andreas Brugger).
+* Improved cControl::Launch() to keep 'control' from pointing to uninitialized
+  memory (thanks to Rolf Ahrenberg).
+* Removed unneeded include files <linux/dvb/dmx.h> and <time.h> from remux.h
+  (reported by Tobias Grimm).
+* Stripping control codes 0x86 and 0x87 from SI strings.
+* Optimized cNitFilter::Process() (thanks to Tobias Bratfisch).
+* Optimized cMenuEditChrItem::Set() (thanks to Tobias Bratfisch).
+* Improved performance of the SVDRP commands LSTC and CHAN when used with a
+  channel name.
+* The SVDRP command LSTC can now list the channels with group separators if the
+  option ':groups' is given (thanks to Andreas Mair).
+* The SVDRP command PUTE now supports reading the EPG data from a given file
+  (thanks to Helmut Auer).
+* Added a debug error message to cReceiver::~cReceiver() in case it is still
+  attached to a device (thanks to Reinhard Nissl).
+* cBitmap::SetXpm() now checks whether the given Xpm pointer is not NULL, to
+  avoid a crash with files that only contain "/* XPM */" (suggested by Andreas
+  Mair).
+* Resetting a timer's 'pending' flag when it has ended.
+* Added some missing 'const' keywords (thanks to Sascha Volkenandt).
+* Added a missing Channels.SetModified(true) call when deleting or moving a
+  channel in the Channels menu (reported by Halim Sahin).
+* Added a missing SetVolumeDevice() call in cDevice::SetPrimaryDevice() (reported
+  by Reinhard Nissl).
+* Fixed a problem with calling isyslog() from within the SignalHandler() (thanks
+  to Udo Richter).
+* Fixed handling kLeft in the calls to cStatus::MsgOsdTextItem() (thanks to
+  Alexander Rieger).
+* Fixed a possible integer overflow in GetAbsTime() (thanks to Alexander Rieger).
+* Fixed wrong value for TableIdBAT in libsi/si.h (thanks to Winfried Köhler).
+* Fixed initializing the timer's flags in the cTimer copy constructor (thanks to
+  Andreas Mair).
+* Fixed the MEGABYTE() macro to make it correctly handle parameters resulting in
+  values larger than 2GB.
+* Added a missing 'P' to vdr.c's SHUTDOWNCANCELROMPT macro (reported by Marco
+  Schlüßler).
+* Fixed checking for ttDolbyLast in cDevice::SetCurrentAudioTrack() (thanks
+  to Marco Schlüßler).
+* Fixed handling address masks in SVDRP host settings (thanks to Frank Schmirler).
+* Added a missing reset of maxNumber in cChannels::Renumber() (reported by Sundararaj
+  Reel).
+* Fixed tuning to a live channel after a recording has been stopped using the
+  'Back' key.
+* Added a missing '.' to the date returned by DayDateTime() (thanks to Lauri Nurmi).
+* Fixed decoding filename characters in case there are not two hex digits after
+  the '#' (reported by Helmut Auer).
+* Fixed selecting the audio track when pressing Ok in the Audio menu (thanks
+  to Marco Schlüßler).
+* Fixed a missing '-' at the next to last line of SVDRP help texts (reported by
+  Denis Knauf).
+* Fixed a crash when pressing Left while at the first character of a cMenuEditStrItem
+  (thanks to Christian Wieninger).
+
+
+diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
+--- VDR-NG-orig/channels.c	2009-06-20 11:21:35.000000000 +0200
++++ VDR-NG/channels.c	2009-06-20 11:27:55.000000000 +0200
+@@ -180,7 +180,7 @@
+   modification = CHANNELMOD_NONE;
+   schedule     = NULL;
+   linkChannels = NULL;
+-  refChannel   = NULL;
++  refChannels  = NULL;
+ }
+ 
+ cChannel::cChannel(const cChannel &Channel)
+@@ -191,28 +191,26 @@
+   portalName = NULL;
+   schedule     = NULL;
+   linkChannels = NULL;
+-  refChannel   = NULL;
++  refChannels  = NULL;
+   *this = Channel;
+ }
+ 
+ cChannel::~cChannel()
+ {
+-  delete linkChannels;
+-  linkChannels = NULL; // more than one channel can link to this one, so we need the following loop
+-  for (cChannel *Channel = Channels.First(); Channel; Channel = Channels.Next(Channel)) {
+-      if (Channel->linkChannels) {
+-         for (cLinkChannel *lc = Channel->linkChannels->First(); lc; lc = Channel->linkChannels->Next(lc)) {
+-             if (lc->Channel() == this) {
+-                Channel->linkChannels->Del(lc);
+-                break;
+-                }
+-             }
+-         if (Channel->linkChannels->Count() == 0) {
+-            delete Channel->linkChannels;
+-            Channel->linkChannels = NULL;
+-            }
+-         }
+-      }
++  if (linkChannels) {
++     // in all channels which we link to remove the reference to us
++     for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc))
++         lc->Channel()->DelRefChannel(this);
++     delete linkChannels;
++     linkChannels = NULL;
++     }
++  if (refChannels) {
++     // in all channels which reference us remove their link to us
++     for (cLinkChannel *lc = refChannels->First(); lc; lc = refChannels->Next(lc))
++         lc->Channel()->DelLinkChannel(this);
++     delete refChannels;
++     refChannels = NULL;
++     }
+   free(name);
+   free(shortName);
+   free(provider);
+@@ -491,7 +489,7 @@
+ 
+ void cChannel::SetCaIds(const int *CaIds)
+ {
+-  if (caids[0] && caids[0] <= 0x00FF)
++  if (caids[0] && caids[0] <= CA_USER_MAX)
+      return; // special values will not be overwritten
+   if (IntArraysDiffer(caids, CaIds)) {
+      char OldCaIdsBuf[MAXCAIDS * 5 + 10]; // 5: 4 digits plus delimiting ',', 10: paranoia
+@@ -544,7 +542,7 @@
+   q += sprintf(q, "linking channel %d from", Number());
+   if (linkChannels) {
+      for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc)) {
+-         lc->Channel()->SetRefChannel(NULL);
++         lc->Channel()->DelRefChannel(this);
+          q += sprintf(q, " %d", lc->Channel()->Number());
+          }
+      delete linkChannels;
+@@ -555,7 +553,7 @@
+   linkChannels = LinkChannels;
+   if (linkChannels) {
+      for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc)) {
+-         lc->Channel()->SetRefChannel(this);
++         lc->Channel()->AddRefChannel(this);
+          q += sprintf(q, " %d", lc->Channel()->Number());
+          //dsyslog("link %4d -> %4d: %s", Number(), lc->Channel()->Number(), lc->Channel()->Name());
+          }
+@@ -565,9 +563,39 @@
+   dsyslog(buffer);
+ }
+ 
+-void cChannel::SetRefChannel(cChannel *RefChannel)
++void cChannel::AddRefChannel(cChannel *RefChannel)
+ {
+-  refChannel = RefChannel;
++  if (!refChannels)
++     refChannels = new cLinkChannels;
++  refChannels->Add(new cLinkChannel(RefChannel));
++}
++
++void cChannel::DelRefChannel(cChannel *RefChannel)
++{
++  for (cLinkChannel *lc = refChannels->First(); lc; lc = refChannels->Next(lc)) {
++      if (lc->Channel() == RefChannel) {
++         refChannels->Del(lc);
++         if (refChannels->Count() <= 0) {
++            delete refChannels;
++            refChannels = NULL;
++            }
++         return;
++         }
++      }
++}
++
++void cChannel::DelLinkChannel(cChannel *LinkChannel)
++{
++  for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc)) {
++      if (lc->Channel() == LinkChannel) {
++         linkChannels->Del(lc);
++         if (linkChannels->Count() <= 0) {
++            delete linkChannels;
++            linkChannels = NULL;
++            }
++         return;
++         }
++      }
+ }
+ 
+ static int PrintParameter(char *p, char Name, int Value)
+@@ -799,7 +827,7 @@
+               while ((q = strtok_r(p, ",", &strtok_next)) != NULL) {
+                     if (NumCaIds < MAXCAIDS) {
+                        caids[NumCaIds++] = strtol(q, NULL, 16) & 0xFFFF;
+-                       if (NumCaIds == 1 && caids[0] <= 0x00FF)
++                       if (NumCaIds == 1 && caids[0] <= CA_USER_MAX)
+                           break;
+                        }
+                     else
+@@ -910,14 +938,72 @@
+   return false;
+ }
+ 
++void cChannels::ClearChannelHashes(void)
++{
++  channelsHashSid.Clear();
++  channelsHashNidTid.Clear();
++}
++
+ void cChannels::HashChannel(cChannel *Channel)
+ {
+   channelsHashSid.Add(Channel, Channel->Sid());
++  channelsHashNidTid.Add(Channel, HashKeyNidTid(Channel->Nid(), Channel->Tid()));
+ }
+ 
+ void cChannels::UnhashChannel(cChannel *Channel)
+ {
+   channelsHashSid.Del(Channel, Channel->Sid());
++  channelsHashNidTid.Del(Channel, HashKeyNidTid(Channel->Nid(), Channel->Tid()));
++}
++
++unsigned int cChannels::HashKeyNidTid(unsigned short Nid, unsigned short Tid)
++{
++  return Nid << 16 | Tid;
++}
++
++cIterator<cChannel> cChannels::GetChannelsBySourceNidTid(int Source, unsigned short Nid, unsigned short Tid)
++{
++  class cIteratorImplSourceNidTid : public cIteratorImpl {
++  private:
++    cList<cHashObject> *hashList;
++    cHashObject *current;
++    int source;
++    unsigned short nid;
++    unsigned short tid;
++    cChannel *FindMatchingChannel(bool reverse, bool reset = false) {
++      if (!hashList || (!current && !reset))
++         return NULL;
++      while (true) {
++            if (reset) {
++               reset = false;
++               current = reverse ? hashList->Last() : hashList->First();
++               }
++            else
++               current = reverse ? hashList->Prev(current) : hashList->Next(current);
++            if (!current)
++               break;
++            cChannel *Channel = (cChannel *)current->Object();
++            if (Channel->Source() == source && Channel->Nid() == nid && Channel->Tid() == tid)
++               return Channel;
++            }
++      return NULL;
++      }
++  public:
++    cIteratorImplSourceNidTid(cList<cHashObject> *HashList, int Source, unsigned short Nid, unsigned short Tid) {
++       hashList = HashList;
++       source = Source;
++       nid = Nid;
++       tid = Tid;
++       current = NULL;
++       }
++    virtual void *First(void) { return FindMatchingChannel(false, true); }
++    virtual void *Last(void)  { return FindMatchingChannel(true,  true); }
++    virtual void *Prev(void)  { return FindMatchingChannel(true);  }
++    virtual void *Next(void)  { return FindMatchingChannel(false); }
++    virtual void *Current(void) const  { return current ? (cChannel *)current->Object() : NULL; }
++    };
++
++  return cIterator<cChannel>(new cIteratorImplSourceNidTid(channelsHashNidTid.GetList(HashKeyNidTid(Nid, Tid)), Source, Nid, Tid));
+ }
+ 
+ int cChannels::GetNextGroup(int Idx)
+@@ -952,9 +1038,10 @@
+   return channel ? Idx : -1;
+ }
+ 
+-void cChannels::ReNumber( void )
++void cChannels::ReNumber(void)
+ {
+-  channelsHashSid.Clear();
++  ClearChannelHashes();
++  maxNumber = 0;
+   int Number = 1;
+   for (cChannel *channel = First(); channel; channel = Next(channel)) {
+       if (channel->GroupSep()) {
+diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
+--- VDR-NG-orig/channels.h	2009-06-20 11:21:35.000000000 +0200
++++ VDR-NG/channels.h	2009-06-20 11:26:14.000000000 +0200
+@@ -147,9 +147,12 @@
+   int modification;
+   mutable const cSchedule *schedule;
+   cLinkChannels *linkChannels;
+-  cChannel *refChannel;
++  cLinkChannels *refChannels;
+   cString ParametersToString(void) const;
+   bool StringToParameters(const char *s);
++  void AddRefChannel(cChannel *RefChannel);
++  void DelRefChannel(cChannel *RefChannel);
++  void DelLinkChannel(cChannel *RefChannel);
+ public:
+   cChannel(void);
+   cChannel(const cChannel &Channel);
+@@ -199,7 +202,8 @@
+   int Guard(void) const { return guard; }
+   int Hierarchy(void) const { return hierarchy; }
+   const cLinkChannels* LinkChannels(void) const { return linkChannels; }
+-  const cChannel *RefChannel(void) const { return refChannel; }
++  const cChannel *RefChannel(void) const { return refChannels ? refChannels->Last()->Channel() : 0; }
++  const cLinkChannels* RefChannels(void) const { return refChannels; }
+   bool IsCable(void) const { return cSource::IsCable(source); }
+   bool IsSat(void) const { return cSource::IsSat(source); }
+   bool IsTerr(void) const { return cSource::IsTerr(source); }
+@@ -217,17 +221,52 @@
+   void SetCaIds(const int *CaIds); // list must be zero-terminated
+   void SetCaDescriptors(int Level);
+   void SetLinkChannels(cLinkChannels *LinkChannels);
+-  void SetRefChannel(cChannel *RefChannel);
+   bool Filtered(void);
+   };
+ 
++class cIteratorImpl {
++private:
++  int refCount;
++  cIteratorImpl(const cIteratorImpl &);
++  const cIteratorImpl &operator =(const cIteratorImpl &);
++public:
++  cIteratorImpl(void) { refCount = 0; }
++  virtual ~cIteratorImpl() {}
++  virtual int AddRef(void) { return ++refCount; }
++  virtual int DelRef(void) { int RefCount = --refCount; if (RefCount <= 0) delete this; return RefCount; }
++  virtual void *First(void) = 0;
++  virtual void *Last(void)  = 0;
++  virtual void *Prev(void)  = 0;
++  virtual void *Next(void)  = 0;
++  virtual void *Current(void) const = 0;
++  };
++
++template <class T> class cIterator
++{
++private:
++  cIteratorImpl *impl;
++public:
++  cIterator(cIteratorImpl *Impl) { impl = Impl; impl->AddRef(); }
++  cIterator(const cIterator &rhs) { impl = rhs.impl; impl->AddRef(); }
++  ~cIterator() { impl->DelRef(); }
++  const cIterator &operator =(const cIterator &rhs) { rhs.impl->AddRef(); impl->DelRef(); impl = rhs.impl; return *this; }
++  T *First(void) const   { return (T *)impl->First(); }
++  T *Last(void) const    { return (T *)impl->Last(); }
++  T *Prev(void) const    { return (T *)impl->Prev(); }
++  T *Next(void) const    { return (T *)impl->Next(); }
++  T *Current(void) const { return (T *)impl->Current(); }
++  };
++
+ class cChannels : public cRwLock, public cConfig<cChannel> {
+ private:
+   int maxNumber;
+   int modified;
+   int beingEdited;
+   cHash<cChannel> channelsHashSid;
++  cHash<cChannel> channelsHashNidTid;
+   void DeleteDuplicateChannels(void);
++  void ClearChannelHashes(void);
++  static unsigned int HashKeyNidTid(unsigned short Nid, unsigned short Tid);
+ public:
+   cChannels(void);
+   bool Load(const char *FileName, bool AllowComments = false, bool MustExist = false);
+@@ -241,6 +280,7 @@
+   cChannel *GetByNumber(int Number, int SkipGap = 0);
+   cChannel *GetByServiceID(int Source, int Transponder, unsigned short ServiceID);
+   cChannel *GetByChannelID(tChannelID ChannelID, bool TryWithoutRid = false, bool TryWithoutPolarization = false);
++  cIterator<cChannel> GetChannelsBySourceNidTid(int Source, unsigned short Nid, unsigned short Tid);
+   int BeingEdited(void) { return beingEdited; }
+   void IncBeingEdited(void) { beingEdited++; }
+   void DecBeingEdited(void) { beingEdited--; }
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/config.c	2009-06-20 11:27:13.000000000 +0200
+@@ -139,7 +139,7 @@
+ 
+ bool cSVDRPhost::Accepts(in_addr_t Address)
+ {
+-  return (Address & mask) == addr.s_addr;
++  return (Address & mask) == (addr.s_addr & mask);
+ }
+ 
+ // -- cCommands --------------------------------------------------------------
+@@ -284,6 +284,7 @@
+ //M7X0 END AK
+   SVDRPTimeout = 300;
+   ZapTimeout = 3;
++  ChannelEntryTimeout = 1000;
+   PrimaryLimit = 0;
+   DefaultPriority = 50;
+   DefaultLifetime = 99;
+@@ -480,6 +481,7 @@
+ //M7X0 END AK
+   else if (!strcasecmp(Name, "SVDRPTimeout"))        SVDRPTimeout       = atoi(Value);
+   else if (!strcasecmp(Name, "ZapTimeout"))          ZapTimeout         = atoi(Value);
++  else if (!strcasecmp(Name, "ChannelEntryTimeout")) ChannelEntryTimeout= atoi(Value);
+   else if (!strcasecmp(Name, "PrimaryLimit"))        PrimaryLimit       = atoi(Value);
+   else if (!strcasecmp(Name, "DefaultPriority"))     DefaultPriority    = atoi(Value);
+   else if (!strcasecmp(Name, "DefaultLifetime"))     DefaultLifetime    = atoi(Value);
+@@ -583,6 +585,7 @@
+ //M7X0 END AK
+   Store("SVDRPTimeout",       SVDRPTimeout);
+   Store("ZapTimeout",         ZapTimeout);
++  Store("ChannelEntryTimeout",ChannelEntryTimeout);
+   Store("PrimaryLimit",       PrimaryLimit);
+   Store("DefaultPriority",    DefaultPriority);
+   Store("DefaultLifetime",    DefaultLifetime);
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/config.h	2009-06-20 11:27:13.000000000 +0200
+@@ -253,6 +253,7 @@
+ //M7X0 END AK
+   int SVDRPTimeout;
+   int ZapTimeout;
++  int ChannelEntryTimeout;
+   int PrimaryLimit;
+   int DefaultPriority, DefaultLifetime;
+   int PausePriority, PauseLifetime;
+diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
+--- VDR-NG-orig/device.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/device.c	2009-06-20 11:27:13.000000000 +0200
+@@ -330,6 +330,7 @@
+      primaryDevice->MakePrimaryDevice(true);
+      primaryDevice->SetTvMode(Setup.TvMode);
+      primaryDevice->SetVideoFormat(eVideoFormat(Setup.VideoFormat));
++     primaryDevice->SetVolumeDevice(Setup.CurrentVolume);
+      return true;
+      }
+   esyslog("ERROR: invalid primary device number: %d", n + 1);
+@@ -1183,7 +1184,7 @@
+ 
+ bool cDevice::SetCurrentAudioTrack(eTrackType Type)
+ {
+-  if (ttNone < Type && Type < ttDolbyLast) {
++  if (ttNone < Type && Type <= ttDolbyLast) {
+      cMutexLock MutexLock(&mutexCurrentAudioTrack);
+      if (IS_DOLBY_TRACK(Type))
+         SetDigitalAudioDevice(true);
+diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
+--- VDR-NG-orig/eit.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/eit.c	2009-06-20 11:27:13.000000000 +0200
+@@ -312,9 +312,9 @@
+   if (diff > 5) {
+      mutex.Lock();
+      if (abs(diff - lastDiff) < 3) {
+-        isyslog("System Time = %s (%ld)", *TimeToString(loctim), loctim);
+-        isyslog("Local Time  = %s (%ld)", *TimeToString(sattim), sattim);
+-        if (stime(&sattim) < 0){
++        if (stime(&sattim) == 0)
++           isyslog("system time changed from %s (%ld) to %s (%ld)", *TimeToString(loctim), loctim, *TimeToString(sattim), sattim);
++        else {
+ 				char __errorstr[256];
+ 				strerror_r(errno,__errorstr,256);
+ 				__errorstr[255]=0;
+diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
+--- VDR-NG-orig/epg.c	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/epg.c	2009-06-20 11:26:14.000000000 +0200
+@@ -1101,6 +1101,7 @@
+   if (!p) {
+      p = new cSchedule(ChannelID);
+      Add(p);
++     HashSchedule(p);
+      cChannel *channel = Channels.GetByChannelID(ChannelID);
+      if (channel)
+         channel->schedule = p;
+@@ -1111,10 +1112,14 @@
+ const cSchedule *cSchedules::GetSchedule(tChannelID ChannelID) const
+ {
+   ChannelID.ClrRid();
+-  for (cSchedule *p = First(); p; p = Next(p)) {
+-      if (p->ChannelID() == ChannelID)
+-         return p;
+-      }
++  cList<cHashObject> *list = schedulesHash.GetList(HashKey(ChannelID));
++  if (list) {
++     for (cHashObject *hobj = list->First(); hobj; hobj = list->Next(hobj)) {
++         cSchedule *p = (cSchedule *)hobj->Object();
++         if (p->ChannelID() == ChannelID)
++            return p;
++         }
++     }
+   return NULL;
+ }
+ 
+@@ -1130,11 +1135,27 @@
+   if (Channel->schedule == &DummySchedule && AddIfMissing) {
+      cSchedule *Schedule = new cSchedule(Channel->GetChannelID());
+      ((cSchedules *)this)->Add(Schedule);
++     ((cSchedules *)this)->HashSchedule(Schedule);
+      Channel->schedule = Schedule;
+      }
+   return Channel->schedule != &DummySchedule? Channel->schedule : NULL;
+ }
+ 
++void cSchedules::HashSchedule(cSchedule *Schedule)
++{
++  schedulesHash.Add(Schedule, HashKey(Schedule->ChannelID().ClrRid()));
++}
++
++void cSchedules::UnhashSchedule(cSchedule *Schedule)
++{
++  schedulesHash.Del(Schedule, HashKey(Schedule->ChannelID().ClrRid()));
++}
++
++unsigned int cSchedules::HashKey(tChannelID ChannelID)
++{
++  return (unsigned int)((ChannelID.Nid() << 16 | ChannelID.Source()) ^ (ChannelID.Tid() << 16 | ChannelID.Sid()) ^ ChannelID.Rid());
++}
++
+ // --- cSchedulesReaderThread ------------------------------------------------------------
+ cSchedulesReaderThread cSchedulesReaderThread::readerThread;
+ 
+diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
+--- VDR-NG-orig/epg.h	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/epg.h	2009-06-20 11:26:14.000000000 +0200
+@@ -172,11 +172,15 @@
+   friend class cSchedulesLock;
+ private:
+   cRwLock rwlock;
++  cHash<cSchedule> schedulesHash;
+   static cSchedules schedules;
+   static const char *epgDataFileName;
+   static time_t lastCleanup;
+   static time_t lastDump;
+   static time_t modified;
++  void HashSchedule(cSchedule *Schedule);
++  void UnhashSchedule(cSchedule *Schedule);
++  static unsigned int HashKey(tChannelID ChannelID);
+ public:
+   static void SetEpgDataFileName(const char *FileName);
+   static const cSchedules *Schedules(cSchedulesLock &SchedulesLock);
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/i18n.c	2009-06-20 11:27:13.000000000 +0200
+@@ -5180,6 +5180,28 @@
+     "Zap timeout (s)",
+     "Èasový limit Zap (s)",
+   },
++  { "Setup.Miscellaneous$Channel entry timeout (ms)",
++    "Zeitlimit für Kanaleingabe (ms)",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Tiempo introducción canal (ms)",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Setup.Miscellaneous$Initial channel",
+     "Kanal beim Einschalten",
+     "Privzeti kanal",
+diff -Naur VDR-NG-orig/INSTALL VDR-NG/INSTALL
+--- VDR-NG-orig/INSTALL	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/INSTALL	2009-06-20 11:27:13.000000000 +0200
+@@ -67,13 +67,8 @@
+ the defaults of which can be set via the RCU_DEVICE and LIRC_DEVICE macros,
+ respectively.
+ 
+-If your video directory will be on a VFAT partition, add the compile
+-time switch
+-
+-  VFAT=1
+-
+-to the 'make' command. Alternatively, you can call VDR with the command
+-line option '--vfat'.
++If your video directory will be on a VFAT partition, you can call VDR with
++the command line option '--vfat'.
+ 
+ When running, the 'vdr' program writes status information into the
+ system log file (/var/log/messages). You may want to watch these
+diff -Naur VDR-NG-orig/libsi/si.c VDR-NG/libsi/si.c
+--- VDR-NG-orig/libsi/si.c	2009-06-10 22:02:18.000000000 +0200
++++ VDR-NG/libsi/si.c	2009-06-20 11:27:13.000000000 +0200
+@@ -280,7 +280,6 @@
+       if (    ((' ' <= *from) && (*from <= '~'))
+            || (*from == '\n')
+            || (0xA0 <= *from)
+-           || (*from == 0x86 || *from == 0x87)
+          )
+          *to++ = *from;
+       else if (*from == 0x8A)
+diff -Naur VDR-NG-orig/libsi/si.h VDR-NG/libsi/si.h
+--- VDR-NG-orig/libsi/si.h	2009-06-10 22:02:18.000000000 +0200
++++ VDR-NG/libsi/si.h	2009-06-20 11:27:13.000000000 +0200
+@@ -28,7 +28,7 @@
+                TableIdNIT_other  = 0x41, //network information section, other network
+                TableIdSDT = 0x42, //service description section
+                TableIdSDT_other  = 0x46,
+-               TableIdBAT = 0x46, //bouquet association section
++               TableIdBAT = 0x4A, //bouquet association section
+                TableIdEIT_presentFollowing = 0x4E, //event information section
+                TableIdEIT_presentFollowing_other = 0x4F,
+                //range from 0x50 to 0x5F
+diff -Naur VDR-NG-orig/libsi/util.c VDR-NG/libsi/util.c
+--- VDR-NG-orig/libsi/util.c	2009-06-10 22:02:18.000000000 +0200
++++ VDR-NG/libsi/util.c	2009-06-20 11:26:14.000000000 +0200
+@@ -215,58 +215,73 @@
+ 
+ //taken and adapted from libdtv, (c) Rolf Hakenes
+ // CRC32 lookup table for polynomial 0x04c11db7
++// swapped bytes to avoid one shift operation in CRC loop (c) Reinhard Nissl
+ u_int32_t CRC32::crc_table[256] = {
+-   0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9, 0x130476dc, 0x17c56b6b,
+-   0x1a864db2, 0x1e475005, 0x2608edb8, 0x22c9f00f, 0x2f8ad6d6, 0x2b4bcb61,
+-   0x350c9b64, 0x31cd86d3, 0x3c8ea00a, 0x384fbdbd, 0x4c11db70, 0x48d0c6c7,
+-   0x4593e01e, 0x4152fda9, 0x5f15adac, 0x5bd4b01b, 0x569796c2, 0x52568b75,
+-   0x6a1936c8, 0x6ed82b7f, 0x639b0da6, 0x675a1011, 0x791d4014, 0x7ddc5da3,
+-   0x709f7b7a, 0x745e66cd, 0x9823b6e0, 0x9ce2ab57, 0x91a18d8e, 0x95609039,
+-   0x8b27c03c, 0x8fe6dd8b, 0x82a5fb52, 0x8664e6e5, 0xbe2b5b58, 0xbaea46ef,
+-   0xb7a96036, 0xb3687d81, 0xad2f2d84, 0xa9ee3033, 0xa4ad16ea, 0xa06c0b5d,
+-   0xd4326d90, 0xd0f37027, 0xddb056fe, 0xd9714b49, 0xc7361b4c, 0xc3f706fb,
+-   0xceb42022, 0xca753d95, 0xf23a8028, 0xf6fb9d9f, 0xfbb8bb46, 0xff79a6f1,
+-   0xe13ef6f4, 0xe5ffeb43, 0xe8bccd9a, 0xec7dd02d, 0x34867077, 0x30476dc0,
+-   0x3d044b19, 0x39c556ae, 0x278206ab, 0x23431b1c, 0x2e003dc5, 0x2ac12072,
+-   0x128e9dcf, 0x164f8078, 0x1b0ca6a1, 0x1fcdbb16, 0x018aeb13, 0x054bf6a4,
+-   0x0808d07d, 0x0cc9cdca, 0x7897ab07, 0x7c56b6b0, 0x71159069, 0x75d48dde,
+-   0x6b93dddb, 0x6f52c06c, 0x6211e6b5, 0x66d0fb02, 0x5e9f46bf, 0x5a5e5b08,
+-   0x571d7dd1, 0x53dc6066, 0x4d9b3063, 0x495a2dd4, 0x44190b0d, 0x40d816ba,
+-   0xaca5c697, 0xa864db20, 0xa527fdf9, 0xa1e6e04e, 0xbfa1b04b, 0xbb60adfc,
+-   0xb6238b25, 0xb2e29692, 0x8aad2b2f, 0x8e6c3698, 0x832f1041, 0x87ee0df6,
+-   0x99a95df3, 0x9d684044, 0x902b669d, 0x94ea7b2a, 0xe0b41de7, 0xe4750050,
+-   0xe9362689, 0xedf73b3e, 0xf3b06b3b, 0xf771768c, 0xfa325055, 0xfef34de2,
+-   0xc6bcf05f, 0xc27dede8, 0xcf3ecb31, 0xcbffd686, 0xd5b88683, 0xd1799b34,
+-   0xdc3abded, 0xd8fba05a, 0x690ce0ee, 0x6dcdfd59, 0x608edb80, 0x644fc637,
+-   0x7a089632, 0x7ec98b85, 0x738aad5c, 0x774bb0eb, 0x4f040d56, 0x4bc510e1,
+-   0x46863638, 0x42472b8f, 0x5c007b8a, 0x58c1663d, 0x558240e4, 0x51435d53,
+-   0x251d3b9e, 0x21dc2629, 0x2c9f00f0, 0x285e1d47, 0x36194d42, 0x32d850f5,
+-   0x3f9b762c, 0x3b5a6b9b, 0x0315d626, 0x07d4cb91, 0x0a97ed48, 0x0e56f0ff,
+-   0x1011a0fa, 0x14d0bd4d, 0x19939b94, 0x1d528623, 0xf12f560e, 0xf5ee4bb9,
+-   0xf8ad6d60, 0xfc6c70d7, 0xe22b20d2, 0xe6ea3d65, 0xeba91bbc, 0xef68060b,
+-   0xd727bbb6, 0xd3e6a601, 0xdea580d8, 0xda649d6f, 0xc423cd6a, 0xc0e2d0dd,
+-   0xcda1f604, 0xc960ebb3, 0xbd3e8d7e, 0xb9ff90c9, 0xb4bcb610, 0xb07daba7,
+-   0xae3afba2, 0xaafbe615, 0xa7b8c0cc, 0xa379dd7b, 0x9b3660c6, 0x9ff77d71,
+-   0x92b45ba8, 0x9675461f, 0x8832161a, 0x8cf30bad, 0x81b02d74, 0x857130c3,
+-   0x5d8a9099, 0x594b8d2e, 0x5408abf7, 0x50c9b640, 0x4e8ee645, 0x4a4ffbf2,
+-   0x470cdd2b, 0x43cdc09c, 0x7b827d21, 0x7f436096, 0x7200464f, 0x76c15bf8,
+-   0x68860bfd, 0x6c47164a, 0x61043093, 0x65c52d24, 0x119b4be9, 0x155a565e,
+-   0x18197087, 0x1cd86d30, 0x029f3d35, 0x065e2082, 0x0b1d065b, 0x0fdc1bec,
+-   0x3793a651, 0x3352bbe6, 0x3e119d3f, 0x3ad08088, 0x2497d08d, 0x2056cd3a,
+-   0x2d15ebe3, 0x29d4f654, 0xc5a92679, 0xc1683bce, 0xcc2b1d17, 0xc8ea00a0,
+-   0xd6ad50a5, 0xd26c4d12, 0xdf2f6bcb, 0xdbee767c, 0xe3a1cbc1, 0xe760d676,
+-   0xea23f0af, 0xeee2ed18, 0xf0a5bd1d, 0xf464a0aa, 0xf9278673, 0xfde69bc4,
+-   0x89b8fd09, 0x8d79e0be, 0x803ac667, 0x84fbdbd0, 0x9abc8bd5, 0x9e7d9662,
+-   0x933eb0bb, 0x97ffad0c, 0xafb010b1, 0xab710d06, 0xa6322bdf, 0xa2f33668,
+-   0xbcb4666d, 0xb8757bda, 0xb5365d03, 0xb1f740b4};
++   0x00000000, 0xb71dc104, 0x6e3b8209, 0xd926430d, 0xdc760413, 0x6b6bc517,
++   0xb24d861a, 0x0550471e, 0xb8ed0826, 0x0ff0c922, 0xd6d68a2f, 0x61cb4b2b,
++   0x649b0c35, 0xd386cd31, 0x0aa08e3c, 0xbdbd4f38, 0x70db114c, 0xc7c6d048,
++   0x1ee09345, 0xa9fd5241, 0xacad155f, 0x1bb0d45b, 0xc2969756, 0x758b5652,
++   0xc836196a, 0x7f2bd86e, 0xa60d9b63, 0x11105a67, 0x14401d79, 0xa35ddc7d,
++   0x7a7b9f70, 0xcd665e74, 0xe0b62398, 0x57abe29c, 0x8e8da191, 0x39906095,
++   0x3cc0278b, 0x8bdde68f, 0x52fba582, 0xe5e66486, 0x585b2bbe, 0xef46eaba,
++   0x3660a9b7, 0x817d68b3, 0x842d2fad, 0x3330eea9, 0xea16ada4, 0x5d0b6ca0,
++   0x906d32d4, 0x2770f3d0, 0xfe56b0dd, 0x494b71d9, 0x4c1b36c7, 0xfb06f7c3,
++   0x2220b4ce, 0x953d75ca, 0x28803af2, 0x9f9dfbf6, 0x46bbb8fb, 0xf1a679ff,
++   0xf4f63ee1, 0x43ebffe5, 0x9acdbce8, 0x2dd07dec, 0x77708634, 0xc06d4730,
++   0x194b043d, 0xae56c539, 0xab068227, 0x1c1b4323, 0xc53d002e, 0x7220c12a,
++   0xcf9d8e12, 0x78804f16, 0xa1a60c1b, 0x16bbcd1f, 0x13eb8a01, 0xa4f64b05,
++   0x7dd00808, 0xcacdc90c, 0x07ab9778, 0xb0b6567c, 0x69901571, 0xde8dd475,
++   0xdbdd936b, 0x6cc0526f, 0xb5e61162, 0x02fbd066, 0xbf469f5e, 0x085b5e5a,
++   0xd17d1d57, 0x6660dc53, 0x63309b4d, 0xd42d5a49, 0x0d0b1944, 0xba16d840,
++   0x97c6a5ac, 0x20db64a8, 0xf9fd27a5, 0x4ee0e6a1, 0x4bb0a1bf, 0xfcad60bb,
++   0x258b23b6, 0x9296e2b2, 0x2f2bad8a, 0x98366c8e, 0x41102f83, 0xf60dee87,
++   0xf35da999, 0x4440689d, 0x9d662b90, 0x2a7bea94, 0xe71db4e0, 0x500075e4,
++   0x892636e9, 0x3e3bf7ed, 0x3b6bb0f3, 0x8c7671f7, 0x555032fa, 0xe24df3fe,
++   0x5ff0bcc6, 0xe8ed7dc2, 0x31cb3ecf, 0x86d6ffcb, 0x8386b8d5, 0x349b79d1,
++   0xedbd3adc, 0x5aa0fbd8, 0xeee00c69, 0x59fdcd6d, 0x80db8e60, 0x37c64f64,
++   0x3296087a, 0x858bc97e, 0x5cad8a73, 0xebb04b77, 0x560d044f, 0xe110c54b,
++   0x38368646, 0x8f2b4742, 0x8a7b005c, 0x3d66c158, 0xe4408255, 0x535d4351,
++   0x9e3b1d25, 0x2926dc21, 0xf0009f2c, 0x471d5e28, 0x424d1936, 0xf550d832,
++   0x2c769b3f, 0x9b6b5a3b, 0x26d61503, 0x91cbd407, 0x48ed970a, 0xfff0560e,
++   0xfaa01110, 0x4dbdd014, 0x949b9319, 0x2386521d, 0x0e562ff1, 0xb94beef5,
++   0x606dadf8, 0xd7706cfc, 0xd2202be2, 0x653deae6, 0xbc1ba9eb, 0x0b0668ef,
++   0xb6bb27d7, 0x01a6e6d3, 0xd880a5de, 0x6f9d64da, 0x6acd23c4, 0xddd0e2c0,
++   0x04f6a1cd, 0xb3eb60c9, 0x7e8d3ebd, 0xc990ffb9, 0x10b6bcb4, 0xa7ab7db0,
++   0xa2fb3aae, 0x15e6fbaa, 0xccc0b8a7, 0x7bdd79a3, 0xc660369b, 0x717df79f,
++   0xa85bb492, 0x1f467596, 0x1a163288, 0xad0bf38c, 0x742db081, 0xc3307185,
++   0x99908a5d, 0x2e8d4b59, 0xf7ab0854, 0x40b6c950, 0x45e68e4e, 0xf2fb4f4a,
++   0x2bdd0c47, 0x9cc0cd43, 0x217d827b, 0x9660437f, 0x4f460072, 0xf85bc176,
++   0xfd0b8668, 0x4a16476c, 0x93300461, 0x242dc565, 0xe94b9b11, 0x5e565a15,
++   0x87701918, 0x306dd81c, 0x353d9f02, 0x82205e06, 0x5b061d0b, 0xec1bdc0f,
++   0x51a69337, 0xe6bb5233, 0x3f9d113e, 0x8880d03a, 0x8dd09724, 0x3acd5620,
++   0xe3eb152d, 0x54f6d429, 0x7926a9c5, 0xce3b68c1, 0x171d2bcc, 0xa000eac8,
++   0xa550add6, 0x124d6cd2, 0xcb6b2fdf, 0x7c76eedb, 0xc1cba1e3, 0x76d660e7,
++   0xaff023ea, 0x18ede2ee, 0x1dbda5f0, 0xaaa064f4, 0x738627f9, 0xc49be6fd,
++   0x09fdb889, 0xbee0798d, 0x67c63a80, 0xd0dbfb84, 0xd58bbc9a, 0x62967d9e,
++   0xbbb03e93, 0x0cadff97, 0xb110b0af, 0x060d71ab, 0xdf2b32a6, 0x6836f3a2,
++   0x6d66b4bc, 0xda7b75b8, 0x035d36b5, 0xb440f7b1};
++
++inline void swap_bytes(u_int32_t &crc)
++{
++  unsigned char a = crc >> 24;
++  unsigned char b = crc >> 16;
++  unsigned char c = crc >> 8;
++  unsigned char d = crc;
++
++  crc = ((d << 8 | c) << 8 | b) << 8 | a;
++}
+ 
+ u_int32_t CRC32::crc32 (const char *d, int len, u_int32_t crc)
+ {
+    register int i;
+    const unsigned char *u=(unsigned char*)d; // Saves '& 0xff'
+ 
++   swap_bytes(crc);
++
+    for (i=0; i<len; i++)
+-      crc = (crc << 8) ^ crc_table[((crc >> 24) ^ *u++)];
++      crc = (crc >> 8) ^ crc_table[(unsigned char)crc ^ *u++];
++
++   swap_bytes(crc);
+ 
+    return crc;
+ }
+diff -Naur VDR-NG-orig/lirc.c VDR-NG/lirc.c
+--- VDR-NG-orig/lirc.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/lirc.c	2009-06-20 11:26:14.000000000 +0200
+@@ -71,42 +71,28 @@
+   char buf[LIRC_BUFFER_SIZE];
+   char LastKeyName[LIRC_KEY_BUF] = "";
+   bool repeat = false;
+-//M7X0 BEGIN AK
+-// This should fix broken shutdown
++  int ret, ch;
+   int timeout = DEFAULTTIMEOUT;
+-  int i,ret=0;
+-  char *end=NULL;
+-//M7X0 END AK
+ 
+   while (Running() && f >= 0) {
+-        int endcount = end ? end - buf + 1 : ret;
+-        if (endcount < ret) {
+-           memcpy (buf,buf + endcount, ret - endcount);
+-           ret -= endcount;
+-           end = NULL;
+-           }
+-        else if (ret < 0 || endcount == ret || ret >= LIRC_BUFFER_SIZE) {
+-           ret = 0;
+-           end = NULL;
+-           }
+         bool ready = cFile::FileReady(f, timeout);
+-//M7X0 BEGIN AK
++        ret = -1;
+         if (ready) {
+-           //ret = 0;
+-           do {
+-              i = safe_read(f, buf + ret, LIRC_BUFFER_SIZE - ret);
+-              if (i < 0) {
+-                 ret = i;
+-                 break;
+-                 }
+-              ret += i;
+-              } while ((!ret || !(end = (char *)memchr(buf,'\n',ret))) && ret < LIRC_BUFFER_SIZE);
+-           buf[ret<0 ? 0 : (ret<LIRC_BUFFER_SIZE?ret:LIRC_BUFFER_SIZE-1)]=0;
+-          // dsyslog("LIRC Buffer '%s' read with %d Bytes",buf,ret);
++           // read one line of the line oriented lirc protocol
++           for (ret = 0; ret < (int)sizeof(buf); ret++) {
++               ch = readchar(f);
++               if (ch < 0) {
++                  ret = -1;
++                  break;
++                  }
++               if (ch == '\n') {
++                  buf[ret++] = '\0';
++                  break;
++                  }
++               buf[ret] = ch;
++               }
+            }
+-        //else
+-        //   ret = -1;
+-//M7X0 END AK
++
+         if (ready && ret <= 0 ) {
+            esyslog("ERROR: lircd connection broken, trying to reconnect every %.1f seconds", float(RECONNECTDELAY) / 1000);
+            close(f);
+diff -Naur VDR-NG-orig/Make.config VDR-NG/Make.config
+--- VDR-NG-orig/Make.config	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/Make.config	2009-06-20 11:27:13.000000000 +0200
+@@ -28,7 +28,6 @@
+ 
+ REMOTE=LIRC
+ NO_KBD=1
+-VFAT=1
+ DEFINES+= -D_REENTRANT -D_GNU_SOURCE -DUSE_TUNER_AUTOVALUES
+ # TESTING 
+ # DEFINES += -DUSE_HW_VIDEO_FRAME_EVENTS # Use Hardware Frame Events
+diff -Naur VDR-NG-orig/Makefile VDR-NG/Makefile
+--- VDR-NG-orig/Makefile	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/Makefile	2009-06-20 11:27:13.000000000 +0200
+@@ -92,11 +92,6 @@
+ VDRVERSION = $(shell sed -ne '/define VDRVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
+ APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
+ 
+-ifdef VFAT
+-# for people who want their video directory on a VFAT partition
+-DEFINES += -DVFAT
+-endif
+-
+ all: vdr
+ font: genfontfile\
+       fontfix-iso8859-1.c fontosd-iso8859-1.c fontsml-iso8859-1.c\
+diff -Naur VDR-NG-orig/MANUAL VDR-NG/MANUAL
+--- VDR-NG-orig/MANUAL	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/MANUAL	2009-06-20 11:27:13.000000000 +0200
+@@ -787,6 +787,15 @@
+   Zap Timeout = 3        The time (in seconds) until a channel counts as "previous"
+                          for switching with '0'
+ 
++  Channel entry timeout = 1000
++                         The time (in milliseconds) after the last keypress until
++                         a numerically entered channel number is considered
++                         complete, and the channel is switched. Default is 1000,
++                         a value of 0 turns this off, so a numerically entered
++                         channel number then needs to be confirmed with the "Ok"
++                         key. Note that the total maximum is also limited by
++                         the "OSD/Channel info time" parameter.
++
+   Initial channel = 0    The number of the channel that shall be tuned to when
+                          VDR starts. Default is 0, which means that it will
+                          tune to the channel that was on before VDR was stopped.
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/menu.c	2009-06-20 11:27:13.000000000 +0200
+@@ -566,6 +566,7 @@
+         Channels.Del(channel);
+         cOsdMenu::Del(Index);
+         Propagate();
++        Channels.SetModified(true);
+         isyslog("channel %d deleted", DeletedChannel);
+         if (CurrentChannel && CurrentChannel->Number() != CurrentChannelNr) {
+            if (!cDevice::PrimaryDevice()->Replaying() || cDevice::PrimaryDevice()->Transferring())
+@@ -590,6 +591,7 @@
+      Channels.Move(FromChannel, ToChannel);
+      cOsdMenu::Move(From, To);
+      Propagate();
++     Channels.SetModified(true);
+      isyslog("channel %d moved to %d", FromNumber, ToNumber);
+      if (CurrentChannel && CurrentChannel->Number() != CurrentChannelNr) {
+         if (!cDevice::PrimaryDevice()->Replaying() || cDevice::PrimaryDevice()->Transferring())
+@@ -692,7 +694,7 @@
+     case kRight|k_Repeat:
+     case kRight:
+                   DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
+-                  cStatus::MsgOsdTextItem(NULL, NORMALKEY(Key) == kUp);
++                  cStatus::MsgOsdTextItem(NULL, NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft);
+                   return osContinue;
+     default: break;
+     }
+@@ -1259,7 +1261,7 @@
+     case kRight|k_Repeat:
+     case kRight:
+                   DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
+-                  cStatus::MsgOsdTextItem(NULL, NORMALKEY(Key) == kUp);
++                  cStatus::MsgOsdTextItem(NULL, NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft);
+                   return osContinue;
+     default: break;
+     }
+@@ -2075,7 +2077,7 @@
+     case kRight|k_Repeat:
+     case kRight:
+                   DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
+-                  cStatus::MsgOsdTextItem(NULL, NORMALKEY(Key) == kUp);
++                  cStatus::MsgOsdTextItem(NULL, NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft);
+                   return osContinue;
+     default: break;
+     }
+@@ -3280,6 +3282,7 @@
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. user inactivity (min)"), &data.MinUserInactivity));
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$SVDRP timeout (s)"),          &data.SVDRPTimeout));
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Zap timeout (s)"),            &data.ZapTimeout));
++  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Channel entry timeout (ms)"), &data.ChannelEntryTimeout, 0));
+   Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
+   Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
+@@ -3906,8 +3909,6 @@
+ 
+ // --- cDisplayChannel -------------------------------------------------------
+ 
+-#define DIRECTCHANNELTIMEOUT 1000 //ms
+-
+ cDisplayChannel *cDisplayChannel::currentDisplayChannel = NULL;
+ 
+ cDisplayChannel::cDisplayChannel(int Number, bool Switched)
+@@ -4143,7 +4144,7 @@
+          Refresh();
+          break;
+     case kNone:
+-         if (number && lastTime.Elapsed() > DIRECTCHANNELTIMEOUT) {
++         if (number && Setup.ChannelEntryTimeout && int(lastTime.Elapsed()) > Setup.ChannelEntryTimeout) {
+             channel = Channels.GetByNumber(number);
+             if (channel)
+                NewChannel = channel;
+@@ -4386,7 +4387,7 @@
+          timeout.Set(TRACKTIMEOUT);
+          break;
+     case kOk:
+-         if (track != cDevice::PrimaryDevice()->GetCurrentAudioTrack())
++         if (types[track] != cDevice::PrimaryDevice()->GetCurrentAudioTrack())
+             oldTrack = -1; // make sure we explicitly switch to that track
+          timeout.Set();
+          break;
+@@ -4528,8 +4529,11 @@
+ bool cRecordControl::Process(time_t t)
+ {
+ //M7X0 BEGIN AK
+-  if (!recorder || !recorder->Activated() || !timer || !timer->Matches(t))
++  if (!recorder || !recorder->Activated() || !timer || !timer->Matches(t)) {
++     if (timer)
++        timer->SetPending(false);
+      return false;
++     }
+   AssertFreeDiskSpace(timer->Priority());
+   return true;
+ //M7X0 END AK
+@@ -4974,7 +4978,8 @@
+          timeSearchActive = false;
+          break;
+     default:
+-         timeSearchActive = false;
++         if (!(Key & k_Flags)) // ignore repeat/release keys
++            timeSearchActive = false;
+          break;
+     }
+ 
+diff -Naur VDR-NG-orig/menuitems.c VDR-NG/menuitems.c
+--- VDR-NG-orig/menuitems.c	2009-06-20 11:21:34.000000000 +0200
++++ VDR-NG/menuitems.c	2009-06-20 11:27:13.000000000 +0200
+@@ -221,7 +221,8 @@
+ void cMenuEditChrItem::Set(void)
+ {
+   char buf[2];
+-  snprintf(buf, sizeof(buf), "%c", *value);
++  buf[0] = *value;
++  buf[1] = '\0';
+   SetValue(buf);
+ }
+ 
+@@ -412,9 +413,7 @@
+                  break;
+     case kBlue|k_Repeat:
+     case kBlue:  // consume the key only if in edit-mode
+-                 if (InEditMode())
+-                    ;
+-                 else
++                 if (!InEditMode())
+                     return osUnknown;
+                  break;
+     case kLeft|k_Repeat:
+@@ -422,9 +421,9 @@
+                     if (!insert || newchar)
+                        pos--;
+                     newchar = true;
++                    if (!insert && isalpha(value[pos]))
++                       uppercase = isupper(value[pos]);
+                     }
+-                 if (!insert && isalpha(value[pos]))
+-                    uppercase = isupper(value[pos]);
+                  break;
+     case kRight|k_Repeat:
+     case kRight: AdvancePos();
+diff -Naur VDR-NG-orig/nit.c VDR-NG/nit.c
+--- VDR-NG-orig/nit.c	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/nit.c	2009-06-20 11:26:14.000000000 +0200
+@@ -142,33 +142,33 @@
+                         }
+                     break;
+                     }
+-                 bool found = false;
+-                 for (cChannel *Channel = Channels.First(); Channel; Channel = Channels.Next(Channel)) {
+-                     if (!Channel->GroupSep() && Channel->Source() == Source && Channel->Nid() == ts.getOriginalNetworkId() && Channel->Tid() == ts.getTransportStreamId()) {
+-                        if (Setup.UpdateChannels >= 5) {
+-                           if (!ISTRANSPONDER(cChannel::Transponder(Frequency, Polarization), Channel->Transponder())) {
+-                              for (int n = 0; n < NumFrequencies; n++) {
+-                                  if (ISTRANSPONDER(cChannel::Transponder(Frequencies[n], Polarization), Channel->Transponder())) {
+-                                     Frequency = Frequencies[n];
+-                                     break;
+-                                     }
++                 if (Setup.UpdateChannels >= 5) {
++                    bool found = false;
++                    cIterator<cChannel> ChannelIterator = Channels.GetChannelsBySourceNidTid(Source, ts.getOriginalNetworkId(), ts.getTransportStreamId());
++                    for (cChannel *Channel = ChannelIterator.First(); Channel; Channel = ChannelIterator.Next()) {
++                        int transponder = Channel->Transponder();
++                        found = true;
++                        if (!ISTRANSPONDER(cChannel::Transponder(Frequency, Polarization), transponder)) {
++                           for (int n = 0; n < NumFrequencies; n++) {
++                               if (ISTRANSPONDER(cChannel::Transponder(Frequencies[n], Polarization), transponder)) {
++                                  Frequency = Frequencies[n];
++                                  break;
+                                   }
+-                              }
+-                           if (ISTRANSPONDER(cChannel::Transponder(Frequency, Polarization), Transponder())) // only modify channels if we're actually receiving this transponder
+-                              Channel->SetSatTransponderData(Source, Frequency, Polarization, SymbolRate, CodeRate);
++                               }
+                            }
+-                        found = true;
+-                        }
+-                     }
+-                 if (!found && Setup.UpdateChannels >= 5) {
+-                    for (int n = 0; n < NumFrequencies; n++) {
+-                        cChannel *Channel = new cChannel;
+-                        Channel->SetId(ts.getOriginalNetworkId(), ts.getTransportStreamId(), 0, 0);
+-                        if (Channel->SetSatTransponderData(Source, Frequencies[n], Polarization, SymbolRate, CodeRate))
+-                           EITScanner.AddTransponder(Channel);
+-                        else
+-                           delete Channel;
++                        if (ISTRANSPONDER(cChannel::Transponder(Frequency, Polarization), Transponder())) // only modify channels if we're actually receiving this transponder
++                           Channel->SetSatTransponderData(Source, Frequency, Polarization, SymbolRate, CodeRate);
+                         }
++                    if (!found) {
++                       for (int n = 0; n < NumFrequencies; n++) {
++                           cChannel *Channel = new cChannel;
++                           Channel->SetId(ts.getOriginalNetworkId(), ts.getTransportStreamId(), 0, 0);
++                           if (Channel->SetSatTransponderData(Source, Frequencies[n], Polarization, SymbolRate, CodeRate))
++                              EITScanner.AddTransponder(Channel);
++                           else
++                              delete Channel;
++                           }
++                       }
+                     }
+                  }
+                  break;
+@@ -192,33 +192,33 @@
+                         }
+                     break;
+                     }
+-                 bool found = false;
+-                 for (cChannel *Channel = Channels.First(); Channel; Channel = Channels.Next(Channel)) {
+-                     if (!Channel->GroupSep() && Channel->Source() == Source && Channel->Nid() == ts.getOriginalNetworkId() && Channel->Tid() == ts.getTransportStreamId()) {
+-                        if (Setup.UpdateChannels >= 5) {
+-                           if (!ISTRANSPONDER(Frequency / 1000, Channel->Transponder())) {
+-                              for (int n = 0; n < NumFrequencies; n++) {
+-                                  if (ISTRANSPONDER(Frequencies[n] / 1000, Channel->Transponder())) {
+-                                     Frequency = Frequencies[n];
+-                                     break;
+-                                     }
++                 if (Setup.UpdateChannels >= 5) {
++                    bool found = false;
++                    cIterator<cChannel> ChannelIterator = Channels.GetChannelsBySourceNidTid(Source, ts.getOriginalNetworkId(), ts.getTransportStreamId());
++                    for (cChannel *Channel = ChannelIterator.First(); Channel; Channel = ChannelIterator.Next()) {
++                        int transponder = Channel->Transponder();
++                        found = true;
++                        if (!ISTRANSPONDER(Frequency / 1000, transponder)) {
++                           for (int n = 0; n < NumFrequencies; n++) {
++                               if (ISTRANSPONDER(Frequencies[n] / 1000, transponder)) {
++                                  Frequency = Frequencies[n];
++                                  break;
+                                   }
+-                              }
+-                           if (ISTRANSPONDER(Frequency / 1000, Transponder())) // only modify channels if we're actually receiving this transponder
+-                              Channel->SetCableTransponderData(Source, Frequency, Modulation, SymbolRate, CodeRate);
++                               }
+                            }
+-                        found = true;
+-                        }
+-                     }
+-                 if (!found && Setup.UpdateChannels >= 5) {
+-                    for (int n = 0; n < NumFrequencies; n++) {
+-                        cChannel *Channel = new cChannel;
+-                        Channel->SetId(ts.getOriginalNetworkId(), ts.getTransportStreamId(), 0, 0);
+-                        if (Channel->SetCableTransponderData(Source, Frequencies[n], Modulation, SymbolRate, CodeRate))
+-                           EITScanner.AddTransponder(Channel);
+-                        else
+-                           delete Channel;
++                        if (ISTRANSPONDER(Frequency / 1000, Transponder())) // only modify channels if we're actually receiving this transponder
++                           Channel->SetCableTransponderData(Source, Frequency, Modulation, SymbolRate, CodeRate);
+                         }
++                    if (!found) {
++                        for (int n = 0; n < NumFrequencies; n++) {
++                           cChannel *Channel = new cChannel;
++                           Channel->SetId(ts.getOriginalNetworkId(), ts.getTransportStreamId(), 0, 0);
++                           if (Channel->SetCableTransponderData(Source, Frequencies[n], Modulation, SymbolRate, CodeRate))
++                              EITScanner.AddTransponder(Channel);
++                           else
++                              delete Channel;
++                           }
++                       }
+                     }
+                  }
+                  break;
+@@ -249,33 +249,33 @@
+                         }
+                     break;
+                     }
+-                 bool found = false;
+-                 for (cChannel *Channel = Channels.First(); Channel; Channel = Channels.Next(Channel)) {
+-                     if (!Channel->GroupSep() && Channel->Source() == Source && Channel->Nid() == ts.getOriginalNetworkId() && Channel->Tid() == ts.getTransportStreamId()) {
+-                        if (Setup.UpdateChannels >= 5) {
+-                           if (!ISTRANSPONDER(Frequency / 1000000, Channel->Transponder())) {
+-                              for (int n = 0; n < NumFrequencies; n++) {
+-                                  if (ISTRANSPONDER(Frequencies[n] / 1000000, Channel->Transponder())) {
+-                                     Frequency = Frequencies[n];
+-                                     break;
+-                                     }
++                 if (Setup.UpdateChannels >= 5) {
++                    bool found = false;
++                    cIterator<cChannel> ChannelIterator = Channels.GetChannelsBySourceNidTid(Source, ts.getOriginalNetworkId(), ts.getTransportStreamId());
++                    for (cChannel *Channel = ChannelIterator.First(); Channel; Channel = ChannelIterator.Next()) {
++                        int transponder = Channel->Transponder();
++                        found = true;
++                        if (!ISTRANSPONDER(Frequency / 1000000, transponder)) {
++                           for (int n = 0; n < NumFrequencies; n++) {
++                               if (ISTRANSPONDER(Frequencies[n] / 1000000, transponder)) {
++                                  Frequency = Frequencies[n];
++                                  break;
+                                   }
+-                              }
+-                           if (ISTRANSPONDER(Frequency / 1000000, Transponder())) // only modify channels if we're actually receiving this transponder
+-                              Channel->SetTerrTransponderData(Source, Frequency, Bandwidth, Constellation, Hierarchy, CodeRateHP, CodeRateLP, GuardInterval, TransmissionMode);
++                               }
+                            }
+-                        found = true;
+-                        }
+-                     }
+-                 if (!found && Setup.UpdateChannels >= 5) {
+-                    for (int n = 0; n < NumFrequencies; n++) {
+-                        cChannel *Channel = new cChannel;
+-                        Channel->SetId(ts.getOriginalNetworkId(), ts.getTransportStreamId(), 0, 0);
+-                        if (Channel->SetTerrTransponderData(Source, Frequencies[n], Bandwidth, Constellation, Hierarchy, CodeRateHP, CodeRateLP, GuardInterval, TransmissionMode))
+-                           EITScanner.AddTransponder(Channel);
+-                        else
+-                           delete Channel;
++                        if (ISTRANSPONDER(Frequency / 1000000, Transponder())) // only modify channels if we're actually receiving this transponder
++                           Channel->SetTerrTransponderData(Source, Frequency, Bandwidth, Constellation, Hierarchy, CodeRateHP, CodeRateLP, GuardInterval, TransmissionMode);
+                         }
++                    if (!found) {
++                       for (int n = 0; n < NumFrequencies; n++) {
++                           cChannel *Channel = new cChannel;
++                           Channel->SetId(ts.getOriginalNetworkId(), ts.getTransportStreamId(), 0, 0);
++                           if (Channel->SetTerrTransponderData(Source, Frequencies[n], Bandwidth, Constellation, Hierarchy, CodeRateHP, CodeRateLP, GuardInterval, TransmissionMode))
++                              EITScanner.AddTransponder(Channel);
++                           else
++                              delete Channel;
++                           }
++                       }
+                     }
+                  }
+                  break;
+diff -Naur VDR-NG-orig/osdbase.h VDR-NG/osdbase.h
+--- VDR-NG-orig/osdbase.h	2009-06-20 11:21:35.000000000 +0200
++++ VDR-NG/osdbase.h	2009-06-20 11:27:13.000000000 +0200
+@@ -58,11 +58,11 @@
+   cOsdItem(eOSState State = osUnknown);
+   cOsdItem(const char *Text, eOSState State = osUnknown, bool Selectable = true);
+   virtual ~cOsdItem();
+-  bool Selectable(void) { return selectable; }
++  bool Selectable(void) const { return selectable; }
+   void SetText(const char *Text, bool Copy = true);
+   void SetSelectable(bool Selectable);
+   void SetFresh(bool Fresh);
+-  const char *Text(void) { return text; }
++  const char *Text(void) const { return text; }
+   virtual void Set(void) {}
+   virtual eOSState ProcessKey(eKeys Key);
+   };
+@@ -77,7 +77,7 @@
+   cOsdObject(bool FastResponse = false) { isMenu = false; needsFastResponse = FastResponse; }
+   virtual ~cOsdObject() {}
+   bool NeedsFastResponse(void) { return needsFastResponse; }
+-  bool IsMenu(void) { return isMenu; }
++  bool IsMenu(void) const { return isMenu; }
+   virtual void Show(void);
+   virtual eOSState ProcessKey(eKeys Key) { return osUnknown; }
+   };
+@@ -123,7 +123,7 @@
+ public:
+   cOsdMenu(const char *Title, int c0 = 0, int c1 = 0, int c2 = 0, int c3 = 0, int c4 = 0);
+   virtual ~cOsdMenu();
+-  int Current(void) { return current; }
++  int Current(void) const { return current; }
+   void Add(cOsdItem *Item, bool Current = false, cOsdItem *After = NULL);
+   void Ins(cOsdItem *Item, bool Current = false, cOsdItem *Before = NULL);
+   virtual void Display(void);
+diff -Naur VDR-NG-orig/osd.c VDR-NG/osd.c
+--- VDR-NG-orig/osd.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/osd.c	2009-06-20 11:27:13.000000000 +0200
+@@ -302,6 +302,8 @@
+ 
+ bool cBitmap::SetXpm(const char *const Xpm[], bool IgnoreNone)
+ {
++  if (!Xpm)
++     return false;
+   const char *const *p = Xpm;
+   int w, h, n, c;
+   if (4 != sscanf(*p, "%d %d %d %d", &w, &h, &n, &c)) {
+diff -Naur VDR-NG-orig/player.c VDR-NG/player.c
+--- VDR-NG-orig/player.c	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/player.c	2009-06-20 11:27:13.000000000 +0200
+@@ -77,8 +77,9 @@
+ void cControl::Launch(cControl *Control)
+ {
+   cMutexLock MutexLock(&mutex);
+-  delete control;
++  cControl *c = control; // keeps control from pointing to uninitialized memory
+   control = Control;
++  delete c;
+ }
+ 
+ void cControl::Attach(void)
+diff -Naur VDR-NG-orig/receiver.c VDR-NG/receiver.c
+--- VDR-NG-orig/receiver.c	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/receiver.c	2009-06-20 11:27:13.000000000 +0200
+@@ -41,7 +41,12 @@
+ 
+ cReceiver::~cReceiver()
+ {
+-  Detach();
++  if (device) {
++     const char *msg = "ERROR: cReceiver has not been detached yet! This is a design fault and VDR will segfault now!";
++     esyslog(msg);
++     fprintf(stderr, "%s\n", msg);
++     *(char *)0 = 0; // cause a segfault
++     }
+ }
+ 
+ bool cReceiver::WantsPid(int Pid)
+diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
+--- VDR-NG-orig/recording.c	2009-06-20 11:21:35.000000000 +0200
++++ VDR-NG/recording.c	2009-06-20 11:44:10.000000000 +0200
+@@ -8,6 +8,7 @@
+  */
+ 
+ #include "recording.h"
++#include <ctype.h>
+ #include "iconpatch.h"
+ #include <dirent.h>
+ #include <errno.h>
+@@ -31,8 +32,8 @@
+ /* This was the original code, which works fine in a Linux only environment.
+    Unfortunately, because of Windows and its brain dead file system, we have
+    to use a more complicated approach, in order to allow users who have enabled
+-   the VFAT compile time option to see their recordings even if they forget to
+-   enable VFAT when compiling a new version of VDR... Gee, do I hate Windows.
++   the --vfat command line option to see their recordings even if they forget to
++   enable --vfat when restarting VDR... Gee, do I hate Windows.
+    (kls 2002-07-27)
+ #define DATAFORMAT   "%4d-%02d-%02d.%02d:%02d.%02d.%02d" RECEXT
+ #define NAMEFORMAT   "%s/%s/" DATAFORMAT
+@@ -83,6 +84,7 @@
+ 
+ void cRemoveDeletedRecordingsThread::Action(void)
+ {
++  SetPriority(19);
+   // Make sure only one instance of VDR does this:
+   cLockFile LockFile(VideoDirectory);
+   if (LockFile.Lock()) {
+@@ -422,34 +424,14 @@
+            // The VFAT file system can't handle all characters, so we
+            // have to take extra efforts to encode/decode them:
+            if (ToFileSystem) {
++              const char *InvalidChars = "\"\\/:*?|<>#";
+               switch (*p) {
+-                     // characters that can be used "as is":
+-                     case '!':
+-                     case '@':
+-                     case '$':
+-                     case '%':
+-                     case '&':
+-                     case '(':
+-                     case ')':
+-                     case '+':
+-                     case ',':
+-                     case '-':
+-                     case ';':
+-                     case '=':
+-                     case '0' ... '9':
+-                     case 'a' ... 'z':
+-                     case 'A' ... 'Z':
+-                     case 'ä': case 'Ä':
+-                     case 'ö': case 'Ö':
+-                     case 'ü': case 'Ü':
+-                     case 'ß':
+-                          break;
+                      // characters that can be mapped to other characters:
+                      case ' ': *p = '_'; break;
+                      case '~': *p = '/'; break;
+                      // characters that have to be encoded:
+                      default:
+-                       if (*p != '.' || !*(p + 1) || *(p + 1) == '~') { // Windows can't handle '.' at the end of directory names
++                       if (strchr(InvalidChars, *p) || *p == '.' && (!*(p + 1) || *(p + 1) == '~')) { // Windows can't handle '.' at the end of file/directory names
+                           int l = p - s;
+                           s = (char *)realloc(s, strlen(s) + 10);
+                           p = s + l;
+@@ -466,14 +448,16 @@
+                 // mapped characters:
+                 case '_': *p = ' '; break;
+                 case '/': *p = '~'; break;
+-                // encodes characters:
++                // encoded characters:
+                 case '#': {
+-                     if (strlen(p) > 2) {
++                     if (strlen(p) > 2 && isxdigit(*(p + 1)) && isxdigit(*(p + 2))) {
+                         char buf[3];
+                         sprintf(buf, "%c%c", *(p + 1), *(p + 2));
+                         unsigned char c = strtol(buf, NULL, 16);
+-                        *p = c;
+-                        memmove(p + 1, p + 3, strlen(p) - 2);
++                        if (c) {
++                           *p = c;
++                           memmove(p + 1, p + 3, strlen(p) - 2);
++                           }
+                         }
+                      }
+                      break;
+diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
+--- VDR-NG-orig/recording.h	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/recording.h	2009-06-19 23:20:07.000000000 +0200
+@@ -13,6 +13,7 @@
+ #include <time.h>
+ #include "channels.h"
+ #include "config.h"
++#include "device.h"
+ #include "epg.h"
+ #include "thread.h"
+ #include "timers.h"
+@@ -198,7 +199,7 @@
+ #define FRAMESPERSEC 25
+ 
+ // The maximum size of a single frame (up to HDTV 1920x1080):
+-#define MAXFRAMESIZE  KILOBYTE(512)
++#define MAXFRAMESIZE  (KILOBYTE(512) / TS_SIZE * TS_SIZE) // multiple of TS_SIZE to avoid breaking up TS packets
+ 
+ // The maximum file size is limited by the range that can be covered
+ // with 'int'. 4GB might be possible (if the range is considered
+diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
+--- VDR-NG-orig/remux.h	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/remux.h	2009-06-20 11:27:13.000000000 +0200
+@@ -12,10 +12,6 @@
+ #ifdef USE_HW_VIDEO_FRAME_EVENTS
+ #define USE_DATAHEADER_IN_RECEIVER 1
+ #endif
+-#include <time.h> //XXX FIXME: DVB/linux/dvb/dmx.h should include <time.h> itself!!!
+-//M7X0 BEGIN AK
+-#include "m7x0_dvb/dmx.h"
+-//M7X0 END AK
+ #include "ringbuffer.h"
+ #include "tools.h"
+ 
+diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
+--- VDR-NG-orig/svdrp.c	2009-06-20 11:21:35.000000000 +0200
++++ VDR-NG/svdrp.c	2009-06-20 11:27:13.000000000 +0200
+@@ -220,10 +220,12 @@
+   "HITK [ <key> ]\n"
+   "    Hit the given remote control key. Without option a list of all\n"
+   "    valid key names is given.",
+-  "LSTC [ <number> | <name> ]\n"
++  "LSTC [ :groups | <number> | <name> ]\n"
+   "    List channels. Without option, all channels are listed. Otherwise\n"
+   "    only the given channel is listed. If a name is given, all channels\n"
+-  "    containing the given string as part of their name are listed.",
++  "    containing the given string as part of their name are listed.\n"
++  "    If ':groups' is given, all channels are listed including group\n"
++  "    separators. The channel number of a group separator is always 0.",
+   "LSTE [ <channel> ] [ now | next | at <time> ]\n"
+   "    List EPG data. Without any parameters all data of all channels is\n"
+   "    listed. If a channel is given (either by number or by channel ID),\n"
+@@ -290,11 +292,14 @@
+   "    If 'help' is followed by a command, the detailed help for that command is\n"
+   "    given. The keyword 'main' initiates a call to the main menu function of the\n"
+   "    given plugin.\n",
+-  "PUTE\n"
++  "PUTE [ file ]\n"
+   "    Put data into the EPG list. The data entered has to strictly follow the\n"
+   "    format defined in vdr(5) for the 'epg.data' file.  A '.' on a line\n"
+   "    by itself terminates the input and starts processing of the data (all\n"
+-  "    entered data is buffered until the terminating '.' is seen).",
++  "    entered data is buffered until the terminating '.' is seen).\n"
++  "    If a file name is given, epg data will be read from this file (which\n"
++  "    must be accessible under the given name from the machine VDR is running\n"
++  "    on). In case of file input, no terminating '.' shall be given.\n",
+   "RENR [<number> | <path>] <new name>\n"
+   "    Rename recording. If a number is used, it must be the Number as \n"
+   "    returned by LSTR command.",
+@@ -502,14 +507,14 @@
+         if (channel)
+            n = channel->Number();
+         else {
+-           int i = 1;
+-           while ((channel = Channels.GetByNumber(i, 1)) != NULL) {
+-                 if (strcasecmp(channel->Name(), Option) == 0) {
+-                    n = channel->Number();
+-                    break;
+-                    }
+-                 i = channel->Number() + 1;
+-                 }
++           for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
++               if (!channel->GroupSep()) {
++                  if (strcasecmp(channel->Name(), Option) == 0) {
++                     n = channel->Number();
++                     break;
++                     }
++                  }
++               }
+            }
+         }
+      if (n < 0) {
+@@ -920,7 +925,7 @@
+   if (*Option) {
+      const char *hp = GetHelpPage(Option, HelpPages);
+      if (hp)
+-        Reply(214, "%s", hp);
++        Reply(-214, "%s", hp);
+      else {
+         Reply(504, "HELP topic \"%s\" unknown", Option);
+         return;
+@@ -965,7 +970,8 @@
+ 
+ void cSVDRP::CmdLSTC(const char *Option)
+ {
+-  if (*Option) {
++  bool WithGroupSeps = strcasecmp(Option, ":groups") == 0;
++  if (*Option && !WithGroupSeps) {
+      if (isnumber(Option)) {
+         cChannel *channel = Channels.GetByNumber(strtol(Option, NULL, 10));
+         if (channel)
+@@ -974,23 +980,16 @@
+            Reply(501, "Channel \"%s\" not defined", Option);
+         }
+      else {
+-        int i = 1;
+         cChannel *next = NULL;
+-        while (i <= Channels.MaxNumber()) {
+-              cChannel *channel = Channels.GetByNumber(i, 1);
+-              if (channel) {
+-                 if (strcasestr(channel->Name(), Option)) {
+-                    if (next)
+-                       Reply(-250, "%d %s", next->Number(), *next->ToText());
+-                    next = channel;
+-                    }
+-                 }
+-              else {
+-                 Reply(501, "Channel \"%d\" not found", i);
+-                 return;
+-                 }
+-              i = channel->Number() + 1;
+-              }
++        for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
++            if (!channel->GroupSep()) {
++               if (strcasestr(channel->Name(), Option)) {
++                  if (next)
++                     Reply(-250, "%d %s", next->Number(), *next->ToText());
++                  next = channel;
++                  }
++               }
++            }
+         if (next)
+            Reply(250, "%d %s", next->Number(), *next->ToText());
+         else
+@@ -998,15 +997,12 @@
+         }
+      }
+   else if (Channels.MaxNumber() >= 1) {
+-     int i = 1;
+-     while (i <= Channels.MaxNumber()) {
+-           cChannel *channel = Channels.GetByNumber(i, 1);
+-           if (channel)
+-              Reply(channel->Number() < Channels.MaxNumber() ? -250 : 250, "%d %s", channel->Number(), *channel->ToText());
+-           else
+-              Reply(501, "Channel \"%d\" not found", i);
+-           i = channel->Number() + 1;
+-           }
++     for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
++         if (WithGroupSeps)
++            Reply(channel->Next() ? -250: 250, "%d %s", channel->GroupSep() ? 0 : channel->Number(), *channel->ToText());
++         else if (!channel->GroupSep())
++            Reply(channel->Number() < Channels.MaxNumber() ? -250 : 250, "%d %s", channel->Number(), *channel->ToText());
++         }
+      }
+   else
+      Reply(550, "No channels defined");
+@@ -1547,11 +1543,27 @@
+ 
+ void cSVDRP::CmdPUTE(const char *Option)
+ {
+-  delete PUTEhandler;
+-  PUTEhandler = new cPUTEhandler;
+-  Reply(PUTEhandler->Status(), "%s", PUTEhandler->Message());
+-  if (PUTEhandler->Status() != 354)
+-     DELETENULL(PUTEhandler);
++  if (*Option) {
++     FILE *f = fopen(Option, "r");
++     if (f) {
++        if (cSchedules::Read(f)) {
++           cSchedules::Cleanup(true);
++           Reply(250, "EPG data processed from \"%s\"", Option);
++           }
++        else
++           Reply(451, "Error while processing EPG from \"%s\"", Option);
++        fclose(f);
++        }
++     else
++        Reply(501, "Cannot open file \"%s\"", Option);
++     }
++  else {     
++     delete PUTEhandler;
++     PUTEhandler = new cPUTEhandler;
++     Reply(PUTEhandler->Status(), "%s", PUTEhandler->Message());
++     if (PUTEhandler->Status() != 354)
++        DELETENULL(PUTEhandler);
++     }
+ }
+ 
+ void cSVDRP::CmdSCAN(const char *Option)
+diff -Naur VDR-NG-orig/thread.c VDR-NG/thread.c
+--- VDR-NG-orig/thread.c	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/thread.c	2009-06-20 11:27:13.000000000 +0200
+@@ -27,11 +27,12 @@
+ {
+   struct timeval now;
+   if (gettimeofday(&now, NULL) == 0) {           // get current time
+-     now.tv_usec += MillisecondsFromNow * 1000;  // add the timeout
+-     while (now.tv_usec >= 1000000) {            // take care of an overflow
+-           now.tv_sec++;
+-           now.tv_usec -= 1000000;
+-           }
++     now.tv_sec  += MillisecondsFromNow / 1000;  // add full seconds
++     now.tv_usec += (MillisecondsFromNow % 1000) * 1000;  // add microseconds
++     if (now.tv_usec >= 1000000) {               // take care of an overflow
++        now.tv_sec++;
++        now.tv_usec -= 1000000;
++        }
+      Abstime->tv_sec = now.tv_sec;          // seconds
+      Abstime->tv_nsec = now.tv_usec * 1000; // nano seconds
+      return true;
+diff -Naur VDR-NG-orig/timers.c VDR-NG/timers.c
+--- VDR-NG-orig/timers.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/timers.c	2009-06-20 11:27:13.000000000 +0200
+@@ -92,6 +92,7 @@
+   channel = NULL;
+   aux = NULL;
+   event = NULL;
++  flags = tfNone;
+   *this = Timer;
+ }
+ 
+diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
+--- VDR-NG-orig/tools.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/tools.c	2009-06-20 11:27:13.000000000 +0200
+@@ -100,6 +100,14 @@
+   return p < 0 ? p : written;
+ }
+ 
++int readchar(int filedes)
++{
++  char c;
++  if (safe_read(filedes, &c, sizeof(c)) != 1)
++     return -1;
++  return c;
++}
++
+ void writechar(int filedes, char c)
+ {
+   safe_write(filedes, &c, sizeof(c));
+@@ -158,11 +166,8 @@
+ {
+   if (s) {
+      char *p = s;
+-     while (*p) {
+-           if (*p == c1)
+-              *p = c2;
+-           p++;
+-           }
++     while ((p = strchr(p, c1)))
++           *p++ = c2;
+      }
+   return s;
+ }
+@@ -176,21 +181,15 @@
+      int l1 = strlen(s1);
+      int l2 = strlen(s2);
+      if (l2 > l1)
+-        s = (char *)realloc(s, strlen(s) + l2 - l1 + 1);
++        s = (char *)realloc(s, l + l2 - l1 + 1);
++     char *sof = s + of;
+      if (l2 != l1)
+-        memmove(s + of + l2, s + of + l1, l - of - l1 + 1);
+-     strncpy(s + of, s2, l2);
++        memmove(sof + l2, sof + l1, l - of - l1 + 1);
++     strncpy(sof, s2, l2);
+      }
+   return s;
+ }
+ 
+-char *skipspace(const char *s)
+-{
+-  while (*s && isspace(*s))
+-        s++;
+-  return (char *)s;
+-}
+-
+ char *stripspace(char *s)
+ {
+   if (s && *s) {
+@@ -270,20 +269,22 @@
+ 
+ int numdigits(int n)
+ {
+-  char buf[16];
+-  snprintf(buf, sizeof(buf), "%d", n);
+-  return strlen(buf);
++  int res = 1;
++  while (n >= 10) {
++        n /= 10;
++        res++;
++        }
++  return res;
+ }
+ 
+ bool isnumber(const char *s)
+ {
+   if (!*s)
+      return false;
+-  while (*s) {
+-        if (!isdigit(*s))
+-           return false;
+-        s++;
+-        }
++  do {
++     if (!isdigit(*s))
++        return false;
++     } while (*++s);
+   return true;
+ }
+ 
+@@ -687,7 +688,7 @@
+      time(&t);
+   struct tm tm_r;
+   tm *tm = localtime_r(&t, &tm_r);
+-  snprintf(buffer, sizeof(buffer), "%s %02d.%02d %02d:%02d", *WeekDayName(tm->tm_wday), tm->tm_mday, tm->tm_mon + 1, tm->tm_hour, tm->tm_min);
++  snprintf(buffer, sizeof(buffer), "%s %02d.%02d. %02d:%02d", *WeekDayName(tm->tm_wday), tm->tm_mday, tm->tm_mon + 1, tm->tm_hour, tm->tm_min);
+   return buffer;
+ }
+ 
+diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
+--- VDR-NG-orig/tools.h	2009-06-10 22:02:35.000000000 +0200
++++ VDR-NG/tools.h	2009-06-20 11:27:13.000000000 +0200
+@@ -50,9 +50,9 @@
+ #define getIntUnaligned(a) get_unaligned((int32_t *) (a))
+ 
+ // Syslog reactivated
+-#define esyslog(a...) void( (SysLogLevel > 0) ? syslog_with_tid(LOG_ERR,   a) : void() )
+-#define isyslog(a...) void( (SysLogLevel > 1) ? syslog_with_tid(LOG_INFO,  a) : void() )
+-#define dsyslog(a...) void( (SysLogLevel > 2) ? syslog_with_tid(LOG_DEBUG, a) : void() )
++#define esyslog(a...) void( (SysLogLevel > 0) ? syslog_with_tid(LOG_ERR, a) : void() )
++#define isyslog(a...) void( (SysLogLevel > 1) ? syslog_with_tid(LOG_ERR, a) : void() )
++#define dsyslog(a...) void( (SysLogLevel > 2) ? syslog_with_tid(LOG_ERR, a) : void() )
+ 
+ // Errno should survive this
+ #define LOG_ERROR       {  int __errno_save = errno; \
+@@ -78,7 +78,7 @@
+ #define SECSINDAY  86400
+ 
+ #define KILOBYTE(n) ((n) * 1024)
+-#define MEGABYTE(n) ((n) * 1024 * 1024)
++#define MEGABYTE(n) ((n) * 1024LL * 1024LL)
+ 
+ #define MALLOC(type, size)  (type *)malloc(sizeof(type) * (size))
+ 
+@@ -142,6 +142,7 @@
+ 
+ ssize_t safe_read(int filedes, void *buffer, size_t size);
+ ssize_t safe_write(int filedes, const void *buffer, size_t size);
++int readchar(int filedes);
+ void writechar(int filedes, char c);
+ int WriteAllOrNothing(int fd, const uchar *Data, int Length, int TimeoutMs = 0, int RetryMs = 0);
+     ///< Writes either all Data to the given file descriptor, or nothing at all.
+@@ -151,7 +152,14 @@
+ char *strn0cpy(char *dest, const char *src, size_t n);
+ char *strreplace(char *s, char c1, char c2);
+ char *strreplace(char *s, const char *s1, const char *s2); ///< re-allocates 's' and deletes the original string if necessary!
+-char *skipspace(const char *s);
++inline char *skipspace(const char *s)
++{
++  if ((uchar)*s > ' ') // most strings don't have any leading space, so handle this case as fast as possible
++     return (char *)s;
++  while (*s && (uchar)*s <= ' ') // avoiding isspace() here, because it is much slower
++        s++;
++  return (char *)s;
++}
+ char *stripspace(char *s);
+ char *compactspace(char *s);
+ cString strescape(const char *s, const char *chars);
+diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
+--- VDR-NG-orig/vdr.c	2009-06-20 11:21:36.000000000 +0200
++++ VDR-NG/vdr.c	2009-06-20 11:29:33.000000000 +0200
+@@ -89,23 +89,23 @@
+ #include "epgmode.h"
+ //M7X0 END AK
+ 
+-#define MINCHANNELWAIT     10 // seconds to wait between failed channel switchings
+-#define ACTIVITYTIMEOUT    60 // seconds before starting housekeeping
+-#define SHUTDOWNWAIT      300 // seconds to wait in user prompt before automatic shutdown
+-#define SHUTDOWNRETRY     360 // seconds before trying again to shut down
+-#define SHUTDOWNFORCEPROMPT 5 // seconds to wait in user prompt to allow forcing shutdown
+-#define SHUTDOWNCANCELROMPT 5 // seconds to wait in user prompt to allow canceling shutdown
+-#define RESTARTCANCELPROMPT 5 // seconds to wait in user prompt before restarting on SIGHUP
+-#define CHANNELSAVEDELTA  600 // seconds before saving channels.conf after automatic modifications
+-#define LASTCAMMENUTIMEOUT  3 // seconds to run the main loop 'fast' after a CAM menu has been closed
+-                              // in order to react on a possible new CAM menu as soon as possible
+-#define DEVICEREADYTIMEOUT 30 // seconds to wait until all devices are ready
+-#define MENUTIMEOUT       120 // seconds of user inactivity after which an OSD display is closed
+-#define TIMERCHECKDELTA    10 // seconds between checks for timers that need to see their channel
+-#define TIMERDEVICETIMEOUT  8 // seconds before a device used for timer check may be reused
+-#define TIMERLOOKAHEADTIME 60 // seconds before a non-VPS timer starts and the channel is switched if possible
+-#define VPSLOOKAHEADTIME   24 // hours within which VPS timers will make sure their events are up to date
+-#define VPSUPTODATETIME  3600 // seconds before the event or schedule of a VPS timer needs to be refreshed
++#define MINCHANNELWAIT        10 // seconds to wait between failed channel switchings
++#define ACTIVITYTIMEOUT       60 // seconds before starting housekeeping
++#define SHUTDOWNWAIT         300 // seconds to wait in user prompt before automatic shutdown
++#define SHUTDOWNRETRY        360 // seconds before trying again to shut down
++#define SHUTDOWNFORCEPROMPT    5 // seconds to wait in user prompt to allow forcing shutdown
++#define SHUTDOWNCANCELPROMPT   5 // seconds to wait in user prompt to allow canceling shutdown
++#define RESTARTCANCELPROMPT    5 // seconds to wait in user prompt before restarting on SIGHUP
++#define CHANNELSAVEDELTA     600 // seconds before saving channels.conf after automatic modifications
++#define LASTCAMMENUTIMEOUT     3 // seconds to run the main loop 'fast' after a CAM menu has been closed
++                                 // in order to react on a possible new CAM menu as soon as possible
++#define DEVICEREADYTIMEOUT    30 // seconds to wait until all devices are ready
++#define MENUTIMEOUT          120 // seconds of user inactivity after which an OSD display is closed
++#define TIMERCHECKDELTA       10 // seconds between checks for timers that need to see their channel
++#define TIMERDEVICETIMEOUT     8 // seconds before a device used for timer check may be reused
++#define TIMERLOOKAHEADTIME    60 // seconds before a non-VPS timer starts and the channel is switched if possible
++#define VPSLOOKAHEADTIME      24 // hours within which VPS timers will make sure their events are up to date
++#define VPSUPTODATETIME     3600 // seconds before the event or schedule of a VPS timer needs to be refreshed
+ 
+ #define EXIT(v) { ShutdownHandler.Exit(v); goto Exit; }
+ 
+@@ -174,8 +174,6 @@
+ 
+ static void SignalHandler(int signum)
+ {
+-// DON'T EVER DO THIS OR YOU END UP WITH A SIGHANDLER RACE
+-//  isyslog("caught signal %d", signum);
+   switch (signum) {
+     case SIGPIPE:
+          break;
+@@ -243,9 +241,6 @@
+ #elif defined(REMOTE_RCU)
+   RcuDevice = RCU_DEVICE;
+ #endif
+-#if defined(VFAT)
+-  VfatFileSystem = true;
+-#endif
+ #if defined(VDR_USER)
+   VdrUser = VDR_USER;
+ #endif
+@@ -589,6 +584,7 @@
+   int MaxLatencyTime = 0;
+   bool InhibitEpgScan = false;
+   bool IsInfoMenu = false;
++  bool CheckHasProgramme = false;
+   cSkin *CurrentSkin = NULL;
+ 
+   // Load plugins:
+@@ -787,10 +783,13 @@
+ #endif
+         // Attach launched player control:
+         cControl::Attach();
++
++        time_t Now = time(NULL);
++
+         // Make sure we have a visible programme in case device usage has changed:
+         if (!EITScanner.Active() && cDevice::PrimaryDevice()->HasDecoder() && !cDevice::PrimaryDevice()->HasProgramme()) {
+            static time_t lastTime = 0;
+-           if (!scanning_on_receiving_device && time(NULL) - lastTime > MINCHANNELWAIT) {
++           if ((!scanning_on_receiving_device || CheckHasProgramme) && Now - lastTime > MINCHANNELWAIT) {
+               cChannel *Channel = Channels.GetByNumber(cDevice::CurrentChannel());
+               if (Channel && (Channel->Vpid() || Channel->Apid(0))) {
+                  if (!Channels.SwitchTo(cDevice::CurrentChannel()) // try to switch to the original channel...
+@@ -799,8 +798,9 @@
+                      && !cDevice::SwitchChannel(-1)) // ...or the next lower available one
+                     ;
+                  }
+-              lastTime = time(NULL); // don't do this too often
++              lastTime = Now; // don't do this too often
+               LastTimerChannel = -1;
++              CheckHasProgramme = false;
+               }
+            }
+         // Restart the Watchdog timer:
+@@ -821,8 +821,8 @@
+            if (modified == CHANNELSMOD_USER || Timers.Modified(TimerState))
+               ChannelSaveTimeout = 1; // triggers an immediate save
+            else if (modified && !ChannelSaveTimeout)
+-              ChannelSaveTimeout = time(NULL) + CHANNELSAVEDELTA;
+-           bool timeout = ChannelSaveTimeout == 1 || (ChannelSaveTimeout && time(NULL) > ChannelSaveTimeout && !cRecordControls::Active());
++              ChannelSaveTimeout = Now + CHANNELSAVEDELTA;
++           bool timeout = ChannelSaveTimeout == 1 || (ChannelSaveTimeout && Now > ChannelSaveTimeout && !cRecordControls::Active());
+            if ((modified || timeout) && Channels.Lock(false, 100)) {
+               if (timeout) {
+                  Channels.Save();
+@@ -850,16 +850,15 @@
+            if (!Menu)
+               Menu = new cDisplayChannel(cDevice::CurrentChannel(), LastChannel >= 0);
+            LastChannel = cDevice::CurrentChannel();
+-           LastChannelChanged = time(NULL);
++           LastChannelChanged = Now;
+            }
+-        if (time(NULL) - LastChannelChanged >= Setup.ZapTimeout && LastChannel != PreviousChannel[PreviousChannelIndex])
++        if (Now - LastChannelChanged >= Setup.ZapTimeout && LastChannel != PreviousChannel[PreviousChannelIndex])
+            PreviousChannel[PreviousChannelIndex ^= 1] = LastChannel;
+         // Timers and Recordings:
+         if (!Timers.BeingEdited()) {
+            // Assign events to timers:
+            Timers.SetEvents();
+            // Must do all following calls with the exact same time!
+-           time_t Now = time(NULL);
+            // Process ongoing recordings:
+            cRecordControls::Process(Now);
+            // Start new recordings:
+@@ -952,7 +951,7 @@
+                * is tuned to timers channel.
+                */
+               InhibitEpgScan = (!!InhibitEpgScan) & devNeed;
+-              LastTimerCheck = time(NULL);
++              LastTimerCheck = Now;
+               }
+            // Delete expired timers:
+            Timers.DeleteExpired();
+@@ -967,14 +966,14 @@
+            if (Menu)
+               LastCamMenu = 0;
+            else if (!LastCamMenu)
+-              LastCamMenu = time(NULL);
++              LastCamMenu = Now;
+            }
+         // Queued messages:
+         if (!Skins.IsOpen())
+            Skins.ProcessQueuedMessages();
+         // User Input:
+         cOsdObject *Interact = Menu ? Menu : cControl::Control();
+-        eKeys key = Interface->GetKey((!Interact || !Interact->NeedsFastResponse()) && time(NULL) - LastCamMenu > LASTCAMMENUTIMEOUT);
++        eKeys key = Interface->GetKey((!Interact || !Interact->NeedsFastResponse()) && Now - LastCamMenu > LASTCAMMENUTIMEOUT);
+ 
+         if (ISREALKEY(key)) {
+            cStatus::MsgUserAction(key, Interact);          // PIN PATCH
+@@ -1162,7 +1161,7 @@
+                    }
+ 		   if(Setup.ShutdownMessage){
+                 // Ask the final question:
+-                if (!Interface->Confirm(tr("Press any key to cancel shutdown"), SHUTDOWNCANCELROMPT, true))
++                if (!Interface->Confirm(tr("Press any key to cancel shutdown"), SHUTDOWNCANCELPROMPT, true))
+                    // If final question was canceled, continue to be active:
+                    break;
+ 		   } else
+@@ -1191,7 +1190,7 @@
+                     continue;
+                     }
+                  }
+-              else if (time(NULL) - cRemote::LastActivity() > MENUTIMEOUT)
++              else if (Now - cRemote::LastActivity() > MENUTIMEOUT)
+                  state = osEnd;
+               }
+            // TODO make the CAM menu stay open in case of automatic updates and have it return osContinue; then the following two lines can be removed again
+@@ -1211,6 +1210,7 @@
+                             DELETE_MENU;
+                             cControl::Shutdown();
+                             Menu = new cMenuMain(osRecordings);
++                            CheckHasProgramme = true; // to have live tv after stopping replay with 'Back'
+                             break;
+              case osReplay: DELETE_MENU;
+                             cControl::Shutdown();
+@@ -1318,12 +1318,12 @@
+                ShutdownHandler.countdown.Cancel();
+             }
+ 
+-         if (!Interact && !cRecordControls::Active() && !cCutter::Active() && !cUsbAutomounter::Active() && !Interface->HasSVDRPConnection() && (time(NULL) - cRemote::LastActivity()) > ACTIVITYTIMEOUT) {
++         if (!Interact && !cRecordControls::Active() && !cCutter::Active() && !cUsbAutomounter::Active() && !Interface->HasSVDRPConnection() && (Now - cRemote::LastActivity()) > ACTIVITYTIMEOUT) {
+             // Handle housekeeping tasks
+ 
+             // Shutdown:
+             // Check whether VDR will be ready for shutdown in SHUTDOWNWAIT seconds:
+-            time_t Soon = time(NULL) + SHUTDOWNWAIT;
++            time_t Soon = Now + SHUTDOWNWAIT;
+             if (ShutdownHandler.IsUserInactive(Soon) && ShutdownHandler.Retry(Soon) && !ShutdownHandler.countdown) {
+                if (ShutdownHandler.ConfirmShutdown(false) && !Setup.HotStandby)
+                   // Time to shut down - start final countdown:
+@@ -1401,9 +1401,11 @@
+   ReportEpgBugFixStats();
+   if (WatchdogTimeout > 0)
+      dsyslog("max. latency time %d seconds", MaxLatencyTime);
+-  isyslog("exiting, exit code %d", ShutdownHandler.GetExitCode());
++  if (LastSignal)
++     isyslog("caught signal %d", LastSignal);
+   if (ShutdownHandler.EmergencyExitRequested())
+      esyslog("emergency exit!");
++  isyslog("exiting, exit code %d", ShutdownHandler.GetExitCode());
+ //M7X0 BEGIN AK
+   //Syslog  reactivated
+   if (SysLogLevel > 0)

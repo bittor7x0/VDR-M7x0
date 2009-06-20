@@ -1,0 +1,13 @@
+--- z/ipc/shm.c	Wed Jul 17 15:36:26 2002
++++ 2.4.19rc2aa1/ipc/shm.c	Wed Jul 17 15:32:54 2002
+@@ -122,9 +122,9 @@ static void shm_open (struct vm_area_str
+  */
+ static void shm_destroy (struct shmid_kernel *shp)
+ {
+-	shm_tot -= (shp->shm_segsz + PAGE_SIZE - 1) >> PAGE_SHIFT;
+ 	shm_rmid (shp->id);
+ 	shm_unlock(shp->id);
++	shm_tot -= (shp->shm_segsz + PAGE_SIZE - 1) >> PAGE_SHIFT;
+ 	shmem_lock(shp->shm_file, 0);
+ 	fput (shp->shm_file);
+ 	kfree (shp);

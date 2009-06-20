@@ -1,0 +1,33 @@
+diff -urNp 2.4.19pre9/fs/dcache.c neg-dentry-ref/fs/dcache.c
+--- 2.4.19pre9/fs/dcache.c	Wed May 29 02:12:36 2002
++++ neg-dentry-ref/fs/dcache.c	Wed May 29 04:19:13 2002
+@@ -806,6 +806,7 @@ out:
+  
+ void d_delete(struct dentry * dentry)
+ {
++#ifdef DENTRY_WASTE_RAM
+ 	/*
+ 	 * Are we the only user?
+ 	 */
+@@ -815,6 +816,7 @@ void d_delete(struct dentry * dentry)
+ 		return;
+ 	}
+ 	spin_unlock(&dcache_lock);
++#endif
+ 
+ 	/*
+ 	 * If not, just drop the dentry and let dput
+diff -urNp 2.4.19pre9/fs/namei.c neg-dentry-ref/fs/namei.c
+--- 2.4.19pre9/fs/namei.c	Wed May 29 02:12:36 2002
++++ neg-dentry-ref/fs/namei.c	Wed May 29 04:20:45 2002
+@@ -1042,6 +1042,10 @@ do_last:
+ 		error = vfs_create(dir->d_inode, dentry,
+ 				   mode & ~current->fs->umask);
+ 		up(&dir->d_inode->i_sem);
++#ifndef DENTRY_WASTE_RAM
++		if (error)
++			d_drop(dentry);
++#endif
+ 		dput(nd->dentry);
+ 		nd->dentry = dentry;
+ 		if (error)

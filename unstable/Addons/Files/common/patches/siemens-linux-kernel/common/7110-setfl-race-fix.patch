@@ -1,0 +1,119 @@
+diff -urNp 2.4.19rc2/Documentation/filesystems/Locking ioctl/Documentation/filesystems/Locking
+--- 2.4.19rc2/Documentation/filesystems/Locking	Wed Jul 17 13:28:22 2002
++++ ioctl/Documentation/filesystems/Locking	Wed Jul 17 17:42:47 2002
+@@ -277,6 +277,8 @@ in sys_read() and friends.
+ 
+ ->fsync() has i_sem on inode.
+ 
++->fasync() has i_sem on inode.
++
+ --------------------------- dquot_operations -------------------------------
+ prototypes:
+ 	void (*initialize) (struct inode *, short);
+diff -urNp 2.4.19rc2/fs/fcntl.c ioctl/fs/fcntl.c
+--- 2.4.19rc2/fs/fcntl.c	Wed Jul 17 13:28:43 2002
++++ ioctl/fs/fcntl.c	Wed Jul 17 17:42:40 2002
+@@ -213,32 +213,29 @@ static int setfl(int fd, struct file * f
+ 	if (!(arg & O_APPEND) && IS_APPEND(inode))
+ 		return -EPERM;
+ 
++	/*
++	 * alloc_kiovec() and ->fasync can sleep, so abuse the i_sem
++	 * to serialize against parallel setfl on the same filp,
++	 * to avoid races with ->f_flags and ->f_iobuf.
++	 */
++	down(&inode->i_sem);
+ 	/* Did FASYNC state change? */
+ 	if ((arg ^ filp->f_flags) & FASYNC) {
+ 		if (filp->f_op && filp->f_op->fasync) {
++			lock_kernel();
+ 			error = filp->f_op->fasync(fd, filp, (arg & FASYNC) != 0);
++			unlock_kernel();
+ 			if (error < 0)
+-				return error;
++				goto out;
+ 		}
+ 	}
+ 
+ 	if (arg & O_DIRECT) {
+-		/*
+-		 * alloc_kiovec() can sleep and we are only serialized by
+-		 * the big kernel lock here, so abuse the i_sem to serialize
+-		 * this case too. We of course wouldn't need to go deep down
+-		 * to the inode layer, we could stay at the file layer, but
+-		 * we don't want to pay for the memory of a semaphore in each
+-		 * file structure too and we use the inode semaphore that we just
+-		 * pay for anyways.
+-		 */
+-		error = 0;
+-		down(&inode->i_sem);
+-		if (!filp->f_iobuf)
++		if (!filp->f_iobuf) {
+ 			error = alloc_kiovec(1, &filp->f_iobuf);
+-		up(&inode->i_sem);
+-		if (error < 0)
+-			return error;
++			if (error < 0)
++				goto out;
++		}
+ 	}
+ 
+ 	/* required for strict SunOS emulation */
+@@ -247,7 +244,10 @@ static int setfl(int fd, struct file * f
+ 		   arg |= O_NONBLOCK;
+ 
+ 	filp->f_flags = (arg & SETFL_MASK) | (filp->f_flags & ~SETFL_MASK);
+-	return 0;
++	error = 0;
++ out:
++	up(&inode->i_sem);
++	return error;
+ }
+ 
+ static long do_fcntl(unsigned int fd, unsigned int cmd,
+@@ -273,9 +273,7 @@ static long do_fcntl(unsigned int fd, un
+ 			err = filp->f_flags;
+ 			break;
+ 		case F_SETFL:
+-			lock_kernel();
+ 			err = setfl(fd, filp, arg);
+-			unlock_kernel();
+ 			break;
+ 		case F_GETLK:
+ 			err = fcntl_getlk(fd, (struct flock *) arg);
+diff -urNp 2.4.19rc2/fs/ioctl.c ioctl/fs/ioctl.c
+--- 2.4.19rc2/fs/ioctl.c	Thu Feb 22 03:45:09 2001
++++ ioctl/fs/ioctl.c	Wed Jul 17 17:43:41 2002
+@@ -81,10 +81,13 @@ asmlinkage long sys_ioctl(unsigned int f
+ 				filp->f_flags &= ~flag;
+ 			break;
+ 
+-		case FIOASYNC:
++		case FIOASYNC: {
++			struct inode * inode;
+ 			if ((error = get_user(on, (int *)arg)) != 0)
+ 				break;
+ 			flag = on ? FASYNC : 0;
++			inode = filp->f_dentry->d_inode;
++			down(&inode->i_sem);
+ 
+ 			/* Did FASYNC state change ? */
+ 			if ((flag ^ filp->f_flags) & FASYNC) {
+@@ -93,13 +96,16 @@ asmlinkage long sys_ioctl(unsigned int f
+ 				else error = -ENOTTY;
+ 			}
+ 			if (error != 0)
+-				break;
++				goto fioasync_out;
+ 
+ 			if (on)
+ 				filp->f_flags |= FASYNC;
+ 			else
+ 				filp->f_flags &= ~FASYNC;
++		fioasync_out:
++			up(&inode->i_sem);
+ 			break;
++		}
+ 
+ 		default:
+ 			error = -ENOTTY;

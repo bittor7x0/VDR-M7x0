@@ -1,0 +1,11 @@
+diff -urNp ref/fs/buffer.c 2.4.20pre7aa1/fs/buffer.c
+--- ref/fs/buffer.c	Wed Sep 18 00:35:35 2002
++++ 2.4.20pre7aa1/fs/buffer.c	Wed Sep 18 00:35:53 2002
+@@ -737,7 +737,6 @@ static void free_more_memory(void)
+ 	balance_dirty();
+ 	wakeup_bdflush();
+ 	try_to_free_pages(GFP_NOIO);
+-	run_task_queue(&tq_disk);
+ 	yield();
+ }
+ 

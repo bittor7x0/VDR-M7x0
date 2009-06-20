@@ -1,4 +1,4 @@
-epgsearch(5)               Epgsearch Version 0.9.24               epgsearch(5)
+epgsearch(5)            Epgsearch Version 0.9.25.beta13           epgsearch(5)
 
 
 
@@ -7,8 +7,8 @@ NAME
 
 OVERVIEW
        EPG-Search can be used as a replacement for the default schedules menu
-       entry. It looks like the standard schedules menu, but adds some addi‐
-       tional functions:
+       entry. It looks like the standard schedules menu, but adds some
+       additional functions:
 
         - Commands for EPG entries with 5 built-in commands like 'show repeats',
           'create search'. One can add own commands for other needs, like adding a
@@ -107,8 +107,7 @@ CONTENT
        additional functions (the default assignment of the color keys can be
        adjusted by setup):
 
-       1.1 Menu Commands
-
+   1.1 Menu Commands
        This menu displays commands that can be executed on the current item.
        There are 8 built-in commands:
 
@@ -145,8 +144,8 @@ CONTENT
        conf file with some sample commands (see directory ’scripts’, taken
        from vdr-wiki.de, thanks to the authors).
 
-       The format of the file is the same as VDR’s commands.conf or rec‐
-       cmds.conf. When a command is executed the following parameters are
+       The format of the file is the same as VDR’s commands.conf or
+       reccmds.conf. When a command is executed the following parameters are
        passed to it:
 
         $1: the title of the EPG entry
@@ -157,11 +156,10 @@ CONTENT
         $5: the long channel name of the EPG entry
         $6: the subtitle of the EPG entry, "" if not present
 
-       To execute a command from the main menu you can also press its associ‐
-       ated number without opening the commands menu.
+       To execute a command from the main menu you can also press its
+       associated number without opening the commands menu.
 
-       1.2 Menu search
-
+   1.2 Menu search
        Here you can add, edit, delete and execute your own queries on the EPG.
        The usage and behavior of this menu is similar to VDR’s timer menu.
 
@@ -170,14 +168,15 @@ CONTENT
        Most things in this menu are quite clear, so only some notes on:
 
        - Search term:
-           The term to search for. If you like to search for more words, sepa‐
-           rate them by blanks. Leaving this empty (combined with search mode
-           ’Phrase’) will match anything. This is useful, if you search e.g.
-           for anything that starts between some times on a specific channel.
+           The term to search for. If you like to search for more words,
+           separate them by blanks. Leaving this empty (combined with search
+           mode ’Phrase’) will match anything. This is useful, if you search
+           e.g. for anything that starts between some times on a specific
+           channel.
 
            With ’blue’ you can also select a template for the new search. If
-           one of the templates is set to default, new searches will automati‐
-           cally get the settings of the default template.
+           one of the templates is set to default, new searches will
+           automatically get the settings of the default template.
 
            Note: fuzzy searching is limited to 32 chars!
 
@@ -190,12 +189,12 @@ CONTENT
 
            With ’Regular expression’ you can setup a regular expression as
            search term. You don’t need a leading and trailing ’/’ in the
-           expression. By default these are POSIX extended regular expres‐
-           sions.  If you like to have Herl compatible regular expression,
-           simply edit the plugins Makefile and uncomment #HAVE_PCREPOSIX=1 to
-           HAVE_PCREPOSIX=1 (you will need pcreposix installed, comes with
-           libpcre from www.pcre.org, but it’s already part of most distribu‐
-           tions).
+           expression. By default these are POSIX extended regular
+           expressions.  If you like to have Herl compatible regular
+           expression, simply edit the plugins Makefile and uncomment
+           #HAVE_PCREPOSIX=1 to HAVE_PCREPOSIX=1 (you will need pcreposix
+           installed, comes with libpcre from www.pcre.org, but it’s already
+           part of most distributions).
 
            See also epgsearch(4) ’Description of the search process’.
 
@@ -211,11 +210,11 @@ CONTENT
            Search only for events in the given channels interval, channel
            groups or FTA channels only.
 
-           Channel groups (e.g. sport channels or Pay-TV channels) can be man‐
-           aged with a sub-menu called with ’blue’.
+           Channel groups (e.g. sport channels or Pay-TV channels) can be
+           managed with a sub-menu called with ’blue’.
 
-           ATTENTION: After changing the channels order please check the set‐
-           tings of your search timers!
+           ATTENTION: After changing the channels order please check the
+           settings of your search timers!
 
        - Use day of week:
            Besides the weekdays you can also set up a user-defined selection,
@@ -247,8 +246,10 @@ CONTENT
 
        - Action:
            Default action is creating a timer for the search results. But you
-           can also choose to simply announce the found event via OSD or to
-           switch to the event one minute before it starts.
+           can also choose to simply announce the found event via OSD as soon
+           as it is found or to automatically switch to the event before it
+           starts. It’s also possible to get an announcement via OSD before
+           the event starts and to switch to its channel with ’Ok’.
 
        - Serial recording:
            If set to yes, the recordings will be stored in a folder with the
@@ -262,9 +263,10 @@ CONTENT
            entries already used in other search entries or given by entries in
            the file epgsearchdirs.conf (simply place your directories here one
            at each line without the leading video directory, also see MANUAL).
-           If your provider delivers extended EPG infos you can also use vari‐
-           ables like "%Genre%" or "%Category%" in your directory entry. These
-           are replaced with the current EPG info, when a timer is created.
+           If your provider delivers extended EPG infos you can also use
+           variables like "%Genre%" or "%Category%" in your directory entry.
+           These are replaced with the current EPG info, when a timer is
+           created.
 
            See also epgsearch(4) ’Using variables in the directory entry of a
            search timer’.
@@ -276,8 +278,8 @@ CONTENT
 
        - Pause if ... recordings exist:
            If the given numbers of recordings currently exists, then epgsearch
-           will not create further timers. After deleting one or more record‐
-           ings it will go on generating new timers.
+           will not create further timers. After deleting one or more
+           recordings it will go on generating new timers.
 
        - Avoid repeats:
            If you don’t want to record repeats, this feature tries to check if
@@ -298,17 +300,21 @@ CONTENT
 
        - Compare subtitle:
            When comparing to events then specify here if the subtitle should
-           be compared. If there is no subtitle than this event is always dif‐
-           ferent to an event with/without a subtitle.
+           be compared. Besides ’no’ and ’yes’ there is also the option ’if
+           present’.  With this setting epgsearch will classify two events
+           only as equal if their episode names match and are not empty.
+           Caution: if your EPG data has no episode names for different
+           episodes don’t use this option! ’yes’ will then be the better
+           choice even if this results in double recordings.
 
        - Compare description:
            When comparing to events then specify here if the description
            should be compared.
 
-           For comparison all parts of the description, that look like a cate‐
-           gory value, are removed first. The remaining text will be compared.
-           If this is similar at 90% (regarding the Levinshtein-Distance algo‐
-           rithm) then it will be accepted as equal.
+           For comparison all parts of the description, that look like a
+           category value, are removed first. The remaining text will be
+           compared. If this is similar at 90% (regarding the Levinshtein-
+           Distance algorithm) then it will be accepted as equal.
 
        - Compare categories:
            With the button ’setup’ you can also specify which categories
@@ -333,19 +339,18 @@ CONTENT
            directly after the correspondig recording
 
        To toggle the flag ’Use as search timer’ without editing the search
-       entry you can use the key ’2’. This will call directly the second com‐
-       mand of the command menu.
+       entry you can use the key ’2’. This will call directly the second
+       command of the command menu.
 
        1.2.2 Menu search results
 
        This menu displays the search results. A ’T’ lets you know, that there
-       is already a timer for the event. A ’t’ means that there’s only a par‐
-       tial timer for it, as in standard schedules menu.
+       is already a timer for the event. A ’t’ means that there’s only a
+       partial timer for it, as in standard schedules menu.
 
-       1.3 Extended ’now’ and ’next’ and favorites
-
-       By setup, one can add up to 4 additional times to extend the green but‐
-       ton, e.g. ’afternoon’, ’prime time’, ’late night’. Times, that are
+   1.3 Extended ’now’ and ’next’ and favorites
+       By setup, one can add up to 4 additional times to extend the green
+       button, e.g. ’afternoon’, ’prime time’, ’late night’. Times, that are
        already passed, are skipped (you will not get ’afternoon’ at evening)
        with the exception that a time will be displayed for the next day, if
        it is less then 20h in the future.  In these menus you can shift the
@@ -360,13 +365,12 @@ CONTENT
        ’graphical’ may also work with text2skin, but this depends on the
        selected skin).
 
-       Furthermore you can enable in the setup an favorites list. You can con‐
-       figure your searchtimers ("Use in favorite list") to display their
+       Furthermore you can enable in the setup an favorites list. You can
+       configure your searchtimers ("Use in favorite list") to display their
        results in you favorite list. This list display event in the next 24
        hours ordered by time.
 
-       1.4 Menu setup
-
+   1.4 Menu setup
        1.4.1 General
 
        - Hide main menu entry:
@@ -388,9 +392,9 @@ CONTENT
 
        - Ok key:
            Choose here the behavior of key ’Ok’. You can use it to display the
-           summary or to switch to the corresponding channel. Note: the func‐
-           tionality of key ’blue’ (Switch/Info/Search) depends on this set‐
-           ting.
+           summary or to switch to the corresponding channel. Note: the
+           functionality of key ’blue’ (Switch/Info/Search) depends on this
+           setting.
 
        - Red key:
            Select if you like to have Standard (’Record’) or ’Commands’ as
@@ -548,8 +552,8 @@ CONTENT
            channels when searching for a repeat.
 
        - Search templates:
-           Here you can manage search templates which can be used when creat‐
-           ing a search.
+           Here you can manage search templates which can be used when
+           creating a search.
 
        - Blacklists:
            Here you can manage blacklists which can be used to suppress
@@ -577,17 +581,17 @@ CONTENT
 
        - Ignore below priority:
            If a timer will fail with a priority below the given value, you
-           won’t get an OSD message about this and the conflict will be clas‐
-           sified as ’not relevant’ in the conflicts overview.
+           won’t get an OSD message about this and the conflict will be
+           classified as ’not relevant’ in the conflicts overview.
 
        - Ignore conflict duration less ... min.:
            If a conflict will last only the given minutes it will not produce
-           an OSD message and the conflict will be classified as ’not rele‐
-           vant’ in the conflicts overview.
+           an OSD message and the conflict will be classified as ’not
+           relevant’ in the conflicts overview.
 
        - Only check within next ... days:
-           Here you can specify the day range that should be used for the con‐
-           flict check.
+           Here you can specify the day range that should be used for the
+           conflict check.
 
        - After each timer programming:
            This performs a conflict check after each manual timer programming
@@ -612,23 +616,24 @@ CONTENT
        - if conflicts within next ... minutes:
            - every ... minutes:
                if you like to have a more frequent check and OSD notification
-               when a conflict appears within the given time, use this fea‐
-               ture.
+               when a conflict appears within the given time, use this
+               feature.
 
        - Avoid notification when replaying:
-           Set this to ’yes’ if the don’t want to get OSD messages about con‐
-           flicts if you currently replay something. Nevertheless messages
+           Set this to ’yes’ if the don’t want to get OSD messages about
+           conflicts if you currently replay something. Nevertheless messages
            will be displayed if
             the first upcoming conflict is within the next 2 hours.
 
-       Also have a look at epgsearch(4), section ’Working with the timer con‐
-       flict menu’.
+       Also have a look at epgsearch(4), section ’Working with the timer
+       conflict menu’.
 
        1.4.7 Email notification
 
-       Please make sure, that ’sendEmail.pl’ is in the path of your executa‐
-       bles and that the ’epgsearchupdmail.templ’ and ’epgsearchcon‐
-       flmail.templ’ exists in epgsearch’s configurations directory!
+       Please make sure, that ’sendEmail.pl’ is in the path of your
+       executables and that the ’epgsearchupdmail.templ’ and
+       ’epgsearchconflmail.templ’ exists in epgsearch’s configurations
+       directory!
 
        - Search timer notification:
            Enable this, if you want to get an email notification, when the
@@ -646,11 +651,11 @@ CONTENT
            Enable this, if you want to get an email notification about timer
            conflicts. The notification will only include ’relevant’ conflicts
            as specified in the timer conflict setup. epgsearch will always
-           send a new notification if there is any change in the current con‐
-           flicts.
+           send a new notification if there is any change in the current
+           conflicts.
 
-           (Also requires ’After each search timer update’ or ’every ... min‐
-           utes’ in the conflict check setup to be activated.)
+           (Also requires ’After each search timer update’ or ’every ...
+           minutes’ in the conflict check setup to be activated.)
 
        - Send to:
            The mail adress of the recipient. Note: Some providers (like Arcor)
@@ -684,8 +689,8 @@ CONTENT
 
        After the account setup, check if it works with ’Test’. If you are
        using ’sendEmail.pl’ for mail delivery, there should be something like
-       ’Email sent successfully’ at the end of the test output. The test func‐
-       tion is not available for method ’sendmail’.
+       ’Email sent successfully’ at the end of the test output. The test
+       function is not available for method ’sendmail’.
 
        Also have a look at epgsearch(4), section ’Email notifications’.
 
@@ -710,29 +715,27 @@ CONTENT
 
        touch /etc/vdr/plugins/epgsearch/.epgsearchupdate
 
-       This can also be part of your shutdown script. (Add here a sleep after‐
-       wards to give the plugin the time to finish the scan.)
+       This can also be part of your shutdown script. (Add here a sleep
+       afterwards to give the plugin the time to finish the scan.)
 
        For more info about searchtimers please refer to epgsearch(4),
        ’Description of the search process’ and ’How do Search Timers work?’
 
-       2.1 ’Avoid repeats’ - internals
-
+   2.1 ’Avoid repeats’ - internals
        This section explains the feature ’Avoid repeats’ for a search timer.
-       Sometimes one cannot avoid double recordings of an event only by set‐
-       ting the corresponding search criterions.
+       Sometimes one cannot avoid double recordings of an event only by
+       setting the corresponding search criterions.
 
        Therefore the feature ’avoid repeats’ tries to check before creating a
        timer, if the same event was already recorded in the past or if there
        is a timer that records the same event. If so, there will be no new
        timer for the event.
 
-       2.2 How do we compare two events?
-
+   2.2 How do we compare two events?
        To check if two events are the same there are many possible settings
        for a search timer. You can choose the title, subtitle, description or
-       extended EPG categories within the description of an event to be com‐
-       pared with the elements of another event.
+       extended EPG categories within the description of an event to be
+       compared with the elements of another event.
 
        This comparison is always done case-sensitive and for the whole term.
        But the description of an event makes an exception of this.  First all
@@ -744,16 +747,15 @@ CONTENT
        description of the repeat of the same event.
 
        The remaining text will now be compared by length. If the difference is
-       bigger then 90%, then we rate the description of the two events as dif‐
-       ferent. If not, we apply the Levinsthein-Distance-Algorithm (LD), which
-       makes a fuzzy text comparison. We accept the description of the events
-       as equal, if LD returns a match of more then 90%.  Since LD is quite
-       runtime intensive (O(mn)), you should not choose ’compare description’
-       as the only comparison criterion, but combine it always with other cri‐
-       terions.
+       bigger then 90%, then we rate the description of the two events as
+       different. If not, we apply the Levinsthein-Distance-Algorithm (LD),
+       which makes a fuzzy text comparison. We accept the description of the
+       events as equal, if LD returns a match of more then 90%.  Since LD is
+       quite runtime intensive (O(mn)), you should not choose ’compare
+       description’ as the only comparison criterion, but combine it always
+       with other criterions.
 
-       2.3 How and when do we compare?
-
+   2.3 How and when do we compare?
        As already mentioned each search timer update checks search timers with
        this feature for recordings in the past or an already existing timer
        for the same event.
@@ -775,9 +777,9 @@ CONTENT
        the next update would create. Existing timers are labeled with ’T’,
        future timers with ’P’.
 
-       Hint: If the programming results in a conflict simply disable the con‐
-       flicting timer in the timers menu. The next search timer update, will
-       try to program a different timer for the same event, if it exists.
+       Hint: If the programming results in a conflict simply disable the
+       conflicting timer in the timers menu. The next search timer update,
+       will try to program a different timer for the same event, if it exists.
 
        When it works not correctly :-)
 
@@ -870,8 +872,8 @@ CONTENT
 
         Gree Schedule
 
-       This patch is already included in some patch collections, like the Big‐
-       patch.
+       This patch is already included in some patch collections, like the
+       Bigpatch.
 
 6. Add-ons
        epgsearch delivers 2 ’mini’-plugins. Both require an installed
@@ -888,8 +890,8 @@ CONTENT
            The timer conflict check can also have its own main menu entry
            which displays epgsearch conflict overview menu. It has a setup
            option to display an information about the last check directly in
-           its main menu entry.  Activation in VDR start script with "-Pcon‐
-           flictcheckonly".
+           its main menu entry.  Activation in VDR start script with
+           "-Pconflictcheckonly".
 
        Have fun!
 
@@ -906,9 +908,10 @@ Advanced description
 
 SEE ALSO
        "epgsearch.conf(5)", "epgsearchcats.conf(5)", "epgsearchcmds.conf(5)",
-       "epgsearchdirs.conf(5)", "epgsearchmenu.conf(5)", "epgsearchuser‐
-       vars.conf(5)", "epgsearchdone.data(5)", "epgsearchswitchtimer.conf(5)",
-       "epgsearchblacklists.conf(5)", "epgsearchchangrps.conf(5)"
+       "epgsearchdirs.conf(5)", "epgsearchmenu.conf(5)",
+       "epgsearchuservars.conf(5)", "epgsearchdone.data(5)",
+       "epgsearchswitchtimer.conf(5)", "epgsearchblacklists.conf(5)",
+       "epgsearchchangrps.conf(5)"
 
 FILES
        epgsearch.conf
@@ -970,7 +973,7 @@ REPORT BUGS
        <http://www.vdr-developer.org/mailman/listinfo/epgsearch>
 
 COPYRIGHT and LICENSE
-       Copyright (C) 2004-2008 Christian Wieninger
+       Copyright (C) 2004-2009 Christian Wieninger
 
        This program is free software; you can redistribute it and/or modify it
        under the terms of the GNU General Public License as published by the
@@ -978,9 +981,9 @@ COPYRIGHT and LICENSE
        option) any later version.
 
        This program is distributed in the hope that it will be useful, but
-       WITHOUT ANY WARRANTY; without even the implied warranty of MER‐
-       CHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
-       Public License for more details.
+       WITHOUT ANY WARRANTY; without even the implied warranty of
+       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+       General Public License for more details.
 
        You should have received a copy of the GNU General Public License along
        with this program; if not, write to the Free Software Foundation, Inc.,
@@ -996,4 +999,4 @@ COPYRIGHT and LICENSE
 
 
 
-perl v5.8.8                       2008-04-13                      epgsearch(5)
+perl v5.10.0                      2009-01-29                      epgsearch(5)

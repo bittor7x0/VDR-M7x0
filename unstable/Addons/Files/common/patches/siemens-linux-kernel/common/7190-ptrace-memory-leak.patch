@@ -1,0 +1,53 @@
+diff -Nru linux/arch/mips/kernel/ptrace.c.orig linux/arch/mips/kernel/ptrace.c
+--- linux/arch/mips/kernel/ptrace.c.orig	Thu Nov  7 14:05:33 2002
++++ linux/arch/mips/kernel/ptrace.c	Wed Mar 12 17:28:34 2003
+@@ -72,7 +72,7 @@
+ 
+ 	ret = -EPERM;
+ 	if (pid == 1)		/* you may not mess with init */
+-		goto out;
++		goto out_tsk;
+ 
+ 	if (request == PTRACE_ATTACH) {
+ 		ret = ptrace_attach(child);
+@@ -94,8 +94,7 @@
+ 		if (copied != sizeof(tmp))
+ 			break;
+ 		ret = put_user(tmp,(unsigned long *) data);
+-
+-		goto out;
++		break;
+ 		}
+ 
+ 	/* Read the word at location addr in the USER area.  */
+@@ -164,10 +163,10 @@
+ 		default:
+ 			tmp = 0;
+ 			ret = -EIO;
+-			goto out;
++			goto out_tsk;
+ 		}
+ 		ret = put_user(tmp, (unsigned long *) data);
+-		goto out;
++		break;
+ 		}
+ 
+ 	case PTRACE_POKETEXT: /* write the word at location addr. */
+@@ -177,7 +176,7 @@
+ 		    == sizeof(data))
+ 			break;
+ 		ret = -EIO;
+-		goto out;
++		break;
+ 
+ 	case PTRACE_POKEUSR: {
+ 		struct pt_regs *regs;
+@@ -277,7 +276,7 @@
+ 
+ 	default:
+ 		ret = -EIO;
+-		goto out;
++		break;
+ 	}
+ out_tsk:
+ 	free_task_struct(child);

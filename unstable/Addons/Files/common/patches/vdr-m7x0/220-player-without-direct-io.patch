@@ -1,0 +1,17 @@
+diff -Naur VDR-NG-orig/dvbplayer.c VDR-NG/dvbplayer.c
+--- VDR-NG-orig/dvbplayer.c	Tue Sep 02 12:40:41 2008
++++ VDR-NG/dvbplayer.c	Tue Jun 02 18:41:00 2009
+@@ -353,13 +353,7 @@
+ 
+   playFrame = NULL;
+   isyslog("replay %s", FileName);
+-//M7X0 BEGIN AK
+-#ifdef USE_DIRECT_IO
+-  fileName = new cFileName(FileName, false, true, true);
+-#else
+   fileName = new cFileName(FileName, false);
+-#endif
+-//M7X0 END AK
+   replayFile = fileName->Open();
+   if (!replayFile)
+      return;

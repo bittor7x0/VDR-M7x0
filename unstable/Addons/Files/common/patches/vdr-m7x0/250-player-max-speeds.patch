@@ -1,0 +1,12 @@
+diff -Naur VDR-NG-orig/dvbplayer.c VDR-NG/dvbplayer.c
+--- VDR-NG-orig/dvbplayer.c	Tue Jun 02 17:58:24 2009
++++ VDR-NG/dvbplayer.c	Tue Jun 02 18:12:25 2009
+@@ -332,7 +332,7 @@
+ 
+ 
+ #define NORMAL_SPEED  0
+-#define MAX_SPEEDS    3
++#define MAX_SPEEDS    9
+ #define LOW_SPEEDS    0
+ cDvbPlayer::cDvbPlayer(const char *FileName)
+ :cThread("dvbplayer")

@@ -1,0 +1,57 @@
+Corrected some comments, thanks to Denis Vlasenko. Grep for 'safe'.
+
+Please refer to this book for reasoning:
+
+Cormen - Leiserson - Rivest: Introduction to Algorithms
+1990 MIT
+page 289, RB-DELETE-FIXUP(t,x)
+
+Laszlo
+
+
+--- linux-2.4.19/lib/rbtree.c	Sat Aug  3 02:39:46 2002
++++ linux/lib/rbtree.c	Sun Nov 24 22:59:38 2002
+@@ -159,17 +159,16 @@
+ 				if (!other->rb_right ||
+ 				    other->rb_right->rb_color == RB_BLACK)
+ 				{
+-					register rb_node_t * o_left;
+-					if ((o_left = other->rb_left))
+-						o_left->rb_color = RB_BLACK;
++					/* safe: other->rb_left can't be 0 */
++					other->rb_left->rb_color = RB_BLACK;
+ 					other->rb_color = RB_RED;
+ 					__rb_rotate_right(other, root);
+ 					other = parent->rb_right;
+ 				}
+ 				other->rb_color = parent->rb_color;
+ 				parent->rb_color = RB_BLACK;
+-				if (other->rb_right)
+-					other->rb_right->rb_color = RB_BLACK;
++				/* safe: other->rb_right can't be 0 */
++				other->rb_right->rb_color = RB_BLACK;
+ 				__rb_rotate_left(parent, root);
+ 				node = root->rb_node;
+ 				break;
+@@ -199,17 +198,16 @@
+ 				if (!other->rb_left ||
+ 				    other->rb_left->rb_color == RB_BLACK)
+ 				{
+-					register rb_node_t * o_right;
+-					if ((o_right = other->rb_right))
+-						o_right->rb_color = RB_BLACK;
++					/* safe: other->rb_right can't be 0 */
++					other->rb_right->rb_color = RB_BLACK;
+ 					other->rb_color = RB_RED;
+ 					__rb_rotate_left(other, root);
+ 					other = parent->rb_left;
+ 				}
+ 				other->rb_color = parent->rb_color;
+ 				parent->rb_color = RB_BLACK;
+-				if (other->rb_left)
+-					other->rb_left->rb_color = RB_BLACK;
++				/* safe: other->rb_left can't be 0 */
++				other->rb_left->rb_color = RB_BLACK;
+ 				__rb_rotate_right(parent, root);
+ 				node = root->rb_node;
+ 				break;

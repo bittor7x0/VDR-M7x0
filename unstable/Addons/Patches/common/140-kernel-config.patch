@@ -1,0 +1,66 @@
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2009-03-28 10:05:57.000000000 +0100
++++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2009-06-14 18:43:48.000000000 +0200
+@@ -48,6 +48,8 @@
+ # CONFIG_NINO is not set
+ # CONFIG_SGI_IP22 is not set
+ # CONFIG_SGI_IP27 is not set
++CONFIG_RTSCHED=y
++CONFIG_MAX_PRI=127
+ # CONFIG_SGI_IP32 is not set
+ # CONFIG_SIBYTE_SB1xxx_SOC is not set
+ # CONFIG_SNI_RM200_PCI is not set
+@@ -62,6 +64,8 @@
+ #
+ # CPU selection
+ #
++CONFIG_LOLAT=y
++# CONFIG_LOLAT_SYSCTL is not set
+ # CONFIG_CPU_MIPS32 is not set
+ # CONFIG_CPU_MIPS64 is not set
+ # CONFIG_CPU_R3000 is not set
+@@ -229,6 +233,11 @@
+ # CONFIG_BLK_STATS is not set
+ 
+ #
++# Elevator
++#
++CONFIG_BLK_DEV_ELEVATOR_LOWLAT=y
++
++#
+ # Multi-device support (RAID and LVM)
+ #
+ # CONFIG_MD is not set
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2009-03-28 10:05:57.000000000 +0100
++++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2009-06-14 18:43:48.000000000 +0200
+@@ -48,6 +48,8 @@
+ # CONFIG_NINO is not set
+ # CONFIG_SGI_IP22 is not set
+ # CONFIG_SGI_IP27 is not set
++CONFIG_RTSCHED=y
++CONFIG_MAX_PRI=127
+ # CONFIG_SGI_IP32 is not set
+ # CONFIG_SIBYTE_SB1xxx_SOC is not set
+ # CONFIG_SNI_RM200_PCI is not set
+@@ -62,6 +64,8 @@
+ #
+ # CPU selection
+ #
++CONFIG_LOLAT=y
++# CONFIG_LOLAT_SYSCTL is not set
+ # CONFIG_CPU_MIPS32 is not set
+ # CONFIG_CPU_MIPS64 is not set
+ # CONFIG_CPU_R3000 is not set
+@@ -229,6 +233,11 @@
+ # CONFIG_BLK_STATS is not set
+ 
+ #
++# Elevator
++#
++CONFIG_BLK_DEV_ELEVATOR_LOWLAT=y
++
++#
+ # Multi-device support (RAID and LVM)
+ #
+ # CONFIG_MD is not set
