@@ -11,7 +11,7 @@ size_part_max=$((200*1024))
 source /etc/rc.debug
 
 # Umount disks
-/sbin/usbautomounter umount
+/sbin/usbautomounter umount nofsck
 
 # Get disks available in the system
 disks=`grep -v "[0-9]$" /proc/partitions \
