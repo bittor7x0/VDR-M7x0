@@ -42,9 +42,6 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 	webifState.currentPage=PN_WATCHIT;
 	int ntabs=initHtmlPage(response,out,tr("channelWatch"),
 "		<script type=\"text/javascript\" src=\"/js/vlc.js\"></script>\n"
-"		<script type=\"text/javascript\">\n"
-"			$.webif.state.channelNum='%d';\n"
-"		</script>\n"
 	);
 	printMenu(out,ntabs);
 	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
@@ -55,11 +52,12 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 	} else {
 		channelList_t channels;
 		const char *hostAddr=getHostHttpAddr(host,request);
+		int channelNum=vars_get_value_i(args,"channelNum");
 		io_printf(out,"%.*s<script type=\"text/javascript\">\n",ntabs,tabs);
-		io_printf(out,"%.*s	$.webif.state.url_base='http://%s'",ntabs,tabs,hostAddr);
+		io_printf(out,"%.*s	$.webif.state.url_base='http://%s';\n",ntabs,tabs,hostAddr);
+		io_printf(out,"%.*s	$.webif.state.channelNum='%d';\n",ntabs,tabs,channelNum);
 		io_printf(out,"%.*s</script>\n",ntabs,tabs);
 		
-		int channelNum=vars_get_value_i(args,"channelNum");
 		getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
 		if ((channelNum<1) || (channelNum>channels.length)) {
 			channel_t channel;

@@ -32,8 +32,7 @@ function toggleFullscreen(event){
 	event.preventDefault();
 	var vlc=getVlc();
 	if (vlc && vlc.video) {
-		var video=vlc.video;
-		video.toggleFullscreen();
+		vlc.video.toggleFullscreen();
 	}
 }
 function toggleMute(event){
