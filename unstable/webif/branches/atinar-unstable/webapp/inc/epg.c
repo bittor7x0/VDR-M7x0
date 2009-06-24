@@ -42,22 +42,22 @@ void initEE(eventEntry_t * const event){
 
 void initEventFromArgs(eventEntry_t * const event, vars_t *args){
 	event->title=(vars_countn(args, "title")>0) 
-		? condstrdup(isFlagSet(EF_TITLE,event->my),vars_get_value(args,"title")) 
+		? condstrdup(isFlagSet(EFI_TITLE,event->my),vars_get_value(args,"title")) 
 		: NULL;
 	event->shortdesc=(vars_countn(args, "shortdesc") > 0) 
-		? condstrdup(isFlagSet(EF_SHORTDESC,event->my),vars_get_value(args,"shortdesc")) 
+		? condstrdup(isFlagSet(EFI_SHORTDESC,event->my),vars_get_value(args,"shortdesc")) 
 		: NULL;
 	event->desc=(vars_countn(args, "desc")>0) 
-		? condstrdup(isFlagSet(EF_DESC,event->my),vars_get_value(args,"desc")) 
+		? condstrdup(isFlagSet(EFI_DESC,event->my),vars_get_value(args,"desc")) 
 		: NULL;
 }
 
 void freeEE(eventEntry_t * const event){
-	if (isFlagSet(EF_TITLE,event->my))
+	if (isFlagSet(EFI_TITLE,event->my))
 		free(event->title);
-	if (isFlagSet(EF_DESC,event->my))
+	if (isFlagSet(EFI_DESC,event->my))
 		free(event->desc);
-	if (isFlagSet(EF_SHORTDESC,event->my))
+	if (isFlagSet(EFI_SHORTDESC,event->my))
 		free(event->shortdesc);
 	initEE(event);
 }
@@ -86,7 +86,7 @@ void freeNNL(nowNextList_t * const list){
 	initNNL(list);
 }
 
-void parse215E(char * line, eventEntry_t * const event) {
+void parseEventRecord(char * line, eventEntry_t * const event) {
 	char *r=line;
 	int k;
 	int l;
@@ -107,25 +107,25 @@ void parse215E(char * line, eventEntry_t * const event) {
 boolean_t parseLineEvent(char c, char *s, eventEntry_t *const event){
 	switch (c) {
 		case 'E':
-			parse215E(s,event);
+			parseEventRecord(s,event);
 			return BT_TRUE;
 		case 'T':
 			crit_goto_if((event->title=strdup(s))==NULL,outOfMemory);
-			event->my|=EF_TITLE;
+			setFlag(EFI_TITLE,event->my);
 			return BT_TRUE;
 		case 'D':
 			crit_goto_if((event->desc=strdup(s))==NULL,outOfMemory);
-			event->my|=EF_DESC;
+			setFlag(EFI_DESC,event->my);
 			return BT_TRUE;
 		case 'S': 
 			crit_goto_if((event->shortdesc=strdup(s))==NULL,outOfMemory);
-			event->my|=EF_SHORTDESC;
+			setFlag(EFI_SHORTDESC,event->my);
 			return BT_TRUE;
 		default:
 			return BT_FALSE;
 	}
 outOfMemory:
-	crit("parseLineEvent:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -167,7 +167,7 @@ void getNowNextList(hostConf_t *vdrHost, nowNextList_t * const list, channelList
 				break;
 			}
 			int code = strtol(p,&p,10);
-			if (code==215 && p[0]=='-') {
+			if (code==SVDRP_RCRD && p[0]=='-') {
 				p++;
 				if (p[0]=='C') {
 					if (channels->length>1) {

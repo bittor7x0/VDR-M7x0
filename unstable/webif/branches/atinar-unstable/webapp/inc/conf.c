@@ -30,32 +30,6 @@
 
 #define VIDEO0 "/var/vdr/video0"
 
-webifConf_t webifConf = {
-	BT_FALSE, //alreadySet
-	0, //st_mtime of conf file in last read
-	-1, //langId
-	{	{0,"","127.0.0.1",2001,VIDEO0,BT_TRUE,0},
-		{1,"vdr2","192.168.100.1",2001,"",BT_TRUE,0},
-		{2,"vdr3","192.168.100.2",2001,"",BT_TRUE,0},
-	}, //hosts
-	1, //hostsLength
-	1, //numVDRs
-	PL_M3U, //playlistType
-	BT_FALSE, //recDeletionDisabled
-	BT_FALSE, //configChangeDisabled
-	BT_FALSE, //disable config view
-	BT_FALSE, //useExternalWwwFolder
-	BT_TRUE, //displayHostId
-	2, //maxDepth
-	BT_FALSE, //alwaysCloseSvdrp
-};
-
-vdrConf_t vdrConf = {
-	BT_FALSE, //alreadySet
-	5*60, //marginStart
-	15*60 //marginStop
-};
-
 void validateCheckbox(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param){
 	const char *option=(paramConfig->options)?paramConfig->options:"false|true";
 	if (!strchr(option,'|')){
@@ -71,13 +45,13 @@ void validateCheckbox(const cfgParamConfig_t * const paramConfig, cfgParam_t * c
 	} else {
 		option+=l+1;
 		l=strcspn(option,"|");
-		if (option[l]=='|') warn("Mas de dos opciones");
+		if (option[l]=='|') warn("More than two options for a checkboxCfg");
 		param->isValid=boolean(param->value!=NULL && strncmp(option,param->value,l)==0);
 	}
 }
 
 boolean_t printCheckbox(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
-	,int paramIdx,const char *paramValue,const char aux[]
+	,const char *id, const char *paramName,int paramIdx,const char *paramValue,char *const aux
 ){
 	if (paramConfig->options) {
 		//value==first option => false
@@ -90,7 +64,7 @@ boolean_t printCheckbox(io_t *out,int ntabs,const cfgParamConfig_t * const param
 			booleanValueSet=BT_TRUE;
 		}
 		if (option[l]!='|'){
-			warn("Solo una opcion");
+			warn("Only one option for a checkboxCfg");
 			option=NULL;
 		} else {
 			option+=l+1;
@@ -101,21 +75,33 @@ boolean_t printCheckbox(io_t *out,int ntabs,const cfgParamConfig_t * const param
 			}
 		}
 		if (!booleanValueSet) {
-			warn("Ninguna opcion coincide");
+			warn("No option match for checkbox value");
 		}
-		io_printf(out,"%.*s<input type=\"checkbox\" name=\"paramValue_%d\" value=\"%.*s\"%s/>\n"
-			,ntabs,tabs,paramIdx,(option)?l:4,(option)?option:"true",checked[booleanValue]
-		);
+		io_printf(out,"%.*s<input type=\"checkbox\"",ntabs,tabs);
+		if (id) io_printf(out,"id=\"%s\" ",id);
+		if (paramName==NULL){
+			io_printf(out,"name=\"paramValue_%d\" ",paramIdx);
+		} else {
+			io_printf(out,"name=\"%s\" ",paramName);
+		}
+		io_printf(out,"value=\"%.*s\"%s/>\n",(option)?l:4,(option)?option:"true",checked[booleanValue]);
 		return BT_TRUE;
 	}
 	return BT_FALSE;
 }
 
 boolean_t printSelect(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
-	,int paramIdx,const char *paramValue, char * const aux
+	,const char *id, const char *paramName,int paramIdx,const char *paramValue, char *const aux
 ){
 	if (paramConfig && paramConfig->options && strlen(paramConfig->options)>0) {
-		io_printf(out,"%.*s<select name=\"paramValue_%d\" size=\"1\">\n",ntabs,tabs,paramIdx);
+		io_printf(out,"%.*s<select ",ntabs,tabs);
+		if (id) io_printf(out,"id=\"%s\" ",id);
+		if (paramName==NULL){
+			io_printf(out,"name=\"paramValue_%d\" ",paramIdx);
+		} else {
+			io_printf(out,"name=\"%s\" ",paramName);
+		}
+		io_printf(out,"size=\"1\">\n");
 		const char * option=paramConfig->options;
 		int o=paramConfig->indexOffset;
 		for(;;) {
@@ -148,25 +134,23 @@ void validateHostsField(const cfgParamConfig_t * const paramConfig, cfgParam_t *
 	param->isValid=validateHostsStr(param->value);
 }
 
-boolean_t printHostsField(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
-	,int paramIdx,const char *paramValue,const char aux[]
-){
-	io_printf(out,"%.*s<input type=\"text\" name=\"paramValue_%d\" value=\"%s\" size=\"50\"/>\n"
-		,ntabs,tabs,paramIdx,paramValue);
-	return BT_TRUE;
-}
+webifConf_t webifConf;
 
 cfgParamConfig_t webifParamConfig[]={ //Keep sorted by name !!
-	{"always_close_svdrp","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"default language","0","langBrowserDefined|langEnglish|langGerman|langSpanish|langFrench",BT_TRUE,-1,NULL,(cfgParamPrintInput_t)printSelect,BT_FALSE},
+	{"always_close_svdrp","true","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
+	{"deletion_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
+	{"default language","-1","langBrowserDefined|langEnglish|langGerman|langSpanish|langFrench",BT_TRUE,-1,NULL,(cfgParamPrintInput_t)printSelect,BT_FALSE},
+	{"default_margin_start","15",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
+	{"default_margin_stop","20",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
 	{"display_host_id","true","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
 	{"config_change_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
 	{"config_view_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"hosts",",127.0.0.1,2001,/var/vdr/video0;",NULL,BT_FALSE,0,(cfgParamValidate_t)validateHostsField,(cfgParamPrintInput_t)printHostsField,BT_FALSE},
-	{"max_depth","1",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"playlist_type","M3U","M3U|XSPF",BT_TRUE,0,NULL,printSelect,BT_FALSE},
-	{"rec_deletion_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
+	{"hosts",",127.0.0.1,2001,/var/vdr/video0;",NULL,BT_FALSE,0,(cfgParamValidate_t)validateHostsField,NULL/*(cfgParamPrintInput_t)printHostsField*/,BT_FALSE},
+	{"max_depth","2",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
+	{"playlist_type","0","M3U|XSPF",BT_TRUE,0,NULL,printSelect,BT_FALSE},
 	{"use_external_www_folder","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
+	{"video_width","640",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
+	{"video_height","480",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
 };
 
 cfgParamConfig_t rcParamConfig[]={ //Keep sorted by name !!
@@ -570,7 +554,7 @@ boolean_t parseHostsField(const char *hosts,boolean_t apply){
 							strncpy(host->video0,t+so,l); host->video0[l]=0;
 							break;
 						default :
-							warn("Mas de HOSTNUMCONFFIELDS=%d detectados en cadena hosts",HOSTNUMCONFFIELDS);
+							warn("Two much parameters for a host cfg.");
 					};
 					if (errno) {
 						warn(strerror(errno));
@@ -599,7 +583,7 @@ boolean_t parseHostsField(const char *hosts,boolean_t apply){
 	regfree(&regex);
 	return ok;
 outOfMemory:
-	crit("parseHostsField: out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -614,14 +598,15 @@ time_t get_mtime(const char *fileName){
 }
 
 boolean_t readWebifConf() {
+	//TODO integrar en readConf mediante funciones en paramCfgs
 	errno=0;
 	time_t current_mtime=get_mtime(cfgFile[CF_WEBIFCONF].fileName);
 	if (webifConf.mtime<current_mtime || errno){
 		webifConf.alreadySet=BT_FALSE;
 		errno=0;
-		dbg("webifConf desfasado [%.0f secs.]. Se vuelve a leer.", difftime(current_mtime,webifConf.mtime));
 	}
 	if (webifConf.alreadySet) {
+		//dbg("webifConf ya actualizado, no se lee.");
 		return;
 	}
 	cfgParamList_t params;
@@ -636,7 +621,7 @@ boolean_t readWebifConf() {
 				if (errno!=0 || webifConf.langId<-1 || webifConf.langId>=I18NNUM) webifConf.langId=-1;
 			} else if (strcmp(param->name,"hosts")==0) {
 				if (!parseHostsField(param->value,BT_TRUE)){
-					warn("No hay ningun host valido configurado");
+					warn("No valid host set up");
 					webifConf.hostsLength=1;
 					webifConf.hosts[0].name[0]=0;
 					strcpy(webifConf.hosts[0].ip,"127.0.0.1");
@@ -650,11 +635,11 @@ boolean_t readWebifConf() {
 				} else {
 					webifConf.playlistType=strtol(param->value,NULL,10);
 				}
-			} else if (strcmp(param->name,"rec_deletion_disabled")==0) {
+			} else if (strcmp(param->name,"deletion_disabled")==0) {
 				if (param->value==NULL || strlen(param->value)<1 ){
 					//TODO warn
 				} else {
-					webifConf.recDeletionDisabled=sameString(param->value,"true");
+					webifConf.deletionDisabled=sameString(param->value,"true");
 				}
 			} else if (strcmp(param->name,"config_change_disabled")==0) {
 				if (param->value==NULL || strlen(param->value)<1 ){
@@ -695,6 +680,30 @@ boolean_t readWebifConf() {
 					//TODO warn
 				} else {
 					webifConf.alwaysCloseSvdrp=sameString(param->value,"true");
+				}
+			} else if (strcmp(param->name,"default_margin_start")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.defaultMarginStart=atoi(param->value);
+				}
+			} else if (strcmp(param->name,"default_margin_stop")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.defaultMarginStop=atoi(param->value);
+				}
+			} else if (strcmp(param->name,"video_width")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.videoWidth=atoi(param->value);
+				}
+			} else if (strcmp(param->name,"video_height")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.videoHeight=atoi(param->value);
 				}
 			}
 		}

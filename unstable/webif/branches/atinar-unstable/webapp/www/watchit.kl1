@@ -39,12 +39,15 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 
 	config(session, request);
 	vars_t *args = request_get_args(request);
-	currentPage=PN_WATCHIT;
+	webifState.currentPage=PN_WATCHIT;
 	int ntabs=initHtmlPage(response,out,tr("channelWatch"),
 "		<script type=\"text/javascript\" src=\"/js/vlc.js\"></script>\n"
+"		<script type=\"text/javascript\">\n"
+"			$.webif.state.channelNum='%d';\n"
+"		</script>\n"
 	);
 	printMenu(out,ntabs);
-	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
 	
 	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
 	if (host==NULL){
@@ -52,6 +55,10 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 	} else {
 		channelList_t channels;
 		const char *hostAddr=getHostHttpAddr(host,request);
+		io_printf(out,"%.*s<script type=\"text/javascript\">\n",ntabs,tabs);
+		io_printf(out,"%.*s	$.webif.state.url_base='http://%s'",ntabs,tabs,hostAddr);
+		io_printf(out,"%.*s</script>\n",ntabs,tabs);
+		
 		int channelNum=vars_get_value_i(args,"channelNum");
 		getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
 		if ((channelNum<1) || (channelNum>channels.length)) {
@@ -61,13 +68,10 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 			}
 			freeChannel(&channel);
 		}
+		io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("channelWatch"));
+		io_printf(out,"%.*s<div class=\"section ui-helper-clearfix\">\n",ntabs++,tabs);
 
 		io_printf(out,"%.*s<div id=\"watchItControl\">\n",ntabs++,tabs);
-		if ((channelNum>0) && (channelNum<=channels.length) ) {
-			io_printf(out,"%.*s<h2>&raquo;%s&laquo;</h2>\n",ntabs,tabs,channels.channel[channelNum-1].channelName);
-		} else {
-			io_printf(out,"%.*s<h2>TV</h2>\n",ntabs,tabs);
-		}
 		const char *Play=tr("play");
 		const char *Pause=tr("pause");
 		const char *Fullscreen=tr("fullScreen");
@@ -75,38 +79,35 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 		const char *VolumeDown=tr("volumeDown");
 		const char *VolumeUp=tr("volumeUp");
 
-		io_printf(out,"%.*s<form action=\"watchit.kl1\" method=\"post\">\n",ntabs++,tabs);
-		printChannelListSelect(out,ntabs,"channelNum",&channels,channelNum);
-		io_printf(out,"%.*s<br />\n",ntabs,tabs);
-		io_printf(out,"%.*s<input type=\"submit\" value=\"%s\"/>\n",ntabs,tabs,tr("switch"));
+		io_printf(out,"%.*s<form action=\"watchit.kl1\" method=\"post\" class=\"ui-helper-clearfix\">\n",ntabs++,tabs);
+		printChannelListSelect(out,ntabs,NULL,"channelNum",&channels,channelNum);
+		io_printf(out,"%.*s<ul class=\"controls\"><!--\n",ntabs++,tabs);
+		/* Produce error de desbordamiento de buffer en streamdevserver
+		io_printf(out,"%.*s"
+			"--><li id=\"PlayOrPause\" class=\"control buttonm-i ui-state-default\" >"
+				"<span class=\"ui-icon ui-icon-pause\" title=\"%s\">%s</span>"
+			"</li><!--\n",ntabs,tabs,Pause,Pause);
+		*/
+		io_printf(out,"%.*s"
+			"--><li id=\"Fullscreen\" class=\"control buttonm-i ui-state-default\" >"
+				"<span class=\"ui-icon ui-icon-arrow-4-diag\" title=\"%s\">%s</span>"
+			"</li><!--\n",ntabs,tabs,Fullscreen,Fullscreen);
+		io_printf(out,"%.*s"
+			"--><li id=\"Mute\" class=\"control buttonm-i ui-state-default\" >"
+				"<span class=\"ui-icon ui-icon-volume-off\" title=\"%s\">%s</span>"
+			"</li><!--\n",ntabs,tabs,Mute,Mute);
+		io_printf(out,"%.*s"
+			"--><li id=\"VolumeDown\" class=\"control buttonm-i ui-state-default\" >"
+				"<span class=\"ui-icon ui-icon-volume-down\" title=\"%s\">%s</span>"
+			"</li><!--\n",ntabs,tabs,VolumeDown,VolumeDown);
+		io_printf(out,"%.*s"
+			"--><li id=\"VolumeUp\" class=\"control buttonm-i ui-state-default\" >"
+				"<span class=\"ui-icon ui-icon-volume-up\" title=\"%s\">%s</span>"
+			"</li><!--\n",ntabs,tabs,VolumeUp,VolumeUp);
+		io_printf(out,"%.*s--></ul>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
 
-		io_printf(out,"%.*s<ul class=\"controls ui-widget ui-helper-clearfix\">\n",ntabs++,tabs);
-		io_printf(out,"%.*s"
-			"<li id=\"PlayOrPause\" class=\"control ui-state-default ui-corner-all\" >"
-				"<span class=\"ui-icon ui-icon-pause\">%s</span>"
-			"</li>\n",ntabs,tabs,Pause);
-		io_printf(out,"%.*s"
-			"<li id=\"Fullscreen\" class=\"control ui-state-default ui-corner-all\" >"
-				"<span class=\"ui-icon ui-icon-arrow-4-diag\">%s</span>"
-			"</li>\n",ntabs,tabs,Fullscreen);
-		io_printf(out,"%.*s"
-			"<li id=\"Mute\" class=\"control ui-state-default ui-corner-all\" >"
-				"<span class=\"ui-icon ui-icon-volume-off\">%s</span>"
-			"</li>\n",ntabs,tabs,Mute);
-		io_printf(out,"%.*s"
-			"<li id=\"VolumeDown\" class=\"control ui-state-default ui-corner-all\" >"
-				"<span class=\"ui-icon ui-icon-volume-down\">%s</span>"
-			"</li>\n",ntabs,tabs,VolumeDown);
-		io_printf(out,"%.*s"
-			"<li id=\"VolumeUp\" class=\"control ui-state-default ui-corner-all\" >"
-				"<span class=\"ui-icon ui-icon-volume-up\">%s</span>"
-			"</li>\n",ntabs,tabs,VolumeUp);
-		io_printf(out,"%.*s</ul>\n",--ntabs,tabs);
-
-		io_printf(out,"%.*s<div id=\"watchItInfoWrapper\">\n",ntabs++,tabs);
-		io_printf(out,"%.*s<iframe id=\"watchItInfo\" src=\"now-next.kl1?chan=%d\"></iframe>\n",ntabs,tabs,channelNum);
-		io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<div id=\"watchItInfo\"></div>\n",ntabs,tabs);
 
 		io_printf(out,"%.*s</div>\n",--ntabs,tabs); //watchItControl
 			
@@ -114,26 +115,40 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 		if ((channelNum>0) && (channelNum<=channels.length)) {
 			const char *context =(channels.channel[channelNum-1].vpid>1) ? "/" : "/ES/";
 			io_printf(out,"%.*s<div id=\"watchItVlc\">\n",ntabs++,tabs);
-			io_printf(out,"%.*s<!--[if !IE]>-->\n",ntabs,tabs);
-			io_printf(out,"%.*s<object	id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\">\n"
-				,ntabs,tabs,720, 576);
-			io_printf(out,"%.*s<!--<![endif]-->\n",ntabs,tabs);
-			io_printf(out,"%.*s<!--[if IE]>\n",ntabs,tabs);
-			io_printf(out,"%.*s<object	id=\"vlc\" width=\"%d\" height=\"%d\"\n"
-				,ntabs++,tabs,720, 576);
-			io_printf(out,"%.*s classid=\"clsid:E23FE9C6-778E-49D4-B537-38FCDE4887D8\"\n",ntabs,tabs);
-			io_printf(out,"%.*s codebase=\"http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab\">\n",ntabs--,tabs);
-			io_printf(out,"%.*s<![endif]-->\n",ntabs++,tabs);
-			io_printf(out,"%.*s<param name=\"showDisplay\" value=\"true\" />\n",ntabs,tabs);
-			io_printf(out,"%.*s<param name=\"autoLoop\" value=\"false\" />\n",ntabs,tabs);
-			io_printf(out,"%.*s<param name=\"autoPlay\" value=\"true\" />\n",ntabs,tabs);
-			io_printf(out,"%.*s<param name=\"src\" value=\"http://%s:3000%s%d\" />\n",ntabs,tabs,hostAddr,context,channelNum);
-			io_printf(out,"%.*s</object>\n",--ntabs,tabs);
+//#define USE_EMBED_TAG
+#ifdef USE_EMBED_TAG
+				io_printf(out,"%.*s<embed id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\"\n"
+					,ntabs++,tabs,webifConf.videoWidth,webifConf.videoHeight);
+				io_printf(out,"%.*s	pluginspage=\"http://www.videolan.org/\"  version=\"VideoLAN.VLCPlugin.2\"\n",ntabs,tabs);
+				io_printf(out,"%.*s	autoPlay=\"true\" target=\"http://%s:3000%s%d\" />\n",ntabs--,tabs,hostAddr,context,channelNum);
+#else
+			int p;
+			for (p=0;p<2;p++){
+				if (p==0) {
+					io_printf(out,"%.*s<!--[if !IE]><!-->\n",ntabs,tabs);
+					io_printf(out,"%.*s<object id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\">\n"
+						,ntabs++,tabs,webifConf.videoWidth,webifConf.videoHeight);
+				}
+				else {
+					io_printf(out,"%.*s<!--[if IE]>\n",ntabs,tabs);
+					io_printf(out,"%.*s<object id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\" \n"
+						,ntabs++,tabs,webifConf.videoWidth,webifConf.videoHeight);
+					io_printf(out,"%.*sclassid=\"clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921\"\n",ntabs,tabs);
+					io_printf(out,"%.*scodebase=\"http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab\">\n",ntabs,tabs);
+				}
+				io_printf(out,"%.*s<param name=\"showDisplay\" value=\"true\" />\n",ntabs,tabs);
+				io_printf(out,"%.*s<param name=\"autoLoop\" value=\"false\" />\n",ntabs,tabs);
+				io_printf(out,"%.*s<param name=\"autoPlay\" value=\"true\" />\n",ntabs,tabs);
+				//io_printf(out,"%.*s<param name=\"src\" value=\"playlistch.kl1?type=%d\" />\n",ntabs,tabs,webifConf.playlistType);
+				io_printf(out,"%.*s</object>\n",--ntabs,tabs);
+				io_printf(out,"%.*s%s<![endif]-->\n",ntabs,tabs,(p==0)?"<!--":"");
+			}
+#endif
 			io_printf(out,"%.*s</div>\n",--ntabs,tabs); //watchItVlc
 		}
 		freeChannelList(&channels);
+		io_printf(out,"%.*s</div>\n",--ntabs,tabs); //section
 	}
-	io_printf(out,"%.*s<div class=\"clearer\"></div>\n",ntabs,tabs);
 	io_printf(out,"%.*s</div>\n",--ntabs,tabs); //main
 	finishHtmlPage(out,ntabs);
 end:

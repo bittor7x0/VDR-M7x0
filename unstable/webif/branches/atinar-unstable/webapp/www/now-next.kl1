@@ -81,13 +81,8 @@ dbg_now_next_kl1(void) { dbg("now-next.kl1"); }
 	
 	int ntabs=initHtmlDoc(response,out);
 	io_printf(out,
-"	<head>\n"
-"		<title>%s</title>\n"
-"		<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/screen.css\" media=\"screen\"/>\n"
-"	</head>\n"
 "	<body id=\"nowNextBody\">\n"
 "		<div id=\"tabs\">\n"
-		,tr("program")
 	);
 
 	int i;

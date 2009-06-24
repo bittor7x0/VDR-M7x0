@@ -25,7 +25,7 @@
 
 typedef struct channel_s {
 	int  channelNum;        //Number to dial on remote control.
-	char *channelId;        //ID of the channel, currently unset!
+	char *channelId;        //Id of the channel
 	char *channelName;      //Name of the channel.
 	char *multiplexName;    //Name of the multiplex if avaible.
 	int  frequency;         //Frequency (in Hz) of the multiplex.
@@ -57,6 +57,6 @@ void getChannelList(hostConf_t *vdrHost, channelList_t * const list, sortField_t
  * If channelNum==0, retrieve current channel name.
  */
 boolean_t getChannel(hostConf_t *vdrHost, int channelNum, channel_t * const channel);
-void printChannelListSelect(io_t *out,int ntabs,const char * name,const channelList_t *const channels,int channelNum);
+void printChannelListSelect(io_t *out,int ntabs,const char * id,const char * name,const channelList_t *const channels,int channelNum);
 
 #endif

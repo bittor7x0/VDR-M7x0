@@ -1,38 +1,42 @@
+.gainlayout { 
+	min-height:0; 
+}
+textarea {
+	overflow:auto;
+}
 #main {
-	margin:20px auto;
-	width:97%;
+	min-height:0;
 }
 .section {
-	height:1%;
+	min-height:0; 
 }
-.recPathWrapper {
-	height:1%;
-}
-.recPath .recDir {
-	height:1%;
-	display:inline;
+#recFoldersWrapper {
+	min-height:0;
 }
 .recFolderWrapper {
-	height:1%;
 	display:inline;
 }
-div.recFolderDetails {
-	height:expresion(this.height>10.5em?10em:true);
+.recFolderHeader,
+.recRec {
+	min-height:0;
 }
-div.infobox div.info {
-	height:expresion(this.height>22.5em?22em:true);
+form table.list tbody tr:hover td {
+	background-color:#D7D7A7;
 }
-#watchItControl {
-	width:expresion(this.height>251px?250px:true);
-	height:expresion(this.height>451px?450px:true);
+button {
+	overflow:visible; 
+	width:auto!important;
 }
-
-/*
- * superfish
- */
+button.button-i-t .ui-icon {
+	left:0;
+}
+.buttons-i {
+	width:18px;
+	height:auto!important;
+}
 .sf-menu li:hover {
-	visibility:inherit; /* fixes IE7 'sticky bug' */
+	visibility:inherit;
 }
 .sf-menu a.sf-with-ul {
-	min-width:1px;
+	min-height:0;
 }

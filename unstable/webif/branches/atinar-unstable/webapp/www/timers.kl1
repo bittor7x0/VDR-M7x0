@@ -67,76 +67,77 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(hostId) : NULL;
 	if (!host || !host->isVdr)
 		host=getFirstVdrHost();
-	sortBy=(vars_countn(args,"sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
-	sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
-	currentPage=PN_TIMERS;
-	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
+	webifState.sortBy=(vars_countn(args,"sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
+	webifState.sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
+	webifState.currentPage=PN_TIMERS;
+	webifState.currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
 	int ntabs=initHtmlPage(response,out,tr("timers"),
 "		<script type=\"text/javascript\">\n"
-"			webif.messages.confirmDelete='%s';\n"
+"			$.webif.messages.confirmDelete='%s';\n"
 "		</script>\n"
-		,tr("timerDeleteConfirm")
+		,tr("timer.delete.confirm")
 	);
 	printMenu(out,ntabs);
-	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
 	io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("timers"));
+	io_printf(out,"%.*s<div class=\"section\">\n",ntabs++,tabs);
 
 	channelList_t channels;
 	initChannelList(&channels);
 
-	if (currentAction==PA_DELETE) {
+	if (webifState.currentAction==PA_DELETE) {
 		if ( (timerId>0) && (timerId<1000) && (oldTimerStr) ) {
 			char *message=NULL;
 			if (deleTimer(host,timerId,oldTimerStr,&message)){
-				printMessage(out,ntabs,"message",tr("timerDeleteOk"),message,aux);
-				currentAction=PA_SUMMARY;
+				printMessage(out,ntabs,"message",tr("timer.delete.ok"),message,aux);
+				webifState.currentAction=PA_SUMMARY;
 			} else {
-				printMessage(out,ntabs,"alert",tr("timerDeleteErr"),message,aux);
-				currentAction=PA_EDIT;
+				printMessage(out,ntabs,"alert",tr("timer.delete.err"),message,aux);
+				webifState.currentAction=PA_EDIT;
 				argTimerStr=oldTimerStr;
 			}
 			free(message);
 		}
 	}
-	if (currentAction==PA_ADD) {
+	if (webifState.currentAction==PA_ADD) {
 		char *timerStr = (argTimerStr==NULL) ? parseTimerForm(args,ntabs) : (char *)argTimerStr;
 		char *message=NULL;
 		if ( (timerId>0) && (timerStr) && (oldTimerStr) && (hostId==oldHostId) ) {
 			if (editTimer(host,timerId,oldTimerStr,timerStr,&message)){
-				printMessage(out,ntabs,"message",tr("timerUpdateOk"),message,aux);
+				printMessage(out,ntabs,"message",tr("timer.update.ok"),message,aux);
 			} else {
-				printMessage(out,ntabs,"alert",tr("timerUpdateErr"),message,aux);
+				printMessage(out,ntabs,"alert",tr("timer.update.err"),message,aux);
 			}
 		} else if (timerStr) {
 			if (addTimer(host,timerStr,&message)){
-				printMessage(out,ntabs,"message",tr("timerCreateOk"),message,aux);
+				printMessage(out,ntabs,"message",tr("timer.create.ok"),message,aux);
 				free(message); message=NULL;
 				if ( (timerId>0) && (timerId<1000) && (oldTimerStr) && hostId!=oldHostId){
 					hostConf_t *oldHost=getHost(oldHostId);
 					if (!oldHost || !oldHost->isVdr) {
 						message="Anterior host erroneo, no se puede eliminar programación";
-						printMessage(out,ntabs,"message",tr("timerDeleteOk"),message,NULL);
+						printMessage(out,ntabs,"message",tr("timer.delete.ok"),message,NULL);
 						message=NULL;
 					} else if (deleTimer(oldHost,timerId,oldTimerStr,&message)){
-						printMessage(out,ntabs,"message",tr("timerDeleteOk"),message,aux);
-						currentAction=PA_SUMMARY;
+						printMessage(out,ntabs,"message",tr("timer.delete.ok"),message,aux);
+						webifState.currentAction=PA_SUMMARY;
 					} else {
-						printMessage(out,ntabs,"alert",tr("timerDeleteErr"),message,aux);
-						currentAction=PA_EDIT;
+						printMessage(out,ntabs,"alert",tr("timer.delete.err"),message,aux);
+						webifState.currentAction=PA_EDIT;
 						argTimerStr=oldTimerStr;
 					}
 				}
 			} else {
-				printMessage(out,ntabs,"alert",tr("timerCreateErr"),message,aux);
+				printMessage(out,ntabs,"alert",tr("timer.create.err"),message,aux);
 			}
 		}
-		currentAction=PA_SUMMARY;
+		webifState.currentAction=PA_SUMMARY;
 		if (timerStr && timerStr!=argTimerStr ){
 			free(timerStr);
 		}
 		free(message);
 	} 
-	if (currentAction==PA_EDIT) {
+	if (webifState.currentAction==PA_EDIT) {
 		vdrTimer_t timer;
 		initTimer(&timer);
 		if (argTimerStr) {
@@ -157,13 +158,14 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 				u_htmlncpy(aux,otstr,l,HTMLCPY_ENCODE);
 				io_printf(out,"%.*s<input type=\"hidden\" name=\"oldTimerStr\" value=\"%s\"/>\n",ntabs,tabs,aux);
 			} else {
-				warn("timers.kl1: timerId asignado pero no hay timerStr");
+				warn("timers.kl1: timerId without timerStr");
 			} 
 		}
-		const char *TimerEdit=tr((timerId>0)?"timerEdit":"timerAdd");
-		io_printf(out,"%.*s<table id=\"timerEdit\" class=\"list2\" summary=\"%s\">\n",ntabs++,tabs,TimerEdit);
+		const char *TimerEdit=tr((timerId>0)?"timer.edit":"timer.add");
+		io_printf(out,"%.*s<table id=\"timerEdit\" class=\"list\" summary=\"%s\">\n",ntabs++,tabs,TimerEdit);
 		io_printf(out,"%.*s<caption>%s</caption>\n",ntabs,tabs,TimerEdit);
 
+		io_printf(out,"%.*s<tbody>\n",ntabs++,tabs);
 		io_printf(out,"%.*s"
 			"<tr>"
 				"<th>%s</th>"
@@ -175,19 +177,21 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
 		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("channel"));
 		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
-		printChannelListSelect(out,ntabs,"channelNum",&channels,timer.channelNum);
+		printChannelListSelect(out,ntabs,NULL,"channelNum",&channels,timer.channelNum);
 		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
 
+		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,"Host");
+		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
 		if (webifConf.numVDRs>1){
-			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-			io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,"Host");
-			io_printf(out,"%.*s<td>\n",ntabs++,tabs);
 			printVDRSelect(out,ntabs,"hostId",(host)?host->id:0);
-			io_printf(out,"%.*s<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",ntabs,tabs,(host)?host->id:0);
-			io_printf(out,"%.*s</td>\n",--ntabs,tabs);
-			io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+		} else {
+			io_printf(out,"%.*s<input type=\"text\" name=\"hostId\" class=\"readOnly\" readonly=\"readonly\" value=\"%d\"/>\n",ntabs,tabs,(host)?host->id:0);
 		}
+		io_printf(out,"%.*s<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",ntabs,tabs,(host)?host->id:0);
+		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
 
 		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
 		io_printf(out,"%.*s<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n"
@@ -252,10 +256,10 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 
 		io_printf(out,"%.*s"
 			"<tr>"
-				"<th>&nbsp;</th>"
-				"<td><input type=\"checkbox\" name=\"addMargin\" value=\"%d\" %s/>%s</td>"
+				"<th>%s</th>"
+				"<td><input type=\"checkbox\" name=\"addMargin\" value=\"%d\" %s/></td>"
 			"</tr>\n"
-			,ntabs,tabs,boolean(timerId<1),checked[boolean(timerId<1)],tr("addMargin"));
+			,ntabs,tabs,tr("margin.add"),boolean(timerId<1),checked[boolean(timerId<1)]);
 
 		io_printf(out,"%.*s"
 			"<tr>"
@@ -292,32 +296,33 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 		io_printf(out,"%.*s<tr class=\"buttons\">\n",ntabs++,tabs);
 		io_printf(out,"%.*s<td colspan=\"2\">\n",ntabs++,tabs);
 		io_printf(out,"%.*s"
-			"<button id=\"confirm\" class=\"confirm ui-state-default ui-corner-all\" name=\"a\" type=\"submit\" value=\"%d\" >"
-				"<span class=\"ui-icon ui-icon-check\">&nbsp;</span> %s"
+			"<button id=\"confirm\" class=\"confirm ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
+				"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
 			"</button>\n"
 			,ntabs,tabs,PA_ADD,tr("accept"));
 		io_printf(out,"%.*s"
-			"<button id=\"delete\" class=\"delete ui-state-default ui-corner-all\" name=\"a\" type=\"submit\" value=\"%d\" >"
-				"<span class=\"ui-icon ui-icon-trash\">&nbsp;</span> %s"
+			"<button id=\"delete\" class=\"delete ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
+				"<div><span class=\"ui-icon ui-icon-trash\">&nbsp;</span>%s</div>"
 			"</button>\n"
-			,ntabs,tabs,PA_DELETE,tr("timerDelete"));
+			,ntabs,tabs,PA_DELETE,tr("timer.delete"));
 		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</tbody>\n",--ntabs,tabs);
 				
 		io_printf(out,"%.*s</table>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
 		freeTimer(&timer);
-		//currentAction=PA_SUMMARY;
+		//webifState.currentAction=PA_SUMMARY;
 	}
-	if (currentAction==PA_SUMMARY) {
+	if (webifState.currentAction==PA_SUMMARY) {
 		if (channels.length==0 && host){
 			getChannelList(host,&channels,SF_NONE,SD_NONE);
 		}
 		if (channels.length>0) {
 			timerList_t timers;
-			getTimerList(&timers,&channels,sortBy,sortDirection);
+			getTimerList(&timers,&channels,webifState.sortBy,webifState.sortDirection);
 			boolean_t printHost=boolean(webifConf.numVDRs>1);
-			io_printf(out,"%.*s<table id=\"timers\" class=\"list1\" summary=\"%s\">\n",ntabs++,tabs,tr("timerList"));
+			io_printf(out,"%.*s<table id=\"timers\" class=\"list\" summary=\"%s\">\n",ntabs++,tabs,tr("timerList"));
 			io_printf(out,"%.*s<col class=\"number\"/>\n",ntabs,tabs);
 			if (printHost) io_printf(out,"%.*s<col class=\"number\"/>\n",ntabs,tabs);
 			io_printf(out,"%.*s<col class=\"tmDate date\"/>\n",ntabs,tabs);
@@ -331,38 +336,22 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 			
 			io_printf(out,"%.*s<thead>\n",ntabs++,tabs);
 			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-			io_printf(out,"%.*s"
-				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
-				,ntabs,tabs,sortClass(SF_TM_NUMBER),SF_TM_NUMBER,newSortDirection(SF_TM_NUMBER),"#");
+			printList1TH(out,ntabs,"timers.kl1",SF_TM_NUMBER,"#");
 			if (printHost){
-				io_printf(out,"%.*s"
-					"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
-					,ntabs,tabs,sortClass(SF_HOST),SF_HOST,newSortDirection(SF_HOST),"Host");
+				printList1TH(out,ntabs,"timers.kl1",SF_HOST,"Host");
 			}
-			io_printf(out,"%.*s"
-				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
-				,ntabs,tabs,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("date"));
-			io_printf(out,"%.*s"
-				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
-				,ntabs,tabs,sortClass(SF_CH_NUMBER),SF_CH_NUMBER,newSortDirection(SF_CH_NUMBER),tr("channel"));
-			io_printf(out,"%.*s"
-				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
-				,ntabs,tabs,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("start"));
-			io_printf(out,"%.*s"
-				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
-				,ntabs,tabs,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("end"));
-			io_printf(out,"%.*s"
-				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
-				,ntabs,tabs,sortClass(SF_TITLE),SF_TITLE,newSortDirection(SF_TITLE),tr("program"));
-			io_printf(out,"%.*s"
-				"<th><a class=\"%s\" href=\"timers.kl1?sort=%d%%26direction=%d\">%s</a></th>\n"
-				,ntabs,tabs,sortClass(SF_MUX),SF_MUX,newSortDirection(SF_MUX),tr("channelMux"));
+			printList1TH(out,ntabs,"timers.kl1",SF_START,tr("date"));
+			printList1TH(out,ntabs,"timers.kl1",SF_CH_NUMBER,tr("channel"));
+			printList1TH(out,ntabs,"timers.kl1",SF_START,tr("start"));
+			printList1TH(out,ntabs,"timers.kl1",SF_START,tr("end"));
+			printList1TH(out,ntabs,"timers.kl1",SF_TITLE,tr("title"));
+			printList1TH(out,ntabs,"timers.kl1",SF_MUX,tr("channelMux"));
 			io_printf(out,"%.*s<th>&nbsp;</th>\n",ntabs,tabs);
 			io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
 			io_printf(out,"%.*s</thead>\n",--ntabs,tabs);
 
 			io_printf(out,"%.*s<tbody>\n",ntabs++,tabs);
-			const char *EditTimer=tr("timerEdit");
+			const char *EditTimer=tr("timer.edit");
 			const char *Schedule=tr("schedule");
 			channel_t noChannel;
 			const channel_t *channel;
@@ -406,7 +395,8 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 			//TODO
 		}
 	}
-	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);//section
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);//main
 	finishHtmlPage(out,ntabs);
 	freeChannelList(&channels);
 	closeSvdrpAll();

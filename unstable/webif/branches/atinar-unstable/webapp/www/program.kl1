@@ -56,7 +56,7 @@ boolean_t intersects(vdrTimer_t *timer, time_t pstart, time_t pend, int *mstart,
 	return result;
 }
 
-void printTimers(io_t *out, int ntabs, int channelNum, time_t startTime, int duration,char aux[]) {
+void printTimers(io_t *out, int ntabs, int channelNum, time_t startTime, int duration,char aux[],const char *TimerEdit) {
 	int mstart=0;
 	int mend=0;
 
@@ -64,7 +64,6 @@ void printTimers(io_t *out, int ntabs, int channelNum, time_t startTime, int dur
 	boolean_t isStart, isEnd, anyMatch;
 	anyMatch=BT_FALSE;
 	if ( (timers.length>0) && (channelNum>0) && (startTime>0) && (duration>0) ) {
-		const char *TimerEdit=tr("timerEdit");
 		int i;
 		vdrTimer_t *timer;
 		for (i=0,timer=timers.entry;i<timers.length;i++,timer++) {
@@ -72,18 +71,20 @@ void printTimers(io_t *out, int ntabs, int channelNum, time_t startTime, int dur
 				isStart=boolean(mstart>=0);
 				isEnd=boolean(mend>=0);
 				anyMatch=BT_TRUE;
-				mstart=(mstart<=0) ? 0 : 100 * mstart / duration;
-				mend=  (mend<=0)   ? 0 : 100 * mend / duration;
+				double left=(mstart>0)?100.0*mstart/duration:0.0;
+				double right=(mend>0)?100*mend/duration:0.0;
+				double width=(100.0-left-right);
+				if (width<0.0) width=0;
 				io_printf(out,"%.*s<div id=\"timer%d_%d\" class=\"timer\" title=\"%s\">\n"
 					,ntabs++,tabs,timer->id,++timer->count,timer->title);
 				io_printf(out,"%.*s<div class=\"progressbar\">\n",ntabs++,tabs);
 				io_printf(out,"%.*s"
-					"<div class=\"pb%s%s%s\" style=\"left:%d%%;right:%d%%;\">"
+					"<div class=\"pb%s%s%s\" style=\"%s:%.0f%%;width:%.0f%%;\">"
 						"&nbsp;"
 					"</div>\n",ntabs,tabs
 					,(isStart) ? " pbstart":"",(isEnd) ? " pbend":""
 					,(isFlagSet(TF_ACTIVE,timer->flags)) ? " pbenabled":" pbdisabled"
-					,mstart,mend);
+					,(isStart)?"right":"left",(isStart)?right:left,width);
 				io_printf(out,"%.*s</div>\n",--ntabs,tabs); //progressbar
 				u_urlncpy(aux,timer->timerStr,strlen(timer->timerStr),URLCPY_ENCODE);
 				io_printf(out,"%.*s<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&amp;timerStr=%s&amp;timerId=%d\" title=\"%s\">%s</a>\n"
@@ -110,16 +111,15 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 	enum {AUXSZ=2048};
 	char aux[AUXSZ];
 
-
 	vars_t *args = request_get_args(request);
 	channelNum=vars_get_value_i(args,"chan");
 
 	config(session, request);
-	currentPage=PN_PROGRAMS;
+	webifState.currentPage=PN_PROGRAMS;
 	
 	int ntabs=initHtmlPage(response,out,tr("schedule"),NULL);
 	printMenu(out,ntabs);
-	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
 	
 	hostConf_t *host=getFirstVdrHost();
 	if (!host)
@@ -129,13 +129,15 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 		getTimerList(&timers,&channels,SF_START,SD_ASC);
 
 		boolean_t isTv;
-		const char * Schedule=tr("schedule");
-		const char * TimerCreate=tr("timerCreate");
+		const char *Schedule=tr("schedule");
+		const char *TimerCreate=tr("timer.create");
+		const char *TimerEdit=tr("timer.edit");
 		if (channelNum<1) {
 			nowNextList_t nnl;
 			getNowNextList(host,&nnl,&channels);
 
 			io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("nowOnTv"));
+			io_printf(out,"%.*s<div class=\"section\">\n",ntabs++,tabs);
 			if (nnl.length==0) {
 				io_printf(out,"%.*s<div class=\"alert\">%s</div>\n",ntabs,tabs,tr("warnNoEPG"));
 			} else {
@@ -146,10 +148,10 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 				int pcbegin;
 				int pcend;
 				const char *LiveStream=tr("liveStream");
-				io_printf(out,"%.*s<table id=\"programs\" class=\"list1\" summary=\"%s\">\n",ntabs++,tabs,Schedule);
+				io_printf(out,"%.*s<table id=\"programs\" class=\"list\" summary=\"%s\">\n",ntabs++,tabs,Schedule);
 				
-				io_printf(out,"%.*s<col class=\"channel\"/>\n",ntabs,tabs);
-				io_printf(out,"%.*s<col class=\"space\"/>\n",ntabs,tabs);
+				io_printf(out,"%.*s<colgroup><col class=\"channel\"/></colgroup>\n",ntabs,tabs);
+				io_printf(out,"%.*s<colgroup><col class=\"space\"/></colgroup>\n",ntabs,tabs);
 				io_printf(out,"%.*s<colgroup id=\"colNow\" class=\"nowNext\">\n",ntabs++,tabs);
 				io_printf(out,"%.*s<col class=\"hour\"/>\n",ntabs,tabs);
 				io_printf(out,"%.*s<col class=\"timers\"/>\n",ntabs,tabs);
@@ -203,7 +205,7 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 							io_printf(out,"%.*s<td class=\"hour\">%02d:%02d</td>\n",ntabs,tabs,sdate->tm_hour,sdate->tm_min);
 							
 							io_printf(out,"%.*s<td class=\"timers\">\n",ntabs++,tabs);
-							printTimers(out,ntabs,channel->channelNum,event->start,event->duration,aux);
+							printTimers(out,ntabs,channel->channelNum,event->start,event->duration,aux,TimerEdit);
 							io_printf(out,"%.*s</td>\n",--ntabs,tabs);
 							
 							u_urlncpy(aux,timerStr,strlen(timerStr),URLCPY_ENCODE);
@@ -234,6 +236,9 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 			freeNNL(&nnl);
 			
 		} else {
+			io_printf(out,"%.*s<h2>%s %s &raquo;%s&laquo;</h2>\n"
+				,ntabs,tabs,tr("schedule"),tr("for"),channels.channel[channelNum-1].channelName);
+			io_printf(out,"%.*s<div class=\"section\">\n",ntabs++,tabs);
 
 			// TODO generalizar nowNextList_t a eventList con numero de eventos por canal uno de {1=now,2={now,next},0=todos}
 			// TODO chanelNum coincide siempre con idx+1?
@@ -254,15 +259,13 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 			int cont=0;
 			for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
 				retCode=strtol(p,&p,10);
-				if (retCode==215){
+				if (retCode==SVDRP_RCRD){
 					p++;
 					if (p[0]=='e') {
 						next_time=event.start+event.duration;
 						if (event.start>0) {
 							if (cont==0){
-								io_printf(out,"%.*s<h2>%s %s &raquo;%s&laquo;</h2>\n"
-									,ntabs,tabs,tr("schedule"),tr("for"),channels.channel[channelNum-1].channelName);
-								io_printf(out,"%.*s<table id=\"programs\" class=\"list1\" summary=\"%s\">\n",ntabs++,tabs,Schedule);
+								io_printf(out,"%.*s<table id=\"programs\" class=\"list\" summary=\"%s\">\n",ntabs++,tabs,Schedule);
 								io_printf(out,"%.*s<col class=\"hour\"/>\n",ntabs,tabs);
 								io_printf(out,"%.*s<col class=\"timers\"/>\n",ntabs,tabs);
 								io_printf(out,"%.*s<col class=\"pgName\"/>\n",ntabs,tabs);
@@ -293,7 +296,7 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 							io_printf(out,"%.*s<td class=\"hour\">%02d:%02d</td>\n",ntabs,tabs,sdate.tm_hour,sdate.tm_min);
 							
 							io_printf(out,"%.*s<td class=\"timers\">\n",ntabs++,tabs);
-							printTimers(out,ntabs,channelNum,event.start,event.duration,aux);
+							printTimers(out,ntabs,channelNum,event.start,event.duration,aux,TimerEdit);
 							io_printf(out,"%.*s</td>\n",--ntabs,tabs);
 							
 							u_urlncpy(aux,timerStr,strlen(timerStr),URLCPY_ENCODE);
@@ -329,6 +332,7 @@ dbg_program_kl1(void) { dbg("program.kl1"); }
 		freeTimerList(&timers);
 		freeChannelList(&channels);
 	}
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 	finishHtmlPage(out,ntabs);
 end:

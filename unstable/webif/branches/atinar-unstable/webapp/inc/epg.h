@@ -25,10 +25,10 @@
 #include "channels.h"
 #include "conf.h"
 
-enum eventFields_s{
-	EF_TITLE=1,
-	EF_SHORTDESC=2,
-	EF_DESC=4
+enum eventFields_e{
+	EFI_TITLE=1,
+	EFI_SHORTDESC=2,
+	EFI_DESC=4
 };
 
 typedef struct eventEntry_s {

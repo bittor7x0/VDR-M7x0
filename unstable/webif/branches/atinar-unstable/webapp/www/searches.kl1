@@ -1,0 +1,431 @@
+<%!
+/*
+* 
+* This source-code is licensed under GPL v2.
+* See ../../LICENSE for details
+* 
+* (c) Christian Kelinski <k@kille.cx>
+* Please checkout the README file!
+* 
+* Originally written for the open7x0.org VDR-FW project:
+* www.open7x0.org
+* 
+* Modified for http://vdr-m7x0.foroactivo.com.es by:
+* atinar <atinar1@hotmail.com>
+* 
+* You will need the KLONE web application development framework
+* from www.koanlogic.com Version 2.
+* 
+*/
+
+#include <klapp_conf.h>
+#include <time.h>
+#include <locale.h>
+#include <u/libu.h>
+
+#include "i18n.h"
+#include "conf.h"
+#include "channels.h"
+#include "epg.h"
+#include "searches.h"
+#include "svdrp_comm.h"
+
+
+#ifdef DEBUG
+void dbg_searches_kl1(void) { dbg("searches.kl1"); }
+#endif
+
+%><%
+
+	#ifdef DEBUG
+	dbg_searches_kl1();
+	#endif
+
+	config(session, request);
+
+	int i=0;
+	int l;
+	enum {AUXSZ=4096};
+	char aux[AUXSZ];
+
+	vars_t *args = request_get_args(request);
+	int searchId=(vars_countn(args,"searchId")>0) ? vars_get_value_i(args,"searchId") : -1;
+	const char * argSearchStr=(vars_countn(args,"searchStr")>0) ? vars_get_value(args,"searchStr") : NULL;
+	const char * oldSearchStr=(vars_countn(args,"oldSearchStr")>0) ? vars_get_value(args,"oldSearchStr") : NULL;
+	int hostId=vars_get_value_i(args,"hostId");
+	int oldHostId=vars_get_value_i(args,"oldHostId");
+	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(hostId) : NULL;
+	if (!host || !host->isVdr) host=getFirstVdrHost();
+	webifState.currentPage=PN_SEARCHES;
+	webifState.currentAction=(vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
+	webifState.sortBy=(vars_countn(args,"sort")>0) ? vars_get_value_i(args,"sort") : SF_NAME;
+	webifState.sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
+	int ntabs=initHtmlPage(response,out,tr("searches"),
+"		<script type=\"text/javascript\">\n"
+"			$.webif.messages.confirmDelete='%s';\n"
+"		</script>\n"
+		,tr("search.delete.confirm")
+	);
+	printMenu(out,ntabs);
+	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
+
+	channelList_t channels;
+	initChannelList(&channels);
+
+	io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("searches"));
+	io_printf(out,"%.*s<div class=\"section ui-helper-clearfix\">\n",ntabs++,tabs);
+	if (webifState.currentAction==PA_DELETE) {
+		if ( (searchId>=0) && (oldSearchStr) ) {
+			char *message=NULL;
+			if (deleSearch(host,searchId,oldSearchStr,&message)){
+				printMessage(out,ntabs,"message",tr("search.delete.ok"),message,aux);
+				webifState.currentAction=PA_SUMMARY;
+			} else {
+				printMessage(out,ntabs,"alert",tr("search.delete.err"),message,aux);
+				webifState.currentAction=PA_EDIT;
+				argSearchStr=oldSearchStr;
+			}
+			free(message);
+		}
+	}
+	if (webifState.currentAction==PA_ADD) {
+		if (channels.length==0 && host){
+			getChannelList(host,&channels,SF_NONE,SD_NONE);
+		}
+		search_t search;
+		initSearchFromArgs(&search,args,&channels,out,ntabs);
+		char *searchStr=makeSearchStr(&search,&channels);
+		freeSearch(&search);
+		char *message=NULL;
+		if ( (searchId>=0) && (oldSearchStr) && (hostId==oldHostId) ) {
+			if (editSearch(host,searchId,oldSearchStr,searchStr,&message)){
+				printMessage(out,ntabs,"message",tr("search.update.ok"),message,aux);
+			} else {
+				printMessage(out,ntabs,"alert",tr("search.update.err"),message,aux);
+			}
+		} else {
+			if (addSearch(host,searchStr,&message)){
+				printMessage(out,ntabs,"message",tr("search.create.ok"),message,aux);
+				free(message); message=NULL;
+				if ( (searchId>=0) && (oldSearchStr) && hostId!=oldHostId){
+					hostConf_t *oldHost=getHost(oldHostId);
+					if (!oldHost || !oldHost->isVdr) {
+						message="Anterior host erroneo, no se puede eliminar programación";
+						printMessage(out,ntabs,"message",tr("search.delete.ok"),message,NULL);
+						message=NULL;
+					} else if (deleSearch(oldHost,searchId,oldSearchStr,&message)){
+						printMessage(out,ntabs,"message",tr("search.delete.ok"),message,aux);
+						webifState.currentAction=PA_SUMMARY;
+					} else {
+						printMessage(out,ntabs,"alert",tr("search.delete.err"),message,aux);
+						webifState.currentAction=PA_EDIT;
+						argSearchStr=oldSearchStr;
+					}
+				}
+			} else {
+				printMessage(out,ntabs,"alert",tr("search.create.err"),message,aux);
+			}
+		}
+		webifState.currentAction=PA_SUMMARY;
+		if (searchStr && searchStr!=argSearchStr ){
+			free(searchStr);
+		}
+		free(message);
+	} 
+	if (webifState.currentAction==PA_EDIT) {
+		cfgParamConfig_t searchModeCfg={"search.mode","0","search.phrase|search.allWords|search.atLeastOne|search.exactMatch|search.regex|search.fuzzy",BT_TRUE,0,NULL,NULL,BT_FALSE};
+		cfgParamConfig_t checkboxCfg={"","0","0|1",BT_FALSE,0,NULL,NULL,BT_FALSE};
+		cfgParamConfig_t useChannelCfg={"","0","no|interval|channel.group|onlyFTA",BT_TRUE,0,NULL,NULL,BT_FALSE};
+		cfgParamConfig_t searchActionCfg={"","0","search.record|search.announce|search.switch",BT_TRUE,0,NULL,NULL,BT_FALSE};
+
+		char *paramValue;
+		struct tm sdate;
+		const char *SearchEdit=tr((argSearchStr)?"search.edit":"search.add");
+		if (channels.length==0){
+			getChannelList(host,&channels,SF_NONE,SD_NONE);
+		}
+		search_t search;
+		initSearch(&search);
+		if (argSearchStr) {
+			parseSearch(argSearchStr,&search,&channels);
+		}
+		io_printf(out,"%.*s"
+			"<form action=\"/searches.kl1\" method=\"post\">\n"
+			,ntabs++,tabs);
+
+		io_printf(out,"%.*s<fieldset>\n",ntabs++,tabs);
+		if (searchId>=0) {
+			io_printf(out,"%.*s<input type=\"hidden\" name=\"searchId\" value=\"%d\"/>\n",ntabs,tabs,searchId);
+			const char * otstr = (oldSearchStr!=NULL) ? oldSearchStr : argSearchStr;
+			if (otstr) {
+				l=strlen(otstr);
+				u_htmlncpy(aux,otstr,l,HTMLCPY_ENCODE);
+				io_printf(out,"%.*s<input type=\"hidden\" name=\"oldSearchStr\" value=\"%s\"/>\n",ntabs,tabs,aux);
+			} else {
+				warn("searches.kl1: searchId without searchStr");
+			} 
+		}
+		if (webifConf.numVDRs>1){
+			io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,"Host");
+			printVDRSelect(out,ntabs,"hostId",(host)?host->id:0);
+			io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		} else {
+			io_printf(out,"%.*s<input type=\"hidden\" name=\"hostId\" value=\"%d\"/>\n",ntabs,tabs,(host)?host->id:0);
+		}
+		io_printf(out,"%.*s<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",ntabs,tabs,(host)?host->id:0);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"search\" value=\"%s\"/></label>\n",ntabs,tabs,tr("search.search"),(search.search)?search.search:"");
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.mode"));
+		asprintf(&paramValue,"%d",search.searchMode);
+		printSelect(out,ntabs,&searchModeCfg,NULL,"searchMode",0,paramValue,aux);
+		free(paramValue);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.useCase"));
+		printCheckbox(out,ntabs,&checkboxCfg,NULL,"useCase",0,isFlagSet(SFL_USE_CASE,search.flags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.compareTitle"));
+		printCheckbox(out,ntabs,&checkboxCfg,NULL,"compareTitle",0,isFlagSet(EFI_TITLE,search.compareFlags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.compareSubtitle"));
+		printCheckbox(out,ntabs,&checkboxCfg,NULL,"compareSubtitle",0,isFlagSet(EFI_SHORTDESC,search.compareFlags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.compareDescription"));
+		printCheckbox(out,ntabs,&checkboxCfg,NULL,"compareDescription",0,isFlagSet(EFI_DESC,search.compareFlags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+
+		io_printf(out,"%.*s<fieldset>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.startFilter"));
+		printCheckbox(out,ntabs,&checkboxCfg,"startFilter","useTime",0,isFlagSet(SFL_USE_TIME,search.flags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<fieldset id=\"startFilterCfg\">\n",ntabs++,tabs);
+		int hour,min;
+		hour=search.startTime/100;
+		min=search.startTime-hour*100;
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"startTime\" value=\"%02d:%02d\" size=\"5\"/></label>\n",ntabs,tabs,tr("search.startAfter"),hour,min);
+		hour=search.stopTime/100;
+		min=search.stopTime-hour*100;
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"stopTime\" value=\"%02d:%02d\" size=\"5\"/></label>\n",ntabs,tabs,tr("search.startBefore"),hour,min);
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</fieldset><!--\n",--ntabs,tabs);
+
+		io_printf(out,"%.*s--><fieldset>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.durationFilter"));
+		printCheckbox(out,ntabs,&checkboxCfg,"durationFilter","useDuration",0,isFlagSet(SFL_USE_DURATION,search.flags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<fieldset id=\"durationFilterCfg\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"minDuration\" value=\"%d\" size=\"3\"/></label>\n",ntabs,tabs,tr("search.durationMin"),search.minDuration);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"maxDuration\" value=\"%d\" size=\"3\"/></label>\n",ntabs,tabs,tr("search.durationMax"),search.maxDuration);
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</fieldset><!--\n",--ntabs,tabs);
+
+		io_printf(out,"%.*s--><fieldset>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.wdayFilter"));
+		printCheckbox(out,ntabs,&checkboxCfg,"wdayFilter","useWday",0,isFlagSet(SFL_USE_WDAY,search.flags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<fieldset id=\"wdayFilterCfg\">\n",ntabs++,tabs);
+		int wdayFlag;
+		int c,wday;
+		for(c=0,wday=startOfWeek[langId];c<7;c++,wday=(wday+1)%7) {
+			wdayFlag=1<<wday;
+			io_printf(out,"%.*s"
+				"<label>%s"
+					"<input type=\"checkbox\" name=\"wday\" value=\"%d\"%s/>"
+				"</label>",ntabs,tabs,weekdays[langId][wday],wday,checked[(search.wday<0)?isFlagSet(wdayFlag,-search.wday):boolean(wday==search.wday)]);
+		}
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</fieldset><!--\n",--ntabs,tabs);
+
+		//channel-start
+		io_printf(out,"%.*s--><fieldset>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.channelFilter"));
+		asprintf(&paramValue,"%d",search.useChannel);
+		printSelect(out,ntabs,&useChannelCfg,"channelFilter","useChannel",0,paramValue,aux);
+		free(paramValue);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<fieldset id=\"channelFilterCfg\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label id=\"channelMinLabel\">%s\n",ntabs++,tabs,tr("search.channelMin"));
+		printChannelListSelect(out,ntabs,NULL,"channelMin",&channels,search.channelMin+1);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<label id=\"channelMaxLabel\">%s\n",ntabs++,tabs,tr("search.channelMax"));
+		printChannelListSelect(out,ntabs,NULL,"channelMax",&channels,search.channelMax+1);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		if (1) { //channelGroup
+			channelGroupList_t groups;
+			getChannelGroupList(host,&groups,&channels);
+			io_printf(out,"%.*s<label id=\"channelGroupLabel\">%s\n",ntabs++,tabs,tr("search.channel.group"));
+			if (groups.length>0) {
+				printChannelGroupListSelect(out,ntabs,"channelGroup",&groups,search.channelGroup);
+				//TODO que hacer si no esta en la lista
+			} else {
+				io_printf(out,"%.*s<input type=\"text\" name=\"channelGroup\" size=\"5\" value=\"%s\"/>",ntabs,tabs,(search.channelGroup)?search.channelGroup:"");
+			} 
+			io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+			freeChannelGroupList(&groups);
+		}
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</fieldset><!--\n",--ntabs,tabs);
+		//channel-end
+
+		//useAsSearchTimer-start
+		io_printf(out,"%.*s--><fieldset>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.useAsSearchTimer"));
+		printCheckbox(out,ntabs,&checkboxCfg,"useAsSearchTimer","useAsSearchTimer",0,isFlagSet(SFL_USE_AS_SEARCH_TIMER,search.flags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<fieldset id=\"useAsSearchTimerCfg\">\n",ntabs++,tabs);
+		//action-start
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.action"));
+		asprintf(&paramValue,"%d",search.action);
+		printSelect(out,ntabs,&searchActionCfg,"searchAction","searchAction",0,paramValue,aux);
+		free(paramValue);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+
+		//record-start
+		io_printf(out,"%.*s<fieldset id=\"recordCfg\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"directory\" value=\"%s\" size=\"50\" /></label>\n"
+			,ntabs,tabs,tr("search.directory"),(search.directory)?search.directory:"");
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.useEpisode"));
+		printCheckbox(out,ntabs,&checkboxCfg,"useEpisode","useEpisode",0,isFlagSet(SFL_USE_EPISODE,search.flags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"priority\" value=\"%d\" size=\"3\" /></label>\n",ntabs,tabs,tr("search.priority"),search.priority);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"lifetime\" value=\"%d\" size=\"3\" /></label>\n",ntabs,tabs,tr("search.lifetime"),search.lifetime);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"marginStart\" value=\"%d\" size=\"3\" /></label>\n",ntabs,tabs,tr("search.margin.before"),search.marginStart);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"marginStop\" value=\"%d\" size=\"3\" /></label>\n",ntabs,tabs,tr("search.margin.after"),search.marginStop);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"delAfterDays\" value=\"%d\" size=\"2\" /></label>\n",ntabs,tabs,tr("search.delAfterDays"),search.delAfterDays);
+
+		//repeats-start
+		//io_printf(out,"%.*s<fieldset id=\"repeats\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.repeats.avoid"));
+		printCheckbox(out,ntabs,&checkboxCfg,"repeatsAvoid","repeatsAvoid",0,isFlagSet(SFL_AVOID_REPEATS,search.flags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<fieldset id=\"repeatsAvoidCfg\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"repeatsAllowed\" value=\"%d\" size=\"2\"/></label>\n"
+			,ntabs,tabs,tr("search.repeats.maxAllowed"),search.allowedRepeats);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.repeats.compareTitle"));
+		printCheckbox(out,ntabs,&checkboxCfg,NULL,"repeatsCompareTitle",0,isFlagSet(EFI_TITLE,search.repeatsCompareFlags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.repeats.compareSubtitle"));
+		printCheckbox(out,ntabs,&checkboxCfg,NULL,"repeatsCompareSubtitle",0,isFlagSet(EFI_SHORTDESC,search.repeatsCompareFlags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.repeats.compareDescription"));
+		printCheckbox(out,ntabs,&checkboxCfg,NULL,"repeatsCompareDescription",0,isFlagSet(EFI_DESC,search.repeatsCompareFlags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		//io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		//repeats-end
+
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		//record-end
+
+		//announce-start
+		/*
+		io_printf(out,"%.*s<fieldset id=\"announceCfg\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		*/
+		//announce-stop
+
+		//switch-start
+		io_printf(out,"%.*s<fieldset id=\"switchCfg\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<label>%s<input type=\"text\" name=\"switchMinsBefore\" value=\"%d\" size=\"2\"/></label>\n"
+			,ntabs,tabs,tr("search.switch.minsBefore"),search.switchMinsBefore);
+		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.switch.unmuteSound"));
+		printCheckbox(out,ntabs,&checkboxCfg,"switchUnmuteSound","repeatsAvoid",0,isFlagSet(SFL_UNMUTE_SOUND_ON_SWITCH,search.flags)?"1":"0",aux);
+		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		//switch-end
+
+		//action-end
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</fieldset><!--\n",--ntabs,tabs);
+		//useAsSearchTimer-end
+
+		io_printf(out,"%.*s--><fieldset class=\"controls\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s"
+			"<button id=\"confirm\" class=\"confirm ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
+				"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
+			"</button>\n"
+			,ntabs,tabs,PA_ADD,tr("accept"));
+		io_printf(out,"%.*s"
+			"<button id=\"delete\" class=\"delete ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
+				"<div><span class=\"ui-icon ui-icon-trash\">&nbsp;</span>%s</div>"
+			"</button>\n"
+			,ntabs,tabs,PA_DELETE,tr("search.delete"));
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
+		freeSearch(&search);
+		//webifState.currentAction=PA_SUMMARY;
+	}
+	if (webifState.currentAction==PA_SUMMARY) {
+		if (channels.length==0 && host){
+			getChannelList(host,&channels,SF_NONE,SD_NONE);
+		}
+		if (channels.length>0) {
+			searchList_t searches;
+			getSearchList(&searches,&channels,webifState.sortBy,webifState.sortDirection);
+			boolean_t printHost=boolean(webifConf.numVDRs>1);
+			io_printf(out,"%.*s<table id=\"searches\" class=\"list\" summary=\"%s\">\n",ntabs++,tabs,tr("searches"));
+			io_printf(out,"%.*s<col class=\"searchId number\"/>\n",ntabs,tabs);
+			if (printHost) io_printf(out,"%.*s<col class=\"hostId number\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"search\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"directory\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"hour\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"hour\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"ctrls\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<thead>\n",ntabs++,tabs);
+			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+			printList1TH(out,ntabs,"searches.kl1",SF_SE_NUMBER,"#");
+			if (printHost){
+				printList1TH(out,ntabs,"searches.kl1",SF_HOST,"Host");
+			}
+			printList1TH(out,ntabs,"searches.kl1",SF_NAME,tr("search"));
+			printList1TH(out,ntabs,"searches.kl1",SF_DIRECTORY,tr("directory"));
+			printList1TH(out,ntabs,"searches.kl1",SF_START,tr("start"));
+			printList1TH(out,ntabs,"searches.kl1",SF_START,tr("end"));
+			io_printf(out,"%.*s<th>&nbsp;</th>\n",ntabs,tabs);
+			io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+			io_printf(out,"%.*s</thead>\n",--ntabs,tabs);
+
+			io_printf(out,"%.*s<tbody>\n",ntabs++,tabs);
+			const char *EditSearch=tr("search.edit");
+			const search_t *search;
+			struct tm sdate;
+			int hour,min;
+			for (i=0,search=searches.entry;i<searches.length;i++,search++) {
+				io_printf(out,"%.*s<tr%s>\n",ntabs++,tabs,classActive[isFlagSet(SFL_USE_AS_SEARCH_TIMER,search->flags)]);
+				io_printf(out,"%.*s<td class=\"number\">%d</td>\n",ntabs,tabs,search->id);
+				if (printHost) 
+					io_printf(out,"%.*s<td class=\"number\">%d</td>\n",ntabs,tabs,search->hostId);
+				io_printf(out,"%.*s<td>%s</td>\n",ntabs,tabs,search->search);
+				u_htmlncpy(aux,search->directory,strlen(search->directory),HTMLCPY_ENCODE);
+				io_printf(out,"%.*s<td>%s</td>\n",ntabs,tabs,aux);
+				if (isFlagSet(SFL_USE_TIME,search->flags)){
+					hour=search->startTime/100;
+					min=search->startTime-hour*100;
+					io_printf(out,"%.*s<td class=\"hour\">%02d:%02d</td>\n",ntabs,tabs,hour,min);
+					hour=search->stopTime/100;
+					min=search->stopTime-hour*100;
+					io_printf(out,"%.*s<td class=\"hour\">%02d:%02d</td>\n",ntabs,tabs,hour,min);
+				} else {
+					io_printf(out,"%.*s<td class=\"hour\">00:00</td>\n",ntabs,tabs);
+					io_printf(out,"%.*s<td class=\"hour\">23:59</td>\n",ntabs,tabs);
+				}
+				u_urlncpy(aux,search->searchStr,strlen(search->searchStr),URLCPY_ENCODE);
+				io_printf(out,"%.*s"
+					"<td class=\"ctrls\">"
+						"<a class=\"ui-icon ui-icon-edit\" href=\"searches.kl1?a=%d&amp;searchId=%d&amp;searchStr=%s&amp;hostId=%d\" title=\"%s\">%s</a>"
+					"</td>\n",ntabs,tabs,PA_EDIT,search->id,aux,search->hostId,EditSearch,EditSearch);
+
+				io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+			}
+			io_printf(out,"%.*s</tbody>\n",--ntabs,tabs);
+			io_printf(out,"%.*s</table>\n",--ntabs,tabs);
+			freeSearchList(&searches);
+		} else {
+			//TODO
+		}
+	}
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);//section
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);//main
+	finishHtmlPage(out,ntabs);
+	freeChannelList(&channels);
+	closeSvdrpAll();
+%>

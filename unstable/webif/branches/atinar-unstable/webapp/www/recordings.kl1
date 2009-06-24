@@ -42,12 +42,12 @@ dbg_recordings_kl1(void) { dbg("recordings.kl1"); }
 	vars_t *args = request_get_args(request);
 	enum {AUXSZ=4096};
 	char aux[AUXSZ];
-	sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
-	sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
-	currentPage=PN_RECORDINGS;
-	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
+	webifState.sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
+	webifState.sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
+	webifState.currentPage=PN_RECORDINGS;
+	webifState.currentAction=(vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
 	
-	if (currentAction==PA_PLAY) {
+	if (webifState.currentAction==PA_PLAY) {
 		rec_t rec;
 		initRecFromArgs(&rec,args);
 		boolean_t ok=printRecPlaylist(request,response,out,&rec,aux);
@@ -56,127 +56,102 @@ dbg_recordings_kl1(void) { dbg("recordings.kl1"); }
 	}
 	
 	int ntabs=initHtmlPage(response,out,tr("recordings"),
-"	<script type=\"text/javascript\">\n"
-"		$(function(){\n"
-"			$('button.delete').click(function (event){\n"
-"				if (!confirm('%s')){\n"
-"					event.preventDefault();\n"
-"				}\n"
-"			});\n"
-"		});\n"
-"	</script>\n"
-		,tr("recDeleteConfirm")
+"		<script type=\"text/javascript\">\n"
+"			$.webif.messages.confirmDelete='%s';\n"
+"		</script>\n"
+		,tr("rec.delete.confirm")
 	);
 	printMenu(out,ntabs);
-	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
 	io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("recordings"));
+	io_printf(out,"%.*s<div class=\"section\">\n",ntabs++,tabs);
 	
-	if (currentAction==PA_DELETE) {
-		if (webifConf.recDeletionDisabled) {
-			io_printf(out,"%.*s<div class=\"alert\">%s</div>\n",ntabs,tabs,tr("recDeletionDisabled"));
+	if (webifState.currentAction==PA_DELETE) {
+		if (webifConf.deletionDisabled) {
+			io_printf(out,"%.*s<div class=\"alert\">%s</div>\n",ntabs,tabs,tr("deletionDisabled"));
 		} else {
 			rec_t rec;
 			initRecFromArgs(&rec,args);
 			char *message=NULL;
 			if (deleRec(&rec,&message))
-				printMessage(out,ntabs,"message",tr("recDeleteOk"),message,aux);
+				printMessage(out,ntabs,"message",tr("rec.delete.ok"),message,aux);
 			else
-				printMessage(out,ntabs,"message",tr("recDeleteErr"),message,aux);
+				printMessage(out,ntabs,"message",tr("rec.delete.err"),message,aux);
 			if (message) free(message);
 			freeRec(&rec);
 		}
 	}
-	if (currentAction==PA_EDIT) {
+	if (webifState.currentAction==PA_EDIT) {
 		rec_t rec;
 		initRecFromArgs(&rec,args);
 		getRecInfo(&rec);
 		io_printf(out,"%.*s<form action=\"/recordings.kl1\" method=\"post\">\n",ntabs++,tabs);
-		io_printf(out,"%.*s<input type=\"hidden\" name=\"sort\" value=\"%d\"/>\n",ntabs,tabs,sortBy);
-		io_printf(out,"%.*s<input type=\"hidden\" name=\"direction\" value=\"%d\"/>\n",ntabs,tabs,sortDirection);
+		io_printf(out,"%.*s<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n",ntabs,tabs,webifState.sortBy);
+		io_printf(out,"%.*s<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n",ntabs,tabs,webifState.sortDirection);
 		printRecEditForm(out,ntabs,&rec,aux);
 		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
 		freeRec(&rec);
 		goto end;
 	}
-	if (currentAction==PA_CONFIRM) {
+	if (webifState.currentAction==PA_CONFIRM) {
 		rec_t rec;
 		initRecFromArgs(&rec,args);
 		const char *oldName=vars_get_value(args,"oldName");
 		if (oldName!=NULL && !sameString(oldName,rec.name)){
 			char *message=NULL;
 			if (editRec(&rec,&message))
-				printMessage(out,ntabs,"message",tr("recEditOk"),message,aux);
+				printMessage(out,ntabs,"message",tr("rec.edit.ok"),message,aux);
 			else 
-				printMessage(out,ntabs,"message",tr("recEditErr"),message,aux);
+				printMessage(out,ntabs,"message",tr("rec.edit.err"),message,aux);
 			free(message);
 		}
 		freeRec(&rec);
 	}
 	if (BT_TRUE){
-		io_printf(out,
-"			<table id=\"recordings\" class=\"list1\" summary=\"\">\n"
-"				<col class=\"number\"/>\n"
-"				<col class=\"date\"/>\n"
-"				<col class=\"hour\"/>\n"
-"				<col class=\"content\"/>\n"
-"				<thead>\n"
-"					<tr>\n"
-"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
-"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
-"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
-"						<th><a class=\"%s\" href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
-"					</tr>\n"
-"				</thead>\n"
-"				<tbody>\n"
-			,sortClass(SF_RC_NUMBER),SF_RC_NUMBER,newSortDirection(SF_RC_NUMBER),"#"
-			,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("date")
-			,sortClass(SF_START),SF_START,newSortDirection(SF_START),tr("start")
-			,sortClass(SF_TITLE),SF_TITLE,newSortDirection(SF_TITLE),tr("title")
-		);
 		recList_t recs;
-		getRecList(&recs,sortBy,sortDirection);
-		const char *RecEdit=tr("recEdit");
-		const char *RecDelete=tr("recDelete");
+		getRecList(&recs,webifState.sortBy,webifState.sortDirection);
+		io_printf(out,"%.*s<table id=\"recordings\" class=\"list\" summary=\"\">\n",ntabs++,tabs);
+		io_printf(out,"%.*s<col class=\"number\"/>\n",ntabs,tabs);
+		io_printf(out,"%.*s<col class=\"date\"/>\n",ntabs,tabs);
+		io_printf(out,"%.*s<col class=\"hour\"/>\n",ntabs,tabs);
+		io_printf(out,"%.*s<col class=\"content\"/>\n",ntabs,tabs);
+		io_printf(out,"%.*s<thead>\n",ntabs++,tabs);
+		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+		printList1TH(out,ntabs,"recordings.kl1",SF_RC_NUMBER,"#");
+		printList1TH(out,ntabs,"recordings.kl1",SF_START,tr("date"));
+		printList1TH(out,ntabs,"recordings.kl1",SF_START,tr("start"));
+		printList1TH(out,ntabs,"recordings.kl1",SF_TITLE,tr("title"));
+		io_printf(out,"%.*s</tr>",--ntabs,tabs);
+		io_printf(out,"%.*s</thead>",--ntabs,tabs);
+		io_printf(out,"%.*s<tbody>",ntabs++,tabs);
+		const char *RecEdit=tr("rec.edit");
+		const char *RecDelete=tr("rec.delete");
 		const char *Play=tr("play");
 		rec_t *prec;
 		int i,l;
 		for (i=0,prec=recs.entry;i<recs.length;i++,prec++) {
 			struct tm t1=*localtime(&prec->event.start);
-			io_printf(out,
-"					<tr class=\"rec\">\n"
-"						<td class=\"number\" >%d</td>\n"
-"						<td class=\"date\">%s</td>\n"
-"						<td class=\"hour\">%02d:%02d</td>\n"
-				,prec->id
-				,formatDate(&t1,0)
-				,t1.tm_hour,t1.tm_min
-			);
-			io_printf(out,
-"						<td class=\"content\">\n"
-"							<form action=\"/recordings.kl1\" method=\"get\">\n"
-"								<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n"
-"								<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n"
-								,sortBy
-								,sortDirection
-			);
+			io_printf(out,"%.*s<tr class=\"rec\">\n",ntabs++,tabs);
+			io_printf(out,"%.*s<td class=\"number\" >%d</td>\n",ntabs,tabs,prec->id);
+			io_printf(out,"%.*s<td class=\"date\">%s</td>\n",ntabs,tabs,formatDate(&t1,0));
+			io_printf(out,"%.*s<td class=\"hour\">%02d:%02d</td>\n",ntabs,tabs,t1.tm_hour,t1.tm_min);
+			io_printf(out,"%.*s<td class=\"content\">\n",ntabs++,tabs);
+			io_printf(out,"%.*s<form action=\"/recordings.kl1\" class=\"controls\" >\n",ntabs++,tabs);
+			io_printf(out,"%.*s<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n",ntabs,tabs,webifState.sortBy);
+			io_printf(out,"%.*s<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n",ntabs,tabs,webifState.sortDirection);
 			printRecControls(out,8,prec,aux,Play,RecEdit,RecDelete);
 			l=strlen(prec->name);
 			u_htmlncpy(aux,prec->name,l,HTMLCPY_ENCODE);
-			io_printf(out,
-"								<input type=\"text\" name=\"name\" class=\"name readOnly\" readonly=\"readonly\" value=\"%s\" "
-									"size=\"%d\"/>\n"
-"							</form>\n"
-"						</td>\n"
-"					</tr>\n"
-								,aux,l
-			);
+			//io_printf(out,"%.*s<input type=\"text\" name=\"name\" class=\"name readOnly\" readonly=\"readonly\" value=\"%s\" size=\"%d\" />\n",ntabs,tabs,aux,l);
+			io_printf(out,"%.*s</form>\n",--ntabs,tabs);
+			io_printf(out,"%.*s%s</td>\n",--ntabs,tabs,aux);
+			io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
 		}
 		freeRecList(&recs);
-		io_printf(out,
-"				</tbody>\n"
-"			</table>\n"
-		);
+		io_printf(out,"%.*s</tbody>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</table>\n",--ntabs,tabs);
 	}
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 	finishHtmlPage(out,ntabs);
 	goto end;

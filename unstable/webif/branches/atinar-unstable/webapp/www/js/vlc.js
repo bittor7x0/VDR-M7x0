@@ -1,5 +1,9 @@
 function getVlc(){
-	return $("#vlc")[0];
+	var vlc=$("#vlc")[0];
+	if (vlc && vlc.object) {
+		vlc=vlc.object;
+	}
+	return vlc;
 }
 function updateVolume(deltaVol){
 	var vlc = getVlc();
@@ -28,7 +32,8 @@ function toggleFullscreen(event){
 	event.preventDefault();
 	var vlc=getVlc();
 	if (vlc && vlc.video) {
-		vlc.video.toggleFullscreen();
+		var video=vlc.video;
+		video.toggleFullscreen();
 	}
 }
 function toggleMute(event){

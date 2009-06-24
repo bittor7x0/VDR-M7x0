@@ -1,3 +1,13 @@
+2009-06-24
+* Añadida gestión de búsquedas (epgsearch).
+* Verificado funcionamiento en IE7,IE8 y WebKit, además de Gecko.
+* Apariencia más homogénea.
+* Cambiado modelo de servidor de prefork a fork y reducido número de procesos, para reducir consumo de recursos.
+* Opciones de configuración: tamaño de video embebido y márgenes en grabaciones.
+* Video embebido gestionado por javascript, sin requerir refresco de página.
+* Corregido funcionamiento horrible de button en IE6 y IE7.
+* Iconos convertidos a png8 para tener transparencia mínima en IE.
+* Información de particiones extraida en modulo aparte.
 2009-05-27
 * Posibilidad de limitar número de niveles mostrados en browse.kl1.
 * Opción para cerrar conexión SVDRP después de cada orden (para depuración con múltiples hosts).

@@ -44,21 +44,29 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 	int i=0;
 
 	vars_t *args = request_get_args(request);
-	sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_CH_NUMBER;
-	sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
+	webifState.currentPage=PN_CHANNELS;
+	webifState.sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_CH_NUMBER;
+	webifState.sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
 
 	config(session, request);
-	currentPage=PN_CHANNELS;
 	int ntabs=initHtmlPage(response,out,tr("channels"),NULL);
 	printMenu(out,ntabs);
-	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
-	io_printf(out,"%.*s<h2><a class=\"ui-icon ui-icon-tv\" href=\"playlistch.kl1?type=%d\" title=\"%s\">%s</a>%s</h2>\n"
-		,ntabs,tabs,webifConf.playlistType,tr("channelPlaylistDownload"),tr("playlist"),tr("channels"));
+	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
+
+	const char *PlaylistDownload=tr("channels.playlist.download");
+	io_printf(out,"%.*s<h2>\n",ntabs++,tabs);
+	io_printf(out,"%.*s<ul class=\"controls\"><li class=\"control buttonm-i ui-state-default\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<a class=\"ui-icon ui-icon-script\" href=\"playlistch.kl1?type=%d\" title=\"%s\">%s</a>\n"
+		,ntabs,tabs,webifConf.playlistType,PlaylistDownload,PlaylistDownload);
+	io_printf(out,"%.*s</li></ul>\n",--ntabs,tabs);
+	io_printf(out,"%.*s%s</h2>\n",--ntabs,tabs,tr("channels"));
+
+	io_printf(out,"%.*s<div class=\"section ui-helper-clearfix\">\n",ntabs++,tabs);
 	hostConf_t *host=getFirstVdrHost();
-	if (!host)
+	if (!host) {
 		printMessage(out,ntabs,"alert",tr("errorNoVdrHost"),NULL,NULL);
-	else {
-		getChannelList(host,&channels,sortBy,sortDirection);
+	} else {
+		getChannelList(host,&channels,webifState.sortBy,webifState.sortDirection);
 		
 		boolean_t isTv;
 		const char *tableId[]={"tvChannels","radioChannels"};
@@ -76,98 +84,70 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 		int t;
 		for (t=0;t<2;t++){
 			const char *Caption=tr(tableId[t]);
-			io_printf(out,
-	"			<table id=\"%s\" class=\"list1 channels\" summary=\"%s\">\n"
-	"				<caption>%s</caption>"
-	"				<col class=\"number\"/>\n"
-	"				<col class=\"channel\"/>\n"
-	"				<col class=\"mux\"/>\n"
-	"				<col class=\"ctrls\"/>\n"
-	"				<thead>\n"
-	"					<tr>\n"
-	"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
-	"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
-	"						<th><a class=\"%s\" href=\"channels.kl1?sort=%d&amp;direction=%d\">%s</a></th>\n"
-	"						<th></th>\n"
-	"					</tr>\n"
-	"				</thead>\n"
-	"				<tbody>\n"
-				,tableId[t],Caption
-				,Caption
-				,sortClass(SF_CH_NUMBER),SF_CH_NUMBER,newSortDirection(SF_CH_NUMBER),"#"
-				,sortClass(SF_NAME),SF_NAME,newSortDirection(SF_NAME),tr("channel")
-				,sortClass(SF_MUX),SF_MUX,newSortDirection(SF_MUX),tr("channelMux")
-			);
+			io_printf(out,"%.*s<table id=\"%s\" class=\"list channels\" summary=\"%s\">\n",ntabs++,tabs,tableId[t],Caption);
+			io_printf(out,"%.*s<caption>%s</caption>",ntabs,tabs,Caption);
+			io_printf(out,"%.*s<col class=\"number\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"channel\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"mux\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<col class=\"ctrls\"/>\n",ntabs,tabs);
+			io_printf(out,"%.*s<thead>\n",ntabs++,tabs);
+			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+			printList1TH(out,ntabs,"channels.kl1",SF_CH_NUMBER,"#");
+			printList1TH(out,ntabs,"channels.kl1",SF_NAME,tr("channel"));
+			printList1TH(out,ntabs,"channels.kl1",SF_MUX,tr("channelMux"));
+			io_printf(out,"%.*s<th>&nbsp;</th>\n",ntabs,tabs);
+			io_printf(out,"%.*s</tr>",--ntabs,tabs);
+			io_printf(out,"%.*s</thead>",--ntabs,tabs);
+			io_printf(out,"%.*s<tbody>",ntabs++,tabs);
 			for (i=0,channel=channels.channel;i<channels.length;i++,channel++) {
 				isTv=boolean(channel->vpid>1);
 				if (t==0 && !isTv ||t==1 && isTv) continue;
-				io_printf(out,
-	"					<tr>\n"
-	"						<td class=\"number\" >%d</td>\n"
-	"						<td class=\"channel\"><a class=\"channel\" href=\"program.kl1?chan=%d\" title=\"%s\">%s</a></td>\n"
-	"						<td class=\"mux\">%s</td>\n"
-					,channel->channelNum
-					,channel->channelNum,Schedule,channel->channelName
-					,channel->multiplexName
-				);
-				io_printf(out,
-	"						<td class=\"ctrls\">\n"
-	"							<div class=\"boxRight\">"
-	"								<div class=\"infobox infoboxCssHover infoLeft\"><span class=\"ui-icon ui-icon-info\">%s</span>\n"
-	"									<div class=\"infoWrapper infoCssHover\">\n"
-	"										<div class=\"info\">\n"
-	"											<table class=\"channelInfo\" summary=\"\">\n"
-	"												<caption>%s</caption>\n"
-					,tr("moreInfo")
-					,ChannelDetails
-					,channel->channelName
-				);
-				io_printf(out,
-	"												<tr><th>Id</th><td>%s</td></tr>\n"
-	"												<tr><th>%s</th><td>%d</td></tr>\n"
-	"												<tr><th>%s</th><td>%s</td></tr>\n"
-	"												<tr><th>%s</th><td>%d</td></tr>\n"
-	"												<tr><th>%s</th><td>%d</td></tr>\n"
-	"												<tr><th>%s</th><td>%d</td></tr>\n"
-	"												<tr><th>%s</th><td>%d</td></tr>\n"
-	"												<tr><th>%s</th><td>%d</td></tr>\n"
-	"												<tr><th>%s</th><td>%d</td></tr>\n"
-	"											</table>\n"
-					,channel->channelId    	
-					,Frequency,channel->frequency
-					,Parameters,channel->parameter
-					,Source,channel->source
-					,ConditionalAccessId,channel->caid
-					,ServiceId,channel->sid
-					,NetworkId,channel->nid
-					,TransportStreamId,channel->tid
-					,RadioId,channel->rid
-				);
-				io_printf(out,
-	"										</div>\n"
-	"									</div>\n"
-	"								</div>\n"
-	"							</div>\n"
-				);
-				io_printf(out,
-	"							<div class=\"boxRight\">\n"
-	"								<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>\n"
-	"							</div>\n"
-	"						</td>\n"
-	"					</tr>\n"
-					,(isTv)?"ui-icon-tv":"ui-icon-radio"
-					,channel->channelNum
-					,LiveStream,LiveStream
-				);
+				io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
+				io_printf(out,"%.*s<td class=\"number\" >%d</td>\n",ntabs,tabs,channel->channelNum);
+				io_printf(out,"%.*s"
+					"<td class=\"channel\">"
+						"<a class=\"channel\" href=\"program.kl1?chan=%d\" title=\"%s\">%s</a>"
+					"</td>\n",ntabs,tabs,channel->channelNum,Schedule,channel->channelName);
+				io_printf(out,"%.*s<td class=\"mux\">%s</td>\n",ntabs,tabs,channel->multiplexName);
+
+				io_printf(out,"%.*s<td class=\"ctrls\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s<div class=\"boxRight\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s<div class=\"infobox infoboxCssHover infoLeft\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s<span class=\"ui-icon ui-icon-info\">%s</span>\n",ntabs,tabs,tr("moreInfo"));
+				io_printf(out,"%.*s<div class=\"infoWrapper infoCssHover\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s<div class=\"info\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s<table class=\"channelInfo\" summary=\"\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s<caption>%s</caption>\n",ntabs,tabs,ChannelDetails);
+				io_printf(out,"%.*s<tr><th>Id</th><td>%s</td></tr>\n",ntabs,tabs,channel->channelId);
+				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,Frequency,channel->frequency);
+				io_printf(out,"%.*s<tr><th>%s</th><td>%s</td></tr>\n",ntabs,tabs,Parameters,channel->parameter);
+				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,Source,channel->source);
+				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,ConditionalAccessId,channel->caid);
+				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,ServiceId,channel->sid);
+				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,NetworkId,channel->nid);
+				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,TransportStreamId,channel->tid);
+				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,RadioId,channel->rid);
+				io_printf(out,"%.*s</table>\n",--ntabs,tabs);
+				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+
+				io_printf(out,"%.*s<div class=\"boxRight\">\n",ntabs++,tabs);
+				io_printf(out,"%.*s"
+					"<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>\n"
+					,ntabs,tabs,(isTv)?"ui-icon-tv":"ui-icon-radio",channel->channelNum,LiveStream,LiveStream);
+				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+				io_printf(out,"%.*s</td>\n",--ntabs,tabs);
+
+				io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
 			}
-			io_printf(out,
-	"				</table>\n"
-			);
+			io_printf(out,"%.*s</table>\n",--ntabs,tabs);
 		}
 		freeChannelList(&channels);
-		io_printf(out,"				<div style=\"clear:both\"></div>");
 	}
-	io_printf(out,"			</div>\n");
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 	finishHtmlPage(out,ntabs);
 end:
 	closeSvdrpAll();

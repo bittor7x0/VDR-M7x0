@@ -104,7 +104,7 @@ void parseChannel(char * line, channel_t * channel) {
 	}
 	return;
 outOfMemory:
-	crit("parseChannel:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -139,7 +139,7 @@ void getChannelList(hostConf_t *host, channelList_t * const list, sortField_t so
 	if (data){
 		char *p;
 		for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-			if (atoi(p)==250){
+			if (atoi(p)==SVDRP_CMD_OK){
 				crit_goto_if((list->channel=(channel_t *)realloc(list->channel,(++list->length)*sizeof(channel_t)))==NULL,outOfMemory);
 				channel_t *channel=list->channel+list->length-1;
 				initChannel(channel);
@@ -151,7 +151,7 @@ void getChannelList(hostConf_t *host, channelList_t * const list, sortField_t so
 	}
 	return;
 outOfMemory:
-	crit("getChannelList:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -169,7 +169,7 @@ boolean_t getChannel(hostConf_t *host, int channelNum, channel_t * const channel
 	if (data) {
 		char *r;
 		int code=strtol(data,&r,10);
-		if (code==250) {
+		if (code==SVDRP_CMD_OK) {
 			r++;
 			channel->channelNum=strtol(r,&r,10);
 			r++;
@@ -182,10 +182,10 @@ boolean_t getChannel(hostConf_t *host, int channelNum, channel_t * const channel
 	return result;
 }
 
-void printChannelListSelect(io_t *out,int ntabs,const char * name,const channelList_t *const channels,int channelNum){
+void printChannelListSelect(io_t *out,int ntabs,const char * id,const char * name,const channelList_t *const channels,int channelNum){
 	int i;
 	channel_t *channel;
-	io_printf(out,"%.*s<select name=\"%s\" size=\"1\">\n",ntabs++,tabs,name);
+	io_printf(out,"%.*s<select id=\"%s\" name=\"%s\" size=\"1\">\n",ntabs++,tabs,(id)?id:name,name);
 	for (i=0,channel=channels->channel;i<channels->length;i++,channel++) {
 		io_printf(out,"%.*s<option value=\"%d\" %s>%d - %s</option>\n"
 			,ntabs,tabs,channel->channelNum,selected[boolean(channel->channelNum==channelNum)]

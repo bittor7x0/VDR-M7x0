@@ -40,11 +40,13 @@ typedef enum sortField_e {
 	SF_RC_NUMBER,
 	SF_CH_NUMBER,
 	SF_TM_NUMBER,
+	SF_SE_NUMBER,
 	SF_NAME,
 	SF_PRIORITY,
 	SF_LIFETIME,
 	SF_MUX,
-	SF_HOST
+	SF_HOST,
+	SF_DIRECTORY
 } sortField_t;
 
 typedef enum sortDirection_e {
@@ -58,6 +60,7 @@ typedef enum pageNumber_e {
 	PN_PROGRAMS,
 	PN_CHANNELS,
 	PN_TIMERS,
+	PN_SEARCHES,
 	PN_RECORDINGS,
 	PN_SETTINGS,
 	PN_FILEVIEW,
@@ -106,6 +109,13 @@ typedef enum systemType_e {
 	ST_M750C
 } systemType_t;
 
+typedef struct webifState_e {
+	pageNumber_t currentPage;
+	pageAction_t currentAction;
+	sortField_t sortBy;
+	sortDirection_t sortDirection;
+} webifState_t;
+
 extern systemType_t systemType;
 extern const char *checked[2];
 extern const char *selected[2];
@@ -113,18 +123,13 @@ extern const char *videoTypeStr[7];
 extern const char *classCurrent[2];
 extern const char *classActive[2];
 extern const char *tabs;
-extern sortField_t sortBy;
-extern sortDirection_t sortDirection;
-extern pageNumber_t currentPage;
-extern pageAction_t currentAction;
-
+extern webifState_t webifState;
 #define boolean(i) ((i)?BT_TRUE:BT_FALSE)
 #define isFlagSet(flag,flags)   boolean(((flag) & (flags)) == (flag) )
 #define hasFlag(flag,flags)     boolean(((flag) & (flags)) != 0 )  //one of the flags in 'flag' is set in 'flags'
 #define setFlag(flag,flags)     ((flags) |=  (flag))
 #define clearFlag(flag,flags)   ((flags) &= ~(flag))
-
-#define newSortDirection(sf) ((sf==sortBy)?-sortDirection:1)
+#define setOrClearFlag(isSet,flag,flags)  if (isSet) {setFlag(flag,flags);} else {clearFlag(flag,flags);}
 
 void config(session_t *session, request_t *request);
 boolean_t isDST(time_t * aTime);
@@ -135,7 +140,6 @@ boolean_t sameIntEx(const char * s, const int i);
 boolean_t parseRequestStr(request_t *request, char ** pathStr, char ** queryStr);
 char * strcatEx(char ** dest, const char * s);
 boolean_t fileExists(const char * fileName);
-const char * sortClass(sortField_t sf);
 void vdrDecode(char *dst, char *src, int l);
 void vdrEncode(char *dst, char *src, int l);
 boolean_t makeTime(time_t *time, const char * date, const char * hour, const char * min );
@@ -144,6 +148,7 @@ int initHtmlDoc(response_t *response,io_t *out);
 int initHtmlPage(response_t *response,io_t *out, const char *title, const char *headExtra, ...);
 void printMenu(io_t *out, int ntabs);
 void printMessage(io_t *out, int ntabs, const char *cssClass, const char *title, const char *message, char *const aux);
+void printList1TH(io_t *out, int ntabs, const char *page, sortField_t aSortField, const char *label);
 void finishHtmlPage(io_t *out, int ntabs);
 char *condstrdup(int isFlagSet,const char *s);
 

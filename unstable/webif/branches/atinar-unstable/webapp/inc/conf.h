@@ -42,7 +42,12 @@ typedef struct cfgParam_s {
 typedef struct cfgParamConfig_s cfgParamConfig_t;
 typedef void (*cfgParamValidate_t)(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param);
 typedef boolean_t (*cfgParamPrintInput_t)(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
-	,int paramIdx,const char *paramValue,char * const aux);
+	,const char *inputId, const char *paramName,int paramIdx,const char *paramValue,char *const aux);
+
+boolean_t printCheckbox(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
+	,const char *checkboxId, const char *paramName,int paramIdx,const char *paramValue,char *const aux);
+boolean_t printSelect(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
+	,const char *selectId, const char *paramName,int paramIdx,const char *paramValue, char *const aux);
 
 struct cfgParamConfig_s {
 	const char *name;         // Name of the param
@@ -95,23 +100,20 @@ typedef struct webifConf_s {
 	int hostsLength;
 	int numVDRs;
 	playlistType_t playlistType;
-	boolean_t recDeletionDisabled;
+	boolean_t deletionDisabled;
 	boolean_t configChangeDisabled;
 	boolean_t configViewDisabled;
 	boolean_t useExternalWwwFolder;
 	boolean_t displayHostId; //display host id in recordings
 	int maxDepth; //maximum directory depth while browsing
 	boolean_t alwaysCloseSvdrp;  //always close SVDRP connection after each command
+	int defaultMarginStart;
+	int defaultMarginStop;
+	int videoWidth;
+	int videoHeight;
 } webifConf_t;
 
-typedef struct vdrConf_s { //TODO leer conf
-	boolean_t alreadySet;
-	int marginStart;
-	int marginStop;
-} vdrConf_t;
-
 extern webifConf_t webifConf;
-extern vdrConf_t vdrConf;
 extern const cfgFile_t const cfgFile[];
 extern const int cfgFileLength;
 extern const cfgFile_t fileMapping[];

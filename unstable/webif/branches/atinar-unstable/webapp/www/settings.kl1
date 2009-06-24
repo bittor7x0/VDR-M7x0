@@ -40,8 +40,8 @@ dbg_settings_kl1(void) { dbg("settings.kl1"); }
 
 	cfgFileId_t cfgFileId=(vars_countn(args,"cfgFileId")>0)?vars_get_value_i(args,"cfgFileId"):CF_WEBIFCONF;
 	config(session, request);
-	currentPage=PN_SETTINGS;
-	currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_NOACTION;
+	webifState.currentPage=PN_SETTINGS;
+	webifState.currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_NOACTION;
 	int ntabs=initHtmlPage(response,out,tr("setup"),NULL);
 	printMenu(out,ntabs);
 	cfgParamList_t params;
@@ -51,9 +51,11 @@ dbg_settings_kl1(void) { dbg("settings.kl1"); }
 	boolean_t allParamsAreValid=BT_TRUE;
 	boolean_t showForm=boolean(!webifConf.configChangeDisabled);
 
-	io_printf(out,"%.*s<div id=\"main\" class=\"content\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("setup"));
+	io_printf(out,"%.*s<div class=\"section\">\n",ntabs++,tabs);
 
-	if (currentAction==PA_SAVE_CONFIG) {
+	if (webifState.currentAction==PA_SAVE_CONFIG) {
 		if (webifConf.configChangeDisabled) {
 			io_printf(out,"%.*s<div class=\"alert\">%s</div>\n",ntabs,tabs,tr("cfgFileChangeDisabledErr"));
 		} else {
@@ -115,8 +117,9 @@ dbg_settings_kl1(void) { dbg("settings.kl1"); }
 	if (showForm) {
 		io_printf(out,"%.*s<form action=\"settings.kl1\" method=\"post\">\n",ntabs++,tabs);
 		io_printf(out,"%.*s<input type=\"hidden\" name=\"cfgFileId\" value=\"%d\" />\n",ntabs,tabs,cfgFileId);
-		io_printf(out,"%.*s<table id=\"cfgFile\" class=\"list2\" summary=\"%s\">\n",ntabs++,tabs,""); //TODO summary
+		io_printf(out,"%.*s<table id=\"cfgFile\" class=\"list\" summary=\"%s\">\n",ntabs++,tabs,""); //TODO summary
 		io_printf(out,"%.*s<caption>%s</caption>\n",ntabs,tabs,tr(cfgFile[cfgFileId].i18nKey));
+		io_printf(out,"%.*s<tbody>\n",ntabs++,tabs);
 		int i;
 		enum { AUXSZ=1024 };
 		char aux[AUXSZ];
@@ -153,7 +156,7 @@ dbg_settings_kl1(void) { dbg("settings.kl1"); }
 				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 			}
-			if (!paramConfig || !paramConfig->printInput || !paramConfig->printInput(out,7,paramConfig,i,paramValue,aux)){
+			if (!paramConfig || !paramConfig->printInput || !paramConfig->printInput(out,ntabs,paramConfig,NULL,NULL,i,paramValue,aux)){
 				char *valueNZ=(paramValue)?param->value:"";
 				u_htmlncpy(aux,valueNZ,strlen(valueNZ),HTMLCPY_ENCODE);
 				io_printf(out,"%.*s<input type=\"text\" name=\"paramValue_%d\" value=\"%s\" size=\"%d\" />\n"
@@ -164,14 +167,18 @@ dbg_settings_kl1(void) { dbg("settings.kl1"); }
 		}
 		io_printf(out,"%.*s<tr class=\"buttons\">\n",ntabs++,tabs);
 		io_printf(out,"%.*s<td colspan=\"2\">\n",ntabs++,tabs);
-		io_printf(out,"%.*s<button id=\"confirm\" name=\"a\" type=\"submit\" value=\"%d\" class=\"confirm\">%s</button>\n"
+		io_printf(out,"%.*s"
+			"<button id=\"confirm\" class=\"confirm ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
+				"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
+			"</button>\n"
 			,ntabs,tabs,PA_SAVE_CONFIG,tr("saveConfig"));
 		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
-
+		io_printf(out,"%.*s</tbody>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</table>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
 	}
+	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 	freeCfgParamList(&params);
 	finishHtmlPage(out,ntabs);

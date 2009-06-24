@@ -99,10 +99,10 @@ void parseRec(char * line, boolean_t withPath, rec_t * const rec){
 	rec->path=NULL;
 	if (withPath) {
 		if (strchr(r,'/')==NULL) { 
-			warn( "VDR should be patched to return path");
+			warn("VDR should be patched to return path");
 		} else {
 			if (r[0]=='/') {
-				warn("parseRec: Recordig path is not relative [%s]", r);
+				warn("Recordig path is not relative [%s]", r);
 			}
 			l=strcspn(r," ");
 			int l2=l;
@@ -114,7 +114,7 @@ void parseRec(char * line, boolean_t withPath, rec_t * const rec){
 	}
 	r=strptime(r,"%d.%m.%y %H:%M",&timeptr);
 	if (r==NULL){ 
-		warn("parseRec:Error converting recording date!\n");
+		warn("Error converting recording date!");
 		freeRec(rec);
 		return;
 	}
@@ -138,7 +138,7 @@ void getRecListHost(hostConf_t *host, recList_t * const recs){
 	data=execSvdrp(host,"LSTR path");
 	for(p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
 		int code=atoi(p);
-		if (code==250) {
+		if (code==SVDRP_CMD_OK) {
 			crit_goto_if((recs->entry=(rec_t *)realloc(recs->entry,(++recs->length)*sizeof(rec_t)))==NULL,outOfMemory);
 			rec_t *rec=recs->entry+recs->length-1;
 			initRec(rec);
@@ -149,7 +149,7 @@ void getRecListHost(hostConf_t *host, recList_t * const recs){
 	free(data);
 	return;
 outOfMemory:
-	crit("getRecListHost:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -210,7 +210,7 @@ boolean_t editRec(const rec_t *rec, char ** message) {
 	if (data!=NULL){
 		char * p=data;
 		int code=strtol(p,&p,10);
-		result=boolean(code==250);
+		result=boolean(code==SVDRP_CMD_OK);
 		if (message && *p && *(++p)){
 			*message=strdup(p);
 		}
@@ -218,7 +218,7 @@ boolean_t editRec(const rec_t *rec, char ** message) {
 	}
 	return result;
 outOfMemory:
-	crit("editRec:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -242,7 +242,7 @@ boolean_t deleRec(const rec_t *rec, char ** message) {
 	if (data!=NULL){
 		char * p=data;
 		int code=strtol(p,&p,10);
-		result=boolean(code==250);
+		result=boolean(code==SVDRP_CMD_OK);
 		if (message && *p && *(++p)){
 			*message=strdup(p);
 		}
@@ -250,7 +250,7 @@ boolean_t deleRec(const rec_t *rec, char ** message) {
 	}
 	return result;
 outOfMemory:
-	crit("deleRec:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -262,7 +262,7 @@ boolean_t parseRecInfo(rec_t * const rec, char * const data, boolean_t fromFile)
 	for (s=strtok(data,"\r\n");s!=NULL;s=strtok(0,"\r\n")) {
 		if (!fromFile){
 			int code=strtol(s,&s,10);
-			if (code==215){
+			if (code==SVDRP_RCRD){
 				if (s[0]==' ') 
 					return; //End of recording info
 				s++;
@@ -300,7 +300,7 @@ boolean_t parseRecInfo(rec_t * const rec, char * const data, boolean_t fromFile)
 	}
 	return result;
 outOfMemory:
-	crit("parseRecInfo:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -316,7 +316,6 @@ boolean_t readRecInfo(rec_t * const rec){
 	} else {
 		crit_goto_if(asprintf(&fileName,"%s/%s/info.vdr",host->video0,rec->path)<0,outOfMemory);
 	}
-	warn("path [%s]",rec->path);
 	handle=fopen(fileName,"r");
 	free(fileName);
 	if (handle) {
@@ -342,14 +341,14 @@ boolean_t readRecInfo(rec_t * const rec){
 	}
 	return BT_FALSE;
 outOfMemory:
-	crit("readRecInfo:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
 boolean_t getRecInfo(rec_t *rec){
 	if (rec==NULL) return BT_FALSE;
 	if (rec->path==NULL) {
-		warn("getRecInfo: no path");
+		warn("No path");
 		return BT_FALSE;
 	}
 	hostConf_t *host=getHost(rec->hostId);
@@ -377,7 +376,7 @@ boolean_t getRecInfo(rec_t *rec){
 	}
 	return BT_FALSE;
 outOfMemory:
-	crit("getRecInfo:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -390,7 +389,7 @@ boolean_t printRecPlaylist(request_t *request, response_t *response, io_t *out, 
 		return BT_TRUE;
 	} else {
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
-		warn("Invalid path [%s]",rec->path);
+		warn("Invalid rec path [%s]",rec->path);
 		return BT_FALSE;
 	}
 }
@@ -403,26 +402,24 @@ void printRecControls(io_t *out,int ntabs,const rec_t *rec,char *const aux,const
 		io_printf(out,"%.*s<input type=\"hidden\" name=\"id\" value=\"%d\" />\n",ntabs,tabs,rec->id);
 	}
 	io_printf(out,"%.*s<input type=\"hidden\" name=\"hostId\" value=\"%d\" />\n",ntabs,tabs,rec->hostId);
-	io_printf(out,"%.*s<div class=\"controls ui-widget ui-helper-clearfix\" >\n",ntabs++,tabs);
 	if (Play) {
 		io_printf(out,"%.*s"
-			"<button class=\"control play ui-state-default ui-corner-all\" name=\"a\" value=\"%d\" title=\"%s\">"
+			"<button type=\"submit\" class=\"play control buttons-i ui-state-default\" name=\"a\" value=\"%d\" title=\"%s\">"
 				"<span class=\"ui-icon ui-icon-play\">%s</span>"
 			"</button>\n",ntabs,tabs,PA_PLAY,Play,Play);
 	}
 	if (Edit) {
 		io_printf(out,"%.*s"
-			"<button class=\"control edit ui-state-default ui-corner-all\" name=\"a\" value=\"%d\" title=\"%s\">"
+			"<button type=\"submit\" class=\"edit control buttons-i ui-state-default\" name=\"a\" value=\"%d\" title=\"%s\">"
 				"<span class=\"ui-icon ui-icon-edit\">%s</span>"
 			"</button>\n",ntabs,tabs,PA_EDIT,Edit,Edit);
 	}
-	if (Delete && !webifConf.recDeletionDisabled) {
+	if (Delete && !webifConf.deletionDisabled) {
 		io_printf(out,"%.*s"
-			"<button class=\"control delete ui-state-default ui-corner-all\" name=\"a\" value=\"%d\" title=\"%s\">"
+			"<button type=\"submit\" class=\"delete control buttons-i ui-state-default\" name=\"a\" value=\"%d\" title=\"%s\">"
 				"<span class=\"ui-icon ui-icon-trash\">%s</span>"
 			"</button>\n",ntabs,tabs,PA_DELETE,Delete,Delete);
 	}
-	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 }
 
 void printRecEditForm(io_t *out, int ntabs, rec_t *rec, char *const aux){
@@ -437,8 +434,8 @@ void printRecEditForm(io_t *out, int ntabs, rec_t *rec, char *const aux){
 		u_htmlncpy(aux,rec->path,strlen(rec->path),HTMLCPY_ENCODE);
 		io_printf(out,"%.*s<input type=\"hidden\" name=\"path\" value=\"%s\"/>\n",ntabs,tabs,aux);
 	}
-	io_printf(out,"%.*s<table id=\"recEdit\" class=\"list2\" summary=\"\">\n",ntabs++,tabs);
-	io_printf(out,"%.*s<caption>%s</caption>\n",ntabs,tabs,tr("recEdit"));
+	io_printf(out,"%.*s<table id=\"recEdit\" class=\"list\" summary=\"\">\n",ntabs++,tabs);
+	io_printf(out,"%.*s<caption>%s</caption>\n",ntabs,tabs,tr("rec.edit"));
 	if (rec->name!=NULL || rec->path!=NULL){
 		if (rec->name==NULL){
 			l=strrchr(rec->path,'/')-rec->path;
@@ -462,10 +459,9 @@ void printRecEditForm(io_t *out, int ntabs, rec_t *rec, char *const aux){
 		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
 		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("title"));
 		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
-		io_printf(out,"%.*s"
-			"<textarea name=\"title\" cols=\"%d\" rows=\"%d\" class=\"readOnly\" readonly=\"readonly\">"
-				"%s"
-			"</textarea>\n",ntabs,tabs,(l>70)?70:l,(l/70)+2,aux);
+		//io_printf(out,"%.*s<textarea name=\"title\" cols=\"%d\" rows=\"%d\">",ntabs,tabs,(l>70)?70:l,(l/70)+2);
+		io_printf(out,"%s",aux);
+		//io_printf(out,"</textarea>\n");
 		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
 	}
@@ -475,10 +471,9 @@ void printRecEditForm(io_t *out, int ntabs, rec_t *rec, char *const aux){
 		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
 		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("shortdesc"));
 		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
-		io_printf(out,"%.*s"
-			"<textarea name=\"shortdesc\" cols=\"%d\" rows=\"%d\" class=\"readOnly\" readonly=\"readonly\">"
-				"%s"
-			"</textarea>\n",ntabs,tabs,(l>70)?70:l,(l/70)+2,aux);
+		//io_printf(out,"%.*s<textarea name=\"shortdesc\" cols=\"%d\" rows=\"%d\">",ntabs,tabs,(l>70)?70:l,(l/70)+2);
+		io_printf(out,"%s",aux);
+		//io_printf(out,"</textarea>\n");
 		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
 	}
@@ -487,39 +482,40 @@ void printRecEditForm(io_t *out, int ntabs, rec_t *rec, char *const aux){
 		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
 		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("desc"));
 		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
-		io_printf(out,"%.*s<textarea name=\"desc\" cols=\"%d\" rows=\"%d\" class=\"readOnly\" readonly=\"readonly\">\n"
-			,ntabs++,tabs,(l>70)?70:l,(l/70)+2,aux);
+		//io_printf(out,"%.*s<textarea name=\"desc\" cols=\"%d\" rows=\"%d\">\n",ntabs++,tabs,(l>70)?70:l,(l/70)+2);
 		printEventDesc(out,ntabs,rec->event.desc,"|",aux);
-		io_printf(out,"%.*s</textarea>\n",--ntabs,tabs);
+		//io_printf(out,"%.*s</textarea>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
 	}
+
 	io_printf(out,"%.*s<tr class=\"buttons\">\n",ntabs++,tabs);
 	io_printf(out,"%.*s<td colspan=\"2\">\n",ntabs++,tabs);
 	if (rec->name!=NULL) {
 		io_printf(out,"%.*s"
-			"<button id=\"confirm\" class=\"confirm ui-state-default ui-corner-all\" name=\"a\" type=\"submit\" value=\"%d\" >"
-				"<span class=\"ui-icon ui-icon-check\">&nbsp;</span> %s"
+			"<button id=\"confirm\" type=\"submit\" name=\"a\" value=\"%d\" class=\"confirm ui-state-default button-i-t\" >"
+				"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
 			"</button>\n",ntabs,tabs,PA_CONFIRM,tr("accept"));
 	}
 	if (rec->path!=NULL) {
 		io_printf(out,"%.*s"
-			"<button id=\"play\" class=\"play ui-state-default ui-corner-all\" name=\"a\" type=\"submit\" value=\"%d\" >"
-				"<span class=\"ui-icon ui-icon-play\">&nbsp;</span> %s"
+			"<button id=\"play\" type=\"submit\" name=\"a\" value=\"%d\" class=\"play ui-state-default button-i-t\" >"
+				"<div><span class=\"ui-icon ui-icon-play\">&nbsp;</span>%s</div>"
 			"</button>\n",ntabs,tabs,PA_PLAY,tr("play"));
 	}
-	if (!webifConf.recDeletionDisabled && (rec->id>0 || rec->path) ) {
+	if (!webifConf.deletionDisabled && (rec->id>0 || rec->path) ) {
 		io_printf(out,"%.*s"
-			"<button id=\"delete\" class=\"delete ui-state-default ui-corner-all\" name=\"a\" type=\"submit\" value=\"%d\" >"
-				"<span class=\"ui-icon ui-icon-trash\">&nbsp;</span> %s"
-			"</button>\n",ntabs,tabs,PA_DELETE,tr("recDelete"));
+			"<button id=\"delete\" type=\"submit\" name=\"a\" value=\"%d\" class=\"delete ui-state-default button-i-t\" >"
+				"<div><span class=\"ui-icon ui-icon-trash\">&nbsp;</span>%s</div>"
+			"</button>\n",ntabs,tabs,PA_DELETE,tr("rec.delete"));
 	}
 	io_printf(out,"%.*s</td>\n",--ntabs,tabs);
 	io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+
 	io_printf(out,"%.*s</table>\n",--ntabs,tabs);
 	return;
 outOfMemory:
-	crit("printRecEditForm:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 

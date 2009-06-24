@@ -65,6 +65,7 @@ void sig_handler(int sig){
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGPIPE,&sa,&oldsa);
 
+	readWebifConf();
 	fragmentList_t list;
 	if (!getFragmentList(&list,&rec)) {
 		returnHttpNoContent(response);
@@ -72,7 +73,7 @@ void sig_handler(int sig){
 	}
 	field_t * range = request_get_field(request,"Range");
 	if (range){
-		dbg("Range requested \"%s\"",range->value);
+		dbg("Rango solicitado \"%s\"",range->value);
 		if (strncmp(range->value,"bytes=",6)==0){
 			char *r = range->value+6;
 			use_range=BT_TRUE;
@@ -101,7 +102,7 @@ void sig_handler(int sig){
 	}
 	
 	if (!seekFragment(&list,range_start)){
-		warn("Error: no fragment found for range_start=%lld",range_start);
+		warn("No fragment found for range_start=%lld",range_start);
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
 		response_print_header(response);
 		goto finish;
@@ -139,7 +140,7 @@ void sig_handler(int sig){
 		while (list.fragNum<list.length && remaining>0 && !cancel){
 			fragmentEntry_t *f=&list.entry[list.fragNum];
 			if (f->path!=NULL && f->size>0){
-				dbg("Fragment[%d] %lld %lld",list.fragNum,f->size,list.fragPos);
+				dbg("Fragmento[%d] tamaño %lld, inicio %lld",list.fragNum,f->size,list.fragPos);
 				FILE *fi = fopen(f->path,"rb");
 				if (fi) {
 					errno=0;
@@ -153,7 +154,7 @@ void sig_handler(int sig){
 						if (br>0) {
 							bw=io_write(out,buffer,br);
 							if (bw<0) {
-								cancel=BT_TRUE; //TODO necesario?
+								cancel=BT_TRUE;
 								dbg("Cancelado");
 							}
 							else {
@@ -165,7 +166,8 @@ void sig_handler(int sig){
 						}
 					}
 					if (errno) {
-						warn(strerror(errno));
+						if (errno!=ECONNRESET) warn("%d %s",errno,strerror(errno));
+						errno=0;
 					}
 					fclose(fi);
 				}

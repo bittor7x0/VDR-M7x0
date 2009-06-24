@@ -87,6 +87,14 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"action",
+		{
+		"Action",
+		"",
+		"Acción",
+		""
+		}
+	},
 	{	"active",
 		{
 		"Active",
@@ -100,14 +108,6 @@ i18n_t i18n[]={
 		"Add",
 		"Eintragen",
 		"Añadir",
-		""
-		}
-	},
-	{	"addMargin",
-		{
-		"Add start/stop margin",
-		"Vor-/Nachlaufzeit hinzuf&uuml;gen",
-		"Añadir tiempo antes/después",
 		""
 		}
 	},
@@ -423,6 +423,30 @@ i18n_t i18n[]={
 		"Langue par défaut"
 		}
 	},
+	{	"cfgWi.default_margin_start",
+		{
+		"Default margin before",
+		"",
+		"Margen antes por defecto",
+		""
+		}
+	},
+	{	"cfgWi.default_margin_stop",
+		{
+		"Default margin after",
+		"",
+		"Margen después por defecto",
+		""
+		}
+	},
+	{	"cfgWi.deletion_disabled",
+		{
+		"Disable deletion",
+		"",
+		"Desactivar borrado",
+		""
+		}
+	},
 	{	"cfgWi.display_host_id",
 		{
 		"Display host id",
@@ -455,19 +479,27 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"cfgWi.rec_deletion_disabled",
-		{
-		"Disable recording deletion",
-		"",
-		"Impedir borrado de grabaciones",
-		""
-		}
-	},
 	{	"cfgWi.use_external_www_folder",
 		{
 		"Use external www folder",
 		"",
 		"Usar carpeta www externa",
+		""
+		}
+	},
+	{	"cfgWi.video_height",
+		{
+		"Video height",
+		"",
+		"Alto de video",
+		""
+		}
+	},
+	{	"cfgWi.video_width",
+		{
+		"Video width",
+		"",
+		"Ancho de video",
 		""
 		}
 	},
@@ -487,11 +519,35 @@ i18n_t i18n[]={
 		"Chaîne"
 		}
 	},
+	{	"channel.current",
+		{
+		"Current channel",
+		"",
+		"Canal actual",
+		""
+		}
+	},
+	{	"channel.group",
+		{
+		"Channel group",
+		"",
+		"Grupo de canales",
+		""
+		}
+	},						
 	{	"channelDetails",
 		{
 		"Channel details",
 		"",
 		"Detalles del canal",
+		""
+		}
+	},
+	{	"channelFilter",
+		{
+		"Filter by channel",
+		"",
+		"Filtrar por canal",
 		""
 		}
 	},
@@ -509,6 +565,22 @@ i18n_t i18n[]={
 		"Liste bearbeiten",
 		"Editar lista",
 		"Edition de la liste"
+		}
+	},
+	{	"channelMax",
+		{
+		"Last channel",		
+		"",
+		"Último canal",
+		""
+		}
+	},
+	{	"channelMin",
+		{
+		"First channel",		
+		"",
+		"Primer canal",
+		""
 		}
 	},
 	{	"channelMux",
@@ -535,28 +607,12 @@ i18n_t i18n[]={
 		"Numéro de chaîne"
 		}
 	},
-	{	"channelPlaylistDownload",
-		{
-		"Download channel playlist",
-		"",
-		"Descargar lista de reproducción de canales",
-		""
-		}
-	},
 	{	"channelWatch",
 		{
 		"Watch TV",
 		"Fernsehen",
 		"Ver TV",
 		"Regarder le direct"
-		}
-	},
-	{	"channelWatching",
-		{
-		"You are watching",
-		"Sie sehen zur Zeit",
-		"Estás viendo",
-		"Vous regardez"
 		}
 	},
 	{	"channels",
@@ -567,12 +623,60 @@ i18n_t i18n[]={
 		"Chaînes"
 		}
 	},
+	{	"compareDescription",
+		{
+		"Compare description",
+		"",
+		"Comparar descripción",
+		""
+		}
+	},
+	{	"compareSubtitle",
+		{
+		"Compare subtitle",
+		"",
+		"Comparar subtítulo",
+		""
+		}
+	},
+	{	"compareTitle",
+		{
+		"Compare title",
+		"",
+		"Comparar título",
+		""
+		}
+	},
 	{	"conditionalAccessId",
 		{
 		"Conditional access ID",
 		"Conditional Access ID",
 		"ID de acceso condicional",
 		"Identifiant d\'accès conditionnel"
+		}
+	},
+	{	"create",
+		{
+		"Create new item",
+		"",
+		"Crear nuevo item",
+		""
+		}
+	},
+	{	"create.err",
+		{
+		"Failed to create new item!",
+		"!",
+		"¡Error al crear nuevo item!",
+		""
+		}
+	},
+	{	"create.ok",
+		{
+		"New item added",
+		"",
+		"Creado nuevo item",
+		""
 		}
 	},
 	{	"currentServer",
@@ -591,11 +695,51 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"delete",
+		{
+		"Delete",	
+		"Löschen",
+		"Borrar",
+		""
+		}
+	},
+	{	"delete.err",
+		{
+		"Error deleting item!",
+		"",
+		"¡Error al borrar item!",
+		""
+		}
+	},
+	{	"delete.ok",
+		{
+		"Item deleted",
+		"",
+		"Item borrado",
+		""
+		}
+	},
+	{	"deletionDisabled",
+		{
+		"Deletion is disabled.",
+		"",
+		"El borrado está bloqueado",
+		""
+		}
+	},
 	{	"desc",
 		{
 		"Description",
 		"",
 		"Descripción",
+		""
+		}
+	},
+	{	"directory",
+		{
+		"Directory",
+		"",
+		"Directorio",
 		""
 		}
 	},
@@ -607,6 +751,46 @@ i18n_t i18n[]={
 		""
 		}
 	}, 
+	{	"duration",
+		{
+		"Duration",	
+		"",
+		"Duración",
+		""
+		}
+	},
+	{	"durationFilter",
+		{
+		"Filter by duration",	
+		"",
+		"Filtrar por duración",
+		""
+		}
+	},
+	{	"durationMax",
+		{
+		"Max. duration",	
+		"",
+		"Duración máx.",
+		""
+		}
+	},
+	{	"durationMin",
+		{
+		"Min. duration",	
+		"",
+		"Duración mín.",
+		""
+		}
+	},
+	{	"edit",
+		{
+		"Edit",
+		"Bearbeiten",
+		"Editar",
+		""
+		}
+	},
 	{	"end",
 		{
 		"End",	
@@ -730,6 +914,14 @@ i18n_t i18n[]={
 		"Page d\'accueil"
 		}
 	},
+	{	"interval",
+		{
+		"Interval",
+		"",
+		"Intervalo",
+		""
+		}
+	},
 	{	"ipAddress",
 		{
 		"IP address",
@@ -790,7 +982,7 @@ i18n_t i18n[]={
 		{
 		"Lifetime",
 		"Lebensdauer",
-		"Tiempo duración",
+		"Tiempo de vida",
 		""
 		}
 	},
@@ -808,6 +1000,46 @@ i18n_t i18n[]={
 		"Live-Stream",
 		"Stream directo",
 		"Direct"
+		}
+	},
+	{	"margin.add",
+		{
+		"Add start/stop margin",
+		"Vor-/Nachlaufzeit hinzuf&uuml;gen",
+		"Añadir tiempo antes/después",
+		""
+		}
+	},
+	{	"margin.after",
+		{
+		"Margin after",
+		"Nachlaufzeit",
+		"Margen después",
+		""
+		}
+	},
+	{	"margin.before",
+		{
+		"Margin before",
+		"Vorlaufzeit",
+		"Margen antes",
+		""
+		}
+	},
+	{	"maxAllowed",
+		{
+		"Máx. allowed",
+		"",
+		"Permitir máximo",
+		""
+		}
+	},
+	{	"mode",
+		{
+		"Mode",
+		"",
+		"Modo",
+		""
 		}
 	},
 	{	"moreInfo",
@@ -934,8 +1166,16 @@ i18n_t i18n[]={
 		{
 		"Pause",
 		"Pause",
-		"Pause",
 		"Pausa",
+		"Pausa",
+		}
+	},
+	{	"phrase",
+		{
+		"Phrase",
+		"",
+		"Frase",
+		"",
 		}
 	},
 	{	"play",
@@ -954,7 +1194,7 @@ i18n_t i18n[]={
 		"",
 		}
 	},
-	{	"playlistDownload",
+	{	"playlist.download",
 		{
 		"Download playlist",
 		"",
@@ -1002,15 +1242,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"recDelete",
-		{
-		"Delete record",	
-		"Aufzeichnen löschen",
-		"Borrar grabación",
-		""
-		}
-	},
-	{	"recDeleteConfirm",
+	{	"rec.delete.confirm",
 		{
 		"Are you sure you want to delete the record?",
 		"Bist du sicher, dass du den Aufzeichnen löschen willst?",
@@ -1018,7 +1250,7 @@ i18n_t i18n[]={
 		""
 		}
 	},	
-	{	"recDeleteErr",
+	{	"rec.delete.err",
 		{
 		"Failed to delete record!",
 		"Aufzeichnen konnte nicht gelöscht werden!",
@@ -1026,7 +1258,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"recDeleteOk",
+	{	"rec.delete.ok",
 		{
 		"Record deleted",
 		"Aufzeichnen gelöscht",
@@ -1034,15 +1266,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"recDeletionDisabled",
-		{
-		"Recording deletion is disabled.",
-		"",
-		"El borrado de grabaciones está bloqueado",
-		""
-		}
-	},
-	{	"recEdit",
+	{	"rec.edit",
 		{
 		"Edit recording",
 		"Aufzeichnen bearbeiten",
@@ -1050,7 +1274,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"recEditErr",
+	{	"rec.edit.err",
 		{
 		"Failed to update recording!",	
 		"Aufzeichnen konnte nicht aktualisiert werden!",
@@ -1058,7 +1282,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"recEditOk",
+	{	"rec.edit.ok",
 		{
 		"Recording updated",
 		"Aufzeichnen aktualisiert",
@@ -1106,11 +1330,43 @@ i18n_t i18n[]={
 		"Enregistrements"
 		}
 	},
+	{	"regex",
+		{
+		"Regular expression",
+		"",
+		"Expresión regular",
+		""
+		}
+	},
 	{	"regularRecording",
 		{
 		"Regular recording",
 		"Regelm&auml;&szlig;ige Aufnahme",
 		"Grabar como serie",
+		""
+		}
+	},
+	{	"repeats",
+		{
+		"Repeats",
+		"",
+		"Repeticiones",
+		""
+		}
+	},
+	{	"repeats.avoid",
+		{
+		"Avoid repeats",
+		"",
+		"Evitar repeticiones",
+		""
+		}
+	},
+	{	"repeats.maxAllowed",
+		{
+		"Repeats allowed",
+		"",
+		"Repeticiones permitidas",
 		""
 		}
 	},
@@ -1136,6 +1392,158 @@ i18n_t i18n[]={
 		"Programm",
 		"Guía de Programación",
 		"Programmation"
+		}
+	},
+	{	"search",
+		{
+		"Search",
+		"",
+		"Buscar",
+		""
+		}
+	},
+	{	"search.allWords",
+		{
+		"All words",
+		"",
+		"Todas las palabras",
+		""
+		}
+	},
+	{	"search.announce",
+		{
+		"Announce only",
+		"",
+		"Sólo avisar",
+		""
+		}
+	},
+	{	"search.atLeastOne",
+		{
+		"At least one word",
+		"",
+		"Al menos una palabra",
+		""
+		}
+	},
+	{	"search.create",
+		{
+		"Create search",
+		"Suche erstellen",
+		"Crear búsqueda",
+		""
+		}
+	},
+	{	"search.create.err",
+		{
+		"Failed to add search!",
+		"Suche konnte nicht hinzugefügt werden!",
+		"¡Error al añadir la búsqueda!",
+		""
+		}
+	},
+	{	"search.create.ok",
+		{
+		"Search added",
+		"Suche hinzugefügt",
+		"Búsqueda añadida",
+		""
+		}
+	},
+	{	"search.delAfterDays",
+		{
+		"Delete recordings after days",
+		"",
+		"Borrar grabaciones tras días",
+		""
+		}
+	},	
+	{	"search.delete.confirm",
+		{
+		"Are you sure you want to delete the search?",
+		"Bist du sicher, dass du den Suche löschen willst?",
+		"¿Seguro que quieres borrar la búsqueda?",
+		""
+		}
+	},	
+	{	"search.edit",
+		{
+		"Edit search",
+		"Suche bearbeiten",
+		"Editar búsqueda",
+		""
+		}
+	},
+	{	"search.exactMatch",
+		{
+		"Exact match",
+		"",
+		"Coincidencia exacta",
+		""
+		}
+	},
+	{	"search.fuzzy",
+		{
+		"Fuzzy match",
+		"",
+		"Coincidencia aproximada",
+		""
+		}
+	},
+	{	"search.switch",
+		{
+		"Switch only",
+		"",
+		"Sólo cambiar",
+		""
+		}
+	},
+	{	"search.switch.minsBefore",
+		{
+		"Switch min. before",
+		"",
+		"Cambiar min. antes",
+		""
+		}
+	},
+	{	"search.switch.unmuteSound",
+		{
+		"Unmute sound on switch",
+		"",
+		"Quitar silencio al cambiar",
+		""
+		}
+	},
+	{	"search.timeFilter",
+		{
+		"Time filter",
+		"",
+		"Filtrar por tiempo",
+		""
+		}
+	},
+	{	"search.useAsSearchTimer",
+		{
+		"Use as search timer",
+		"",
+		"Usar como programación por búsqueda",
+		""
+		}
+	},
+	{	"search.useEpisode",
+		{
+		"Series recording",
+		"",
+		"Grabación en serie",
+		""
+		}
+	},
+	{	"searches",
+		{
+		"Searches",
+		"",
+		"Búsquedas",
+		""
 		}
 	},
 	{	"serviceId",
@@ -1176,6 +1584,30 @@ i18n_t i18n[]={
 		"Start",
 		"Inicio",
 		"Lancement"
+		}
+	},
+	{	"startAfter",
+		{
+		"Start after",
+		"",
+		"Inicio después de",
+		""
+		}
+	},
+	{	"startBefore",
+		{
+		"Start before",
+		"",
+		"Inicio antes de",
+		""
+		}
+	},
+	{	"startFilter",
+		{
+		"Filter by start",
+		"",
+		"Filtrar por hora de inicio",
+		""
 		}
 	},
 	{	"streamdevHosts",
@@ -1234,7 +1666,7 @@ i18n_t i18n[]={
 		"Heure"
 		}
 	},
-	{	"timerAdd",
+	{	"timer.add",
 		{
 		"New timer",
 		"Neuer Timer",
@@ -1242,7 +1674,7 @@ i18n_t i18n[]={
 		"Nouvel enregistrement programmé"
 		}
 	},
-	{	"timerCheck",
+	{	"timer.check",
 		{
 		"Check timer",
 		"Angaben pr&uuml;fen",
@@ -1250,7 +1682,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"timerCreate",
+	{	"timer.create",
 		{
 		"Create timer",
 		"Timer erstellen",
@@ -1258,7 +1690,7 @@ i18n_t i18n[]={
 		"Création d\'un enregistrement programmé"
 		}
 	},
-	{	"timerCreateErr",
+	{	"timer.create.err",
 		{
 		"Failed to add timer!",
 		"Timer konnte nicht hinzugefügt werden!",
@@ -1266,7 +1698,7 @@ i18n_t i18n[]={
 		"Erreur de programmation de l\'enregistrement!"
 		}
 	},
-	{	"timerCreateOk",
+	{	"timer.create.ok",
 		{
 		"Timer added",
 		"Timer hinzugefügt",
@@ -1274,7 +1706,7 @@ i18n_t i18n[]={
 		"Enregistrement programmé"
 		}
 	},
-	{	"timerDelete",
+	{	"timer.delete",
 		{
 		"Delete timer",	
 		"Timer löschen",
@@ -1282,7 +1714,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"timerDeleteConfirm",
+	{	"timer.delete.confirm",
 		{
 		"Are you sure you want to delete the timer?",
 		"Bist du sicher, dass du den Timer löschen willst?",
@@ -1290,7 +1722,7 @@ i18n_t i18n[]={
 		""
 		}
 	},	
-	{	"timerDeleteErr",
+	{	"timer.delete.err",
 		{
 		"Failed to delete timer!",
 		"Timer konnte nicht gelöscht werden!",
@@ -1298,7 +1730,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"timerDeleteOk",
+	{	"timer.delete.ok",
 		{
 		"Timer deleted",
 		"Timer gelöscht",
@@ -1306,7 +1738,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"timerEdit",
+	{	"timer.edit",
 		{
 		"Edit timer",
 		"Timer bearbeiten",
@@ -1314,15 +1746,7 @@ i18n_t i18n[]={
 		"Modification d\'un enregistrement"
 		}
 	},
-	{	"timerList",
-		{
-		"List of timers",					
-		"",
-		"Lista de programaciones",
-		""
-		}
-	},
-	{	"timerUpdateErr",
+	{	"timer.update.err",
 		{
 		"Failed to update timer!",	
 		"Timer konnte nicht aktualisiert werden!",
@@ -1330,11 +1754,19 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"timerUpdateOk",
+	{	"timer.update.ok",
 		{
 		"Timer updated",
 		"Timer aktualisiert",
 		"Programación actualizada",
+		""
+		}
+	},
+	{	"timerList",
+		{
+		"List of timers",					
+		"",
+		"Lista de programaciones",
 		""
 		}
 	},
@@ -1375,6 +1807,30 @@ i18n_t i18n[]={
 		"TV channels",
 		"",
 		"Canales de televisión",
+		""
+		}
+	},
+	{	"update.err",
+		{
+		"Error updating!",	
+		"",
+		"¡Error actualizando!",
+		""
+		}
+	},
+	{	"update.ok",
+		{
+		"Updated",
+		"",
+		"Actualización realizada",
+		""
+		}
+	},
+	{	"useCase",
+		{
+		"Compare case",
+		"",
+		"Distinguir mayúsculas",
 		""
 		}
 	},
@@ -1434,6 +1890,22 @@ i18n_t i18n[]={
 		"<p><b>Echec d\'accès par connection SVDRP au logiciel VDR. Raisons possibles:\n\n<ul><li>VDR n\'est pas démarré.</li><li>La connexion SVDRP est encore utilisée par un autre client comme \"vdradmin\".</li><li>la connexion SVDRP est bloqué suite à une erreur précédente</li></ul>\n\nVérifier que VDR est bien lancé ou essayer ultérieurement.</b></p>\n"
 		}
 	},
+	{	"wday",
+		{
+		"Weekday",
+		"",
+		"Día de la semana",
+		""
+		}
+	},
+	{	"wdayFilter",
+		{
+		"Weekday filter",
+		"",
+		"Filtrar por día",
+		""
+		}
+	},
 	{	"webif",
 		{
 		"Webinterface",
@@ -1459,7 +1931,7 @@ int i18nCompare(const void *a, const void *b){
 	const i18n_t *ib=(const i18n_t *)b;
 	int result;
 	if (ia->key==NULL){
-		warn( "i18n:Null key found");
+		warn("Null key found");
 		if (ib->key==NULL) {
 			result = strcmp(ia->val[0],ib->val[0]);
 		} else {
@@ -1472,11 +1944,21 @@ int i18nCompare(const void *a, const void *b){
 }
 
 const char *tr(const char *s) {
-	i18n_t test = { s, { s,NULL,NULL,NULL}};
-	i18n_t *found=(i18n_t *)bsearch(&test,&i18n,i18nLength,sizeof(i18n_t),i18nCompare);
-	if (found==NULL) {
-		dbg("i18n:Key %s not found",s);
+	i18n_t test={s,{s,NULL,NULL,NULL}};
+	i18n_t *found=NULL;
+	while (!found && test.key) {
+		found=(i18n_t *)bsearch(&test,&i18n,i18nLength,sizeof(i18n_t),i18nCompare);
+		if (!found) {
+			char *dot=strchr(test.key,'.');
+			if (dot && dot[1]) {
+				test.key=dot+1;
+				test.val[0]=dot+1;
+			} else {
+				test.key=NULL;
+			}
+		}
 	}
+	//if (!found) dbg("i18n:Key %s not found",s);
 	const char * result = (found!=NULL) ? (strlen(found->val[langId])>0) ? found->val[langId] : found->val[0] : s;
 	return result;
 }

@@ -113,7 +113,7 @@ boolean_t openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
 		}
 
 		readSvdrp(host,pdata,eod_regex);
-		if (strtol(*pdata,NULL,10)!=220){
+		if (strtol(*pdata,NULL,10)!=SVDRP_VDR_READY){
 			warn("Unexpected SVDRP response: %s",*pdata);
 			//TODO cerrar mejor la conexion
 			closeSocket(host);

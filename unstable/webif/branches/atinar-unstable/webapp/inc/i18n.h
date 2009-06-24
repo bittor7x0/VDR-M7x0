@@ -25,7 +25,7 @@
 typedef const char * i18nVal_t[I18NNUM];
 
 typedef struct i18n_s {
-	const char * const key;
+	const char * key;
 	i18nVal_t val;
 } i18n_t;
 

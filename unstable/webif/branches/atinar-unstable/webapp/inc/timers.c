@@ -91,8 +91,8 @@ boolean_t initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, io_t *out, in
 		}
 		if (makeTime(&timer->start,date,startH,startM) && makeTime(&timer->stop,date,endH,endM)){
 			if (addMargin){
-				timer->start-=vdrConf.marginStart;
-				timer->stop+=vdrConf.marginStop;
+				timer->start-=webifConf.defaultMarginStart*60;
+				timer->stop+=webifConf.defaultMarginStop*60;
 			}
 		}
 		free(date);
@@ -139,7 +139,7 @@ int compareTimers(const vdrTimer_t *ta, const vdrTimer_t *tb, sortField_t sortBy
 			case SF_CH_NUMBER:
 				result=sortDirection*(ta->channelNum-tb->channelNum);	
 				if (result) return result; else sortBy=SF_START; break;
-			case SF_NAME:     
+			case SF_NAME:
 				result=(ta->channel && tb->channel) 
 					? sortDirection*strcmp(ta->channel->channelName,tb->channel->channelName) : 0;
 				if (result) return result; else sortBy=SF_START; break;
@@ -177,7 +177,7 @@ void getTimerListHost(hostConf_t *const host, timerList_t *const timers, channel
 	if (data){
 		char *p;
 		for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-			if (atoi(p)==250) {
+			if (atoi(p)==SVDRP_CMD_OK) {
 				crit_goto_if((timers->entry=(vdrTimer_t *)realloc(timers->entry,(++timers->length)*sizeof(vdrTimer_t)))==NULL,outOfMemory);
 				vdrTimer_t *tmp=timers->entry+timers->length-1;
 				initTimer(tmp);
@@ -191,19 +191,16 @@ void getTimerListHost(hostConf_t *const host, timerList_t *const timers, channel
 						tmp->channel = channels->channel+tmp->channelNum-1;
 					}
 				} else {
-					freeTimer(tmp); //TODO decidir cual de las dos veces
+					freeTimer(tmp);
 					timers->length--;
 				} 
 			}
 		}
 		free(data);
 	}
-#ifdef TEST_REPEATED_HOSTS
-	closeSvdrp(host);
-#endif
 	return;
 outOfMemory:
-	crit("getTimerListHost:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -211,9 +208,6 @@ void getTimerList(timerList_t *const timers, channelList_t const *const channels
 	initTimerList(timers);
 	int h;
 	hostConf_t *host;
-#ifdef TEST_REPEATED_HOSTS
-	closeSvdrpAll();
-#endif
 	for (h=0,host=webifConf.hosts;h<webifConf.hostsLength;h++,host++){
 		if (host->isVdr){
 			getTimerListHost(host,timers,channels);
@@ -232,7 +226,7 @@ boolean_t addTimer(hostConf_t *const host, const char *newTimerStr, char **messa
 		if (data){
 			char *p=data;
 			int code=strtol(p,&p,10);
-			result=boolean(code==250);
+			result=boolean(code==SVDRP_CMD_OK);
 			if (message && *p && *(++p)){
 				(*message)=strdup(p);
 			}
@@ -241,7 +235,7 @@ boolean_t addTimer(hostConf_t *const host, const char *newTimerStr, char **messa
 	}
 	return result;
 outOfMemory:
-	crit("addTimer:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -255,7 +249,7 @@ char *getTimerStrAt(hostConf_t *const host, int id) {
 		if (data) {
 			char *p;
 			for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-				if (atoi(p)==250) {
+				if (atoi(p)==SVDRP_CMD_OK) {
 					p+=4;
 					p+=strcspn(p," "); //ID
 					p+=strspn(p," ");
@@ -268,7 +262,7 @@ char *getTimerStrAt(hostConf_t *const host, int id) {
 	}
 	return timerStr;
 outOfMemory:
-	crit("getTimerStrAt:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -284,22 +278,20 @@ boolean_t deleTimer(hostConf_t *host, int id, const char *delTimerStr, char **me
 			if (data!=NULL){
 				char *p=data;
 				int code=strtol(p,&p,10);
-				result=boolean(code==250);
+				result=boolean(code==SVDRP_CMD_OK);
 				if (message && *p && *(++p)){
 					(*message)=strdup(p);
 				}
 				free(data);
 			}
 		} else { 
-			warn("Error trying to delete a timer: there is no timer as specified!");
-			warn("Timer to delete(%d): [%s]",strlen(delTimerStr), delTimerStr);
-			warn("Timer in list  (%d): [%s]",strlen(timerStr),timerStr);
+			warn("Timer [%s] doen't exist", delTimerStr);
 		}
 		free(timerStr);
 	}
 	return result;
 outOfMemory:
-	crit("deleTimer:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -321,27 +313,24 @@ boolean_t editTimer(hostConf_t *const host, int id, const char *oldTimerStr, con
 			if (data!=NULL){
 				char *p=data;
 				int code=strtol(p,&p,10);
-				result=boolean(code==250);
+				result=boolean(code==SVDRP_CMD_OK);
 				if (message && *p && *(++p)){
 					(*message)=strdup(p);
 				}
 				free(data);
 			}
 		} else {
-			warn("Error trying to edit a timer: there is no timer as specified!");
-			warn("Timer to edit(%d): [%s]",strlen(oldTimerStr),oldTimerStr);
-			warn("Timer in list(%d): [%s]",strlen(timerStr),timerStr);
+			warn("Timer [%s] doen't exist", oldTimerStr);
 		}
 		free(timerStr);
 	}
 	return result;
 outOfMemory:
-	crit("editTimer:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
 boolean_t parseTimer(const char *line, vdrTimer_t *const timer ){
-	//timer->my= ~0;
 	char *c;
 	char *h;
 	int l;
@@ -392,7 +381,7 @@ boolean_t parseTimer(const char *line, vdrTimer_t *const timer ){
 				strncpy(h,r,2);
 				strncpy(h+3,r+2,2);
 				if (!strptime(cdate,"%Y-%m-%d %H:%M",&sdate)) { 
-					warn("Error converting timer date \"%s\"!\n",cdate);
+					warn("Error converting date \"%s\"",cdate);
 					return BT_FALSE;
 				}
 				sdate.tm_sec=0; 
@@ -437,7 +426,7 @@ wrongFormat:
 	warn("Wrong timer string [%s]",line);
 	return BT_FALSE;
 outOfMemory:
-	crit("parseTimer:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -460,7 +449,7 @@ char *makeRegularTimerStr(uint flags,int channelNum,const char *wdays,time_t sta
 	for(c=title;*c;c++) if (*c=='|') *c=':';
 	return timerStr;
 outOfMemory:
-	crit("makeRegularTimerStr:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -483,7 +472,7 @@ char *makeOneTimeTimerStr(uint flags,int channelNum,time_t start,time_t stop,int
 	for(c=title;*c;c++) if (*c=='|') *c=':';
 	return timerStr;
 outOfMemory:
-	crit("makeOneTimeTimerStr:out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 

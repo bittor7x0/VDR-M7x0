@@ -1,35 +1,70 @@
+.gainlayout { 
+	height: 1%; 
+}
+fieldset {
+	display:inline;
+}
+fieldset label{
+	display:inline;
+}
+label *{
+	vertical-align:middle;
+	margin-left:2px;
+}
+table.list {
+	width:auto!important;
+	width:95%;
+}
+table.list tr.controls td{
+	height:auto!important;
+	height:8px;
+}
 #main {
 	height:1%;
 }
 .section {
 	height:1%;
 }
-.recPathWrapper {
-	float:none!important;
-	margin-left:0!important;
+table#recEdit {
+	width:auto!important;
+	width:80em;
 }
-.recPath {
-	top:0;
-	left:0;
+/*
+#recPathWrapper {
+	display:inline;
 }
 .recPath .recDir {
 	display:inline;
 }
+*/
 .recFolderWrapper {
-	height:1%;
 	display:inline;
 }
-div.recFolderDetails {
+div.recFolder .recFolderDetails,
+div.recFolder .recFolders {
+	height:auto!important;
 	height:10em;
+	font-size:1em;
+}
+.recFolderDetails,
+.recFolders {
+	overflow:auto;
+}
+.recFolder .controls {
+}
+.recFolder .controls button.control {
+	width:20px;
+	height:20px;
+}
+.recFolder .controls button.control .ui-icon {
+	float:none;
+	width:16px;
+	height:16px;
 }
 div.infobox div.info {
+	height:auto!important;
 	height:22em;
 }
-#watchItControl {
-	width:25%;
-	height:450px;
-}
-
 /*
  * superfish
  */

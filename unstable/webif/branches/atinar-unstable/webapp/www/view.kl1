@@ -40,22 +40,22 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 	config(session,request);
 
 	vars_t *args = request_get_args(request);
-	currentAction=(vars_countn(args,"action")>0)?vars_get_value_i(args,"action"):PA_SHOW;
+	webifState.currentAction=(vars_countn(args,"action")>0)?vars_get_value_i(args,"action"):PA_SHOW;
 	int fileNum=(vars_countn(args,"fileNum")>0)?vars_get_value_i(args,"fileNum"):0;
-	if (currentAction<PA_SHOW||currentAction>=PA_DOWNLOAD_ALL){
+	if (webifState.currentAction<PA_SHOW||webifState.currentAction>=PA_DOWNLOAD_ALL){
 		//TODO error
-		currentAction=PA_SHOW;
+		webifState.currentAction=PA_SHOW;
 		fileNum=0;
 	}
 	if (fileNum<0||fileNum>=fileMappingLength){
 		//TODO error
-		currentAction=PA_SHOW;
+		webifState.currentAction=PA_SHOW;
 		fileNum=0;
 	}
 	
 	int i=0;
 
-	if (currentAction==PA_DOWNLOAD) {
+	if (webifState.currentAction==PA_DOWNLOAD) {
 		response_set_content_type(response, "application/octetstream");
 		{
 		char *cd;
@@ -72,7 +72,7 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 			}
 			fclose(f);
 		}
-	} else if (currentAction==PA_DOWNLOAD_ALL) {
+	} else if (webifState.currentAction==PA_DOWNLOAD_ALL) {
 		char *argumente[fileMappingLength+4];
 		argumente[0]="tar";
 		argumente[1]="-czf";
@@ -104,35 +104,22 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 			}
 		}
 	} else { 
-		currentPage=PN_FILEVIEW;
+		webifState.currentPage=PN_FILEVIEW;
 		int ntabs=initHtmlPage(response,out,tr("fileView"),NULL);
 		printMenu(out,ntabs);
 
-		io_printf(out,
-"		<div id=\"main\" class=\"code\">\n"
-		);
+		io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
 		struct stat status;
 		if ((stat(fileMapping[fileNum].fileName,&status))>=0) {
 			const char *FileDownload=tr("fileDownload");
-			io_printf(out,
-"			<div class=\"codeHead\">\n"
-"				<ul class=\"controls ui-widget ui-helper-clearfix\">\n"
-"					<li class=\"control ui-state-default ui-corner-all\">"
-						"<a class=\"ui-icon ui-icon-disk\" href=\"view.kl1?action=%d&amp;fileNum=%d\" title=\"%s\">%s</a>"
-					"</li>\n"
-"				</ul>\n"
-				,PA_DOWNLOAD,fileNum,FileDownload,FileDownload
-			);
-			io_printf(out,
-"				<ul class=\"fields\">\n"
-"					<li class=\"field\"><span class=\"label\">%s</span><span class=\"value\">%s</span></li>\n"
-"					<li class=\"field\"><span class=\"label\">%s</span><span class=\"value\">%s</span></li>\n"
-"				</ul>\n"
-"			</div>\n"
-"			<pre>\n"
-				,tr("file"),fileMapping[fileNum].fileName
-				,tr("date"),ctime(&status.st_mtime)
-			);
+			io_printf(out,"%.*s<h2>\n",ntabs++,tabs);
+			io_printf(out,"%.*s<ul class=\"controls\"><li class=\"control buttonm-i ui-state-default\">\n",ntabs++,tabs);
+			io_printf(out,"%.*s<a class=\"ui-icon ui-icon-disk\" href=\"view.kl1?action=%d&amp;fileNum=%d\" title=\"%s\">%s</a>\n"
+				,ntabs,tabs,PA_DOWNLOAD,fileNum,FileDownload,FileDownload);
+			io_printf(out,"%.*s</li></ul>\n",--ntabs,tabs);
+			io_printf(out,"%.*s%s</h2>\n",--ntabs,tabs,fileMapping[fileNum].fileName);
+			io_printf(out,"%.*s<div class=\"section\">\n",ntabs++,tabs);
+			io_printf(out,"%.*s<pre>\n",ntabs++,tabs);
 
 			FILE *f = fopen(fileMapping[fileNum].fileName,"r");
 			if (f) {
@@ -145,13 +132,10 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 				}
 				fclose(f);
 			}
-			io_printf(out,
-"			</pre>\n"
-			);
+			io_printf(out,"%.*s</pre>\n",--ntabs,tabs);
+			io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 		}
-		io_printf(out,
-"		</div>\n"
-		);
+		io_printf(out,"%.*s</div>\n",--ntabs,tabs);
 		finishHtmlPage(out,ntabs);
 	} 
 %>

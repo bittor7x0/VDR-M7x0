@@ -82,7 +82,7 @@ boolean_t getFragmentList(fragmentList_t * const list, const rec_t *rec){
 	}
 	hostConf_t *host=getHost(rec->hostId);
 	if (!host || !host->video0 || host->video0[0]!='/') {
-		warn("Recording host is not local or video0 not valid");
+		warn("Recording host %d is not local or video0 %s not valid", rec->hostId, (host)?host->video0:"null");
 		return BT_FALSE;
 	}
 	struct stat st;
@@ -113,7 +113,7 @@ boolean_t getFragmentList(fragmentList_t * const list, const rec_t *rec){
 					f->end=f->start+f->size-1;
 					list->totalSize=f->end+1;
 				} else {
-					warn(strerror(errno));
+					warn("file %s error %s",f->path,strerror(errno));
 					freeFE(f);
 				}
 			}
