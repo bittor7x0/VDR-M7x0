@@ -1,11 +1,14 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 1.7.7 backports applied in this patch:
+VDR 1.7.8 backports applied in this patch:
 * The new Setup parameter "Channel entry timeout" can be used to customize the time
   since the last keypress until a numerically entered channel number is considered
   complete, and the channel is switched (suggested by Helmut Auer). Setting this
   parameter to 0 turns off the automatic channel switching, and the user will
   have to confirm the entry by pressing the "Ok" key.
+* The new setup option "Recording/Pause key handling" can be used to define
+  what happens if the Pause key on the remote control is pressed during
+  live tv (thanks to Timo Eskola).
 * Removed the compile time option VFAT to allow users of precompiled binary
   distributions to have full control over whether or not to use the --vfat option
   at runtime (suggested by Michael Nork).
@@ -50,6 +53,20 @@ VDR 1.7.7 backports applied in this patch:
   Mair).
 * Resetting a timer's 'pending' flag when it has ended.
 * Added some missing 'const' keywords (thanks to Sascha Volkenandt).
+* Added some missing 'const' keywords to avoid compilation errors with gcc 4.4
+  (thanks to Ville Skyttä and Ludwig Nussel).
+* Removed limitation to PAL resolution from SPU handling.
+* Added the backslash ('\') to the list of characters that need to be escaped
+  when executing external commands (thanks to Peter Bieringer for reporting this one).
+* The section handler is now stopped before the device is destroyed, to avoid
+  accessing file handles after they have become invalid (thanks to Reinhard
+  Nissl for reporting an invalid access when ending VDR, and to Deti Fliegl for
+  a patch that was used to implement StopSectionHandler()).
+* Fixed the format in cRemote::Put() to use "%016llX" instead of "%016LX" (thanks
+  to Ludwig Nussel for pointing this out).
+* Fixed variable types in cIndexFile (reported by Udo Richter).
+* Fixed cOsdMenu::Display() in case the menu size has changed (thanks to
+  Reinhard Nissl).
 * Added a missing Channels.SetModified(true) call when deleting or moving a
   channel in the Channels menu (reported by Halim Sahin).
 * Added a missing SetVolumeDevice() call in cDevice::SetPrimaryDevice() (reported
@@ -85,8 +102,8 @@ VDR 1.7.7 backports applied in this patch:
 
 
 diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
---- VDR-NG-orig/channels.c	2009-06-20 11:21:35.000000000 +0200
-+++ VDR-NG/channels.c	2009-06-20 11:27:55.000000000 +0200
+--- VDR-NG-orig/channels.c	Tue Jun 23 11:06:13 2009
++++ VDR-NG/channels.c	Tue Jun 23 11:07:48 2009
 @@ -180,7 +180,7 @@
    modification = CHANNELMOD_NONE;
    schedule     = NULL;
@@ -305,8 +322,8 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
    for (cChannel *channel = First(); channel; channel = Next(channel)) {
        if (channel->GroupSep()) {
 diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
---- VDR-NG-orig/channels.h	2009-06-20 11:21:35.000000000 +0200
-+++ VDR-NG/channels.h	2009-06-20 11:26:14.000000000 +0200
+--- VDR-NG-orig/channels.h	Tue Jun 23 11:06:14 2009
++++ VDR-NG/channels.h	Tue Jun 23 11:07:48 2009
 @@ -147,9 +147,12 @@
    int modification;
    mutable const cSchedule *schedule;
@@ -394,8 +411,8 @@ diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
    void IncBeingEdited(void) { beingEdited++; }
    void DecBeingEdited(void) { beingEdited--; }
 diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
---- VDR-NG-orig/config.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/config.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/config.c	Tue Jun 23 11:06:35 2009
++++ VDR-NG/config.c	Tue Jun 23 11:08:13 2009
 @@ -139,7 +139,7 @@
  
  bool cSVDRPhost::Accepts(in_addr_t Address)
@@ -405,7 +422,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
  }
  
  // -- cCommands --------------------------------------------------------------
-@@ -284,6 +284,7 @@
+@@ -284,9 +284,11 @@
  //M7X0 END AK
    SVDRPTimeout = 300;
    ZapTimeout = 3;
@@ -413,7 +430,11 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    PrimaryLimit = 0;
    DefaultPriority = 50;
    DefaultLifetime = 99;
-@@ -480,6 +481,7 @@
++  PauseKeyHandling = 2;
+   PausePriority = 10;
+   PauseLifetime = 1;
+   UseSubtitle = 1;
+@@ -480,9 +482,11 @@
  //M7X0 END AK
    else if (!strcasecmp(Name, "SVDRPTimeout"))        SVDRPTimeout       = atoi(Value);
    else if (!strcasecmp(Name, "ZapTimeout"))          ZapTimeout         = atoi(Value);
@@ -421,7 +442,11 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    else if (!strcasecmp(Name, "PrimaryLimit"))        PrimaryLimit       = atoi(Value);
    else if (!strcasecmp(Name, "DefaultPriority"))     DefaultPriority    = atoi(Value);
    else if (!strcasecmp(Name, "DefaultLifetime"))     DefaultLifetime    = atoi(Value);
-@@ -583,6 +585,7 @@
++  else if (!strcasecmp(Name, "PauseKeyHandling"))    PauseKeyHandling   = atoi(Value);
+   else if (!strcasecmp(Name, "PausePriority"))       PausePriority      = atoi(Value);
+   else if (!strcasecmp(Name, "PauseLifetime"))       PauseLifetime      = atoi(Value);
+   else if (!strcasecmp(Name, "UseSubtitle"))         UseSubtitle        = atoi(Value);
+@@ -583,9 +587,11 @@
  //M7X0 END AK
    Store("SVDRPTimeout",       SVDRPTimeout);
    Store("ZapTimeout",         ZapTimeout);
@@ -429,10 +454,14 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    Store("PrimaryLimit",       PrimaryLimit);
    Store("DefaultPriority",    DefaultPriority);
    Store("DefaultLifetime",    DefaultLifetime);
++  Store("PauseKeyHandling",   PauseKeyHandling);
+   Store("PausePriority",      PausePriority);
+   Store("PauseLifetime",      PauseLifetime);
+   Store("UseSubtitle",        UseSubtitle);
 diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
---- VDR-NG-orig/config.h	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/config.h	2009-06-20 11:27:13.000000000 +0200
-@@ -253,6 +253,7 @@
+--- VDR-NG-orig/config.h	Tue Jun 23 11:06:35 2009
++++ VDR-NG/config.h	Tue Jun 23 11:08:13 2009
+@@ -253,9 +253,11 @@
  //M7X0 END AK
    int SVDRPTimeout;
    int ZapTimeout;
@@ -440,9 +469,13 @@ diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
    int PrimaryLimit;
    int DefaultPriority, DefaultLifetime;
    int PausePriority, PauseLifetime;
++  int PauseKeyHandling;
+   int UseSubtitle;
+   int DelTimeshiftRec;
+   int UseVps;
 diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
---- VDR-NG-orig/device.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/device.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/device.c	Tue Jun 23 11:06:33 2009
++++ VDR-NG/device.c	Tue Jun 23 11:08:13 2009
 @@ -330,6 +330,7 @@
       primaryDevice->MakePrimaryDevice(true);
       primaryDevice->SetTvMode(Setup.TvMode);
@@ -451,7 +484,30 @@ diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
       return true;
       }
    esyslog("ERROR: invalid primary device number: %d", n + 1);
-@@ -1183,7 +1184,7 @@
+@@ -808,6 +809,22 @@
+      }
+ }
+ 
++void cDevice::StopSectionHandler(void)
++{
++  if (sectionHandler) {
++     delete nitFilter;
++     delete sdtFilter;
++     delete patFilter;
++     delete eitFilter;
++     delete sectionHandler;
++     nitFilter = NULL;
++     sdtFilter = NULL;
++     patFilter = NULL;
++     eitFilter = NULL;
++     sectionHandler = NULL;
++     }
++}
++
+ int cDevice::OpenFilter(u_short Pid, u_char Tid, u_char Mask)
+ {
+   return -1;
+@@ -1183,7 +1200,7 @@
  
  bool cDevice::SetCurrentAudioTrack(eTrackType Type)
  {
@@ -460,9 +516,136 @@ diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
       cMutexLock MutexLock(&mutexCurrentAudioTrack);
       if (IS_DOLBY_TRACK(Type))
          SetDigitalAudioDevice(true);
+diff -Naur VDR-NG-orig/device.h VDR-NG/device.h
+--- VDR-NG-orig/device.h	Wed Sep 10 10:54:45 2008
++++ VDR-NG/device.h	Tue Jun 23 11:08:13 2009
+@@ -328,7 +328,12 @@
+ protected:
+   void StartSectionHandler(void);
+        ///< A derived device that provides section data must call
+-       ///< this function to actually set up the section handler.
++       ///< this function (typically in its constructor) to actually set
++       ///< up the section handler.
++  void StopSectionHandler(void);
++       ///< A device that has called StartSectionHandler() must call this
++       ///< function (typically in its destructor) to stop the section
++       ///< handler.
+ public:
+   virtual int OpenFilter(u_short Pid, u_char Tid, u_char Mask);
+        ///< Opens a file handle for the given filter data.
+diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
+--- VDR-NG-orig/dvbdevice.c	Tue Jun 23 11:06:33 2009
++++ VDR-NG/dvbdevice.c	Tue Jun 23 11:08:14 2009
+@@ -2389,6 +2389,7 @@
+   if (tsreplayer != NULL)
+      delete tsreplayer;
+ //M7X0 END AK
++  StopSectionHandler();
+   delete spuDecoder;
+   delete dvbTuner;
+   // We're not explicitly closing any device files here, since this sometimes
+diff -Naur VDR-NG-orig/dvbspu.c VDR-NG/dvbspu.c
+--- VDR-NG-orig/dvbspu.c	Tue Sep 02 12:40:43 2008
++++ VDR-NG/dvbspu.c	Tue Jun 23 11:08:14 2009
+@@ -55,18 +55,16 @@
+ #define setMin(a, b) if (a > b) a = b
+ #define setMax(a, b) if (a < b) a = b
+ 
+-#define spuXres   720
+-#define spuYres   576
+-
+ #define revRect(r1, r2) { r1.x1 = r2.x2; r1.y1 = r2.y2; r1.x2 = r2.x1; r1.y2 = r2.y1; }
+ 
+ cDvbSpuBitmap::cDvbSpuBitmap(sDvbSpuRect size,
+                              uint8_t * fodd, uint8_t * eodd,
+                              uint8_t * feven, uint8_t * eeven)
+ {
+-    if (size.x1 < 0 || size.y1 < 0 || size.x2 >= spuXres
+-        || size.y2 >= spuYres)
+-        throw;
++    size.x1 = max(size.x1, 0);
++    size.y1 = max(size.y1, 0);
++    size.x2 = min(size.x2, Setup.OSDWidth);
++    size.y2 = min(size.y2, Setup.OSDHeight);
+ 
+     bmpsize = size;
+     revRect(minsize[0], size);
+@@ -74,10 +72,11 @@
+     revRect(minsize[2], size);
+     revRect(minsize[3], size);
+ 
+-    if (!(bmp = new uint8_t[spuXres * spuYres * sizeof(uint8_t)]))
+-        throw;
++    int MemSize = bmpsize.width() * bmpsize.height() * sizeof(uint8_t);
++    bmp = new uint8_t[MemSize];
+ 
+-    memset(bmp, 0, spuXres * spuYres * sizeof(uint8_t));
++    if (bmp)
++       memset(bmp, 0, MemSize);
+     putFieldData(0, fodd, eodd);
+     putFieldData(1, feven, eeven);
+ }
+@@ -94,10 +93,10 @@
+     int h = size.height();
+     int w = size.width();
+ 
+-    if (size.y1 + h >= spuYres)
+-        h = spuYres - size.y1 - 1;
+-    if (size.x1 + w >= spuXres)
+-        w = spuXres - size.x1 - 1;
++    if (size.y1 + h >= bmpsize.height())
++        h = bmpsize.height() - size.y1 - 1;
++    if (size.x1 + w >= bmpsize.width())
++        w = bmpsize.width() - size.x1 - 1;
+ 
+     if (w & 0x03)
+         w += 4 - (w & 0x03);
+@@ -114,7 +113,7 @@
+     // set the content
+     for (int yp = 0; yp < h; yp++) {
+         for (int xp = 0; xp < w; xp++) {
+-            uint8_t idx = bmp[(size.y1 + yp) * spuXres + size.x1 + xp];
++            uint8_t idx = bmp[(size.y1 + yp) * bmpsize.width() + size.x1 + xp];
+             ret->SetIndex(xp, yp, idx);
+         }
+     }
+@@ -150,7 +149,7 @@
+ 
+ void cDvbSpuBitmap::putPixel(int xp, int yp, int len, uint8_t colorid)
+ {
+-    memset(bmp + spuXres * yp + xp, colorid, len);
++    memset(bmp + bmpsize.width() * yp + xp, colorid, len);
+     setMin(minsize[colorid].x1, xp);
+     setMin(minsize[colorid].y1, yp);
+     setMax(minsize[colorid].x2, xp + len - 1);
+diff -Naur VDR-NG-orig/dvbspu.h VDR-NG/dvbspu.h
+--- VDR-NG-orig/dvbspu.h	Tue Sep 02 12:40:43 2008
++++ VDR-NG/dvbspu.h	Tue Jun 23 11:08:14 2009
+@@ -32,10 +32,10 @@
+     int x1, y1;
+     int x2, y2;
+ 
+-    int width() {
++    int width() const {
+         return x2 - x1 + 1;
+     };
+-    int height() {
++    int height() const {
+         return y2 - y1 + 1;
+     };
+ 
+@@ -63,8 +63,6 @@
+ // --- cDvbSpuBitmap----------------------------------------------------------
+ 
+ class cDvbSpuBitmap {
+-
+-  public:
+   private:
+     sDvbSpuRect bmpsize;
+     sDvbSpuRect minsize[4];
 diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
---- VDR-NG-orig/eit.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/eit.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/eit.c	Tue Jun 23 11:06:33 2009
++++ VDR-NG/eit.c	Tue Jun 23 11:07:48 2009
 @@ -312,9 +312,9 @@
    if (diff > 5) {
       mutex.Lock();
@@ -477,8 +660,8 @@ diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
  				strerror_r(errno,__errorstr,256);
  				__errorstr[255]=0;
 diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
---- VDR-NG-orig/epg.c	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/epg.c	2009-06-20 11:26:14.000000000 +0200
+--- VDR-NG-orig/epg.c	Mon Mar 09 10:05:41 2009
++++ VDR-NG/epg.c	Tue Jun 23 11:07:49 2009
 @@ -1101,6 +1101,7 @@
    if (!p) {
       p = new cSchedule(ChannelID);
@@ -506,7 +689,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
    return NULL;
  }
  
-@@ -1130,11 +1135,27 @@
+@@ -1130,9 +1135,25 @@
    if (Channel->schedule == &DummySchedule && AddIfMissing) {
       cSchedule *Schedule = new cSchedule(Channel->GetChannelID());
       ((cSchedules *)this)->Add(Schedule);
@@ -514,8 +697,8 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
       Channel->schedule = Schedule;
       }
    return Channel->schedule != &DummySchedule? Channel->schedule : NULL;
- }
- 
++}
++
 +void cSchedules::HashSchedule(cSchedule *Schedule)
 +{
 +  schedulesHash.Add(Schedule, HashKey(Schedule->ChannelID().ClrRid()));
@@ -529,14 +712,12 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +unsigned int cSchedules::HashKey(tChannelID ChannelID)
 +{
 +  return (unsigned int)((ChannelID.Nid() << 16 | ChannelID.Source()) ^ (ChannelID.Tid() << 16 | ChannelID.Sid()) ^ ChannelID.Rid());
-+}
-+
- // --- cSchedulesReaderThread ------------------------------------------------------------
- cSchedulesReaderThread cSchedulesReaderThread::readerThread;
+ }
  
+ // --- cSchedulesReaderThread ------------------------------------------------------------
 diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
---- VDR-NG-orig/epg.h	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/epg.h	2009-06-20 11:26:14.000000000 +0200
+--- VDR-NG-orig/epg.h	Mon Mar 09 10:05:41 2009
++++ VDR-NG/epg.h	Tue Jun 23 11:07:49 2009
 @@ -172,11 +172,15 @@
    friend class cSchedulesLock;
  private:
@@ -554,12 +735,130 @@ diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
    static void SetEpgDataFileName(const char *FileName);
    static const cSchedules *Schedules(cSchedulesLock &SchedulesLock);
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
---- VDR-NG-orig/i18n.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/i18n.c	2009-06-20 11:27:13.000000000 +0200
-@@ -5180,6 +5180,28 @@
+--- VDR-NG-orig/i18n.c	Tue Jun 23 11:06:35 2009
++++ VDR-NG/i18n.c	Tue Jun 23 11:08:15 2009
+@@ -4718,6 +4718,116 @@
+     "Standard levetid (d)",
+     "Výchozí ¾ivotnost",
+   },
++  { "Setup.Recording$Pause key handling",
++    "Funktion der Pause-Taste",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Función del botón Pausa",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "do not pause live video",
++    "Live-Signal nicht anhalten",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "no pausar directo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "confirm pause live video",
++    "Anhalten des Live-Signals bestätigen",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "confirmar pausar directo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "pause live video",
++    "Live-Signal anhalten",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "pausar directo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Pause live video?",
++    "Live-Signal anhalten?",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "¿Pausar vídeo en directo?",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Setup.Recording$Pause priority",
+     "Pause-Priorität",
+     "Prioriteta pavze",
+@@ -5179,6 +5289,28 @@
+     "Kanalivahetuse ooteaeg (s)",
      "Zap timeout (s)",
      "Èasový limit Zap (s)",
-   },
++  },
 +  { "Setup.Miscellaneous$Channel entry timeout (ms)",
 +    "Zeitlimit für Kanaleingabe (ms)",
 +    "",// TODO
@@ -581,13 +880,12 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-+  },
+   },
    { "Setup.Miscellaneous$Initial channel",
      "Kanal beim Einschalten",
-     "Privzeti kanal",
 diff -Naur VDR-NG-orig/INSTALL VDR-NG/INSTALL
---- VDR-NG-orig/INSTALL	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/INSTALL	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/INSTALL	Wed Sep 10 10:54:44 2008
++++ VDR-NG/INSTALL	Tue Jun 23 11:07:49 2009
 @@ -67,13 +67,8 @@
  the defaults of which can be set via the RCU_DEVICE and LIRC_DEVICE macros,
  respectively.
@@ -605,8 +903,8 @@ diff -Naur VDR-NG-orig/INSTALL VDR-NG/INSTALL
  When running, the 'vdr' program writes status information into the
  system log file (/var/log/messages). You may want to watch these
 diff -Naur VDR-NG-orig/libsi/si.c VDR-NG/libsi/si.c
---- VDR-NG-orig/libsi/si.c	2009-06-10 22:02:18.000000000 +0200
-+++ VDR-NG/libsi/si.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/libsi/si.c	Fri Sep 26 16:08:25 2008
++++ VDR-NG/libsi/si.c	Tue Jun 23 11:07:49 2009
 @@ -280,7 +280,6 @@
        if (    ((' ' <= *from) && (*from <= '~'))
             || (*from == '\n')
@@ -616,8 +914,8 @@ diff -Naur VDR-NG-orig/libsi/si.c VDR-NG/libsi/si.c
           *to++ = *from;
        else if (*from == 0x8A)
 diff -Naur VDR-NG-orig/libsi/si.h VDR-NG/libsi/si.h
---- VDR-NG-orig/libsi/si.h	2009-06-10 22:02:18.000000000 +0200
-+++ VDR-NG/libsi/si.h	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/libsi/si.h	Tue Sep 02 12:40:33 2008
++++ VDR-NG/libsi/si.h	Tue Jun 23 11:07:50 2009
 @@ -28,7 +28,7 @@
                 TableIdNIT_other  = 0x41, //network information section, other network
                 TableIdSDT = 0x42, //service description section
@@ -628,8 +926,8 @@ diff -Naur VDR-NG-orig/libsi/si.h VDR-NG/libsi/si.h
                 TableIdEIT_presentFollowing_other = 0x4F,
                 //range from 0x50 to 0x5F
 diff -Naur VDR-NG-orig/libsi/util.c VDR-NG/libsi/util.c
---- VDR-NG-orig/libsi/util.c	2009-06-10 22:02:18.000000000 +0200
-+++ VDR-NG/libsi/util.c	2009-06-20 11:26:14.000000000 +0200
+--- VDR-NG-orig/libsi/util.c	Tue Sep 23 08:54:21 2008
++++ VDR-NG/libsi/util.c	Tue Jun 23 11:07:50 2009
 @@ -215,58 +215,73 @@
  
  //taken and adapted from libdtv, (c) Rolf Hakenes
@@ -749,8 +1047,8 @@ diff -Naur VDR-NG-orig/libsi/util.c VDR-NG/libsi/util.c
     return crc;
  }
 diff -Naur VDR-NG-orig/lirc.c VDR-NG/lirc.c
---- VDR-NG-orig/lirc.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/lirc.c	2009-06-20 11:26:14.000000000 +0200
+--- VDR-NG-orig/lirc.c	Tue Jun 23 11:06:29 2009
++++ VDR-NG/lirc.c	Tue Jun 23 11:07:50 2009
 @@ -71,42 +71,28 @@
    char buf[LIRC_BUFFER_SIZE];
    char LastKeyName[LIRC_KEY_BUF] = "";
@@ -811,8 +1109,8 @@ diff -Naur VDR-NG-orig/lirc.c VDR-NG/lirc.c
             esyslog("ERROR: lircd connection broken, trying to reconnect every %.1f seconds", float(RECONNECTDELAY) / 1000);
             close(f);
 diff -Naur VDR-NG-orig/Make.config VDR-NG/Make.config
---- VDR-NG-orig/Make.config	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/Make.config	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/Make.config	Wed Sep 10 10:54:45 2008
++++ VDR-NG/Make.config	Tue Jun 23 11:07:50 2009
 @@ -28,7 +28,6 @@
  
  REMOTE=LIRC
@@ -822,8 +1120,8 @@ diff -Naur VDR-NG-orig/Make.config VDR-NG/Make.config
  # TESTING 
  # DEFINES += -DUSE_HW_VIDEO_FRAME_EVENTS # Use Hardware Frame Events
 diff -Naur VDR-NG-orig/Makefile VDR-NG/Makefile
---- VDR-NG-orig/Makefile	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/Makefile	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/Makefile	Tue Jun 23 11:06:32 2009
++++ VDR-NG/Makefile	Tue Jun 23 11:07:50 2009
 @@ -92,11 +92,6 @@
  VDRVERSION = $(shell sed -ne '/define VDRVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
  APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
@@ -837,12 +1135,27 @@ diff -Naur VDR-NG-orig/Makefile VDR-NG/Makefile
  font: genfontfile\
        fontfix-iso8859-1.c fontosd-iso8859-1.c fontsml-iso8859-1.c\
 diff -Naur VDR-NG-orig/MANUAL VDR-NG/MANUAL
---- VDR-NG-orig/MANUAL	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/MANUAL	2009-06-20 11:27:13.000000000 +0200
-@@ -787,6 +787,15 @@
+--- VDR-NG-orig/MANUAL	Tue Sep 02 12:40:43 2008
++++ VDR-NG/MANUAL	Tue Jun 23 11:08:15 2009
+@@ -700,6 +700,13 @@
+   Pause priority = 10    The Priority and Lifetime values used when pausing live
+   Pause lifetime = 1     video.
+ 
++  Pause key handling = 3 Defines what happens if the Pause key on the remote control
++                         is pressed during live tv.
++                         0 = do not pause live video
++                         1 = confirm pause live video
++                         2 = pause live video
++                         The default is 2.
++
+   Use episode name = yes Repeating timers use the EPG's 'Episode name' information
+                          to create recording file names in a hierarchical structure
+                          (for instance to gather all episodes of a series in a
+@@ -786,6 +793,15 @@
+ 
    Zap Timeout = 3        The time (in seconds) until a channel counts as "previous"
                           for switching with '0'
- 
++
 +  Channel entry timeout = 1000
 +                         The time (in milliseconds) after the last keypress until
 +                         a numerically entered channel number is considered
@@ -851,13 +1164,12 @@ diff -Naur VDR-NG-orig/MANUAL VDR-NG/MANUAL
 +                         channel number then needs to be confirmed with the "Ok"
 +                         key. Note that the total maximum is also limited by
 +                         the "OSD/Channel info time" parameter.
-+
+ 
    Initial channel = 0    The number of the channel that shall be tuned to when
                           VDR starts. Default is 0, which means that it will
-                          tune to the channel that was on before VDR was stopped.
 diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
---- VDR-NG-orig/menu.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/menu.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/menu.c	Tue Jun 23 11:06:36 2009
++++ VDR-NG/menu.c	Tue Jun 23 11:08:15 2009
 @@ -566,6 +566,7 @@
          Channels.Del(channel);
          cOsdMenu::Del(Index);
@@ -901,7 +1213,42 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
                    return osContinue;
      default: break;
      }
-@@ -3280,6 +3282,7 @@
+@@ -2528,7 +2530,7 @@
+      cRecording *recording = GetRecording(ri);
+      if (recording) {
+         char *parameter = NULL;
+-        asprintf(&parameter, "\"%s\"", *strescape(recording->FileName(), "\"$"));
++        asprintf(&parameter, "\"%s\"", *strescape(recording->FileName(), "\\\"$"));
+         cMenuCommands *menu;
+         eOSState state = AddSubMenu(menu = new cMenuCommands(tr("Recording commands"), &RecordingCommands, parameter));
+         free(parameter);
+@@ -3168,6 +3170,7 @@
+ 
+ class cMenuSetupRecord : public cMenuSetupBase {
+ private:
++  const char *pauseKeyHandlingTexts[3];
+   const char *DelTimeshiftRecValues[3];
+   const char *RecordingsSortModeTexts[MAXSORTMODES];
+ public:
+@@ -3176,6 +3179,9 @@
+ 
+ cMenuSetupRecord::cMenuSetupRecord(void)
+ {
++  pauseKeyHandlingTexts[0] = tr("do not pause live video");
++  pauseKeyHandlingTexts[1] = tr("confirm pause live video");
++  pauseKeyHandlingTexts[2] = tr("pause live video");
+   DelTimeshiftRecValues[0]   = tr("request");
+   DelTimeshiftRecValues[1]   = tr("no");
+   DelTimeshiftRecValues[2]   = tr("yes");
+@@ -3190,6 +3196,7 @@
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Primary limit"),             &data.PrimaryLimit, 0, MAXPRIORITY));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Default priority"),          &data.DefaultPriority, 0, MAXPRIORITY));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Default lifetime (d)"),      &data.DefaultLifetime, 0, MAXLIFETIME));
++  Add(new cMenuEditStraItem(tr("Setup.Recording$Pause key handling"),        &data.PauseKeyHandling, 3, pauseKeyHandlingTexts));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Pause priority"),            &data.PausePriority, 0, MAXPRIORITY));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Pause lifetime (d)"),        &data.PauseLifetime, 0, MAXLIFETIME));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Use episode name"),          &data.UseSubtitle));
+@@ -3280,6 +3287,7 @@
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. user inactivity (min)"), &data.MinUserInactivity));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$SVDRP timeout (s)"),          &data.SVDRPTimeout));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Zap timeout (s)"),            &data.ZapTimeout));
@@ -909,7 +1256,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
    Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
-@@ -3906,8 +3909,6 @@
+@@ -3906,8 +3914,6 @@
  
  // --- cDisplayChannel -------------------------------------------------------
  
@@ -918,7 +1265,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
  cDisplayChannel *cDisplayChannel::currentDisplayChannel = NULL;
  
  cDisplayChannel::cDisplayChannel(int Number, bool Switched)
-@@ -4143,7 +4144,7 @@
+@@ -4143,7 +4149,7 @@
           Refresh();
           break;
      case kNone:
@@ -927,7 +1274,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
              channel = Channels.GetByNumber(number);
              if (channel)
                 NewChannel = channel;
-@@ -4386,7 +4387,7 @@
+@@ -4386,7 +4392,7 @@
           timeout.Set(TRACKTIMEOUT);
           break;
      case kOk:
@@ -936,7 +1283,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
              oldTrack = -1; // make sure we explicitly switch to that track
           timeout.Set();
           break;
-@@ -4528,8 +4529,11 @@
+@@ -4528,8 +4534,11 @@
  bool cRecordControl::Process(time_t t)
  {
  //M7X0 BEGIN AK
@@ -949,7 +1296,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    AssertFreeDiskSpace(timer->Priority());
    return true;
  //M7X0 END AK
-@@ -4974,7 +4978,8 @@
+@@ -4974,7 +4983,8 @@
           timeSearchActive = false;
           break;
      default:
@@ -960,8 +1307,8 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
      }
  
 diff -Naur VDR-NG-orig/menuitems.c VDR-NG/menuitems.c
---- VDR-NG-orig/menuitems.c	2009-06-20 11:21:34.000000000 +0200
-+++ VDR-NG/menuitems.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/menuitems.c	Tue Jun 23 11:06:04 2009
++++ VDR-NG/menuitems.c	Tue Jun 23 11:07:50 2009
 @@ -221,7 +221,8 @@
  void cMenuEditChrItem::Set(void)
  {
@@ -996,8 +1343,8 @@ diff -Naur VDR-NG-orig/menuitems.c VDR-NG/menuitems.c
      case kRight|k_Repeat:
      case kRight: AdvancePos();
 diff -Naur VDR-NG-orig/nit.c VDR-NG/nit.c
---- VDR-NG-orig/nit.c	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/nit.c	2009-06-20 11:26:14.000000000 +0200
+--- VDR-NG-orig/nit.c	Tue Sep 02 12:40:43 2008
++++ VDR-NG/nit.c	Tue Jun 23 11:07:50 2009
 @@ -142,33 +142,33 @@
                          }
                      break;
@@ -1172,9 +1519,32 @@ diff -Naur VDR-NG-orig/nit.c VDR-NG/nit.c
                      }
                   }
                   break;
+diff -Naur VDR-NG-orig/osd.c VDR-NG/osd.c
+--- VDR-NG-orig/osd.c	Tue Jun 23 11:06:26 2009
++++ VDR-NG/osd.c	Tue Jun 23 11:07:50 2009
+@@ -302,6 +302,8 @@
+ 
+ bool cBitmap::SetXpm(const char *const Xpm[], bool IgnoreNone)
+ {
++  if (!Xpm)
++     return false;
+   const char *const *p = Xpm;
+   int w, h, n, c;
+   if (4 != sscanf(*p, "%d %d %d %d", &w, &h, &n, &c)) {
+diff -Naur VDR-NG-orig/osdbase.c VDR-NG/osdbase.c
+--- VDR-NG-orig/osdbase.c	Tue Jun 23 11:06:04 2009
++++ VDR-NG/osdbase.c	Tue Jun 23 11:08:15 2009
+@@ -210,6 +210,7 @@
+          }
+      if (current < 0)
+         current = 0; // just for safety - there HAS to be a current item!
++     first = min(first, max(0, count - displayMenuItems)); // in case the menu size has changed
+      if (current - first >= displayMenuItems || current < first) {
+         first = current - displayMenuItems / 2;
+         if (first + displayMenuItems > count)
 diff -Naur VDR-NG-orig/osdbase.h VDR-NG/osdbase.h
---- VDR-NG-orig/osdbase.h	2009-06-20 11:21:35.000000000 +0200
-+++ VDR-NG/osdbase.h	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/osdbase.h	Tue Jun 23 11:06:16 2009
++++ VDR-NG/osdbase.h	Tue Jun 23 11:07:50 2009
 @@ -58,11 +58,11 @@
    cOsdItem(eOSState State = osUnknown);
    cOsdItem(const char *Text, eOSState State = osUnknown, bool Selectable = true);
@@ -1207,21 +1577,9 @@ diff -Naur VDR-NG-orig/osdbase.h VDR-NG/osdbase.h
    void Add(cOsdItem *Item, bool Current = false, cOsdItem *After = NULL);
    void Ins(cOsdItem *Item, bool Current = false, cOsdItem *Before = NULL);
    virtual void Display(void);
-diff -Naur VDR-NG-orig/osd.c VDR-NG/osd.c
---- VDR-NG-orig/osd.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/osd.c	2009-06-20 11:27:13.000000000 +0200
-@@ -302,6 +302,8 @@
- 
- bool cBitmap::SetXpm(const char *const Xpm[], bool IgnoreNone)
- {
-+  if (!Xpm)
-+     return false;
-   const char *const *p = Xpm;
-   int w, h, n, c;
-   if (4 != sscanf(*p, "%d %d %d %d", &w, &h, &n, &c)) {
 diff -Naur VDR-NG-orig/player.c VDR-NG/player.c
---- VDR-NG-orig/player.c	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/player.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/player.c	Tue Sep 02 12:40:41 2008
++++ VDR-NG/player.c	Tue Jun 23 11:07:50 2009
 @@ -77,8 +77,9 @@
  void cControl::Launch(cControl *Control)
  {
@@ -1234,8 +1592,8 @@ diff -Naur VDR-NG-orig/player.c VDR-NG/player.c
  
  void cControl::Attach(void)
 diff -Naur VDR-NG-orig/receiver.c VDR-NG/receiver.c
---- VDR-NG-orig/receiver.c	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/receiver.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/receiver.c	Tue Sep 02 12:40:41 2008
++++ VDR-NG/receiver.c	Tue Jun 23 11:07:50 2009
 @@ -41,7 +41,12 @@
  
  cReceiver::~cReceiver()
@@ -1251,8 +1609,8 @@ diff -Naur VDR-NG-orig/receiver.c VDR-NG/receiver.c
  
  bool cReceiver::WantsPid(int Pid)
 diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
---- VDR-NG-orig/recording.c	2009-06-20 11:21:35.000000000 +0200
-+++ VDR-NG/recording.c	2009-06-20 11:44:10.000000000 +0200
+--- VDR-NG-orig/recording.c	Tue Jun 23 11:06:23 2009
++++ VDR-NG/recording.c	Tue Jun 23 11:08:15 2009
 @@ -8,6 +8,7 @@
   */
  
@@ -1338,9 +1696,60 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
                          }
                       }
                       break;
+@@ -522,8 +506,8 @@
+      strn0cpy(SubtitleBuffer, Subtitle, MAX_SUBTITLE_LENGTH);
+      Subtitle = SubtitleBuffer;
+      }
+-  char *macroTITLE   = strstr(Timer->File(), TIMERMACRO_TITLE);
+-  char *macroEPISODE = strstr(Timer->File(), TIMERMACRO_EPISODE);
++  const char *macroTITLE   = strstr(Timer->File(), TIMERMACRO_TITLE);
++  const char *macroEPISODE = strstr(Timer->File(), TIMERMACRO_EPISODE);
+   if (macroTITLE || macroEPISODE) {
+      name = strdup(Timer->File());
+      name = strreplace(name, TIMERMACRO_TITLE, Title);
+@@ -567,7 +551,7 @@
+   }
+   fileName = strdup(FileName);
+   FileName += strlen(VideoDirectory) + 1;
+-  char *p = strrchr(FileName, '/');
++  const char *p = strrchr(FileName, '/');
+ 
+   name = NULL;
+   info = new cRecordingInfo;
+@@ -1270,7 +1254,7 @@
+ {
+   if (command) {
+      char *cmd;
+-     asprintf(&cmd, "%s %s \"%s\"", command, State, *strescape(RecordingFileName, "\"$"));
++     asprintf(&cmd, "%s %s \"%s\"", command, State, *strescape(RecordingFileName, "\\\"$"));
+      isyslog("executing '%s'", cmd);
+      SystemExec(cmd);
+      free(cmd);
+@@ -1524,8 +1508,8 @@
+         if (PictureType)
+            *PictureType = index[Index].type;
+         if (Length) {
+-           int fn = index[Index + 1].number;
+-           int fo = index[Index + 1].offset;
++           uint16_t fn = index[Index + 1].number;
++           off_t fo = index[Index + 1].offset;
+            if (fn == *FileNumber)
+               *Length = fo - *FileOffset;
+            else
+@@ -1555,8 +1539,8 @@
+                   FileOffset = &index[Index].offset;
+                if (Length) {
+                   // all recordings end with a non-I_FRAME, so the following should be safe:
+-                  int fn = index[Index + 1].number;
+-                  int fo = index[Index + 1].offset;
++                  uint16_t fn = index[Index + 1].number;
++                  off_t fo = index[Index + 1].offset;
+                   if (fn == *FileNumber)
+                      *Length = fo - *FileOffset;
+                   else {
 diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
---- VDR-NG-orig/recording.h	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/recording.h	2009-06-19 23:20:07.000000000 +0200
+--- VDR-NG-orig/recording.h	Tue Jun 23 11:06:27 2009
++++ VDR-NG/recording.h	Tue Jun 23 11:07:51 2009
 @@ -13,6 +13,7 @@
  #include <time.h>
  #include "channels.h"
@@ -1358,9 +1767,21 @@ diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
  
  // The maximum file size is limited by the range that can be covered
  // with 'int'. 4GB might be possible (if the range is considered
+diff -Naur VDR-NG-orig/remote.c VDR-NG/remote.c
+--- VDR-NG-orig/remote.c	Tue Jun 23 11:06:21 2009
++++ VDR-NG/remote.c	Tue Jun 23 11:08:15 2009
+@@ -121,7 +121,7 @@
+ bool cRemote::Put(uint64_t Code, bool Repeat, bool Release)
+ {
+   char buffer[32];
+-  snprintf(buffer, sizeof(buffer), "%016LX", Code);
++  snprintf(buffer, sizeof(buffer), "%016llX", Code);
+   return Put(buffer, Repeat, Release);
+ }
+ 
 diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
---- VDR-NG-orig/remux.h	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/remux.h	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/remux.h	Tue Sep 02 12:40:42 2008
++++ VDR-NG/remux.h	Tue Jun 23 11:07:51 2009
 @@ -12,10 +12,6 @@
  #ifdef USE_HW_VIDEO_FRAME_EVENTS
  #define USE_DATAHEADER_IN_RECEIVER 1
@@ -1373,8 +1794,8 @@ diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
  #include "tools.h"
  
 diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
---- VDR-NG-orig/svdrp.c	2009-06-20 11:21:35.000000000 +0200
-+++ VDR-NG/svdrp.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/svdrp.c	Tue Jun 23 11:06:24 2009
++++ VDR-NG/svdrp.c	Tue Jun 23 11:08:16 2009
 @@ -220,10 +220,12 @@
    "HITK [ <key> ]\n"
    "    Hit the given remote control key. Without option a list of all\n"
@@ -1430,6 +1851,15 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
             }
          }
       if (n < 0) {
+@@ -789,7 +794,7 @@
+      char *strtok_next;
+      FileName = strtok_r(p, delim, &strtok_next);
+      // image type:
+-     char *Extension = strrchr(FileName, '.');
++     const char *Extension = strrchr(FileName, '.');
+      if (Extension) {
+         if (strcasecmp(Extension, ".jpg") == 0 || strcasecmp(Extension, ".jpeg") == 0)
+            Jpeg = true;
 @@ -920,7 +925,7 @@
    if (*Option) {
       const char *hp = GetHelpPage(Option, HelpPages);
@@ -1538,8 +1968,8 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
  
  void cSVDRP::CmdSCAN(const char *Option)
 diff -Naur VDR-NG-orig/thread.c VDR-NG/thread.c
---- VDR-NG-orig/thread.c	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/thread.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/thread.c	Wed Sep 10 10:54:44 2008
++++ VDR-NG/thread.c	Tue Jun 23 11:07:51 2009
 @@ -27,11 +27,12 @@
  {
    struct timeval now;
@@ -1559,8 +1989,8 @@ diff -Naur VDR-NG-orig/thread.c VDR-NG/thread.c
       Abstime->tv_nsec = now.tv_usec * 1000; // nano seconds
       return true;
 diff -Naur VDR-NG-orig/timers.c VDR-NG/timers.c
---- VDR-NG-orig/timers.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/timers.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/timers.c	Tue Jun 23 11:06:26 2009
++++ VDR-NG/timers.c	Tue Jun 23 11:07:51 2009
 @@ -92,6 +92,7 @@
    channel = NULL;
    aux = NULL;
@@ -1570,8 +2000,8 @@ diff -Naur VDR-NG-orig/timers.c VDR-NG/timers.c
  }
  
 diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
---- VDR-NG-orig/tools.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/tools.c	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/tools.c	Tue Jun 23 11:06:34 2009
++++ VDR-NG/tools.c	Tue Jun 23 11:07:51 2009
 @@ -100,6 +100,14 @@
    return p < 0 ? p : written;
  }
@@ -1668,8 +2098,8 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
  }
  
 diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
---- VDR-NG-orig/tools.h	2009-06-10 22:02:35.000000000 +0200
-+++ VDR-NG/tools.h	2009-06-20 11:27:13.000000000 +0200
+--- VDR-NG-orig/tools.h	Wed Oct 01 13:01:42 2008
++++ VDR-NG/tools.h	Tue Jun 23 11:07:51 2009
 @@ -50,9 +50,9 @@
  #define getIntUnaligned(a) get_unaligned((int32_t *) (a))
  
@@ -1717,8 +2147,8 @@ diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
  char *compactspace(char *s);
  cString strescape(const char *s, const char *chars);
 diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
---- VDR-NG-orig/vdr.c	2009-06-20 11:21:36.000000000 +0200
-+++ VDR-NG/vdr.c	2009-06-20 11:29:33.000000000 +0200
+--- VDR-NG-orig/vdr.c	Tue Jun 23 11:06:36 2009
++++ VDR-NG/vdr.c	Tue Jun 23 11:08:16 2009
 @@ -89,23 +89,23 @@
  #include "epgmode.h"
  //M7X0 END AK
@@ -1869,7 +2299,22 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
  
          if (ISREALKEY(key)) {
             cStatus::MsgUserAction(key, Interact);          // PIN PATCH
-@@ -1162,7 +1161,7 @@
+@@ -1122,8 +1121,12 @@
+           case kPause:
+                if (!cControl::Control()) {
+                   DELETE_MENU;
+-                  if (!cRecordControls::PauseLiveVideo())
+-                     Skins.Message(mtError, tr("No free DVB device to record!"));
++                  if (Setup.PauseKeyHandling) {
++                     if (Setup.PauseKeyHandling > 1 || Interface->Confirm(tr("Pause live video?"))) {
++                        if (!cRecordControls::PauseLiveVideo())
++                           Skins.Message(mtError, tr("No free DVB device to record!"));
++                        }
++                     }
+                   key = kNone; // nobody else needs to see this key
+                   }
+                break;
+@@ -1162,7 +1165,7 @@
                     }
  		   if(Setup.ShutdownMessage){
                  // Ask the final question:
@@ -1878,7 +2323,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                     // If final question was canceled, continue to be active:
                     break;
  		   } else
-@@ -1191,7 +1190,7 @@
+@@ -1191,7 +1194,7 @@
                      continue;
                      }
                   }
@@ -1887,7 +2332,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                   state = osEnd;
                }
             // TODO make the CAM menu stay open in case of automatic updates and have it return osContinue; then the following two lines can be removed again
-@@ -1211,6 +1210,7 @@
+@@ -1211,6 +1214,7 @@
                              DELETE_MENU;
                              cControl::Shutdown();
                              Menu = new cMenuMain(osRecordings);
@@ -1895,7 +2340,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                              break;
               case osReplay: DELETE_MENU;
                              cControl::Shutdown();
-@@ -1318,12 +1318,12 @@
+@@ -1318,12 +1322,12 @@
                 ShutdownHandler.countdown.Cancel();
              }
  
@@ -1910,7 +2355,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
              if (ShutdownHandler.IsUserInactive(Soon) && ShutdownHandler.Retry(Soon) && !ShutdownHandler.countdown) {
                 if (ShutdownHandler.ConfirmShutdown(false) && !Setup.HotStandby)
                    // Time to shut down - start final countdown:
-@@ -1401,9 +1401,11 @@
+@@ -1401,9 +1405,11 @@
    ReportEpgBugFixStats();
    if (WatchdogTimeout > 0)
       dsyslog("max. latency time %d seconds", MaxLatencyTime);
