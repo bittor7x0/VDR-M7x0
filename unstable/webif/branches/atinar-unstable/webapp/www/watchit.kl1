@@ -134,9 +134,9 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 					io_printf(out,"%.*sclassid=\"clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921\"\n",ntabs,tabs);
 					io_printf(out,"%.*scodebase=\"http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab\">\n",ntabs,tabs);
 				}
-				io_printf(out,"%.*s<param name=\"showDisplay\" value=\"true\" />\n",ntabs,tabs);
-				io_printf(out,"%.*s<param name=\"autoLoop\" value=\"false\" />\n",ntabs,tabs);
-				io_printf(out,"%.*s<param name=\"autoPlay\" value=\"true\" />\n",ntabs,tabs);
+				io_printf(out,"%.*s<param name=\"ShowDisplay\" value=\"true\" />\n",ntabs,tabs);
+				io_printf(out,"%.*s<param name=\"AutoLoop\" value=\"false\" />\n",ntabs,tabs);
+				io_printf(out,"%.*s<param name=\"AutoPlay\" value=\"false\" />\n",ntabs,tabs);
 				//io_printf(out,"%.*s<param name=\"src\" value=\"playlistch.kl1?type=%d\" />\n",ntabs,tabs,webifConf.playlistType);
 				io_printf(out,"%.*s</object>\n",--ntabs,tabs);
 				io_printf(out,"%.*s%s<![endif]-->\n",ntabs,tabs,(p==0)?"<!--":"");

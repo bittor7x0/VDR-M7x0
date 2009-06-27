@@ -94,6 +94,13 @@ function initPageWatchIt(){
 			var channelNum=$(this).val();
 			var vlc=getVlc();
 			if (vlc && vlc.playlist) {
+				try {
+					if (vlc.playlist.isPlaying==true) {
+						vlc.playlist.stop();
+					}
+				} catch (stopErr) {
+					;
+				}
 				var itemId=$.webif.state.playlistId[channelNum];
 				if (!itemId){
 					var url=$.webif.state.url_base+':3000/'+channelNum;

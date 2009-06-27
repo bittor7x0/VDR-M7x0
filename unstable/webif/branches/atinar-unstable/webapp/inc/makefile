@@ -1,5 +1,5 @@
 -include ../../linux-mips-uclibc.tc
-DEBUG  = -g -ggdb -DDEBUG 
+DEBUG  = -g -ggdb -DDEBUG
 COMMON_CFLAGS = -I$(KLONE_SRC) $(UCLIBC_CFLAGS) -D_GNU_SOURCE $(DEBUG)
 CFLAGS  = $(COMMON_CFLAGS) -I$(KLONE_SRC)/libu/include/
 

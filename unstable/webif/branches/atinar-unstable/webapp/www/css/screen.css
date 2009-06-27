@@ -33,7 +33,6 @@ img {
 	border:medium none;
 }
 h2 {
-	color:#304050;
 	background-color:#A0B0C0;
 	font-size:1.3em;
 	margin:0 10px;
@@ -43,6 +42,7 @@ h2 {
 	-webkit-border-top-left-radius:3px;
 	-webkit-border-top-right-radius:3px;
 }
+h2,
 h2 a,
 h2 a:visited {
 	color:#304050;
@@ -800,7 +800,7 @@ div.recRecEdt .recFolderHeader {
 div.recFolder > .recFolderDetails,
 div.recFolder > .recFolders {
 	min-height:5em;
-	max-height:10em;
+	max-height:15em;
 }
 .recFolder .recFolderDetailsPending {
 	background-image:url(images/ajax-loader.gif);
