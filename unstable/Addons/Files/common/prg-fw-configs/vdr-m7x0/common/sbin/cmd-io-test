@@ -4,65 +4,65 @@ todas=0
 tam=40
 usage="$0 -d \"Test IO-Direct\" -a \"Testear todas las unidades\" -s \"tamaÃ±o en Mib\" -D \"Directorio\"";
 args=`getopt dahs:D: $*`
-set -- $args
+set -- ${args}
 for i do
   case "$i" in
         -d ) shift;io="-d";;
         -a ) shift;todas=1;;
         -s ) shift;tam=$1;shift;;
         -D ) shift;directorio=$1;shift;;
-        -h ) echo $usage;
+        -h ) echo ${usage};
             exit 1;;
   esac
 done
 
 parse()
         {
-        a=$(io-test -v -s $1 $3 $2 2>&1)
-        b1=$(echo $a|awk '{print("Escritura: "$25" "$26)}')
-        b2=$(echo $a|awk '{print("Lectura: "$38" "$39)}')
-        b3=$(echo $a|awk -F "=" '{print($4$5)}'|awk -F '"' '{print("Lect: "$2" Escr: "$4)}')
+        a=`/usr/bin/io-test -v -s $1 $3 $2 2>&1`
+        b1=`echo $a|awk '{print("Escritura: "$25" "$26)}'`
+        b2=`echo $a|awk '{print("Lectura: "$38" "$39)}'`
+        b3=`echo $a|awk -F "=" '{print($4$5)}'|awk -F '"' '{print("Lect: "$2" Escr: "$4)}'`
         if [ "$3" == "" ]; then
-                echo -e "\t"$2"("$(mount|grep $2|cut -d" " -f1)")-"$1"Mib:"
+                echo -e "\t"$2"("`mount|grep $2|cut -d" " -f1`")-"$1"Mib:"
         else
-                echo -e "\t"$2"("$(mount|grep $2|cut -d" " -f1)")-"$1"Mib Directo:"
+                echo -e "\t"$2"("`mount|grep $2|cut -d" " -f1`")-"$1"Mib Directo:"
         fi
-        echo -e "\t\t"$b1
-        echo -e "\t\t"$b2
-        svdrpsend 127.0.0.1 2001 "MESG $2 $b3" > /dev/null 2>&1 &
+        echo -e "\t\t"${b1}
+        echo -e "\t\t"${b2}
+        /sbin/cmd-svdrpsend "MESG $2 ${b3}"
         }
 
 echo "Test de velocidad de Lectura/Escritura"
 
-if [ $todas -eq 1 ]; then
+if [ ${todas} -eq 1 ]; then
         echo "Evaluando las distintas particiones del disco duro..."
-        for i in $(mount|grep nodiratime|grep ext|cut -d " " -f3); do
-                parse $tam $i $io
+        for i in `mount | awk '{if ($5=="ext2" || $5=="ext3" || $5=="vfat")  print $3}'`; do
+                parse ${tam} ${i} ${io}
         done
-        if [ "$io" != "-d" ]; then
+        if [ "${io}" != "-d" ]; then
         echo "Evaluando las carpetas compartidas..."
-                for i in $(mount|grep nodiratime|grep cifs|cut -d " " -f3); do
-                        parse $tam $i
+                for i in `mount | awk '{if ($5=="nfs" || $5=="cifs")  print $3}'`; do
+                        parse ${tam} ${i}
                 done
         else
         echo "En carpetas compartidas no funciona el acceso directo"
         echo "Evaluando las carpetas compartidas..."
-                for i in $(mount|grep nodiratime|grep cifs|cut -d " " -f3); do
-                        parse $tam $i
+                for i in `mount | awk '{if ($5=="nfs" || $5=="cifs")  print $3}'`; do
+                        parse ${tam} ${i}
                 done
         fi
 else
-        if [ -d "$directorio" ]; then
-                for i in $(mount|grep nodiratime|grep cifs|cut -d " " -f3); do
-                        a=$(echo $directorio|grep $i)
-                        if [ "$a" == "" ]; then
+        if [ -d "${directorio}" ]; then
+                for i in `mount | awk '{if ($5=="nfs" || $5=="cifs")  print $3}'`; do
+                        a=`echo ${directorio}|grep $i`
+                        if [ "${a}" == "" ]; then
                                 io="";
                                 break 1;
                         fi
                 done
-                parse $tam $directorio $io
+                parse ${tam} ${directorio} ${io}
         else
-                /usr/bin/svdrpsend 127.0.0.1 2001 "MESG ERROR: Directorio no valido" > /dev/null 2>&1 &
-                echo "ERROR: Directorio no valido"
+                /sbin/cmd-svdrpsend "MESG ERROR: Directorio no válido"
+                echo "ERROR: Directorio no válido"
         fi
 fi
