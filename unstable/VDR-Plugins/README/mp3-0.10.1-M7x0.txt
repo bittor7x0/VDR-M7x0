@@ -1,0 +1,89 @@
+
+This is a plugin for VDR.
+The "MP3-Plugin" allows playback of MP3 audio files.
+
+Original written by:
+Written by:                  Stefan Hülswitt <s.huelswitt@gmx.de>
+Project's homepage:          http://www.muempf.de/
+Latest version available at: http://www.muempf.de/down/
+
+See the file COPYING for license information.
+
+----------------------------------------------------------------------
+
+For the user manual see the MANUAL file.
+
+
+Installing:
+-----------
+
+This is a special adopted version of this plugin for the VDR on
+Siemens M7x0 DVB reseivers.
+It was adopted by the open7x0.org team.
+
+See http://open7x0.org for details about the project
+
+
+Commandline options:
+--------------------
+
+For the plugin it's possible to give an additional configuration subdirectory
+with commandline option -S/--sources, i.e. the given directory name is appended
+to the default plugin config directory path.
+
+The plugin have a commandline option -m/--mount to define the name and
+location of the mount script. The default mount script is "mount.sh". This
+script is called from the plugin with 2 options on the commandline. The first
+is one of mount/unmount/eject/status and gives the action to perform. The
+second one is the base directory as defined in "mp3sources.conf".
+The script must return the exit code 0 if the action was
+successful and 1 if the action failed (see the comments in the example
+"mount.sh" script which comes with the archive).
+
+The MP3 plugin maintains a cache for information scanned from song files (e.g.
+ID3 tags). This information is saved to the id3info.cache file by default
+located in the video directory. You can use commandline option -C/--cache to
+specify a different directory for this file.
+
+If you are using any of the networking capabilities and you have a dial-up
+network, you can use the commandline option -n/--network to give a script name.
+This script is called before and after any network access and receives one
+option on commandline. This can either be "up" or "down", depending on if it's
+before or after the network access. In the "up" case the script should not
+return before the network is connected and useable. By default the plugin
+assumes that network access can be done at any time without prior action.
+
+If you want to use the cover image display, you have to provide image
+in iFrame format. Usually your covers are in a common image format like e.g.
+JPEG or PNG, but the MP3 plugin can only display MPEG (still) frames. 
+
+The scripts that are provided from the open7x0 team for the pictures plugin
+can be used for this.
+http://www.open7x0.org/svnweb/vdr-m7x0-PLUGINS/browse/branches/unstable/pictures/scripts
+
+Don't forget to enable the image display in the plugin setup menu.
+The search order for images is:
+- An image in the same directory as the song, named like the song but with the
+  song extension replaced with the image format extension
+  e.g. test.mp3 -> test.iFrame
+- An image named "folder" with the image format extension in the same directory
+  as the song (album cover).
+  e.g. folder.iFrame
+- An image named "folder" with the image format extension in the parent
+  directory of the song (artist image).
+  e.g. folder.iFrame
+- An image named "background" with the image format extension in the base
+  directory of the MP3 source.
+  e.g. background.iFrame
+For all locations the extension "iFrame" is checked.
+If no image can be found, a default image is displayed (this
+is included statically in the plugin).
+
+Summary of commandline options:
+-------------------------------
+
+MP3 Plugin:
+-m CMD,  --mount=CMD    use CMD to mount/unmount/eject mp3 sources
+-n CMD,  --network=CMD  execute CMD before & after network access
+-C DIR,  --cache=DIR    store ID3 cache file in DIR
+-S SUB,  --sources=SUB  search sources config in SUB subdirectory
