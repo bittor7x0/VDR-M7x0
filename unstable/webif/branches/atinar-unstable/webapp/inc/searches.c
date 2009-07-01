@@ -112,6 +112,9 @@ void initSearch(search_t *const search) {
 	memset(search,0,sizeof(search_t));
 	search->priority=50;
 	search->lifetime=99;
+	setFlag(EFI_TITLE,search->compareFlags);
+	setFlag(EFI_SHORTDESC,search->compareFlags);
+	setFlag(EFI_DESC,search->compareFlags);
 	search->marginStart=webifConf.defaultMarginStart;
 	search->marginStop=webifConf.defaultMarginStop;
 	setFlag(SFL_USE_AS_SEARCH_TIMER,search->flags);
@@ -281,7 +284,7 @@ boolean_t parseSearch(const char *line, search_t *const search, channelList_t co
 				setFlag(SFI_SEARCH,search->my);
 				break;
 			case 3:  
-				if (strtol(r,&n,10)) setFlag(SFL_USE_TIME,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_USE_TIME,search->flags);
 				break;
 			case 4:
 				search->startTime = (isFlagSet(SFL_USE_TIME,search->flags) && l) ? strtol(r,&n,10) : 0;
@@ -329,22 +332,22 @@ boolean_t parseSearch(const char *line, search_t *const search, channelList_t co
 				}
 				break;
 			case 8:  
-				if (strtol(r,&n,10)) setFlag(SFL_USE_CASE,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_USE_CASE,search->flags);
 				break;
 			case 9:  
 				search->searchMode = strtol(r,&n,10);
 				break;
 			case 10: 
-				if (strtol(r,&n,10)) setFlag(EFI_TITLE,search->compareFlags);
+				setOrClearFlag(strtol(r,&n,10),EFI_TITLE,search->compareFlags);
 				break;
 			case 11: 
-				if (strtol(r,&n,10)) setFlag(EFI_SHORTDESC,search->compareFlags);
+				setOrClearFlag(strtol(r,&n,10),EFI_SHORTDESC,search->compareFlags);
 				break;
 			case 12:
-				if (strtol(r,&n,10)) setFlag(EFI_DESC,search->compareFlags);
+				setOrClearFlag(strtol(r,&n,10),EFI_DESC,search->compareFlags);
 				break;
 			case 13:
-				if (strtol(r,&n,10)) setFlag(SFL_USE_DURATION,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_USE_DURATION,search->flags);
 				break;
 			case 14: 
 				search->minDuration = (isFlagSet(SFL_USE_DURATION,search->flags) && l) ? strtol(r,&n,10) : 0;
@@ -353,16 +356,16 @@ boolean_t parseSearch(const char *line, search_t *const search, channelList_t co
 				search->maxDuration = (isFlagSet(SFL_USE_DURATION,search->flags) && l) ? strtol(r,&n,10) : 0;
 				break;
 			case 16: 
-				if (strtol(r,&n,10)) setFlag(SFL_USE_AS_SEARCH_TIMER,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_USE_AS_SEARCH_TIMER,search->flags);
 				break;
 			case 17:
-				if (strtol(r,&n,10)) setFlag(SFL_USE_WDAY,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_USE_WDAY,search->flags);
 				break;
 			case 18: 
 				search->wday = strtol(r,&n,10);
 				break;
 			case 19:
-				if (strtol(r,&n,10)) setFlag(SFL_USE_EPISODE,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_USE_EPISODE,search->flags);
 				break;
 			case 20:  
 				crit_goto_if((search->directory = strndup(r,l))==NULL,outOfMemory);
@@ -381,32 +384,32 @@ boolean_t parseSearch(const char *line, search_t *const search, channelList_t co
 				search->marginStop = strtol(r,&n,10);
 				break;
 			case 25:
-				if (strtol(r,&n,10)) setFlag(SFL_USE_VPS,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_USE_VPS,search->flags);
 				break;
 			case 26: 
 				search->action = strtol(r,&n,10);
 				break;
 			case 27:
-				if (strtol(r,&n,10)) setFlag(SFL_USE_EXT_EPG_INFO,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_USE_EXT_EPG_INFO,search->flags);
 				break;
 			case 28: 
 				crit_goto_if((search->extEpgValues = strndup(r,l))==NULL,outOfMemory);
 				setFlag(SFI_EXT_EPG_VALUES,search->my);
 				break;
 			case 29:
-				if (strtol(r,&n,10)) setFlag(SFL_AVOID_REPEATS,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_AVOID_REPEATS,search->flags);
 				break;
 			case 30: 
 				search->allowedRepeats = strtol(r,&n,10);
 				break;
 			case 31:
-				if (strtol(r,&n,10)) setFlag(EFI_TITLE,search->repeatsCompareFlags);
+				setOrClearFlag(strtol(r,&n,10),EFI_TITLE,search->repeatsCompareFlags);
 				break;
 			case 32:
-				if (strtol(r,&n,10)) setFlag(EFI_SHORTDESC,search->repeatsCompareFlags);
+				setOrClearFlag(strtol(r,&n,10),EFI_SHORTDESC,search->repeatsCompareFlags);
 				break;
 			case 33:
-				if (strtol(r,&n,10)) setFlag(EFI_DESC,search->repeatsCompareFlags);
+				setOrClearFlag(strtol(r,&n,10),EFI_DESC,search->repeatsCompareFlags);
 				break;
 			case 34: 
 				search->catvaluesAvoidRepeat = strtol(r,&n,10);
@@ -442,7 +445,7 @@ boolean_t parseSearch(const char *line, search_t *const search, channelList_t co
 				search->fuzzyTolerance = strtol(r,&n,10);
 				break;
 			case 43:
-				if (strtol(r,&n,10)) setFlag(SFL_USE_IN_FAVORITES,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_USE_IN_FAVORITES,search->flags);
 				break;
 			case 44: 
 				search->menuTemplate = strtol(r,&n,10);
@@ -463,10 +466,10 @@ boolean_t parseSearch(const char *line, search_t *const search, channelList_t co
 				search->useAsSearchTimerTil = strtol(r,&n,10);
 				break;
 			case 50:
-				if (strtol(r,&n,10)) setFlag(SFL_IGNORE_MISSING_EPG_CATS,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_IGNORE_MISSING_EPG_CATS,search->flags);
 				break;
 			case 51:
-				if (strtol(r,&n,10)) setFlag(SFL_UNMUTE_SOUND_ON_SWITCH,search->flags);
+				setOrClearFlag(strtol(r,&n,10),SFL_UNMUTE_SOUND_ON_SWITCH,search->flags);
 				break;
 		}
 		if (errno) {
