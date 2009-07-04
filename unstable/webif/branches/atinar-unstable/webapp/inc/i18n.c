@@ -1474,6 +1474,22 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"search.err.nothingToCompareWith",
+		{
+		"Specify where to search for text",
+		"",
+		"Especifica dónde se debe buscar el texto",
+		""
+		}
+	},
+	{	"search.err.nothingToSearchFor",
+		{
+		"Specify text to search for",
+		"",
+		"Especifica texto a buscar",
+		""
+		}
+	},
 	{	"search.exactMatch",
 		{
 		"Exact match",

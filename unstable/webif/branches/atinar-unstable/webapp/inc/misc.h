@@ -130,6 +130,17 @@ extern webifState_t webifState;
 #define setFlag(flag,flags)     ((flags) |=  (flag))
 #define clearFlag(flag,flags)   ((flags) &= ~(flag))
 #define setOrClearFlag(isSet,flag,flags)  if (isSet) {setFlag(flag,flags);} else {clearFlag(flag,flags);}
+#ifdef IGNORE_TABS
+	#define TABS
+	#define NTABS(ignore,ntabs)
+	#define DECNTABS(ntabs)
+	#define INCNTABS(ntabs)
+#else
+	#define TABS "%.*s"
+	#define NTABS(ignore,ntabs) ,ntabs,tabs
+	#define DECNTABS(ntabs) --ntabs
+	#define INCNTABS(ntabs) ntabs++
+#endif
 
 void config(session_t *session, request_t *request);
 boolean_t isDST(time_t * aTime);

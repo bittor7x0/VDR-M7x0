@@ -57,7 +57,7 @@ dbg_recordings_kl1(void) { dbg("recordings.kl1"); }
 	
 	int ntabs=initHtmlPage(response,out,tr("recordings"),
 "		<script type=\"text/javascript\">\n"
-"			$.webif.messages.confirmDelete='%s';\n"
+"			webif.messages.confirmDelete='%s';\n"
 "		</script>\n"
 		,tr("rec.delete.confirm")
 	);

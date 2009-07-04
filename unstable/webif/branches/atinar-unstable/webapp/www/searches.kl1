@@ -62,9 +62,16 @@ void dbg_searches_kl1(void) { dbg("searches.kl1"); }
 	webifState.sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
 	int ntabs=initHtmlPage(response,out,tr("searches"),
 "		<script type=\"text/javascript\">\n"
-"			$.webif.messages.confirmDelete='%s';\n"
+"			webif.messages.confirmDelete='%s';\n"
+"			webif.messages.searches={\n"
+"				nothingToSearchFor:'%s',\n"
+"				nothingToCompareWith:'%s'\n"
+"			};\n"
 "		</script>\n"
+"		<script type=\"text/javascript\" src=\"/js/searches.js\"></script>\n"
 		,tr("search.delete.confirm")
+		,tr("search.err.nothingToSearchFor")
+		,tr("search.err.nothingToCompareWith")
 	);
 	printMenu(out,ntabs);
 	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
@@ -182,6 +189,7 @@ void dbg_searches_kl1(void) { dbg("searches.kl1"); }
 		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.useCase"));
 		printCheckbox(out,ntabs,&checkboxCfg,NULL,"useCase",0,isFlagSet(SFL_USE_CASE,search.flags)?"1":"0",aux);
 		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s<fieldset id=\"compareSet\">\n",ntabs++,tabs);
 		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.compareTitle"));
 		printCheckbox(out,ntabs,&checkboxCfg,NULL,"compareTitle",0,isFlagSet(EFI_TITLE,search.compareFlags)?"1":"0",aux);
 		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
@@ -191,6 +199,7 @@ void dbg_searches_kl1(void) { dbg("searches.kl1"); }
 		io_printf(out,"%.*s<label>%s\n",ntabs++,tabs,tr("search.compareDescription"));
 		printCheckbox(out,ntabs,&checkboxCfg,NULL,"compareDescription",0,isFlagSet(EFI_DESC,search.compareFlags)?"1":"0",aux);
 		io_printf(out,"%.*s</label>\n",--ntabs,tabs);
+		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</fieldset>\n",--ntabs,tabs);
 
 		io_printf(out,"%.*s<fieldset>\n",ntabs++,tabs);

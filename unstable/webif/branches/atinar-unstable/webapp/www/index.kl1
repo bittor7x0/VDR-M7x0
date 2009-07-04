@@ -128,7 +128,7 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 	getPartitionList(&partitions);
 	if (partitions.length){
 		io_printf(out,"%.*s<table id=\"partitionSpace\" class=\"list\" summary=\"%s\">\n",ntabs++,tabs,tr("partitionSpace"));
-		io_printf(out,"%.*s<thead>",ntabs++,tabs);
+		io_printf(out,"%.*s<thead>\n",ntabs++,tabs);
 		io_printf(out,"%.*s"
 			"<tr>"
 				"<th>%s</th>"
@@ -138,13 +138,11 @@ void dbg_index_kl1(void) { dbg("index.kl1"); }
 		io_printf(out,"%.*s</thead>\n",--ntabs,tabs);
 		int i;
 		partitionInfo_t *partition;
-		io_printf(out,"%.*s<tbody>",ntabs++,tabs);
+		io_printf(out,"%.*s<tbody>\n",ntabs++,tabs);
 		for (i=0,partition=partitions.partition;i<partitions.length;i++,partition++){
-			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-			io_printf(out,"%.*s<td>%s</td><td>%.0f MB</td><td>%.0f %%</td><td>%.0f MB</td>"
+			io_printf(out,"%.*s<tr><td>%s</td><td>%.0f MB</td><td>%.0f %%</td><td>%.0f MB</td></tr>\n"
 				,ntabs,tabs,partition->name,partition->usedMB,partition->usedPercent,partition->freeMB
 			);
-			io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
 		}
 		io_printf(out,"%.*s</tbody>\n",--ntabs,tabs);
 		io_printf(out,"%.*s</table>\n",--ntabs,tabs);

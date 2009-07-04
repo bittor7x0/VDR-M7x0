@@ -9,7 +9,6 @@ function updateVolume(deltaVol){
 	var vlc = getVlc();
 	if (vlc && vlc.audio){
 		vlc.audio.volume += deltaVol;
-		/*$("#VolumeText").text(vlc.audio.volume+"%");*/
 	}
 }
 function doVolumeUp(event){

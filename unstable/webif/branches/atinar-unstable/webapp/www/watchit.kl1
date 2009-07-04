@@ -42,6 +42,8 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 	webifState.currentPage=PN_WATCHIT;
 	int ntabs=initHtmlPage(response,out,tr("channelWatch"),
 "		<script type=\"text/javascript\" src=\"/js/vlc.js\"></script>\n"
+"		<script type=\"text/javascript\" src=\"/js/jquery.selectboxes.js\"></script>\n"
+"		<script type=\"text/javascript\" src=\"/js/watchit.js\"></script>\n"
 	);
 	printMenu(out,ntabs);
 	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
@@ -54,8 +56,8 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 		const char *hostAddr=getHostHttpAddr(host,request);
 		int channelNum=vars_get_value_i(args,"channelNum");
 		io_printf(out,"%.*s<script type=\"text/javascript\">\n",ntabs,tabs);
-		io_printf(out,"%.*s	$.webif.state.url_base='http://%s';\n",ntabs,tabs,hostAddr);
-		io_printf(out,"%.*s	$.webif.state.channelNum='%d';\n",ntabs,tabs,channelNum);
+		io_printf(out,"%.*s	webif.state.url_base='http://%s';\n",ntabs,tabs,hostAddr);
+		io_printf(out,"%.*s	webif.state.channelNum='%d';\n",ntabs,tabs,channelNum);
 		io_printf(out,"%.*s</script>\n",ntabs,tabs);
 		
 		getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
@@ -79,6 +81,7 @@ dbg_watchit_kl1(void) { dbg("watchit.kl1"); }
 
 		io_printf(out,"%.*s<form action=\"watchit.kl1\" method=\"post\" class=\"ui-helper-clearfix\">\n",ntabs++,tabs);
 		printChannelListSelect(out,ntabs,NULL,"channelNum",&channels,channelNum);
+		io_printf(out,"%.*s<select id=\"audioTrack\" name=\"audioTrack\" size=\"1\"></select>",ntabs,tabs);
 		io_printf(out,"%.*s<ul class=\"controls\"><!--\n",ntabs++,tabs);
 		/* Produce error de desbordamiento de buffer en streamdevserver
 		io_printf(out,"%.*s"

@@ -56,8 +56,9 @@ void dbg_browse_kl1(void) { dbg("browse.kl1"); }
 	
 	int ntabs=initHtmlPage(response,out,tr("recordings"),
 "		<script type=\"text/javascript\">\n"
-"			$.webif.messages.confirmDelete='%s';\n"
+"			webif.messages.confirmDelete='%s';\n"
 "		</script>\n"
+"		<script type=\"text/javascript\" src=\"/js/browse.js\"></script>\n"
 		,tr("rec.delete.confirm")
 	);
 	printMenu(out,ntabs);
