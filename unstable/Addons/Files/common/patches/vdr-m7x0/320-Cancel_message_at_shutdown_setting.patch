@@ -1,45 +1,45 @@
 diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
---- VDR-NG-orig/config.c	Wed Jul 16 09:24:45 2008
-+++ VDR-NG/config.c	Wed Jul 16 09:25:21 2008
-@@ -335,6 +335,7 @@
-   JumpSeconds = 60;
-   JumpSecondsRepeat = 120;
-   JumpFramesRepeat = 15;
+--- VDR-NG-orig/config.c	2009-07-05 11:58:28.000000000 +0200
++++ VDR-NG/config.c	2009-07-05 12:05:09.000000000 +0200
+@@ -342,6 +342,7 @@
+ #ifdef USE_DIRECT_IO
+   ReplayUseDirectIO = 0;
+ #endif
 +  ShutdownMessage = 0;
    AbortWhenPluginFails = 0;
-   EmergencyExit = 1;
+   EmergencyExit = 0;
    LircRepeatDelay = 350;
-@@ -525,6 +526,7 @@
-   else if (!strcasecmp(Name, "JumpSeconds"))         JumpSeconds        = atoi(Value);
-   else if (!strcasecmp(Name, "JumpSecondsRepeat"))   JumpSecondsRepeat  = atoi(Value);
-   else if (!strcasecmp(Name, "JumpFramesRepeat"))    JumpFramesRepeat   = atoi(Value);
+@@ -539,6 +540,7 @@
+ #ifdef USE_DIRECT_IO
+   else if (!strcasecmp(Name, "ReplayUseDirectIO"))   ReplayUseDirectIO  = atoi(Value);
+ #endif
 +  else if (!strcasecmp(Name, "ShutdownMessage"))     ShutdownMessage    = atoi(Value);
    else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
    else if (!strcasecmp(Name, "EmergencyExit"))       EmergencyExit      = atoi(Value);
    else if (!strcasecmp(Name, "LircRepeatDelay"))     LircRepeatDelay    = atoi(Value);
-@@ -622,6 +624,7 @@
-   Store("JumpSeconds",        JumpSeconds);
-   Store("JumpSecondsRepeat",  JumpSecondsRepeat);
-   Store("JumpFramesRepeat",   JumpFramesRepeat);
+@@ -643,6 +645,7 @@
+ #ifdef USE_DIRECT_IO
+   Store("ReplayUseDirectIO",  ReplayUseDirectIO);
+ #endif
 +  Store("ShutdownMessage",    ShutdownMessage);
    Store("AbortWhenPluginFails", AbortWhenPluginFails);
    Store("EmergencyExit",      EmergencyExit);
    Store("LircRepeatDelay",    LircRepeatDelay);
 diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
---- VDR-NG-orig/config.h	Wed Jul 16 09:24:45 2008
-+++ VDR-NG/config.h	Wed Jul 16 09:25:21 2008
-@@ -292,6 +292,7 @@
-   int RecordingsSortMode;
-   int RecordingsSortDirsFirst;
-   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
+--- VDR-NG-orig/config.h	2009-07-05 11:58:28.000000000 +0200
++++ VDR-NG/config.h	2009-07-05 12:05:45.000000000 +0200
+@@ -299,6 +299,7 @@
+ #ifdef USE_DIRECT_IO
+   int ReplayUseDirectIO;
+ #endif
 +  int ShutdownMessage;
    int AbortWhenPluginFails;
    int EmergencyExit;
    int LircRepeatDelay;
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
---- VDR-NG-orig/i18n.c	Wed Jul 16 09:24:45 2008
-+++ VDR-NG/i18n.c	Wed Jul 16 09:25:21 2008
-@@ -5092,6 +5092,48 @@
+--- VDR-NG-orig/i18n.c	2009-07-05 11:58:28.000000000 +0200
++++ VDR-NG/i18n.c	2009-07-05 12:08:53.000000000 +0200
+@@ -5246,6 +5246,48 @@
      "som før",
      "jako naposledy",
    },
@@ -89,9 +89,9 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Abbrechen wenn Plugin nicht lädt",
      "",// TODO
 diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
---- VDR-NG-orig/menu.c	Wed Jul 16 09:24:45 2008
-+++ VDR-NG/menu.c	Wed Jul 16 09:25:21 2008
-@@ -3255,6 +3255,7 @@
+--- VDR-NG-orig/menu.c	2009-07-05 11:58:28.000000000 +0200
++++ VDR-NG/menu.c	2009-07-05 12:10:54.000000000 +0200
+@@ -3278,6 +3278,7 @@
    Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
    Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
@@ -100,9 +100,9 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Emergency exit"),             &data.EmergencyExit));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat delay"),          &data.LircRepeatDelay, 0, 1000));
 diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
---- VDR-NG-orig/vdr.c	Wed Jul 16 09:24:44 2008
-+++ VDR-NG/vdr.c	Wed Jul 16 09:25:56 2008
-@@ -1157,10 +1157,14 @@
+--- VDR-NG-orig/vdr.c	2009-07-05 11:58:28.000000000 +0200
++++ VDR-NG/vdr.c	2009-07-05 12:13:02.000000000 +0200
+@@ -1163,10 +1163,14 @@
                     ShutdownHandler.SetUserInactive();
                     break;
                     }

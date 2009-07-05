@@ -1,17 +1,110 @@
-diff -Naur VDR-NG-orig/dvbplayer.c VDR-NG/dvbplayer.c
---- VDR-NG-orig/dvbplayer.c	Tue Sep 02 12:40:41 2008
-+++ VDR-NG/dvbplayer.c	Tue Jun 02 18:41:00 2009
-@@ -353,13 +353,7 @@
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	2009-07-05 11:30:40.000000000 +0200
++++ VDR-NG/config.c	2009-07-05 11:36:22.000000000 +0200
+@@ -336,6 +336,9 @@
+   JumpSeconds = 60;
+   JumpSecondsRepeat = 120;
+   JumpFramesRepeat = 15;
++#ifdef USE_DIRECT_IO
++  ReplayUseDirectIO = 0;
++#endif
+   AbortWhenPluginFails = 0;
+ }
  
-   playFrame = NULL;
+@@ -523,6 +526,9 @@
+   else if (!strcasecmp(Name, "JumpSeconds"))         JumpSeconds        = atoi(Value);
+   else if (!strcasecmp(Name, "JumpSecondsRepeat"))   JumpSecondsRepeat  = atoi(Value);
+   else if (!strcasecmp(Name, "JumpFramesRepeat"))    JumpFramesRepeat   = atoi(Value);
++#ifdef USE_DIRECT_IO
++  else if (!strcasecmp(Name, "ReplayUseDirectIO"))   ReplayUseDirectIO  = atoi(Value);
++#endif
+   else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
+   else
+      return false;
+@@ -617,6 +623,9 @@
+   Store("JumpSeconds",        JumpSeconds);
+   Store("JumpSecondsRepeat",  JumpSecondsRepeat);
+   Store("JumpFramesRepeat",   JumpFramesRepeat);
++#ifdef USE_DIRECT_IO
++  Store("ReplayUseDirectIO",  ReplayUseDirectIO);
++#endif
+   Store("AbortWhenPluginFails", AbortWhenPluginFails);
+ 
+   Sort();
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	2009-07-05 11:30:40.000000000 +0200
++++ VDR-NG/config.h	2009-07-05 11:37:18.000000000 +0200
+@@ -293,6 +293,9 @@
+   int CutterMaxBandwidth;
+   int CutterRelBandwidth;
+   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
++#ifdef USE_DIRECT_IO
++  int ReplayUseDirectIO;
++#endif
+   int AbortWhenPluginFails;
+   int __EndData__;
+   cSetup(void);
+diff -Naur VDR-NG-orig/dvbplayer.c VDR-NG/dvbplayer.c
+--- VDR-NG-orig/dvbplayer.c	2009-07-05 11:29:33.000000000 +0200
++++ VDR-NG/dvbplayer.c	2009-07-05 11:39:53.000000000 +0200
+@@ -355,10 +355,11 @@
    isyslog("replay %s", FileName);
--//M7X0 BEGIN AK
--#ifdef USE_DIRECT_IO
--  fileName = new cFileName(FileName, false, true, true);
+ //M7X0 BEGIN AK
+ #ifdef USE_DIRECT_IO
++if(Setup.ReplayUseDirectIO)
+   fileName = new cFileName(FileName, false, true, true);
 -#else
-   fileName = new cFileName(FileName, false);
--#endif
--//M7X0 END AK
+-  fileName = new cFileName(FileName, false);
++else
+ #endif
++  fileName = new cFileName(FileName, false);
+ //M7X0 END AK
    replayFile = fileName->Open();
    if (!replayFile)
-      return;
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2009-07-05 11:30:40.000000000 +0200
++++ VDR-NG/i18n.c	2009-07-05 11:42:08.000000000 +0200
+@@ -7354,6 +7354,30 @@
+     "",
+     "",
+   },
++#ifdef USE_DIRECT_IO
++  { "Setup.Replay$Use Direct I/O",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "Usar Direct I/O",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++  },
++#endif
+   { "Setup.Recording$Sort recordings by",
+     "Aufnahmen sortieren nach",
+     "",// TODO
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2009-07-05 11:30:40.000000000 +0200
++++ VDR-NG/menu.c	2009-07-05 11:53:56.000000000 +0200
+@@ -3222,6 +3222,9 @@
+   Add(new cMenuEditIntItem( tr("Setup.Replay$Jump Seconds"), &data.JumpSeconds));
+   Add(new cMenuEditIntItem( tr("Setup.Replay$Jump Seconds (repeated)"), &data.JumpSecondsRepeat));
+   Add(new cMenuEditIntItem( tr("Setup.Replay$Jump Frames (repeated)"), &data.JumpFramesRepeat));
++#ifdef USE_DIRECT_IO
++  Add(new cMenuEditBoolItem(tr("Setup.Replay$Use Direct I/O"), &data.ReplayUseDirectIO));
++#endif
+ }
+ 
+ void cMenuSetupReplay::Store(void)
