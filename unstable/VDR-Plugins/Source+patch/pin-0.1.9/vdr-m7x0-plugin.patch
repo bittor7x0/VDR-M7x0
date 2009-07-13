@@ -636,12 +636,13 @@ diff -Naur pin-0.1.9-orig/Makefile pin-0.1.9/Makefile
  DEPFILE = .dependencies
  $(DEPFILE): Makefile
  	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
-@@ -80,11 +80,11 @@
+@@ -79,12 +79,11 @@
+ 
  fskcheck: $(CMDOBJS)
  	$(CXX) $(CXXFLAGS) $(CMDOBJS) -o $@
- 	@strip $@
+-	@strip $@
 -	@cp $@ $(FSKCHKDIR)
-+	@cp -f $@ $(FSKCHKDIR)
++	@mips-linux-uclibc-strip $@
  
  libvdr-$(PLUGIN).so: $(OBJS)
  	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
