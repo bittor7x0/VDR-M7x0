@@ -16,10 +16,6 @@ VDR 1.7.8 backports applied in this patch:
 * Made MAXFRAMESIZE a multiple of TS_SIZE to avoid breaking up TS packets.
 * Improved logging system time changes to avoid problems on slow systems under
   heavy load (suggested by Helmut Auer).
-* All logging now goes to LOG_ERR, because some systems split error, info and
-  debug messages into separate files, which repeatedly caused extra efforts to
-  find out when incomplete log excerpts were attached to problem reports in
-  the past.
 * Running the thread that removes deleted recordings at a low priority to (maybe)
   avoid stuttering replay in case the thread is run during replay.
 * Reduced the number of time(NULL) calls in vdr.c's main loop to a single call
@@ -2100,19 +2096,6 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
 diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
 --- VDR-NG-orig/tools.h	Wed Oct 01 13:01:42 2008
 +++ VDR-NG/tools.h	Tue Jun 23 11:07:51 2009
-@@ -50,9 +50,9 @@
- #define getIntUnaligned(a) get_unaligned((int32_t *) (a))
- 
- // Syslog reactivated
--#define esyslog(a...) void( (SysLogLevel > 0) ? syslog_with_tid(LOG_ERR,   a) : void() )
--#define isyslog(a...) void( (SysLogLevel > 1) ? syslog_with_tid(LOG_INFO,  a) : void() )
--#define dsyslog(a...) void( (SysLogLevel > 2) ? syslog_with_tid(LOG_DEBUG, a) : void() )
-+#define esyslog(a...) void( (SysLogLevel > 0) ? syslog_with_tid(LOG_ERR, a) : void() )
-+#define isyslog(a...) void( (SysLogLevel > 1) ? syslog_with_tid(LOG_ERR, a) : void() )
-+#define dsyslog(a...) void( (SysLogLevel > 2) ? syslog_with_tid(LOG_ERR, a) : void() )
- 
- // Errno should survive this
- #define LOG_ERROR       {  int __errno_save = errno; \
 @@ -78,7 +78,7 @@
  #define SECSINDAY  86400
  
