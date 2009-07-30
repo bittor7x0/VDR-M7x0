@@ -25,15 +25,16 @@ diff -Naur ntpclient-2007-orig/Makefile ntpclient-2007/Makefile
 diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
 --- ntpclient-2007-orig/ntpclient.c	2008-01-01 03:16:10.000000000 +0100
 +++ ntpclient-2007/ntpclient.c	2009-03-08 00:08:57.000000000 +0100
-@@ -55,6 +55,7 @@
+@@ -55,6 +55,8 @@
  #ifdef USE_OBSOLETE_GETTIMEOFDAY
  #include <sys/time.h>
  #endif
-+# include <syslog.h>
++#include <syslog.h>
++#include <signal.h>
  
  #include "ntpclient.h"
  
-@@ -91,7 +92,7 @@
+@@ -91,7 +93,7 @@
  extern struct hostent *gethostbyname(const char *name);
  extern int h_errno;
  #define herror(hostname) \
@@ -42,7 +43,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  #endif
  /* end configuration for host systems */
  
-@@ -134,6 +135,175 @@
+@@ -134,6 +136,175 @@
  	char serv_addr[4];
  };
  
@@ -51,7 +52,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
 +static struct timeval LastTime;
 +static double LastDelay;
 +static double CurrentOffset;
-+ 
++static struct timex CurrentAdjustment;
 +void ReadAdjustment()
 +{
 +	FILE *fp=fopen(FREQFILE, "r");
@@ -121,7 +122,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
 +	txc.modes=ADJ_FREQUENCY|ADJ_TICK;
 +	if(adjtimex(&txc)<0)
 +		syslog(LOG_CRIT,"adjtimex");
-+	WriteAdjustment(&txc);
++	memcpy(&CurrentAdjustment,&txc,sizeof(CurrentAdjustment));
 +}
 +void KillRemaining(void)
 +{
@@ -218,7 +219,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  /* prototypes for some local routines */
  static void send_packet(int usd, u32 time_sent[2]);
  static int rfc1305print(u32 *data, struct ntptime *arrival, struct ntp_control *ntpc, int *error);
-@@ -163,7 +333,7 @@
+@@ -163,7 +334,7 @@
  	struct timex txc;
  	txc.modes = ADJ_FREQUENCY;
  	txc.freq = new_freq;
@@ -227,7 +228,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  		perror("adjtimex"); exit(1);
  	}
  	return txc.freq;
-@@ -236,9 +406,9 @@
+@@ -236,9 +407,9 @@
  #define POLL 4
  #define PREC -6
  
@@ -239,7 +240,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  		return;
  	}
  	memset(data,0,sizeof data);
-@@ -259,7 +429,7 @@
+@@ -259,7 +430,7 @@
  	/* XXX broken */
  	struct timeval udp_arrival;
  	if ( ioctl(usd, SIOCGSTAMP, &udp_arrival) < 0 ) {
@@ -248,7 +249,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  		gettimeofday(&udp_arrival,NULL);
  	}
  	udp_arrival_ntp->coarse = udp_arrival.tv_sec + JAN_1970;
-@@ -274,7 +444,7 @@
+@@ -274,7 +445,7 @@
  {
  	struct sockaddr_in *sa_in=(struct sockaddr_in *)sa_source;
  	(void) sa_len;  /* not used */
@@ -257,7 +258,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  		printf("packet of length %d received\n",data_len);
  		if (sa_source->sa_family==AF_INET) {
  			printf("Source: INET Port %d host %s\n",
-@@ -282,7 +452,7 @@
+@@ -282,7 +453,7 @@
  		} else {
  			printf("Source: Address family %d\n",sa_source->sa_family);
  		}
@@ -266,7 +267,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  	/* we could check that the source is the server we expect, but
  	 * Denis Vlasenko recommends against it: multihomed hosts get it
  	 * wrong too often. */
-@@ -354,7 +524,7 @@
+@@ -354,7 +525,7 @@
  	xmttime.fine   = Data(11);
  #undef Data
  
@@ -275,7 +276,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  	printf("LI=%d  VN=%d  Mode=%d  Stratum=%d  Poll=%d  Precision=%d\n",
  		li, vn, mode, stratum, poll, prec);
  	printf("Delay=%.1f  Dispersion=%.1f  Refid=%u.%u.%u.%u\n",
-@@ -366,13 +536,13 @@
+@@ -366,13 +537,13 @@
  	printf("Receive   %u.%.6u\n", rectime.coarse, USEC(rectime.fine));
  	printf("Transmit  %u.%.6u\n", xmttime.coarse, USEC(xmttime.fine));
  	printf("Our recv  %u.%.6u\n", arrival->coarse, USEC(arrival->fine));
@@ -292,7 +293,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  	printf("Total elapsed: %9.2f\n"
  	       "Server stall:  %9.2f\n"
  	       "Slop:          %9.2f\n",
-@@ -381,7 +551,7 @@
+@@ -381,7 +552,7 @@
  	       "Frequency:     %9d\n"
  	       " day   second     elapsed    stall     skew  dispersion  freq\n",
  		(skew1-skew2)/2, freq);
@@ -301,7 +302,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  
  	/* error checking, see RFC-4330 section 5 */
  #ifdef ENABLE_DEBUG
-@@ -404,7 +574,7 @@
+@@ -404,7 +575,7 @@
  
  	/* XXX should I do this if debug flag is set? */
  	if (ntpc->set_clock) { /* you'd better be root, or ntpclient will crash! */
@@ -310,7 +311,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  	}
  
  	/* Not the ideal order for printing, but we want to be sure
-@@ -412,27 +582,30 @@
+@@ -412,27 +583,30 @@
  	 * before we start the output, especially fflush() (which
  	 * could be slow).  Of course, if debug is turned on, speed
  	 * has gone down the drain anyway. */
@@ -347,7 +348,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  		arrival->coarse/86400, arrival->coarse%86400,
  		arrival->fine/4294967);
  #endif
-@@ -449,7 +622,7 @@
+@@ -449,7 +623,7 @@
  	}
  	if (ntpserver->h_length != 4) {
  		/* IPv4 only, until I get a chance to test IPv6 */
@@ -356,7 +357,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  		exit(1);
  	}
  	memcpy(&(p->s_addr),ntpserver->h_addr_list[0],4);
-@@ -463,8 +636,8 @@
+@@ -463,8 +637,8 @@
  	sa_rcvr.sin_addr.s_addr=htonl(interface);
  	sa_rcvr.sin_port=htons(port);
  	if(bind(usd,(struct sockaddr *) &sa_rcvr,sizeof sa_rcvr) == -1) {
@@ -367,7 +368,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  		exit(1);
  	}
  	/* listen(usd,3); this isn't TCP; thanks Alexander! */
-@@ -479,9 +652,201 @@
+@@ -479,9 +653,211 @@
  	memcpy(ntpc->serv_addr,&(sa_dest.sin_addr),4); /* XXX asumes IPv4 */
  	sa_dest.sin_port=htons(port);
  	if (connect(usd,(struct sockaddr *)&sa_dest,sizeof sa_dest)==-1)
@@ -472,6 +473,14 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
 +		syslog(LOG_CRIT,"not socket");
 +	return usd; 
 +}
++static void SignalHandler(int signum)
++{
++	signal(signum,SignalHandler);
++	if(CurrentAdjustment.modes)
++		WriteAdjustment(&CurrentAdjustment);
++	FreeAddresses();
++	exit(0);
++}
 +static void AdjustmentLoop(struct ntp_control *ntpc, short int LocalPort, char *Server)
 +{
 +        pid_t pid=fork();
@@ -495,6 +504,8 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
 +	struct ntptime udp_arrival_ntp;
 +	int usd=-1;
  
++	signal(SIGINT,SignalHandler);
++	signal(SIGTERM,SignalHandler);
 +	for(;;)
 +	{
 +		if(usd==-1)
@@ -570,7 +581,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  static void primary_loop(int usd, struct ntp_control *ntpc)
  {
  	fd_set fds;
-@@ -494,7 +859,7 @@
+@@ -494,7 +870,7 @@
  #define incoming ((char *) incoming_word)
  #define sizeof_incoming (sizeof incoming_word)
  
@@ -579,7 +590,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  
  	probes_sent=0;
  	sa_xmit_len=sizeof sa_xmit;
-@@ -506,7 +871,7 @@
+@@ -506,7 +882,7 @@
  		i=select(usd+1,&fds,NULL,NULL,&to);  /* Wait on read or error */
  		if ((i!=1)||(!FD_ISSET(usd,&fds))) {
  			if (i<0) {
@@ -588,7 +599,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  				continue;
  			}
  			if (to.tv_sec == 0) {
-@@ -523,15 +888,14 @@
+@@ -523,15 +899,14 @@
  		                  &sa_xmit,&sa_xmit_len);
  		error = ntpc->goodness;
  		if (pack_len<0) {
@@ -606,7 +617,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  		}
  		/* best rollover option: specify -g, -s, and -l.
  		 * simpler rollover option: specify -s and -l, which
-@@ -574,7 +938,7 @@
+@@ -574,7 +949,7 @@
  			last_fake_time=absolute;
  			simulated_freq = contemplate_data(absolute, skew, errorbar, freq);
  		} else {
@@ -615,7 +626,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  			exit(2);
  		}
  	}
-@@ -600,6 +964,8 @@
+@@ -600,6 +976,8 @@
  int main(int argc, char *argv[]) {
  	int usd;  /* socket */
  	int c;
@@ -624,16 +635,17 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  	/* These parameters are settable from the command line
  	   the initializations here provide default behavior */
  	short int udp_local_port=0;   /* default of 0 means kernel chooses */
-@@ -609,7 +975,7 @@
+@@ -609,7 +986,8 @@
  	ntpc.live=0;
  	ntpc.set_clock=0;
  	ntpc.probe_count=0;           /* default of 0 means loop forever */
 -	ntpc.cycle_time=600;          /* seconds */
 +	ntpc.cycle_time=300;          /* seconds */
++	CurrentAdjustment.modes=0;
  	ntpc.goodness=0;
  	ntpc.cross_check=1;
  
-@@ -627,8 +993,8 @@
+@@ -627,8 +1005,8 @@
  #endif
  			case 'f':
  				initial_freq = atoi(optarg);
@@ -644,7 +656,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  				set_freq(initial_freq);
  				break;
  			case 'g':
-@@ -673,16 +1039,15 @@
+@@ -673,16 +1051,15 @@
  		exit(1);
  	}
  
@@ -664,7 +676,7 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  		printf("Configuration:\n"
  		"  -c probe_count %d\n"
  		"  -d (debug)     %d\n"
-@@ -697,18 +1062,9 @@
+@@ -697,18 +1074,8 @@
  		ntpc.probe_count, debug, ntpc.goodness,
  		hostname, ntpc.cycle_time, ntpc.live, udp_local_port, min_delay,
  		ntpc.set_clock, ntpc.cross_check );
@@ -683,7 +695,6 @@ diff -Naur ntpclient-2007-orig/ntpclient.c ntpclient-2007/ntpclient.c
  
 -	close(usd);
 +	AdjustmentLoop(&ntpc, udp_local_port, hostname);
-+	FreeAddresses();
  	return 0;
  }
 diff -Naur ntpclient-2007-orig/ntpclient.h ntpclient-2007/ntpclient.h

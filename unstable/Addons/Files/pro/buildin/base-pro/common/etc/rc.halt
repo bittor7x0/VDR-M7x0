@@ -10,6 +10,11 @@ if [ X"${lircd_flags}" != X"NO" ]; then
     kill -15 `cat /var/run/lircd.pid`
 fi
 
+if [ X"${netdate}" != X"NO" ]; then
+    echo -n "network time protocol daemon"
+    killall -15 ntpclient
+fi
+
 if [ X"${inetd}" != X"NO" ]; then
     echo -n ' inetd'
     kill -15 `cat /var/run/inetd.pid`
