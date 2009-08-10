@@ -28,7 +28,6 @@ endif
 HTOP_VERSION := 0.8.1
 HTOP_PATCHES_DIR := $(PATCHES_DIR)/htop/$(HTOP_VERSION)
 
-#http://ovh.dl.sourceforge.net/sourceforge/htop/htop-0.8.1.tar.gz
 HTOP_FILE := htop-$(HTOP_VERSION).tar.gz
 HTOP_DLFILE := $(DOWNLOAD_DIR)/$(HTOP_FILE)
 HTOP_URL := http://ovh.dl.sourceforge.net/sourceforge/htop/$(HTOP_FILE)

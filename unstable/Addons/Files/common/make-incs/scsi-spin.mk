@@ -22,7 +22,6 @@ SCSI-SPIN_DEPS = $(BASE_BUILD_STAGEFILE)
 SCSI-SPIN_VERSION := 0.9
 SCSI-SPIN_PATCHES_DIR := $(PATCHES_DIR)/scsi-spin/$(SCSI-SPIN_VERSION)
 
-#http://www.freewrt.org/distfiles/scsi-spin-0.9.tar.gz
 SCSI-SPIN_FILE := scsi-spin-$(SCSI-SPIN_VERSION).tar.gz
 SCSI-SPIN_DLFILE := $(DOWNLOAD_DIR)/$(SCSI-SPIN_FILE)
 SCSI-SPIN_URL := http://www.freewrt.org/distfiles/$(SCSI-SPIN_FILE)

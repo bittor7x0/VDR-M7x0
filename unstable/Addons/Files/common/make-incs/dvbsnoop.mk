@@ -22,7 +22,6 @@ DVBSNOOP_DEPS = $(BASE_BUILD_STAGEFILE) $(LINUX_HEADERS_INSTALLED)
 DVBSNOOP_VERSION := 1.4.50
 DVBSNOOP_PATCHES_DIR := $(PATCHES_DIR)/dvbsnoop/$(DVBSNOOP_VERSION)
 
-#http://easynews.dl.sourceforge.net/sourceforge/dvbsnoop/dvbsnoop-1.4.50.tar.gz
 DVBSNOOP_FILE := dvbsnoop-$(DVBSNOOP_VERSION).tar.gz
 DVBSNOOP_DLFILE := $(DOWNLOAD_DIR)/$(DVBSNOOP_FILE)
 DVBSNOOP_URL := http://easynews.dl.sourceforge.net/sourceforge/dvbsnoop/$(DVBSNOOP_FILE)

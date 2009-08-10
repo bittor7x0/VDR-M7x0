@@ -22,7 +22,6 @@ DBENCH_DEPS = $(BASE_BUILD_STAGEFILE)
 DBENCH_VERSION := 3.04
 DBENCH_PATCHES_DIR := $(PATCHES_DIR)/dbench/$(DBENCH_VERSION)
 
-#http://samba.org/ftp/tridge/dbench/dbench-3.04.tar.gz
 DBENCH_FILE := dbench-$(DBENCH_VERSION).tar.gz
 DBENCH_DLFILE := $(DOWNLOAD_DIR)/$(DBENCH_FILE)
 DBENCH_URL := http://samba.org/ftp/tridge/dbench/$(DBENCH_FILE)

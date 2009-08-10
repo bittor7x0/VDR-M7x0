@@ -22,7 +22,6 @@ BONNIE++_DEPS = $(BASE_BUILD_STAGEFILE)
 BONNIE++_VERSION := 1.03e
 BONNIE++_PATCHES_DIR := $(PATCHES_DIR)/bonnie++/$(BONNIE++_VERSION)
 
-#http://www.coker.com.au/bonnie++/bonnie++-1.03e.tgz
 BONNIE++_FILE := bonnie++-$(BONNIE++_VERSION).tgz
 BONNIE++_DLFILE := $(DOWNLOAD_DIR)/$(BONNIE++_FILE)
 BONNIE++_URL := http://www.coker.com.au/bonnie++/$(BONNIE++_FILE)

@@ -21,7 +21,6 @@ HACKBENCH_DEPS = $(BASE_BUILD_STAGEFILE)
 
 HACKBENCH_PATCHES_DIR := $(PATCHES_DIR)/hackbench
 
-#http://people.redhat.com/mingo/cfs-scheduler/tools/hackbench.c
 HACKBENCH_FILE := hackbench.c
 HACKBENCH_DLFILE := $(DOWNLOAD_DIR)/$(HACKBENCH_FILE)
 HACKBENCH_URL := http://people.redhat.com/mingo/cfs-scheduler/tools/$(HACKBENCH_FILE)

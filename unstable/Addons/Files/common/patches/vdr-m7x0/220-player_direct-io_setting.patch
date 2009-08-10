@@ -6,7 +6,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    JumpSecondsRepeat = 120;
    JumpFramesRepeat = 15;
 +#ifdef USE_DIRECT_IO
-+  ReplayUseDirectIO = 0;
++  ReplayUseDirectIO = 1;
 +#endif
    AbortWhenPluginFails = 0;
  }

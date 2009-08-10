@@ -22,7 +22,6 @@ SPINDOWN_DEPS = $(BASE_BUILD_STAGEFILE)
 SPINDOWN_VERSION := 1.0
 SPINDOWN_PATCHES_DIR := $(PATCHES_DIR)/spindown/$(SPINDOWN_VERSION)
 
-#http://vladimir.grouzdev.free.fr/public/spindown/src/spindown-1.0.tar.gz
 SPINDOWN_FILE := spindown-$(SPINDOWN_VERSION).tar.gz
 SPINDOWN_DLFILE := $(DOWNLOAD_DIR)/$(SPINDOWN_FILE)
 SPINDOWN_URL := http://vladimir.grouzdev.free.fr/public/spindown/src/$(SPINDOWN_FILE)

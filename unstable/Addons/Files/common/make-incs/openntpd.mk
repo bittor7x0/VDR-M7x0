@@ -22,7 +22,6 @@ OPENNTPD_DEPS = $(BASE_BUILD_STAGEFILE)
 OPENNTPD_VERSION := 3.9p1
 OPENNTPD_PATCHES_DIR := $(PATCHES_DIR)/openntpd/$(OPENNTPD_VERSION)
 
-#http://artfiles.org/openbsd/OpenNTPD/openntpd-3.9p1.tar.gz
 OPENNTPD_FILE := openntpd-$(OPENNTPD_VERSION).tar.gz
 OPENNTPD_DLFILE := $(DOWNLOAD_DIR)/$(OPENNTPD_FILE)
 OPENNTPD_URL := http://artfiles.org/openbsd/OpenNTPD/$(OPENNTPD_FILE)

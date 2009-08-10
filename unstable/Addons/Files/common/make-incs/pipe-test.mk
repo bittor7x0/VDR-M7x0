@@ -21,7 +21,6 @@ PIPE-TEST_DEPS = $(BASE_BUILD_STAGEFILE)
 
 PIPE-TEST_PATCHES_DIR := $(PATCHES_DIR)/pipe-test
 
-#http://people.redhat.com/mingo/cfs-scheduler/tools/pipe-test.c
 PIPE-TEST_FILE := pipe-test.c
 PIPE-TEST_DLFILE := $(DOWNLOAD_DIR)/$(PIPE-TEST_FILE)
 PIPE-TEST_URL := http://people.redhat.com/mingo/cfs-scheduler/tools/$(PIPE-TEST_FILE)

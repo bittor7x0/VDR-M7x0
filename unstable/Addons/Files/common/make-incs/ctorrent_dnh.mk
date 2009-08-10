@@ -19,13 +19,12 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 CTORRENT_DNH_DEPS = $(BASE_BUILD_STAGEFILE)
 
-CTORRENT_DNH_VERSION := 3.3
+CTORRENT_DNH_VERSION := 3.3.2
 CTORRENT_DNH_PATCHES_DIR := $(PATCHES_DIR)/ctorrent_dnh/$(CTORRENT_DNH_VERSION)
 
-#http://dfn.dl.sourceforge.net/sourceforge/dtorrent/ctorrent-dnh3.3.tar.gz
 CTORRENT_DNH_FILE := ctorrent-dnh$(CTORRENT_DNH_VERSION).tar.gz
 CTORRENT_DNH_DLFILE := $(DOWNLOAD_DIR)/$(CTORRENT_DNH_FILE)
-CTORRENT_DNH_URL := http://dfn.dl.sourceforge.net/sourceforge/dtorrent/$(CTORRENT_DNH_FILE)
+CTORRENT_DNH_URL := http://www.rahul.net/dholmes/ctorrent/$(CTORRENT_DNH_FILE)
 CTORRENT_DNH_DIR := $(BUILD_DIR)/ctorrent-dnh$(CTORRENT_DNH_VERSION)
 
 CTORRENT_DNH_INSTALLED = $(STAGEFILES_DIR)/.ctorrent_dnh_installed

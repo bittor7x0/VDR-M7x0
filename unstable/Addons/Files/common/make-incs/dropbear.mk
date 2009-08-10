@@ -19,16 +19,9 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 DROPBEAR_DEPS = $(BASE_BUILD_STAGEFILE) $(ZLIB_INSTALLED)
 
-ifeq ($(CONFIG_DROPBEAR),y)
-ifneq ($(CONFIG_ZLIB),y)
-   $(error dependency error: dropbear needs zlib enabled)
-endif
-endif
-
 DROPBEAR_VERSION := 0.52
 DROPBEAR_PATCHES_DIR := $(PATCHES_DIR)/dropbear/$(DROPBEAR_VERSION)
 
-#http://matt.ucc.asn.au/dropbear/releases/dropbear-0.52.tar.bz2
 DROPBEAR_FILE := dropbear-$(DROPBEAR_VERSION).tar.bz2
 DROPBEAR_DLFILE := $(DOWNLOAD_DIR)/$(DROPBEAR_FILE)
 DROPBEAR_URL := http://matt.ucc.asn.au/dropbear/releases/$(DROPBEAR_FILE)
@@ -80,8 +73,17 @@ $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
 		$(DROPBEAR_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
+			--disable-pam \
+			--enable-syslog \
 			--disable-lastlog \
+			--disable-utmp \
+			--disable-utmpx \
 			--disable-wtmp \
+			--disable-wtmpx \
+			--disable-loginfunc \
+			--disable-pututline \
+			--disable-pututxline \
+			--disable-zlib \
 			--sysconfdir=/etc/dropbear)
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_configured
 

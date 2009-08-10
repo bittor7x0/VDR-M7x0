@@ -22,7 +22,6 @@ VSFTPD_DEPS = $(BASE_BUILD_STAGEFILE)
 VSFTPD_VERSION := 2.1.2
 VSFTPD_PATCHES_DIR := $(PATCHES_DIR)/vsftpd/$(VSFTPD_VERSION)
 
-#ftp://vsftpd.beasts.org/users/cevans/vsftpd-2.1.2.tar.gz
 VSFTPD_FILE := vsftpd-$(VSFTPD_VERSION).tar.gz
 VSFTPD_DLFILE := $(DOWNLOAD_DIR)/$(VSFTPD_FILE)
 VSFTPD_URL := ftp://vsftpd.beasts.org/users/cevans/$(VSFTPD_FILE)

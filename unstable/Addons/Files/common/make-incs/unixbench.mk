@@ -22,7 +22,6 @@ UNIXBENCH_DEPS = $(BASE_BUILD_STAGEFILE)
 UNIXBENCH_VERSION := 4.1.0
 UNIXBENCH_PATCHES_DIR := $(PATCHES_DIR)/unixbench/$(UNIXBENCH_VERSION)
 
-#http://www.tux.org/pub/tux/niemi/unixbench/unixbench-4.1.0.tgz
 UNIXBENCH_FILE := unixbench-$(UNIXBENCH_VERSION).tgz
 UNIXBENCH_DLFILE := $(DOWNLOAD_DIR)/$(UNIXBENCH_FILE)
 UNIXBENCH_URL := http://www.tux.org/pub/tux/niemi/unixbench/$(UNIXBENCH_FILE)
