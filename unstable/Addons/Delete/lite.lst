@@ -3,6 +3,7 @@
 ./VDR-NG-FW/patches/busybox/1.11.2/300_mount_cifs.patch
 ./VDR-NG-FW/patches/busybox/1.13.1/300_mount_cifs.patch
 ./VDR-NG-FW/patches/busybox/1.13.3/300_mount_cifs.patch
+./VDR-NG-FW/patches/busybox/1.14.3/300_mount_cifs.patch
 ./VDR-NG-FW/patches/siemens-linux-kernel/common/300-cifs_24.patch
 ./VDR-NG-FW/patches/siemens-linux-kernel/common/cifs-fs.tar.bz2
 ./VDR-NG-FW/prg-fw-configs/vdr-m7x0/common/etc/vdr/plugins/streamdevhosts.conf

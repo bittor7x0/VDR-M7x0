@@ -1,6 +1,6 @@
---- VDR-NG-FW.orig/configs/busybox/1.13.3/busybox.config	2009-02-10 18:24:04.000000000 +0100
-+++ VDR-NG-FW/configs/busybox/1.13.3/busybox.config	2009-02-10 18:26:04.000000000 +0100
-@@ -129,7 +129,7 @@
+--- VDR-NG-FW.orig/configs/busybox/1.14.3/busybox.config	2009-08-14 15:41:58.000000000 +0200
++++ VDR-NG-FW/configs/busybox/1.14.3/busybox.config	2009-08-14 16:25:29.000000000 +0200
+@@ -131,7 +131,7 @@
  # CONFIG_UNCOMPRESS is not set
  CONFIG_UNLZMA=y
  CONFIG_FEATURE_LZMA_FAST=y
@@ -9,7 +9,7 @@
  
  #
  # Coreutils
-@@ -195,7 +195,7 @@
+@@ -197,7 +197,7 @@
  CONFIG_FEATURE_MV_LONG_OPTIONS=y
  CONFIG_NICE=y
  CONFIG_NOHUP=y
@@ -18,7 +18,7 @@
  CONFIG_PRINTENV=y
  CONFIG_PRINTF=y
  CONFIG_PWD=y
-@@ -231,24 +231,24 @@
+@@ -235,24 +235,24 @@
  CONFIG_FEATURE_TR_CLASSES=y
  CONFIG_FEATURE_TR_EQUIV=y
  CONFIG_TRUE=y
@@ -49,10 +49,10 @@
  
  #
  # Common options for ls, more and telnet
-@@ -386,14 +386,14 @@
- CONFIG_USE_BB_PWD_GRP=y
+@@ -391,14 +391,14 @@
  CONFIG_USE_BB_SHADOW=y
  CONFIG_USE_BB_CRYPT=y
+ # CONFIG_USE_BB_CRYPT_SHA is not set
 -# CONFIG_ADDGROUP is not set
 -# CONFIG_FEATURE_ADDUSER_TO_GROUP is not set
 -# CONFIG_DELGROUP is not set
@@ -70,7 +70,7 @@
  CONFIG_GETTY=y
  # CONFIG_FEATURE_UTMP is not set
  # CONFIG_FEATURE_WTMP is not set
-@@ -415,9 +415,9 @@
+@@ -420,9 +420,9 @@
  #
  # Linux Ext2 FS Progs
  #
@@ -82,16 +82,16 @@
  
  #
  # Linux Module Utilities
-@@ -473,7 +473,7 @@
- # CONFIG_MKFS_MINIX is not set
+@@ -481,7 +481,7 @@
  # CONFIG_FEATURE_MINIX2 is not set
+ # CONFIG_MKFS_VFAT is not set
  CONFIG_GETOPT=y
 -# CONFIG_HEXDUMP is not set
 +CONFIG_HEXDUMP=y
  # CONFIG_FEATURE_HEXDUMP_REVERSE is not set
  # CONFIG_HD is not set
  # CONFIG_HWCLOCK is not set
-@@ -488,7 +488,7 @@
+@@ -496,7 +496,7 @@
  # CONFIG_FEATURE_MDEV_RENAME_REGEXP is not set
  # CONFIG_FEATURE_MDEV_EXEC is not set
  # CONFIG_FEATURE_MDEV_LOAD_FIRMWARE is not set
@@ -100,7 +100,7 @@
  # CONFIG_FEATURE_MKSWAP_V0 is not set
  CONFIG_MORE=y
  CONFIG_FEATURE_USE_TERMIOS=y
-@@ -519,13 +519,13 @@
+@@ -527,13 +527,13 @@
  CONFIG_FEATURE_MOUNT_FLAGS=y
  CONFIG_FEATURE_MOUNT_FSTAB=y
  CONFIG_PIVOT_ROOT=y
@@ -116,7 +116,7 @@
  # CONFIG_FEATURE_SWAPON_PRI is not set
  CONFIG_SWITCH_ROOT=y
  CONFIG_UMOUNT=y
-@@ -540,7 +540,7 @@
+@@ -548,7 +548,7 @@
  #
  # Miscellaneous Utilities
  #
@@ -125,16 +125,16 @@
  # CONFIG_BBCONFIG is not set
  # CONFIG_CHAT is not set
  # CONFIG_FEATURE_CHAT_NOFAIL is not set
-@@ -554,7 +554,7 @@
- CONFIG_CROND=y
+@@ -563,7 +563,7 @@
  # CONFIG_FEATURE_CROND_D is not set
  # CONFIG_FEATURE_CROND_CALL_SENDMAIL is not set
+ CONFIG_FEATURE_CROND_DIR="/var/spool/cron"
 -# CONFIG_CRONTAB is not set
 +CONFIG_CRONTAB=y
  # CONFIG_DC is not set
  # CONFIG_FEATURE_DC_LIBM is not set
  # CONFIG_DEVFSD is not set
-@@ -598,7 +598,7 @@
+@@ -609,7 +609,7 @@
  # CONFIG_RUNLEVEL is not set
  # CONFIG_RX is not set
  # CONFIG_SETSID is not set
@@ -143,7 +143,7 @@
  # CONFIG_TASKSET is not set
  # CONFIG_FEATURE_TASKSET_FANCY is not set
  CONFIG_TIME=y
-@@ -611,8 +611,8 @@
+@@ -623,8 +623,8 @@
  # CONFIG_FEATURE_IPV6 is not set
  # CONFIG_FEATURE_PREFER_IPV4_ADDRESS is not set
  # CONFIG_VERBOSE_RESOLUTION_ERRORS is not set
@@ -154,7 +154,7 @@
  # CONFIG_BRCTL is not set
  # CONFIG_FEATURE_BRCTL_FANCY is not set
  # CONFIG_FEATURE_BRCTL_SHOW is not set
-@@ -702,7 +702,7 @@
+@@ -714,7 +714,7 @@
  # CONFIG_FEATURE_TFTP_PUT is not set
  # CONFIG_FEATURE_TFTP_BLOCKSIZE is not set
  # CONFIG_TFTP_DEBUG is not set
@@ -163,9 +163,9 @@
  # CONFIG_FEATURE_TRACEROUTE_VERBOSE is not set
  # CONFIG_FEATURE_TRACEROUTE_SOURCE_ROUTE is not set
  # CONFIG_FEATURE_TRACEROUTE_USE_ICMP is not set
-@@ -719,10 +719,10 @@
- CONFIG_UDHCPC_DEFAULT_SCRIPT="/usr/share/udhcpc/default.script"
+@@ -732,10 +732,10 @@
  CONFIG_UDHCPC_SLACK_FOR_BUGGY_SERVERS=80
+ CONFIG_IFUPDOWN_UDHCPC_CMD_OPTIONS=""
  # CONFIG_VCONFIG is not set
 -# CONFIG_WGET is not set
 -# CONFIG_FEATURE_WGET_STATUSBAR is not set
@@ -177,13 +177,13 @@
 +CONFIG_FEATURE_WGET_LONG_OPTIONS=y
  # CONFIG_ZCIP is not set
  # CONFIG_TCPSVD is not set
- # CONFIG_UDPSVD is not set
-@@ -861,9 +861,9 @@
+ # CONFIG_TUNCTL is not set
+@@ -876,9 +876,9 @@
  CONFIG_FEATURE_ROTATE_LOGFILE=y
  CONFIG_FEATURE_REMOTE_LOG=y
  # CONFIG_FEATURE_SYSLOGD_DUP is not set
 -# CONFIG_FEATURE_IPC_SYSLOG is not set
--CONFIG_FEATURE_IPC_SYSLOG_BUFFER_SIZE=
+-CONFIG_FEATURE_IPC_SYSLOG_BUFFER_SIZE=0
 -# CONFIG_LOGREAD is not set
 +CONFIG_FEATURE_IPC_SYSLOG=y
 +CONFIG_FEATURE_IPC_SYSLOG_BUFFER_SIZE=16
