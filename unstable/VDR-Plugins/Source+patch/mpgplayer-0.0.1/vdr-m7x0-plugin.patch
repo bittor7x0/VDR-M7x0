@@ -1,6 +1,6 @@
-diff -Naur mpgplayer-0.0.1-orig/mpgplayer_i18n.c mpgplayer-0.0.1/mpgplayer_i18n.c
---- mpgplayer-0.0.1-orig/mpgplayer_i18n.c	Sun Jan 06 11:55:06 2008
-+++ mpgplayer-0.0.1/mpgplayer_i18n.c	Tue Jan 15 18:14:52 2008
+diff -Naurx .svn mpgplayer-0.0.1-orig/mpgplayer_i18n.c mpgplayer-0.0.1/mpgplayer_i18n.c
+--- mpgplayer-0.0.1-orig/mpgplayer_i18n.c	2009-08-21 15:15:53.000000000 +0200
++++ mpgplayer-0.0.1/mpgplayer_i18n.c	2009-08-22 17:56:28.000000000 +0200
 @@ -33,7 +33,7 @@
    },
    {
@@ -55,3 +55,61 @@ diff -Naur mpgplayer-0.0.1-orig/mpgplayer_i18n.c mpgplayer-0.0.1/mpgplayer_i18n.
       "",
       "",
       "",
+diff -Naurx .svn mpgplayer-0.0.1-orig/mpgplayer_menu.c mpgplayer-0.0.1/mpgplayer_menu.c
+--- mpgplayer-0.0.1-orig/mpgplayer_menu.c	2009-08-21 15:15:53.000000000 +0200
++++ mpgplayer-0.0.1/mpgplayer_menu.c	2009-08-22 17:56:28.000000000 +0200
+@@ -735,7 +735,7 @@
+ {
+   return new cMpgMenuRecording(Recording(), false);
+ }
+-
++//
+ eOSState cMpgReplayControl::ProcessKey(eKeys Key)
+ {
+   if (!Active())
+@@ -764,6 +764,20 @@
+      return osContinue;
+      }
+   bool DoShowMode = true;
++  if (!Setup.LRForwardRewind || (Setup.LRForwardRewind == 1 && !visible)) {
++    switch (Key) {
++      // Left/Right volume control
++      case kLeft|k_Repeat:
++      case kLeft:
++      case kRight|k_Repeat:
++      case kRight:
++	  cRemote::Put(NORMALKEY(Key) == kLeft ? kVolDn : kVolUp, true);
++        return osContinue;
++        break;
++      default:
++        break;
++    }
++  }
+   switch (Key) {
+     // Positioning:
+     case kPlay:
+@@ -783,10 +797,11 @@
+ //    case kRed:     TimeSearch(); break;
+     case kRed|k_Repeat:
+     case kRed:   SkipSeconds(-100); break;
+-    case kGreen|k_Repeat:
+-    case kGreen:   SkipSeconds(-10); break;
+-    case kYellow|k_Repeat:
+-    case kYellow:  SkipSeconds( 10); break;
++    case kGreen|k_Repeat:   SkipSeconds(-(Setup.JumpSecondsRepeat)); break;
++    case kGreen:   SkipSeconds(-(Setup.JumpSeconds)); break;
++    case kYellow|k_Repeat: 
++                   SkipSeconds(Setup.JumpSecondsRepeat); break;
++    case kYellow:  SkipSeconds(Setup.JumpSeconds); break;
+     case kBlue|k_Repeat:
+     case kBlue:    SkipSeconds( 100); break;
+     case kStop:
+@@ -835,7 +850,7 @@
+      ShowMode();
+   return osContinue;
+ }
+-
++//
+ // --- cMpgSetupMenu --------------------------------------------------------
+ 
+ cMpgSetupMenu::cMpgSetupMenu(cMpgController *Controller)
