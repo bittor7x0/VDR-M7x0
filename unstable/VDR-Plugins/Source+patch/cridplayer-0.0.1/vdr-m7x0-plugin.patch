@@ -1,0 +1,39 @@
+diff -Naurx .svn cridplayer-0.0.1-orig/cridplayer_menu.c cridplayer-0.0.1/cridplayer_menu.c
+--- cridplayer-0.0.1-orig/cridplayer_menu.c	2009-08-25 21:17:27.000000000 +0200
++++ cridplayer-0.0.1/cridplayer_menu.c	2009-08-25 21:25:25.000000000 +0200
+@@ -750,6 +750,20 @@
+      return osContinue;
+      }
+   bool DoShowMode = true;
++  if (!Setup.LRForwardRewind || (Setup.LRForwardRewind == 1 && !visible)) {
++    switch (Key) {
++      // Left/Right volume control
++      case kLeft|k_Repeat:
++      case kLeft:
++      case kRight|k_Repeat:
++      case kRight:
++	  cRemote::Put(NORMALKEY(Key) == kLeft ? kVolDn : kVolUp, true);
++        return osContinue;
++        break;
++      default:
++        break;
++    }
++  }
+   switch (Key) {
+     // Positioning:
+     case kPlay:
+@@ -767,10 +781,10 @@
+     case kFastFwd:
+     case kRight:   Forward(); break;
+     case kRed:     TimeSearch(); break;
+-    case kGreen|k_Repeat:
+-    case kGreen:   SkipSeconds(-60); break;
+-    case kYellow|k_Repeat:
+-    case kYellow:  SkipSeconds( 60); break;
++    case kGreen|k_Repeat:   SkipSeconds(-(Setup.JumpSecondsRepeat)); break;
++    case kGreen:   SkipSeconds(-(Setup.JumpSecondsRepeat)); break;
++    case kYellow|k_Repeat:  SkipSeconds(Setup.JumpSecondsRepeat); break;
++    case kYellow:    SkipSeconds(Setup.JumpSeconds); break;
+     case kStop:
+     case kBlue:    Hide();
+                    Stop();
