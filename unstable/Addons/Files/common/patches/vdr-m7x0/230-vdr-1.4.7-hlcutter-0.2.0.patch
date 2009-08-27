@@ -592,6 +592,6 @@ diff -Naur VDR-NG-orig/videodir.h VDR-NG/videodir.h
  bool RenameVideoFile(const char *OldName, const char *NewName);
  bool RemoveVideoFile(const char *FileName);
 +bool HardLinkVideoFile(const char *OldName, const char *NewName);
- bool VideoFileSpaceAvailable(int SizeMB);
- int VideoDiskSpace(int *FreeMB = NULL, int *UsedMB = NULL); // returns the used disk space in percent
- cString PrefixVideoFileName(const char *FileName, char Prefix);
+ //M7X0 BEGIN AK 
+ bool RemoveSingleVideoFile(const char *FileName);
+ //M7X0 END AK 
