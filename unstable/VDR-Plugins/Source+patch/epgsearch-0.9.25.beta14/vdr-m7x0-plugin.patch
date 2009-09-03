@@ -68,6 +68,18 @@ diff -Naur epgsearch-0.9.25.beta14-orig/Makefile epgsearch-0.9.25.beta14/Makefil
  #INCLUDES += -I$(VDRDIR)/include
  
  DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+diff -Naur epgsearch-0.9.25.beta14-orig/menu_whatson.c epgsearch-0.9.25.beta14/menu_whatson.c
+--- epgsearch-0.9.25.beta14-orig/menu_whatson.c	Mon Jul 27 10:51:09 2009
++++ epgsearch-0.9.25.beta14/menu_whatson.c	Thu Sep 03 19:00:29 2009
+@@ -173,7 +173,7 @@
+       else
+       {
+ 	t[0] = event && hasMatch ? (timerMatch == tmFull) ? ((timer && timer->Recording())?'R':'T') : 't' : ' ';
+-	v[0] = event && event->Vps() && (event->Vps() - event->StartTime()) ? 'V' : 'v';
++	v[0] = event && event->Vps() ? (event->Vps() - event->StartTime() ? 'V' : 'v') : ' ';
+ 	r[0] = event && event->IsRunning() ? '*' : ' ';
+       }
+ 
 diff -Naur epgsearch-0.9.25.beta14-orig/svdrpclient.h epgsearch-0.9.25.beta14/svdrpclient.h
 --- epgsearch-0.9.25.beta14-orig/svdrpclient.h	2009-01-29 18:51:54.000000000 +0100
 +++ epgsearch-0.9.25.beta14/svdrpclient.h	2009-06-20 21:39:27.000000000 +0200
