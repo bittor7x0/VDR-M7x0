@@ -31,7 +31,7 @@ diff -Naurx .svn cridplayer-0.0.1-orig/cridplayer_menu.c cridplayer-0.0.1/cridpl
 -    case kYellow|k_Repeat:
 -    case kYellow:  SkipSeconds( 60); break;
 +    case kGreen|k_Repeat:   SkipSeconds(-(Setup.JumpSecondsRepeat)); break;
-+    case kGreen:   SkipSeconds(-(Setup.JumpSecondsRepeat)); break;
++    case kGreen:   SkipSeconds(-(Setup.JumpSeconds)); break;
 +    case kYellow|k_Repeat:  SkipSeconds(Setup.JumpSecondsRepeat); break;
 +    case kYellow:    SkipSeconds(Setup.JumpSeconds); break;
      case kStop:
