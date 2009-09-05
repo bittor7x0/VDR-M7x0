@@ -1,7 +1,28 @@
+diff -Naur epgsearch-0.9.25.beta14-orig/epgsearchcfg.c epgsearch-0.9.25.beta14/epgsearchcfg.c
+--- epgsearch-0.9.25.beta14-orig/epgsearchcfg.c	Mon Jul 27 10:51:10 2009
++++ epgsearch-0.9.25.beta14/epgsearchcfg.c	Fri Sep 04 09:47:46 2009
+@@ -58,7 +58,16 @@
+   DefSearchTemplateID = -1;
+   addSubtitleToTimer = addSubtitleSmart;
+   strcpy(mainmenuentry, "");
+-  WarEagle = 0;
++#if APIVERSNUM >= 10503
++  if (strstr(Setup.FontOsd, "VDRSymbols") == Setup.FontOsd)
++    WarEagle = 1;
++  else
++    WarEagle = 0;
++#elif HAVE_ICONPATCH
++    WarEagle = Setup.WarEagleIcons;
++#else
++    WarEagle = 0;
++#endif
+   showRadioChannels = 1;
+   onePressTimerCreation = 1;
+   conflictCheckIntervall = 30;
 diff -Naur epgsearch-0.9.25.beta14-orig/epgsearchtools.c epgsearch-0.9.25.beta14/epgsearchtools.c
 --- epgsearch-0.9.25.beta14-orig/epgsearchtools.c	2009-03-23 18:36:05.000000000 +0100
 +++ epgsearch-0.9.25.beta14/epgsearchtools.c	2009-06-20 21:39:02.000000000 +0200
-@@ -890,7 +897,10 @@
+@@ -858,7 +858,10 @@
  
  void DelTimer(int index)
  {
@@ -68,6 +89,18 @@ diff -Naur epgsearch-0.9.25.beta14-orig/Makefile epgsearch-0.9.25.beta14/Makefil
  #INCLUDES += -I$(VDRDIR)/include
  
  DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+@@ -127,6 +127,11 @@
+ ### The object files (add further files here):
+ 
+ OBJS = afuzzy.o blacklist.o changrp.o confdloader.o conflictcheck.o conflictcheck_thread.o distance.o $(PLUGIN).o epgsearchcats.o epgsearchcfg.o epgsearchext.o epgsearchsetup.o  epgsearchsvdrp.o epgsearchtools.o i18n.o mail.o md5.o menu_announcelist.o menu_blacklistedit.o menu_blacklists.o menu_commands.o menu_conflictcheck.o menu_deftimercheckmethod.o menu_dirselect.o menu_event.o menu_favorites.o menu_main.o menu_myedittimer.o menu_quicksearch.o menu_recsdone.o menu_search.o menu_searchactions.o menu_searchedit.o menu_searchresults.o menu_searchtemplate.o menu_switchtimers.o menu_templateedit.o menu_timersdone.o menu_whatson.o noannounce.o rcfile.o  recdone.o recstatus.o searchtimer_thread.o services.o switchtimer.o switchtimer_thread.o templatefile.o timer_thread.o timerdone.o timerstatus.o uservars.o varparser.o  
++
++# Check WarEagleIcons patch
++ifeq (exists, $(shell test -e $(VDRDIR)/iconpatch.h && echo exists))
++   DEFINES += -DHAVE_ICONPATCH
++endif
+ 
+ ifdef HAVE_PCREPOSIX
+ LIBS += $(shell pcre-config --libs-posix)
 diff -Naur epgsearch-0.9.25.beta14-orig/menu_whatson.c epgsearch-0.9.25.beta14/menu_whatson.c
 --- epgsearch-0.9.25.beta14-orig/menu_whatson.c	Mon Jul 27 10:51:09 2009
 +++ epgsearch-0.9.25.beta14/menu_whatson.c	Thu Sep 03 19:00:29 2009
@@ -94,4 +127,3 @@ diff -Naur epgsearch-0.9.25.beta14-orig/svdrpclient.h epgsearch-0.9.25.beta14/sv
  		}
  		free(csResp);
  		csResp = strdup("");
-
