@@ -1,6 +1,6 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 1.7.8 backports applied in this patch:
+VDR 1.7.9 backports applied in this patch:
 * The new Setup parameter "Channel entry timeout" can be used to customize the time
   since the last keypress until a numerically entered channel number is considered
   complete, and the channel is switched (suggested by Helmut Auer). Setting this
@@ -26,6 +26,8 @@ VDR 1.7.8 backports applied in this patch:
   calling isspace(), which made the whole function a lot faster.
 * Fixed a problem with characters >0x7F in the modified version of skipspace()
   (thanks to Marco Schlüßler).
+* Changed the EIT filter setup to save a few handles on devices that do hardware
+  filtering.
 * Ignoring "repeat" and "release" keys in the time search entry mode during replay,
   to avoid inadvertently leaving it in case a key is pressed too long (suggested
   by Andreas Brugger).
@@ -655,6 +657,57 @@ diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
  				char __errorstr[256];
  				strerror_r(errno,__errorstr,256);
  				__errorstr[255]=0;
+@@ -330,34 +330,30 @@
+ 
+ cEitFilter::cEitFilter(void)
+ {
+-//M7X0 BEGIN AK
+-// m7x0 can only handle one filter per pid
+-// Lets only filter 0x40-0x5f m7x0 seems not to like too many filters
+-// Is 0x6x really used? (hopefully not)
+-  Set(0x12, 0x40, 0xE0, 5);   // event info, actual(0x4E)/other(0x4F) TS, present/following
+- 									// event info, actual TS, schedule(0x50)/schedule for future days(0x5X)
+-									// event info, other  TS, schedule(0x60)/schedule for future days(0x6X)
+-//M7X0 END AK
+-  Set(0x14, 0x70);        // TDT
++  Set(0x12, 0x40, 0xC0);  // event info now&next actual/other TS (0x4E/0x4F), future actual/other TS (0x5X/0x6X)
++  if (Setup.SetSystemTime && Setup.TimeTransponder)
++     Set(0x14, 0x70);     // TDT
+ }
+ 
+ void cEitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
+ {
+   switch (Pid) {
+     case 0x12: {
+-         cSchedulesLock SchedulesLock(true, 10);
+-         cSchedules *Schedules = (cSchedules *)cSchedules::Schedules(SchedulesLock);
+-         if (Schedules)
+-            cEIT EIT(Schedules, Source(), Tid, Data);
+-         else {
+-            // If we don't get a write lock, let's at least get a read lock, so
+-            // that we can set the running status and 'seen' timestamp (well, actually
+-            // with a read lock we shouldn't be doing that, but it's only integers that
+-            // get changed, so it should be ok)
+-            cSchedulesLock SchedulesLock(false, 50);
++         if (Tid >= 0x4E && Tid <= 0x6F) {
++            cSchedulesLock SchedulesLock(true, 10);
+             cSchedules *Schedules = (cSchedules *)cSchedules::Schedules(SchedulesLock);
+             if (Schedules)
+-               cEIT EIT(Schedules, Source(), Tid, Data, true);
++               cEIT EIT(Schedules, Source(), Tid, Data);
++            else {
++               // If we don't get a write lock, let's at least get a read lock, so
++               // that we can set the running status and 'seen' timestamp (well, actually
++               // with a read lock we shouldn't be doing that, but it's only integers that
++               // get changed, so it should be ok)
++               cSchedulesLock SchedulesLock(false, 50);
++               cSchedules *Schedules = (cSchedules *)cSchedules::Schedules(SchedulesLock);
++               if (Schedules)
++                  cEIT EIT(Schedules, Source(), Tid, Data, true);
++               }
+             }
+          }
+          break;
 diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 --- VDR-NG-orig/epg.c	Mon Mar 09 10:05:41 2009
 +++ VDR-NG/epg.c	Tue Jun 23 11:07:49 2009
