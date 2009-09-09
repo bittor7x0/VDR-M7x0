@@ -4,7 +4,7 @@
 umount.etc
 
 echo ">> mount /rw-flash" >&2
-mount -n -t jffs2 /dev/mtdblock2 /rw-flash
+mount -o rw,noatime,nodiratime -n -t jffs2 /dev/mtdblock2 /rw-flash
 
 echo ">> mount /etc" >&2
 mount -o bind /rw-flash/etc /etc
