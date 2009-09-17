@@ -1,9 +1,7 @@
-# Copyright (C) 2006,2007 Andreas Koch - the open7x0.org group
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,15 +9,11 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-# Or, point your browser to http://www.gnu.org/copyleft/gpl.html
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The author can be reached at andreas@open7x0.org
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: readline.mk 374 2008-09-01 18:22:42Z andreas $
 #
 
 READLINE_DEPS = $(BASE_BUILD_STAGEFILE) $(NCURSES_INSTALLED)
@@ -30,7 +24,7 @@ ifneq ($(CONFIG_NCURSES),y)
 endif
 endif
 
-READLINE_VERSION := 5.2
+READLINE_VERSION := 6.0
 READLINE_PATCHES_DIR := $(PATCHES_DIR)/readline/$(READLINE_VERSION)
 
 READLINE_FILE := readline-$(READLINE_VERSION).tar.gz

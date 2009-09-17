@@ -1,9 +1,7 @@
-# Copyright (C) 2006,2007 Andreas Koch - the open7x0.org group
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,15 +9,11 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-# Or, point your browser to http://www.gnu.org/copyleft/gpl.html
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The author can be reached at andreas@open7x0.org
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: bash.mk 374 2008-09-01 18:22:42Z andreas $
 #
 
 BASH_DEPS = $(BASE_BUILD_STAGEFILE) $(NCURSES_INSTALLED) $(READLINE_INSTALLED)
@@ -30,7 +24,7 @@ ifneq ($(and $(filter y,$(CONFIG_NCURSES)),$(filter y,$(CONFIG_READLINE))),y)
 endif
 endif
 
-BASH_VERSION := 3.2
+BASH_VERSION := 4.0
 BASH_PATCHES_DIR := $(PATCHES_DIR)/bash/$(BASH_VERSION)
 
 BASH_FILE := bash-$(BASH_VERSION).tar.gz
@@ -147,6 +141,7 @@ $(STAGEFILES_DIR)/.bash_installed: $(STAGEFILES_DIR)/.bash_compiled
 	$(UCLIBC_ENV) $(MAKE) -C $(BASH_BUILD_DIR) install
 	$(CP) $(BASH_DIR)/profile $(TARGET_ROOT)/etc/profile
 	chmod 644 $(TARGET_ROOT)/etc/profile
+	$(LN) -sfn bash $(TARGET_ROOT)/bin/sh
 	$(TOUCH) $(STAGEFILES_DIR)/.bash_installed
 
 $(FILELIST_DIR)/bash.lst: $(STAGEFILES_DIR)/.bash_installed
