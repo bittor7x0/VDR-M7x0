@@ -1,0 +1,25 @@
+diff -Naur uclibc_build_env_orig/make-incs/uclibc.mk uclibc_build_env/make-incs/uclibc.mk
+--- uclibc_build_env_orig/make-incs/uclibc.mk	Fri Mar 27 09:34:10 2009
++++ uclibc_build_env/make-incs/uclibc.mk	Wed Sep 16 17:02:42 2009
+@@ -67,7 +67,8 @@
+                                     $(UCLIBC_PATCHES_DIR)/*.patch \
+                                     $$(LINUX_HEADERS_INSTALLED) \
+                                     $(UCLIBC_CONFIG) \
+-                                    $$(BINUTILS_INSTALLED)
++                                    $$(BINUTILS_INSTALLED) \
++                                    $$(SSTRIP_INSTALLED)
+ 	-$(RM) -rf $(UCLIBC_DIR)
+ 	$(BZCAT) $(UCLIBC_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+ 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_unpacked
+diff -Naur uclibc_build_env_orig/Makefile uclibc_build_env/Makefile
+--- uclibc_build_env_orig/Makefile	Fri Mar 27 09:34:10 2009
++++ uclibc_build_env/Makefile	Wed Sep 16 16:49:36 2009
+@@ -108,7 +108,7 @@
+ UCLIBC_CPP := $(UCLIBC_TARGET)-cpp
+ UCLIBC_RANLIB := $(UCLIBC_TARGET)-ranlib
+ UCLIBC_LD := $(UCLIBC_TARGET)-ld
+-UCLIBC_STRIP := $(UCLIBC_TARGET)-strip
++UCLIBC_STRIP := sstrip
+ UCLIBC_OBJCOPY := $(UCLIBC_TARGET)-objcopy
+ UCLIBC_CFLAGS := -march=mips2 -mtune=vr4120 -O3 -msoft-float -mfix-vr4120
+ UCLIBC_CXXFLAGS := $(UCLIBC_CFLAGS)
