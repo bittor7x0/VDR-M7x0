@@ -1,0 +1,75 @@
+diff -Naur uclibc_build_env_orig/hostutils-make-incs/lzma.mk uclibc_build_env/hostutils-make-incs/lzma.mk
+--- uclibc_build_env_orig/hostutils-make-incs/lzma.mk	2009-08-16 18:51:31.000000000 +0200
++++ uclibc_build_env/hostutils-make-incs/lzma.mk	2009-09-20 19:41:48.000000000 +0200
+@@ -24,13 +24,15 @@
+ 
+ LZMA_BIN := $(HOSTUTILS_PREFIX_BIN)/lzma
+ 
+-LZMA_HOSTVERSION := 4.32.7
+-LZMA_HOSTFILE := lzma-$(LZMA_HOSTVERSION).tar.gz
++LZMA_HOSTVERSION := 432
++LZMA_HOSTFILE := lzma$(LZMA_HOSTVERSION).tar.bz2
+ LZMA_HOSTDLFILE := $(DOWNLOAD_DIR)/$(LZMA_HOSTFILE)
+ 
+ LZMA_HOSTPATCHES_DIR := $(PATCHES_DIR)/lzma/$(LZMA_HOSTVERSION)
+-LZMA_HOSTURL := http://tukaani.org/lzma/$(LZMA_HOSTFILE)
+-LZMA_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/lzma-$(LZMA_HOSTVERSION)
++LZMA_HOSTURL := http://kent.dl.sourceforge.net/sourceforge/sevenzip/$(LZMA_HOSTFILE)
++LZMA_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/lzma$(LZMA_HOSTVERSION)
++LZMA_HOSTLIBDIR := $(LZMA_HOSTDIR)/C/7zip/Compress/LZMA_Lib
++LZMA_HOSTALONEDIR := $(LZMA_HOSTDIR)/C/7zip/Compress/LZMA_Alone
+ 
+ CLEAN_RULES += clean-lzma-host
+ DISTCLEAN_RULES += distclean-lzma-host
+@@ -52,7 +54,8 @@
+ $(STAGEFILES_DIR)/.lzma_host_unpacked: $(LZMA_HOSTDLFILE) \
+                                          $(wildcard $(LZMA_HOSTPATCHES_DIR)/*.patch)
+ 	-$(RM) -rf $(LZMA_HOSTDIR)
+-	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -zf $(LZMA_HOSTDLFILE)
++	$(MKDIR) -p $(LZMA_HOSTDIR)
++	$(BZCAT) $(LZMA_HOSTDLFILE) | $(TAR) -C $(LZMA_HOSTDIR) -f -
+ 	$(TOUCH) $(STAGEFILES_DIR)/.lzma_host_unpacked
+ 
+ #
+@@ -63,25 +66,19 @@
+ 	$(call patch_package, $(LZMA_HOSTDIR), $(LZMA_HOSTPATCHES_DIR))
+ 	$(TOUCH) $(STAGEFILES_DIR)/.lzma_host_patched
+ 
+-
+-$(STAGEFILES_DIR)/.lzma_host_configured: $(STAGEFILES_DIR)/.lzma_host_patched
+-	-$(MAKE) -C $(LZMA_HOSTDIR) distclean
+-	($(CD) $(LZMA_HOSTDIR) ; \
+-		$(LZMA_HOSTDIR)/configure --disable-shared \
+-			--prefix=$(PREFIX))
+-	$(TOUCH) $(STAGEFILES_DIR)/.lzma_host_configured
+-
+ #
+ # compile lzma
+ #
+ 
+-$(STAGEFILES_DIR)/.lzma_host_compiled: $(STAGEFILES_DIR)/.lzma_host_configured
+-	-$(MAKE) -C $(LZMA_HOSTDIR) clean
+-	$(MAKE) -C $(LZMA_HOSTDIR) all
++$(STAGEFILES_DIR)/.lzma_host_compiled: $(STAGEFILES_DIR)/.lzma_host_patched
++	$(MAKE) -C $(LZMA_HOSTLIBDIR) clean
++	$(MAKE) -C $(LZMA_HOSTLIBDIR) all
++	$(MAKE) -f makefile.gcc -C $(LZMA_HOSTALONEDIR)
+ 	$(TOUCH) $(STAGEFILES_DIR)/.lzma_host_compiled
+ 
+ $(STAGEFILES_DIR)/.lzma_host_installed: $(STAGEFILES_DIR)/.lzma_host_compiled
+-	$(MAKE) -C $(LZMA_HOSTDIR) install
++	$(CP) $(LZMA_HOSTLIBDIR)/liblzma.a $(HOSTUTILS_PREFIX)/lib/liblzma.a
++	$(CP) $(LZMA_HOSTALONEDIR)/lzma $(HOSTUTILS_PREFIX_BIN)/lzma
+ 	$(TOUCH) $(STAGEFILES_DIR)/.lzma_host_installed
+ 
+ #
+@@ -103,8 +100,8 @@
+ 	-$(RM) -f $(STAGEFILES_DIR)/.lzma_host_patched
+ 	-$(RM) -f $(STAGEFILES_DIR)/.lzma_host_compiled
+ 	-$(RM) -f $(STAGEFILES_DIR)/.lzma_host_installed
+-	-$(RM) -f $(STAGEFILES_DIR)/.lzma_host_configured
+ 	-$(RM) -f $(HOSTUTILS_PREFIX_BIN)/lzma
++	-$(RM) -f $(HOSTUTILS_PREFIX)/lib/liblzma.a
+ ifeq ($(DISTCLEAN_DLFILE),y)
+ 	-$(RM) -rf $(LZMA_HOSTDLFILE)
+ endif
