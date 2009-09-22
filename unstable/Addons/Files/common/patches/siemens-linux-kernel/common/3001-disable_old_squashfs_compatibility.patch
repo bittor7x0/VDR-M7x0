@@ -23,3 +23,17 @@ diff -Naur slin_m740_orig/fs/squashfs/squashfs.h slin_m740/fs/squashfs/squashfs.
  #ifdef SQUASHFS_TRACE
  #define TRACE(s, args...)	printk(KERN_NOTICE "SQUASHFS: "s, ## args)
  #else
+diff -Naur slin_m740_orig/include/linux/squashfs_fs.h slin_m740/include/linux/squashfs_fs.h
+--- slin_m740_orig/include/linux/squashfs_fs.h	2009-07-22 21:35:02.000000000 +0200
++++ slin_m740/include/linux/squashfs_fs.h	2009-09-22 18:24:22.000000000 +0200
+@@ -24,10 +24,6 @@
+  * squashfs_fs.h
+  */
+ 
+-#ifndef CONFIG_SQUASHFS_2_0_COMPATIBILITY
+-#define CONFIG_SQUASHFS_2_0_COMPATIBILITY
+-#endif
+-
+ #ifdef CONFIG_SQUASHFS_VMALLOC
+ #define SQUASHFS_ALLOC(a)		vmalloc(a)
+ #define SQUASHFS_FREE(a)		vfree(a)
