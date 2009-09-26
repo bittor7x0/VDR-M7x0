@@ -1,0 +1,45 @@
+diff -Naur uclibc_build_env_orig/make-incs/generate_rootfs.mk uclibc_build_env/make-incs/generate_rootfs.mk
+--- uclibc_build_env_orig/make-incs/generate_rootfs.mk	2009-08-16 18:51:37.000000000 +0200
++++ uclibc_build_env/make-incs/generate_rootfs.mk	2009-09-26 21:05:13.000000000 +0200
+@@ -68,11 +68,41 @@
+    { file="/"$$1 ; gsub("//","/",file) ; \
+     print file, $$3, $$4, $$5, $$6, $$7, $$8, $$9, $$10, $$11}'
+ 
++# Strip modules (based in rstrip.sh from OpenWrt.org)
++STRIP_KMOD = "$(PREFIX_BIN)/$(UCLIBC_TARGET)-strip --strip-unneeded --remove-section=.comment --remove-section=.note"
++define find_modparams
++	$(PREFIX_BIN)/$(UCLIBC_TARGET)-nm "$1" | $(AWK) ' \
++	BEGIN { \
++		FS=" " \
++	} \
++	($$3 ~ /^__module_parm_/) && ($$3 !~ /^__module_parm_desc/) { \
++		gsub(/__module_parm_/, "", $$3) ; \
++		printf "-K " $$3 " " \
++	} \
++	($$2 ~ /r/) && ($$3 ~ /__param_/) { \
++		gsub(/__param_/, "", $$3) ; \
++		printf "-K " $$3 " " \
++	} \
++	'
++endef
+ 
+ $(ROOTFS_FILE_TABLE): $(ROOTFS_DIR_DEPS)
+ 	-$(RM) -rf $(ROOTFS_DIR)
+ 	-$(RM) -f $(ROOTFS_FILE_TABLE)
+ 	$(MKDIR) -p $(ROOTFS_DIR)
++	($(FIND) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/lib/modules -type f -a -exec file {} \; | \
++		$(SED) -n -e 's/^\(.*\):.*ELF.*\(executable\|relocatable\|shared object\).*,.* stripped/\1:\2/p' | \
++		( \
++			IFS=":" ; \
++			while read F S; do \
++				$(ECHO) "strip: $$F:$$S" ; \
++				[ "$${S}" = "relocatable" ] && { \
++					eval "$(STRIP_KMOD) -w -K '__param*' -K '__mod*' $$($(call find_modparams,"$$F"))$$F" ; \
++				} \
++			done ; \
++			true ; \
++		) \
++	)
+ 	$(COPY_LISTS_BIN) -s '$(ROOTFS_DIR)' '$(TARGET_ROOT)' \
+ 		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' $(FQ_FILE_LISTS)
+ 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG) > \
