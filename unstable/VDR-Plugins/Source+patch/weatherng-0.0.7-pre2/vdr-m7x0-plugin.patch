@@ -1,5 +1,6 @@
---- weatherng-0.0.5-orig/i18n.c	2009-02-04 22:33:16.000000000 +0100
-+++ weatherng/i18n.c	2009-02-06 13:25:56.000000000 +0100
+diff -Naur weatherng-0.0.7-pre2-orig/i18n.c weatherng-0.0.7-pre2/i18n.c
+--- weatherng-0.0.7-pre2-orig/i18n.c	Wed Mar 25 13:32:58 2009
++++ weatherng-0.0.7-pre2/i18n.c	Mon Sep 28 08:47:19 2009
 @@ -19,7 +19,7 @@
      "",// TODO
      "Sääennuste",
@@ -1222,7 +1223,7 @@
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -2108,7 +2108,7 @@
+@@ -2108,13 +2108,67 @@
      "",// TODO
      "ajoittaisia sadekuuroja",
      "",// TODO
@@ -1231,10 +1232,10 @@
      "",// TODO
      "",// TODO
      "",// TODO
-@@ -2116,5 +2116,59 @@
+     "",// TODO
      "",// TODO
      "¿àØÒÕâ!",
-   },
++  },
 +      { "Weather station 1",
 +      "",
 +      "",// TODO
@@ -1288,11 +1289,43 @@
 +      "",// TODO
 +      "",// TODO
 +      "¿àØÒÕâ!",
-+  },
+   },
    { NULL }
    };
---- weatherng-0.0.5-orig/setup.c	2009-02-04 22:33:16.000000000 +0100
-+++ weatherng/setup.c	2009-02-06 00:32:15.000000000 +0100
+diff -Naur weatherng-0.0.7-pre2-orig/OsdWeather.c weatherng-0.0.7-pre2/OsdWeather.c
+--- weatherng-0.0.7-pre2-orig/OsdWeather.c	Wed Mar 25 13:32:58 2009
++++ weatherng-0.0.7-pre2/OsdWeather.c	Mon Sep 28 09:02:51 2009
+@@ -271,24 +271,21 @@
+ 	char *url;
+ 
+ 	asprintf(&buffer, "%s%s",ScriptDir,"/data1.xml");
+-//	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data1,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+-	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data1,"?cc=*&unit=m&dayf=10");
++	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data1,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+ 	dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
+ 	httpGet(url,buffer);
+ 	free(buffer);
+ 	free(url);
+ 
+ 	asprintf(&buffer, "%s%s",ScriptDir,"/data2.xml");
+-//	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data2,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+-	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data2,"?cc=*&unit=m&dayf=10");
++	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data2,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+ 	dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
+ 	httpGet(url,buffer);
+ 	free(buffer);
+ 	free(url);
+ 
+ 	asprintf(&buffer, "%s%s",ScriptDir,"/data3.xml");
+-//	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data3,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+-	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data3,"?cc=*&unit=m&dayf=10");
++	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data3,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+ 	dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
+ 	httpGet(url,buffer);
+ 	free(buffer);
+diff -Naur weatherng-0.0.7-pre2-orig/setup.c weatherng-0.0.7-pre2/setup.c
+--- weatherng-0.0.7-pre2-orig/setup.c	Wed Mar 25 13:32:58 2009
++++ weatherng-0.0.7-pre2/setup.c	Mon Sep 28 08:47:19 2009
 @@ -30,9 +30,9 @@
  	w_osdoffset_y = 0;
  	w_inverted = 1;
@@ -1306,3 +1339,34 @@
  	st_pic0=NULL;
  	st_pic1=NULL;
  	st_pic2=NULL;
+diff -Naur weatherng-0.0.7-pre2-orig/weatherng.c weatherng-0.0.7-pre2/weatherng.c
+--- weatherng-0.0.7-pre2-orig/weatherng.c	Wed Mar 25 13:32:58 2009
++++ weatherng-0.0.7-pre2/weatherng.c	Mon Sep 28 09:03:04 2009
+@@ -112,24 +112,21 @@
+ 		char *url;
+ 
+ 		asprintf(&buffer, "%s%s",ScriptDir,"/data1.xml");
+-//		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data1,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+-		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data1,"?cc=*&unit=m&dayf=10");
++		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data1,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+ 		dsyslog("DEBUG : weatherng: Autoupdate %s => %s",url, buffer);
+ 		httpGet(url,buffer);
+ 		free(buffer);
+ 		free(url);
+ 
+ 		asprintf(&buffer, "%s%s",ScriptDir,"/data2.xml");
+-//		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data2,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+-		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data2,"?cc=*&unit=m&dayf=10");
++		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data2,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+ 		dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
+ 		httpGet(url,buffer);
+ 		free(buffer);
+ 		free(url);
+ 
+ 		asprintf(&buffer, "%s%s",ScriptDir,"/data3.xml");
+-//		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data3,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+-		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data3,"?cc=*&unit=m&dayf=10");
++		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data3,"?cc=*&unit=m&dayf=10&prod=xoap&par=1004124588&key=079f24145f208494");
+ 		dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
+ 		httpGet(url,buffer);
+ 		free(buffer);
