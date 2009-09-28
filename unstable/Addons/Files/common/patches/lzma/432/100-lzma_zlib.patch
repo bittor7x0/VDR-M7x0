@@ -164,8 +164,8 @@ diff -Naur lzma432-orig/C/7zip/Compress/LZMA_Lib/ZLib.cpp lzma432/C/7zip/Compres
 +
 +#include <zlib.h>
 +
-+#define ZLIB_LC 3
-+#define ZLIB_LP 0
++#define ZLIB_LC 1
++#define ZLIB_LP 2
 +#define ZLIB_PB 2
 +
 +#ifdef WIN32

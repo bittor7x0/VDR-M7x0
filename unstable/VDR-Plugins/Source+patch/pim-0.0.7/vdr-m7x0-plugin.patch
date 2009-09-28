@@ -1,6 +1,6 @@
-diff -Naur -x .svn pim-0.0.7/calEvent.c /home/garrulo/VDR-EM-SVN-plugins2/VDR-NG/PLUGINS/src/pim/calEvent.c
---- pim-0.0.7/calEvent.c	2008-07-08 20:27:36.000000000 +0200
-+++ /home/garrulo/VDR-EM-SVN-plugins2/VDR-NG/PLUGINS/src/pim/calEvent.c	2008-09-20 12:08:50.000000000 +0200
+diff -Naur pim-0.0.7-orig/calEvent.c pim-0.0.7/calEvent.c
+--- pim-0.0.7-orig/calEvent.c	Tue Sep 02 08:57:43 2008
++++ pim-0.0.7/calEvent.c	Mon Sep 28 09:37:44 2009
 @@ -22,6 +22,7 @@
  #include <string>
  #include <iostream>
@@ -9,9 +9,9 @@ diff -Naur -x .svn pim-0.0.7/calEvent.c /home/garrulo/VDR-EM-SVN-plugins2/VDR-NG
  #include "i18n.h"
  #include "calEvent.h"
  
-diff -Naur -x .svn pim-0.0.7/Makefile /home/garrulo/VDR-EM-SVN-plugins2/VDR-NG/PLUGINS/src/pim/Makefile
---- pim-0.0.7/Makefile	2008-07-08 20:27:36.000000000 +0200
-+++ /home/garrulo/VDR-EM-SVN-plugins2/VDR-NG/PLUGINS/src/pim/Makefile	2008-09-17 19:45:37.000000000 +0200
+diff -Naur pim-0.0.7-orig/Makefile pim-0.0.7/Makefile
+--- pim-0.0.7-orig/Makefile	Tue Sep 02 08:57:43 2008
++++ pim-0.0.7/Makefile	Mon Sep 28 09:37:44 2009
 @@ -16,13 +16,13 @@
  ### The C++ compiler and options:
  
