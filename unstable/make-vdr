@@ -54,5 +54,5 @@ fi
 if [ -x $vdr/vdr ]
 then
     cp -p $vdr/vdr .
-    mips-linux-uclibc-strip vdr
+    sstrip vdr
 fi
