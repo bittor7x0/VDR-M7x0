@@ -1,0 +1,103 @@
+diff -u --recursive --new-file linux-2.4.19-fix_lockd2/fs/lockd/svc4proc.c linux-2.4.19-fix_lockd3/fs/lockd/svc4proc.c
+--- linux-2.4.19-fix_lockd2/fs/lockd/svc4proc.c	Tue Jul 23 17:49:34 2002
++++ linux-2.4.19-fix_lockd3/fs/lockd/svc4proc.c	Tue Jul 23 17:42:23 2002
+@@ -473,7 +473,7 @@
+ 
+         dprintk("lockd: GRANTED_RES   called\n");
+ 
+-        nlmsvc_grant_reply(&argp->cookie, argp->status);
++        nlmsvc_grant_reply(rqstp, &argp->cookie, argp->status);
+         return rpc_success;
+ }
+ 
+diff -u --recursive --new-file linux-2.4.19-fix_lockd2/fs/lockd/svclock.c linux-2.4.19-fix_lockd3/fs/lockd/svclock.c
+--- linux-2.4.19-fix_lockd2/fs/lockd/svclock.c	Tue Feb  5 08:52:37 2002
++++ linux-2.4.19-fix_lockd3/fs/lockd/svclock.c	Tue Jul 23 18:08:35 2002
+@@ -143,14 +143,15 @@
+  * Find a block with a given NLM cookie.
+  */
+ static inline struct nlm_block *
+-nlmsvc_find_block(struct nlm_cookie *cookie)
++nlmsvc_find_block(struct nlm_cookie *cookie,  struct sockaddr_in *sin)
+ {
+ 	struct nlm_block *block;
+ 
+ 	for (block = nlm_blocked; block; block = block->b_next) {
+ 		dprintk("cookie: head of blocked queue %p, block %p\n", 
+ 			nlm_blocked, block);
+-		if (nlm_cookie_match(&block->b_call.a_args.cookie,cookie))
++		if (nlm_cookie_match(&block->b_call.a_args.cookie,cookie)
++				&& nlm_cmp_addr(sin, &block->b_host->h_addr))
+ 			break;
+ 	}
+ 
+@@ -572,12 +573,16 @@
+ 	struct nlm_rqst		*call = (struct nlm_rqst *) task->tk_calldata;
+ 	struct nlm_block	*block;
+ 	unsigned long		timeout;
++	struct sockaddr_in	*peer_addr = RPC_PEERADDR(task->tk_client);
+ 
+ 	dprintk("lockd: GRANT_MSG RPC callback\n");
+-	dprintk("callback: looking for cookie %x \n", 
+-		*(unsigned int *)(call->a_args.cookie.data));
+-	if (!(block = nlmsvc_find_block(&call->a_args.cookie))) {
+-		dprintk("lockd: no block for cookie %x\n", *(u32 *)(call->a_args.cookie.data));
++	dprintk("callback: looking for cookie %x, host (%08x)\n", 
++		*(unsigned int *)(call->a_args.cookie.data),
++		ntohl(peer_addr->sin_addr.s_addr));
++	if (!(block = nlmsvc_find_block(&call->a_args.cookie, peer_addr))) {
++		dprintk("lockd: no block for cookie %x, host (%08x)\n",
++			*(u32 *)(call->a_args.cookie.data),
++			ntohl(peer_addr->sin_addr.s_addr));
+ 		return;
+ 	}
+ 
+@@ -606,18 +611,21 @@
+  * block.
+  */
+ void
+-nlmsvc_grant_reply(struct nlm_cookie *cookie, u32 status)
++nlmsvc_grant_reply(struct svc_rqst *rqstp, struct nlm_cookie *cookie, u32 status)
+ {
+ 	struct nlm_block	*block;
+ 	struct nlm_file		*file;
+ 
+-	if (!(block = nlmsvc_find_block(cookie)))
++	dprintk("grant_reply: looking for cookie %x, host (%08x), s=%d \n", 
++		*(unsigned int *)(cookie->data), 
++		ntohl(rqstp->rq_addr.sin_addr.s_addr), status);
++	if (!(block = nlmsvc_find_block(cookie, &rqstp->rq_addr)))
+ 		return;
+ 	file = block->b_file;
+ 
+ 	file->f_count++;
+ 	down(&file->f_sema);
+-	if ((block = nlmsvc_find_block(cookie)) != NULL) {
++	if ((block = nlmsvc_find_block(cookie,&rqstp->rq_addr)) != NULL) {
+ 		if (status == NLM_LCK_DENIED_GRACE_PERIOD) {
+ 			/* Try again in a couple of seconds */
+ 			nlmsvc_insert_block(block, 10 * HZ);
+diff -u --recursive --new-file linux-2.4.19-fix_lockd2/fs/lockd/svcproc.c linux-2.4.19-fix_lockd3/fs/lockd/svcproc.c
+--- linux-2.4.19-fix_lockd2/fs/lockd/svcproc.c	Tue Jul 23 17:49:34 2002
++++ linux-2.4.19-fix_lockd3/fs/lockd/svcproc.c	Tue Jul 23 17:42:23 2002
+@@ -501,7 +501,7 @@
+ 
+ 	dprintk("lockd: GRANTED_RES   called\n");
+ 
+-	nlmsvc_grant_reply(&argp->cookie, argp->status);
++	nlmsvc_grant_reply(rqstp, &argp->cookie, argp->status);
+ 	return rpc_success;
+ }
+ 
+diff -u --recursive --new-file linux-2.4.19-fix_lockd2/include/linux/lockd/lockd.h linux-2.4.19-fix_lockd3/include/linux/lockd/lockd.h
+--- linux-2.4.19-fix_lockd2/include/linux/lockd/lockd.h	Tue Jul 23 17:49:35 2002
++++ linux-2.4.19-fix_lockd3/include/linux/lockd/lockd.h	Tue Jul 23 17:42:23 2002
+@@ -164,7 +164,7 @@
+ unsigned long	  nlmsvc_retry_blocked(void);
+ int		  nlmsvc_traverse_blocks(struct nlm_host *, struct nlm_file *,
+ 					int action);
+-void	  nlmsvc_grant_reply(struct nlm_cookie *cookie, u32 status);
++void	  nlmsvc_grant_reply(struct svc_rqst *, struct nlm_cookie *, u32);
+ 
+ /*
+  * File handling for the server personality

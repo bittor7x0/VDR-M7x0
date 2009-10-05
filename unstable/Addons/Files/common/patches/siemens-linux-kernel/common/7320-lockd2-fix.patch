@@ -1,0 +1,12 @@
+diff -u --recursive --new-file linux-2.4.19-fix_lockd1/fs/lockd/clntproc.c linux-2.4.19-fix_lockd2/fs/lockd/clntproc.c
+--- linux-2.4.19-fix_lockd1/fs/lockd/clntproc.c	Tue Feb  5 08:52:37 2002
++++ linux-2.4.19-fix_lockd2/fs/lockd/clntproc.c	Tue Jul 23 17:50:25 2002
+@@ -460,7 +460,7 @@
+ 		}
+ 		if (status < 0)
+ 			return status;
+-	} while (resp->status == NLM_LCK_BLOCKED);
++	} while (resp->status == NLM_LCK_BLOCKED && req->a_args.block);
+ 
+ 	if (resp->status == NLM_LCK_GRANTED) {
+ 		fl->fl_u.nfs_fl.state = host->h_state;
