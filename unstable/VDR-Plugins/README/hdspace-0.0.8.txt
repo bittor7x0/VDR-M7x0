@@ -1,0 +1,26 @@
+open7x0.org hdspace "plugin" for the Video Disk Recorder (VDR).
+---------------------------------------------------------------
+
+Written by:                  Your Name <hanspeter@hp-jochmann.de>
+
+Project's homepage:          http://www.open7x0.org
+
+See the file COPYING for license information.
+
+Description:
+A small plugin to check the free space of all video drives and displays a warning or/and send an
+e-mail if it is below a configured level. On additional message is dispalyed or/and send as
+e-mail when the space is above the limit again.
+
+Have fun
+   HaPe
+
+
+Version:
+--------
+V0.0.2 (12.Sep.2007)
+- reworked the config for the mail messages
+- added one mail if the recording space is over the limit again
+
+V0.0.1 (11.Sep.2007)
+- First verision

@@ -1,0 +1,13 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Thomas Koch <tom@linvdr.org>
+
+Project's homepage:          http://www.linvdr.org/projects/sleeptimer/
+
+Latest version available at: Project's homepage
+
+See the file COPYING for license information.
+
+Description:
+
+use -e parameter to redefine the command for shutdown. By default /sbin/poweroff is called
