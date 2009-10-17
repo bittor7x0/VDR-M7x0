@@ -7,7 +7,7 @@ diff -Naur uclibc_build_env_orig/hostutils-make-incs/lzma.mk uclibc_build_env/ho
  
 -LZMA_HOSTVERSION := 4.32.7
 -LZMA_HOSTFILE := lzma-$(LZMA_HOSTVERSION).tar.gz
-+LZMA_HOSTVERSION := 432
++LZMA_HOSTVERSION := 457
 +LZMA_HOSTFILE := lzma$(LZMA_HOSTVERSION).tar.bz2
  LZMA_HOSTDLFILE := $(DOWNLOAD_DIR)/$(LZMA_HOSTFILE)
  
@@ -16,8 +16,8 @@ diff -Naur uclibc_build_env_orig/hostutils-make-incs/lzma.mk uclibc_build_env/ho
 -LZMA_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/lzma-$(LZMA_HOSTVERSION)
 +LZMA_HOSTURL := http://kent.dl.sourceforge.net/sourceforge/sevenzip/$(LZMA_HOSTFILE)
 +LZMA_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/lzma$(LZMA_HOSTVERSION)
-+LZMA_HOSTLIBDIR := $(LZMA_HOSTDIR)/C/7zip/Compress/LZMA_Lib
-+LZMA_HOSTALONEDIR := $(LZMA_HOSTDIR)/C/7zip/Compress/LZMA_Alone
++LZMA_HOSTLIBDIR := $(LZMA_HOSTDIR)/CPP/7zip/Compress/LZMA_Lib
++LZMA_HOSTALONEDIR := $(LZMA_HOSTDIR)/CPP/7zip/Compress/LZMA_Alone
  
  CLEAN_RULES += clean-lzma-host
  DISTCLEAN_RULES += distclean-lzma-host

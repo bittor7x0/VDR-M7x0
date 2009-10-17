@@ -1,0 +1,73 @@
+diff -Naur scheduler-0.1.4-orig/i18n-generated.h scheduler-0.1.4/i18n-generated.h
+--- scheduler-0.1.4-orig/i18n-generated.h	Tue Jul 15 20:38:36 2008
++++ scheduler-0.1.4/i18n-generated.h	Thu Oct 15 20:45:18 2009
+@@ -638,7 +638,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Detener a los ... minutos",
+     "",
+     "",
+     "",
+@@ -743,7 +743,7 @@
+     "Konfigurasjon",
+     "Testaa",
+     "Nastawy",
+-    "Detener",
++    "Nuevo",
+     "Ñõèìéóåéò",
+     "Inställningar",
+     "Configuraþie",
+diff -Naur scheduler-0.1.4-orig/Makefile scheduler-0.1.4/Makefile
+--- scheduler-0.1.4-orig/Makefile	Sun May 04 14:08:35 2008
++++ scheduler-0.1.4/Makefile	Thu Oct 15 20:45:18 2009
+@@ -22,8 +22,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+diff -Naur scheduler-0.1.4-orig/po/es_ES.po scheduler-0.1.4/po/es_ES.po
+--- scheduler-0.1.4-orig/po/es_ES.po	Tue Jul 15 20:38:36 2008
++++ scheduler-0.1.4/po/es_ES.po	Thu Oct 15 20:45:18 2009
+@@ -8,7 +8,7 @@
+ "Project-Id-Version: VDR 1.5.7\n"
+ "Report-Msgid-Bugs-To: <see README>\n"
+ "POT-Creation-Date: 2008-07-10 19:45+0200\n"
+-"PO-Revision-Date: 2007-12-07 19:31+0200\n"
++"PO-Revision-Date: 2009-10-15 20:45+0200\n"
+ "Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
+ "Language-Team: <vdr@linuxtv.org>\n"
+ "MIME-Version: 1.0\n"
+@@ -67,7 +67,7 @@
+ msgstr "Guardar ... registros"
+ 
+ msgid "Kill after ... minutes"
+-msgstr ""
++msgstr "Detener a los ... minutos"
+ 
+ msgid "Next executions:"
+ msgstr "Próximas ejecuciones:"
+@@ -75,15 +75,12 @@
+ msgid "Tasks"
+ msgstr "Tareas"
+ 
+-#, fuzzy
+ msgid "Button$New"
+-msgstr "Detener"
++msgstr "Nuevo"
+ 
+-#, fuzzy
+ msgid "Button$Stop"
+ msgstr "Detener"
+ 
+-#, fuzzy
+ msgid "Button$Start"
+ msgstr "Iniciar"
+ 
