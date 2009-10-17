@@ -4,7 +4,7 @@ diff -Naur vsftpd-2.1.0-orig/Makefile vsftpd-2.1.0/Makefile
 @@ -1,11 +1,11 @@
  # Makefile for systems with GNU tools
 -CC 	=	gcc
-+CC 	=	mips-linux-uclibc-gcc
++#CC 	=	gcc
  INSTALL	=	install
  IFLAGS  = -idirafter dummyinc
  #CFLAGS = -g
