@@ -5,7 +5,7 @@ diff -Naur slin_m740_orig/drivers/usb/usb.c slin_m740/drivers/usb/usb.c
  {
  	char *argv [3], **envp, *buf, *scratch;
  	int i = 0, value;
-+	int InterfaceClass = -1, InterfaceSubClass = -1, InterfaceProtocol = -1;
++	int InterfaceClass = -1;
  
  	if (!hotplug_path [0])
  		return;
@@ -21,26 +21,20 @@ diff -Naur slin_m740_orig/drivers/usb/usb.c slin_m740/drivers/usb/usb.c
  	/* minimal command environment */
  	envp [i++] = "HOME=/";
  	envp [i++] = "PATH=/sbin:/bin:/usr/sbin:/usr/bin";
-@@ -891,11 +887,15 @@
+@@ -890,10 +886,11 @@
+ 			    dev->descriptor.bDeviceProtocol) + 1;
  	if (dev->descriptor.bDeviceClass == 0) {
  		int alt = dev->actconfig->interface [interface].act_altsetting;
++		InterfaceClass = dev->actconfig->interface [interface].altsetting [alt].bInterfaceClass;
  
-+		InterfaceClass    = dev->actconfig->interface [interface].altsetting [alt].bInterfaceClass;
-+		InterfaceSubClass = dev->actconfig->interface [interface].altsetting [alt].bInterfaceSubClass;
-+		InterfaceProtocol = dev->actconfig->interface [interface].altsetting [alt].bInterfaceProtocol;
-+		
  		envp [i++] = scratch;
  		scratch += sprintf (scratch, "INTERFACE=%d/%d/%d",
 -			dev->actconfig->interface [interface].altsetting [alt].bInterfaceClass,
--			dev->actconfig->interface [interface].altsetting [alt].bInterfaceSubClass,
--			dev->actconfig->interface [interface].altsetting [alt].bInterfaceProtocol)
 +			InterfaceClass,
-+			InterfaceSubClass,
-+			InterfaceProtocol)
+ 			dev->actconfig->interface [interface].altsetting [alt].bInterfaceSubClass,
+ 			dev->actconfig->interface [interface].altsetting [alt].bInterfaceProtocol)
  			+ 1;
- 	}
- 	envp [i++] = 0;
-@@ -903,12 +903,20 @@
+@@ -903,12 +900,20 @@
  
  	/* NOTE: user mode daemons can call the agents too */
  
