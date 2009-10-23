@@ -385,7 +385,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Otros Comandos", // /*Español*/
++    "Otros comandos", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -451,7 +451,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Play", // /*Español*/
++    "Ejecutar", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
