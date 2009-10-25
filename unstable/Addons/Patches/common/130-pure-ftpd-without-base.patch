@@ -1,7 +1,7 @@
 diff -Naur uclibc_build_env_orig/make-incs/pure-ftpd.mk uclibc_build_env/make-incs/pure-ftpd.mk
 --- uclibc_build_env_orig/make-incs/pure-ftpd.mk	2009-03-28 10:12:21.000000000 +0100
 +++ uclibc_build_env/make-incs/pure-ftpd.mk	2009-06-01 20:14:26.000000000 +0200
-@@ -139,6 +139,14 @@
+@@ -140,6 +140,14 @@
  
  $(STAGEFILES_DIR)/.pure-ftpd_installed: $(STAGEFILES_DIR)/.pure-ftpd_compiled
  	$(UCLIBC_ENV) $(MAKE) -C $(PURE-FTPD_DIR) install

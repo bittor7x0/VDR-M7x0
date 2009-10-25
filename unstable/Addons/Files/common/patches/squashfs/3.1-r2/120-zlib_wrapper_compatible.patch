@@ -1,0 +1,67 @@
+diff -Naur squashfs3.1-r2-orig/squashfs-tools/mksquashfs.c squashfs3.1-r2/squashfs-tools/mksquashfs.c
+--- squashfs3.1-r2-orig/squashfs-tools/mksquashfs.c	2009-09-26 11:32:38.000000000 +0200
++++ squashfs3.1-r2/squashfs-tools/mksquashfs.c	2009-09-26 11:51:48.000000000 +0200
+@@ -559,57 +559,20 @@
+ 
+ unsigned int mangle2(z_stream **strm, char *d, char *s, int size, int block_size, int uncompressed, int data_block)
+ {
+-	unsigned long c_byte;
++	unsigned long c_byte = block_size << 1;
+ 	unsigned int res;
+-	z_stream *stream = *strm;
+ 
+-	if(uncompressed)
+-		goto notcompressed;
+-
+-	if(stream == NULL) {
+-		if((stream = *strm = malloc(sizeof(z_stream))) == NULL)
+-			BAD_ERROR("mangle::compress failed, not enough memory\n");
+-
+-		stream->zalloc = Z_NULL;
+-		stream->zfree = Z_NULL;
+-		stream->opaque = 0;
+-
+-		if((res = deflateInit(stream, 9)) != Z_OK) {
+-			if(res == Z_MEM_ERROR)
+-				BAD_ERROR("zlib::compress failed, not enough memory\n");
+-			else if(res == Z_STREAM_ERROR)
+-				BAD_ERROR("zlib::compress failed, not a valid compression level\n");
+-			else if(res == Z_VERSION_ERROR)
+-				BAD_ERROR("zlib::compress failed, incorrect zlib version\n");
+-			else
+-				BAD_ERROR("zlib::compress failed, unknown error %d\n", res);
+-		}
+-	} else if((res = deflateReset(stream)) != Z_OK) {
+-		if(res == Z_STREAM_ERROR)
+-			BAD_ERROR("zlib::compress failed, stream state inconsistent\n");
+-		else
+-			BAD_ERROR("zlib::compress failed, unknown error %d\n", res);
+-	}
+-
+-	stream->next_in = (unsigned char *) s;
+-	stream->avail_in = size;
+-	stream->next_out = (unsigned char *) d;
+-	stream->avail_out = block_size;
+-
+-	res = deflate(stream, Z_FINISH);
+-	if(res != Z_STREAM_END && res != Z_OK) {
+-		if(res == Z_STREAM_ERROR)
+-			BAD_ERROR("zlib::compress failed, stream state inconsistent\n");
++	if(!uncompressed && (res = compress2((unsigned char *) d, &c_byte, (unsigned char *) s, size, 9)) != Z_OK) {
++		if(res == Z_MEM_ERROR)
++			BAD_ERROR("zlib::compress failed, not enough memory\n");
+ 		else if(res == Z_BUF_ERROR)
+ 			BAD_ERROR("zlib::compress failed, no progress possible\n");
+ 		else
+ 			BAD_ERROR("zlib::compress failed, unknown error %d\n", res);
++		return 0;
+ 	}
+ 
+-	c_byte = stream->total_out;
+-
+-	if(res != Z_STREAM_END || c_byte >= size) {
+-notcompressed:
++	if(uncompressed || c_byte >= size) {
+ 		memcpy(d, s, size);
+ 		return size | (data_block ? SQUASHFS_COMPRESSED_BIT_BLOCK : SQUASHFS_COMPRESSED_BIT);
+ 	}

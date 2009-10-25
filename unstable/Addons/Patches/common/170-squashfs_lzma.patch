@@ -1,0 +1,88 @@
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2009-10-24 19:05:42.000000000 +0200
++++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2009-10-24 18:40:32.000000000 +0200
+@@ -613,6 +613,7 @@
+ CONFIG_CRAMFS=y
+ CONFIG_SQUASHFS=y
+ # CONFIG_SQUASHFS_EMBEDDED is not set
++# CONFIG_SQUASHFS_LZMA is not set
+ # CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE is not set
+ # CONFIG_SQUASHFS_VMALLOC is not set
+ CONFIG_TMPFS=y
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2009-10-24 19:05:52.000000000 +0200
++++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2009-10-24 18:40:32.000000000 +0200
+@@ -613,6 +613,7 @@
+ CONFIG_CRAMFS=y
+ CONFIG_SQUASHFS=y
+ # CONFIG_SQUASHFS_EMBEDDED is not set
++# CONFIG_SQUASHFS_LZMA is not set
+ # CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE is not set
+ # CONFIG_SQUASHFS_VMALLOC is not set
+ CONFIG_TMPFS=y
+diff -Naur uclibc_build_env_orig/hostutils-make-incs/squashfs.mk uclibc_build_env/hostutils-make-incs/squashfs.mk
+--- uclibc_build_env_orig/hostutils-make-incs/squashfs.mk	2009-08-16 18:51:31.000000000 +0200
++++ uclibc_build_env/hostutils-make-incs/squashfs.mk	2009-10-03 17:59:25.000000000 +0200
+@@ -22,8 +22,13 @@
+ # $Id: squashfs.mk 401 2009-03-26 12:29:09Z andreas $
+ #
+ 
++ifeq ($(CONFIG_SQUASHFS_LZMA),y)
++MKSQUASHFS := mksquashfs-lzma
++else
++MKSQUASHFS := mksquashfs
++endif
+ 
+-MKSQUASHFS_BIN := $(HOSTUTILS_PREFIX_BIN)/mksquashfs
++MKSQUASHFS_BIN := $(HOSTUTILS_PREFIX_BIN)/$(MKSQUASHFS)
+ 
+ SQUASHFS_HOSTVERSION := 3.1-r2
+ SQUASHFS_HOSTFILE := squashfs$(SQUASHFS_HOSTVERSION).tar.gz
+@@ -70,15 +75,15 @@
+ 
+ $(STAGEFILES_DIR)/.squashfs_host_compiled: $(STAGEFILES_DIR)/.squashfs_host_patched
+ 	$(MAKE) -C $(SQUASHFS_HOSTDIR)/squashfs-tools clean
+-	$(MAKE) -C $(SQUASHFS_HOSTDIR)/squashfs-tools all
++	$(MAKE) -C $(SQUASHFS_HOSTDIR)/squashfs-tools LZMAPATH=$(LZMA_HOSTLIBDIR) $(MKSQUASHFS)
+ 	$(TOUCH) $(STAGEFILES_DIR)/.squashfs_host_compiled
+ 
+ #
+ # install squashfs
+ #
+ 
+-$(HOSTUTILS_PREFIX_BIN)/mksquashfs: $(STAGEFILES_DIR)/.squashfs_host_compiled
+-	$(CP) $(SQUASHFS_HOSTDIR)/squashfs-tools/mksquashfs $(HOSTUTILS_PREFIX_BIN)/mksquashfs
++$(MKSQUASHFS_BIN): $(STAGEFILES_DIR)/.squashfs_host_compiled
++	$(CP) $(SQUASHFS_HOSTDIR)/squashfs-tools/$(MKSQUASHFS) $(MKSQUASHFS_BIN)
+ 
+ .PHONY: clean-squashfs-host distclean-squashfs-host
+ 
+@@ -89,7 +94,7 @@
+ 	-$(RM) -f $(STAGEFILES_DIR)/.squashfs_host_unpacked
+ 	-$(RM) -f $(STAGEFILES_DIR)/.squashfs_host_patched
+ 	-$(RM) -f $(STAGEFILES_DIR)/.squashfs_host_compiled
+-	-$(RM) -f $(HOSTUTILS_PREFIX_BIN)/mksquashfs
++	-$(RM) -f $(MKSQUASHFS_BIN)
+ ifeq ($(DISTCLEAN_DLFILE),y)
+ 	-$(RM) -rf $(SQUASHFS_HOSTDLFILE)
+ endif
+diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
+--- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2009-10-24 18:58:22.000000000 +0200
++++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2009-10-24 19:18:14.000000000 +0200
+@@ -151,6 +151,16 @@
+ 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
+ 		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) distclean
+ 	$(CP) $(SIEMENS-LINUX-KERNEL_CONFIG) $(SIEMENS-LINUX-KERNEL_DIR)/.config
++  ifeq ($(CONFIG_SQUASHFS_LZMA),y)
++	$(SED) -i -e 's,^# CONFIG_SQUASHFS_LZMA is not set,CONFIG_SQUASHFS_LZMA=y,g' \
++		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++	$(SED) -i -e 's,^CONFIG_SQUASHFS_LZMA=y,CONFIG_SQUASHFS_LZMA=y\nCONFIG_SQUASHFS_LZMA_PB=2,g' \
++		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++	$(SED) -i -e 's,^CONFIG_SQUASHFS_LZMA=y,CONFIG_SQUASHFS_LZMA=y\nCONFIG_SQUASHFS_LZMA_LP=2,g' \
++		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++	$(SED) -i -e 's,^CONFIG_SQUASHFS_LZMA=y,CONFIG_SQUASHFS_LZMA=y\nCONFIG_SQUASHFS_LZMA_LC=1,g' \
++		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++  endif
+ 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
+ 		BASH=$(BASH) CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) oldconfig
+ 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \

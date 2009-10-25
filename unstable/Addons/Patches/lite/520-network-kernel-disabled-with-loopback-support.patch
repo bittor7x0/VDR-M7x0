@@ -1,7 +1,7 @@
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2008-04-20 10:44:50.000000000 +0200
 +++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2008-04-20 11:02:14.000000000 +0200
-@@ -243,14 +243,14 @@
+@@ -252,14 +252,14 @@
  #
  # Networking options
  #
@@ -18,7 +18,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_IP_ADVANCED_ROUTER is not set
  # CONFIG_IP_PNP is not set
  # CONFIG_NET_IPIP is not set
-@@ -384,7 +384,7 @@
+@@ -393,7 +393,7 @@
  #
  # Network device support
  #
@@ -27,7 +27,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  
  #
  # ARCnet devices
-@@ -399,7 +399,7 @@
+@@ -408,7 +408,7 @@
  #
  # Ethernet (10 or 100Mbit)
  #
@@ -36,7 +36,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_NE2000 is not set
  # CONFIG_SUNLANCE is not set
  # CONFIG_HAPPYMEAL is not set
-@@ -412,7 +412,7 @@
+@@ -421,7 +421,7 @@
  # CONFIG_NET_VENDOR_RACAL is not set
  # CONFIG_HP100 is not set
  # CONFIG_NET_ISA is not set
@@ -45,7 +45,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_PCNET32 is not set
  # CONFIG_AMD8111_ETH is not set
  # CONFIG_ADAPTEC_STARFIRE is not set
-@@ -427,7 +427,7 @@
+@@ -436,7 +436,7 @@
  # CONFIG_E100 is not set
  # CONFIG_LNE390 is not set
  # CONFIG_FEALNX is not set
@@ -57,7 +57,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2008-04-20 10:44:50.000000000 +0200
 +++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2008-04-20 11:02:14.000000000 +0200
-@@ -243,14 +243,14 @@
+@@ -252,14 +252,14 @@
  #
  # Networking options
  #
@@ -74,7 +74,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_IP_ADVANCED_ROUTER is not set
  # CONFIG_IP_PNP is not set
  # CONFIG_NET_IPIP is not set
-@@ -384,7 +384,7 @@
+@@ -393,7 +393,7 @@
  #
  # Network device support
  #
@@ -83,7 +83,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  
  #
  # ARCnet devices
-@@ -399,7 +399,7 @@
+@@ -408,7 +408,7 @@
  #
  # Ethernet (10 or 100Mbit)
  #
@@ -92,7 +92,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_NE2000 is not set
  # CONFIG_SUNLANCE is not set
  # CONFIG_HAPPYMEAL is not set
-@@ -412,7 +412,7 @@
+@@ -421,7 +421,7 @@
  # CONFIG_NET_VENDOR_RACAL is not set
  # CONFIG_HP100 is not set
  # CONFIG_NET_ISA is not set
@@ -101,7 +101,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_PCNET32 is not set
  # CONFIG_AMD8111_ETH is not set
  # CONFIG_ADAPTEC_STARFIRE is not set
-@@ -427,7 +427,7 @@
+@@ -436,7 +436,7 @@
  # CONFIG_E100 is not set
  # CONFIG_LNE390 is not set
  # CONFIG_FEALNX is not set

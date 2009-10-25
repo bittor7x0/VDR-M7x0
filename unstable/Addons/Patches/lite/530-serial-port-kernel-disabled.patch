@@ -1,7 +1,7 @@
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2008-02-14 22:04:12.000000000 +0100
 +++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2008-03-21 18:41:21.000000000 +0100
-@@ -523,8 +523,8 @@
+@@ -532,8 +532,8 @@
  #
  CONFIG_VT=y
  # CONFIG_VT_CONSOLE is not set
@@ -15,7 +15,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2008-02-14 22:04:12.000000000 +0100
 +++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2008-03-21 18:41:21.000000000 +0100
-@@ -523,8 +523,8 @@
+@@ -532,8 +532,8 @@
  #
  CONFIG_VT=y
  # CONFIG_VT_CONSOLE is not set
