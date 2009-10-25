@@ -13,6 +13,7 @@
 #include "txtrecv.h"
 #include "tables.h"
 #include "setup.h"
+#include "menu.h"
 
 #include <vdr/channels.h>
 #include <vdr/device.h>
@@ -26,9 +27,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-const char *RootDir::root = "/tmp/vtx"; // M7x0
-//const char *RootDir::root = "/var/media/USB/tmp/vtx"; // HaPe
-//const char *RootDir::root = "/var/media/samsung/vdr/vtx";
+const char *RootDir::root = "/var/cache/vdr/vtx";
 
 void RootDir::setRootDir(const char *newRoot) {
    root=newRoot;
@@ -57,7 +56,7 @@ int Storage::doCleanUp() {
       }
       closedir(top);
    } else {
-      esyslog("Error opening teletext storage directory \"%s\": %s", root, strerror(errno));
+      esyslog("OSD-Teletext: Error opening teletext storage directory \"%s\": %s", root, strerror(errno));
    }
    return pagesDeleted;
 }
@@ -89,13 +88,13 @@ int Storage::cleanSubDir(const char *dir) {
       rmdir(dir);
    } else {
       if (!reportedError) {
-         esyslog("osdteletext: Error opening teletext storage subdirectory \"%s\": %s", dir, strerror(errno));
+         esyslog("OSD-Teletext: Error opening teletext storage subdirectory \"%s\": %s", dir, strerror(errno));
          reportedError=true;
       }
    }
-   
+
    if (hadError && !reportedError) {
-      esyslog("osdteletext: Error removing teletext storage subdirectory \"%s\": %s", dir, strerror(hadError));
+      esyslog("OSD-Teletext: Error removing teletext storage subdirectory \"%s\": %s", dir, strerror(hadError));
       reportedError=true;
    }
    return bytesDeleted;
@@ -107,11 +106,7 @@ Storage::StorageSystem Storage::system = Storage::StorageSystemPacked;
 Storage::Storage() {
    s_self=this;
    byteCount=0;
-   currentDir=0;
-//Start M7x0
-//   storageOption=-1;
-   storageOption=10;
-//End M7x0
+   storageOption=-1;
    failedFreeSpace=false;
 }
 
@@ -142,10 +137,6 @@ void Storage::setMaxStorage(int maxMB) {
 }
 
 void Storage::init() {
-//M7x0 start
-//create cache dir
-  MakeDirs(RootDir::getRootDir(), true);
-//M7x0 end
    cleanUp();
    initMaxStorage(storageOption);
 }
@@ -155,13 +146,12 @@ void Storage::freeSpace() {
    //occupies the whole space. We cannot delete anything. Don't waste time scanning.
    if (failedFreeSpace)
       return;
-   
-   dsyslog("osdteletext: freeSpace()\n");
+
+   //printf("freeSpace()\n");
    time_t min=time(0);
    char minDir[PATH_MAX];
    char fullPath[PATH_MAX];
    int haveDir=0;
-   int i_bytesCleared=0;
    DIR *top=opendir(getRootDir());
    if (top) {
       struct dirent *chandir, path;
@@ -181,16 +171,12 @@ void Storage::freeSpace() {
          }
       }
       closedir(top);
-      
+
       //if haveDir, only current directory present, which must not be deleted
-      if (haveDir>=2) {
-		 i_bytesCleared=cleanSubDir(minDir);
-         byteCount-=i_bytesCleared;
-		 dsyslog("osdteletext: Removed cache dir '%s', freed %i bytes,new cache size is %i",minDir,i_bytesCleared,(int)byteCount);
-      } else { 
-		 esyslog("osdteletext: Caching problem!!!, no old cache files left to remove. Cache size is %i",(int)byteCount);
+      if (haveDir>=2)
+         byteCount-=cleanSubDir(minDir);
+      else
          failedFreeSpace=true;
-	  }
    }
 }
 
@@ -201,24 +187,16 @@ bool Storage::exists(const char* file) {
 
 void Storage::getFilename(char *buffer, int bufLength, PageID page) {
    snprintf(buffer, bufLength, "%s/%s/%03x_%02x.vtx", getRootDir(),
-#if VDRVERSNUM >= 10318
-            *page.channel.ToString(),
-#else
-            page.channel.ToString(),
-#endif
-            page.page, page.subPage);
+            *page.channel.ToString(), page.page, page.subPage);
 }
 
 void Storage::prepareDirectory(tChannelID chan) {
-   free(currentDir);
-   asprintf(&currentDir, "%s/%s", root,
-#if VDRVERSNUM >= 10318
-            *chan.ToString()
-#else
-            chan.ToString()
-#endif
-            );
-   MakeDirs(currentDir, 1);
+   currentDir = cString::sprintf("%s/%s", root, *chan.ToString());
+   if (!MakeDirs(currentDir, 1)) {
+      esyslog("OSD-Teletext: Error preparing directory for channel \"%s\"",
+              *chan.ToString());
+      return;
+   }
    failedFreeSpace=false;
 }
 
@@ -255,23 +233,21 @@ int LegacyStorage::actualFileSize(int netFileSize) {
 
 //max==0 means unlimited, max==-1 means a reasonable default value shall be calculated
 void LegacyStorage::initMaxStorage(int maxMB) {
-   
    struct statfs fs;
    if (statfs(getRootDir(), &fs)!=0) {
-      esyslog("osdteletext: Error statfs'ing root directory \"%s\": %s, cache size uncontrolled", getRootDir(), strerror(errno));
+      esyslog("OSD-Teletext: Error statfs'ing root directory \"%s\": %s, cache size uncontrolled", getRootDir(), strerror(errno));
       return;
    }
    fsBlockSize=fs.f_bsize;
-   
+
    pageBytes=actualFileSize(TELETEXT_PAGESIZE);
-      
+
    if (maxMB>=0) {
       if (maxMB<3) {
-         esyslog("osdteletext: Request to use at most %d MB for caching. This is not enough, using 3 MB", maxMB);
+         esyslog("OSD-Teletext: Request to use at most %d MB for caching. This is not enough, using 3 MB", maxMB);
          maxMB=3;
       }
       maxBytes=MEGABYTE(maxMB);
-	  dsyslog("osdteletext: Set maxBytes to %ld", maxBytes);
    } else if (maxMB==-1) {
       //calculate a default value
       double blocksPerMeg = 1024.0 * 1024.0 / fs.f_bsize;
@@ -283,14 +259,14 @@ void LegacyStorage::initMaxStorage(int maxMB) {
          maxBytes=MEGABYTE((int)freeMB);
          //maxPages= FilesForMegabytes(freeMB, fs.f_bsize);
          if (freeMB<3.0) {
-            esyslog("osdteletext: Less than %.1f MB free on filesystem of root directory \"%s\"!", freeMB, getRootDir());
+            esyslog("OSD-Teletext: Less than %.1f MB free on filesystem of root directory \"%s\"!", freeMB, getRootDir());
             maxBytes=MEGABYTE(3);
          }
       } else {
          //the maximum default size is set to 50 MB
          maxBytes=MEGABYTE(50);
       }
-	  dsyslog("osdteletext: Set maxBytes to %ld, cap:%.2f free:%.2f\n", maxBytes, capacityMB, freeMB);
+      //printf("Set maxBytes to %ld, %.2f %.2f\n", maxBytes, capacityMB, freeMB);
    }
 }
 
@@ -332,7 +308,7 @@ StorageHandle LegacyStorage::openForWriting(PageID page) {
    if (!fd && !wroteError) {
       //report error to syslog - once!
       wroteError=true;
-      esyslog("osdteletext: Error opening teletext file %s: %s", filename, strerror(errno));
+      esyslog("OSD-Teletext: Error opening teletext file %s: %s", filename, strerror(errno));
    }
    //make sure newly created files are counted
    if (fd && !existed)
@@ -348,7 +324,7 @@ ssize_t LegacyStorage::write(const void *ptr, size_t size, StorageHandle stream)
          freeSpace();
          return ::write((int)stream, ptr, size);
       case EINTR:
-         esyslog("osdteletext: EINTR while writing. Please contact the author and tell him this happened.");
+         esyslog("OSD-Teletext: EINTR while writing. Please contact the author and tell him this happened.");
          break;
       default:
          break;
@@ -369,7 +345,7 @@ PackedStorage::PackedStorage() {
 bool PackedStorage::seekTo(PageID page, int desc, bool create) {
    lseek(desc, 0, SEEK_SET);
    PageAddress addr[TOC_SIZE];
-   
+
    while (::read(desc, addr, sizeof(addr)) == sizeof(addr)) {
       lseek(desc, 0, SEEK_CUR);
       for (int index=0; index<TOC_SIZE; index++) {
@@ -380,7 +356,7 @@ bool PackedStorage::seekTo(PageID page, int desc, bool create) {
             //0 means: no more pages follow
             if (create) {
                //rewind what was read
-               lseek(desc, -(sizeof(addr)), SEEK_CUR);
+               lseek(desc, -(off_t)sizeof(addr), SEEK_CUR);
                //update index
                addr[index]=page;
                if (::write(desc, addr, sizeof(addr)) != sizeof(addr))
@@ -392,11 +368,11 @@ bool PackedStorage::seekTo(PageID page, int desc, bool create) {
                return false;
          }
       }
-      
+
       //seek over data area
       lseek(desc, TELETEXT_PAGESIZE*TOC_SIZE, SEEK_CUR);
    }
-   
+
    int oldSize=actualFileSize(lseek(desc, 0, SEEK_CUR));
    if (create) {
       //create a new set of a TOC and a TOC_SIZE*TELETEXT_PAGESIZE data area
@@ -414,7 +390,7 @@ bool PackedStorage::seekTo(PageID page, int desc, bool create) {
       //Now, calculate new file size
       byteCount += ( actualFileSize(lseek(desc, 0, SEEK_CUR)) - oldSize );
       //seek to beginning of data, which is requested
-      lseek(desc, -(TELETEXT_PAGESIZE*TOC_SIZE), SEEK_CUR);
+      lseek(desc, -(off_t)(TELETEXT_PAGESIZE*TOC_SIZE), SEEK_CUR);
       return true;
    } else
       return false;
@@ -424,12 +400,7 @@ void PackedStorage::getFilename(char *buffer, int bufLength, PageID page) {
    //This is a different scheme: page 576_07 will have the name 570s.vtx, the same as e.g. 571_01 or 575_00
    //Think of "the five hundred seventies"
    snprintf(buffer, bufLength, "%s/%s/%03xs.vtx", getRootDir(),
-#if VDRVERSNUM >= 10318
-            *page.channel.ToString(),
-#else
-            page.channel.ToString(),
-#endif
-            (page.page & 0xFF0));
+            *page.channel.ToString(), (page.page & 0xFF0));
 }
 
 StorageHandle PackedStorage::openForWriting(PageID page) {
@@ -455,16 +426,16 @@ StorageHandle PackedStorage::openForWriting(PageID page) {
    if (desc==-1 && !wroteError) {
       //report error to syslog - once!
       wroteError=true;
-      esyslog("osdteletext: Error opening teletext file %s: %s", filename, strerror(errno));
+      esyslog("OSD-Teletext: Error opening teletext file %s: %s", filename, strerror(errno));
    }
-      
+
    if (desc==-1)
       return StorageHandle();
    else if (!seekTo(page, desc, true)) {
       ::close(desc);
       return StorageHandle();
    }
-   
+
    if ( maxBytes && byteCount>maxBytes )
       freeSpace();
    return (StorageHandle)desc;
@@ -523,211 +494,53 @@ void cTelePage::save()
 cTxtStatus::cTxtStatus(void)
 {
    receiver = NULL;
- 
-   //running=false;
-   TPid=0;
-   /*doNotSuspend=false;
-   doNotReceive=false;*/
-   //suspended=false;
+   currentLiveChannel = tChannelID::InvalidID;
 }
 
 cTxtStatus::~cTxtStatus()
 {
-   /*if (running)
-      Cancel(3);*/
-   if (receiver)
-      delete receiver;
+    delete receiver;
 }
 
 void cTxtStatus::ChannelSwitch(const cDevice *Device, int ChannelNumber)
 {
+   // ignore if channel is 0
+   if (ChannelNumber == 0) return;
 
+   // ignore if channel is invalid (highly unlikely, this will ever
+   // be the case, but defensive coding rules!)
+   cChannel* newLiveChannel = Channels.GetByNumber(ChannelNumber);
+   if (newLiveChannel == NULL) return;
 
-   if (Device->IsPrimaryDevice()) {
+   // ignore if channel hasn't changed
+   if (currentLiveChannel == newLiveChannel->GetChannelID()) return;
 
-/*#ifdef OSDTELETEXT_REINSERTION_PATCH
-      if (ttSetup.suspendReceiving) {
-         if (!running)
-         Start();
-      } else if (running) { //setup option changed, apply
-         running=false;
-         Cancel(3);
-      }
-#endif*/
+   // ignore non-live-channel-switching
+   if (!Device->IsPrimaryDevice() ||
+      ChannelNumber != cDevice::CurrentChannel()) return;
 
-// M7x0 start 
-// Do not run the receiver in the backround all the time.
-// It is started only if the usere opens the teletext OSD
-// To save CPU Time
-//      CheckDeleteReceiver();
-//but we will clean the chae here as we only have a limited storage
-		Storage::instance()->cleanUp();
-// M7x0 end
-   
-      if (ChannelNumber) {
-         cChannel *channel = Channels.GetByNumber(ChannelNumber);
-         if (channel && channel->Tpid()) {
-/*#ifdef OSDTELETEXT_REINSERTION_PATCH
-            cMutexLock MutexLock(&mutex);
-            count=0; //reset 20 second intervall
-            condVar.Broadcast();
-            //other thread is locked on the mutex until the end of this function!
-#endif  */
-            TPid=channel->Tpid();
-            chan=channel->GetChannelID();
-// M7x0 start            
-//            CheckCreateReceiver();
-// M7x0 end
-         }
-      }
+   // At this point it seems to be pretty sure to me, that the live
+   // channel was changed to a new channel and OSDTeletext can
+   // now re-attach the receiver to the new live channel
+
+   currentLiveChannel = newLiveChannel->GetChannelID();
+
+   delete receiver;
+   receiver = NULL;
+
+   int TPid = newLiveChannel->Tpid();
+
+   if (TPid) {
+      receiver = new cTxtReceiver(TPid, currentLiveChannel);
+      cDevice::ActualDevice()->AttachReceiver(receiver);
    }
+
+   TeletextBrowser::ChannelSwitched(ChannelNumber);
 }
 
-void cTxtStatus::CheckCreateReceiver() {
-
-	
-   if (!receiver  && TPid ) {
-      cChannel *channel = Channels.GetByChannelID(chan);
-      if (!channel)
-         return;
-      //primary device a full-featured card
-      if (cDevice::PrimaryDevice()->ProvidesChannel(channel, Setup.PrimaryLimit)) {
-          receiver = new cTxtReceiver(TPid, chan);
-          cDevice::PrimaryDevice()->AttachReceiver(receiver);
-          dsyslog("osdteletext: Created teletext receiver on primary device TPid=%d", TPid);
-      //primary device a DXR3 or similar
-      } else {
-         int devNum = cDevice::NumDevices();
-         bool bFound = false;
-         cDevice* pDevice = 0;
-         for (int i = 0; i < devNum && !bFound; ++i) {
-            pDevice = cDevice::GetDevice(i);
-            if (pDevice && pDevice->ProvidesChannel(channel, Setup.PrimaryLimit) && pDevice->Receiving(true)) {
-               bFound = true;
-               receiver = new cTxtReceiver(TPid, chan);
-               pDevice->AttachReceiver(receiver);
-               dsyslog("osdteletext: Created teletext receiver on device TPid=%d i=%d", TPid, i);
-            }
-         }
-         if (!bFound) //can this happen?
-            esyslog("osdteletext: Did not find appropriate device for teletext receiver for channel %s, PID %d", channel->Name(), TPid);
-      }
-   }
-}
-
-void cTxtStatus::CheckDeleteReceiver() {
-
-	
-   if (receiver) {
-      dsyslog("osdteletext: Deleted teletext receiver");
-      delete receiver;
-/*#ifdef OSDTELETEXT_REINSERTION_PATCH
-      //the patch only makes sense if primary device is a DVB card, so no handling for DXR3
-      cDevice::PrimaryDevice()->ReinsertTeletextPid(TPid);
-#endif*/
-      receiver = NULL;
-
-   }
-}
-
-/*
-//only used for suspending the receiver, if selected by user in setup
-void cTxtStatus::Action() {
-#ifdef OSDTELETEXT_REINSERTION_PATCH
-   running=true;
-   
-   dsyslog("osdteletext waiting thread started with pid %d", getpid());
-   
-   count=0;
-   
-   
-   while (running) {
-      cMutexLock MutexLock(&mutex);
-      
-      if (doNotSuspend) {
-         CheckCreateReceiver();
-         count=0;
-      } else if (doNotReceive) {
-         CheckDeleteReceiver();
-         count=0;
-      } else {
-         count++;
-         if (count <= 20)
-            CheckCreateReceiver();
-         else if (count < 20+5*60) 
-            CheckDeleteReceiver();
-         else
-            count=0; //if count=20+5*60
-      }            
-   
-      condVar.TimedWait(mutex, 1000); //one second
-      
-   }
-   
-   running=false;
-   dsyslog("osdteletext waiting thread ended");
-   
-#endif
-}
-
-//only has an effect when suspending is enabled:
-//prevents receiving from suspension when argument is true
-//reenables suspension when argument is false,
-// but does not necessarily suspend immediately, that is the task of ForceSuspending,
-// in contrast to which it does not make any sense if suspending is
-// not enabled.
-//In clear words: When the plugin is in use, it calls the function
-//with onOrOff=true so that data is received continously during the
-//TeletextBrowser object's lifetime. When it is destroyed, it releases 
-//this constraint by calling onOrOff=false.
-void cTxtStatus::ForceReceiving(bool onOrOff) {
-#ifdef OSDTELETEXT_REINSERTION_PATCH
-   if (!running)
-      return;
-   if (onOrOff && !doNotSuspend) {
-      cMutexLock MutexLock(&mutex);
-      doNotSuspend=true;
-      condVar.Broadcast(); 
-   } else if (!onOrOff && doNotSuspend) {
-      cMutexLock MutexLock(&mutex);
-      doNotSuspend=false;
-      condVar.Broadcast(); 
-   }
-#endif
-}
-
-//opposite as above:
-//allows to switch off receiving
-void cTxtStatus::ForceSuspending(bool onOrOff) {
-#ifdef OSDTELETEXT_REINSERTION_PATCH
-   if (!running) { //thread is not running, suspend anyway
-      if (onOrOff) {
-         CheckDeleteReceiver();
-      } else {
-         CheckCreateReceiver();
-      }
-   } else {
-      doNotSuspend=false; //ForceReceive may have been called before
-      if (onOrOff && !doNotReceive) {
-         cMutexLock MutexLock(&mutex);
-         doNotReceive=true;
-         condVar.Broadcast(); 
-      } else if (!onOrOff && doNotReceive) {
-         cMutexLock MutexLock(&mutex);
-         doNotReceive=false;
-         condVar.Broadcast(); 
-      }   
-   }
-#endif
-}
-*/
 
 cTxtReceiver::cTxtReceiver(int TPid, tChannelID chan)
-#if VDRVERSNUM >= 10319
- : cReceiver(0, -1, TPid), 
-#else
- : cReceiver(0, -1, 1, TPid), 
-#endif
+ : cReceiver(chan, -1, TPid), cThread("osdteletext-receiver"),
    chan(chan), TxtPage(0), buffer((188+60)*75), running(false)
 {
    Storage::instance()->prepareDirectory(chan);
@@ -738,7 +551,7 @@ cTxtReceiver::cTxtReceiver(int TPid, tChannelID chan)
 
 cTxtReceiver::~cTxtReceiver()
 {
-   Detach();
+   cReceiver::Detach();
    if (running) {
       running=false;
       buffer.Signal();
@@ -746,6 +559,11 @@ cTxtReceiver::~cTxtReceiver()
    }
    buffer.Clear();
    delete TxtPage;
+}
+
+void cTxtReceiver::Stop()
+{
+   Activate(false);
 }
 
 void cTxtReceiver::Activate(bool On)
@@ -763,36 +581,22 @@ void cTxtReceiver::Activate(bool On)
      }
 }
 
-// M7x0 start
 void cTxtReceiver::Receive(uchar *Data, int Length)
 {
-  uchar *ts_data = MALLOC(uchar, 188 + 60);
-  if (!ts_data) {
-    esyslog ("ERROR: txtreceiver can't alloc memory");
-    return;
-  }
-    
-  while (Length >= 188) {
+   int len = Length+60;
 
-    if (!buffer.Check(188 + 60)) {
+   if (!buffer.Check(len)) {
+      // Buffer overrun
       buffer.Signal();
-      break;
-    }
-
-    memcpy(ts_data, Data, 188);
-    Data += 188;
-    cFrame *frame = new cFrame(ts_data, 188 + 60);
-    if (frame && !buffer.Put(frame)) {
+      return;
+   }
+   cFrame *frame=new cFrame(Data, len);
+   if (frame && !buffer.Put(frame)) {
+      // Buffer overrun
       delete frame;
       buffer.Signal();
-      break;
-    }
-    Length -= 188;
-  }
-  
-  free(ts_data);
+   }
 }
-// M7x0 end
 
 void cTxtReceiver::Action() {
 
@@ -800,7 +604,7 @@ void cTxtReceiver::Action() {
       cFrame *frame=buffer.Get();
       if (frame) {
          uchar *Datai=frame->Data();
-         
+
          for (int i=0; i < 4; i++) {
             if (Datai[4+i*46]==2 || Datai[4+i*46]==3) {
                for (int j=(8+i*46);j<(50+i*46);j++)
@@ -808,12 +612,12 @@ void cTxtReceiver::Action() {
                DecodeTXT(&Datai[i*46]);
             }
          }
-         
+
          buffer.Drop(frame);
       } else
          buffer.Wait();
    }
-   
+
    buffer.Clear();
    running=false;
 }
@@ -856,17 +660,17 @@ void cTxtReceiver::DecodeTXT(uchar* TXT_buf)
    //   C11 - Magazine Serial mode
    //   C12-C14 - Language selection, lower 3 bits
 
-    
+
    int hdr,mag,mag8,line;
    uchar *ptr;
    uchar flags,lang;
-   
+
    hdr = unham16 (&TXT_buf[0x8]);
    mag = hdr & 0x07;
    mag8 = mag ?: 8;
    line = (hdr>>3) & 0x1f;
    ptr = &TXT_buf[10];
-   
+
    switch (line) {
    case 0: 
       {
@@ -874,7 +678,7 @@ void cTxtReceiver::DecodeTXT(uchar* TXT_buf)
       int pgno, subno;
       b1 = unham16 (ptr);    
       // Page no, 10- and 1-digit
-      
+
       if (b1 == 0xff) break;
       if (TxtPage) {
          TxtPage->save();
@@ -902,7 +706,7 @@ void cTxtReceiver::DecodeTXT(uchar* TXT_buf)
 
       pgno = mag8 * 256 + b1;
       subno = (b2 + b3 * 256) & 0x3f7f;         // Sub Page Number
-      
+
       TxtPage = new cTelePage(PageID(chan, pgno, subno), flags, lang, mag);
       TxtPage->SetLine((int)line,(uchar *)ptr);
       break;

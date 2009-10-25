@@ -209,11 +209,6 @@ void cDisplay::RenderTeletextCode(unsigned char *PageCode) {
     // and draw the whole page content into OSD.
     // PageCode must be a 40*24+12 bytes buffer
 
-    #ifdef timingdebug
-        cTime t;
-        t.Start();
-    #endif
-
     HoldFlush();
 
     cRenderPage::ReadTeletextHeader(PageCode);
@@ -227,10 +222,6 @@ void cDisplay::RenderTeletextCode(unsigned char *PageCode) {
     }
 
     cRenderPage::RenderTeletextCode(PageCode+12);
-        
-    #ifdef timingdebug
-        t.Stop("Render Teletext");
-    #endif
 
     ReleaseFlush();
 }
@@ -243,11 +234,6 @@ void cDisplay::DrawDisplay() {
     
     if (!IsDirty()) return;
     // nothing to do
-
-    #ifdef timingdebug
-        cTime t;
-        t.Start();
-    #endif
 
     for (y=0;y<25;y++) {
         for (x=0;x<40;x++) {
@@ -265,9 +251,6 @@ void cDisplay::DrawDisplay() {
             }
         }
     }
-    #ifdef timingdebug
-        t.Stop("Draw Display");
-    #endif
 
     Dirty=false;
     DirtyAll=false;

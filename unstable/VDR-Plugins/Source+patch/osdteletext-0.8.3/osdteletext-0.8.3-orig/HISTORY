@@ -1,16 +1,54 @@
-VDR Plugin 'teletextosd' Revision History
+VDR Plugin 'osdteletext' Revision History
 -----------------------------------------
 
-2007-11-06: version 0.5.1 open7x0
-- changes to work with the special vdr version for the Siemens Gigaset
-- default cache path is now /tmp/vtx
-- cache path is created when the plugin starts
-- default max cache size is 10MB
-- the task to load the pages is only running when the plugin entry is selected.
-  This was needed to change to avoid CPU problems.
-  This results in a delay until the first page is shown
-- The cache is cleared if you switch the channel to avoid space problems
+2009-06-02: version 0.8.3
+- Updated Ukrainian translation provided by Yarema P. aka Knedlyk (Closes #133)
 
+2009-05-25: version 0.8.2
+- More refactoring of the TxtStatus class (Thx to Sören Moch!)
+- Install plug-in to lib dir with --remove-destination as suggested
+  by Christian Wieninger (Closes #57)
+- If background is configured to completely black or transparent,
+  toggle between black and transparent only.
+- Updated Italian translation provided by Diego Pierotto (Closes #60)
+- Fixed problems with VDR >= 1.7.3 (not all teletext pages accessible,
+  4 GByte VTX files)
+- Removed unnecessary DVBDIR from Makefile
+
+2009-01-10: version 0.8.1
+- Small bugfix in channel switching code
+
+2009-01-10: version 0.8.0
+- Added Portuguese translation provided by Chris Silva
+- Updated Italian translation by Davide Cavalca
+- Removed the "OSD" from the main menu entry as suggested by Davide Cavalca
+- Added Ukrainian translation provided by Yarema P. aka Knedlyk
+- Removed obsolete options -R and -r
+- Remove remnants of VDR < 1.6 support
+- Updated Russian translation provided by Oleg Roitburd (Closes #46)
+- Improved error handling
+- Background toggling now allows to switch between black, the configured
+  background transparency and full transparency as suggested by
+  Walter K. (Closes #41)
+- Removed the OSDTELETEXT_REINSERTION_PATCH (dead code)
+- Removed timingdebug code
+- Merged class ChannelStatus into cTxtStatus and changed the code that
+  detects, if the current live channel has been changed and the
+  OsdTeletext receiver needs to switch to the new channel as well
+- Updated French translation provided by Nival Michaël (Closes #56)
+
+2008-12-19: version 0.7.0
+- switched completely to VDR 1.6's I18N system and removed the old crap - no
+  more support for older VDR versions! (thx to Rolf Ahrenberg)
+- proper translation of the key bindings (thx to Rolf Ahrenberg)
+- Partially updated Italian translation by Davide Cavalca <davide125@tiscali.it>
+
+2008-12-02: version 0.6.0
+- Moved installation of README and manpage from all to install target
+- Updated code for VDR 1.6.0
+- Changed default location of vtx cache to /var/cache/vdr/vtx
+- Fixed problems with switching channels on FF+Budget systems
+  See: http://www.vdr-portal.de/board/thread.php?postid=728192#post728192
 
 2005-08-16: version 0.5.1
 
@@ -24,14 +62,14 @@ VDR Plugin 'teletextosd' Revision History
   setup option.
   (suggested by Peter Bieringer)
 - fixed gcc4 warnings
-  (thanks to Ville Skytt�)
+  (thanks to Ville Skyttä)
 - updated Finnish translation
   (thanks to Rolf Ahrenberg)
 - added command line parameter documentation
   to READMEs
 - added /var/cache/vdr/osdteletext to the list of recommended
   cache directories
-  (suggested by Ville Skytt�)
+  (suggested by Ville Skyttä)
 
 2005-04-21: version 0.5
 

@@ -22,14 +22,6 @@
 
 extern int Stretch;
 
-class ChannelStatus : public cStatus {
-public:
-   ChannelStatus();
-protected:
-   virtual void ChannelSwitch(const cDevice *Device, int ChannelNumber);
-};
-
-
 class TeletextBrowser : public cOsdObject {
 public:
    TeletextBrowser(cTxtStatus *txtSt);
@@ -75,6 +67,8 @@ protected:
    static tChannelID channel;
    static int currentChannelNumber;
    static TeletextBrowser* self;
+private:
+   void ChangeBackground();
 };
 
 

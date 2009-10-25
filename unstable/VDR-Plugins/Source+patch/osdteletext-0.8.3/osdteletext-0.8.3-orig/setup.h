@@ -24,25 +24,12 @@ ActionKeyGreen,
 ActionKeyYellow,
 ActionKeyBlue,
 ActionKeyPlay,
-//ActionKeyPause,
 ActionKeyStop,
-//ActionKeyRecord,
 ActionKeyFastFwd,
 ActionKeyFastRew,
 
 LastActionKey
 };
-
-/* 
-kRed
-kGreen
-kYellow
-kBlue
-kPlay
-kPause
-kStop
-kRecord
-kFastFwd*/
 
 //Default values are set in menu.c, setup menu, parsing and storing can be found in osdteletext.c
 class TeletextSetup {

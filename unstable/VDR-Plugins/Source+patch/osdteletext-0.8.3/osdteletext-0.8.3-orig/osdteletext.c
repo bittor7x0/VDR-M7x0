@@ -10,7 +10,6 @@
  ***************************************************************************/
 
 #include <vdr/plugin.h>
-#include <vdr/i18n.h>
 #include <vdr/keys.h>
 #include <vdr/config.h>
 
@@ -19,19 +18,21 @@
 using namespace std;
 
 #include "menu.h"
-#include "i18n.h"
 #include "txtrecv.h"
 #include "setup.h"
 
-static const char *VERSION        = "0.5.1 M7x0";
-static const char *DESCRIPTION    = "Displays teletext on the OSD";
-static const char *MAINMENUENTRY  = "Teletext (OSD)";
+#if defined(APIVERSNUM) && APIVERSNUM < 10600
+#error "VDR-1.6.0 API version or greater is required!"
+#endif
+
+static const char *VERSION        = "0.8.3";
+static const char *DESCRIPTION    = trNOOP("Displays teletext on the OSD");
+static const char *MAINMENUENTRY  = trNOOP("Teletext");
 
 class cPluginTeletextosd : public cPlugin {
 private:
   // Add any member variables or functions you may need here.
   cTxtStatus *txtStatus;
-  ChannelStatus *channelStatus;
   bool startReceiver;
   void initTexts();
 public:
@@ -102,7 +103,6 @@ cPluginTeletextosd::cPluginTeletextosd(void)
   // DON'T DO ANYTHING ELSE THAT MAY HAVE SIDE EFFECTS, REQUIRE GLOBAL
   // VDR OBJECTS TO EXIST OR PRODUCE ANY OUTPUT!
   txtStatus=0;
-  channelStatus=0;
   startReceiver=true;
 }
 
@@ -111,8 +111,6 @@ cPluginTeletextosd::~cPluginTeletextosd()
    // Clean up after yourself!
    if (txtStatus)
       delete txtStatus;
-   if (channelStatus)
-      delete channelStatus;
    Storage::instance()->cleanUp();
 }
 
@@ -121,8 +119,7 @@ const char *cPluginTeletextosd::CommandLineHelp(void)
   // Return a string that describes all known command line options.
   return "  -d        --directory=DIR    The directory where the temporary\n"
          "                               files will be stored.\n"
-         "                               (default: /tmp/vtx\n"
-         "                                or /var/cache/vdr/osdteletext.)\n"
+         "                               (default: /var/cache/vdr/vtx)\n"
          "                               Ensure that the directory exists and is writable.\n"
          "  -n        --max-cache=NUM    Maximum size in megabytes of cache used\n"
          "                               to store the pages on the harddisk.\n"
@@ -131,10 +128,7 @@ const char *cPluginTeletextosd::CommandLineHelp(void)
          "                               Choose \"legacy\" for the traditional\n"
          "                               one-file-per-page system.\n"
          "                               Default is \"packed\" for the \n"
-         "                               one-file-for-a-few-pages system.\n"
-         "  -R,       --no-receive       Do not receive and store teletext\n"
-         "                               (deprecated - plugin will be useless).\n"
-         "  -r,       --receive          (obsolete)\n";
+         "                               one-file-for-a-few-pages system.\n";
 }
 
 bool cPluginTeletextosd::ProcessArgs(int argc, char *argv[])
@@ -144,14 +138,12 @@ bool cPluginTeletextosd::ProcessArgs(int argc, char *argv[])
        { "directory",    required_argument,       NULL, 'd' },
        { "max-cache",    required_argument,       NULL, 'n' },
        { "cache-system",    required_argument,       NULL, 's' },
-       { "no-receiver",  no_argument,       NULL, 'R' },
-       { "receive",      no_argument,       NULL, 'r' },
        { NULL }
        };
      
    int c;
    int maxStorage=-1;
-   while ((c = getopt_long(argc, argv, "s:d:n:Rr", long_options, NULL)) != -1) {
+   while ((c = getopt_long(argc, argv, "s:d:n:", long_options, NULL)) != -1) {
         switch (c) {
           case 's': 
                     if (!optarg)
@@ -167,10 +159,6 @@ bool cPluginTeletextosd::ProcessArgs(int argc, char *argv[])
                        int n = atoi(optarg);
                        maxStorage=n;
                     }
-                    break;
-          case 'R': startReceiver=false;
-                    break;
-          case 'r': startReceiver=true;
                     break;
         }
    }
@@ -190,7 +178,6 @@ bool cPluginTeletextosd::Start(void)
    initTexts();
    if (startReceiver)
       txtStatus=new cTxtStatus();
-   channelStatus=new ChannelStatus();
    if (ttSetup.OSDheight<=100)  ttSetup.OSDheight=Setup.OSDHeight;
    if (ttSetup.OSDwidth<=100)   ttSetup.OSDwidth=Setup.OSDWidth;
   
@@ -200,20 +187,17 @@ bool cPluginTeletextosd::Start(void)
 void cPluginTeletextosd::initTexts() {
    if (cTeletextSetupPage::actionKeyNames)
       return;
-   RegisterI18n(Phrases);
    //TODO: rewrite this in the xy[0].cd="fg"; form
    static const ActionKeyName st_actionKeyNames[] =
    {
-      { "Action_kRed",      tr("Red key") },
-      { "Action_kGreen",    tr("Green key") },
-      { "Action_kYellow",   tr("Yellow key") },
-      { "Action_kBlue",     tr("Blue key") },
-      { "Action_kPlay",     tr(cKey::ToString( kPlay)) },
-      //{ "Action_kPause",    tr(cKey::ToString( kPause)) },
-      { "Action_kStop",     tr(cKey::ToString( kStop)) },
-      //{ "Action_kRecord",   tr(cKey::ToString( kRecord)) },
-      { "Action_kFastFwd",  tr(cKey::ToString( kFastFwd)) },
-      { "Action_kFastRew",  tr(cKey::ToString( kFastRew)) }
+      { "Action_kRed",      trVDR("Key$Red") },
+      { "Action_kGreen",    trVDR("Key$Green") },
+      { "Action_kYellow",   trVDR("Key$Yellow") },
+      { "Action_kBlue",     trVDR("Key$Blue") },
+      { "Action_kPlay",     trVDR("Key$Play") },
+      { "Action_kStop",     trVDR("Key$Stop") },
+      { "Action_kFastFwd",  trVDR("Key$FastFwd") },
+      { "Action_kFastRew",  trVDR("Key$FastRew") }
    };
    
    cTeletextSetupPage::actionKeyNames = st_actionKeyNames;
@@ -256,16 +240,6 @@ bool cPluginTeletextosd::SetupParse(const char *Name, const char *Value)
   // Parse your own setup parameters and store their values.
   //Stretch=true;
   if (!strcasecmp(Name, "configuredClrBackground")) ttSetup.configuredClrBackground=( ((unsigned int)atoi(Value)) << 24);
-  /*else if (!strcasecmp(Name, "Action_kRed")) ttSetup.mapKeyToAction[0]=(eTeletextAction)atoi(Value);
-  else if (!strcasecmp(Name, "Action_kGreen")) ttSetup.mapKeyToAction[1]=(eTeletextAction)atoi(Value);
-  else if (!strcasecmp(Name, "Action_kYellow")) ttSetup.mapKeyToAction[2]=(eTeletextAction)atoi(Value);
-  else if (!strcasecmp(Name, "Action_kBlue")) ttSetup.mapKeyToAction[3]=(eTeletextAction)atoi(Value);
-  else if (!strcasecmp(Name, "Action_kPlay")) ttSetup.mapKeyToAction[4]=(eTeletextAction)atoi(Value);
-  else if (!strcasecmp(Name, "Action_kPause")) ttSetup.mapKeyToAction[5]=(eTeletextAction)atoi(Value);
-  else if (!strcasecmp(Name, "Action_kStop")) ttSetup.mapKeyToAction[6]=(eTeletextAction)atoi(Value);
-  else if (!strcasecmp(Name, "Action_kRecord")) ttSetup.mapKeyToAction[7]=(eTeletextAction)atoi(Value);
-  else if (!strcasecmp(Name, "Action_kFastFwd")) ttSetup.mapKeyToAction[8]=(eTeletextAction)atoi(Value);
-  else if (!strcasecmp(Name, "Action_kFastRew")) ttSetup.mapKeyToAction[9]=(eTeletextAction)atoi(Value);*/
   else if (!strcasecmp(Name, "showClock")) ttSetup.showClock=atoi(Value);
      //currently not used
   else if (!strcasecmp(Name, "suspendReceiving")) ttSetup.suspendReceiving=atoi(Value);
@@ -320,16 +294,6 @@ void cTeletextSetupPage::Store(void) {
    for (int i=0;i<LastActionKey;i++) {
       SetupStore(actionKeyNames[i].internalName, ttSetup.mapKeyToAction[i]);
    }
-   /*SetupStore("Action_kRed", ttSetup.mapKeyToAction[0]);
-   SetupStore("Action_kGreen", ttSetup.mapKeyToAction[1]);
-   SetupStore("Action_kYellow", ttSetup.mapKeyToAction[2]);
-   SetupStore("Action_kBlue", ttSetup.mapKeyToAction[3]);
-   SetupStore("Action_kPlay", ttSetup.mapKeyToAction[4]);
-   SetupStore("Action_kPause", ttSetup.mapKeyToAction[5]);
-   SetupStore("Action_kStop", ttSetup.mapKeyToAction[6]);
-   SetupStore("Action_kRecord", ttSetup.mapKeyToAction[7]);
-   SetupStore("Action_kFastFwd", ttSetup.mapKeyToAction[8]);
-   SetupStore("Action_kFastRew", ttSetup.mapKeyToAction[9]);*/
    SetupStore("configuredClrBackground", (int)(ttSetup.configuredClrBackground >> 24));
    SetupStore("showClock", ttSetup.showClock);
       //currently not used
@@ -344,6 +308,9 @@ void cTeletextSetupPage::Store(void) {
 
 
 cTeletextSetupPage::cTeletextSetupPage(void) {
+   cString buf;
+   cOsdItem *item;
+
    //init tables
    for (int i=0;i<LastActionKey;i++) {
       if (ttSetup.mapKeyToAction[i] >= LastAction) {//jump to page selected  
@@ -380,52 +347,16 @@ cTeletextSetupPage::cTeletextSetupPage(void) {
    
    //Using same string as VDR's setup menu
    //Add(new cMenuEditIntItem(tr("Setup.Miscellaneous$Min. user inactivity (min)"), &temp.inactivityTimeout));
-   
+
+   buf = cString::sprintf("%s:", tr("Key bindings"));
+   item = new cOsdItem(*buf);
+   item->SetSelectable(false);
+   Add(item);
+
    for (int i=0;i<LastActionKey;i++) {
       ActionEdits[i].Init(this, i, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[i], 100, 899),
          new cMenuEditStraItem(actionKeyNames[i].userName, (int*)&temp.mapKeyToAction[i], LastAction+1, modes) );
    }
-   
-   /*ActionEdits[0].Init(this, 0, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[0], 100, 899),
-      new cMenuEditStraItem(tr("Red key"),     (int*)&temp.mapKeyToAction[0], LAST_ACTION+2, modes) );
-    //Add(tempItem);
-    
-   ActionEdits[1].Init(this, 1, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[1], 100, 899),
-     new cMenuEditStraItem(tr("Green key"),   (int*)&temp.mapKeyToAction[1], LAST_ACTION+2, modes));
-    //Add(tempItem);
-    
-   ActionEdits[2].Init(this, 2, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[2], 100, 899),
-     new cMenuEditStraItem(tr("Yellow key"),  (int*)&temp.mapKeyToAction[2], LAST_ACTION+2, modes));
-    //Add(tempItem);
-    
-   ActionEdits[3].Init(this, 3, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[3], 100, 899),
-     new cMenuEditStraItem(tr("Blue key"),    (int*)&temp.mapKeyToAction[3], LAST_ACTION+2, modes));
-    //Add(tempItem);
-    
-   ActionEdits[4].Init(this, 4, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[4], 100, 899),
-     new cMenuEditStraItem(tr(cKey::ToString( kPlay)),  (int*)&temp.mapKeyToAction[4], LAST_ACTION+2, modes));
-    //Add(tempItem);
-    
-   ActionEdits[5].Init(this, 5, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[5], 100, 899),
-     new cMenuEditStraItem(tr(cKey::ToString( kPause)),  (int*)&temp.mapKeyToAction[5], LAST_ACTION+2, modes));
-    //Add(tempItem);
-    
-   ActionEdits[6].Init(this, 6, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[6], 100, 899),
-     new cMenuEditStraItem(tr(cKey::ToString(kStop)),  (int*)&temp.mapKeyToAction[6], LAST_ACTION+2, modes));
-    //Add(tempItem);
-    
-   ActionEdits[7].Init(this, 7, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[7], 100, 899),
-     new cMenuEditStraItem(tr(cKey::ToString(kRecord)),  (int*)&temp.mapKeyToAction[7], LAST_ACTION+2, modes));
-    //Add(tempItem);
-    
-   ActionEdits[8].Init(this, 8, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[8], 100, 899),
-     new cMenuEditStraItem(tr(cKey::ToString(kFastFwd)),  (int*)&temp.mapKeyToAction[8], LAST_ACTION+2, modes));
-    //Add(tempItem);
-    
-   ActionEdits[9].Init(this, 9, new cMenuEditIntItem(tr("  Page number"), &tempPageNumber[9], 100, 899),
-     new cMenuEditStraItem(tr(cKey::ToString(kFastRew)),  (int*)&temp.mapKeyToAction[9], LAST_ACTION+2, modes));
-    //Add(tempItem);*/
-    
 }
 
 eOSState cTeletextSetupPage::ProcessKey(eKeys Key) {

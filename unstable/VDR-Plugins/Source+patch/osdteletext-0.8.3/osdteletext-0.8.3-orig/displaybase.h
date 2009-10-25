@@ -19,34 +19,6 @@
 #include "txtrender.h"
 #include <vdr/osd.h>
 
-//#define timingdebug
-// Enables some time measure debugging code
-
-#ifdef timingdebug
-    #include <sys/timeb.h>
-    
-    class cTime {
-        // Debugging: Simple class to measure time
-        timeb start;
-    public:
-        void Start() {
-            ftime(&start);
-        }
-        void Stop(char *txt) {
-            timeb t;
-            ftime(&t);
-            int s=t.time-start.time;
-            int ms=t.millitm-start.millitm;
-            if (ms<0) {
-                s--;
-                ms+=1000;
-            }
-            printf("%s: %i.%03i\n",txt,s,ms);
-        }
-    };
-#endif
-
-
 class cDisplay : public cRenderPage {
     // Class that extends the virtual cRenderPage with the capability
     // to render its contents to an OSD of variable size.
@@ -216,17 +188,7 @@ protected:
         if (FlushLock>0) return;
         if (!osd) return;
         if (IsDirty()) DrawDisplay();
-
-        #ifdef timingdebug
-            cTime t;
-            t.Start();
-        #endif
-
         osd->Flush();
-
-        #ifdef timingdebug
-            t.Stop("osd Flush");
-        #endif
     }
 
 public: 
