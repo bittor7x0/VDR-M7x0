@@ -2,7 +2,7 @@
 io=""
 todas=0
 tam=40
-usage="$0 -d \"Test IO-Direct\" -a \"Testear todas las unidades\" -s \"tamaÃ±o en Mib\" -D \"Directorio\"";
+usage="$0 -d \"Test IO-Direct\" -a \"Testear todas las unidades\" -s \"tamaño en Mib\" -D \"Directorio\"";
 args=`getopt dahs:D: $*`
 set -- ${args}
 for i do

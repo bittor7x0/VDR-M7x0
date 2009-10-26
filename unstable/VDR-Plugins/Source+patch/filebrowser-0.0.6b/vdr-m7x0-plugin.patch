@@ -517,7 +517,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Ejecutandose", // /*Español*/
++    "Ejecutándose", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
@@ -539,7 +539,7 @@ diff -Naurx .svn filebrowser-0.0.6b-orig/i18n.h filebrowser-0.0.6b/i18n.h
 +    "", // TODO /*Norsk*/
 +    "", // TODO /*suomi*/
 +    "", // TODO /*Polski*/
-+    "Procesos ejecutandose", // /*Español*/
++    "Procesos ejecutándose", // /*Español*/
 +    "", // TODO /*Ellinika*/
 +    "", // TODO /*Svenska*/
 +    "", // TODO /*Romaneste*/
