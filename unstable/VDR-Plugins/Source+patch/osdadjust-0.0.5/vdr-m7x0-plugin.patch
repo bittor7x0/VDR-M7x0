@@ -1,297 +1,1493 @@
-diff -Naur osdadjust-0.0.2-orig/i18n.c osdadjust-0.0.2/i18n.c
---- osdadjust-0.0.2-orig/i18n.c	2008-04-07 21:23:46.000000000 +0200
-+++ osdadjust-0.0.2/i18n.c	2008-06-20 21:50:56.000000000 +0200
-@@ -18,7 +18,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Ajustar OSD", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -40,7 +40,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Ajustar OSD Tamaño y posición", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -62,7 +62,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Opciones generales", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -84,7 +84,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Ocultar entrada en menú principal", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -106,7 +106,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Ocultar texto de ayuda", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -128,7 +128,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Silenciar al abrir", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -150,7 +150,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Color de fondo", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -172,7 +172,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Color de primer plano", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -194,7 +194,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Grosor de la línea", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -216,7 +216,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Salto de anchura", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -238,7 +238,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Tamaño y posición", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -260,7 +260,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Mostrar rejilla", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -283,7 +283,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Resolución", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -306,7 +306,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Proporción de aspecto", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -328,7 +328,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Formato de vídeo", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -350,7 +350,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Pulse 1-9 para mover,", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -372,7 +372,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Arriba/Abajo e Izquierda/Derecha para redimensionar,", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -394,7 +394,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Ok para guardar, Volver para cancelar.", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -416,7 +416,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "¡La anchura debe ser un múltiplo de 8!", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -438,7 +438,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Derecha", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -460,7 +460,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Abajo", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -482,7 +482,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Transparente", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -504,7 +504,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Transparente 50", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -526,7 +526,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Negro", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -548,7 +548,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Rojo", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -570,7 +570,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Verde", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -592,7 +592,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Amarillo", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -614,7 +614,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Magenta", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -636,7 +636,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Azul", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -658,7 +658,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Cian", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -680,7 +680,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Blanco", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-@@ -702,7 +702,7 @@
-     "", // Norsk
-     "", // suomi
-     "", // Polski
--    "", // Español
-+    "Gris", // Español
-     "", // ÅëëçíéêÜ (Greek)
-     "", // Svenska
-     "", // Romaneste
-diff -Naur osdadjust-0.0.2-orig/Makefile osdadjust-0.0.2/Makefile
---- osdadjust-0.0.2-orig/Makefile	2008-02-08 22:20:30.000000000 +0100
-+++ osdadjust-0.0.2/Makefile	2008-06-20 21:50:56.000000000 +0200
+diff -Naur osdadjust-0.0.5-orig/buildutil/pot2i18n.pl osdadjust-0.0.5/buildutil/pot2i18n.pl
+--- osdadjust-0.0.5-orig/buildutil/pot2i18n.pl	1970-01-01 01:00:00.000000000 +0100
++++ osdadjust-0.0.5/buildutil/pot2i18n.pl	2009-09-29 07:56:56.000000000 +0200
+@@ -0,0 +1,157 @@
++#!/usr/bin/perl
++#
++#  File:	pot2i18n.pl - Convert plugin pot file into i18n.c-format
++#  Author:	Dieter Hametner
++#  Version:	0.1
++#
++#  based on po2i18n.pl version 0.1 from Udo Richter
++#
++#  See the po2i18n/README file for copyright information and how to
++#  reach the original author. Also general use is described there.
++#
++#  This version uses the CPAN module Locale::PO to read the .pot and .po files
++#  which ensures, that these files are read correctly.
++#
++#  The usage of pot2i18n.pl differs from po2i18n.pl that it requires as first
++#  argument the path to the plugins .pot file. There it then looks also for
++#  the translated .po files which are used to create the result.
++#  This version does not sort the msgids lexicaly (in contrast to po2i18n.pl)
++
++use strict;
++use warnings;
++
++use Locale::PO;
++use File::Basename;
++
++my @LANGS = (
++  "en_US",
++  "de_DE",
++  "sl_SI",
++  "it_IT",
++  "nl_NL",
++  "pt_PT",
++  "fr_FR",
++  "nn_NO",
++  "fi_FI",
++  "pl_PL",
++  "es_ES",
++  "el_GR",
++  "sv_SE",
++  "ro_RO",
++  "hu_HU",
++  "ca_ES",
++  "ru_RU",
++  "hr_HR",
++  "et_EE",
++  "da_DK",
++  "cs_CZ",
++  "tr_TR"
++  );
++
++my %VERS = (
++  "en_US" => 10200,
++  "de_DE" => 10200,
++  "sl_SI" => 10200,
++  "it_IT" => 10200,
++  "nl_NL" => 10200,
++  "pt_PT" => 10200,
++  "fr_FR" => 10200,
++  "nn_NO" => 10200,
++  "fi_FI" => 10200,
++  "pl_PL" => 10200,
++  "es_ES" => 10200,
++  "el_GR" => 10200,
++  "sv_SE" => 10200,
++  "ro_RO" => 10200,
++  "hu_HU" => 10200,
++  "ca_ES" => 10200,
++  "ru_RU" => 10302,
++  "hr_HR" => 10307,
++  "et_EE" => 10313,
++  "da_DK" => 10316,
++  "cs_CZ" => 10342,
++  "tr_TR" => 10502
++  );
++
++die "Missing .pot file argument" unless $#ARGV >= 0;
++
++my $potfile = $ARGV[0];
++my $podir = dirname($potfile);
++
++my $potRef = Locale::PO->load_file_asarray($potfile);
++shift;
++
++my %translations;
++
++foreach my $lang (@LANGS) {
++    $translations{$lang} = Locale::PO->load_file_ashash("$podir/$lang.po");
++}
++
++# debugging code: (may be removed)
++#for my $po (@{$potRef}) {
++#    my $msgid = $po->msgid;
++#
++#    print "UNTRANSLATED: ", $msgid, "\n";
++#    next if $msgid eq "\"\"";
++#    foreach my $lang (@LANGS) {
++#	my $lhref = $translations{$lang};
++#	my $lpo = ${$lhref}{$msgid};
++#	$lpo = $po if !defined $lpo;
++#
++#	my $msg = $lpo->msgstr;
++#	$msg = $lpo->msgid if !defined $msg;
++#	$msg = $msgid if ($lang eq "en_US");
++#	print $lang, ": ", $msg, "\n";
++#    }
++#    print "\n";
++#}
++#
++#exit;
++
++my $silent = 0;
++
++while (<>) {
++    my $line = $_;
++
++    if ($line =~ /^\/\/ START I18N/) {
++        print "// START I18N - automatically generated by pot2i18n.pl\n";
++	foreach my $po (@{$potRef}) {
++	    my $msgid = $po->msgid;
++            next if $msgid eq "\"\"";
++
++            my $head = "  { ";
++            my $endif = "";
++            my $versnum = 10200;
++
++            for my $lang (@LANGS) {
++                if ($VERS{$lang} ne $versnum) {
++                    $versnum = $VERS{$lang};
++                    print $endif;
++                    print "#if VDRVERSNUM >= $versnum\n";
++                    $endif = "#endif\n";
++                }
++
++		my $lhref = $translations{$lang};
++		my $lpo = ${$lhref}{$msgid};
++		$lpo = $po if !defined $lpo;
++
++		my $msgstr = $lpo->msgstr;
++		$msgstr = $lpo->msgid if !defined $msgstr;
++		$msgstr = $msgid if ($lang eq "en_US");
++
++                print "$head$msgstr,\n";
++                $head = "    ";
++            }
++            print $endif;
++            print "  },\n";
++        }
++        $silent = 1;
++    }
++
++    if (!$silent) { print $line; }
++
++    if ($line =~ /^\/\/ END I18N/) {
++        print "// END I18N - automatically generated by pot2i18n.pl\n";
++        $silent = 0;
++    }
++}
+diff -Naur osdadjust-0.0.5-orig/HISTORY osdadjust-0.0.5/HISTORY
+--- osdadjust-0.0.5-orig/HISTORY	2009-05-07 23:13:14.000000000 +0200
++++ osdadjust-0.0.5/HISTORY	2009-11-06 17:11:51.000000000 +0100
+@@ -1,5 +1,14 @@
+ VDR Plugin 'osdadjust' Revision History
+ ----------------------------------
++
++20xx-xx-xx: version x.x.x
++- Backward compatibility to VDR 1.4.5 based in EPGSearch - thanks to Bittor Corl
++  In VDR < 1.5.7 the translation is built from the po files calling to:
++    make generate-i18n
++  from osdadjust's source directory (this calls buildutil/pot2i18n.pl which
++  may need to install Locale::PO in the pearl cpan shell)
++- Added spanish translation - thanks to Bittor Corl
++
+ 2009-05-08: Version 0.0.5
+ - Save Setup in procent (vdr-1.7.7)
+ 
+diff -Naur osdadjust-0.0.5-orig/i18n.c osdadjust-0.0.5/i18n.c
+--- osdadjust-0.0.5-orig/i18n.c	1970-01-01 01:00:00.000000000 +0100
++++ osdadjust-0.0.5/i18n.c	2009-10-26 09:49:48.000000000 +0100
+@@ -0,0 +1,15 @@
++/*
++ * i18n.c: Internationalization
++ *
++ * See the README file for copyright information and how to reach the author.
++ *
++ */
++
++#include <vdr/plugin.h>
++
++#if APIVERSNUM < 10507
++
++#include "i18n.h"
++#include "i18n-generated.h"
++
++#endif
+diff -Naur osdadjust-0.0.5-orig/i18n-generated.h osdadjust-0.0.5/i18n-generated.h
+--- osdadjust-0.0.5-orig/i18n-generated.h	1970-01-01 01:00:00.000000000 +0100
++++ osdadjust-0.0.5/i18n-generated.h	2009-11-02 12:58:05.000000000 +0100
+@@ -0,0 +1,1240 @@
++/*
++  	WARNING: automatically generated content. Changes will get lost!
++
++    If this file is 'i18n-generated.h' then it *really* is automatically
++	generated.
++    If this file is 'i18n-template.h' then it is the base for the
++    autogeneration of the other file.
++
++*/
++
++const tI18nPhrase Phrases[] = {
++// START I18N - automatically generated by pot2i18n.pl
++  { "Transparent",
++    "Transparent",
++    "",
++    "Trasparente",
++    "",
++    "",
++    "Transparent",
++    "",
++    "",
++    "",
++    "Transparente",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Transparent 50",
++    "Transparent 50",
++    "",
++    "Trasparente 50",
++    "",
++    "",
++    "Transparent 50",
++    "",
++    "",
++    "",
++    "Transparente 50",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Black",
++    "Schwarz",
++    "",
++    "Nero",
++    "",
++    "",
++    "Noir",
++    "",
++    "",
++    "",
++    "Negro",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Red",
++    "Rot",
++    "",
++    "Rosso",
++    "",
++    "",
++    "Rouge",
++    "",
++    "",
++    "",
++    "Rojo",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Green",
++    "Grün",
++    "",
++    "Verde",
++    "",
++    "",
++    "Vert",
++    "",
++    "",
++    "",
++    "Verde",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Yellow",
++    "Gelb",
++    "",
++    "Giallo",
++    "",
++    "",
++    "Jaune",
++    "",
++    "",
++    "",
++    "Amarillo",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Magenta",
++    "Magenta",
++    "",
++    "Magenta",
++    "",
++    "",
++    "Magenta",
++    "",
++    "",
++    "",
++    "Magenta",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Blue",
++    "Blau",
++    "",
++    "Blu",
++    "",
++    "",
++    "Bleu",
++    "",
++    "",
++    "",
++    "Azul",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Cyan",
++    "Cyan",
++    "",
++    "Ciano",
++    "",
++    "",
++    "Cyan",
++    "",
++    "",
++    "",
++    "Cian",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "White",
++    "Weiss",
++    "",
++    "Bianco",
++    "",
++    "",
++    "Blanc",
++    "",
++    "",
++    "",
++    "Blanco",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Gray",
++    "Grau",
++    "",
++    "Grigio",
++    "",
++    "",
++    "Gris",
++    "",
++    "",
++    "",
++    "Gris",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Size and Position",
++    "Größe und Position",
++    "",
++    "Dimensione e posizione",
++    "",
++    "",
++    "Taille et Position",
++    "",
++    "",
++    "",
++    "Tamaño y posición",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Video Format",
++    "Bildformat",
++    "",
++    "Formato video",
++    "",
++    "",
++    "Format Video",
++    "",
++    "",
++    "",
++    "Formato de vídeo",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "General Options",
++    "Generelle Optionen",
++    "",
++    "Opzioni generali",
++    "",
++    "",
++    "Options Générales",
++    "",
++    "",
++    "",
++    "Opciones generales",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Hide main menu entry",
++    "Hauptmenüeintrag verstecken",
++    "",
++    "Nascondi voce menu principale",
++    "",
++    "",
++    "Invisible dans le menu principal",
++    "",
++    "",
++    "",
++    "Ocultar entrada en menú principal",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Hide help text",
++    "Hilfe verstecken",
++    "",
++    "Nascondi testo aiuto",
++    "",
++    "",
++    "Masquer l'aide contextuelle",
++    "",
++    "",
++    "",
++    "Ocultar texto de ayuda",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Mute on open",
++    "Stumm beim öffnen",
++    "",
++    "Muto all'apertura",
++    "",
++    "",
++    "Muet à l'ouverture",
++    "",
++    "",
++    "",
++    "Silenciar al abrir",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Background color",
++    "Hintergrund Farbe",
++    "",
++    "Colore sfondo",
++    "",
++    "",
++    "Couleur de l'arrière plan",
++    "",
++    "",
++    "",
++    "Color de fondo",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Foreground color",
++    "Vordergrund Farbe",
++    "",
++    "Colore primo piano",
++    "",
++    "",
++    "Couleur du premier plan",
++    "",
++    "",
++    "",
++    "Color de primer plano",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Line thickness",
++    "Linienstärke",
++    "",
++    "Spessore bordo",
++    "",
++    "",
++    "Épaisseur de ligne",
++    "",
++    "",
++    "",
++    "Grosor de la línea",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Gauge",
++    "Sprungweite",
++    "",
++    "Calibrazione",
++    "",
++    "",
++    "Gauge",
++    "",
++    "",
++    "",
++    "Salto de anchura",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Aspect Ratio",
++    "Seitenverhältnis",
++    "",
++    "Aspetto video",
++    "",
++    "",
++    "Aspect Ratio",
++    "",
++    "",
++    "",
++    "Proporción de aspecto",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Show grid",
++    "Gitter einblenden",
++    "",
++    "Mostra griglia",
++    "",
++    "",
++    "Afficher la grille",
++    "",
++    "",
++    "",
++    "Mostrar rejilla",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Adjust OSD Size and Position",
++    "Anpassen von OSD Größe und Position",
++    "",
++    "Regola la dimensione e posizione OSD",
++    "",
++    "",
++    "Ajuster Taille et Position de l'OSD",
++    "",
++    "",
++    "",
++    "Ajustar tamaño y posición OSD",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "OSD adjust",
++    "OSD anpassen",
++    "",
++    "Regolazione OSD",
++    "",
++    "",
++    "Ajuster OSD",
++    "",
++    "",
++    "",
++    "Ajustar OSD",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Press 1-9 to move,",
++    "Drücke 1-9 zum verschieben,",
++    "",
++    "Premi 1-9 per spostare,",
++    "",
++    "",
++    "Presser 1-9 pour déplacer,",
++    "",
++    "",
++    "",
++    "Pulse 1-9 para mover,",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Up/Down & Left/Right to resize,",
++    "Auf/Ab & Links/Rechts zum ändern,",
++    "",
++    "Su/Giù e Sinistra/Destra per ridimensionare,",
++    "",
++    "",
++    "Haut/Bas & Gauche/Droite pour redimensionner",
++    "",
++    "",
++    "",
++    "Arriba/Abajo e Izquierda/Derecha para redimensionar,",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Ok to save, Back to cancel.",
++    "Ok speichert, Zurück bricht ab.",
++    "",
++    "OK per salvare, Indietro per annullare.",
++    "",
++    "",
++    "Ok pour sauvegarder, Retour pour annuler.",
++    "",
++    "",
++    "",
++    "OK para guardar, EXIT para cancelar.",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Top",
++    "Oben",
++    "",
++    "In alto",
++    "",
++    "",
++    "Haut",
++    "",
++    "",
++    "",
++    "Arriba",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Bottom",
++    "Unten",
++    "",
++    "In basso",
++    "",
++    "",
++    "Bouton",
++    "",
++    "",
++    "",
++    "Abajo",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Left",
++    "Links",
++    "",
++    "Sinistra",
++    "",
++    "",
++    "Gauche",
++    "",
++    "",
++    "",
++    "Izquierda",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Right",
++    "Rechts",
++    "",
++    "Destra",
++    "",
++    "",
++    "Droite",
++    "",
++    "",
++    "",
++    "Derecha",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Width",
++    "Breite",
++    "",
++    "Larghezza",
++    "",
++    "",
++    "Largeur",
++    "",
++    "",
++    "",
++    "Anchura",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Height",
++    "Höhe",
++    "",
++    "Altezza",
++    "",
++    "",
++    "Hauteur",
++    "",
++    "",
++    "",
++    "Altura",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++  { "Width must be a multiple of 8!",
++    "Breite muss ein Vielfaches von 8 sein!",
++    "",
++    "La larghezza deve essere multiplo di 8!",
++    "",
++    "",
++    "La largeur doit être un multiple de 8 !",
++    "",
++    "",
++    "",
++    "¡La anchura debe ser un múltiplo de 8!",
++    "",
++    "",
++    "",
++    "",
++    "",
++#if VDRVERSNUM >= 10302
++    "",
++#endif
++#if VDRVERSNUM >= 10307
++    "",
++#endif
++#if VDRVERSNUM >= 10313
++    "",
++#endif
++#if VDRVERSNUM >= 10316
++    "",
++#endif
++#if VDRVERSNUM >= 10342
++    "",
++#endif
++#if VDRVERSNUM >= 10502
++    "",
++#endif
++  },
++// END I18N - automatically generated by pot2i18n.pl
++  { NULL }
++};
+diff -Naur osdadjust-0.0.5-orig/i18n.h osdadjust-0.0.5/i18n.h
+--- osdadjust-0.0.5-orig/i18n.h	1970-01-01 01:00:00.000000000 +0100
++++ osdadjust-0.0.5/i18n.h	2009-10-26 09:50:10.000000000 +0100
+@@ -0,0 +1,22 @@
++/*
++ * i18n.h: Internationalization
++ *
++ * See the README file for copyright information and how to reach the author.
++ *
++ */
++
++#ifndef _I18N__H
++#define _I18N__H
++
++#include <vdr/i18n.h>
++
++#if APIVERSNUM < 10507
++extern const tI18nPhrase Phrases[];
++#define trNOOP(s) (s)
++#endif
++
++#if APIVERSNUM < 10509
++#define trVDR(s) tr(s)
++#endif
++
++#endif //_I18N__H
+diff -Naur osdadjust-0.0.5-orig/i18n-template.h osdadjust-0.0.5/i18n-template.h
+--- osdadjust-0.0.5-orig/i18n-template.h	1970-01-01 01:00:00.000000000 +0100
++++ osdadjust-0.0.5/i18n-template.h	2009-10-07 11:22:24.000000000 +0200
+@@ -0,0 +1,15 @@
++/*
++  	WARNING: automatically generated content. Changes will get lost!
++
++    If this file is 'i18n-generated.h' then it *really* is automatically
++	generated.
++    If this file is 'i18n-template.h' then it is the base for the
++    autogeneration of the other file.
++
++*/
++
++const tI18nPhrase Phrases[] = {
++// START I18N
++// END I18N
++  { NULL }
++};
+diff -Naur osdadjust-0.0.5-orig/Makefile osdadjust-0.0.5/Makefile
+--- osdadjust-0.0.5-orig/Makefile	2009-05-05 19:02:46.000000000 +0200
++++ osdadjust-0.0.5/Makefile	2009-10-29 11:10:34.000000000 +0100
 @@ -20,8 +20,8 @@
  
  ### The directory environment:
@@ -303,198 +1499,264 @@ diff -Naur osdadjust-0.0.2-orig/Makefile osdadjust-0.0.2/Makefile
  TMPDIR = /tmp
  
  ### Allow user defined options to overwrite defaults:
-@@ -54,7 +54,7 @@
+@@ -45,7 +45,7 @@
  
- # Dependencies:
+ ### The object files (add further files here):
  
--MAKEDEP = g++ -MM -MG
-+MAKEDEP = $(CXX) -MM -MG
- DEPFILE = .dependencies
- $(DEPFILE): Makefile
- 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
-@@ -92,7 +92,7 @@
+-OBJS = $(PLUGIN).o menu.o screenmenu.o
++OBJS = $(PLUGIN).o i18n.o menu.o screenmenu.o
+ 
+ ### The main target:
+ 
+@@ -76,8 +76,8 @@
+ %.mo: %.po
+ 	msgfmt -c -o $@ $<
+ 
+-$(I18Npot): $(wildcard *.c)
+-	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='<see README>' -o $@ $^
++$(I18Npot): $(wildcard *.[ch])
++	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='<see README>' -o $@ $(wildcard *.[ch])
+ 
+ %.po: $(I18Npot)
+ 	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
+@@ -90,13 +90,17 @@
+ .PHONY: i18n
+ i18n: $(I18Nmsgs) $(I18Npot)
+ 
++generate-i18n: i18n-template.h $(I18Npot) $(I18Npo) buildutil/pot2i18n.pl
++	@chmod +x buildutil/pot2i18n.pl
++	buildutil/pot2i18n.pl $(I18Npot) i18n-template.h > i18n-generated.h
++
+ ### Targets:
  
  libvdr-$(PLUGIN).so: $(OBJS)
  	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
--	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
-+	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
+ 	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
  
- dist: clean
+-dist: clean
++dist: generate-i18n clean
  	@-rm -rf $(TMPDIR)/$(ARCHIVE)
-diff -Naur osdadjust-0.0.2-orig/po/es_ES.po osdadjust-0.0.2/po/es_ES.po
---- osdadjust-0.0.2-orig/po/es_ES.po	2008-02-11 21:44:04.000000000 +0100
-+++ osdadjust-0.0.2/po/es_ES.po	2008-06-20 21:50:56.000000000 +0200
+ 	@mkdir $(TMPDIR)/$(ARCHIVE)
+ 	@cp -a * $(TMPDIR)/$(ARCHIVE)
+@@ -105,4 +109,4 @@
+ 	@echo Distribution package created as $(PACKAGE).tgz
+ 
+ clean:
+-	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot
++	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot pod2*.tmp
+diff -Naur osdadjust-0.0.5-orig/menu.c osdadjust-0.0.5/menu.c
+--- osdadjust-0.0.5-orig/menu.c	2009-05-05 14:23:28.000000000 +0200
++++ osdadjust-0.0.5/menu.c	2009-10-26 09:45:58.000000000 +0100
+@@ -1,5 +1,6 @@
+ #include <vdr/plugin.h>
+ #include <vdr/interface.h>
++#include "i18n.h"
+ #include "menu.h"
+ 
+ 
+diff -Naur osdadjust-0.0.5-orig/osdadjust.c osdadjust-0.0.5/osdadjust.c
+--- osdadjust-0.0.5-orig/osdadjust.c	2009-05-07 23:13:48.000000000 +0200
++++ osdadjust-0.0.5/osdadjust.c	2009-10-26 09:47:58.000000000 +0100
+@@ -7,6 +7,7 @@
+ 
+ #include <vdr/plugin.h>
+ #include "config.h"
++#include "i18n.h"
+ #include "menu.h"
+ #include "screenmenu.h"
+ 
+@@ -77,6 +78,9 @@
+ bool cPluginOsdadjust::Initialize(void)
+ {
+   // Initialize any background activities the plugin shall perform.
++#if VDRVERSNUM < 10507
++  RegisterI18n(Phrases);
++#endif
+   return true;
+ }
+ 
+diff -Naur osdadjust-0.0.5-orig/po/es_ES.po osdadjust-0.0.5/po/es_ES.po
+--- osdadjust-0.0.5-orig/po/es_ES.po	2009-05-07 23:18:50.000000000 +0200
++++ osdadjust-0.0.5/po/es_ES.po	2009-10-29 11:04:22.000000000 +0100
 @@ -1,7 +1,7 @@
  # VDR plugin language source file.
  # Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
  # This file is distributed under the same license as the VDR package.
 -# Ruben Nunez Francisco <ruben.nunez@tang-it.com>, 2002
-+# bittor from open7x0.org <bittor7x0 _at_ gmail.com>, 2008
++# bittor from open7x0.org <bittor7x0 _at_ gmail.com>, 2009
  #
  msgid ""
  msgstr ""
-@@ -9,7 +9,7 @@
+@@ -9,113 +9,113 @@
  "Report-Msgid-Bugs-To: <see README>\n"
- "POT-Creation-Date: 2008-02-11 21:43+0100\n"
- "PO-Revision-Date: 2008-02-11 21:43+0100\n"
+ "POT-Creation-Date: 2009-01-08 20:29+0100\n"
+ "PO-Revision-Date: 2009-01-08 20:19+0100\n"
 -"Last-Translator: Ruben Nunez Francisco <ruben.nunez@tang-it.com>\n"
 +"Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
  "Language-Team: <vdr@linuxtv.org>\n"
  "MIME-Version: 1.0\n"
  "Content-Type: text/plain; charset=ISO-8859-15\n"
-@@ -17,124 +17,124 @@
+ "Content-Transfer-Encoding: 8bit\n"
  
- #: menu.c:26
  msgid "Transparent"
 -msgstr ""
 +msgstr "Transparente"
  
- #: menu.c:27
  msgid "Transparent 50"
 -msgstr ""
 +msgstr "Transparente 50"
  
- #: menu.c:28
  msgid "Black"
 -msgstr ""
 +msgstr "Negro"
  
- #: menu.c:29
  msgid "Red"
 -msgstr ""
 +msgstr "Rojo"
  
- #: menu.c:30
  msgid "Green"
 -msgstr ""
 +msgstr "Verde"
  
- #: menu.c:31
  msgid "Yellow"
 -msgstr ""
 +msgstr "Amarillo"
  
- #: menu.c:32
  msgid "Magenta"
 -msgstr ""
 +msgstr "Magenta"
  
- #: menu.c:33
  msgid "Blue"
 -msgstr ""
 +msgstr "Azul"
  
- #: menu.c:34
  msgid "Cyan"
 -msgstr ""
 +msgstr "Cian"
  
- #: menu.c:35
  msgid "White"
 -msgstr ""
 +msgstr "Blanco"
  
- #: menu.c:36
  msgid "Gray"
 -msgstr ""
 +msgstr "Gris"
  
- #: menu.c:57
  msgid "Size and Position"
 -msgstr ""
-+msgstr "TamaÃ±o y posiciÃ³n"
++msgstr "Tamaño y posición"
  
- #: menu.c:58
  msgid "Video Format"
 -msgstr ""
-+msgstr "Formato de vÃ­deo"
++msgstr "Formato de vídeo"
  
- #: menu.c:62
  msgid "General Options"
 -msgstr ""
 +msgstr "Opciones generales"
  
- #: menu.c:63
  msgid "Hide main menu entry"
 -msgstr ""
-+msgstr "Ocultar entrada en menÃº principal"
++msgstr "Ocultar entrada en menú principal"
  
- #: menu.c:64
  msgid "Hide help text"
 -msgstr ""
 +msgstr "Ocultar texto de ayuda"
  
- #: menu.c:65
  msgid "Mute on open"
 -msgstr ""
 +msgstr "Silenciar al abrir"
  
- #: menu.c:66
  msgid "Background color"
 -msgstr ""
 +msgstr "Color de fondo"
  
- #: menu.c:67
  msgid "Foreground color"
 -msgstr ""
 +msgstr "Color de primer plano"
  
- #: menu.c:68
  msgid "Line thickness"
 -msgstr ""
-+msgstr "Grosor de la lÃ­nea"
++msgstr "Grosor de la línea"
  
- #: menu.c:69
  msgid "Gauge"
 -msgstr ""
 +msgstr "Salto de anchura"
  
- #: menu.c:73
  msgid "Aspect Ratio"
 -msgstr ""
-+msgstr "ProporciÃ³n de aspecto"
++msgstr "Proporción de aspecto"
  
- #: menu.c:74
  msgid "Show grid"
 -msgstr ""
 +msgstr "Mostrar rejilla"
  
- #: osdadjust.c:15
  msgid "Adjust OSD Size and Position"
 -msgstr ""
-+msgstr "Ajustar OSD TamaÃ±o y posiciÃ³n"
++msgstr "Ajustar tamaño y posición OSD"
  
- #: osdadjust.c:16
  msgid "OSD adjust"
 -msgstr ""
 +msgstr "Ajustar OSD"
  
- #: screenmenu.c:577
  msgid "Press 1-9 to move,"
 -msgstr ""
 +msgstr "Pulse 1-9 para mover,"
  
- #: screenmenu.c:578
  msgid "Up/Down & Left/Right to resize,"
 -msgstr ""
 +msgstr "Arriba/Abajo e Izquierda/Derecha para redimensionar,"
  
- #: screenmenu.c:579
  msgid "Ok to save, Back to cancel."
 -msgstr ""
-+msgstr "Ok para guardar, Volver para cancelar."
++msgstr "OK para guardar, EXIT para cancelar."
  
- #: screenmenu.c:586
+ msgid "Top"
+-msgstr ""
++msgstr "Arriba"
+ 
  msgid "Bottom"
 -msgstr ""
 +msgstr "Abajo"
  
- #: screenmenu.c:592
+ msgid "Left"
+-msgstr ""
++msgstr "Izquierda"
+ 
  msgid "Right"
 -msgstr ""
 +msgstr "Derecha"
  
- #: screenmenu.c:605
+ msgid "Width"
+-msgstr ""
++msgstr "Anchura"
+ 
+ msgid "Height"
+-msgstr ""
++msgstr "Altura"
+ 
  msgid "Width must be a multiple of 8!"
 -msgstr ""
-+msgstr "Â¡La anchura debe ser un mÃºltiplo de 8!"
++msgstr "¡La anchura debe ser un múltiplo de 8!"
+diff -Naur osdadjust-0.0.5-orig/README osdadjust-0.0.5/README
+--- osdadjust-0.0.5-orig/README	2009-05-05 14:06:22.000000000 +0200
++++ osdadjust-0.0.5/README	2009-09-29 07:56:38.000000000 +0200
+@@ -24,7 +24,7 @@
+ 
+ Requirements
+ -------------
+-VDR >= 1.6.0
++VDR >= 1.4.5
+ 
+ 
+ Installation
+diff -Naur osdadjust-0.0.5-orig/screenmenu.c osdadjust-0.0.5/screenmenu.c
+--- osdadjust-0.0.5-orig/screenmenu.c	2009-05-07 23:20:52.000000000 +0200
++++ osdadjust-0.0.5/screenmenu.c	2009-10-26 09:48:50.000000000 +0100
+@@ -3,6 +3,7 @@
+ #include <vdr/interface.h>
+ //#include <vdr/osd.h>
+ #include <vdr/menu.h>
++#include "i18n.h"
+ #include "screenmenu.h"
+ 
+ int DEBUG_OSD = 1;  // 0, 1, 2, 3

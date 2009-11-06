@@ -1,0 +1,25 @@
+VDR Plugin 'osdadjust' Revision History
+----------------------------------
+2009-05-08: Version 0.0.5
+- Save Setup in procent (vdr-1.7.7)
+
+2009-05-05: Version 0.0.4
+- Minimum required VDR version is 1.6.0
+- Adaption to vdr-1.7.7
+- Workaround for the hud-osd.patch
+- Fixed some compiler warnings with gcc-4.3
+- New Makefile
+
+2009-01-08: Version 0.0.3
+- Added italian translation - thanks to Diego Pierotto
+- Items from the screenmenu get there translations no longer from VDR
+  so translators can adapt it better for the plugin
+
+2008-04-07: Version 0.0.2
+- Fixed resetting of OSD size on plugin start
+- 8bit test pattern now work also with vdr-1.4.7
+- Added french translation - thanks to Michaël Nival
+
+2008-02-11: Version 0.0.1
+- Initial revision.
+- New graphical tool to adjust grid size and position on screen.
