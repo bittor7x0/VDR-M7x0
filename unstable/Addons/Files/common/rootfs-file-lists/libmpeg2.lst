@@ -1,7 +1,7 @@
-usr/lib/libmpeg2.so.0.0.0         usr/lib/libmpeg2.so.0.0.0         f 755 0 0 - - - - -
-usr/lib/libmpeg2.so.0.0.0         -                                 s   - - - - - - - -
-usr/lib/libmpeg2.so               libmpeg2.so.0.0.0                 l 777 0 0 - - - - -
-usr/lib/libmpeg2.so.0             libmpeg2.so.0.0.0                 l 777 0 0 - - - - -
+usr/lib/libmpeg2.so.0.1.0         usr/lib/libmpeg2.so.0.1.0         f 755 0 0 - - - - -
+usr/lib/libmpeg2.so.0.1.0         -                                 s   - - - - - - - -
+usr/lib/libmpeg2.so               libmpeg2.so.0.1.0                 l 777 0 0 - - - - -
+usr/lib/libmpeg2.so.0             libmpeg2.so.0.1.0                 l 777 0 0 - - - - -
 usr/lib/libmpeg2convert.so.0.0.0  usr/lib/libmpeg2convert.so.0.0.0  f 755 0 0 - - - - -
 usr/lib/libmpeg2convert.so.0.0.0  -                                 s   - - - - - - - -
 usr/lib/libmpeg2convert.so        usr/lib/libmpeg2convert.so.0.0.0  l 777 0 0 - - - - -

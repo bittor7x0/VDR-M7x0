@@ -25,12 +25,12 @@ ifneq ($(CONFIG_LIBMPEG2),y)
 endif
 endif
 
-NOAD_VERSION := 0.6.1
+NOAD_VERSION := snapshot-20081021
 NOAD_PATCHES_DIR := $(PATCHES_DIR)/noad/$(NOAD_VERSION)
 
-NOAD_FILE := noad-$(NOAD_VERSION).tar.bz2
+NOAD_FILE := noad-$(NOAD_VERSION).tar.gz
 NOAD_DLFILE := $(DOWNLOAD_DIR)/$(NOAD_FILE)
-NOAD_URL := http://rsync16.de.gentoo.org/files/noad/noad-0.6.1.tar.bz2
+NOAD_URL := "http://git.gekrumbel.de/?p=noad.git;a=snapshot;h=e12eb6d8d02cc51d6e6dbe5e733009a354285700;sf=tgz"
 NOAD_DIR := $(BUILD_DIR)/noad-$(NOAD_VERSION)
 
 NOAD_INSTALLED = $(STAGEFILES_DIR)/.noad_installed
@@ -59,7 +59,8 @@ $(STAGEFILES_DIR)/.noad_unpacked: $(NOAD_DLFILE) \
                                            $(wildcard $(NOAD_PATCHES_DIR)/*.patch) \
                                            $$(NOAD_DEPS)
 	-$(RM) -rf $(NOAD_DIR)
-	$(BZCAT) $(NOAD_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(TAR) -C $(BUILD_DIR) -zf $(NOAD_DLFILE)
+	$(MV) $(BUILD_DIR)/noad $(NOAD_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.noad_unpacked
 
 #
