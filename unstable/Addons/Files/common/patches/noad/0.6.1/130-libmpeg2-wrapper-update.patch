@@ -1,0 +1,118 @@
+diff -Naur noad-snapshot-20081021-orig/mpeg2wrap.cpp noad-snapshot-20081021/mpeg2wrap.cpp
+--- noad-snapshot-20081021-orig/mpeg2wrap.cpp	2008-10-21 21:44:25.000000000 +0200
++++ noad-snapshot-20081021/mpeg2wrap.cpp	2009-10-31 10:24:04.000000000 +0100
+@@ -141,7 +141,7 @@
+     fclose (pgmfile);
+ }
+ 
+-// from mpeg2dec.cpp
++// from mpeg2dec.c
+ void decode_mpeg2 (uint8_t * current, uint8_t * end)
+ {
+   if(ignorevideo)
+@@ -165,7 +165,7 @@
+ */
+     switch (state)
+     {
+-      case -1:
++      case STATE_BUFFER:
+         return;
+       case STATE_SEQUENCE:
+         /*
+@@ -187,6 +187,7 @@
+ 
+       case STATE_SLICE:
+       case STATE_END:
++      case STATE_INVALID_END:
+         if (info->display_fbuf)
+         {
+           //save_ppm (info->sequence->width, info->sequence->height, info->display_fbuf->buf[0], iCurrentDecodedFrame);
+@@ -427,10 +428,7 @@
+   } while (0)
+ 
+   if (flags & DEMUX_PAYLOAD_START)
+-  {
+-    state = DEMUX_SKIP;
+     goto payload_start;
+-  }
+   switch (state)
+   {
+     case DEMUX_HEADER:
+@@ -513,7 +511,7 @@
+         return 1;
+ 
+       case 0xba:	/* pack header */
+-        NEEDBYTES (12);
++        NEEDBYTES (5);
+       if ((header[4] & 0xc0) == 0x40)
+       {	/* mpeg2 */
+           NEEDBYTES (14);
+@@ -524,14 +522,14 @@
+       }
+       else if ((header[4] & 0xf0) == 0x20)
+       {	/* mpeg1 */
++          NEEDBYTES (12);
+           DONEBYTES (12);
+           /* header points to the mpeg1 pack header */
+       }
+       else
+       {
+           fprintf (stderr, "weird pack header\n");
+-          //exit (1);
+-          return -1;
++          DONEBYTES (5);
+         }
+       break;
+ 
+@@ -665,7 +663,7 @@
+           NEEDBYTES (len);
+           /* header points to the mpeg1 pes header */
+           ptsbuf = header + len_skip;
+-          if (ptsbuf[-1] & 0x20)
++          if ((ptsbuf[-1] & 0xe0) == 0x20)
+           {
+             videopts = (((ptsbuf[-1] >> 1) << 30) |
+                        (ptsbuf[0] << 22) |
+@@ -698,8 +696,7 @@
+         dump2log (buf, end );
+         syslog(LOG_ERR,"header byte follows");
+         dump2log (header, header+40 );
+-        //exit (1);
+-        return -1;
++        DONEBYTES (4);
+       }
+       else
+       {
+diff -Naur noad-snapshot-20081021-orig/mpeg2wrap.h noad-snapshot-20081021/mpeg2wrap.h
+--- noad-snapshot-20081021-orig/mpeg2wrap.h	2008-10-21 21:44:25.000000000 +0200
++++ noad-snapshot-20081021/mpeg2wrap.h	2009-10-30 22:51:20.000000000 +0100
+@@ -33,9 +33,10 @@
+ 
+ #define DEMUX_PAYLOAD_START 1
+ 
+-// from mpeg2.h, Version 0.3.2pre:
++// from mpeg2.h, Version 0.4.1:
+ // workaround for different state-definitions
+ #if !defined(MPEG2_VERSION)
++#undef STATE_BUFFER
+ #undef STATE_SEQUENCE
+ #undef STATE_SEQUENCE_REPEATED
+ #undef STATE_GOP
+@@ -45,6 +46,7 @@
+ #undef STATE_SLICE
+ #undef STATE_END
+ #undef STATE_INVALID
++#undef STATE_INVALID_END
+ typedef enum __mpeg2_state_t
+ {
+     STATE_BUFFER = 0,
+@@ -56,7 +58,8 @@
+     STATE_PICTURE_2ND = 6,
+     STATE_SLICE = 7,
+     STATE_END = 8,
+-    STATE_INVALID = 9
++    STATE_INVALID = 9,
++    STATE_INVALID_END = 10
+ } mpeg2_state_t;
+ #endif
+ 

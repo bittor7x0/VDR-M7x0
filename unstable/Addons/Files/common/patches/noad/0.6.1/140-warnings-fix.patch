@@ -1,0 +1,33 @@
+diff -Naur noad-snapshot-20081021-orig/main.cpp noad-snapshot-20081021/main.cpp
+--- noad-snapshot-20081021-orig/main.cpp	2009-11-01 11:45:16.000000000 +0100
++++ noad-snapshot-20081021/main.cpp	2009-11-01 11:55:46.000000000 +0100
+@@ -391,7 +391,7 @@
+       break;
+ 
+       default:
+-        printf ("?? getopt returned character code 0%o ??(option_index %d)\n", c,option_index);
++        printf ("getopt returned character code 0%o (option_index %d)\n", c,option_index);
+     }
+   }
+ 
+diff -Naur noad-snapshot-20081021-orig/showindex.cpp noad-snapshot-20081021/showindex.cpp
+--- noad-snapshot-20081021-orig/showindex.cpp	2008-10-21 21:44:25.000000000 +0200
++++ noad-snapshot-20081021/showindex.cpp	2009-11-01 11:56:39.000000000 +0100
+@@ -26,7 +26,7 @@
+   uchar PictureType;        // current picture-type
+   int Length;               // frame-lenght of current frame
+   char pictypes[]= { 'U','I','P','B' };
+-  char *indents[]= { "",""," ","    " };
++  const char *indents[]= { "",""," ","    " };
+   while( iIndex < iMax )
+   {
+     cIF->Get( iIndex, &FileNumber, &FileOffset, &PictureType, &Length);
+@@ -98,7 +98,7 @@
+       break;
+       
+       default:
+-        printf ("?? getopt returned character code 0%o ??(option_index %d)\n", c,option_index);
++        printf ("getopt returned character code 0%o (option_index %d)\n", c,option_index);
+     }
+   }
+ 
