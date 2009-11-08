@@ -1,7 +1,6 @@
 #!/bin/ash
 
 (( is-mounted "/rw-flash" )) && exit 0
-umount.etc
 
 echo ">> mount /rw-flash" >&2
 mount -o rw,noatime,nodiratime -n -t jffs2 /dev/mtdblock2 /rw-flash

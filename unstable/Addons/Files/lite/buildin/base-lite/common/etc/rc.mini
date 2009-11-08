@@ -58,7 +58,6 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
 	mkdir /rw-flash/log
 	[ -f /var/tmp/flash_content.etc ] && mv /var/tmp/flash_content.etc \
 		/rw-flash/etc/flash_content
-	touch /rw-flash/.wbx
 	echo "Done"
 else
 	echo "Skipped"

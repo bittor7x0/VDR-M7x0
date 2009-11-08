@@ -69,19 +69,29 @@ diff -Naur uclibc_build_env_orig/hostutils-make-incs/squashfs.mk uclibc_build_en
 diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
 --- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2009-10-24 18:58:22.000000000 +0200
 +++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2009-10-24 19:18:14.000000000 +0200
-@@ -151,6 +151,16 @@
+@@ -151,6 +151,26 @@
  	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
  		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) distclean
  	$(CP) $(SIEMENS-LINUX-KERNEL_CONFIG) $(SIEMENS-LINUX-KERNEL_DIR)/.config
-+  ifeq ($(CONFIG_SQUASHFS_LZMA),y)
-+	$(SED) -i -e 's,^# CONFIG_SQUASHFS_LZMA is not set,CONFIG_SQUASHFS_LZMA=y,g' \
++  # Disable CramFS support if Squash RootFS image is generated and viceversa
++  ifeq ($(CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE),y)
++	$(SED) -i -e 's,^CONFIG_CRAMFS=y,# CONFIG_CRAMFS is not set,g' \
 +		$(SIEMENS-LINUX-KERNEL_DIR)/.config
-+	$(SED) -i -e 's,^CONFIG_SQUASHFS_LZMA=y,CONFIG_SQUASHFS_LZMA=y\nCONFIG_SQUASHFS_LZMA_PB=2,g' \
++    ifeq ($(CONFIG_SQUASHFS_LZMA),y)
++		$(SED) -i -e 's,^# CONFIG_SQUASHFS_LZMA is not set,CONFIG_SQUASHFS_LZMA=y,g' \
++			$(SIEMENS-LINUX-KERNEL_DIR)/.config
++		$(SED) -i -e 's,^CONFIG_SQUASHFS_LZMA=y,CONFIG_SQUASHFS_LZMA=y\nCONFIG_SQUASHFS_LZMA_PB=2,g' \
++			$(SIEMENS-LINUX-KERNEL_DIR)/.config
++		$(SED) -i -e 's,^CONFIG_SQUASHFS_LZMA=y,CONFIG_SQUASHFS_LZMA=y\nCONFIG_SQUASHFS_LZMA_LP=2,g' \
++			$(SIEMENS-LINUX-KERNEL_DIR)/.config
++		$(SED) -i -e 's,^CONFIG_SQUASHFS_LZMA=y,CONFIG_SQUASHFS_LZMA=y\nCONFIG_SQUASHFS_LZMA_LC=1,g' \
++			$(SIEMENS-LINUX-KERNEL_DIR)/.config
++      endif
++  else
++  ifeq ($(CONFIG_GENERATE_CRAM_ROOTFS_IMAGE),y)
++	$(SED) -i -e 's,^CONFIG_SQUASHFS=y,# CONFIG_SQUASHFS is not set,g' \
 +		$(SIEMENS-LINUX-KERNEL_DIR)/.config
-+	$(SED) -i -e 's,^CONFIG_SQUASHFS_LZMA=y,CONFIG_SQUASHFS_LZMA=y\nCONFIG_SQUASHFS_LZMA_LP=2,g' \
-+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
-+	$(SED) -i -e 's,^CONFIG_SQUASHFS_LZMA=y,CONFIG_SQUASHFS_LZMA=y\nCONFIG_SQUASHFS_LZMA_LC=1,g' \
-+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++  endif
 +  endif
  	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
  		BASH=$(BASH) CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) oldconfig

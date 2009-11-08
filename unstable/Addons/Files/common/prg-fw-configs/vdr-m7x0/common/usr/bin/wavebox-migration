@@ -1,6 +1,0 @@
-#!/bin/ash
-
-/bin/mount.rescue
-chroot /rescue /sbin/flash_archive read
-/usr/bin/wavebox-migration-channels
-/bin/umount.rescue

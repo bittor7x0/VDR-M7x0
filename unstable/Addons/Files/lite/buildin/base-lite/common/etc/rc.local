@@ -11,12 +11,6 @@ if [ X"${hd_swap_dev}" != X"NO" ] ; then
 	done
 fi
 
-if [ -f /rw-flash/.wbx ]; then
-    echo -n ' wavebox migration'
-    /usr/bin/wavebox-migration
-    rm -f /rw-flash/.wbx
-fi
-
 if [ X"${runvdr}" != X"NO" ]; then
     echo -n ' vdr' 
     export ${runvdr_vars}

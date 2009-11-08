@@ -24,7 +24,7 @@ PREFIX := /usr/local
 SBINDIR := $(PREFIX)/sbin
 BINDIR := $(PREFIX)/bin
 SPRGS :=
-PRGS := genindex io-test scan-param
+PRGS := genindex io-test
 RM := rm
 CP := cp
 MKDIR := mkdir
@@ -35,8 +35,6 @@ genindex_OBJS := genindex.o
 genindex_LDADD :=
 io-test_OBJS := io-test.o
 io-test_LDADD :=
-scan-param_OBJS := scan-param.o
-scan-param_LDADD :=
 
 # sort unifies (is the only reason for sorting)
 ALL_OBJS := $(sort $(foreach bin,$(SPRGS) $(PRGS),$($(bin)_OBJS)))
@@ -57,8 +55,8 @@ $(SPRGS) $(PRGS): $$($$@_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $($@_OBJS) $($@_LDADD)
 
 install: $(SPRGS) $(PRGS)
-	-@$(MKDIR) -p $(SBINDIR)
    ifneq ($(strip $(SPRGS)),)
+	-@$(MKDIR) -p $(SBINDIR)
 	@$(CP) $(SPRGS) $(SBINDIR)
    endif
 	-@$(MKDIR) -p $(BINDIR)
@@ -69,3 +67,4 @@ clean:
 
 distclean: clean
 	-$(RM) -f $(SPRGS)
+	-$(RM) -f $(PRGS)

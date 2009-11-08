@@ -1,7 +1,7 @@
 diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
 --- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2009-09-20 19:45:47.000000000 +0200
 +++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2009-09-19 10:19:58.000000000 +0200
-@@ -198,7 +198,7 @@
+@@ -208,7 +208,7 @@
  		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux \
  		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
  	-$(RM) -f $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.lzma

@@ -16,12 +16,6 @@ if [ X"${do_net_mount}" != X"NO" ] ; then
     ash /etc/rc.netmount
 fi
 
-if [ -f /rw-flash/.wbx ]; then
-    echo -n ' wavebox migration'
-    /usr/bin/wavebox-migration
-    rm -f /rw-flash/.wbx
-fi
-
 if [ X"${bootmenu_start}" != X"NO" ] ; then
     alarm=`cat /etc/bootmenu/next_alarm`
 
