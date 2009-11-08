@@ -1,0 +1,65 @@
+diff -Naur lmbench3-orig/CONFIG.m740av lmbench3/CONFIG.m740av
+--- lmbench3-orig/CONFIG.m740av	1970-01-01 01:00:00.000000000 +0100
++++ lmbench3/CONFIG.m740av	2009-08-10 19:33:16.000000000 +0200
+@@ -0,0 +1,45 @@
++DISKS=""
++DISK_DESC=""
++OUTPUT=/dev/tty
++ENOUGH=1000000
++FASTMEM="NO"
++FILE=/var/tmp/XXX
++FSDIR=/var/tmp
++INFO=INFO.m740av
++LINE_SIZE=16
++LOOP_O=0.00680971
++MAIL=no
++TOTAL_MEM=44
++MB=30
++MHZ="166"
++MOTHERBOARD=""
++NETWORKS=""
++OS="mips-Linux"
++PROCESSORS="1"
++REMOTE=""
++SLOWFS="NO"
++SYNC_MAX="1"
++LMBENCH_SCHED="DEFAULT"
++TIMING_O=0
++RSH=rsh
++RCP=rcp
++VERSION=lmbench-3alpha4
++BENCHMARK_HARDWARE=YES
++BENCHMARK_OS=YES
++BENCHMARK_SYSCALL=
++BENCHMARK_SELECT=
++BENCHMARK_PROC=
++BENCHMARK_CTX=
++BENCHMARK_PAGEFAULT=
++BENCHMARK_FILE=
++BENCHMARK_MMAP=
++BENCHMARK_PIPE=
++BENCHMARK_UNIX=
++BENCHMARK_UDP=
++BENCHMARK_TCP=
++BENCHMARK_CONNECT=
++BENCHMARK_RPC=
++BENCHMARK_HTTP=
++BENCHMARK_BCOPY=
++BENCHMARK_MEM=
++BENCHMARK_OPS=
+diff -Naur lmbench3-orig/m7x0-make-results.sh lmbench3/m7x0-make-results.sh
+--- lmbench3-orig/m7x0-make-results.sh	1970-01-01 01:00:00.000000000 +0100
++++ lmbench3/m7x0-make-results.sh	2009-11-07 10:39:05.000000000 +0100
+@@ -0,0 +1,12 @@
++#!/bin/ash
++
++cd src
++
++export OS="mips-Linux"
++CONFIG=../bin/${OS}/`../scripts/config`
++
++if [ ! -f ${CONFIG} ]; then
++	../scripts/config-run
++fi
++
++../scripts/results

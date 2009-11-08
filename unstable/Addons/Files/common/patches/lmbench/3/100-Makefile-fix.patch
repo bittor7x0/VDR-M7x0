@@ -1,0 +1,15 @@
+diff -Naur lmbench3-orig/src/Makefile lmbench3/src/Makefile
+--- lmbench3-orig/src/Makefile	2005-08-23 02:19:54.000000000 +0200
++++ lmbench3/src/Makefile	2009-11-08 12:05:33.000000000 +0100
+@@ -165,9 +165,9 @@
+ assembler:
+ 	@env CFLAGS=-O MAKE="$(MAKE)" MAKEFLAGS="$(MAKEFLAGS)" CC="${CC}" OS="${OS}" ../scripts/build asm
+ 
+-bk.ver: ../SCCS/s.ChangeSet
++bk.ver:
+ 	rm -f bk.ver
+-	-echo `bk prs -hr+ -d'$$if(:SYMBOL:){:SYMBOL: }:UTC:' ../ChangeSet;` > bk.ver
++	-echo "3alpha4" > bk.ver
+ 	touch bk.ver
+ 
+ dist: bk.ver
