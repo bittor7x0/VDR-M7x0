@@ -1,5 +1,3 @@
-usr/bin/scan-param usr/bin/scan-param f 755 0 0 - - - - -
-usr/bin/scan-param -                  s   - - - - - - - -
 usr/bin/genindex   usr/bin/genindex   f 755 0 0 - - - - -
 usr/bin/genindex   -                  s   - - - - - - - -
 usr/bin/io-test    usr/bin/io-test    f 755 0 0 - - - - -
