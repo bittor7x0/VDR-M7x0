@@ -31,9 +31,6 @@ if [ X"${runvdr}" != X"NO" ]; then
      [ -f /var/run/runvdr.pid ] && killall -9 vdr
 
      [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && mv /var/vdr/epg.data ${vdr_epgfile}
-
-     export VDR_TV_MODE=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
-     export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
 fi
 
 echo -n ' usb-umount'
@@ -63,6 +60,8 @@ fi
 echo ' '
 
 if [ -x "${fw_update_file}" ] ; then
+    export VDR_TV_MODE=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+    export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
     umount /etc || umount -l /etc
     umount /rw-flash || umount -l /rw-flash
     ${fw_update_file}
