@@ -70,9 +70,22 @@ $(STAGEFILES_DIR)/.webapp_downloaded: $(STAGEFILES_DIR)/.webif_unpacked
 	$(CP) -Trf ../webif/$(WEBIF_BRANCH) $(WEBIF_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
 
+#TODO
+#TODO move static content
+#TODO
+
+#TODO $(STAGEFILES_DIR)/.webapp_static_content_moved: $(STAGEFILES_DIR)/.webapp_downloaded
+#TODO        $(RM) -rf $(TARGET_ROOT)/srv/www/htdocs
+#TODO        -$(MKDIR) -p $(TARGET_ROOT)/srv/www/htdocs
+#TODO        $(MV) $(WEBIF_DIR)/webapp/www/css $(TARGET_ROOT)/srv/www/htdocs
+#TODO        $(MV) $(WEBIF_DIR)/webapp/www/js $(TARGET_ROOT)/srv/www/htdocs
+#TODO        $(MV) $(WEBIF_DIR)/webapp/www/images $(TARGET_ROOT)/srv/www/htdocs
+#TODO        $(TOUCH) $(STAGEFILES_DIR)/.webif_static_content_moved
+
 #
 # compile webif
 #
+#TODO $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_static_content_moved $$(WEBIF_DEPS)
 $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF_DEPS)
 	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
 	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS) >> $(WEBIF_TC_FILE)
