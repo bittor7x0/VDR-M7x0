@@ -1,0 +1,190 @@
+diff -Naur -x '*svn*' '--exclude-from=exclude' VDR-NG-orig/epg.c VDR-NG/epg.c
+--- VDR-NG-orig/epg.c	2009-10-27 00:34:00.000000000 +0100
++++ VDR-NG/epg.c	2009-11-14 06:47:35.000000000 +0100
+@@ -862,7 +862,7 @@
+         }
+ }
+ 
+-void cSchedule::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtTime) const
++void cSchedule::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtTime, time_t BeforeTime, tEventID EventID) const
+ {
+ //M7X0 BEGIN AK
+   if (EpgModes.GetModeByChannelID(&channelID)->GetMode() >= emNoSave)
+@@ -888,11 +888,35 @@
+                p->Dump(f, Prefix);
+             }
+             break;
++       case dmPresentAndFollowing: {
++            if ((p = GetPresentEvent()) != NULL)
++               p->Dump(f, Prefix);
++               if ((p = events.Next(p)) != NULL)
++                  p->Dump(f,Prefix);
++            }
++            break;
+        case dmAtTime: {
+             if ((p = GetEventAround(AtTime)) != NULL)
+                p->Dump(f, Prefix);
+             }
+             break;
++       case dmBetween: if (BeforeTime > AtTime) {
++            for (p = events.First(); p; p = events.Next(p)) {
++               if ((AtTime <= p->EndTime()) && (p->StartTime() <= BeforeTime)) {
++                  p->Dump(f, Prefix);
++                  }
++               }
++            }
++            break;
++       case dmWithID: if (EventID > 0) {
++            for (p = events.First(); p; p = events.Next(p)) {
++               if (EventID==p->eventID) {
++                  p->Dump(f, Prefix);
++                  break;
++                  }
++               }
++            }
++            break;
+        }
+      fprintf(f, "%sc\n", Prefix);
+      }
+@@ -1051,13 +1075,13 @@
+   return false;
+ }
+ 
+-bool cSchedules::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtTime)
++bool cSchedules::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtTime, time_t BeforeTime, tEventID EventID)
+ {
+   cSchedulesLock SchedulesLock(false, 1000);
+   cSchedules *s = (cSchedules *)Schedules(SchedulesLock);
+   if (s) {
+      for (cSchedule *p = s->First(); p; p = s->Next(p))
+-         p->Dump(f, Prefix, DumpMode, AtTime);
++         p->Dump(f, Prefix, DumpMode, AtTime, BeforeTime, EventID);
+      return true;
+      }
+   return false;
+diff -Naur -x '*svn*' '--exclude-from=exclude' VDR-NG-orig/epg.h VDR-NG/epg.h
+--- VDR-NG-orig/epg.h	2009-10-27 00:34:00.000000000 +0100
++++ VDR-NG/epg.h	2009-11-14 06:28:49.000000000 +0100
+@@ -19,7 +19,7 @@
+ 
+ #define MAXEPGBUGFIXLEVEL 3
+ 
+-enum eDumpMode { dmAll, dmPresent, dmFollowing, dmAtTime };
++enum eDumpMode { dmAll, dmPresent, dmFollowing, dmPresentAndFollowing, dmAtTime, dmBetween, dmWithID };
+ 
+ struct tComponent {
+   uchar stream;
+@@ -154,7 +154,7 @@
+   const cEvent *GetFollowingEvent(void) const;
+   const cEvent *GetEvent(tEventID EventID, time_t StartTime = 0) const;
+   const cEvent *GetEventAround(time_t Time) const;
+-  void Dump(FILE *f, const char *Prefix = "", eDumpMode DumpMode = dmAll, time_t AtTime = 0) const;
++  void Dump(FILE *f, const char *Prefix = "", eDumpMode DumpMode = dmAll, time_t AtTime = 0, time_t BeforeTime = 0, tEventID EventID = 0) const;
+   static bool Read(FILE *f, cSchedules *Schedules);
+   };
+ 
+@@ -192,7 +192,7 @@
+   static void Cleanup(bool Force = false);
+   static void ResetVersions(void);
+   static bool ClearAll(void);
+-  static bool Dump(FILE *f, const char *Prefix = "", eDumpMode DumpMode = dmAll, time_t AtTime = 0);
++  static bool Dump(FILE *f, const char *Prefix = "", eDumpMode DumpMode = dmAll, time_t AtTime = 0, time_t BeforeTime = 0, tEventID EventID = 0);
+   static bool Read(FILE *f = NULL);
+   cSchedule *AddSchedule(tChannelID ChannelID);
+   const cSchedule *GetSchedule(tChannelID ChannelID) const;
+diff -Naur -x '*svn*' '--exclude-from=exclude' VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
+--- VDR-NG-orig/svdrp.c	2009-10-27 00:34:00.000000000 +0100
++++ VDR-NG/svdrp.c	2009-11-14 06:49:22.000000000 +0100
+@@ -226,12 +226,13 @@
+   "    containing the given string as part of their name are listed.\n"
+   "    If ':groups' is given, all channels are listed including group\n"
+   "    separators. The channel number of a group separator is always 0.",
+-  "LSTE [ <channel> ] [ now | next | at <time> ]\n"
++  "LSTE [ <channel> ] [ now | next | nownext | at <time> | between <time> <time> | withid <number> ]\n"
+   "    List EPG data. Without any parameters all data of all channels is\n"
+   "    listed. If a channel is given (either by number or by channel ID),\n"
+-  "    only data for that channel is listed. 'now', 'next', or 'at <time>'\n"
+-  "    restricts the returned data to present events, following events, or\n"
+-  "    events at the given time (which must be in time_t form).",
++  "    only data for that channel is listed. 'now', 'next', 'at <time>'\n"
++  "    or 'between <time> <time>' restricts the returned data to present events, \n"
++  "    following events, events at the given time, events between given times \n"
++  "    (which must be in time_t form) or event with given id.",
+   "LSTR [ <number> | <path> ] [path]\n"
+   "    List recordings. Without option, all recordings are listed. Otherwise\n"
+   "    the information for the given recording is listed. If the keyword 'path'\n ",
+@@ -1016,6 +1017,8 @@
+      const cSchedule* Schedule = NULL;
+      eDumpMode DumpMode = dmAll;
+      time_t AtTime = 0;
++     time_t BeforeTime = 0;
++     tEventID EventID = 0;
+      if (*Option) {
+         char buf[strlen(Option) + 1];
+         strcpy(buf, Option);
+@@ -1027,6 +1030,8 @@
+                  DumpMode = dmPresent;
+               else if (strcasecmp(p, "NEXT") == 0)
+                  DumpMode = dmFollowing;
++              else if (strcasecmp(p, "NOWNEXT") == 0)
++                 DumpMode = dmPresentAndFollowing;
+               else if (strcasecmp(p, "AT") == 0) {
+                  DumpMode = dmAtTime;
+                  if ((p = strtok_r(NULL, delim, &strtok_next)) != NULL) {
+@@ -1042,6 +1047,44 @@
+                     return;
+                     }
+                  }
++              else if (strcasecmp(p, "BETWEEN") == 0) {
++                 DumpMode = dmBetween;
++                 time_t *a_time[]={&AtTime,&BeforeTime};
++                 int i;
++                 for (i=0;i<2;i++){
++                    if ((p = strtok_r(NULL, delim, &strtok_next)) != NULL) {
++                       if (isnumber(p)) 
++                          *a_time[i] = strtol(p, NULL, 10);
++                       else {
++                           Reply(501, (i==0) ? "Invalid start time" : "Invalid end time");
++                           return;
++                           }
++                       }
++                   else {
++                       Reply(501, (i==0) ? "Missing start time" : "Missing end time");
++                       return;
++                       }
++                   }
++                 if (AtTime>=BeforeTime) {
++                    Reply(501, "End time must be greater than start time");
++                    return;
++                    }
++                }
++              else if (strcasecmp(p, "WITHID") == 0) {
++                 DumpMode = dmWithID;
++                 if ((p = strtok_r(NULL, delim, &strtok_next)) != NULL) {
++                    if (isnumber(p)) 
++                       EventID = strtol(p, NULL, 10);
++                    else {
++                       Reply(501, "Invalid event ID");
++                       return;
++                       }
++                    }
++                 else {
++                    Reply(501, "Missing event ID");
++                    return;
++                    }
++                 }
+               else if (!Schedule) {
+                  cChannel* Channel = NULL;
+                  if (isnumber(p))
+@@ -1072,9 +1115,9 @@
+         FILE *f = fdopen(fd, "w");
+         if (f) {
+            if (Schedule)
+-              Schedule->Dump(f, "215-", DumpMode, AtTime);
++              Schedule->Dump(f, "215-", DumpMode, AtTime, BeforeTime, EventID);
+            else
+-              Schedules->Dump(f, "215-", DumpMode, AtTime);
++              Schedules->Dump(f, "215-", DumpMode, AtTime, BeforeTime, EventID);
+            fflush(f);
+            Reply(215, "End of EPG data");
+            fclose(f);
