@@ -1,0 +1,35 @@
+table.channels {
+	float:left;
+	width:45%;
+	min-width:45%;
+	margin:0 0 0 3%;
+	border-collapse:collapse;
+}
+tr.channelInfo {
+	display:none;
+}
+td.channelInfo {
+	background-color:#FFCF9F;
+	padding:2px;
+}
+table.channelInfo {
+	background-color:transparent;
+	border:0 none;
+	margin:0 15%;
+	width:68%;
+	padding:0;
+	font-size:0.8em;
+}
+table.channelInfo caption {	
+	font-weight:bold;
+}
+table.channelInfo th,
+table.channelInfo td {
+	color:black;
+	background-color:#ffe2c4;
+	border:1px solid silver;
+	margin:0;
+	padding:1px;
+	-moz-border-radius:0;
+	-webkit-border-radius:0;
+}
