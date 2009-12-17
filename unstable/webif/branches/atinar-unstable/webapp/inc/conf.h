@@ -41,13 +41,13 @@ typedef struct cfgParam_s {
 
 typedef struct cfgParamConfig_s cfgParamConfig_t;
 typedef void (*cfgParamValidate_t)(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param);
-typedef boolean_t (*cfgParamPrintInput_t)(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
-	,const char *inputId, const char *paramName,int paramIdx,const char *paramValue,char *const aux);
+typedef boolean_t (*cfgParamPrintInput_t)(context_t *ctx,const cfgParamConfig_t * const paramConfig
+	,const char *inputId, const char *paramName,int paramIdx,const char *paramValue);
 
-boolean_t printCheckbox(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
-	,const char *checkboxId, const char *paramName,int paramIdx,const char *paramValue,char *const aux);
-boolean_t printSelect(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
-	,const char *selectId, const char *paramName,int paramIdx,const char *paramValue, char *const aux);
+boolean_t printCheckbox(context_t *ctx,const cfgParamConfig_t * const paramConfig
+	,const char *checkboxId, const char *paramName,int paramIdx,const char *paramValue);
+boolean_t printSelect(context_t *ctx,const cfgParamConfig_t * const paramConfig
+	,const char *selectId, const char *paramName,int paramIdx,const char *paramValue);
 
 struct cfgParamConfig_s {
 	const char *name;         // Name of the param
@@ -96,7 +96,7 @@ typedef struct webifConf_s {
 	boolean_t alreadySet;
 	time_t mtime; //st_mtime of conf file in last read
 	int langId;
-	hostConf_t hosts[MAXHOSTS]; 
+	hostConf_t hosts[MAXHOSTS];  //TODO hacer dinamico
 	int hostsLength;
 	int numVDRs;
 	playlistType_t playlistType;
@@ -105,12 +105,16 @@ typedef struct webifConf_s {
 	boolean_t configViewDisabled;
 	boolean_t useExternalWwwFolder;
 	boolean_t displayHostId; //display host id in recordings
+	boolean_t printRecFolderSummary;
 	int maxDepth; //maximum directory depth while browsing
 	boolean_t alwaysCloseSvdrp;  //always close SVDRP connection after each command
 	int defaultMarginStart;
 	int defaultMarginStop;
 	int videoWidth;
 	int videoHeight;
+	int tvScheduleGridWidth;
+	int channelLogoWidth;
+	char *www; 
 } webifConf_t;
 
 extern webifConf_t webifConf;
@@ -123,10 +127,11 @@ const cfgParamConfig_t *getCfgParamConfig(cfgFileId_t cfgFileId, cfgParam_t * co
 boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean_t *isNew);
 boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params);
 boolean_t readWebifConf();
+void freeWebifConf();
 hostConf_t *getHost(int hostId);
 hostConf_t *getFirstVdrHost();
 boolean_t isHostLocal(hostConf_t *host);
-const char *getHostHttpAddr(hostConf_t *host,request_t *request);
-void printVDRSelect(io_t *out,int ntabs,const char * name,const int hostId);
+const char *getHostHttpAddr(hostConf_t *host,context_t *ctx);
+void printVDRSelect(context_t *ctx,const char * name,const int hostId);
 
 #endif

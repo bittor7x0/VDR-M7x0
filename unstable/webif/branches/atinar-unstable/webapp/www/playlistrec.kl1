@@ -15,13 +15,14 @@
 #include "recordings.h"
 
 %><%
-	config(session, request);
+	context_t vctx;
+	context_t *ctx=&vctx;
+	initCtx(ctx,session,request,response,out,1024);
 	vars_t *args = request_get_args(request);
-	enum {AUXSZ=1024};
-	char aux[AUXSZ];
 	rec_t rec;
 	initRec(&rec);
-	initRecFromArgs(&rec,args);
-	printRecPlaylist(request,response,out,&rec,aux);
+	initRecFromArgs(ctx,&rec,args);
+	printRecPlaylist(ctx,&rec);
 	freeRec(&rec);
+	freeCtx(ctx);
 %>

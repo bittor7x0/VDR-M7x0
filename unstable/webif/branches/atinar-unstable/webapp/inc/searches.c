@@ -20,11 +20,13 @@
 #include <u/libu.h>
 #include <klone/utils.h>
 
+#include "searches.h"
 #include "epg.h"
 #include "i18n.h"
 #include "misc.h"
 #include "svdrp_comm.h"
-#include "searches.h"
+
+char *getSearchStrAt(hostConf_t *const host, int id);
 
 void initChannelGroup(channelGroup_t *const group){
 	group->hostId=0;
@@ -97,19 +99,21 @@ outOfMemory:
 	exit(1);
 }
 
-void printChannelGroupListSelect(io_t *out,int ntabs,const char * name,const channelGroupList_t *const groups,const char *groupName){
+void printChannelGroupListSelect(context_t *ctx,const char * name,const channelGroupList_t *const groups,const char *groupName){
 	int i;
 	channelGroup_t *group;
-	io_printf(out,"%.*s<select name=\"%s\" size=\"1\">\n",ntabs++,tabs,name);
+	ctx_printfn(ctx,"<select name=\"%s\" size=\"1\">\n",0,1,name);
 	for (i=0,group=groups->entry;i<groups->length;i++,group++) {
-		io_printf(out,"%.*s<option value=\"%s\" %s>%s</option>\n"
-			,ntabs,tabs,group->name,selected[boolean(groupName && strcmp(group->name,groupName)==0)],group->name);
-		}
-	io_printf(out,"%.*s</select>\n",--ntabs,tabs);
+		ctx_printf0(ctx,"<option value=\"%s\" %s>%s</option>\n"
+			,group->name,selected[boolean(groupName && strcmp(group->name,groupName)==0)],group->name);
+	}
+	ctx_printfn(ctx,"</select>\n",-1,0);
 }
 
 void initSearch(search_t *const search) {
 	memset(search,0,sizeof(search_t));
+	search->id=-1;
+	search->searchMode=SEARCH_MODE_SUBSTRING;
 	search->priority=50;
 	search->lifetime=99;
 	setFlag(EFI_TITLE,search->compareFlags);
@@ -120,7 +124,49 @@ void initSearch(search_t *const search) {
 	setFlag(SFL_USE_AS_SEARCH_TIMER,search->flags);
 }
 
-boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, io_t *out, int ntabs){
+boolean_t initSearchFromEvent(context_t *ctx, search_t *const search, hostConf_t *host, const int channelNum, const int eventId) {
+	initSearch(search);
+	boolean_t result= BT_FALSE;
+	if (!host || !host->isVdr) {
+		if (ctx) printMessage(ctx,"alert",tr("search.create.err"),"Host nulo o no es VDR",BT_FALSE); //TODO i18n
+	} else {
+		channelEvents_t channelEvents;
+		initChannelEvents(&channelEvents);
+		channelEvents.channelNum=channelNum;
+		channelEvents.eventId=eventId;
+		channelEvents.dumpMode=dmByIds;
+		getChannelEvents(host,&channelEvents);
+		if (channelEvents.length>0){
+			epgEvent_t *event=channelEvents.entry;
+			//setFlag(TF_ACTIVE,search->flags);
+			if (event->shortdesc!=NULL && event->shortdesc[0]){
+				crit_goto_if(asprintf(&search->search,"%s %s",event->title,event->shortdesc)<1,outOfMemory);
+				setFlag(ECF_COMPARE_SUBTITLE,search->compareFlags);
+			} else {
+				crit_goto_if(asprintf(&search->search,"%s",event->title)<1,outOfMemory);
+			}
+			setFlag(ECF_COMPARE_TITLE,search->compareFlags);
+			search->hostId=host->id;
+			search->useChannel=1;
+			search->channelMin=search->channelMax=channelNum-1; 
+			time_t ttime=event->start;
+			struct tm stime=*localtime(&ttime);
+			search->wday=stime.tm_wday;
+			search->startTime=stime.tm_hour*100+stime.tm_min;
+			ttime+=event->duration;
+			stime=*localtime(&ttime);
+			search->stopTime=stime.tm_hour*100+stime.tm_min;
+			result=BT_TRUE;
+		}
+		freeChannelEvents(&channelEvents);
+	}
+	return result;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, context_t *ctx){
 	initSearch(search);
 	const char *oldSearchStr=vars_get_value(args,"oldSearchStr");
 	if (oldSearchStr) parseSearch(oldSearchStr,search,channels);
@@ -177,14 +223,13 @@ boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t
 	if (vars_get_value_i(args,"useWday")) {
 		setFlag(SFL_USE_WDAY,search->compareFlags); ;
 		int ndays=vars_countn(args,"wday");
-		//TODO comprobar esta porqueria
 		if (ndays>1){
 			int i,wday;
 			uint wdayFlag;
 			for(i=0;i<ndays;i++){
 				wday=vars_geti_value_i(args,"wday",i);
 				if (wday>6||wday<0){
-					if (out) printMessage(out,ntabs,"alert",tr("search.errWrongWday"),NULL,NULL);
+					printMessage(ctx,"alert",tr("search.errWrongWday"),NULL,BT_FALSE);
 				} else {
 					wdayFlag=1<<wday;
 					setFlag(wdayFlag,search->wday); 
@@ -261,6 +306,235 @@ void freeSearchList(searchList_t *const list){
 	}
 	free(list->entry);
 	initSearchList(list);
+}
+
+void getSearchListHost(hostConf_t *const host, searchList_t *const searches, channelList_t const *const channels){
+	char *data=execSvdrp(host,"PLUG epgsearch LSTS");
+	if (data){
+		char *p;
+		search_t *tmp;
+		for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+			if (atoi(p)==SVDRP_PLUG_DEFAULT) {
+				p+=4;
+				crit_goto_if((searches->entry=(search_t *)realloc(searches->entry,(++searches->length)*sizeof(search_t)))==NULL,outOfMemory);
+				tmp=searches->entry+searches->length-1;
+				initSearch(tmp);
+				tmp->hostId=host->id;
+				tmp->searchStr=strdup(p); 
+				setFlag(SFI_SEARCH_STR,tmp->my);
+				if (parseSearch(p,tmp,channels)){
+					//TODO asignar canales
+				} else {
+					freeSearch(tmp); //TODO decidir cual de las dos veces
+					searches->length--;
+				} 
+			}
+		}
+		free(data);
+	}
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+int compareSearchs(const search_t *sa, const search_t *sb, sortField_t sortBy, sortDirection_t sortDirection){
+	if (sortDirection==SF_NONE) return 0;
+	int result=0;
+	int step;
+	for (step=0;step<2;step++){
+		switch (sortBy) {
+			case SF_PRIORITY:
+				result=sortDirection*(sa->priority-sb->priority);	
+				if (result) return result; else sortBy=SF_NAME; break;
+			case SF_LIFETIME: 
+				result=sortDirection*(sa->lifetime-sb->lifetime);	
+				if (result) return result; else sortBy=SF_NAME; break;
+			case SF_HOST:
+				result=sortDirection*(sa->hostId-sb->hostId);
+				if (result) return result; else sortBy=SF_NAME; break;
+			case SF_DIRECTORY:
+				result=sortDirection*strcmp(sa->directory,sb->directory);
+				dbg("sa.dir [%s] sb.dir [%s] result %d",sa->directory,sb->directory,result);
+				if (result) return result; else sortBy=SF_NAME; break;
+			case SF_NAME:
+				result=sortDirection*strcmp(sa->search,sb->search);
+				if (result) return result; else sortBy=SF_START; break;
+			case SF_START:    
+				result=sortDirection*(sa->startTime-sb->startTime);	
+				if (result) return result; else sortBy=SF_NAME; break;
+		}
+	}
+	return result;
+}
+
+void sortSearchList(searchList_t *const searches, const sortField_t sortBy, const sortDirection_t sortDirection){
+	int compare(const void *a, const void *b) {
+		return compareSearchs((const search_t *)a,(const search_t *)b, sortBy, sortDirection);
+	}
+	if (searches->length>0 && sortBy!=SF_NONE) {
+		qsort(searches->entry,searches->length,sizeof(search_t),compare);
+	} 
+}
+
+void getSearchList(searchList_t *const searches, channelList_t const *const channels, const sortField_t sortBy, const sortDirection_t sortDirection){
+	initSearchList(searches);
+	int h;
+	hostConf_t *host;
+	for (h=0,host=webifConf.hosts;h<webifConf.hostsLength;h++,host++){
+		if (host->isVdr){
+			getSearchListHost(host,searches,channels);
+		}
+	}
+	sortSearchList(searches,sortBy,sortDirection);
+}
+
+boolean_t addSearch(context_t *ctx, hostConf_t *const host, const char *newSearchStr) {
+	boolean_t result= BT_FALSE;
+	if (!host || !host->isVdr) {
+		if (ctx) printMessage(ctx,"alert",tr("search.create.err"),"Host nulo o no es VDR",BT_FALSE); //TODO i18n
+	} else {
+		char *command;
+		crit_goto_if(asprintf(&command,"PLUG epgsearch NEWS %s",newSearchStr)<0,outOfMemory);
+		char *data=execSvdrp(host,command);
+		free(command);
+		if (data){
+			char *p=data;
+			int code=strtol(p,&p,10);
+			result=boolean(code==SVDRP_PLUG_DEFAULT);
+			if (ctx && *p && *(++p)){
+				printMessage(ctx,(result)?"message":"alert",tr((result)?"search.create.ok":"search.create.err"),p,BT_TRUE);
+			}
+			free(data);
+		}
+	}
+	return result;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+boolean_t deleteSearch(context_t *ctx, hostConf_t *host, int id, const char *oldSearchStr) {
+	boolean_t result=BT_FALSE;
+	if (!host || !host->isVdr) {
+		if (ctx) printMessage(ctx,"alert",tr("search.delete.err"),"Host nulo o no es VDR",BT_FALSE); //TODO i18n
+	} else if (oldSearchStr==NULL) {
+		if (ctx) printMessage(ctx,"alert",tr("search.delete.err"),"Faltan argumentos",BT_FALSE); //TODO i18n
+	} else {
+		char *searchStr=getSearchStrAt(host, id);
+		if (searchStr!=NULL) {
+			if (strcmp(oldSearchStr,searchStr)==0) {
+				char *command=NULL;
+				crit_goto_if(asprintf(&command,"PLUG epgsearch DELS %d",id)<0,outOfMemory);
+				char *data=execSvdrp(host,command);
+				free(command);
+				if (data!=NULL){
+					char *p=data;
+					int code=strtol(p,&p,10);
+					result=boolean(code==SVDRP_PLUG_DEFAULT);
+					if (ctx && *p && *(++p)){
+						printMessage(ctx,(result)?"message":"alert",tr((result)?"search.delete.ok":"search.delete.err"),p,BT_TRUE);
+					}
+					free(data);
+				}
+			} else { 
+				if (ctx) printMessage(ctx,"alert",tr("search.delete.err"),"Probablemente la búsqueda ha sido modificada",BT_FALSE); //TODO i18n
+			}
+			free(searchStr);
+		} else { 
+			if (ctx) printMessage(ctx,"alert",tr("search.delete.err"),"La búsqueda no existe",BT_FALSE); //TODO i18n
+		}
+	}
+	return result;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+boolean_t editSearch(context_t *ctx, hostConf_t *const host, int id, const char *oldSearchStr, const char *newSearchStr) {
+	if (!host || !oldSearchStr || !newSearchStr){
+		if (ctx) printMessage(ctx,"alert",tr("search.update.err"),"Faltan argumentos",BT_TRUE); //TODO i18n
+		return BT_FALSE;
+	}
+	if (strcmp(oldSearchStr,newSearchStr)==0){
+		if (ctx) printMessage(ctx,"alert",tr("search.update.err"),"Nada que hacer. No hay cambios",BT_TRUE); //TODO i18n
+		return BT_TRUE;
+	}
+	boolean_t result= BT_FALSE;
+	char *searchStr=getSearchStrAt(host,id);
+	if (searchStr!=NULL) {
+		if (strcmp(oldSearchStr,searchStr)==0) {
+			char *command=NULL;
+			crit_goto_if(asprintf(&command,"PLUG epgsearch EDIS %s",newSearchStr)<0,outOfMemory);
+			char *data=execSvdrp(host,command);
+			free(command);
+			if (data!=NULL){
+				char *p=data;
+				int code=strtol(p,&p,10);
+				result=boolean(code==SVDRP_PLUG_DEFAULT);
+				if (ctx && *p && *(++p)){
+					printMessage(ctx,(result)?"message":"alert",tr((result)?"search.update.ok":"search.update.err"),p,BT_TRUE);
+				}
+				free(data);
+			} else {
+				if (ctx) printMessage(ctx,"alert",tr("search.update.err"),tr("warnSvdrpConnection"),BT_TRUE);
+			}
+		} else {
+			printMessage(ctx,"alert",tr("search.update.err"),"Búsqueda no existe",BT_FALSE);
+		}
+		free(searchStr);
+	}
+	return result;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+boolean_t updateSearches(context_t *ctx, hostConf_t *host){
+	if (!host){
+		return BT_FALSE;
+	}
+	boolean_t result= BT_FALSE;
+	char *command=NULL;
+	char *data=execSvdrp(host,"PLUG epgsearch UPDS");
+	if (data!=NULL){
+		char *p=data;
+		int code=strtol(p,&p,10);
+		result=boolean(code==SVDRP_PLUG_DEFAULT);
+		if (ctx && *p && *(++p)){
+			printMessage(ctx,(result)?"message":"alert",tr((result)?"searches.update.ok":"searches.update.err"),p,BT_TRUE);
+		}
+		free(data);
+	}
+	return result;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+char *getSearchStrAt(hostConf_t *const host, int id) {
+	char *searchStr=NULL;
+	if (id>=0) {
+		char *command=NULL;
+		crit_goto_if(asprintf(&command,"PLUG epgsearch LSTS %d",id)<0,outOfMemory);
+		char *data=execSvdrp(host,command);
+		free(command);
+		if (data) {
+			char *p;
+			for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+				if (atoi(p)==SVDRP_PLUG_DEFAULT) {
+					p+=4;
+					searchStr=strdup(p);
+					break;
+				}
+			}
+			free(data);
+		}
+	}
+	return searchStr;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
 }
 
 boolean_t parseSearch(const char *line, search_t *const search, channelList_t const *const channels ){
@@ -492,221 +766,6 @@ outOfMemory:
 	exit(1);
 }
 
-void getSearchListHost(hostConf_t *const host, searchList_t *const searches, channelList_t const *const channels){
-	char *data=execSvdrp(host,"PLUG epgsearch LSTS");
-	if (data){
-		char *p;
-		search_t *tmp;
-		for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-			if (atoi(p)==SVDRP_PLUG_DEFAULT) {
-				p+=4;
-				crit_goto_if((searches->entry=(search_t *)realloc(searches->entry,(++searches->length)*sizeof(search_t)))==NULL,outOfMemory);
-				tmp=searches->entry+searches->length-1;
-				initSearch(tmp);
-				tmp->hostId=host->id;
-				tmp->searchStr=strdup(p); 
-				setFlag(SFI_SEARCH_STR,tmp->my);
-				if (parseSearch(p,tmp,channels)){
-					//TODO asignar canales
-				} else {
-					freeSearch(tmp); //TODO decidir cual de las dos veces
-					searches->length--;
-				} 
-			}
-		}
-		free(data);
-	}
-	return;
-outOfMemory:
-	crit("Out of memory");
-	exit(1);
-}
-
-int compareSearchs(const search_t *sa, const search_t *sb, sortField_t sortBy, sortDirection_t sortDirection){
-	if (sortDirection==SF_NONE) return 0;
-	int result=0;
-	int step;
-	for (step=0;step<2;step++){
-		switch (sortBy) {
-			case SF_PRIORITY:
-				result=sortDirection*(sa->priority-sb->priority);	
-				if (result) return result; else sortBy=SF_NAME; break;
-			case SF_LIFETIME: 
-				result=sortDirection*(sa->lifetime-sb->lifetime);	
-				if (result) return result; else sortBy=SF_NAME; break;
-			case SF_HOST:
-				result=sortDirection*(sa->hostId-sb->hostId);
-				if (result) return result; else sortBy=SF_NAME; break;
-			case SF_DIRECTORY:
-				result=sortDirection*strcmp(sa->directory,sb->directory);
-				dbg("sa.dir [%s] sb.dir [%s] result %d",sa->directory,sb->directory,result);
-				if (result) return result; else sortBy=SF_NAME; break;
-			case SF_NAME:
-				result=sortDirection*strcmp(sa->search,sb->search);
-				if (result) return result; else sortBy=SF_START; break;
-			case SF_START:    
-				result=sortDirection*(sa->startTime-sb->startTime);	
-				if (result) return result; else sortBy=SF_NAME; break;
-		}
-	}
-	return result;
-}
-
-void sortSearchList(searchList_t *const searches, const sortField_t sortBy, const sortDirection_t sortDirection){
-	int compare(const void *a, const void *b) {
-		return compareSearchs((const search_t *)a,(const search_t *)b, sortBy, sortDirection);
-	}
-	if (searches->length>0 && sortBy!=SF_NONE) {
-		qsort(searches->entry,searches->length,sizeof(search_t),compare);
-	} 
-}
-
-void getSearchList(searchList_t *const searches, channelList_t const *const channels, const sortField_t sortBy, const sortDirection_t sortDirection){
-	initSearchList(searches);
-	int h;
-	hostConf_t *host;
-	for (h=0,host=webifConf.hosts;h<webifConf.hostsLength;h++,host++){
-		if (host->isVdr){
-			getSearchListHost(host,searches,channels);
-		}
-	}
-	sortSearchList(searches,sortBy,sortDirection);
-}
-
-boolean_t addSearch(hostConf_t *const host, const char *newSearchStr, char **message) {
-	boolean_t result= BT_FALSE;
-	if (host && newSearchStr) {
-		char *command;
-		crit_goto_if(asprintf(&command,"PLUG epgsearch NEWS %s",newSearchStr)<0,outOfMemory);
-		char *data=execSvdrp(host,command);
-		free(command);
-		if (data){
-			char *p=data;
-			int code=strtol(p,&p,10);
-			result=boolean(code==SVDRP_PLUG_DEFAULT);
-			if (message && *p && *(++p)){
-				(*message)=strdup(p);
-			}
-			free(data);
-		}
-	}
-	return result;
-outOfMemory:
-	crit("Out of memory");
-	exit(1);
-}
-
-char *getSearchStrAt(hostConf_t *const host, int id) {
-	char *searchStr=NULL;
-	if (id>=0) {
-		char *command=NULL;
-		crit_goto_if(asprintf(&command,"PLUG epgsearch LSTS %d",id)<0,outOfMemory);
-		char *data=execSvdrp(host,command);
-		free(command);
-		if (data) {
-			char *p;
-			for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
-				if (atoi(p)==SVDRP_PLUG_DEFAULT) {
-					p+=4;
-					searchStr=strdup(p);
-					break;
-				}
-			}
-			free(data);
-		}
-	}
-	return searchStr;
-outOfMemory:
-	crit("Out of memory");
-	exit(1);
-}
-
-boolean_t deleSearch(hostConf_t *host, int id, const char *delSearchStr, char **message) {
-	boolean_t result=BT_FALSE;
-	char *searchStr=getSearchStrAt(host, id);
-	if (searchStr!=NULL) {
-		if (strcmp(delSearchStr,searchStr)==0) {
-			char *command=NULL;
-			crit_goto_if(asprintf(&command,"PLUG epgsearch DELS %d",id)<0,outOfMemory);
-			char *data=execSvdrp(host,command);
-			free(command);
-			if (data!=NULL){
-				char *p=data;
-				int code=strtol(p,&p,10);
-				result=boolean(code==SVDRP_PLUG_DEFAULT);
-				if (message && *p && *(++p)){
-					(*message)=strdup(p);
-				}
-				free(data);
-			}
-		} else { 
-			warn("Search [%s] not found.",delSearchStr);
-		}
-		free(searchStr);
-	}
-	return result;
-outOfMemory:
-	crit("Out of memory");
-	exit(1);
-}
-
-boolean_t editSearch(hostConf_t *const host, int id, const char *oldSearchStr, const char *newSearchStr, char **message) {
-	if (!host || !oldSearchStr || !newSearchStr){
-		return BT_FALSE;
-	}
-	if (strcmp(oldSearchStr,newSearchStr)==0){
-		return BT_TRUE;
-	}
-	boolean_t result= BT_FALSE;
-	char *searchStr=getSearchStrAt(host,id);
-	if (searchStr!=NULL) {
-		if (strcmp(oldSearchStr,searchStr)==0) {
-			char *command=NULL;
-			crit_goto_if(asprintf(&command,"PLUG epgsearch EDIS %s",newSearchStr)<0,outOfMemory);
-			char *data=execSvdrp(host,command);
-			free(command);
-			if (data!=NULL){
-				char *p=data;
-				int code=strtol(p,&p,10);
-				result=boolean(code==SVDRP_PLUG_DEFAULT);
-				if (message && *p && *(++p)){
-					(*message)=strdup(p);
-				}
-				free(data);
-			}
-		} else {
-			warn("Search [%s] not found.",oldSearchStr);
-		}
-		free(searchStr);
-	}
-	return result;
-outOfMemory:
-	crit("Out of memory");
-	exit(1);
-}
-
-boolean_t updateSearches(hostConf_t *host, char **message){
-	if (!host){
-		return BT_FALSE;
-	}
-	boolean_t result= BT_FALSE;
-	char *command=NULL;
-	char *data=execSvdrp(host,"PLUG epgsearch UPDS");
-	if (data!=NULL){
-		char *p=data;
-		int code=strtol(p,&p,10);
-		result=boolean(code==SVDRP_PLUG_DEFAULT);
-		if (message && *p && *(++p)){
-			(*message)=strdup(p);
-		}
-		free(data);
-	}
-	return result;
-outOfMemory:
-	crit("Out of memory");
-	exit(1);
-}
-
 char *makeSearchStr(search_t *const search,const channelList_t *channels){
 	char *searchStr;
 	crit_goto_if(asprintf(&searchStr,"%d:%s:%d",search->id,search->search,isFlagSet(SFL_USE_TIME,search->flags))<0,outOfMemory);
@@ -785,4 +844,219 @@ char *makeSearchStr(search_t *const search,const channelList_t *channels){
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
+}
+//------------------------------
+void printSearchForm(context_t *ctx, search_t *const search, channelList_t const *const channels, const char *cssLevel){
+	cfgParamConfig_t searchModeCfg={"search.mode","0",
+		"search.phrase|search.allWords|search.atLeastOne|search.exactMatch|search.regex|search.fuzzy",BT_TRUE,0,NULL,NULL,BT_FALSE};
+	cfgParamConfig_t checkboxCfg={"","0","0|1",BT_FALSE,0,NULL,NULL,BT_FALSE};
+	cfgParamConfig_t useChannelCfg={"","0","no|interval|channel.group|onlyFTA",BT_TRUE,0,NULL,NULL,BT_FALSE};
+	cfgParamConfig_t searchActionCfg={"","0","search.record|search.announce|search.switch",BT_TRUE,0,NULL,NULL,BT_FALSE};
+
+	char *paramValue;
+	struct tm sdate;
+	const char *SearchEdit=tr((search->searchStr)?"search.edit":"search.add");
+	hostConf_t *host=getHost(search->hostId);
+
+	ctx_printfn(ctx,"<form id=\"searchEdit\" action=\"/searches.kl1\" method=\"post\">\n",0,1);
+	ctx_printfn(ctx,"<div class=\"%s-div  formContent\">\n",0,1,cssLevel);
+	ctx_printf0(ctx,"<h3 class=\"%s-top formTitle\"\">%s</h3>\n",cssLevel,tr("search.edit"));
+	ctx_printfn(ctx,"<div class=\"%s\">\n",0,1,cssLevel);
+
+	ctx_printfn(ctx,"<fieldset>\n",0,1);
+	if (search->id>=0) {
+		ctx_printf0(ctx,"<input type=\"hidden\" name=\"searchId\" value=\"%d\"/>\n",search->id);
+		ctx_printf0(ctx,"<input type=\"hidden\" name=\"oldSearchStr\" value=\"%s\"/>\n",CTX_HTML_ENCODE(search->searchStr,-1));
+	}
+	if (webifConf.numVDRs>1){
+		ctx_printfn(ctx,"<label>%s\n",0,1,"Host");
+		printVDRSelect(ctx,"hostId",search->hostId);
+		ctx_printfn(ctx,"</label>\n",-1,0);
+	} else {
+		ctx_printf0(ctx,"<input type=\"hidden\" name=\"hostId\" value=\"%d\"/>\n",search->hostId);
+	}
+	ctx_printf0(ctx,"<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",search->hostId);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"search\" value=\"%s\"/></label>\n",tr("search.search"),(search->search)?search->search:"");
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.mode"));
+	asprintf(&paramValue,"%d",search->searchMode);
+	printSelect(ctx,&searchModeCfg,NULL,"searchMode",0,paramValue);
+	free(paramValue);
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.useCase"));
+	printCheckbox(ctx,&checkboxCfg,NULL,"useCase",0,isFlagSet(SFL_USE_CASE,search->flags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<fieldset id=\"compareSet\">\n",0,1);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.compareTitle"));
+	printCheckbox(ctx,&checkboxCfg,NULL,"compareTitle",0,isFlagSet(EFI_TITLE,search->compareFlags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.compareSubtitle"));
+	printCheckbox(ctx,&checkboxCfg,NULL,"compareSubtitle",0,isFlagSet(EFI_SHORTDESC,search->compareFlags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.compareDescription"));
+	printCheckbox(ctx,&checkboxCfg,NULL,"compareDescription",0,isFlagSet(EFI_DESC,search->compareFlags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+
+	ctx_printfn(ctx,"--><fieldset>\n",0,1);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.startFilter"));
+	printCheckbox(ctx,&checkboxCfg,"startFilter","useTime",0,isFlagSet(SFL_USE_TIME,search->flags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<fieldset id=\"startFilterCfg\">\n",0,1);
+	int hour,min;
+	hour=search->startTime/100;
+	min=search->startTime-hour*100;
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"startTime\" value=\"%02d:%02d\" size=\"5\"/></label>\n",tr("search.startAfter"),hour,min);
+	hour=search->stopTime/100;
+	min=search->stopTime-hour*100;
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"stopTime\" value=\"%02d:%02d\" size=\"5\"/></label>\n",tr("search.startBefore"),hour,min);
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+
+	ctx_printfn(ctx,"--><fieldset>\n",0,1);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.durationFilter"));
+	printCheckbox(ctx,&checkboxCfg,"durationFilter","useDuration",0,isFlagSet(SFL_USE_DURATION,search->flags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<fieldset id=\"durationFilterCfg\">\n",0,1);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"minDuration\" value=\"%d\" size=\"3\"/></label>\n",tr("search.durationMin"),search->minDuration);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"maxDuration\" value=\"%d\" size=\"3\"/></label>\n",tr("search.durationMax"),search->maxDuration);
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+
+	ctx_printfn(ctx,"--><fieldset>\n",0,1);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.wdayFilter"));
+	printCheckbox(ctx,&checkboxCfg,"wdayFilter","useWday",0,isFlagSet(SFL_USE_WDAY,search->flags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<fieldset id=\"wdayFilterCfg\">\n",0,1);
+	int wdayFlag;
+	int c,wday;
+	for(c=0,wday=startOfWeek[langId];c<7;c++,wday=(wday+1)%7) {
+		wdayFlag=1<<wday;
+		ctx_printf0(ctx,
+			"<label>%s"
+				"<input type=\"checkbox\" name=\"wday\" value=\"%d\"%s/>"
+			"</label>"
+			,weekdays[langId][wday],wday,checked[(search->wday<0)?isFlagSet(wdayFlag,-search->wday):boolean(wday==search->wday)]);
+	}
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+
+	//channel-start
+	ctx_printfn(ctx,"--><fieldset>\n",0,1);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.channelFilter"));
+	asprintf(&paramValue,"%d",search->useChannel);
+	printSelect(ctx,&useChannelCfg,"channelFilter","useChannel",0,paramValue);
+	free(paramValue);
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<fieldset id=\"channelFilterCfg\">\n",0,1);
+	ctx_printfn(ctx,"<label id=\"channelMinLabel\">%s\n",0,1,tr("search.channelMin"));
+	printChannelListSelect(ctx,NULL,"channelMin",channels,search->channelMin+1,NULL);
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<label id=\"channelMaxLabel\">%s\n",0,1,tr("search.channelMax"));
+	printChannelListSelect(ctx,NULL,"channelMax",channels,search->channelMax+1,NULL);
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	if (1) { //channelGroup
+		channelGroupList_t groups;
+		getChannelGroupList(host,&groups,channels);
+		ctx_printfn(ctx,"<label id=\"channelGroupLabel\">%s\n",0,1,tr("search.channel.group"));
+		if (groups.length>0) {
+			printChannelGroupListSelect(ctx,"channelGroup",&groups,search->channelGroup);
+			//TODO que hacer si no esta en la lista
+		} else {
+			ctx_printf0(ctx,"<input type=\"text\" name=\"channelGroup\" size=\"5\" value=\"%s\"/>",(search->channelGroup)?search->channelGroup:"");
+		} 
+		ctx_printfn(ctx,"</label>\n",-1,0);
+		freeChannelGroupList(&groups);
+	}
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+	//channel-end
+
+	//useAsSearchTimer-start
+	ctx_printfn(ctx,"--><fieldset>\n",0,1);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.useAsSearchTimer"));
+	printCheckbox(ctx,&checkboxCfg,"useAsSearchTimer","useAsSearchTimer",0,isFlagSet(SFL_USE_AS_SEARCH_TIMER,search->flags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<fieldset id=\"useAsSearchTimerCfg\">\n",0,1);
+	//action-start
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.action"));
+	asprintf(&paramValue,"%d",search->action);
+	printSelect(ctx,&searchActionCfg,"searchAction","searchAction",0,paramValue);
+	free(paramValue);
+	ctx_printfn(ctx,"</label>\n",-1,0);
+
+	//record-start
+	ctx_printfn(ctx,"<fieldset id=\"recordCfg\">\n",0,1);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"directory\" value=\"%s\" size=\"50\" /></label>\n"
+		,tr("search.directory"),(search->directory)?search->directory:"%Title%~%Subtitle%");
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.useEpisode"));
+	printCheckbox(ctx,&checkboxCfg,"useEpisode","useEpisode",0,isFlagSet(SFL_USE_EPISODE,search->flags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"priority\" value=\"%d\" size=\"3\" /></label>\n",tr("search.priority"),search->priority);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"lifetime\" value=\"%d\" size=\"3\" /></label>\n",tr("search.lifetime"),search->lifetime);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"marginStart\" value=\"%d\" size=\"3\" /></label>\n",tr("search.margin.before"),search->marginStart);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"marginStop\" value=\"%d\" size=\"3\" /></label>\n",tr("search.margin.after"),search->marginStop);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"delAfterDays\" value=\"%d\" size=\"2\" /></label>\n",tr("search.delAfterDays"),search->delAfterDays);
+
+	//repeats-start
+	//ctx_printfn(ctx,"<fieldset id=\"repeats\">\n",0,1);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.repeats.avoid"));
+	printCheckbox(ctx,&checkboxCfg,"repeatsAvoid","repeatsAvoid",0,isFlagSet(SFL_AVOID_REPEATS,search->flags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<fieldset id=\"repeatsAvoidCfg\">\n",0,1);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"repeatsAllowed\" value=\"%d\" size=\"2\"/></label>\n"
+		,tr("search.repeats.maxAllowed"),search->allowedRepeats);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.repeats.compareTitle"));
+	printCheckbox(ctx,&checkboxCfg,NULL,"repeatsCompareTitle",0,isFlagSet(EFI_TITLE,search->repeatsCompareFlags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.repeats.compareSubtitle"));
+	printCheckbox(ctx,&checkboxCfg,NULL,"repeatsCompareSubtitle",0,isFlagSet(EFI_SHORTDESC,search->repeatsCompareFlags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.repeats.compareDescription"));
+	printCheckbox(ctx,&checkboxCfg,NULL,"repeatsCompareDescription",0,isFlagSet(EFI_DESC,search->repeatsCompareFlags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	//ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	//repeats-end
+
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	//record-end
+
+	//announce-start
+	/*
+	ctx_printfn(ctx,"<fieldset id=\"announceCfg\">\n",0,1);
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	*/
+	//announce-stop
+
+	//switch-start
+	ctx_printfn(ctx,"<fieldset id=\"switchCfg\">\n",0,1);
+	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"switchMinsBefore\" value=\"%d\" size=\"2\"/></label>\n"
+		,tr("search.switch.minsBefore"),search->switchMinsBefore);
+	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.switch.unmuteSound"));
+	printCheckbox(ctx,&checkboxCfg,"switchUnmuteSound","repeatsAvoid",0,isFlagSet(SFL_UNMUTE_SOUND_ON_SWITCH,search->flags)?"1":"0");
+	ctx_printfn(ctx,"</label>\n",-1,0);
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	//switch-end
+
+	//action-end
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+	//useAsSearchTimer-end
+
+	ctx_printfn(ctx,"--><fieldset class=\"controls ajaxButtonsHolder\">\n",0,1);
+	ctx_printf0(ctx,
+		"<button id=\"confirm\" class=\"confirm ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
+			"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
+		"</button>\n"
+		,PA_ADD,tr("accept"));
+	ctx_printf0(ctx,
+		"<button id=\"searchDelete\" class=\"delete searchDelete ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
+			"<div><span class=\"ui-icon ui-icon-trash\">&nbsp;</span>%s</div>"
+		"</button>\n"
+		,PA_DELETE,tr("search.delete"));
+	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	ctx_printfn(ctx,"</div>\n",-1,0); //[cssLevel]
+	ctx_printfn(ctx,"</div>\n",-1,0); //[cssLevel]-div
+	ctx_printfn(ctx,"</form>\n",-1,0);
 }

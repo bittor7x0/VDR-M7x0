@@ -1,0 +1,96 @@
+table#recordings tr .controls {
+	float:right;
+	margin:0 2px;
+}
+
+table#recEdit {
+	min-width:70%;
+}
+table#recEdit input,
+table#recEdit textarea {
+	width:98%;
+	margin:0;
+}
+/* Browse */
+.level3-top {
+	overflow:hidden;
+	padding:0.5em 0.5em;
+}
+.recPath .recDir {
+	display:block;
+	float:left;
+	padding:0;
+	margin:1px 0.2em;
+}
+.recPath .recDir a.act,
+.recPath .recDir a:hover {
+	color:#ffff4f!important;
+}
+.recPath .recDir a:before {
+	content: " / ";
+}
+li.level4-div {
+	display:inline-block;
+	width:295px;
+	position:relative;
+	margin-top:1em!important;
+	min-height:5em;
+	max-height:15em;
+	overflow:auto;
+}
+.recFolder {
+	padding:2px;
+	border:1px solid #6797E7;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+}
+li.recFolder {
+	margin:2px;
+}
+ul li.recRec {
+	background-color:transparent;
+	border:none;
+	margin:0.1em 0.25em;
+	list-style-type:circle;
+	list-style-position:inside;
+	padding-left:0.5em;
+}
+ul li.recRecEdt {
+	list-style-type:disc!important;
+}
+.recRecDel {
+	text-decoration:line-through!important;
+}
+.recFolder a, 
+.recFolder a:link, 
+.recFolder a:visited {
+	color:#202040;
+}
+li.recRec:hover {
+	color:#272747;
+	background-color:#F0F0FF;
+}
+.recFolderHeader {
+	background-color:transparent;
+	display:block;
+	font-size:1.1em;
+	font-weight:bold;
+}
+.recFolderHeader a:hover {
+	color:#234;
+	font-weight:bold;
+}
+.recDetails {
+	background-color:#FFCF9F;
+	padding:3px;
+	margin-bottom:1px;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+}
+.recFolderFooter .field {
+	font-size:0.9em;
+	display:inline;
+}
+.recFolder .controls {
+	overflow:hidden;
+}

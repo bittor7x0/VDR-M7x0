@@ -1,0 +1,190 @@
+@import url('epg.css');
+#grid-div.level3-div {
+	background:#282A2D none;
+	border:none;
+	position:relative; 
+	padding:2px 2px 6px;
+	-moz-border-radius-bottomleft:0;
+	-moz-border-radius-bottomright:0;
+	-webkit-border-bottom-left-radius:0;
+	-webkit-border-bottom-right-radius:0;
+}     
+#grid-div.level3-div h3#grid-top.level3-top {
+	border:none;
+	padding-left:28px;
+}
+#grid-div.level3-div #grid.level3 {
+	background-color:transparent;
+	background-image:none;
+	border:none;
+	color:black;
+	margin:0;
+	padding:0;
+}
+#grid-div.level3-div * { 
+	line-height:1.1em;
+	font-size:1em; 
+}
+#grid-div ul{
+	list-style-type:none;
+} 
+#grid-div img { 
+	border:0;
+	display:block;
+}  
+#grid-div a {
+	text-decoration:none;
+}    
+#grid-div a:hover {
+	text-decoration:underline;
+}
+#grid-div #timeTable { 
+	width:100%;	
+	height:28px;
+	position: relative;
+	font-weight:bold;
+	font-family:verdana;
+	font-size:11px;
+	background-color:#A8CDFF;
+	margin:3px 0;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+}   
+#grid-div #timeTable .marks{
+	position:absolute;
+	left:64px;
+	top:0;
+}
+#grid-div #timeTable .marks .mark {
+	position:absolute;
+	height:28px; /*timeTable.height*/
+	border-left:1px solid #949CA6;
+	background:transparent;
+}
+#grid-div #timeTable .marks .mark span,
+#grid-div #timeTable .marks .mark input {
+	position:absolute;
+	top:50%;
+	width:5em;
+	margin-left:-2.5em;
+	z-index:1;
+	text-align:center;
+}
+#grid-div #timeTable .marks .mark span {
+	border:none;
+	height:1.2em;
+	margin-top:-0.6em;
+	background-color:#A8CDFF;
+}
+#grid-div #timeTable .marks .mark input {
+	border:1px solid #949CA6;
+	height:1.4em;
+	margin-top:-0.7em;
+	background-color:#BFDFFF;
+}
+#grid-div #timeTable .change {
+	position:absolute;
+	top:50%;
+	margin-top:-9px;
+	display:block;
+	width:16px;
+	height:16px;
+}
+#grid-div #timeTable .previous .change {
+	left:6px;
+}
+#grid-div #timeTable .next .change{
+	right:6px;
+}
+#grid-div #channels {
+	margin:0 auto; 
+	background-color:#A8CDFF;
+	overflow:hidden;
+}
+#grid-div #channels div.logo { 
+	float:left; 
+}
+#grid-div #channels div.logo img {
+	width:58px;
+	height:58px;
+}
+#grid-div .channel { 
+	clear:both;
+	border-top:1px solid #949CA6;
+}  
+#grid-div .channel .channelContent {
+	float:left;
+	position:relative;
+	background-color:#949CA6;
+	min-height:58px;
+}    
+#grid-div .channel .channelEvents { 
+	position:relative;
+	overflow:hidden;
+	height:58px;
+	width:100%;
+}
+#grid-div .channel .channelEvents .event { 
+	position:absolute;
+	overflow:hidden;
+	color:#4b4b4b;
+	background-color:white;
+	z-index:0; /*<eventInfoDiv.z-index*/
+}
+#grid-div .channel .channelEvents .open {
+	z-index:3; /*>eventInfoDiv.z-index*/
+}
+#grid-div .channel .channelEvents .event .eventContent { 
+	border-left:1px solid #949CA6;
+	padding:0.5em;
+	height:58px;
+}
+#grid-div .channel .eventInfoDiv {
+	width:100%;
+	float:left;
+	overflow:hidden;
+	margin-top:-1px;
+	position:relative;
+	z-index:2;
+}
+#grid-div .channel .channelEvents .open {
+	background-color:Moccasin!important;
+}
+#grid-div .channel .eventInfo {
+	border-left:1px solid #949CA6;
+	border-top:1px solid #949CA6;
+	margin:0;
+	padding:0.5em;
+}
+#grid-div .channel .eventInfo span.more {
+	display:none;
+}
+h3#grid-top * {
+	vertical-align:middle;
+}
+h3#grid-top a.change {
+	display:inline-block;
+	width:16px;
+}
+h3#grid-top a.change .ui-icon {
+	display:block;
+	float:none;
+}
+#ui-datepicker-div {
+	z-index:10;
+}
+#grid-div #grid-top img.ui-datepicker-trigger {
+	display:inline;
+	margin-left:0.5em;
+}
+#gridDate {
+	text-transform:capitalize;
+}
+#timers-div {
+	background-color:#A8CDFF;
+}
+#timers {
+	border-left:1px solid #949CA6;
+	background-color:wheat;
+	padding: 0.1px 0; /*para forzar margenes hijos*/
+}

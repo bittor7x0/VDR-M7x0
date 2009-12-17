@@ -15,6 +15,7 @@
 #include <sys/vfs.h>
 #include <klone/utils.h>
 
+#include "i18n.h"
 #include "partitions.h"
 
 void initPartitionInfo(partitionInfo_t *const partition){
@@ -67,5 +68,31 @@ void getPartitionList/*Host*/(/*hostConf_t *const host,*/partitionList_t *const 
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
+}
+
+void printPartitionList(context_t *ctx, const partitionList_t * const partitions){
+	if (partitions->length){
+		ctx_printfn(ctx,"<table id=\"partitionSpace\" class=\"list\" summary=\"%s\">\n",0,1,tr("partitionSpace"));
+		ctx_printfn(ctx,"<thead>\n",0,1);
+		ctx_printf0(ctx,
+			"<tr>"
+				"<th>%s</th>"
+				"<th colspan=\"2\">%s</th>"
+				"<th>%s</th>"
+			"</tr>\n",tr("partition"),tr("used"),tr("available"));
+		ctx_printfn(ctx,"</thead>\n",-1,0);
+		int i;
+		partitionInfo_t *partition;
+		ctx_printfn(ctx,"<tbody>\n",0,1);
+		for (i=0,partition=partitions->partition;i<partitions->length;i++,partition++){
+			ctx_printf0(ctx,"<tr><td>%s</td><td>%.0f MB</td><td>%.0f %%</td><td>%.0f MB</td></tr>\n"
+				,partition->name,partition->usedMB,partition->usedPercent,partition->freeMB
+			);
+		}
+		ctx_printfn(ctx,"</tbody>\n",-1,0);
+		ctx_printfn(ctx,"</table>\n",-1,0);
+	} else {
+		printMessage(ctx,"alert",tr("noMediaErr"),NULL, BT_FALSE);
+	}
 }
 

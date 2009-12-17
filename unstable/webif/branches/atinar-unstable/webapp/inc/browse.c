@@ -253,134 +253,99 @@ outOfMemory:
 	exit(1);
 }
 
-const char * getPrintName(recDir_t *rdir,char *const aux){
+const char * getPrintName(context_t *ctx,recDir_t *rdir){
 	if (isFlagSet(DF_ISREC,rdir->flags)){
 		struct tm dates;
 		strptime(rdir->name,"%Y-%m-%d.%H.%M",&dates);
-		strcpy(aux,formatDate(&dates,BT_TRUE));
-		return aux;
+		CTX_CHK_BUFFER(18);
+		strcpy(ctx->buffer,formatDate(&dates,BT_TRUE));
+		return ctx->buffer;
 	} else {
 		return (rdir->dname!=NULL)?rdir->dname:rdir->name;
 	}
 }
 
-//TODO usar printEvent
-void printRecInfo(io_t *out, int ntabs, const rec_t * const rec){
-	int minutes = rec->event.duration/60;
-	io_printf(out,"%.*s<div class=\"recInfo\">\n",ntabs++,tabs);
-	io_printf(out,"%.*s<div class=\"recDate\">",ntabs++,tabs);
-	io_printf(out,"%.*s"
-		"<span class=\"recStart field\">"
-			"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%s</span>"
-		"</span>\n",ntabs,tabs,tr("date"),formatDate(localtime(&rec->event.start),1));
-	io_printf(out,"%.*s"
-		"<span class=\"recDuration field\">"
-			"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%d&#39;</span>"
-		"</span>\n",ntabs,tabs,tr("runtime"),minutes);
-	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-	if (webifConf.displayHostId && webifConf.hostsLength>1){
-		hostConf_t *host=getHost(rec->hostId);
-		if (host){
-			io_printf(out,"%.*s<div class=\"recHost\">",ntabs++,tabs);
-			io_printf(out,"%.*s"
-				"<span class=\"field\">"
-					"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%s</span>"
-				"</span>\n",ntabs,tabs,"Host",(host->name[0])?host->name:(host->ip[0])?host->ip:"?");
-			io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-		}
-	}
-	if (rec->event.desc && rec->event.desc[0]) {
-		io_printf(out,"%.*s<div class=\"desc\">\n",ntabs++,tabs);
-		printEventDesc(out,ntabs,rec->event.desc,"|",NULL);
-		io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-	}
-	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-}
-
-
-void printRecording(io_t *out,int ntabs,int pl,recDir_t *rdir, rec_t *const rec, char *const aux,int level){
+void printRecording(context_t *ctx,int pl,recDir_t *rdir, rec_t *const rec,int level){
+	const char * const Play=tr("play");
 	if (level==0){
-		io_printf(out,"<li class=\"recFolderWrapper\">\n");
-		io_printf(out,"%.*s<div class=\"recFolder%s%s\">\n",ntabs++,tabs
-			,classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
-		io_printf(out,"%.*s<div class=\"recFolderHeader\">\n",ntabs++,tabs);
+		ctx_printf(ctx,"<li class=\"level4-div recFolder%s%s\">\n",classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
+		ctx_printfn(ctx,"<div class=\"level4-top recFolderHeader\">\n",1,1);
 	} else {
-		io_printf(out,"<li class=\"recRec%s%s\">\n"
-			,classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
+		ctx_printf(ctx,"<li class=\"recRec%s%s\">\n",classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
+		inctab(ctx);
 	}
-	io_printf(out,"%.*s<form action=\"/browse.kl1\" method=\"get\" class=\"controls\" >\n",ntabs++,tabs);
-	io_printf(out,"%.*s<input type=\"hidden\" name=\"pl\" value=\"%d\" />\n",ntabs,tabs,pl);
-	if (!isFlagSet(DF_DELETED,rdir->flags)){
-		printRecControls(out,ntabs,rec,aux,tr("play"),tr("rec.edit"),tr("rec.delete"));
+	ctx_printf0(ctx,"<a href=\"");
+	printRecPlayLink(ctx,rec,BT_FALSE);
+	ctx_printf(ctx,"\" class=\"playRec\" title=\"%s\">",Play);
+	if (webifConf.displayHostId) {
+		ctx_printf(ctx,"%s <span class=\"host\">[h%d]</span>",getPrintName(ctx,rdir),rec->hostId);
+	} else {
+		ctx_printf(ctx,"%s",getPrintName(ctx,rdir));
 	}
-	io_printf(out,"%.*s</form>",--ntabs,tabs);
-	//if (webifConf.displayHostId) {
-	//	io_printf(out,"%.*s%s <span class=\"host\">[h%d]</span>\n",ntabs,tabs,getPrintName(rdir,aux),rec->hostId);
-	//} else {
-	io_printf(out,"%.*s%s\n",ntabs,tabs,getPrintName(rdir,aux));
-	//}
+	ctx_printf(ctx,"</a>\n");
 	if (level==0){
-		io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-		setFlag(RE_REMOTE_INFO_PENDING,rec->flags); //don't read info if host is remote
+		ctx_printfn(ctx,"</div>\n",-1,0); //recFolderHeader
+		ctx_printfn(ctx,"<div class=\"level4 recDetails\">\n",0,1);
+		if (!isFlagSet(DF_DELETED,rdir->flags)){
+			ctx_printfn(ctx,"<form action=\"/recordings.kl1\" method=\"get\" class=\"recControls controls\" >\n",0,1);
+			ctx_printf0(ctx,"<input type=\"hidden\" name=\"na\" value=\"%d\" />\n",PA_BROWSE);
+			ctx_printf0(ctx,"<input type=\"hidden\" name=\"pl\" value=\"%d\" />\n",pl);
+			printRecControls(ctx,rec,tr("play"),tr("rec.edit"),tr("rec.delete"));
+			ctx_printfn(ctx,"</form>\n",-1,0);
+		}
+		setFlag(RE_REMOTE_INFO_PENDING,rec->flags);
 		if (getRecInfo(rec)) {
 			if (isFlagSet(RE_REMOTE_INFO_PENDING,rec->flags)){
-				io_printf(out,"%.*s<div class=\"recFolderDetails recFolderDetailsPending\"></div>\n",ntabs++,tabs);
+				ctx_printf0(ctx,"<div class=\"recInfo ajaxLoading\"></div>\n");
 			} else {
-				io_printf(out,"%.*s<div class=\"recFolderDetails\">\n",ntabs++,tabs);
-				printRecInfo(out,ntabs,rec);
-				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+				printRecInfo(ctx,rec);
 			}
 		}
-		io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+		ctx_printfn(ctx,"</div>\n",-1,0); //recDetails
 	}
-	io_printf(out,"%.*s</li>",--ntabs,tabs);
+	ctx_printfn(ctx,"</li>",-1,0);
 	return;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
 }
 
-void printFolder(io_t *out,int ntabs,const char *const path,int pl,recDir_t *rdir,char *const aux,int level){
+void printFolder(context_t *ctx,const char *const path,int pl,recDir_t *rdir,int level){
 	if (rdir->numRecs==0) return; //TODO parametro de configuracion?
 	const char * const Browse=tr("browse");
 	if (level==0) {
-		io_printf(out,"<li class=\"recFolderWrapper\">\n");
-		io_printf(out,"%.*s<div class=\"recFolder%s%s\">\n",ntabs++,tabs
-			,classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
+		ctx_printf(ctx,"<li class=\"level4-div recFolder%s%s\">\n",classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
 	} else {
-		io_printf(out,"<li class=\"recFolder%s%s\">\n"
-			,classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
+		ctx_printf(ctx,"<li class=\"recFolder%s%s\">\n",classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
 	}
-	u_urlncpy(aux,path,strlen(path),URLCPY_ENCODE);
-	io_printf(out,"%.*s<div class=\"recFolderHeader\">\n",ntabs++,tabs);
-	io_printf(out,"%.*s<ul class=\"controls\"><li class=\"control buttons-i ui-state-default\">\n",ntabs++,tabs);
-	io_printf(out,"%.*s<a href=\"browse.kl1?path=%s\" class=\"ui-icon ui-icon-folder-rec\" title=\"%s\">%s</a>\n"
-		,ntabs,tabs,aux,Browse,Browse);
-	io_printf(out,"%.*s</li></ul>\n",--ntabs,tabs);
-	io_printf(out,"%.*s%s\n",ntabs,tabs,getPrintName(rdir,aux));
-	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-	if (webifConf.maxDepth<=0 || level<webifConf.maxDepth)
-		printRecDirListUL(out,ntabs,path,pl,rdir,aux,level+1);
-	if (level==0){
-		io_printf(out,"%.*s<ul class=\"recFolderFooter\">",ntabs,tabs);
+	inctab(ctx);
+	ctx_printfn(ctx,"<div class=\"level4-top recFolderHeader\">\n",0,1);
+	ctx_printf0(ctx,"<a href=\"recordings.kl1?a=%d&amp;path=%s\" class=\"openFolder\" title=\"%s\">"
+		,PA_BROWSE,CTX_URL_ENCODE(path,-1,NULL),Browse);
+	ctx_printf(ctx,"%s</a>\n",getPrintName(ctx,rdir));
+	ctx_printfn(ctx,"</div>\n",-1,0);
+	if (webifConf.maxDepth<=0 || level<webifConf.maxDepth) {
+		printRecDirListUL(ctx,path,pl,rdir,level+1);
+	}
+	if (level==0 && webifConf.printRecFolderSummary){
+		ctx_printf0(ctx,"<ul class=\"level4-bottom recFolderFooter\">");
 		if (rdir->numDirs>0) {
-			io_printf(out,
+			ctx_printf(ctx,
 				"<li class=\"field\">"
 					"<span class=\"label\">%s:</span> "
 					"<span class=\"value\">%d</span>"
 				"</li>",tr("subfolders"),rdir->numDirs);
 		}
 		if (rdir->numRecs>0) {
-			io_printf(out,
+			ctx_printf(ctx,
 				"<li class=\"field\">"
 					"<span class=\"label\">%s:</span> "
 					"<span class=\"value\">%d</span>"
 				"</li>",tr("recordings"),rdir->numRecs);
 		}
-		io_printf(out,"</ul>\n");
-		io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+		ctx_printf(ctx,"</ul>\n");
 	}
-	io_printf(out,"%.*s</li>",--ntabs,tabs);
+	ctx_printfn(ctx,"</li>",-1,0);
 	return;
 outOfMemory:
 	crit("Out of memory");
@@ -398,7 +363,7 @@ char *getPath2(const char *const path,const char *const name){
 	return path2;
 }
 
-void printRecDir(io_t *out,int ntabs,const char *const path,int pl,recDir_t *rdir,char *const aux,int level) {
+void printRecDir(context_t *ctx,const char *const path,int pl,recDir_t *rdir,int level) {
 	const char * const Play=tr("play");
 	const char * const Browse=tr("browse");
 	if ( rdir->subdirs.length==0 && isFlagSet(DF_ISREC,rdir->flags)) {
@@ -407,7 +372,7 @@ void printRecDir(io_t *out,int ntabs,const char *const path,int pl,recDir_t *rdi
 		rec.my=0;
 		rec.path=(char *)path;
 		rec.hostId=rdir->hostId;
-		printRecording(out,ntabs,pl,rdir,&rec,aux,level);
+		printRecording(ctx,pl,rdir,&rec,level);
 		freeRec(&rec);
 	} else if ( rdir->subdirs.length==1 && isFlagSet(DF_ISREC,rdir->subdirs.entry[0].flags)) {
 		rec_t rec;
@@ -415,10 +380,10 @@ void printRecDir(io_t *out,int ntabs,const char *const path,int pl,recDir_t *rdi
 		rec.my=RF_PATH;
 		rec.hostId=rdir->subdirs.entry[0].hostId;
 		crit_goto_if((rec.path=getPath2(path,rdir->subdirs.entry[0].name))==NULL,outOfMemory);
-		printRecording(out,ntabs,pl,rdir,&rec,aux,level);
+		printRecording(ctx,pl,rdir,&rec,level);
 		freeRec(&rec);
 	} else {
-		printFolder(out,ntabs,path,pl,rdir,aux,level);
+		printFolder(ctx,path,pl,rdir,level);
 	}
 	return;
 outOfMemory:
@@ -426,7 +391,7 @@ outOfMemory:
 	exit(1);
 }
 
-void printRecDirList(io_t *out,int ntabs,const char *const path,int pl, recDirList_t *rdirs,char *const aux,int level,int xflags) {
+void printRecDirList(context_t *ctx,const char *const path,int pl, recDirList_t *rdirs,int level,int xflags) {
 	int i;
 	recDir_t *rdir;
 	for(i=0,rdir=rdirs->entry;i<rdirs->length;i++,rdir++){
@@ -436,10 +401,10 @@ void printRecDirList(io_t *out,int ntabs,const char *const path,int pl, recDirLi
 		int j=(rdir->name[0]=='%')?1:0;
 		if (rdir->name[j]=='_' && rdir->name[j+1]==0 ){
 			if (rdir->subdirs.length>0){
-				printRecDirList(out,ntabs,path2,pl,&rdir->subdirs,aux,level,(j==0)?0:DF_EDITED);
+				printRecDirList(ctx,path2,pl,&rdir->subdirs,level,(j==0)?0:DF_EDITED);
 			}
 		} else {
-			printRecDir(out,ntabs,path2,pl,rdir,aux,level);
+			printRecDir(ctx,path2,pl,rdir,level);
 		}
 		free(path2);
 	}
@@ -449,23 +414,24 @@ outOfMemory:
 	exit(1);
 }
 
-void printRecDirListUL(io_t *out,int ntabs,const char *path,int pl, recDir_t *rdir,char *const aux,int level){
+void printRecDirListUL(context_t *ctx,const char *path,int pl, recDir_t *rdir,int level){
 	recDirList_t *rdirs = &rdir->subdirs;
 	if (rdirs->length>0){
-		io_printf(out,"%.*s<ul class=\"recFolders\">",ntabs++,tabs);
-		printRecDirList(out,ntabs,path,pl,rdirs,aux,level,0);
-		io_printf(out,"</ul>\n");
+		if (level==0){
+			ctx_printf0(ctx,"<ul id=\"%s\" class=\"level3 recFolders\">",AJAX_REPLACE_PREFIX("recFolders"));
+		} else {
+			ctx_printf0(ctx,"<ul class=\"level4 recFolders\">");
+		}
+		printRecDirList(ctx,path,pl,rdirs,level,0);
+		ctx_printf(ctx,"</ul>\n");
 	}
 }
 
-void printRecPathUl(io_t *out,int ntabs,const char *path,char *const aux){
-	io_printf(out,"%.*s"
-		"<ul class=\"recPath\"><li class=\"recDir\">\n%.*s"
-			"<a%s href=\"browse.kl1\">%s</a>\n%.*s"
-		"</li>"
-		,ntabs,tabs
-		,ntabs+1,tabs,classCurrent[boolean(!path || !path[0])],tr("recordings")
-		,ntabs,tabs);
+void printRecPathUl(context_t *ctx,const char *path){
+	ctx_printf0(ctx,"<ul id=\"%s\" class=\"recPath\">",AJAX_REPLACE_PREFIX("recPath"));
+	ctx_printf(ctx,"<li class=\"recDir\">\n");
+	ctx_printfn(ctx,"<a%s href=\"recordings.kl1?a=%d\">%s</a>\n",1,0,classCurrent[boolean(!path || !path[0])],PA_BROWSE,tr("recordings"));
+	ctx_printfn(ctx,"</li>",-1,0);
 	if (path && path[0]) {
 		int ln;
 		int lp=0;
@@ -473,15 +439,12 @@ void printRecPathUl(io_t *out,int ntabs,const char *path,char *const aux){
 		while((ln=strcspn(n,"/"))>0){
 			lp+=ln;
 			if (strncmp(n,"_",ln)!=0) {
-				u_urlncpy(aux,path,lp,URLCPY_ENCODE);
 				char *dn=strndup(n,ln);
 				crit_goto_if(dn==NULL,outOfMemory);
-				io_printf(out,
-					"<li class=\"recDir\">\n%.*s"
-						"<a%s href=\"browse.kl1?path=%s\">%s</a>\n%.*s"
-					"</li>"
-					,ntabs+1,tabs,classCurrent[path[lp]==0],aux,vdrDecodeName(dn,BT_TRUE,NULL)
-					,ntabs,tabs);
+				ctx_printf(ctx,"<li class=\"recDir\">\n");
+				ctx_printfn(ctx,"<a%s href=\"recordings.kl1?a=%d&amp;path=%s\">%s</a>\n",1,0
+					,classCurrent[boolean(path[lp]==0)],PA_BROWSE,CTX_URL_ENCODE(path,lp,NULL),vdrDecodeName(dn,BT_TRUE,NULL));
+				ctx_printfn(ctx,"</li>",-1,0);
 				free(dn);
 			}
 			if (path[lp]!='/') break;
@@ -489,7 +452,7 @@ void printRecPathUl(io_t *out,int ntabs,const char *path,char *const aux){
 			n=path+lp;
 		}
 	}
-	io_printf(out,"</ul>\n");
+	ctx_printf(ctx,"</ul>\n");
 	return;
 outOfMemory:
 	crit("Out of memory");

@@ -1,3 +1,14 @@
+2009-12-15
+* Agregada parrilla de programacion.
+* Gestion de formularios mediante llamadas ajax y refrescos parciales de las paginas.
+* Modularizacion del javascript y del css.
+* Cambiada estructura interna de la página.
+* Integrado browse.kl1 dentro de recordings.kl1.
+* Renombradas paginas program y watchit, por epg y live.
+* Eliminada pagina index.kl1. Se entra directamente a la parrilla de programación.
+* Simplificada creacion de programaciones a partir de id de eventos.
+* Introducido contexto para simplificar API.
+* Extracción de logos.tgz para posibilitar modificaciones.
 2009-06-24
 * Añadida gestión de búsquedas (epgsearch).
 * Verificado funcionamiento en IE7,IE8 y WebKit, además de Gecko.

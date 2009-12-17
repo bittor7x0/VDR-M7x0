@@ -47,8 +47,8 @@ void freeRecDir(recDir_t *rdir);
 void initRecDirList(recDirList_t *rdirs);
 void freeRecDirList(recDirList_t *rdirs);
 void getRecDirList(const char * const path, recDirList_t * const rdirs);
-void printRecDirListUL(io_t *out,int ntabs,const char *const path,int pl, recDir_t *rdir,char *const aux,int level);
-void printRecDir(io_t *out,int ntabs,const char *const path,int pl,recDir_t *rdir,char *const aux,int level);
-void printRecPathUl(io_t *out, int ntabs,const char *path,char *const aux);
+void printRecDirListUL(context_t *ctx,const char *const path,int pl, recDir_t *rdir,int level);
+void printRecDir(context_t *ctx,const char *const path,int pl,recDir_t *rdir,int level);
+void printRecPathUl(context_t *ctx,const char *path);
 
 #endif

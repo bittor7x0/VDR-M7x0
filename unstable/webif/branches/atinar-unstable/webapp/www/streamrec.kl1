@@ -25,14 +25,14 @@
 #include "recordings.h"
 
 #ifdef DEBUG
-void dbg_streamrec_kl1(void) { 
+static void dbg_streamrec_kl1(void) { 
 	dbg("streamrec.kl1");
 }
 #endif
 
-volatile sig_atomic_t cancel=BT_FALSE;
+static volatile sig_atomic_t cancel=BT_FALSE;
 
-void sig_handler(int sig){
+static void sig_handler(int sig){
 	dbg("Got signal [%s]",sig);
 	if( sig==SIGPIPE){
 		dbg("Broken pipe");
@@ -47,7 +47,10 @@ void sig_handler(int sig){
 #endif
 	vars_t *args = request_get_args(request);
 	rec_t rec;
-	initRecFromArgs(&rec,args);
+	context_t vctx;
+	context_t *ctx=&vctx;
+	initCtx(ctx,session,request,response,out,1024);
+	initRecFromArgs(ctx,&rec,args);
 	if (!rec.path){
 		warn("Invalid parameters");
 		response_set_status(response,HTTP_STATUS_NO_CONTENT);
@@ -181,4 +184,5 @@ finish:
 	freeRec(&rec);
 	freeFL(&list);
 end:
+	freeCtx(ctx);
 %>

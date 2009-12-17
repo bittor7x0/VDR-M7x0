@@ -15,6 +15,7 @@
 #define __PARTITIONS_H__
 
 #include "conf.h"
+#include "misc.h"
 
 typedef struct partitionInfo_s {
 	int hostId;
@@ -35,5 +36,6 @@ void initPartitionList(partitionList_t *const partitions);
 void freePartitionList(partitionList_t *const partitions);
 void getPartitionListHost(hostConf_t *const host,partitionList_t *const partitions);
 void getPartitionList(partitionList_t *const partitions);
+void printPartitionList(context_t *ctx, const partitionList_t *const partitions);
 
 #endif

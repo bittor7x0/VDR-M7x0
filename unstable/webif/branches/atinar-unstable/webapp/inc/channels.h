@@ -52,11 +52,9 @@ void freeChannel(channel_t * const channel);
 void initChannelList(channelList_t  * const list);
 void freeChannelList(channelList_t  * const list);
 void getChannelList(hostConf_t *vdrHost, channelList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
-/*
- * Retrieve channelName.
- * If channelNum==0, retrieve current channel name.
- */
 boolean_t getChannel(hostConf_t *vdrHost, int channelNum, channel_t * const channel);
-void printChannelListSelect(io_t *out,int ntabs,const char * id,const char * name,const channelList_t *const channels,int channelNum);
+void printChannelListSelect(context_t *ctx,const char * id,const char * name,
+	const channelList_t *const channels,int channelNum,const char  *onchange);
+void printChannelControls(context_t *ctx,const channel_t *channel,const char *Epg,const char *LiveStream);
 
 #endif

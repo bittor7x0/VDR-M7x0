@@ -19,7 +19,6 @@
 #include "i18n.h"
 
 int langId=-1;
-char acceptedLang[3]="";
 char cldate[20];
 
 // startOfWeek holds the index of the first weekday of the week.
@@ -36,6 +35,13 @@ const char * const weekdays[I18NNUM][7]={
 		{"Sonntag","Montag","Dienstag","Mittwoch" ,"Donnerstag","Freitag","Samstag"},
 		{"Domingo" ,"Lunes" ,"Martes"  ,"Miércoles","Jueves"   ,"Viernes" ,"Sábado"},
 		{"Dimanche","Lundi" ,"Mardi"   ,"Mercredi" ,"Jeudi"    ,"Vendredi","Samedi"}
+};
+
+const char * const monthNames[I18NNUM][12]={
+      {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"},
+      {"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"},
+      {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"},
+      {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"},
 };
 
 const i18nVal_t locale={
@@ -140,6 +146,22 @@ i18n_t i18n[]={
 		"Browse",
 		"Schmökern",
 		"Navegar",
+		""
+		}
+	},
+	{	"browser.not_supported",
+		{
+		"Browser not supported",
+		"",
+		"Navegador no soportado",
+		""
+		}
+	},
+	{	"browser.please_update",
+		{
+		"Browser not supported, please update it to a more recent version (or a different one...).",
+		"",
+		"Navegador no soportado, por favor actualízalo o utiliza un navegador diferente...",
 		""
 		}
 	},
@@ -399,6 +421,14 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"cfgWi.channel_logo_width",
+		{
+		"Channel logo width",
+		"",
+		"Ancho del logo de los canales",
+		""
+		}
+	},
 	{	"cfgWi.config_change_disabled",
 		{
 		"Disable configuration modification",
@@ -455,6 +485,14 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"cfgWi.epg_schedule_grid_width",
+		{
+		"Epg schedule grid width",
+		"",
+		"Ancho de la parrilla de programación",
+		""
+		}
+	},
 	{	"cfgWi.hosts",
 		{
 		"Hosts",
@@ -476,6 +514,14 @@ i18n_t i18n[]={
 		"Playlist type",
 		"",
 		"Tipo de listas de reproducción",
+		""
+		}
+	},
+	{	"cfgWi.print_rec_folder_summary",
+		{
+		"Print rec. folder summary",
+		"",
+		"Mostrar resumen carpetas de grabación",
 		""
 		}
 	},
@@ -607,20 +653,28 @@ i18n_t i18n[]={
 		"Numéro de chaîne"
 		}
 	},
-	{	"channelWatch",
-		{
-		"Watch TV",
-		"Fernsehen",
-		"Ver TV",
-		"Regarder le direct"
-		}
-	},
 	{	"channels",
 		{
 		"Channels",
 		"Kanäle",
 		"Canales",
 		"Chaînes"
+		}
+	},
+	{	"channels.filename",
+		{
+		"channels",
+		"kanaele",
+		"canales",
+		"chaines"
+		}
+	},
+	{	"close",
+		{
+		"Close",
+		"Schliessen",
+		"Cerrar",
+		""
 		}
 	},
 	{	"compareDescription",
@@ -799,6 +853,30 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"epg",
+		{
+		"Schedule",
+		"Programm",
+		"Guía de Programación",
+		"Programmation"
+		}
+	},
+	{	"epg.grid",
+		{
+		"Program",
+		"Sendung",
+		"Parrilla TV",
+		"Émission"
+		}
+	},
+	{	"epg.list",
+		{
+		"Program list",
+		"Sendung",
+		"Listado",
+		"Émission"
+		}
+	},
 	{	"execute",
 		{
 		"Execute",	
@@ -858,28 +936,28 @@ i18n_t i18n[]={
 	{	"fromToFmt",
 		{
 		"<span class=\"fromTo\">"
-			"<span class=\"l\">From</span>&nbsp;<span class=\"t\">%02d:%02d</span> "
-			"<span class=\"l\">to</span>&nbsp;<span class=\"t\">%02d:%02d</span> "
-			"(<span class=\"l\">Runtime</span>: approx. <span class=\"t\">%d</span> minutes)"
-		"</span>"
+			"<span class=\"start\"><span class=\"l\">From&nbsp;</span><span class=\"t\">%02d:%02d</span></span> "
+			"<span class=\"end\"><span class=\"l\">to&nbsp;</span><span class=\"t\">%02d:%02d</span> "
+			"<span class=\"duration\">(<span class=\"l\">Runtime</span>: approx. <span class=\"t\">%d</span> minutes)</span>"
+		"</span>\n"
 		,
 		"<span class=\"fromTo\">"
-			"<span class=\"l\">Von</span>&nbsp;<span class=\"t\">%02d:%02d</span> "
-			"<span class=\"l\">bis</span>&nbsp;<span class=\"t\">%02d:%02d</span> "
-			"(<span class=\"l\">Dauer</span>: ca. <span class=\"t\">%d</span> Minuten)"
-		"</span>"
+			"<span class=\"start\"><span class=\"l\">Von&nbsp;</span><span class=\"t\">%02d:%02d</span></span> "
+			"<span class=\"end\"><span class=\"l\">bis&nbsp;</span><span class=\"t\">%02d:%02d</span></span> "
+			"<span class=\"duration\">(<span class=\"l\">Dauer</span>: ca. <span class=\"t\">%d</span> Minuten)</span>"
+		"</span>\n"
 		,
 		"<span class=\"fromTo\">"
-			"<span class=\"l\">Inicio</span>&nbsp;<span class=\"t\">%02d:%02d</span> "
-			"<span class=\"l\">Final</span>&nbsp;<span class=\"t\">%02d:%02d</span> "
-			"(<span class=\"l\">Duración</span>: <span class=\"t\">%d</span> minutos aprox.)"
-		"</span>"
+			"<span class=\"start\"><span class=\"l\">Inicio&nbsp;</span><span class=\"t\">%02d:%02d</span></span> "
+			"<span class=\"end\"><span class=\"l\">Final&nbsp;</span><span class=\"t\">%02d:%02d</span></span> "
+			"<span class=\"duration\">(<span class=\"l\">Duración</span>: <span class=\"t\">%d</span> minutos aprox.)</span>"
+		"</span>\n"
 		,
 		"<span class=\"fromTo\">"
-			"<span class=\"l\">De</span>&nbsp;<span class=\"t\">%02d:%02d</span> "
-			"<span class=\"l\">à</span>&nbsp;<span class=\"t\">%02d:%02d</span> "
-			"(<span class=\"l\">Durée</span>: approximativement <span class=\"t\">%d</span> minutes)"
-		"</span>"
+			"<span class=\"start\"><span class=\"l\">De&nbsp;</span><span class=\"t\">%02d:%02d</span></span> "
+			"<span class=\"end\"><span class=\"l\">à&nbsp;</span><span class=\"t\">%02d:%02d</span></span> "
+			"<span class=\"duration\">(<span class=\"l\">Durée</span>: approximativement <span class=\"t\">%d</span> minutes)</span>"
+		"</span>\n"
 		}
 	},
 	{	"fstab",
@@ -1005,7 +1083,7 @@ i18n_t i18n[]={
 	{	"margin.add",
 		{
 		"Add start/stop margin",
-		"Vor-/Nachlaufzeit hinzuf&uuml;gen",
+		"Vor-/Nachlaufzeit hinzufügen",
 		"Añadir tiempo antes/después",
 		""
 		}
@@ -1190,7 +1268,7 @@ i18n_t i18n[]={
 		{
 		"Playlist",
 		"",
-		"Lista reproducción",
+		"Lista de reproducción",
 		"",
 		}
 	},
@@ -1205,7 +1283,7 @@ i18n_t i18n[]={
 	{	"priority",
 		{
 		"Priority",
-		"Priorit&auml;t",
+		"Priorität",
 		"Prioridad",
 		""
 		}
@@ -1314,6 +1392,14 @@ i18n_t i18n[]={
 		"enregistrement"
 		}
 	},
+	{	"recording.filename",
+		{
+		"recording",
+		"aufzeichnung",
+		"grabacion",
+		"enregistrement"
+		}
+	},
 	{	"recordingList",
 		{
 		"List of available recordings.",					
@@ -1341,7 +1427,7 @@ i18n_t i18n[]={
 	{	"regularRecording",
 		{
 		"Regular recording",
-		"Regelm&auml;&szlig;ige Aufnahme",
+		"Regelmä&szlig;ige Aufnahme",
 		"Grabar como serie",
 		""
 		}
@@ -1384,14 +1470,6 @@ i18n_t i18n[]={
 		"",
 		"Guardar configuración",
 		""
-		}
-	},
-	{	"schedule",
-		{
-		"Schedule",
-		"Programm",
-		"Guía de Programación",
-		"Programmation"
 		}
 	},
 	{	"search",
@@ -1693,7 +1771,7 @@ i18n_t i18n[]={
 	{	"timer.check",
 		{
 		"Check timer",
-		"Angaben pr&uuml;fen",
+		"Angaben prüfen",
 		"Comprobar programación",
 		""
 		}
@@ -1884,26 +1962,60 @@ i18n_t i18n[]={
 	},
 	{	"warnNoEPG",
 		{
-		"EPG ist not available, please try again later. If the problem persists, this channel either has no EPG or it is broken. Feel free to get in touch with someone who is in charge for this channel.",
-		"EPG ist nicht verf&uuml;gbar. Bitte versuchen sie es sp&auml;ter nocheinmal. Falls dieses Problem &uuml;ber l&auml;ngere Zeit besteht, wenden sie sich bitte an den Sender.",
+		"<p>EPG ist not available, please try again later.</p>"
+		"<p>If the problem persists, this channel either has no EPG or it is broken. Feel free to get in touch with someone who is in charge for this channel.</p>\n"
+		,
+		"<p>EPG ist nicht verfügbar.</p>"
+		"<p>Bitte versuchen sie es später nocheinmal. Falls dieses Problem über längere Zeit besteht, wenden sie sich bitte an den Sender.</p>\n"
+		,
 		"<p>EPG no disponible, por favor inténtelo más tarde.</p>"
-		"<p>Si el problema persiste, éste canal no tiene EPG o funciona incorrectamente.</p>",
-		"L\'EPG (guide des programmes) n\'est pas disponible, merci d\'essayer ultérieurement. Si le problème persiste, cette chaîne n\'a pas de guide des programmes ou il engendre des erreurs. Vous pouvez peut-être essayer de prendre contact avec un responsable de cette chaîne."
+		"<p>Si el problema persiste, éste canal no tiene EPG o funciona incorrectamente.</p>\n"
+		,
+		"<p>L\'EPG (guide des programmes) n\'est pas disponible, merci d\'essayer ultérieurement.</p>"
+		"<p>Si le problème persiste, cette chaîne n\'a pas de guide des programmes ou il engendre des erreurs. Vous pouvez peut-être essayer de prendre contact avec un responsable de cette chaîne.</p>\n"
 		}
 	},
 	{	"warnSvdrpConnection",
 		{
-		"<p><b>Failed to open a SVDRP connection to the local VDR. Possible Reasons:\n\n<ul><li>The VDR is not running.</li>\n<li>The SVDRP connection is still in use by another client like vdradmin-AM</li>\n<li>An error occured while processing an earlier request and now the SVDRP connection is blocked.</li></ul>\n\nPlease check if the VDR is running or try it again later.</b></p>\n",
-		"<p><b>Es konnte keine SVDRP-Verbindung zum VDR aufgebaut werden. Typische Gr&uuml;nde daf&uuml;r:\n\n<ul><li>Der VDR wurde nicht gestartet bzw. l&auml;uft nicht mehr.</li>\n<li>Die SVDRP-Verbindung wird von einem anderen Client verwendet, z.B. vdradmin-AM</li>\n<li>Es gab bei einer fr&uuml;heren Abfrage einen Fehler und die SVDRP-Verbindung ist blockiert.</li></ul>\n\nBitte &uuml;berpr&uuml;fen sie, dass der VDR l&auml;uft und versuchen sie es ggf. sp&auml;ter noch einmal.</b></p>\n",
-		"<p>No se puede abrir una conexión SVDRP con el VDR local.</p>/n"
-		"<p>Posibles motivos:</p>/n"
-		"<ul>/n"
-		"	<li>El VDR no se está ejecutando.</li>\n"
-		"	<li>La conexión SVDRP está todavía en uso por otro cliente como vdradmin-AM</li>\n"
-		"	<li>Se ha producido un error mientras se procesó una petición anterior y ahora la conexión SVDRP está bloqueada.</li>\n"
-		"</ul>\n"
-		"<p>Por favor, compruebe si el VDR se está ejecutando o inténtelo más tarde.</p>\n",
-		"<p><b>Echec d\'accès par connection SVDRP au logiciel VDR. Raisons possibles:\n\n<ul><li>VDR n\'est pas démarré.</li><li>La connexion SVDRP est encore utilisée par un autre client comme \"vdradmin\".</li><li>la connexion SVDRP est bloqué suite à une erreur précédente</li></ul>\n\nVérifier que VDR est bien lancé ou essayer ultérieurement.</b></p>\n"
+		"<div>"
+			"<p><strong>Failed to open a SVDRP connection to the VDR</strong>. Possible Reasons:</p>"
+			"<ul>"
+				"<li>The VDR is not running.</li>"
+				"<li>The SVDRP connection is still in use by another client like vdradmin-AM</li>"
+				"<li>An error occured while processing an earlier request and now the SVDRP connection is blocked.</li>"
+			"</ul>"
+			"<p>Please check if the VDR is running or try it again later.</p>"
+		"</div>\n"
+		,
+		"<div>"
+			"<p><strong>Es konnte keine SVDRP-Verbindung zum VDR aufgebaut werden. Typische Gründe dafür:</p>"
+			"<ul>"
+				"<li>Der VDR wurde nicht gestartet bzw. läuft nicht mehr.</li>"
+				"<li>Die SVDRP-Verbindung wird von einem anderen Client verwendet, z.B. vdradmin-AM</li>"
+				"<li>Es gab bei einer früheren Abfrage einen Fehler und die SVDRP-Verbindung ist blockiert.</li>"
+			"</ul>"
+			"<p>Bitte überprüfen sie, dass der VDR läuft und versuchen sie es ggf. später noch einmal.</p>"
+		"</div>\n"
+		,
+		"<div>"
+			"<p><strong>No se puede abrir una conexión SVDRP con el VDR. Posibles motivos::</p>"
+			"<ul>"
+				"<li>El VDR no se está ejecutando.</li>"
+				"<li>La conexión SVDRP está todavía en uso por otro cliente como vdradmin-AM</li>"
+				"<li>Se ha producido un error mientras se procesó una petición anterior y ahora la conexión SVDRP está bloqueada.</li>"
+			"</ul>"
+			"<p>Por favor, compruebe si el VDR se está ejecutando o inténtelo más tarde.</p>"
+		"</div>\n"
+		,
+		"<div>"
+			"<p><strong>Echec d\'accès par connection SVDRP au logiciel VDR. Raisons possibles:</p>"
+			"<ul>"
+				"<li>VDR n\'est pas démarré.</li>"
+				"<li>La connexion SVDRP est encore utilisée par un autre client comme \"vdradmin\".</li>"
+				"<li>la connexion SVDRP est bloqué suite à une erreur précédente</li>"
+			"</ul>"
+			"<p>Vérifier que VDR est bien lancé ou essayer ultérieurement.</p>"
+		"</div>\n"
 		}
 	},
 	{	"wday",

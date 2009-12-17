@@ -64,16 +64,16 @@ void dbg_404_kl1(){ dbg("404.kl1"); }
 
 	char * path=NULL;
 	char * query=NULL;
-	char * url;
 	hostConf_t *host;
 	if (parseRequestStr(request,&path,&query) && (host=isVideoPath(path))!=NULL ) {
-		crit_goto_if(asprintf(&url,"/browse.kl1?path=%s&amp;hostId=%d",REMOVE_VIDEO(path),host->id)<0,outOfMemory);
+		char * url;
+		crit_goto_if(asprintf(&url,"/recordings.kl1?a=%d&amp;path=%s&amp;hostId=%d",PA_BROWSE,REMOVE_VIDEO(path),host->id)<0,outOfMemory);
+		response_redirect(response,url);
+		free(url);
 	} else {
 		warn("Unknown path %s",path);
-		crit_goto_if((url=strdup("/index.kl1"))==NULL,outOfMemory);
+		io_printf(out,"<html><body><p>Recurso %s%s no hallado</p></body></html>",path,query); //TODO i18n
 	}
-	response_redirect(response,url);
-	free(url);
 	free(path);
 	free(query);
 	goto end;

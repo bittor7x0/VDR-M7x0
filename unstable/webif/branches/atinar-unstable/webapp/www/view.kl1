@@ -37,25 +37,25 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 	dbg_view_kl1();
 	#endif
 
-	config(session,request);
+	context_t vctx;
+	context_t *ctx=&vctx;
+	initCtx(ctx,session,request,response,out,0);
 
 	vars_t *args = request_get_args(request);
-	webifState.currentAction=(vars_countn(args,"action")>0)?vars_get_value_i(args,"action"):PA_SHOW;
+	ctx->currentAction=(vars_countn(args,"action")>0)?vars_get_value_i(args,"action"):PA_SHOW;
 	int fileNum=(vars_countn(args,"fileNum")>0)?vars_get_value_i(args,"fileNum"):0;
-	if (webifState.currentAction<PA_SHOW||webifState.currentAction>=PA_DOWNLOAD_ALL){
+	if (ctx->currentAction<PA_SHOW||ctx->currentAction>=PA_DOWNLOAD_ALL){
 		//TODO error
-		webifState.currentAction=PA_SHOW;
+		ctx->currentAction=PA_SHOW;
 		fileNum=0;
 	}
 	if (fileNum<0||fileNum>=fileMappingLength){
 		//TODO error
-		webifState.currentAction=PA_SHOW;
+		ctx->currentAction=PA_SHOW;
 		fileNum=0;
 	}
 	
-	int i=0;
-
-	if (webifState.currentAction==PA_DOWNLOAD) {
+	if (ctx->currentAction==PA_DOWNLOAD) {
 		response_set_content_type(response, "application/octetstream");
 		{
 		char *cd;
@@ -63,39 +63,38 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 		response_set_field(response,"Content-Disposition",cd);
 		free(cd);
 		}
-		//TODO ¿implementado en klone?
 		FILE *f = fopen(fileMapping[fileNum].fileName,"r");
 		if (f) {
 			char buffer[1024];
 			while(fgets(buffer,1023,f)!=NULL) {
-				io_printf(out,"%s",buffer);
+				ctx_printf(ctx,"%s",buffer);
 			}
 			fclose(f);
 		}
-	} else if (webifState.currentAction==PA_DOWNLOAD_ALL) {
-		char *argumente[fileMappingLength+4];
-		argumente[0]="tar";
-		argumente[1]="-czf";
-		argumente[2]="/var/tmp/files.tar.gz";
+	} else if (ctx->currentAction==PA_DOWNLOAD_ALL) {
+		int i;
+		char *tar_args[fileMappingLength+4];
+		tar_args[0]="tar";
+		tar_args[1]="-czf";
+		tar_args[2]="/var/tmp/files.tar.gz";
+
 		for (i=0;i<fileMappingLength;i++) {
-			argumente[3+i]=(char*)fileMapping[i].fileName;
+			tar_args[3+i]=(char*)fileMapping[i].fileName;
 		}
-		argumente[fileMappingLength+3]=NULL;
+		tar_args[fileMappingLength+3]=NULL;
 		pid_t pid=0;
 		int status;
 		pid=fork();
 		if (pid==0) {
-			execvp("/bin/tar", argumente);
+			execvp("/bin/tar", tar_args);
 		}
 		if (pid>0) {
 			waitpid(pid,NULL,0);
 			response_set_content_type(response, "application/gzip");
 			response_set_field(response,"Content-Disposition","attachment; filename=\"files.tar.gz\"");
-			//TODO kloned task:
 			FILE *f = fopen("/var/tmp/files.tar.gz","rb");
 			if (f) {
 				char buffer;
-				int bytesRead;
 				while(!feof(f)) {
 					buffer=fgetc(f);
 					io_putc(out,buffer);
@@ -104,22 +103,23 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 			}
 		}
 	} else { 
-		webifState.currentPage=PN_FILEVIEW;
-		int ntabs=initHtmlPage(response,out,tr("fileView"),NULL);
-		printMenu(out,ntabs);
-
-		io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
+		ctx->currentPage=PN_FILEVIEW;
+		initHtmlPage(ctx,tr("fileView"),NULL);
 		struct stat status;
 		if ((stat(fileMapping[fileNum].fileName,&status))>=0) {
 			const char *FileDownload=tr("fileDownload");
-			io_printf(out,"%.*s<h2>\n",ntabs++,tabs);
-			io_printf(out,"%.*s<ul class=\"controls\"><li class=\"control buttonm-i ui-state-default\">\n",ntabs++,tabs);
-			io_printf(out,"%.*s<a class=\"ui-icon ui-icon-disk\" href=\"view.kl1?action=%d&amp;fileNum=%d\" title=\"%s\">%s</a>\n"
-				,ntabs,tabs,PA_DOWNLOAD,fileNum,FileDownload,FileDownload);
-			io_printf(out,"%.*s</li></ul>\n",--ntabs,tabs);
-			io_printf(out,"%.*s%s</h2>\n",--ntabs,tabs,fileMapping[fileNum].fileName);
-			io_printf(out,"%.*s<div class=\"section\">\n",ntabs++,tabs);
-			io_printf(out,"%.*s<pre>\n",ntabs++,tabs);
+			ctx_printfn(ctx,"<div class=\"level2-div ui-widget\">\n",0,1);
+			ctx_printfn(ctx,"<h2 class=\"level2-top ui-widget-header\">\n",0,1);
+			ctx_printfn(ctx,"<ul class=\"controls\"><li class=\"control\">\n",0,1);
+			ctx_printf0(ctx,
+				"<a class=\"button-i ui-state-default\" href=\"view.kl1?action=%d&amp;fileNum=%d\" title=\"%s\">"
+					"<span class=\"ui-icon ui-icon-disk\">%s</span>"
+				"</a>\n",PA_DOWNLOAD,fileNum,FileDownload,FileDownload);
+			ctx_printfn(ctx,"</li></ul>\n",-1,0);
+			ctx_printf0(ctx,"%s\n",fileMapping[fileNum].fileName);
+			ctx_printfn(ctx,"</h2>\n",-1,0);
+			ctx_printfn(ctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
+			ctx_printfn(ctx,"<pre>\n",0,1);
 
 			FILE *f = fopen(fileMapping[fileNum].fileName,"r");
 			if (f) {
@@ -128,14 +128,15 @@ void dbg_view_kl1(){ dbg("view.kl1"); }
 				
 				while(fgets(buffer,1023,f)!=NULL) {
 					u_htmlncpy(encoded,buffer,strlen(buffer),HTMLCPY_ENCODE);
-					io_printf(out,encoded);
+					ctx_printf(ctx,encoded);
 				}
 				fclose(f);
 			}
-			io_printf(out,"%.*s</pre>\n",--ntabs,tabs);
-			io_printf(out,"%.*s</div>\n",--ntabs,tabs);
+			ctx_printfn(ctx,"</pre>\n",-1,0);
+			ctx_printfn(ctx,"</div>\n",-1,0); //level2
+			ctx_printfn(ctx,"</div>\n",-1,0); //level2-div
 		}
-		io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-		finishHtmlPage(out,ntabs);
-	} 
+		finishHtmlPage(ctx);
+	}
+	freeCtx(ctx);
 %>

@@ -30,13 +30,13 @@ typedef struct i18n_s {
 } i18n_t;
 
 extern int langId;
-extern char acceptedLang[3];
 
 extern const i18nVal_t locale;
 extern const i18nVal_t alpha2;
 extern const i18nVal_t alpha3;
 extern const char * const weekdays[I18NNUM][7];
 extern const char * const shortWeekdays[I18NNUM][7];
+extern const char * const monthNames[I18NNUM][12];
 extern const i18nVal_t dateFormat; //to use with strftime
 extern const int startOfWeek[I18NNUM];
 

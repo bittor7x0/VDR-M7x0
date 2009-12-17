@@ -24,14 +24,23 @@
 #include <klone/io.h>
 #include "channels.h"
 #include "conf.h"
+#include "timers.h"
 
-enum eventFields_e{
+typedef enum eventDumpMode_e{ 
+	dmAll, 
+	dmNowNext, 
+	dmAtTime, 
+	dmBetween, 
+	dmByIds
+} eventDumpMode_t;
+
+enum eventFields_e { //usado como flags para determinar que variables se han de liberar
 	EFI_TITLE=1,
 	EFI_SHORTDESC=2,
 	EFI_DESC=4
 };
 
-typedef struct eventEntry_s {
+typedef struct epgEvent_s {
 	int    my;
 	int    id;
 	char   *title;
@@ -41,30 +50,52 @@ typedef struct eventEntry_s {
 	int    duration;
 	int    tableId;
 	int    version;
-} eventEntry_t;
+} epgEvent_t;
 
-typedef struct nowNextEntry_s {
-	eventEntry_t event[2];
-} nowNextEntry_t;
-
-typedef struct nowNextList_s {
+//Lista de eventos de un canal
+typedef struct channelEvents_s {
 	int length;
-	nowNextEntry_t *entry;
-} nowNextList_t;
+	epgEvent_t *entry;
+	int hostId;
+	time_t start;
+	time_t end;
+	int eventId;
+	int channelNum;
+	eventDumpMode_t dumpMode;
+} channelEvents_t;
 
-void initEE(eventEntry_t * const event);
-void freeEE(eventEntry_t * const event);
-void initNNE(nowNextEntry_t * const nowNext);
-void freeNNE(nowNextEntry_t * const nowNext);
-void initNNL(nowNextList_t * const list);
-void freeNNL(nowNextList_t * const list);
-void parse215E(char * line, eventEntry_t * const event);
-boolean_t parseLineEvent(char c, char *s, eventEntry_t *const event);
-void getNowNextList(hostConf_t *vdrHost, nowNextList_t * const list, channelList_t const * const channels);
-void freeNNL(nowNextList_t * const list);
-void printEventDesc(io_t *out, int ntabs, char * const desc, const char * const lineDelim, char * const aux);
-void printEvent(io_t *out, int ntabs, eventEntry_t * const event);
-void printEventInfobox(io_t *out, int ntabs, eventEntry_t * const event);
-void initEventFromArgs(eventEntry_t * const event, vars_t *args);
+//Lista de eventos de varios canales
+//entre dos instantes de tiempo.
+typedef struct events_s {
+	int length;
+	channelEvents_t *entry;
+	int hostId;
+	time_t start;
+	time_t end;
+	int eventId;
+	int channelNum;
+	eventDumpMode_t dumpMode;
+} events_t;
+
+extern const char *gridDateFmt;
+void initEpgEvent(epgEvent_t * const event);
+void initEpgEventFromArgs(context_t *ctx, epgEvent_t * const event, vars_t *args);
+void freeEpgEvent(epgEvent_t * const event);
+void initChannelEvents(channelEvents_t * const list);
+void freeChannelEvents(channelEvents_t * const list);
+void initEvents(events_t * const list);
+void freeEvents(events_t * const list);
+void parse215E(char * line, epgEvent_t * const event);
+void parseEventLine(char c, char *s, epgEvent_t *const event);
+void parseEvents(char *data, events_t * const events, channelList_t const * const channels);
+void getEvents(hostConf_t *vdrHost, events_t * const events, channelList_t const * const channels);
+void getChannelEvents(hostConf_t *vdrHost, channelEvents_t * const channelEvents);
+void printEventDesc(context_t *ctx, char * const desc, boolean_t encode);
+void printEvent(context_t *ctx, epgEvent_t * const event, const int channelNum, boolean_t compact, const char *const TimerCreate, const char *const SearchCreate);
+void getEpgGridLimits(const char *argStart,time_t *start, time_t *end);
+void printEpgGrid(context_t *ctx, events_t * const events, channelList_t * const channels, timerList_t * const timers);
+void printChannelEpg(context_t *ctx, const char *id, hostConf_t *host, const int channelNum, timerList_t *const timers);
+void printTimersDiv(context_t *ctx, const char *id, timerList_t * const timers, const time_t start, const time_t end);
+const char * ctxChannelFilename(context_t *ctx, const char *channelName);
 
 #endif

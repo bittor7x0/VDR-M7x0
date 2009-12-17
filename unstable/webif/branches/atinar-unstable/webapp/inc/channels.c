@@ -182,14 +182,41 @@ boolean_t getChannel(hostConf_t *host, int channelNum, channel_t * const channel
 	return result;
 }
 
-void printChannelListSelect(io_t *out,int ntabs,const char * id,const char * name,const channelList_t *const channels,int channelNum){
+void printChannelListSelect(context_t *ctx,const char *id, const char *name,
+	const channelList_t *const channels, int channelNum, const char *onchange)
+{
 	int i;
 	channel_t *channel;
-	io_printf(out,"%.*s<select id=\"%s\" name=\"%s\" size=\"1\">\n",ntabs++,tabs,(id)?id:name,name);
+	ctx_printfn(ctx,"<select id=\"%s\" name=\"%s\" size=\"1\"",0,1,(id)?id:name,name);
+	if (onchange!=NULL){
+		ctx_printf(ctx," onchange=\"%s\"",onchange);
+	}
+	ctx_printf(ctx,">\n");
 	for (i=0,channel=channels->channel;i<channels->length;i++,channel++) {
-		io_printf(out,"%.*s<option value=\"%d\" %s>%d - %s</option>\n"
-			,ntabs,tabs,channel->channelNum,selected[boolean(channel->channelNum==channelNum)]
+		ctx_printf0(ctx,"<option value=\"%d\" %s>%d - %s</option>\n"
+			,channel->channelNum,selected[boolean(channel->channelNum==channelNum)]
 			,channel->channelNum,channel->channelName);
 		}
-	io_printf(out,"%.*s</select>\n",--ntabs,tabs);
+	ctx_printfn(ctx,"</select>\n",-1,0);
 }
+
+void printChannelControls(context_t *ctx,const channel_t *channel,const char *Epg,const char *LiveStream){
+	ctx_printfn(ctx,"<ul class=\"controls\"><!--\n",0,1);
+	if (Epg) {
+		ctx_printfn(ctx,"--><li class=\"control\">\n",0,1);
+		ctx_printf0(ctx,"<a href=\"epg.kl1?channelNum=%d\" class=\"epg control button-i ui-state-default\" title=\"%s\">"
+				"<span class=\"ui-icon ui-icon-clock\">%s</span>"
+			"</a>\n",channel->channelNum,Epg,Epg);
+		ctx_printfn(ctx,"</li><!--\n",-1,0);
+	}
+	if (LiveStream) {
+		boolean_t isTv=boolean(channel->vpid>1);
+		ctx_printfn(ctx,"--><li class=\"control\">\n",0,1);
+		ctx_printf0(ctx,"<a href=\"live.kl1?channelNum=%d\" class=\"live control button-i ui-state-default\" title=\"%s\">"
+				"<span class=\"ui-icon ui-icon-%s\">%s</span>"
+			"</a>\n",channel->channelNum,LiveStream,(isTv)?"tv":"radio",LiveStream);
+		ctx_printfn(ctx,"</li><!--\n",-1,0);
+	}
+	ctx_printfn(ctx,"--></ul>\n",-1,0);
+}
+

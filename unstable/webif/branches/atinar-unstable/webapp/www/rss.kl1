@@ -34,7 +34,9 @@ const char * const getPubDate(const struct tm *t){
 
 %><%
 
-	config(session,request);
+	context_t vctx;
+	context_t *ctx=&vctx;
+	initCtx(ctx,session,request,response,out,0);
 
 	recList_t recs;
 	int i=0;
@@ -47,54 +49,33 @@ const char * const getPubDate(const struct tm *t){
 	char * httpBase;
 	field_t *host=request_get_field(request,"Host");
 	asprintf(&httpBase,"http://%s",host->value);
-	io_printf(out,
-"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
-"<rss version=\"2.0\">\n"
-"	<channel>\n"
-"		<title>%s VDR</title>\n"
-"		<description>%s</description>\n"
-"		<language>%s</language>\n"
-		,tr("recordings")
-		,tr("recordingList")
-		,alpha3[langId]
-	);
+	ctx_printf0(ctx,"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
+	ctx_printfn(ctx,"<rss version=\"2.0\">\n",0,1);
+	ctx_printfn(ctx,"<channel>\n",0,1);
+	ctx_printf0(ctx,"<title>%s VDR</title>\n",tr("recordings"));
+	ctx_printf0(ctx,"<description>%s</description>\n",tr("recordingList"));
+	ctx_printf0(ctx,"<language>%s</language>\n",alpha3[langId]);
 	if (recs.length>0) {
-		io_printf(out,
-"		<pubDate>%s</pubDate>\n", getPubDate(localtime(&recs.entry[recs.length-1].event.start))
-		);
+		ctx_printf0(ctx,"<pubDate>%s</pubDate>\n", getPubDate(localtime(&recs.entry[recs.length-1].event.start)));
 	}
-	io_printf(out,
-"		<link>%s/</link>\n",httpBase
-	);
+	ctx_printf0(ctx,"<link>%s/</link>\n",httpBase);
 	rec_t *rec;
 	for (i=0,rec=recs.entry;i<recs.length;i++,rec++) {
 		struct tm t=*localtime(&rec->event.start);
 		const char * fd=formatDate(&t,0);
-		io_printf(out,
-"		<item>\n"
-"			<title>%s</title>\n"
-"			<description>[%s %s] %02d:%02d: %s</description>\n"
-			,rec->name
-			,weekdays[langId][t.tm_wday],fd,t.tm_hour,t.tm_min,rec->name
-		);
-		io_printf(out,
-"			<link>%s/playlistrec.kl1?id=%d</link>\n"
-			,httpBase
-			,rec->id
-		);
-		io_printf(out,
-"			<guid isPermaLink=\"false\">%d</guid>\n"
-"			<pubDate>%s</pubDate>\n"
-"		</item>\n"
-			,rec->id
-			,getPubDate(&t)
-		);
+		ctx_printfn(ctx,"<item>\n",0,1);
+		ctx_printf0(ctx,"<title>%s</title>\n",rec->name);
+		ctx_printf0(ctx,"<description>[%s %s] %02d:%02d: %s</description>\n"
+			,weekdays[langId][t.tm_wday],fd,t.tm_hour,t.tm_min,rec->name);
+		ctx_printf0(ctx,"<link>%s/playlistrec.kl1?id=%d</link>\n",httpBase,rec->id);
+		ctx_printf0(ctx,"<guid isPermaLink=\"false\">%d</guid>\n",rec->id);
+		ctx_printf0(ctx,"<pubDate>%s</pubDate>\n",getPubDate(&t));
+		ctx_printfn(ctx,"</item>\n",-1,0);
 	}
 	free(httpBase);
 	freeRecList(&recs);
-	io_printf(out,
-"	</channel>\n"
-"</rss>\n"
-	);
+	ctx_printfn(ctx,"</channel>\n",-1,0);
+	ctx_printfn(ctx,"</rss>\n",-1,0);
+	freeCtx(ctx);
 %>
 

@@ -1,0 +1,40 @@
+.timer {
+	margin:1px 0;
+	height:14px;
+}
+.progressbar {
+	display:block!important;
+	width:100%;
+	height:14px;
+	position:relative;
+}
+a.progressbar,
+a.progressbar:hover {
+	text-decoration:none!important;
+}
+.progressbar .pb {
+	display:block;
+	height:14px;
+	position:absolute;
+	top:0;
+	border:none;
+}
+.progressbar .pbstart{
+	-moz-border-radius-topleft:3px;
+	-moz-border-radius-bottomleft:3px;
+	-webkit-border-top-left-radius:3px;
+	-webkit-border-bottom-left-radius:3px;
+}
+.progressbar .pbend{
+	-moz-border-radius-topright:3px;
+	-moz-border-radius-bottomright:3px;
+	-webkit-border-top-right-radius:3px;
+	-webkit-border-bottom-right-radius:3px;
+}
+.progressbar .pbenabled{
+	background:#005104 url(images/ui-bg_gloss-wave_75_005104_1x100.png) repeat-x scroll 50% 50%;
+}
+.progressbar .pbdisabled{
+	background-color:#B8BFA0;
+}
+

@@ -51,7 +51,7 @@ typedef struct rec_s {
 	char * name;
 	char * path;
 	int flags;
-	eventEntry_t event;
+	epgEvent_t event;
 	videoType_t video;
 	audioList_t audio;
 } rec_t;
@@ -62,18 +62,19 @@ typedef struct recList_s {
 } recList_t;
 
 void initRec(rec_t * const rec);
-void initRecFromArgs(rec_t * const rec, vars_t *args);
+boolean_t initRecFromArgs(context_t *ctx, rec_t * const rec, vars_t *args);
 void freeRec(rec_t * const rec);
 void initRecList(recList_t  * const list);
 void freeRecList(recList_t  * const list);
 void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
 void sortRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
-boolean_t editRec(const rec_t *rec, char ** message);
-boolean_t deleRec(const rec_t *rec, char ** message);
+boolean_t editRec(context_t *ctx, const rec_t *rec, const char *oldName);
+boolean_t deleteRec(context_t *ctx, const rec_t *rec);
 boolean_t getRecInfo(rec_t *rec);
-boolean_t printRecPlaylist(request_t *request, response_t *response, io_t *out, rec_t *rec, char * const aux);
-void printRecControls(io_t *out,int ntabs,const rec_t *rec,char *const aux,const char *Play,const char *Edit,const char *Delete);
-void printRecEditForm(io_t *out, int ntabs, rec_t *rec, char *const aux);
-#define isValidRecPath(path) (path && strlen(path)>4 && strcmp(path+strlen(path)-4,".rec")==0)
+void printRecInfo(context_t *ctx, const rec_t * const rec);
+void printRecPlayLink(context_t *ctx, const rec_t *rec, boolean_t direct);
+boolean_t printRecPlaylist(context_t *ctx, rec_t *rec);
+void printRecControls(context_t *ctx,const rec_t *rec,const char *Play,const char *Edit,const char *Delete);
+void printRecEditForm(context_t *ctx, rec_t *rec);
 
 #endif

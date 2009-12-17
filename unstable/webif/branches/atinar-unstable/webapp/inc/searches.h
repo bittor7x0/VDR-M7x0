@@ -3,22 +3,18 @@
 * This source-code is licensed under GPL v2.
 * See ../../LICENSE for details
 * 
-* (c) Christian Kelinski <k@kille.cx>
+* (c) Atinar <atinar1@hotmail.com>
 * Please checkout the README file!
 * 
-* Originally written for the open7x0.org VDR-FW project:
-* www.open7x0.org
-* 
-* Modified for http://vdr-m7x0.foroactivo.com.es by:
-* atinar <atinar1@hotmail.com>
+* Originally written for http://vdr-m7x0.foroactivo.com.es
 * 
 * You will need the KLONE web application development framework
 * from www.koanlogic.com Version 2.
 * 
 */
 
-#ifndef __TIMERS_H__
-#define __TIMERS_H__
+#ifndef __SEARCHES_H__
+#define __SEARCHES_H__
 
 #include "channels.h"
 #include "conf.h"
@@ -132,19 +128,22 @@ typedef struct searchList_s {
 void initChannelGroupList(channelGroupList_t *const groups);
 void freeChannelGroupList(channelGroupList_t *const groups);
 void getChannelGroupList(hostConf_t *host, channelGroupList_t *const groups, channelList_t const *const channels);
-void printChannelGroupListSelect(io_t *out,int ntabs,const char * name,const channelGroupList_t *const groups,const char *groupName);
+void printChannelGroupListSelect(context_t *ctx,const char * name,const channelGroupList_t *const groups,const char *groupName);
+
 void initSearch(search_t *const entry);
-boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, io_t *out, int ntabs);
+boolean_t initSearchFromEvent(context_t *ctx, search_t *const search, hostConf_t *host, const int channelNum, const int eventId);
+boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, context_t *ctx);
 void freeSearch(search_t *const entry);
 void initSearchList(searchList_t *const searches);
 void freeSearchList(searchList_t *const searches);
 void getSearchList(searchList_t *const searchs, channelList_t const *const channels, const sortField_t sortBy, const sortDirection_t sortDirection);
 boolean_t parseSearch(const char *line, search_t *const search, channelList_t const *const channels );
-boolean_t addSearch(hostConf_t *host, const char *newSearchStr, char **message);
-boolean_t editSearch(hostConf_t *host, int id, const char *oldSearchStr, const char *newSearchStr, char **message);
-boolean_t deleSearch(hostConf_t *host, int id, const char *delSearchStr, char **message);
-boolean_t updateSearches(hostConf_t *host, char **message);
+boolean_t addSearch(context_t *ctx, hostConf_t *host, const char *newSearchStr);
+boolean_t editSearch(context_t *ctx, hostConf_t *host, int id, const char *oldSearchStr, const char *newSearchStr);
+boolean_t deleteSearch(context_t *ctx, hostConf_t *host, int id, const char *oldSearchStr);
+boolean_t updateSearches(context_t *ctx, hostConf_t *host);
 char *makeSearchStr(search_t *const search,const channelList_t *channels);
+void printSearcForm(context_t *ctx, search_t *const search, channelList_t const *const channels,const char *cssLevel);
 
 
 #endif

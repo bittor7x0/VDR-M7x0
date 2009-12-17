@@ -50,8 +50,8 @@ void validateCheckbox(const cfgParamConfig_t * const paramConfig, cfgParam_t * c
 	}
 }
 
-boolean_t printCheckbox(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
-	,const char *id, const char *paramName,int paramIdx,const char *paramValue,char *const aux
+boolean_t printCheckbox(context_t *ctx,const cfgParamConfig_t * const paramConfig
+	,const char *id, const char *paramName,int paramIdx,const char *paramValue
 ){
 	if (paramConfig->options) {
 		//value==first option => false
@@ -77,44 +77,41 @@ boolean_t printCheckbox(io_t *out,int ntabs,const cfgParamConfig_t * const param
 		if (!booleanValueSet) {
 			warn("No option match for checkbox value");
 		}
-		io_printf(out,"%.*s<input type=\"checkbox\"",ntabs,tabs);
-		if (id) io_printf(out,"id=\"%s\" ",id);
+		ctx_printf0(ctx,"<input type=\"checkbox\"");
+		if (id) ctx_printf(ctx,"id=\"%s\" ",id);
 		if (paramName==NULL){
-			io_printf(out,"name=\"paramValue_%d\" ",paramIdx);
+			ctx_printf(ctx,"name=\"paramValue_%d\" ",paramIdx);
 		} else {
-			io_printf(out,"name=\"%s\" ",paramName);
+			ctx_printf(ctx,"name=\"%s\" ",paramName);
 		}
-		io_printf(out,"value=\"%.*s\"%s/>\n",(option)?l:4,(option)?option:"true",checked[booleanValue]);
+		ctx_printf(ctx,"value=\"%.*s\"%s/>\n",(option)?l:4,(option)?option:"true",checked[booleanValue]);
 		return BT_TRUE;
 	}
 	return BT_FALSE;
 }
 
-boolean_t printSelect(io_t *out,int ntabs,const cfgParamConfig_t * const paramConfig
-	,const char *id, const char *paramName,int paramIdx,const char *paramValue, char *const aux
+boolean_t printSelect(context_t *ctx,const cfgParamConfig_t * const paramConfig
+	,const char *id, const char *paramName,int paramIdx,const char *paramValue
 ){
 	if (paramConfig && paramConfig->options && strlen(paramConfig->options)>0) {
-		io_printf(out,"%.*s<select ",ntabs,tabs);
-		if (id) io_printf(out,"id=\"%s\" ",id);
+		ctx_printfn(ctx,"<select ",0,1);
+		if (id) ctx_printf(ctx,"id=\"%s\" ",id);
 		if (paramName==NULL){
-			io_printf(out,"name=\"paramValue_%d\" ",paramIdx);
+			ctx_printf(ctx,"name=\"paramValue_%d\" ",paramIdx);
 		} else {
-			io_printf(out,"name=\"%s\" ",paramName);
+			ctx_printf(ctx,"name=\"%s\" ",paramName);
 		}
-		io_printf(out,"size=\"1\">\n");
+		ctx_printf(ctx,"size=\"1\">\n");
 		const char * option=paramConfig->options;
 		int o=paramConfig->indexOffset;
 		for(;;) {
 			int l=strcspn(option,"|");
 			char *optionnt=strndup(option,l);
-			const char *optiontr=tr(optionnt);
-			u_htmlncpy(aux,optiontr,strlen(optiontr),HTMLCPY_ENCODE);
+			const char *optiontre=CTX_HTML_ENCODE(tr(optionnt),-1);
 			if (paramConfig->isIndex) {
-				io_printf(out,"%.*s	<option value=\"%d\"%s>%s</option>\n"
-				,ntabs,tabs,o,selected[sameIntEx(paramValue,o)],aux);
+				ctx_printf0(ctx,"<option value=\"%d\"%s>%s</option>\n",o,selected[sameIntEx(paramValue,o)],optiontre);
 			} else {
-				io_printf(out,"%.*s	<option value=\"%s\"%s>%s</option>\n"
-				,ntabs,tabs,optionnt,selected[sameString(paramValue,optionnt)],aux);
+				ctx_printf0(ctx,"<option value=\"%s\"%s>%s</option>\n",optionnt,selected[sameString(paramValue,optionnt)],optiontre);
 			}
 			free(optionnt);
 			option+=l;
@@ -122,7 +119,7 @@ boolean_t printSelect(io_t *out,int ntabs,const cfgParamConfig_t * const paramCo
 			option++;
 			o++;
 		}
-		io_printf(out,"%.*s</select>\n",ntabs,tabs);
+		ctx_printfn(ctx,"</select>\n",-1,0);
 		return BT_TRUE;
 	}
 	return BT_FALSE;
@@ -148,9 +145,12 @@ cfgParamConfig_t webifParamConfig[]={ //Keep sorted by name !!
 	{"hosts",",127.0.0.1,2001,/var/vdr/video0;",NULL,BT_FALSE,0,(cfgParamValidate_t)validateHostsField,NULL/*(cfgParamPrintInput_t)printHostsField*/,BT_FALSE},
 	{"max_depth","2",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
 	{"playlist_type","0","M3U|XSPF",BT_TRUE,0,NULL,printSelect,BT_FALSE},
+	{"print_rec_folder_summary","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
 	{"use_external_www_folder","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
 	{"video_width","640",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
 	{"video_height","480",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
+	{"epg_schedule_grid_width","900",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
+	{"channel_logo_width","58",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
 };
 
 cfgParamConfig_t rcParamConfig[]={ //Keep sorted by name !!
@@ -609,6 +609,7 @@ boolean_t readWebifConf() {
 		//dbg("webifConf ya actualizado, no se lee.");
 		return;
 	}
+	freeWebifConf();
 	cfgParamList_t params;
 	cfgParam_t *param;
 	boolean_t isNew;
@@ -665,6 +666,12 @@ boolean_t readWebifConf() {
 				} else {
 					webifConf.displayHostId=sameString(param->value,"true");
 				}
+			} else if (strcmp(param->name,"print_rec_folder_summary")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.printRecFolderSummary=sameString(param->value,"true");
+				}
 			} else if (strcmp(param->name,"max_depth")==0) {
 				if (param->value==NULL || strlen(param->value)<1 ){
 					//TODO warn
@@ -705,14 +712,40 @@ boolean_t readWebifConf() {
 				} else {
 					webifConf.videoHeight=atoi(param->value);
 				}
+			} else if (strcmp(param->name,"epg_schedule_grid_width")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.tvScheduleGridWidth=atoi(param->value);
+				}
+			} else if (strcmp(param->name,"channel_logo_width")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.channelLogoWidth=atoi(param->value);
+				}
 			}
 		}
 		freeCfgParamList(&params);
+		crit_goto_if((webifConf.www=strdup((webifConf.useExternalWwwFolder)?"/www2":""))==NULL,outOfMemory);
 		webifConf.alreadySet=BT_TRUE;
 		webifConf.mtime=current_mtime;
 		return BT_TRUE;
 	}
 	return BT_FALSE;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+void resetWebifConf(){
+	memset(&webifConf,0,sizeof(webifConf_t));
+}
+
+void freeWebifConf(){
+	free(webifConf.www);
+	//TODO eliminar hosts
+	resetWebifConf();
 }
 
 hostConf_t *getHost(int hostId){
@@ -731,26 +764,24 @@ boolean_t isHostLocal(hostConf_t *host){
 	return boolean(host!=NULL && strncmp(host->ip,"127.",4)==0);
 }
 
-const char *getHostHttpAddr(hostConf_t *host,request_t *request){
+const char *getHostHttpAddr(hostConf_t *host,context_t *ctx){
 	return (host==NULL)
 	? NULL
 	: (isHostLocal(host)) 
-		? request_get_field(request,"Host")->value 
+		? request_get_field(ctx->request,"Host")->value 
 		: (host->name[0]) 
 			? host->name 
 			: host->ip;
 }
 
-void printVDRSelect(io_t *out,int ntabs,const char * name,const int hostId){
+void printVDRSelect(context_t *ctx,const char * name,const int hostId){
 	int i;
 	hostConf_t *host;
-	io_printf(out,"%.*s<select name=\"%s\" size=\"1\">\n",ntabs++,tabs,name);
+	ctx_printfn(ctx,"<select name=\"%s\" size=\"1\">\n",0,1,name);
 	for (i=0,host=webifConf.hosts;i<webifConf.hostsLength;i++,host++) {
 		if (host->isVdr){
-			io_printf(out,"%.*s<option value=\"%d\" %s>%d - %s</option>\n"
-				,ntabs,tabs,host->id,selected[boolean(host->id==hostId)]
-				,host->id,(host->name[0])?host->name:host->ip);
+			ctx_printf0(ctx,"<option value=\"%d\" %s>%d - %s</option>\n",host->id,selected[boolean(host->id==hostId)],host->id,(host->name[0])?host->name:host->ip);
 		}
 	}
-	io_printf(out,"%.*s</select>\n",--ntabs,tabs);
+	ctx_printfn(ctx,"</select>\n",-1,0);
 }

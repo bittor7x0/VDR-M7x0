@@ -23,27 +23,34 @@
 #include <locale.h>
 #include <u/libu.h>
 
-#include "i18n.h"
-#include "conf.h"
-#include "timers.h"
 #include "channels.h"
+#include "conf.h"
+#include "epg.h"
+#include "i18n.h"
 #include "svdrp_comm.h"
-
-
-char * parseTimerForm(vars_t *args,int ntabs){
-	char * timerStr=NULL;
-	vdrTimer_t timer;
-	if (initTimerFromArgs(&timer,args,out,ntabs)){
-		timerStr=makeTimerStr(&timer);
-		clearFlag(TF_TIMER_STR,timer.my);
-	}
-	freeTimer(&timer);
-	return timerStr;
-}
+#include "timers.h"
 
 #ifdef DEBUG
-void dbg_timers_kl1(void) { dbg("timers.kl1"); }
+static void dbg_timers_kl1(void){
+   dbg("timers.kl1");
+}
 #endif
+
+static void printHtmlHeadExtra(context_t *ctx){
+	if (!ctx->isAjaxRequest){
+		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.form-2.36.js\"></script>\n",webifConf.www);
+		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/formHandler.js\"></script>\n",webifConf.www);
+		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/timers.js\"></script>\n",webifConf.www);
+	}
+	ctx_printfn(ctx,"<script type=\"text/javascript\">\n",0,1);
+	if (!ctx->isAjaxRequest){
+		ctx_printf0(ctx,"$(function(){webif.timersPageInit();});\n");
+	}
+	ctx_printfn(ctx,"$.extend(webif.messages,{\n",0,1);
+	ctx_printf0(ctx,"timerDeleteConfirm:'%s',\n",tr("timer.delete.confirm"));
+	ctx_printfn(ctx,"});\n",-1,0);
+	ctx_printfn(ctx,"</script>\n",-1,0);
+}
 
 %><%
 
@@ -51,308 +58,177 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 	dbg_timers_kl1();
 	#endif
 
-	config(session, request);
+	context_t vctx;
+	context_t *ctx=&vctx;
+	initCtx(ctx,session,request,response,out,4096);
 
 	int i=0;
 	int l;
-	enum {AUXSZ=4096};
-	char aux[AUXSZ];
 
 	vars_t *args = request_get_args(request);
-	int timerId=(vars_countn(args,"timerId")>0) ? vars_get_value_i(args,"timerId") : 0;
-	const char * argTimerStr=(vars_countn(args,"timerStr")>0) ? vars_get_value(args,"timerStr") : NULL;
-	const char * oldTimerStr=(vars_countn(args,"oldTimerStr")>0) ? vars_get_value(args,"oldTimerStr") : NULL;
-	int hostId=vars_get_value_i(args,"hostId");
-	int oldHostId=vars_get_value_i(args,"oldHostId");
+	int timerId=vars_get_value_i(args,"timerId");
+	char *timerStr;
+	char *oldTimerStr;
+	boolean_t myTimerStr=ctxGetRequestParamAsCpy(ctx,&timerStr,args,"timerStr");
+	boolean_t myOldTimerStr=ctxGetRequestParamAsCpy(ctx,&oldTimerStr,args,"oldTimerStr");
+	const int hostId=vars_get_value_i(args,"hostId");
+	const int oldHostId=vars_get_value_i(args,"oldHostId");
 	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(hostId) : NULL;
-	if (!host || !host->isVdr)
+	if (!host || !host->isVdr){
 		host=getFirstVdrHost();
-	webifState.sortBy=(vars_countn(args,"sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
-	webifState.sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
-	webifState.currentPage=PN_TIMERS;
-	webifState.currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
-	int ntabs=initHtmlPage(response,out,tr("timers"),
-"		<script type=\"text/javascript\">\n"
-"			webif.messages.confirmDelete='%s';\n"
-"		</script>\n"
-		,tr("timer.delete.confirm")
-	);
-	printMenu(out,ntabs);
-	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
-	io_printf(out,"%.*s<h2>%s</h2>\n",ntabs,tabs,tr("timers"));
-	io_printf(out,"%.*s<div class=\"section\">\n",ntabs++,tabs);
-
-	channelList_t channels;
-	initChannelList(&channels);
-
-	if (webifState.currentAction==PA_DELETE) {
-		if ( (timerId>0) && (timerId<1000) && (oldTimerStr) ) {
-			char *message=NULL;
-			if (deleTimer(host,timerId,oldTimerStr,&message)){
-				printMessage(out,ntabs,"message",tr("timer.delete.ok"),message,aux);
-				webifState.currentAction=PA_SUMMARY;
-			} else {
-				printMessage(out,ntabs,"alert",tr("timer.delete.err"),message,aux);
-				webifState.currentAction=PA_EDIT;
-				argTimerStr=oldTimerStr;
-			}
-			free(message);
-		}
 	}
-	if (webifState.currentAction==PA_ADD) {
-		char *timerStr = (argTimerStr==NULL) ? parseTimerForm(args,ntabs) : (char *)argTimerStr;
-		char *message=NULL;
-		if ( (timerId>0) && (timerStr) && (oldTimerStr) && (hostId==oldHostId) ) {
-			if (editTimer(host,timerId,oldTimerStr,timerStr,&message)){
-				printMessage(out,ntabs,"message",tr("timer.update.ok"),message,aux);
-			} else {
-				printMessage(out,ntabs,"alert",tr("timer.update.err"),message,aux);
-			}
-		} else if (timerStr) {
-			if (addTimer(host,timerStr,&message)){
-				printMessage(out,ntabs,"message",tr("timer.create.ok"),message,aux);
-				free(message); message=NULL;
-				if ( (timerId>0) && (timerId<1000) && (oldTimerStr) && hostId!=oldHostId){
-					hostConf_t *oldHost=getHost(oldHostId);
-					if (!oldHost || !oldHost->isVdr) {
-						message="Anterior host erroneo, no se puede eliminar programación";
-						printMessage(out,ntabs,"message",tr("timer.delete.ok"),message,NULL);
-						message=NULL;
-					} else if (deleTimer(oldHost,timerId,oldTimerStr,&message)){
-						printMessage(out,ntabs,"message",tr("timer.delete.ok"),message,aux);
-						webifState.currentAction=PA_SUMMARY;
-					} else {
-						printMessage(out,ntabs,"alert",tr("timer.delete.err"),message,aux);
-						webifState.currentAction=PA_EDIT;
-						argTimerStr=oldTimerStr;
-					}
+	ctx->currentPage=PN_TIMERS;
+	ctx->currentAction=(vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_SUMMARY;
+	ctx->sortBy=(vars_countn(args,"sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
+	ctx->sortDirection=(vars_countn(args,"direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
+
+	channelList_t vchannels;
+	channelList_t *channels=&vchannels;
+	initChannelList(channels);
+
+	initHtmlPage(ctx,tr("timers"),printHtmlHeadExtra);
+	if (!ctx->isAjaxRequest){
+		ctx_printfn(ctx,"<div class=\"level2-div ui-widget\">\n",0,1);
+		ctx_printf0(ctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("timers"));
+		ctx_printfn(ctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
+	}
+	if (ctx->isReload){
+		ctx->currentAction=PA_SUMMARY;
+	}
+	boolean_t timersHaveChanged=BT_FALSE;
+	if (ctx->currentAction==PA_DELETE) {
+		if ( (timerId>0) && (oldTimerStr) ) {
+			ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
+			timersHaveChanged=deleteTimer(ctx,host,timerId,oldTimerStr);
+			if (!timersHaveChanged){
+				ctx->currentAction=PA_EDIT;
+				if (myTimerStr){
+					free(timerStr);
 				}
-			} else {
-				printMessage(out,ntabs,"alert",tr("timer.create.err"),message,aux);
+				timerStr=oldTimerStr;
+				myTimerStr=myOldTimerStr;
+				myOldTimerStr=BT_FALSE;
 			}
+			ctx_printfn(ctx,"</div>\n",-1,0); //messageDialog
 		}
-		webifState.currentAction=PA_SUMMARY;
-		if (timerStr && timerStr!=argTimerStr ){
-			free(timerStr);
+		if (!ctx->isAjaxRequest){
+			ctx->currentAction=PA_SUMMARY;
 		}
-		free(message);
-	} 
-	if (webifState.currentAction==PA_EDIT) {
-		vdrTimer_t timer;
-		initTimer(&timer);
-		if (argTimerStr) {
-			parseTimer(argTimerStr,&timer);
-		}
-		if (channels.length==0){
-			getChannelList(host,&channels,SF_NONE,SD_NONE);
-		}
-		io_printf(out,"%.*s"
-			"<form action=\"/timers.kl1\" method=\"post\">\n"
-			,ntabs++,tabs);
-
-		if (timerId>0) {
-			io_printf(out,"%.*s<input type=\"hidden\" name=\"timerId\" value=\"%d\"/>\n",ntabs,tabs,timerId);
-			const char * otstr = (oldTimerStr!=NULL) ? oldTimerStr : argTimerStr;
-			if (otstr) {
-				l=strlen(otstr);
-				u_htmlncpy(aux,otstr,l,HTMLCPY_ENCODE);
-				io_printf(out,"%.*s<input type=\"hidden\" name=\"oldTimerStr\" value=\"%s\"/>\n",ntabs,tabs,aux);
-			} else {
-				warn("timers.kl1: timerId without timerStr");
-			} 
-		}
-		const char *TimerEdit=tr((timerId>0)?"timer.edit":"timer.add");
-		io_printf(out,"%.*s<table id=\"timerEdit\" class=\"list\" summary=\"%s\">\n",ntabs++,tabs,TimerEdit);
-		io_printf(out,"%.*s<caption>%s</caption>\n",ntabs,tabs,TimerEdit);
-
-		io_printf(out,"%.*s<tbody>\n",ntabs++,tabs);
-		io_printf(out,"%.*s"
-			"<tr>"
-				"<th>%s</th>"
-				"<td><input type=\"checkbox\" name=\"active\" value=\"1\"%s/></td>"
-			"</tr>\n"
-			,ntabs,tabs,tr("active"),checked[isFlagSet(TF_ACTIVE,timer.flags)]
-		);
-
-		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("channel"));
-		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
-		printChannelListSelect(out,ntabs,NULL,"channelNum",&channels,timer.channelNum);
-		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
-		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
-
-		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,"Host");
-		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
-		if (webifConf.numVDRs>1){
-			printVDRSelect(out,ntabs,"hostId",(host)?host->id:0);
-		} else {
-			io_printf(out,"%.*s<input type=\"text\" name=\"hostId\" class=\"readOnly\" readonly=\"readonly\" value=\"%d\"/>\n",ntabs,tabs,(host)?host->id:0);
-		}
-		io_printf(out,"%.*s<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",ntabs,tabs,(host)?host->id:0);
-		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
-		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
-
-		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-		io_printf(out,"%.*s<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n"
-			,ntabs,tabs,TT_ONE_TIME,checked[boolean(timer.type==TT_ONE_TIME)],tr("oneTimeRecording"));
-		io_printf(out,"%.*s<td>\n",ntabs++,tabs);
-		io_printf(out,"%.*s<select name=\"date\" size=\"1\">\n",ntabs++,tabs);
-		time_t tdate=time(NULL);
-		char cdate[11];
-		struct tm sdate;
-		boolean_t isThatDay=BT_FALSE;
-		boolean_t isAfterThatDay=BT_FALSE;
-		for(i=0;i<14;i++) {
-			sdate=*localtime(&tdate);
-			strftime(cdate,11,"%Y-%m-%d",&sdate);
-			if (!isAfterThatDay){
-				isThatDay=sameDay(tdate,timer.start);
-				isAfterThatDay=boolean(isThatDay||tdate>timer.start);
-			}
-			io_printf(out,"%.*s<option value=\"%s\" %s>%s, %s</option>\n"
-				,ntabs,tabs,cdate,selected[isThatDay],weekdays[langId][sdate.tm_wday],formatDate(&sdate,BT_FALSE));
-			if (isThatDay && (timer.type==TT_ONE_TIME)) { 
-				//marcar por si se cambia a regular
-				timer.wdays[(sdate.tm_wday+6)%7]=weekdays[langId][sdate.tm_wday][0]; 
-			}
-			isThatDay=BT_FALSE;
-			tdate+=24*60*60;
-		}
-		io_printf(out,"%.*s</select>\n",--ntabs,tabs);
-		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
-		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
-
-		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-		io_printf(out,"%.*s<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n",ntabs,tabs
-			,TT_REGULAR,checked[boolean(timer.type==TT_REGULAR)],tr("regularRecording"));
-		io_printf(out,"%.*s<td>",ntabs++,tabs);
-		for(i=startOfWeek[langId];i<startOfWeek[langId]+7;i++) {
-			io_printf(out,"%.*s<input type=\"checkbox\" name=\"wday\" value=\"%d\"%s/>%s "
-				,ntabs,tabs,(i%7),checked[boolean(timer.wdays[(i+6)%7]!='-')],weekdays[langId][i%7]);
-		}
-		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
-		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
-
-		struct tm start_date=*localtime(&timer.start);
-		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("start"));
-		io_printf(out,"%.*s"
-			"<td>"
-				"<input type=\"text\" name=\"startHour\" maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;:&nbsp;"
-				"<input type=\"text\" name=\"startMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>"
-			"</td>\n",ntabs,tabs,start_date.tm_hour,start_date.tm_min);
-		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
-
-		struct tm end_date=*localtime(&timer.stop);
-		io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-		io_printf(out,"%.*s<th>%s</th>\n",ntabs,tabs,tr("end"));
-		io_printf(out,"%.*s"
-			"<td>"
-				"<input type=\"text\" name=\"endHour\" maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;:&nbsp;"
-				"<input type=\"text\" name=\"endMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>"
-			"</td>\n",ntabs,tabs,end_date.tm_hour,end_date.tm_min);
-		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
-
-		io_printf(out,"%.*s"
-			"<tr>"
-				"<th>%s</th>"
-				"<td><input type=\"checkbox\" name=\"addMargin\" value=\"%d\" %s/></td>"
-			"</tr>\n"
-			,ntabs,tabs,tr("margin.add"),boolean(timerId<1),checked[boolean(timerId<1)]);
-
-		io_printf(out,"%.*s"
-			"<tr>"
-				"<th>%s</th>"
-				"<td><input type=\"text\" name=\"priority\" maxlength=\"2\" size=\"3\" value=\"%d\"/></td>"
-			"</tr>\n"
-			,ntabs,tabs,tr("priority"),timer.priority);
-
-		io_printf(out,"%.*s"
-			"<tr>"
-				"<th>%s</th>"
-				"<td><input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\"/></td>"
-			"</tr>\n"
-			,ntabs,tabs,tr("lifetime"),timer.lifetime);
-
-		io_printf(out,"%.*s"
-			"<tr>"
-				"<th>%s</th>"
-				"<td><input type=\"text\" name=\"title\" size=\"70\" value=\"%s\"/></td>"
-			"</tr>\n"
-			,ntabs,tabs,tr("title"),(timer.title)?timer.title:"");
-
-		if (timer.aux) {
-			l=strlen(timer.aux);
-			u_htmlncpy(aux,timer.aux,l,HTMLCPY_ENCODE);
-			io_printf(out,"%.*s"
-				"<tr>"
-					"<th>%s</th>"
-					"<td><textarea name=\"aux\" spellcheck=\"false\" cols=\"%d\" rows=\"%d\">%s</textarea></td>"
-				"</tr>\n"
-				,ntabs,tabs,tr("aux"),(l>70)?70:l,l/70+2,aux);
-		}
-
-		io_printf(out,"%.*s<tr class=\"buttons\">\n",ntabs++,tabs);
-		io_printf(out,"%.*s<td colspan=\"2\">\n",ntabs++,tabs);
-		io_printf(out,"%.*s"
-			"<button id=\"confirm\" class=\"confirm ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
-				"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
-			"</button>\n"
-			,ntabs,tabs,PA_ADD,tr("accept"));
-		io_printf(out,"%.*s"
-			"<button id=\"delete\" class=\"delete ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
-				"<div><span class=\"ui-icon ui-icon-trash\">&nbsp;</span>%s</div>"
-			"</button>\n"
-			,ntabs,tabs,PA_DELETE,tr("timer.delete"));
-		io_printf(out,"%.*s</td>\n",--ntabs,tabs);
-		io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
-		io_printf(out,"%.*s</tbody>\n",--ntabs,tabs);
-				
-		io_printf(out,"%.*s</table>\n",--ntabs,tabs);
-		io_printf(out,"%.*s</form>\n",--ntabs,tabs);
-		freeTimer(&timer);
-		//webifState.currentAction=PA_SUMMARY;
 	}
-	if (webifState.currentAction==PA_SUMMARY) {
-		if (channels.length==0 && host){
-			getChannelList(host,&channels,SF_NONE,SD_NONE);
-		}
-		if (channels.length>0) {
-			timerList_t timers;
-			getTimerList(&timers,&channels,webifState.sortBy,webifState.sortDirection);
-			boolean_t printHost=boolean(webifConf.numVDRs>1);
-			io_printf(out,"%.*s<table id=\"timers\" class=\"list\" summary=\"%s\">\n",ntabs++,tabs,tr("timerList"));
-			io_printf(out,"%.*s<col class=\"number\"/>\n",ntabs,tabs);
-			if (printHost) io_printf(out,"%.*s<col class=\"number\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"tmDate date\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"chName\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"tmStart hour\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"tmEnd hour\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"tmName\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"mxName\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"ctrls\"/>\n",ntabs,tabs);
-			
-			
-			io_printf(out,"%.*s<thead>\n",ntabs++,tabs);
-			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-			printList1TH(out,ntabs,"timers.kl1",SF_TM_NUMBER,"#");
-			if (printHost){
-				printList1TH(out,ntabs,"timers.kl1",SF_HOST,"Host");
+	if (ctx->currentAction==PA_ADD) {
+		if (timerStr==NULL){
+			vdrTimer_t timer;
+			if (initTimerFromArgs(&timer,args,ctx)){
+				timerStr=makeTimerStr(&timer);
+				myTimerStr=BT_TRUE;
 			}
-			printList1TH(out,ntabs,"timers.kl1",SF_START,tr("date"));
-			printList1TH(out,ntabs,"timers.kl1",SF_CH_NUMBER,tr("channel"));
-			printList1TH(out,ntabs,"timers.kl1",SF_START,tr("start"));
-			printList1TH(out,ntabs,"timers.kl1",SF_START,tr("end"));
-			printList1TH(out,ntabs,"timers.kl1",SF_TITLE,tr("title"));
-			printList1TH(out,ntabs,"timers.kl1",SF_MUX,tr("channelMux"));
-			io_printf(out,"%.*s<th>&nbsp;</th>\n",ntabs,tabs);
-			io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
-			io_printf(out,"%.*s</thead>\n",--ntabs,tabs);
+			freeTimer(&timer);
+		}
+		ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
+		if ( (timerId>0) && (timerStr) && (oldTimerStr) && (hostId==oldHostId)) {
+			timersHaveChanged=editTimer(ctx,host,timerId,oldTimerStr,timerStr);
+		} else if (timerStr) {
+			if (addTimer(ctx,host,timerStr)){
+				timersHaveChanged=BT_TRUE;
+				if ((timerId>0) && (oldTimerStr) && (hostId!=oldHostId)){
+					hostConf_t *oldHost=getHost(oldHostId);
+					deleteTimer(ctx,oldHost,timerId,oldTimerStr);
+				}
+			}
+		}
+		ctx_printfn(ctx,"</div>\n",-1,0);
+		if (!ctx->isAjaxRequest){
+			ctx->currentAction=PA_SUMMARY;
+		}
+	}
+	if (timersHaveChanged && ctx->isAjaxRequest){
+		if (vars_countn(args,"epg_grid_start")){
+			if (channels->length==0 && host){
+				getChannelList(host,channels,SF_NONE,SD_NONE);
+			}
+			if (channels->length>0) {
+				time_t start, end;
+				timerList_t timers;
+				initTimerList(&timers);
+				getTimerList(&timers,channels,ctx->sortBy,ctx->sortDirection);
+				getEpgGridLimits(vars_get_value(args,"epg_grid_start"),&start,&end);
+				printTimersDiv(ctx,AJAX_REPLACE_PREFIX("timers"),&timers,start,end);
+				freeTimerList(&timers);
+			}
+		} else if (vars_countn(args,"epg_channel_num")){
+			const int channelNum=vars_get_value_i(args,"epg_channel_num");
+			if (channelNum>0){
+				if (channels->length==0 && host){
+					getChannelList(host,channels,SF_NONE,SD_NONE);
+				}
+				if (channels->length>0) {
+					timerList_t timers;
+					initTimerList(&timers);
+					getTimerList(&timers,channels,ctx->sortBy,ctx->sortDirection);
+					printChannelEpg(ctx,AJAX_REPLACE_PREFIX("epg"),host,channelNum,&timers);
+					freeTimerList(&timers);
+				}
+			}
+		} else {
+			ctx->currentAction=PA_SUMMARY;
+		}
+	}
+	if (ctx->currentAction==PA_EDIT || ctx->currentAction==PA_TIMER_CREATE_FROM_EVENT) {
+		if (channels->length==0){
+			getChannelList(host,channels,SF_NONE,SD_NONE);
+		}
+		vdrTimer_t vtimer;
+		vdrTimer_t *timer=&vtimer;
+		initTimer(timer);
+		if (ctx->currentAction==PA_EDIT){
+			if (timerStr) {
+				parseTimer(timerStr,timer);
+				timer->timerStr=timerStr;
+			}
+			timer->id=timerId;
+			timer->hostId=hostId;
+		} else {
+			initTimerFromEvent(ctx,timer,host,vars_get_value_i(args,"channelNum"),vars_get_value_i(args,"eventId"));	
+		}
+		printTimerForm(ctx,timer,channels);
+		freeTimer(timer);
+	}
+	if (ctx->currentAction==PA_SUMMARY) {
+		if (channels->length==0 && host){
+			getChannelList(host,channels,SF_NONE,SD_NONE);
+		}
+		if (channels->length>0) {
+			timerList_t timers;
+			getTimerList(&timers,channels,ctx->sortBy,ctx->sortDirection);
+			boolean_t printHost=boolean(webifConf.numVDRs>1);
+			ctx_printfn(ctx,"<table id=\"%s\" class=\"level3-div\" summary=\"%s\">\n",0,1,AJAX_REPLACE_PREFIX("timers"),tr("timerList"));
+			ctx_printf0(ctx,"<col class=\"number\"/>\n");
+			if (printHost) ctx_printf0(ctx,"<col class=\"number\"/>\n");
+			ctx_printf0(ctx,"<col class=\"tmDate date\"/>\n");
+			ctx_printf0(ctx,"<col class=\"chName\"/>\n");
+			ctx_printf0(ctx,"<col class=\"tmStart hour\"/>\n");
+			ctx_printf0(ctx,"<col class=\"tmEnd hour\"/>\n");
+			ctx_printf0(ctx,"<col class=\"tmName\"/>\n");
+			ctx_printf0(ctx,"<col class=\"mxName\"/>\n");
+			
+			ctx_printfn(ctx,"<thead class=\"level3-top\">\n",0,1);
+			ctx_printfn(ctx,"<tr>\n",0,1);
+			printList1TH(ctx,"timers.kl1",SF_TM_NUMBER,"#");
+			if (printHost){
+				printList1TH(ctx,"timers.kl1",SF_HOST,"Host");
+			}
+			printList1TH(ctx,"timers.kl1",SF_START,tr("date"));
+			printList1TH(ctx,"timers.kl1",SF_CH_NUMBER,tr("channel"));
+			printList1TH(ctx,"timers.kl1",SF_START,tr("start"));
+			printList1TH(ctx,"timers.kl1",SF_START,tr("end"));
+			printList1TH(ctx,"timers.kl1",SF_TITLE,tr("title"));
+			printList1TH(ctx,"timers.kl1",SF_MUX,tr("channelMux"));
+			ctx_printfn(ctx,"</tr>\n",-1,0);
+			ctx_printfn(ctx,"</thead>\n",-1,0);
 
-			io_printf(out,"%.*s<tbody>\n",ntabs++,tabs);
+			ctx_printfn(ctx,"<tbody class=\"level3\">\n",0,1);
 			const char *EditTimer=tr("timer.edit");
-			const char *Schedule=tr("schedule");
+			const char *Schedule=tr("epg");
 			channel_t noChannel;
 			const channel_t *channel;
 			noChannel.channelNum=1;
@@ -363,41 +239,52 @@ void dbg_timers_kl1(void) { dbg("timers.kl1"); }
 				struct tm t1=*localtime(&timer->start);
 				struct tm t2=*localtime(&timer->stop);
 				channel=(timer->channel)?timer->channel:&noChannel;
-				io_printf(out,"%.*s<tr%s>\n",ntabs++,tabs,classActive[isFlagSet(TF_ACTIVE,timer->flags)]);
-				io_printf(out,"%.*s<td class=\"number\">%d</td>\n",ntabs,tabs,timer->id);
-				if (printHost) 
-					io_printf(out,"%.*s<td class=\"number\">%d</td>\n",ntabs,tabs,timer->hostId);
-				if (timer->type==TT_REGULAR) {
-					io_printf(out,"%.*s<td class=\"date\">%s (%.7s)</td>\n",ntabs,tabs,formatDate(&t1,0),timer->wdays);
-				} else {
-					io_printf(out,"%.*s<td class=\"date\">%s</td>\n",ntabs,tabs,formatDate(&t1,0));
+				ctx_printfn(ctx,"<tr%s>\n",0,1,classActive[isFlagSet(TF_ACTIVE,timer->flags)]);
+				ctx_printf0(ctx,"<td class=\"number\">%d</td>\n",timer->id);
+				if (printHost) {
+					ctx_printf0(ctx,"<td class=\"number\">%d</td>\n",timer->hostId);
 				}
-				io_printf(out,"%.*s"
+				if (timer->type==TT_REGULAR) {
+					ctx_printf0(ctx,"<td class=\"date\">%s (%.7s)</td>\n",formatDate(&t1,0),timer->wdays);
+				} else {
+					ctx_printf0(ctx,"<td class=\"date\">%s</td>\n",formatDate(&t1,0));
+				}
+				ctx_printf0(ctx,
 					"<td>"
-						"<a class=\"channel\" href=\"program.kl1?chan=%d#timer%d_1\" title=\"%s\">%s</a>"
-					"</td>\n",ntabs,tabs,channel->channelNum,timer->id,Schedule,channel->channelName);
-				io_printf(out,"%.*s<td class=\"hour\">%02d:%02d</td>\n",ntabs,tabs,t1.tm_hour,t1.tm_min);
-				io_printf(out,"%.*s<td class=\"hour\">%02d:%02d</td>\n",ntabs,tabs,t2.tm_hour,t2.tm_min);
-				io_printf(out,"%.*s<td>%s</td>\n",ntabs,tabs,timer->title);
-				io_printf(out,"%.*s<td>%s</td>\n",ntabs,tabs,channel->multiplexName);
-				u_urlncpy(aux,timer->timerStr,strlen(timer->timerStr),URLCPY_ENCODE);
-				io_printf(out,"%.*s"
-					"<td class=\"ctrls\">"
-						"<a class=\"ui-icon ui-icon-edit\" href=\"timers.kl1?a=%d&amp;timerId=%d&amp;timerStr=%s&amp;hostId=%d\" title=\"%s\">%s</a>"
-					"</td>\n",ntabs,tabs,PA_EDIT,timer->id,aux,timer->hostId,EditTimer,EditTimer);
-
-				io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+						"<a class=\"channel\" href=\"epg.kl1?channelNum=%d#timer%d_1\" title=\"%s\">%s</a>"
+					"</td>\n"
+					,channel->channelNum,timer->id,Schedule,channel->channelName);
+				ctx_printf0(ctx,"<td class=\"hour\">%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
+				ctx_printf0(ctx,"<td class=\"hour\">%02d:%02d</td>\n",t2.tm_hour,t2.tm_min);
+				ctx_printf0(ctx,
+					"<td>"
+						"<a class=\"timerEdit titleLink\" href=\"timers.kl1?a=%d&amp;timerId=%d&amp;timerStr=%s&amp;hostId=%d\" title=\"%s\">%s</a>"
+					"</td>\n"
+					,PA_EDIT,timer->id,CTX_URL_ENCODE(timer->timerStr,-1,NULL),timer->hostId,EditTimer,timer->title);
+				ctx_printf0(ctx,"<td>%s</td>\n",channel->multiplexName);
+				ctx_printfn(ctx,"</tr>\n",-1,0);
 			}
-			io_printf(out,"%.*s</tbody>\n",--ntabs,tabs);
-			io_printf(out,"%.*s</table>\n",--ntabs,tabs);
+			ctx_printfn(ctx,"</tbody>\n",-1,0);
+			ctx_printfn(ctx,"</table>\n",-1,0);
 			freeTimerList(&timers);
 		} else {
-			//TODO
+			printMessage(ctx,"alert",tr("warnNoEPG"),NULL, BT_FALSE);
 		}
 	}
-	io_printf(out,"%.*s</div>\n",--ntabs,tabs);//section
-	io_printf(out,"%.*s</div>\n",--ntabs,tabs);//main
-	finishHtmlPage(out,ntabs);
-	freeChannelList(&channels);
+	if (!ctx->isAjaxRequest){
+		ctx_printfn(ctx,"</div>\n",-1,0); //level2
+		ctx_printfn(ctx,"</div>\n",-1,0); //level2-div
+	}
+	finishHtmlPage(ctx);
+	if (myTimerStr){
+		free(timerStr);
+		myTimerStr=BT_FALSE;
+	}
+	if (myOldTimerStr){
+		free(oldTimerStr);
+		myOldTimerStr=BT_FALSE;
+	}
+	freeChannelList(channels);
+	freeCtx(ctx);
 	closeSvdrpAll();
 %>

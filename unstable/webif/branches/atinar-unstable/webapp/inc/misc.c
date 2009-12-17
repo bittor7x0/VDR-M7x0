@@ -17,6 +17,7 @@
 * 
 */
 
+#include <iconv.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,13 +33,6 @@
 #include "i18n.h"
 #include "conf.h"
 #include "svdrp_comm.h"
-
-webifState_t webifState = {
-	PN_INDEX,
-	PA_NOACTION,
-	SF_START,
-	SD_ASC,
-};
 
 const char *checked[2]={""," checked=\"checked\""};
 const char *selected[2]={""," selected=\"selected\""};
@@ -123,29 +117,50 @@ boolean_t dirExists(const char * dirName) {
 	return boolean(S_ISDIR(status.st_mode));
 }
 
-void config(session_t *session, request_t *request) {
-	header_t *header = request_get_header(request);
-	if (header_get_field(header,"Accept-Language")!=NULL) {
-		field_t *field=header_get_field(header,"Accept-Language");
-		strncpy(acceptedLang,field->value,2);
-		acceptedLang[2]='\0';
-	}
+void initCtx(context_t *ctx, session_t *session, request_t *request, response_t *response, io_t *out, int bufferLength ){
 	readWebifConf();
+	ctx->session=session;
+	ctx->request=request;
+	ctx->response=response;
+	ctx->out=out;
+	ctx->ntabs=0;
+	ctx->currentPage=PN_INDEX;
+	ctx->currentAction=PA_NOACTION;
+	ctx->currentChannelNum=0;
+	ctx->sortBy=SF_START;
+	ctx->sortDirection=SD_ASC;
+	ctx->bufferLength=bufferLength;
+	ctx->buffer=NULL;
+	if (bufferLength>0){
+		crit_goto_if((ctx->buffer=malloc(bufferLength))==NULL,outOfMemory);
+	}
+
+	header_t *header = request_get_header(request);
+	field_t *field;
+	field=header_get_field(header,"X-Requested-With");
+	ctx->isAjaxRequest=boolean(field!=NULL && strncmp("XMLHttpRequest",field->value,14)==0);
+
+	field=header_get_field(header,"Cache-Control");
+	ctx->isReload=boolean(field!=NULL && strstr(field->value,"max-age=0")!=NULL);
+
 	langId=webifConf.langId;  
 	if ((langId<0) || (langId>=I18NNUM)) {
-		int i=0;
-		for (i=0;i<I18NNUM;i++) {
-			if (strcmp(acceptedLang,alpha2[i])==0) {
-				langId=i;
-				break;
-			}
-		} 
+		field=header_get_field(header,"Accept-Language");
+		if (field!=NULL){
+			int i=0;
+			for (i=0;i<I18NNUM;i++) {
+				if (strncmp(alpha2[i],field->value,2)==0) {
+					langId=i;
+					break;
+				}
+			} 
+		}
 	}
 	if ((langId<0) || (langId>=I18NNUM)) {
 		langId=0;
 	}
 	setlocale(LC_ALL,locale[langId]);
-	//----System type----
+	/*----System type----
 	systemType=ST_UNKNOWN;
 	FILE *f = fopen("/etc/systemtype","r");
 	if (f) {
@@ -160,6 +175,84 @@ void config(session_t *session, request_t *request) {
 			systemType=ST_M750C;
 		}
 	}
+	*/
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+void freeCtx(context_t *ctx){
+	if (ctx->buffer!=NULL){
+		free(ctx->buffer);
+		ctx->bufferLength=0;
+		ctx->buffer=NULL;
+	}
+}
+
+void chkCtxBuffer(context_t *ctx,int length, const char * routineName){
+	if ((length+1)>ctx->bufferLength){
+		if (routineName){
+			warn("buffer insuficiente en %s:  %d %d",routineName,ctx->bufferLength,length);
+		}
+		crit_goto_if((ctx->buffer=realloc(ctx->buffer,length+1))==NULL,outOfMemory);
+		ctx->bufferLength=length+1;
+	}
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+char * ctxHtmlEncode(context_t *ctx, const char * const str, int l, const char * routineName){
+	if (l<0) l=strlen(str);
+	chkCtxBuffer(ctx,2*l,routineName);
+	u_htmlncpy(ctx->buffer,str,l,HTMLCPY_ENCODE);
+	return ctx->buffer;
+}
+
+char * ctxUrlEncode(context_t *ctx, const char * const url, int l, const char * keep, const char *routineName){
+	if (l<0) l=strlen(url);
+	chkCtxBuffer(ctx,2*l,routineName);
+	u_urlncpy_encode(ctx->buffer,url,l,keep);
+	return ctx->buffer;
+}
+
+char * ctxUrlDecode(context_t *ctx, const char * const url, const char *routineName){
+	int l=strlen(url);
+	chkCtxBuffer(ctx,l,routineName);
+	u_urlncpy(ctx->buffer,url,l,URLCPY_DECODE);
+	return ctx->buffer;
+}
+
+/*
+ * Request hechas a traves de ajax normalmente se codifican en UTF-8, que kloned no procesa bien.
+ * Devuelve true si se duplica el string, false si se retorna el arg original.
+ */
+boolean_t ctxGetRequestParamAsCpy(context_t *ctx, char **target, vars_t *args, const char *argName){
+	const char *argValue=vars_get_value(args,argName);
+	if (argValue && argValue[0] && ctx->isAjaxRequest) { 
+		//TODO comprobar los headers de request para verificar que se utiliza UTF-8
+		iconv_t iconv_cd = iconv_open("ISO-8859-1","UTF-8");
+		if( iconv_cd == (iconv_t)-1) {
+			warn("Error creando descriptor de conversion UTF-8->ISO-8859-1\n");
+		} else {
+			size_t inbytesleft = strlen(argValue);
+			CTX_CHK_BUFFER(inbytesleft);
+			size_t outbytesleft = ctx->bufferLength - 1;
+			char *latin1_ptr = ctx->buffer;
+			char *utf8_ptr = (char *)argValue;
+			size_t chars = iconv(iconv_cd, &utf8_ptr, &inbytesleft, &latin1_ptr, &outbytesleft);
+			if(chars == -1) {
+				warn("Error de conversion UTF8->ISO-8859-1");
+			} else {
+				*latin1_ptr=0;
+				*target=strdup(ctx->buffer);
+				return BT_TRUE;
+			}
+		}
+	}
+	*target=(char *)argValue;
+	return BT_FALSE;
 }
 
 short htoi(unsigned char c) {
@@ -220,222 +313,210 @@ void vdrEncode(char *dst, char *src, int l){
 	d[0]=0;
 }
 
-boolean_t makeTime(time_t *time, const char * date, const char * hour, const char * min ){
-	boolean_t result=BT_FALSE;
-	struct tm timePtr;
-	char * s;
-	if (asprintf(&s,"%s %s:%s:00",date,hour,min)>0) {
-		if (strptime(s,"%Y-%m-%d %H:%M:%S",&timePtr)) {
-			timePtr.tm_wday=0; 
-			timePtr.tm_yday=0;  
-			timePtr.tm_isdst=-1;
-			*time=mktime(&timePtr);
-			result=BT_TRUE;
-		}
-		free(s);
-	}
-	return result;
-}
-
 void returnHttpNoContent(response_t *response){
 	response_set_status(response,HTTP_STATUS_NO_CONTENT);
 	response_print_header(response);
 }	
 
-int initHtmlDoc(response_t *response,io_t *out){
-	response_set_content_type(response,"text/html; charset=ISO-8859-1");
-	response_set_field(response,"Content-Style-Type","text/css");
-	response_set_field(response,"Content-Script-Type","text/javascript");
-	io_printf(out,"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
-	io_printf(out,"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"%s\" lang=\"%s\">\n",alpha2[langId],alpha2[langId]);
-	return 1;
+void initHtmlDoc(context_t *ctx){
+	response_set_content_type(ctx->response,"text/html; charset=ISO-8859-1");
+	response_set_field(ctx->response,"Content-Style-Type","text/css");
+	response_set_field(ctx->response,"Content-Script-Type","text/javascript");
+	ctx->ntabs=0;
+	if (!ctx->isAjaxRequest){
+		ctx_printf0(ctx,"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
+		ctx_printfn(ctx,"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"%s\" lang=\"%s\">\n",0,1,alpha2[langId],alpha2[langId]);
+	}
 }
 
-int initHtmlPage(response_t *response,io_t *out, const char *title, const char *headExtra, ...){
-	int ntabs=initHtmlDoc(response,out);
-	const char * www=(webifConf.useExternalWwwFolder)?"/www2":"";
-	io_printf(out,TABS "<head>\n" NTABS(,ntabs++));
-	io_printf(out,TABS "<title>%s</title>\n" NTABS(,ntabs),title);
-	io_printf(out,TABS "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n" NTABS(,ntabs));
-	io_printf(out,TABS "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen.css\" media=\"screen\" />\n" NTABS(,ntabs),www);
-	io_printf(out,TABS "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/print.css\" media=\"print\" />\n" NTABS(,ntabs),www);
-	const char *ie[]={"6","7","8"};
-	int v;
-	for (v=0;v<(sizeof(ie)/sizeof(char*));v++){
-		io_printf(out,TABS "<!--[if IE %s]>\n" NTABS(,ntabs++),ie[v]);
-		io_printf(out,TABS "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie%s.css\" media=\"screen\" />\n" NTABS(,ntabs),www,ie[v]);
-		io_printf(out,TABS "<![endif]-->\n" NTABS(,--ntabs));
+void initHtmlPage(context_t *ctx, const char *title, printHtmlHeadExtra_t printHtmlHeadExtra){
+	initHtmlDoc(ctx);
+	if (!ctx->isAjaxRequest){
+		ctx_printfn(ctx,"<head>\n",0,1);
+		ctx_printf0(ctx,"<title>%s</title>\n",title);
+		ctx_printf0(ctx,"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n");
+		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen.css\" media=\"screen\" />\n",webifConf.www);
+		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/print.css\" media=\"print\" />\n",webifConf.www);
+		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-1.3.2.min.js\"></script>\n",webifConf.www);
+		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-ui-1.7.2.min.js\"></script>\n",webifConf.www);
+		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.hoverIntent.min.js\"></script>\n",webifConf.www);
+		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/superfish.js\"></script>\n",webifConf.www);
+		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/supersubs.js\"></script>\n",webifConf.www);
+		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/common.js\"></script>\n",webifConf.www);
+		ctx_printfn(ctx,"<script type=\"text/javascript\">\n",0,1);
+		ctx_printf0(ctx,"$.extend(webif.state,{'currentPage':%d,'currentAction':%d});\n",ctx->currentPage,ctx->currentAction);
+		ctx_printf0(ctx,"$.extend(webif.messages,{close:'%s',cancel:'%s'});\n",tr("close"),tr("cancel"));
+		ctx_printfn(ctx,"</script>\n",-1,0);
 	}
-
-	io_printf(out,TABS "<script type=\"text/javascript\" src=\"%s/js/jquery-1.3.2.min.js\"></script>\n" NTABS(,ntabs),www);
-	io_printf(out,TABS "<script type=\"text/javascript\" src=\"%s/js/jquery-ui-1.7.min.js\"></script>\n" NTABS(,ntabs),www);
-	io_printf(out,TABS "<script type=\"text/javascript\" src=\"%s/js/jquery.hoverIntent.min.js\"></script>\n" NTABS(,ntabs),www);
-	io_printf(out,TABS "<script type=\"text/javascript\" src=\"%s/js/superfish.js\"></script>\n" NTABS(,ntabs),www);
-	io_printf(out,TABS "<script type=\"text/javascript\" src=\"%s/js/supersubs.js\"></script>\n" NTABS(,ntabs),www);
-	io_printf(out,TABS "<script type=\"text/javascript\" src=\"%s/js/common.js\"></script>\n" NTABS(,ntabs),www);
-	io_printf(out,TABS "<!--[if lte IE7]>\n" NTABS(,ntabs++));
-	/*
-	io_printf(out,TABS "<script type=\"text/javascript\" src=\"%s/js/IE8.js\"></script>\n" NTABS(,ntabs),www);
-	*/
-	io_printf(out,TABS "<script type=\"text/javascript\" src=\"%s/js/jquery.iefixbuttons-0.3.js\"></script>\n" NTABS(,ntabs),www);
-	io_printf(out,TABS "<script type=\"text/javascript\">\n" NTABS(,ntabs));
-	io_printf(out,TABS "	$(function(){$('form').ieFixButtons()});\n" NTABS(,ntabs));
-	io_printf(out,TABS "</script>\n" NTABS(,ntabs));
-	io_printf(out,TABS "<![endif]-->\n" NTABS(,--ntabs));
-
-	io_printf(out,TABS "<script type=\"text/javascript\">\n" NTABS(,ntabs++));
-	io_printf(out,TABS "webif.state={'currentPage':%d,'currentAction':%d};\n",
-		ntabs,tabs,webifState.currentPage,webifState.currentAction);
-	io_printf(out,
-		TABS "$(function(){\n"
-		TABS "webif.defaultPageInit()\n"
-		TABS "});\n" 
-		NTABS(,ntabs) 
-		NTABS(,ntabs+1) 
-		NTABS(,ntabs));
-	io_printf(out,TABS "</script>\n" NTABS(,--ntabs));
+	if (printHtmlHeadExtra) {
+		printHtmlHeadExtra(ctx);
+	}
+	if (!ctx->isAjaxRequest){
+		ctx_printfn(ctx,"<!--[if IE 8]>\n",0,1);
+		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie8.css\" media=\"screen\" />\n",webifConf.www);
+		ctx_printfn(ctx,"<![endif]-->\n",-1,0);
+	}
 		
-	if (headExtra) {
-		va_list ap;
-		va_start(ap, headExtra); /* init variable list arguments */
-		io_vprintf(out, headExtra, ap);
-		va_end(ap);
+	if (!ctx->isAjaxRequest){
+		ctx_printfn(ctx,"</head>\n",-1,0);
+		ctx_printfn(ctx,"<body id=\"body-p%d-a%d\">\n",0,1,ctx->currentPage,ctx->currentAction);
+		ctx_printfn(ctx,"<div id=\"page-div\">\n",0,1);
+		ctx_printfn(ctx,"<div id=\"page-top\">\n",0,1);
+		ctx_printfn(ctx,"<table class=\"layout\" cellspacing=\"5\">\n",0,1);
+		ctx_printf0(ctx,"<col class=\"menu\"/>\n");
+		ctx_printf0(ctx,"<col class=\"logo\"/>\n");
+		ctx_printfn(ctx,"<tbody>\n",0,1);
+		ctx_printfn(ctx,"<tr>\n",0,1);
+		ctx_printfn(ctx,"<td>\n",0,1);
+		ctx_printf0(ctx,"<h1 id=\"page-title\">%s</h1>\n",title);
+		ctx_printfn(ctx,"</td>\n",-1,0);
+		ctx_printfn(ctx,"<td rowspan=\"2\">\n",0,1);
+		ctx_printf0(ctx,"<div id=\"logo\"></div>\n");
+		ctx_printfn(ctx,"</td>\n",-1,0);
+		ctx_printfn(ctx,"</tr>\n",-1,0);
+		ctx_printfn(ctx,"<tr>\n",0,1);
+		ctx_printfn(ctx,"<td>\n",0,1);
+		printMenu(ctx);
+		ctx_printfn(ctx,"</td>\n",-1,0);
+		ctx_printfn(ctx,"</tr>\n",-1,0);
+		ctx_printfn(ctx,"</tbody>\n",-1,0);
+		ctx_printfn(ctx,"</table>\n",-1,0);
+		ctx_printfn(ctx,"</div>\n",-1,0); //page-top
+		ctx_printfn(ctx,"<div id=\"page\">\n",0,1);
+/*		No nos pasemos, de momento:
+		ctx_printfn(ctx,"<!--[if lte IE 8]>\n",0,1);
+		printMessage(ctx,"alert",tr("browser.not_supported"),tr("browser.please_update"),BT_FALSE);
+		ctx_printfn(ctx,"<![endif]-->\n",-1,0);
+*/
 	}
-	io_printf(out,TABS "</head>\n" NTABS(,--ntabs));
-	io_printf(out,TABS "<body id=\"body-p%d-a%d\">\n" NTABS(,ntabs++),webifState.currentPage,webifState.currentAction);
-	io_printf(out,TABS "<div id=\"page-div\">\n" NTABS(,ntabs++));
-	io_printf(out,TABS "<div id=\"page-top\">\n" NTABS(,ntabs++));
-	io_printf(out,TABS "<h1>%s</h1>\n" NTABS(,ntabs),title);
-	io_printf(out,TABS "</div>\n" NTABS(,--ntabs)); //page-top
-	io_printf(out,TABS "<div id=\"page\">\n" NTABS(,ntabs++));
-	return ntabs;
 }
 
-#define CURRENT_PAGE(pageNumber) boolean(webifState.currentPage==pageNumber)
-#define CURRENT_ACTION(action) boolean(webifState.currentAction==action)
-#define SORT_BY(sortField) boolean(webifState.sortBy==sortField)
+#define CURRENT_PAGE(pageNumber) boolean(ctx->currentPage==pageNumber)
+#define CURRENT_ACTION(action) boolean(ctx->currentAction==action)
+#define SORT_BY(sortField) boolean(ctx->sortBy==sortField)
 
-void printMenu(io_t *out,int ntabs){
+void printMenu(context_t *ctx){
+	if (ctx->isAjaxRequest) return;
 	int i;
 	int clock_id;
 	const char *Summary=tr("summary");
-	io_printf(out,TABS "<ul id=\"menu\" class=\"sf-menu\"><li%s><a href=\"index.kl1\">%s</a>\n"
-		NTABS(,ntabs),classCurrent[CURRENT_PAGE(PN_INDEX)],tr("start"));
+	/*
+	ctx_printf0(ctx,"<ul id=\"menu\" class=\"sf-menu\"><li%s><a href=\"index.kl1\">%s</a>\n"
+		,classCurrent[CURRENT_PAGE(PN_INDEX)],tr("start"));
+	*/
+	ctx_printf0(ctx,"<ul id=\"menu\" class=\"sf-menu\"><li%s><a href=\"epgGrid.kl1\">%s</a>\n"
+		,classCurrent[CURRENT_PAGE(PN_EPG_GRID)],tr("epg"));
+	ctx_printfn(ctx,"<ul><li%s><a href=\"epgGrid.kl1\">%s</a>\n"
+		,1,0,classCurrent[CURRENT_PAGE(PN_EPG_GRID)],tr("epg.grid"));
+	ctx_printf0(ctx,"</li><li%s><a href=\"epg.kl1?channelNum=%d\">%s</a>\n"
+		,classCurrent[CURRENT_PAGE(PN_PROGRAMS)],(ctx->currentChannelNum>0)?ctx->currentChannelNum:1,tr("epg.list"));
+	ctx_printfn(ctx,"</li></ul>\n",0,-1);
 
-	io_printf(out,TABS "</li><li%s><a href=\"program.kl1\">%s</a>\n"
-		NTABS(,ntabs),classCurrent[CURRENT_PAGE(PN_PROGRAMS)],tr("schedule"));
+	ctx_printf0(ctx,"</li><li%s><a href=\"channels.kl1\">%s</a>\n"
+		,classCurrent[CURRENT_PAGE(PN_CHANNELS)],tr("channels"));
+	ctx_printfn(ctx,"<ul><li%s><a href=\"channels.kl1\">%s</a>\n"
+		,1,0,classCurrent[CURRENT_PAGE(PN_CHANNELS)],Summary);
+	ctx_printf0(ctx,"</li><li%s><a href=\"live.kl1?channelNum=%d\">%s</a>\n"
+		,classCurrent[CURRENT_PAGE(PN_LIVE_STREAM)],(ctx->currentChannelNum>0)?ctx->currentChannelNum:1,tr("liveStream"));
+	ctx_printf0(ctx,"</li><li><a href=\"playlistch.kl1?type=%d\">%s</a>\n"
+		,webifConf.playlistType,tr("channel.playlist"));
+	ctx_printfn(ctx,"</li></ul>\n",0,-1);
 
-	io_printf(out,TABS "</li><li%s><a href=\"channels.kl1\">%s</a>\n"
-		NTABS(,ntabs),classCurrent[CURRENT_PAGE(PN_CHANNELS)],tr("channels"));
-	io_printf(out,TABS "<ul><li%s><a href=\"channels.kl1\">%s</a>\n"
-		NTABS(,++ntabs),classCurrent[CURRENT_PAGE(PN_CHANNELS)],Summary);
-	io_printf(out,TABS "</li><li%s><a href=\"watchit.kl1\">%s</a>\n"
-		NTABS(,ntabs),classCurrent[CURRENT_PAGE(PN_WATCHIT)],tr("channelWatch"));
-	io_printf(out,TABS "</li><li><a href=\"playlistch.kl1?type=%d\">%s</a>\n"
-		NTABS(,ntabs),webifConf.playlistType,tr("channel.playlist.download"));
-	io_printf(out,TABS "</li></ul>\n" NTABS(,ntabs--));
-
-	io_printf(out,TABS "</li><li%s><a href=\"timers.kl1\">%s</a>\n"
-		NTABS(,ntabs),classCurrent[CURRENT_PAGE(PN_TIMERS)],tr("timers"));
-	io_printf(out,TABS "<ul><li%s><a href=\"timers.kl1\">%s</a>\n"
-		NTABS(,++ntabs),classCurrent[boolean(CURRENT_PAGE(PN_TIMERS) && !CURRENT_ACTION(PA_EDIT))],tr("timers"));
-	io_printf(out,TABS "</li><li%s><a href=\"timers.kl1?a=%d\">%s</a>\n"
-		NTABS(,ntabs),classCurrent[boolean(CURRENT_PAGE(PN_TIMERS) && CURRENT_ACTION(PA_EDIT))],PA_EDIT,tr("timer.create"));
-	io_printf(out,TABS "</li><li%s><a href=\"searches.kl1\">%s</a>\n"
-		NTABS(,ntabs),classCurrent[boolean(CURRENT_PAGE(PN_SEARCHES) && !CURRENT_ACTION(PA_EDIT))],tr("searches"));
-	io_printf(out,TABS "</li><li%s><a href=\"searches.kl1?a=%d\">%s</a>\n"
-		NTABS(,ntabs),classCurrent[boolean(CURRENT_PAGE(PN_SEARCHES) && CURRENT_ACTION(PA_EDIT))],PA_EDIT,tr("search.create"));
-	io_printf(out,TABS "</li></ul>\n" NTABS(,ntabs--));
+	ctx_printf0(ctx,"</li><li%s><a href=\"timers.kl1\">%s</a>\n"
+		,classCurrent[CURRENT_PAGE(PN_TIMERS)],tr("timers"));
+	ctx_printfn(ctx,"<ul><li%s><a href=\"timers.kl1\">%s</a>\n"
+		,1,0,classCurrent[boolean(CURRENT_PAGE(PN_TIMERS) && !CURRENT_ACTION(PA_EDIT))],tr("timers"));
+	ctx_printf0(ctx,"</li><li%s><a href=\"timers.kl1?a=%d\">%s</a>\n"
+		,classCurrent[boolean(CURRENT_PAGE(PN_TIMERS) && CURRENT_ACTION(PA_EDIT))],PA_EDIT,tr("timer.create"));
+	ctx_printf0(ctx,"</li><li%s><a href=\"searches.kl1\">%s</a>\n"
+		,classCurrent[boolean(CURRENT_PAGE(PN_SEARCHES) && !CURRENT_ACTION(PA_EDIT))],tr("searches"));
+	ctx_printf0(ctx,"</li><li%s><a href=\"searches.kl1?a=%d\">%s</a>\n"
+		,classCurrent[boolean(CURRENT_PAGE(PN_SEARCHES) && CURRENT_ACTION(PA_EDIT))],PA_EDIT,tr("search.create"));
+	ctx_printfn(ctx,"</li></ul>\n",0,-1);
 		
-	io_printf(out,TABS "</li><li%s><a href=\"browse.kl1\">%s</a>\n"
-		NTABS(,ntabs),classCurrent[CURRENT_PAGE(PN_RECORDINGS) || CURRENT_PAGE(PN_BROWSE)],tr("recordings"));
-	io_printf(out,TABS "<ul><li%s><a href=\"browse.kl1\">%s</a>\n"
-		NTABS(,++ntabs),classCurrent[CURRENT_PAGE(PN_BROWSE)],tr("browse"));
-	io_printf(out,TABS "</li><li%s><a href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s (%s)</a>\n"
-		NTABS(,ntabs),classCurrent[boolean(CURRENT_PAGE(PN_RECORDINGS) && SORT_BY(SF_TITLE))],SF_TITLE,SD_ASC,Summary,tr("title"));
-	io_printf(out,TABS "</li><li%s><a href=\"recordings.kl1?sort=%d&amp;direction=%d\">%s (%s)</a>\n"
-		NTABS(,ntabs),classCurrent[boolean(CURRENT_PAGE(PN_RECORDINGS) && SORT_BY(SF_START))],SF_START,SD_DESC,Summary,tr("date"));
-	io_printf(out,TABS "</li></ul>\n" NTABS(,ntabs--));
+	ctx_printf0(ctx,"</li><li%s><a href=\"recordings.kl1\">%s</a>\n"
+		,classCurrent[CURRENT_PAGE(PN_RECORDINGS)],tr("recordings"));
+	ctx_printfn(ctx,"<ul><li%s><a href=\"recordings.kl1\">%s</a>\n"
+		,1,0,classCurrent[boolean(CURRENT_PAGE(PN_RECORDINGS) && CURRENT_ACTION(PA_BROWSE))],tr("browse"));
+	ctx_printf0(ctx,"</li><li%s><a href=\"recordings.kl1?a=%d&amp;sort=%d&amp;direction=%d\">%s (%s)</a>\n"
+		,classCurrent[boolean(CURRENT_PAGE(PN_RECORDINGS) && CURRENT_ACTION(PA_SUMMARY) && SORT_BY(SF_TITLE))],PA_SUMMARY,SF_TITLE,SD_ASC,Summary,tr("title"));
+	ctx_printf0(ctx,"</li><li%s><a href=\"recordings.kl1?a=%d&amp;sort=%d&amp;direction=%d\">%s (%s)</a>\n"
+		,classCurrent[boolean(CURRENT_PAGE(PN_RECORDINGS) && CURRENT_ACTION(PA_SUMMARY) && SORT_BY(SF_START))],PA_SUMMARY,SF_START,SD_DESC,Summary,tr("date"));
+	ctx_printfn(ctx,"</li></ul>\n",0,-1);
 		
 	if (!webifConf.configChangeDisabled){
-		io_printf(out,TABS "</li><li%s><a href=\"settings.kl1\">%s</a>\n"
-			NTABS(,ntabs),classCurrent[CURRENT_PAGE(PN_SETTINGS)],tr("setup"));
-		io_printf(out,TABS "<ul>" NTABS(,++ntabs));
+		ctx_printf0(ctx,"</li><li%s><a href=\"settings.kl1\">%s</a>\n",classCurrent[CURRENT_PAGE(PN_SETTINGS)],tr("setup"));
+		ctx_printfn(ctx,"<ul>",1,0);
 		for (i=0;i<cfgFileLength;i++) {
-			io_printf(out,"<li><a href=\"settings.kl1?cfgFileId=%d\">%s</a>\n"
-				TABS "</li>"
-				,i,tr(cfgFile[i].i18nKey)
-				NTABS(,ntabs));
+			ctx_printf(ctx,"<li><a href=\"settings.kl1?cfgFileId=%d\">%s</a>\n",i,tr(cfgFile[i].i18nKey));
+			ctx_printf0(ctx,"</li>");
 		}
-		io_printf(out,"</ul>\n");
-		DECNTABS(ntabs);
+		ctx_printf(ctx,"</ul>\n");
+		dectab(ctx);
 	}
 	if (!webifConf.configViewDisabled){
-		io_printf(out,TABS "</li><li%s><a href=\"view.kl1\">%s</a>\n"
-			NTABS(,ntabs),classCurrent[CURRENT_PAGE(PN_FILEVIEW)],tr("fileView"));
-		io_printf(out,TABS "<ul>" NTABS(,++ntabs));
+		ctx_printf0(ctx,"</li><li%s><a href=\"view.kl1\">%s</a>\n",classCurrent[CURRENT_PAGE(PN_FILEVIEW)],tr("fileView"));
+		ctx_printfn(ctx,"<ul>",1,0);
 		for(i=0;i<fileMappingLength;i++) {
 			if (fileExists(fileMapping[i].fileName)) {
-				io_printf(out,"<li><a href=\"view.kl1?action=%d&amp;fileNum=%d\">&bull;&nbsp;%s</a>\n"
-					TABS "</li>"
-					,PA_SHOW,i,tr(fileMapping[i].i18nKey)
-					NTABS(,ntabs));
+				ctx_printf(ctx,"<li><a href=\"view.kl1?action=%d&amp;fileNum=%d\">&bull;&nbsp;%s</a>\n",PA_SHOW,i,tr(fileMapping[i].i18nKey));
+				ctx_printf0(ctx,"</li>");
 			}
 		}
-		io_printf(out,"</ul>\n");
-		DECNTABS(ntabs);
+		ctx_printf(ctx,"</ul>\n");
+		dectab(ctx);
 	}
 	
-	io_printf(out,
-		TABS "</li><li><a href=\"#\">%s</a>\n"
-		TABS "<ul><li><a class=\"newWindow\" href=\"http://www.open7x0.org/\">open7x0.org</a>\n"
-		TABS "</li><li><a class=\"newWindow\" href=\"http://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a>\n"
-		TABS "</li></ul>\n"
-		TABS "</li></ul>\n"
-		NTABS(,ntabs),tr("links")
-		NTABS(,ntabs+1)
-		NTABS(,ntabs+1)
-		NTABS(,ntabs+1)
-		NTABS(,ntabs));
+	ctx_printf0(ctx,"</li><li><a href=\"#\">%s</a>\n",tr("links"));
+	ctx_printfn(ctx,"<ul><li><a class=\"newWindow\" href=\"http://www.open7x0.org/\">open7x0.org</a>\n",1,0);
+	ctx_printf0(ctx,"</li><li><a class=\"newWindow\" href=\"http://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a>\n");
+	ctx_printfn(ctx,"</li></ul>\n",0,-1);
+	ctx_printf0(ctx,"</li></ul>\n");
 }
 
-void finishHtmlPage(io_t *out,int ntabs){
-	if (ntabs<4) {
-		dbg("Indentacion erronea, revisar markup");
-		ntabs=4;
-	}
-	io_printf(out,TABS "</div>\n" NTABS(,--ntabs)); //page
-	io_printf(out,TABS "<div id=\"page-bottom\">\n" NTABS(,ntabs++));
-	io_printf(out,TABS "<p>(C) 2006 open7x0-team</p>\n" NTABS(,ntabs));
-	io_printf(out,TABS "<p>(C) 2008 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n" NTABS(,ntabs));
-	io_printf(out,TABS "</div>\n" NTABS(,--ntabs)); //page-bottom
-	io_printf(out,TABS "</div>\n" NTABS(,--ntabs)); //page-div
-	io_printf(out,TABS "</body>\n" NTABS(,--ntabs));
-	io_printf(out,TABS "</html>\n" NTABS(,--ntabs));
-}
-
-
-void printMessage(io_t *out, int ntabs, const char *cssClass, const char *title, const char *message, char *const aux){
-	io_printf(out,TABS "<div class=\"%s\">\n" NTABS(,ntabs++),cssClass);
-	if (title) io_printf(out,TABS "<p>%s%s</p>\n" NTABS(,ntabs),title,(message && message[0])?":":"");
-	if (message && message[0]) {
-		if (aux){
-			int l=strlen(message);
-			u_htmlncpy(aux,message,l,HTMLCPY_ENCODE);
-			message=aux;
+void finishHtmlPage(context_t *ctx){
+	if (!ctx->isAjaxRequest){
+#ifndef IGNORE_TABS
+		if (ctx->ntabs<4) {
+			dbg("Indentacion erronea, revisar markup");
+			ctx->ntabs=4;
 		}
-		io_printf(out,TABS "<p class=\"response\">%s</p>\n" NTABS(,ntabs),message);
+#endif
+		//ctx_printfn(ctx,"</div>\n",-1,0); //main
+		ctx_printfn(ctx,"</div>\n",-1,0); //page
+		ctx_printfn(ctx,"<div id=\"page-bottom\">\n",0,1);
+		ctx_printf0(ctx,"<p>(C) 2006 open7x0-team</p>\n");
+		ctx_printf0(ctx,"<p>(C) 2008 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n");
+		ctx_printfn(ctx,"</div>\n",-1,0); //page-bottom
+		ctx_printfn(ctx,"</div>\n",-1,0); //page-div
+		ctx_printfn(ctx,"</body>\n",-1,0);
+		ctx_printfn(ctx,"</html>\n",-1,0);
 	}
-	io_printf(out,TABS "</div>\n" NTABS(,--ntabs));
 }
 
-void printList1TH(io_t *out, int ntabs, const char *page, sortField_t sortField, const char *label){
-	io_printf(out,TABS "<th><a class=\"%s\" href=\"%s?sort=%d&amp;direction=%d\">%s</a></th>\n"
-		NTABS(,ntabs),cssSortClass[(SORT_BY(sortField)?webifState.sortDirection:SD_NONE)+1],page
-		,sortField,SORT_BY(sortField)?-webifState.sortDirection:SD_ASC,label);
+void initJavascript(context_t *ctx){
+	ctx_printfn(ctx,"<script type=\"text/javascript\">\n",0,1);
+	//ctx_printfn(ctx,"<![CDATA[\n",0,1);
 }
 
-char *condstrdup(int isFlagSet,const char *s){
-	return (isFlagSet)?strdup(s):(char *)s;
+void finishJavascript(context_t *ctx){
+	//ctx_printfn(ctx,"]]>",-1,0);
+	ctx_printfn(ctx,"</script>\n",-1,0);
 }
 
+void printMessage(context_t *ctx, const char *cssClass, const char *title, const char *message, boolean_t encode){
+	ctx_printfn(ctx,"<div class=\"response-div %s\">\n",0,1,cssClass);
+	if (title && title[0]){
+		ctx_printf0(ctx,"<p class=\"response-top\">%s%s</p>\n",title,(message && message[0])?":":"");
+	}
+	if (message && message[0]) {
+		ctx_printf0(ctx,"<p class=\"response\">%s</p>\n",(encode) ? CTX_HTML_ENCODE(message,-1) : message);
+	}
+	ctx_printfn(ctx,"</div>\n",-1,0);
+}
+
+void printList1TH(context_t *ctx, const char *page, sortField_t sortField, const char *label){
+	ctx_printf0(ctx,"<th><a class=\"%s\" href=\"%s?a=%d&amp;sort=%d&amp;direction=%d\">%s</a></th>\n"
+		,cssSortClass[(SORT_BY(sortField)?ctx->sortDirection:SD_NONE)+1],page,ctx->currentAction
+		,sortField,SORT_BY(sortField)?-ctx->sortDirection:SD_ASC,label);
+}

@@ -30,8 +30,18 @@ time_t now;
 #include "svdrp_comm.h"
 
 #ifdef DEBUG
-void dbg_channels_kl1(void) { dbg("channels.kl1"); }
+static void dbg_channels_kl1(void) {
+   dbg("channels.kl1");
+}
 #endif
+
+static void printHtmlHeadExtra(context_t *ctx){
+	ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/channels.css\" media=\"screen\" />\n",webifConf.www);
+	ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/channels.js\"></script>\n",webifConf.www);
+	initJavascript(ctx);
+	ctx_printf0(ctx,"$(function(){webif.channelsPageInit();});\n");
+	finishJavascript(ctx);
+}
 
 %><%
 
@@ -43,35 +53,37 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 	channel_t *channel;
 	int i=0;
 
+	context_t vctx;
+	context_t *ctx=&vctx;
+	initCtx(ctx,session,request,response,out,0);
 	vars_t *args = request_get_args(request);
-	webifState.currentPage=PN_CHANNELS;
-	webifState.sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_CH_NUMBER;
-	webifState.sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
+	vctx.currentPage=PN_CHANNELS;
+	vctx.sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_CH_NUMBER;
+	vctx.sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
 
-	config(session, request);
-	int ntabs=initHtmlPage(response,out,tr("channels"),NULL);
-	printMenu(out,ntabs);
-	io_printf(out,"%.*s<div id=\"main\">\n",ntabs++,tabs);
+	initHtmlPage(ctx,tr("channels"),printHtmlHeadExtra);
 
 	const char *PlaylistDownload=tr("channels.playlist.download");
-	io_printf(out,"%.*s<h2>\n",ntabs++,tabs);
-	io_printf(out,"%.*s<ul class=\"controls\"><li class=\"control buttonm-i ui-state-default\">\n",ntabs++,tabs);
-	io_printf(out,"%.*s<a class=\"ui-icon ui-icon-script\" href=\"playlistch.kl1?type=%d\" title=\"%s\">%s</a>\n"
-		,ntabs,tabs,webifConf.playlistType,PlaylistDownload,PlaylistDownload);
-	io_printf(out,"%.*s</li></ul>\n",--ntabs,tabs);
-	io_printf(out,"%.*s%s</h2>\n",--ntabs,tabs,tr("channels"));
+	ctx_printfn(ctx,"<div class=\"level2-div ui-widget\">\n",0,1);
+	ctx_printfn(ctx,"<h2 class=\"level2-top ui-widget-header\">\n",0,1);
+	ctx_printfn(ctx,"<ul class=\"controls\"><li class=\"control\">\n",0,1);
+	ctx_printf0(ctx,"<a class=\"button-i ui-state-default\" href=\"playlistch.kl1?type=%d\" title=\"%s\"><span class=\"ui-icon ui-icon-script\">%s</span></a>\n"
+		,webifConf.playlistType,PlaylistDownload,PlaylistDownload);
+	ctx_printfn(ctx,"</li></ul>\n",-1,0);
+	ctx_printf0(ctx,"%s\n",tr("channels"));
+	ctx_printfn(ctx,"</h2>\n",-1,0,tr("channels"));
 
-	io_printf(out,"%.*s<div class=\"section ui-helper-clearfix\">\n",ntabs++,tabs);
+	ctx_printfn(ctx,"<div class=\"level2 ui-widget-content ui-helper-clearfix\">\n",0,1);
 	hostConf_t *host=getFirstVdrHost();
 	if (!host) {
-		printMessage(out,ntabs,"alert",tr("errorNoVdrHost"),NULL,NULL);
+		printMessage(ctx,"alert",tr("errorNoVdrHost"),NULL, BT_FALSE);
 	} else {
-		getChannelList(host,&channels,webifState.sortBy,webifState.sortDirection);
+		getChannelList(host,&channels,vctx.sortBy,vctx.sortDirection);
 		
 		boolean_t isTv;
 		const char *tableId[]={"tvChannels","radioChannels"};
 		const char *ChannelDetails=tr("channelDetails");
-		const char *Schedule=tr("schedule");
+		const char *Epg=tr("epg");
 		const char *LiveStream=tr("liveStream");
 		const char *Frequency=tr("frequency");
 		const char *Parameters=tr("parameters");
@@ -84,71 +96,57 @@ void dbg_channels_kl1(void) { dbg("channels.kl1"); }
 		int t;
 		for (t=0;t<2;t++){
 			const char *Caption=tr(tableId[t]);
-			io_printf(out,"%.*s<table id=\"%s\" class=\"list channels\" summary=\"%s\">\n",ntabs++,tabs,tableId[t],Caption);
-			io_printf(out,"%.*s<caption>%s</caption>",ntabs,tabs,Caption);
-			io_printf(out,"%.*s<col class=\"number\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"channel\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"mux\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<col class=\"ctrls\"/>\n",ntabs,tabs);
-			io_printf(out,"%.*s<thead>\n",ntabs++,tabs);
-			io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-			printList1TH(out,ntabs,"channels.kl1",SF_CH_NUMBER,"#");
-			printList1TH(out,ntabs,"channels.kl1",SF_NAME,tr("channel"));
-			printList1TH(out,ntabs,"channels.kl1",SF_MUX,tr("channelMux"));
-			io_printf(out,"%.*s<th>&nbsp;</th>\n",ntabs,tabs);
-			io_printf(out,"%.*s</tr>",--ntabs,tabs);
-			io_printf(out,"%.*s</thead>",--ntabs,tabs);
-			io_printf(out,"%.*s<tbody>",ntabs++,tabs);
+			ctx_printfn(ctx,"<table id=\"%s\" class=\"level-3 channels\" summary=\"%s\">\n",0,1,tableId[t],Caption);
+			ctx_printf0(ctx,"<caption>%s</caption>\n",Caption);
+			ctx_printf0(ctx,"<col class=\"number\"/>\n");
+			ctx_printf0(ctx,"<col class=\"channel\"/>\n");
+			ctx_printf0(ctx,"<col class=\"mux\"/>\n");
+			ctx_printfn(ctx,"<thead class=\"level3-top\">\n",0,1);
+			ctx_printfn(ctx,"<tr>\n",0,1);
+			printList1TH(ctx,"channels.kl1",SF_CH_NUMBER,"#");
+			printList1TH(ctx,"channels.kl1",SF_NAME,tr("channel"));
+			printList1TH(ctx,"channels.kl1",SF_MUX,tr("channelMux"));
+			ctx_printfn(ctx,"</tr>\n",-1,0);
+			ctx_printfn(ctx,"</thead>\n",-1,0);
+			ctx_printfn(ctx,"<tbody class=\"level3\">\n",0,1);
 			for (i=0,channel=channels.channel;i<channels.length;i++,channel++) {
 				isTv=boolean(channel->vpid>1);
 				if (t==0 && !isTv ||t==1 && isTv) continue;
-				io_printf(out,"%.*s<tr>\n",ntabs++,tabs);
-				io_printf(out,"%.*s<td class=\"number\" >%d</td>\n",ntabs,tabs,channel->channelNum);
-				io_printf(out,"%.*s"
+				ctx_printfn(ctx,"<tr class=\"channel\">\n",0,1);
+				ctx_printf0(ctx,"<td class=\"number\" >%d</td>\n",channel->channelNum);
+				ctx_printf0(ctx,
 					"<td class=\"channel\">"
-						"<a class=\"channel\" href=\"program.kl1?chan=%d\" title=\"%s\">%s</a>"
-					"</td>\n",ntabs,tabs,channel->channelNum,Schedule,channel->channelName);
-				io_printf(out,"%.*s<td class=\"mux\">%s</td>\n",ntabs,tabs,channel->multiplexName);
-
-				io_printf(out,"%.*s<td class=\"ctrls\">\n",ntabs++,tabs);
-				io_printf(out,"%.*s<div class=\"boxRight\">\n",ntabs++,tabs);
-				io_printf(out,"%.*s<div class=\"infobox infoboxCssHover infoLeft\">\n",ntabs++,tabs);
-				io_printf(out,"%.*s<span class=\"ui-icon ui-icon-info\">%s</span>\n",ntabs,tabs,tr("moreInfo"));
-				io_printf(out,"%.*s<div class=\"infoWrapper infoCssHover\">\n",ntabs++,tabs);
-				io_printf(out,"%.*s<div class=\"info\">\n",ntabs++,tabs);
-				io_printf(out,"%.*s<table class=\"channelInfo\" summary=\"\">\n",ntabs++,tabs);
-				io_printf(out,"%.*s<caption>%s</caption>\n",ntabs,tabs,ChannelDetails);
-				io_printf(out,"%.*s<tr><th>Id</th><td>%s</td></tr>\n",ntabs,tabs,channel->channelId);
-				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,Frequency,channel->frequency);
-				io_printf(out,"%.*s<tr><th>%s</th><td>%s</td></tr>\n",ntabs,tabs,Parameters,channel->parameter);
-				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,Source,channel->source);
-				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,ConditionalAccessId,channel->caid);
-				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,ServiceId,channel->sid);
-				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,NetworkId,channel->nid);
-				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,TransportStreamId,channel->tid);
-				io_printf(out,"%.*s<tr><th>%s</th><td>%d</td></tr>\n",ntabs,tabs,RadioId,channel->rid);
-				io_printf(out,"%.*s</table>\n",--ntabs,tabs);
-				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-
-				io_printf(out,"%.*s<div class=\"boxRight\">\n",ntabs++,tabs);
-				io_printf(out,"%.*s"
-					"<a class=\"ui-icon %s\" href=\"watchit.kl1?channelnum=%d\" title=\"%s\">%s</a>\n"
-					,ntabs,tabs,(isTv)?"ui-icon-tv":"ui-icon-radio",channel->channelNum,LiveStream,LiveStream);
-				io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-				io_printf(out,"%.*s</td>\n",--ntabs,tabs);
-
-				io_printf(out,"%.*s</tr>\n",--ntabs,tabs);
+						"<a class=\"channel titleLink\" href=\"#\">%s</a>"
+					"</td>\n",channel->channelName);
+				ctx_printf0(ctx,"<td class=\"mux\">%s</td>\n",channel->multiplexName);
+				ctx_printfn(ctx,"</tr>\n",-1,0);
+				ctx_printfn(ctx,"<tr class=\"channelInfo\">\n",0,1);
+				ctx_printfn(ctx,"<td class=\"channelInfo\" colspan=\"3\">\n",0,1);
+				printChannelControls(ctx,channel,Epg,LiveStream);
+				ctx_printfn(ctx,"<table class=\"channelInfo\" summary=\"\">\n",0,1);
+				ctx_printf0(ctx,"<caption>%s</caption>\n",ChannelDetails);
+				ctx_printf0(ctx,"<tr><th>Id</th><td>%s</td></tr>\n",channel->channelId);
+				ctx_printf0(ctx,"<tr><th>%s</th><td>%d</td></tr>\n",Frequency,channel->frequency);
+				ctx_printf0(ctx,"<tr><th>%s</th><td>%s</td></tr>\n",Parameters,channel->parameter);
+				ctx_printf0(ctx,"<tr><th>%s</th><td>%d</td></tr>\n",Source,channel->source);
+				ctx_printf0(ctx,"<tr><th>%s</th><td>%d</td></tr>\n",ConditionalAccessId,channel->caid);
+				ctx_printf0(ctx,"<tr><th>%s</th><td>%d</td></tr>\n",ServiceId,channel->sid);
+				ctx_printf0(ctx,"<tr><th>%s</th><td>%d</td></tr>\n",NetworkId,channel->nid);
+				ctx_printf0(ctx,"<tr><th>%s</th><td>%d</td></tr>\n",TransportStreamId,channel->tid);
+				ctx_printf0(ctx,"<tr><th>%s</th><td>%d</td></tr>\n",RadioId,channel->rid);
+				ctx_printfn(ctx,"</table>\n",-1,0);
+				ctx_printfn(ctx,"</td>\n",-1,0); //channelInfo
+				ctx_printfn(ctx,"</tr>\n",-1,0); //channelInfo
 			}
-			io_printf(out,"%.*s</table>\n",--ntabs,tabs);
+			ctx_printfn(ctx,"</tbody>\n",-1,0);
+			ctx_printfn(ctx,"</table>\n",-1,0);
 		}
 		freeChannelList(&channels);
 	}
-	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-	io_printf(out,"%.*s</div>\n",--ntabs,tabs);
-	finishHtmlPage(out,ntabs);
-end:
+	ctx_printfn(ctx,"</div>\n",-1,0); //level2
+	ctx_printfn(ctx,"</div>\n",-1,0); //level2-div
+
+	finishHtmlPage(ctx);
+	freeCtx(ctx);
 	closeSvdrpAll();
 %>

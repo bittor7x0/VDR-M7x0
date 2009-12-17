@@ -1,0 +1,128 @@
+@import url('progressbar.css');
+table#epg th.timers,
+table#epg td.timers {
+	padding:0;
+}
+table#epg td.timers {
+	vertical-align:top;
+	padding-bottom:2px;
+}
+/*
+#epg .timers .timer {
+	border:1px solid #B8BFA0;
+}
+#epg .progressbar .pbenabled {
+	background-color:#949CA6;
+}
+*/
+a.timerCreate .ui-icon-rec {
+	background-image:url(images/rec16.png)!important;
+	background-position:0 0;
+}
+h2.level2-top {
+	padding-left:60px;
+	position:relative;
+}
+h2.level2-top #logo {
+	width:40px;
+	height:40px;
+	background:transparent url(images/ui-bg_alpha50_ffffff_100.png) repeat-x 50% 50%;
+	position:absolute;
+	top:50%;
+	left:10px;
+	margin-top:-20px;
+}
+.level4-div {
+	width:40ex;
+	display:inline-block;
+}
+.level4 .event {
+	background: white none;
+	margin:0.5ex 0;
+	padding:0.25ex 0;
+	border-top:1px solid #949CA6;
+}
+.level4 .event .eventContent *{
+	vertical-align:top;
+}
+.level4 .event .eventContent .fromTo {
+	display:inline-block;
+	width:6ex;
+}
+.level4 .event .eventContent .title {
+	display:inline-block;
+	width:33ex;
+}
+.event .eventContent .controls {
+	display:none;
+}
+.event .compact * {
+	display:none;
+}
+.event .compact .more {
+	display:inline !important;
+}
+.event .compact .more {
+	display:inline;
+}
+.event .eventInfo {
+	display:none;
+}
+.fullEvent .eventInfo {
+	display:block;
+	background-color:#FFEFAF;
+	margin:2px;
+	padding:2px;
+	-moz-border-radius:2px;
+	-webkit-border-radius:2px;
+}
+.event .eventContent .shortdesc,
+.event .eventContent .desc {
+	display:none;
+}
+.eventContent .fromTo .start .l {
+	display:none;
+}
+.eventContent .fromTo .end,
+.eventContent .fromTo .duration {
+	display:none;
+}
+.eventInfoDiv {
+	background-color:Moccasin;
+}
+.eventInfo ul.controls {
+	display:inline-block;
+	margin-bottom:0.25em;
+}
+.eventInfo .fromTo,
+.eventInfo .title {
+	display:block;
+}
+.eventInfo .fromTo {
+	margin-top:0;
+}
+.eventInfo .fromTo .t{
+	color:green;
+}
+.eventInfo .title,
+.eventInfo .fromTo .l{
+	font-weight:bold;
+	color:#444;
+}
+.level4 .eventInfo .fromTo .duration {
+	display:block;
+}
+.eventInfo a.timerCreate,
+.eventInfo a.searchCreate {
+	width:22px;
+	height:22px;
+	margin-right:0.25em;
+	position:relative;
+}
+.eventInfo a .ui-icon {
+	position:absolute;
+	top:50%;
+	left:50%;
+	margin-top:-8px;
+	margin-left:-8px;
+}
