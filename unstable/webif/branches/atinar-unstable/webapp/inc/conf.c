@@ -744,6 +744,7 @@ void resetWebifConf(){
 
 void freeWebifConf(){
 	free(webifConf.www);
+	webifConf.www=NULL;
 	//TODO eliminar hosts
 	resetWebifConf();
 }

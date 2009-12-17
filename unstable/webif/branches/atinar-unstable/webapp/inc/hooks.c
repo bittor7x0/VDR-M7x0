@@ -96,8 +96,7 @@ boolean_t extractEmbededFile(const char *src, const char *dst){
 			//Extraer archivo embebido
 			//TODO verificar que no exista y sea otra cosa
 			embres_t *er;
-			emb_lookup(src, &er);
-			if (er->type!=ET_FILE) {
+			if ( (emb_lookup(src, &er)!=0) || (er->type!=ET_FILE) ) {
 				warn("%s no es un archivo embebido",src);
 			} else {
 				embfile_t *ef=(embfile_t *)er;
