@@ -520,3 +520,119 @@ void printList1TH(context_t *ctx, const char *page, sortField_t sortField, const
 		,cssSortClass[(SORT_BY(sortField)?ctx->sortDirection:SD_NONE)+1],page,ctx->currentAction
 		,sortField,SORT_BY(sortField)?-ctx->sortDirection:SD_ASC,label);
 }
+
+int execCmd(char *args[]){
+	pid_t pid=0;
+	int status;
+	pid=vfork(); //TODO evaluar si es mejor fork
+	if (pid==0) { //proceso hijo
+		execvp(args[0],args);
+		perror("execvp"); //solo llegamos aqui si execvp falla y no termina child
+		_exit(-1);
+	} else if (pid<0) {
+		warn("fallo la bifurcacion");
+		return -1;
+	} else { //proceso padre
+		int status;
+		pid_t child_pid=waitpid(pid,&status,0);
+		if (WIFEXITED(status)){
+			return WEXITSTATUS(status);
+		} else {
+			return -1;
+		}
+	}
+}
+
+boolean_t extractLogos(context_t *ctx, const char *logos_tgz){
+	boolean_t result=BT_FALSE;
+	pid_t pid=0;
+	int status;
+	pid=vfork(); //TODO evaluar si es mejor fork
+	if (pid==0) { //proceso hijo
+		char *args[] = {"/bin/tar", "-C", "/etc/webif/www/images", "-xzf", (char*)logos_tgz, "--no-same-owner", (char*)NULL};
+		execv(args[0],args);
+		perror("execvp"); //solo llegamos aqui si execvp falla y no termina child
+		_exit(-1);
+	} else if (pid<0) { //proceso padre sin bifurcacion
+		warn("fallo la bifurcacion");
+		result=BT_FALSE;
+	} else { //proceso padre
+		int status;
+		pid_t child_pid=waitpid(pid,&status,0);
+		if (WIFEXITED(status)){
+			if (WEXITSTATUS(status)==0){
+				info("%s desenpaquetado",logos_tgz);
+				webifConf.noLogos=BT_FALSE;
+				result=BT_TRUE;
+			} else {
+				warn("error descomprimiendo %s",logos_tgz);
+			}
+		} else {
+			warn("proceso hijo no ha terminado con exit");
+			result=BT_FALSE;
+		}
+	}
+	return result;
+}
+
+/*
+boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName){
+	char localFilename[U_PATH_MAX]; 
+	char clientFilename[U_PATH_MAX];
+	char mimeType[MIME_TYPE_BUFSZ];
+	size_t idx=0;
+	size_t size;
+	if (request_get_uploaded_file(ctx->request,"logos",idx,localFilename,clientFilename,mimeType,&size)==0){
+		if (localFilename[0]){
+			return extractLogos(ctx,localFilename);
+		} else {
+			warn("variable retornada de request_get_uploaded_file se ha anulado!!!");
+		}
+	}
+	return BT_FALSE;
+}
+*/
+
+boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName){
+	boolean_t result=BT_FALSE;
+	pid_t pid=vfork(); //TODO evaluar si es mejor fork
+	if (pid==0) { //proceso hijo
+		char localFilename[U_PATH_MAX]; 
+		char clientFilename[U_PATH_MAX];
+		char mimeType[MIME_TYPE_BUFSZ];
+		size_t idx=0;
+		size_t size;
+		if (request_get_uploaded_file(ctx->request,"logos",idx,localFilename,clientFilename,mimeType,&size)==0){
+			if (localFilename[0]){
+				char *args[] = {"/bin/tar", "-C", "/etc/webif/www/images", "-xzf", localFilename, "--no-same-owner", (char*)NULL};
+				execv(args[0],args);
+				perror("execvp"); //solo llegamos aqui si execvp falla y no termina child
+				_exit(-1);
+			} else {
+				warn("variable retornada de request_get_uploaded_file se ha anulado!!!");
+				_exit(-1);
+			}
+		}
+	} else if (pid<0) { //proceso padre sin bifurcacion
+		warn("fallo la bifurcacion");
+		result=BT_FALSE;
+	} else { //proceso padre
+		int status;
+		pid_t child_pid=waitpid(pid,&status,0);
+		if (WIFEXITED(status)){
+			int exitStatus;
+			if ((exitStatus=WEXITSTATUS(status))==0){
+				info("logos desenpaquetados");
+				webifConf.noLogos=BT_FALSE;
+				result=BT_TRUE;
+			} else {
+				warn("error descomprimiendo logos. exit(%d)",exitStatus);
+			}
+		} else {
+			warn("proceso hijo no ha terminado con exit");
+			result=BT_FALSE;
+		}
+	}
+	return result;
+}
+

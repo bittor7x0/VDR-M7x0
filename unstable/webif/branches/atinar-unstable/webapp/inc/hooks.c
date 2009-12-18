@@ -31,23 +31,8 @@ int onServerInit(void){
 	const char *logos_dir="/etc/webif/www/images/logos";
 	if (extractEmbededFile(logos_tgz_src,logos_tgz_dst)){
 		//descomprimir logos.tgz
-		info("%s ya existe",logos_tgz_dst);
-		char *tar_args[] = {"tar", "-C", "/etc/webif/www/images", "-xzf", (char*)logos_tgz_dst, "--no-same-owner", (char*)NULL};
-		pid_t pid=0;
-		int status;
-		pid=fork();
-		if (pid==0) { //proceso hijo
-			execvp("/bin/tar", tar_args);
-		}
-		if (pid>0) { //proceso padre
-			int status;
-			pid_t child_pid=waitpid(pid,&status,0);
-			if (WIFEXITED(status)){ 
-				info("%s descomprimido correctamente. Estado %d",logos_tgz_dst,WEXITSTATUS(status));
-			} else {
-				warn("error descomprimiendo %s",logos_tgz_dst);
-			}
-		}
+		info("%s extraido",logos_tgz_dst);
+		extractLogos(NULL,logos_tgz_dst);
 	}
 	return 0;
 err:

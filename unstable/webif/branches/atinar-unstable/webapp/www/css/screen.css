@@ -509,6 +509,14 @@ table.list th a,
 	background-repeat:no-repeat;
 	display:block;
 }
+table.list tbody th a {
+	display:inline;
+	text-decoration:underline;
+	padding:0;
+}
+table.list tbody th a:hover {
+	color:#FFFF9F
+}
 table.list a.sortasc,
 .level3-top a.sortasc {
 	background-image:url(images/upw.png);

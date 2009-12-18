@@ -501,6 +501,16 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"cfgWi.logos",
+		{
+		"Add hannel logos file (.tgz)",
+		"",
+		"Agregar archivo <a class=\"newWindow\" href=\"http://www.assembla.com/spaces/VDR-M7x0/documents/tag/webif\" title=\"Descargar aquí\">"
+			"logos-webif-*.tgz"
+		"</a>",
+		""
+		}
+	},
 	{	"cfgWi.max_depth",
 		{
 		"Max. subdir depth",
@@ -1174,6 +1184,23 @@ i18n_t i18n[]={
 		"Nein",
 		"No",
 		"Non"
+		}
+	},
+	{	"noLogosErrTitle",
+		{
+		"No logos found!",
+		"",
+		"No se han encontrado logos",
+		""
+		}
+	},
+	{	"noLogosErrMessage",
+		{
+		"No logos found!",
+		"",
+		"<p>No se ha encontrado el directorio con los logotipos de los canales en tu sistema.</p>"
+		"<p>Descarga el archivo de logos apropiado para tu localidad e instálalo a través de este formulario.</p>",
+		""
 		}
 	},
 	{	"noMediaErr",
