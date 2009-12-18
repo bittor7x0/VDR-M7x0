@@ -1,0 +1,111 @@
+diff -Naur uclibc_build_env_orig/2.64/300_ssmtp_conf.patch uclibc_build_env/2.64/300_ssmtp_conf.patch
+--- uclibc_build_env_orig/2.64/300_ssmtp_conf.patch	1970-01-01 01:00:00.000000000 +0100
++++ uclibc_build_env/2.64/300_ssmtp_conf.patch	2009-10-02 12:58:56.000000000 +0200
+@@ -0,0 +1,64 @@
++--- ssmtp-2.61-13/ssmtp.conf	2007-11-18 19:34:23.000000000 +0100
+++++ conf-m740av/ssmtp.conf	2007-11-18 21:27:01.000000000 +0100
++@@ -1,15 +1,18 @@
++ #
++-# /etc/ssmtp.conf -- a config file for sSMTP sendmail.
+++# Config file for sSMTP sendmail
++ #
+++# Get enhanced (*really* enhanced) debugging information in the logs
+++# If you want to have debugging of the config file parsing, move this option
+++# to the top of the config file and uncomment
+++#Debug=YES
++ 
++ # The person who gets all mail for userids < 1000
++ # Make this empty to disable rewriting.
++ root=postmaster
++ 
++-# The place where the mail goes. The actual machine name is required
++-# no MX records are consulted. Commonly mailhosts are named mail.domain.com
++-# The example will fit if you are in domain.com and your mailhub is so named.
++-mailhub=mail
+++# The place where the mail goes. The actual machine name is required no
+++# MX records are consulted. Commonly mailhosts are named mail.domain.com
+++mailhub=mail.your_provider.de
++ 
++ # Example for SMTP port number 2525
++ # mailhub=mail.your.domain:2525
++@@ -18,26 +21,18 @@
++ # Example for SSL encrypted connection
++ # mailhub=mail.your.domain:465
++ 
++-# Where will the mail seem to come from?
++-rewriteDomain=
++-
++-# The full hostname
++-hostname=_HOSTNAME_
++-
++-# Set this to never rewrite the "From:" line (unless not given) and to
++-# use that address in the "from line" of the envelope.
++-#FromLineOverride=YES
++ 
++-# Use SSL/TLS to send secure messages to server.
++-#UseTLS=YES
+++# Falls SMTP-AUTH verwendet :
+++AuthUser=KlausMaier
+++AuthPass=geheim
++ 
++-# Use SSL/TLS certificate to authenticate against smtp host.
++-#UseTLSCert=YES
+++# Where will the mail seem to come from?
+++#rewriteDomain=
++ 
++-# Use this RSA certificate.
++-#TLSCert=/etc/ssl/certs/ssmtp.pem
+++# The full hostname
+++hostname=m740av
++ 
++-# Get enhanced (*really* enhanced) debugging information in the logs
++-# If you want to have debugging of the config file parsing, move this option
++-# to the top of the config file and uncomment
++-#Debug=YES
+++# Are users allowed to set their own From: address?
+++# YES - Allow the user to specify their own From: address
+++# NO - Use the system generated From: address
+++# FromLineOverride=YES
+diff -Naur uclibc_build_env_orig/2.64/400_revaliases.patch uclibc_build_env/2.64/400_revaliases.patch
+--- uclibc_build_env_orig/2.64/400_revaliases.patch	1970-01-01 01:00:00.000000000 +0100
++++ uclibc_build_env/2.64/400_revaliases.patch	2009-10-02 12:58:56.000000000 +0200
+@@ -0,0 +1,13 @@
++--- ssmtp-2.61-13/revaliases	2001-04-16 13:46:22.000000000 +0200
+++++ conf-m740av/revaliases	2007-11-18 00:12:00.000000000 +0100
++@@ -1,6 +1,7 @@
++ # sSMTP aliases
++-# 
++-# Format:	local_account:outgoing_address:mailhub
++ #
++-# Example: root:your_login@your.domain:mailhub.your.domain[:port]
+++# Format:       local_account:outgoing_address:mailhub
+++#
+++# Example:      root:your_login@your.domain:mailhub.your.domain[:port]
++ # where [:port] is an optional port number that defaults to 25.
+++root:KlausMaier@your_provider.de:mail.your_provider.de
+diff -Naur uclibc_build_env_orig/make-incs/ssmtp.mk uclibc_build_env/make-incs/ssmtp.mk
+--- uclibc_build_env_orig/make-incs/ssmtp.mk	2009-10-02 12:58:54.000000000 +0200
++++ uclibc_build_env/make-incs/ssmtp.mk	2009-12-18 16:50:38.000000000 +0100
+@@ -25,11 +25,11 @@
+ # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
+ SSMTP_DEPS = $(BASE_BUILD_STAGEFILE)
+ 
+-SSMTP_VERSION := 2.63
++SSMTP_VERSION := 2.64
+ SSMTP_PATCHES_DIR := $(PATCHES_DIR)/ssmtp/$(SSMTP_VERSION)
+ 
+ #http://ftp.de.debian.org/debian/pool/main/s/ssmtp/ssmtp_2.61.orig.tar.gz
+-SSMTP_FILE := ssmtp_$(SSMTP_VERSION).orig.tar.gz
++SSMTP_FILE := ssmtp_$(SSMTP_VERSION).orig.tar.bz2
+ SSMTP_DLFILE := $(DOWNLOAD_DIR)/$(SSMTP_FILE)
+ SSMTP_URL := http://ftp.de.debian.org/debian/pool/main/s/ssmtp/$(SSMTP_FILE)
+ SSMTP_DIR := $(BUILD_DIR)/ssmtp-$(SSMTP_VERSION)
+@@ -60,7 +60,7 @@
+                                            $(wildcard $(SSMTP_PATCHES_DIR)/*.patch) \
+                                            $$(SSMTP_DEPS)
+ 	-$(RM) -rf $(SSMTP_DIR)
+-	$(TAR) -C $(BUILD_DIR) -zf $(SSMTP_DLFILE)
++	$(TAR) -C $(BUILD_DIR) -jf $(SSMTP_DLFILE)
+ 	$(TOUCH) $(STAGEFILES_DIR)/.ssmtp_unpacked
+ 
+ #
