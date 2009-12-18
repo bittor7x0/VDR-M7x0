@@ -23,6 +23,9 @@ KLONE_VERSION := 2.1.1
 KLONE_FILE := klone-$(KLONE_VERSION).tar.gz
 KLONE_DLFILE := $(DOWNLOAD_DIR)/$(KLONE_FILE)
 KLONE_URL := http://koanlogic.com/download/klone/$(KLONE_FILE)
+LOGOS_FILE := logos-webif-comun.tgz
+LOGOS_DLFILE := $(DOWNLOAD_DIR)/$(LOGOS_FILE)
+LOGOS_URL := http://www.assembla.com/spaces/VDR-M7x0/documents/cDNA5q69Sr3RgSeJe5aVNr/download/$(LOGOS_FILE)
 
 ifeq ($(strip $(CONFIG_WEBIF_TREE)),)
   WEBIF_BRANCH := branches/atinar-unstable
@@ -35,6 +38,7 @@ WEBIF_TC_FILE := $(WEBIF_DIR)/linux-mips-uclibc.tc
 LASTDIR := `pwd`
 
 PACKS_RULES_$(CONFIG_WEBIF) += $(STAGEFILES_DIR)/.webif_installed
+#TODO PACKS_RULES_$(CONFIG_WEBIF) += $(STAGEFILES_DIR)/.webif_logos_installed
 FILE_LISTS_$(CONFIG_WEBIF) += webif.lst
 
 CLEAN_RULES += clean-webif
@@ -48,6 +52,7 @@ $(KLONE_DLFILE): $(TC_INIT_RULE)
 	$(WGET) $(KLONE_URL) -O $(KLONE_DLFILE) ; \
 	fi );
 	$(TOUCH) $(KLONE_DLFILE)
+
 #
 # unpack webif
 #
@@ -65,28 +70,14 @@ $(STAGEFILES_DIR)/.webif_unpacked: $(KLONE_DLFILE)
 #
 # webapp download
 #
-
 $(STAGEFILES_DIR)/.webapp_downloaded: $(STAGEFILES_DIR)/.webif_unpacked
 	$(CP) -Trf ../webif/$(WEBIF_BRANCH) $(WEBIF_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
 
 #
-# move static content
-#
-
-$(STAGEFILES_DIR)/.webapp_static_content_moved: $(STAGEFILES_DIR)/.webapp_downloaded
-	$(MV) -f $(WEBIF_DIR)/webapp/www/images/logos.tgz $(DOWNLOAD_DIR)
-#TODO        $(RM) -rf $(TARGET_ROOT)/srv/www/htdocs
-#TODO        -$(MKDIR) -p $(TARGET_ROOT)/srv/www/htdocs
-#TODO        $(MV) $(WEBIF_DIR)/webapp/www/css $(TARGET_ROOT)/srv/www/htdocs
-#TODO        $(MV) $(WEBIF_DIR)/webapp/www/js $(TARGET_ROOT)/srv/www/htdocs
-#TODO        $(MV) $(WEBIF_DIR)/webapp/www/images $(TARGET_ROOT)/srv/www/htdocs
-	$(TOUCH) $(STAGEFILES_DIR)/.webif_static_content_moved
-
-#
 # compile webif
 #
-$(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_static_content_moved $$(WEBIF_DEPS)
+$(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF_DEPS)
 	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
 	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS) >> $(WEBIF_TC_FILE)
 	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CFLAGS) >> $(WEBIF_TC_FILE)
@@ -111,6 +102,23 @@ $(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled
 	$(CP) $(WEBIF_DIR)/kloned $(TARGET_ROOT)/usr/sbin/webifd
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_installed
 
+#
+# download logos
+#
+$(LOGOS_DLFILE): $(TC_INIT_RULE)
+	(if [ ! -f $(LOGOS_DLFILE) ] ; then \
+	$(WGET) $(LOGOS_URL) -O $(LOGOS_DLFILE) ; \
+	fi );
+	$(TOUCH) $(LOGOS_DLFILE)
+
+#
+# install logos
+#
+$(STAGEFILES_DIR)/.webif_logos_installed: $(LOGOS_DLFILE)
+	-$(MKDIR) -p $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
+	$(CP) $(LOGOS_DLFILE) $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
+	$(TOUCH) $(STAGEFILES_DIR)/.webif_logos_installed
+
 $(FILELIST_DIR)/webif.lst: $(STAGEFILES_DIR)/.webif_installed
 	$(TOUCH) $(FILELIST_DIR)/webif.lst
 
@@ -126,4 +134,5 @@ distclean-webif:
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
 	-$(RM) -f $(STAGEFILES_DIR)/.webapp_downloaded
+	-$(RM) -f $(STAGEFILES_DIR)/.webif_logos_installed
 
