@@ -414,7 +414,7 @@ void printEpgGrid(context_t *ctx, events_t * const events, channelList_t * const
 	strftime(cend,13,gridDateFmtO,localtime(&gridEnd));
 
 	int totalWidth=webifConf.tvScheduleGridWidth;
-	int logoWidth=webifConf.channelLogoWidth;
+	int logoWidth=CHAN_LOGO_W;
 	int channelWidth=totalWidth-logoWidth;
 
 	if (!ctx->isAjaxRequest){
@@ -503,11 +503,13 @@ void printEpgGrid(context_t *ctx, events_t * const events, channelList_t * const
 			channel=channels->channel+i1;
 			ctx_printf(ctx,"<li id=\"c-%d\" class=\"channel\"><!--\n",channel->channelNum); inctab(ctx);
 			ctx_printfn(ctx,"--><div class=\"logo\">\n",0,1);
-			ctx_printfn(ctx,"<a href=\"epg.kl1?channelNum=%d\" title=\"%s\">\n",0,1,channel->channelNum,Epg);
-			// ctx_printf0(ctx,"<img id=\"logo_%s\" alt=\"%s\" src=\"/www2/images/logos/%s.png\"/>\n"
-			// 	,channel->channelId,channel->channelName,ctxChannelFilename(ctx,channel->channelName));
-			ctx_printf0(ctx,"<img id=\"logo_%s\" alt=\"%s\" src=\"/www2/images/logos/%s.png\"/>\n"
-				,channel->channelId,channel->channelName,CTX_URL_ENCODE(channel->channelName,-1,"-_./"));
+			ctx_printfn(ctx,"<a class=\"%s\" href=\"epg.kl1?channelNum=%d\" title=\"%s\">\n",0,1,(webifConf.noLogos)?"nologo":"logo",channel->channelNum,Epg);
+			if (webifConf.noLogos){
+				ctx_printf0(ctx,"<span class=\"nologo\">%s</span>",ctxChannelDisplayName(ctx,channel));
+			} else {
+				ctx_printf0(ctx,"<img id=\"logo_%s\" alt=\"%s\" src=\"/www2/images/logos/%s.png\"/>\n"
+					,channel->channelId,ctxChannelDisplayName(ctx,channel),CTX_URL_ENCODE(channel->channelName,-1,"-_./"));
+			}
 			ctx_printfn(ctx,"</a>",-1,0);
 			ctx_printfn(ctx,"</div><!--\n",-1,0); //logo
 			ctx_printfn(ctx,"--><div class=\"channelContent\" style=\"width:%dpx\">\n",0,1,channelWidth);
@@ -603,7 +605,7 @@ void printChannelEpg(context_t *ctx, const char *id, hostConf_t *host, const int
 }
 
 void printTimersDiv(context_t *ctx, const char *id, timerList_t * const timers, const time_t start, const time_t end){
-	if (!ctx->isAjaxRequest) ctx_printfn(ctx,"<div id=\"timers-div\" style=\"padding-left:%dpx;\">\n",0,1,webifConf.channelLogoWidth);
+	if (!ctx->isAjaxRequest) ctx_printfn(ctx,"<div id=\"timers-div\" style=\"padding-left:%dpx;\">\n",0,1,CHAN_LOGO_W);
 	ctx_printfn(ctx,"<div id=\"%s\">\n",0,1,id);
 	printTimerBars(ctx,timers,0,start,end-start,tr("timer.edit"),BT_TRUE);
 	ctx_printfn(ctx,"</div>\n",-1,0); //div.id

@@ -220,3 +220,15 @@ void printChannelControls(context_t *ctx,const channel_t *channel,const char *Ep
 	ctx_printfn(ctx,"--></ul>\n",-1,0);
 }
 
+char *ctxChannelDisplayName(context_t *ctx,const channel_t *channel){
+	if (strchr(channel->channelName,'.')){
+		CTX_CHK_BUFFER(strlen(channel->channelName));
+		strcpy(ctx->buffer,channel->channelName);
+		char *c;
+		while ((c=strchr(ctx->buffer,'.'))!=NULL) *c=' ';
+		return ctx->buffer;
+	} else {
+		return channel->channelName;
+	}
+}
+

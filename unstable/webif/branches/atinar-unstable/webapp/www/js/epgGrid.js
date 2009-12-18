@@ -3,7 +3,7 @@ webif.epgGridPageInit=function(){
 	$('body').prepareElements();
 	$('#datepicker').datepicker({
 		showOn: 'button', 
-		buttonImage: '/images/calendar.gif', 
+		buttonImage: webif.images.calendar, 
 		buttonImageOnly: true,
 		showButtonPanel: false,
 		dateFormat: 'yymmdd'

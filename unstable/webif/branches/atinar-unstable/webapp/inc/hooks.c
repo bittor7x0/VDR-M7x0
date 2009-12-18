@@ -24,7 +24,7 @@
 /**
  * Acciones a realizar al iniciar el servidor.
  */
-int on_server_init(void){
+int onServerInit(void){
 	info("Iniciando servidor");
 	const char *logos_tgz_src="/www/images/logos.tgz";
 	const char *logos_tgz_dst="/etc/webif/www/images/logos.tgz";
@@ -57,7 +57,7 @@ err:
 /**
  * Acciones al crear un proceso hijo.
  */
-int on_child_init(void){
+int onChildInit(void){
 	info("Iniciando proceso hijo");
 	resetWebifConf();
 	readWebifConf();
@@ -66,7 +66,7 @@ int on_child_init(void){
 /**
  * Acciones al terminar un proceso hijo.
  */
-int on_child_term(void){
+int onChildTerm(void){
 	info("Terminando proceso hijo");
 	freeWebifConf();
 }
@@ -75,9 +75,9 @@ int on_child_term(void){
 * Registrar hooks
 */
 void hooks_setup(void){
-	hook_server_init( on_server_init );
-	hook_child_init( on_child_init );
-	hook_child_term( on_child_term );
+	hook_server_init( onServerInit );
+	hook_child_init( onChildInit );
+	hook_child_term( onChildTerm );
 }
 
 /**

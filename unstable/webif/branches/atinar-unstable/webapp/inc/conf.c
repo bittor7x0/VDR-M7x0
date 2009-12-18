@@ -727,6 +727,15 @@ boolean_t readWebifConf() {
 			}
 		}
 		freeCfgParamList(&params);
+		struct stat st;
+		int logos_stat=stat("/etc/webif/www/images/logos",&st);
+		if (logos_stat == 0 && S_ISDIR(st.st_mode)){
+			info("Existe directorio de logos");
+			webifConf.noLogos=BT_FALSE;
+		} else {
+			warn("No existe directorio de logos");
+			webifConf.noLogos=BT_TRUE;
+		}
 		crit_goto_if((webifConf.www=strdup((webifConf.useExternalWwwFolder)?"/www2":""))==NULL,outOfMemory);
 		webifConf.alreadySet=BT_TRUE;
 		webifConf.mtime=current_mtime;

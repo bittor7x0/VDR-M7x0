@@ -114,8 +114,11 @@ typedef struct webifConf_s {
 	int videoHeight;
 	int tvScheduleGridWidth;
 	int channelLogoWidth;
-	char *www; 
+	char *www;
+	boolean_t noLogos;
 } webifConf_t;
+
+#define CHAN_LOGO_W ((webifConf.noLogos)?80:webifConf.channelLogoWidth)
 
 extern webifConf_t webifConf;
 extern const cfgFile_t const cfgFile[];

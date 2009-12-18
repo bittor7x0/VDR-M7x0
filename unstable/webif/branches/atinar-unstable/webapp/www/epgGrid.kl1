@@ -36,6 +36,12 @@ static void printHtmlHeadExtra(context_t *ctx){
 	if (!ctx->isAjaxRequest){
 		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/jquery.timepickr.css\" media=\"screen\" />\n",webifConf.www);
 		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/epgGrid.css\" media=\"screen\" />\n",webifConf.www);
+		ctx_printfn(ctx,"<style type=\"text/css\">",0,1);
+		ctx_printf0(ctx,"#grid-div #channels div.logo {width:%dpx;}",CHAN_LOGO_W);
+		ctx_printf0(ctx,"#grid-div #channels div.logo img {width:%dpx;height:%dpx;}",webifConf.channelLogoWidth,webifConf.channelLogoWidth);
+		ctx_printf0(ctx,"#grid-div .channel .channelEvents {min-height:%dpx;}",webifConf.channelLogoWidth);
+		ctx_printfn(ctx,"</style>",-1,0);
+
 		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.form-2.36.js\"></script>\n",webifConf.www);
 		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.timepickr.min.js\"></script>\n",webifConf.www);
 		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/formHandler.js\"></script>\n",webifConf.www);
@@ -53,6 +59,11 @@ static void printHtmlHeadExtra(context_t *ctx){
 		ctx_printfn(ctx,"});\n",-1,0);
 		ctx_printfn(ctx,"$.extend(webif.messages,{\n",0,1);
 		ctx_printf0(ctx,"timerCreate:'%s',\n",tr("timer.create"));
+		ctx_printf0(ctx,"timerDeleteConfirm:'%s',\n",tr("timer.delete.confirm"));
+		ctx_printf0(ctx,"searchCreate:'%s',\n",tr("search.create"));
+		ctx_printfn(ctx,"});\n",-1,0);
+		ctx_printfn(ctx,"$.extend(webif.images,{\n",0,1);
+		ctx_printf0(ctx,"calendar:'%s/images/calendar.gif',\n",webifConf.www);
 		ctx_printf0(ctx,"timerDeleteConfirm:'%s',\n",tr("timer.delete.confirm"));
 		ctx_printf0(ctx,"searchCreate:'%s',\n",tr("search.create"));
 		ctx_printfn(ctx,"});\n",-1,0);

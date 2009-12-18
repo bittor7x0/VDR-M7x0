@@ -56,5 +56,6 @@ boolean_t getChannel(hostConf_t *vdrHost, int channelNum, channel_t * const chan
 void printChannelListSelect(context_t *ctx,const char * id,const char * name,
 	const channelList_t *const channels,int channelNum,const char  *onchange);
 void printChannelControls(context_t *ctx,const channel_t *channel,const char *Epg,const char *LiveStream);
+char *ctxChannelDisplayName(context_t *ctx,const channel_t *channel);
 
 #endif

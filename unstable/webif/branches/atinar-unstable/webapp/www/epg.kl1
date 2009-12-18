@@ -96,8 +96,10 @@ static void printHtmlHeadExtra(context_t *ctx){
 		if (!ctx->isAjaxRequest){
 			ctx_printfn(ctx,"<h2 class=\"level2-top ui-widget-header\">%s %s &raquo;%s&laquo;\n",0,1
 				,tr("epg"),tr("for"),channel->channelName);
-			//ctx_printf0(ctx,"<img id=\"logo\" src=\"www2/images/logos/%s.png\"/>\n",ctxChannelFilename(ctx,channel->channelName));
-			ctx_printf0(ctx,"<img id=\"logo\" src=\"/www2/images/logos/%s.png\"/>\n",CTX_URL_ENCODE(channel->channelName,-1,"-_./"));
+			if (!webifConf.noLogos){
+				//ctx_printf0(ctx,"<img id=\"logo\" src=\"www2/images/logos/%s.png\"/>\n",ctxChannelFilename(ctx,channel->channelName));
+				ctx_printf0(ctx,"<img id=\"logo\" src=\"/www2/images/logos/%s.png\"/>\n",CTX_URL_ENCODE(channel->channelName,-1,"-_./"));
+			}
 			ctx_printfn(ctx,"</h2>\n",-1,0);
 			ctx_printfn(ctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
 		}

@@ -1,6 +1,7 @@
 webif={
 	state:{},
 	messages:{}, //i18n
+	images:{},
 	actions:{},  //codigos numericos de acciones
 	callbacks:{},
 	prepareHiddenDiv:function(){

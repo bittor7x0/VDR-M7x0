@@ -102,11 +102,16 @@
 	overflow:hidden;
 }
 #grid-div #channels div.logo { 
-	float:left; 
+	font-family:Times New Roman;
+	font-weight:bold;
+	font-size:small;
+	float:left;
+	text-align:center;
+	color:#000000;
+	font-weight:bold;
 }
-#grid-div #channels div.logo img {
-	width:58px;
-	height:58px;
+#grid-div #channels div.logo a:hover { 
+	text-decoration:underline;
 }
 #grid-div .channel { 
 	clear:both;
@@ -116,12 +121,10 @@
 	float:left;
 	position:relative;
 	background-color:#949CA6;
-	min-height:58px;
 }    
 #grid-div .channel .channelEvents { 
 	position:relative;
 	overflow:hidden;
-	height:58px;
 	width:100%;
 }
 #grid-div .channel .channelEvents .event { 
