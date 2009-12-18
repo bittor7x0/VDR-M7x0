@@ -24,7 +24,7 @@ KLONE_FILE := klone-$(KLONE_VERSION).tar.gz
 KLONE_DLFILE := $(DOWNLOAD_DIR)/$(KLONE_FILE)
 KLONE_URL := http://koanlogic.com/download/klone/$(KLONE_FILE)
 LOGOS_FILE := logos-webif-comun.tgz
-LOGOS_DLFILE := $(DOWNLOAD_DIR)/$(LOGOS_FILE)
+LOGOS_DLFILE := $(DOWNLOAD_DIR)/logos.tgz
 LOGOS_URL := http://www.assembla.com/spaces/VDR-M7x0/documents/cDNA5q69Sr3RgSeJe5aVNr/download/$(LOGOS_FILE)
 
 ifeq ($(strip $(CONFIG_WEBIF_TREE)),)
