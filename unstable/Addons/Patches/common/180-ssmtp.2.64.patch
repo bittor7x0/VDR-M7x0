@@ -1,6 +1,6 @@
-diff -Naur uclibc_build_env_orig/2.64/300_ssmtp_conf.patch uclibc_build_env/2.64/300_ssmtp_conf.patch
---- uclibc_build_env_orig/2.64/300_ssmtp_conf.patch	1970-01-01 01:00:00.000000000 +0100
-+++ uclibc_build_env/2.64/300_ssmtp_conf.patch	2009-10-02 12:58:56.000000000 +0200
+diff -Naur uclibc_build_env_orig/patches/ssmtp/2.64/300_ssmtp_conf.patch uclibc_build_env/patches/ssmtp/2.64/300_ssmtp_conf.patch
+--- uclibc_build_env_orig/patches/ssmtp/2.64/300_ssmtp_conf.patch	1970-01-01 01:00:00.000000000 +0100
++++ uclibc_build_env/patches/ssmtp/2.64/300_ssmtp_conf.patch	2009-10-02 12:58:56.000000000 +0200
 @@ -0,0 +1,64 @@
 +--- ssmtp-2.61-13/ssmtp.conf	2007-11-18 19:34:23.000000000 +0100
 ++++ conf-m740av/ssmtp.conf	2007-11-18 21:27:01.000000000 +0100
@@ -66,9 +66,9 @@ diff -Naur uclibc_build_env_orig/2.64/300_ssmtp_conf.patch uclibc_build_env/2.64
 ++# YES - Allow the user to specify their own From: address
 ++# NO - Use the system generated From: address
 ++# FromLineOverride=YES
-diff -Naur uclibc_build_env_orig/2.64/400_revaliases.patch uclibc_build_env/2.64/400_revaliases.patch
---- uclibc_build_env_orig/2.64/400_revaliases.patch	1970-01-01 01:00:00.000000000 +0100
-+++ uclibc_build_env/2.64/400_revaliases.patch	2009-10-02 12:58:56.000000000 +0200
+diff -Naur uclibc_build_env_orig/patches/ssmtp/2.64/400_revaliases.patch uclibc_build_env/patches/ssmtp/2.64/400_revaliases.patch
+--- uclibc_build_env_orig/patches/ssmtp/2.64/400_revaliases.patch	1970-01-01 01:00:00.000000000 +0100
++++ uclibc_build_env/patches/ssmtp/2.64/400_revaliases.patch	2009-10-02 12:58:56.000000000 +0200
 @@ -0,0 +1,13 @@
 +--- ssmtp-2.61-13/revaliases	2001-04-16 13:46:22.000000000 +0200
 ++++ conf-m740av/revaliases	2007-11-18 00:12:00.000000000 +0100
