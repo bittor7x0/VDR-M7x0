@@ -1,5 +1,5 @@
 #!/bin/ash
 
-ash /etc/rc.halt reboot > /dev/null 2>&1 &
+/bin/ash /etc/rc.halt reboot > /dev/null 2>&1 &
 
 exit 0

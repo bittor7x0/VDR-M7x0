@@ -1,0 +1,32 @@
+#!/bin/ash
+
+source /etc/rc.local.conf
+
+# load filesystems modules
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/ext2/ext2.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/jbd/jbd.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/ext3/ext3.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/fat/fat.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/vfat/vfat.o
+
+# load usb/scsi modules
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/usbcore.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/scsi/scsi_mod.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/scsi/sd_mod.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/storage/usb-storage.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o
+
+if [ X"${hd_swap_dev}" != X"NO" ] ; then
+	for hd_swp_dev in ${hd_swap_dev} ; do
+		/sbin/swapon ${hd_swp_dev} &
+	done
+fi
+
+if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_time}" != X"NO" ] ; then
+	for hd_sd_dev in ${hd_spindown_dev} ; do
+		/usr/sbin/spindown -d ${hd_spindown_time} +${hd_sd_dev} &
+	done
+fi
+
+exit 0

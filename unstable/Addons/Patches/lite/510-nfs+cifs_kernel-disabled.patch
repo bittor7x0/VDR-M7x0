@@ -1,11 +1,11 @@
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
---- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	Fri Jan 25 12:37:18 2008
-+++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	Wed Mar 19 12:12:45 2008
-@@ -656,9 +656,9 @@
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2009-12-13 18:10:34.000000000 +0100
++++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2009-12-13 18:14:40.000000000 +0100
+@@ -656,17 +656,17 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set
--CONFIG_NFS_FS=y
+-CONFIG_NFS_FS=m
 -CONFIG_NFS_V3=y
 -CONFIG_NFS_DIRECTIO=y
 +# CONFIG_NFS_FS is not set
@@ -14,23 +14,26 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_ROOT_NFS is not set
  # CONFIG_NFSD is not set
  # CONFIG_NFSD_V3 is not set
-@@ -666,7 +666,7 @@
- CONFIG_SUNRPC=y
- CONFIG_LOCKD=y
- CONFIG_LOCKD_V4=y
+ # CONFIG_NFSD_TCP is not set
+-CONFIG_SUNRPC=m
+-CONFIG_LOCKD=m
+-CONFIG_LOCKD_V4=y
 -CONFIG_CIFS=m
++# CONFIG_SUNRPC is not set
++# CONFIG_LOCKD is not set
++# CONFIG_LOCKD_V4 is not set
 +# CONFIG_CIFS is not set
  # CONFIG_CIFS_STATS is not set
  # CONFIG_CIFS_POSIX is not set
  # CONFIG_SMB_FS is not set
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
---- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	Fri Jan 25 12:37:18 2008
-+++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	Wed Mar 19 12:13:41 2008
-@@ -656,9 +656,9 @@
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2009-12-13 18:10:34.000000000 +0100
++++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2009-12-13 18:14:40.000000000 +0100
+@@ -656,17 +656,17 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set
--CONFIG_NFS_FS=y
+-CONFIG_NFS_FS=m
 -CONFIG_NFS_V3=y
 -CONFIG_NFS_DIRECTIO=y
 +# CONFIG_NFS_FS is not set
@@ -39,36 +42,59 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_ROOT_NFS is not set
  # CONFIG_NFSD is not set
  # CONFIG_NFSD_V3 is not set
-@@ -666,7 +666,7 @@
- CONFIG_SUNRPC=y
- CONFIG_LOCKD=y
- CONFIG_LOCKD_V4=y
+ # CONFIG_NFSD_TCP is not set
+-CONFIG_SUNRPC=m
+-CONFIG_LOCKD=m
+-CONFIG_LOCKD_V4=y
 -CONFIG_CIFS=m
++# CONFIG_SUNRPC is not set
++# CONFIG_LOCKD is not set
++# CONFIG_LOCKD_V4 is not set
 +# CONFIG_CIFS is not set
  # CONFIG_CIFS_STATS is not set
  # CONFIG_CIFS_POSIX is not set
  # CONFIG_SMB_FS is not set
 diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
---- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	Thu Jan 08 10:52:31 2009
-+++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	Mon Mar 09 18:27:41 2009
-@@ -57,7 +57,6 @@
+--- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2009-12-13 18:10:39.000000000 +0100
++++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2009-12-13 18:16:20.000000000 +0100
+@@ -57,17 +57,12 @@
  DISTCLEAN_RULES += distclean-siemens-linux-kernel
  
  SIEMENS-LINUX-KERNEL_MODLST := \
 -   lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
-    lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o \
-    lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o 
- 
-@@ -76,8 +75,6 @@
-    lib/modules \
+    lib/modules/2.4.21-xfs/kernel/fs/ext2/ext2.o \
+    lib/modules/2.4.21-xfs/kernel/fs/ext3/ext3.o \
+    lib/modules/2.4.21-xfs/kernel/fs/fat/fat.o \
+    lib/modules/2.4.21-xfs/kernel/fs/jbd/jbd.o \
+-   lib/modules/2.4.21-xfs/kernel/fs/lockd/lockd.o \
+-   lib/modules/2.4.21-xfs/kernel/fs/nfs/nfs.o \
+    lib/modules/2.4.21-xfs/kernel/fs/nls/nls_iso8859-15.o \
+    lib/modules/2.4.21-xfs/kernel/fs/vfat/vfat.o \
+-   lib/modules/2.4.21-xfs/kernel/net/packet/af_packet.o \
+-   lib/modules/2.4.21-xfs/kernel/net/sunrpc/sunrpc.o \
+    lib/modules/2.4.21-xfs/kernel/drivers/scsi/scsi_mod.o \
+    lib/modules/2.4.21-xfs/kernel/drivers/scsi/sd_mod.o \
+    lib/modules/2.4.21-xfs/kernel/drivers/usb/usbcore.o \
+@@ -91,18 +86,12 @@
     lib/modules/2.4.21-xfs \
     lib/modules/2.4.21-xfs/kernel \
--   lib/modules/2.4.21-xfs/kernel/fs \
+    lib/modules/2.4.21-xfs/kernel/fs \
 -   lib/modules/2.4.21-xfs/kernel/fs/cifs \
+    lib/modules/2.4.21-xfs/kernel/fs/ext2 \
+    lib/modules/2.4.21-xfs/kernel/fs/ext3 \
+    lib/modules/2.4.21-xfs/kernel/fs/fat \
+    lib/modules/2.4.21-xfs/kernel/fs/jbd \
+-   lib/modules/2.4.21-xfs/kernel/fs/lockd \
+-   lib/modules/2.4.21-xfs/kernel/fs/nfs \
+    lib/modules/2.4.21-xfs/kernel/fs/nls \
+    lib/modules/2.4.21-xfs/kernel/fs/vfat \
+-   lib/modules/2.4.21-xfs/kernel/net \
+-   lib/modules/2.4.21-xfs/kernel/net/packet \
+-   lib/modules/2.4.21-xfs/kernel/net/sunrpc \
     lib/modules/2.4.21-xfs/kernel/drivers \
+    lib/modules/2.4.21-xfs/kernel/drivers/scsi \
     lib/modules/2.4.21-xfs/kernel/drivers/usb \
-    lib/modules/2.4.21-xfs/kernel/drivers/usb/host     
-@@ -95,7 +92,6 @@
+@@ -122,7 +111,6 @@
  $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked: \
        $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/*.patch) \
        $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_M7X0_TYPE)/*.patch) \
@@ -76,7 +102,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
        $$(SIEMENS-LINUX-KERNEL_DEPS) $(SIEMENS-LINUX-KERNEL_CONFIG)
  	-$(RM) -rf $(SIEMENS-LINUX-KERNEL_DIR)
  	$(BZCAT) $(SIEMENS-GPL-SRC_DLFILE) | $(TAR) -C $(BUILD_DIR) \
-@@ -111,9 +107,6 @@
+@@ -138,9 +126,6 @@
  
  $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_patched: \
        $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked

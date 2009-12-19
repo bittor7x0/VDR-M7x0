@@ -1,47 +1,34 @@
 #!/bin/ash
 
-[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+source /etc/rc.local.conf
 
 echo -n 'starting local stuff:'
 
-if [ X"${hd_swap_dev}" != X"NO" ] ; then
-	for hd_swp_dev in ${hd_swap_dev} ; do
-		echo " setting up swap in ${hd_swp_dev}"
-		/sbin/swapon ${hd_swp_dev}
-	done
-fi
+echo -n ' vdr'
+export ${runvdr_vars}
+/bin/ash ${runvdr} &
 
-if [ X"${runvdr}" != X"NO" ]; then
-    echo -n ' vdr' 
-    export ${runvdr_vars}
-    ash ${runvdr} &
-fi
+# With this sleep VDR start faster
+/bin/sleep 5
+
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/nls/nls_iso8859-15.o
+/bin/ash /etc/rc.local.usb &
 
 for bpath in ${bind_paths} ; do
-	echo -n " Binding ${bpath}"
-	mount -o bind /rw-flash${bpath} ${bpath}
+    echo -n " Binding ${bpath}"
+    /bin/mount -o bind /rw-flash${bpath} ${bpath} &
 done
-
-if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_time}" != X"NO" ] ; then
-	for hd_sd_dev in ${hd_spindown_dev} ; do
-		echo " starting spindown in ${hd_sd_dev}"
-		/usr/sbin/spindown -d ${hd_spindown_time} +${hd_sd_dev}
-	done
-fi
 
 if [ X"${memwatch}" != X"NO" -a -d ${memwatch_dir} ] ; then
     echo -n ' starting memwatch'
     memwatch_dest="${memwatch_dir}/`date +%F-%H%M`"
-    mkdir -p ${memwatch_dest}
-    /usr/sbin/memwatch "${memwatch_dest}" ${memwatch_interval}
+    /bin/mkdir -p ${memwatch_dest}
+    /usr/sbin/memwatch "${memwatch_dest}" ${memwatch_interval} &
 fi
 
 if [ X"${rescue_keys}" != X"NO" ]; then
     echo -n ' starting rescue keys'
-    /usr/bin/irexec -d /etc/lircrc
+    /usr/bin/irexec -d /etc/lircrc &
 fi
 
 # put here your optional stuff
-
-
-echo ' '

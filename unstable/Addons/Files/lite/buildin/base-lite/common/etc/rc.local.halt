@@ -1,5 +1,6 @@
 #!/bin/ash
-[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+
+source /etc/rc.local.conf
 
 echo -n 'stopping local stuff:'
 
@@ -11,22 +12,20 @@ echo -n 'stopping local stuff:'
 
 for bpath in ${bind_paths} ; do
         echo -n " Umount binding ${bpath}"
-        umount ${bpath} || umount -l ${bpath}
+        /bin/umount ${bpath} || /bin/umount -l ${bpath}
 done
 
-if [ X"${runvdr}" != X"NO" ]; then
-     echo -n ' vdr'
-     trys=0
-     while [ -e /var/run/runvdr.pid -a ${trys} -le 300 ] ; do
-	    [ $(( ${trys} % 30 )) -eq 0 ] && killall -15 vdr
-            trys=$(( ${trys} + 1 ))
-            sleep 1
-     done
+echo -n ' vdr'
+trys=0
+while [ -e /var/run/runvdr.pid -a ${trys} -le 300 ] ; do
+     [ $(( ${trys} % 30 )) -eq 0 ] && /usr/bin/killall -15 vdr
+     trys=$(( ${trys} + 1 ))
+     /bin/sleep 1
+done
 
-     [ -f /var/run/runvdr.pid ] && killall -9 vdr
+[ -f /var/run/runvdr.pid ] && /usr/bin/killall -9 vdr
 
-     [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && mv /var/vdr/epg.data ${vdr_epgfile}
-fi
+[ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && /bin/mv /var/vdr/epg.data ${vdr_epgfile}
 
 echo -n ' usb-umount'
 /bin/sync
@@ -47,19 +46,19 @@ if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_shutdown}" != X"NO" ] ; t
 fi
 
 if [ X"${osddebug}" != X"NO" ] ; then
-    [ -f /rw-flash/.nodebug ] && rm /rw-flash/.nodebug
+    [ -f /rw-flash/.nodebug ] && /bin/rm /rw-flash/.nodebug
 else
-    touch /rw-flash/.nodebug
+    /bin/touch /rw-flash/.nodebug
 fi
 
 echo ' '
 
 if [ -x "${fw_update_file}" ] ; then
-    export VDR_TV_MODE=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
-    export VDR_LANG=`grep -i OSDLanguage ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
-    umount /etc || umount -l /etc
-    umount /rw-flash || umount -l /rw-flash
+    export VDR_TV_MODE=`/bin/grep -i TvMode ${vdr_confdir}/setup.conf | /usr/bin/cut -d '=' -f 2 | /usr/bin/tr -d " "`
+    export VDR_LANG=`/bin/grep -i OSDLanguage ${vdr_confdir}/setup.conf | /usr/bin/cut -d '=' -f 2 | /usr/bin/tr -d " "`
+    /bin/umount /etc || /bin/umount -l /etc
+    /bin/umount /rw-flash || /bin/umount -l /rw-flash
     ${fw_update_file}
 fi
 
-/usr/bin/set-video off
+/usr/bin/set-video off &

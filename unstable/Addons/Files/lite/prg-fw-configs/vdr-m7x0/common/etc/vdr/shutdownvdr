@@ -1,13 +1,11 @@
 #!/bin/ash
 
-# need for startup time
-[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
-
 if [ $1 -eq 0 ] ; then
-    pic_tool alarm clear
+    /usr/sbin/pic_tool alarm clear
 else
-    pic_tool alarm set $(( $1 - ${vdr_startup_time} ))
+    source /etc/rc.local.conf
+    /usr/sbin/pic_tool alarm set $(( $1 - ${vdr_startup_time} ))
 fi
 
-halt
+/sbin/halt
 exit 0

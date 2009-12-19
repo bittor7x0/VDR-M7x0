@@ -1,9 +1,7 @@
 #!/bin/ash
 
-[ -f /etc/rc.local.conf ] && source /etc/rc.local.conf
+source /etc/rc.local.conf
 
-if [ X"${runvdr}" != X"NO" ]; then
-	echo -n ' vdr intern' 
-        export ${runvdr_vars}
-        ash ${runvdr} &
-fi
+echo -n ' vdr intern' 
+export ${runvdr_vars}
+/bin/ash ${runvdr} &

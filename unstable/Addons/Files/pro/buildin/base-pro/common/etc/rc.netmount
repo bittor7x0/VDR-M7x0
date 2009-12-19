@@ -1,20 +1,23 @@
 #!/bin/ash
 
-# Load CIFS kernel module
-if [ ! -f /var/run/cifs ] ; then
-	touch /var/run/cifs
-	insmod /lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o
+# Load network fs modules
+if [ ! -f /var/run/network_fs ] ; then
+	/bin/touch /var/run/network_fs
+	/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o
+	/sbin/insmod /lib/modules/2.4.21-xfs/kernel/net/sunrpc/sunrpc.o
+	/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/lockd/lockd.o
+	/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/nfs/nfs.o
 fi
 
-# Disable extentions
-echo 0 > /proc/fs/cifs/LinuxExtensionsEnabled
+# Disable extensions
+/bin/echo 0 > /proc/fs/cifs/LinuxExtensionsEnabled
 
 while read netshare mountpoint fstype mountopts ignore ; do
 	if [ -n "${netshare###*}" -a -n "${mountopts##*noauto*}" -a \
 			! -e "${mountpoint}" -a \( "${fstype}" = "nfs" -o \
 			"${fstype}" = "cifs" \) ] ; then
-		mkdir -p "${mountpoint}"
-		mount -t ${fstype} -o ${mountopts} "${netshare}" \
-			 "${mountpoint}" || rmdir -p "${mountpoint}"
+		/bin/mkdir -p "${mountpoint}"
+		/bin/mount -t ${fstype} -o ${mountopts} "${netshare}" \
+			 "${mountpoint}" || /bin/rmdir -p "${mountpoint}"
 	fi
 done < /etc/fstab

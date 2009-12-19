@@ -5,7 +5,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  #
  # Networking options
  #
--CONFIG_PACKET=y
+-CONFIG_PACKET=m
 +# CONFIG_PACKET is not set
  # CONFIG_PACKET_MMAP is not set
  # CONFIG_NETLINK_DEV is not set
@@ -61,7 +61,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  #
  # Networking options
  #
--CONFIG_PACKET=y
+-CONFIG_PACKET=m
 +# CONFIG_PACKET is not set
  # CONFIG_PACKET_MMAP is not set
  # CONFIG_NETLINK_DEV is not set

@@ -1,0 +1,52 @@
+#!/bin/ash
+
+source /etc/rc.conf
+source /etc/rc.local.conf
+
+# load network modules
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/net/packet/af_packet.o
+
+/sbin/ifconfig ${if} hw ether `${mac_cmd}`
+if [ X"${net}" = X"DHCP" ]; then
+    echo "dhcp";
+    /sbin/ifconfig ${if} 0.0.0.0
+    /sbin/udhcpc -i ${if} ${dhcp_flags}
+else
+    echo "${if} - ${ip} - ${netmask}";
+    /sbin/ifconfig ${if} ${ip} netmask ${netmask}
+fi
+
+if [ X"${gateway}" != X"NO" ]; then
+    echo -n "setup default gateway ... ${gateway} - ${if}";
+    /sbin/route add default gw ${gateway} ${if}
+    echo "Done"
+fi
+
+if [ X"${netdate}" != X"NO" ]; then
+    echo -n "network time protocol daemon"
+    /usr/sbin/ntpclient -l -s -h ${netdate_server} &
+fi
+
+if [ X"${do_net_mount}" != X"NO" ] ; then
+    echo -n ' net-mount'
+    /bin/ash /etc/rc.netmount &
+fi
+
+if [ X"${inetd}" != X"NO" ]; then
+    echo -n ' starting inetd';
+
+    db_key=/etc/dropbear/dropbear_dss_host_key
+    [ ! -f $db_key ] && /usr/sbin/dropbearkey -t dss -f $db_key
+
+    db_key=/etc/dropbear/dropbear_rsa_host_key
+    [ ! -f $db_key ] && /usr/sbin/dropbearkey -t rsa -f $db_key
+
+    /usr/sbin/inetd /etc/inetd.conf &
+fi
+
+if [ X"${webif_start}" != X"NO" ]; then
+    echo -n ' starting webif'
+    /usr/sbin/webifd &
+fi
+
+exit 0

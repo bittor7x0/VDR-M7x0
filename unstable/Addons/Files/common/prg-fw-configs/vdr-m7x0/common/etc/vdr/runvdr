@@ -1,20 +1,19 @@
 #!/bin/ash
-KILL="killall -9"
-VDR_FLAGS="-c ${vdr_confdir} -L /var/vdr/lib -v /var/vdr/video0 -s \
-  ${vdr_shutdown}"
+KILL="/usr/bin/killall -9"
+VDR_FLAGS="-c ${vdr_confdir} -L /var/vdr/lib -v /var/vdr/video0 -s ${vdr_shutdown}"
 
 export LC_ALL=es_ES
 
-mkdir -p /var/vdr/lib
+/bin/mkdir -p /var/vdr/lib
 
 my_pid=$$
-echo $my_pid > /var/run/runvdr.pid
+/bin/echo $my_pid > /var/run/runvdr.pid
 
 # EPG Data
 
 if [ "${vdr_epgfile}" != "-" ] ; then
     if [ "${vdr_epgdirect}" = "NO" ] ; then
-        [ -f ${vdr_epgfile} ] && mv ${vdr_epgfile} /var/vdr/epg.data
+        [ -f ${vdr_epgfile} ] && /bin/mv ${vdr_epgfile} /var/vdr/epg.data
         VDR_EPGOPT="-E /var/vdr/epg.data"
     else
 # Don't change this again. Links to direct epg-file not working 
@@ -31,19 +30,19 @@ fi
 if [ X"${vdr_videodirs}" != X" " ] ; then
     vdirn=0
     for vdir in ${vdr_videodirs} ; do
-        ln -snf ${vdir} /var/vdr/video${vdirn}
+        /bin/ln -snf ${vdir} /var/vdr/video${vdirn}
         vdirn=$(( ${vdirn} + 1 ))
     done
 else
     # fallback no video dir defined
-    mkdir -p /var/vdr/video.flash
-    ln -snf /var/vdr/video.flash /var/vdr/video0
+    /bin/mkdir -p /var/vdr/video.flash
+    /bin/ln -snf /var/vdr/video.flash /var/vdr/video0
 fi
 
 while (true) do
-    rm -f /var/vdr/lib/*
+    /bin/rm -f /var/vdr/lib/*
     for plug in `find ${vdr_plugindirs} -name "libvdr*.so*" -type f`; do
- 	ln -snf ${plug} /var/vdr/lib/`basename ${plug}`
+ 	/bin/ln -snf ${plug} /var/vdr/lib/`basename ${plug}`
     done
     ${vdr_bin} ${VDR_EPGOPT} ${VDR_FLAGS} ${vdr_pluginopts} ${vdr_stumode} ${vdr_options}
     if [ $? -eq 0 -o $? -eq 2 -o $? -eq 137 ]; then
@@ -51,8 +50,8 @@ while (true) do
     fi
     echo "restarting VDR"
     $KILL $vdr_bin
-    sleep 1
+    /bin/sleep 1
 done
 
-rm -f /var/run/runvdr.pid
+/bin/rm -f /var/run/runvdr.pid
 exit 0

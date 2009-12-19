@@ -7,9 +7,9 @@ fi
 
 source /etc/rc.local.conf
 
-vdr_tv_mode=`grep -i TvMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
-vdr_vcr_mode=`grep -i VCRMode ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
-vdr_video_format=`grep -i VideoFormat ${vdr_confdir}/setup.conf | cut -d '=' -f 2 | tr -d " "`
+vdr_tv_mode=`/bin/grep -i TvMode ${vdr_confdir}/setup.conf | /usr/bin/cut -d '=' -f 2 | /usr/bin/tr -d " "`
+vdr_vcr_mode=`/bin/grep -i VCRMode ${vdr_confdir}/setup.conf | /usr/bin/cut -d '=' -f 2 | /usr/bin/tr -d " "`
+vdr_video_format=`/bin/grep -i VideoFormat ${vdr_confdir}/setup.conf | /usr/bin/cut -d '=' -f 2 | /usr/bin/tr -d " "`
 
 tv_mode="fbas"
 [ X"${vdr_tv_mode}" = X"1" ] && tv_mode="svideo"

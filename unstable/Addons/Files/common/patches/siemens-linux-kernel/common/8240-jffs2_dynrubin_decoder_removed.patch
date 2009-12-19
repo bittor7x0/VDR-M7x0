@@ -13,12 +13,13 @@ diff -Naur slin_m740_orig/fs/jffs2/compr.c slin_m740/fs/jffs2/compr.c
 diff -Naur slin_m740_orig/fs/jffs2/Makefile slin_m740/fs/jffs2/Makefile
 --- slin_m740_orig/fs/jffs2/Makefile	Sat May 29 15:45:42 2004
 +++ slin_m740/fs/jffs2/Makefile	Mon Sep 28 11:03:57 2009
-@@ -10,7 +10,7 @@
+@@ -10,8 +10,7 @@
  # Note 2! The CFLAGS definitions are now in the main makefile...
  
  
 -COMPR_OBJS	:= compr.o compr_rubin.o compr_rtime.o pushpull.o \
-+COMPR_OBJS	:= compr.o compr_rtime.o pushpull.o \
- 			compr_zlib.o
- JFFS2_OBJS	:= crc32.o dir.o file.o ioctl.o nodelist.o malloc.o \
+-			compr_zlib.o
++COMPR_OBJS	:= compr.o compr_rtime.o compr_zlib.o
+ JFFS2_OBJS	:= dir.o file.o ioctl.o nodelist.o malloc.o \
  	read.o nodemgmt.o readinode.o super.o write.o scan.o gc.o \
+ 	symlink.o build.o erase.o background.o

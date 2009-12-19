@@ -14,7 +14,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  endif
  endif
  
-@@ -190,7 +190,7 @@
+@@ -197,7 +197,7 @@
  #
  
  $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed: \
@@ -23,18 +23,18 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  	$(MKDIR) -p $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)
  	$(CP) -f $(SIEMENS-LINUX-KERNEL_DIR)/vmlinux $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)
  	$(CAT) $(SIEMENS-LINUX-KERNEL_DIR)/System.map | $(SED) -e "s/^ffffffff//" > \
-@@ -200,8 +200,8 @@
+@@ -207,8 +207,8 @@
  	$(PREFIX_BIN)/$(UCLIBC_OBJCOPY) --strip-all -O binary \
  		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux \
  		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
 -	-$(RM) -f $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.lzma
 -	$(LZMA_BIN) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
 +	-$(RM) -f $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.gz
-+	$(GZIP) -9 $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
++	$(GZIP) -1 $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
  	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
  		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) \
  		INSTALL_MOD_PATH=$(TARGET_ROOT)/$(M7X0_KERNEL_DIR) modules_install
-@@ -236,13 +236,11 @@
+@@ -243,13 +243,11 @@
  #
  $(SIEMENS-LINUX-KERNEL-IMG): \
        $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed \

@@ -4,51 +4,26 @@ if [ X"${OSDLOG}" = X"YES" ]; then
     source /etc/rc.debug
 fi
 
-[ -f /etc/rc.conf ] && source /etc/rc.conf
-hostname ${hostname}
+source /etc/rc.conf
+
 if [ X"${syslogd_flags}" != X"NO" ]; then
-    mv /rw-flash/log/messages* /var/log
+    /bin/mv /rw-flash/log/messages* /var/log
     echo -n "starting syslogd ... "
-    syslogd ${syslogd_flags}
-    echo "Done"
+    /sbin/syslogd ${syslogd_flags} &
 fi
 
 echo -n "loading modules ... "
-[ -f /etc/rc.modules ] && ash /etc/rc.modules
-echo "Done";
+/bin/ash /etc/rc.modules
+echo "Done"
 
-echo -n "starting network:"
-
-echo "lo";
-ifconfig lo 127.0.0.1
-
-ifconfig ${if} hw ether `${mac_cmd}`
-if [ X"${net}" = X"DHCP" ]; then
-    echo "dhcp";
-    ifconfig ${if} 0.0.0.0
-    udhcpc -i ${if} ${dhcp_flags}
-else
-    echo "${if} - ${ip} - ${netmask}";
-    ifconfig ${if} ${ip} netmask ${netmask}
+if [ X"${pic_tool_flags}" != X"NO" ]; then
+    echo -n "execute pic_tool ... "
+    /usr/sbin/pic_tool ${pic_tool_flags} &
 fi
 
-if [ X"${gateway}" != X"NO" ]; then
-    echo -n "setup default gateway ... ${gateway} - ${if}";
-    route add default gw ${gateway} ${if}
-    echo "Done"
-fi
+echo "lircd daemon"
+/usr/sbin/lircd ${lircd_flags}
 
-if [ X"${netdate}" != X"NO" ]; then
-    echo -n "network time protocol daemon"
-    /usr/sbin/ntpclient -l -s -h ${netdate_server}
-    echo "Done"
-fi
-
-if [ X"${lircd_flags}" != X"NO" ]; then
-    echo "lircd daemon"
-    lircd ${lircd_flags}
-fi
-
-[ -f /etc/rc.local ] && ash /etc/rc.local
+/bin/ash /etc/rc.local
 
 exit 0

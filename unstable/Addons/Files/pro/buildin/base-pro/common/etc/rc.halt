@@ -1,35 +1,33 @@
 #!/bin/ash
 
-[ -f /etc/rc.local.halt ] && ash /etc/rc.local.halt
+/bin/ash /etc/rc.local.halt
 
-[ -f /etc/rc.conf ] && source /etc/rc.conf
+source /etc/rc.conf
 
 echo -n 'stopping daemons:'
-if [ X"${lircd_flags}" != X"NO" ]; then
-    echo -n ' lircd'
-    kill -15 `cat /var/run/lircd.pid`
-fi
+echo -n ' lircd'
+/bin/kill -15 `/bin/cat /var/run/lircd.pid`
 
 if [ X"${netdate}" != X"NO" ]; then
     echo -n "network time protocol daemon"
-    killall -15 ntpclient
+    /usr/bin/killall -15 ntpclient
 fi
 
 if [ X"${inetd}" != X"NO" ]; then
     echo -n ' inetd'
-    kill -15 `cat /var/run/inetd.pid`
+    /bin/kill -15 `/bin/cat /var/run/inetd.pid`
 fi
 
-pic_tool -s time systopic
+/usr/sbin/pic_tool -s time systopic
 
 if [ X"${syslogd_flags}" != X"NO" ]; then
     echo -n ' syslogd'
-    kill -15 `cat /var/run/syslogd.pid`
-    mv /var/log/messages* /rw-flash/log
+    /bin/kill -15 `/bin/cat /var/run/syslogd.pid`
+    /bin/mv /var/log/messages* /rw-flash/log
 fi 
 
 /bin/sync
-umount -a -l
+/bin/umount -a -l
 
 if [ X"$1" != X"reboot" ]; then
     action1="shutdown 3"
