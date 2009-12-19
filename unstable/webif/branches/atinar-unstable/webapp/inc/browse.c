@@ -416,13 +416,15 @@ outOfMemory:
 
 void printRecDirListUL(context_t *ctx,const char *path,int pl, recDir_t *rdir,int level){
 	recDirList_t *rdirs = &rdir->subdirs;
-	if (rdirs->length>0){
+	if (rdirs->length>0 || ctx->isAjaxRequest){
 		if (level==0){
 			ctx_printf0(ctx,"<ul id=\"%s\" class=\"level3 recFolders\">",AJAX_REPLACE_PREFIX("recFolders"));
 		} else {
 			ctx_printf0(ctx,"<ul class=\"level4 recFolders\">");
 		}
-		printRecDirList(ctx,path,pl,rdirs,level,0);
+		if (rdirs->length>0) {
+			printRecDirList(ctx,path,pl,rdirs,level,0);
+		}
 		ctx_printf(ctx,"</ul>\n");
 	}
 }
