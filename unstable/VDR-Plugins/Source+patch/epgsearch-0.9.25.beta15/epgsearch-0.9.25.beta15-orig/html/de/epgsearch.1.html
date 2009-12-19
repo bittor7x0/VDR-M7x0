@@ -1,0 +1,1270 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Epgsearch Version 0.9.25.beta15</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#beschreibung">BESCHREIBUNG</a></li>
+	<li><a href="#optionen">OPTIONEN</a></li>
+	<li><a href="#inhalt">Inhalt</a></li>
+	<li><a href="#1__beschreibung">1. Beschreibung</a></li>
+	<ul>
+
+		<li><a href="#1_1_men__befehle">1.1 Menü Befehle</a></li>
+		<li><a href="#1_2_men__suche">1.2 Menü Suche</a></li>
+		<ul>
+
+			<li><a href="#1_2_1_men__suche_editieren">1.2.1 Menü Suche editieren</a></li>
+			<li><a href="#1_2_2_men__suchergebnisse">1.2.2 Menü Suchergebnisse</a></li>
+		</ul>
+
+		<li><a href="#1_3_erweitertes__jetzt__and__n_chste_">1.3 Erweitertes 'Jetzt' and 'Nächste'</a></li>
+		<li><a href="#1_4_men__setup">1.4 Menü Setup</a></li>
+		<ul>
+
+			<li><a href="#1_4_1_allgemein">1.4.1 Allgemein</a></li>
+			<li><a href="#1_4_2_epg_men_s">1.4.2 EPG Menüs</a></li>
+			<li><a href="#1_4_3_benutzerdef__epg_zeiten">1.4.3 Benutzerdef. EPG-Zeiten</a></li>
+			<li><a href="#1_4_4_timer_programmierung">1.4.4 Timer-Programmierung</a></li>
+			<li><a href="#1_4_5_suche_und_suchtimer">1.4.5 Suche und Suchtimer</a></li>
+			<li><a href="#1_4_6_timer_konflikt_pr_fung">1.4.6 Timer-Konflikt-Prüfung</a></li>
+			<li><a href="#1_4_7_email_benachrichtigungen">1.4.7 Email-Benachrichtigungen</a></li>
+		</ul>
+
+	</ul>
+
+	<li><a href="#2__suchtimer">2. Suchtimer</a></li>
+	<li><a href="#2_1__wiederholungen_vermeiden____im_detail">2.1 'Wiederholungen vermeiden' - Im Detail</a></li>
+	<ul>
+
+		<li><a href="#2_2_wie_funktioniert_der_vergleichstest_zwischen_2_sendungen">2.2 Wie funktioniert der Vergleichstest zwischen 2 Sendungen?</a></li>
+		<li><a href="#2_3_wie_und_wo_wird_der_vergleichstest_eingesetzt">2.3 Wie und wo wird der Vergleichstest eingesetzt?</a></li>
+	</ul>
+
+	<li><a href="#3__verwendung_der_suche_durch_andere_plugins_oder_skripte">3. Verwendung der Suche durch andere Plugins oder Skripte</a></li>
+	<li><a href="#4__verwendung_erweiterter_epg_infos">4. Verwendung erweiterter EPG Infos</a></li>
+	<li><a href="#5__ersetzen_des_standardmen_">5. Ersetzen des Standardmenü</a></li>
+	<li><a href="#6__addons">6. Addons</a></li>
+	<li><a href="#ausf_hrliche_beschreibung">Ausführliche Beschreibung</a></li>
+	<li><a href="#siehe_auch">SIEHE AUCH</a></li>
+	<li><a href="#dateien">DATEIEN</a></li>
+	<li><a href="#autor__man_pages_">AUTOR (man pages)</a></li>
+	<li><a href="#fehler_melden">FEHLER MELDEN</a></li>
+	<li><a href="#copyright_and_lizenz">COPYRIGHT and LIZENZ</a></li>
+</ul>
+
+<hr name="index" />
+</div>
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p><em class="file">epgsearch</em> - Suchtimer und Ersatz für VDR's Standard-Programm-Menü</p>
+<p>
+</p>
+<hr />
+<h1><a name="beschreibung">BESCHREIBUNG</a></h1>
+<p>EPG-Search kann als Ersatz für VDR's Standard-Programm-Menü verwendet
+werden. Es sieht genauso aus, erweitert es aber um einige zusätzliche
+Funktionen.</p>
+<p>Ein weiterer Punkt sind die sog. Suchtimer die dafür
+sorgen, dass Timer automatisch programmiert werden.</p>
+<pre>
+ - Befehle für EPG-Einträge mit verschiedenen integrierten Befehlen wie
+   z.B. 'Wiederholungen anzeigen', 'Suche anlegen'. Man kann eigene   
+   Befehle hinzufügen, um z.B. einen VDRAdmin Autotimer anzulegen.</pre>
+<pre>
+ - Bis zu 4 weitere Zeitpunkte im Menü 'Was läuft jetzt?' neben 'Jetzt'
+   und 'Nächste', sowie ein optionales Favoritenmenü.</pre>
+<pre>
+ - Suche im EPG: Anlegen von wiederverwendbaren Abfragen, die auch als
+   'Suchtimer' verwendet werden können.</pre>
+<pre>
+ - Suchtimer: Sucht im Hintergrund nach Sendungen und erzeugt einen
+   Timer bei passenden EPG-Einträgen (ähnlich zu VDRAdmins Autotimern)
+   oder informiert über die Sendung via OSD.</pre>
+<pre>
+ - Vermeidung von doppelten Aufnahmen der gleichen Sendung
+   * Timer-Vorschau
+   * Erkennung abgebrochener Aufnahmen
+   * Fuzzy-Vergleich von Sendungen</pre>
+<pre>
+ - Fortschrittsbalken in 'Jetzt' und 'Nächste'</pre>
+<pre>
+ - Zeit im Menü 'Jetzt', 'Nächste' kann per Tastendruck verschoben
+   werden,  z.B. was läuft 'Jetzt' + 30 Minuten</pre>
+<pre>
+ - Startmenü 'Programm' oder 'Jetzt' einstellbar.</pre>
+<pre>
+ - das Menü zur detaillierten EPG-Anzeige (Zusammenfassung) erlaubt den
+   Sprung zur vorherigen/nächsten Sendung</pre>
+<pre>
+ - Unterstützung erweiterter EPG-Infos in Suchtimern</pre>
+<pre>
+ - Erweiterung des Timer-Edit-Menüs um Verzeichnisse,
+   benutzerdefinierte Wochentage und Untertitel-Auswahl</pre>
+<pre>
+ - Timer Konfliktcheck, informiert über OSD-Meldung</pre>
+<pre>
+ - Timer Konfliktmenü, zeigt die Konflikte an und erleichtert die
+   Konfliktlösung</pre>
+<pre>
+ - Email-Benachrichtigungen über Suchtimer-Updates und Timer-Konflikte</pre>
+<p>Funktioniert nur mit &gt;= vdr-1.3.46.</p>
+<p>Teile der Quelltexte basieren auf dem repeating-epg-patch von Gerhard Steiner, der mir die Erlaubnis gab, diese zu verwenden. Danke für seine Arbeit!</p>
+<p>
+</p>
+<hr />
+<h1><a name="optionen">OPTIONEN</a></h1>
+<dl>
+<dt><strong><a name="f_file_svdrpsendcmd_file" class="item">-f file,  --svdrpsendcmd=file</a></strong></dt>
+
+<dd>
+<p>Pfad zu svdrpsend.pl für externe SVDRP-Kommunikation (Standard ist interne
+Kommunikation, deshalb ist dieser Paramter normalerweise nicht notwendig)</p>
+</dd>
+<dt><strong><a name="c_path_config_path" class="item">-c path,  --config=path</a></strong></dt>
+
+<dd>
+<p>zur Angabe eines eigenen Konfigurationsverzeichnisses für alle
+epgsearch-Dateien, Standard ist '&lt;Plugin-Konfig-Verzeichnis&gt;/epgsearch'</p>
+</dd>
+<dt><strong><a name="l_file_logfile_file" class="item">-l file,  --logfile=file</a></strong></dt>
+
+<dd>
+<p>zur Angabe eines abweichenden Dateipfades für epgsearch's Log-File (Standard
+ist epgsearch.log in epgsearch's Konfig-Verzeichnis)</p>
+</dd>
+<dt><strong><a name="v_n_verbose_n" class="item">-v n,  --verbose=n</a></strong></dt>
+
+<dd>
+<p>verbose level für das Log-File. Wert 0 bedeutet kein Logging. Weiter Werte sind
+1 (allgemeine Meldungen), 2 (detaillierte Meldungen), 3 (für Debug-Zwecke)</p>
+</dd>
+<dt><strong><a name="r_reloadmenuconf" class="item">-r,  --reloadmenuconf</a></strong></dt>
+
+<dd>
+<p>bewirkt ein Neuladen der epgsearchmenu.conf bei jedem Plugin-Aufruf am
+OSD. Kann für das Testen eines selbst angepaßten Menü-Layouts praktisch sein.</p>
+</dd>
+<dt><strong><a name="m_file_mailcmd_file" class="item">-m file,  --mailcmd=file</a></strong></dt>
+
+<dd>
+<p>das externe Kommando für den Emailversand. Als Standard wird 'sendEmail.pl'
+benutzt. Wenn ein abweichendes Kommando oder Skript verwendet wird, muss
+sichergestellt sein, dass das gleiche Paramter-Interface verwendet wird, wie
+bei sendEmail.pl.</p>
+</dd>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="inhalt">Inhalt</a></h1>
+<pre>
+ 1.    Beschreibung
+ 1.1     Menü Befehle
+ 1.2     Menü Suche
+ 1.2.1     Menü Suche editieren
+ 1.2.2     Menü Suchergebnisse
+ 1.3     Erweitertes 'Jetzt' und 'Nächste'
+ 1.4     Menü Setup
+ 23.    Suchtimer
+ 2.1     'Wiederholungen vermeiden' - Im Detail
+ 2.2     Wie funktioniert der Vergleichstest zwischen 2 Sendungen?
+ 2.3     Wie und wo wird der Vergleichstest eingesetzt?
+ 3.    Verwendung der Suche durch andere Plugins oder Skripte
+ 4.    Verwendung erweiterter EPG Infos
+ 5.    Ersetzen des Standardmenü
+ 6.    Addons</pre>
+<p>
+</p>
+<hr />
+<h1><a name="1__beschreibung">1. Beschreibung</a></h1>
+<p>Auf den ersten Blick sieht EPG-Search wie der Programm-Menü-Punkt des
+VDR aus.   
+Ein Tastendruck auf '0' schaltet die Farbtasten um, so dass weitere
+Funktionen erreicht werden können (die vorgegebene Zuweisung kann per
+Setup angepasst werden):</p>
+<p>
+</p>
+<h2><a name="1_1_men__befehle">1.1 Menü Befehle</a></h2>
+<p>Dieses Menü zeigt Befehle an, die auf den ausgewählten Menüeintrag
+angewandt werden können. Es gibt 8 vorgegebene Befehle:</p>
+<pre>
+ - Wiederholung: Zeigt Wiederholungen an
+ - Aufnehmen
+ - Umschalten
+ - Suche anlegen: schaltet zum Suchmenü und erzeugt eine Suche mit dem
+   Namen der aktuellen Sendung als Suchbegriff (um die manuelle Erfassung
+   zu vermeiden
+ - Suche in Aufnahmen: durchsucht die Aufnahmen nach einer Sendung mit
+   diesem Namen
+ - Als 'bereits aufgezeichnet' markieren:
+   Hiermit wird die ausgewählte Sendung in die Datei epgsearchdone.data
+   übernommen und epgsearch angewiesen, diese Sendung nicht aufzunehmen, falls
+   der zugehörige Suchtimer mit &quot;Wiederholung vermeiden&quot; geschaltet ist. Ein
+   bereits erzeugter Timer wird beim nächsten Suchtimer-Update automatisch
+   gelöscht.
+ - In/Aus Umschaltliste?:
+   Zum Bearbeiten der Umschaltliste. Wenn eine Sendung in der Umschaltliste
+   enthalten ist, wird kurz vor Beginn eine Ankündigung eingeblendet und dann
+   umgeschaltet. Um die gesamte Umschaltliste einzusehen, bitte
+   'Suche/Aktionen/Zeige Umschaltliste' aufrufen.
+ - Erzeuge Ausschlussliste:
+   Eine Ausschlussliste wird verwendet um bestimmte Sendungen bei der
+   Verwendung von Suchtimern zu ignorieren. Ein Suchtimer kann beliebige
+   Ausschlusslisten verwenden.</pre>
+<p>Man kann eigene Befehle hinzufügen, indem man die Datei
+epgsearchcmds.conf im epgsearch-Konfig-Verzeichnis editiert. Eine
+Beispiel-Datei mit Bespielscripts liegt dem Plugin bei (s. Unterverzeichnis
+'scripts', stammt von vdr-wiki.de. Danke an die Autoren).</p>
+<p>Das Format der Datei ist identisch zu VDRs commands.conf oder reccmds.conf.
+Wenn ein Befehl ausgeführt wird, werden folgende Parameter übergeben:</p>
+<pre>
+ $1: Titel des Programmeintrags
+ $2: Startzeit als time_t-Wert (wie im Shutdown-Skript)
+ $3: Endzeit
+ $4: Programmplatz
+ $5: langer Kanalname
+ $6: Untertitel des Programmeintrags, &quot;&quot; falls nicht vorhanden</pre>
+<p>Zum Ausführen eines Befehls aus dem Hauptmenü ohne Öffnen des
+Befehlsmenüs genügt es, die zugehörige Nummer des Befehls zu drücken.</p>
+<p>
+</p>
+<h2><a name="1_2_men__suche">1.2 Menü Suche</a></h2>
+<p>Hier kann man eine Suche im EPG erzeugen, editieren, löschen und
+ausführen. Bedienung und Verhalten ist ähnlich zu VDR's Timer-Menü.</p>
+<p>
+</p>
+<h3><a name="1_2_1_men__suche_editieren">1.2.1 Menü Suche editieren</a></h3>
+<p>Das meiste in diesem Menü ist selbsterklärend, deshalb nur einige
+Anmerkungen zu:</p>
+<dl>
+<dt><strong><a name="suche" class="item">- <strong>Suche:</strong></a></strong></dt>
+
+<dd>
+<p>Suchbegriff. Will man nach mehreren Worten suchen, dann bitte mit
+Leerzeichen trennen. Lässt man den Suchbegriff leer (in Verbindung
+mit Suchmodus 'Ausdruck') wird alles akzeptiert. Das kann praktisch
+sein, um z.B. alles zu suchen, was zu einer bestimmten Zeit auf
+einem bestimmten Sender kommt.</p>
+<p>Mit 'Blau' kann man auch eine Vorlage für eine Suche
+übernehmen. Falls eine Vorlage als Standard definiert wurde, wird
+bei einer neuen Suche automatisch der Inhalt der Standard-Vorlage
+verwendet.</p>
+<p>Hinweis: Die unscharfe Suche ist auf 32 Zeichen begrenzt!</p>
+</dd>
+<dt><strong><a name="suchmodus" class="item">- <strong>Suchmodus:</strong></a></strong></dt>
+
+<dd>
+<p>'Ausdruck' sucht nach diesem Ausdruck innerhalb eines
+EPG-Eintrags. 'alle Worte' erfordert, dass jedes Wort im EPG-Eintrag
+vorkommt, 'ein Wort' dagegen nur, dass zumindest ein Wort
+auftaucht. 'exakt' vergleicht den gesamten Suchbegriff mit dem
+EPG-Eintrag (praktisch bei kurzen Titeln wie z.B. &quot;Alf&quot;). 'regulärer
+Ausdruck' erlaubt die Angabe eines regulären Ausdrucks zur
+Suche. Ein führender und abschließender '/' ist nicht notwendig. Als
+Standard werden POSIX extended regular expressions verwendet. Wer
+lieber mit Perl kompatiblen regulären Ausdrücken arbeitet, muss
+lediglich im Makefile des Plugins #HAVE_PCREPOSIX=1 in
+HAVE_PCREPOSIX=1 ändern und neu kompilieren. (Dafür ist pcreposix
+notwendig, das mit libpcre von www.pcre.org installiert wird, aber
+auf den meisten Distributionen bereits vorhanden sein sollte).</p>
+<p>Eine Beschreibung des Suchprozesses gibt es im MANUAL.</p>
+</dd>
+<dt><strong><a name="verw_erweiterte_epg_info" class="item">- <strong>Verw. erweiterte EPG Info</strong></a></strong></dt>
+
+<dd>
+<p>(nur verfügbar, wenn konfiguriert. Siehe weiter unten 'Verwendung
+erweiterter EPG Infos')</p>
+</dd>
+<dt><strong><a name="ignoriere_fehlende_kategorien" class="item">- <strong>Ignoriere fehlende Kategorien</strong></a></strong></dt>
+
+<dd>
+<p>Wenn 'Ja' gewählt ist, verhindert das, dass eine Sendung aus dem 
+Suchergebnis ausgeschlossen wird, falls die entsprechende 
+Kategorie nicht im EPG vorhanden ist. Vorsicht: Ohne weitere Suchkriterien 
+kann das zu einer Flut von Timern führen.</p>
+</dd>
+<dt><strong><a name="verw_kanal" class="item">- <strong>Verw. Kanal:</strong></a></strong></dt>
+
+<dd>
+<p>sucht nur im angegebenen Kanalbereich, der hinterlegten
+Kanalgruppe, z.B. 'Öffentl. Rechtl.' oder 'Sportsender'... oder in
+FTA-Sendern.</p>
+<p>ACHTUNG: Nach einer Änderung der Kanal-Reihenfolge sollten unbedingt
+diese Einstellungen der Suchtimer kontrolliert werden!</p>
+</dd>
+<dt><strong><a name="verwende_wochentag" class="item">- <strong>Verwende Wochentag:</strong></a></strong></dt>
+
+<dd>
+<p>Neben den Wochentagen kann auch eine benutzerdefinierte Auswahl
+getroffen werden, um z.B. nur Montags und Freitags zu suchen.</p>
+<p>Die benutzerdefinierte Auswahl findet sich am Ende der Liste
+Son, Mon, ..., Sam, benutzerdefiniert</p>
+</dd>
+<dt><strong><a name="verwende_ausschlusslisten" class="item">- <strong>Verwende Ausschlusslisten:</strong></a></strong></dt>
+
+<dd>
+<p>Hier können eine oder mehrere oder alle Ausschlusslisten selektiert werden.
+Falls ein Suchergebnis auch in einer der gewählten Ausschlusslisten
+erscheint, wird es verworfen.</p>
+</dd>
+<dt><strong><a name="in_favoritenmen_verw" class="item">- <strong>In Favoritenmenü verw.:</strong></a></strong></dt>
+
+<dd>
+<p>Nur verfügbar, wenn im Setup aktiviert. Mit dieser Option kann eine Suche zur
+Verwendung im Favoritenmenü markiert werden. Dieses Menü listet alle
+Suchergebnisse von Suchen mit dieser Option.</p>
+</dd>
+<dt><strong><a name="layout_des_ergebnismen_s" class="item">- <strong>Layout des Ergebnismenüs:</strong></a></strong></dt>
+
+<dd>
+<p>Nur verfügbar, wenn mehr als eine Menüvorlage für Suchergebnisse in
+epgsearchmenu.conf angegeben wurde. Mit dieser Option kann ein anderes Layout
+für die Suchergebnisse dieser Suche gewählt werden.</p>
+</dd>
+<dt><strong><a name="verwende_als_suchtimer" class="item">- <strong>Verwende als Suchtimer:</strong></a></strong></dt>
+
+<dd>
+<p>falls ja, sucht das Plugin im Hintergrund nach passenden Sendungen
+und erzeugt dafür einen Timer (im Setup muss dazu die Verwendung von
+Suchtimern aktiv sein). Bei der Einstellung &lt;benutzerdefiniert&gt; läßt sich
+über die Taste 'Blau' ein Zeitfenster einstellen, in dem der Suchtimer
+aktiv sein soll.</p>
+</dd>
+<dt><strong><a name="aktion" class="item">- <strong>Aktion:</strong></a></strong></dt>
+
+<dd>
+<p>Standard ist 'Aufnehmen', also das Erzeugen eines Timers für das
+Suchergebnis. Man kann aber auch wählen, dass nur eine Ankündigung
+der Sendung per OSD vorgenommen werden soll, sobald diese gefunden wird. 
+Eine weitere Möglichkeit ist 'nur umschalten'. Dadurch wird automatisch eine
+Minute vor Beginn der Sendung auf deren Kanal gewechselt. Ebenso kann
+mit 'Ankündigen und Umschalten' die Sendung vor ihrem Beginn angekündigt werden
+und mit 'Ok' zum entsprechenden Kanal gewechselt werden.</p>
+</dd>
+<dt><strong><a name="serienaufnahme" class="item">- <strong>Serienaufnahme:</strong></a></strong></dt>
+
+<dd>
+<p>falls ja, wird die Aufnahme in einem Ordner mit dem Seriennamen
+gespeichert. Die Aufnahme selbst erhält den Episondennamen. Falls es
+keinen gibt, wird Datum und Uhrzeit als Episondenname verwendet.</p>
+</dd>
+<dt><strong><a name="verzeichnis" class="item">- <strong>Verzeichnis:</strong></a></strong></dt>
+
+<dd>
+<p>hier kann man ein Verzeichnis angeben, in dem die Aufnahme
+gespeichert wird, z.B. 'SciFi'. Mit der Taste 'Blau' kann ein
+Verzeichnis gewählt werden, das bereits bei anderen Sucheinträgen
+verwendet wird. Die Liste kann außerdem durch Einträge in der Datei
+epgsearchdirs.conf erweitert werden (pro Zeile ein Verzeichnis, ohne
+das führende video-Verzeichnis, s. auch MANUAL).</p>
+<p>Wenn man erweiterte EPG-Infos von einem Provider erhält, können im
+Verzeichnis-Eintrag auch Variablen wie &quot;%Genre%&quot; oder &quot;%Category%&quot;
+verwendet werden. Diese werden durch die aktuellen erw. EPG-Infos
+ersetzt, sobald ein Timer erzeugt wird.</p>
+<p>Siehe MANUAL 'Using variables in the directory entry of a search timer')</p>
+</dd>
+<dt><strong><a name="aufn_nach_tagen_l_schen" class="item">- <strong>Aufn. nach ... Tagen löschen</strong></a></strong></dt>
+
+<dd>
+<p>Manchen Aufnahmen sollen nur ein paar Tage existieren,
+z.B. Tagesschau. Mit diesem Feature kann man epgsearch sagen, dass
+es die Aufnahme automatisch nach ... Tagen löschen soll</p>
+</dd>
+<dt><strong><a name="pause_wenn_aufnahmen_existieren" class="item">- <strong>Pause, wenn ... Aufnahmen existieren</strong></a></strong></dt>
+
+<dd>
+<p>Wenn die angegebene Anzahl von Aufnahmen existiert, dann pausiert
+epgsearch mit dem Erzeugen neuer Timer. Erst nach dem Löschen einer
+oder mehrerer Aufnahmen, wird wieder nach neuen Sendungen gesucht.</p>
+</dd>
+<dt><strong><a name="wiederholung_vermeiden" class="item">- <strong>Wiederholung vermeiden</strong></a></strong></dt>
+
+<dd>
+<p>Wenn man keine Wiederholungen aufnehmen will, versucht dieses
+Feature festzustellen, ob eine Sendung bereits
+aufgenommen/programmiert wurde und überspringt diese dann. Bitte vor
+Verwendung den Abschnitt 'Wiederholungen vermeiden - Im Detail'
+weiter unten lesen.</p>
+</dd>
+<dt><strong><a name="erlaubte_wiederholungen" class="item">- <strong>erlaubte Wiederholungen</strong></a></strong></dt>
+
+<dd>
+<p>Will man eine gewisse Anzahl von Wiederholungen einer Sendung
+erlauben, kann dies hier hinterlegt werden.</p>
+</dd>
+<dt><strong><a name="nur_wiederh_innerhalb_tagen" class="item">- <strong>Nur Wiederh. innerhalb ... Tagen</strong></a></strong></dt>
+
+<dd>
+<p>Falls Wiederholungen nur innerhalb einer anzugebenden Anzahl Tage
+erlaubt werden sollen, kann dies hier eingestellt werden. 0
+entspricht unbegrenzt.</p>
+</dd>
+<dt><strong><a name="vergleiche_titel" class="item">- <strong>Vergleiche Titel</strong></a></strong></dt>
+
+<dd>
+<p>Einstellung, ob beim Test, ob eine Sendung identisch ist, auch der
+Titel verglichen werden soll.</p>
+</dd>
+<dt><strong><a name="vergleiche_untertitel" class="item">- <strong>Vergleiche Untertitel</strong></a></strong></dt>
+
+<dd>
+<p>Einstellung, ob beim Test, ob eine Sendung identisch ist, auch der
+Untertitel verglichen werden soll. Neben 'nein' und 'ja' existiert noch
+'falls vorhanden'. Damit stuft epgsearch zwei Sendungen nur dann als 
+identisch ein, wenn die Episodennamen gleich sind und nicht leer. Vorsicht: Wenn die 
+EPG-Daten keine Untertitel für unterschiedliche Folgen enthalten, sollte diese Option
+nicht verwendet werden. 'ja' ist in diesem Fall besser, selbst wenn dadurch doppelt 
+aufgezeichnet werden kann.</p>
+</dd>
+<dt><strong><a name="vergleiche_beschreibung" class="item">- <strong>Vergleiche Beschreibung</strong></a></strong></dt>
+
+<dd>
+<p>Einstellung, ob beim Test, ob eine Sendung identisch ist, auch die
+Inhaltsbeschreibung verglichen werden soll. Dabei wird zunächst
+alles aus dem Inhalt entfernt, das einer Kategorienangabe
+gleicht. Der verbleibende Text wird dann verglichen. Ist dieser zu
+90% ähnlich (im Sinne des Levinshtein-Distance-Algorithmus) wird er
+als gleich behandelt.</p>
+</dd>
+<dt><strong><a name="vergl_kategorien" class="item">- <strong>Vergl. Kategorien</strong></a></strong></dt>
+
+<dd>
+<p>Über die Schaltfläche 'Einstellungen' kann angegeben werden welche
+Kategorien ebenfalls miteinander verglichen werden sollen.</p>
+</dd>
+<dt><strong><a name="priorit_t_lebensdauer_zeitpuffer_anfang_und_ende" class="item">- <strong>Priorität, Lebensdauer, Zeitpuffer Anfang und Ende:</strong></a></strong></dt>
+
+<dd>
+<p>Jeder Suchtimer kann für diese Parameter eigene Einstellungen
+haben. Die Voreinstellung wird im Setup vorgenommen.</p>
+</dd>
+<dt><strong><a name="vps" class="item">- <strong>VPS:</strong></a></strong></dt>
+
+<dd>
+<p>aktiviert VPS, falls im VDR-Setup aktiv und für die gefundene
+Sendung auch VPS-Informationen vorhanden sind.</p>
+</dd>
+<dt><strong><a name="automatisch_l_schen" class="item">- <strong>automatisch löschen:</strong></a></strong></dt>
+
+<dd>
+<p>zum automatischen Löschen eines Suchttimers bei folgenden Bedingungen:</p>
+<pre>
+ * nach x Aufnahmen, oder
+ * nach x Tagen nach erster Aufnahme</pre>
+<p>Gezählt werden dabei nur erfolgreiche Aufnahmen. Das Löschen erfolgt 
+direkt nach dem Ende der entsprechenden Aufnahme.</p>
+</dd>
+</dl>
+<p>Um den Status 'Als Suchtimer verw.' zu ändern, ohne das Menü zu
+öffnen, kann die Taste '2' verwendet werden. Dies ruft direkt den
+2. Befehl im Befehlsmenü auf.</p>
+<p>
+</p>
+<h3><a name="1_2_2_men__suchergebnisse">1.2.2 Menü Suchergebnisse</a></h3>
+<p>Dieses Menü zeigt die Suchergebnisse an. Ein 'T' sagt aus, dass es zu
+diesem Eintrag bereits einen Timer gibt, ein 't', dass es nur
+teilweise aufgenommen wird, also wie im Standard-Programm-Menü.</p>
+<p>
+</p>
+<h2><a name="1_3_erweitertes__jetzt__and__n_chste_">1.3 Erweitertes 'Jetzt' and 'Nächste'</a></h2>
+<p>Im Setup können bis zu 4 zusätzliche Zeiten, als Erweiterung zu 'Jetzt'
+und 'Nächste', angegeben werden um die Taste Grün zu erweitern.
+Z.B. 'nachmittags', 'abends', 'spätabends'. Zeiten, die bereits
+verstrichen sind, werden übersprungen, man erhält abends also kein
+'nachmittags'. Ausnahme: Ist ein Zeitpunkt nicht mehr als 20 Stunden in der
+Zukunft wird das Menü des nächsten Tages angezeigt.
+In diesen Menü kann die aktuell angezeigte Zeit durch Drücken auf
+FastRew und FastFwd verschoben werden um die Zeit nach hinter oder
+vorne zu verstellen. Falls diese Tasten auf der Fernbedienung nicht
+existieren, kann diese Funktion durch Umschalten mit '0' erreicht
+werden. Die Tasten Grün und Gelb wechseln dann zu '&lt;&lt;' und '&gt;&gt;'. Das
+Umschalten kann über das Setup angepasst werden.
+Man kann einen Fortschrittsbalken im Menü 'Jetzt'/'Nächste' anzeigen lassen.
+Falls text2skin verwendet wird, sollte die Option &quot;text2skin&quot; in den
+Setup-Optionen &quot;Zeige Fortschrittsbalken in 'Jetzt'&quot;/&quot;Zeige Fortschrittsbalken
+in 'Nächste'&quot; verwendet werden (Die Option 'graphisch' kann ebenfalls mit
+text2skin funktionieren, das ist aber abhängig vom gewählten skin)</p>
+<p>
+</p>
+<h2><a name="1_4_men__setup">1.4 Menü Setup</a></h2>
+<p>
+</p>
+<h3><a name="1_4_1_allgemein">1.4.1 Allgemein</a></h3>
+<dl>
+<dt><strong><a name="hauptmen_eintrag_verstecken" class="item">- <strong>Hauptmenüeintrag verstecken:</strong></a></strong></dt>
+
+<dd>
+<p>Damit wird der Eintrag 'Suche' im Hauptmenü ausgeblendet. Achtung:
+wenn das Plugin der Taste Grün zugeordnet ist, dann bewirkt das
+Ausblenden, dass wieder das VDR-Standardmenü gerufen wird (um das zu
+vermeiden s. unten).</p>
+</dd>
+<dt><strong><a name="hauptmen_eintrag" class="item">- <strong>Hauptmenü-Eintrag</strong></a></strong></dt>
+
+<dd>
+<p>Falls nicht ausgeblendet, kann hier der Name des Hauptmenü-Eintrags
+hinterlegt werden. Vorgabe ist 'Programmführer'. Hinweis: Wenn man den
+Eintrag abweichend von der Vorgabe setzt, ist der Eintrag nicht mehr
+abhängig von der gewählten OSD-Sprache. Setzt man den Eintrag wieder auf den
+Default oder auf leer ist die Abhängigkeit wieder gegeben.</p>
+</dd>
+<dt><strong><a name="startmen" class="item">- <strong>Startmenü:</strong></a></strong></dt>
+
+<dd>
+<p>Auswahl von 'Programm' oder 'Jetzt' als Startmenü.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h3><a name="1_4_2_epg_men_s">1.4.2 EPG Menüs</a></h3>
+<dl>
+<dt><strong><a name="taste_ok" class="item">- <strong>Taste Ok:</strong></a></strong></dt>
+
+<dd>
+<p>Hier kann das Verhalten der 'Ok'-Taste bestimmt werden. Man kann damit
+die Inhaltsangabe  anzeigen oder zum entsprechenden Sender
+wechseln. Hinweis: Die Funktion der Taste 'Blau' (Umschalten/Info/Suche)
+hängt von dieser Einstellung ab.</p>
+</dd>
+<dt><strong><a name="taste_rot" class="item">- <strong>Taste Rot:</strong></a></strong></dt>
+
+<dd>
+<p>Auswahl, ob man den Standard ('Aufnehmen') oder 'Befehle' als
+Vorbelegung möchte.</p>
+</dd>
+<dt><strong><a name="taste_blau" class="item">- <strong>Taste Blau:</strong></a></strong></dt>
+
+<dd>
+<p>Auswahl, ob man den Standard ('Umschalten') oder 'Suche' als
+Vorbelegung möchte.</p>
+</dd>
+<dt><strong><a name="zeige_fortschrittsbalken_in_jetzt" class="item">- <strong>Zeige Fortschrittsbalken in 'Jetzt':</strong></a></strong></dt>
+
+<dd>
+<p>Im Menü 'Jetzt' kann ein Fortschrittsbalken angezeigt werden, der
+den Fortschritt der laufenden Sendung anzeigt. Falls text2skin verwendet
+wird, sollte die Option &quot;pipes&quot; verwendet werden (Die Option 'graphisch'
+kann ebenfalls mit text2skin funktionieren, das ist aber abhängig vom
+gewählten skin)</p>
+</dd>
+<dt><strong><a name="zeige_kanalnummer" class="item">- <strong>Zeige Kanalnummer:</strong></a></strong></dt>
+
+<dd>
+<p>auswählen, um eine führende Programmnummer vor jedem EPG-Eintrag
+anzuzeigen.</p>
+</dd>
+<dt><strong><a name="zeige_kanal_separatoren" class="item">- <strong>Zeige Kanal-Separatoren:</strong></a></strong></dt>
+
+<dd>
+<p>zur Anzeige einer Trennzeile zwischen Kanalgruppen im Menü
+'Übersicht - Jetzt' ...</p>
+</dd>
+<dt><strong><a name="zeige_tages_separatoren" class="item">- <strong>Zeige Tages-Separatoren:</strong></a></strong></dt>
+
+<dd>
+<p>zur Anzeige einer Trennzeile zwischen Sendungen unterschiedlicher
+Tage im Menü 'Programm'.</p>
+</dd>
+<dt><strong><a name="zeige_radiokan_le" class="item">- <strong>Zeige Radiokanäle:</strong></a></strong></dt>
+
+<dd>
+<p>Zeigt auch Radiokanäle an.</p>
+</dd>
+<dt><strong><a name="limit_channels_from_1_to" class="item">- <strong>Limit channels from 1 to:</strong></a></strong></dt>
+
+<dd>
+<p>Bei einer sehr großen Kanalliste läßt sich der Menü-Aufbau mit dieser
+Einstellung durch eine Einschränkung der angezeigten Kanäle beschleunigen. Mit
+'0' wird das Limit aufgehoben. Wenn der aktuelle Kanal über dem Limit liegt,
+wird das Limit ignoriert und wieder alle Kanäle angezeigt.</p>
+</dd>
+<dt><strong><a name="timer_mit_aufnehmen_sofort_anlegen" class="item">- <strong>Timer mit 'Aufnehmen' sofort anlegen:</strong></a></strong></dt>
+
+<dd>
+<p>Falls 'Ja' wird ein Timer sofort erzeugt, sobald man 'Aufnehmen' drückt, wie
+in vdr-1.3.38 eingeführt, sonst wird das Timer-Edit-Menü angezeigt.</p>
+</dd>
+<dt><strong><a name="zeige_kan_le_ohne_epg" class="item">- <strong>Zeige Kanäle ohne EPG:</strong></a></strong></dt>
+
+<dd>
+<p>zur Anzeige von Programmen ohne EPG, um auf diese umschalten zu
+können oder einen Timer zu programmieren</p>
+</dd>
+<dt><strong><a name="timer_mit_aufnehmen_sofort_anlegen2" class="item">- <strong>Timer mit 'Aufnehmen' sofort anlegen:</strong></a></strong></dt>
+
+<dd>
+<p>Falls 'Ja' wird nach Drücken von 'Aufnahme' sofort ein Timer angelegt, wie
+in vdr-1.3.38 eingeführt, falls 'Nein' erscheint das Timer-Edit-Menü.</p>
+</dd>
+<dt><strong><a name="zeitintervall_f_r_fr_ff_min" class="item">- <strong>Zeitintervall für FR/FF [min]:</strong></a></strong></dt>
+
+<dd>
+<p>In den Menüs 'Programm', 'Jetzt', 'Nächste', 'Benutzerdef. Zeit 1',
+... kann die angezeigte Zeit durch drücken von FastRew, FastFwd
+verschoben werden.  Die Anzahl Minuten für den Sprung kann hier
+angepasst werden.</p>
+</dd>
+<dt><strong><a name="gr_n_gelb_umschalten" class="item">- <strong>Grün/Gelb umschalten:</strong></a></strong></dt>
+
+<dd>
+<p>Falls die Tasten FastRew, FastFwd auf der Fernbedienung nicht
+vorhanden sind, dann auf 'ja' setzen. Wenn die Taste '0' gedrückt
+wird, werden somit auch die Tasten Grün/Gelb auf z.B. '&lt;&lt;' und '&gt;&gt;'
+umgeschaltet.</p>
+</dd>
+<dt><strong><a name="zeige_favoriten_men" class="item">- <strong>Zeige Favoriten-Menü:</strong></a></strong></dt>
+
+<dd>
+<p>Das Favoritenmenü kann dazu verwendet werden, eine Liste von bevorzugten
+Sendungen anzuzeigen, die innerhalb der nächsten 24 Stunden laufen. Je nach
+Einstellung erscheint dieses Menü vor oder nach den EPG-Menüs mit
+benutzerdef. Zeiten. Die Auswahl von Sendungen wird durch setzen der Option
+'In Favoriten-Menü verw.' innerhalb einer Suche geregelt.</p>
+</dd>
+<dt><strong><a name="f_r_die_n_chsten_stunden" class="item">- <strong>für die nächsten ... Stunden:</strong></a></strong></dt>
+
+<dd>
+<p>Mit diesem Wert wird die Zeitspanne eingestellt, für die Favoriten angezeigt
+werden sollen.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h3><a name="1_4_3_benutzerdef__epg_zeiten">1.4.3 Benutzerdef. EPG-Zeiten</a></h3>
+<dl>
+<dt><strong><a name="benutzerdef_zeit_1_4" class="item">- <strong>Benutzerdef. Zeit 1..4:</strong></a></strong></dt>
+
+<dd>
+<p>Bis zu 4 benutzerdefinierte Zeiten können zu 'Jetzt' und 'Nächste'
+hinzugefügt werden.</p>
+</dd>
+<dt><strong><a name="beschreibung" class="item">- <strong>Beschreibung:</strong></a></strong></dt>
+
+<dd>
+<p>Name der benutzerdef. Zeit, z.B. 'Nachmittags', 'Abends',
+'Spätabends'.</p>
+</dd>
+<dt><strong><a name="zeit" class="item">- <strong>Zeit:</strong></a></strong></dt>
+
+<dd>
+<p>zugehörige Uhrzeit.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h3><a name="1_4_4_timer_programmierung">1.4.4 Timer-Programmierung</a></h3>
+<dl>
+<dt><strong><a name="vdr_s_time_edit_men_verw" class="item">- <strong>VDR's Time-Edit-Menü verw.</strong></a></strong></dt>
+
+<dd>
+<p>Beim normalen Programmieren eines Timers verwendet epgsearch ein
+erweitertes Timer-Edit-Menü, das einen Verzeichniseintrag,
+benutzerdefinierte Wochentage und die Vervollständigung um
+Untertitel anbietet. Falls man einen gepatchten VDR verwendet der
+ebenfalls ein erweitertes Timer-Edit-Menü anbietet und lieber dieses
+verwenden will, dann einfach diese Option auf 'Ja' setzen.</p>
+</dd>
+<dt><strong><a name="standard_aufn_verzeichnis" class="item">- <strong>Standard Aufn. Verzeichnis:</strong></a></strong></dt>
+
+<dd>
+<p>Dieser Eintrag wird beim normalen Programmieren eines Timers
+verwendet. Man kann auch EPG-Variablen verwenden (z.B.. 'Meine
+Filme~%Category%~%Genre%'). Wird das Timer-Edit-Menü aufgerufen
+versucht epgsearch alle Variablen durch die Werte in der
+Beschreibung der Sendung zu ersetzen. Konnten nicht alle ersetzt
+werden, bleibt der Verzeichniseintrag leer.</p>
+</dd>
+<dt><strong><a name="untertitel_in_manuellen_timern" class="item">- <strong>Untertitel in manuellen Timern:</strong></a></strong></dt>
+
+<dd>
+<p>Beim manuellen Programmieren eines Timers kann epgsearch den
+Untertitel automatisch im Dateinamen ergänzen, wodurch die spätere
+Aufnahme in einem Unterverzeichnis für diese Episode gespeichert
+wird. Hier wählt man wie die Ergänzung gemacht werden
+soll. 'Intelligent' versucht zu prüfen, ob es Sinn macht und prüft
+dazu die Länge einer Sendung. Ist diese länger als 80min wird keine
+Untertitel ergänzt.</p>
+</dd>
+<dt><strong><a name="standard_timer_pr_fmethode" class="item">- <strong>Standard-Timer-Prüfmethode:</strong></a></strong></dt>
+
+<dd>
+<p>Manuell angelegte Timer können auf Änderungen im EPG überprüft werden. Hier
+kann die Standardeinstellung für die Prüfmethode je Kanal hinterlegt
+werden. Folgende Prüfmethoden existieren:
+   * ohne Überwachung
+   * anhand Sendungskennung: geprüft wird anhand einer Kennung, die durch den
+     Sender vergeben wird. (Achtung: nicht jeder Sender liefert vernünftige
+     Kennungen!) 
+   * anhand Sender/Uhrzeit: geprüft wird anhand der Sendung, die am besten zur
+     Dauer der ursprünglichen Sendung passt.</p>
+<p>Nicht alle Sender liefern eine vernünftige Sendungskennung. Deshalb kann hier
+die Standardeinstellung für jeden Kanal einzeln gesetzt werden. Bei der
+Programmierung eines manuellen Timers wird diese im Timer-Edit-Menü
+vorgegeben, falls das epgsearch-eigene Menü benutzt wird.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h3><a name="1_4_5_suche_und_suchtimer">1.4.5 Suche und Suchtimer</a></h3>
+<dl>
+<dt><strong><a name="verwende_suchtimer" class="item">- <strong>Verwende Suchtimer:</strong></a></strong></dt>
+
+<dd>
+<p>falls ja, untersucht das Plugin im Hintergrund die EPG-Daten und
+erzeugt Timer, falls passende Einträge gefunden werden. Dies
+betrifft nur Sucheinträge, die mit 'Als Suchtimer verwenden'
+markiert sind.</p>
+</dd>
+<dt><strong><a name="aktualisierungsintervall" class="item">- <strong>Aktualisierungsintervall:</strong></a></strong></dt>
+
+<dd>
+<p>Das Intervall in Minuten, in dem die Hintergrundsuche vorgenommen
+wird.</p>
+</dd>
+<dt><strong><a name="svdrp_port" class="item">- <strong>SVDRP Port:</strong></a></strong></dt>
+
+<dd>
+<p>Falls nicht der Standard-SVDRP-Port 2001 verwendet wird, dann bitte
+hier anpassen, damit die Suchtimer funktionieren.</p>
+</dd>
+<dt><strong><a name="priorit_t_lebensdauer_und_zeitpuffer_f_r_anfang_und_ende" class="item">- <strong>Priorität, Lebensdauer und Zeitpuffer für Anfang und Ende:</strong></a></strong></dt>
+
+<dd>
+<p>Voreinstellungen</p>
+</dd>
+<dt><strong><a name="keine_ank_ndigung_bei_wiedergabe" class="item">- <strong>Keine Ankündigung bei Wiedergabe:</strong></a></strong></dt>
+
+<dd>
+<p>zum Unterdrücken von Sendungs-Ankündigungen während einer aktiven Wiedergabe.</p>
+</dd>
+<dt><strong><a name="timer_nach_l_schen_neuprogrammieren" class="item">- <strong>Timer nach Löschen neuprogrammieren:</strong></a></strong></dt>
+
+<dd>
+<p>epgsearch merkt sich standardmäßig welche Timer bereits durch Suchtimer
+angelegt wurden und programmiert diese nicht erneut, wenn sie gelöscht
+wurden. Zum Abschalten dieses Verhaltens bitte 'Ja' wählen.</p>
+</dd>
+<dt><strong><a name="paytv_sender_ignorieren" class="item">- <strong>PayTV-Sender ignorieren:</strong></a></strong></dt>
+
+<dd>
+<p>Auf 'Ja' setzen, wenn man bei der Suche nach Wiederholungen keine Sendungen
+von PayTV-Sendern haben will.</p>
+</dd>
+<dt><strong><a name="such_vorlagen" class="item">- <strong>Such-Vorlagen:</strong></a></strong></dt>
+
+<dd>
+<p>Hier können Suchvorlagen verwaltet werden, die beim Anlegen neuer Suchen
+verwendet werden können.</p>
+</dd>
+<dt><strong><a name="ausschlusslisten" class="item">- <strong>Ausschlusslisten:</strong></a></strong></dt>
+
+<dd>
+<p>Hier können Ausschlusslisten verwalten werden. Diese können innerhalb einer
+Suche verwendet werden um unerwünschte Sendungen zu vermeiden.</p>
+</dd>
+<dt><strong><a name="kanalgruppen" class="item">- <strong>Kanalgruppen:</strong></a></strong></dt>
+
+<dd>
+<p>verwaltet die Kanalgruppen, die als Suchkriterium in einer Suche
+verwendet werden können. Die Verwaltung ist auch im Edit-Menü einer
+Suche möglich.</p>
+</dd>
+</dl>
+<p><strong>Wichtig</strong>: wenn der EPG aus einer externen Quelle bezogen wird, sollte dafür
+gesorgt werden, dass die Suchtimer-Updates während des EPG-Updates
+abgeschaltet sind. Der Grund dafür ist, dass epgsearch Timer löscht, denen
+keine Sendungen zugeordnet sind. Während der neue EPG an VDR übermittelt wird,
+kann diese Situation auftreten. Am einfachsten geht das mit dem SVDRP-Befehl
+SETS im EPG-Update-Skript:</p>
+<p>svdrpsend.pl plug epgsearch SETS off</p>
+<p>&lt;das EPG update Skript&gt;</p>
+<p>svdrpsend.pl plug epgsearch SETS on</p>
+<p>
+</p>
+<h3><a name="1_4_6_timer_konflikt_pr_fung">1.4.6 Timer-Konflikt-Prüfung</a></h3>
+<dl>
+<dt><strong><a name="ignoriere_unter_priorit_t" class="item">- <strong>Ignoriere unter Priorität:</strong></a></strong></dt>
+
+<dd>
+<p>Falls ein Timer fehlschlagen wird, dessen Priorität unter dem angegebene
+Wert liegt, wird darauf nicht per OSD-Nachricht hingewiesen und der Konflikt
+wird als 'nicht relevant' in der Konflikt-Übersicht angezeigt.</p>
+</dd>
+<dt><strong><a name="ignoriere_konfliktdauer_unter_min" class="item">- <strong>Ignoriere Konfliktdauer unter ... Min.:</strong></a></strong></dt>
+
+<dd>
+<p>Falls ein Konflikt nicht länger als die angegebene Anzahl Minuten dauert,
+wird darauf nicht per OSD-Nachricht hingewiesen und der Konflikt wird als
+'nicht relevant' in der Konflikt-Übersicht angezeigt.</p>
+</dd>
+<dt><strong><a name="pr_fe_nur_die_n_chsten_tage" class="item">- <strong>Prüfe nur die nächsten ... Tage:</strong></a></strong></dt>
+
+<dd>
+<p>Hier kann der Zeitraum der Prüfung angegeben werden.</p>
+</dd>
+<dt><strong><a name="nach_jeder_timer_programmierung" class="item">- <strong>Nach jeder Timer-Programmierung:</strong></a></strong></dt>
+
+<dd>
+<p>Das bewirkt eine Konfliktprüfung nach jeder manuellen Timer-Programmierung
+und erzeugt eine OSD-Nachricht, falls der neue/geänderte Timer in einen
+Konflikt verwickelt ist.</p>
+</dd>
+<dt><strong><a name="beim_beginn_einer_aufnahme" class="item">- <strong>Beim Beginn einer Aufnahme:</strong></a></strong></dt>
+
+<dd>
+<p>Hier auf 'Ja' setzen, wenn die Konfliktprüfung beim Beginn jeder Aufnahme erfolgen soll. 
+Im Falle eines Konflikts wird dann sofort eine Nachricht angezeigt. Diese erscheint nur, 
+wenn der Konflikt innerhalb der nächsten 2 Stunden auftritt.</p>
+</dd>
+<dt><strong><a name="nach_jedem_suchtimer_update" class="item">- <strong>Nach jedem Suchtimer-Update:</strong></a></strong></dt>
+
+<dd>
+<p>Hier kann eingestellt werden, ob eine Konfliktprüfung nach jedem
+Suchtimer-Update erfolgen soll. Falls nicht:</p>
+</dd>
+<dt><strong><a name="nach_minuten" class="item">- <strong>nach ... Minuten:</strong></a></strong></dt>
+
+<dd>
+<p>gibt an nach wievielen Minuten im Hintergrund eine automatische
+Konfliktprüfung erfolgen soll. Bei relevanten Konflikten erfolgt eine
+Nachricht per OSD. Mit '0' wird diese Funktion deaktiviert.</p>
+</dd>
+<dt><strong><a name="wenn_n_chster_konflikt_in_minuten" class="item">- <strong>Wenn nächster Konflikt in ... Minuten:</strong></a></strong></dt>
+
+<dd>
+<p>Wenn nächster Konflikt in ... Minuten eintritt, verwende folgendes
+Prüfintervall.</p>
+<dl>
+<dt><strong><a name="alle_minuten" class="item">- <strong>alle ... Minuten:</strong></a></strong></dt>
+
+<dd>
+<p>um einen Konflikt in Kürze nicht zu übersehen, kann hier ein kürzeres
+Prüfintervall eingestellt werden.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong><a name="vermeide_nachricht_bei_wiedergabe" class="item">- <strong>Vermeide Nachricht bei Wiedergabe:</strong></a></strong></dt>
+
+<dd>
+<p>Bitte auf 'Ja' setzen, wenn während einer Wiedergabe keine OSD-Benachrichtigungen
+über Timer-Konflikte gewünscht sind. Die Benachrichtigung erfolgt trotzdem, 
+wenn der nächste Konflikt innerhalb der nächsten 2 Stunden auftritt.</p>
+</dd>
+</dl>
+<p>Bitte ebenfalls den Abschnitt 'Working with the timer conflict menu' im MANUAL
+berücksichtigen.</p>
+<p>
+</p>
+<h3><a name="1_4_7_email_benachrichtigungen">1.4.7 Email-Benachrichtigungen</a></h3>
+<p>(Bitte sicherstellen, dass 'sendEmail.pl' im Pfad der ausführbaren Dateien
+liegt und 'epgsearchupdmail.templ' und 'epgsearchconflmail.templ' im
+Konfig-Verzeichnis von epgsearch existieren!)</p>
+<dl>
+<dt><strong><a name="suchtimer_benachrichtigung" class="item">- <strong>Suchtimer-Benachrichtigung:</strong></a></strong></dt>
+
+<dd>
+<p>Diese Option aktivieren, wenn man eine Email-Benachrichtigung wünscht, sobald
+der Suchtimer-Hintergrund-Thread</p>
+<pre>
+  - neue Timer angelegt hat
+  - vorhandene Timer geändert hat
+  - Timer gelöscht hat, weil diese wegen EPG-Änderungen oder anderen
+    Benutzeraktionen nicht mehr gültig sind.</pre>
+<p>(Dazu muss ebenfalls die Option 'Verwende Suchtimer' im Suchtimer-Setup aktiv sein.)</p>
+</dd>
+<dt><strong><a name="zeit_zwischen_mails_h" class="item">- <strong>Zeit zwischen Mails [h]:</strong></a></strong></dt>
+
+<dd>
+<p>Für Benachrichtigungen zu Suchtimern kann hier angegeben werden, welchen Mindestabstand in Stunden
+die Mails haben sollen. Sobald die entsprechende Zeit verstrichen ist, wird eine Mail nach dem nächsten Suchtimer-Update
+versandt. Der Wert '0' bedeutet keine Verzögerung und bewirkt einen sofortigen Mailversand.</p>
+</dd>
+<dt><strong><a name="timer_konflikt_benachrichtigung" class="item">- <strong>Timer-Konflikt-Benachrichtigung:</strong></a></strong></dt>
+
+<dd>
+<p>Diese Option aktivieren, wenn man eine Email-Benachrichtigung bei
+Timer-Konflikten wünscht. Es werden nur Konflikte gemeldet, die laut
+Setup-Einstellungen 'relevant' sind. Neue Benachrichtigungen werden nur
+versandt, sobald sich etwas bei den Konflikten verändert.</p>
+<p>(Dazu muss ebenfalls die Option 'Nach jedem Suchtimer-Update' oder 'nach
+... Minuten' im Timer-Konflikt-Setup aktiv sein.)</p>
+</dd>
+<dt><strong><a name="email_adresse" class="item">- <strong>Email-Adresse:</strong></a></strong></dt>
+
+<dd>
+<p>Hier bitte die volle (!) Email-Adresse hinterlegen, an die die Nachrichten 
+verschickt werden sollen. Hinweis: Einigen Provider (z.B. Arcor) erlauben nicht 
+die gleiche Adresse für Sender und Empfänger.</p>
+</dd>
+<dt><strong><a name="mail_methode" class="item">- <strong>Mail-Methode:</strong></a></strong></dt>
+
+<dd>
+<p>Zur Auswahl stehen</p>
+<pre>
+  - sendEmail.pl: ein einfaches Skript, das auch auf Systemen ohne
+    konfigurierten Mailserver den Versand von Emails erlaubt. Das Skript wird
+    mit epgsearch ausgeliefert und sollte im $PATH liegen.
+  - sendmail: setzt ein korrekt aufgesetzes Mailsystem voraus.</pre>
+</dd>
+<dt><strong><a name="email_adresse2" class="item">- <strong>Email-Adresse:</strong></a></strong></dt>
+
+<dd>
+<p>Hier bitte die volle (!) Email-Adresse hinterlegen, von der die Nachricht versandt
+werden soll.</p>
+</dd>
+<dt><strong><a name="smtp_server" class="item">- <strong>SMTP Server:</strong></a></strong></dt>
+
+<dd>
+<p>Der Name des SMTP Servers, über den der Mailversand erfolgt.</p>
+</dd>
+<dt><strong><a name="verw_smtp_authentifizierung" class="item">- <strong>Verw. SMTP-Authentifizierung:</strong></a></strong></dt>
+
+<dd>
+<p>'Ja' wählen wenn das Emailkonto eine SMTP-Authentifizierung für den
+Emailversand benötigt.</p>
+</dd>
+<dt><strong><a name="auth_benutzer" class="item">- <strong>AUTH-Benutzer:</strong></a></strong></dt>
+
+<dd>
+<p>Hier bitte den Benutzernamen angeben, falls das Email-Konto mit
+Authentifizierung arbeitet.</p>
+</dd>
+<dt><strong><a name="auth_passwort" class="item">- <strong>AUTH-Passwort:</strong></a></strong></dt>
+
+<dd>
+<p>Hier bitte das Passwort angeben, falls das Email-Konto mit
+Authentifizierung arbeitet.
+Achtung: Das Passwort wird im Klartext gespeichert. Man muss selber dafür
+sorgen, dass das System sicher ist und nicht authorisierten Personen kein
+Zugriff auf VDR-Konfigurations-Dateien möglich ist.</p>
+</dd>
+</dl>
+<p>Nach Angabe der Email-Konto-Daten bitte mit 'Test' prüfen, ob alles
+funktioniert. Wenn mit 'sendEmail.pl' gearbeitet wird, sollte am Ende der
+Test-Ausgabe etwas wie 'Email sent successfully' auftauchen. Die Testfunktion
+gibt es bei der Methode 'sendmail' leider nicht.</p>
+<p>Bitte ebenfalls den Abschnitt 'Email notifications' im Manual berücksichtigen.</p>
+<p>
+</p>
+<hr />
+<h1><a name="2__suchtimer">2. Suchtimer</a></h1>
+<p>Das ist ziemlich das gleiche wie VDRAdmin's Autotimer, benötigt jedoch
+kein externes Programm. Beim Anlegen einer Suche kann man die Option
+setzen, ob diese als Suchtimer verwendet werden soll. Das Plugin sucht
+nun im Hintergrund in bestimmten Zeitabständen (-&gt;Setup-&gt;Update
+Intervall [min]) nach passenden Sendungen und erzeugt Timer für die
+Ergebnisse. Gerade für Serien ist dies sehr praktisch, weshalb es in
+der Suche die Option &quot;Serienaufnahme&quot; gibt. In diesem Fall wird ein
+Timer mit zusätzlichem Episodennamen angelegt. Die Aufnahme erscheint
+dann in einem Ordner mit dem Seriennamem. Falls es keinen Episodennamen gibt
+wird stattdessen automatisch Datum und Uhrzeit verwendet.</p>
+<p>Die Suchtimer-Funktion muss ausserdem im Setup aktiviert werden.
+Falls für SVDRP nicht der Standardport 2001 verwendet wird, bitte
+ebenfalls im Setup eintragen.</p>
+<p>Falls man eine Hintergrund-Suche manuell anstoßen will, genügt ein</p>
+<p>touch /etc/vdr/plugins/epgsearch/.epgsearchupdate</p>
+<p>Das kann ebenfalls Teil des shutdown-Skripts sein (hier sollte man
+dann noch einen sleep von ein paar Sekunden anhängen, damit das Plugin
+Zeit hat, den Scan zu beenden).</p>
+<p>Mehr Infos zu Suchtimern gibts im MANUAL unter 'Description of the
+search process' und 'How do Search Timers work?'.</p>
+<p>
+</p>
+<hr />
+<h1><a name="2_1__wiederholungen_vermeiden____im_detail">2.1 'Wiederholungen vermeiden' - Im Detail</a></h1>
+<p>Hier soll erklärt werden wie die Option 'Wiederholungen vermeiden'
+eines Suchtimers funktioniert.</p>
+<p>Nicht immer lässt sich durch entsprechende Suchkriterien vermeiden,
+dass auch Timer für Wiederholungen erzeugt werden.</p>
+<p>Um das zu verhindern, versucht das Feature 'Wiederholungen vermeiden'
+vor dem Programmieren einer Sendung zu prüfen, ob eine gleiche Sendung
+schon mal aufgenommen wurde oder ein Timer existiert, der die gleiche
+(nicht dieselbe!) Sendung aufzeichnet. Ist dies der Fall, wird kein
+Timer für die zu überprüfende Sendung erzeugt.</p>
+<p>
+</p>
+<h2><a name="2_2_wie_funktioniert_der_vergleichstest_zwischen_2_sendungen">2.2 Wie funktioniert der Vergleichstest zwischen 2 Sendungen?</a></h2>
+<p>Für den Test auf Gleichheit zwischen 2 Sendungen gibt es viele
+Einstellmöglichkeiten beim Suchtimer. Man kann wählen, ob Titel,
+Untertitel, Beschreibung und bestimmte Kategorien innerhalb der
+Beschreibung einer Sendung mit den jeweiligen Angaben einer anderen
+Sendung verglichen werden sollen.</p>
+<p>Der Vergleich der einzelnen Angaben selbst prüft immer auf
+vollständige Identität. Die Beschreibung einer Sendung bildet hier
+aber eine Ausnahme. Hier wird zunächst alles aus dem Text entfernt,
+das einer Kategorie-Angabe gleicht, z.B. 'Bewertung: Tagestipp'. Als
+Kategorie-Angabe wird alles gewertet, was am Anfang einer Zeile
+maximal 40 Zeichen hat, von einem ':' gefolgt wird und dann maximal
+weitere 60 Zeichen hat. Hintergrund für dieses Rausschneiden sind die
+oft vorhandenen Bewertungen wie 'Tagestipp', die bei der Wiederholung
+aber nicht mehr enthalten sind.</p>
+<p>Der verbleibende Text wird nun zunächst in der Länge verglichen. Ist
+der Unterschied größer als 90% wird die Beschreibung als
+unterschiedlich gewertet. Andernfalls wird über den
+Levinsthein-Distance-Algorithmus (LD), der einen Fuzzy-Textvergleich
+macht, ein Test vorgenommen. Hier wird die Beschreibung als gleich
+akzeptiert, wenn LD mehr als 90% Identität zurückgibt.</p>
+<p>Da dieser Algorithmus ziemlich laufzeitintensiv ist (O(mn)), sollte
+nach Möglichkeit nicht nur 'Vergleiche Beschreibung' als einziges
+Vergleichskriterium ausgewählt werden, sondern am besten immer nur in
+Kombination mit anderen Vergleichen.</p>
+<p>
+</p>
+<h2><a name="2_3_wie_und_wo_wird_der_vergleichstest_eingesetzt">2.3 Wie und wo wird der Vergleichstest eingesetzt?</a></h2>
+<p>Wie zuvor erwähnt wird bei einem Suchtimer-Update für Suchtimer mit
+diesem Feature zusätzlich geprüft, ob eine Sendung bereits irgendwann
+schon aufgezeichnet wurde, oder in der Timerliste ein Timer steht, der
+die gleiche Sendung aufzeichnen würde. Letzteres sollte klar sein,
+während für ersteres das File epgsearchdone.data ins Spiel kommt.</p>
+<p>Nach jeder Aufnahme, die durch einen Suchtimer mit 'Wiederholung vermeiden'
+erzeugt wurde, werden alle Angaben zu dieser Sendung im genannten File
+gespeichert. Über das Aktionenmenü im Menü 'Suche' kann man sich alle
+Sendungen, die ein solcher Timer bisher aufgenommen hat, anzeigen
+lassen und diese auch bearbeiten. In dieses File werden nur Aufnahmen
+aufgenommen, die bezüglich der Timerangaben korrekt begonnen und auch
+beendet wurden. D.h. dass teilweise unvollständige Aufnahmen nicht
+registriert werden und somit beim nächsten Suchtimer-Update
+automatisch ein neuer Timer für diese Sendung erzeugt wird, falls
+gefunden.</p>
+<p><strong>Wie verwenden?</strong></p>
+<p>Man sieht, dass das ganze Feature stark von der Qualität und dem
+Umfang des verwendeten EPGs abhängt. Hat man einen entsprechenden
+Suchtimer angelegt, ist es sinnvoll erstmal zu prüfen, ob er auch das
+richtige macht. Dazu gibt es für solche Timer im Suchergebnis-Menü auf
+der Taste 'Blau' die zusätzliche Belegung 'Timer-Vorschau'. Sendungen,
+die noch keinen Timer haben ('T'), aber für die einer aufgrund des
+Features beim nächsten Suchtimer-Update programmiert würde, haben dort
+ein 'P' stehen.</p>
+<p>Hinweis: Möchte man wegen Konflikten einen bereits programmierten
+Timer nicht verwenden, dann sollte dieser im Timermenü deaktiviert
+werden. Beim nächsten Suchtimer-Update wird dann einfach die nächste
+mögliche Wiederholung programmiert, falls vorhanden.</p>
+<p><strong>Wenn es nicht richtig funktioniert :-)</strong></p>
+<p>Damit das Programmieren oder Nicht-Programmieren von Timern gerade bei
+Verwendung dieses Features besser nachvollziehbar ist, wurde ein
+Logfile für epgsearch eingeführt. Startet man epgsearch mit einem
+Loglevel &gt;= 2 (-P'epgsearch -v 2) werden beim Suchtimer-Update
+in der Datei epgsearch.log hilfreiche Infos abgelegt. Siehe MANUAL für
+'command line options'.</p>
+<p>
+</p>
+<hr />
+<h1><a name="3__verwendung_der_suche_durch_andere_plugins_oder_skripte">3. Verwendung der Suche durch andere Plugins oder Skripte</a></h1>
+<p>Siehe <code>epgsearch(4)</code>.</p>
+<p>
+</p>
+<hr />
+<h1><a name="4__verwendung_erweiterter_epg_infos">4. Verwendung erweiterter EPG Infos</a></h1>
+<p>Einige EPG Provider liefern zusätzliche EPG Infos wie die Art der
+Sendung, das Video und Audio Format, die Besetzung,...
+Mit tvmovie2vdr oder epg4vdr können diese Daten in den VDR importiert
+werden.</p>
+<p>Somit kann man also z.B. einfach einen Suchtimer erzeugen, der alle
+Tagestipps findet, die in 16:9 ausgestrahlt werden.
+Um diese Informationen in Suchtimern zu verwenden, muss anhand der
+Datei epgsearchcats.conf im epgsearch-Konfig-Verzeichnis eine
+Konfiguration vorgenommen werden.</p>
+<p>Das Format dieser Datei ist folgendes:</p>
+<pre>
+ ID|category name|name in menu|values separated by ','(option)|searchmode(option)</pre>
+<pre>
+ - 'ID' sollte eine eindeutige ganze Zahl sein
+    Achtung: Ändert man später aus irgendeinem Grund diese ID müssen
+    die Suchtimer neu editiert werden!
+ - 'category name' ist der Name der Info lt. EPG Provider, z.B. 'Genre'
+ - 'name in menu' ist der Name im Menü von epgsearch.
+ - 'values' ist eine optionale Liste von Werten für diese Info.
+ - 'searchmode' gibt optional an, wie gesucht werden soll:
+   Textvergleich:
+   0 - Der gesamte Begriff muss als Substring erscheinen
+   1 - Die einzelnen Worte (getrennt durch ',', ';', '|' oder
+       '~') müssen alle als Substring auftauchen. Diese Einstellung ist
+       der Standardwert.
+   2 - mindestens ein Wort (getrennt durch ',', ';', '|' oder
+       '~') muss als Substring auftauchen
+   3 - exakte Übereinstimmung
+   4 - als regulärer Ausdruck
+   Numerischer Vergleich:
+   10 - kleiner
+   11 - kleiner oder gleich
+   12 - größer
+   13 - größer oder gleich
+   14 - gleich
+   15 - ungleich</pre>
+<p>Beispiel-Dateien für epgsearchcats.conf kommen mit dem
+Plugin im Verzeichnis 'conf'. Einfach die passende ins
+epgsearch-Konfig-Verzeichnis als epgsearchcats.conf kopieren, VDR neu starten und
+dann das Eingabe-Menü eines Suchtimers aufrufen.</p>
+<p>Weil das Aufsetzen einer neuen epgsearchcats.conf ziemlich lästig ist,
+habe ich ein kleines Tool 'createcats' mitgeliefert, das den Großteil
+der Arbeit erledigt. Es sollte mit dem Plugin übersetzt worden sein
+und sich im Quellverzeichnis befinden. Einfach folgendermaßen aufrufen:</p>
+<p>createcats /pfad_zu/epg.data</p>
+<p>Dieses Tool scannt nun die vorhandenen EPG infos und versucht daraus
+die erweiterten Infos zu extrahieren. Das Ergebnis ist eine neue
+epgsearchcats.conf, die aber noch editiert werden muss, weil sicher
+nicht alles genau passt. Danach ins epgsearch-Konfig-Verzeichnis kopieren.
+(Mehr über createcats im Manual 'Using createcats')</p>
+<p>Details: epgsearch durchsucht die Zusammenfassung einer Sendung nach
+dem Namen einer Kategorie gefolgt von ': '. Das geschieht für alle
+Kategorien, für die im Suchtimer ein Wert gesetzt wurde. Die Suche
+berücksichtigt die Groß/Kleinschreibung sowohl bezüglich des
+Kategorie-Namens als auch des Wertes.</p>
+<p>
+</p>
+<hr />
+<h1><a name="5__ersetzen_des_standardmen_">5. Ersetzen des Standardmenü</a></h1>
+<p>Um das Plugin als Ersatz für VDR's Standard-Menü zu verwenden, genügt
+es die Zeile</p>
+<pre>
+ Green   @epgsearch</pre>
+<p>in die Datei keymacros.conf zu setzen. Falls kein weiterer Menüeintrag
+im Hauptmenü erscheinen soll, dann den Eintrag des Plugins zunächst im
+Setup ausblenden. Um das Plugin trotzdem mit der Taste &quot;Grün&quot; aufrufen
+zu können, könnte man z.B. mein launcher-Plugin verwenden und
+die Zeile</p>
+<pre>
+ Green @launcher x</pre>
+<p>in die keymacros.conf schreiben, wobei x die Position von epgsearch
+innerhalb des launcher listings ist.</p>
+<p>Achtung: Versteckt man das Plugin ohne die Verwendung des launcher
+plugins oder anderer Patches, die das Aufrufen versteckter Plugins
+erlauben, erhält man das VDR-Standard-Menü beim Drücken von Grün. Ab
+VDR 1.3.32 sind dazu keine Patches oder Plugins mehr notwendig.</p>
+<p>Ein weiterer Ansatz ist ein Patch gegen VDR, der das Standardmenü
+'Programm' gegen epgsearch austauscht.
+Hierzu VDR mit dem Patch vdr-replace-schedulemenu.diff.gz aus dem
+Patches-Verzeichnis patchen. Danke an den Autor Uwe/egal@vdrportal.
+Bei Anwendung dieses Patches sollte der Eintrag</p>
+<pre>
+ Green Schedule</pre>
+<p>heißen. Dieser Patch ist bereits in manchen Patchsammlungen,
+z.B. Bigpatch, enthalten.</p>
+<p>
+</p>
+<hr />
+<h1><a name="6__addons">6. Addons</a></h1>
+<p>Mit epgsearch werden 2 weitere 'Mini'-Plugins ausgeliefert. Beide Plugins
+erfordern, dass epgsearch ebenfalls installiert ist (epgsearch kann aber aus
+dem Hauptmenü ausgeblendet werden):</p>
+<dl>
+<dt><strong><a name="epgsearchonly" class="item">- <strong>epgsearchonly:</strong></a></strong></dt>
+
+<dd>
+<p>Wer nur die Suchfunktionen und/oder die Suchtimer von
+epgsearch verwenden möchte oder einfach einen eigenen Hauptmenüeintrag für die
+Suche wünscht, kann dies mit diesem Plugin erreichen. Es wird damit ein
+Hauptmenüeintrag &quot;Suche&quot; erzeugt, der einen direkt in das Suchenmenü führt.
+Aktivierung im VDR-Startskript mit &quot;-Pepgsearchonly&quot;.</p>
+</dd>
+<dt><strong><a name="conflictcheckonly" class="item">- <strong>conflictcheckonly:</strong></a></strong></dt>
+
+<dd>
+<p>Die Timer-Konfliktprüfung kann ebenfalls als eigener
+Hauptmenüeintrag angelegt werden. Über eine Setup-Option läßt sich auch
+das Ergebniss der letzten Konfliktprüfung direkt im Hauptmenü anzeigen.
+Aktivierung im VDR-Startskript mit &quot;-Pconflictcheckonly&quot;.</p>
+</dd>
+</dl>
+<p>Viel Spass!</p>
+<p>Christian Wieninger</p>
+<p>
+</p>
+<hr />
+<h1><a name="ausf_hrliche_beschreibung">Ausführliche Beschreibung</a></h1>
+<p>Die ausführliche Beschreibung der internen Funktionen des Plugins findest
+Du in der Datei MANUAL, die dem Plugin beigelegt sein sollten.</p>
+<p>Ob Du diese auf deinem System hast verrät dir</p>
+<p><code>locate epgsearch*/MANUAL</code></p>
+<p>Sollte Deine Distribution diese Dateien nicht enthalten, kannst Du sie
+dir online durchlesen</p>
+<p><a href="http://winni.vdr-developer.org/epgsearch/README.DE">http://winni.vdr-developer.org/epgsearch/README.DE</a></p>
+<p><a href="http://winni.vdr-developer.org/epgsearch/README">http://winni.vdr-developer.org/epgsearch/README</a></p>
+<p><a href="http://winni.vdr-developer.org/epgsearch/MANUAL">http://winni.vdr-developer.org/epgsearch/MANUAL</a></p>
+<p>
+</p>
+<hr />
+<h1><a name="siehe_auch">SIEHE AUCH</a></h1>
+<p><code>epgsearch.conf(5)</code>, <code>epgsearchcats.conf(5)</code>, <code>epgsearchcmds.conf(5)</code>, <code>epgsearchdirs.conf(5)</code>, <code>epgsearchmenu.conf(5)</code>, <code>epgsearchuservars.conf(5)</code>, <code>epgsearchdone.data(5)</code>, <code>epgsearchswitchtimer.conf(5)</code>, <code>epgsearchblacklists.conf(5)</code>, <code>epgsearchchangrps.conf(5)</code></p>
+<p>
+</p>
+<hr />
+<h1><a name="dateien">DATEIEN</a></h1>
+<p><em class="file">epgsearch.conf</em></p>
+<p>Enthält die Suchtimer. Siehe <code>epgsearch.conf(5)</code>.</p>
+<p><em class="file">epgsearchcats.conf</em></p>
+<p>Enthält die Kategorien des erweiterten EPG. Siehe <code>epgsearchcats.conf(5)</code>.</p>
+<p><em class="file">epgsearchcmds.conf</em></p>
+<p>Enthält Befehle ähnlich der commands.conf, die auf EPG-Einträge angewandt werden können. Siehe <code>epgsearchcmds.conf(5)</code>.</p>
+<p><em class="file">epgsearchdirs.conf</em></p>
+<p>Enthält Pfade die beim Bearbeiten eines Suchtimers ausgewählt werden können. Siehe <code>epgsearchdirs.conf(5)</code>.</p>
+<p><em class="file">epgsearchmenu.conf</em></p>
+<p>Enthält die vom User gewählte Konfiguration der OSD Menüdarstellung. Siehe <code>epgsearchmenu.conf(5)</code>.</p>
+<p><em class="file">epgsearchuservars.conf</em></p>
+<p>Enthält die User-Variablen. Siehe <code>epgsearchuservars.conf(5)</code>.</p>
+<p><em class="file">epgsearchdone.data</em></p>
+<p>Enthält die done-Liste. Siehe <code>epgsearchdone.data(5)</code>.</p>
+<p><em class="file">epgsearchswitchtimers.conf</em></p>
+<p>Enthält die Umschalttimer. Siehe <code>epgsearchswitchtimer.conf(5)</code>.</p>
+<p><em class="file">epgsearchblacklists.conf</em></p>
+<p>Enthält die Ausschlussliste. Siehe <code>epgsearchblacklists.conf(5)</code>.</p>
+<p><em class="file">epgsearchchangrps.conf</em></p>
+<p>Enthält die Kanalgruppen. Siehe <code>epgsearchchangrps.conf(5)</code>.</p>
+<p><em class="file">epgsearchtemplates.conf</em></p>
+<p>Enthält die Vorlagen für Suchtimer. Siehe <code>epgsearchtemplates.conf(5)</code>.</p>
+<p>
+</p>
+<hr />
+<h1><a name="autor__man_pages_">AUTOR (man pages)</a></h1>
+<p>Mike Constabel &lt;epgsearch (at) constabel (dot) net&gt;</p>
+<p>
+</p>
+<hr />
+<h1><a name="fehler_melden">FEHLER MELDEN</a></h1>
+<p>Fehlerberichte bitte im Bugtracker.</p>
+<p><a href="http://www.vdr-developer.org/mantisbt/">http://www.vdr-developer.org/mantisbt/</a></p>
+<p>Mailinglist:</p>
+<p><a href="http://www.vdr-developer.org/mailman/listinfo/epgsearch">http://www.vdr-developer.org/mailman/listinfo/epgsearch</a></p>
+<p>
+</p>
+<hr />
+<h1><a name="copyright_and_lizenz">COPYRIGHT and LIZENZ</a></h1>
+<p>Copyright © 2004-2009 Christian Wieninger</p>
+<p>Dieses Programm ist freie Software. Sie können es unter den Bedingungen
+der GNU General Public License, wie von der Free Software Foundation 
+veröffentlicht, weitergeben und/oder modifizieren, entweder gemäß Version 2
+der Lizenz oder (nach Ihrer Option) jeder späteren Version.</p>
+<p>Die Veröffentlichung dieses Programms erfolgt in der Hoffnung, dass es 
+Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne die 
+implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN 
+ZWECK. Details finden Sie in der GNU General Public License.</p>
+<p>Sie sollten ein Exemplar der GNU General Public License zusammen mit 
+diesem Programm erhalten haben. Falls nicht, schreiben Sie an die 
+Free Software Foundation, Inc. 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+Oder rufen Sie in Ihrem Browser <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</a>
+auf.</p>
+<p>Der Author kann über <a href="mailto:cwieninger@gmx.de">cwieninger@gmx.de</a> erreicht werden.</p>
+<p>Die Projektseite ist <a href="http://winni.vdr-developer.org/epgsearch">http://winni.vdr-developer.org/epgsearch</a></p>
+<p>Der MD5-Code ist abgeleitet aus dem Message-Digest Algorithm 
+von RSA Data Security, Inc..</p>
+
+</body>
+
+</html>

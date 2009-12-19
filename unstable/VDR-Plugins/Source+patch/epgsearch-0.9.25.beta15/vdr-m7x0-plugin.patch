@@ -1,6 +1,6 @@
-diff -Naur epgsearch-0.9.25.beta14-orig/epgsearchcfg.c epgsearch-0.9.25.beta14/epgsearchcfg.c
---- epgsearch-0.9.25.beta14-orig/epgsearchcfg.c	Mon Jul 27 10:51:10 2009
-+++ epgsearch-0.9.25.beta14/epgsearchcfg.c	Fri Sep 04 09:47:46 2009
+diff -Naur epgsearch-0.9.25.beta15-orig/epgsearchcfg.c epgsearch-0.9.25.beta15/epgsearchcfg.c
+--- epgsearch-0.9.25.beta15-orig/epgsearchcfg.c	2009-09-22 20:13:52.000000000 +0200
++++ epgsearch-0.9.25.beta15/epgsearchcfg.c	2009-12-17 19:20:17.000000000 +0100
 @@ -58,7 +58,16 @@
    DefSearchTemplateID = -1;
    addSubtitleToTimer = addSubtitleSmart;
@@ -19,10 +19,10 @@ diff -Naur epgsearch-0.9.25.beta14-orig/epgsearchcfg.c epgsearch-0.9.25.beta14/e
    showRadioChannels = 1;
    onePressTimerCreation = 1;
    conflictCheckIntervall = 30;
-diff -Naur epgsearch-0.9.25.beta14-orig/epgsearchtools.c epgsearch-0.9.25.beta14/epgsearchtools.c
---- epgsearch-0.9.25.beta14-orig/epgsearchtools.c	2009-03-23 18:36:05.000000000 +0100
-+++ epgsearch-0.9.25.beta14/epgsearchtools.c	2009-06-20 21:39:02.000000000 +0200
-@@ -858,7 +858,10 @@
+diff -Naur epgsearch-0.9.25.beta15-orig/epgsearchtools.c epgsearch-0.9.25.beta15/epgsearchtools.c
+--- epgsearch-0.9.25.beta15-orig/epgsearchtools.c	2009-10-03 21:05:17.000000000 +0200
++++ epgsearch-0.9.25.beta15/epgsearchtools.c	2009-12-17 19:20:28.000000000 +0100
+@@ -860,7 +860,10 @@
  
  void DelTimer(int index)
  {
@@ -34,9 +34,9 @@ diff -Naur epgsearch-0.9.25.beta14-orig/epgsearchtools.c epgsearch-0.9.25.beta14
    LogFile.Log(2, "delete timer %d", index);
    SendViaSVDRP(cmdbuf);
    gl_timerStatusMonitor->SetConflictCheckAdvised(); 
-diff -Naur epgsearch-0.9.25.beta14-orig/epgsearchtools.h epgsearch-0.9.25.beta14/epgsearchtools.h
---- epgsearch-0.9.25.beta14-orig/epgsearchtools.h	2009-03-23 18:30:36.000000000 +0100
-+++ epgsearch-0.9.25.beta14/epgsearchtools.h	2009-06-20 20:44:44.000000000 +0200
+diff -Naur epgsearch-0.9.25.beta15-orig/epgsearchtools.h epgsearch-0.9.25.beta15/epgsearchtools.h
+--- epgsearch-0.9.25.beta15-orig/epgsearchtools.h	2009-08-23 20:54:24.000000000 +0200
++++ epgsearch-0.9.25.beta15/epgsearchtools.h	2009-12-17 19:20:34.000000000 +0100
 @@ -92,7 +92,7 @@
  #define ICON_VPS               0x93
  #else
@@ -46,9 +46,57 @@ diff -Naur epgsearch-0.9.25.beta14-orig/epgsearchtools.h epgsearch-0.9.25.beta14
  #define ICON_RUNNING           0xFB
  #define ICON_CLOCK             0xFD
  #define ICON_CLOCK_HALF        0x74
-diff -Naur epgsearch-0.9.25.beta14-orig/Makefile epgsearch-0.9.25.beta14/Makefile
---- epgsearch-0.9.25.beta14-orig/Makefile	2009-03-12 19:47:20.000000000 +0100
-+++ epgsearch-0.9.25.beta14/Makefile	2009-06-20 20:49:09.000000000 +0200
+diff -Naur epgsearch-0.9.25.beta15-orig/i18n-generated.h epgsearch-0.9.25.beta15/i18n-generated.h
+--- epgsearch-0.9.25.beta15-orig/i18n-generated.h	2009-10-14 18:18:44.000000000 +0200
++++ epgsearch-0.9.25.beta15/i18n-generated.h	2009-12-17 19:21:33.000000000 +0100
+@@ -4803,7 +4803,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Tiempo entre correos [h]",
+     "",
+     "",
+     "",
+@@ -4838,7 +4838,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "Especifique cuánto tiempo en [h] le gustaría\ntener como mínimo entre dos correos.\nCon '0' obtendrá un nuevo correo después de cada\nprogramación por búsqueda con nuevos resultados.",
+     "",
+     "",
+     "",
+@@ -5748,7 +5748,7 @@
+     "",
+     "",
+     "",
+-    "",
++    "No hay nuevos eventos que avisar.",
+     "",
+     "",
+     "",
+@@ -10018,7 +10018,7 @@
+     "",
+     "muistutus",
+     "",
+-    "Sólo avisar",
++    "Avisar por el OSD",
+     "",
+     "",
+     "",
+@@ -10123,7 +10123,7 @@
+     "",
+     "muistutus",
+     "",
+-    "Sólo avisar",
++    "Avisar por correo",
+     "",
+     "",
+     "",
+diff -Naur epgsearch-0.9.25.beta15-orig/Makefile epgsearch-0.9.25.beta15/Makefile
+--- epgsearch-0.9.25.beta15-orig/Makefile	2009-09-23 18:48:58.000000000 +0200
++++ epgsearch-0.9.25.beta15/Makefile	2009-12-17 19:20:39.000000000 +0100
 @@ -18,7 +18,7 @@
  #WITHOUT_QUICKSEARCH=1
  
@@ -67,7 +115,7 @@ diff -Naur epgsearch-0.9.25.beta14-orig/Makefile epgsearch-0.9.25.beta14/Makefil
  
  # uncomment this to enable support for the graphtft plugin.
  #USE_GRAPHTFT = 1
-@@ -64,9 +64,9 @@
+@@ -68,9 +68,9 @@
  
  ### The directory environment:
  
@@ -80,7 +128,7 @@ diff -Naur epgsearch-0.9.25.beta14-orig/Makefile epgsearch-0.9.25.beta14/Makefil
  TMPDIR = /tmp
  
  ### auto configuring modules
-@@ -115,7 +115,7 @@
+@@ -119,7 +119,7 @@
  
  ### Includes and Defines (add further entries here):
  
@@ -88,42 +136,91 @@ diff -Naur epgsearch-0.9.25.beta14-orig/Makefile epgsearch-0.9.25.beta14/Makefil
 +INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
  #INCLUDES += -I$(VDRDIR)/include
  
- DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
-@@ -127,6 +127,11 @@
- ### The object files (add further files here):
+ EPGSEARCH_DEFINES += -D_GNU_SOURCE
+@@ -136,6 +136,11 @@
  
- OBJS = afuzzy.o blacklist.o changrp.o confdloader.o conflictcheck.o conflictcheck_thread.o distance.o $(PLUGIN).o epgsearchcats.o epgsearchcfg.o epgsearchext.o epgsearchsetup.o  epgsearchsvdrp.o epgsearchtools.o i18n.o mail.o md5.o menu_announcelist.o menu_blacklistedit.o menu_blacklists.o menu_commands.o menu_conflictcheck.o menu_deftimercheckmethod.o menu_dirselect.o menu_event.o menu_favorites.o menu_main.o menu_myedittimer.o menu_quicksearch.o menu_recsdone.o menu_search.o menu_searchactions.o menu_searchedit.o menu_searchresults.o menu_searchtemplate.o menu_switchtimers.o menu_templateedit.o menu_timersdone.o menu_whatson.o noannounce.o rcfile.o  recdone.o recstatus.o searchtimer_thread.o services.o switchtimer.o switchtimer_thread.o templatefile.o timer_thread.o timerdone.o timerstatus.o uservars.o varparser.o  
-+
+ OBJS = afuzzy.o blacklist.o changrp.o confdloader.o conflictcheck.o conflictcheck_thread.o distance.o $(PLUGIN).o epgsearchcats.o epgsearchcfg.o epgsearchext.o epgsearchsetup.o  epgsearchsvdrp.o epgsearchtools.o i18n.o mail.o md5.o menu_announcelist.o menu_blacklistedit.o menu_blacklists.o menu_commands.o menu_conflictcheck.o menu_deftimercheckmethod.o menu_dirselect.o menu_event.o menu_favorites.o menu_main.o menu_myedittimer.o menu_quicksearch.o menu_recsdone.o menu_search.o menu_searchactions.o menu_searchedit.o menu_searchresults.o menu_searchtemplate.o menu_switchtimers.o menu_templateedit.o menu_timersdone.o menu_whatson.o noannounce.o pending_notifications.o rcfile.o  recdone.o recstatus.o searchtimer_thread.o services.o switchtimer.o switchtimer_thread.o templatefile.o timer_thread.o timerdone.o timerstatus.o uservars.o varparser.o  
+ 
 +# Check WarEagleIcons patch
 +ifeq (exists, $(shell test -e $(VDRDIR)/iconpatch.h && echo exists))
 +   DEFINES += -DHAVE_ICONPATCH
 +endif
- 
++
  ifdef HAVE_PCREPOSIX
  LIBS += $(shell pcre-config --libs-posix)
-diff -Naur epgsearch-0.9.25.beta14-orig/menu_whatson.c epgsearch-0.9.25.beta14/menu_whatson.c
---- epgsearch-0.9.25.beta14-orig/menu_whatson.c	Mon Jul 27 10:51:09 2009
-+++ epgsearch-0.9.25.beta14/menu_whatson.c	Thu Sep 03 19:00:29 2009
+ #LIBS += -L/usr/lib -lpcreposix -lpcre
+diff -Naur epgsearch-0.9.25.beta15-orig/menu_whatson.c epgsearch-0.9.25.beta15/menu_whatson.c
+--- epgsearch-0.9.25.beta15-orig/menu_whatson.c	2009-08-23 20:54:27.000000000 +0200
++++ epgsearch-0.9.25.beta15/menu_whatson.c	2009-12-17 19:20:49.000000000 +0100
 @@ -173,7 +173,7 @@
        else
        {
  	t[0] = event && hasMatch ? (timerMatch == tmFull) ? ((timer && timer->Recording())?'R':'T') : 't' : ' ';
--	v[0] = event && event->Vps() && (event->Vps() - event->StartTime()) ? 'V' : 'v';
+-	v[0] = event && event->Vps() && (event->Vps() - event->StartTime()) ? 'V' : ' ';
 +	v[0] = event && event->Vps() ? (event->Vps() - event->StartTime() ? 'V' : 'v') : ' ';
  	r[0] = event && event->IsRunning() ? '*' : ' ';
        }
  
-diff -Naur epgsearch-0.9.25.beta14-orig/svdrpclient.h epgsearch-0.9.25.beta14/svdrpclient.h
---- epgsearch-0.9.25.beta14-orig/svdrpclient.h	2009-01-29 18:51:54.000000000 +0100
-+++ epgsearch-0.9.25.beta14/svdrpclient.h	2009-06-20 21:39:27.000000000 +0200
-@@ -152,6 +152,10 @@
+diff -Naur epgsearch-0.9.25.beta15-orig/po/es_ES.po epgsearch-0.9.25.beta15/po/es_ES.po
+--- epgsearch-0.9.25.beta15-orig/po/es_ES.po	2009-10-14 18:18:43.000000000 +0200
++++ epgsearch-0.9.25.beta15/po/es_ES.po	2009-12-17 19:21:31.000000000 +0100
+@@ -491,14 +491,14 @@
+ msgstr "Establecer a 'sí' cuando desee tener una notificación por correo de las programaciones por búsqueda que fueron creadas automáticamente."
+ 
+ msgid "Time between mails [h]"
+-msgstr ""
++msgstr "Tiempo entre correos [h]"
+ 
+ msgid ""
+ "Help$Specifiy how much time in [h] you would\n"
+ "like to have atleast between two mails.\n"
+ "With '0' you get a new mail after each\n"
+ "search timer update with new results."
+-msgstr ""
++msgstr "Especifique cuánto tiempo en [h] le gustaría\ntener como mínimo entre dos correos.\nCon '0' obtendrá un nuevo correo después de cada\nprogramación por búsqueda con nuevos resultados."
+ 
+ msgid "Timer conflict notification"
+ msgstr "Notificar conflicto en programación"
+@@ -584,7 +584,7 @@
+ msgstr "No se borraron programaciones."
+ 
+ msgid "No new events to announce."
+-msgstr ""
++msgstr "No hay nuevos eventos que avisar."
+ 
+ msgid "This version of EPGSearch does not support this service!"
+ msgstr "¡Esta versión de EPGSearch no soporta este servicio!"
+@@ -950,9 +950,8 @@
+ msgid "Record"
+ msgstr "Grabar"
+ 
+-#, fuzzy
+ msgid "Announce by OSD"
+-msgstr "Sólo avisar"
++msgstr "Avisar por el OSD"
+ 
+ msgid "Switch only"
+ msgstr "Cambiar de canal"
+@@ -960,9 +959,8 @@
+ msgid "Announce and switch"
+ msgstr "Avisar y cambiar"
+ 
+-#, fuzzy
+ msgid "Announce by mail"
+-msgstr "Sólo avisar"
++msgstr "Avisar por correo"
+ 
+ msgid "Selection"
+ msgstr "selección"
+diff -Naur epgsearch-0.9.25.beta15-orig/svdrpclient.h epgsearch-0.9.25.beta15/svdrpclient.h
+--- epgsearch-0.9.25.beta15-orig/svdrpclient.h	2009-08-23 20:54:26.000000000 +0200
++++ epgsearch-0.9.25.beta15/svdrpclient.h	2009-12-17 19:21:07.000000000 +0100
+@@ -152,6 +152,8 @@
  		{
  		    bCheckMultiLine = false;
  		    rc = atol(csResp);
-+            if (rc != CMDSUCCESS )
-+            {
-+            LogFile.eSysLog("EPGSearch: SVDRP response '%s'", csResp);
-+            }
++		    if (rc != CMDSUCCESS )
++		    LogFile.eSysLog("EPGSearch: SVDRP response '%s'", csResp);
  		}
  		free(csResp);
  		csResp = strdup("");
