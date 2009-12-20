@@ -19,6 +19,19 @@ diff -Naur epgsearch-0.9.25.beta15-orig/epgsearchcfg.c epgsearch-0.9.25.beta15/e
    showRadioChannels = 1;
    onePressTimerCreation = 1;
    conflictCheckIntervall = 30;
+diff -Naur epgsearch-0.9.25.beta15-orig/epgsearchext.c epgsearch-0.9.25.beta15/epgsearchext.c
+--- epgsearch-0.9.25.beta15-orig/epgsearchext.c	2009-09-20 09:45:08.000000000 +0200
++++ epgsearch-0.9.25.beta15/epgsearchext.c	2009-12-20 18:40:02.000000000 +0100
+@@ -637,7 +637,9 @@
+    else if (Utf8StrLen(Subtitle) > MAX_SUBTITLE_LENGTH) 
+    {
+       Utf8Strn0Cpy(SubtitleBuffer, Subtitle, sizeof(SubtitleBuffer));
++#if APIVERSNUM > 10503 
+       SubtitleBuffer[Utf8SymChars(SubtitleBuffer, MAX_SUBTITLE_LENGTH)] = 0;
++#endif
+       Subtitle = SubtitleBuffer;
+    }
+ 
 diff -Naur epgsearch-0.9.25.beta15-orig/epgsearchtools.c epgsearch-0.9.25.beta15/epgsearchtools.c
 --- epgsearch-0.9.25.beta15-orig/epgsearchtools.c	2009-10-03 21:05:17.000000000 +0200
 +++ epgsearch-0.9.25.beta15/epgsearchtools.c	2009-12-17 19:20:28.000000000 +0100
@@ -46,6 +59,15 @@ diff -Naur epgsearch-0.9.25.beta15-orig/epgsearchtools.h epgsearch-0.9.25.beta15
  #define ICON_RUNNING           0xFB
  #define ICON_CLOCK             0xFD
  #define ICON_CLOCK_HALF        0x74
+@@ -116,6 +116,8 @@
+ 
+ #if APIVERSNUM < 10503 
+ #define Utf8BufSize(s) ((s) * 4)
++#define Utf8StrLen(s) strlen(s)
++#define Utf8Strn0Cpy(d, s, n) strn0cpy(d, s, n)
+ #endif
+ 
+ extern const char AllowedChars[];
 diff -Naur epgsearch-0.9.25.beta15-orig/i18n-generated.h epgsearch-0.9.25.beta15/i18n-generated.h
 --- epgsearch-0.9.25.beta15-orig/i18n-generated.h	2009-10-14 18:18:44.000000000 +0200
 +++ epgsearch-0.9.25.beta15/i18n-generated.h	2009-12-17 19:21:33.000000000 +0100
