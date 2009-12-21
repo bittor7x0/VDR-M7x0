@@ -70,10 +70,9 @@ static void dbg_settings_kl1(void){
 	ctx_printfn(ctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
 
 	if (vctx.currentAction==PA_SAVE_CONFIG) {
+		ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
 		if (webifConf.configChangeDisabled) {
-			ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
 			printMessage(ctx,"alert",tr("setup"),tr("cfgFileChangeDisabledErr"),BT_FALSE);
-			ctx_printfn(ctx,"</div>\n",-1,0);
 		} else {
 			char argName[15];
 			for(params.length=0;;params.length++){
@@ -81,9 +80,7 @@ static void dbg_settings_kl1(void){
 				if (!vars_countn(args,argName)) break;
 			}
 			if (params.length==0){
-				ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
 				printMessage(ctx,"alert",tr("setup"),tr("cfgErrParamNameValueMismatch"),BT_FALSE);
-				ctx_printfn(ctx,"</div>\n",-1,0);
 			} else {
 				params.entry=malloc(params.length*sizeof(cfgParam_t));
 				int i;
@@ -109,7 +106,6 @@ static void dbg_settings_kl1(void){
 			}
 			if (allParamsAreValid) {
 				boolean_t ok=writeConf(cfgFileId,&params);
-				ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
 				CTX_CHK_BUFFER(50);
 				sprintf(ctx->buffer,tr((ok)?"cfgFileSaveOkFmt":"cfgFileSaveErrFmt"),cfgFile[cfgFileId].fileName);
 				printMessage(ctx,(ok)?"message":"alert",tr("setup"),ctx->buffer,BT_FALSE);
@@ -120,13 +116,14 @@ static void dbg_settings_kl1(void){
 				showForm=BT_TRUE;
 			}
 		}
+		ctx_printfn(ctx,"</div>\n",-1,0);
 	} else {
 		boolean_t isNew;
 		if (!readConf(cfgFileId,&params,&isNew)) {
 			showForm=BT_FALSE;
-			ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
 			CTX_CHK_BUFFER(50);
 			sprintf(ctx->buffer,tr("cfgFileDoesNotExistFmt"),cfgFileId,(cfgFileId>=0&&cfgFileId<cfgFileLength)?cfgFile[cfgFileId].fileName:"");
+			ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
 			printMessage(ctx,"alert",tr("cfgFileDoesNotExistFmt"),ctx->buffer,BT_FALSE);
 			ctx_printfn(ctx,"</div>\n",-1,0);
 		} else {

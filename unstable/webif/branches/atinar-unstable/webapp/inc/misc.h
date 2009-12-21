@@ -204,7 +204,8 @@ void printMenu(context_t *ctx);
 void printMessage(context_t *ctx, const char *cssClass, const char *title, const char *message, boolean_t encode);
 void printList1TH(context_t *ctx, const char *page, sortField_t aSortField, const char *label);
 void finishHtmlPage(context_t *ctx);
-int execCmd(char *args[]);
-boolean_t extractLogos(context_t *ctx, const char *logos_tgz);
+boolean_t extractEmbededFile(const char *src, const char *dst, boolean_t overwrite);
+boolean_t createParentFolders(const char *path, mode_t mode);
+boolean_t extractLogosFromFile(context_t *ctx, const char *logos_tgz/*,boolean_t overwrite*/);
 boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName);
 #endif

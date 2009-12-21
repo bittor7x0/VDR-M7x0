@@ -659,7 +659,7 @@ void printEvent(context_t *ctx, epgEvent_t * const event, const int channelNum, 
 						"<span class=\"ui-icon ui-icon-search\">%s</span>"
 					"</a>"
 				"</li><!--\n"
-				,PA_SEARCH_CREATE_FROM_EVENT,channelNum,event->id,TimerCreate,TimerCreate);
+				,PA_SEARCH_CREATE_FROM_EVENT,channelNum,event->id,SearchCreate,SearchCreate);
 		}
 		ctx_printfn(ctx,"--></ul><!--\n",-1,0); //controls
 	}

@@ -17,8 +17,6 @@
 #include <sys/stat.h>
 #include "misc.h"
 
-boolean_t extractEmbededFile(const char *src, const char *dst);
-boolean_t createParentFolders(const char *path, mode_t mode);
 
 #endif
 

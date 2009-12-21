@@ -17,7 +17,10 @@
 * 
 */
 
+#include <fcntl.h>
 #include <iconv.h>
+#include <klone/emb.h>
+#include <klone/ioprv.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +30,6 @@
 #include <math.h>
 #include <locale.h>
 #include <u/libu.h>
-#include <klone/ioprv.h>
 
 #include "misc.h"
 #include "i18n.h"
@@ -521,118 +523,166 @@ void printList1TH(context_t *ctx, const char *page, sortField_t sortField, const
 		,sortField,SORT_BY(sortField)?-ctx->sortDirection:SD_ASC,label);
 }
 
-int execCmd(char *args[]){
-	pid_t pid=0;
-	int status;
-	pid=vfork(); //TODO evaluar si es mejor fork
-	if (pid==0) { //proceso hijo
-		execvp(args[0],args);
-		perror("execvp"); //solo llegamos aqui si execvp falla y no termina child
-		_exit(-1);
-	} else if (pid<0) {
-		warn("fallo la bifurcacion");
-		return -1;
-	} else { //proceso padre
-		int status;
-		pid_t child_pid=waitpid(pid,&status,0);
-		if (WIFEXITED(status)){
-			return WEXITSTATUS(status);
-		} else {
-			return -1;
-		}
-	}
-}
-
-boolean_t extractLogos(context_t *ctx, const char *logos_tgz){
+/**
+* Extraer archivo embebido. Devuelve true si al terminar existe dst.
+*/
+boolean_t extractEmbededFile(const char *src, const char *dst, boolean_t overwrite){
 	boolean_t result=BT_FALSE;
-	pid_t pid=0;
-	int status;
-	pid=vfork(); //TODO evaluar si es mejor fork
-	if (pid==0) { //proceso hijo
-		char *args[] = {"/bin/tar", "-C", "/etc/webif/www/images", "-xzf", (char*)logos_tgz, "--no-same-owner", (char*)NULL};
-		execv(args[0],args);
-		perror("execvp"); //solo llegamos aqui si execvp falla y no termina child
-		_exit(-1);
-	} else if (pid<0) { //proceso padre sin bifurcacion
-		warn("fallo la bifurcacion");
-		result=BT_FALSE;
-	} else { //proceso padre
-		int status;
-		pid_t child_pid=waitpid(pid,&status,0);
-		if (WIFEXITED(status)){
-			if (WEXITSTATUS(status)==0){
-				info("%s desenpaquetado",logos_tgz);
-				webifConf.noLogos=BT_FALSE;
-				result=BT_TRUE;
+	io_t *io=NULL;
+	if (createParentFolders(dst,S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)){
+		struct stat st;
+		int dst_stat=stat(dst, &st);
+		if (dst_stat == 0 && S_ISREG(st.st_mode) && !overwrite){
+			info("%s ya existe. Se conserva el anterior.",dst);
+			result=BT_TRUE;
+		} else if (((dst_stat==-1) && (errno==ENOENT)) || ((dst_stat==0) && S_ISREG(st.st_mode) && overwrite)){
+			//Extraer archivo embebido
+			embres_t *er;
+			if ((emb_lookup(src, &er)!=0) || (er->type!=ET_FILE)) {
+				warn("%s no es un archivo embebido",src);
 			} else {
-				warn("error descomprimiendo %s",logos_tgz);
+				embfile_t *ef=(embfile_t *)er;
+				dbg_err_if(u_file_open(dst, O_CREAT | O_TRUNC | O_WRONLY, &io));
+				dbg_err_if(!io_write(io, (const char*)ef->data, ef->size));
+				//dbg_err_if(io_codecs_remove(io)); 
+				io_free(io);
+				dst_stat=stat(dst, &st);
+				if (dst_stat == 0 && S_ISREG(st.st_mode)){
+					info("%s se ha extraido correctamente",dst);
+					result=BT_TRUE;
+				} else {
+					warn("Error de extraccion. stat produce un error inesperado %s",strerror(errno));
+				}
 			}
 		} else {
-			warn("proceso hijo no ha terminado con exit");
-			result=BT_FALSE;
+			warn("stat produce un error inesperado %s",strerror(errno));
 		}
+	}
+	return result;
+err:
+	if (io){
+		io_free(io);
+	}
+	return BT_FALSE;
+}
+
+boolean_t createParentFolders(const char *filename, mode_t mode){
+	boolean_t result=BT_TRUE;
+	if (filename && filename[0]=='/'){
+		char *last_slash=strrchr(filename,'/');
+		if (last_slash!=filename){
+			struct stat st;
+			int path_stat;
+			char *path=strndup(filename,last_slash-filename);
+			char *next_slash=path;
+			for (;;) {
+				next_slash=strchr(next_slash+1,'/');
+				if (next_slash) *next_slash=0;
+				path_stat=stat(path,&st);
+				if (path_stat==0){
+					if (!S_ISDIR(st.st_mode)){
+						result=BT_FALSE;
+						warn("%s no es directorio",path);
+						break;
+					}
+				} else {
+					if( (errno!=ENOENT) || mkdir(path,mode)!=0){
+						result=BT_FALSE;
+						warn("error creando ruta %s: %s",path,strerror(errno));
+						break;
+					}
+				}
+				if (!next_slash) break;
+				*next_slash='/';
+			};
+			free(path);
+		}
+	} else {
+		warn("%s no es una ruta absoluta",filename);
+		result=BT_FALSE;
 	}
 	return result;
 }
 
-/*
-boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName){
-	char localFilename[U_PATH_MAX]; 
-	char clientFilename[U_PATH_MAX];
-	char mimeType[MIME_TYPE_BUFSZ];
-	size_t idx=0;
-	size_t size;
-	if (request_get_uploaded_file(ctx->request,"logos",idx,localFilename,clientFilename,mimeType,&size)==0){
-		if (localFilename[0]){
-			return extractLogos(ctx,localFilename);
-		} else {
-			warn("variable retornada de request_get_uploaded_file se ha anulado!!!");
-		}
+//Executed in a child process. Should no return.
+void extractLogosFromFileAndExit(const char *logos_tgz){
+	const char *images="/etc/webif/www/images/";
+	if (createParentFolders(images,S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)){
+		char *args[] = {"/bin/tar", "-C", (char*)images, "-xzf", (char*)logos_tgz, (char*)NULL};
+		execv(args[0],args);
+		//execv only returns if call fails
+		perror("execvp");
+		_exit(-1);
+	} else {
+		_exit(-2);
 	}
-	return BT_FALSE;
 }
-*/
-
-boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName){
+	
+boolean_t extractLogos(context_t *ctx, void (*extractLogosAndExit)(void)){
 	boolean_t result=BT_FALSE;
-	pid_t pid=vfork(); //TODO evaluar si es mejor fork
-	if (pid==0) { //proceso hijo
-		char localFilename[U_PATH_MAX]; 
-		char clientFilename[U_PATH_MAX];
-		char mimeType[MIME_TYPE_BUFSZ];
-		size_t idx=0;
-		size_t size;
-		if (request_get_uploaded_file(ctx->request,"logos",idx,localFilename,clientFilename,mimeType,&size)==0){
-			if (localFilename[0]){
-				char *args[] = {"/bin/tar", "-C", "/etc/webif/www/images", "-xzf", localFilename, "--no-same-owner", (char*)NULL};
-				execv(args[0],args);
-				perror("execvp"); //solo llegamos aqui si execvp falla y no termina child
-				_exit(-1);
-			} else {
-				warn("variable retornada de request_get_uploaded_file se ha anulado!!!");
-				_exit(-1);
-			}
-		}
-	} else if (pid<0) { //proceso padre sin bifurcacion
+	pid_t pid=vfork();
+	if (pid<0) { 
+		//fork failure
 		warn("fallo la bifurcacion");
 		result=BT_FALSE;
-	} else { //proceso padre
+	} else if (pid==0) { 
+		//child process
+		extractLogosAndExit();
+	} else { 
+		//parent process
 		int status;
 		pid_t child_pid=waitpid(pid,&status,0);
 		if (WIFEXITED(status)){
 			int exitStatus;
 			if ((exitStatus=WEXITSTATUS(status))==0){
-				info("logos desenpaquetados");
+				if (ctx!=NULL){
+					printMessage(ctx,"message",tr("setup"),"Logos extraídos",BT_FALSE); //TODO i18n
+				}
+				info("Logos extraídos");
 				webifConf.noLogos=BT_FALSE;
 				result=BT_TRUE;
 			} else {
-				warn("error descomprimiendo logos. exit(%d)",exitStatus);
+				if (ctx!=NULL){
+					printMessage(ctx,"alert",tr("setup"),"Error extrayendo logos",BT_FALSE); //TODO i18n
+				}
+				warn("Error descomprimiendo logos");
 			}
 		} else {
-			warn("proceso hijo no ha terminado con exit");
+			if (ctx!=NULL){
+				printMessage(ctx,"alert",tr("setup"),"Extracción de logos interrumpida",BT_FALSE); //TODO i18n
+			}
+			warn("child process signaled");
 			result=BT_FALSE;
 		}
 	}
 	return result;
+}
+
+boolean_t extractLogosFromFile(context_t *ctx, const char *logos_tgz){
+	void extractLogosAndExit(void){
+		//child process
+		extractLogosFromFileAndExit(logos_tgz);
+	}
+	return extractLogos(ctx,extractLogosAndExit);
+}
+
+boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName){
+	void extractLogosAndExit(void){
+		//child process
+		char localFilename[U_PATH_MAX]; 
+		char clientFilename[U_PATH_MAX];
+		char mimeType[MIME_TYPE_BUFSZ];
+		size_t idx=0;
+		size_t size;
+		if (request_get_uploaded_file(ctx->request,fieldName,idx,localFilename,clientFilename,mimeType,&size)==0){
+			if (localFilename[0]){
+				extractLogosFromFileAndExit(localFilename);
+			} else {
+				warn("variable retornada de request_get_uploaded_file se ha anulado!!!");
+				_exit(-3);
+			}
+		}
+	}
+	return extractLogos(ctx,extractLogosAndExit);
 }
 
