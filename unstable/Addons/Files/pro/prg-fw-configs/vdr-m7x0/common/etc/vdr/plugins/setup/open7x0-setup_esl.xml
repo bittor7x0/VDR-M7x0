@@ -33,7 +33,6 @@
             <entry name="DNS primario" sysconfig="resolv.conf--nameserver1" type="ip" value="192.168.2.1" help1="DNS primario" />
             <entry name="DNS secundario" sysconfig="resolv.conf--nameserver2" type="ip" value="" help1="DNS secundario" />
             <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="Define el comando con el que se obtiene la dirección MAC" />
-            <entry name="Nombre del M7x0" sysconfig="rc.conf--hostname" type="text" value="`cat /etc/hostname`" help1="Nombre DNS del M7X0" />
         </menu>
         <menu name="Configuración de discos USB">
             <entry name="Dispositivos a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivos USB a detener separados por espacios. Ej.: /dev/sda" />
