@@ -6,6 +6,8 @@ source /etc/rc.local.conf
 # load network modules
 /sbin/insmod /lib/modules/2.4.21-xfs/kernel/net/packet/af_packet.o
 
+/bin/hostname -F /etc/hostname
+
 /sbin/ifconfig ${if} hw ether `${mac_cmd}`
 if [ X"${net}" = X"DHCP" ]; then
     echo "dhcp";

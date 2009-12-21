@@ -6,7 +6,6 @@
 
 tty0::sysinit:/bin/mount -o rw,nosuid,nodev,noexec -t proc proc /proc
 tty0::sysinit:/bin/mount -o rw,nosuid,noexec -t devpts devpts /dev/pts
-tty0::sysinit:/bin/hostname -F /etc/hostname
 tty0::sysinit:/sbin/ifconfig lo 127.0.0.1
 tty0::wait:/bin/ash /etc/rc.mini
 
