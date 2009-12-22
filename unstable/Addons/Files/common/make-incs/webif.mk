@@ -38,7 +38,6 @@ WEBIF_TC_FILE := $(WEBIF_DIR)/linux-mips-uclibc.tc
 LASTDIR := `pwd`
 
 PACKS_RULES_$(CONFIG_WEBIF) += $(STAGEFILES_DIR)/.webif_installed
-#TODO PACKS_RULES_$(CONFIG_WEBIF) += $(STAGEFILES_DIR)/.webif_logos_installed
 FILE_LISTS_$(CONFIG_WEBIF) += webif.lst
 
 CLEAN_RULES += clean-webif
@@ -54,14 +53,23 @@ $(KLONE_DLFILE): $(TC_INIT_RULE)
 	$(TOUCH) $(KLONE_DLFILE)
 
 #
+# download logos
+#
+$(LOGOS_DLFILE): $(KLONE_DLFILE)
+	(if [ ! -f $(LOGOS_DLFILE) ] ; then \
+	$(WGET) $(LOGOS_URL) -O $(LOGOS_DLFILE) ; \
+	fi );
+	$(TOUCH) $(LOGOS_DLFILE)
+
+#
 # unpack webif
 #
-$(STAGEFILES_DIR)/.webif_unpacked: $(KLONE_DLFILE) 
+$(STAGEFILES_DIR)/.webif_unpacked: $(LOGOS_DLFILE) 
 	-$(RM) -rf $(WEBIF_DIR)
 	$(TAR) -C $(BUILD_DIR) -zf $(KLONE_DLFILE)
 	$(MV) $(BUILD_DIR)/klone-$(KLONE_VERSION) $(WEBIF_DIR)
-	$(RM) -rf $(WEBIF_DIR)/webapp
-	$(RM) -rf $(WEBIF_DIR)/Makefile
+	-$(RM) -rf $(WEBIF_DIR)/webapp
+	-$(RM) -rf $(WEBIF_DIR)/Makefile
 	$(MV) $(WEBIF_DIR)/README $(WEBIF_DIR)/README.klone
 	$(MV) $(WEBIF_DIR)/LICENSE $(WEBIF_DIR)/LICENSE.klone
 	$(MV) $(WEBIF_DIR)/ChangeLog $(WEBIF_DIR)/ChangeLog.klone
@@ -98,26 +106,13 @@ $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF
 # install webif
 #
 $(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled
-	-$(MKDIR) -p $(TARGET_ROOT)/usr/sbin
+	$(MKDIR) -p $(TARGET_ROOT)/usr/sbin
 	$(CP) $(WEBIF_DIR)/kloned $(TARGET_ROOT)/usr/sbin/webifd
+	-$(RM) -rf $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
+	$(MKDIR) -p $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
+#	mksquash bug with tar.gz files?
+#	$(CP) $(LOGOS_DLFILE) $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_installed
-
-#
-# download logos
-#
-$(LOGOS_DLFILE): $(TC_INIT_RULE)
-	(if [ ! -f $(LOGOS_DLFILE) ] ; then \
-	$(WGET) $(LOGOS_URL) -O $(LOGOS_DLFILE) ; \
-	fi );
-	$(TOUCH) $(LOGOS_DLFILE)
-
-#
-# install logos
-#
-$(STAGEFILES_DIR)/.webif_logos_installed: $(LOGOS_DLFILE)
-	-$(MKDIR) -p $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
-	$(CP) $(LOGOS_DLFILE) $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
-	$(TOUCH) $(STAGEFILES_DIR)/.webif_logos_installed
 
 $(FILELIST_DIR)/webif.lst: $(STAGEFILES_DIR)/.webif_installed
 	$(TOUCH) $(FILELIST_DIR)/webif.lst
@@ -134,5 +129,5 @@ distclean-webif:
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
 	-$(RM) -f $(STAGEFILES_DIR)/.webapp_downloaded
-	-$(RM) -f $(STAGEFILES_DIR)/.webif_logos_installed
-
+	-$(RM) -f $(LOGOS_DLFILE)
+	-$(RM) -rf $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
