@@ -109,7 +109,6 @@ static void dbg_settings_kl1(void){
 				CTX_CHK_BUFFER(50);
 				sprintf(ctx->buffer,tr((ok)?"cfgFileSaveOkFmt":"cfgFileSaveErrFmt"),cfgFile[cfgFileId].fileName);
 				printMessage(ctx,(ok)?"message":"alert",tr("setup"),ctx->buffer,BT_FALSE);
-				ctx_printfn(ctx,"</div>\n",-1,0);
 				if (ok && (cfgFileId==CF_WEBIFCONF)){
 					webifConf.alreadySet=BT_FALSE;
 				}

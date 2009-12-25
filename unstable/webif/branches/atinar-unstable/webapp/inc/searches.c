@@ -221,7 +221,7 @@ boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t
 
 	search->wday=0;
 	if (vars_get_value_i(args,"useWday")) {
-		setFlag(SFL_USE_WDAY,search->compareFlags); ;
+		setFlag(SFL_USE_WDAY,search->flags); ;
 		int ndays=vars_countn(args,"wday");
 		if (ndays>1){
 			int i,wday;
@@ -240,7 +240,7 @@ boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t
 			search->wday=vars_get_value_i(args,"wday");
 		}
 	} else {
-		clearFlag(SFL_USE_WDAY,search->compareFlags);
+		clearFlag(SFL_USE_WDAY,search->flags);
 	}
 
 	search->useChannel=vars_get_value_i(args,"useChannel");
