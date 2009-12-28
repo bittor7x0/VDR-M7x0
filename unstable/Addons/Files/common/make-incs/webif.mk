@@ -53,18 +53,9 @@ $(KLONE_DLFILE): $(TC_INIT_RULE)
 	$(TOUCH) $(KLONE_DLFILE)
 
 #
-# download logos
-#
-$(LOGOS_DLFILE): $(KLONE_DLFILE)
-	(if [ ! -f $(LOGOS_DLFILE) ] ; then \
-	$(WGET) $(LOGOS_URL) -O $(LOGOS_DLFILE) ; \
-	fi );
-	$(TOUCH) $(LOGOS_DLFILE)
-
-#
 # unpack webif
 #
-$(STAGEFILES_DIR)/.webif_unpacked: $(LOGOS_DLFILE) 
+$(STAGEFILES_DIR)/.webif_unpacked: $(KLONE_DLFILE) 
 	-$(RM) -rf $(WEBIF_DIR)
 	$(TAR) -C $(BUILD_DIR) -zf $(KLONE_DLFILE)
 	$(MV) $(BUILD_DIR)/klone-$(KLONE_VERSION) $(WEBIF_DIR)
@@ -103,15 +94,23 @@ $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_compiled
 
 #
+# download logos
+#
+$(LOGOS_DLFILE): $(TC_INIT_RULE)
+	(if [ ! -f $(LOGOS_DLFILE) ] ; then \
+	$(WGET) $(LOGOS_URL) -O $(LOGOS_DLFILE) ; \
+	fi );
+	$(TOUCH) $(LOGOS_DLFILE)
+
+#
 # install webif
 #
-$(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled
+$(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled $(LOGOS_DLFILE)
 	$(MKDIR) -p $(TARGET_ROOT)/usr/sbin
 	$(CP) $(WEBIF_DIR)/kloned $(TARGET_ROOT)/usr/sbin/webifd
 	-$(RM) -rf $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
 	$(MKDIR) -p $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
-#	mksquash bug with tar.gz files?
-#	$(CP) $(LOGOS_DLFILE) $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
+	$(TAR) -C $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images -zf $(LOGOS_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_installed
 
 $(FILELIST_DIR)/webif.lst: $(STAGEFILES_DIR)/.webif_installed
@@ -129,5 +128,5 @@ distclean-webif:
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
 	-$(RM) -f $(STAGEFILES_DIR)/.webapp_downloaded
-	-$(RM) -f $(LOGOS_DLFILE)
+#	-$(RM) -f $(LOGOS_DLFILE)
 	-$(RM) -rf $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
