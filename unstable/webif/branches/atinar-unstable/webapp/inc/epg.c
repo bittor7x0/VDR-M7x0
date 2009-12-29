@@ -24,10 +24,11 @@
 #include <u/libu.h>
 #include <klone/utils.h>
 
-#include "svdrp_comm.h"
+#include "channels.h"
+#include "epg.h"
 #include "i18n.h"
 #include "misc.h"
-#include "epg.h"
+#include "svdrp_comm.h"
 
 const char *gridDateFmtI = "%Y-%m-%d %H:%M";
 const char *gridDateFmtO = "%Y%m%d%H%M";
@@ -363,32 +364,6 @@ void printChangeDateButton(context_t *ctx,char *ctime,boolean_t isPrevious,int h
 	if (isLi) ctx_printfn(ctx,"</li>",-1,0); //previus
 }
 
-const char * ctxChannelFilename(context_t *ctx, const char *channelName){
-	int l;
-	const char *s;
-	char *d;
-	const char encode[]="+&";
-	l=0;
-	for (s=channelName;*s;s++){
-		l+=(*s>127 || strchr(encode,*s))?3:1;
-	}
-	CTX_CHK_BUFFER(l+1);
-	for (s=channelName,d=ctx->buffer;*s;s++){
-		if (*s==' '){
-			*d='_';
-			d++;
-		} else if (*s>127 || strchr(encode,*s)) {
-			sprintf(d, "@%02X", (unsigned char)s[0]);
-			d+=3;
-		} else {
-			*d=*s;
-			d++;
-		}
-	}
-	*d=0;
-	return ctx->buffer;
-}
-
 void printEpgGrid(context_t *ctx, events_t * const events, channelList_t * const channels, timerList_t * const timers){
 	channelEvents_t *channelEvents;
 	epgEvent_t *event;
@@ -508,7 +483,7 @@ void printEpgGrid(context_t *ctx, events_t * const events, channelList_t * const
 				ctx_printf0(ctx,"<span class=\"nologo\">%s</span>",ctxChannelDisplayName(ctx,channel));
 			} else {
 				ctx_printf0(ctx,"<img id=\"logo_%s\" alt=\"%s\" src=\"/www2/images/logos/%s.png\"/>\n"
-					,channel->channelId,ctxChannelDisplayName(ctx,channel),CTX_URL_ENCODE(channel->channelName,-1,"-_./"));
+					,channel->channelId,channel->channelName,ctxChannelFilename(ctx,channel->channelName,BT_TRUE));
 			}
 			ctx_printfn(ctx,"</a>",-1,0);
 			ctx_printfn(ctx,"</div><!--\n",-1,0); //logo

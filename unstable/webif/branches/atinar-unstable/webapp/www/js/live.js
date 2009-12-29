@@ -41,15 +41,15 @@ $.extend(webif,{
 	,
 	clearUpdateProgramInfoTimer: function(){
 		if (this.state.updateProgramInfoTimer!==undefined){
-			clearTimeout(this.state.updateProgramInfoTimer);
+			window.clearTimeout(this.state.updateProgramInfoTimer);
 			delete this.state.updateProgramInfoTimer;
 		}
 	}
 	,
-	clearUpdatePlaylistItemTimer: function(){
-		if (this.state.updatePlaylistItemTimer!==undefined) {
-			clearInterval(this.state.updatePlaylistItemTimer); 
-			delete this.state.updatePlaylistItemTimer;
+	clearUpdateAudioTrackListInterval: function(){
+		if (this.state.updateAudioTrackListInterval!==undefined) {
+			window.clearInterval(this.state.updateAudioTrackListInterval); 
+			delete this.state.updateAudioTrackListInterval;
 		}
 	}
 	,
@@ -64,7 +64,7 @@ $.extend(webif,{
 					var refreshTime=refreshHeader[0]*1000;
 					if (refreshTime<60000) refreshTime=60000;
 					webif.clearUpdateProgramInfoTimer();
-					webif.state.updateProgramInfoTimer=setTimeout(
+					webif.state.updateProgramInfoTimer=window.setTimeout(
 						function(){
 							$info.load(url,updateProgramInfoCallback);
 						},
@@ -76,11 +76,11 @@ $.extend(webif,{
 		$('#info').load(url,updateProgramInfoCallback);
 	}
 	,
-	updatePlaylistItemInfo: function(){
+	updateAudioTrackList: function(){
 		try {
 			var vlc=this.getVlc();
 			if (vlc.input.state==VLC_INPUT_STATE.PLAYING) {
-				this.clearUpdatePlaylistItemTimer();
+				this.clearUpdateAudioTrackListInterval();
 				var $audioTrack=$('#audioTrack');
 				$audioTrack.removeOption(/./);
 				var numTracks=vlc.audio.count;
@@ -108,7 +108,7 @@ $.extend(webif,{
 			this.state.channelNum=$channelNum.val();
 			var vlc=this.getVlc();
 			try {
-				this.clearUpdatePlaylistItemTimer();
+				this.clearUpdateAudioTrackListInterval();
 				if (vlc.input.state==VLC_INPUT_STATE.PLAYING) {
 					vlc.playlist.stop();
 					while (vlc.input.state==VLC_INPUT_STATE.STOPPING){
@@ -127,8 +127,8 @@ $.extend(webif,{
 				this.state.playlistId[this.state.channelNum]=itemId;
 			}
 			vlc.playlist.playItem(itemId);
-			this.state.updatePlaylistItemTimer=setInterval(function(){
-				webif.updatePlaylistItemInfo()
+			this.state.updateAudioTrackListInterval=window.setInterval(function(){
+				webif.updateAudioTrackList()
 			},3500);
 			this.updateProgramInfo();
 		} catch (err){
@@ -150,7 +150,7 @@ $.extend(webif,{
 		$.extend(this.state,{
 			playlistId:new Array(),        //almacena ids de items en playlist
 			updateProgramInfoTimer:null,   //temporizador para actualizar info
-			updatePlaylistItemTimer:null,  //temporizador para actualizar informacion del item reproducido
+			updateAudioTrackListInterval:null,  //temporizador para actualizar informacion del item reproducido
 			currentAudioTrack:1,
 		});
 		$('#channelNum').change(function(){webif.channelNumChange($(this));return false;}).change();
@@ -163,7 +163,7 @@ $.extend(webif,{
 		$(document).unload(function(){
 			//Desactivar timers de refresco de info
 			this.clearUpdateProgramInfoTimer();
-			this.clearUpdatePlaylistItemTimer();
+			this.clearUpdateAudioTrackListInterval();
 		});
 	}
 });

@@ -96,6 +96,5 @@ void getEpgGridLimits(const char *argStart,time_t *start, time_t *end);
 void printEpgGrid(context_t *ctx, events_t * const events, channelList_t * const channels, timerList_t * const timers);
 void printChannelEpg(context_t *ctx, const char *id, hostConf_t *host, const int channelNum, timerList_t *const timers);
 void printTimersDiv(context_t *ctx, const char *id, timerList_t * const timers, const time_t start, const time_t end);
-const char * ctxChannelFilename(context_t *ctx, const char *channelName);
 
 #endif

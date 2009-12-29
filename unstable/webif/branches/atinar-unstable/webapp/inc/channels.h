@@ -57,5 +57,6 @@ void printChannelListSelect(context_t *ctx,const char * id,const char * name,
 	const channelList_t *const channels,int channelNum,const char  *onchange);
 void printChannelControls(context_t *ctx,const channel_t *channel,const char *Epg,const char *LiveStream);
 char *ctxChannelDisplayName(context_t *ctx,const channel_t *channel);
+char *ctxChannelFilename(context_t *ctx, const char *channelName, boolean_t urlEncode);
 
 #endif

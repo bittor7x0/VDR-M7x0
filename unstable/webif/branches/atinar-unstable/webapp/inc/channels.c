@@ -232,3 +232,39 @@ char *ctxChannelDisplayName(context_t *ctx,const channel_t *channel){
 	}
 }
 
+char *ctxChannelFilename(context_t *ctx, const char *channelName, boolean_t urlEncode){
+	int l;
+	const char *s;
+	char *d;
+	const char encode[]="+&";
+	/*
+	l=0;
+	for (s=channelName;*s;s++){
+		l+=(*s>127 || strchr(encode,*s))?3:1;
+	}
+	*/
+	l=strlen(channelName);
+	CTX_CHK_BUFFER(l+1);
+	for (s=channelName,d=ctx->buffer;*s;s++){
+		if (*s==' '){
+			*d='_';
+			d++;
+		/*
+		} else if (*s>127 || strchr(encode,*s)) {
+			sprintf(d, "@%02X", (unsigned char)s[0]);
+			d+=3;
+		*/
+		} else {
+			*d=*s;
+			d++;
+		}
+	}
+	*d=0;
+	if (urlEncode){
+		s=strdup(ctx->buffer);
+		CTX_URL_ENCODE(s,l,NULL);
+		free(s);
+	}
+	return ctx->buffer;
+}
+
