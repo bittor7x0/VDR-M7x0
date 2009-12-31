@@ -410,7 +410,7 @@ i18n_t i18n[]={
 		"Setup Webinterface",
 		"Einstellungen Webinterface",
 		"Configuración del interfaz web",
-		"Configuration de l\'interface web"
+		"Configuration de l'interface web"
 		}
 	},
 	{	"cfgWi.always_close_svdrp",
@@ -716,7 +716,7 @@ i18n_t i18n[]={
 		"Conditional access ID",
 		"Conditional Access ID",
 		"ID de acceso condicional",
-		"Identifiant d\'accès conditionnel"
+		"Identifiant d'accès conditionnel"
 		}
 	},
 	{	"create",
@@ -999,7 +999,7 @@ i18n_t i18n[]={
 		"Homepage",
 		"Startseite",
 		"Página inicial",
-		"Page d\'accueil"
+		"Page d'accueil"
 		}
 	},
 	{	"interval",
@@ -1135,7 +1135,7 @@ i18n_t i18n[]={
 		"More infos",
 		"Mehr Infos",
 		"Más info",
-		"Plus d\'informations"
+		"Plus d'informations"
 		}
 	},
 	{	"mute",
@@ -1808,7 +1808,7 @@ i18n_t i18n[]={
 		"Create timer",
 		"Timer erstellen",
 		"Crear programación",
-		"Création d\'un enregistrement programmé"
+		"Création d'un enregistrement programmé"
 		}
 	},
 	{	"timer.create.err",
@@ -1816,7 +1816,7 @@ i18n_t i18n[]={
 		"Failed to add timer!",
 		"Timer konnte nicht hinzugefügt werden!",
 		"¡Error al añadir la programación!",
-		"Erreur de programmation de l\'enregistrement!"
+		"Erreur de programmation de l'enregistrement!"
 		}
 	},
 	{	"timer.create.ok",
@@ -1864,7 +1864,7 @@ i18n_t i18n[]={
 		"Edit timer",
 		"Timer bearbeiten",
 		"Editar programación",
-		"Modification d\'un enregistrement"
+		"Modification d'un enregistrement"
 		}
 	},
 	{	"timer.update.err",
@@ -1998,8 +1998,8 @@ i18n_t i18n[]={
 		"<p>EPG no disponible, por favor inténtelo más tarde.</p>"
 		"<p>Si el problema persiste, éste canal no tiene EPG o funciona incorrectamente.</p>\n"
 		,
-		"<p>L\'EPG (guide des programmes) n\'est pas disponible, merci d\'essayer ultérieurement.</p>"
-		"<p>Si le problème persiste, cette chaîne n\'a pas de guide des programmes ou il engendre des erreurs. Vous pouvez peut-être essayer de prendre contact avec un responsable de cette chaîne.</p>\n"
+		"<p>L'EPG (guide des programmes) n'est pas disponible, merci d'essayer ultérieurement.</p>"
+		"<p>Si le problème persiste, cette chaîne n'a pas de guide des programmes ou il engendre des erreurs. Vous pouvez peut-être essayer de prendre contact avec un responsable de cette chaîne.</p>\n"
 		}
 	},
 	{	"warnSvdrpConnection",
@@ -2035,9 +2035,9 @@ i18n_t i18n[]={
 		"</div>\n"
 		,
 		"<div>"
-			"<p><strong>Echec d\'accès par connection SVDRP au logiciel VDR. Raisons possibles:</p>"
+			"<p><strong>Echec d'accès par connection SVDRP au logiciel VDR. Raisons possibles:</p>"
 			"<ul>"
-				"<li>VDR n\'est pas démarré.</li>"
+				"<li>VDR n'est pas démarré.</li>"
 				"<li>La connexion SVDRP est encore utilisée par un autre client comme \"vdradmin\".</li>"
 				"<li>la connexion SVDRP est bloqué suite à une erreur précédente</li>"
 			"</ul>"

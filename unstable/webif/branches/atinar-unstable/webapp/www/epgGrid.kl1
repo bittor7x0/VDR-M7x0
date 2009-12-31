@@ -58,37 +58,35 @@ static void printHtmlHeadExtra(context_t *ctx){
 		ctx_printf0(ctx,"searchCreateFromEvent:%d,\n",PA_SEARCH_CREATE_FROM_EVENT);
 		ctx_printfn(ctx,"});\n",-1,0);
 		ctx_printfn(ctx,"$.extend(webif.messages,{\n",0,1);
-		ctx_printf0(ctx,"timerCreate:'%s',\n",tr("timer.create"));
-		ctx_printf0(ctx,"timerDeleteConfirm:'%s',\n",tr("timer.delete.confirm"));
-		ctx_printf0(ctx,"searchCreate:'%s',\n",tr("search.create"));
+		ctx_printf0(ctx,"timerCreate:\"%s\",\n",tr("timer.create"));
+		ctx_printf0(ctx,"timerDeleteConfirm:\"%s\",\n",tr("timer.delete.confirm"));
+		ctx_printf0(ctx,"searchCreate:\"%s\",\n",tr("search.create"));
 		ctx_printfn(ctx,"});\n",-1,0);
 		ctx_printfn(ctx,"$.extend(webif.images,{\n",0,1);
-		ctx_printf0(ctx,"calendar:'%s/images/calendar.gif',\n",webifConf.www);
-		ctx_printf0(ctx,"timerDeleteConfirm:'%s',\n",tr("timer.delete.confirm"));
-		ctx_printf0(ctx,"searchCreate:'%s',\n",tr("search.create"));
+		ctx_printf0(ctx,"calendar:\"%s/images/calendar.gif\",\n",webifConf.www);
 		ctx_printfn(ctx,"});\n",-1,0);
 
 		if (ctx->currentAction==PA_GET_EPG_GRID){
 			ctx_printfn(ctx,"$.datepicker.setDefaults({\n",0,1);
 			ctx_printfn(ctx,"dayNames: [\n",0,1);
 			for(i=0;i<7;i++){
-				ctx_printf0(ctx,"'%s'%s\n",weekdays[langId][i],(i<6)?",":"");
+				ctx_printf0(ctx,"\"%s\"%s\n",weekdays[langId][i],(i<6)?",":"");
 			}
 			ctx_printfn(ctx,"],\n",-1,0); //dayNames
 			ctx_printfn(ctx,"dayNamesMin: [\n",0,1);
 			for(i=0;i<7;i++){
-				ctx_printf0(ctx,"'%.2s'%s\n",shortWeekdays[langId][i],(i<6)?",":"");
+				ctx_printf0(ctx,"\"%.2s\"%s\n",shortWeekdays[langId][i],(i<6)?",":"");
 			}
 			ctx_printfn(ctx,"],\n",-1,0); //dayNamesMin
 			ctx_printf0(ctx,"firstDay: %d,\n",startOfWeek[langId]);
 			ctx_printfn(ctx,"monthNames: [\n",0,1);
 			for(i=0;i<12;i++){
-				ctx_printf0(ctx,"'%s'%s\n",monthNames[langId][i],(i<11)?",":"");
+				ctx_printf0(ctx,"\"%s\"%s\n",monthNames[langId][i],(i<11)?",":"");
 			}
 			ctx_printfn(ctx,"],\n",-1,0); //monthNames
 			ctx_printfn(ctx,"monthNamesShort: [\n",0,1);
 			for(i=0;i<12;i++){
-				ctx_printf0(ctx,"'%.3s'%s\n",monthNames[langId][i],(i<11)?",":"");
+				ctx_printf0(ctx,"\"%.3s\"%s\n",monthNames[langId][i],(i<11)?",":"");
 			}
 			ctx_printfn(ctx,"],\n",-1,0); //monthNamesShort
 			ctx_printfn(ctx,"});\n",-1,0); //setDefaults
