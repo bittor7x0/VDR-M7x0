@@ -234,9 +234,9 @@ boolean_t ctxGetRequestParamAsCpy(context_t *ctx, char **target, vars_t *args, c
 	const char *argValue=vars_get_value(args,argName);
 	if (argValue && argValue[0] && ctx->isAjaxRequest) { 
 		//TODO comprobar los headers de request para verificar que se utiliza UTF-8
-		iconv_t iconv_cd = iconv_open("ISO-8859-1","UTF-8");
+		iconv_t iconv_cd = iconv_open("ISO-8859-15","UTF-8");
 		if( iconv_cd == (iconv_t)-1) {
-			warn("Error creando descriptor de conversion UTF-8->ISO-8859-1\n");
+			warn("Error creando descriptor de conversion UTF-8->ISO-8859-15\n");
 		} else {
 			size_t inbytesleft = strlen(argValue);
 			CTX_CHK_BUFFER(inbytesleft);
@@ -245,7 +245,7 @@ boolean_t ctxGetRequestParamAsCpy(context_t *ctx, char **target, vars_t *args, c
 			char *utf8_ptr = (char *)argValue;
 			size_t chars = iconv(iconv_cd, &utf8_ptr, &inbytesleft, &latin1_ptr, &outbytesleft);
 			if(chars == -1) {
-				warn("Error de conversion UTF8->ISO-8859-1");
+				warn("Error de conversion UTF8->ISO-8859-15");
 			} else {
 				*latin1_ptr=0;
 				*target=strdup(ctx->buffer);
@@ -321,7 +321,7 @@ void returnHttpNoContent(response_t *response){
 }	
 
 void initHtmlDoc(context_t *ctx){
-	response_set_content_type(ctx->response,"text/html; charset=ISO-8859-1");
+	response_set_content_type(ctx->response,"text/html; charset=ISO-8859-15");
 	response_set_field(ctx->response,"Content-Style-Type","text/css");
 	response_set_field(ctx->response,"Content-Script-Type","text/javascript");
 	ctx->ntabs=0;

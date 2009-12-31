@@ -396,8 +396,6 @@ void printEpgGrid(context_t *ctx, events_t * const events, channelList_t * const
 		ctx_printfn(ctx,"<div id=\"grid-div\" class=\"level3-div\" style=\"width:%dpx\">\n",0,1,totalWidth);
 		ctx_printfn(ctx,"<h3 id=\"grid-top\" class=\"level3-top\">\n",0,1);
 	}
-	CTX_CHK_BUFFER(30);
-	strftime(ctx->buffer,30,"%A, %x",&sstart);
 	ctx_printfn(ctx,"<span id=\"gridDate\">\n",0,1);
 	int hours;
 	hours=24;
@@ -406,6 +404,8 @@ void printEpgGrid(context_t *ctx, events_t * const events, channelList_t * const
 		strftime(cdatehour,13,gridDateFmtO,localtime(&aTime));
 		printChangeDateButton(ctx,cdatehour,BT_TRUE,hours,BT_FALSE);
 	}
+	CTX_CHK_BUFFER(30);
+	strftime(ctx->buffer,30,"%A, %x",&sstart);
 	ctx_printf0(ctx,"%s\n",ctx->buffer);
 	if (1) {//one day after
 		aTime=gridStart+24*60*60;

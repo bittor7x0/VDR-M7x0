@@ -45,10 +45,10 @@ const char * const monthNames[I18NNUM][12]={
 };
 
 const i18nVal_t locale={
-	"en_GB",
-	"de_DE",
-	"es_ES",
-	"fr_FR"
+	"en_GB.ISO-8859-15",
+	"de_DE.ISO-8859-15",
+	"es_ES.ISO-8859-15",
+	"fr_FR.ISO-8859-15"
 };
 
 const i18nVal_t language={
