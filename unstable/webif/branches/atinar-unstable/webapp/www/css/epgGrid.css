@@ -176,6 +176,12 @@ h3#grid-top a.change .ui-icon {
 #ui-datepicker-div {
 	z-index:10;
 }
+#datepicker {
+	border:none;
+	background:transparent;
+	color:transparent;
+	width:0;
+}
 #grid-div #grid-top img.ui-datepicker-trigger {
 	display:inline;
 	margin-left:0.5em;

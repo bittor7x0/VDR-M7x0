@@ -89,6 +89,7 @@ static void printHtmlHeadExtra(context_t *ctx){
 				ctx_printf0(ctx,"\"%.3s\"%s\n",monthNames[langId][i],(i<11)?",":"");
 			}
 			ctx_printfn(ctx,"],\n",-1,0); //monthNamesShort
+			ctx_printf0(ctx,"buttonText: \"%s\",\n","Escoger dí­a"); //TODO i18n
 			ctx_printfn(ctx,"});\n",-1,0); //setDefaults
 		}
 		ctx_printfn(ctx,"</script>\n",-1,0);

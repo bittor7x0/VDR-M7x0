@@ -404,9 +404,7 @@ void printEpgGrid(context_t *ctx, events_t * const events, channelList_t * const
 		strftime(cdatehour,13,gridDateFmtO,localtime(&aTime));
 		printChangeDateButton(ctx,cdatehour,BT_TRUE,hours,BT_FALSE);
 	}
-	CTX_CHK_BUFFER(30);
-	strftime(ctx->buffer,30,"%A, %x",&sstart);
-	ctx_printf0(ctx,"%s\n",ctx->buffer);
+	ctx_printf0(ctx,"%s, %s",weekdays[langId][sstart.tm_wday],formatDate(&sstart,BT_FALSE));
 	if (1) {//one day after
 		aTime=gridStart+24*60*60;
 		strftime(cdatehour,13,gridDateFmtO,localtime(&aTime));
@@ -552,7 +550,7 @@ void printChannelEpg(context_t *ctx, const char *id, hostConf_t *host, const int
 						}
 						ctx_printfn(ctx,"<div class=\"level4-div\">\n",0,1);
 						ctx_printfn(ctx,"<div class=\"level4-top\">%s %s</div>\n",0,1
-							,weekdays[langId][sdate.tm_wday],formatDate(&sdate,0));
+							,weekdays[langId][sdate.tm_wday],formatDate(&sdate,BT_FALSE));
 						ctx_printfn(ctx,"<div class=\"level4\">\n",0,1);
 					}
 					ctx_printfn(ctx,"<div class=\"event\">\n",0,1);
