@@ -592,13 +592,18 @@ void printTimerForm(context_t *ctx, vdrTimer_t *const timer, channelList_t const
 	ctx_printfn(ctx,"<td>\n",0,1);
 	ctx_printfn(ctx,"<select name=\"date\" size=\"1\">\n",0,1);
 	time_t tdate=time(NULL);
-	if (tdate>timer->start) tdate=timer->start;
+	if (timer->start<=0){
+		timer->start=tdate;
+	}
+	else if (tdate>timer->start) {
+		tdate=timer->start;
+	}
 	char cdate[11];
 	struct tm sdate;
 	boolean_t isThatDay=BT_FALSE;
 	boolean_t isAfterThatDay=BT_FALSE;
 	int i;
-	for(i=0;i<14;i++) {
+	for(i=0;i<14;i++) { //TODO usar datepicker
 		sdate=*localtime(&tdate);
 		strftime(cdate,11,"%Y-%m-%d",&sdate);
 		if (!isAfterThatDay){

@@ -92,7 +92,7 @@ static void printHtmlHeadExtra(context_t *ctx){
 		ctx_printf0(ctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("timers"));
 		ctx_printfn(ctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
 	}
-	if (ctx->isReload){
+	if (ctx->isReload && ctx->currentAction==PA_ADD){
 		ctx->currentAction=PA_SUMMARY;
 	}
 	boolean_t timersHaveChanged=BT_FALSE;
@@ -184,6 +184,9 @@ static void printHtmlHeadExtra(context_t *ctx){
 			if (timerStr) {
 				parseTimer(timerStr,timer);
 				timer->timerStr=timerStr;
+			} else {
+				timer->start=time(NULL);
+				timer->type=TT_ONE_TIME;
 			}
 			timer->id=timerId;
 			timer->hostId=hostId;
