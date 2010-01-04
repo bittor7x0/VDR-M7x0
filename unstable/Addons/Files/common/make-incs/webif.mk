@@ -25,7 +25,7 @@ KLONE_DLFILE := $(DOWNLOAD_DIR)/$(KLONE_FILE)
 KLONE_URL := http://koanlogic.com/download/klone/$(KLONE_FILE)
 LOGOS_FILE := logos-webif-comun.2.tgz
 LOGOS_DLFILE := $(DOWNLOAD_DIR)/logos.tgz
-LOGOS_URL := http://www.assembla.com/spaces/VDR-M7x0/documents/cDNA5q69Sr3RgSeJe5aVNr/download/$(LOGOS_FILE)
+LOGOS_URL := http://www.assembla.com/spaces/VDR-M7x0/documents/aXqAAA9zKr3PgfeJe5aVNr/download/$(LOGOS_FILE)
 
 ifeq ($(strip $(CONFIG_WEBIF_TREE)),)
   WEBIF_BRANCH := branches/atinar-unstable
