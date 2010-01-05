@@ -8,4 +8,14 @@ diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
 +      SetVCRMode(Setup.VCRMode);
        SetVideoFormat(eVideoFormat(Setup.VideoFormat));
      }else{
-       int avs = open("/dev/avswitch", O_WRONLY);
+       int avs = open("/dev/avswitch", O_WRONLY);diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
+--- VDR-NG-orig/vdr.c	Thu Oct 16 15:11:43 2008
++++ VDR-NG/vdr.c	Wed Nov 19 10:48:20 2008
+@@ -750,6 +750,7 @@
+      cDevice::PrimaryDevice()->ToggleMute();
+   else
+      cDevice::PrimaryDevice()->SetVolume(Setup.CurrentVolume, true);
++  cDevice::PrimaryDevice()->SetTvSettings(getIaMode());
+ 
+ 
+ // Signal handlers:
