@@ -803,3 +803,18 @@ diff -Naur undelete-0.0.6-orig/Makefile undelete-0.0.6/Makefile
  
  dist: clean
  	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+diff -Naur undelete-0.0.6-orig/undelete.c undelete-0.0.6/undelete.c
+--- undelete-0.0.6-orig/undelete.c	2009-12-25 02:39:49.000000000 +0100
++++ undelete-0.0.6/undelete.c	2010-01-08 16:42:09.728035701 +0100
+@@ -57,11 +57,6 @@
+ cPlugin     *plugin = NULL;
+ bool        PurgeRecording = false;
+ bool        SalvageRecording = false;
+-#if VDRVERSNUM >= 10311
+-cRecordings DeletedRecordings(true);
+-#else
+-cRecordings DeletedRecordings;
+-#endif
+ bool        MenuIsOpen = false;
+ char        *SVDRP_Process = NULL;
+ char        *WorkFilename = NULL;
