@@ -768,7 +768,7 @@ outOfMemory:
 
 char *makeSearchStr(search_t *const search,const channelList_t *channels){
 	char *searchStr;
-	crit_goto_if(asprintf(&searchStr,"%d:%s:%d",search->id,search->search,isFlagSet(SFL_USE_TIME,search->flags))<0,outOfMemory);
+	crit_goto_if(asprintf(&searchStr,"%d:%s:%d",(search->id>=0)?search->id:0,search->search,isFlagSet(SFL_USE_TIME,search->flags))<0,outOfMemory);
 	if (isFlagSet(SFL_USE_TIME,search->flags)){
 		crit_goto_if(asprintf(&searchStr,"%s:%04d:%04d",searchStr,search->startTime,search->stopTime)<0,outOfMemory);
 	} else {
@@ -827,7 +827,7 @@ char *makeSearchStr(search_t *const search,const channelList_t *channels){
 		search->switchMinsBefore,
 		search->pauseOnNrRecordings,
 		search->blacklistMode,
-		search->blacklistIds,
+		(search->blacklistIds)?search->blacklistIds:"",
 		search->fuzzyTolerance,
 		isFlagSet(SFL_USE_IN_FAVORITES,search->flags),
 		search->menuTemplate,
