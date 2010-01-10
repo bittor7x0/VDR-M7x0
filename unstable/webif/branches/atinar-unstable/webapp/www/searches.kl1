@@ -122,15 +122,20 @@ static void printHtmlHeadExtra(context_t *ctx){
 			freeSearch(&vsearch);
 		}
 		ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
+		boolean_t searchesChanged=BT_FALSE;
 		if ( (searchId>=0) && (oldSearchStr) && (hostId==oldHostId) ) {
-			editSearch(ctx,host,searchId,oldSearchStr,searchStr);
+			searchesChanged=editSearch(ctx,host,searchId,oldSearchStr,searchStr);
 		} else if (searchStr) {
-			if (addSearch(ctx,host,searchStr)){
+			searchesChanged=addSearch(ctx,host,searchStr);
+			if (searchesChanged){
 				if ( (searchId>=0) && (oldSearchStr) && hostId!=oldHostId){
 					hostConf_t *oldHost=getHost(oldHostId);
 					deleteSearch(ctx,oldHost,searchId,oldSearchStr);
 				}
 			}
+		}
+		if (searchesChanged) {
+			updateSearches(ctx,host);
 		}
 		ctx_printfn(ctx,"</div>\n",-1,0);
 		if (!ctx->isAjaxRequest){
