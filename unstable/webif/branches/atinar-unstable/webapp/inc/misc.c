@@ -681,6 +681,8 @@ boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName){
 				warn("variable retornada de request_get_uploaded_file se ha anulado!!!");
 				_exit(-3);
 			}
+		} else {
+			_exit(0);
 		}
 	}
 	return extractLogos(ctx,extractLogosAndExit);
