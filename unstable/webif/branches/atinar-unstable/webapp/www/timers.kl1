@@ -67,10 +67,10 @@ static void printHtmlHeadExtra(context_t *ctx){
 
 	vars_t *args = request_get_args(request);
 	int timerId=vars_get_value_i(args,"timerId");
-	char *timerStr;
-	char *oldTimerStr;
-	boolean_t myTimerStr=ctxGetRequestParamAsCpy(ctx,&timerStr,args,"timerStr");
-	boolean_t myOldTimerStr=ctxGetRequestParamAsCpy(ctx,&oldTimerStr,args,"oldTimerStr");
+	boolean_t myTimerStr;
+	boolean_t myOldTimerStr;
+	char *timerStr=ctxGetRequestParam(ctx,args,"timerStr",&myTimerStr);
+	char *oldTimerStr=ctxGetRequestParam(ctx,args,"oldTimerStr",&myOldTimerStr);
 	const int hostId=vars_get_value_i(args,"hostId");
 	const int oldHostId=vars_get_value_i(args,"oldHostId");
 	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(hostId) : NULL;

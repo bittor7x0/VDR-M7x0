@@ -89,8 +89,9 @@ boolean_t makeTime(time_t *time, const char * cdate, int hour, int min ){
 
 
 boolean_t initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, context_t *ctx){
-	initTimer(timer);
 	boolean_t result=BT_TRUE;
+	boolean_t isACopy;
+	initTimer(timer);
 	timer->flags=0;
 	if (vars_countn(args,"active")>0){
 		setFlag(TF_ACTIVE,timer->flags);
@@ -114,8 +115,10 @@ boolean_t initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, context_t *ct
 	}
 	timer->lifetime=(vars_countn(args,"lifetime")>0) ? vars_get_value_i(args,"lifetime") : 99;
 	timer->priority=(vars_countn(args,"priority")>0) ? vars_get_value_i(args,"priority") : 50;
-	if (ctxGetRequestParamAsCpy(ctx,&timer->title,args,"title")) setFlag(TF_TITLE,timer->my);
-	if (ctxGetRequestParamAsCpy(ctx,&timer->aux,args,"aux")) setFlag(TF_AUX,timer->my);
+	timer->title=ctxGetRequestParam(ctx,args,"title",&isACopy);
+	if (isACopy) setFlag(TF_TITLE,timer->my);
+	timer->aux=ctxGetRequestParam(ctx,args,"aux",&isACopy);
+	if (isACopy) setFlag(TF_AUX,timer->my);
 	boolean_t addMargin= boolean(vars_countn(args,"addMargin")>0);
 	if	( (timer->type==TT_UNDEFINED) ||
 		( (timer->type==TT_ONE_TIME) && (!cdate) ) ||

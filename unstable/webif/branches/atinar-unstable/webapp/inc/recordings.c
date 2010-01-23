@@ -49,14 +49,17 @@ void initRec(rec_t * const rec){
 }
 
 boolean_t initRecFromArgs(context_t *ctx, rec_t * const rec, vars_t *args){
+	boolean_t isACopy;
 	initRec(rec);
 	rec->hostId=(vars_countn(args, "hostId")>0)?vars_get_value_i(args,"hostId"):0;
 	rec->id=(vars_countn(args,"id")>0) ? vars_get_value_i(args,"id") : 0;
 	if (vars_countn(args, "name")>0) {
-		if (ctxGetRequestParamAsCpy(ctx,&rec->name,args,"name")) setFlag(RF_NAME,rec->my);
+		rec->name=ctxGetRequestParam(ctx,args,"name",&isACopy);
+		if (isACopy) setFlag(RF_NAME,rec->my);
 	}
 	if (vars_countn(args, "path")>0){
-		if (ctxGetRequestParamAsCpy(ctx,&rec->path,args,"path")) setFlag(RF_PATH,rec->my);
+		rec->path=ctxGetRequestParam(ctx,args,"path",&isACopy);
+		if (isACopy) setFlag(RF_PATH,rec->my);
 		if (!isValidRecPath(rec->path)) {
 			printMessage(ctx,"alert",tr("rec.delete.err"),tr("recErrNoValidPath"), BT_FALSE);
 			return BT_FALSE;

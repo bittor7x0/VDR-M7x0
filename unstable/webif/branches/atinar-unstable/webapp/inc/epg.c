@@ -44,15 +44,19 @@ void initEpgEvent(epgEvent_t * const event){
 }
 
 void initEpgEventFromArgs(context_t *ctx, epgEvent_t * const event, vars_t *args){
+	boolean_t isACopy;
 	initEpgEvent(event);
 	if (vars_countn(args, "title")>0) {
-		if (ctxGetRequestParamAsCpy(ctx,&event->title,args,"title")) setFlag(EFI_TITLE,event->my);
+		event->title=ctxGetRequestParam(ctx,args,"title",&isACopy);
+		if (isACopy) setFlag(EFI_TITLE,event->my);
 	}
 	if (vars_countn(args, "shortdesc")>0) {
-		if (ctxGetRequestParamAsCpy(ctx,&event->shortdesc,args,"shortdesc")) setFlag(EFI_SHORTDESC,event->my);
+		event->shortdesc=ctxGetRequestParam(ctx,args,"shortdesc",&isACopy);
+		if (isACopy) setFlag(EFI_SHORTDESC,event->my);
 	}
 	if (vars_countn(args, "desc")>0) {
-		if (ctxGetRequestParamAsCpy(ctx,&event->desc,args,"desc")) setFlag(EFI_DESC,event->my);
+		event->desc=ctxGetRequestParam(ctx,args,"desc",&isACopy); 
+		if (isACopy) setFlag(EFI_DESC,event->my);
 	}
 }
 

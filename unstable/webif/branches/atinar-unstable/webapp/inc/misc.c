@@ -230,8 +230,9 @@ char * ctxUrlDecode(context_t *ctx, const char * const url, const char *routineN
  * Request hechas a traves de ajax normalmente se codifican en UTF-8, que kloned no procesa bien.
  * Devuelve true si se duplica el string, false si se retorna el arg original.
  */
-boolean_t ctxGetRequestParamAsCpy(context_t *ctx, char **target, vars_t *args, const char *argName){
+char * ctxGetRequestParam(context_t *ctx, vars_t *args, const char *argName, boolean_t *isACopy){
 	const char *argValue=vars_get_value(args,argName);
+	if (isACopy) *isACopy=BT_FALSE;
 	if (argValue && argValue[0] && ctx->isAjaxRequest) { 
 		//TODO comprobar los headers de request para verificar que se utiliza UTF-8
 		iconv_t iconv_cd = iconv_open("ISO-8859-15","UTF-8");
@@ -248,13 +249,12 @@ boolean_t ctxGetRequestParamAsCpy(context_t *ctx, char **target, vars_t *args, c
 				warn("Error de conversion UTF8->ISO-8859-15");
 			} else {
 				*latin1_ptr=0;
-				*target=strdup(ctx->buffer);
-				return BT_TRUE;
+				if (isACopy) *isACopy=BT_TRUE;
+				return strdup(ctx->buffer);
 			}
 		}
 	}
-	*target=(char *)argValue;
-	return BT_FALSE;
+	return (char *)argValue;
 }
 
 short htoi(unsigned char c) {

@@ -63,10 +63,10 @@ static void printHtmlHeadExtra(context_t *ctx){
 
 	vars_t *args = request_get_args(request);
 	int searchId=(vars_countn(args,"searchId")>0) ? vars_get_value_i(args,"searchId") : -1;
-	char *searchStr;
-	char *oldSearchStr;
-	boolean_t mySearchStr=ctxGetRequestParamAsCpy(ctx,&searchStr,args,"searchStr");
-	boolean_t myOldSearchStr=ctxGetRequestParamAsCpy(ctx,&oldSearchStr,args,"oldSearchStr");
+	boolean_t mySearchStr;
+	boolean_t myOldSearchStr;
+	char *searchStr=ctxGetRequestParam(ctx,args,"searchStr",&mySearchStr);
+	char *oldSearchStr=ctxGetRequestParam(ctx,args,"oldSearchStr",&myOldSearchStr);
 	const int hostId=vars_get_value_i(args,"hostId");
 	const int oldHostId=vars_get_value_i(args,"oldHostId");
 	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(hostId) : NULL;

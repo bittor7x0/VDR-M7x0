@@ -135,7 +135,8 @@ static void printHtmlHeadExtra(context_t *ctx){
 		freeRec(&rec);
 	}
 	if (ctx->currentAction==PA_BROWSE) {
-		const char *argpath=(vars_countn(args, "path")>0) ? vars_get_value(args,"path") : NULL;
+		boolean_t isACopy;
+		char *argpath=ctxGetRequestParam(ctx,args,"path",&isACopy);
 		char *path=NULL;
 		if (argpath) {
 			int l=strlen(argpath);
@@ -148,23 +149,28 @@ static void printHtmlHeadExtra(context_t *ctx){
 					argpath++;
 					pl--;
 				}
-				if (pl>0)
-				crit_goto_if((path=strndup(argpath,pl))==NULL,outOfMemory);
+				if (pl>0) {
+					if (isACopy) {
+						path=argpath;
+						path[pl]=0;
+					} else {
+						crit_goto_if((path=strndup(argpath,pl))==NULL,outOfMemory);
+					}
+				}
 			}
 		}
-		if (path && path[0]=='/') path++;
-
+		char *pathrel=path;
+		if (pathrel && pathrel[0]=='/') pathrel++;
 		if (!ctx->isAjaxRequest){
 			ctx_printfn(ctx,"<div class=\"level3-div\">\n",0,1);
 			ctx_printfn(ctx,"<div class=\"level3-top\">\n",0,1);
-			printRecPathUl(ctx,path);
+			printRecPathUl(ctx,pathrel);
 			ctx_printfn(ctx,"</div>\n",-1,0); //level3-top
 		}
-
 		recDir_t rdir;
 		initRecDir(&rdir);
-		getRecDir(path,&rdir);
-		printRecDirListUL(ctx,path,(path)?strlen(path):0,&rdir,0);
+		getRecDir(pathrel,&rdir);
+		printRecDirListUL(ctx,pathrel,(pathrel)?strlen(pathrel):0,&rdir,0);
 		freeRecDir(&rdir);
 		free(path);
 		if (!ctx->isAjaxRequest) {

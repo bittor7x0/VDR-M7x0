@@ -184,7 +184,7 @@ void chkCtxBuffer(context_t *ctx,int length, const char *routine);
 char * ctxHtmlEncode(context_t *ctx, const char * const str, int l, const char *routine);
 char * ctxUrlEncode(context_t *ctx, const char * const url, int l, const char * keep, const char *routine);
 char * ctxUrlDecode(context_t *ctx, const char * const url, const char *routine);
-boolean_t ctxGetRequestParamAsCpy(context_t *ctx, char **target, vars_t *args, const char *argName);
+char * ctxGetRequestParam(context_t *ctx, vars_t *args, const char *argName, boolean_t *isACopy);
 boolean_t isDST(time_t * aTime);
 boolean_t sameDay(time_t oneDate,time_t anotherDate);
 boolean_t sameString(const char * s1, const char * s2);
