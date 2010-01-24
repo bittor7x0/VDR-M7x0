@@ -101,7 +101,11 @@ static void dbg_settings_kl1(void){
 					}
 				}
 				if (cfgFileId==CF_WEBIFCONF){
-					extractLogosFromRequest(ctx,"logos");
+					const char *logosFieldName="logos";
+					vars_t *uploads=request_get_uploads(ctx->request);
+					if (vars_countn(uploads,logosFieldName)>0){
+						extractLogosFromRequest(ctx,logosFieldName);
+					}
 				}
 			}
 			if (allParamsAreValid) {

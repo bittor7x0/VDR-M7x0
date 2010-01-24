@@ -1,3 +1,6 @@
+2010-01-24
+* Parcheada definicion erronea de request_get_uploaded_file en request.h de kloned.
+* Simplificado fork para extraer logos.
 2009-12-15
 * Agregada parrilla de programacion.
 * Gestion de formularios mediante llamadas ajax y refrescos parciales de las paginas.

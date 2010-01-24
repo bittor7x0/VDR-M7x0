@@ -402,10 +402,6 @@ void printMenu(context_t *ctx){
 	int i;
 	int clock_id;
 	const char *Summary=tr("summary");
-	/*
-	ctx_printf0(ctx,"<ul id=\"menu\" class=\"sf-menu\"><li%s><a href=\"index.kl1\">%s</a>\n"
-		,classCurrent[CURRENT_PAGE(PN_INDEX)],tr("start"));
-	*/
 	ctx_printf0(ctx,"<ul id=\"menu\" class=\"sf-menu\"><li%s><a href=\"epgGrid.kl1\">%s</a>\n"
 		,classCurrent[CURRENT_PAGE(PN_EPG_GRID)],tr("epg"));
 	ctx_printfn(ctx,"<ul><li%s><a href=\"epgGrid.kl1\">%s</a>\n"
@@ -484,7 +480,6 @@ void finishHtmlPage(context_t *ctx){
 			ctx->ntabs=4;
 		}
 #endif
-		//ctx_printfn(ctx,"</div>\n",-1,0); //main
 		ctx_printfn(ctx,"</div>\n",-1,0); //page
 		ctx_printfn(ctx,"<div id=\"page-bottom\">\n",0,1);
 		ctx_printf0(ctx,"<p>(C) 2006 open7x0-team</p>\n");
@@ -604,30 +599,26 @@ boolean_t createParentFolders(const char *filename, mode_t mode){
 	return result;
 }
 
-//Executed in a child process. Should no return.
-void extractLogosFromFileAndExit(const char *logos_tgz){
-	const char *images="/etc/webif/www/images/";
-	if (createParentFolders(images,S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)){
-		char *args[] = {"/bin/tar", "-C", (char*)images, "-xzf", (char*)logos_tgz, (char*)NULL};
-		execv(args[0],args);
-		//execv only returns if call fails
-		perror("execvp");
-		_exit(-1);
-	} else {
-		_exit(-2);
-	}
-}
-	
-boolean_t extractLogos(context_t *ctx, void (*extractLogosAndExit)(void)){
+boolean_t extractLogosFromFile(context_t *ctx, const char *logos_tgz){
 	boolean_t result=BT_FALSE;
+	//TODO interfiere con hooks.
 	pid_t pid=vfork();
 	if (pid<0) { 
 		//fork failure
 		warn("fallo la bifurcacion");
 		result=BT_FALSE;
-	} else if (pid==0) { 
+	} else if (pid==0) {
 		//child process
-		extractLogosAndExit();
+		const char *images="/etc/webif/www/images/";
+		if (createParentFolders(images,S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)){
+			const char *tar="/bin/tar";
+			execl((char *)tar, (char *)tar, "-C", (char*)images, "-xzf", (char*)logos_tgz, (char*)NULL);
+			//exec only returns if call fails
+			perror("exec");
+			_exit(-1);
+		} else {
+			_exit(-2);
+		}
 	} else { 
 		//parent process
 		int status;
@@ -658,33 +649,15 @@ boolean_t extractLogos(context_t *ctx, void (*extractLogosAndExit)(void)){
 	return result;
 }
 
-boolean_t extractLogosFromFile(context_t *ctx, const char *logos_tgz){
-	void extractLogosAndExit(void){
-		//child process
-		extractLogosFromFileAndExit(logos_tgz);
-	}
-	return extractLogos(ctx,extractLogosAndExit);
-}
-
 boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName){
-	void extractLogosAndExit(void){
-		//child process
-		char localFilename[U_PATH_MAX]; 
-		char clientFilename[U_PATH_MAX];
-		char mimeType[MIME_TYPE_BUFSZ];
-		size_t idx=0;
-		size_t size;
-		if (request_get_uploaded_file(ctx->request,fieldName,idx,localFilename,clientFilename,mimeType,&size)==0){
-			if (localFilename[0]){
-				extractLogosFromFileAndExit(localFilename);
-			} else {
-				warn("variable retornada de request_get_uploaded_file se ha anulado!!!");
-				_exit(-3);
-			}
-		} else {
-			_exit(0);
-		}
+	boolean_t result=BT_FALSE;
+	char localFilename[U_FILENAME_MAX]; 
+	char clientFilename[U_FILENAME_MAX];
+	char mimeType[MIME_TYPE_BUFSZ];
+	size_t idx=0;
+	size_t size;
+	if (request_get_uploaded_file(ctx->request,fieldName,idx,localFilename,clientFilename,mimeType,&size)==0){
+		result=extractLogosFromFile(ctx,localFilename);
 	}
-	return extractLogos(ctx,extractLogosAndExit);
+	return result;
 }
-
