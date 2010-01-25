@@ -51,6 +51,7 @@
             <entry name="Default option" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Default option" />
         </menu>
         <menu name="Debug">
+            <entry name="Enable syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="System log daemon" />
             <entry name="Show OSD messages" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Show debug messages in OSD at startup" />
             <entry name="Memory watch" sysconfig="rc.local.conf--memwatch" type="bool" value="NO" help1="Enable memory watch" />
             <entry name="Memory watch - Interval" sysconfig="rc.local.conf--memwatch_interval" type="number" value="60" help1="Interval in minutes for save memory logs" />

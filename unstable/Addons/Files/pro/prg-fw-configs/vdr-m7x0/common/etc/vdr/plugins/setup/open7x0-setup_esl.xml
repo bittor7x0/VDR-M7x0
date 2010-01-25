@@ -51,6 +51,7 @@
             <entry name="Opción por defecto" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Opción por defecto para el menú de inicio" />
         </menu>
         <menu name="Depuración">
+            <entry name="Activar servicio syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="Registro del sistema. Dejarlo vacío para activarlo" />
             <entry name="Mostrar mensajes en OSD" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Mostrar en el OSD la info de procesos al arrancar" />
             <entry name="Monitor de memoria" sysconfig="rc.local.conf--memwatch" type="bool" value="NO" help1="Guardar registros del uso de memoria" />
             <entry name="Mon. memoria - Intervalo" sysconfig="rc.local.conf--memwatch_interval" type="number" value="60" help1="Intervalo de minutos en el que guardar registros de memoria" />
