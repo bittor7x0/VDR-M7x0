@@ -1,6 +1,16 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 1.7.9 backports applied in this patch:
+VDR 1.7.11 backports applied in this patch:
+* Implemented handling the "Content Descriptor" (based on a patch from Rolf
+  Ahrenberg). The 'classic' and 'sttng' skins display the textual
+  representation of the content descriptors as "genre". The epg.data file stores
+  the genre using the tag character 'G'.
+* Implemented handling the "Parental Rating Descriptor" (based on a patch from Rolf
+  Ahrenberg). The 'classic' and 'sttng' skins display the parental
+  rating (if given) in their event displays. The epg.data file stores
+  the parental rating using the tag character 'R'.
+  IMPORTANT NOTE: if VDR doesn't display a parental rating, this does not
+  necessarily mean that the given programme is suitable for all audiences!
 * The new Setup parameter "Channel entry timeout" can be used to customize the time
   since the last keypress until a numerically entered channel number is considered
   complete, and the channel is switched (suggested by Helmut Auer). Setting this
@@ -53,7 +63,6 @@ VDR 1.7.9 backports applied in this patch:
 * Added some missing 'const' keywords (thanks to Sascha Volkenandt).
 * Added some missing 'const' keywords to avoid compilation errors with gcc 4.4
   (thanks to Ville Skyttä and Ludwig Nussel).
-* Removed limitation to PAL resolution from SPU handling.
 * Added the backslash ('\') to the list of characters that need to be escaped
   when executing external commands (thanks to Peter Bieringer for reporting this one).
 * The section handler is now stopped before the device is destroyed, to avoid
@@ -97,11 +106,100 @@ VDR 1.7.9 backports applied in this patch:
   Denis Knauf).
 * Fixed a crash when pressing Left while at the first character of a cMenuEditStrItem
   (thanks to Christian Wieninger).
+* Channel names containing commas are now handled correctly in channels.conf.
+  If a channel's short name contains a comma, it is replaced with a '.'.
+* Removed the workaround for short channel names of "Kabel Deutschland", because
+  apparently they now have their data according to the DVB standard (thanks to
+  Johann Friedrichs).
+* cDevice now logs the device number when a new device is created.
+* Improved SPU handling on devices with limited OSD capabilities (thanks to
+  Matthieu Castet).
+* Some fixes to dvbspu.[hc] (thanks to Johann Friedrichs).
+* Fixed plugin arguments corruption with glibc 2.11 on x86_64 (thanks to
+  Anssi Hannula).
+* cPatFilter::Process() now only stores CA descriptors for video and audio pids
+  (thanks to Francesco Saverio Schiavarelli for reporting a problem with channels
+  that have some encrypted components that VDR doesn't use).
+* Several code modifications to avoid compiler warnings (thanks to Winfried Köhler).
+* Fixed compiler warnings "format not a string literal and no format arguments"
+  in some syslog calls (thanks to Rolf Ahrenberg).
+* Fixed not logging changes for channels that have no number
+  (reported by Timothy D. Lenz).
+* Fixed saving terminal settings when running in background (thanks to Manuel
+  Reimer).
+* The new command line option --edit can be used to edit a recording without
+  actually starting the entire VDR (based on a patch from Helmut Auer).
+* Rearranged cEvent members to minimize memory waste.
+* After a CLRE command, no further EPG processing is now done for 10 seconds,
+  so that data sent with subsequent PUTE commands doesn't interfere with data
+  from the broadcasters (suggested by Helmut Auer).
 
 
 diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
---- VDR-NG-orig/channels.c	Tue Jun 23 11:06:13 2009
-+++ VDR-NG/channels.c	Tue Jun 23 11:07:48 2009
+--- VDR-NG-orig/channels.c	2010-01-14 09:51:58.000000000 +0100
++++ VDR-NG/channels.c	2010-01-14 18:19:08.000000000 +0100
+@@ -26,7 +26,7 @@
+   {   0, INVERSION_OFF },
+   {   1, INVERSION_ON },
+   { 999, INVERSION_AUTO },
+-  { -1 }
++  {  -1, 0 }
+   };
+ 
+ const tChannelParameterMap BandwidthValues[] = {
+@@ -34,7 +34,7 @@
+   {   7, BANDWIDTH_7_MHZ },
+   {   8, BANDWIDTH_8_MHZ },
+   { 999, BANDWIDTH_AUTO },
+-  { -1 }
++  {  -1, 0 }
+   };
+ 
+ const tChannelParameterMap CoderateValues[] = {
+@@ -48,7 +48,7 @@
+   {  78, FEC_7_8 },
+   {  89, FEC_8_9 },
+   { 999, FEC_AUTO },
+-  { -1 }
++  {  -1, 0 }
+   };
+ 
+ const tChannelParameterMap ModulationValues[] = {
+@@ -59,14 +59,14 @@
+   { 128, QAM_128 },
+   { 256, QAM_256 },
+   { 999, QAM_AUTO },
+-  { -1 }
++  {  -1, 0 }
+   };
+ 
+ const tChannelParameterMap TransmissionValues[] = {
+   {   2, TRANSMISSION_MODE_2K },
+   {   8, TRANSMISSION_MODE_8K },
+   { 999, TRANSMISSION_MODE_AUTO },
+-  { -1 }
++  {  -1, 0 }
+   };
+ 
+ const tChannelParameterMap GuardValues[] = {
+@@ -75,7 +75,7 @@
+   {  16, GUARD_INTERVAL_1_16 },
+   {  32, GUARD_INTERVAL_1_32 },
+   { 999, GUARD_INTERVAL_AUTO },
+-  { -1 }
++  {  -1, 0 }
+   };
+ 
+ const tChannelParameterMap HierarchyValues[] = {
+@@ -84,7 +84,7 @@
+   {   2, HIERARCHY_2 },
+   {   4, HIERARCHY_4 },
+   { 999, HIERARCHY_AUTO },
+-  { -1 }
++  {  -1, 0 }
+   };
+ 
+ int UserIndex(int Value, const tChannelParameterMap *Map)
 @@ -180,7 +180,7 @@
    modification = CHANNELMOD_NONE;
    schedule     = NULL;
@@ -155,7 +253,25 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
    free(name);
    free(shortName);
    free(provider);
-@@ -491,7 +489,7 @@
+@@ -237,6 +235,7 @@
+     case 'v': Frequency += 200000; break;
+     case 'l': Frequency += 300000; break;
+     case 'r': Frequency += 400000; break;
++    default: esyslog("ERROR: invalid value for Polarization '%c'", Polarization);
+     }
+   return Frequency;
+ }
+@@ -470,7 +469,8 @@
+         q += IntArrayToString(q, Dpids, 10, DLangs);
+         }
+      *q = 0;
+-     dsyslog("changing pids of channel %d from %d+%d:%s:%d to %d+%d:%s:%d", Number(), vpid, ppid, OldApidsBuf, tpid, Vpid, Ppid, NewApidsBuf, Tpid);
++     if (Number())
++         dsyslog("changing pids of channel %d from %d+%d:%s:%d to %d+%d:%s:%d", Number(), vpid, ppid, OldApidsBuf, tpid, Vpid, Ppid, NewApidsBuf, Tpid);
+      vpid = Vpid;
+      ppid = Ppid;
+      for (int i = 0; i < MAXAPIDS; i++) {
+@@ -491,14 +491,15 @@
  
  void cChannel::SetCaIds(const int *CaIds)
  {
@@ -164,7 +280,25 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
       return; // special values will not be overwritten
    if (IntArraysDiffer(caids, CaIds)) {
       char OldCaIdsBuf[MAXCAIDS * 5 + 10]; // 5: 4 digits plus delimiting ',', 10: paranoia
-@@ -544,7 +542,7 @@
+      char NewCaIdsBuf[MAXCAIDS * 5 + 10];
+      IntArrayToString(OldCaIdsBuf, caids, 16);
+      IntArrayToString(NewCaIdsBuf, CaIds, 16);
+-     dsyslog("changing caids of channel %d from %s to %s", Number(), OldCaIdsBuf, NewCaIdsBuf);
++     if (Number())
++         dsyslog("changing caids of channel %d from %s to %s", Number(), OldCaIdsBuf, NewCaIdsBuf);
+      for (int i = 0; i <= MAXCAIDS; i++) { // <= to copy the terminating 0
+          caids[i] = CaIds[i];
+          if (!CaIds[i])
+@@ -514,7 +515,7 @@
+   if (Level > 0) {
+      modification |= CHANNELMOD_CA;
+      Channels.SetModified();
+-     if (Level > 1)
++     if (Number() && Level > 1)
+         dsyslog("changing ca descriptors of channel %d", Number());
+      }
+ }
+@@ -544,7 +545,7 @@
    q += sprintf(q, "linking channel %d from", Number());
    if (linkChannels) {
       for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc)) {
@@ -173,7 +307,7 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
           q += sprintf(q, " %d", lc->Channel()->Number());
           }
       delete linkChannels;
-@@ -555,7 +553,7 @@
+@@ -555,19 +556,50 @@
    linkChannels = LinkChannels;
    if (linkChannels) {
       for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc)) {
@@ -182,8 +316,12 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
           q += sprintf(q, " %d", lc->Channel()->Number());
           //dsyslog("link %4d -> %4d: %s", Number(), lc->Channel()->Number(), lc->Channel()->Name());
           }
-@@ -565,9 +563,39 @@
-   dsyslog(buffer);
+      }
+   else
+      q += sprintf(q, " none");
+-  dsyslog(buffer);
++  if (Number())
++     dsyslog("%s", buffer);
  }
  
 -void cChannel::SetRefChannel(cChannel *RefChannel)
@@ -224,7 +362,16 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
  }
  
  static int PrintParameter(char *p, char Name, int Value)
-@@ -799,7 +827,7 @@
+@@ -649,6 +681,8 @@
+   q += sprintf(q, "%s", Channel->name);
+   if (!isempty(Channel->shortName))
+      q += sprintf(q, ",%s", Channel->shortName);
++  else if (strchr(Channel->name, ','))
++     q += sprintf(q, ",");
+   if (!isempty(Channel->provider))
+      q += sprintf(q, ";%s", Channel->provider);
+   *q = 0;
+@@ -799,7 +833,7 @@
                while ((q = strtok_r(p, ",", &strtok_next)) != NULL) {
                      if (NumCaIds < MAXCAIDS) {
                         caids[NumCaIds++] = strtol(q, NULL, 16) & 0xFFFF;
@@ -233,7 +380,16 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
                            break;
                         }
                      else
-@@ -910,14 +938,72 @@
+@@ -816,7 +850,7 @@
+            *p++ = 0;
+            provider = strcpyrealloc(provider, p);
+            }
+-        p = strchr(namebuf, ',');
++        p = strrchr(namebuf, ','); // long name might contain a ',', so search for the rightmost one
+         if (p) {
+            *p++ = 0;
+            shortName = strcpyrealloc(shortName, p);
+@@ -910,14 +944,72 @@
    return false;
  }
  
@@ -306,7 +462,7 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
  }
  
  int cChannels::GetNextGroup(int Idx)
-@@ -952,9 +1038,10 @@
+@@ -952,9 +1044,10 @@
    return channel ? Idx : -1;
  }
  
@@ -320,8 +476,8 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
    for (cChannel *channel = First(); channel; channel = Next(channel)) {
        if (channel->GroupSep()) {
 diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
---- VDR-NG-orig/channels.h	Tue Jun 23 11:06:14 2009
-+++ VDR-NG/channels.h	Tue Jun 23 11:07:48 2009
+--- VDR-NG-orig/channels.h	2010-01-14 09:52:00.000000000 +0100
++++ VDR-NG/channels.h	2010-01-14 09:52:56.000000000 +0100
 @@ -147,9 +147,12 @@
    int modification;
    mutable const cSchedule *schedule;
@@ -409,8 +565,17 @@ diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
    void IncBeingEdited(void) { beingEdited++; }
    void DecBeingEdited(void) { beingEdited--; }
 diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
---- VDR-NG-orig/config.c	Tue Jun 23 11:06:35 2009
-+++ VDR-NG/config.c	Tue Jun 23 11:08:13 2009
+--- VDR-NG-orig/config.c	2010-01-14 09:52:24.000000000 +0100
++++ VDR-NG/config.c	2010-01-14 17:48:56.000000000 +0100
+@@ -82,7 +82,7 @@
+      while ((c = fgetc(p)) != EOF) {
+            if (l % 20 == 0)
+               result = (char *)realloc(result, l + 21);
+-           result[l++] = c;
++           result[l++] = char(c);
+            }
+      if (result)
+         result[l] = 0;
 @@ -139,7 +139,7 @@
  
  bool cSVDRPhost::Accepts(in_addr_t Address)
@@ -432,7 +597,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    PausePriority = 10;
    PauseLifetime = 1;
    UseSubtitle = 1;
-@@ -480,9 +482,11 @@
+@@ -483,9 +485,11 @@
  //M7X0 END AK
    else if (!strcasecmp(Name, "SVDRPTimeout"))        SVDRPTimeout       = atoi(Value);
    else if (!strcasecmp(Name, "ZapTimeout"))          ZapTimeout         = atoi(Value);
@@ -444,7 +609,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    else if (!strcasecmp(Name, "PausePriority"))       PausePriority      = atoi(Value);
    else if (!strcasecmp(Name, "PauseLifetime"))       PauseLifetime      = atoi(Value);
    else if (!strcasecmp(Name, "UseSubtitle"))         UseSubtitle        = atoi(Value);
-@@ -583,9 +587,11 @@
+@@ -589,9 +593,11 @@
  //M7X0 END AK
    Store("SVDRPTimeout",       SVDRPTimeout);
    Store("ZapTimeout",         ZapTimeout);
@@ -457,8 +622,8 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    Store("PauseLifetime",      PauseLifetime);
    Store("UseSubtitle",        UseSubtitle);
 diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
---- VDR-NG-orig/config.h	Tue Jun 23 11:06:35 2009
-+++ VDR-NG/config.h	Tue Jun 23 11:08:13 2009
+--- VDR-NG-orig/config.h	2010-01-14 09:52:24.000000000 +0100
++++ VDR-NG/config.h	2010-01-14 09:52:56.000000000 +0100
 @@ -253,9 +253,11 @@
  //M7X0 END AK
    int SVDRPTimeout;
@@ -471,10 +636,63 @@ diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
    int UseSubtitle;
    int DelTimeshiftRec;
    int UseVps;
+diff -Naur VDR-NG-orig/cutter.c VDR-NG/cutter.c
+--- VDR-NG-orig/cutter.c	2010-01-14 09:52:08.000000000 +0100
++++ VDR-NG/cutter.c	2010-01-14 12:00:34.000000000 +0100
+@@ -484,3 +484,31 @@
+   ended = false;
+   return result;
+ }
++
++#define CUTTINGCHECKINTERVAL 500 // ms between checks for the active cutting process
++
++bool CutRecording(const char *FileName)
++{
++  if (DirectoryOk(FileName)) {
++     cRecording Recording(FileName);
++     if (Recording.Name()) {
++        cMarks Marks;
++        if (Marks.Load(FileName) && Marks.Count()) {
++           if (cCutter::Start(FileName)) {
++              while (cCutter::Active())
++                    cCondWait::SleepMs(CUTTINGCHECKINTERVAL);
++              return true;
++              }
++           else
++              fprintf(stderr, "can't start editing process\n");
++           }
++        else
++           fprintf(stderr, "'%s' has no editing marks\n", FileName);
++        }
++     else
++        fprintf(stderr, "'%s' is not a recording\n", FileName);
++     }
++  else
++     fprintf(stderr, "'%s' is not a directory\n", FileName);
++  return false;
++}
+diff -Naur VDR-NG-orig/cutter.h VDR-NG/cutter.h
+--- VDR-NG-orig/cutter.h	2010-01-14 09:52:02.000000000 +0100
++++ VDR-NG/cutter.h	2010-01-14 12:04:40.000000000 +0100
+@@ -28,4 +28,6 @@
+   static bool Ended(void);
+   };
+ 
++bool CutRecording(const char *FileName);
++
+ #endif //__CUTTER_H
 diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
---- VDR-NG-orig/device.c	Tue Jun 23 11:06:33 2009
-+++ VDR-NG/device.c	Tue Jun 23 11:08:13 2009
-@@ -330,6 +330,7 @@
+--- VDR-NG-orig/device.c	2010-01-14 09:52:22.000000000 +0100
++++ VDR-NG/device.c	2010-01-15 10:46:54.000000000 +0100
+@@ -220,6 +220,7 @@
+ cDevice::cDevice(void)
+ {
+   cardIndex = nextCardIndex++;
++  dsyslog("new device number %d", CardIndex() + 1);
+ 
+   SetDescription("receiver on device %d", CardIndex() + 1);
+ 
+@@ -330,6 +331,7 @@
       primaryDevice->MakePrimaryDevice(true);
       primaryDevice->SetTvMode(Setup.TvMode);
       primaryDevice->SetVideoFormat(eVideoFormat(Setup.VideoFormat));
@@ -482,7 +700,24 @@ diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
       return true;
       }
    esyslog("ERROR: invalid primary device number: %d", n + 1);
-@@ -808,6 +809,22 @@
+@@ -468,6 +470,7 @@
+                case vdfLetterBox:
+                     spuDecoder->setScaleMode(cSpuDecoder::eSpuLetterBox);
+                     break;
++               default: esyslog("ERROR: invalid value for VideoDisplayFormat '%d'", VideoDisplayFormat);
+                }
+         }
+      }
+@@ -483,7 +486,7 @@
+   return vsPAL;
+ }
+ 
+-//#define PRINTPIDS(s) { char b[500]; char *q = b; q += sprintf(q, "%d %s ", CardIndex(), s); for (int i = 0; i < MAXPIDHANDLES; i++) q += sprintf(q, " %s%4d %d", i == ptOther ? "* " : "", pidHandles[i].pid, pidHandles[i].used); dsyslog(b); }
++//#define PRINTPIDS(s) { char b[500]; char *q = b; q += sprintf(q, "%d %s ", CardIndex(), s); for (int i = 0; i < MAXPIDHANDLES; i++) q += sprintf(q, " %s%4d %d", i == ptOther ? "* " : "", pidHandles[i].pid, pidHandles[i].used); dsyslog("%s", b); }
+ #define PRINTPIDS(s)
+ 
+ bool cDevice::HasPid(int Pid) const
+@@ -808,6 +811,22 @@
       }
  }
  
@@ -505,7 +740,15 @@ diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
  int cDevice::OpenFilter(u_short Pid, u_char Tid, u_char Mask)
  {
    return -1;
-@@ -1183,7 +1200,7 @@
+@@ -871,6 +890,7 @@
+         case scrNoTransfer:   Skins.Message(mtError, tr("Can't start Transfer Mode!"));
+                               return false;
+         case scrFailed:       break; // loop will retry
++        default:              esyslog("ERROR: invalid return value from SetChannel");
+         }
+       esyslog("retrying");
+       }
+@@ -1183,7 +1203,7 @@
  
  bool cDevice::SetCurrentAudioTrack(eTrackType Type)
  {
@@ -515,8 +758,8 @@ diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
       if (IS_DOLBY_TRACK(Type))
          SetDigitalAudioDevice(true);
 diff -Naur VDR-NG-orig/device.h VDR-NG/device.h
---- VDR-NG-orig/device.h	Wed Sep 10 10:54:45 2008
-+++ VDR-NG/device.h	Tue Jun 23 11:08:13 2009
+--- VDR-NG-orig/device.h	2009-09-24 17:21:12.000000000 +0200
++++ VDR-NG/device.h	2010-01-14 09:52:56.000000000 +0100
 @@ -328,7 +328,12 @@
  protected:
    void StartSectionHandler(void);
@@ -532,9 +775,26 @@ diff -Naur VDR-NG-orig/device.h VDR-NG/device.h
    virtual int OpenFilter(u_short Pid, u_char Tid, u_char Mask);
         ///< Opens a file handle for the given filter data.
 diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
---- VDR-NG-orig/dvbdevice.c	Tue Jun 23 11:06:33 2009
-+++ VDR-NG/dvbdevice.c	Tue Jun 23 11:08:14 2009
-@@ -2389,6 +2389,7 @@
+--- VDR-NG-orig/dvbdevice.c	2010-01-14 09:52:22.000000000 +0100
++++ VDR-NG/dvbdevice.c	2010-01-18 13:26:12.000000000 +0100
+@@ -291,6 +291,7 @@
+                           }
+                        }
+                        break;
++                  default: esyslog("ERROR: unknown diseqc command %d", da);
+                   }
+                 }
+             frequency -= diseqc->Lof();
+@@ -409,6 +410,8 @@
+                   lastTimeoutReport = 0;
+                   continue;
+                   }
++               break;
++          default: esyslog("ERROR: unknown tuner status %d", tunerStatus);
+           }
+ 
+         if (ciHandler)
+@@ -2389,6 +2392,7 @@
    if (tsreplayer != NULL)
       delete tsreplayer;
  //M7X0 END AK
@@ -542,19 +802,77 @@ diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
    delete spuDecoder;
    delete dvbTuner;
    // We're not explicitly closing any device files here, since this sometimes
+@@ -2398,7 +2402,6 @@
+ bool cDvbDevice::Probe(const char *FileName)
+ {
+   if (access(FileName, F_OK) == 0) {
+-     dsyslog("probing %s", FileName);
+      int f = open(FileName, O_RDONLY);
+      if (f >= 0) {
+         close(f);
+@@ -2607,6 +2610,7 @@
+              CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_MODE, M7X0_VIDEO_LETTER_BOX));
+              dsyslog("DEBUG: set mode -> letterbox");
+              break;
++        default: esyslog("ERROR: unknown video display format %d", VideoDisplayFormat);
+         }
+       //}
+    }
+@@ -2636,16 +2640,17 @@
+         	dsyslog("DEBUG: set 16/9");
+         	CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_RATIO, M7X0_VIDEO_FORMAT_16_9));
+         	CHECK(ioctl(avs, AVSWCMD_MODE_16_9, 0));
+-		break;
+-    	    case vf4_3:
++        	break;
++	    case vf4_3:
+         	dsyslog("DEBUG: set 4/3");
+         	CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_RATIO, M7X0_VIDEO_FORMAT_4_3));
+         	CHECK(ioctl(avs, AVSWCMD_MODE_4_3, 0));
+-		break;
++        	break;
+ 	    case vfauto:
+-		dsyslog("DEBUG: m7x0 auto aspect");
+-		CheckStreamAspect(1);
+-		break;
++        	dsyslog("DEBUG: m7x0 auto aspect");
++        	CheckStreamAspect(1);
++        	break;
++		default: esyslog("ERROR: unknown video format %d", VideoFormat);
+       }
+       close(avs);
+       SetVideoDisplayFormat(eVideoDisplayFormat(Setup.VideoDisplayFormat));
+@@ -3396,6 +3401,7 @@
+     case pmTransfererAudioOnly:
+          TurnOffLiveMode(true,pidHandles[cDevice::ptVideo].pid);
+          break;
++    default: esyslog("ERROR: unknown play mode %d", PlayMode);
+     }
+   playMode = PlayMode;
+   return true;
+diff -Naur VDR-NG-orig/dvbplayer.c VDR-NG/dvbplayer.c
+--- VDR-NG-orig/dvbplayer.c	2010-01-14 09:52:12.000000000 +0100
++++ VDR-NG/dvbplayer.c	2010-01-14 18:22:14.000000000 +0100
+@@ -820,6 +820,7 @@
+             FasterUnlockOther();
+             }
+             break;
++       default: esyslog("ERROR: unknown playMode %d (%s)", playMode, __FUNCTION__);
+        }
+      }
+ }
+@@ -873,6 +874,7 @@
+             FasterUnlockOther();
+             }
+             break;
++       default: esyslog("ERROR: unknown playMode %d (%s)", playMode, __FUNCTION__);
+        }
+      }
+ }
 diff -Naur VDR-NG-orig/dvbspu.c VDR-NG/dvbspu.c
---- VDR-NG-orig/dvbspu.c	Tue Sep 02 12:40:43 2008
-+++ VDR-NG/dvbspu.c	Tue Jun 23 11:08:14 2009
-@@ -55,18 +55,16 @@
- #define setMin(a, b) if (a > b) a = b
- #define setMax(a, b) if (a < b) a = b
- 
--#define spuXres   720
--#define spuYres   576
--
- #define revRect(r1, r2) { r1.x1 = r2.x2; r1.y1 = r2.y2; r1.x2 = r2.x1; r1.y2 = r2.y1; }
- 
- cDvbSpuBitmap::cDvbSpuBitmap(sDvbSpuRect size,
+--- VDR-NG-orig/dvbspu.c	2009-09-24 17:21:12.000000000 +0200
++++ VDR-NG/dvbspu.c	2010-01-18 19:26:33.000000000 +0100
+@@ -64,9 +64,10 @@
                               uint8_t * fodd, uint8_t * eodd,
                               uint8_t * feven, uint8_t * eeven)
  {
@@ -563,18 +881,18 @@ diff -Naur VDR-NG-orig/dvbspu.c VDR-NG/dvbspu.c
 -        throw;
 +    size.x1 = max(size.x1, 0);
 +    size.y1 = max(size.y1, 0);
-+    size.x2 = min(size.x2, Setup.OSDWidth);
-+    size.y2 = min(size.y2, Setup.OSDHeight);
++    size.x2 = min(size.x2, spuXres - 1);
++    size.y2 = min(size.y2, spuYres - 1);
  
      bmpsize = size;
      revRect(minsize[0], size);
-@@ -74,10 +72,11 @@
+@@ -74,10 +75,11 @@
      revRect(minsize[2], size);
      revRect(minsize[3], size);
  
 -    if (!(bmp = new uint8_t[spuXres * spuYres * sizeof(uint8_t)]))
 -        throw;
-+    int MemSize = bmpsize.width() * bmpsize.height() * sizeof(uint8_t);
++    int MemSize = spuXres * spuYres * sizeof(uint8_t);
 +    bmp = new uint8_t[MemSize];
  
 -    memset(bmp, 0, spuXres * spuYres * sizeof(uint8_t));
@@ -583,42 +901,205 @@ diff -Naur VDR-NG-orig/dvbspu.c VDR-NG/dvbspu.c
      putFieldData(0, fodd, eodd);
      putFieldData(1, feven, eeven);
  }
-@@ -94,10 +93,10 @@
-     int h = size.height();
-     int w = size.width();
- 
--    if (size.y1 + h >= spuYres)
--        h = spuYres - size.y1 - 1;
--    if (size.x1 + w >= spuXres)
--        w = spuXres - size.x1 - 1;
-+    if (size.y1 + h >= bmpsize.height())
-+        h = bmpsize.height() - size.y1 - 1;
-+    if (size.x1 + w >= bmpsize.width())
-+        w = bmpsize.width() - size.x1 - 1;
- 
-     if (w & 0x03)
-         w += 4 - (w & 0x03);
-@@ -114,7 +113,7 @@
-     // set the content
-     for (int yp = 0; yp < h; yp++) {
-         for (int xp = 0; xp < w; xp++) {
--            uint8_t idx = bmp[(size.y1 + yp) * spuXres + size.x1 + xp];
-+            uint8_t idx = bmp[(size.y1 + yp) * bmpsize.width() + size.x1 + xp];
-             ret->SetIndex(xp, yp, idx);
-         }
+@@ -112,11 +114,13 @@
      }
-@@ -150,7 +149,7 @@
+ 
+     // set the content
+-    for (int yp = 0; yp < h; yp++) {
+-        for (int xp = 0; xp < w; xp++) {
+-            uint8_t idx = bmp[(size.y1 + yp) * spuXres + size.x1 + xp];
+-            ret->SetIndex(xp, yp, idx);
+-        }
++    if (bmp) {
++       for (int yp = 0; yp < h; yp++) {
++           for (int xp = 0; xp < w; xp++) {
++               uint8_t idx = bmp[(size.y1 + yp) * spuXres + size.x1 + xp];
++               ret->SetIndex(xp, yp, idx);
++           }
++       }
+     }
+     return ret;
+ }
+@@ -143,14 +147,15 @@
+         DEBUG("MinSize: (%d, %d) x (%d, %d)\n",
+               size.x1, size.y1, size.x2, size.y2);
+     if (size.x1 > size.x2 || size.y1 > size.y2)
+-       return false;
++        return false;
+ 
+     return ret;
+ }
  
  void cDvbSpuBitmap::putPixel(int xp, int yp, int len, uint8_t colorid)
  {
 -    memset(bmp + spuXres * yp + xp, colorid, len);
-+    memset(bmp + bmpsize.width() * yp + xp, colorid, len);
++    if (bmp)
++       memset(bmp + spuXres * yp + xp, colorid, len);
      setMin(minsize[colorid].x1, xp);
      setMin(minsize[colorid].y1, yp);
      setMax(minsize[colorid].x2, xp + len - 1);
+@@ -335,6 +340,35 @@
+     return size;
+ }
+ 
++int cDvbSpuBitmap::getMinBpp(const aDvbSpuPalDescr paldescr)
++{
++    int col = 1;
++    for (int i = 0; i < 4; i++) {
++        if (paldescr[i].trans != 0) {
++                col++;
++        }
++    }
++    return col > 2 ? 4 : 2;
++}
++
++int cDvbSpuDecoder::CalcAreaBpp(cBitmap *fgbmp, cBitmap *bgbmp)
++{
++        int fgbpp = 0;
++        int bgbpp = 0;
++        int ret;
++    if (fgbmp) {
++            fgbpp = spubmp->getMinBpp(hlpDescr);
++    }
++    if (bgbmp) {
++            bgbpp = spubmp->getMinBpp(palDescr);
++    }
++    ret = fgbpp + bgbpp;
++    if (ret > 2)
++            ret = 4;
++    return ret;
++}
++
++
+ void cDvbSpuDecoder::Draw(void)
+ {
+     cMutexLock MutexLock(&mutex);
+@@ -342,43 +376,92 @@
+         Hide();
+         return;
+     }
+-
++    sDvbSpuRect bgsize;
+     cBitmap *fg = NULL;
+     cBitmap *bg = NULL;
+-    sDvbSpuRect bgsize;
+-    sDvbSpuRect hlsize;
+-
+-    hlsize.x1 = hlpsize.x1;
+-    hlsize.y1 = hlpsize.y1;
+-    hlsize.x2 = hlpsize.x2;
+-    hlsize.y2 = hlpsize.y2;
+ 
+     if (highlight)
+-        fg = spubmp->getBitmap(hlpDescr, palette, hlsize);
++        fg = spubmp->getBitmap(hlpDescr, palette, hlpsize);
+ 
+     if (spubmp->getMinSize(palDescr, bgsize))
+         bg = spubmp->getBitmap(palDescr, palette, bgsize);
+ 
+-    sDvbSpuRect areaSize = CalcAreaSize(hlsize, fg, bgsize, bg);
++    if (!fg || !bg || !osd)
++        Hide();
+ 
+-    if (!fg || !bg || !osd) {
+-       Hide();
+-       }
++    if (osd == NULL) {
++            restricted_osd = false;
++            osd = cOsdProvider::NewOsd(0, 0);
++
++            tArea Area = { size.x1, size.y1, size.x2, size.y2, 4};
++            if (osd->CanHandleAreas(&Area, 1) != oeOk)
++                    restricted_osd = true;
++            else
++                osd->SetAreas(&Area, 1);
++    }
++    if (restricted_osd) {
++            sDvbSpuRect hlsize;
++            bool setarea = false;
++            /* reduce fg area (only valid if there is no bg below) */
++            if (fg) {
++                    spubmp->getMinSize(hlpDescr,hlsize);
++                    /* clip to the highligh area */
++                    setMax(hlsize.x1, hlpsize.x1);
++                    setMax(hlsize.y1, hlpsize.y1);
++                    setMin(hlsize.x2, hlpsize.x2);
++                    setMin(hlsize.y2, hlpsize.y2);
++                    if (hlsize.x1 > hlsize.x2 || hlsize.y1 > hlsize.y2) {
++                            hlsize.x1 = hlsize.x2 = hlsize.y1 = hlsize.y2 = 0;
++                    }
++            }
++            sDvbSpuRect areaSize = CalcAreaSize((fg && bg) ? hlpsize : hlsize, fg, bgsize, bg);
+ 
+-    if (bg || fg) {
+-        if (osd == NULL) {
+-           osd = cOsdProvider::NewOsd(0, 0);
+-           if ((areaSize.width() & 3) != 0)
+-              areaSize.x2 += 4 - (areaSize.width() & 3);
+-           tArea Area = { areaSize.x1, areaSize.y1, areaSize.x2, areaSize.y2, (fg && bg) ? 4 : 2 };
+-           if (osd->SetAreas(&Area, 1) != oeOk)
++#define DIV(a, b) (a/b)?:1
++            for (int d = 1; !setarea && d <= 2; d++) {
++
++                    /* first try old behaviour */
++                    tArea Area = { areaSize.x1, areaSize.y1, areaSize.x2, areaSize.y2, DIV(CalcAreaBpp(fg, bg), d) };
++
++                    if ((Area.Width() & 7) != 0)
++                            Area.x2 += 8 - (Area.Width() & 7);
++
++                    if (osd->CanHandleAreas(&Area, 1) == oeOk &&
++                        osd->SetAreas(&Area, 1) == oeOk)
++                            setarea = true;
++
++                    /* second try to split area if there is both area */
++                    if (!setarea && fg && bg) {
++                            tArea Area_Both [2] = {
++                                    {bgsize.x1, bgsize.y1, bgsize.x2, bgsize.y2, DIV(CalcAreaBpp(0, bg), d)},
++                                    {hlpsize.x1, hlpsize.y1, hlpsize.x2, hlpsize.y2, DIV(CalcAreaBpp(fg, 0), d)}
++                            };
++                            if (!Area_Both[0].Intersects(Area_Both[1])) {
++                                    /* there is no intersection. We can reduce hl */
++                                    Area_Both[1].x1 = hlsize.x1;
++                                    Area_Both[1].y1 = hlsize.y1;
++                                    Area_Both[1].x2 = hlsize.x2;
++                                    Area_Both[1].y2 = hlsize.y2;
++
++                                    if ((Area_Both[0].Width() & 7) != 0)
++                                            Area_Both[0].x2 += 8 - (Area_Both[0].Width() & 7);
++                                    if ((Area_Both[1].Width() & 7) != 0)
++                                            Area_Both[1].x2 += 8 - (Area_Both[1].Width() & 7);
++                                    if (osd->CanHandleAreas(Area_Both, 2) == oeOk &&
++                                        osd->SetAreas(Area_Both, 2) == oeOk)
++                                            setarea = true;
++                            }
++                    }
++            }
++            if (!setarea)
+               dsyslog("dvbspu: AreaSize (%d, %d) (%d, %d) Bpp %d", areaSize.x1, areaSize.y1, areaSize.x2, areaSize.y2, (fg && bg) ? 4 : 2 );
+-           }
++    }
+ 
++    /* we could draw use DrawPixel on osd */
++    if (bg || fg) {
+         if (bg)
+            osd->DrawBitmap(bgsize.x1, bgsize.y1, *bg);
+         if (fg)
+-           osd->DrawBitmap(hlsize.x1, hlsize.y1, *fg);
++           osd->DrawBitmap(hlpsize.x1, hlpsize.y1, *fg);
+         delete fg;
+         delete bg;
+ 
+@@ -509,6 +592,7 @@
+                 }
+             }
+             if (fodd != 0 && feven != 0) {
++                Hide();
+                 delete spubmp;
+                 spubmp = new cDvbSpuBitmap(size, spu + fodd, spu + feven,
+                                            spu + feven, spu + cmdOffs());
 diff -Naur VDR-NG-orig/dvbspu.h VDR-NG/dvbspu.h
---- VDR-NG-orig/dvbspu.h	Tue Sep 02 12:40:43 2008
-+++ VDR-NG/dvbspu.h	Tue Jun 23 11:08:14 2009
+--- VDR-NG-orig/dvbspu.h	2009-09-24 17:21:12.000000000 +0200
++++ VDR-NG/dvbspu.h	2010-01-14 18:24:16.000000000 +0100
 @@ -32,10 +32,10 @@
      int x1, y1;
      int x2, y2;
@@ -641,10 +1122,87 @@ diff -Naur VDR-NG-orig/dvbspu.h VDR-NG/dvbspu.h
    private:
      sDvbSpuRect bmpsize;
      sDvbSpuRect minsize[4];
+@@ -82,6 +80,7 @@
+ 
+     bool getMinSize(const aDvbSpuPalDescr paldescr,
+                     sDvbSpuRect & size) const;
++    int getMinBpp(const aDvbSpuPalDescr paldescr);
+     cBitmap *getBitmap(const aDvbSpuPalDescr paldescr,
+                        const cDvbSpuPalette & pal,
+                        sDvbSpuRect & size) const;
+@@ -99,6 +98,7 @@
+     uint32_t spupts;
+     bool clean;
+     bool ready;
++    bool restricted_osd;
+ 
+     enum spFlag { spNONE, spHIDE, spSHOW, spMENU };
+     spFlag state;
+@@ -131,6 +131,7 @@
+     };
+ 
+     sDvbSpuRect CalcAreaSize(sDvbSpuRect fgsize, cBitmap *fgbmp, sDvbSpuRect bgsize, cBitmap *bgbmp);
++    int CalcAreaBpp(cBitmap *fgbmp, cBitmap *bgbmp);
+ 
+   public:
+     cDvbSpuDecoder();
+@@ -196,8 +197,7 @@
+ 
+ inline uint32_t cDvbSpuPalette::getColor(uint8_t idx, uint8_t trans) const
+ {
+-    uint8_t t = trans == 0x0f ? 0xff : trans << 4;
+-    return palette[idx] | (t << 24);
++    return palette[idx] | ((trans == 0x0f) ? 0xff000000 : (trans << 28));
+ }
+ 
+ #endif                          // __DVBSPU_H
 diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
---- VDR-NG-orig/eit.c	Tue Jun 23 11:06:33 2009
-+++ VDR-NG/eit.c	Tue Jun 23 11:07:48 2009
-@@ -312,9 +312,9 @@
+--- VDR-NG-orig/eit.c	2010-01-14 09:52:22.000000000 +0100
++++ VDR-NG/eit.c	2010-01-15 14:19:16.000000000 +0100
+@@ -159,9 +159,40 @@
+                     }
+                  }
+                  break;
+-            case SI::ContentDescriptorTag:
++            case SI::ContentDescriptorTag: {
++                 SI::ContentDescriptor *cd = (SI::ContentDescriptor *)d;
++                 SI::ContentDescriptor::Nibble Nibble;
++                 int NumContents = 0;
++                 uchar Contents[MAXEVCONTENTS] = { 0 };
++                 for (SI::Loop::Iterator it3; cd->nibbleLoop.getNext(Nibble, it3); ) {
++                     if (NumContents < MAXEVCONTENTS) {
++                        Contents[NumContents] = ((Nibble.getContentNibbleLevel1() & 0xF) << 4) | (Nibble.getContentNibbleLevel2() & 0xF);
++                        NumContents++;
++                        }
++                     }
++                 pEvent->SetContents(Contents);
++                 }
+                  break;
+-            case SI::ParentalRatingDescriptorTag:
++            case SI::ParentalRatingDescriptorTag: {
++                 int LanguagePreferenceRating = -1;
++                 SI::ParentalRatingDescriptor *prd = (SI::ParentalRatingDescriptor *)d;
++                 SI::ParentalRatingDescriptor::Rating Rating;
++                 for (SI::Loop::Iterator it3; prd->ratingLoop.getNext(Rating, it3); ) {
++                     if (I18nIsPreferredLanguage(Setup.EPGLanguages, Rating.languageCode, LanguagePreferenceRating)) {
++                        int ParentalRating = (Rating.getRating() & 0xFF);
++                        switch (ParentalRating) {
++                          // values defined by the DVB standard (minimum age = rating + 3 years):
++                          case 0x01 ... 0x0F: ParentalRating += 3; break;
++                          // values defined by broadcaster CSAT (now why didn't they just use 0x07, 0x09 and 0x0D?):
++                          case 0x11:          ParentalRating = 10; break;
++                          case 0x12:          ParentalRating = 12; break;
++                          case 0x13:          ParentalRating = 16; break;
++                          default:            ParentalRating = 0;
++                          }
++                        pEvent->SetParentalRating(ParentalRating);
++                        }
++                     }
++                 }
+                  break;
+             case SI::PDCDescriptorTag: {
+                  SI::PDCDescriptor *pd = (SI::PDCDescriptor *)d;
+@@ -312,9 +343,9 @@
    if (diff > 5) {
       mutex.Lock();
       if (abs(diff - lastDiff) < 3) {
@@ -657,8 +1215,12 @@ diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
  				char __errorstr[256];
  				strerror_r(errno,__errorstr,256);
  				__errorstr[255]=0;
-@@ -330,34 +330,30 @@
+@@ -328,36 +359,45 @@
  
+ // --- cEitFilter ------------------------------------------------------------
+ 
++time_t cEitFilter::disableUntil = 0;
++
  cEitFilter::cEitFilter(void)
  {
 -//M7X0 BEGIN AK
@@ -673,10 +1235,21 @@ diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
 +  Set(0x12, 0x40, 0xC0);  // event info now&next actual/other TS (0x4E/0x4F), future actual/other TS (0x5X/0x6X)
 +  if (Setup.SetSystemTime && Setup.TimeTransponder)
 +     Set(0x14, 0x70);     // TDT
++}
++
++void cEitFilter::SetDisableUntil(time_t Time)
++{
++  disableUntil = Time;
  }
  
  void cEitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
  {
++  if (disableUntil) {
++     if (time(NULL) > disableUntil)
++        disableUntil = 0;
++     else
++        return;
++     }
    switch (Pid) {
      case 0x12: {
 -         cSchedulesLock SchedulesLock(true, 10);
@@ -708,10 +1281,286 @@ diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
              }
           }
           break;
+@@ -366,5 +406,6 @@
+             cTDT TDT(Data);
+          }
+          break;
++    default: ;
+     }
+ }
+diff -Naur VDR-NG-orig/eit.h VDR-NG/eit.h
+--- VDR-NG-orig/eit.h	2009-09-24 17:21:02.000000000 +0200
++++ VDR-NG/eit.h	2010-01-15 14:19:16.000000000 +0100
+@@ -13,10 +13,13 @@
+ #include "filter.h"
+ 
+ class cEitFilter : public cFilter {
++private:
++  static time_t disableUntil;
+ protected:
+   virtual void Process(u_short Pid, u_char Tid, const u_char *Data, int Length);
+ public:
+   cEitFilter(void);
++  static void SetDisableUntil(time_t Time);
+   };
+ 
+ #endif //__EIT_H
 diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
---- VDR-NG-orig/epg.c	Mon Mar 09 10:05:41 2009
-+++ VDR-NG/epg.c	Tue Jun 23 11:07:49 2009
-@@ -1101,6 +1101,7 @@
+--- VDR-NG-orig/epg.c	2010-01-14 09:52:12.000000000 +0100
++++ VDR-NG/epg.c	2010-01-15 14:19:16.000000000 +0100
+@@ -112,6 +112,8 @@
+   shortText = NULL;
+   description = NULL;
+   components = NULL;
++  memset(contents, 0, sizeof(contents));
++  parentalRating = 0;
+   startTime = 0;
+   duration = 0;
+   vps = 0;
+@@ -193,6 +195,17 @@
+   components = Components;
+ }
+ 
++void cEvent::SetContents(uchar *Contents)
++{
++  for (int i = 0; i < MAXEVCONTENTS; i++)
++      contents[i] = Contents[i];
++}
++
++void cEvent::SetParentalRating(int ParentalRating)
++{
++  parentalRating = ParentalRating;
++}
++
+ void cEvent::SetStartTime(time_t StartTime)
+ {
+   if (startTime != StartTime) {
+@@ -237,6 +250,155 @@
+   return runningStatus >= (OrAboutToStart ? SI::RunningStatusStartsInAFewSeconds : SI::RunningStatusPausing);
+ }
+ 
++const char *cEvent::ContentToString(uchar Content)
++{
++  switch (Content & 0xF0) {
++    case EVCONTENTMASK_MOVIEDRAMA:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$Movie/Drama");
++           case 0x01: return tr("Content$Detective/Thriller");
++           case 0x02: return tr("Content$Adventure/Western/War");
++           case 0x03: return tr("Content$Science Fiction/Fantasy/Horror");
++           case 0x04: return tr("Content$Comedy");
++           case 0x05: return tr("Content$Soap/Melodrama/Folkloric");
++           case 0x06: return tr("Content$Romance");
++           case 0x07: return tr("Content$Serious/Classical/Religious/Historical Movie/Drama");
++           case 0x08: return tr("Content$Adult Movie/Drama");
++           }
++         break;
++    case EVCONTENTMASK_NEWSCURRENTAFFAIRS:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$News/Current Affairs");
++           case 0x01: return tr("Content$News/Weather Report");
++           case 0x02: return tr("Content$News Magazine");
++           case 0x03: return tr("Content$Documentary");
++           case 0x04: return tr("Content$Discussion/Inverview/Debate");
++           }
++         break;
++    case EVCONTENTMASK_SHOW:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$Show/Game Show");
++           case 0x01: return tr("Content$Game Show/Quiz/Contest");
++           case 0x02: return tr("Content$Variety Show");
++           case 0x03: return tr("Content$Talk Show");
++           }
++         break;
++    case EVCONTENTMASK_SPORTS:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$Sports");
++           case 0x01: return tr("Content$Special Event");
++           case 0x02: return tr("Content$Sport Magazine");
++           case 0x03: return tr("Content$Football/Soccer");
++           case 0x04: return tr("Content$Tennis/Squash");
++           case 0x05: return tr("Content$Team Sports");
++           case 0x06: return tr("Content$Athletics");
++           case 0x07: return tr("Content$Motor Sport");
++           case 0x08: return tr("Content$Water Sport");
++           case 0x09: return tr("Content$Winter Sports");
++           case 0x0A: return tr("Content$Equestrian");
++           case 0x0B: return tr("Content$Martial Sports");
++           }
++         break;
++    case EVCONTENTMASK_CHILDRENYOUTH:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$Children's/Youth Programme");
++           case 0x01: return tr("Content$Pre-school Children's Programme");
++           case 0x02: return tr("Content$Entertainment Programme for 6 to 14");
++           case 0x03: return tr("Content$Entertainment Programme for 10 to 16");
++           case 0x04: return tr("Content$Informational/Educational/School Programme");
++           case 0x05: return tr("Content$Cartoons/Puppets");
++           }
++         break;
++    case EVCONTENTMASK_MUSICBALLETDANCE:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$Music/Ballet/Dance");
++           case 0x01: return tr("Content$Rock/Pop");
++           case 0x02: return tr("Content$Serious/Classical Music");
++           case 0x03: return tr("Content$Folk/Tradional Music");
++           case 0x04: return tr("Content$Jazz");
++           case 0x05: return tr("Content$Musical/Opera");
++           case 0x06: return tr("Content$Ballet");
++           }
++         break;
++    case EVCONTENTMASK_ARTSCULTURE:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$Arts/Culture");
++           case 0x01: return tr("Content$Performing Arts");
++           case 0x02: return tr("Content$Fine Arts");
++           case 0x03: return tr("Content$Religion");
++           case 0x04: return tr("Content$Popular Culture/Traditional Arts");
++           case 0x05: return tr("Content$Literature");
++           case 0x06: return tr("Content$Film/Cinema");
++           case 0x07: return tr("Content$Experimental Film/Video");
++           case 0x08: return tr("Content$Broadcasting/Press");
++           case 0x09: return tr("Content$New Media");
++           case 0x0A: return tr("Content$Arts/Culture Magazine");
++           case 0x0B: return tr("Content$Fashion");
++           }
++         break;
++    case EVCONTENTMASK_SOCIALPOLITICALECONOMICS:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$Social/Political/Economics");
++           case 0x01: return tr("Content$Magazine/Report/Documentary");
++           case 0x02: return tr("Content$Economics/Social Advisory");
++           case 0x03: return tr("Content$Remarkable People");
++           }
++         break;
++    case EVCONTENTMASK_EDUCATIONALSCIENCE:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$Education/Science/Factual");
++           case 0x01: return tr("Content$Nature/Animals/Environment");
++           case 0x02: return tr("Content$Technology/Natural Sciences");
++           case 0x03: return tr("Content$Medicine/Physiology/Psychology");
++           case 0x04: return tr("Content$Foreign Countries/Expeditions");
++           case 0x05: return tr("Content$Social/Spiritual Sciences");
++           case 0x06: return tr("Content$Further Education");
++           case 0x07: return tr("Content$Languages");
++           }
++         break;
++    case EVCONTENTMASK_LEISUREHOBBIES:
++         switch (Content & 0x0F) {
++           default:
++           case 0x00: return tr("Content$Leisure/Hobbies");
++           case 0x01: return tr("Content$Tourism/Travel");
++           case 0x02: return tr("Content$Handicraft");
++           case 0x03: return tr("Content$Motoring");
++           case 0x04: return tr("Content$Fitness & Health");
++           case 0x05: return tr("Content$Cooking");
++           case 0x06: return tr("Content$Advertisement/Shopping");
++           case 0x07: return tr("Content$Gardening");
++           }
++         break;
++    case EVCONTENTMASK_SPECIAL:
++         switch (Content & 0x0F) {
++           case 0x00: return tr("Content$Original Language");
++           case 0x01: return tr("Content$Black & White");
++           case 0x02: return tr("Content$Unpublished");
++           case 0x03: return tr("Content$Live Broadcast");
++           default: ;
++           }
++         break;
++    default: ;
++    }
++  return "";
++}
++
++cString cEvent::GetParentalRatingString(void) const
++{
++  if (parentalRating)
++     return cString::sprintf(tr("ParentalRating$from %d"), parentalRating);
++  return NULL;
++}
++
+ cString cEvent::GetDateString(void) const
+ {
+ //M7X0 BEGIN AK
+@@ -281,6 +443,14 @@
+         fprintf(f, "%sD %s\n", Prefix, description);
+         strreplace(description, '|', '\n');
+         }
++     if (contents[0]) {
++        fprintf(f, "%sG", Prefix);
++        for (int i = 0; Contents(i); i++)
++            fprintf(f, " %02X", Contents(i));
++        fprintf(f, "\n");
++        }
++     if (parentalRating)
++        fprintf(f, "%sR %d\n", Prefix, parentalRating);
+      if (components) {
+         for (int i = 0; i < components->NumComponents(); i++) {
+             tComponent *p = components->Component(i);
+@@ -307,6 +477,22 @@
+     case 'D': strreplace(t, '|', '\n');
+               SetDescription(t);
+               break;
++    case 'G': {
++                memset(contents, 0, sizeof(contents));
++                for (int i = 0; i < MAXEVCONTENTS; i++) {
++                    char *tail = NULL;
++                    int c = strtol(t, &tail, 16);
++                    if (0x00 < c && c <= 0xFF) {
++                       contents[i] = c;
++                       t = tail;
++                       }
++                    else
++                       break;
++                    }
++              }
++              break;
++    case 'R': SetParentalRating(atoi(t));
++              break;
+     case 'X': if (!components)
+                  components = new cComponents;
+               components->SetComponent(components->NumComponents(), t);
+@@ -624,6 +810,7 @@
+                      case 0x0F: p->description = strdup("HD 16:9"); break;
+                      case 0x0C:
+                      case 0x10: p->description = strdup("HD >16:9"); break;
++                     default: ;
+                      }
+                    EpgBugFixStat(9, ChannelID());
+                    }
+@@ -642,12 +829,13 @@
+                 if (!p->description) {
+                    switch (p->type) {
+                      case 0x05: p->description = strdup("Dolby Digital"); break;
+-                     // all others will just display the language
++                     default: ; // all others will just display the language
+                      }
+                    EpgBugFixStat(11, ChannelID());
+                    }
+                 }
+                 break;
++           default: ;
+            }
+          }
+      }
+@@ -917,6 +1105,7 @@
+                }
+             }
+             break;
++       default: esyslog("ERROR: unknown DumpMode %d (%s %d)", DumpMode, __FUNCTION__, __LINE__);
+        }
+      fprintf(f, "%sc\n", Prefix);
+      }
+@@ -1125,6 +1314,7 @@
    if (!p) {
       p = new cSchedule(ChannelID);
       Add(p);
@@ -719,7 +1568,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
       cChannel *channel = Channels.GetByChannelID(ChannelID);
       if (channel)
          channel->schedule = p;
-@@ -1111,10 +1112,14 @@
+@@ -1135,10 +1325,14 @@
  const cSchedule *cSchedules::GetSchedule(tChannelID ChannelID) const
  {
    ChannelID.ClrRid();
@@ -738,7 +1587,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
    return NULL;
  }
  
-@@ -1130,9 +1135,25 @@
+@@ -1154,11 +1348,27 @@
    if (Channel->schedule == &DummySchedule && AddIfMissing) {
       cSchedule *Schedule = new cSchedule(Channel->GetChannelID());
       ((cSchedules *)this)->Add(Schedule);
@@ -746,8 +1595,8 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
       Channel->schedule = Schedule;
       }
    return Channel->schedule != &DummySchedule? Channel->schedule : NULL;
-+}
-+
+ }
+ 
 +void cSchedules::HashSchedule(cSchedule *Schedule)
 +{
 +  schedulesHash.Add(Schedule, HashKey(Schedule->ChannelID().ClrRid()));
@@ -761,13 +1610,83 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +unsigned int cSchedules::HashKey(tChannelID ChannelID)
 +{
 +  return (unsigned int)((ChannelID.Nid() << 16 | ChannelID.Source()) ^ (ChannelID.Tid() << 16 | ChannelID.Sid()) ^ ChannelID.Rid());
- }
- 
++}
++
  // --- cSchedulesReaderThread ------------------------------------------------------------
+ cSchedulesReaderThread cSchedulesReaderThread::readerThread;
+ 
 diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
---- VDR-NG-orig/epg.h	Mon Mar 09 10:05:41 2009
-+++ VDR-NG/epg.h	Tue Jun 23 11:07:49 2009
-@@ -172,11 +172,15 @@
+--- VDR-NG-orig/epg.h	2010-01-14 09:52:12.000000000 +0100
++++ VDR-NG/epg.h	2010-01-15 14:20:04.000000000 +0100
+@@ -19,6 +19,20 @@
+ 
+ #define MAXEPGBUGFIXLEVEL 3
+ 
++#define MAXEVCONTENTS                          4
++#define EVCONTENTMASK_MOVIEDRAMA               0x10
++#define EVCONTENTMASK_NEWSCURRENTAFFAIRS       0x20
++#define EVCONTENTMASK_SHOW                     0x30
++#define EVCONTENTMASK_SPORTS                   0x40
++#define EVCONTENTMASK_CHILDRENYOUTH            0x50
++#define EVCONTENTMASK_MUSICBALLETDANCE         0x60
++#define EVCONTENTMASK_ARTSCULTURE              0x70
++#define EVCONTENTMASK_SOCIALPOLITICALECONOMICS 0x80
++#define EVCONTENTMASK_EDUCATIONALSCIENCE       0x90
++#define EVCONTENTMASK_LEISUREHOBBIES           0xA0
++#define EVCONTENTMASK_SPECIAL                  0xB0
++#define EVCONTENTMASK_USERDEFINED              0xF0
++
+ enum eDumpMode { dmAll, dmPresent, dmFollowing, dmPresentAndFollowing, dmAtTime, dmBetween, dmWithID };
+ 
+ struct tComponent {
+@@ -53,15 +67,18 @@
+ class cEvent : public cListObject {
+   friend class cSchedule;
+ private:
++  // The sequence of these parameters is optimized for minimal memory waste!
+   cSchedule *schedule;     // The Schedule this event belongs to
+   tEventID eventID;        // Event ID of this event
+   uchar tableID;           // Table ID this event came from
+   uchar version;           // Version number of section this event came from
+-  int runningStatus;       // 0=undefined, 1=not running, 2=starts in a few seconds, 3=pausing, 4=running
++  uchar runningStatus;     // 0=undefined, 1=not running, 2=starts in a few seconds, 3=pausing, 4=running
++  uchar parentalRating;    // Parental rating of this event
+   char *title;             // Title of this event
+   char *shortText;         // Short description of this event (typically the episode name in case of a series)
+   char *description;       // Description of this event
+   cComponents *components; // The stream components of this event
++  uchar contents[MAXEVCONTENTS]; // Contents of this event
+   time_t startTime;        // Start time of this event
+   int duration;            // Duration of this event in seconds
+   time_t vps;              // Video Programming Service timestamp (VPS, aka "Programme Identification Label", PIL)
+@@ -86,6 +103,8 @@
+   const char *ShortText(void) const { return shortText; }
+   const char *Description(void) const { return description; }
+   const cComponents *Components(void) const { return components; }
++  uchar Contents(int i = 0) const { return (0 <= i && i < MAXEVCONTENTS) ? contents[i] : 0; }
++  int ParentalRating(void) const { return parentalRating; }
+   time_t StartTime(void) const { return startTime; }
+   time_t EndTime(void) const { return startTime + duration; }
+   int Duration(void) const { return duration; }
+@@ -96,6 +115,8 @@
+   void IncTimerUse(void) const { usedByTimers++; }
+   void DecTimerUse(void) const { usedByTimers--; }
+   bool IsRunning(bool OrAboutToStart = false) const;
++  static const char *ContentToString(uchar Content);
++  cString GetParentalRatingString(void) const;
+   cString GetDateString(void) const;
+   cString GetTimeString(void) const;
+   cString GetEndTimeString(void) const;
+@@ -108,6 +129,8 @@
+   void SetShortText(const char *ShortText);
+   void SetDescription(const char *Description);
+   void SetComponents(cComponents *Components); // Will take ownership of Components!
++  void SetContents(uchar *Contents);
++  void SetParentalRating(int ParentalRating);
+   void SetStartTime(time_t StartTime);
+   void SetDuration(int Duration);
+   void SetVps(time_t Vps);
+@@ -172,11 +195,15 @@
    friend class cSchedulesLock;
  private:
    cRwLock rwlock;
@@ -784,8 +1703,8 @@ diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
    static void SetEpgDataFileName(const char *FileName);
    static const cSchedules *Schedules(cSchedulesLock &SchedulesLock);
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
---- VDR-NG-orig/i18n.c	Tue Jun 23 11:06:35 2009
-+++ VDR-NG/i18n.c	Tue Jun 23 11:08:15 2009
+--- VDR-NG-orig/i18n.c	2010-01-14 09:52:24.000000000 +0100
++++ VDR-NG/i18n.c	2010-01-22 12:47:51.000000000 +0100
 @@ -4718,6 +4718,116 @@
      "Standard levetid (d)",
      "Výchozí ¾ivotnost",
@@ -903,11 +1822,10 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
    { "Setup.Recording$Pause priority",
      "Pause-Priorität",
      "Prioriteta pavze",
-@@ -5179,6 +5289,28 @@
-     "Kanalivahetuse ooteaeg (s)",
+@@ -5180,6 +5290,28 @@
      "Zap timeout (s)",
      "Èasový limit Zap (s)",
-+  },
+   },
 +  { "Setup.Miscellaneous$Channel entry timeout (ms)",
 +    "Zeitlimit für Kanaleingabe (ms)",
 +    "",// TODO
@@ -929,12 +1847,1780 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
-   },
++  },
    { "Setup.Miscellaneous$Initial channel",
      "Kanal beim Einschalten",
+     "Privzeti kanal",
+@@ -7040,6 +7172,1766 @@
+     "Starter EPG skanning",
+     "Zaèíná prohledávání EPG",
+   },
++  { "Content$Movie/Drama",
++    "Film/Drama",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Película/Drama",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Detective/Thriller",
++    "Detektiv/Thriller",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Policíaca/Suspense",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Adventure/Western/War",
++    "Abenteuer/Western/Krieg",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Aventura/Oeste/Guerra",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Science Fiction/Fantasy/Horror",
++    "Science-Fiction/Fantasy/Horror",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Ciencia Ficción/Fantasía/Terror",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Comedy",
++    "Komödie",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Comedia",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Soap/Melodrama/Folkloric",
++    "Seife/Melodram/Folklore",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Telenovela/Melodrama/Folclore",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Romance",
++    "Romanze",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Romántico",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Serious/Classical/Religious/Historical Movie/Drama",
++    "Ernst/Klassik/Religion/Historischer Film/Drama",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Solemne/Clásico/Religioso/Película histórica/Drama",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Adult Movie/Drama",
++    "Erwachsenen-Film/Drama",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Película para adultos/Drama",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$News/Current Affairs",
++    "Aktuelle Angelegenheiten",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Noticias/Actualidad",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$News/Weather Report",
++    "Wetterbericht",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Noticias/Informe meteorológico",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$News Magazine",
++    "Nachrichtenmagazin",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Magazín informativo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Documentary",
++    "Dokumentation",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Documental",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Discussion/Inverview/Debate",
++    "Diskussion/Interview/Debatte",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Discusión/Entrevista/Debate",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Show/Game Show",
++    "Show/Spielshow",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Programa/Programa concurso",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Game Show/Quiz/Contest",
++    "Spielshow/Quiz/Wettbewerb",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Programa concurso/Acertijo/Cuestionario",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Variety Show",
++    "Variete-Show",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Programa de variedades",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Talk Show",
++    "Talkshow",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Programa de entrevistas",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Sports",
++    "Sport",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Deporte",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Special Event",
++    "Besonderes Ereignis",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Acontecimiento especial",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Sport Magazine",
++    "Sportmagazin",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Magazín deportivo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Football/Soccer",
++    "Football/Fußball",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Fútbol",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Tennis/Squash",
++    "Tennis/Squash",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Tenis/Squash",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Team Sports",
++    "Mannschaftssport",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Deporte de equipo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Athletics",
++    "Athletik",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Atletismo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Motor Sport",
++    "Motorsport",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Deporte motorizado",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Water Sport",
++    "Wassersport",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Deporte acuático",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Winter Sports",
++    "Wintersport",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Deporte de invierno",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Equestrian",
++    "Reitsport",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Hípica",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Martial Sports",
++    "Kampfsport",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Deporte marcial",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Children's/Youth Programme",
++    "Kinder/Jugendprogramm",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Infantil/Programa juvenil",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Pre-school Children's Programme",
++    "Programm für Vorschulkinder",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Programa para niños en preescolar",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Entertainment Programme for 6 to 14",
++    "Unterhaltungsprogramm für 6 bis 14",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Programa de entretenimiento de 6 a 14",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Entertainment Programme for 10 to 16",
++    "Unterhaltungsprogramm für 10 bis 16",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Programa de entretenimiento de 10 a 16",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Informational/Educational/School Programme",
++    "Informations/Lehr/Schul-Programm",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Informativo/Educacional/Programa escolar",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Cartoons/Puppets",
++    "Zeichentrick/Puppen",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Dibujos animados/Muñecos",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Music/Ballet/Dance",
++    "Musik/Ballett/Tanz",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Música/Ballet/Danza",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Rock/Pop",
++    "Rock/Pop",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Rock/Pop",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Serious/Classical Music",
++    "Ernste/Klassische Musik",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Solemne/Música clásica",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Folk/Tradional Music",
++    "Volks/Traditionelle Musik",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Folclore/Música tradicional",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Jazz",
++    "Jazz",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Jazz",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Musical/Opera",
++    "Musical/Oper",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Musical/Ópera",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Ballet",
++    "Ballett",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Ballet",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Arts/Culture",
++    "Kunst/Kultur",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Artes/Cultura",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Performing Arts",
++    "Darstellende Künste",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Artes escénicas",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Fine Arts",
++    "Bildende Künste",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Bellas Artes",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Religion",
++    "Religion",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Religión",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Popular Culture/Traditional Arts",
++    "Pop-Kultur/Traditionelle Künste",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Cultura popular/Artes tradicionales",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Literature",
++    "Literatur",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Literatura",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Film/Cinema",
++    "Film/Kino",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Película/Cine",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Experimental Film/Video",
++    "Experimentalfilm/Video",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Película experimental/Vídeo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Broadcasting/Press",
++    "Rundfunk/Presse",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Radiodifusión/Prensa",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$New Media",
++    "Neue Medien",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Nuevos medios",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Arts/Culture Magazine",
++    "Kunst/Kulturmagazin",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Artes/Magazín cultural",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Fashion",
++    "Mode",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Moda",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Social/Political/Economics",
++    "Gesellschaft/Politik/Wirtschaft",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Sociedad/Política/Economía",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Magazine/Report/Documentary",
++    "Magazin/Bericht/Dokumentation",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Magazín/Reportaje/Documental",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Economics/Social Advisory",
++    "Wirtschafts/Gesellschaftsberatung",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Economía/Asesor social",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Remarkable People",
++    "Bemerkenswerte Leute",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Gente excepcional",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Education/Science/Factual",
++    "Ausbildung/Wissenschaft/Sachlich",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Educación/Ciencia/Práctico",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Nature/Animals/Environment",
++    "Natur/Tiere/Umwelt",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Naturaleza/Animales/Medio ambiente",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Technology/Natural Sciences",
++    "Technik/Naturwissenschaften",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Tecnología/Ciencias naturales",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Medicine/Physiology/Psychology",
++    "Medizin/Physiologie/Psychologie",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Medicina/Fisiología/Psicología",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Foreign Countries/Expeditions",
++    "Ausland/Expeditionen",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Países extranjeros/Expediciones",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Social/Spiritual Sciences",
++    "Sozial/Geisteswissenschaften",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Sociedad/Humanidades",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Further Education",
++    "Weiterbildung",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Formación continua",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Languages",
++    "Sprachen",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Idiomas",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Leisure/Hobbies",
++    "Freizeit/Hobbies",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Ocio y tiempo libre/Aficiones",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Tourism/Travel",
++    "Tourismus/Reisen",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Turismo/Viajes",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Handicraft",
++    "Handwerk",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Artesanía",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Motoring",
++    "Autofahren",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Automovilismo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Fitness & Health",
++    "Fitness & Gesundheit",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Forma física y salud",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Cooking",
++    "Kochen",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Cocina",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Advertisement/Shopping",
++    "Werbung/Einkaufen",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Publicidad/Compras",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Gardening",
++    "Gartenbau",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Jardinería",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Original Language",
++    "Originalsprache",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Idioma original",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Black & White",
++    "Schwarz-weiß",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Blanco y negro",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Unpublished",
++    "Unveröffentlicht",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Inédito",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Content$Live Broadcast",
++    "Live-Sendung",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Programa en directo",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "ParentalRating$from %d",
++    "ab %d",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "a partir de %d",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "This plugin has no setup parameters!",
+     "Dieses Plugin hat keine Parameter!",
+     "Ta vstavek nima nastavitvenih parametrov!",
 diff -Naur VDR-NG-orig/INSTALL VDR-NG/INSTALL
---- VDR-NG-orig/INSTALL	Wed Sep 10 10:54:44 2008
-+++ VDR-NG/INSTALL	Tue Jun 23 11:07:49 2009
+--- VDR-NG-orig/INSTALL	2009-09-24 17:21:00.000000000 +0200
++++ VDR-NG/INSTALL	2010-01-19 19:20:06.617246768 +0100
 @@ -67,13 +67,8 @@
  the defaults of which can be set via the RCU_DEVICE and LIRC_DEVICE macros,
  respectively.
@@ -952,8 +3638,8 @@ diff -Naur VDR-NG-orig/INSTALL VDR-NG/INSTALL
  When running, the 'vdr' program writes status information into the
  system log file (/var/log/messages). You may want to watch these
 diff -Naur VDR-NG-orig/libsi/si.c VDR-NG/libsi/si.c
---- VDR-NG-orig/libsi/si.c	Fri Sep 26 16:08:25 2008
-+++ VDR-NG/libsi/si.c	Tue Jun 23 11:07:49 2009
+--- VDR-NG-orig/libsi/si.c	2009-09-24 17:20:48.000000000 +0200
++++ VDR-NG/libsi/si.c	2010-01-15 11:00:24.000000000 +0100
 @@ -280,7 +280,6 @@
        if (    ((' ' <= *from) && (*from <= '~'))
             || (*from == '\n')
@@ -962,9 +3648,17 @@ diff -Naur VDR-NG-orig/libsi/si.c VDR-NG/libsi/si.c
           )
           *to++ = *from;
        else if (*from == 0x8A)
+@@ -543,6 +542,7 @@
+             break;
+       }
+       break;
++   default: ; // unknown domain, nothing to do
+    }
+    d->setData(da);
+    return d;
 diff -Naur VDR-NG-orig/libsi/si.h VDR-NG/libsi/si.h
---- VDR-NG-orig/libsi/si.h	Tue Sep 02 12:40:33 2008
-+++ VDR-NG/libsi/si.h	Tue Jun 23 11:07:50 2009
+--- VDR-NG-orig/libsi/si.h	2009-09-24 17:20:48.000000000 +0200
++++ VDR-NG/libsi/si.h	2010-01-15 11:01:06.000000000 +0100
 @@ -28,7 +28,7 @@
                 TableIdNIT_other  = 0x41, //network information section, other network
                 TableIdSDT = 0x42, //service description section
@@ -974,9 +3668,18 @@ diff -Naur VDR-NG-orig/libsi/si.h VDR-NG/libsi/si.h
                 TableIdEIT_presentFollowing = 0x4E, //event information section
                 TableIdEIT_presentFollowing_other = 0x4F,
                 //range from 0x50 to 0x5F
+@@ -398,6 +398,8 @@
+             return data.FourBytes(index);
+          case 8:
+             return (SixtyFourBit(data.FourBytes(index)) << 32) | data.FourBytes(index+4);
++         default:
++            return 0; // just to avoid a compiler warning
+          }
+          return 0; // just to avoid a compiler warning
+       }
 diff -Naur VDR-NG-orig/libsi/util.c VDR-NG/libsi/util.c
---- VDR-NG-orig/libsi/util.c	Tue Sep 23 08:54:21 2008
-+++ VDR-NG/libsi/util.c	Tue Jun 23 11:07:50 2009
+--- VDR-NG-orig/libsi/util.c	2009-09-24 17:20:48.000000000 +0200
++++ VDR-NG/libsi/util.c	2010-01-14 09:52:58.000000000 +0100
 @@ -215,58 +215,73 @@
  
  //taken and adapted from libdtv, (c) Rolf Hakenes
@@ -1096,8 +3799,8 @@ diff -Naur VDR-NG-orig/libsi/util.c VDR-NG/libsi/util.c
     return crc;
  }
 diff -Naur VDR-NG-orig/lirc.c VDR-NG/lirc.c
---- VDR-NG-orig/lirc.c	Tue Jun 23 11:06:29 2009
-+++ VDR-NG/lirc.c	Tue Jun 23 11:07:50 2009
+--- VDR-NG-orig/lirc.c	2010-01-14 09:52:18.000000000 +0100
++++ VDR-NG/lirc.c	2010-01-14 09:52:58.000000000 +0100
 @@ -71,42 +71,28 @@
    char buf[LIRC_BUFFER_SIZE];
    char LastKeyName[LIRC_KEY_BUF] = "";
@@ -1158,8 +3861,8 @@ diff -Naur VDR-NG-orig/lirc.c VDR-NG/lirc.c
             esyslog("ERROR: lircd connection broken, trying to reconnect every %.1f seconds", float(RECONNECTDELAY) / 1000);
             close(f);
 diff -Naur VDR-NG-orig/Make.config VDR-NG/Make.config
---- VDR-NG-orig/Make.config	Wed Sep 10 10:54:45 2008
-+++ VDR-NG/Make.config	Tue Jun 23 11:07:50 2009
+--- VDR-NG-orig/Make.config	2009-09-24 17:21:12.000000000 +0200
++++ VDR-NG/Make.config	2010-01-14 09:52:58.000000000 +0100
 @@ -28,7 +28,6 @@
  
  REMOTE=LIRC
@@ -1169,8 +3872,8 @@ diff -Naur VDR-NG-orig/Make.config VDR-NG/Make.config
  # TESTING 
  # DEFINES += -DUSE_HW_VIDEO_FRAME_EVENTS # Use Hardware Frame Events
 diff -Naur VDR-NG-orig/Makefile VDR-NG/Makefile
---- VDR-NG-orig/Makefile	Tue Jun 23 11:06:32 2009
-+++ VDR-NG/Makefile	Tue Jun 23 11:07:50 2009
+--- VDR-NG-orig/Makefile	2010-01-14 09:52:22.000000000 +0100
++++ VDR-NG/Makefile	2010-01-14 09:52:58.000000000 +0100
 @@ -92,11 +92,6 @@
  VDRVERSION = $(shell sed -ne '/define VDRVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
  APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
@@ -1184,13 +3887,13 @@ diff -Naur VDR-NG-orig/Makefile VDR-NG/Makefile
  font: genfontfile\
        fontfix-iso8859-1.c fontosd-iso8859-1.c fontsml-iso8859-1.c\
 diff -Naur VDR-NG-orig/MANUAL VDR-NG/MANUAL
---- VDR-NG-orig/MANUAL	Tue Sep 02 12:40:43 2008
-+++ VDR-NG/MANUAL	Tue Jun 23 11:08:15 2009
+--- VDR-NG-orig/MANUAL	2009-09-24 17:21:12.000000000 +0200
++++ VDR-NG/MANUAL	2010-01-19 19:19:22.401253961 +0100
 @@ -700,6 +700,13 @@
    Pause priority = 10    The Priority and Lifetime values used when pausing live
    Pause lifetime = 1     video.
  
-+  Pause key handling = 3 Defines what happens if the Pause key on the remote control
++  Pause key handling = 2 Defines what happens if the Pause key on the remote control
 +                         is pressed during live tv.
 +                         0 = do not pause live video
 +                         1 = confirm pause live video
@@ -1200,11 +3903,10 @@ diff -Naur VDR-NG-orig/MANUAL VDR-NG/MANUAL
    Use episode name = yes Repeating timers use the EPG's 'Episode name' information
                           to create recording file names in a hierarchical structure
                           (for instance to gather all episodes of a series in a
-@@ -786,6 +793,15 @@
- 
+@@ -787,6 +794,15 @@
    Zap Timeout = 3        The time (in seconds) until a channel counts as "previous"
                           for switching with '0'
-+
+ 
 +  Channel entry timeout = 1000
 +                         The time (in milliseconds) after the last keypress until
 +                         a numerically entered channel number is considered
@@ -1213,12 +3915,13 @@ diff -Naur VDR-NG-orig/MANUAL VDR-NG/MANUAL
 +                         channel number then needs to be confirmed with the "Ok"
 +                         key. Note that the total maximum is also limited by
 +                         the "OSD/Channel info time" parameter.
- 
++
    Initial channel = 0    The number of the channel that shall be tuned to when
                           VDR starts. Default is 0, which means that it will
+                          tune to the channel that was on before VDR was stopped.
 diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
---- VDR-NG-orig/menu.c	Tue Jun 23 11:06:36 2009
-+++ VDR-NG/menu.c	Tue Jun 23 11:08:15 2009
+--- VDR-NG-orig/menu.c	2010-01-14 09:52:24.000000000 +0100
++++ VDR-NG/menu.c	2010-01-15 14:19:16.000000000 +0100
 @@ -566,6 +566,7 @@
          Channels.Del(channel);
          cOsdMenu::Del(Index);
@@ -1253,7 +3956,15 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
                    return osContinue;
      default: break;
      }
-@@ -2075,7 +2077,7 @@
+@@ -1698,6 +1700,7 @@
+     case cMenuScheduleItem::ssmThisThis: PrepareScheduleThisThis(Event, Channel); break;
+     case cMenuScheduleItem::ssmThisAll:  PrepareScheduleThisAll(Event, Channel); break;
+     case cMenuScheduleItem::ssmAllAll:   PrepareScheduleAllAll(Event, Channel); break;
++    default: esyslog("ERROR: unknown SortMode %d (%s %d)", cMenuScheduleItem::SortMode(), __FUNCTION__, __LINE__);
+     }
+   CurrentItem = (cMenuScheduleItem *)Get(Current());
+   Sort();
+@@ -2075,7 +2078,7 @@
      case kRight|k_Repeat:
      case kRight:
                    DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
@@ -1262,7 +3973,15 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
                    return osContinue;
      default: break;
      }
-@@ -2528,7 +2530,7 @@
+@@ -2344,6 +2347,7 @@
+        case 1: SetHelp(tr("Button$Open")); break;
+        case 2:
+        case 3: SetHelp(RecordingCommands.Count() ? tr("Commands") : tr("Button$Play"), tr("Button$Rewind"), tr("Button$Delete"), NewHelpKeys == 3 ? tr("Button$Info") : NULL);
++       default: ;
+        }
+      helpKeys = NewHelpKeys;
+      }
+@@ -2528,7 +2532,7 @@
       cRecording *recording = GetRecording(ri);
       if (recording) {
          char *parameter = NULL;
@@ -1271,7 +3990,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
          cMenuCommands *menu;
          eOSState state = AddSubMenu(menu = new cMenuCommands(tr("Recording commands"), &RecordingCommands, parameter));
          free(parameter);
-@@ -3168,6 +3170,7 @@
+@@ -3168,6 +3172,7 @@
  
  class cMenuSetupRecord : public cMenuSetupBase {
  private:
@@ -1279,7 +3998,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    const char *DelTimeshiftRecValues[3];
    const char *RecordingsSortModeTexts[MAXSORTMODES];
  public:
-@@ -3176,6 +3179,9 @@
+@@ -3176,6 +3181,9 @@
  
  cMenuSetupRecord::cMenuSetupRecord(void)
  {
@@ -1289,7 +4008,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    DelTimeshiftRecValues[0]   = tr("request");
    DelTimeshiftRecValues[1]   = tr("no");
    DelTimeshiftRecValues[2]   = tr("yes");
-@@ -3190,6 +3196,7 @@
+@@ -3190,6 +3198,7 @@
    Add(new cMenuEditIntItem( tr("Setup.Recording$Primary limit"),             &data.PrimaryLimit, 0, MAXPRIORITY));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Default priority"),          &data.DefaultPriority, 0, MAXPRIORITY));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Default lifetime (d)"),      &data.DefaultLifetime, 0, MAXLIFETIME));
@@ -1297,7 +4016,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditIntItem( tr("Setup.Recording$Pause priority"),            &data.PausePriority, 0, MAXPRIORITY));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Pause lifetime (d)"),        &data.PauseLifetime, 0, MAXLIFETIME));
    Add(new cMenuEditBoolItem(tr("Setup.Recording$Use episode name"),          &data.UseSubtitle));
-@@ -3280,6 +3287,7 @@
+@@ -3283,6 +3292,7 @@
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. user inactivity (min)"), &data.MinUserInactivity));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$SVDRP timeout (s)"),          &data.SVDRPTimeout));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Zap timeout (s)"),            &data.ZapTimeout));
@@ -1305,7 +4024,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
    Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
-@@ -3906,8 +3914,6 @@
+@@ -3909,8 +3919,6 @@
  
  // --- cDisplayChannel -------------------------------------------------------
  
@@ -1314,7 +4033,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
  cDisplayChannel *cDisplayChannel::currentDisplayChannel = NULL;
  
  cDisplayChannel::cDisplayChannel(int Number, bool Switched)
-@@ -4143,7 +4149,7 @@
+@@ -4146,7 +4154,7 @@
           Refresh();
           break;
      case kNone:
@@ -1323,7 +4042,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
              channel = Channels.GetByNumber(number);
              if (channel)
                 NewChannel = channel;
-@@ -4386,7 +4392,7 @@
+@@ -4389,7 +4397,7 @@
           timeout.Set(TRACKTIMEOUT);
           break;
      case kOk:
@@ -1332,7 +4051,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
              oldTrack = -1; // make sure we explicitly switch to that track
           timeout.Set();
           break;
-@@ -4528,8 +4534,11 @@
+@@ -4531,8 +4539,11 @@
  bool cRecordControl::Process(time_t t)
  {
  //M7X0 BEGIN AK
@@ -1345,7 +4064,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    AssertFreeDiskSpace(timer->Priority());
    return true;
  //M7X0 END AK
-@@ -4974,7 +4983,8 @@
+@@ -4977,7 +4988,8 @@
           timeSearchActive = false;
           break;
      default:
@@ -1356,8 +4075,17 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
      }
  
 diff -Naur VDR-NG-orig/menuitems.c VDR-NG/menuitems.c
---- VDR-NG-orig/menuitems.c	Tue Jun 23 11:06:04 2009
-+++ VDR-NG/menuitems.c	Tue Jun 23 11:07:50 2009
+--- VDR-NG-orig/menuitems.c	2010-01-14 09:51:48.000000000 +0100
++++ VDR-NG/menuitems.c	2010-01-18 13:18:00.000000000 +0100
+@@ -103,7 +103,7 @@
+             if (*value > max) { *value = max; Set(); }
+             return state;
+        }
+-     if (newValue != *value && (!fresh || min <= newValue) && newValue <= max) {
++     if (!DoubleEqual(newValue, *value) && (!fresh || min <= newValue) && newValue <= max) {
+         *value = newValue;
+         Set();
+         }
 @@ -221,7 +221,8 @@
  void cMenuEditChrItem::Set(void)
  {
@@ -1391,10 +4119,26 @@ diff -Naur VDR-NG-orig/menuitems.c VDR-NG/menuitems.c
                   break;
      case kRight|k_Repeat:
      case kRight: AdvancePos();
+@@ -993,6 +992,7 @@
+                      pos++;
+                      }
+                   break;
++          default: ;
+           }
+         }
+      else if (NORMALKEY(Key) == kLeft) { // TODO might want to increase the delta if repeated quickly?
 diff -Naur VDR-NG-orig/nit.c VDR-NG/nit.c
---- VDR-NG-orig/nit.c	Tue Sep 02 12:40:43 2008
-+++ VDR-NG/nit.c	Tue Jun 23 11:07:50 2009
-@@ -142,33 +142,33 @@
+--- VDR-NG-orig/nit.c	2009-09-24 17:21:12.000000000 +0200
++++ VDR-NG/nit.c	2010-01-14 18:32:14.000000000 +0100
+@@ -112,6 +112,7 @@
+                   case 1: f = BCD2INT(f) / 100; break;
+                   case 2: f = BCD2INT(f) / 10; break;
+                   case 3: f = f * 10;  break;
++                  default: ;
+                   }
+                 Frequencies[n++] = f;
+                 }
+@@ -142,33 +143,33 @@
                          }
                      break;
                      }
@@ -1452,7 +4196,7 @@ diff -Naur VDR-NG-orig/nit.c VDR-NG/nit.c
                      }
                   }
                   break;
-@@ -192,33 +192,33 @@
+@@ -192,33 +193,33 @@
                          }
                      break;
                      }
@@ -1510,7 +4254,7 @@ diff -Naur VDR-NG-orig/nit.c VDR-NG/nit.c
                      }
                   }
                   break;
-@@ -249,33 +249,33 @@
+@@ -249,33 +250,33 @@
                          }
                      break;
                      }
@@ -1568,21 +4312,9 @@ diff -Naur VDR-NG-orig/nit.c VDR-NG/nit.c
                      }
                   }
                   break;
-diff -Naur VDR-NG-orig/osd.c VDR-NG/osd.c
---- VDR-NG-orig/osd.c	Tue Jun 23 11:06:26 2009
-+++ VDR-NG/osd.c	Tue Jun 23 11:07:50 2009
-@@ -302,6 +302,8 @@
- 
- bool cBitmap::SetXpm(const char *const Xpm[], bool IgnoreNone)
- {
-+  if (!Xpm)
-+     return false;
-   const char *const *p = Xpm;
-   int w, h, n, c;
-   if (4 != sscanf(*p, "%d %d %d %d", &w, &h, &n, &c)) {
 diff -Naur VDR-NG-orig/osdbase.c VDR-NG/osdbase.c
---- VDR-NG-orig/osdbase.c	Tue Jun 23 11:06:04 2009
-+++ VDR-NG/osdbase.c	Tue Jun 23 11:08:15 2009
+--- VDR-NG-orig/osdbase.c	2010-01-14 09:51:48.000000000 +0100
++++ VDR-NG/osdbase.c	2010-01-14 09:52:58.000000000 +0100
 @@ -210,6 +210,7 @@
           }
       if (current < 0)
@@ -1592,8 +4324,8 @@ diff -Naur VDR-NG-orig/osdbase.c VDR-NG/osdbase.c
          first = current - displayMenuItems / 2;
          if (first + displayMenuItems > count)
 diff -Naur VDR-NG-orig/osdbase.h VDR-NG/osdbase.h
---- VDR-NG-orig/osdbase.h	Tue Jun 23 11:06:16 2009
-+++ VDR-NG/osdbase.h	Tue Jun 23 11:07:50 2009
+--- VDR-NG-orig/osdbase.h	2010-01-14 09:52:02.000000000 +0100
++++ VDR-NG/osdbase.h	2010-01-14 09:52:58.000000000 +0100
 @@ -58,11 +58,11 @@
    cOsdItem(eOSState State = osUnknown);
    cOsdItem(const char *Text, eOSState State = osUnknown, bool Selectable = true);
@@ -1626,9 +4358,104 @@ diff -Naur VDR-NG-orig/osdbase.h VDR-NG/osdbase.h
    void Add(cOsdItem *Item, bool Current = false, cOsdItem *After = NULL);
    void Ins(cOsdItem *Item, bool Current = false, cOsdItem *Before = NULL);
    virtual void Display(void);
+diff -Naur VDR-NG-orig/osd.c VDR-NG/osd.c
+--- VDR-NG-orig/osd.c	2010-01-14 09:52:14.000000000 +0100
++++ VDR-NG/osd.c	2010-01-15 13:28:30.000000000 +0100
+@@ -302,6 +302,8 @@
+ 
+ bool cBitmap::SetXpm(const char *const Xpm[], bool IgnoreNone)
+ {
++  if (!Xpm)
++     return false;
+   const char *const *p = Xpm;
+   int w, h, n, c;
+   if (4 != sscanf(*p, "%d %d %d %d", &w, &h, &n, &c)) {
+@@ -657,6 +659,7 @@
+     case 6:          cy = y2; rx /= 2; break;
+     case 7: cx = x2;          ry /= 2; break;
+     case 8:          cy = y1; rx /= 2; break;
++    default: ;
+     }
+   int TwoASquare = 2 * rx * rx;
+   int TwoBSquare = 2 * ry * ry;
+@@ -682,6 +685,7 @@
+           case -2: DrawRectangle(x1,     cy - y, cx - x, cy - y, Color); break;
+           case -3: DrawRectangle(x1,     cy + y, cx - x, cy + y, Color); break;
+           case -4: DrawRectangle(cx + x, cy + y, x2,     cy + y, Color); break;
++          default: ;
+           }
+         y++;
+         StoppingY += TwoASquare;
+@@ -716,6 +720,7 @@
+           case -2: DrawRectangle(x1,     cy - y, cx - x, cy - y, Color); break;
+           case -3: DrawRectangle(x1,     cy + y, cx - x, cy + y, Color); break;
+           case -4: DrawRectangle(cx + x, cy + y, x2,     cy + y, Color); break;
++          default: ;
+           }
+         x++;
+         StoppingX += TwoBSquare;
+diff -Naur VDR-NG-orig/pat.c VDR-NG/pat.c
+--- VDR-NG-orig/pat.c	2009-09-24 17:21:12.000000000 +0200
++++ VDR-NG/pat.c	2010-01-19 13:03:08.000000000 +0100
+@@ -144,7 +144,7 @@
+   q += sprintf(q, "CAM: %04X %5d %5d %04X %d -", source, transponder, serviceId, d->getCaType(), Stream);
+   for (int i = 0; i < nca->Length(); i++)
+       q += sprintf(q, " %02X", nca->Data()[i]);
+-  dsyslog(buffer);
++  dsyslog("%s", buffer);
+ #endif
+ }
+ 
+@@ -337,10 +337,12 @@
+         int NumApids = 0;
+         int NumDpids = 0;
+         for (SI::Loop::Iterator it; pmt.streamLoop.getNext(stream, it); ) {
++            bool ProcessCaDescriptors = false;
+             switch (stream.getStreamType()) {
+               case 1: // STREAMTYPE_11172_VIDEO
+               case 2: // STREAMTYPE_13818_VIDEO
+                       Vpid = stream.getPid();
++                      ProcessCaDescriptors = true;
+                       break;
+               case 3: // STREAMTYPE_11172_AUDIO
+               case 4: // STREAMTYPE_13818_AUDIO
+@@ -373,6 +375,7 @@
+                              }
+                          NumApids++;
+                          }
++                      ProcessCaDescriptors = true;
+                       }
+                       break;
+               case 5: // STREAMTYPE_13818_PRIVATE
+@@ -386,6 +389,7 @@
+                           switch (d->getDescriptorTag()) {
+                             case SI::AC3DescriptorTag:
+                                  dpid = stream.getPid();
++                                 ProcessCaDescriptors = true;
+                                  break;
+                             case SI::TeletextDescriptorTag:
+                                  Tpid = stream.getPid();
+@@ -408,11 +412,13 @@
+                          }
+                       }
+                       break;
+-              //default: printf("PID: %5d %5d %2d %3d %3d\n", pmt.getServiceId(), stream.getPid(), stream.getStreamType(), pmt.getVersionNumber(), Channel->Number());//XXX
++              default: ;//printf("PID: %5d %5d %2d %3d %3d\n", pmt.getServiceId(), stream.getPid(), stream.getStreamType(), pmt.getVersionNumber(), Channel->Number());
+               }
+-            for (SI::Loop::Iterator it; (d = (SI::CaDescriptor*)stream.streamDescriptors.getNext(it, SI::CaDescriptorTag)); ) {
+-                CaDescriptors->AddCaDescriptor(d, true);
+-                delete d;
++            if (ProcessCaDescriptors) {
++                for (SI::Loop::Iterator it; (d = (SI::CaDescriptor*)stream.streamDescriptors.getNext(it, SI::CaDescriptorTag)); ) {
++                    CaDescriptors->AddCaDescriptor(d, true);
++                    delete d;
++                    }
+                 }
+             }
+         if (Setup.UpdateChannels >= 2) {
 diff -Naur VDR-NG-orig/player.c VDR-NG/player.c
---- VDR-NG-orig/player.c	Tue Sep 02 12:40:41 2008
-+++ VDR-NG/player.c	Tue Jun 23 11:07:50 2009
+--- VDR-NG-orig/player.c	2009-09-24 17:21:00.000000000 +0200
++++ VDR-NG/player.c	2010-01-14 09:52:58.000000000 +0100
 @@ -77,8 +77,9 @@
  void cControl::Launch(cControl *Control)
  {
@@ -1640,9 +4467,40 @@ diff -Naur VDR-NG-orig/player.c VDR-NG/player.c
  }
  
  void cControl::Attach(void)
+diff -Naur VDR-NG-orig/plugin.c VDR-NG/plugin.c
+--- VDR-NG-orig/plugin.c	2010-01-14 09:51:54.000000000 +0100
++++ VDR-NG/plugin.c	2010-01-15 14:27:22.000000000 +0100
+@@ -172,15 +172,15 @@
+ static char *SkipQuote(char *s)
+ {
+   char c = *s;
+-  strcpy(s, s + 1);
++  memmove(s, s + 1, strlen(s));
+   while (*s && *s != c) {
+         if (*s == '\\')
+-           strcpy(s, s + 1);
++           memmove(s, s + 1, strlen(s));
+         if (*s)
+            s++;
+         }
+   if (*s) {
+-     strcpy(s, s + 1);
++     memmove(s, s + 1, strlen(s));
+      return s;
+      }
+   esyslog("ERROR: missing closing %c", c);
+@@ -231,7 +231,7 @@
+               if (!q)
+                  q = p;
+               switch (*p) {
+-                case '\\': strcpy(p, p + 1);
++                case '\\': memmove(p, p + 1, strlen(p));
+                            if (*p)
+                               p++;
+                            else {
 diff -Naur VDR-NG-orig/receiver.c VDR-NG/receiver.c
---- VDR-NG-orig/receiver.c	Tue Sep 02 12:40:41 2008
-+++ VDR-NG/receiver.c	Tue Jun 23 11:07:50 2009
+--- VDR-NG-orig/receiver.c	2009-09-24 17:21:00.000000000 +0200
++++ VDR-NG/receiver.c	2010-01-14 11:31:28.000000000 +0100
 @@ -41,7 +41,12 @@
  
  cReceiver::~cReceiver()
@@ -1650,7 +4508,7 @@ diff -Naur VDR-NG-orig/receiver.c VDR-NG/receiver.c
 -  Detach();
 +  if (device) {
 +     const char *msg = "ERROR: cReceiver has not been detached yet! This is a design fault and VDR will segfault now!";
-+     esyslog(msg);
++     esyslog("%s", msg);
 +     fprintf(stderr, "%s\n", msg);
 +     *(char *)0 = 0; // cause a segfault
 +     }
@@ -1658,8 +4516,8 @@ diff -Naur VDR-NG-orig/receiver.c VDR-NG/receiver.c
  
  bool cReceiver::WantsPid(int Pid)
 diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
---- VDR-NG-orig/recording.c	Tue Jun 23 11:06:23 2009
-+++ VDR-NG/recording.c	Tue Jun 23 11:08:15 2009
+--- VDR-NG-orig/recording.c	2010-01-14 09:52:10.000000000 +0100
++++ VDR-NG/recording.c	2010-01-18 13:14:22.000000000 +0100
 @@ -8,6 +8,7 @@
   */
  
@@ -1687,6 +4545,17 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
    // Make sure only one instance of VDR does this:
    cLockFile LockFile(VideoDirectory);
    if (LockFile.Lock()) {
+@@ -367,8 +369,8 @@
+                             ownEvent->SetEventID(EventID);
+                             ownEvent->SetStartTime(StartTime);
+                             ownEvent->SetDuration(Duration);
+-                            ownEvent->SetTableID(TableID);
+-                            ownEvent->SetVersion(Version);
++                            ownEvent->SetTableID(uchar(TableID));
++                            ownEvent->SetVersion(uchar(Version));
+                             }
+                        }
+                        break;
 @@ -422,34 +424,14 @@
             // The VFAT file system can't handle all characters, so we
             // have to take extra efforts to encode/decode them:
@@ -1735,9 +4604,10 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
 +                     if (strlen(p) > 2 && isxdigit(*(p + 1)) && isxdigit(*(p + 2))) {
                          char buf[3];
                          sprintf(buf, "%c%c", *(p + 1), *(p + 2));
-                         unsigned char c = strtol(buf, NULL, 16);
+-                        unsigned char c = strtol(buf, NULL, 16);
 -                        *p = c;
 -                        memmove(p + 1, p + 3, strlen(p) - 2);
++                        uchar c = uchar(strtol(buf, NULL, 16));
 +                        if (c) {
 +                           *p = c;
 +                           memmove(p + 1, p + 3, strlen(p) - 2);
@@ -1745,7 +4615,15 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
                          }
                       }
                       break;
-@@ -522,8 +506,8 @@
+@@ -481,6 +465,7 @@
+                 case '\x01': *p = '\''; break;
+                 case '\x02': *p = '/';  break;
+                 case '\x03': *p = ':';  break;
++                default: ;
+                 }
+               }
+            }
+@@ -522,8 +507,8 @@
       strn0cpy(SubtitleBuffer, Subtitle, MAX_SUBTITLE_LENGTH);
       Subtitle = SubtitleBuffer;
       }
@@ -1756,16 +4634,21 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
    if (macroTITLE || macroEPISODE) {
       name = strdup(Timer->File());
       name = strreplace(name, TIMERMACRO_TITLE, Title);
-@@ -567,7 +551,7 @@
+@@ -565,9 +550,11 @@
+      sortBuffer[i] = NULL;
+      lastDirsFirst[i] = -1;
    }
-   fileName = strdup(FileName);
+-  fileName = strdup(FileName);
++  FileName = fileName = strdup(FileName);
++  if (*(fileName + strlen(fileName) - 1) == '/')
++     *(fileName + strlen(fileName) - 1) = 0;
    FileName += strlen(VideoDirectory) + 1;
 -  char *p = strrchr(FileName, '/');
 +  const char *p = strrchr(FileName, '/');
  
    name = NULL;
    info = new cRecordingInfo;
-@@ -1270,7 +1254,7 @@
+@@ -1270,7 +1257,7 @@
  {
    if (command) {
       char *cmd;
@@ -1774,7 +4657,30 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
       isyslog("executing '%s'", cmd);
       SystemExec(cmd);
       free(cmd);
-@@ -1524,8 +1508,8 @@
+@@ -1309,19 +1296,19 @@
+         if (access(fileName, R_OK) == 0) {
+            struct stat buf;
+            if (stat(fileName, &buf) == 0) {
+-              delta = buf.st_size % sizeof(tIndex);
++              delta = int(buf.st_size % sizeof(tIndex));
+               if (delta) {
+                  delta = sizeof(tIndex) - delta;
+                  esyslog("ERROR: invalid file size (%ld) in '%s'", buf.st_size, fileName);
+                  }
+-              last = (buf.st_size + delta) / sizeof(tIndex) - 1;
++              last = int((buf.st_size + delta) / sizeof(tIndex) - 1);
+               if (!Record && last >= 0) {
+                  size = last + 1;
+                  index = MALLOC(tIndex, size);
+                  if (index) {
+                     f = open(fileName, O_RDONLY);
+                     if (f >= 0) {
+-                       if ((int)safe_read(f, index, buf.st_size) != buf.st_size) {
++                       if (safe_read(f, index, size_t(buf.st_size)) != buf.st_size) {
+                           esyslog("ERROR: can't read from file '%s'", fileName);
+                           free(index);
+                           index = NULL;
+@@ -1540,10 +1527,10 @@
          if (PictureType)
             *PictureType = index[Index].type;
          if (Length) {
@@ -1783,9 +4689,12 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
 +           uint16_t fn = index[Index + 1].number;
 +           off_t fo = index[Index + 1].offset;
             if (fn == *FileNumber)
-               *Length = fo - *FileOffset;
+-              *Length = fo - *FileOffset;
++              *Length = int(fo - *FileOffset);
             else
-@@ -1555,8 +1539,8 @@
+               *Length = -1; // this means "everything up to EOF" (the buffer's Read function will act accordingly)
+            }
+@@ -1571,10 +1558,10 @@
                    FileOffset = &index[Index].offset;
                 if (Length) {
                    // all recordings end with a non-I_FRAME, so the following should be safe:
@@ -1794,11 +4703,28 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
 +                  uint16_t fn = index[Index + 1].number;
 +                  off_t fo = index[Index + 1].offset;
                    if (fn == *FileNumber)
-                      *Length = fo - *FileOffset;
+-                     *Length = fo - *FileOffset;
++                     *Length = int(fo - *FileOffset);
                    else {
+                      esyslog("ERROR: 'I' frame at end of file #%d", *FileNumber);
+                      *Length = -1;
+@@ -1708,11 +1695,11 @@
+   if (fileNumber != Number)
+      Close();
+   if (0 < Number && Number <= MAXFILESPERRECORDING) {
+-     fileNumber = Number;
++     fileNumber = uint16_t(Number);
+      sprintf(pFileNumber, RECORDFILESUFFIX, fileNumber);
+      if (record) {
+         if (access(fileName, F_OK) == 0) {
+-           // files exists, check if it has non-zero size
++           // file exists, check if it has non-zero size
+            struct stat buf;
+            if (stat(fileName, &buf) == 0) {
+               if (buf.st_size != 0)
 diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
---- VDR-NG-orig/recording.h	Tue Jun 23 11:06:27 2009
-+++ VDR-NG/recording.h	Tue Jun 23 11:07:51 2009
+--- VDR-NG-orig/recording.h	2010-01-14 09:52:16.000000000 +0100
++++ VDR-NG/recording.h	2010-01-19 13:27:29.000000000 +0100
 @@ -13,6 +13,7 @@
  #include <time.h>
  #include "channels.h"
@@ -1807,7 +4733,15 @@ diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
  #include "epg.h"
  #include "thread.h"
  #include "timers.h"
-@@ -198,7 +199,7 @@
+@@ -59,6 +60,7 @@
+ public:
+   ~cRecordingInfo();
+   tChannelID ChannelID(void) const { return channelID; }
++  const cEvent *GetEvent(void) const { return event; }
+   const char *Title(void) const { return event->Title(); }
+   const char *ShortText(void) const { return event->ShortText(); }
+   const char *Description(void) const { return event->Description(); }
+@@ -198,7 +200,7 @@
  #define FRAMESPERSEC 25
  
  // The maximum size of a single frame (up to HDTV 1920x1080):
@@ -1816,9 +4750,32 @@ diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
  
  // The maximum file size is limited by the range that can be covered
  // with 'int'. 4GB might be possible (if the range is considered
+@@ -248,7 +250,7 @@
+ class cFileName {
+ private:
+   cUnbufferedFile *file;
+-  int fileNumber;
++  uint16_t fileNumber;
+   char *fileName, *pFileNumber;
+   bool record;
+   bool blocking;
+@@ -263,11 +265,11 @@
+ #endif
+   ~cFileName();
+   const char *Name(void) { return fileName; }
+-  int Number(void) { return fileNumber; }
++  uint16_t Number(void) { return fileNumber; }
+   cUnbufferedFile *Open(void);
+   void Close(void);
+   int Unlink(void);
+-  cUnbufferedFile *SetOffset(int Number, int Offset = 0);
++  cUnbufferedFile *SetOffset(int Number, int Offset = 0); // yes, Number is int for easier internal calculating
+   int MaxFileSize();
+       // Dynamic file size for this file
+   cUnbufferedFile *NextFile(void);
 diff -Naur VDR-NG-orig/remote.c VDR-NG/remote.c
---- VDR-NG-orig/remote.c	Tue Jun 23 11:06:21 2009
-+++ VDR-NG/remote.c	Tue Jun 23 11:08:15 2009
+--- VDR-NG-orig/remote.c	2010-01-14 09:52:06.000000000 +0100
++++ VDR-NG/remote.c	2010-01-14 18:36:12.000000000 +0100
 @@ -121,7 +121,7 @@
  bool cRemote::Put(uint64_t Code, bool Repeat, bool Release)
  {
@@ -1828,9 +4785,43 @@ diff -Naur VDR-NG-orig/remote.c VDR-NG/remote.c
    return Put(buffer, Repeat, Release);
  }
  
+@@ -282,7 +282,9 @@
+       if (p->code == Code)
+          return p->func;
+       }
+-  return (Code <= 0xFF) ? Code : kfNone;
++  if (Code <= 0xFF)
++     return Code;
++  return kfNone;
+ }
+ 
+ int cKbdRemote::ReadKey(void)
+@@ -332,9 +334,11 @@
+                                 k |= key1 & 0xFF;
+                                 } while (key1 != 0x7E);
+                              break;
++                        default: ;
+                         }
+                       }
+                    break;
++              default: ;
+               }
+             }
+         }
+diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
+--- VDR-NG-orig/remux.c	2009-09-24 17:21:08.000000000 +0200
++++ VDR-NG/remux.c	2010-01-14 18:37:26.000000000 +0100
+@@ -1528,6 +1528,7 @@
+                  switch (p[1]) {
+                    case SC_PICTURE: PictureType = (p[3] >> 3) & 0x07;
+                                     return Length;
++                   default: ;
+                    }
+                  p += 4; // continue scanning after 0x01ssxxyy
+                  }
 diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
---- VDR-NG-orig/remux.h	Tue Sep 02 12:40:42 2008
-+++ VDR-NG/remux.h	Tue Jun 23 11:07:51 2009
+--- VDR-NG-orig/remux.h	2009-09-24 17:21:10.000000000 +0200
++++ VDR-NG/remux.h	2010-01-14 09:53:00.000000000 +0100
 @@ -12,10 +12,6 @@
  #ifdef USE_HW_VIDEO_FRAME_EVENTS
  #define USE_DATAHEADER_IN_RECEIVER 1
@@ -1842,10 +4833,193 @@ diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
  #include "ringbuffer.h"
  #include "tools.h"
  
+diff -Naur VDR-NG-orig/sdt.c VDR-NG/sdt.c
+--- VDR-NG-orig/sdt.c	2009-09-24 17:21:12.000000000 +0200
++++ VDR-NG/sdt.c	2010-01-14 18:44:06.000000000 +0100
+@@ -64,16 +64,18 @@
+                         char *ps = compactspace(ShortNameBuf);
+                         if (!*ps && cSource::IsCable(Source())) {
+                            // Some cable providers don't mark short channel names according to the
+-                           // standard, but rather go their own way and use "name>short name" or
+-                           // "name, short name":
++                           // standard, but rather go their own way and use "name>short name":
+                            char *p = strchr(pn, '>'); // fix for UPC Wien
+-                           if (!p)
+-                              p = strchr(pn, ','); // fix for "Kabel Deutschland"
+                            if (p && p > pn) {
+                               *p++ = 0;
+                               strcpy(ShortNameBuf, skipspace(p));
+                               }
+                            }
++                        // Avoid ',' in short name (would cause trouble in channels.conf):
++                        for (char *p = ShortNameBuf; *p; p++) {
++                           if (*p == ',')
++                              *p = '.';
++                           }
+                         sd->providerName.getText(ProviderNameBuf, sizeof(ProviderNameBuf));
+                         char *pp = compactspace(ProviderNameBuf);
+                         if (channel) {
+@@ -91,6 +93,7 @@
+                            patFilter->Trigger();
+                            }
+                         }
++                   default: ;
+                    }
+                  }
+                  break;
+diff -Naur VDR-NG-orig/skinclassic.c VDR-NG/skinclassic.c
+--- VDR-NG-orig/skinclassic.c	2010-01-14 09:52:12.000000000 +0100
++++ VDR-NG/skinclassic.c	2010-01-19 13:19:39.000000000 +0100
+@@ -312,6 +312,11 @@
+      free(buffer);
+      }
+   y += ts.Height();
++  if (Event->ParentalRating()) {
++     cString buffer = cString::sprintf(" %s ", *Event->GetParentalRatingString());
++     const cFont *font = cFont::GetFont(fontSml);
++     osd->DrawText(x1 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVpsFg), Theme.Color(clrMenuEventVpsBg), font);
++     }
+   y += font->Height();
+   ts.Set(osd, xl, y, x1 - xl, y3 - y, Event->Title(), font, Theme.Color(clrMenuEventTitle), Theme.Color(clrBackground));
+   y += ts.Height();
+@@ -320,6 +325,14 @@
+      ts.Set(osd, xl, y, x1 - xl, y3 - y, Event->ShortText(), font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
+      y += ts.Height();
+      }
++  for (int i = 0; Event->Contents(i); i++) {
++     const char *s = Event->ContentToString(Event->Contents(i));
++     if (!isempty(s)) {
++         const cFont *font = cFont::GetFont(fontSml);
++         ts.Set(osd, xl, y, x1 - xl, y3 - y, s, font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
++         y += ts.Height();
++         }
++     }
+   y += font->Height();
+   if (!isempty(Event->Description())) {
+      textScroller.Set(osd, xl, y, x1 - xl - 2 * ScrollWidth, y3 - y, Event->Description(), font, Theme.Color(clrMenuEventDescription), Theme.Color(clrBackground));
+@@ -340,6 +353,11 @@
+   snprintf(t, sizeof(t), "%s  %s", *DateString(Recording->start), *TimeString(Recording->start));
+   ts.Set(osd, xl, y, x1 - xl, y3 - y, t, font, Theme.Color(clrMenuEventTime), Theme.Color(clrBackground));
+   y += ts.Height();
++  if (Info->GetEvent()->ParentalRating()) {
++     cString buffer = cString::sprintf(" %s ", *Info->GetEvent()->GetParentalRatingString());
++     const cFont *font = cFont::GetFont(fontSml);
++     osd->DrawText(x1 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVpsFg), Theme.Color(clrMenuEventVpsBg), font);
++     }
+   y += font->Height();
+   const char *Title = Info->Title();
+   if (isempty(Title))
+@@ -351,6 +369,14 @@
+      ts.Set(osd, xl, y, x1 - xl, y3 - y, Info->ShortText(), font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
+      y += ts.Height();
+      }
++  for (int i = 0; Info->GetEvent()->Contents(i); i++) {
++     const char *s = Info->GetEvent()->ContentToString(Info->GetEvent()->Contents(i));
++     if (!isempty(s)) {
++         const cFont *font = cFont::GetFont(fontSml);
++         ts.Set(osd, xl, y, x1 - xl, y3 - y, s, font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
++         y += ts.Height();
++         }
++     }
+   y += font->Height();
+   if (!isempty(Info->Description())) {
+      textScroller.Set(osd, xl, y, x1 - xl - 2 * ScrollWidth, y3 - y, Info->Description(), font, Theme.Color(clrMenuEventDescription), Theme.Color(clrBackground));
+diff -Naur VDR-NG-orig/skinsttng.c VDR-NG/skinsttng.c
+--- VDR-NG-orig/skinsttng.c	2010-01-14 09:52:12.000000000 +0100
++++ VDR-NG/skinsttng.c	2010-01-19 13:23:29.000000000 +0100
+@@ -572,6 +572,14 @@
+      free(buffer);
+      }
+   y += ts.Height();
++  if (Event->ParentalRating()) {
++     cString buffer = cString::sprintf(" %s ", *Event->GetParentalRatingString());
++     const cFont *font = cFont::GetFont(fontSml);
++     osd->DrawText(x4 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVps), frameColor, font);
++     int yb = y + font->Height();
++     osd->DrawRectangle(x5, y, x6 - 1, yb - 1, frameColor);
++     osd->DrawEllipse  (x6, y, x7 - 1, yb - 1, frameColor, 5);
++     }
+   y += font->Height();
+   ts.Set(osd, xl, y, x4 - xl, y4 - y, Event->Title(), font, Theme.Color(clrMenuEventTitle), Theme.Color(clrBackground));
+   y += ts.Height();
+@@ -580,6 +588,14 @@
+      ts.Set(osd, xl, y, x4 - xl, y4 - y, Event->ShortText(), font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
+      y += ts.Height();
+      }
++  for (int i = 0; Event->Contents(i); i++) {
++     const char *s = Event->ContentToString(Event->Contents(i));
++     if (!isempty(s)) {
++         const cFont *font = cFont::GetFont(fontSml);
++         ts.Set(osd, xl, y, x4 - xl, y4 - y, s, font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
++         y += ts.Height();
++         }
++     }
+   y += font->Height();
+   if (!isempty(Event->Description())) {
+      int yt = y;
+@@ -606,6 +622,14 @@
+   snprintf(t, sizeof(t), "%s  %s", *DateString(Recording->start), *TimeString(Recording->start));
+   ts.Set(osd, xl, y, x4 - xl, y4 - y, t, font, Theme.Color(clrMenuEventTime), Theme.Color(clrBackground));
+   y += ts.Height();
++  if (Info->GetEvent()->ParentalRating()) {
++     cString buffer = cString::sprintf(" %s ", *Info->GetEvent()->GetParentalRatingString());
++     const cFont *font = cFont::GetFont(fontSml);
++     osd->DrawText(x4 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVps), frameColor, font);
++     int yb = y + font->Height();
++     osd->DrawRectangle(x5, y, x6 - 1, yb - 1, frameColor);
++     osd->DrawEllipse  (x6, y, x7 - 1, yb - 1, frameColor, 5);
++     }
+   y += font->Height();
+   const char *Title = Info->Title();
+   if (isempty(Title))
+@@ -617,6 +641,14 @@
+      ts.Set(osd, xl, y, x4 - xl, y4 - y, Info->ShortText(), font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
+      y += ts.Height();
+      }
++  for (int i = 0; Info->GetEvent()->Contents(i); i++) {
++     const char *s = Info->GetEvent()->ContentToString(Info->GetEvent()->Contents(i));
++     if (!isempty(s)) {
++         const cFont *font = cFont::GetFont(fontSml);
++         ts.Set(osd, xl, y, x4 - xl, y4 - y, s, font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
++         y += ts.Height();
++         }
++     }
+   y += font->Height();
+   if (!isempty(Info->Description())) {
+      int yt = y;
+@@ -1027,6 +1059,7 @@
+     case 0: bm = &bmAudioStereo; break;
+     case 1: bm = &bmAudioLeft;   break;
+     case 2: bm = &bmAudioRight;  break;
++    default: ;
+     }
+   if (bm)
+      osd->DrawBitmap(x3 + 5, y6 + (y7 - y6 - bm->Height()) / 2, *bm, Theme.Color(clrChannelSymbolOn), frameColor);
 diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
---- VDR-NG-orig/svdrp.c	Tue Jun 23 11:06:24 2009
-+++ VDR-NG/svdrp.c	Tue Jun 23 11:08:16 2009
-@@ -220,10 +220,12 @@
+--- VDR-NG-orig/svdrp.c	2010-01-14 09:52:12.000000000 +0100
++++ VDR-NG/svdrp.c	2010-01-18 13:29:52.000000000 +0100
+@@ -179,6 +179,8 @@
+ // --- cSVDRP ----------------------------------------------------------------
+ 
+ #define MAXHELPTOPIC 10
++#define EITDISABLETIME 10 // seconds until EIT processing is enabled again after a CLRE command
++                          // adjust the help for CLRE accordingly if changing this!
+ 
+ const char *HelpPages[] = {
+   "CHAN [ + | - | <number> | <name> | <id> ]\n"
+@@ -187,7 +189,10 @@
+   "    it returns the current channel number and name.",
+   "CLRE [<number> | <name> | <id>]\n"
+   "    Clear the EPG list of the given channel number, name or id. \n"
+-  "    Without option it clears the entire EPG list.",
++  "    Without option it clears the entire EPG list.\n"
++  "    After a CLRE command, no further EPG processing is done for 10\n"
++  "    seconds, so that data sent with subsequent PUTE commands doesn't\n"
++  "    interfere with data from the broadcasters.",
+   "CTRL <on|off>\n"
+   "    Enable/Disable Input devices.",
+   "DELC <number>\n"
+@@ -220,10 +225,12 @@
    "HITK [ <key> ]\n"
    "    Hit the given remote control key. Without option a list of all\n"
    "    valid key names is given.",
@@ -1857,10 +5031,10 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
 +  "    containing the given string as part of their name are listed.\n"
 +  "    If ':groups' is given, all channels are listed including group\n"
 +  "    separators. The channel number of a group separator is always 0.",
-   "LSTE [ <channel> ] [ now | next | at <time> ]\n"
+   "LSTE [ <channel> ] [ now | next | nownext | at <time> | between <time> <time> | withid <number> ]\n"
    "    List EPG data. Without any parameters all data of all channels is\n"
    "    listed. If a channel is given (either by number or by channel ID),\n"
-@@ -290,11 +292,14 @@
+@@ -291,11 +298,14 @@
    "    If 'help' is followed by a command, the detailed help for that command is\n"
    "    given. The keyword 'main' initiates a call to the main menu function of the\n"
    "    given plugin.\n",
@@ -1877,7 +5051,7 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
    "RENR [<number> | <path>] <new name>\n"
    "    Rename recording. If a number is used, it must be the Number as \n"
    "    returned by LSTR command.",
-@@ -502,14 +507,14 @@
+@@ -503,14 +513,14 @@
          if (channel)
             n = channel->Number();
          else {
@@ -1900,7 +5074,24 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
             }
          }
       if (n < 0) {
-@@ -789,7 +794,7 @@
+@@ -577,7 +587,7 @@
+         
+         if(schedule) {
+           schedule->Cleanup(INT_MAX);
+-          
++          cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME);
+           Reply(250, "EPG data from channel \"%s\" cleared", Option);
+         } else {
+           Reply(550, "No schedule found");
+@@ -591,6 +601,7 @@
+     }
+   } else {
+     cSchedules::ClearAll();
++    cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME);
+     Reply(250, "EPG data cleared");
+   }
+   
+@@ -790,7 +801,7 @@
       char *strtok_next;
       FileName = strtok_r(p, delim, &strtok_next);
       // image type:
@@ -1909,7 +5100,7 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
       if (Extension) {
          if (strcasecmp(Extension, ".jpg") == 0 || strcasecmp(Extension, ".jpeg") == 0)
             Jpeg = true;
-@@ -920,7 +925,7 @@
+@@ -921,7 +932,7 @@
    if (*Option) {
       const char *hp = GetHelpPage(Option, HelpPages);
       if (hp)
@@ -1918,7 +5109,7 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
       else {
          Reply(504, "HELP topic \"%s\" unknown", Option);
          return;
-@@ -965,7 +970,8 @@
+@@ -966,7 +977,8 @@
  
  void cSVDRP::CmdLSTC(const char *Option)
  {
@@ -1928,7 +5119,7 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
       if (isnumber(Option)) {
          cChannel *channel = Channels.GetByNumber(strtol(Option, NULL, 10));
          if (channel)
-@@ -974,23 +980,16 @@
+@@ -975,23 +987,16 @@
             Reply(501, "Channel \"%s\" not defined", Option);
          }
       else {
@@ -1961,7 +5152,7 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
          if (next)
             Reply(250, "%d %s", next->Number(), *next->ToText());
          else
-@@ -998,15 +997,12 @@
+@@ -999,15 +1004,12 @@
          }
       }
    else if (Channels.MaxNumber() >= 1) {
@@ -1983,7 +5174,7 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
       }
    else
       Reply(550, "No channels defined");
-@@ -1547,11 +1543,27 @@
+@@ -1590,11 +1592,27 @@
  
  void cSVDRP::CmdPUTE(const char *Option)
  {
@@ -2017,8 +5208,8 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
  
  void cSVDRP::CmdSCAN(const char *Option)
 diff -Naur VDR-NG-orig/thread.c VDR-NG/thread.c
---- VDR-NG-orig/thread.c	Wed Sep 10 10:54:44 2008
-+++ VDR-NG/thread.c	Tue Jun 23 11:07:51 2009
+--- VDR-NG-orig/thread.c	2009-09-24 17:21:00.000000000 +0200
++++ VDR-NG/thread.c	2010-01-14 09:53:00.000000000 +0100
 @@ -27,11 +27,12 @@
  {
    struct timeval now;
@@ -2038,8 +5229,8 @@ diff -Naur VDR-NG-orig/thread.c VDR-NG/thread.c
       Abstime->tv_nsec = now.tv_usec * 1000; // nano seconds
       return true;
 diff -Naur VDR-NG-orig/timers.c VDR-NG/timers.c
---- VDR-NG-orig/timers.c	Tue Jun 23 11:06:26 2009
-+++ VDR-NG/timers.c	Tue Jun 23 11:07:51 2009
+--- VDR-NG-orig/timers.c	2010-01-14 09:52:14.000000000 +0100
++++ VDR-NG/timers.c	2010-01-14 09:53:00.000000000 +0100
 @@ -92,6 +92,7 @@
    channel = NULL;
    aux = NULL;
@@ -2049,8 +5240,8 @@ diff -Naur VDR-NG-orig/timers.c VDR-NG/timers.c
  }
  
 diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
---- VDR-NG-orig/tools.c	Tue Jun 23 11:06:34 2009
-+++ VDR-NG/tools.c	Tue Jun 23 11:07:51 2009
+--- VDR-NG-orig/tools.c	2010-01-14 09:52:24.000000000 +0100
++++ VDR-NG/tools.c	2010-01-14 09:53:00.000000000 +0100
 @@ -100,6 +100,14 @@
    return p < 0 ? p : written;
  }
@@ -2147,9 +5338,18 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
  }
  
 diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
---- VDR-NG-orig/tools.h	Wed Oct 01 13:01:42 2008
-+++ VDR-NG/tools.h	Tue Jun 23 11:07:51 2009
-@@ -78,7 +78,7 @@
+--- VDR-NG-orig/tools.h	2009-09-24 17:21:12.000000000 +0200
++++ VDR-NG/tools.h	2010-01-18 19:05:52.000000000 +0100
+@@ -13,6 +13,8 @@
+ #include <dirent.h>
+ #include <errno.h>
+ #include <fcntl.h>
++#include <float.h>
++#include <math.h>
+ #include <poll.h>
+ #include <stddef.h>
+ #include <stdint.h>
+@@ -78,7 +80,7 @@
  #define SECSINDAY  86400
  
  #define KILOBYTE(n) ((n) * 1024)
@@ -2158,7 +5358,31 @@ diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
  
  #define MALLOC(type, size)  (type *)malloc(sizeof(type) * (size))
  
-@@ -142,6 +142,7 @@
+@@ -113,7 +115,7 @@
+ int BCD2INT(int x);
+ 
+ // Unfortunately there are no platform independent macros for unaligned
+-// access. so we do it this way:
++// access, so we do it this way:
+ 
+ template<class T> inline T get_unaligned(const T *const p)
+ {
+@@ -127,6 +129,14 @@
+   ((s *)p)->v = i;
+ }
+ 
++// Comparing doubles for equality is unsafe, but unfortunately we can't
++// overwrite operator==(double, double), so this will have to do:
++
++inline bool DoubleEqual(double a, double b)
++{
++  return fabs(a - b) <= DBL_EPSILON;
++}
++
+ class cString {
+ private:
+   char *s;
+@@ -142,6 +152,7 @@
  
  ssize_t safe_read(int filedes, void *buffer, size_t size);
  ssize_t safe_write(int filedes, const void *buffer, size_t size);
@@ -2166,7 +5390,7 @@ diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
  void writechar(int filedes, char c);
  int WriteAllOrNothing(int fd, const uchar *Data, int Length, int TimeoutMs = 0, int RetryMs = 0);
      ///< Writes either all Data to the given file descriptor, or nothing at all.
-@@ -151,7 +152,14 @@
+@@ -151,7 +162,14 @@
  char *strn0cpy(char *dest, const char *src, size_t n);
  char *strreplace(char *s, char c1, char c2);
  char *strreplace(char *s, const char *s1, const char *s2); ///< re-allocates 's' and deletes the original string if necessary!
@@ -2183,8 +5407,8 @@ diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
  char *compactspace(char *s);
  cString strescape(const char *s, const char *chars);
 diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
---- VDR-NG-orig/vdr.c	Tue Jun 23 11:06:36 2009
-+++ VDR-NG/vdr.c	Tue Jun 23 11:08:16 2009
+--- VDR-NG-orig/vdr.c	2010-01-14 09:52:26.000000000 +0100
++++ VDR-NG/vdr.c	2010-01-14 12:13:48.000000000 +0100
 @@ -89,23 +89,23 @@
  #include "epgmode.h"
  //M7X0 END AK
@@ -2245,7 +5469,54 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
  #if defined(VDR_USER)
    VdrUser = VDR_USER;
  #endif
-@@ -589,6 +584,7 @@
+@@ -257,6 +252,7 @@
+       { "config",   required_argument, NULL, 'c' },
+       { "daemon",   no_argument,       NULL, 'd' },
+       { "device",   required_argument, NULL, 'D' },
++      { "edit",     required_argument, NULL, 'e' | 0x100 },
+       { "epgfile",  required_argument, NULL, 'E' },
+       { "grab",     required_argument, NULL, 'g' },
+       { "help",     no_argument,       NULL, 'h' },
+@@ -277,11 +273,11 @@
+       { "vfat",     no_argument,       NULL, 'v' | 0x100 },
+       { "video",    required_argument, NULL, 'v' },
+       { "watchdog", required_argument, NULL, 'w' },
+-      { NULL }
++      { NULL,       no_argument,       NULL,  0  }
+     };
+ 
+   int c;
+-  while ((c = getopt_long(argc, argv, "a:c:dD:E:g:hi:l:L:mp:P:r:s:t:u:v:Vw:", long_options, NULL)) != -1) {
++  while ((c = getopt_long(argc, argv, "a:c:dD:e:E:g:hi:l:L:mp:P:r:s:t:u:v:Vw:", long_options, NULL)) != -1) {
+         switch (c) {
+           case 'a': AudioCommand = optarg;
+                     break;
+@@ -298,6 +294,8 @@
+                     fprintf(stderr, "vdr: invalid DVB device number: %s\n", optarg);
+                     return 2;
+                     break;
++          case 'e' | 0x100:
++                    return CutRecording(optarg) ? 0 : 2;
+           case 'E': EpgDataFileName = (*optarg != '-' ? optarg : NULL);
+                     break;
+           case 'g': cSVDRP::SetGrabImageDir(*optarg != '-' ? optarg : NULL);
+@@ -437,6 +435,7 @@
+                "  -D NUM,   --device=NUM   use only the given DVB device (NUM = 0, 1, 2...)\n"
+                "                           there may be several -D options (default: all DVB\n"
+                "                           devices will be used)\n"
++               "            --edit=REC     cut recording REC and exit\n"
+                "  -E FILE,  --epgfile=FILE write the EPG data into the given FILE (default is\n"
+                "                           '%s' in the video directory)\n"
+                "                           '-E-' disables this\n"
+@@ -549,6 +548,7 @@
+      stdout = freopen(Terminal, "w", stdout);
+      stderr = freopen(Terminal, "w", stderr);
+      HasStdin = true;
++     tcgetattr(STDIN_FILENO, &savedTm);
+      }
+ 
+ //M7X0 BEGIN AK
+@@ -589,6 +589,7 @@
    int MaxLatencyTime = 0;
    bool InhibitEpgScan = false;
    bool IsInfoMenu = false;
@@ -2253,7 +5524,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
    cSkin *CurrentSkin = NULL;
  
    // Load plugins:
-@@ -787,10 +783,13 @@
+@@ -788,10 +789,13 @@
  #endif
          // Attach launched player control:
          cControl::Attach();
@@ -2268,7 +5539,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                cChannel *Channel = Channels.GetByNumber(cDevice::CurrentChannel());
                if (Channel && (Channel->Vpid() || Channel->Apid(0))) {
                   if (!Channels.SwitchTo(cDevice::CurrentChannel()) // try to switch to the original channel...
-@@ -799,8 +798,9 @@
+@@ -800,8 +804,9 @@
                       && !cDevice::SwitchChannel(-1)) // ...or the next lower available one
                      ;
                   }
@@ -2279,7 +5550,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                }
             }
          // Restart the Watchdog timer:
-@@ -821,8 +821,8 @@
+@@ -822,8 +827,8 @@
             if (modified == CHANNELSMOD_USER || Timers.Modified(TimerState))
                ChannelSaveTimeout = 1; // triggers an immediate save
             else if (modified && !ChannelSaveTimeout)
@@ -2290,7 +5561,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
             if ((modified || timeout) && Channels.Lock(false, 100)) {
                if (timeout) {
                   Channels.Save();
-@@ -850,16 +850,15 @@
+@@ -851,16 +856,15 @@
             if (!Menu)
                Menu = new cDisplayChannel(cDevice::CurrentChannel(), LastChannel >= 0);
             LastChannel = cDevice::CurrentChannel();
@@ -2309,7 +5580,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
             // Process ongoing recordings:
             cRecordControls::Process(Now);
             // Start new recordings:
-@@ -952,7 +951,7 @@
+@@ -953,7 +957,7 @@
                 * is tuned to timers channel.
                 */
                InhibitEpgScan = (!!InhibitEpgScan) & devNeed;
@@ -2318,7 +5589,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                }
             // Delete expired timers:
             Timers.DeleteExpired();
-@@ -967,14 +966,14 @@
+@@ -968,14 +972,14 @@
             if (Menu)
                LastCamMenu = 0;
             else if (!LastCamMenu)
@@ -2335,7 +5606,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
  
          if (ISREALKEY(key)) {
             cStatus::MsgUserAction(key, Interact);          // PIN PATCH
-@@ -1122,8 +1121,12 @@
+@@ -1123,8 +1127,12 @@
            case kPause:
                 if (!cControl::Control()) {
                    DELETE_MENU;
@@ -2350,7 +5621,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                    key = kNone; // nobody else needs to see this key
                    }
                 break;
-@@ -1162,7 +1165,7 @@
+@@ -1163,7 +1171,7 @@
                     }
  		   if(Setup.ShutdownMessage){
                  // Ask the final question:
@@ -2359,7 +5630,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                     // If final question was canceled, continue to be active:
                     break;
  		   } else
-@@ -1191,7 +1194,7 @@
+@@ -1192,7 +1200,7 @@
                      continue;
                      }
                   }
@@ -2368,7 +5639,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                   state = osEnd;
                }
             // TODO make the CAM menu stay open in case of automatic updates and have it return osContinue; then the following two lines can be removed again
-@@ -1211,6 +1214,7 @@
+@@ -1212,6 +1220,7 @@
                              DELETE_MENU;
                              cControl::Shutdown();
                              Menu = new cMenuMain(osRecordings);
@@ -2376,7 +5647,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                              break;
               case osReplay: DELETE_MENU;
                              cControl::Shutdown();
-@@ -1318,12 +1322,12 @@
+@@ -1319,12 +1328,12 @@
                 ShutdownHandler.countdown.Cancel();
              }
  
@@ -2391,7 +5662,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
              if (ShutdownHandler.IsUserInactive(Soon) && ShutdownHandler.Retry(Soon) && !ShutdownHandler.countdown) {
                 if (ShutdownHandler.ConfirmShutdown(false) && !Setup.HotStandby)
                    // Time to shut down - start final countdown:
-@@ -1401,9 +1405,11 @@
+@@ -1402,9 +1411,11 @@
    ReportEpgBugFixStats();
    if (WatchdogTimeout > 0)
       dsyslog("max. latency time %d seconds", MaxLatencyTime);

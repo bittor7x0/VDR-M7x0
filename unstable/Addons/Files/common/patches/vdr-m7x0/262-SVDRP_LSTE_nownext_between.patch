@@ -95,10 +95,10 @@ diff -Naur -x '*svn*' '--exclude-from=exclude' VDR-NG-orig/epg.h VDR-NG/epg.h
 diff -Naur -x '*svn*' '--exclude-from=exclude' VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
 --- VDR-NG-orig/svdrp.c	2009-10-27 00:34:00.000000000 +0100
 +++ VDR-NG/svdrp.c	2009-11-14 06:49:22.000000000 +0100
-@@ -226,12 +226,13 @@
-   "    containing the given string as part of their name are listed.\n"
-   "    If ':groups' is given, all channels are listed including group\n"
-   "    separators. The channel number of a group separator is always 0.",
+@@ -224,12 +224,13 @@
+   "    List channels. Without option, all channels are listed. Otherwise\n"
+   "    only the given channel is listed. If a name is given, all channels\n"
+   "    containing the given string as part of their name are listed.",
 -  "LSTE [ <channel> ] [ now | next | at <time> ]\n"
 +  "LSTE [ <channel> ] [ now | next | nownext | at <time> | between <time> <time> | withid <number> ]\n"
    "    List EPG data. Without any parameters all data of all channels is\n"
