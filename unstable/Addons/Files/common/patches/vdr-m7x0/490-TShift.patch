@@ -1,0 +1,3922 @@
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/config.c	2009-12-11 11:09:36.000000000 +0100
+@@ -332,6 +332,13 @@
+   ChannelFilter = 0;
+   InitialChannel = 0;
+   InitialVolume = -1;
++  TShift = 0;
++  TShiftBufferSize = 60;
++  TShiftStartRecord = 120;
++  TShiftDelayed = 0;
++  TShiftPriority = 0;
++  TShiftPause = 1;
++  TShiftTimeout = 60;
+   LRChannelGroups = 0;
+   LRForwardRewind = 0;
+   ShowRecDate = 1;
+@@ -533,6 +540,13 @@
+   else if (!strcasecmp(Name, "ChannelFilter"))       ChannelFilter      = atoi(Value);
+   else if (!strcasecmp(Name, "InitialChannel"))      InitialChannel     = atoi(Value);
+   else if (!strcasecmp(Name, "InitialVolume"))       InitialVolume      = atoi(Value);
++  else if (!strcasecmp(Name, "TShift"))              TShift             = atoi(Value);
++  else if (!strcasecmp(Name, "TShiftBufferSize"))    TShiftBufferSize   = atoi(Value);
++  else if (!strcasecmp(Name, "TShiftStartRecord"))   TShiftStartRecord  = atoi(Value);
++  else if (!strcasecmp(Name, "TShiftDelayed"))       TShiftDelayed      = atoi(Value);
++  else if (!strcasecmp(Name, "TShiftPriority"))      TShiftPriority     = atoi(Value);
++  else if (!strcasecmp(Name, "TShiftPause"))         TShiftPause        = atoi(Value);
++  else if (!strcasecmp(Name, "TShiftTimeout"))       TShiftTimeout      = atoi(Value);
+   else if (!strcasecmp(Name, "LRChannelGroups"))     LRChannelGroups    = atoi(Value);
+   else if (!strcasecmp(Name, "LRForwardRewind"))     LRForwardRewind    = atoi(Value);
+   else if (!strcasecmp(Name, "ShowRecDate"))         ShowRecDate        = atoi(Value);
+@@ -641,6 +655,13 @@
+   Store("ChannelFilter",      ChannelFilter);
+   Store("InitialChannel",     InitialChannel);
+   Store("InitialVolume",      InitialVolume);
++  Store("TShift",             TShift);
++  Store("TShiftBufferSize",   TShiftBufferSize);
++  Store("TShiftStartRecord",  TShiftStartRecord);
++  Store("TShiftDelayed",      TShiftDelayed);
++  Store("TShiftPriority",     TShiftPriority);
++  Store("TShiftPause",        TShiftPause);
++  Store("TShiftTimeout",      TShiftTimeout);
+   Store("LRChannelGroups",    LRChannelGroups);
+   Store("LRForwardRewind",    LRForwardRewind);
+   Store("ShowRecDate",        ShowRecDate);
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/config.h	2009-12-11 11:07:50.000000000 +0100
+@@ -290,6 +290,13 @@
+   int ChannelFilter;
+   int InitialChannel;
+   int InitialVolume;
++  int TShift;
++  int TShiftBufferSize;
++  int TShiftStartRecord;
++  int TShiftDelayed;
++  int TShiftPriority;
++  int TShiftPause;
++  int TShiftTimeout;
+   int LRChannelGroups;
+   int LRForwardRewind;
+   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;
+diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
+--- VDR-NG-orig/device.c	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/device.c	2009-12-11 17:22:58.000000000 +0100
+@@ -18,6 +18,7 @@
+ #include "receiver.h"
+ #include "status.h"
+ #include "transfer.h"
++#include "tshift.h"
+ 
+ bool scanning_on_receiving_device = false;
+ 
+@@ -401,6 +402,8 @@
+          imp <<= 1; imp |= device[i] == cTransferControl::ReceiverDevice();        // avoid the Transfer Mode receiver device
+          imp <<= 8; imp |= min(max(device[i]->Priority() + MAXPRIORITY, 0), 0xFF); // use the device with the lowest priority (+MAXPRIORITY to assure that values -99..99 can be used)
+          imp <<= 8; imp |= min(max(device[i]->ProvidesCa(Channel), 0), 0xFF);      // use the device that provides the lowest number of conditional access methods
++         imp <<= 1; imp |= ndr;                                                    // avoid detach receivers
++         imp <<= 1; imp |= cTShiftControl::Impact(device[i],ndr);                  // avoid last TShift device
+          imp <<= 1; imp |= device[i]->IsPrimaryDevice();                           // avoid the primary device
+          imp <<= 1; imp |= device[i]->HasDecoder();                                // avoid full featured cards
+          if (imp < Impact) {
+@@ -942,12 +945,13 @@
+   // If this card is switched to an other transponder, any receivers still
+   // attached to it need to be automatically detached:
+   bool NeedsDetachReceivers = false;
++  bool provides=ProvidesChannel(Channel, Setup.PrimaryLimit, &NeedsDetachReceivers, true);
+ 
+   // If this card can't receive this channel, we must not actually switch
+   // the channel here, because that would irritate the driver when we
+   // start replaying in Transfer Mode immediately after switching the channel:
+ //M7X0 BEGIN AK
+-  bool NeedsTransferMode = (LiveView && IsPrimaryDevice() && !ProvidesChannel(Channel, Setup.PrimaryLimit, &NeedsDetachReceivers, true));
++  bool NeedsTransferMode = (LiveView && IsPrimaryDevice() && (Setup.TShift || !provides));
+ //M7X0 END AK
+   eSetChannelResult Result = scrOk;
+ 
+@@ -970,7 +974,10 @@
+         if (CaDevice->SetChannel(Channel, false) == scrOk) { // calling SetChannel() directly, not SwitchChannel()!
+            if (NeedsDetachReceivers)
+               CaDevice->DetachAllReceivers();
+-           cControl::Launch(new cTransferControl(CaDevice,Channel->Ppid(), Channel->Vpid(), Channel->Apid(0),Channel->Tpid()));
++	   if(Setup.TShift)
++           	cControl::Launch(new cTShiftControl(CaDevice,Channel));
++	   else
++           	cControl::Launch(new cTransferControl(CaDevice,Channel->Ppid(), Channel->Vpid(), Channel->Apid(0),Channel->Tpid()));
+            }
+         else
+            Result = scrNoTransfer;
+diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
+--- VDR-NG-orig/dvbdevice.c	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/dvbdevice.c	2009-12-11 17:24:44.000000000 +0100
+@@ -3012,7 +3012,7 @@
+ 
+   bool TurnOffLivePIDs = HasDecoder()
+                          && (DoTune
+-                            || !IsPrimaryDevice()
++                            || (!IsPrimaryDevice() && !Setup.TShift)
+                             || LiveView // for a new live view the old PIDs need to be turned off
+                             );
+ 
+@@ -3242,6 +3242,9 @@
+          if ((playMode == pmAudioOnly) | (playMode == pmAudioOnlyBlack))
+             TurnOffLiveMode(true, true);
+ 
++         if((playMode==pmTransfererAudioOnly)&&(Setup.TShift))
++            TurnOffLiveMode(true, true);
++
+          if (tsreplayer != NULL) {
+             delete tsreplayer;
+             tsreplayer=NULL;
+@@ -3253,7 +3256,7 @@
+             delete tsreplayer;
+             tsreplayer=NULL;
+          }
+-         TurnOffLiveMode(true, !pidHandles[cDevice::ptVideo].pid |
++         TurnOffLiveMode(true, (!pidHandles[cDevice::ptVideo].pid&&!Setup.TShift) |
+               (playMode == pmAudioOnly) | (playMode == pmAudioOnlyBlack));
+          CHECK(ioctl(fd_audio, AUDIO_STOP,0));
+          CHECK(ioctl(fd_video, VIDEO_STOP, 1));
+@@ -3396,10 +3399,10 @@
+          break;
+ 
+     case pmTransferer:
+-         TurnOffLiveMode(true,!pidHandles[cDevice::ptVideo].pid);
++         TurnOffLiveMode(true,!pidHandles[cDevice::ptVideo].pid&&!Setup.TShift);
+          break;
+     case pmTransfererAudioOnly:
+-         TurnOffLiveMode(true,pidHandles[cDevice::ptVideo].pid);
++         TurnOffLiveMode(true,pidHandles[cDevice::ptVideo].pid||Setup.TShift);
+          break;
+     default: esyslog("ERROR: unknown play mode %d", PlayMode);
+     }
+diff -Naur VDR-NG-orig/dvbplayer.c VDR-NG/dvbplayer.c
+--- VDR-NG-orig/dvbplayer.c	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/dvbplayer.c	2009-12-11 17:28:41.000000000 +0100
+@@ -14,6 +14,7 @@
+ #include "ringbuffer.h"
+ #include "thread.h"
+ #include "tools.h"
++#include "tshift.h"
+ 
+ // --- cBackTrace ------------------------------------------------------------
+ 
+@@ -278,6 +279,7 @@
+ 
+ class cDvbPlayer : public cPlayer, cThread {
+ private:
++  bool mustDeleteIndex;
+   enum ePlayModes { pmPlay, pmPause, pmSlow, pmFast, pmStill };
+   enum ePlayDirs { pdForward, pdBackward };
+   //static int Speeds[];
+@@ -316,7 +318,7 @@
+   virtual void Activate(bool On);
+   virtual void Action(void);
+ public:
+-  cDvbPlayer(const char *FileName);
++  cDvbPlayer(const char *FileName, cTShiftIndexFile *newIndex = NULL);
+   virtual ~cDvbPlayer();
+   bool Active(void) { return cThread::Running(); }
+   void Pause(void);
+@@ -335,9 +337,10 @@
+ #define MAX_SPEEDS    9
+ #define MAX_SLOWSPEEDS 3
+ #define LOW_SPEEDS    0
+-cDvbPlayer::cDvbPlayer(const char *FileName)
++cDvbPlayer::cDvbPlayer(const char *FileName, cTShiftIndexFile *newIndex)
+ :cThread("dvbplayer")
+ {
++  mustDeleteIndex = !newIndex;
+   nonBlockingFileReader = NULL;
+   ringBuffer = NULL;
+   backTrace = NULL;
+@@ -362,6 +365,9 @@
+ #endif
+   fileName = new cFileName(FileName, false);
+ //M7X0 END AK
++  if (newIndex)
++     replayFile=newIndex->GetReplayFile(fileName);
++  else
+   replayFile = fileName->Open();
+   if (!replayFile)
+      return;
+@@ -369,6 +375,10 @@
+ 
+   ringBuffer = new cRingBufferFrameM7x0(PLAYERBUFSIZE, PLAYERBUFALIGNMENT);
+   ringBuffer->SetTimeouts(40,0);
++  if (newIndex)
++     index=newIndex;
++  else
++  {
+   // Create the index file:
+   index = new cIndexFile(FileName, false);
+   if (!index)
+@@ -377,6 +387,7 @@
+      delete index;
+      index = NULL;
+      }
++  }
+   backTrace = new cBackTrace;
+ }
+ 
+@@ -384,6 +395,7 @@
+ {
+   Detach();
+   Save();
++  if (mustDeleteIndex)
+   delete index;
+   delete fileName;
+   delete backTrace;
+@@ -483,7 +495,7 @@
+   //LOCK_THREAD;
+   if (nonBlockingFileReader)
+      nonBlockingFileReader->Clear();
+-  if (playMode == pmFast || playMode == pmSlow || (readIndex = backTrace->Get(playDir == pdForward)) < 0)
++  if ((writeIndex>=0)&&(playMode == pmFast || playMode == pmSlow || (readIndex = backTrace->Get(playDir == pdForward)) < 0))
+      readIndex = writeIndex;
+   writeIndex = readIndex;
+   if ((readIndex = index->GetNextIFrame(readIndex + (playDir == pdBackward ? -1 : 1) ,playDir == pdBackward) - 1) < 0)
+@@ -499,6 +511,9 @@
+ bool cDvbPlayer::NextFile(void)
+ {
+   if (replayFile && eof) {
++     if (index)
++        replayFile = index->NextFile(fileName, false);
++     else
+      replayFile = fileName->NextFile();
+      fileNr = fileName->Number();
+      fileOffset = 0;
+@@ -635,7 +650,12 @@
+                  else if (index) {  // Normal play mode
+                     readIndex++;
+                     if (!index->Get(readIndex, &fileNr, &fileOffset, NULL, &readFrameLength)) {
+-                       readIndex = -1;
++                       readIndex = index->WaitIndex(readIndex);
++                       if (readIndex>=0) {
++                          Sleep = true;
++                          FasterUnlockAction();
++                          continue;
++                          }
+                        eof = true;
+                        FasterUnlockAction();
+                        continue;
+@@ -1028,8 +1048,8 @@
+ 
+ // --- cDvbPlayerControl -----------------------------------------------------
+ 
+-cDvbPlayerControl::cDvbPlayerControl(const char *FileName)
+-:cControl(player = new cDvbPlayer(FileName))
++cDvbPlayerControl::cDvbPlayerControl(const char *FileName, cTShiftIndexFile *newIndex)
++:cControl(player = new cDvbPlayer(FileName, newIndex))
+ {
+ }
+ 
+diff -Naur VDR-NG-orig/dvbplayer.h VDR-NG/dvbplayer.h
+--- VDR-NG-orig/dvbplayer.h	2009-12-11 15:33:06.000000000 +0100
++++ VDR-NG/dvbplayer.h	2009-12-11 11:07:53.000000000 +0100
+@@ -14,12 +14,13 @@
+ #include "thread.h"
+ 
+ class cDvbPlayer;
++class cTShiftIndexFile;
+ 
+ class cDvbPlayerControl : public cControl {
+ private:
+   cDvbPlayer *player;
+ public:
+-  cDvbPlayerControl(const char *FileName);
++  cDvbPlayerControl(const char *FileName, cTShiftIndexFile *newIndex = NULL);
+        // Sets up a player for the given file.
+   virtual ~cDvbPlayerControl();
+   bool Active(void);
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/i18n.c	2009-12-11 11:11:41.000000000 +0100
+@@ -3390,6 +3390,28 @@
+     "Diverse",
+     "Rùzné",
+   },
++  { "Timeshift",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "Timeshift",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++  },
+   { "Plugins",
+     "Plugins",
+     "Vstavki",
+@@ -5670,6 +5692,270 @@
+     "",// TODO
+     "",// TODO
+   },
++  { "Delayed TV",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "TV en diferido",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++    "",
++  },
++  { "Setup.TShift$Buffer size (min)",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Tamaño del buffer (min)",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.TShift$Start records after (s)",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Grabar después de (sg)",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.TShift$Keep recordings",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Mantener grabaciones",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.TShift$Delayed rec priority",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Prioridad grabaciones retrasadas",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "using play",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "usando play",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "delayed",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "retrasadas",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Channel not available in less than %d minutes",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Canal no disponible en menos de %d minutos",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Switching to live TV in 1 minute",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Cambio a TV en directo en 1 minuto",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Stopping buffer in 1 minute",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "El buffer se detendrá en 1 minuto",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.TShift$Pause on channel switching",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Pausa al cambiar de canal",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Setup.TShift$Inactivity timeout (min)",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Tiempo de inactividad (min)",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   // The days of the week:
+   { "MTWTFSS",
+     "MDMDFSS",
+diff -Naur VDR-NG-orig/Makefile VDR-NG/Makefile 
+--- VDR-NG-orig/Makefile	2009-12-11 17:58:12.000000000 +0100
++++ VDR-NG/Makefile	2009-12-11 18:03:34.000000000 +0100
+@@ -45,7 +45,7 @@
+        lirc.o menu.o menuitems.o nit.o osdbase.o osd.o pat.o player.o plugin.o rcu.o\
+        receiver.o recorder.o recording.o remote.o remux.o ringbuffer.o sdt.o sections.o shutdown.o\
+        skinclassic.o skins.o skinsttng.o sources.o spu.o status.o svdrp.o themes.o thread.o\
+-       timers.o tools.o transfer.o vdr.o videodir.o submenu.o
++       timers.o tools.o transfer.o vdr.o videodir.o submenu.o tshift.o
+ 
+ FIXFONT_ISO8859_1 = -adobe-courier-bold-r-normal--25-*-100-100-m-*-iso8859-1
+ OSDFONT_ISO8859_1 = -adobe-helvetica-medium-r-normal--23-*-100-100-p-*-iso8859-1
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/menu.c	2009-12-11 17:53:14.000000000 +0100
+@@ -34,6 +34,7 @@
+ #include "timers.h"
+ #include "transfer.h"
+ #include "videodir.h"
++#include "tshift.h"
+ 
+ #define MAXWAIT4EPGINFO   3 // seconds
+ #define MODETIMEOUT       3 // seconds
+@@ -3308,6 +3309,69 @@
+   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat timeout"),        &data.LircRepeatTimeout, 0, 5000));
+ }
+ 
++// --- cMenuSetupTShift --------------------------------------------------
++
++class cMenuSetupTShift : public cMenuSetupBase {
++private:
++  const char *modes[3];
++  const char *delayed[3];
++  void Setup();
++public:
++  eOSState ProcessKey(eKeys Key);
++  cMenuSetupTShift(void);
++  };
++
++cMenuSetupTShift::cMenuSetupTShift(void)
++{ 
++  SetSection(tr("Delayed TV"));
++  modes[0] = tr("never");
++  modes[1] = tr("always");
++  modes[2] = tr("using play");
++  delayed[0] = tr("never");
++  delayed[1] = tr("always");
++  delayed[2] = tr("delayed");
++  Setup();
++}
++
++void cMenuSetupTShift::Setup(void)
++{
++  int current=Current();
++  Clear();
++  Add(new cMenuEditStraItem(tr("Delayed TV"),&data.TShift,3,modes));
++  Add(new cMenuEditIntItem(tr("Setup.TShift$Buffer size (min)"), &data.TShiftBufferSize, 10, 180));
++  Add(new cMenuEditIntItem(tr("Setup.TShift$Start records after (s)"), &data.TShiftStartRecord, 0, 3600));
++  Add(new cMenuEditIntItem(tr("Setup.TShift$Inactivity timeout (min)"),&data.TShiftTimeout, 0, 180));
++  Add(new cMenuEditStraItem(tr("Setup.TShift$Keep recordings"),&data.TShiftDelayed,3,delayed));
++  Add(new cMenuEditIntItem(tr("Setup.TShift$Delayed rec priority"),&data.TShiftPriority, 0, MAXPRIORITY));
++  Add(new cMenuEditBoolItem(tr("Setup.TShift$Pause on channel switching"),&data.TShiftPause));
++  SetCurrent(Get(current));
++  Display();
++}
++
++eOSState cMenuSetupTShift::ProcessKey(eKeys Key)
++{
++  int oldTShift = data.TShift;
++  int oldTShiftBufferSize = data.TShiftBufferSize; 
++  int oldTShiftStartRecord = data.TShiftStartRecord;
++  int oldTShiftDelayed = data.TShiftDelayed;
++  int oldTShiftPriority = data.TShiftPriority;
++  int oldTShiftPause = data.TShiftPause;
++  int oldTShiftTimeout = data.TShiftTimeout;
++  eOSState state = cMenuSetupBase::ProcessKey(Key);
++
++  if (Key != kNone && (data.TShift != oldTShift || data.TShiftBufferSize != oldTShiftBufferSize || data.TShiftStartRecord != oldTShiftStartRecord || data.TShiftDelayed != oldTShiftDelayed || data.TShiftPriority != oldTShiftPriority || data.TShiftPause != oldTShiftPause || data.TShiftTimeout != oldTShiftTimeout)) {
++     Setup();
++     if (!data.TShift != !oldTShift) {
++       if (!data.TShift)
++	 cTShiftControl::ShutdownTShift();
++       else
++	 cTShiftControl::StartTShift();
++       }
++     }
++  return state;
++}
++
++
+ // --- cMenuSetupPluginItem --------------------------------------------------
+ 
+ class cMenuSetupPluginItem : public cOsdItem {
+@@ -3409,6 +3469,7 @@
+   Add(new cOsdItem(hk(tr("Cutter")),        osUser8));
+   Add(new cOsdItem(hk(tr("Replay")),        osUser9));
+   Add(new cOsdItem(hk(tr("Miscellaneous")), osUser10));
++  Add(new cOsdItem(hk(tr("Delayed TV")),osTShift));
+   if (cPluginManager::HasPlugins())
+   Add(new cOsdItem(hk(tr("Plugins")),       osUser11));
+   Add(new cOsdItem(hk(tr("Restart")),       (eOSState) (osUser11 + 1)));
+@@ -3442,7 +3503,8 @@
+     case osUser9: return AddSubMenu(new cMenuSetupReplay);
+     case osUser10: return AddSubMenu(new cMenuSetupMisc);
+     case osUser11: return AddSubMenu(new cMenuSetupPlugins);
+-    case osUser11 + 1: return Restart();
++    case osUserRestart: return Restart();
++    case osTShift: return AddSubMenu(new cMenuSetupTShift);
+ //M7X0 BEGIN AK
+     default: ;
+     }
+@@ -4029,6 +4091,7 @@
+ 
+ eOSState cDisplayChannel::ProcessKey(eKeys Key)
+ {
++  Key=cTShiftControl::FilterKeyFromMenu(Key);
+   cChannel *NewChannel = NULL;
+   if (Key != kNone)
+      lastTime.Set();
+diff -Naur VDR-NG-orig/osdbase.h VDR-NG/osdbase.h
+--- VDR-NG-orig/osdbase.h	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/osdbase.h	2009-12-11 17:53:00.000000000 +0100
+@@ -45,6 +45,8 @@
+                 osUser9,
+                 osUser10,
+                 osUser11,
++                osUserRestart,
++                osTShift
+               };
+ 
+ class cOsdItem : public cListObject {
+diff -Naur VDR-NG-orig/receiver.h VDR-NG/receiver.h
+--- VDR-NG-orig/receiver.h	2009-12-11 15:33:06.000000000 +0100
++++ VDR-NG/receiver.h	2009-12-11 17:44:04.000000000 +0100
+@@ -27,10 +27,13 @@
+ //M7X0 BEGIN AK
+   friend class cTransfer;
+ //M7X0 END AK
+-private:
++protected:
+   cDevice *device;
++private:
+   int ca;
++protected:
+   int priority;
++private:
+   int pids[MAXRECEIVEPIDS];
+   int numPids;
+   bool WantsPid(int Pid);
+diff -Naur VDR-NG-orig/recorder.c VDR-NG/recorder.c
+--- VDR-NG-orig/recorder.c	2009-12-11 15:33:26.000000000 +0100
++++ VDR-NG/recorder.c	2009-12-11 17:45:15.000000000 +0100
+@@ -12,6 +12,7 @@
+ #include <stdio.h>
+ #include <unistd.h>
+ #include "shutdown.h"
++#include "tshift.h"
+ 
+ #define RECORDERBUFSIZE  MEGABYTE(4)
+ 
+@@ -36,11 +37,12 @@
+ protected:
+   virtual void Action(void);
+ public:
+-  cFileWriter(const char *FileName, cRemux *Remux);
++  cFileWriter(const char *FileName, cRemux *Remux, bool IsTShift = false);
+   virtual ~cFileWriter();
++  cIndexFile *GetIndexFile(void) { return index; }
+   };
+ //M7X0 BEGIN AK
+-cFileWriter::cFileWriter(const char *FileName, cRemux *Remux)
++cFileWriter::cFileWriter(const char *FileName, cRemux *Remux, bool IsTShift)
+ :cThread("file writer")
+ {
+   fileName = NULL;
+@@ -59,6 +61,9 @@
+      LOG_ERROR;
+      return;
+      }
++  if (IsTShift)
++     index=new cTShiftIndexFile(FileName);
++  else
+   // Create the index file:
+   index = new cIndexFile(FileName, true);
+   if (!index)
+@@ -126,6 +131,14 @@
+ 
+               recordFile->Truncate(fileSize + Header[FirstIFrame].offset);
+ 
++              if (index) {
++                 if (!(recordFile = index->NextFile(fileName, true))) {
++                    LOG_ERROR;
++                    esyslog("Cannot open next recording file '%s' ... giving up",fileName->Name());
++                    break;
++                    }
++                 }
++              else
+               if (!(recordFile = fileName->NextFile())) {
+                  LOG_ERROR;
+                  esyslog("Cannot open next recording file '%s' ... giving up",fileName->Name());
+@@ -169,7 +182,7 @@
+ 
+ }
+ 
+-cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids)
++cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift)
+ :cReceiver(Ca, Priority, VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids)
+ #ifndef DISABLE_RINGBUFFER_IN_RECEIVER
+ ,cThread("recording")
+@@ -193,7 +206,7 @@
+   ringBuffer->SetLimits(TS_SIZE, TS_SIZE * 1024);
+ #endif
+   remux = new cRemux(VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids, true);
+-  writer = new cFileWriter(FileName, remux);
++  writer = new cFileWriter(FileName, remux, IsTShift);
+ }
+ 
+ cRecorder::~cRecorder()
+@@ -286,3 +299,11 @@
+ #endif
+ #endif
+ //M7X0 END AK
++
++cIndexFile *cRecorder::GetIndexFile(void)
++{
++	if(writer)
++		return writer->GetIndexFile();
++	return NULL;
++}
++
+diff -Naur VDR-NG-orig/recorder.h VDR-NG/recorder.h
+--- VDR-NG-orig/recorder.h	2009-12-11 15:33:06.000000000 +0100
++++ VDR-NG/recorder.h	2009-12-11 11:08:02.000000000 +0100
+@@ -52,12 +52,14 @@
+ #endif
+ 
+ public:
+-  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids);
++  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift = false);
+                // Creates a new recorder that requires conditional access Ca, has
+                // the given Priority and will record the given PIDs into the file FileName.
+   virtual ~cRecorder();
+   bool Activated(void) const { return activated; }
+ //M7X0 END AK
++protected:
++  cIndexFile *GetIndexFile(void);
+   };
+ 
+ #endif //__RECORDER_H
+diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
+--- VDR-NG-orig/recording.c	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/recording.c	2009-12-11 17:34:45.000000000 +0100
+@@ -1276,7 +1276,7 @@
+ #define MAXINDEXCATCHUP   8 // seconds
+ 
+ // The minimum age of an index file for considering it no longer to be written:
+-#define MININDEXAGE    3600 // seconds
++#define MININDEXAGE    60 // seconds
+ 
+ cIndexFile::cIndexFile(const char *FileName, bool Record)
+ :resumeFile(FileName)
+@@ -1596,6 +1596,18 @@
+   return f >= 0;
+ }
+ 
++cUnbufferedFile *cIndexFile::NextFile(cFileName *FileName, bool Record)
++{
++  return FileName->NextFile();
++}
++
++int cIndexFile::WaitIndex(int Index)
++{
++	if (!IsStillRecording())
++		return -1;
++	return Index-1;
++}
++
+ // --- cFileName -------------------------------------------------------------
+ 
+ #include <errno.h>
+diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
+--- VDR-NG-orig/recording.h	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/recording.h	2009-12-11 17:36:00.000000000 +0100
+@@ -220,31 +220,48 @@
+ // will be reached, before recording to file 255.vdr
+ 
+ class cIndexFile {
+-private:
++protected:
+   struct tIndex { int offset; uchar type; uchar number; short reserved; };
+   int f;
++private:
+   char *fileName;
++protected:
+   int size, last;
+   tIndex *index;
++private:
+   cResumeFile resumeFile;
+   cMutex mutex;
++protected:
++virtual
+   bool CatchUp(int Index = -1);
+ public:
+   cIndexFile(const char *FileName, bool Record);
++virtual
+   ~cIndexFile();
+   bool Ok(void) { return index != NULL; }
++virtual
+   bool Write(uchar PictureType, uchar FileNumber, int FileOffset);
+ //M7X0 BEGIN AK
++virtual
+   bool Write(sPesResult *Picture, int PictureCount , uchar FileNumber, int FileOffset);
++virtual
+   int StripOffToLastIFrame(int number);
+ //M7X0 END AK
++virtual 
+   bool Get(int Index, uchar *FileNumber, int *FileOffset, uchar *PictureType = NULL, int *Length = NULL);
++virtual
+   int GetNextIFrame(int Index, bool Forward, uchar *FileNumber = NULL, int *FileOffset = NULL, int *Length = NULL, bool StayOffEnd = false);
++virtual
+   int Get(uchar FileNumber, int FileOffset);
+   int Last(void) { CatchUp(); return last; }
++virtual
+   int GetResume(void) { return resumeFile.Read(); }
++virtual
+   bool StoreResume(int Index) { return resumeFile.Save(Index); }
++virtual
+   bool IsStillRecording(void);
++  virtual cUnbufferedFile *NextFile(cFileName *FileName, bool Record);
++  virtual int WaitIndex(int Index);
+   };
+ 
+ class cFileName {
+diff -Naur VDR-NG-orig/skinsttng.c VDR-NG/skinsttng.c
+--- VDR-NG-orig/skinsttng.c	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/skinsttng.c	2009-12-11 17:38:26.000000000 +0100
+@@ -16,6 +16,7 @@
+ #include "osd.h"
+ #include "menu.h"
+ #include "themes.h"
++#include "tshift.h"
+ 
+ #include "symbols/arrowdown.xpm"
+ #include "symbols/arrowup.xpm"
+@@ -60,6 +61,33 @@
+ #include "symbols/srew3.xpm"
+ #include "symbols/teletext.xpm"
+ #include "symbols/volume.xpm"
++#include "symbols/tshift.xpm"
++#include "symbols/tshiftplay.xpm"
++#include "symbols/tshift1.xpm"
++#include "symbols/tshift2.xpm"
++#include "symbols/tshift3.xpm"
++#include "symbols/tshift4.xpm"
++#include "symbols/tshift5.xpm"
++#include "symbols/tshift6.xpm"
++#include "symbols/tshift7.xpm"
++#include "symbols/tshift8.xpm"
++#include "symbols/tshift9.xpm"
++#include "symbols/tshift11.xpm"
++#include "symbols/tshift12.xpm"
++#include "symbols/tshift13.xpm"
++#include "symbols/tshift14.xpm"
++#include "symbols/tshift15.xpm"
++#include "symbols/tshift16.xpm"
++#include "symbols/tshift17.xpm"
++#include "symbols/tshift18.xpm"
++#include "symbols/tshift19.xpm"
++#include "symbols/tshifts1.xpm"
++#include "symbols/tshifts2.xpm"
++#include "symbols/tshifts3.xpm"
++#include "symbols/tshifts11.xpm"
++#include "symbols/tshifts12.xpm"
++#include "symbols/tshifts13.xpm"
++#include "symbols/tshiftpause.xpm"
+ 
+ #define Roundness   10
+ #define Gap          5
+@@ -144,6 +172,10 @@
+   int lastSeen;
+   tTrackId lastTrackId;
+   static cBitmap bmTeletext, bmRadio, bmAudio, bmDolbyDigital, bmEncrypted, bmRecording;
++  static cBitmap bmTShift;
++  static const char *const *TShiftSymbolsFast[2][10];
++  static const char *const *TShiftSymbolsSlow[2][4];
++  int channelNumber;
+ public:
+   cSkinSTTNGDisplayChannel(bool WithInfo);
+   virtual ~cSkinSTTNGDisplayChannel();
+@@ -160,6 +192,17 @@
+ cBitmap cSkinSTTNGDisplayChannel::bmDolbyDigital(dolbydigital_xpm);
+ cBitmap cSkinSTTNGDisplayChannel::bmEncrypted(encrypted_xpm);
+ cBitmap cSkinSTTNGDisplayChannel::bmRecording(recording_xpm);
++cBitmap cSkinSTTNGDisplayChannel::bmTShift(tshift_xpm);
++
++const char *const *cSkinSTTNGDisplayChannel::TShiftSymbolsFast[2][10] = {
++    { tshift11_xpm, tshift11_xpm, tshift12_xpm, tshift13_xpm, tshift14_xpm, tshift15_xpm, tshift16_xpm, tshift17_xpm, tshift18_xpm, tshift19_xpm },
++    { tshift11_xpm, tshift1_xpm, tshift2_xpm, tshift3_xpm, tshift4_xpm, tshift5_xpm, tshift6_xpm, tshift7_xpm, tshift8_xpm, tshift9_xpm }
++  };
++
++const char *const *cSkinSTTNGDisplayChannel::TShiftSymbolsSlow[2][4] = {
++    { tshifts11_xpm, tshifts11_xpm, tshifts12_xpm, tshifts13_xpm },
++    { tshifts1_xpm, tshifts1_xpm, tshifts2_xpm, tshifts3_xpm }
++  };
+ 
+ cSkinSTTNGDisplayChannel::cSkinSTTNGDisplayChannel(bool WithInfo)
+ {
+@@ -171,6 +214,7 @@
+   lineHeight = font->Height();
+   frameColor = Theme.Color(clrChannelFrame);
+   message = false;
++  channelNumber = -1;
+   if (withInfo) {
+      x0 = 0;
+      x1 = x0 + font->Width("00:00") + 4;
+@@ -255,6 +299,17 @@
+   int x = x4 - 5;
+   if (Channel && !Channel->GroupSep()) {
+      int d = 3;
++     if(Setup.TShift)
++     {
++        channelNumber = Channel->Number();
++        x -= bmTShift.Width() + d;
++        switch(cTShiftControl::GetTShiftInfo(channelNumber)) {
++           case 1: osd->DrawBitmap(x, y0 + (y1 - y0 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolOff), frameColor); break;
++           case 2: osd->DrawBitmap(x, y0 + (y1 - y0 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolOn), frameColor); break;
++           case 3:
++           case 4: osd->DrawBitmap(x, y0 + (y1 - y0 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolRecFg), Theme.Color(clrChannelSymbolRecBg)); break;
++           }
++        }
+      bool rec = cRecordControls::Active();
+      x -= bmRecording.Width() + d;
+      if(rec)
+@@ -280,6 +335,7 @@
+         }
+      }
+   osd->DrawText(x3 + 2, y0, ChannelString(Channel, Number), Theme.Color(clrChannelName), frameColor, cFont::GetFont(fontOsd), x - x3 - 2);
++  osd->DrawRectangle(x1,y6,x4-3-cFont::GetFont(fontSml)->Width((const char *)DayDateTime()),y7-1,frameColor);
+ }
+ 
+ void cSkinSTTNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Following)
+@@ -333,6 +389,74 @@
+            osd->DrawText(x3 + 2, y6, Track ? Track->description : "", Theme.Color(clrChannelName), frameColor, font, x4 - x3 - w - 4);
+            strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
+            }
++        osd->DrawRectangle(x1,y6,x4-w-3,y7-1,frameColor);
++        if (Setup.TShift) {
++           TShiftPlayerMode Mode;
++           int Record;
++           switch (cTShiftControl::GetTShiftInfo(channelNumber, &Mode, &Record)) {
++              case 0: osd->DrawRectangle(x4 - 8 - bmTShift.Width(), (y0 + y1 - bmTShift.Height()) / 2, x4 - 9, (y0 + y1 + bmTShift.Height()) / 2 - 1, frameColor); break;
++              case 1: osd->DrawBitmap(x4 - 8 - bmTShift.Width(), (y0 + y1 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolOff), frameColor); break;
++              case 2: osd->DrawBitmap(x4 - 8 - bmTShift.Width(), (y0 + y1 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolOn), frameColor); break;
++              case 3:
++              case 4: osd->DrawBitmap(x4 - 8 - bmTShift.Width(), (y0 + y1 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolRecFg), Theme.Color(clrChannelSymbolRecBg)); break;
++              }
++           if (Record > 0) {
++              const char *const *nameBitmap = NULL;
++              bool Play,Forward;
++              int Speed;
++              switch (Mode) {
++                 case TShiftPlayerLive: nameBitmap = tshift_xpm; break;
++                 case TShiftPlayerDelay: nameBitmap = tshiftplay_xpm; break;
++                 case TShiftPlayerPlay:
++                 case TShiftPlayerPause:
++                    if (cTShiftControl::ReplayInfo(channelNumber, &Play, &Forward, &Speed))
++                    {
++                       if (Play)
++                          if (Speed < 0)
++                             nameBitmap = tshiftplay_xpm;
++                          else {
++                             if (Speed > 9)
++                                Speed = 9;
++                             nameBitmap = TShiftSymbolsFast[Forward][Speed];
++                             }                             
++                       else
++                          if (Speed < 0)
++                             nameBitmap = tshiftpause_xpm;
++                          else {
++                             if (Speed > 3)
++                                Speed = 3;
++                             nameBitmap = TShiftSymbolsSlow[Forward][Speed];
++                             }
++                    }
++                    else
++                       nameBitmap = (Mode = TShiftPlayerPlay) ? tshiftplay_xpm : tshiftpause_xpm;
++                    break;
++                 }
++              if (nameBitmap) {
++                 cBitmap bitmap(nameBitmap);
++                 osd->DrawBitmap(x1, y6 + (y7 - y6 - bitmap.Height()) / 2, bitmap, Theme.Color(Record>1 ? clrChannelSymbolOn : clrChannelSymbolOff),  frameColor);
++                 }
++              int Current, Total;
++              if (cTShiftControl::BufferInfo(channelNumber, &Total, &Current)) {
++                 if (Total > 0) {
++                    int x = x1 + bmTShift.Width() + Gap + font->Width("00:00:00");
++                    int xf = x4 - w - 2 - Gap - font->Width("00:00:00") - Gap;
++                    int yi = y6 + (y7 - y6) / 2 - ScrollWidth;
++                    int yf = y6 + (y7 - y6) / 2 + ScrollWidth - 1;
++                    cString time(IndexToHMSF(Current, false));
++                    osd->DrawText(x - font->Width(time), y7 - font->Height(time), time, Theme.Color(clrChannelDate), frameColor, font);
++                    x += Gap;
++                    Current=((xf - x) * Current) / Total;
++                    if(Current < xf - x - 1)
++                       osd->DrawRectangle(x + Current, yi, xf - 1, yf, Theme.Color(clrChannelTimebarRest));
++                    if(Current > 0)
++                       osd->DrawRectangle(x , yi, x + Current - 1, yf, Theme.Color(clrChannelTimebarSeen));
++                    time = IndexToHMSF(Total, false);
++                    osd->DrawText(x4 - w - 2 - Gap - font->Width("00:00:00"), y7 - font->Height(time), time, Theme.Color(clrChannelDate), frameColor, font);
++                    }
++                 }
++              }
++           }
+         }
+ 
+      int seen = 0;
+diff -Naur VDR-NG-orig/symbols/tshift11.xpm VDR-NG/symbols/tshift11.xpm
+--- VDR-NG-orig/symbols/tshift11.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift11.xpm	2009-10-28 14:49:58.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift11_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........++...++............",
++".......++...+++............",
++".....+++..+++++............",
++"....++...++++++............",
++"..+++..++++++++............",
++".++...+++++++++............",
++"++..+++++++++++............",
++"+..++++++++++++............",
++"+..++++++++++++............",
++"++..+++++++++++............",
++".++...+++++++++............",
++"..+++..++++++++............",
++"....++...++++++............",
++".....+++..+++++............",
++".......++...+++............",
++"........++...++............",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift12.xpm VDR-NG/symbols/tshift12.xpm
+--- VDR-NG-orig/symbols/tshift12.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift12.xpm	2009-10-28 14:49:57.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift12_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........++...++.+..........",
++".......++...+++.+..........",
++".....+++..+++++.+..........",
++"....++...++++++.+..........",
++"..+++..++++++++.+..........",
++".++...+++++++++.+..........",
++"++..+++++++++++.+..........",
++"+..++++++++++++.+..........",
++"+..++++++++++++.+..........",
++"++..+++++++++++.+..........",
++".++...+++++++++.+..........",
++"..+++..++++++++.+..........",
++"....++...++++++.+..........",
++".....+++..+++++.+..........",
++".......++...+++.+..........",
++"........++...++.+..........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift13.xpm VDR-NG/symbols/tshift13.xpm
+--- VDR-NG-orig/symbols/tshift13.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift13.xpm	2009-10-28 14:49:56.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift13_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........++...++.++.........",
++".......++...+++.++.........",
++".....+++..+++++.++.........",
++"....++...++++++.++.........",
++"..+++..++++++++.++.........",
++".++...+++++++++.++.........",
++"++..+++++++++++.++.........",
++"+..++++++++++++.++.........",
++"+..++++++++++++.++.........",
++"++..+++++++++++.++.........",
++".++...+++++++++.++.........",
++"..+++..++++++++.++.........",
++"....++...++++++.++.........",
++".....+++..+++++.++.........",
++".......++...+++.++.........",
++"........++...++.++.........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift14.xpm VDR-NG/symbols/tshift14.xpm
+--- VDR-NG-orig/symbols/tshift14.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift14.xpm	2009-10-28 14:49:55.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift14_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........++...++.+.+........",
++".......++...+++.+.+........",
++".....+++..+++++.+.+........",
++"....++...++++++.+.+........",
++"..+++..++++++++.+.+........",
++".++...+++++++++.+.+........",
++"++..+++++++++++.+.+........",
++"+..++++++++++++.+.+........",
++"+..++++++++++++.+.+........",
++"++..+++++++++++.+.+........",
++".++...+++++++++.+.+........",
++"..+++..++++++++.+.+........",
++"....++...++++++.+.+........",
++".....+++..+++++.+.+........",
++".......++...+++.+.+........",
++"........++...++.+.+........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift15.xpm VDR-NG/symbols/tshift15.xpm
+--- VDR-NG-orig/symbols/tshift15.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift15.xpm	2009-10-28 14:49:54.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift15_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........++...++.+.++.......",
++".......++...+++.+.++.......",
++".....+++..+++++.+.++.......",
++"....++...++++++.+.++.......",
++"..+++..++++++++.+.++.......",
++".++...+++++++++.+.++.......",
++"++..+++++++++++.+.++.......",
++"+..++++++++++++.+.++.......",
++"+..++++++++++++.+.++.......",
++"++..+++++++++++.+.++.......",
++".++...+++++++++.+.++.......",
++"..+++..++++++++.+.++.......",
++"....++...++++++.+.++.......",
++".....+++..+++++.+.++.......",
++".......++...+++.+.++.......",
++"........++...++.+.++.......",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift16.xpm VDR-NG/symbols/tshift16.xpm
+--- VDR-NG-orig/symbols/tshift16.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift16.xpm	2009-10-28 14:49:52.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift16_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........++...++.+.+.+......",
++".......++...+++.+.+.+......",
++".....+++..+++++.+.+.+......",
++"....++...++++++.+.+.+......",
++"..+++..++++++++.+.+.+......",
++".++...+++++++++.+.+.+......",
++"++..+++++++++++.+.+.+......",
++"+..++++++++++++.+.+.+......",
++"+..++++++++++++.+.+.+......",
++"++..+++++++++++.+.+.+......",
++".++...+++++++++.+.+.+......",
++"..+++..++++++++.+.+.+......",
++"....++...++++++.+.+.+......",
++".....+++..+++++.+.+.+......",
++".......++...+++.+.+.+......",
++"........++...++.+.+.+......",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift17.xpm VDR-NG/symbols/tshift17.xpm
+--- VDR-NG-orig/symbols/tshift17.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift17.xpm	2009-10-28 14:49:51.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift17_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........++...++.+.+.++.....",
++".......++...+++.+.+.++.....",
++".....+++..+++++.+.+.++.....",
++"....++...++++++.+.+.++.....",
++"..+++..++++++++.+.+.++.....",
++".++...+++++++++.+.+.++.....",
++"++..+++++++++++.+.+.++.....",
++"+..++++++++++++.+.+.++.....",
++"+..++++++++++++.+.+.++.....",
++"++..+++++++++++.+.+.++.....",
++".++...+++++++++.+.+.++.....",
++"..+++..++++++++.+.+.++.....",
++"....++...++++++.+.+.++.....",
++".....+++..+++++.+.+.++.....",
++".......++...+++.+.+.++.....",
++"........++...++.+.+.++.....",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift18.xpm VDR-NG/symbols/tshift18.xpm
+--- VDR-NG-orig/symbols/tshift18.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift18.xpm	2009-10-28 14:49:50.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift18_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........++...++.+.+.+.+....",
++".......++...+++.+.+.+.+....",
++".....+++..+++++.+.+.+.+....",
++"....++...++++++.+.+.+.+....",
++"..+++..++++++++.+.+.+.+....",
++".++...+++++++++.+.+.+.+....",
++"++..+++++++++++.+.+.+.+....",
++"+..++++++++++++.+.+.+.+....",
++"+..++++++++++++.+.+.+.+....",
++"++..+++++++++++.+.+.+.+....",
++".++...+++++++++.+.+.+.+....",
++"..+++..++++++++.+.+.+.+....",
++"....++...++++++.+.+.+.+....",
++".....+++..+++++.+.+.+.+....",
++".......++...+++.+.+.+.+....",
++"........++...++.+.+.+.+....",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift19.xpm VDR-NG/symbols/tshift19.xpm
+--- VDR-NG-orig/symbols/tshift19.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift19.xpm	2009-10-28 14:49:48.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift19_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........++...++.+.+.+.++...",
++".......++...+++.+.+.+.++...",
++".....+++..+++++.+.+.+.++...",
++"....++...++++++.+.+.+.++...",
++"..+++..++++++++.+.+.+.++...",
++".++...+++++++++.+.+.+.++...",
++"++..+++++++++++.+.+.+.++...",
++"+..++++++++++++.+.+.+.++...",
++"+..++++++++++++.+.+.+.++...",
++"++..+++++++++++.+.+.+.++...",
++".++...+++++++++.+.+.+.++...",
++"..+++..++++++++.+.+.+.++...",
++"....++...++++++.+.+.+.++...",
++".....+++..+++++.+.+.+.++...",
++".......++...+++.+.+.+.++...",
++"........++...++.+.+.+.++...",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift1.xpm VDR-NG/symbols/tshift1.xpm
+--- VDR-NG-orig/symbols/tshift1.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift1.xpm	2009-10-28 14:46:56.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift1_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"............++...++........",
++"............+++...++.......",
++"............+++++..+++.....",
++"............++++++...++....",
++"............++++++++..+++..",
++"............+++++++++...++.",
++"............+++++++++++..++",
++"............++++++++++++..+",
++"............++++++++++++..+",
++"............+++++++++++..++",
++"............+++++++++...++.",
++"............++++++++..+++..",
++"............++++++...++....",
++"............+++++..+++.....",
++"............+++...++.......",
++"............++...++........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift2.xpm VDR-NG/symbols/tshift2.xpm
+--- VDR-NG-orig/symbols/tshift2.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift2.xpm	2009-10-28 14:47:08.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift2_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"..........+.++...++........",
++"..........+.+++...++.......",
++"..........+.+++++..+++.....",
++"..........+.++++++...++....",
++"..........+.++++++++..+++..",
++"..........+.+++++++++...++.",
++"..........+.+++++++++++..++",
++"..........+.++++++++++++..+",
++"..........+.++++++++++++..+",
++"..........+.+++++++++++..++",
++"..........+.+++++++++...++.",
++"..........+.++++++++..+++..",
++"..........+.++++++...++....",
++"..........+.+++++..+++.....",
++"..........+.+++...++.......",
++"..........+.++...++........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift3.xpm VDR-NG/symbols/tshift3.xpm
+--- VDR-NG-orig/symbols/tshift3.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift3.xpm	2009-10-28 14:50:08.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift3_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++".........++.++...++........",
++".........++.+++...++.......",
++".........++.+++++..+++.....",
++".........++.++++++...++....",
++".........++.++++++++..+++..",
++".........++.+++++++++...++.",
++".........++.+++++++++++..++",
++".........++.++++++++++++..+",
++".........++.++++++++++++..+",
++".........++.+++++++++++..++",
++".........++.+++++++++...++.",
++".........++.++++++++..+++..",
++".........++.++++++...++....",
++".........++.+++++..+++.....",
++".........++.+++...++.......",
++".........++.++...++........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift4.xpm VDR-NG/symbols/tshift4.xpm
+--- VDR-NG-orig/symbols/tshift4.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift4.xpm	2009-10-28 14:50:07.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift4_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"........+.+.++...++........",
++"........+.+.+++...++.......",
++"........+.+.+++++..+++.....",
++"........+.+.++++++...++....",
++"........+.+.++++++++..+++..",
++"........+.+.+++++++++...++.",
++"........+.+.+++++++++++..++",
++"........+.+.++++++++++++..+",
++"........+.+.++++++++++++..+",
++"........+.+.+++++++++++..++",
++"........+.+.+++++++++...++.",
++"........+.+.++++++++..+++..",
++"........+.+.++++++...++....",
++"........+.+.+++++..+++.....",
++"........+.+.+++...++.......",
++"........+.+.++...++........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift5.xpm VDR-NG/symbols/tshift5.xpm
+--- VDR-NG-orig/symbols/tshift5.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift5.xpm	2009-10-28 14:50:05.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift5_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++".......++.+.++...++........",
++".......++.+.+++...++.......",
++".......++.+.+++++..+++.....",
++".......++.+.++++++...++....",
++".......++.+.++++++++..+++..",
++".......++.+.+++++++++...++.",
++".......++.+.+++++++++++..++",
++".......++.+.++++++++++++..+",
++".......++.+.++++++++++++..+",
++".......++.+.+++++++++++..++",
++".......++.+.+++++++++...++.",
++".......++.+.++++++++..+++..",
++".......++.+.++++++...++....",
++".......++.+.+++++..+++.....",
++".......++.+.+++...++.......",
++".......++.+.++...++........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift6.xpm VDR-NG/symbols/tshift6.xpm
+--- VDR-NG-orig/symbols/tshift6.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift6.xpm	2009-10-28 14:50:04.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift6_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"......+.+.+.++...++........",
++"......+.+.+.+++...++.......",
++"......+.+.+.+++++..+++.....",
++"......+.+.+.++++++...++....",
++"......+.+.+.++++++++..+++..",
++"......+.+.+.+++++++++...++.",
++"......+.+.+.+++++++++++..++",
++"......+.+.+.++++++++++++..+",
++"......+.+.+.++++++++++++..+",
++"......+.+.+.+++++++++++..++",
++"......+.+.+.+++++++++...++.",
++"......+.+.+.++++++++..+++..",
++"......+.+.+.++++++...++....",
++"......+.+.+.+++++..+++.....",
++"......+.+.+.+++...++.......",
++"......+.+.+.++...++........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift7.xpm VDR-NG/symbols/tshift7.xpm
+--- VDR-NG-orig/symbols/tshift7.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift7.xpm	2009-10-28 14:50:03.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift7_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++".....++.+.+.++...++........",
++".....++.+.+.+++...++.......",
++".....++.+.+.+++++..+++.....",
++".....++.+.+.++++++...++....",
++".....++.+.+.++++++++..+++..",
++".....++.+.+.+++++++++...++.",
++".....++.+.+.+++++++++++..++",
++".....++.+.+.++++++++++++..+",
++".....++.+.+.++++++++++++..+",
++".....++.+.+.+++++++++++..++",
++".....++.+.+.+++++++++...++.",
++".....++.+.+.++++++++..+++..",
++".....++.+.+.++++++...++....",
++".....++.+.+.+++++..+++.....",
++".....++.+.+.+++...++.......",
++".....++.+.+.++...++........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift8.xpm VDR-NG/symbols/tshift8.xpm
+--- VDR-NG-orig/symbols/tshift8.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift8.xpm	2009-10-28 14:50:01.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift8_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"....+.+.+.+.++...++........",
++"....+.+.+.+.+++...++.......",
++"....+.+.+.+.+++++..+++.....",
++"....+.+.+.+.++++++...++....",
++"....+.+.+.+.++++++++..+++..",
++"....+.+.+.+.+++++++++...++.",
++"....+.+.+.+.+++++++++++..++",
++"....+.+.+.+.++++++++++++..+",
++"....+.+.+.+.++++++++++++..+",
++"....+.+.+.+.+++++++++++..++",
++"....+.+.+.+.+++++++++...++.",
++"....+.+.+.+.++++++++..+++..",
++"....+.+.+.+.++++++...++....",
++"....+.+.+.+.+++++..+++.....",
++"....+.+.+.+.+++...++.......",
++"....+.+.+.+.++...++........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift9.xpm VDR-NG/symbols/tshift9.xpm
+--- VDR-NG-orig/symbols/tshift9.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift9.xpm	2009-10-28 14:48:16.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift9_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"...++.+.+.+.++...++........",
++"...++.+.+.+.+++...++.......",
++"...++.+.+.+.+++++..+++.....",
++"...++.+.+.+.++++++...++....",
++"...++.+.+.+.++++++++..+++..",
++"...++.+.+.+.+++++++++...++.",
++"...++.+.+.+.+++++++++++..++",
++"...++.+.+.+.++++++++++++..+",
++"...++.+.+.+.++++++++++++..+",
++"...++.+.+.+.+++++++++++..++",
++"...++.+.+.+.+++++++++...++.",
++"...++.+.+.+.++++++++..+++..",
++"...++.+.+.+.++++++...++....",
++"...++.+.+.+.+++++..+++.....",
++"...++.+.+.+.+++...++.......",
++"...++.+.+.+.++...++........",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshiftpause.xpm VDR-NG/symbols/tshiftpause.xpm
+--- VDR-NG-orig/symbols/tshiftpause.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshiftpause.xpm	2009-10-28 14:49:42.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshiftpause_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"...........................",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"...........................",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshiftplay.xpm VDR-NG/symbols/tshiftplay.xpm
+--- VDR-NG-orig/symbols/tshiftplay.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshiftplay.xpm	2009-10-28 18:39:12.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshiftplay_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"............++.............",
++"............+++............",
++"............+++++..........",
++"............++++++.........",
++"............++++++++.......",
++"............+++++++++......",
++"............+++++++++++....",
++"............++++++++++++...",
++"............++++++++++++...",
++"............+++++++++++....",
++"............+++++++++......",
++"............++++++++.......",
++"............++++++.........",
++"............+++++..........",
++"............+++............",
++"............++.............",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshifts11.xpm VDR-NG/symbols/tshifts11.xpm
+--- VDR-NG-orig/symbols/tshifts11.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshifts11.xpm	2009-11-18 14:41:17.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshifts11_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"...........................",
++".........++.....+++++......",
++".........++.....+++++......",
++"........+++.....+++++......",
++"........+++.....+++++......",
++".......++++.....+++++......",
++".......++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++".......++++.....+++++......",
++".......++++.....+++++......",
++"........+++.....+++++......",
++"........+++.....+++++......",
++".........++.....+++++......",
++".........++.....+++++......",
++"...........................",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshifts12.xpm VDR-NG/symbols/tshifts12.xpm
+--- VDR-NG-orig/symbols/tshifts12.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshifts12.xpm	2009-11-18 14:42:21.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshifts12_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"...........................",
++".....++..++.....+++++......",
++".....++..++.....+++++......",
++"....++..+++.....+++++......",
++"....++..+++.....+++++......",
++"...++..++++.....+++++......",
++"...++..++++.....+++++......",
++"..++..+++++.....+++++......",
++"..++..+++++.....+++++......",
++"...++..++++.....+++++......",
++"...++..++++.....+++++......",
++"....++..+++.....+++++......",
++"....++..+++.....+++++......",
++".....++..++.....+++++......",
++".....++..++.....+++++......",
++"...........................",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshifts13.xpm VDR-NG/symbols/tshifts13.xpm
+--- VDR-NG-orig/symbols/tshifts13.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshifts13.xpm	2009-11-18 14:44:33.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshifts13_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"...........................",
++"....++.+.++.....+++++......",
++"....++.+.++.....+++++......",
++"...++.+.+++.....+++++......",
++"...++.+.+++.....+++++......",
++"..++.+.++++.....+++++......",
++"..++.+.++++.....+++++......",
++".++.+.+++++.....+++++......",
++".++.+.+++++.....+++++......",
++"..++.+.++++.....+++++......",
++"..++.+.++++.....+++++......",
++"...++.+.+++.....+++++......",
++"...++.+.+++.....+++++......",
++"....++.+.++.....+++++......",
++"....++.+.++.....+++++......",
++"...........................",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshifts1.xpm VDR-NG/symbols/tshifts1.xpm
+--- VDR-NG-orig/symbols/tshifts1.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshifts1.xpm	2009-11-18 14:30:05.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshifts1_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"...........................",
++"......+++++.....++.........",
++"......+++++.....++.........",
++"......+++++.....+++........",
++"......+++++.....+++........",
++"......+++++.....++++.......",
++"......+++++.....++++.......",
++"......+++++.....+++++......",
++"......+++++.....+++++......",
++"......+++++.....++++.......",
++"......+++++.....++++.......",
++"......+++++.....+++........",
++"......+++++.....+++........",
++"......+++++.....++.........",
++"......+++++.....++.........",
++"...........................",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshifts2.xpm VDR-NG/symbols/tshifts2.xpm
+--- VDR-NG-orig/symbols/tshifts2.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshifts2.xpm	2009-11-18 14:31:43.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshifts2_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"...........................",
++"......+++++.....++..++.....",
++"......+++++.....++..++.....",
++"......+++++.....+++..++....",
++"......+++++.....+++..++....",
++"......+++++.....++++..++...",
++"......+++++.....++++..++...",
++"......+++++.....+++++..++..",
++"......+++++.....+++++..++..",
++"......+++++.....++++..++...",
++"......+++++.....++++..++...",
++"......+++++.....+++..++....",
++"......+++++.....+++..++....",
++"......+++++.....++..++.....",
++"......+++++.....++..++.....",
++"...........................",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshifts3.xpm VDR-NG/symbols/tshifts3.xpm
+--- VDR-NG-orig/symbols/tshifts3.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshifts3.xpm	2009-11-18 14:36:20.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshifts3_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"...........................",
++"......+++++.....++.+.++....",
++"......+++++.....++.+.++....",
++"......+++++.....+++.+.++...",
++"......+++++.....+++.+.++...",
++"......+++++.....++++.+.++..",
++"......+++++.....++++.+.++..",
++"......+++++.....+++++.+.++.",
++"......+++++.....+++++.+.++.",
++"......+++++.....++++.+.++..",
++"......+++++.....++++.+.++..",
++"......+++++.....+++.+.++...",
++"......+++++.....+++.+.++...",
++"......+++++.....++.+.++....",
++"......+++++.....++.+.++....",
++"...........................",
++"..........................."};
+diff -Naur VDR-NG-orig/symbols/tshift.xpm VDR-NG/symbols/tshift.xpm
+--- VDR-NG-orig/symbols/tshift.xpm	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/symbols/tshift.xpm	2009-10-27 16:21:47.000000000 +0100
+@@ -0,0 +1,23 @@
++/* XPM */
++static const char *const tshift_xpm[] = {
++"27 18 2 1",
++".	c #FFFFFF",
++"+	c #000000",
++"...........................",
++"...........................",
++".........+++++++++.........",
++"......+++++++++++++++......",
++".....+++++++++++++++++.....",
++"....+++++++++++++++++++....",
++"...+++++++.......+++++++...",
++"..+++++++.........+++++++..",
++"..++++++...........++++++..",
++"..++++++...........++++++..",
++"..+++++++.........+++++++..",
++"...+++++++.......+++++++...",
++"....+++++++++++++++++++....",
++".....+++++++++++++++++.....",
++"......+++++++++++++++......",
++".........+++++++++.........",
++"...........................",
++"..........................."};
+diff -Naur VDR-NG-orig/tshift.c VDR-NG/tshift.c
+--- VDR-NG-orig/tshift.c	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/tshift.c	2009-12-11 12:09:41.000000000 +0100
+@@ -0,0 +1,1885 @@
++/*
++ * tshift.c: Advanced timeshift by Posix.
++ *
++ * See the main source file 'vdr.c' for copyright information.
++ * http://vdr-m7x0.foroactivo.com.es
++ *
++ */
++#include <sys/ioctl.h>
++#include "tshift.h"
++#include "m7x0_dvb/dmx_ext.h"
++#include "videodir.h"
++#include "recorder.h"
++#include "recording.h"
++#include "dvbplayer.h"
++#include "transfer.h"
++#include "remote.h"
++
++
++extern const char *VideoDirectory;
++#define MAXTSHIFTFILES (MAXTSHIFT+1)
++#define BASEPRIORITY (-MAXPRIORITY)
++
++class cTShiftFileName
++{
++	enum fileState{fileUnknown,fileDeleting,fileFree,fileInUse};
++	static fileState files[MAXTSHIFTFILES];
++public:
++	static cString makeFileName(int Number);
++	static cString newFileName(int *Number);
++	static bool FreeFiles(bool Force);
++	static void InitializeTShift(void);
++	static void FreeFile(int Number);
++};
++
++cTShiftFileName::fileState cTShiftFileName::files[MAXTSHIFTFILES];
++
++cString cTShiftFileName::newFileName(int *Number)
++{
++	int newDelete=-1;
++	int f;
++	for(f=0;f<MAXTSHIFTFILES;f++)
++	{
++		if(files[f]==fileFree)
++			break;
++		if((files[f]<fileFree)&&(newDelete<0))
++			newDelete=f;
++	}
++	if((f==MAXTSHIFTFILES)&&(newDelete>=0))
++		f=newDelete;
++	cString result(makeFileName(f));
++	if(f<MAXTSHIFTFILES)
++	{
++		if(files[f]<fileFree)		
++			RemoveVideoFile(result);
++		files[f]=fileInUse;
++	}
++	MakeDirs(result,true);
++	*Number=f;
++	return result;
++}
++
++cString cTShiftFileName::makeFileName(int Number)
++{
++	return cString::sprintf("%s/timeShift/%d",VideoDirectory,Number);
++}
++
++bool cTShiftFileName::FreeFiles(bool Force)
++{
++	bool result=false;
++	for(int f=0;f<MAXTSHIFTFILES;f++)
++		if(files[f]<fileFree)
++		{
++			RemoveVideoFile(makeFileName(f));
++			files[f]=fileFree;
++			if(!Force)
++				return true;
++			else
++				result=true;
++		}
++	return result;
++}
++
++
++void cTShiftFileName::FreeFile(int Number)
++{
++	if(Number<MAXTSHIFTFILES)
++		files[Number]=fileDeleting;
++	else
++		RemoveVideoFile(makeFileName(Number));
++}
++
++void cTShiftFileName::InitializeTShift()
++{
++	for(int f=0;f<MAXTSHIFTFILES;f++)
++		files[f]=fileUnknown;
++}
++
++class cTShiftPlayerControl;
++
++class cTShiftData
++{
++private:
++	time_t zapChannel;
++	TShiftPlayerMode mode;
++	time_t lastChannel;
++	int index;
++	time_t GetZapChannel(void);
++public:
++	cTShiftData(time_t LastChannel);
++	void BeginZapping(void);
++	bool IsZapping(void);
++	void ForgetZapping(void);
++	time_t GetLastChannel(void);
++	int GetIndex(void);
++	TShiftPlayerMode GetMode(void);
++	void SetMode(cTShiftPlayerControl *player);
++	void SetMode(TShiftPlayerMode Mode,int Index=-1);
++};
++
++cTShiftData::cTShiftData(time_t LastChannel)
++{
++	lastChannel=LastChannel;
++	if(lastChannel+Setup.ZapTimeout<time(NULL))
++		zapChannel=0;
++	else
++		zapChannel=LastChannel;
++	mode=TShiftPlayerLive;
++	index=-1;
++}
++
++bool cTShiftData::IsZapping()
++{
++	return GetZapChannel();
++}
++
++time_t cTShiftData::GetZapChannel()
++{
++	if((zapChannel)&&(zapChannel+Setup.ZapTimeout<time(NULL)))
++	{
++		switch(mode)
++		{
++			case TShiftPlayerLive:
++			case TShiftPlayerDelay:
++				break;
++			case TShiftPlayerPlay:
++				index+=(zapChannel-lastChannel)*FRAMESPERSEC;
++				break;
++			case TShiftPlayerPause:
++				mode=TShiftPlayerPlay;
++				break;
++		}
++		lastChannel=zapChannel;
++		zapChannel=0;
++	}
++	return zapChannel;
++}
++
++void cTShiftData::BeginZapping()
++{
++	zapChannel=time(NULL);
++}
++
++void cTShiftData::ForgetZapping()
++{
++	if(zapChannel)
++		zapChannel=0;
++}
++
++time_t cTShiftData::GetLastChannel()
++{
++	time_t result=GetZapChannel();
++	return result?result:lastChannel;
++}
++
++int cTShiftData::GetIndex()
++{
++	switch(mode)
++	{
++		case TShiftPlayerLive:
++		case TShiftPlayerDelay:
++			return INT_MAX;
++		case TShiftPlayerPlay:
++			return index+(time(NULL)-lastChannel)*FRAMESPERSEC;
++		case TShiftPlayerPause:
++			time_t result=GetZapChannel();
++			if(result)
++				return index+(time(NULL)-result)*FRAMESPERSEC;
++			return index;				
++	}
++	return -1;
++}
++
++TShiftPlayerMode cTShiftData::GetMode()
++{
++	if(IsZapping()&&(mode==TShiftPlayerPause))
++		return TShiftPlayerPlay;
++	return mode;
++}
++
++void cTShiftData::SetMode(TShiftPlayerMode Mode,int Index)
++{
++	zapChannel=0;
++	time_t now=time(NULL);
++	if(Mode<TShiftPlayerPlay)
++		index=-1;
++	else
++	{
++		if(Index>=0)
++			index=Index;
++		else if(mode==TShiftPlayerPlay)
++			index+=(now-lastChannel)*FRAMESPERSEC;
++	}
++	mode=Mode;
++	lastChannel=now;
++}
++class cTShiftRecorder:public cRecorder
++{
++//File
++	int file;
++//Channel
++	int channelNumber;
++//Recorder
++	cTShiftRecorder(const cChannel *Channel,time_t BeginChannel);
++	cTShiftIndexFile *index;
++//Recorder state
++	bool haveLast;
++	bool online;
++	bool newRecord;
++	void SetPriority(void);
++//Player
++	cTShiftPlayerControl *player;
++	cTShiftData data;
++public:
++//Files
++	static void InitializeTShift(void);
++	static void ShutdownTShift(void);
++	static bool ProcessTShift(void);
++//Channel
++	int GetChannelNumber(void){return channelNumber;}
++//Recorder
++	static cTShiftRecorder *New(const cChannel *Channel,time_t BeginChannel);
++	virtual ~cTShiftRecorder();
++	void Impact(cDevice *Device,time_t *LastThis,time_t *LastOther);
++	cDevice *GetDevice(void);
++	bool AutoDelete(void);
++//Recorder state
++	bool HaveRecord(void);
++	int IsRecording(void);
++//Player
++	cPlayer *GetPlayer(void);
++	bool BufferInfo(int *Total,int *Current,int *First);
++	bool ReplayInfo(bool *Play,bool *Forward,int *Speed);
++
++	void SetOnline(void);
++	void PlayerStop(void);
++	void PlayerPause(void);
++	void PlayerPlay(void);
++	void PlayerDelay(void);
++	void PlayerForward(void);
++	void PlayerBackward(void);
++	TShiftPlayerMode GetMode();
++	time_t GetLastChannel(void);
++	bool IsPlaying(void);
++};
++
++class cTShiftPlayerControl:public cDvbPlayerControl
++{
++	cTShiftIndexFile *index;
++	int lastIndex;
++public:
++	int GetIndex(void);
++	TShiftPlayerMode GetMode(void);
++	cTShiftPlayerControl(const char *FileName,int ResumeIndex,cTShiftIndexFile *newIndex);
++	~cTShiftPlayerControl();
++	virtual void Hide(void){}
++	cPlayer *GetPlayer(void); 
++};
++
++class cTShiftTransferControl:public cTransferControl
++{
++public:
++	cTShiftTransferControl(cDevice *ReceiverDevice, const cChannel *Channel);
++	cPlayer *GetPlayer(bool Attach=false); 
++}; 
++
++void cTShiftData::SetMode(cTShiftPlayerControl *player)
++{
++	SetMode(player->GetMode(),player->GetIndex());
++}
++
++
++// --- cTShiftRecorder -------------------------------------------------------------
++
++cTShiftRecorder::cTShiftRecorder(const cChannel *Channel,time_t BeginChannel)
++:cRecorder(cTShiftFileName::newFileName(&file),0,BASEPRIORITY,Channel->Vpid(),Channel->Apids(),Channel->Dpids(),Channel->Spids(),true),data(BeginChannel)
++{
++  player=NULL;
++  channelNumber=Channel->Number();
++  haveLast=false;
++  online=true;
++  newRecord=true;
++  index=(cTShiftIndexFile *)GetIndexFile();
++}
++
++cTShiftRecorder *cTShiftRecorder::New(const cChannel *Channel,time_t BeginChannel)
++{
++	cTShiftRecorder *result=new cTShiftRecorder(Channel,BeginChannel);
++	if(!result)
++		return NULL;
++	if((!result->index)||(result->file==MAXTSHIFTFILES))
++	{
++		delete result;
++		return NULL;
++	}
++	if(!result->index->IsFileOK())
++	{
++		delete result;
++		return NULL;
++	}
++	return result;
++}
++
++bool cTShiftRecorder::AutoDelete(void)
++{
++	if(!Activated())
++	{
++		dsyslog("TShift: detached recorder autodeleted, channel %d",channelNumber);
++		delete this;
++		return true;
++	}
++	if(online)
++	{
++		if(data.IsZapping())
++		{
++			if(newRecord)
++			{
++				dsyslog("TShift: pre-zaptime recorder autodeleted, channel %d",channelNumber);
++				delete this;
++				return true;
++			}
++			else
++				data.ForgetZapping();
++		}
++		else
++		{
++			if(player)
++				data.SetMode(player);
++			else
++				data.SetMode(data.GetMode());
++		}
++		if(player)
++		{
++			delete player;
++			player=NULL;
++		}
++		newRecord=false;
++		online=false;
++	}
++	return false;
++}
++
++cTShiftRecorder::~cTShiftRecorder()
++{
++	if(player)
++		delete player;
++	Detach();
++	cTShiftFileName::FreeFile(file);
++}
++
++void cTShiftRecorder::InitializeTShift()
++{
++	cTShiftFileName::InitializeTShift();
++}
++
++bool cTShiftRecorder::ProcessTShift()
++{
++	return cTShiftFileName::FreeFiles(false);
++}
++
++void cTShiftRecorder::ShutdownTShift()
++{
++	cTShiftFileName::FreeFiles(true);
++}
++
++bool cTShiftRecorder::HaveRecord()
++{
++	if(!haveLast)
++		haveLast=(index->Last()>0);
++	return haveLast;
++}
++
++bool cTShiftRecorder::IsPlaying()
++{
++	if(player)
++		return player->Active();
++	return false;
++}
++
++cPlayer* cTShiftRecorder::GetPlayer()
++{
++	if(!HaveRecord())
++	{
++		for(int f=1;(f<10)&&(Activated())&&(!HaveRecord());f++)
++		{
++			dsyslog("TShift: try #%d waiting recorder, channel %d",f,channelNumber);
++			sleep(1);				
++		}
++		if(!HaveRecord())
++		{
++			esyslog("TShift: timeout waiting recorder, channel %d",channelNumber);
++			return NULL;
++		}
++	}
++	if(player)
++		delete player;
++	player=new cTShiftPlayerControl(cTShiftFileName::makeFileName(file),data.GetIndex(),index);
++	if(!index->Ok())
++	{
++		delete player;
++		player=NULL;
++		return NULL;
++	}
++	cPlayer *result=player->GetPlayer();
++	if(!result)
++	{
++		delete player;
++		player=NULL;
++	}
++	return result;
++}
++
++bool cTShiftRecorder::BufferInfo(int *Total,int *Current,int *First)
++{
++	if(!HaveRecord())
++		return false;
++	*Total=index->Last();
++	*First=index->First();
++	if(player)
++		*Current=player->GetIndex();
++	else
++		*Current=data.GetIndex();
++	if(*Current<*First)
++		*Current=*First;
++	else if (*Current>*Total)
++		*Current=*Total;
++	return true;
++}
++
++bool cTShiftRecorder::ReplayInfo(bool *Play,bool *Forward,int *Speed)
++{
++	if(!HaveRecord())
++		return false;
++	if(player)
++		return player->GetReplayMode(*Play,*Forward,*Speed);
++	*Play=true;
++	*Forward=true;
++	*Speed=-1;
++	return true;
++}
++
++void cTShiftRecorder::SetOnline()
++{
++	online=true;
++	data.BeginZapping();
++}
++
++void cTShiftRecorder::PlayerStop()
++{
++	if(player)
++	{
++		delete player;
++		player=NULL;
++	}
++	data.SetMode(TShiftPlayerLive);
++	SetPriority();
++}
++
++void cTShiftRecorder::PlayerDelay()
++{
++	if(player)
++	{
++		delete player;
++		player=NULL;
++	}
++	data.SetMode(TShiftPlayerDelay);
++	SetPriority();
++}
++
++void cTShiftRecorder::PlayerPlay()
++{
++	if(player)
++	{
++		player->Play();
++		data.SetMode(player);
++	}
++	else
++		data.SetMode(TShiftPlayerPlay);
++	SetPriority();
++}
++void cTShiftRecorder::PlayerPause()
++{
++	if(player)
++	{
++		player->Pause();
++		data.SetMode(player);
++	}
++	else
++		data.SetMode(TShiftPlayerPause);
++	SetPriority();
++}
++void cTShiftRecorder::PlayerBackward()
++{
++	if(player)
++	{
++		player->Backward();
++		data.SetMode(player);
++	}
++	else
++		data.SetMode(TShiftPlayerPlay);
++	SetPriority();
++}
++void cTShiftRecorder::PlayerForward()
++{
++	if(player)
++	{
++		player->Forward();
++		data.SetMode(player);
++	}
++	else
++		data.SetMode(TShiftPlayerPlay);
++	SetPriority();
++}
++
++void cTShiftRecorder::SetPriority()
++{
++	if(data.GetMode()==TShiftPlayerLive)
++	{
++		if(priority!=BASEPRIORITY)
++		{
++			priority=BASEPRIORITY;
++			dsyslog("TShift: recorder priority=%d, channel %d",priority,channelNumber);
++		}
++	}
++	else
++	{
++		if(priority!=Setup.TShiftPriority)
++		{
++			priority=Setup.TShiftPriority;
++			dsyslog("TShift: recorder priority=%d, channel %d",priority,channelNumber);
++		}
++	}
++}
++
++TShiftPlayerMode cTShiftRecorder::GetMode()
++{
++	return data.GetMode();
++}
++time_t cTShiftRecorder::GetLastChannel(void)
++{
++	return data.GetLastChannel();
++}
++
++cDevice *cTShiftRecorder::GetDevice()
++{
++	return device;
++}
++
++void cTShiftRecorder::Impact(cDevice *Device,time_t *LastThis,time_t *LastOther)
++{
++	time_t lastChannel=GetLastChannel();
++	if(device==Device)
++	{
++		if(*LastThis<lastChannel)
++			*LastThis=lastChannel;
++	}
++	else
++	{
++		if(*LastOther<lastChannel)
++			*LastOther=lastChannel;
++	}
++}
++
++// --- cTShiftPlayerControl -------------------------------------------------------------
++
++cTShiftPlayerControl::cTShiftPlayerControl(const char *FileName,int ResumeIndex,cTShiftIndexFile *newIndex)
++:cDvbPlayerControl(FileName,newIndex->ActivatePlayer(ResumeIndex))
++{
++	index=newIndex;
++	lastIndex=-1;
++}
++
++cTShiftPlayerControl::~cTShiftPlayerControl()
++{
++	index->DeactivatePlayer();
++}
++int cTShiftPlayerControl::GetIndex()
++{
++	int current;
++	int total;
++	if(!cDvbPlayerControl::GetIndex(current,total,false))
++	{
++		if(lastIndex>=0)
++			return lastIndex;
++		else
++			return index->GetResume();
++	}
++	if(current<=0)
++	{
++		if(lastIndex>=0)
++			return lastIndex;
++		else
++			return index->GetResume();
++	}
++	lastIndex=current;
++	return current;
++}
++
++TShiftPlayerMode cTShiftPlayerControl::GetMode()
++{
++	bool Play=true;
++	bool Forward;
++	int Speed=1;
++	if(cDvbPlayerControl::GetReplayMode(Play,Forward,Speed))
++		if(!Play)
++			return TShiftPlayerPause;
++	return TShiftPlayerPlay;
++}
++
++cPlayer *cTShiftPlayerControl::GetPlayer()
++{
++	if(!cControl::player->IsAttached())
++		if(!cDevice::PrimaryDevice()->AttachPlayer(cControl::player))
++			return NULL;
++	return cControl::player;
++}
++
++// --- cTShiftTransferControl -------------------------------------------------------------
++
++cTShiftTransferControl::cTShiftTransferControl(cDevice *ReceiverDevice, const cChannel *Channel)
++:cTransferControl(ReceiverDevice,Channel->Ppid(), Channel->Vpid(), Channel->Apid(0),Channel->Tpid())
++{
++}
++
++cPlayer *cTShiftTransferControl::GetPlayer(bool Attach)
++{
++	if((Attach)&&(!cControl::player->IsAttached()))
++		if(!cDevice::PrimaryDevice()->AttachPlayer(cControl::player))
++			return NULL;
++	return cControl::player;
++} 
++
++// --- cTShiftControl ------------------------------------------------------
++
++cTShiftRecorder *cTShiftControl::receivers[MAXTSHIFT];
++cMutex cTShiftControl::controlLock;
++cTShiftControl *cTShiftControl::currentControl=NULL;
++time_t cTShiftControl::LastProcess=0;
++bool cTShiftControl::nothingToDo=true;
++
++
++cTShiftControl::cTShiftControl(cDevice *ReceiverDevice, const cChannel *Channel)
++:cControl(NULL,true)
++{
++  controlLock.Lock();
++  delete currentControl;
++  currentControl=this;
++  ControlLastProcess=time(NULL);
++  beginChannel=ControlLastProcess;
++  lastActivated=0;
++  IsForwarding=false;
++  startRecorder=((Setup.TShift==1)&&(getIaMode()))?ControlLastProcess+Setup.TShiftStartRecord:0;
++  channelNumber=Channel->Number();
++  controlTransfer=NULL;
++  controlRecorder=NULL;
++  for(int f=0;f<MAXTSHIFT;f++)
++	if(receivers[f])
++		if(receivers[f]->GetChannelNumber()==channelNumber)
++		{
++			if(receivers[f]->AutoDelete())
++				receivers[f]=NULL;
++			else
++			{ 			
++				controlRecorder=receivers[f];
++				receivers[f]=NULL;
++				controlRecorder->SetOnline();
++				startRecorder=ControlLastProcess+60;
++			}
++			break;
++		}
++  if(controlRecorder)
++	if(controlRecorder->GetMode()>TShiftPlayerDelay)
++		cControl::player=controlRecorder->GetPlayer();
++  if(!cControl::player)
++  {
++	controlTransfer=new cTShiftTransferControl(ReceiverDevice,Channel);
++	cControl::player=controlTransfer->GetPlayer();
++  }
++	
++  nothingToDo=false;
++  controlLock.Unlock();
++}
++void cTShiftControl::StopRecord()
++{
++	startRecorder=0;
++	lastActivated=0;
++	if(controlRecorder)
++	{
++		delete controlRecorder;
++		controlRecorder=NULL;
++	}
++}
++int cTShiftControl::IsRecording()
++{
++	if(!startRecorder)
++		return -1;
++	if(!controlRecorder)
++		return 0;
++	return (controlRecorder->Activated()?1:0);
++}
++
++bool cTShiftControl::StartRecord()
++{
++	time_t Now=time(NULL);
++	startRecorder=Now+60;
++	cChannel *channel=NULL;
++	if(controlRecorder)
++	{
++		if(controlRecorder->Activated())
++		{
++			lastActivated=Now;
++			return true;
++		}
++	}
++	else
++	{
++		int FreeMB=0;
++		VideoDiskSpace(&FreeMB);
++		if(FreeMB<MINFREEDISK)
++		{
++			isyslog("TShift: not enough disk space to start recording, channel %d",channelNumber);
++			return false;
++		}
++		Channels.Lock(false);
++		channel=Channels.GetByNumber(channelNumber);
++		if(!channel)
++		{
++			Channels.Unlock();
++			StopRecord();
++			esyslog("TShift: channel not found, channel %d",channelNumber);
++			return false;
++		}
++		controlRecorder=cTShiftRecorder::New(channel,beginChannel);
++		if(!controlRecorder)
++		{
++			Channels.Unlock();
++			StopRecord();
++			esyslog("TShift: recorder without file, channel %d",channelNumber);
++			return false;
++		}
++	}
++	cDevice *receiverDevice=cTransferControl::ReceiverDevice();
++	if(receiverDevice)
++		if(!receiverDevice->FreeReceiverSlot())
++			receiverDevice=NULL;
++	if(!receiverDevice)
++	{
++		if(!channel)
++		{
++			Channels.Lock(false);
++			channel=Channels.GetByNumber(channelNumber);
++		}
++		if(!channel)
++		{
++			Channels.Unlock();
++			esyslog("TShift: channel not found, channel %d",channelNumber);
++		}
++		else
++		{
++			receiverDevice=cDevice::GetDevice(channel,IsDelayed()?Setup.TShiftPriority:0,NULL,false);
++			if(receiverDevice)
++				if(!receiverDevice->IsTunedToTransponder(channel))
++					if(!receiverDevice->SwitchChannel(channel,false))
++						receiverDevice=NULL;
++		}
++	}
++	if(channel)
++		Channels.Unlock();
++	if(!receiverDevice)
++		isyslog("TShift: device not available, channel %d",channelNumber);
++	else if(receiverDevice->AttachReceiver(controlRecorder))
++	{
++		isyslog("TShift: start online recording, channel %d",channelNumber);
++		lastActivated=Now;
++		return true;
++	}
++	startRecorder=Now+5;
++	if(!lastActivated)
++		lastActivated=Now;
++	return true;
++}
++
++void cTShiftControl::InitializeTShift()
++{
++  int f=0;
++  controlLock.Lock();
++  for(;f<MAXTSHIFT;f++)
++	receivers[f]=NULL;
++  cTShiftRecorder::InitializeTShift();
++  LastProcess=time(NULL);
++  controlLock.Unlock();
++}
++
++void cTShiftControl::StartTShift()
++{
++  controlLock.Lock();
++  LastProcess=time(NULL);
++  nothingToDo=false;
++  if(currentControl)
++	if(!currentControl->startRecorder)
++		currentControl->startRecorder=((Setup.TShift==1)&&(getIaMode()))?time(NULL)+Setup.TShiftStartRecord:0;
++  controlLock.Unlock();
++}
++
++void cTShiftControl::ShutdownTShift()
++{
++  int f=0;
++  controlLock.Lock();
++  if(currentControl)
++	currentControl->StopRecord();
++  for(;f<MAXTSHIFT;f++)
++  {
++	if(receivers[f])
++	{
++		delete receivers[f];
++		receivers[f]=NULL;
++	}
++  }
++  LastProcess=time(NULL);
++  cTShiftRecorder::ShutdownTShift();
++  nothingToDo=true;
++  controlLock.Unlock();
++}
++
++cTShiftControl::~cTShiftControl()
++{
++  int f=0;
++  controlLock.Lock();
++  if(currentControl==this)
++	currentControl=NULL;
++  if(controlTransfer)
++	delete controlTransfer; 
++  if(controlRecorder)
++  {
++	if(controlRecorder->AutoDelete())
++		isyslog("TShift: stop online recording, channel %d",channelNumber);
++	else
++	{
++		if((Setup.TShiftDelayed==1)||((Setup.TShiftDelayed)&&(IsDelayed())))
++		{
++			for(;f<MAXTSHIFT;f++)
++				if(!receivers[f])
++					break;
++			if(f<MAXTSHIFT)
++			{
++				isyslog("TShift: start offline recording, channel %d",channelNumber);
++				if((Setup.TShiftPause)&&(IsDelayed()))
++					controlRecorder->PlayerPause();
++				receivers[f]=controlRecorder;
++				controlRecorder=NULL;
++			}
++			else
++				esyslog("TShift: too much recordings, channel %d",channelNumber);
++		}
++		if(controlRecorder)
++		{
++			isyslog("TShift: stop online recording, channel %d",channelNumber);
++			delete controlRecorder;
++		}
++	}
++  }
++  controlLock.Unlock();
++}
++bool cTShiftControl::IsDelayed()
++{
++	if(!controlRecorder)
++		return false;
++	return (controlRecorder->GetMode()>TShiftPlayerLive);
++}
++bool cTShiftControl::IsTransfering()
++{
++	return controlTransfer;
++}
++
++bool cTShiftControl::StartTransfer()
++{
++	if(IsTransfering())
++		return true;
++	Channels.Lock(false);
++	cChannel *channel=Channels.GetByNumber(channelNumber);
++	if(!channel)
++	{
++		Channels.Unlock();
++		esyslog("TShift: channel not found, channel %d",channelNumber);
++		return false;
++	}
++	cDevice *receiverDevice=controlRecorder?controlRecorder->GetDevice():NULL;
++	if(!receiverDevice)
++	{
++		receiverDevice=cDevice::GetDevice(channel,0,NULL,true);
++		if(receiverDevice)
++			if(!receiverDevice->IsTunedToTransponder(channel))
++				if(!receiverDevice->SwitchChannel(channel,false))
++					receiverDevice=NULL;
++	}
++	if(receiverDevice)
++		controlTransfer=new cTShiftTransferControl(receiverDevice,channel);
++	Channels.Unlock();
++	if(controlTransfer)
++	{
++		cPlayer *Player=controlTransfer->GetPlayer(true);
++		if(Player)
++		{
++			cControl::player=Player;
++			return true;
++		}
++		delete controlTransfer;
++		controlTransfer=NULL;
++		return false;
++	}
++	isyslog("TShift: device not available, channel %d",channelNumber);
++	return false;
++}
++bool cTShiftControl::StartPlayer()
++{
++	if(!StartRecord())
++		return false;
++	if(controlRecorder->IsPlaying())
++		return true;
++	cPlayer *Player=controlRecorder->GetPlayer();
++	if(!Player)
++	{
++		StopRecord();
++		return false;
++	}
++	cControl::player=Player;
++	delete controlTransfer;
++	controlTransfer=NULL;
++	return true;
++}
++bool cTShiftControl::Play(void)
++{
++	if(StartPlayer())
++	{
++		controlRecorder->PlayerPlay();
++		return true;
++	}
++	return false;
++}
++bool cTShiftControl::Pause(void)
++{
++	if(StartPlayer())
++	{
++		controlRecorder->PlayerPause();
++		return true;
++	}
++	return false;
++}
++bool cTShiftControl::Delay(void)
++{
++	if(StartTransfer())
++	{
++		controlRecorder->PlayerDelay();
++		return true;
++	}
++	return false;
++}
++bool cTShiftControl::Stop(void)
++{
++	if(StartTransfer())
++	{
++		controlRecorder->PlayerStop();
++		return true;
++	}
++	return false;
++}
++bool cTShiftControl::Forward(void)
++{
++	if(StartPlayer())
++	{
++		IsForwarding=true;
++		controlRecorder->PlayerForward();
++		return true;
++	}
++	return false;
++}
++bool cTShiftControl::Backward(void)
++{
++	if(StartPlayer())
++	{
++		controlRecorder->PlayerBackward();
++		return true;
++	}
++	return false;
++}
++bool cTShiftControl::Forget(void)
++{
++	if(StartTransfer())
++	{
++		StopRecord();
++		return true;
++	}
++	return false;
++}
++
++bool cTShiftControl::OnlyProcessKey(eKeys Key,int *LastChannel)
++{
++  switch(Key)
++  {
++    case kPlay:   if(LastChannel) *LastChannel=-1;
++		   Play();
++		   return true;
++    case kPause:  if(LastChannel) *LastChannel=-1;
++		   Pause();
++		   return true;
++    case kFastRew|k_Release:
++	           if(Setup.MultiSpeedMode)
++			return true;
++    case kFastRew:if(LastChannel) *LastChannel=-1;
++		   if(!StartRecord())
++			return true;
++		   if(!controlRecorder->HaveRecord())
++		   	Delay();
++		   else
++			Backward();
++		   return true;
++    case kFastFwd|k_Release:
++	           if(Setup.MultiSpeedMode)
++			return true;
++    case kFastFwd:if(LastChannel) *LastChannel=-1;
++		   if(!StartRecord())
++			return true;
++		   if(IsTransfering())
++			Delay();
++		   else
++			Forward();
++		   return true;
++    case kStop:   if(LastChannel) *LastChannel=-1;
++		   if(!IsDelayed())
++			Forget();
++		   else if(!Stop())
++			Skins.QueueMessage(mtInfo,tr("Channel not available!"));
++		   return true;
++    default:	   return false;
++  }
++  return false;
++}
++bool cTShiftControl::ProcessKeyTShift(eKeys Key,int *LastChannel,cOsdObject *Menu)
++{
++  if(!Menu)
++	if(OnlyProcessKey(Key,LastChannel))
++		return true;
++  if(Key==kNone)
++  {
++	if(IsForwarding)
++	{
++		if((!IsTransfering())&&(controlRecorder))
++		{
++			if(!controlRecorder->IsPlaying())
++			{
++				*LastChannel=-1;
++				if(!Delay())
++					if(!Pause())
++						StopChannel();
++				return true;
++			}
++			else
++			{
++				bool Play,Forward;
++				int Speed;
++				if(controlRecorder->ReplayInfo(&Play,&Forward,&Speed))
++				{
++					if((!Forward)||(Speed<0))
++						IsForwarding=false;
++				}
++				else
++					IsForwarding=false;
++			}
++		}
++		else
++			IsForwarding=false;
++	}
++	time_t Now=time(NULL);
++	if(startRecorder&&(startRecorder<Now))
++		if(StartRecord())
++			if(!controlRecorder->Activated())
++			{
++				int Total=0,Current=0,First=0;
++				switch(controlRecorder->GetMode())
++				{
++					case TShiftPlayerLive:
++					case TShiftPlayerDelay:
++						if(Now-lastActivated>300)
++						{
++							if(Forget())
++								startRecorder=Now+60;
++							else
++								StopChannel();
++							return true;
++						}
++					case TShiftPlayerPause:
++						startRecorder=Now+60;
++						break;
++					case TShiftPlayerPlay:
++						controlRecorder->BufferInfo(&Total,&Current,&First);
++						if(Total-Current<FRAMESPERSEC*10)
++						{
++							Skins.QueueMessage(mtInfo,tr("Channel not available!"));
++							if(!Pause())
++								StopChannel();
++							return true;
++						}
++						if(Total-Current>FRAMESPERSEC*60)
++						{
++							Skins.QueueMessage(mtInfo,cString::sprintf(tr("Channel not available in less than %d minutes"),((Total-Current)/(FRAMESPERSEC*60))+1));
++							startRecorder=Now+60;
++						}
++						break;
++				}
++			}
++	if((ControlLastProcess+60<Now)&&(Setup.TShiftTimeout))
++	{
++		ControlLastProcess=Now;
++		if(controlRecorder)
++		{
++			time_t LastActivity=cRemote::LastActivity();
++			if(LastActivity<controlRecorder->GetLastChannel())
++				LastActivity=controlRecorder->GetLastChannel();
++			LastActivity+=Setup.TShiftTimeout*60;
++			if(LastActivity<Now)
++			{
++				if(LastActivity+60<Now)
++				{
++					*LastChannel=-1;
++					if(controlRecorder->GetMode()>=TShiftPlayerPlay)
++					{
++						isyslog("TShift: auto playerDelay online, channel %d",channelNumber);
++						if(!Delay())
++							StopChannel();
++					}
++					else
++					{
++						isyslog("TShift: auto StopRecord online, channel %d",channelNumber);
++						if(!Forget())
++							StopChannel();
++					}
++					return true;
++				}
++				if(controlRecorder->GetMode()>=TShiftPlayerPlay)
++					Skins.QueueMessage(mtInfo,tr("Switching to live TV in 1 minute"));
++				else
++					Skins.QueueMessage(mtInfo,tr("Stopping buffer in 1 minute"));
++			}
++		}
++	}
++  }
++  return false;
++}
++void cTShiftControl::StopChannel()
++{
++	int number=channelNumber;
++	isyslog("TShift: StopChannel, channel %d",number);
++	cDevice::PrimaryDevice()->StopReplay();
++	if(!Channels.SwitchTo(number))
++		if(!cDevice::SwitchChannel(1))
++			cDevice::SwitchChannel(-1);
++}
++eKeys cTShiftControl::FilterKeyFromMenu(eKeys Key)
++{
++  if(nothingToDo)
++	return Key;
++  controlLock.Lock();
++  if(currentControl)
++  {
++	if(currentControl->OnlyProcessKey(Key))
++	{
++		controlLock.Unlock();
++		return kNone;
++	}
++  }
++  controlLock.Unlock();
++  return Key;
++}
++eKeys cTShiftControl::FilterKey(eKeys Key,int *LastChannel,cOsdObject *Menu)
++{
++  if(nothingToDo)
++	return Key;
++  controlLock.Lock();
++  if(currentControl)
++  {
++	if(currentControl->ProcessKeyTShift(Key,LastChannel,Menu))
++	{
++		controlLock.Unlock();
++		return kNone;
++	}
++  }
++  if(Key==kNone)
++  {
++	if(cTShiftRecorder::ProcessTShift())
++	{
++		controlLock.Unlock();
++		return kNone;
++	}
++	time_t Now=time(NULL);
++	if(LastProcess+60<Now)
++	{
++		LastProcess=Now;
++		nothingToDo=!currentControl;
++		for(int f=0;f<MAXTSHIFT;f++)
++			if(receivers[f])
++			{
++				nothingToDo=false;
++				if(receivers[f]->AutoDelete())
++				{
++					receivers[f]=NULL;
++					break;
++				}
++				else if((Setup.TShiftTimeout)&&(receivers[f]->GetLastChannel()+Setup.TShiftTimeout*60<Now))
++				{
++					isyslog("TShift: auto StopRecord offline, channel %d",receivers[f]->GetChannelNumber());
++					delete receivers[f];
++					receivers[f]=NULL;
++					break;
++				}
++			}
++	}
++  }
++  controlLock.Unlock();
++  return Key;
++}
++
++int cTShiftControl::GetTShiftInfo(int Channel,TShiftPlayerMode *Mode,int *Recording)
++{
++  int result=0;
++  if(Recording)
++	*Recording=-1;
++  controlLock.Lock();
++  if(currentControl)
++  {
++	if(currentControl->IsDelayed())
++		result=2;
++	else if(currentControl->IsRecording()>0)
++		result=1;
++	if((Channel>0)&&(currentControl->channelNumber==Channel))
++	{
++		Channel=0;
++		if(Recording)
++			*Recording=currentControl->IsRecording()+1;
++		if(Mode)
++		{
++			if(currentControl->controlRecorder)
++				*Mode=currentControl->controlRecorder->GetMode();
++			else
++				*Mode=TShiftPlayerLive;
++		}
++		if(result)
++			result+=2;
++	}
++  }
++  for(int f=0;(f<MAXTSHIFT)&&((Channel>0)||(result<2))&&(result<3);f++)
++  	if(receivers[f])
++	{
++		if((Channel>0)&&(receivers[f]->GetChannelNumber()==Channel))
++		{
++			Channel=0;
++			if(receivers[f]->GetMode()>TShiftPlayerLive)
++				result=4;
++			else if(receivers[f]->Activated())
++				result=3;
++			if(Recording)
++				*Recording=receivers[f]->Activated()?2:1;
++			if(Mode)
++				*Mode=receivers[f]->GetMode();
++		}
++		else
++		{
++			if(receivers[f]->GetMode()>TShiftPlayerLive)
++				result=2;
++			else if(receivers[f]->Activated())
++				result=1;
++		}
++	}
++  controlLock.Unlock();
++  return result;
++}
++bool cTShiftControl::BufferInfo(int CurrentChannel,int *Total,int *Current)
++{
++  controlLock.Lock();
++  if(currentControl)
++	if((currentControl->controlRecorder)&&(currentControl->channelNumber==CurrentChannel))
++	{
++		int First;
++		if(currentControl->controlRecorder->BufferInfo(Total,Current,&First))
++		{
++			if(*Current==*Total)
++				(*Current)++;
++			*Total-=First-1;
++			*Current-=First;
++			controlLock.Unlock();
++			return true;
++		}
++	}
++  controlLock.Unlock();
++  return false;
++}
++
++bool cTShiftControl::ReplayInfo(int CurrentChannel,bool *Play,bool *Forward,int *Speed)
++{
++  controlLock.Lock();
++  if(currentControl)
++	if((currentControl->controlRecorder)&&(currentControl->channelNumber==CurrentChannel))
++		if(currentControl->controlRecorder->ReplayInfo(Play,Forward,Speed))
++		{
++			controlLock.Unlock();
++			return true;
++		}
++  controlLock.Unlock();
++  return false;
++}
++
++bool cTShiftControl::Impact(cDevice *Device,bool NeedDetach)
++{
++  if((!NeedDetach)||(!Setup.TShift)||(Setup.TShiftDelayed!=1))
++	return false;
++  time_t LastThis=0;
++  time_t LastOther=0;
++  controlLock.Lock();
++  if(currentControl)
++	if(currentControl->controlRecorder)
++	{
++		currentControl->controlRecorder->Impact(Device,&LastThis,&LastOther);
++		controlLock.Unlock();
++		return LastThis>LastOther;
++	}
++  for(int f=0;f<MAXTSHIFT;f++)
++  	if(receivers[f])
++		receivers[f]->Impact(Device,&LastThis,&LastOther);
++  controlLock.Unlock();
++  return LastThis>LastOther;
++}
++
++
++bool cTShiftIndexFile::Grow(int needed,int FileNumber)
++{
++	lastFile=FileNumber;
++	if((index)&&(size<maxSize)&&(last+needed>=size))
++	{
++		size+=600*FRAMESPERSEC;
++		if(size>maxSize)
++			size=maxSize;
++		currentMutex.Lock();
++		tIndex *newIndex=(tIndex *)realloc(index,size*sizeof(tIndex));
++		if(!newIndex)
++		{
++			esyslog("ERROR: can't realloc() index in Grow()");
++			WriteIndex();
++			currentMutex.Unlock();
++			return false;
++		}
++		index=newIndex;
++		currentMutex.Unlock();
++		dsyslog("TShift: cTShiftIndexFile realloc %d indexes,f=%d,l=%d,m=%d",size,first,last,maxSize);
++	}
++	if(last+needed-first>=maxSize)
++		IncFirst(last+needed+1-first-maxSize);
++	return index;
++}
++
++
++cUnbufferedFile *cTShiftIndexFile::GetReplayFile(cFileName *FileName)
++{
++	if((f>=0)&&(index)&&(FileName))
++		return FileName->SetOffset(lastFile);
++	return NULL;
++}
++
++cTShiftIndexFile *cTShiftIndexFile::ActivatePlayer(int ResumeIndex)
++{
++	indexLock.Lock();
++	if((!index)&&(f>=0))
++	{
++		currentMutex.Lock();
++		ReadIndex();
++		currentMutex.Unlock();
++		indexLock.Unlock();
++		StoreResume(ResumeIndex);
++		return this;
++	}
++	indexLock.Unlock();
++	return NULL;
++}
++void cTShiftIndexFile::DeactivatePlayer()
++{
++	indexLock.Lock();
++	if((index)&&(f>=0))
++	{
++		currentMutex.Lock();
++		WriteIndex();
++		currentMutex.Unlock();
++	}
++	indexLock.Unlock();
++}
++void cTShiftIndexFile::WriteIndex()
++{
++	if(lseek(f,0,SEEK_SET))
++	{
++		LOG_ERROR;
++		close(f);
++		f=-1;
++		free(index);
++		index=NULL;
++		return;
++	}
++	int realSize=last+1;
++	if(!realSize)
++	{
++		free(index);
++		index=NULL;
++		return;
++	}
++	if(realSize>maxSize)
++		realSize=maxSize;
++#if BYTE_ORDER == BIG_ENDIAN
++	for(int j=0;j<realSize;j++)
++		index[j].offset=bswap_32(index[j].offset);
++#endif
++	realSize*=sizeof(tIndex);
++	if(safe_write(f,index,realSize)!=realSize)
++	{
++		LOG_ERROR;
++		close(f);
++		f=-1;
++	}
++	free(index);
++	index=NULL;
++	if((f>=0)&&(last+1>=maxSize))
++	{
++		realSize=((last+1)%maxSize)*sizeof(tIndex);
++		if(lseek(f,realSize,SEEK_SET)!=realSize)
++		{
++			LOG_ERROR;
++			close(f);
++			f=-1;
++		}
++	}
++}
++bool cTShiftIndexFile::ReadIndex()
++{
++	int realSize;
++	if(last>=maxSize)
++	{
++		realSize=maxSize;
++		size=maxSize;
++	}
++	else
++	{
++		realSize=last+1;
++		size=realSize+600*FRAMESPERSEC;
++		if(size>maxSize)
++			size=maxSize;
++	}
++	index=MALLOC(tIndex,size);
++	if(!index)
++	{
++		esyslog("TShift: can't allocate index, size %d",size);
++		close(f);
++		f=-1;
++		return false;
++	}
++	if(realSize)
++	{
++		if(lseek(f,0,SEEK_SET))
++		{
++			LOG_ERROR;
++			close(f);
++			f=-1;
++			free(index);
++			index=NULL;
++			return false;
++		}
++		int toRead=realSize*sizeof(tIndex);
++		if(safe_read(f,index,toRead)!=toRead)
++		{
++			LOG_ERROR;
++			close(f);
++			f=-1;
++			free(index);
++			index=NULL;
++			return false;
++		}
++#if BYTE_ORDER == BIG_ENDIAN
++		for(int j=0;j<realSize;j++)
++			index[j].offset=bswap_32(index[j].offset);
++#endif
++	}
++	return true;
++}
++
++cUnbufferedFile *cTShiftIndexFile::NextFile(cFileName *FileName, bool Record)
++{
++	if(!Record)
++		return FileName->SetOffset((FileName->Number()%MAXFILESPERRECORDING)+1);
++	int FileNumber=FileName->Number();
++	files[FileNumber-1]=last+1;
++	FileNumber%=MAXFILESPERRECORDING;
++	int NextFile=(((FileNumber+1)%MAXFILESPERRECORDING)+1)%MAXFILESPERRECORDING;
++	if(files[NextFile])
++		SetFirst(files[NextFile]);
++	if(!files[FileNumber])
++		return FileName->SetOffset(FileNumber+1);
++	esyslog("TShift: no more files");
++	return NULL;
++}
++
++int cTShiftIndexFile::GetResume(void)
++{
++	if(resume>=last)
++		resume=last-1;
++	if(resume<first)
++		resume=first;
++	return resume;
++}
++
++bool cTShiftIndexFile::StoreResume(int Index)
++{
++	resume=Index;
++	return true;
++}
++
++void cTShiftIndexFile::RemoveOldFiles(int First)
++{
++	while((files[nextFileToDelete])&&(First>=files[nextFileToDelete]+REMOVEOLDFILESAFETYLIMIT))
++	{
++		files[nextFileToDelete]=0;
++		sprintf(contentFileNumber,RECORDFILESUFFIX,++nextFileToDelete);
++		if(nextFileToDelete==MAXFILESPERRECORDING)
++			nextFileToDelete=0;
++		dsyslog("TShift: removing %s",contentFileName);
++		RemoveSingleVideoFile(contentFileName);
++	}
++}
++
++int cTShiftIndexFile::GetNextCurrent(int Current)
++{
++	firstMutex.Lock();
++	if(Current<first)
++		Current=first;
++	currentMutex.Lock();
++	current=Current;
++	firstMutex.Unlock();
++	return current;
++}
++	
++int cTShiftIndexFile::GetCurrent(int Current)
++{
++	firstMutex.Lock();
++	if(Current<first)
++	{
++		firstMutex.Unlock();
++		return -1;
++	}
++	currentMutex.Lock();
++	current=Current;
++	firstMutex.Unlock();
++	return current;
++}
++
++void cTShiftIndexFile::UnlockCurrent()
++{
++	current=INT_MAX;
++	currentMutex.Unlock();
++}
++
++void cTShiftIndexFile::IncFirst(int Inc)
++{
++	firstMutex.Lock();
++	int First=first+Inc;
++	if(First<=current)
++	{
++		first=First;
++		firstMutex.Unlock();
++		RemoveOldFiles(First);
++		return;
++	}
++	currentMutex.Lock();
++	first=First;
++	firstMutex.Unlock();
++	currentMutex.Unlock();
++	RemoveOldFiles(First);
++}
++void cTShiftIndexFile::SetFirst(int First)
++{
++	firstMutex.Lock();
++	if(First<=first)
++	{
++		firstMutex.Unlock();
++		return;
++	}
++	if(First<=current)
++	{
++		first=First;
++		firstMutex.Unlock();
++		RemoveOldFiles(First);
++		return;
++	}
++	currentMutex.Lock();
++	first=First;
++	firstMutex.Unlock();
++	currentMutex.Unlock();
++	RemoveOldFiles(First);
++}
++
++cTShiftIndexFile::cTShiftIndexFile(const char *FileName):cIndexFile(FileName,true)
++{
++	maxSize=Setup.TShiftBufferSize*60*FRAMESPERSEC;
++	lastFile=0;
++	current=INT_MAX;
++	first=0;
++	resume=-1;
++	memset(files,0,sizeof(int)*MAXFILESPERRECORDING);
++	nextFileToDelete=0;
++	contentFileName=MALLOC(char,strlen(FileName)+RECORDFILESUFFIXLEN);
++	if(!contentFileName)
++	{
++		LOG_ERROR;
++		close(f);
++		f=-1;
++		return;
++	}
++	strcpy(contentFileName,FileName);
++	contentFileNumber=contentFileName+strlen(FileName);
++	if(f>=0)
++	{
++		int flags=fcntl(f,F_GETFL);
++		if(flags<0)
++		{
++			LOG_ERROR;
++			close(f);
++			f=-1;
++			return;
++		}
++		if(fcntl(f,F_SETFL,flags&~O_APPEND)<0)
++		{
++			LOG_ERROR;
++			close(f);
++			f=-1;
++			return;
++		}
++	}
++}
++cTShiftIndexFile::~cTShiftIndexFile()
++{
++	free(contentFileName);
++}
++bool cTShiftIndexFile::Get(int Index, uchar *FileNumber, int *FileOffset, uchar *PictureType, int *Length)
++{
++	Index=GetCurrent(Index);
++	if(Index<0)
++		return false;
++	if((index)&&(Index<last))
++	{
++		int realIndex=Index%maxSize;
++		*FileNumber=index[realIndex].number;
++		*FileOffset=index[realIndex].offset;
++		if(PictureType)
++			*PictureType=index[realIndex].type;
++		if(Length)
++		{
++			int nextIndex=(realIndex+1)%maxSize;
++			if(index[nextIndex].number==*FileNumber)
++				*Length=index[nextIndex].offset-*FileOffset;
++			else
++				*Length=-1;
++		}
++		UnlockCurrent();
++		return true;
++	}
++	UnlockCurrent();
++	return false;
++}
++
++int cTShiftIndexFile::WaitIndex(int Index)
++{
++	if(Index<first)
++		return GetNextIFrame(Index-1,true);
++	return Index-1;
++}
++
++
++int cTShiftIndexFile::GetNextIFrame(int Index, bool Forward, uchar *FileNumber, int *FileOffset, int *Length, bool StayOffEnd)
++{
++	for(Index=(Forward?GetNextCurrent(Index+1):GetCurrent(Index-1));Index>=0;Index=(Forward?GetNextCurrent(Index+1):GetCurrent(Index-1)))
++	{
++		if((!index)||(Index>=last))
++		{
++			UnlockCurrent();
++			return -1;
++		}
++		int realIndex=Index%maxSize;
++		if(index[realIndex].type==I_FRAME)
++		{
++			if(FileNumber)
++				*FileNumber=index[realIndex].number;
++			if(FileOffset)
++				*FileOffset=index[realIndex].offset;
++			if(Length)
++			{
++				int nextIndex=(realIndex+1)%maxSize;
++				if(index[nextIndex].number==index[realIndex].number)
++					*Length=index[nextIndex].offset-index[realIndex].offset;
++				else
++					*Length=-1;
++			}
++			UnlockCurrent();
++			return Index;
++		}
++		UnlockCurrent();
++	}
++	return -1;
++}
++
++int cTShiftIndexFile::Get(uchar FileNumber, int FileOffset)
++{
++	int LastFile=lastFile;
++	int i;
++	for(i=0;i<last;i++)
++	{
++		i=GetNextCurrent(i);
++		if(!index)
++		{
++			UnlockCurrent();
++			return -1;
++		}
++		if(LastFile)
++			if(index[i%maxSize].number<=LastFile)
++				LastFile=0;
++		int realIndex=i%maxSize;
++		if(((index[realIndex].number>FileNumber)&&(LastFile<FileNumber))||((index[realIndex].number==FileNumber)&&(index[realIndex].offset>=FileOffset)))
++			break;
++		UnlockCurrent();
++	}
++	return i;
++}
++
++bool cTShiftIndexFile::Write(uchar PictureType, uchar FileNumber, int FileOffset)
++{
++	indexLock.Lock();
++	tIndex i={FileOffset,PictureType,FileNumber,0};
++	if(Grow(1,FileNumber))
++	{
++		memcpy(index+((last+1)%maxSize),&i,sizeof(tIndex));
++		last++;
++		indexLock.Unlock();
++		return true;
++	}
++	if(f<0)
++	{
++		indexLock.Unlock();
++		return false;
++	}
++#if BYTE_ORDER == BIG_ENDIAN
++	i.offset=bswap_32(i.offset);
++#endif
++	if((!((last+1)%maxSize))&&(last>=0))
++		if(lseek(f,0,SEEK_SET))
++		{
++			LOG_ERROR;
++			close(f);
++			f=-1;
++			indexLock.Unlock();
++			return false;
++		}
++	if(safe_write(f,&i,sizeof(tIndex))<0)
++	{
++		LOG_ERROR;
++		close(f);
++		f=-1;
++		indexLock.Unlock();
++		return false;
++	}
++	last++;
++	indexLock.Unlock();
++	return true;
++}
++
++//M7X0 BEGIN AK
++bool cTShiftIndexFile::Write(sPesResult *Picture,int PictureCount,uchar FileNumber,int FileOffset)
++{
++	tIndex inds[PictureCount];
++	int count=0;
++	indexLock.Lock();
++	int realLeft=maxSize-((last+1)%maxSize);
++	if(realLeft>=maxSize)
++		realLeft=0;
++	for(int i=0;i<PictureCount;i++)
++	{
++		if(Picture[i].pictureType)
++		{
++			inds[count].offset=FileOffset+Picture[i].offset;
++			inds[count].type=Picture[i].pictureType;
++			inds[count].number=FileNumber;
++			inds[count++].reserved=0;
++		}
++	}
++	if(count)
++	{
++		if(Grow(count,FileNumber))
++		{
++			if(count>realLeft)
++			{
++				if(realLeft)
++				{
++					memcpy(index+((last+1)%maxSize),inds,realLeft*sizeof(tIndex));
++					memcpy(index,inds+realLeft,(count-realLeft)*sizeof(tIndex));
++				}
++				else
++				{
++					memcpy(index,inds,count*sizeof(tIndex));
++				}
++			}
++			else
++			{
++				memcpy(index+((last+1)%maxSize),inds,count*sizeof(tIndex));
++			}
++			last+=count;
++			indexLock.Unlock();
++			return true;
++		}
++		if(f<0)
++		{
++			indexLock.Unlock();
++			return false;
++		}
++#if BYTE_ORDER == BIG_ENDIAN
++		for(int i=0;i<count;i++)
++			inds[i].offset=bswap_32(inds[i].offset);
++#endif
++		if(count>realLeft)
++		{
++			if(realLeft)
++			{
++				if(safe_write(f,inds,sizeof(tIndex)*realLeft)<0)
++				{
++					LOG_ERROR;
++					close(f);
++					f=-1;
++					indexLock.Unlock();
++					return false;
++				}
++			}
++			if(last>=0)
++				if(lseek(f,0,SEEK_SET))
++				{
++					LOG_ERROR;
++					close(f);
++					f=-1;
++					indexLock.Unlock();
++					return false;
++				}
++		}
++		else
++			realLeft=0;
++		if(safe_write(f,inds+realLeft,sizeof(tIndex)*(count-realLeft))<0)
++		{
++			LOG_ERROR;
++			close(f);
++			f=-1;
++			indexLock.Unlock();
++			return false;
++		}
++		last+=count;
++	}
++	indexLock.Unlock();
++	return true;
++}
++
+diff -Naur VDR-NG-orig/tshift.h VDR-NG/tshift.h
+--- VDR-NG-orig/tshift.h	1970-01-01 01:00:00.000000000 +0100
++++ VDR-NG/tshift.h	2009-12-11 18:01:16.000000000 +0100
+@@ -0,0 +1,124 @@
++/*
++ * tshift.h: TShift mode
++ *
++ * See the main source file 'vdr.c' for copyright information and
++ * how to reach the author.
++ *
++ */
++
++#ifndef __TSHIFT_H
++#define __TSHIFT_H
++
++#include "player.h"
++
++#define MAXTSHIFT (MAXDEVICES * MAXRECEIVERS)
++#define MAXFILESPERRECORDING 255
++#define RECORDFILESUFFIX    "/%03d.vdr"
++#define RECORDFILESUFFIXLEN 20 // some additional bytes for safety...
++#define INDEXFILESUFFIX   "/index.vdr"
++#define REMOVEOLDFILESAFETYLIMIT 50 // delete old files
++#define MINFREEDISK       300 // minimum free disk space (in MB) required to start recording
++
++enum TShiftPlayerMode{TShiftPlayerLive,TShiftPlayerDelay,TShiftPlayerPlay,TShiftPlayerPause};
++
++
++class cTShiftRecorder;
++class cTShiftTransferControl;
++
++class cTShiftControl : public cControl {
++private:
++  static cTShiftRecorder *receivers[MAXTSHIFT];
++  static cMutex controlLock;
++  static cTShiftControl *currentControl;
++  static time_t LastProcess;
++  static bool nothingToDo;
++  cTShiftTransferControl *controlTransfer;
++  cTShiftRecorder *controlRecorder;
++  int channelNumber;
++  bool StartRecord(void);
++  bool IsForwarding;
++  int IsRecording(void);
++  void StopRecord(void);
++  bool StartTransfer(void);
++  bool StartPlayer(void);
++  bool ProcessKeyTShift(eKeys Key,int *LastChannel,cOsdObject *Menu);
++  bool OnlyProcessKey(eKeys Key,int *LastChannel=NULL);
++  time_t ControlLastProcess;
++  time_t startRecorder;
++  time_t beginChannel;
++  time_t lastActivated;
++  bool IsDelayed(void);
++  bool IsTransfering(void);
++  void StopChannel(void);
++
++  bool Play(void);
++  bool Pause(void);
++  bool Delay(void);
++  bool Stop(void);
++  bool Forward(void);
++  bool Backward(void);
++  bool Forget(void);
++
++public:
++  cTShiftControl(cDevice *ReceiverDevice, const cChannel *Channel);
++  virtual ~cTShiftControl();
++  virtual void Hide(void){}
++  static void InitializeTShift(void);
++  static void ShutdownTShift(void);
++  static void StartTShift(void);
++  static eKeys FilterKey(eKeys Key,int *LastChannel,cOsdObject *Menu);
++  static eKeys FilterKeyFromMenu(eKeys Key);
++  static int GetTShiftInfo(int Channel,TShiftPlayerMode *Mode=NULL,int *Recording=NULL);
++  static bool BufferInfo(int CurrentChannel,int *Total,int *Current);
++  static bool ReplayInfo(int CurrentChannel,bool *Play,bool *Forward,int *Speed);
++  static bool Impact(cDevice *Device,bool NeedDetach);
++  };
++
++class cTShiftIndexFile : public cIndexFile {
++	int resume;
++	int current;
++	cMutex currentMutex;
++	int first;
++	cMutex firstMutex;
++	char *contentFileName;
++	char *contentFileNumber;
++	int files[MAXFILESPERRECORDING];
++	uchar nextFileToDelete;
++	void RemoveOldFiles(int First);
++	void SetFirst(int First);
++	int maxSize;
++	int lastFile;
++	cMutex indexLock;
++	bool ReadIndex(void);
++	void WriteIndex(void);
++	bool Grow(int needed,int FileNumber);
++	int GetNextCurrent(int Current);
++	int GetCurrent(int Current);
++	void UnlockCurrent();
++	void IncFirst(int Inc);
++public:
++	cUnbufferedFile *GetReplayFile(cFileName *FileName);
++	cTShiftIndexFile *ActivatePlayer(int ResumeIndex);
++	void DeactivatePlayer(void);
++	int First(void){return first;}
++protected:
++	virtual bool CatchUp(int Index=-1){return index;}
++public:
++	cTShiftIndexFile(const char *FileName);
++	virtual ~cTShiftIndexFile();
++	virtual bool Write(uchar PictureType,uchar FileNumber,int FileOffset);
++	virtual bool Write(sPesResult *Picture,int PictureCount,uchar FileNumber,int FileOffset);
++	virtual int StripOffToLastIFrame(int number){return -1;}
++	virtual bool Get(int Index,uchar *FileNumber,int *FileOffset,uchar *PictureType=NULL,int *Length=NULL);
++	virtual int GetNextIFrame(int Index,bool Forward,uchar *FileNumber=NULL,int *FileOffset=NULL,int *Length=NULL,bool StayOffEnd=false);
++	virtual int Get(uchar FileNumber,int FileOffset);
++	virtual int GetResume(void);
++	virtual bool StoreResume(int Index);
++	virtual cUnbufferedFile *NextFile(cFileName *FileName,bool Record);
++	virtual bool IsStillRecording(void){ return false;}
++	virtual int WaitIndex(int Index);
++	bool IsFileOK(void){return (f>=0); }
++};
++
++
++#endif //__TSHIFT_H
+diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
+--- VDR-NG-orig/vdr.c	2009-12-11 15:33:27.000000000 +0100
++++ VDR-NG/vdr.c	2009-12-11 17:40:59.000000000 +0100
+@@ -83,6 +83,7 @@
+ #include "timers.h"
+ #include "tools.h"
+ #include "transfer.h"
++#include "tshift.h"
+ #include "videodir.h"
+ //M7X0 BEGIN AK
+ #include "builddate.h"
+@@ -640,6 +641,7 @@
+      cSchedulesReaderThread::getInstance()->ReadEPG();
+      }
+ 
++  cTShiftControl::InitializeTShift();
+   // DVB interfaces:
+ 
+   cDvbDevice::Initialize();
+@@ -999,10 +1001,12 @@
+ 	      dsyslog("DEBUG: wakeup from IaMode");
+ 	      setIaMode(1);
+ 	      cDevice::PrimaryDevice()->SetTvSettings(1);
++	      if(Setup.TShift)
++	         cTShiftControl::StartTShift();
+ 	      key = kNone;
+ 	   }
+ 	}
+-
++	key=cTShiftControl::FilterKey(key,&LastChannel,Menu);
+         // Keys that must work independent of any interactive mode:
+         switch (key) {
+           // Menu control:
+@@ -1152,6 +1157,7 @@
+ 		    setIaMode(0);
+ 		    cDevice::PrimaryDevice()->SetTvSettings(0);
+ 		    cControl::Shutdown();
++		    cTShiftControl::ShutdownTShift();
+ 		    break;
+ 		}
+                 // Check for activity, request power button again if active:
+@@ -1160,6 +1166,7 @@
+ 		   setIaMode(0);
+ 		   cDevice::PrimaryDevice()->SetTvSettings(0);
+ 		   cControl::Shutdown();
++		    cTShiftControl::ShutdownTShift();
+ 		   // Not pressed power - set VDR to be non-interactive and power down later:
+                    ShutdownHandler.SetUserInactive();
+                    break;
+@@ -1358,6 +1165,7 @@
+ 			setIaMode(0);
+ 			cDevice::PrimaryDevice()->SetTvSettings(0);
+ 			cControl::Shutdown();
++			cTShiftControl::ShutdownTShift();
+ 		    }
+ 		}
+ 		}
+@@ -1395,6 +1403,7 @@
+   cRecordControls::Shutdown();
+   cCutter::Stop();
+   delete Menu;
++  cTShiftControl::ShutdownTShift();
+   cControl::Shutdown();
+   delete Interface;
+   cOsdProvider::Shutdown();
