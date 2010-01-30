@@ -88,7 +88,7 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
 diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
 --- VDR-NG-orig/vdr.c	2009-02-21 10:23:05.000000000 +0100
 +++ VDR-NG/vdr.c	2009-03-20 20:48:50.000000000 +0100
-@@ -525,7 +525,6 @@
+@@ -527,7 +527,6 @@
  
    if (!DirectoryOk(VideoDirectory, true)) {
       fprintf(stderr, "vdr: can't access video directory %s\n", VideoDirectory);
@@ -96,3 +96,78 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
       }
  
    // Daemon mode:
+@@ -1335,7 +1334,7 @@
+                ShutdownHandler.countdown.Cancel();
+             }
+ 
+-         if (!Interact && !cRecordControls::Active() && !cCutter::Active() && !Interface->HasSVDRPConnection() && (time(NULL) - cRemote::LastActivity()) > ACTIVITYTIMEOUT) {
++         if (!Interact && !cRecordControls::Active() && !cCutter::Active() && !cUsbAutomounter::Active() && !Interface->HasSVDRPConnection() && (time(NULL) - cRemote::LastActivity()) > ACTIVITYTIMEOUT) {
+             // Handle housekeeping tasks
+ 
+             // Shutdown:
+diff -Naur VDR-NG-orig/shutdown.c VDR-NG/shutdown.c
+--- VDR-NG-orig/shutdown.c	2009-05-12 20:17:19.000000000 +0200
++++ VDR-NG/shutdown.c	2009-05-12 20:03:25.000000000 +0200
+@@ -14,6 +14,8 @@
+ #include <stdlib.h>
+ #include <sys/types.h>
+ #include <sys/wait.h>
++#include <sys/file.h>
++#include <errno.h>
+ #include "channels.h"
+ #include "config.h"
+ #include "cutter.h"
+@@ -26,6 +28,26 @@
+ 
+ cShutdownHandler ShutdownHandler;
+ 
++bool cUsbAutomounter::Active(void)
++{
++	int file=open("/var/usbautomounter",O_CREAT|O_WRONLY);
++	if(file!=-1)
++	{
++		if(flock(file,LOCK_EX|LOCK_NB))
++		{
++			if(errno==EWOULDBLOCK)
++			{
++				close(file);
++				return true;
++			}
++		}
++		else
++			flock(file,LOCK_UN);
++		close(file);
++	}
++	return false;
++}
++
+ cCountdown::cCountdown(void)
+ {
+   timeout = 0;
+@@ -162,6 +184,11 @@
+      //if (!Interactive || !Interface->Confirm(tr("Editing - shut down anyway?")))
+         return false;
+      }
++  if (cUsbAutomounter::Active()) {
++	setIaMode(0);
++	cDevice::PrimaryDevice()->SetTvSettings(0);
++        return false;
++     }
+ 
+   cTimer *timer = Timers.GetNextActiveTimer();
+   time_t Next = timer ? timer->StartTime() : 0;
+diff -Naur VDR-NG-orig/shutdown.h VDR-NG/shutdown.h
+--- VDR-NG-orig/shutdown.h	2009-05-12 20:17:02.000000000 +0200
++++ VDR-NG/shutdown.h	2009-05-12 20:19:23.000000000 +0200
+@@ -14,6 +14,11 @@
+ 
+ #include <time.h>
+ 
++class cUsbAutomounter {
++public:
++  static bool Active(void);
++};
++
+ class cCountdown {
+ private:
+   time_t timeout;      ///< 5-minute countdown timer

@@ -1,6 +1,6 @@
 --- VDR-NG-orig/vdr.c	2009-03-24 11:53:20.000000000 +0100
 +++ VDR-NG/vdr.c	2009-03-24 12:01:13.000000000 +0100
-@@ -1410,6 +1410,7 @@
+@@ -1413,6 +1413,7 @@
    cDevice::Shutdown();
    PluginManager.Shutdown(true);
    cSchedules::Cleanup(true);
