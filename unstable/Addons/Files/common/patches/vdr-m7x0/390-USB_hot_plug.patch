@@ -37,10 +37,21 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
    return -1;
  }
  
-@@ -559,11 +551,47 @@
+@@ -559,11 +551,58 @@
       LOG_ERROR_STR(FileName);
  }
  
++bool DirectoryNotEmpty(const char *DirName)
++{
++  cReadDir d(DirName);
++  if (d.Ok()) {
++     struct dirent *e;
++     while ((e = d.Next()) != NULL)
++           if (strcmp(e->d_name, ".") && strcmp(e->d_name, ".."))
++              return true;
++  }
++  return false;
++}
 +extern const char *VideoDirectory;
 +static time_t FirstUpdateFileTime=0;
 +static time_t LastUpdateFileTime=0;
@@ -64,7 +75,7 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
 +  } 
 +  if(!strncmp(FileName,VideoDirectory,strlen(VideoDirectory)))
 +  { 
-+     if(DirectoryOk(VideoDirectory,true))
++     if(DirectoryNotEmpty(VideoDirectory))
 +     {
 +        if(!FirstUpdateFileTime) 
 +        {
