@@ -3,6 +3,7 @@
 /bin/ash /etc/rc.local.halt
 
 source /etc/rc.conf
+source /etc/rc.local.conf
 
 echo -n 'stopping daemons:'
 echo -n ' lircd'
