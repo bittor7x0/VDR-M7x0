@@ -71,9 +71,8 @@ $(STAGEFILES_DIR)/.runit_patched: $(STAGEFILES_DIR)/.runit_unpacked
 #
 
 $(STAGEFILES_DIR)/.runit_compiled: $(STAGEFILES_DIR)/.runit_patched
-	$(UCLIBC_ENV) HOSTCC= $(MAKE) \
-		-C $(RUNIT_DIR)/src \
-		HOSTCC=$(UCLIBC_CC)
+	$(UCLIBC_ENV) HOSTCC=$(CC) $(MAKE) \
+		-C $(RUNIT_DIR)/src
 	$(TOUCH) $(STAGEFILES_DIR)/.runit_compiled
 
 #
