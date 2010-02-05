@@ -38,98 +38,99 @@ static void dbg_now_next_kl1(void){
 	dbg_now_next_kl1();
 	#endif
 
-	context_t vctx;
-	context_t *ctx=&vctx;
-	initCtx(ctx,session,request,response,out,256);
+	wcontext_t vwctx;
+	wcontext_t *wctx=&vwctx;
+	if (initCtx(wctx,PN_NOW_NEXT,session,request,response,out,256)){
 
-	vars_t *args = request_get_args(request);
-	int channelNum=vars_get_value_i(args,"chan");
+		vars_t *args = request_get_args(request);
+		int channelNum=vars_get_value_i(args,"chan");
 
-	if (channelNum<1) {
-		warn("Invalid parameters");
-		returnHttpNoContent(response);
-		goto end;
-	}
-	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
-	if (host==NULL){
-		warn("No host");
-		returnHttpNoContent(response);
-		goto end;
-	};
-
-	// Get events for this channel
-	channelEvents_t channelEvents;
-	initChannelEvents(&channelEvents);
-	channelEvents.channelNum=channelNum;
-	channelEvents.dumpMode=dmNowNext;
-	getChannelEvents(host,&channelEvents);
-	if (channelEvents.length==0){
-		warn("No events");
-		returnHttpNoContent(response);
-	} else {
-		if (channelEvents.length>1){
-			//Refresh header field
-			epgEvent_t *nne=channelEvents.entry;
-			long int waitSeconds=0;
-			char *refresh;
-			if ( (channelEvents.length>=2) && (nne[1].start>0) && (nne[0].start>0) && (nne[0].title) && (nne[1].title) ) {
-				time_t now=time(NULL);
-				waitSeconds=nne[1].start-now;
-			}
-			if (waitSeconds<5){
-				waitSeconds=5;
-			}
-			asprintf(&refresh,"%ld;URL=/now-next.kl1?chan=%d",waitSeconds,channelNum);
-			response_set_field(response,"Refresh",refresh);
-			free(refresh);
+		if (channelNum<1) {
+			warn("Invalid parameters");
+			returnHttpNoContent(response);
+			goto end;
 		}
-		
-		initHtmlDoc(ctx);
+		hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
+		if (host==NULL){
+			warn("No host");
+			returnHttpNoContent(response);
+			goto end;
+		};
 
-		ctx_printfn(ctx,"<body id=\"nowNextBody\">\n",0,1);
-		ctx_printfn(ctx,"<div id=\"tabs\">\n",0,1);
+		// Get events for this channel
+		channelEvents_t channelEvents;
+		initChannelEvents(&channelEvents);
+		channelEvents.channelNum=channelNum;
+		channelEvents.dumpMode=dmNowNext;
+		getChannelEvents(host,&channelEvents);
+		if (channelEvents.length==0){
+			warn("No events");
+			returnHttpNoContent(response);
+		} else {
+			if (channelEvents.length>1){
+				//Refresh header field
+				epgEvent_t *nne=channelEvents.entry;
+				long int waitSeconds=0;
+				char *refresh;
+				if ( (channelEvents.length>=2) && (nne[1].start>0) && (nne[0].start>0) && (nne[0].title) && (nne[1].title) ) {
+					time_t now=time(NULL);
+					waitSeconds=nne[1].start-now;
+				}
+				if (waitSeconds<5){
+					waitSeconds=5;
+				}
+				asprintf(&refresh,"%ld;URL=/now-next.kl1?chan=%d",waitSeconds,channelNum);
+				response_set_field(response,"Refresh",refresh);
+				free(refresh);
+			}
+			
+			initHtmlDoc(wctx);
 
-		int i;
-		char *title[channelEvents.length];
-		epgEvent_t *event;
-		for (i=0,event=channelEvents.entry;i<channelEvents.length;i++,event++){
-			title[i]=NULL;
-			if (event->title) {
-				if (event->start>0) {
-					struct tm t = *localtime(&event->start);
-					asprintf(&title[i],"%02d:%02d",t.tm_hour,t.tm_min);
-				} else {
-					title[i]=strdup((i==0)?tr("Now"):tr("next")); 
+			wctx_printfn(wctx,"<body id=\"nowNextBody\">\n",0,1);
+			wctx_printfn(wctx,"<div id=\"tabs\">\n",0,1);
+
+			int i;
+			char *title[channelEvents.length];
+			epgEvent_t *event;
+			for (i=0,event=channelEvents.entry;i<channelEvents.length;i++,event++){
+				title[i]=NULL;
+				if (event->title) {
+					if (event->start>0) {
+						struct tm t = *localtime(&event->start);
+						asprintf(&title[i],"%02d:%02d",t.tm_hour,t.tm_min);
+					} else {
+						title[i]=strdup((i==0)?tr("Now"):tr("next")); 
+					}
 				}
 			}
-		}
-		ctx_printfn(ctx,"<ul id=\"tabsSelector\">\n",0,1);
-		int c=0;
-		for (i=0;i<channelEvents.length;i++){
-			if (title[i]){
-				ctx_printf0(ctx,"<li><a href=\"#tabs-%d\">%s</a></li>\n",c++,title[i]);
+			wctx_printfn(wctx,"<ul id=\"tabsSelector\">\n",0,1);
+			int c=0;
+			for (i=0;i<channelEvents.length;i++){
+				if (title[i]){
+					wctx_printf0(wctx,"<li><a href=\"#tabs-%d\">%s</a></li>\n",c++,title[i]);
+				}
 			}
-		}
-		ctx_printfn(ctx,"</ul>\n",-1,0);
-		c=0;
-		for (i=0,event=channelEvents.entry;i<channelEvents.length;i++,event++){
-			if (title[i]) {
-				ctx_printfn(ctx,"<div id=\"tabs-%d\" class=\"eventSummary\">\n",0,1,c++);
-				ctx_printf0(ctx,"<h3>%s</h3>\n",title[i]);
-				ctx_printf0(ctx,"<h4>%s</h4>\n",(event->title)?event->title:(event->shortdesc && event->desc)?event->shortdesc:"--");
-				ctx_printfn(ctx,"<div class=\"desc\">\n",0,1);
-				printEventDesc(ctx,(event->desc)?event->desc:event->shortdesc,BT_FALSE);
-				ctx_printfn(ctx,"</div>\n",-1,0);
-				ctx_printfn(ctx,"</div>\n",-1,0);
+			wctx_printfn(wctx,"</ul>\n",-1,0);
+			c=0;
+			for (i=0,event=channelEvents.entry;i<channelEvents.length;i++,event++){
+				if (title[i]) {
+					wctx_printfn(wctx,"<div id=\"tabs-%d\" class=\"eventSummary\">\n",0,1,c++);
+					wctx_printf0(wctx,"<h3>%s</h3>\n",title[i]);
+					wctx_printf0(wctx,"<h4>%s</h4>\n",(event->title)?event->title:(event->shortdesc && event->desc)?event->shortdesc:"--");
+					wctx_printfn(wctx,"<div class=\"desc\">\n",0,1);
+					printEventDesc(wctx,(event->desc)?event->desc:event->shortdesc,false);
+					wctx_printfn(wctx,"</div>\n",-1,0);
+					wctx_printfn(wctx,"</div>\n",-1,0);
+				}
 			}
+			for (i=0;i<channelEvents.length;i++) free(title[i]);
 		}
-		for (i=0;i<channelEvents.length;i++) free(title[i]);
-	}
-	freeChannelEvents(&channelEvents);
-	ctx_printfn(ctx,"</div>\n",-1,0); //tabs
-	ctx_printfn(ctx,"</body>\n",-1,0);
-	ctx_printfn(ctx,"</html>\n",-1,0);
+		freeChannelEvents(&channelEvents);
+		wctx_printfn(wctx,"</div>\n",-1,0); //tabs
+		wctx_printfn(wctx,"</body>\n",-1,0);
+		wctx_printfn(wctx,"</html>\n",-1,0);
 end:
-	freeCtx(ctx);
-	closeSvdrpAll();
+		closeSvdrpAll();
+	}
+	freeCtx(wctx);
 %>

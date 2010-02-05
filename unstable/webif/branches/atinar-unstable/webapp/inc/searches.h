@@ -128,22 +128,22 @@ typedef struct searchList_s {
 void initChannelGroupList(channelGroupList_t *const groups);
 void freeChannelGroupList(channelGroupList_t *const groups);
 void getChannelGroupList(hostConf_t *host, channelGroupList_t *const groups, channelList_t const *const channels);
-void printChannelGroupListSelect(context_t *ctx,const char * name,const channelGroupList_t *const groups,const char *groupName);
+void printChannelGroupListSelect(wcontext_t *wctx,const char * name,const channelGroupList_t *const groups,const char *groupName);
 
 void initSearch(search_t *const entry);
-boolean_t initSearchFromEvent(context_t *ctx, search_t *const search, hostConf_t *host, const int channelNum, const int eventId);
-boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, context_t *ctx);
+bool initSearchFromEvent(wcontext_t *wctx, search_t *const search, hostConf_t *host, const int channelNum, const int eventId);
+bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, wcontext_t *wctx);
 void freeSearch(search_t *const entry);
 void initSearchList(searchList_t *const searches);
 void freeSearchList(searchList_t *const searches);
 void getSearchList(searchList_t *const searchs, channelList_t const *const channels, const sortField_t sortBy, const sortDirection_t sortDirection);
-boolean_t parseSearch(const char *line, search_t *const search, channelList_t const *const channels );
-boolean_t addSearch(context_t *ctx, hostConf_t *host, const char *newSearchStr);
-boolean_t editSearch(context_t *ctx, hostConf_t *host, int id, const char *oldSearchStr, const char *newSearchStr);
-boolean_t deleteSearch(context_t *ctx, hostConf_t *host, int id, const char *oldSearchStr);
-boolean_t updateSearches(context_t *ctx, hostConf_t *host);
+bool parseSearch(const char *line, search_t *const search, channelList_t const *const channels );
+bool addSearch(wcontext_t *wctx, hostConf_t *host, const char *newSearchStr);
+bool editSearch(wcontext_t *wctx, hostConf_t *host, int id, const char *oldSearchStr, const char *newSearchStr);
+bool deleteSearch(wcontext_t *wctx, hostConf_t *host, int id, const char *oldSearchStr);
+bool updateSearches(wcontext_t *wctx, hostConf_t *host);
 char *makeSearchStr(search_t *const search,const channelList_t *channels);
-void printSearcForm(context_t *ctx, search_t *const search, channelList_t const *const channels,const char *cssLevel);
+void printSearcForm(wcontext_t *wctx, search_t *const search, channelList_t const *const channels,const char *cssLevel);
 
 
 #endif

@@ -2118,11 +2118,11 @@ const char *tr(const char *s) {
 	return result;
 }
 
-const char *formatDate(struct tm *timeptr, boolean_t addHour){
+const char *formatDate(struct tm *timeptr, bool addHour){
 	char * format;
 	if (!addHour || asprintf(&format,"%s %%H:%%M",dateFormat[langId])<0) {
 		format=(char *)dateFormat[langId];
-		addHour=BT_FALSE;
+		addHour=false;
 	}
 	size_t l = strftime(cldate,sizeof cldate,(const char*)format,timeptr);
 	if (addHour) {

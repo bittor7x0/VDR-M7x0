@@ -20,17 +20,13 @@
 #ifndef __MISC_H__
 #define __MISC_H__
 
+#include <stdbool.h>
 #include <time.h>
 #include <klone/io.h>
 #include <klone/session.h>
 #include <klone/response.h>
 #include <klone/request.h>
 #define M3U_MIME_TYPE "audio/mpegurl"
-
-typedef enum boolean_e {
-	BT_FALSE=0,
-	BT_TRUE=1 //importante positivo porque se usa como indice
-} boolean_t;
 
 typedef enum sortField_e {
 	SF_NONE,
@@ -66,7 +62,11 @@ typedef enum pageNumber_e {
 	PN_SETTINGS,
 	PN_FILEVIEW,
 	PN_LIVE_STREAM,
-	PN_LINKS
+	PN_LINKS,
+	PN_PLAYLIST_REC,
+	PN_PLAYLIST_CHN,
+	PN_NOW_NEXT,
+	PN_STREAM_REC
 } pageNumber_t;
 
 typedef enum pageAction_e {
@@ -115,7 +115,7 @@ typedef enum systemType_e {
 	ST_M750C
 } systemType_t;
 
-typedef struct context_s {
+typedef struct wcontext_s {
 	session_t *session;
 	request_t *request;
 	response_t *response;
@@ -128,9 +128,9 @@ typedef struct context_s {
 	sortDirection_t sortDirection;
 	int bufferLength;
 	char *buffer;
-	boolean_t isAjaxRequest;
-	boolean_t isReload;
-} context_t;
+	bool isAjaxRequest;
+	bool isReload;
+} wcontext_t;
 
 extern const char *checked[2];
 extern const char *selected[2];
@@ -138,74 +138,74 @@ extern const char *videoTypeStr[7];
 extern const char *classCurrent[2];
 extern const char *classActive[2];
 extern const char *tabs;
-#define boolean(i) ((i)?BT_TRUE:BT_FALSE)
+#define boolean(i) ((i)?true:false)
 #define isFlagSet(flag,flags)   boolean(((flag) & (flags)) == (flag) )
 #define hasFlag(flag,flags)     boolean(((flag) & (flags)) != 0 )  //one of the flags in 'flag' is set in 'flags'
 #define setFlag(flag,flags)     ((flags) |=  (flag))
 #define clearFlag(flag,flags)   ((flags) &= ~(flag))
 #define setOrClearFlag(isSet,flag,flags)  if (isSet) {setFlag(flag,flags);} else {clearFlag(flag,flags);}
-#define AJAX_REPLACE_PREFIX(id) ((ctx->isAjaxRequest)? "replace_" id : id)
+#define AJAX_REPLACE_PREFIX(id) ((wctx->isAjaxRequest)? "replace_" id : id)
 
 #undef IGNORE_TABS
 #ifdef IGNORE_TABS
-	#define ctx_printf(ctx,str,...) io_printf(ctx->out,str,##__VA_ARGS__)
-	#define ctx_printf0(ctx,str,...) io_printf(ctx->out,str,##__VA_ARGS__)
-	#define ctx_printfn(ctx,str,pre,post,...) io_printf(ctx->out,str,##__VA_ARGS__)
-	#define inctab(ctx)
-	#define dectab(ctx)
+	#define wctx_printf(wctx,str,...) io_printf(wctx->out,str,##__VA_ARGS__)
+	#define wctx_printf0(wctx,str,...) io_printf(wctx->out,str,##__VA_ARGS__)
+	#define wctx_printfn(wctx,str,pre,post,...) io_printf(wctx->out,str,##__VA_ARGS__)
+	#define inctab(wctx)
+	#define dectab(wctx)
 #else
-	#define ctx_printf(ctx,str,...) io_printf(ctx->out,str,##__VA_ARGS__)
-	#define ctx_printf0(ctx,str,...) \
+	#define wctx_printf(wctx,str,...) io_printf(wctx->out,str,##__VA_ARGS__)
+	#define wctx_printf0(wctx,str,...) \
 			{ \
-				io_printf(ctx->out,"%.*s",ctx->ntabs,tabs); \
-				io_printf(ctx->out,str,##__VA_ARGS__); \
+				io_printf(wctx->out,"%.*s",wctx->ntabs,tabs); \
+				io_printf(wctx->out,str,##__VA_ARGS__); \
 			}
-	#define ctx_printfn(ctx,str,pre,post,...) \
+	#define wctx_printfn(wctx,str,pre,post,...) \
 			{ \
-				ctx->ntabs += pre; \
-				if (ctx->ntabs>0) io_printf(ctx->out,"%.*s",ctx->ntabs,tabs); \
-				io_printf(ctx->out,str,##__VA_ARGS__); \
-				ctx->ntabs += post; \
+				wctx->ntabs += pre; \
+				if (wctx->ntabs>0) io_printf(wctx->out,"%.*s",wctx->ntabs,tabs); \
+				io_printf(wctx->out,str,##__VA_ARGS__); \
+				wctx->ntabs += post; \
 			}
-	#define inctab(ctx) ctx->ntabs++
-	#define dectab(ctx) ctx->ntabs--
+	#define inctab(wctx) wctx->ntabs++
+	#define dectab(wctx) wctx->ntabs--
 #endif
 
-#define CTX_CHK_BUFFER(l) chkCtxBuffer(ctx,l,__FUNCTION__)
-#define CTX_HTML_ENCODE(str,l) ctxHtmlEncode(ctx,str,l,__FUNCTION__)
-#define CTX_URL_ENCODE(url,l,keep) ctxUrlEncode(ctx,url,l,keep,__FUNCTION__)
-#define CTX_URL_DECODE(url) ctxUrlDecode(ctx,url,__FUNCTION__)
+#define CTX_CHK_BUFFER(l) chkCtxBuffer(wctx,l,__FUNCTION__)
+#define CTX_HTML_ENCODE(str,l) wctxHtmlEncode(wctx,str,l,__FUNCTION__)
+#define CTX_URL_ENCODE(url,l,keep) wctxUrlEncode(wctx,url,l,keep,__FUNCTION__)
+#define CTX_URL_DECODE(url) wctxUrlDecode(wctx,url,__FUNCTION__)
 
-typedef void (*printHtmlHeadExtra_t)(context_t *ctx);
+typedef void (*printHtmlHeadExtra_t)(wcontext_t *wctx);
 
-void initCtx(context_t *ctx, session_t *session, request_t *request, response_t *response, io_t *out, int bufferLength );
-void freeCtx(context_t *ctx);
-void chkCtxBuffer(context_t *ctx,int length, const char *routine);
-char * ctxHtmlEncode(context_t *ctx, const char * const str, int l, const char *routine);
-char * ctxUrlEncode(context_t *ctx, const char * const url, int l, const char * keep, const char *routine);
-char * ctxUrlDecode(context_t *ctx, const char * const url, const char *routine);
-char * ctxGetRequestParam(context_t *ctx, vars_t *args, const char *argName, boolean_t *isACopy);
-boolean_t isDST(time_t * aTime);
-boolean_t sameDay(time_t oneDate,time_t anotherDate);
-boolean_t sameString(const char * s1, const char * s2);
-boolean_t sameInt(const int i1, const int i2);
-boolean_t sameIntEx(const char * s, const int i);
-boolean_t parseRequestStr(request_t *request, char ** pathStr, char ** queryStr);
+bool initCtx(wcontext_t *wctx, pageNumber_t currentPage, session_t *session, request_t *request, response_t *response, io_t *out, int bufferLength );
+void freeCtx(wcontext_t *wctx);
+void chkCtxBuffer(wcontext_t *wctx,int length, const char *routine);
+char * wctxHtmlEncode(wcontext_t *wctx, const char * const str, int l, const char *routine);
+char * wctxUrlEncode(wcontext_t *wctx, const char * const url, int l, const char * keep, const char *routine);
+char * wctxUrlDecode(wcontext_t *wctx, const char * const url, const char *routine);
+char * wctxGetRequestParam(wcontext_t *wctx, vars_t *args, const char *argName, bool *isACopy);
+bool isDST(time_t * aTime);
+bool sameDay(time_t oneDate,time_t anotherDate);
+bool sameString(const char * s1, const char * s2);
+bool sameInt(const int i1, const int i2);
+bool sameIntEx(const char * s, const int i);
+bool parseRequestStr(request_t *request, char ** pathStr, char ** queryStr);
 char * strcatEx(char ** dest, const char * s);
-boolean_t fileExists(const char * fileName);
+bool fileExists(const char * fileName);
 void vdrDecode(char *dst, char *src, int l);
 void vdrEncode(char *dst, char *src, int l);
 void returnHttpNoContent(response_t *response);
-void initHtmlDoc(context_t *ctx);
-void initHtmlPage(context_t *ctx, const char *title, printHtmlHeadExtra_t printHtmlHeadExtra);
-void initJavascript(context_t *ctx);
-void finishJavascript(context_t *ctx);
-void printMenu(context_t *ctx);
-void printMessage(context_t *ctx, const char *cssClass, const char *title, const char *message, boolean_t encode);
-void printList1TH(context_t *ctx, const char *page, sortField_t aSortField, const char *label);
-void finishHtmlPage(context_t *ctx);
-boolean_t extractEmbededFile(const char *src, const char *dst, boolean_t overwrite);
-boolean_t createParentFolders(const char *path, mode_t mode);
-boolean_t extractLogosFromFile(context_t *ctx, const char *logos_tgz/*,boolean_t overwrite*/);
-boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName);
+void initHtmlDoc(wcontext_t *wctx);
+void initHtmlPage(wcontext_t *wctx, const char *title, printHtmlHeadExtra_t printHtmlHeadExtra);
+void initJavascript(wcontext_t *wctx);
+void finishJavascript(wcontext_t *wctx);
+void printMenu(wcontext_t *wctx);
+void printMessage(wcontext_t *wctx, const char *cssClass, const char *title, const char *message, bool encode);
+void printList1TH(wcontext_t *wctx, const char *page, sortField_t aSortField, const char *label);
+void finishHtmlPage(wcontext_t *wctx);
+bool extractEmbededFile(const char *src, const char *dst, bool overwrite);
+bool createParentFolders(const char *path, mode_t mode);
+bool extractLogosFromFile(wcontext_t *wctx, const char *logos_tgz/*,bool overwrite*/);
+bool extractLogosFromRequest(wcontext_t *wctx, const char *fieldName);
 #endif

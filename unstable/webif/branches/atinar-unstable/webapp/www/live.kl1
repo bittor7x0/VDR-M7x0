@@ -33,13 +33,13 @@ static void dbg_live_kl1(void){
 }
 #endif
 
-static void printHtmlHeadExtra(context_t *ctx){
-	ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/live.css\" media=\"screen\" />\n",webifConf.www);
-	ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.selectboxes.js\"></script>\n",webifConf.www);
-	ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/live.js\"></script>\n",webifConf.www);
-	initJavascript(ctx);
-	ctx_printf0(ctx,"$(function(){webif.livePageInit();});\n");
-	finishJavascript(ctx);
+static void printHtmlHeadExtra(wcontext_t *wctx){
+	wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/live.css\" media=\"screen\" />\n",webifConf.www);
+	wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.selectboxes.js\"></script>\n",webifConf.www);
+	wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/live.js\"></script>\n",webifConf.www);
+	initJavascript(wctx);
+	wctx_printf0(wctx,"$(function(){webif.livePageInit();});\n");
+	finishJavascript(wctx);
 }
 
 %><%
@@ -48,128 +48,119 @@ static void printHtmlHeadExtra(context_t *ctx){
 	dbg_live_kl1();
 	#endif
 
-	context_t vctx;
-	context_t *ctx=&vctx;
-	initCtx(ctx,session,request,response,out,0);
-	vars_t *args = request_get_args(request);
-	int channelNum=vars_get_value_i(args,"channelNum");
-	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
-	ctx->currentPage=PN_LIVE_STREAM;
-	ctx->currentChannelNum=channelNum;
-   initHtmlPage(ctx,tr("liveStream"),printHtmlHeadExtra);
+	wcontext_t vwctx;
+	wcontext_t *wctx=&vwctx;
+	if (initCtx(wctx,PN_LIVE_STREAM,session,request,response,out,0)){
+		vars_t *args = request_get_args(request);
+		int channelNum=vars_get_value_i(args,"channelNum");
+		hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
+		wctx->currentChannelNum=channelNum;
+		initHtmlPage(wctx,tr("liveStream"),printHtmlHeadExtra);
 
-	ctx_printfn(ctx,"<div class=\"level2-div ui-widget\">\n",0,1);
-	ctx_printf0(ctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("liveStream"));
-	ctx_printfn(ctx,"<div class=\"level2 ui-widget-content ui-helper-clearfix\">\n",0,1);
+		wctx_printfn(wctx,"<div class=\"level2-div ui-widget\">\n",0,1);
+		wctx_printf0(wctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("liveStream"));
+		wctx_printfn(wctx,"<div class=\"level2 ui-widget-content ui-helper-clearfix\">\n",0,1);
 
-	if (host==NULL || !host->isVdr){
-		ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
-		printMessage(ctx,"alert",tr("VDR not running!"),NULL,BT_FALSE);
-	} else {
-		channelList_t channels;
-		const char *hostAddr=getHostHttpAddr(host,ctx);
-		ctx_printfn(ctx,"<script type=\"text/javascript\">\n",0,1);
-		ctx_printf0(ctx,"webif.state.url_base='http://%s';\n",hostAddr);
-		ctx_printf0(ctx,"webif.state.channelNum='%d';\n",channelNum);
-		ctx_printfn(ctx,"</script>\n",-1,0);
-		
-		getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
-		if ((channelNum<1) || (channelNum>channels.length)) {
-			channel_t channel;
-			if (getChannel(host,0,&channel)){
-				channelNum=channel.channelNum;
-			}
-			freeChannel(&channel);
-		}
-		ctx_printfn(ctx,"<div id=\"control\">\n",0,1);
-		const char *Play=tr("play");
-		const char *Pause=tr("pause");
-		const char *Fullscreen=tr("fullScreen");
-		const char *Mute=tr("mute");
-		const char *VolumeDown=tr("volumeDown");
-		const char *VolumeUp=tr("volumeUp");
-
-		{ //form
-			ctx_printfn(ctx,"<form action=\"live.kl1\" method=\"post\" class=\"ui-helper-clearfix\">\n",0,1);
-			ctx_printfn(ctx,"<ul class=\"controls\"><!--\n",0,1);
-			ctx_printfn(ctx,"--><li class=\"control\">\n",0,1);
-			printChannelListSelect(ctx,NULL,"channelNum",&channels,channelNum,NULL);
-			ctx_printfn(ctx,"</li><!--\n",0,1);
-			ctx_printfn(ctx,"--><li class=\"control\">\n",0,1);
-			ctx_printf0(ctx,"<select id=\"audioTrack\" name=\"audioTrack\" size=\"1\" title=\"%s\"></select>\n",tr("audio.track"));
-			ctx_printfn(ctx,"</li><!--\n",0,1);
-			/* Produce error de desbordamiento de buffer en streamdevserver
-			ctx_printf0(ctx,
-				"--><li id=\"PlayOrPause\" class=\"control button-i ui-state-default\" >"
-					"<span class=\"ui-icon ui-icon-pause\" title=\"%s\">%s</span>"
-				"</li><!--\n",Pause,Pause);
-			*/
-			ctx_printf0(ctx,
-				"--><li id=\"Fullscreen\" class=\"control button-i ui-state-default\" >"
-					"<span class=\"ui-icon ui-icon-arrow-4-diag\" title=\"%s\">%s</span>"
-				"</li><!--\n",Fullscreen,Fullscreen);
-			ctx_printf0(ctx,
-				"--><li id=\"Mute\" class=\"control button-i ui-state-default\" >"
-					"<span class=\"ui-icon ui-icon-volume-off\" title=\"%s\">%s</span>"
-				"</li><!--\n",Mute,Mute);
-			ctx_printf0(ctx,
-				"--><li id=\"VolumeDown\" class=\"control button-i ui-state-default\" >"
-					"<span class=\"ui-icon ui-icon-volume-down\" title=\"%s\">%s</span>"
-				"</li><!--\n",VolumeDown,VolumeDown);
-			ctx_printf0(ctx,
-				"--><li id=\"VolumeUp\" class=\"control button-i ui-state-default\" >"
-					"<span class=\"ui-icon ui-icon-volume-up\" title=\"%s\">%s</span>"
-				"</li><!--\n",VolumeUp,VolumeUp);
-			ctx_printfn(ctx,"--></ul>\n",-1,0);
-			ctx_printfn(ctx,"</form>\n",-1,0);
-		}
-
-		ctx_printf0(ctx,"<div id=\"info\"></div>\n");
-
-		ctx_printfn(ctx,"</div>\n",-1,0); //control
+		if (host==NULL || !host->isVdr){
+			wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
+			printMessage(wctx,"alert",tr("VDR not running!"),NULL,false);
+		} else {
+			channelList_t channels;
+			const char *hostAddr=getHostHttpAddr(host,wctx);
+			wctx_printfn(wctx,"<script type=\"text/javascript\">\n",0,1);
+			wctx_printf0(wctx,"webif.state.url_base='http://%s';\n",hostAddr);
+			wctx_printf0(wctx,"webif.state.channelNum='%d';\n",channelNum);
+			wctx_printfn(wctx,"</script>\n",-1,0);
 			
-			
-		if ((channelNum>0) && (channelNum<=channels.length)) {
-			const char *context =(channels.channel[channelNum-1].vpid>1) ? "/" : "/ES/";
-			ctx_printfn(ctx,"<div id=\"vlcDiv\">\n",0,1);
-//#define USE_EMBED_TAG
-#ifdef USE_EMBED_TAG
-				ctx_printfn(ctx,"<embed id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\"\n"
-					,0,1,webifConf.videoWidth,webifConf.videoHeight);
-				ctx_printf0(ctx,"	pluginspage=\"http://www.videolan.org/\"  version=\"VideoLAN.VLCPlugin.2\"\n");
-				ctx_printf0(ctx,"	autoPlay=\"true\" target=\"http://%s:3000%s%d\" />\n",ntabs--,tabs,hostAddr,context,channelNum);
-#else
-			int p;
-			for (p=0;p<2;p++){
-				if (p==0) {
-					ctx_printf0(ctx,"<!--[if !IE]><!-->\n");
-					ctx_printfn(ctx,"<object id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\">\n"
-						,0,1,webifConf.videoWidth,webifConf.videoHeight);
+			getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
+			if ((channelNum<1) || (channelNum>channels.length)) {
+				channel_t channel;
+				if (getChannel(host,0,&channel)){
+					channelNum=channel.channelNum;
 				}
-				else {
-					ctx_printf0(ctx,"<!--[if IE]>\n");
-					ctx_printfn(ctx,"<object id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\" \n"
-						,0,1,webifConf.videoWidth,webifConf.videoHeight);
-					ctx_printf0(ctx,"classid=\"clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921\"\n");
-					ctx_printf0(ctx,"codebase=\"http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab\">\n");
-				}
-				ctx_printf0(ctx,"<param name=\"ShowDisplay\" value=\"true\" />\n");
-				ctx_printf0(ctx,"<param name=\"AutoLoop\" value=\"false\" />\n");
-				ctx_printf0(ctx,"<param name=\"AutoPlay\" value=\"false\" />\n");
-				//ctx_printf0(ctx,"<param name=\"src\" value=\"playlistch.kl1?type=%d\" />\n",webifConf.playlistType);
-				ctx_printfn(ctx,"</object>\n",-1,0);
-				ctx_printf0(ctx,"%s<![endif]-->\n",(p==0)?"<!--":"");
+				freeChannel(&channel);
 			}
-#endif
-			ctx_printfn(ctx,"</div>\n",-1,0); //vlcDiv
+			wctx_printfn(wctx,"<div id=\"control\">\n",0,1);
+			const char *Play=tr("play");
+			const char *Pause=tr("pause");
+			const char *Fullscreen=tr("fullScreen");
+			const char *Mute=tr("mute");
+			const char *VolumeDown=tr("volumeDown");
+			const char *VolumeUp=tr("volumeUp");
+
+			{ //form
+				wctx_printfn(wctx,"<form action=\"live.kl1\" method=\"post\" class=\"ui-helper-clearfix\">\n",0,1);
+				wctx_printfn(wctx,"<ul class=\"controls\"><!--\n",0,1);
+				wctx_printfn(wctx,"--><li class=\"control\">\n",0,1);
+				printChannelListSelect(wctx,NULL,"channelNum",&channels,channelNum,NULL);
+				wctx_printfn(wctx,"</li><!--\n",0,1);
+				wctx_printfn(wctx,"--><li class=\"control\">\n",0,1);
+				wctx_printf0(wctx,"<select id=\"audioTrack\" name=\"audioTrack\" size=\"1\" title=\"%s\"></select>\n",tr("audio.track"));
+				wctx_printfn(wctx,"</li><!--\n",0,1);
+				/* Produce error de desbordamiento de buffer en streamdevserver
+				wctx_printf0(wctx,
+					"--><li id=\"PlayOrPause\" class=\"control button-i ui-state-default\" >"
+						"<span class=\"ui-icon ui-icon-pause\" title=\"%s\">%s</span>"
+					"</li><!--\n",Pause,Pause);
+				*/
+				wctx_printf0(wctx,
+					"--><li id=\"Fullscreen\" class=\"control button-i ui-state-default\" >"
+						"<span class=\"ui-icon ui-icon-arrow-4-diag\" title=\"%s\">%s</span>"
+					"</li><!--\n",Fullscreen,Fullscreen);
+				wctx_printf0(wctx,
+					"--><li id=\"Mute\" class=\"control button-i ui-state-default\" >"
+						"<span class=\"ui-icon ui-icon-volume-off\" title=\"%s\">%s</span>"
+					"</li><!--\n",Mute,Mute);
+				wctx_printf0(wctx,
+					"--><li id=\"VolumeDown\" class=\"control button-i ui-state-default\" >"
+						"<span class=\"ui-icon ui-icon-volume-down\" title=\"%s\">%s</span>"
+					"</li><!--\n",VolumeDown,VolumeDown);
+				wctx_printf0(wctx,
+					"--><li id=\"VolumeUp\" class=\"control button-i ui-state-default\" >"
+						"<span class=\"ui-icon ui-icon-volume-up\" title=\"%s\">%s</span>"
+					"</li><!--\n",VolumeUp,VolumeUp);
+				wctx_printfn(wctx,"--></ul>\n",-1,0);
+				wctx_printfn(wctx,"</form>\n",-1,0);
+			}
+
+			wctx_printf0(wctx,"<div id=\"info\"></div>\n");
+
+			wctx_printfn(wctx,"</div>\n",-1,0); //control
+				
+				
+			if ((channelNum>0) && (channelNum<=channels.length)) {
+				const char *context =(channels.channel[channelNum-1].vpid>1) ? "/" : "/ES/";
+				wctx_printfn(wctx,"<div id=\"vlcDiv\">\n",0,1);
+				int p;
+				for (p=0;p<2;p++){
+					if (p==0) {
+						wctx_printf0(wctx,"<!--[if !IE]><!-->\n");
+						wctx_printfn(wctx,"<object id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\">\n"
+							,0,1,webifConf.videoWidth,webifConf.videoHeight);
+					}
+					else {
+						wctx_printf0(wctx,"<!--[if IE]>\n");
+						wctx_printfn(wctx,"<object id=\"vlc\" width=\"%d\" height=\"%d\" type=\"application/x-vlc-plugin\" \n"
+							,0,1,webifConf.videoWidth,webifConf.videoHeight);
+						wctx_printf0(wctx,"classid=\"clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921\"\n");
+						wctx_printf0(wctx,"codebase=\"http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab\">\n");
+					}
+					wctx_printf0(wctx,"<param name=\"ShowDisplay\" value=\"true\" />\n");
+					wctx_printf0(wctx,"<param name=\"AutoLoop\" value=\"false\" />\n");
+					wctx_printf0(wctx,"<param name=\"AutoPlay\" value=\"false\" />\n");
+					//wctx_printf0(wctx,"<param name=\"src\" value=\"playlistch.kl1?type=%d\" />\n",webifConf.playlistType);
+					wctx_printfn(wctx,"</object>\n",-1,0);
+					wctx_printf0(wctx,"%s<![endif]-->\n",(p==0)?"<!--":"");
+				}
+				wctx_printfn(wctx,"</div>\n",-1,0); //vlcDiv
+			}
+			freeChannelList(&channels);
 		}
-		freeChannelList(&channels);
+		wctx_printfn(wctx,"</div>\n",-1,0); //level2
+		wctx_printfn(wctx,"</div>\n",-1,0); //level2-div
+
+		finishHtmlPage(wctx);
+		closeSvdrpAll();
 	}
-	ctx_printfn(ctx,"</div>\n",-1,0); //level2
-	ctx_printfn(ctx,"</div>\n",-1,0); //level2-div
-
-	finishHtmlPage(ctx);
-end:
-	freeCtx(ctx);
-	closeSvdrpAll();
+	freeCtx(wctx);
 %>

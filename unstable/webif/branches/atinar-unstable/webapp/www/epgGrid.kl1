@@ -31,68 +31,68 @@ static void dbg_epgGrid_kl1(void) {
 }
 #endif
 
-static void printHtmlHeadExtra(context_t *ctx){
+static void printHtmlHeadExtra(wcontext_t *wctx){
    int i;
-	if (!ctx->isAjaxRequest){
-		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/jquery.timepickr.css\" media=\"screen\" />\n",webifConf.www);
-		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/epgGrid.css\" media=\"screen\" />\n",webifConf.www);
-		ctx_printfn(ctx,"<style type=\"text/css\">",0,1);
-		ctx_printf0(ctx,"#grid-div #channels div.logo {width:%dpx;}",CHAN_LOGO_W);
-		ctx_printf0(ctx,"#grid-div #channels div.logo img {width:%dpx;height:%dpx;}",webifConf.channelLogoWidth,webifConf.channelLogoWidth);
-		ctx_printf0(ctx,"#grid-div .channel .channelEvents {min-height:%dpx;}",webifConf.channelLogoWidth);
-		ctx_printfn(ctx,"</style>",-1,0);
+	if (!wctx->isAjaxRequest){
+		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/jquery.timepickr.css\" media=\"screen\" />\n",webifConf.www);
+		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/epgGrid.css\" media=\"screen\" />\n",webifConf.www);
+		wctx_printfn(wctx,"<style type=\"text/css\">",0,1);
+		wctx_printf0(wctx,"#grid-div #channels div.logo {width:%dpx;}",CHAN_LOGO_W);
+		wctx_printf0(wctx,"#grid-div #channels div.logo img {width:%dpx;height:%dpx;}",webifConf.channelLogoWidth,webifConf.channelLogoWidth);
+		wctx_printf0(wctx,"#grid-div .channel .channelEvents {min-height:%dpx;}",webifConf.channelLogoWidth);
+		wctx_printfn(wctx,"</style>",-1,0);
 
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.form-2.36.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.timepickr.min.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/formHandler.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/timers.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/searches.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/epgGrid.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.form-2.36.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.timepickr.min.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/formHandler.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/timers.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/searches.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/epgGrid.js\"></script>\n",webifConf.www);
 
-		ctx_printfn(ctx,"<script type=\"text/javascript\">\n",0,1);
-		ctx_printf0(ctx,"$(function(){webif.epgGridPageInit();});\n");
-		ctx_printfn(ctx,"$.extend(webif.actions,{\n",0,1);
-		ctx_printf0(ctx,"getTimers:%d,\n",PA_GET_TIMERS);
-		ctx_printf0(ctx,"getEpgGrid:%d,\n",PA_GET_EPG_GRID);
-		ctx_printf0(ctx,"timerCreateFromEvent:%d,\n",PA_TIMER_CREATE_FROM_EVENT);
-		ctx_printf0(ctx,"searchCreateFromEvent:%d,\n",PA_SEARCH_CREATE_FROM_EVENT);
-		ctx_printfn(ctx,"});\n",-1,0);
-		ctx_printfn(ctx,"$.extend(webif.messages,{\n",0,1);
-		ctx_printf0(ctx,"timerCreate:\"%s\",\n",tr("timer.create"));
-		ctx_printf0(ctx,"timerDeleteConfirm:\"%s\",\n",tr("timer.delete.confirm"));
-		ctx_printf0(ctx,"searchCreate:\"%s\",\n",tr("search.create"));
-		ctx_printfn(ctx,"});\n",-1,0);
-		ctx_printfn(ctx,"$.extend(webif.images,{\n",0,1);
-		ctx_printf0(ctx,"calendar:\"%s/images/calendar.gif\",\n",webifConf.www);
-		ctx_printfn(ctx,"});\n",-1,0);
+		wctx_printfn(wctx,"<script type=\"text/javascript\">\n",0,1);
+		wctx_printf0(wctx,"$(function(){webif.epgGridPageInit();});\n");
+		wctx_printfn(wctx,"$.extend(webif.actions,{\n",0,1);
+		wctx_printf0(wctx,"getTimers:%d,\n",PA_GET_TIMERS);
+		wctx_printf0(wctx,"getEpgGrid:%d,\n",PA_GET_EPG_GRID);
+		wctx_printf0(wctx,"timerCreateFromEvent:%d,\n",PA_TIMER_CREATE_FROM_EVENT);
+		wctx_printf0(wctx,"searchCreateFromEvent:%d,\n",PA_SEARCH_CREATE_FROM_EVENT);
+		wctx_printfn(wctx,"});\n",-1,0);
+		wctx_printfn(wctx,"$.extend(webif.messages,{\n",0,1);
+		wctx_printf0(wctx,"timerCreate:\"%s\",\n",tr("timer.create"));
+		wctx_printf0(wctx,"timerDeleteConfirm:\"%s\",\n",tr("timer.delete.confirm"));
+		wctx_printf0(wctx,"searchCreate:\"%s\",\n",tr("search.create"));
+		wctx_printfn(wctx,"});\n",-1,0);
+		wctx_printfn(wctx,"$.extend(webif.images,{\n",0,1);
+		wctx_printf0(wctx,"calendar:\"%s/images/calendar.gif\",\n",webifConf.www);
+		wctx_printfn(wctx,"});\n",-1,0);
 
-		if (ctx->currentAction==PA_GET_EPG_GRID){
-			ctx_printfn(ctx,"$.datepicker.setDefaults({\n",0,1);
-			ctx_printfn(ctx,"dayNames: [\n",0,1);
+		if (wctx->currentAction==PA_GET_EPG_GRID){
+			wctx_printfn(wctx,"$.datepicker.setDefaults({\n",0,1);
+			wctx_printfn(wctx,"dayNames: [\n",0,1);
 			for(i=0;i<7;i++){
-				ctx_printf0(ctx,"\"%s\"%s\n",weekdays[langId][i],(i<6)?",":"");
+				wctx_printf0(wctx,"\"%s\"%s\n",weekdays[langId][i],(i<6)?",":"");
 			}
-			ctx_printfn(ctx,"],\n",-1,0); //dayNames
-			ctx_printfn(ctx,"dayNamesMin: [\n",0,1);
+			wctx_printfn(wctx,"],\n",-1,0); //dayNames
+			wctx_printfn(wctx,"dayNamesMin: [\n",0,1);
 			for(i=0;i<7;i++){
-				ctx_printf0(ctx,"\"%.2s\"%s\n",shortWeekdays[langId][i],(i<6)?",":"");
+				wctx_printf0(wctx,"\"%.2s\"%s\n",shortWeekdays[langId][i],(i<6)?",":"");
 			}
-			ctx_printfn(ctx,"],\n",-1,0); //dayNamesMin
-			ctx_printf0(ctx,"firstDay: %d,\n",startOfWeek[langId]);
-			ctx_printfn(ctx,"monthNames: [\n",0,1);
+			wctx_printfn(wctx,"],\n",-1,0); //dayNamesMin
+			wctx_printf0(wctx,"firstDay: %d,\n",startOfWeek[langId]);
+			wctx_printfn(wctx,"monthNames: [\n",0,1);
 			for(i=0;i<12;i++){
-				ctx_printf0(ctx,"\"%s\"%s\n",monthNames[langId][i],(i<11)?",":"");
+				wctx_printf0(wctx,"\"%s\"%s\n",monthNames[langId][i],(i<11)?",":"");
 			}
-			ctx_printfn(ctx,"],\n",-1,0); //monthNames
-			ctx_printfn(ctx,"monthNamesShort: [\n",0,1);
+			wctx_printfn(wctx,"],\n",-1,0); //monthNames
+			wctx_printfn(wctx,"monthNamesShort: [\n",0,1);
 			for(i=0;i<12;i++){
-				ctx_printf0(ctx,"\"%.3s\"%s\n",monthNames[langId][i],(i<11)?",":"");
+				wctx_printf0(wctx,"\"%.3s\"%s\n",monthNames[langId][i],(i<11)?",":"");
 			}
-			ctx_printfn(ctx,"],\n",-1,0); //monthNamesShort
-			ctx_printf0(ctx,"buttonText: \"%s\",\n","Escoger dí­a"); //TODO i18n
-			ctx_printfn(ctx,"});\n",-1,0); //setDefaults
+			wctx_printfn(wctx,"],\n",-1,0); //monthNamesShort
+			wctx_printf0(wctx,"buttonText: \"%s\",\n","Escoger dí­a"); //TODO i18n
+			wctx_printfn(wctx,"});\n",-1,0); //setDefaults
 		}
-		ctx_printfn(ctx,"</script>\n",-1,0);
+		wctx_printfn(wctx,"</script>\n",-1,0);
 	}
 }
 
@@ -102,59 +102,59 @@ static void printHtmlHeadExtra(context_t *ctx){
 	dbg_epgGrid_kl1();
 	#endif
 
-	context_t vctx;
-	context_t *ctx=&vctx;
-	initCtx(ctx,session,request,response,out,100);
-	vars_t *args = request_get_args(request);
+	wcontext_t vwctx;
+	wcontext_t *wctx=&vwctx;
+	if (initCtx(wctx,PN_EPG_GRID,session,request,response,out,100)){
+		vars_t *args = request_get_args(request);
 
-	ctx->currentPage=PN_EPG_GRID;
-	ctx->currentAction=(vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_GET_EPG_GRID;
+		wctx->currentAction=(vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_GET_EPG_GRID;
 
-	initHtmlPage(ctx,tr("epg.grid"),printHtmlHeadExtra);
-	if (!ctx->isAjaxRequest){
-		ctx_printfn(ctx,"<div class=\"level2-div ui-widget\">\n",0,1);
-		ctx_printf0(ctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("epg.grid"));
-		ctx_printfn(ctx,"<div class=\"level2 ui-widget-content ui-helper-clearfix\">\n",0,1);
-	}
-
-	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
-	if (!host) {
-		printMessage(ctx,"alert",tr("errorNoVdrHost"),NULL, BT_FALSE);
-	} else {
-		channelList_t channels;
-		timerList_t timers;
-		getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
-		getTimerList(&timers,&channels,SF_START,SD_ASC);
-
-		if (channels.length==0){
-			printMessage(ctx,"alert",tr("warnNoEPG"),NULL, BT_FALSE);
-		} else {
-			events_t events;
-			if (ctx->currentAction==PA_GET_EPG_GRID){
-				initEvents(&events);
-				getEpgGridLimits(vars_get_value(args,"start"),&events.start,&events.end);
-				events.dumpMode=dmBetween;
-				getEvents(host,&events,&channels);
-				if (events.length==0){
-					printMessage(ctx,"alert",tr("warnNoEPG"),NULL, BT_FALSE);
-				} else {
-					printEpgGrid(ctx,&events,&channels,&timers);
-				}
-				freeEvents(&events);
-			} else if (ctx->currentAction==PA_GET_TIMERS){
-				time_t start, end;
-				getEpgGridLimits(vars_get_value(args,"start"),&start,&end);
-				printTimersDiv(ctx,"timers",&timers,start,end);
-			}
+		initHtmlPage(wctx,tr("epg.grid"),printHtmlHeadExtra);
+		if (!wctx->isAjaxRequest){
+			wctx_printfn(wctx,"<div class=\"level2-div ui-widget\">\n",0,1);
+			wctx_printf0(wctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("epg.grid"));
+			wctx_printfn(wctx,"<div class=\"level2 ui-widget-content ui-helper-clearfix\">\n",0,1);
 		}
-		freeChannelList(&channels);
-		freeTimerList(&timers);
+
+		hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
+		if (!host) {
+			printMessage(wctx,"alert",tr("errorNoVdrHost"),NULL, false);
+		} else {
+			channelList_t channels;
+			timerList_t timers;
+			getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
+			getTimerList(&timers,&channels,SF_START,SD_ASC);
+
+			if (channels.length==0){
+				printMessage(wctx,"alert",tr("warnNoEPG"),NULL, false);
+			} else {
+				events_t events;
+				if (wctx->currentAction==PA_GET_EPG_GRID){
+					initEvents(&events);
+					getEpgGridLimits(vars_get_value(args,"start"),&events.start,&events.end);
+					events.dumpMode=dmBetween;
+					getEvents(host,&events,&channels);
+					if (events.length==0){
+						printMessage(wctx,"alert",tr("warnNoEPG"),NULL, false);
+					} else {
+						printEpgGrid(wctx,&events,&channels,&timers);
+					}
+					freeEvents(&events);
+				} else if (wctx->currentAction==PA_GET_TIMERS){
+					time_t start, end;
+					getEpgGridLimits(vars_get_value(args,"start"),&start,&end);
+					printTimersDiv(wctx,"timers",&timers,start,end);
+				}
+			}
+			freeChannelList(&channels);
+			freeTimerList(&timers);
+		}
+		if (!wctx->isAjaxRequest){
+			wctx_printfn(wctx,"</div>\n",-1,0); //level2
+			wctx_printfn(wctx,"</div>\n",-1,0); //level2-div
+		}
+		finishHtmlPage(wctx);
+		closeSvdrpAll();
 	}
-	if (!ctx->isAjaxRequest){
-		ctx_printfn(ctx,"</div>\n",-1,0); //level2
-		ctx_printfn(ctx,"</div>\n",-1,0); //level2-div
-	}
-	finishHtmlPage(ctx);
-	freeCtx(ctx);
-	closeSvdrpAll();
+	freeCtx(wctx);
 %>

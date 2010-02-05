@@ -48,29 +48,29 @@ void initRec(rec_t * const rec){
 	rec->audio.entry=NULL;
 }
 
-boolean_t initRecFromArgs(context_t *ctx, rec_t * const rec, vars_t *args){
-	boolean_t isACopy;
+bool initRecFromArgs(wcontext_t *wctx, rec_t * const rec, vars_t *args){
+	bool isACopy;
 	initRec(rec);
 	rec->hostId=(vars_countn(args, "hostId")>0)?vars_get_value_i(args,"hostId"):0;
 	rec->id=(vars_countn(args,"id")>0) ? vars_get_value_i(args,"id") : 0;
 	if (vars_countn(args, "name")>0) {
-		rec->name=ctxGetRequestParam(ctx,args,"name",&isACopy);
+		rec->name=wctxGetRequestParam(wctx,args,"name",&isACopy);
 		if (isACopy) setFlag(RF_NAME,rec->my);
 	}
 	if (vars_countn(args, "path")>0){
-		rec->path=ctxGetRequestParam(ctx,args,"path",&isACopy);
+		rec->path=wctxGetRequestParam(wctx,args,"path",&isACopy);
 		if (isACopy) setFlag(RF_PATH,rec->my);
 		if (!isValidRecPath(rec->path)) {
-			printMessage(ctx,"alert",tr("rec.delete.err"),tr("recErrNoValidPath"), BT_FALSE);
-			return BT_FALSE;
+			printMessage(wctx,"alert",tr("rec.delete.err"),tr("recErrNoValidPath"), false);
+			return false;
 		}
 	}
 	dbg("rec->path [%s]",rec->path);
-	initEpgEventFromArgs(ctx,&rec->event,args);
+	initEpgEventFromArgs(wctx,&rec->event,args);
 	rec->video=VT_UNKNOWN;
 	rec->audio.length=0;
 	rec->audio.entry=NULL;
-	return BT_TRUE;
+	return true;
 }
 
 void freeRec(rec_t * const entry){
@@ -98,7 +98,7 @@ void freeRecList(recList_t * const list){
 	list->entry=NULL;
 }
 
-void parseRec(char * line, boolean_t withPath, rec_t * const rec){
+void parseRec(char * line, bool withPath, rec_t * const rec){
 	char * r=line;
 	int l;
 	struct tm timeptr;
@@ -154,7 +154,7 @@ void getRecListHost(hostConf_t *host, recList_t * const recs){
 			rec_t *rec=recs->entry+recs->length-1;
 			initRec(rec);
 			rec->hostId=host->id;
-			parseRec(p+4,BT_TRUE,rec);
+			parseRec(p+4,true,rec);
 		}
 	}  
 	free(data);
@@ -200,24 +200,24 @@ void getRecList(recList_t * const recs, sortField_t sortBy, sortDirection_t sort
 }
 
 
-boolean_t editRec(context_t *ctx, const rec_t *rec, const char *oldName) {
-	boolean_t result=BT_FALSE;
+bool editRec(wcontext_t *wctx, const rec_t *rec, const char *oldName) {
+	bool result=false;
 	if (!rec->path) {
-		if (ctx) printMessage(ctx,"alert",tr("rec.update.err"),tr("recErrorNoPath"),BT_TRUE);
-		return BT_FALSE;
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),tr("recErrorNoPath"),true);
+		return false;
 	}
 	hostConf_t *host=getHost(rec->hostId);
 	if (!host){
-		if (ctx) printMessage(ctx,"alert",tr("rec.update.err"),tr("recErrorWrongHost"),BT_TRUE);
-		return BT_FALSE;
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),tr("recErrorWrongHost"),true);
+		return false;
 	}
 	if (oldName==NULL){
-		if (ctx) printMessage(ctx,"alert",tr("rec.update.err"),"Es necesario el nombre antiguo",BT_TRUE); //TODO i18n
-		return BT_FALSE;
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),"Es necesario el nombre antiguo",true); //TODO i18n
+		return false;
 	}
 	if (sameString(oldName,rec->name)){
-		if (ctx) printMessage(ctx,"alert",tr("rec.update.err"),"No se ha cambiado el nombre",BT_TRUE); //TODO i18n
-		return BT_FALSE;
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),"No se ha cambiado el nombre",true); //TODO i18n
+		return false;
 	}
 
 	char *command;
@@ -229,12 +229,12 @@ boolean_t editRec(context_t *ctx, const rec_t *rec, const char *oldName) {
 		char * p=data;
 		int code=strtol(p,&p,10);
 		result=boolean(code==SVDRP_CMD_OK);
-		if (ctx && *p && *(++p)){
-			printMessage(ctx,(result)?"message":"alert",tr((result)?"rec.update.ok":"rec.update.err"),p,BT_TRUE);
+		if (wctx && *p && *(++p)){
+			printMessage(wctx,(result)?"message":"alert",tr((result)?"rec.update.ok":"rec.update.err"),p,true);
 		}
 		free(data);
 	} else {
-		if (ctx) printMessage(ctx,"alert",tr("rec.update.err"),tr("warnSvdrpConnection"),BT_TRUE);
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),tr("warnSvdrpConnection"),true);
 	}
 	return result;
 outOfMemory:
@@ -242,17 +242,17 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t deleteRec(context_t *ctx, const rec_t *rec) {
+bool deleteRec(wcontext_t *wctx, const rec_t *rec) {
 	if (!rec->path) {
-		if (ctx) printMessage(ctx,"alert",tr("rec.delete.err"),tr("recErrorNoPath"),BT_TRUE);
-		return BT_FALSE;
+		if (wctx) printMessage(wctx,"alert",tr("rec.delete.err"),tr("recErrorNoPath"),true);
+		return false;
 	}
 	hostConf_t *host=getHost(rec->hostId);
 	if (!host){
-		if (ctx) printMessage(ctx,"alert",tr("rec.delete.err"),tr("recErrorWrongHost"),BT_TRUE);
-		return BT_FALSE;
+		if (wctx) printMessage(wctx,"alert",tr("rec.delete.err"),tr("recErrorWrongHost"),true);
+		return false;
 	}
-	boolean_t result=BT_FALSE;
+	bool result=false;
 	char *command;
 	crit_goto_if(asprintf(&command,"DELR %s",rec->path)<0,outOfMemory);
 	char * data=execSvdrp(host,command);
@@ -261,12 +261,12 @@ boolean_t deleteRec(context_t *ctx, const rec_t *rec) {
 		char * p=data;
 		int code=strtol(p,&p,10);
 		result=boolean(code==SVDRP_CMD_OK);
-		if (ctx && *p && *(++p)){
-			printMessage(ctx,(result)?"message":"alert",tr((result)?"rec.delete.ok":"rec.delete.err"),p,BT_TRUE);
+		if (wctx && *p && *(++p)){
+			printMessage(wctx,(result)?"message":"alert",tr((result)?"rec.delete.ok":"rec.delete.err"),p,true);
 		}
 		free(data);
 	} else {
-		if (ctx) printMessage(ctx,"alert",tr("rec.delete.err"),tr("warnSvdrpConnection"),BT_TRUE);
+		if (wctx) printMessage(wctx,"alert",tr("rec.delete.err"),tr("warnSvdrpConnection"),true);
 	}
 	return result;
 outOfMemory:
@@ -274,9 +274,9 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t parseRecInfo(rec_t * const rec, char * const data, boolean_t fromFile){
+bool parseRecInfo(rec_t * const rec, char * const data, bool fromFile){
 	char *s;
-	boolean_t result=BT_TRUE;
+	bool result=true;
 	audioList_t *al;
 	al=&rec->audio;
 	for (s=strtok(data,"\r\n");s!=NULL;s=strtok(0,"\r\n")) {
@@ -324,9 +324,9 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t readRecInfo(rec_t * const rec){
+bool readRecInfo(rec_t * const rec){
 	if (rec->hostId<0 || rec->hostId>=webifConf.hostsLength){
-		return BT_FALSE;
+		return false;
 	}
 	hostConf_t *host=getHost(rec->hostId);
 	FILE *handle;
@@ -354,22 +354,22 @@ boolean_t readRecInfo(rec_t * const rec){
 		}
 		fclose(handle);
 		if (data!=NULL){
-			boolean_t result=parseRecInfo(rec,data,BT_TRUE);
+			bool result=parseRecInfo(rec,data,true);
 			free(data);
 			return result;
 		}
 	}
-	return BT_FALSE;
+	return false;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
 }
 
-boolean_t getRecInfo(rec_t *rec){
-	if (rec==NULL) return BT_FALSE;
+bool getRecInfo(rec_t *rec){
+	if (rec==NULL) return false;
 	if (rec->path==NULL) {
 		warn("No path");
-		return BT_FALSE;
+		return false;
 	}
 	hostConf_t *host=getHost(rec->hostId);
 	if (host){
@@ -379,14 +379,14 @@ boolean_t getRecInfo(rec_t *rec){
 		} else if (isFlagSet(RE_REMOTE_INFO_PENDING,rec->flags)){
 			//Info is estimated from path, instead of reading it from remote host
 			//TODO
-			return BT_TRUE;
+			return true;
 		} else {
 			char * command=NULL;
 			crit_goto_if(asprintf(&command,"LSTR %s",rec->path)<0,outOfMemory);
 			char * data=execSvdrp(host,command);
 			free(command);
 			if (data!=NULL) {
-				boolean_t result=parseRecInfo(rec,data,BT_FALSE);
+				bool result=parseRecInfo(rec,data,false);
 				free(data);
 				return result;
 			}
@@ -394,199 +394,199 @@ boolean_t getRecInfo(rec_t *rec){
 	} else {
 		warn("No valid host defined for rec %s", rec->path);
 	}
-	return BT_FALSE;
+	return false;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
 }
 
 //TODO usar printEvent
-void printRecInfo(context_t *ctx, const rec_t * const rec){
+void printRecInfo(wcontext_t *wctx, const rec_t * const rec){
 	int minutes = rec->event.duration/60;
-	ctx_printfn(ctx,"<div class=\"recInfo\">\n",0,1);
-	ctx_printfn(ctx,"<div class=\"recDate\">\n",0,1);
-	ctx_printf0(ctx,
+	wctx_printfn(wctx,"<div class=\"recInfo\">\n",0,1);
+	wctx_printfn(wctx,"<div class=\"recDate\">\n",0,1);
+	wctx_printf0(wctx,
 		"<span class=\"recStart field\">"
 			"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%s</span>"
 		"</span>\n",tr("date"),formatDate(localtime(&rec->event.start),1));
-	ctx_printf0(ctx,
+	wctx_printf0(wctx,
 		"<span class=\"recDuration field\">"
 			"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%d&#39;</span>"
 		"</span>\n",tr("runtime"),minutes);
-	ctx_printfn(ctx,"</div>\n",-1,0);
+	wctx_printfn(wctx,"</div>\n",-1,0);
 	if (webifConf.displayHostId && webifConf.hostsLength>1){
 		hostConf_t *host=getHost(rec->hostId);
 		if (host){
-			ctx_printfn(ctx,"<div class=\"recHost\">\n",0,1);
-			ctx_printf0(ctx,
+			wctx_printfn(wctx,"<div class=\"recHost\">\n",0,1);
+			wctx_printf0(wctx,
 				"<span class=\"field\">"
 					"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%s</span>"
 				"</span>\n","Host",(host->name[0])?host->name:(host->ip[0])?host->ip:"?");
-			ctx_printfn(ctx,"</div>\n",-1,0);
+			wctx_printfn(wctx,"</div>\n",-1,0);
 		}
 	}
 	if (rec->event.desc && rec->event.desc[0]) {
-		ctx_printfn(ctx,"<div class=\"desc\">\n",0,1);
-		printEventDesc(ctx,rec->event.desc,BT_FALSE);
-		ctx_printfn(ctx,"</div>\n",-1,0);
+		wctx_printfn(wctx,"<div class=\"desc\">\n",0,1);
+		printEventDesc(wctx,rec->event.desc,false);
+		wctx_printfn(wctx,"</div>\n",-1,0);
 	}
-	ctx_printfn(ctx,"</div>\n",-1,0);
+	wctx_printfn(wctx,"</div>\n",-1,0);
 }
 
 
 
-void printRecPlayLink(context_t *ctx, const rec_t *rec, boolean_t direct){
-	const char *hostAddr=getHostHttpAddr(getHost(rec->hostId),ctx);
-	ctx_printf(ctx,"http://%s/%s.kl1?path=%s",hostAddr,(direct)?"streamrec":"playlistrec",CTX_URL_ENCODE(rec->path,-1,"-_.~"));
+void printRecPlayLink(wcontext_t *wctx, const rec_t *rec, bool direct){
+	const char *hostAddr=getHostHttpAddr(getHost(rec->hostId),wctx);
+	wctx_printf(wctx,"http://%s/%s.kl1?path=%s",hostAddr,(direct)?"streamrec":"playlistrec",CTX_URL_ENCODE(rec->path,-1,"-_.~"));
 }
 
-boolean_t printRecPlaylist(context_t *ctx, rec_t *rec){
+bool printRecPlaylist(wcontext_t *wctx, rec_t *rec){
 	if (isValidRecPath(rec->path)){
-		response_set_content_type(ctx->response,M3U_MIME_TYPE);
-		sprintf(ctx->buffer,"inline; filename=%s.m3u",(rec->name!=NULL)?rec->name:tr("recording.filename"));
-		response_set_field(ctx->response,"Content-Disposition",ctx->buffer);
-		printRecPlayLink(ctx,rec,BT_TRUE);
-		return BT_TRUE;
+		response_set_content_type(wctx->response,M3U_MIME_TYPE);
+		sprintf(wctx->buffer,"inline; filename=%s.m3u",(rec->name!=NULL)?rec->name:tr("recording.filename"));
+		response_set_field(wctx->response,"Content-Disposition",wctx->buffer);
+		printRecPlayLink(wctx,rec,true);
+		return true;
 	} else {
-		response_set_status(ctx->response,HTTP_STATUS_NO_CONTENT);
+		response_set_status(wctx->response,HTTP_STATUS_NO_CONTENT);
 		warn("Invalid rec path [%s]",rec->path);
-		return BT_FALSE;
+		return false;
 	}
 }
 
-void printRecControls(context_t *ctx,const rec_t *rec,const char *Play,const char *Edit,const char *Delete){
+void printRecControls(wcontext_t *wctx,const rec_t *rec,const char *Play,const char *Edit,const char *Delete){
 	if (rec->path==NULL) return;
-	ctx_printf0(ctx,"<input type=\"hidden\" name=\"path\" value=\"%s\" />\n",rec->path);
+	wctx_printf0(wctx,"<input type=\"hidden\" name=\"path\" value=\"%s\" />\n",rec->path);
 	if (rec->id>0) {
-		ctx_printf0(ctx,"<input type=\"hidden\" name=\"id\" value=\"%d\" />\n",rec->id);
+		wctx_printf0(wctx,"<input type=\"hidden\" name=\"id\" value=\"%d\" />\n",rec->id);
 	}
-	ctx_printf0(ctx,"<input type=\"hidden\" name=\"hostId\" value=\"%d\" />\n",rec->hostId);
-	ctx_printfn(ctx,"<ul class=\"controls\"><!--\n",0,1);
+	wctx_printf0(wctx,"<input type=\"hidden\" name=\"hostId\" value=\"%d\" />\n",rec->hostId);
+	wctx_printfn(wctx,"<ul class=\"controls\"><!--\n",0,1);
 	if (Play) {
-		ctx_printfn(ctx,"--><li class=\"control\">\n",0,1);
+		wctx_printfn(wctx,"--><li class=\"control\">\n",0,1);
 #ifdef PRINT_REC_CONTROLS_AS_FORM		
-		ctx_printf0(ctx,
+		wctx_printf0(wctx,
 			"<button type=\"submit\" class=\"play control button-i ui-state-default\" name=\"a\" value=\"%d\" title=\"%s\">"
 				"<div><span class=\"ui-icon ui-icon-play\">%s</span></div>"
 			"</button>\n",PA_PLAY,Play,Play)
 #else
-		ctx_printf0(ctx,"<a href=\"");
-		printRecPlayLink(ctx,rec,BT_FALSE);
-		ctx_printf(ctx,"\" class=\"play control button-i ui-state-default\" title=\"%s\">"
+		wctx_printf0(wctx,"<a href=\"");
+		printRecPlayLink(wctx,rec,false);
+		wctx_printf(wctx,"\" class=\"play control button-i ui-state-default\" title=\"%s\">"
 				"<span class=\"ui-icon ui-icon-play\">%s</span>"
 			"</a>\n",Play,Play);
 #endif
-		ctx_printfn(ctx,"</li><!--\n",-1,0);
+		wctx_printfn(wctx,"</li><!--\n",-1,0);
 	}
 	if (Edit) {
-		ctx_printfn(ctx,"--><li class=\"control\">\n",0,1);
-		ctx_printf0(ctx,
+		wctx_printfn(wctx,"--><li class=\"control\">\n",0,1);
+		wctx_printf0(wctx,
 			"<button type=\"submit\" class=\"edit control button-i ui-state-default\" name=\"a\" value=\"%d\" title=\"%s\">"
 				"<div><span class=\"ui-icon ui-icon-edit\">%s</span></div>"
 			"</button>\n",PA_EDIT,Edit,Edit);
-		ctx_printfn(ctx,"</li><!--\n",-1,0);
+		wctx_printfn(wctx,"</li><!--\n",-1,0);
 	}
 	if (Delete && !webifConf.deletionDisabled) {
-		ctx_printfn(ctx,"--><li class=\"control\">\n",0,1);
-		ctx_printf0(ctx,
+		wctx_printfn(wctx,"--><li class=\"control\">\n",0,1);
+		wctx_printf0(wctx,
 			"<button type=\"submit\" class=\"delete control button-i ui-state-default\" name=\"a\" value=\"%d\" title=\"%s\">"
 				"<div><span class=\"ui-icon ui-icon-trash\">%s</span></div>"
 			"</button>\n",PA_DELETE,Delete,Delete);
-		ctx_printfn(ctx,"</li><!--\n",-1,0);
+		wctx_printfn(wctx,"</li><!--\n",-1,0);
 	}
-	ctx_printfn(ctx,"--></ul>\n",-1,0);
+	wctx_printfn(wctx,"--></ul>\n",-1,0);
 }
 
-void printRecEditForm(context_t *ctx, rec_t *rec){
+void printRecEditForm(wcontext_t *wctx, rec_t *rec){
 	int l;
-	ctx_printf0(ctx,"<input type=\"hidden\" name=\"hostId\" value=\"%d\" />\n",rec->hostId);
+	wctx_printf0(wctx,"<input type=\"hidden\" name=\"hostId\" value=\"%d\" />\n",rec->hostId);
 	if (rec->id>0){
-		ctx_printf0(ctx,"<input type=\"hidden\" name=\"id\" value=\"%d\"/>\n",rec->id);
+		wctx_printf0(wctx,"<input type=\"hidden\" name=\"id\" value=\"%d\"/>\n",rec->id);
 	}
 	if (rec->path!=NULL) {
 		dbg("rec->path=[%s]",rec->path);
-		ctx_printf0(ctx,"<input type=\"hidden\" name=\"path\" value=\"%s\"/>\n",rec->path);
+		wctx_printf0(wctx,"<input type=\"hidden\" name=\"path\" value=\"%s\"/>\n",rec->path);
 	} else {
 		warn("rec->path==NULL");
 	}
-	ctx_printfn(ctx,"<table id=\"recEdit\" class=\"list formContent\" summary=\"\">\n",0,1);
-	ctx_printf0(ctx,"<caption class=\"formTitle\">%s</caption>\n",tr("rec.edit"));
+	wctx_printfn(wctx,"<table id=\"recEdit\" class=\"list formContent\" summary=\"\">\n",0,1);
+	wctx_printf0(wctx,"<caption class=\"formTitle\">%s</caption>\n",tr("rec.edit"));
 	if (rec->name!=NULL || rec->path!=NULL){
 		if (rec->name==NULL){
 			l=strrchr(rec->path,'/')-rec->path;
 			CTX_CHK_BUFFER(l);
-			vdrDecode(ctx->buffer,rec->path,l);
-			crit_goto_if((rec->name=strdup(ctx->buffer))==NULL,outOfMemory);
+			vdrDecode(wctx->buffer,rec->path,l);
+			crit_goto_if((rec->name=strdup(wctx->buffer))==NULL,outOfMemory);
 			setFlag(RF_NAME,rec->my);
 		};
-		ctx_printfn(ctx,"<tr>\n",0,1);
-		ctx_printf0(ctx,"<th>%s</th>\n",tr("name"));
-		ctx_printfn(ctx,"<td>\n",0,1);
+		wctx_printfn(wctx,"<tr>\n",0,1);
+		wctx_printf0(wctx,"<th>%s</th>\n",tr("name"));
+		wctx_printfn(wctx,"<td>\n",0,1);
 		l=strlen(rec->name);
 		CTX_HTML_ENCODE(rec->name,l);
-		ctx_printf0(ctx,"<input type=\"text\" name=\"name\" value=\"%s\" size=\"%d\"/>\n",ctx->buffer,5+(l>55)?55:l);
-		ctx_printf0(ctx,"<input type=\"hidden\" name=\"oldName\" value=\"%s\"/>\n",ctx->buffer);
-		ctx_printfn(ctx,"</td>\n",-1,0);
-		ctx_printfn(ctx,"</tr>\n",-1,0);
+		wctx_printf0(wctx,"<input type=\"text\" name=\"name\" value=\"%s\" size=\"%d\"/>\n",wctx->buffer,5+(l>55)?55:l);
+		wctx_printf0(wctx,"<input type=\"hidden\" name=\"oldName\" value=\"%s\"/>\n",wctx->buffer);
+		wctx_printfn(wctx,"</td>\n",-1,0);
+		wctx_printfn(wctx,"</tr>\n",-1,0);
 	}
 	if (rec->event.title!=NULL){
-		ctx_printfn(ctx,"<tr>\n",0,1);
-		ctx_printf0(ctx,"<th>%s</th>\n",tr("title"));
-		ctx_printfn(ctx,"<td>\n",0,1);
-		//ctx_printf0(ctx,"<textarea name=\"title\" cols=\"%d\" rows=\"%d\">",(l>70)?70:l,(l/70)+2);
-		ctx_printf(ctx,"%s",CTX_HTML_ENCODE(rec->event.title,-1));
-		//ctx_printf(ctx,"</textarea>\n");
-		ctx_printfn(ctx,"</td>\n",-1,0);
-		ctx_printfn(ctx,"</tr>\n",-1,0);
+		wctx_printfn(wctx,"<tr>\n",0,1);
+		wctx_printf0(wctx,"<th>%s</th>\n",tr("title"));
+		wctx_printfn(wctx,"<td>\n",0,1);
+		//wctx_printf0(wctx,"<textarea name=\"title\" cols=\"%d\" rows=\"%d\">",(l>70)?70:l,(l/70)+2);
+		wctx_printf(wctx,"%s",CTX_HTML_ENCODE(rec->event.title,-1));
+		//wctx_printf(wctx,"</textarea>\n");
+		wctx_printfn(wctx,"</td>\n",-1,0);
+		wctx_printfn(wctx,"</tr>\n",-1,0);
 	}
 	if (rec->event.shortdesc!=NULL){
-		ctx_printfn(ctx,"<tr>\n",0,1);
-		ctx_printf0(ctx,"<th>%s</th>\n",tr("shortdesc"));
-		ctx_printfn(ctx,"<td>\n",0,1);
-		//ctx_printf0(ctx,"<textarea name=\"shortdesc\" cols=\"%d\" rows=\"%d\">",(l>70)?70:l,(l/70)+2);
-		ctx_printf(ctx,"%s",CTX_HTML_ENCODE(rec->event.shortdesc,-1));
-		//ctx_printf(ctx,"</textarea>\n");
-		ctx_printfn(ctx,"</td>\n",-1,0);
-		ctx_printfn(ctx,"</tr>\n",-1,0);
+		wctx_printfn(wctx,"<tr>\n",0,1);
+		wctx_printf0(wctx,"<th>%s</th>\n",tr("shortdesc"));
+		wctx_printfn(wctx,"<td>\n",0,1);
+		//wctx_printf0(wctx,"<textarea name=\"shortdesc\" cols=\"%d\" rows=\"%d\">",(l>70)?70:l,(l/70)+2);
+		wctx_printf(wctx,"%s",CTX_HTML_ENCODE(rec->event.shortdesc,-1));
+		//wctx_printf(wctx,"</textarea>\n");
+		wctx_printfn(wctx,"</td>\n",-1,0);
+		wctx_printfn(wctx,"</tr>\n",-1,0);
 	}
 	if (rec->event.desc!=NULL){
-		ctx_printfn(ctx,"<tr>\n",0,1);
-		ctx_printf0(ctx,"<th>%s</th>\n",tr("desc"));
-		ctx_printfn(ctx,"<td>\n",0,1);
+		wctx_printfn(wctx,"<tr>\n",0,1);
+		wctx_printf0(wctx,"<th>%s</th>\n",tr("desc"));
+		wctx_printfn(wctx,"<td>\n",0,1);
 		//l=strlen(rec->event.desc);
-		//ctx_printfn(ctx,"<textarea name=\"desc\" cols=\"%d\" rows=\"%d\">\n",0,1,(l>70)?70:l,(l/70)+2);
-		printEventDesc(ctx,rec->event.desc,BT_FALSE);
-		//ctx_printfn(ctx,"</textarea>\n",-1,0);
-		ctx_printfn(ctx,"</td>\n",-1,0);
-		ctx_printfn(ctx,"</tr>\n",-1,0);
+		//wctx_printfn(wctx,"<textarea name=\"desc\" cols=\"%d\" rows=\"%d\">\n",0,1,(l>70)?70:l,(l/70)+2);
+		printEventDesc(wctx,rec->event.desc,false);
+		//wctx_printfn(wctx,"</textarea>\n",-1,0);
+		wctx_printfn(wctx,"</td>\n",-1,0);
+		wctx_printfn(wctx,"</tr>\n",-1,0);
 	}
 
-	ctx_printfn(ctx,"<tr class=\"buttons\">\n",0,1);
-	ctx_printfn(ctx,"<td class=\"buttons ajaxButtonsHolder\" colspan=\"2\">\n",0,1);
+	wctx_printfn(wctx,"<tr class=\"buttons\">\n",0,1);
+	wctx_printfn(wctx,"<td class=\"buttons ajaxButtonsHolder\" colspan=\"2\">\n",0,1);
 	if (rec->name!=NULL) {
-		ctx_printf0(ctx,
+		wctx_printf0(wctx,
 			"<button type=\"submit\" name=\"a\" value=\"%d\" class=\"confirm ui-state-default button-i-t\" >"
 				"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
 			"</button>\n",PA_CONFIRM,tr("accept"));
 	}
 	if (rec->path!=NULL) {
 		const char *Play=tr("play");
-		ctx_printf0(ctx,"<a href=\"");
-		printRecPlayLink(ctx,rec,BT_FALSE);
-		ctx_printf(ctx,"\" class=\"play ui-state-default button-i-t\">"
+		wctx_printf0(wctx,"<a href=\"");
+		printRecPlayLink(wctx,rec,false);
+		wctx_printf(wctx,"\" class=\"play ui-state-default button-i-t\">"
 				"<span class=\"ui-icon ui-icon-play\">&nbsp;</span>%s"
 			"</a>\n",Play);
 	}
 	if (!webifConf.deletionDisabled && (rec->id>0 || rec->path) ) {
-		ctx_printf0(ctx,
+		wctx_printf0(wctx,
 			"<button type=\"submit\" name=\"a\" value=\"%d\" class=\"delete ui-state-default button-i-t\" >"
 				"<div><span class=\"ui-icon ui-icon-trash\">&nbsp;</span>%s</div>"
 			"</button>\n",PA_DELETE,tr("rec.delete"));
 	}
-	ctx_printfn(ctx,"</td>\n",-1,0);
-	ctx_printfn(ctx,"</tr>\n",-1,0);
+	wctx_printfn(wctx,"</td>\n",-1,0);
+	wctx_printfn(wctx,"</tr>\n",-1,0);
 
-	ctx_printfn(ctx,"</table>\n",-1,0);
+	wctx_printfn(wctx,"</table>\n",-1,0);
 	return;
 outOfMemory:
 	crit("Out of memory");

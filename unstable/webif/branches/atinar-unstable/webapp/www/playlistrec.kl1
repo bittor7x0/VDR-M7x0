@@ -15,14 +15,15 @@
 #include "recordings.h"
 
 %><%
-	context_t vctx;
-	context_t *ctx=&vctx;
-	initCtx(ctx,session,request,response,out,1024);
-	vars_t *args = request_get_args(request);
-	rec_t rec;
-	initRec(&rec);
-	initRecFromArgs(ctx,&rec,args);
-	printRecPlaylist(ctx,&rec);
-	freeRec(&rec);
-	freeCtx(ctx);
+	wcontext_t vwctx;
+	wcontext_t *wctx=&vwctx;
+	if(initCtx(wctx,PN_PLAYLIST_REC,session,request,response,out,1024)){
+		vars_t *args = request_get_args(request);
+		rec_t rec;
+		initRec(&rec);
+		initRecFromArgs(wctx,&rec,args);
+		printRecPlaylist(wctx,&rec);
+		freeRec(&rec);
+	}
+	freeCtx(wctx);
 %>

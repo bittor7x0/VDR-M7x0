@@ -62,19 +62,19 @@ typedef struct recList_s {
 } recList_t;
 
 void initRec(rec_t * const rec);
-boolean_t initRecFromArgs(context_t *ctx, rec_t * const rec, vars_t *args);
+bool initRecFromArgs(wcontext_t *wctx, rec_t * const rec, vars_t *args);
 void freeRec(rec_t * const rec);
 void initRecList(recList_t  * const list);
 void freeRecList(recList_t  * const list);
 void getRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
 void sortRecList(recList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
-boolean_t editRec(context_t *ctx, const rec_t *rec, const char *oldName);
-boolean_t deleteRec(context_t *ctx, const rec_t *rec);
-boolean_t getRecInfo(rec_t *rec);
-void printRecInfo(context_t *ctx, const rec_t * const rec);
-void printRecPlayLink(context_t *ctx, const rec_t *rec, boolean_t direct);
-boolean_t printRecPlaylist(context_t *ctx, rec_t *rec);
-void printRecControls(context_t *ctx,const rec_t *rec,const char *Play,const char *Edit,const char *Delete);
-void printRecEditForm(context_t *ctx, rec_t *rec);
+bool editRec(wcontext_t *wctx, const rec_t *rec, const char *oldName);
+bool deleteRec(wcontext_t *wctx, const rec_t *rec);
+bool getRecInfo(rec_t *rec);
+void printRecInfo(wcontext_t *wctx, const rec_t * const rec);
+void printRecPlayLink(wcontext_t *wctx, const rec_t *rec, bool direct);
+bool printRecPlaylist(wcontext_t *wctx, rec_t *rec);
+void printRecControls(wcontext_t *wctx,const rec_t *rec,const char *Play,const char *Edit,const char *Delete);
+void printRecEditForm(wcontext_t *wctx, rec_t *rec);
 
 #endif

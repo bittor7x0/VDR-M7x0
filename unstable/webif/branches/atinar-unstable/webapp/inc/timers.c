@@ -40,11 +40,11 @@ void initTimer(vdrTimer_t *const timer) {
 	strcpy(timer->wdays,"-------"); 
 }
 
-boolean_t initTimerFromEvent(context_t *ctx, vdrTimer_t *const timer, hostConf_t *host, const int channelNum, const int eventId){
+bool initTimerFromEvent(wcontext_t *wctx, vdrTimer_t *const timer, hostConf_t *host, const int channelNum, const int eventId){
 	initTimer(timer);
-	boolean_t result= BT_FALSE;
+	bool result= false;
 	if (!host || !host->isVdr) {
-		if (ctx) printMessage(ctx,"alert",tr("timer.delete.err"),"Host nulo o no es VDR",BT_FALSE); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("timer.delete.err"),"Host nulo o no es VDR",false); //TODO i18n
 	} else {
 		channelEvents_t channelEvents;
 		initChannelEvents(&channelEvents);
@@ -61,7 +61,7 @@ boolean_t initTimerFromEvent(context_t *ctx, vdrTimer_t *const timer, hostConf_t
 			timer->title=strdup(event->title); setFlag(TF_TITLE,timer->my);
 			timer->start=timer->stop=event->start;
 			timer->stop+=event->duration;
-			result=BT_TRUE;
+			result=true;
 		}
 		freeChannelEvents(&channelEvents);
 	}
@@ -71,8 +71,8 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t makeTime(time_t *time, const char * cdate, int hour, int min ){
-	boolean_t result=BT_FALSE;
+bool makeTime(time_t *time, const char * cdate, int hour, int min ){
+	bool result=false;
 	struct tm sdate;
 	if (strptime(cdate,"%Y-%m-%d",&sdate)) {
 		sdate.tm_hour=hour;
@@ -82,15 +82,15 @@ boolean_t makeTime(time_t *time, const char * cdate, int hour, int min ){
 		sdate.tm_yday=0;  
 		sdate.tm_isdst=-1;
 		*time=mktime(&sdate);
-		result=BT_TRUE;
+		result=true;
 	}
 	return result;
 }
 
 
-boolean_t initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, context_t *ctx){
-	boolean_t result=BT_TRUE;
-	boolean_t isACopy;
+bool initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, wcontext_t *wctx){
+	bool result=true;
+	bool isACopy;
 	initTimer(timer);
 	timer->flags=0;
 	if (vars_countn(args,"active")>0){
@@ -106,8 +106,8 @@ boolean_t initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, context_t *ct
 		for(i=0;i<vars_countn(args,"wday");i++){
 			int wday=vars_geti_value_i(args, "wday",i);
 			if (wday>6||wday<0){
-				result=BT_FALSE;
-				printMessage(ctx,"alert",tr("timerErrWrongWday"),NULL,BT_FALSE);
+				result=false;
+				printMessage(wctx,"alert",tr("timerErrWrongWday"),NULL,false);
 			} else {
 				timer->wdays[(wday+6)%7]=weekdays[langId][wday][0]; 
 			}
@@ -115,18 +115,18 @@ boolean_t initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, context_t *ct
 	}
 	timer->lifetime=(vars_countn(args,"lifetime")>0) ? vars_get_value_i(args,"lifetime") : 99;
 	timer->priority=(vars_countn(args,"priority")>0) ? vars_get_value_i(args,"priority") : 50;
-	timer->title=ctxGetRequestParam(ctx,args,"title",&isACopy);
+	timer->title=wctxGetRequestParam(wctx,args,"title",&isACopy);
 	if (isACopy) setFlag(TF_TITLE,timer->my);
-	timer->aux=ctxGetRequestParam(ctx,args,"aux",&isACopy);
+	timer->aux=wctxGetRequestParam(wctx,args,"aux",&isACopy);
 	if (isACopy) setFlag(TF_AUX,timer->my);
-	boolean_t addMargin= boolean(vars_countn(args,"addMargin")>0);
+	bool addMargin= boolean(vars_countn(args,"addMargin")>0);
 	if	( (timer->type==TT_UNDEFINED) ||
 		( (timer->type==TT_ONE_TIME) && (!cdate) ) ||
 		( (timer->type==TT_REGULAR) && (strlen(timer->wdays)<7) ) ||
 		( (!vars_countn(args,"startHour")) || (!vars_countn(args,"startMin")) || (!vars_countn(args,"endHour")) || (!vars_countn(args,"endMin")) ) ) 
 	{
-		result=BT_FALSE;
-		printMessage(ctx,"alert",tr("timerErrIncompleteArgs"),NULL,BT_FALSE);
+		result=false;
+		printMessage(wctx,"alert",tr("timerErrIncompleteArgs"),NULL,false);
 	} else {
 		int startH=vars_get_value_i(args,"startHour"); 
 		int startM=vars_get_value_i(args,"startMin");
@@ -270,10 +270,10 @@ void getTimerList(timerList_t *const timers, channelList_t const *const channels
 	sortTimerList(timers,sortBy,sortDirection);
 }
 
-boolean_t addTimer(context_t *ctx, hostConf_t *const host, const char *newTimerStr) {
-	boolean_t result= BT_FALSE;
+bool addTimer(wcontext_t *wctx, hostConf_t *const host, const char *newTimerStr) {
+	bool result= false;
 	if (!host || !host->isVdr) {
-		if (ctx) printMessage(ctx,"alert",tr("timer.create.err"),"Host nulo o no es VDR",BT_FALSE); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("timer.create.err"),"Host nulo o no es VDR",false); //TODO i18n
 	} else {
 		char *command;
 		crit_goto_if(asprintf(&command,"NEWT %s",newTimerStr)<0,outOfMemory);
@@ -283,8 +283,8 @@ boolean_t addTimer(context_t *ctx, hostConf_t *const host, const char *newTimerS
 			char *p=data;
 			int code=strtol(p,&p,10);
 			result=boolean(code==SVDRP_CMD_OK);
-			if (ctx && *p && *(++p)){
-				printMessage(ctx,(result)?"message":"alert",tr((result)?"timer.create.ok":"timer.create.err"),p,BT_TRUE);
+			if (wctx && *p && *(++p)){
+				printMessage(wctx,(result)?"message":"alert",tr((result)?"timer.create.ok":"timer.create.err"),p,true);
 			}
 			free(data);
 		}
@@ -295,12 +295,12 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t deleteTimer(context_t *ctx, hostConf_t *host, int timerId, const char *oldTimerStr) {
-	boolean_t result=BT_FALSE;
+bool deleteTimer(wcontext_t *wctx, hostConf_t *host, int timerId, const char *oldTimerStr) {
+	bool result=false;
 	if (!host || !host->isVdr) {
-		if (ctx) printMessage(ctx,"alert",tr("timer.delete.err"),"Host nulo o no es VDR",BT_FALSE); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("timer.delete.err"),"Host nulo o no es VDR",false); //TODO i18n
 	} else if (oldTimerStr==NULL) {
-		if (ctx) printMessage(ctx,"alert",tr("timer.delete.err"),"Faltan argumentos",BT_FALSE); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("timer.delete.err"),"Faltan argumentos",false); //TODO i18n
 	} else {
 		char *timerStr=getTimerStrAt(host, timerId);
 		if (timerStr!=NULL) {
@@ -313,17 +313,17 @@ boolean_t deleteTimer(context_t *ctx, hostConf_t *host, int timerId, const char 
 					char *p=data;
 					int code=strtol(p,&p,10);
 					result=boolean(code==SVDRP_CMD_OK);
-					if (ctx && *p && *(++p)){
-						printMessage(ctx,(result)?"message":"alert",tr((result)?"timer.delete.ok":"timer.delete.err"),p,BT_TRUE);
+					if (wctx && *p && *(++p)){
+						printMessage(wctx,(result)?"message":"alert",tr((result)?"timer.delete.ok":"timer.delete.err"),p,true);
 					}
 					free(data);
 				}
 			} else {
-				if (ctx) printMessage(ctx,"alert",tr("timer.delete.err"),"Probablemente la programación ha sido modificada",BT_FALSE); //TODO i18n
+				if (wctx) printMessage(wctx,"alert",tr("timer.delete.err"),"Probablemente la programación ha sido modificada",false); //TODO i18n
 			}
 			free(timerStr);
 		} else { 
-			if (ctx) printMessage(ctx,"alert",tr("timer.delete.err"),"Programación no existe",BT_FALSE); //TODO i18n
+			if (wctx) printMessage(wctx,"alert",tr("timer.delete.err"),"Programación no existe",false); //TODO i18n
 		}
 	}
 	return result;
@@ -332,16 +332,16 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t editTimer(context_t *ctx, hostConf_t *const host, int timerId, const char *oldTimerStr, const char *newTimerStr) {
+bool editTimer(wcontext_t *wctx, hostConf_t *const host, int timerId, const char *oldTimerStr, const char *newTimerStr) {
 	if (!host || !oldTimerStr || !newTimerStr){
-		if (ctx) printMessage(ctx,"alert",tr("timer.update.err"),"Faltan argumentos",BT_TRUE); //TODO i18n
-		return BT_FALSE;
+		if (wctx) printMessage(wctx,"alert",tr("timer.update.err"),"Faltan argumentos",true); //TODO i18n
+		return false;
 	}
 	if (strcmp(oldTimerStr,newTimerStr)==0){
-		if (ctx) printMessage(ctx,"alert",tr("timer.update.err"),"Nada que hacer. No hay cambios",BT_TRUE); //TODO i18n
-		return BT_TRUE;
+		if (wctx) printMessage(wctx,"alert",tr("timer.update.err"),"Nada que hacer. No hay cambios",true); //TODO i18n
+		return true;
 	}
-	boolean_t result= BT_FALSE;
+	bool result= false;
 	char *timerStr=getTimerStrAt(host,timerId);
 	if (timerStr!=NULL) {
 		if (strcmp(oldTimerStr,timerStr)==0) {
@@ -353,15 +353,15 @@ boolean_t editTimer(context_t *ctx, hostConf_t *const host, int timerId, const c
 				char *p=data;
 				int code=strtol(p,&p,10);
 				result=boolean(code==SVDRP_CMD_OK);
-				if (ctx && *p && *(++p)){
-					printMessage(ctx,(result)?"message":"alert",tr((result)?"timer.update.ok":"timer.update.err"),p,BT_TRUE);
+				if (wctx && *p && *(++p)){
+					printMessage(wctx,(result)?"message":"alert",tr((result)?"timer.update.ok":"timer.update.err"),p,true);
 				}
 				free(data);
 			} else {
-				if (ctx) printMessage(ctx,"alert",tr("timer.update.err"),tr("warnSvdrpConnection"),BT_TRUE);
+				if (wctx) printMessage(wctx,"alert",tr("timer.update.err"),tr("warnSvdrpConnection"),true);
 			}
 		} else {
-			printMessage(ctx,"alert",tr("timer.update.err"),"Programación no existe",BT_FALSE);
+			printMessage(wctx,"alert",tr("timer.update.err"),"Programación no existe",false);
 		}
 		free(timerStr);
 	}
@@ -398,7 +398,7 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t parseTimer(const char *line, vdrTimer_t *const timer ){
+bool parseTimer(const char *line, vdrTimer_t *const timer ){
 	char *c;
 	char *h;
 	int l;
@@ -450,7 +450,7 @@ boolean_t parseTimer(const char *line, vdrTimer_t *const timer ){
 				strncpy(h+3,r+2,2);
 				if (!strptime(cdate,"%Y-%m-%d %H:%M",&sdate)) { 
 					warn("Error converting date \"%s\"",cdate);
-					return BT_FALSE;
+					return false;
 				}
 				sdate.tm_sec=0; 
 				sdate.tm_isdst=-1;
@@ -489,10 +489,10 @@ boolean_t parseTimer(const char *line, vdrTimer_t *const timer ){
 		if (r[0]!=':') break;
 		r++;
 	}
-	return BT_TRUE;
+	return true;
 wrongFormat:
 	warn("Wrong timer string [%s]",line);
-	return BT_FALSE;
+	return false;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
@@ -550,19 +550,19 @@ char *makeTimerStr(vdrTimer_t *const timer){
 	: makeOneTimeTimerStr(timer->flags,timer->channelNum,timer->start,timer->stop,timer->priority,timer->lifetime,timer->title,timer->aux);
 }
 //------------------------------
-void printTimerForm(context_t *ctx, vdrTimer_t *const timer, channelList_t const *const channels){
-	ctx_printfn(ctx,"<form id=\"timerEdit\" action=\"/timers.kl1\" method=\"post\">\n",0,1);
+void printTimerForm(wcontext_t *wctx, vdrTimer_t *const timer, channelList_t const *const channels){
+	wctx_printfn(wctx,"<form id=\"timerEdit\" action=\"/timers.kl1\" method=\"post\">\n",0,1);
 
 	if (timer->id>0) {
-		ctx_printf0(ctx,"<input type=\"hidden\" name=\"timerId\" value=\"%d\"/>\n",timer->id);
-		ctx_printf0(ctx,"<input type=\"hidden\" name=\"oldTimerStr\" value=\"%s\"/>\n",CTX_HTML_ENCODE(timer->timerStr,-1));
+		wctx_printf0(wctx,"<input type=\"hidden\" name=\"timerId\" value=\"%d\"/>\n",timer->id);
+		wctx_printf0(wctx,"<input type=\"hidden\" name=\"oldTimerStr\" value=\"%s\"/>\n",CTX_HTML_ENCODE(timer->timerStr,-1));
 	}
 	const char *TimerEdit=tr((timer->id>0)?"timer.edit":"timer.add");
-	ctx_printfn(ctx,"<table id=\"timerEdit\" class=\"list formContent\" summary=\"%s\">\n",0,1,TimerEdit);
-	ctx_printf0(ctx,"<caption class=\"formTitle\">%s</caption>\n",TimerEdit);
+	wctx_printfn(wctx,"<table id=\"timerEdit\" class=\"list formContent\" summary=\"%s\">\n",0,1,TimerEdit);
+	wctx_printf0(wctx,"<caption class=\"formTitle\">%s</caption>\n",TimerEdit);
 
-	ctx_printfn(ctx,"<tbody>\n",0,1);
-	ctx_printf0(ctx,
+	wctx_printfn(wctx,"<tbody>\n",0,1);
+	wctx_printf0(wctx,
 		"<tr>"
 			"<th>%s</th>"
 			"<td><input type=\"checkbox\" name=\"active\" value=\"1\"%s/></td>"
@@ -570,30 +570,30 @@ void printTimerForm(context_t *ctx, vdrTimer_t *const timer, channelList_t const
 		,tr("active"),checked[isFlagSet(TF_ACTIVE,timer->flags)]
 	);
 
-	ctx_printfn(ctx,"<tr>\n",0,1);
-	ctx_printf0(ctx,"<th>%s</th>\n",tr("channel"));
-	ctx_printfn(ctx,"<td>\n",0,1);
-	printChannelListSelect(ctx,NULL,"channelNum",channels,timer->channelNum,NULL);
-	ctx_printfn(ctx,"</td>\n",-1,0);
-	ctx_printfn(ctx,"</tr>\n",-1,0);
+	wctx_printfn(wctx,"<tr>\n",0,1);
+	wctx_printf0(wctx,"<th>%s</th>\n",tr("channel"));
+	wctx_printfn(wctx,"<td>\n",0,1);
+	printChannelListSelect(wctx,NULL,"channelNum",channels,timer->channelNum,NULL);
+	wctx_printfn(wctx,"</td>\n",-1,0);
+	wctx_printfn(wctx,"</tr>\n",-1,0);
 
-	ctx_printfn(ctx,"<tr>\n",0,1);
-	ctx_printf0(ctx,"<th>%s</th>\n","Host");
-	ctx_printfn(ctx,"<td>\n",0,1);
+	wctx_printfn(wctx,"<tr>\n",0,1);
+	wctx_printf0(wctx,"<th>%s</th>\n","Host");
+	wctx_printfn(wctx,"<td>\n",0,1);
 	if (webifConf.numVDRs>1){
-		printVDRSelect(ctx,"hostId",timer->hostId);
+		printVDRSelect(wctx,"hostId",timer->hostId);
 	} else {
-		ctx_printf0(ctx,"<input type=\"text\" name=\"hostId\" class=\"readOnly\" readonly=\"readonly\" value=\"%d\"/>\n",timer->hostId);
+		wctx_printf0(wctx,"<input type=\"text\" name=\"hostId\" class=\"readOnly\" readonly=\"readonly\" value=\"%d\"/>\n",timer->hostId);
 	}
-	ctx_printf0(ctx,"<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",timer->hostId);
-	ctx_printfn(ctx,"</td>\n",-1,0);
-	ctx_printfn(ctx,"</tr>\n",-1,0);
+	wctx_printf0(wctx,"<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",timer->hostId);
+	wctx_printfn(wctx,"</td>\n",-1,0);
+	wctx_printfn(wctx,"</tr>\n",-1,0);
 
-	ctx_printfn(ctx,"<tr>\n",0,1);
-	ctx_printf0(ctx,"<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n"
+	wctx_printfn(wctx,"<tr>\n",0,1);
+	wctx_printf0(wctx,"<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n"
 		,TT_ONE_TIME,checked[boolean(timer->type==TT_ONE_TIME)],tr("oneTimeRecording"));
-	ctx_printfn(ctx,"<td>\n",0,1);
-	ctx_printfn(ctx,"<select name=\"date\" size=\"1\">\n",0,1);
+	wctx_printfn(wctx,"<td>\n",0,1);
+	wctx_printfn(wctx,"<select name=\"date\" size=\"1\">\n",0,1);
 	time_t tdate=time(NULL);
 	if (timer->start<=0){
 		timer->start=tdate;
@@ -603,8 +603,8 @@ void printTimerForm(context_t *ctx, vdrTimer_t *const timer, channelList_t const
 	}
 	char cdate[11];
 	struct tm sdate;
-	boolean_t isThatDay=BT_FALSE;
-	boolean_t isAfterThatDay=BT_FALSE;
+	bool isThatDay=false;
+	bool isAfterThatDay=false;
 	int i;
 	for(i=0;i<14;i++) { //TODO usar datepicker
 		sdate=*localtime(&tdate);
@@ -613,72 +613,72 @@ void printTimerForm(context_t *ctx, vdrTimer_t *const timer, channelList_t const
 			isThatDay=sameDay(tdate,timer->start);
 			isAfterThatDay=boolean(isThatDay||tdate>timer->start);
 		}
-		ctx_printf0(ctx,"<option value=\"%s\" %s>%s, %s</option>\n"
-			,cdate,selected[isThatDay],weekdays[langId][sdate.tm_wday],formatDate(&sdate,BT_FALSE));
+		wctx_printf0(wctx,"<option value=\"%s\" %s>%s, %s</option>\n"
+			,cdate,selected[isThatDay],weekdays[langId][sdate.tm_wday],formatDate(&sdate,false));
 		if (isThatDay && (timer->type==TT_ONE_TIME)) { 
 			//marcar por si se cambia a regular
 			timer->wdays[(sdate.tm_wday+6)%7]=weekdays[langId][sdate.tm_wday][0]; 
 		}
-		isThatDay=BT_FALSE;
+		isThatDay=false;
 		tdate+=24*60*60;
 	}
-	ctx_printfn(ctx,"</select>\n",-1,0);
-	ctx_printfn(ctx,"</td>\n",-1,0);
-	ctx_printfn(ctx,"</tr>\n",-1,0);
+	wctx_printfn(wctx,"</select>\n",-1,0);
+	wctx_printfn(wctx,"</td>\n",-1,0);
+	wctx_printfn(wctx,"</tr>\n",-1,0);
 
-	ctx_printfn(ctx,"<tr>\n",0,1);
-	ctx_printf0(ctx,"<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n"
+	wctx_printfn(wctx,"<tr>\n",0,1);
+	wctx_printf0(wctx,"<th><input type=\"radio\" name=\"type\" value=\"%d\"%s/>%s</th>\n"
 		,TT_REGULAR,checked[boolean(timer->type==TT_REGULAR)],tr("regularRecording"));
-	ctx_printfn(ctx,"<td>\n",0,1);
+	wctx_printfn(wctx,"<td>\n",0,1);
 	for(i=startOfWeek[langId];i<startOfWeek[langId]+7;i++) {
-		ctx_printf0(ctx,"<input type=\"checkbox\" name=\"wday\" value=\"%d\"%s/>%s\n"
+		wctx_printf0(wctx,"<input type=\"checkbox\" name=\"wday\" value=\"%d\"%s/>%s\n"
 			,(i%7),checked[boolean(timer->wdays[(i+6)%7]!='-')],weekdays[langId][i%7]);
 	}
-	ctx_printfn(ctx,"</td>\n",-1,0);
-	ctx_printfn(ctx,"</tr>\n",-1,0);
+	wctx_printfn(wctx,"</td>\n",-1,0);
+	wctx_printfn(wctx,"</tr>\n",-1,0);
 
 	struct tm start_date=*localtime(&timer->start);
-	ctx_printfn(ctx,"<tr>\n",0,1);
-	ctx_printf0(ctx,"<th>%s</th>\n",tr("start"));
-	ctx_printf0(ctx,
+	wctx_printfn(wctx,"<tr>\n",0,1);
+	wctx_printf0(wctx,"<th>%s</th>\n",tr("start"));
+	wctx_printf0(wctx,
 		"<td>"
 			"<input type=\"text\" name=\"startHour\" maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;:&nbsp;"
 			"<input type=\"text\" name=\"startMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>"
 		"</td>\n",start_date.tm_hour,start_date.tm_min);
-	ctx_printfn(ctx,"</tr>\n",-1,0);
+	wctx_printfn(wctx,"</tr>\n",-1,0);
 
 	struct tm end_date=*localtime(&timer->stop);
-	ctx_printfn(ctx,"<tr>\n",0,1);
-	ctx_printf0(ctx,"<th>%s</th>\n",tr("end"));
-	ctx_printf0(ctx,
+	wctx_printfn(wctx,"<tr>\n",0,1);
+	wctx_printf0(wctx,"<th>%s</th>\n",tr("end"));
+	wctx_printf0(wctx,
 		"<td>"
 			"<input type=\"text\" name=\"endHour\" maxlength=\"2\" size=\"3\" value=\"%02d\"/>&nbsp;:&nbsp;"
 			"<input type=\"text\" name=\"endMin\"  maxlength=\"2\" size=\"3\" value=\"%02d\"/>"
 		"</td>\n",end_date.tm_hour,end_date.tm_min);
-	ctx_printfn(ctx,"</tr>\n",-1,0);
+	wctx_printfn(wctx,"</tr>\n",-1,0);
 
-	ctx_printf0(ctx,
+	wctx_printf0(wctx,
 		"<tr>"
 			"<th>%s</th>"
 			"<td><input type=\"checkbox\" name=\"addMargin\" value=\"%d\" %s/></td>"
 		"</tr>\n"
 		,tr("margin.add"),boolean(timer->id<1),checked[boolean(timer->id<1)]);
 
-	ctx_printf0(ctx,
+	wctx_printf0(wctx,
 		"<tr>"
 			"<th>%s</th>"
 			"<td><input type=\"text\" name=\"priority\" maxlength=\"2\" size=\"3\" value=\"%d\"/></td>"
 		"</tr>\n"
 		,tr("priority"),timer->priority);
 
-	ctx_printf0(ctx,
+	wctx_printf0(wctx,
 		"<tr>"
 			"<th>%s</th>"
 			"<td><input type=\"text\" name=\"lifetime\" value=\"%d\" maxlength=\"2\" size=\"3\"/></td>"
 		"</tr>\n"
 		,tr("lifetime"),timer->lifetime);
 
-	ctx_printf0(ctx,
+	wctx_printf0(wctx,
 		"<tr>"
 			"<th>%s</th>"
 			"<td><input type=\"text\" name=\"title\" size=\"70\" value=\"%s\"/></td>"
@@ -687,7 +687,7 @@ void printTimerForm(context_t *ctx, vdrTimer_t *const timer, channelList_t const
 
 	if (timer->aux) {
 		int l=strlen(timer->aux);
-		ctx_printf0(ctx,
+		wctx_printf0(wctx,
 			"<tr>"
 				"<th>%s</th>"
 				"<td><textarea name=\"aux\" spellcheck=\"false\" cols=\"%d\" rows=\"%d\">%s</textarea></td>"
@@ -695,33 +695,33 @@ void printTimerForm(context_t *ctx, vdrTimer_t *const timer, channelList_t const
 			,tr("aux"),(l>70)?70:l,l/70+2,CTX_HTML_ENCODE(timer->aux,l));
 	}
 
-	ctx_printfn(ctx,"<tr class=\"buttons\">\n",0,1);
-	ctx_printfn(ctx,"<td class=\"ajaxButtonsHolder\" colspan=\"2\">\n",0,1);
-	ctx_printf0(ctx,
+	wctx_printfn(wctx,"<tr class=\"buttons\">\n",0,1);
+	wctx_printfn(wctx,"<td class=\"ajaxButtonsHolder\" colspan=\"2\">\n",0,1);
+	wctx_printf0(wctx,
 		"<button id=\"confirm\" class=\"confirm ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
 			"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
 		"</button>\n"
 		,PA_ADD,tr("accept"));
 	if (timer->id>0){
-		ctx_printf0(ctx,
+		wctx_printf0(wctx,
 			"<button id=\"delete\" class=\"delete ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
 				"<div><span class=\"ui-icon ui-icon-trash\">&nbsp;</span>%s</div>"
 			"</button>\n"
 			,PA_DELETE,tr("timer.delete"));
 	}
-	ctx_printfn(ctx,"</td>\n",-1,0);
-	ctx_printfn(ctx,"</tr>\n",-1,0);
-	ctx_printfn(ctx,"</tbody>\n",-1,0);
+	wctx_printfn(wctx,"</td>\n",-1,0);
+	wctx_printfn(wctx,"</tr>\n",-1,0);
+	wctx_printfn(wctx,"</tbody>\n",-1,0);
 			
-	ctx_printfn(ctx,"</table>\n",-1,0);
-	ctx_printfn(ctx,"</form>\n",-1,0);
+	wctx_printfn(wctx,"</table>\n",-1,0);
+	wctx_printfn(wctx,"</form>\n",-1,0);
 }
 
-void printTimerBars(context_t *ctx, timerList_t *const timers, const int channelNum
-	, const time_t startTime, const time_t duration,const char *TimerEdit,boolean_t wrapPBWithA) {
+void printTimerBars(wcontext_t *wctx, timerList_t *const timers, const int channelNum
+	, const time_t startTime, const time_t duration,const char *TimerEdit,bool wrapPBWithA) {
 	const time_t endTime=startTime+duration;
-	boolean_t isStart, isEnd, anyMatch;
-	anyMatch=BT_FALSE;
+	bool isStart, isEnd, anyMatch;
+	anyMatch=false;
 	if ( (timers->length>0) && (startTime>0) && (duration>0) ) {
 		int i;
 		int mstart=0;
@@ -748,28 +748,28 @@ void printTimerBars(context_t *ctx, timerList_t *const timers, const int channel
 				mend  =endTime-timer->stop;    //margen no cubierto al final
 				isStart=boolean(mstart>=0);
 				isEnd=boolean(mend>=0);
-				anyMatch=BT_TRUE;
+				anyMatch=true;
 				double left=(mstart>0)?100.0*mstart/duration:0.0;
 				double right=(mend>0)?100*mend/duration:0.0;
 				double width=(100.0-left-right);
 				if (width<0.0) width=0;
-				ctx_printfn(ctx,"<div id=\"timer%d_%d\" class=\"timer\">\n",0,1,timer->id,++timer->count);
-				ctx_printf0(ctx,"<a class=\"timerEdit progressbar\"");
-				ctx_printf(ctx," href=\"timers.kl1?a=%d&amp;timerStr=%s&amp;timerId=%d\"",PA_EDIT,CTX_URL_ENCODE(timer->timerStr,-1,NULL),timer->id);
-				ctx_printf(ctx," title=\"%s: %s\"",TimerEdit,timer->title);
-				ctx_printf(ctx,">\n");
-				inctab(ctx);
-				ctx_printf0(ctx,"<span class=\"pb%s%s%s\""
+				wctx_printfn(wctx,"<div id=\"timer%d_%d\" class=\"timer\">\n",0,1,timer->id,++timer->count);
+				wctx_printf0(wctx,"<a class=\"timerEdit progressbar\"");
+				wctx_printf(wctx," href=\"timers.kl1?a=%d&amp;timerStr=%s&amp;timerId=%d\"",PA_EDIT,CTX_URL_ENCODE(timer->timerStr,-1,NULL),timer->id);
+				wctx_printf(wctx," title=\"%s: %s\"",TimerEdit,timer->title);
+				wctx_printf(wctx,">\n");
+				inctab(wctx);
+				wctx_printf0(wctx,"<span class=\"pb%s%s%s\""
 					,(isStart)?" pbstart":"", (isEnd)?" pbend":"", (isFlagSet(TF_ACTIVE,timer->flags))?" pbenabled":" pbdisabled");
-				ctx_printf(ctx," style=\"%s:%.0f%%;width:%.0f%%;\"",(isStart)?"right":"left",(isStart)?right:left,width);
-				ctx_printf(ctx,">\n");
-				inctab(ctx);
-				ctx_printf0(ctx,"&nbsp;\n");
-				ctx_printfn(ctx,"</span>\n",-1,0); //pb
-				ctx_printfn(ctx,"</a>\n",-1,0); //progressbar
-				ctx_printfn(ctx,"</div>\n",-1,0); //timer
+				wctx_printf(wctx," style=\"%s:%.0f%%;width:%.0f%%;\"",(isStart)?"right":"left",(isStart)?right:left,width);
+				wctx_printf(wctx,">\n");
+				inctab(wctx);
+				wctx_printf0(wctx,"&nbsp;\n");
+				wctx_printfn(wctx,"</span>\n",-1,0); //pb
+				wctx_printfn(wctx,"</a>\n",-1,0); //progressbar
+				wctx_printfn(wctx,"</div>\n",-1,0); //timer
 			}
 		}
 	}
-	//if (!anyMatch) ctx_printf0(ctx,"&nbsp;\n");
+	//if (!anyMatch) wctx_printf0(wctx,"&nbsp;\n");
 }

@@ -1,3 +1,8 @@
+2010-02-05
+* Implementada autenticación HTTP básica.
+* Eliminado rss.kl1.
+* Usar stdbool.h para booleanos.
+* Renombrar tipo y variable de contexto para evitar coincidencia con contexto de aplicación.
 2010-01-24
 * Parcheada definicion erronea de request_get_uploaded_file en request.h de kloned.
 * Simplificado fork para extraer logos.

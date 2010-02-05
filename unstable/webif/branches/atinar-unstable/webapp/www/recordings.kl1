@@ -41,21 +41,21 @@ static void dbg_recordings_kl1(void){
 }
 #endif
 
-static void printHtmlHeadExtra(context_t *ctx){
-	if (!ctx->isAjaxRequest) {
-		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/recordings.css\" media=\"screen\" />\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.form-2.36.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/formHandler.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/recordings.js\"></script>\n",webifConf.www);
-		ctx_printfn(ctx,"<script type=\"text/javascript\">\n",0,1);
-		ctx_printf0(ctx,"$(function(){webif.recordingsPageInit();});\n");
-		ctx_printfn(ctx,"$.extend(webif.messages,{\n",0,1);
-		ctx_printf0(ctx,"recDeleteConfirm:'%s',\n",tr("rec.delete.confirm"));
-		ctx_printfn(ctx,"});\n",-1,0);
-		ctx_printfn(ctx,"$.extend(webif.actions,{\n",0,1);
-		ctx_printf0(ctx,"getRecInfo:%d,\n",PA_GET_REC_INFO);
-		ctx_printfn(ctx,"});\n",-1,0);
-		ctx_printfn(ctx,"</script>\n",-1,0);
+static void printHtmlHeadExtra(wcontext_t *wctx){
+	if (!wctx->isAjaxRequest) {
+		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/recordings.css\" media=\"screen\" />\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.form-2.36.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/formHandler.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/recordings.js\"></script>\n",webifConf.www);
+		wctx_printfn(wctx,"<script type=\"text/javascript\">\n",0,1);
+		wctx_printf0(wctx,"$(function(){webif.recordingsPageInit();});\n");
+		wctx_printfn(wctx,"$.extend(webif.messages,{\n",0,1);
+		wctx_printf0(wctx,"recDeleteConfirm:'%s',\n",tr("rec.delete.confirm"));
+		wctx_printfn(wctx,"});\n",-1,0);
+		wctx_printfn(wctx,"$.extend(webif.actions,{\n",0,1);
+		wctx_printf0(wctx,"getRecInfo:%d,\n",PA_GET_REC_INFO);
+		wctx_printfn(wctx,"});\n",-1,0);
+		wctx_printfn(wctx,"</script>\n",-1,0);
 	}
 }
 
@@ -65,199 +65,199 @@ static void printHtmlHeadExtra(context_t *ctx){
 	dbg_recordings_kl1();
 	#endif
 
-	context_t vctx;
-	context_t *ctx=&vctx;
-	initCtx(ctx,session,request,response,out,4096);
-	vars_t *args = request_get_args(request);
-	ctx->sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
-	ctx->sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
-	ctx->currentPage=PN_RECORDINGS;
-	ctx->currentAction=(vars_countn(args,"a")>0)?vars_get_value_i(args,"a"):PA_BROWSE;
-	pageAction_t nextAction=(vars_countn(args,"na")>0)?vars_get_value_i(args,"na"):ctx->currentAction;
-	
-	if (ctx->currentAction==PA_PLAY) {
-		rec_t rec;
-		initRecFromArgs(ctx,&rec,args);
-		boolean_t ok=printRecPlaylist(ctx,&rec);
-		freeRec(&rec);
-		if (ok) goto end;
-	}
-	initHtmlPage(ctx,tr("recordings"),printHtmlHeadExtra);
-	if (!ctx->isAjaxRequest) {
-		ctx_printfn(ctx,"<div class=\"level2-div ui-widget\">\n",0,1);
-		ctx_printf0(ctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("recordings"));
-		ctx_printfn(ctx,"<div class=\"level2 ui-widget-content ui-helper-clearfix\">\n",0,1);
-	}
-
-	boolean_t recordingsHaveChanged=BT_FALSE;
-	if (ctx->currentAction==PA_DELETE) {
-		ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
-		if (webifConf.deletionDisabled) {
-			printMessage(ctx,"alert",tr("rec.delete.err"),tr("deletionDisabled"),BT_FALSE);
-		} else {
+	wcontext_t vwctx;
+	wcontext_t *wctx=&vwctx;
+	if (initCtx(wctx,PN_RECORDINGS,session,request,response,out,4096)){
+		vars_t *args = request_get_args(request);
+		wctx->sortBy=(vars_countn(args, "sort")>0) ? vars_get_value_i(args,"sort") : SF_START;
+		wctx->sortDirection=(vars_countn(args, "direction")>0) ? vars_get_value_i(args,"direction") : SD_ASC;
+		wctx->currentAction=(vars_countn(args,"a")>0)?vars_get_value_i(args,"a"):PA_BROWSE;
+		pageAction_t nextAction=(vars_countn(args,"na")>0)?vars_get_value_i(args,"na"):wctx->currentAction;
+		
+		if (wctx->currentAction==PA_PLAY) {
 			rec_t rec;
-			if (initRecFromArgs(ctx,&rec,args)){
-				recordingsHaveChanged=deleteRec(ctx,&rec);
+			initRecFromArgs(wctx,&rec,args);
+			bool ok=printRecPlaylist(wctx,&rec);
+			freeRec(&rec);
+			if (ok) goto end;
+		}
+		initHtmlPage(wctx,tr("recordings"),printHtmlHeadExtra);
+		if (!wctx->isAjaxRequest) {
+			wctx_printfn(wctx,"<div class=\"level2-div ui-widget\">\n",0,1);
+			wctx_printf0(wctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("recordings"));
+			wctx_printfn(wctx,"<div class=\"level2 ui-widget-content ui-helper-clearfix\">\n",0,1);
+		}
+
+		bool recordingsHaveChanged=false;
+		if (wctx->currentAction==PA_DELETE) {
+			wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
+			if (webifConf.deletionDisabled) {
+				printMessage(wctx,"alert",tr("rec.delete.err"),tr("deletionDisabled"),false);
+			} else {
+				rec_t rec;
+				if (initRecFromArgs(wctx,&rec,args)){
+					recordingsHaveChanged=deleteRec(wctx,&rec);
+				}
+				freeRec(&rec);
+			}
+			wctx_printfn(wctx,"</div>\n",-1,0);
+			if (!wctx->isAjaxRequest || recordingsHaveChanged){
+				wctx->currentAction=nextAction;
+			}
+		}
+		if (wctx->currentAction==PA_CONFIRM) {
+			wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
+			rec_t rec;
+			if (initRecFromArgs(wctx,&rec,args)){
+				recordingsHaveChanged=editRec(wctx,&rec,vars_get_value(args,"oldName"));
+			}
+			freeRec(&rec);
+			wctx_printfn(wctx,"</div>\n",-1,0);
+			if (!wctx->isAjaxRequest || recordingsHaveChanged){
+				wctx->currentAction=nextAction;
+			}
+		}
+		if (wctx->currentAction==PA_EDIT) {
+			rec_t rec;
+			if (initRecFromArgs(wctx,&rec,args)) {
+				getRecInfo(&rec);
+				wctx_printfn(wctx,"<form action=\"/recordings.kl1\" method=\"post\">\n",0,1);
+				if (vars_countn(args,"pl")>0){
+					wctx_printf0(wctx,"<input type=\"hidden\" name=\"pl\" value=\"%d\"/>\n",vars_get_value_i(args,"pl"));
+				}
+				wctx_printf0(wctx,"<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n",wctx->sortBy);
+				wctx_printf0(wctx,"<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n",wctx->sortDirection);
+				wctx_printf0(wctx,"<input type=\"hidden\" name=\"na\" value=\"%d\" />\n",nextAction);
+				printRecEditForm(wctx,&rec);
+				wctx_printfn(wctx,"</form>\n",-1,0);
 			}
 			freeRec(&rec);
 		}
-		ctx_printfn(ctx,"</div>\n",-1,0);
-		if (!ctx->isAjaxRequest || recordingsHaveChanged){
-			ctx->currentAction=nextAction;
-		}
-	}
-	if (ctx->currentAction==PA_CONFIRM) {
-		ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
-		rec_t rec;
-		if (initRecFromArgs(ctx,&rec,args)){
-			recordingsHaveChanged=editRec(ctx,&rec,vars_get_value(args,"oldName"));
-		}
-		freeRec(&rec);
-		ctx_printfn(ctx,"</div>\n",-1,0);
-		if (!ctx->isAjaxRequest || recordingsHaveChanged){
-			ctx->currentAction=nextAction;
-		}
-	}
-	if (ctx->currentAction==PA_EDIT) {
-		rec_t rec;
-		if (initRecFromArgs(ctx,&rec,args)) {
-			getRecInfo(&rec);
-			ctx_printfn(ctx,"<form action=\"/recordings.kl1\" method=\"post\">\n",0,1);
-			if (vars_countn(args,"pl")>0){
-				ctx_printf0(ctx,"<input type=\"hidden\" name=\"pl\" value=\"%d\"/>\n",vars_get_value_i(args,"pl"));
-			}
-			ctx_printf0(ctx,"<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n",ctx->sortBy);
-			ctx_printf0(ctx,"<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n",ctx->sortDirection);
-			ctx_printf0(ctx,"<input type=\"hidden\" name=\"na\" value=\"%d\" />\n",nextAction);
-			printRecEditForm(ctx,&rec);
-			ctx_printfn(ctx,"</form>\n",-1,0);
-		}
-		freeRec(&rec);
-	}
-	if (ctx->currentAction==PA_BROWSE) {
-		boolean_t isACopy;
-		char *argpath=ctxGetRequestParam(ctx,args,"path",&isACopy);
-		char *path=NULL;
-		if (argpath) {
-			int l=strlen(argpath);
-			int pl=(vars_countn(args,"pl")>0) ? vars_get_value_i(args,"pl") : l;
-			if (pl>l) pl=l;
-			const char * c;
-			for (c=argpath+pl-1;(c>=argpath) && (*c=='/' || *c=='_');c--) pl--;
-			if (pl>0) {
-				if (argpath[0]=='/') {
-					argpath++;
-					pl--;
-				}
+		if (wctx->currentAction==PA_BROWSE) {
+			bool isACopy;
+			char *argpath=wctxGetRequestParam(wctx,args,"path",&isACopy);
+			char *path=NULL;
+			if (argpath) {
+				int l=strlen(argpath);
+				int pl=(vars_countn(args,"pl")>0) ? vars_get_value_i(args,"pl") : l;
+				if (pl>l) pl=l;
+				const char * c;
+				for (c=argpath+pl-1;(c>=argpath) && (*c=='/' || *c=='_');c--) pl--;
 				if (pl>0) {
-					if (isACopy) {
-						path=argpath;
-						path[pl]=0;
-					} else {
-						crit_goto_if((path=strndup(argpath,pl))==NULL,outOfMemory);
+					if (argpath[0]=='/') {
+						argpath++;
+						pl--;
+					}
+					if (pl>0) {
+						if (isACopy) {
+							path=argpath;
+							path[pl]=0;
+						} else {
+							crit_goto_if((path=strndup(argpath,pl))==NULL,outOfMemory);
+						}
 					}
 				}
 			}
+			char *pathrel=path;
+			if (pathrel && pathrel[0]=='/') pathrel++;
+			if (!wctx->isAjaxRequest){
+				wctx_printfn(wctx,"<div class=\"level3-div\">\n",0,1);
+				wctx_printfn(wctx,"<div class=\"level3-top\">\n",0,1);
+				printRecPathUl(wctx,pathrel);
+				wctx_printfn(wctx,"</div>\n",-1,0); //level3-top
+			}
+			recDir_t rdir;
+			initRecDir(&rdir);
+			getRecDir(pathrel,&rdir);
+			printRecDirListUL(wctx,pathrel,(pathrel)?strlen(pathrel):0,&rdir,0);
+			freeRecDir(&rdir);
+			free(path);
+			if (!wctx->isAjaxRequest) {
+				wctx_printfn(wctx,"</div>\n",-1,0); //level3-div
+			}
 		}
-		char *pathrel=path;
-		if (pathrel && pathrel[0]=='/') pathrel++;
-		if (!ctx->isAjaxRequest){
-			ctx_printfn(ctx,"<div class=\"level3-div\">\n",0,1);
-			ctx_printfn(ctx,"<div class=\"level3-top\">\n",0,1);
-			printRecPathUl(ctx,pathrel);
-			ctx_printfn(ctx,"</div>\n",-1,0); //level3-top
+		if (wctx->currentAction==PA_SUMMARY) {
+			recList_t recs;
+			getRecList(&recs,wctx->sortBy,wctx->sortDirection);
+			wctx_printfn(wctx,"<table id=\"%s\" class=\"level3-div\" summary=\"\">\n",0,1,AJAX_REPLACE_PREFIX("recordings"));
+			wctx_printf0(wctx,"<col class=\"number\"/>\n");
+			wctx_printf0(wctx,"<col class=\"date\"/>\n");
+			wctx_printf0(wctx,"<col class=\"hour\"/>\n");
+			wctx_printf0(wctx,"<col class=\"content\"/>\n");
+			wctx_printfn(wctx,"<thead class=\"level3-top\">\n",0,1);
+			wctx_printfn(wctx,"<tr>\n",0,1);
+			printList1TH(wctx,"recordings.kl1",SF_RC_NUMBER,"#");
+			printList1TH(wctx,"recordings.kl1",SF_START,tr("date"));
+			printList1TH(wctx,"recordings.kl1",SF_START,tr("start"));
+			printList1TH(wctx,"recordings.kl1",SF_TITLE,tr("title"));
+			wctx_printfn(wctx,"</tr>\n",-1,0);
+			wctx_printfn(wctx,"</thead>\n",-1,0);
+			wctx_printfn(wctx,"<tbody class=\"level3\">\n",0,1);
+			const char *RecEdit=tr("rec.edit");
+			const char *RecDelete=tr("rec.delete");
+			const char *Play=tr("play");
+			rec_t *prec;
+			int i,l;
+			for (i=0,prec=recs.entry;i<recs.length;i++,prec++) {
+				struct tm t1=*localtime(&prec->event.start);
+				wctx_printfn(wctx,"<tr class=\"rec\">\n",0,1);
+				wctx_printf0(wctx,"<td class=\"number\" >%d</td>\n",prec->id);
+				wctx_printf0(wctx,"<td class=\"date\">%s</td>\n",formatDate(&t1,0));
+				wctx_printf0(wctx,"<td class=\"hour\">%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
+				wctx_printfn(wctx,"<td class=\"content\">\n",0,1);
+				wctx_printfn(wctx,"<form action=\"/recordings.kl1\" class=\"recControls\" >\n",0,1);
+				wctx_printf0(wctx,"<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n",wctx->sortBy);
+				wctx_printf0(wctx,"<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n",wctx->sortDirection);
+				wctx_printf0(wctx,"<input type=\"hidden\" name=\"na\" value=\"%d\" />\n",PA_SUMMARY);
+				printRecControls(wctx,prec,Play,RecEdit,RecDelete);
+				l=strlen(prec->name);
+				CTX_HTML_ENCODE(prec->name,l);
+				//wctx_printf0(wctx,"<input type=\"text\" name=\"name\" class=\"name readOnly\" readonly=\"readonly\" value=\"%s\" size=\"%d\" />\n"
+				//	,wctx->buffer,l);
+				wctx_printfn(wctx,"</form>\n",-1,0);
+				wctx_printfn(wctx,"%s</td>\n",-1,0,wctx->buffer);
+				wctx_printfn(wctx,"</tr>\n",-1,0);
+			}
+			freeRecList(&recs);
+			wctx_printfn(wctx,"</tbody>\n",-1,0);
+			wctx_printfn(wctx,"</table>\n",-1,0);
+			if (!wctx->isAjaxRequest) wctx->currentAction=PA_PARTITION_USAGE;
 		}
-		recDir_t rdir;
-		initRecDir(&rdir);
-		getRecDir(pathrel,&rdir);
-		printRecDirListUL(ctx,pathrel,(pathrel)?strlen(pathrel):0,&rdir,0);
-		freeRecDir(&rdir);
-		free(path);
-		if (!ctx->isAjaxRequest) {
-			ctx_printfn(ctx,"</div>\n",-1,0); //level3-div
-		}
-	}
-	if (ctx->currentAction==PA_SUMMARY) {
-		recList_t recs;
-		getRecList(&recs,ctx->sortBy,ctx->sortDirection);
-		ctx_printfn(ctx,"<table id=\"%s\" class=\"level3-div\" summary=\"\">\n",0,1,AJAX_REPLACE_PREFIX("recordings"));
-		ctx_printf0(ctx,"<col class=\"number\"/>\n");
-		ctx_printf0(ctx,"<col class=\"date\"/>\n");
-		ctx_printf0(ctx,"<col class=\"hour\"/>\n");
-		ctx_printf0(ctx,"<col class=\"content\"/>\n");
-		ctx_printfn(ctx,"<thead class=\"level3-top\">\n",0,1);
-		ctx_printfn(ctx,"<tr>\n",0,1);
-		printList1TH(ctx,"recordings.kl1",SF_RC_NUMBER,"#");
-		printList1TH(ctx,"recordings.kl1",SF_START,tr("date"));
-		printList1TH(ctx,"recordings.kl1",SF_START,tr("start"));
-		printList1TH(ctx,"recordings.kl1",SF_TITLE,tr("title"));
-		ctx_printfn(ctx,"</tr>\n",-1,0);
-		ctx_printfn(ctx,"</thead>\n",-1,0);
-		ctx_printfn(ctx,"<tbody class=\"level3\">\n",0,1);
-		const char *RecEdit=tr("rec.edit");
-		const char *RecDelete=tr("rec.delete");
-		const char *Play=tr("play");
-		rec_t *prec;
-		int i,l;
-		for (i=0,prec=recs.entry;i<recs.length;i++,prec++) {
-			struct tm t1=*localtime(&prec->event.start);
-			ctx_printfn(ctx,"<tr class=\"rec\">\n",0,1);
-			ctx_printf0(ctx,"<td class=\"number\" >%d</td>\n",prec->id);
-			ctx_printf0(ctx,"<td class=\"date\">%s</td>\n",formatDate(&t1,0));
-			ctx_printf0(ctx,"<td class=\"hour\">%02d:%02d</td>\n",t1.tm_hour,t1.tm_min);
-			ctx_printfn(ctx,"<td class=\"content\">\n",0,1);
-			ctx_printfn(ctx,"<form action=\"/recordings.kl1\" class=\"recControls\" >\n",0,1);
-			ctx_printf0(ctx,"<input type=\"hidden\" name=\"sort\" value=\"%d\" />\n",ctx->sortBy);
-			ctx_printf0(ctx,"<input type=\"hidden\" name=\"direction\" value=\"%d\" />\n",ctx->sortDirection);
-			ctx_printf0(ctx,"<input type=\"hidden\" name=\"na\" value=\"%d\" />\n",PA_SUMMARY);
-			printRecControls(ctx,prec,Play,RecEdit,RecDelete);
-			l=strlen(prec->name);
-			CTX_HTML_ENCODE(prec->name,l);
-			//ctx_printf0(ctx,"<input type=\"text\" name=\"name\" class=\"name readOnly\" readonly=\"readonly\" value=\"%s\" size=\"%d\" />\n"
-			//	,ctx->buffer,l);
-			ctx_printfn(ctx,"</form>\n",-1,0);
-			ctx_printfn(ctx,"%s</td>\n",-1,0,ctx->buffer);
-			ctx_printfn(ctx,"</tr>\n",-1,0);
-		}
-		freeRecList(&recs);
-		ctx_printfn(ctx,"</tbody>\n",-1,0);
-		ctx_printfn(ctx,"</table>\n",-1,0);
-		if (!ctx->isAjaxRequest) ctx->currentAction=PA_PARTITION_USAGE;
-	}
 
-	if (ctx->currentAction==PA_PARTITION_USAGE) {
-		if (!ctx->isAjaxRequest) {
-			ctx_printfn(ctx,"</div>\n",-1,0); //level2
-			ctx_printfn(ctx,"</div>\n",-1,0); //level2-div
+		if (wctx->currentAction==PA_PARTITION_USAGE) {
+			if (!wctx->isAjaxRequest) {
+				wctx_printfn(wctx,"</div>\n",-1,0); //level2
+				wctx_printfn(wctx,"</div>\n",-1,0); //level2-div
 
-			ctx_printfn(ctx,"<div class=\"level2-div ui-widget\">\n",0,1);
-			ctx_printf0(ctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("freeSpace"));
-			ctx_printfn(ctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
+				wctx_printfn(wctx,"<div class=\"level2-div ui-widget\">\n",0,1);
+				wctx_printf0(wctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("freeSpace"));
+				wctx_printfn(wctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
+			}
+			partitionList_t partitions;
+			getPartitionList(&partitions);
+			printPartitionList(wctx,&partitions);
+			freePartitionList(&partitions);
 		}
-		partitionList_t partitions;
-		getPartitionList(&partitions);
-		printPartitionList(ctx,&partitions);
-		freePartitionList(&partitions);
-	}
 
-	if (ctx->currentAction==PA_GET_REC_INFO) {
-		rec_t rec;
-		if (initRecFromArgs(ctx,&rec,args) && getRecInfo(&rec)) {
-			printRecInfo(ctx,&rec);
+		if (wctx->currentAction==PA_GET_REC_INFO) {
+			rec_t rec;
+			if (initRecFromArgs(wctx,&rec,args) && getRecInfo(&rec)) {
+				printRecInfo(wctx,&rec);
+			}
+			freeRec(&rec);
 		}
-		freeRec(&rec);
-	}
 
-	if (!ctx->isAjaxRequest) {
-		ctx_printfn(ctx,"</div>\n",-1,0); //level2
-		ctx_printfn(ctx,"</div>\n",-1,0); //level2-div
-	}
-	finishHtmlPage(ctx);
-	goto end;
+		if (!wctx->isAjaxRequest) {
+			wctx_printfn(wctx,"</div>\n",-1,0); //level2
+			wctx_printfn(wctx,"</div>\n",-1,0); //level2-div
+		}
+		finishHtmlPage(wctx);
+		goto end;
 outOfMemory:
-	crit("recordings.kl1:out of memory");
-	exit(1);
+		crit("recordings.kl1:out of memory");
+		exit(1);
 end:
-	freeCtx(ctx);
-	closeSvdrpAll();
+		closeSvdrpAll();
+	}
+	freeCtx(wctx);
 %>

@@ -88,7 +88,7 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
+bool openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
 	if (host->socket<1) {
 		struct sockaddr_in hostAddress;
 		dbg("Opening SVDRP connection to %s:%d",host->ip,host->port);
@@ -101,7 +101,7 @@ boolean_t openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
 		if ((host->socket=socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 			warn(strerror(errno));
 			host->socket=0;
-			return BT_FALSE;
+			return false;
 		}
 
 		// Connect to VDR
@@ -109,7 +109,7 @@ boolean_t openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
 		if (connect(host->socket, (struct sockaddr*)&hostAddress, sizeof(hostAddress)) < 0) {
 			warn(strerror(errno));
 			closeSocket(host);
-			return BT_FALSE;
+			return false;
 		}
 
 		readSvdrp(host,pdata,eod_regex);
@@ -122,7 +122,7 @@ boolean_t openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
 		*pdata=NULL;
 		return boolean(host->socket>0);
 	} else {
-		return BT_TRUE;
+		return true;
 	}
 }
 
@@ -144,7 +144,7 @@ void closeSvdrpAll() {
 	}
 }
 
-boolean_t writeSvdrp(hostConf_t *host, const char *cmd) {
+bool writeSvdrp(hostConf_t *host, const char *cmd) {
 	dbg("Sending SVDRP cmd [%s]",cmd);
 	int l=strlen(cmd);
 	int w=write(host->socket,cmd,l+1);
@@ -164,7 +164,7 @@ char *execSvdrp(hostConf_t * const host, const char *cmd){
 		regex_t eod_regex; //regex to detect End Of Data
 
 		dbg("Executing SVDRP cmd [%s]",cmd);
-		boolean_t isQuit=boolean(strncmp(cmd,"QUIT",4)==0);
+		bool isQuit=boolean(strncmp(cmd,"QUIT",4)==0);
 		if (isQuit && host->socket<1){
 			warn("SVDRP connection already closed before QUIT");
 			return NULL;

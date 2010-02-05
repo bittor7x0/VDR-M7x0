@@ -36,23 +36,23 @@ static void dbg_epg_kl1(void) {
 }
 #endif
 
-static void printHtmlHeadExtra(context_t *ctx){
-	if (!ctx->isAjaxRequest){
-		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/epg.css\" media=\"screen\" />\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.form-2.36.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/formHandler.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/timers.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/searches.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/epg.js\"></script>\n",webifConf.www);
+static void printHtmlHeadExtra(wcontext_t *wctx){
+	if (!wctx->isAjaxRequest){
+		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/epg.css\" media=\"screen\" />\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.form-2.36.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/formHandler.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/timers.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/searches.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/epg.js\"></script>\n",webifConf.www);
 	}
-	initJavascript(ctx);
-	if (!ctx->isAjaxRequest){
-		ctx_printf0(ctx,"$(function(){webif.epgPageInit();});\n");
+	initJavascript(wctx);
+	if (!wctx->isAjaxRequest){
+		wctx_printf0(wctx,"$(function(){webif.epgPageInit();});\n");
 	}
-	ctx_printfn(ctx,"$.extend(webif.messages,{\n",0,1);
-	ctx_printf0(ctx,"timerDeleteConfirm:'%s',\n",tr("timer.delete.confirm"));
-	ctx_printfn(ctx,"});\n",-1,0);
-	finishJavascript(ctx);
+	wctx_printfn(wctx,"$.extend(webif.messages,{\n",0,1);
+	wctx_printf0(wctx,"timerDeleteConfirm:'%s',\n",tr("timer.delete.confirm"));
+	wctx_printfn(wctx,"});\n",-1,0);
+	finishJavascript(wctx);
 }
 
 %><%
@@ -66,73 +66,73 @@ static void printHtmlHeadExtra(context_t *ctx){
 	vars_t *args = request_get_args(request);
 	channelNum=vars_get_value_i(args,"channelNum");
 
-	context_t vctx;
-	context_t *ctx=&vctx;
-	initCtx(ctx,session,request,response,out,2048);
-	ctx->currentPage=PN_PROGRAMS;
-	ctx->currentChannelNum=channelNum;
-	
-	const char *Epg=tr("epg");
-   initHtmlPage(ctx,Epg,printHtmlHeadExtra);
-	
-	hostConf_t *host=getFirstVdrHost();
-	if (!host){
-		ctx_printfn(ctx,"<div class=\"messageDialog\">\n",0,1);
-		printMessage(ctx,"alert",tr("errorNoVdrHost"),NULL, BT_FALSE);
-		ctx_printfn(ctx,"</div>\n",-1,0); //messageDialog
-	} else {
-		channelList_t vchannels; channelList_t *const channels=&vchannels;
-		timerList_t vtimers; timerList_t *const timers=&vtimers;
+	wcontext_t vwctx;
+	wcontext_t *wctx=&vwctx;
+	if (initCtx(wctx,PN_PROGRAMS,session,request,response,out,2048)){
+		wctx->currentChannelNum=channelNum;
+		
+		const char *Epg=tr("epg");
+		initHtmlPage(wctx,Epg,printHtmlHeadExtra);
+		
+		hostConf_t *host=getFirstVdrHost();
+		if (!host){
+			wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
+			printMessage(wctx,"alert",tr("errorNoVdrHost"),NULL, false);
+			wctx_printfn(wctx,"</div>\n",-1,0); //messageDialog
+		} else {
+			channelList_t vchannels; channelList_t *const channels=&vchannels;
+			timerList_t vtimers; timerList_t *const timers=&vtimers;
 
-		getChannelList(host,channels,SF_NONE,SD_NONE);
-		getTimerList(timers,channels,SF_START,SD_ASC);
+			getChannelList(host,channels,SF_NONE,SD_NONE);
+			getTimerList(timers,channels,SF_START,SD_ASC);
 
-		boolean_t isTv;
-		if (!ctx->isAjaxRequest){
-			ctx_printfn(ctx,"<div class=\"level2-div ui-widget\">\n",0,1);
-		}
-		if (channelNum<1) channelNum=1;
-		channel_t *channel=channels->channel+channelNum-1;
-		if (!ctx->isAjaxRequest){
-			ctx_printfn(ctx,"<h2 class=\"level2-top ui-widget-header\">%s %s &raquo;%s&laquo;\n",0,1
-				,tr("epg"),tr("for"),channel->channelName);
-			if (!webifConf.noLogos){
-				ctx_printf0(ctx,"<img id=\"logo\" src=\"www2/images/logos/%s.png\"/>\n",ctxChannelFilename(ctx,channel->channelName,BT_TRUE));
+			bool isTv;
+			if (!wctx->isAjaxRequest){
+				wctx_printfn(wctx,"<div class=\"level2-div ui-widget\">\n",0,1);
 			}
-			ctx_printfn(ctx,"</h2>\n",-1,0);
-			ctx_printfn(ctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
+			if (channelNum<1) channelNum=1;
+			channel_t *channel=channels->channel+channelNum-1;
+			if (!wctx->isAjaxRequest){
+				wctx_printfn(wctx,"<h2 class=\"level2-top ui-widget-header\">%s %s &raquo;%s&laquo;\n",0,1
+					,tr("epg"),tr("for"),channel->channelName);
+				if (!webifConf.noLogos){
+					wctx_printf0(wctx,"<img id=\"logo\" src=\"www2/images/logos/%s.png\"/>\n",wctxChannelFilename(wctx,channel->channelName,true));
+				}
+				wctx_printfn(wctx,"</h2>\n",-1,0);
+				wctx_printfn(wctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
+			}
+
+			wctx_printfn(wctx,"<div id=\"epg-div\" class=\"level3-div\">\n",0,1);
+			wctx_printfn(wctx,"<div class=\"level3-top\">\n",0,1);
+
+			wctx_printfn(wctx,"<form id=\"channelChange\" action=\"/epg.kl1\" method=\"get\">\n",1,0);
+			wctx_printfn(wctx,"<label>%s\n",0,1,tr("channel"));
+			printChannelListSelect(wctx,"channelNum","channelNum",channels,channelNum,"this.form.submit();");
+			wctx_printfn(wctx,"</label>\n",-1,0);
+			/*
+			wctx_printf0(wctx,
+				"<button type=\"submit\" class=\"change button-i-t ui-state-default\">"
+					"<div>"
+						"<span class=\"ui-icon ui-icon-shuffle\">&nbsp;</span>%s"
+					"</div>"
+				"</button>\n",tr("change"));
+			*/
+			wctx_printfn(wctx,"</form>\n",-1,0);
+			wctx_printfn(wctx,"</div>\n",-1,0); //level3-top
+
+			printChannelEpg(wctx,"epg",host,channelNum,timers);
+
+			wctx_printfn(wctx,"</div>\n",-1,0); //level3-div
+			freeTimerList(timers);
+			freeChannelList(channels);
 		}
-
-		ctx_printfn(ctx,"<div id=\"epg-div\" class=\"level3-div\">\n",0,1);
-		ctx_printfn(ctx,"<div class=\"level3-top\">\n",0,1);
-
-		ctx_printfn(ctx,"<form id=\"channelChange\" action=\"/epg.kl1\" method=\"get\">\n",1,0);
-		ctx_printfn(ctx,"<label>%s\n",0,1,tr("channel"));
-		printChannelListSelect(ctx,"channelNum","channelNum",channels,channelNum,"this.form.submit();");
-		ctx_printfn(ctx,"</label>\n",-1,0);
-		/*
-		ctx_printf0(ctx,
-			"<button type=\"submit\" class=\"change button-i-t ui-state-default\">"
-				"<div>"
-					"<span class=\"ui-icon ui-icon-shuffle\">&nbsp;</span>%s"
-				"</div>"
-			"</button>\n",tr("change"));
-		*/
-		ctx_printfn(ctx,"</form>\n",-1,0);
-		ctx_printfn(ctx,"</div>\n",-1,0); //level3-top
-
-		printChannelEpg(ctx,"epg",host,channelNum,timers);
-
-		ctx_printfn(ctx,"</div>\n",-1,0); //level3-div
-		freeTimerList(timers);
-		freeChannelList(channels);
+		if (!wctx->isAjaxRequest){
+			wctx_printfn(wctx,"</div>\n",-1,0); //level2
+			wctx_printfn(wctx,"</div>\n",-1,0); //level2-div
+		}
+		finishHtmlPage(wctx);
+		closeSvdrpAll();
 	}
-	if (!ctx->isAjaxRequest){
-		ctx_printfn(ctx,"</div>\n",-1,0); //level2
-		ctx_printfn(ctx,"</div>\n",-1,0); //level2-div
-	}
-	finishHtmlPage(ctx);
-	freeCtx(ctx);
-	closeSvdrpAll();
+	freeCtx(wctx);
 %>
 

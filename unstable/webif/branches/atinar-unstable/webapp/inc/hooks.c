@@ -26,7 +26,7 @@ int onServerInit(void){
 	const char *logos_tgz_src="/www/images/logos.tgz";
 	const char *logos_tgz_dst="/etc/webif/www/images/logos.tgz";
 	const char *logos_dir="/etc/webif/www/images/logos";
-	if (extractEmbededFile(logos_tgz_src,logos_tgz_dst,BT_FALSE)){
+	if (extractEmbededFile(logos_tgz_src,logos_tgz_dst,false)){
 		info("%s extraido",logos_tgz_dst);
 		extractLogosFromFile(NULL,logos_tgz_dst);
 	}

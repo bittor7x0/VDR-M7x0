@@ -52,11 +52,11 @@ void freeChannel(channel_t * const channel);
 void initChannelList(channelList_t  * const list);
 void freeChannelList(channelList_t  * const list);
 void getChannelList(hostConf_t *vdrHost, channelList_t * const list, sortField_t sortBy, sortDirection_t sortDirection);
-boolean_t getChannel(hostConf_t *vdrHost, int channelNum, channel_t * const channel);
-void printChannelListSelect(context_t *ctx,const char * id,const char * name,
+bool getChannel(hostConf_t *vdrHost, int channelNum, channel_t * const channel);
+void printChannelListSelect(wcontext_t *wctx,const char * id,const char * name,
 	const channelList_t *const channels,int channelNum,const char  *onchange);
-void printChannelControls(context_t *ctx,const channel_t *channel,const char *Epg,const char *LiveStream);
-char *ctxChannelDisplayName(context_t *ctx,const channel_t *channel);
-char *ctxChannelFilename(context_t *ctx, const char *channelName, boolean_t urlEncode);
+void printChannelControls(wcontext_t *wctx,const channel_t *channel,const char *Epg,const char *LiveStream);
+char *wctxChannelDisplayName(wcontext_t *wctx,const channel_t *channel);
+char *wctxChannelFilename(wcontext_t *wctx, const char *channelName, bool urlEncode);
 
 #endif

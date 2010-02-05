@@ -155,7 +155,7 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t getChannel(hostConf_t *host, int channelNum, channel_t * const channel) {
+bool getChannel(hostConf_t *host, int channelNum, channel_t * const channel) {
 	char cmd[10];
 
 	initChannel(channel);
@@ -164,7 +164,7 @@ boolean_t getChannel(hostConf_t *host, int channelNum, channel_t * const channel
 	} else {
 		sprintf(cmd,"CHAN %d",channelNum);
 	}
-	boolean_t result=BT_FALSE;
+	bool result=false;
 	char *data=execSvdrp(host,cmd);
 	if (data) {
 		char *r;
@@ -175,64 +175,64 @@ boolean_t getChannel(hostConf_t *host, int channelNum, channel_t * const channel
 			r++;
 			int l=strcspn(r,"\r\n");
 			channel->channelName=strndup(r,l);
-			result=BT_TRUE;
+			result=true;
 		}
 		free(data);
 	}
 	return result;
 }
 
-void printChannelListSelect(context_t *ctx,const char *id, const char *name,
+void printChannelListSelect(wcontext_t *wctx,const char *id, const char *name,
 	const channelList_t *const channels, int channelNum, const char *onchange)
 {
 	int i;
 	channel_t *channel;
-	ctx_printfn(ctx,"<select id=\"%s\" name=\"%s\" size=\"1\"",0,1,(id)?id:name,name);
+	wctx_printfn(wctx,"<select id=\"%s\" name=\"%s\" size=\"1\"",0,1,(id)?id:name,name);
 	if (onchange!=NULL){
-		ctx_printf(ctx," onchange=\"%s\"",onchange);
+		wctx_printf(wctx," onchange=\"%s\"",onchange);
 	}
-	ctx_printf(ctx,">\n");
+	wctx_printf(wctx,">\n");
 	for (i=0,channel=channels->channel;i<channels->length;i++,channel++) {
-		ctx_printf0(ctx,"<option value=\"%d\" %s>%d - %s</option>\n"
+		wctx_printf0(wctx,"<option value=\"%d\" %s>%d - %s</option>\n"
 			,channel->channelNum,selected[boolean(channel->channelNum==channelNum)]
 			,channel->channelNum,channel->channelName);
 		}
-	ctx_printfn(ctx,"</select>\n",-1,0);
+	wctx_printfn(wctx,"</select>\n",-1,0);
 }
 
-void printChannelControls(context_t *ctx,const channel_t *channel,const char *Epg,const char *LiveStream){
-	ctx_printfn(ctx,"<ul class=\"controls\"><!--\n",0,1);
+void printChannelControls(wcontext_t *wctx,const channel_t *channel,const char *Epg,const char *LiveStream){
+	wctx_printfn(wctx,"<ul class=\"controls\"><!--\n",0,1);
 	if (Epg) {
-		ctx_printfn(ctx,"--><li class=\"control\">\n",0,1);
-		ctx_printf0(ctx,"<a href=\"epg.kl1?channelNum=%d\" class=\"epg control button-i ui-state-default\" title=\"%s\">"
+		wctx_printfn(wctx,"--><li class=\"control\">\n",0,1);
+		wctx_printf0(wctx,"<a href=\"epg.kl1?channelNum=%d\" class=\"epg control button-i ui-state-default\" title=\"%s\">"
 				"<span class=\"ui-icon ui-icon-clock\">%s</span>"
 			"</a>\n",channel->channelNum,Epg,Epg);
-		ctx_printfn(ctx,"</li><!--\n",-1,0);
+		wctx_printfn(wctx,"</li><!--\n",-1,0);
 	}
 	if (LiveStream) {
-		boolean_t isTv=boolean(channel->vpid>1);
-		ctx_printfn(ctx,"--><li class=\"control\">\n",0,1);
-		ctx_printf0(ctx,"<a href=\"live.kl1?channelNum=%d\" class=\"live control button-i ui-state-default\" title=\"%s\">"
+		bool isTv=boolean(channel->vpid>1);
+		wctx_printfn(wctx,"--><li class=\"control\">\n",0,1);
+		wctx_printf0(wctx,"<a href=\"live.kl1?channelNum=%d\" class=\"live control button-i ui-state-default\" title=\"%s\">"
 				"<span class=\"ui-icon ui-icon-%s\">%s</span>"
 			"</a>\n",channel->channelNum,LiveStream,(isTv)?"tv":"radio",LiveStream);
-		ctx_printfn(ctx,"</li><!--\n",-1,0);
+		wctx_printfn(wctx,"</li><!--\n",-1,0);
 	}
-	ctx_printfn(ctx,"--></ul>\n",-1,0);
+	wctx_printfn(wctx,"--></ul>\n",-1,0);
 }
 
-char *ctxChannelDisplayName(context_t *ctx,const channel_t *channel){
+char *wctxChannelDisplayName(wcontext_t *wctx,const channel_t *channel){
 	if (strchr(channel->channelName,'.')){
 		CTX_CHK_BUFFER(strlen(channel->channelName));
-		strcpy(ctx->buffer,channel->channelName);
+		strcpy(wctx->buffer,channel->channelName);
 		char *c;
-		while ((c=strchr(ctx->buffer,'.'))!=NULL) *c=' ';
-		return ctx->buffer;
+		while ((c=strchr(wctx->buffer,'.'))!=NULL) *c=' ';
+		return wctx->buffer;
 	} else {
 		return channel->channelName;
 	}
 }
 
-char *ctxChannelFilename(context_t *ctx, const char *channelName, boolean_t urlEncode){
+char *wctxChannelFilename(wcontext_t *wctx, const char *channelName, bool urlEncode){
 	int l;
 	const char *s;
 	char *d;
@@ -245,7 +245,7 @@ char *ctxChannelFilename(context_t *ctx, const char *channelName, boolean_t urlE
 	*/
 	l=strlen(channelName);
 	CTX_CHK_BUFFER(l+1);
-	for (s=channelName,d=ctx->buffer;*s;s++){
+	for (s=channelName,d=wctx->buffer;*s;s++){
 		if (*s==' '){
 			*d='_';
 			d++;
@@ -261,10 +261,10 @@ char *ctxChannelFilename(context_t *ctx, const char *channelName, boolean_t urlE
 	}
 	*d=0;
 	if (urlEncode){
-		s=strdup(ctx->buffer);
+		s=strdup(wctx->buffer);
 		CTX_URL_ENCODE(s,l,NULL);
 		free(s);
 	}
-	return ctx->buffer;
+	return wctx->buffer;
 }
 

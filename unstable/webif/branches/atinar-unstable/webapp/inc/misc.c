@@ -46,11 +46,11 @@ const char *tabs="\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t
 
 systemType_t systemType=ST_UNKNOWN;
 
-boolean_t parseRequestStr(request_t *request, char ** pathStr, char ** queryStr) {
+bool parseRequestStr(request_t *request, char ** pathStr, char ** queryStr) {
 	*pathStr=NULL; 
 	*queryStr=NULL;
 	if (request==NULL){
-		return BT_FALSE;
+		return false;
 	}
 	const char *r=request_get_client_request(request);
 	int l;
@@ -63,7 +63,7 @@ boolean_t parseRequestStr(request_t *request, char ** pathStr, char ** queryStr)
 		r+=strcspn(r," ");
 		(*queryStr)=strndup(r,l);
 	}
-	return BT_TRUE;
+	return true;
 }
 
 char * strcatEx(char ** dest, const char * s) {
@@ -82,68 +82,73 @@ char * strcatEx(char ** dest, const char * s) {
 	return *dest;
 }
 
-boolean_t isDST(time_t * aTime) {
+bool isDST(time_t * aTime) {
 	struct tm t=*localtime(aTime);
 	return boolean(t.tm_isdst>0);
 }
 
-boolean_t sameDay(time_t oneDate,time_t anotherDate) {
+bool sameDay(time_t oneDate,time_t anotherDate) {
 	struct tm sone=*localtime(&oneDate);
 	struct tm sanother=*localtime(&anotherDate);
 	return boolean((sone.tm_year==sanother.tm_year) && (sone.tm_yday==sanother.tm_yday));
 }
 
-boolean_t sameString(const char * s1, const char * s2) {
+bool sameString(const char * s1, const char * s2) {
 	return boolean( (s1==NULL && s2==NULL) || (strcmp(s1,s2)==0) );
 }
 
-boolean_t sameInt(const int i1, const int i2) {
+bool sameInt(const int i1, const int i2) {
 	return boolean(i1==i2);
 }
 
-boolean_t sameIntEx(const char * s, const int i) {
+bool sameIntEx(const char * s, const int i) {
 	return boolean(strtol(s,NULL,10)==i);
 }
 
-boolean_t fileExists(const char * fileName) {
+bool fileExists(const char * fileName) {
 	struct stat status;
 
-	if (stat(fileName, &status)< 0) { return BT_FALSE; }
+	if (stat(fileName, &status)< 0) { return false; }
 	return boolean(S_ISREG(status.st_mode));
 }
 
-boolean_t dirExists(const char * dirName) {
+bool dirExists(const char * dirName) {
 	struct stat status;
 	
-	if (( stat (dirName, &status)) < 0) { return BT_FALSE; }
+	if (( stat (dirName, &status)) < 0) { return false; }
 	return boolean(S_ISDIR(status.st_mode));
 }
 
-void initCtx(context_t *ctx, session_t *session, request_t *request, response_t *response, io_t *out, int bufferLength ){
+bool initCtx(wcontext_t *wctx, pageNumber_t currentPage, session_t *session, request_t *request, response_t *response, io_t *out, int bufferLength ){
 	readWebifConf();
-	ctx->session=session;
-	ctx->request=request;
-	ctx->response=response;
-	ctx->out=out;
-	ctx->ntabs=0;
-	ctx->currentPage=PN_INDEX;
-	ctx->currentAction=PA_NOACTION;
-	ctx->currentChannelNum=0;
-	ctx->sortBy=SF_START;
-	ctx->sortDirection=SD_ASC;
-	ctx->bufferLength=bufferLength;
-	ctx->buffer=NULL;
+	info("user: %s, password: %s",webifConf.user,webifConf.password);
+	wctx->session=session;
+	wctx->request=request;
+	wctx->response=response;
+	wctx->out=out;
+	wctx->ntabs=0;
+	wctx->currentPage=currentPage;
+	wctx->currentAction=PA_NOACTION;
+	wctx->currentChannelNum=0;
+	wctx->sortBy=SF_START;
+	wctx->sortDirection=SD_ASC;
+	wctx->bufferLength=0;
+	wctx->buffer=NULL;
+	if (strlen(webifConf.user)>0 && strlen(webifConf.password)>0 && !is_connected(wctx)) {
+		return false;
+	}
 	if (bufferLength>0){
-		crit_goto_if((ctx->buffer=malloc(bufferLength))==NULL,outOfMemory);
+		crit_goto_if((wctx->buffer=malloc(bufferLength))==NULL,outOfMemory);
+		wctx->bufferLength=bufferLength;
 	}
 
 	header_t *header = request_get_header(request);
 	field_t *field;
 	field=header_get_field(header,"X-Requested-With");
-	ctx->isAjaxRequest=boolean(field!=NULL && strncmp("XMLHttpRequest",field->value,14)==0);
+	wctx->isAjaxRequest=boolean(field!=NULL && strncmp("XMLHttpRequest",field->value,14)==0);
 
 	field=header_get_field(header,"Cache-Control");
-	ctx->isReload=boolean(field!=NULL && strstr(field->value,"max-age=0")!=NULL);
+	wctx->isReload=boolean(field!=NULL && strstr(field->value,"max-age=0")!=NULL);
 
 	langId=webifConf.langId;  
 	if ((langId<0) || (langId>=I18NNUM)) {
@@ -162,78 +167,62 @@ void initCtx(context_t *ctx, session_t *session, request_t *request, response_t 
 		langId=0;
 	}
 	setlocale(LC_ALL,locale[langId]);
-	/*----System type----
-	systemType=ST_UNKNOWN;
-	FILE *f = fopen("/etc/systemtype","r");
-	if (f) {
-		char str[10];
-		fgets(str,sizeof(str),f);
-		fclose(f);
-		if (strncmp(str,"m740",4)==0) {
-			systemType=ST_M740AV;
-		} else if (strncmp(str,"m750s",5)==0) {
-			systemType=ST_M750S;
-		} else if (strncmp(str,"m750c",5)==0) {
-			systemType=ST_M750C;
-		}
-	}
-	*/
-	return;
+	return true;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
 }
 
-void freeCtx(context_t *ctx){
-	if (ctx->buffer!=NULL){
-		free(ctx->buffer);
-		ctx->bufferLength=0;
-		ctx->buffer=NULL;
+void freeCtx(wcontext_t *wctx){
+	if (wctx->buffer!=NULL){
+		free(wctx->buffer);
+		wctx->bufferLength=0;
+		wctx->buffer=NULL;
 	}
 }
 
-void chkCtxBuffer(context_t *ctx,int length, const char * routineName){
-	if ((length+1)>ctx->bufferLength){
+void chkCtxBuffer(wcontext_t *wctx,int length, const char * routineName){
+	if ((length+1)>wctx->bufferLength){
 		if (routineName){
-			warn("buffer insuficiente en %s:  %d %d",routineName,ctx->bufferLength,length);
+			warn("buffer insuficiente en %s:  %d %d",routineName,wctx->bufferLength,length);
 		}
-		crit_goto_if((ctx->buffer=realloc(ctx->buffer,length+1))==NULL,outOfMemory);
-		ctx->bufferLength=length+1;
+		crit_goto_if((wctx->buffer=realloc(wctx->buffer,length+1))==NULL,outOfMemory);
+		wctx->bufferLength=length+1;
 	}
 	return;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
 }
-char * ctxHtmlEncode(context_t *ctx, const char * const str, int l, const char * routineName){
+char * wctxHtmlEncode(wcontext_t *wctx, const char * const str, int l, const char * routineName){
 	if (l<0) l=strlen(str);
-	chkCtxBuffer(ctx,2*l,routineName);
-	u_htmlncpy(ctx->buffer,str,l,HTMLCPY_ENCODE);
-	return ctx->buffer;
+	chkCtxBuffer(wctx,2*l,routineName);
+	u_htmlncpy(wctx->buffer,str,l,HTMLCPY_ENCODE);
+	return wctx->buffer;
 }
 
-char * ctxUrlEncode(context_t *ctx, const char * const url, int l, const char * keep, const char *routineName){
+char * wctxUrlEncode(wcontext_t *wctx, const char * const url, int l, const char * keep, const char *routineName){
 	if (l<0) l=strlen(url);
-	chkCtxBuffer(ctx,2*l,routineName);
-	u_urlncpy_encode(ctx->buffer,url,l,keep);
-	return ctx->buffer;
+	chkCtxBuffer(wctx,2*l,routineName);
+	u_urlncpy_encode(wctx->buffer,url,l,keep);
+	return wctx->buffer;
 }
 
-char * ctxUrlDecode(context_t *ctx, const char * const url, const char *routineName){
+char * wctxUrlDecode(wcontext_t *wctx, const char * const url, const char *routineName){
 	int l=strlen(url);
-	chkCtxBuffer(ctx,l,routineName);
-	u_urlncpy(ctx->buffer,url,l,URLCPY_DECODE);
-	return ctx->buffer;
+	chkCtxBuffer(wctx,l,routineName);
+	u_urlncpy(wctx->buffer,url,l,URLCPY_DECODE);
+	return wctx->buffer;
 }
 
 /*
  * Request hechas a traves de ajax normalmente se codifican en UTF-8, que kloned no procesa bien.
  * Devuelve true si se duplica el string, false si se retorna el arg original.
  */
-char * ctxGetRequestParam(context_t *ctx, vars_t *args, const char *argName, boolean_t *isACopy){
+char * wctxGetRequestParam(wcontext_t *wctx, vars_t *args, const char *argName, bool *isACopy){
 	const char *argValue=vars_get_value(args,argName);
-	if (isACopy) *isACopy=BT_FALSE;
-	if (argValue && argValue[0] && ctx->isAjaxRequest) { 
+	if (isACopy) *isACopy=false;
+	if (argValue && argValue[0] && wctx->isAjaxRequest) { 
 		//TODO comprobar los headers de request para verificar que se utiliza UTF-8
 		iconv_t iconv_cd = iconv_open("ISO-8859-15","UTF-8");
 		if( iconv_cd == (iconv_t)-1) {
@@ -241,16 +230,16 @@ char * ctxGetRequestParam(context_t *ctx, vars_t *args, const char *argName, boo
 		} else {
 			size_t inbytesleft = strlen(argValue);
 			CTX_CHK_BUFFER(inbytesleft);
-			size_t outbytesleft = ctx->bufferLength - 1;
-			char *latin1_ptr = ctx->buffer;
+			size_t outbytesleft = wctx->bufferLength - 1;
+			char *latin1_ptr = wctx->buffer;
 			char *utf8_ptr = (char *)argValue;
 			size_t chars = iconv(iconv_cd, &utf8_ptr, &inbytesleft, &latin1_ptr, &outbytesleft);
 			if(chars == -1) {
 				warn("Error de conversion UTF8->ISO-8859-15");
 			} else {
 				*latin1_ptr=0;
-				if (isACopy) *isACopy=BT_TRUE;
-				return strdup(ctx->buffer);
+				if (isACopy) *isACopy=true;
+				return strdup(wctx->buffer);
 			}
 		}
 	}
@@ -320,216 +309,216 @@ void returnHttpNoContent(response_t *response){
 	response_print_header(response);
 }	
 
-void initHtmlDoc(context_t *ctx){
-	response_set_content_type(ctx->response,"text/html; charset=ISO-8859-15");
-	response_set_field(ctx->response,"Content-Style-Type","text/css");
-	response_set_field(ctx->response,"Content-Script-Type","text/javascript");
-	ctx->ntabs=0;
-	if (!ctx->isAjaxRequest){
-		ctx_printf0(ctx,"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
-		ctx_printfn(ctx,"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"%s\" lang=\"%s\">\n",0,1,alpha2[langId],alpha2[langId]);
+void initHtmlDoc(wcontext_t *wctx){
+	response_set_content_type(wctx->response,"text/html; charset=ISO-8859-15");
+	response_set_field(wctx->response,"Content-Style-Type","text/css");
+	response_set_field(wctx->response,"Content-Script-Type","text/javascript");
+	wctx->ntabs=0;
+	if (!wctx->isAjaxRequest){
+		wctx_printf0(wctx,"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
+		wctx_printfn(wctx,"<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"%s\" lang=\"%s\">\n",0,1,alpha2[langId],alpha2[langId]);
 	}
 }
 
-void initHtmlPage(context_t *ctx, const char *title, printHtmlHeadExtra_t printHtmlHeadExtra){
-	initHtmlDoc(ctx);
-	if (!ctx->isAjaxRequest){
-		ctx_printfn(ctx,"<head>\n",0,1);
-		ctx_printf0(ctx,"<title>%s</title>\n",title);
-		ctx_printf0(ctx,"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n");
-		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen.css\" media=\"screen\" />\n",webifConf.www);
-		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/print.css\" media=\"print\" />\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-1.3.2.min.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-ui-1.7.2.min.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.hoverIntent.min.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/superfish.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/supersubs.js\"></script>\n",webifConf.www);
-		ctx_printf0(ctx,"<script type=\"text/javascript\" src=\"%s/js/common.js\"></script>\n",webifConf.www);
-		ctx_printfn(ctx,"<script type=\"text/javascript\">\n",0,1);
-		ctx_printf0(ctx,"$.extend(webif.state,{'currentPage':%d,'currentAction':%d});\n",ctx->currentPage,ctx->currentAction);
-		ctx_printf0(ctx,"$.extend(webif.messages,{close:'%s',cancel:'%s'});\n",tr("close"),tr("cancel"));
-		ctx_printfn(ctx,"</script>\n",-1,0);
+void initHtmlPage(wcontext_t *wctx, const char *title, printHtmlHeadExtra_t printHtmlHeadExtra){
+	initHtmlDoc(wctx);
+	if (!wctx->isAjaxRequest){
+		wctx_printfn(wctx,"<head>\n",0,1);
+		wctx_printf0(wctx,"<title>%s</title>\n",title);
+		wctx_printf0(wctx,"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n");
+		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen.css\" media=\"screen\" />\n",webifConf.www);
+		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/print.css\" media=\"print\" />\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-1.3.2.min.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-ui-1.7.2.min.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.hoverIntent.min.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/superfish.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/supersubs.js\"></script>\n",webifConf.www);
+		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/common.js\"></script>\n",webifConf.www);
+		wctx_printfn(wctx,"<script type=\"text/javascript\">\n",0,1);
+		wctx_printf0(wctx,"$.extend(webif.state,{'currentPage':%d,'currentAction':%d});\n",wctx->currentPage,wctx->currentAction);
+		wctx_printf0(wctx,"$.extend(webif.messages,{close:'%s',cancel:'%s'});\n",tr("close"),tr("cancel"));
+		wctx_printfn(wctx,"</script>\n",-1,0);
 	}
 	if (printHtmlHeadExtra) {
-		printHtmlHeadExtra(ctx);
+		printHtmlHeadExtra(wctx);
 	}
-	if (!ctx->isAjaxRequest){
-		ctx_printfn(ctx,"<!--[if IE 8]>\n",0,1);
-		ctx_printf0(ctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie8.css\" media=\"screen\" />\n",webifConf.www);
-		ctx_printfn(ctx,"<![endif]-->\n",-1,0);
+	if (!wctx->isAjaxRequest){
+		wctx_printfn(wctx,"<!--[if IE 8]>\n",0,1);
+		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie8.css\" media=\"screen\" />\n",webifConf.www);
+		wctx_printfn(wctx,"<![endif]-->\n",-1,0);
 	}
 		
-	if (!ctx->isAjaxRequest){
-		ctx_printfn(ctx,"</head>\n",-1,0);
-		ctx_printfn(ctx,"<body id=\"body-p%d-a%d\">\n",0,1,ctx->currentPage,ctx->currentAction);
-		ctx_printfn(ctx,"<div id=\"page-div\">\n",0,1);
-		ctx_printfn(ctx,"<div id=\"page-top\">\n",0,1);
-		ctx_printfn(ctx,"<table class=\"layout\" cellspacing=\"5\">\n",0,1);
-		ctx_printf0(ctx,"<col class=\"menu\"/>\n");
-		ctx_printf0(ctx,"<col class=\"logo\"/>\n");
-		ctx_printfn(ctx,"<tbody>\n",0,1);
-		ctx_printfn(ctx,"<tr>\n",0,1);
-		ctx_printfn(ctx,"<td>\n",0,1);
-		ctx_printf0(ctx,"<h1 id=\"page-title\">%s</h1>\n",title);
-		ctx_printfn(ctx,"</td>\n",-1,0);
-		ctx_printfn(ctx,"<td rowspan=\"2\">\n",0,1);
-		ctx_printf0(ctx,"<div id=\"logo\"></div>\n");
-		ctx_printfn(ctx,"</td>\n",-1,0);
-		ctx_printfn(ctx,"</tr>\n",-1,0);
-		ctx_printfn(ctx,"<tr>\n",0,1);
-		ctx_printfn(ctx,"<td>\n",0,1);
-		printMenu(ctx);
-		ctx_printfn(ctx,"</td>\n",-1,0);
-		ctx_printfn(ctx,"</tr>\n",-1,0);
-		ctx_printfn(ctx,"</tbody>\n",-1,0);
-		ctx_printfn(ctx,"</table>\n",-1,0);
-		ctx_printfn(ctx,"</div>\n",-1,0); //page-top
-		ctx_printfn(ctx,"<div id=\"page\">\n",0,1);
+	if (!wctx->isAjaxRequest){
+		wctx_printfn(wctx,"</head>\n",-1,0);
+		wctx_printfn(wctx,"<body id=\"body-p%d-a%d\">\n",0,1,wctx->currentPage,wctx->currentAction);
+		wctx_printfn(wctx,"<div id=\"page-div\">\n",0,1);
+		wctx_printfn(wctx,"<div id=\"page-top\">\n",0,1);
+		wctx_printfn(wctx,"<table class=\"layout\" cellspacing=\"5\">\n",0,1);
+		wctx_printf0(wctx,"<col class=\"menu\"/>\n");
+		wctx_printf0(wctx,"<col class=\"logo\"/>\n");
+		wctx_printfn(wctx,"<tbody>\n",0,1);
+		wctx_printfn(wctx,"<tr>\n",0,1);
+		wctx_printfn(wctx,"<td>\n",0,1);
+		wctx_printf0(wctx,"<h1 id=\"page-title\">%s</h1>\n",title);
+		wctx_printfn(wctx,"</td>\n",-1,0);
+		wctx_printfn(wctx,"<td rowspan=\"2\">\n",0,1);
+		wctx_printf0(wctx,"<div id=\"logo\"></div>\n");
+		wctx_printfn(wctx,"</td>\n",-1,0);
+		wctx_printfn(wctx,"</tr>\n",-1,0);
+		wctx_printfn(wctx,"<tr>\n",0,1);
+		wctx_printfn(wctx,"<td>\n",0,1);
+		printMenu(wctx);
+		wctx_printfn(wctx,"</td>\n",-1,0);
+		wctx_printfn(wctx,"</tr>\n",-1,0);
+		wctx_printfn(wctx,"</tbody>\n",-1,0);
+		wctx_printfn(wctx,"</table>\n",-1,0);
+		wctx_printfn(wctx,"</div>\n",-1,0); //page-top
+		wctx_printfn(wctx,"<div id=\"page\">\n",0,1);
 /*		No nos pasemos, de momento:
-		ctx_printfn(ctx,"<!--[if lte IE 8]>\n",0,1);
-		printMessage(ctx,"alert",tr("browser.not_supported"),tr("browser.please_update"),BT_FALSE);
-		ctx_printfn(ctx,"<![endif]-->\n",-1,0);
+		wctx_printfn(wctx,"<!--[if lte IE 8]>\n",0,1);
+		printMessage(wctx,"alert",tr("browser.not_supported"),tr("browser.please_update"),false);
+		wctx_printfn(wctx,"<![endif]-->\n",-1,0);
 */
 	}
 }
 
-#define CURRENT_PAGE(pageNumber) boolean(ctx->currentPage==pageNumber)
-#define CURRENT_ACTION(action) boolean(ctx->currentAction==action)
-#define SORT_BY(sortField) boolean(ctx->sortBy==sortField)
+#define CURRENT_PAGE(pageNumber) boolean(wctx->currentPage==pageNumber)
+#define CURRENT_ACTION(action) boolean(wctx->currentAction==action)
+#define SORT_BY(sortField) boolean(wctx->sortBy==sortField)
 
-void printMenu(context_t *ctx){
-	if (ctx->isAjaxRequest) return;
+void printMenu(wcontext_t *wctx){
+	if (wctx->isAjaxRequest) return;
 	int i;
 	int clock_id;
 	const char *Summary=tr("summary");
-	ctx_printf0(ctx,"<ul id=\"menu\" class=\"sf-menu\"><li%s><a href=\"epgGrid.kl1\">%s</a>\n"
+	wctx_printf0(wctx,"<ul id=\"menu\" class=\"sf-menu\"><li%s><a href=\"epgGrid.kl1\">%s</a>\n"
 		,classCurrent[CURRENT_PAGE(PN_EPG_GRID)],tr("epg"));
-	ctx_printfn(ctx,"<ul><li%s><a href=\"epgGrid.kl1\">%s</a>\n"
+	wctx_printfn(wctx,"<ul><li%s><a href=\"epgGrid.kl1\">%s</a>\n"
 		,1,0,classCurrent[CURRENT_PAGE(PN_EPG_GRID)],tr("epg.grid"));
-	ctx_printf0(ctx,"</li><li%s><a href=\"epg.kl1?channelNum=%d\">%s</a>\n"
-		,classCurrent[CURRENT_PAGE(PN_PROGRAMS)],(ctx->currentChannelNum>0)?ctx->currentChannelNum:1,tr("epg.list"));
-	ctx_printfn(ctx,"</li></ul>\n",0,-1);
+	wctx_printf0(wctx,"</li><li%s><a href=\"epg.kl1?channelNum=%d\">%s</a>\n"
+		,classCurrent[CURRENT_PAGE(PN_PROGRAMS)],(wctx->currentChannelNum>0)?wctx->currentChannelNum:1,tr("epg.list"));
+	wctx_printfn(wctx,"</li></ul>\n",0,-1);
 
-	ctx_printf0(ctx,"</li><li%s><a href=\"channels.kl1\">%s</a>\n"
+	wctx_printf0(wctx,"</li><li%s><a href=\"channels.kl1\">%s</a>\n"
 		,classCurrent[CURRENT_PAGE(PN_CHANNELS)],tr("channels"));
-	ctx_printfn(ctx,"<ul><li%s><a href=\"channels.kl1\">%s</a>\n"
+	wctx_printfn(wctx,"<ul><li%s><a href=\"channels.kl1\">%s</a>\n"
 		,1,0,classCurrent[CURRENT_PAGE(PN_CHANNELS)],Summary);
-	ctx_printf0(ctx,"</li><li%s><a href=\"live.kl1?channelNum=%d\">%s</a>\n"
-		,classCurrent[CURRENT_PAGE(PN_LIVE_STREAM)],(ctx->currentChannelNum>0)?ctx->currentChannelNum:1,tr("liveStream"));
-	ctx_printf0(ctx,"</li><li><a href=\"playlistch.kl1?type=%d\">%s</a>\n"
+	wctx_printf0(wctx,"</li><li%s><a href=\"live.kl1?channelNum=%d\">%s</a>\n"
+		,classCurrent[CURRENT_PAGE(PN_LIVE_STREAM)],(wctx->currentChannelNum>0)?wctx->currentChannelNum:1,tr("liveStream"));
+	wctx_printf0(wctx,"</li><li><a href=\"playlistch.kl1?type=%d\">%s</a>\n"
 		,webifConf.playlistType,tr("channel.playlist"));
-	ctx_printfn(ctx,"</li></ul>\n",0,-1);
+	wctx_printfn(wctx,"</li></ul>\n",0,-1);
 
-	ctx_printf0(ctx,"</li><li%s><a href=\"timers.kl1\">%s</a>\n"
+	wctx_printf0(wctx,"</li><li%s><a href=\"timers.kl1\">%s</a>\n"
 		,classCurrent[CURRENT_PAGE(PN_TIMERS)],tr("timers"));
-	ctx_printfn(ctx,"<ul><li%s><a href=\"timers.kl1\">%s</a>\n"
+	wctx_printfn(wctx,"<ul><li%s><a href=\"timers.kl1\">%s</a>\n"
 		,1,0,classCurrent[boolean(CURRENT_PAGE(PN_TIMERS) && !CURRENT_ACTION(PA_EDIT))],tr("timers"));
-	ctx_printf0(ctx,"</li><li%s><a href=\"timers.kl1?a=%d\">%s</a>\n"
+	wctx_printf0(wctx,"</li><li%s><a href=\"timers.kl1?a=%d\">%s</a>\n"
 		,classCurrent[boolean(CURRENT_PAGE(PN_TIMERS) && CURRENT_ACTION(PA_EDIT))],PA_EDIT,tr("timer.create"));
-	ctx_printf0(ctx,"</li><li%s><a href=\"searches.kl1\">%s</a>\n"
+	wctx_printf0(wctx,"</li><li%s><a href=\"searches.kl1\">%s</a>\n"
 		,classCurrent[boolean(CURRENT_PAGE(PN_SEARCHES) && !CURRENT_ACTION(PA_EDIT))],tr("searches"));
-	ctx_printf0(ctx,"</li><li%s><a href=\"searches.kl1?a=%d\">%s</a>\n"
+	wctx_printf0(wctx,"</li><li%s><a href=\"searches.kl1?a=%d\">%s</a>\n"
 		,classCurrent[boolean(CURRENT_PAGE(PN_SEARCHES) && CURRENT_ACTION(PA_EDIT))],PA_EDIT,tr("search.create"));
-	ctx_printfn(ctx,"</li></ul>\n",0,-1);
+	wctx_printfn(wctx,"</li></ul>\n",0,-1);
 		
-	ctx_printf0(ctx,"</li><li%s><a href=\"recordings.kl1\">%s</a>\n"
+	wctx_printf0(wctx,"</li><li%s><a href=\"recordings.kl1\">%s</a>\n"
 		,classCurrent[CURRENT_PAGE(PN_RECORDINGS)],tr("recordings"));
-	ctx_printfn(ctx,"<ul><li%s><a href=\"recordings.kl1\">%s</a>\n"
+	wctx_printfn(wctx,"<ul><li%s><a href=\"recordings.kl1\">%s</a>\n"
 		,1,0,classCurrent[boolean(CURRENT_PAGE(PN_RECORDINGS) && CURRENT_ACTION(PA_BROWSE))],tr("browse"));
-	ctx_printf0(ctx,"</li><li%s><a href=\"recordings.kl1?a=%d&amp;sort=%d&amp;direction=%d\">%s (%s)</a>\n"
+	wctx_printf0(wctx,"</li><li%s><a href=\"recordings.kl1?a=%d&amp;sort=%d&amp;direction=%d\">%s (%s)</a>\n"
 		,classCurrent[boolean(CURRENT_PAGE(PN_RECORDINGS) && CURRENT_ACTION(PA_SUMMARY) && SORT_BY(SF_TITLE))],PA_SUMMARY,SF_TITLE,SD_ASC,Summary,tr("title"));
-	ctx_printf0(ctx,"</li><li%s><a href=\"recordings.kl1?a=%d&amp;sort=%d&amp;direction=%d\">%s (%s)</a>\n"
+	wctx_printf0(wctx,"</li><li%s><a href=\"recordings.kl1?a=%d&amp;sort=%d&amp;direction=%d\">%s (%s)</a>\n"
 		,classCurrent[boolean(CURRENT_PAGE(PN_RECORDINGS) && CURRENT_ACTION(PA_SUMMARY) && SORT_BY(SF_START))],PA_SUMMARY,SF_START,SD_DESC,Summary,tr("date"));
-	ctx_printfn(ctx,"</li></ul>\n",0,-1);
+	wctx_printfn(wctx,"</li></ul>\n",0,-1);
 		
 	if (!webifConf.configChangeDisabled){
-		ctx_printf0(ctx,"</li><li%s><a href=\"settings.kl1\">%s</a>\n",classCurrent[CURRENT_PAGE(PN_SETTINGS)],tr("setup"));
-		ctx_printfn(ctx,"<ul>",1,0);
+		wctx_printf0(wctx,"</li><li%s><a href=\"settings.kl1\">%s</a>\n",classCurrent[CURRENT_PAGE(PN_SETTINGS)],tr("setup"));
+		wctx_printfn(wctx,"<ul>",1,0);
 		for (i=0;i<cfgFileLength;i++) {
-			ctx_printf(ctx,"<li><a href=\"settings.kl1?cfgFileId=%d\">%s</a>\n",i,tr(cfgFile[i].i18nKey));
-			ctx_printf0(ctx,"</li>");
+			wctx_printf(wctx,"<li><a href=\"settings.kl1?cfgFileId=%d\">%s</a>\n",i,tr(cfgFile[i].i18nKey));
+			wctx_printf0(wctx,"</li>");
 		}
-		ctx_printf(ctx,"</ul>\n");
-		dectab(ctx);
+		wctx_printf(wctx,"</ul>\n");
+		dectab(wctx);
 	}
 	if (!webifConf.configViewDisabled){
-		ctx_printf0(ctx,"</li><li%s><a href=\"view.kl1\">%s</a>\n",classCurrent[CURRENT_PAGE(PN_FILEVIEW)],tr("fileView"));
-		ctx_printfn(ctx,"<ul>",1,0);
+		wctx_printf0(wctx,"</li><li%s><a href=\"view.kl1\">%s</a>\n",classCurrent[CURRENT_PAGE(PN_FILEVIEW)],tr("fileView"));
+		wctx_printfn(wctx,"<ul>",1,0);
 		for(i=0;i<fileMappingLength;i++) {
 			if (fileExists(fileMapping[i].fileName)) {
-				ctx_printf(ctx,"<li><a href=\"view.kl1?action=%d&amp;fileNum=%d\">&bull;&nbsp;%s</a>\n",PA_SHOW,i,tr(fileMapping[i].i18nKey));
-				ctx_printf0(ctx,"</li>");
+				wctx_printf(wctx,"<li><a href=\"view.kl1?action=%d&amp;fileNum=%d\">&bull;&nbsp;%s</a>\n",PA_SHOW,i,tr(fileMapping[i].i18nKey));
+				wctx_printf0(wctx,"</li>");
 			}
 		}
-		ctx_printf(ctx,"</ul>\n");
-		dectab(ctx);
+		wctx_printf(wctx,"</ul>\n");
+		dectab(wctx);
 	}
 	
-	ctx_printf0(ctx,"</li><li><a href=\"#\">%s</a>\n",tr("links"));
-	ctx_printfn(ctx,"<ul><li><a class=\"newWindow\" href=\"http://www.open7x0.org/\">open7x0.org</a>\n",1,0);
-	ctx_printf0(ctx,"</li><li><a class=\"newWindow\" href=\"http://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a>\n");
-	ctx_printfn(ctx,"</li></ul>\n",0,-1);
-	ctx_printf0(ctx,"</li></ul>\n");
+	wctx_printf0(wctx,"</li><li><a href=\"#\">%s</a>\n",tr("links"));
+	wctx_printfn(wctx,"<ul><li><a class=\"newWindow\" href=\"http://www.open7x0.org/\">open7x0.org</a>\n",1,0);
+	wctx_printf0(wctx,"</li><li><a class=\"newWindow\" href=\"http://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a>\n");
+	wctx_printfn(wctx,"</li></ul>\n",0,-1);
+	wctx_printf0(wctx,"</li></ul>\n");
 }
 
-void finishHtmlPage(context_t *ctx){
-	if (!ctx->isAjaxRequest){
+void finishHtmlPage(wcontext_t *wctx){
+	if (!wctx->isAjaxRequest){
 #ifndef IGNORE_TABS
-		if (ctx->ntabs<4) {
+		if (wctx->ntabs<4) {
 			dbg("Indentacion erronea, revisar markup");
-			ctx->ntabs=4;
+			wctx->ntabs=4;
 		}
 #endif
-		ctx_printfn(ctx,"</div>\n",-1,0); //page
-		ctx_printfn(ctx,"<div id=\"page-bottom\">\n",0,1);
-		ctx_printf0(ctx,"<p>(C) 2006 open7x0-team</p>\n");
-		ctx_printf0(ctx,"<p>(C) 2008 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n");
-		ctx_printfn(ctx,"</div>\n",-1,0); //page-bottom
-		ctx_printfn(ctx,"</div>\n",-1,0); //page-div
-		ctx_printfn(ctx,"</body>\n",-1,0);
-		ctx_printfn(ctx,"</html>\n",-1,0);
+		wctx_printfn(wctx,"</div>\n",-1,0); //page
+		wctx_printfn(wctx,"<div id=\"page-bottom\">\n",0,1);
+		wctx_printf0(wctx,"<p>(C) 2006 open7x0-team</p>\n");
+		wctx_printf0(wctx,"<p>(C) 2008 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n");
+		wctx_printfn(wctx,"</div>\n",-1,0); //page-bottom
+		wctx_printfn(wctx,"</div>\n",-1,0); //page-div
+		wctx_printfn(wctx,"</body>\n",-1,0);
+		wctx_printfn(wctx,"</html>\n",-1,0);
 	}
 }
 
-void initJavascript(context_t *ctx){
-	ctx_printfn(ctx,"<script type=\"text/javascript\">\n",0,1);
-	//ctx_printfn(ctx,"<![CDATA[\n",0,1);
+void initJavascript(wcontext_t *wctx){
+	wctx_printfn(wctx,"<script type=\"text/javascript\">\n",0,1);
+	//wctx_printfn(wctx,"<![CDATA[\n",0,1);
 }
 
-void finishJavascript(context_t *ctx){
-	//ctx_printfn(ctx,"]]>",-1,0);
-	ctx_printfn(ctx,"</script>\n",-1,0);
+void finishJavascript(wcontext_t *wctx){
+	//wctx_printfn(wctx,"]]>",-1,0);
+	wctx_printfn(wctx,"</script>\n",-1,0);
 }
 
-void printMessage(context_t *ctx, const char *cssClass, const char *title, const char *message, boolean_t encode){
-	ctx_printfn(ctx,"<div class=\"response-div %s\">\n",0,1,cssClass);
+void printMessage(wcontext_t *wctx, const char *cssClass, const char *title, const char *message, bool encode){
+	wctx_printfn(wctx,"<div class=\"response-div %s\">\n",0,1,cssClass);
 	if (title && title[0]){
-		ctx_printf0(ctx,"<p class=\"response-top\">%s%s</p>\n",title,(message && message[0])?":":"");
+		wctx_printf0(wctx,"<p class=\"response-top\">%s%s</p>\n",title,(message && message[0])?":":"");
 	}
 	if (message && message[0]) {
-		ctx_printf0(ctx,"<p class=\"response\">%s</p>\n",(encode) ? CTX_HTML_ENCODE(message,-1) : message);
+		wctx_printf0(wctx,"<p class=\"response\">%s</p>\n",(encode) ? CTX_HTML_ENCODE(message,-1) : message);
 	}
-	ctx_printfn(ctx,"</div>\n",-1,0);
+	wctx_printfn(wctx,"</div>\n",-1,0);
 }
 
-void printList1TH(context_t *ctx, const char *page, sortField_t sortField, const char *label){
-	ctx_printf0(ctx,"<th><a class=\"%s\" href=\"%s?a=%d&amp;sort=%d&amp;direction=%d\">%s</a></th>\n"
-		,cssSortClass[(SORT_BY(sortField)?ctx->sortDirection:SD_NONE)+1],page,ctx->currentAction
-		,sortField,SORT_BY(sortField)?-ctx->sortDirection:SD_ASC,label);
+void printList1TH(wcontext_t *wctx, const char *page, sortField_t sortField, const char *label){
+	wctx_printf0(wctx,"<th><a class=\"%s\" href=\"%s?a=%d&amp;sort=%d&amp;direction=%d\">%s</a></th>\n"
+		,cssSortClass[(SORT_BY(sortField)?wctx->sortDirection:SD_NONE)+1],page,wctx->currentAction
+		,sortField,SORT_BY(sortField)?-wctx->sortDirection:SD_ASC,label);
 }
 
 /**
 * Extraer archivo embebido. Devuelve true si al terminar existe dst.
 */
-boolean_t extractEmbededFile(const char *src, const char *dst, boolean_t overwrite){
-	boolean_t result=BT_FALSE;
+bool extractEmbededFile(const char *src, const char *dst, bool overwrite){
+	bool result=false;
 	io_t *io=NULL;
 	if (createParentFolders(dst,S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)){
 		struct stat st;
 		int dst_stat=stat(dst, &st);
 		if (dst_stat == 0 && S_ISREG(st.st_mode) && !overwrite){
 			info("%s ya existe. Se conserva el anterior.",dst);
-			result=BT_TRUE;
+			result=true;
 		} else if (((dst_stat==-1) && (errno==ENOENT)) || ((dst_stat==0) && S_ISREG(st.st_mode) && overwrite)){
 			//Extraer archivo embebido
 			embres_t *er;
@@ -544,7 +533,7 @@ boolean_t extractEmbededFile(const char *src, const char *dst, boolean_t overwri
 				dst_stat=stat(dst, &st);
 				if (dst_stat == 0 && S_ISREG(st.st_mode)){
 					info("%s se ha extraido correctamente",dst);
-					result=BT_TRUE;
+					result=true;
 				} else {
 					warn("Error de extraccion. stat produce un error inesperado %s",strerror(errno));
 				}
@@ -558,11 +547,11 @@ err:
 	if (io){
 		io_free(io);
 	}
-	return BT_FALSE;
+	return false;
 }
 
-boolean_t createParentFolders(const char *filename, mode_t mode){
-	boolean_t result=BT_TRUE;
+bool createParentFolders(const char *filename, mode_t mode){
+	bool result=true;
 	if (filename && filename[0]=='/'){
 		char *last_slash=strrchr(filename,'/');
 		if (last_slash!=filename){
@@ -576,13 +565,13 @@ boolean_t createParentFolders(const char *filename, mode_t mode){
 				path_stat=stat(path,&st);
 				if (path_stat==0){
 					if (!S_ISDIR(st.st_mode)){
-						result=BT_FALSE;
+						result=false;
 						warn("%s no es directorio",path);
 						break;
 					}
 				} else {
 					if( (errno!=ENOENT) || mkdir(path,mode)!=0){
-						result=BT_FALSE;
+						result=false;
 						warn("error creando ruta %s: %s",path,strerror(errno));
 						break;
 					}
@@ -594,19 +583,19 @@ boolean_t createParentFolders(const char *filename, mode_t mode){
 		}
 	} else {
 		warn("%s no es una ruta absoluta",filename);
-		result=BT_FALSE;
+		result=false;
 	}
 	return result;
 }
 
-boolean_t extractLogosFromFile(context_t *ctx, const char *logos_tgz){
-	boolean_t result=BT_FALSE;
+bool extractLogosFromFile(wcontext_t *wctx, const char *logos_tgz){
+	bool result=false;
 	//TODO interfiere con hooks.
 	pid_t pid=vfork();
 	if (pid<0) { 
 		//fork failure
 		warn("fallo la bifurcacion");
-		result=BT_FALSE;
+		result=false;
 	} else if (pid==0) {
 		//child process
 		const char *images="/etc/webif/www/images/";
@@ -626,38 +615,38 @@ boolean_t extractLogosFromFile(context_t *ctx, const char *logos_tgz){
 		if (WIFEXITED(status)){
 			int exitStatus;
 			if ((exitStatus=WEXITSTATUS(status))==0){
-				if (ctx!=NULL){
-					printMessage(ctx,"message",tr("setup"),"Logos extraídos",BT_FALSE); //TODO i18n
+				if (wctx!=NULL){
+					printMessage(wctx,"message",tr("setup"),"Logos extraídos",false); //TODO i18n
 				}
 				info("Logos extraídos");
-				webifConf.noLogos=BT_FALSE;
-				result=BT_TRUE;
+				webifConf.noLogos=false;
+				result=true;
 			} else {
-				if (ctx!=NULL){
-					printMessage(ctx,"alert",tr("setup"),"Error extrayendo logos",BT_FALSE); //TODO i18n
+				if (wctx!=NULL){
+					printMessage(wctx,"alert",tr("setup"),"Error extrayendo logos",false); //TODO i18n
 				}
 				warn("Error descomprimiendo logos");
 			}
 		} else {
-			if (ctx!=NULL){
-				printMessage(ctx,"alert",tr("setup"),"Extracción de logos interrumpida",BT_FALSE); //TODO i18n
+			if (wctx!=NULL){
+				printMessage(wctx,"alert",tr("setup"),"Extracción de logos interrumpida",false); //TODO i18n
 			}
 			warn("child process signaled");
-			result=BT_FALSE;
+			result=false;
 		}
 	}
 	return result;
 }
 
-boolean_t extractLogosFromRequest(context_t *ctx, const char *fieldName){
-	boolean_t result=BT_FALSE;
+bool extractLogosFromRequest(wcontext_t *wctx, const char *fieldName){
+	bool result=false;
 	char localFilename[U_FILENAME_MAX]; 
 	char clientFilename[U_FILENAME_MAX];
 	char mimeType[MIME_TYPE_BUFSZ];
 	size_t idx=0;
 	size_t size;
-	if (request_get_uploaded_file(ctx->request,fieldName,idx,localFilename,clientFilename,mimeType,&size)==0){
-		result=extractLogosFromFile(ctx,localFilename);
+	if (request_get_uploaded_file(wctx->request,fieldName,idx,localFilename,clientFilename,mimeType,&size)==0){
+		result=extractLogosFromFile(wctx,localFilename);
 	}
 	return result;
 }

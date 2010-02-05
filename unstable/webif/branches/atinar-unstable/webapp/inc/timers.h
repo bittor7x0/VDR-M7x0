@@ -72,21 +72,21 @@ typedef struct timerList_s {
 } timerList_t;
 
 void initTimer(vdrTimer_t *const entry);
-boolean_t initTimerFromEvent(context_t *ctx, vdrTimer_t *const timer, hostConf_t *host, const int channelNum, const int eventId);
-boolean_t initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, context_t *ctx);
+bool initTimerFromEvent(wcontext_t *wctx, vdrTimer_t *const timer, hostConf_t *host, const int channelNum, const int eventId);
+bool initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, wcontext_t *wctx);
 void freeTimer(vdrTimer_t *const entry);
 void initTimerList(timerList_t *const list);
 void freeTimerList(timerList_t *const list);
 void getTimerList(timerList_t *const timers, channelList_t const *const channels, const sortField_t sortBy, const sortDirection_t sortDirection);
-boolean_t addTimer(context_t *ctx, hostConf_t *host, const char *newTimerStr);
-boolean_t editTimer(context_t *ctx, hostConf_t *host, int id, const char *oldTimerStr, const char *newTimerStr);
-boolean_t deleteTimer(context_t *ctx, hostConf_t *host, int id, const char *oldTimerStr);
-boolean_t parseTimer(const char *line, vdrTimer_t *const timer);
+bool addTimer(wcontext_t *wctx, hostConf_t *host, const char *newTimerStr);
+bool editTimer(wcontext_t *wctx, hostConf_t *host, int id, const char *oldTimerStr, const char *newTimerStr);
+bool deleteTimer(wcontext_t *wctx, hostConf_t *host, int id, const char *oldTimerStr);
+bool parseTimer(const char *line, vdrTimer_t *const timer);
 char *makeRegularTimerStr(uint flags,int channelNum,const char *wdays,time_t start,time_t stop,int priority,int lifetime,char *title,const char *aux);
 char *makeOneTimeTimerStr(uint flags,int channelNum,time_t start,time_t stop,int priority,int lifetime,char *title,const char *aux);
 char *makeTimerStr(vdrTimer_t *const timer);
-void printTimerForm(context_t *ctx, vdrTimer_t *const timer, channelList_t const *const channels);
-void printTimerBars(context_t *ctx, timerList_t *const timers, const int channelNum
-	, const time_t startTime, const time_t duration,const char *TimerEdit,boolean_t wrapPBWithA);
+void printTimerForm(wcontext_t *wctx, vdrTimer_t *const timer, channelList_t const *const channels);
+void printTimerBars(wcontext_t *wctx, timerList_t *const timers, const int channelNum
+	, const time_t startTime, const time_t duration,const char *TimerEdit,bool wrapPBWithA);
 
 #endif

@@ -26,7 +26,7 @@
 #define REMOVE_VIDEO(path) ((strncmp(path,"/video/",7)==0)?path+7:path+1)
 
 hostConf_t *isVideoPath(char *path) {
-	int found = BT_FALSE;
+	bool found = false;
 	if (path){
 		char * fullpath;
 		int i;

@@ -35,33 +35,33 @@ typedef struct cfgParam_s {
 	char *value;
 	char *comment;
 	int configId;
-	boolean_t isValid;
-	boolean_t written;
+	bool isValid;
+	bool written;
 } cfgParam_t;
 
 typedef struct cfgParamConfig_s cfgParamConfig_t;
 typedef void (*cfgParamValidate_t)(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param);
-typedef boolean_t (*cfgParamPrintInput_t)(context_t *ctx,const cfgParamConfig_t * const paramConfig
+typedef bool (*cfgParamPrintInput_t)(wcontext_t *wctx,const cfgParamConfig_t * const paramConfig
 	,const char *inputId, const char *paramName,int paramIdx,const char *paramValue);
 
-boolean_t printCheckbox(context_t *ctx,const cfgParamConfig_t * const paramConfig
+bool printCheckbox(wcontext_t *wctx,const cfgParamConfig_t * const paramConfig
 	,const char *checkboxId, const char *paramName,int paramIdx,const char *paramValue);
-boolean_t printSelect(context_t *ctx,const cfgParamConfig_t * const paramConfig
+bool printSelect(wcontext_t *wctx,const cfgParamConfig_t * const paramConfig
 	,const char *selectId, const char *paramName,int paramIdx,const char *paramValue);
 
 struct cfgParamConfig_s {
 	const char *name;         // Name of the param
 	const char *defaultValue; // defaultValue if needed
 	const char *options;      // if multiple choice enter the options here, seperated by |
-	boolean_t isIndex; //value is index in options
+	bool isIndex; //value is index in options
 	int indexOffset;
 	cfgParamValidate_t validate; //function to validate a param
 	cfgParamPrintInput_t printInput; //function to print an input for the param in a form
-	boolean_t alreadySet;
+	bool alreadySet;
 };
 
 typedef struct cfgParamConfigList_s {
-	boolean_t exclusive; //Ignore params not listed
+	bool exclusive; //Ignore params not listed
 	int length;
 	cfgParamConfig_t * const entry;
 } cfgParamConfigList_t;
@@ -88,26 +88,26 @@ typedef struct hostConf_f {
 	char ip[16];      //ip as seen by the webif server
 	uint16_t  port;   //port where SVDRP is listening
 	char video0[128]; //path to video0
-	boolean_t isVdr;  //VDR is running in host
+	bool isVdr;  //VDR is running in host
 	int  socket;
 } hostConf_t;
 
 typedef struct webifConf_s {
-	boolean_t alreadySet;
+	bool alreadySet;
 	time_t mtime; //st_mtime of conf file in last read
 	int langId;
 	hostConf_t hosts[MAXHOSTS];  //TODO hacer dinamico
 	int hostsLength;
 	int numVDRs;
 	playlistType_t playlistType;
-	boolean_t deletionDisabled;
-	boolean_t configChangeDisabled;
-	boolean_t configViewDisabled;
-	boolean_t useExternalWwwFolder;
-	boolean_t displayHostId; //display host id in recordings
-	boolean_t printRecFolderSummary;
+	bool deletionDisabled;
+	bool configChangeDisabled;
+	bool configViewDisabled;
+	bool useExternalWwwFolder;
+	bool displayHostId; //display host id in recordings
+	bool printRecFolderSummary;
 	int maxDepth; //maximum directory depth while browsing
-	boolean_t alwaysCloseSvdrp;  //always close SVDRP connection after each command
+	bool alwaysCloseSvdrp;  //always close SVDRP connection after each command
 	int defaultMarginStart;
 	int defaultMarginStop;
 	int videoWidth;
@@ -115,7 +115,9 @@ typedef struct webifConf_s {
 	int tvScheduleGridWidth;
 	int channelLogoWidth;
 	char *www;
-	boolean_t noLogos;
+	bool noLogos;
+	char user[30];
+	char password[30];
 } webifConf_t;
 
 #define CHAN_LOGO_W ((webifConf.noLogos)?80:webifConf.channelLogoWidth)
@@ -127,14 +129,14 @@ extern const cfgFile_t fileMapping[];
 extern const int fileMappingLength;
 
 const cfgParamConfig_t *getCfgParamConfig(cfgFileId_t cfgFileId, cfgParam_t * const param);
-boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean_t *isNew);
-boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params);
-boolean_t readWebifConf();
+bool readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, bool *isNew);
+bool writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params);
+bool readWebifConf();
 void freeWebifConf();
 hostConf_t *getHost(int hostId);
 hostConf_t *getFirstVdrHost();
-boolean_t isHostLocal(hostConf_t *host);
-const char *getHostHttpAddr(hostConf_t *host,context_t *ctx);
-void printVDRSelect(context_t *ctx,const char * name,const int hostId);
+bool isHostLocal(hostConf_t *host);
+const char *getHostHttpAddr(hostConf_t *host,wcontext_t *wctx);
+void printVDRSelect(wcontext_t *wctx,const char * name,const int hostId);
 
 #endif

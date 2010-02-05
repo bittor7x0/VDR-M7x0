@@ -33,79 +33,80 @@ static void dbg_playlistch_kl1(void){
 #ifdef DEBUG
 	dbg_playlistch_kl1();
 #endif
-	context_t vctx;
-	context_t *ctx=&vctx;
-	initCtx(ctx,session,request,response,out,0);
-	vars_t *args = request_get_args(request);
-	hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
-	if (!host){
-		returnHttpNoContent(response);
-	} else {
-		int i;
-		int nchannel=-1;
-		channelList_t channels;
-		channel_t *channel;
-		getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
-		if (vars_countn(args,"channelnum")>0) {
-			nchannel=vars_get_value_i(args,"channelnum");
+	wcontext_t vwctx;
+	wcontext_t *wctx=&vwctx;
+	if (initCtx(wctx,PN_PLAYLIST_CHN,session,request,response,out,0)){
+		vars_t *args = request_get_args(request);
+		hostConf_t *host=(vars_countn(args,"hostId")>0) ? getHost(vars_get_value_i(args,"hostId")) : getFirstVdrHost();
+		if (!host){
+			returnHttpNoContent(response);
+		} else {
+			int i;
+			int nchannel=-1;
+			channelList_t channels;
+			channel_t *channel;
+			getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
+			if (vars_countn(args,"channelnum")>0) {
+				nchannel=vars_get_value_i(args,"channelnum");
+			}
+			playlistType_t type=(vars_countn(args,"type")>0) ? vars_get_value_i(args,"type") : webifConf.playlistType;
+			const char *hostAddr=getHostHttpAddr(host,wctx);
+			CTX_CHK_BUFFER(50);
+			switch (type) {
+				case PL_M3U:
+					response_set_content_type(response,M3U_MIME_TYPE);
+					sprintf(wctx->buffer,"inline; filename=%s.m3u",tr("channels.filename"));
+					response_set_field(response,"Content-Disposition",wctx->buffer);
+					wctx_printf0(wctx,"#EXTM3U\n");
+					for(i=0,channel=channels.channel;i<channels.length;i++,channel++){
+						if ( nchannel==-1 || i==nchannel ) {
+							wctx_printf0(wctx,"#EXTINF:0,%.2d-%s\n",channel->channelNum,channel->channelName);
+							wctx_printf0(wctx,"http://%s:%d/%d\n",hostAddr,3000,channel->channelNum);
+						}
+					}
+					break;
+				case PL_XSPF: 
+					response_set_content_type(response,"application/xspf+xml");
+					sprintf(wctx->buffer,"inline; filename=%s.xspf",tr("channels.filename"));
+					response_set_field(response,"Content-Disposition",wctx->buffer);
+					wctx_printf0(wctx,"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
+					wctx_printfn(wctx,"<playlist version=\"1\" xmlns=\"http://xspf.org/ns/0/\" xmlns:vlc=\"http://www.videolan.org/vlc/playlist/ns/0/\">\n",0,1);
+
+					int ntabs=1;
+					wctx_printfn(wctx,"<trackList>\n",0,1);
+					for(i=0,channel=channels.channel;i<channels.length;i++,channel++){
+						if (nchannel==-1 || i==nchannel) {
+							wctx_printfn(wctx,"<track>\n",0,1);
+							wctx_printf0(wctx,"<identifier>%d</identifier>\n",channel->channelNum-1);
+							wctx_printf0(wctx,"<title>%.2d-%s</title>\n",channel->channelNum,channel->channelName);
+							wctx_printf0(wctx,"<location>http://%s:%d/%d</location>\n",hostAddr,3000,channel->channelNum);
+							wctx_printfn(wctx,"<extension application=\"http://www.videolan.org/vlc/playlist/0\">\n",0,1);
+							wctx_printf0(wctx,"<vlc:id>%d</vlc:id>\n",i);
+							wctx_printfn(wctx,"</extension>\n",-1,0);
+							wctx_printfn(wctx,"</track>\n",-1,0);
+						}
+					};
+					wctx_printfn(wctx,"</trackList>\n",-1,0);
+
+					wctx_printfn(wctx,"<extension application=\"http://www.videolan.org/vlc/playlist/0\">\n",0,1);
+					wctx_printfn(wctx,"<vlc:node title=\"%s\">\n",0,1,tr("channels"));
+					for(i=0; i<channels.length; i++){
+						if (nchannel==-1 || i==nchannel) {
+							wctx_printf0(wctx,"<vlc:item tid=\"%d\" />\n",i);
+						}
+					}
+					wctx_printfn(wctx,"</vlc:node>\n",-1,0);
+					wctx_printfn(wctx,"</extension>\n",-1,0);
+
+					wctx_printfn(wctx,"</playlist>\n",-1,0);
+					break;
+				default:
+					warn("Unknown playlist type %d",type);
+					returnHttpNoContent(response);
+			}
+			freeChannelList(&channels);
 		}
-		playlistType_t type=(vars_countn(args,"type")>0) ? vars_get_value_i(args,"type") : webifConf.playlistType;
-		const char *hostAddr=getHostHttpAddr(host,ctx);
-		CTX_CHK_BUFFER(50);
-		switch (type) {
-			case PL_M3U:
-				response_set_content_type(response,M3U_MIME_TYPE);
-				sprintf(ctx->buffer,"inline; filename=%s.m3u",tr("channels.filename"));
-				response_set_field(response,"Content-Disposition",ctx->buffer);
-				ctx_printf0(ctx,"#EXTM3U\n");
-				for(i=0,channel=channels.channel;i<channels.length;i++,channel++){
-					if ( nchannel==-1 || i==nchannel ) {
-						ctx_printf0(ctx,"#EXTINF:0,%.2d-%s\n",channel->channelNum,channel->channelName);
-						ctx_printf0(ctx,"http://%s:%d/%d\n",hostAddr,3000,channel->channelNum);
-					}
-				}
-				break;
-			case PL_XSPF: 
-				response_set_content_type(response,"application/xspf+xml");
-				sprintf(ctx->buffer,"inline; filename=%s.xspf",tr("channels.filename"));
-				response_set_field(response,"Content-Disposition",ctx->buffer);
-				ctx_printf0(ctx,"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
-				ctx_printfn(ctx,"<playlist version=\"1\" xmlns=\"http://xspf.org/ns/0/\" xmlns:vlc=\"http://www.videolan.org/vlc/playlist/ns/0/\">\n",0,1);
-
-				int ntabs=1;
-				ctx_printfn(ctx,"<trackList>\n",0,1);
-				for(i=0,channel=channels.channel;i<channels.length;i++,channel++){
-					if (nchannel==-1 || i==nchannel) {
-						ctx_printfn(ctx,"<track>\n",0,1);
-						ctx_printf0(ctx,"<identifier>%d</identifier>\n",channel->channelNum-1);
-						ctx_printf0(ctx,"<title>%.2d-%s</title>\n",channel->channelNum,channel->channelName);
-						ctx_printf0(ctx,"<location>http://%s:%d/%d</location>\n",hostAddr,3000,channel->channelNum);
-						ctx_printfn(ctx,"<extension application=\"http://www.videolan.org/vlc/playlist/0\">\n",0,1);
-						ctx_printf0(ctx,"<vlc:id>%d</vlc:id>\n",i);
-						ctx_printfn(ctx,"</extension>\n",-1,0);
-						ctx_printfn(ctx,"</track>\n",-1,0);
-					}
-				};
-				ctx_printfn(ctx,"</trackList>\n",-1,0);
-
-				ctx_printfn(ctx,"<extension application=\"http://www.videolan.org/vlc/playlist/0\">\n",0,1);
-				ctx_printfn(ctx,"<vlc:node title=\"%s\">\n",0,1,tr("channels"));
-				for(i=0; i<channels.length; i++){
-					if (nchannel==-1 || i==nchannel) {
-						ctx_printf0(ctx,"<vlc:item tid=\"%d\" />\n",i);
-					}
-				}
-				ctx_printfn(ctx,"</vlc:node>\n",-1,0);
-				ctx_printfn(ctx,"</extension>\n",-1,0);
-
-				ctx_printfn(ctx,"</playlist>\n",-1,0);
-				break;
-			default:
-				warn("Unknown playlist type %d",type);
-				returnHttpNoContent(response);
-		}
-		freeChannelList(&channels);
+		closeSvdrpAll();
 	}
-	freeCtx(ctx);
-	closeSvdrpAll();
+	freeCtx(wctx);
 %>

@@ -52,7 +52,7 @@ void freeFL(fragmentList_t *const list){
 	initFL(list);
 }
 
-boolean_t seekFragment(fragmentList_t * const list, uint64_t pos){
+bool seekFragment(fragmentList_t * const list, uint64_t pos){
 	fragmentEntry_t * f;
 	int i;
 	list->fragNum=-1;
@@ -74,16 +74,16 @@ int isVideoFile(const struct dirent * ent){
 	return (strcmp(c,".vdr")==0);
 }
 
-boolean_t getFragmentList(fragmentList_t * const list, const rec_t *rec){
+bool getFragmentList(fragmentList_t * const list, const rec_t *rec){
 	initFL(list);
 	if (rec->path==NULL) {
 		warn("Path should be specified");
-		return BT_FALSE;
+		return false;
 	}
 	hostConf_t *host=getHost(rec->hostId);
 	if (!host || !host->video0 || host->video0[0]!='/') {
 		warn("Recording host %d is not local or video0 %s not valid", rec->hostId, (host)?host->video0:"null");
-		return BT_FALSE;
+		return false;
 	}
 	struct stat st;
 	fragmentEntry_t *f;

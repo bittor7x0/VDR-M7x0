@@ -36,12 +36,12 @@ void validateCheckbox(const cfgParamConfig_t * const paramConfig, cfgParam_t * c
 		crit("validateCheckbox: wrong config, only one option");
 		exit(1);
 	}
-	param->isValid=BT_FALSE;
+	param->isValid=false;
 	int l=strcspn(option,"|");
 	if (param->value==NULL || strncmp(option,param->value,l)==0){
 		//value==NULL => first option (unchecked checkboxes aren't submitted)
 		param->value=strndup(option,l);
-		param->isValid=BT_TRUE;
+		param->isValid=true;
 	} else {
 		option+=l+1;
 		l=strcspn(option,"|");
@@ -50,18 +50,18 @@ void validateCheckbox(const cfgParamConfig_t * const paramConfig, cfgParam_t * c
 	}
 }
 
-boolean_t printCheckbox(context_t *ctx,const cfgParamConfig_t * const paramConfig
+bool printCheckbox(wcontext_t *wctx,const cfgParamConfig_t * const paramConfig
 	,const char *id, const char *paramName,int paramIdx,const char *paramValue
 ){
 	if (paramConfig->options) {
 		//value==first option => false
 		//value==second option =>true
-		boolean_t booleanValue=BT_FALSE;
-		boolean_t booleanValueSet=BT_FALSE;
+		bool booleanValue=false;
+		bool booleanValueSet=false;
 		const char *option=paramConfig->options;
 		int l=strcspn(option,"|");
 		if (strncmp(option,paramValue,l)==0){
-			booleanValueSet=BT_TRUE;
+			booleanValueSet=true;
 		}
 		if (option[l]!='|'){
 			warn("Only one option for a checkboxCfg");
@@ -70,38 +70,38 @@ boolean_t printCheckbox(context_t *ctx,const cfgParamConfig_t * const paramConfi
 			option+=l+1;
 			l=strcspn(option,"|");
 			if (strncmp(option,paramValue,l)==0){
-				booleanValue=BT_TRUE;
-				booleanValueSet=BT_TRUE;
+				booleanValue=true;
+				booleanValueSet=true;
 			}
 		}
 		if (!booleanValueSet) {
 			warn("No option match for checkbox value");
 		}
-		ctx_printf0(ctx,"<input type=\"checkbox\"");
-		if (id) ctx_printf(ctx,"id=\"%s\" ",id);
+		wctx_printf0(wctx,"<input type=\"checkbox\"");
+		if (id) wctx_printf(wctx,"id=\"%s\" ",id);
 		if (paramName==NULL){
-			ctx_printf(ctx,"name=\"paramValue_%d\" ",paramIdx);
+			wctx_printf(wctx,"name=\"paramValue_%d\" ",paramIdx);
 		} else {
-			ctx_printf(ctx,"name=\"%s\" ",paramName);
+			wctx_printf(wctx,"name=\"%s\" ",paramName);
 		}
-		ctx_printf(ctx,"value=\"%.*s\"%s/>\n",(option)?l:4,(option)?option:"true",checked[booleanValue]);
-		return BT_TRUE;
+		wctx_printf(wctx,"value=\"%.*s\"%s/>\n",(option)?l:4,(option)?option:"true",checked[booleanValue]);
+		return true;
 	}
-	return BT_FALSE;
+	return false;
 }
 
-boolean_t printSelect(context_t *ctx,const cfgParamConfig_t * const paramConfig
+bool printSelect(wcontext_t *wctx,const cfgParamConfig_t * const paramConfig
 	,const char *id, const char *paramName,int paramIdx,const char *paramValue
 ){
 	if (paramConfig && paramConfig->options && strlen(paramConfig->options)>0) {
-		ctx_printfn(ctx,"<select ",0,1);
-		if (id) ctx_printf(ctx,"id=\"%s\" ",id);
+		wctx_printfn(wctx,"<select ",0,1);
+		if (id) wctx_printf(wctx,"id=\"%s\" ",id);
 		if (paramName==NULL){
-			ctx_printf(ctx,"name=\"paramValue_%d\" ",paramIdx);
+			wctx_printf(wctx,"name=\"paramValue_%d\" ",paramIdx);
 		} else {
-			ctx_printf(ctx,"name=\"%s\" ",paramName);
+			wctx_printf(wctx,"name=\"%s\" ",paramName);
 		}
-		ctx_printf(ctx,"size=\"1\">\n");
+		wctx_printf(wctx,"size=\"1\">\n");
 		const char * option=paramConfig->options;
 		int o=paramConfig->indexOffset;
 		for(;;) {
@@ -109,9 +109,9 @@ boolean_t printSelect(context_t *ctx,const cfgParamConfig_t * const paramConfig
 			char *optionnt=strndup(option,l);
 			const char *optiontre=CTX_HTML_ENCODE(tr(optionnt),-1);
 			if (paramConfig->isIndex) {
-				ctx_printf0(ctx,"<option value=\"%d\"%s>%s</option>\n",o,selected[sameIntEx(paramValue,o)],optiontre);
+				wctx_printf0(wctx,"<option value=\"%d\"%s>%s</option>\n",o,selected[sameIntEx(paramValue,o)],optiontre);
 			} else {
-				ctx_printf0(ctx,"<option value=\"%s\"%s>%s</option>\n",optionnt,selected[sameString(paramValue,optionnt)],optiontre);
+				wctx_printf0(wctx,"<option value=\"%s\"%s>%s</option>\n",optionnt,selected[sameString(paramValue,optionnt)],optiontre);
 			}
 			free(optionnt);
 			option+=l;
@@ -119,13 +119,13 @@ boolean_t printSelect(context_t *ctx,const cfgParamConfig_t * const paramConfig
 			option++;
 			o++;
 		}
-		ctx_printfn(ctx,"</select>\n",-1,0);
-		return BT_TRUE;
+		wctx_printfn(wctx,"</select>\n",-1,0);
+		return true;
 	}
-	return BT_FALSE;
+	return false;
 }
 
-boolean_t validateHostsStr(const char *hosts);
+bool validateHostsStr(const char *hosts);
 
 void validateHostsField(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param){
 	param->isValid=validateHostsStr(param->value);
@@ -134,74 +134,76 @@ void validateHostsField(const cfgParamConfig_t * const paramConfig, cfgParam_t *
 webifConf_t webifConf;
 
 cfgParamConfig_t webifParamConfig[]={ //Keep sorted by name !!
-	{"always_close_svdrp","true","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"deletion_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"default language","-1","langBrowserDefined|langEnglish|langGerman|langSpanish|langFrench",BT_TRUE,-1,NULL,(cfgParamPrintInput_t)printSelect,BT_FALSE},
-	{"default_margin_start","15",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"default_margin_stop","20",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"display_host_id","true","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"config_change_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"config_view_disabled","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"hosts",",127.0.0.1,2001,/var/vdr/video0;",NULL,BT_FALSE,0,(cfgParamValidate_t)validateHostsField,NULL/*(cfgParamPrintInput_t)printHostsField*/,BT_FALSE},
-	{"max_depth","2",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"playlist_type","0","M3U|XSPF",BT_TRUE,0,NULL,printSelect,BT_FALSE},
-	{"print_rec_folder_summary","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"use_external_www_folder","false","false|true",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"video_width","640",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"video_height","480",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"epg_schedule_grid_width","900",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"channel_logo_width","58",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
+	{"always_close_svdrp","true","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"deletion_disabled","false","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"default language","-1","langBrowserDefined|langEnglish|langGerman|langSpanish|langFrench",true,-1,NULL,(cfgParamPrintInput_t)printSelect,false},
+	{"default_margin_start","15",NULL,false,0,NULL,NULL,false},
+	{"default_margin_stop","20",NULL,false,0,NULL,NULL,false},
+	{"display_host_id","true","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"config_change_disabled","false","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"config_view_disabled","false","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"hosts",",127.0.0.1,2001,/var/vdr/video0;",NULL,false,0,(cfgParamValidate_t)validateHostsField,NULL/*(cfgParamPrintInput_t)printHostsField*/,false},
+	{"max_depth","2",NULL,false,0,NULL,NULL,false},
+	{"playlist_type","0","M3U|XSPF",true,0,NULL,printSelect,false},
+	{"print_rec_folder_summary","false","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"use_external_www_folder","false","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"video_width","640",NULL,false,0,NULL,NULL,false},
+	{"video_height","480",NULL,false,0,NULL,NULL,false},
+	{"epg_schedule_grid_width","900",NULL,false,0,NULL,NULL,false},
+	{"channel_logo_width","58",NULL,false,0,NULL,NULL,false},
+	{"user","",NULL,false,0,NULL,NULL,false},
+	{"password","",NULL,false,0,NULL,NULL,false},
 };
 
 cfgParamConfig_t rcParamConfig[]={ //Keep sorted by name !!
-	{"ip","192.168.100.102",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"net","inet","inet|DHCP",BT_FALSE,0,NULL,printSelect,BT_FALSE},
-	{"netdate","NO","NO|YES",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"netmask","255.255.255.0",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
+	{"ip","192.168.100.102",NULL,false,0,NULL,NULL,false},
+	{"net","inet","inet|DHCP",false,0,NULL,printSelect,false},
+	{"netdate","NO","NO|YES",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"netmask","255.255.255.0",NULL,false,0,NULL,NULL,false},
 };
 
 cfgParamConfig_t vdrParamConfig[] = { //Keep sorted by name !!
-	{"AbortWhenPluginFails","0","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"CutterAutoDelete","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"DelTimeshiftRec","0","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"EmergencyExit","0","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"HardLinkCutter","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"HotStandby","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"MarkInstantRecord","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"MenuButtonCloses","0","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"MenuScrollPage","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"MenuScrollWrap","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"PauseLifetime","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"SetSystemTime","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"ShowInfoOnChSwitch","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"ShowProgressBar","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"ShowRecDate","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"ShowRecLength","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"ShowRecTime","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"ShowReplayMode","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"ShutdownMessage","0","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"SplitEditedFiles","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"UseDolbyDigital","0","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"UseDolbyInRecordings","0","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"UseSubtitle","0","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"UseVps","0","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
-	{"WarEagleIcons","1","0|1",BT_FALSE,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,BT_FALSE},
+	{"AbortWhenPluginFails","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"CutterAutoDelete","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"DelTimeshiftRec","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"EmergencyExit","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"HardLinkCutter","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"HotStandby","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"MarkInstantRecord","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"MenuButtonCloses","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"MenuScrollPage","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"MenuScrollWrap","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"PauseLifetime","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"SetSystemTime","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"ShowInfoOnChSwitch","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"ShowProgressBar","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"ShowRecDate","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"ShowRecLength","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"ShowRecTime","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"ShowReplayMode","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"ShutdownMessage","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"SplitEditedFiles","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"UseDolbyDigital","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"UseDolbyInRecordings","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"UseSubtitle","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"UseVps","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
+	{"WarEagleIcons","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,false},
 };
 
 cfgParamConfig_t boxampParamConfig[] = { //Keep sorted by name !!
-	{"boxamp_bin","boxamp",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"boxamp_mp3dir","/var/media/mp3",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"boxamp_opts","-f ${boxamp_path}",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"boxamp_path","/var/media/pc2/boxamp",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"boxamp_startup_time","300",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
-	{"runboxamp","/var/media/pc2/boxamp/runboxamp",NULL,BT_FALSE,0,NULL,NULL,BT_FALSE},
+	{"boxamp_bin","boxamp",NULL,false,0,NULL,NULL,false},
+	{"boxamp_mp3dir","/var/media/mp3",NULL,false,0,NULL,NULL,false},
+	{"boxamp_opts","-f ${boxamp_path}",NULL,false,0,NULL,NULL,false},
+	{"boxamp_path","/var/media/pc2/boxamp",NULL,false,0,NULL,NULL,false},
+	{"boxamp_startup_time","300",NULL,false,0,NULL,NULL,false},
+	{"runboxamp","/var/media/pc2/boxamp/runboxamp",NULL,false,0,NULL,NULL,false},
 };
 
 cfgParamConfigList_t cfgParamConfig[] = { //Indexed by cfgFileId_t
-	{BT_TRUE,sizeof(webifParamConfig)/sizeof(cfgParamConfig_t),webifParamConfig},
-	{BT_FALSE,sizeof(rcParamConfig)/sizeof(cfgParamConfig_t),rcParamConfig},
-	{BT_FALSE,sizeof(vdrParamConfig)/sizeof(cfgParamConfig_t),vdrParamConfig},
-	{BT_FALSE,sizeof(boxampParamConfig)/sizeof(cfgParamConfig_t),boxampParamConfig}
+	{true,sizeof(webifParamConfig)/sizeof(cfgParamConfig_t),webifParamConfig},
+	{false,sizeof(rcParamConfig)/sizeof(cfgParamConfig_t),rcParamConfig},
+	{false,sizeof(vdrParamConfig)/sizeof(cfgParamConfig_t),vdrParamConfig},
+	{false,sizeof(boxampParamConfig)/sizeof(cfgParamConfig_t),boxampParamConfig}
 };
 
 const cfgFile_t fileMapping[] = {
@@ -233,8 +235,8 @@ void initCfgParam(cfgParam_t * const param){
 	param->value=NULL;
 	param->comment=NULL;
 	param->configId=-1;
-	param->written=BT_FALSE;
-	param->isValid=BT_TRUE;
+	param->written=false;
+	param->isValid=true;
 }
 
 void freeCfgParam(cfgParam_t * const param){
@@ -271,28 +273,28 @@ const cfgParamConfig_t *getCfgParamConfig(cfgFileId_t cfgFileId, cfgParam_t * co
 	}
 	return NULL;
 }
-boolean_t isValidParamName(const char *name, int nameLength,cfgParamConfigList_t *configs){
+bool isValidParamName(const char *name, int nameLength,cfgParamConfigList_t *configs){
 	if (configs->exclusive){
 		cfgParamConfig_t *config;
 		int i;
 		for (i=0,config=configs->entry;i<configs->length;i++,config++){
-			if (strncmp(name,config->name,nameLength)==0) return BT_TRUE;
+			if (strncmp(name,config->name,nameLength)==0) return true;
 		}
-		return BT_FALSE;
+		return false;
 	} else
-		return BT_TRUE;
+		return true;
 }
 
-boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean_t *isNew) {
-	if (cfgFileId<CF_WEBIFCONF || cfgFileId>CF_BOXAMPCONF) return BT_FALSE;
+bool readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, bool *isNew) {
+	if (cfgFileId<CF_WEBIFCONF || cfgFileId>CF_BOXAMPCONF) return false;
 	int i;
 	cfgParamConfig_t *config;
 	cfgParamConfigList_t *configs=&cfgParamConfig[cfgFileId];
 	FILE *f = fopen(cfgFile[cfgFileId].fileName,"r");
 	initCfgParamList(params);
 	cfgParam_t *param;
-	*isNew=BT_TRUE;
-	for (i=0,config=configs->entry;i<configs->length;i++,config++) config->alreadySet=BT_FALSE;
+	*isNew=true;
+	for (i=0,config=configs->entry;i<configs->length;i++,config++) config->alreadySet=false;
 	if (f) {
 		enum {BUFSZ=256};
 		char buffer[BUFSZ];
@@ -327,7 +329,7 @@ boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean
 						for (i=0,config=configs->entry;i<configs->length;i++,config++){
 							if (strcmp(config->name,param->name)==0){
 								param->configId=i;	
-								config->alreadySet=BT_TRUE;
+								config->alreadySet=true;
 								break;
 							}
 						}
@@ -336,7 +338,7 @@ boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean
 			}
 		}
 		fclose(f);
-		*isNew=BT_FALSE;
+		*isNew=false;
 	}
 	for (i=0,config=configs->entry;i<configs->length;i++,config++){
 		if (config->alreadySet) continue;
@@ -347,7 +349,7 @@ boolean_t readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, boolean
 		param->value=(config->defaultValue)?strdup(config->defaultValue):NULL;
 		dbg("Asignado parametro por defecto [%s]=[%s]",param->name,param->value);
 		param->configId=i;
-		config->alreadySet=BT_TRUE;
+		config->alreadySet=true;
 	}
 	return boolean(params->length>0);
 outOfMemory:
@@ -373,34 +375,34 @@ FILE * tmpCfgFile(char tmpName[16]){
 	return t;
 }
 
-boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
-	boolean_t result=BT_FALSE;
-	boolean_t isNew=BT_FALSE;
-	boolean_t exclusive=cfgParamConfig[cfgFileId].exclusive;
+bool writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
+	bool result=false;
+	bool isNew=false;
+	bool exclusive=cfgParamConfig[cfgFileId].exclusive;
 	const char *fileName=cfgFile[cfgFileId].fileName;
 	errno=0;
 	FILE *f = fopen(fileName,"r");
 	if (errno){
 		if (errno==ENOENT){
-			isNew=BT_TRUE;
+			isNew=true;
 			errno=0;
 		} else {
 			warn(strerror(errno));
-			return BT_FALSE;
+			return false;
 		}
 	}
 	char tmpName[16];
 	FILE *t=tmpCfgFile(tmpName);
 	if (t==NULL) {
 		if (!isNew) fclose(f);
-		return BT_FALSE;
+		return false;
 	}
 	int i;
 	char *paramName;
 	char *paramValue;
 	char *paramComment;
 	cfgParam_t *param;
-	for (i=0;i<params->length;i++) params->entry[i].written=BT_FALSE;
+	for (i=0;i<params->length;i++) params->entry[i].written=false;
 	if (!isNew) {
 		enum {BUFSZ=256};
 		char buffer[BUFSZ];
@@ -444,21 +446,21 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 						} else {
 							if (param && param->value){
 								paramValue=param->value;
-							}
-							if (paramComment) {
-								while (paramComment[0]==' ') paramComment++;
-								lc=strcspn(paramComment,"\n\r");
-								while (lc>0 && paramComment[lc]==' ') lc--;
-								fprintf(t,"%s=%s #%s\n",paramName,paramValue,paramComment);
-							} else {
-								fprintf(t,"%s=%s\n",paramName,paramValue);
+								if (paramComment) {
+									while (paramComment[0]==' ') paramComment++;
+									lc=strcspn(paramComment,"\n\r");
+									while (lc>0 && paramComment[lc]==' ') lc--;
+									fprintf(t,"%s=%s #%s\n",paramName,paramValue,paramComment);
+								} else {
+									fprintf(t,"%s=%s\n",paramName,paramValue);
+								}
 							}
 						}
 						if (errno){
 							warn(strerror(errno));
 							errno=0;
 						}
-						if (param) param->written=BT_TRUE;
+						if (param) param->written=true;
 					}
 				}
 			}
@@ -467,7 +469,7 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 	}
 	for(i=0,param=params->entry;i<params->length;i++,param++) if (!param->written) {
 		fprintf(t,"%s=%s\n",param->name,param->value);
-		param->written=BT_TRUE;
+		param->written=true;
 	}
 	fclose(t);
 	char *backupName;
@@ -493,9 +495,9 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 			if (errno){
 				warn(strerror(errno));
 				errno=0;
-				result=BT_FALSE;
+				result=false;
 			} else {
-				result=BT_TRUE;
+				result=true;
 			}
 		}
 		if (errno) {
@@ -508,23 +510,23 @@ boolean_t writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 }
 
 
-boolean_t validateHostsStr(const char *hosts){
-	if (hosts==NULL) return BT_FALSE;
+bool validateHostsStr(const char *hosts){
+	if (hosts==NULL) return false;
 	const char * pattern="^(([a-zA-Z0-9]*),([0-9.]*),([0-9]*),([a-zA-Z0-9./_]*);?)+$";
 	regex_t regex;
 	if (regcomp(&regex,pattern,REG_EXTENDED|REG_NOSUB)!=0) {
 		crit("Error compiling the pattern!");
 		exit(1);
 	}
-	boolean_t ok=(regexec(&regex,hosts,0,NULL,0)==0);
+	bool ok=(regexec(&regex,hosts,0,NULL,0)==0);
 	regfree(&regex);
 	return ok;
 }
 
-boolean_t parseHostsField(const char *hosts,boolean_t apply){
+bool parseHostsField(const char *hosts,bool apply){
 	webifConf.hostsLength=0;
 	webifConf.numVDRs=0;
-	if (hosts==NULL) return BT_FALSE;
+	if (hosts==NULL) return false;
 	enum {MAXREGMATCH=HOSTNUMCONFFIELDS+1};
 	const char * pattern="([a-zA-Z0-9]*),([0-9.]*),([0-9]*),([a-zA-Z0-9./_]*);?";
 	regex_t regex;
@@ -533,13 +535,13 @@ boolean_t parseHostsField(const char *hosts,boolean_t apply){
 		exit(1);
 	}
 	regmatch_t regmatch[MAXREGMATCH];
-	boolean_t ok=BT_FALSE;
+	bool ok=false;
 	int err,m,so,l;
 	const char *t=hosts;
 	hostConf_t *host=webifConf.hosts;
 	while (t[0]) {
 		if ((err=regexec(&regex,t,MAXREGMATCH,regmatch,0))==0){
-			boolean_t isValid=BT_TRUE;
+			bool isValid=true;
 			for (m=1;m<MAXREGMATCH && isValid;m++){
 				so=regmatch[m].rm_so;
 				l=regmatch[m].rm_eo-so;
@@ -558,18 +560,18 @@ boolean_t parseHostsField(const char *hosts,boolean_t apply){
 					};
 					if (errno) {
 						warn(strerror(errno));
-						isValid=BT_FALSE;
+						isValid=false;
 						errno=0;
 					}
 				} else {
-					isValid=BT_FALSE;
+					isValid=false;
 				}
 			}
 			if (isValid) {
 				host->id=webifConf.hostsLength;
 				host->isVdr=boolean(strlen(host->ip)>0 && host->port>0);
 				if (host->isVdr) webifConf.numVDRs++;
-				ok=BT_TRUE; //ok if there is at least one valid host
+				ok=true; //ok if there is at least one valid host
 				webifConf.hostsLength++;
 				host++;
 			}
@@ -597,12 +599,12 @@ time_t get_mtime(const char *fileName){
 	}
 }
 
-boolean_t readWebifConf() {
+bool readWebifConf() {
 	//TODO integrar en readConf mediante funciones en paramCfgs
 	errno=0;
 	time_t current_mtime=get_mtime(cfgFile[CF_WEBIFCONF].fileName);
 	if (webifConf.mtime<current_mtime || errno){
-		webifConf.alreadySet=BT_FALSE;
+		webifConf.alreadySet=false;
 		errno=0;
 	}
 	if (webifConf.alreadySet) {
@@ -612,7 +614,7 @@ boolean_t readWebifConf() {
 	freeWebifConf();
 	cfgParamList_t params;
 	cfgParam_t *param;
-	boolean_t isNew;
+	bool isNew;
 	if (readConf(CF_WEBIFCONF,&params,&isNew)){
 		int i;
 		for (i=0,param=params.entry;i<params.length;i++,param++){
@@ -621,14 +623,14 @@ boolean_t readWebifConf() {
 				webifConf.langId=strtol(param->value,NULL,10);
 				if (errno!=0 || webifConf.langId<-1 || webifConf.langId>=I18NNUM) webifConf.langId=-1;
 			} else if (strcmp(param->name,"hosts")==0) {
-				if (!parseHostsField(param->value,BT_TRUE)){
+				if (!parseHostsField(param->value,true)){
 					warn("No valid host set up");
 					webifConf.hostsLength=1;
 					webifConf.hosts[0].name[0]=0;
 					strcpy(webifConf.hosts[0].ip,"127.0.0.1");
 					webifConf.hosts[0].port=2001;
 					strcpy(webifConf.hosts[0].video0,VIDEO0);
-					webifConf.hosts[0].isVdr=BT_TRUE;
+					webifConf.hosts[0].isVdr=true;
 				}
 			} else if (strcmp(param->name,"playlist_type")==0) {
 				if (param->value==NULL || strlen(param->value)<1 ){
@@ -724,6 +726,14 @@ boolean_t readWebifConf() {
 				} else {
 					webifConf.channelLogoWidth=atoi(param->value);
 				}
+			} else if (strcmp(param->name,"user")==0 && param->value!=NULL){
+				info("user:%s",param->value);
+				strncpy(webifConf.user,param->value,29);
+				webifConf.user[29]=0;
+			} else if (strcmp(param->name,"password")==0 && param->value!=NULL){
+				info("password:%s",param->value);
+				strncpy(webifConf.password,param->value,29);
+				webifConf.password[29]=0;
 			}
 		}
 		freeCfgParamList(&params);
@@ -731,17 +741,17 @@ boolean_t readWebifConf() {
 		int logos_stat=stat("/etc/webif/www/images/logos",&st);
 		if (logos_stat == 0 && S_ISDIR(st.st_mode)){
 			info("Existe directorio de logos");
-			webifConf.noLogos=BT_FALSE;
+			webifConf.noLogos=false;
 		} else {
 			warn("No existe directorio de logos");
-			webifConf.noLogos=BT_TRUE;
+			webifConf.noLogos=true;
 		}
 		crit_goto_if((webifConf.www=strdup((webifConf.useExternalWwwFolder)?"/www2":""))==NULL,outOfMemory);
-		webifConf.alreadySet=BT_TRUE;
+		webifConf.alreadySet=true;
 		webifConf.mtime=current_mtime;
-		return BT_TRUE;
+		return true;
 	}
-	return BT_FALSE;
+	return false;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
@@ -770,28 +780,28 @@ hostConf_t *getFirstVdrHost(){
 	return NULL;
 }
 
-boolean_t isHostLocal(hostConf_t *host){
+bool isHostLocal(hostConf_t *host){
 	return boolean(host!=NULL && strncmp(host->ip,"127.",4)==0);
 }
 
-const char *getHostHttpAddr(hostConf_t *host,context_t *ctx){
+const char *getHostHttpAddr(hostConf_t *host,wcontext_t *wctx){
 	return (host==NULL)
 	? NULL
 	: (isHostLocal(host)) 
-		? request_get_field(ctx->request,"Host")->value 
+		? request_get_field(wctx->request,"Host")->value 
 		: (host->name[0]) 
 			? host->name 
 			: host->ip;
 }
 
-void printVDRSelect(context_t *ctx,const char * name,const int hostId){
+void printVDRSelect(wcontext_t *wctx,const char * name,const int hostId){
 	int i;
 	hostConf_t *host;
-	ctx_printfn(ctx,"<select name=\"%s\" size=\"1\">\n",0,1,name);
+	wctx_printfn(wctx,"<select name=\"%s\" size=\"1\">\n",0,1,name);
 	for (i=0,host=webifConf.hosts;i<webifConf.hostsLength;i++,host++) {
 		if (host->isVdr){
-			ctx_printf0(ctx,"<option value=\"%d\" %s>%d - %s</option>\n",host->id,selected[boolean(host->id==hostId)],host->id,(host->name[0])?host->name:host->ip);
+			wctx_printf0(wctx,"<option value=\"%d\" %s>%d - %s</option>\n",host->id,selected[boolean(host->id==hostId)],host->id,(host->name[0])?host->name:host->ip);
 		}
 	}
-	ctx_printfn(ctx,"</select>\n",-1,0);
+	wctx_printfn(wctx,"</select>\n",-1,0);
 }

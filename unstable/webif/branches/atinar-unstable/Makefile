@@ -48,7 +48,7 @@ SUBDIR ?= $(KLONE_APP_TOP)/webapp/inc/
 #DEBUG  = -g -ggdb -DDEBUG
 COMMON_CFLAGS = -I$(KLONE_SRC) $(UCLIBC_CFLAGS) -D_GNU_SOURCE $(DEBUG)
 WEBAPP_CFLAGS ?= $(COMMON_CFLAGS) -I$(KLONE_APP_TOP) -I$(SUBDIR)
-WEBAPP_LDADD ?= ${SUBDIR}browse.o $(SUBDIR)channels.o ${SUBDIR}conf.o $(SUBDIR)epg.o $(SUBDIR)hooks.o ${SUBDIR}i18n.o $(SUBDIR)misc.o $(SUBDIR)partitions.o $(SUBDIR)recording.o $(SUBDIR)recordings.o $(SUBDIR)searches.o $(SUBDIR)svdrp_comm.o $(SUBDIR)timers.o
+WEBAPP_LDADD ?= ${SUBDIR}basic_auth.o ${SUBDIR}browse.o $(SUBDIR)channels.o ${SUBDIR}conf.o $(SUBDIR)epg.o $(SUBDIR)hooks.o ${SUBDIR}i18n.o $(SUBDIR)misc.o $(SUBDIR)partitions.o $(SUBDIR)recording.o $(SUBDIR)recordings.o $(SUBDIR)searches.o $(SUBDIR)svdrp_comm.o $(SUBDIR)timers.o
 WEBAPP_LDFLAGS ?=
 
 -include build/mk/klone-app.mk

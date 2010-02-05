@@ -72,16 +72,16 @@ void getChannelGroupList(hostConf_t *host, channelGroupList_t *const groups, cha
 				channel_t *channel;
 				int i;
 				char *c,*sc;
-				boolean_t found;
+				bool found;
 				for (c=strtok_r(g,"|",&sc);c!=0;c=strtok_r(NULL,"|",&sc)) {
 					if (group->name==NULL) {
 						crit_goto_if((group->name=strdup(c))==NULL,outOfMemory);
 					} else {
-						for (i=0,channel=channels->channel,found=BT_FALSE;i<channels->length && !found;i++,channel++){
+						for (i=0,channel=channels->channel,found=false;i<channels->length && !found;i++,channel++){
 							if (strcmp(channel->channelId,c)==0){
 								crit_goto_if((group->entry=(channel_t* *)realloc(group->entry,(++group->length)*sizeof(channel_t*)))==NULL,outOfMemory);
 								group->entry[group->length-1]=channel;
-								found=BT_TRUE;
+								found=true;
 							}
 						}
 						if (!found) {
@@ -99,15 +99,15 @@ outOfMemory:
 	exit(1);
 }
 
-void printChannelGroupListSelect(context_t *ctx,const char * name,const channelGroupList_t *const groups,const char *groupName){
+void printChannelGroupListSelect(wcontext_t *wctx,const char * name,const channelGroupList_t *const groups,const char *groupName){
 	int i;
 	channelGroup_t *group;
-	ctx_printfn(ctx,"<select name=\"%s\" size=\"1\">\n",0,1,name);
+	wctx_printfn(wctx,"<select name=\"%s\" size=\"1\">\n",0,1,name);
 	for (i=0,group=groups->entry;i<groups->length;i++,group++) {
-		ctx_printf0(ctx,"<option value=\"%s\" %s>%s</option>\n"
+		wctx_printf0(wctx,"<option value=\"%s\" %s>%s</option>\n"
 			,group->name,selected[boolean(groupName && strcmp(group->name,groupName)==0)],group->name);
 	}
-	ctx_printfn(ctx,"</select>\n",-1,0);
+	wctx_printfn(wctx,"</select>\n",-1,0);
 }
 
 void initSearch(search_t *const search) {
@@ -124,11 +124,11 @@ void initSearch(search_t *const search) {
 	setFlag(SFL_USE_AS_SEARCH_TIMER,search->flags);
 }
 
-boolean_t initSearchFromEvent(context_t *ctx, search_t *const search, hostConf_t *host, const int channelNum, const int eventId) {
+bool initSearchFromEvent(wcontext_t *wctx, search_t *const search, hostConf_t *host, const int channelNum, const int eventId) {
 	initSearch(search);
-	boolean_t result= BT_FALSE;
+	bool result= false;
 	if (!host || !host->isVdr) {
-		if (ctx) printMessage(ctx,"alert",tr("search.create.err"),"Host nulo o no es VDR",BT_FALSE); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("search.create.err"),"Host nulo o no es VDR",false); //TODO i18n
 	} else {
 		channelEvents_t channelEvents;
 		initChannelEvents(&channelEvents);
@@ -156,7 +156,7 @@ boolean_t initSearchFromEvent(context_t *ctx, search_t *const search, hostConf_t
 			ttime+=event->duration;
 			stime=*localtime(&ttime);
 			search->stopTime=stime.tm_hour*100+stime.tm_min;
-			result=BT_TRUE;
+			result=true;
 		}
 		freeChannelEvents(&channelEvents);
 	}
@@ -166,7 +166,7 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, context_t *ctx){
+bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, wcontext_t *wctx){
 	initSearch(search);
 	const char *oldSearchStr=vars_get_value(args,"oldSearchStr");
 	if (oldSearchStr) parseSearch(oldSearchStr,search,channels);
@@ -229,7 +229,7 @@ boolean_t initSearchFromArgs(search_t *const search, vars_t *args, channelList_t
 			for(i=0;i<ndays;i++){
 				wday=vars_geti_value_i(args,"wday",i);
 				if (wday>6||wday<0){
-					printMessage(ctx,"alert",tr("search.errWrongWday"),NULL,BT_FALSE);
+					printMessage(wctx,"alert",tr("search.errWrongWday"),NULL,false);
 				} else {
 					wdayFlag=1<<wday;
 					setFlag(wdayFlag,search->wday); 
@@ -389,10 +389,10 @@ void getSearchList(searchList_t *const searches, channelList_t const *const chan
 	sortSearchList(searches,sortBy,sortDirection);
 }
 
-boolean_t addSearch(context_t *ctx, hostConf_t *const host, const char *newSearchStr) {
-	boolean_t result= BT_FALSE;
+bool addSearch(wcontext_t *wctx, hostConf_t *const host, const char *newSearchStr) {
+	bool result= false;
 	if (!host || !host->isVdr) {
-		if (ctx) printMessage(ctx,"alert",tr("search.create.err"),"Host nulo o no es VDR",BT_FALSE); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("search.create.err"),"Host nulo o no es VDR",false); //TODO i18n
 	} else {
 		char *command;
 		crit_goto_if(asprintf(&command,"PLUG epgsearch NEWS %s",newSearchStr)<0,outOfMemory);
@@ -402,8 +402,8 @@ boolean_t addSearch(context_t *ctx, hostConf_t *const host, const char *newSearc
 			char *p=data;
 			int code=strtol(p,&p,10);
 			result=boolean(code==SVDRP_PLUG_DEFAULT);
-			if (ctx && *p && *(++p)){
-				printMessage(ctx,(result)?"message":"alert",tr((result)?"search.create.ok":"search.create.err"),p,BT_TRUE);
+			if (wctx && *p && *(++p)){
+				printMessage(wctx,(result)?"message":"alert",tr((result)?"search.create.ok":"search.create.err"),p,true);
 			}
 			free(data);
 		}
@@ -414,12 +414,12 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t deleteSearch(context_t *ctx, hostConf_t *host, int id, const char *oldSearchStr) {
-	boolean_t result=BT_FALSE;
+bool deleteSearch(wcontext_t *wctx, hostConf_t *host, int id, const char *oldSearchStr) {
+	bool result=false;
 	if (!host || !host->isVdr) {
-		if (ctx) printMessage(ctx,"alert",tr("search.delete.err"),"Host nulo o no es VDR",BT_FALSE); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("search.delete.err"),"Host nulo o no es VDR",false); //TODO i18n
 	} else if (oldSearchStr==NULL) {
-		if (ctx) printMessage(ctx,"alert",tr("search.delete.err"),"Faltan argumentos",BT_FALSE); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("search.delete.err"),"Faltan argumentos",false); //TODO i18n
 	} else {
 		char *searchStr=getSearchStrAt(host, id);
 		if (searchStr!=NULL) {
@@ -432,17 +432,17 @@ boolean_t deleteSearch(context_t *ctx, hostConf_t *host, int id, const char *old
 					char *p=data;
 					int code=strtol(p,&p,10);
 					result=boolean(code==SVDRP_PLUG_DEFAULT);
-					if (ctx && *p && *(++p)){
-						printMessage(ctx,(result)?"message":"alert",tr((result)?"search.delete.ok":"search.delete.err"),p,BT_TRUE);
+					if (wctx && *p && *(++p)){
+						printMessage(wctx,(result)?"message":"alert",tr((result)?"search.delete.ok":"search.delete.err"),p,true);
 					}
 					free(data);
 				}
 			} else { 
-				if (ctx) printMessage(ctx,"alert",tr("search.delete.err"),"Probablemente la búsqueda ha sido modificada",BT_FALSE); //TODO i18n
+				if (wctx) printMessage(wctx,"alert",tr("search.delete.err"),"Probablemente la búsqueda ha sido modificada",false); //TODO i18n
 			}
 			free(searchStr);
 		} else { 
-			if (ctx) printMessage(ctx,"alert",tr("search.delete.err"),"La búsqueda no existe",BT_FALSE); //TODO i18n
+			if (wctx) printMessage(wctx,"alert",tr("search.delete.err"),"La búsqueda no existe",false); //TODO i18n
 		}
 	}
 	return result;
@@ -451,16 +451,16 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t editSearch(context_t *ctx, hostConf_t *const host, int id, const char *oldSearchStr, const char *newSearchStr) {
+bool editSearch(wcontext_t *wctx, hostConf_t *const host, int id, const char *oldSearchStr, const char *newSearchStr) {
 	if (!host || !oldSearchStr || !newSearchStr){
-		if (ctx) printMessage(ctx,"alert",tr("search.update.err"),"Faltan argumentos",BT_TRUE); //TODO i18n
-		return BT_FALSE;
+		if (wctx) printMessage(wctx,"alert",tr("search.update.err"),"Faltan argumentos",true); //TODO i18n
+		return false;
 	}
 	if (strcmp(oldSearchStr,newSearchStr)==0){
-		if (ctx) printMessage(ctx,"alert",tr("search.update.err"),"Nada que hacer. No hay cambios",BT_TRUE); //TODO i18n
-		return BT_TRUE;
+		if (wctx) printMessage(wctx,"alert",tr("search.update.err"),"Nada que hacer. No hay cambios",true); //TODO i18n
+		return true;
 	}
-	boolean_t result= BT_FALSE;
+	bool result= false;
 	char *searchStr=getSearchStrAt(host,id);
 	if (searchStr!=NULL) {
 		if (strcmp(oldSearchStr,searchStr)==0) {
@@ -472,15 +472,15 @@ boolean_t editSearch(context_t *ctx, hostConf_t *const host, int id, const char 
 				char *p=data;
 				int code=strtol(p,&p,10);
 				result=boolean(code==SVDRP_PLUG_DEFAULT);
-				if (ctx && *p && *(++p)){
-					printMessage(ctx,(result)?"message":"alert",tr((result)?"search.update.ok":"search.update.err"),p,BT_TRUE);
+				if (wctx && *p && *(++p)){
+					printMessage(wctx,(result)?"message":"alert",tr((result)?"search.update.ok":"search.update.err"),p,true);
 				}
 				free(data);
 			} else {
-				if (ctx) printMessage(ctx,"alert",tr("search.update.err"),tr("warnSvdrpConnection"),BT_TRUE);
+				if (wctx) printMessage(wctx,"alert",tr("search.update.err"),tr("warnSvdrpConnection"),true);
 			}
 		} else {
-			printMessage(ctx,"alert",tr("search.update.err"),"Búsqueda no existe",BT_FALSE);
+			printMessage(wctx,"alert",tr("search.update.err"),"Búsqueda no existe",false);
 		}
 		free(searchStr);
 	}
@@ -490,19 +490,19 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t updateSearches(context_t *ctx, hostConf_t *host){
+bool updateSearches(wcontext_t *wctx, hostConf_t *host){
 	if (!host){
-		return BT_FALSE;
+		return false;
 	}
-	boolean_t result= BT_FALSE;
+	bool result= false;
 	char *command=NULL;
 	char *data=execSvdrp(host,"PLUG epgsearch UPDS");
 	if (data!=NULL){
 		char *p=data;
 		int code=strtol(p,&p,10);
 		result=boolean(code==SVDRP_PLUG_DEFAULT);
-		if (ctx && *p && *(++p)){
-			printMessage(ctx,(result)?"message":"alert",tr((result)?"searches.update.ok":"searches.update.err"),p,BT_TRUE);
+		if (wctx && *p && *(++p)){
+			printMessage(wctx,(result)?"message":"alert",tr((result)?"searches.update.ok":"searches.update.err"),p,true);
 		}
 		free(data);
 	}
@@ -537,7 +537,7 @@ outOfMemory:
 	exit(1);
 }
 
-boolean_t parseSearch(const char *line, search_t *const search, channelList_t const *const channels ){
+bool parseSearch(const char *line, search_t *const search, channelList_t const *const channels ){
 	char *c;
 	int l;
 	struct tm sdate;
@@ -757,10 +757,10 @@ boolean_t parseSearch(const char *line, search_t *const search, channelList_t co
 		if (r[0]!=':') break;
 		r++;
 	}
-	return BT_TRUE;
+	return true;
 wrongFormat:
 	warn("Wrong search string [%s]",line);
-	return BT_FALSE;
+	return false;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
@@ -846,217 +846,217 @@ outOfMemory:
 	exit(1);
 }
 //------------------------------
-void printSearchForm(context_t *ctx, search_t *const search, channelList_t const *const channels, const char *cssLevel){
+void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t const *const channels, const char *cssLevel){
 	cfgParamConfig_t searchModeCfg={"search.mode","0",
-		"search.phrase|search.allWords|search.atLeastOne|search.exactMatch|search.regex|search.fuzzy",BT_TRUE,0,NULL,NULL,BT_FALSE};
-	cfgParamConfig_t checkboxCfg={"","0","0|1",BT_FALSE,0,NULL,NULL,BT_FALSE};
-	cfgParamConfig_t useChannelCfg={"","0","no|interval|channel.group|onlyFTA",BT_TRUE,0,NULL,NULL,BT_FALSE};
-	cfgParamConfig_t searchActionCfg={"","0","search.record|search.announce|search.switch",BT_TRUE,0,NULL,NULL,BT_FALSE};
+		"search.phrase|search.allWords|search.atLeastOne|search.exactMatch|search.regex|search.fuzzy",true,0,NULL,NULL,false};
+	cfgParamConfig_t checkboxCfg={"","0","0|1",false,0,NULL,NULL,false};
+	cfgParamConfig_t useChannelCfg={"","0","no|interval|channel.group|onlyFTA",true,0,NULL,NULL,false};
+	cfgParamConfig_t searchActionCfg={"","0","search.record|search.announce|search.switch",true,0,NULL,NULL,false};
 
 	char *paramValue;
 	struct tm sdate;
 	const char *SearchEdit=tr((search->searchStr)?"search.edit":"search.add");
 	hostConf_t *host=getHost(search->hostId);
 
-	ctx_printfn(ctx,"<form id=\"searchEdit\" action=\"/searches.kl1\" method=\"post\">\n",0,1);
-	ctx_printfn(ctx,"<div class=\"%s-div  formContent\">\n",0,1,cssLevel);
-	ctx_printf0(ctx,"<h3 class=\"%s-top formTitle\"\">%s</h3>\n",cssLevel,tr("search.edit"));
-	ctx_printfn(ctx,"<div class=\"%s\">\n",0,1,cssLevel);
+	wctx_printfn(wctx,"<form id=\"searchEdit\" action=\"/searches.kl1\" method=\"post\">\n",0,1);
+	wctx_printfn(wctx,"<div class=\"%s-div  formContent\">\n",0,1,cssLevel);
+	wctx_printf0(wctx,"<h3 class=\"%s-top formTitle\"\">%s</h3>\n",cssLevel,tr("search.edit"));
+	wctx_printfn(wctx,"<div class=\"%s\">\n",0,1,cssLevel);
 
-	ctx_printfn(ctx,"<fieldset>\n",0,1);
+	wctx_printfn(wctx,"<fieldset>\n",0,1);
 	if (search->id>=0) {
-		ctx_printf0(ctx,"<input type=\"hidden\" name=\"searchId\" value=\"%d\"/>\n",search->id);
-		ctx_printf0(ctx,"<input type=\"hidden\" name=\"oldSearchStr\" value=\"%s\"/>\n",CTX_HTML_ENCODE(search->searchStr,-1));
+		wctx_printf0(wctx,"<input type=\"hidden\" name=\"searchId\" value=\"%d\"/>\n",search->id);
+		wctx_printf0(wctx,"<input type=\"hidden\" name=\"oldSearchStr\" value=\"%s\"/>\n",CTX_HTML_ENCODE(search->searchStr,-1));
 	}
 	if (webifConf.numVDRs>1){
-		ctx_printfn(ctx,"<label>%s\n",0,1,"Host");
-		printVDRSelect(ctx,"hostId",search->hostId);
-		ctx_printfn(ctx,"</label>\n",-1,0);
+		wctx_printfn(wctx,"<label>%s\n",0,1,"Host");
+		printVDRSelect(wctx,"hostId",search->hostId);
+		wctx_printfn(wctx,"</label>\n",-1,0);
 	} else {
-		ctx_printf0(ctx,"<input type=\"hidden\" name=\"hostId\" value=\"%d\"/>\n",search->hostId);
+		wctx_printf0(wctx,"<input type=\"hidden\" name=\"hostId\" value=\"%d\"/>\n",search->hostId);
 	}
-	ctx_printf0(ctx,"<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",search->hostId);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"search\" value=\"%s\"/></label>\n",tr("search.search"),(search->search)?search->search:"");
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.mode"));
+	wctx_printf0(wctx,"<input type=\"hidden\" name=\"oldHostId\" value=\"%d\"/>\n",search->hostId);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"search\" value=\"%s\"/></label>\n",tr("search.search"),(search->search)?search->search:"");
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.mode"));
 	asprintf(&paramValue,"%d",search->searchMode);
-	printSelect(ctx,&searchModeCfg,NULL,"searchMode",0,paramValue);
+	printSelect(wctx,&searchModeCfg,NULL,"searchMode",0,paramValue);
 	free(paramValue);
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.useCase"));
-	printCheckbox(ctx,&checkboxCfg,NULL,"useCase",0,isFlagSet(SFL_USE_CASE,search->flags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<fieldset id=\"compareSet\">\n",0,1);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.compareTitle"));
-	printCheckbox(ctx,&checkboxCfg,NULL,"compareTitle",0,isFlagSet(EFI_TITLE,search->compareFlags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.compareSubtitle"));
-	printCheckbox(ctx,&checkboxCfg,NULL,"compareSubtitle",0,isFlagSet(EFI_SHORTDESC,search->compareFlags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.compareDescription"));
-	printCheckbox(ctx,&checkboxCfg,NULL,"compareDescription",0,isFlagSet(EFI_DESC,search->compareFlags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
-	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.useCase"));
+	printCheckbox(wctx,&checkboxCfg,NULL,"useCase",0,isFlagSet(SFL_USE_CASE,search->flags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<fieldset id=\"compareSet\">\n",0,1);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.compareTitle"));
+	printCheckbox(wctx,&checkboxCfg,NULL,"compareTitle",0,isFlagSet(EFI_TITLE,search->compareFlags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.compareSubtitle"));
+	printCheckbox(wctx,&checkboxCfg,NULL,"compareSubtitle",0,isFlagSet(EFI_SHORTDESC,search->compareFlags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.compareDescription"));
+	printCheckbox(wctx,&checkboxCfg,NULL,"compareDescription",0,isFlagSet(EFI_DESC,search->compareFlags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset><!--\n",-1,0);
 
-	ctx_printfn(ctx,"--><fieldset>\n",0,1);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.startFilter"));
-	printCheckbox(ctx,&checkboxCfg,"startFilter","useTime",0,isFlagSet(SFL_USE_TIME,search->flags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<fieldset id=\"startFilterCfg\">\n",0,1);
+	wctx_printfn(wctx,"--><fieldset>\n",0,1);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.startFilter"));
+	printCheckbox(wctx,&checkboxCfg,"startFilter","useTime",0,isFlagSet(SFL_USE_TIME,search->flags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<fieldset id=\"startFilterCfg\">\n",0,1);
 	int hour,min;
 	hour=search->startTime/100;
 	min=search->startTime-hour*100;
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"startTime\" value=\"%02d:%02d\" size=\"5\"/></label>\n",tr("search.startAfter"),hour,min);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"startTime\" value=\"%02d:%02d\" size=\"5\"/></label>\n",tr("search.startAfter"),hour,min);
 	hour=search->stopTime/100;
 	min=search->stopTime-hour*100;
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"stopTime\" value=\"%02d:%02d\" size=\"5\"/></label>\n",tr("search.startBefore"),hour,min);
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
-	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"stopTime\" value=\"%02d:%02d\" size=\"5\"/></label>\n",tr("search.startBefore"),hour,min);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset><!--\n",-1,0);
 
-	ctx_printfn(ctx,"--><fieldset>\n",0,1);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.durationFilter"));
-	printCheckbox(ctx,&checkboxCfg,"durationFilter","useDuration",0,isFlagSet(SFL_USE_DURATION,search->flags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<fieldset id=\"durationFilterCfg\">\n",0,1);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"minDuration\" value=\"%d\" size=\"3\"/></label>\n",tr("search.durationMin"),search->minDuration);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"maxDuration\" value=\"%d\" size=\"3\"/></label>\n",tr("search.durationMax"),search->maxDuration);
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
-	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+	wctx_printfn(wctx,"--><fieldset>\n",0,1);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.durationFilter"));
+	printCheckbox(wctx,&checkboxCfg,"durationFilter","useDuration",0,isFlagSet(SFL_USE_DURATION,search->flags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<fieldset id=\"durationFilterCfg\">\n",0,1);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"minDuration\" value=\"%d\" size=\"3\"/></label>\n",tr("search.durationMin"),search->minDuration);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"maxDuration\" value=\"%d\" size=\"3\"/></label>\n",tr("search.durationMax"),search->maxDuration);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset><!--\n",-1,0);
 
-	ctx_printfn(ctx,"--><fieldset>\n",0,1);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.wdayFilter"));
-	printCheckbox(ctx,&checkboxCfg,"wdayFilter","useWday",0,isFlagSet(SFL_USE_WDAY,search->flags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<fieldset id=\"wdayFilterCfg\">\n",0,1);
+	wctx_printfn(wctx,"--><fieldset>\n",0,1);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.wdayFilter"));
+	printCheckbox(wctx,&checkboxCfg,"wdayFilter","useWday",0,isFlagSet(SFL_USE_WDAY,search->flags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<fieldset id=\"wdayFilterCfg\">\n",0,1);
 	int wdayFlag;
 	int c,wday;
 	for(c=0,wday=startOfWeek[langId];c<7;c++,wday=(wday+1)%7) {
 		wdayFlag=1<<wday;
-		ctx_printf0(ctx,
+		wctx_printf0(wctx,
 			"<label>%s"
 				"<input type=\"checkbox\" name=\"wday\" value=\"%d\"%s/>"
 			"</label>"
 			,weekdays[langId][wday],wday,checked[(search->wday<0)?isFlagSet(wdayFlag,-search->wday):boolean(wday==search->wday)]);
 	}
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
-	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset><!--\n",-1,0);
 
 	//channel-start
-	ctx_printfn(ctx,"--><fieldset>\n",0,1);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.channelFilter"));
+	wctx_printfn(wctx,"--><fieldset>\n",0,1);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.channelFilter"));
 	asprintf(&paramValue,"%d",search->useChannel);
-	printSelect(ctx,&useChannelCfg,"channelFilter","useChannel",0,paramValue);
+	printSelect(wctx,&useChannelCfg,"channelFilter","useChannel",0,paramValue);
 	free(paramValue);
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<fieldset id=\"channelFilterCfg\">\n",0,1);
-	ctx_printfn(ctx,"<label id=\"channelMinLabel\">%s\n",0,1,tr("search.channelMin"));
-	printChannelListSelect(ctx,NULL,"channelMin",channels,search->channelMin+1,NULL);
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<label id=\"channelMaxLabel\">%s\n",0,1,tr("search.channelMax"));
-	printChannelListSelect(ctx,NULL,"channelMax",channels,search->channelMax+1,NULL);
-	ctx_printfn(ctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<fieldset id=\"channelFilterCfg\">\n",0,1);
+	wctx_printfn(wctx,"<label id=\"channelMinLabel\">%s\n",0,1,tr("search.channelMin"));
+	printChannelListSelect(wctx,NULL,"channelMin",channels,search->channelMin+1,NULL);
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<label id=\"channelMaxLabel\">%s\n",0,1,tr("search.channelMax"));
+	printChannelListSelect(wctx,NULL,"channelMax",channels,search->channelMax+1,NULL);
+	wctx_printfn(wctx,"</label>\n",-1,0);
 	if (1) { //channelGroup
 		channelGroupList_t groups;
 		getChannelGroupList(host,&groups,channels);
-		ctx_printfn(ctx,"<label id=\"channelGroupLabel\">%s\n",0,1,tr("search.channel.group"));
+		wctx_printfn(wctx,"<label id=\"channelGroupLabel\">%s\n",0,1,tr("search.channel.group"));
 		if (groups.length>0) {
-			printChannelGroupListSelect(ctx,"channelGroup",&groups,search->channelGroup);
+			printChannelGroupListSelect(wctx,"channelGroup",&groups,search->channelGroup);
 			//TODO que hacer si no esta en la lista
 		} else {
-			ctx_printf0(ctx,"<input type=\"text\" name=\"channelGroup\" size=\"5\" value=\"%s\"/>",(search->channelGroup)?search->channelGroup:"");
+			wctx_printf0(wctx,"<input type=\"text\" name=\"channelGroup\" size=\"5\" value=\"%s\"/>",(search->channelGroup)?search->channelGroup:"");
 		} 
-		ctx_printfn(ctx,"</label>\n",-1,0);
+		wctx_printfn(wctx,"</label>\n",-1,0);
 		freeChannelGroupList(&groups);
 	}
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
-	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset><!--\n",-1,0);
 	//channel-end
 
 	//useAsSearchTimer-start
-	ctx_printfn(ctx,"--><fieldset>\n",0,1);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.useAsSearchTimer"));
-	printCheckbox(ctx,&checkboxCfg,"useAsSearchTimer","useAsSearchTimer",0,isFlagSet(SFL_USE_AS_SEARCH_TIMER,search->flags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<fieldset id=\"useAsSearchTimerCfg\">\n",0,1);
+	wctx_printfn(wctx,"--><fieldset>\n",0,1);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.useAsSearchTimer"));
+	printCheckbox(wctx,&checkboxCfg,"useAsSearchTimer","useAsSearchTimer",0,isFlagSet(SFL_USE_AS_SEARCH_TIMER,search->flags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<fieldset id=\"useAsSearchTimerCfg\">\n",0,1);
 	//action-start
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.action"));
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.action"));
 	asprintf(&paramValue,"%d",search->action);
-	printSelect(ctx,&searchActionCfg,"searchAction","searchAction",0,paramValue);
+	printSelect(wctx,&searchActionCfg,"searchAction","searchAction",0,paramValue);
 	free(paramValue);
-	ctx_printfn(ctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"</label>\n",-1,0);
 
 	//record-start
-	ctx_printfn(ctx,"<fieldset id=\"recordCfg\">\n",0,1);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"directory\" value=\"%s\" size=\"50\" /></label>\n"
+	wctx_printfn(wctx,"<fieldset id=\"recordCfg\">\n",0,1);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"directory\" value=\"%s\" size=\"50\" /></label>\n"
 		,tr("search.directory"),(search->directory)?search->directory:"%Title%~%Subtitle%");
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.useEpisode"));
-	printCheckbox(ctx,&checkboxCfg,"useEpisode","useEpisode",0,isFlagSet(SFL_USE_EPISODE,search->flags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"priority\" value=\"%d\" size=\"3\" /></label>\n",tr("search.priority"),search->priority);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"lifetime\" value=\"%d\" size=\"3\" /></label>\n",tr("search.lifetime"),search->lifetime);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"marginStart\" value=\"%d\" size=\"3\" /></label>\n",tr("search.margin.before"),search->marginStart);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"marginStop\" value=\"%d\" size=\"3\" /></label>\n",tr("search.margin.after"),search->marginStop);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"delAfterDays\" value=\"%d\" size=\"2\" /></label>\n",tr("search.delAfterDays"),search->delAfterDays);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.useEpisode"));
+	printCheckbox(wctx,&checkboxCfg,"useEpisode","useEpisode",0,isFlagSet(SFL_USE_EPISODE,search->flags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"priority\" value=\"%d\" size=\"3\" /></label>\n",tr("search.priority"),search->priority);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"lifetime\" value=\"%d\" size=\"3\" /></label>\n",tr("search.lifetime"),search->lifetime);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"marginStart\" value=\"%d\" size=\"3\" /></label>\n",tr("search.margin.before"),search->marginStart);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"marginStop\" value=\"%d\" size=\"3\" /></label>\n",tr("search.margin.after"),search->marginStop);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"delAfterDays\" value=\"%d\" size=\"2\" /></label>\n",tr("search.delAfterDays"),search->delAfterDays);
 
 	//repeats-start
-	//ctx_printfn(ctx,"<fieldset id=\"repeats\">\n",0,1);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.repeats.avoid"));
-	printCheckbox(ctx,&checkboxCfg,"repeatsAvoid","repeatsAvoid",0,isFlagSet(SFL_AVOID_REPEATS,search->flags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<fieldset id=\"repeatsAvoidCfg\">\n",0,1);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"repeatsAllowed\" value=\"%d\" size=\"2\"/></label>\n"
+	//wctx_printfn(wctx,"<fieldset id=\"repeats\">\n",0,1);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.repeats.avoid"));
+	printCheckbox(wctx,&checkboxCfg,"repeatsAvoid","repeatsAvoid",0,isFlagSet(SFL_AVOID_REPEATS,search->flags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<fieldset id=\"repeatsAvoidCfg\">\n",0,1);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"repeatsAllowed\" value=\"%d\" size=\"2\"/></label>\n"
 		,tr("search.repeats.maxAllowed"),search->allowedRepeats);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.repeats.compareTitle"));
-	printCheckbox(ctx,&checkboxCfg,NULL,"repeatsCompareTitle",0,isFlagSet(EFI_TITLE,search->repeatsCompareFlags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.repeats.compareSubtitle"));
-	printCheckbox(ctx,&checkboxCfg,NULL,"repeatsCompareSubtitle",0,isFlagSet(EFI_SHORTDESC,search->repeatsCompareFlags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.repeats.compareDescription"));
-	printCheckbox(ctx,&checkboxCfg,NULL,"repeatsCompareDescription",0,isFlagSet(EFI_DESC,search->repeatsCompareFlags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
-	//ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.repeats.compareTitle"));
+	printCheckbox(wctx,&checkboxCfg,NULL,"repeatsCompareTitle",0,isFlagSet(EFI_TITLE,search->repeatsCompareFlags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.repeats.compareSubtitle"));
+	printCheckbox(wctx,&checkboxCfg,NULL,"repeatsCompareSubtitle",0,isFlagSet(EFI_SHORTDESC,search->repeatsCompareFlags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.repeats.compareDescription"));
+	printCheckbox(wctx,&checkboxCfg,NULL,"repeatsCompareDescription",0,isFlagSet(EFI_DESC,search->repeatsCompareFlags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
+	//wctx_printfn(wctx,"</fieldset>\n",-1,0);
 	//repeats-end
 
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
 	//record-end
 
 	//announce-start
 	/*
-	ctx_printfn(ctx,"<fieldset id=\"announceCfg\">\n",0,1);
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"<fieldset id=\"announceCfg\">\n",0,1);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
 	*/
 	//announce-stop
 
 	//switch-start
-	ctx_printfn(ctx,"<fieldset id=\"switchCfg\">\n",0,1);
-	ctx_printf0(ctx,"<label>%s<input type=\"text\" name=\"switchMinsBefore\" value=\"%d\" size=\"2\"/></label>\n"
+	wctx_printfn(wctx,"<fieldset id=\"switchCfg\">\n",0,1);
+	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"switchMinsBefore\" value=\"%d\" size=\"2\"/></label>\n"
 		,tr("search.switch.minsBefore"),search->switchMinsBefore);
-	ctx_printfn(ctx,"<label>%s\n",0,1,tr("search.switch.unmuteSound"));
-	printCheckbox(ctx,&checkboxCfg,"switchUnmuteSound","repeatsAvoid",0,isFlagSet(SFL_UNMUTE_SOUND_ON_SWITCH,search->flags)?"1":"0");
-	ctx_printfn(ctx,"</label>\n",-1,0);
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.switch.unmuteSound"));
+	printCheckbox(wctx,&checkboxCfg,"switchUnmuteSound","repeatsAvoid",0,isFlagSet(SFL_UNMUTE_SOUND_ON_SWITCH,search->flags)?"1":"0");
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
 	//switch-end
 
 	//action-end
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
-	ctx_printfn(ctx,"</fieldset><!--\n",-1,0);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset><!--\n",-1,0);
 	//useAsSearchTimer-end
 
-	ctx_printfn(ctx,"--><fieldset class=\"controls ajaxButtonsHolder\">\n",0,1);
-	ctx_printf0(ctx,
+	wctx_printfn(wctx,"--><fieldset class=\"controls ajaxButtonsHolder\">\n",0,1);
+	wctx_printf0(wctx,
 		"<button id=\"confirm\" class=\"confirm ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
 			"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
 		"</button>\n"
 		,PA_ADD,tr("accept"));
-	ctx_printf0(ctx,
+	wctx_printf0(wctx,
 		"<button id=\"searchDelete\" class=\"delete searchDelete ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
 			"<div><span class=\"ui-icon ui-icon-trash\">&nbsp;</span>%s</div>"
 		"</button>\n"
 		,PA_DELETE,tr("search.delete"));
-	ctx_printfn(ctx,"</fieldset>\n",-1,0);
-	ctx_printfn(ctx,"</div>\n",-1,0); //[cssLevel]
-	ctx_printfn(ctx,"</div>\n",-1,0); //[cssLevel]-div
-	ctx_printfn(ctx,"</form>\n",-1,0);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0);
+	wctx_printfn(wctx,"</div>\n",-1,0); //[cssLevel]
+	wctx_printfn(wctx,"</div>\n",-1,0); //[cssLevel]-div
+	wctx_printfn(wctx,"</form>\n",-1,0);
 }
