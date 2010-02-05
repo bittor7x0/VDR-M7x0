@@ -446,14 +446,14 @@ bool writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 						} else {
 							if (param && param->value){
 								paramValue=param->value;
-								if (paramComment) {
-									while (paramComment[0]==' ') paramComment++;
-									lc=strcspn(paramComment,"\n\r");
-									while (lc>0 && paramComment[lc]==' ') lc--;
-									fprintf(t,"%s=%s #%s\n",paramName,paramValue,paramComment);
-								} else {
-									fprintf(t,"%s=%s\n",paramName,paramValue);
-								}
+							}
+							if (paramComment) {
+								while (paramComment[0]==' ') paramComment++;
+								lc=strcspn(paramComment,"\n\r");
+								while (lc>0 && paramComment[lc]==' ') lc--;
+								fprintf(t,"%s=%s #%s\n",paramName,(paramValue)?paramValue:"",paramComment);
+							} else {
+								fprintf(t,"%s=%s\n",paramName,(paramValue)?paramValue:"");
 							}
 						}
 						if (errno){
