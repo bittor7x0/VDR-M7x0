@@ -444,7 +444,7 @@ bool writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 						if (exclusive && !param) {
 							dbg("param [%s] eliminado de conf [%s]", paramName, fileName);
 						} else {
-							if (param && param->value){
+							if (param){
 								paramValue=param->value;
 							}
 							if (paramComment) {
