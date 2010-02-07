@@ -334,11 +334,11 @@ outOfMemory:
 
 bool editTimer(wcontext_t *wctx, hostConf_t *const host, int timerId, const char *oldTimerStr, const char *newTimerStr) {
 	if (!host || !oldTimerStr || !newTimerStr){
-		if (wctx) printMessage(wctx,"alert",tr("timer.update.err"),"Faltan argumentos",true); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("timer.update.err"),"Faltan argumentos",false); //TODO i18n
 		return false;
 	}
 	if (strcmp(oldTimerStr,newTimerStr)==0){
-		if (wctx) printMessage(wctx,"alert",tr("timer.update.err"),"Nada que hacer. No hay cambios",true); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("timer.update.err"),"Nada que hacer. No hay cambios",false); //TODO i18n
 		return true;
 	}
 	bool result= false;
@@ -358,7 +358,7 @@ bool editTimer(wcontext_t *wctx, hostConf_t *const host, int timerId, const char
 				}
 				free(data);
 			} else {
-				if (wctx) printMessage(wctx,"alert",tr("timer.update.err"),tr("warnSvdrpConnection"),true);
+				if (wctx) printMessage(wctx,"alert",tr("timer.update.err"),tr("warnSvdrpConnection"),false);
 			}
 		} else {
 			printMessage(wctx,"alert",tr("timer.update.err"),"Programación no existe",false);
@@ -755,7 +755,7 @@ void printTimerBars(wcontext_t *wctx, timerList_t *const timers, const int chann
 				if (width<0.0) width=0;
 				wctx_printfn(wctx,"<div id=\"timer%d_%d\" class=\"timer\">\n",0,1,timer->id,++timer->count);
 				wctx_printf0(wctx,"<a class=\"timerEdit progressbar\"");
-				wctx_printf(wctx," href=\"timers.kl1?a=%d&amp;timerStr=%s&amp;timerId=%d\"",PA_EDIT,CTX_URL_ENCODE(timer->timerStr,-1,NULL),timer->id);
+				wctx_printf(wctx," href=\"timers.kl1?a=%d&amp;timerStr=%s&amp;timerId=%d&hostId=%d\"",PA_EDIT,CTX_URL_ENCODE(timer->timerStr,-1,NULL),timer->id,timer->hostId);
 				wctx_printf(wctx," title=\"%s: %s\"",TimerEdit,timer->title);
 				wctx_printf(wctx,">\n");
 				inctab(wctx);

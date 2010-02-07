@@ -453,11 +453,11 @@ outOfMemory:
 
 bool editSearch(wcontext_t *wctx, hostConf_t *const host, int id, const char *oldSearchStr, const char *newSearchStr) {
 	if (!host || !oldSearchStr || !newSearchStr){
-		if (wctx) printMessage(wctx,"alert",tr("search.update.err"),"Faltan argumentos",true); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("search.update.err"),"Faltan argumentos",false); //TODO i18n
 		return false;
 	}
 	if (strcmp(oldSearchStr,newSearchStr)==0){
-		if (wctx) printMessage(wctx,"alert",tr("search.update.err"),"Nada que hacer. No hay cambios",true); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("search.update.err"),"Nada que hacer. No hay cambios",false); //TODO i18n
 		return true;
 	}
 	bool result= false;
@@ -477,7 +477,7 @@ bool editSearch(wcontext_t *wctx, hostConf_t *const host, int id, const char *ol
 				}
 				free(data);
 			} else {
-				if (wctx) printMessage(wctx,"alert",tr("search.update.err"),tr("warnSvdrpConnection"),true);
+				if (wctx) printMessage(wctx,"alert",tr("search.update.err"),tr("warnSvdrpConnection"),false);
 			}
 		} else {
 			printMessage(wctx,"alert",tr("search.update.err"),"Búsqueda no existe",false);

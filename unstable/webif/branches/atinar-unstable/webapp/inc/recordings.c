@@ -203,20 +203,20 @@ void getRecList(recList_t * const recs, sortField_t sortBy, sortDirection_t sort
 bool editRec(wcontext_t *wctx, const rec_t *rec, const char *oldName) {
 	bool result=false;
 	if (!rec->path) {
-		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),tr("recErrorNoPath"),true);
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),tr("recErrorNoPath"),false);
 		return false;
 	}
 	hostConf_t *host=getHost(rec->hostId);
 	if (!host){
-		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),tr("recErrorWrongHost"),true);
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),tr("recErrorWrongHost"),false);
 		return false;
 	}
 	if (oldName==NULL){
-		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),"Es necesario el nombre antiguo",true); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),"Es necesario el nombre antiguo",false); //TODO i18n
 		return false;
 	}
 	if (sameString(oldName,rec->name)){
-		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),"No se ha cambiado el nombre",true); //TODO i18n
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),"No se ha cambiado el nombre",false); //TODO i18n
 		return false;
 	}
 
@@ -234,7 +234,7 @@ bool editRec(wcontext_t *wctx, const rec_t *rec, const char *oldName) {
 		}
 		free(data);
 	} else {
-		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),tr("warnSvdrpConnection"),true);
+		if (wctx) printMessage(wctx,"alert",tr("rec.update.err"),tr("warnSvdrpConnection"),false);
 	}
 	return result;
 outOfMemory:
@@ -244,12 +244,12 @@ outOfMemory:
 
 bool deleteRec(wcontext_t *wctx, const rec_t *rec) {
 	if (!rec->path) {
-		if (wctx) printMessage(wctx,"alert",tr("rec.delete.err"),tr("recErrorNoPath"),true);
+		if (wctx) printMessage(wctx,"alert",tr("rec.delete.err"),tr("recErrorNoPath"),false);
 		return false;
 	}
 	hostConf_t *host=getHost(rec->hostId);
 	if (!host){
-		if (wctx) printMessage(wctx,"alert",tr("rec.delete.err"),tr("recErrorWrongHost"),true);
+		if (wctx) printMessage(wctx,"alert",tr("rec.delete.err"),tr("recErrorWrongHost"),false);
 		return false;
 	}
 	bool result=false;
@@ -266,7 +266,7 @@ bool deleteRec(wcontext_t *wctx, const rec_t *rec) {
 		}
 		free(data);
 	} else {
-		if (wctx) printMessage(wctx,"alert",tr("rec.delete.err"),tr("warnSvdrpConnection"),true);
+		if (wctx) printMessage(wctx,"alert",tr("rec.delete.err"),tr("warnSvdrpConnection"),false);
 	}
 	return result;
 outOfMemory:
