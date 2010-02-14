@@ -1,6 +1,6 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 1.7.11 backports applied in this patch:
+VDR 1.7.12 backports applied in this patch:
 * Implemented handling the "Content Descriptor" (based on a patch from Rolf
   Ahrenberg). The 'classic' and 'sttng' skins display the textual
   representation of the content descriptors as "genre". The epg.data file stores
@@ -38,6 +38,7 @@ VDR 1.7.11 backports applied in this patch:
   (thanks to Marco Schlüßler).
 * Changed the EIT filter setup to save a few handles on devices that do hardware
   filtering.
+* Changed the EVCONTENTMASK_* macros to enums and changed "mask" to "group".
 * Ignoring "repeat" and "release" keys in the time search entry mode during replay,
   to avoid inadvertently leaving it in case a key is pressed too long (suggested
   by Andreas Brugger).
@@ -74,6 +75,8 @@ VDR 1.7.11 backports applied in this patch:
 * Fixed variable types in cIndexFile (reported by Udo Richter).
 * Fixed cOsdMenu::Display() in case the menu size has changed (thanks to
   Reinhard Nissl).
+* Added plain text error messages to log entries from cOsd::SetAreas() (suggested
+  by Rolf Ahrenberg).
 * Added a missing Channels.SetModified(true) call when deleting or moving a
   channel in the Channels menu (reported by Halim Sahin).
 * Added a missing SetVolumeDevice() call in cDevice::SetPrimaryDevice() (reported
@@ -93,6 +96,8 @@ VDR 1.7.11 backports applied in this patch:
 * Fixed checking for ttDolbyLast in cDevice::SetCurrentAudioTrack() (thanks
   to Marco Schlüßler).
 * Fixed handling address masks in SVDRP host settings (thanks to Frank Schmirler).
+* If svdrphosts.conf contains only the address of the local host, the SVDRP port
+  is opened only for the local host (thanks to Manuel Reimer).
 * Added a missing reset of maxNumber in cChannels::Renumber() (reported by Sundararaj
   Reel).
 * Fixed tuning to a live channel after a recording has been stopped using the
@@ -114,6 +119,8 @@ VDR 1.7.11 backports applied in this patch:
 * cDevice now logs the device number when a new device is created.
 * Improved SPU handling on devices with limited OSD capabilities (thanks to
   Matthieu Castet).
+* Improved cDvbSpuBitmap::getMinBpp() (thanks to Matthieu Castet and Johann
+  Friedrichs).
 * Some fixes to dvbspu.[hc] (thanks to Johann Friedrichs).
 * Fixed plugin arguments corruption with glibc 2.11 on x86_64 (thanks to
   Anssi Hannula).
@@ -136,8 +143,8 @@ VDR 1.7.11 backports applied in this patch:
 
 
 diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
---- VDR-NG-orig/channels.c	2010-01-14 09:51:58.000000000 +0100
-+++ VDR-NG/channels.c	2010-01-14 18:19:08.000000000 +0100
+--- VDR-NG-orig/channels.c	2010-02-10 16:57:06.000000000 +0100
++++ VDR-NG/channels.c	2010-02-10 16:58:58.000000000 +0100
 @@ -26,7 +26,7 @@
    {   0, INVERSION_OFF },
    {   1, INVERSION_ON },
@@ -476,8 +483,8 @@ diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
    for (cChannel *channel = First(); channel; channel = Next(channel)) {
        if (channel->GroupSep()) {
 diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
---- VDR-NG-orig/channels.h	2010-01-14 09:52:00.000000000 +0100
-+++ VDR-NG/channels.h	2010-01-14 09:52:56.000000000 +0100
+--- VDR-NG-orig/channels.h	2010-02-10 16:57:08.000000000 +0100
++++ VDR-NG/channels.h	2010-02-10 16:58:58.000000000 +0100
 @@ -147,9 +147,12 @@
    int modification;
    mutable const cSchedule *schedule;
@@ -565,8 +572,8 @@ diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
    void IncBeingEdited(void) { beingEdited++; }
    void DecBeingEdited(void) { beingEdited--; }
 diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
---- VDR-NG-orig/config.c	2010-01-14 09:52:24.000000000 +0100
-+++ VDR-NG/config.c	2010-01-14 17:48:56.000000000 +0100
+--- VDR-NG-orig/config.c	2010-02-10 16:57:34.000000000 +0100
++++ VDR-NG/config.c	2010-02-10 17:16:10.000000000 +0100
 @@ -82,7 +82,7 @@
       while ((c = fgetc(p)) != EOF) {
             if (l % 20 == 0)
@@ -576,8 +583,15 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
             }
       if (result)
          result[l] = 0;
-@@ -139,7 +139,7 @@
+@@ -137,9 +137,14 @@
+   return result != 0 && (mask != 0 || addr.s_addr == 0);
+ }
  
++bool cSVDRPhost::IsLocalhost(void)
++{
++  return addr.s_addr == htonl(INADDR_LOOPBACK);
++}
++
  bool cSVDRPhost::Accepts(in_addr_t Address)
  {
 -  return (Address & mask) == addr.s_addr;
@@ -585,7 +599,25 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
  }
  
  // -- cCommands --------------------------------------------------------------
-@@ -284,9 +284,11 @@
+@@ -167,6 +172,17 @@
+ 
+ cSVDRPhosts SVDRPhosts;
+ 
++bool cSVDRPhosts::LocalhostOnly(void)
++{
++  cSVDRPhost *h = First();
++  while (h) {
++        if (!h->IsLocalhost())
++           return false;
++        h = (cSVDRPhost *)h->Next();
++        }
++  return true;
++}
++
+ bool cSVDRPhosts::Acceptable(in_addr_t Address)
+ {
+   cSVDRPhost *h = First();
+@@ -284,9 +300,11 @@
  //M7X0 END AK
    SVDRPTimeout = 300;
    ZapTimeout = 3;
@@ -597,7 +629,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    PausePriority = 10;
    PauseLifetime = 1;
    UseSubtitle = 1;
-@@ -483,9 +485,11 @@
+@@ -483,9 +501,11 @@
  //M7X0 END AK
    else if (!strcasecmp(Name, "SVDRPTimeout"))        SVDRPTimeout       = atoi(Value);
    else if (!strcasecmp(Name, "ZapTimeout"))          ZapTimeout         = atoi(Value);
@@ -609,7 +641,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    else if (!strcasecmp(Name, "PausePriority"))       PausePriority      = atoi(Value);
    else if (!strcasecmp(Name, "PauseLifetime"))       PauseLifetime      = atoi(Value);
    else if (!strcasecmp(Name, "UseSubtitle"))         UseSubtitle        = atoi(Value);
-@@ -589,9 +593,11 @@
+@@ -589,9 +609,11 @@
  //M7X0 END AK
    Store("SVDRPTimeout",       SVDRPTimeout);
    Store("ZapTimeout",         ZapTimeout);
@@ -622,9 +654,25 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    Store("PauseLifetime",      PauseLifetime);
    Store("UseSubtitle",        UseSubtitle);
 diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
---- VDR-NG-orig/config.h	2010-01-14 09:52:24.000000000 +0100
-+++ VDR-NG/config.h	2010-01-14 09:52:56.000000000 +0100
-@@ -253,9 +253,11 @@
+--- VDR-NG-orig/config.h	2010-02-10 16:57:34.000000000 +0100
++++ VDR-NG/config.h	2010-02-10 17:17:06.000000000 +0100
+@@ -88,6 +88,7 @@
+ public:
+   cSVDRPhost(void);
+   bool Parse(const char *s);
++  bool IsLocalhost(void);
+   bool Accepts(in_addr_t Address);
+   };
+ 
+@@ -183,6 +184,7 @@
+ 
+ class cSVDRPhosts : public cConfig<cSVDRPhost> {
+ public:
++  bool LocalhostOnly(void);
+   bool Acceptable(in_addr_t Address);
+   };
+ 
+@@ -253,9 +255,11 @@
  //M7X0 END AK
    int SVDRPTimeout;
    int ZapTimeout;
@@ -637,8 +685,8 @@ diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
    int DelTimeshiftRec;
    int UseVps;
 diff -Naur VDR-NG-orig/cutter.c VDR-NG/cutter.c
---- VDR-NG-orig/cutter.c	2010-01-14 09:52:08.000000000 +0100
-+++ VDR-NG/cutter.c	2010-01-14 12:00:34.000000000 +0100
+--- VDR-NG-orig/cutter.c	2010-02-10 16:57:18.000000000 +0100
++++ VDR-NG/cutter.c	2010-02-10 16:58:58.000000000 +0100
 @@ -484,3 +484,31 @@
    ended = false;
    return result;
@@ -672,8 +720,8 @@ diff -Naur VDR-NG-orig/cutter.c VDR-NG/cutter.c
 +  return false;
 +}
 diff -Naur VDR-NG-orig/cutter.h VDR-NG/cutter.h
---- VDR-NG-orig/cutter.h	2010-01-14 09:52:02.000000000 +0100
-+++ VDR-NG/cutter.h	2010-01-14 12:04:40.000000000 +0100
+--- VDR-NG-orig/cutter.h	2010-02-10 16:57:12.000000000 +0100
++++ VDR-NG/cutter.h	2010-02-10 16:58:58.000000000 +0100
 @@ -28,4 +28,6 @@
    static bool Ended(void);
    };
@@ -682,8 +730,8 @@ diff -Naur VDR-NG-orig/cutter.h VDR-NG/cutter.h
 +
  #endif //__CUTTER_H
 diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
---- VDR-NG-orig/device.c	2010-01-14 09:52:22.000000000 +0100
-+++ VDR-NG/device.c	2010-01-15 10:46:54.000000000 +0100
+--- VDR-NG-orig/device.c	2010-02-10 16:57:32.000000000 +0100
++++ VDR-NG/device.c	2010-02-10 16:58:58.000000000 +0100
 @@ -220,6 +220,7 @@
  cDevice::cDevice(void)
  {
@@ -759,7 +807,7 @@ diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
          SetDigitalAudioDevice(true);
 diff -Naur VDR-NG-orig/device.h VDR-NG/device.h
 --- VDR-NG-orig/device.h	2009-09-24 17:21:12.000000000 +0200
-+++ VDR-NG/device.h	2010-01-14 09:52:56.000000000 +0100
++++ VDR-NG/device.h	2010-02-10 16:58:58.000000000 +0100
 @@ -328,7 +328,12 @@
  protected:
    void StartSectionHandler(void);
@@ -775,8 +823,8 @@ diff -Naur VDR-NG-orig/device.h VDR-NG/device.h
    virtual int OpenFilter(u_short Pid, u_char Tid, u_char Mask);
         ///< Opens a file handle for the given filter data.
 diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
---- VDR-NG-orig/dvbdevice.c	2010-01-14 09:52:22.000000000 +0100
-+++ VDR-NG/dvbdevice.c	2010-01-18 13:26:12.000000000 +0100
+--- VDR-NG-orig/dvbdevice.c	2010-02-10 16:57:32.000000000 +0100
++++ VDR-NG/dvbdevice.c	2010-02-10 16:58:58.000000000 +0100
 @@ -291,6 +291,7 @@
                            }
                         }
@@ -851,8 +899,8 @@ diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
    playMode = PlayMode;
    return true;
 diff -Naur VDR-NG-orig/dvbplayer.c VDR-NG/dvbplayer.c
---- VDR-NG-orig/dvbplayer.c	2010-01-14 09:52:12.000000000 +0100
-+++ VDR-NG/dvbplayer.c	2010-01-14 18:22:14.000000000 +0100
+--- VDR-NG-orig/dvbplayer.c	2010-02-10 16:57:22.000000000 +0100
++++ VDR-NG/dvbplayer.c	2010-02-10 16:58:58.000000000 +0100
 @@ -820,6 +820,7 @@
              FasterUnlockOther();
              }
@@ -871,7 +919,7 @@ diff -Naur VDR-NG-orig/dvbplayer.c VDR-NG/dvbplayer.c
  }
 diff -Naur VDR-NG-orig/dvbspu.c VDR-NG/dvbspu.c
 --- VDR-NG-orig/dvbspu.c	2009-09-24 17:21:12.000000000 +0200
-+++ VDR-NG/dvbspu.c	2010-01-18 19:26:33.000000000 +0100
++++ VDR-NG/dvbspu.c	2010-02-10 17:11:00.000000000 +0100
 @@ -64,9 +64,10 @@
                               uint8_t * fodd, uint8_t * eodd,
                               uint8_t * feven, uint8_t * eeven)
@@ -950,7 +998,7 @@ diff -Naur VDR-NG-orig/dvbspu.c VDR-NG/dvbspu.c
 +                col++;
 +        }
 +    }
-+    return col > 2 ? 4 : 2;
++    return col > 2 ? 2 : 1;
 +}
 +
 +int cDvbSpuDecoder::CalcAreaBpp(cBitmap *fgbmp, cBitmap *bgbmp)
@@ -1099,7 +1147,7 @@ diff -Naur VDR-NG-orig/dvbspu.c VDR-NG/dvbspu.c
                                             spu + feven, spu + cmdOffs());
 diff -Naur VDR-NG-orig/dvbspu.h VDR-NG/dvbspu.h
 --- VDR-NG-orig/dvbspu.h	2009-09-24 17:21:12.000000000 +0200
-+++ VDR-NG/dvbspu.h	2010-01-14 18:24:16.000000000 +0100
++++ VDR-NG/dvbspu.h	2010-02-10 16:58:58.000000000 +0100
 @@ -32,10 +32,10 @@
      int x1, y1;
      int x2, y2;
@@ -1157,8 +1205,8 @@ diff -Naur VDR-NG-orig/dvbspu.h VDR-NG/dvbspu.h
  
  #endif                          // __DVBSPU_H
 diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
---- VDR-NG-orig/eit.c	2010-01-14 09:52:22.000000000 +0100
-+++ VDR-NG/eit.c	2010-01-15 14:19:16.000000000 +0100
+--- VDR-NG-orig/eit.c	2010-02-10 16:57:32.000000000 +0100
++++ VDR-NG/eit.c	2010-02-10 17:11:00.000000000 +0100
 @@ -159,9 +159,40 @@
                      }
                   }
@@ -1168,9 +1216,9 @@ diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
 +                 SI::ContentDescriptor *cd = (SI::ContentDescriptor *)d;
 +                 SI::ContentDescriptor::Nibble Nibble;
 +                 int NumContents = 0;
-+                 uchar Contents[MAXEVCONTENTS] = { 0 };
++                 uchar Contents[MaxEventContents] = { 0 };
 +                 for (SI::Loop::Iterator it3; cd->nibbleLoop.getNext(Nibble, it3); ) {
-+                     if (NumContents < MAXEVCONTENTS) {
++                     if (NumContents < MaxEventContents) {
 +                        Contents[NumContents] = ((Nibble.getContentNibbleLevel1() & 0xF) << 4) | (Nibble.getContentNibbleLevel2() & 0xF);
 +                        NumContents++;
 +                        }
@@ -1290,7 +1338,7 @@ diff -Naur VDR-NG-orig/eit.c VDR-NG/eit.c
  }
 diff -Naur VDR-NG-orig/eit.h VDR-NG/eit.h
 --- VDR-NG-orig/eit.h	2009-09-24 17:21:02.000000000 +0200
-+++ VDR-NG/eit.h	2010-01-15 14:19:16.000000000 +0100
++++ VDR-NG/eit.h	2010-02-10 16:58:58.000000000 +0100
 @@ -13,10 +13,13 @@
  #include "filter.h"
  
@@ -1306,8 +1354,8 @@ diff -Naur VDR-NG-orig/eit.h VDR-NG/eit.h
  
  #endif //__EIT_H
 diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
---- VDR-NG-orig/epg.c	2010-01-14 09:52:12.000000000 +0100
-+++ VDR-NG/epg.c	2010-01-15 14:19:16.000000000 +0100
+--- VDR-NG-orig/epg.c	2010-02-10 16:57:22.000000000 +0100
++++ VDR-NG/epg.c	2010-02-10 17:11:00.000000000 +0100
 @@ -112,6 +112,8 @@
    shortText = NULL;
    description = NULL;
@@ -1323,7 +1371,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
  
 +void cEvent::SetContents(uchar *Contents)
 +{
-+  for (int i = 0; i < MAXEVCONTENTS; i++)
++  for (int i = 0; i < MaxEventContents; i++)
 +      contents[i] = Contents[i];
 +}
 +
@@ -1342,7 +1390,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +const char *cEvent::ContentToString(uchar Content)
 +{
 +  switch (Content & 0xF0) {
-+    case EVCONTENTMASK_MOVIEDRAMA:
++    case ecgMovieDrama:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$Movie/Drama");
@@ -1356,7 +1404,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x08: return tr("Content$Adult Movie/Drama");
 +           }
 +         break;
-+    case EVCONTENTMASK_NEWSCURRENTAFFAIRS:
++    case ecgNewsCurrentAffairs:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$News/Current Affairs");
@@ -1366,7 +1414,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x04: return tr("Content$Discussion/Inverview/Debate");
 +           }
 +         break;
-+    case EVCONTENTMASK_SHOW:
++    case ecgShow:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$Show/Game Show");
@@ -1375,7 +1423,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x03: return tr("Content$Talk Show");
 +           }
 +         break;
-+    case EVCONTENTMASK_SPORTS:
++    case ecgSports:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$Sports");
@@ -1392,7 +1440,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x0B: return tr("Content$Martial Sports");
 +           }
 +         break;
-+    case EVCONTENTMASK_CHILDRENYOUTH:
++    case ecgChildrenYouth:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$Children's/Youth Programme");
@@ -1403,7 +1451,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x05: return tr("Content$Cartoons/Puppets");
 +           }
 +         break;
-+    case EVCONTENTMASK_MUSICBALLETDANCE:
++    case ecgMusicBalletDance:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$Music/Ballet/Dance");
@@ -1415,7 +1463,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x06: return tr("Content$Ballet");
 +           }
 +         break;
-+    case EVCONTENTMASK_ARTSCULTURE:
++    case ecgArtsCulture:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$Arts/Culture");
@@ -1432,7 +1480,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x0B: return tr("Content$Fashion");
 +           }
 +         break;
-+    case EVCONTENTMASK_SOCIALPOLITICALECONOMICS:
++    case ecgSocialPoliticalEconomics:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$Social/Political/Economics");
@@ -1441,7 +1489,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x03: return tr("Content$Remarkable People");
 +           }
 +         break;
-+    case EVCONTENTMASK_EDUCATIONALSCIENCE:
++    case ecgEducationalScience:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$Education/Science/Factual");
@@ -1454,7 +1502,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x07: return tr("Content$Languages");
 +           }
 +         break;
-+    case EVCONTENTMASK_LEISUREHOBBIES:
++    case ecgLeisureHobbies:
 +         switch (Content & 0x0F) {
 +           default:
 +           case 0x00: return tr("Content$Leisure/Hobbies");
@@ -1467,7 +1515,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 +           case 0x07: return tr("Content$Gardening");
 +           }
 +         break;
-+    case EVCONTENTMASK_SPECIAL:
++    case ecgSpecial:
 +         switch (Content & 0x0F) {
 +           case 0x00: return tr("Content$Original Language");
 +           case 0x01: return tr("Content$Black & White");
@@ -1512,7 +1560,7 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
                break;
 +    case 'G': {
 +                memset(contents, 0, sizeof(contents));
-+                for (int i = 0; i < MAXEVCONTENTS; i++) {
++                for (int i = 0; i < MaxEventContents; i++) {
 +                    char *tail = NULL;
 +                    int c = strtol(t, &tail, 16);
 +                    if (0x00 < c && c <= 0xFF) {
@@ -1616,30 +1664,33 @@ diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
  cSchedulesReaderThread cSchedulesReaderThread::readerThread;
  
 diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
---- VDR-NG-orig/epg.h	2010-01-14 09:52:12.000000000 +0100
-+++ VDR-NG/epg.h	2010-01-15 14:20:04.000000000 +0100
-@@ -19,6 +19,20 @@
+--- VDR-NG-orig/epg.h	2010-02-10 16:57:22.000000000 +0100
++++ VDR-NG/epg.h	2010-02-10 17:11:00.000000000 +0100
+@@ -19,6 +19,23 @@
  
  #define MAXEPGBUGFIXLEVEL 3
  
-+#define MAXEVCONTENTS                          4
-+#define EVCONTENTMASK_MOVIEDRAMA               0x10
-+#define EVCONTENTMASK_NEWSCURRENTAFFAIRS       0x20
-+#define EVCONTENTMASK_SHOW                     0x30
-+#define EVCONTENTMASK_SPORTS                   0x40
-+#define EVCONTENTMASK_CHILDRENYOUTH            0x50
-+#define EVCONTENTMASK_MUSICBALLETDANCE         0x60
-+#define EVCONTENTMASK_ARTSCULTURE              0x70
-+#define EVCONTENTMASK_SOCIALPOLITICALECONOMICS 0x80
-+#define EVCONTENTMASK_EDUCATIONALSCIENCE       0x90
-+#define EVCONTENTMASK_LEISUREHOBBIES           0xA0
-+#define EVCONTENTMASK_SPECIAL                  0xB0
-+#define EVCONTENTMASK_USERDEFINED              0xF0
++enum { MaxEventContents = 4 };
++
++enum eEventContentGroup {
++  ecgMovieDrama               = 0x10,
++  ecgNewsCurrentAffairs       = 0x20,
++  ecgShow                     = 0x30,
++  ecgSports                   = 0x40,
++  ecgChildrenYouth            = 0x50,
++  ecgMusicBalletDance         = 0x60,
++  ecgArtsCulture              = 0x70,
++  ecgSocialPoliticalEconomics = 0x80,
++  ecgEducationalScience       = 0x90,
++  ecgLeisureHobbies           = 0xA0,
++  ecgSpecial                  = 0xB0,
++  ecgUserDefined              = 0xF0
++  };
 +
  enum eDumpMode { dmAll, dmPresent, dmFollowing, dmPresentAndFollowing, dmAtTime, dmBetween, dmWithID };
  
  struct tComponent {
-@@ -53,15 +67,18 @@
+@@ -53,15 +70,18 @@
  class cEvent : public cListObject {
    friend class cSchedule;
  private:
@@ -1655,20 +1706,20 @@ diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
    char *shortText;         // Short description of this event (typically the episode name in case of a series)
    char *description;       // Description of this event
    cComponents *components; // The stream components of this event
-+  uchar contents[MAXEVCONTENTS]; // Contents of this event
++  uchar contents[MaxEventContents]; // Contents of this event
    time_t startTime;        // Start time of this event
    int duration;            // Duration of this event in seconds
    time_t vps;              // Video Programming Service timestamp (VPS, aka "Programme Identification Label", PIL)
-@@ -86,6 +103,8 @@
+@@ -86,6 +106,8 @@
    const char *ShortText(void) const { return shortText; }
    const char *Description(void) const { return description; }
    const cComponents *Components(void) const { return components; }
-+  uchar Contents(int i = 0) const { return (0 <= i && i < MAXEVCONTENTS) ? contents[i] : 0; }
++  uchar Contents(int i = 0) const { return (0 <= i && i < MaxEventContents) ? contents[i] : 0; }
 +  int ParentalRating(void) const { return parentalRating; }
    time_t StartTime(void) const { return startTime; }
    time_t EndTime(void) const { return startTime + duration; }
    int Duration(void) const { return duration; }
-@@ -96,6 +115,8 @@
+@@ -96,6 +118,8 @@
    void IncTimerUse(void) const { usedByTimers++; }
    void DecTimerUse(void) const { usedByTimers--; }
    bool IsRunning(bool OrAboutToStart = false) const;
@@ -1677,7 +1728,7 @@ diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
    cString GetDateString(void) const;
    cString GetTimeString(void) const;
    cString GetEndTimeString(void) const;
-@@ -108,6 +129,8 @@
+@@ -108,6 +132,8 @@
    void SetShortText(const char *ShortText);
    void SetDescription(const char *Description);
    void SetComponents(cComponents *Components); // Will take ownership of Components!
@@ -1686,7 +1737,7 @@ diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
    void SetStartTime(time_t StartTime);
    void SetDuration(int Duration);
    void SetVps(time_t Vps);
-@@ -172,11 +195,15 @@
+@@ -172,11 +198,15 @@
    friend class cSchedulesLock;
  private:
    cRwLock rwlock;
@@ -1703,8 +1754,8 @@ diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
    static void SetEpgDataFileName(const char *FileName);
    static const cSchedules *Schedules(cSchedulesLock &SchedulesLock);
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
---- VDR-NG-orig/i18n.c	2010-01-14 09:52:24.000000000 +0100
-+++ VDR-NG/i18n.c	2010-01-22 12:47:51.000000000 +0100
+--- VDR-NG-orig/i18n.c	2010-02-10 16:57:34.000000000 +0100
++++ VDR-NG/i18n.c	2010-02-10 16:59:00.000000000 +0100
 @@ -4718,6 +4718,116 @@
      "Standard levetid (d)",
      "Výchozí ¾ivotnost",
@@ -3619,8 +3670,8 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
      "Dieses Plugin hat keine Parameter!",
      "Ta vstavek nima nastavitvenih parametrov!",
 diff -Naur VDR-NG-orig/INSTALL VDR-NG/INSTALL
---- VDR-NG-orig/INSTALL	2009-09-24 17:21:00.000000000 +0200
-+++ VDR-NG/INSTALL	2010-01-19 19:20:06.617246768 +0100
+--- VDR-NG-orig/INSTALL	2010-02-10 17:38:46.091269446 +0100
++++ VDR-NG/INSTALL	2010-02-10 17:38:39.903287937 +0100
 @@ -67,13 +67,8 @@
  the defaults of which can be set via the RCU_DEVICE and LIRC_DEVICE macros,
  respectively.
@@ -3639,7 +3690,7 @@ diff -Naur VDR-NG-orig/INSTALL VDR-NG/INSTALL
  system log file (/var/log/messages). You may want to watch these
 diff -Naur VDR-NG-orig/libsi/si.c VDR-NG/libsi/si.c
 --- VDR-NG-orig/libsi/si.c	2009-09-24 17:20:48.000000000 +0200
-+++ VDR-NG/libsi/si.c	2010-01-15 11:00:24.000000000 +0100
++++ VDR-NG/libsi/si.c	2010-02-10 16:59:00.000000000 +0100
 @@ -280,7 +280,6 @@
        if (    ((' ' <= *from) && (*from <= '~'))
             || (*from == '\n')
@@ -3658,7 +3709,7 @@ diff -Naur VDR-NG-orig/libsi/si.c VDR-NG/libsi/si.c
     return d;
 diff -Naur VDR-NG-orig/libsi/si.h VDR-NG/libsi/si.h
 --- VDR-NG-orig/libsi/si.h	2009-09-24 17:20:48.000000000 +0200
-+++ VDR-NG/libsi/si.h	2010-01-15 11:01:06.000000000 +0100
++++ VDR-NG/libsi/si.h	2010-02-10 16:59:00.000000000 +0100
 @@ -28,7 +28,7 @@
                 TableIdNIT_other  = 0x41, //network information section, other network
                 TableIdSDT = 0x42, //service description section
@@ -3679,7 +3730,7 @@ diff -Naur VDR-NG-orig/libsi/si.h VDR-NG/libsi/si.h
        }
 diff -Naur VDR-NG-orig/libsi/util.c VDR-NG/libsi/util.c
 --- VDR-NG-orig/libsi/util.c	2009-09-24 17:20:48.000000000 +0200
-+++ VDR-NG/libsi/util.c	2010-01-14 09:52:58.000000000 +0100
++++ VDR-NG/libsi/util.c	2010-02-10 16:59:00.000000000 +0100
 @@ -215,58 +215,73 @@
  
  //taken and adapted from libdtv, (c) Rolf Hakenes
@@ -3799,8 +3850,8 @@ diff -Naur VDR-NG-orig/libsi/util.c VDR-NG/libsi/util.c
     return crc;
  }
 diff -Naur VDR-NG-orig/lirc.c VDR-NG/lirc.c
---- VDR-NG-orig/lirc.c	2010-01-14 09:52:18.000000000 +0100
-+++ VDR-NG/lirc.c	2010-01-14 09:52:58.000000000 +0100
+--- VDR-NG-orig/lirc.c	2010-02-10 16:57:28.000000000 +0100
++++ VDR-NG/lirc.c	2010-02-10 16:59:00.000000000 +0100
 @@ -71,42 +71,28 @@
    char buf[LIRC_BUFFER_SIZE];
    char LastKeyName[LIRC_KEY_BUF] = "";
@@ -3862,7 +3913,7 @@ diff -Naur VDR-NG-orig/lirc.c VDR-NG/lirc.c
             close(f);
 diff -Naur VDR-NG-orig/Make.config VDR-NG/Make.config
 --- VDR-NG-orig/Make.config	2009-09-24 17:21:12.000000000 +0200
-+++ VDR-NG/Make.config	2010-01-14 09:52:58.000000000 +0100
++++ VDR-NG/Make.config	2010-02-10 16:59:00.000000000 +0100
 @@ -28,7 +28,6 @@
  
  REMOTE=LIRC
@@ -3872,8 +3923,8 @@ diff -Naur VDR-NG-orig/Make.config VDR-NG/Make.config
  # TESTING 
  # DEFINES += -DUSE_HW_VIDEO_FRAME_EVENTS # Use Hardware Frame Events
 diff -Naur VDR-NG-orig/Makefile VDR-NG/Makefile
---- VDR-NG-orig/Makefile	2010-01-14 09:52:22.000000000 +0100
-+++ VDR-NG/Makefile	2010-01-14 09:52:58.000000000 +0100
+--- VDR-NG-orig/Makefile	2010-02-10 16:57:32.000000000 +0100
++++ VDR-NG/Makefile	2010-02-10 16:59:00.000000000 +0100
 @@ -92,11 +92,6 @@
  VDRVERSION = $(shell sed -ne '/define VDRVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
  APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
@@ -3887,8 +3938,8 @@ diff -Naur VDR-NG-orig/Makefile VDR-NG/Makefile
  font: genfontfile\
        fontfix-iso8859-1.c fontosd-iso8859-1.c fontsml-iso8859-1.c\
 diff -Naur VDR-NG-orig/MANUAL VDR-NG/MANUAL
---- VDR-NG-orig/MANUAL	2009-09-24 17:21:12.000000000 +0200
-+++ VDR-NG/MANUAL	2010-01-19 19:19:22.401253961 +0100
+--- VDR-NG-orig/MANUAL	2010-02-10 17:40:08.391267647 +0100
++++ VDR-NG/MANUAL	2010-02-10 17:40:03.915267524 +0100
 @@ -700,6 +700,13 @@
    Pause priority = 10    The Priority and Lifetime values used when pausing live
    Pause lifetime = 1     video.
@@ -3920,8 +3971,8 @@ diff -Naur VDR-NG-orig/MANUAL VDR-NG/MANUAL
                           VDR starts. Default is 0, which means that it will
                           tune to the channel that was on before VDR was stopped.
 diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
---- VDR-NG-orig/menu.c	2010-01-14 09:52:24.000000000 +0100
-+++ VDR-NG/menu.c	2010-01-15 14:19:16.000000000 +0100
+--- VDR-NG-orig/menu.c	2010-02-10 16:57:34.000000000 +0100
++++ VDR-NG/menu.c	2010-02-10 16:59:00.000000000 +0100
 @@ -566,6 +566,7 @@
          Channels.Del(channel);
          cOsdMenu::Del(Index);
@@ -4075,8 +4126,8 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
      }
  
 diff -Naur VDR-NG-orig/menuitems.c VDR-NG/menuitems.c
---- VDR-NG-orig/menuitems.c	2010-01-14 09:51:48.000000000 +0100
-+++ VDR-NG/menuitems.c	2010-01-18 13:18:00.000000000 +0100
+--- VDR-NG-orig/menuitems.c	2010-02-10 16:56:56.000000000 +0100
++++ VDR-NG/menuitems.c	2010-02-10 16:59:02.000000000 +0100
 @@ -103,7 +103,7 @@
              if (*value > max) { *value = max; Set(); }
              return state;
@@ -4129,7 +4180,7 @@ diff -Naur VDR-NG-orig/menuitems.c VDR-NG/menuitems.c
       else if (NORMALKEY(Key) == kLeft) { // TODO might want to increase the delta if repeated quickly?
 diff -Naur VDR-NG-orig/nit.c VDR-NG/nit.c
 --- VDR-NG-orig/nit.c	2009-09-24 17:21:12.000000000 +0200
-+++ VDR-NG/nit.c	2010-01-14 18:32:14.000000000 +0100
++++ VDR-NG/nit.c	2010-02-10 16:59:02.000000000 +0100
 @@ -112,6 +112,7 @@
                    case 1: f = BCD2INT(f) / 100; break;
                    case 2: f = BCD2INT(f) / 10; break;
@@ -4313,8 +4364,17 @@ diff -Naur VDR-NG-orig/nit.c VDR-NG/nit.c
                   }
                   break;
 diff -Naur VDR-NG-orig/osdbase.c VDR-NG/osdbase.c
---- VDR-NG-orig/osdbase.c	2010-01-14 09:51:48.000000000 +0100
-+++ VDR-NG/osdbase.c	2010-01-14 09:52:58.000000000 +0100
+--- VDR-NG-orig/osdbase.c	2010-02-10 16:56:56.000000000 +0100
++++ VDR-NG/osdbase.c	2010-02-10 17:11:00.000000000 +0100
+@@ -41,7 +41,7 @@
+ void cOsdItem::SetText(const char *Text, bool Copy)
+ {
+   free(text);
+-  text = Copy ? strdup(Text) : (char *)Text; // text assumes ownership!
++  text = Copy ? strdup(Text ? Text : "") : (char *)Text; // text assumes ownership!
+ }
+ 
+ void cOsdItem::SetSelectable(bool Selectable)
 @@ -210,6 +210,7 @@
           }
       if (current < 0)
@@ -4324,8 +4384,8 @@ diff -Naur VDR-NG-orig/osdbase.c VDR-NG/osdbase.c
          first = current - displayMenuItems / 2;
          if (first + displayMenuItems > count)
 diff -Naur VDR-NG-orig/osdbase.h VDR-NG/osdbase.h
---- VDR-NG-orig/osdbase.h	2010-01-14 09:52:02.000000000 +0100
-+++ VDR-NG/osdbase.h	2010-01-14 09:52:58.000000000 +0100
+--- VDR-NG-orig/osdbase.h	2010-02-10 16:57:10.000000000 +0100
++++ VDR-NG/osdbase.h	2010-02-10 16:59:02.000000000 +0100
 @@ -58,11 +58,11 @@
    cOsdItem(eOSState State = osUnknown);
    cOsdItem(const char *Text, eOSState State = osUnknown, bool Selectable = true);
@@ -4359,8 +4419,8 @@ diff -Naur VDR-NG-orig/osdbase.h VDR-NG/osdbase.h
    void Ins(cOsdItem *Item, bool Current = false, cOsdItem *Before = NULL);
    virtual void Display(void);
 diff -Naur VDR-NG-orig/osd.c VDR-NG/osd.c
---- VDR-NG-orig/osd.c	2010-01-14 09:52:14.000000000 +0100
-+++ VDR-NG/osd.c	2010-01-15 13:28:30.000000000 +0100
+--- VDR-NG-orig/osd.c	2010-02-10 16:57:24.000000000 +0100
++++ VDR-NG/osd.c	2010-02-10 17:12:58.000000000 +0100
 @@ -302,6 +302,8 @@
  
  bool cBitmap::SetXpm(const char *const Xpm[], bool IgnoreNone)
@@ -4394,9 +4454,49 @@ diff -Naur VDR-NG-orig/osd.c VDR-NG/osd.c
            }
          x++;
          StoppingX += TwoBSquare;
+@@ -772,6 +777,18 @@
+ 
+ // --- cOsd ------------------------------------------------------------------
+ 
++static const char *OsdErrorTexts[] = {
++  "ok",
++  "too many areas",
++  "too many colors",
++  "bpp not supported",
++  "areas overlap",
++  "wrong alignment",
++  "out of memory",
++  "wrong area size",
++  "unknown",
++  };
++
+ int cOsd::isOpen = 0;
+ bool cOsd::pinValid = false;   // PIN PATCH
+ 
+@@ -833,7 +850,7 @@
+         }
+      }
+   if (Result != oeOk)
+-     esyslog("ERROR: cOsd::SetAreas returned %d", Result);
++     esyslog("ERROR: cOsd::SetAreas returned %d (%s)", Result, Result < oeUnknown ? OsdErrorTexts[Result] : OsdErrorTexts[oeUnknown]);
+   return Result;
+ }
+ 
+diff -Naur VDR-NG-orig/osd.h VDR-NG/osd.h
+--- VDR-NG-orig/osd.h	2010-02-10 16:57:24.000000000 +0100
++++ VDR-NG/osd.h	2010-02-10 17:11:00.000000000 +0100
+@@ -30,7 +30,7 @@
+   clrWhite       = 0xFFFCFCFC,
+   };
+ 
+-enum eOsdError { oeOk,
++enum eOsdError { oeOk, // see also OsdErrorTexts in osd.c
+                  oeTooManyAreas,
+                  oeTooManyColors,
+                  oeBppNotSupported,
 diff -Naur VDR-NG-orig/pat.c VDR-NG/pat.c
 --- VDR-NG-orig/pat.c	2009-09-24 17:21:12.000000000 +0200
-+++ VDR-NG/pat.c	2010-01-19 13:03:08.000000000 +0100
++++ VDR-NG/pat.c	2010-02-10 16:59:02.000000000 +0100
 @@ -144,7 +144,7 @@
    q += sprintf(q, "CAM: %04X %5d %5d %04X %d -", source, transponder, serviceId, d->getCaType(), Stream);
    for (int i = 0; i < nca->Length(); i++)
@@ -4455,7 +4555,7 @@ diff -Naur VDR-NG-orig/pat.c VDR-NG/pat.c
          if (Setup.UpdateChannels >= 2) {
 diff -Naur VDR-NG-orig/player.c VDR-NG/player.c
 --- VDR-NG-orig/player.c	2009-09-24 17:21:00.000000000 +0200
-+++ VDR-NG/player.c	2010-01-14 09:52:58.000000000 +0100
++++ VDR-NG/player.c	2010-02-10 16:59:02.000000000 +0100
 @@ -77,8 +77,9 @@
  void cControl::Launch(cControl *Control)
  {
@@ -4468,8 +4568,8 @@ diff -Naur VDR-NG-orig/player.c VDR-NG/player.c
  
  void cControl::Attach(void)
 diff -Naur VDR-NG-orig/plugin.c VDR-NG/plugin.c
---- VDR-NG-orig/plugin.c	2010-01-14 09:51:54.000000000 +0100
-+++ VDR-NG/plugin.c	2010-01-15 14:27:22.000000000 +0100
+--- VDR-NG-orig/plugin.c	2010-02-10 16:57:02.000000000 +0100
++++ VDR-NG/plugin.c	2010-02-10 16:59:02.000000000 +0100
 @@ -172,15 +172,15 @@
  static char *SkipQuote(char *s)
  {
@@ -4500,7 +4600,7 @@ diff -Naur VDR-NG-orig/plugin.c VDR-NG/plugin.c
                             else {
 diff -Naur VDR-NG-orig/receiver.c VDR-NG/receiver.c
 --- VDR-NG-orig/receiver.c	2009-09-24 17:21:00.000000000 +0200
-+++ VDR-NG/receiver.c	2010-01-14 11:31:28.000000000 +0100
++++ VDR-NG/receiver.c	2010-02-10 16:59:02.000000000 +0100
 @@ -41,7 +41,12 @@
  
  cReceiver::~cReceiver()
@@ -4516,8 +4616,8 @@ diff -Naur VDR-NG-orig/receiver.c VDR-NG/receiver.c
  
  bool cReceiver::WantsPid(int Pid)
 diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
---- VDR-NG-orig/recording.c	2010-01-14 09:52:10.000000000 +0100
-+++ VDR-NG/recording.c	2010-01-18 13:14:22.000000000 +0100
+--- VDR-NG-orig/recording.c	2010-02-10 16:57:20.000000000 +0100
++++ VDR-NG/recording.c	2010-02-10 16:59:02.000000000 +0100
 @@ -8,6 +8,7 @@
   */
  
@@ -4723,8 +4823,8 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
             if (stat(fileName, &buf) == 0) {
                if (buf.st_size != 0)
 diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
---- VDR-NG-orig/recording.h	2010-01-14 09:52:16.000000000 +0100
-+++ VDR-NG/recording.h	2010-01-19 13:27:29.000000000 +0100
+--- VDR-NG-orig/recording.h	2010-02-10 16:57:26.000000000 +0100
++++ VDR-NG/recording.h	2010-02-10 16:59:02.000000000 +0100
 @@ -13,6 +13,7 @@
  #include <time.h>
  #include "channels.h"
@@ -4774,8 +4874,8 @@ diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
        // Dynamic file size for this file
    cUnbufferedFile *NextFile(void);
 diff -Naur VDR-NG-orig/remote.c VDR-NG/remote.c
---- VDR-NG-orig/remote.c	2010-01-14 09:52:06.000000000 +0100
-+++ VDR-NG/remote.c	2010-01-14 18:36:12.000000000 +0100
+--- VDR-NG-orig/remote.c	2010-02-10 16:57:16.000000000 +0100
++++ VDR-NG/remote.c	2010-02-10 16:59:02.000000000 +0100
 @@ -121,7 +121,7 @@
  bool cRemote::Put(uint64_t Code, bool Repeat, bool Release)
  {
@@ -4810,7 +4910,7 @@ diff -Naur VDR-NG-orig/remote.c VDR-NG/remote.c
          }
 diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
 --- VDR-NG-orig/remux.c	2009-09-24 17:21:08.000000000 +0200
-+++ VDR-NG/remux.c	2010-01-14 18:37:26.000000000 +0100
++++ VDR-NG/remux.c	2010-02-10 16:59:02.000000000 +0100
 @@ -1528,6 +1528,7 @@
                   switch (p[1]) {
                     case SC_PICTURE: PictureType = (p[3] >> 3) & 0x07;
@@ -4821,7 +4921,7 @@ diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
                   }
 diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
 --- VDR-NG-orig/remux.h	2009-09-24 17:21:10.000000000 +0200
-+++ VDR-NG/remux.h	2010-01-14 09:53:00.000000000 +0100
++++ VDR-NG/remux.h	2010-02-10 16:59:02.000000000 +0100
 @@ -12,10 +12,6 @@
  #ifdef USE_HW_VIDEO_FRAME_EVENTS
  #define USE_DATAHEADER_IN_RECEIVER 1
@@ -4835,7 +4935,7 @@ diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
  
 diff -Naur VDR-NG-orig/sdt.c VDR-NG/sdt.c
 --- VDR-NG-orig/sdt.c	2009-09-24 17:21:12.000000000 +0200
-+++ VDR-NG/sdt.c	2010-01-14 18:44:06.000000000 +0100
++++ VDR-NG/sdt.c	2010-02-10 16:59:02.000000000 +0100
 @@ -64,16 +64,18 @@
                          char *ps = compactspace(ShortNameBuf);
                          if (!*ps && cSource::IsCable(Source())) {
@@ -4868,8 +4968,8 @@ diff -Naur VDR-NG-orig/sdt.c VDR-NG/sdt.c
                   }
                   break;
 diff -Naur VDR-NG-orig/skinclassic.c VDR-NG/skinclassic.c
---- VDR-NG-orig/skinclassic.c	2010-01-14 09:52:12.000000000 +0100
-+++ VDR-NG/skinclassic.c	2010-01-19 13:19:39.000000000 +0100
+--- VDR-NG-orig/skinclassic.c	2010-02-10 16:57:22.000000000 +0100
++++ VDR-NG/skinclassic.c	2010-02-10 16:59:02.000000000 +0100
 @@ -312,6 +312,11 @@
       free(buffer);
       }
@@ -4925,8 +5025,8 @@ diff -Naur VDR-NG-orig/skinclassic.c VDR-NG/skinclassic.c
    if (!isempty(Info->Description())) {
       textScroller.Set(osd, xl, y, x1 - xl - 2 * ScrollWidth, y3 - y, Info->Description(), font, Theme.Color(clrMenuEventDescription), Theme.Color(clrBackground));
 diff -Naur VDR-NG-orig/skinsttng.c VDR-NG/skinsttng.c
---- VDR-NG-orig/skinsttng.c	2010-01-14 09:52:12.000000000 +0100
-+++ VDR-NG/skinsttng.c	2010-01-19 13:23:29.000000000 +0100
+--- VDR-NG-orig/skinsttng.c	2010-02-10 16:57:22.000000000 +0100
++++ VDR-NG/skinsttng.c	2010-02-10 16:59:02.000000000 +0100
 @@ -572,6 +572,14 @@
       free(buffer);
       }
@@ -4996,8 +5096,17 @@ diff -Naur VDR-NG-orig/skinsttng.c VDR-NG/skinsttng.c
    if (bm)
       osd->DrawBitmap(x3 + 5, y6 + (y7 - y6 - bm->Height()) / 2, *bm, Theme.Color(clrChannelSymbolOn), frameColor);
 diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
---- VDR-NG-orig/svdrp.c	2010-01-14 09:52:12.000000000 +0100
-+++ VDR-NG/svdrp.c	2010-01-18 13:29:52.000000000 +0100
+--- VDR-NG-orig/svdrp.c	2010-02-10 16:57:22.000000000 +0100
++++ VDR-NG/svdrp.c	2010-02-10 17:11:00.000000000 +0100
+@@ -79,7 +79,7 @@
+      struct sockaddr_in name;
+      name.sin_family = AF_INET;
+      name.sin_port = htons(port);
+-     name.sin_addr.s_addr = htonl(INADDR_ANY);
++     name.sin_addr.s_addr = SVDRPhosts.LocalhostOnly() ? htonl(INADDR_LOOPBACK) : htonl(INADDR_ANY);
+      if (bind(sock, (struct sockaddr *)&name, sizeof(name)) < 0) {
+         LOG_ERROR;
+         Close();
 @@ -179,6 +179,8 @@
  // --- cSVDRP ----------------------------------------------------------------
  
@@ -5209,7 +5318,7 @@ diff -Naur VDR-NG-orig/svdrp.c VDR-NG/svdrp.c
  void cSVDRP::CmdSCAN(const char *Option)
 diff -Naur VDR-NG-orig/thread.c VDR-NG/thread.c
 --- VDR-NG-orig/thread.c	2009-09-24 17:21:00.000000000 +0200
-+++ VDR-NG/thread.c	2010-01-14 09:53:00.000000000 +0100
++++ VDR-NG/thread.c	2010-02-10 16:59:02.000000000 +0100
 @@ -27,11 +27,12 @@
  {
    struct timeval now;
@@ -5229,8 +5338,8 @@ diff -Naur VDR-NG-orig/thread.c VDR-NG/thread.c
       Abstime->tv_nsec = now.tv_usec * 1000; // nano seconds
       return true;
 diff -Naur VDR-NG-orig/timers.c VDR-NG/timers.c
---- VDR-NG-orig/timers.c	2010-01-14 09:52:14.000000000 +0100
-+++ VDR-NG/timers.c	2010-01-14 09:53:00.000000000 +0100
+--- VDR-NG-orig/timers.c	2010-02-10 16:57:24.000000000 +0100
++++ VDR-NG/timers.c	2010-02-10 16:59:02.000000000 +0100
 @@ -92,6 +92,7 @@
    channel = NULL;
    aux = NULL;
@@ -5240,8 +5349,8 @@ diff -Naur VDR-NG-orig/timers.c VDR-NG/timers.c
  }
  
 diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
---- VDR-NG-orig/tools.c	2010-01-14 09:52:24.000000000 +0100
-+++ VDR-NG/tools.c	2010-01-14 09:53:00.000000000 +0100
+--- VDR-NG-orig/tools.c	2010-02-10 16:57:34.000000000 +0100
++++ VDR-NG/tools.c	2010-02-10 16:59:02.000000000 +0100
 @@ -100,6 +100,14 @@
    return p < 0 ? p : written;
  }
@@ -5328,7 +5437,7 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
    return true;
  }
  
-@@ -687,7 +688,7 @@
+@@ -698,7 +699,7 @@
       time(&t);
    struct tm tm_r;
    tm *tm = localtime_r(&t, &tm_r);
@@ -5339,7 +5448,7 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
  
 diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
 --- VDR-NG-orig/tools.h	2009-09-24 17:21:12.000000000 +0200
-+++ VDR-NG/tools.h	2010-01-18 19:05:52.000000000 +0100
++++ VDR-NG/tools.h	2010-02-10 16:59:02.000000000 +0100
 @@ -13,6 +13,8 @@
  #include <dirent.h>
  #include <errno.h>
@@ -5407,8 +5516,8 @@ diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
  char *compactspace(char *s);
  cString strescape(const char *s, const char *chars);
 diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
---- VDR-NG-orig/vdr.c	2010-01-14 09:52:26.000000000 +0100
-+++ VDR-NG/vdr.c	2010-01-14 12:13:48.000000000 +0100
+--- VDR-NG-orig/vdr.c	2010-02-10 16:57:36.000000000 +0100
++++ VDR-NG/vdr.c	2010-02-10 16:59:02.000000000 +0100
 @@ -89,23 +89,23 @@
  #include "epgmode.h"
  //M7X0 END AK

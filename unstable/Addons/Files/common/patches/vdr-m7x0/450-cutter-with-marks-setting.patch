@@ -1,0 +1,143 @@
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	2010-02-10 18:45:27.000000000 +0100
++++ VDR-NG/config.c	2010-02-10 18:49:52.756975790 +0100
+@@ -317,6 +317,7 @@
+   CutterAutoDelete = 1;
+   CutterMaxBandwidth = 10;
+   CutterRelBandwidth = 75;
++  CutterWithMarks = 0;
+   HotStandby = 0;
+   TvMode = 0;
+   VCRMode = 0;
+@@ -518,6 +519,7 @@
+   else if (!strcasecmp(Name, "CutterAutoDelete"))    CutterAutoDelete   = atoi(Value);
+   else if (!strcasecmp(Name, "CutterMaxBandwidth"))  CutterMaxBandwidth = atoi(Value);
+   else if (!strcasecmp(Name, "CutterRelBandwidth"))  CutterRelBandwidth = atoi(Value);
++  else if (!strcasecmp(Name, "CutterWithMarks"))     CutterWithMarks    = atoi(Value);
+   else if (!strcasecmp(Name, "HotStandby"))          HotStandby         = atoi(Value);
+   else if (!strcasecmp(Name, "TvMode"))              TvMode             = atoi(Value);
+   else if (!strcasecmp(Name, "VCRMode"))             VCRMode            = atoi(Value);
+@@ -626,6 +628,7 @@
+   Store("CutterAutoDelete",   CutterAutoDelete);
+   Store("CutterMaxBandwidth", CutterMaxBandwidth);
+   Store("CutterRelBandwidth", CutterRelBandwidth);
++  Store("CutterWithMarks",    CutterWithMarks);
+   Store("HotStandby", 	      HotStandby);
+   Store("TvMode", 	      TvMode);
+   Store("VCRMode", 	      VCRMode);
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	2010-02-10 18:45:27.000000000 +0100
++++ VDR-NG/config.h	2010-02-10 18:50:30.451280706 +0100
+@@ -300,6 +300,7 @@
+   int CutterAutoDelete;
+   int CutterMaxBandwidth;
+   int CutterRelBandwidth;
++  int CutterWithMarks;
+   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
+ #ifdef USE_DIRECT_IO
+   int ReplayUseDirectIO;
+diff -Naur VDR-NG-orig/cutter.c VDR-NG/cutter.c
+--- VDR-NG-orig/cutter.c	2010-02-10 18:45:27.000000000 +0100
++++ VDR-NG/cutter.c	2010-02-10 19:06:19.000000000 +0100
+@@ -48,7 +48,8 @@
+      toFileName = new cFileName(ToFileName, true, true);
+      fromIndex = new cIndexFile(FromFileName, false);
+      toIndex = new cIndexFile(ToFileName, true);
+-     toMarks.Load(ToFileName); // doesn't actually load marks, just sets the file name
++     if (Setup.CutterWithMarks)
++        toMarks.Load(ToFileName); // doesn't actually load marks, just sets the file name
+      Start();
+      }
+   else
+@@ -93,8 +94,10 @@
+      int CurrentFileNumber = 0;
+      bool SkipThisSourceFile = false;
+      int LastIFrame = 0;
+-     toMarks.Add(0);
+-     toMarks.Save();
++     if (Setup.CutterWithMarks) {
++        toMarks.Add(0);
++        toMarks.Save();
++        }
+      uchar buffer[MAXFRAMESIZE];
+      bool LastMark = false;
+      bool cutIn = true;
+@@ -224,7 +227,8 @@
+                     }
+                  FileSize = 0;
+                  }
+-              LastIFrame = 0;
++              if (Setup.CutterWithMarks)
++                 LastIFrame = 0;
+ 
+               if (!SkipThisSourceFile && cutIn) {
+                  cRemux::SetBrokenLink(buffer, Length);
+@@ -240,17 +244,19 @@
+               break;
+               }
+            FileSize += Length;
+-           if (!LastIFrame)
+-              LastIFrame = toIndex->Last();
++           if (Setup.CutterWithMarks && !LastIFrame)
++                 LastIFrame = toIndex->Last();
+ 
+            // Check editing marks:
+ 
+            if (Mark && Index >= Mark->position) {
+               Mark = fromMarks.Next(Mark);
+-              toMarks.Add(LastIFrame);
+-              if (Mark)
+-                 toMarks.Add(toIndex->Last() + 1);
+-              toMarks.Save();
++              if (Setup.CutterWithMarks) {
++                 toMarks.Add(LastIFrame);
++                 if (Mark)
++                    toMarks.Add(toIndex->Last() + 1);
++                 toMarks.Save();
++                 }
+               if (Mark) {
+                  Index = Mark->position;
+                  Mark = fromMarks.Next(Mark);
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2010-02-10 18:45:27.000000000 +0100
++++ VDR-NG/i18n.c	2010-02-10 18:58:34.255265127 +0100
+@@ -3346,6 +3346,28 @@
+     "",// TODO
+     "",// TODO
+   },
++  { "Setup.Cutter$Cutted recordings with marks",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Grabaciones editadas con marcas",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Replay",
+     "Wiedergabe",
+     "Predvajanje",
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2010-02-10 18:45:27.000000000 +0100
++++ VDR-NG/menu.c	2010-02-10 18:57:22.387281531 +0100
+@@ -3232,6 +3232,7 @@
+   Add(new cMenuEditBoolItem(tr("Setup.Cutter$Auto delete original record"),  &data.CutterAutoDelete));
+   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum MB per second"),        &data.CutterMaxBandwidth, 1, 60));
+   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum bandwidth used in %"),  &data.CutterRelBandwidth, 1, 100));
++  Add(new cMenuEditBoolItem(tr("Setup.Cutter$Cutted recordings with marks"), &data.CutterWithMarks));
+   Add(new cMenuEditBoolItem(tr("Setup.Cutter$Hard Link Cutter"),             &data.HardLinkCutter));
+ }
+ 
