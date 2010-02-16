@@ -1,3 +1,51 @@
+diff -Naur uclibc_build_env_orig/hostutils-make-incs/cramfs.mk uclibc_build_env/hostutils-make-incs/cramfs.mk
+--- uclibc_build_env_orig/hostutils-make-incs/cramfs.mk	2009-12-11 12:03:31.000000000 +0100
++++ uclibc_build_env/hostutils-make-incs/cramfs.mk	2010-02-15 12:19:20.957516987 +0100
+@@ -32,7 +32,7 @@
+ CRAMFS_HOSTDLFILE := $(DOWNLOAD_DIR)/$(CRAMFS_HOSTFILE)
+ 
+ CRAMFS_HOSTPATCHES_DIR := $(PATCHES_DIR)/cramfs/$(CRAMFS_HOSTVERSION)
+-CRAMFS_HOSTURL := http://dfn.dl.sourceforge.net/sourceforge/cramfs/$(CRAMFS_HOSTFILE)
++CRAMFS_HOSTURL := http://sourceforge.net/projects/cramfs/files/cramfs/$(CRAMFS_HOSTVERSION)/$(CRAMFS_HOSTFILE)/download
+ CRAMFS_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/cramfs-$(CRAMFS_HOSTVERSION)
+ 
+ CLEAN_RULES += clean-cramfs-host
+diff -Naur uclibc_build_env_orig/hostutils-make-incs/squashfs.mk uclibc_build_env/hostutils-make-incs/squashfs.mk
+--- uclibc_build_env_orig/hostutils-make-incs/squashfs.mk	2009-12-11 12:03:31.000000000 +0100
++++ uclibc_build_env/hostutils-make-incs/squashfs.mk	2010-02-15 12:17:32.729290653 +0100
+@@ -35,7 +35,7 @@
+ SQUASHFS_HOSTDLFILE := $(DOWNLOAD_DIR)/$(SQUASHFS_HOSTFILE)
+ 
+ SQUASHFS_HOSTPATCHES_DIR := $(PATCHES_DIR)/squashfs/$(SQUASHFS_HOSTVERSION)
+-SQUASHFS_HOSTURL := http://surfnet.dl.sourceforge.net/sourceforge/squashfs/$(SQUASHFS_HOSTFILE)
++SQUASHFS_HOSTURL := http://mesh.dl.sourceforge.net/sourceforge/squashfs/$(SQUASHFS_HOSTFILE)
+ SQUASHFS_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/squashfs$(SQUASHFS_HOSTVERSION)
+ 
+ CLEAN_RULES += clean-squashfs-host
+diff -Naur uclibc_build_env_orig/make-incs/e2fsprogs.mk uclibc_build_env/make-incs/e2fsprogs.mk
+--- uclibc_build_env_orig/make-incs/e2fsprogs.mk	2009-12-11 12:03:35.000000000 +0100
++++ uclibc_build_env/make-incs/e2fsprogs.mk	2010-02-15 17:30:40.780024398 +0100
+@@ -29,7 +29,7 @@
+ 
+ E2FSPROGS_FILE := e2fsprogs-$(E2FSPROGS_VERSION).tar.gz
+ E2FSPROGS_DLFILE := $(DOWNLOAD_DIR)/$(E2FSPROGS_FILE)
+-E2FSPROGS_URL := http://dfn.dl.sourceforge.net/sourceforge/e2fsprogs/$(E2FSPROGS_FILE)
++E2FSPROGS_URL := http://sourceforge.net/projects/e2fsprogs/files/e2fsprogs/$(E2FSPROGS_VERSION)/$(E2FSPROGS_FILE)/download
+ E2FSPROGS_DIR := $(BUILD_DIR)/e2fsprogs-$(E2FSPROGS_VERSION)
+ E2FSPROGS_BUILD_DIR := $(BUILD_DIR)/e2fsprogs.build
+ 
+diff -Naur uclibc_build_env_orig/make-incs/lirc.mk uclibc_build_env/make-incs/lirc.mk
+--- uclibc_build_env_orig/make-incs/lirc.mk	2009-12-11 12:03:35.000000000 +0100
++++ uclibc_build_env/make-incs/lirc.mk	2010-02-15 17:30:56.648752439 +0100
+@@ -29,7 +29,7 @@
+ LIRC_PATCHES_DIR := $(PATCHES_DIR)/lirc/$(LIRC_VERSION)
+ LIRC_FILE := lirc-$(LIRC_VERSION).tar.bz2
+ LIRC_DLFILE := $(DOWNLOAD_DIR)/$(LIRC_FILE)
+-LIRC_URL := http://dfn.dl.sourceforge.net/sourceforge/lirc/$(LIRC_FILE)
++LIRC_URL := http://sourceforge.net/projects/lirc/files/LIRC/$(LIRC_VERSION)/$(LIRC_FILE)/download
+ LIRC_DIR := $(BUILD_DIR)/lirc-$(LIRC_VERSION)
+ 
+ LIRC_INSTALLED = $(STAGEFILES_DIR)/.lirc_installed
 diff -Naur uclibc_build_env_orig/patches/ssmtp/2.64/300_ssmtp_conf.patch uclibc_build_env/patches/ssmtp/2.64/300_ssmtp_conf.patch
 --- uclibc_build_env_orig/patches/ssmtp/2.64/300_ssmtp_conf.patch	1970-01-01 01:00:00.000000000 +0100
 +++ uclibc_build_env/patches/ssmtp/2.64/300_ssmtp_conf.patch	2009-10-02 12:58:56.000000000 +0200
