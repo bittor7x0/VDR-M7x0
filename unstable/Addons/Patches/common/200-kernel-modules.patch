@@ -1,7 +1,7 @@
 diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
 --- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2009-12-13 15:19:06.000000000 +0100
 +++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2009-12-13 15:22:11.000000000 +0100
-@@ -58,8 +58,22 @@
+@@ -61,8 +61,22 @@
  
  SIEMENS-LINUX-KERNEL_MODLST := \
     lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
@@ -25,7 +25,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  
  ifeq ($(CONFIG_PPTPD),y)
     SIEMENS-LINUX-KERNEL_MODLST += \
-@@ -78,9 +92,22 @@
+@@ -81,9 +95,22 @@
     lib/modules/2.4.21-xfs/kernel \
     lib/modules/2.4.21-xfs/kernel/fs \
     lib/modules/2.4.21-xfs/kernel/fs/cifs \

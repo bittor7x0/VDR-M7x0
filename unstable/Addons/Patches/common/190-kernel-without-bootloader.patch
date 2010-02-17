@@ -1,8 +1,13 @@
 diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
 --- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2009-05-06 20:24:36.000000000 +0200
 +++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2009-05-06 20:31:30.000000000 +0200
-@@ -26,10 +26,10 @@
+@@ -24,12 +24,15 @@
+ 
+ # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
  SIEMENS-LINUX-KERNEL_DEPS = $(BASE_BUILD_STAGEFILE) $(SIEMENS-GPL-SRC_DLFILE) $(EGCS_INSTALLED)
++ifeq ($(CONFIG_SQUASHFS_LZMA),y)
++   SIEMENS-LINUX-KERNEL_DEPS += $(LZMA_BIN)
++endif
  
  ifeq ($(CONFIG_SIEMENS-LINUX-KERNEL),y)
 -ifneq ($(and $(CONFIG_EGCS),$(CONFIG_BOOTLOADER)),y)
@@ -14,7 +19,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  endif
  endif
  
-@@ -197,7 +197,7 @@
+@@ -197,7 +200,7 @@
  #
  
  $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed: \
@@ -23,7 +28,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  	$(MKDIR) -p $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)
  	$(CP) -f $(SIEMENS-LINUX-KERNEL_DIR)/vmlinux $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)
  	$(CAT) $(SIEMENS-LINUX-KERNEL_DIR)/System.map | $(SED) -e "s/^ffffffff//" > \
-@@ -207,8 +207,8 @@
+@@ -207,8 +210,8 @@
  	$(PREFIX_BIN)/$(UCLIBC_OBJCOPY) --strip-all -O binary \
  		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux \
  		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
@@ -34,7 +39,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
  		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) \
  		INSTALL_MOD_PATH=$(TARGET_ROOT)/$(M7X0_KERNEL_DIR) modules_install
-@@ -243,13 +243,11 @@
+@@ -243,13 +246,11 @@
  #
  $(SIEMENS-LINUX-KERNEL-IMG): \
        $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed \
