@@ -1,0 +1,154 @@
+diff -Naur fritzbox-1.1.2-orig/calllist.c fritzbox-1.1.2/calllist.c
+--- fritzbox-1.1.2-orig/calllist.c	2008-08-16 14:49:27.000000000 +0200
++++ fritzbox-1.1.2/calllist.c	2010-02-18 17:58:08.000000000 +0100
+@@ -71,10 +71,10 @@
+ 			   << " HTTP/1.1\n\n\0";
+ 			tc >> msg;
+ 			// convert answer to current SystemCodeSet (we assume, Fritz!Box sends its answer in latin15)
+-			cCharSetConv *conv = new cCharSetConv("ISO-8859-15", cCharSetConv::SystemCharacterTable());
+-			const char *msg_converted = conv->Convert(msg.c_str());
+-			msg = msg_converted;
+-			delete(conv);	
++//			cCharSetConv *conv = new cCharSetConv("ISO-8859-15", cCharSetConv::SystemCharacterTable());
++//			const char *msg_converted = conv->Convert(msg.c_str());
++//			msg = msg_converted;
++//			delete(conv);	
+ 			// parse answer
+ 			callListIn.clear();
+ 			callListOut.clear();
+diff -Naur fritzbox-1.1.2-orig/fritzbox.c fritzbox-1.1.2/fritzbox.c
+--- fritzbox-1.1.2-orig/fritzbox.c	2008-08-03 15:42:54.000000000 +0200
++++ fritzbox-1.1.2/fritzbox.c	2010-02-18 17:53:08.000000000 +0100
+@@ -28,8 +28,8 @@
+ #include "menu.h"
+ 
+ static const char *VERSION        = "1.1.2";
+-static const char *DESCRIPTION    = trNOOP("Fritz!Box Plugin for AVM Fritz!Box");
+-static const char *MAINMENUENTRY  = trNOOP("Fritz!Box");
++static const char *DESCRIPTION    = tr("Fritz!Box Plugin for AVM Fritz!Box");
++static const char *MAINMENUENTRY  = tr("Fritz!Box");
+ 
+ cPluginFritzbox::cPluginFritzbox(void)
+ {
+diff -Naur fritzbox-1.1.2-orig/fritzfonbuch.c fritzbox-1.1.2/fritzfonbuch.c
+--- fritzbox-1.1.2-orig/fritzfonbuch.c	2008-07-28 22:36:58.000000000 +0200
++++ fritzbox-1.1.2/fritzfonbuch.c	2010-02-18 17:53:47.000000000 +0100
+@@ -140,10 +140,10 @@
+ 			}
+ 		}
+ 		// convert the string from latin15 to current system character table
+-		cCharSetConv *conv = new cCharSetConv("ISO-8859-15", cCharSetConv::SystemCharacterTable());
+-		const char *s_converted = conv->Convert(s.c_str());
+-		s = s_converted;
+-		delete (conv);		
++//		cCharSetConv *conv = new cCharSetConv("ISO-8859-15", cCharSetConv::SystemCharacterTable());
++//		const char *s_converted = conv->Convert(s.c_str());
++//		s = s_converted;
++//		delete (conv);
+ 	}	
+ 	return s;
+ }
+diff -Naur fritzbox-1.1.2-orig/fritztools.c fritzbox-1.1.2/fritztools.c
+--- fritzbox-1.1.2-orig/fritztools.c	2008-08-10 22:04:48.000000000 +0200
++++ fritzbox-1.1.2/fritztools.c	2010-02-18 17:54:39.000000000 +0100
+@@ -92,9 +92,10 @@
+ 	std::string result;
+ 	std::string s;
+ 	std::string hex = "0123456789abcdef";
+-	cCharSetConv *conv = new cCharSetConv(cCharSetConv::SystemCharacterTable(), "ISO-8859-15");
+-	s = conv->Convert(s_input.c_str());
+-	delete(conv);
++//	cCharSetConv *conv = new cCharSetConv(cCharSetConv::SystemCharacterTable(), "ISO-8859-15");
++//	s = conv->Convert(s_input.c_str());
++	s = s_input.c_str();
++//	delete(conv);
+ 	for (unsigned int i=0; i<s.length(); i++) {
+ 		if( 'a' <= s[i] && s[i] <= 'z'
+ 			|| 'A' <= s[i] && s[i] <= 'Z'
+diff -Naur fritzbox-1.1.2-orig/Makefile fritzbox-1.1.2/Makefile
+--- fritzbox-1.1.2-orig/Makefile	2008-07-02 23:25:40.000000000 +0200
++++ fritzbox-1.1.2/Makefile	2010-02-18 18:05:12.798455064 +0100
+@@ -22,8 +22,8 @@
+ 
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### Allow user defined options to overwrite defaults:
+diff -Naur fritzbox-1.1.2-orig/notifyosd.c fritzbox-1.1.2/notifyosd.c
+--- fritzbox-1.1.2-orig/notifyosd.c	2008-07-17 22:33:20.000000000 +0200
++++ fritzbox-1.1.2/notifyosd.c	2010-02-18 17:55:59.000000000 +0100
+@@ -22,6 +22,7 @@
+ #include <vdr/config.h>
+ #include <vdr/osd.h>
+ #include <vdr/status.h>
++#include <vdr/tools.h>
+ #include "notifyosd.h"
+ #include "fritztools.h"
+ 
+@@ -92,21 +93,36 @@
+ 	for (size_t i=0; i < numLines; i++)
+ 		if (font->Width(lines[i].c_str()) + 2*cellspacing > width)
+ 			width = font->Width(lines[i].c_str()) + 2*cellspacing;
+-	if (width > cOsd::OsdWidth())
+-		width = cOsd::OsdWidth(); 
++//	if (width > cOsd::OsdWidth())
++//		width = cOsd::OsdWidth();
++	if (width > Setup.OSDWidth)
++		width = Setup.OSDWidth;
+ 	height = (font->Height() + lineBuffer) * numLines + 4*borderWidth + lineBuffer;
+ 	// assert alignment
+ 	while (width  % (8/colorDepth) > 0) width++;
+ 	while (height % (8/colorDepth) > 0) height++;
+ 	// center osd
+-	left = cOsd::OsdLeft() + (cOsd::OsdWidth() - width) / 2; 
+-	top  = cOsd::OsdTop()  + cOsd::OsdHeight() - height - verticalOffset;
++//	left = cOsd::OsdLeft() + (cOsd::OsdWidth() - width) / 2;
++//	top  = cOsd::OsdTop()  + cOsd::OsdHeight() - height - verticalOffset;
++	left = Setup.OSDLeft + (Setup.OSDWidth - width) / 2;
++	top  = Setup.OSDTop  + Setup.OSDHeight - height - verticalOffset;
++	isyslog("t=%d,l=%d,w=%d,h=%d",left,top,width,height);
+ 
+ 	// defines upper left corner of osd
+-	osd = cOsdProvider::NewOsd(left, top);
++//	osd = cOsdProvider::NewOsd(left, top);
+ 	// defines drawing area and color depth
+-	tArea Area = { 0, 0, width-1, height-1, colorDepth };
+-	osd->SetAreas(&Area, 1);
++//	tArea Area = { 0, 0, width-1, height-1, colorDepth };
++//	osd->SetAreas(&Area, 1);
++    osd=cOsdProvider::NewOsd(Setup.OSDLeft,Setup.OSDTop);
++    if(!osd){
++		isyslog("fritzbox=>notifyosd: No OSD OBJECT!!");
++		return;
++	}
++    tArea Areas[] = { { 0,0,Setup.OSDWidth-1,Setup.OSDWidth-1,4 } };
++    osd->SetAreas(Areas,1);
++
++
++
+ 	// draw osd frame, 2px thick
+ 	osd->DrawRectangle(0,             0,             width-1,               height-1,               clrBackground);
+ 	osd->DrawRectangle(borderWidth,   borderWidth,   width-borderWidth-1,   height-borderWidth-1,   clrForeground);
+diff -Naur fritzbox-1.1.2-orig/oertlichesfonbuch.c fritzbox-1.1.2/oertlichesfonbuch.c
+--- fritzbox-1.1.2-orig/oertlichesfonbuch.c	2008-08-08 21:45:34.000000000 +0200
++++ fritzbox-1.1.2/oertlichesfonbuch.c	2010-02-18 17:56:20.000000000 +0100
+@@ -69,10 +69,10 @@
+ 	size_t stop  = msg.find("<", start);
+ 	name = msg.substr(start, stop - start);
+ 	// convert the string from latin1 to current system character table
+-	cCharSetConv *conv = new cCharSetConv("ISO-8859-1", cCharSetConv::SystemCharacterTable());
+-	const char *s_converted = conv->Convert(name.c_str());
+-	name = s_converted;
+-	delete (conv);
++//	cCharSetConv *conv = new cCharSetConv("ISO-8859-1", cCharSetConv::SystemCharacterTable());
++//	const char *s_converted = conv->Convert(name.c_str());
++//	name = s_converted;
++//	delete (conv);
+ 	isyslog("oertlichesfonbuch.c: resolves to %s.", name.c_str());
+ 	return name;
+ }

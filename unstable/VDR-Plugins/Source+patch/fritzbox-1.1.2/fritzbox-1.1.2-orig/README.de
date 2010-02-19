@@ -1,0 +1,66 @@
+Ein Plugin für den Video Disc Recorder (VDR).
+
+Autoren:                     Joachim Wilke <vdr@joachim-wilke.de>
+                             Matthias Becker <becker.matthias@gmail.com>
+
+Projektseite:                http://www.joachim-wilke.de
+
+Download unter:              http://www.joachim-wilke.de/vdr-fritz.htm
+
+Lizenzinformationen sind in der Datei COPYING enthalten.
+
+Beschreibung:
+
+* Anrufsignalisierung
+
+Das Fritz!Box Plugin verbindet sich mit der Fritz!Box um über eingehende
+Anrufe zu informieren. Dabei kann das Plugin VDR stummschalten und 
+die Wiedergabe anhalten.
+
+Um diese Funktion zu nutzen, muss die Fritz!Box einmalig aktiviert werden,
+indem von einem der angeschlossenen Telefone "#96*5*" gewählt wird. Dies 
+funktioniert mit allen Firmwareversionen >= xx.03.99.
+
+In Verbindung mit ISDN Telefonen kann es beim Wählen von "#96*5*" Probleme
+geben. In diesem Fall hilft es am Telefon "auto keypad", "dial * and #" 
+oder ähnliches zu aktivieren. 
+
+Um nicht bei jedem Anruf benachrichtigt zu werden, lässt sich eine Liste
+von MSNs anlegen bei denen man benachrichtigt werden möchte. Max. 22 
+solcher MSNs sind möglich.
+
+* Telefonbücher
+
+Das Plugin unterstützt verschiedene Telefonbücher. Im Setup Menü des Plugins
+lässt sich einstellen, welche Telefonbücher verwendet werden. Im Falle eines
+Anrufes wird versucht die Telefonnummer in einem dieser Telefonbücher zu 
+finden. Dabei wird in der eingestellten Reihenfolge vorgegangen.
+
+Im Hauptmenu des Plugins wird das erste Telefonbuch angezeigt, das 
+Einträge enthält. Mit der [OK]-Taste können Kontakte direkt angerufen werden. 
+Diese Funktion nutzt dabei das Telefon, welches unter Telefonie > Anrufliste 
+> Wählhilfe ausgewählt ist.
+
+-> Fritz!Box Telefonbuch
+
+Dieses Telefonbuch greift auf die Einträge der Fritz!Box zu.
+
+-> das-oertliche.de Telefonbuch
+
+Dieses Telefonbuch versucht eine Rückwärtsauflösung über die Webseite
+das-oertliche.de. Da dieses Telefonbuch keine eigentlichen Einträge
+besitzt, kann es nicht im Hauptmenu des Plugins angezeigt werden.
+
+* Fritz!Box Anrufliste
+
+Über die Farbtasten lassen sich die drei Anruflisten der Fritz!Box 
+[Grün] liefert die Liste der eingegangenen Anrufe, [Gelb] die Liste der 
+verpassten Anrufe und [Blau] die Liste der ausgehenden Anrufe.
+
+Mit [OK] öffnet sich ein Menu mit den Details. Mit [Rot] kann der Anrufer 
+zurückgerufen werden.
+
+
+Hinweis: Dieses Plugin wurden mit der Fritz!Box Fon WLAN 7170 FW 29.04.29 
+getestet. Eine ausführliche Liste findet sich auf der Projektseite. Wir freuen
+ uns über Rückmeldung zu (Miss)-Erfolg mit anderen Firmware-Versionen und Geräten.
