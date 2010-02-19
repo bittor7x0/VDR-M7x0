@@ -162,14 +162,10 @@ $(STAGEFILES_DIR)/.samba_compiled: $(STAGEFILES_DIR)/.samba_configured
 
 $(STAGEFILES_DIR)/.samba_installed: $(STAGEFILES_DIR)/.samba_compiled
 	$(CP) $(SAMBA_DIR)/source/bin/nmbd $(TARGET_ROOT)/usr/sbin/nmbd
-	chmod 755 $(TARGET_ROOT)/usr/sbin/nmbd
 	$(CP) $(SAMBA_DIR)/source/bin/smbd $(TARGET_ROOT)/usr/sbin/smbd
-	chmod 755 $(TARGET_ROOT)/usr/sbin/smbd
 	$(CP) $(SAMBA_DIR)/source/bin/smbpasswd $(TARGET_ROOT)/usr/sbin/smbpasswd
-	chmod 755 $(TARGET_ROOT)/usr/sbin/smbpasswd
 	$(MKDIR) -p $(TARGET_ROOT)/etc/samba
 	$(CP) $(SAMBA_DIR)/source/bin/smb.conf $(TARGET_ROOT)/etc/samba/smb.conf
-	$(MKDIR) -p $(TARGET_ROOT)/usr/share
 	$(MKDIR) -p $(TARGET_ROOT)/usr/share/samba
 	$(BZCAT) $(SAMBA_PATCHES_DIR)/samba.codepages.tar.bz2 | \
 		 $(TAR) -C $(TARGET_ROOT)/usr/share/samba/ -f -

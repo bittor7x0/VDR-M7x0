@@ -91,7 +91,6 @@ $(STAGEFILES_DIR)/.dvbsnoop_compiled: $(STAGEFILES_DIR)/.dvbsnoop_configured
 
 $(STAGEFILES_DIR)/.dvbsnoop_installed: $(STAGEFILES_DIR)/.dvbsnoop_compiled
 	$(CP) $(DVBSNOOP_DIR)/src/dvbsnoop $(TARGET_ROOT)/usr/sbin/dvbsnoop
-	chmod 755 $(TARGET_ROOT)/usr/sbin/dvbsnoop
 	$(TOUCH) $(STAGEFILES_DIR)/.dvbsnoop_installed
 
 

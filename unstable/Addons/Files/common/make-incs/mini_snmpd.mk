@@ -81,7 +81,6 @@ $(STAGEFILES_DIR)/.mini_snmpd_compiled: $(STAGEFILES_DIR)/.mini_snmpd_patched
 
 $(STAGEFILES_DIR)/.mini_snmpd_installed: $(STAGEFILES_DIR)/.mini_snmpd_compiled
 	$(CP) $(MINI_SNMPD_DIR)/mini_snmpd $(TARGET_ROOT)/usr/sbin/mini_snmpd
-	chmod 755 $(TARGET_ROOT)/usr/sbin/mini_snmpd
 	$(TOUCH) $(STAGEFILES_DIR)/.mini_snmpd_installed
 
 

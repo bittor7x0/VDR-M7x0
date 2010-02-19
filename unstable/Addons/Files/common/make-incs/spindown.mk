@@ -90,7 +90,6 @@ $(STAGEFILES_DIR)/.spindown_compiled: $(STAGEFILES_DIR)/.spindown_configured
 
 $(STAGEFILES_DIR)/.spindown_installed: $(STAGEFILES_DIR)/.spindown_compiled
 	$(CP) $(SPINDOWN_DIR)/src/spindown $(TARGET_ROOT)/usr/sbin/spindown
-	chmod 755 $(TARGET_ROOT)/usr/sbin/spindown
 	$(TOUCH) $(STAGEFILES_DIR)/.spindown_installed
 
 

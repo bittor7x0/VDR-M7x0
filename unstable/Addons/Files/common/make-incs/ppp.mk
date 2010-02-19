@@ -90,7 +90,6 @@ $(STAGEFILES_DIR)/.ppp_compiled: $(STAGEFILES_DIR)/.ppp_configured
 
 $(STAGEFILES_DIR)/.ppp_installed: $(STAGEFILES_DIR)/.ppp_compiled
 	$(CP) $(PPP_DIR)/pppd/pppd $(TARGET_ROOT)/usr/sbin/pppd
-	chmod 755 $(TARGET_ROOT)/usr/sbin/pppd
 	$(TOUCH) $(STAGEFILES_DIR)/.ppp_installed
 
 

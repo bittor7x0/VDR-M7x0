@@ -90,9 +90,7 @@ $(STAGEFILES_DIR)/.bonnie++_compiled: $(STAGEFILES_DIR)/.bonnie++_configured
 
 $(STAGEFILES_DIR)/.bonnie++_installed: $(STAGEFILES_DIR)/.bonnie++_compiled
 	$(CP) $(BONNIE++_DIR)/bonnie++ $(TARGET_ROOT)/usr/sbin/bonnie++
-	chmod 755 $(TARGET_ROOT)/usr/sbin/bonnie++
 	$(CP) $(BONNIE++_DIR)/zcav $(TARGET_ROOT)/usr/sbin/zcav
-	chmod 755 $(TARGET_ROOT)/usr/sbin/zcav
 	$(TOUCH) $(STAGEFILES_DIR)/.bonnie++_installed
 
 

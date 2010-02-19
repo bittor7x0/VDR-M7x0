@@ -71,7 +71,6 @@ $(STAGEFILES_DIR)/.pipe-test_compiled: $(STAGEFILES_DIR)/.pipe-test_patched
 
 $(STAGEFILES_DIR)/.pipe-test_installed: $(STAGEFILES_DIR)/.pipe-test_compiled
 	$(CP) $(PIPE-TEST_DIR)/pipe-test $(TARGET_ROOT)/usr/sbin/pipe-test
-	chmod 755 $(TARGET_ROOT)/usr/sbin/pipe-test
 	$(TOUCH) $(STAGEFILES_DIR)/.pipe-test_installed
 
 

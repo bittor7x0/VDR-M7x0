@@ -71,7 +71,6 @@ $(STAGEFILES_DIR)/.hackbench_compiled: $(STAGEFILES_DIR)/.hackbench_patched
 
 $(STAGEFILES_DIR)/.hackbench_installed: $(STAGEFILES_DIR)/.hackbench_compiled
 	$(CP) $(HACKBENCH_DIR)/hackbench $(TARGET_ROOT)/usr/sbin/hackbench
-	chmod 755 $(TARGET_ROOT)/usr/sbin/hackbench
 	$(TOUCH) $(STAGEFILES_DIR)/.hackbench_installed
 
 

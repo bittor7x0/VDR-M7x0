@@ -98,7 +98,6 @@ $(STAGEFILES_DIR)/.htop_compiled: $(STAGEFILES_DIR)/.htop_configured
 
 $(STAGEFILES_DIR)/.htop_installed: $(STAGEFILES_DIR)/.htop_compiled
 	$(CP) $(HTOP_DIR)/htop $(TARGET_ROOT)/usr/bin/htop
-	chmod 755 $(TARGET_ROOT)/usr/bin/htop
 	$(TOUCH) $(STAGEFILES_DIR)/.htop_installed
 
 

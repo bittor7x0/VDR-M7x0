@@ -140,7 +140,6 @@ $(STAGEFILES_DIR)/.bash_compiled: $(STAGEFILES_DIR)/.bash_configured
 $(STAGEFILES_DIR)/.bash_installed: $(STAGEFILES_DIR)/.bash_compiled
 	$(UCLIBC_ENV) $(MAKE) -C $(BASH_BUILD_DIR) install
 	$(CP) $(BASH_DIR)/profile $(TARGET_ROOT)/etc/profile
-	chmod 644 $(TARGET_ROOT)/etc/profile
 	$(LN) -sfn bash $(TARGET_ROOT)/bin/sh
 	$(TOUCH) $(STAGEFILES_DIR)/.bash_installed
 

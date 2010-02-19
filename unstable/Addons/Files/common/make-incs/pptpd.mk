@@ -90,7 +90,6 @@ $(STAGEFILES_DIR)/.pptpd_compiled: $(STAGEFILES_DIR)/.pptpd_configured
 
 $(STAGEFILES_DIR)/.pptpd_installed: $(STAGEFILES_DIR)/.pptpd_compiled
 	$(CP) $(PPTPD_DIR)/pptpctrl $(TARGET_ROOT)/usr/sbin/pptpctrl
-	chmod 755 $(TARGET_ROOT)/usr/sbin/pptpctrl
 	$(MKDIR) -p $(TARGET_ROOT)/etc/ppp
 	$(CP) $(PPTPD_DIR)/samples/options.pptpd $(TARGET_ROOT)/etc/ppp/options
 	$(CP) $(PPTPD_DIR)/samples/chap-secrets $(TARGET_ROOT)/etc/ppp/chap-secrets

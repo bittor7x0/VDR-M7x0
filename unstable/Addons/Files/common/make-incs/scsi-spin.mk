@@ -79,7 +79,6 @@ $(STAGEFILES_DIR)/.scsi-spin_compiled: $(STAGEFILES_DIR)/.scsi-spin_patched
 
 $(STAGEFILES_DIR)/.scsi-spin_installed: $(STAGEFILES_DIR)/.scsi-spin_compiled
 	$(CP) $(SCSI-SPIN_DIR)/scsi-spin $(TARGET_ROOT)/usr/sbin/scsi-spin
-	chmod 755 $(TARGET_ROOT)/usr/sbin/scsi-spin
 	$(TOUCH) $(STAGEFILES_DIR)/.scsi-spin_installed
 
 

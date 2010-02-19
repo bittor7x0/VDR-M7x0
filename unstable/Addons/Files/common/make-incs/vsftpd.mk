@@ -79,9 +79,7 @@ $(STAGEFILES_DIR)/.vsftpd_compiled: $(STAGEFILES_DIR)/.vsftpd_patched
 
 $(STAGEFILES_DIR)/.vsftpd_installed: $(STAGEFILES_DIR)/.vsftpd_compiled
 	$(CP) $(VSFTPD_DIR)/vsftpd $(TARGET_ROOT)/usr/sbin/vsftpd
-	chmod 755 $(TARGET_ROOT)/usr/sbin/vsftpd
 	$(CP) $(VSFTPD_DIR)/vsftpd-m7x0.conf $(TARGET_ROOT)/etc/vsftpd.conf
-	chmod 644 $(TARGET_ROOT)/etc/vsftpd.conf
 	(if [ X"`$(GREP) vsftpd $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" = X"" ] ; then \
 		$(SED) -i '$$aftp\tstream tcp nowait root /usr/sbin/vsftpd vsftpd' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf ; \
 	fi);

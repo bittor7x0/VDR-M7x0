@@ -90,7 +90,6 @@ $(STAGEFILES_DIR)/.ctorrent_dnh_compiled: $(STAGEFILES_DIR)/.ctorrent_dnh_config
 
 $(STAGEFILES_DIR)/.ctorrent_dnh_installed: $(STAGEFILES_DIR)/.ctorrent_dnh_compiled
 	$(CP) $(CTORRENT_DNH_DIR)/ctorrent $(TARGET_ROOT)/usr/sbin/ctorrent
-	chmod 755 $(TARGET_ROOT)/usr/sbin/ctorrent
 	$(TOUCH) $(STAGEFILES_DIR)/.ctorrent_dnh_installed
 
 

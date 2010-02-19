@@ -80,7 +80,6 @@ $(STAGEFILES_DIR)/.ntpclient_compiled: $(STAGEFILES_DIR)/.ntpclient_patched
 
 $(STAGEFILES_DIR)/.ntpclient_installed: $(STAGEFILES_DIR)/.ntpclient_compiled
 	$(CP) $(NTPCLIENT_DIR)/ntpclient $(TARGET_ROOT)/usr/sbin/ntpclient
-	chmod 755 $(TARGET_ROOT)/usr/sbin/ntpclient
 	$(MKDIR) -p $(TARGET_ROOT)/etc/ntp
 	$(TOUCH) $(STAGEFILES_DIR)/.ntpclient_installed
 
