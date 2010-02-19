@@ -1,4 +1,3 @@
-usr/sbin                  -                      d 755 0 0 - - - - -
 usr/sbin/nmbd             usr/sbin/nmbd          f 755 0 0 - - - - -
 usr/sbin/nmbd             -                      s   - - - - - - - -
 usr/sbin/smbd             usr/sbin/smbd          f 755 0 0 - - - - -
@@ -7,7 +6,6 @@ usr/sbin/smbd             -                      s   - - - - - - - -
 #usr/sbin/smbpasswd        -                      s   - - - - - - - -
 etc/samba                 -                      d 755 0 0 - - - - -
 etc/samba/smb.conf        etc/samba/smb.conf     f 664 0 0 - - - - -
-usr/share                 -                      d 755 0 0 - - - - -
 usr/share/samba           -                      d 755 0 0 - - - - -
 usr/share/samba/codepages -                      d 755 0 0 - - - - -
 etc/samba/codepages       -                      d 755 0 0 - - - - -
