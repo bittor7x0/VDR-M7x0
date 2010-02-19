@@ -1,7 +1,7 @@
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2009-10-24 19:05:42.000000000 +0200
 +++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2009-10-24 18:40:32.000000000 +0200
-@@ -613,6 +613,7 @@
+@@ -615,6 +615,7 @@
  CONFIG_CRAMFS=y
  CONFIG_SQUASHFS=y
  # CONFIG_SQUASHFS_EMBEDDED is not set
@@ -12,7 +12,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2009-10-24 19:05:52.000000000 +0200
 +++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2009-10-24 18:40:32.000000000 +0200
-@@ -613,6 +613,7 @@
+@@ -615,6 +615,7 @@
  CONFIG_CRAMFS=y
  CONFIG_SQUASHFS=y
  # CONFIG_SQUASHFS_EMBEDDED is not set

@@ -19,7 +19,16 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_CPU_MIPS32 is not set
  # CONFIG_CPU_MIPS64 is not set
  # CONFIG_CPU_R3000 is not set
-@@ -229,6 +233,11 @@
+@@ -122,6 +126,8 @@
+ # CONFIG_BINFMT_ELF32 is not set
+ # CONFIG_BINFMT_MISC is not set
+ CONFIG_PM=y
++CONFIG_FASTBOOT=y
++CONFIG_FASTBOOT_LPJ=829440
+ 
+ #
+ # Memory Technology Devices (MTD)
+@@ -229,6 +235,11 @@
  # CONFIG_BLK_STATS is not set
  
  #
@@ -31,7 +40,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # Multi-device support (RAID and LVM)
  #
  # CONFIG_MD is not set
-@@ -243,7 +252,7 @@
+@@ -243,7 +254,7 @@
  #
  # Networking options
  #
@@ -40,7 +49,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_PACKET_MMAP is not set
  # CONFIG_NETLINK_DEV is not set
  # CONFIG_NETFILTER is not set
-@@ -308,8 +317,8 @@
+@@ -308,8 +319,8 @@
  #
  # SCSI support
  #
@@ -51,7 +60,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  CONFIG_SD_EXTRA_DEVS=8
  # CONFIG_CHR_DEV_ST is not set
  # CONFIG_CHR_DEV_OSST is not set
-@@ -523,8 +532,8 @@
+@@ -523,8 +534,8 @@
  #
  CONFIG_VT=y
  # CONFIG_VT_CONSOLE is not set
@@ -62,7 +71,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_SERIAL_EXTENDED is not set
  # CONFIG_SERIAL_NONSTANDARD is not set
  CONFIG_UNIX98_PTYS=y
-@@ -590,13 +599,13 @@
+@@ -590,13 +601,13 @@
  # CONFIG_BEFS_FS is not set
  # CONFIG_BEFS_DEBUG is not set
  # CONFIG_BFS_FS is not set
@@ -79,7 +88,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_EFS_FS is not set
  # CONFIG_JFFS_FS is not set
  CONFIG_JFFS2_FS=y
-@@ -627,7 +636,7 @@
+@@ -627,7 +638,7 @@
  # CONFIG_QNX4FS_FS is not set
  # CONFIG_QNX4FS_RW is not set
  # CONFIG_ROMFS_FS is not set
@@ -88,7 +97,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_SYSV_FS is not set
  # CONFIG_UDF_FS is not set
  # CONFIG_UDF_RW is not set
-@@ -646,15 +655,15 @@
+@@ -646,15 +657,15 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set
@@ -107,7 +116,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  CONFIG_LOCKD_V4=y
  CONFIG_CIFS=m
  # CONFIG_CIFS_STATS is not set
-@@ -730,7 +739,7 @@
+@@ -730,7 +741,7 @@
  # CONFIG_NLS_ISO8859_9 is not set
  # CONFIG_NLS_ISO8859_13 is not set
  # CONFIG_NLS_ISO8859_14 is not set
@@ -116,7 +125,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_NLS_KOI8_R is not set
  # CONFIG_NLS_KOI8_U is not set
  # CONFIG_NLS_UTF8 is not set
-@@ -835,7 +844,7 @@
+@@ -835,7 +846,7 @@
  #
  # USB support
  #
@@ -125,7 +134,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_USB_DEBUG is not set
  # CONFIG_USB_DEVICEFS is not set
  # CONFIG_USB_BANDWIDTH is not set
-@@ -847,7 +856,7 @@
+@@ -847,7 +858,7 @@
  # CONFIG_USB_EMI26 is not set
  # CONFIG_USB_BLUETOOTH is not set
  # CONFIG_USB_MIDI is not set
@@ -134,7 +143,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  # CONFIG_USB_STORAGE_DEBUG is not set
  # CONFIG_USB_STORAGE_DATAFAB is not set
  CONFIG_USB_STORAGE_FREECOM=y
-@@ -920,6 +929,7 @@
+@@ -920,6 +931,7 @@
  # CONFIG_DEBUG is not set
  # CONFIG_MAGIC_SYSRQ is not set
  # CONFIG_MIPS_UNCACHED is not set
@@ -142,7 +151,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
  
  #
  # Cryptographic options
-@@ -953,3 +963,4 @@
+@@ -953,3 +965,4 @@
  #
  CONFIG_ZLIB_INFLATE=y
  CONFIG_ZLIB_DEFLATE=y
@@ -168,7 +177,16 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_CPU_MIPS32 is not set
  # CONFIG_CPU_MIPS64 is not set
  # CONFIG_CPU_R3000 is not set
-@@ -229,6 +233,11 @@
+@@ -122,6 +126,8 @@
+ # CONFIG_BINFMT_ELF32 is not set
+ # CONFIG_BINFMT_MISC is not set
+ CONFIG_PM=y
++CONFIG_FASTBOOT=y
++CONFIG_FASTBOOT_LPJ=829440
+ 
+ #
+ # Memory Technology Devices (MTD)
+@@ -229,6 +235,11 @@
  # CONFIG_BLK_STATS is not set
  
  #
@@ -180,7 +198,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # Multi-device support (RAID and LVM)
  #
  # CONFIG_MD is not set
-@@ -243,7 +252,7 @@
+@@ -243,7 +254,7 @@
  #
  # Networking options
  #
@@ -189,7 +207,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_PACKET_MMAP is not set
  # CONFIG_NETLINK_DEV is not set
  # CONFIG_NETFILTER is not set
-@@ -308,8 +317,8 @@
+@@ -308,8 +319,8 @@
  #
  # SCSI support
  #
@@ -200,7 +218,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  CONFIG_SD_EXTRA_DEVS=8
  # CONFIG_CHR_DEV_ST is not set
  # CONFIG_CHR_DEV_OSST is not set
-@@ -523,8 +532,8 @@
+@@ -523,8 +534,8 @@
  #
  CONFIG_VT=y
  # CONFIG_VT_CONSOLE is not set
@@ -211,7 +229,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_SERIAL_EXTENDED is not set
  # CONFIG_SERIAL_NONSTANDARD is not set
  CONFIG_UNIX98_PTYS=y
-@@ -590,13 +599,13 @@
+@@ -590,13 +601,13 @@
  # CONFIG_BEFS_FS is not set
  # CONFIG_BEFS_DEBUG is not set
  # CONFIG_BFS_FS is not set
@@ -228,7 +246,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_EFS_FS is not set
  # CONFIG_JFFS_FS is not set
  CONFIG_JFFS2_FS=y
-@@ -627,7 +636,7 @@
+@@ -627,7 +638,7 @@
  # CONFIG_QNX4FS_FS is not set
  # CONFIG_QNX4FS_RW is not set
  # CONFIG_ROMFS_FS is not set
@@ -237,7 +255,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_SYSV_FS is not set
  # CONFIG_UDF_FS is not set
  # CONFIG_UDF_RW is not set
-@@ -646,15 +655,15 @@
+@@ -646,15 +657,15 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set
@@ -256,7 +274,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  CONFIG_LOCKD_V4=y
  CONFIG_CIFS=m
  # CONFIG_CIFS_STATS is not set
-@@ -730,7 +739,7 @@
+@@ -730,7 +741,7 @@
  # CONFIG_NLS_ISO8859_9 is not set
  # CONFIG_NLS_ISO8859_13 is not set
  # CONFIG_NLS_ISO8859_14 is not set
@@ -265,7 +283,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_NLS_KOI8_R is not set
  # CONFIG_NLS_KOI8_U is not set
  # CONFIG_NLS_UTF8 is not set
-@@ -835,7 +844,7 @@
+@@ -835,7 +846,7 @@
  #
  # USB support
  #
@@ -274,7 +292,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_USB_DEBUG is not set
  # CONFIG_USB_DEVICEFS is not set
  # CONFIG_USB_BANDWIDTH is not set
-@@ -847,7 +856,7 @@
+@@ -847,7 +858,7 @@
  # CONFIG_USB_EMI26 is not set
  # CONFIG_USB_BLUETOOTH is not set
  # CONFIG_USB_MIDI is not set
@@ -283,7 +301,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  # CONFIG_USB_STORAGE_DEBUG is not set
  # CONFIG_USB_STORAGE_DATAFAB is not set
  CONFIG_USB_STORAGE_FREECOM=y
-@@ -920,6 +929,7 @@
+@@ -920,6 +931,7 @@
  # CONFIG_DEBUG is not set
  # CONFIG_MAGIC_SYSRQ is not set
  # CONFIG_MIPS_UNCACHED is not set
@@ -291,7 +309,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
  
  #
  # Cryptographic options
-@@ -953,3 +963,4 @@
+@@ -953,3 +965,4 @@
  #
  CONFIG_ZLIB_INFLATE=y
  CONFIG_ZLIB_DEFLATE=y
