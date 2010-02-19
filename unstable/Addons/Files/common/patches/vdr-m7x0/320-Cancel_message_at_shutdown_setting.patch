@@ -3,7 +3,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
 +++ VDR-NG/config.c	2009-07-05 12:05:09.000000000 +0200
 @@ -342,6 +342,7 @@
  #ifdef USE_DIRECT_IO
-   ReplayUseDirectIO = 0;
+   ReplayUseDirectIO = 1;
  #endif
 +  ShutdownMessage = 0;
    AbortWhenPluginFails = 0;
@@ -39,7 +39,7 @@ diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 --- VDR-NG-orig/i18n.c	2009-07-05 11:58:28.000000000 +0200
 +++ VDR-NG/i18n.c	2009-07-05 12:08:53.000000000 +0200
-@@ -5246,6 +5246,48 @@
+@@ -5246,6 +5246,27 @@
      "som før",
      "jako naposledy",
    },
@@ -54,27 +54,6 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 +    "",// TODO
 +    "",// TODO
 +    "Mensaje de cancelación al apagar",
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+  },
-+  { "System shutdown",
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "",// TODO
-+    "Apagando el sistema",
 +    "",// TODO
 +    "",// TODO
 +    "",// TODO
@@ -102,7 +81,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
 diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
 --- VDR-NG-orig/vdr.c	2009-07-05 11:58:28.000000000 +0200
 +++ VDR-NG/vdr.c	2009-07-05 12:13:02.000000000 +0200
-@@ -1163,10 +1163,14 @@
+@@ -1164,10 +1164,16 @@
                     ShutdownHandler.SetUserInactive();
                     break;
                     }
@@ -111,8 +90,10 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                  if (!Interface->Confirm(tr("Press any key to cancel shutdown"), SHUTDOWNCANCELROMPT, true))
                     // If final question was canceled, continue to be active:
                     break;
-+		   } else
-+                Skins.Message(mtInfo, tr("System shutdown"));
++		   } else {
++                setIaMode(0);
++                cDevice::PrimaryDevice()->SetTvSettings(0);
++           }
 +
                  // Ok, now call the shutdown script:
                  ShutdownHandler.DoShutdown(true);

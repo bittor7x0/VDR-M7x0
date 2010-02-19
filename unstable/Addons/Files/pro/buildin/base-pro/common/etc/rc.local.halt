@@ -20,6 +20,10 @@ for bpath in ${bind_paths} ; do
         /bin/umount ${bpath} || /bin/umount -l ${bpath}
 done
 
+echo -n ' usb-umount'
+/bin/sync
+/sbin/usbautomounter umount
+
 echo -n ' vdr'
 trys=0
 while [ -e /var/run/runvdr.pid -a ${trys} -le 300 ] ; do
@@ -31,10 +35,6 @@ done
 [ -f /var/run/runvdr.pid ] && /usr/bin/killall -9 vdr
 
 [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && /bin/mv /var/vdr/epg.data ${vdr_epgfile}
-
-echo -n ' usb-umount'
-/bin/sync
-/sbin/usbautomounter umount noSVDRP
 
 if [ X"${hd_swap_dev}" != X"NO" ] ; then
 	for hd_swp_dev in ${hd_swap_dev} ; do
