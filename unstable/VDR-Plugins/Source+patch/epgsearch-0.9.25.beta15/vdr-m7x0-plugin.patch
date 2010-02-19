@@ -55,7 +55,7 @@ diff -Naur epgsearch-0.9.25.beta15-orig/epgsearchtools.h epgsearch-0.9.25.beta15
  #else
  // previous WAREAGLE icons
 -#define ICON_REC               0xF9
-+#define ICON_REC               0xE4
++#define ICON_REC               0xF0
  #define ICON_RUNNING           0xFB
  #define ICON_CLOCK             0xFD
  #define ICON_CLOCK_HALF        0x74
