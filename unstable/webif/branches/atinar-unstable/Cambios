@@ -1,3 +1,9 @@
+2010-02-21
+* Implementación de ejecución de comandos.
+* Permitir filtrado por categorías extendidas en búsquedas.
+* Desactivado hook onServerInit, porque no se incluye logos.tgz embebido.
+* Evitar gotos en streamrec para asegurar que se liberan todas las variables.
+* Eliminada exigencia de metodo GET para streamrec. No recuerdo por qué la puse...
 2010-02-07
 * Enviar hostId en barras de programaciones.
 * Evitar codificaciones innecesarias en llamadas a printMessage.

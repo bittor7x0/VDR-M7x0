@@ -57,7 +57,14 @@ typedef enum searchMode_e {
 	SEARCH_MODE_SUBSTRING_OR=2, 
 	SEARCH_MODE_EQUAL=3, 
 	SEARCH_MODE_REGEX=4,
-	SEARCH_MODE_FUZZY=5
+	SEARCH_MODE_FUZZY=5,
+	// numerical comparison:
+	SEARCH_MODE_NUM_LT=10,  //less
+	SEARCH_MODE_NUM_LET=11, //less equal
+	SEARCH_MODE_NUM_GT=12,  // greater
+	SEARCH_MODE_NUM_GET=13, // greater or equal
+	SEARCH_MODE_NUM_EQ=14,  // equal
+	SEARCH_MODE_NUM_NEQ=15, // not equal
 } searchMode_t;
 
 typedef enum blacklistMode_e {
@@ -125,6 +132,23 @@ typedef struct searchList_s {
 	search_t *entry;
 } searchList_t;
 
+typedef struct searchCat_s {
+	int id;
+	int hostId;
+	char* name;
+	char* menuname;
+	searchMode_t searchmode; 
+	char** values;
+	int nvalues;
+	//char *currentvalue;
+} searchCat_t;
+
+typedef struct searchCatList_s {
+	int length;
+	searchCat_t *entry;
+} searchCatList_t;
+
+
 void initChannelGroupList(channelGroupList_t *const groups);
 void freeChannelGroupList(channelGroupList_t *const groups);
 void getChannelGroupList(hostConf_t *host, channelGroupList_t *const groups, channelList_t const *const channels);
@@ -132,18 +156,24 @@ void printChannelGroupListSelect(wcontext_t *wctx,const char * name,const channe
 
 void initSearch(search_t *const entry);
 bool initSearchFromEvent(wcontext_t *wctx, search_t *const search, hostConf_t *host, const int channelNum, const int eventId);
-bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, wcontext_t *wctx);
+bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels,searchCatList_t * const cats, wcontext_t *wctx);
 void freeSearch(search_t *const entry);
 void initSearchList(searchList_t *const searches);
 void freeSearchList(searchList_t *const searches);
 void getSearchList(searchList_t *const searchs, channelList_t const *const channels, const sortField_t sortBy, const sortDirection_t sortDirection);
-bool parseSearch(const char *line, search_t *const search, channelList_t const *const channels );
+bool parseSearch(const char *line, search_t *const search, channelList_t const *const channels);
 bool addSearch(wcontext_t *wctx, hostConf_t *host, const char *newSearchStr);
 bool editSearch(wcontext_t *wctx, hostConf_t *host, int id, const char *oldSearchStr, const char *newSearchStr);
 bool deleteSearch(wcontext_t *wctx, hostConf_t *host, int id, const char *oldSearchStr);
 bool updateSearches(wcontext_t *wctx, hostConf_t *host);
 char *makeSearchStr(search_t *const search,const channelList_t *channels);
-void printSearcForm(wcontext_t *wctx, search_t *const search, channelList_t const *const channels,const char *cssLevel);
+void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t const *const channels,searchCatList_t const *const cats,const char *cssLevel);
 
+void initSearchCat(searchCat_t *const cat);
+void freeSearchCat(searchCat_t *const cat);
+void initSearchCatList(searchCatList_t *const cats);
+void freeSearchCatList(searchCatList_t *const cats);
+void getSearchCatList(searchCatList_t *const cats, hostConf_t *host);
+bool printSearchCatListFilter(wcontext_t *wctx,const search_t *search,const searchCatList_t * const cats,const char *fieldsetId );
 
 #endif

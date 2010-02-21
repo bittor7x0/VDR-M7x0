@@ -8,7 +8,7 @@ $.extend(SearchEditFormHandler.prototype,{
 			return;
 		}
 		//cada uno de estos campos oculta/muestra el fieldset etiquetado "<campoId>Cfg"
-		$('#startFilter,#durationFilter,#wdayFilter,#useAsSearchTimer,#repeatsAvoid',$form).each(function(){
+		$('#catsFilter,#startFilter,#durationFilter,#wdayFilter,#useAsSearchTimer,#repeatsAvoid',$form).each(function(){
 			if (!this.checked) 
 				$('#' + this.id + 'Cfg').hide();
 			$(this).click(function(){
@@ -19,6 +19,22 @@ $.extend(SearchEditFormHandler.prototype,{
 				}
 			});
 		});
+		//campos a ocultar para cada valor de searchMode:
+		var $fuzzyToleranceLabel=$('#fuzzyToleranceLabel',$form);
+		$.searchModeHideMap = {
+			'0':$fuzzyToleranceLabel,
+			'1':$fuzzyToleranceLabel,
+			'2':$fuzzyToleranceLabel,
+			'3':$fuzzyToleranceLabel,
+			'4':$fuzzyToleranceLabel,
+			'5':$([])};
+		var $searchMode=$('#searchMode',$form);
+		$.searchModeHideMap[$searchMode.val()].hide();
+		$searchMode.change(function(){
+			$.each($.searchModeHideMap,function(){$(this).show()});
+			$.searchModeHideMap[$(this).val()].hide();
+		});
+
 		//campos a ocultar para cada valor de channelFilter:
 		$.channelFilterHideMap = {'0':$('#channelFilterCfg',$form),'1':$('#channelGroupLabel',$form),'2':$('#channelMinLabel,#channelMaxLabel',$form),'3':$([])};
 		var $channelFilter=$('#channelFilter',$form);
@@ -51,9 +67,18 @@ $.extend(SearchEditFormHandler.prototype,{
 				return false;
 			}
 		});
+		$('a.searchCat',$form).click(function(event){ 
+			event.preventDefault();
+			var $searchCat=$(event.target);
+			var $directory=$('input[name=directory]');
+			$directory.val($directory.val()+$searchCat.attr('title'));
+		});
+		FormHandler.prototype.prepareForm.call(this,$form);
 	}
 });
-webif.prepareSearchEditForm=function(){
+webif.searchesPageInit=function(){
+	this.prepareHiddenDiv();
+	$('body').prepareElements();
 	var $searchEditForm=$('form#searchEdit');
 	if (!this.searchEditFormHandler){
 		this.searchEditFormHandler=new SearchEditFormHandler({
@@ -63,11 +88,6 @@ webif.prepareSearchEditForm=function(){
 			this.searchEditFormHandler.prepareForm($searchEditForm);
 		}
 	}
-}
-webif.searchesPageInit=function(){
-	this.prepareHiddenDiv();
-	$('body').prepareElements();
-	this.prepareSearchEditForm();
 	$('a.searchNew,a.searchEdit').live('click',this.searchEditFormHandler.clickHandler);
 }
 

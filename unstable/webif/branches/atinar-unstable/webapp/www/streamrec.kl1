@@ -53,136 +53,128 @@ static void sig_handler(int sig){
 		initRecFromArgs(wctx,&rec,args);
 		if (!rec.path){
 			warn("Invalid parameters");
-			response_set_status(response,HTTP_STATUS_NO_CONTENT);
-			response_print_header(response);
-			return;
-		}
-		uint64_t range_start=0;
-		uint64_t range_end=0;
-		bool use_range=false;
-
-		/* Catch SIGPIPE signals */
-		struct sigaction sa;
-		struct sigaction oldsa;
-		sa.sa_handler=sig_handler;		
-		sigemptyset(&sa.sa_mask);
-		sigaction(SIGPIPE,&sa,&oldsa);
-
-		readWebifConf();
-		fragmentList_t list;
-		if (!getFragmentList(&list,&rec)) {
 			returnHttpNoContent(response);
-			goto end;
-		}
-		field_t * range = request_get_field(request,"Range");
-		if (range){
-			dbg("Rango solicitado \"%s\"",range->value);
-			if (strncmp(range->value,"bytes=",6)==0){
-				char *r = range->value+6;
-				use_range=true;
-				errno=0;
-				range_start=(uint64_t)strtoll(r,&r,10);
-				if (errno || range_start>list.totalSize){
-					warn("Invalid range start %s, range_start=%lld, total_size=%lld, errno=%d",r,range_start,list.totalSize,errno);
-					use_range=false;
-				}
-				else {
-					r+=strspn(r,"- ");
-					if (strlen(r)>0) {
-						errno=0;
-						range_end=(uint64_t)strtoll((const char *)r,&r,10);
-						if (errno){
-							warn("Invalid range end %s, range_end=%lld, total_size=%lld, errno=%d",r,range_end,list.totalSize,errno);
-							range_end=0;
-						}
-					}
-				}
-			}
-			else {
-				warn("Invalid range %s",range->value);
-				use_range=0;
-			}
-		}
-		
-		if (!seekFragment(&list,range_start)){
-			warn("No fragment found for range_start=%lld",range_start);
-			response_set_status(response,HTTP_STATUS_NO_CONTENT);
-			response_print_header(response);
-			goto end;
-		}
-		
-		response_set_field(response, "Accept-Ranges", "bytes");
-		if (use_range){
-			if (!range_end){
-				range_end=list.totalSize-1;
-			}
-			response_set_status(response,HTTP_PARTIAL_CONTENT); //=206 requires klone-core patched
-			char *content_range;		
-			if (asprintf(&content_range,"bytes %lld-%lld/%lld",range_start,range_end,list.totalSize)!=-1) {
-				response_set_field(response, "Content-Range", content_range);
-				free(content_range);
-			}
-		}
-		else {
-			response_set_status(response,HTTP_STATUS_OK);
-			range_end=list.totalSize-1;
-		}
-		uint64_t remaining=(range_end-range_start+1);
-		response_set_content_length(response,remaining);
-		response_set_content_type(response,"video/mpeg");
+		} else {
+			uint64_t range_start=0;
+			uint64_t range_end=0;
+			bool use_range=false;
 
-		io_codecs_remove(response_io(rs));
-		response_print_header(response);
-		io_flush(out);
-		
-		if (request_get_method(request)==HM_GET){
-			cancel=false;
-			int len,br,bw;
-			enum { BUFSZ = 4096 };
-			char buffer[BUFSZ];
-			while (list.fragNum<list.length && remaining>0 && !cancel){
-				fragmentEntry_t *f=&list.entry[list.fragNum];
-				if (f->path!=NULL && f->size>0){
-					dbg("Fragmento[%d] tamaño %lld, inicio %lld",list.fragNum,f->size,list.fragPos);
-					FILE *fi = fopen(f->path,"rb");
-					if (fi) {
+			readWebifConf();
+			fragmentList_t list;
+			if (!getFragmentList(&list,&rec)) {
+				returnHttpNoContent(response);
+			} else {
+				field_t * range = request_get_field(request,"Range");
+				if (range){
+					dbg("Rango solicitado \"%s\"",range->value);
+					if (strncmp(range->value,"bytes=",6)==0){
+						char *r = range->value+6;
+						use_range=true;
 						errno=0;
-						if (fseek(fi,list.fragPos,SEEK_SET)!=0) {
-							warn("Wrong position %lld in fragment[&d].Error:%d",list.fragPos,list.fragNum,errno);
+						range_start=(uint64_t)strtoll(r,&r,10);
+						if (errno || range_start>list.totalSize){
+							warn("Invalid range start %s, range_start=%lld, total_size=%lld, errno=%d",r,range_start,list.totalSize,errno);
+							use_range=false;
 						}
-
-						while(remaining>0 && !cancel && !feof(fi) && !ferror(fi)) {
-							len=(remaining>BUFSZ)?BUFSZ:(int)remaining;
-							br=fread(buffer,1,len,fi);
-							if (br>0) {
-								bw=io_write(out,buffer,br);
-								if (bw<0) {
-									cancel=true;
-									dbg("Cancelado");
-								}
-								else {
-									if (bw<br){
-										warn("bw(%d)!=br(%d)",bw,br);
-									}
-									remaining-=bw;
+						else {
+							r+=strspn(r,"- ");
+							if (strlen(r)>0) {
+								errno=0;
+								range_end=(uint64_t)strtoll((const char *)r,&r,10);
+								if (errno){
+									warn("Invalid range end %s, range_end=%lld, total_size=%lld, errno=%d",r,range_end,list.totalSize,errno);
+									range_end=0;
 								}
 							}
 						}
-						if (errno) {
-							if (errno!=ECONNRESET) warn("%d %s",errno,strerror(errno));
-							errno=0;
-						}
-						fclose(fi);
+					}
+					else {
+						warn("Invalid range %s",range->value);
+						use_range=0;
 					}
 				}
-				list.fragNum++;
-				list.fragPos=0;
+				if (!seekFragment(&list,range_start)){
+					warn("No fragment found for range_start=%lld",range_start);
+					returnHttpNoContent(response);
+				} else {
+					response_set_field(response, "Accept-Ranges", "bytes");
+					if (use_range){
+						if (!range_end){
+							range_end=list.totalSize-1;
+						}
+						response_set_status(response,HTTP_PARTIAL_CONTENT); //=206 requires klone-core patched
+						char *content_range;		
+						if (asprintf(&content_range,"bytes %lld-%lld/%lld",range_start,range_end,list.totalSize)!=-1) {
+							response_set_field(response, "Content-Range", content_range);
+							free(content_range);
+						}
+					}
+					else {
+						response_set_status(response,HTTP_STATUS_OK);
+						range_end=list.totalSize-1;
+					}
+					uint64_t remaining=(range_end-range_start+1);
+					response_set_content_length(response,remaining);
+					response_set_content_type(response,"video/mpeg");
+
+					io_codecs_remove(response_io(rs)); //avoids extra buffering
+					response_print_header(response);
+					io_flush(out); //TODO ¿necesario?
+					
+					// Start of streaming
+
+					// catch SIGPIPE signals
+					struct sigaction sa;
+					struct sigaction oldsa;
+					sa.sa_handler=sig_handler;		
+					sigemptyset(&sa.sa_mask);
+					sigaction(SIGPIPE,&sa,&oldsa);
+
+					cancel=false; //modified by SIGPIPE handler
+					int len,br,bw;
+					enum { BUFSZ = 4096 };
+					char buffer[BUFSZ];
+					while (list.fragNum<list.length && remaining>0 && !cancel){
+						fragmentEntry_t *f=&list.entry[list.fragNum];
+						if (f->path!=NULL && f->size>0){
+							FILE *fi = fopen(f->path,"rb");
+							if (fi) {
+								errno=0;
+								if (fseek(fi,list.fragPos,SEEK_SET)!=0) {
+									warn("Wrong position %lld in fragment[&d].Error:%d",list.fragPos,list.fragNum,errno);
+								}
+								while(remaining>0 && !cancel && !feof(fi) && !ferror(fi)) {
+									len=(remaining>BUFSZ)?BUFSZ:(int)remaining;
+									br=fread(buffer,1,len,fi);
+									if (br>0) {
+										bw=io_write(out,buffer,br);
+										if (bw<0) {
+											cancel=true;
+										}
+										else {
+											remaining-=bw;
+										}
+									}
+								}
+								if (errno) {
+									if (errno!=ECONNRESET) warn("%d %s",errno,strerror(errno));
+									errno=0;
+								}
+								fclose(fi);
+							}
+						}
+						list.fragNum++;
+						list.fragPos=0;
+					}
+
+					// End of streaming 
+
+					sigaction(SIGPIPE,&oldsa,NULL);
+				}
 			}
+			freeFL(&list);
 		}
-end:
-		sigaction(SIGPIPE,&oldsa,NULL);
 		freeRec(&rec);
-		freeFL(&list);
 	}
 	freeCtx(wctx);
 %>

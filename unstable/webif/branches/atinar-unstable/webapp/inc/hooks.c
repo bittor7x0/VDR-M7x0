@@ -21,6 +21,7 @@
 /**
  * Acciones a realizar al iniciar el servidor.
  */
+/*
 int onServerInit(void){
 	info("Iniciando servidor");
 	const char *logos_tgz_src="/www/images/logos.tgz";
@@ -34,11 +35,13 @@ int onServerInit(void){
 err:
 	return ~0;
 }
+*/
 
 /**
  * Acciones al crear un proceso hijo.
  */
 int onChildInit(void){
+	//TODO evitar que se ejecute en los forks para ejecutar orden externa.
 	info("Iniciando proceso hijo");
 	resetWebifConf();
 	readWebifConf();
@@ -56,7 +59,7 @@ int onChildTerm(void){
 * Registrar hooks
 */
 void hooks_setup(void){
-	hook_server_init( onServerInit );
+	//hook_server_init( onServerInit );
 	hook_child_init( onChildInit );
 	hook_child_term( onChildTerm );
 }

@@ -687,6 +687,22 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"command.execute.confirm",
+		{
+		"Are you sure you want to execute this command?",
+		"",
+		"¿Seguro que quieres ejecutar la orden?",
+		""
+		}
+	},
+	{	"commands",
+		{
+		"Commands",
+		"",
+		"Órdenes",
+		""
+		}
+	},
 	{	"compareDescription",
 		{
 		"Compare description",
@@ -1659,6 +1675,14 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"search.useExtEpgInfo",
+		{
+		"Use extended EPG info",
+		"",
+		"Filtrar por categorías EPG",
+		""
+		}
+	},
 	{	"searches",
 		{
 		"Searches",
@@ -1912,6 +1936,14 @@ i18n_t i18n[]={
 		"Title",
 		"Titel",
 		"Título",
+		""
+		}
+	},
+	{	"tolerance",
+		{
+		"Tolerance",
+		"",
+		"Tolerancia",
 		""
 		}
 	},

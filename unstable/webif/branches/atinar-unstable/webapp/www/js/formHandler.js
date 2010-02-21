@@ -1,3 +1,12 @@
+/*
+ * 
+ * This source-code is licensed under GPL v2.
+ * 
+ * Copyright (c) 2009-2010  atinar <atinar1@hotmail.com>
+ * 
+ * 
+*/
+
 function FormHandler(options){
 	this.init(options);
 }

@@ -66,7 +66,8 @@ typedef enum pageNumber_e {
 	PN_PLAYLIST_REC,
 	PN_PLAYLIST_CHN,
 	PN_NOW_NEXT,
-	PN_STREAM_REC
+	PN_STREAM_REC,
+	PN_COMMANDS,
 } pageNumber_t;
 
 typedef enum pageAction_e {
@@ -91,6 +92,8 @@ typedef enum pageAction_e {
 	PA_GET_EPG_GRID,
 	PA_GET_TIMERS,
 	PA_PARTITION_USAGE,
+	PA_COMMANDS_SHOW,
+	PA_COMMANDS_EXECUTE,
 } pageAction_t;
 
 typedef enum playlistType_e {
@@ -130,6 +133,7 @@ typedef struct wcontext_s {
 	char *buffer;
 	bool isAjaxRequest;
 	bool isReload;
+	bool decoratePage;
 } wcontext_t;
 
 extern const char *checked[2];
@@ -192,6 +196,8 @@ bool sameInt(const int i1, const int i2);
 bool sameIntEx(const char * s, const int i);
 bool parseRequestStr(request_t *request, char ** pathStr, char ** queryStr);
 char * strcatEx(char ** dest, const char * s);
+char *strreplace(char *s, const char *s1, const char *s2);
+
 bool fileExists(const char * fileName);
 void vdrDecode(char *dst, char *src, int l);
 void vdrEncode(char *dst, char *src, int l);

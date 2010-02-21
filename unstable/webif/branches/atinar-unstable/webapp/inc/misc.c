@@ -82,6 +82,27 @@ char * strcatEx(char ** dest, const char * s) {
 	return *dest;
 }
 
+char *strreplace(char *s, const char *s1, const char *s2){
+	//taken from tools.h
+	char *p = strstr(s, s1);
+	if (p) {
+		int of = p - s;
+		int l  = strlen(s);
+		int l1 = strlen(s1);
+		int l2 = strlen(s2);
+		if (l2 > l1){
+			s = (char *)realloc(s, l + l2 - l1 + 1);
+		}
+		char *sof = s + of;
+		if (l2 != l1) {
+			memmove(sof + l2, sof + l1, l - of - l1 + 1);
+		}
+		strncpy(sof, s2, l2);
+	}
+	return s;
+}
+
+
 bool isDST(time_t * aTime) {
 	struct tm t=*localtime(aTime);
 	return boolean(t.tm_isdst>0);
@@ -121,7 +142,6 @@ bool dirExists(const char * dirName) {
 
 bool initCtx(wcontext_t *wctx, pageNumber_t currentPage, session_t *session, request_t *request, response_t *response, io_t *out, int bufferLength ){
 	readWebifConf();
-	info("user: %s, password: %s",webifConf.user,webifConf.password);
 	wctx->session=session;
 	wctx->request=request;
 	wctx->response=response;
@@ -134,6 +154,7 @@ bool initCtx(wcontext_t *wctx, pageNumber_t currentPage, session_t *session, req
 	wctx->sortDirection=SD_ASC;
 	wctx->bufferLength=0;
 	wctx->buffer=NULL;
+	wctx->decoratePage=true;
 	if (strlen(webifConf.user)>0 && strlen(webifConf.password)>0 && !is_connected(wctx)) {
 		return false;
 	}
@@ -184,7 +205,7 @@ void freeCtx(wcontext_t *wctx){
 void chkCtxBuffer(wcontext_t *wctx,int length, const char * routineName){
 	if ((length+1)>wctx->bufferLength){
 		if (routineName){
-			warn("buffer insuficiente en %s:  %d %d",routineName,wctx->bufferLength,length);
+			dbg("buffer insuficiente en %s:  %d %d",routineName,wctx->bufferLength,length);
 		}
 		crit_goto_if((wctx->buffer=realloc(wctx->buffer,length+1))==NULL,outOfMemory);
 		wctx->bufferLength=length+1;
@@ -326,23 +347,25 @@ void initHtmlPage(wcontext_t *wctx, const char *title, printHtmlHeadExtra_t prin
 		wctx_printfn(wctx,"<head>\n",0,1);
 		wctx_printf0(wctx,"<title>%s</title>\n",title);
 		wctx_printf0(wctx,"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n");
-		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen.css\" media=\"screen\" />\n",webifConf.www);
-		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/print.css\" media=\"print\" />\n",webifConf.www);
-		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-1.3.2.min.js\"></script>\n",webifConf.www);
-		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-ui-1.7.2.min.js\"></script>\n",webifConf.www);
-		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.hoverIntent.min.js\"></script>\n",webifConf.www);
-		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/superfish.js\"></script>\n",webifConf.www);
-		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/supersubs.js\"></script>\n",webifConf.www);
-		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/common.js\"></script>\n",webifConf.www);
-		wctx_printfn(wctx,"<script type=\"text/javascript\">\n",0,1);
-		wctx_printf0(wctx,"$.extend(webif.state,{'currentPage':%d,'currentAction':%d});\n",wctx->currentPage,wctx->currentAction);
-		wctx_printf0(wctx,"$.extend(webif.messages,{close:'%s',cancel:'%s'});\n",tr("close"),tr("cancel"));
-		wctx_printfn(wctx,"</script>\n",-1,0);
+		if (wctx->decoratePage){
+			wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen.css\" media=\"screen\" />\n",webifConf.www);
+			wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/print.css\" media=\"print\" />\n",webifConf.www);
+			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-1.3.2.min.js\"></script>\n",webifConf.www);
+			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-ui-1.7.2.min.js\"></script>\n",webifConf.www);
+			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.hoverIntent.min.js\"></script>\n",webifConf.www);
+			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/superfish.js\"></script>\n",webifConf.www);
+			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/supersubs.js\"></script>\n",webifConf.www);
+			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/common.js\"></script>\n",webifConf.www);
+			wctx_printfn(wctx,"<script type=\"text/javascript\">\n",0,1);
+			wctx_printf0(wctx,"$.extend(webif.state,{'currentPage':%d,'currentAction':%d});\n",wctx->currentPage,wctx->currentAction);
+			wctx_printf0(wctx,"$.extend(webif.messages,{close:'%s',cancel:'%s'});\n",tr("close"),tr("cancel"));
+			wctx_printfn(wctx,"</script>\n",-1,0);
+		}
 	}
 	if (printHtmlHeadExtra) {
 		printHtmlHeadExtra(wctx);
 	}
-	if (!wctx->isAjaxRequest){
+	if (!wctx->isAjaxRequest && wctx->decoratePage){
 		wctx_printfn(wctx,"<!--[if IE 8]>\n",0,1);
 		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen-ie8.css\" media=\"screen\" />\n",webifConf.www);
 		wctx_printfn(wctx,"<![endif]-->\n",-1,0);
@@ -351,29 +374,31 @@ void initHtmlPage(wcontext_t *wctx, const char *title, printHtmlHeadExtra_t prin
 	if (!wctx->isAjaxRequest){
 		wctx_printfn(wctx,"</head>\n",-1,0);
 		wctx_printfn(wctx,"<body id=\"body-p%d-a%d\">\n",0,1,wctx->currentPage,wctx->currentAction);
-		wctx_printfn(wctx,"<div id=\"page-div\">\n",0,1);
-		wctx_printfn(wctx,"<div id=\"page-top\">\n",0,1);
-		wctx_printfn(wctx,"<table class=\"layout\" cellspacing=\"5\">\n",0,1);
-		wctx_printf0(wctx,"<col class=\"menu\"/>\n");
-		wctx_printf0(wctx,"<col class=\"logo\"/>\n");
-		wctx_printfn(wctx,"<tbody>\n",0,1);
-		wctx_printfn(wctx,"<tr>\n",0,1);
-		wctx_printfn(wctx,"<td>\n",0,1);
-		wctx_printf0(wctx,"<h1 id=\"page-title\">%s</h1>\n",title);
-		wctx_printfn(wctx,"</td>\n",-1,0);
-		wctx_printfn(wctx,"<td rowspan=\"2\">\n",0,1);
-		wctx_printf0(wctx,"<div id=\"logo\"></div>\n");
-		wctx_printfn(wctx,"</td>\n",-1,0);
-		wctx_printfn(wctx,"</tr>\n",-1,0);
-		wctx_printfn(wctx,"<tr>\n",0,1);
-		wctx_printfn(wctx,"<td>\n",0,1);
-		printMenu(wctx);
-		wctx_printfn(wctx,"</td>\n",-1,0);
-		wctx_printfn(wctx,"</tr>\n",-1,0);
-		wctx_printfn(wctx,"</tbody>\n",-1,0);
-		wctx_printfn(wctx,"</table>\n",-1,0);
-		wctx_printfn(wctx,"</div>\n",-1,0); //page-top
-		wctx_printfn(wctx,"<div id=\"page\">\n",0,1);
+		if (wctx->decoratePage){
+			wctx_printfn(wctx,"<div id=\"page-div\">\n",0,1);
+			wctx_printfn(wctx,"<div id=\"page-top\">\n",0,1);
+			wctx_printfn(wctx,"<table class=\"layout\" cellspacing=\"5\">\n",0,1);
+			wctx_printf0(wctx,"<col class=\"menu\"/>\n");
+			wctx_printf0(wctx,"<col class=\"logo\"/>\n");
+			wctx_printfn(wctx,"<tbody>\n",0,1);
+			wctx_printfn(wctx,"<tr>\n",0,1);
+			wctx_printfn(wctx,"<td>\n",0,1);
+			wctx_printf0(wctx,"<h1 id=\"page-title\">%s</h1>\n",title);
+			wctx_printfn(wctx,"</td>\n",-1,0);
+			wctx_printfn(wctx,"<td rowspan=\"2\">\n",0,1);
+			wctx_printf0(wctx,"<div id=\"logo\"></div>\n");
+			wctx_printfn(wctx,"</td>\n",-1,0);
+			wctx_printfn(wctx,"</tr>\n",-1,0);
+			wctx_printfn(wctx,"<tr>\n",0,1);
+			wctx_printfn(wctx,"<td>\n",0,1);
+			printMenu(wctx);
+			wctx_printfn(wctx,"</td>\n",-1,0);
+			wctx_printfn(wctx,"</tr>\n",-1,0);
+			wctx_printfn(wctx,"</tbody>\n",-1,0);
+			wctx_printfn(wctx,"</table>\n",-1,0);
+			wctx_printfn(wctx,"</div>\n",-1,0); //page-top
+			wctx_printfn(wctx,"<div id=\"page\">\n",0,1);
+		}
 /*		No nos pasemos, de momento:
 		wctx_printfn(wctx,"<!--[if lte IE 8]>\n",0,1);
 		printMessage(wctx,"alert",tr("browser.not_supported"),tr("browser.please_update"),false);
@@ -454,6 +479,10 @@ void printMenu(wcontext_t *wctx){
 		dectab(wctx);
 	}
 	
+	if (fileExists(commandsFile)) {
+		wctx_printf0(wctx,"</li><li%s><a href=\"commands.kl1?a=%d\">%s</a>\n",classCurrent[CURRENT_PAGE(PN_COMMANDS)],PA_COMMANDS_SHOW,tr("commands"));
+	}
+	
 	wctx_printf0(wctx,"</li><li><a href=\"#\">%s</a>\n",tr("links"));
 	wctx_printfn(wctx,"<ul><li><a class=\"newWindow\" href=\"http://www.open7x0.org/\">open7x0.org</a>\n",1,0);
 	wctx_printf0(wctx,"</li><li><a class=\"newWindow\" href=\"http://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a>\n");
@@ -463,18 +492,22 @@ void printMenu(wcontext_t *wctx){
 
 void finishHtmlPage(wcontext_t *wctx){
 	if (!wctx->isAjaxRequest){
+		if (wctx->decoratePage){
 #ifndef IGNORE_TABS
-		if (wctx->ntabs<4) {
-			dbg("Indentacion erronea, revisar markup");
-			wctx->ntabs=4;
-		}
+			if (wctx->ntabs<4) {
+				dbg("Indentacion erronea, revisar markup");
+				wctx->ntabs=4;
+			}
 #endif
-		wctx_printfn(wctx,"</div>\n",-1,0); //page
-		wctx_printfn(wctx,"<div id=\"page-bottom\">\n",0,1);
-		wctx_printf0(wctx,"<p>(C) 2006 open7x0-team</p>\n");
-		wctx_printf0(wctx,"<p>(C) 2008 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n");
-		wctx_printfn(wctx,"</div>\n",-1,0); //page-bottom
-		wctx_printfn(wctx,"</div>\n",-1,0); //page-div
+		}
+		if (wctx->decoratePage){
+			wctx_printfn(wctx,"</div>\n",-1,0); //page
+			wctx_printfn(wctx,"<div id=\"page-bottom\">\n",0,1);
+			wctx_printf0(wctx,"<p>(C) 2006 open7x0-team</p>\n");
+			wctx_printf0(wctx,"<p>(C) 2008 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n");
+			wctx_printfn(wctx,"</div>\n",-1,0); //page-bottom
+			wctx_printfn(wctx,"</div>\n",-1,0); //page-div
+		}
 		wctx_printfn(wctx,"</body>\n",-1,0);
 		wctx_printfn(wctx,"</html>\n",-1,0);
 	}

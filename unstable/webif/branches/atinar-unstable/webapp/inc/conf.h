@@ -127,6 +127,8 @@ extern const cfgFile_t const cfgFile[];
 extern const int cfgFileLength;
 extern const cfgFile_t fileMapping[];
 extern const int fileMappingLength;
+extern char* commandsFile;
+
 
 const cfgParamConfig_t *getCfgParamConfig(cfgFileId_t cfgFileId, cfgParam_t * const param);
 bool readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, bool *isNew);

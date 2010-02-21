@@ -166,8 +166,29 @@ outOfMemory:
 	exit(1);
 }
 
-bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, wcontext_t *wctx){
+char *decodeCatValue(char * catvalue){
+	while(strstr(catvalue, "!^colon^!")){
+		strreplace(catvalue, "!^colon^!", ":");
+	}
+	while(strstr(catvalue, "!^pipe^!")){
+		strreplace(catvalue, "!^pipe^!", "|");
+	}
+	return catvalue;
+}
+
+char *encodeCatValue(char * catvalue){
+	while(strstr(catvalue, ":")){
+		catvalue = strreplace(catvalue, ":", "!^colon^!");
+	}
+	while(strstr(catvalue, "|")){
+		catvalue = strreplace(catvalue, "|", "!^pipe^!");
+	}
+	return catvalue;
+}
+
+bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, searchCatList_t * const cats, wcontext_t *wctx){
 	initSearch(search);
+	//TODO ignorar oldSearchStr aquí
 	const char *oldSearchStr=vars_get_value(args,"oldSearchStr");
 	if (oldSearchStr) parseSearch(oldSearchStr,search,channels);
 	const char *arg;
@@ -185,10 +206,38 @@ bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *cha
 		}
 	}
 	search->searchMode=vars_get_value_i(args,"searchMode");
+	search->fuzzyTolerance=vars_get_value_i(args,"fuzzyTolerance");
 	setOrClearFlag(vars_get_value_i(args,"useCase"),SFL_USE_CASE,search->flags);
 	setOrClearFlag(vars_get_value_i(args,"compareTitle"),EFI_TITLE,search->compareFlags);
 	setOrClearFlag(vars_get_value_i(args,"compareSubtitle"),EFI_SHORTDESC,search->compareFlags);
 	setOrClearFlag(vars_get_value_i(args,"compareDescription"),EFI_DESC,search->compareFlags);
+
+	setOrClearFlag(vars_get_value_i(args,"useExtEpgInfo"),SFL_USE_EXT_EPG_INFO,search->flags);
+	if (isFlagSet(SFL_USE_EXT_EPG_INFO,search->flags)){
+		if (isFlagSet(SFL_USE_EXT_EPG_INFO,search->my)){
+			free(search->extEpgValues);
+			search->extEpgValues=NULL;
+		}
+		int i;
+		searchCat_t *cat;
+		for (cat=cats->entry,i=0;i<cats->length;cat++,i++){
+			char *argName;
+			crit_goto_if(asprintf(&argName,"compare_cat_%d",cat->id)<0,outOfMemory);
+			const char *argValue=vars_get_value(args,argName);
+			info("%s:[%s]",argName,argValue);
+			free(argName);
+			char *value=(argValue)?encodeCatValue(strdup(argValue)):strdup("");
+			if (search->extEpgValues==NULL){
+				crit_goto_if(asprintf(&search->extEpgValues,"%d#%s",cat->id,value)<0,outOfMemory);
+			} else {
+				char *tmp=search->extEpgValues;
+				crit_goto_if(asprintf(&search->extEpgValues,"%s|%d#%s",tmp,cat->id,value)<0,outOfMemory);
+			}
+			free(value);
+			setFlag(SFI_EXT_EPG_VALUES,search->my);
+		}
+	}
+	
 	if (vars_get_value_i(args,"useTime")) {
 		setFlag(SFL_USE_TIME,search->flags);
 		int k;
@@ -800,7 +849,7 @@ char *makeSearchStr(search_t *const search,const channelList_t *channels){
 		crit_goto_if(asprintf(&searchStr,"%s::",searchStr)<0,outOfMemory);
 	};
 	crit_goto_if(asprintf(&searchStr,
-		"%s:%d:%d:%d:%d:%s:%d:%d:%d:%d:%d:%d:%d:%s:%d:%d:%d:%d:%d:%ld:%d:%d:%d:%d:%d:%d:%s:%d:%d:%d:%d:%d:%d:%ld:%ld:%d:%d",
+		"%s:%d:%d:%d:%d:%s:%d:%d:%d:%d:%d:%d:%d:%s",
 		searchStr,
 		isFlagSet(SFL_USE_AS_SEARCH_TIMER,search->flags),
 		isFlagSet(SFL_USE_WDAY,search->flags),
@@ -814,7 +863,11 @@ char *makeSearchStr(search_t *const search,const channelList_t *channels){
 		isFlagSet(SFL_USE_VPS,search->flags),
 		search->action,
 		isFlagSet(SFL_USE_EXT_EPG_INFO,search->flags),
-		isFlagSet(SFL_USE_EXT_EPG_INFO,search->flags)?search->extEpgValues:"",
+		(search->extEpgValues)?search->extEpgValues:""
+	)<0,outOfMemory);
+	crit_goto_if(asprintf(&searchStr,
+		"%s:%d:%d:%d:%d:%d:%ld:%d:%d:%d:%d:%d:%d:%s:%d:%d:%d:%d:%d:%d:%ld:%ld:%d:%d",
+		searchStr,
 		isFlagSet(SFL_AVOID_REPEATS,search->flags),
 		search->allowedRepeats,
 		isFlagSet(EFI_TITLE,search->repeatsCompareFlags),
@@ -846,9 +899,11 @@ outOfMemory:
 	exit(1);
 }
 //------------------------------
-void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t const *const channels, const char *cssLevel){
+void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t const *const channels, searchCatList_t const *const cats, const char *cssLevel){
 	cfgParamConfig_t searchModeCfg={"search.mode","0",
-		"search.phrase|search.allWords|search.atLeastOne|search.exactMatch|search.regex|search.fuzzy",true,0,NULL,NULL,false};
+		"search.phrase|search.allWords|search.atLeastOne|search.exactMatch|search.regex|search.fuzzy"
+		/*"|search.lt|search.let|search.gt|search.get|search.eq|search.neq"*/
+		,true,0,NULL,NULL,false};
 	cfgParamConfig_t checkboxCfg={"","0","0|1",false,0,NULL,NULL,false};
 	cfgParamConfig_t useChannelCfg={"","0","no|interval|channel.group|onlyFTA",true,0,NULL,NULL,false};
 	cfgParamConfig_t searchActionCfg={"","0","search.record|search.announce|search.switch",true,0,NULL,NULL,false};
@@ -863,7 +918,7 @@ void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t con
 	wctx_printf0(wctx,"<h3 class=\"%s-top formTitle\"\">%s</h3>\n",cssLevel,tr("search.edit"));
 	wctx_printfn(wctx,"<div class=\"%s\">\n",0,1,cssLevel);
 
-	wctx_printfn(wctx,"<fieldset>\n",0,1);
+	wctx_printfn(wctx,"<fieldset id=\"searchSet\">\n",0,1);
 	if (search->id>=0) {
 		wctx_printf0(wctx,"<input type=\"hidden\" name=\"searchId\" value=\"%d\"/>\n",search->id);
 		wctx_printf0(wctx,"<input type=\"hidden\" name=\"oldSearchStr\" value=\"%s\"/>\n",CTX_HTML_ENCODE(search->searchStr,-1));
@@ -879,12 +934,16 @@ void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t con
 	wctx_printf0(wctx,"<label>%s<input type=\"text\" name=\"search\" value=\"%s\"/></label>\n",tr("search.search"),(search->search)?search->search:"");
 	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.mode"));
 	asprintf(&paramValue,"%d",search->searchMode);
-	printSelect(wctx,&searchModeCfg,NULL,"searchMode",0,paramValue);
+	printSelect(wctx,&searchModeCfg,"searchMode","searchMode",0,paramValue);
 	free(paramValue);
+	wctx_printfn(wctx,"</label>\n",-1,0);
+	wctx_printfn(wctx,"<label id=\"fuzzyToleranceLabel\">%s\n",0,1,tr("search.fuzzy.tolerance"));
+	wctx_printf0(wctx,"<input type=\"text\" name=\"fuzzyTolerance\" value=\"%d\" size=\"2\"/></label>\n",search->fuzzyTolerance);
 	wctx_printfn(wctx,"</label>\n",-1,0);
 	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.useCase"));
 	printCheckbox(wctx,&checkboxCfg,NULL,"useCase",0,isFlagSet(SFL_USE_CASE,search->flags)?"1":"0");
 	wctx_printfn(wctx,"</label>\n",-1,0);
+	
 	wctx_printfn(wctx,"<fieldset id=\"compareSet\">\n",0,1);
 	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.compareTitle"));
 	printCheckbox(wctx,&checkboxCfg,NULL,"compareTitle",0,isFlagSet(EFI_TITLE,search->compareFlags)?"1":"0");
@@ -895,9 +954,18 @@ void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t con
 	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.compareDescription"));
 	printCheckbox(wctx,&checkboxCfg,NULL,"compareDescription",0,isFlagSet(EFI_DESC,search->compareFlags)?"1":"0");
 	wctx_printfn(wctx,"</label>\n",-1,0);
-	wctx_printfn(wctx,"</fieldset>\n",-1,0);
-	wctx_printfn(wctx,"</fieldset><!--\n",-1,0);
+	wctx_printfn(wctx,"</fieldset>\n",-1,0); //compareSet
+	wctx_printfn(wctx,"</fieldset><!--\n",-1,0); //searchSet
 
+	wctx_printfn(wctx,"--><fieldset id=\"catsSet\"%s>\n",0,1,(cats->length>0)?"":" style=\"display:none\"");
+	if (cats->length>0){
+		wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.useExtEpgInfo"));
+		printCheckbox(wctx,&checkboxCfg,"catsFilter","useExtEpgInfo",0,isFlagSet(SFL_USE_EXT_EPG_INFO,search->flags)?"1":"0");
+		wctx_printfn(wctx,"</label>\n",-1,0);
+		printSearchCatListFilter(wctx,search,cats,"catsFilterCfg");
+	}
+	wctx_printfn(wctx,"</fieldset><!--\n",-1,0); //catsSet
+	
 	wctx_printfn(wctx,"--><fieldset>\n",0,1);
 	wctx_printfn(wctx,"<label>%s\n",0,1,tr("search.startFilter"));
 	printCheckbox(wctx,&checkboxCfg,"startFilter","useTime",0,isFlagSet(SFL_USE_TIME,search->flags)?"1":"0");
@@ -1060,3 +1128,163 @@ void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t con
 	wctx_printfn(wctx,"</div>\n",-1,0); //[cssLevel]-div
 	wctx_printfn(wctx,"</form>\n",-1,0);
 }
+
+//	SearchCats--------------------------
+
+void initSearchCat(searchCat_t *const cat){
+	cat->id = 0;
+	cat->name = NULL;
+	cat->menuname = NULL;
+	cat->searchmode = SEARCH_MODE_SUBSTRING; // default: all substrings must exist
+	cat->values = NULL;
+	cat->nvalues = 0;
+	//cat->currentvalue=NULL;
+}
+
+void freeSearchCat(searchCat_t *const cat){
+	int i;
+	free(cat->name);
+	free(cat->menuname);
+	for(i=0; i<cat->nvalues; i++){
+		free(cat->values[i]);
+	}
+	free(cat->values);
+	//free(cat->currentvalue);
+}
+
+void initSearchCatList(searchCatList_t *const list){
+	list->length=0;
+	list->entry=NULL;
+}
+
+void freeSearchCatList(searchCatList_t *const list){
+	int i;
+	for (i=0;i<list->length;i++){
+		freeSearchCat(&(list->entry[i]));
+	}
+	free(list->entry);
+	initSearchCatList(list);
+}
+
+void getSearchCatList(searchCatList_t *const cats, hostConf_t *host){
+	initSearchCatList(cats);
+	char *data=execSvdrp(host,"PLUG epgsearch LSTE");
+	if (data){
+		char *line,*sline;
+		searchCat_t *cat;
+		for (line=strtok_r(data,"\r\n",&sline);line!=0;line=strtok_r(NULL,"\r\n",&sline)) {
+			if (atoi(line)==SVDRP_PLUG_DEFAULT) {
+				line+=4;
+				crit_goto_if((cats->entry=(searchCat_t *)realloc(cats->entry,(++cats->length)*sizeof(searchCat_t)))==NULL,outOfMemory);
+				cat=cats->entry+cats->length-1;
+				initSearchCat(cat);
+				cat->hostId=host->id;
+
+				int i=1;
+				char *field,*nfield;
+				field=line;
+				while(*field) {
+					while (field[0]==' ') field++;
+					if (*field == '|'){
+						field++;
+					} else {
+						nfield=strchrnul(field,'|');
+						if (nfield[0]=='|'){
+							*nfield=0;
+							nfield++;
+						}
+						switch (i) {
+							case 1:
+								cat->id=atoi(field);
+								break;
+							case 2:
+								crit_goto_if((cat->name=strdup(field))==NULL,outOfMemory);
+								break;
+							case 3:  
+								crit_goto_if((cat->menuname=strdup(field))==NULL,outOfMemory);
+								break;
+							case 4:
+								{
+									char *value,*svalue;
+									for (value=strtok_r(field,",",&svalue);value!=0;value=strtok_r(NULL,",",&svalue)){
+										while(*value==' ') value++;
+										cat->values=(char**)realloc(cat->values,(++cat->nvalues)*sizeof(char*));
+										crit_goto_if(cat->values==NULL,outOfMemory);
+										crit_goto_if((cat->values[cat->nvalues-1]=strdup(value))==NULL,outOfMemory);
+									}
+									break;
+								}
+							case 5:  
+								cat->searchmode = atoi(field);
+								break;
+						}
+						field=nfield;
+					}
+					i++;
+				}
+			}
+		}
+		free(data);
+	}
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+char *currentCatValue(const search_t *search,const searchCat_t *cat){
+	if (search->extEpgValues){
+		char *tmp=strdup(search->extEpgValues);
+		char *t;
+		char *val=NULL;
+		for (t=strtok(tmp,"|");t;t=strtok(NULL,"|")){
+			char *n;
+			int id=strtol(t,&n,10);
+			if (id==cat->id){
+				if (*n=='#'){
+					val=decodeCatValue(strdup(n+1));
+					break;
+				} else {
+					warn("extEpgValues mal formado: %s",search->extEpgValues);
+				}
+			}
+		}
+		free(tmp);
+		if (val) return val;
+	}
+	return strdup("");
+}
+
+bool printSearchCatListFilter(wcontext_t *wctx,const search_t *search,const searchCatList_t * const searchCatList,const char *fieldsetId ){
+	if (searchCatList->length>0) {
+		wctx_printfn(wctx,"<fieldset id=\"%s\">\n",0,1,(fieldsetId)?fieldsetId:"compareCatsSet");
+		int ncat;
+		searchCat_t *cat;
+		for (cat=searchCatList->entry,ncat=0;ncat<searchCatList->length;cat++,ncat++){
+			wctx_printfn(wctx,"<label><a class=\"searchCat\" title=\"%%%s%%\"href=\"#\">%s</a>&nbsp;\n",0,1,cat->name,cat->menuname);
+			char *cv=currentCatValue(search,cat);
+			if (cat->nvalues==0){
+				wctx_printf0(wctx,"<input type=\"text\" name=\"compare_cat_%d\" value=\"%s\"/>\n",cat->id,cv);
+			} else {
+				wctx_printfn(wctx,"<select name=\"compare_cat_%d\" size=\"1\">\n",0,1,cat->id);
+				int nvalue;
+				bool noneSelected=true;
+				for(nvalue=0;nvalue<cat->nvalues;nvalue++) {
+					const char *value=cat->values[nvalue];
+					const char *valuee=CTX_HTML_ENCODE(value,-1);
+					bool thisSelected=sameString(cv,value);
+					if (thisSelected) noneSelected=false;
+					wctx_printf0(wctx,"<option value=\"%s\"%s>%s</option>\n",valuee,selected[thisSelected],valuee);
+				}
+				wctx_printf0(wctx,"<option value=\"\"%s></option>\n",selected[noneSelected]);
+				wctx_printfn(wctx,"</select>\n",-1,0);
+			}
+			free(cv);
+			wctx_printfn(wctx,"</label>\n",-1,0);
+		}
+		wctx_printfn(wctx,"</fieldset>\n",-1,0);
+		return true;
+	}
+	return false;
+}
+

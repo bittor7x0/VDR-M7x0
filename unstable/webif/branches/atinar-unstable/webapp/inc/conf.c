@@ -29,6 +29,7 @@
 #include "misc.h"
 
 #define VIDEO0 "/var/vdr/video0"
+char* commandsFile="/etc/webif/commands.conf";
 
 void validateCheckbox(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param){
 	const char *option=(paramConfig->options)?paramConfig->options:"false|true";
@@ -727,11 +728,9 @@ bool readWebifConf() {
 					webifConf.channelLogoWidth=atoi(param->value);
 				}
 			} else if (strcmp(param->name,"user")==0 && param->value!=NULL){
-				info("user:%s",param->value);
 				strncpy(webifConf.user,param->value,29);
 				webifConf.user[29]=0;
 			} else if (strcmp(param->name,"password")==0 && param->value!=NULL){
-				info("password:%s",param->value);
 				strncpy(webifConf.password,param->value,29);
 				webifConf.password[29]=0;
 			}
@@ -740,7 +739,6 @@ bool readWebifConf() {
 		struct stat st;
 		int logos_stat=stat("/etc/webif/www/images/logos",&st);
 		if (logos_stat == 0 && S_ISDIR(st.st_mode)){
-			info("Existe directorio de logos");
 			webifConf.noLogos=false;
 		} else {
 			warn("No existe directorio de logos");
