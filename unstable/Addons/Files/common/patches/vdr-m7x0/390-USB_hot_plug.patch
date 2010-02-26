@@ -85,7 +85,7 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
 +        }
 +        return FirstUpdateFileTime;     
 +     }
-+     if(!LastUpdateFileTime)
++     if((!LastUpdateFileTime)&&(FirstUpdateFileTime))
 +     {
 +        FirstUpdateFileTime=0;
 +        LastUpdateFileTime=time(NULL);
