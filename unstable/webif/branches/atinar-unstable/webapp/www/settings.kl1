@@ -38,7 +38,7 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 
 #ifdef DEBUG
 static void dbg_settings_kl1(void){
-   dbg("settings.kl1");
+	dbg("settings.kl1");
 }
 #endif
 
@@ -47,176 +47,177 @@ static void dbg_settings_kl1(void){
 	#ifdef DEBUG
 	dbg_settings_kl1();
 	#endif
-	
+
 	vars_t *args = request_get_args(request);
 
 	wcontext_t vwctx;
 	wcontext_t *wctx=&vwctx;
 	if (initCtx(wctx,PN_SETTINGS,session,request,response,out,1024)){
-      cfgFileId_t cfgFileId=(vars_countn(args,"cfgFileId")>0)?vars_get_value_i(args,"cfgFileId"):CF_WEBIFCONF;
-      vwctx.currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_NOACTION;
-      cfgParamList_t params;
-      cfgParam_t *param;
-      const cfgParamConfig_t *paramConfig;
-      initCfgParamList(&params);
-      bool allParamsAreValid=true;
-      bool showForm=boolean(!webifConf.configChangeDisabled);
+		cfgFileId_t cfgFileId=(vars_countn(args,"cfgFileId")>0)?vars_get_value_i(args,"cfgFileId"):CF_WEBIFCONF;
+		vwctx.currentAction = (vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_NOACTION;
+		cfgParamList_t params;
+		cfgParam_t *param;
+		const cfgParamConfig_t *paramConfig;
+		initCfgParamList(&params);
+		bool allParamsAreValid=true;
+		bool showForm=boolean(!webifConf.configChangeDisabled);
 
-      initHtmlPage(wctx,tr("setup"),printHtmlHeadExtra);
+		initHtmlPage(wctx,tr("setup"),printHtmlHeadExtra);
 
-      wctx_printfn(wctx,"<div class=\"level2-div ui-widget\">\n",0,1);
-      wctx_printf0(wctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("setup"));
-      wctx_printfn(wctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
+		wctx_printfn(wctx,"<div class=\"level2-div ui-widget\">\n",0,1);
+		wctx_printf0(wctx,"<h2 class=\"level2-top ui-widget-header\">%s</h2>\n",tr("setup"));
+		wctx_printfn(wctx,"<div class=\"level2 ui-widget-content\">\n",0,1);
 
-      if (vwctx.currentAction==PA_SAVE_CONFIG) {
-         wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
-         if (webifConf.configChangeDisabled) {
-            printMessage(wctx,"alert",tr("setup"),tr("cfgFileChangeDisabledErr"),false);
-         } else {
-            char argName[15];
-            for(params.length=0;;params.length++){
-               sprintf(argName,"paramName_%d",params.length);
-               if (!vars_countn(args,argName)) break;
-            }
-            if (params.length==0){
-               printMessage(wctx,"alert",tr("setup"),tr("cfgErrParamNameValueMismatch"),false);
-            } else {
-               params.entry=malloc(params.length*sizeof(cfgParam_t));
-               int i;
-               for (i=0,param=params.entry;i<params.length;i++,param++){
-                  initCfgParam(param);
-                  sprintf(argName,"paramName_%d",i);
-                  param->name=strdup(vars_get_value(args,argName));
-                  sprintf(argName,"paramValue_%d",i);
-                  const char *argValue=vars_get_value(args,argName);
-                  param->value=(argValue)?strdup(argValue):NULL;
-                  param->isValid=true;
-                  paramConfig=getCfgParamConfig(cfgFileId,param);
-                  if (paramConfig && paramConfig->validate!=NULL){
-                     paramConfig->validate(paramConfig,param);
-                  }
-                  if (!param->isValid){
-                     allParamsAreValid=false;
-                  }
-               }
-               if (cfgFileId==CF_WEBIFCONF){
-                  const char *logosFieldName="logos";
-                  vars_t *uploads=request_get_uploads(wctx->request);
-                  if (vars_countn(uploads,logosFieldName)>0){
-                     extractLogosFromRequest(wctx,logosFieldName);
-                  }
-               }
-            }
-            if (allParamsAreValid) {
-               bool ok=writeConf(cfgFileId,&params);
-               CTX_CHK_BUFFER(50);
-               sprintf(wctx->buffer,tr((ok)?"cfgFileSaveOkFmt":"cfgFileSaveErrFmt"),cfgFile[cfgFileId].fileName);
-               printMessage(wctx,(ok)?"message":"alert",tr("setup"),wctx->buffer,false);
-               if (ok && (cfgFileId==CF_WEBIFCONF)){
-                  webifConf.alreadySet=false;
-               }
-               showForm=true;
-            }
-         }
-         wctx_printfn(wctx,"</div>\n",-1,0);
-      } else {
-         bool isNew;
-         if (!readConf(cfgFileId,&params,&isNew)) {
-            showForm=false;
-            CTX_CHK_BUFFER(50);
-            sprintf(wctx->buffer,tr("cfgFileDoesNotExistFmt"),cfgFileId,(cfgFileId>=0&&cfgFileId<cfgFileLength)?cfgFile[cfgFileId].fileName:"");
-            wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
-            printMessage(wctx,"alert",tr("cfgFileDoesNotExistFmt"),wctx->buffer,false);
-            wctx_printfn(wctx,"</div>\n",-1,0);
-         } else {
-            if (isNew){
-               wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
-               printMessage(wctx,"message",cfgFile[cfgFileId].fileName,tr("cfgFileIsNew"),false);
-               wctx_printfn(wctx,"</div>\n",-1,0);
-            }
-         }
-      }
-      if (showForm) {
-         if (cfgFileId==CF_WEBIFCONF && webifConf.noLogos){
-            wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
-            printMessage(wctx,"alert",tr("noLogosErrTitle"),tr("noLogosErrMessage"),false);
-            wctx_printfn(wctx,"</div>\n",-1,0);
-         }
-         wctx_printfn(wctx,"<form action=\"settings.kl1\" method=\"post\"",0,1);
-         if (cfgFileId==CF_WEBIFCONF){
-            wctx_printf(wctx,"enctype=\"multipart/form-data\"");
-         }
-         wctx_printf(wctx,">\n");
-         wctx_printf0(wctx,"<input type=\"hidden\" name=\"cfgFileId\" value=\"%d\" />\n",cfgFileId);
-         wctx_printfn(wctx,"<table id=\"cfgFile\" class=\"list\" summary=\"%s\">\n",0,1,""); //TODO summary
-         wctx_printf0(wctx,"<caption>%s</caption>\n",tr(cfgFile[cfgFileId].i18nKey));
-         wctx_printfn(wctx,"<tbody>\n",0,1);
-         int i;
-         const char *paramI18n;
-         for (i=0;i<params.length;i++) {
-            const char * paramValue;
-            param=params.entry+i;
-            paramConfig=getCfgParamConfig(cfgFileId,param);
-            //search by i18n key like "fileKey.paramName"
-            CTX_CHK_BUFFER(strlen(cfgFile[cfgFileId].i18nKey)+strlen(param->name)+1);
-            sprintf(wctx->buffer,"%s.%s",cfgFile[cfgFileId].i18nKey,param->name);
-            paramI18n=tr(wctx->buffer);
-            if (paramI18n==wctx->buffer) paramI18n=param->name;
-            wctx_printfn(wctx,"<tr>\n",0,1);
-            wctx_printf0(wctx,"<th>%s <input type=\"hidden\" name=\"paramName_%d\" value=\"%s\" /></th>\n",paramI18n,i,param->name);
-            wctx_printfn(wctx,"<td>\n",0,1);
-            if (param->isValid){
-               paramValue=param->value;
-            } else {
-               wctx_printf0(wctx,"<p class=\"alert\">");
-               wctx_printf(wctx,tr("cfgErrInvalidParamValueFmt"),param->value);
-               wctx_printf(wctx,"</p>\n");
-               if (paramConfig && paramConfig->defaultValue){
-                  paramValue=paramConfig->defaultValue;
-               }
-            };
-            if (param->comment) {
-               wctx_printfn(wctx,"<div class=\"boxRight\">\n",0,1);
-               wctx_printfn(wctx,"<div class=\"infobox infoboxCssHover infoLeft\">\n",0,1);
-               wctx_printf0(wctx,"<span class=\"ui-icon ui-icon-info\"></span>\n");
-               wctx_printfn(wctx,"<div class=\"infoWrapper infoCssHover\">\n",0,1);
-               wctx_printf0(wctx,"<div class=\"info\">%s</div>\n",CTX_HTML_ENCODE(param->comment,-1));
-               wctx_printfn(wctx,"</div>\n",-1,0);
-               wctx_printfn(wctx,"</div>\n",-1,0);
-               wctx_printfn(wctx,"</div>\n",-1,0);
-            }
-            if (!paramConfig || !paramConfig->printInput || !paramConfig->printInput(wctx,paramConfig,NULL,NULL,i,paramValue)){
-               wctx_printf0(wctx,"<input type=\"text\" name=\"paramValue_%d\" value=\"%s\" size=\"%d\" />\n"
-                  ,i,CTX_HTML_ENCODE((paramValue)?param->value:"",-1),(paramValue)?strlen(paramValue)+5:40);
-            }
-            wctx_printfn(wctx,"</td>\n",-1,0);
-            wctx_printfn(wctx,"</tr>\n",-1,0);
-         }
-         if (cfgFileId==CF_WEBIFCONF){
-            wctx_printfn(wctx,"<tr>\n",0,1);
-            wctx_printf0(wctx,"<th>%s</th>\n",tr("cfgWi.logos"));
-            wctx_printfn(wctx,"<td>\n",0,1);
-            wctx_printf0(wctx,"<input id=\"logos_file\" type=\"file\" name=\"logos\"/>");
-            wctx_printfn(wctx,"</td>\n",-1,0);
-            wctx_printfn(wctx,"</tr>\n",-1,0);
-         }
-         wctx_printfn(wctx,"<tr class=\"buttons\">\n",0,1);
-         wctx_printfn(wctx,"<td colspan=\"2\">\n",0,1);
-         wctx_printf0(wctx,
-            "<button id=\"confirm\" class=\"confirm ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
-               "<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
-            "</button>\n"
-            ,PA_SAVE_CONFIG,tr("saveConfig"));
-         wctx_printfn(wctx,"</td>\n",-1,0);
-         wctx_printfn(wctx,"</tr>\n",-1,0);
-         wctx_printfn(wctx,"</tbody>\n",-1,0);
-         wctx_printfn(wctx,"</table>\n",-1,0);
-         wctx_printfn(wctx,"</form>\n",-1,0);
-      }
-      wctx_printfn(wctx,"</div>\n",-1,0); //level2
-      wctx_printfn(wctx,"</div>\n",-1,0); //level2-div
-      finishHtmlPage(wctx);
-      freeCfgParamList(&params);
-   }
+		if (vwctx.currentAction==PA_SAVE_CONFIG) {
+			wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
+			if (webifConf.configChangeDisabled) {
+				printMessage(wctx,"alert",tr("setup"),tr("cfgFileChangeDisabledErr"),false);
+			} else {
+				char argName[15];
+				for(params.length=0;;params.length++){
+					sprintf(argName,"paramName_%d",params.length);
+					if (!vars_countn(args,argName)) break;
+				}
+				if (params.length==0){
+					printMessage(wctx,"alert",tr("setup"),tr("cfgErrParamNameValueMismatch"),false);
+				} else {
+					params.entry=malloc(params.length*sizeof(cfgParam_t));
+					int i;
+					for (i=0,param=params.entry;i<params.length;i++,param++){
+						initCfgParam(param);
+						snprintf(argName,15,"paramName_%d",i);
+						param->name=strdup(vars_get_value(args,argName));
+						sprintf(argName,"paramValue_%d",i);
+						const char *argValue=vars_get_value(args,argName);
+						param->value=(argValue)?strdup(argValue):NULL;
+						param->isValid=true;
+						paramConfig=getCfgParamConfig(cfgFileId,param);
+						if (paramConfig && paramConfig->validate!=NULL){
+							paramConfig->validate(paramConfig,param);
+						}
+						if (!param->isValid){
+							allParamsAreValid=false;
+						}
+					}
+					if (cfgFileId==CF_WEBIFCONF){
+						const char *logosFieldName="logos";
+						vars_t *uploads=request_get_uploads(wctx->request);
+						if (vars_countn(uploads,logosFieldName)>0){
+							extractLogosFromRequest(wctx,logosFieldName);
+						}
+					}
+				}
+				if (allParamsAreValid) {
+					bool ok=writeConf(cfgFileId,&params);
+					CTX_CHK_BUFFER(50);
+					sprintf(wctx->buffer,tr((ok)?"cfgFileSaveOkFmt":"cfgFileSaveErrFmt"),cfgFile[cfgFileId].fileName);
+					printMessage(wctx,(ok)?"message":"alert",tr("setup"),wctx->buffer,false);
+					if (ok && (cfgFileId==CF_WEBIFCONF)){
+						webifConf.alreadySet=false;
+						readWebifConf();
+					}
+					showForm=true;
+				}
+			}
+			wctx_printfn(wctx,"</div>\n",-1,0);
+		} else {
+			bool isNew;
+			if (!readConf(cfgFileId,&params,&isNew)) {
+				showForm=false;
+				CTX_CHK_BUFFER(50);
+				sprintf(wctx->buffer,tr("cfgFileDoesNotExistFmt"),cfgFileId,(cfgFileId>=0&&cfgFileId<cfgFileLength)?cfgFile[cfgFileId].fileName:"");
+				wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
+				printMessage(wctx,"alert",tr("cfgFileDoesNotExistFmt"),wctx->buffer,false);
+				wctx_printfn(wctx,"</div>\n",-1,0);
+			} else {
+				if (isNew){
+					wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
+					printMessage(wctx,"message",cfgFile[cfgFileId].fileName,tr("cfgFileIsNew"),false);
+					wctx_printfn(wctx,"</div>\n",-1,0);
+				}
+			}
+		}
+		if (showForm) {
+			if (cfgFileId==CF_WEBIFCONF && webifConf.noLogos){
+				wctx_printfn(wctx,"<div class=\"messageDialog\">\n",0,1);
+				printMessage(wctx,"alert",tr("noLogosErrTitle"),tr("noLogosErrMessage"),false);
+				wctx_printfn(wctx,"</div>\n",-1,0);
+			}
+			wctx_printfn(wctx,"<form action=\"settings.kl1\" method=\"post\"",0,1);
+			if (cfgFileId==CF_WEBIFCONF){
+				wctx_printf(wctx,"enctype=\"multipart/form-data\"");
+			}
+			wctx_printf(wctx,">\n");
+			wctx_printf0(wctx,"<input type=\"hidden\" name=\"cfgFileId\" value=\"%d\" />\n",cfgFileId);
+			wctx_printfn(wctx,"<table id=\"cfgFile\" class=\"list\" summary=\"%s\">\n",0,1,""); //TODO summary
+			wctx_printf0(wctx,"<caption>%s</caption>\n",tr(cfgFile[cfgFileId].i18nKey));
+			wctx_printfn(wctx,"<tbody>\n",0,1);
+			int i;
+			const char *paramI18n;
+			for (i=0;i<params.length;i++) {
+				const char * paramValue;
+				param=params.entry+i;
+				paramConfig=getCfgParamConfig(cfgFileId,param);
+				//search by i18n key like "fileKey.paramName"
+				CTX_CHK_BUFFER(strlen(cfgFile[cfgFileId].i18nKey)+strlen(param->name)+1);
+				sprintf(wctx->buffer,"%s.%s",cfgFile[cfgFileId].i18nKey,param->name);
+				paramI18n=tr(wctx->buffer);
+				if (paramI18n==wctx->buffer) paramI18n=param->name;
+				wctx_printfn(wctx,"<tr>\n",0,1);
+				wctx_printf0(wctx,"<th>%s <input type=\"hidden\" name=\"paramName_%d\" value=\"%s\" /></th>\n",paramI18n,i,param->name);
+				wctx_printfn(wctx,"<td>\n",0,1);
+				info("name:%s, value:%s, valid:%d",param->name,param->value,param->isValid);
+				if (param->isValid){
+					paramValue=param->value;
+				} else {
+					wctx_printf0(wctx,"<p class=\"alert\">");
+					wctx_printf(wctx,tr("cfgErrInvalidParamValueFmt"),param->value);
+					wctx_printf(wctx,"</p>\n");
+					if (paramConfig && paramConfig->defaultValue){
+						paramValue=paramConfig->defaultValue;
+					}
+				};
+				if (param->comment) {
+					wctx_printfn(wctx,"<div class=\"boxRight\">\n",0,1);
+					wctx_printfn(wctx,"<div class=\"infobox infoboxCssHover infoLeft\">\n",0,1);
+					wctx_printf0(wctx,"<span class=\"ui-icon ui-icon-info\"></span>\n");
+					wctx_printfn(wctx,"<div class=\"infoWrapper infoCssHover\">\n",0,1);
+					wctx_printf0(wctx,"<div class=\"info\">%s</div>\n",CTX_HTML_ENCODE(param->comment,-1));
+					wctx_printfn(wctx,"</div>\n",-1,0);
+					wctx_printfn(wctx,"</div>\n",-1,0);
+					wctx_printfn(wctx,"</div>\n",-1,0);
+				}
+				if (!paramConfig || !paramConfig->printInput || !paramConfig->printInput(wctx,paramConfig,NULL,NULL,i,paramValue)){
+					printInputText(wctx,paramConfig,NULL,NULL,i,(paramValue)?param->value:NULL);
+				}
+				wctx_printfn(wctx,"</td>\n",-1,0);
+				wctx_printfn(wctx,"</tr>\n",-1,0);
+			}
+			if (cfgFileId==CF_WEBIFCONF){
+				wctx_printfn(wctx,"<tr>\n",0,1);
+				wctx_printf0(wctx,"<th>%s</th>\n",tr("cfgWi.logos"));
+				wctx_printfn(wctx,"<td>\n",0,1);
+				wctx_printf0(wctx,"<input id=\"logos_file\" type=\"file\" name=\"logos\"/>");
+				wctx_printfn(wctx,"</td>\n",-1,0);
+				wctx_printfn(wctx,"</tr>\n",-1,0);
+			}
+			wctx_printfn(wctx,"<tr class=\"buttons\">\n",0,1);
+			wctx_printfn(wctx,"<td colspan=\"2\">\n",0,1);
+			wctx_printf0(wctx,
+				"<button id=\"confirm\" class=\"confirm ui-state-default button-i-t\" name=\"a\" type=\"submit\" value=\"%d\" >"
+					"<div><span class=\"ui-icon ui-icon-check\">&nbsp;</span>%s</div>"
+				"</button>\n"
+				,PA_SAVE_CONFIG,tr("saveConfig"));
+			wctx_printfn(wctx,"</td>\n",-1,0);
+			wctx_printfn(wctx,"</tr>\n",-1,0);
+			wctx_printfn(wctx,"</tbody>\n",-1,0);
+			wctx_printfn(wctx,"</table>\n",-1,0);
+			wctx_printfn(wctx,"</form>\n",-1,0);
+		}
+		wctx_printfn(wctx,"</div>\n",-1,0); //level2
+		wctx_printfn(wctx,"</div>\n",-1,0); //level2-div
+		finishHtmlPage(wctx);
+		freeCfgParamList(&params);
+	}
 	freeCtx(wctx);
 %>

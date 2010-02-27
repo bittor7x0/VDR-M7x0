@@ -1,0 +1,28 @@
+table#commands {
+	width:94%;
+	margin:0 3%;
+}
+table#commands col.menu {
+	width:25%;
+}
+table#commands td {
+	vertical-align:top;
+}
+ul.commands li.command {
+	background-color:transparent;
+	border:none;
+	margin:0.1em 0;
+	list-style-position:outside;
+	list-style-type:disc;
+	padding-left:0.5em;
+}
+ul.commands ul.commands li.command {
+	list-style-type:circle;
+	margin-left:1em;
+}
+iframe#result {
+	width:100%;
+	height:600px;
+	border:1px solid #303030;
+	background-color:#F0F0F0;
+}

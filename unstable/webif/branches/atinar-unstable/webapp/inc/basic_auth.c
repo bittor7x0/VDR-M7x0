@@ -3,7 +3,6 @@
 #include "conf.h"
 
 bool is_connected(wcontext_t *wctx){
-	info("is_connected");
 	const char *valeur=NULL;
 	int i;
 	char *decode;
@@ -13,14 +12,12 @@ bool is_connected(wcontext_t *wctx){
 	
 	//get login and password
 	valeur = request_get_field_value(wctx->request,"Authorization");
-	info("valeur:%s",valeur);
 	
 	if (valeur!=NULL) {
 		//remove the "Basic " word of base64 string
 		valeur += 6;
 
 		decode = base64decode(valeur);
-		info("decode: %s",decode);
 		
 		//distinguish the login and the password
 		char *p;
@@ -33,7 +30,6 @@ bool is_connected(wcontext_t *wctx){
 					break;
 			}
 		}
-		info("user: %s, password: %s",user,password);
 		
 		//compare the login with a static string
 		if (user && password){
@@ -45,14 +41,12 @@ bool is_connected(wcontext_t *wctx){
 	}
 	if (!result){
 		//the user is refused
-		info("1");
 		response_set_status(wctx->response, HTTP_STATUS_UNAUTHORIZED);
 		response_set_field(wctx->response,"WWW-Authenticate", "Basic realm=\"Identification\"");
 		response_set_field(wctx->response,"Cache-Control","no-cache");
 		response_set_field(wctx->response,"Connection","close");
 		//HTML page for the client
 		io_printf(wctx->out,"<html><head><title>Autentificación fallida</title></head><body><p class=\"alert\">No autorizado</p></body></html>");
-		info("2");
 	}
 	return result;
 }

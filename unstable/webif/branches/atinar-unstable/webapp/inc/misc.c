@@ -490,6 +490,20 @@ void printMenu(wcontext_t *wctx){
 	wctx_printf0(wctx,"</li></ul>\n");
 }
 
+void printInput(wcontext_t *wctx, const char *type, const char *id, const char *name, int idx, const char *value, int l){
+	char tmpName[20];
+	if (name==NULL) {
+		snprintf(tmpName,20,"paramValue_%d",idx);
+		name=tmpName;
+	}
+	wctx_printf0(wctx,"<input type=\"%s\" ",type);
+	if (id!=NULL){
+		wctx_printf(wctx,"id=\"%s\" ",id);
+	}
+	wctx_printf(wctx,"name=\"%s\" value=\"%s\" size=\"%d\" />\n",name,(value)?CTX_HTML_ENCODE(value,-1):"",(l>0)?l:(value)?strlen(value)+3:10);
+}
+
+
 void finishHtmlPage(wcontext_t *wctx){
 	if (!wctx->isAjaxRequest){
 		if (wctx->decoratePage){

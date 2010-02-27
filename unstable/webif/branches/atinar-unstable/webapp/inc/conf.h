@@ -40,14 +40,13 @@ typedef struct cfgParam_s {
 } cfgParam_t;
 
 typedef struct cfgParamConfig_s cfgParamConfig_t;
-typedef void (*cfgParamValidate_t)(const cfgParamConfig_t * const paramConfig, cfgParam_t * const param);
-typedef bool (*cfgParamPrintInput_t)(wcontext_t *wctx,const cfgParamConfig_t * const paramConfig
-	,const char *inputId, const char *paramName,int paramIdx,const char *paramValue);
+typedef void (*cfgParamValidate_t)(const cfgParamConfig_t * const cfg, cfgParam_t * const param);
+typedef bool (*cfgParamPrintInput_t)(wcontext_t *wctx,const cfgParamConfig_t * const cfg, const char *id, const char *name,int idx,const char *value);
 
-bool printCheckbox(wcontext_t *wctx,const cfgParamConfig_t * const paramConfig
-	,const char *checkboxId, const char *paramName,int paramIdx,const char *paramValue);
-bool printSelect(wcontext_t *wctx,const cfgParamConfig_t * const paramConfig
-	,const char *selectId, const char *paramName,int paramIdx,const char *paramValue);
+bool printInputText(wcontext_t *wctx,const cfgParamConfig_t * const cfg, const char *id, const char *name,int idx,const char *value);
+bool printInputPassword(wcontext_t *wctx,const cfgParamConfig_t * const cfg, const char *id, const char *name,int idx,const char *value);
+bool printCheckbox(wcontext_t *wctx,const cfgParamConfig_t * const cfg, const char *id, const char *name,int idx,const char *value);
+bool printSelect(wcontext_t *wctx,const cfgParamConfig_t * const cfg, const char *id, const char *name,int idx,const char *value);
 
 struct cfgParamConfig_s {
 	const char *name;         // Name of the param
@@ -57,6 +56,7 @@ struct cfgParamConfig_s {
 	int indexOffset;
 	cfgParamValidate_t validate; //function to validate a param
 	cfgParamPrintInput_t printInput; //function to print an input for the param in a form
+	int size;
 	bool alreadySet;
 };
 

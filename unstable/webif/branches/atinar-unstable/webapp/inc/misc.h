@@ -209,6 +209,8 @@ void finishJavascript(wcontext_t *wctx);
 void printMenu(wcontext_t *wctx);
 void printMessage(wcontext_t *wctx, const char *cssClass, const char *title, const char *message, bool encode);
 void printList1TH(wcontext_t *wctx, const char *page, sortField_t aSortField, const char *label);
+void printInput(wcontext_t *wctx, const char *type, const char *id, const char *name, int idx, const char *value, int l);
+
 void finishHtmlPage(wcontext_t *wctx);
 bool extractEmbededFile(const char *src, const char *dst, bool overwrite);
 bool createParentFolders(const char *path, mode_t mode);

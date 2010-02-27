@@ -1,3 +1,8 @@
+2010-02-27
+* Subir archivos para ejecutar comandos (...).
+* Ocultar password.
+* Permitir especificar logintud para inputs en configuración.
+* Eliminar algunos logs.
 2010-02-21
 * Implementación de ejecución de comandos.
 * Permitir filtrado por categorías extendidas en búsquedas.
