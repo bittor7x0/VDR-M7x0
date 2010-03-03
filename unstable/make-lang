@@ -1,0 +1,80 @@
+###################
+# make-lang
+# © 2010 Rainer Piechura
+# rainer@piechura.de
+# Changes the default languages of the vdr
+# for the Siemens Gigaset m7xx Box
+###################
+LANG=$1
+#
+# check Language de|fr|en
+#
+if [ ! "$LANG" == "de" ] && [ ! "$LANG" == "fr" ] && [ !"$LANG" == "en" ]
+then
+	echo "Invalid Language, Usage: $0 de|fr|en "
+ 	exit
+fi
+#
+# Path of script etc.
+#
+BASE="${0%/*}"
+CONFDIR="$BASE/VDR-NG-FW"
+VDRCONFDIR="$CONFDIR/prg-fw-configs/vdr-m7x0/common/etc/vdr"
+PLUGINDIR="$VDRCONFDIR/plugins"
+SETUP="$VDRCONFDIR/setup.conf"
+RUNVDR="$VDRCONFDIR/runvdr"
+WEBIF="$CONFDIR/buildin/base-pro/common/etc/webif.conf"
+echo "Preparing vdr for Language: $LANG"
+if [ $LANG = "de" ]
+then
+	LANG_S="deu"
+	LANG_LC="de_DE"
+	LANG_OSD="1"	
+	LANG_WEB="1"
+fi
+if [ $LANG = "fr" ]
+then
+	LANG_S="fra"
+	LANG_LC="fr_FR"
+	LANG_OSD="6"
+	LANG_WEB="3"	
+fi
+if [ $LANG = "en" ]
+then
+	LANG_S="eng"
+	LANG_LC="en_US"
+	LANG_OSD="0"
+	LANG_WEB="0"	
+fi
+#
+# Change VDR Languages
+#
+sed -i -e "s/^AudioLanguages.*/AudioLanguages = $LANG_S/" $SETUP
+sed -i -e "s/^EPGLanguages.*/EPGLanguages = $LANG_S/" $SETUP
+sed -i -e "s/^OSDLanguage.*/OSDLanguage = $LANG_OSD/" $SETUP
+#
+# Change runvdr
+#
+sed -i -e "s/^export LC_ALL.*/export LC_ALL=$LANG_LC/" $RUNVDR
+#
+# Change WebIf
+#
+sed -i -e "s/^default language.*/default language = $LANG_WEB/" $WEBIF
+#
+# Change Setup Plugin
+#
+cp $PLUGINDIR/setup/open7x0-setup.xml $PLUGINDIR/setup/open7x0-setup_$LANG_S.xml
+#
+# Change Help Plugin
+#
+if [ -d  $PLUGINDIR/help/esl ]
+then
+	rm -rf $PLUGINDIR/help/esl
+fi
+if [ -d  $PLUGINDIR/help/$LANG_S ]
+then
+	:
+else
+	mkdir $PLUGINDIR/help/$LANG_S
+	cp $BASE/VDR-Plugins/Config-dir/plugins/help/eng/* $PLUGINDIR/help/$LANG_S/
+fi

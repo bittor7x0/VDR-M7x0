@@ -1,2 +1,117 @@
-Addons		New files with extra packs and patches for VDR-EM
-VDR-Plugins	All plugins that work with VDR-EM
+NOTE: This file is incomplete (also can have some error) and will be completed
+      gradually.
+
+
+What is VDR-NG-EM ?
+-------------------
+VDR-NG-EM is a Open Source firmware (except drivers) for Siemens Gigaset M740AV
+and M750T EPG, based in VDR-NG from open7x0.org with nice new features.
+Also is available a RootFS version for Lemmi firm with VDR binary and plugins.
+
+His full name is: Video Disk Recorder - Next Generation - Edición Mejorada
+Initially it was just a version translated to spanish called VDR-NG-ES and later
+were added some improvements and changed to VDR-NG-EM "Edición Mejorada" (in
+english "Enhanced Edition").
+
+
+Main new features in firmware
+-----------------------------
+* Speed up boot and shutdown.
+* USB hard disks to 2 times faster.
+* All binaries are stripped with sstrip tool (files smaller).
+* Removed all symbols and sections not needed in modules (tainted modules from
+  DiscVision are 20% smaller).
+* Kernel smaller and faster, with real time scheduler, low latency, network
+  hashes shrinked, NFS and CRC32 (JFFS2 is very fast with it) backports from 2.6
+  and many fixes and speed ups.
+* vsftpd as FTP server.
+* Hard disks spindown.
+* Swap partitions support.
+* New webif.
+* NTP client.
+* SAMBA.
+* Recover time from file on powerfail.
+* usbautomounter with SVDRP support, interval check on umount and new paremeters.
+
+You can change .config in Linux for add:
+* Bash shell.
+* BitTorrent client.
+* SquashFS with LZMA compression.
+* VPN.
+* Other programs as dvbsnoop, htop, ...
+
+
+Main new features in VDR
+------------------------
+* Backports from VDR 1.7.12.
+* Speed ups from VDR-Extensions-Patch-72 for VDR 1.7.7.
+* WarEagle icons for REC, timers, TV and radio channels, ...
+* Rename recordings, move to other directory, change priority and lifetime,
+  show estimated bitrate, ... only with press button number 8 about recording.
+* Sort recordings (button number 0) in recordings menu.
+* TimeShift.
+* commands.conf (at moment only in spanish).
+* Rescue menu x4 unplug from commands.conf.
+* Plugins can to replace the VDR mainmenus "Schedule", "Channels", "Timers" and
+  "Recordings" by a different implementation.
+* Player with x9 speeds.
+* Replaymode display with symbols (instead of characters) in Skin Classic.
+* Shows info, if it is possible to record an event in the timer menu of VDR.
+  The first column in the timer-list shows:
+     ( + ) recording will be most probably possible (enough space)
+     (+/-) recording may be possible
+     ( - ) recording will most probably fail (to less space)
+  The calculations also consider repeating timers.
+* New plugins and updated.
+
+
+Firmware builder for Windows
+----------------------------
+firmware-builder.bat
+firmware-builder-debug.cmd
+.....
+
+Autors:
+gambler: Original builder.
+jamc:    GUI with WizApp.
+bittor:  Clean up, cygwin 1.7.0, multi-language support, stripped modules, ...
+
+
+Firmware builder for Linux
+--------------------------
+svn checkout -q http://svn.assembla.com/svn/VDR-M7x0/unstable ./VDR-NG-EM
+cd ./VDR-NG-EM
+./make-fw
+cd VDR-NG-FW
+make
+
+Our original target were spanish users and many things are hardcoded in scripts
+and source code.
+Due to the interest of some german and french users we are gradually
+internationalizing the firmware, but there is still work to do.
+
+If you want to compile our firmware in German (de), French (fr) or English (en),
+Rainer Piechura has made a little script to do this work easier.
+
+Run this command after of "./make-fw":
+./make-lang de|fr|en
+
+If you have any problems or doubts you can send it to international forum:
+http://vdr-m7x0.foroactivo.com.es/international-forum-f19/
+
+
+Directory structure in SVN
+--------------------------
+Addons          New files with extra packs and patches for VDR-NG-EM
+Licenses        Licenses
+VDR-Plugins     All plugins that work with VDR-NG-EM
+webif           Web interface
+
+
+Licenses
+--------
+In directory Licenses:
+* firmware.txt                  Firmware with GPL v3
+* firmware-windows-builder.txt  Firmware Builder for Windows with ISC license.
+* WizApp.txt                    Wizard's Apprentice program used in new GUI
+                                Firmware Builder with Copyright of Dion Nicolaas.
