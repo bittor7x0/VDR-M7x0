@@ -1,0 +1,20 @@
+diff -Naur usbautomounter-orig/usbautomounter.c usbautomounter/usbautomounter.c
+--- usbautomounter-orig/usbautomounter.c	2010-02-17 09:06:35.000000000 +0100
++++ usbautomounter/usbautomounter.c	2010-03-02 17:32:53.730154523 +0100
+@@ -847,14 +847,11 @@
+ 			
+ 	int res=1;
+ 	if (!strcasecmp(argv[1],"mount")) {
+-		int autoboot = 0;
+-		if (argc >= 3 && !strcasecmp(argv[2],"alarm"))
+-			autoboot = 1;
+-		res=do_auto_all(0,autoboot,force_fsck);
++		res=do_auto_all(0,1,force_fsck);
+ 	}
+ 	if (!strcasecmp(argv[1],"usb") ||
+ 			!strcasecmp(argv[1],"remount")) {
+-		res=do_auto_all(1,0,force_fsck);
++		res=do_auto_all(1,1,force_fsck);
+ 	}
+ 
+ 	if (!strcasecmp(argv[1],"umount")) {
