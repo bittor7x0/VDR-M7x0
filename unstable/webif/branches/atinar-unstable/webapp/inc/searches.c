@@ -903,10 +903,10 @@ void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t con
 	cfgParamConfig_t searchModeCfg={"search.mode","0",
 		"search.phrase|search.allWords|search.atLeastOne|search.exactMatch|search.regex|search.fuzzy"
 		/*"|search.lt|search.let|search.gt|search.get|search.eq|search.neq"*/
-		,true,0,NULL,NULL,false};
-	cfgParamConfig_t checkboxCfg={"","0","0|1",false,0,NULL,NULL,false};
-	cfgParamConfig_t useChannelCfg={"","0","no|interval|channel.group|onlyFTA",true,0,NULL,NULL,false};
-	cfgParamConfig_t searchActionCfg={"","0","search.record|search.announce|search.switch",true,0,NULL,NULL,false};
+		,true,0,NULL,NULL,0,false};
+	cfgParamConfig_t checkboxCfg={"","0","0|1",false,0,NULL,NULL,0,false};
+	cfgParamConfig_t useChannelCfg={"","0","no|interval|channel.group|onlyFTA",true,0,NULL,NULL,0,false};
+	cfgParamConfig_t searchActionCfg={"","0","search.record|search.announce|search.switch",true,0,NULL,NULL,0,false};
 
 	char *paramValue;
 	struct tm sdate;

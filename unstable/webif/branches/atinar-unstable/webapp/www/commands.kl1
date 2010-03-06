@@ -109,7 +109,7 @@ static void command_exec(wcontext_t *wctx,const char *command){
 		if(WIFEXITED(status) && WEXITSTATUS(status)){
 			warn("cgi exited with [%d]", WEXITSTATUS(status));
 		}
-		pid=-1;
+		pid=(pid_t)-1;
 	} else {
 		warn_err("fork error");
 	}
@@ -168,7 +168,7 @@ err:
 				} else {
 					wctx_printfn(wctx,"<pre>\n",0,1);
 				}
-				enum {BUFSZ=1024};
+				enum {BUFSZ=4096};
 				char buffer[BUFSZ];
 				int level=0;
 				int levelant=-1;

@@ -256,7 +256,7 @@ char * wctxGetRequestParam(wcontext_t *wctx, vars_t *args, const char *argName, 
 			char *utf8_ptr = (char *)argValue;
 			size_t chars = iconv(iconv_cd, &utf8_ptr, &inbytesleft, &latin1_ptr, &outbytesleft);
 			if(chars == -1) {
-				warn("Error de conversion UTF8->ISO-8859-15");
+				warn("Error de conversion UTF8->ISO-8859-15 [%s]",argValue);
 			} else {
 				*latin1_ptr=0;
 				if (isACopy) *isACopy=true;
