@@ -1,6 +1,6 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 1.7.12 backports applied in this patch:
+VDR 1.7.13 backports applied in this patch:
 * Implemented handling the "Content Descriptor" (based on a patch from Rolf
   Ahrenberg). The 'classic' and 'sttng' skins display the textual
   representation of the content descriptors as "genre". The epg.data file stores
@@ -140,6 +140,12 @@ VDR 1.7.12 backports applied in this patch:
 * After a CLRE command, no further EPG processing is now done for 10 seconds,
   so that data sent with subsequent PUTE commands doesn't interfere with data
   from the broadcasters (suggested by Helmut Auer).
+* Fixed adding new transponders in case there is only a single channel in the
+  channel list (reported by Halim Sahin).
+* The file name in the "Timers" menu now shows only the base name of the recording
+  without the folder path (if any). Otherwise with long folder paths the actual
+  recording name was not visible at all.
+* cSafeFile::Close() now flushes the file (suggested by Stephan Austermühle).
 
 
 diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
@@ -1353,6 +1359,18 @@ diff -Naur VDR-NG-orig/eit.h VDR-NG/eit.h
    };
  
  #endif //__EIT_H
+diff -Naur VDR-NG-orig/eitscan.c VDR-NG/eitscan.c
+--- VDR-NG-orig/eitscan.c	2009-09-24 17:21:00.000000000 +0200
++++ VDR-NG/eitscan.c	2010-03-04 11:47:14.000000000 +0100
+@@ -141,7 +141,7 @@
+ 
+ void cEITScanner::Process(void)
+ {
+-  if ((Setup.EPGScanTimeout || !lastActivity) && Channels.MaxNumber() > 1) { // !lastActivity means a scan was forced
++  if (Setup.EPGScanTimeout || !lastActivity) { // !lastActivity means a scan was forced
+      time_t now = time(NULL);
+      if (now - lastScan > ScanTimeout && now - lastActivity > ActivityTimeout) {
+         if (Channels.Lock(false, 10)) {
 diff -Naur VDR-NG-orig/epg.c VDR-NG/epg.c
 --- VDR-NG-orig/epg.c	2010-02-10 16:57:22.000000000 +0100
 +++ VDR-NG/epg.c	2010-02-10 17:11:00.000000000 +0100
@@ -1902,7 +1920,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
    { "Setup.Miscellaneous$Initial channel",
      "Kanal beim Einschalten",
      "Privzeti kanal",
-@@ -7040,6 +7172,1766 @@
+@@ -7019,6 +7151,1766 @@
      "Starter EPG skanning",
      "Zaèíná prohledávání EPG",
    },
@@ -3998,7 +4016,28 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
                    return osContinue;
      default: break;
      }
-@@ -1259,7 +1261,7 @@
+@@ -879,6 +881,11 @@
+      strftime(buffer, sizeof(buffer), "%Y%m%d", &tm_r);
+      day = buffer;
+      }
++  const char *File = strrchr(timer->File(), '~');
++  if (File)
++     File++;
++  else
++     File = timer->File();
+   char *buffer = NULL;
+   asprintf(&buffer, "%c\t%d\t%s%s%s\t%02d:%02d\t%02d:%02d\t%s",
+                     !(timer->HasFlags(tfActive)) ? ' ' : timer->FirstDay() ? Setup.WarEagleIcons ? ICON_PFEIL : '!' : timer->Recording() ? Setup.WarEagleIcons ? ICON_REC : '#' : Setup.WarEagleIcons ? ICON_UHR : '>',
+@@ -890,7 +897,7 @@
+                     timer->Start() % 100,
+                     timer->Stop() / 100,
+                     timer->Stop() % 100,
+-                    timer->File());
++                    File);
+   char *buffer2 = buffer;
+   buffer = NULL;
+   asprintf(&buffer, "%c%s", diskStatus, buffer2);
+@@ -1259,7 +1266,7 @@
      case kRight|k_Repeat:
      case kRight:
                    DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
@@ -4007,7 +4046,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
                    return osContinue;
      default: break;
      }
-@@ -1698,6 +1700,7 @@
+@@ -1698,6 +1705,7 @@
      case cMenuScheduleItem::ssmThisThis: PrepareScheduleThisThis(Event, Channel); break;
      case cMenuScheduleItem::ssmThisAll:  PrepareScheduleThisAll(Event, Channel); break;
      case cMenuScheduleItem::ssmAllAll:   PrepareScheduleAllAll(Event, Channel); break;
@@ -4015,7 +4054,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
      }
    CurrentItem = (cMenuScheduleItem *)Get(Current());
    Sort();
-@@ -2075,7 +2078,7 @@
+@@ -2075,7 +2083,7 @@
      case kRight|k_Repeat:
      case kRight:
                    DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
@@ -4024,7 +4063,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
                    return osContinue;
      default: break;
      }
-@@ -2344,6 +2347,7 @@
+@@ -2344,6 +2352,7 @@
         case 1: SetHelp(tr("Button$Open")); break;
         case 2:
         case 3: SetHelp(RecordingCommands.Count() ? tr("Commands") : tr("Button$Play"), tr("Button$Rewind"), tr("Button$Delete"), NewHelpKeys == 3 ? tr("Button$Info") : NULL);
@@ -4032,7 +4071,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
         }
       helpKeys = NewHelpKeys;
       }
-@@ -2528,7 +2532,7 @@
+@@ -2528,7 +2537,7 @@
       cRecording *recording = GetRecording(ri);
       if (recording) {
          char *parameter = NULL;
@@ -4041,7 +4080,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
          cMenuCommands *menu;
          eOSState state = AddSubMenu(menu = new cMenuCommands(tr("Recording commands"), &RecordingCommands, parameter));
          free(parameter);
-@@ -3168,6 +3172,7 @@
+@@ -3168,6 +3177,7 @@
  
  class cMenuSetupRecord : public cMenuSetupBase {
  private:
@@ -4049,7 +4088,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    const char *DelTimeshiftRecValues[3];
    const char *RecordingsSortModeTexts[MAXSORTMODES];
  public:
-@@ -3176,6 +3181,9 @@
+@@ -3176,6 +3186,9 @@
  
  cMenuSetupRecord::cMenuSetupRecord(void)
  {
@@ -4059,7 +4098,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    DelTimeshiftRecValues[0]   = tr("request");
    DelTimeshiftRecValues[1]   = tr("no");
    DelTimeshiftRecValues[2]   = tr("yes");
-@@ -3190,6 +3198,7 @@
+@@ -3190,6 +3203,7 @@
    Add(new cMenuEditIntItem( tr("Setup.Recording$Primary limit"),             &data.PrimaryLimit, 0, MAXPRIORITY));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Default priority"),          &data.DefaultPriority, 0, MAXPRIORITY));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Default lifetime (d)"),      &data.DefaultLifetime, 0, MAXLIFETIME));
@@ -4067,7 +4106,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditIntItem( tr("Setup.Recording$Pause priority"),            &data.PausePriority, 0, MAXPRIORITY));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Pause lifetime (d)"),        &data.PauseLifetime, 0, MAXLIFETIME));
    Add(new cMenuEditBoolItem(tr("Setup.Recording$Use episode name"),          &data.UseSubtitle));
-@@ -3283,6 +3292,7 @@
+@@ -3283,6 +3297,7 @@
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. user inactivity (min)"), &data.MinUserInactivity));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$SVDRP timeout (s)"),          &data.SVDRPTimeout));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Zap timeout (s)"),            &data.ZapTimeout));
@@ -4075,7 +4114,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
    Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
-@@ -3909,8 +3919,6 @@
+@@ -3909,8 +3924,6 @@
  
  // --- cDisplayChannel -------------------------------------------------------
  
@@ -4084,7 +4123,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
  cDisplayChannel *cDisplayChannel::currentDisplayChannel = NULL;
  
  cDisplayChannel::cDisplayChannel(int Number, bool Switched)
-@@ -4146,7 +4154,7 @@
+@@ -4146,7 +4159,7 @@
           Refresh();
           break;
      case kNone:
@@ -4093,7 +4132,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
              channel = Channels.GetByNumber(number);
              if (channel)
                 NewChannel = channel;
-@@ -4389,7 +4397,7 @@
+@@ -4389,7 +4402,7 @@
           timeout.Set(TRACKTIMEOUT);
           break;
      case kOk:
@@ -4102,7 +4141,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
              oldTrack = -1; // make sure we explicitly switch to that track
           timeout.Set();
           break;
-@@ -4531,8 +4539,11 @@
+@@ -4531,8 +4544,11 @@
  bool cRecordControl::Process(time_t t)
  {
  //M7X0 BEGIN AK
@@ -4115,7 +4154,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    AssertFreeDiskSpace(timer->Priority());
    return true;
  //M7X0 END AK
-@@ -4977,7 +4988,8 @@
+@@ -4977,7 +4993,8 @@
           timeSearchActive = false;
           break;
      default:
@@ -5446,6 +5485,15 @@ diff -Naur VDR-NG-orig/tools.c VDR-NG/tools.c
    return buffer;
  }
  
+@@ -1121,6 +1122,8 @@
+         LOG_ERROR_STR(tempName);
+         result = false;
+         }
++     fflush(f);
++     fsync(fileno(f));
+      if (fclose(f) < 0) {
+         LOG_ERROR_STR(tempName);
+         result = false;
 diff -Naur VDR-NG-orig/tools.h VDR-NG/tools.h
 --- VDR-NG-orig/tools.h	2009-09-24 17:21:12.000000000 +0200
 +++ VDR-NG/tools.h	2010-02-10 16:59:02.000000000 +0100
@@ -5738,8 +5786,8 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
 +                if (!Interface->Confirm(tr("Press any key to cancel shutdown"), SHUTDOWNCANCELPROMPT, true))
                     // If final question was canceled, continue to be active:
                     break;
- 		   } else
-@@ -1192,7 +1200,7 @@
+ 		   } else {
+@@ -1194,7 +1202,7 @@
                      continue;
                      }
                   }
@@ -5748,7 +5796,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                   state = osEnd;
                }
             // TODO make the CAM menu stay open in case of automatic updates and have it return osContinue; then the following two lines can be removed again
-@@ -1212,6 +1220,7 @@
+@@ -1214,6 +1222,7 @@
                              DELETE_MENU;
                              cControl::Shutdown();
                              Menu = new cMenuMain(osRecordings);
@@ -5756,7 +5804,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
                              break;
               case osReplay: DELETE_MENU;
                              cControl::Shutdown();
-@@ -1319,12 +1328,12 @@
+@@ -1321,12 +1330,12 @@
                 ShutdownHandler.countdown.Cancel();
              }
  
@@ -5771,7 +5819,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
              if (ShutdownHandler.IsUserInactive(Soon) && ShutdownHandler.Retry(Soon) && !ShutdownHandler.countdown) {
                 if (ShutdownHandler.ConfirmShutdown(false) && !Setup.HotStandby)
                    // Time to shut down - start final countdown:
-@@ -1402,9 +1411,11 @@
+@@ -1404,9 +1413,11 @@
    ReportEpgBugFixStats();
    if (WatchdogTimeout > 0)
       dsyslog("max. latency time %d seconds", MaxLatencyTime);

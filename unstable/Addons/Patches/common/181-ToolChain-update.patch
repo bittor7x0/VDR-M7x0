@@ -1,0 +1,155 @@
+diff -Naur uclibc_build_env_orig/make-incs/binutils.mk uclibc_build_env/make-incs/binutils.mk
+--- uclibc_build_env_orig/make-incs/binutils.mk	2010-03-04 12:50:38.000000000 +0100
++++ uclibc_build_env/make-incs/binutils.mk	2010-02-22 18:19:57.000000000 +0100
+@@ -22,7 +22,7 @@
+ # $Id: binutils.mk 401 2009-03-26 12:29:09Z andreas $
+ #
+ 
+-BINUTILS_VERSION := 2.19.1
++BINUTILS_VERSION := 2.20
+ BINUTILS_PATCHES_DIR := $(PATCHES_DIR)/binutils/$(BINUTILS_VERSION)
+ 
+ BINUTILS_DIR := $(BUILD_DIR)/binutils-$(BINUTILS_VERSION)
+diff -Naur uclibc_build_env_orig/make-incs/busybox.mk uclibc_build_env/make-incs/busybox.mk
+--- uclibc_build_env_orig/make-incs/busybox.mk	2010-03-04 12:50:38.000000000 +0100
++++ uclibc_build_env/make-incs/busybox.mk	2010-02-22 18:19:41.000000000 +0100
+@@ -24,7 +24,7 @@
+ 
+ BUSYBOX_DEPS = $(BASE_BUILD_STAGEFILE)
+ 
+-BUSYBOX_VERSION := 1.14.3
++BUSYBOX_VERSION := 1.16.0
+ BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/$(BUSYBOX_VERSION)
+ 
+ BUSYBOX_FILE := busybox-$(BUSYBOX_VERSION).tar.bz2
+diff -Naur uclibc_build_env_orig/make-incs/e2fsprogs.mk uclibc_build_env/make-incs/e2fsprogs.mk
+--- uclibc_build_env_orig/make-incs/e2fsprogs.mk	2010-03-04 12:50:38.000000000 +0100
++++ uclibc_build_env/make-incs/e2fsprogs.mk	2010-02-22 18:20:17.000000000 +0100
+@@ -24,7 +24,7 @@
+ 
+ E2FSPROGS_DEPS = $(BASE_BUILD_STAGEFILE)
+ 
+-E2FSPROGS_VERSION := 1.41.8
++E2FSPROGS_VERSION := 1.41.10
+ E2FSPROGS_PATCHES_DIR := $(PATCHES_DIR)/e2fsprogs/$(E2FSPROGS_VERSION)
+ 
+ E2FSPROGS_FILE := e2fsprogs-$(E2FSPROGS_VERSION).tar.gz
+diff -Naur uclibc_build_env_orig/make-incs/gcc.mk uclibc_build_env/make-incs/gcc.mk
+--- uclibc_build_env_orig/make-incs/gcc.mk	2010-03-04 12:50:38.000000000 +0100
++++ uclibc_build_env/make-incs/gcc.mk	2010-02-26 08:52:56.000000000 +0100
+@@ -22,7 +22,7 @@
+ # $Id: gcc.mk 403 2009-08-11 22:40:16Z andreas $
+ #
+ 
+-GCC_VERSION := 4.4.1
++GCC_VERSION := 4.4.3
+ GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
+ 
+ GCC_FILE1 := gcc-core-$(GCC_VERSION).tar.bz2
+@@ -94,6 +94,7 @@
+ 			--with-gnu-as \
+ 			--with-ld=$(PREFIX_BIN)/$(UCLIBC_LD) \
+ 			--with-gnu-ld \
++			--with-system-zlib \
+ 			--target=$(UCLIBC_TARGET) \
+ 			--enable-languages=c \
+ 			--enable-__cxa_atexit \
+@@ -140,6 +141,7 @@
+ 			--with-sysroot=$(TARGET_ROOT) \
+ 			--with-gnu-as \
+ 			--with-gnu-ld \
++			--with-system-zlib \
+ 			--target=$(UCLIBC_TARGET) \
+ 			--enable-languages=c,c++ \
+ 			--enable-__cxa_atexit \
+diff -Naur uclibc_build_env_orig/make-incs/uclibc.mk uclibc_build_env/make-incs/uclibc.mk
+--- uclibc_build_env_orig/make-incs/uclibc.mk	2010-03-04 12:50:38.000000000 +0100
++++ uclibc_build_env/make-incs/uclibc.mk	2010-02-22 18:20:45.000000000 +0100
+@@ -22,7 +22,7 @@
+ # $Id: uclibc.mk 401 2009-03-26 12:29:09Z andreas $
+ #
+ 
+-UCLIBC_VERSION := 0.9.30.1
++UCLIBC_VERSION := 0.9.30.2
+ UCLIBC_IS_SNAPSHOT := n
+ UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/$(UCLIBC_VERSION)
+ 
+diff -Naur uclibc_build_env_orig/rootfs-file-lists/gcc.lst uclibc_build_env/rootfs-file-lists/gcc.lst
+--- uclibc_build_env_orig/rootfs-file-lists/gcc.lst	2010-03-04 12:50:37.000000000 +0100
++++ uclibc_build_env/rootfs-file-lists/gcc.lst	2010-03-01 09:17:31.000000000 +0100
+@@ -1,7 +1,7 @@
+ lib/libgcc_s.so.1      lib/libgcc_s.so.1      f 755 0 0 - - - - -
+ lib/libgcc_s.so.1      -                      s   - - - - - - - -
+ lib/libgcc_s.so        libgcc_s.so.1          l 777 0 0 - - - - -
+-lib/libstdc++.so.6.0.12 lib/libstdc++.so.6.0.12 f 755 0 0 - - - - -
+-lib/libstdc++.so.6.0.12 -                      s   - - - - - - - -
+-lib/libstdc++.so.6     libstdc++.so.6.0.12     l 777 0 0 - - - - -
+-lib/libstdc++.so       libstdc++.so.6.0.12     l 777 0 0 - - - - -
++lib/libstdc++.so.6.0.13 lib/libstdc++.so.6.0.13 f 755 0 0 - - - - -
++lib/libstdc++.so.6.0.13 -                      s   - - - - - - - -
++lib/libstdc++.so.6     libstdc++.so.6.0.13     l 777 0 0 - - - - -
++lib/libstdc++.so       libstdc++.so.6.0.13     l 777 0 0 - - - - -
+diff -Naur uclibc_build_env_orig/rootfs-file-lists/uclibc.lst uclibc_build_env/rootfs-file-lists/uclibc.lst
+--- uclibc_build_env_orig/rootfs-file-lists/uclibc.lst	2010-03-04 12:50:37.000000000 +0100
++++ uclibc_build_env/rootfs-file-lists/uclibc.lst	2010-03-01 09:00:32.000000000 +0100
+@@ -1,30 +1,30 @@
+-lib/ld-uClibc-0.9.30.1.so  lib/ld-uClibc-0.9.30.1.so  f 755 0 0 - - - - -
+-lib/ld-uClibc-0.9.30.1.so  -                        s   - - - - - - - -
+-lib/ld-uClibc.so.0       ld-uClibc-0.9.30.1.so      l 777 0 0 - - - - -
+-lib/libcrypt-0.9.30.1.so   lib/libcrypt-0.9.30.1.so   f 755 0 0 - - - - -
+-lib/libcrypt-0.9.30.1.so   -                        s   - - - - - - - -
+-lib/libcrypt.so.0        libcrypt-0.9.30.1.so       l 777 0 0 - - - - -
+-lib/libdl-0.9.30.1.so      lib/libdl-0.9.30.1.so      f 755 0 0 - - - - -
+-lib/libdl-0.9.30.1.so      -                        s   - - - - - - - -
+-lib/libdl.so.0           libdl-0.9.30.1.so          l 777 0 0 - - - - -
+-lib/libm-0.9.30.1.so       lib/libm-0.9.30.1.so       f 755 0 0 - - - - -
+-lib/libm-0.9.30.1.so       -                        s   - - - - - - - -
+-lib/libm.so.0            libm-0.9.30.1.so           l 777 0 0 - - - - -
+-lib/libnsl-0.9.30.1.so     lib/libnsl-0.9.30.1.so     f 755 0 0 - - - - -
+-lib/libnsl-0.9.30.1.so     -                        s   - - - - - - - -
+-lib/libnsl.so.0          libnsl-0.9.30.1.so         l 777 0 0 - - - - -
+-lib/libpthread-0.9.30.1.so lib/libpthread-0.9.30.1.so f 755 0 0 - - - - -
+-lib/libpthread-0.9.30.1.so -                        s   - - - - - - - -
+-lib/libpthread.so.0      libpthread-0.9.30.1.so     l 777 0 0 - - - - -
+-lib/libresolv-0.9.30.1.so  lib/libresolv-0.9.30.1.so  f 755 0 0 - - - - -
+-lib/libresolv-0.9.30.1.so  -                        s   - - - - - - - -
+-lib/libresolv.so.0       libresolv-0.9.30.1.so      l 777 0 0 - - - - -
+-lib/librt-0.9.30.1.so      lib/librt-0.9.30.1.so      f 755 0 0 - - - - -
+-lib/librt-0.9.30.1.so      -                        s   - - - - - - - -
+-lib/librt.so.0           librt-0.9.30.1.so          l 777 0 0 - - - - -
+-lib/libutil-0.9.30.1.so    lib/libutil-0.9.30.1.so    f 755 0 0 - - - - -
+-lib/libutil-0.9.30.1.so    -                        s   - - - - - - - -
+-lib/libutil.so.0         libutil-0.9.30.1.so        l 777 0 0 - - - - -
+-lib/libuClibc-0.9.30.1.so  lib/libuClibc-0.9.30.1.so  f 755 0 0 - - - - -
+-lib/libuClibc-0.9.30.1.so  -                        s   - - - - - - - -
+-lib/libc.so.0            libuClibc-0.9.30.1.so      l 777 0 0 - - - - -
++lib/ld-uClibc-0.9.30.2.so  lib/ld-uClibc-0.9.30.2.so  f 755 0 0 - - - - -
++lib/ld-uClibc-0.9.30.2.so  -                        s   - - - - - - - -
++lib/ld-uClibc.so.0       ld-uClibc-0.9.30.2.so      l 777 0 0 - - - - -
++lib/libcrypt-0.9.30.2.so   lib/libcrypt-0.9.30.2.so   f 755 0 0 - - - - -
++lib/libcrypt-0.9.30.2.so   -                        s   - - - - - - - -
++lib/libcrypt.so.0        libcrypt-0.9.30.2.so       l 777 0 0 - - - - -
++lib/libdl-0.9.30.2.so      lib/libdl-0.9.30.2.so      f 755 0 0 - - - - -
++lib/libdl-0.9.30.2.so      -                        s   - - - - - - - -
++lib/libdl.so.0           libdl-0.9.30.2.so          l 777 0 0 - - - - -
++lib/libm-0.9.30.2.so       lib/libm-0.9.30.2.so       f 755 0 0 - - - - -
++lib/libm-0.9.30.2.so       -                        s   - - - - - - - -
++lib/libm.so.0            libm-0.9.30.2.so           l 777 0 0 - - - - -
++lib/libnsl-0.9.30.2.so     lib/libnsl-0.9.30.2.so     f 755 0 0 - - - - -
++lib/libnsl-0.9.30.2.so     -                        s   - - - - - - - -
++lib/libnsl.so.0          libnsl-0.9.30.2.so         l 777 0 0 - - - - -
++lib/libpthread-0.9.30.2.so lib/libpthread-0.9.30.2.so f 755 0 0 - - - - -
++lib/libpthread-0.9.30.2.so -                        s   - - - - - - - -
++lib/libpthread.so.0      libpthread-0.9.30.2.so     l 777 0 0 - - - - -
++lib/libresolv-0.9.30.2.so  lib/libresolv-0.9.30.2.so  f 755 0 0 - - - - -
++lib/libresolv-0.9.30.2.so  -                        s   - - - - - - - -
++lib/libresolv.so.0       libresolv-0.9.30.2.so      l 777 0 0 - - - - -
++lib/librt-0.9.30.2.so      lib/librt-0.9.30.2.so      f 755 0 0 - - - - -
++lib/librt-0.9.30.2.so      -                        s   - - - - - - - -
++lib/librt.so.0           librt-0.9.30.2.so          l 777 0 0 - - - - -
++lib/libutil-0.9.30.2.so    lib/libutil-0.9.30.2.so    f 755 0 0 - - - - -
++lib/libutil-0.9.30.2.so    -                        s   - - - - - - - -
++lib/libutil.so.0         libutil-0.9.30.2.so        l 777 0 0 - - - - -
++lib/libuClibc-0.9.30.2.so  lib/libuClibc-0.9.30.2.so  f 755 0 0 - - - - -
++lib/libuClibc-0.9.30.2.so  -                        s   - - - - - - - -
++lib/libc.so.0            libuClibc-0.9.30.2.so      l 777 0 0 - - - - -
