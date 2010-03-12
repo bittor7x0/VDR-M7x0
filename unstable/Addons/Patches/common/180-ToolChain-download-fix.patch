@@ -1,3 +1,36 @@
+diff -Naur uclibc_build_env_orig/make-incs/m7x0-modules.mk uclibc_build_env/make-incs/m7x0-modules.mk
+--- uclibc_build_env_orig/make-incs/m7x0-modules.mk	2009-12-11 12:03:35.000000000 +0100
++++ uclibc_build_env/make-incs/m7x0-modules.mk	2010-03-12 09:32:05.818115034 +0100
+@@ -68,12 +68,12 @@
+ M7X0-MODULES-FW-m750s-VERSION := 2.4
+ M7X0-MODULES_FILE := fw-siemens-$(CONFIG_M7X0_TYPE)-$(M7X0-MODULES-FW-$(CONFIG_M7X0_TYPE)-VERSION).zip
+ M7X0-MODULES_DLFILE := $(DOWNLOAD_DIR)/$(M7X0-MODULES_FILE)
+-M7X0-REFERER_URL := http://gigaset.siemens.com/
++M7X0-REFERER_URL := http://gigaset.com/
+ 
+ ifeq ($(CONFIG_M7X0_TYPE),m740)
+-M7X0-MODULES_URL := http://shc-download.siemens.com/repository/1374/137469/Gigaset_M740_AV_V_2.4.exe
++M7X0-MODULES_URL := http://gigaset.com/medias/sys_master/Gigaset_M740_AV_V_2.4.exe
+ else ifeq ($(CONFIG_M7X0_TYPE),m750s)
+-M7X0-MODULES_URL := http://shc-download.siemens.com/repository/1374/137472/Gigaset_M750_S_V_2.4.exe
++M7X0-MODULES_URL := http://gigaset.com/medias/sys_master/Gigaset_M750_S_V_2.4.exe
+ else
+ $(error unknown system type given)
+ endif
+diff -Naur uclibc_build_env_orig/make-incs/siemens-gpl-src.mk uclibc_build_env/make-incs/siemens-gpl-src.mk
+--- uclibc_build_env_orig/make-incs/siemens-gpl-src.mk	2009-12-11 12:03:35.000000000 +0100
++++ uclibc_build_env/make-incs/siemens-gpl-src.mk	2010-03-12 09:33:46.309230523 +0100
+@@ -33,8 +33,8 @@
+ SIEMENS-BUILD-ENV_FILE := siemens-build_env.tar.gz
+ SIEMENS-BUILD-ENV_DLFILE = $(DOWNLOAD_DIR)/$(SIEMENS-BUILD-ENV_FILE)
+ 
+-SIEMENS-GPL-SRC_URL := http://gigaset.siemens.com/repository/1222/122244/gigaset_m750_gplsw_1_4_3_tar.bz2
+-SIEMENS-BUILD-ENV_URL := http://gigaset.siemens.com/repository/1237/123736/wavebox_build_env.tar.gz
++SIEMENS-GPL-SRC_URL := http://zenvoid.org/software/m7x0/siemens-m750-gpl-src.tar.bz2
++SIEMENS-BUILD-ENV_URL := http://zenvoid.org/software/m7x0/wavebox_build_env.tar.gz
+ # As the extracted archive is very big (around 1GB) and
+ # we need only a very small part of it we don't extracted fully
+ # BTW: This thing has wrong naming it should called siemens-gpl-trash ...
 diff -Naur uclibc_build_env_orig/hostutils-make-incs/cramfs.mk uclibc_build_env/hostutils-make-incs/cramfs.mk
 --- uclibc_build_env_orig/hostutils-make-incs/cramfs.mk	2009-12-11 12:03:31.000000000 +0100
 +++ uclibc_build_env/hostutils-make-incs/cramfs.mk	2010-02-15 12:19:20.957516987 +0100
