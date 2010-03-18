@@ -327,7 +327,7 @@ bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *cha
 	//swit-end
 	//action-end
 	//useAsSearchTimer-end
-	return;
+	return true;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);

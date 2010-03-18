@@ -143,9 +143,7 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 				}
 				wctx_printfn(wctx,"</div>\n",-1,0);
 			}
-			if (!wctx->isAjaxRequest){
-				wctx->currentAction=PA_SUMMARY;
-			}
+			wctx->currentAction=PA_SUMMARY;
 		}
 		if (wctx->currentAction==PA_EDIT || wctx->currentAction==PA_SEARCH_CREATE_FROM_EVENT) {
 			if (channels->length==0){
@@ -178,7 +176,7 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 				searchList_t searches;
 				getSearchList(&searches,channels,wctx->sortBy,wctx->sortDirection);
 				bool printHost=boolean(webifConf.numVDRs>1);
-				wctx_printfn(wctx,"<table id=\"searches\" class=\"level3-div\" summary=\"%s\">\n",0,1,tr("searches"));
+				wctx_printfn(wctx,"<table id=\"%s\" class=\"level3-div\" summary=\"%s\">\n",0,1,AJAX_REPLACE_PREFIX("searches"),tr("searches"));
 				wctx_printf0(wctx,"<col class=\"searchId number\"/>\n");
 				if (printHost) wctx_printf0(wctx,"<col class=\"hostId number\"/>\n");
 				wctx_printf0(wctx,"<col class=\"search\"/>\n");

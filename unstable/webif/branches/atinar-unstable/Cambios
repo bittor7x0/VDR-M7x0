@@ -1,3 +1,5 @@
+2010-03-18
+* Refrescar listado al editar búsqueda via ajax.
 2010-03-06
 * Faltaba parametro size en algunas struct cfgParamConfig_t en searches.c.
 * No interceptar EDIT cuando isReload en searches.kl1.
