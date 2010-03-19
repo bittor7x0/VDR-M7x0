@@ -199,6 +199,7 @@ char * strcatEx(char ** dest, const char * s);
 char *strreplace(char *s, const char *s1, const char *s2);
 
 bool fileExists(const char * fileName);
+bool dirExists(const char * dirName);
 void vdrDecode(char *dst, char *src, int l);
 void vdrEncode(char *dst, char *src, int l);
 void returnHttpNoContent(response_t *response);
