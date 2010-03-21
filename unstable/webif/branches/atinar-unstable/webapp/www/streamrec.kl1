@@ -30,16 +30,6 @@ static void dbg_streamrec_kl1(void) {
 }
 #endif
 
-static volatile sig_atomic_t cancel=false;
-
-static void sig_handler(int sig){
-	dbg("Got signal [%s]",sig);
-	if( sig==SIGPIPE){
-		dbg("Broken pipe");
-		cancel=true;
-	}
-}
-
 %><%
 
 #ifdef DEBUG
@@ -126,11 +116,11 @@ static void sig_handler(int sig){
 					// catch SIGPIPE signals
 					struct sigaction sa;
 					struct sigaction oldsa;
-					sa.sa_handler=sig_handler;		
+					sa.sa_handler=SIG_IGN;		
 					sigemptyset(&sa.sa_mask);
 					sigaction(SIGPIPE,&sa,&oldsa);
 
-					cancel=false; //modified by SIGPIPE handler
+					bool cancel=false;
 					int len,br,bw;
 					enum { BUFSZ = 4096 };
 					char buffer[BUFSZ];
@@ -149,6 +139,7 @@ static void sig_handler(int sig){
 									if (br>0) {
 										bw=io_write(out,buffer,br);
 										if (bw<0) {
+											info("socket cerrado");
 											cancel=true;
 										}
 										else {

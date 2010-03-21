@@ -42,19 +42,6 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 	}
 }
 
-static pid_t pid;
-
-static void sig_handler(int sig){
-	dbg("Got signal [%s]",sig);
-	if( sig==SIGPIPE){
-		if (pid>0){ //parent must kill child
-			info("Interrumpiendo pid:%d");
-			kill(pid,SIGKILL);
-			pid=-1;
-		}
-	}
-}
-
 static int cgi_set_blocking(int fd){
 	int flags;
 	warn_err_sif((flags = fcntl(fd, F_GETFL)) < 0);
@@ -69,23 +56,14 @@ err:
 static void command_exec(wcontext_t *wctx,const char *command){
 	enum {RD_END,WR_END};
 	int ipc[2] = { -1, -1 };
-
-	// detect browser closing channel
-	struct sigaction sa;
-	struct sigaction oldsa;
-	sa.sa_handler=sig_handler;		
-	sigemptyset(&sa.sa_mask);
-	sigaction(SIGPIPE,&sa,&oldsa);
+	pid_t pid;
 
 	response_disable_caching(wctx->response);
 	io_codecs_remove(response_io(wctx->response));
 	crit_err_if(pipe(ipc) < 0);
 	crit_err_if((pid = fork()) < 0);
 	if (pid==0) { 	/* child */
-		int fd;
 		close(ipc[RD_END]);
-		//close(STDIN_FILENO);
-		//for(fd=0;fd<255;fd++) close(fd);
 		crit_err_if(dup2(ipc[WR_END], STDOUT_FILENO) < 0);
 		//crit_err_if(dup2(ipc[WR_END], STDERR_FILENO) < 0);
 		info("comando: [%s]",command);
@@ -97,33 +75,46 @@ static void command_exec(wcontext_t *wctx,const char *command){
 		enum {BUFSZ=256};
 		char buffer[BUFSZ];
 
-		close(ipc[WR_END]);
-		dbg("antes del bucle");
-		while((cont=read(ipc[RD_END],buffer,BUFSZ))>0){
-			crit_err_if(wctx_printf(wctx,CTX_HTML_ENCODE(buffer,cont)));
-			crit_err_if(io_flush(wctx->out));
-		}
-		dbg("despues del bucle");
+		// establecer un sighandler para poder matar el proceso hijo si el cliente web cierra la conexion
+		struct sigaction sa;
+		struct sigaction oldsa;
+		sa.sa_handler=SIG_IGN;
+		sigfillset(&sa.sa_mask);
+		sigaction(SIGPIPE,&sa,&oldsa);
+		info("sigpipe handler establecido");
 
+		close(ipc[WR_END]);
+		bool cancel=false;
+		while(!cancel && (cont=read(ipc[RD_END],buffer,BUFSZ))>0){
+			if(wctx_printf(wctx,"%s",CTX_HTML_ENCODE(buffer,cont))!=0){
+				cancel=true;
+				break;
+			}
+			if(io_flush(wctx->out)!=0){
+				cancel=true;
+				break;
+			}
+		}
+		if (cancel) { 
+			//el cliente web ha cerrado el socket
+			//tenemos que indicar al proceso hijo que termine
+			info("Enviando SIGTERM a pid[%d]",pid);
+			kill(pid,SIGTERM);
+		}
 		waitpid(pid, &status, 0);
 		if(WIFEXITED(status) && WEXITSTATUS(status)){
-			warn("cgi exited with [%d]", WEXITSTATUS(status));
+			warn("proceso hijo terminado con estado [%d]", WEXITSTATUS(status));
 		}
-		pid=(pid_t)-1;
+
+		// restore SIGPIPE handler
+		sigaction(SIGPIPE,&oldsa,NULL);
+		info("sigpipe handler restaurado");
 	} else {
 		warn_err("fork error");
 	}
 err:
 	if(pid == 0){ /*child*/
 		_exit(1);
-	}
-	/*parent*/
-	// restore SIGPIPE handler
-	sigaction(SIGPIPE,&oldsa,NULL);
-
-	if (pid>0){
-		warn("Interrumpiendo pid:%d %s",pid,command);
-		kill(pid,SIGKILL);
 	}
 	if(ipc[0] != -1) close(ipc[0]);
 	if(ipc[1] != -1) close(ipc[1]);
