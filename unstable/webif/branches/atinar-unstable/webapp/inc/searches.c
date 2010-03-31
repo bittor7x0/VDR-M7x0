@@ -187,23 +187,34 @@ char *encodeCatValue(char * catvalue){
 }
 
 bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *channels, searchCatList_t * const cats, wcontext_t *wctx){
+	char *arg;
+	bool isACopy;
 	initSearch(search);
-	//TODO ignorar oldSearchStr aquí
-	const char *oldSearchStr=vars_get_value(args,"oldSearchStr");
-	if (oldSearchStr) parseSearch(oldSearchStr,search,channels);
-	const char *arg;
-	arg=vars_get_value(args,"search");
+	if (1){ 
+		//TODO evaluar si es necesario
+		char *oldSearchStr=wctxGetRequestParam(wctx,args,"oldSearchStr",&isACopy);
+		if (oldSearchStr) {
+			parseSearch(oldSearchStr,search,channels);
+			if (isACopy){
+				free(oldSearchStr);
+			}
+		}
+	}
+	arg=wctxGetRequestParam(wctx,args,"search",&isACopy);
+	info("search:%s",arg);
 	if (arg && (!search->search || strcmp(arg,search->search)!=0)) {
 		if (isFlagSet(SFI_SEARCH,search->my)) free(search->search);
 		if (strchr(arg,':')){
-			search->search=strdup(arg);
+			search->search=(isACopy)?arg:strdup(arg);
 			char *c=search->search;
 			for(c=strchr(c,':');c;c++) *c='|';
 			setFlag(SFI_SEARCH,search->my);
 		} else {
-			search->search=(char *)arg;
-			clearFlag(SFI_SEARCH,search->my);
+			search->search=arg;
+			setOrClearFlag(isACopy,SFI_SEARCH,search->my);
 		}
+	} else if (isACopy){
+		free(arg);
 	}
 	search->searchMode=vars_get_value_i(args,"searchMode");
 	search->fuzzyTolerance=vars_get_value_i(args,"fuzzyTolerance");
@@ -242,7 +253,7 @@ bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *cha
 		setFlag(SFL_USE_TIME,search->flags);
 		int k;
 		for (k=0;k<2;k++){
-			arg=vars_get_value(args,(k==0)?"startTime":"stopTime");
+			arg=(char *)vars_get_value(args,(k==0)?"startTime":"stopTime");
 			if (arg) {
 				int *time=(k==0)?&search->startTime:&search->stopTime;
 				char *c;
@@ -296,8 +307,13 @@ bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *cha
 	search->channelMin=vars_get_value_i(args,"channelMin")-1;
 	search->channelMax=vars_get_value_i(args,"channelMax")-1;
 	if (isFlagSet(SFI_CHANNEL_GROUP,search->my)) free(search->channelGroup);
-	clearFlag(SFI_CHANNEL_GROUP,search->my);
-	search->channelGroup=(search->useChannel==2)?(char *)vars_get_value(args,"channelGroup"):NULL;
+	if (search->useChannel==2) {
+		search->channelGroup=wctxGetRequestParam(wctx,args,"channelGroup",&isACopy);
+		setOrClearFlag(isACopy,SFI_CHANNEL_GROUP,search->my);
+	} else {
+		search->channelGroup=NULL;
+		clearFlag(SFI_CHANNEL_GROUP,search->my);
+	}
 
 	//useAsSearchTimer-start
 	setOrClearFlag(vars_get_value_i(args,"useAsSearchTimer"),SFL_USE_AS_SEARCH_TIMER,search->flags);
@@ -305,8 +321,9 @@ bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *cha
 	search->action=vars_get_value_i(args,"searchAction");
 	//record-start
 	if (isFlagSet(SFI_DIRECTORY,search->my)) free(search->directory);
-	clearFlag(SFI_DIRECTORY,search->my);
-	search->directory=(char *)vars_get_value(args,"directory");
+	search->directory=wctxGetRequestParam(wctx,args,"directory",&isACopy);
+	info("directorio:%s",search->directory);
+	setOrClearFlag(isACopy,SFI_DIRECTORY,search->my);
 	setOrClearFlag(vars_get_value_i(args,"useEpisode"),SFL_USE_EPISODE,search->flags);
 	search->priority=vars_get_value_i(args,"priority");
 	search->lifetime=vars_get_value_i(args,"lifetime");

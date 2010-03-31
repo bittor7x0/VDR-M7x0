@@ -45,9 +45,12 @@ webif.epgGridPageInit=function(){
 			}
 			if ($channelEventInfoDiv.length>0){
 				var $eventInfo=$('.eventInfo',$channelEventInfoDiv).empty().append($eventChildren.clone());
-				var desc=$eventInfo.find('.desc');
-				if (desc.length>0){
-					$eventInfo.find('.shortdesc').remove();
+				var $desc=$('.desc',$eventInfo);
+				if ($desc.length>0){
+					$shortdesc=$('.shortdesc',$eventInfo);
+					if ($shortdesc.length>0 && ($desc.text().toLowerCase().indexOf($shortdesc.text().toLowerCase())>-1)){
+						$shortdesc.remove();
+					}
 				}
 				$event.addClass('open');
 				$channelEventInfoDiv.prepareElements();

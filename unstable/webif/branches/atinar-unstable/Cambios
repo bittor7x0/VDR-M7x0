@@ -1,3 +1,6 @@
+2010-04-01
+* Convertir de UTF-8 en edición de búsquedas via ajax.
+* Ocultar shortdesc en guía de programación sólo si desc contiene el mismo texto.
 2010-03-21
 * Cambiada gestion de SIGPIPE en commands.kl1 y streamrec.kl1 para evitar seg-fault.
 2010-03-18

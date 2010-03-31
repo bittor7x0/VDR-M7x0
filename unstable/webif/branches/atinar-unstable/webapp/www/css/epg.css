@@ -109,6 +109,9 @@ h2.level2-top #logo {
 	font-weight:bold;
 	color:#444;
 }
+.eventInfo .shortdesc {
+	font-style:italic;
+}
 .level4 .eventInfo .fromTo .duration {
 	display:block;
 }
