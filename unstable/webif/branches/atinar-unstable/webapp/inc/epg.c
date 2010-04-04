@@ -356,7 +356,7 @@ void getEpgGridLimits(const char *arg_cstart,time_t *start, time_t *end){
 	sdate.tm_isdst=-1;
 	sdate.tm_zone=NULL;
 	*start=mktime(&sdate);
-	*end=*start+3*60*60;
+	*end=*start+webifConf.epgGridHours*60*60;
 }
 
 void printChangeDateButton(wcontext_t *wctx,char *ctime,bool isPrevious,int hours,bool isLi){
@@ -392,23 +392,19 @@ void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * con
 	strftime(cstart,13,gridDateFmtO,&sstart);
 	strftime(cend,13,gridDateFmtO,localtime(&gridEnd));
 
-	int totalWidth=webifConf.tvScheduleGridWidth;
-	int logoWidth=CHAN_LOGO_W;
-	int channelWidth=totalWidth-logoWidth;
-
 	if (!wctx->isAjaxRequest){
-		wctx_printfn(wctx,"<div id=\"grid-div\" class=\"level3-div\" style=\"width:%dpx\">\n",0,1,totalWidth);
+		wctx_printfn(wctx,"<div id=\"grid-div\" class=\"level3-div\">\n",0,1);
 		wctx_printfn(wctx,"<h3 id=\"grid-top\" class=\"level3-top\">\n",0,1);
 	}
 	wctx_printfn(wctx,"<span id=\"gridDate\">\n",0,1);
 	int hours;
 	hours=24;
-	if (gridStart>now){ //one day before
+	if (gridEnd>now+24*60*60){ //one day before
 		aTime=gridStart-hours*60*60;
 		strftime(cdatehour,13,gridDateFmtO,localtime(&aTime));
 		printChangeDateButton(wctx,cdatehour,true,hours,false);
 	}
-	wctx_printf0(wctx,"%s, %s",weekdays[langId][sstart.tm_wday],formatDate(&sstart,false));
+	wctx_printf0(wctx,"<span class=\"day\">%s, %s</span>",weekdays[langId][sstart.tm_wday],formatDate(&sstart,false));
 	if (1) {//one day after
 		aTime=gridStart+24*60*60;
 		strftime(cdatehour,13,gridDateFmtO,localtime(&aTime));
@@ -440,16 +436,26 @@ void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * con
 		wctx_printf(wctx,"<li class=\"container\">\n"); inctab(wctx);
 	}
 
-	wctx_printf0(wctx,"<ul id=\"timeTableMarks\" class=\"marks\" style=\"left:%dpx;width:%dpx;\">",logoWidth,channelWidth);
+	wctx_printf0(wctx,"<ul id=\"timeTableMarks\" class=\"marks\">");
 	time_t mark;
 	time_t step=60*60;
 	bool last=false;
 
+#ifndef STATIC_EPG_GRID
+	double left,width;
+#else
 	int left,width;
+#endif
+
 	for (i1=0,mark=gridStart;mark<gridEnd;i1++){
 		strftime(cmark,6,"%H:%M",localtime(&mark));
+#ifndef STATIC_EPG_GRID
+		left=((mark-gridStart)*100.0)/gridDuration;
+		wctx_printf(wctx,"<li id=\"timemark%d\" class=\"mark\" style=\"left:%.2f%%\">\n",i1,left); inctab(wctx);
+#else
 		left=((mark-gridStart)*channelWidth)/gridDuration;
 		wctx_printf(wctx,"<li id=\"timemark%d\" class=\"mark\" style=\"left:%dpx\">\n",i1,left); inctab(wctx);
+#endif
 		if (i1==0){
 			wctx_printf0(wctx,"<input type=\"text\" value=\"%s\" id=\"timepicker\" size=\"5\"/>\n",cmark);
 		} else {
@@ -489,17 +495,35 @@ void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * con
 			}
 			wctx_printfn(wctx,"</a>",-1,0);
 			wctx_printfn(wctx,"</div><!--\n",-1,0); //logo
-			wctx_printfn(wctx,"--><div class=\"channelContent\" style=\"width:%dpx\">\n",0,1,channelWidth);
+			bool compact;
+			wctx_printfn(wctx,"--><div class=\"channelContent\">\n",0,1);
 			wctx_printf0(wctx,"<ul class=\"channelEvents\">");
 			time_t previousEventEnd=gridStart;
 			for(i2=0,event=channelEvents->entry;i2<channelEvents->length;i2++,event++){
 				eventStart=(event->start>gridStart)?event->start:gridStart;
-				eventEnd=(event->start+event->duration); if (eventEnd>gridEnd) eventEnd=gridEnd;
+				eventEnd=(event->start+event->duration); 
+				if (eventEnd>gridEnd){
+					eventEnd=gridEnd;
+				}
+				if (i2<channelEvents->length-1){
+					if (eventEnd>event[1].start){
+						eventEnd=event[1].start;
+					}
+				}
 				eventDuration=eventEnd-eventStart;
+#ifndef STATIC_EPG_GRID
+				left=((eventStart-gridStart)*100.0)/gridDuration;
+				width=(eventDuration*100.0)/gridDuration;
+				compact=false;
+				wctx_printf(wctx,"<li id=\"e-%d\" class=\"event\" style=\"left:%.2f%%;width:%.2f%%\">\n",event->id,left,width);
+#else
 				left=((eventStart-gridStart)*channelWidth)/gridDuration;
 				width=(eventDuration*channelWidth)/gridDuration;
-				wctx_printf(wctx,"<li id=\"e-%d\" class=\"event\" style=\"left:%dpx;width:%dpx\">\n",event->id,left,width); inctab(wctx);
-				printEvent(wctx,event,channelEvents->channelNum,(width<55),TimerCreate,SearchCreate);
+				compact=width<55;
+				wctx_printf(wctx,"<li id=\"e-%d\" class=\"event\" style=\"left:%dpx;width:%dpx\">\n",event->id,left,width);
+#endif
+				inctab(wctx);
+				printEvent(wctx,event,channelEvents->channelNum,compact,TimerCreate,SearchCreate);
 				wctx_printfn(wctx,"</li>",-1,0); //event
 				previousEventEnd=eventEnd;
 			}
@@ -582,7 +606,9 @@ void printChannelEpg(wcontext_t *wctx, const char *id, hostConf_t *host, const i
 }
 
 void printTimersDiv(wcontext_t *wctx, const char *id, timerList_t * const timers, const time_t start, const time_t end){
-	if (!wctx->isAjaxRequest) wctx_printfn(wctx,"<div id=\"timers-div\" style=\"padding-left:%dpx;\">\n",0,1,CHAN_LOGO_W);
+	if (!wctx->isAjaxRequest) {
+		wctx_printfn(wctx,"<div id=\"timers-div\">\n",0,1);
+	}
 	wctx_printfn(wctx,"<div id=\"%s\">\n",0,1,id);
 	printTimerBars(wctx,timers,0,start,end-start,tr("timer.edit"),true);
 	wctx_printfn(wctx,"</div>\n",-1,0); //div.id
@@ -615,9 +641,7 @@ void printEvent(wcontext_t *wctx, epgEvent_t * const event, const int channelNum
 	startt=*localtime(&event->start);
 	endt=*localtime(&end_time);
 	wctx_printfn(wctx,"<div class=\"eventContent %s\">\n",0,1,(compact)?" compact":"");
-	if (compact){
-		wctx_printf0(wctx,"<span class=\"more titleLink\">+</span>\n");
-	}
+	wctx_printf0(wctx,"<span class=\"more\">+</span>\n");
 	if (TimerCreate || SearchCreate){
 		wctx_printfn(wctx,"<ul class=\"controls\"><!--\n",0,1);
 		if (TimerCreate) {

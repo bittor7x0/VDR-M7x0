@@ -39,12 +39,19 @@ h2.level2-top #logo {
 .level4 .event {
 	background: white none;
 	margin:0.5ex 0;
-	padding:0.25ex 0;
-	border-top:1px solid #949CA6;
+	padding:0.25ex;
+	/*border-top:1px solid #949CA6;*/
+}
+.event .timers {
+	padding:0 2px;
+}
+.event .eventContent {
+	padding:2px;
 }
 .level4 .event .eventContent *{
 	vertical-align:top;
 }
+/*
 .level4 .event .eventContent .fromTo {
 	display:inline-block;
 	width:6ex;
@@ -53,25 +60,29 @@ h2.level2-top #logo {
 	display:inline-block;
 	width:33ex;
 }
+*/
 .event .eventContent .controls {
 	display:none;
 }
-.event .compact * {
+.event .eventContent.compact * {
 	display:none;
 }
-.event .compact .more {
-	display:inline !important;
+.event .eventContent .more {
+	display:none;
 }
-.event .compact .more {
-	display:inline;
+.event .eventContent.compact .more {
+	display:inline!important;
+	text-decoration:none!important;
+	vertical-align:top;
+	line-height:0.8!important;
 }
 .event .eventInfo {
 	display:none;
 }
-.fullEvent .eventInfo {
+.event.full .eventInfo {
 	display:block;
-	background-color:#FFEFAF;
-	margin:2px;
+	/*background-color:#FFEFAF;*/
+	background-color:PeachPuff;
 	padding:2px;
 	-moz-border-radius:2px;
 	-webkit-border-radius:2px;

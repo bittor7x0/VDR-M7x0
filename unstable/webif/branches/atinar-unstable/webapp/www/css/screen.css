@@ -6,9 +6,9 @@
 * {
 	margin:0;
 	padding:0;
-	box-sizing:content-box;
-	-moz-box-sizing:content-box;
-	-webkit-box-sizing:content-box;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
 }
 body {
 	color:black;
@@ -302,7 +302,8 @@ h3.level3-top,
 	padding:0.5ex;
 	margin:0.5ex;
 	font-size:1em;
-	background-color:#ffefaf;
+	/*background-color:#ffefaf;*/
+	background-color:PeachPuff;
 	vertical-align:top;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;

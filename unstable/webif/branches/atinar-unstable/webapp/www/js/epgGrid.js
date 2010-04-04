@@ -1,6 +1,25 @@
+webif.compactEvents=function(){
+	$("#grid .eventContent").each(function(i){
+			$eventContent=$(this);
+			if ($eventContent.width()>55){
+				$eventContent.removeClass('compact');
+			} else {
+				$eventContent.addClass('compact');
+			}
+		}
+	);
+}
+$.fn.prepareElements=function(){
+	webif.compactEvents();
+	return this.defaultPrepareElements();
+	return this;
+};
 webif.epgGridPageInit=function(){
 	this.prepareHiddenDiv();
-	$('body').prepareElements();
+	$(window).bind("resize", function(e){
+		webif.compactEvents();
+	});
+ 	$('body').prepareElements();
 	$('#datepicker').datepicker({
 		showOn: 'button', 
 		buttonImage: webif.images.calendar, 

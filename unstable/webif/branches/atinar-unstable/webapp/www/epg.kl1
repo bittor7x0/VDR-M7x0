@@ -109,14 +109,6 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 			wctx_printfn(wctx,"<label>%s\n",0,1,tr("channel"));
 			printChannelListSelect(wctx,"channelNum","channelNum",channels,channelNum,"this.form.submit();");
 			wctx_printfn(wctx,"</label>\n",-1,0);
-			/*
-			wctx_printf0(wctx,
-				"<button type=\"submit\" class=\"change button-i-t ui-state-default\">"
-					"<div>"
-						"<span class=\"ui-icon ui-icon-shuffle\">&nbsp;</span>%s"
-					"</div>"
-				"</button>\n",tr("change"));
-			*/
 			wctx_printfn(wctx,"</form>\n",-1,0);
 			wctx_printfn(wctx,"</div>\n",-1,0); //level3-top
 

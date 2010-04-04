@@ -112,15 +112,16 @@ typedef struct webifConf_s {
 	int defaultMarginStop;
 	int videoWidth;
 	int videoHeight;
-	int tvScheduleGridWidth;
+#ifdef STATIC_EPG_GRID
+	int epgGridWidth;
+#endif
+	int epgGridHours;
 	int channelLogoWidth;
 	char *www;
 	bool noLogos;
 	char user[30];
 	char password[30];
 } webifConf_t;
-
-#define CHAN_LOGO_W ((webifConf.noLogos)?80:webifConf.channelLogoWidth)
 
 extern webifConf_t webifConf;
 extern const cfgFile_t const cfgFile[];

@@ -750,7 +750,7 @@ void printTimerBars(wcontext_t *wctx, timerList_t *const timers, const int chann
 				isEnd=boolean(mend>=0);
 				anyMatch=true;
 				double left=(mstart>0)?100.0*mstart/duration:0.0;
-				double right=(mend>0)?100*mend/duration:0.0;
+				double right=(mend>0)?100.0*mend/duration:0.0;
 				double width=(100.0-left-right);
 				if (width<0.0) width=0;
 				wctx_printfn(wctx,"<div id=\"timer%d_%d\" class=\"timer\">\n",0,1,timer->id,++timer->count);
@@ -761,7 +761,7 @@ void printTimerBars(wcontext_t *wctx, timerList_t *const timers, const int chann
 				inctab(wctx);
 				wctx_printf0(wctx,"<span class=\"pb%s%s%s\""
 					,(isStart)?" pbstart":"", (isEnd)?" pbend":"", (isFlagSet(TF_ACTIVE,timer->flags))?" pbenabled":" pbdisabled");
-				wctx_printf(wctx," style=\"%s:%.0f%%;width:%.0f%%;\"",(isStart)?"right":"left",(isStart)?right:left,width);
+				wctx_printf(wctx," style=\"%s:%.2f%%;width:%.2f%%;\"",(isStart)?"right":"left",(isStart)?right:left,width);
 				wctx_printf(wctx,">\n");
 				inctab(wctx);
 				wctx_printf0(wctx,"&nbsp;\n");

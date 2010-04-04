@@ -1,3 +1,7 @@
+2010-04-04
+* La parrilla de programación ajusta el ancho de forma dinámica (funcionamiento antiguo compilando con directiva EPG_STATIC_GRID).
+* Los eventos de corta duración se marcan como 'compactos' dinámicamente mediante javascript.
+* En CSS cambiado 'box-sizing' a 'border-box' y añadidos selectores de intersección de clases '.clase1.clase2'.
 2010-04-01
 * Convertir de UTF-8 en edición de búsquedas via ajax.
 * Ocultar shortdesc en guía de programación sólo si desc contiene el mismo texto.

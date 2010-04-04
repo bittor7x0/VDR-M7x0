@@ -36,11 +36,7 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 	if (!wctx->isAjaxRequest){
 		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/jquery.timepickr.css\" media=\"screen\" />\n",webifConf.www);
 		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/epgGrid.css\" media=\"screen\" />\n",webifConf.www);
-		wctx_printfn(wctx,"<style type=\"text/css\">",0,1);
-		wctx_printf0(wctx,"#grid-div #channels div.logo {width:%dpx;}",CHAN_LOGO_W);
-		wctx_printf0(wctx,"#grid-div #channels div.logo img {width:%dpx;height:%dpx;}",webifConf.channelLogoWidth,webifConf.channelLogoWidth);
-		wctx_printf0(wctx,"#grid-div .channel .channelEvents {min-height:%dpx;}",webifConf.channelLogoWidth);
-		wctx_printfn(wctx,"</style>",-1,0);
+		wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"css/epgGridCss.kl1\" media=\"screen\" />\n",webifConf.www);
 
 		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.form-2.36.js\"></script>\n",webifConf.www);
 		wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.timepickr.min.js\"></script>\n",webifConf.www);
@@ -89,7 +85,7 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 				wctx_printf0(wctx,"\"%.3s\"%s\n",monthNames[langId][i],(i<11)?",":"");
 			}
 			wctx_printfn(wctx,"],\n",-1,0); //monthNamesShort
-			wctx_printf0(wctx,"buttonText: \"%s\",\n","Escoger dí­a"); //TODO i18n
+			wctx_printf0(wctx,"buttonText: \"%s\",\n","Escoger día"); //TODO i18n
 			wctx_printfn(wctx,"});\n",-1,0); //setDefaults
 		}
 		wctx_printfn(wctx,"</script>\n",-1,0);

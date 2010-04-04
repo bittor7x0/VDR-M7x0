@@ -261,9 +261,9 @@ char *wctxChannelFilename(wcontext_t *wctx, const char *channelName, bool urlEnc
 	}
 	*d=0;
 	if (urlEncode){
-		s=strdup(wctx->buffer);
-		CTX_URL_ENCODE(s,l,NULL);
-		free(s);
+		char *se=strdup(wctx->buffer);
+		CTX_URL_ENCODE(se,l,NULL);
+		free(se);
 	}
 	return wctx->buffer;
 }

@@ -11,7 +11,7 @@
 }     
 #grid-div.level3-div h3#grid-top.level3-top {
 	border:none;
-	padding-left:28px;
+	padding-left:6px;
 }
 #grid-div.level3-div #grid.level3 {
 	background-color:transparent;
@@ -40,20 +40,23 @@
 }
 #grid-div #timeTable { 
 	width:100%;	
-	height:28px;
 	position: relative;
 	font-weight:bold;
 	font-family:verdana;
 	font-size:11px;
 	background-color:#A8CDFF;
 	margin:3px 0;
+	overflow: hidden;
 	-moz-border-radius:3px;
 	-webkit-border-radius:3px;
-}   
+}
+#grid-div #timeTable .controls .change {
+	z-index:2;
+}
 #grid-div #timeTable .marks{
-	position:absolute;
-	left:64px;
-	top:0;
+	height:28px;
+	width:100%;
+	position:relative;
 }
 #grid-div #timeTable .marks .mark {
 	position:absolute;
@@ -65,8 +68,8 @@
 #grid-div #timeTable .marks .mark input {
 	position:absolute;
 	top:50%;
-	width:5em;
-	margin-left:-2.5em;
+	width:4em;
+	margin-left:-2em;
 	z-index:1;
 	text-align:center;
 }
@@ -87,8 +90,6 @@
 	top:50%;
 	margin-top:-9px;
 	display:block;
-	width:16px;
-	height:16px;
 }
 #grid-div #timeTable .previous .change {
 	left:6px;
@@ -118,7 +119,6 @@
 	border-top:1px solid #949CA6;
 }  
 #grid-div .channel .channelContent {
-	float:left;
 	position:relative;
 	background-color:#949CA6;
 }    
@@ -139,8 +139,11 @@
 }
 #grid-div .channel .channelEvents .event .eventContent { 
 	border-left:1px solid #949CA6;
+	height:100%;
 	padding:0.5em;
-	height:58px;
+}
+#grid-div .channel .channelEvents .event .eventContent.compact { 
+	padding:1px;
 }
 #grid-div .channel .eventInfoDiv {
 	width:100%;
@@ -159,7 +162,13 @@
 	margin:0;
 	padding:0.5em;
 }
-#grid-div .channel .eventInfo span.more {
+#grid-div .channel .eventContent .more {
+	color:#0d53b2;
+}
+#grid-div .channel .eventContent .more:hover {
+	cursor:pointer;
+}
+#grid-div .channel .eventInfo .more {
 	display:none;
 }
 h3#grid-top * {
@@ -167,7 +176,6 @@ h3#grid-top * {
 }
 h3#grid-top a.change {
 	display:inline-block;
-	width:16px;
 }
 h3#grid-top a.change .ui-icon {
 	display:block;
@@ -186,8 +194,9 @@ h3#grid-top a.change .ui-icon {
 	display:inline;
 	margin-left:0.5em;
 }
-#gridDate {
+#gridDate .day{
 	text-transform:capitalize;
+	padding: 0 1em;
 }
 #timers-div {
 	background-color:#A8CDFF;

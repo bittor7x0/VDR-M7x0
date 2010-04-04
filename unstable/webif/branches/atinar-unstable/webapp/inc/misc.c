@@ -188,6 +188,7 @@ bool initCtx(wcontext_t *wctx, pageNumber_t currentPage, session_t *session, req
 		langId=0;
 	}
 	setlocale(LC_ALL,locale[langId]);
+	setlocale(LC_NUMERIC,"POSIX"); //necesario para usar '.' como separador decimal (requerido en css)
 	return true;
 outOfMemory:
 	crit("Out of memory");
@@ -331,7 +332,7 @@ void returnHttpNoContent(response_t *response){
 }	
 
 void initHtmlDoc(wcontext_t *wctx){
-	response_set_content_type(wctx->response,"text/html; charset=ISO-8859-15");
+	response_set_content_type(wctx->response,"text/html; charset=ISO-8859-1");
 	response_set_field(wctx->response,"Content-Style-Type","text/css");
 	response_set_field(wctx->response,"Content-Script-Type","text/javascript");
 	wctx->ntabs=0;

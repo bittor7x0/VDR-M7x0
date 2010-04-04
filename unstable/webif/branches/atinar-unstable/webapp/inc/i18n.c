@@ -485,7 +485,16 @@ i18n_t i18n[]={
 		""
 		}
 	},
-	{	"cfgWi.epg_schedule_grid_width",
+	{	"cfgWi.epg_grid_hours",
+		{
+		"Epg schedule grid spanning hours",
+		"",
+		"Ancho en horas de la parrilla de programación",
+		""
+		}
+	},
+#ifdef STATIC_EPG_GRID
+	{	"cfgWi.epg_grid_width",
 		{
 		"Epg schedule grid width",
 		"",
@@ -493,6 +502,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
+#endif
 	{	"cfgWi.hosts",
 		{
 		"Hosts",

@@ -161,8 +161,11 @@ cfgParamConfig_t webifParamConfig[]={ //Keep sorted by name !!
 	{"use_external_www_folder","false","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 	{"video_width","640",NULL,false,0,NULL,NULL,4,false},
 	{"video_height","480",NULL,false,0,NULL,NULL,4,false},
-	{"epg_schedule_grid_width","900",NULL,false,0,NULL,NULL,5,false},
-	{"channel_logo_width","58",NULL,false,0,NULL,NULL,3,false},
+#ifdef STATIC_EPG_GRID
+	{"epg_grid_width","900",NULL,false,0,NULL,NULL,5,false},
+#endif
+	{"epg_grid_hours","4",NULL,false,0,NULL,NULL,5,false},
+	{"channel_logo_width","54",NULL,false,0,NULL,NULL,3,false},
 	{"user","",NULL,false,0,NULL,NULL,10,false},
 	{"password","",NULL,false,0,NULL,(cfgParamPrintInput_t)printInputPassword,10,false},
 };
@@ -219,7 +222,7 @@ cfgParamConfigList_t cfgParamConfig[] = { //Indexed by cfgFileId_t
 };
 
 const cfgFile_t fileMapping[] = {
-	{"cfgWi", "/etc/webif.conf"},
+	{"cfgWi", "/etc/webif/webif.conf"},
 	{"cfgRc", "/etc/rc.conf"},
 	{"vdrSetup", "/etc/vdr/setup.conf"},
 	{"cfgBa", "/etc/bootmenu/bm.local.boxamp.conf"},
@@ -235,7 +238,7 @@ const int fileMappingLength=sizeof(fileMapping)/sizeof(cfgFile_t);
 
 //TODO usar directamente fileMapping
 const cfgFile_t cfgFile[] = {//Indexed by cfgFileId_t
-	{"cfgWi", "/etc/webif.conf"},
+	{"cfgWi", "/etc/webif/webif.conf"},
 	{"cfgRc", "/etc/rc.conf"},
 	{"vdrSetup", "/etc/vdr/setup.conf"},
 	{"cfgBa", "/etc/bootmenu/bm.local.boxamp.conf"},
@@ -726,11 +729,19 @@ bool readWebifConf() {
 				} else {
 					webifConf.videoHeight=atoi(param->value);
 				}
-			} else if (strcmp(param->name,"epg_schedule_grid_width")==0) {
+#ifdef STATIC_EPG_GRID
+			} else if (strcmp(param->name,"epg_grid_width")==0) {
 				if (param->value==NULL || strlen(param->value)<1 ){
 					//TODO warn
 				} else {
-					webifConf.tvScheduleGridWidth=atoi(param->value);
+					webifConf.epgGridWidth=atoi(param->value);
+				}
+#endif
+			} else if (strcmp(param->name,"epg_grid_hours")==0) {
+				if (param->value==NULL || strlen(param->value)<1 ){
+					//TODO warn
+				} else {
+					webifConf.epgGridHours=atoi(param->value);
 				}
 			} else if (strcmp(param->name,"channel_logo_width")==0) {
 				if (param->value==NULL || strlen(param->value)<1 ){
