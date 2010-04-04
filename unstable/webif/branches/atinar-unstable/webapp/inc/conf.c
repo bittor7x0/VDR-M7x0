@@ -145,7 +145,7 @@ void validateHostsField(const cfgParamConfig_t * const cfg, cfgParam_t * const p
 
 webifConf_t webifConf;
 
-cfgParamConfig_t webifParamConfig[]={ //Keep sorted by name !!
+cfgParamConfig_t webifParamConfig[]={
 	{"always_close_svdrp","true","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 	{"deletion_disabled","false","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 	{"default language","-1","langBrowserDefined|langEnglish|langGerman|langSpanish|langFrench",true,-1,NULL,(cfgParamPrintInput_t)printSelect,0,false},
@@ -170,14 +170,14 @@ cfgParamConfig_t webifParamConfig[]={ //Keep sorted by name !!
 	{"password","",NULL,false,0,NULL,(cfgParamPrintInput_t)printInputPassword,10,false},
 };
 
-cfgParamConfig_t rcParamConfig[]={ //Keep sorted by name !!
+cfgParamConfig_t rcParamConfig[]={
 	{"ip","192.168.100.102",NULL,false,0,NULL,NULL,15,false},
 	{"net","inet","inet|DHCP",false,0,NULL,printSelect,0,false},
 	{"netdate","NO","NO|YES",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 	{"netmask","255.255.255.0",NULL,false,0,NULL,NULL,15,false},
 };
 
-cfgParamConfig_t vdrParamConfig[] = { //Keep sorted by name !!
+cfgParamConfig_t vdrParamConfig[] = {
 	{"AbortWhenPluginFails","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 	{"CutterAutoDelete","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 	{"DelTimeshiftRec","0","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
@@ -205,7 +205,7 @@ cfgParamConfig_t vdrParamConfig[] = { //Keep sorted by name !!
 	{"WarEagleIcons","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 };
 
-cfgParamConfig_t boxampParamConfig[] = { //Keep sorted by name !!
+cfgParamConfig_t boxampParamConfig[] = {
 	{"boxamp_bin","boxamp",NULL,false,0,NULL,NULL,10,false},
 	{"boxamp_mp3dir","/var/media/mp3",NULL,false,0,NULL,NULL,30,false},
 	{"boxamp_opts","-f ${boxamp_path}",NULL,false,0,NULL,NULL,30,false},
@@ -214,7 +214,7 @@ cfgParamConfig_t boxampParamConfig[] = { //Keep sorted by name !!
 	{"runboxamp","/var/media/pc2/boxamp/runboxamp",NULL,false,0,NULL,NULL,50,false},
 };
 
-cfgParamConfigList_t cfgParamConfig[] = { //Indexed by cfgFileId_t
+cfgParamConfigList_t cfgParamConfig[] = {
 	{true,sizeof(webifParamConfig)/sizeof(cfgParamConfig_t),webifParamConfig},
 	{false,sizeof(rcParamConfig)/sizeof(cfgParamConfig_t),rcParamConfig},
 	{false,sizeof(vdrParamConfig)/sizeof(cfgParamConfig_t),vdrParamConfig},
@@ -482,9 +482,13 @@ bool writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 		}
 		fclose(f);
 	}
-	for(i=0,param=params->entry;i<params->length;i++,param++) if (!param->written) {
-		fprintf(t,"%s=%s\n",param->name,param->value);
-		param->written=true;
+	for(i=0,param=params->entry;i<params->length;i++,param++) {
+		if (!param->written) {
+			if (param->value){
+				fprintf(t,"%s=%s\n",param->name,(param->value)?param->value:"");
+			}
+			param->written=true;
+		}
 	}
 	fclose(t);
 	char *backupName;

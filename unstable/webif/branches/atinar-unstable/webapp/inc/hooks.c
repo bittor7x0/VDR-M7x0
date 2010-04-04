@@ -15,6 +15,7 @@
 #include <klone/hook.h>
 #include <klone/io.h>
 #include <klone/utils.h>
+#include <stdio.h>
 #include <string.h>
 #include "hooks.h"
 #include "misc.h"
@@ -33,11 +34,26 @@ int onServerInit(void){
 			extractLogosFromFile(NULL,logos_tgz_dst);
 		}
 	}
+	renameWebifConf();
 	return 0;
 err:
 	return ~0;
 }
 
+/**
+ * Mueve la configuracion antigua a la nueva localizacion
+ */
+int renameWebifConf(void){
+	const char *oldConf="/etc/webif.conf";
+	const char *newConf="/etc/webif/webif.conf";
+	if (!fileExists(newConf) && fileExists(oldConf)){
+		dbg("Moviendo %s a %s",oldConf,newConf);
+		warn_err_if(rename(oldConf,newConf));
+	}
+	return 0;
+err:
+	return ~0;
+}
 
 /**
  * Acciones al crear un proceso hijo.
