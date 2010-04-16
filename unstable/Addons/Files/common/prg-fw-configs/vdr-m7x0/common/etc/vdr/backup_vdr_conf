@@ -94,7 +94,7 @@ case $1 in
 	    exit 3
 	else
 	    cp /etc/fw-version /tmp
-	    file_list=`ls $vdr_confdir/setup.conf $vdr_confdir/svdrphosts.conf $vdr_confdir/timers.conf $vdr_confdir/channels.conf $vdr_confdir/plugins/streamdevhosts.conf $vdr_confdir/plugins/MainMenu.conf $vdr_confdir/epgmodes.conf $vdr_confdir/plugins/rssreader.conf $vdr_confdir/plugins/scheduler/tasks.conf $vdr_confdir/keymacros.conf $vdr_confdir/plugins/playlists*.conf $vdr_confdir/plugins/epgsearch/*.conf $vdr_confdir/plugins/pin/*.conf $vdr_confdir/plugins/mp3sources.conf /etc/hosts /etc/rc.local.conf /etc/resolv.conf /etc/rc.conf /etc/samba/smb.conf /etc/ssmtp/ssmtp.conf /etc/ssmtp/revaliases /etc/ppp/chap-secrets /etc/ppp/options /etc/lircrc /etc/bootmenu/bm.local.boxamp.conf /etc/fstab /tmp/fw-version 2> /dev/null`
+	    file_list=`ls $vdr_confdir/setup.conf $vdr_confdir/svdrphosts.conf $vdr_confdir/timers.conf $vdr_confdir/channels.conf $vdr_confdir/plugins/streamdevhosts.conf $vdr_confdir/plugins/MainMenu.conf $vdr_confdir/epgmodes.conf $vdr_confdir/plugins/rssreader.conf $vdr_confdir/plugins/scheduler/tasks.conf $vdr_confdir/keymacros.conf $vdr_confdir/plugins/playlists*.conf $vdr_confdir/plugins/epgsearch/*.conf $vdr_confdir/plugins/pin/*.conf $vdr_confdir/plugins/mp3sources.conf /etc/hosts /etc/rc.local.conf /etc/resolv.conf /etc/rc.conf /etc/samba/smb.conf /etc/ssmtp/ssmtp.conf /etc/ssmtp/revaliases /etc/ppp/chap-secrets /etc/ppp/options /etc/lircrc /etc/bootmenu/bm.local.boxamp.conf /etc/fstab /tmp/fw-version /etc/webif.conf 2> /dev/null`
 	    file_list=$file_list`find /etc/webif -type f -regex ".*\.conf\|.*\.png" -exec echo -n " {}" \; 2> /dev/null`
 	    tar -cf "$conf_tar" $file_list 2> /tmp/tar_backup.$$.err
 	    if [ $? -eq 0 ]; then

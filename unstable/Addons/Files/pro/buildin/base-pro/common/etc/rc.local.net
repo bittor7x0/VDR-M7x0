@@ -48,6 +48,9 @@ fi
 
 if [ X"${webif_start}" != X"NO" ]; then
     echo -n ' starting webif'
+    if [ -f /etc/webif.conf -a ! -f /etc/webif/webif.conf ]; then
+        ( [ -d /etc/webif ] ||  mkdir /etc/webif ) && mv /etc/webif.conf /etc/webif/webif.conf
+    fi
     /usr/sbin/webifd &
 fi
 
