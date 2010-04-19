@@ -6,7 +6,7 @@ diff -Naur uclibc_build_env_orig/make-incs/binutils.mk uclibc_build_env/make-inc
  #
  
 -BINUTILS_VERSION := 2.19.1
-+BINUTILS_VERSION := 2.20
++BINUTILS_VERSION := 2.20.1
  BINUTILS_PATCHES_DIR := $(PATCHES_DIR)/binutils/$(BINUTILS_VERSION)
  
  BINUTILS_DIR := $(BUILD_DIR)/binutils-$(BINUTILS_VERSION)
@@ -18,7 +18,7 @@ diff -Naur uclibc_build_env_orig/make-incs/busybox.mk uclibc_build_env/make-incs
  BUSYBOX_DEPS = $(BASE_BUILD_STAGEFILE)
  
 -BUSYBOX_VERSION := 1.14.3
-+BUSYBOX_VERSION := 1.16.0
++BUSYBOX_VERSION := 1.16.1
  BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/$(BUSYBOX_VERSION)
  
  BUSYBOX_FILE := busybox-$(BUSYBOX_VERSION).tar.bz2
@@ -30,7 +30,7 @@ diff -Naur uclibc_build_env_orig/make-incs/e2fsprogs.mk uclibc_build_env/make-in
  E2FSPROGS_DEPS = $(BASE_BUILD_STAGEFILE)
  
 -E2FSPROGS_VERSION := 1.41.8
-+E2FSPROGS_VERSION := 1.41.10
++E2FSPROGS_VERSION := 1.41.11
  E2FSPROGS_PATCHES_DIR := $(PATCHES_DIR)/e2fsprogs/$(E2FSPROGS_VERSION)
  
  E2FSPROGS_FILE := e2fsprogs-$(E2FSPROGS_VERSION).tar.gz
@@ -70,7 +70,7 @@ diff -Naur uclibc_build_env_orig/make-incs/uclibc.mk uclibc_build_env/make-incs/
  #
  
 -UCLIBC_VERSION := 0.9.30.1
-+UCLIBC_VERSION := 0.9.30.2
++UCLIBC_VERSION := 0.9.30.3
  UCLIBC_IS_SNAPSHOT := n
  UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/$(UCLIBC_VERSION)
  
@@ -123,33 +123,33 @@ diff -Naur uclibc_build_env_orig/rootfs-file-lists/uclibc.lst uclibc_build_env/r
 -lib/libuClibc-0.9.30.1.so  lib/libuClibc-0.9.30.1.so  f 755 0 0 - - - - -
 -lib/libuClibc-0.9.30.1.so  -                        s   - - - - - - - -
 -lib/libc.so.0            libuClibc-0.9.30.1.so      l 777 0 0 - - - - -
-+lib/ld-uClibc-0.9.30.2.so  lib/ld-uClibc-0.9.30.2.so  f 755 0 0 - - - - -
-+lib/ld-uClibc-0.9.30.2.so  -                        s   - - - - - - - -
-+lib/ld-uClibc.so.0       ld-uClibc-0.9.30.2.so      l 777 0 0 - - - - -
-+lib/libcrypt-0.9.30.2.so   lib/libcrypt-0.9.30.2.so   f 755 0 0 - - - - -
-+lib/libcrypt-0.9.30.2.so   -                        s   - - - - - - - -
-+lib/libcrypt.so.0        libcrypt-0.9.30.2.so       l 777 0 0 - - - - -
-+lib/libdl-0.9.30.2.so      lib/libdl-0.9.30.2.so      f 755 0 0 - - - - -
-+lib/libdl-0.9.30.2.so      -                        s   - - - - - - - -
-+lib/libdl.so.0           libdl-0.9.30.2.so          l 777 0 0 - - - - -
-+lib/libm-0.9.30.2.so       lib/libm-0.9.30.2.so       f 755 0 0 - - - - -
-+lib/libm-0.9.30.2.so       -                        s   - - - - - - - -
-+lib/libm.so.0            libm-0.9.30.2.so           l 777 0 0 - - - - -
-+lib/libnsl-0.9.30.2.so     lib/libnsl-0.9.30.2.so     f 755 0 0 - - - - -
-+lib/libnsl-0.9.30.2.so     -                        s   - - - - - - - -
-+lib/libnsl.so.0          libnsl-0.9.30.2.so         l 777 0 0 - - - - -
-+lib/libpthread-0.9.30.2.so lib/libpthread-0.9.30.2.so f 755 0 0 - - - - -
-+lib/libpthread-0.9.30.2.so -                        s   - - - - - - - -
-+lib/libpthread.so.0      libpthread-0.9.30.2.so     l 777 0 0 - - - - -
-+lib/libresolv-0.9.30.2.so  lib/libresolv-0.9.30.2.so  f 755 0 0 - - - - -
-+lib/libresolv-0.9.30.2.so  -                        s   - - - - - - - -
-+lib/libresolv.so.0       libresolv-0.9.30.2.so      l 777 0 0 - - - - -
-+lib/librt-0.9.30.2.so      lib/librt-0.9.30.2.so      f 755 0 0 - - - - -
-+lib/librt-0.9.30.2.so      -                        s   - - - - - - - -
-+lib/librt.so.0           librt-0.9.30.2.so          l 777 0 0 - - - - -
-+lib/libutil-0.9.30.2.so    lib/libutil-0.9.30.2.so    f 755 0 0 - - - - -
-+lib/libutil-0.9.30.2.so    -                        s   - - - - - - - -
-+lib/libutil.so.0         libutil-0.9.30.2.so        l 777 0 0 - - - - -
-+lib/libuClibc-0.9.30.2.so  lib/libuClibc-0.9.30.2.so  f 755 0 0 - - - - -
-+lib/libuClibc-0.9.30.2.so  -                        s   - - - - - - - -
-+lib/libc.so.0            libuClibc-0.9.30.2.so      l 777 0 0 - - - - -
++lib/ld-uClibc-0.9.30.3.so  lib/ld-uClibc-0.9.30.3.so  f 755 0 0 - - - - -
++lib/ld-uClibc-0.9.30.3.so  -                        s   - - - - - - - -
++lib/ld-uClibc.so.0       ld-uClibc-0.9.30.3.so      l 777 0 0 - - - - -
++lib/libcrypt-0.9.30.3.so   lib/libcrypt-0.9.30.3.so   f 755 0 0 - - - - -
++lib/libcrypt-0.9.30.3.so   -                        s   - - - - - - - -
++lib/libcrypt.so.0        libcrypt-0.9.30.3.so       l 777 0 0 - - - - -
++lib/libdl-0.9.30.3.so      lib/libdl-0.9.30.3.so      f 755 0 0 - - - - -
++lib/libdl-0.9.30.3.so      -                        s   - - - - - - - -
++lib/libdl.so.0           libdl-0.9.30.3.so          l 777 0 0 - - - - -
++lib/libm-0.9.30.3.so       lib/libm-0.9.30.3.so       f 755 0 0 - - - - -
++lib/libm-0.9.30.3.so       -                        s   - - - - - - - -
++lib/libm.so.0            libm-0.9.30.3.so           l 777 0 0 - - - - -
++lib/libnsl-0.9.30.3.so     lib/libnsl-0.9.30.3.so     f 755 0 0 - - - - -
++lib/libnsl-0.9.30.3.so     -                        s   - - - - - - - -
++lib/libnsl.so.0          libnsl-0.9.30.3.so         l 777 0 0 - - - - -
++lib/libpthread-0.9.30.3.so lib/libpthread-0.9.30.3.so f 755 0 0 - - - - -
++lib/libpthread-0.9.30.3.so -                        s   - - - - - - - -
++lib/libpthread.so.0      libpthread-0.9.30.3.so     l 777 0 0 - - - - -
++lib/libresolv-0.9.30.3.so  lib/libresolv-0.9.30.3.so  f 755 0 0 - - - - -
++lib/libresolv-0.9.30.3.so  -                        s   - - - - - - - -
++lib/libresolv.so.0       libresolv-0.9.30.3.so      l 777 0 0 - - - - -
++lib/librt-0.9.30.3.so      lib/librt-0.9.30.3.so      f 755 0 0 - - - - -
++lib/librt-0.9.30.3.so      -                        s   - - - - - - - -
++lib/librt.so.0           librt-0.9.30.3.so          l 777 0 0 - - - - -
++lib/libutil-0.9.30.3.so    lib/libutil-0.9.30.3.so    f 755 0 0 - - - - -
++lib/libutil-0.9.30.3.so    -                        s   - - - - - - - -
++lib/libutil.so.0         libutil-0.9.30.3.so        l 777 0 0 - - - - -
++lib/libuClibc-0.9.30.3.so  lib/libuClibc-0.9.30.3.so  f 755 0 0 - - - - -
++lib/libuClibc-0.9.30.3.so  -                        s   - - - - - - - -
++lib/libc.so.0            libuClibc-0.9.30.3.so      l 777 0 0 - - - - -

@@ -34,3 +34,4 @@ CICAM=setup_cicam
 Recording=setup_record
 Replay=setup_playback
 Miscellaneous=setup_misc
+Plugins=setup_plugins

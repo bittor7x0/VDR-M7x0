@@ -43,7 +43,7 @@ You can change .config in Linux for add:
 
 Main new features in VDR
 ------------------------
-* Backports from VDR 1.7.12.
+* Backports from VDR 1.7.x.
 * Speed ups from VDR-Extensions-Patch-72 for VDR 1.7.7.
 * WarEagle icons for REC, timers, TV and radio channels, ...
 * Rename recordings, move to other directory, change priority and lifetime,
@@ -62,6 +62,7 @@ Main new features in VDR
      (+/-) recording may be possible
      ( - ) recording will most probably fail (to less space)
   The calculations also consider repeating timers.
+* Parental control with PIN plugin.
 * New plugins and updated.
 
 
