@@ -51,7 +51,7 @@ restore_configuration () {
 	source /tmp/work-$$/$file.sh
     done
     cp -a /tmp/backup-$$/etc /
-    if [ -f /etc/webif.conf -a ! -f /etc/webif/webif.conf ]; then
+    if [ -f /etc/webif.conf ]; then
         ( [ -d /etc/webif ] ||  mkdir /etc/webif ) && mv /etc/webif.conf /etc/webif/webif.conf
     fi
     
