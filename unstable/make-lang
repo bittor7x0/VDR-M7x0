@@ -1,3 +1,4 @@
+#!/bin/sh
 ###################
 # make-lang
 # © 2010 Rainer Piechura
@@ -23,7 +24,7 @@ VDRCONFDIR="$CONFDIR/prg-fw-configs/vdr-m7x0/common/etc/vdr"
 PLUGINDIR="$VDRCONFDIR/plugins"
 SETUP="$VDRCONFDIR/setup.conf"
 RUNVDR="$VDRCONFDIR/runvdr"
-WEBIF="$CONFDIR/buildin/base-pro/common/etc/webif.conf"
+WEBIF="$CONFDIR/buildin/base-pro/common/etc/webif/webif.conf"
 echo "Preparing vdr for Language: $LANG"
 if [ $LANG = "de" ]
 then
