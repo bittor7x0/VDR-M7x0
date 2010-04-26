@@ -1,0 +1,104 @@
+diff -Naur usbautomounter-orig/fs_id_reader.c usbautomounter/fs_id_reader.c
+--- usbautomounter-orig/fs_id_reader.c	2010-04-26 16:36:32.188105000 +0200
++++ usbautomounter/fs_id_reader.c	2010-04-26 15:00:26.472322000 +0200
+@@ -28,6 +28,7 @@
+ #include "fs_id_fat_reader.h"
+ #include "fs_id_ext2_3_reader.h"
+ #include "tools.h"
++#include "sys/swap.h"
+ 
+ struct fs_id_reader {
+ 	const uint8_t *partition_types;
+@@ -40,10 +41,23 @@
+ 	{ fs_id_ext2_3_types,	fs_id_ext2_3_reader	}
+ };
+ 
+-static int read_fs_id(struct partition *part)
++static int read_fs_id(struct partition *part,int mounting)
+ {
+-	if(part->type==130) /*usbautomaounter don't touch swap partitions*/
++	if(part->type==130) 
++	{
++		if(mounting)
++		{
++			char *Action=getenv("ACTION");
++			if(Action)
++				if(strcmp(Action,"add"))		
++					return 1;
++			if(!swapon(part->devname,0))
++				SYSLOG_INFO("swapon %s",part->devname);
++			else if(errno!=EBUSY)
++				SYSLOG_ERR("swapon %s error number %d",part->devname,errno);
++		}
+ 		return 1;
++	}
+ 	int i;
+ 	int r;
+ 
+@@ -70,7 +84,7 @@
+ 	return 1;
+ }
+ 
+-void read_all_fs_ids(struct partition_list *parts)
++void read_all_fs_ids(struct partition_list *parts,int mounting)
+ {
+ 	struct partition *part;
+ 	part = parts->first;
+@@ -78,7 +92,7 @@
+ 	while (part) {
+ 		struct partition *part_cur = part;
+ 		part = part->next;
+-		if (read_fs_id(part_cur)) {
++		if (read_fs_id(part_cur,mounting)) {
+ 			delete_partition(parts, part_cur);
+ 		} else if (part_cur->label) {
+ 			tmp = part_cur->label;
+diff -Naur usbautomounter-orig/fs_id_reader.h usbautomounter/fs_id_reader.h
+--- usbautomounter-orig/fs_id_reader.h	2010-04-22 16:53:17.571135000 +0200
++++ usbautomounter/fs_id_reader.h	2010-04-26 14:53:32.595881000 +0200
+@@ -26,5 +26,5 @@
+ 
+ #include "partitions_reader.h"
+ 
+-void read_all_fs_ids(struct partition_list *parts);
++void read_all_fs_ids(struct partition_list *parts,int mounting);
+ #endif
+diff -Naur usbautomounter-orig/usbautomounter.c usbautomounter/usbautomounter.c
+--- usbautomounter-orig/usbautomounter.c	2010-04-26 16:36:32.188105000 +0200
++++ usbautomounter/usbautomounter.c	2010-04-26 14:52:28.380318000 +0200
+@@ -88,7 +88,7 @@
+ 	}
+ }
+ 
+-static void get_context(struct usbmounter_context *cont)
++static void get_context(struct usbmounter_context *cont,int mounting)
+ {
+ 	int scsi_usb_devs_count;
+ 	char **scsi_usb_devs;
+@@ -114,7 +114,7 @@
+ 		free(scsi_usb_devs[i]);
+ 	}
+ 	free(scsi_usb_devs);
+-	read_all_fs_ids(&cont->part_list);
++	read_all_fs_ids(&cont->part_list,mounting);
+ 	setup_part_asso(cont);
+ }
+ 
+@@ -728,7 +728,7 @@
+ 	struct usbmounter_context context;
+ 	openlog("usbautomounter", LOG_PID | LOG_CONS, LOG_DAEMON);
+ 	SYSLOG_INFO("usb auto mounter started in auto mode");
+-	get_context(&context);
++	get_context(&context,1);
+ 	context.ashotplug = ashotplug;
+ 	context.autoboot = autoboot;
+ 	check_devs_mounted(&context);
+@@ -793,7 +793,7 @@
+ 	struct usbmounter_context context;
+ 	openlog("usbautomounter", LOG_PID | LOG_CONS, LOG_DAEMON);
+ 	SYSLOG_INFO("usb auto mounter started in umount mode");
+-	get_context(&context);
++	get_context(&context,0);
+ 	check_devs_mounted(&context);
+ 	umount_lost_volumes(&context);
+ 	int res=umount_partitions(&context, force_fsck, lazy);

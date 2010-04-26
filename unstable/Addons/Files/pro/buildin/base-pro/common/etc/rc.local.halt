@@ -37,10 +37,12 @@ done
 [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && /bin/mv /var/vdr/epg.data ${vdr_epgfile}
 
 if [ X"${hd_swap_dev}" != X"NO" ] ; then
-	for hd_swp_dev in ${hd_swap_dev} ; do
-		echo -n " setting down swap in ${hd_swp_dev}"
-		/sbin/swapoff ${hd_swp_dev}
-	done
+        while read hd_swp_dev ignore ; do
+                if [ ${hd_swp_dev} != "Filename" ] ; then
+                        echo -n " setting down swap in ${hd_swp_dev}"
+                        /sbin/swapoff ${hd_swp_dev}
+                fi
+        done < /proc/swaps
 fi
 
 if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_shutdown}" != X"NO" ] ; then
