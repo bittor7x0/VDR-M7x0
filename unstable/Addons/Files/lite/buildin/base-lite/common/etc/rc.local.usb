@@ -17,12 +17,6 @@ source /etc/rc.local.conf
 /sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o
 /sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o
 
-if [ X"${hd_swap_dev}" != X"NO" ] ; then
-	for hd_swp_dev in ${hd_swap_dev} ; do
-		/sbin/swapon ${hd_swp_dev} &
-	done
-fi
-
 if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_time}" != X"NO" ] ; then
 	for hd_sd_dev in ${hd_spindown_dev} ; do
 		/usr/sbin/spindown -d ${hd_spindown_time} +${hd_sd_dev} &
