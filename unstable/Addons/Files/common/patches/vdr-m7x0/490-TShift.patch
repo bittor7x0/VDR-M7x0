@@ -1,7 +1,7 @@
 diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
 --- VDR-NG-orig/config.c	2009-12-11 15:33:27.000000000 +0100
 +++ VDR-NG/config.c	2009-12-11 11:09:36.000000000 +0100
-@@ -332,6 +332,13 @@
+@@ -349,6 +349,13 @@
    ChannelFilter = 0;
    InitialChannel = 0;
    InitialVolume = -1;
@@ -15,7 +15,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    LRChannelGroups = 0;
    LRForwardRewind = 0;
    ShowRecDate = 1;
-@@ -533,6 +540,13 @@
+@@ -551,6 +558,13 @@
    else if (!strcasecmp(Name, "ChannelFilter"))       ChannelFilter      = atoi(Value);
    else if (!strcasecmp(Name, "InitialChannel"))      InitialChannel     = atoi(Value);
    else if (!strcasecmp(Name, "InitialVolume"))       InitialVolume      = atoi(Value);
@@ -29,7 +29,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    else if (!strcasecmp(Name, "LRChannelGroups"))     LRChannelGroups    = atoi(Value);
    else if (!strcasecmp(Name, "LRForwardRewind"))     LRForwardRewind    = atoi(Value);
    else if (!strcasecmp(Name, "ShowRecDate"))         ShowRecDate        = atoi(Value);
-@@ -641,6 +655,13 @@
+@@ -660,6 +674,13 @@
    Store("ChannelFilter",      ChannelFilter);
    Store("InitialChannel",     InitialChannel);
    Store("InitialVolume",      InitialVolume);
@@ -46,7 +46,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
 diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
 --- VDR-NG-orig/config.h	2009-12-11 15:33:27.000000000 +0100
 +++ VDR-NG/config.h	2009-12-11 11:07:50.000000000 +0100
-@@ -290,6 +290,13 @@
+@@ -292,6 +292,13 @@
    int ChannelFilter;
    int InitialChannel;
    int InitialVolume;
@@ -293,7 +293,7 @@ diff -Naur VDR-NG-orig/dvbplayer.h VDR-NG/dvbplayer.h
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 --- VDR-NG-orig/i18n.c	2009-12-11 15:33:27.000000000 +0100
 +++ VDR-NG/i18n.c	2009-12-11 11:11:41.000000000 +0100
-@@ -3390,6 +3390,28 @@
+@@ -3412,6 +3412,28 @@
      "Diverse",
      "Rùzné",
    },
@@ -322,7 +322,7 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
    { "Plugins",
      "Plugins",
      "Vstavki",
-@@ -5670,6 +5692,270 @@
+@@ -5671,6 +5693,270 @@
      "",// TODO
      "",// TODO
    },
@@ -616,7 +616,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
  
  #define MAXWAIT4EPGINFO   3 // seconds
  #define MODETIMEOUT       3 // seconds
-@@ -3308,6 +3309,69 @@
+@@ -3312,6 +3313,69 @@
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat timeout"),        &data.LircRepeatTimeout, 0, 5000));
  }
  
@@ -686,7 +686,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
  // --- cMenuSetupPluginItem --------------------------------------------------
  
  class cMenuSetupPluginItem : public cOsdItem {
-@@ -3409,6 +3469,7 @@
+@@ -3413,6 +3473,7 @@
    Add(new cOsdItem(hk(tr("Cutter")),        osUser8));
    Add(new cOsdItem(hk(tr("Replay")),        osUser9));
    Add(new cOsdItem(hk(tr("Miscellaneous")), osUser10));
@@ -694,7 +694,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    if (cPluginManager::HasPlugins())
    Add(new cOsdItem(hk(tr("Plugins")),       osUser11));
    Add(new cOsdItem(hk(tr("Restart")),       (eOSState) (osUser11 + 1)));
-@@ -3442,7 +3503,8 @@
+@@ -3446,7 +3507,8 @@
      case osUser9: return AddSubMenu(new cMenuSetupReplay);
      case osUser10: return AddSubMenu(new cMenuSetupMisc);
      case osUser11: return AddSubMenu(new cMenuSetupPlugins);
@@ -704,7 +704,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
  //M7X0 BEGIN AK
      default: ;
      }
-@@ -4029,6 +4091,7 @@
+@@ -4033,6 +4096,7 @@
  
  eOSState cDisplayChannel::ProcessKey(eKeys Key)
  {
@@ -3904,7 +3904,23 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
  		   // Not pressed power - set VDR to be non-interactive and power down later:
                     ShutdownHandler.SetUserInactive();
                     break;
-@@ -1358,6 +1165,7 @@
+@@ -1179,6 +1186,7 @@
+                 setIaMode(0);
+                 cDevice::PrimaryDevice()->SetTvSettings(0);
+                 cControl::Shutdown();
++                cTShiftControl::ShutdownTShift();
+            }
+ 
+                 // Ok, now call the shutdown script:
+@@ -1354,6 +1362,7 @@
+                if (ShutdownHandler.IsUserInactive() && ShutdownHandler.ConfirmShutdown(false))
+                {
+                   cControl::Shutdown();
++                  cTShiftControl::ShutdownTShift();
+                   ShutdownHandler.DoShutdown(false);
+                }
+                // Do this again a bit later:
+@@ -1364,6 +1373,7 @@
  			setIaMode(0);
  			cDevice::PrimaryDevice()->SetTvSettings(0);
  			cControl::Shutdown();
@@ -3912,7 +3928,7 @@ diff -Naur VDR-NG-orig/vdr.c VDR-NG/vdr.c
  		    }
  		}
  		}
-@@ -1395,6 +1403,7 @@
+@@ -1401,6 +1411,7 @@
    cRecordControls::Shutdown();
    cCutter::Stop();
    delete Menu;
