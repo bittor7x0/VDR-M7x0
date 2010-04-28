@@ -36,7 +36,7 @@ done
 
 [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && /bin/mv /var/vdr/epg.data ${vdr_epgfile}
 
-if [ X"${hd_swap_dev}" != X"NO" ] ; then
+if [ X"${hd_swap}" != X"NO" ] ; then
         while read hd_swp_dev ignore ; do
                 if [ ${hd_swp_dev} != "Filename" ] ; then
                         echo -n " setting down swap in ${hd_swp_dev}"
