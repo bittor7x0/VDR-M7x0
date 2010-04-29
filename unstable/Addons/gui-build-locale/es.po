@@ -1,0 +1,243 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR-NG-EM\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Ponç J. Llaneras <pjllaneras2@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Spanish\n"
+"X-Poedit-Country: SPAIN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+msgid "You have to install 'zenity' package"
+msgstr "Necesitas instalar el paquete 'zenity'"
+
+msgid "This system is not Ubuntu, the package installation must be done manually"
+msgstr "El sistema no es Ubuntu, la instalación de paquetes debe realizarse manualmente"
+
+msgid "Verifying installed packages..."
+msgstr "Verificando los paquetes instalados..."
+
+msgid "Installing '$PACKAGE'"
+msgstr "Instalando '$PACKAGE'"
+
+msgid "The package '$PACKAGE' is already installed"
+msgstr "El paquete '$PACKAGE' ya está instalado"
+
+msgid "Downloading $PACKAGE$PACKAGEVERSION$PCTYPE.deb"
+msgstr "Descargando $PACKAGE$PACKAGEVERSION$PCTYPE.deb"
+
+msgid "LOCALE"
+msgstr "LOCALE"
+
+msgid "Select locale:"
+msgstr "Selecciona el locale:"
+
+msgid "Locale"
+msgstr "Locale"
+
+msgid "Install Mode"
+msgstr "Modo de instalación"
+
+msgid "Select option:"
+msgstr "Selecciona una opción:"
+
+msgid "Mode"
+msgstr "Modo"
+
+msgid "Version"
+msgstr "Versión"
+
+msgid "Select Version:"
+msgstr "Selecciona la versión:"
+
+msgid "Siemens m7xx model"
+msgstr "Modelo m7xx de Siemens"
+
+msgid "Select Siemens m7xx model"
+msgstr "Selecciona el modelo m7xx de Siemens"
+
+msgid "Model"
+msgstr "Modelo"
+
+msgid "IP configuration"
+msgstr "Configuración IP"
+
+msgid "Select option"
+msgstr "Selecciona una opción"
+
+msgid "Static IP"
+msgstr "IP estática"
+
+msgid "Network configuration"
+msgstr "Configuración de red"
+
+msgid "IP address"
+msgstr "Dirección IP"
+
+msgid "Netmask"
+msgstr "Máscara de red"
+
+msgid "Gateway"
+msgstr "Puerta de enlace"
+
+msgid "Netdate server"
+msgstr "Servidor de fecha"
+
+msgid "Activate Netdate"
+msgstr "Activar el servidor de fecha"
+
+msgid "Netdate configuration"
+msgstr "Configurar el servidor de fecha"
+
+msgid "Assign IP"
+msgstr "Asignar IP"
+
+msgid "Activate network directories"
+msgstr "Activar directorio de red"
+
+msgid "Activate Webif server"
+msgstr "Activar Servidor Web"
+
+msgid "Activate Inetd server (telnet, ftp, ...)"
+msgstr "Activar Servidor Inetd (telnet, ftp, ...)"
+
+msgid "Activate Netdate server"
+msgstr "Activar Servidor Netdate"
+
+msgid "Mount network directories"
+msgstr "Montar directorios de red"
+
+msgid "Option"
+msgstr "Opción"
+
+msgid "Mounting Parameters"
+msgstr "Parámetros de montaje"
+
+msgid "Activate Inetd server"
+msgstr "Activar Servidor Inetd"
+
+msgid "General configuration"
+msgstr "Configuración general"
+
+msgid "Recordings Directory"
+msgstr "Directorio de grabaciones"
+
+msgid "VDR options"
+msgstr "Opciones VDR"
+
+msgid "Updating VDR source code"
+msgstr "Actualizando código fuente de VDR"
+
+msgid "Updating plugins source code"
+msgstr "Actualizando código fuente de los plugins"
+
+msgid "Updating webif source code"
+msgstr "Actualizando código fuente de webif"
+
+msgid "'Downloads' backup"
+msgstr "Guardando copia de 'Downloads'"
+
+msgid "Updating VDR-NG-EM source code"
+msgstr "Actualizando código fuente de VDR-NG-EM"
+
+msgid "Reminder: building with `grep ^vdr_version $BASE/VDR-NG-EM/make-fw` option"
+msgstr "Recordatorio: compilando con la opción `grep ^vdr_version $BASE/VDR-NG-EM/make-fw`"
+
+msgid "Preparing the building..."
+msgstr "Preparando la compilación..."
+
+msgid "We are in `pwd` directory"
+msgstr "Estamos en el directorio `pwd`"
+
+msgid "Set firmware language [$locale_firm]"
+msgstr "Configura el idioma del firmware [$locale_firm]"
+
+msgid "Building firmware..."
+msgstr "Compilando el firmware..."
+
+msgid "The building incidences will be saved in '$COMP_LOG' file"
+msgstr "Se guardan las incidencias detalladas de la compilación en el fichero '$COMP_LOG'"
+
+msgid "End of building"
+msgstr "Fin de la compilación"
+
+msgid "Date: `date`"
+msgstr "Fecha: `date`"
+
+msgid "Firmware created: "
+msgstr "Firmware generado: "
+
+msgid "There has been an error. Look at '$COMP_LOG' file to figure out the problem."
+msgstr "Ha habido un error. Revise el fichero '$COMP_LOG' para tratar de averiguar el problema."
+
+msgid ""
+"The firmware files have been created.\\n"
+"\\n"
+"$mensaje\\n"
+"\\n"
+"You can proceed with the firmware installation."
+msgstr ""
+"Se han generado los ficheros de firmware.\\n"
+"\\n"
+"$mensaje\\n"
+"\\n"
+"Puede proceder a la instalación del firmware."
+
+msgid "Downloading source"
+msgstr "Descargando los fuentes"
+
+msgid "VDR-EM firwmare creation"
+msgstr "Generación del firmware VDR-EM"
+
+msgid "Install needed packages in Ubuntu"
+msgstr "Instalar paquetes necesarios en Ubuntu"
+
+msgid "Firmware Update"
+msgstr "Actualizar firmware"
+
+msgid "VDR Update"
+msgstr "Actualizar VDR"
+
+msgid "Plugins Update"
+msgstr "Actualizar Plugins"
+
+msgid "Web Server Update"
+msgstr "Actualizar Servidor Web"
+
+msgid "Setting options"
+msgstr "Configurar opciones"
+
+msgid "Firmware creation"
+msgstr "Generar firmware"
+
+msgid "Quit"
+msgstr "Salir"
+
+msgid "Now you can generate the firmware"
+msgstr "Ya puede generar el firmware"
+
+msgid "Begin of building"
+msgstr "Inicio de la compilación"
+
+msgid ""
+"- It's going to download and build the VDR firmware sources for the Gigaset M7x0.\\n"
+"- Info (in spanish): http://www.assembla.com/wiki/show/VDR-M7x0/Instalación_del_VDR-NG-EM#instalacion_linux.\\n"
+msgstr ""
+"- Va a descargar y compilar los fuentes del firmware VDR para el Gigaset M7xx.\\n"
+"- Info: http://www.assembla.com/wiki/show/VDR-M7x0/Instalación_del_VDR-NG-EM#instalacion_linux.\\n"
+
+msgid "Locale: $locale_firm"
+msgstr "Locale: $locale_firm"
+
+msgid "Install mode: $install_mode"
+msgstr "Modo de instalación: $install_mode"
+
+msgid "Version: $version_firm"
+msgstr "Versión: $version_firm"
+
+msgid "Model: $model_m7xx"
+msgstr "Modelo: $model_m7xx"

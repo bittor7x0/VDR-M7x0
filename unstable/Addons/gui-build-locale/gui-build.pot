@@ -1,0 +1,222 @@
+msgid "You have to install 'zenity' package"
+msgstr ""
+
+msgid "This system is not Ubuntu, the package installation must be done manually"
+msgstr ""
+
+msgid "Verifying installed packages..."
+msgstr ""
+
+msgid "Installing '$PACKAGE'"
+msgstr ""
+
+msgid "The package '$PACKAGE' is already installed"
+msgstr ""
+
+msgid "Downloading $PACKAGE$PACKAGEVERSION$PCTYPE.deb"
+msgstr ""
+
+msgid "LOCALE"
+msgstr ""
+
+msgid "Select locale:"
+msgstr ""
+
+msgid "Locale"
+msgstr ""
+
+msgid "Install Mode"
+msgstr ""
+
+msgid "Select option:"
+msgstr ""
+
+msgid "Mode"
+msgstr ""
+
+msgid "Version"
+msgstr ""
+
+msgid "Select Version:"
+msgstr ""
+
+msgid "Siemens m7xx model"
+msgstr ""
+
+msgid "Select Siemens m7xx model"
+msgstr ""
+
+msgid "Model"
+msgstr ""
+
+msgid "IP configuration"
+msgstr ""
+
+msgid "Select option"
+msgstr ""
+
+msgid "Static IP"
+msgstr ""
+
+msgid "Network configuration"
+msgstr ""
+
+msgid "IP address"
+msgstr ""
+
+msgid "Netmask"
+msgstr ""
+
+msgid "Gateway"
+msgstr ""
+
+msgid "Netdate server"
+msgstr ""
+
+msgid "Activate Netdate"
+msgstr ""
+
+msgid "Netdate configuration"
+msgstr ""
+
+msgid "Assign IP"
+msgstr ""
+
+msgid "Activate network directories"
+msgstr ""
+
+msgid "Activate Webif server"
+msgstr ""
+
+msgid "Activate Inetd server (telnet, ftp, ...)"
+msgstr ""
+
+msgid "Activate Netdate server"
+msgstr ""
+
+msgid "Mount network directories"
+msgstr ""
+
+msgid "Option"
+msgstr ""
+
+msgid "Mounting Parameters"
+msgstr ""
+
+msgid "Activate Inetd server"
+msgstr ""
+
+msgid "General configuration"
+msgstr ""
+
+msgid "Recordings Directory"
+msgstr ""
+
+msgid "VDR options"
+msgstr ""
+
+msgid "Updating VDR source code"
+msgstr ""
+
+msgid "Updating plugins source code"
+msgstr ""
+
+msgid "Updating webif source code"
+msgstr ""
+
+msgid "'Downloads' backup"
+msgstr ""
+
+msgid "Updating VDR-NG-EM source code"
+msgstr ""
+
+msgid "Reminder: building with `grep ^vdr_version $BASE/VDR-NG-EM/make-fw` option"
+msgstr ""
+
+msgid "Preparing the building..."
+msgstr ""
+
+msgid "We are in `pwd` directory"
+msgstr ""
+
+msgid "Set firmware language [$locale_firm]"
+msgstr ""
+
+msgid "Building firmware..."
+msgstr ""
+
+msgid "The building incidences will be saved in '$COMP_LOG' file"
+msgstr ""
+
+msgid "End of building"
+msgstr ""
+
+msgid "Date: `date`"
+msgstr ""
+
+msgid "Firmware created: "
+msgstr ""
+
+msgid "There has been an error. Look at '$COMP_LOG' file to figure out the problem."
+msgstr ""
+
+msgid ""
+"The firmware files have been created.\\n"
+"\\n"
+"$mensaje\\n"
+"\\n"
+"You can proceed with the firmware installation."
+msgstr ""
+
+msgid "Downloading source"
+msgstr ""
+
+msgid "VDR-EM firwmare creation"
+msgstr ""
+
+msgid "Install needed packages in Ubuntu"
+msgstr ""
+
+msgid "Firmware Update"
+msgstr ""
+
+msgid "VDR Update"
+msgstr ""
+
+msgid "Plugins Update"
+msgstr ""
+
+msgid "Web Server Update"
+msgstr ""
+
+msgid "Setting options"
+msgstr ""
+
+msgid "Firmware creation"
+msgstr ""
+
+msgid "Quit"
+msgstr ""
+
+msgid "Now you can generate the firmware"
+msgstr ""
+
+msgid "Begin of building"
+msgstr ""
+
+msgid ""
+"- It's going to download and build the VDR firmware sources for the Gigaset M7x0.\\n"
+"- Info (in spanish): http://www.assembla.com/wiki/show/VDR-M7x0/Instalación_del_VDR-NG-EM#instalacion_linux.\\n"
+msgstr ""
+
+msgid "Locale: $locale_firm"
+msgstr ""
+
+msgid "Install mode: $install_mode"
+msgstr ""
+
+msgid "Version: $version_firm"
+msgstr ""
+
+msgid "Model: $model_m7xx"
+msgstr ""
