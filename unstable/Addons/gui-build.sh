@@ -8,6 +8,7 @@
 #Autor: pjllaneras
 
 #Defaults
+SCRIPT_VERSION="1.0"
 COMP_OPTS=""
 
 BASE=`pwd`
@@ -23,8 +24,11 @@ CONF_LOCAL_FILE="$BASE/.config_local"
 RC_CONF="$BASE/VDR-NG-EM/VDR-NG-FW/buildin/base-$version_firm/common/etc/rc.conf"
 RC_LOCAL_CONF="$BASE/VDR-NG-EM/VDR-NG-FW/buildin/base-$version_firm/common/etc/rc.local.conf"
 
+TEXTDOMAIN="gui-build"
+TEXTDOMAINDIR="./locale/"
+
 export CC=/usr/bin/gcc-3.4
-#fin defaults
+#end defaults
 
 
 
@@ -45,7 +49,7 @@ info() {
 check_zenity() {
     zenity 2>&1 > /dev/null
     if [ "$?" = "127" ] ; then
-        echo "Necesitas instalar el paquete 'zenity'"
+        echo $"You have to install 'zenity' package"
         exit 1
     fi
 }
@@ -61,20 +65,20 @@ system_type() {
 ubuntu_install() {
     system_type 'Ubuntu'
     if [ "$?" = "0" ] ; then
-        info "El sistema no es Ubuntu, la instalación de paquetes debe realizarse manualmente"
-        zenity --info --text "El sistema no es Ubuntu, la instalación de paquetes debe realizarse manualmente"
+        info $"This system is not Ubuntu, the package installation must be done manually"
+        zenity --info --text $"This system is not Ubuntu, the package installation must be done manually"
         return;
     fi
 
-    info "Verificando los paquetes instalados..."
+    info $"Verifying installed packages..."
 
     PACKAGES='gcc-3.4 build-essential subversion make automake bison binutils genext2fs texinfo libmpfr-dev patch zlib1g-dev libncurses5-dev gettext flex libgmp3-dev'
     for PACKAGE in $PACKAGES; do
         if [ `dpkg --get-selections $PACKAGE | grep -w install | wc -l` = "0" ] ; then
-            info "Instalando $PACKAGE"
+            info $"Installing '$PACKAGE'"
             gksudo "apt-get install -q -y $PACKAGE"
         else
-            info "El paquete $PACKAGE ya está instalado"
+            info $"The package '$PACKAGE' is already installed"
         fi;
     done
 
@@ -90,22 +94,22 @@ ubuntu_install() {
     for PACKAGE in $PACKAGES; do
         if [ `dpkg --get-selections $PACKAGE | grep -w install | wc -l` = "0" ] ; then
             if [ ! -e $PACKAGE$PACKAGEVERSION$PCTYPE.deb ] ; then
-                info "Descargando $PACKAGE$PACKAGEVERSION$PCTYPE.deb"
+                info $"Downloading $PACKAGE$PACKAGEVERSION$PCTYPE.deb"
                 wget -q $DEBIANPOOL$PACKAGE$PACKAGEVERSION$PCTYPE.deb
             fi
-            info "Instalando $PACKAGE"
+            info $"Installing '$PACKAGE'"
             gksudo "dpkg -i $PACKAGE$PACKAGEVERSION$PCTYPE.deb"
         else
-            info "El paquete $PACKAGE ya está instalado"
+            info $"The package '$PACKAGE' is already installed"
         fi;
     done
 }
 
 #---------------------------------------------------------------------------------------------------------------
 select_locale() {
-    ans=$(zenity --list --title "LOCALE" --text "Select locale:" --radiolist \
+    ans=$(zenity --list --title $"LOCALE" --text $"Select locale:" --radiolist \
         --column=""\
-        --column="Locale" `on_off $locale_firm 'es'` "es" `on_off $locale_firm 'en'` "en" \
+        --column=$"Locale" `on_off $locale_firm 'es'` "es" `on_off $locale_firm 'en'` "en" \
         `on_off $locale_firm 'de'` "de" `on_off $locale_firm 'fr'` "fr"
     );
 
@@ -120,7 +124,7 @@ select_locale() {
 }
 #---------------------------------------------------------------------------------------------------------------
 select_install_mode() {
-    ans=$(zenity --list --title "Install Mode" --text "Select option:" --radiolist --column="" --column="Mode" `on_off $install_mode 'basic'` "BASIC" `on_off $install_mode 'expert'` "EXPERT" );
+    ans=$(zenity --list --title $"Install Mode" --text $"Select option:" --radiolist --column="" --column=$"Mode" `on_off $install_mode 'basic'` "BASIC" `on_off $install_mode 'expert'` "EXPERT" );
 
     if [ -z "$ans" ] ; then return ; fi
 
@@ -131,7 +135,7 @@ select_install_mode() {
 }
 #---------------------------------------------------------------------------------------------------------------
 select_version() {
-    ans=$(zenity --list --title "Version" --text "Select Version:" --radiolist --column="" --column="Version" `on_off $version_firm 'lite'` "LITE" `on_off $version_firm 'pro'` "PRO" );
+    ans=$(zenity --list --title $"Version" --text $"Select Version:" --radiolist --column="" --column=$"Version" `on_off $version_firm 'lite'` "LITE" `on_off $version_firm 'pro'` "PRO" );
 
     if [ -z "$ans" ] ; then return ; fi
 
@@ -142,7 +146,7 @@ select_version() {
 }
 #---------------------------------------------------------------------------------------------------------------
 select_model() {
-    ans=$(zenity --list --title "Siemens m7xx model" --text "Select Siemens m7xx model" --radiolist --column="" --column="Model" `on_off $model_m7xx 'm740'` "M740" `on_off $model_m7xx 'm750t'` "M750T" );
+    ans=$(zenity --list --title $"Siemens m7xx model" --text $"Select Siemens m7xx model" --radiolist --column="" --column=$"Model" `on_off $model_m7xx 'm740'` "M740" `on_off $model_m7xx 'm750t'` "M750T" );
 
     if [ -z "$ans" ] ; then return ; fi
 
@@ -155,16 +159,16 @@ select_model() {
 #---------------------------------------------------------------------------------------------------------------
 inet_menu() {
 # network config
-    ans=$(zenity --list --title "Configuracion IP" --text "Select option" --radiolist --column="" --column="Model" `on_off $net 'dhcp'` DHCP `on_off $net 'inet'` "IP Fija" );
+    ans=$(zenity --list --title $"IP configuration" --text $"Select option" --radiolist --column="" --column=$"Model" `on_off $net 'dhcp'` "DHCP" `on_off $net 'inet'` $"Static IP" );
 
     if [ -z "$ans" ] ; then return ; fi
 
     case $ans in
         "DHCP") net=dhcp;;
-        "IP Fija") net=inet;
-            ip=$(zenity --title "Network configuration" --entry --text "Direccion IP" --entry-text "$ip")
-            netmask=$(zenity --title "Network configuration" --entry --text "Direccion Mascara de red" --entry-text "$netmask")
-            gateway=$(zenity --title "Network configuration" --entry --text "Direccion Puerta de enlace" --entry-text "$gateway")
+        $"Static IP") net=inet;
+            ip=$(zenity --title $"Network configuration" --entry --text $"IP address" --entry-text "$ip")
+            netmask=$(zenity --title $"Network configuration" --entry --text $"Netmask" --entry-text "$netmask")
+            gateway=$(zenity --title $"Network configuration" --entry --text $"Gateway" --entry-text "$gateway")
             if [ -z "$gateway" ] ; then gateway="NO" ; fi ;;
     esac
 }
@@ -174,14 +178,14 @@ netdate_menu(){
 #netdate=NO
 #netdate_server=europe.pool.ntp.org
 
-    ans=$(zenity --list --title "Servidor de fecha" --text "Select option" --checklist --column="" --column="" `on_off $netdate "YES"` "Activar servidor de fecha" );
+    ans=$(zenity --list --title $"Netdate server" --text $"Select option" --checklist --column="" --column="" `on_off $netdate "YES"` $"Activate Netdate" );
 
     if [ -z "$ans" ] ; then return ; fi
 
     case $ans in
-        "Activar servidor de fecha")
+        $"Activate Netdate")
             netdate='YES';
-            netdate_server=$(zenity --title "Netdate configuration" --entry --text "Servidor de fecha" --entry-text "$netdate_server");;
+            netdate_server=$(zenity --title $"Netdate configuration" --entry --text $"Netdate server" --entry-text "$netdate_server");;
         *) netdate='NO';;
     esac
 }
@@ -190,22 +194,22 @@ netdate_menu(){
 net_menu() {
     while true
     do
-        ans=$(zenity --list --title="Configuracion de la red" --column "" --column ""\
-            1 "Asignacion IP" \
-            2 "Activar directorios de red" \
-            3 "Activar Servidor Web" \
-            4 "Activar Servidor Inetd (telnet, ftp, ..)" \
-            5 "Activar Servidor de fecha"
+        ans=$(zenity --list --title=$"Network configuration" --column "" --column ""\
+            1 $"Assign IP" \
+            2 $"Activate network directories" \
+            3 $"Activate Webif server" \
+            4 $"Activate Inetd server (telnet, ftp, ...)" \
+            5 $"Activate Netdate server"
             )
 
         if [ -z "$ans" ] ; then return ; fi
 
         case $ans in
             1) inet_menu;;
-            2) do_net_mount=$(zenity --list --title "Configuracion de la red" --text "Montar directorios de red" --radiolist --column="" --column="Option" `on_off $do_net_mount 'YES'` "YES" `on_off $do_net_mount 'NO'` "NO" );
-               fstab_entry=$(zenity --title "Configuracion de la red" --entry --text "Parametros de montaje" --entry-text "$fstab_entry");;
-            3) webif_start=$(zenity --list --title "Configuracion de la red" --text "Activar Servidor Inetd" --radiolist --column="" --column="Option" `on_off $webif_start 'YES'` "YES" `on_off $webif_start 'NO'` "NO" );;
-            4) inetd=$(zenity --list --title "Configuracion de la red" --text "Activar Servidor Inetd" --radiolist --column="" --column="Option" `on_off $inetd 'YES'` "YES" `on_off $inetd 'NO'` "NO" );;
+            2) do_net_mount=$(zenity --list --title $"Network configuration" --text $"Mount network directories" --radiolist --column="" --column=$"Option" `on_off $do_net_mount 'YES'` "YES" `on_off $do_net_mount 'NO'` "NO" );
+               fstab_entry=$(zenity --title $"Network configuration" --entry --text $"Mounting Parameters" --entry-text "$fstab_entry");;
+            3) webif_start=$(zenity --list --title $"Network configuration" --text $"Activate Webif server" --radiolist --column="" --column=$"Option" `on_off $webif_start 'YES'` "YES" `on_off $webif_start 'NO'` "NO" );;
+            4) inetd=$(zenity --list --title $"Network configuration" --text $"Activate Inetd server" --radiolist --column="" --column=$"Option" `on_off $inetd 'YES'` "YES" `on_off $inetd 'NO'` "NO" );;
             5) netdate_menu;;
         esac
     done
@@ -258,6 +262,7 @@ set_net() {
 #---------------------------------------------------------------------------------------------------------------
 set_general() {
     cat /dev/null > $CONF_LOCAL_FILE;
+    echo "last_script_version=$last_script_version" >> $CONF_LOCAL_FILE;
     echo "last_svn_firm=$last_svn_firm" >> $CONF_LOCAL_FILE;
     echo "install_mode=$install_mode" >> $CONF_LOCAL_FILE;
     echo "model_m7xx=$model_m7xx" >> $CONF_LOCAL_FILE;
@@ -282,15 +287,15 @@ set_general() {
 general_menu() {
     while true
     do
-        ans=$(zenity --list --title="General configuration" --column "" --column ""\
-            1 "Directorio de grabaciones" \
-            2 "Opciones VDR" \
+        ans=$(zenity --list --title=$"General configuration" --column "" --column ""\
+            1 $"Recordings Directory" \
+            2 $"VDR options" \
          )
         if [ -z "$ans" ] ; then return ; fi
 
         case $ans in
-            1) vdr_videodirs=$(zenity --title "General configuration" --entry --text "Directorio de grabaciones" --entry-text "$vdr_videodirs");;
-            2) vdr_options=$(zenity --title "General configuration" --entry --text "Opciones VDR" --entry-text "$vdr_options");;
+            1) vdr_videodirs=$(zenity --title $"General configuration" --entry --text $"Recordings Directory" --entry-text "$vdr_videodirs");;
+            2) vdr_options=$(zenity --title $"General configuration" --entry --text $"VDR options" --entry-text "$vdr_options");;
         esac
     done
 }
@@ -325,34 +330,34 @@ load_general(){
 
 #---------------------------------------------------------------------------------------------------------------
 update_vdr() {
-    svn update $BASE/VDR-NG-EM/Addons 2>&1 | tee -a $COMP_LOG | zenity --progress --auto-close --auto-kill --pulsate --text "Actualizando codigo fuente de VDR"
+    svn update $BASE/VDR-NG-EM/Addons 2>&1 | tee -a $COMP_LOG | zenity --progress --auto-close --auto-kill --pulsate --text $"Updating VDR source code"
 
     cd $BASE/VDR-NG-EM/VDR-NG-FW ;
-    make clean-vdr 2>&1 | tee -a $COMP_LOG;
-    make distclean-vdr 2>&1 | tee -a $COMP_LOG;
-    make 2>&1 | tee -a $COMP_LOG;
+    $LINUX32BIN make clean-vdr 2>&1 | tee -a $COMP_LOG;
+    $LINUX32BIN make distclean-vdr 2>&1 | tee -a $COMP_LOG;
+    $LINUX32BIN make 2>&1 | tee -a $COMP_LOG;
 }
 
 
 #---------------------------------------------------------------------------------------------------------------
 update_plugins() {
-    svn update $BASE/VDR-NG-EM/Addons 2>&1 | tee -a $COMP_LOG | zenity --progress --auto-close --auto-kill --pulsate --text "Updating plugins source code" 
+    svn update $BASE/VDR-NG-EM/Addons 2>&1 | tee -a $COMP_LOG | zenity --progress --auto-close --auto-kill --pulsate --text $"Updating plugins source code"
 
     cd $BASE/VDR-NG-EM/VDR-NG-FW ;
-    make clean-vdr-plugins 2>&1 | tee -a $COMP_LOG;
-    make distclean-vdr-plugins 2>&1 | tee -a $COMP_LOG;
-    make 2>&1 | tee -a $COMP_LOG;
+    $LINUX32BIN make clean-vdr-plugins 2>&1 | tee -a $COMP_LOG;
+    $LINUX32BIN make distclean-vdr-plugins 2>&1 | tee -a $COMP_LOG;
+    $LINUX32BIN make 2>&1 | tee -a $COMP_LOG;
 }
 
 #---------------------------------------------------------------------------------------------------------------
 update_webif() {
-    svn update $BASE/VDR-NG-EM/Addons 2>&1 | tee -a $COMP_LOG | zenity --progress --auto-close --auto-kill --pulsate --text "Updating webif source code"
+    svn update $BASE/VDR-NG-EM/Addons 2>&1 | tee -a $COMP_LOG | zenity --progress --auto-close --auto-kill --pulsate --text $"Updating webif source code"
 
     cd $BASE/VDR-NG-EM/VDR-NG-FW;
 
-    make clean-webif 2>&1 | tee -a $COMP_LOG;
-    make distclean-webif 2>&1 | tee -a $COMP_LOG;
-    make 2>&1 | tee -a $COMP_LOG;
+    $LINUX32BIN make clean-webif 2>&1 | tee -a $COMP_LOG;
+    $LINUX32BIN make distclean-webif 2>&1 | tee -a $COMP_LOG;
+    $LINUX32BIN make 2>&1 | tee -a $COMP_LOG;
 }
 #---------------------------------------------------------------------------------------------------------------
 
@@ -366,7 +371,7 @@ backup_downloads() {
         ( 
         cp -u -v $BASE/VDR-NG-EM/VDR-NG-FW/downloads/* $BASE/downloads/
         rm -rf $BASE/VDR-NG-EM/VDR-NG-FW/downloads
-        ) | tee -a >(zenity --progress --text "Downloads backup" --auto-close --auto-kill --pulsate --auto-close)
+        ) | tee -a >(zenity --progress --text $"'Downloads' backup" --auto-close --auto-kill --pulsate --auto-close)
     fi
 
     if [ -e $BASE/downloads ]; then
@@ -385,19 +390,19 @@ update_firmware() {
 ###rm -rf VDR-NG-EM/VDR-NG-FW | tee >(zenity --progress --auto-close --pulsate) #>> $COMP_LOG
 #info "Actualizando VDR-NG-EM..." 
     if [ -e $BASE/VDR-NG-EM ]; then
-        svn update $BASE/VDR-NG-EM | tee -a $COMP_LOG | zenity --progress --auto-close --auto-kill --pulsate --text "Updating VDR-NG-EM source code"
+        svn update $BASE/VDR-NG-EM | tee -a $COMP_LOG | zenity --progress --auto-close --auto-kill --pulsate --text $"Updating VDR-NG-EM source code"
     fi
 
 # Aquí se configura automáticamente si la versión es PRO o LITE.
     sed -i "s/vdr_version=\".*\"/vdr_version=\"$version_firm\"/g" $BASE/VDR-NG-EM/make-fw
-    info "Recordatorio: compilando con la opción `grep ^vdr_version $BASE/VDR-NG-EM/make-fw`"
-    info "Preparando la compilación..."
+    info $"Reminder: building with `grep ^vdr_version $BASE/VDR-NG-EM/make-fw` option"
+    info $"Preparing the building..."
 
     cd $BASE/VDR-NG-EM
 
-    ./make-fw 2>&1 | tee -a $COMP_LOG #| zenity --progress --auto-close --auto-kill --pulsate --text "Generando firmware base"
+    $LINUX32BIN ./make-fw 2>&1 | tee -a $COMP_LOG #| zenity --progress --auto-close --auto-kill --pulsate --text "Generating firmware base"
 
-    debug "Estamos en el directorio `pwd`"
+    debug $"We are in `pwd` directory"
 
 # Aquí se configura automáticamente el modelo del Siemens
     if [ "$version_firm" = "lite" ]; then
@@ -414,18 +419,50 @@ update_firmware() {
 #---------------------------------------------------------------------------------------------------------------
 set_locale() {
 if [ -f  $BASE/VDR-NG-EM/make-lang ]; then
-    info "Set firmware language [$locale_firm]"
-    cd $BASE/VDR-NG-EM ;
-    make-lang $locale_firm 2>&1 | tee -a $COMP_LOG;
+    info $"Set firmware language [$locale_firm]"
+    cd $BASE/VDR-NG-EM;
+    $LINUX32BIN make-lang $locale_firm 2>&1 | tee -a $COMP_LOG;
 fi
+}
+#---------------------------------------------------------------------------------------------------------------
+generate_locale() {
+    if [ "$SCRIPT_VERSION" != "$last_script_version" ] || [ ! -e $BASE/locale ]; then
+        debug SCRIPT_VERSION=$SCRIPT_VERSION
+        debug last_script_version=$last_script_version
+        language="${LANG:0:4}"
+        generate_mo_file;
+        language="${LANG:0:2}"
+        generate_mo_file;
+    fi
+}
+#---------------------------------------------------------------------------------------------------------------
+generate_mo_file(){
+    if [ -e $BASE/VDR-NG-EM/Addons/gui-build-locale/$language.po ]; then
+        if [ ! -e $BASE/locale ]; then
+            mkdir $BASE/locale
+        fi        
+        if [ ! -e $BASE/locale/$language ]; then
+            mkdir $BASE/locale/$language
+        fi
+        if [ ! -e $BASE/locale/$language/LC_MESSAGES ]; then
+            mkdir $BASE/locale/$language/LC_MESSAGES
+        fi
+        msgfmt -o $BASE/locale/$language/LC_MESSAGES/gui-build.mo $BASE/VDR-NG-EM/Addons/gui-build-locale/$language.po
+
+        TEXTDOMAIN="gui-build"
+        TEXTDOMAINDIR="./locale/"
+
+        last_script_version=$SCRIPT_VERSION
+        set_general
+    fi
 }
 #---------------------------------------------------------------------------------------------------------------
 create_firmware(){
 
     set_locale
 
-    info "Compilando el firmware..."
-    info "Se guardan las incidencias detalladas de la compilación en el fichero '$COMP_LOG'"
+    info $"Building firmware..."
+    info $"The building incidences will be saved in '$COMP_LOG' file"
     rm -f $BASE/VDR-NG-EM/VDR-NG-FW/*.ofi
     rm -f $BASE/VDR-NG-EM/VDR-NG-FW/*.wsw
 
@@ -436,14 +473,14 @@ create_firmware(){
     export PATH=$PATH:./
 
 # make
-    make $COMP_OPTS 2>&1 | tee -a $COMP_LOG #| zenity --progress --auto-close --pulsate --text "Creando fichero de firmware"
+    $LINUX32BIN make $COMP_OPTS 2>&1 | tee -a $COMP_LOG #| zenity --progress --auto-close --pulsate --text "Creando fichero de firmware"
 
-    info "Fin de la compilación"
-    info "Fecha: `date`"
+    info $"End of building"
+    info $"Date: `date`"
 
     exito="NO"
     version=`svnversion $BASE/VDR-NG-EM/Addons | cut -d ":" -f 2`
-    mensaje="Firmware generado: "
+    mensaje=$"Firmware created: "
     if [ -f $BASE/VDR-NG-EM/VDR-NG-FW/open7x0.org-m740.ofi ]; then
         cp $BASE/VDR-NG-EM/VDR-NG-FW/open7x0.org-m740.ofi $BASE/open7x0.org-m740-$version.ofi
         mensaje=$mensaje"\n* $BASE/open7x0.org-m740-$version.ofi"
@@ -466,9 +503,9 @@ create_firmware(){
     fi
 
     if [ "$exito" = "NO" ]; then
-        zenity --error --text "Ha habido un error. Revise el fichero '$COMP_LOG' para tratar de averiguar el problema."
+        zenity --error --text $"There has been an error. Look at '$COMP_LOG' file to figure out the problem."
     else
-        zenity --info --text "Se han generado los ficheros de firmware: $mensaje\nPuede proceder a la instalación del firmware."
+        zenity --info --text $"The firmware files have been created.\n\n$mensaje\n\nYou can proceed with the firmware installation."
     fi
  
     debug `date`
@@ -477,7 +514,7 @@ create_firmware(){
 first_download() {
     #Descargando fuentes del firmware si no existen
     if [ ! -e "$BASE/VDR-NG-EM" ]; then 
-      svn checkout http://svn.assembla.com/svn/VDR-M7x0/unstable $BASE/VDR-NG-EM 2>&1 | tee -a $COMP_LOG | zenity --progress --auto-close --pulsate --text "Downloading source"
+      svn checkout http://svn.assembla.com/svn/VDR-M7x0/unstable $BASE/VDR-NG-EM 2>&1 | tee -a $COMP_LOG | zenity --progress --auto-close --pulsate --text $"Downloading source"
       update_firmware
     fi
 }
@@ -487,26 +524,26 @@ main_menu() {
 
 while true
 do
-    ans=$(zenity --list --width 300 --height 275 --title "Generacion firmware VDR-EM" --text "" --column "" --column "" \
-         1 "Instalar paquetes necesarios en Ubuntu" \
-         2 "Actualizar firmware" \
-         3 "Actualizar VDR" \
-         4 "Actualizar Plugins" \
-         5 "Actualizar Servidor Web" \
-         6 "Configurar opciones" \
-         7 "Generar firmware" \
-         8 "Salir"
+    ans=$(zenity --list --width 300 --height 275 --title $"VDR-EM firwmare creation" --text "" --column "" --column "" \
+         1 $"Install needed packages in Ubuntu" \
+         2 $"Firmware Update" \
+         3 $"VDR Update" \
+         4 $"Plugins Update" \
+         5 $"Web Server Update" \
+         6 $"Setting options" \
+         7 $"Firmware creation" \
+         8 $"Quit"
         )
   
     if [ -z $ans ] ; then return ; fi
 
     case $ans in
         1) ubuntu_install;;
-        2) first_download;update_firmware;;
+        2) first_download;update_firmware;generate_locale;;
         3) update_vdr;;
         4) update_plugins;;
         5) update_webif;;
-        6) net_menu;set_config;general_menu;set_config; zenity --info --text "Ya puede generar el firmware" ;;
+        6) net_menu;set_config;general_menu;set_config; zenity --info --text $"Now you can generate the firmware" ;;
         7) create_firmware;;
         8) exit 0;;
     esac
@@ -521,6 +558,7 @@ wizard() {
     #Descarga/actualizacion
     first_download;
     update_firmware;
+    generate_locale;
 
     #Compilacion y generacion ficheros firmware
     create_firmware;
@@ -528,33 +566,40 @@ wizard() {
 
 #--------------- MAIN -----------------------------------------------------------------------------
 
+#Verificamos si el sistema es 64bits para utilizar linux32 al ejecutar los make
+system_type 'x86_64'
+if [ "$?" = "0" ] ; then
+    LINUX32BIN=''
+else
+    LINUX32BIN='linux32'
+fi
+
 check_zenity
 
 #Inicializar el fichero de log general
-info "Inicio de la compilación"
-info "Fecha: `date`"
+info $"Begin of building"
+info $"Date: `date`"
 
 # Introducción e instrucciones generales
-zenity --info --text "- Va a descargar y compilar los fuentes del firmware VDR para el Gigaset M7xx.\n- Info: http://www.assembla.com/wiki/show/VDR-M7x0/Instalación_del_VDR-NG-EM#instalacion_linux.\n" 
+zenity --info --text $"- It's going to download and build the VDR firmware sources for the Gigaset M7x0.\n- Info (in spanish): http://www.assembla.com/wiki/show/VDR-M7x0/Instalación_del_VDR-NG-EM#instalacion_linux.\n"
 
 #Cargando configuracion guardada por defecto
 load_general
 
 #Seleccionar lenguaje
 select_locale
-debug "Locale: $locale_firm"
+debug $"Locale: $locale_firm"
 
 select_install_mode
-debug "Install mode: $install_mode"
+debug $"Install mode: $install_mode"
 
 # El usuario debe elegir entre firmware 'PRO' y firmware 'LITE'
 select_version
-debug "Version: $version_firm"
-version_firm='lite'
+debug $"Version: $version_firm"
 
 # El usuario debe elegir el modelo de su Siemens entre m740 y m750t
 select_model
-debug "Modelo: $model_m7xx"
+debug $"Model: $model_m7xx"
 
 set_general
 load_general
