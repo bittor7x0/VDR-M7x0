@@ -79,3 +79,13 @@ else
 	mkdir $PLUGINDIR/help/$LANG_S
 	cp $BASE/VDR-Plugins/Config-dir/plugins/help/eng/* $PLUGINDIR/help/$LANG_S/
 fi
+
+#
+# Change Epgsearch Plugin
+#
+if [ -d $BASE/VDR-Plugins/Config-dir/plugins/epgsearch/$LANG_S/* ]
+then
+	cp -f $BASE/VDR-Plugins/Config-dir/plugins/epgsearch/$LANG_S/* $PLUGINDIR/epgsearch/
+fi
+
+

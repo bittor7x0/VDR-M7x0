@@ -1,37 +1,36 @@
 #########################################################################
-# Plantilla de correo de notificación de conflictos.
+# This is a template for email notifications about timer conflicts.
 # 
-# Se han de definir cuatro secciones:
-#  - subject: asunto del mensaje
-#  - mailbody: texto del mensaje (la variable %conflict.conflicts% representa 
-#           la lista de conflictos)
-#  - conflictsat: descripción del momento en que hay un conflicto entre
-#           programaciones (la variable %conflict.confltimers% representa
-#           la lista de programaciones afectadas)
-#  - "confltimer" descripción de un conflicto de programación
+# There are 4 sections to be defined:
+#  - "subject" to be used as mail subject
+#  - "mailbody" the body of the mail (put %conflictss% in the place where the 
+#           list of conflicts should appear!)
+#  - "conflictsat" the description of one time where one or more conflicts
+#           exists (put %confltimers% in the place where the list of conflict
+#          timers should appear!)
+#  - "confltimer" the description of one conflicting timer
 #
-# ¡Cerrar cada sección con la correspondiente etiqueta!
+# close each section with the correspondig end tag!
 #
-#
-#  Version: 0.1   Fecha: 29/04/2010
-#  Autor: Atinar  <atinar1 @ hotmail . com>
+#  Version: 0.1   Date: 29/04/2010
+#  Author: Atinar  <atinar1 @ hotmail . com>
 #
 #########################################################################
 
 
 #########################################################################
-# Asunto del mensaje (no poner salto de línea)
+# Subject definition (no CR!)
 #########################################################################
-<subject>[epgsearch] Conflictos de programación</subject>
+<subject>[epgsearch] Timer conflicts</subject>
 
 
 #########################################################################
-# Cuerpo del mensaje
+# Body definition
 #########################################################################
 <mailbody>
 <html>
 <head>
-	<title>Comprobación de conflictos en programaciones.</title>
+	<title>Timer conflicts check.</title>
 	<style type="text/css">
 		div.level0 {
 			font-family: Bitstream Vera Sans;
@@ -113,10 +112,10 @@
 	<div class="level0">
 		<table id="info" class="main">
 			<tr>
-				<th colspan="2" class="caption">Comprobación de conflictos en programaciones.</th>
+				<th colspan="2" class="caption">Timer conflicts check.</th>
 			</tr>
-			<tr><th>Comprobado</a></th><td>%datenow% %timenow%</td></tr>
-			<tr><th>Nº conflictos</th><td>%conflict.count%</td></tr>
+			<tr><th>Done at</a></th><td>%datenow% %timenow%</td></tr>
+			<tr><th>Conflicts</th><td>%conflict.count%</td></tr>
 		</table>
 		%conflict.conflicts%
 	</div>
@@ -125,13 +124,13 @@
 </mailbody>
 
 #########################################################################
-# Descripción de un conflicto
+# Conflict definition
 #########################################################################
 <conflictsat>
 		<table class="main">
 			<tr>
 				<th class="caption">
-					<a href="#info" class="gotop">&uarr; Subir</a> Conflicto %conflict.date% %conflict.time%
+					<a href="#info" class="gotop">&uarr; Top</a> Conflict at %conflict.date% %conflict.time%
 				</th>
 			</tr>
 			<tr>
@@ -144,17 +143,12 @@
 
 
 #########################################################################
-# Programación afectada por un conflicto.
-# Se pueden usar variables refereidas a la programación o al envento EPG.
-# Se debe tener en cuenta que la programación es posible que no tenga evento 
-# asociado, en cuyo caso las variables se sustituyen por espacios.
-# Tambien se pueden utilizar variables definidas por el usuario en 
-# epgsearchuservars.conf (ejemplo: webif_url_base).
+# Definition of a conflict timer
 #########################################################################
 <conflicttimer>
 					<table class="timer">
 						<tr class="event">
-							<th>Programa</th>
+							<th>Event</th>
 							<td>
 								<p class="title"><a href="%webif_url_base%/epgGrid.kl1?a=18&amp;start=l%time_lng%">%title%</a></p>
 								<p class="subtitle">%subtitle%</p>
@@ -162,22 +156,22 @@
 							</td>
 						</tr>
 						<tr class="date">
-							<th>Fecha</td><td>%time_w% %date%</td>
+							<th>Date</td><td>%time_w% %date%</td>
 						</tr>
 						<tr class="timespan">
-							<th>Duración<br/>evento</th><td>%time%-%timeend%</td>
+							<th>Event<br/>duration</th><td>%time%-%timeend%</td>
 						</tr>
 						<tr class="timespan">
-							<th>Duración<br/>programación</th><td>%timer.start%-%timer.stop%</td>
+							<th>Timer<br/>duration</th><td>%timer.start%-%timer.stop%</td>
 						</tr>
 						<tr class="channel">
-							<th>Canal</th><td>%timer.chlng% (%timer.chnr%)</td>
+							<th>Channel</th><td>%timer.chlng% (%timer.chnr%)</td>
 						</tr>
 						<tr class="file">
-							<th>Archivo</th><td>%timer.file%</td>
+							<th>File</th><td>%timer.file%</td>
 						</tr>
 						<tr class="search">
-							<th>Búsqueda</th><td>%timer.search% (%timer.searchid%)</td>
+							<th>Search</th><td>%timer.search% (%timer.searchid%)</td>
 						</tr>
 					</table>
 </conflicttimer>

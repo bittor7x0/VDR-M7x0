@@ -1,42 +1,43 @@
 #########################################################################
-# Esta es una plantilla para notificaciones por email de cambios en 
-# programaciones.
+# This is a sample template for email notifications about timer changes
+# (NOTE: This is a sample for a HTML mail, but you could use only text
+# as well)
 #
-# Se han de definir tres secciones:
-#  - "subject" como asunto del mensaje.
-#  - "mailbody" como cuerpo del mensaje.
-#    Las variables %update.newtimers%, %update.modtimers% y %update.deltimers% 
-#    serán sustituidas respectivamente por las listas de programaciones nuevas,
-#    modificadas y borradas.
-#  - "timer" es la sección que describe una programación dentro de una de las
-#    listas.
+# There are 3 sections that have to be defined:
+#  - "subject" to be used as mail subject
+#  - "mailbody" the body of the mail:
+#    put %update.newtimers% in the place where the list of new timers should
+#    appear. The same for %update.modtimers% and %update.deltimers% for the
+#    list of changed or deleted timers.
+#  - "timer" the description of one timer. This section is used to display one
+#    timer within a timer list, e.g. in %update.newtimers%
 #
-# ¡Se debe cerrar cada sección con la correspondiente etiqueta!
-# En el MANUAL se describern las variables disponibles.
-#
+# close each section with the corresponding end tag!
+# Please have a look at the MANUAL for the available variables.
+#########################################################################
 #
 # Version: 0.3    Date: 24.09.2006
 #
 #  Author: Mike Constabel      <vejoun @ vdrportal>
 #          Christian Wieninger <winni  @ vdrportal>
 #
-#  Traducido/adaptado: Atinar  <atinar1 @ hotmail . com>    30.04.2010
+#  Modified: Atinar  <atinar1 @ hotmail . com>   Date: 30.04.2010
 #
 #########################################################################
 
 #########################################################################
-# Asunto del mensaje (no poner salto de línea)
+# Subject definition (no CR!)
 #########################################################################
-<subject>[epgsearch] Cambios en programaciones</subject>
+<subject>[epgsearch] Timers modification</subject>
 
 
 #########################################################################
-# Cuerpo del mensaje
+# Body definition
 #########################################################################
 <mailbody>
 <html>
 <head>
-	<title>Cambios en programaciones<br/>por epgsearch</title>
+<title>Information about search timer update</title>
 
 	<style type="text/css">
 		div.level0 {
@@ -122,22 +123,22 @@
 				<th colspan="2" class="caption">Detalles de la actualización</th>
 			</tr>
 			<tr>
-				<th>Actualizado el</a></th><td>%datenow% %timenow%</td>
+				<th>Updated at</a></th><td>%datenow% %timenow%</td>
 			</tr>
 			<tr>
-				<th><a href="#new">Programaciones nuevas</a></th><td>%update.countnewtimers%</td>
+				<th><a href="#new">New timers</a></th><td>%update.countnewtimers%</td>
 			</tr>
 			<tr>
-				<th><a href="#mod">Programaciones modificadas</a></th><td>%update.countmodtimers%</td>
+				<th><a href="#mod">Modified timers</a></th><td>%update.countmodtimers%</td>
 			</tr>
 			<tr>
-				<th><a href="#del">Programaciones borradas</a></th><td>%update.countdeltimers%</td>
+				<th><a href="#del">Deleted timers</a></th><td>%update.countdeltimers%</td>
 			</tr>
 		</table>
 		<table id="new" class="main">
 			<tr>
 				<th class="caption">
-					<a href="#info" class="gotop">&uarr; Subir</a> Programaciones nuevas
+					<a href="#info" class="gotop">&uarr; Top</a> New timers
 				</th>
 			</tr>
 			<tr>
@@ -149,7 +150,7 @@
 		<table id="mod" class="main">
 			<tr>
 				<th class="caption">
-					<a href="#info" class="gotop">&uarr; Subir</a> Programaciones modificadas
+					<a href="#info" class="gotop">&uarr; Top</a> Modified timers
 				</th>
 			</tr>
 			<tr>
@@ -161,7 +162,7 @@
 		<table id="del" class="main">
 			<tr>
 				<th class="caption">
-					<a href="#info" class="gotop">&uarr; Subir</a> Programaciones borradas
+					<a href="#info" class="gotop">&uarr; Top</a> Deleted timers
 				</th>
 			</tr>
 			<tr>
@@ -172,21 +173,19 @@
 		</table>
 	</div>
 </body>
-</html>
-</mailbody>
+</html></mailbody>
 
 ##############################################################################
-# Descripción de cada programación de las listas anteriores.
-# Se pueden usar variables refereidas a la programación o al envento EPG.
-# Se debe tener en cuenta que la programación es posible que no tenga evento 
-# asociado, en cuyo caso las variables se sustituyen por espacios.
-# Tambien se pueden utilizar variables definidas por el usuario en 
-# epgsearchuservars.conf (ejemplo: webif_url_base).
-#########################################################################
+# here's the timer definition, which is used to display information about 
+# a timer within one of the timer lists. You can use any variables that refer
+# to an event or timer. (Please note, that a timer may have no event assigned
+# to it, resulting in an empty variable substitution!). You can also use 'user
+# defined' variables from epgsearchuservars.conf.
+##############################################################################
 <timer>
 					<table class="timer">
 						<tr class="event">
-							<th>Programa</th>
+							<th>Event</th>
 							<td>
 								<p class="title"><a href="%webif_url_base%/epgGrid.kl1?a=18&amp;start=l%time_lng%">%title%</a></p>
 								<p class="subtitle">%subtitle%</p>
@@ -194,22 +193,22 @@
 							</td>
 						</tr>
 						<tr class="date">
-							<th>Fecha</td><td>%time_w% %date%</td>
+							<th>Date</td><td>%time_w% %date%</td>
 						</tr>
 						<tr class="timespan">
-							<th>Duración<br/>evento</th><td>%time%-%timeend%</td>
+							<th>Event<br/>duration</th><td>%time%-%timeend%</td>
 						</tr>
 						<tr class="timespan">
-							<th>Duración<br/>programación</th><td>%timer.start%-%timer.stop%</td>
+							<th>Timer<br/>duration</th><td>%timer.start%-%timer.stop%</td>
 						</tr>
 						<tr class="channel">
-							<th>Canal</th><td>%timer.chlng% (%timer.chnr%)</td>
+							<th>Channel</th><td>%timer.chlng% (%timer.chnr%)</td>
 						</tr>
 						<tr class="file">
-							<th>Archivo</th><td>%timer.file%</td>
+							<th>File</th><td>%timer.file%</td>
 						</tr>
 						<tr class="search">
-							<th>Búsqueda</th><td>%timer.search% (%timer.searchid%)</td>
+							<th>Search</th><td>%timer.search% (%timer.searchid%)</td>
 						</tr>
 					</table>
 </timer>
