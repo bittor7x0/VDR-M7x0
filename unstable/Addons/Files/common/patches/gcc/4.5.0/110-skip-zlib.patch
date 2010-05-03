@@ -1,0 +1,30 @@
+diff -Naur gcc-4.4.3-orig/configure gcc-4.4.3/configure
+--- gcc-4.4.3-orig/configure	2009-04-25 06:10:29.000000000 +0200
++++ gcc-4.4.3/configure	2010-02-26 12:43:50.470726894 +0100
+@@ -1990,9 +1990,9 @@
+ 
+ 
+ # Skipdirs are removed silently.
+-skipdirs=
++skipdirs="zlib target-zlib"
+ # Noconfigdirs are removed loudly.
+-noconfigdirs=""
++noconfigdirs="zlib target-zlib"
+ 
+ use_gnu_ld=
+ # Make sure we don't let GNU ld be added if we didn't want it.
+diff -Naur gcc-4.4.3-orig/configure.ac gcc-4.4.3/configure.ac
+--- gcc-4.4.3-orig/configure.ac	2009-04-25 06:10:29.000000000 +0200
++++ gcc-4.4.3/configure.ac	2010-02-26 12:44:05.450818727 +0100
+@@ -234,9 +234,9 @@
+ GCC_TOPLEV_SUBDIRS
+ 
+ # Skipdirs are removed silently.
+-skipdirs=
++skipdirs="zlib target-zlib"
+ # Noconfigdirs are removed loudly.
+-noconfigdirs=""
++noconfigdirs="zlib target-zlib"
+ 
+ use_gnu_ld=
+ # Make sure we don't let GNU ld be added if we didn't want it.
