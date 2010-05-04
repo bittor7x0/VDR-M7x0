@@ -73,7 +73,7 @@ class cOsdMenuFilebrowser : public cOsdMenu, public cStatus
 
     eMenuFilebrowserTask Task;
 
-    static int DirectorySort(const dirent64** File1, const dirent64** File2);
+    static int DirectorySort(const void* File1, const void* File2);
     /*
      *  This filters entries shown in Filebrowser
      *  The function uses Statebag->ShowHiddenFiles and Statebag->Filter
