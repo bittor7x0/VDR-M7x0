@@ -1,29 +1,16 @@
 #!/bin/ash
 
-/bin/ash /etc/rc.local.halt
-
 source /etc/rc.conf
-source /etc/rc.local.conf
 
 echo -n 'stopping daemons:'
 echo -n ' lircd'
-/bin/kill -15 `/bin/cat /var/run/lircd.pid`
-
-if [ X"${netdate}" != X"NO" ]; then
-    echo -n "network time protocol daemon"
-    /usr/bin/killall -15 ntpclient
-fi
-
-if [ X"${inetd}" != X"NO" ]; then
-    echo -n ' inetd'
-    /bin/kill -15 `/bin/cat /var/run/inetd.pid`
-fi
+while read pid; do /bin/kill -15 $pid; done < /var/run/lircd.pid
 
 /usr/sbin/pic_tool -s time systopic
 
 if [ X"${syslogd_flags}" != X"NO" ]; then
     echo -n ' syslogd'
-    /bin/kill -15 `/bin/cat /var/run/syslogd.pid`
+    while read pid; do /bin/kill -15 $pid; done < /var/run/syslogd.pid
     /bin/mv /var/log/messages* /rw-flash/log
 fi 
 

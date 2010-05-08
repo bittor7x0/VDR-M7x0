@@ -22,7 +22,7 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc -o ! -f /rw-flash/.nodebug ]; then
     /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000
 
     /usr/bin/set-video &
-    /bin/echo "Enter osd debugging mode" | /usr/bin/osddrawtext -a 8 -c 1 -b 0xFFFF0000
+    echo "Enter osd debugging mode" | /usr/bin/osddrawtext -a 8 -c 1 -b 0xFFFF0000
     source /etc/rc.debug
 fi
 
@@ -49,6 +49,7 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
 	/bin/mkdir /rw-flash/log
 	[ -f /var/tmp/flash_content.etc ] && /bin/mv /var/tmp/flash_content.etc \
 		/rw-flash/etc/flash_content
+	/bin/sed -i -e "s,^mac=.*,mac=\"`/usr/sbin/pic_tool get-mac`\",g" /rw-flash/etc/rc.conf
 	echo "Done"
 fi
 
@@ -64,6 +65,4 @@ echo -n "Binding /etc ... "
 /bin/mount -o bind /rw-flash/etc /etc
 echo "Done"
 
-/bin/ash /etc/rc
-
-exit 0
+exec /bin/ash /etc/rc.modules

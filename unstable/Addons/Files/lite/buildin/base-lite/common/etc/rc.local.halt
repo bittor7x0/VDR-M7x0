@@ -6,8 +6,6 @@ echo -n 'stopping local stuff:'
 
 # put optional stuff after
 
-
-
 # put optional stuff before
 
 for bpath in ${bind_paths} ; do
@@ -71,3 +69,5 @@ if [ -x "${fw_update_file}" ] ; then
 fi
 
 /usr/bin/set-video off &
+
+exec /bin/ash /etc/rc.halt

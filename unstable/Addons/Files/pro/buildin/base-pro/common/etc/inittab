@@ -11,4 +11,4 @@ tty0::wait:/bin/ash /etc/rc.mini
 
 #----- system halt -----
 
-tty0::shutdown:/bin/ash /etc/rc.halt
+tty0::shutdown:/bin/ash /etc/rc.local.halt

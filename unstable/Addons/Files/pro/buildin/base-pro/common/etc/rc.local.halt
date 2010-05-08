@@ -6,14 +6,7 @@ echo -n 'stopping local stuff:'
 
 # put optional stuff after
 
-
-
 # put optional stuff before
-
-if [ X"${webif_start}" != X"NO" ]; then
-    echo -n ' stopping webif'
-    /usr/bin/killall -15 webifd
-fi
 
 for bpath in ${bind_paths} ; do
         echo -n " Umount binding ${bpath}"
@@ -36,6 +29,21 @@ done
 [ -f /var/run/runvdr.pid ] && /usr/bin/killall -9 vdr
 
 [ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && /bin/mv /var/vdr/epg.data ${vdr_epgfile}
+
+if [ X"${inetd}" != X"NO" ]; then
+    echo -n ' inetd'
+    while read pid; do /bin/kill -15 $pid; done < /var/run/inetd.pid
+fi
+
+if [ X"${webif_start}" != X"NO" ]; then
+    echo -n ' stopping webif'
+    while read pid; do /bin/kill -15 $pid; done < /var/run/webifd.pid
+fi
+
+if [ X"${netdate}" != X"NO" ]; then
+    echo -n "network time protocol daemon"
+    /usr/bin/killall -15 ntpclient
+fi
 
 if [ ${lazyumount} -ne 0 ] ; then
 	echo -n ' usb-umount'
@@ -76,3 +84,5 @@ if [ -x "${fw_update_file}" ] ; then
 fi
 
 /usr/bin/set-video off &
+
+exec /bin/ash /etc/rc.halt

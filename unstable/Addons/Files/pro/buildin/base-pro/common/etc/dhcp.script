@@ -26,11 +26,11 @@ case "$1" in
                      done
                 fi
 
-                /bin/echo -n > $RESOLV_CONF
-                [ -n "$domain" ] && /bin/echo search $domain >> $RESOLV_CONF
+                echo -n > $RESOLV_CONF
+                [ -n "$domain" ] && echo search $domain >> $RESOLV_CONF
                 for i in $dns ; do
                         echo "adding dns $i"
-                        /bin/echo nameserver $i >> $RESOLV_CONF
+                        echo nameserver $i >> $RESOLV_CONF
                 done
                 ;;
 esac

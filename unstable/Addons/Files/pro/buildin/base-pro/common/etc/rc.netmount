@@ -10,7 +10,7 @@ if [ ! -f /var/run/network_fs ] ; then
 fi
 
 # Disable extensions
-/bin/echo 0 > /proc/fs/cifs/LinuxExtensionsEnabled
+echo 0 > /proc/fs/cifs/LinuxExtensionsEnabled
 
 while read netshare mountpoint fstype mountopts ignore ; do
 	if [ -n "${netshare###*}" -a -n "${mountopts##*noauto*}" -a \

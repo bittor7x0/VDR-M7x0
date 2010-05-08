@@ -9,21 +9,13 @@ source /etc/rc.conf
 if [ X"${syslogd_flags}" != X"NO" ]; then
     /bin/mv /rw-flash/log/messages* /var/log
     echo -n "starting syslogd ... "
-    /sbin/syslogd ${syslogd_flags} &
+    /sbin/syslogd ${syslogd_flags}
 fi
 
-echo -n "loading modules ... "
-/bin/ash /etc/rc.modules
-echo "Done"
-
-if [ X"${pic_tool_flags}" != X"NO" ]; then
-    echo -n "execute pic_tool ... "
-    /usr/sbin/pic_tool ${pic_tool_flags} &
-fi
+echo -n "execute pic_tool ... "
+/usr/sbin/pic_tool ${pic_tool_flags} &
 
 echo "lircd daemon"
 /usr/sbin/lircd ${lircd_flags}
 
-/bin/ash /etc/rc.local
-
-exit 0
+exec /bin/ash /etc/rc.local

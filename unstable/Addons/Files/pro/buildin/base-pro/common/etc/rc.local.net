@@ -1,6 +1,5 @@
 #!/bin/ash
 
-source /etc/rc.conf
 source /etc/rc.local.conf
 
 # load network modules
@@ -8,7 +7,7 @@ source /etc/rc.local.conf
 
 /bin/hostname -F /etc/hostname
 
-/sbin/ifconfig ${if} hw ether `${mac_cmd}`
+/sbin/ifconfig ${if} hw ether ${mac}
 if [ X"${net}" = X"DHCP" ]; then
     echo "dhcp";
     /sbin/ifconfig ${if} 0.0.0.0
@@ -48,7 +47,7 @@ fi
 
 if [ X"${webif_start}" != X"NO" ]; then
     echo -n ' starting webif'
-    /usr/sbin/webifd &
+    /usr/sbin/webifd -p /var/run/webifd.pid &
 fi
 
-exit 0
+exec /bin/ash /etc/rc.local.post

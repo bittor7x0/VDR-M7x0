@@ -1,7 +1,5 @@
 #!/bin/ash
 
-source /etc/rc.local.conf
-
 # Load DV-Modules
 if [ X"${OSDLOG}" != X"YES" ]; then
     /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
@@ -52,4 +50,4 @@ else
 	echo "video.o"
 fi
 
-exit 0
+exec /bin/ash /etc/rc

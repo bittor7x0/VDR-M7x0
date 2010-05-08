@@ -3,6 +3,7 @@
 source /etc/rc.local.conf
 
 # load filesystems modules
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/nls/nls_iso8859-15.o
 /sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/ext2/ext2.o
 /sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/jbd/jbd.o
 /sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/ext3/ext3.o
@@ -23,4 +24,4 @@ if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_time}" != X"NO" ] ; then
 	done
 fi
 
-exit 0
+exec /bin/ash /etc/rc.local.post
