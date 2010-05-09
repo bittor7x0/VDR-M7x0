@@ -42,7 +42,7 @@ diff -Naur uclibc_build_env_orig/make-incs/gcc.mk uclibc_build_env/make-incs/gcc
  #
  
 -GCC_VERSION := 4.4.1
-+GCC_VERSION := 4.5.0
++GCC_VERSION := 4.4.3
  GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
  
  GCC_FILE1 := gcc-core-$(GCC_VERSION).tar.bz2
@@ -50,7 +50,7 @@ diff -Naur uclibc_build_env_orig/make-incs/gcc.mk uclibc_build_env/make-incs/gcc
  
  $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                            $$(BINUTILS_INSTALLED) \
-+                                          $$(MPC_INSTALLED) \
++                                          $$(MPFR_INSTALLED) \
                                            $$(UCLIBC_PRE_ALL_GCC)
  	-$(RM) -rf $(GCC_STAGE1_BUILD_DIR)
  	$(MKDIR) -p $(GCC_STAGE1_BUILD_DIR)
@@ -62,28 +62,26 @@ diff -Naur uclibc_build_env_orig/make-incs/gcc.mk uclibc_build_env/make-incs/gcc
  			--target=$(UCLIBC_TARGET) \
  			--enable-languages=c \
  			--enable-__cxa_atexit \
-@@ -102,6 +104,12 @@
+@@ -102,6 +104,10 @@
  			--with-arch=mips2 \
  			--with-tune=vr4120 \
  			--with-float=soft \
 +			--with-gmp=$(PREFIX) \
-+			--with-mpc=$(PREFIX) \
 +			--with-mpfr=$(PREFIX) \
-+			--disable-decimal-float \
 +			--disable-libgomp \
 +			--disable-libmudflap \
  			--nfp \
  			--enable-multilib \
  			--enable-softfloat \
-@@ -131,6 +139,7 @@
+@@ -131,6 +137,7 @@
  
  $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                     $$(BINUTILS_INSTALLED) \
-+                                   $$(MPC_INSTALLED) \
++                                   $$(MPFR_INSTALLED) \
                                     $$(UCLIBC_INSTALLED)
  	-$(RM) -rf $(GCC_BUILD_DIR)
  	$(MKDIR) -p $(GCC_BUILD_DIR)
-@@ -140,6 +149,7 @@
+@@ -140,6 +147,7 @@
  			--with-sysroot=$(TARGET_ROOT) \
  			--with-gnu-as \
  			--with-gnu-ld \
@@ -91,14 +89,12 @@ diff -Naur uclibc_build_env_orig/make-incs/gcc.mk uclibc_build_env/make-incs/gcc
  			--target=$(UCLIBC_TARGET) \
  			--enable-languages=c,c++ \
  			--enable-__cxa_atexit \
-@@ -148,6 +158,12 @@
+@@ -148,6 +156,10 @@
  			--with-arch=mips2 \
  			--with-tune=vr4120 \
  			--with-float=soft \
 +			--with-gmp=$(PREFIX) \
-+			--with-mpc=$(PREFIX) \
 +			--with-mpfr=$(PREFIX) \
-+			--disable-decimal-float \
 +			--disable-libgomp \
 +			--disable-libmudflap \
  			--nfp \
@@ -127,10 +123,10 @@ diff -Naur uclibc_build_env_orig/rootfs-file-lists/gcc.lst uclibc_build_env/root
 -lib/libstdc++.so.6.0.12 -                      s   - - - - - - - -
 -lib/libstdc++.so.6     libstdc++.so.6.0.12     l 777 0 0 - - - - -
 -lib/libstdc++.so       libstdc++.so.6.0.12     l 777 0 0 - - - - -
-+lib/libstdc++.so.6.0.14 lib/libstdc++.so.6.0.14 f 755 0 0 - - - - -
-+lib/libstdc++.so.6.0.14 -                      s   - - - - - - - -
-+lib/libstdc++.so.6     libstdc++.so.6.0.14     l 777 0 0 - - - - -
-+lib/libstdc++.so       libstdc++.so.6.0.14     l 777 0 0 - - - - -
++lib/libstdc++.so.6.0.13 lib/libstdc++.so.6.0.13 f 755 0 0 - - - - -
++lib/libstdc++.so.6.0.13 -                      s   - - - - - - - -
++lib/libstdc++.so.6     libstdc++.so.6.0.13     l 777 0 0 - - - - -
++lib/libstdc++.so       libstdc++.so.6.0.13     l 777 0 0 - - - - -
 diff -Naur uclibc_build_env_orig/rootfs-file-lists/uclibc.lst uclibc_build_env/rootfs-file-lists/uclibc.lst
 --- uclibc_build_env_orig/rootfs-file-lists/uclibc.lst	2010-03-04 12:50:37.000000000 +0100
 +++ uclibc_build_env/rootfs-file-lists/uclibc.lst	2010-03-01 09:00:32.000000000 +0100
