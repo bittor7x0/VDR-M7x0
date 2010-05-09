@@ -1,6 +1,6 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 1.7.13 backports applied in this patch:
+VDR 1.7.14 backports applied in this patch:
 * Implemented handling the "Content Descriptor" (based on a patch from Rolf
   Ahrenberg). The 'classic' and 'sttng' skins display the textual
   representation of the content descriptors as "genre". The epg.data file stores
@@ -16,9 +16,18 @@ VDR 1.7.13 backports applied in this patch:
   complete, and the channel is switched (suggested by Helmut Auer). Setting this
   parameter to 0 turns off the automatic channel switching, and the user will
   have to confirm the entry by pressing the "Ok" key.
+* The "Source" item in the "Edit channel" menu now wraps around the list of sources
+  (suggested by Halim Sahin).
 * The new setup option "Recording/Pause key handling" can be used to define
   what happens if the Pause key on the remote control is pressed during
   live tv (thanks to Timo Eskola).
+* The new setup option "Recording/Delete timeshift recording" controls whether a timeshift
+  recording is automatically deleted after viewing it.
+  This obsoletes the DELTIMESHIFTREC patch.
+  Note that the meaning of the values for this option is different from the DELTIMESHIFTREC
+  patch: 0 means timeshift recordings are not automatically deleted (the default behavior
+  as in previous versions), while 1 means to ask the user whether the recording shall be
+  deleted.
 * Removed the compile time option VFAT to allow users of precompiled binary
   distributions to have full control over whether or not to use the --vfat option
   at runtime (suggested by Michael Nork).
@@ -142,9 +151,10 @@ VDR 1.7.13 backports applied in this patch:
   from the broadcasters (suggested by Helmut Auer).
 * Fixed adding new transponders in case there is only a single channel in the
   channel list (reported by Halim Sahin).
-* The file name in the "Timers" menu now shows only the base name of the recording
-  without the folder path (if any). Otherwise with long folder paths the actual
-  recording name was not visible at all.
+* The new setup option "Folders in timer menu" controls whether the file names in
+  the timer menu are shown with their full folder path.
+* The full timer file name is now displayed if it ends with "TITLE" or "EPISODE"
+  (pointed out by Udo Richter).
 * cSafeFile::Close() now flushes the file (suggested by Stephan Austermühle).
 
 
@@ -623,7 +633,7 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
  bool cSVDRPhosts::Acceptable(in_addr_t Address)
  {
    cSVDRPhost *h = First();
-@@ -284,9 +300,11 @@
+@@ -284,15 +300,18 @@
  //M7X0 END AK
    SVDRPTimeout = 300;
    ZapTimeout = 3;
@@ -635,7 +645,22 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    PausePriority = 10;
    PauseLifetime = 1;
    UseSubtitle = 1;
-@@ -483,9 +501,11 @@
+   UseVps = 0;
+   VpsMargin = 120;
+   RecordingDirs = 1;
++  FoldersInTimerMenu = 1;
+   RecordingsSortMode = 0;
+   RecordingsSortDirsFirst = 0;
+   CutterAutoDelete = 1;
+@@ -317,6 +336,7 @@
+   MaxVideoFileSize = MAXVIDEOFILESIZE;
+   MaxRecordingSize = DEFAULTRECORDINGSIZE;
+   SplitEditedFiles = 0;
++  DelTimeshiftRec = 0;
+   HardLinkCutter = 0;
+   MinEventTimeout = 30;
+   MinUserInactivity = 300;
+@@ -482,15 +502,18 @@
  //M7X0 END AK
    else if (!strcasecmp(Name, "SVDRPTimeout"))        SVDRPTimeout       = atoi(Value);
    else if (!strcasecmp(Name, "ZapTimeout"))          ZapTimeout         = atoi(Value);
@@ -647,7 +672,22 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    else if (!strcasecmp(Name, "PausePriority"))       PausePriority      = atoi(Value);
    else if (!strcasecmp(Name, "PauseLifetime"))       PauseLifetime      = atoi(Value);
    else if (!strcasecmp(Name, "UseSubtitle"))         UseSubtitle        = atoi(Value);
-@@ -589,9 +609,11 @@
+   else if (!strcasecmp(Name, "UseVps"))              UseVps             = atoi(Value);
+   else if (!strcasecmp(Name, "VpsMargin"))           VpsMargin          = atoi(Value);
+   else if (!strcasecmp(Name, "RecordingDirs"))       RecordingDirs      = atoi(Value);
++  else if (!strcasecmp(Name, "FoldersInTimerMenu"))  FoldersInTimerMenu = atoi(Value);
+   else if (!strcasecmp(Name, "RecordingsSortMode"))  RecordingsSortMode = atoi(Value);
+   else if (!strcasecmp(Name, "RecordingsSortDirsFirst")) RecordingsSortDirsFirst = atoi(Value);
+   else if (!strcasecmp(Name, "CutterAutoDelete"))    CutterAutoDelete   = atoi(Value);
+@@ -515,6 +538,7 @@
+   else if (!strcasecmp(Name, "MaxVideoFileSize"))    MaxVideoFileSize   = atoi(Value);
+   else if (!strcasecmp(Name, "MaxRecordingSize"))    MaxRecordingSize   = atoi(Value);
+   else if (!strcasecmp(Name, "SplitEditedFiles"))    SplitEditedFiles   = atoi(Value);
++  else if (!strcasecmp(Name, "DelTimeshiftRec"))     DelTimeshiftRec    = atoi(Value);
+   else if (!strcasecmp(Name, "HardLinkCutter"))      HardLinkCutter     = atoi(Value);
+   else if (!strcasecmp(Name, "MinEventTimeout"))     MinEventTimeout    = atoi(Value);
+   else if (!strcasecmp(Name, "MinUserInactivity"))   MinUserInactivity  = atoi(Value);
+@@ -587,15 +611,18 @@
  //M7X0 END AK
    Store("SVDRPTimeout",       SVDRPTimeout);
    Store("ZapTimeout",         ZapTimeout);
@@ -659,6 +699,21 @@ diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
    Store("PausePriority",      PausePriority);
    Store("PauseLifetime",      PauseLifetime);
    Store("UseSubtitle",        UseSubtitle);
+   Store("UseVps",             UseVps);
+   Store("VpsMargin",          VpsMargin);
+   Store("RecordingDirs",      RecordingDirs);
++  Store("FoldersInTimerMenu", FoldersInTimerMenu);
+   Store("RecordingsSortMode", RecordingsSortMode);
+   Store("RecordingsSortDirsFirst", RecordingsSortDirsFirst);
+   Store("CutterAutoDelete",   CutterAutoDelete);
+@@ -620,6 +647,7 @@
+   Store("MaxVideoFileSize",   MaxVideoFileSize);
+   Store("MaxRecordingSize",   MaxRecordingSize);
+   Store("SplitEditedFiles",   SplitEditedFiles);
++  Store("DelTimeshiftRec",    DelTimeshiftRec);
+   Store("HardLinkCutter",     HardLinkCutter);
+   Store("MinEventTimeout",    MinEventTimeout);
+   Store("MinUserInactivity",  MinUserInactivity);
 diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
 --- VDR-NG-orig/config.h	2010-02-10 16:57:34.000000000 +0100
 +++ VDR-NG/config.h	2010-02-10 17:17:06.000000000 +0100
@@ -678,7 +733,7 @@ diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
    bool Acceptable(in_addr_t Address);
    };
  
-@@ -253,9 +255,11 @@
+@@ -253,13 +255,16 @@
  //M7X0 END AK
    int SVDRPTimeout;
    int ZapTimeout;
@@ -688,8 +743,21 @@ diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
    int PausePriority, PauseLifetime;
 +  int PauseKeyHandling;
    int UseSubtitle;
-   int DelTimeshiftRec;
    int UseVps;
+   int VpsMargin;
+   int RecordingDirs;
++  int FoldersInTimerMenu;
+   int HotStandby;
+   int TvMode;
+   int VCRMode;
+@@ -276,6 +281,7 @@
+   int MaxVideoFileSize;
+   int MaxRecordingSize;
+   int SplitEditedFiles;
++  int DelTimeshiftRec;
+   int HardLinkCutter;
+   int MinEventTimeout, MinUserInactivity;
+   int MultiSpeedMode;
 diff -Naur VDR-NG-orig/cutter.c VDR-NG/cutter.c
 --- VDR-NG-orig/cutter.c	2010-02-10 16:57:18.000000000 +0100
 +++ VDR-NG/cutter.c	2010-02-10 16:58:58.000000000 +0100
@@ -1774,7 +1842,36 @@ diff -Naur VDR-NG-orig/epg.h VDR-NG/epg.h
 diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
 --- VDR-NG-orig/i18n.c	2010-02-10 16:57:34.000000000 +0100
 +++ VDR-NG/i18n.c	2010-02-10 16:59:00.000000000 +0100
-@@ -4718,6 +4718,116 @@
+@@ -3926,6 +3926,28 @@
+     "Optagelser i foldere",
+     "Seznam nahrávek",
+   },
++  { "Setup.OSD$Folders in timer menu",
++    "Verzeichnisse im Timer-Menü",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Mostrar directorios en programaciones",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Setup.EPG$EPG scan timeout (h)",
+     "Zeit bis zur EPG-Aktualisierung (h)",
+     "Èas do EPG pregleda (h)",
+@@ -4718,6 +4740,116 @@
      "Standard levetid (d)",
      "Výchozí ¾ivotnost",
    },
@@ -1891,7 +1988,58 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
    { "Setup.Recording$Pause priority",
      "Pause-Priorität",
      "Prioriteta pavze",
-@@ -5180,6 +5290,28 @@
+@@ -4784,6 +4916,50 @@
+     "Anvend udsendelsesnavn",
+     "Pou¾ívat název epizody",
+   },
++  { "Setup.Recording$Delete timeshift recording",
++    "Zeitversetzte Aufnahme löschen",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Borrar grabación timeshift",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
++  { "Delete timeshift recording?",
++    "Zeitversetzte Aufnahme löschen?",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "¿Borrar grabación timeshift?",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Setup.Recording$Use VPS",
+     "VPS benutzen",
+     "Uporabi VPS",
+@@ -5136,6 +5312,28 @@
      "Zap timeout (s)",
      "Èasový limit Zap (s)",
    },
@@ -1920,7 +2068,36 @@ diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
    { "Setup.Miscellaneous$Initial channel",
      "Kanal beim Einschalten",
      "Privzeti kanal",
-@@ -7019,6 +7151,1766 @@
+@@ -6491,6 +6689,28 @@
+     "Zvuk",
+   },
+   // Miscellaneous:
++  { "confirm",
++    "bestätigen",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "confirmar",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "yes",
+     "ja",
+     "da",
+@@ -6975,6 +7195,1766 @@
      "Starter EPG skanning",
      "Zaèíná prohledávání EPG",
    },
@@ -3991,7 +4168,35 @@ diff -Naur VDR-NG-orig/MANUAL VDR-NG/MANUAL
 diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
 --- VDR-NG-orig/menu.c	2010-02-10 16:57:34.000000000 +0100
 +++ VDR-NG/menu.c	2010-02-10 16:59:00.000000000 +0100
-@@ -566,6 +566,7 @@
+@@ -129,16 +129,23 @@
+   eOSState state = cMenuEditItem::ProcessKey(Key);
+ 
+   if (state == osUnknown) {
+-     if (NORMALKEY(Key) == kLeft) { // TODO might want to increase the delta if repeated quickly?
+-        if (source && source->Prev()) {
+-           source = (cSource *)source->Prev();
++     bool IsRepeat = Key & k_Repeat;
++     Key = NORMALKEY(Key);
++     if (Key == kLeft) { // TODO might want to increase the delta if repeated quickly?
++        if (source) {
++           if (source->Prev())
++              source = (cSource *)source->Prev();
++           else if (!IsRepeat)
++              source = Sources.Last();
+            *value = source->Code();
+            }
+         }
+-     else if (NORMALKEY(Key) == kRight) {
++     else if (Key == kRight) {
+         if (source) {
+            if (source->Next())
+               source = (cSource *)source->Next();
++           else if (!IsRepeat)
++              source = Sources.First();
+            }
+         else
+            source = Sources.First();
+@@ -566,6 +573,7 @@
          Channels.Del(channel);
          cOsdMenu::Del(Index);
          Propagate();
@@ -3999,7 +4204,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
          isyslog("channel %d deleted", DeletedChannel);
          if (CurrentChannel && CurrentChannel->Number() != CurrentChannelNr) {
             if (!cDevice::PrimaryDevice()->Replaying() || cDevice::PrimaryDevice()->Transferring())
-@@ -590,6 +591,7 @@
+@@ -590,6 +598,7 @@
       Channels.Move(FromChannel, ToChannel);
       cOsdMenu::Move(From, To);
       Propagate();
@@ -4007,7 +4212,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
       isyslog("channel %d moved to %d", FromNumber, ToNumber);
       if (CurrentChannel && CurrentChannel->Number() != CurrentChannelNr) {
          if (!cDevice::PrimaryDevice()->Replaying() || cDevice::PrimaryDevice()->Transferring())
-@@ -692,7 +694,7 @@
+@@ -692,7 +701,7 @@
      case kRight|k_Repeat:
      case kRight:
                    DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
@@ -4016,19 +4221,34 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
                    return osContinue;
      default: break;
      }
-@@ -879,6 +881,11 @@
+@@ -739,12 +748,12 @@
+         free(buf);
+         }
+ 
+-     char* p = strrchr(data.file, '~');
++     char* p = strrchr(data.file, FOLDERDELIMCHAR);
+      if (p) {
+         p++;
+         strn0cpy(name, p, sizeof(name));
+         strn0cpy(path, data.file, sizeof(path));
+-        p = strrchr(path, '~');
++        p = strrchr(path, FOLDERDELIMCHAR);
+         if (p)
+            p[0] = 0;
+         }   
+@@ -879,6 +888,11 @@
       strftime(buffer, sizeof(buffer), "%Y%m%d", &tm_r);
       day = buffer;
       }
-+  const char *File = strrchr(timer->File(), '~');
-+  if (File)
++  const char *File = Setup.FoldersInTimerMenu ? NULL : strrchr(timer->File(), FOLDERDELIMCHAR);
++  if (File && strcmp(File + 1, TIMERMACRO_TITLE) && strcmp(File + 1, TIMERMACRO_EPISODE))
 +     File++;
 +  else
 +     File = timer->File();
    char *buffer = NULL;
    asprintf(&buffer, "%c\t%d\t%s%s%s\t%02d:%02d\t%02d:%02d\t%s",
                      !(timer->HasFlags(tfActive)) ? ' ' : timer->FirstDay() ? Setup.WarEagleIcons ? ICON_PFEIL : '!' : timer->Recording() ? Setup.WarEagleIcons ? ICON_REC : '#' : Setup.WarEagleIcons ? ICON_UHR : '>',
-@@ -890,7 +897,7 @@
+@@ -890,7 +904,7 @@
                      timer->Start() % 100,
                      timer->Stop() / 100,
                      timer->Stop() % 100,
@@ -4037,7 +4257,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    char *buffer2 = buffer;
    buffer = NULL;
    asprintf(&buffer, "%c%s", diskStatus, buffer2);
-@@ -1259,7 +1266,7 @@
+@@ -1259,7 +1273,7 @@
      case kRight|k_Repeat:
      case kRight:
                    DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
@@ -4046,7 +4266,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
                    return osContinue;
      default: break;
      }
-@@ -1698,6 +1705,7 @@
+@@ -1698,6 +1712,7 @@
      case cMenuScheduleItem::ssmThisThis: PrepareScheduleThisThis(Event, Channel); break;
      case cMenuScheduleItem::ssmThisAll:  PrepareScheduleThisAll(Event, Channel); break;
      case cMenuScheduleItem::ssmAllAll:   PrepareScheduleAllAll(Event, Channel); break;
@@ -4054,7 +4274,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
      }
    CurrentItem = (cMenuScheduleItem *)Get(Current());
    Sort();
-@@ -2075,7 +2083,7 @@
+@@ -2075,7 +2090,7 @@
      case kRight|k_Repeat:
      case kRight:
                    DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
@@ -4063,7 +4283,22 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
                    return osContinue;
      default: break;
      }
-@@ -2344,6 +2352,7 @@
+@@ -2179,12 +2194,12 @@
+   priority = recording->priority;
+   lifetime = recording->lifetime;
+ 
+-  char* p = strrchr(recording->Name(), '~');
++  char* p = strrchr(recording->Name(), FOLDERDELIMCHAR);
+   if (p) {
+      p++;
+      strn0cpy(name, p, sizeof(name));
+      strn0cpy(path, recording->Name(), sizeof(path));
+-     p = strrchr(path, '~');
++     p = strrchr(path, FOLDERDELIMCHAR);
+      if (p)
+         p[0] = 0;
+      }
+@@ -2344,6 +2359,7 @@
         case 1: SetHelp(tr("Button$Open")); break;
         case 2:
         case 3: SetHelp(RecordingCommands.Count() ? tr("Commands") : tr("Button$Play"), tr("Button$Rewind"), tr("Button$Delete"), NewHelpKeys == 3 ? tr("Button$Info") : NULL);
@@ -4071,7 +4306,16 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
         }
       helpKeys = NewHelpKeys;
       }
-@@ -2528,7 +2537,7 @@
+@@ -2366,7 +2382,7 @@
+   Clear();
+   Recordings.Sort();
+   for (cRecording *recording = Recordings.First(); recording; recording = Recordings.Next(recording)) {
+-      if (!base || (strstr(recording->Name(), base) == recording->Name() && recording->Name()[strlen(base)] == '~')) {
++      if (!base || (strstr(recording->Name(), base) == recording->Name() && recording->Name()[strlen(base)] == FOLDERDELIMCHAR)) {
+          cMenuRecordingItem *Item = new cMenuRecordingItem(recording, level);
+          if ((*Item->Text() && (!LastItem || strcmp(Item->Text(), LastItemText) != 0))
+             && (!cStatus::MsgReplayProtected(GetRecording(Item), Item->Name(), base,
+@@ -2528,7 +2544,7 @@
       cRecording *recording = GetRecording(ri);
       if (recording) {
          char *parameter = NULL;
@@ -4080,25 +4324,37 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
          cMenuCommands *menu;
          eOSState state = AddSubMenu(menu = new cMenuCommands(tr("Recording commands"), &RecordingCommands, parameter));
          free(parameter);
-@@ -3168,6 +3177,7 @@
+@@ -2685,6 +2701,7 @@
+   Add(new cMenuEditBoolItem(tr("Setup.OSD$Scroll wraps"),           &data.MenuScrollWrap));
+   Add(new cMenuEditBoolItem(tr("Setup.OSD$Menu button closes"),     &data.MenuButtonCloses));
+   Add(new cMenuEditBoolItem(tr("Setup.OSD$Recording directories"),  &data.RecordingDirs));
++  Add(new cMenuEditBoolItem(tr("Setup.OSD$Folders in timer menu"),  &data.FoldersInTimerMenu));
+   Add(new cMenuEditBoolItem(tr("Setup.OSD$Main menu command position"), &data.MenuCmdPosition, tr("bottom"), tr("top")));
+   SetCurrent(Get(current));
+   Display();
+@@ -3168,6 +3185,8 @@
  
  class cMenuSetupRecord : public cMenuSetupBase {
  private:
 +  const char *pauseKeyHandlingTexts[3];
-   const char *DelTimeshiftRecValues[3];
++  const char *delTimeshiftRecTexts[3];
    const char *RecordingsSortModeTexts[MAXSORTMODES];
  public:
-@@ -3176,6 +3186,9 @@
+   cMenuSetupRecord(void);
+@@ -3175,6 +3194,12 @@
  
  cMenuSetupRecord::cMenuSetupRecord(void)
  {
 +  pauseKeyHandlingTexts[0] = tr("do not pause live video");
 +  pauseKeyHandlingTexts[1] = tr("confirm pause live video");
 +  pauseKeyHandlingTexts[2] = tr("pause live video");
-   DelTimeshiftRecValues[0]   = tr("request");
-   DelTimeshiftRecValues[1]   = tr("no");
-   DelTimeshiftRecValues[2]   = tr("yes");
-@@ -3190,6 +3203,7 @@
++  delTimeshiftRecTexts[0] = tr("no");
++  delTimeshiftRecTexts[1] = tr("confirm");
++  delTimeshiftRecTexts[2] = tr("yes");
+   RecordingsSortModeTexts[0] = tr("main dir alphabetically, subdirs flexible");
+   RecordingsSortModeTexts[1] = tr("main dir by date, subdirs flexible");
+   RecordingsSortModeTexts[2] = tr("all alphabetically");
+@@ -3186,9 +3211,11 @@
    Add(new cMenuEditIntItem( tr("Setup.Recording$Primary limit"),             &data.PrimaryLimit, 0, MAXPRIORITY));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Default priority"),          &data.DefaultPriority, 0, MAXPRIORITY));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Default lifetime (d)"),      &data.DefaultLifetime, 0, MAXLIFETIME));
@@ -4106,7 +4362,11 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditIntItem( tr("Setup.Recording$Pause priority"),            &data.PausePriority, 0, MAXPRIORITY));
    Add(new cMenuEditIntItem( tr("Setup.Recording$Pause lifetime (d)"),        &data.PauseLifetime, 0, MAXLIFETIME));
    Add(new cMenuEditBoolItem(tr("Setup.Recording$Use episode name"),          &data.UseSubtitle));
-@@ -3283,6 +3297,7 @@
++  Add(new cMenuEditStraItem(tr("Setup.Recording$Delete timeshift recording"),&data.DelTimeshiftRec, 3, delTimeshiftRecTexts));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Use VPS"),                   &data.UseVps));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$VPS margin (s)"),            &data.VpsMargin, 0));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Record Dolby Digital"),      &data.UseDolbyInRecordings));
+@@ -3278,6 +3305,7 @@
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. user inactivity (min)"), &data.MinUserInactivity));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$SVDRP timeout (s)"),          &data.SVDRPTimeout));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Zap timeout (s)"),            &data.ZapTimeout));
@@ -4114,7 +4374,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
    Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
-@@ -3909,8 +3924,6 @@
+@@ -3904,8 +3932,6 @@
  
  // --- cDisplayChannel -------------------------------------------------------
  
@@ -4123,7 +4383,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
  cDisplayChannel *cDisplayChannel::currentDisplayChannel = NULL;
  
  cDisplayChannel::cDisplayChannel(int Number, bool Switched)
-@@ -4146,7 +4159,7 @@
+@@ -4141,7 +4167,7 @@
           Refresh();
           break;
      case kNone:
@@ -4132,7 +4392,7 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
              channel = Channels.GetByNumber(number);
              if (channel)
                 NewChannel = channel;
-@@ -4389,7 +4402,7 @@
+@@ -4384,7 +4410,7 @@
           timeout.Set(TRACKTIMEOUT);
           break;
      case kOk:
@@ -4141,7 +4401,24 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
              oldTrack = -1; // make sure we explicitly switch to that track
           timeout.Set();
           break;
-@@ -4531,8 +4544,11 @@
+@@ -4512,22 +4538,26 @@
+   return false;
+ }
+ 
+-void cRecordControl::Stop(void)
++void cRecordControl::Stop(bool ExecuteUserCommand)
+ {
+   if (timer) {
+      DELETENULL(recorder);
+      timer->SetRecording(false);
+      timer = NULL;
+      cStatus::MsgRecording(device, NULL, fileName, false);
+-     cRecordingUserCommand::InvokeCommand(RUC_AFTERRECORDING, fileName);
++     if (ExecuteUserCommand)
++        cRecordingUserCommand::InvokeCommand(RUC_AFTERRECORDING, fileName);
+      }
+ }
+ 
  bool cRecordControl::Process(time_t t)
  {
  //M7X0 BEGIN AK
@@ -4154,7 +4431,63 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
    AssertFreeDiskSpace(timer->Priority());
    return true;
  //M7X0 END AK
-@@ -4977,7 +4993,8 @@
+@@ -4662,10 +4692,12 @@
+ 
+ cRecordControl *cRecordControls::GetRecordControl(const char *FileName)
+ {
+-  for (int i = 0; i < MAXRECORDCONTROLS; i++) {
+-      if (RecordControls[i] && strcmp(RecordControls[i]->FileName(), FileName) == 0)
+-         return RecordControls[i];
+-      }
++  if (FileName) {
++     for (int i = 0; i < MAXRECORDCONTROLS; i++) {
++         if (RecordControls[i] && strcmp(RecordControls[i]->FileName(), FileName) == 0)
++            return RecordControls[i];
++         }
++     }
+   return NULL;
+ }
+ 
+@@ -4754,6 +4786,38 @@
+      currentReplayControl = NULL;
+ }
+ 
++void cReplayControl::Stop(void)
++{
++  if (Setup.DelTimeshiftRec && fileName) {
++     cRecordControl* rc = cRecordControls::GetRecordControl(fileName);
++     if (rc && rc->InstantId()) {
++        if (Active()) {
++           if (Setup.DelTimeshiftRec == 2 || Interface->Confirm(tr("Delete timeshift recording?"))) {
++              cTimer *timer = rc->Timer();
++              rc->Stop(false); // don't execute user command
++              if (timer) {
++                 isyslog("deleting timer %s", *timer->ToDescr());
++                 Timers.Del(timer);
++                 Timers.SetModified();
++                 }
++              cDvbPlayerControl::Stop();
++              cRecording *recording = Recordings.GetByName(fileName);;
++              if (recording) {
++                 if (recording->Delete()) {
++                    Recordings.DelByName(fileName);
++                    ClearLastReplayed(fileName);
++                    }
++                 else
++                    Skins.Message(mtError, tr("Error while deleting recording!"));
++                 }
++              return;
++              }
++           }
++        }
++     }
++  cDvbPlayerControl::Stop();
++}
++
+ void cReplayControl::SetRecording(const char *FileName, const char *Title)
+ {
+   free(fileName);
+@@ -4921,7 +4985,8 @@
           timeSearchActive = false;
           break;
      default:
@@ -4164,6 +4497,39 @@ diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
           break;
      }
  
+@@ -5180,7 +5245,11 @@
+                            else
+                               Show();
+                            break;
+-            case kBack:    return osRecordings;
++            case kBack:    if (Setup.DelTimeshiftRec) { 
++                              cRecordControl* rc = cRecordControls::GetRecordControl(fileName);
++                              return rc && rc->InstantId() ? osEnd : osRecordings;
++                              }
++                           return osRecordings;
+             default:       return osUnknown;
+             }
+           }
+diff -Naur VDR-NG-orig/menu.h VDR-NG/menu.h
+--- VDR-NG-orig/menu.h	2010-04-29 18:40:41.000000000 +0200
++++ VDR-NG/menu.h	2010-04-29 19:10:04.294971024 +0200
+@@ -198,7 +198,7 @@
+   virtual ~cRecordControl();
+   bool Process(time_t t);
+   cDevice *Device(void) { return device; }
+-  void Stop(void);
++  void Stop(bool ExecuteUserCommand = true);
+   const char *InstantId(void) { return instantId; }
+   const char *FileName(void) { return fileName; }
+   cTimer *Timer(void) { return timer; }
+@@ -251,6 +251,7 @@
+ public:
+   cReplayControl(void);
+   virtual ~cReplayControl();
++  void Stop(void);
+   virtual cOsdObject *GetInfo(void);
+   virtual eOSState ProcessKey(eKeys Key);
+   virtual void Show(void);
 diff -Naur VDR-NG-orig/menuitems.c VDR-NG/menuitems.c
 --- VDR-NG-orig/menuitems.c	2010-02-10 16:56:56.000000000 +0100
 +++ VDR-NG/menuitems.c	2010-02-10 16:59:02.000000000 +0100
@@ -4676,7 +5042,17 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
     (kls 2002-07-27)
  #define DATAFORMAT   "%4d-%02d-%02d.%02d:%02d.%02d.%02d" RECEXT
  #define NAMEFORMAT   "%s/%s/" DATAFORMAT
-@@ -83,6 +84,7 @@
+@@ -55,9 +56,6 @@
+ #define DISKCHECKDELTA    100 // seconds between checks for free disk space
+ #define REMOVELATENCY      10 // seconds to wait until next check after removing a file
+ 
+-#define TIMERMACRO_TITLE    "TITLE"
+-#define TIMERMACRO_EPISODE  "EPISODE"
+-
+ #define MAX_SUBTITLE_LENGTH  40
+ 
+ #define MAX_LINK_LEVEL  6
+@@ -83,6 +81,7 @@
  
  void cRemoveDeletedRecordingsThread::Action(void)
  {
@@ -4684,7 +5060,7 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
    // Make sure only one instance of VDR does this:
    cLockFile LockFile(VideoDirectory);
    if (LockFile.Lock()) {
-@@ -367,8 +369,8 @@
+@@ -367,8 +366,8 @@
                              ownEvent->SetEventID(EventID);
                              ownEvent->SetStartTime(StartTime);
                              ownEvent->SetDuration(Duration);
@@ -4695,7 +5071,18 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
                              }
                         }
                         break;
-@@ -422,34 +424,14 @@
+@@ -404,8 +403,8 @@
+ 
+ struct tCharExchange { char a; char b; };
+ tCharExchange CharExchange[] = {
+-  { '~',  '/'    },
+-  { '/',  '~'    },
++  { FOLDERDELIMCHAR,  '/'    },
++  { '/',  FOLDERDELIMCHAR    },
+   { ' ',  '_'    },
+   // backwards compatibility:
+   { '\'', '\''   },
+@@ -422,34 +421,14 @@
             // The VFAT file system can't handle all characters, so we
             // have to take extra efforts to encode/decode them:
             if (ToFileSystem) {
@@ -4724,19 +5111,22 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
 -                          break;
                       // characters that can be mapped to other characters:
                       case ' ': *p = '_'; break;
-                      case '~': *p = '/'; break;
+-                     case '~': *p = '/'; break;
++                     case FOLDERDELIMCHAR: *p = '/'; break;
                       // characters that have to be encoded:
                       default:
 -                       if (*p != '.' || !*(p + 1) || *(p + 1) == '~') { // Windows can't handle '.' at the end of directory names
-+                       if (strchr(InvalidChars, *p) || *p == '.' && (!*(p + 1) || *(p + 1) == '~')) { // Windows can't handle '.' at the end of file/directory names
++                       if (strchr(InvalidChars, *p) || *p == '.' && (!*(p + 1) || *(p + 1) == FOLDERDELIMCHAR)) { // Windows can't handle '.' at the end of file/directory names
                            int l = p - s;
                            s = (char *)realloc(s, strlen(s) + 10);
                            p = s + l;
-@@ -466,14 +448,16 @@
+@@ -465,15 +444,17 @@
+               switch (*p) {
                  // mapped characters:
                  case '_': *p = ' '; break;
-                 case '/': *p = '~'; break;
+-                case '/': *p = '~'; break;
 -                // encodes characters:
++                case '/': *p = FOLDERDELIMCHAR; break;
 +                // encoded characters:
                  case '#': {
 -                     if (strlen(p) > 2) {
@@ -4754,7 +5144,7 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
                          }
                       }
                       break;
-@@ -481,6 +465,7 @@
+@@ -481,6 +462,7 @@
                  case '\x01': *p = '\''; break;
                  case '\x02': *p = '/';  break;
                  case '\x03': *p = ':';  break;
@@ -4762,7 +5152,7 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
                  }
                }
             }
-@@ -522,8 +507,8 @@
+@@ -522,8 +504,8 @@
       strn0cpy(SubtitleBuffer, Subtitle, MAX_SUBTITLE_LENGTH);
       Subtitle = SubtitleBuffer;
       }
@@ -4773,7 +5163,16 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
    if (macroTITLE || macroEPISODE) {
       name = strdup(Timer->File());
       name = strreplace(name, TIMERMACRO_TITLE, Title);
-@@ -565,9 +550,11 @@
+@@ -531,7 +513,7 @@
+      // avoid blanks at the end:
+      int l = strlen(name);
+      while (l-- > 2) {
+-           if (name[l] == ' ' && name[l - 1] != '~')
++           if (name[l] == ' ' && name[l - 1] != FOLDERDELIMCHAR)
+               name[l] = 0;
+            else
+               break;
+@@ -565,9 +547,11 @@
       sortBuffer[i] = NULL;
       lastDirsFirst[i] = -1;
    }
@@ -4787,7 +5186,56 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
  
    name = NULL;
    info = new cRecordingInfo;
-@@ -1270,7 +1257,7 @@
+@@ -752,7 +736,7 @@
+      struct tm tm_r;
+      struct tm *t = localtime_r(&start, &tm_r);
+      char *s;
+-     if (Level > 0 && (s = strrchr(name, '~')) != NULL)
++     if (Level > 0 && (s = strrchr(name, FOLDERDELIMCHAR)) != NULL)
+         s++;
+      else
+         s = name;
+@@ -803,18 +787,18 @@
+                                (Setup.ShowRecLength ? RecDelimiter : ""),
+                                s);
+         }
+-     // let's not display a trailing '~':
++     // let's not display a trailing FOLDERDELIMCHAR:
+      if (!NewIndicator)
+         stripspace(titleBuffer);
+      s = &titleBuffer[strlen(titleBuffer) - 1];
+-     if (*s == '~')
++     if (*s == FOLDERDELIMCHAR)
+         *s = 0;
+      }
+   else if (Level < HierarchyLevels()) {
+      const char *s = name;
+      const char *p = s;
+      while (*++s) {
+-           if (*s == '~') {
++           if (*s == FOLDERDELIMCHAR) {
+               if (Level--)
+                  p = s + 1;
+               else
+@@ -856,7 +840,7 @@
+   const char *s = name;
+   int level = 0;
+   while (*++s) {
+-        if (*s == '~')
++        if (*s == FOLDERDELIMCHAR)
+            level++;
+         }
+   return level;
+@@ -864,7 +848,7 @@
+ 
+ bool cRecording::IsEdited(void) const
+ {
+-  const char *s = strrchr(name, '~');
++  const char *s = strrchr(name, FOLDERDELIMCHAR);
+   s = !s ? name : s + 1;
+   return *s == '%';
+ }
+@@ -1270,7 +1254,7 @@
  {
    if (command) {
       char *cmd;
@@ -4796,7 +5244,7 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
       isyslog("executing '%s'", cmd);
       SystemExec(cmd);
       free(cmd);
-@@ -1309,19 +1296,19 @@
+@@ -1309,19 +1293,19 @@
          if (access(fileName, R_OK) == 0) {
             struct stat buf;
             if (stat(fileName, &buf) == 0) {
@@ -4819,7 +5267,7 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
                            esyslog("ERROR: can't read from file '%s'", fileName);
                            free(index);
                            index = NULL;
-@@ -1540,10 +1527,10 @@
+@@ -1540,10 +1524,10 @@
          if (PictureType)
             *PictureType = index[Index].type;
          if (Length) {
@@ -4833,7 +5281,7 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
             else
                *Length = -1; // this means "everything up to EOF" (the buffer's Read function will act accordingly)
             }
-@@ -1571,10 +1558,10 @@
+@@ -1571,10 +1555,10 @@
                    FileOffset = &index[Index].offset;
                 if (Length) {
                    // all recordings end with a non-I_FRAME, so the following should be safe:
@@ -4847,7 +5295,7 @@ diff -Naur VDR-NG-orig/recording.c VDR-NG/recording.c
                    else {
                       esyslog("ERROR: 'I' frame at end of file #%d", *FileNumber);
                       *Length = -1;
-@@ -1708,11 +1695,11 @@
+@@ -1708,11 +1692,11 @@
    if (fileNumber != Number)
       Close();
    if (0 < Number && Number <= MAXFILESPERRECORDING) {
@@ -4872,7 +5320,18 @@ diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
  #include "epg.h"
  #include "thread.h"
  #include "timers.h"
-@@ -59,6 +60,7 @@
+@@ -25,6 +26,10 @@
+ #endif
+ //M7X0 BEGIN AK
+ 
++#define FOLDERDELIMCHAR '~'
++#define TIMERMACRO_TITLE    "TITLE"
++#define TIMERMACRO_EPISODE  "EPISODE"
++
+ extern bool VfatFileSystem;
+ extern bool DirOrderState;
+ 
+@@ -59,6 +64,7 @@
  public:
    ~cRecordingInfo();
    tChannelID ChannelID(void) const { return channelID; }
@@ -4880,7 +5339,7 @@ diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
    const char *Title(void) const { return event->Title(); }
    const char *ShortText(void) const { return event->ShortText(); }
    const char *Description(void) const { return event->Description(); }
-@@ -198,7 +200,7 @@
+@@ -197,7 +203,7 @@
  #define FRAMESPERSEC 25
  
  // The maximum size of a single frame (up to HDTV 1920x1080):
@@ -4889,7 +5348,7 @@ diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
  
  // The maximum file size is limited by the range that can be covered
  // with 'int'. 4GB might be possible (if the range is considered
-@@ -248,7 +250,7 @@
+@@ -247,7 +253,7 @@
  class cFileName {
  private:
    cUnbufferedFile *file;
@@ -4898,7 +5357,7 @@ diff -Naur VDR-NG-orig/recording.h VDR-NG/recording.h
    char *fileName, *pFileNumber;
    bool record;
    bool blocking;
-@@ -263,11 +265,11 @@
+@@ -262,11 +268,11 @@
  #endif
    ~cFileName();
    const char *Name(void) { return fileName; }
