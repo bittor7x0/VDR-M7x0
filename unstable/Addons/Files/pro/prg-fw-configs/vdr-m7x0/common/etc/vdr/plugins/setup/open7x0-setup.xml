@@ -23,16 +23,16 @@
             <entry name="EPG direct" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="EPG direct" />
         </menu>
         <menu name="Network Configuration">
-            <entry name="Mode" sysconfig="rc.conf--net" type="selection" value="inet" help1="Configuration IP mode. DHCP/INET">
+            <entry name="Mode" sysconfig="rc.local.conf--net" type="selection" value="inet" help1="Configuration IP mode. DHCP/INET">
                 <value>DHCP</value>
                 <value>inet</value>
             </entry>
-            <entry name="IP Address" sysconfig="rc.conf--ip" type="ip" value="192.168.2.100" help1="IP Address M7XX" />
-            <entry name="Network Mask" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Network mask" />
-            <entry name="Gateway" sysconfig="rc.conf--gateway" type="ip" value='&quot;NO&quot;' help1="Gatewary IP address. default NO" />
+            <entry name="IP Address" sysconfig="rc.local.conf--ip" type="ip" value="192.168.2.100" help1="IP Address M7X0" />
+            <entry name="Network Mask" sysconfig="rc.local.conf--netmask" type="ip" value="255.255.255.0" help1="Network mask" />
+            <entry name="Gateway" sysconfig="rc.local.conf--gateway" type="ip" value='&quot;NO&quot;' help1="Gatewary IP address. default NO" />
             <entry name="DNS 1" sysconfig="resolv.conf--nameserver1" type="ip" value="192.168.1.1" help1="DNS 1" />
             <entry name="DNS 2" sysconfig="resolv.conf--nameserver2" type="ip" value="" help1="DNS 2" />
-            <entry name="MAC Address" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="NOT MODIFY" />
+            <entry name="MAC Address" sysconfig="rc.local.conf--mac" type="text" value="00:01:02:03:04:05" help1="MAC Address M7X0" />
         </menu>
         <menu name="USB HardDisk Configuration">
             <entry name="Devices to stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB devices to stop separated by spaces. Ex.: /dev/sda" />
@@ -43,8 +43,8 @@
         <menu name="Services">
             <entry name="Start inetd daemon" sysconfig="rc.local.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />
             <entry name="Start web server" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Start administration web" />
-            <entry name="Start NTP daemon" sysconfig="rc.conf--netdate" type="bool" value="NO" help1="Start daemon for network time update" />
-            <entry name="NTP server" sysconfig="rc.conf--netdate_server" type="text" value="europe.pool.ntp.org" help1="NTP server for clock update" />
+            <entry name="Start NTP daemon" sysconfig="rc.local.conf--netdate" type="bool" value="NO" help1="Start daemon for network time update" />
+            <entry name="NTP server" sysconfig="rc.local.conf--netdate_server" type="text" value="europe.pool.ntp.org" help1="NTP server for clock update" />
         </menu>
         <menu name="Boot menu">
             <entry name="Enabled" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="YES" help1="Enable boot menu" />

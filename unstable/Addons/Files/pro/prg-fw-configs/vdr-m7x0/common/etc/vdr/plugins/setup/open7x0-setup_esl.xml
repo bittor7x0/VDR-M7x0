@@ -23,16 +23,16 @@
             <entry name="EPG inmediata" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="Guardar inmediatamente la EPG o sólo al apagar el VDR" />
         </menu>
         <menu name="Configuración de red">
-            <entry name="Tipo de red" sysconfig="rc.conf--net" type="selection" value="inet" help1="Establecer tipo de dirección IP: Fija (inet) o Dinámica (dhcp)">
+            <entry name="Tipo de red" sysconfig="rc.local.conf--net" type="selection" value="inet" help1="Establecer tipo de dirección IP: Fija (inet) o Dinámica (dhcp)">
                 <value>DHCP</value>
                 <value>inet</value>
             </entry>
-            <entry name="Dirección IP" sysconfig="rc.conf--ip" type="ip" value="192.168.2.100" help1="Dirección IP fija del M7X0" />
-            <entry name="Máscara de Red" sysconfig="rc.conf--netmask" type="ip" value="255.255.255.0" help1="Máscara de Red del M7X0" />
-            <entry name="Puerta de enlace" sysconfig="rc.conf--gateway" type="ip" value='&quot;192.168.2.1&quot;' help1="Dirección IP de la puerta de enlace. Valor NO si no se usa" />
+            <entry name="Dirección IP" sysconfig="rc.local.conf--ip" type="ip" value="192.168.2.100" help1="Dirección IP fija del M7X0" />
+            <entry name="Máscara de Red" sysconfig="rc.local.conf--netmask" type="ip" value="255.255.255.0" help1="Máscara de Red del M7X0" />
+            <entry name="Puerta de enlace" sysconfig="rc.local.conf--gateway" type="ip" value='&quot;192.168.2.1&quot;' help1="Dirección IP de la puerta de enlace. Valor NO si no se usa" />
             <entry name="DNS primario" sysconfig="resolv.conf--nameserver1" type="ip" value="192.168.2.1" help1="DNS primario" />
             <entry name="DNS secundario" sysconfig="resolv.conf--nameserver2" type="ip" value="" help1="DNS secundario" />
-            <entry name="Dirección MAC" sysconfig="rc.conf--mac_cmd" type="text" value='&quot;pic_tool -s get-mac&quot;' help1="Define el comando con el que se obtiene la dirección MAC" />
+            <entry name="Dirección MAC" sysconfig="rc.local.conf--mac" type="text" value="00:01:02:03:04:05" help1="Dirección MAC del M7x0" />
         </menu>
         <menu name="Configuración de discos USB">
             <entry name="Dispositivos a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivos USB a detener separados por espacios. Ej.: /dev/sda" />
@@ -43,8 +43,8 @@
         <menu name="Servicios">
             <entry name="Iniciar servicio inetd" sysconfig="rc.local.conf--inetd" type="bool" value="YES" help1="Iniciar el servicio inetd (ftp, telnet y ssh)" />
             <entry name="Iniciar interfaz web" sysconfig="rc.local.conf--webif_start" type="bool" value="NO" help1="Iniciar el interfaz web para la administración remota" />
-            <entry name="Iniciar servicio NTP" sysconfig="rc.conf--netdate" type="bool" value="NO" help1="Iniciar el servicio para sincronizar la hora por red" />
-            <entry name="Servidor NTP" sysconfig="rc.conf--netdate_server" type="text" value="europe.pool.ntp.org" help1="Servidor NTP del que obtener la hora" />
+            <entry name="Iniciar servicio NTP" sysconfig="rc.local.conf--netdate" type="bool" value="NO" help1="Iniciar el servicio para sincronizar la hora por red" />
+            <entry name="Servidor NTP" sysconfig="rc.local.conf--netdate_server" type="text" value="europe.pool.ntp.org" help1="Servidor NTP del que obtener la hora" />
         </menu>
         <menu name="Menú de inicio">
             <entry name="Activar menú de inicio" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Activar el menú de inicio" />
