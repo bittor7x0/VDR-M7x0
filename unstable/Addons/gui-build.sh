@@ -238,15 +238,13 @@ set_net() {
     echo "webif_start=$webif_start" >> $CONF_LOCAL_FILE;
     echo "inetd=$inetd" >> $CONF_LOCAL_FILE;
 
-    if [ -f $RC_CONF ]; then
-        sed -i "s/net=.*/net=$net/g" $RC_CONF
-        sed -i "s/ip=.*/ip=$ip/g" $RC_CONF
-        sed -i "s/netmask=.*/netmask=$netmask/g" $RC_CONF
-        sed -i "s/gateway=.*/gateway=$gateway/g" $RC_CONF
-        sed -i "s/netdate=.*/netdate=$netdate/g" $RC_CONF
-        sed -i "s/netdate_server=.*/netdate_server=$netdate_server/g" $RC_CONF
-    fi
     if [ -f $RC_LOCAL_CONF ]; then
+        sed -i "s/net=.*/net=$net/g" $RC_LOCAL_CONF
+        sed -i "s/ip=.*/ip=$ip/g" $RC_LOCAL_CONF
+        sed -i "s/netmask=.*/netmask=$netmask/g" $RC_LOCAL_CONF
+        sed -i "s/gateway=.*/gateway=$gateway/g" $RC_LOCAL_CONF
+        sed -i "s/netdate=.*/netdate=$netdate/g" $RC_LOCAL_CONF
+        sed -i "s/netdate_server=.*/netdate_server=$netdate_server/g" $RC_LOCAL_CONF
         sed -i "s/do_net_mount=.*/do_net_mount=$do_net_mount/g" $RC_LOCAL_CONF
         sed -i "s/webif_start=.*/webif_start=$webif_start/g" $RC_LOCAL_CONF
         sed -i "s/inetd=.*/inetd=$inetd/g" $RC_LOCAL_CONF
