@@ -1,7 +1,7 @@
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2009-12-13 18:10:34.000000000 +0100
 +++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2009-12-13 18:14:40.000000000 +0100
-@@ -656,17 +656,17 @@
+@@ -658,17 +658,17 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set
@@ -29,7 +29,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2009-12-13 18:10:34.000000000 +0100
 +++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2009-12-13 18:14:40.000000000 +0100
-@@ -656,17 +656,17 @@
+@@ -658,17 +658,17 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set
@@ -57,7 +57,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
 diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
 --- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2009-12-13 18:10:39.000000000 +0100
 +++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2009-12-13 18:16:20.000000000 +0100
-@@ -57,17 +57,12 @@
+@@ -60,17 +60,12 @@
  DISTCLEAN_RULES += distclean-siemens-linux-kernel
  
  SIEMENS-LINUX-KERNEL_MODLST := \
@@ -75,7 +75,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
     lib/modules/2.4.21-xfs/kernel/drivers/scsi/scsi_mod.o \
     lib/modules/2.4.21-xfs/kernel/drivers/scsi/sd_mod.o \
     lib/modules/2.4.21-xfs/kernel/drivers/usb/usbcore.o \
-@@ -91,18 +86,12 @@
+@@ -94,18 +89,12 @@
     lib/modules/2.4.21-xfs \
     lib/modules/2.4.21-xfs/kernel \
     lib/modules/2.4.21-xfs/kernel/fs \
@@ -94,7 +94,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
     lib/modules/2.4.21-xfs/kernel/drivers \
     lib/modules/2.4.21-xfs/kernel/drivers/scsi \
     lib/modules/2.4.21-xfs/kernel/drivers/usb \
-@@ -122,7 +111,6 @@
+@@ -125,7 +114,6 @@
  $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked: \
        $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/*.patch) \
        $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_M7X0_TYPE)/*.patch) \
@@ -102,7 +102,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
        $$(SIEMENS-LINUX-KERNEL_DEPS) $(SIEMENS-LINUX-KERNEL_CONFIG)
  	-$(RM) -rf $(SIEMENS-LINUX-KERNEL_DIR)
  	$(BZCAT) $(SIEMENS-GPL-SRC_DLFILE) | $(TAR) -C $(BUILD_DIR) \
-@@ -138,9 +126,6 @@
+@@ -141,9 +129,6 @@
  
  $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_patched: \
        $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked
