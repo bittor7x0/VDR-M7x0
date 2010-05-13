@@ -7,7 +7,7 @@ diff -Naur uclibc_build_env_orig/make-incs/uclibc.mk uclibc_build_env/make-incs/
                                      $(UCLIBC_CONFIG) \
 -                                    $$(BINUTILS_INSTALLED)
 +                                    $$(BINUTILS_INSTALLED) \
-+                                    $$(SSTRIP_INSTALLED)
++                                    $$(SSTRIP_HOSTINSTALLED)
  	-$(RM) -rf $(UCLIBC_DIR)
  	$(BZCAT) $(UCLIBC_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
  	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_unpacked
