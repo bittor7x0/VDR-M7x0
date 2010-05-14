@@ -79,6 +79,18 @@ diff -Naur uclibc_build_env_orig/make-incs/lirc.mk uclibc_build_env/make-incs/li
  LIRC_DIR := $(BUILD_DIR)/lirc-$(LIRC_VERSION)
  
  LIRC_INSTALLED = $(STAGEFILES_DIR)/.lirc_installed
+diff -Naur uclibc_build_env_orig/make-incs/zlib.mk uclibc_build_env/make-incs/zlib.mk
+--- uclibc_build_env_orig/make-incs/zlib.mk	2010-05-12 10:35:59.000000000 +0200
++++ uclibc_build_env/make-incs/zlib.mk	2010-05-14 09:34:01.806471824 +0200
+@@ -30,7 +30,7 @@
+ ZLIB_FILE := zlib-$(ZLIB_VERSION).tar.bz2
+ ZLIB_DLFILE := $(DOWNLOAD_DIR)/$(ZLIB_FILE)
+ ZLIB_DIR := $(BUILD_DIR)/zlib-$(ZLIB_VERSION)
+-ZLIB_URL := http://www.zlib.net/$(ZLIB_FILE)
++ZLIB_URL := http://sourceforge.net/projects/libpng/files/zlib/$(ZLIB_VERSION)/$(ZLIB_FILE)/download
+ 
+ ZLIB_INSTALLED = $(STAGEFILES_DIR)/.zlib_installed
+ 
 diff -Naur uclibc_build_env_orig/patches/ssmtp/2.64/300_ssmtp_conf.patch uclibc_build_env/patches/ssmtp/2.64/300_ssmtp_conf.patch
 --- uclibc_build_env_orig/patches/ssmtp/2.64/300_ssmtp_conf.patch	1970-01-01 01:00:00.000000000 +0100
 +++ uclibc_build_env/patches/ssmtp/2.64/300_ssmtp_conf.patch	2009-10-02 12:58:56.000000000 +0200
