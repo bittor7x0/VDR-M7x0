@@ -1,0 +1,11 @@
+diff -Naur uclibc_build_env_orig/make-incs/generate_rootfs.mk uclibc_build_env/make-incs/generate_rootfs.mk
+--- uclibc_build_env_orig/make-incs/generate_rootfs.mk	2010-05-02 14:45:30.000000000 +0200
++++ uclibc_build_env/make-incs/generate_rootfs.mk	2010-04-23 14:38:14.000000000 +0200
+@@ -105,6 +105,7 @@
+ 	)
+ 	$(COPY_LISTS_BIN) -s '$(ROOTFS_DIR)' '$(TARGET_ROOT)' \
+ 		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' $(FQ_FILE_LISTS)
++	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(ROOTFS_DIR)/etc/systemtype`,g" $(ROOTFS_DIR)/etc/rc.mini
+ 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG) > \
+ 		$(ROOTFS_FILE_TABLE)
+ 
