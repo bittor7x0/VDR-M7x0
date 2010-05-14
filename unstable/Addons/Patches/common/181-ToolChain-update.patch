@@ -1,3 +1,8 @@
+BusyBox 1.16.1 compiled with gcc 4.5.0 result in
+segmentation faults with any commands as sed and testcase.
+This is fixed using -fno-tree-pta in flags:
+http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43987
+
 diff -Naur uclibc_build_env_orig/make-incs/binutils.mk uclibc_build_env/make-incs/binutils.mk
 --- uclibc_build_env_orig/make-incs/binutils.mk	2010-03-04 12:50:38.000000000 +0100
 +++ uclibc_build_env/make-incs/binutils.mk	2010-02-22 18:19:57.000000000 +0100
@@ -22,6 +27,33 @@ diff -Naur uclibc_build_env_orig/make-incs/busybox.mk uclibc_build_env/make-incs
  BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/$(BUSYBOX_VERSION)
  
  BUSYBOX_FILE := busybox-$(BUSYBOX_VERSION).tar.bz2
+@@ -85,6 +85,8 @@
+ 		$(BUSYBOX_DIR)/.config
+   endif
+ 	$(UCLIBC_ENV) $(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
++		CFLAGS="$(UCLIBC_CFLAGS) -fno-tree-pta" \
++		CXXFLAGS="$(UCLIBC_CXXFLAGS) -fno-tree-pta" \
+ 		ARCH=mips oldconfig
+ 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_configured
+ 
+@@ -94,6 +96,8 @@
+ 
+ $(STAGEFILES_DIR)/.busybox_compiled: $(STAGEFILES_DIR)/.busybox_configured
+ 	$(UCLIBC_ENV) $(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
++		CFLAGS="$(UCLIBC_CFLAGS) -fno-tree-pta" \
++		CXXFLAGS="$(UCLIBC_CXXFLAGS) -fno-tree-pta" \
+ 		ARCH=mips all
+ 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_compiled
+ 
+@@ -103,6 +107,8 @@
+ 
+ $(STAGEFILES_DIR)/.busybox_installed: $(STAGEFILES_DIR)/.busybox_compiled
+ 	$(UCLIBC_ENV) $(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
++		CFLAGS="$(UCLIBC_CFLAGS) -fno-tree-pta" \
++		CXXFLAGS="$(UCLIBC_CXXFLAGS) -fno-tree-pta" \
+ 		ARCH=mips install
+ 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_installed
+ 
 diff -Naur uclibc_build_env_orig/make-incs/e2fsprogs.mk uclibc_build_env/make-incs/e2fsprogs.mk
 --- uclibc_build_env_orig/make-incs/e2fsprogs.mk	2010-03-04 12:50:38.000000000 +0100
 +++ uclibc_build_env/make-incs/e2fsprogs.mk	2010-02-22 18:20:17.000000000 +0100
@@ -42,7 +74,7 @@ diff -Naur uclibc_build_env_orig/make-incs/gcc.mk uclibc_build_env/make-incs/gcc
  #
  
 -GCC_VERSION := 4.4.1
-+GCC_VERSION := 4.4.3
++GCC_VERSION := 4.5.0
  GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
  
  GCC_FILE1 := gcc-core-$(GCC_VERSION).tar.bz2
@@ -50,7 +82,7 @@ diff -Naur uclibc_build_env_orig/make-incs/gcc.mk uclibc_build_env/make-incs/gcc
  
  $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                            $$(BINUTILS_INSTALLED) \
-+                                          $$(MPFR_INSTALLED) \
++                                          $$(MPC_INSTALLED) \
                                            $$(UCLIBC_PRE_ALL_GCC)
  	-$(RM) -rf $(GCC_STAGE1_BUILD_DIR)
  	$(MKDIR) -p $(GCC_STAGE1_BUILD_DIR)
@@ -62,26 +94,28 @@ diff -Naur uclibc_build_env_orig/make-incs/gcc.mk uclibc_build_env/make-incs/gcc
  			--target=$(UCLIBC_TARGET) \
  			--enable-languages=c \
  			--enable-__cxa_atexit \
-@@ -102,6 +104,10 @@
+@@ -102,6 +104,12 @@
  			--with-arch=mips2 \
  			--with-tune=vr4120 \
  			--with-float=soft \
 +			--with-gmp=$(PREFIX) \
++			--with-mpc=$(PREFIX) \
 +			--with-mpfr=$(PREFIX) \
++			--disable-decimal-float \
 +			--disable-libgomp \
 +			--disable-libmudflap \
  			--nfp \
  			--enable-multilib \
  			--enable-softfloat \
-@@ -131,6 +137,7 @@
+@@ -131,6 +139,7 @@
  
  $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                     $$(BINUTILS_INSTALLED) \
-+                                   $$(MPFR_INSTALLED) \
++                                   $$(MPC_INSTALLED) \
                                     $$(UCLIBC_INSTALLED)
  	-$(RM) -rf $(GCC_BUILD_DIR)
  	$(MKDIR) -p $(GCC_BUILD_DIR)
-@@ -140,6 +147,7 @@
+@@ -140,6 +149,7 @@
  			--with-sysroot=$(TARGET_ROOT) \
  			--with-gnu-as \
  			--with-gnu-ld \
@@ -89,12 +123,14 @@ diff -Naur uclibc_build_env_orig/make-incs/gcc.mk uclibc_build_env/make-incs/gcc
  			--target=$(UCLIBC_TARGET) \
  			--enable-languages=c,c++ \
  			--enable-__cxa_atexit \
-@@ -148,6 +156,10 @@
+@@ -148,6 +158,12 @@
  			--with-arch=mips2 \
  			--with-tune=vr4120 \
  			--with-float=soft \
 +			--with-gmp=$(PREFIX) \
++			--with-mpc=$(PREFIX) \
 +			--with-mpfr=$(PREFIX) \
++			--disable-decimal-float \
 +			--disable-libgomp \
 +			--disable-libmudflap \
  			--nfp \
@@ -123,10 +159,10 @@ diff -Naur uclibc_build_env_orig/rootfs-file-lists/gcc.lst uclibc_build_env/root
 -lib/libstdc++.so.6.0.12 -                      s   - - - - - - - -
 -lib/libstdc++.so.6     libstdc++.so.6.0.12     l 777 0 0 - - - - -
 -lib/libstdc++.so       libstdc++.so.6.0.12     l 777 0 0 - - - - -
-+lib/libstdc++.so.6.0.13 lib/libstdc++.so.6.0.13 f 755 0 0 - - - - -
-+lib/libstdc++.so.6.0.13 -                      s   - - - - - - - -
-+lib/libstdc++.so.6     libstdc++.so.6.0.13     l 777 0 0 - - - - -
-+lib/libstdc++.so       libstdc++.so.6.0.13     l 777 0 0 - - - - -
++lib/libstdc++.so.6.0.14 lib/libstdc++.so.6.0.14 f 755 0 0 - - - - -
++lib/libstdc++.so.6.0.14 -                      s   - - - - - - - -
++lib/libstdc++.so.6     libstdc++.so.6.0.14     l 777 0 0 - - - - -
++lib/libstdc++.so       libstdc++.so.6.0.14     l 777 0 0 - - - - -
 diff -Naur uclibc_build_env_orig/rootfs-file-lists/uclibc.lst uclibc_build_env/rootfs-file-lists/uclibc.lst
 --- uclibc_build_env_orig/rootfs-file-lists/uclibc.lst	2010-03-04 12:50:37.000000000 +0100
 +++ uclibc_build_env/rootfs-file-lists/uclibc.lst	2010-03-01 09:00:32.000000000 +0100
