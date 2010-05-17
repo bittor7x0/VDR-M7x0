@@ -193,7 +193,7 @@ diff -Naur epgsearch-git-2010-04-13-orig/i18n-generated.h epgsearch-git-2010-04-
      "Vaadittava yhdenmukaisuus [%]",
      "",
 -    "  Duración mín.",
-+    "  Coincidencia mín. in %",
++    "  Coincidencia mín. en %",
      "",
      "",
      "",
@@ -384,7 +384,7 @@ diff -Naur epgsearch-git-2010-04-13-orig/po/es_ES.po epgsearch-git-2010-04-13/po
 -#, fuzzy
  msgid "Min. match in %"
 -msgstr "  Duración mín."
-+msgstr "  Coincidencia mín. in %"
++msgstr "  Coincidencia mín. en %"
  
  msgid "Compare categories"
  msgstr "Comparar categorías"
