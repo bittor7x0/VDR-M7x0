@@ -85,4 +85,4 @@ fi
 
 /usr/bin/set-video off &
 
-exec /bin/ash /etc/rc.halt
+exec /bin/ash /etc/rc.halt $1
