@@ -2,12 +2,12 @@
 source /etc/rc.local.conf
 
 /usr/bin/svdrpsend 127.0.0.1 2001 "MESG Cerrando el VDR"
-/bin/echo "Killing VDR"
+echo "Killing VDR"
 
 trys=0
 while [ -e /var/run/runvdr.pid -a ${trys} -le 300 ] ; do
     if [ $(( ${trys} % 30 )) -eq 0 ] ; then
-        /bin/echo "Try n#$(( ${trys} / 30 + 1 ))"
+        echo "Try n#$(( ${trys} / 30 + 1 ))"
         /usr/bin/killall -15 vdr
     fi
     trys=$(( ${trys} + 1 ))

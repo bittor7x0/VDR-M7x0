@@ -3,7 +3,7 @@
 source /etc/rc.local.conf
 
 if [ X"${bootmenu_start}" != X"NO" ] ; then
-    /bin/echo $1 >/etc/bootmenu/next_alarm
+    echo $1 >/etc/bootmenu/next_alarm
 fi
 
 if [ $1 -eq 0 ] ; then

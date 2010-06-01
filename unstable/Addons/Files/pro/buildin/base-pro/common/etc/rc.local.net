@@ -25,7 +25,7 @@ fi
 
 if [ X"${netdate}" != X"NO" ]; then
     echo -n "network time protocol daemon"
-    /usr/sbin/ntpclient -l -s -h ${netdate_server} &
+    /usr/sbin/ntpclient -l -s -h ${netdate_server} -n /var/run/ntpclient.pid &
 fi
 
 if [ X"${do_net_mount}" != X"NO" ] ; then

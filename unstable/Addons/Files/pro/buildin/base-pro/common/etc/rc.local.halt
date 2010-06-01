@@ -42,7 +42,7 @@ fi
 
 if [ X"${netdate}" != X"NO" ]; then
     echo -n "network time protocol daemon"
-    /usr/bin/killall -15 ntpclient
+    while read pid; do /bin/kill -15 $pid; done < /var/run/ntpclient.pid
 fi
 
 if [ ${lazyumount} -ne 0 ] ; then
