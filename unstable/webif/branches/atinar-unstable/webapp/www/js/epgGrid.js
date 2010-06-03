@@ -41,12 +41,18 @@ webif.epgGridPageInit=function(){
 	$('#timepicker').live('change',webif.updateGrid);
 	$('a.timerCreate,a.timerEdit').live('click',this.timerEditFormHandler.clickHandler);
 	$('a.searchCreate').live('click',this.searchEditFormHandler.clickHandler);
+	/*
 	$('a.change').live('click',function (e) {
-		e.preventDefault();
-		webif.loadGrid($(this).attr('href'));
-		return false;
+		if (e.button == 0){
+			e.preventDefault();
+			webif.loadGrid($(this).attr('href'));
+			return false;
+		} else {
+			return true;
+		}
 	});
-	$('.channel .event .title,.channel .event .more',this).live('click',function (e) {
+	*/
+	$('.channel .event .title,.channel .event .more').live('click',function (e) {
 		e.preventDefault();
 		var $event = $(this).closest('.event');
 		var $channelEvents=$event.closest('.channelEvents');
@@ -57,23 +63,15 @@ webif.epgGridPageInit=function(){
 			if ($channelEventInfoDiv.length>0) $channelEventInfoDiv.remove();
 		} else {
 			$channelEvents.find('.open').removeClass('open');
-			var $eventChildren = $('.eventContent>*',$event);
-			if ($eventChildren.length>0 && $channelEventInfoDiv.length==0){
-				$channelEventInfoDiv=$('<div class="eventInfoDiv"></div>').append($('<div class="eventInfo"></div>'));
+			if ($channelEventInfoDiv.length==0){
+				$channelEventInfoDiv=$('<div class="eventInfoDiv"></div>');
 				$channelEvents.after($channelEventInfoDiv);
+			} else {
+				$channelEventInfoDiv.empty();
 			}
-			if ($channelEventInfoDiv.length>0){
-				var $eventInfo=$('.eventInfo',$channelEventInfoDiv).empty().append($eventChildren.clone());
-				var $desc=$('.desc',$eventInfo);
-				if ($desc.length>0){
-					$shortdesc=$('.shortdesc',$eventInfo);
-					if ($shortdesc.length>0 && ($desc.text().toLowerCase().indexOf($shortdesc.text().toLowerCase())>-1)){
-						$shortdesc.remove();
-					}
-				}
-				$event.addClass('open');
-				$channelEventInfoDiv.prepareElements();
-			}
+			var $eventInfo=$('<div class="eventInfo"></div>').appendTo($channelEventInfoDiv);
+			webif.showEpgEventInfo($event,$eventInfo,true);
+			$event.addClass('open');
 		}
 		return false;
 	});
@@ -86,6 +84,8 @@ webif.updateGrid=function(){
 	webif.loadGrid(href)
 }
 webif.loadGrid=function(href){
+	window.location=href;
+	/*
 	this.openLoadingDialog();
 	$.get(
 		href,
@@ -104,4 +104,5 @@ webif.loadGrid=function(href){
 		},
 		'html'
 	);
+	*/
 };

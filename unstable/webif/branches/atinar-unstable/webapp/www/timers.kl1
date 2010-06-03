@@ -200,7 +200,9 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 			}
 			if (channels->length>0) {
 				timerList_t timers;
+				conflictList_t conflicts;
 				getTimerList(&timers,channels,wctx->sortBy,wctx->sortDirection);
+				getConflictList(&conflicts,&timers);
 				bool printHost=boolean(webifConf.numVDRs>1);
 				wctx_printfn(wctx,"<table id=\"%s\" class=\"level3-div\" summary=\"%s\">\n",0,1,AJAX_REPLACE_PREFIX("timers"),tr("timerList"));
 				wctx_printf0(wctx,"<col class=\"number\"/>\n");
@@ -240,7 +242,7 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 					struct tm t1=*localtime(&timer->start);
 					struct tm t2=*localtime(&timer->stop);
 					channel=(timer->channel)?timer->channel:&noChannel;
-					wctx_printfn(wctx,"<tr%s>\n",0,1,classActive[isFlagSet(TF_ACTIVE,timer->flags)]);
+					wctx_printfn(wctx,"<tr class=\"%s%s\">\n",0,1,isFlagSet(TF_ACTIVE,timer->flags)?"active":"inactive",(timer->inConflict)?" conflict":"");
 					wctx_printf0(wctx,"<td class=\"number\">%d</td>\n",timer->id);
 					if (printHost) {
 						wctx_printf0(wctx,"<td class=\"number\">%d</td>\n",timer->hostId);
@@ -267,6 +269,7 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 				}
 				wctx_printfn(wctx,"</tbody>\n",-1,0);
 				wctx_printfn(wctx,"</table>\n",-1,0);
+				freeConflictList(&conflicts);
 				freeTimerList(&timers);
 			} else {
 				printMessage(wctx,"alert",tr("warnNoEPG"),NULL, false);

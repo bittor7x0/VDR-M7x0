@@ -18,7 +18,6 @@
 */
 
 #include <errno.h>
-#include <regex.h>
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,42 +55,51 @@ void closeSocket(hostConf_t *host){
 	host->socket=0;
 }
 
-void readSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
+char *readSvdrp(hostConf_t *host) {
 	enum {BUFFERSZ=4096};
 	char buffer[BUFFERSZ]="";
 	int l=0; //current length without trailing 0
 	int n=0;
-	int eod_matches=1;
+	bool eod=false; //end of data code already received (but last line may be still incomplete)
 
-	if (host->socket==0) {
+	if (host->socket<1) {
 		warn("No socket found!");
-		return;
+		return NULL;
 	}
-	(*pdata)=NULL;
+	char *data=NULL;
 	while ( (n=recv(host->socket,buffer,BUFFERSZ-1,0))>0 ) {
 		buffer[n]='\0';
-		crit_goto_if(((*pdata)=realloc((*pdata),l+n+1))==NULL,outOfMemory);
-		(*pdata)[l]=0;
-		strcat((*pdata),buffer);
+		crit_goto_if((data=realloc(data,l+n+1))==NULL,outOfMemory);
+		data[l]=0;
+		strcat(data,buffer);
 		l+=n;
-		if (eod_matches!=0) {
+		if (!eod) {
 			int offset=(l>n+5) ? l-n-5 : 0;
-			eod_matches=regexec(eod_regex,(*pdata)+offset,0,NULL,0);
+			eod=boolean(regexec(&webifConf.eod_regex,data+offset,0,NULL,0)==0);
 		}
-		if ((eod_matches==0) && ((*pdata)[l-1]=='\n')){
+		if (eod && (data[l-1]=='\n')){
 			break;
 		}
 	}
-	return;
+	if (n<0 || !eod){
+		if (n<0)
+			warn(strerror(errno));
+		else
+			warn("SVDRP response truncated [%s]. Discarding everything",data);
+		free(data);
+		data=NULL;
+		errno=0;
+	}
+	return data;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
 }
 
-bool openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
+bool openSvdrp(hostConf_t *host) {
 	if (host->socket<1) {
 		struct sockaddr_in hostAddress;
-		dbg("Opening SVDRP connection to %s:%d",host->ip,host->port);
+		//dbg("Opening SVDRP connection to %s:%d",host->ip,host->port);
 		hostAddress.sin_family = AF_INET;
 		hostAddress.sin_port = htons(host->port);
 		inet_aton(host->ip, &hostAddress.sin_addr);
@@ -111,15 +119,12 @@ bool openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
 			closeSocket(host);
 			return false;
 		}
-
-		readSvdrp(host,pdata,eod_regex);
-		if (strtol(*pdata,NULL,10)!=SVDRP_VDR_READY){
-			warn("Unexpected SVDRP response: %s",*pdata);
-			//TODO cerrar mejor la conexion
+		char *data=readSvdrp(host);
+		if (data==NULL || strtol(data,NULL,10)!=SVDRP_VDR_READY){
+			warn("Unexpected SVDRP response: %s",data);
 			closeSocket(host);
 		}
-		free(*pdata);
-		*pdata=NULL;
+		free(data);
 		return boolean(host->socket>0);
 	} else {
 		return true;
@@ -128,9 +133,8 @@ bool openSvdrp(hostConf_t *host, char **pdata, regex_t *const eod_regex) {
 
 void closeSvdrp(hostConf_t *host) {
 	if (host && host->isVdr && host->socket>0){
-		dbg("Closing SVDRP connection to %s:%d",host->ip,host->port);
+		//dbg("Closing SVDRP connection to %s:%d",host->ip,host->port);
 		free(execSvdrp(host,"QUIT"));
-		closeSocket(host);
 	}
 }
 
@@ -145,67 +149,42 @@ void closeSvdrpAll() {
 }
 
 bool writeSvdrp(hostConf_t *host, const char *cmd) {
-	dbg("Sending SVDRP cmd [%s]",cmd);
-	int l=strlen(cmd);
-	int w=write(host->socket,cmd,l+1);
-	if (w<l) warn("Written only %d bytes from %d",w,l);
-	return boolean(w>=l);
+	dbg("SVDRP cmd [%s]",cmd);
+	if (host->socket<1){
+		warn("socket is closed");
+		return false;
+	} else {
+		int l=strlen(cmd);
+		int w=write(host->socket,cmd,l+1);
+		if (w<l) warn("Written only %d bytes from %d",w,l);
+		return boolean(w>=l);
+	}
 }
 
-static jmp_buf execSvdrpContext;
-
-void signalHandler(int sig) {
-	dbg("Got signal [%s]",sig);
-	longjmp(execSvdrpContext,sig);
-}
-		
 char *execSvdrp(hostConf_t * const host, const char *cmd){
 	if (host && host->isVdr){
-		regex_t eod_regex; //regex to detect End Of Data
-
-		dbg("Executing SVDRP cmd [%s]",cmd);
 		bool isQuit=boolean(strncmp(cmd,"QUIT",4)==0);
 		if (isQuit && host->socket<1){
 			warn("SVDRP connection already closed before QUIT");
 			return NULL;
 		}
-		if (regcomp(&eod_regex,"^[0-9]{3} ",REG_EXTENDED | REG_NOSUB | REG_NEWLINE)!=0) {
-			crit(strerror(errno));
-			exit(1);
-		}
-		sighandler_t oldSignalHandler=signal(SIGPIPE,signalHandler);
-		volatile char *data=NULL;
-		char *result=NULL;
-		if (setjmp(execSvdrpContext)!=0){
-			warn("Broken Pipe.");
-			free((char *)data);
-			data=NULL;
-			host->socket=0;
-		} else {
-			if (openSvdrp(host,(char **)&data,&eod_regex)) {
-				free((char *)data);
-				data=NULL;
-				if (writeSvdrp(host,cmd)) {
-					readSvdrp(host,(char **)&data,&eod_regex);
-					result=(char *)data;
-					data=NULL;
-				}
-				if (webifConf.alwaysCloseSvdrp && !isQuit){
-					if (writeSvdrp(host,"QUIT")) {
-						readSvdrp(host,(char **)&data,&eod_regex);
-						free((char *)data);
-						closeSocket(host);
-					}
-					data=NULL;
-				}
-			} else {
-				warn("Can't establish SVDRP connection");
-				return NULL;
+		//sighandler_t oldSignalHandler=signal(SIGPIPE,SIG_IGN);
+		//if (oldSignalHandler==SIG_IGN){
+		//	dbg("ya era SIG_IGN"); //TODO
+		//}
+		char *data=NULL;
+		if (isQuit || openSvdrp(host)) {
+			if (writeSvdrp(host,cmd)) {
+				data=readSvdrp(host);
 			}
+			if (isQuit){
+				closeSocket(host);
+			}
+		} else {
+			warn("Can't establish SVDRP connection");
 		}
-		signal(SIGPIPE,oldSignalHandler);
-		regfree(&eod_regex);
-		return result;
+		//signal(SIGPIPE,oldSignalHandler);
+		return data;
 	} else {
 		warn("Not a valid host [id=%d]", host->id);
 		return NULL;

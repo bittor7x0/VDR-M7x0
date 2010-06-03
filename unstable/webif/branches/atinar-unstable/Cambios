@@ -1,3 +1,15 @@
+2010-05-03
+* Posibilidad de hacer streaming de carpetas enteras.
+* Se señalan las programaciones con conflicto.
+* Opción para revertir cambios en parámetros de configuración.
+* La configuración del VDR se lee y graba por SVDRP (requiere parche en VDR).
+* Descartada posibilidad de compilar con la directiva EPG_STATIC_GRID.
+* Desactivada la página de error 404 personalizada porque requeriría 
+  leer la configuración para saber las rutas y no añade funcionalidad.
+* Borrado de búsqueda con programaciones.
+* Incluido enlace para búsqueda externa de información de programas.
+* Arrays en webifConf dinámicos para prevenir desbordamientos de búfer.
+* Modificada conversación SVDRP.
 2010-04-04
 * La parrilla de programación ajusta el ancho de forma dinámica (funcionamiento antiguo compilando con directiva EPG_STATIC_GRID).
 * Los eventos de corta duración se marcan como 'compactos' dinámicamente mediante javascript.

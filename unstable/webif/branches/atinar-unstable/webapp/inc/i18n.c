@@ -489,20 +489,18 @@ i18n_t i18n[]={
 		{
 		"Epg schedule grid spanning hours",
 		"",
-		"Ancho en horas de la parrilla de programación",
+		"Nº de horas en la parrilla de programación",
 		""
 		}
 	},
-#ifdef STATIC_EPG_GRID
-	{	"cfgWi.epg_grid_width",
+	{	"cfgWi.eventSearchUrl",
 		{
-		"Epg schedule grid width",
+		"Event search URL",
 		"",
-		"Ancho de la parrilla de programación",
+		"URL para buscar información de eventos",
 		""
 		}
 	},
-#endif
 	{	"cfgWi.hosts",
 		{
 		"Hosts",
@@ -529,6 +527,14 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"cfgWi.password",
+		{
+		"Password",
+		"",
+		"Contraseña",
+		""
+		}
+	},
 	{	"cfgWi.playlist_type",
 		{
 		"Playlist type",
@@ -550,6 +556,14 @@ i18n_t i18n[]={
 		"Use external www folder",
 		"",
 		"Usar carpeta www externa",
+		""
+		}
+	},
+	{	"cfgWi.user",
+		{
+		"Username",
+		"",
+		"Usuario",
 		""
 		}
 	},
@@ -793,6 +807,14 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"delete+",
+		{
+		"Delete+",
+		"",
+		"Borrar+",
+		""
+		}
+	},	
 	{	"delete.err",
 		{
 		"Error deleting item!",
@@ -1317,6 +1339,14 @@ i18n_t i18n[]={
 		"",
 		}
 	},
+	{	"playAll",
+		{
+		"Play all",
+		"",
+		"Reproducir todo",
+		"",
+		}
+	},
 	{	"playlist",
 		{
 		"Playlist",
@@ -1509,6 +1539,14 @@ i18n_t i18n[]={
 		""
 		}
 	},
+	{	"revert",
+		{
+		"Revert",
+		"",
+		"Revertir",
+		""
+		}
+	},
 	{	"runtime",
 		{
 		"Runtime",
@@ -1559,9 +1597,9 @@ i18n_t i18n[]={
 	},
 	{	"search.create",
 		{
-		"Create search",
-		"Suche erstellen",
-		"Crear búsqueda",
+		"Create EPG search",
+		"EPG Suche erstellen",
+		"Crear búsqueda EPG",
 		""
 		}
 	},
@@ -1586,6 +1624,14 @@ i18n_t i18n[]={
 		"Delete recordings after days",
 		"",
 		"Borrar grabaciones tras días",
+		""
+		}
+	},	
+	{	"search.delete+.title",
+		{
+		"Delete search and associated timers",
+		"",
+		"Borrar búsqueda y programaciones asociadas",
 		""
 		}
 	},	
@@ -1841,7 +1887,7 @@ i18n_t i18n[]={
 		{
 		"Create timer",
 		"Timer erstellen",
-		"Crear programación",
+		"Programar grabación",
 		"Création d'un enregistrement programmé"
 		}
 	},
@@ -2100,6 +2146,14 @@ i18n_t i18n[]={
 		"Weekday filter",
 		"",
 		"Filtrar por día",
+		""
+		}
+	},
+	{	"web.search",
+		{
+		"Web search",
+		"Im Internet suchen",
+		"Buscar en Internet",
 		""
 		}
 	},

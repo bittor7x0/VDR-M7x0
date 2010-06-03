@@ -55,7 +55,7 @@ ul li.recRec {
 	list-style-position:inside;
 	padding-left:0.5em;
 }
-ul li.recRecEdt {
+ul li.recRec.recRecEdt {
 	list-style-type:disc!important;
 }
 .recRecDel {
@@ -75,6 +75,9 @@ li.recRec:hover {
 	display:block;
 	font-size:1.1em;
 	font-weight:bold;
+}
+.recFolderHeader a {
+	vertical-align:middle;
 }
 .recFolderHeader a:hover {
 	color:#234;

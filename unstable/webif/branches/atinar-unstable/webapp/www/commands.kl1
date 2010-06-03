@@ -234,7 +234,6 @@ err:
 				command_exec(wctx,execCommand);
 				free(execCommand);
 				wctx_printfn(wctx,"</pre>\n",-1,0);
-				wctx_printf0(wctx,"<p>-------------FIN--------------</p>");
 			}
 		}
 		finishHtmlPage(wctx);

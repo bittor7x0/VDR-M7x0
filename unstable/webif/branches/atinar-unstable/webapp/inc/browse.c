@@ -85,43 +85,55 @@ char * vdrDecodeName(char *name, bool inPlace, bool *isEdt){
 	return dname;
 }
 
+void prepareRecDirList(recDir_t * const rdir,recDirList_t * const rdirs);
+
 void prepareRecDir(recDir_t * const rdir){
 	if (rdir->subdirs.length>0){
-		qsort(rdir->subdirs.entry,rdir->subdirs.length,sizeof(recDir_t),compareRecDir);
+		prepareRecDirList(rdir,&rdir->subdirs);
+	}
+}
+
+void prepareRecDirList(recDir_t * const rdir,recDirList_t * const rdirs){
+	if (rdirs->length>0){
+		qsort(rdirs->entry,rdirs->length,sizeof(recDir_t),compareRecDir);
 		int i;
 		recDir_t *rdir2;
 		bool allDeleted=true;
-		for (i=0,rdir2=rdir->subdirs.entry;i<rdir->subdirs.length;i++,rdir2++){
+		for (i=0,rdir2=rdirs->entry;i<rdirs->length;i++,rdir2++){
 			prepareRecDir(rdir2);
 			if (!isFlagSet(DF_DELETED,rdir2->flags)) {
 				allDeleted=false;
 			}
-			if (isFlagSet(DF_ISREC,rdir2->flags)) {
-				rdir->numRecs++;
-				rdir->flags|=DF_HASRECS;
+			if (rdir){
+				if ( isFlagSet(DF_ISREC,rdir2->flags)) {
+					rdir->numRecs++;
+					rdir->flags|=DF_HASRECS;
+				}
+				if ( isFlagSet(DF_ISDIR,rdir2->flags) && !isFlagSet(DF_HASRECS,rdir2->flags)) {
+					rdir->numDirs++;
+				}
+				rdir->numRecs+=rdir2->numRecs;
+				rdir->numDirs+=rdir2->numDirs;
 			}
-			if (isFlagSet(DF_ISDIR,rdir2->flags) && !isFlagSet(DF_HASRECS,rdir2->flags)) {
-				rdir->numDirs++;
-			}
-			rdir->numRecs+=rdir2->numRecs;
-			rdir->numDirs+=rdir2->numDirs;
 		}
-		if (allDeleted) {
+		if (rdir && allDeleted) {
 			rdir->flags|=DF_DELETED;
 		}
 	}
 }
 
-recDir_t *addSubdir(const char * name, const hostConf_t * const host, recDirList_t * const rdirs) {
-	recDir_t *rdir2;
-	if ( (name[0]=='.' && (name[1]==0 || (name[1]=='.' && name[2]==0)))  ){
+void addSubdirs(const char * const fullpath, const hostConf_t * const host, recDirList_t * const rdirs);
+
+recDir_t *addDir(const char * const fullpath, const char * name, const hostConf_t * const host, recDirList_t * const rdirs) {
+	recDir_t *rdir;
+	if (name[0]=='.'){
 		return NULL;
 	}
 	int i;
-	bool found=false;
-	for (i=0,rdir2=rdirs->entry;i<rdirs->length;i++,rdir2++){
-		if (strcmp(name,rdir2->name)==0){
-			found=true;
+	bool alreadyThere=false;
+	for (i=0,rdir=rdirs->entry;i<rdirs->length;i++,rdir++){
+		if (strcmp(name,rdir->name)==0){
+			alreadyThere=true;
 			break;
 		}
 	}
@@ -129,47 +141,46 @@ recDir_t *addSubdir(const char * name, const hostConf_t * const host, recDirList
 	bool isRec=boolean(ext && strcmp(ext,".rec")==0);
 	bool isDel=boolean(ext && !isRec && strcmp(ext,".del")==0);
 	bool isEdt=false;
-	if (!found || isRec || isDel) {
+	if (!alreadyThere || isRec || isDel) {
 		rdirs->length++;
 		rdirs->entry=(recDir_t *)realloc(rdirs->entry,rdirs->length*sizeof(recDir_t));
 		crit_goto_if(rdirs->entry==NULL,outOfMemory);
-		rdir2=rdirs->entry+(rdirs->length-1);
-		initRecDir(rdir2);
-		rdir2->name=strdup(name);
-		crit_goto_if(rdir2->name==NULL,outOfMemory);
-	}
-	if ( isRec || isDel ) {
-		rdir2->flags|=DF_ISREC;
-		rdir2->hostId=host->id;
-		if (isDel) rdir2->flags|=DF_DELETED;
-	} else {
-		if (!found){
-			rdir2->flags |= DF_ISDIR;
-			rdir2->dname=vdrDecodeName((char *)name,false,&isEdt);
-			if (isEdt) rdir2->flags|=DF_EDITED;
+		rdir=rdirs->entry+(rdirs->length-1);
+		initRecDir(rdir);
+		rdir->name=strdup(name);
+		crit_goto_if(rdir->name==NULL,outOfMemory);
+		if ( isRec || isDel ) {
+			rdir->flags|=DF_ISREC;
+			rdir->hostId=host->id;
+			if (isDel) rdir->flags|=DF_DELETED;
+		} else if (!alreadyThere){
+			rdir->flags |= DF_ISDIR;
+			rdir->dname=vdrDecodeName((char *)name,false,&isEdt);
+			if (isEdt) rdir->flags|=DF_EDITED;
+			if (fullpath!=NULL){
+				addSubdirs(fullpath,host,&rdir->subdirs);
+			}
 		}
 	}
-	return rdir2;
+	return rdir;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
 }
 
-void addSubdirs(const char * const fullpath, const hostConf_t * const host, recDir_t * const rdir) {
+void addSubdirs(const char * const fullpath, const hostConf_t * const host, recDirList_t * const rdirs) {
 	DIR *dir = opendir(fullpath);
 	if (dir == 0) {
 		return;
 	}
 	struct dirent* dirE;
-	recDir_t *rdir2;
-	recDirList_t *rdirs=&rdir->subdirs;
+	recDir_t *rdir;
 	while(0 != (dirE = readdir(dir))) {
 		if (dirE->d_type==DT_DIR) {
-			rdir2=addSubdir(dirE->d_name,host,rdirs);
-			if (rdir2 && isFlagSet(DF_ISDIR,rdir2->flags)){
+			if (dirE->d_name[0] != '.'){
 				char *fullpath2;
-				crit_goto_if(asprintf(&fullpath2,"%s/%s",fullpath,rdir2->name)<0,outOfMemory);
-				addSubdirs(fullpath2,host,rdir2);
+				crit_goto_if(asprintf(&fullpath2,"%s/%s",fullpath,dirE->d_name)<0,outOfMemory);
+				rdir=addDir(fullpath2,dirE->d_name,host,rdirs);
 				free(fullpath2);
 			}
 		}
@@ -180,20 +191,20 @@ outOfMemory:
 	exit(1);
 }
 
-void addRemoteRecs(const char * const path, hostConf_t *host, recDir_t *rdir) {
+void addRemoteRecs(const char * const path, hostConf_t *host, recDirList_t *rdirs) {
 	int l=(path)?strlen(path):0;
 	char *data=execSvdrp(host,"LSTR path");
 	if (data){
-		recDir_t *rdir2;
-		char *r, *sr;
+		recDir_t *rdir;
+		char *r, *sr; //row
 		for(r=strtok_r(data,"\r\n",&sr);r!=0;r=strtok_r(0,"\r\n",&sr)) {
 			int code=strtol(r,&r,10);
 			if (code==SVDRP_CMD_OK) {
 				r++;
-				rdir2=rdir;
-				char *f,*sf;
+				rdir=NULL;
+				char *f,*sf; //field
 				int i;
-				for(f=strtok_r(r," ",&sf),i=0;f && rdir2;f=strtok_r(0," ",&sf),i++) {
+				for(f=strtok_r(r," ",&sf),i=0;f;f=strtok_r(0," ",&sf),i++) {
 					if(i==1) {
 						if (f[0]=='/'){
 							warn("Absolute path %s",f);
@@ -201,10 +212,17 @@ void addRemoteRecs(const char * const path, hostConf_t *host, recDir_t *rdir) {
 						if (!path || (strncmp(path,f,l)==0)){
 							f+=l;
 							if (f[0]=='/') f++;
-							char *d,*sd;
+							char *d,*sd; //dir
 							for(d=strtok_r(f,"/",&sd);d;d=strtok_r(0,"/",&sd)) {
-								rdir2=addSubdir(d,host,&rdir2->subdirs);
-								if (rdir2==NULL) break;
+								if (!rdir || isFlagSet(DF_ISDIR,rdir->flags) ){
+									rdir=addDir(NULL,d,host,(rdir==NULL) ? rdirs : &rdir->subdirs);
+									if (rdir==NULL){
+										break;
+									}
+								} else {
+									dbg("[%s] es terminal. No se añade [%s]",rdir->name,d);
+									break;
+								}
 							}
 						}
 						break;
@@ -220,7 +238,7 @@ outOfMemory:
 	exit(1);
 }
 
-void getRecDir(const char * const path, recDir_t * const rdir) {
+void getRecDirList(const char * const path, recDirList_t * const rdirs, bool onlyLocal) {
 	int h;
 	hostConf_t *host;
 	bool parsed[webifConf.hostsLength];
@@ -234,7 +252,9 @@ void getRecDir(const char * const path, recDir_t * const rdir) {
 			} else  {
 				crit_goto_if((fullpath=strdup(host->video0))==NULL,outOfMemory);
 			}
-			addSubdirs(fullpath,host,rdir);
+			char *name=strrchr(fullpath,'/');
+			name=(name) ? name+1 : fullpath;
+			addDir(fullpath,name,host,rdirs);
 			free(fullpath);
 			parsed[h]=true;
 			int h2;
@@ -242,11 +262,11 @@ void getRecDir(const char * const path, recDir_t * const rdir) {
 			for (h2=h+1;h2<webifConf.hostsLength;h2++,host2++) 
 				if (!parsed[h2] && host2->video0[0] && strcmp(host->video0,host2->video0)==0)
 					parsed[h2]=true;
-		} else {
-			addRemoteRecs(path,host,rdir);
+		} else if (!onlyLocal) {
+			addRemoteRecs(path,host,rdirs);
 		}
 	}
-	prepareRecDir(rdir);
+	prepareRecDirList(NULL,rdirs);
 	return;
 outOfMemory:
 	crit("Out of memory");
@@ -313,21 +333,37 @@ outOfMemory:
 void printFolder(wcontext_t *wctx,const char *const path,int pl,recDir_t *rdir,int level){
 	if (rdir->numRecs==0) return; //TODO parametro de configuracion?
 	const char * const Browse=tr("browse");
+	const char * const PlayAll=tr("playAll");
 	if (level==0) {
 		wctx_printf(wctx,"<li class=\"level4-div recFolder%s%s\">\n",classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
 	} else {
 		wctx_printf(wctx,"<li class=\"recFolder%s%s\">\n",classIsDel[isFlagSet(DF_DELETED,rdir->flags)],classIsEdt[isFlagSet(DF_EDITED,rdir->flags)]);
 	}
-	inctab(wctx);
-	wctx_printfn(wctx,"<div class=\"level4-top recFolderHeader\">\n",0,1);
-	wctx_printf0(wctx,"<a href=\"recordings.kl1?a=%d&amp;path=%s\" class=\"openFolder\" title=\"%s\">"
-		,PA_BROWSE,CTX_URL_ENCODE(path,-1,NULL),Browse);
-	wctx_printf(wctx,"%s</a>\n",getPrintName(wctx,rdir));
-	wctx_printfn(wctx,"</div>\n",-1,0);
-	if (webifConf.maxDepth<=0 || level<webifConf.maxDepth) {
-		printRecDirListUL(wctx,path,pl,rdir,level+1);
+	{	//top
+		inctab(wctx);
+		char *epath=strdup(CTX_URL_ENCODE(path,-1,NULL));
+		wctx_printfn(wctx,"<div class=\"level4-top recFolderHeader\">\n",0,1);
+		wctx_printf0(wctx,"<a href=\"recordings.kl1?a=%d&amp;path=%s\" class=\"openFolder\" title=\"%s\">"
+			,PA_BROWSE,epath,Browse);
+		wctx_printf(wctx,"%s</a>\n",getPrintName(wctx,rdir));
+		{
+			//TODO usar funciones en recordings.
+			bool direct=false;
+			wctx_printf0(wctx,"<a href=\"");
+			wctx_printf(wctx,"/%s.kl1?path=%s",(direct)?"streamrec":"playlistrec",epath);
+			wctx_printf(wctx,"\" class=\"play control button-i ui-state-default\" title=\"%s\">"
+					"<span class=\"ui-icon ui-icon-play\">%s</span>"
+				"</a>\n",PlayAll,PlayAll);
+			wctx_printfn(wctx,"</div>\n",-1,0);
+		}
+		free(epath);
 	}
-	if (level==0 && webifConf.printRecFolderSummary){
+	if (webifConf.maxDepth<=0 || level<webifConf.maxDepth) {
+		//content
+		printRecDirListUL(wctx,path,pl,&rdir->subdirs,level+1);
+	}
+	if (level==0 && webifConf.printRecFolderSummary){ 
+		//bottom
 		wctx_printf0(wctx,"<ul class=\"level4-bottom recFolderFooter\">");
 		if (rdir->numDirs>0) {
 			wctx_printf(wctx,
@@ -414,8 +450,7 @@ outOfMemory:
 	exit(1);
 }
 
-void printRecDirListUL(wcontext_t *wctx,const char *path,int pl, recDir_t *rdir,int level){
-	recDirList_t *rdirs = &rdir->subdirs;
+void printRecDirListUL(wcontext_t *wctx,const char *path,int pl, recDirList_t *rdirs,int level){
 	if (rdirs->length>0 || wctx->isAjaxRequest){
 		if (level==0){
 			wctx_printf0(wctx,"<ul id=\"%s\" class=\"level3 recFolders\">",AJAX_REPLACE_PREFIX("recFolders"));

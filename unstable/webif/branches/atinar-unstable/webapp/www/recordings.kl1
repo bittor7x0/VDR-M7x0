@@ -166,11 +166,13 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 				printRecPathUl(wctx,pathrel);
 				wctx_printfn(wctx,"</div>\n",-1,0); //level3-top
 			}
-			recDir_t rdir;
-			initRecDir(&rdir);
-			getRecDir(pathrel,&rdir);
-			printRecDirListUL(wctx,pathrel,(pathrel)?strlen(pathrel):0,&rdir,0);
-			freeRecDir(&rdir);
+			recDirList_t rdirs;
+			initRecDirList(&rdirs);
+			getRecDirList(pathrel,&rdirs,false);
+			if (rdirs.length){
+				printRecDirListUL(wctx,pathrel,(pathrel)?strlen(pathrel):0,(rdirs.length>1) ? &rdirs : &rdirs.entry->subdirs,0);
+			}
+			freeRecDirList(&rdirs);
 			free(path);
 			if (!wctx->isAjaxRequest) {
 				wctx_printfn(wctx,"</div>\n",-1,0); //level3-div

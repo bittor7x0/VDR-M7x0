@@ -51,30 +51,12 @@
 		"}\n"
 		,channelHeight
 	);
-#ifndef STATIC_EPG_GRID
 	io_printf(out,
 		"#grid-div .channel .channelContent {\n"
 		"	margin-left:%dpx;\n"
 		"}\n"
 		,logoWidth
 	);
-#else
-	io_printf(out,
-		"#grid-div {\n"
-		"	width:%dpx;\n"
-		"}\n"
-		,webifConf.epgGridWidth
-	);
-
-	io_printf(out,
-		"#grid-div .channel .channelContent {\n"
-		"	float:left;\n"
-		"	width:%dpx;\n"
-		"}\n"
-		,webifConf.epgGridWidth-logoWidth
-	);
-
-#endif
 %>
 
 

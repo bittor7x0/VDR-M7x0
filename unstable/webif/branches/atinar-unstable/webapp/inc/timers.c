@@ -38,6 +38,8 @@ void initTimer(vdrTimer_t *const timer) {
 	timer->lifetime=99;
 	timer->priority=50;
 	strcpy(timer->wdays,"-------"); 
+	timer->inConflict=false;
+	timer->percent=100;
 }
 
 bool initTimerFromEvent(wcontext_t *wctx, vdrTimer_t *const timer, hostConf_t *host, const int channelNum, const int eventId){
@@ -211,6 +213,7 @@ int compareTimers(const vdrTimer_t *ta, const vdrTimer_t *tb, sortField_t sortBy
 				result=sortDirection*(ta->hostId-tb->hostId);
 				if (result) return result; else sortBy=SF_START; break;
 			case SF_START:    
+			default:
 				return sortDirection*(ta->start-tb->start);	
 		}
 	}
@@ -219,7 +222,7 @@ int compareTimers(const vdrTimer_t *ta, const vdrTimer_t *tb, sortField_t sortBy
 
 void sortTimerList(timerList_t *const timers, const sortField_t sortBy, const sortDirection_t sortDirection){
 	int compare(const void *a, const void *b) {
-		compareTimers((const vdrTimer_t *)a,(const vdrTimer_t *)b, sortBy, sortDirection);
+		return compareTimers((const vdrTimer_t *)a,(const vdrTimer_t *)b, sortBy, sortDirection);
 	}
 	if (timers->length>0 && sortBy!=SF_NONE) {
 		qsort(timers->entry,timers->length,sizeof(vdrTimer_t),compare);
@@ -753,7 +756,7 @@ void printTimerBars(wcontext_t *wctx, timerList_t *const timers, const int chann
 				double right=(mend>0)?100.0*mend/duration:0.0;
 				double width=(100.0-left-right);
 				if (width<0.0) width=0;
-				wctx_printfn(wctx,"<div id=\"timer%d_%d\" class=\"timer\">\n",0,1,timer->id,++timer->count);
+				wctx_printfn(wctx,"<div id=\"timer%d_%d\" class=\"timer%s\">\n",0,1,++timer->count,timer->id,(timer->inConflict)?" conflict":"");
 				wctx_printf0(wctx,"<a class=\"timerEdit progressbar\"");
 				wctx_printf(wctx," href=\"timers.kl1?a=%d&amp;timerStr=%s&amp;timerId=%d&hostId=%d\"",PA_EDIT,CTX_URL_ENCODE(timer->timerStr,-1,NULL),timer->id,timer->hostId);
 				wctx_printf(wctx," title=\"%s: %s\"",TimerEdit,timer->title);
@@ -773,3 +776,116 @@ void printTimerBars(wcontext_t *wctx, timerList_t *const timers, const int chann
 	}
 	//if (!anyMatch) wctx_printf0(wctx,"&nbsp;\n");
 }
+
+void initConflict(conflict_t * const conflict){
+	conflict->when=(time_t)0;
+	conflict->timer=NULL;
+	conflict->nconcurrent=0;
+	conflict->pconcurrent=NULL;
+}
+
+void freeConflict(conflict_t * const conflict){
+	free(conflict->pconcurrent);
+	initConflict(conflict);
+}
+
+void initConflictList(conflictList_t * const conflicts){
+	conflicts->length=0;
+	conflicts->entry=NULL;
+}
+
+void freeConflictList(conflictList_t * const conflicts){
+	int i;
+	for (i=0;i<conflicts->length;i++){
+		freeConflict(conflicts->entry+i);
+	}
+	free(conflicts->entry);
+	initConflictList(conflicts);
+}
+
+bool parseConflict(const char *line, conflict_t *const conflict, timerList_t const * timers ){
+	int l;
+	int timerId;
+	int i;
+	vdrTimer_t *ptimer;
+	const char *r;
+	char *n; //pointer to next field, only to check integrity
+
+	r=line;
+	conflict->when=(time_t)strtol(r,&n,10);
+	if (n[0]!=':') goto wrongFormat;
+	r=n+1;
+	
+	timerId=strtol(r,&n,10); 
+	if (n[0]!='|') goto wrongFormat;
+	for (i=0,ptimer=timers->entry;i<timers->length;i++,ptimer++){
+		if (ptimer->hostId==conflict->hostId && ptimer->id==timerId){
+			ptimer->inConflict=true;
+			conflict->timer=ptimer;
+			break;
+		}
+	}
+	if (conflict->timer==NULL){
+		warn("Wrong timer %d in conflict",timerId);
+		return false;
+	}
+	r=n+1;
+	
+	conflict->timer->percent=strtol(r,&n,10); 
+	if (n[0]!='|') goto wrongFormat;
+
+	//TODO leer concurrentes
+
+	return true;
+wrongFormat:
+	warn("Wrong conflict string s[%s] r[%s] n[%s]",line,r,n);
+	if (errno) {
+		warn(strerror(errno));
+	}
+	return false;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+void getConflictListHost(hostConf_t *const host, conflictList_t * const conflicts, timerList_t const * timers){
+	char *data=execSvdrp(host,"PLUG epgsearch LSCC REL");
+	if (data){
+		char *p;
+		for (p=strtok(data,"\r\n");p!=0;p=strtok(0,"\r\n")) {
+			if (strtol(p,&p,10)==SVDRP_PLUG_DEFAULT) {
+				p++;
+				crit_goto_if((conflicts->entry=(conflict_t *)realloc(conflicts->entry,(++conflicts->length)*sizeof(conflict_t)))==NULL,outOfMemory);
+				conflict_t *tmp=conflicts->entry+conflicts->length-1;
+				initConflict(tmp);
+				tmp->hostId=host->id;
+				if (!parseConflict(p,tmp,timers)){
+					freeConflict(tmp);
+					conflicts->length--;
+				} 
+			}
+		}
+		free(data);
+	}
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+void getConflictList(conflictList_t * const conflicts, timerList_t const * timers){
+	int i;
+	hostConf_t *host;
+	vdrTimer_t *ptimer;
+	initConflictList(conflicts);
+	for (i=0,ptimer=timers->entry;i<timers->length;i++,ptimer++){
+		ptimer->inConflict=false;
+		ptimer->percent=100;
+	}
+	for (i=0,host=webifConf.hosts;i<webifConf.hostsLength;i++,host++){
+		if (host->isVdr){
+			getConflictListHost(host,conflicts,timers);
+		}
+	}
+}
+

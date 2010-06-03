@@ -41,7 +41,6 @@ const char *selected[2]={""," selected=\"selected\""};
 const char *videoTypeStr[7]={"unknown","sd43","sd169","sd","hd43","hd169","hd"}; //See videoType_t
 const char *cssSortClass[]={"sortdesc","sortnone","sortasc"};
 const char *classCurrent[2]={""," class=\"act\""};
-const char *classActive[2]={" class=\"inactive\""," class=\"active\""};
 const char *tabs="\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 
 systemType_t systemType=ST_UNKNOWN;
@@ -64,22 +63,6 @@ bool parseRequestStr(request_t *request, char ** pathStr, char ** queryStr) {
 		(*queryStr)=strndup(r,l);
 	}
 	return true;
-}
-
-char * strcatEx(char ** dest, const char * s) {
-	int size=0;
-	
-	if (*dest==NULL) { *dest=malloc(strlen(s)+2); strcpy(*dest,""); }
-	size=strlen(*dest)+strlen(s);
-	
-	char * tmp =(char *)realloc(*dest,size+2);
-	if (!tmp) {
-		exit(1);
-	}
-	*dest=tmp;
-
-	strcat(*dest,s);
-	return *dest;
 }
 
 char *strreplace(char *s, const char *s1, const char *s2){
@@ -155,7 +138,7 @@ bool initCtx(wcontext_t *wctx, pageNumber_t currentPage, session_t *session, req
 	wctx->bufferLength=0;
 	wctx->buffer=NULL;
 	wctx->decoratePage=true;
-	if (strlen(webifConf.user)>0 && strlen(webifConf.password)>0 && !is_connected(wctx)) {
+	if (!isAuthorized(wctx)) {
 		return false;
 	}
 	if (bufferLength>0){
@@ -205,9 +188,11 @@ void freeCtx(wcontext_t *wctx){
 
 void chkCtxBuffer(wcontext_t *wctx,int length, const char * routineName){
 	if ((length+1)>wctx->bufferLength){
+		/*
 		if (routineName){
 			dbg("buffer insuficiente en %s:  %d %d",routineName,wctx->bufferLength,length);
 		}
+		*/
 		crit_goto_if((wctx->buffer=realloc(wctx->buffer,length+1))==NULL,outOfMemory);
 		wctx->bufferLength=length+1;
 	}
@@ -345,21 +330,26 @@ void initHtmlDoc(wcontext_t *wctx){
 void initHtmlPage(wcontext_t *wctx, const char *title, printHtmlHeadExtra_t printHtmlHeadExtra){
 	initHtmlDoc(wctx);
 	if (!wctx->isAjaxRequest){
+#define JQUERYVERSION "-1.3.2.min"
+#define JQUERYUIVERSION "-1.7.2.min"
 		wctx_printfn(wctx,"<head>\n",0,1);
 		wctx_printf0(wctx,"<title>%s</title>\n",title);
 		wctx_printf0(wctx,"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\" />\n");
 		if (wctx->decoratePage){
 			wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/screen.css\" media=\"screen\" />\n",webifConf.www);
 			wctx_printf0(wctx,"<link rel=\"stylesheet\" type=\"text/css\" href=\"%s/css/print.css\" media=\"print\" />\n",webifConf.www);
-			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-1.3.2.min.js\"></script>\n",webifConf.www);
-			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-ui-1.7.2.min.js\"></script>\n",webifConf.www);
+			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery" JQUERYVERSION ".js\"></script>\n",webifConf.www);
+			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery-ui" JQUERYUIVERSION ".js\"></script>\n",webifConf.www);
 			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/jquery.hoverIntent.min.js\"></script>\n",webifConf.www);
 			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/superfish.js\"></script>\n",webifConf.www);
 			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/supersubs.js\"></script>\n",webifConf.www);
 			wctx_printf0(wctx,"<script type=\"text/javascript\" src=\"%s/js/common.js\"></script>\n",webifConf.www);
 			wctx_printfn(wctx,"<script type=\"text/javascript\">\n",0,1);
 			wctx_printf0(wctx,"$.extend(webif.state,{'currentPage':%d,'currentAction':%d});\n",wctx->currentPage,wctx->currentAction);
-			wctx_printf0(wctx,"$.extend(webif.messages,{close:'%s',cancel:'%s'});\n",tr("close"),tr("cancel"));
+			wctx_printf0(wctx,"$.extend(webif.messages,{close:'%s',cancel:'%s',webSearch:'%s'});\n",tr("close"),tr("cancel"),tr("web.search"));
+			if (webifConf.eventSearchUrl && webifConf.eventSearchUrl[0]) {
+				wctx_printf0(wctx,"$.extend(webif.urls,{eventSearch:'%s'});\n",webifConf.eventSearchUrl);
+			}
 			wctx_printfn(wctx,"</script>\n",-1,0);
 		}
 	}
@@ -400,11 +390,6 @@ void initHtmlPage(wcontext_t *wctx, const char *title, printHtmlHeadExtra_t prin
 			wctx_printfn(wctx,"</div>\n",-1,0); //page-top
 			wctx_printfn(wctx,"<div id=\"page\">\n",0,1);
 		}
-/*		No nos pasemos, de momento:
-		wctx_printfn(wctx,"<!--[if lte IE 8]>\n",0,1);
-		printMessage(wctx,"alert",tr("browser.not_supported"),tr("browser.please_update"),false);
-		wctx_printfn(wctx,"<![endif]-->\n",-1,0);
-*/
 	}
 }
 
@@ -491,17 +476,28 @@ void printMenu(wcontext_t *wctx){
 	wctx_printf0(wctx,"</li></ul>\n");
 }
 
-void printInput(wcontext_t *wctx, const char *type, const char *id, const char *name, int idx, const char *value, int l){
-	char tmpName[20];
-	if (name==NULL) {
-		snprintf(tmpName,20,"paramValue_%d",idx);
+void printInput(wcontext_t *wctx, const char *type, const char *id, const char *name, const char *cssClass, int idx, const char *value, int l){
+	char *tmpName;
+	if (!name) {
+		name="paramValue";
+	}
+	if (idx>=0) {
+		crit_goto_if(asprintf(&tmpName,"%s_%d",name,idx)<0,outOfMemory);
 		name=tmpName;
 	}
 	wctx_printf0(wctx,"<input type=\"%s\" ",type);
 	if (id!=NULL){
 		wctx_printf(wctx,"id=\"%s\" ",id);
 	}
+	if (cssClass!=NULL){
+		wctx_printf(wctx,"class=\"%s\" ",cssClass);
+	}
 	wctx_printf(wctx,"name=\"%s\" value=\"%s\" size=\"%d\" />\n",name,(value)?CTX_HTML_ENCODE(value,-1):"",(l>0)?l:(value)?strlen(value)+3:10);
+	if (tmpName) free(tmpName);
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
 }
 
 

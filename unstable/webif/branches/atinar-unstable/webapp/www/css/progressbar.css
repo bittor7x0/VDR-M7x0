@@ -34,6 +34,11 @@ a.progressbar:hover {
 .progressbar .pbenabled{
 	background:#005104 url(images/ui-bg_gloss-wave_75_005104_1x100.png) repeat-x scroll 50% 50%;
 }
+.conflict .progressbar .pbenabled {
+	background-color: #d93a3a;
+	background-image: url("images/ui-bg_gloss-wave_75_d93a3a_1x100.png");
+}
+
 .progressbar .pbdisabled{
 	background-color:#B8BFA0;
 }

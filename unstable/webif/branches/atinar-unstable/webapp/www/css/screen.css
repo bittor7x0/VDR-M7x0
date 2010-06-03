@@ -146,6 +146,12 @@ pre {
 	cursor:pointer;
 	text-decoration:underline;
 }
+tr.conflict {
+	background-color:#FFE7C0;
+}
+.conflict .titleLink {
+	color:#d93a3a;
+}
 
 /* Page layout 
 ------------------------------------------------------*/
@@ -418,18 +424,22 @@ tr .controls .control .ui-icon {
 
 /* Table related 
 ------------------------------------------------------------*/
+/*
 .formContainer {
 	width:auto;
 	max-width:95%;
 	min-width:60%;
 }
+*/
 table.list,
 table.level3-div {
 	border-collapse:collapse;
 	margin:0 auto;
+	/*
 	width:auto;
 	max-width:95%!important;
 	min-width:60%;
+	*/
 	empty-cells:show;
 }
 table caption {
@@ -438,10 +448,12 @@ table caption {
 	padding:0.35em 1em;
 	border:none;
 }
+/*
 form table.list {
 	width:auto;
 	min-width:60%;
 }
+*/
 form table.list caption {
 	background-color:#909070;
 	border-bottom:1px solid #b8b888;

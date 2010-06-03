@@ -33,7 +33,7 @@
 * @param _out standard output (global var) of KLone server
 * @return false if the user is not connected
 */ 
-bool is_connected(wcontext_t *wctx);
+bool isAuthorized(wcontext_t *wctx);
 
 /**
 * Decode a base64 string like "login:password"

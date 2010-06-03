@@ -2,6 +2,7 @@ webif={
 	state:{},
 	messages:{}, //i18n
 	images:{},
+	urls:{},
 	actions:{},  //codigos numericos de acciones
 	callbacks:{},
 	prepareHiddenDiv:function(){
@@ -54,6 +55,77 @@ webif={
 		if(this.loadingDialogCounter<=1){
 			this.$loading.dialog('close');
 		}
+	}
+	,
+	showEpgEventInfo:function($event,$eventInfo,inGrid){
+		var $eventChildren = $('.controls,.fromTo,.shortdesc,.desc',$event);
+		var $title=$('.title',$event);
+		var $shortdesc=$('.shortdesc',$event);
+		var $desc=$('.desc',$event);
+		var $controls=$('ul.controls',$event);
+		if (inGrid) {
+			$controls=$controls.clone();
+		}
+		if (webif.urls.eventSearch){
+			var aUrl=webif.urls.eventSearch;
+			aUrl=aUrl.replace(/\{title\}/gi,webif.URLEncode($title.text()));
+			aUrl=aUrl.replace(/\{subtitle\}/gi,webif.URLEncode($shortdesc.text()));
+			var $control=$('<li class="control"/>').appendTo($controls);
+			var $anchor=$('<a class="webSearch newWindow button-i ui-state-default"><span class="ui-icon ui-icon-extlink">search Event</span></a>').appendTo($control);
+			$anchor.attr('href',aUrl);
+			$anchor.attr('title',webif.messages.webSearch);
+		}
+		$controls.appendTo($eventInfo);
+		$('.fromTo',$event).clone().appendTo($eventInfo);
+		if (inGrid){
+			$title.clone().removeClass('titleLink').appendTo($eventInfo);
+		}
+		if ($shortdesc.length>0){
+			if ($desc.text().toLowerCase().indexOf($shortdesc.text().toLowerCase())>-1){
+				$shortdesc.remove();
+			} else {
+				if (inGrid) $shortdesc=$shortdesc.clone();
+				$shortdesc.appendTo($eventInfo);
+			}
+		}
+		if (inGrid) $desc=$desc.clone();
+		$desc.appendTo($eventInfo);
+		$eventInfo.prepareElements();
+	}
+	,
+	URLEncode:function(c){
+		var o='';
+		var x=0;
+		var r=/(^[a-zA-Z0-9_.]*)/;
+		c=c.toString();
+		while(x<c.length){
+			var m=r.exec(c.substr(x));
+			if(m!=null && m.length>1 && m[1]!=''){
+				o+=m[1];
+				x+=m[1].length;
+			}else{
+				if(c[x]==' ')
+					o+='+';
+				else{
+					var d=c.charCodeAt(x);
+					var h=d.toString(16);
+					o+='%'+(h.length<2?'0':'')+h.toUpperCase();
+				}
+				x++;
+			}
+		}
+		return o;
+	},
+	URLDecode:function(s){
+		var o=s;
+		var binVal,t;
+		var r=/(%[^%]{2})/;
+		while((m=r.exec(o))!=null && m.length>1 && m[1]!=''){
+			b=parseInt(m[1].substr(1),16);
+			t=String.fromCharCode(b);
+			o=o.replace(m[1],t);
+		}
+		return o;
 	}
 }
 $.fn.uniqueId = function(prefix){
@@ -136,6 +208,8 @@ $.fn.popMessageDialog=function(okFunction){
 		} 
 	});
 };
+
+
 $(function(){
 	$('ul.sf-menu')
 		.supersubs({minWidth:12,maxWidth:25,extraWidth:1})

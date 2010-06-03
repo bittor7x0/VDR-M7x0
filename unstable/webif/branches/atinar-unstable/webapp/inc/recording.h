@@ -16,7 +16,7 @@
 
 #include <klone/session.h>
 #include "misc.h"
-#include "recordings.h"
+#include "browse.h"
 
 typedef struct fragmentEntry_s {
   char * path;
@@ -37,7 +37,8 @@ void initFE(fragmentEntry_t *const entry);
 void freeFE(fragmentEntry_t *const entry);
 void initFL(fragmentList_t *const list);
 void freeFL(fragmentList_t *const list);
-bool seekFragment(fragmentList_t * const list, uint64_t totalPos);
-bool getFragmentList(fragmentList_t * const list, const rec_t *rec);
+bool seekFragment(fragmentList_t * const fragments, uint64_t pos);
+void getFragmentList(fragmentList_t * const fragments, const char * const path );
+void debugFragmentList(const char * const label, fragmentList_t * const fragments);
 
 #endif

@@ -52,19 +52,28 @@ void freeFL(fragmentList_t *const list){
 	initFL(list);
 }
 
+void debugFragmentList(const char * const label, fragmentList_t * const fragments){
+	int i;
+	fragmentEntry_t *f;
+	for(i=0,f=fragments->entry; i<fragments->length; i++,f++){
+		info("%s i[%d] start[%llu] end[%llu]",label,i,f->start,f->end);
+	}
+}
+
 bool seekFragment(fragmentList_t * const list, uint64_t pos){
 	fragmentEntry_t * f;
 	int i;
-	list->fragNum=-1;
-	for(i=0; i<list->length; i++){
-		f=&list->entry[i];
+	//dbg("pos[%llu]",pos);
+	//dbg("length[%d],totalSize[%llu]",list->length,list->totalSize);
+	for(i=0,f=list->entry; i<list->length; i++,f++){
+		//dbg("i[%d] start[%llu] end[%llu]",i,f->start,f->end);
 		if (pos>=f->start && pos<=f->end) {
 			list->fragPos=pos-f->start;
 			list->fragNum=i;
-			break;
+			return true;
 		}
 	}
-	return boolean(list->fragNum>-1);
+	return false;
 }
 
 int isVideoFile(const struct dirent * ent){
@@ -74,58 +83,87 @@ int isVideoFile(const struct dirent * ent){
 	return (strcmp(c,".vdr")==0);
 }
 
-bool getFragmentList(fragmentList_t * const list, const rec_t *rec){
-	initFL(list);
-	if (rec->path==NULL) {
-		warn("Path should be specified");
-		return false;
-	}
-	hostConf_t *host=getHost(rec->hostId);
-	if (!host || !host->video0 || host->video0[0]!='/') {
-		warn("Recording host %d is not local or video0 %s not valid", rec->hostId, (host)?host->video0:"null");
-		return false;
-	}
+void addRecFragments(fragmentList_t * const fragments, const char * const fullpath){
 	struct stat st;
 	fragmentEntry_t *f;
 	int i;
-	char * fullpath;
-	if (rec->path[0]=='/'){
-		warn("Absolute recording path [%s]",rec->path);
-		fullpath=rec->path;
-	}
-	else {
-		crit_goto_if(asprintf(&fullpath,"%s/%s",host->video0,rec->path)<0,outOfMemory);
-	}
 	if ( (stat(fullpath, &st)==0) && S_ISDIR(st.st_mode)) {
 		struct dirent **namelist;
-		list->length = scandir(fullpath, &namelist, isVideoFile, alphasort);
-		if (list->length<0) list->length=0;
-		if (list->length>0) {
-			list->entry=(fragmentEntry_t*)malloc((list->length)*sizeof(fragmentEntry_t));
-			crit_goto_if(list->entry==NULL,outOfMemory);
-			for (i=0;i<list->length;i++) {
-				f=&list->entry[i];
+		int n=scandir(fullpath, &namelist, isVideoFile, alphasort);
+		if (n>0) {
+			fragments->entry=(fragmentEntry_t*)realloc(fragments->entry,(fragments->length+n)*sizeof(fragmentEntry_t));
+			crit_goto_if(fragments->entry==NULL,outOfMemory);
+			for (i=0, f=fragments->entry+fragments->length ; i<n ; i++, f++) {
 				initFE(f);
 				crit_goto_if(asprintf(&(f->path),"%s/%s",fullpath,namelist[i]->d_name)<0,outOfMemory);
 				if (stat(f->path,&st)==0) {
 					f->size=st.st_size;
-					f->start=list->totalSize;
+					f->start=fragments->totalSize;
 					f->end=f->start+f->size-1;
-					list->totalSize=f->end+1;
+					//dbg("i[%d] start[%llu] end[%llu]",i,f->start,f->end);
+					fragments->totalSize=f->end+1;
 				} else {
 					warn("file %s error %s",f->path,strerror(errno));
 					freeFE(f);
 				}
 			}
-			for (i=0;i<list->length;i++) free(namelist[i]);
+			fragments->length+=n;
+			for (i=0;i<n;i++) free(namelist[i]);
 			free(namelist);
 		}
 	}
-	if (fullpath!=rec->path) free(fullpath);
-	return boolean(list->length>0 && list->totalSize>0);
+	return;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
+}
+
+void addRecDirListFragments(fragmentList_t * const fragments, const char * const path, const recDirList_t *rdirs);
+
+void addRecDirFragments(fragmentList_t * const fragments, const char * const path, const recDir_t *rdir){
+	if (isFlagSet(DF_ISREC,rdir->flags)){
+		char * fullpath;
+		hostConf_t *host=getHost(rdir->hostId);
+		if (!host || !host->video0 || host->video0[0]!='/') {
+			warn("Recording host %d is not local or video0 %s not valid", rdir->hostId, (host)?host->video0:"null");
+			return;
+		}
+		crit_goto_if(asprintf(&fullpath,"%s/%s",host->video0,path)<0,outOfMemory);
+		addRecFragments(fragments,fullpath);
+		free(fullpath);
+	} else if (isFlagSet(DF_ISDIR,rdir->flags)) {
+		addRecDirListFragments(fragments,path,&rdir->subdirs);
+	}
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+void addRecDirListFragments(fragmentList_t * const fragments, const char * const path, const recDirList_t *rdirs){
+	int i;
+	recDir_t *rdir;
+	for(i=0,rdir=rdirs->entry;i<rdirs->length;i++,rdir++){
+		char *path2;
+		crit_goto_if(asprintf(&path2,"%s/%s",path,rdir->name)<0,outOfMemory);
+		addRecDirFragments(fragments,path2,rdir);
+		free(path2);
+	}
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+void getFragmentList(fragmentList_t * const fragments, const char * const path ){
+	recDirList_t rdirs;
+	initRecDirList(&rdirs);
+	getRecDirList(path,&rdirs,true);
+	if (rdirs.length){
+		addRecDirFragments(fragments,path,rdirs.entry);
+	}
+	freeRecDirList(&rdirs);
+	//debugFragmentList("getFragmentList",fragments);
 }
 
 

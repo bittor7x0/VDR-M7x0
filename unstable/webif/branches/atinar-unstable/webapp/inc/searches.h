@@ -164,7 +164,7 @@ void getSearchList(searchList_t *const searchs, channelList_t const *const chann
 bool parseSearch(const char *line, search_t *const search, channelList_t const *const channels);
 bool addSearch(wcontext_t *wctx, hostConf_t *host, const char *newSearchStr);
 bool editSearch(wcontext_t *wctx, hostConf_t *host, int id, const char *oldSearchStr, const char *newSearchStr);
-bool deleteSearch(wcontext_t *wctx, hostConf_t *host, int id, const char *oldSearchStr);
+bool deleteSearch(wcontext_t *wctx, hostConf_t *host, int id, const char *oldSearchStr,bool andTimers);
 bool updateSearches(wcontext_t *wctx, hostConf_t *host);
 char *makeSearchStr(search_t *const search,const channelList_t *channels);
 void printSearchForm(wcontext_t *wctx, search_t *const search, channelList_t const *const channels,searchCatList_t const *const cats,const char *cssLevel);

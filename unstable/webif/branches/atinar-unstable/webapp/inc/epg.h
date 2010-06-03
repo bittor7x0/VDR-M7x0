@@ -91,9 +91,13 @@ void parseEvents(char *data, events_t * const events, channelList_t const * cons
 void getEvents(hostConf_t *vdrHost, events_t * const events, channelList_t const * const channels);
 void getChannelEvents(hostConf_t *vdrHost, channelEvents_t * const channelEvents);
 void printEventDesc(wcontext_t *wctx, char * const desc, bool encode);
-void printEvent(wcontext_t *wctx, epgEvent_t * const event, const int channelNum, bool compact, const char *const TimerCreate, const char *const SearchCreate);
+void printEvent(wcontext_t *wctx, epgEvent_t * const event, const int channelNum, bool compact
+	, const char *const TimerCreate
+	, const char *const SearchCreate
+	, const char *const WebSearch
+);
 void getEpgGridLimits(const char *argStart,time_t *start, time_t *end);
-void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * const channels, timerList_t * const timers);
+void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * const channels, timerList_t * const timers, conflictList_t * const conflicts);
 void printChannelEpg(wcontext_t *wctx, const char *id, hostConf_t *host, const int channelNum, timerList_t *const timers);
 void printTimersDiv(wcontext_t *wctx, const char *id, timerList_t * const timers, const time_t start, const time_t end);
 

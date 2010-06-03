@@ -33,7 +33,8 @@
 #include "recordings.h"
 #include "svdrp_comm.h"
 
-#define isValidRecPath(path) (path && strlen(path)>4 && strcmp(path+strlen(path)-4,".rec")==0)
+//#define isValidRecPath(path) (path && strlen(path)>4 && strcmp(path+strlen(path)-4,".rec")==0)
+#define isValidRecPath(path) (path && strlen(path)>0)
 
 void initRec(rec_t * const rec){
 	rec->my=0;
@@ -61,11 +62,10 @@ bool initRecFromArgs(wcontext_t *wctx, rec_t * const rec, vars_t *args){
 		rec->path=wctxGetRequestParam(wctx,args,"path",&isACopy);
 		if (isACopy) setFlag(RF_PATH,rec->my);
 		if (!isValidRecPath(rec->path)) {
-			printMessage(wctx,"alert",tr("rec.delete.err"),tr("recErrNoValidPath"), false);
+			printMessage(wctx,"alert",tr("rec.err"),tr("recErrNoValidPath"), false);
 			return false;
 		}
 	}
-	dbg("rec->path [%s]",rec->path);
 	initEpgEventFromArgs(wctx,&rec->event,args);
 	rec->video=VT_UNKNOWN;
 	rec->audio.length=0;
@@ -274,17 +274,18 @@ outOfMemory:
 	exit(1);
 }
 
-bool parseRecInfo(rec_t * const rec, char * const data, bool fromFile){
+void parseRecInfo(rec_t * const rec, char * const data, bool fromFile){
 	char *s;
-	bool result=true;
+	//bool result=true;
 	audioList_t *al;
 	al=&rec->audio;
 	for (s=strtok(data,"\r\n");s!=NULL;s=strtok(0,"\r\n")) {
 		if (!fromFile){
 			int code=strtol(s,&s,10);
 			if (code==SVDRP_RCRD){
-				if (s[0]==' ') 
-					return; //End of recording info
+				if (s[0]==' ') {
+					break; //End of recording info
+				}
 				s++;
 			} else {
 				continue;
@@ -318,7 +319,20 @@ bool parseRecInfo(rec_t * const rec, char * const data, bool fromFile){
 				parseEventLine(s[0],s+2,&rec->event);
 		}
 	}
-	return result;
+	if (rec->event.start==0 && rec->path && rec->path[0]){
+		//obtener fecha a partir de ruta
+		char *r=strrchr(rec->path,'/');
+		if (r){
+			r++;
+			struct tm sstart=*localtime(&rec->event.start);
+			if (strptime(r,"%Y-%m-%d.%H.%M",&sstart)!=NULL){
+				sstart.tm_sec=0;
+				sstart.tm_isdst=-1;
+				rec->event.start=mktime(&sstart);
+			}
+		}
+	}
+	return;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
@@ -354,10 +368,10 @@ bool readRecInfo(rec_t * const rec){
 		}
 		fclose(handle);
 		if (data!=NULL){
-			bool result=parseRecInfo(rec,data,true);
+			parseRecInfo(rec,data,true);
 			free(data);
-			return result;
 		}
+		return true;
 	}
 	return false;
 outOfMemory:
@@ -386,9 +400,9 @@ bool getRecInfo(rec_t *rec){
 			char * data=execSvdrp(host,command);
 			free(command);
 			if (data!=NULL) {
-				bool result=parseRecInfo(rec,data,false);
+				parseRecInfo(rec,data,false);
 				free(data);
-				return result;
+				return true;
 			}
 		}
 	} else {
@@ -402,17 +416,18 @@ outOfMemory:
 
 //TODO usar printEvent
 void printRecInfo(wcontext_t *wctx, const rec_t * const rec){
-	int minutes = rec->event.duration/60;
 	wctx_printfn(wctx,"<div class=\"recInfo\">\n",0,1);
 	wctx_printfn(wctx,"<div class=\"recDate\">\n",0,1);
 	wctx_printf0(wctx,
 		"<span class=\"recStart field\">"
 			"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%s</span>"
 		"</span>\n",tr("date"),formatDate(localtime(&rec->event.start),1));
-	wctx_printf0(wctx,
-		"<span class=\"recDuration field\">"
-			"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%d&#39;</span>"
-		"</span>\n",tr("runtime"),minutes);
+	if (rec->event.duration>0){
+		wctx_printf0(wctx,
+			"<span class=\"recDuration field\">"
+				"<span class=\"label\">%s:</span>&nbsp;<span class=\"value\">%d&#39;</span>"
+			"</span>\n",tr("runtime"),rec->event.duration/60);
+	}
 	wctx_printfn(wctx,"</div>\n",-1,0);
 	if (webifConf.displayHostId && webifConf.hostsLength>1){
 		hostConf_t *host=getHost(rec->hostId);
@@ -464,9 +479,10 @@ void printRecControls(wcontext_t *wctx,const rec_t *rec,const char *Play,const c
 	wctx_printfn(wctx,"<ul class=\"controls\"><!--\n",0,1);
 	if (Play) {
 		wctx_printfn(wctx,"--><li class=\"control\">\n",0,1);
-#ifdef PRINT_REC_CONTROLS_AS_FORM		
+#ifndef PRINT_REC_CONTROLS_AS_LINK
+		//nota: requiere cambio en jquery-form para someter botones 'noajax' de la forma normal
 		wctx_printf0(wctx,
-			"<button type=\"submit\" class=\"play control button-i ui-state-default\" name=\"a\" value=\"%d\" title=\"%s\">"
+			"<button type=\"submit\" class=\"noajax play control button-i ui-state-default\" name=\"a\" value=\"%d\" title=\"%s\">"
 				"<div><span class=\"ui-icon ui-icon-play\">%s</span></div>"
 			"</button>\n",PA_PLAY,Play,Play)
 #else
@@ -504,7 +520,6 @@ void printRecEditForm(wcontext_t *wctx, rec_t *rec){
 		wctx_printf0(wctx,"<input type=\"hidden\" name=\"id\" value=\"%d\"/>\n",rec->id);
 	}
 	if (rec->path!=NULL) {
-		dbg("rec->path=[%s]",rec->path);
 		wctx_printf0(wctx,"<input type=\"hidden\" name=\"path\" value=\"%s\"/>\n",rec->path);
 	} else {
 		warn("rec->path==NULL");

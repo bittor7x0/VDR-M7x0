@@ -58,7 +58,7 @@ FormHandler.prototype = {
 	,
 	handleClick:function(e,$anchor){
 		// Click event handler ligado a un anchor 'a' que carga, 
-		// via ajax, el formulario al que apunta 'a.href' 
+		// via ajax, el recurso al que apunta 'a.href' 
 		// dentro de un dialogo modal.
 		e.preventDefault();
 		webif.openLoadingDialog();
@@ -77,7 +77,7 @@ FormHandler.prototype = {
 	}
 	,
 	responseReady:function(responseText,textStatus,$form){
-		// Handler llamado por $.load() tras completar la llamada ajax que devuelve el formulario
+		// Handler llamado por $.load() tras completar la llamada ajax
 		$('[id^="replace_"]',this.$responseContainer).each(function(){
 			var $nodeNew=$(this);
 			var id=$nodeNew.attr('id').replace('replace_','');

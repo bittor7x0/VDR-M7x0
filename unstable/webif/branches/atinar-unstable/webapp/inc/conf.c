@@ -27,6 +27,7 @@
 #include "conf.h"
 #include "i18n.h"
 #include "misc.h"
+#include "svdrp_comm.h"
 
 #define VIDEO0 "/var/vdr/video0"
 char* commandsFile="/etc/webif/commands.conf";
@@ -52,19 +53,19 @@ void validateCheckbox(const cfgParamConfig_t * const cfg, cfgParam_t * const par
 }
 
 bool printInputText(wcontext_t *wctx,const cfgParamConfig_t * const cfg
-, const char *id, const char *name,int idx,const char *value ){
-	printInput(wctx,"text",id,name,idx,value,(cfg)?cfg->size:0);
+, const char *id, const char *name, const char *cssClass, int idx,const char *value ){
+	printInput(wctx,"text",id,name,cssClass,idx,value,(cfg)?cfg->size:0);
 	return true;
 }
 
 bool printInputPassword(wcontext_t *wctx,const cfgParamConfig_t * const cfg
-,const char *id, const char *name,int idx,const char *value){
-	printInput(wctx,"password",id,name,idx,value,(cfg)?cfg->size:0);
+,const char *id, const char *name, const char *cssClass, int idx, const char *value){
+	printInput(wctx,"password",id,name,cssClass,idx,value,(cfg)?cfg->size:0);
 	return true;
 }
 
 bool printCheckbox(wcontext_t *wctx,const cfgParamConfig_t * const cfg
-, const char *id, const char *name,int idx,const char *value){
+, const char *id, const char *name, const char *cssClass, int idx,const char *value){
 	if (cfg->options) {
 		//value==first option => false
 		//value==second option =>true
@@ -90,30 +91,34 @@ bool printCheckbox(wcontext_t *wctx,const cfgParamConfig_t * const cfg
 			warn("No option match for checkbox value");
 		}
 		wctx_printf0(wctx,"<input type=\"checkbox\"");
-		if (id) wctx_printf(wctx,"id=\"%s\" ",id);
-		if (name==NULL){
-			wctx_printf(wctx,"name=\"paramValue_%d\" ",idx);
+		if (id) wctx_printf(wctx," id=\"%s\" ",id);
+		if (!name) name="paramValue";
+		if (idx>=0){
+			wctx_printf(wctx," name=\"%s_%d\" ",name,idx);
 		} else {
-			wctx_printf(wctx,"name=\"%s\" ",name);
+			wctx_printf(wctx," name=\"%s\" ",name);
 		}
-		wctx_printf(wctx,"value=\"%.*s\"%s/>\n",(option)?l:4,(option)?option:"true",checked[booleanValue]);
+		if (cssClass) wctx_printf(wctx," class=\"%s\" ",cssClass);
+		wctx_printf(wctx," value=\"%.*s\"%s/>\n",(option)?l:4,(option)?option:"true",checked[booleanValue]);
 		return true;
 	}
 	return false;
 }
 
 bool printSelect(wcontext_t *wctx,const cfgParamConfig_t * const cfg
-	,const char *id, const char *name,int idx,const char *value
+	,const char *id, const char *name, const char *cssClass, int idx, const char *value
 ){
 	if (cfg && cfg->options && strlen(cfg->options)>0) {
 		wctx_printfn(wctx,"<select ",0,1);
-		if (id) wctx_printf(wctx,"id=\"%s\" ",id);
-		if (name==NULL){
-			wctx_printf(wctx,"name=\"paramValue_%d\" ",idx);
+		if (id) wctx_printf(wctx," id=\"%s\" ",id);
+		if (!name) name="paramValue";
+		if (idx>=0){
+			wctx_printf(wctx," name=\"%s_%d\" ",name,idx);
 		} else {
-			wctx_printf(wctx,"name=\"%s\" ",name);
+			wctx_printf(wctx," name=\"%s\" ",name);
 		}
-		wctx_printf(wctx,"size=\"1\">\n");
+		if (cssClass) wctx_printf(wctx," class=\"%s\" ",cssClass);
+		wctx_printf(wctx," size=\"1\">\n");
 		const char * option=cfg->options;
 		int o=cfg->indexOffset;
 		for(;;) {
@@ -146,7 +151,6 @@ void validateHostsField(const cfgParamConfig_t * const cfg, cfgParam_t * const p
 webifConf_t webifConf;
 
 cfgParamConfig_t webifParamConfig[]={
-	{"always_close_svdrp","true","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 	{"deletion_disabled","false","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 	{"default language","-1","langBrowserDefined|langEnglish|langGerman|langSpanish|langFrench",true,-1,NULL,(cfgParamPrintInput_t)printSelect,0,false},
 	{"default_margin_start","15",NULL,false,0,NULL,NULL,3,false},
@@ -161,13 +165,11 @@ cfgParamConfig_t webifParamConfig[]={
 	{"use_external_www_folder","false","false|true",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 	{"video_width","640",NULL,false,0,NULL,NULL,4,false},
 	{"video_height","480",NULL,false,0,NULL,NULL,4,false},
-#ifdef STATIC_EPG_GRID
-	{"epg_grid_width","900",NULL,false,0,NULL,NULL,5,false},
-#endif
 	{"epg_grid_hours","4",NULL,false,0,NULL,NULL,5,false},
 	{"channel_logo_width","54",NULL,false,0,NULL,NULL,3,false},
-	{"user","",NULL,false,0,NULL,NULL,10,false},
-	{"password","",NULL,false,0,NULL,(cfgParamPrintInput_t)printInputPassword,10,false},
+	{"user",NULL,NULL,false,0,NULL,NULL,10,false},
+	{"password",NULL,NULL,false,0,NULL,(cfgParamPrintInput_t)printInputPassword,10,false},
+	{"eventSearchUrl","http://www.google.com/search?as_q={title}+{subtitle}",NULL,false,0,NULL,NULL,50,false},
 };
 
 cfgParamConfig_t rcParamConfig[]={
@@ -214,7 +216,7 @@ cfgParamConfig_t boxampParamConfig[] = {
 	{"runboxamp","/var/media/pc2/boxamp/runboxamp",NULL,false,0,NULL,NULL,50,false},
 };
 
-cfgParamConfigList_t cfgParamConfig[] = {
+cfgParamConfigList_t cfgParamConfig[] = { //Indexed by cfgFileId_t
 	{true,sizeof(webifParamConfig)/sizeof(cfgParamConfig_t),webifParamConfig},
 	{false,sizeof(rcParamConfig)/sizeof(cfgParamConfig_t),rcParamConfig},
 	{false,sizeof(vdrParamConfig)/sizeof(cfgParamConfig_t),vdrParamConfig},
@@ -248,8 +250,9 @@ const int cfgFileLength=sizeof(cfgFile)/sizeof(cfgFile_t);
 void initCfgParam(cfgParam_t * const param){
 	param->name=NULL;
 	param->value=NULL;
+	param->oldValue=NULL;
 	param->comment=NULL;
-	param->configId=-1;
+	param->config=NULL;
 	param->written=false;
 	param->isValid=true;
 }
@@ -257,11 +260,14 @@ void initCfgParam(cfgParam_t * const param){
 void freeCfgParam(cfgParam_t * const param){
 	free(param->name);
 	free(param->value);
+	free(param->oldValue);
 	free(param->comment);
 	initCfgParam(param);
 }
 
 void initCfgParamList(cfgParamList_t * const params){
+	params->fileId=CF_WEBIFCONF;
+	params->hostId=0;
 	params->length=0;
 	params->entry=NULL;
 }
@@ -273,87 +279,114 @@ void freeCfgParamList(cfgParamList_t * const params){
 	initCfgParamList(params);
 }
 
-const cfgParamConfig_t *getCfgParamConfig(cfgFileId_t cfgFileId, cfgParam_t * const param){
-	if (param->configId>=0 && param->configId<cfgParamConfig[cfgFileId].length) {
-		return cfgParamConfig[cfgFileId].entry+param->configId;
+const cfgParamConfig_t *getCfgParamConfig(cfgFileId_t fileId, cfgParam_t * const param){
+	if (param->config) {
+		return param->config;
 	}
 	int i;
 	const cfgParamConfig_t *config;
-	//TODO busqueda binaria
-	for (i=0,config=cfgParamConfig[cfgFileId].entry;i<cfgParamConfig[cfgFileId].length;i++,config++){
+	for (i=0,config=cfgParamConfig[fileId].entry;i<cfgParamConfig[fileId].length;i++,config++){
 		if (strcmp(config->name,param->name)==0){
-			param->configId=i;
+			param->config=config;
 			return config;
 		}
 	}
 	return NULL;
 }
-bool isValidParamName(const char *name, int nameLength,cfgParamConfigList_t *configs){
-	if (configs->exclusive){
-		cfgParamConfig_t *config;
-		int i;
-		for (i=0,config=configs->entry;i<configs->length;i++,config++){
-			if (strncmp(name,config->name,nameLength)==0) return true;
-		}
-		return false;
-	} else
-		return true;
-}
 
-bool readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, bool *isNew) {
-	if (cfgFileId<CF_WEBIFCONF || cfgFileId>CF_BOXAMPCONF) return false;
+void parseParam(char *s, cfgParamList_t * const params, cfgParamConfigList_t * const configs){
+	cfgParam_t * param;
+	cfgParamConfig_t * config;
+	char *e,*n;
 	int i;
-	cfgParamConfig_t *config;
-	cfgParamConfigList_t *configs=&cfgParamConfig[cfgFileId];
-	FILE *f = fopen(cfgFile[cfgFileId].fileName,"r");
-	initCfgParamList(params);
-	cfgParam_t *param;
-	*isNew=true;
-	for (i=0,config=configs->entry;i<configs->length;i++,config++) config->alreadySet=false;
-	if (f) {
-		enum {BUFSZ=256};
-		char buffer[BUFSZ];
-		const char *s;
-		int l,l2;
-		while (!feof(f) && (s=fgets(buffer,BUFSZ,f))!=NULL) {
-			s+=strspn(s," ");
-			if ((s[0]) && (s[0]!='#')) {
-				l=strcspn(s,"=\n\r");
-				if (s[l]=='='){
-					l2=l;
-					while (l2>0 && s[l2-1]==' ') l2--;
-					if (l2>0 && isValidParamName(s,l2,configs)){
-						crit_goto_if((params->entry=realloc(params->entry, (++params->length)*sizeof(cfgParam_t)))==NULL,outOfMemory);
-						param=params->entry+params->length-1;
-						initCfgParam(param);
-						param->name=strndup(s,l2);
-						s+=l+1;
-						s+=strspn(s," ");
-						l2=l=strcspn(s,"#\n\r");
-						while (l2>0 && s[l2-1]==' ') l2--;
-						param->value=strndup(s,l2);
-						if (s[l]=='#'){
-							s+=l+1;
-							s+=strspn(s," ");
-							l2=l=strcspn(s,"\n\r");
-							while (l2>0 && s[l2-1]==' ') l2--;
-							param->comment=strndup(s,l2); //TODO falla si # esta en value
-						} else {
-							param->comment=NULL;
+	s+=strspn(s," ");
+	e=s+strcspn(s,"\n\r");
+	e[0]=0;
+	if (s[0] && s[0]!='#') {
+		n=strchr(s,'=');
+		if (n && n>s){
+			for(e=n-1; e>=s && e[0]==' ';e--) ;
+			if (e>=s){ 
+				int l=e-s+1;
+				config=NULL;
+				for (i=0;i<configs->length;i++){
+					if (strncmp(s,configs->entry[i].name,l)==0){
+						config=configs->entry+i;
+						break;
+					}
+				}
+				if (!configs->exclusive || config){
+					crit_goto_if((params->entry=realloc(params->entry, (++params->length)*sizeof(cfgParam_t)))==NULL,outOfMemory);
+					param=params->entry+params->length-1;
+					initCfgParam(param);
+					param->name=strndup(s,e-s+1);
+					s=n+strspn(n,"= ");
+					if (s[0]){
+						n=strchrnul(s,'#');
+						while (n[0]=='#' && n[-1]!=' '){
+							n=strchrnul(n+1,'#');
+						};
+						for(e=n-1; e>=s && e[0]==' ';e--) ;
+						if (e>=s){
+							param->value=strndup(s,e-s+1);
+							param->oldValue=strdup(param->value);
 						}
-						for (i=0,config=configs->entry;i<configs->length;i++,config++){
-							if (strcmp(config->name,param->name)==0){
-								param->configId=i;	
-								config->alreadySet=true;
-								break;
-							}
+						if (n[0]=='#'){
+							s=n+strspn(n,"# ");
+							for(e=s+strlen(s)-1; e>=s && e[0]==' ';e--) ;
+							param->comment=(e>=s)?strndup(s,e-s+1):NULL;
 						}
+					}
+					if (config){
+						config->alreadySet=true;
+						param->config=config;
 					}
 				}
 			}
 		}
-		fclose(f);
-		*isNew=false;
+	}
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+bool readConf(cfgParamList_t * const params) {
+	if (params->fileId<CF_MIN || params->fileId>CF_MAX) return false;
+	int i;
+	char * s;
+	enum {BUFSZ=256};
+	char buffer[BUFSZ]; //TODO longitud
+	cfgParamConfig_t * config;
+	cfgParamConfigList_t * const configs=&cfgParamConfig[params->fileId];
+	cfgParam_t *param;
+	for (i=0,config=configs->entry;i<configs->length;i++,config++){
+		config->alreadySet=false;
+	}
+	if (params->fileId == CF_VDRCONF ){
+		hostConf_t * host=getHost(params->hostId);
+		if (host==NULL || ! host->isVdr){
+			warn("Host %d no existe o no ejecuta VDR",params->hostId);
+			return false;
+		}
+		char *data=execSvdrp(host,"PARG");
+		if (data){
+			for (s=strtok(data,"\r\n");s!=0;s=strtok(0,"\r\n")) {
+				if (atoi(s)==SVDRP_CMD_OK) {
+					parseParam(s+4,params,configs);
+				}
+			}
+			free(data);
+		}
+	}
+	else {
+		FILE *f = fopen(cfgFile[params->fileId].fileName,"r");
+		if (f) {
+			while (!feof(f) && (s=fgets(buffer,BUFSZ,f))!=NULL) {
+				parseParam(s,params, configs);
+			}
+			fclose(f);
+		}
 	}
 	for (i=0,config=configs->entry;i<configs->length;i++,config++){
 		if (config->alreadySet) continue;
@@ -362,13 +395,13 @@ bool readConf(cfgFileId_t cfgFileId, cfgParamList_t * const params, bool *isNew)
 		initCfgParam(param);
 		param->name=strdup(config->name);
 		param->value=(config->defaultValue)?strdup(config->defaultValue):NULL;
-		dbg("Asignado parametro por defecto [%s]=[%s]",param->name,param->value);
-		param->configId=i;
+		param->oldValue=NULL;
+		param->config=config;
 		config->alreadySet=true;
 	}
 	return boolean(params->length>0);
 outOfMemory:
-	crit("readConf:Out of memory");
+	crit("Out of memory");
 	exit(1);
 }
 
@@ -390,11 +423,11 @@ FILE * tmpCfgFile(char tmpName[16]){
 	return t;
 }
 
-bool writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
+bool writeConfFile(cfgParamList_t * const params) {
 	bool result=false;
 	bool isNew=false;
-	bool exclusive=cfgParamConfig[cfgFileId].exclusive;
-	const char *fileName=cfgFile[cfgFileId].fileName;
+	bool exclusive=cfgParamConfig[params->fileId].exclusive;
+	const char *fileName=cfgFile[params->fileId].fileName;
 	errno=0;
 	FILE *f = fopen(fileName,"r");
 	if (errno){
@@ -484,15 +517,13 @@ bool writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 	}
 	for(i=0,param=params->entry;i<params->length;i++,param++) {
 		if (!param->written) {
-			if (param->value){
-				fprintf(t,"%s=%s\n",param->name,(param->value)?param->value:"");
-			}
+			fprintf(t,"%s=%s\n",param->name,(param->value)?param->value:"");
 			param->written=true;
 		}
 	}
 	fclose(t);
 	char *backupName;
-	asprintf(&backupName,"%s.webif",fileName);
+	asprintf(&backupName,"%s.back",fileName);
 	if (backupName) {
 		remove(backupName);
 		if (errno){
@@ -528,6 +559,39 @@ bool writeConf(cfgFileId_t cfgFileId, cfgParamList_t * const params) {
 	return result;
 }
 
+bool sendConfVDR(int hostId, cfgParamList_t * const params) {
+	bool onlyDiff=boolean(hostId==params->hostId);
+	hostConf_t *host=getHost(hostId);
+	if (host && host->isVdr){
+		bool result=true;
+		char *cmd;
+		int i;
+		cfgParam_t *param;
+		for(i=0,param=params->entry;i<params->length;i++,param++) {
+			if (!onlyDiff || strcmp(param->value,param->oldValue)!=0) {
+				crit_goto_if(asprintf(&cmd,"PARS %s=%s",param->name,(param->value)?param->value:"")<0,outOfMemory);
+				dbg("cmd[%s]",cmd);
+				char *data=execSvdrp(host,cmd);
+				param->written=boolean(data && atoi(data)==SVDRP_CMD_OK);
+				if (!param->written){
+					result=false;
+				}
+				free(cmd);
+			}
+		}
+		return result;
+	} else {
+		warn("Host %d no existe o no ejecuta VDR",hostId);
+	}
+	return false;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+bool writeConf(int hostId, cfgParamList_t * const params) {
+	return (params->fileId==CF_VDRCONF) ? sendConfVDR(hostId,params) : writeConfFile(params);
+}
 
 bool validateHostsStr(const char *hosts){
 	if (hosts==NULL) return false;
@@ -542,10 +606,23 @@ bool validateHostsStr(const char *hosts){
 	return ok;
 }
 
-bool parseHostsField(const char *hosts,bool apply){
-	webifConf.hostsLength=0;
-	webifConf.numVDRs=0;
-	if (hosts==NULL) return false;
+//TODO
+void parseHostsFieldJson(const char *hostsField){
+	/*
+	sintaxis:
+	  {[name:"<host name>",][ip:"<SVDRP ip>",][port:"<SVDRP port>",][video0:"<video0 path>"]}[,{<host 2>}...]
+	where: 
+	  {},:"      are literals
+	  []         optional content
+	  <value>    replace by real value
+	*/
+	warn("No implementado");
+	exit(1);
+}
+
+void parseHostsFieldOld(const char *hostsField){
+	//sintaxis: [<host name>],[<SVDRP ip>],[<SVDRP port>],[<video0 path>];...
+	hostConf_t *host;
 	enum {MAXREGMATCH=HOSTNUMCONFFIELDS+1};
 	const char * pattern="([a-zA-Z0-9]*),([0-9.]*),([0-9]*),([a-zA-Z0-9./_]*);?";
 	regex_t regex;
@@ -554,25 +631,32 @@ bool parseHostsField(const char *hosts,bool apply){
 		exit(1);
 	}
 	regmatch_t regmatch[MAXREGMATCH];
-	bool ok=false;
 	int err,m,so,l;
-	const char *t=hosts;
-	hostConf_t *host=webifConf.hosts;
+	const char *t=hostsField;
 	while (t[0]) {
 		if ((err=regexec(&regex,t,MAXREGMATCH,regmatch,0))==0){
 			bool isValid=true;
+			crit_goto_if((webifConf.hosts=(hostConf_t*)realloc(webifConf.hosts,(++webifConf.hostsLength)*sizeof(hostConf_t)))==NULL,outOfMemory);
+			host=webifConf.hosts+webifConf.hostsLength-1;
+			initHostConf(host);
 			for (m=1;m<MAXREGMATCH && isValid;m++){
 				so=regmatch[m].rm_so;
 				l=regmatch[m].rm_eo-so;
 				if (so>=0 && l>=0) {
 					errno=0;
 					switch (m) {
-						case 1: strncpy(host->name,t+so,l); host->name[l]=0; break;
-						case 2: strncpy(host->ip,t+so,l); host->ip[l]=0; break;
-						case 3: host->port=strtol(t+so,NULL,10);break;
+						case 1: 
+							crit_goto_if((host->name=strndup(t+so,l))==NULL,outOfMemory);
+							break;
+						case 2: 
+							crit_goto_if((host->ip=strndup(t+so,l))==NULL,outOfMemory);
+							break;
+						case 3: 
+							host->port=strtol(t+so,NULL,10);
+							break;
 						case 4: 
 							if (l>1 && t[so+l-1]=='/') l--;
-							strncpy(host->video0,t+so,l); host->video0[l]=0;
+							crit_goto_if((host->video0=strndup(t+so,l))==NULL,outOfMemory);
 							break;
 						default :
 							warn("Two much parameters for a host cfg.");
@@ -587,12 +671,12 @@ bool parseHostsField(const char *hosts,bool apply){
 				}
 			}
 			if (isValid) {
-				host->id=webifConf.hostsLength;
-				host->isVdr=boolean(strlen(host->ip)>0 && host->port>0);
+				host->id=webifConf.hostsLength-1;
+				host->isVdr=boolean(host->ip && host->ip[0] && host->port>0);
 				if (host->isVdr) webifConf.numVDRs++;
-				ok=true; //ok if there is at least one valid host
-				webifConf.hostsLength++;
-				host++;
+			} else {
+				freeHostConf(host);
+				webifConf.hostsLength--;
 			}
 			if (regmatch[0].rm_eo>0) t+=regmatch[0].rm_eo; else break;
 		} else if (err==REG_NOMATCH){
@@ -602,7 +686,36 @@ bool parseHostsField(const char *hosts,bool apply){
 		}
 	}
 	regfree(&regex);
-	return ok;
+	return;
+outOfMemory:
+	crit("Out of memory");
+	exit(1);
+}
+
+void parseHostsField(const char *hostsField){
+	hostConf_t *host;
+	webifConf.hostsLength=0;
+	webifConf.numVDRs=0;
+	if (hostsField!=NULL){
+		if (hostsField[0]=='{'){
+			parseHostsFieldJson(hostsField);
+		} else {
+			parseHostsFieldOld(hostsField);
+		}
+	}
+	if (webifConf.hostsLength==0){
+		warn("No valid host set up");
+		crit_goto_if((webifConf.hosts=(hostConf_t*)realloc(webifConf.hosts,(++webifConf.hostsLength)*sizeof(hostConf_t)))==NULL,outOfMemory);
+		host=webifConf.hosts;
+		initHostConf(host);
+		crit_goto_if((host->name=strdup(""))==NULL,outOfMemory);
+		crit_goto_if((host->ip=strdup("127.0.0.1"))==NULL,outOfMemory);
+		host->port=2001;
+		crit_goto_if((host->video0=strdup(VIDEO0))==NULL,outOfMemory);
+		host->isVdr=true;
+		webifConf.numVDRs=1;
+	}
+	return;
 outOfMemory:
 	crit("Out of memory");
 	exit(1);
@@ -619,22 +732,24 @@ time_t get_mtime(const char *fileName){
 }
 
 bool readWebifConf() {
-	//TODO integrar en readConf mediante funciones en paramCfgs
-	errno=0;
 	time_t current_mtime=get_mtime(cfgFile[CF_WEBIFCONF].fileName);
 	if (webifConf.mtime<current_mtime || errno){
 		webifConf.alreadySet=false;
 		errno=0;
 	}
-	if (webifConf.alreadySet) {
-		dbg("webifConf ya actualizado, no se lee.");
-		return;
+	if (!webifConf.alreadyInit) {
+		error("No se ha llamado a initWebifConf. Se llamará ahora, pero no se liberarán recursos");
+		initWebifConf();
 	}
-	freeWebifConf();
+	if (webifConf.alreadySet) {
+		return true;
+	}
 	cfgParamList_t params;
 	cfgParam_t *param;
-	bool isNew;
-	if (readConf(CF_WEBIFCONF,&params,&isNew)){
+	initCfgParamList(&params);
+	params.hostId=0;
+	params.fileId=CF_WEBIFCONF;
+	if (readConf(&params)){
 		int i;
 		for (i=0,param=params.entry;i<params.length;i++,param++){
 			if (strcmp(param->name,"default language")==0) {
@@ -642,126 +757,75 @@ bool readWebifConf() {
 				webifConf.langId=strtol(param->value,NULL,10);
 				if (errno!=0 || webifConf.langId<-1 || webifConf.langId>=I18NNUM) webifConf.langId=-1;
 			} else if (strcmp(param->name,"hosts")==0) {
-				if (!parseHostsField(param->value,true)){
-					warn("No valid host set up");
-					webifConf.hostsLength=1;
-					webifConf.hosts[0].name[0]=0;
-					strcpy(webifConf.hosts[0].ip,"127.0.0.1");
-					webifConf.hosts[0].port=2001;
-					strcpy(webifConf.hosts[0].video0,VIDEO0);
-					webifConf.hosts[0].isVdr=true;
-				}
+				parseHostsField(param->value);
 			} else if (strcmp(param->name,"playlist_type")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.playlistType=strtol(param->value,NULL,10);
 				}
 			} else if (strcmp(param->name,"deletion_disabled")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.deletionDisabled=sameString(param->value,"true");
 				}
 			} else if (strcmp(param->name,"config_change_disabled")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.configChangeDisabled=sameString(param->value,"true");
 				}
 			} else if (strcmp(param->name,"config_view_disabled")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.configViewDisabled=sameString(param->value,"true");
 				}
 			} else if (strcmp(param->name,"use_external_www_folder")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.useExternalWwwFolder=sameString(param->value,"true");
 				}
 			} else if (strcmp(param->name,"display_host_id")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.displayHostId=sameString(param->value,"true");
 				}
 			} else if (strcmp(param->name,"print_rec_folder_summary")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.printRecFolderSummary=sameString(param->value,"true");
 				}
 			} else if (strcmp(param->name,"max_depth")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
-					errno=0;
+				if (param->value && param->value[0]){
 					webifConf.maxDepth=strtol(param->value,NULL,10);
-					if (errno){
-						warn("webifConf.maxDepth %s",strerror(errno));
-					}
-				}
-			} else if (strcmp(param->name,"always_close_svdrp")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
-					webifConf.alwaysCloseSvdrp=sameString(param->value,"true");
 				}
 			} else if (strcmp(param->name,"default_margin_start")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.defaultMarginStart=atoi(param->value);
 				}
 			} else if (strcmp(param->name,"default_margin_stop")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.defaultMarginStop=atoi(param->value);
 				}
 			} else if (strcmp(param->name,"video_width")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.videoWidth=atoi(param->value);
 				}
 			} else if (strcmp(param->name,"video_height")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.videoHeight=atoi(param->value);
 				}
-#ifdef STATIC_EPG_GRID
-			} else if (strcmp(param->name,"epg_grid_width")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
-					webifConf.epgGridWidth=atoi(param->value);
-				}
-#endif
 			} else if (strcmp(param->name,"epg_grid_hours")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.epgGridHours=atoi(param->value);
 				}
 			} else if (strcmp(param->name,"channel_logo_width")==0) {
-				if (param->value==NULL || strlen(param->value)<1 ){
-					//TODO warn
-				} else {
+				if (param->value && param->value[0]){
 					webifConf.channelLogoWidth=atoi(param->value);
 				}
 			} else if (strcmp(param->name,"user")==0){
-				const char *value=(param->value)?param->value:"";
-				dbg("user:%s",value);
-				strncpy(webifConf.user,value,29);
-				webifConf.user[29]=0;
+				if (param->value && param->value[0]){
+					webifConf.user=strdup(param->value);
+				}
 			} else if (strcmp(param->name,"password")==0){
-				const char *value=(param->value)?param->value:"";
-				strncpy(webifConf.password,value,29);
-				webifConf.password[29]=0;
+				if (param->value && param->value[0]){
+					webifConf.password=strdup(param->value);
+				}
+			} else if (strcmp(param->name,"eventSearchUrl")==0){
+				if (param->value && param->value[0]){
+					webifConf.eventSearchUrl=strdup(param->value);
+				}
 			}
 		}
 		freeCfgParamList(&params);
@@ -785,14 +849,71 @@ outOfMemory:
 }
 
 void resetWebifConf(){
-	memset(&webifConf,0,sizeof(webifConf_t));
+	webifConf.alreadySet=false;
+	webifConf.langId=0;
+	webifConf.hosts=NULL;
+	webifConf.hostsLength=0;
+	webifConf.numVDRs=0;
+	webifConf.user=NULL;
+	webifConf.password=NULL;
+	webifConf.eventSearchUrl=NULL;
+}
+
+void initWebifConf(){
+	if (webifConf.alreadyInit) {
+		error("No se deberia ejecutar mas de una vez por proceso");
+		return;
+	}
+	resetWebifConf();
+	if (regcomp(&webifConf.eod_regex,"^[0-9]{3} ",REG_EXTENDED | REG_NOSUB | REG_NEWLINE)!=0) {
+		crit(strerror(errno));
+		exit(1);
+	}
+	webifConf.alreadyInit=true;
 }
 
 void freeWebifConf(){
+	if (!webifConf.alreadyInit) {
+		error("O no se ha iniciado, o ya se han liberado recursos");
+		return;
+	}
 	free(webifConf.www);
 	webifConf.www=NULL;
-	//TODO eliminar hosts
+	if (webifConf.user!=NULL){
+		free(webifConf.user);
+	}
+	if (webifConf.password!=NULL){
+		free(webifConf.password);
+	}
+	if (webifConf.hostsLength>0){
+		int i;
+		hostConf_t *host;
+		for (i=0,host=webifConf.hosts;i<webifConf.hostsLength;i++,host++){
+			freeHostConf(host);
+		}
+		free(webifConf.hosts);
+	}
+	if (webifConf.eventSearchUrl!=NULL){
+		free(webifConf.eventSearchUrl);
+	}
+	regfree(&webifConf.eod_regex);
 	resetWebifConf();
+	webifConf.alreadyInit=false;
+}
+
+void initHostConf(hostConf_t * const host){
+	host->id=0;
+	host->name=NULL;
+	host->ip=NULL;
+	host->video0=NULL;
+	host->socket=0;
+}
+
+void freeHostConf(hostConf_t * const host){
+	free(host->name);
+	free(host->ip);
+	free(host->video0);
+	initHostConf(host);
 }
 
 hostConf_t *getHost(int hostId){

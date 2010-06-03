@@ -376,6 +376,8 @@ $.fn.ajaxSubmit = function(options) {
  */
 $.fn.ajaxForm = function(options) {
 	return this.ajaxFormUnbind().bind('submit.form-plugin', function() {
+		if ($(this.clk).hasClass('noajax'))
+			return true;
 		$(this).ajaxSubmit(options);
 		return false;
 	}).bind('click.form-plugin', function(e) {

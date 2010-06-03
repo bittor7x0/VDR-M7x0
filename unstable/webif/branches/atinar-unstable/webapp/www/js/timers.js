@@ -27,5 +27,5 @@ webif.timersPageInit=function(){
 			this.timerEditFormHandler.prepareForm($timerEditForm);
 		}
 	}
-	$('a.timerNew,a.timerEdit').live('click',this.timerEditFormHandler.clickHandler);
+	$('a.timerCreate,a.timerEdit').live('click',this.timerEditFormHandler.clickHandler);
 };

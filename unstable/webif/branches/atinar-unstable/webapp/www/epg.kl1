@@ -80,18 +80,19 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 			printMessage(wctx,"alert",tr("errorNoVdrHost"),NULL, false);
 			wctx_printfn(wctx,"</div>\n",-1,0); //messageDialog
 		} else {
-			channelList_t vchannels; channelList_t *const channels=&vchannels;
-			timerList_t vtimers; timerList_t *const timers=&vtimers;
-
-			getChannelList(host,channels,SF_NONE,SD_NONE);
-			getTimerList(timers,channels,SF_START,SD_ASC);
+			channelList_t channels;
+			timerList_t timers;
+			conflictList_t conflicts;
+			getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
+			getTimerList(&timers,&channels,SF_START,SD_ASC);
+			getConflictList(&conflicts,&timers);
 
 			bool isTv;
 			if (!wctx->isAjaxRequest){
 				wctx_printfn(wctx,"<div class=\"level2-div ui-widget\">\n",0,1);
 			}
 			if (channelNum<1) channelNum=1;
-			channel_t *channel=channels->channel+channelNum-1;
+			channel_t *channel=channels.channel+channelNum-1;
 			if (!wctx->isAjaxRequest){
 				wctx_printfn(wctx,"<h2 class=\"level2-top ui-widget-header\">%s %s &raquo;%s&laquo;\n",0,1
 					,tr("epg"),tr("for"),channel->channelName);
@@ -107,16 +108,17 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 
 			wctx_printfn(wctx,"<form id=\"channelChange\" action=\"/epg.kl1\" method=\"get\">\n",1,0);
 			wctx_printfn(wctx,"<label>%s\n",0,1,tr("channel"));
-			printChannelListSelect(wctx,"channelNum","channelNum",channels,channelNum,"this.form.submit();");
+			printChannelListSelect(wctx,"channelNum","channelNum",&channels,channelNum,"this.form.submit();");
 			wctx_printfn(wctx,"</label>\n",-1,0);
 			wctx_printfn(wctx,"</form>\n",-1,0);
 			wctx_printfn(wctx,"</div>\n",-1,0); //level3-top
 
-			printChannelEpg(wctx,"epg",host,channelNum,timers);
+			printChannelEpg(wctx,"epg",host,channelNum,&timers);
 
 			wctx_printfn(wctx,"</div>\n",-1,0); //level3-div
-			freeTimerList(timers);
-			freeChannelList(channels);
+			freeConflictList(&conflicts);
+			freeTimerList(&timers);
+			freeChannelList(&channels);
 		}
 		if (!wctx->isAjaxRequest){
 			wctx_printfn(wctx,"</div>\n",-1,0); //level2

@@ -126,14 +126,13 @@ h2.level2-top #logo {
 .level4 .eventInfo .fromTo .duration {
 	display:block;
 }
-.eventInfo a.timerCreate,
-.eventInfo a.searchCreate {
+.eventInfo a.button-i {
 	width:22px;
 	height:22px;
 	margin-right:0.25em;
 	position:relative;
 }
-.eventInfo a .ui-icon {
+.eventInfo a.button-i .ui-icon {
 	position:absolute;
 	top:50%;
 	left:50%;

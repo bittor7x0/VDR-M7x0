@@ -23,17 +23,21 @@
 #include <sys/stat.h>
 #include "conf.h"
 
-#define REMOVE_VIDEO(path) ((strncmp(path,"/video/",7)==0)?path+7:path+1)
+#define REMOVE_VIDEO(path) ((strncmp(path,"/video/",7)==0)?path+7:(path[0]=='/')?path+1:path)
 
-hostConf_t *isVideoPath(char *path) {
+hostConf_t *isVideoPath(const char *path) {
+	dbg("path[%s]",path);
 	bool found = false;
 	if (path){
 		char * fullpath;
 		int i;
 		hostConf_t *host;
+		dbg("hosts[%d]",webifConf.hostsLength);
 		for(i=0,host=webifConf.hosts;i<webifConf.hostsLength;i++,host++){
-			if (host->video0[0]){
+			dbg("video0[%s]",host->video0);
+			if (host->video0 && host->video0[0]){
 				crit_goto_if(asprintf(&fullpath,"%s/%s",host->video0,REMOVE_VIDEO(path))<0,outOfMemory);
+				dbg("fullpath[%s]",fullpath);
 				struct stat buf;
 				if (stat(fullpath,&buf)!=0){
 					warn("Error en stat");
@@ -71,8 +75,7 @@ void dbg_404_kl1(){ dbg("404.kl1"); }
 		response_redirect(response,url);
 		free(url);
 	} else {
-		warn("Unknown path %s",path);
-		io_printf(out,"<html><body><p>Recurso %s%s no hallado</p></body></html>",path,query); //TODO i18n
+		io_printf(out,"<html><body><p>Recurso %s no hallado</p></body></html>",request_get_client_request(request)); //TODO i18n
 	}
 	free(path);
 	free(query);

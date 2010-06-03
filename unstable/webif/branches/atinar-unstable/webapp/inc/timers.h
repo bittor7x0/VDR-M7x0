@@ -64,12 +64,30 @@ typedef struct vdrTimer_s {
 	channel_t const *channel;
 	char *timerStr;
 	int count; //to create different html id's in program.kl1
+	bool inConflict;
+	int percent; //event coverage
 } vdrTimer_t;
 
 typedef struct timerList_s {
 	int length;
 	vdrTimer_t *entry;
 } timerList_t;
+
+//Implementation note:
+//timers are holded in timerList, don't deallocate here
+typedef struct conflict_s {
+	int hostId;
+	time_t when;
+	vdrTimer_t *timer; //failed timer
+	int nconcurrent;
+	vdrTimer_t ** pconcurrent;
+} conflict_t;
+
+typedef struct conflictList_s {
+	int length;
+	conflict_t *entry;
+} conflictList_t;
+
 
 void initTimer(vdrTimer_t *const entry);
 bool initTimerFromEvent(wcontext_t *wctx, vdrTimer_t *const timer, hostConf_t *host, const int channelNum, const int eventId);
@@ -88,5 +106,11 @@ char *makeTimerStr(vdrTimer_t *const timer);
 void printTimerForm(wcontext_t *wctx, vdrTimer_t *const timer, channelList_t const *const channels);
 void printTimerBars(wcontext_t *wctx, timerList_t *const timers, const int channelNum
 	, const time_t startTime, const time_t duration,const char *TimerEdit,bool wrapPBWithA);
+void initConflict(conflict_t * const conflict);
+void freeConflict(conflict_t * const conflict);
+void initConflictList(conflictList_t * const conflicts);
+void freeConflictList(conflictList_t * const conflicts);
+void getConflictList(conflictList_t * const conflicts, timerList_t const * timers);
+
 
 #endif

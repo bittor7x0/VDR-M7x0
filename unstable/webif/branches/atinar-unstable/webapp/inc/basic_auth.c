@@ -2,13 +2,18 @@
 #include "basic_auth.h"
 #include "conf.h"
 
-bool is_connected(wcontext_t *wctx){
+bool isAuthorized(wcontext_t *wctx){
 	const char *valeur=NULL;
 	int i;
 	char *decode;
 	bool result=false;
 	char *user=NULL;
 	char *password=NULL;
+	
+	if (!webifConf.user || !webifConf.user[0] || !webifConf.password ||  !webifConf.password[0]){
+		//authorization not requiered
+		return true;
+	}
 	
 	//get login and password
 	valeur = request_get_field_value(wctx->request,"Authorization");
@@ -30,7 +35,6 @@ bool is_connected(wcontext_t *wctx){
 					break;
 			}
 		}
-		
 		//compare the login with a static string
 		if (user && password){
 			if (strcmp(webifConf.user,user)==0 && strcmp(webifConf.password,password)==0){
@@ -46,7 +50,7 @@ bool is_connected(wcontext_t *wctx){
 		response_set_field(wctx->response,"Cache-Control","no-cache");
 		response_set_field(wctx->response,"Connection","close");
 		//HTML page for the client
-		io_printf(wctx->out,"<html><head><title>Autentificación fallida</title></head><body><p class=\"alert\">No autorizado</p></body></html>");
+		io_printf(wctx->out,"<html><head><title>Autentificación fallida</title></head><body><p class=\"alert\">No autorizado</p></body></html>"); //TODO i18n
 	}
 	return result;
 }

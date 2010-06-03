@@ -100,7 +100,7 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 
 	wcontext_t vwctx;
 	wcontext_t *wctx=&vwctx;
-	if (initCtx(wctx,PN_EPG_GRID,session,request,response,out,100)){
+	if (initCtx(wctx,PN_EPG_GRID,session,request,response,out,200)){
 		vars_t *args = request_get_args(request);
 
 		wctx->currentAction=(vars_countn(args,"a")>0) ? vars_get_value_i(args,"a") : PA_GET_EPG_GRID;
@@ -118,8 +118,10 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 		} else {
 			channelList_t channels;
 			timerList_t timers;
+			conflictList_t conflicts;
 			getChannelList(host,&channels,SF_CH_NUMBER,SD_ASC);
 			getTimerList(&timers,&channels,SF_START,SD_ASC);
+			getConflictList(&conflicts,&timers);
 
 			if (channels.length==0){
 				printMessage(wctx,"alert",tr("warnNoEPG"),NULL, false);
@@ -133,7 +135,7 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 					if (events.length==0){
 						printMessage(wctx,"alert",tr("warnNoEPG"),NULL, false);
 					} else {
-						printEpgGrid(wctx,&events,&channels,&timers);
+						printEpgGrid(wctx,&events,&channels,&timers,&conflicts);
 					}
 					freeEvents(&events);
 				} else if (wctx->currentAction==PA_GET_TIMERS){
@@ -142,8 +144,9 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 					printTimersDiv(wctx,"timers",&timers,start,end);
 				}
 			}
-			freeChannelList(&channels);
+			freeConflictList(&conflicts);
 			freeTimerList(&timers);
+			freeChannelList(&channels);
 		}
 		if (!wctx->isAjaxRequest){
 			wctx_printfn(wctx,"</div>\n",-1,0); //level2

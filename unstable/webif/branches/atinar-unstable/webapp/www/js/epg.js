@@ -18,20 +18,8 @@ webif.epgPageInit=function(){
 		if ($event.hasClass('full')){
 			var $eventInfo=$('.eventInfo',$event);
 			if ($eventInfo.length==0){
-				var $eventChildren = $('.controls,.fromTo,.shortdesc,.desc',$event);
 				var $eventInfo=$('<div class="eventInfo"></div>').appendTo($event);
-				$('.controls',$event).appendTo($eventInfo);
-				$('.fromTo',$event).clone().appendTo($eventInfo);
-				var $shortdesc=$('.shortdesc',$event);
-				var $desc=$('.desc',$event);
-				if ($shortdesc.length>0){
-					if ($desc.text().toLowerCase().indexOf($shortdesc.text().toLowerCase())>-1){
-						$shortdesc.remove();
-					} else {
-						$shortdesc.appendTo($eventInfo);
-					}
-				}
-				$desc.appendTo($eventInfo);
+				webif.showEpgEventInfo($event,$eventInfo,false);
 			}
 		}
 	});

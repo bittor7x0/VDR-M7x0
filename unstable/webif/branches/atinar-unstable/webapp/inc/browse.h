@@ -26,6 +26,7 @@ enum recDirFlags_e { //also used to sort recordings
 };
 
 typedef struct recDir_s recDir_t;
+
 typedef struct recDirList_s {
 	int length;
 	recDir_t *entry;
@@ -46,8 +47,8 @@ void initRecDir(recDir_t *rdir);
 void freeRecDir(recDir_t *rdir);
 void initRecDirList(recDirList_t *rdirs);
 void freeRecDirList(recDirList_t *rdirs);
-void getRecDirList(const char * const path, recDirList_t * const rdirs);
-void printRecDirListUL(wcontext_t *wctx,const char *const path,int pl, recDir_t *rdir,int level);
+void getRecDirList(const char * const path, recDirList_t * const rdirs,bool onlyLocal);
+void printRecDirListUL(wcontext_t *wctx,const char *const path,int pl, recDirList_t *rdirs,int level);
 void printRecDir(wcontext_t *wctx,const char *const path,int pl,recDir_t *rdir,int level);
 void printRecPathUl(wcontext_t *wctx,const char *path);
 

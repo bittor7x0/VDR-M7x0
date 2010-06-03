@@ -86,6 +86,7 @@ typedef enum pageAction_e {
 	PA_DOWNLOAD,
 	PA_DOWNLOAD_ALL,
 	PA_SAVE_CONFIG,
+	PA_READ_CONFIG,
 	PA_TIMER_CREATE_FROM_EVENT,
 	PA_SEARCH_CREATE_FROM_EVENT,
 	PA_GET_REC_INFO,
@@ -94,6 +95,7 @@ typedef enum pageAction_e {
 	PA_PARTITION_USAGE,
 	PA_COMMANDS_SHOW,
 	PA_COMMANDS_EXECUTE,
+	PA_DELETE_PLUS,
 } pageAction_t;
 
 typedef enum playlistType_e {
@@ -140,7 +142,6 @@ extern const char *checked[2];
 extern const char *selected[2];
 extern const char *videoTypeStr[7];
 extern const char *classCurrent[2];
-extern const char *classActive[2];
 extern const char *tabs;
 #define boolean(i) ((i)?true:false)
 #define isFlagSet(flag,flags)   boolean(((flag) & (flags)) == (flag) )
@@ -195,7 +196,6 @@ bool sameString(const char * s1, const char * s2);
 bool sameInt(const int i1, const int i2);
 bool sameIntEx(const char * s, const int i);
 bool parseRequestStr(request_t *request, char ** pathStr, char ** queryStr);
-char * strcatEx(char ** dest, const char * s);
 char *strreplace(char *s, const char *s1, const char *s2);
 
 bool fileExists(const char * fileName);
@@ -210,7 +210,7 @@ void finishJavascript(wcontext_t *wctx);
 void printMenu(wcontext_t *wctx);
 void printMessage(wcontext_t *wctx, const char *cssClass, const char *title, const char *message, bool encode);
 void printList1TH(wcontext_t *wctx, const char *page, sortField_t aSortField, const char *label);
-void printInput(wcontext_t *wctx, const char *type, const char *id, const char *name, int idx, const char *value, int l);
+void printInput(wcontext_t *wctx, const char *type, const char *id, const char *name, const char *cssClass, int idx, const char *value, int l);
 
 void finishHtmlPage(wcontext_t *wctx);
 bool extractEmbededFile(const char *src, const char *dst, bool overwrite);

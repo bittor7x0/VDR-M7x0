@@ -326,36 +326,48 @@ outOfMemory:
 void getEpgGridLimits(const char *arg_cstart,time_t *start, time_t *end){
 	time_t now=time(NULL);
 	tzset();
-	struct tm sdate;
-	char cstart[17]="0000-00-00 00:00";
+	*start=now;
 	if (arg_cstart!=NULL){
-		int i;
-		const char *o;
-		char *d;
-		const char *l=arg_cstart+strlen(arg_cstart);
-		for(i=0,o=arg_cstart,d=cstart;i<5 && (*o) && o<l;i++){
-			int n=(i)?2:4;
-			int l2=strlen(o);
-			if (l2<n) d+=(n-l2); else l2=n;
-			strncpy(d,o,l2);
-			dbg("cstart [%s]",cstart);
-			d+=n+1;
-			o+=n;
-		}
-		dbg("Fecha convertida de [%s] a [%s]",arg_cstart,cstart);
-		if (strptime(cstart,gridDateFmtI,&sdate)==NULL){
-			warn("No se ha interpretado el argumento %s con el patron %s.", cstart, gridDateFmtI);
-			arg_cstart=NULL;
+		if (arg_cstart[0]=='l'){
+			errno=0;
+			*start=(time_t)strtol(arg_cstart+1,NULL,10);
+			if (errno || *start<0){
+				warn("El argumento %s no especifica un tiempo correcto. Error %d",arg_cstart,errno);
+				*start=now;
+			}
+		} else {
+			struct tm sdate;
+			char cstart[17]="0000-00-00 00:00";
+			int i;
+			const char *o;
+			char *d;
+			const char *l=arg_cstart+strlen(arg_cstart);
+			for(i=0,o=arg_cstart,d=cstart;i<5 && (*o) && o<l;i++){
+				int n=(i)?2:4;
+				int l2=strlen(o);
+				if (l2<n) d+=(n-l2); else l2=n;
+				strncpy(d,o,l2);
+				//dbg("cstart [%s]",cstart);
+				d+=n+1;
+				o+=n;
+			}
+			//dbg("Fecha convertida de [%s] a [%s]",arg_cstart,cstart);
+			if (strptime(cstart,gridDateFmtI,&sdate)==NULL){
+				warn("No se ha interpretado el argumento %s con el patron %s.", cstart, gridDateFmtI);
+				*start=now;
+			} else {
+				sdate.tm_sec=0;
+				sdate.tm_min-=sdate.tm_min%15;
+				sdate.tm_isdst=-1;
+				sdate.tm_zone=NULL;
+				*start=mktime(&sdate);
+			}
 		}
 	}
-	if (arg_cstart==NULL){
-		sdate=*localtime(&now);
+	if (*start<now-webifConf.epgGridHours*60*60){
+		warn("Start ajustado al presente");
+		*start=now;
 	}
-	sdate.tm_sec=0;
-	sdate.tm_min-=sdate.tm_min%15;
-	sdate.tm_isdst=-1;
-	sdate.tm_zone=NULL;
-	*start=mktime(&sdate);
 	*end=*start+webifConf.epgGridHours*60*60;
 }
 
@@ -368,7 +380,7 @@ void printChangeDateButton(wcontext_t *wctx,char *ctime,bool isPrevious,int hour
 	if (isLi) wctx_printfn(wctx,"</li>",-1,0); //previus
 }
 
-void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * const channels, timerList_t * const timers){
+void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * const channels, timerList_t * const timers, conflictList_t * const conflicts){
 	channelEvents_t *channelEvents;
 	epgEvent_t *event;
 	const channel_t *channel;
@@ -382,6 +394,7 @@ void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * con
 	const char *TimerCreate=tr("timer.create");
 	const char *TimerEdit=tr("timer.edit");
 	const char *SearchCreate=tr("search.create");
+	const char *WebSearch=tr("event.web.search");
 
 	time_t gridStart=events->start;
 	time_t gridEnd=events->end;
@@ -441,21 +454,11 @@ void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * con
 	time_t step=60*60;
 	bool last=false;
 
-#ifndef STATIC_EPG_GRID
 	double left,width;
-#else
-	int left,width;
-#endif
-
 	for (i1=0,mark=gridStart;mark<gridEnd;i1++){
 		strftime(cmark,6,"%H:%M",localtime(&mark));
-#ifndef STATIC_EPG_GRID
 		left=((mark-gridStart)*100.0)/gridDuration;
 		wctx_printf(wctx,"<li id=\"timemark%d\" class=\"mark\" style=\"left:%.2f%%\">\n",i1,left); inctab(wctx);
-#else
-		left=((mark-gridStart)*channelWidth)/gridDuration;
-		wctx_printf(wctx,"<li id=\"timemark%d\" class=\"mark\" style=\"left:%dpx\">\n",i1,left); inctab(wctx);
-#endif
 		if (i1==0){
 			wctx_printf0(wctx,"<input type=\"text\" value=\"%s\" id=\"timepicker\" size=\"5\"/>\n",cmark);
 		} else {
@@ -511,19 +514,12 @@ void printEpgGrid(wcontext_t *wctx, events_t * const events, channelList_t * con
 					}
 				}
 				eventDuration=eventEnd-eventStart;
-#ifndef STATIC_EPG_GRID
 				left=((eventStart-gridStart)*100.0)/gridDuration;
 				width=(eventDuration*100.0)/gridDuration;
 				compact=false;
 				wctx_printf(wctx,"<li id=\"e-%d\" class=\"event\" style=\"left:%.2f%%;width:%.2f%%\">\n",event->id,left,width);
-#else
-				left=((eventStart-gridStart)*channelWidth)/gridDuration;
-				width=(eventDuration*channelWidth)/gridDuration;
-				compact=width<55;
-				wctx_printf(wctx,"<li id=\"e-%d\" class=\"event\" style=\"left:%dpx;width:%dpx\">\n",event->id,left,width);
-#endif
 				inctab(wctx);
-				printEvent(wctx,event,channelEvents->channelNum,compact,TimerCreate,SearchCreate);
+				printEvent(wctx,event,channelEvents->channelNum,compact,TimerCreate,SearchCreate,WebSearch);
 				wctx_printfn(wctx,"</li>",-1,0); //event
 				previousEventEnd=eventEnd;
 			}
@@ -552,6 +548,7 @@ void printChannelEpg(wcontext_t *wctx, const char *id, hostConf_t *host, const i
 	const char *TimerCreate=tr("timer.create");
 	const char *TimerEdit=tr("timer.edit");
 	const char *SearchCreate=tr("search.create");
+	const char *WebSearch=tr("event.web.search");
 
 	initEpgEvent(&event);
 	CTX_CHK_BUFFER(20);
@@ -585,7 +582,7 @@ void printChannelEpg(wcontext_t *wctx, const char *id, hostConf_t *host, const i
 					wctx_printfn(wctx,"<div class=\"timers\">\n",0,1);
 					printTimerBars(wctx,timers,channelNum,event.start,event.duration,TimerEdit,false);
 					wctx_printfn(wctx,"</div>\n",-1,0); //timers
-					printEvent(wctx,&event,channelNum,false,TimerCreate,SearchCreate);	
+					printEvent(wctx,&event,channelNum,false,TimerCreate,SearchCreate,WebSearch);	
 					wctx_printfn(wctx,"</div>\n",-1,0); //event
 				} 
 				freeEpgEvent(&event);
@@ -635,7 +632,11 @@ void printEventDesc(wcontext_t *wctx, char * const desc, bool encode){
 	}
 }
 
-void printEvent(wcontext_t *wctx, epgEvent_t * const event, const int channelNum, bool compact, const char *const TimerCreate, const char *const SearchCreate){
+void printEvent(wcontext_t *wctx, epgEvent_t * const event, const int channelNum, bool compact
+	, const char *const TimerCreate
+	, const char *const SearchCreate
+	, const char *const WebSearch
+){
 	struct tm startt,endt;
 	long int end_time = event->start+event->duration;
 	startt=*localtime(&event->start);
@@ -662,6 +663,38 @@ void printEvent(wcontext_t *wctx, epgEvent_t * const event, const int channelNum
 				"</li><!--\n"
 				,PA_SEARCH_CREATE_FROM_EVENT,channelNum,event->id,SearchCreate,SearchCreate);
 		}
+#ifdef NO_JAVASCRIPT
+		if (WebSearch && webifConf.eventSearchUrl && webifConf.eventSearchUrl[0]) {
+			char *url=strdup(webifConf.eventSearchUrl);
+			if (event->title && event->title[0]){
+				const char *etitle=NULL;
+				const char *tag="{title}";
+				while (strstr(url,tag)){
+					if (!etitle){
+						etitle=CTX_URL_ENCODE(event->title,-1,NULL);
+					}
+					strreplace(url,tag,etitle);
+				}
+			}
+			if (event->shortdesc && event->shortdesc[0]){
+				const char *eshortdesc=NULL;
+				const char *tag="{subtitle}";
+				while (strstr(url,tag)){
+					if (!eshortdesc){
+						eshortdesc=CTX_URL_ENCODE(event->shortdesc,-1,NULL);
+					}
+					strreplace(url,tag,eshortdesc);
+				}
+			}
+			wctx_printf0(wctx,
+				"--><li class=\"control\">"
+					"<a class=\"webSearch button-i ui-state-default\" href=\"%s\" title=\"%s\">"
+						"<span class=\"ui-icon ui-icon-link\">%s</span>"
+					"</a>"
+				"</li><!--\n"
+				,url,WebSearch);
+		}
+#endif
 		wctx_printfn(wctx,"--></ul><!--\n",-1,0); //controls
 	}
 	wctx_printf0(wctx,"-->");
