@@ -17,6 +17,7 @@
 #include <error.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <u/libu.h>
 
 #include "browse.h"
@@ -176,10 +177,23 @@ void addSubdirs(const char * const fullpath, const hostConf_t * const host, recD
 	struct dirent* dirE;
 	recDir_t *rdir;
 	while(0 != (dirE = readdir(dir))) {
-		if (dirE->d_type==DT_DIR) {
-			if (dirE->d_name[0] != '.'){
-				char *fullpath2;
+		if (dirE->d_name[0] != '.'){
+			char *fullpath2=NULL;
+			if (dirE->d_type==DT_LNK){
+				struct stat sstat;
 				crit_goto_if(asprintf(&fullpath2,"%s/%s",fullpath,dirE->d_name)<0,outOfMemory);
+				if ( (stat(fullpath2,&sstat)==0) && S_ISDIR(sstat.st_mode)){
+					dbg("Siguiendo enlace %s",fullpath2);
+				} else {
+					dbg("No se sigue enlace %s",fullpath2);
+					free(fullpath2);
+					fullpath2=NULL;
+				}
+			}
+			if (dirE->d_type==DT_DIR) {
+				crit_goto_if(asprintf(&fullpath2,"%s/%s",fullpath,dirE->d_name)<0,outOfMemory);
+			}
+			if (fullpath2!=NULL){
 				rdir=addDir(fullpath2,dirE->d_name,host,rdirs);
 				free(fullpath2);
 			}
