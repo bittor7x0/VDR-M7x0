@@ -1,0 +1,415 @@
+diff -Naur epgsearch-git-2010-04-13-orig/epgsearchcfg.c epgsearch-git-2010-04-13/epgsearchcfg.c
+--- epgsearch-git-2010-04-13-orig/epgsearchcfg.c	2010-05-06 17:55:23.000000000 +0200
++++ epgsearch-git-2010-04-13/epgsearchcfg.c	2010-05-06 18:44:29.446753598 +0200
+@@ -62,7 +62,16 @@
+   DefSearchTemplateID = -1;
+   addSubtitleToTimer = addSubtitleSmart;
+   strcpy(mainmenuentry, "");
+-  WarEagle = 0;
++#if APIVERSNUM >= 10503
++  if (strstr(Setup.FontOsd, "VDRSymbols") == Setup.FontOsd)
++    WarEagle = 1;
++  else
++    WarEagle = 0;
++#elif HAVE_ICONPATCH
++    WarEagle = Setup.WarEagleIcons;
++#else
++    WarEagle = 0;
++#endif
+   showRadioChannels = 1;
+   onePressTimerCreation = 1;
+   conflictCheckIntervall = 30;
+diff -Naur epgsearch-git-2010-04-13-orig/epgsearchext.c epgsearch-git-2010-04-13/epgsearchext.c
+--- epgsearch-git-2010-04-13-orig/epgsearchext.c	2010-05-06 17:55:23.000000000 +0200
++++ epgsearch-git-2010-04-13/epgsearchext.c	2010-05-06 18:44:29.446753598 +0200
+@@ -645,7 +645,9 @@
+    else if (Utf8StrLen(Subtitle) > MAX_SUBTITLE_LENGTH) 
+    {
+       Utf8Strn0Cpy(SubtitleBuffer, Subtitle, sizeof(SubtitleBuffer));
++#if APIVERSNUM > 10503 
+       SubtitleBuffer[Utf8SymChars(SubtitleBuffer, MAX_SUBTITLE_LENGTH)] = 0;
++#endif
+       Subtitle = SubtitleBuffer;
+    }
+ 
+diff -Naur epgsearch-git-2010-04-13-orig/epgsearchtools.c epgsearch-git-2010-04-13/epgsearchtools.c
+--- epgsearch-git-2010-04-13-orig/epgsearchtools.c	2010-05-06 17:55:23.000000000 +0200
++++ epgsearch-git-2010-04-13/epgsearchtools.c	2010-05-06 18:44:29.451610279 +0200
+@@ -860,7 +860,10 @@
+ 
+ void DelTimer(int index)
+ {
+-  cString cmdbuf = cString::sprintf("DELT %d", index);    
++  cString cmdbuf = cString::sprintf("MODT %d off", index);
++  LogFile.Log(2, "deactivate timer %d", index);
++  SendViaSVDRP(cmdbuf);
++  cmdbuf = cString::sprintf("DELT %d", index);
+   LogFile.Log(2, "delete timer %d", index);
+   SendViaSVDRP(cmdbuf);
+   gl_timerStatusMonitor->SetConflictCheckAdvised(); 
+diff -Naur epgsearch-git-2010-04-13-orig/epgsearchtools.h epgsearch-git-2010-04-13/epgsearchtools.h
+--- epgsearch-git-2010-04-13-orig/epgsearchtools.h	2010-05-06 17:55:23.000000000 +0200
++++ epgsearch-git-2010-04-13/epgsearchtools.h	2010-05-06 18:44:29.451610279 +0200
+@@ -92,7 +92,7 @@
+ #define ICON_VPS               0x93
+ #else
+ // previous WAREAGLE icons
+-#define ICON_REC               0xF9
++#define ICON_REC               0xF0
+ #define ICON_RUNNING           0xFB
+ #define ICON_CLOCK             0xFD
+ #define ICON_CLOCK_HALF        0x74
+@@ -116,6 +116,8 @@
+ 
+ #if APIVERSNUM < 10503 
+ #define Utf8BufSize(s) ((s) * 4)
++#define Utf8StrLen(s) strlen(s)
++#define Utf8Strn0Cpy(d, s, n) strn0cpy(d, s, n)
+ #endif
+ 
+ extern const char AllowedChars[];
+diff -Naur epgsearch-git-2010-04-13-orig/i18n-generated.h epgsearch-git-2010-04-13/i18n-generated.h
+--- epgsearch-git-2010-04-13-orig/i18n-generated.h	2010-05-11 11:35:57.739931255 +0200
++++ epgsearch-git-2010-04-13/i18n-generated.h	2010-05-11 11:31:50.300044458 +0200
+@@ -3823,7 +3823,7 @@
+     "",
+     "Tarkasta tulevat ohjelmatiedot... [h]",
+     "",
+-    "",
++    "Comprobar si hay EPG durante ... [h]",
+     "",
+     "",
+     "",
+@@ -3858,7 +3858,7 @@
+     "",
+     "MÃ¤Ã¤rittelee vaadittavat tulevat ohjelmatietot tunteina hakuajastimien pÃ¤ivityksen yhteydessÃ¤, jonka jÃ¤lkeen kÃ¤yttÃ¤jÃ¤Ã¤ varoitetaan.",
+     "",
+-    "Establecer a 'sí' cuando desee comprobar conflictos después de actualizar cada programación por búsqueda.",
++    "Especifique el número de horas futuras de EPG que debería haber y si no las hay será avisado después de actualizar una programación por búsqueda.",
+     "",
+     "",
+     "",
+@@ -3893,7 +3893,7 @@
+     "",
+     "Muistuta kuvaruutunÃ¤ytÃ¶llÃ¤",
+     "",
+-    "Sólo avisar",
++    "Avisar por el OSD",
+     "",
+     "",
+     "",
+@@ -3928,7 +3928,7 @@
+     "",
+     "Laittamalla tÃ¤mÃ¤n asetuksen pÃ¤Ã¤lle saat varoitukset ohjelmatietojen tarkastuksesta kuvaruutunÃ¤ytÃ¶lle.",
+     "",
+-    "Establecer a 'sí' cuando desee recibir una notificación por correo sobre los conflictos de programación.",
++    "Establecer a 'sí' cuando desee recibir avisos de las comprobaciones EPG por el OSD.",
+     "",
+     "",
+     "",
+@@ -3963,7 +3963,7 @@
+     "",
+     "Muistuta sÃ¤hkÃ¶postitse",
+     "",
+-    "Sólo avisar",
++    "Avisar por correo",
+     "",
+     "",
+     "",
+@@ -3998,7 +3998,7 @@
+     "",
+     "Laittamalla tÃ¤mÃ¤n asetuksen pÃ¤Ã¤lle saat varoitukset ohjelmatietojen tarkastuksesta sÃ¤hkÃ¶postitse.",
+     "",
+-    "Establecer a 'sí' cuando su cuenta necesite autenticación para enviar correos.",
++    "Establecer a 'sí' cuando desee recibir avisos de las comprobaciones EPG por correo.",
+     "",
+     "",
+     "",
+@@ -4033,7 +4033,7 @@
+     "",
+     "Tarkastettava kanavaryhmÃ¤",
+     "",
+-    "Grupo de canales",
++    "Grupo de canales a comprobar",
+     "",
+     "",
+     "",
+@@ -4068,7 +4068,7 @@
+     "",
+     "MÃ¤Ã¤rittelee tarkastettavan kanavaryhmÃ¤n.",
+     "",
+-    "Especifique el nombre de la plantilla.",
++    "Especifique el grupo de canales a comprobar.",
+     "",
+     "",
+     "",
+@@ -5083,7 +5083,7 @@
+     "",
+     "SÃ¤hkÃ¶postin lÃ¤hetysvÃ¤li [h]",
+     "",
+-    "",
++    "Tiempo entre correos [h]",
+     "",
+     "",
+     "",
+@@ -5118,7 +5118,7 @@
+     "",
+     "VÃ¤himmÃ¤isvÃ¤liaika tunteina sÃ¤hkÃ¶postien\nlÃ¤hetykselle. MikÃ¤li 0, uusi sÃ¤hkÃ¶posti\nlÃ¤hetetÃ¤Ã¤n aina hakuajastimen pÃ¤ivittyessÃ¤\nuusilla tuloksilla.",
+     "",
+-    "",
++    "Especifique cuánto tiempo en [h] le gustaría\ntener como mínimo entre dos correos.\nCon '0' obtendrá un nuevo correo después de cada\nprogramación por búsqueda con nuevos resultados.",
+     "",
+     "",
+     "",
+@@ -6028,7 +6028,7 @@
+     "",
+     "Ei uusia ilmoitettavia tapahtumia.",
+     "",
+-    "",
++    "No hay nuevos eventos que avisar.",
+     "",
+     "",
+     "",
+@@ -10298,7 +10298,7 @@
+     "",
+     "muistutus kuvaruutunÃ¤ytÃ¶lle",
+     "",
+-    "Sólo avisar",
++    "Avisar por el OSD",
+     "",
+     "",
+     "",
+@@ -10403,7 +10403,7 @@
+     "",
+     "muistutus sÃ¤hkÃ¶postitse",
+     "",
+-    "Sólo avisar",
++    "Avisar por correo",
+     "",
+     "",
+     "",
+@@ -11628,7 +11628,7 @@
+     "",
+     "Vaadittava yhdenmukaisuus [%]",
+     "",
+-    "  Duración mín.",
++    "  Coincidencia mín. en %",
+     "",
+     "",
+     "",
+@@ -13203,7 +13203,7 @@
+     "",
+     "vajaat ohjelmatiedot: %s",
+     "",
+-    "",
++    "poco contenido EPG en:%s",
+     "",
+     "",
+     "",
+@@ -13238,7 +13238,7 @@
+     "",
+     "Varoitus VDR:n ohjelmatietojen tarkastuksesta",
+     "",
+-    "",
++    "VDR aviso al comprobar EPG",
+     "",
+     "",
+     "",
+diff -Naur epgsearch-git-2010-04-13-orig/Makefile epgsearch-git-2010-04-13/Makefile
+--- epgsearch-git-2010-04-13-orig/Makefile	2010-05-06 17:55:23.000000000 +0200
++++ epgsearch-git-2010-04-13/Makefile	2010-05-06 18:44:29.451610279 +0200
+@@ -18,7 +18,7 @@
+ #WITHOUT_QUICKSEARCH=1
+ 
+ ### comment this if you don't want epgsearch to auto config itself
+-AUTOCONFIG=1
++#AUTOCONFIG=1
+ 
+ ### if AUTOCONFIG is not active (i.e. commented) you can manually enable the 
+ ### optional modules or patches for other plugins
+@@ -31,7 +31,7 @@
+ 
+ # uncomment this to enable support for the pin plugin.
+ 
+-#USE_PINPLUGIN = 1
++USE_PINPLUGIN = 1
+ 
+ # uncomment this to enable support for the graphtft plugin.
+ #USE_GRAPHTFT = 1
+@@ -64,9 +64,9 @@
+ 
+ ### The directory environment:
+ 
+-DVBDIR = ../../../../DVB
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
++DVBDIR ?= ../../../../DVB
++VDRDIR ?= ../../..
++LIBDIR ?= ../../lib
+ TMPDIR = /tmp
+ 
+ ### auto configuring modules
+@@ -118,7 +118,7 @@
+ 
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
++INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
+ #INCLUDES += -I$(VDRDIR)/include
+ 
+ EPGSEARCH_DEFINES += -D_GNU_SOURCE
+@@ -135,6 +135,11 @@
+ 
+ OBJS = afuzzy.o blacklist.o changrp.o confdloader.o conflictcheck.o conflictcheck_thread.o distance.o $(PLUGIN).o epgsearchcats.o epgsearchcfg.o epgsearchext.o epgsearchsetup.o  epgsearchsvdrp.o epgsearchtools.o i18n.o mail.o md5.o menu_announcelist.o menu_blacklistedit.o menu_blacklists.o menu_commands.o menu_conflictcheck.o menu_deftimercheckmethod.o menu_dirselect.o menu_event.o menu_favorites.o menu_main.o menu_myedittimer.o menu_quicksearch.o menu_recsdone.o menu_search.o menu_searchactions.o menu_searchedit.o menu_searchresults.o menu_searchtemplate.o menu_switchtimers.o menu_templateedit.o menu_timersdone.o menu_whatson.o noannounce.o pending_notifications.o rcfile.o  recdone.o recstatus.o searchtimer_thread.o services.o switchtimer.o switchtimer_thread.o templatefile.o timer_thread.o timerdone.o timerstatus.o uservars.o varparser.o  
+ 
++# Check WarEagleIcons patch
++ifeq (exists, $(shell test -e $(VDRDIR)/iconpatch.h && echo exists))
++   DEFINES += -DHAVE_ICONPATCH
++endif
++
+ ifeq ($(REGEXLIB), pcre)
+ LIBS += $(shell pcre-config --libs-posix)
+ #LIBS += -L/usr/lib -lpcreposix -lpcre
+diff -Naur epgsearch-git-2010-04-13-orig/menu_whatson.c epgsearch-git-2010-04-13/menu_whatson.c
+--- epgsearch-git-2010-04-13-orig/menu_whatson.c	2010-05-06 17:55:23.000000000 +0200
++++ epgsearch-git-2010-04-13/menu_whatson.c	2010-05-06 18:44:29.454758619 +0200
+@@ -173,7 +173,7 @@
+       else
+       {
+ 	t[0] = event && hasMatch ? (timerMatch == tmFull) ? ((timer && timer->Recording())?'R':'T') : 't' : ' ';
+-	v[0] = event && event->Vps() && (event->Vps() - event->StartTime()) ? 'V' : ' ';
++	v[0] = event && event->Vps() ? (event->Vps() - event->StartTime() ? 'V' : 'v') : ' ';
+ 	r[0] = event && event->IsRunning() ? '*' : ' ';
+       }
+ 
+diff -Naur epgsearch-git-2010-04-13-orig/po/es_ES.po epgsearch-git-2010-04-13/po/es_ES.po
+--- epgsearch-git-2010-04-13-orig/po/es_ES.po	2010-05-11 11:35:55.703877919 +0200
++++ epgsearch-git-2010-04-13/po/es_ES.po	2010-05-11 11:33:55.075873534 +0200
+@@ -403,35 +403,28 @@
+ msgstr "Establecer a 'sí' cuando desee que las programaciones se creen de nuevo con la siguiente actualización de programación por búsqueda después de borrarlas."
+ 
+ msgid "Check if EPG exists for ... [h]"
+-msgstr ""
++msgstr "Comprobar si hay EPG durante ... [h]"
+ 
+-#, fuzzy
+ msgid "Help$Specify how many hours of future EPG there should be and get warned else after a search timer update."
+-msgstr "Establecer a 'sí' cuando desee comprobar conflictos después de actualizar cada programación por búsqueda."
++msgstr "Especifique el número de horas futuras de EPG que debería haber y si no las hay será avisado después de actualizar una programación por búsqueda."
+ 
+-#, fuzzy
+ msgid "Warn by OSD"
+-msgstr "Sólo avisar"
++msgstr "Avisar por el OSD"
+ 
+-#, fuzzy
+ msgid "Help$Set this to 'yes' if you want get warnings from the EPG check via OSD."
+-msgstr "Establecer a 'sí' cuando desee recibir una notificación por correo sobre los conflictos de programación."
++msgstr "Establecer a 'sí' cuando desee recibir avisos de las comprobaciones EPG por el OSD."
+ 
+-#, fuzzy
+ msgid "Warn by mail"
+-msgstr "Sólo avisar"
++msgstr "Avisar por correo"
+ 
+-#, fuzzy
+ msgid "Help$Set this to 'yes' if you want get warnings from the EPG check by mail."
+-msgstr "Establecer a 'sí' cuando su cuenta necesite autenticación para enviar correos."
++msgstr "Establecer a 'sí' cuando desee recibir avisos de las comprobaciones EPG por correo."
+ 
+-#, fuzzy
+ msgid "Channel group to check"
+-msgstr "Grupo de canales"
++msgstr "Grupo de canales a comprobar"
+ 
+-#, fuzzy
+ msgid "Help$Specify the channel group to check."
+-msgstr "Especifique el nombre de la plantilla."
++msgstr "Especifique el grupo de canales a comprobar."
+ 
+ msgid "Ignore PayTV channels"
+ msgstr "Ignorar los canales de pago"
+@@ -522,14 +515,14 @@
+ msgstr "Establecer a 'sí' cuando desee tener una notificación por correo de las programaciones por búsqueda que fueron creadas automáticamente."
+ 
+ msgid "Time between mails [h]"
+-msgstr ""
++msgstr "Tiempo entre correos [h]"
+ 
+ msgid ""
+ "Help$Specifiy how much time in [h] you would\n"
+ "like to have atleast between two mails.\n"
+ "With '0' you get a new mail after each\n"
+ "search timer update with new results."
+-msgstr ""
++msgstr "Especifique cuánto tiempo en [h] le gustaría\ntener como mínimo entre dos correos.\nCon '0' obtendrá un nuevo correo después de cada\nprogramación por búsqueda con nuevos resultados."
+ 
+ msgid "Timer conflict notification"
+ msgstr "Notificar conflicto en programación"
+@@ -615,7 +608,7 @@
+ msgstr "No se borraron programaciones."
+ 
+ msgid "No new events to announce."
+-msgstr ""
++msgstr "No hay nuevos eventos que avisar."
+ 
+ msgid "This version of EPGSearch does not support this service!"
+ msgstr "¡Esta versión de EPGSearch no soporta este servicio!"
+@@ -981,9 +974,8 @@
+ msgid "Record"
+ msgstr "Grabar"
+ 
+-#, fuzzy
+ msgid "Announce by OSD"
+-msgstr "Sólo avisar"
++msgstr "Avisar por el OSD"
+ 
+ msgid "Switch only"
+ msgstr "Cambiar de canal"
+@@ -991,9 +983,8 @@
+ msgid "Announce and switch"
+ msgstr "Avisar y cambiar"
+ 
+-#, fuzzy
+ msgid "Announce by mail"
+-msgstr "Sólo avisar"
++msgstr "Avisar por correo"
+ 
+ msgid "Selection"
+ msgstr "selección"
+@@ -1113,9 +1104,8 @@
+ msgid "Compare summary"
+ msgstr "Comparar resumen"
+ 
+-#, fuzzy
+ msgid "Min. match in %"
+-msgstr "  Duración mín."
++msgstr "  Coincidencia mín. en %"
+ 
+ msgid "Compare categories"
+ msgstr "Comparar categorías"
+@@ -1252,10 +1242,10 @@
+ 
+ #, c-format
+ msgid "small EPG content on:%s"
+-msgstr ""
++msgstr "poco contenido EPG en:%s"
+ 
+ msgid "VDR EPG check warning"
+-msgstr ""
++msgstr "VDR aviso al comprobar EPG"
+ 
+ #, c-format
+ msgid "Switch to (%d) '%s'?"
+diff -Naur epgsearch-git-2010-04-13-orig/svdrpclient.h epgsearch-git-2010-04-13/svdrpclient.h
+--- epgsearch-git-2010-04-13-orig/svdrpclient.h	2010-05-06 17:55:23.000000000 +0200
++++ epgsearch-git-2010-04-13/svdrpclient.h	2010-05-06 18:44:29.458796494 +0200
+@@ -123,6 +123,8 @@
+ 		{
+ 		    bCheckMultiLine = false;
+ 		    rc = atol(csResp);
++		    if (rc != CMDSUCCESS )
++		    LogFile.eSysLog("EPGSearch: SVDRP response '%s'", csResp);
+ 		}
+ 		free(csResp);
+ 		csResp = strdup("");
