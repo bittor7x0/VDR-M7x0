@@ -1,7 +1,7 @@
 diff -Naur epgsearch-git-2010-04-13-orig/epgsearchcfg.c epgsearch-git-2010-04-13/epgsearchcfg.c
 --- epgsearch-git-2010-04-13-orig/epgsearchcfg.c	2010-05-06 17:55:23.000000000 +0200
 +++ epgsearch-git-2010-04-13/epgsearchcfg.c	2010-05-06 18:44:29.446753598 +0200
-@@ -58,7 +58,16 @@
+@@ -62,7 +62,16 @@
    DefSearchTemplateID = -1;
    addSubtitleToTimer = addSubtitleSmart;
    strcpy(mainmenuentry, "");
