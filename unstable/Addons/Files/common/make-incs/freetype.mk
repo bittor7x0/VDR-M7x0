@@ -24,7 +24,7 @@ FREETYPE_PATCHES_DIR := $(PATCHES_DIR)/freetype/$(FREETYPE_VERSION)
 
 FREETYPE_FILE := freetype-$(FREETYPE_VERSION).tar.bz2
 FREETYPE_DLFILE := $(DOWNLOAD_DIR)/$(FREETYPE_FILE)
-FREETYPE_URL := http://www.coker.com.au/freetype/$(FREETYPE_FILE)
+FREETYPE_URL := http://sourceforge.net/projects/freetype/files/freetype2/$(FREETYPE_VERSION)/$(FREETYPE_FILE)/download
 FREETYPE_DIR := $(BUILD_DIR)/freetype-$(FREETYPE_VERSION)
 
 FREETYPE_INSTALLED = $(STAGEFILES_DIR)/.freetype_installed
