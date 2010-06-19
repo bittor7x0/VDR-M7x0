@@ -639,8 +639,10 @@ char* cSearchExt::BuildFile(const cEvent* pEvent) const
    char SubtitleBuffer[Utf8BufSize(MAX_SUBTITLE_LENGTH)];
    if (isempty(Subtitle))
    {
-      sprintf(SubtitleBuffer, "%s-%s", GETDATESTRING(pEvent), GETTIMESTRING(pEvent));
-      Subtitle = SubtitleBuffer;
+     time_t Start = pEvent->StartTime();
+     struct tm tm_r;
+     strftime(SubtitleBuffer, sizeof(SubtitleBuffer), "%Y.%m.%d-%R-%a", localtime_r(&Start, &tm_r));      
+     Subtitle = SubtitleBuffer;
    }
    else if (Utf8StrLen(Subtitle) > MAX_SUBTITLE_LENGTH) 
    {
@@ -848,7 +850,6 @@ cEvent * cSearchExt::GetEventBySearchExt(const cSchedule *schedules, const cEven
       p1 = Events->First();
 
    time_t tNow=time(NULL);
-   char* szTest = NULL;
    char* searchText = strdup(search);
 
    int searchStart = 0, searchStop = 0;
@@ -951,6 +952,7 @@ cEvent * cSearchExt::GetEventBySearchExt(const cSchedule *schedules, const cEven
             }
          }
 
+	 char* szTest = NULL;
 	 msprintf(&szTest, "%s%s%s%s%s", (useTitle?(p->Title()?p->Title():""):""), (useSubtitle||useDescription)?"~":"",
                (useSubtitle?(p->ShortText()?p->ShortText():""):""),useDescription?"~":"",
                (useDescription?(p->Description()?p->Description():""):""));     
@@ -961,11 +963,13 @@ cEvent * cSearchExt::GetEventBySearchExt(const cSchedule *schedules, const cEven
          if (szTest && *szTest)
          {
             if (!MatchesSearchMode(szTest, searchText, mode," ,;|~", fuzzyTolerance))
+	    {
+	       free(szTest);
                continue;
+	    }
          }
 	 if (szTest)
 	   free(szTest);
-	 szTest = NULL;
 
          if (useExtEPGInfo && !MatchesExtEPGInfo(p))
             continue;
