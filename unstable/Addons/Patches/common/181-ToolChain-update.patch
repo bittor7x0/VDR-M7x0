@@ -23,7 +23,7 @@ diff -Naur uclibc_build_env_orig/make-incs/busybox.mk uclibc_build_env/make-incs
  BUSYBOX_DEPS = $(BASE_BUILD_STAGEFILE)
  
 -BUSYBOX_VERSION := 1.14.3
-+BUSYBOX_VERSION := 1.16.1
++BUSYBOX_VERSION := 1.16.2
  BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/$(BUSYBOX_VERSION)
  
  BUSYBOX_FILE := busybox-$(BUSYBOX_VERSION).tar.bz2
@@ -62,7 +62,7 @@ diff -Naur uclibc_build_env_orig/make-incs/e2fsprogs.mk uclibc_build_env/make-in
  E2FSPROGS_DEPS = $(BASE_BUILD_STAGEFILE)
  
 -E2FSPROGS_VERSION := 1.41.8
-+E2FSPROGS_VERSION := 1.41.11
++E2FSPROGS_VERSION := 1.41.12
  E2FSPROGS_PATCHES_DIR := $(PATCHES_DIR)/e2fsprogs/$(E2FSPROGS_VERSION)
  
  E2FSPROGS_FILE := e2fsprogs-$(E2FSPROGS_VERSION).tar.gz

@@ -1,6 +1,6 @@
-diff -Naur uclibc_build_env_orig/configs/busybox/1.16.1/busybox.config uclibc_build_env/configs/busybox/1.16.1/busybox.config
---- uclibc_build_env_orig/configs/busybox/1.16.1/busybox.config	2010-03-04 17:19:41.000000000 +0100
-+++ uclibc_build_env/configs/busybox/1.16.1/busybox.config	2010-03-04 17:19:44.000000000 +0100
+diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_build_env/configs/busybox/1.16.2/busybox.config
+--- uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config	2010-03-04 17:19:41.000000000 +0100
++++ uclibc_build_env/configs/busybox/1.16.2/busybox.config	2010-03-04 17:19:44.000000000 +0100
 @@ -574,7 +574,7 @@
  #
  # Miscellaneous Utilities
