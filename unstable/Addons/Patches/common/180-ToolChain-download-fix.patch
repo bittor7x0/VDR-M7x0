@@ -43,6 +43,18 @@ diff -Naur uclibc_build_env_orig/hostutils-make-incs/cramfs.mk uclibc_build_env/
  CRAMFS_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/cramfs-$(CRAMFS_HOSTVERSION)
  
  CLEAN_RULES += clean-cramfs-host
+diff -Naur uclibc_build_env_orig/hostutils-make-incs/cramfsswap.mk uclibc_build_env/hostutils-make-incs/cramfsswap.mk
+--- uclibc_build_env_orig/hostutils-make-incs/cramfsswap.mk	2010-05-12 10:35:58.000000000 +0200
++++ uclibc_build_env/hostutils-make-incs/cramfsswap.mk	2010-07-02 09:01:04.956624960 +0200
+@@ -33,7 +33,7 @@
+ CRAMFSSWAP_HOSTDLFILE := $(DOWNLOAD_DIR)/$(CRAMFSSWAP_HOSTFILE)
+ 
+ CRAMFSSWAP_HOSTPATCHES_DIR := $(PATCHES_DIR)/cramfsswap/$(CRAMFSSWAP_HOSTVERSION)
+-CRAMFSSWAP_HOSTURL := http://ftp.debian.org/debian/pool/main/c/cramfsswap/$(CRAMFSSWAP_HOSTFILE)
++CRAMFSSWAP_HOSTURL := http://old-releases.ubuntu.com/ubuntu/pool/universe/c/cramfsswap/$(CRAMFSSWAP_HOSTFILE)
+ CRAMFSSWAP_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/cramfsswap-$(CRAMFSSWAP_HOSTVERSION)
+ 
+ CLEAN_RULES += clean-cramfsswap-host
 diff -Naur uclibc_build_env_orig/hostutils-make-incs/squashfs.mk uclibc_build_env/hostutils-make-incs/squashfs.mk
 --- uclibc_build_env_orig/hostutils-make-incs/squashfs.mk	2009-12-11 12:03:31.000000000 +0100
 +++ uclibc_build_env/hostutils-make-incs/squashfs.mk	2010-02-15 12:17:32.729290653 +0100
