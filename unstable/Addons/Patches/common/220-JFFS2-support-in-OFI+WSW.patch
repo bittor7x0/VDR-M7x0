@@ -1,0 +1,30 @@
+diff -Naur uclibc_build_env_orig/make-incs/generate_ofi.mk uclibc_build_env/make-incs/generate_ofi.mk
+--- uclibc_build_env_orig/make-incs/generate_ofi.mk	2010-05-12 10:35:59.000000000 +0200
++++ uclibc_build_env/make-incs/generate_ofi.mk	2010-07-02 12:21:58.000000000 +0200
+@@ -54,6 +54,11 @@
+    OFI-IMG_DEPS += $(SIEMENS-LINUX-KERNEL-IMG)
+    OFI-IMG_TIME_REF_all += $(SIEMENS-LINUX-KERNEL-IMG)
+ endif
++ifeq ($(CONFIG_GENERATE_JFFS2_IMAGE),y)
++   GEN_OFI_CMD_LINE += -j $(TOP_DIR)/$(JFFS2_IMG)
++   OFI-IMG_DEPS += $(TOP_DIR)/$(JFFS2_IMG)
++   OFI-IMG_TIME_REF_all += $(TOP_DIR)/$(JFFS2_IMG)
++endif
+ OFI-IMG := $(TOP_DIR)/$(or $(notdir $(CONFIG_OFI-IMG)),open7x0.org-$(CONFIG_M7X0_TYPE).ofi)
+ OFI-IMG_TIME_REF = $(firstword $(OFI-IMG_TIME_REF_all))
+ GEN_OFI_CMD_LINE += -o $(OFI-IMG)
+diff -Naur uclibc_build_env_orig/make-incs/generate_wsw.mk uclibc_build_env/make-incs/generate_wsw.mk
+--- uclibc_build_env_orig/make-incs/generate_wsw.mk	2010-05-12 10:35:59.000000000 +0200
++++ uclibc_build_env/make-incs/generate_wsw.mk	2010-07-02 12:23:03.000000000 +0200
+@@ -53,6 +53,11 @@
+    WSW-IMG_DEPS += $(SIEMENS-LINUX-KERNEL-IMG)
+    WSW-IMG_TIME_REF_all += $(SIEMENS-LINUX-KERNEL-IMG)
+ endif
++ifeq ($(CONFIG_GENERATE_JFFS2_IMAGE),y)
++   GEN_WSW_CMD_LINE += -d $(TOP_DIR)/$(JFFS2_IMG)
++   WSW-IMG_DEPS += $(TOP_DIR)/$(JFFS2_IMG)
++   WSW-IMG_TIME_REF_all += $(TOP_DIR)/$(JFFS2_IMG)
++endif
+ GEN_WSW_FWNAME = $(or $(subst .wsw,,$(notdir $(CONFIG_WSW-IMG))), \
+                  open7x0.org-$(CONFIG_M7X0_TYPE)-%Y-%m-%d-%M%H)
+ WSW-IMG := $(TOP_DIR)/$(or $(notdir $(CONFIG_WSW-IMG)),open7x0.org-$(CONFIG_M7X0_TYPE).wsw)
