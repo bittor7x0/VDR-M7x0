@@ -16,8 +16,8 @@
 #
 #
 
-# Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-MPFR_DEPS = $(BASE_BUILD_STAGEFILE) $(GMP_INSTALLED)
+# Put dependencies here
+MPFR_DEPS = $(GMP_INSTALLED)
 
 MPFR_VERSION := 2.4.2
 MPFR_PATCHES_DIR := $(PATCHES_DIR)/mpfr/$(MPFR_VERSION)

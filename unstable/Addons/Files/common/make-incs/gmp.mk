@@ -16,9 +16,6 @@
 #
 #
 
-# Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-GMP_DEPS = $(BASE_BUILD_STAGEFILE)
-
 GMP_VERSION := 5.0.1
 GMP_PATCHES_DIR := $(PATCHES_DIR)/gmp/$(GMP_VERSION)
 
@@ -49,8 +46,7 @@ $(GMP_DLFILE): $(TC_INIT_RULE)
 #
 
 $(STAGEFILES_DIR)/.gmp_unpacked: $(GMP_DLFILE) \
-                                           $(wildcard $(GMP_PATCHES_DIR)/*.patch) \
-                                           $$(GMP_DEPS)
+                                           $(wildcard $(GMP_PATCHES_DIR)/*.patch)
 	-$(RM) -rf $(GMP_DIR)
 	$(BZCAT) $(GMP_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.gmp_unpacked

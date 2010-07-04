@@ -16,8 +16,8 @@
 #
 #
 
-# Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-MPC_DEPS = $(BASE_BUILD_STAGEFILE) $(GMP_INSTALLED) $(MPFR_INSTALLED)
+# Put dependencies here
+MPC_DEPS = $(GMP_INSTALLED) $(MPFR_INSTALLED)
 
 MPC_VERSION := 0.8.1
 MPC_PATCHES_DIR := $(PATCHES_DIR)/mpc/$(MPC_VERSION)
