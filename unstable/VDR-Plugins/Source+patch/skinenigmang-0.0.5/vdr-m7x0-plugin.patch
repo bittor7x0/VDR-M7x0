@@ -1014,12 +1014,34 @@ diff -Naur skinenigmang-0.0.5-orig/i18n.c skinenigmang-0.0.5/i18n.c
     "",                          // ÅëëçíéêÜ (Greek)
     "",                          // Svenska
     "",                          // Românã
-@@ -2637,7 +2639,7 @@
+@@ -2637,7 +2639,29 @@
     "",                                      // Norsk
     "TrueType-kirjasintyyppejä ei löydy!",   // suomi (Finnish)
     "",                                      // Polski
 -   "",                                      // Español
 +   "¡Ninguna fuente TrueType instalada!",   // Español
++   "",                                      // ÅëëçíéêÜ (Greek)
++   "",                                      // Svenska
++   "",                                      // Românã
++   "",                                      // Magyar
++   "",                                      // Català
++   "",                                      // ÀãááÚØÙ (Russian)
++   "",                                      // Hrvatski
++   "",                                      // Eesti
++   "",                                      // Dansk
++   "",                                      // Èesky (Czech)
++   },
++  {"Content: ",                             // English
++   "",                                      // Deutsch
++   "",                                      // Slovenski
++   "",                                      // Italiano
++   "",                                      // Nederlands
++   "",                                      // Português
++   "",                                      // Français
++   "",                                      // Norsk
++   "",                                      // suomi (Finnish)
++   "",                                      // Polski
++   "Contenido: ",                           // Español
     "",                                      // ÅëëçíéêÜ (Greek)
     "",                                      // Svenska
     "",                                      // Românã
@@ -1270,6 +1292,87 @@ diff -Naur skinenigmang-0.0.5-orig/enigma.c skinenigmang-0.0.5/enigma.c
    osd->Flush();
  
  #ifndef DISABLE_ANIMATED_TEXT
+@@ -2120,12 +2247,38 @@
+     xs -= Gap;
+   }
+   std::string stringInfo;
++  std::stringstream sstrInfo, sstrInfoContent;
++
++  bool fFirst = true;
++  for (int i = 0; Event->Contents(i); i++) {
++    const char *s = Event->ContentToString(Event->Contents(i));
++    if (!isempty(s)) {
++      if (fFirst) {
++        fFirst = false;
++        sstrInfoContent << tr("Content: ");
++      } else {
++        sstrInfoContent << ", ";
++      }
++      sstrInfoContent << s;
++    }
++  }
++  if (!fFirst)
++    sstrInfoContent << std::endl;
++
++  if (Event->ParentalRating()) {
++    sstrInfoContent << *Event->GetParentalRatingString() << std::endl;
++  }
++
++  fFirst = true;
+   const cComponents *Components = Event->Components();
+   if (Components) {
+-    std::stringstream sstrInfo;
+     for (int i = 0; i < Components->NumComponents(); i++) {
+       const tComponent *p = Components->Component(i);
+       if (p && (p->stream == 2) && p->language) {
++        if (fFirst) {
++          fFirst = false;
++          sstrInfo << tr("Languages") << ": ";
++        }
+         if (p->description) {
+           sstrInfo << p->description
+                    << " (" << p->language << "), ";
+@@ -2135,10 +2288,10 @@
+ //        DrawFlag(p); //TODO
+       }
+     }
++    if (!sstrInfoContent.str().empty())
++      stringInfo += sstrInfoContent.str();
+     // strip out the last delimiter
+     if (!sstrInfo.str().empty())
+-      stringInfo = tr("Languages");
+-      stringInfo += ": "; 
+       stringInfo += sstrInfo.str().substr(0, sstrInfo.str().length() - 2);
+   }
+   int yHeadlineBottom = yDateBottom;
+@@ -2337,6 +2490,27 @@
+ 
+   // draw additional information
+   std::stringstream sstrInfo;
++
++  bool fFirst = true;
++  for (int i = 0; Info->GetEvent()->Contents(i); i++) {
++    const char *s = Info->GetEvent()->ContentToString(Info->GetEvent()->Contents(i));
++    if (!isempty(s)) {
++      if (fFirst) {
++        fFirst = false;
++        sstrInfo << tr("Content: ");
++      } else {
++        sstrInfo << ", ";
++      }
++      sstrInfo << s;
++    }
++  }
++  if (!fFirst)
++    sstrInfo << std::endl;
++
++  if (Info->GetEvent()->ParentalRating()) {
++    sstrInfo << *Info->GetEvent()->GetParentalRatingString() << std::endl;
++  }
++
+   int dirSize = -1;
+   if (EnigmaConfig.showRecSize > 0) {
+     if ((dirSize = ReadSizeVdr(Recording->FileName())) < 0 && EnigmaConfig.showRecSize == 2) {
 diff -Naur skinenigmang-0.0.5-orig/symbols/small/tshift11.xpm skinenigmang-0.0.5/symbols/small/tshift11.xpm
 --- skinenigmang-0.0.5-orig/symbols/small/tshift11.xpm	1970-01-01 01:00:00.000000000 +0100
 +++ skinenigmang-0.0.5/symbols/small/tshift11.xpm	2010-01-19 15:01:33.000000000 +0100
