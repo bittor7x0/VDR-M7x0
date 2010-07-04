@@ -1,0 +1,12 @@
+usr/lib/libGraphicsMagick.so.3.6.0     usr/lib/libGraphicsMagick.so.3.6.0     f 755 0 0 - - - - -
+usr/lib/libGraphicsMagick.so.3.6.0     -                                      s   - - - - - - - -
+usr/lib/libGraphicsMagick.so.3         libGraphicsMagick.so.3.6.0             l 777 0 0 - - - - -
+usr/lib/libGraphicsMagick.so           libGraphicsMagick.so.3.6.0             l 777 0 0 - - - - -
+usr/lib/libGraphicsMagick++.so.3.3.0   usr/lib/libGraphicsMagick++.so.3.3.0   f 755 0 0 - - - - -
+usr/lib/libGraphicsMagick++.so.3.3.0   -                                      s   - - - - - - - -
+usr/lib/libGraphicsMagick++.so.3       libGraphicsMagick++.so.3.3.0           l 777 0 0 - - - - -
+usr/lib/libGraphicsMagick++.so         libGraphicsMagick++.so.3.3.0           l 777 0 0 - - - - -
+usr/lib/libGraphicsMagickWand.so.2.2.0 usr/lib/libGraphicsMagickWand.so.2.2.0 f 755 0 0 - - - - -
+usr/lib/libGraphicsMagickWand.so.2.2.0 -                                      s   - - - - - - - -
+usr/lib/libGraphicsMagickWand.so.2     libGraphicsMagickWand.so.2.2.0         l 777 0 0 - - - - -
+usr/lib/libGraphicsMagickWand.so       libGraphicsMagickWand.so.2.2.0         l 777 0 0 - - - - -

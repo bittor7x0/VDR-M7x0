@@ -1,0 +1,5 @@
+usr/lib/libpng14.so.14.2.0 usr/lib/libpng14.so.14.2.0 f 755 0 0 - - - - -
+usr/lib/libpng14.so.14.2.0 -                          s   - - - - - - - -
+usr/lib/libpng14.so.14     libpng14.so.14.2.0         l 777 0 0 - - - - -
+usr/lib/libpng14.so        libpng14.so.14.2.0         l 777 0 0 - - - - -
+usr/lib/libpng.so          libpng14.so.14.2.0         l 777 0 0 - - - - -
