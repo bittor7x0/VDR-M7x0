@@ -38,6 +38,10 @@ else
   JFFS2_IMG =$(notdir $(CONFIG_JFFS2_IMG))
 endif
 
+ifeq ($(CONFIG_JFFS2_LZO),y)
+  JFFS2_OPTIONS := -x zlib -x lzari -X lzo -X rtime
+endif
+
 POST_RULES_$(CONFIG_GENERATE_JFFS2_DIR) += $(JFFS2_DIR)
 POST_RULES_$(CONFIG_GENERATE_JFFS2_IMAGE) += $(TOP_DIR)/$(JFFS2_IMG)
 
@@ -51,9 +55,10 @@ $(JFFS2_DIR): $(JFFS2_DIR_DEPS)
 $(TOP_DIR)/$(JFFS2_IMG): $$(MKJFFS2_BIN) $(JFFS2_DIR)
 	-$(RM) -f $(TOP_DIR)/$(JFFS2_IMG)
 	$(MKJFFS2_BIN) --big-endian --pad --squash \
+		$(JFFS2_OPTIONS) \
 		--root="$(JFFS2_DIR)" \
 		--output=$(TOP_DIR)/$(JFFS2_IMG)
-	# Add JFFS2 mark
+	# Add JFFS2 end-of-filesystem mark
 	$(ECHO) $(shell $(ECHO) -ne '\xde\xad\xc0\xde') >> $(TOP_DIR)/$(JFFS2_IMG)
 ifeq ($(strip $(HOST_BS)),OpenBSD)
 	@if	$(TEST) `$(STAT) -f b $(TOP_DIR)/$(JFFS2_IMG)` \

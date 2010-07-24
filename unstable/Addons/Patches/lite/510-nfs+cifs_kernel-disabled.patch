@@ -1,7 +1,7 @@
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2009-12-13 18:10:34.000000000 +0100
 +++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2009-12-13 18:14:40.000000000 +0100
-@@ -658,17 +658,17 @@
+@@ -662,17 +662,17 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set
@@ -29,7 +29,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc
 diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
 --- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2009-12-13 18:10:34.000000000 +0100
 +++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2009-12-13 18:14:40.000000000 +0100
-@@ -658,17 +658,17 @@
+@@ -662,17 +662,17 @@
  #
  # CONFIG_CODA_FS is not set
  # CONFIG_INTERMEZZO_FS is not set

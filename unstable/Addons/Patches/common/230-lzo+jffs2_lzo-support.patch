@@ -1,0 +1,63 @@
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config uclibc_build_env/configs/siemens-linux-kernel/m740.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m740.config	2010-07-24 11:03:24.000000000 +0200
++++ uclibc_build_env/configs/siemens-linux-kernel/m740.config	2010-07-10 11:00:07.000000000 +0200
+@@ -612,6 +612,10 @@
+ # CONFIG_JFFS_FS is not set
+ CONFIG_JFFS2_FS=y
+ CONFIG_JFFS2_FS_DEBUG=0
++# CONFIG_JFFS2_LZO is not set
++CONFIG_JFFS2_ZLIB=y
++CONFIG_JFFS2_RTIME=y
++CONFIG_JFFS2_RUBIN=y
+ CONFIG_CRAMFS=y
+ CONFIG_SQUASHFS=y
+ # CONFIG_SQUASHFS_EMBEDDED is not set
+@@ -967,3 +971,5 @@
+ CONFIG_ZLIB_INFLATE=y
+ CONFIG_ZLIB_DEFLATE=y
+ CONFIG_CRC32=y
++# CONFIG_LZO_COMPRESS is not set
++# CONFIG_LZO_DECOMPRESS is not set
+diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclibc_build_env/configs/siemens-linux-kernel/m750s.config
+--- uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config	2010-07-24 11:03:24.000000000 +0200
++++ uclibc_build_env/configs/siemens-linux-kernel/m750s.config	2010-07-10 11:00:07.000000000 +0200
+@@ -612,6 +612,10 @@
+ # CONFIG_JFFS_FS is not set
+ CONFIG_JFFS2_FS=y
+ CONFIG_JFFS2_FS_DEBUG=0
++# CONFIG_JFFS2_LZO is not set
++CONFIG_JFFS2_ZLIB=y
++CONFIG_JFFS2_RTIME=y
++CONFIG_JFFS2_RUBIN=y
+ CONFIG_CRAMFS=y
+ CONFIG_SQUASHFS=y
+ # CONFIG_SQUASHFS_EMBEDDED is not set
+@@ -967,3 +971,5 @@
+ CONFIG_ZLIB_INFLATE=y
+ CONFIG_ZLIB_DEFLATE=y
+ CONFIG_CRC32=y
++# CONFIG_LZO_COMPRESS is not set
++# CONFIG_LZO_DECOMPRESS is not set
+diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
+--- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2010-07-24 11:03:24.000000000 +0200
++++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2010-07-24 11:10:20.000000000 +0200
+@@ -201,6 +201,19 @@
+ 		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+   endif
+   endif
++  # Enable LZO and disable any JFFS2 compressors
++  ifeq ($(CONFIG_JFFS2_LZO),y)
++	$(SED) -i -e 's,^# CONFIG_LZO_COMPRESS is not set,CONFIG_LZO_COMPRESS=y,g' \
++		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++	$(SED) -i -e 's,^# CONFIG_LZO_DECOMPRESS is not set,CONFIG_LZO_DECOMPRESS=y,g' \
++		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++	$(SED) -i -e 's,^# CONFIG_JFFS2_LZO is not set,CONFIG_JFFS2_LZO=y,g' \
++		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++	$(SED) -i -e 's,^CONFIG_JFFS2_ZLIB=y,# CONFIG_JFFS2_ZLIB is not set,g' \
++		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++	$(SED) -i -e 's,^CONFIG_JFFS2_RUBIN=y,# CONFIG_JFFS2_RUBIN is not set,g' \
++		$(SIEMENS-LINUX-KERNEL_DIR)/.config
++  endif
+ 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
+ 		BASH=$(BASH) CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) oldconfig
+ 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
