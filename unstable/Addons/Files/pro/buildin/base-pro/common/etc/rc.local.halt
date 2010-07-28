@@ -83,6 +83,4 @@ if [ -x "${fw_update_file}" ] ; then
     ${fw_update_file}
 fi
 
-/usr/bin/set-video off &
-
 exec /bin/ash /etc/rc.halt $1
