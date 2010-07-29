@@ -1,0 +1,27 @@
+diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
+--- VDR-NG-orig/device.c	2010-07-29 16:53:26.898566000 +0200
++++ VDR-NG/device.c	2010-07-28 14:20:32.785510000 +0200
+@@ -330,9 +330,6 @@
+         primaryDevice->MakePrimaryDevice(false);
+      primaryDevice = device[n];
+      primaryDevice->MakePrimaryDevice(true);
+-     primaryDevice->SetTvMode(Setup.TvMode);
+-     primaryDevice->SetVideoFormat(eVideoFormat(Setup.VideoFormat));
+-     primaryDevice->SetVolumeDevice(Setup.CurrentVolume);
+      return true;
+      }
+   esyslog("ERROR: invalid primary device number: %d", n + 1);
+diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
+--- VDR-NG-orig/dvbdevice.c	2010-07-29 16:53:26.902607000 +0200
++++ VDR-NG/dvbdevice.c	2010-07-28 14:16:39.857456000 +0200
+@@ -2364,10 +2364,6 @@
+      }
+   devVideoIndex = (devVideoOffset >= 0 && HasDecoder()) ? devVideoOffset++ : -1;
+ 
+-  // Video format:
+-
+-  SetVideoFormat(eVideoFormat(Setup.VideoFormat));
+-
+   // We only check the devices that must be present - the others will be checked before accessing them://XXX
+ 
+   if (fd_frontend >= 0) {
