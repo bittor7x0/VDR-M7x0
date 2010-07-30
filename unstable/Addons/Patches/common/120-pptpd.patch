@@ -105,7 +105,7 @@ diff -Naur uclibc_build_env_orig/configs/siemens-linux-kernel/m750s.config uclib
 diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_env/make-incs/siemens-linux-kernel.mk
 --- uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk	2009-04-08 18:21:37.000000000 +0200
 +++ uclibc_build_env/make-incs/siemens-linux-kernel.mk	2009-04-08 19:16:46.000000000 +0200
-@@ -60,6 +60,18 @@
+@@ -60,6 +60,17 @@
     lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
     lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o \
     lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o 
@@ -117,14 +117,13 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
 +	lib/modules/2.4.21-xfs/kernel/drivers/net/slhc.o \
 +	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_generic.o \
 +	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_async.o \
-+	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_deflate.o \
 +	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_mppe.o
 +endif
 +
  SIEMENS-LINUX-KERNEL_DIRLST := \
     lib/modules \
     lib/modules/2.4.21-xfs \
-@@ -69,6 +81,13 @@
+@@ -69,6 +80,13 @@
     lib/modules/2.4.21-xfs/kernel/drivers \
     lib/modules/2.4.21-xfs/kernel/drivers/usb \
     lib/modules/2.4.21-xfs/kernel/drivers/usb/host     
@@ -138,7 +137,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  #
  # unpack siemens linux kernel
  #
-@@ -104,6 +123,12 @@
+@@ -104,6 +122,12 @@
  # There are some hard coded defines in tree, which are system type depending
  	$(call patch_package, $(SIEMENS-LINUX-KERNEL_DIR), \
  		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_M7X0_TYPE))
@@ -151,7 +150,7 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
  	$(TOUCH) $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_patched
  
  #
-@@ -167,6 +192,29 @@
+@@ -167,6 +191,26 @@
  	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
  		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) \
  		INSTALL_MOD_PATH=$(TARGET_ROOT)/$(M7X0_KERNEL_DIR) modules_install
@@ -170,9 +169,6 @@ diff -Naur uclibc_build_env_orig/make-incs/siemens-linux-kernel.mk uclibc_build_
 +	fi);
 +	(if [ X"`$(GREP) ppp_async\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
 +		$(SED) -i 's/\/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/\/sbin\/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_async.o\n\ \ \ \ \/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
-+	fi);
-+	(if [ X"`$(GREP) ppp_deflate\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
-+		$(SED) -i 's/\/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/\/sbin\/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_deflate.o\n\ \ \ \ \/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
 +	fi);
 +	(if [ X"`$(GREP) ppp_mppe\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
 +		$(SED) -i 's/\/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/\/sbin\/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_mppe.o\n\ \ \ \ \/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
