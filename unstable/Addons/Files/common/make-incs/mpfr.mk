@@ -19,7 +19,7 @@
 # Put dependencies here
 MPFR_DEPS = $(GMP_INSTALLED)
 
-MPFR_VERSION := 2.4.2
+MPFR_VERSION := 3.0.0
 MPFR_PATCHES_DIR := $(PATCHES_DIR)/mpfr/$(MPFR_VERSION)
 
 MPFR_FILE := mpfr-$(MPFR_VERSION).tar.bz2

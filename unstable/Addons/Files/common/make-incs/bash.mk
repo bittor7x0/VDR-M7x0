@@ -24,7 +24,7 @@ ifneq ($(and $(filter y,$(CONFIG_NCURSES)),$(filter y,$(CONFIG_READLINE))),y)
 endif
 endif
 
-BASH_VERSION := 4.0
+BASH_VERSION := 4.1
 BASH_PATCHES_DIR := $(PATCHES_DIR)/bash/$(BASH_VERSION)
 
 BASH_FILE := bash-$(BASH_VERSION).tar.gz

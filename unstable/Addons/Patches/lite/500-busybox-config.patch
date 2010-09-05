@@ -1,7 +1,7 @@
-diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_build_env/configs/busybox/1.16.2/busybox.config
---- uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config	2010-03-05 18:35:58.000000000 +0100
-+++ uclibc_build_env/configs/busybox/1.16.2/busybox.config	2010-03-07 15:27:47.000000000 +0100
-@@ -37,7 +37,7 @@
+diff -Naur uclibc_build_env_orig/configs/busybox/1.17.2/busybox.config uclibc_build_env/configs/busybox/1.17.2/busybox.config
+--- uclibc_build_env_orig/configs/busybox/1.17.2/busybox.config	2010-09-03 13:52:08.093750000 +0200
++++ uclibc_build_env/configs/busybox/1.17.2/busybox.config	2010-09-03 14:01:29.522279865 +0200
+@@ -47,7 +47,7 @@
  CONFIG_FEATURE_PREFER_APPLETS=y
  CONFIG_BUSYBOX_EXEC_PATH="/proc/self/exe"
  CONFIG_FEATURE_SYSLOG=y
@@ -10,7 +10,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
  
  #
  # Build Options
-@@ -80,19 +80,19 @@
+@@ -90,19 +90,19 @@
  #
  CONFIG_PASSWORD_MINLEN=6
  CONFIG_MD5_SIZE_VS_SPEED=2
@@ -39,7 +39,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
  CONFIG_FEATURE_COPYBUF_KB=4
  # CONFIG_MONOTONIC_SYSCALL is not set
  CONFIG_IOCTL_HEX2STR_ERROR=y
-@@ -184,7 +184,7 @@
+@@ -207,7 +207,7 @@
  CONFIG_FOLD=y
  # CONFIG_FSYNC is not set
  CONFIG_HEAD=y
@@ -48,7 +48,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
  # CONFIG_HOSTID is not set
  # CONFIG_ID is not set
  # CONFIG_INSTALL is not set
-@@ -238,7 +238,7 @@
+@@ -261,7 +261,7 @@
  CONFIG_SYNC=y
  # CONFIG_TAC is not set
  CONFIG_TAIL=y
@@ -56,8 +56,8 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
 +# CONFIG_FEATURE_FANCY_TAIL is not set
  CONFIG_TEE=y
  CONFIG_FEATURE_TEE_USE_BLOCK_IO=y
- CONFIG_TEST=y
-@@ -330,19 +330,19 @@
+ CONFIG_TOUCH=y
+@@ -351,20 +351,20 @@
  # CONFIG_ED is not set
  # CONFIG_PATCH is not set
  CONFIG_SED=y
@@ -73,7 +73,6 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
 -CONFIG_FEATURE_VI_SETOPTS=y
 -CONFIG_FEATURE_VI_SET=y
 -CONFIG_FEATURE_VI_WIN_RESIZE=y
--CONFIG_FEATURE_VI_OPTIMIZE_CURSOR=y
 +# CONFIG_VI is not set
 +CONFIG_FEATURE_VI_MAX_LEN=0
 +# CONFIG_FEATURE_VI_8BIT is not set
@@ -86,11 +85,13 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
 +# CONFIG_FEATURE_VI_SETOPTS is not set
 +# CONFIG_FEATURE_VI_SET is not set
 +# CONFIG_FEATURE_VI_WIN_RESIZE is not set
+ # CONFIG_FEATURE_VI_ASK_TERMINAL is not set
+-CONFIG_FEATURE_VI_OPTIMIZE_CURSOR=y
 +# CONFIG_FEATURE_VI_OPTIMIZE_CURSOR is not set
  CONFIG_FEATURE_ALLOW_EXEC=y
  
  #
-@@ -547,10 +547,10 @@
+@@ -556,10 +556,10 @@
  CONFIG_FEATURE_MOUNT_VERBOSE=y
  # CONFIG_FEATURE_MOUNT_HELPERS is not set
  # CONFIG_FEATURE_MOUNT_LABEL is not set
@@ -101,10 +102,10 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
  CONFIG_FEATURE_MOUNT_FLAGS=y
 -CONFIG_FEATURE_MOUNT_FSTAB=y
 +# CONFIG_FEATURE_MOUNT_FSTAB is not set
- CONFIG_PIVOT_ROOT=y
+ # CONFIG_PIVOT_ROOT is not set
  # CONFIG_RDATE is not set
  # CONFIG_RDEV is not set
-@@ -664,7 +664,7 @@
+@@ -700,7 +700,7 @@
  # CONFIG_FEATURE_BRCTL_FANCY is not set
  # CONFIG_FEATURE_BRCTL_SHOW is not set
  # CONFIG_DNSD is not set
@@ -113,7 +114,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
  # CONFIG_FAKEIDENTD is not set
  # CONFIG_FTPD is not set
  # CONFIG_FEATURE_FTP_WRITE is not set
-@@ -672,7 +672,7 @@
+@@ -708,7 +708,7 @@
  # CONFIG_FTPGET is not set
  # CONFIG_FTPPUT is not set
  # CONFIG_FEATURE_FTPGETPUT_LONG_OPTIONS is not set
@@ -122,7 +123,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
  # CONFIG_HTTPD is not set
  # CONFIG_FEATURE_HTTPD_RANGES is not set
  # CONFIG_FEATURE_HTTPD_USE_SENDFILE is not set
-@@ -686,10 +686,10 @@
+@@ -722,10 +722,10 @@
  # CONFIG_FEATURE_HTTPD_ERROR_PAGES is not set
  # CONFIG_FEATURE_HTTPD_PROXY is not set
  CONFIG_IFCONFIG=y
@@ -135,7 +136,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
  # CONFIG_FEATURE_IFCONFIG_BROADCAST_PLUS is not set
  # CONFIG_IFENSLAVE is not set
  # CONFIG_IFPLUGD is not set
-@@ -702,13 +702,13 @@
+@@ -738,13 +738,13 @@
  # CONFIG_FEATURE_IFUPDOWN_IPV6 is not set
  # CONFIG_FEATURE_IFUPDOWN_MAPPING is not set
  # CONFIG_FEATURE_IFUPDOWN_EXTERNAL_DHCP is not set
@@ -156,18 +157,15 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
  # CONFIG_IP is not set
  # CONFIG_FEATURE_IP_ADDRESS is not set
  # CONFIG_FEATURE_IP_LINK is not set
-@@ -725,27 +725,27 @@
+@@ -761,25 +761,25 @@
  # CONFIG_IPCALC is not set
  # CONFIG_FEATURE_IPCALC_FANCY is not set
  # CONFIG_FEATURE_IPCALC_LONG_OPTIONS is not set
 -CONFIG_NAMEIF=y
 -CONFIG_FEATURE_NAMEIF_EXTENDED=y
+-CONFIG_NETSTAT=y
 +# CONFIG_NAMEIF is not set
 +# CONFIG_FEATURE_NAMEIF_EXTENDED is not set
- # CONFIG_NC is not set
- # CONFIG_NC_SERVER is not set
- # CONFIG_NC_EXTRA is not set
--CONFIG_NETSTAT=y
 +# CONFIG_NETSTAT is not set
  # CONFIG_FEATURE_NETSTAT_WIDE is not set
  # CONFIG_FEATURE_NETSTAT_PRG is not set
@@ -183,6 +181,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
 -CONFIG_ROUTE=y
 +# CONFIG_ROUTE is not set
  # CONFIG_SLATTACH is not set
+ # CONFIG_TCPSVD is not set
 -CONFIG_TELNET=y
 -CONFIG_FEATURE_TELNET_TTYPE=y
 -CONFIG_FEATURE_TELNET_AUTOLOGIN=y
@@ -194,7 +193,7 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
  # CONFIG_FEATURE_TELNETD_STANDALONE is not set
  # CONFIG_FEATURE_TELNETD_INETD_WAIT is not set
  # CONFIG_TFTP is not set
-@@ -765,13 +765,13 @@
+@@ -801,13 +801,13 @@
  # CONFIG_DUMPLEASES is not set
  # CONFIG_FEATURE_UDHCPD_WRITE_LEASES_EARLY is not set
  CONFIG_DHCPD_LEASES_FILE=""
@@ -210,9 +209,9 @@ diff -Naur uclibc_build_env_orig/configs/busybox/1.16.2/busybox.config uclibc_bu
 +CONFIG_UDHCPC_DEFAULT_SCRIPT=""
 +CONFIG_UDHCPC_SLACK_FOR_BUGGY_SERVERS=0
  CONFIG_IFUPDOWN_UDHCPC_CMD_OPTIONS=""
+ # CONFIG_UDPSVD is not set
  # CONFIG_VCONFIG is not set
- # CONFIG_WGET is not set
-@@ -823,13 +823,13 @@
+@@ -857,13 +857,13 @@
  # CONFIG_FEATURE_PS_UNUSUAL_SYSTEMS is not set
  CONFIG_RENICE=y
  # CONFIG_BB_SYSCTL is not set

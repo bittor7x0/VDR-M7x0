@@ -1,8 +1,8 @@
-lib/libhistory.so.5.2  lib/libhistory.so.5.2  f 755 0 0 - - - - -
-lib/libhistory.so.5.2  -                      s   - - - - - - - -
-lib/libhistory.so.5    libhistory.so.5.2      l 777 0 0 - - - - -
-lib/libhistory.so      libhistory.so.5        l 777 0 0 - - - - -
-lib/libreadline.so.5.2 lib/libreadline.so.5.2 f 755 0 0 - - - - -
-lib/libreadline.so.5.2 -                      s   - - - - - - - -
-lib/libreadline.so.5   libreadline.so.5.2     l 777 0 0 - - - - -
-lib/libreadline.so     libreadline.so.5       l 777 0 0 - - - - -
+lib/libhistory.so.6.1  lib/libhistory.so.6.1  f 755 0 0 - - - - -
+lib/libhistory.so.6.1  -                      s   - - - - - - - -
+lib/libhistory.so.6    libhistory.so.6.1      l 777 0 0 - - - - -
+lib/libhistory.so      libhistory.so.6        l 777 0 0 - - - - -
+lib/libreadline.so.6.1 lib/libreadline.so.6.1 f 755 0 0 - - - - -
+lib/libreadline.so.6.1 -                      s   - - - - - - - -
+lib/libreadline.so.6   libreadline.so.6.1     l 777 0 0 - - - - -
+lib/libreadline.so     libreadline.so.6       l 777 0 0 - - - - -
