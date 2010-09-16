@@ -49,7 +49,7 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
 	/bin/mkdir /rw-flash/log
 	[ -f /var/tmp/flash_content.etc ] && /bin/mv /var/tmp/flash_content.etc \
 		/rw-flash/etc/flash_content
-	/bin/sed -i -e "s,^mac=.*,mac=\"`/usr/sbin/pic_tool get-mac`\",g" /rw-flash/etc/rc.conf
+	/bin/sed -i -e "s,^mac=.*,mac=\"`/usr/sbin/pic_tool get-mac`\",g" /rw-flash/etc/rc.local.conf
 	echo "Done"
 fi
 
