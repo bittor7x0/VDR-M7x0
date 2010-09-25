@@ -2244,7 +2244,7 @@ diff -Naur VDR-NG-orig/tshift.c VDR-NG/tshift.c
 +{
 +	if(!HaveRecord())
 +	{
-+		for(int f=1;(f<10)&&(Activated())&&(!HaveRecord());f++)
++		for(int f=1;(f<15)&&(Activated())&&(!HaveRecord());f++)
 +		{
 +			dsyslog("TShift: try #%d waiting recorder, channel %d",f,channelNumber);
 +			sleep(1);				
