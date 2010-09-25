@@ -1,0 +1,264 @@
+diff -Naur VDR-NG-orig/builddate.h VDR-NG/builddate.h
+--- VDR-NG-orig/builddate.h	2010-09-26 00:59:26.801365000 +0200
++++ VDR-NG/builddate.h	1970-01-01 01:00:00.000000000 +0100
+@@ -1 +0,0 @@
+-#define VDRM7X0VERSION "Preview 2010-09-25 22:59 (o7o version: Edición Mejorada Pro 0.6 BETA)"
+diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
+--- VDR-NG-orig/device.c	2010-09-26 00:54:54.650329000 +0200
++++ VDR-NG/device.c	2010-09-25 01:21:30.160035000 +0200
+@@ -1264,6 +1264,11 @@
+   return false;
+ }
+ 
++bool cDevice::PublicSetPlayMode(ePlayMode PlayMode)
++{
++  return false;
++}
++
+ int64_t cDevice::GetSTC(void)
+ {
+   return -1;
+@@ -1489,9 +1494,15 @@
+         if (!pData)
+            continue;
+ 
++        for (;;) {
+         int w = PlayPesPacket(pData, pLength, VideoOnly);
+-        if (w < 0)
++        if (w < 0) {
++           if ((errno == EAGAIN) && (Result != used))
++              continue;
+            return w;
++           }
++        break;
++        }
+         }
+   return Result;
+ }
+diff -Naur VDR-NG-orig/device.h VDR-NG/device.h
+--- VDR-NG-orig/device.h	2010-09-26 00:54:54.670324000 +0200
++++ VDR-NG/device.h	2010-09-23 21:48:06.284671000 +0200
+@@ -473,6 +473,11 @@
+   virtual bool SetPlayMode(ePlayMode PlayMode);
+        ///< Sets the device into the given play mode.
+        ///< \return true if the operation was successful.
++public:
++  virtual bool PublicSetPlayMode(ePlayMode PlayMode);
++       ///< Sets the device into the given play mode (public member).
++       ///< \return true if the operation was successful.
++protected:
+   virtual int PlayVideo(const uchar *Data, int Length);
+        ///< Plays the given data block as video.
+        ///< Data points to exactly one complete PES packet of the given Length.
+diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
+--- VDR-NG-orig/dvbdevice.c	2010-09-26 00:54:54.658300000 +0200
++++ VDR-NG/dvbdevice.c	2010-09-25 17:13:25.481176000 +0200
+@@ -2317,6 +2317,7 @@
+   spuDecoder = NULL;
+   digitalAudio = false;
+   playMode = pmNone;
++  videoPlayMode = pmNone;
+ 
+   // Devices that are present on all card types:
+ 
+@@ -3403,9 +3404,20 @@
+     default: esyslog("ERROR: unknown play mode %d", PlayMode);
+     }
+   playMode = PlayMode;
++  videoPlayMode = PlayMode;
+   return true;
+ }
+ 
++bool cDvbDevice::PublicSetPlayMode(ePlayMode PlayMode)
++{
++  ePlayMode oldPlayMode = playMode;
++  if(SetPlayMode(PlayMode))
++  {
++     videoPlayMode = oldPlayMode;
++     return true;
++  }
++  return false;
++}
+ 
+ int64_t cDvbDevice::GetSTC(void)
+ {
+@@ -3761,6 +3773,12 @@
+   if (Data[3] == 0xBE) // skip padding stream
+      return Length;
+ 
++  if(videoPlayMode!=playMode)
++  {
++     isyslog("Video packet in frame");
++     SetPlayMode(videoPlayMode);
++  }
++
+   if (!playTrickSpeed) {
+      PESPacket2TS(Data, Length, 0xef, playTsCcounter[0]);
+      int r = safe_write(fd_playDvr, playBuffer, playBufferFill);
+@@ -3936,6 +3954,10 @@
+      }
+ 
+   int r;
++  int new_errno = 0;
++  int ret = Length;
++  if(write_length>=KILOBYTE(3))
++  {
+   do {
+      r = write(fd_audio, write_data, write_length);
+      if (r < 0) {
+@@ -3957,13 +3979,12 @@
+   write_data += r;
+   write_length -= r;
+ 
+-  int new_errno = 0;
+-  int ret = Length;
+   if (write_length >= cur_data_length) {
+      write_length -= cur_data_length;
+      new_errno = EAGAIN;
+      ret = -1;
+      }
++  }
+ 
+   playBufferFill = write_length;
+   if (write_length > 0)
+diff -Naur VDR-NG-orig/dvbdevice.h VDR-NG/dvbdevice.h
+--- VDR-NG-orig/dvbdevice.h	2010-09-26 00:54:51.907322000 +0200
++++ VDR-NG/dvbdevice.h	2010-09-23 21:48:06.264647000 +0200
+@@ -168,8 +168,12 @@
+ //M7X0 END AK
+ protected:
+   ePlayMode playMode;
++  ePlayMode videoPlayMode;
+   virtual bool CanReplay(void) const;
+   virtual bool SetPlayMode(ePlayMode PlayMode);
++public:
++  virtual bool PublicSetPlayMode(ePlayMode PlayMode);
++protected:
+   virtual int PlayVideo(const uchar *Data, int Length);
+   virtual int PlayAudio(const uchar *Data, int Length, uchar Id);
+ public:
+diff -Naur VDR-NG-orig/dvbplayer.c VDR-NG/dvbplayer.c
+--- VDR-NG-orig/dvbplayer.c	2010-09-26 00:54:54.490326000 +0200
++++ VDR-NG/dvbplayer.c	2010-09-24 18:55:33.136507000 +0200
+@@ -701,8 +701,9 @@
+                  data2 = playFrame->Data2();
+                  count2 = playFrame->Count2();
+                  if (firstPacket) {
++                    if(cRemux::SetBrokenLink(data1, count1)==2)
++                       DeviceSetPlayMode(pmAudioOnlyBlack);
+                     PlayPes(NULL, 0);
+-                    cRemux::SetBrokenLink(data1, count1);
+                     firstPacket = false;
+                     }
+                  }
+diff -Naur VDR-NG-orig/player.h VDR-NG/player.h
+--- VDR-NG-orig/player.h	2010-09-26 00:54:51.687323000 +0200
++++ VDR-NG/player.h	2010-09-23 21:48:06.268679000 +0200
+@@ -35,6 +35,7 @@
+   void DevicePlay(void) { if (device) device->Play(); }
+   void DeviceFreeze(void) { if (device) device->Freeze(); }
+   void DeviceMute(void) { if (device) device->Mute(); }
++  void DeviceSetPlayMode(ePlayMode PlayMode) { if (device) device->PublicSetPlayMode(PlayMode); }
+   void DeviceSetVideoDisplayFormat(eVideoDisplayFormat VideoDisplayFormat) { if (device) device->SetVideoDisplayFormat(VideoDisplayFormat); }
+   void DeviceStillPicture(const uchar *Data, int Length) { if (device) device->StillPicture(Data, Length); }
+   void DeviceSetTsPids(int pmtPid, int videoPid) { if (device) device->SetTsReplayPids(pmtPid, videoPid); }
+diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
+--- VDR-NG-orig/remux.c	2010-09-26 00:54:54.294322000 +0200
++++ VDR-NG/remux.c	2010-09-26 01:09:40.855321999 +0200
+@@ -874,6 +874,8 @@
+   int state;
+   int frameTodo;
+   int frameSize;
++  int samples;
++  int keyFrame;
+ 
+   inline bool IsValidAudioHeader(void) __attribute__ ((always_inline));
+   inline bool ScanDataForStartCode (const uchar *&Data, const uchar *const Limit) __attribute__ ((always_inline));
+@@ -903,6 +905,8 @@
+   state = syncing;
+   frameTodo = 0;
+   frameSize = 0;
++  samples=0;
++  keyFrame=0;
+ 
+ 
+   curPacketDataHeader.pesPacketType = pesPtAudio;
+@@ -913,6 +917,11 @@
+ 
+ bool cAudioRepacker::IsValidAudioHeader(void)
+ {
++  static const int keyFrames[2][3] = {  // packets*576 per keyFrame
++        { 2646, 960, 640 }, // MPEG 1 / Layer 1,2,3
++        { 1323, 576, 576 }  // MPEG 2 / Layer 1,2,3
++  };
++
+   static const int slots[2][3][3][14] = {
+     {
+       {
+@@ -967,6 +976,8 @@
+   if ((scanner & 0x00000003) == 2) // emphasis 2 reserved
+      return false;
+ 
++  keyFrame=keyFrames[mpegIndex][layer];
++
+   if (bitrate_index == -1) {
+      frameSize = 0;
+      return true;
+@@ -1172,8 +1183,17 @@
+ 
+         frameTodo = frameSize -4;
+ 
++	if(samples>=0)
++	{
++		curPacketDataHeader.pictureType=I_FRAME;
++		samples+=576-keyFrame;
++	}
++	else
++	{
++		curPacketDataHeader.pictureType = NO_PICTURE;
++		samples+=576;
++	}
+ 
+-        curPacketDataHeader.pictureType = I_FRAME; // Always I-Frames for audio frames
+         state = scanFrame;
+         }
+ 
+@@ -1704,7 +1724,7 @@
+ }
+ 
+ 
+-void cRemux::SetBrokenLink(uchar *Data, int Length)
++int cRemux::SetBrokenLink(uchar *Data, int Length)
+ {
+   int PesPayloadOffset = 0;
+   if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1 && (Data[3] & 0xF0) == VIDEO_STREAM_S) {
+@@ -1712,11 +1732,14 @@
+          if (Data[i] == 0 && Data[i + 1] == 0 && Data[i + 2] == 1 && Data[i + 3] == 0xB8) {
+             if (!(Data[i + 7] & 0x40)) // set flag only if GOP is not closed
+                Data[i + 7] |= 0x20;
+-            return;
++            return 0;
+             }
+          }
+      dsyslog("SetBrokenLink: no GOP header found in video packet");
++     return 1;
++     }
++  else {
++     isyslog("No video packet in frame");
++     return 2;
+      }
+-  else
+-     dsyslog("SetBrokenLink: no video packet in frame");
+ }
+diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
+--- VDR-NG-orig/remux.h	2010-09-26 00:54:54.306339000 +0200
++++ VDR-NG/remux.h	2010-09-23 21:48:06.272672000 +0200
+@@ -88,7 +88,7 @@
+   void Clear(void);
+        ///< Clears the remuxer of all data it might still contain, keeping the PID
+        ///< settings as they are.
+-  static void SetBrokenLink(uchar *Data, int Length);
++  static int SetBrokenLink(uchar *Data, int Length);
+   static int GetPacketLength(const uchar *Data, int Count, int Offset);
+   static int ScanVideoPacket(const uchar *Data, int Count, int Offset, uchar &PictureType);
+   };
