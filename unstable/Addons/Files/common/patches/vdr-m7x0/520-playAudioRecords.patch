@@ -1,8 +1,3 @@
-diff -Naur VDR-NG-orig/builddate.h VDR-NG/builddate.h
---- VDR-NG-orig/builddate.h	2010-09-26 00:59:26.801365000 +0200
-+++ VDR-NG/builddate.h	1970-01-01 01:00:00.000000000 +0100
-@@ -1 +0,0 @@
--#define VDRM7X0VERSION "Preview 2010-09-25 22:59 (o7o version: Edición Mejorada Pro 0.6 BETA)"
 diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
 --- VDR-NG-orig/device.c	2010-09-26 00:54:54.650329000 +0200
 +++ VDR-NG/device.c	2010-09-25 01:21:30.160035000 +0200
