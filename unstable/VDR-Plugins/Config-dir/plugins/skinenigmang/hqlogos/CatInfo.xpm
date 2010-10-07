@@ -1,5 +1,5 @@
 /* XPM */
-static char *CATALUNYA_INFORMACI__[] = {
+static char *CatInfo[] = {
 /* columns rows colors chars-per-pixel */
 "80 80 203 2",
 "   c #45535A",
