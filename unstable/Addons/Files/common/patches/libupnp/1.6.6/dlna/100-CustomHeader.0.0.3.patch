@@ -1,0 +1,945 @@
+diff -Naur libupnp-1.6.6/upnp/inc/upnp.h libupnp-1.6.6-dlna/upnp/inc/upnp.h
+--- libupnp-1.6.6/upnp/inc/upnp.h	2008-03-09 01:54:58.000000000 +0100
++++ libupnp-1.6.6-dlna/upnp/inc/upnp.h	2010-01-02 18:54:31.252250635 +0100
+@@ -29,6 +29,28 @@
+  *
+  ******************************************************************************/
+ 
++/*TU*
++    
++    TombUPnP - a library for developing UPnP applications.
++    
++    Copyright (C) 2006-2008 Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++    
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License version 2.1 as published by the Free Software Foundation.
++    
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++    
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++    
++    $Id: upnp.h 1698 2008-02-23 20:48:30Z lww $
++*/
++
+ #ifndef UPNP_H
+ #define UPNP_H
+ 
+@@ -119,10 +141,16 @@
+ 
+ #include <sys/types.h>
+ 
++/**
++ * Custom Header functions are implemented in this library.
++ * @see UpnpAddCustomHTTPHeader
++ */
++#define UPNP_HAVE_CUSTOMHEADERS
+ 
+ #define NUM_HANDLE 200
+ #define LINE_SIZE  180
+ #define NAME_SIZE  256
++#define HEADER_SIZE  256
+ #define MNFT_NAME_SIZE  64
+ #define MODL_NAME_SIZE  32
+ #define SERL_NUMR_SIZE  64
+@@ -831,6 +859,7 @@
+ 
+ 
+ /** Returned in a {\bf UPNP_DISCOVERY_RESULT} callback. */
++
+ struct Upnp_Discovery
+ {
+ 	/** The result code of the {\bf UpnpSearchAsync} call. */
+@@ -933,6 +962,11 @@
+    
+   DOMString content_type;
+ 
++  /** A header to be added to the HTTP response. The header will be
++   *  automatically terminated with \r\n by the SDK. This string needs
++   *  to be allocated  by the caller using {\bf ixmlCloneDOMString}.
++   *  When finished with it, the SDK frees the {\bf DOMString}. */
++  DOMString http_header;
+ };
+ 
+ /* The type of handle returned by the web server for open requests. */
+@@ -1037,6 +1071,12 @@
+     char dirName[NAME_SIZE];
+ } virtualDirList;
+ 
++typedef struct user_HTTP_Header_List
++{
++    struct user_HTTP_Header_List *next;
++    char header[HEADER_SIZE];
++} userHTTPHeaderList;
++
+ /** All callback functions share the same prototype, documented below.
+  *  Note that any memory passed to the callback function
+  *  is valid only during the callback and should be copied if it
+@@ -2646,6 +2686,43 @@
+                                 server. */
+     );
+ 
++/** {\bf UpnpAddHTTPHeader} add a custom header to
++ *  the internal web server. All HTTP responses will contain the
++ *  specified header.
++ *
++ *  @return [int] An integer representing one of the following:
++ *    \begin{itemize}
++ *       \item {\tt UPPN_E_SUCCESS}: The operation completed successfully.
++ *       \item {\tt UPNP_E_INVALID_ARGUMENT}: {\bf header_string} is empty.
++ *    \end{itemize}
++ */
++
++EXPORT_SPEC int UpnpAddCustomHTTPHeader(
++    IN const char* header_string  /** Header to add (\r\n termination not needed) */
++    );
++
++/** {\bf UpnpRemoveHTTPHeader} removes a header that was previously added
++ *  with {\bf UpnpAddHTTPHeader}.
++ *
++ *  @return [int] An integer representing one of the following:
++ *    \begin{itemize}
++ *       \item {\tt UPPN_E_SUCCESS}: The operation completed successfully.
++ *       \item {\tt UPNP_E_INVALID_ARGUMENT}: {\bf dirName} is not valid.
++ *    \end{itemize}
++ */
++
++EXPORT_SPEC int UpnpRemoveCustomHTTPHeader(
++    IN const char* header_string  /** Name of the header to remove */
++    );
++
++/** {\bf UpnpRemoveAll} removes all virtual directory mappings.
++ *
++ *  @return [void] This function does not return a value.
++ *
++ */
++
++EXPORT_SPEC void UpnpRemoveAllCustomHTTPHeaders( );
++
+ /** {\bf UpnpSetVirtualDirCallbacks} sets the callback function to be used to 
+  *  access a virtual directory.  Refer to the description of
+  *  {\bf UpnpVirtualDirCallbacks} for a description of the functions.
+diff -Naur libupnp-1.6.6/upnp/src/api/upnpapi.c libupnp-1.6.6-dlna/upnp/src/api/upnpapi.c
+--- libupnp-1.6.6/upnp/src/api/upnpapi.c	2008-04-10 18:17:35.000000000 +0200
++++ libupnp-1.6.6-dlna/upnp/src/api/upnpapi.c	2010-01-01 18:37:34.705077528 +0100
+@@ -28,6 +28,27 @@
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ //
+ ///////////////////////////////////////////////////////////////////////////
++/*TU*
++    
++    TombUPnP - a library for developing UPnP applications.
++    
++    Copyright (C) 2006-2008 Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++    
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License version 2.1 as published by the Free Software Foundation.
++    
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++    
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++    
++    $Id: ThreadPool.h 1698 2008-02-23 20:48:30Z lww $
++*/
+ 
+ 
+ #include "config.h"
+@@ -206,6 +227,7 @@
+ #endif
+ 
+     membuffer_init( &gDocumentRootDir );
++    membuffer_init( &gUserHTTPHeaders );
+ 
+     srand( time( NULL ) );      // needed by SSDP or other parts
+ 
+@@ -457,6 +479,8 @@
+ 
+     // remove all virtual dirs
+     UpnpRemoveAllVirtualDirs();
++    UpnpRemoveAllCustomHTTPHeaders();
++    membuffer_destroy(&gUserHTTPHeaders);
+ 
+     // allow static linking
+ #ifdef WIN32
+@@ -4094,6 +4118,197 @@
+ 
+ }
+ 
++/**************************************************************************
++ * Function: UpnpAddHTTPHeader
++ *
++ * Parameters:
++ *	IN const char *header: string to be added to the HTTP response
++ *
++ * Description:
++ *	This function adds a HTTP header to the response.
++ *  For example "X-User-Agent: something" (\r\n termination is done
++ *  automatically.
++ *
++ *  Return Values: int
++ *     UPNP_E_SUCCESS if successful else returns appropriate error
++ ***************************************************************************/
++int
++UpnpAddCustomHTTPHeader( IN const char *header_string )
++{
++
++    userHTTPHeaderList *pNewHeader,
++     *pLast;
++    userHTTPHeaderList *pCurrentHeader;
++    char header[HEADER_SIZE];
++
++    if( UpnpSdkInit != 1 ) {
++        // SDK is not initialized
++        return UPNP_E_FINISH;
++    }
++
++    if( ( header_string == NULL ) || ( strlen( header_string ) == 0 ) ||
++        ( strlen(header_string) > HEADER_SIZE )) {
++        return UPNP_E_INVALID_PARAM;
++    }
++
++    strncpy( header, header_string, HEADER_SIZE);
++
++    pCurrentHeader = pUserHTTPHeaderList;
++    while( pCurrentHeader != NULL ) {
++        // already has this entry
++        if( strcmp( pCurrentHeader->header, header ) == 0 ) {
++            return UPNP_E_SUCCESS;
++        }
++
++        pCurrentHeader = pCurrentHeader->next;
++    }
++
++    pNewHeader =
++        ( userHTTPHeaderList * ) malloc( sizeof( userHTTPHeaderList ) );
++    if( pNewHeader == NULL ) {
++        return UPNP_E_OUTOF_MEMORY;
++    }
++    pNewHeader->next = NULL;
++    strncpy( pNewHeader->header, header, HEADER_SIZE );
++    *( pNewHeader->header + strlen( header ) ) = 0;
++
++    if( pUserHTTPHeaderList == NULL ) { // first virtual dir
++        pUserHTTPHeaderList = pNewHeader;
++    } else {
++        pLast = pUserHTTPHeaderList;
++        while( pLast->next != NULL ) {
++            pLast = pLast->next;
++        }
++        pLast->next = pNewHeader;
++    }
++
++    if (gUserHTTPHeaders.length > 0)
++        membuffer_append(&gUserHTTPHeaders, "\r\n", 2);
++    membuffer_append(&gUserHTTPHeaders, header_string, strlen(header_string));
++    return UPNP_E_SUCCESS;
++}
++
++ /**************************************************************************
++ * Function: UpnpRemoveHTTPHeader
++ *
++ * Parameters:
++ * 	IN const char *header:The header string to remove.
++ *
++ * Description:
++ *	This function removes a virtual directory mapping.
++ *
++ * Return Values: int
++ *	UPNP_E_SUCCESS if successful else returns appropriate error
++ ***************************************************************************/
++int
++UpnpRemoveCustomHTTPHeader( IN const char *header_string)
++{
++
++    userHTTPHeaderList *pPrev;
++    userHTTPHeaderList *pCur;
++    int found = 0;
++
++    if( UpnpSdkInit != 1 ) {
++        return UPNP_E_FINISH;
++    }
++
++    if( header_string == NULL ) {
++        return UPNP_E_INVALID_PARAM;
++    }
++
++    if( pUserHTTPHeaderList == NULL ) {
++        return UPNP_E_INVALID_PARAM;
++    }
++
++    //
++    // Handle the special case where the directory that we are
++    // removing is the first and only one in the list.
++    //
++
++    if( ( pUserHTTPHeaderList->next == NULL ) &&
++        ( strcmp( pUserHTTPHeaderList->header, header_string ) == 0 ) ) {
++        free( pUserHTTPHeaderList );
++        pUserHTTPHeaderList = NULL;
++        found = 1;
++    }
++
++    if (!found)
++    {
++        pCur = pUserHTTPHeaderList;
++
++        pPrev = pCur;
++
++        while( pCur != NULL ) {
++            if( strcmp( pCur->header, header_string ) == 0 ) {
++                pPrev->next = pCur->next;
++                // Jin: we are deleting the first element in the list,
++                // update the global variable!
++                if (pCur == pUserHTTPHeaderList)
++                    pUserHTTPHeaderList = pCur->next;
++
++                free( pCur );
++                found = 1;
++                break;
++            } else {
++                pPrev = pCur;
++                pCur = pCur->next;
++            }
++        }
++    }
++    if( found == 1 )
++    {
++        membuffer_delete(&gUserHTTPHeaders, 0, gUserHTTPHeaders.length);
++        pCur = pUserHTTPHeaderList;
++        while (pCur != NULL)
++        {
++            if (gUserHTTPHeaders.length > 0)
++                membuffer_append(&gUserHTTPHeaders, "\r\n", 2);
++
++            membuffer_append(&gUserHTTPHeaders, pCur->header, strlen(pCur->header));
++        }
++        return UPNP_E_SUCCESS;
++    }
++    else
++        return UPNP_E_INVALID_PARAM;
++
++}
++
++ /**************************************************************************
++ * Function: UpnpRemoveAllCustomHTTPHeaders
++ *
++ * Parameters: VOID
++ *
++ * Description:
++ *	This function removes all the virtual directory mappings.
++ *
++ * Return Values: VOID
++ *
++ ***************************************************************************/
++void
++UpnpRemoveAllCustomHTTPHeaders(  )
++{
++
++    userHTTPHeaderList *pCur;
++    userHTTPHeaderList *pNext;
++
++    if( UpnpSdkInit != 1 ) {
++        return;
++    }
++
++    pCur = pUserHTTPHeaderList;
++
++    while( pCur != NULL ) {
++        pNext = pCur->next;
++        free( pCur );
++
++        pCur = pNext;
++    }
++
++    pUserHTTPHeaderList = NULL;
++
++    membuffer_delete(&gUserHTTPHeaders, 0, gUserHTTPHeaders.length);
++}
++
+  /**************************************************************************
+  * Function: UpnpEnableWebserver 
+  *
+diff -Naur libupnp-1.6.6/upnp/src/gena/gena_device.c libupnp-1.6.6-dlna/upnp/src/gena/gena_device.c
+--- libupnp-1.6.6/upnp/src/gena/gena_device.c	2008-02-10 02:55:34.000000000 +0100
++++ libupnp-1.6.6-dlna/upnp/src/gena/gena_device.c	2010-01-03 11:11:54.161799059 +0100
+@@ -28,6 +28,27 @@
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ //
+ ///////////////////////////////////////////////////////////////////////////
++/*TU*
++    
++    TombUPnP - a library for developing UPnP applications.
++    
++    Copyright (C) 2006-2008 Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++    
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License version 2.1 as published by the Free Software Foundation.
++    
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++    
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++    
++    $Id: ThreadPool.h 1698 2008-02-23 20:48:30Z lww $
++*/
+ 
+ #include "config.h"
+ #if EXCLUDE_GENA == 0
+@@ -1168,9 +1189,10 @@
+     response.size_inc = 30;
+     if( http_MakeMessage(
+         &response, major, minor,
+-        "R" "D" "S" "N" "Xc" "ssc" "scc",
++        "R" "D" "S" "N" "AXc" "ssc" "scc",
+         HTTP_OK,
+         (off_t)0,
++        gUserHTTPHeaders.buf,
+         X_USER_AGENT,
+         "SID: ", sub->sid,
+         timeout_str ) != 0 ) {
+diff -Naur libupnp-1.6.6/upnp/src/genlib/net/http/httpreadwrite.c libupnp-1.6.6-dlna/upnp/src/genlib/net/http/httpreadwrite.c
+--- libupnp-1.6.6/upnp/src/genlib/net/http/httpreadwrite.c	2008-03-09 01:57:34.000000000 +0100
++++ libupnp-1.6.6-dlna/upnp/src/genlib/net/http/httpreadwrite.c	2010-01-03 11:08:37.808828577 +0100
+@@ -28,6 +28,27 @@
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ //
+ ///////////////////////////////////////////////////////////////////////////
++/*TU*
++    
++    TombUPnP - a library for developing UPnP applications.
++    
++    Copyright (C) 2006-2008 Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++    
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License version 2.1 as published by the Free Software Foundation.
++    
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++    
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++    
++    $Id: ThreadPool.h 1698 2008-02-23 20:48:30Z lww $
++*/
+ 
+ /************************************************************************
+ * Purpose: This file defines the functionality making use of the http 
+@@ -1763,6 +1784,10 @@
+  *	't':	arg = time_t * gmt_time     // appends time in RFC 1123 fmt
+  *	'U':	(no args) appends HTTP USER-AGENT: header
+  *      'X':    arg = const char useragent; "redsonic" HTTP X-User-Agent: useragent
++*       'H':    arg = *userHTTPHeaderList
++*       'A':    arg = const char* C_string
++*               adds a custom HTTP header to a specific response (filled out
++*               by the user in the File_Info struct), may be NULL
+  *
+  * Return: int
+  *	0 - On Success
+@@ -1795,6 +1820,7 @@
+     uri_type url;
+     uri_type *uri_ptr;
+     int error_code = UPNP_E_OUTOF_MEMORY;
++    userHTTPHeaderList *pCurUserHTTPHeaderList;
+ 
+     va_list argp;
+     char tempbuf[200];
+@@ -1813,6 +1839,22 @@
+             if( membuffer_append( buf, s, strlen( s ) ) != 0 ) {
+                 goto error_handler;
+             }
++        } else if( c == 'A' ) {         // C string
++            s = ( char * )va_arg( argp, char * );
++
++            if (s)
++            {
++                UpnpPrintf(UPNP_ALL,HTTP,__FILE__,__LINE__,"Adding a string : %s\n", s); 
++                if( membuffer_append( buf, s, strlen( s ) ) != 0 ) 
++                {
++                    goto error_handler;
++                }
++                if( membuffer_append( buf, "\r\n", 2 ) != 0 ) 
++                {
++                    goto error_handler;
++                }
++
++            }
+         } else if( c == 'K' ) {
+             // Add Chunky header
+             if( membuffer_append
+@@ -1962,9 +2004,10 @@
+             bignum = strlen( tempbuf );
+             if (http_MakeMessage(
+                     buf, http_major_version, http_minor_version,
+-                    "NTcs",
++                    "NTAcs",
+                     bignum, // content-length
+                     "text/html",  // content-type
++                    gUserHTTPHeaders.buf, // custom headers
+                     tempbuf ) != 0 // body
+             ) {
+                 goto error_handler;
+@@ -2009,6 +2052,29 @@
+                 "CONTENT-TYPE: ", temp_str ) != 0 ) {
+                 goto error_handler;
+             }
++        } else if( c == 'H' ) {        // header list 
++            pCurUserHTTPHeaderList = 
++                ( userHTTPHeaderList * )va_arg( argp, userHTTPHeaderList * );
++
++            if (pCurUserHTTPHeaderList != NULL)
++            {
++                while (pCurUserHTTPHeaderList != NULL)
++                {
++                    if( membuffer_append
++                        ( buf, pCurUserHTTPHeaderList->header, 
++                          strlen( pCurUserHTTPHeaderList->header) ) != 0 ) 
++                    {
++                        goto error_handler;
++                    }
++
++                    if( membuffer_append( buf, "\r\n", 2 ) != 0 ) 
++                    {
++                        goto error_handler;
++                    }
++
++                    pCurUserHTTPHeaderList = pCurUserHTTPHeaderList->next;
++                }
++            }
+         } else {
+             assert( 0 );
+         }
+diff -Naur libupnp-1.6.6/upnp/src/genlib/net/http/webserver.c libupnp-1.6.6-dlna/upnp/src/genlib/net/http/webserver.c
+--- libupnp-1.6.6/upnp/src/genlib/net/http/webserver.c	2008-03-22 18:17:25.000000000 +0100
++++ libupnp-1.6.6-dlna/upnp/src/genlib/net/http/webserver.c	2010-01-05 22:36:00.423130041 +0100
+@@ -28,6 +28,27 @@
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ //
+ ///////////////////////////////////////////////////////////////////////////
++/*TU*
++    
++    TombUPnP - a library for developing UPnP applications.
++    
++    Copyright (C) 2006-2008 Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++    
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License version 2.1 as published by the Free Software Foundation.
++    
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++    
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++    
++    $Id: ThreadPool.h 1698 2008-02-23 20:48:30Z lww $
++*/
+ 
+ /******************************************************************************
+  * Purpose: This file defines the Web Server and has functions to carry out
+@@ -635,6 +656,8 @@
+ 
+     rc = get_content_type( filename, &info->content_type );
+ 
++    info->http_header = NULL;
++
+     UpnpPrintf( UPNP_INFO, HTTP, __FILE__, __LINE__,
+         "file info: %s, length: %lld, last_mod=%s readable=%d\n",
+         filename, (long long)info->file_length,
+@@ -711,6 +734,7 @@
+         info->is_readable = TRUE;
+         info->is_directory = FALSE;
+         info->last_modified = alias->last_modified;
++        info->http_header = NULL;
+     }
+ 
+     return cmp == 0;
+@@ -1219,6 +1243,8 @@
+     // init
+     request_doc = NULL;
+     finfo.content_type = NULL;
++    finfo.http_header = NULL;
++
+     alias_grabbed = FALSE;
+     err_code = HTTP_INTERNAL_SERVER_ERROR;  // default error
+     using_virtual_dir = FALSE;
+@@ -1390,12 +1416,14 @@
+         // Transfer-Encoding: chunked
+         if (http_MakeMessage(
+             headers, resp_major, resp_minor,
+-            "R" "T" "GKD" "s" "tcS" "XcCc",
++            "R" "T" "GKD" "s" "tcS" "AAXcCc",
+             HTTP_PARTIAL_CONTENT, // status code
+             finfo.content_type,   // content type
+             RespInstr,            // range info
+             "LAST-MODIFIED: ",
+ 	    &finfo.last_modified,
++            finfo.http_header,
++            gUserHTTPHeaders.buf,
+             X_USER_AGENT) != 0 ) {
+             goto error_handler;
+         }
+@@ -1405,13 +1433,15 @@
+         // Transfer-Encoding: chunked
+         if (http_MakeMessage(
+             headers, resp_major, resp_minor,
+-            "R" "N" "T" "GD" "s" "tcS" "XcCc",
++            "R" "N" "T" "GD" "s" "tcS" "AAXcCc",
+             HTTP_PARTIAL_CONTENT,     // status code
+             RespInstr->ReadSendSize,  // content length
+             finfo.content_type,       // content type
+             RespInstr,                // range info
+             "LAST-MODIFIED: ",
+ 	    &finfo.last_modified,
++            finfo.http_header,
++            gUserHTTPHeaders.buf,
+             X_USER_AGENT) != 0 ) {
+             goto error_handler;
+         }
+@@ -1421,11 +1451,13 @@
+         // Transfer-Encoding: chunked
+         if (http_MakeMessage(
+             headers, resp_major, resp_minor,
+-            "RK" "TD" "s" "tcS" "XcCc",
++            "RK" "TD" "s" "tcS" "AAXcCc",
+             HTTP_OK,            // status code
+             finfo.content_type, // content type
+             "LAST-MODIFIED: ",
+ 	    &finfo.last_modified,
++            finfo.http_header,
++            gUserHTTPHeaders.buf,
+             X_USER_AGENT) != 0 ) {
+             goto error_handler;
+         }
+@@ -1436,12 +1468,14 @@
+             // Transfer-Encoding: chunked
+             if (http_MakeMessage(
+                 headers, resp_major, resp_minor,
+-                "R" "N" "TD" "s" "tcS" "XcCc",
++                "R" "N" "TD" "s" "tcS" "AAXcCc",
+                 HTTP_OK,                 // status code
+                 RespInstr->ReadSendSize, // content length
+                 finfo.content_type,      // content type
+                 "LAST-MODIFIED: ",
+ 		&finfo.last_modified,
++                finfo.http_header,
++                gUserHTTPHeaders.buf,
+                 X_USER_AGENT) != 0 ) {
+                 goto error_handler;
+             }
+@@ -1450,11 +1484,13 @@
+             // Transfer-Encoding: chunked
+             if (http_MakeMessage(
+                 headers, resp_major, resp_minor,
+-                "R" "TD" "s" "tcS" "XcCc",
++                "R" "TD" "s" "tcS" "AAXcCc",
+                 HTTP_OK,            // status code
+                 finfo.content_type, // content type
+                 "LAST-MODIFIED: ",
+ 		&finfo.last_modified,
++                finfo.http_header,
++                gUserHTTPHeaders.buf,
+                 X_USER_AGENT) != 0 ) {
+                 goto error_handler;
+             }
+@@ -1484,6 +1520,8 @@
+   error_handler:
+     free( request_doc );
+     ixmlFreeDOMString( finfo.content_type );
++    if (finfo.http_header)
++        ixmlFreeDOMString( finfo.http_header);
+     if( err_code != UPNP_E_SUCCESS && alias_grabbed ) {
+         alias_release( alias );
+     }
+@@ -1741,9 +1779,10 @@
+ 
+                 http_MakeMessage(
+                     &headers, 1, 1,
+-                    "RTDSXcCc",
++                    "RTDSAXcCc",
+                     ret,
+                     "text/html",
++                    gUserHTTPHeaders.buf,
+                     X_USER_AGENT );
+ 
+                 http_SendMessage( info, &timeout, "b", headers.buf,
+diff -Naur libupnp-1.6.6/upnp/src/inc/config.h libupnp-1.6.6-dlna/upnp/src/inc/config.h
+--- libupnp-1.6.6/upnp/src/inc/config.h	2008-03-22 16:57:27.000000000 +0100
++++ libupnp-1.6.6-dlna/upnp/src/inc/config.h	2009-12-31 15:26:47.694951746 +0100
+@@ -65,7 +65,7 @@
+  */
+ 
+ //@{
+-#define JOBS_PER_THREAD 10
++#define JOBS_PER_THREAD 1
+ //@}
+ 
+ /** @name MIN_THREADS
+@@ -78,7 +78,7 @@
+  */
+ 
+ //@{
+-#define MIN_THREADS 2 
++#define MIN_THREADS 10
+ //@}
+ 
+ /** @name MAX_THREADS
+@@ -93,7 +93,7 @@
+  */
+ 
+ //@{
+-#define MAX_THREADS 12 
++#define MAX_THREADS 16
+ //@}
+ 
+ /** @name MAX_JOBS_TOTAL
+diff -Naur libupnp-1.6.6/upnp/src/inc/httpreadwrite.h libupnp-1.6.6-dlna/upnp/src/inc/httpreadwrite.h
+--- libupnp-1.6.6/upnp/src/inc/httpreadwrite.h	2008-02-10 02:55:34.000000000 +0100
++++ libupnp-1.6.6-dlna/upnp/src/inc/httpreadwrite.h	2010-01-01 18:38:55.153109823 +0100
+@@ -28,6 +28,27 @@
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ //
+ ///////////////////////////////////////////////////////////////////////////
++/*TU*
++    
++    TombUPnP - a library for developing UPnP applications.
++    
++    Copyright (C) 2006-2008 Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++    
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License version 2.1 as published by the Free Software Foundation.
++    
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++    
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++    
++    $Id: ThreadPool.h 1698 2008-02-23 20:48:30Z lww $
++*/
+ 
+ #ifndef GENLIB_NET_HTTP_HTTPREADWRITE_H
+ #define GENLIB_NET_HTTP_HTTPREADWRITE_H
+@@ -513,6 +534,10 @@
+  *	't':	arg = time_t * gmt_time     // appends time in RFC 1123 fmt
+  *	'U':	(no args) appends HTTP USER-AGENT: header
+  *      'X':    arg = const char useragent; "redsonic" HTTP X-User-Agent: useragent
++ *      'H':    arg = *userHTTPHeaderList
++ *      'A':    arg = const char* C_string
++ *              adds a custom HTTP header to a specific response (filled out
++ *              by the user in the File_Info struct), may be NULL
+  *
+  * Return: int
+  *	0 - On Success
+diff -Naur libupnp-1.6.6/upnp/src/inc/upnpapi.h libupnp-1.6.6-dlna/upnp/src/inc/upnpapi.h
+--- libupnp-1.6.6/upnp/src/inc/upnpapi.h	2008-03-20 23:27:02.000000000 +0100
++++ libupnp-1.6.6-dlna/upnp/src/inc/upnpapi.h	2010-01-02 10:55:24.207256914 +0100
+@@ -28,6 +28,27 @@
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ //
+ ///////////////////////////////////////////////////////////////////////////
++/*TU*
++    
++    TombUPnP - a library for developing UPnP applications.
++    
++    Copyright (C) 2006-2008 Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++    
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License version 2.1 as published by the Free Software Foundation.
++    
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++    
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++    
++    $Id: upnpapi.h 1698 2008-02-23 20:48:30Z lww $
++*/
+ 
+ // File : upnpapi.h
+ 
+@@ -36,6 +57,8 @@
+ 
+ #include "upnp.h"
+ #include "client_table.h"
++#include "membuffer.h"
++
+ //#include "../ssdp/ssdplib.h"
+ 
+ #define MAX_INTERFACES 256
+@@ -179,6 +202,11 @@
+ void AutoAdvertise(void *input); 
+ int getlocalhostname(char *out);
+ 
++userHTTPHeaderList *pUserHTTPHeaderList;
++// concatenated list of custom http headers
++membuffer gUserHTTPHeaders;
++
++
+ extern WebServerState bWebServerState;
+ 
+ #endif
+diff -Naur libupnp-1.6.6/upnp/src/soap/soap_device.c libupnp-1.6.6-dlna/upnp/src/soap/soap_device.c
+--- libupnp-1.6.6/upnp/src/soap/soap_device.c	2008-04-24 05:17:42.000000000 +0200
++++ libupnp-1.6.6-dlna/upnp/src/soap/soap_device.c	2010-01-02 10:21:39.067251698 +0100
+@@ -28,6 +28,27 @@
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ //
+ ///////////////////////////////////////////////////////////////////////////
++/*TU*
++    
++    TombUPnP - a library for developing UPnP applications.
++    
++    Copyright (C) 2006-2008 Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++    
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License version 2.1 as published by the Free Software Foundation.
++    
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++    
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++    
++    $Id: soap_device.c 1698 2008-02-23 20:48:30Z lww $
++*/
+ 
+ #include "config.h"
+ #ifdef INCLUDE_DEVICE_APIS
+@@ -230,11 +251,12 @@
+     membuffer_init( &headers );
+     if (http_MakeMessage(
+         &headers, major, minor,
+-        "RNsDsSXcc" "sssss",
++        "RNsDsSAXcc" "sssss",
+         500,
+         content_length,
+         ContentTypeHeader,
+         "EXT:\r\n",
++        gUserHTTPHeaders.buf,
+         X_USER_AGENT,
+         start_body, err_code_str, mid_body, err_msg,
+         end_body ) != 0 ) {
+@@ -297,11 +319,12 @@
+     
+     if (http_MakeMessage(
+         &response, major, minor,
+-        "RNsDsSXcc" "sss",
++        "RNsDsSAXcc" "sss",
+         HTTP_OK,
+         content_length,
+         ContentTypeHeader,
+         "EXT:\r\n",
++        gUserHTTPHeaders.buf,
+         X_USER_AGENT,
+         start_body, var_value, end_body ) != 0 ) {
+         membuffer_destroy( &response );
+@@ -721,11 +744,12 @@
+     // make headers
+     if (http_MakeMessage(
+         &headers, major, minor,
+-        "RNsDsSXcc",
++        "RNsDsSAXcc",
+         HTTP_OK,   // status code
+         content_length,
+         ContentTypeHeader,
+         "EXT:\r\n",
++        gUserHTTPHeaders.buf,
+         X_USER_AGENT) != 0 ) {
+         goto error_handler;
+     }
+diff -Naur libupnp-1.6.6/upnp/src/ssdp/ssdp_device.c libupnp-1.6.6-dlna/upnp/src/ssdp/ssdp_device.c
+--- libupnp-1.6.6/upnp/src/ssdp/ssdp_device.c	2008-03-21 00:27:26.000000000 +0100
++++ libupnp-1.6.6-dlna/upnp/src/ssdp/ssdp_device.c	2010-01-02 10:21:01.571251088 +0100
+@@ -28,6 +28,27 @@
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ //
+ ///////////////////////////////////////////////////////////////////////////
++/*TU*
++    
++    TombUPnP - a library for developing UPnP applications.
++    
++    Copyright (C) 2006-2008 Sergey 'Jin' Bostandzhyan <jin@mediatomb.cc>
++    
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License version 2.1 as published by the Free Software Foundation.
++    
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++    
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
++    
++    $Id: ssdp_device.c 1698 2008-02-23 20:48:30Z lww $
++*/
+ 
+ #include "config.h"
+ 
+@@ -315,11 +336,12 @@
+     if( msg_type == MSGTYPE_REPLY ) {
+         ret_code = http_MakeMessage(
+             &buf, 1, 1,
+-            "R" "sdc" "D" "sc" "ssc" "S" "Xc" "ssc" "sscc",
++            "R" "sdc" "D" "sc" "ssc" "S" "AXc" "ssc" "sscc",
+             HTTP_OK,
+             "CACHE-CONTROL: max-age=", duration,
+ 	    "EXT:",
+             "LOCATION: ", location,
++            gUserHTTPHeaders.buf,
+             X_USER_AGENT,
+             "ST: ", nt,
+             "USN: ", usn);
+@@ -340,13 +362,14 @@
+         
+         ret_code = http_MakeMessage(
+             &buf, 1, 1,
+-            "Q" "sssdc" "sdc" "ssc" "ssc" "ssc" "S" "Xc" "sscc",
++            "Q" "sssdc" "sdc" "ssc" "ssc" "ssc" "S" "AXc" "sscc",
+             HTTPMETHOD_NOTIFY, "*", (size_t)1,
+             "HOST: ", SSDP_IP, ":", SSDP_PORT,
+             "CACHE-CONTROL: max-age=", duration,
+             "LOCATION: ", location,
+             "NT: ", nt,
+             "NTS: ", nts,
++            gUserHTTPHeaders.buf,
+             X_USER_AGENT,
+             "USN: ", usn );
+         if( ret_code != 0 ) {

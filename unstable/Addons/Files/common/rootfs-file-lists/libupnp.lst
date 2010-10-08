@@ -1,0 +1,12 @@
+usr/lib/libixml.so.2.0.4        usr/lib/libixml.so.2.0.4        f 755 0 0 - - - - -
+usr/lib/libixml.so.2.0.4        -                               s   - - - - - - - -
+usr/lib/libixml.so.2            libixml.so.2.0.4                l 777 0 0 - - - - -
+usr/lib/libixml.so              libixml.so.2.0.4                l 777 0 0 - - - - -
+usr/lib/libupnp.so.3.0.5        usr/lib/libupnp.so.3.0.5        f 755 0 0 - - - - -
+usr/lib/libupnp.so.3.0.5        -                               s   - - - - - - - -
+usr/lib/libupnp.so.3            libupnp.so.3.0.5                l 777 0 0 - - - - -
+usr/lib/libupnp.so              libupnp.so.3.0.5                l 777 0 0 - - - - -
+usr/lib/libthreadutil.so.2.2.3  usr/lib/libthreadutil.so.2.2.3  f 755 0 0 - - - - -
+usr/lib/libthreadutil.so.2.2.3  -                               s   - - - - - - - -
+usr/lib/libthreadutil.so.2      libthreadutil.so.2.2.3          l 777 0 0 - - - - -
+usr/lib/libthreadutil.so        libthreadutil.so.2.2.3          l 777 0 0 - - - - -

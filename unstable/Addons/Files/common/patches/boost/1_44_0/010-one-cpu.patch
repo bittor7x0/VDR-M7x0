@@ -1,0 +1,12 @@
+diff -Naur boost_1_44_0.orig/libs/thread/src/pthread/thread.cpp boost_1_44_0/libs/thread/src/pthread/thread.cpp
+--- boost_1_44_0.orig/libs/thread/src/pthread/thread.cpp	2010-07-09 21:13:09.000000000 +0200
++++ boost_1_44_0/libs/thread/src/pthread/thread.cpp	2010-10-07 10:17:06.396985206 +0200
+@@ -383,7 +383,7 @@
+         int const count=sysconf(_SC_NPROCESSORS_ONLN);
+         return (count>0)?count:0;
+ #elif defined(_GNU_SOURCE)
+-        return get_nprocs();
++        return 1;
+ #else
+         return 0;
+ #endif
