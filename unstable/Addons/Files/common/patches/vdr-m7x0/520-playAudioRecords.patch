@@ -1,19 +1,7 @@
 diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
 --- VDR-NG-orig/device.c	2010-09-26 00:54:54.650329000 +0200
 +++ VDR-NG/device.c	2010-09-25 01:21:30.160035000 +0200
-@@ -1264,6 +1264,11 @@
-   return false;
- }
- 
-+bool cDevice::PublicSetPlayMode(ePlayMode PlayMode)
-+{
-+  return false;
-+}
-+
- int64_t cDevice::GetSTC(void)
- {
-   return -1;
-@@ -1489,9 +1494,15 @@
+@@ -1489,9 +1489,15 @@
          if (!pData)
             continue;
  
@@ -33,14 +21,14 @@ diff -Naur VDR-NG-orig/device.c VDR-NG/device.c
 diff -Naur VDR-NG-orig/device.h VDR-NG/device.h
 --- VDR-NG-orig/device.h	2010-09-26 00:54:54.670324000 +0200
 +++ VDR-NG/device.h	2010-09-23 21:48:06.284671000 +0200
-@@ -473,6 +473,11 @@
+@@ -470,9 +470,11 @@
+ protected:
+   virtual bool CanReplay(void) const;
+        ///< Returns true if this device can currently start a replay session.
++public:
    virtual bool SetPlayMode(ePlayMode PlayMode);
         ///< Sets the device into the given play mode.
         ///< \return true if the operation was successful.
-+public:
-+  virtual bool PublicSetPlayMode(ePlayMode PlayMode);
-+       ///< Sets the device into the given play mode (public member).
-+       ///< \return true if the operation was successful.
 +protected:
    virtual int PlayVideo(const uchar *Data, int Length);
         ///< Plays the given data block as video.
@@ -48,49 +36,16 @@ diff -Naur VDR-NG-orig/device.h VDR-NG/device.h
 diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
 --- VDR-NG-orig/dvbdevice.c	2010-09-26 00:54:54.658300000 +0200
 +++ VDR-NG/dvbdevice.c	2010-09-25 17:13:25.481176000 +0200
-@@ -2317,6 +2317,7 @@
-   spuDecoder = NULL;
-   digitalAudio = false;
-   playMode = pmNone;
-+  videoPlayMode = pmNone;
+@@ -3758,7 +3758,7 @@
  
-   // Devices that are present on all card types:
- 
-@@ -3403,9 +3404,20 @@
-     default: esyslog("ERROR: unknown play mode %d", PlayMode);
-     }
-   playMode = PlayMode;
-+  videoPlayMode = PlayMode;
-   return true;
- }
- 
-+bool cDvbDevice::PublicSetPlayMode(ePlayMode PlayMode)
-+{
-+  ePlayMode oldPlayMode = playMode;
-+  if(SetPlayMode(PlayMode))
-+  {
-+     videoPlayMode = oldPlayMode;
-+     return true;
-+  }
-+  return false;
-+}
- 
- int64_t cDvbDevice::GetSTC(void)
+ int cDvbDevice::PlayVideo(const uchar *Data, int Length)
  {
-@@ -3761,6 +3773,12 @@
-   if (Data[3] == 0xBE) // skip padding stream
+-  if (Data[3] == 0xBE) // skip padding stream
++  if ((Data[3] == 0xBE) || (playMode == pmAudioOnlyBlack)) // skip padding stream or video packets in audio mode
       return Length;
  
-+  if(videoPlayMode!=playMode)
-+  {
-+     isyslog("Video packet in frame");
-+     SetPlayMode(videoPlayMode);
-+  }
-+
    if (!playTrickSpeed) {
-      PESPacket2TS(Data, Length, 0xef, playTsCcounter[0]);
-      int r = safe_write(fd_playDvr, playBuffer, playBufferFill);
-@@ -3936,6 +3954,10 @@
+@@ -3936,6 +3936,10 @@
       }
  
    int r;
@@ -101,7 +56,7 @@ diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
    do {
       r = write(fd_audio, write_data, write_length);
       if (r < 0) {
-@@ -3957,13 +3979,12 @@
+@@ -3957,13 +3961,12 @@
    write_data += r;
    write_length -= r;
  
@@ -119,15 +74,12 @@ diff -Naur VDR-NG-orig/dvbdevice.c VDR-NG/dvbdevice.c
 diff -Naur VDR-NG-orig/dvbdevice.h VDR-NG/dvbdevice.h
 --- VDR-NG-orig/dvbdevice.h	2010-09-26 00:54:51.907322000 +0200
 +++ VDR-NG/dvbdevice.h	2010-09-23 21:48:06.264647000 +0200
-@@ -168,8 +168,12 @@
- //M7X0 END AK
+@@ -169,7 +169,9 @@
  protected:
    ePlayMode playMode;
-+  ePlayMode videoPlayMode;
    virtual bool CanReplay(void) const;
-   virtual bool SetPlayMode(ePlayMode PlayMode);
 +public:
-+  virtual bool PublicSetPlayMode(ePlayMode PlayMode);
+   virtual bool SetPlayMode(ePlayMode PlayMode);
 +protected:
    virtual int PlayVideo(const uchar *Data, int Length);
    virtual int PlayAudio(const uchar *Data, int Length, uchar Id);
@@ -153,7 +105,7 @@ diff -Naur VDR-NG-orig/player.h VDR-NG/player.h
    void DevicePlay(void) { if (device) device->Play(); }
    void DeviceFreeze(void) { if (device) device->Freeze(); }
    void DeviceMute(void) { if (device) device->Mute(); }
-+  void DeviceSetPlayMode(ePlayMode PlayMode) { if (device) device->PublicSetPlayMode(PlayMode); }
++  void DeviceSetPlayMode(ePlayMode PlayMode) { if (device) device->SetPlayMode(PlayMode); }
    void DeviceSetVideoDisplayFormat(eVideoDisplayFormat VideoDisplayFormat) { if (device) device->SetVideoDisplayFormat(VideoDisplayFormat); }
    void DeviceStillPicture(const uchar *Data, int Length) { if (device) device->StillPicture(Data, Length); }
    void DeviceSetTsPids(int pmtPid, int videoPid) { if (device) device->SetTsReplayPids(pmtPid, videoPid); }
