@@ -170,7 +170,7 @@ diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
          state = scanFrame;
          }
  
-@@ -1704,7 +1724,7 @@
+@@ -1704,19 +1724,27 @@
  }
  
  
@@ -178,8 +178,10 @@ diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
 +int cRemux::SetBrokenLink(uchar *Data, int Length)
  {
    int PesPayloadOffset = 0;
-   if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1 && (Data[3] & 0xF0) == VIDEO_STREAM_S) {
-@@ -1712,11 +1732,14 @@
+-  if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1 && (Data[3] & 0xF0) == VIDEO_STREAM_S) {
++  if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1) {
++     if ((Data[3] & 0xF0) == VIDEO_STREAM_S) {
+      for (int i = PesPayloadOffset; i < Length - 7; i++) {
           if (Data[i] == 0 && Data[i + 1] == 0 && Data[i + 2] == 1 && Data[i + 3] == 0xB8) {
              if (!(Data[i + 7] & 0x40)) // set flag only if GOP is not closed
                 Data[i + 7] |= 0x20;
@@ -190,12 +192,14 @@ diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
       dsyslog("SetBrokenLink: no GOP header found in video packet");
 +     return 1;
 +     }
-+  else {
-+     isyslog("No video packet in frame");
-+     return 2;
++     else if ((Data[3] & 0xE0) == AUDIO_STREAM_S) {
++        isyslog("Audio stream detected");
++        return 2;
++        }
       }
--  else
--     dsyslog("SetBrokenLink: no video packet in frame");
+   else
+      dsyslog("SetBrokenLink: no video packet in frame");
++  return 1;
  }
 diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
 --- VDR-NG-orig/remux.h	2010-09-26 00:54:54.306339000 +0200
