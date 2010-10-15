@@ -39,46 +39,11 @@ FILE_LISTS_$(CONFIG_FFMPEG) += ffmpeg.lst
 CLEAN_RULES += clean-ffmpeg
 DISTCLEAN_RULES += distclean-ffmpeg
 
-#
-# download ffmpeg
-#
-
-$(FFMPEG_DLFILE): $(TC_INIT_RULE)
-	(if [ ! -f $(FFMPEG_DLFILE) ] ; then \
-	$(WGET) $(FFMPEG_URL) -O $(FFMPEG_DLFILE) ; \
-	fi );
-	$(TOUCH) $(FFMPEG_DLFILE)
-
-#
-# unpack ffmpeg
-#
-
-$(STAGEFILES_DIR)/.ffmpeg_unpacked: $(FFMPEG_DLFILE) \
-                                           $(wildcard $(FFMPEG_PATCHES_DIR)/*.patch) \
-                                           $$(FFMPEG_DEPS)
-	-$(RM) -rf $(FFMPEG_DIR)
-	$(BZCAT) $(FFMPEG_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
-	$(TOUCH) $(STAGEFILES_DIR)/.ffmpeg_unpacked
-
-#
-# patch ffmpeg
-#
-
-$(STAGEFILES_DIR)/.ffmpeg_patched: $(STAGEFILES_DIR)/.ffmpeg_unpacked
-	$(call patch_package, $(FFMPEG_DIR), $(FFMPEG_PATCHES_DIR))
-	$(TOUCH) $(STAGEFILES_DIR)/.ffmpeg_patched
-
-#
-# configure ffmpeg
-#
-
-$(STAGEFILES_DIR)/.ffmpeg_configured: $(STAGEFILES_DIR)/.ffmpeg_patched
-	($(CD) $(FFMPEG_DIR) ; $(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fPIC" \
-		$(FFMPEG_DIR)/configure \
-			--enable-cross-compile \
-			--cross-prefix="$(UCLIBC_TARGET)-" \
-			--arch="mips" \
-			--prefix="/usr" \
+ifneq ($(CONFIG_LIBDLNA),y)
+	FFMPEG_CONFIGURE_OPTIONS:=--enable-cross-compile \
+			--cross-prefix=$(UCLIBC_TARGET)- \
+			--arch=mips \
+			--prefix=/usr \
 			--enable-shared \
 			--enable-static \
 			--disable-debug \
@@ -133,7 +98,101 @@ $(STAGEFILES_DIR)/.ffmpeg_configured: $(STAGEFILES_DIR)/.ffmpeg_patched
 			--disable-protocols \
 			--enable-protocol=file \
 			--enable-protocol=pipe \
-			--disable-filters)
+			--disable-filters
+else
+	FFMPEG_CONFIGURE_OPTIONS:=--enable-cross-compile \
+			--cross-prefix=$(UCLIBC_TARGET)- \
+			--arch=mips \
+			--prefix=/usr \
+			--enable-shared \
+			--enable-static \
+			--disable-debug \
+			--disable-ffmpeg \
+			--disable-ffplay \
+			--disable-ffserver \
+			--disable-network \
+			--enable-gpl \
+			--disable-libfaad \
+			--disable-mmx \
+			--disable-mmx2 \
+			--enable-pthreads \
+			$(if $(CONFIG_SQUASHFS_LZMA),,--disable-optimizations --enable-small) \
+			--disable-stripping \
+			--disable-vhook \
+			$(if $(CONFIG_ZLIB),--enable-zlib,--disable-zlib) \
+			--enable-postproc \
+			--disable-ipv6 \
+			--disable-bsfs \
+			--disable-devices \
+			--disable-encoders \
+			--disable-decoders \
+			--enable-decoder=ac3 \
+			--enable-decoder=atrac3 \
+			--enable-decoder=h264 \
+			--enable-decoder=jpegls \
+			--enable-decoder=mp3 \
+			--enable-decoder=mpeg1video \
+			--enable-decoder=mpeg2video \
+			--enable-decoder=mpeg4 \
+			--enable-decoder=mpeg4aac \
+			--enable-decoder=mpegvideo \
+			--enable-decoder=wmav1 \
+			--enable-decoder=wmav2 \
+			--enable-decoder=png \
+			$(if $(CONFIG_ZLIB),--enable-decoder=zlib,--disable-decoder=zlib) \
+			--disable-muxers \
+			--disable-demuxers \
+			--enable-demuxer=ac3 \
+			--enable-demuxer=h264 \
+			--enable-demuxer=mp3 \
+			--enable-demuxer=mpegvideo \
+			--disable-parsers \
+			--enable-parser=aac \
+			--enable-parser=ac3 \
+			--enable-parser=h264 \
+			--enable-parser=mpegaudio \
+			--enable-parser=mpegvideo \
+			--enable-parser=mpeg4video \
+			--disable-protocols \
+			--disable-filters
+endif
+
+#
+# download ffmpeg
+#
+
+$(FFMPEG_DLFILE): $(TC_INIT_RULE)
+	(if [ ! -f $(FFMPEG_DLFILE) ] ; then \
+	$(WGET) $(FFMPEG_URL) -O $(FFMPEG_DLFILE) ; \
+	fi );
+	$(TOUCH) $(FFMPEG_DLFILE)
+
+#
+# unpack ffmpeg
+#
+
+$(STAGEFILES_DIR)/.ffmpeg_unpacked: $(FFMPEG_DLFILE) \
+                                           $(wildcard $(FFMPEG_PATCHES_DIR)/*.patch) \
+                                           $$(FFMPEG_DEPS)
+	-$(RM) -rf $(FFMPEG_DIR)
+	$(BZCAT) $(FFMPEG_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(TOUCH) $(STAGEFILES_DIR)/.ffmpeg_unpacked
+
+#
+# patch ffmpeg
+#
+
+$(STAGEFILES_DIR)/.ffmpeg_patched: $(STAGEFILES_DIR)/.ffmpeg_unpacked
+	$(call patch_package, $(FFMPEG_DIR), $(FFMPEG_PATCHES_DIR))
+	$(TOUCH) $(STAGEFILES_DIR)/.ffmpeg_patched
+
+#
+# configure ffmpeg
+#
+
+$(STAGEFILES_DIR)/.ffmpeg_configured: $(STAGEFILES_DIR)/.ffmpeg_patched
+	($(CD) $(FFMPEG_DIR) ; $(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fPIC" \
+		$(FFMPEG_DIR)/configure $(FFMPEG_CONFIGURE_OPTIONS))
 	$(TOUCH) $(STAGEFILES_DIR)/.ffmpeg_configured
 
 #
@@ -160,7 +219,12 @@ $(STAGEFILES_DIR)/.ffmpeg_installed: $(STAGEFILES_DIR)/.ffmpeg_compiled
 
 
 $(FILELIST_DIR)/ffmpeg.lst: $(STAGEFILES_DIR)/.ffmpeg_installed
-	$(TOUCH) $(FILELIST_DIR)/ffmpeg.lst
+ifneq ($(CONFIG_LIBDLNA),y)
+	$(CAT) $(FILELIST_DIR)/ffmpeg_bin.lst $(FILELIST_DIR)/ffmpeg_libs.lst > $(FILELIST_DIR)/ffmpeg.lst
+else
+	$(CP) -f $(FILELIST_DIR)/ffmpeg_libs.lst $(FILELIST_DIR)/ffmpeg.lst
+endif
+	$(TOUCH) -f  $(FILELIST_DIR)/ffmpeg.lst
 
 .PHONY: clean-ffmpeg distclean-ffmpeg
 
