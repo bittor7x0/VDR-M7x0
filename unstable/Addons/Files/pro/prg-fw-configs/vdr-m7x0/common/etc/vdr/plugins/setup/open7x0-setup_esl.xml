@@ -46,10 +46,6 @@
             <entry name="Iniciar servicio NTP" sysconfig="rc.local.conf--netdate" type="bool" value="NO" help1="Iniciar el servicio para sincronizar la hora por red" />
             <entry name="Servidor NTP" sysconfig="rc.local.conf--netdate_server" type="text" value="europe.pool.ntp.org" help1="Servidor NTP del que obtener la hora" />
         </menu>
-        <menu name="Menú de inicio">
-            <entry name="Activar menú de inicio" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="NO" help1="Activar el menú de inicio" />
-            <entry name="Opción por defecto" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Opción por defecto para el menú de inicio" />
-        </menu>
         <menu name="Depuración">
             <entry name="Activar servicio syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="Registro del sistema. Dejarlo vacío para activarlo" />
             <entry name="Mostrar mensajes en OSD" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Mostrar en el OSD la info de procesos al arrancar" />

@@ -4,24 +4,11 @@ source /etc/rc.local.conf
 
 echo -n 'starting local stuff:'
 
-if [ X"${bootmenu_start}" != X"NO" ] ; then
-    alarm=`/bin/cat /etc/bootmenu/next_alarm`
+echo -n ' vdr'
+export ${runvdr_vars}
+/bin/ash ${runvdr} &
 
-    if [ ${alarm} -eq 0 ] ; then
-        /usr/sbin/pic_tool alarm clear
-    else
-        /usr/sbin/pic_tool alarm set $(( ${alarm} - ${vdr_startup_time} ))
-    fi
-
-    echo -n ' bootmenu'
-    export VDR_TV_MODE=`/bin/grep -i TvMode ${vdr_confdir}/setup.conf | /usr/bin/cut -d '=' -f 2 | /usr/bin/tr -d " "`
-    `/usr/bin/bootmenu -s ${bootmenu_default} ${bootmenu_config}` &
-else
-    echo -n ' vdr'
-    export ${runvdr_vars}
-    /bin/ash ${runvdr} &
-    # With this sleep VDR start faster
-    /bin/sleep 5
-fi
+# With this sleep VDR start faster
+/bin/sleep 5
 
 exec /bin/ash /etc/rc.local.usb

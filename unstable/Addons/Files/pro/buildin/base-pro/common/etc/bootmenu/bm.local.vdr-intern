@@ -1,7 +1,0 @@
-#!/bin/ash
-
-source /etc/rc.local.conf
-
-echo -n ' vdr intern' 
-export ${runvdr_vars}
-/bin/ash ${runvdr} &

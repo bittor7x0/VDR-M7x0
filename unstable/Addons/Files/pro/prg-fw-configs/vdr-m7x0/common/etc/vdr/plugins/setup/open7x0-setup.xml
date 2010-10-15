@@ -46,10 +46,6 @@
             <entry name="Start NTP daemon" sysconfig="rc.local.conf--netdate" type="bool" value="NO" help1="Start daemon for network time update" />
             <entry name="NTP server" sysconfig="rc.local.conf--netdate_server" type="text" value="europe.pool.ntp.org" help1="NTP server for clock update" />
         </menu>
-        <menu name="Boot menu">
-            <entry name="Enabled" sysconfig="rc.local.conf--bootmenu_start" type="bool" value="YES" help1="Enable boot menu" />
-            <entry name="Default option" sysconfig="rc.local.conf--bootmenu_default" type="number" value="0" help1="Default option" />
-        </menu>
         <menu name="Debug">
             <entry name="Enable syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="System log daemon" />
             <entry name="Show OSD messages" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Show debug messages in OSD at startup" />

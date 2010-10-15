@@ -1,7 +1,0 @@
-#!/bin/ash
-
-source /etc/bootmenu/bm.local.boxamp.conf
-
-echo -n 'boxamp' 
-export ${runboxamp_vars}
-/bin/ash ${runboxamp} &
