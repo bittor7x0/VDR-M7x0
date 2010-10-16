@@ -1,0 +1,610 @@
+diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
+--- VDR-NG-orig/channels.c	2010-10-11 18:28:51.265316000 +0200
++++ VDR-NG/channels.c	2010-10-10 01:10:37.549198000 +0200
+@@ -441,10 +441,10 @@
+   return q - s;
+ }
+ 
+-void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid)
++void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype)
+ {
+   int mod = CHANNELMOD_NONE;
+-  if (vpid != Vpid || ppid != Ppid || tpid != Tpid)
++  if (vpid != Vpid || vtype != Vtype || ppid != Ppid || tpid != Tpid)
+      mod |= CHANNELMOD_PIDS;
+   int m = IntArraysDiffer(apids, Apids, alangs, ALangs) | IntArraysDiffer(dpids, Dpids, dlangs, DLangs);
+   if (m & STRDIFF)
+@@ -470,9 +470,10 @@
+         }
+      *q = 0;
+      if (Number())
+-         dsyslog("changing pids of channel %d from %d+%d:%s:%d to %d+%d:%s:%d", Number(), vpid, ppid, OldApidsBuf, tpid, Vpid, Ppid, NewApidsBuf, Tpid);
++         dsyslog("changing pids of channel %d from %d+%d=%d:%s:%d to %d+%d=%d:%s:%d", Number(), vpid, ppid, vtype, OldApidsBuf, tpid, Vpid, Ppid, Vtype, NewApidsBuf, Tpid);
+      vpid = Vpid;
+      ppid = Ppid;
++     vtype = Vtype;
+      for (int i = 0; i < MAXAPIDS; i++) {
+          apids[i] = Apids[i];
+          strn0cpy(alangs[i], ALangs[i], MAXLANGCODE2);
+@@ -700,6 +701,8 @@
+      q += snprintf(q, sizeof(vpidbuf), "%d", Channel->vpid);
+      if (Channel->ppid && Channel->ppid != Channel->vpid)
+         q += snprintf(q, sizeof(vpidbuf) - (q - vpidbuf), "+%d", Channel->ppid);
++     if (Channel->vpid && Channel->vtype)
++        q += snprintf(q, sizeof(vpidbuf) - (q - vpidbuf), "=%d", Channel->vtype);
+      *q = 0;
+      const int BufferSize = (MAXAPIDS + MAXDPIDS) * (5 + 1 + MAXLANGCODE2) + 10; // 5 digits plus delimiting ',' or ';' plus optional '=cod+cod', +10: paranoia
+      char apidbuf[BufferSize];
+@@ -761,13 +764,19 @@
+            tpid = 0;
+            }
+         vpid = ppid = 0;
++        vtype = 0;
+         apids[0] = 0;
+         dpids[0] = 0;
+         ok = false;
+         if (parambuf && sourcebuf && vpidbuf && apidbuf) {
+            ok = StringToParameters(parambuf) && (source = cSource::FromString(sourcebuf)) >= 0;
+ 
+-           char *p = strchr(vpidbuf, '+');
++           char *p = strchr(vpidbuf, '=');
++           if (p) {
++              *p++ = 0;
++              sscanf(p, "%d", &vtype);
++              }
++           p = strchr(vpidbuf, '+');
+            if (p)
+               *p++ = 0;
+            if (sscanf(vpidbuf, "%d", &vpid) != 1)
+diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
+--- VDR-NG-orig/channels.h	2010-10-11 18:28:51.268777000 +0200
++++ VDR-NG/channels.h	2010-10-10 01:09:52.121207000 +0200
+@@ -120,6 +120,7 @@
+   int srate;
+   int vpid;
+   int ppid;
++  int vtype;
+   int apids[MAXAPIDS + 1]; // list is zero-terminated
+   char alangs[MAXAPIDS][MAXLANGCODE2];
+   int dpids[MAXDPIDS + 1]; // list is zero-terminated
+@@ -170,8 +171,9 @@
+   static int Transponder(int Frequency, char Polarization); ///< builds the transponder from the given Frequency and Polarization
+   int Source(void) const { return source; }
+   int Srate(void) const { return srate; }
+-  int Vpid(void) const { return vpid; }
+-  int Ppid(void) const { return ppid; }
++  int Vpid(bool AcceptHD = false) const { return (AcceptHD || (vtype != 0x1B)) ? vpid : 0; }
++  int Ppid(bool AcceptHD = false) const { return (AcceptHD || (vtype != 0x1B)) ? ppid : 0; }
++  int Vtype(void) const { return vtype; }
+   const int *Apids(void) const { return apids; }
+   const int *Dpids(void) const { return dpids; }
+   const int *Spids(void) const { return spids; }
+@@ -187,8 +189,8 @@
+   int Tid(void) const { return tid; }
+   int Sid(void) const { return sid; }
+   int Rid(void) const { return rid; }
+-  bool IsTV(void)    const { return (vpid > 0)  && (Apid(0)>0); }
+-  bool IsRadio(void) const { return (vpid == 0) && (Apid(0)>0); }
++  bool IsTV(bool AcceptHD = false)    const { return (Vpid(AcceptHD) > 0)  && (Apid(0)>0); }
++  bool IsRadio(bool AcceptHD = false) const { return (Vpid(AcceptHD) == 0) && (Apid(0)>0); }
+   int Number(void) const { return number; }
+   void SetNumber(int Number) { number = Number; }
+   bool GroupSep(void) const { return groupSep; }
+@@ -217,7 +219,7 @@
+   void SetId(int Nid, int Tid, int Sid, int Rid = 0);
+   void SetName(const char *Name, const char *ShortName, const char *Provider);
+   void SetPortalName(const char *PortalName);
+-  void SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid);
++  void SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype = 0);
+   void SetCaIds(const int *CaIds); // list must be zero-terminated
+   void SetCaDescriptors(int Level);
+   void SetLinkChannels(cLinkChannels *LinkChannels);
+diff -Naur VDR-NG-orig/config.c VDR-NG/config.c
+--- VDR-NG-orig/config.c	2010-10-11 18:28:51.625222000 +0200
++++ VDR-NG/config.c	2010-10-11 18:34:12.281216000 +0200
+@@ -326,6 +326,7 @@
+   UpdateChannels = 5;
+   UseDolbyDigital = 1;
+   UseDolbyInRecordings = 1;
++  UseHDInRecordings = 0;
+   ChannelInfoPos = 0;
+   ChannelInfoTime = 5;
+   OSDLeft = 54;
+@@ -536,6 +537,7 @@
+   else if (!strcasecmp(Name, "UpdateChannels"))      UpdateChannels     = atoi(Value);
+   else if (!strcasecmp(Name, "UseDolbyDigital"))     UseDolbyDigital    = atoi(Value);
+   else if (!strcasecmp(Name, "UseDolbyInRecordings")) UseDolbyInRecordings = atoi(Value);
++  else if (!strcasecmp(Name, "UseHDInRecordings")) UseHDInRecordings = atoi(Value);
+   else if (!strcasecmp(Name, "ChannelInfoPos"))      ChannelInfoPos     = atoi(Value);
+   else if (!strcasecmp(Name, "ChannelInfoTime"))     ChannelInfoTime    = atoi(Value);
+   else if (!strcasecmp(Name, "OSDLeft"))             OSDLeft            = atoi(Value);
+@@ -653,6 +655,7 @@
+   Store("UpdateChannels",     UpdateChannels);
+   Store("UseDolbyDigital",    UseDolbyDigital);
+   Store("UseDolbyInRecordings", UseDolbyInRecordings);
++  Store("UseHDInRecordings", UseHDInRecordings);
+   Store("ChannelInfoPos",     ChannelInfoPos);
+   Store("ChannelInfoTime",    ChannelInfoTime);
+   Store("OSDLeft",            OSDLeft);
+diff -Naur VDR-NG-orig/config.h VDR-NG/config.h
+--- VDR-NG-orig/config.h	2010-10-11 18:28:51.769220000 +0200
++++ VDR-NG/config.h	2010-10-11 18:34:54.505216000 +0200
+@@ -274,6 +274,7 @@
+   int UpdateChannels;
+   int UseDolbyDigital;
+   int UseDolbyInRecordings;
++  int UseHDInRecordings;
+   int ChannelInfoPos;
+   int ChannelInfoTime;
+   int OSDLeft, OSDTop, OSDWidth, OSDHeight;
+diff -Naur VDR-NG-orig/i18n.c VDR-NG/i18n.c
+--- VDR-NG-orig/i18n.c	2010-10-11 18:28:51.669215000 +0200
++++ VDR-NG/i18n.c	2010-10-11 18:36:26.429221000 +0200
+@@ -4322,6 +4322,28 @@
+     "",// TODO
+     "",// TODO
+   },
++  { "Setup.Recording$Record HD Video",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "Grabar Video HD",
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++    "",// TODO
++  },
+   { "Setup.DVB$Update channels",
+     "Kanäle aktualisieren",
+     "Posodobi kanale",
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2010-10-11 18:28:51.681118000 +0200
++++ VDR-NG/menu.c	2010-10-11 18:37:44.929218000 +0200
+@@ -3248,6 +3248,7 @@
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Use VPS"),                   &data.UseVps));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$VPS margin (s)"),            &data.VpsMargin, 0));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Record Dolby Digital"),      &data.UseDolbyInRecordings));
++  Add(new cMenuEditBoolItem(tr("Setup.Recording$Record HD Video"),      &data.UseHDInRecordings));
+   Add(new cMenuEditBoolItem(tr("Setup.Recording$Mark instant recording"),    &data.MarkInstantRecord));
+   Add(new cMenuEditStrItem( tr("Setup.Recording$Name instant recording"),     data.NameInstantRecord, sizeof(data.NameInstantRecord), tr(FileNameChars)));
+   Add(new cMenuEditIntItem( tr("Setup.Recording$Instant rec. time (min)"),   &data.InstantRecordTime, 1, MAXINSTANTRECTIME));
+@@ -4578,7 +4579,7 @@
+   isyslog("record %s", fileName);
+   if (MakeDirs(fileName, true)) {
+      const cChannel *ch = timer->Channel();
+-     recorder = new cRecorder(fileName, ch->Ca(), timer->Priority(), ch->Vpid(), ch->Apids(), ch->Dpids(), ch->Spids());
++     recorder = new cRecorder(fileName, ch->Ca(), timer->Priority(), ch->Vpid(Setup.UseHDInRecordings), ch->Apids(), ch->Dpids(), ch->Spids(), false,  ch->Vtype());
+      if (device->AttachReceiver(recorder)) {
+         Recording.WriteInfo();
+         cStatus::MsgRecording(device, Recording.Name(), Recording.FileName(), true);
+diff -Naur VDR-NG-orig/pat.c VDR-NG/pat.c
+--- VDR-NG-orig/pat.c	2010-10-11 18:28:51.449216000 +0200
++++ VDR-NG/pat.c	2010-10-10 01:09:20.741203000 +0200
+@@ -329,6 +329,7 @@
+         SI::PMT::Stream stream;
+         int Vpid = 0;
+         int Ppid = pmt.getPCRPid();
++        int Vtype = 0;
+         int Apids[MAXAPIDS + 1] = { 0 }; // these lists are zero-terminated
+         int Dpids[MAXDPIDS + 1] = { 0 };
+         char ALangs[MAXAPIDS][MAXLANGCODE2] = { "" };
+@@ -342,6 +343,8 @@
+               case 1: // STREAMTYPE_11172_VIDEO
+               case 2: // STREAMTYPE_13818_VIDEO
++              case 0x1B: // MPEG4
+                       Vpid = stream.getPid();
++                      Vtype = stream.getStreamType();
+                       ProcessCaDescriptors = true;
+                       break;
+               case 3: // STREAMTYPE_11172_AUDIO
+@@ -422,7 +425,7 @@
+                 }
+             }
+         if (Setup.UpdateChannels >= 2) {
+-           Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid);
++           Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid, Vtype);
+            Channel->SetCaIds(CaDescriptors->CaIds());
+            }
+         Channel->SetCaDescriptors(CaDescriptorHandler.AddCaDescriptors(CaDescriptors));
+diff -Naur VDR-NG-orig/recorder.c VDR-NG/recorder.c
+--- VDR-NG-orig/recorder.c	2010-10-11 18:28:51.689219000 +0200
++++ VDR-NG/recorder.c	2010-10-11 18:40:00.557224000 +0200
+@@ -182,7 +182,7 @@
+ 
+ }
+ 
+-cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift)
++cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift, int VType)
+ :cReceiver(Ca, Priority, VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids)
+ #ifndef DISABLE_RINGBUFFER_IN_RECEIVER
+ ,cThread("recording")
+@@ -205,7 +204,7 @@
+   ringBuffer->SetTimeouts(0, 500);
+   ringBuffer->SetLimits(TS_SIZE, TS_SIZE * 1024);
+ #endif
+-  remux = new cRemux(VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids, true);
++  remux = new cRemux(VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids, true, VType);
+   writer = new cFileWriter(FileName, remux, IsTShift);
+ }
+ 
+diff -Naur VDR-NG-orig/recorder.h VDR-NG/recorder.h
+--- VDR-NG-orig/recorder.h	2010-10-11 18:28:51.689219000 +0200
++++ VDR-NG/recorder.h	2010-10-10 01:18:41.048204000 +0200
+@@ -52,7 +52,7 @@
+ #endif
+ 
+ public:
+-  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift = false);
++  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift = false, int VType = 0);
+                // Creates a new recorder that requires conditional access Ca, has
+                // the given Priority and will record the given PIDs into the file FileName.
+   virtual ~cRecorder();
+diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
+--- VDR-NG-orig/remux.c	2010-10-11 18:28:51.861219000 +0200
++++ VDR-NG/remux.c	2010-10-11 13:50:57.713230000 +0200
+@@ -861,6 +861,297 @@
+   put_unaligned(save_scan, ((uint32_t *)(Data - 4)));
+ }
+ 
++// --- cHDVideoRepacker --------------------------------------------------------
++
++
++class cHDVideoRepacker : public cRepacker {
++private:
++  enum eState {
++    syncing,
++    findPicture,
++    scanPicture
++    };
++  int state;
++
++#ifdef USE_HW_VIDEO_FRAME_EVENTS
++  eTsVideoFrame videoFrameSave;
++#endif
++
++  int picTypeOffset;
++  inline void PushOutVideoPacket(const uchar *const Data, const int Count)  __attribute__ ((always_inline));
++
++  inline void HandleStartCode(const uchar *const Data, const uchar *&Payload, const bool UseCurrentHeader)  __attribute__ ((always_inline));
++
++  inline bool ScanDataForStartCode(const uchar *&Data, const uchar *const Limit)  __attribute__ ((always_inline));
++#ifdef USE_HW_VIDEO_FRAME_EVENTS
++  virtual void Repack(uchar *Data, int Count, const bool PacketStart, const eTsVideoFrame videoFrame);
++#else
++  virtual void Repack(uchar *Data, int Count, const bool PacketStart);
++#endif
++public:
++
++  cHDVideoRepacker(int Pid, cRingBufferResult *ResultBuffer, int MaxPacketSize, uint8_t StreamId, uint8_t SubStreamId = 0);
++
++  virtual void Reset(void);
++
++  int currentField;
++  };
++
++
++cHDVideoRepacker::cHDVideoRepacker(int Pid, cRingBufferResult *ResultBuffer, int MaxPacketSize, uint8_t StreamId, uint8_t SubStreamId)
++: cRepacker(Pid, ResultBuffer, MaxPacketSize, StreamId, SubStreamId)
++{
++  Reset();
++}
++
++void cHDVideoRepacker::Reset(void)
++{
++  cRepacker::Reset();
++  scanner = 0xFFFFFFFF;
++  state = syncing;
++#ifdef USE_HW_VIDEO_FRAME_EVENTS
++  videoFrameSave = tsVideoFrameUnknown;
++#endif
++
++  curPacketDataHeader.pesPacketType = pesPtVideo;
++  curPacketDataHeader.pictureType = NO_PICTURE;
++  picTypeOffset = -1;
++  currentField=0;
++}
++
++
++void cHDVideoRepacker::PushOutVideoPacket(const uchar *const Data, const int Count)
++{
++  // Check for not yet known picture type and read it
++  if (picTypeOffset != -1) {
++     int pictureType;
++     if (picTypeOffset < fragmentLen)
++        pictureType = (fragmentData[picTypeOffset] >> 5) + 1;
++     else {
++        const int i = picTypeOffset - fragmentLen;
++        if (i < Count)
++           pictureType = (Data[i] >> 5) + 1;
++        else {
++           dsyslog("picTypeOffset - fragmentLen >= count ???");
++           pictureType = I_FRAME;
++           }
++        }
++//TODO - Progresive video
++     if ((currentField >= 0)||((pictureType == I_FRAME)&&(currentField > -25))) {
++        curPacketDataHeader.pictureType = pictureType;
++        currentField--;
++        }
++     else
++        currentField++;
++     picTypeOffset = -1;
++     }
++  PushOutPacket(Data, Count);
++}
++
++void cHDVideoRepacker::HandleStartCode(const uchar *const Data, const uchar *&Payload, const bool UseCurrentHeader)
++{
++
++  if (state == scanPicture) {
++     // the start codes indicate that the current picture is done. So
++     // push out the packet to start a new packet for the next picuture. If
++     // the byte count get's negative then the current buffer ends in a
++     // partitial start code that must be stripped off, as it shall be put
++     // in the next packet.
++
++     if (packetTodo + 3 < 0) {
++        int bite = Data + packetTodo - Payload;
++             // This may get negative, if we have copied to much in the last
++             // run. In this case data gets striped off.
++             // The overcommited Data may be at maximum 2 bytes long in this case.
++             // This data is saved in scanner and put before start of this run,
++             // so we need not copy anything in here.
++        PushOutVideoPacket(Payload,bite);
++
++        CreatePesHeader(true);
++        Payload += bite;
++        }
++
++     PushOutVideoPacket(Payload, Data - 3 - Payload);
++     // go on with syncing to the next picture
++     state = syncing;
++     }
++
++  if (state == syncing) {
++     if (initiallySyncing) // omit report for the typical initial case
++        initiallySyncing = false;
++     else if (skippedBytes > 3) // report that syncing dropped some bytes
++        LOG("cHDVideoRepacker: skipped %d bytes to sync on next picture", skippedBytes - 3);
++     skippedBytes = 0;
++
++     CreatePesHeader(false, UseCurrentHeader);
++
++
++     // Scanner is copied befor payload of this run. So startcode
++     // is allways fully present.
++     Payload = Data - 3;
++     // as there is no length information available, assume the
++     // maximum we can hold in one PES packet
++     packetTodo = maxPacketSize - fragmentLen - 3;
++     // go on with finding the picture data
++     state = findPicture;
++     }
++
++  if (*Data == 0x09) {
++     state = scanPicture;
++     picTypeOffset = maxPacketSize - packetTodo + 1;
++     }
++}
++
++
++
++bool cHDVideoRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *const Limit)
++{
++  // Scanner is saved at Data - 4, 4 bytes are always free,
++  // TS-Header is at least 4 bytes long.
++  register const uchar *data = Data;
++  register const uchar *const limit = Limit - 1;
++  while (data < limit)
++        if (data[0] > 1)
++           data += 3;
++        else if (!data[0])
++           data++;
++        else {
++           if (!(data[-2] | data[-1])) {
++              register const uchar code = *++data;
++              if (code == 9) {
++                 Data = data;
++                 return true;
++                 }
++              }
++           data += 3;
++           }
++
++  return false;
++}
++
++#ifdef USE_HW_VIDEO_FRAME_EVENTS
++void cHDVideoRepacker::Repack(uchar *Data, int Count, const bool PacketStart, const eTsVideoFrame videoFrame)
++#else
++void cHDVideoRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
++#endif
++{
++  const uchar *const limit = Data + Count;
++  uint32_t save_scan;
++  // Store scanner at Data -4, we have always 4 bytes free from ts-header
++  save_scan = get_unaligned((uint32_t *)(Data - 4));
++  put_unaligned(scanner, (uint32_t *)(Data - 4));
++  scanner = get_unaligned((uint32_t *)(limit - 4));
++
++  const uchar *data = Data - 1; // 1 of startcode may be in scanner
++
++ // remember start of the data
++  const uchar *payload = Data;
++  // remember start of handled data
++  const uchar *data_save = Data;
++
++#ifdef USE_HW_VIDEO_FRAME_EVENTS
++  if (videoFrameSave <= tsVideoFrameNone) {
++     videoFrameSave = videoFrame;
++     if (videoFrameSave == tsVideoFrameNone && state == findPicture)
++        videoFrameSave = tsVideoFrameUnknown;
++     }
++#endif
++
++  // Search for startcodes and handle them.
++  while (
++#ifdef USE_HW_VIDEO_FRAME_EVENTS
++           videoFrameSave != tsVideoFrameNone &&
++#endif
++           ScanDataForStartCode(data, limit)) {
++
++        packetTodo -= data - data_save;
++        //dsyslog("DEBUG: In with Events %d %d",videoFrameSave, videoFrame);
++        if (state == syncing)
++           skippedBytes += data - data_save;
++
++        HandleStartCode(data, payload, inputPesHeaderBackupLen && inputPacketDone - inputPesHeaderBackupLen + (data - Data) >= 3);
++
++        data_save = data;
++        data += 3; // Next 1 of startcode  is at least 3 bytes away.
++
++#ifdef USE_HW_VIDEO_FRAME_EVENTS
++        if (videoFrameSave != tsVideoFrameUnknown && state == scanPicture) {
++           // curPacketDataHeader.pictureType = videoFrameSave - tsVideoFrameNone;
++           // state = scanPicture;
++           videoFrameSave = tsVideoFrameUnknown;
++           //break;
++           }
++#endif
++        }
++
++  if (state == syncing) {
++     put_unaligned(save_scan, ((uint32_t *)(Data - 4)));
++     skippedBytes += limit - data_save;
++     return;
++     }
++
++  packetTodo -= limit - data_save;
++
++
++  // Check if we need to spilt the packet.
++  // But be careful there may be a partial startcode at end
++  // of packet which should not be spilted.
++  // In this cases copy the partial one and strip overcommited
++  // data off in the next runns (normaly the next).
++  // Case (| := marks the splitpoint):
++  // Todo : Scanner     | Possible follwing : Result
++  // -----:---------------------------------:------
++  //      : XX 00 00 01 | YY XX XX          :
++  //   0  :             |                   : Wait
++  //  -1  :         |                       : Wait
++  //  -2  :      |                          : Wait
++  //  -3  :   |                             : Push
++  //   <  :                                 : Push
++  // -----:---------------------------------:------
++  //      : XX XX 00 00 | 01 YY XX          :
++  //   0  :             |                   : Wait
++  //  -1  :         |                       : Wait
++  //  -2  :      |                          : Push
++  //  -3  :   |                             : Push
++  //   <  :                                 : Push
++  // -----:---------------------------------:------
++  //      : XX XX XX 00 | 00 01 YY          :
++  //   0  :             |                   : Wait
++  //  -1  :         |                       : Push
++  //  -2  :      |                          : Push
++  //  -3  :   |                             : Push
++  //   <  :                                 : Push
++  if (packetTodo <= 0 && (packetTodo < -2 ||
++                           ((scanner & 0x00FFFFFF) != 0x00000001  &&
++        (packetTodo < -1 || (scanner & 0x0000FFFF) != 0x00000000) &&
++        (packetTodo <  0 || (scanner & 0x000000FF) != 0x00000000)))) {
++
++     int bite = limit + packetTodo - payload;
++             // This may get negative, if we have copied to much in the last
++             // run. In this case data gets striped off.
++             // The overcommited Data may be at maximum 2 bytes long in this case.
++             // This data is saved in scanner and put before start of this run,
++             // so we need not copy anything in here.
++
++
++     PushOutVideoPacket(payload, bite);
++
++     CreatePesHeader(true);
++     payload = limit + packetTodo;
++     packetTodo += maxPacketSize - fragmentLen;
++     }
++
++  // the packet is done. Now store any remaining data into fragment buffer
++  // It may contain part of a start code at it's end,
++  // which will be removed when the next packet gets processed.
++  const int bite = limit - payload;
++  if (bite > 0) {
++     memcpy(fragmentData + fragmentLen, payload, bite);
++     fragmentLen += bite;
++     }
++  put_unaligned(save_scan, ((uint32_t *)(Data - 4)));
++}
++
+ 
+ 
+ // --- cAudioRepacker --------------------------------------------------------
+@@ -1453,7 +1744,7 @@
+ #endif
+ #define MAXRESTARTS 10
+ 
+-cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure)
++cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure, int VType)
+ {
+   exitOnFailure = ExitOnFailure;
+   isRadio = VPid == 0 || VPid == 1 || VPid == 0x1FFF;
+@@ -1469,7 +1760,11 @@
+   resultBuffer->SetTimeouts(0, 500);
+   resultBuffer->SetLimits(2 * IPACKS, 2 * RESULT_BUFFER_ALIGNMENT);
+-  if (VPid)
++  if (VPid) {
++    if (VType != 0x1B)
+      repacker[numTracks++] = new cVideoRepacker(VPid, resultBuffer, IPACKS, 0xE0, 0x00);
++    else
++     repacker[numTracks++] = new cHDVideoRepacker(VPid, resultBuffer, IPACKS, 0xE0, 0x00);
++    }
+ 
+   if (APids) {
+      int n = 0;
+@@ -1729,6 +2023,10 @@
+   int PesPayloadOffset = 0;
+   if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1) {
+      if ((Data[3] & 0xF0) == VIDEO_STREAM_S) {
++     if (Data[PesPayloadOffset] == 0 && Data[PesPayloadOffset + 1] == 0 && Data[PesPayloadOffset + 2] == 1 && Data[PesPayloadOffset + 3] == 0x09) {
++	isyslog("H.264 video detected");
++        return 2;
++        }
+      for (int i = PesPayloadOffset; i < Length - 7; i++) {
+          if (Data[i] == 0 && Data[i + 1] == 0 && Data[i + 2] == 1 && Data[i + 3] == 0xB8) {
+             if (!(Data[i + 7] & 0x40)) // set flag only if GOP is not closed
+diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
+--- VDR-NG-orig/remux.h	2010-10-11 18:28:51.865215000 +0200
++++ VDR-NG/remux.h	2010-10-10 01:11:50.249201000 +0200
+@@ -52,7 +52,7 @@
+   int resultSkipped;
+   int GetPid(const uchar *Data);
+ public:
+-  cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure = false);
++  cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure = false, int VType = 0);
+        ///< Creates a new remuxer for the given PIDs. VPid is the video PID, while
+        ///< APids, DPids and SPids are pointers to zero terminated lists of audio,
+        ///< dolby and subtitle PIDs (the pointers may be NULL if there is no such
+diff -Naur VDR-NG-orig/sdt.c VDR-NG/sdt.c
+--- VDR-NG-orig/sdt.c	2010-10-11 18:28:51.473228000 +0200
++++ VDR-NG/sdt.c	2010-10-09 11:56:39.870380000 +0200
+@@ -55,6 +55,7 @@
+                    case 0x02: // digital radio sound service
+                    case 0x04: // NVOD reference service
+                    case 0x05: // NVOD time-shifted service
++                   case 0x19: // digital HD television service
+                         {
+                         char NameBuf[1024];
+                         char ShortNameBuf[1024];

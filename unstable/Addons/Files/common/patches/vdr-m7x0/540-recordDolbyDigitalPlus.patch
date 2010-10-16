@@ -1,0 +1,441 @@
+diff -Naur VDR-NG-orig/channels.c VDR-NG/channels.c
+--- VDR-NG-orig/channels.c	2010-10-13 21:30:36.723007000 +0200
++++ VDR-NG/channels.c	2010-10-15 23:45:46.743403000 +0200
+@@ -425,12 +425,25 @@
+   return result;
+ }
+ 
++static int IntArraysDiffer(const int *a, const int *b, const int *aPlus, const int *bPlus)
++{
++  for (int i = 0; a[i] || b[i]; i++) {
++      int aP = aPlus ? aPlus[i] : 0;
++      int bP = bPlus ? bPlus[i] : 0;
++      if ((a[i] != b[i]) || (aP != bP))
++         return VALDIFF;
++      }
++  return 0;
++}
++
+-static int IntArrayToString(char *s, const int *a, int Base = 10, const char n[][MAXLANGCODE2] = NULL)
++static int IntArrayToString(char *s, const int *a, int Base = 10, const char n[][MAXLANGCODE2] = NULL, const int *aPlus = NULL)
+ {
+   char *q = s;
+   int i = 0;
+   while (a[i] || i == 0) {
+         q += sprintf(q, Base == 16 ? "%s%X" : "%s%d", i ? "," : "", a[i]);
++        if (a[i] && aPlus && aPlus[i])
++           q += sprintf(q, "+%d", aPlus[i]);
+         if (a[i] && n && *n[i])
+            q += sprintf(q, "=%s", n[i]);
+         if (!a[i])
+@@ -441,12 +454,12 @@
+   return q - s;
+ }
+ 
+-void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype)
++void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype, int *DPpids)
+ {
+   int mod = CHANNELMOD_NONE;
+   if (vpid != Vpid || vtype != Vtype || ppid != Ppid || tpid != Tpid)
+      mod |= CHANNELMOD_PIDS;
+-  int m = IntArraysDiffer(apids, Apids, alangs, ALangs) | IntArraysDiffer(dpids, Dpids, dlangs, DLangs);
++  int m = IntArraysDiffer(apids, Apids, alangs, ALangs) | IntArraysDiffer(dpids, Dpids, dlangs, DLangs) | IntArraysDiffer(dpids, Dpids, dppids, DPpids);
+   if (m & STRDIFF)
+      mod |= CHANNELMOD_LANGS;
+   if (m & VALDIFF)
+@@ -459,14 +472,14 @@
+      q += IntArrayToString(q, apids, 10, alangs);
+      if (dpids[0]) {
+         *q++ = ';';
+-        q += IntArrayToString(q, dpids, 10, dlangs);
++        q += IntArrayToString(q, dpids, 10, dlangs, dppids);
+         }
+      *q = 0;
+      q = NewApidsBuf;
+      q += IntArrayToString(q, Apids, 10, ALangs);
+      if (Dpids[0]) {
+         *q++ = ';';
+-        q += IntArrayToString(q, Dpids, 10, DLangs);
++        q += IntArrayToString(q, Dpids, 10, DLangs, DPpids);
+         }
+      *q = 0;
+      if (Number())
+@@ -481,6 +494,7 @@
+      apids[MAXAPIDS] = 0;
+      for (int i = 0; i < MAXDPIDS; i++) {
+          dpids[i] = Dpids[i];
++         dppids[i] = DPpids ? DPpids[i] : 0;
+          strn0cpy(dlangs[i], DLangs[i], MAXLANGCODE2);
+          }
+      dpids[MAXDPIDS] = 0;
+@@ -704,13 +718,13 @@
+      if (Channel->vpid && Channel->vtype)
+         q += snprintf(q, sizeof(vpidbuf) - (q - vpidbuf), "=%d", Channel->vtype);
+      *q = 0;
+-     const int BufferSize = (MAXAPIDS + MAXDPIDS) * (5 + 1 + MAXLANGCODE2) + 10; // 5 digits plus delimiting ',' or ';' plus optional '=cod+cod', +10: paranoia
++     const int BufferSize = (MAXAPIDS + MAXDPIDS) * (5 + 1 + 5 + 1 + MAXLANGCODE2) + 10; // 2*(5 digits plus delimiting ',' or ';' or '+') plus optional '=cod+cod',  +10: paranoia
+      char apidbuf[BufferSize];
+      q = apidbuf;
+      q += IntArrayToString(q, Channel->apids, 10, Channel->alangs);
+      if (Channel->dpids[0]) {
+         *q++ = ';';
+-        q += IntArrayToString(q, Channel->dpids, 10, Channel->dlangs);
++        q += IntArrayToString(q, Channel->dpids, 10, Channel->dlangs, Channel->dppids);
+         }
+      *q = 0;
+      char caidbuf[MAXCAIDS * 5 + 10]; // 5: 4 digits plus delimiting ',', 10: paranoia
+@@ -825,6 +839,13 @@
+                           }
+                        else
+                           *dlangs[NumDpids] = 0;
++                       l = strchr(q, '+');
++                       if (l) {
++                          *l++ = 0;
++                          dppids[NumDpids] = strtol(l, NULL, 10);
++                          }
++                       else
++                          dppids[NumDpids] = 0;
+                        dpids[NumDpids++] = strtol(q, NULL, 10);
+                        }
+                     else
+diff -Naur VDR-NG-orig/channels.h VDR-NG/channels.h
+--- VDR-NG-orig/channels.h	2010-10-13 21:30:36.727506000 +0200
++++ VDR-NG/channels.h	2010-10-15 23:33:40.057439000 +0200
+@@ -124,6 +124,7 @@
+   int apids[MAXAPIDS + 1]; // list is zero-terminated
+   char alangs[MAXAPIDS][MAXLANGCODE2];
+   int dpids[MAXDPIDS + 1]; // list is zero-terminated
++  int dppids[MAXDPIDS + 1]; // list is zero-terminated
+   char dlangs[MAXDPIDS][MAXLANGCODE2];
+   int spids[MAXSPIDS + 1]; // list is zero-terminated
+   char slangs[MAXSPIDS][MAXLANGCODE2];
+@@ -176,9 +177,11 @@
+   int Vtype(void) const { return vtype; }
+   const int *Apids(void) const { return apids; }
+   const int *Dpids(void) const { return dpids; }
++  const int *DPpids(void) const { return dppids; }
+   const int *Spids(void) const { return spids; }
+   int Apid(int i) const { return (0 <= i && i < MAXAPIDS) ? apids[i] : 0; }
+   int Dpid(int i) const { return (0 <= i && i < MAXDPIDS) ? dpids[i] : 0; }
++  int DPpid(int i) const { return (0 <= i && i < MAXDPIDS) ? dppids[i] : 0; }
+   int Spid(int i) const { return (0 <= i && i < MAXSPIDS) ? spids[i] : 0; }
+   const char *Alang(int i) const { return (0 <= i && i < MAXAPIDS) ? alangs[i] : ""; }
+   const char *Dlang(int i) const { return (0 <= i && i < MAXDPIDS) ? dlangs[i] : ""; }
+@@ -219,7 +222,7 @@
+   void SetId(int Nid, int Tid, int Sid, int Rid = 0);
+   void SetName(const char *Name, const char *ShortName, const char *Provider);
+   void SetPortalName(const char *PortalName);
+-  void SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype = 0);
++  void SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype = 0, int *DPpids = NULL);
+   void SetCaIds(const int *CaIds); // list must be zero-terminated
+   void SetCaDescriptors(int Level);
+   void SetLinkChannels(cLinkChannels *LinkChannels);
+diff -Naur VDR-NG-orig/libsi/si.h VDR-NG/libsi/si.h
+--- VDR-NG-orig/libsi/si.h	2010-10-13 21:30:36.279386000 +0200
++++ VDR-NG/libsi/si.h	2010-10-14 18:44:11.237218000 +0200
+@@ -122,6 +122,7 @@
+                AdaptationFieldDataDescriptorTag = 0x70,
+                ServiceIdentifierDescriptorTag = 0x71,
+                ServiceAvailabilityDescriptorTag = 0x72,
++               EAC3DescriptorTag = 0x7A,
+  // Defined by ETSI TS 102 812 (MHP)
+                // They once again start with 0x00 (see page 234, MHP specification)
+                MHP_ApplicationDescriptorTag = 0x00,
+diff -Naur VDR-NG-orig/menu.c VDR-NG/menu.c
+--- VDR-NG-orig/menu.c	2010-10-13 21:30:36.791376000 +0200
++++ VDR-NG/menu.c	2010-10-15 23:37:23.543404000 +0200
+@@ -4579,7 +4579,7 @@
+   isyslog("record %s", fileName);
+   if (MakeDirs(fileName, true)) {
+      const cChannel *ch = timer->Channel();
+-     recorder = new cRecorder(fileName, ch->Ca(), timer->Priority(), ch->Vpid(Setup.UseHDInRecordings), ch->Apids(), ch->Dpids(), ch->Spids(), false,  ch->Vtype());
++     recorder = new cRecorder(fileName, ch->Ca(), timer->Priority(), ch->Vpid(Setup.UseHDInRecordings), ch->Apids(), ch->Dpids(), ch->Spids(), false,  ch->Vtype(), ch->DPpids());
+      if (device->AttachReceiver(recorder)) {
+         Recording.WriteInfo();
+         cStatus::MsgRecording(device, Recording.Name(), Recording.FileName(), true);
+diff -Naur VDR-NG-orig/pat.c VDR-NG/pat.c
+--- VDR-NG-orig/pat.c	2010-10-13 21:30:36.759384000 +0200
++++ VDR-NG/pat.c	2010-10-15 23:49:54.991399000 +0200
+@@ -332,6 +332,7 @@
+         int Vtype = 0;
+         int Apids[MAXAPIDS + 1] = { 0 }; // these lists are zero-terminated
+         int Dpids[MAXDPIDS + 1] = { 0 };
++        int DPpids[MAXDPIDS + 1] = { 0 };
+         char ALangs[MAXAPIDS][MAXLANGCODE2] = { "" };
+         char DLangs[MAXDPIDS][MAXLANGCODE2] = { "" };
+         int Tpid = 0;
+@@ -386,12 +387,15 @@
+               //XXX case 8: // STREAMTYPE_13818_DSMCC
+                       {
+                       int dpid = 0;
++                      int dppid = 0;
+                       char lang[MAXLANGCODE1] = { 0 };
+                       SI::Descriptor *d;
+                       for (SI::Loop::Iterator it; (d = stream.streamDescriptors.getNext(it)); ) {
+                           switch (d->getDescriptorTag()) {
+                             case SI::AC3DescriptorTag:
++                            case SI::EAC3DescriptorTag:
+                                  dpid = stream.getPid();
++                                 dppid = d->getDescriptorTag();
+                                  ProcessCaDescriptors = true;
+                                  break;
+                             case SI::TeletextDescriptorTag:
+@@ -409,6 +413,7 @@
+                       if (dpid) {
+                          if (NumDpids < MAXDPIDS) {
+                             Dpids[NumDpids] = dpid;
++                            DPpids[NumDpids] = dppid;
+                             strn0cpy(DLangs[NumDpids], lang, MAXLANGCODE1);
+                             NumDpids++;
+                             }
+@@ -425,7 +430,7 @@
+                 }
+             }
+         if (Setup.UpdateChannels >= 2) {
+-           Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid, Vtype);
++           Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid, Vtype, DPpids);
+            Channel->SetCaIds(CaDescriptors->CaIds());
+            }
+         Channel->SetCaDescriptors(CaDescriptorHandler.AddCaDescriptors(CaDescriptors));
+diff -Naur VDR-NG-orig/recorder.c VDR-NG/recorder.c
+--- VDR-NG-orig/recorder.c	2010-10-13 21:30:36.759384000 +0200
++++ VDR-NG/recorder.c	2010-10-15 23:55:14.333412000 +0200
+@@ -182,7 +182,7 @@
+ 
+ }
+ 
+-cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift, int VType)
++cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift, int VType, const int *DPPids)
+ :cReceiver(Ca, Priority, VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids)
+ #ifndef DISABLE_RINGBUFFER_IN_RECEIVER
+ ,cThread("recording")
+@@ -205,7 +205,7 @@
+   ringBuffer->SetTimeouts(0, 500);
+   ringBuffer->SetLimits(TS_SIZE, TS_SIZE * 1024);
+ #endif
+-  remux = new cRemux(VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids, true, VType);
++  remux = new cRemux(VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids, true, VType, DPPids);
+   writer = new cFileWriter(FileName, remux, IsTShift);
+ }
+ 
+diff -Naur VDR-NG-orig/recorder.h VDR-NG/recorder.h
+--- VDR-NG-orig/recorder.h	2010-10-13 21:30:36.763379000 +0200
++++ VDR-NG/recorder.h	2010-10-15 23:48:18.685448000 +0200
+@@ -52,7 +52,7 @@
+ #endif
+ 
+ public:
+-  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift = false, int VType = 0);
++  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift = false, int VType = 0, const int *DPPids = NULL);
+                // Creates a new recorder that requires conditional access Ca, has
+                // the given Priority and will record the given PIDs into the file FileName.
+   virtual ~cRecorder();
+diff -Naur VDR-NG-orig/remux.c VDR-NG/remux.c
+--- VDR-NG-orig/remux.c	2010-10-13 21:30:36.767380000 +0200
++++ VDR-NG/remux.c	2010-10-15 23:44:45.967580000 +0200
+@@ -1736,6 +1736,162 @@
+ }
+ 
+ 
++// --- cDolbyPlusRepacker --------------------------------------------------------
++
++class cDolbyPlusRepacker : public cRepacker {
++private:
++  enum eState {
++    syncing,
++    scanFrame
++    };
++  int frameSize;
++  int frameTodo;
++  int state;
++
++  inline void AppendSubStreamHeader(bool ContinuationFrame = false)  __attribute__ ((always_inline));
++  inline bool ScanDataForStartCode(const uchar *&Data, const uchar *Limit)  __attribute__ ((always_inline));
++#ifdef USE_HW_VIDEO_FRAME_EVENTS
++  virtual void Repack(uchar *Data, int Count, const bool PacketStart, const eTsVideoFrame videoFrame);
++#else
++  virtual void Repack(uchar *Data, int Count, const bool PacketStart);
++#endif
++public:
++
++  cDolbyPlusRepacker(int Pid, cRingBufferResult *ResultBuffer, int MaxPacketSize, uint8_t StreamId, uint8_t SubStreamId = 0);
++
++  virtual void Reset(void);
++
++  };
++
++
++cDolbyPlusRepacker::cDolbyPlusRepacker(int Pid, cRingBufferResult *ResultBuffer, int MaxPacketSize, uint8_t StreamId, uint8_t SubStreamId)
++: cRepacker(Pid, ResultBuffer, MaxPacketSize, StreamId, SubStreamId)
++{
++  Reset();
++}
++
++void cDolbyPlusRepacker::AppendSubStreamHeader(bool ContinuationFrame)
++{
++   fragmentData[fragmentLen++] = subStreamId;
++   // number of ac3 frames "starting" in this packet (1 by design).
++   fragmentData[fragmentLen++] = 0x01;
++   // offset to start of first ac3 frame (0 means "no ac3 frame starting"
++   // so 1 (by design) addresses the first byte after the next two bytes).
++   fragmentData[fragmentLen++] = 0x00;
++   fragmentData[fragmentLen++] = (ContinuationFrame ? 0x00 : 0x01);
++}
++
++bool cDolbyPlusRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *const Limit)
++{
++  register const uchar *data = Data;
++  if (!skippedBytes && Limit - data >= 4) {
++        scanner = BE2HOST(get_unaligned((uint32_t *)data));
++        data += 4;
++        if ((scanner & 0xFFFF0000) == 0x0B770000) {
++           frameSize=((scanner & 0x7FF)+1)*2;
++           skippedBytes = 4;
++           Data = data;
++           return true;
++           }
++     }
++
++  while (data < Limit) {
++        if ((scanner & 0xFFFF0000) == 0x0B770000) {
++           frameSize=((scanner & 0x7FF)+1)*2;
++           skippedBytes += data - Data;
++           Data = data;
++           return true;
++           }
++        scanner <<= 8;
++        scanner |= *data;
++        data++;
++        }
++
++  skippedBytes += data - Data;
++  // Data = data;
++  return false;
++}
++
++void cDolbyPlusRepacker::Reset(void)
++{
++  cRepacker::Reset();
++  state = syncing;
++  frameSize = 0;
++  frameTodo = 0;
++  scanner = 0;
++
++  curPacketDataHeader.pesPacketType = pesPtDolby;
++  curPacketDataHeader.pictureType = NO_PICTURE;
++}
++
++#ifdef USE_HW_VIDEO_FRAME_EVENTS
++void cDolbyPlusRepacker::Repack(uchar *Data, int Count, const bool PacketStart, const eTsVideoFrame videoFrame)
++#else
++void cDolbyPlusRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
++#endif
++{
++  // check for MPEG 2
++  if (mpegLevel != phMPEG2) {
++     DroppedData("cDolbyPlusRepacker: MPEG 2 PES header expected", Count);
++     return;
++     }
++
++  const uchar *data = Data;
++  const uchar *const limit = Data + Count;
++
++  while (data < limit) {
++        // Have we a frame needs finishing?
++        if (state == scanFrame) {
++           const int bite = min(limit - data, min(frameTodo, packetTodo));
++           packetTodo -= bite;
++           frameTodo -= bite;
++
++           if (frameTodo && packetTodo) {
++              // All remaining data contains to current frame
++              // And frame is not fully present
++              memcpy(fragmentData + fragmentLen, data, bite);
++              fragmentLen += bite;
++              return;
++              }
++
++           PushOutPacket(data,bite);
++           data += bite;
++           if (!frameTodo) {
++               state=syncing;
++               scanner = 0;
++               continue;
++               }
++
++           CreatePesHeader(true);
++           AppendSubStreamHeader(true);
++           packetTodo = maxPacketSize - fragmentLen;
++           continue;
++           }
++
++        if (!ScanDataForStartCode(data,limit))
++           return; // No frame start and we are syncing
++
++        if (initiallySyncing) // omit report for the typical initial case
++           initiallySyncing = false;
++        else if (skippedBytes > 4) // report that syncing dropped some bytes
++           LOG("cDolbyPlusRepacker: skipped %d bytes to sync on next E-AC3 frame", skippedBytes - 4);
++        skippedBytes = 0;
++
++        CreatePesHeader(false, inputPesHeaderBackupLen && inputPacketDone - inputPesHeaderBackupLen - (data - Data) >= 4 );
++        AppendSubStreamHeader(false);
++        put_unaligned(HOST2BE(scanner), (uint32_t *)(fragmentData + fragmentLen));
++        fragmentLen += 4;
++        packetTodo = maxPacketSize - fragmentLen;
++        frameTodo = frameSize - 4;
++
++
++        curPacketDataHeader.pictureType = I_FRAME;
++
++        state=scanFrame;
++        }
++}
++
++
+ // --- cRemux ----------------------------------------------------------------
+ #ifdef DISABLE_RINGBUFFER_IN_RECEIVER
+ #define RESULTBUFFERSIZE MEGABYTE(3) //(256)
+@@ -1744,7 +1900,7 @@
+ #endif
+ #define MAXRESTARTS 10
+ 
+-cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure, int VType)
++cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure, int VType, const int *DPPids)
+ {
+   exitOnFailure = ExitOnFailure;
+   isRadio = VPid == 0 || VPid == 1 || VPid == 0x1FFF;
+@@ -1775,6 +1931,9 @@
+   if (DPids) {
+      int n = 0;
+      while (*DPids && numTracks < MAXTRACKS && n < MAXDPIDS)
++        if ((DPPids) && (DPPids[n] == 0x7A))
++           repacker[numTracks++] = new cDolbyPlusRepacker(*DPids++, resultBuffer, IPACKS, 0xBD, 0x80 + n++);
++        else
+            repacker[numTracks++] = new cDolbyRepacker(*DPids++, resultBuffer, IPACKS, 0xBD, 0x80 + n++);
+      }
+   /* future...
+diff -Naur VDR-NG-orig/remux.h VDR-NG/remux.h
+--- VDR-NG-orig/remux.h	2010-10-13 21:30:36.771379000 +0200
++++ VDR-NG/remux.h	2010-10-15 23:53:21.321436000 +0200
+@@ -52,7 +52,7 @@
+   int resultSkipped;
+   int GetPid(const uchar *Data);
+ public:
+-  cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure = false, int VType = 0);
++  cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure = false, int VType = 0, const int *DPPids = NULL);
+        ///< Creates a new remuxer for the given PIDs. VPid is the video PID, while
+        ///< APids, DPids and SPids are pointers to zero terminated lists of audio,
+        ///< dolby and subtitle PIDs (the pointers may be NULL if there is no such
+diff -Naur VDR-NG-orig/tshift.c VDR-NG/tshift.c
+--- VDR-NG-orig/tshift.c	2010-10-16 01:41:12.560753003 +0200
++++ VDR-NG/tshift.c	2010-10-16 00:42:01.776539830 +0200
+@@ -292,7 +292,7 @@
+ // --- cTShiftRecorder -------------------------------------------------------------
+ 
+ cTShiftRecorder::cTShiftRecorder(const cChannel *Channel,time_t BeginChannel)
+-:cRecorder(cTShiftFileName::newFileName(&file),0,BASEPRIORITY,Channel->Vpid(),Channel->Apids(),Channel->Dpids(),Channel->Spids(),true),data(BeginChannel)
++:cRecorder(cTShiftFileName::newFileName(&file),0,BASEPRIORITY,Channel->Vpid(),Channel->Apids(),Channel->Dpids(),Channel->Spids(),true,0,Channel->DPpids()),data(BeginChannel)
+ {
+   player=NULL;
+   channelNumber=Channel->Number();
