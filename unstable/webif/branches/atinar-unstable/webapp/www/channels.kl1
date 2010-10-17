@@ -122,6 +122,10 @@ static void printHtmlHeadExtra(wcontext_t *wctx){
 					wctx_printfn(wctx,"<tr class=\"channelInfo\">\n",0,1);
 					wctx_printfn(wctx,"<td class=\"channelInfo\" colspan=\"3\">\n",0,1);
 					printChannelControls(wctx,channel,Epg,LiveStream);
+					if (!webifConf.noLogos){
+						wctx_printf0(wctx,"<img id=\"logo_%s\" class=\"logo\" alt=\"%s\" src=\"/www2/images/logos/%s.png\"/>\n"
+							,channel->channelId,channel->channelName,wctxChannelFilename(wctx,channel->channelName,true));
+					}
 					wctx_printfn(wctx,"<table class=\"channelInfo\" summary=\"\">\n",0,1);
 					wctx_printf0(wctx,"<caption>%s</caption>\n",ChannelDetails);
 					wctx_printf0(wctx,"<tr><th>Id</th><td>%s</td></tr>\n",channel->channelId);

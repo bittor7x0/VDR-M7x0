@@ -137,10 +137,14 @@ void parseRec(char * line, bool withPath, rec_t * const rec){
 	r+=strspn(r," ");
 	l=strcspn(r,"/\n\r");
 	rec->name=strndup(r,l);
-	if (strchr(rec->name,'@')) rec->flags|=RE_DIRECT;
-	if (strchr(rec->name,'%')) rec->flags|=RE_EDITED;
+	setRecFlags(rec);
 	r+=l;
 	return;
+}
+
+void setRecFlags(rec_t * const rec){
+	if (strchr(rec->name,'@')) rec->flags|=RE_DIRECT;
+	if (strchr(rec->name,'%')) rec->flags|=RE_EDITED;
 }
 
 void getRecListHost(hostConf_t *host, recList_t * const recs){
@@ -508,6 +512,15 @@ void printRecControls(wcontext_t *wctx,const rec_t *rec,const char *Play,const c
 			"<button type=\"submit\" class=\"delete control button-i ui-state-default\" name=\"a\" value=\"%d\" title=\"%s\">"
 				"<div><span class=\"ui-icon ui-icon-trash\">%s</span></div>"
 			"</button>\n",PA_DELETE,Delete,Delete);
+		wctx_printfn(wctx,"</li><!--\n",-1,0);
+	}
+	if (isFlagSet(RE_EDITED,rec->flags)) {
+		const char *Edited=tr("rec.edited");
+		wctx_printfn(wctx,"--><li class=\"control\">\n",0,1);
+		wctx_printf0(wctx,
+			"<span class=\"cut control button-i\" name=\"a\" value=\"%d\" title=\"%s\">"
+				"<span class=\"ui-icon ui-icon-scissors\">%s</span>"
+			"</button>\n",Edited,Edited);
 		wctx_printfn(wctx,"</li><!--\n",-1,0);
 	}
 	wctx_printfn(wctx,"--></ul>\n",-1,0);

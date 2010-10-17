@@ -181,6 +181,7 @@ i18n_t i18n[]={
 		"Configuration de BoxAmp"
 		}
 	},
+#ifdef ENABLE_BOXAMP_CONF
 	{	"cfgBa.boxamp_bin",
 		{
 		"BoxAmp bin",
@@ -237,6 +238,7 @@ i18n_t i18n[]={
 		""
 		}
 	},
+#endif
 	{	"cfgErrInvalidParamValueFmt",
 		{
 		"Invalid param value (%s)",
@@ -1448,6 +1450,14 @@ i18n_t i18n[]={
 		"Recording updated",
 		"Aufzeichnen aktualisiert",
 		"Grabación actualizada",
+		""
+		}
+	},
+	{	"rec.edited",
+		{
+		"Recording edited",
+		"",
+		"Grabación ya editada",
 		""
 		}
 	},

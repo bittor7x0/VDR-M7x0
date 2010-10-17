@@ -76,5 +76,6 @@ void printRecPlayLink(wcontext_t *wctx, const rec_t *rec, bool direct);
 bool printRecPlaylist(wcontext_t *wctx, rec_t *rec);
 void printRecControls(wcontext_t *wctx,const rec_t *rec,const char *Play,const char *Edit,const char *Delete);
 void printRecEditForm(wcontext_t *wctx, rec_t *rec);
+void setRecFlags(rec_t * const rec);
 
 #endif

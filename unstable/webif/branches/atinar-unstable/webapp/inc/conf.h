@@ -29,8 +29,12 @@ typedef enum cfgFileId_e {
 	CF_WEBIFCONF=CF_MIN,
 	CF_RCCONF,
 	CF_VDRCONF,
+#ifdef ENABLE_BOXAMP_CONF
 	CF_BOXAMPCONF,
 	CF_MAX=CF_BOXAMPCONF
+#else
+   CF_MAX=CF_VDRCONF
+#endif
 } cfgFileId_t;
 
 typedef struct cfgParamConfig_s cfgParamConfig_t;

@@ -1,3 +1,8 @@
+2010-10-17
+* Mostrar logos en información de los canales.
+* Señalar gráficamente grabaciones editadas.
+* Descartar fragmentos vacíos de grabaciones al servir.
+* Configuración del BOXAMP se tiene que activar mediante directiva de compilación.
 2010-06-06
 * Seguir enlaces en browse.
 2010-05-03

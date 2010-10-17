@@ -12,10 +12,19 @@ td.channelInfo {
 	background-color:#FFCF9F;
 	padding:2px;
 }
+td.channelInfo img.logo {
+	width:60px;
+	height:60px;
+	border:1px solid silver;
+	background-color:White;
+	clear:left;
+	float:left;
+	margin-top:10px;
+}
 table.channelInfo {
-	background-color:transparent;
-	border:0 none;
-	margin:0 15%;
+	background-color:#ffe2c4;
+	border-collapse:collapse;
+	margin:0 15% 1em;
 	width:68%;
 	padding:0;
 	font-size:0.8em;
@@ -26,7 +35,7 @@ table.channelInfo caption {
 table.channelInfo th,
 table.channelInfo td {
 	color:black;
-	background-color:#ffe2c4;
+	background-color:transparent;
 	border:1px solid silver;
 	margin:0;
 	padding:1px;

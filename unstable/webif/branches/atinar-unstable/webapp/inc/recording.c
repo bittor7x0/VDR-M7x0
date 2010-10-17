@@ -91,25 +91,36 @@ void addRecFragments(fragmentList_t * const fragments, const char * const fullpa
 		struct dirent **namelist;
 		int n=scandir(fullpath, &namelist, isVideoFile, alphasort);
 		if (n>0) {
+			int n2=0;
 			fragments->entry=(fragmentEntry_t*)realloc(fragments->entry,(fragments->length+n)*sizeof(fragmentEntry_t));
 			crit_goto_if(fragments->entry==NULL,outOfMemory);
-			for (i=0, f=fragments->entry+fragments->length ; i<n ; i++, f++) {
+			for (i=0, f=fragments->entry+fragments->length ; i<n ; i++) {
 				initFE(f);
 				crit_goto_if(asprintf(&(f->path),"%s/%s",fullpath,namelist[i]->d_name)<0,outOfMemory);
 				if (stat(f->path,&st)==0) {
-					f->size=st.st_size;
-					f->start=fragments->totalSize;
-					f->end=f->start+f->size-1;
-					//dbg("i[%d] start[%llu] end[%llu]",i,f->start,f->end);
-					fragments->totalSize=f->end+1;
+					if (st.st_size>0) {
+						f->size=st.st_size;
+						f->start=fragments->totalSize;
+						f->end=f->start+f->size-1;
+						//dbg("i[%d] start[%llu] end[%llu]",i,f->start,f->end);
+						fragments->totalSize=f->end+1;
+						f++;
+						fragments->length++;
+						n2++;
+					} else {
+						info("file %s is empty",f->path);
+						freeFE(f);
+					}
 				} else {
 					warn("file %s error %s",f->path,strerror(errno));
 					freeFE(f);
 				}
 			}
-			fragments->length+=n;
 			for (i=0;i<n;i++) free(namelist[i]);
 			free(namelist);
+			if (n2<n){
+				fragments->entry=(fragmentEntry_t*)realloc(fragments->entry,(fragments->length)*sizeof(fragmentEntry_t));
+			}
 		}
 	}
 	return;

@@ -429,7 +429,9 @@ void printRecDir(wcontext_t *wctx,const char *const path,int pl,recDir_t *rdir,i
 		initRec(&rec);
 		rec.my=RF_PATH;
 		rec.hostId=rdir->subdirs.entry[0].hostId;
+		rec.name=rdir->name;
 		crit_goto_if((rec.path=getPath2(path,rdir->subdirs.entry[0].name))==NULL,outOfMemory);
+		setRecFlags(&rec);
 		printRecording(wctx,pl,rdir,&rec,level);
 		freeRec(&rec);
 	} else {

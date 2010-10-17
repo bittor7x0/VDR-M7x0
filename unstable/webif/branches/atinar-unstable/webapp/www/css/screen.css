@@ -372,6 +372,7 @@ td .button-i-t {
 .button-i,
 .button-i-t {
 	display:inline-block;
+	vertical-align:baseline;
 	-moz-border-radius:5px;
 	-webkit-border-radius:5px;
 }
@@ -381,12 +382,15 @@ button.button-i-t {
 	-moz-appearance:none;
 	-webkit-appearance:none;
 }
-button.button-i div,
-a.button-i,
-li.button-i {
-	width:20px;
-	height:20px;
+.button-i,
+.button-i div {
+	width:22px;
+	height:22px;
 	position:relative;
+}
+.button-i div {
+	display:block;
+	margin:-1px 0 0 -1px;
 }
 .button-i .ui-icon {
 	position:absolute;
@@ -400,10 +404,6 @@ a.button-i-t {
 	position:relative;
 	padding:0.3em 1.3em 0.3em 20px;
 	white-space:nowrap;
-}
-button.button-i-t div {
-	display:inline-block;
-	vertical-align:baseline;
 }
 .button-i-t .ui-icon {
 	position:absolute;

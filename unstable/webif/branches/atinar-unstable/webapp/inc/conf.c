@@ -207,6 +207,7 @@ cfgParamConfig_t vdrParamConfig[] = {
 	{"WarEagleIcons","1","0|1",false,0,(cfgParamValidate_t)validateCheckbox,(cfgParamPrintInput_t)printCheckbox,0,false},
 };
 
+#ifdef ENABLE_BOXAMP_CONF
 cfgParamConfig_t boxampParamConfig[] = {
 	{"boxamp_bin","boxamp",NULL,false,0,NULL,NULL,10,false},
 	{"boxamp_mp3dir","/var/media/mp3",NULL,false,0,NULL,NULL,30,false},
@@ -215,19 +216,24 @@ cfgParamConfig_t boxampParamConfig[] = {
 	{"boxamp_startup_time","300",NULL,false,0,NULL,NULL,4,false},
 	{"runboxamp","/var/media/pc2/boxamp/runboxamp",NULL,false,0,NULL,NULL,50,false},
 };
+#endif
 
 cfgParamConfigList_t cfgParamConfig[] = { //Indexed by cfgFileId_t
 	{true,sizeof(webifParamConfig)/sizeof(cfgParamConfig_t),webifParamConfig},
 	{false,sizeof(rcParamConfig)/sizeof(cfgParamConfig_t),rcParamConfig},
 	{false,sizeof(vdrParamConfig)/sizeof(cfgParamConfig_t),vdrParamConfig},
+#ifdef ENABLE_BOXAMP_CONF
 	{false,sizeof(boxampParamConfig)/sizeof(cfgParamConfig_t),boxampParamConfig}
+#endif
 };
 
 const cfgFile_t fileMapping[] = {
 	{"cfgWi", "/etc/webif/webif.conf"},
 	{"cfgRc", "/etc/rc.conf"},
 	{"vdrSetup", "/etc/vdr/setup.conf"},
+#ifdef ENABLE_BOXAMP_CONF
 	{"cfgBa", "/etc/bootmenu/bm.local.boxamp.conf"},
+#endif
 	{"sysLog", "/var/log/messages"},
 	{"fstab", "/etc/fstab"},
 	{"rc.local", "/etc/rc.local.conf"},
@@ -243,7 +249,9 @@ const cfgFile_t cfgFile[] = {//Indexed by cfgFileId_t
 	{"cfgWi", "/etc/webif/webif.conf"},
 	{"cfgRc", "/etc/rc.conf"},
 	{"vdrSetup", "/etc/vdr/setup.conf"},
+#ifdef ENABLE_BOXAMP_CONF
 	{"cfgBa", "/etc/bootmenu/bm.local.boxamp.conf"},
+#endif
 };
 const int cfgFileLength=sizeof(cfgFile)/sizeof(cfgFile_t);
 
