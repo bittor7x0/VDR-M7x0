@@ -24,7 +24,7 @@ LIBUPNP_PATCHES_DIR := $(PATCHES_DIR)/libupnp/$(LIBUPNP_VERSION)
 
 LIBUPNP_FILE := libupnp-$(LIBUPNP_VERSION).tar.bz2
 LIBUPNP_DLFILE := $(DOWNLOAD_DIR)/$(LIBUPNP_FILE)
-LIBUPNP_URL := http://sourceforge.net/projects/pupnp/files/pupnp/LibUPnP%20$(LIBUPNP_VERSION)/$(LIBUPNP_FILE)/download
+LIBUPNP_URL := http://sourceforge.net/projects/pupnp/files/pupnp/libUPnP%20$(LIBUPNP_VERSION)/$(LIBUPNP_FILE)/download
 LIBUPNP_DIR := $(BUILD_DIR)/libupnp-$(LIBUPNP_VERSION)
 
 LIBUPNP_INSTALLED = $(STAGEFILES_DIR)/.libupnp_installed
