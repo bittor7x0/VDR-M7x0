@@ -19,10 +19,10 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 MINI_SNMPD_DEPS = $(BASE_BUILD_STAGEFILE)
 
-MINI_SNMPD_VERSION := 1.0
+MINI_SNMPD_VERSION := 1.2b
 MINI_SNMPD_PATCHES_DIR := $(PATCHES_DIR)/mini_snmpd/$(MINI_SNMPD_VERSION)
 
-MINI_SNMPD_FILE := mini_snmpd.tar.gz
+MINI_SNMPD_FILE := mini_snmpd-$(MINI_SNMPD_VERSION).tar.gz
 MINI_SNMPD_DLFILE := $(DOWNLOAD_DIR)/$(MINI_SNMPD_FILE)
 MINI_SNMPD_URL := http://members.aon.at/linuxfreak/linux/$(MINI_SNMPD_FILE)
 MINI_SNMPD_DIR := $(BUILD_DIR)/mini_snmpd

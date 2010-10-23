@@ -1,2 +1,5 @@
-usr/bin/upnpc  usr/bin/upnpc  f 755 0 0 - - - - -
-usr/bin/upnpc  -              s   - - - - - - - -
+usr/bin/upnpc              usr/bin/upnpc              f 755 0 0 - - - - -
+usr/bin/upnpc              -                          s   - - - - - - - -
+usr/lib/libminiupnpc.so.4  usr/lib/libminiupnpc.so.4  f 755 0 0 - - - - -
+usr/lib/libminiupnpc.so.4  -                          s   - - - - - - - -
+usr/lib/libminiupnpc.so    libminiupnpc.so.4          l 777 0 0 - - - - -

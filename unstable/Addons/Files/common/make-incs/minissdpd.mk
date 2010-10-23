@@ -69,7 +69,7 @@ $(STAGEFILES_DIR)/.minissdpd_patched: $(STAGEFILES_DIR)/.minissdpd_unpacked
 #
 
 $(STAGEFILES_DIR)/.minissdpd_compiled: $(STAGEFILES_DIR)/.minissdpd_patched
-	$(UCLIBC_ENV) $(MAKE) -C $(MINISSDPD_DIR)
+	$(MAKE) $(UCLIBC_ENV) -C $(MINISSDPD_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.minissdpd_compiled
 
 #
@@ -77,8 +77,8 @@ $(STAGEFILES_DIR)/.minissdpd_compiled: $(STAGEFILES_DIR)/.minissdpd_patched
 #
 
 $(STAGEFILES_DIR)/.minissdpd_installed: $(STAGEFILES_DIR)/.minissdpd_compiled
-	$(UCLIBC_ENV) PREFIX=$(TARGET_ROOT) \
-		$(MAKE) -C $(MINISSDPD_DIR) install
+	PREFIX=$(TARGET_ROOT) \
+		$(MAKE) $(UCLIBC_ENV) -C $(MINISSDPD_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.minissdpd_installed
 
 
