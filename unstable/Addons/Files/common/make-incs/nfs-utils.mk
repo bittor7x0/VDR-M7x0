@@ -16,8 +16,14 @@
 #
 #
 
+ifeq ($(CONFIG_NFS-UTILS),y)
+ifneq ($(CONFIG_TCP_WRAPPERS),y)
+   $(error dependency error: nfs-utils needs tcp_wrappers enabled)
+endif
+endif
+
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-NFS-UTILS_DEPS = $(BASE_BUILD_STAGEFILE)
+NFS-UTILS_DEPS = $(BASE_BUILD_STAGEFILE) $(TCP_WRAPPERS_INSTALLED)
 
 NFS-UTILS_VERSION := 1.1.6
 NFS-UTILS_PATCHES_DIR := $(PATCHES_DIR)/nfs-utils/$(NFS-UTILS_VERSION)
@@ -74,7 +80,6 @@ $(STAGEFILES_DIR)/.nfs-utils_configured: $(STAGEFILES_DIR)/.nfs-utils_patched
 		$(NFS-UTILS_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
-			--without-tcp-wrappers \
 			--disable-uuid \
 			--disable-gss \
 			--disable-nfsv4 \
