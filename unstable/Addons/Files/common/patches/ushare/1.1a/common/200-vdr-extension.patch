@@ -1,0 +1,58 @@
+diff -Naur ushare-1.1a-orig/src/metadata.c ushare-1.1a/src/metadata.c
+--- ushare-1.1a-orig/src/metadata.c	2007-12-09 14:03:36.000000000 +0100
++++ ushare-1.1a/src/metadata.c	2010-10-20 18:28:09.687436551 +0200
+@@ -20,6 +20,7 @@
+ 
+ #include <stdlib.h>
+ #include <string.h>
++#include <ctype.h>
+ #include <stdio.h>
+ #include <dirent.h>
+ #include <sys/types.h>
+@@ -169,12 +170,25 @@
+ {
+   struct upnp_entry_t *entry = NULL;
+   char *title = NULL, *x = NULL;
++  int isVDR = 0;
+   char url_tmp[MAX_URL_SIZE] = { '\0' };
+   char *title_or_name = NULL;
+ 
+   if (!name)
+     return NULL;
+ 
++  char *ext = strrchr(name, '.');
++  if (ext)
++  {
++      if (!strcmp(ext, ".vdr"))
++      {
++          if (isdigit(name[0]) && isdigit(name[1]) && isdigit(name[2]))
++              isVDR=1;
++          else
++              return NULL;
++      }
++  }
++
+   entry = (struct upnp_entry_t *) malloc (sizeof (struct upnp_entry_t));
+ 
+ #ifdef HAVE_DLNA
+@@ -238,6 +252,9 @@
+ 
+       /* Only malloc() what we really need */
++
++      if ((isVDR)&&(strlen(url_tmp)+5<MAX_URL_SIZE))
++          strcat(url_tmp, ".mpeg");
+       entry->url = strdup (url_tmp);
+     }
+   else /* container */
+     {
+diff -Naur ushare-1.1a-orig/src/mime.c ushare-1.1a/src/mime.c
+--- ushare-1.1a-orig/src/mime.c	2007-12-09 14:03:36.000000000 +0100
++++ ushare-1.1a/src/mime.c	2010-10-20 17:40:41.620625000 +0200
+@@ -63,6 +63,7 @@
+   { "qt",    UPNP_VIDEO, "http-get:*:video/quicktime:"},
+   { "bin",   UPNP_VIDEO, "http-get:*:video/mpeg2:"},
+   { "iso",   UPNP_VIDEO, "http-get:*:video/mpeg2:"},
++  { "vdr",   UPNP_VIDEO, "http-get:*:video/mpeg:"},
+ 
+   /* Audio files */
+   { "3gp",  UPNP_AUDIO, "http-get:*:audio/3gpp:"},

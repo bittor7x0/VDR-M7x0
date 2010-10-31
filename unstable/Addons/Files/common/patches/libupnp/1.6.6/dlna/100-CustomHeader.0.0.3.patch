@@ -685,36 +685,6 @@ diff -Naur libupnp-1.6.6/upnp/src/genlib/net/http/webserver.c libupnp-1.6.6-dlna
                      X_USER_AGENT );
  
                  http_SendMessage( info, &timeout, "b", headers.buf,
-diff -Naur libupnp-1.6.6/upnp/src/inc/config.h libupnp-1.6.6-dlna/upnp/src/inc/config.h
---- libupnp-1.6.6/upnp/src/inc/config.h	2008-03-22 16:57:27.000000000 +0100
-+++ libupnp-1.6.6-dlna/upnp/src/inc/config.h	2009-12-31 15:26:47.694951746 +0100
-@@ -65,7 +65,7 @@
-  */
- 
- //@{
--#define JOBS_PER_THREAD 10
-+#define JOBS_PER_THREAD 1
- //@}
- 
- /** @name MIN_THREADS
-@@ -78,7 +78,7 @@
-  */
- 
- //@{
--#define MIN_THREADS 2 
-+#define MIN_THREADS 10
- //@}
- 
- /** @name MAX_THREADS
-@@ -93,7 +93,7 @@
-  */
- 
- //@{
--#define MAX_THREADS 12 
-+#define MAX_THREADS 16
- //@}
- 
- /** @name MAX_JOBS_TOTAL
 diff -Naur libupnp-1.6.6/upnp/src/inc/httpreadwrite.h libupnp-1.6.6-dlna/upnp/src/inc/httpreadwrite.h
 --- libupnp-1.6.6/upnp/src/inc/httpreadwrite.h	2008-02-10 02:55:34.000000000 +0100
 +++ libupnp-1.6.6-dlna/upnp/src/inc/httpreadwrite.h	2010-01-01 18:38:55.153109823 +0100

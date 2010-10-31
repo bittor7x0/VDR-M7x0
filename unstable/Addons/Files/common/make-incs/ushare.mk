@@ -71,7 +71,10 @@ $(STAGEFILES_DIR)/.ushare_unpacked: $(USHARE_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.ushare_patched: $(STAGEFILES_DIR)/.ushare_unpacked
-	$(call patch_package, $(USHARE_DIR), $(USHARE_PATCHES_DIR))
+	$(call patch_package, $(USHARE_DIR), $(USHARE_PATCHES_DIR)/common)
+ifeq ($(CONFIG_LIBUPNP_DLNA),y)
+	$(call patch_package, $(USHARE_DIR), $(USHARE_PATCHES_DIR)/dlna)
+endif
 	$(TOUCH) $(STAGEFILES_DIR)/.ushare_patched
 
 #
