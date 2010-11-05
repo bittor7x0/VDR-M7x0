@@ -1,0 +1,98 @@
+diff -Naur uclibc_build_env_orig/buildin/fw-utils/copy_lists.c uclibc_build_env/buildin/fw-utils/copy_lists.c
+--- uclibc_build_env_orig/buildin/fw-utils/copy_lists.c	2010-11-05 10:37:38.048185371 +0100
++++ uclibc_build_env/buildin/fw-utils/copy_lists.c	2010-11-05 10:41:19.475749517 +0100
+@@ -56,6 +56,7 @@
+ 	const char *root_fs_path;
+ 	const char *target_root_path;
+ 	char *strip_tool;
++	char *upx_tool;
+ 	const char *cur_filename;
+ 	FILE *cur_file;
+ 	int cur_line;
+@@ -281,6 +282,24 @@
+ 	free(full_name);
+ }
+ 
++static void do_upx(struct copy_context *cont)
++{
++	char *full_name;
++
++	if (asprintf(&full_name,"%s/%s", cont->root_fs_path,
++			cont->cur_entry.file1) < 0)
++		die("Cannot alloc memory");
++
++	// UPX only work with executables files
++	int upx_chmod = chmod(full_name, 0755);
++	if (upx_chmod != 0)
++	    die("Cannot set execute permission to '%s'", full_name);
++	else
++	    EXEC_SIMPLE(cont->upx_tool, 2, "-9", full_name);
++
++	free(full_name);
++}
++
+ static void do_copy(struct copy_context *cont)
+ {
+ 	char *from;
+@@ -450,6 +469,9 @@
+ 		case 's':
+ 			do_strip(cont);
+ 			break;
++		case 'u':
++			do_upx(cont);
++			break;
+ 		default:
+ 			die("Invalid action/filetype flag %c", cont->cur_entry.action);
+ 	}
+@@ -476,7 +498,7 @@
+ 
+ static void print_usage(void)
+ {
+-	printf("Usage: copy_lists [-s] <rootfs path> <target root path> <strip util> <input file list>");
++	printf("Usage: copy_lists [-s] <rootfs path> <target root path> <strip util> <upx util> <input file list>");
+ }
+ 
+ int main(int argc, char **argv)
+@@ -514,6 +536,12 @@
+ 	}
+ 	i++;
+ 
++	cont.upx_tool = argv[i];
++	if (stat(cont.upx_tool, &st) || !S_ISREG(st.st_mode)) {
++		die("upx tool '%s' not usable", cont.upx_tool);
++	}
++	i++;
++
+ 	if (argc == i) {
+ 		handle_file(&cont, NULL);
+ 
+diff -Naur uclibc_build_env_orig/make-incs/generate_rootfs.mk uclibc_build_env/make-incs/generate_rootfs.mk
+--- uclibc_build_env_orig/make-incs/generate_rootfs.mk	2010-11-05 10:37:39.562124481 +0100
++++ uclibc_build_env/make-incs/generate_rootfs.mk	2010-11-05 10:21:33.039755000 +0100
+@@ -31,7 +31,7 @@
+ ROOTFS_FILE_TABLE := $(STAGEFILES_DIR)/file_tab$(subst /,.,$(subst $(TOP_DIR),,$(ROOTFS_DIR))).lst
+ FQ_FILE_LISTS = $(addprefix $(FILELIST_DIR)/, $(FILE_LISTS))
+ ROOTFS_DIR_DEPS = $(PACKS_BUILD_STAGEFILE) $$(FQ_FILE_LISTS) \
+-   $(COPY_LISTS_BIN) $(TOP_DIR)/.config
++   $(COPY_LISTS_BIN) $(UPX_BIN) $(TOP_DIR)/.config
+ 
+ ifndef CONFIG_EXT2_ROOTFS_SIZE
+   EXT2_ROOTFS_SIZE := 65536
+@@ -64,7 +64,7 @@
+ 
+ DISTCLEAN_RULES += distclean-generate-rootfs
+ 
+-AWK_LST_TRANS_PRG := '$$1 !~ /\#/ && $$3 !~ /l/ && $$3 !~ /s/ \
++AWK_LST_TRANS_PRG := '$$1 !~ /\#/ && $$3 !~ /l/ && $$3 !~ /s/ && $$3 !~ /u/ \
+    { file="/"$$1 ; gsub("//","/",file) ; \
+     print file, $$3, $$4, $$5, $$6, $$7, $$8, $$9, $$10, $$11}'
+ 
+@@ -104,7 +104,7 @@
+ 		) \
+ 	)
+ 	$(COPY_LISTS_BIN) -s '$(ROOTFS_DIR)' '$(TARGET_ROOT)' \
+-		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' $(FQ_FILE_LISTS)
++		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(FQ_FILE_LISTS)
+ 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(ROOTFS_DIR)/etc/systemtype`,g" $(ROOTFS_DIR)/etc/rc.mini
+ 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG) > \
+ 		$(ROOTFS_FILE_TABLE)
