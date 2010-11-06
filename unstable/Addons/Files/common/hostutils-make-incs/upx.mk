@@ -65,6 +65,7 @@ $(STAGEFILES_DIR)/.upx_host_patched: $(STAGEFILES_DIR)/.upx_host_unpacked
 
 $(STAGEFILES_DIR)/.upx_host_compiled: $(STAGEFILES_DIR)/.upx_host_patched $(UCL_LIB)
 	$(MAKE) -C $(UPX_HOSTDIR) \
+		CXXFLAGS="$(CXXFLAGS) -Wl,-rpath,$(PREFIX)/lib" \
 		UPX_UCLDIR="$(UCL_HOSTDIR)" \
 		DEFS="-DUCL_NO_ASM" \
 		exeext="" \
