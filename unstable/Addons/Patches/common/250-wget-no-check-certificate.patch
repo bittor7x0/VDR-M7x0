@@ -1,0 +1,12 @@
+diff -Naur uclibc_build_env_orig/Makefile uclibc_build_env/Makefile
+--- uclibc_build_env_orig/Makefile	2010-11-05 10:37:39.562124000 +0100
++++ uclibc_build_env/Makefile	2010-11-09 09:36:49.613338035 +0100
+@@ -48,7 +48,7 @@
+ LN := ln
+ ECHO := echo
+ SECHO := @echo
+-WGET := wget --passive-ftp
++WGET := wget --passive-ftp --no-check-certificate
+ RM := rm
+ CAT := cat
+ CUT := cut
