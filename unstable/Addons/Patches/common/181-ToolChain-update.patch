@@ -217,3 +217,15 @@ diff -Naur uclibc_build_env_orig/rootfs-file-lists/uclibc.lst uclibc_build_env/r
 +lib/libuClibc-0.9.30.3.so  lib/libuClibc-0.9.30.3.so  f 755 0 0 - - - - -
 +lib/libuClibc-0.9.30.3.so  -                        s   - - - - - - - -
 +lib/libc.so.0            libuClibc-0.9.30.3.so      l 777 0 0 - - - - -
+diff -Naur uclibc_build_env_orig/rootfs-file-lists/zlib.lst uclibc_build_env/rootfs-file-lists/zlib.lst
+--- uclibc_build_env_orig/rootfs-file-lists/zlib.lst	2010-11-10 12:48:21.139923000 +0100
++++ uclibc_build_env/rootfs-file-lists/zlib.lst	2010-11-10 16:07:45.826070943 +0100
+@@ -1,4 +1,4 @@
+-usr/lib/libz.so.1.2.3 usr/lib/libz.so.1.2.3 f 755 0 0 - - - - -
+-usr/lib/libz.so.1.2.3 -                     s   - - - - - - - -
+-usr/lib/libz.so.1     libz.so.1.2.3         l 777 0 0 - - - - -
+-usr/lib/libz.so       libz.so.1.2.3         l 777 0 0 - - - - -
++usr/lib/libz.so.1.2.5 usr/lib/libz.so.1.2.5 f 755 0 0 - - - - -
++usr/lib/libz.so.1.2.5 -                     s   - - - - - - - -
++usr/lib/libz.so.1     libz.so.1.2.5         l 777 0 0 - - - - -
++usr/lib/libz.so       libz.so.1.2.5         l 777 0 0 - - - - -
