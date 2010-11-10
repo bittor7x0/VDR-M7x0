@@ -1,0 +1,11 @@
+---  uclibc_build_env_orig/make-incs/zlib.mk	2009-01-18 15:30:41.000000000 +0100
++++ uclibc_build_env/make-incs/zlib.mk	2009-01-18 15:31:37.000000000 +0100
+@@ -81,7 +81,7 @@
+                                       $(filter y,$(CONFIG_ZLIB_STATIC)))
+ 	# -$(RM) -f $(STAGEFILES_DIR)/.zlib_static_configured
+ 	-$(UCLIBC_ENV) $(MAKE) -C $(ZLIB_DIR) distclean
+-	($(CD) $(ZLIB_DIR) ; $(UCLIBC_ENV) \
++	($(CD) $(ZLIB_DIR) ; $(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fPIC" \
+ 		$(ZLIB_DIR)/configure \
+ 			--prefix=$(TARGET_ROOT)/usr \
+ 			--shared) # This is really needed otherwise _only_ static is build
