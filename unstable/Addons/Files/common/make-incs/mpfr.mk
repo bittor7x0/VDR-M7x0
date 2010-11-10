@@ -24,7 +24,7 @@ MPFR_PATCHES_DIR := $(PATCHES_DIR)/mpfr/$(MPFR_VERSION)
 
 MPFR_FILE := mpfr-$(MPFR_VERSION).tar.bz2
 MPFR_DLFILE := $(DOWNLOAD_DIR)/$(MPFR_FILE)
-MPFR_URL := http://ftp.gnu.org/gnu/mpfr/$(MPFR_FILE)
+MPFR_URL := http://www.mpfr.org/mpfr-current/$(MPFR_FILE)
 MPFR_DIR := $(BUILD_DIR)/mpfr-$(MPFR_VERSION)
 
 MPFR_INSTALLED = $(STAGEFILES_DIR)/.mpfr_installed
