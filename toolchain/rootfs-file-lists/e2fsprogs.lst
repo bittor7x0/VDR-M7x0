@@ -1,0 +1,11 @@
+sbin/e2fsck           sbin/e2fsck           f 755 0 0 - - - - -
+sbin/e2fsck           -                     s   - - - - - - - -
+sbin/fsck.ext2        e2fsck                l 777 0 0 - - - - -
+sbin/fsck.ext3        e2fsck                l 777 0 0 - - - - -
+sbin/mke2fs           sbin/mke2fs           f 755 0 0 - - - - -
+sbin/mke2fs           -                     s   - - - - - - - -
+sbin/mkfs.ext2        mke2fs                l 777 0 0 - - - - -
+sbin/mkfs.ext3        mke2fs                l 777 0 0 - - - - -
+etc/mke2fs.conf	      etc/mke2fs.conf       f 664 0 0 - - - - -
+sbin/tune2fs          sbin/tune2fs          f 755 0 0 - - - - -
+sbin/tune2fs          -                     s   - - - - - - - -

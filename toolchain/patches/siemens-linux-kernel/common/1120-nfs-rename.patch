@@ -1,0 +1,17 @@
+--- slin_m740/fs/nfs/dir_old.c	2008-11-12 20:02:09.000000000 +0100
++++ slin_m740/fs/nfs/dir.c	2008-11-12 19:02:28.000000000 +0100
+@@ -1020,9 +1020,11 @@
+ 	 */
+ 	if (!new_inode)
+ 		goto go_ahead;
+-	if (S_ISDIR(new_inode->i_mode))
+-		goto out;
+-	else if (atomic_read(&new_dentry->d_count) > 1) {
++	if (S_ISDIR(new_inode->i_mode)) {
++		error = -EISDIR;
++		if (!S_ISDIR(old_inode->i_mode))
++			goto out;
++	} else if (atomic_read(&new_dentry->d_count) > 1) {
+ 		int err;
+ 		/* copy the target dentry's name */
+ 		dentry = d_alloc(new_dentry->d_parent,

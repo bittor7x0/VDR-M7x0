@@ -1,0 +1,12 @@
+--- cramfs-1.1/cramfsck.c.orig	2008-06-19 08:35:16.000000000 -0400
++++ cramfs-1.1/cramfsck.c	2008-06-19 08:36:39.000000000 -0400
+@@ -357,8 +357,7 @@
+ 	}
+ 	err = inflate(&stream, Z_FINISH);
+ 	if (err != Z_STREAM_END) {
+-		die(FSCK_UNCORRECTED, 0, "decompression error %p(%d): %s",
+-		    zError(err), src, len);
++		die(FSCK_ERROR, 0, "decompression error");
+ 	}
+ 	return stream.total_out;
+ }

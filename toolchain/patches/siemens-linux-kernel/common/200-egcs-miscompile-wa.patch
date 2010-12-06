@@ -1,0 +1,13 @@
+--- siemens-m750-linux-src/include/linux/byteorder/swab.h.old.ak	2007-06-21 12:39:42.000000000 +0200
++++ siemens-m750-linux-src/include/linux/byteorder/swab.h	2007-06-21 13:21:50.000000000 +0200
+@@ -22,8 +22,8 @@
+ ({ \
+ 	__u16 __x = (x); \
+ 	((__u16)( \
+-		(((__u16)(__x) & (__u16)0x00ffU) << 8) | \
+-		(((__u16)(__x) & (__u16)0xff00U) >> 8) )); \
++		((__x << 8) & 0xff00) | \
++		((__x >> 8) & 0x00ff) )); \
+ })
+ 
+ #define ___swab24(x) \

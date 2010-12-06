@@ -1,0 +1,57 @@
+--- slin_m740/net/ipv4/tcp_input.c.orig	2007-12-23 12:22:32.000000000 +0100
++++ slin_m740/net/ipv4/tcp_input.c	2007-12-23 13:31:07.000000000 +0100
+@@ -69,6 +69,7 @@
+ #include <net/tcp.h>
+ #include <net/inet_common.h>
+ #include <linux/ipsec.h>
++#include <asm/unaligned.h>
+ 
+ int sysctl_tcp_timestamps = 1;
+ int sysctl_tcp_window_scaling = 1;
+@@ -2169,8 +2170,8 @@
+ 						if ((estab && tp->tstamp_ok) ||
+ 						    (!estab && sysctl_tcp_timestamps)) {
+ 							tp->saw_tstamp = 1;
+-							tp->rcv_tsval = ntohl(*(__u32 *)ptr);
+-							tp->rcv_tsecr = ntohl(*(__u32 *)(ptr+4));
++							tp->rcv_tsval = ntohl(get_unaligned((__u32 *)ptr));
++							tp->rcv_tsecr = ntohl(get_unaligned((__u32 *)(ptr+4)));
+ 						}
+ 					}
+ 					break;
+@@ -2207,13 +2208,13 @@
+ 	} else if (tp->tstamp_ok &&
+ 		   th->doff == (sizeof(struct tcphdr)>>2)+(TCPOLEN_TSTAMP_ALIGNED>>2)) {
+ 		__u32 *ptr = (__u32 *)(th + 1);
+-		if (*ptr == ntohl((TCPOPT_NOP << 24) | (TCPOPT_NOP << 16)
++		if (get_unaligned(ptr) == ntohl((TCPOPT_NOP << 24) | (TCPOPT_NOP << 16)
+ 				  | (TCPOPT_TIMESTAMP << 8) | TCPOLEN_TIMESTAMP)) {
+ 			tp->saw_tstamp = 1;
+ 			++ptr;
+-			tp->rcv_tsval = ntohl(*ptr);
++			tp->rcv_tsval = ntohl(get_unaligned(ptr));
+ 			++ptr;
+-			tp->rcv_tsecr = ntohl(*ptr);
++			tp->rcv_tsecr = ntohl(get_unaligned(ptr));
+ 			return 1;
+ 		}
+ 	}
+@@ -3376,15 +3377,15 @@
+ 			__u32 *ptr = (__u32 *)(th + 1);
+ 
+ 			/* No? Slow path! */
+-			if (*ptr != ntohl((TCPOPT_NOP << 24) | (TCPOPT_NOP << 16)
++			if (get_unaligned(ptr) != ntohl((TCPOPT_NOP << 24) | (TCPOPT_NOP << 16)
+ 					   | (TCPOPT_TIMESTAMP << 8) | TCPOLEN_TIMESTAMP))
+ 				goto slow_path;
+ 
+ 			tp->saw_tstamp = 1;
+ 			++ptr; 
+-			tp->rcv_tsval = ntohl(*ptr);
++			tp->rcv_tsval = ntohl(get_unaligned(ptr));
+ 			++ptr;
+-			tp->rcv_tsecr = ntohl(*ptr);
++			tp->rcv_tsecr = ntohl(get_unaligned(ptr));
+ 
+ 			/* If PAWS failed, check it more carefully in slow path */
+ 			if ((s32)(tp->rcv_tsval - tp->ts_recent) < 0)

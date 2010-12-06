@@ -1,0 +1,16 @@
+#!/bin/ash
+
+#
+# build in echo override
+#
+
+echo() {
+    if [ X"$1" == X"-n" ]; then
+	/bin/echo "$2" | /usr/bin/osddrawtext -a 8  -b 0xFFFF0000 
+    else
+	/bin/echo "$1" | /usr/bin/osddrawtext -a 8
+    fi 
+}
+
+
+

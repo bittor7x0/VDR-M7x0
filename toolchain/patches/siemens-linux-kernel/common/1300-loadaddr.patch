@@ -1,0 +1,11 @@
+--- slin_m740/arch/mips/Makefile.old	2008-02-23 20:08:03.000000000 +0100
++++ slin_m740/arch/mips/Makefile	2008-02-23 20:08:50.000000000 +0100
+@@ -124,7 +124,7 @@
+       SUBDIRS       += arch/mips/emma2
+ 
+       # Link kernel just above exception vectors (default).
+-      LOADADDR      = 0x80200000
++      LOADADDR      = 0x80100000
+ 
+       # arch/mips/config.in can provide .text and .data addresses.
+       ifdef CONFIG_LINK_TEXT

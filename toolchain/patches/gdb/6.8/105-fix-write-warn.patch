@@ -1,0 +1,26 @@
+--- gdb-6.8/gdb/utils.c.orig	2008-12-21 22:20:01.000000000 +0100
++++ gdb-6.8/gdb/utils.c	2008-12-21 22:20:48.000000000 +0100
+@@ -704,7 +704,8 @@
+ 	abort ();	/* NOTE: GDB has only three calls to abort().  */
+       default:
+ 	dejavu = 3;
+-	write (STDERR_FILENO, msg, sizeof (msg));
++	if (write (STDERR_FILENO, msg, sizeof (msg)) != sizeof (msg))
++	   exit (2);
+ 	exit (1);
+       }
+   }
+--- gdb-6.8/gdb/ui-file.c.orig	2008-12-21 22:28:02.000000000 +0100
++++ gdb-6.8/gdb/ui-file.c	2008-12-21 22:35:25.000000000 +0100
+@@ -481,7 +481,10 @@
+   if (stdio->magic != &stdio_file_magic)
+     internal_error (__FILE__, __LINE__,
+ 		    _("stdio_file_write: bad magic number"));
+-  fwrite (buf, length_buf, 1, stdio->file);
++  if (fwrite (buf, length_buf, 1, stdio->file) != 1)
++    internal_error (__FILE__, __LINE__,
++		    _("stdio_file_write: fwrite failed"));
++  
+ }
+ 
+ static void

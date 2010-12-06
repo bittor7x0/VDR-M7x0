@@ -1,0 +1,170 @@
+--- siemens-m750-linux-src/arch/mips/emma2/pci-emma2.c.orig	2007-09-08 17:59:01.000000000 +0200
++++ siemens-m750-linux-src/arch/mips/emma2/pci-emma2.c	2007-09-09 14:56:27.000000000 +0200
+@@ -123,14 +123,18 @@
+ 	{
+ 		*val = 0xff;
+ 		*initReg = oldInit;
++#ifdef DEBUG_PCI_EMMA
+ 		printk("\n\nvr41xx_pci_read_config_byte read wrong address %lx\n\n",adr);
++#endif
+ 		return PCIBIOS_SUCCESSFUL;
+ 	}
+-	printk("read config byte at adr = %x\n",adr);
+ 	*adr;
+ 	*val = *adr >> ((where & 3)*8);
+ 
+ 	*initReg = oldInit;
++#ifdef DEBUG_PCI_EMMA
++	printk("read config byte at adr = %x val = %x\n",adr,(u32)(*val));
++#endif
+ 	return PCIBIOS_SUCCESSFUL;
+ }
+ 
+@@ -147,14 +151,18 @@
+ 	{
+ 		*val = 0xffff;
+ 		*initReg = oldInit;
++#ifdef DEBUG_PCI_EMMA
+ 		printk("\n\n vr41xx_pci_read_config_word read wrong address %lx\n\n",adr);
++#endif
+ 		return PCIBIOS_SUCCESSFUL;
+ 	}
+-	printk("read config word at adr = %x\n",adr);
+ 	*adr;
+ 	*val = *adr;
+ 
+ 	*initReg = oldInit;
++#ifdef DEBUG_PCI_EMMA
++	printk("read config word at adr = %x val = %x\n",adr,(u32)(*val));
++#endif
+ 	return PCIBIOS_SUCCESSFUL;
+ }
+ 
+@@ -171,14 +179,18 @@
+ 	{
+ 		*val = 0xffffffff;
+ 		*initReg = oldInit;
++#ifdef DEBUG_PCI_EMMA
+ 		printk("\n\n vr41xx_pci_read_config_dword read wrong address %lx\n\n",adr);
++#endif
+ 		return PCIBIOS_SUCCESSFUL;
+ 	}
+-	printk("read config dword at adr = %x\n",adr);
+ 	*adr;
+ 	*val = *adr;
+-
++        
+ 	*initReg = oldInit;
++#ifdef DEBUG_PCI_EMMA
++	printk("read config dword at adr = %x val = %x\n",adr, *val);
++#endif
+ 	return PCIBIOS_SUCCESSFUL;
+ }
+ 
+@@ -193,11 +205,15 @@
+ 	adr = (u32 *) (PCI_BASE_ADR(dev) + PCI_CONFIG_ADRS(dev, where & 0xfc));
+ 	if (((long int)adr & 0x00000400) != 0)
+ 	{
++#ifdef DEBUG_PCI_EMMA
+ 		printk("\n\n vr41xx_pci_write_config_byte write to wrong address %lx\n\n",adr);
++#endif
+ 		*initReg = oldInit;
+ 		return PCIBIOS_SUCCESSFUL;
+ 	}
+-	printk("write config byte at adr = %x\n",adr);
++#ifdef DEBUG_PCI_EMMA
++	printk("write config byte at adr = %x val = %x\n",adr, (int)val);
++#endif
+ 	*adr;
+ 	*adr = *adr |  (val<<((where & 3))*8);
+ 
+@@ -216,11 +232,15 @@
+ 	adr = (u16 *) (PCI_BASE_ADR(dev) + PCI_CONFIG_ADRS(dev, where));
+ 	if (((long int)adr & 0x00000400) != 0)
+ 	{
++#ifdef DEBUG_PCI_EMMA
+ 		printk("\n\n vr41xx_pci_write_config_word write to wrong address %lx\n\n",adr);
++#endif
+ 		*initReg = oldInit;
+ 		return PCIBIOS_SUCCESSFUL;
+ 	}
+-	printk("write config word at adr = %x\n",adr);
++#ifdef DEBUG_PCI_EMMA
++	printk("write config word at adr = %x val = %x\n",adr,(int)val);
++#endif
+ 	*adr = val;
+ 
+ 	*initReg = oldInit;
+@@ -238,11 +258,15 @@
+ 	adr = (u32 *) (PCI_BASE_ADR(dev) + PCI_CONFIG_ADRS(dev, where));
+ 	if (((long int)adr & 0x00000400) != 0)
+ 	{
++#ifdef DEBUG_PCI_EMMA
+ 		printk("\n\n vr41xx_pci_write_config_dword write to wrong address %lx\n\n",adr);
++#endif
+ 		*initReg = oldInit;
+ 		return PCIBIOS_SUCCESSFUL;
+ 	}
+-	printk("write config dword at adr = %x\n",adr);
++#ifdef DEBUG_PCI_EMMA
++	printk("write config dword at adr = %x val = %x\n",adr,val);
++#endif
+ 	*adr = val;
+ 
+ 	*initReg = oldInit;
+@@ -271,11 +295,15 @@
+ static void set_pin_irq(int pin)
+ {
+     if(pin < 32) {
++#ifdef DEBUG_PCI_EMMA
+ 	printk("pin must be >= 32\n");
++#endif
+ 	return;
+     }
+     pin -= 32;
++#ifdef DEBUG_PCI_EMMA
+     printk("pin %d = %d\n",pin+32, (zpio_regs_base->port_data_1 & (1<<pin)) >> pin );
++#endif
+     zpio_regs_base->port_direction_1 &= ~(1 << pin);
+     zpio_regs_base->int_status_1 &= ~(1 << pin);
+     zpio_regs_base->int_mode_1 |= (1 << pin);  /* level trigger */
+@@ -286,10 +314,14 @@
+ static void set_pin_irq_lower(int pin)
+ {
+     if(pin >= 32) {
++#ifdef DEBUG_PCI_EMMA
+ 	printk("pin must be < 32\n");
++#endif
+ 	return;
+     }
++#ifdef DEBUG_PCI_EMMA
+     printk("pin %d = %d\n",pin, (zpio_regs_base->port_data_0 & (1<<pin)) >> pin );
++#endif
+     zpio_regs_base->port_direction_0 &= ~(1 << pin);
+     zpio_regs_base->int_status_0 &= ~(1 << pin);
+     zpio_regs_base->int_mode_0 |= (1 << pin);  /* level trigger */
+@@ -496,8 +528,24 @@
+ 	return 0;
+ }
+ 
++/* The usb controller chip supports 5 Ports, but only 2 are wired.
++ * This disables the unusable 3 Ports */
++void __init pcibios_fixup_usb(struct pci_dev *dev)
++{
++	u32 reg_ext1;
++	if ((dev->device == 0x0035 && dev->devfn == 0) ||
++		(dev->device == 0x00e0 && dev->devfn == 2)) {
++		pci_read_config_dword(dev, 0xe0, &reg_ext1);
++		reg_ext1 = (reg_ext1 & (~0x7)) | 0x2;
++		pci_write_config_dword(dev, 0xe0, reg_ext1);
++	}
++}
++
+ struct pci_fixup pcibios_fixups[] = {
++#if 0
+ 	{ PCI_FIXUP_HEADER, PCI_ANY_ID, PCI_ANY_ID, pcibios_fixup_resources },
++#endif
++	{ PCI_FIXUP_FINAL, PCI_VENDOR_ID_NEC, PCI_ANY_ID, pcibios_fixup_usb },
+ 	{ 0 }
+ };
+ 

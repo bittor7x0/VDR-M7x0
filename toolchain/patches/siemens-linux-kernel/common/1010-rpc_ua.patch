@@ -1,0 +1,19 @@
+--- slin_m740/net/sunrpc/xprt.c.orig	2007-12-23 13:43:12.000000000 +0100
++++ slin_m740/net/sunrpc/xprt.c	2007-12-23 13:45:58.000000000 +0100
+@@ -66,6 +66,7 @@
+ #include <net/tcp.h>
+ 
+ #include <asm/uaccess.h>
++#include <asm/unaligned.h>
+ 
+ /*
+  * Local variables
+@@ -679,7 +680,7 @@
+ 
+ 	/* Look up and lock the request corresponding to the given XID */
+ 	spin_lock(&xprt->sock_lock);
+-	rovr = xprt_lookup_rqst(xprt, *(u32 *) (skb->h.raw + sizeof(struct udphdr)));
++	rovr = xprt_lookup_rqst(xprt, get_unaligned((u32 *) (skb->h.raw + sizeof(struct udphdr))));
+ 	if (!rovr)
+ 		goto out_unlock;
+ 	task = rovr->rq_task;

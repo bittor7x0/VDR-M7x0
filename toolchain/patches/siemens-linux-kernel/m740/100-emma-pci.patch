@@ -1,0 +1,10 @@
+--- siemens-m750-linux-src/arch/mips/emma2/pci-emma2.c.m750	2007-06-19 18:10:20.000000000 +0200
++++ siemens-m750-linux-src/arch/mips/emma2/pci-emma2.c	2007-06-19 18:10:50.000000000 +0200
+@@ -86,7 +86,6 @@
+ 
+ #define SIEMENS_WB2 // !!!!!!for evaluation board WB2!!!!!
+ #undef SIEMENS_WB2
+-#define SIEMENS_S //Siemens one tuner sat version
+ 
+ /****************************************************************/
+ /*			LOCAL TYPES				*/

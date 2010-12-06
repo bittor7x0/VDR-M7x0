@@ -1,0 +1,21 @@
+# <file1> <file2> <filetype> <mode> <uid> <gid> <major nr> <minor nr> <start> <increment> <count>
+# file1     := filename in root fs relative to /
+# file2     := for regular files filename relative to target root of toolchain 
+#              (or full path indicated by leading /) path gets copy to root fs 
+#              for links link-target
+# filetype  := type of <file1>:
+#               b := block-device
+#               c := char-device
+#               d := directory
+#               f := regular file
+#               l := symbolic link
+#               p := named pipe
+#               s := strip <file1>
+# mode      := access mode in octal for <file1> as in chmod
+# uid       := user id owning <file1>
+# gid       := group id owning <file1>
+# major nr  := major number for block/char-devices
+# minor nr  := major number for block/char-devices (starting minor-nr for more than own device)
+# start     := starting number of <file1>, <count> device are generated
+# increment := <minor nr> gets incremented by
+# count     := number of devices are generated (ignored if <filetype> is not b or c)

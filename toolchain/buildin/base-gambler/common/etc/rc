@@ -1,0 +1,78 @@
+#!/bin/ash
+
+if [ X"${OSDLOG}" = X"YES" ]; then
+    source /etc/rc.debug
+fi
+
+[ -f /etc/rc.conf ] && source /etc/rc.conf
+hostname ${hostname}
+if [ X"${syslogd_flags}" != X"NO" ]; then
+    mv /rw-flash/log/messages* /var/log
+    echo -n "starting syslogd ... "
+    syslogd ${syslogd_flags}
+    echo "Done"		
+fi
+
+echo -n "loading modules ... "
+[ -f /etc/rc.modules ] && ash /etc/rc.modules
+echo "Done";
+
+if [ X"${pic_tool_flags}" != X"NO" ]; then
+    echo -n "execute pic_tool ... "
+    pic_tool ${pic_tool_flags}
+    echo "Done"
+fi
+
+echo -n "starting network:"
+
+echo "lo";
+ifconfig lo 127.0.0.1
+
+ifconfig ${if} hw ether `${mac_cmd}`
+if [ X"${net}" = X"DHCP" ]; then
+    echo "dhcp";
+    ifconfig ${if} 0.0.0.0
+    udhcpc -i ${if} ${dhcp_flags}
+else
+    echo "${if} - ${ip} - ${netmask}";
+    ifconfig ${if} ${ip} netmask ${netmask}
+fi
+
+if [ X"${gateway}" != X"NO" ]; then
+    echo -n "setup default gateway ... ${gateway} - ${if}";
+    route add default gw ${gateway} ${if}
+    echo "Done"
+fi
+
+echo -n "standard deamons:"
+
+if [ X"${inetd}" != X"NO" ]; then
+    echo "inetd";		inetd /etc/inetd.conf
+fi
+
+if [ X"${sshd}" != X"NO" ]; then
+
+    if [ ! -d /etc/.sshd ]; then
+	mkdir -p /etc/.sshd;
+    fi
+
+    if [ ! -f /etc/.sshd/host.rsa.key ]; then
+	echo -n "generate ssh rsa host key..."
+	/sbin/dropbearkey -t rsa -f /etc/.sshd/host.rsa.key;
+    fi
+
+    if [ ! -f /etc/.sshd/host.dss.key ]; then
+	echo -n "generate ssh dss host key..."
+	/sbin/dropbearkey -t dss -f /etc/.sshd/host.dss.key;
+	echo "Done"
+    fi
+    echo "sshd";		/sbin/dropbear -r /etc/.sshd/host.rsa.key -d /etc/.sshd/host.dss.key
+fi
+
+if [ X"${lircd_flags}" != X"NO" ]; then
+    echo "lircd";		lircd ${lircd_flags}
+fi
+
+[ -f /etc/rc.local ] && ash /etc/rc.local
+
+exit 0

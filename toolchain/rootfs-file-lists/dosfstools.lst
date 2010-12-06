@@ -1,0 +1,8 @@
+sbin/dosfsck          sbin/dosfsck          f 755 0 0 - - - - -
+sbin/dosfsck          -                     s   - - - - - - - -
+sbin/fsck.msdos       dosfsck               l 777 0 0 - - - - -
+sbin/fsck.vfat        dosfsck               l 777 0 0 - - - - -
+sbin/mkdosfs          sbin/mkdosfs          f 755 0 0 - - - - -
+sbin/mkdosfs          -                     s   - - - - - - - -
+sbin/mkfs.msdos       mkdosfs               l 777 0 0 - - - - -
+sbin/mkfs.vfat        mkdosfs               l 777 0 0 - - - - -
