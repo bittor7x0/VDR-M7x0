@@ -1,0 +1,47 @@
+VDR Plugin 'channelscan' Revision History
+-----------------------------------
+
+2004-12-31: Version 0.0.1
+- Initial revision.
+
+
+2005-01-08: Version 0.0.2
+- Bug fix.
+- Add multilanguage via i18n file
+- Currect osd english string error
+- Add more debug on terminal
+
+2005-01-15: Version 0.0.3
+- Code clean (by bergwinkl.thomas@vr-web.de)
+- The plugin not show the last channel after scan (fix by Thomas Bergwinkl)
+- Add DE translation (by bergwinkl.thomas@vr-web.de)
+- Add RU translation (by sdiconov@mail.ru)
+- Now when change file of sat, the plugin show the sat name and total of transponder
+- Bug fix
+
+2005-01-16: Version 0.0.3a
+- Now compile with gcc-2.95 (fix by 999)
+- Bug fix
+
+2005-04-11: Version 0.0.4
+- Channelscan is now faster because sets the filters for sdt, pat and pmt itself, 
+  so it now knows when scanning of a transponder is over.(idea from Luca Olivetti) 
+  (write by Thomas Bergwinkl)
+- It's now also possible to decide which service types (TV,Radio,NVOD) 
+  should be added (write by Thomas Bergwinkl)
+- it now checks if the dvb device, which does the scan, is able to
+  provide the transponder. So no dvb-c/t devices will be selected for
+  channelscan. (write by Thomas Bergwinkl)
+- fixed a bug, which crashed vdr if two transponders have the same
+  polarization and almost the same frequency (write by Thomas Bergwinkl)
+- now take care of Setup.OSDHeigth (write by Thomas Bergwinkl)
+- added autorepeat for left/right buttons (suggested by Andrey Vlasov)
+  (write by Thomas Bergwinkl)
+- added up/down to jump over 10 satellites (suggested by Andrey Vlasov)
+  (write by Thomas Bergwinkl)
+- Add IT translation (by kikko77)
+*** A BIG THANKS TO Thomas Bergwinkl AND ALL BETA-TESTER FOR ALL NEW FEATURES ***
+
+2005-04-13: Version 0.0.4a
+- Add finish translation (by Rolf Ahrenberg)
+- Add missing transponder directory (suggested by Ronny Kornexl)

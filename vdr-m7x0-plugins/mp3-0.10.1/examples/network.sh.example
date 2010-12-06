@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# This script is called from VDR before & after network access
+#
+# argument 1: wanted action, one of up,down
+#
+
+action="$1"
+
+case "$action" in
+up)
+  echo "starting dialin"
+  ;;
+down)
+  echo "hangup"
+  ;;
+esac
+
+exit 0

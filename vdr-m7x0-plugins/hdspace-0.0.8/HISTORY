@@ -1,0 +1,37 @@
+VDR Plugin 'hdspace' Revision History
+-------------------------------------
+2007-11-21: Version 0.0.8
+- code cleanup
+- removed wrong free() for the ReadLine object
+
+2007-11-21: Version 0.0.7
+- added support for sendmail. There is a switch in the makefile to select sendmail or minni_sendmail.
+
+2007-11-05: Version 0.0.6
+- added support for iaMode
+  The OSD warning is now shown if the iaMode changes to on and the spcae is below the limit
+
+2007-11-04: Version 0.0.5
+- added workaround for message if no recoring medium is attched
+
+2007-10-06: Version 0.0.4
+- messages are queued with timout -1 (only the lat one will be displayed after hot standby)
+- fixed bug that mail was send even if server and/or username was empty for OK message
+
+2007-09-25: Version 0.0.3
+- Replace Sleep() by cCondWait::SleepMs()
+- Replaced Interface->Confirm() by Skins.QueueMessage()
+- Corrected checking for mail texts. The fallback to engish for missing translations is working now.
+- Changed the hadling for the 10sec delay before the next time check to avoid problems
+  with the vdr shutdown
+- replaced sprintf by snprintf
+- removed unused char buffer
+- added Spanish transation (thanks to Bittor)
+- fixed bug that mail was send even if server and/or username was empty
+
+2007-09-12: Version 0.0.2
+- reworked the config for the mail messages
+- added one mail if the recording space is over the limit again
+
+2007-09-10: Version 0.0.1
+- Initial revision.

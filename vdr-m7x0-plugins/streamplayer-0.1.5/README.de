@@ -1,0 +1,211 @@
+        
+                        VDR Streamplayer
+
+
+Geschrieben von:             Udo Richter <udo_richter@gmx.de>
+Projekt Homepage:            http://www.udo-richter.de/vdr/streamplayer.html
+Kompatibilität:              VDR-1.2.6 bis VDR-1.5.7 sollte funktionieren
+Siehe Datei COPYING für Lizenz-Informationen
+
+
+
+Über
+--------------------------------------------------------------------------
+Streamplayer ist ein Plugin, um Netzwerk-Streams mit VDR zu empfangen und 
+anzuzeigen, wodurch VDR zum Streaming-Client wird. Das Plugin ist 
+absichtlich auf DVB-Kompatible MPEG1/2-Streams beschränkt, die ohne große
+CPU-Last angezeigt werden können. Ein möglicher Stream Server ist der VLC
+media player (http://www.videolan.org/), ein anderer ist der HTTP Server
+des Streamdev Plugins.
+
+
+Unterstützte Protokolle
+--------------------------------------------------------------------------
+Derzeit sind zwei Protokolle implementiert:
+
+-HTTP Streaming fordert den Video-Stream von einem Web-Server an. HTTP
+ basiert auf TCP, einem zuverlässigen, fehlertoleranten Internet-
+ Protokoll, das eigentlich schlechter für Echtzeit-Anwendungen geeignet 
+ ist. Andererseits ist es toleranter auf schwierigen Netzwerken.
+
+-UDP Streaming empfängt alle UDP-Pakete, die an einem UDP-Port 
+ gesendet werden, unabhängig davon, woher sie kommen. Da UDP keine 
+ verlorengegangenen Pakete erneut anfordert, erholt sich UDP sehr schnell
+ von Datenverlusten in dem Teile des Videos übersprungen werden. UDP ist 
+ das einzige Format, das Multicast-Übertragungen unterstützt.
+
+ Fals der Computer direkt mit dem Internet verbunden ist, sollte der UDP-
+ Port geblockt werden, sonst kann jeder im Internet den Fernseher 
+ übernehmen. ;)
+
+
+Unterstützte Formate
+--------------------------------------------------------------------------
+Derzeit akzeptiert das Plugin nur MPEG Transport Streams (TS) mit darin 
+enthaltenen MPEG1/2 Video Streams. Der Video-Stream muss eine DVB-
+kompatible Auflösung von {720,704,640,512,480,352}x{576,480,288,240} 
+haben. Nicht alle Kombinationen werden funktionieren. Basierend auf der
+Framerate wird die DVB-Karte zwischen PAL und NTSC umschalten. Es ist eine
+gute Idee, die Zeilenzahl 240 und 480 zusammen mit 30fps für NTSC-Ausgabe
+zu benutzen, und die Zeilenzahl 288 und 576 mit 25fps für PAL.
+
+
+Installation
+--------------------------------------------------------------------------
+Entpacken und Übersetzen wie jedes andere Plugin:
+
+   cd vdr-x.x.xx/PLUGINS/src
+   tar xzf vdr-streamplayer-x.x.x.tgz
+   ln -s streamplayer-x.x.x streamplayer
+   cd ../..
+   make plugins
+
+Falls Fehler bezüglich #include linux/dvb auftreten, sollte die folgende Zeile
+zur globalen VDR Make.config oder zu einer lokalen Make.config im 
+Streamplayer-Verzeichnis hinzugefügt werden:
+
+   INCLUDES += -I/Pfad/zu/DVB/Treiber/include
+
+Zum Übersetzen kann man entweder 'make plugins' im VDR-Verzeichnis ausführen, oder
+einfach 'make' im Streamplayer-Verzeichnis.
+
+
+Benutzung
+--------------------------------------------------------------------------
+Nachdem der Hauptmenü-Eintrg des Plugins ausgewählt wurde, öffnet sich ein
+Lesetzeichen-ähnlicher Dialog. Streamplayer verwendet ein URL-ähnliches 
+konzept, um Netzwerk-Streams auszuwählen. Die erste Zeile zeigt die zu 
+letzt benutzte URL an, und kann bearbeitet werden. Darunter ist eine Liste
+von Lesezeichen. Die Einträge können mit 'Ok' direkt abgespielt werden, 
+'Rot' ermöglicht das Bearbteiten des Eintrags, 'Grün' zeigt den gleichen
+Dialog zum Anlegen eines neuen Eintrags, und 'Blau' lädt das ausgewählte
+Lesezeichen in die obere Eingabezeile für weitere Bearbeitung.
+
+Die Lesezeichen-Datei kann auch bearbeitet werden, in der Datei
+/video/plugins/streamplayer-bookmarks.conf (oder wo der Plugin 
+Konfigurationsordner ist). Der Syntax ist Titel:URL.
+
+Beim ersten Start wird eine kleine Lesezeichen-Liste angelegt. Der erste 
+Eintrag lauscht auf UDP Port 1234, der gerne vom VideoLan Player genutzt 
+wird, der zweite Eintrag verbindet zu einem Streamdev HTTP server auf dem
+lokalen Rechner, und fordert Kanal 1 an.
+
+UDP Protokoll:
+Die URL für das UDP-Protokoll ist udp://['@'[server][':'port]]. server
+ist der optionale Remote-Server, von dem Daten entgegen genommen werden,
+und port ist die UDP Port-Nummer, auf der Daten entgegen genommen werden.
+Normalerweise ist die Adresse etwas in der Art udp://@:port oder 
+udp://@server:port. 
+Streamplayer wartet nur auf eingehende Daten, die Video-Quelle muss dazu 
+gebracht werden, die Daten an den VDR-Rechner zu senden.
+Falls der Server eine Class D IP Adresse (224.0.0.0 - 239.255.255.255) 
+besitzt, wird Streamplayer versuchen, dieser Multicast-Gruppe beizutreten.
+Die alte Adressform udp:port wird weiter unterstützt.
+
+HTTP Protokoll:
+Die URL für HTTP ist wie üblich: "http://server[:port]/path". Die Port-
+Numer ist optional und wie üblich standardmässig 80.
+
+Während des Abspielens zeigt 'Ok' ein kleines Status-Display, mit 
+derzeitigen Status-Infos und der Empfangs-Datenrate.
+
+
+Beispiele
+--------------------------------------------------------------------------
+Einige Beispiele, wie VLC media player und Streamplayer zusammen arbeiten:
+
+Angenommen, source.local ist der Computer mit der Stream-Quelle, 
+vdr.local ist der VDR-Computer. Falls im lokalen Netz kein DNS-Server 
+läuft, können auch IP-Adressen verwendet werden. Natürlich können beide 
+Adressen auch gleich sein, wenn nur ein Computer eingesetzt wird.
+
+
+http-Streaming von MPEG
+-----------------------
+
+Falls das Video als video.mpg vorliegt, und im VCD/SVCD/DVD-Format ist,
+kann das Video direkt gestreamt werden.
+Zum Abspielen über HTTP streaming muss VLC wie folgt gestartet werden:
+
+  vlc video.mpg --sout "#std{access=http,mux=ts,url=:1234}"
+
+Im Streamplayer muss diese URL benutzt werden:
+ 
+  http://source.local:1234/
+  
+Das ist alles.
+
+
+udp-Streaming von MPEG
+----------------------
+
+Falls das Video als UDP-Stream gesendet werden soll:
+
+  vlc video.mpg --sout "#std{access=udp,mux=ts,url=vdr.local:1234}"
+
+Diesmal wird die Adresse des VDR-Computers verwendet. Im Streamplayer
+kommt diese Adresse zum Einsatz:
+
+  udp://@:1234
+
+
+http-Streaming und Transkodieren
+--------------------------------
+
+Falls die Quelle nicht MPEG1/2 kompatibel ist, kann das Video umkodiert 
+werden:
+
+  vlc video.avi --sout "#transcode{vcodec=mpgv,vb=4000,acodec=mpga,ab=192}
+  :std{access=http,mux=ts,url=:1234}"
+
+Um eine DVB-kompatible Auflösung zu erreichen, kann man die Größe 
+anpassen:
+
+  vlc video.avi --sout "#transcode{vcodec=mpgv,vb=4000,acodec=mpga,ab=192,
+  width=720,height=576}:std{access=http,mux=ts,url=:1234}"
+
+Dummerweise gibt es ein Problem: Die DVB-Karten erwarten 4:3 
+Videomaterial, alle 16:9 oder ähnliche Quellen müssen mit schwarzen Balken
+auf 4:3 Format aufgefüllt werden, und dieses Auffüllen ist erst ab VLC-0.8.5
+möglich.
+
+
+VLC-0.8.5 Streaming
+-------------------
+
+Mit VLC-0.8.5 oder neuer kann das 4:3-Problem gelöst werden. Alternativ gibt
+es diese Funktion auch als Patch für ältere Versionen:
+http://www.udo-richter.de/vdr/streamplayer.html#vlc-croppadd
+
+Die neueren Versionen erlauben überwiegend automatische Skalierung zu 
+720x576 4:3 Video, wie es für Streamplayer nötig ist. Diese Variante 
+funktioniert gut:
+
+  vlc video.avi --sout "#transcode{vcodec=mpgv,vb=4000,acodec=mpga,ab=192,
+  width=720,height=576,canvas-width=720,canvas-height=576,canvas-aspect=4:3,
+  fps=25}:std{access=http,mux=ts,url=:1234}"
+
+Damit wird jedes Video zu 720x576 skaliert und passend mit schwarzen 
+Balken versehen, um sicher zu stellen, dass das Ausgabeformat 4:3 ist.
+Zusätzlich wird die Quelle zu 25fps konvertiert. Man kann sogar 
+canvas-aspect=16:9 setzen, um anamorphes Video zu erzeugen, allerdings 
+wird dann 4:3-Video links und rechts mit schwarzen Balken aufgefüllt.
+Für ac3 mixdown kann ein zusätzliches channels=2 nötig sein.
+
+Man kann auch zu einem anderen Format mittels width/height skalieren, oder 
+ganz auf Skalierung verzichten, das Ausgabeformat wird in jedem Fall
+die Parameter canvas-width und canvas-height einhalten.
+
+
+Zukunfts-Pläne
+--------------------------------------------------------------------------
+Dies sind keine Versprechen, eher eine Sammlung von Dingen, die sinnvoll
+erscheinen. Keine Garantie, ob oder wann diese Dinge Realität werden.
+
+-Löschen/Verschieben von Bookmarks
+-RTP/RTSP Protokoll, für echtes Video-On-Demand
+-PS/PES Stream-Formate
+-Verbesserte PID-Erkennung, Auswertung von PAT-Tabellen etc.
+-Dynamische PID-Wechsel während des Abspielens?
+-Unterstützung reiner Audio-Streams
+-Unterstützung mehrerer Audio-Streams

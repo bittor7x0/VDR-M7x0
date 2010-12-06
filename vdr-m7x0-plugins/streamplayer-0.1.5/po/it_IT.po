@@ -1,0 +1,104 @@
+# VDR plugin language source file.
+# This file is distributed under the same license as the VDR package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Streamplayer 1.x\n"
+"Report-Msgid-Bugs-To: <udo_richter@gmx.de>\n"
+"POT-Creation-Date: 2007-08-18 19:03+0200\n"
+"PO-Revision-Date: 2008-02-24 13:00+0100\n"
+"Last-Translator: Gringo <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Error"
+msgstr "Errore"
+
+msgid "failed"
+msgstr "fallita"
+
+msgid "Connect timed out"
+msgstr "Connessione scaduta"
+
+msgid "connection closed by peer"
+msgstr "connessione chiusa dal client"
+
+msgid "Connection timed out"
+msgstr "Connessione scaduta"
+
+msgid "Expected HTTP header not found"
+msgstr "Header HTTP atteso non trovato"
+
+msgid "HTTP response"
+msgstr "Risposta HTTP"
+
+msgid "Failed to connect to"
+msgstr "Fallita connessione a"
+
+msgid "waiting"
+msgstr "in attesa"
+
+msgid "Connecting to"
+msgstr "Connessione a"
+
+msgid "Waiting for response from"
+msgstr "In attesa di risposta da"
+
+msgid "Reading Headers from"
+msgstr "Lettura headers da"
+
+msgid "Receiving from"
+msgstr "Ricezione da"
+
+msgid "HTTP header not found"
+msgstr "Header HTTP non trovato"
+
+msgid "HTTP response error"
+msgstr "Errore risposta HTTP"
+
+msgid "Edit Bookmark"
+msgstr "Modifica preferiti"
+
+msgid "Title"
+msgstr "Titolo"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Stream Player"
+msgstr "Stream Player"
+
+msgid "Edit"
+msgstr "Modifica"
+
+msgid "New"
+msgstr "Nuova"
+
+msgid "Select"
+msgstr "Seleziona"
+
+msgid "Bookmarks:"
+msgstr "Preferiti:"
+
+msgid "Receive buffer size (k)"
+msgstr "Dimensione buffer ricezione (k)"
+
+msgid "fill up buffer at start (k)"
+msgstr "riempi buffer all'avvio (k)"
+
+msgid "Stream video player"
+msgstr "Stream Videoplayer"
+
+msgid "Streamplayer"
+msgstr "Streamplayer"
+
+msgid "Protocol type scan error"
+msgstr "Errore scansione tipo protocollo"
+
+msgid "Unknown protocol type"
+msgstr "Tipo protocollo sconosciuto"
+
+msgid "Listening on UDP port"
+msgstr "In ascolto su porta UDP"

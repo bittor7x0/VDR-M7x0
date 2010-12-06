@@ -1,0 +1,88 @@
+#!/bin/bash
+
+#usage
+# $0 tmpfile path
+
+RIPPER="cdparanoia"
+RIPPER_TEST_OPTIONS="-Q"
+RIPPER_OPTIONS="-Be"
+RIPPER_FILES="track*.cdda.wav"
+RIPPER_FILES_EXT="wav"
+ENCODER="oggenc"
+ENCODER_OPTIONS="-q 5"
+ENCODER_EXT="ogg"
+CDDRIVE="/dev/hda"
+
+function realpath()
+{
+	filename=`basename "$1"` 
+	dirname=`dirname "$1"` 
+	cd "$dirname" && echo `pwd`/$filename
+}
+
+TMP_PATH=`realpath "$1"`
+OUTPUT_PATH=`realpath "$2"`
+
+if [ ! -d "$TMP_PATH" ] || [ ! -d "$OUTPUT_PATH" ]; then
+	echo Usage: $0 temp_path output_path
+	exit 1
+fi
+
+function show_progress()
+{
+	POS=`tail $1 | grep read | tail -n1 | sed -e 's/^.* @ //'`
+	SECTORS=`grep -m1 to\ sector $1 | sed -e 's/[^0-9]*\([0-9]*\).*/\1/'`
+	PERCENT=`echo scale=2\;$POS \* 100 / 1176 / $SECTORS | bc 2>/dev/null`
+	#echo Pos: $POS Sectors: $SECTORS Percent: $PERCENT
+	if [ -n "$PERCENT" ]; then
+		echo -n $'\r'
+		echo -n $PERCENT% completed
+	fi
+}
+
+function realpath()
+{
+	filename=`basename "$1"` 
+	dirname=`dirname "$1"` 
+	cd "$dirname" && echo `pwd`/$filename
+}
+
+$RIPPER $RIPPER_TEST_OPTIONS
+
+echo
+echo Ripping in 10 seconds
+sleep 10
+
+TMPDIR=`mktemp -dp "$TMP_PATH"`
+RIPPER_OUTPUT=$TMPDIR/ripper_output
+cd "$TMPDIR"
+
+$RIPPER $RIPPER_OPTIONS 2>&1 | cat > "$RIPPER_OUTPUT" &
+RIPPER_PID=$!
+
+while [ 1 ]; do
+	if ls $RIPPER_FILES >/dev/null 2>&1; then
+		IFS=$'\n'
+		for i in `ls $RIPPER_FILES 2>/dev/null`; do
+			SIZE=`du "$i" | sed -re 's/[[:blank:]]+.*//'`
+			for (( j=0; j < 15 ; j++ )); do show_progress $RIPPER_OUTPUT; sleep 1; done
+			if [ $SIZE -eq `du "$i" | sed -re 's/[[:blank:]]+.*//'` ]; then
+				echo
+				echo Encoding $i
+				$ENCODER $ENCODER_OPTIONS "$i" -o "$OUTPUT_PATH/`basename "$i" $RIPPER_FILES_EXT`$ENCODER_EXT"
+				echo Encoding finished - deleting $i
+				rm -f "$i"
+				#tail -f $RIPPER_OUTPUT &
+				#TAIL_PID=$!
+			fi
+		done
+	else
+		if ! kill -0 $RIPPER_PID >/dev/null 2>&1; then
+			break
+		fi
+	fi
+	sleep 2;
+done
+echo Finished
+rm -rf "$TMPDIR"
+eject $CDDRIVE

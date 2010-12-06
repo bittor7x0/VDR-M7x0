@@ -1,0 +1,29 @@
+diff -ruN ./mplayer.c /usr/src/MPlayer-0.90rc1/mplayer.c
+--- ./mplayer.c	Thu Dec  5 01:18:56 2002
++++ /usr/src/MPlayer-0.90rc1/mplayer.c	Wed Dec 11 15:49:50 2002
+@@ -2682,6 +2682,25 @@
+   current_module=NULL;
+ }
+ 
++#if 1
++  if(slave_mode){
++    float position=0.0;
++    float time=0.0;
++    if(demuxer->file_format==DEMUXER_TYPE_AVI && sh_video->video.dwLength>2) {
++      // get pos from frame number / total frames
++      position=(float)d_video->pack_no*100.0/(float)sh_video->video.dwLength;
++      }
++    else {
++      off_t len = ( demuxer->movi_end - demuxer->movi_start );
++      off_t pos = ( demuxer->file_format == DEMUXER_TYPE_AUDIO?stream->pos:demuxer->filepos );
++      if(len>0) position=( pos - demuxer->movi_start ) * 100.0 / len;
++      }
++    if(sh_video) time=d_video->pts;
++    else if(sh_audio) time=sh_audio->delay;
++    mp_msg(MSGT_OSD,MSGL_ERR,"SLAVE: time=%.2f position=%.2f\r",time,position);
++    }
++#endif
++
+ #ifdef HAVE_NEW_GUI
+       if(use_gui){
+         guiEventHandling();

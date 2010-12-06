@@ -1,0 +1,150 @@
+#!/bin/bash
+
+# usage: $0 [path for resulting file] [files to recode]...
+# 
+
+
+OGGINFO="ogginfo"
+ID3INFO="id3info"
+MP3INFO="mp3info"
+LAME="lame"
+OGGENC="oggenc"
+OGGDEC="oggdec"
+
+OGGENC_PARAMS="-q 0"
+
+#function to replace illegal characters in sed's replace with argument (s//[this is what i mean/)
+#eg. a slash
+function escapeSedArgument()
+{
+	echo $1 | sed -e 's/\//\\\//g' -e 's/\&/\\\&/g' | sed -e "s/'/'\\\\\\\\''/g" 
+}
+#function for formatted printing of id-tags which wraps ogginfo and mp3info as needed
+#use 	%l for album name
+#	%a for artist
+#	%y for year
+#	%g for genre
+#	%t for title
+#	%n for tracknumber
+#	%S for playback length in seconds
+function musicinfo()
+{
+	if [ ! -f "$1" ]; then
+		return 1
+	fi
+	local OUTPUT TYPE l a t y g n S line
+	#get extension /path1/path2/filename.[what i want]
+	TYPE=$(echo $1 | sed -e 's/.*\.\([^.]*\)$/\1/' | tr A-Z a-z)
+	case $TYPE in
+		ogg)
+			#required to split lines below
+			IFS=$'\n'
+			#parse output of ogginfo
+			for line in $($OGGINFO $1) ; do
+			#think of things like different track-formats and genres!	
+				case $(echo $line | tr [:lower:] [:upper:]) in
+					*ALBUM=*)
+						l=$(echo $line | sed -e 's/.*ALBUM=\(.*\)$/\1/I');;
+					*ARTIST=*)
+						a=$(echo $line | sed -e 's/.*ARTIST=\(.*\)$/\1/I');;
+					*DATE=*)
+						y=$(echo $line | sed -e 's/.*DATE=\(.*\)$/\1/I');;
+					*GENRE=*)
+						g=$(echo $line | sed -e 's/.*GENRE=\(.*\)$/\1/I');;
+					*TITLE=*)
+						t=$(echo $line | sed -e 's/.*TITLE=\(.*\)$/\1/I');;
+					*TRACKNUMBER=*)
+						n=$(echo $line | sed -e 's/.*TRACKNUMBER=\([0-9]*\).*$/\1/I');;
+					*PLAYBACK\ LENGTH:*)
+						S=$(echo $line | sed -e 's/.*Playback length: \(.*\)$/\1/I')
+						#convert time [minutes]m:[seconds]s to seconds
+						S=$(date -d "1970-01-01 00:`echo $S | sed -e 's/\([0-9]*\)m:\([0-9]*\)\.*.*/\1:\2/'` UTC" +%s)
+						;;
+				esac;
+			done
+		;;
+		mp3)
+			#required to split lines below
+			IFS=$'\n'
+			#parse output of id3info
+			for line in $($ID3INFO $1) ; do
+				case $line in
+					===$' 'TALB*)
+						l=$(echo $line | sed -e 's/.*: \(.*\)$/\1/');;
+					===$' 'TPE1*)
+						a=$(echo $line | sed -e 's/.*: \(.*\)$/\1/');;
+					===$' 'TYER*)
+						y=$(echo $line | sed -e 's/.*: \(.*\)$/\1/');;
+					===$' 'TCON*)
+						#possibilities: ([no of Genre])[nothing], (no Genre)[Name of Genre]
+						g=$(echo $line | sed -e 's/.*: \(.*\)$/\1/');;
+					===$' 'TIT2*)
+						t=$(echo $line | sed -e 's/.*: \(.*\)$/\1/');;
+					===$' 'TRCK*)
+						#possibilities: nn/nn, n, nn
+						n=$(echo $line | sed -e 's/.*: \([0-9]*\).*$/\1/');;
+					===$' 'TLEN*)
+						#cut last three characters, id3tag displays length in milliseconds
+						S=$(echo $line | sed -e 's/.*: \(.*\)$/\1/' | rev | cut -c 4- | rev);;
+				esac;
+			done
+			#$S could be empty - then let it be calculated by mp3info...
+			if [ -z $S ] || [ "$S" == "0" ]; then
+				S=`$MP3INFO -p %S "$1"`
+			fi
+			#get genre
+			g=`$MP3INFO -p "%g" $1`
+			#$MPINFO not used because it can't handle idv2
+			#redirect errors for possible message "no id tag"
+			#OUTPUT=`$MP3INFO $1 -p "$2"`
+		;;
+	esac
+	l=$(escapeSedArgument "$l")
+	a=$(escapeSedArgument "$a")
+	y=$(escapeSedArgument "$y")
+	g=$(escapeSedArgument "$g")
+	t=$(escapeSedArgument "$t")
+	n=$(escapeSedArgument "$n")
+	S=$(escapeSedArgument "$S")
+	#now replace placeholders with values
+	OUTPUT=$(echo $2 | sed -e s/%a/$a/g -e s/%l/$l/g -e s/%y/$y/g -e s/%g/$g/g -e s/%n/$n/g -e s/%S/$S/g -e s/%t/$t/g)
+	echo $OUTPUT
+	return 0
+}
+
+if [ ! -f "$2" ]; then
+	echo No valid input file given
+	exit 1
+fi
+
+if [ ! -d "$1" ]; then
+	echo No valid destination path given
+	exit 1
+fi
+
+OUTPUT_DIR=$1
+
+while [[ $# > 1 ]]; do
+	FILE=$2
+	FILE_ESCAPED=$(echo $FILE | sed -e "s/'/'\\\\''/g")
+	echo Recoding $FILE
+	TYPE=$(echo $FILE | sed -e 's/.*\.\([^.]*\)$/\1/' | tr A-Z a-z)
+	ENCODER="$OGGENC `musicinfo "$FILE" "-a '%a' -G '%g' -d '%y' -N '%n' -t '%t' -l '%l'"` $OGGENC_PARAMS -r -o - -"
+
+	case $TYPE in
+		mp3)
+			DECODER="$LAME --quiet -t --decode '$FILE_ESCAPED' -"
+		;;
+		ogg)
+			DECODER="$OGGDEC --quiet --raw -o - '$FILE_ESCAPED'"
+		;;
+		*)
+			echo File type is unknown
+			shift
+			continue
+		;;
+	esac
+	
+	echo $DECODER 2\> /dev/null \| $ENCODER | sh > "$OUTPUT_DIR/`basename "$FILE" $TYPE`ogg"
+	shift
+done
