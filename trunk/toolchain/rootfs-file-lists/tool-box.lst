@@ -1,0 +1,8 @@
+usr/sbin/pic_tool   usr/sbin/pic_tool   f 755 0 0 - - - - -
+usr/sbin/pic_tool   -                   s   - - - - - - - -
+usr/sbin/avswctl    usr/sbin/avswctl    f 755 0 0 - - - - -
+usr/sbin/avswctl    -                   s   - - - - - - - -
+usr/bin/osddrawtext usr/bin/osddrawtext f 755 0 0 - - - - -
+usr/bin/osddrawtext -                   s   - - - - - - - -
+usr/bin/svdrpsend   usr/bin/svdrpsend f 755 0 0 - - - - -
+usr/bin/svdrpsend   -                   s   - - - - - - - -

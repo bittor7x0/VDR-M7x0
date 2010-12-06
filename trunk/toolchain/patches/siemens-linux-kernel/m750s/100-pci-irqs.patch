@@ -1,0 +1,296 @@
+--- slin_m740.orig/arch/mips/emma2/int-handler-upd61130x.S.orig	2008-07-29 16:50:56.000000000 +0200
++++ slin_m740.orig/arch/mips/emma2/int-handler-upd61130x.S	2008-07-31 15:09:40.000000000 +0200
+@@ -24,6 +24,11 @@
+ #include <asm/stackframe.h>
+ #include <asm/vr41xx.h>
+ 
++#define ZPIO_BASE 0xB2010C00
++#define ZPIO_INT_STATUS0 (ZPIO_BASE + 0x10)
++#define ZPIO_INT_MODE0 (ZPIO_BASE + 0x18)
++#define ZPIO_INT_COND_A0 (ZPIO_BASE + 0x20)
++#define ZPIO_INT_COND_B0 (ZPIO_BASE + 0x28)
+ 
+ 		.text
+ 		.set	noreorder
+@@ -72,24 +77,42 @@
+ 		// Isolate the allowed ones by anding with irq mask
+ 		mfc0	t2,CP0_STATUS
+ 
+-		andi	t0,0xff00
+ 		and	t0,t2
+-		andi	t1,t0,0x0800	// check for IRQ 3
++		
++		andi	t1,t0,STATUSF_IP7	// check for IRQ 7 (timer)
+ 		bnez	t1,handle_it
+-		 li	a0,3
+-		andi	t1,t0,0xf000	// check for IRQ 4-7
+-		bnez	t1,1f
+-		 andi	t1,t0,0x0400	// check for IRQ 2
++		 li	a0,7
++
++		andi	t1,t0,STATUSF_IP2	// check for IRQ 2 (cascade)
+ 		bnez	t1,icu_int
+ 		 lui	t3,%hi(VR41XX_SYSINT1REG)
+-		beqz	t0,go_spurious	// check for IRQ 0-1
+-		 li	a0,-1
+-		sll	t0,4
+-1:		andi	t1,t0,0x1000
+-		srl	t0,1
+-		beqz	t1,1b
+-		 addiu	a0,1
+-		b	handle_it
++
++		andi	t1,t0,STATUSF_IP3	// check for IRQ 3
++		bnez	t1,handle_it
++		 li	a0,3
++
++		andi	t1,t0,STATUSF_IP4	// check for IRQ 4
++		bnez	t1,handle_it
++		 li	a0,4
++		
++		andi	t1,t0,STATUSF_IP5	// check for IRQ 5
++		bnez	t1,handle_it
++		 li	a0,5
++
++		andi	t1,t0,STATUSF_IP6	// check for IRQ 6
++		bnez	t1,handle_it
++		 li	a0,6
++
++		andi	t1,t0,STATUSF_IP0	// check for IRQ 0
++		bnez	t1,handle_it
++		 li	a0,0
++
++		andi	t1,t0,STATUSF_IP1	// check for IRQ 1
++		bnez	t1,handle_it
++		 li	a0,1
++
++		/* No IRQ indicated by CP0 Status */
++		j	spurious_interrupt
+ 		 nop
+ 
+ /*
+@@ -104,6 +127,9 @@
+ 		lw	t0,%lo(VR41XX_SYSINT2REG)(t3)
+ 		lw	t2,%lo(VR41XX_MSYSINT2REG)(t3)
+ 		and	t0,t2
++		andi	t1,t0,0x100
++		bnez	t1,zpio_int
++		 lui	t4,%hi(ZPIO_INT_STATUS0)
+ 		beqz	t0,2f
+ 		li	a0,35
+ 		b	1f
+@@ -133,5 +159,30 @@
+ 
+ 		j	ret_from_irq
+ 		 nop
+-		
++
++zpio_int:	lw	t1,%lo(ZPIO_INT_MODE0)(t4)
++		lw	t2,%lo(ZPIO_INT_COND_A0)(t4)
++		lw	t3,%lo(ZPIO_INT_COND_B0)(t4)
++		lw 	t0,%lo(ZPIO_INT_STATUS0)(t4)
++		or	t1,t2
++		or	t1,t3
++		and	t0,t1
++		srl	t2,t0,28
++		andi	t1,t2,0x8
++		bnez	t1,handle_it
++		 li	a0,75
++		andi	t1,t2,0x1
++		bnez	t1,handle_it
++		 li	a0,72
++		andi	t1,t2,0x2
++		bnez	t1,handle_it
++		 li	a0,73
++		andi	t1,t2,0x4
++		bnez	t1,handle_it
++		 li	a0,74
++		bnez	t0,handle_it
++		 li	a0,48
++		j	spurious_interrupt
++		 nop
++
+ 		END(vr41xx_handle_irq)
+--- slin_m740.orig/arch/mips/emma2/irq.c.orig	2008-07-29 19:56:31.000000000 +0200
++++ slin_m740.orig/arch/mips/emma2/irq.c	2008-07-31 15:19:20.000000000 +0200
+@@ -56,23 +56,33 @@
+ }
+ 
+ #ifdef CONFIG_CPU_VR4120A
++#define ZPIO_BASE 0xB2010C00
++#define ZPIO_INT_STATUS0 ((volatile u32 *)(ZPIO_BASE + 0x10))
++#define ZPIO_INT_MODE0 ((volatile u32 *)(ZPIO_BASE + 0x18))
++
+ static inline void mask_irq(unsigned int irq)
+ {
++        int zpio_bit;
+ 	if (irq < 8) {
+ 		// it's a cpu interrupt
+ 		unsigned short newstatus = read_32bit_cp0_register(CP0_STATUS);
+ 		newstatus &= ~((unsigned short)1 << (irq + 8)); 
+ 		change_cp0_status(ST0_IM, newstatus);
+-	} else {
+-		if (irq < 72) {
+-			// it's an ICU interrupt
+-			if (irq < 40) {
+-				*VR41XX_MSYSINT1REG &= ~(1 << (irq - 8 ));
+-			} else {
+-				*VR41XX_MSYSINT2REG &= ~(1 << (irq - 40));
+-			}
++		return;
++	} 
++	
++	if (irq < 72) {
++		// it's an ICU interrupt
++		if (irq < 40) {
++			*VR41XX_MSYSINT1REG &= ~(1 << (irq - 8 ));
++		} else {
++			*VR41XX_MSYSINT2REG &= ~(1 << (irq - 40));
+ 		}
++		return;
+ 	}
++	
++	*ZPIO_INT_MODE0 &= ~(1 << (irq - 72 + 28));
++	*ZPIO_INT_STATUS0 &= ~(1 << (irq - 72 + 28));
+ }
+ 
+ static inline void unmask_irq(unsigned int irq)
+@@ -82,19 +92,26 @@
+ 		unsigned short newstatus = read_32bit_cp0_register(CP0_STATUS);
+ 		newstatus |= ((unsigned short)1 << (irq + 8)); 
+ 		change_cp0_status(ST0_IM, newstatus);
+-	} else {
+-		if (irq < 72) {
+-			unsigned short newstatus = read_32bit_cp0_register(CP0_STATUS);
+-			newstatus |= ((unsigned short)1 << (2 + 8)); 
+-			change_cp0_status(ST0_IM, newstatus);
++		return;
++	} 
++	
++	if (irq < 72) {
++		unsigned short newstatus = read_32bit_cp0_register(CP0_STATUS);
++		newstatus |= ((unsigned short)1 << (2 + 8)); 
++		change_cp0_status(ST0_IM, newstatus);
+ 			// it's an ICU interrupt
+-			if (irq < 40) {
+-				*VR41XX_MSYSINT1REG |= (1 << (irq - 8 ));
+-			} else {
+-				*VR41XX_MSYSINT2REG |= (1 << (irq - 40));
+-			}
++		if (irq < 40) {
++			*VR41XX_MSYSINT1REG |= (1 << (irq - 8 ));
++		} else {
++		        if (irq == 48)
++                                *ZPIO_INT_STATUS0 &= 0xF0000000;
++			*VR41XX_MSYSINT2REG |= (1 << (irq - 40));
+ 		}
++		return;
+ 	}
++	
++	*VR41XX_MSYSINT2REG |= (1 << (48 - 40));
++ 	*ZPIO_INT_MODE0 |= (1 << (irq - 72 + 28));
+ }
+ 
+ #else
+@@ -273,11 +290,9 @@
+ 
+ 		if (flags & SA_SAMPLE_RANDOM)
+ 			add_interrupt_randomness(irq);
+-		if(irq == IRQ_ZPIO1)  // for Wavebox
+-			clear_zpio1_interrupt();
+-    		else
+-		if(irq == IRQ_ZPIO0)  // for Wavebox S
+-			clear_zpio0_interrupt();
++			
++                if(irq == IRQ_ZPIO1)  // for Wavebox
++                        clear_zpio1_interrupt();
+ 
+ 		__cli();
+ 
+--- slin_m740.orig/arch/mips/emma2/pci-emma2.c.orig	2008-07-31 14:47:44.000000000 +0200
++++ slin_m740.orig/arch/mips/emma2/pci-emma2.c	2008-07-31 15:11:21.000000000 +0200
+@@ -411,24 +411,6 @@
+     unsigned int value;
+     int i;
+ 
+-#ifndef SIEMENS_WB2
+-#ifdef SIEMENS_S
+-		set_pin_irq_lower(28);
+-		set_pin_irq_lower(29);
+-		set_pin_irq_lower(30);
+-		set_pin_irq_lower(31);
+-		printk("Wavebox S!\n");
+-#else
+-    // retval = request_irq(IRQ_ZPIO1, pci_pin_isr, SA_SHIRQ, "pci pins" , 0x12345678);
+-    for(i=33;i<=40;i++)
+-	set_pin_irq(i);
+-#endif
+-#else
+-    // retval = request_irq(IRQ_ZPIO0, pci_pin_isr, SA_SHIRQ, "pci pins" , 0x12345678);
+-    for(i=24;i<=31;i++)
+-		set_pin_irq_lower(i);
+-		printk(" Version for WB2\n");
+-#endif
+     pci0Regs->inten = 0;
+     pci0Regs->pci_int = 0;
+ 
+@@ -484,28 +466,23 @@
+ {
+ }
+ #ifndef SIEMENS_WB2
+-#ifdef SIEMENS_S
+-void __init pcibios_fixup_irqs(void)
+-{
+-	struct pci_dev *dev;
+-
+-	pci_for_each_dev(dev) {
+-		dev->irq = IRQ_ZPIO0; /* ZPIO0 */
+-	}
+-	emma2_init_irqs();
+-	printk("pcibios_fixup_irqs Siemens S\n");
+-}
+-#else
+ void __init pcibios_fixup_irqs(void)
+ {
+ 	struct pci_dev *dev;
+ 
+ 	pci_for_each_dev(dev) {
+-		dev->irq = IRQ_ZPIO1; /* ZPIO1 */
++		if (dev->bus->number == 2) {
++			dev->irq = 75; 
++		} else if (dev->devfn == 0) {
++			dev->irq = 74;
++		} else if (dev->devfn == 1) {
++			dev->irq = 73;
++		} else {
++			dev->irq = 72;
++		}
+ 	}
+ 	emma2_init_irqs();
+ }
+-#endif
+ #else
+ void __init pcibios_fixup_irqs(void)
+ {
+@@ -516,8 +493,8 @@
+ 	return;
+ */
+ 
+-	pci_for_each_dev(dev) {
+-		dev->irq = IRQ_ZPIO0; /* ZPIO0 */
++        pci_for_each_dev(dev) {
++                dev->irq = IRQ_ZPIO0; /* ZPIO0 */
+ 	}
+ 	emma2_init_irqs();
+ }
+--- slin_m740.orig/include/asm-mips/vr4120A.h.orig	2008-07-29 22:28:15.000000000 +0200
++++ slin_m740.orig/include/asm-mips/vr4120A.h	2008-07-29 22:28:42.000000000 +0200
+@@ -29,7 +29,7 @@
+ #define VR41XX_IRQ_SIU	    56 
+ #define VR41XX_IRQ_SIU1	    57 
+ 
+-#define VR41XX_IRQ_MAX       71
++#define VR41XX_IRQ_MAX       75
+ 
+ #ifndef _LANGUAGE_ASSEMBLY
+ #define __preg8		(volatile unsigned char*)

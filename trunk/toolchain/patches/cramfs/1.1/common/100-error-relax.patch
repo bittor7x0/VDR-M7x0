@@ -1,0 +1,68 @@
+--- cramfs-1.1/cramfsck.c.old	2007-06-14 09:36:15.000000000 +0200
++++ cramfs-1.1/cramfsck.c	2007-06-14 08:39:28.000000000 +0200
+@@ -76,6 +76,7 @@
+ #ifdef INCLUDE_FS_TESTS
+ static int opt_extract = 0;		/* extract cramfs (-x) */
+ static char *extract_dir = "root";	/* extraction directory (-x) */
++static int opt_error_relax = 0;		/* for exctracting fs with errors*/
+ static uid_t euid;			/* effective UID */
+ 
+ /* (cramfs_super + start) <= start_dir < end_dir <= start_data <= end_data */
+@@ -107,6 +108,7 @@
+ 	fprintf(stream, "usage: %s [-hv] [-x dir] file\n"
+ 		" -h         print this help\n"
+ 		" -x dir     extract into dir\n"
++		" -r         relax on errors\n"
+ 		" -v         be more verbose\n"
+ 		" file       file to test\n", progname);
+ 
+@@ -127,7 +129,8 @@
+ 	}
+ 	fprintf(stderr, "\n");
+ 	va_end(arg_ptr);
+-	exit(status);
++	if (!opt_error_relax || status > FSCK_UNCORRECTED)
++  		exit(status);
+ }
+ 
+ static void test_super(int *start, size_t *length) {
+@@ -603,10 +606,16 @@
+ 	}
+ 
+ 	if (opt_extract) {
+-		if (mknod(path, i->mode, devtype) < 0) {
+-			die(FSCK_ERROR, 1, "mknod failed: %s", path);
+-		}
+-		change_file_status(path, i);
++                if (euid != 0 && type != 'c' && type != 'b') {
++		        if (mknod(path, i->mode, devtype) < 0) {
++		        	die(FSCK_ERROR, 1, "mknod failed: %s", path);
++		        }
++		        change_file_status(path, i);
++                }
++                else {
++                        fprintf(stderr,"warning: cannot generate special file "
++                                       "%s as user.\n", path);
++                }
+ 	}
+ }
+ 
+@@ -665,7 +674,7 @@
+ 		progname = argv[0];
+ 
+ 	/* command line options */
+-	while ((c = getopt(argc, argv, "hx:v")) != EOF) {
++	while ((c = getopt(argc, argv, "hx:vr")) != EOF) {
+ 		switch (c) {
+ 		case 'h':
+ 			usage(FSCK_OK);
+@@ -680,6 +689,9 @@
+ 		case 'v':
+ 			opt_verbose++;
+ 			break;
++                case 'r':
++                        opt_error_relax = 1;
++                        break;
+ 		}
+ 	}
+ 

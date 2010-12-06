@@ -1,0 +1,29 @@
+--- slin_m740/arch/mips/kernel/unaligned.c.orig	2007-12-22 15:04:48.000000000 +0100
++++ slin_m740/arch/mips/kernel/unaligned.c	2004-05-29 14:44:23.000000000 +0200
+@@ -388,7 +388,7 @@
+ }
+ 
+ #ifdef CONFIG_PROC_FS
+-unsigned long unaligned_instructions;
++extern unsigned long unaligned_instructions;
+ #endif
+ 
+ asmlinkage void do_ade(struct pt_regs *regs)
+--- slin_m740/arch/mips/kernel/proc.c.orig	2007-12-22 15:05:31.000000000 +0100
++++ slin_m740/arch/mips/kernel/proc.c	2007-12-22 15:14:10.000000000 +0100
+@@ -20,6 +20,7 @@
+ #ifndef CONFIG_CPU_HAS_LLSC
+ unsigned long ll_ops, sc_ops;
+ #endif
++unsigned long unaligned_instructions;
+ 
+ static const char *cpu_name[] = {
+ 	[CPU_UNKNOWN]	"unknown",
+@@ -125,6 +126,7 @@
+ 	seq_printf(m, "ll emulations\t\t: %lu\n", ll_ops);
+ 	seq_printf(m, "sc emulations\t\t: %lu\n", sc_ops);
+ #endif
++	seq_printf(m, "unaligned access\t: %lu\n", unaligned_instructions);
+ 
+ 	return 0;
+ }

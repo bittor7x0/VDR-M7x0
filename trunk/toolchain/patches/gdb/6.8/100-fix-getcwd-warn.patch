@@ -1,0 +1,65 @@
+--- gdb-6.8/gdb/cli/cli-cmds.c.orig	2008-12-21 21:27:13.000000000 +0100
++++ gdb-6.8/gdb/cli/cli-cmds.c	2008-12-21 21:30:01.000000000 +0100
+@@ -318,13 +318,14 @@
+ static void
+ pwd_command (char *args, int from_tty)
+ {
++  char *cdir;
+   if (args)
+     error (_("The \"pwd\" command does not take an argument: %s"), args);
+-  getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
++  cdir = getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
+ 
+-  if (strcmp (gdb_dirbuf, current_directory) != 0)
++  if (strcmp (cdir, current_directory) != 0)
+     printf_unfiltered (_("Working directory %s\n (canonically %s).\n"),
+-		       current_directory, gdb_dirbuf);
++		       current_directory, cdir);
+   else
+     printf_unfiltered (_("Working directory %s.\n"), current_directory);
+ }
+--- gdb-6.8/gdb/mi/mi-cmd-env.c.orig	2008-12-21 21:37:09.000000000 +0100
++++ gdb-6.8/gdb/mi/mi-cmd-env.c	2008-12-21 21:38:21.000000000 +0100
+@@ -67,6 +67,7 @@
+ enum mi_cmd_result
+ mi_cmd_env_pwd (char *command, char **argv, int argc)
+ {
++  char *cdir;
+   if (argc > 0)
+     error (_("mi_cmd_env_pwd: No arguments required"));
+           
+@@ -78,8 +79,8 @@
+      
+   /* Otherwise the mi level is 2 or higher.  */
+ 
+-  getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
+-  ui_out_field_string (uiout, "cwd", gdb_dirbuf);
++  cdir = getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
++  ui_out_field_string (uiout, "cwd", cdir);
+ 
+   return MI_CMD_DONE;
+ }
+--- gdb-6.8/gdb/main.c.orig	2008-12-21 21:50:25.000000000 +0100
++++ gdb-6.8/gdb/main.c	2008-12-21 21:53:04.000000000 +0100
+@@ -188,8 +188,7 @@
+   line[0] = '\0';		/* Terminate saved (now empty) cmd line */
+   instream = stdin;
+ 
+-  getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
+-  current_directory = gdb_dirbuf;
++  current_directory = getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
+ 
+   gdb_stdout = stdio_fileopen (stdout);
+   gdb_stderr = stdio_fileopen (stderr);
+--- gdb-6.8/gdb/top.c.orig	2008-12-21 21:56:09.000000000 +0100
++++ gdb-6.8/gdb/top.c	2008-12-21 21:57:00.000000000 +0100
+@@ -1628,8 +1628,7 @@
+ 
+   /* Run the init function of each source file */
+ 
+-  getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
+-  current_directory = gdb_dirbuf;
++  current_directory = getcwd (gdb_dirbuf, sizeof (gdb_dirbuf));
+ 
+ #ifdef __MSDOS__
+   /* Make sure we return to the original directory upon exit, come

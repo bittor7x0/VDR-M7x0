@@ -1,0 +1,3 @@
+sbin/usbautomounter   sbin/usbautomounter   f 755 0 0 - - - - -
+sbin/usbautomounter   -                     s   - - - - - - - -
+sbin/hotplug          /var/tmp/hotplug      l 777 0 0   -    - - -  -

@@ -1,0 +1,5233 @@
+diff -rNu dosfstools-2.11/dosfsck/boot.c dosfstools-2.11.new/dosfsck/boot.c
+--- dosfstools-2.11/dosfsck/boot.c	2007-05-29 10:37:01.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/boot.c	2007-05-29 10:37:51.000000000 +0200
+@@ -14,7 +14,7 @@
+ #include "io.h"
+ #include "boot.h"
+ 
+-
++#define  FS_TYPE_OFFSET (offsetof(struct boot_sector,fat32_length) + 18 + 3)
+ #define ROUND_TO_MULTIPLE(n,m) ((n) && (m) ? (n)+(m)-1-((n)-1)%(m) : 0)
+     /* don't divide by zero */
+ 
+@@ -65,7 +65,7 @@
+     printf("Boot sector contents:\n");
+     if (!atari_format) {
+ 	char id[9];
+-	strncpy(id,b->system_id,8);
++	strncpy(id,(char *)b->system_id,8);
+ 	id[8] = 0;
+ 	printf("System ID \"%s\"\n",id);
+     }
+@@ -93,13 +93,13 @@
+ 	printf("%10d root directory entries\n",fs->root_entries);
+     }
+     else {
+-	printf( "Root directory start at cluster %lu (arbitrary size)\n",
++	printf( "Root directory start at cluster %d (arbitrary size)\n",
+ 		fs->root_cluster);
+     }
+     printf("Data area starts at byte %llu (sector %llu)\n",
+ 	   (unsigned long long)fs->data_start,
+ 	   (unsigned long long)fs->data_start/lss);
+-    printf("%10lu data clusters (%llu bytes)\n",fs->clusters,
++    printf("%10d data clusters (%llu bytes)\n",fs->clusters,
+ 	   (unsigned long long)fs->clusters*fs->cluster_size);
+     printf("%u sectors/track, %u heads\n",CF_LE_W(b->secs_track),
+ 	   CF_LE_W(b->heads));
+@@ -113,7 +113,11 @@
+     printf("%10u sectors total\n", sectors ? sectors : CF_LE_L(b->total_sect));
+ }
+ 
+-static void check_backup_boot(DOS_FS *fs, struct boot_sector *b, int lss)
++/*
++ * AK: returns 1 if first boot sector is changed.
++ * so it can be readed.
++ */
++static int check_backup_boot(DOS_FS *fs, struct boot_sector *b, int lss)
+ {
+     struct boot_sector b2;
+ 
+@@ -121,7 +125,7 @@
+ 	printf( "There is no backup boot sector.\n" );
+ 	if (CF_LE_W(b->reserved) < 3) {
+ 	    printf( "And there is no space for creating one!\n" );
+-	    return;
++	    return 0;
+ 	}
+ 	if (interactive)
+ 	    printf( "1) Create one\n2) Do without a backup\n" );
+@@ -139,13 +143,19 @@
+ 	    }
+ 	    fs->backupboot_start = bbs*lss;
+ 	    b->backup_boot = CT_LE_W(bbs);
+-	    fs_write(fs->backupboot_start,sizeof(*b),b);
+-	    fs_write((off_t)offsetof(struct boot_sector,backup_boot),
+-		     sizeof(b->backup_boot),&b->backup_boot);
++	    fs->changed = 1;
++	    if (write_immed) {
++ 	       fs_write(fs->backupboot_start,sizeof(*b),b);
++	       fs_write((off_t)offsetof(struct boot_sector,backup_boot),
++	 	        sizeof(b->backup_boot),&b->backup_boot);
++               }
++            else {
++               fs->write_boot = 1;
++               }
+ 	    printf( "Created backup of boot sector in sector %d\n", bbs );
+-	    return;
++	    return 0;
+ 	}
+-	else return;
++	else return 0;
+     }
+     
+     fs_read(fs->backupboot_start,sizeof(b2),&b2);
+@@ -178,15 +188,29 @@
+ 	else printf( "  Not automatically fixing this.\n" );
+ 	switch (interactive ? get_key("123","?") : '3') {
+ 	  case '1':
+-	    fs_write(fs->backupboot_start,sizeof(*b),b);
++	    fs->changed = 1;
++	    if (write_immed) {
++	       fs_write(fs->backupboot_start,sizeof(*b),b);
++	       }
++            else {
++               fs->write_boot = 1;
++               }
+ 	    break;
+ 	  case '2':
+-	    fs_write(0,sizeof(b2),&b2);
+-	    break;
++	    memcpy(b, &b2, sizeof(b2));
++	    fs->changed = 1;
++	    if (write_immed) {
++	       fs_write(0,sizeof(b2),&b2);
++	       }
++             else {
++               fs->write_boot = 1;
++               }
++	    return 1;
+ 	  default:
+ 	    break;
+ 	}
+     }
++    return 0;
+ }
+ 
+ static void init_fsinfo(struct info_sector *i)
+@@ -200,8 +224,8 @@
+ 
+ static void read_fsinfo(DOS_FS *fs, struct boot_sector *b,int lss)
+ {
+-    struct info_sector i;
+-
++    struct info_sector *i = &fs->fsinfo_sector;
++    fs->write_fsinfo = 0;
+     if (!b->info_sector) {
+ 	printf( "No FSINFO sector\n" );
+ 	if (interactive)
+@@ -214,15 +238,24 @@
+ 	    for( s = 1; s < CF_LE_W(b->reserved); ++s )
+ 		if (s != CF_LE_W(b->backup_boot)) break;
+ 	    if (s > 0 && s < CF_LE_W(b->reserved)) {
+-		init_fsinfo(&i);
+-		fs_write((off_t)s*lss,sizeof(i),&i);
++		init_fsinfo(i);
+ 		b->info_sector = CT_LE_W(s);
+-		fs_write((off_t)offsetof(struct boot_sector,info_sector),
++		fs->changed = 1;
++		fs->fsinfo_start = s*lss;
++		if (write_immed) {
++		   fs_write((off_t)s*lss,sizeof(i),i);
++  		   fs_write((off_t)offsetof(struct boot_sector,info_sector),
+ 			 sizeof(b->info_sector),&b->info_sector);
+-		if (fs->backupboot_start)
+-		    fs_write(fs->backupboot_start+
++		   if (fs->backupboot_start)
++		      fs_write(fs->backupboot_start+
+ 			     offsetof(struct boot_sector,info_sector),
+ 			     sizeof(b->info_sector),&b->info_sector);
++                   }
++                else {
++                   fs->write_fsinfo = 1;
++                   fs->write_boot = 1;
++                   }
++                   
+ 	    }
+ 	    else {
+ 		printf( "No free reserved sector found -- "
+@@ -232,38 +265,45 @@
+ 	}
+ 	else return;
+     }
+-    
+-    fs->fsinfo_start = CF_LE_W(b->info_sector)*lss;
+-    fs_read(fs->fsinfo_start,sizeof(i),&i);
+-    
+-    if (i.magic != CT_LE_L(0x41615252) ||
+-	i.signature != CT_LE_L(0x61417272) ||
+-	i.boot_sign != CT_LE_W(0xaa55)) {
++    else {
++       fs->fsinfo_start = CF_LE_W(b->info_sector)*lss;
++       fs_read(fs->fsinfo_start,sizeof(*i), i);
++       }
++       
++    if (i->magic != CT_LE_L(0x41615252) ||
++	i->signature != CT_LE_L(0x61417272) ||
++	i->boot_sign != CT_LE_W(0xaa55)) {
+ 	printf( "FSINFO sector has bad magic number(s):\n" );
+-	if (i.magic != CT_LE_L(0x41615252))
++	if (i->magic != CT_LE_L(0x41615252))
+ 	    printf( "  Offset %llu: 0x%08x != expected 0x%08x\n",
+ 		    (unsigned long long)offsetof(struct info_sector,magic),
+-		    CF_LE_L(i.magic),0x41615252);
+-	if (i.signature != CT_LE_L(0x61417272))
++		    CF_LE_L(i->magic),0x41615252);
++	if (i->signature != CT_LE_L(0x61417272))
+ 	    printf( "  Offset %llu: 0x%08x != expected 0x%08x\n",
+ 		    (unsigned long long)offsetof(struct info_sector,signature),
+-		    CF_LE_L(i.signature),0x61417272);
+-	if (i.boot_sign != CT_LE_W(0xaa55))
++		    CF_LE_L(i->signature),0x61417272);
++	if (i->boot_sign != CT_LE_W(0xaa55))
+ 	    printf( "  Offset %llu: 0x%04x != expected 0x%04x\n",
+ 		    (unsigned long long)offsetof(struct info_sector,boot_sign),
+-		    CF_LE_W(i.boot_sign),0xaa55);
++		    CF_LE_W(i->boot_sign),0xaa55);
+ 	if (interactive)
+ 	    printf( "1) Correct\n2) Don't correct (FSINFO invalid then)\n" );
+ 	else printf( "  Auto-correcting it.\n" );
+ 	if (!interactive || get_key("12","?") == '1') {
+-	    init_fsinfo(&i);
+-	    fs_write(fs->fsinfo_start,sizeof(i),&i);
++	    init_fsinfo(i);
++	    fs->changed = 1;
++	    if (write_immed) {
++	       fs_write(fs->fsinfo_start,sizeof(*i),i);
++	       }
++            else {
++               fs->write_fsinfo = 1;
++               }
+ 	}
+ 	else fs->fsinfo_start = 0;
+     }
+ 
+     if (fs->fsinfo_start)
+-	fs->free_clusters = CF_LE_L(i.free_clusters);
++	fs->free_clusters = CF_LE_L(i->free_clusters);
+ }
+ 
+ void read_boot(DOS_FS *fs)
+@@ -273,10 +313,24 @@
+     unsigned short logical_sector_size, sectors;
+     unsigned fat_length;
+     off_t data_size;
+-
++    
++    fs->write_boot = 0;
++    
+     fs_read(0,sizeof(b),&b);
+     logical_sector_size = GET_UNALIGNED_W(b.sector_size);
+     if (!logical_sector_size) die("Logical sector size is zero.");
++    
++    fs->backupboot_start = 0;
++    if (!b.fat_length && b.fat32_length) {
++       fs->backupboot_start = CF_LE_W(b.backup_boot)*logical_sector_size;
++       if (check_backup_boot(fs,&b,logical_sector_size)) {
++          /* b has been overwritten with backup_boot sector */
++          logical_sector_size = GET_UNALIGNED_W(b.sector_size);
++          if (!logical_sector_size) 
++             die("Logical sector size is zero.");
++  	  }
++       }
++    
+     fs->cluster_size = b.cluster_size*logical_sector_size;
+     if (!fs->cluster_size) die("Cluster size is zero.");
+     if (b.fats != 2 && b.fats != 1)
+@@ -319,31 +373,37 @@
+ 		    "a separate root dir\n"
+ 		    "  area is defined. Cannot fix this easily.\n" );
+ 
+-	fs->backupboot_start = CF_LE_W(b.backup_boot)*logical_sector_size;
+-	check_backup_boot(fs,&b,logical_sector_size);
+-	
+ 	read_fsinfo(fs,&b,logical_sector_size);
+     }
+-    else if (!atari_format) {
+-	/* On real MS-DOS, a 16 bit FAT is used whenever there would be too
+-	 * much clusers otherwise. */
+-	fs->fat_bits = (fs->clusters > MSDOS_FAT12) ? 16 : 12;
++    else if (!strncmp(((char *)&b) + FS_TYPE_OFFSET, "12", 2)) {
++        fs->fat_bits = 12;
+     }
++    else if (!strncmp(((char *)&b) + FS_TYPE_OFFSET, "16", 2)) {
++        fs->fat_bits = 16;
++    } 
+     else {
+-	/* On Atari, things are more difficult: GEMDOS always uses 12bit FATs
+-	 * on floppies, and always 16 bit on harddisks. */
+-	fs->fat_bits = 16; /* assume 16 bit FAT for now */
+-	/* If more clusters than fat entries in 16-bit fat, we assume
+-	 * it's a real MSDOS FS with 12-bit fat. */
+-	if (fs->clusters+2 > fat_length*logical_sector_size*8/16 ||
+-	    /* if it's a floppy disk --> 12bit fat */
+-	    device_no == 2 ||
+-	    /* if it's a ramdisk or loopback device and has one of the usual
+-	     * floppy sizes -> 12bit FAT  */
+-	    ((device_no == 1 || device_no == 7) &&
+-	     (total_sectors == 720 || total_sectors == 1440 ||
+-	      total_sectors == 2880)))
+-	    fs->fat_bits = 12;
++        printf ("Warning: fs type field for FAT 12/16 not set.\n");
++        if (!atari_format) {
++    	    /* On real MS-DOS, a 16 bit FAT is used whenever there would be too
++	     * much clusers otherwise. */
++	    fs->fat_bits = (fs->clusters > MSDOS_FAT12) ? 16 : 12;
++        }
++        else {
++	    /* On Atari, things are more difficult: GEMDOS always uses 12bit FATs
++	     * on floppies, and always 16 bit on harddisks. */
++	    fs->fat_bits = 16; /* assume 16 bit FAT for now */
++	    /* If more clusters than fat entries in 16-bit fat, we assume
++	     * it's a real MSDOS FS with 12-bit fat. */
++   	    if (fs->clusters+2 > fat_length*logical_sector_size*8/16 ||
++	        /* if it's a floppy disk --> 12bit fat */
++	        device_no == 2 ||
++	        /* if it's a ramdisk or loopback device and has one of the usual
++                 * floppy sizes -> 12bit FAT  */
++	        ((device_no == 1 || device_no == 7) &&
++	         (total_sectors == 720 || total_sectors == 1440 ||
++	          total_sectors == 2880)))
++	        fs->fat_bits = 12;
++        }
+     }
+     /* On FAT32, the high 4 bits of a FAT entry are reserved */
+     fs->eff_fat_bits = (fs->fat_bits == 32) ? 28 : fs->fat_bits;
+@@ -363,8 +423,25 @@
+     if (!atari_format && (!b.secs_track || !b.heads))
+ 	die("Invalid disk format in boot sector.");
+     if (verbose) dump_boot(fs,&b,logical_sector_size);
++    
++    memcpy(&fs->boot_sector, &b, sizeof(b));
+ }
+ 
++void write_boot(DOS_FS *fs, int rw) 
++{
++  if (!rw)
++     return;
++  
++  if (fs->write_boot) {
++     fs_write(0, sizeof(fs->boot_sector), &fs->boot_sector);
++     if (fs->backupboot_start)
++        fs_write(fs->backupboot_start, sizeof(fs->boot_sector), &fs->boot_sector);
++     }
++  
++  if (fs->fsinfo_start && fs->write_fsinfo) {
++     fs_write(fs->fsinfo_start, sizeof(fs->fsinfo_sector), &fs->fsinfo_sector);
++     }
++}
+ /* Local Variables: */
+ /* tab-width: 8     */
+ /* End:             */
+diff -rNu dosfstools-2.11/dosfsck/boot.h dosfstools-2.11.new/dosfsck/boot.h
+--- dosfstools-2.11/dosfsck/boot.h	1997-06-18 12:09:38.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/boot.h	2007-05-29 10:37:51.000000000 +0200
+@@ -10,4 +10,5 @@
+ 
+ /* Reads the boot sector from the currently open device and initializes *FS */
+ 
++void write_boot(DOS_FS *fs, int rw);
+ #endif
+diff -rNu dosfstools-2.11/dosfsck/changes-ak.txt dosfstools-2.11.new/dosfsck/changes-ak.txt
+--- dosfstools-2.11/dosfsck/changes-ak.txt	1970-01-01 01:00:00.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/changes-ak.txt	2007-05-29 10:37:51.000000000 +0200
+@@ -0,0 +1,62 @@
++all:
++* drop use of memqueue, memory is freed an allocated as needed now
++
++* drop use of io buffers, to rollback changes. All changes are now hold in 
++  memory (if not write immediate is set) at a type (of change) depending
++  level. This supports rollback of changes fully.
++
++* adapted to uses changes below
++
++boot.c:
++* reread boot sector in case it gets overwritten by backup 
++
++* try to determintate FAT12 or FAT16 by type field in boot sector 
++  (if this failed using old code for this)
++
++* buffers boot sector changes in case not writting immediately
++
++check.c:
++* handle volume lables
++
++* buffers modified directory entries to ensure data is only written if its
++  save. (If directory shares cluster(s) with an other file, changed 
++  directory entries has overwritten files contents). 
++
++* buffers newly created cluster either by copying from exiting one or by 
++  clearing
++
++* buffering supports selective rollback of changes made.
++
++* detects directories directly or indirectly containing them selfs,  and 
++  drop/truncate them (can only happen if directories sharing clusters).
++
++* files check completely reworked needing only two passes in all cases
++  now:
++  - Pass 0 detects shared clusters and read all files/directories until its
++    end (if directories not containing them selfs). Therefor fake cluster are 
++    generated, if an shared cluster is  detected. This pass correct all errors
++    temporary in memory. It detects all other errors as before.
++  - Pass 1 is only need if file(s) sharing clusters. Fake clusters - generated 
++    in pass 0 - ensure files sharing clusters are detected. In automatic
++    mode files sharing clusters are truncate (befor first shared cluster).
++    In interactive mode user can select to duplicate all shared clusters. 
++    This is done cause it is undecidable to which file the shared cluster
++    belongs.
++
++fat.c:
++* useing of mmap to access fats (for saveing of memory). 
++
++* buffers fat changes: one for supporting rollback of all changes, one for
++  temporay changes made during the two passes in files check. Last one
++  support selective rollback of changes.
++
++* using bitmap for keeping track of clusters owned by a file, are bad and
++  involved in a cycle.
++
++* precheck of fat extended. Search for cycles in clusters chain is done here
++  now.
++
++* searching of/testing for bad clusters is be done before files check now.
++
++--
++Andreas Koch (andreas@open7x0.org)
+\ Kein Zeilenumbruch am Dateiende.
+diff -rNu dosfstools-2.11/dosfsck/check.c dosfstools-2.11.new/dosfsck/check.c
+--- dosfstools-2.11/dosfsck/check.c	2005-03-12 16:08:43.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/check.c	2007-05-29 10:37:51.000000000 +0200
+@@ -20,60 +20,562 @@
+ #include "lfn.h"
+ #include "check.h"
+ 
+-
+-static DOS_FILE *root;
+-
+ /* get start field of a dir entry */
+ #define FSTART(p,fs) \
+-  ((unsigned long)CF_LE_W(p->dir_ent.start) | \
+-   (fs->fat_bits == 32 ? CF_LE_W(p->dir_ent.starthi) << 16 : 0))
++  ((int32_t) CF_LE_W(p->dir_ent.start) | \
++   (fs->fat_bits == 32 ? (int32_t) CF_LE_W(p->dir_ent.starthi) << 16 : \
++    (CF_LE_W(p->dir_ent.starthi) & 0x1000) << 16))
++   
++#define FSIZE(p)  CF_LE_L((p)->dir_ent.size)
+ 
+-#define MODIFY(p,i,v)					\
+-  do {							\
+-    if (p->offset) {					\
+-	p->dir_ent.i = v;				\
+-	fs_write(p->offset+offsetof(DIR_ENT,i),		\
+-		 sizeof(p->dir_ent.i),&p->dir_ent.i);	\
+-    }							\
++
++#define MODIFY(p,i,v)						\
++  do {								\
++    if (p->offset) {						\
++	p->dir_ent.i = v;					\
++	add_modified_dirent(p->offset, &p->dir_ent); 	        \
++    }								\
++    else							\
++       die("Internal error: try to modify root dir");		\
+   } while(0)
+ 
+ #define MODIFY_START(p,v,fs)						\
+   do {									\
+-    unsigned long __v = (v);						\
++    int32_t __v = (v);							\
+     if (!p->offset) {							\
+ 	/* writing to fake entry for FAT32 root dir */			\
+ 	if (!__v) die("Oops, deleting FAT32 root dir!");		\
+ 	fs->root_cluster = __v;						\
+ 	p->dir_ent.start = CT_LE_W(__v&0xffff);				\
+ 	p->dir_ent.starthi = CT_LE_W(__v>>16);				\
+-	__v = CT_LE_L(__v);						\
+-	fs_write((loff_t)offsetof(struct boot_sector,root_cluster),	\
+-	         sizeof(((struct boot_sector *)0)->root_cluster),	\
+-		 &__v);							\
++	add_modified_dirent(0, &p->dir_ent);	  		      	\
+     }									\
+     else {								\
+-	MODIFY(p,start,CT_LE_W((__v)&0xffff));				\
++	p->dir_ent.start = CT_LE_W(__v&0xffff);				\
+ 	if (fs->fat_bits == 32)						\
+-	    MODIFY(p,starthi,CT_LE_W((__v)>>16));			\
++            p->dir_ent.starthi = CT_LE_W(__v>>16);			\
++        else 								\
++            p->dir_ent.starthi = CT_LE_W((__v>>16)&0x1000);		\
++	add_modified_dirent(p->offset, &p->dir_ent);	 	      	\
+     }									\
+   } while(0)
+ 
+ 
+-loff_t alloc_rootdir_entry(DOS_FS *fs, DIR_ENT *de, const char *pattern)
++int check_pass = 0;
++
++typedef struct _new_cluster {
++  int32_t cluster;
++  int32_t copy_cluster;
++  struct _new_cluster *next;
++  struct _new_cluster *prev;
++  struct _new_cluster *next_copy;
++  struct _new_cluster *prev_copy;
++} NEW_CLUSTER;
++
++static NEW_CLUSTER *new_clusters = NULL;
++static NEW_CLUSTER *new_copy_clusters = NULL;
++
++static int32_t add_new_fake_cluster(int32_t copy_cluster)
++{
++  static int32_t last_fake_no = (1 << 28);
++  NEW_CLUSTER *new_cluster;
++  NEW_CLUSTER **walk;
++  
++  new_cluster = alloc(sizeof(NEW_CLUSTER));
++  new_cluster->cluster = last_fake_no++;
++  new_cluster->copy_cluster = copy_cluster;
++  new_cluster->next = NULL;
++  new_cluster->prev = NULL;
++  
++  walk = &new_clusters;
++  while (*walk && (*walk)->cluster < new_cluster->cluster) {
++        new_cluster->prev = *walk;
++        walk = &(*walk)->next;  
++        }
++        
++  if (*walk) 
++     die("Internal error: Try to create illegal fake cluster.");
++  
++  if (*walk)
++     (*walk)->prev = new_cluster;
++  *walk = new_cluster;
++  
++  if (!copy_cluster) 
++     die("Internal error: No real cluster for fake given!");
++  
++  walk = &new_copy_clusters;
++  new_cluster->prev_copy = NULL;
++  while (*walk && (*walk)->copy_cluster <= copy_cluster) {
++        new_cluster->prev_copy = *walk;
++        walk = &(*walk)->next_copy;
++        }
++  
++  new_cluster->next_copy = *walk;
++  if (*walk)
++     (*walk)->prev_copy = new_cluster;
++  *walk = new_cluster;
++  return new_cluster->cluster;
++}
++
++static void drop_new_cluster(int32_t cluster)
++{
++  NEW_CLUSTER **walk; 
++  NEW_CLUSTER *cur;
++  
++  walk = &new_clusters;
++  while (*walk && (*walk)->cluster < cluster)
++        walk = &(*walk)->next;  
++        
++  cur = *walk;
++  if (!cur || cur->cluster != cluster) 
++     die("Internal error: Cannot find new cluster %d.", cluster);
++  
++  
++  *walk = cur->next;
++  if (cur->next)
++     cur->next->prev = cur->prev;
++     
++  if (!cur->copy_cluster) {
++     free(cur);
++     return;
++     }
++     
++  if (cur->prev_copy) 
++     cur->prev_copy->next_copy = cur->next_copy;
++  else
++     new_copy_clusters = cur->next_copy;
++
++  if (cur->next_copy) 
++     cur->next_copy->prev_copy = cur->prev_copy;
++  
++  free(cur);
++}
++
++static int32_t add_new_cluster(DOS_FS *fs, int32_t last_cluster,
++                               int32_t copy_cluster)
++{
++  NEW_CLUSTER *new_cluster;
++  NEW_CLUSTER **walk;
++  int32_t new_cluster_no;
++  int32_t end_cluster;
++  
++  end_cluster = last_cluster;
++  new_cluster_no = last_cluster + 1;
++  if (!last_cluster) {
++     new_cluster_no = 2;
++     end_cluster = fs->clusters + 2;
++     }
++     
++  while (new_cluster_no != end_cluster) {
++        if (new_cluster_no >= fs->clusters + 2) {
++           new_cluster_no = 2;
++           continue;
++           }
++              
++        if (!bad_cluster(fs, new_cluster_no) && 
++              !next_cluster(fs, new_cluster_no))
++           break;
++        new_cluster_no++;
++        }
++           
++  if (new_cluster_no == end_cluster) {
++     die("No free cluster found! Disk full");
++     }
++        
++  if (write_immed) {
++     uint8_t cluster_data[fs->cluster_size];
++     if (copy_cluster) {
++        fs_read(cluster_start(fs, copy_cluster), fs->cluster_size,
++                                                    cluster_data);
++        }
++     else {
++        memset(cluster_data, 0, fs->cluster_size);
++        }
++     fs_write(cluster_start(fs, new_cluster_no), fs->cluster_size, 
++                                                    cluster_data);
++     return new_cluster_no;
++     }
++        
++  new_cluster = alloc(sizeof(NEW_CLUSTER));
++  new_cluster->cluster = new_cluster_no;
++  new_cluster->copy_cluster = copy_cluster;
++  new_cluster->prev = NULL;
++  
++  walk = &new_clusters;
++  while (*walk && (*walk)->cluster < new_cluster_no) {
++        new_cluster->prev = *walk;
++        walk = &(*walk)->next;
++        }
++  
++  if (*walk && (*walk)->cluster == new_cluster_no) 
++     die("Internal error: Try to create same new cluster twice.");
++  
++  new_cluster->next = *walk;
++  if (*walk)
++     (*walk)->prev = new_cluster;
++  *walk = new_cluster;
++  
++  new_cluster->prev_copy = NULL;
++  if (!copy_cluster) {
++     new_cluster->next_copy = NULL;
++     return new_cluster_no;
++     }
++  
++  walk = &new_copy_clusters;
++  while (*walk && (*walk)->copy_cluster < copy_cluster) {
++        new_cluster->prev_copy = *walk;
++        walk = &(*walk)->next_copy;
++        }
++  
++  while (*walk && (*walk)->copy_cluster == copy_cluster && 
++         (*walk)->cluster < new_cluster_no) {
++        new_cluster->prev_copy = *walk;
++        walk = &(*walk)->next_copy;
++        }
++  
++  new_cluster->next_copy = *walk;
++  if (*walk)
++     (*walk)->prev_copy = new_cluster;
++  *walk = new_cluster;
++  return new_cluster_no;
++}
++
++static int32_t real_cluster(int32_t cluster)
++{
++  NEW_CLUSTER *walk;
++  if (!IS_FAKE_CLUSTER(cluster))
++     return cluster;
++     
++  walk = new_clusters; 
++  while (walk && walk->cluster < cluster)
++        walk = walk->next;
++      
++  if (!walk || walk->cluster != cluster)
++     die("Internal error: Cannot find real cluster for fake %d", cluster);
++     
++  return walk->copy_cluster;
++}
++
++static int has_fake_dup_cluster(int32_t cluster) 
++{
++  NEW_CLUSTER *walk;
++  walk = new_copy_clusters;
++  while (walk && walk->copy_cluster < cluster)
++        walk = walk->next_copy;
++  
++  while (walk && walk->copy_cluster == cluster && !IS_FAKE_CLUSTER(walk->cluster))
++        walk = walk->next_copy;
++  
++  return (walk && walk->copy_cluster == cluster);
++}
++
++static void drop_all_fake_clusters(void) 
++{
++  NEW_CLUSTER **walk;
++  NEW_CLUSTER *cur;
++  walk = &new_clusters;
++  while (*walk && !IS_FAKE_CLUSTER((*walk)->cluster))
++        walk = &(*walk)->next;
++  
++  cur = *walk;
++  *walk = NULL;
++  
++  while (cur) {
++        NEW_CLUSTER *tmp;
++        tmp = cur;
++        cur = tmp->next;
++        if (!tmp->copy_cluster)
++           die("Internal error: No cluster to copy for fake cluster");
++           
++        if (tmp->prev_copy) 
++           tmp->prev_copy->next_copy = tmp->next_copy;
++        else
++           new_copy_clusters = tmp->next_copy;
++
++        if (tmp->next_copy) 
++           tmp->next_copy->prev_copy = tmp->prev_copy;
++  
++        free(tmp);
++        }
++}
++
++typedef struct _modified_dirent {
++  off_t offset;
++  DIR_ENT dirent;
++  int check_pass;
++  struct _modified_dirent *next;
++} MODIFIED_DIRENT;
++static MODIFIED_DIRENT *modified_dirents = NULL;
++
++
++void add_modified_dirent(off_t offset, DIR_ENT *dirent) 
++{
++  MODIFIED_DIRENT **walk, *new_mod;
++  walk = &modified_dirents;
++  while (*walk && (*walk)->offset < offset)
++        walk = &(*walk)->next;
++  
++  if (*walk && (*walk)->offset == offset) {
++     memcpy(&(*walk)->dirent, dirent, sizeof(DIR_ENT));
++     (*walk)->check_pass = check_pass;
++     return;
++     }
++ 
++  new_mod = alloc(sizeof(MODIFIED_DIRENT));
++  new_mod->offset = offset;
++  memcpy(&new_mod->dirent, dirent, sizeof(DIR_ENT));
++  new_mod->check_pass = check_pass;
++  new_mod->next = *walk;
++  *walk = new_mod;
++}
++
++void read_modified_dirent(DOS_FS *fs, off_t offset, DIR_ENT *dirent)
++{
++  MODIFIED_DIRENT *walk;
++  NEW_CLUSTER *walk2;
++  walk = modified_dirents; 
++  while (walk && walk->offset < offset) 
++        walk = walk->next;
++  
++  if (walk && walk->offset == offset) {
++     memcpy(dirent, &walk->dirent, sizeof(DIR_ENT));
++     walk->check_pass = check_pass;
++     return;
++     }
++     
++  walk2 = new_clusters;
++  while (walk2) {
++        const off_t clu_start = cluster_start(fs, walk2->cluster);
++        if (offset >= clu_start && offset < clu_start + fs->cluster_size) {
++           if (!walk2->copy_cluster) {
++              memset(dirent, 0, sizeof(DIR_ENT));
++              return;
++              }
++           offset -= clu_start;
++           offset += cluster_start(fs, walk2->copy_cluster);
++           break;
++           }
++        walk2 = walk2->next;
++        }
++        
++  if (offset >= cluster_start(fs,fs->clusters + 2))
++     die("Internal error: directory entry offset out of range.");
++     
++  if (!offset) 
++     die("Internal error: Root directory entry should not be readed");
++
++  fs_read(offset, sizeof(DIR_ENT), dirent);
++}
++
++static off_t real_offset(DOS_FS *fs, off_t offset)
++{
++  NEW_CLUSTER *walk;
++  walk = new_clusters;
++  while (walk) {
++        const off_t clu_start = cluster_start(fs, walk->cluster);
++        if (offset >= clu_start && offset < clu_start + fs->cluster_size) {
++           if (!walk->copy_cluster) {
++              return offset;
++              }
++           offset -= clu_start;
++           offset += cluster_start(fs, walk->copy_cluster);
++           return offset;
++           }
++        walk = walk->next;
++        }
++  return offset;
++}
++
++static void drop_modified_dirents(off_t start, int size)
++{
++  MODIFIED_DIRENT **walk, *tmp;
++  
++  walk = &modified_dirents;
++  while (*walk && (*walk)->offset < start)
++        walk = &(*walk)->next;
++  
++  start += size;
++  while (*walk && (*walk)->offset < start) {
++        tmp = *walk;
++        *walk = tmp->next;
++        free(tmp);
++        }
++}
++
++static void convert_modified_dirents(DOS_FS *fs, int32_t from_cluster, 
++                                     int32_t to_cluster)
++{
++  MODIFIED_DIRENT **walk;
++  MODIFIED_DIRENT **first;
++  MODIFIED_DIRENT *last;
++  MODIFIED_DIRENT *tmp;
++  off_t from_start;
++  off_t to_start;
++  off_t diff_start;
++  
++  from_start = cluster_start(fs, from_cluster);
++  to_start = cluster_start(fs, to_cluster);
++  
++  diff_start = to_start - from_start;
++  
++  walk = &modified_dirents;
++  while (*walk && (*walk)->offset < from_start)
++        walk = &(*walk)->next;
++  
++  first = walk;
++  last = NULL;
++  from_start += fs->cluster_size;
++  while (*walk && (*walk)->offset < from_start) {
++        (*walk)->offset += diff_start;
++        walk = &(*walk)->next;
++        last = *walk;
++        }
++        
++  if (!last)   
++     return;
++     
++  tmp = *first;
++  *first = last->next;
++  
++  walk = &modified_dirents;
++  while (*walk && (*walk)->offset < tmp->offset)
++        walk = &(*walk)->next;    
++  
++  if (*walk && (*walk)->offset >= to_start && 
++               (*walk)->offset < to_start + fs->cluster_size)
++     die("Internal error: Found modified dirents for new cluster.");
++  
++  last->next = *walk;
++  *walk = tmp;
++}
++
++static void drop_unneeded_dirents(int last_check_pass) 
++{
++  MODIFIED_DIRENT **walk;
++  MODIFIED_DIRENT *tmp;
++  
++  walk = &modified_dirents;
++  while (*walk) {
++        tmp = *walk;
++        if (tmp->check_pass == last_check_pass || !tmp->offset) {
++           tmp->check_pass = 0;
++           walk = &tmp->next;
++           continue;
++           }
++        *walk = tmp->next;
++        free(tmp);
++        }
++}
++
++void perform_changes(DOS_FS *fs, int rw)
++{
++  MODIFIED_DIRENT *dirents;
++  NEW_CLUSTER *clusters;
++  NEW_CLUSTER *copy_clusters;
++  MODIFIED_DIRENT *tmp_dirent; 
++  NEW_CLUSTER *tmp_cluster;
++  int32_t copy_cluster_no;
++  
++  uint8_t free_cluster_buf[fs->cluster_size];
++  uint8_t copy_cluster_buf[fs->cluster_size];
++  memset(free_cluster_buf, 0, fs->cluster_size);
++  
++  dirents = modified_dirents;
++  modified_dirents = NULL;
++  if (dirents && !dirents->offset) {
++     /* Special case root dir start changed */
++     int32_t start;
++     if (fs->fat_bits != 32)
++        die("Internal error: Can only change start of FAT32 root directory.");
++     tmp_dirent = dirents;
++     dirents = tmp_dirent->next;
++     
++     start = CT_LE_L(fs->root_cluster);
++     if (rw) {
++        fs_write((off_t)offsetof(struct boot_sector,root_cluster),	
++	            sizeof(((struct boot_sector *)0)->root_cluster),	
++	   	    &start);
++        if (fs->backupboot_start)
++           fs_write(fs->backupboot_start+(off_t)offsetof(struct boot_sector,root_cluster),	
++	            sizeof(((struct boot_sector *)0)->root_cluster),	
++	   	    &start);
++        }
++     free(tmp_dirent);
++     }
++
++  clusters = new_clusters;
++  copy_clusters = new_copy_clusters;
++  new_clusters = NULL;
++  new_copy_clusters = NULL;
++  
++  while (dirents || clusters || copy_clusters) {
++        if (dirents && (!clusters || 
++               dirents->offset < cluster_start(fs,clusters->cluster)) &&
++            (!copy_clusters || 
++               dirents->offset < cluster_start(fs,copy_clusters->copy_cluster))) {
++           tmp_dirent = dirents;
++           dirents = tmp_dirent->next;
++           if (rw)
++              fs_write(tmp_dirent->offset, sizeof(DIR_ENT), &tmp_dirent->dirent);
++           free(tmp_dirent);
++           continue;
++           }
++        
++        if (clusters && !clusters->copy_cluster && (!copy_clusters ||
++            clusters->cluster < copy_clusters->copy_cluster)) {
++           tmp_cluster = clusters;
++           clusters = tmp_cluster->next;
++           if (rw)
++              fs_write(cluster_start(fs,tmp_cluster->cluster), fs->cluster_size,
++                    &free_cluster_buf);
++           free(tmp_cluster);
++           continue;
++           }
++           
++        if (copy_clusters) {
++           copy_cluster_no = copy_clusters->copy_cluster;
++           if (rw)
++              fs_read(cluster_start(fs, copy_cluster_no), fs->cluster_size, 
++                   &copy_cluster_buf);
++                   
++           while (copy_clusters && 
++                  copy_clusters->copy_cluster == copy_cluster_no) {
++                 tmp_cluster = copy_clusters;
++                 copy_clusters = tmp_cluster->next_copy;
++                 
++                 if (tmp_cluster->prev)
++                    tmp_cluster->prev->next = tmp_cluster->next;
++                 else
++                    clusters = tmp_cluster->next;
++                 
++                 if (tmp_cluster->next)
++                    tmp_cluster->next->prev = tmp_cluster->prev;
++                    
++                 if (rw)   
++                    fs_write(cluster_start(fs,tmp_cluster->cluster), 
++                          fs->cluster_size,  &copy_cluster_buf);
++                 free(tmp_cluster);
++                 }
++           }
++        }
++}
++
++
++off_t alloc_rootdir_entry(DOS_FS *fs, DIR_ENT *de, const char *pattern)
+ {
+     static int curr_num = 0;
+-    loff_t offset;
++    off_t offset;
+ 
+     if (fs->root_cluster) {
+ 	DIR_ENT d2;
+ 	int i = 0, got = 0;
+-	unsigned long clu_num, prev = 0;
+-	loff_t offset2;
++	int32_t clu_num, prev = 0;
++	off_t offset2;
+ 	
+ 	clu_num = fs->root_cluster;
+ 	offset = cluster_start(fs,clu_num);
+ 	while (clu_num > 0 && clu_num != -1) {
+-	    fs_read(offset,sizeof(DIR_ENT),&d2);
++	    read_modified_dirent(fs, offset, &d2);
+ 	    if (IS_FREE(d2.name) && d2.attr != VFAT_LN_ATTR) {
+ 		got = 1;
+ 		break;
+@@ -92,32 +594,22 @@
+ 	     * after previous one */
+ 	    if (!prev)
+ 		die("Root directory has no cluster allocated!");
+-	    for (clu_num = prev+1; clu_num != prev; clu_num++) {
+-		if (clu_num >= fs->clusters+2) clu_num = 2;
+-		if (!fs->fat[clu_num].value)
+-		    break;
+-	    }
+-	    if (clu_num == prev)
+-		die("Root directory full and no free cluster");
+-	    set_fat(fs,prev,clu_num);
+-	    set_fat(fs,clu_num,-1);
+-	    set_owner(fs, clu_num, get_owner(fs, fs->root_cluster));
+-	    /* clear new cluster */
+-	    memset( &d2, 0, sizeof(d2) );
++            clu_num = add_new_cluster(fs, prev, 0);
++            set_fat(fs, prev, clu_num);
++            set_fat(fs, clu_num, -1);
++	    set_owned(fs, clu_num, 1);
+ 	    offset = cluster_start(fs,clu_num);
+-	    for( i = 0; i < fs->cluster_size; i += sizeof(DIR_ENT) )
+-		fs_write( offset+i, sizeof(d2), &d2 );
+ 	}
+ 	memset(de,0,sizeof(DIR_ENT));
+ 	while (1) {
+-	    sprintf(de->name,pattern,curr_num);
++	    sprintf((char *)de->name,pattern,curr_num);
+ 	    clu_num = fs->root_cluster;
+ 	    i = 0;
+ 	    offset2 = cluster_start(fs,clu_num);
+ 	    while (clu_num > 0 && clu_num != -1) {
+-		fs_read(offset2,sizeof(DIR_ENT),&d2);
++		read_modified_dirent(fs, offset2, &d2);
+ 		if (offset2 != offset &&
+-		    !strncmp(d2.name,de->name,MSDOS_NAME))
++		    !strncmp((char *) d2.name, (char *) de->name,MSDOS_NAME))
+ 		    break;
+ 		i += sizeof(DIR_ENT);
+ 		offset2 += sizeof(DIR_ENT);
+@@ -138,7 +630,9 @@
+ 	int next_free = 0, scan;
+ 
+ 	root = alloc(fs->root_entries*sizeof(DIR_ENT));
+-	fs_read(fs->root_start,fs->root_entries*sizeof(DIR_ENT),root);
++	for (scan = 0; scan < fs->root_entries; scan++)
++ 	    read_modified_dirent(fs, fs->root_start + scan * sizeof(DIR_ENT),
++	                        root + scan * sizeof(DIR_ENT));
+ 
+ 	while (next_free < fs->root_entries)
+ 	    if (IS_FREE(root[next_free].name) &&
+@@ -150,10 +644,10 @@
+ 	offset = fs->root_start+next_free*sizeof(DIR_ENT);
+ 	memset(de,0,sizeof(DIR_ENT));
+ 	while (1) {
+-	    sprintf(de->name,pattern,curr_num);
++	    sprintf((char *)de->name,pattern,curr_num);
+ 	    for (scan = 0; scan < fs->root_entries; scan++)
+ 		if (scan != next_free &&
+-		    !strncmp(root[scan].name,de->name,MSDOS_NAME))
++		    !strncmp((char *)root[scan].name,(char *)de->name,MSDOS_NAME))
+ 		    break;
+ 	    if (scan == fs->root_entries) break;
+ 	    if (++curr_num >= 10000) die("Unable to create unique name");
+@@ -186,7 +680,7 @@
+ 
+ /* Convert a MS-DOS time/date pair to a UNIX date (seconds since 1 1 70). */
+ 
+-time_t date_dos2unix(unsigned short time,unsigned short date)
++static time_t date_dos2unix(unsigned short time,unsigned short date)
+ {
+     int month,year;
+     time_t secs;
+@@ -224,8 +718,8 @@
+ 
+     /* Do not complain about (and auto-correct) the extended attribute files
+      * of OS/2. */
+-    if (strncmp(name,"EA DATA  SF",11) == 0 ||
+-        strncmp(name,"WP ROOT  SF",11) == 0) return 0;
++    if (strncmp((char *)name,"EA DATA  SF",11) == 0 ||
++        strncmp((char *)name,"WP ROOT  SF",11) == 0) return 0;
+     
+     for (i = 0; i < 8; i++) {
+ 	if (name[i] < ' ' || name[i] == 0x7f) return 1;
+@@ -272,590 +766,1186 @@
+ }
+ 
+ 
+-static void drop_file(DOS_FS *fs,DOS_FILE *file)
+-{
+-    unsigned long cluster;
+-
+-    MODIFY(file,name[0],DELETED_FLAG);
+-    for (cluster = FSTART(file,fs); cluster > 0 && cluster <
+-      fs->clusters+2; cluster = next_cluster(fs,cluster))
+-	set_owner(fs,cluster,NULL);
+-    --n_files;
+-}
+-
+-
+-static void truncate_file(DOS_FS *fs,DOS_FILE *file,unsigned long clusters)
+-{
+-    int deleting;
+-    unsigned long walk,next,prev;
+-    
+-    walk = FSTART(file,fs);
+-    prev = 0;
+-    if ((deleting = !clusters)) MODIFY_START(file,0,fs);
+-    while (walk > 0 && walk != -1) {
+-	next = next_cluster(fs,walk);
+-	if (deleting) set_fat(fs,walk,0);
+-	else if ((deleting = !--clusters)) set_fat(fs,walk,-1);
+-	prev = walk;
+-	walk = next;
+-    }
+-}
+-
+-
+ static void auto_rename(DOS_FILE *file)
+ {
+-    DOS_FILE *first,*walk;
+-    int number;
++  DOS_FILE *walk;
++  int number;
+ 
+-    if (!file->offset) return;	/* cannot rename FAT32 root dir */
+-    first = file->parent ? file->parent->first : root;
+-    number = 0;
+-    while (1) {
+-	sprintf(file->dir_ent.name,"FSCK%04d",number);
+-	strncpy(file->dir_ent.ext,"REN",3);
+-	for (walk = first; walk; walk = walk->next)
+-	    if (walk != file && !strncmp(walk->dir_ent.name,file->dir_ent.
+-	      name,MSDOS_NAME)) break;
++  if (!file->parent) 
++     die("Internal error: try to auto rename root dir."); 
++     
++  number = 0;
++  while (number < 10000) {
++	sprintf((char *) file->dir_ent.name,"FSCK%04d",number);
++	strncpy((char *) file->dir_ent.ext,"REN",3);
++	
++	for (walk = file->parent->first; walk; walk = walk->next)
++	    if (walk != file && !strncmp((char *) walk->dir_ent.name,
++	                                 (char *) file->dir_ent.name,MSDOS_NAME))
++               break;
+ 	if (!walk) {
+-	    fs_write(file->offset,MSDOS_NAME,file->dir_ent.name);
+-	    return;
+-	}
++	   add_modified_dirent(file->offset,&file->dir_ent);
++	   return;
++           }
+ 	number++;
+-    }
+-    die("Can't generate a unique name.");
++        }
++  die("Can't generate a unique name.");
+ }
+ 
+ 
+ static void rename_file(DOS_FILE *file)
+ {
+-    unsigned char name[46];
+-    unsigned char *walk,*here;
++  char name[46];
++  char *walk,*here;
+ 
+-    if (!file->offset) {
+-	printf( "Cannot rename FAT32 root dir\n" );
+-	return;	/* cannot rename FAT32 root dir */
+-    }
+-    while (1) {
++  if (!file->parent)
++     die("Internal error: try to rename root dir."); 
++       
++  while (1) {
+ 	printf("New name: ");
+ 	fflush(stdout);
+ 	if (fgets(name,45,stdin)) {
+-	    if ((here = strchr(name,'\n'))) *here = 0;
+-	    for (walk = strrchr(name,0); walk >= name && (*walk == ' ' ||
+-	      *walk == '\t'); walk--);
+-	    walk[1] = 0;
+-	    for (walk = name; *walk == ' ' || *walk == '\t'; walk++);
+-	    if (file_cvt(walk,file->dir_ent.name)) {
+-		fs_write(file->offset,MSDOS_NAME,file->dir_ent.name);
+-		return;
+-	    }
+-	}
+-    }
++           if ((here = strchr(name,'\n'))) 
++              *here = 0;
++	   for (walk = strrchr(name,0); walk >= name && 
++                       (*walk == ' ' || *walk == '\t'); walk--)
++               ;
++	   walk[1] = 0;
++	   for (walk = name; *walk == ' ' || *walk == '\t'; walk++)
++	       ;
++	   if (file_cvt((unsigned char*) walk,file->dir_ent.name)) {
++	      DOS_FILE *walk2; 
++	      for (walk2 = file->parent->first; walk2; walk2 = walk2->next)
++	          if (walk2 != file && !strncmp((char *)walk2->dir_ent.name,
++                                     (char *)file->dir_ent.name,MSDOS_NAME))
++                     break;
++   	      if (!walk2) {
++	         add_modified_dirent(file->offset,&file->dir_ent);
++                 return;
++                 }
++              printf("File already exists\n");
++              }
++	   }
++        }
+ }
+ 
+-
+-static int handle_dot(DOS_FS *fs,DOS_FILE *file,int dots)
++static void undelete(DOS_FS *fs,DOS_FILE *file)
+ {
+-    char *name;
++  int32_t clusters,left,prev,walk;
+ 
+-    name = strncmp(file->dir_ent.name,MSDOS_DOT,MSDOS_NAME) ? ".." : ".";
+-    if (!(file->dir_ent.attr & ATTR_DIR)) {
+-	printf("%s\n  Is a non-directory.\n",path_name(file));
+-	if (interactive)
+-	    printf("1) Drop it\n2) Auto-rename\n3) Rename\n"
+-	      "4) Convert to directory\n");
+-	else printf("  Auto-renaming it.\n");
+-	switch (interactive ? get_key("1234","?") : '2') {
+-	    case '1':
+-		drop_file(fs,file);
+-		return 1;
+-	    case '2':
+-		auto_rename(file);
+-		printf("  Renamed to %s\n",file_name(file->dir_ent.name));
+-		return 0;
+-	    case '3':
+-		rename_file(file);
+-		return 0;
+-	    case '4':
+-		MODIFY(file,size,CT_LE_L(0));
+-		MODIFY(file,attr,file->dir_ent.attr | ATTR_DIR);
+-		break;
+-	}
+-    }
+-    if (!dots) {
+-	printf("Root contains directory \"%s\". Dropping it.\n",name);
+-	drop_file(fs,file);
+-	return 1;
+-    }
+-    return 0;
++  clusters = left = (CF_LE_L(file->dir_ent.size)+fs->cluster_size-1)/
++      fs->cluster_size;
++  prev = 0;
++  for (walk = FSTART(file,fs); left && walk >= 2 && walk <
++        fs->clusters+2 && !bad_cluster(fs, walk) && !next_cluster(fs,walk); walk++) {
++      left--;
++      if (prev) 
++         set_fat_tmp(fs,prev,walk);
++      prev = walk;
++      }
++  if (prev)  
++     set_fat_tmp(fs,prev,-1);
++  else {
++     MODIFY_START(file,0,fs);
++     }
++  if (left)
++     printf("Warning: Did only undelete %d of %d cluster%s.\n",clusters-left,
++  	     clusters,clusters == 1 ? "" : "s");
++   
+ }
+ 
+-
+-static int check_file(DOS_FS *fs,DOS_FILE *file)
++static void drop_file(DOS_FS *fs,DOS_FILE *file)
+ {
+-    DOS_FILE *owner;
+-    int restart;
+-    unsigned long expect,curr,this,clusters,prev,walk,clusters2;
+-
+-    if (file->dir_ent.attr & ATTR_DIR) {
+-	if (CF_LE_L(file->dir_ent.size)) {
+-	    printf("%s\n  Directory has non-zero size. Fixing it.\n",
+-	      path_name(file));
+-	    MODIFY(file,size,CT_LE_L(0));
+-	}
+-	if (file->parent && !strncmp(file->dir_ent.name,MSDOS_DOT,MSDOS_NAME)) {
+-	    expect = FSTART(file->parent,fs);
+-	    if (FSTART(file,fs) != expect) {
+-		printf("%s\n  Start (%ld) does not point to parent (%ld)\n",
+-		  path_name(file),FSTART(file,fs),expect);
+-		MODIFY_START(file,expect,fs);
+-	    }
+-	    return 0;
+-	}
+-	if (file->parent && !strncmp(file->dir_ent.name,MSDOS_DOTDOT,
+-	  MSDOS_NAME)) {
+-	    expect = file->parent->parent ? FSTART(file->parent->parent,fs):0;
+-	    if (fs->root_cluster && expect == fs->root_cluster)
+-		expect = 0;
+-	    if (FSTART(file,fs) != expect) {
+-		printf("%s\n  Start (%lu) does not point to .. (%lu)\n",
+-		  path_name(file),FSTART(file,fs),expect);
+-		MODIFY_START(file,expect,fs);
+-	    }
+-	    return 0;
+-	}
+-	if (FSTART(file,fs)==0){
+-		printf ("%s\n Start does point to root directory. Deleting dir. \n",
+-				path_name(file));
+-    		MODIFY(file,name[0],DELETED_FLAG);
+-		return 0;
+-	}
+-    }
+-    if (FSTART(file,fs) >= fs->clusters+2) {
+-	printf("%s\n  Start cluster beyond limit (%lu > %lu). Truncating file.\n",
+-	  path_name(file),FSTART(file,fs),fs->clusters+1);
+-	if (!file->offset)
+-	    die( "Bad FAT32 root directory! (bad start cluster)\n" );
+-	MODIFY_START(file,0,fs);
+-    }
+-    clusters = prev = 0;
+-    for (curr = FSTART(file,fs) ? FSTART(file,fs) :
+-      -1; curr != -1; curr = next_cluster(fs,curr)) {
+-	if (!fs->fat[curr].value || bad_cluster(fs,curr)) {
+-	    printf("%s\n  Contains a %s cluster (%lu). Assuming EOF.\n",
+-	      path_name(file),fs->fat[curr].value ? "bad" : "free",curr);
+-	    if (prev) set_fat(fs,prev,-1);
+-	    else if (!file->offset)
+-		die( "FAT32 root dir starts with a bad cluster!" );
+-	    else MODIFY_START(file,0,fs);
+-	    break;
+-	}
+-	if (!(file->dir_ent.attr & ATTR_DIR) && CF_LE_L(file->dir_ent.size) <=
+-	  clusters*fs->cluster_size) {
+-	    printf("%s\n  File size is %u bytes, cluster chain length is > %lu "
+-	      "bytes.\n  Truncating file to %u bytes.\n",path_name(file),
+-	      CF_LE_L(file->dir_ent.size),clusters*fs->cluster_size,
+-	      CF_LE_L(file->dir_ent.size));
+-	    truncate_file(fs,file,clusters);
+-	    break;
+-	}
+-	if ((owner = get_owner(fs,curr))) {
+-	    int do_trunc = 0;
+-	    printf("%s  and\n",path_name(owner));
+-	    printf("%s\n  share clusters.\n",path_name(file));
+-	    clusters2 = 0;
+-	    for (walk = FSTART(owner,fs); walk > 0 && walk != -1; walk =
+-	      next_cluster(fs,walk))
+-		if (walk == curr) break;
+-		else clusters2++;
+-	    restart = file->dir_ent.attr & ATTR_DIR;
+-	    if (!owner->offset) {
+-		printf( "  Truncating second to %lu bytes because first "
+-			"is FAT32 root dir.\n", clusters2*fs->cluster_size );
+-		do_trunc = 2;
+-	    }
+-	    else if (!file->offset) {
+-		printf( "  Truncating first to %lu bytes because second "
+-			"is FAT32 root dir.\n", clusters*fs->cluster_size );
+-		do_trunc = 1;
+-	    }
+-	    else if (interactive)
+-		printf("1) Truncate first to %lu bytes%s\n"
+-		  "2) Truncate second to %lu bytes\n",clusters*fs->cluster_size,
+-		  restart ? " and restart" : "",clusters2*fs->cluster_size);
+-	    else printf("  Truncating second to %lu bytes.\n",clusters2*
+-		  fs->cluster_size);
+-	    if (do_trunc != 2 &&
+-		(do_trunc == 1 ||
+-		 (interactive && get_key("12","?") == '1'))) {
+-		prev = 0;
+-		clusters = 0;
+-		for (this = FSTART(owner,fs); this > 0 && this != -1; this =
+-		  next_cluster(fs,this)) {
+-		    if (this == curr) {
+-			if (prev) set_fat(fs,prev,-1);
+-			else MODIFY_START(owner,0,fs);
+-			MODIFY(owner,size,CT_LE_L(clusters*fs->cluster_size));
+-			if (restart) return 1;
+-			while (this > 0 && this != -1) {
+-			    set_owner(fs,this,NULL);
+-			    this = next_cluster(fs,this);
+-			}
+-			break;
+-		    }
+-		    clusters++;
+-		    prev = this;
+-		}
+-		if (this != curr)
+-		    die("Internal error: didn't find cluster %d in chain"
+-		      " starting at %d",curr,FSTART(owner,fs));
+-	    }
+-	    else {
+-		if (prev) set_fat(fs,prev,-1);
+-		else MODIFY_START(file,0,fs);
+-		break;
+-	    }
+-	}
+-	set_owner(fs,curr,file);
+-	clusters++;
+-	prev = curr;
+-    }
+-    if (!(file->dir_ent.attr & ATTR_DIR) && CF_LE_L(file->dir_ent.size) >
+-      clusters*fs->cluster_size) {
+-	printf("%s\n  File size is %u bytes, cluster chain length is %lu bytes."
+-	  "\n  Truncating file to %lu bytes.\n",path_name(file),CF_LE_L(file->
+-	  dir_ent.size),clusters*fs->cluster_size,clusters*fs->cluster_size);
+-	MODIFY(file,size,CT_LE_L(clusters*fs->cluster_size));
+-    }
+-    return 0;
++  /* 
++   * TODO: Delete lfn entries if present as well.
++   */
++  MODIFY(file,name[0],DELETED_FLAG);
+ }
+ 
+-
+-static int check_files(DOS_FS *fs,DOS_FILE *start)
++static int handle_volume_label(DOS_FS *fs, DOS_FILE *file)
+ {
+-    while (start) {
+-	if (check_file(fs,start)) return 1;
+-	start = start->next;
+-    }
+-    return 0;
++  int choice; 
++  if (FSTART(file,fs)) {
++     const int auto_conv = FSIZE(file) || (file->dir_ent.attr & ATTR_DIR);
++     printf("%s\n  Volume label has start cluster.\n", path_name(file));
++     choice = interact("1) Drop it\n"
++                       "2) Convert to file \n"
++                       "3) Fix start\n"
++                       "4) Keep it\n","?", 4,
++                        auto_conv ? "  Auto converting to file\n" :
++                       "  Auto fixing start\n", auto_conv ? 2 : 3);
++     switch (choice) {
++       case 1:
++            drop_file(fs, file);
++            return 1;
++       case 2:
++            MODIFY(file,attr,file->dir_ent.attr & ~ATTR_VOLUME);
++            return 0;
++       case 3:
++            MODIFY_START(file, 0, fs);
++            break;
++       case 4:
++            break;
++       }
++     }
++  
++  if (FSIZE(file)) {
++     printf("%s\n  Volume label has non-zero size.\n",
++            path_name(file));
++     choice = interact("1) Drop it\n"
++                       "2) Fix size\n"
++                       "3) Keep it\n","?",3,"  Auto fixing size\n", 2);
++     switch (choice) {
++       case 1:
++            drop_file(fs, file);
++            return 1;
++       case 2:                  
++            MODIFY(file,size,CT_LE_L(0));
++            break;
++       case 3:
++            break;
++       }     
++     }
++     
++  if (file->parent->parent) {
++     printf("%s\n  Volume label not in root directory.\n", path_name(file));
++     choice = interact("1) Drop it\n"
++                       "2) Keep it\n","?",2,"  Auto dropping it\n", 1);
++     switch (choice) {
++       case 1:
++            drop_file(fs, file); 
++            return 1;
++       case 2:
++            break;
++       }
++     }
++  
++  return 0;
+ }
+ 
+-
+-static int check_dir(DOS_FS *fs,DOS_FILE **root,int dots)
++static int handle_dot(DOS_FS *fs,DOS_FILE *file)
+ {
+-    DOS_FILE *parent,**walk,**scan;
+-    int dot,dotdot,skip,redo;
+-    int good,bad;
+-
+-    if (!*root) return 0;
+-    parent = (*root)->parent;
+-    good = bad = 0;
+-    for (walk = root; *walk; walk = &(*walk)->next)
+-	if (bad_name((*walk)->dir_ent.name)) bad++;
+-	else good++;
+-    if (*root && parent && good+bad > 4 && bad > good/2) {
+-	printf("%s\n  Has a large number of bad entries. (%d/%d)\n",
+-	  path_name(parent),bad,good+bad);
+-	if (!dots) printf( "  Not dropping root directory.\n" );
+-	else if (!interactive) printf("  Not dropping it in auto-mode.\n");
+-	else if (get_key("yn","Drop directory ? (y/n)") == 'y') {
+-	    truncate_file(fs,parent,0);
+-	    MODIFY(parent,name[0],DELETED_FLAG);
+-	    /* buglet: deleted directory stays in the list. */
++  char *name;
++  int choice;
++  int32_t expect;
++
++  name = strncmp((char *) file->dir_ent.name,MSDOS_DOT,MSDOS_NAME) ? ".." : ".";
++  if (!(file->dir_ent.attr & ATTR_DIR)) {
++     printf("%s\n  Is a non-directory.\n",path_name(file));
++     choice = interact("1) Drop it\n"
++                       "2) Auto-rename\n"
++                       "3) Rename\n"
++                       "4) Convert to directory\n","?", 4,
++                       "  Auto-renaming it.\n",2);
++     switch (choice) {
++       case 1:
++            drop_file(fs, file);
+ 	    return 1;
+-	}
+-    }
+-    dot = dotdot = redo = 0;
+-    walk = root;
+-    while (*walk) {
+-	if (!strncmp((*walk)->dir_ent.name,MSDOS_DOT,MSDOS_NAME) ||
+-	  !strncmp((*walk)->dir_ent.name,MSDOS_DOTDOT,MSDOS_NAME)) {
+-	    if (handle_dot(fs,*walk,dots)) {
+-		*walk = (*walk)->next;
+-		continue;
+-	    }
+-	    if (!strncmp((*walk)->dir_ent.name,MSDOS_DOT,MSDOS_NAME)) dot++;
+-	    else dotdot++;
+-	}
+-	if (!((*walk)->dir_ent.attr & ATTR_VOLUME) &&
+-	    bad_name((*walk)->dir_ent.name)) {
+-	    printf("%s\n  Bad file name.\n",path_name(*walk));
+-	    if (interactive)
+-		printf("1) Drop file\n2) Rename file\n3) Auto-rename\n"
+-		  "4) Keep it\n");
+-	    else printf("  Auto-renaming it.\n");
+-	    switch (interactive ? get_key("1234","?") : '3') {
+-		case '1':
+-		    drop_file(fs,*walk);
+-		    walk = &(*walk)->next;
+-		    continue;
+-		case '2':
+-		    rename_file(*walk);
+-		    redo = 1;
+-		    break;
+-		case '3':
+-		    auto_rename(*walk);
+-		    printf("  Renamed to %s\n",file_name((*walk)->dir_ent.
+-		      name));
+-		    break;
+-		case '4':
+-		    break;
+-	    }
+-	}
+-	/* don't check for duplicates of the volume label */
+-	if (!((*walk)->dir_ent.attr & ATTR_VOLUME)) {
+-	    scan = &(*walk)->next;
+-	    skip = 0;
+-	    while (*scan && !skip) {
+-		if (!((*scan)->dir_ent.attr & ATTR_VOLUME) &&
+-		    !strncmp((*walk)->dir_ent.name,(*scan)->dir_ent.name,MSDOS_NAME)) {
+-		    printf("%s\n  Duplicate directory entry.\n  First  %s\n",
+-			   path_name(*walk),file_stat(*walk));
+-		    printf("  Second %s\n",file_stat(*scan));
+-		    if (interactive)
+-			printf("1) Drop first\n2) Drop second\n3) Rename first\n"
+-			       "4) Rename second\n5) Auto-rename first\n"
+-			       "6) Auto-rename second\n");
+-		    else printf("  Auto-renaming second.\n");
+-		    switch (interactive ? get_key("123456","?") : '6') {
+-		      case '1':
+-			drop_file(fs,*walk);
+-			*walk = (*walk)->next;
+-			skip = 1;
+-			break;
+-		      case '2':
+-			drop_file(fs,*scan);
+-			*scan = (*scan)->next;
+-			continue;
+-		      case '3':
+-			rename_file(*walk);
+-			printf("  Renamed to %s\n",path_name(*walk));
+-			redo = 1;
+-			break;
+-		      case '4':
+-			rename_file(*scan);
+-			printf("  Renamed to %s\n",path_name(*walk));
+-			redo = 1;
+-			break;
+-		      case '5':
+-			auto_rename(*walk);
+-			printf("  Renamed to %s\n",file_name((*walk)->dir_ent.
+-			  name));
+-			break;
+-		      case '6':
+-			auto_rename(*scan);
+-			printf("  Renamed to %s\n",file_name((*scan)->dir_ent.
+-			  name));
+-			break;
+-		    }
+-		}
+-		scan = &(*scan)->next;
+-	    }
+-	    if (skip) continue;
+-	}
+-	if (!redo) walk = &(*walk)->next;
+-	else {
+-	    walk = root;
+-	    dot = dotdot = redo = 0;
+-	}
+-    }
+-    if (dots && !dot)
+-	printf("%s\n  \".\" is missing. Can't fix this yet.\n",
+-	  path_name(parent));
+-    if (dots && !dotdot)
+-	printf("%s\n  \"..\" is missing. Can't fix this yet.\n",
+-	  path_name(parent));
+-    return 0;
++       case 2:
++	    auto_rename(file);
++	    printf("  Renamed to %s\n",file_name(file->dir_ent.name));
++            return 0;
++       case '3':
++	    rename_file(file);
++            return 0;
++       case '4':
++            MODIFY(file,size,CT_LE_L(0));
++            MODIFY(file,attr,file->dir_ent.attr | ATTR_DIR);
++	    break;
++       }
++     }
++    
++  if (!file->parent->parent) {
++     printf("Root contains directory \"%s\". Dropping it.\n",name);
++     drop_file(fs, file);
++     return 1;
++     }
++  
++  if (FSIZE(file)) {
++     printf("%s\n  Directory has non-zero size. Fixing it.\n",
++            path_name(file));
++     MODIFY(file, size, CT_LE_L(0));
++     }
++     
++  if (!name[1]) {
++     expect = FSTART(file->parent,fs);
++     if (FSTART(file,fs) != expect) {
++        if (!IS_FAKE_CLUSTER(expect))
++           printf("%s\n  Start (%d) does not point to parent (%d). Fixing it.\n",
++                  path_name(file),FSTART(file,fs),expect);
++        MODIFY_START(file, expect, fs);
++	}
++     return 0;
++     }
++     
++  expect = FSTART(file->parent->parent, fs);
++  if (fs->root_cluster == expect)
++     expect = 0;
++     
++  if (FSTART(file,fs) != expect) {
++     if (!IS_FAKE_CLUSTER(expect))
++        printf("%s\n  Start (%d) does not point to .. (%d). Fixing it.\n",
++               path_name(file),FSTART(file,fs),expect);
++     MODIFY_START(file, expect, fs);
++     }
++   
++  return 0;
+ }
+ 
+-
+-static void test_file(DOS_FS *fs,DOS_FILE *file,int read_test)
++static int handle_dir(DOS_FS *fs,DOS_FILE *file)
+ {
+-    DOS_FILE *owner;
+-    unsigned long walk,prev,clusters,next_clu;
+ 
+-    prev = clusters = 0;
+-    for (walk = FSTART(file,fs); walk > 0 && walk < fs->clusters+2;
+-      walk = next_clu) {
+-	next_clu = next_cluster(fs,walk);
+-	if ((owner = get_owner(fs,walk))) {
+-	    if (owner == file) {
+-		printf("%s\n  Circular cluster chain. Truncating to %lu "
+-		  "cluster%s.\n",path_name(file),clusters,clusters == 1 ? "" :
+-		  "s");
+-		if (prev) set_fat(fs,prev,-1);
+-		else if (!file->offset)
+-		    die( "Bad FAT32 root directory! (bad start cluster)\n" );
+-		else MODIFY_START(file,0,fs);
+-	    }
+-	    break;
+-	}
+-	if (bad_cluster(fs,walk)) break;
+-	if (read_test) {
+-	    if (fs_test(cluster_start(fs,walk),fs->cluster_size)) {
+-		prev = walk;
+-		clusters++;
+-	    }
+-	    else {
+-		printf("%s\n  Cluster %lu (%lu) is unreadable. Skipping it.\n",
+-		  path_name(file),clusters,walk);
+-		if (prev) set_fat(fs,prev,next_cluster(fs,walk));
+-		else MODIFY_START(file,next_cluster(fs,walk),fs);
+-		set_fat(fs,walk,-2);
+-	    }
+-	}
+-	set_owner(fs,walk,file);
+-    }
+-    for (walk = FSTART(file,fs); walk > 0 && walk < fs->clusters+2;
+-      walk = next_cluster(fs,walk))
+-	if (bad_cluster(fs,walk)) break;
+-	else if (get_owner(fs,walk) == file) set_owner(fs,walk,NULL);
+-	    else break;
++  if (FSIZE(file)) {
++     printf("%s\n  Directory has non-zero size. Fixing it.\n", 
++            path_name(file));
++     MODIFY(file,size,CT_LE_L(0));
++     }
++     
++  if (FSTART(file,fs)==0){
++     printf("%s\n Start does point to root directory. Deleting dir. \n",
++             path_name(file));
++     drop_file(fs,file);
++     return 1;
++     }
++     
++  return 0;	
+ }
+ 
+-
+-static void undelete(DOS_FS *fs,DOS_FILE *file)
++static int check_dir(DOS_FS *fs,DOS_FILE *dir)
+ {
+-    unsigned long clusters,left,prev,walk;
++  DOS_FILE **walk,**scan, *tmp;
++  int dot,dotdot;
++  int walk_dropped;
++  int good,bad;
++  int choice;
++
++  good = bad = 0;
++  for (walk = &dir->first; *walk; walk = &(*walk)->next)
++      if (bad_name((*walk)->dir_ent.name))
++         bad++;
++      else good++;
++	
++  if (good+bad > 4 && bad > good/2) {
++     printf("%s\n  Has a large number of bad entries. (%d/%d)\n",
++            path_name(dir), bad, good+bad);
++	  
++     if (!dir->parent) 
++        printf( "  Not dropping root directory.\n" );
++     else if (ask("","Drop directory ? (y/n)",
++                  "  Not dropping it in auto-mode.\n", 'n') == 'y') {
++        drop_file(fs, dir);
++        return 1;
++        }
++     }
++     
++  dot = dotdot = 0;
++  walk = &dir->first;
++  while (*walk) {
++        if (((*walk)->dir_ent.attr & ATTR_VOLUME) && 
++                    handle_volume_label(fs, *walk)) {
++           tmp = *walk;
++           *walk = (*walk)->next;
++           free(tmp->lfn);
++           free(tmp);
++           continue;
++           }
++           
++	if (!strncmp((char *)(*walk)->dir_ent.name,MSDOS_DOT,MSDOS_NAME) ||
++            !strncmp((char *)(*walk)->dir_ent.name,MSDOS_DOTDOT,MSDOS_NAME)) {
++           if (handle_dot(fs,*walk)) {
++              tmp = *walk;
++              *walk = (*walk)->next;
++              free(tmp->lfn);
++              free(tmp);
++              continue;
++	      }
++           else if (!strncmp((char *)(*walk)->dir_ent.name,MSDOS_DOT,MSDOS_NAME))
++              dot++;
++           else if (!strncmp((char *)(*walk)->dir_ent.name,MSDOS_DOTDOT,MSDOS_NAME))
++              dotdot++;
++           }
++        else if (((*walk)->dir_ent.attr & ATTR_DIR) && handle_dir(fs, *walk)) {
++           tmp = *walk;
++           *walk = (*walk)->next;
++           free(tmp->lfn);
++           free(tmp);
++           continue;
++           }
++           
++	if (!((*walk)->dir_ent.attr & ATTR_VOLUME) && 
++            bad_name((*walk)->dir_ent.name)) {
++            
++	   printf("%s\n  Bad file name.\n",path_name(*walk));
++	   choice = interact("1) Drop file\n"
++	                     "2) Rename file\n"
++                             "3) Auto-rename\n"
++		             "4) Keep it\n","?",4,"  Auto-renaming it.\n",3);
++	   switch (choice) {
++	     case 1:
++	          drop_file(fs, *walk);
++	          tmp = *walk;
++		  *walk = (*walk)->next;
++		  free(tmp->lfn);
++		  free(tmp);
++                  continue;
++             case 2:
++		  rename_file(*walk);
++     	          break;
++             case 3:
++                  auto_rename(*walk);
++		  printf("  Renamed to %s\n",file_name((*walk)->dir_ent.name));
++                  break;
++             case 4:
++                  break;
++	     }
++	   }
++	   
++	/*
++	 * Start at first entry for duplicates search
++	 * as remaining files are not check yet and may be
++	 * deleted or renamed
++	 */
++	scan = &dir->first;
++	walk_dropped = 0;
++	while (scan != walk && !walk_dropped) {
++	      if ((*walk)->dir_ent.attr & ATTR_VOLUME) {
++	         if (!((*scan)->dir_ent.attr & ATTR_VOLUME)) {
++	            scan = &(*scan)->next;
++	            continue;
++	            }
++	         printf("Duplicate volume label found:\n");
++	         printf("  First %s %s\n",path_name(*scan),file_stat(*scan));
++	         printf("  Second %s %s\n",path_name(*walk),file_stat(*walk));
++	         choice = interact("1) Drop first\n"
++	                           "2) Drop second\n"
++	                           "3) Keep them\n", "?", 3,
++                                   "  Auto dropping second\n", 2);
++                 switch(choice) {
++                   case 1:
++                        drop_file(fs,*scan);
++                        tmp = *scan;
++                        if (&(*scan)->next == walk)
++                           walk = scan;
++                        *scan = (*scan)->next;
++                        free(tmp->lfn);
++                        free(tmp);
++                        continue;
++                   case 2:
++                        drop_file(fs,*walk);
++                        tmp = *walk;
++                        *walk = (*walk)->next;
++                        free(tmp->lfn);
++                        free(tmp);
++                        walk_dropped = 1;
++                        continue;
++                   case 3:
++                        break;
++                   }
++                 scan = &(*scan)->next;
++	         continue;
++	         }
++	         
++	      if (((*scan)->dir_ent.attr & ATTR_VOLUME) || 
++	          strncmp((char *)(*scan)->dir_ent.name,
++	                  (char *)(*walk)->dir_ent.name,MSDOS_NAME)) {
++	         scan = &(*scan)->next;
++	         continue;
++	         }
++	      
++	      printf("%s\n  Duplicate directory entry.\n", path_name(*scan));
++	      printf("  First  %s\n", file_stat(*scan));
++	      printf("  Second %s\n", file_stat(*walk));
++	      
++	      choice = interact("1) Drop first\n"
++	                        "2) Drop second\n"
++	                        "3) Rename first\n"
++			        "4) Rename second\n"
++			        "5) Auto-rename first\n"
++			        "6) Auto-rename second\n", "?", 6,
++			        "  Auto-renaming second.\n", 6);
++              switch (choice) {
++                case 1:
++                     drop_file(fs,*scan);
++                     tmp = *scan;
++                     if (&(*scan)->next == walk)
++                        walk = scan;
++                     *scan = (*scan)->next;
++                     free(tmp->lfn);
++                     free(tmp);
++                     continue;
++                case 2:
++                     drop_file(fs,*walk);
++                     tmp = *walk;
++                     *walk = (*walk)->next;
++                     free(tmp->lfn);
++                     free(tmp);
++                     walk_dropped = 1;
++                     continue;
++                case 3:
++                     rename_file(*scan);
++                     break;
++                case 4:
++                     rename_file(*walk);
++                     break;
++                case 5:
++                     auto_rename(*scan);
++                     printf("  Renamed to %s\n",
++                            file_name((*scan)->dir_ent.name));
++                     break;
++                case 6:
++                     auto_rename(*walk);
++                     printf("  Renamed to %s\n",
++                            file_name((*walk)->dir_ent.name));
++                     break;
++                }
++              scan = &(*scan)->next;
++	      }
++	      
++        if (!walk_dropped)
++           walk = &(*walk)->next;
++        }
++        
++  if (dir->parent && !dot)
++     printf("%s\n  \".\" is missing. Can't fix this yet.\n", path_name(dir));
++  if (dir->parent && !dotdot)
++     printf("%s\n  \"..\" is missing. Can't fix this yet.\n", path_name(dir));
++  return 0;
++}
+ 
+-    clusters = left = (CF_LE_L(file->dir_ent.size)+fs->cluster_size-1)/
+-      fs->cluster_size;
+-    prev = 0;
+-    for (walk = FSTART(file,fs); left && walk >= 2 && walk <
+-       fs->clusters+2 && !fs->fat[walk].value; walk++) {
+-	left--;
+-	if (prev) set_fat(fs,prev,walk);
+-	prev = walk;
+-    }
+-    if (prev) set_fat(fs,prev,-1);
+-    else MODIFY_START(file,0,fs);
+-    if (left)
+-	printf("Warning: Did only undelete %lu of %lu cluster%s.\n",clusters-left,
+-	  clusters,clusters == 1 ? "" : "s");
++static void check_dirent_start(DOS_FS *fs, DOS_FILE *file)
++{
++  int32_t start_cluster_no;
+    
++  start_cluster_no = FSTART(file, fs);
++  /* Check start cluster of file */
++  if (start_cluster_no < 0 ||start_cluster_no == 1 || 
++              start_cluster_no >= fs->clusters + 2) {
++     printf("%s\n  Start cluster %d out of range! Truncating file.\n",
++                                   path_name(file), start_cluster_no);
++     if (!file->parent)
++        die("Bad FAT32 root directory!\n");
++     MODIFY_START(file, 0, fs);
++     } 
++  else if (start_cluster_no) {
++     FAT_ENTRY start_cluster;
++     get_fat_tmp(fs, &start_cluster, start_cluster_no);
++       
++     if (bad_cluster(fs, start_cluster_no) || !start_cluster.value) {
++        printf("%s\n  Starting with %s cluster (%d)!\n", path_name(file),
++                 start_cluster.value ? "bad" : "free", start_cluster_no);
++                         
++        if (!start_cluster.value || FAT_IS_BAD(fs,start_cluster.value)) {
++           if (!file->parent)
++              die("Bad FAT32 root directory!\n");
++           MODIFY_START(file, 0, fs);
++           }
++        else {
++           MODIFY_START(file, start_cluster.value, fs);
++           }
++        }
++     }
+ }
+ 
+-
+-static void new_dir( void )
++static DOS_FILE *read_dirent(DOS_FS *fs, DOS_FILE *parent, off_t offset,
++                             FDSC **cp)
+ {
+-    lfn_reset();
++  DOS_FILE *file;
++  FD_TYPE type;
++    
++  file = alloc(sizeof(DOS_FILE));
++  read_modified_dirent(fs, offset, &file->dir_ent);
++    
++  type = file_type(cp,(char *)file->dir_ent.name);
++  if (type == fdt_undelete && (file->dir_ent.attr & ATTR_DIR))
++     die("Can't undelete directories.");
++        
++  if (type != fdt_none) {
++     file_modify(cp,(char *)file->dir_ent.name);
++     add_modified_dirent(file->offset, &file->dir_ent);
++     }   
++  	
++  if (IS_FREE(file->dir_ent.name)) {
++     free(file);
++     lfn_check_orphaned();
++     return NULL;
++     }
++     
++  if (file->dir_ent.attr == VFAT_LN_ATTR) {
++     lfn_add_slot(&file->dir_ent, offset);
++     free(file);
++     return NULL;
++     }
++  
++
++  
++  if (!check_pass && file->dir_ent.attr & ATTR_DIR) {
++     file->real_offset = real_offset(fs, offset); 
++     }  
++  
++  file->offset = offset;
++  file->lfn = lfn_get(fs, &file->dir_ent);
++  file->next = file->first = NULL;
++  file->parent = parent;
++  
++  if (!check_pass)
++     check_dirent_start(fs, file);
++  
++  if (type == fdt_undelete) 
++     undelete(fs,file);
++  return file;
+ }
+ 
+ 
+-static void add_file(DOS_FS *fs,DOS_FILE ***chain,DOS_FILE *parent,
+-					 loff_t offset,FDSC **cp)
++static void read_file_pass0(DOS_FS *fs,DOS_FILE *file)
+ {
+-    DOS_FILE *new;
+-    DIR_ENT de;
+-    FD_TYPE type;
+-
+-    if (offset)
+-	fs_read(offset,sizeof(DIR_ENT),&de);
+-    else {
+-	memcpy(de.name,"           ",MSDOS_NAME);
+-	de.attr = ATTR_DIR;
+-	de.size = de.time = de.date = 0;
+-	de.start = CT_LE_W(fs->root_cluster & 0xffff);
+-	de.starthi = CT_LE_W((fs->root_cluster >> 16) & 0xffff);
+-    }
+-    if ((type = file_type(cp,de.name)) != fdt_none) {
+-	if (type == fdt_undelete && (de.attr & ATTR_DIR))
+-	    die("Can't undelete directories.");
+-	file_modify(cp,de.name);
+-	fs_write(offset,1,&de);
+-    }
+-    if (IS_FREE(de.name)) {
+-	lfn_check_orphaned();
+-	return;
+-    }
+-    if (de.attr == VFAT_LN_ATTR) {
+-	lfn_add_slot(&de,offset);
+-	return;
+-    }
+-    new = qalloc(&mem_queue,sizeof(DOS_FILE));
+-    new->lfn = lfn_get(&de);
+-    new->offset = offset;
+-    memcpy(&new->dir_ent,&de,sizeof(de));
+-    new->next = new->first = NULL;
+-    new->parent = parent;
+-    if (type == fdt_undelete) undelete(fs,new);
+-    **chain = new;
+-    *chain = &new->next;
+-    if (list) {
+-	printf("Checking file %s",path_name(new));
+-	if (new->lfn)
+-	    printf(" (%s)", file_name(new->dir_ent.name) );
+-	printf("\n");
+-    }
+-    if (offset &&
+-	strncmp(de.name,MSDOS_DOT,MSDOS_NAME) != 0 &&
+-	strncmp(de.name,MSDOS_DOTDOT,MSDOS_NAME) != 0)
+-	++n_files;
+-    test_file(fs,new,test);
++  uint32_t clusters;
++  int32_t prev;
++  int32_t walk;
++  int32_t cycle_start; 
++  
++   if (list) {
++     printf("Checking file %s",path_name(file));
++     if (file->lfn)
++        printf(" (%s)", file_name(file->dir_ent.name) );
++     printf("\n");
++     }
++     
++  prev = 0;
++  clusters = 0;
++  cycle_start = 0;
++  for (walk = FSTART(file, fs); walk > 0; walk = next_cluster(fs, walk)) {
++      if (cycle_start == walk) {
++         printf("%s\n  Broken cycle in cluster chain.\n",path_name(file));
++         set_fat_tmp(fs, prev, -1);
++         break;
++         }
++         
++      if (FSIZE(file) <= clusters*fs->cluster_size) {
++         printf("%s\n  File size is %u bytes, cluster chain length is > %d "
++                "bytes.\n  Truncating chain to %u bytes.\n",path_name(file),
++                FSIZE(file), clusters*fs->cluster_size, FSIZE(file));
++         if (prev)
++            set_fat_tmp(fs, prev, -1);
++         else 
++            MODIFY_START(file, 0, fs);
++         break;
++	 }
++	 
++      if (!cycle_start && cycle_cluster(fs, walk))
++         cycle_start = walk;
++      
++      clusters++;   
++      if (get_owned(fs, walk)) {
++         int32_t fake_cluster;
++         fake_cluster = add_new_fake_cluster(walk);
++         if (prev)
++            set_fat_tmp(fs, prev, fake_cluster);
++         else
++            MODIFY_START(file, fake_cluster, fs);
++         prev = fake_cluster;
++         }
++      else {
++         if (IS_FAKE_CLUSTER(prev)) 
++            set_fat_tmp(fs, prev, walk);
++         set_owned(fs, walk, 1);
++         prev = walk;
++         }   
++      }
++  
++  if (IS_FAKE_CLUSTER(prev)) 
++     set_fat_tmp(fs, prev, -1); 
++     
++  if (FSIZE(file) > clusters*fs->cluster_size) {
++     printf("%s\n  File size is %u bytes, cluster chain length is %u bytes."
++	    "\n  Truncating file to %u bytes.\n",path_name(file),
++	    FSIZE(file), clusters*fs->cluster_size,clusters*fs->cluster_size);
++     MODIFY(file,size,CT_LE_L(clusters*fs->cluster_size));
++     }
+ }
+ 
+ 
+-static int subdirs(DOS_FS *fs,DOS_FILE *parent,FDSC **cp);
+-
+-
+-static int scan_dir(DOS_FS *fs,DOS_FILE *this,FDSC **cp)
++static void read_file_pass1(DOS_FS *fs, DOS_FILE *file)
+ {
+-    DOS_FILE **chain;
+-    int i;
+-    unsigned long clu_num;
+-
+-    chain = &this->first;
+-    i = 0;
+-    clu_num = FSTART(this,fs);
+-    new_dir();
+-    while (clu_num > 0 && clu_num != -1) {
+-	add_file(fs,&chain,this,cluster_start(fs,clu_num)+(i % fs->
+-	  cluster_size),cp);
+-	i += sizeof(DIR_ENT);
+-	if (!(i % fs->cluster_size))
+-	    if ((clu_num = next_cluster(fs,clu_num)) == 0 || clu_num == -1)
+-		break;
+-    }
+-    lfn_check_orphaned();
+-    if (check_dir(fs,&this->first,this->offset)) return 0;
+-    if (check_files(fs,this->first)) return 1;
+-    return subdirs(fs,this,cp);
++  uint32_t clusters;
++  int32_t prev;
++  int32_t walk;
++  int choice;
++  int prev_changed;
++     
++   if (list) {
++     printf("Checking file %s",path_name(file));
++     if (file->lfn)
++        printf(" (%s)", file_name(file->dir_ent.name) );
++     printf("\n");
++     }   
++     
++  prev = 0;
++  clusters = 0;
++  choice = 0;
++  prev_changed = 0;
++  walk = FSTART(file, fs);
++  while (walk > 0) {
++      if (!choice && (IS_FAKE_CLUSTER(walk) || has_fake_dup_cluster(walk))) {
++         char inter_msg[512];
++         char non_inter_msg[512];
++         printf("%s\n"
++                "  File shares at least cluster %d with another file.\n",
++                path_name(file), real_cluster(walk));
++         sprintf(inter_msg,"  1) Dublicate shared clusters."
++                           " Warning: File content may get wrong\n"
++                           "  2) Truncate file to %u bytes\n",
++                           clusters*fs->cluster_size);
++         sprintf(non_inter_msg,"  Truncating file to %u bytes\n",
++                 clusters*fs->cluster_size);
++         choice = interact(inter_msg, "?", 2, non_inter_msg, 2);
++         if (choice == 2) {
++            if (prev) {
++               set_fat_tmp(fs, prev, -1);
++               }
++            else {
++               MODIFY_START(file, 0, fs);
++               }
++            MODIFY(file, size, CT_LE_L(clusters*fs->cluster_size));
++            while (walk > 0) {
++                  if (IS_FAKE_CLUSTER(walk)) 
++                     drop_new_cluster(walk);
++                  walk = drop_fat_tmp(fs, walk);   
++                  }
++            return;
++            }
++         }
++         
++      clusters++;
++      if (IS_FAKE_CLUSTER(walk)) {
++         int32_t real = real_cluster(walk);
++         drop_new_cluster(walk);
++         prev_changed = 1;
++         
++         if (get_owned(fs, real)) {
++            real = add_new_cluster(fs, prev, real);
++            }
++         
++         if (prev) {
++            if (next_cluster(fs, prev) != real)
++               set_fat_tmp(fs, prev, real);
++            }
++         else
++            MODIFY_START(file, real, fs);
++         
++         set_owned(fs, real, 1);
++         prev = real;
++         walk = drop_fat_tmp(fs, walk);
++         }
++      else {
++         if (prev_changed) {
++            prev_changed = 0;
++            if (next_cluster(fs,prev) != walk)
++               set_fat_tmp(fs, prev, walk);
++            }
++         set_owned(fs, walk, 1);
++         prev = walk;
++         walk = next_cluster(fs,walk);
++         }
++      }
++      
++  if (prev_changed && next_cluster(fs,prev) != -1)
++     set_fat_tmp(fs, prev, -1);
+ }
+ 
+-
+-static int subdirs(DOS_FS *fs,DOS_FILE *parent,FDSC **cp)
++static void read_dir_pass0(DOS_FS *fs, DOS_FILE *dir, FDSC **cp) 
+ {
+-    DOS_FILE *walk;
++  int32_t walk;
++  int32_t prev;
++  int32_t cycle_start;
++  DOS_FILE **cur;
++  
++   if (list) {
++     printf("Checking directory %s",path_name(dir));
++     if (dir->lfn)
++        printf(" (%s)", file_name(dir->dir_ent.name) );
++     printf("\n");
++     }
++     
++  /* Read all dir entries. 
++   * TODO: Check if there are entries in dir after end-of-dir marker and
++   *       fix this (dir_ent.name[0] == 0 marks end-of-dir).
++   */
++  prev = 0;
++  cycle_start = 0;
++  cur = &dir->first;
++  lfn_reset();
++  for (walk = FSTART(dir, fs); walk > 0; walk = next_cluster(fs, walk)) {
++      off_t offset;
++      int offset2;
++      int32_t read_cluster;
++        
++      if (cycle_start == walk) {
++         printf("%s\n  Broken cycle in cluster chain.\n",path_name(dir));
++         set_fat_tmp(fs, prev, -1);
++         break;
++         }
++           
++      if (!cycle_start && cycle_cluster(fs, walk))
++         cycle_start = walk;
++           
++      if (get_owned(fs, walk)) {
++         DOS_FILE *walk2;
++         const off_t cluster_offset = cluster_start(fs, walk);
++         const off_t cluster_end  = cluster_offset + fs->cluster_size;
++         
++         walk2 = dir;
++         while (walk2 && (walk2->real_offset < cluster_offset ||
++                          walk2->real_offset >= cluster_end))
++               walk2 = walk2->parent;
++
++         if (walk2) {
++            printf("%s\n  Contains %sdirecly it self.\n"
++               "  %s directory\n", path_name(dir), 
++               walk2 == dir ? "" : "in", prev ? "Truncating": "Dropping");
++            if (prev) {
++               set_fat_tmp(fs, prev, -1);
++               break;
++               }
++            else {
++               drop_file(fs, dir);
++               n_files--;
++               return;
++               }
++            }
++         
++         read_cluster = add_new_fake_cluster(walk);
++         if (prev)
++            set_fat_tmp(fs, prev, read_cluster);
++         else
++            MODIFY_START(dir, read_cluster, fs);
++         } 
++      else {
++         if (IS_FAKE_CLUSTER(prev))
++            set_fat_tmp(fs,prev, walk);
++         set_owned(fs, walk, 1);
++         read_cluster = walk;
++         }
++        
++      offset = cluster_start(fs, read_cluster);
++      offset2 = 0;
++      while (offset2 < fs->cluster_size) {
++            *cur = read_dirent(fs, dir, offset, cp);
++            if (*cur) {
++               cur = &(*cur)->next;
++               }            
++            offset += sizeof(DIR_ENT);
++            offset2 += sizeof(DIR_ENT);
++            }
++        
++      prev = read_cluster;
++      }
++      
++  if (IS_FAKE_CLUSTER(prev)) 
++     set_fat_tmp(fs, prev, -1);  
++     
++  lfn_check_orphaned();
++  
++  /* Check dir (only needed in first pass)
++   * If dir is deleted free all entries, reset owner flag
++   * and drop all modifications in all clusters of dir.
++   */
++  if (check_dir(fs, dir)) {
++     DOS_FILE *ent = dir->first;
++     while (ent) {
++           DOS_FILE *tmp;
++           tmp = ent;
++           ent = ent->next;
++           free(tmp->lfn);
++           free(tmp);
++           }
++           
++     for (walk = FSTART(dir, fs); walk > 0; walk = drop_fat_tmp(fs, walk)) {
++         drop_modified_dirents(cluster_start(fs,walk), fs->cluster_size);
++         if (IS_FAKE_CLUSTER(walk)) {
++            drop_new_cluster(walk);
++            }
++         else {
++            set_owned(fs, walk, 0);
++            }
++         }
++         
++     n_files--;
++     return;
++     }
++
++  /* Check all regular files first 
++   * Only for not using too much ram
++   */
++  cur = &dir->first;
++  while (*cur) {
++        if (!((*cur)->dir_ent.attr & (ATTR_DIR | ATTR_VOLUME))) {
++           read_file_pass0(fs, *cur);
++           n_files++;
++           }
++           
++        if ((*cur)->dir_ent.attr & ATTR_DIR) {
++           cur = &(*cur)->next;
++           }
++        else {
++           DOS_FILE *tmp;
++           tmp = *cur;
++           *cur = tmp->next;
++           free(tmp->lfn);
++           free(tmp);
++           }
++        }
++  
++  /* Recurse in sub-dirs */
++  cur = &dir->first;
++  while (*cur) {
++        if (((*cur)->dir_ent.attr & ATTR_DIR) && 
++            strncmp((char *)(*cur)->dir_ent.name,MSDOS_DOT,MSDOS_NAME) &&
++            strncmp((char *)(*cur)->dir_ent.name,MSDOS_DOTDOT,MSDOS_NAME)) {
++           read_dir_pass0(fs, *cur, file_cd(cp, (char *)(*cur)->dir_ent.name));
++           n_files++;
++           }
++           
++        DOS_FILE *tmp;
++        tmp = *cur;
++        *cur = tmp->next;
++        free(tmp->lfn);
++        free(tmp);
++        }
++}
+ 
+-    for (walk = parent ? parent->first : root; walk; walk = walk->next)
+-	if (walk->dir_ent.attr & ATTR_DIR)
+-	    if (strncmp(walk->dir_ent.name,MSDOS_DOT,MSDOS_NAME) &&
+-	      strncmp(walk->dir_ent.name,MSDOS_DOTDOT,MSDOS_NAME))
+-		if (scan_dir(fs,walk,file_cd(cp,walk->dir_ent.name))) return 1;
+-    return 0;
++static void read_dir_pass1(DOS_FS *fs, DOS_FILE *dir, FDSC **cp) 
++{
++  int32_t walk;
++  int32_t prev;
++  DOS_FILE **cur;
++  int choice;
++  int prev_changed;
++  
++   if (list) {
++     printf("Checking directory %s",path_name(dir));
++     if (dir->lfn)
++        printf(" (%s)", file_name(dir->dir_ent.name) );
++     printf("\n");
++     }
++  prev = 0;
++  prev_changed = 0;
++  walk = FSTART(dir,fs);
++  cur = &dir->first;
++  choice = 0;
++  lfn_reset();
++  while (walk > 0) {
++        off_t offset;
++        int offset2;
++        int32_t read_cluster;
++        
++        if (!choice && (IS_FAKE_CLUSTER(walk) || has_fake_dup_cluster(walk))) {
++           char inter_msg[512];
++           char non_inter_msg[512];
++           printf("%s\n"
++                  "  Directory shares at least cluster %d with another file.\n",
++                  path_name(dir), real_cluster(walk));
++           sprintf(inter_msg,"  1) Duplicate shared clusters."
++                             " Warning: Directory content may get wrong\n"
++                             "  2) %s directory\n",
++                             prev ? "Truncate" : "Drop");
++           sprintf(non_inter_msg,"  %s directory\n",
++                   prev ? "Truncating" :  "Dropping");
++           if (dir->parent)
++              choice = interact(inter_msg, "?", 2, non_inter_msg, 2);
++           else {
++              choice = 1;
++              printf("  Not %s root directory\n", prev ? "truncating" :  "dropping");
++              }
++           if (choice == 2) {
++              while (walk > 0) {
++                    drop_modified_dirents(cluster_start(fs,walk), fs->cluster_size);
++                    if (IS_FAKE_CLUSTER(walk)) 
++                       drop_new_cluster(walk);
++                    walk = drop_fat_tmp(fs, walk);   
++                    }
++              if (prev) {
++                 set_fat_tmp(fs, prev, -1);
++                 lfn_check_orphaned();
++                 break;
++                 }
++              else {
++                 if (!dir->parent)
++                    die("Cannot delete root directory");
++                 drop_file(fs, dir);
++                 n_files--;
++                 return;
++                 }
++              }
++           }  
++      
++        if (IS_FAKE_CLUSTER(walk)) {
++           read_cluster = real_cluster(walk);
++           drop_new_cluster(walk);
++           prev_changed = 1;
++         
++           if (get_owned(fs, read_cluster)) {
++              read_cluster = add_new_cluster(fs, prev, read_cluster);
++              }
++              
++           convert_modified_dirents(fs, walk, read_cluster);
++           if (prev) {
++              if (next_cluster(fs, prev) != read_cluster)
++                 set_fat_tmp(fs, prev, read_cluster);
++              }
++           else
++              MODIFY_START(dir, read_cluster, fs);
++         
++           set_owned(fs, read_cluster, 1);
++           walk = drop_fat_tmp(fs, walk);
++           }
++        else {
++           if (prev_changed) {
++              prev_changed = 0;
++              if (next_cluster(fs,prev) != walk)
++                 set_fat(fs, prev, walk);
++              }
++           set_owned(fs, walk, 1);
++           read_cluster = walk;
++           walk = next_cluster(fs,walk);
++           }     
++        
++        offset = cluster_start(fs, read_cluster);
++        offset2 = 0;
++        while (offset2 < fs->cluster_size) {
++              *cur = read_dirent(fs, dir, offset, cp);
++              if (*cur) {
++                 cur = &(*cur)->next;
++                 }            
++              offset += sizeof(DIR_ENT);
++              offset2 += sizeof(DIR_ENT);
++              }
++        
++        prev = read_cluster;
++        }
++      
++  if (prev_changed && next_cluster(fs,prev) != -1) 
++     set_fat_tmp(fs, prev, -1);  
++     
++  
++  /* Check all regular files first 
++   * Only for not using too much ram
++   */
++  cur = &dir->first;
++  while (*cur) {
++        if (!((*cur)->dir_ent.attr & (ATTR_DIR | ATTR_VOLUME))) {
++           read_file_pass1(fs, *cur);
++           n_files++;
++           }
++           
++        if ((*cur)->dir_ent.attr & ATTR_DIR) {
++           cur = &(*cur)->next;
++           }
++        else {
++           DOS_FILE *tmp;
++           tmp = *cur;
++           *cur = tmp->next;
++           free(tmp->lfn);
++           free(tmp);
++           }
++        }
++  
++  /* Recurse in sub-dirs */
++  cur = &dir->first;
++  while (*cur) {
++        DOS_FILE *tmp;
++        if (!strncmp((char *)(*cur)->dir_ent.name,MSDOS_DOT,MSDOS_NAME)) {
++           int32_t expected = FSTART(dir, fs);
++           if (expected != FSTART((*cur), fs))
++              MODIFY_START((*cur), expected, fs);
++           }
++        else if (!strncmp((char *)(*cur)->dir_ent.name,MSDOS_DOTDOT,MSDOS_NAME)) {
++           int32_t expected = FSTART(dir->parent,fs);
++           if (fs->root_cluster == expected)
++              expected = 0;
++           if (expected != FSTART((*cur),fs))
++              MODIFY_START((*cur), expected, fs);
++           }
++        else {
++           read_dir_pass1(fs, *cur, file_cd(cp, (char *) (*cur)->dir_ent.name));
++           n_files++;
++           }
++           
++        
++        tmp = *cur;
++        *cur = tmp->next;
++        free(tmp->lfn);
++        free(tmp);
++        }
+ }
+ 
+ 
+-int scan_root(DOS_FS *fs)
++void check_files(DOS_FS *fs)
+ {
+-    DOS_FILE **chain;
+-    int i;
++  DOS_FILE *root;
++  int i;
+ 
+-    root = NULL;
+-    chain = &root;
+-    new_dir();
+-    if (fs->root_cluster) {
+-	add_file(fs,&chain,NULL,0,&fp_root);
+-    }
+-    else {
+-	for (i = 0; i < fs->root_entries; i++)
+-	    add_file(fs,&chain,NULL,fs->root_start+i*sizeof(DIR_ENT),&fp_root);
+-    }
+-    lfn_check_orphaned();
+-    (void) check_dir(fs,&root,0);
+-    if (check_files(fs,root)) return 1;
+-    return subdirs(fs,NULL,&fp_root);
++  n_files = 0;
++  check_pass =0;
++  root = NULL;
++  root = alloc(sizeof(DOS_FILE));
++  lfn_reset();
++    
++  root->offset = 0;
++  root->real_offset = 0;
++  root->parent = NULL;
++  root->lfn = NULL;
++  root->next = NULL;
++  root->first = NULL;
++  memcpy(root->dir_ent.name,"           ",MSDOS_NAME);
++  root->dir_ent.attr = ATTR_DIR;
++  root->dir_ent.size = 0;
++  root->dir_ent.time = 0;
++  root->dir_ent.date = 0;
++  root->dir_ent.start = CT_LE_W(fs->root_cluster & 0xffff);
++  root->dir_ent.starthi = CT_LE_W((fs->root_cluster >> 16) & 0xffff);
++  
++  if (verbose)
++     printf("Checking files pass 0 ...\n");
++    
++  if (fs->root_cluster) {
++     check_dirent_start(fs, root);
++     read_dir_pass0(fs, root, &fp_root);
++     }
++  else {
++     DOS_FILE **cur;
++     cur = &root->first;
++     for (i = 0; i < fs->root_entries; i++) {
++         *cur = read_dirent(fs, root, fs->root_start+i*sizeof(DIR_ENT),
++                            &fp_root);
++         if (*cur) {
++             cur = &(*cur)->next;
++             }  
++         }
++     lfn_check_orphaned();
++     check_dir(fs, root);
++     
++     /* Check all regular files first 
++      * Only for not using too much ram
++      */
++     cur = &root->first;
++     while (*cur) {
++           if (!((*cur)->dir_ent.attr & (ATTR_DIR | ATTR_VOLUME))) {
++              read_file_pass0(fs, *cur);
++              n_files++;
++              }
++           
++           if ((*cur)->dir_ent.attr & ATTR_DIR) {
++              cur = &(*cur)->next;
++              }
++           else {
++              DOS_FILE *tmp;
++              tmp = *cur;
++              *cur = tmp->next;
++              free(tmp->lfn);
++              free(tmp);
++              }
++           }
++  
++     /* Recurse in sub-dirs */
++     cur = &root->first;
++     while (*cur) {
++           DOS_FILE *tmp;
++           if (((*cur)->dir_ent.attr & ATTR_DIR) && 
++               strncmp((char *)(*cur)->dir_ent.name,MSDOS_DOT,MSDOS_NAME) &&
++               strncmp((char *)(*cur)->dir_ent.name,MSDOS_DOTDOT,MSDOS_NAME)) {
++               read_dir_pass0(fs, *cur, file_cd(&fp_root,(char *) (*cur)->dir_ent.name));
++               n_files++;
++               }
++           
++           
++           tmp = *cur;
++           *cur = tmp->next;
++           free(tmp->lfn);
++           free(tmp);
++           }
++     
++     }
++     
++  if (!new_clusters) {
++     perform_fat_tmp(fs, 0);
++     if (modified_dirents)
++        fs->changed = 1;
++     return;
++     }
++     
++  
++  printf("Found shared clusters second pass needed\n");
++  if (verbose)
++     printf("Checking files pass 1 ...\n");
++     
++  n_files = 0;
++  check_pass = 1;
++  lfn_reset();
++  reset_owned(fs);
++  
++   if (fs->root_cluster) {
++     read_dir_pass1(fs, root, &fp_root);
++     }
++  else {
++     DOS_FILE **cur;
++     cur = &root->first;
++     for (i = 0; i < fs->root_entries; i++) {
++         *cur = read_dirent(fs, root, fs->root_start+i*sizeof(DIR_ENT),
++                            &fp_root);
++         if (*cur) {
++             cur = &(*cur)->next;
++             }  
++         }
++     lfn_check_orphaned();
++     
++     /* Check all regular files first 
++      * Only for not using too much ram
++      */
++     cur = &root->first;
++     while (*cur) {
++           if (!((*cur)->dir_ent.attr & (ATTR_DIR | ATTR_VOLUME))) {
++              read_file_pass1(fs, *cur);
++              n_files++;
++              }
++           
++           if ((*cur)->dir_ent.attr & ATTR_DIR) {
++              cur = &(*cur)->next;
++              }
++           else {
++              DOS_FILE *tmp;
++              tmp = *cur;
++              *cur = tmp->next;
++              free(tmp->lfn);
++              free(tmp);
++              }
++           }
++  
++     /* Recurse in sub-dirs */
++     cur = &root->first;
++     while (*cur) {
++           DOS_FILE *tmp;
++           if (strncmp((char *)(*cur)->dir_ent.name,MSDOS_DOT,MSDOS_NAME) &&
++               strncmp((char *)(*cur)->dir_ent.name,MSDOS_DOTDOT,MSDOS_NAME)) {
++              read_dir_pass1(fs, *cur, file_cd(&fp_root, (char *)(*cur)->dir_ent.name));
++              n_files++;
++              }
++           
++           
++           tmp = *cur;
++           *cur = tmp->next;
++           free(tmp->lfn);
++           free(tmp);
++           }
++     
++     }
++     
++  perform_fat_tmp(fs, 1);
++  drop_all_fake_clusters();
++  drop_unneeded_dirents(1);
++  if (modified_dirents || new_clusters)
++     fs->changed = 1;
++  check_pass = 0;  
+ }
+-
+ /* Local Variables: */
+ /* tab-width: 8     */
+ /* End:             */
+diff -rNu dosfstools-2.11/dosfsck/check.h dosfstools-2.11.new/dosfsck/check.h
+--- dosfstools-2.11/dosfsck/check.h	1998-05-14 15:12:42.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/check.h	2007-05-29 10:37:51.000000000 +0200
+@@ -6,7 +6,12 @@
+ #ifndef _CHECK_H
+ #define _CHECK_H
+ 
+-loff_t alloc_rootdir_entry(DOS_FS *fs, DIR_ENT *de, const char *pattern);
++#define IS_FAKE_CLUSTER(c) (((c) >> 28) == 1)
++#define LAST_CHECK_PASS 1
++
++extern int check_pass;
++
++off_t alloc_rootdir_entry(DOS_FS *fs, DIR_ENT *de, const char *pattern);
+ 
+ /* Allocate a free slot in the root directory for a new file. The file name is
+    constructed after 'pattern', which must include a %d type format for printf
+@@ -14,10 +19,14 @@
+    the 'de' structure, the rest of *de is cleared. The offset returned is to
+    where in the filesystem the entry belongs. */
+ 
+-int scan_root(DOS_FS *fs);
++void check_files(DOS_FS *fs);
+ 
+ /* Scans the root directory and recurses into all subdirectories. See check.c
+    for all the details. Returns a non-zero integer if the file system has to
+    be checked again. */
+ 
++void add_modified_dirent(off_t offset, DIR_ENT *dirent);
++
++void read_modified_dirent(DOS_FS *fs, off_t offset, DIR_ENT *dirent);
++void perform_changes(DOS_FS *fs, int rw);
+ #endif
+diff -rNu dosfstools-2.11/dosfsck/common.c dosfstools-2.11.new/dosfsck/common.c
+--- dosfstools-2.11/dosfsck/common.c	2003-05-15 20:39:16.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/common.c	2007-05-29 10:37:51.000000000 +0200
+@@ -11,14 +11,10 @@
+ #include <string.h>
+ #include <stdarg.h>
+ #include <errno.h>
++#include <ctype.h>
+ 
+ #include "common.h"
+-
+-
+-typedef struct _link {
+-    void *data;
+-    struct _link *next;
+-} LINK;
++#include "dosfsck.h"
+ 
+ 
+ void die(char *msg,...)
+@@ -55,38 +51,39 @@
+ }
+ 
+ 
+-void *qalloc(void **root,int size)
+-{
+-    LINK *link;
+-
+-    link = alloc(sizeof(LINK));
+-    link->next = *root;
+-    *root = link;
+-    return link->data = alloc(size);
+-}
+-
+-
+-void qfree(void **root)
+-{
+-    LINK *this;
+-
+-    while (*root) {
+-	this = (LINK *) *root;
+-	*root = this->next;
+-	free(this->data);
+-	free(this);
+-    }
+-}
+-
+-
+ int min(int a,int b)
+ {
+     return a < b ? a : b;
+ }
+ 
+ 
+-char get_key(char *valid,char *prompt)
++static int read_number(void)
+ {
++  char buffer[81];
++  int ch = 0;
++  int offset = 0;
++
++  while (offset < 80) {
++        ch = getchar();
++        if (ch == ' ' || ch == '\t')
++           continue;
++        if (ch == '\n')
++           break;
++        if (ch == EOF) 
++           exit(1);
++        if (ch < '0' || ch > '9')
++           return -1; 
++        buffer[offset++] = ch;
++        }
++
++  buffer[offset] = 0;
++  if (!offset)
++      return 0;
++  return atoi(buffer);
++} 
++
++char get_key(char *valid,char *prompt)
++{       
+     int ch,okay;
+ 
+     while (1) {
+@@ -102,6 +99,61 @@
+     }
+ }
+ 
++int interact(const char *inter_msg, const char *prompt, const int choices, 
++             const char *non_inter_msg, const int default_choice)
++{
++  int choice = -1;
++  int first = 1;
++  if (!interactive) {
++     if (non_inter_msg)
++        printf(non_inter_msg);
++     return default_choice;    
++     }
++     
++  if (inter_msg)
++     printf(inter_msg);
++     
++  while (choice < 0 || choice > choices) {
++        if (!first) 
++            printf("Invalid input.\n");
++        first = 0;
++        if (prompt)
++           printf(prompt);
++        printf("[%d] ", default_choice);
++        fflush(stdout);
++        choice = read_number();
++        }
++  return choice ? choice : default_choice;      
++}
++
++char ask(const char *inter_msg, const char *prompt, 
++         const char *non_inter_msg, const int default_choice)
++{
++  char choice = 0;
++  int first = 1;
++  if (!interactive) {
++     if (non_inter_msg)
++        printf(non_inter_msg);
++     return default_choice;    
++     }
++     
++  if (inter_msg)
++     printf(inter_msg);
++   
++  while (tolower(choice) != 'y' && tolower(choice) != 'n' && choice != '\n') {
++        if (!first && choice != ' ' && choice != '\t') 
++            printf("Invalid input.\n");
++        first = 0;
++        if (prompt)
++           printf(prompt);
++        printf("[%c] ", (char) default_choice);
++        fflush(stdout);
++        choice = getchar();
++        if (choice == EOF)
++           exit(1);
++        }
++  return choice == '\n' ? default_choice : tolower(choice);      
++}
+ /* Local Variables: */
+ /* tab-width: 8     */
+ /* End:             */
+diff -rNu dosfstools-2.11/dosfsck/common.h dosfstools-2.11.new/dosfsck/common.h
+--- dosfstools-2.11/dosfsck/common.h	2004-02-25 10:07:01.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/common.h	2007-05-29 10:37:51.000000000 +0200
+@@ -26,14 +26,6 @@
+ /* mallocs SIZE bytes and returns a pointer to the data. Terminates the program
+    if malloc fails. */
+ 
+-void *qalloc(void **root,int size);
+-
+-/* Like alloc, but registers the data area in a list described by ROOT. */
+-
+-void qfree(void **root);
+-
+-/* Deallocates all qalloc'ed data areas described by ROOT. */
+-
+ int min(int a,int b);
+ 
+ /* Returns the smaller integer value of a and b. */
+@@ -43,4 +35,9 @@
+ /* Displays PROMPT and waits for user input. Only characters in VALID are
+    accepted. Terminates the program on EOF. Returns the character. */
+ 
++int interact(const char *inter_msg, const char *prompt, const int choices,
++             const char *non_inter_msg, const int default_choice);
++
++char ask(const char *inter_msg, const char *prompt,
++         const char *non_inter_msg, const int default_choice);             
+ #endif
+diff -rNu dosfstools-2.11/dosfsck/dosfsck.c dosfstools-2.11.new/dosfsck/dosfsck.c
+--- dosfstools-2.11/dosfsck/dosfsck.c	2004-02-25 20:28:57.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/dosfsck.c	2007-05-29 10:37:51.000000000 +0200
+@@ -26,8 +26,7 @@
+ 
+ int interactive = 0,list = 0,test = 0,verbose = 0,write_immed = 0;
+ int atari_format = 0;
+-unsigned n_files = 0;
+-void *mem_queue = NULL;
++uint32_t n_files = 0;
+ 
+ 
+ static void usage(char *name)
+@@ -84,12 +83,13 @@
+ {
+     DOS_FS fs;
+     int rw,salvage_files,verify,c;
+-    unsigned long free_clusters;
++    int32_t free_clusters;
+     
+     rw = salvage_files = verify = 0;
+     interactive = 1;
+     check_atari();
+-
++    fs.changed = 0;
++    
+     while ((c = getopt(argc,argv,"Aad:flnrtu:vVwy")) != EOF)
+ 	switch (c) {
+ 	    case 'A': /* toggle Atari format */
+@@ -146,36 +146,52 @@
+     printf( "dosfsck " VERSION ", " VERSION_DATE ", FAT32, LFN\n" );
+     fs_open(argv[optind],rw);
+     read_boot(&fs);
+-    if (verify) printf("Starting check/repair pass.\n");
+-    while (read_fat(&fs), scan_root(&fs)) qfree(&mem_queue);
+-    if (test) fix_bad(&fs);
+-    if (salvage_files) reclaim_file(&fs);
+-    else reclaim_free(&fs);
++    read_fat(&fs, rw);
++    if (verify) 
++       printf("Starting check/repair pass.\n");
++    precheck_fat(&fs);
++    if (test)
++       fix_bad(&fs);
++    
++    check_files(&fs);
++    
++    if (salvage_files) 
++       reclaim_file(&fs);
++    else 
++       reclaim_free(&fs);
++       
++    if (test)
++       update_bad_cluster(&fs);
+     free_clusters = update_free(&fs);
+     file_unused();
+-    qfree(&mem_queue);
++    
+     if (verify) {
+ 	printf("Starting verification pass.\n");
+-	read_fat(&fs);
+-	scan_root(&fs);
++	precheck_fat(&fs);
++	check_files(&fs);
+ 	reclaim_free(&fs);
+-	qfree(&mem_queue);
+     }
+ 
+-    if (fs_changed()) {
++    if (fs.changed) {
+ 	if (rw) {
+-	    if (interactive)
++	    if (interactive && !write_immed)
+ 		rw = get_key("yn","Perform changes ? (y/n)") == 'y';
+ 	    else printf("Performing changes.\n");
+ 	}
+ 	else
+ 	    printf("Leaving file system unchanged.\n");
++        if (rw)
++           write_immed = 1;
++        write_boot(&fs,rw);
++        perform_changes(&fs,rw);
++        flush_fat(&fs, rw);	    
+     }
+ 
+-    printf( "%s: %u files, %lu/%lu clusters\n", argv[optind],
+-	    n_files, fs.clusters - free_clusters, fs.clusters );
++    printf( "%s: %u files, %d/%d clusters\n", argv[optind],
++	    n_files, fs.clusters - free_clusters, fs.clusters);
+ 
+-    return fs_close(rw) ? 1 : 0;
++    fs_close();
++    return  fs.changed;
+ }
+ 
+ /* Local Variables: */
+diff -rNu dosfstools-2.11/dosfsck/dosfsck.h dosfstools-2.11.new/dosfsck/dosfsck.h
+--- dosfstools-2.11/dosfsck/dosfsck.h	2005-03-12 15:23:12.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/dosfsck.h	2007-05-29 10:37:51.000000000 +0200
+@@ -9,6 +9,7 @@
+ #ifndef _DOSFSCK_H
+ #define _DOSFSCK_H
+ 
++#include <stdint.h>
+ #include <sys/types.h>
+ #define _LINUX_STAT_H		/* hack to avoid inclusion of <linux/stat.h> */
+ #define _LINUX_STRING_H_	/* hack to avoid inclusion of <linux/string.h>*/
+@@ -104,35 +105,45 @@
+ typedef struct _dos_file {
+     DIR_ENT dir_ent;
+     char *lfn;
+-    loff_t offset;
++    off_t offset;
++    off_t real_offset;
+     struct _dos_file *parent; /* parent directory */
+     struct _dos_file *next; /* next entry */
+     struct _dos_file *first; /* first entry (directory only) */
+ } DOS_FILE;
+ 
+ typedef struct {
+-    unsigned long value;
+-    unsigned long reserved;
+-    DOS_FILE *owner;
+-    int prev; /* number of previous clusters */
++    int32_t value;
++    int32_t reserved;
+ } FAT_ENTRY;
+ 
+ typedef struct {
+     int nfats;
+-    loff_t fat_start;
++    off_t fat_start;
+     unsigned int fat_size; /* unit is bytes */
+     unsigned int fat_bits; /* size of a FAT entry */
+     unsigned int eff_fat_bits; /* # of used bits in a FAT entry */
+-    unsigned long root_cluster; /* 0 for old-style root dir */
+-    loff_t root_start;
++    int32_t root_cluster; /* 0 for old-style root dir */
++    off_t root_start;
+     unsigned int root_entries;
+-    loff_t data_start;
++    off_t data_start;
+     unsigned int cluster_size;
+-    unsigned long clusters;
+-    loff_t fsinfo_start; /* 0 if not present */
+-    long free_clusters;
+-    loff_t backupboot_start; /* 0 if not present */
+-    FAT_ENTRY *fat;
++    int32_t clusters;
++    off_t fsinfo_start; /* 0 if not present */
++    int32_t free_clusters;
++    off_t backupboot_start; /* 0 if not present */
++    uint8_t *fat_raw;
++    uint8_t *fat_first;
++    uint8_t *fat_second;
++    int fat_need_copy;
++    uint8_t *used_cluster;
++    uint8_t *bad_cluster;
++    uint8_t *cycle_cluster;
++    struct boot_sector boot_sector;
++    int write_boot;
++    struct info_sector fsinfo_sector;
++    int write_fsinfo;
++    int changed;
+ } DOS_FS;
+ 
+ #ifndef offsetof
+@@ -141,12 +152,11 @@
+ 
+ extern int interactive,list,verbose,test,write_immed;
+ extern int atari_format;
+-extern unsigned n_files;
+-extern void *mem_queue;
++extern uint32_t n_files;
+ 
+ /* value to use as end-of-file marker */
+ #define FAT_EOF(fs)	((atari_format ? 0xfff : 0xff8) | FAT_EXTD(fs))
+-#define FAT_IS_EOF(fs,v) ((unsigned long)(v) >= (0xff8|FAT_EXTD(fs)))
++#define FAT_IS_EOF(fs,v) ((v) >= (0xff8|FAT_EXTD(fs)) && (v) <= (0xfff|FAT_EXTD(fs)))
+ /* value to mark bad clusters */
+ #define FAT_BAD(fs)	(0xff7 | FAT_EXTD(fs))
+ /* range of values used for bad clusters */
+diff -rNu dosfstools-2.11/dosfsck/fat.c dosfstools-2.11.new/dosfsck/fat.c
+--- dosfstools-2.11/dosfsck/fat.c	2003-06-14 22:03:20.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/fat.c	2007-05-29 10:37:51.000000000 +0200
+@@ -10,6 +10,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <sys/mman.h>
+ 
+ #include "common.h"
+ #include "dosfsck.h"
+@@ -17,310 +18,970 @@
+ #include "check.h"
+ #include "fat.h"
+ 
+-
+-static void get_fat(FAT_ENTRY *entry,void *fat,unsigned long cluster,DOS_FS *fs)
+-{
+-    unsigned char *ptr;
+-
+-    switch(fs->fat_bits) {
+-      case 12:
+-	ptr = &((unsigned char *) fat)[cluster*3/2];
+-	entry->value = 0xfff & (cluster & 1 ? (ptr[0] >> 4) | (ptr[1] << 4) :
+-	  (ptr[0] | ptr[1] << 8));
+-	break;
+-      case 16:
+-	entry->value = CF_LE_W(((unsigned short *) fat)[cluster]);
+-	break;
+-      case 32:
+-	/* According to M$, the high 4 bits of a FAT32 entry are reserved and
+-	 * are not part of the cluster number. So we cut them off. */
+-	{
+-	    unsigned long e = CF_LE_L(((unsigned int *) fat)[cluster]);
+-	    entry->value = e & 0xfffffff;
+-	    entry->reserved = e >> 28;
+-	}
+-	break;
+-      default:
+-	die("Bad FAT entry size: %d bits.",fs->fat_bits);
++typedef struct _fat_entry_change {
++  int32_t cluster;
++  int32_t value;
++  int pass;
++  struct _fat_entry_change *next;
++} FAT_ENTRY_CHANGE;
++
++static FAT_ENTRY_CHANGE *fat_changes = NULL;
++static FAT_ENTRY_CHANGE *fat_changes_tmp = NULL;
++
++static void set_cycle_cluster(DOS_FS *fs, int32_t cluster, int cycle)
++{
++  int cur;
++  cycle = cycle ? 1 : 0; /* ensure this is own or zero */
++  if (!fs->cycle_cluster) {
++     if (!cycle)
++        return;
++     fs->cycle_cluster = alloc((fs->clusters + 2 + 7) >> 3);
++     memset(fs->cycle_cluster, 0, (fs->clusters + 2 + 7) >> 3);
++     }
++     
++  cur = (fs->cycle_cluster[cluster >> 3] >> (cluster & 7)) & 1;
++  if (cur && cycle)
++     die("Internal error: Try to mark cluster as in cycle twice");
++
++  cur = fs->cycle_cluster[cluster >> 3] & ~(1 << (cluster & 7));
++  fs->cycle_cluster[cluster >> 3] = cur | (cycle << (cluster & 7));
++}
++
++int cycle_cluster(DOS_FS *fs,int32_t cluster)
++{
++  return fs->cycle_cluster && 
++         ((fs->cycle_cluster[cluster >> 3] >> (cluster & 7)) & 1);
++}
++
++static void get_fat(DOS_FS *fs, FAT_ENTRY *entry, int32_t cluster)
++{
++  uint8_t *ptr;
++  FAT_ENTRY_CHANGE *change;
++  change = fat_changes;
++  while (change && change->cluster < cluster )
++        change = change->next;
++      
++  if (change && change->cluster == cluster) {
++     entry->value = change->value;
++     return;
++     } 
++    
++  switch (fs->fat_bits) {
++    case 12:
++ 	 ptr = &((uint8_t *) fs->fat_raw)[cluster*3/2];
++	 entry->value = 0xfff & (cluster & 1 ? (ptr[0] >> 4) | (ptr[1] << 4) :
++	                (ptr[0] | ptr[1] << 8));
++	 break;
++    case 16:
++	 entry->value = CF_LE_W(((uint16_t *) fs->fat_raw)[cluster]);
++	 break;
++    case 32:
++	 /* According to M$, the high 4 bits of a FAT32 entry are reserved and
++	  * are not part of the cluster number. So we cut them off. */
++	 {
++	 uint32_t e = CF_LE_L(((uint32_t *) fs->fat_raw)[cluster]);
++	 entry->value = e & 0xfffffff;
++	 entry->reserved = (e >> 28) & 0xf;
++	 }
++	 break;
++    default:
++ 	 die("Bad FAT entry size: %d bits.",fs->fat_bits);
+     }
+-    entry->owner = NULL;
++    
+ }
+ 
+-
+-void read_fat(DOS_FS *fs)
++static void write_fat_entry(DOS_FS *fs, int32_t cluster, int32_t new_value)
+ {
+-    int eff_size;
+-    unsigned long i;
+-    void *first,*second,*use;
+-    int first_ok,second_ok;
+-
+-    eff_size = ((fs->clusters+2)*fs->fat_bits+7)/8;
+-    first = alloc(eff_size);
+-    fs_read(fs->fat_start,eff_size,first);
+-    use = first;
+-    if (fs->nfats > 1) {
+-	second = alloc(eff_size);
+-	fs_read(fs->fat_start+fs->fat_size,eff_size,second);
+-    }
+-    else
+-	second = NULL;
+-    if (second && memcmp(first,second,eff_size) != 0) {
+-	FAT_ENTRY first_media, second_media;
+-	get_fat(&first_media,first,0,fs);
+-	get_fat(&second_media,second,0,fs);
+-	first_ok = (first_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
+-	second_ok = (second_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
+-	if (first_ok && !second_ok) {
+-	    printf("FATs differ - using first FAT.\n");
+-	    fs_write(fs->fat_start+fs->fat_size,eff_size,use = first);
+-	}
+-	if (!first_ok && second_ok) {
+-	    printf("FATs differ - using second FAT.\n");
+-	    fs_write(fs->fat_start,eff_size,use = second);
+-	}
+-	if (first_ok && second_ok) {
+-	    if (interactive) {
+-		printf("FATs differ but appear to be intact. Use which FAT ?\n"
+-		  "1) Use first FAT\n2) Use second FAT\n");
+-		if (get_key("12","?") == '1')
+-		    fs_write(fs->fat_start+fs->fat_size,eff_size,use = first);
+-		else fs_write(fs->fat_start,eff_size,use = second);
++  uint8_t data[4];
++  int size;
++  off_t offs;
++   
++  switch (fs->fat_bits) {
++    case 12:
++ 	 offs = cluster*3/2;
++	 if (cluster & 1) {
++	    FAT_ENTRY prev;
++	    get_fat(fs, &prev, cluster - 1);
++	    data[0] = ((new_value & 0xf) << 4) | (prev.value >> 8);
++	    data[1] = new_value >> 4;
+ 	    }
+-	    else {
+-		printf("FATs differ but appear to be intact. Using first "
+-		  "FAT.\n");
+-		fs_write(fs->fat_start+fs->fat_size,eff_size,use = first);
++	 else {
++	    FAT_ENTRY next;
++	    if (cluster < fs->clusters - 1)
++   	       get_fat(fs, &next, cluster + 1);
++            else 
++               next.value = 0;
++	    data[0] = new_value & 0xff;
++	    data[1] = (new_value >> 8) | ((0xff & next.value) << 4);
+ 	    }
+-	}
+-	if (!first_ok && !second_ok) {
+-	    printf("Both FATs appear to be corrupt. Giving up.\n");
+-	    exit(1);
+-	}
+-    }
+-    fs->fat = qalloc(&mem_queue,sizeof(FAT_ENTRY)*(fs->clusters+2));
+-    for (i = 2; i < fs->clusters+2; i++) get_fat(&fs->fat[i],use,i,fs);
+-    for (i = 2; i < fs->clusters+2; i++)
+-	if (fs->fat[i].value >= fs->clusters+2 &&
+-	    (fs->fat[i].value < FAT_MIN_BAD(fs))) {
+-	    printf("Cluster %ld out of range (%ld > %ld). Setting to EOF.\n",
+-		   i-2,fs->fat[i].value,fs->clusters+2-1);
+-	    set_fat(fs,i,-1);
+-	}
+-    free(first);
+-    if (second)
+-	free(second);
+-}
+-
+-
+-void set_fat(DOS_FS *fs,unsigned long cluster,unsigned long new)
+-{
+-    unsigned char data[4];
+-    int size;
+-    loff_t offs;
+-
+-    if ((long)new == -1)
+-	new = FAT_EOF(fs);
+-    else if ((long)new == -2)
+-	new = FAT_BAD(fs);
+-    switch( fs->fat_bits ) {
+-      case 12:
+-	offs = fs->fat_start+cluster*3/2;
+-	if (cluster & 1) {
+-	    data[0] = ((new & 0xf) << 4) | (fs->fat[cluster-1].value >> 8);
+-	    data[1] = new >> 4;
+-	}
+-	else {
+-	    data[0] = new & 0xff;
+-	    data[1] = (new >> 8) | (cluster == fs->clusters-1 ? 0 :
+-	      (0xff & fs->fat[cluster+1].value) << 4);
+-	}
+-	size = 2;
+-	break;
+-      case 16:
+-	offs = fs->fat_start+cluster*2;
+-	*(unsigned short *) data = CT_LE_W(new);
+-	size = 2;
+-	break;
+-      case 32:
+-	offs = fs->fat_start+cluster*4;
+-	/* According to M$, the high 4 bits of a FAT32 entry are reserved and
++	 size = 2;
++	 break;
++    case 16:
++	 offs = cluster*2;
++	 *(uint16_t *) data = CT_LE_W(new_value);
++	 size = 2;
++	 break;
++    case 32: {
++         FAT_ENTRY cur;
++         get_fat(fs, &cur, cluster);
++	 offs = cluster*4;
++	 /* According to M$, the high 4 bits of a FAT32 entry are reserved and
+ 	 * are not part of the cluster number. So we never touch them. */
+-	*(unsigned long *) data = CT_LE_L( (new & 0xfffffff) |
+-					   (fs->fat[cluster].reserved << 28) );
+-	size = 4;
+-	break;
+-      default:
+-	die("Bad FAT entry size: %d bits.",fs->fat_bits);
++	 /* AK: long  is 64bit on 64 bit machines ... */
++	 *(uint32_t *) data = CT_LE_L((uint32_t) ((new_value & 0xfffffff) | 
++	                                      (cur.reserved << 28)) );
++	 size = 4;
++ 	 break;
++	 }
++    default:
++	 die("Bad FAT entry size: %d bits.",fs->fat_bits);
+     }
+-    fs->fat[cluster].value = new;
+-    fs_write(offs,size,&data);
+-    fs_write(offs+fs->fat_size,size,&data);
+-}
+-
+-
+-int bad_cluster(DOS_FS *fs,unsigned long cluster)
+-{
+-    return FAT_IS_BAD(fs,fs->fat[cluster].value);
+-}
+-
+-
+-unsigned long next_cluster(DOS_FS *fs,unsigned long cluster)
+-{
+-    unsigned long value;
+-
+-    value = fs->fat[cluster].value;
+-    if (FAT_IS_BAD(fs,value))
+-	die("Internal error: next_cluster on bad cluster");
+-    return FAT_IS_EOF(fs,value) ? -1 : value;
+-}
+-
++  memcpy(fs->fat_first + offs, data, size);
++  if (fs->fat_second)
++     memcpy(fs->fat_second + offs, data, size);
++}
++
++
++
++static int32_t next_cluster_real(DOS_FS *fs,int32_t cluster)
++{
++    FAT_ENTRY cur;
++    if (bad_cluster(fs,cluster))
++        die("Internal error: next_cluster on bad cluster");
++        
++    get_fat(fs, &cur, cluster);
++    return FAT_IS_EOF(fs,cur.value) ? -1 : cur.value;
++}
++
++void set_fat(DOS_FS *fs, int32_t cluster, int32_t new_value)
++{
++  FAT_ENTRY_CHANGE **change, *new_change;
++  fs->changed = 1;
++  
++  if (new_value == -1)
++     new_value = FAT_EOF(fs);
++  else if (new_value == -2)
++     new_value = FAT_BAD(fs);
++  
++  if (FAT_IS_EOF(fs,new_value) && cycle_cluster(fs, cluster)){
++     int32_t walk = next_cluster_real(fs, cluster);
++     set_cycle_cluster(fs, cluster, 0);
++     while (walk != cluster && walk > 0 && cycle_cluster(fs,walk)) {
++           set_cycle_cluster(fs, walk, 0);
++           walk = next_cluster_real(fs, walk);
++           }
++           
++     if (walk != cluster)
++        die("Internal error: cycle marking wrong");
++     }
++     
++  if (write_immed) {
++     write_fat_entry(fs, cluster, new_value);
++     return;
++     }
++    
++  change = &fat_changes;
++  while (*change && (*change)->cluster < cluster)
++        change = &(*change)->next;
++      
++  if (*change && (*change)->cluster == cluster) {
++     (*change)->value = new_value;
++     return;
++     } 	
++     
++  new_change = alloc(sizeof(FAT_ENTRY_CHANGE));
++  new_change->cluster = cluster;
++  new_change->value = new_value;
++  new_change->next = *change;
++  *change = new_change;
++}
++
++void get_fat_tmp(DOS_FS *fs, FAT_ENTRY *entry, int32_t cluster)
++{
++  FAT_ENTRY_CHANGE **change;
++  change = &fat_changes_tmp;
++  while (*change && (*change)->cluster < cluster)
++        change = &(*change)->next;
++  
++  if (*change &&  (*change)->cluster == cluster && 
++      (*change)->pass < check_pass) {
++      entry->value = (*change)->value;
++      if (check_pass == LAST_CHECK_PASS &&
++          !IS_FAKE_CLUSTER((*change)->cluster) && 
++          !IS_FAKE_CLUSTER((*change)->value)) {
++         FAT_ENTRY_CHANGE *tmp;
++         tmp = *change;
++         *change = tmp->next;
++         set_fat(fs, tmp->cluster, tmp->value);
++         free(tmp);
++         return;
++         }
++     (*change)->pass = check_pass;
++     return;
++     }
++      
++  get_fat(fs, entry, cluster);
++}
++
++int32_t drop_fat_tmp(DOS_FS *fs, int32_t cluster)
++{
++  FAT_ENTRY_CHANGE **change;
++  change = &fat_changes_tmp;
++  while (*change && (*change)->cluster < cluster)
++        change = &(*change)->next;
++  
++  if (*change &&  (*change)->cluster == cluster) {
++     FAT_ENTRY_CHANGE *tmp;
++     int32_t value;
++         
++     tmp = *change;
++     *change = tmp->next;
++     value = tmp->value;         
++     free(tmp);
++     return value;
++     }
++      
++ return next_cluster(fs, cluster);
++}
++
++void set_fat_tmp(DOS_FS *fs, int32_t cluster, int32_t value)
++{
++  FAT_ENTRY_CHANGE **change;
++  FAT_ENTRY_CHANGE *new_change;
++  change = &fat_changes_tmp;
++  while (*change && (*change)->cluster < cluster)
++        change = &(*change)->next;
++  
++  if (*change &&  (*change)->cluster == cluster) {
++     if (check_pass == LAST_CHECK_PASS) {
++        FAT_ENTRY_CHANGE *tmp;
++        tmp = *change;
++        *change = tmp->next;
++        free(tmp);
++        set_fat(fs, cluster, value);
++        return;
++        }
++     (*change)->value = value;
++     (*change)->pass = check_pass;
++     return;
++     }
++
++  if (check_pass == LAST_CHECK_PASS) {
++     set_fat(fs, cluster, value);
++     return;
++     }
++     
++  new_change = alloc(sizeof(FAT_ENTRY_CHANGE));
++  new_change->cluster = cluster;
++  new_change->value = value;
++  new_change->pass = check_pass;
++  new_change->next = *change;
++  *change = new_change;
++}
++
++void perform_fat_tmp(DOS_FS *fs, int last_check_pass) 
++{
++  FAT_ENTRY_CHANGE **change;
++  change = &fat_changes_tmp;
++  while (fat_changes_tmp) {
++        FAT_ENTRY_CHANGE *tmp;
++        tmp = fat_changes_tmp;
++        fat_changes_tmp = tmp->next;
++        if (tmp->pass == last_check_pass) {
++           if (tmp->cluster < 2 || tmp->cluster >= fs->clusters + 2)
++              die("Internal error: Cluster out of range for temporary fat change ");
++           if (tmp->value == 1 || tmp->cluster >= fs->clusters + 2)
++              die("Internal error: Value out of range for temporary fat change ");
++              
++           set_fat(fs, tmp->cluster, tmp->value);
++           }
++        free(tmp);
++        }
++}
++
++void read_fat(DOS_FS *fs, int rw)
++{
++  size_t eff_size;
++  int first_ok,second_ok;
++  size_t pagesize;
++    
++  eff_size = ((fs->clusters+2)*fs->fat_bits+7)/8;
++  
++  pagesize = sysconf(_SC_PAGESIZE);
++  if (pagesize < 1) 
++     pdie("Cannot get pagesize");
++       
++  if (pagesize & (pagesize -1)) 
++     die("Internal error: pagesize not power of two");
++    
++  fs->used_cluster = alloc((fs->clusters + 2 + 7) >> 3);
++  memset (fs->used_cluster, 0, (fs->clusters + 2 + 7) >> 3);
++    
++  fs->bad_cluster = NULL;
++  fs->cycle_cluster = NULL;
++        
++  fs->fat_first = mmap(0,eff_size + pagesize - 1, 
++         rw ? PROT_READ | PROT_WRITE : PROT_READ,
++                         MAP_SHARED, fs_get_fd(), 
++                fs->fat_start & ~(pagesize - 1));
++                         
++  if (fs->fat_first == MAP_FAILED) 
++     pdie("Mapping of first fat failed");
++        
++  fs->fat_first += fs->fat_start & (pagesize - 1);
++        
++  if (fs->nfats > 1) {
++     fs->fat_second = mmap(0,eff_size + pagesize - 1, 
++             rw ? PROT_READ | PROT_WRITE : PROT_READ,
++                             MAP_SHARED, fs_get_fd(), 
++                     (fs->fat_start + fs->fat_size) &
++                                    ~(pagesize - 1)); 
++                                    
++     if (fs->fat_first == MAP_FAILED) 
++        pdie("Mapping of second fat failed");
++        
++     fs->fat_second += (fs->fat_start + fs->fat_size) & (pagesize - 1);
++     }
++  else
++     fs->fat_second = NULL;
++        
++  fs->fat_raw = fs->fat_first;
++  fs->fat_need_copy = 0;
++    
++  if (fs->fat_second && memcmp(fs->fat_first,fs->fat_second,eff_size)) {
++     FAT_ENTRY first_media, second_media;
++     int choice;
++     fs->changed = 1;
++     
++     fs->fat_raw = fs->fat_first;
++     get_fat(fs,&first_media,0);
++     fs->fat_raw = fs->fat_second;
++     get_fat(fs,&second_media,0);
++	
++     first_ok = (first_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
++     second_ok = (second_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
++	
++     if (first_ok && !second_ok) {
++        printf("FATs differ - using first FAT.\n");
++        choice = 1;
++	}
++     else if (!first_ok && second_ok) {
++	printf("FATs differ - using second FAT.\n");
++	choice = 2;
++	}
++     else if (first_ok && second_ok) {
++        choice = interact("FATs differ but appear to be intact. " 
++                              "Use which FAT ?\n"
++		              "1) Use first FAT\n"
++		              "2) Use second FAT\n", "?", 2, 
++		              "FATs differ but appear to be intact. "
++		              "Using first FAT\n", 1);
++        }
++     else {
++        printf("Both FATs appear to be corrupt. Giving up.\n");
++	exit(1);
++        }
++        
++     switch (choice) {
++       case 1:
++	    fs->fat_raw = fs->fat_first;
++    	    if (write_immed) 
++      	       memcpy(fs->fat_second, fs->fat_first, eff_size);
++            else
++ 	       fs->fat_need_copy = 1;
++            break;
++       case 2:
++	    fs->fat_raw = fs->fat_second;
++    	    if (write_immed) 
++      	       memcpy(fs->fat_first, fs->fat_second, eff_size);
++            else
++ 	       fs->fat_need_copy = 1;
++            break;
++       default:
++            die("Internal error");        
++       }
++     }
++}
++
++void flush_fat(DOS_FS *fs, int rw)
++{
++  size_t eff_size;
++  size_t pagesize;
++    
++  eff_size = ((fs->clusters+2)*fs->fat_bits+7)/8;
++  pagesize = sysconf(_SC_PAGESIZE);
++  if (pagesize < 1) 
++     pdie("Cannot get pagesize");
++       
++  if (pagesize & (pagesize -1)) 
++     die("Internal error: pagesize not power of two");
++       
++  if (fs->fat_need_copy && rw) {
++     if (fs->fat_raw == fs->fat_first) {
++        memcpy(fs->fat_second, fs->fat_first, eff_size);
++        }
++     else if (fs->fat_raw == fs->fat_second) {
++        memcpy(fs->fat_first, fs->fat_second, eff_size);
++        }
++     else
++        die("Internal error: used fat mismatched");   
++     }
++    
++  while (fat_changes) {
++        FAT_ENTRY_CHANGE *cur = fat_changes;
++        fat_changes = cur->next;
++        if (rw)
++            write_fat_entry(fs,cur->cluster,cur->value);
++        free(cur);
++        }  
++    
++  fs->fat_first -= fs->fat_start & (pagesize - 1);
++  munmap(fs->fat_first, eff_size + pagesize - 1);
++  if (fs->fat_second) {
++     fs->fat_second -= (fs->fat_start + fs->fat_size) & (pagesize - 1);
++     munmap(fs->fat_second, eff_size + pagesize - 1);
++     }
++   
++  free(fs->used_cluster);
++  free(fs->bad_cluster);
++  free(fs->cycle_cluster);
++}
++
++static void set_bad_cluster(DOS_FS *fs, int32_t cluster)
++{
++  int cur;
++  if (!fs->bad_cluster) {
++     fs->bad_cluster = alloc((fs->clusters + 2 + 7) >> 3);
++     memset(fs->bad_cluster, 0, (fs->clusters + 2 + 7) >> 3);
++     }
++     
++  cur = (fs->bad_cluster[cluster >> 3] >> (cluster & 7)) & 1;
++  if (cur)
++     die("Internal error: Try to mark cluster bad twice");
++
++  fs->bad_cluster[cluster >> 3] = fs->bad_cluster[cluster >> 3] | 
++                                                (1 << (cluster & 7));
++}
++
++int bad_cluster(DOS_FS *fs,int32_t cluster)
++{
++  return fs->bad_cluster && 
++         ((fs->bad_cluster[cluster >> 3] >> (cluster & 7)) & 1);
++}
++
++void set_owned(DOS_FS *fs, int32_t cluster, int owned)
++{   
++    int cur;
++    cur = (fs->used_cluster[cluster >> 3] >> (cluster & 7)) & 1;
++    owned = owned ? 1 : 0; /* ensure this is own or zero */
++    if (cur && owned)
++	die("Internal error: attempt to change file owner");
+ 
+-loff_t cluster_start(DOS_FS *fs,unsigned long cluster)
+-{
+-    return fs->data_start+((loff_t)cluster-2)*fs->cluster_size;
++    cur = fs->used_cluster[cluster >> 3] & ~(1 << (cluster & 7));
++    fs->used_cluster[cluster >> 3] = cur | (owned << (cluster & 7));
+ }
+ 
+ 
+-void set_owner(DOS_FS *fs,unsigned long cluster,DOS_FILE *owner)
++int get_owned(DOS_FS *fs,int32_t cluster)
+ {
+-    if (owner && fs->fat[cluster].owner)
+-	die("Internal error: attempt to change file owner");
+-    fs->fat[cluster].owner = owner;
++    return (fs->used_cluster[cluster >> 3] >> (cluster & 7)) & 1;
+ }
+ 
+ 
+-DOS_FILE *get_owner(DOS_FS *fs,unsigned long cluster)
+-{
+-    return fs->fat[cluster].owner;
++void reset_owned(DOS_FS *fs) 
++{
++   memset (fs->used_cluster, 0, (fs->clusters + 2 + 7) >> 3);
++}
++
++static void set_tmp_bitmap(DOS_FS *fs, uint8_t **bitmap , int32_t cluster, int value)
++{
++  int cur;
++  if (!*bitmap) {
++     if (!value)
++        return;
++     *bitmap = alloc((fs->clusters + 2 + 7) >> 3);
++     memset(*bitmap, 0, (fs->clusters + 2 + 7) >> 3);
++     }
++     
++  cur = ((*bitmap)[cluster >> 3] >> (cluster & 7)) & 1;
++  if (cur && value)
++     die("Internal error: Try to mark temporary bitmap twice");
++  cur = (*bitmap)[cluster >> 3] & ~(1 << (cluster & 7));
++  (*bitmap)[cluster >> 3] = cur | (value << (cluster & 7));
++}
++
++static int get_tmp_bitmap(uint8_t *bitmap, int32_t cluster)
++{
++  return bitmap && ((bitmap[cluster >> 3] >> (cluster & 7)) & 1);
++}
++
++static void reset_tmp_bitmap(DOS_FS *fs, uint8_t **bitmap)
++{
++  if (!*bitmap) {
++     *bitmap = alloc((fs->clusters + 2 + 7) >> 3);
++     }
++  memset(*bitmap, 0, (fs->clusters + 2 + 7) >> 3);
++}
++
++void precheck_fat(DOS_FS *fs) 
++{
++  int32_t i;
++  int cycles;
++  uint8_t *tmp_bitmap = NULL;
++        
++  if (verbose)
++     printf("Prechecking FAT.\n");
++       
++  /* Ensure clusters are in range, not self referencing and
++   * references no bad or empty cluster
++   */
++  for (i = 2; i < fs->clusters+2; i++) {
++      FAT_ENTRY cur_entry, next_entry;
++      
++      get_fat(fs, &cur_entry, i);
++      if (FAT_IS_BAD(fs,cur_entry.value)) {
++         set_bad_cluster(fs, i);
++         continue;
++         }
++        
++      if (!cur_entry.value || FAT_IS_EOF(fs,cur_entry.value)) 
++         continue;
++            
++      if (cur_entry.value < 2) {
++	 printf("Cluster %d out of range (%d < 2). Setting to EOF.\n",
++	   	                                   i,cur_entry.value);
++         set_fat(fs,i,-1);
++         continue;
++	 }
++	
++      if (cur_entry.value >= fs->clusters+2) {
++         printf("Cluster %d out of range (%d > %d). Setting to EOF.\n",
++	                           i,cur_entry.value,fs->clusters+2-1);
++	 set_fat(fs,i,-1);
++	 continue;
++	 }
++	
++      if (cur_entry.value == i) {
++         printf("Cluster %d references itself.\n", i);
++         set_fat(fs,i,-1);
++         continue;
++  	 }
++	
++      get_fat(fs, &next_entry, cur_entry.value);
++      if (!next_entry.value || FAT_IS_BAD(fs, next_entry.value)) {
++         printf("Cluster %d references %s cluster. Assuming EOF.\n", i,
++ 	                           !next_entry.value ? "free" : "bad");
++         set_fat(fs, i, -1); 
++	 }
++      }
++    
++  if (verbose)
++     printf("Searching for cycles in cluster chains.\n");
++     
++  cycles = 0;   
++  for (i = 2; i < fs->clusters + 2; i++) {
++      int32_t j;
++      int32_t k;
++      if (verbose && (i == 2 || (i % 128) == 0)) {
++         printf("\r  Checking chain starting at cluster %10d/%d", i - 2, fs->clusters);
++         fflush(stdout);
++         }
++         
++      if (bad_cluster(fs, i) || get_owned(fs,i) ||
++          !(j = next_cluster_real(fs, i)))
++         continue;
++         
++      reset_tmp_bitmap(fs, &tmp_bitmap);
++      
++      set_owned(fs, i, 1);    
++      set_tmp_bitmap(fs, &tmp_bitmap, i, 1);
++      while (j > 0 && !get_owned(fs, j) && !get_tmp_bitmap(tmp_bitmap, j)) {
++            set_owned(fs, j, 1);
++            set_tmp_bitmap(fs, &tmp_bitmap, j, 1);
++            j = next_cluster_real(fs, j);
++            }
++      
++      if (j <= 0 || !get_tmp_bitmap(tmp_bitmap, j))
++         continue;
++         
++      cycles++;   
++      set_cycle_cluster(fs, j, 1);
++      k = next_cluster_real(fs, j);
++      while (k > 0 && k != j && get_tmp_bitmap(tmp_bitmap, k)) {
++            set_cycle_cluster(fs, k, 1);
++            k = next_cluster_real(fs, k);
++            }
++      
++      if (k != j)
++         die("Internal error: Cycle marking went wrong!");
++      }
++      
++  if (verbose)    
++     printf("\n");
++     
++  reset_owned(fs);
++  free(tmp_bitmap);
++  if (cycles)
++     printf("Found %d cycles in cluster chains.\n", cycles);   
++}
++    
++void fix_bad(DOS_FS *fs)        
++{
++  int32_t i;
++  int32_t bad_cluster_count;
++  if (verbose)
++     printf("Checking for bad clusters.\n");
++	
++  bad_cluster_count = 0;
++  for (i = 2; i < fs->clusters + 2; i++) {
++      if (bad_cluster(fs,i))
++         continue;
++
++      if (verbose && (i == 2 || (i % 128) == 0)) {
++         printf("\r  Checking cluster %9d/%d", i - 2, fs->clusters);
++         fflush(stdout);
++         }
++         
++      if (fs_test(cluster_start(fs,i), fs->cluster_size))
++         continue;
++          
++      printf("Cluster %d is unreadable.\n",i);
++      set_bad_cluster(fs, i);
++      bad_cluster_count++;
++      }
++    
++  if (verbose) 
++     printf("\r  Check finished\n");
++     
++  if (!bad_cluster_count)
++     return;
++    
++  if (verbose)
++     printf("Marked %d clusters bad.\n", bad_cluster_count);
++	
++  /* Update predecessor */
++    
++  /* need to update newly marked bad clusters first
++   * they may contain cycles and referencing other bad cluster.
++   */
++  for (i = 2; i < fs->clusters + 2; i++) {
++      FAT_ENTRY cur_entry;
++      int32_t walk, set_to;
++      if (!bad_cluster(fs,i))
++         continue;
++            
++      get_fat(fs, &cur_entry, i);
++      if (FAT_IS_BAD(fs,cur_entry.value))
++         continue;
++        
++      if (FAT_IS_EOF(fs, cur_entry.value) || !cur_entry.value) {
++         set_fat(fs, i, -2);
++         continue;
++      }     
++        
++      if (!bad_cluster(fs,cur_entry.value))
++         continue;
++        
++      walk = cur_entry.value; 
++      while (walk != -1 && bad_cluster(fs,walk) && i != walk && 
++                                            !get_owned(fs,walk)) {
++            FAT_ENTRY next_entry;
++            set_owned(fs, walk, 1);
++              
++            get_fat(fs, &next_entry, walk);
++            if (!next_entry.value)
++               die("Internal error: Bad marked cluster chain starting at "
++                   "%d references free cluster %d unexpectedly.",i, walk);
++                                                                
++            walk = (FAT_IS_EOF(fs, next_entry.value) || 
++                    FAT_IS_BAD(fs, next_entry.value))?-1:next_entry.value;
++            } 
++        
++      if (walk == -1) {
++         set_to = -2;
++         }
++      else if (!bad_cluster(fs,walk)) {
++         set_to = walk;
++         }
++      else { 
++         printf("Cluster chain starting at %d " 
++                "contains a cycle in bad marked cluster.\n", i);
++         set_to = -2;
++         } 
++        
++      set_fat(fs, i, set_to);
++      walk = cur_entry.value;
++      /* All bad marked cluster on the path will lead to the same successor 
++       * or run into the same cycle. So update them now we need to reset 
++       * owned flag anyway. 
++       */
++      while (walk != -1 && get_owned(fs, walk)) {
++            FAT_ENTRY next_entry;
++            set_owned(fs, walk, 0);
++            if (!bad_cluster(fs,walk))
++               die("Internal error: Cluster not marked bad");
++              
++            get_fat(fs, &next_entry, walk);
++            if (FAT_IS_BAD(fs, next_entry.value))
++               break;
++            set_fat(fs, walk, set_to);    
++            walk = FAT_IS_EOF(fs, next_entry.value) ? -1 : next_entry.value;
++            }
++      }          
++    
++  /* Now update other predecessor of bad marked cluster.
++   * All bad marked cluster are update to reference
++   * next readable cluster in chain or bad.
++   */
++  for (i = 2; i < fs->clusters + 2; i++) {
++      FAT_ENTRY cur_entry, next_entry;
++      if (bad_cluster(fs,i))
++         continue;
++            
++      get_fat(fs, &cur_entry, i);
++        
++      if (FAT_IS_BAD(fs,cur_entry.value)) 
++         die("Internal error: Cluster not marked bad!");
++            
++      if (!cur_entry.value || FAT_IS_EOF(fs, cur_entry.value) 
++                           || !bad_cluster(fs, cur_entry.value))
++         continue;
++           
++            
++      get_fat(fs, &next_entry, cur_entry.value);
++      if (!next_entry.value) 
++         die("Internal error: unexpected reference to empty cluster");
++           
++      if (FAT_IS_BAD(fs,next_entry.value)) {
++         set_fat(fs, i, -1);
++         continue;
++         }
++        
++      if (FAT_IS_EOF(fs, next_entry.value) || 
++          bad_cluster(fs, next_entry.value))
++         die("Internal error: unexpected reference to EOF "
++             "or bad marked cluster");
++            
++      if (next_entry.value == i) {
++         printf("Broken cycle in chain (due to clusters marked bad) at "
++                "cluster %d.\n", i);
++         set_fat(fs, i, -1);
++         set_cycle_cluster(fs, i, 0);
++         continue;
++         }
++      set_fat(fs, i, next_entry.value);
++      } 
++}
++
++
++void update_bad_cluster(DOS_FS *fs) 
++{
++  int32_t i;
++  if (!fs->bad_cluster)
++     return;
++    
++  for (i = 2 ; i < fs->clusters + 2; i++) {
++      FAT_ENTRY cur_entry;
++      if (!bad_cluster(fs,i))
++         continue;
++            
++      get_fat(fs, &cur_entry, i);
++           
++      if (FAT_IS_BAD(fs,cur_entry.value))
++         continue;    
++      set_fat(fs, i, -2);    
++      }
++      
++}
++
++int32_t next_cluster(DOS_FS *fs,int32_t cluster)
++{
++    FAT_ENTRY cur;
++    if (!IS_FAKE_CLUSTER(cluster) && bad_cluster(fs,cluster))
++        die("Internal error: next_cluster on bad cluster");
++        
++    get_fat_tmp(fs, &cur, cluster);
++    return FAT_IS_EOF(fs,cur.value) ? -1 : cur.value;
+ }
+ 
+ 
+-void fix_bad(DOS_FS *fs)
++off_t cluster_start(DOS_FS *fs,int32_t cluster)
+ {
+-    unsigned long i;
+-
+-    if (verbose)
+-	printf("Checking for bad clusters.\n");
+-    for (i = 2; i < fs->clusters+2; i++)
+-	if (!get_owner(fs,i) && !FAT_IS_BAD(fs,fs->fat[i].value))
+-	    if (!fs_test(cluster_start(fs,i),fs->cluster_size)) {
+-		printf("Cluster %lu is unreadable.\n",i);
+-		set_fat(fs,i,-2);
+-	    }
++    return fs->data_start+((off_t)cluster-2)*fs->cluster_size;
+ }
+ 
+ 
+ void reclaim_free(DOS_FS *fs)
+ {
+     int reclaimed;
+-    unsigned long i;
++    int32_t i;
+ 
+     if (verbose)
+ 	printf("Checking for unused clusters.\n");
++	
++    free(fs->cycle_cluster);
++    fs->cycle_cluster = NULL;
++    
+     reclaimed = 0;
+     for (i = 2; i < fs->clusters+2; i++)
+-	if (!get_owner(fs,i) && fs->fat[i].value &&
+-	    !FAT_IS_BAD(fs,fs->fat[i].value)) {
+-	    set_fat(fs,i,0);
+-	    reclaimed++;
++	if (!get_owned(fs,i) && !bad_cluster(fs,i)) {
++	    if (next_cluster_real(fs,i)) {
++	        set_fat(fs,i,0);
++  	        reclaimed++;
++            }
+ 	}
+     if (reclaimed)
+-	printf("Reclaimed %d unused cluster%s (%d bytes).\n",reclaimed,
+-	  reclaimed == 1 ?  "" : "s",reclaimed*fs->cluster_size);
++	printf("Reclaimed %d unused cluster%s (%lld bytes).\n",reclaimed,
++	  reclaimed == 1 ?  "" : "s",(long long)reclaimed*fs->cluster_size);
++    
+ }
+ 
+-
+-static void tag_free(DOS_FS *fs,DOS_FILE *ptr)
+-{
+-    DOS_FILE *owner;
+-    int prev;
+-    unsigned long i,walk;
+-
+-    for (i = 2; i < fs->clusters+2; i++)
+-	if (fs->fat[i].value && !FAT_IS_BAD(fs,fs->fat[i].value) &&
+-	    !get_owner(fs,i) && !fs->fat[i].prev) {
+-	    prev = 0;
+-	    for (walk = i; walk > 0 && walk != -1;
+-		 walk = next_cluster(fs,walk)) {
+-		if (!(owner = get_owner(fs,walk))) set_owner(fs,walk,ptr);
+-		else if (owner != ptr)
+-		        die("Internal error: free chain collides with file");
+-		    else {
+-			set_fat(fs,prev,-1);
+-			break;
+-		    }
+-		prev = walk;
+-	    }
+-	}
+-}
+-
+-
+ void reclaim_file(DOS_FS *fs)
+ {
+-    DOS_FILE dummy;
+-    int reclaimed,files,changed;
+-    unsigned long i,next,walk;
+-
+-    if (verbose)
+-	printf("Reclaiming unconnected clusters.\n");
+-    for (i = 2; i < fs->clusters+2; i++) fs->fat[i].prev = 0;
+-    for (i = 2; i < fs->clusters+2; i++) {
+-	next = fs->fat[i].value;
+-	if (!get_owner(fs,i) && next && next < fs->clusters+2) {
+-	    if (get_owner(fs,next) || !fs->fat[next].value ||
+-		FAT_IS_BAD(fs,fs->fat[next].value)) set_fat(fs,i,-1);
+-	    else fs->fat[next].prev++;
+-	}
+-    }
+-    do {
+-	tag_free(fs,&dummy);
+-	changed = 0;
+-	for (i = 2; i < fs->clusters+2; i++)
+-	    if (fs->fat[i].value && !FAT_IS_BAD(fs,fs->fat[i].value) &&
+-		!get_owner(fs, i)) {
+-		if (!fs->fat[fs->fat[i].value].prev--)
+-		    die("Internal error: prev going below zero");
+-		set_fat(fs,i,-1);
+-		changed = 1;
+-		printf("Broke cycle at cluster %lu in free chain.\n",i);
+-		break;
+-	    }
+-    }
+-    while (changed);
+-    files = reclaimed = 0;
+-    for (i = 2; i < fs->clusters+2; i++)
+-	if (get_owner(fs,i) == &dummy && !fs->fat[i].prev) {
+-	    DIR_ENT de;
+-	    loff_t offset;
+-	    files++;
+-	    offset = alloc_rootdir_entry(fs,&de,"FSCK%04dREC");
+-	    de.start = CT_LE_W(i&0xffff);
+-	    if (fs->fat_bits == 32)
+-		de.starthi = CT_LE_W(i>>16);
+-	    for (walk = i; walk > 0 && walk != -1;
+-		 walk = next_cluster(fs,walk)) {
+-		de.size = CT_LE_L(CF_LE_L(de.size)+fs->cluster_size);
+-		reclaimed++;
+-	    }
+-	    fs_write(offset,sizeof(DIR_ENT),&de);
+-	}
+-    if (reclaimed)
+-	printf("Reclaimed %d unused cluster%s (%d bytes) in %d chain%s.\n",
+-	  reclaimed,reclaimed == 1 ? "" : "s",reclaimed*fs->cluster_size,files,
+-	  files == 1 ? "" : "s");
+-}
+-
+-
+-unsigned long update_free(DOS_FS *fs)
+-{
+-    unsigned long i;
+-    unsigned long free = 0;
+-    int do_set = 0;
+-
+-    for (i = 2; i < fs->clusters+2; i++)
+-	if (!get_owner(fs,i) && !FAT_IS_BAD(fs,fs->fat[i].value))
++  int reclaimed,files;
++  int32_t i;
++  uint8_t *nostart_bitmap = NULL;
++  uint8_t *used_bitmap = NULL;
++  if (verbose)
++     printf("Reclaiming unconnected clusters.\n");
++  
++  /* Search for start of free chains:
++   *
++   * For all unowned clusters mark referenced cluster
++   * as not starting cluster and used cluster, if 
++   * it was not found by any other before (indicated by used_bitmap).
++   *
++   * If the referenced cluster was found before -- as indicated by
++   * used_bitmap, reset the nostart_bitmap entry, because
++   * the referenced cluster is shared with at least an other chains.
++   *
++   * For clusters in cycle skip the steps above, cause we do not
++   * know at which to start. 
++   * If any cluster references a cycle cluster do the steps for all
++   * cycle clusters. 
++   *
++   * If a free cluster is not marked in nostart_bitmap this is the 
++   * start of a free chain. Cycles are splited into chains for each
++   * cluster, if it is unclear at which cluster to start.
++   */
++  for (i = 2; i < fs->clusters + 2; i++) {
++      int32_t next;
++      if (get_owned(fs,i) || bad_cluster(fs,i) 
++                          || cycle_cluster(fs, i)
++                          || (next = next_cluster_real(fs, i)) <= 0)
++         continue;
++      
++      if (get_owned(fs, next)) {
++         set_fat(fs, i, -1);
++         continue;
++         }
++         
++      if (cycle_cluster(fs, next)) {
++         int32_t walk;
++         walk = next_cluster_real(fs, next);
++         while (walk > 0 && walk != next && !get_owned(fs, walk) &&
++                                            cycle_cluster(fs, walk)) {
++               if (get_tmp_bitmap(used_bitmap, walk)) {
++                  set_tmp_bitmap(fs, &nostart_bitmap, walk, 0);
++                  walk = next_cluster_real(fs, walk);
++                  continue;
++                  }   
++         
++               set_tmp_bitmap(fs, &nostart_bitmap, walk, 1);   
++               set_tmp_bitmap(fs, &used_bitmap, walk, 1);
++               walk = next_cluster_real(fs, walk); 
++               }
++               
++         if (walk != next)
++            die("Internal error: cycle marking wrong");
++         }  
++          
++      if (get_tmp_bitmap(used_bitmap, next)) {
++         set_tmp_bitmap(fs, &nostart_bitmap, next, 0);
++         continue;
++         }   
++         
++      set_tmp_bitmap(fs, &nostart_bitmap, next, 1);   
++      set_tmp_bitmap(fs, &used_bitmap, next, 1);
++      }
++      
++  free(used_bitmap);
++  free(fs->cycle_cluster);
++  fs->cycle_cluster = NULL;
++  
++  reclaimed = 0;
++  files = 0;
++  /* If a free cluster is not marked in nostart_bitmap this is the 
++   * start of a free chain. Cycles are splited into chains for each
++   * cluster, if its unclear at which cluster to start.
++   */
++  for (i = 2; i < fs->clusters+2; i++) {
++      DIR_ENT de;
++      off_t offset;
++      int32_t next;
++      int32_t walk;
++      int32_t prev;
++      if (get_owned(fs,i) || bad_cluster(fs,i) ||
++                             !(next = next_cluster_real(fs, i)) || 
++                             get_tmp_bitmap(nostart_bitmap, i))
++         continue;
++        
++            
++      files++;
++      offset = alloc_rootdir_entry(fs,&de,"FSCK%04dREC");
++      de.start = CT_LE_W(i&0xffff);
++      if (fs->fat_bits == 32)
++         de.starthi = CT_LE_W(i>>16);
++      
++      de.size = CT_LE_L(CF_LE_L(de.size)+fs->cluster_size);   
++      reclaimed++;
++      prev = i;
++      set_owned(fs, i, 1);
++      for (walk = next; walk != -1; walk = next_cluster_real(fs,walk)) {
++          if (get_owned(fs,walk)) {
++	     /* At least one cluster has to be in chain */
++	     printf("Broke cycle at cluster %d in free chain.\n", prev);
++	     set_fat(fs, prev, -1); 
++	     break;
++             }
++          if (!get_tmp_bitmap(nostart_bitmap, walk)) {
++             printf("Broke multiple reference to cluster %d or cycle "
++                    "in free chain.\n",walk);
++             set_fat(fs, prev, -1);
++             break;
++             }
++          set_owned(fs, walk, 1);
++          prev = walk;
++	  de.size = CT_LE_L(CF_LE_L(de.size)+fs->cluster_size);
++          reclaimed++;
++          }
++      add_modified_dirent(offset,&de);
++      }
++    
++  if (reclaimed) {
++     printf("Reclaimed %d unused cluster%s (%lld bytes) in %d chain%s.\n",
++	  reclaimed,reclaimed == 1 ? "" : "s",
++	  (long long)reclaimed*fs->cluster_size, files, files == 1 ? "" : "s");
++     fs->changed = 1;
++     }
++	  
++  free(nostart_bitmap);
++}
++
++
++int32_t update_free(DOS_FS *fs)
++{
++    int32_t i;
++    int32_t free = 0;
++    int set_free = 0;
++    for (i = 2; i < fs->clusters+2; i++) 
++	if (!get_owned(fs,i) && !bad_cluster(fs,i)) {
+ 	    ++free;
+-
++	    if (next_cluster_real(fs,i) != 0)
++	       die("Internal error: Unfree cluster %d marked free",i);
++	}    
++             
++        
+     if (!fs->fsinfo_start)
+ 	return free;
+ 
+@@ -328,32 +989,32 @@
+ 	printf("Checking free cluster summary.\n");
+     if (fs->free_clusters >= 0) {
+ 	if (free != fs->free_clusters) {
+-	    printf( "Free cluster summary wrong (%ld vs. really %ld)\n",
++	    printf( "Free cluster summary wrong (%d vs. really %d)\n",
+ 		    fs->free_clusters,free);
+-	    if (interactive)
+-		printf( "1) Correct\n2) Don't correct\n" );
+-	    else printf( "  Auto-correcting.\n" );
+-	    if (!interactive || get_key("12","?") == '1')
+-		do_set = 1;
++            set_free = interact("1) Correct\n2) Don't correct\n", "?", 2,
++	                      "  Auto-correcting.\n", 1) == 1;
+ 	}
+     }
+     else {
+-	printf( "Free cluster summary uninitialized (should be %ld)\n", free );
+-	if (interactive)
+-	    printf( "1) Set it\n2) Leave it uninitialized\n" );
+-	else printf( "  Auto-setting.\n" );
+-	if (!interactive || get_key("12","?") == '1')
+-	    do_set = 1;
+-    }
+-
+-    if (do_set) {
+-	fs->free_clusters = free;
+-	free = CT_LE_L(free);
+-	fs_write(fs->fsinfo_start+offsetof(struct info_sector,free_clusters),
+-		 sizeof(free),&free);
++	printf( "Free cluster summary uninitialized (should be %d)\n", free );
++	set_free = interact("1) Set it\n2) Leave it uninitialized\n", "?", 2,
++	                  "  Auto-setting.\n", 1) == 1;
+     }
+ 
+-    return free;
++    fs->free_clusters = free;
++    if (set_free) {
++       fs->changed = 1;
++       free = CT_LE_L(fs->free_clusters);
++       fs->fsinfo_sector.free_clusters = free;
++       if (write_immed) {
++          fs_write(fs->fsinfo_start+offsetof(struct info_sector,free_clusters),
++		 sizeof(free),&free);  
++          }
++       else {
++          fs->write_fsinfo = 1;
++          }
++       }
++    return fs->free_clusters;
+ }
+ 
+ /* Local Variables: */
+diff -rNu dosfstools-2.11/dosfsck/fat.h dosfstools-2.11.new/dosfsck/fat.h
+--- dosfstools-2.11/dosfsck/fat.h	1999-07-02 14:58:17.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/fat.h	2007-05-29 10:37:51.000000000 +0200
+@@ -6,43 +6,53 @@
+ #ifndef _FAT_H
+ #define _FAT_H
+ 
+-void read_fat(DOS_FS *fs);
++int cycle_cluster(DOS_FS *fs,int32_t cluster);
++
++void flush_fat(DOS_FS *fs, int rw);
++void read_fat(DOS_FS *fs, int rw);
+ 
+ /* Loads the FAT of the file system described by FS. Initializes the FAT,
+    replaces broken FATs and rejects invalid cluster entries. */
+ 
+-void set_fat(DOS_FS *fs,unsigned long cluster,unsigned long new);
++void get_fat_tmp(DOS_FS *fs, FAT_ENTRY *entry, int32_t cluster);
++void set_fat_tmp(DOS_FS *fs,int32_t cluster,int32_t new_value);
++int32_t drop_fat_tmp(DOS_FS *fs, int32_t cluster);
++void perform_fat_tmp(DOS_FS *fs, int last_check_pass);
++void set_fat(DOS_FS *fs,int32_t cluster,int32_t new_value);
+ 
+ /* Changes the value of the CLUSTERth cluster of the FAT of FS to NEW. Special
+    values of NEW are -1 (EOF, 0xff8 or 0xfff8) and -2 (bad sector, 0xff7 or
+    0xfff7) */
+ 
+-int bad_cluster(DOS_FS *fs,unsigned long cluster);
++int bad_cluster(DOS_FS *fs,int32_t cluster);
+ 
+ /* Returns a non-zero integer if the CLUSTERth cluster is marked as bad or zero
+    otherwise. */
+ 
+-unsigned long next_cluster(DOS_FS *fs,unsigned long cluster);
++int32_t next_cluster(DOS_FS *fs,int32_t cluster);
+ 
+ /* Returns the number of the cluster following CLUSTER, or -1 if this is the
+    last cluster of the respective cluster chain. CLUSTER must not be a bad
+    cluster. */
+ 
+-loff_t cluster_start(DOS_FS *fs,unsigned long cluster);
++off_t cluster_start(DOS_FS *fs,int32_t cluster);
+ 
+ /* Returns the byte offset of CLUSTER, relative to the respective device. */
+ 
+-void set_owner(DOS_FS *fs,unsigned long cluster,DOS_FILE *owner);
++void set_owned(DOS_FS *fs,int32_t cluster,int owned);
+ 
+ /* Sets the owner pointer of the respective cluster to OWNER. If OWNER was NULL
+    before, it can be set to NULL or any non-NULL value. Otherwise, only NULL is
+    accepted as the new value. */
+ 
+-DOS_FILE *get_owner(DOS_FS *fs,unsigned long cluster);
++int get_owned(DOS_FS *fs,int32_t cluster);
+ 
+ /* Returns the owner of the repective cluster or NULL if the cluster has no
+    owner. */
+ 
++void reset_owned(DOS_FS *fs);
++void precheck_fat(DOS_FS *fs);
++void update_bad_cluster(DOS_FS *fs);
+ void fix_bad(DOS_FS *fs);
+ 
+ /* Scans the disk for currently unused bad clusters and marks them as bad. */
+@@ -57,7 +67,7 @@
+    for them in the root directory. Also tries to fix all inconsistencies (e.g.
+    loops, shared clusters, etc.) in the process. */
+ 
+-unsigned long update_free(DOS_FS *fs);
++int32_t update_free(DOS_FS *fs);
+ 
+ /* Updates free cluster count in FSINFO sector. */
+ 
+diff -rNu dosfstools-2.11/dosfsck/file.c dosfstools-2.11.new/dosfsck/file.c
+--- dosfstools-2.11/dosfsck/file.c	2004-02-25 10:07:38.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/file.c	2007-05-29 10:37:51.000000000 +0200
+@@ -218,9 +218,12 @@
+ 	default:
+ 	    die("Internal error: file_modify");
+     }
++    
++    
+     next = (*this)->next;
+     free(*this);
+     *this = next;
++    
+ }
+ 
+ 
+diff -rNu dosfstools-2.11/dosfsck/io.c dosfstools-2.11.new/dosfsck/io.c
+--- dosfstools-2.11/dosfsck/io.c	2005-03-12 16:33:58.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/io.c	2007-05-29 10:37:51.000000000 +0200
+@@ -26,24 +26,15 @@
+ #include "io.h"
+ 
+ 
+-typedef struct _change {
+-    void *data;
+-    loff_t pos;
+-    int size;
+-    struct _change *next;
+-} CHANGE;
+-
+-
+-static CHANGE *changes,*last;
+-static int fd,did_change = 0;
++static int fd;
+ 
+ unsigned device_no;
+ 
+ 
+ #ifdef __DJGPP__
+ #include "volume.h"	/* DOS lowlevel disk access functions */
+-#undef llseek
+-static loff_t llseek( int fd, loff_t offset, int whence )
++#undef lseek
++static off_t lseek( int fd, off_t offset, int whence )
+ {
+     if ((whence != SEEK_SET) || (fd == 4711)) return -1; /* only those supported */
+     return VolumeSeek(offset);
+@@ -54,14 +45,17 @@
+ #define write(a,b,c) WriteVolume(b,c)
+ #endif
+ 
++int fs_get_fd(void)
++{
++  return fd;
++}
++
+ void fs_open(char *path,int rw)
+ {
+     struct stat stbuf;
+     
+     if ((fd = open(path,rw ? O_RDWR : O_RDONLY)) < 0)
+ 	pdie("open %s",path);
+-    changes = last = NULL;
+-    did_change = 0;
+ 
+ #ifndef _DJGPP_
+     if (fstat(fd,&stbuf) < 0)
+@@ -85,32 +79,22 @@
+ }
+ 
+ 
+-void fs_read(loff_t pos,int size,void *data)
++void fs_read(off_t pos,int size,void *data)
+ {
+-    CHANGE *walk;
+     int got;
+ 
+-    if (llseek(fd,pos,0) != pos) pdie("Seek to %lld",pos);
++    if (lseek(fd,pos,0) != pos) pdie("Seek to %lld",pos);
+     if ((got = read(fd,data,size)) < 0) pdie("Read %d bytes at %lld",size,pos);
+     if (got != size) die("Got %d bytes instead of %d at %lld",got,size,pos);
+-    for (walk = changes; walk; walk = walk->next) {
+-	if (walk->pos < pos+size && walk->pos+walk->size > pos) {
+-	    if (walk->pos < pos)
+-		memcpy(data,(char *) walk->data+pos-walk->pos,min(size,
+-		  walk->size-pos+walk->pos));
+-	    else memcpy((char *) data+walk->pos-pos,walk->data,min(walk->size,
+-		  size+pos-walk->pos));
+-	}
+-    }
+ }
+ 
+ 
+-int fs_test(loff_t pos,int size)
++int fs_test(off_t pos,int size)
+ {
+     void *scratch;
+     int okay;
+ 
+-    if (llseek(fd,pos,0) != pos) pdie("Seek to %lld",pos);
++    if (lseek(fd,pos,0) != pos) pdie("Seek to %lld",pos);
+     scratch = alloc(size);
+     okay = read(fd,scratch,size) == size;
+     free(scratch);
+@@ -118,74 +102,24 @@
+ }
+ 
+ 
+-void fs_write(loff_t pos,int size,void *data)
++void fs_write(off_t pos,int size,void *data)
+ {
+-    CHANGE *new;
+     int did;
+ 
+-    if (write_immed) {
+-	did_change = 1;
+-	if (llseek(fd,pos,0) != pos) pdie("Seek to %lld",pos);
+-	if ((did = write(fd,data,size)) == size) return;
+-	if (did < 0) pdie("Write %d bytes at %lld",size,pos);
+-	die("Wrote %d bytes instead of %d at %lld",did,size,pos);
+-    }
+-    new = alloc(sizeof(CHANGE));
+-    new->pos = pos;
+-    memcpy(new->data = alloc(new->size = size),data,size);
+-    new->next = NULL;
+-    if (last) last->next = new;
+-    else changes = new;
+-    last = new;
++    if (lseek(fd,pos,0) != pos) pdie("Seek to %lld",pos);
++    if ((did = write(fd,data,size)) == size) return;
++    if (did < 0) pdie("Write %d bytes at %lld",size,pos);
++    die("Wrote %d bytes instead of %d at %lld",did,size,pos);
+ }
+ 
+ 
+-static void fs_flush(void)
+-{
+-    CHANGE *this;
+-    int size;
+-
+-    while (changes) {
+-	this = changes;
+-	changes = changes->next;
+-	if (llseek(fd,this->pos,0) != this->pos)
+-	    fprintf(stderr,"Seek to %lld failed: %s\n  Did not write %d bytes.\n",
+-	      (long long)this->pos,strerror(errno),this->size);
+-	else if ((size = write(fd,this->data,this->size)) < 0)
+-		fprintf(stderr,"Writing %d bytes at %lld failed: %s\n",this->size,
+-		  (long long)this->pos,strerror(errno));
+-	    else if (size != this->size)
+-		    fprintf(stderr,"Wrote %d bytes instead of %d bytes at %lld."
+-		      "\n",size,this->size,(long long)this->pos);
+-	free(this->data);
+-	free(this);
+-    }
+-}
+ 
+-
+-int fs_close(int write)
++void fs_close(void)
+ {
+-    CHANGE *next;
+-    int changed;
+-
+-    changed = !!changes;
+-    if (write) fs_flush();
+-    else while (changes) {
+-	    next = changes->next;
+-	    free(changes->data);
+-	    free(changes);
+-	    changes = next;
+-	}
+     if (close(fd) < 0) pdie("closing file system");
+-    return changed || did_change;
+ }
+ 
+ 
+-int fs_changed(void)
+-{
+-    return !!changes || did_change;
+-}
+-
+ /* Local Variables: */
+ /* tab-width: 8     */
+ /* End:             */
+diff -rNu dosfstools-2.11/dosfsck/io.h dosfstools-2.11.new/dosfsck/io.h
+--- dosfstools-2.11/dosfsck/io.h	2005-03-12 15:04:07.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/io.h	2007-05-29 10:37:51.000000000 +0200
+@@ -11,38 +11,35 @@
+ 
+ #include <sys/types.h> /* for loff_t */
+ 
+-/* In earlier versions, an own llseek() was used, but glibc lseek() is
+- * sufficient (or even better :) for 64 bit offsets in the meantime */
+-#define llseek lseek
++int fs_get_fd(void); 
+ 
+ void fs_open(char *path,int rw);
+ 
+ /* Opens the file system PATH. If RW is zero, the file system is opened
+    read-only, otherwise, it is opened read-write. */
+ 
+-void fs_read(loff_t pos,int size,void *data);
++void fs_read(off_t pos,int size,void *data);
+ 
+ /* Reads SIZE bytes starting at POS into DATA. Performs all applicable
+    changes. */
+ 
+-int fs_test(loff_t pos,int size);
++int fs_test(off_t pos,int size);
+ 
+ /* Returns a non-zero integer if SIZE bytes starting at POS can be read without
+    errors. Otherwise, it returns zero. */
+ 
+-void fs_write(loff_t pos,int size,void *data);
++void fs_write(off_t pos,int size,void *data);
+ 
+ /* If write_immed is non-zero, SIZE bytes are written from DATA to the disk,
+    starting at POS. If write_immed is zero, the change is added to a list in
+    memory. */
+ 
+-int fs_close(int write);
++void fs_close(void);
+ 
+ /* Closes the file system, performs all pending changes if WRITE is non-zero
+    and removes the list of changes. Returns a non-zero integer if the file
+    system has been changed since the last fs_open, zero otherwise. */
+ 
+-int fs_changed(void);
+ 
+ /* Determines whether the file system has changed. See fs_close. */
+ 
+diff -rNu dosfstools-2.11/dosfsck/lfn.c dosfstools-2.11.new/dosfsck/lfn.c
+--- dosfstools-2.11/dosfsck/lfn.c	2005-03-12 16:05:44.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/lfn.c	2007-05-29 10:37:51.000000000 +0200
+@@ -9,10 +9,10 @@
+ #include <time.h>
+ 
+ #include "common.h"
+-#include "io.h"
+ #include "dosfsck.h"
+ #include "lfn.h"
+ #include "file.h"
++#include "check.h"
+ 
+ typedef struct {
+ 	__u8    id;		/* sequence number for slot */
+@@ -34,7 +34,7 @@
+ unsigned char *lfn_unicode = NULL;
+ unsigned char lfn_checksum;
+ int lfn_slot = -1;
+-loff_t *lfn_offsets = NULL;
++off_t *lfn_offsets = NULL;
+ int lfn_parts = 0;
+ 
+ static unsigned char fat_uni2esc[64] = {
+@@ -59,19 +59,19 @@
+     ({							\
+ 	char __part_uni[CHARS_PER_LFN*2];		\
+ 	copy_lfn_part( __part_uni, lfn );		\
+-	cnv_unicode( __part_uni, CHARS_PER_LFN, 0 );	\
++	cnv_unicode( __part_uni, CHARS_PER_LFN);	\
+     })
+     
+ /* Convert name parts collected so far (from previous slots) from unicode to
+  * ASCII */
+ #define CNV_PARTS_SO_FAR()					\
+ 	(cnv_unicode( lfn_unicode+(lfn_slot*CHARS_PER_LFN*2),	\
+-		      lfn_parts*CHARS_PER_LFN, 0 ))
++		      lfn_parts*CHARS_PER_LFN))
+ 
+ /* This function converts an unicode string to a normal ASCII string, assuming
+  * ISO-8859-1 charset. Characters not in 8859-1 are converted to the same
+  * escape notation as used by the kernel, i.e. the uuencode-like ":xxx" */
+-static char *cnv_unicode( const unsigned char *uni, int maxlen, int use_q )
++static char *cnv_unicode( const unsigned char *uni, int maxlen )
+ {
+     const unsigned char *up;
+     unsigned char *out, *cp;
+@@ -83,7 +83,7 @@
+ 	else
+ 	    len += 4;
+     }
+-    cp = out = use_q ? qalloc( &mem_queue, len+1 ) : alloc( len+1 );
++    cp = out = alloc( len+1 );
+ 
+     for( up = uni; (up-uni)/2 < maxlen && (up[0] || up[1]); up += 2 ) {
+ 	if (UNICODE_CONVERTABLE(up[0],up[1]))
+@@ -127,7 +127,7 @@
+     empty.id = DELETED_FLAG;
+     
+     for( i = start; i <= end; ++i ) {
+-	fs_write( lfn_offsets[i], sizeof(LFN_ENT), &empty );
++        add_modified_dirent(lfn_offsets[i], (DIR_ENT *) &empty);
+     }
+ }
+ 
+@@ -145,15 +145,17 @@
+ 
+ /* This function is only called with de->attr == VFAT_LN_ATTR. It stores part
+  * of the long name. */
+-void lfn_add_slot( DIR_ENT *de, loff_t dir_offset )
++void lfn_add_slot( DIR_ENT *de, off_t dir_offset)
+ {
+     LFN_ENT *lfn = (LFN_ENT *)de;
+     unsigned offset;
++    int choice;
+ 
+     if (de->attr != VFAT_LN_ATTR)
+ 	die("lfn_add_slot called with non-LFN directory entry");
+ 
+     if (lfn->id & LFN_ID_START) {
++        int do_alloc = 1;
+ 	if (lfn_slot != -1) {
+ 	    int can_clear = 0;
+ 	    /* There is already a LFN "in progess", so it is an error that a
+@@ -175,33 +177,37 @@
+ 		free( part2 );
+ 		can_clear = 1;
+ 	    }
+-	    if (interactive) {
+-		printf( "1: Delete previous LFN\n2: Leave it as it is.\n" );
+-		if (can_clear)
+-		    printf( "3: Clear start bit and concatenate LFNs\n" );
+-	    }
+-	    else printf( "  Not auto-correcting this.\n" );
+-	    if (interactive) {
+-		switch( get_key( can_clear ? "123" : "12", "?" )) {
+-		  case '1':
++	    choice = interact(can_clear ? 
++    		              "1: Delete previous LFN\n"
++    		              "2: Leave it as it is.\n"
++    		              "3: Clear start bit and concatenate LFNs\n" :
++    		              "1: Delete previous LFN\n"
++    		              "2: Leave it as it is.\n", "?",
++    		               can_clear ? 3 : 2, 
++    		               "  Not auto-correcting this.\n", 2
++    		               );
++     	    switch(choice) {
++		  case 1:
+ 		    clear_lfn_slots( 0, lfn_parts-1 );
+ 		    lfn_reset();
+ 		    break;
+-		  case '2':
++		  case 2:
++		    lfn_reset(); 
+ 		    break;
+-		  case '3':
++		  case 3:
+ 		    lfn->id &= ~LFN_ID_START;
+-		    fs_write( dir_offset+offsetof(LFN_ENT,id),
+-			      sizeof(lfn->id), &lfn->id );
++		    add_modified_dirent(dir_offset, (DIR_ENT *) lfn);
++	            do_alloc = 0;
+ 		    break;
+ 		}
+-	    }
+ 	}
+-	lfn_slot = lfn->id & LFN_ID_SLOTMASK;
+-	lfn_checksum = lfn->alias_checksum;
+-	lfn_unicode = alloc( (lfn_slot*CHARS_PER_LFN+1)*2 );
+-	lfn_offsets = alloc( lfn_slot*sizeof(loff_t) );
+-	lfn_parts = 0;
++	if (do_alloc) {
++   	    lfn_slot = lfn->id & LFN_ID_SLOTMASK;
++	    lfn_checksum = lfn->alias_checksum;
++	    lfn_unicode = alloc( (lfn_slot*CHARS_PER_LFN+1)*2 );
++	    lfn_offsets = alloc( lfn_slot*sizeof(off_t) );
++	    lfn_parts = 0;
++        }
+     }
+     else if (lfn_slot == -1) {
+ 	/* No LFN in progress, but slot found; start bit missing */
+@@ -212,27 +218,25 @@
+ 	printf( "Long filename fragment \"%s\" found outside a LFN "
+ 		"sequence.\n  (Maybe the start bit is missing on the "
+ 		"last fragment)\n", part );
+-	if (interactive) {
+-	    printf( "1: Delete fragment\n2: Leave it as it is.\n"
+-		    "3: Set start bit\n" );
+-	}
+-	else printf( "  Not auto-correcting this.\n" );
+-	if (interactive) {
+-	    switch( get_key( "123", "?" )) {
+-	      case '1':
++        free(part);
++	choice = interact("1: Delete fragment\n"
++	                  "2: Leave it as it is.\n"
++		          "3: Set start bit\n","?", 3,
++		          "  Not auto-correcting this.\n", 2);
++        switch(choice) {
++	      case 1:
+ 		if (!lfn_offsets)
+ 		    lfn_offsets = alloc( sizeof(loff_t) );
+ 		lfn_offsets[0] = dir_offset;
+ 		clear_lfn_slots( 0, 0 );
+ 		lfn_reset();
+ 		return;
+-	      case '2':
++	      case 2:
+ 		lfn_reset();
+ 		return;
+-	      case '3':
++	      case 3:
+ 		lfn->id |= LFN_ID_START;
+-		fs_write( dir_offset+offsetof(LFN_ENT,id),
+-			  sizeof(lfn->id), &lfn->id );
++		add_modified_dirent(dir_offset, (DIR_ENT *) lfn);
+ 		lfn_slot = lfn->id & LFN_ID_SLOTMASK;
+ 		lfn_checksum = lfn->alias_checksum;
+ 		lfn_unicode = alloc( (lfn_slot*CHARS_PER_LFN+1)*2 );
+@@ -240,7 +244,6 @@
+ 		lfn_parts = 0;
+ 		break;
+ 	    }
+-	}
+     }
+     else if ((lfn->id & LFN_ID_SLOTMASK) != lfn_slot) {
+ 	/* wrong sequence number */
+@@ -261,29 +264,28 @@
+ 	    free( part2 );
+ 	    can_fix = 1;
+ 	}
+-	if (interactive) {
+-	    printf( "1: Delete LFN\n2: Leave it as it is (and ignore LFN so far)\n" );
+-	    if (can_fix)
+-		printf( "3: Correct sequence number\n" );
+-	}
+-	else printf( "  Not auto-correcting this.\n" );
+-	if (interactive) {
+-	    switch( get_key( can_fix ? "123" : "12", "?" )) {
+-	      case '1':
++	choice = interact(can_fix ?
++	                  "1: Delete LFN\n"
++	                  "2: Leave it as it is (and ignore LFN so far)\n"
++		          "3: Correct sequence number\n" :
++		          "1: Delete LFN\n"
++	                  "2: Leave it as it is (and ignore LFN so far)\n", 
++	                  "?", can_fix ? 3 : 2, 
++	                  "  Not auto-correcting this.\n", 2);
++	switch(choice) {
++	      case 1:
+ 		lfn_offsets[lfn_parts++] = dir_offset;
+ 		clear_lfn_slots( 0, lfn_parts-1 );
+ 		lfn_reset();
+ 		return;
+-	      case '2':
++	      case 2:
+ 		lfn_reset();
+ 		return;
+-	      case '3':
++	      case 3:
+ 		lfn->id = (lfn->id & ~LFN_ID_SLOTMASK) | lfn_slot;
+-		fs_write( dir_offset+offsetof(LFN_ENT,id),
+-			  sizeof(lfn->id), &lfn->id );
++		add_modified_dirent(dir_offset,(DIR_ENT *) lfn);
+ 		break;
+ 	    }
+-	}
+     }
+ 
+     if (lfn->alias_checksum != lfn_checksum) {
+@@ -293,27 +295,23 @@
+ 	printf( "Checksum in long filename part wrong "
+ 		"(%02x vs. expected %02x).\n",
+ 		lfn->alias_checksum, lfn_checksum );
+-	if (interactive) {
+-	    printf( "1: Delete LFN\n2: Leave it as it is.\n"
+-		    "3: Correct checksum\n" );
+-	}
+-	else printf( "  Not auto-correcting this.\n" );
+-	if (interactive) {
+-	    switch( get_key( "123", "?" )) {
+-	      case '1':
++	choice = interact("1: Delete LFN\n"
++	                  "2: Leave it as it is.\n"
++		          "3: Correct checksum\n","?", 3,
++    	                  "  Not auto-correcting this.\n", 2);
++        switch(choice) {
++	      case 1:
+ 		lfn_offsets[lfn_parts++] = dir_offset;
+ 		clear_lfn_slots( 0, lfn_parts-1 );
+ 		lfn_reset();
+ 		return;
+-	      case '2':
++	      case 2:
+ 		break;
+-	      case '3':
++	      case 3:
+ 		lfn->alias_checksum = lfn_checksum;
+-		fs_write( dir_offset+offsetof(LFN_ENT,alias_checksum),
+-			  sizeof(lfn->alias_checksum), &lfn->alias_checksum );
++		add_modified_dirent(dir_offset,(DIR_ENT *)lfn);
+ 		break;
+ 	    }
+-	}
+     }
+ 
+     if (lfn_slot != -1) {
+@@ -328,25 +326,21 @@
+     if (lfn->reserved != 0) {
+ 	printf( "Reserved field in VFAT long filename slot is not 0 "
+ 		"(but 0x%02x).\n", lfn->reserved );
+-	if (interactive)
+-	    printf( "1: Fix.\n2: Leave it.\n" );
+-	else printf( "Auto-setting to 0.\n" );
+-	if (!interactive || get_key("12","?") == '1') {
++	choice = interact("1: Fix.\n2: Leave it.\n", "?", 2,
++    	                  "Auto-setting to 0.\n", 1 );
++	if (choice == 1) {
+ 	    lfn->reserved = 0;
+-	    fs_write( dir_offset+offsetof(LFN_ENT,reserved),
+-		      sizeof(lfn->reserved), &lfn->reserved );
++            add_modified_dirent(dir_offset,(DIR_ENT *) lfn);
+ 	}
+     }
+     if (lfn->start != CT_LE_W(0)) {
+ 	printf( "Start cluster field in VFAT long filename slot is not 0 "
+ 		"(but 0x%04x).\n", lfn->start );
+-	if (interactive)
+-	    printf( "1: Fix.\n2: Leave it.\n" );
+-	else printf( "Auto-setting to 0.\n" );
++        choice = interact("1: Fix.\n2: Leave it.\n", "?", 2,
++    	                  "Auto-setting to 0.\n", 1 );
+ 	if (!interactive || get_key("12","?") == '1') {
+ 	    lfn->start = CT_LE_W(0);
+-	    fs_write( dir_offset+offsetof(LFN_ENT,start),
+-		      sizeof(lfn->start),&lfn->start );
++	    add_modified_dirent(dir_offset,(DIR_ENT *) lfn);
+ 	}
+     }
+ }
+@@ -354,11 +348,12 @@
+ 
+ /* This function is always called when de->attr != VFAT_LN_ATTR is found, to
+  * retrieve the previously constructed LFN. */
+-char *lfn_get( DIR_ENT *de )
++char *lfn_get(DOS_FS *fs, DIR_ENT *de)
+ {
+     char *lfn;
+     __u8 sum;
+     int i;
++    int choice;
+     
+     if (de->attr == VFAT_LN_ATTR)
+ 	die("lfn_get called with LFN directory entry");
+@@ -384,32 +379,29 @@
+ 		"  (Start may have been overwritten by %s)\n",
+ 		long_name, short_name );
+ 	free( long_name );
+-	if (interactive) {
+-	    printf( "1: Delete LFN\n2: Leave it as it is.\n"
+-		    "3: Fix numbering (truncates long name and attaches "
+-		    "it to short name %s)\n", short_name );
+-	}
+-	else printf( "  Not auto-correcting this.\n" );
+-	if (interactive) {
+-	    switch( get_key( "123", "?" )) {
+-	      case '1':
++	choice = interact("1: Delete LFN\n2: Leave it as it is.\n"
++		          "3: Fix numbering (truncates long name and attaches "
++		          "it to short name)\n", "?", 3,
++	                  "  Not auto-correcting this.\n", 2);
++        switch(choice) {
++	      case 1:
+ 		clear_lfn_slots( 0, lfn_parts-1 );
+ 		lfn_reset();
+ 		return NULL;
+-	      case '2':
++	      case 2:
+ 		lfn_reset();
+ 		return NULL;
+-	      case '3':
++	      case 3:
+ 		for( i = 0; i < lfn_parts; ++i ) {
+-		    __u8 id = (lfn_parts-i) | (i==0 ? LFN_ID_START : 0);
+-		    fs_write( lfn_offsets[i]+offsetof(LFN_ENT,id),
+-			      sizeof(id), &id );
++		    LFN_ENT lfn_ent;
++		    read_modified_dirent(fs, lfn_offsets[i], (DIR_ENT *) &lfn_ent);
++		    lfn_ent.id = (lfn_parts-i) | (i==0 ? LFN_ID_START : 0);
++		    add_modified_dirent(lfn_offsets[i], (DIR_ENT *) &lfn_ent);
+ 		}
+ 		memmove( lfn_unicode, lfn_unicode+lfn_slot*CHARS_PER_LFN*2,
+ 			 lfn_parts*CHARS_PER_LFN*2 );
+ 		break;
+ 	    }
+-	}
+     }
+ 
+     for (sum = 0, i = 0; i < 11; i++)
+@@ -424,32 +416,29 @@
+ 		"  (Short name %s may have changed without updating the long name)\n",
+ 		long_name, short_name );
+ 	free( long_name );
+-	if (interactive) {
+-	    printf( "1: Delete LFN\n2: Leave it as it is.\n"
+-		    "3: Fix checksum (attaches to short name %s)\n",
+-		    short_name );
+-	}
+-	else printf( "  Not auto-correcting this.\n" );
+-	if (interactive) {
+-	    switch( get_key( "123", "?" )) {
+-	      case '1':
++        choice = interact("1: Delete LFN\n2: Leave it as it is.\n"
++		          "3: Fix checksum (attaches to short name)\n", 
++		          "?", 3,"  Not auto-correcting this.\n", 2 );
++        switch(choice) {
++	      case 1:
+ 		clear_lfn_slots( 0, lfn_parts-1 );
+ 		lfn_reset();
+ 		return NULL;
+-	      case '2':
++	      case 2:
+ 		lfn_reset();
+ 		return NULL;
+-	      case '3':
+-		for( i = 0; i < lfn_parts; ++i ) {
+-		    fs_write( lfn_offsets[i]+offsetof(LFN_ENT,alias_checksum),
+-			      sizeof(sum), &sum );
++	      case 3:
++		for( i = 0; i < lfn_parts; ++i ) { 
++                    LFN_ENT lfn_ent;
++		    read_modified_dirent(fs, lfn_offsets[i], (DIR_ENT *) &lfn_ent);
++		    lfn_ent.alias_checksum = sum;
++		    add_modified_dirent(lfn_offsets[i], (DIR_ENT *) &lfn_ent);
+ 		}
+ 		break;
+-	    }
+ 	}
+     }
+ 
+-    lfn = cnv_unicode( lfn_unicode, UNTIL_0, 1 );
++    lfn = cnv_unicode( lfn_unicode, UNTIL_0);
+     lfn_reset();
+     return( lfn );
+ }
+@@ -457,16 +446,17 @@
+ void lfn_check_orphaned(void)
+ {
+     char *long_name;
++    int choice;
+ 
+     if (lfn_slot == -1)
+ 	return;
+ 
+     long_name = CNV_PARTS_SO_FAR();
+     printf("Orphaned long file name part \"%s\"\n", long_name);
+-    if (interactive)
+-	printf( "1: Delete.\n2: Leave it.\n" );
+-    else printf( "  Auto-deleting.\n" );
+-    if (!interactive || get_key("12","?") == '1') {
++    free(long_name);
++    choice = interact("1: Delete.\n2: Leave it.\n", "?", 2, 
++                      "  Auto-deleting.\n", 1 );
++    if (choice == 1) {
+ 	clear_lfn_slots(0, lfn_parts - 1);
+     }
+     lfn_reset();
+diff -rNu dosfstools-2.11/dosfsck/lfn.h dosfstools-2.11.new/dosfsck/lfn.h
+--- dosfstools-2.11/dosfsck/lfn.h	2005-03-12 16:02:00.000000000 +0100
++++ dosfstools-2.11.new/dosfsck/lfn.h	2007-05-29 10:37:51.000000000 +0200
+@@ -9,10 +9,10 @@
+ void lfn_reset( void );
+ /* Reset the state of the LFN parser. */
+ 
+-void lfn_add_slot( DIR_ENT *de, loff_t dir_offset );
++void lfn_add_slot( DIR_ENT *de, off_t dir_offset);
+ /* Process a dir slot that is a VFAT LFN entry. */
+ 
+-char *lfn_get( DIR_ENT *de );
++char *lfn_get(DOS_FS *, DIR_ENT *de);
+ /* Retrieve the long name for the proper dir entry. */
+ 
+ void lfn_check_orphaned(void);

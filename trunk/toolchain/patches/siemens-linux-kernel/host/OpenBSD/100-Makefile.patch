@@ -1,0 +1,29 @@
+--- Makefile	Sat May 29 14:44:13 2004
++++ Makefile.openbsd	Wed Nov 28 16:30:09 2007
+@@ -10,7 +10,7 @@
+ KERNELPATH=kernel-$(shell echo $(KERNELRELEASE) | sed -e "s/-//")
+ 
+ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
+-	  else if [ -x /bin/bash ]; then echo /bin/bash; \
++	  else if [ -x /usr/local/bin/bash ]; then echo /usr/local/bin/bash; \
+ 	  else echo sh; fi ; fi)
+ TOPDIR	:= $(shell /bin/pwd)
+ 
+@@ -383,7 +383,7 @@
+ 	@rm -f .ver1
+ 
+ include/linux/version.h: ./Makefile
+-	@expr length "$(KERNELRELEASE)" \<= $(uts_len) > /dev/null || \
++	@expr "$(KERNELRELEASE)" \<= $(uts_len) > /dev/null || \
+ 	  (echo KERNELRELEASE \"$(KERNELRELEASE)\" exceeds $(uts_len) characters >&2; false)
+ 	@echo \#define UTS_RELEASE \"$(KERNELRELEASE)\" > .ver
+ 	@echo \#define LINUX_VERSION_CODE `expr $(VERSION) \\* 65536 + $(PATCHLEVEL) \\* 256 + $(SUBLEVEL)` >> .ver
+@@ -459,7 +459,7 @@
+ _modinst_post_pcmcia:
+ 	cd $(MODLIB); \
+ 	mkdir -p pcmcia; \
+-	find kernel -path '*/pcmcia/*' -name '*.o' | xargs -i -r ln -sf ../{} pcmcia
++	find kernel -path '*/pcmcia/*' -name '*.o' | xargs -I -r ln -sf ../{} pcmcia
+ 
+ .PHONY: $(patsubst %, _modinst_%, $(SUBDIRS))
+ $(patsubst %, _modinst_%, $(SUBDIRS)) :

@@ -1,0 +1,22 @@
+--- slin_m740/drivers/mtd/chips/cfi_cmdset_0002.c.orig	2007-12-26 13:18:23.000000000 +0100
++++ slin_m740/drivers/mtd/chips/cfi_cmdset_0002.c	2007-12-26 13:20:17.000000000 +0100
+@@ -18,6 +18,7 @@
+ #include <linux/sched.h>
+ #include <asm/io.h>
+ #include <asm/byteorder.h>
++#include <asm/unaligned.h>
+ 
+ #include <linux/errno.h>
+ #include <linux/slab.h>
+@@ -634,9 +635,9 @@
+ 		if (cfi_buswidth_is_1()) {
+ 			datum = *(__u8*)buf;
+ 		} else if (cfi_buswidth_is_2()) {
+-			datum = *(__u16*)buf;
++			datum = get_unaligned((__u16*)buf);
+ 		} else if (cfi_buswidth_is_4()) {
+-			datum = *(__u32*)buf;
++			datum = get_unaligned((__u32*)buf);
+ 		} else {
+ 			return -EINVAL;
+ 		}

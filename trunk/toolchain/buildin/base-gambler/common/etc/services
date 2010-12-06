@@ -1,0 +1,4 @@
+ftp		21/tcp
+telnet		23/tcp
+www		80/tcp		http	# WorldWideWeb HTTP
+www		80/udp

@@ -1,0 +1,398 @@
+diff -ruN dosfstools-2.11/dosfsck/check.c dosfstools-2.11.new/dosfsck/check.c
+--- dosfstools-2.11/dosfsck/check.c	2007-09-24 12:40:53.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/check.c	2007-09-24 11:41:37.000000000 +0200
+@@ -1295,6 +1295,7 @@
+   return file;
+ }
+ 
++static int pass0_check_clusters = 0;
+ 
+ static void read_file_pass0(DOS_FS *fs,DOS_FILE *file)
+ {
+@@ -1343,6 +1344,7 @@
+          else
+             MODIFY_START(file, fake_cluster, fs);
+          prev = fake_cluster;
++         progress_used_clusters++;
+          }
+       else {
+          if (IS_FAKE_CLUSTER(prev)) 
+@@ -1354,7 +1356,8 @@
+   
+   if (IS_FAKE_CLUSTER(prev)) 
+      set_fat_tmp(fs, prev, -1); 
+-     
++  
++  pass0_check_clusters += clusters;
+   if (FSIZE(file) > clusters*fs->cluster_size) {
+      printf("%s\n  File size is %u bytes, cluster chain length is %u bytes."
+ 	    "\n  Truncating file to %u bytes.\n",path_name(file),
+@@ -1518,6 +1521,7 @@
+             set_fat_tmp(fs, prev, read_cluster);
+          else
+             MODIFY_START(dir, read_cluster, fs);
++         progress_used_clusters++;
+          } 
+       else {
+          if (IS_FAKE_CLUSTER(prev))
+@@ -1536,7 +1540,8 @@
+             offset += sizeof(DIR_ENT);
+             offset2 += sizeof(DIR_ENT);
+             }
+-        
++            
++      pass0_check_clusters++;
+       prev = read_cluster;
+       }
+       
+@@ -1563,16 +1568,19 @@
+          drop_modified_dirents(cluster_start(fs,walk), fs->cluster_size);
+          if (IS_FAKE_CLUSTER(walk)) {
+             drop_new_cluster(walk);
++            progress_used_clusters--;
+             }
+          else {
+             set_owned(fs, walk, 0);
+             }
++         pass0_check_clusters--;
+          }
+          
+      n_files--;
+      return;
+      }
+-
++     
++  print_progress(3,pass0_check_clusters, progress_used_clusters);
+   /* Check all regular files first 
+    * Only for not using too much ram
+    */
+@@ -1580,6 +1588,7 @@
+   while (*cur) {
+         if (!((*cur)->dir_ent.attr & (ATTR_DIR | ATTR_VOLUME))) {
+            read_file_pass0(fs, *cur);
++           print_progress(3,pass0_check_clusters, progress_used_clusters);
+            n_files++;
+            }
+            
+@@ -1613,6 +1622,8 @@
+         }
+ }
+ 
++static uint32_t pass0_files = 0;
++
+ static void read_dir_pass1(DOS_FS *fs, DOS_FILE *dir, FDSC **cp) 
+ {
+   int32_t walk;
+@@ -1735,6 +1746,7 @@
+         if (!((*cur)->dir_ent.attr & (ATTR_DIR | ATTR_VOLUME))) {
+            read_file_pass1(fs, *cur);
+            n_files++;
++           print_progress(4,n_files, pass0_files);
+            }
+            
+         if ((*cur)->dir_ent.attr & ATTR_DIR) {
+@@ -1768,6 +1780,7 @@
+         else {
+            read_dir_pass1(fs, *cur, file_cd(cp, (char *) (*cur)->dir_ent.name));
+            n_files++;
++           print_progress(4,n_files, pass0_files);
+            }
+            
+         
+@@ -1804,6 +1817,8 @@
+   root->dir_ent.start = CT_LE_W(fs->root_cluster & 0xffff);
+   root->dir_ent.starthi = CT_LE_W((fs->root_cluster >> 16) & 0xffff);
+   
++  pass0_check_clusters = 0;
++  
+   if (verbose)
+      printf("Checking files pass 0 ...\n");
+     
+@@ -1877,7 +1892,8 @@
+   printf("Found shared clusters second pass needed\n");
+   if (verbose)
+      printf("Checking files pass 1 ...\n");
+-     
++  
++  pass0_files = n_files;
+   n_files = 0;
+   check_pass = 1;
+   lfn_reset();
+diff -ruN dosfstools-2.11/dosfsck/common.c dosfstools-2.11.new/dosfsck/common.c
+--- dosfstools-2.11/dosfsck/common.c	2007-09-24 12:40:53.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/common.c	2007-09-24 12:23:12.000000000 +0200
+@@ -16,6 +16,16 @@
+ #include "common.h"
+ #include "dosfsck.h"
+ 
++FILE *progress_file = NULL;
++uint32_t progress_used_clusters = 0;
++
++void print_progress(int step, uint32_t val, uint32_t max) 
++{
++  if (progress_file) {
++     fprintf(progress_file,"%d %u %u\n", step, val, max);
++     fflush(progress_file);
++  }
++}
+ 
+ void die(char *msg,...)
+ {
+@@ -25,7 +35,7 @@
+     vfprintf(stderr,msg,args);
+     va_end(args);
+     fprintf(stderr,"\n");
+-    exit(1);
++    exit(8);
+ }
+ 
+ 
+@@ -37,7 +47,7 @@
+     vfprintf(stderr,msg,args);
+     va_end(args);
+     fprintf(stderr,":%s\n",strerror(errno));
+-    exit(1);
++    exit(8);
+ }
+ 
+ 
+@@ -70,7 +80,7 @@
+         if (ch == '\n')
+            break;
+         if (ch == EOF) 
+-           exit(1);
++           exit(32);
+         if (ch < '0' || ch > '9')
+            return -1; 
+         buffer[offset++] = ch;
+@@ -90,10 +100,10 @@
+ 	if (prompt) printf("%s ",prompt);
+ 	fflush(stdout);
+ 	while (ch = getchar(), ch == ' ' || ch == '\t');
+-	if (ch == EOF) exit(1);
++	if (ch == EOF) exit(32);
+ 	if (!strchr(valid,okay = ch)) okay = 0;
+ 	while (ch = getchar(), ch != '\n' && ch != EOF);
+-	if (ch == EOF) exit(1);
++	if (ch == EOF) exit(32);
+ 	if (okay) return okay;
+ 	printf("Invalid input.\n");
+     }
+@@ -150,7 +160,7 @@
+         fflush(stdout);
+         choice = getchar();
+         if (choice == EOF)
+-           exit(1);
++           exit(32);
+         }
+   return choice == '\n' ? default_choice : tolower(choice);      
+ }
+diff -ruN dosfstools-2.11/dosfsck/common.h dosfstools-2.11.new/dosfsck/common.h
+--- dosfstools-2.11/dosfsck/common.h	2007-09-24 12:40:53.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/common.h	2007-09-24 12:22:54.000000000 +0200
+@@ -13,6 +13,9 @@
+ #ifndef _COMMON_H
+ #define _COMMON_H
+ 
++#include <stdio.h>
++#include <stdint.h>
++
+ void die(char *msg,...) __attribute((noreturn));
+ 
+ /* Displays a prinf-style message and terminates the program. */
+@@ -39,5 +42,9 @@
+              const char *non_inter_msg, const int default_choice);
+ 
+ char ask(const char *inter_msg, const char *prompt,
+-         const char *non_inter_msg, const int default_choice);             
++         const char *non_inter_msg, const int default_choice);
++         
++extern FILE *progress_file;
++extern uint32_t progress_used_clusters;
++void print_progress(int step, uint32_t val, uint32_t max);
+ #endif
+diff -ruN dosfstools-2.11/dosfsck/dosfsck.c dosfstools-2.11.new/dosfsck/dosfsck.c
+--- dosfstools-2.11/dosfsck/dosfsck.c	2007-09-24 12:40:53.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/dosfsck.c	2007-09-24 12:27:02.000000000 +0200
+@@ -31,7 +31,7 @@
+ 
+ static void usage(char *name)
+ {
+-    fprintf(stderr,"usage: %s [-aAflrtvVwy] [-d path -d ...] "
++    fprintf(stderr,"usage: %s [-aAflrtvVwyC] [-d path -d ...] "
+       "[-u path -u ...]\n%15sdevice\n",name,"");
+     fprintf(stderr,"  -a       automatically repair the file system\n");
+     fprintf(stderr,"  -A       toggle Atari file system format\n");
+@@ -46,7 +46,8 @@
+     fprintf(stderr,"  -V       perform a verification pass\n");
+     fprintf(stderr,"  -w       write changes to disk immediately\n");
+     fprintf(stderr,"  -y       same as -a, for compat with other *fsck\n");
+-    exit(2);
++    fprintf(stderr,"  -C fd    print progress info to fd\n");
++    exit(16);
+ }
+ 
+ 
+@@ -84,13 +85,15 @@
+     DOS_FS fs;
+     int rw,salvage_files,verify,c;
+     int32_t free_clusters;
++    int progress_fd;
+     
++    progress_fd = -1;
+     rw = salvage_files = verify = 0;
+     interactive = 1;
+     check_atari();
+     fs.changed = 0;
+     
+-    while ((c = getopt(argc,argv,"Aad:flnrtu:vVwy")) != EOF)
++    while ((c = getopt(argc,argv,"Aad:flnrtu:vVwyC:")) != EOF)
+ 	switch (c) {
+ 	    case 'A': /* toggle Atari format */
+ 	  	atari_format = !atari_format;
+@@ -134,16 +137,25 @@
+ 	    case 'w':
+ 		write_immed = 1;
+ 		break;
++            case 'C':
++                progress_fd = atoi(optarg);
++                break;
+ 	    default:
+ 		usage(argv[0]);
+ 	}
+     if ((test || write_immed) && !rw) {
+ 	fprintf(stderr,"-t and -w require -a or -r\n");
+-	exit(2);
++	exit(16);
+     }
+     if (optind != argc-1) usage(argv[0]);
+ 
+     printf( "dosfsck " VERSION ", " VERSION_DATE ", FAT32, LFN\n" );
++    if (progress_fd >= 0) {
++       progress_file = fdopen(progress_fd, "w");
++       if (!progress_file)
++          pdie("Cannot assign progress fd file stream");
++      verbose = 0;
++    }
+     fs_open(argv[optind],rw);
+     read_boot(&fs);
+     read_fat(&fs, rw);
+@@ -191,7 +203,9 @@
+ 	    n_files, fs.clusters - free_clusters, fs.clusters);
+ 
+     fs_close();
+-    return  fs.changed;
++    if (progress_file)
++       fclose(progress_file);
++    return  fs.changed ? (rw ? 1 : 4) : 0;
+ }
+ 
+ /* Local Variables: */
+diff -ruN dosfstools-2.11/dosfsck/fat.c dosfstools-2.11.new/dosfsck/fat.c
+--- dosfstools-2.11/dosfsck/fat.c	2007-09-24 12:40:53.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/fat.c	2007-09-24 12:04:02.000000000 +0200
+@@ -379,7 +379,7 @@
+         }
+      else {
+         printf("Both FATs appear to be corrupt. Giving up.\n");
+-	exit(1);
++	exit(4);
+         }
+         
+      switch (choice) {
+@@ -528,7 +528,7 @@
+   int32_t i;
+   int cycles;
+   uint8_t *tmp_bitmap = NULL;
+-        
++  progress_used_clusters = 0;      
+   if (verbose)
+      printf("Prechecking FAT.\n");
+        
+@@ -537,16 +537,23 @@
+    */
+   for (i = 2; i < fs->clusters+2; i++) {
+       FAT_ENTRY cur_entry, next_entry;
+-      
++
++      if ((i - 2) % 256 == 0)
++         print_progress(1, i - 2, fs->clusters);
+       get_fat(fs, &cur_entry, i);
+       if (FAT_IS_BAD(fs,cur_entry.value)) {
+          set_bad_cluster(fs, i);
+          continue;
+          }
+         
+-      if (!cur_entry.value || FAT_IS_EOF(fs,cur_entry.value)) 
++      if (!cur_entry.value) 
+          continue;
+-            
++         
++      progress_used_clusters++;
++      
++      if (FAT_IS_EOF(fs,cur_entry.value)) 
++         continue;
++         
+       if (cur_entry.value < 2) {
+ 	 printf("Cluster %d out of range (%d < 2). Setting to EOF.\n",
+ 	   	                                   i,cur_entry.value);
+@@ -587,6 +594,9 @@
+          fflush(stdout);
+          }
+          
++      if ((i - 2) % 256 == 0)
++         print_progress(2, i - 2, fs->clusters);
++         
+       if (bad_cluster(fs, i) || get_owned(fs,i) ||
+           !(j = next_cluster_real(fs, i)))
+          continue;
+@@ -823,13 +833,17 @@
+     fs->cycle_cluster = NULL;
+     
+     reclaimed = 0;
+-    for (i = 2; i < fs->clusters+2; i++)
++    for (i = 2; i < fs->clusters+2; i++) {
++        if ((i - 2) % 256 == 0)
++           print_progress(5,i-2,fs->clusters);
++           
+ 	if (!get_owned(fs,i) && !bad_cluster(fs,i)) {
+ 	    if (next_cluster_real(fs,i)) {
+ 	        set_fat(fs,i,0);
+   	        reclaimed++;
+             }
+ 	}
++    }
+     if (reclaimed)
+ 	printf("Reclaimed %d unused cluster%s (%lld bytes).\n",reclaimed,
+ 	  reclaimed == 1 ?  "" : "s",(long long)reclaimed*fs->cluster_size);
+@@ -866,6 +880,8 @@
+    */
+   for (i = 2; i < fs->clusters + 2; i++) {
+       int32_t next;
++      if ((i - 2) % 256 == 0)
++         print_progress(5,i-2,fs->clusters * 2);
+       if (get_owned(fs,i) || bad_cluster(fs,i) 
+                           || cycle_cluster(fs, i)
+                           || (next = next_cluster_real(fs, i)) <= 0)
+@@ -921,6 +937,9 @@
+       int32_t next;
+       int32_t walk;
+       int32_t prev;
++      if ((i - 2) % 256 == 0)
++         print_progress(5,fs->clusters + i - 2,fs->clusters * 2);
++         
+       if (get_owned(fs,i) || bad_cluster(fs,i) ||
+                              !(next = next_cluster_real(fs, i)) || 
+                              get_tmp_bitmap(nostart_bitmap, i))
+diff -ruN dosfstools-2.11/dosfsck/file.c dosfstools-2.11.new/dosfsck/file.c
+--- dosfstools-2.11/dosfsck/file.c	2007-09-24 12:40:53.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/file.c	2007-09-24 10:01:47.000000000 +0200
+@@ -137,7 +137,7 @@
+     path++;
+     while (1) {
+ 	if ((here = strchr(path,'/'))) *here = 0;
+-	if (!file_cvt(path,name)) exit(2);
++	if (!file_cvt(path,name)) exit(16);
+ 	for (walk = *current; walk; walk = walk->next)
+ 	    if (!here && (!strncmp(name,walk->name,MSDOS_NAME) || (type ==
+ 	      fdt_undelete && !strncmp(name+1,walk->name+1,MSDOS_NAME-1))))

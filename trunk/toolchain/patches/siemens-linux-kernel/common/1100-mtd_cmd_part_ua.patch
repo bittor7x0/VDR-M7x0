@@ -1,0 +1,20 @@
+--- slin_m740/drivers/mtd/cmdlinepart.c.orig	2007-12-23 15:21:07.000000000 +0100
++++ slin_m740/drivers/mtd/cmdlinepart.c	2007-12-23 15:41:07.000000000 +0100
+@@ -82,6 +82,8 @@
+ 	unsigned char *extra_mem;
+ 	char delim;
+ 	unsigned int mask_flags;
++	
++	extra_mem_size += 8; /* for alignment of ret ptr */
+ 
+ 	/* fetch the partition size */
+ 	if (*s == '-')
+@@ -197,7 +199,7 @@
+ 
+ 	/* return (updated) pointer to extra_mem memory */
+ 	if (extra_mem_ptr)
+-	  *extra_mem_ptr = extra_mem;
++	  *extra_mem_ptr = (unsigned char *)((((long) extra_mem) + 7) & (~7));
+ 
+ 	/* return (updated) pointer command line string */
+ 	*retptr = s;

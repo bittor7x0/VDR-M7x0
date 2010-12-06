@@ -1,0 +1,7 @@
+sbin/dropbearmulti              sbin/dropbearmulti        f 4755 0 0 - - - - -
+sbin/dropbearmulti              -                         s    - - - - - - - -
+sbin/dropbear                   dropbearmulti             l  777 0 0 - - - - -
+sbin/dropbearkey                dropbearmulti             l  777 0 0 - - - - -
+sbin/dropbearconvert            dropbearmulti             l  777 0 0 - - - - -
+usr/bin/dbclient                ../../sbin/dropbearmulti  l  777 0 0 - - - - -
+usr/bin/scp                     ../../sbin/dropbearmulti  l  777 0 0 - - - - -

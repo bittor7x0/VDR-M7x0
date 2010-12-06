@@ -1,0 +1,28 @@
+--- siemens-m750-linux-src/fs/nfs/direct.c.orig	2007-09-06 15:08:30.000000000 +0200
++++ siemens-m750-linux-src/fs/nfs/direct.c	2007-09-06 15:09:17.000000000 +0200
+@@ -358,7 +358,7 @@
+ 
+        switch (rw) {
+        case READ:
+-               printk(
++               dfprintk(VFS,
+                        "NFS: direct_IO(READ) (%s/%s) off/cnt(%Lu/%d)\n",
+                                dentry->d_parent->d_name.name,
+                                        dentry->d_name.name, offset, count);
+@@ -366,7 +366,7 @@
+                result = nfs_direct_read(file, iobuf, offset, count);
+                break;
+        case WRITE:
+-               printk(
++               dfprintk(VFS,
+                        "NFS: direct_IO(WRITE) (%s/%s) off/cnt(%Lu/%d)\n",
+                                dentry->d_parent->d_name.name,
+                                        dentry->d_name.name, offset, count);
+@@ -377,6 +377,6 @@
+                break;
+        }
+ 
+-       printk( "NFS: direct_IO result = %d\n", result); // DEBUG_JAN was dfprintk(VFS,
++       dfprintk(VFS, "NFS: direct_IO result = %d\n", result); 
+        return result;
+ }
