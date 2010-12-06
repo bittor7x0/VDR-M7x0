@@ -1,0 +1,11 @@
+diff -urNp x-ref/fs/inode.c x/fs/inode.c
+--- x-ref/fs/inode.c	2003-02-27 08:15:28.000000000 +0100
++++ x/fs/inode.c	2003-03-11 18:22:57.000000000 +0100
+@@ -111,6 +111,7 @@ static struct inode *alloc_inode(struct 
+ 		inode->i_pipe = NULL;
+ 		inode->i_bdev = NULL;
+ 		inode->i_cdev = NULL;
++		inode->i_rdev = 0;
+ 
+ 		mapping->a_ops = &empty_aops;
+ 		mapping->host = inode;

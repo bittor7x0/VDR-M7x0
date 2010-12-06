@@ -1,0 +1,11 @@
+#!/bin/ash
+
+{
+
+# Umount disks
+/sbin/usbautomounter umount nofsck nolazy
+
+# Mount disks with fsck
+/sbin/usbautomounter mount fsck
+
+} > /dev/null 2>&1 &

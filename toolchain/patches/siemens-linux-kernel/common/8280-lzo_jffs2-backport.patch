@@ -1,0 +1,336 @@
+Backport from 2.6.34.1 to add LZO1X compression/decompression support in JFFS2.
+Also is possible to disable other JFFS2 compressors to shrink kernel size.
+---
+
+diff -Naur slin_m740_orig/fs/Config.in slin_m740/fs/Config.in
+--- slin_m740_orig/fs/Config.in	2010-07-06 17:36:18.000000000 +0200
++++ slin_m740/fs/Config.in	2010-07-06 18:04:50.131496353 +0200
+@@ -53,6 +53,10 @@
+ dep_tristate 'Journalling Flash File System v2 (JFFS2) support' CONFIG_JFFS2_FS $CONFIG_MTD
+ if [ "$CONFIG_JFFS2_FS" = "y" -o "$CONFIG_JFFS2_FS" = "m" ] ; then
+    int 'JFFS2 debugging verbosity (0 = quiet, 2 = noisy)' CONFIG_JFFS2_FS_DEBUG 0
++   dep_mbool 'JFFS2 LZO compression support (faster than zlib)' CONFIG_JFFS2_LZO $CONFIG_LZO_COMPRESS $CONFIG_LZO_DECOMPRESS
++   dep_mbool 'JFFS2 ZLIB compression support' CONFIG_JFFS2_ZLIB $CONFIG_ZLIB_INFLATE $CONFIG_ZLIB_DEFLATE
++   bool 'JFFS2 RTIME compression support' CONFIG_JFFS2_RTIME
++   bool 'JFFS2 RUBINMIPS and DYNRUBIN compression support' CONFIG_JFFS2_RUBIN
+ fi
+ tristate 'Compressed ROM file system support' CONFIG_CRAMFS
+ tristate 'Squashed file system support' CONFIG_SQUASHFS
+diff -Naur slin_m740_orig/fs/jffs2/compr.c slin_m740/fs/jffs2/compr.c
+--- slin_m740_orig/fs/jffs2/compr.c	2010-07-06 17:36:23.000000000 +0200
++++ slin_m740/fs/jffs2/compr.c	2010-07-06 17:13:37.000000000 +0200
+@@ -41,14 +41,24 @@
+ #include <linux/errno.h>
+ #include <linux/jffs2.h>
+ 
++#ifdef CONFIG_JFFS2_LZO
++int lzo_compress(unsigned char *data_in, unsigned char *cpage_out, __u32 *sourcelen, __u32 *dstlen);
++int lzo_decompress(unsigned char *data_in, unsigned char *cpage_out, __u32 srclen, __u32 destlen);
++#endif
++#ifdef CONFIG_JFFS2_ZLIB
+ int zlib_compress(unsigned char *data_in, unsigned char *cpage_out, __u32 *sourcelen, __u32 *dstlen);
+ void zlib_decompress(unsigned char *data_in, unsigned char *cpage_out, __u32 srclen, __u32 destlen);
++#endif
++#ifdef CONFIG_JFFS2_RTIME
+ int rtime_compress(unsigned char *data_in, unsigned char *cpage_out, __u32 *sourcelen, __u32 *dstlen);
+ void rtime_decompress(unsigned char *data_in, unsigned char *cpage_out, __u32 srclen, __u32 destlen);
++#endif
++#ifdef CONFIG_JFFS2_RUBIN
+ int rubinmips_compress(unsigned char *data_in, unsigned char *cpage_out, __u32 *sourcelen, __u32 *dstlen);
+ void rubinmips_decompress(unsigned char *data_in, unsigned char *cpage_out, __u32 srclen, __u32 destlen);
+ int dynrubin_compress(unsigned char *data_in, unsigned char *cpage_out, __u32 *sourcelen, __u32 *dstlen);
+ void dynrubin_decompress(unsigned char *data_in, unsigned char *cpage_out, __u32 srclen, __u32 destlen);
++#endif
+ 
+ 
+ /* jffs2_compress:
+@@ -73,10 +83,19 @@
+ {
+ 	int ret;
+ 
++#ifdef CONFIG_JFFS2_LZO
++	ret = lzo_compress(data_in, cpage_out, datalen, cdatalen);
++	if (!ret) {
++		return JFFS2_COMPR_LZO;
++	}
++#endif
++#ifdef CONFIG_JFFS2_ZLIB
+ 	ret = zlib_compress(data_in, cpage_out, datalen, cdatalen);
+ 	if (!ret) {
+ 		return JFFS2_COMPR_ZLIB;
+ 	}
++#endif
++#ifdef CONFIG_JFFS2_RUBIN
+ #if 0 /* Disabled 23/9/1. With zlib it hardly ever gets a look in */
+ 	ret = dynrubin_compress(data_in, cpage_out, datalen, cdatalen);
+ 	if (!ret) {
+@@ -89,11 +108,14 @@
+ 		return JFFS2_COMPR_RUBINMIPS;
+ 	}
+ #endif
++#endif /* CONFIG_JFFS2_RUBIN */
++#ifdef CONFIG_JFFS2_RTIME
+ 	/* rtime does manage to recompress already-compressed data */
+ 	ret = rtime_compress(data_in, cpage_out, datalen, cdatalen);
+ 	if (!ret) {
+ 		return JFFS2_COMPR_RTIME;
+ 	}
++#endif
+ #if 0
+ 	/* We don't need to copy. Let the caller special-case the COMPR_NONE case. */
+ 	/* If we get here, no compression is going to work */
+@@ -120,14 +142,25 @@
+ 		memset(data_out, 0, datalen);
+ 		break;
+ 
++#ifdef CONFIG_JFFS2_LZO
++	case JFFS2_COMPR_LZO:
++		lzo_decompress(cdata_in, data_out, cdatalen, datalen);
++		break;
++#endif
++
++#ifdef CONFIG_JFFS2_ZLIB
+ 	case JFFS2_COMPR_ZLIB:
+ 		zlib_decompress(cdata_in, data_out, cdatalen, datalen);
+ 		break;
++#endif
+ 
++#ifdef CONFIG_JFFS2_RTIME
+ 	case JFFS2_COMPR_RTIME:
+ 		rtime_decompress(cdata_in, data_out, cdatalen, datalen);
+ 		break;
++#endif
+ 
++#ifdef CONFIG_JFFS2_RUBIN
+ 	case JFFS2_COMPR_RUBINMIPS:
+ #if 0 /* Disabled 23/9/1 */
+ 		rubinmips_decompress(cdata_in, data_out, cdatalen, datalen);
+@@ -142,6 +175,7 @@
+ 		printk(KERN_WARNING "JFFS2: Dynrubin compression encountered but support not compiled in!\n");
+ #endif
+ 		break;
++#endif /* CONFIG_JFFS2_RUBIN */
+ 
+ 	default:
+ 		printk(KERN_NOTICE "Unknown JFFS2 compression type 0x%02x\n", comprtype);
+diff -Naur slin_m740_orig/fs/jffs2/compr_lzo.c slin_m740/fs/jffs2/compr_lzo.c
+--- slin_m740_orig/fs/jffs2/compr_lzo.c	1970-01-01 01:00:00.000000000 +0100
++++ slin_m740/fs/jffs2/compr_lzo.c	2010-07-07 09:49:31.703912484 +0200
+@@ -0,0 +1,108 @@
++/*
++ * JFFS2 LZO Compression Interface
++ *
++ * Copyright (C) 2007 Nokia Corporation. All rights reserved.
++ *
++ * Author: Richard Purdie <rpurdie@openedhand.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
++ * 02110-1301 USA
++ *
++ */
++
++#include <linux/kernel.h>
++#include <linux/sched.h>
++#include <linux/slab.h>
++#include <linux/vmalloc.h>
++#include <linux/init.h>
++#include <linux/jffs2.h>
++#include <linux/lzo.h>
++#include "nodelist.h"
++
++static void *lzo_mem;
++static void *lzo_compress_buf;
++static DECLARE_MUTEX(deflate_sem);
++
++void free_workspace(void)
++{
++	vfree(lzo_mem);
++	vfree(lzo_compress_buf);
++}
++
++int __init alloc_workspace(void)
++{
++	lzo_mem = vmalloc(LZO1X_MEM_COMPRESS);
++	lzo_compress_buf = vmalloc(lzo1x_worst_compress(PAGE_SIZE));
++
++	if (!lzo_mem || !lzo_compress_buf) {
++		printk(KERN_WARNING "Failed to allocate lzo deflate workspace\n");
++		free_workspace();
++		return -ENOMEM;
++	}
++
++	return 0;
++}
++
++int lzo_compress(unsigned char *data_in, unsigned char *cpage_out,
++			      __u32 *sourcelen, __u32 *dstlen)
++{
++	size_t compress_size;
++	int ret;
++
++	down(&deflate_sem);
++	ret = lzo1x_1_compress(data_in, *sourcelen, lzo_compress_buf, &compress_size, lzo_mem);
++	if (ret != LZO_E_OK)
++		goto fail;
++
++	if (compress_size > *dstlen)
++		goto fail;
++
++	memcpy(cpage_out, lzo_compress_buf, compress_size);
++	up(&deflate_sem);
++
++	*dstlen = compress_size;
++	return 0;
++
++ fail:
++	up(&deflate_sem);
++	return -1;
++}
++
++int lzo_decompress(unsigned char *data_in, unsigned char *cpage_out,
++				 __u32 srclen, __u32 destlen)
++{
++	size_t dl = destlen;
++	int ret;
++
++	ret = lzo1x_decompress_safe(data_in, srclen, cpage_out, &dl);
++
++	if (ret != LZO_E_OK || dl != destlen)
++		return -1;
++
++	return 0;
++}
++
++int __init jffs2_lzo_init(void)
++{
++	int ret;
++
++	ret = alloc_workspace();
++
++	return ret;
++}
++
++void jffs2_lzo_exit(void)
++{
++	free_workspace();
++}
+diff -Naur slin_m740_orig/fs/jffs2/Makefile slin_m740/fs/jffs2/Makefile
+--- slin_m740_orig/fs/jffs2/Makefile	2010-07-06 17:36:23.000000000 +0200
++++ slin_m740/fs/jffs2/Makefile	2010-07-07 10:04:07.284495504 +0200
+@@ -10,7 +10,18 @@
+ # Note 2! The CFLAGS definitions are now in the main makefile...
+ 
+ 
+-COMPR_OBJS	:= compr.o compr_rtime.o compr_zlib.o
++COMPR_OBJS	:= compr.o
++
++ifeq ($(CONFIG_JFFS2_LZO),y)
++COMPR_OBJS	+= compr_lzo.o
++endif
++ifeq ($(CONFIG_JFFS2_ZLIB),y)
++COMPR_OBJS	+= compr_zlib.o
++endif
++ifeq ($(CONFIG_JFFS2_RTIME),y)
++COMPR_OBJS	+= compr_rtime.o
++endif
++
+ JFFS2_OBJS	:= dir.o file.o ioctl.o nodelist.o malloc.o \
+ 	read.o nodemgmt.o readinode.o super.o write.o scan.o gc.o \
+ 	symlink.o build.o erase.o background.o
+diff -Naur slin_m740_orig/fs/jffs2/nodelist.h slin_m740/fs/jffs2/nodelist.h
+--- slin_m740_orig/fs/jffs2/nodelist.h	2010-07-06 17:46:50.000000000 +0200
++++ slin_m740/fs/jffs2/nodelist.h	2010-07-06 18:02:44.832339444 +0200
+@@ -349,6 +349,14 @@
+ void jffs2_mark_erased_blocks(struct jffs2_sb_info *c);
+ void jffs2_erase_pending_trigger(struct jffs2_sb_info *c);
+ 
++#ifdef CONFIG_JFFS2_LZO
++/* compr_lzo.c */
++int jffs2_lzo_init(void);
++void jffs2_lzo_exit(void);
++#endif
++
++#ifdef CONFIG_JFFS2_ZLIB
+ /* compr_zlib.c */
+ int jffs2_zlib_init(void);
+ void jffs2_zlib_exit(void);
++#endif
+diff -Naur slin_m740_orig/fs/jffs2/super.c slin_m740/fs/jffs2/super.c
+--- slin_m740_orig/fs/jffs2/super.c	2004-05-29 14:45:41.000000000 +0200
++++ slin_m740/fs/jffs2/super.c	2010-07-06 18:02:44.832339444 +0200
+@@ -361,15 +361,24 @@
+ 	}
+ #endif
+ 
++#ifdef CONFIG_JFFS2_LZO
++	ret = jffs2_lzo_init();
++	if (ret) {
++		printk(KERN_ERR "JFFS2 error: Failed to initialise lzo workspaces\n");
++		goto out;
++	}
++#endif
++#ifdef CONFIG_JFFS2_ZLIB
+ 	ret = jffs2_zlib_init();
+ 	if (ret) {
+ 		printk(KERN_ERR "JFFS2 error: Failed to initialise zlib workspaces\n");
+ 		goto out;
+ 	}
++#endif
+ 	ret = jffs2_create_slab_caches();
+ 	if (ret) {
+ 		printk(KERN_ERR "JFFS2 error: Failed to initialise slab caches\n");
+-		goto out_zlib;
++		goto out_workspaces;
+ 	}
+ 	ret = register_filesystem(&jffs2_fs_type);
+ 	if (ret) {
+@@ -380,8 +389,13 @@
+ 
+  out_slab:
+ 	jffs2_destroy_slab_caches();
+- out_zlib:
++ out_workspaces:
++#ifdef CONFIG_JFFS2_LZO
++	jffs2_lzo_exit();
++#endif
++#ifdef CONFIG_JFFS2_ZLIB
+ 	jffs2_zlib_exit();
++#endif
+  out:
+ 	return ret;
+ }
+@@ -389,7 +403,12 @@
+ static void __exit exit_jffs2_fs(void)
+ {
+ 	jffs2_destroy_slab_caches();
++#ifdef CONFIG_JFFS2_LZO
++	jffs2_lzo_exit();
++#endif
++#ifdef CONFIG_JFFS2_ZLIB
+ 	jffs2_zlib_exit();
++#endif
+ 	unregister_filesystem(&jffs2_fs_type);
+ }
+ 
+diff -Naur slin_m740_orig/include/linux/jffs2.h slin_m740/include/linux/jffs2.h
+--- slin_m740_orig/include/linux/jffs2.h	2010-07-06 17:46:49.000000000 +0200
++++ slin_m740/include/linux/jffs2.h	2010-07-06 18:02:44.835552937 +0200
+@@ -63,6 +63,7 @@
+ #define JFFS2_COMPR_COPY	0x04
+ #define JFFS2_COMPR_DYNRUBIN	0x05
+ #define JFFS2_COMPR_ZLIB	0x06
++#define JFFS2_COMPR_LZO		0x07
+ /* Compatibility flags. */
+ #define JFFS2_COMPAT_MASK 0xc000      /* What do to if an unknown nodetype is found */
+ #define JFFS2_NODE_ACCURATE 0x2000

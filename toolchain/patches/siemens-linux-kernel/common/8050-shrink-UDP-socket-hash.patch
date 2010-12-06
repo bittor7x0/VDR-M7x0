@@ -1,0 +1,12 @@
+diff -Naur slin_m740_orig/include/net/udp.h slin_m740/include/net/udp.h
+--- slin_m740_orig/include/net/udp.h	Wed May 04 13:01:24 2005
++++ slin_m740/include/net/udp.h	Fri Dec 19 10:45:38 2008
+@@ -25,7 +25,7 @@
+ #include <linux/udp.h>
+ #include <net/sock.h>
+ 
+-#define UDP_HTABLE_SIZE		128
++#define UDP_HTABLE_SIZE		8
+ 
+ /* udp.c: This needs to be shared by v4 and v6 because the lookup
+  *        and hashing code needs to work with different AF's yet

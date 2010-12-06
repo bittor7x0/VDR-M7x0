@@ -1,0 +1,4 @@
+usr/lib/libjpeg.so.8.0.2 usr/lib/libjpeg.so.8.0.2 f 755 0 0 - - - - -
+usr/lib/libjpeg.so.8.0.2 -                        s   - - - - - - - -
+usr/lib/libjpeg.so.8     libjpeg.so.8.0.2         l 777 0 0 - - - - -
+usr/lib/libjpeg.so       libjpeg.so.8.0.2         l 777 0 0 - - - - -

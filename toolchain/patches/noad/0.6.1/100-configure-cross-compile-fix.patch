@@ -1,0 +1,69 @@
+diff -Naur noad-orig/configure noad/configure
+--- noad-orig/configure	2008-10-21 21:44:25.000000000 +0200
++++ noad/configure	2009-11-01 11:16:29.000000000 +0100
+@@ -3299,15 +3299,7 @@
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+-if test -r "${defprefix}/include/mpeg2dec/mpeg2.h"; then
+   eval "$as_ac_File=yes"
+-else
+-  eval "$as_ac_File=no"
+-fi
+ fi
+ echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
+ echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
+@@ -3326,15 +3318,7 @@
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+-if test -r "${defprefix}/lib/libmpeg2.a"; then
+   eval "$as_ac_File=yes"
+-else
+-  eval "$as_ac_File=no"
+-fi
+ fi
+ echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
+ echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
+@@ -3413,16 +3397,8 @@
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+-if test -r "${defprefix}/include/ffmpeg/avcodec.h"; then
+-  eval "$as_ac_File=yes"
+-else
+   eval "$as_ac_File=no"
+ fi
+-fi
+ echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
+ echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
+ if test `eval echo '${'$as_ac_File'}'` = yes; then
+@@ -3439,16 +3415,8 @@
+ if eval "test \"\${$as_ac_File+set}\" = set"; then
+   echo $ECHO_N "(cached) $ECHO_C" >&6
+ else
+-  test "$cross_compiling" = yes &&
+-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+-if test -r "${defprefix}/lib/libavcodec.so"; then
+-  eval "$as_ac_File=yes"
+-else
+   eval "$as_ac_File=no"
+ fi
+-fi
+ echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
+ echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
+ if test `eval echo '${'$as_ac_File'}'` = yes; then

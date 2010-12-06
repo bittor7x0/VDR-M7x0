@@ -1,0 +1,73 @@
+From 897c6386f0b4b31ba7f2bde8b3f42303e164343d Mon Sep 17 00:00:00 2001
+From: Lionel Debroux <lionel_debroux@yahoo.fr>
+Date: Sun, 2 Dec 2007 11:18:03 +0100
+Subject: Fix crash with http://sam.zoy.org/zzuf/lol-mplayer.m2v (modified from MPlayer SVN repo, revision 21941), and fix indentation in a macro.
+
+---
+ mpeg2dec-0.4.1/libmpeg2/slice.c |   28 +++++++++++++++++++++++-----
+ 1 files changed, 23 insertions(+), 5 deletions(-)
+
+diff --git mpeg2dec-0.4.1.origlibmpeg2/slice.c mpeg2dec-0.4.1/libmpeg2/slice.c
+index 8f1035b..778a478 100644
+--- mpeg2dec-0.4.1.origlibmpeg2/slice.c
++++ mpeg2dec-0.4.1/libmpeg2/slice.c
+@@ -1555,11 +1555,11 @@ static void motion_fi_conceal (mpeg2_decoder_t * const decoder)
+ #define MOTION_CALL(routine,direction)				\
+ do {								\
+     if ((direction) & MACROBLOCK_MOTION_FORWARD)		\
+-	routine (decoder, &(decoder->f_motion), mpeg2_mc.put);	\
++        routine (decoder, &(decoder->f_motion), mpeg2_mc.put);	\
+     if ((direction) & MACROBLOCK_MOTION_BACKWARD)		\
+-	routine (decoder, &(decoder->b_motion),			\
+-		 ((direction) & MACROBLOCK_MOTION_FORWARD ?	\
+-		  mpeg2_mc.avg : mpeg2_mc.put));		\
++        routine (decoder, &(decoder->b_motion), 		\
++                 ((direction) & MACROBLOCK_MOTION_FORWARD ?	\
++                  mpeg2_mc.avg : mpeg2_mc.put));		\
+ } while (0)
+ 
+ #define NEXT_MACROBLOCK							\
+@@ -1587,6 +1587,16 @@ do {									\
+     }									\
+ } while (0)
+ 
++/**
++ * Dummy motion decoding function, to avoid calling NULL in
++ * case of malformed streams.
++ */
++static void motion_dummy (mpeg2_decoder_t * const decoder,
++                          motion_t * const motion,
++                          mpeg2_mc_fct * const * const table)
++{
++}
++
+ void mpeg2_init_fbuf (mpeg2_decoder_t * decoder, uint8_t * current_fbuf[3],
+ 		      uint8_t * forward_fbuf[3], uint8_t * backward_fbuf[3])
+ {
+@@ -1644,7 +1654,9 @@ void mpeg2_init_fbuf (mpeg2_decoder_t * decoder, uint8_t * current_fbuf[3],
+ 
+     if (decoder->mpeg1) {
+ 	decoder->motion_parser[0] = motion_zero_420;
+-	decoder->motion_parser[MC_FRAME] = motion_mp1;
++        decoder->motion_parser[MC_FIELD] = motion_dummy;
++ 	decoder->motion_parser[MC_FRAME] = motion_mp1;
++        decoder->motion_parser[MC_DMV] = motion_dummy;
+ 	decoder->motion_parser[4] = motion_reuse_420;
+     } else if (decoder->picture_structure == FRAME_PICTURE) {
+ 	if (decoder->chroma_format == 0) {
+@@ -1869,6 +1881,12 @@ void mpeg2_slice (mpeg2_decoder_t * const decoder, const int code,
+ 
+ 	    motion_parser_t * parser;
+ 
++	    if (   ((macroblock_modes >> MOTION_TYPE_SHIFT) < 0)
++                || ((macroblock_modes >> MOTION_TYPE_SHIFT) >= (int)(sizeof(decoder->motion_parser)/sizeof(decoder->motion_parser[0])))
++	       ) {
++		break; // Illegal !
++	    }
++
+ 	    parser =
+ 		decoder->motion_parser[macroblock_modes >> MOTION_TYPE_SHIFT];
+ 	    MOTION_CALL (parser, macroblock_modes);
+-- 
+1.5.3.4
+

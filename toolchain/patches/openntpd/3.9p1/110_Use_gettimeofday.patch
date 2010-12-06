@@ -1,0 +1,70 @@
+diff -Naur openntpd-3.9p1-orig/ntpd.c openntpd-3.9p1/ntpd.c
+--- openntpd-3.9p1-orig/ntpd.c	2006-05-14 07:29:23.000000000 +0200
++++ openntpd-3.9p1/ntpd.c	2009-02-16 10:15:56.000000000 +0100
+@@ -331,17 +331,33 @@
+ 	struct timeval	tv, olddelta;
+ 	int		synced = 0;
+ 	static int	firstadj = 1;
++	double 		olddelta_d;
+ 
+-	if (d >= (double)LOG_NEGLIGEE / 1000 ||
+-	    d <= -1 * (double)LOG_NEGLIGEE / 1000)
+-		log_info("adjusting local clock by %fs", d);
++	/* if the offset is big, call settimeofday */
++	if (d >= SETTIME_MIN_OFFSET || d <= -SETTIME_MIN_OFFSET)
++		ntpd_settime(d);
+ 	else
+-		log_debug("adjusting local clock by %fs", d);
+-	d_to_tv(d, &tv);
+-	if (adjtime(&tv, &olddelta) == -1)
+-		log_warn("adjtime failed");
+-	else if (!firstadj && olddelta.tv_sec == 0 && olddelta.tv_usec == 0)
+-		synced = 1;
++	{
++		d_to_tv(d, &tv);
++		if (adjtime(&tv, &olddelta) == -1)
++			log_warn("adjtime failed");
++		else
++		{
++			olddelta_d = olddelta.tv_sec + (double)olddelta.tv_usec / 1000000L;
++			if (olddelta_d == 0)
++			{		
++				if (d >= (double)LOG_NEGLIGEE / 1000 ||
++				    d <= -1 * (double)LOG_NEGLIGEE / 1000)
++					log_info("adjusting local clock by %fs", d);
++				else
++					log_debug("adjusting local clock by %fs", d);
++				if (!firstadj)
++					synced = 1;
++			}
++			else
++				log_info("adjusting local clock by %fs (remaining %fs)", d , olddelta_d);
++		}
++	}
+ 	firstadj = 0;
+ 	return (synced);
+ }
+@@ -357,6 +373,11 @@
+ 	if (d < SETTIME_MIN_OFFSET && d > -SETTIME_MIN_OFFSET)
+ 		return;
+ 
++	tv.tv_sec = 0;
++	tv.tv_usec = 0;
++	if (adjtime(&tv, NULL) == -1)
++		log_warn("adjtime failed");
++
+ 	if (gettimeofday(&curtime, NULL) == -1) {
+ 		log_warn("gettimeofday");
+ 		return;
+diff -Naur openntpd-3.9p1-orig/ntpd.h openntpd-3.9p1/ntpd.h
+--- openntpd-3.9p1-orig/ntpd.h	2006-05-14 07:29:21.000000000 +0200
++++ openntpd-3.9p1/ntpd.h	2009-02-12 19:23:34.000000000 +0100
+@@ -56,7 +56,7 @@
+ 
+ #define	QUERYTIME_MAX		15	/* single query might take n secs max */
+ #define	OFFSET_ARRAY_SIZE	8
+-#define	SETTIME_MIN_OFFSET	180	/* min offset for settime at start */
++#define	SETTIME_MIN_OFFSET	1	/* min offset for settime */
+ #define	SETTIME_TIMEOUT		15	/* max seconds to wait with -s */
+ #define	LOG_NEGLIGEE		128	/* negligible drift to not log (ms) */
+ 

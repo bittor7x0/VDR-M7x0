@@ -1,0 +1,30 @@
+diff -Naur libupnp-1.6.6/upnp/src/inc/config.h libupnp-1.6.6-dlna/upnp/src/inc/config.h
+--- libupnp-1.6.6/upnp/src/inc/config.h	2008-03-22 16:57:27.000000000 +0100
++++ libupnp-1.6.6-dlna/upnp/src/inc/config.h	2009-12-31 15:26:47.694951746 +0100
+@@ -65,7 +65,7 @@
+  */
+ 
+ //@{
+-#define JOBS_PER_THREAD 10
++#define JOBS_PER_THREAD 1
+ //@}
+ 
+ /** @name MIN_THREADS
+@@ -93,7 +93,7 @@
+  */
+ 
+ //@{
+-#define MAX_THREADS 12 
++#define MAX_THREADS 16
+ //@}
+ 
+ /** @name MAX_JOBS_TOTAL
+@@ -140,7 +140,7 @@
+  * webserver.  The default value is 1MB.
+  */
+ //@{
+-#define WEB_SERVER_BUF_SIZE  (1024*1024)
++#define WEB_SERVER_BUF_SIZE  (512*1024)
+ //@}
+ 
+ /** @name AUTO_RENEW_TIME

@@ -1,0 +1,11 @@
+--- linux-2.4.19-pre10/fs/namei.c.orig	Thu Apr  4 19:35:15 2002
++++ linux-2.4.19-pre10/fs/namei.c	Sat Jun  8 15:23:46 2002
+@@ -635,7 +635,7 @@
+ 		dentry = nd->dentry;
+ 		if (dentry && dentry->d_op && dentry->d_op->d_revalidate) {
+ 			err = -ESTALE;
+-			if (!dentry->d_op->d_revalidate(dentry, 0)) {
++			if (!dentry->d_op->d_revalidate(dentry, lookup_flags & LOOKUP_PARENT)) {
+ 				d_invalidate(dentry);
+ 				break;
+ 			}

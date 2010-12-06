@@ -1,0 +1,12 @@
+--- openntpd-3.9p1-orig/ntpd.conf	2006-05-14 07:29:21.000000000 +0200
++++ openntpd-3.9p1/ntpd.conf	2009-02-16 11:33:45.000000000 +0100
+@@ -11,4 +11,8 @@
+ 
+ # use a random selection of 8 public stratum 2 servers
+ # see http://twiki.ntp.org/bin/view/Servers/NTPPoolServers
+-servers pool.ntp.org
++# servers pool.ntp.org
++server 0.europe.pool.ntp.org
++server 1.europe.pool.ntp.org
++server 2.europe.pool.ntp.org
++server 3.europe.pool.ntp.org

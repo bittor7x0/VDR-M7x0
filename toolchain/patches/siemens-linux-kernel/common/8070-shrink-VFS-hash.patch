@@ -1,0 +1,12 @@
+diff -Naur slin_m740_orig/init/main.c slin_m740/init/main.c
+--- slin_m740_orig/init/main.c	Sat May 29 14:46:26 2004
++++ slin_m740/init/main.c	Fri Dec 19 11:50:08 2008
+@@ -440,7 +440,7 @@
+   
+ 	fork_init(num_mappedpages);
+ 	proc_caches_init();
+-	vfs_caches_init(num_physpages);
++	vfs_caches_init(1);
+ 	buffer_init(num_physpages);
+ 	page_cache_init(num_physpages);
+ #if defined(CONFIG_ARCH_S390)

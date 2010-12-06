@@ -1,0 +1,16 @@
+diff -urNp 2.4.19rc3ac1/fs/locks.c 2.4.19rc3ac2/fs/locks.c
+--- 2.4.19rc3ac1/fs/locks.c	Tue Jul 23 23:03:33 2002
++++ 2.4.19rc3ac2/fs/locks.c	Tue Jul 23 23:10:57 2002
+@@ -934,8 +934,11 @@ int posix_lock_file(struct file *filp, s
+ 				goto next_lock;
+ 			/* If the next lock in the list has entirely bigger
+ 			 * addresses than the new one, insert the lock here.
++			 *
++			 * be careful if fl_end == OFFSET_MAX --okir
+ 			 */
+-			if (fl->fl_start > caller->fl_end + 1)
++			if (fl->fl_start > caller->fl_end + 1
++			 && caller->fl_end != OFFSET_MAX)
+ 				break;
+ 
+ 			/* If we come here, the new and old lock are of the

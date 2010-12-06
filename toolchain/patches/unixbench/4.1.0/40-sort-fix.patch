@@ -1,0 +1,11 @@
+diff -Naur unixbench-4.1.0-orig/pgms/tst.sh unixbench-4.1.0/pgms/tst.sh
+--- unixbench-4.1.0-orig/pgms/tst.sh	1995-11-27 18:07:03.000000000 +0100
++++ unixbench-4.1.0/pgms/tst.sh	2009-03-07 20:49:52.000000000 +0100
+@@ -15,6 +15,6 @@
+ ###############################################################################
+ ID="@(#)tst.sh:3.4 -- 5/15/91 19:30:24";
+ sort >sort.$$ <sort.src
+-od sort.$$ | sort -n +1 > od.$$
++od sort.$$ | sort -n > od.$$
+ grep the sort.$$ | tee grep.$$ | wc > wc.$$
+ rm sort.$$ grep.$$ od.$$ wc.$$

@@ -1,0 +1,30 @@
+diff -Naur lmbench3-orig/scripts/lmbench lmbench3/scripts/lmbench
+--- lmbench3-orig/scripts/lmbench	2005-08-23 02:19:54.000000000 +0200
++++ lmbench3/scripts/lmbench	2009-11-08 12:08:42.000000000 +0100
+@@ -6,7 +6,7 @@
+ # Copyright (c) 1994 Larry McVoy.  GPLed software.
+ # $Id$
+ 
+-# Make sure we can find: ./cmd, df, and netstat
++# Make sure we can find: ./cmd and df
+ PATH=.:../../scripts:$PATH:/etc:/usr/etc:/sbin:/usr/sbin
+ export PATH
+ 
+@@ -101,17 +101,6 @@
+ 
+ echo \[`date`] 1>&2
+ echo \[`uptime`] 1>&2
+-netstat -i | while read i
+-do	echo \[net: "$i"] 1>&2
+-	set `echo $i`
+-	case $1 in
+-	    *ame)	;;
+-	    *)		ifconfig $1 | while read i
+-			do echo \[if: "$i"] 1>&2
+-			done
+-			;;
+-	esac
+-done
+ 
+ mount | while read i
+ do	echo \[mount: "$i"] 1>&2

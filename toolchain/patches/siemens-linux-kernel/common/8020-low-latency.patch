@@ -1,0 +1,1770 @@
+ arch/mips/config-shared.in   |    3 +
+ drivers/block/ll_rw_blk.c    |    1 
+ drivers/char/drm/mga_dma.c   |    0 
+ drivers/char/drm/r128_cce.c  |    0 
+ drivers/char/drm/radeon_cp.c |    0 
+ drivers/char/mem.c           |    2 
+ drivers/char/random.c        |    5 +
+ drivers/i2c/i2c-algo-bit.c   |    1 
+ drivers/i2c/i2c-core.c       |    7 ++
+ drivers/video/fbcon-cfb16.c  |    2 
+ fs/buffer.c                  |   90 +++++++++++++++++++++++++++++++----
+ fs/dcache.c                  |   25 +++++++++
+ fs/exec.c                    |    2 
+ fs/ext2/dir.c                |    1 
+ fs/ext2/inode.c              |    6 ++
+ fs/ext3/balloc.c             |    3 +
+ fs/ext3/inode.c              |    4 +
+ fs/ext3/namei.c              |    1 
+ fs/inode.c                   |   37 +++++++++++++-
+ fs/jbd/checkpoint.c          |   10 +++
+ fs/jbd/commit.c              |   26 +++++++++-
+ fs/jbd/recovery.c            |    0 
+ fs/proc/array.c              |    4 +
+ fs/proc/generic.c            |    2 
+ fs/reiserfs/bitmap.c         |    0 
+ fs/reiserfs/buffer2.c        |    1 
+ fs/reiserfs/journal.c        |    7 ++
+ fs/reiserfs/stree.c          |   12 +++-
+ include/linux/low-latency.h  |  109 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/mm.h           |    4 +
+ include/linux/reiserfs_fs.h  |    4 -
+ include/linux/sched.h        |    1 
+ include/linux/sysctl.h       |    1 
+ kernel/exit.c                |    1 
+ kernel/ksyms.c               |    7 ++
+ kernel/module.c              |    5 +
+ kernel/sched.c               |  106 +++++++++++++++++++++++++++++++++++++++++
+ kernel/sysctl.c              |    4 +
+ mm/filemap.c                 |   88 ++++++++++++++++++++++++++++------
+ mm/memory.c                  |   38 ++++++++++++--
+ mm/mmap.c                    |    6 +-
+ mm/mremap.c                  |    2 
+ mm/page_alloc.c              |    0 
+ mm/slab.c                    |    2 
+ mm/swapfile.c                |    9 +++
+ mm/vmscan.c                  |   18 +++++++
+ net/core/iovec.c             |    2 
+ net/ipv4/tcp_minisocks.c     |   30 ++++++++++-
+ 48 files changed, 629 insertions(+), 60 deletions(-)
+
+diff -puN fs/reiserfs/stree.c~low-latency fs/reiserfs/stree.c
+--- 24/fs/reiserfs/stree.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/reiserfs/stree.c	2003-06-17 20:24:29.000000000 -0700
+@@ -652,9 +652,8 @@ int search_by_key (struct super_block * 
+                                        stop at leaf level - set to
+                                        DISK_LEAF_NODE_LEVEL */
+     ) {
+-    int  n_block_number = SB_ROOT_BLOCK (p_s_sb),
+-      expected_level = SB_TREE_HEIGHT (p_s_sb),
+-      n_block_size    = p_s_sb->s_blocksize;
++    int n_block_number, expected_level;
++    int n_block_size    = p_s_sb->s_blocksize;
+     struct buffer_head  *       p_s_bh;
+     struct path_element *       p_s_last_element;
+     int				n_node_level, n_retval;
+@@ -666,7 +665,8 @@ int search_by_key (struct super_block * 
+ #endif
+     
+     PROC_INFO_INC( p_s_sb, search_by_key );
+-    
++    conditional_schedule();
++
+     /* As we add each node to a path we increase its count.  This means that
+        we must be careful to release all nodes in a path before we either
+        discard the path struct or re-use the path struct, as we do here. */
+@@ -678,6 +678,8 @@ int search_by_key (struct super_block * 
+     /* With each iteration of this loop we search through the items in the
+        current node, and calculate the next current node(next path element)
+        for the next iteration of this loop.. */
++    n_block_number = SB_ROOT_BLOCK (p_s_sb);
++    expected_level = SB_TREE_HEIGHT (p_s_sb);
+     while ( 1 ) {
+ 
+ #ifdef CONFIG_REISERFS_CHECK
+@@ -1104,6 +1106,8 @@ static char  prepare_for_delete_or_cut(
+ 	    for (n_counter = *p_n_removed;
+ 		 n_counter < n_unfm_number; n_counter++, p_n_unfm_pointer-- ) {
+ 
++		conditional_schedule();
++
+ 		if (item_moved (&s_ih, p_s_path)) {
+ 		    need_research = 1 ;
+ 		    break;
+diff -puN /dev/null include/linux/low-latency.h
+--- /dev/null	2002-08-30 16:31:37.000000000 -0700
++++ 24-akpm/include/linux/low-latency.h	2003-06-17 20:24:29.000000000 -0700
+@@ -0,0 +1,109 @@
++/*
++ * include/linux/low-latency.h
++ *
++ * Andrew Morton <akpm@zip.com.au>
++ */
++
++#ifndef LOW_LATENCY_H_INCLUDED
++#define LOW_LATENCY_H_INCLUDED
++
++#if defined(CONFIG_LOLAT)
++#define LOWLATENCY_NEEDED	1
++#else
++#define LOWLATENCY_NEEDED	0
++#endif
++
++#if LOWLATENCY_NEEDED
++
++#include <linux/cache.h>		/* For ____cacheline_aligned */
++
++#ifdef CONFIG_LOLAT_SYSCTL
++extern struct low_latency_enable_struct {
++	int yep;
++} ____cacheline_aligned __enable_lowlatency;
++#define enable_lowlatency __enable_lowlatency.yep
++
++#else
++#define enable_lowlatency 1
++#endif
++
++/*
++ * Set this non-zero to generate low-latency instrumentation
++ */
++#define LOWLATENCY_DEBUG		0
++
++/*
++ * Set this non-zero for robustness testing
++ */
++#define LOWLATENCY_ALWAYS_SCHEDULE	0
++
++#if LOWLATENCY_DEBUG
++
++#if LOWLATENCY_ALWAYS_SCHEDULE
++#define conditional_schedule_needed() ((enable_lowlatency == 2) || (enable_lowlatency && current->need_resched))
++#else
++#define conditional_schedule_needed() (enable_lowlatency && current->need_resched)
++#endif
++
++struct lolat_stats_t {
++	unsigned long count;
++	int visited;
++	const char *file;
++	int line;
++	struct lolat_stats_t *next;
++};
++
++void set_running_and_schedule(struct lolat_stats_t *stats);
++
++#define unconditional_schedule()					\
++	do {								\
++		static struct lolat_stats_t stats = {			\
++			file: __FILE__,					\
++			line: __LINE__,					\
++		};							\
++		set_running_and_schedule(&stats);			\
++	} while (0)
++
++extern void show_lolat_stats(void);
++
++#else	/* LOWLATENCY_DEBUG */
++
++#if LOWLATENCY_ALWAYS_SCHEDULE
++#define conditional_schedule_needed() 1
++#else
++#define conditional_schedule_needed() (current->need_resched)
++#endif
++
++void set_running_and_schedule(void);
++#define unconditional_schedule() set_running_and_schedule()
++
++#endif	/* LOWLATENCY_DEBUG */
++
++#define conditional_schedule()						\
++	do {								\
++		if (conditional_schedule_needed())			\
++			unconditional_schedule();			\
++	} while (0)
++
++#define DEFINE_RESCHED_COUNT	int resched_count = 0
++#define TEST_RESCHED_COUNT(n)	(enable_lowlatency && (++resched_count > (n)))
++#define RESET_RESCHED_COUNT()	resched_count = 0
++extern int ll_copy_to_user(void *to_user, const void *from, unsigned long len);
++extern int ll_copy_from_user(void *to, const void *from_user, unsigned long len);
++
++#else	/* LOWLATENCY_NEEDED */
++
++#define conditional_schedule_needed() 0
++#define conditional_schedule()
++#define unconditional_schedule()
++
++#define DEFINE_RESCHED_COUNT
++#define TEST_RESCHED_COUNT(n)	0
++#define RESET_RESCHED_COUNT()
++#define ll_copy_to_user(to_user, from, len) copy_to_user((to_user), (from), (len))
++#define ll_copy_from_user(to, from_user, len) copy_from_user((to), (from_user), (len))
++
++#endif	/* LOWLATENCY_NEEDED */
++
++#endif /* LOW_LATENCY_H_INCLUDED */
++
+diff -puN include/linux/mm.h~low-latency include/linux/mm.h
+--- 24/include/linux/mm.h~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/include/linux/mm.h	2003-06-17 20:24:29.000000000 -0700
+@@ -122,6 +122,8 @@ extern int vm_max_readahead;
+  */
+ extern pgprot_t protection_map[16];
+ 
++/* Actions for zap_page_range() */
++#define ZPR_COND_RESCHED	1	/* Do a conditional_schedule() occasionally */
+ 
+ /*
+  * These are the virtual MM functions - opening of an area, closing and
+@@ -472,7 +474,7 @@ struct file *shmem_file_setup(char * nam
+ extern void shmem_lock(struct file * file, int lock);
+ extern int shmem_zero_setup(struct vm_area_struct *);
+ 
+-extern void zap_page_range(struct mm_struct *mm, unsigned long address, unsigned long size);
++extern void zap_page_range(struct mm_struct *mm, unsigned long address, unsigned long size, int actions);
+ extern int copy_page_range(struct mm_struct *dst, struct mm_struct *src, struct vm_area_struct *vma);
+ extern int remap_page_range(unsigned long from, unsigned long to, unsigned long size, pgprot_t prot);
+ extern int zeromap_page_range(unsigned long from, unsigned long size, pgprot_t prot);
+diff -puN include/linux/reiserfs_fs.h~low-latency include/linux/reiserfs_fs.h
+--- 24/include/linux/reiserfs_fs.h~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/include/linux/reiserfs_fs.h	2003-06-17 20:24:29.000000000 -0700
+@@ -1197,8 +1197,8 @@ static inline loff_t max_reiserfs_offset
+ #define fs_generation(s) ((s)->u.reiserfs_sb.s_generation_counter)
+ #define get_generation(s) atomic_read (&fs_generation(s))
+ #define FILESYSTEM_CHANGED_TB(tb)  (get_generation((tb)->tb_sb) != (tb)->fs_gen)
+-#define fs_changed(gen,s) (gen != get_generation (s))
+-
++#define __fs_changed(gen,s) (gen != get_generation (s))
++#define fs_changed(gen,s) ({conditional_schedule(); __fs_changed(gen,s);})
+ 
+ /***************************************************************************/
+ /*                  FIXATE NODES                                           */
+diff -puN include/linux/sched.h~low-latency include/linux/sched.h
+--- 24/include/linux/sched.h~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/include/linux/sched.h	2003-06-17 20:24:29.000000000 -0700
+@@ -26,6 +26,7 @@
+ #include <linux/signal.h>
+ #include <linux/securebits.h>
+ #include <linux/fs_struct.h>
++#include <linux/low-latency.h>
+ #include <linux/personality.h> // DEBUG_JAN
+ 
+ 
+diff -puN include/linux/sysctl.h~low-latency include/linux/sysctl.h
+--- 24/include/linux/sysctl.h~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/include/linux/sysctl.h	2003-06-17 20:24:29.000000000 -0700
+@@ -124,6 +124,7 @@
+ 	KERN_CORE_USES_PID=52,		/* int: use core or core.%pid */
+ 	KERN_TAINTED=53,	/* int: various kernel tainted flags */
+ 	KERN_CADPID=54,		/* int: PID of the process to notify on CAD */
++	KERN_LOWLATENCY=55, /* int: enable low latency scheduling */
+ 	KERN_KDB=55,		/* int: kdb on/off */
+  	KERN_CORE_PATTERN=56,	/* string: pattern for core-files */
+ };
+diff -puN arch/mips/config-shared.in~low-latency arch/mips/config-shared.in
+--- 24/arch/mips/config-shared.in~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/arch/mips/config-shared.in	2003-06-17 20:24:29.000000000 -0700
+@@ -437,6 +437,9 @@
+ mainmenu_option next_comment
+ comment 'CPU selection'
+ 
++bool 'Low latency scheduling' CONFIG_LOLAT
++dep_bool 'Control low latency with sysctl' CONFIG_LOLAT_SYSCTL $CONFIG_LOLAT
++
+ choice 'CPU type' \
+ 	"MIPS32	CONFIG_CPU_MIPS32 \
+ 	 MIPS64	CONFIG_CPU_MIPS64 \
+diff -puN drivers/block/ll_rw_blk.c~low-latency drivers/block/ll_rw_blk.c
+--- 24/drivers/block/ll_rw_blk.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/drivers/block/ll_rw_blk.c	2003-06-17 20:24:29.000000000 -0700
+@@ -1206,6 +1206,7 @@ void submit_bh(int rw, struct buffer_hea
+ 			kstat.pgpgin += count;
+ 			break;
+ 	}
++	conditional_schedule();
+ }
+ 
+ /**
+diff -puN drivers/char/mem.c~low-latency drivers/char/mem.c
+--- 24/drivers/char/mem.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/drivers/char/mem.c	2003-06-17 20:24:29.000000000 -0700
+@@ -400,7 +400,7 @@ static inline size_t read_zero_pagealign
+ 		if (count > size)
+ 			count = size;
+ 
+-		zap_page_range(mm, addr, count);
++		zap_page_range(mm, addr, count, 0);
+         	zeromap_page_range(addr, count, PAGE_COPY);
+ 
+ 		size -= count;
+diff -puN drivers/char/random.c~low-latency drivers/char/random.c
+--- 24/drivers/char/random.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/drivers/char/random.c	2003-06-17 20:24:29.000000000 -0700
+@@ -1367,6 +1367,11 @@ static ssize_t extract_entropy(struct en
+ 		buf += i;
+ 		ret += i;
+ 		add_timer_randomness(&extract_timer_state, nbytes);
++#if LOWLATENCY_NEEDED
++		/* This can happen in softirq's, but that's what we want */
++		if (conditional_schedule_needed())
++			break;
++#endif
+ 	}
+ 
+ 	/* Wipe data just returned from memory */
+diff -puN drivers/i2c/i2c-core.c~low-latency drivers/i2c/i2c-core.c
+--- 24/drivers/i2c/i2c-core.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/drivers/i2c/i2c-core.c	2003-06-17 20:24:29.000000000 -0700
+@@ -763,6 +763,8 @@ int i2c_transfer(struct i2c_adapter * ad
+ {
+ 	int ret;
+ 
++	conditional_schedule();
++
+ 	if (adap->algo->master_xfer) {
+  	 	DEB2(printk("i2c-core.o: master_xfer: %s with %d msgs.\n",
+ 		            adap->name,num));
+@@ -785,6 +787,8 @@ int i2c_master_send(struct i2c_client *c
+ 	struct i2c_adapter *adap=client->adapter;
+ 	struct i2c_msg msg;
+ 
++	conditional_schedule();
++
+ 	if (client->adapter->algo->master_xfer) {
+ 		msg.addr   = client->addr;
+ 		msg.flags = client->flags & I2C_M_TEN;
+@@ -814,6 +818,9 @@ int i2c_master_recv(struct i2c_client *c
+ 	struct i2c_adapter *adap=client->adapter;
+ 	struct i2c_msg msg;
+ 	int ret;
++	
++	conditional_schedule();	 
++	 
+ 	if (client->adapter->algo->master_xfer) {
+ 		msg.addr   = client->addr;
+ 		msg.flags = client->flags & I2C_M_TEN;
+diff -puN fs/buffer.c~low-latency fs/buffer.c
+--- 24/fs/buffer.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/buffer.c	2003-06-17 20:24:29.000000000 -0700
+@@ -241,8 +241,10 @@
+ 
+ 		if (dev != NODEV && bh->b_dev != dev)
+ 			continue;
+-		if (test_and_set_bit(BH_Lock, &bh->b_state))
++		if (test_and_set_bit(BH_Lock, &bh->b_state)) {
++			__refile_buffer(bh);
+ 			continue;
++		}
+ 		if (buffer_delay(bh)) {
+ 			if (write_buffer_delay(bh)) {
+ 				if (count)
+@@ -258,6 +260,7 @@
+ 
+ 			spin_unlock(&lru_list_lock);
+ 			write_locked_buffers(array, count);
++			conditional_schedule();
+ 			return -EAGAIN;
+ 		}
+ 		unlock_buffer(bh);
+@@ -291,12 +294,19 @@
+ 	struct buffer_head * next;
+ 	int nr;
+ 
+-	next = lru_list[index];
+ 	nr = nr_buffers_type[index];
++repeat:
++	next = lru_list[index];
+ 	while (next && --nr >= 0) {
+ 		struct buffer_head *bh = next;
+ 		next = bh->b_next_free;
+ 
++		if (conditional_schedule_needed()) {
++			spin_unlock(&lru_list_lock);
++			unconditional_schedule();
++			spin_lock(&lru_list_lock);
++			goto repeat;
++		}
+ 		if (!buffer_locked(bh)) {
+ 			if (refile)
+ 				__refile_buffer(bh);
+@@ -304,7 +314,6 @@
+ 		}
+ 		if (dev != NODEV && bh->b_dev != dev)
+ 			continue;
+-
+ 		get_bh(bh);
+ 		spin_unlock(&lru_list_lock);
+ 		wait_on_buffer (bh);
+@@ -337,6 +346,15 @@
+ {
+ 	int err = 0;
+ 
++#if LOWLATENCY_NEEDED
++	/*
++	 * syncing devA when there are lots of buffers dirty against
++	 * devB is expensive.
++	 */
++	if (enable_lowlatency)
++		dev = NODEV;
++#endif
++
+ 	/* One pass for no-wait, three for wait:
+ 	 * 0) write out all dirty, unlocked buffers;
+ 	 * 1) wait for all dirty locked buffers;
+@@ -695,6 +713,7 @@
+ 	int i, nlist, slept;
+ 	struct buffer_head * bh, * bh_next;
+ 	kdev_t dev = to_kdev_t(bdev->bd_dev);	/* will become bdev */
++	int lolat_retry = 0;
+ 
+  retry:
+ 	slept = 0;
+@@ -712,6 +731,17 @@
+ 			/* Not hashed? */
+ 			if (!bh->b_pprev)
+ 				continue;
++
++			if (lolat_retry < 10 && conditional_schedule_needed()) {
++				get_bh(bh);
++				spin_unlock(&lru_list_lock);
++				unconditional_schedule();
++				spin_lock(&lru_list_lock);
++				put_bh(bh);
++				slept = 1;
++				lolat_retry++;
++			}
++
+ 			if (buffer_locked(bh)) {
+ 				get_bh(bh);
+ 				spin_unlock(&lru_list_lock);
+@@ -863,12 +893,18 @@
+ 	struct buffer_head *bh;
+ 	struct list_head tmp;
+ 	int err = 0, err2;
+-	
++	DEFINE_RESCHED_COUNT;
++
+ 	INIT_LIST_HEAD(&tmp);
+-	
++repeat:
+ 	spin_lock(&lru_list_lock);
+ 
+ 	while (!list_empty(list)) {
++		if (conditional_schedule_needed()) {
++			spin_unlock(&lru_list_lock);
++			unconditional_schedule();
++			goto repeat;
++		}
+ 		bh = BH_ENTRY(list->next);
+ 		list_del(&bh->b_inode_buffers);
+ 		if (!buffer_dirty(bh) && !buffer_locked(bh))
+@@ -893,8 +929,18 @@
+ 				spin_lock(&lru_list_lock);
+ 			}
+ 		}
++		if (TEST_RESCHED_COUNT(32)) {
++			RESET_RESCHED_COUNT();
++			if (conditional_schedule_needed()) {
++				spin_unlock(&lru_list_lock);
++				unconditional_schedule();
++				spin_lock(&lru_list_lock);
++			}
++		}
+ 	}
+ 
++	RESET_RESCHED_COUNT();
++
+ 	while (!list_empty(&tmp)) {
+ 		bh = BH_ENTRY(tmp.prev);
+ 		remove_inode_queue(bh);
+@@ -904,6 +950,7 @@
+ 		if (!buffer_uptodate(bh))
+ 			err = -EIO;
+ 		brelse(bh);
++		conditional_schedule();
+ 		spin_lock(&lru_list_lock);
+ 	}
+ 	
+@@ -933,9 +980,18 @@
+ 	struct buffer_head *bh;
+ 	struct list_head *p;
+ 	int err = 0;
++	DEFINE_RESCHED_COUNT;
+ 
+- repeat:
++repeat:
++	conditional_schedule();
+ 	list_for_each_prev(p, list) {
++		if (TEST_RESCHED_COUNT(32)) {
++			RESET_RESCHED_COUNT();
++			if (conditional_schedule_needed()) {
++				spin_unlock(&lru_list_lock);
++				goto repeat;
++			}
++		}
+ 		bh = BH_ENTRY(p);
+ 		if (buffer_locked(bh)) {
+ 			get_bh(bh);
+@@ -944,7 +1000,6 @@
+ 			if (!buffer_uptodate(bh))
+ 				err = -EIO;
+ 			brelse(bh);
+-			spin_lock(&lru_list_lock);
+ 			goto repeat;
+ 		}
+ 	}
+@@ -960,12 +1015,24 @@
+ void invalidate_inode_buffers(struct inode *inode)
+ {
+ 	struct list_head * entry;
+-	
++
++repeat:
++	conditional_schedule();	
+ 	spin_lock(&lru_list_lock);
+-	while ((entry = inode->i_dirty_buffers.next) != &inode->i_dirty_buffers)
++	while ((entry = inode->i_dirty_buffers.next) != &inode->i_dirty_buffers) {
++		if (conditional_schedule_needed()) {
++			spin_unlock(&lru_list_lock);
++			goto repeat;
++		}
+ 		remove_inode_queue(BH_ENTRY(entry));
+-	while ((entry = inode->i_dirty_data_buffers.next) != &inode->i_dirty_data_buffers)
++	}
++	while ((entry = inode->i_dirty_data_buffers.next) != &inode->i_dirty_data_buffers) {
++		if (conditional_schedule_needed()) {
++			spin_unlock(&lru_list_lock);
++			goto repeat;
++		}
+ 		remove_inode_queue(BH_ENTRY(entry));
++	}
+ 	spin_unlock(&lru_list_lock);
+ }
+ 
+@@ -988,6 +1055,7 @@
+ 		bh = get_hash_table(dev, block, size);
+ 		if (bh) {
+ 			touch_buffer(bh);
++			conditional_schedule();
+ 			return bh;
+ 		}
+ 
+@@ -2849,7 +2917,7 @@
+ 
+ DECLARE_WAIT_QUEUE_HEAD(bdflush_wait);
+ 
+-void wakeup_bdflush(void)
++void wakeup_bdflush(void) 
+ {
+ 	wake_up_interruptible(&bdflush_wait);
+ }
+
+diff -puN fs/dcache.c~low-latency fs/dcache.c
+--- 24/fs/dcache.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/dcache.c	2003-06-17 20:24:29.000000000 -0700
+@@ -320,11 +320,23 @@ static inline void prune_one_dentry(stru
+  
+ void prune_dcache(int count)
+ {
++	DEFINE_RESCHED_COUNT;
++
++redo:
+ 	spin_lock(&dcache_lock);
+ 	for (;;) {
+ 		struct dentry *dentry;
+ 		struct list_head *tmp;
+ 
++		if (TEST_RESCHED_COUNT(100)) {
++			RESET_RESCHED_COUNT();
++			if (conditional_schedule_needed()) {
++				spin_unlock(&dcache_lock);
++				unconditional_schedule();
++				goto redo;
++			}
++		}
++
+ 		tmp = dentry_unused.prev;
+ 
+ 		if (tmp == &dentry_unused)
+@@ -479,6 +491,7 @@ static int select_parent(struct dentry *
+ 	struct dentry *this_parent = parent;
+ 	struct list_head *next;
+ 	int found = 0;
++	DEFINE_RESCHED_COUNT;
+ 
+ 	spin_lock(&dcache_lock);
+ repeat:
+@@ -493,6 +506,13 @@ resume:
+ 			list_add(&dentry->d_lru, dentry_unused.prev);
+ 			found++;
+ 		}
++
++		if (TEST_RESCHED_COUNT(500) && found > 10) {
++			if (conditional_schedule_needed())	/* Typically sys_rmdir() */
++				goto out;
++			RESET_RESCHED_COUNT();
++		}
++
+ 		/*
+ 		 * Descend a level if the d_subdirs list is non-empty.
+ 		 */
+@@ -517,6 +537,7 @@ this_parent->d_parent->d_name.name, this
+ #endif
+ 		goto resume;
+ 	}
++out:
+ 	spin_unlock(&dcache_lock);
+ 	return found;
+ }
+@@ -532,8 +553,10 @@ void shrink_dcache_parent(struct dentry 
+ {
+ 	int found;
+ 
+-	while ((found = select_parent(parent)) != 0)
++	while ((found = select_parent(parent)) != 0) {
+ 		prune_dcache(found);
++		conditional_schedule();		/* Typically sys_rmdir() */
++	}
+ }
+ 
+ /*
+diff -puN fs/exec.c~low-latency fs/exec.c
+--- 24/fs/exec.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/exec.c	2003-06-17 20:24:29.000000000 -0700
+@@ -244,7 +244,7 @@ int copy_strings(int argc,char ** argv, 
+ 					memset(kaddr+offset+len, 0,
+ 						PAGE_SIZE-offset-len);
+ 			}
+-			err = copy_from_user(kaddr+offset, str, bytes_to_copy);
++			err = ll_copy_from_user(kaddr+offset, str, bytes_to_copy);
+ 			if (err) {
+ 				ret = -EFAULT;
+ 				goto out;
+diff -puN fs/ext2/dir.c~low-latency fs/ext2/dir.c
+--- 24/fs/ext2/dir.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/ext2/dir.c	2003-06-17 20:24:29.000000000 -0700
+@@ -153,6 +153,7 @@ static struct page * ext2_get_page(struc
+ 	struct address_space *mapping = dir->i_mapping;
+ 	struct page *page = read_cache_page(mapping, n,
+ 				(filler_t*)mapping->a_ops->readpage, NULL);
++	conditional_schedule();		/* Scanning large directories */
+ 	if (!IS_ERR(page)) {
+ 		wait_on_page(page);
+ 		kmap(page);
+diff -puN fs/ext2/inode.c~low-latency fs/ext2/inode.c
+--- 24/fs/ext2/inode.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/ext2/inode.c	2003-06-17 20:24:29.000000000 -0700
+@@ -715,8 +715,13 @@ static inline void ext2_free_data(struct
+ {
+ 	unsigned long block_to_free = 0, count = 0;
+ 	unsigned long nr;
++	DEFINE_RESCHED_COUNT;
+ 
+ 	for ( ; p < q ; p++) {
++		if (TEST_RESCHED_COUNT(32)) {
++			RESET_RESCHED_COUNT();
++			conditional_schedule();
++		}
+ 		nr = le32_to_cpu(*p);
+ 		if (nr) {
+ 			*p = 0;
+@@ -759,6 +764,7 @@ static void ext2_free_branches(struct in
+ 	if (depth--) {
+ 		int addr_per_block = EXT2_ADDR_PER_BLOCK(inode->i_sb);
+ 		for ( ; p < q ; p++) {
++			conditional_schedule();		/* Deleting large files */
+ 			nr = le32_to_cpu(*p);
+ 			if (!nr)
+ 				continue;
+diff -puN fs/inode.c~low-latency fs/inode.c
+--- 24/fs/inode.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/inode.c	2003-06-17 20:24:29.000000000 -0700
+@@ -278,6 +278,8 @@ static inline void __sync_one(struct ino
+ 
+ 	filemap_fdatawait(inode->i_mapping);
+ 
++	conditional_schedule();
++
+ 	spin_lock(&inode_lock);
+ 	inode->i_state &= ~I_LOCK;
+ 	if (!(inode->i_state & I_FREEING)) {
+@@ -588,6 +590,7 @@ static void dispose_list(struct list_hea
+ 
+ 	while ((inode_entry = head->next) != head)
+ 	{
++		conditional_schedule();
+ 		list_del(inode_entry);
+ 
+ 		inode = list_entry(inode_entry, struct inode, i_list);
+@@ -616,9 +619,22 @@ static int invalidate_list(struct list_h
+ 		if (tmp == head)
+ 			break;
+ 		inode = list_entry(tmp, struct inode, i_list);
++
++		if (conditional_schedule_needed()) {
++			atomic_inc(&inode->i_count);
++			spin_unlock(&inode_lock);
++			unconditional_schedule();
++			spin_lock(&inode_lock);
++			atomic_dec(&inode->i_count);
++		}
++			
+ 		if (inode->i_sb != sb)
+ 			continue;
++		atomic_inc(&inode->i_count);
++		spin_unlock(&inode_lock);
+ 		invalidate_inode_buffers(inode);
++		spin_lock(&inode_lock);
++		atomic_dec(&inode->i_count);
+ 		if (!atomic_read(&inode->i_count)) {
+ 			list_del_init(&inode->i_hash);
+ 			list_del(&inode->i_list);
+@@ -716,15 +732,28 @@ void prune_icache(int goal)
+ 	struct list_head *entry, *freeable = &list;
+ 	int count;
+ 	struct inode * inode;
++	int nr_to_scan = inodes_stat.nr_unused;
+ 
++resume:
+ 	spin_lock(&inode_lock);
+-
+ 	count = 0;
+ 	entry = inode_unused.prev;
+-	while (entry != &inode_unused)
+-	{
++	while (entry != &inode_unused && nr_to_scan--) {
+ 		struct list_head *tmp = entry;
+ 
++		if (conditional_schedule_needed()) {
++			/*
++			 * Need to drop the lock.  Reposition
++			 * the list head so we start here next time.
++			 * This can corrupt the LRU nature of the
++			 * unused list, but this isn't very important.
++			 */
++			list_del(&inode_unused);
++			list_add(&inode_unused, entry);
++			spin_unlock(&inode_lock);
++			unconditional_schedule();
++			goto resume;
++		}
+ 		entry = entry->prev;
+ 		inode = INODE(tmp);
+ 		if (inode->i_state & (I_FREEING|I_CLEAR|I_LOCK))
+@@ -846,6 +875,8 @@ static struct inode * get_new_inode(stru
+ 	if (inode) {
+ 		struct inode * old;
+ 
++		conditional_schedule();			/* sync_old_buffers */
++
+ 		spin_lock(&inode_lock);
+ 		/* We released the lock, so.. */
+ 		old = find_inode(sb, ino, head, find_actor, opaque);
+diff -puN fs/proc/array.c~low-latency fs/proc/array.c
+--- 24/fs/proc/array.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/proc/array.c	2003-06-17 20:24:29.000000000 -0700
+@@ -415,9 +415,11 @@ static inline void statm_pte_range(pmd_t
+ 	if (end > PMD_SIZE)
+ 		end = PMD_SIZE;
+ 	do {
+-		pte_t page = *pte;
++		pte_t page;
+ 		struct page *ptpage;
+ 
++		conditional_schedule();		/* For `top' and `ps' */
++		page = *pte;
+ 		address += PAGE_SIZE;
+ 		pte++;
+ 		if (pte_none(page))
+diff -puN fs/proc/generic.c~low-latency fs/proc/generic.c
+--- 24/fs/proc/generic.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/proc/generic.c	2003-06-17 20:24:29.000000000 -0700
+@@ -98,6 +98,8 @@ proc_file_read(struct file * file, char 
+ 				retval = n;
+ 			break;
+ 		}
++
++		conditional_schedule();		/* Some /proc files are large */
+ 		
+ 		/* This is a hack to allow mangling of file pos independent
+  		 * of actual bytes read.  Simply place the data at page,
+diff -puN fs/reiserfs/bitmap.c~low-latency fs/reiserfs/bitmap.c
+diff -puN fs/reiserfs/buffer2.c~low-latency fs/reiserfs/buffer2.c
+--- 24/fs/reiserfs/buffer2.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/reiserfs/buffer2.c	2003-06-17 20:24:29.000000000 -0700
+@@ -54,6 +54,7 @@ struct buffer_head  * reiserfs_bread (st
+     PROC_EXP( unsigned int ctx_switches = kstat.context_swtch );
+ 
+     result = bread (super -> s_dev, n_block, n_size);
++    conditional_schedule();
+     PROC_INFO_INC( super, breads );
+     PROC_EXP( if( kstat.context_swtch != ctx_switches ) 
+ 	      PROC_INFO_INC( super, bread_miss ) );
+diff -puN fs/reiserfs/journal.c~low-latency fs/reiserfs/journal.c
+--- 24/fs/reiserfs/journal.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/reiserfs/journal.c	2003-06-17 20:24:29.000000000 -0700
+@@ -573,6 +573,7 @@ inline void insert_journal_hash(struct r
+ /* lock the current transaction */
+ inline static void lock_journal(struct super_block *p_s_sb) {
+   PROC_INFO_INC( p_s_sb, journal.lock_journal );
++  conditional_schedule();
+   while(atomic_read(&(SB_JOURNAL(p_s_sb)->j_wlock)) > 0) {
+     PROC_INFO_INC( p_s_sb, journal.lock_journal_wait );
+     sleep_on(&(SB_JOURNAL(p_s_sb)->j_wait)) ;
+@@ -703,6 +704,7 @@ reiserfs_panic(s, "journal-539: flush_co
+ 	mark_buffer_dirty(tbh) ;
+       }
+       ll_rw_block(WRITE, 1, &tbh) ;
++      conditional_schedule();
+       count++ ;
+       put_bh(tbh) ; /* once for our get_hash */
+     } 
+@@ -832,6 +834,7 @@ static int _update_journal_header_block(
+     set_bit(BH_Dirty, &(SB_JOURNAL(p_s_sb)->j_header_bh->b_state)) ;
+     ll_rw_block(WRITE, 1, &(SB_JOURNAL(p_s_sb)->j_header_bh)) ;
+     wait_on_buffer((SB_JOURNAL(p_s_sb)->j_header_bh)) ; 
++    conditional_schedule();
+     if (!buffer_uptodate(SB_JOURNAL(p_s_sb)->j_header_bh)) {
+       printk( "reiserfs: journal-837: IO error during journal replay\n" );
+       return -EIO ;
+@@ -2131,6 +2134,7 @@ static int journal_join(struct reiserfs_
+ }
+ 
+ int journal_begin(struct reiserfs_transaction_handle *th, struct super_block  * p_s_sb, unsigned long nblocks) {
++  conditional_schedule();
+   return do_journal_begin_r(th, p_s_sb, nblocks, 0) ;
+ }
+ 
+@@ -2271,6 +2275,7 @@ int journal_mark_dirty_nolog(struct reis
+ }
+ 
+ int journal_end(struct reiserfs_transaction_handle *th, struct super_block *p_s_sb, unsigned long nblocks) {
++  conditional_schedule();
+   return do_journal_end(th, p_s_sb, nblocks, 0) ;
+ }
+ 
+@@ -2742,6 +2747,7 @@ void reiserfs_prepare_for_journal(struct
+       RFALSE( buffer_locked(bh) && cur_tb != NULL,
+ 	      "waiting while do_balance was running\n") ;
+       wait_on_buffer(bh) ;
++      conditional_schedule();
+     }
+     PROC_INFO_INC( p_s_sb, journal.prepare_retry );
+     retry_count++ ;
+@@ -2914,6 +2920,7 @@ printk("journal-2020: do_journal_end: BA
+     /* copy all the real blocks into log area.  dirty log blocks */
+     if (test_bit(BH_JDirty, &cn->bh->b_state)) {
+       struct buffer_head *tmp_bh ;
++      conditional_schedule();
+       tmp_bh = sb_getblk(p_s_sb, reiserfs_get_journal_block(p_s_sb) + 
+ 		     ((cur_write_start + jindex) % JOURNAL_BLOCK_COUNT)) ;
+       mark_buffer_uptodate(tmp_bh, 1) ;
+diff -puN fs/jbd/checkpoint.c~low-latency fs/jbd/checkpoint.c
+--- 24/fs/jbd/checkpoint.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/jbd/checkpoint.c	2003-06-17 20:24:29.000000000 -0700
+@@ -431,7 +431,11 @@ int __journal_clean_checkpoint_list(jour
+ {
+ 	transaction_t *transaction, *last_transaction, *next_transaction;
+ 	int ret = 0;
++	int ll_retries = 4;		/* lowlatency addition */
+ 
++restart:
++	if (ll_retries-- == 0)
++		goto out;
+ 	transaction = journal->j_checkpoint_transactions;
+ 	if (transaction == 0)
+ 		goto out;
+@@ -451,6 +455,12 @@ int __journal_clean_checkpoint_list(jour
+ 				jh = next_jh;
+ 				next_jh = jh->b_cpnext;
+ 				ret += __try_to_free_cp_buf(jh);
++				if (conditional_schedule_needed()) {
++					spin_unlock(&journal_datalist_lock);
++					unconditional_schedule();
++					spin_lock(&journal_datalist_lock);
++					goto restart;
++				}
+ 			} while (jh != last_jh);
+ 		}
+ 	} while (transaction != last_transaction);
+diff -puN fs/jbd/commit.c~low-latency fs/jbd/commit.c
+--- 24/fs/jbd/commit.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/jbd/commit.c	2003-06-17 20:24:29.000000000 -0700
+@@ -212,6 +212,16 @@ write_out_data_locked:
+ 				__journal_remove_journal_head(bh);
+ 				refile_buffer(bh);
+ 				__brelse(bh);
++				if (conditional_schedule_needed()) {
++					if (commit_transaction->t_sync_datalist)
++						commit_transaction->t_sync_datalist =
++							next_jh;
++					if (bufs)
++						break;
++					spin_unlock(&journal_datalist_lock);
++					unconditional_schedule();
++					goto write_out_data;
++				}
+ 			}
+ 		}
+ 		if (bufs == ARRAY_SIZE(wbuf)) {
+@@ -235,8 +245,7 @@ write_out_data_locked:
+ 		journal_brelse_array(wbuf, bufs);
+ 		lock_journal(journal);
+ 		spin_lock(&journal_datalist_lock);
+-		if (bufs)
+-			goto write_out_data_locked;
++		goto write_out_data_locked;
+ 	}
+ 
+ 	/*
+@@ -272,6 +281,15 @@ sync_datalist_empty:
+ 	 */
+ 	while ((jh = commit_transaction->t_async_datalist)) {
+ 		struct buffer_head *bh = jh2bh(jh);
++
++		if (conditional_schedule_needed()) {
++			spin_unlock(&journal_datalist_lock);
++			unlock_journal(journal);
++			unconditional_schedule();
++			lock_journal(journal);
++			spin_lock(&journal_datalist_lock);
++			continue;	/* List may have changed */
++		}
+ 		if (__buffer_state(bh, Freed)) {
+ 			BUFFER_TRACE(bh, "Cleaning freed buffer");
+ 			clear_bit(BH_Freed, &bh->b_state);
+@@ -491,6 +509,8 @@ start_journal_io:
+  wait_for_iobuf:
+ 	while (commit_transaction->t_iobuf_list != NULL) {
+ 		struct buffer_head *bh;
++
++		conditional_schedule();
+ 		jh = commit_transaction->t_iobuf_list->b_tprev;
+ 		bh = jh2bh(jh);
+ 		if (buffer_locked(bh)) {
+@@ -649,6 +669,8 @@ skip_commit: /* The journal should be un
+ 		transaction_t *cp_transaction;
+ 		struct buffer_head *bh;
+ 
++		conditional_schedule();		/* journal is locked */
++
+ 		jh = commit_transaction->t_forget;
+ 		J_ASSERT_JH(jh,	jh->b_transaction == commit_transaction ||
+ 			jh->b_transaction == journal->j_running_transaction);
+diff -puN fs/jbd/recovery.c~low-latency fs/jbd/recovery.c
+diff -puN fs/ext3/balloc.c~low-latency fs/ext3/balloc.c
+--- 24/fs/ext3/balloc.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/ext3/balloc.c	2003-06-17 20:24:29.000000000 -0700
+@@ -363,6 +363,9 @@ do_more:
+ 			}
+ 		}
+ #endif
++		/* superblock lock is held, so this is safe */
++		conditional_schedule();
++
+ 		BUFFER_TRACE(bitmap_bh, "clear bit");
+ 		if (!ext3_clear_bit (bit + i, bitmap_bh->b_data)) {
+ 			ext3_error(sb, __FUNCTION__,
+diff -puN fs/ext3/inode.c~low-latency fs/ext3/inode.c
+--- 24/fs/ext3/inode.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/ext3/inode.c	2003-06-17 20:24:29.000000000 -0700
+@@ -917,6 +917,8 @@ struct buffer_head *ext3_bread(handle_t 
+ 
+ 	prev_blocks = inode->i_blocks;
+ 
++	conditional_schedule();		/* Reading large directories */
++
+ 	bh = ext3_getblk (handle, inode, block, create, err);
+ 	if (!bh)
+ 		return bh;
+@@ -1620,6 +1622,7 @@ ext3_clear_blocks(handle_t *handle, stru
+ 	 */
+ 	for (p = first; p < last; p++) {
+ 		u32 nr = le32_to_cpu(*p);
++		conditional_schedule();
+ 		if (nr) {
+ 			struct buffer_head *bh;
+ 
+@@ -1674,6 +1677,7 @@ static void ext3_free_data(handle_t *han
+ 	}
+ 
+ 	for (p = first; p < last; p++) {
++		conditional_schedule();
+ 		nr = le32_to_cpu(*p);
+ 		if (nr) {
+ 			/* accumulate blocks to free if they're contiguous */
+diff -puN fs/ext3/namei.c~low-latency fs/ext3/namei.c
+--- 24/fs/ext3/namei.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/fs/ext3/namei.c	2003-06-17 20:24:29.000000000 -0700
+@@ -157,6 +157,7 @@ restart:
+ 		if ((bh = bh_use[ra_ptr++]) == NULL)
+ 			goto next;
+ 		wait_on_buffer(bh);
++		conditional_schedule();
+ 		if (!buffer_uptodate(bh)) {
+ 			/* read error, skip block & hope for the best */
+ 			brelse(bh);
+diff -puN kernel/exit.c~low-latency kernel/exit.c
+--- 24/kernel/exit.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/kernel/exit.c	2003-06-17 20:24:29.000000000 -0700
+@@ -196,6 +196,7 @@ static inline void close_files(struct fi
+ 			}
+ 			i++;
+ 			set >>= 1;
++			conditional_schedule();		/* sys_exit, many files open */
+ 		}
+ 	}
+ }
+diff -puN kernel/ksyms.c~low-latency kernel/ksyms.c
+--- 24/kernel/ksyms.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/kernel/ksyms.c	2003-06-17 20:24:29.000000000 -0700
+@@ -463,6 +463,13 @@ EXPORT_SYMBOL(xtime);
+ EXPORT_SYMBOL(do_gettimeofday);
+ EXPORT_SYMBOL(do_settimeofday);
+ 
++#if LOWLATENCY_NEEDED
++EXPORT_SYMBOL(set_running_and_schedule);
++#ifdef CONFIG_LOLAT_SYSCTL
++EXPORT_SYMBOL(__enable_lowlatency);
++#endif
++#endif
++
+ #if !defined(__ia64__)
+ EXPORT_SYMBOL(loops_per_jiffy);
+ #endif
+diff -puN kernel/module.c~low-latency kernel/module.c
+--- 24/kernel/module.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/kernel/module.c	2003-06-17 20:24:29.000000000 -0700
+@@ -1174,6 +1174,11 @@ static void *s_start(struct seq_file *m,
+ 		return ERR_PTR(-ENOMEM);
+ 	lock_kernel();
+ 	for (v = module_list, n = *pos; v; n -= v->nsyms, v = v->next) {
++#if 0
++		/* We can't actually do this, because we'd create a
++		 * race against module unload.  Need a semaphore. */
++		conditional_schedule();
++#endif
+ 		if (n < v->nsyms) {
+ 			p->mod = v;
+ 			p->index = n;
+diff -puN kernel/sched.c~low-latency kernel/sched.c
+--- 24/kernel/sched.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/kernel/sched.c	2003-06-17 20:24:29.000000000 -0700
+@@ -302,6 +302,17 @@ send_now_idle:
+ 		if (tsk->processor != this_cpu)
+ 			smp_send_reschedule(tsk->processor);
+ 	}
++#if LOWLATENCY_NEEDED
++	if (enable_lowlatency && (p->policy != SCHED_OTHER)) {
++		struct task_struct *t;
++		for (i = 0; i < smp_num_cpus; i++) {
++			cpu = cpu_logical_map(i);
++			t = cpu_curr(cpu);
++			if (t != tsk)
++				t->need_resched = 1;
++		}
++	}
++#endif
+ 	return;
+ 		
+ 
+@@ -625,6 +636,11 @@ repeat_schedule:
+ 		goto repeat_schedule;
+ 	}
+ 
++	if (unlikely(prev->need_resched)) {
++		prev->need_resched = 0;
++		goto repeat_schedule;
++	}
++
+ 	/*
+ 	 * from this point on nothing can prevent us from
+ 	 * switching to the next task, save this fact in
+@@ -1411,3 +1427,93 @@
+ 	enter_lazy_tlb(&init_mm, current, cpu);
+ }
+ #endif /* ifndef CONFIG_RTSCHED */
++
++#if LOWLATENCY_NEEDED
++#if LOWLATENCY_DEBUG
++
++static struct lolat_stats_t *lolat_stats_head;
++static spinlock_t lolat_stats_lock = SPIN_LOCK_UNLOCKED;
++
++void set_running_and_schedule(struct lolat_stats_t *stats)
++{
++	spin_lock(&lolat_stats_lock);
++	if (stats->visited == 0) {
++		stats->visited = 1;
++		stats->next = lolat_stats_head;
++		lolat_stats_head = stats;
++	}
++	stats->count++;
++	spin_unlock(&lolat_stats_lock);
++
++	if (current->state != TASK_RUNNING)
++		set_current_state(TASK_RUNNING);
++	schedule();
++}
++
++void show_lolat_stats(void)
++{
++	struct lolat_stats_t *stats = lolat_stats_head;
++
++	printk("Low latency scheduling stats:\n");
++	while (stats) {
++		printk("%s:%d: %lu\n", stats->file, stats->line, stats->count);
++		stats->count = 0;
++		stats = stats->next;
++	}
++}
++
++#else	/* LOWLATENCY_DEBUG */
++
++void set_running_and_schedule()
++{
++	if (current->state != TASK_RUNNING)
++		__set_current_state(TASK_RUNNING);
++	schedule();
++}
++
++#endif	/* LOWLATENCY_DEBUG */
++
++int ll_copy_to_user(void *to_user, const void *from, unsigned long len)
++{
++	while (len) {
++		unsigned long n_to_copy = len;
++		unsigned long remainder;
++
++		if (n_to_copy > 4096)
++			n_to_copy = 4096;
++		remainder = copy_to_user(to_user, from, n_to_copy);
++		if (remainder)
++			return remainder + len;
++		to_user = ((char *)to_user) + n_to_copy;
++		from = ((char *)from) + n_to_copy;
++		len -= n_to_copy;
++		conditional_schedule();
++	}
++	return 0;
++}
++
++int ll_copy_from_user(void *to, const void *from_user, unsigned long len)
++{
++	while (len) {
++		unsigned long n_to_copy = len;
++		unsigned long remainder;
++
++		if (n_to_copy > 4096)
++			n_to_copy = 4096;
++		remainder = copy_from_user(to, from_user, n_to_copy);
++		if (remainder)
++			return remainder + len;
++		to = ((char *)to) + n_to_copy;
++		from_user = ((char *)from_user) + n_to_copy;
++		len -= n_to_copy;
++		conditional_schedule();
++	}
++	return 0;
++}
++
++#ifdef CONFIG_LOLAT_SYSCTL
++struct low_latency_enable_struct __enable_lowlatency = { 0, };
++#endif
++
++#endif	/* LOWLATENCY_NEEDED */
++
+diff -puN kernel/sysctl.c~low-latency kernel/sysctl.c
+--- 24/kernel/sysctl.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/kernel/sysctl.c	2003-06-17 20:24:29.000000000 -0700
+@@ -266,6 +266,10 @@
+ 	{KERN_KDB, "kdb", &kdb_on, sizeof(int),
+ 	 0644, NULL, &proc_dointvec},
+ #endif	/* CONFIG_KDB */
++#ifdef CONFIG_LOLAT_SYSCTL
++	{KERN_LOWLATENCY, "lowlatency", &enable_lowlatency, sizeof (int),
++	 0644, NULL, &proc_dointvec},
++#endif
+ 	{0}
+ };
+ 
+diff -puN mm/filemap.c~low-latency mm/filemap.c
+--- 24/mm/filemap.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/mm/filemap.c	2003-06-17 20:24:29.000000000 -0700
+@@ -183,7 +183,9 @@ void invalidate_inode_pages(struct inode
+ {
+ 	struct list_head *head, *curr;
+ 	struct page * page;
++	int ll_count = 100;
+ 
++restart:
+ 	head = &inode->i_mapping->clean_pages;
+ 
+ 	spin_lock(&pagemap_lru_lock);
+@@ -194,6 +196,14 @@ void invalidate_inode_pages(struct inode
+ 		page = list_entry(curr, struct page, list);
+ 		curr = curr->next;
+ 
++		if (conditional_schedule_needed() && ll_count) {
++			spin_unlock(&pagecache_lock);
++			spin_unlock(&pagemap_lru_lock);
++			unconditional_schedule();
++			ll_count--;
++			goto restart;
++		}
++
+ 		/* We cannot invalidate something in dirty.. */
+ 		if (PageDirty(page))
+ 			continue;
+@@ -257,8 +267,7 @@ static void truncate_complete_page(struc
+ 	page_cache_release(page);
+ }
+ 
+-static int FASTCALL(truncate_list_pages(struct list_head *, unsigned long, unsigned *));
+-static int truncate_list_pages(struct list_head *head, unsigned long start, unsigned *partial)
++static int truncate_list_pages(struct list_head *head, unsigned long start, unsigned *partial, int *restart_count)
+ {
+ 	struct list_head *curr;
+ 	struct page * page;
+@@ -269,6 +278,17 @@ static int truncate_list_pages(struct li
+ 	while (curr != head) {
+ 		unsigned long offset;
+ 
++		if (conditional_schedule_needed() && *restart_count) {
++			(*restart_count)--;
++			list_del(head);
++			list_add(head, curr);		/* Restart on this page */
++			spin_unlock(&pagecache_lock);
++			unconditional_schedule();
++			spin_lock(&pagecache_lock);
++			unlocked = 1;
++			goto restart;
++		}
++
+ 		page = list_entry(curr, struct page, list);
+ 		offset = page->index;
+ 
+@@ -301,13 +321,11 @@ static int truncate_list_pages(struct li
+ 			} else
+  				wait_on_page(page);
+ 
+-			page_cache_release(page);
+-
+-			if (current->need_resched) {
+-				__set_current_state(TASK_RUNNING);
+-				schedule();
++			if (LOWLATENCY_NEEDED) {
++				*restart_count = 4;	/* We made progress */
+ 			}
+ 
++			page_cache_release(page);
+ 			spin_lock(&pagecache_lock);
+ 			goto restart;
+ 		}
+@@ -330,13 +348,14 @@ void truncate_inode_pages(struct address
+ {
+ 	unsigned long start = (lstart + PAGE_CACHE_SIZE - 1) >> PAGE_CACHE_SHIFT;
+ 	unsigned partial = lstart & (PAGE_CACHE_SIZE - 1);
++	int restart_count = 4;
+ 	int unlocked;
+ 
+ 	spin_lock(&pagecache_lock);
+ 	do {
+-		unlocked = truncate_list_pages(&mapping->clean_pages, start, &partial);
+-		unlocked |= truncate_list_pages(&mapping->dirty_pages, start, &partial);
+-		unlocked |= truncate_list_pages(&mapping->locked_pages, start, &partial);
++		unlocked = truncate_list_pages(&mapping->clean_pages, start, &partial, &restart_count);
++		unlocked |= truncate_list_pages(&mapping->dirty_pages, start, &partial, &restart_count);
++		unlocked |= truncate_list_pages(&mapping->locked_pages, start, &partial, &restart_count);
+ 	} while (unlocked);
+ 	/* Traversed all three lists without dropping the lock */
+ 	spin_unlock(&pagecache_lock);
+@@ -481,6 +500,7 @@ static int do_buffer_fdatasync(struct li
+ 
+ 		page_cache_get(page);
+ 		spin_unlock(&pagecache_lock);
++		conditional_schedule();		/* sys_msync() (only used by minixfs, udf) */
+ 		lock_page(page);
+ 
+ 		/* The buffers could have been free'd while we waited for the page lock */
+@@ -567,12 +587,14 @@ int filemap_fdatasync(struct address_spa
+ 		list_del(&page->list);
+ 		list_add(&page->list, &mapping->locked_pages);
+ 
+-		if (!PageDirty(page))
+-			continue;
+-
+ 		page_cache_get(page);
+ 		spin_unlock(&pagecache_lock);
+ 
++		conditional_schedule();		/* sys_msync() */
++
++		if (!PageDirty(page))
++			goto clean;
++
+ 		lock_page(page);
+ 
+ 		if (PageDirty(page)) {
+@@ -583,7 +605,7 @@ int filemap_fdatasync(struct address_spa
+ 				ret = err;
+ 		} else
+ 			UnlockPage(page);
+-
++clean:
+ 		page_cache_release(page);
+ 		spin_lock(&pagecache_lock);
+ 	}
+@@ -601,7 +623,8 @@ int filemap_fdatasync(struct address_spa
+ int filemap_fdatawait(struct address_space * mapping)
+ {
+ 	int ret = 0;
+-
++	DEFINE_RESCHED_COUNT;
++restart:
+ 	spin_lock(&pagecache_lock);
+ 
+         while (!list_empty(&mapping->locked_pages)) {
+@@ -610,6 +633,17 @@ int filemap_fdatawait(struct address_spa
+ 		list_del(&page->list);
+ 		list_add(&page->list, &mapping->clean_pages);
+ 
++		if (TEST_RESCHED_COUNT(32)) {
++			RESET_RESCHED_COUNT();
++			if (conditional_schedule_needed()) {
++				page_cache_get(page);
++				spin_unlock(&pagecache_lock);
++				unconditional_schedule();
++				page_cache_release(page);
++				goto restart;
++			}
++		}
++
+ 		if (!PageLocked(page))
+ 			continue;
+ 
+@@ -710,8 +744,10 @@ static int page_cache_read(struct file *
+ 	spin_lock(&pagecache_lock);
+ 	page = __find_page_nolock(mapping, offset, *hash);
+ 	spin_unlock(&pagecache_lock);
+-	if (page)
++	if (page) {
++		conditional_schedule();
+ 		return 0;
++	}
+ 
+ 	page = page_cache_alloc(mapping);
+ 	if (!page)
+@@ -967,6 +1003,11 @@ static struct page * __find_lock_page_he
+ 	 * the hash-list needs a held write-lock.
+ 	 */
+ repeat:
++	if (conditional_schedule_needed()) {
++		spin_unlock(&pagecache_lock);
++		unconditional_schedule();
++		spin_lock(&pagecache_lock);
++	}
+ 	page = __find_page_nolock(mapping, offset, hash);
+ 	if (page) {
+ 		page_cache_get(page);
+@@ -1417,6 +1458,8 @@ found_page:
+ 		page_cache_get(page);
+ 		spin_unlock(&pagecache_lock);
+ 
++		conditional_schedule();		/* sys_read() */
++
+ 		if (!Page_Uptodate(page))
+ 			goto page_not_up_to_date;
+ 		generic_file_readahead(reada_ok, filp, inode, page);
+@@ -2142,6 +2185,12 @@ static inline int filemap_sync_pte_range
+ 		address += PAGE_SIZE;
+ 		pte++;
+ 	} while (address && (address < end));
++
++	if (conditional_schedule_needed()) {
++		spin_unlock(&vma->vm_mm->page_table_lock);
++		unconditional_schedule();		/* syncing large mapped files */
++		spin_lock(&vma->vm_mm->page_table_lock);
++	}
+ 	return error;
+ }
+ 
+@@ -2555,7 +2604,9 @@ static long madvise_dontneed(struct vm_a
+ 	if (vma->vm_flags & VM_LOCKED)
+ 		return -EINVAL;
+ 
+-	zap_page_range(vma->vm_mm, start, end - start);
++        zap_page_range(vma->vm_mm, start, end - start,
++		ZPR_COND_RESCHED);        /* sys_madvise(MADV_DONTNEED) */
++
+ 	return 0;
+ }
+ 
+@@ -3120,6 +3171,9 @@ generic_file_write(struct file *file,con
+ 			goto sync_failure;
+ 		page_fault = __copy_from_user(kaddr+offset, buf, bytes);
+ 		flush_dcache_page(page);
++
++                conditional_schedule();
++
+ 		status = mapping->a_ops->commit_write(file, page, offset, offset+bytes);
+ 		if (page_fault)
+ 			goto fail_write;
+diff -puN mm/memory.c~low-latency mm/memory.c
+--- 24/mm/memory.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/mm/memory.c	2003-06-17 20:24:29.000000000 -0700
+@@ -357,7 +357,7 @@ static inline int zap_pmd_range(mmu_gath
+ /*
+  * remove user pages in a given range.
+  */
+-void zap_page_range(struct mm_struct *mm, unsigned long address, unsigned long size)
++static void do_zap_page_range(struct mm_struct *mm, unsigned long address, unsigned long size)
+ {
+ 	mmu_gather_t *tlb;
+ 	pgd_t * dir;
+@@ -478,6 +478,10 @@ int get_user_pages(struct task_struct *t
+ 			struct page *map;
+ 			while (!(map = follow_page(mm, start, write))) {
+ 				spin_unlock(&mm->page_table_lock);
++
++				/* Pinning down many physical pages (kiobufs, mlockall) */
++				conditional_schedule();
++
+ 				switch (handle_mm_fault(mm, vma, start, write)) {
+ 				case 1:
+ 					tsk->min_flt++;
+@@ -639,6 +643,21 @@ void unmap_kiobuf (struct kiobuf *iobuf)
+ 	iobuf->locked = 0;
+ }
+ 
++#define MAX_ZAP_BYTES 256*PAGE_SIZE
++
++void zap_page_range(struct mm_struct *mm, unsigned long address, unsigned long size, int actions)
++{
++	while (size) {
++		unsigned long chunk = size;
++		if (actions & ZPR_COND_RESCHED && chunk > MAX_ZAP_BYTES)
++			chunk = MAX_ZAP_BYTES;
++		do_zap_page_range(mm, address, chunk);
++		if (actions & ZPR_COND_RESCHED)
++			conditional_schedule();
++		address += chunk;
++		size -= chunk;
++	}
++}
+ 
+ /*
+  * Lock down all of the pages of a kiovec for IO.
+@@ -748,11 +767,18 @@ int unlock_kiovec(int nr, struct kiobuf 
+ 	return 0;
+ }
+ 
+-static inline void zeromap_pte_range(pte_t * pte, unsigned long address,
+-                                     unsigned long size, pgprot_t prot)
++static inline void zeromap_pte_range(struct mm_struct *mm, pte_t * pte,
++				unsigned long address, unsigned long size,
++				pgprot_t prot)
+ {
+ 	unsigned long end;
+ 
++	if (conditional_schedule_needed()) {
++		spin_unlock(&mm->page_table_lock);
++		unconditional_schedule();		/* mmap(/dev/zero) */
++		spin_lock(&mm->page_table_lock);
++	}
++
+ 	address &= ~PMD_MASK;
+ 	end = address + size;
+ 	if (end > PMD_SIZE)
+@@ -780,7 +806,7 @@ static inline int zeromap_pmd_range(stru
+ 		pte_t * pte = pte_alloc(mm, pmd, address);
+ 		if (!pte)
+ 			return -ENOMEM;
+-		zeromap_pte_range(pte, address, end - address, prot);
++		zeromap_pte_range(mm, pte, address, end - address, prot);
+ 		address = (address + PMD_SIZE) & PMD_MASK;
+ 		pmd++;
+ 	} while (address && (address < end));
+@@ -1014,7 +1040,7 @@ static void vmtruncate_list(struct vm_ar
+ 
+ 		/* mapping wholly truncated? */
+ 		if (mpnt->vm_pgoff >= pgoff) {
+-			zap_page_range(mm, start, len);
++                        zap_page_range(mm, start, len, 0);
+ 			continue;
+ 		}
+ 
+@@ -1027,7 +1053,7 @@ static void vmtruncate_list(struct vm_ar
+ 		/* Ok, partially affected.. */
+ 		start += diff << PAGE_SHIFT;
+ 		len = (len - diff) << PAGE_SHIFT;
+-		zap_page_range(mm, start, len);
++                zap_page_range(mm, start, len, 0);
+ 	} while ((mpnt = mpnt->vm_next_share) != NULL);
+ }
+ 
+diff -puN mm/mmap.c~low-latency mm/mmap.c
+--- 24/mm/mmap.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/mm/mmap.c	2003-06-17 20:24:29.000000000 -0700
+@@ -594,7 +594,7 @@ unmap_and_free_vma:
+ 	fput(file);
+ 
+ 	/* Undo any partial mapping done by a device driver. */
+-	zap_page_range(mm, vma->vm_start, vma->vm_end - vma->vm_start);
++        zap_page_range(mm, vma->vm_start, vma->vm_end - vma->vm_start, 0);
+ free_vma:
+ 	kmem_cache_free(vm_area_cachep, vma);
+ 	return error;
+@@ -994,7 +994,7 @@ int do_munmap(struct mm_struct *mm, unsi
+ 		remove_shared_vm_struct(mpnt);
+ 		mm->map_count--;
+ 
+-		zap_page_range(mm, st, size);
++                zap_page_range(mm, st, size, ZPR_COND_RESCHED);   /* sys_munmap() */
+ 
+ 		/*
+ 		 * Fix the mapping, and free the old area if it wasn't reused.
+@@ -1151,7 +1151,7 @@ void exit_mmap(struct mm_struct * mm)
+ 		}
+ 		mm->map_count--;
+ 		remove_shared_vm_struct(mpnt);
+-		zap_page_range(mm, start, size);
++		zap_page_range(mm, start, size, ZPR_COND_RESCHED);      /* sys_exit() */
+ 		if (mpnt->vm_file)
+ 			fput(mpnt->vm_file);
+ 		kmem_cache_free(vm_area_cachep, mpnt);
+diff -puN mm/mremap.c~low-latency mm/mremap.c
+--- 24/mm/mremap.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/mm/mremap.c	2003-06-17 20:24:29.000000000 -0700
+@@ -118,7 +118,7 @@ oops_we_failed:
+ 	flush_cache_range(mm, new_addr, new_addr + len);
+ 	while ((offset += PAGE_SIZE) < len)
+ 		move_one_page(mm, new_addr + offset, old_addr + offset);
+-	zap_page_range(mm, new_addr, len);
++        zap_page_range(mm, new_addr, len, 0);
+ 	return -1;
+ }
+ 
+diff -puN mm/slab.c~low-latency mm/slab.c
+--- 24/mm/slab.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/mm/slab.c	2003-06-17 20:24:29.000000000 -0700
+@@ -935,6 +935,7 @@ static int __kmem_cache_shrink_locked(km
+ 		list_del(&slabp->list);
+ 
+ 		spin_unlock_irq(&cachep->spinlock);
++		conditional_schedule();
+ 		kmem_slab_destroy(cachep, slabp);
+ 		ret++;
+ 		spin_lock_irq(&cachep->spinlock);
+@@ -1850,6 +1851,7 @@ perfect:
+ 		 */
+ 		spin_unlock_irq(&best_cachep->spinlock);
+ 		kmem_slab_destroy(best_cachep, slabp);
++		conditional_schedule();		/* try_to_free_pages() */
+ 		spin_lock_irq(&best_cachep->spinlock);
+ 	}
+ 	spin_unlock_irq(&best_cachep->spinlock);
+diff -puN mm/swapfile.c~low-latency mm/swapfile.c
+--- 24/mm/swapfile.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/mm/swapfile.c	2003-06-17 20:24:29.000000000 -0700
+@@ -819,7 +819,7 @@ int get_swaparea_info(char *buf)
+ 				len += sprintf(buf + len, "partition\t");
+ 
+ 			usedswap = 0;
+-			for (j = 0; j < ptr->max; ++j)
++			for (j = 0; j < ptr->max; ++j) {
+ 				switch (ptr->swap_map[j]) {
+ 					case SWAP_MAP_BAD:
+ 					case 0:
+@@ -827,6 +827,8 @@ int get_swaparea_info(char *buf)
+ 					default:
+ 						usedswap++;
+ 				}
++				conditional_schedule();
++			}
+ 			len += sprintf(buf + len, "%d\t%d\t%d\n", ptr->pages << (PAGE_SHIFT - 10), 
+ 				usedswap << (PAGE_SHIFT - 10), ptr->prio);
+ 		}
+@@ -1125,6 +1127,11 @@ void si_swapinfo(struct sysinfo *val)
+ 		if (swap_info[i].flags != SWP_USED)
+ 			continue;
+ 		for (j = 0; j < swap_info[i].max; ++j) {
++			if (conditional_schedule_needed()) {
++				swap_list_unlock();
++				conditional_schedule();
++				swap_list_lock();
++			}
+ 			switch (swap_info[i].swap_map[j]) {
+ 				case 0:
+ 				case SWAP_MAP_BAD:
+diff -puN mm/vmscan.c~low-latency mm/vmscan.c
+--- 24/mm/vmscan.c~low-latency	2003-06-17 20:24:28.000000000 -0700
++++ 24-akpm/mm/vmscan.c	2003-06-17 20:24:29.000000000 -0700
+@@ -159,6 +159,7 @@ static inline int swap_out_pmd(struct mm
+ {
+ 	pte_t * pte;
+ 	unsigned long pmd_end;
++	DEFINE_RESCHED_COUNT;
+ 
+ 	if (pmd_none(*dir))
+ 		return count;
+@@ -184,11 +185,17 @@ static inline int swap_out_pmd(struct mm
+ 					address += PAGE_SIZE;
+ 					break;
+ 				}
++                                if (TEST_RESCHED_COUNT(4)) {
++                                        if (conditional_schedule_needed())
++						goto out;
++                                        RESET_RESCHED_COUNT();
++                                }
+ 			}
+ 		}
+ 		address += PAGE_SIZE;
+ 		pte++;
+ 	} while (address && (address < end));
++out:
+ 	mm->swap_address = address;
+ 	return count;
+ }
+@@ -217,6 +224,8 @@ static inline int swap_out_pgd(struct mm
+ 		count = swap_out_pmd(mm, vma, pmd, address, end, count, classzone);
+ 		if (!count)
+ 			break;
++		if (conditional_schedule_needed())
++			return count;
+ 		address = (address + PMD_SIZE) & PMD_MASK;
+ 		pmd++;
+ 	} while (address && (address < end));
+@@ -241,6 +250,8 @@ static inline int swap_out_vma(struct mm
+ 		count = swap_out_pgd(mm, vma, pgdir, address, end, count, classzone);
+ 		if (!count)
+ 			break;
++		if (conditional_schedule_needed())
++			return count;
+ 		address = (address + PGDIR_SIZE) & PGDIR_MASK;
+ 		pgdir++;
+ 	} while (address && (address < end));
+@@ -262,6 +273,7 @@ static inline int swap_out_mm(struct mm_
+ 	 * Find the proper vm-area after freezing the vma chain 
+ 	 * and ptes.
+ 	 */
++continue_scan:
+ 	spin_lock(&mm->page_table_lock);
+ 	address = mm->swap_address;
+ 	if (address == TASK_SIZE || swap_mm != mm) {
+@@ -279,6 +291,12 @@ static inline int swap_out_mm(struct mm_
+ 			vma = vma->vm_next;
+ 			if (!vma)
+ 				break;
++                        if (conditional_schedule_needed()) {    /* Scanning a large vma */
++                                spin_unlock(&mm->page_table_lock);
++                                unconditional_schedule();
++                                /* Continue from where we left off */
++                                goto continue_scan;
++                        }
+ 			if (!count)
+ 				goto out_unlock;
+ 			address = vma->vm_start;
+diff -puN mm/page_alloc.c~low-latency mm/page_alloc.c
+diff -puN net/core/iovec.c~low-latency net/core/iovec.c
+--- 24/net/core/iovec.c~low-latency	2003-06-17 20:24:29.000000000 -0700
++++ 24-akpm/net/core/iovec.c	2003-06-17 20:24:29.000000000 -0700
+@@ -88,7 +88,7 @@ int memcpy_toiovec(struct iovec *iov, un
+ 		if(iov->iov_len)
+ 		{
+ 			int copy = min_t(unsigned int, iov->iov_len, len);
+-			if (copy_to_user(iov->iov_base, kdata, copy))
++                        if (ll_copy_to_user(iov->iov_base, kdata, copy))
+ 				goto out;
+ 			kdata+=copy;
+ 			len-=copy;
+diff -puN net/ipv4/tcp_minisocks.c~low-latency net/ipv4/tcp_minisocks.c
+--- 24/net/ipv4/tcp_minisocks.c~low-latency	2003-06-17 20:24:29.000000000 -0700
++++ 24-akpm/net/ipv4/tcp_minisocks.c	2003-06-17 20:24:29.000000000 -0700
+@@ -433,6 +433,9 @@ static void SMP_TIMER_NAME(tcp_twkill)(u
+ {
+ 	struct tcp_tw_bucket *tw;
+ 	int killed = 0;
++#if LOWLATENCY_NEEDED
++	int max_killed = 0;
++#endif
+ 
+ 	/* NOTE: compare this to previous version where lock
+ 	 * was released after detaching chain. It was racy,
+@@ -446,6 +449,13 @@ static void SMP_TIMER_NAME(tcp_twkill)(u
+ 		goto out;
+ 
+ 	while((tw = tcp_tw_death_row[tcp_tw_death_row_slot]) != NULL) {
++#if LOWLATENCY_NEEDED
++		/* This loop takes ~6 usecs per iteration. */
++		if (killed > 100) {
++			max_killed = 1;
++			break;
++		}
++#endif
+ 		tcp_tw_death_row[tcp_tw_death_row_slot] = tw->next_death;
+ 		tw->pprev_death = NULL;
+ 		spin_unlock(&tw_death_lock);
+@@ -456,12 +466,24 @@ static void SMP_TIMER_NAME(tcp_twkill)(u
+ 		killed++;
+ 
+ 		spin_lock(&tw_death_lock);
++
++	}
++
++#if LOWLATENCY_NEEDED
++	if (max_killed) {	/* More to do: do it soon */
++		mod_timer(&tcp_tw_timer, jiffies+2);
++		tcp_tw_count -= killed;
++	}
++	else
++#endif
++	{
++		tcp_tw_death_row_slot =
++			((tcp_tw_death_row_slot + 1) & (TCP_TWKILL_SLOTS - 1));
++	
++		if ((tcp_tw_count -= killed) != 0)
++			mod_timer(&tcp_tw_timer, jiffies+TCP_TWKILL_PERIOD);
+ 	}
+-	tcp_tw_death_row_slot =
+-		((tcp_tw_death_row_slot + 1) & (TCP_TWKILL_SLOTS - 1));
+ 
+-	if ((tcp_tw_count -= killed) != 0)
+-		mod_timer(&tcp_tw_timer, jiffies+TCP_TWKILL_PERIOD);
+ 	net_statistics[smp_processor_id()*2].TimeWaited += killed;
+ out:
+ 	spin_unlock(&tw_death_lock);
+diff -puN drivers/char/drm/mga_dma.c~low-latency drivers/char/drm/mga_dma.c
+diff -puN drivers/char/drm/r128_cce.c~low-latency drivers/char/drm/r128_cce.c
+diff -puN drivers/char/drm/radeon_cp.c~low-latency drivers/char/drm/radeon_cp.c
+diff -puN drivers/i2c/i2c-algo-bit.c~low-latency drivers/i2c/i2c-algo-bit.c
+--- 24/drivers/i2c/i2c-algo-bit.c~low-latency	2003-06-17 20:24:29.000000000 -0700
++++ 24-akpm/drivers/i2c/i2c-algo-bit.c	2003-06-17 20:24:29.000000000 -0700
+@@ -370,6 +370,7 @@ static int sendbytes(struct i2c_adapter 
+ 			return (retval<0)? retval : -EFAULT;
+ 			        /* got a better one ?? */
+ 		}
++		conditional_schedule();
+ #if 0
+ 		/* from asm/delay.h */
+ 		__delay(adap->mdelay * (loops_per_sec / 1000) );
+diff -puN drivers/video/fbcon-cfb16.c~low-latency drivers/video/fbcon-cfb16.c
+--- 24/drivers/video/fbcon-cfb16.c~low-latency	2003-06-17 20:24:29.000000000 -0700
++++ 24-akpm/drivers/video/fbcon-cfb16.c	2003-06-17 20:24:29.000000000 -0700
+@@ -189,6 +189,7 @@ void fbcon_cfb16_putcs(struct vc_data *c
+     case 4:
+     case 8:
+ 	while (count--) {
++	    conditional_schedule();
+ 	    c = scr_readw(s++) & p->charmask;
+ 	    cdat = p->fontdata + c * fontheight(p);
+ 	    for (rows = fontheight(p), dest = dest0; rows--; dest += bytes) {
+@@ -206,6 +207,7 @@ void fbcon_cfb16_putcs(struct vc_data *c
+     case 12:
+     case 16:
+ 	while (count--) {
++	    conditional_schedule();
+ 	    c = scr_readw(s++) & p->charmask;
+ 	    cdat = p->fontdata + (c * fontheight(p) << 1);
+ 	    for (rows = fontheight(p), dest = dest0; rows--; dest += bytes) {
+
+_

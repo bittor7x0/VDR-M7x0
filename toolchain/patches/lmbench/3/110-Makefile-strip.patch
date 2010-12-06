@@ -1,0 +1,47 @@
+diff -Naur lmbench3-orig/Makefile lmbench3/Makefile
+--- lmbench3-orig/Makefile	2005-08-23 02:19:55.000000000 +0200
++++ lmbench3/Makefile	2009-05-14 20:43:11.000000000 +0200
+@@ -4,6 +4,7 @@
+ # Possible things to $(MAKE):
+ #
+ # build		(default) go to the source directory and build the benchmark
++# strip		strip all lmbench binaries
+ # results	go to the source directory and build and run the benchmark
+ # rerun		run the benchmark again
+ # see		see the results that came with this release
+@@ -19,6 +20,9 @@
+ build: 
+ 	cd src && $(MAKE)
+ 
++strip:
++	cd src && $(MAKE) strip
++
+ results: FRC
+ 	cd src && $(MAKE) results
+ 
+diff -Naur lmbench3-orig/src/Makefile lmbench3/src/Makefile
+--- lmbench3-orig/src/Makefile	2009-05-14 20:17:14.000000000 +0200
++++ lmbench3/src/Makefile	2009-05-14 20:47:31.000000000 +0200
+@@ -41,10 +41,10 @@
+ 
+ # base of installation location
+ BASE=/usr/local
+-O= ../bin/unknown
++OS=`../scripts/os`
++O= ../bin/$(OS)
+ D= ../doc
+ TRUE=/bin/true
+-OS=`../scripts/os`
+ TARGET=`../scripts/target`
+ BINDIR=../bin/$(OS)
+ CONFIG=../bin/$(OS)/`../scripts/config`
+@@ -206,6 +206,9 @@
+ edit get-e:
+ 	get -e -s $(SRCS)
+ 
++strip:
++	$(STRIP) $(EXES) $(OPT_EXES)
++
+ clean:
+ 	/bin/rm -f ../bin/*/CONFIG ../bin/*/*.[oas]
+ 	/bin/rm -f *.[oas]

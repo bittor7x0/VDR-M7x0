@@ -1,0 +1,170 @@
+diff -urNp 2.4.20-rc1/kernel/module.c x/kernel/module.c
+--- 2.4.20-rc1/kernel/module.c	Tue Jan 22 18:56:00 2002
++++ x/kernel/module.c	Tue Nov  5 23:42:14 2002
+@@ -78,6 +78,8 @@ static int kmalloc_failed;
+  
+ spinlock_t modlist_lock = SPIN_LOCK_UNLOCKED;
+ 
++static DECLARE_MUTEX(module_mutex);
++
+ /**
+  * inter_module_register - register a new set of inter module data.
+  * @im_name: an arbitrary string to identify the data, must be unique
+@@ -298,6 +300,7 @@ sys_create_module(const char *name_user,
+ 
+ 	if (!capable(CAP_SYS_MODULE))
+ 		return -EPERM;
++	down(&module_mutex);
+ 	lock_kernel();
+ 	if ((namelen = get_mod_name(name_user, &name)) < 0) {
+ 		error = namelen;
+@@ -335,6 +338,7 @@ err1:
+ 	put_mod_name(name);
+ err0:
+ 	unlock_kernel();
++	up(&module_mutex);
+ 	return error;
+ }
+ 
+@@ -353,6 +357,7 @@ sys_init_module(const char *name_user, s
+ 
+ 	if (!capable(CAP_SYS_MODULE))
+ 		return -EPERM;
++	down(&module_mutex);
+ 	lock_kernel();
+ 	if ((namelen = get_mod_name(name_user, &name)) < 0) {
+ 		error = namelen;
+@@ -549,13 +554,16 @@ sys_init_module(const char *name_user, s
+ 	/* Initialize the module.  */
+ 	atomic_set(&mod->uc.usecount,1);
+ 	mod->flags |= MOD_INITIALIZING;
++	up(&module_mutex);
+ 	if (mod->init && (error = mod->init()) != 0) {
++		down(&module_mutex);
+ 		atomic_set(&mod->uc.usecount,0);
+ 		mod->flags &= ~MOD_INITIALIZING;
+ 		if (error > 0)	/* Buggy module */
+ 			error = -EBUSY;
+ 		goto err0;
+ 	}
++	down(&module_mutex);
+ 	atomic_dec(&mod->uc.usecount);
+ 
+ 	/* And set it running.  */
+@@ -572,6 +580,7 @@ err1:
+ 	put_mod_name(name);
+ err0:
+ 	unlock_kernel();
++	up(&module_mutex);
+ 	kfree(name_tmp);
+ 	return error;
+ }
+@@ -602,6 +611,7 @@ sys_delete_module(const char *name_user)
+ 	if (!capable(CAP_SYS_MODULE))
+ 		return -EPERM;
+ 
++	down(&module_mutex);
+ 	lock_kernel();
+ 	if (name_user) {
+ 		if ((error = get_mod_name(name_user, &name)) < 0)
+@@ -665,6 +675,7 @@ restart:
+ 	error = 0;
+ out:
+ 	unlock_kernel();
++	up(&module_mutex);
+ 	return error;
+ }
+ 
+@@ -887,6 +898,7 @@ sys_query_module(const char *name_user, 
+ 	struct module *mod;
+ 	int err;
+ 
++	down(&module_mutex);
+ 	lock_kernel();
+ 	if (name_user == NULL)
+ 		mod = &kernel_module;
+@@ -938,6 +950,7 @@ sys_query_module(const char *name_user, 
+ 	
+ out:
+ 	unlock_kernel();
++	up(&module_mutex);
+ 	return err;
+ }
+ 
+@@ -956,6 +969,7 @@ sys_get_kernel_syms(struct kernel_sym *t
+ 	int i;
+ 	struct kernel_sym ksym;
+ 
++	down(&module_mutex);
+ 	lock_kernel();
+ 	for (mod = module_list, i = 0; mod; mod = mod->next) {
+ 		/* include the count for the module name! */
+@@ -1000,6 +1014,7 @@ sys_get_kernel_syms(struct kernel_sym *t
+ 	}
+ out:
+ 	unlock_kernel();
++	up(&module_mutex);
+ 	return i;
+ }
+ 
+@@ -1037,8 +1052,11 @@ free_module(struct module *mod, int tag_
+ 
+ 	if (mod->flags & MOD_RUNNING)
+ 	{
+-		if(mod->cleanup)
++		if(mod->cleanup) {
++			up(&module_mutex);
+ 			mod->cleanup();
++			down(&module_mutex);
++		}
+ 		mod->flags &= ~MOD_RUNNING;
+ 	}
+ 
+@@ -1082,6 +1100,7 @@ int get_module_list(char *p)
+ 	char tmpstr[64];
+ 	struct module_ref *ref;
+ 
++	down(&module_mutex);
+ 	for (mod = module_list; mod != &kernel_module; mod = mod->next) {
+ 		long len;
+ 		const char *q;
+@@ -1150,6 +1169,7 @@ int get_module_list(char *p)
+ 	}
+ 
+ fini:
++	up(&module_mutex);
+ 	return PAGE_SIZE - left;
+ }
+ 
+@@ -1172,6 +1192,7 @@ static void *s_start(struct seq_file *m,
+ 
+ 	if (!p)
+ 		return ERR_PTR(-ENOMEM);
++	down(&module_mutex);
+ 	lock_kernel();
+ 	for (v = module_list, n = *pos; v; n -= v->nsyms, v = v->next) {
+ 		if (n < v->nsyms) {
+@@ -1181,6 +1202,7 @@ static void *s_start(struct seq_file *m,
+ 		}
+ 	}
+ 	unlock_kernel();
++	up(&module_mutex);
+ 	kfree(p);
+ 	return NULL;
+ }
+@@ -1194,6 +1216,7 @@ static void *s_next(struct seq_file *m, 
+ 			v->mod = v->mod->next;
+ 			if (!v->mod) {
+ 				unlock_kernel();
++				up(&module_mutex);
+ 				kfree(p);
+ 				return NULL;
+ 			}
+@@ -1207,6 +1230,7 @@ static void s_stop(struct seq_file *m, v
+ {
+ 	if (p && !IS_ERR(p)) {
+ 		unlock_kernel();
++		up(&module_mutex);
+ 		kfree(p);
+ 	}
+ }

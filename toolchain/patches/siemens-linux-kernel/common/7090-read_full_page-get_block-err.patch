@@ -1,0 +1,28 @@
+Binary files x-ref/ID and x/ID differ
+diff -urNp x-ref/fs/buffer.c x/fs/buffer.c
+--- x-ref/fs/buffer.c	Mon Nov 18 17:28:37 2002
++++ x/fs/buffer.c	Mon Nov 18 17:39:04 2002
+@@ -1736,7 +1736,7 @@ int block_read_full_page(struct page *pa
+ 		if (!buffer_mapped(bh)) {
+ 			if (iblock < lblock) {
+ 				if (get_block(inode, iblock, bh, 0))
+-					continue;
++					SetPageError(page);
+ 			}
+ 			if (!buffer_mapped(bh)) {
+ 				memset(kmap(page) + i*blocksize, 0, blocksize);
+@@ -1756,10 +1756,11 @@ int block_read_full_page(struct page *pa
+ 
+ 	if (!nr) {
+ 		/*
+-		 * all buffers are uptodate - we can set the page
+-		 * uptodate as well.
++		 * All buffers are uptodate - we can set the page uptodate
++		 * as well. But not if get_block() returned an error.
+ 		 */
+-		SetPageUptodate(page);
++		if (!PageError(page))
++			SetPageUptodate(page);
+ 		UnlockPage(page);
+ 		return 0;
+ 	}

@@ -1,0 +1,43 @@
+diff -Naur vsftpd-2.1.2-orig/vsftpd-m7x0.conf vsftpd-2.1.2/vsftpd-m7x0.conf
+--- vsftpd-2.1.2-orig/vsftpd-m7x0.conf	1970-01-01 01:00:00.000000000 +0100
++++ vsftpd-2.1.2/vsftpd-m7x0.conf	2009-05-31 12:40:58.000000000 +0200
+@@ -0,0 +1,38 @@
++# Please see vsftpd.conf.5 for all compiled in defaults.
++#
++# READ THIS: This file is NOT an exhaustive list of vsftpd options.
++# Please read the vsftpd.conf.5 manual page to get a full idea of vsftpd's
++# capabilities.
++#
++# When "listen" directive is enabled, vsftpd runs in standalone mode and
++# listens on IPv4 sockets. This directive cannot be used in conjunction
++# with the listen_ipv6 directive.
++listen=NO
++#
++# Allow anonymous FTP? (Beware - allowed by default if you comment this out).
++anonymous_enable=NO
++#
++# Uncomment this to allow local users to log in.
++local_enable=YES
++#
++# Will not check /etc/shells for a valid user shell for local logins.
++check_shell=NO
++#
++# Uncomment this to enable any form of FTP write command.
++write_enable=YES
++#
++# Default umask for local users is 077. You may wish to change this to 022,
++# if your users expect that (022 is used by most other ftpd's)
++local_umask=022
++#
++# If enabled, then any log output which would have gone to /var/log/vsftpd.log
++# goes to the system log instead. Logging is done under the FTPD facility.
++syslog_enable=YES
++#
++# If enabled, all user and group information in directory listings will be
++# displayed as "ftp".
++hide_ids=YES
++#
++# By default, numeric IDs are shown in the user and group fields of directory listings.
++# You can get textual names by enabling this parameter. It is off by default for performance reasons.
++#text_userdb_names=YES
+\ No hay ningún carácter de nueva línea al final del fichero

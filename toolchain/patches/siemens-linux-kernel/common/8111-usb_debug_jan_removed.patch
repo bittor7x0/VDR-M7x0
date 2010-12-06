@@ -1,0 +1,61 @@
+diff -Naur slin_m740_orig/drivers/usb/host/usb-ohci.c slin_m740/drivers/usb/host/usb-ohci.c
+--- slin_m740_orig/drivers/usb/host/usb-ohci.c	Fri May 06 12:15:28 2005
++++ slin_m740/drivers/usb/host/usb-ohci.c	Thu Sep 17 19:31:16 2009
+@@ -2506,34 +2506,26 @@
+ 	/* disconnect all devices */    
+ 	if (ohci->bus->root_hub)
+ 		usb_disconnect (&ohci->bus->root_hub);
+-	printk("DEBUG_JAN2\n");
+ 
+ 	if (!ohci->disabled)
+ 		hc_reset (ohci);
+-	printk("DEBUG_JAN3\n");
+ 	
+ 	if (ohci->irq >= 0) {
+ 		free_irq (ohci->irq, ohci);
+ 		ohci->irq = -1;
+ 	}
+-	printk("DEBUG_JAN4\n");
+ 	pci_set_drvdata(ohci->ohci_dev, NULL);
+-	printk("DEBUG_JAN5\n");
+ 	if (ohci->bus) {
+ 		if (ohci->bus->busnum != -1)
+ 			usb_deregister_bus (ohci->bus);
+-		printk("DEBUG_JAN6\n");
+ 
+ 		usb_free_bus (ohci->bus);
+ 	}
+-	printk("DEBUG_JAN7\n");
+ 
+ 	ohci_mem_cleanup (ohci);
+-	printk("DEBUG_JAN8\n");
+     
+ 	/* unmap the IO address space */
+ 	iounmap (ohci->regs);
+-	printk("DEBUG_JAN9\n");
+ 
+ 	pci_free_consistent (ohci->ohci_dev, sizeof *ohci->hcca,
+ 		ohci->hcca, ohci->hcca_dma);
+@@ -2734,7 +2726,6 @@
+ #ifdef	DEBUG
+ 	ohci_dump (ohci, 1);
+ #endif
+-	printk("DEBUG_JAN1\n");
+ 
+ 	/* don't wake up sleeping controllers, or block in interrupt context */
+ 	if ((ohci->hc_control & OHCI_CTRL_HCFS) != OHCI_USB_OPER || in_interrupt ()) {
+@@ -2747,14 +2738,10 @@
+ 		writel (ohci->hc_control = OHCI_USB_RESET,
+ 			&ohci->regs->control);
+ 
+-	printk("DEBUG_JAN1\n");
+ 	hc_release_ohci (ohci);
+-	printk("DEBUG_JAN10\n");
+ 
+ 	release_mem_region (pci_resource_start (dev, 0), pci_resource_len (dev, 0));
+-	printk("DEBUG_JAN11\n");
+ 	pci_disable_device (dev);
+-	printk("DEBUG_JAN12\n");
+ }
+ 
+ 

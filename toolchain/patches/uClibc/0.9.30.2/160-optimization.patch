@@ -1,0 +1,23 @@
+--- uClibc.orig/Rules.mak	2008-08-30 09:10:31.000000000 +0200
++++ uClibc/Rules.mak	2008-08-30 23:16:13.000000000 +0200
+@@ -142,9 +142,9 @@
+ ARFLAGS:=cr
+ 
+ # Flags in OPTIMIZATION are used only for non-debug builds
+-OPTIMIZATION:=
++OPTIMIZATION:= -O3
+ # Use '-Os' optimization if available, else use -O2, allow Config to override
+-OPTIMIZATION+=$(call check_gcc,-Os,-O2)
++# OPTIMIZATION+=$(call check_gcc,-Os,-O2)
+ # Use the gcc 3.4 -funit-at-a-time optimization when available
+ OPTIMIZATION+=$(call check_gcc,-funit-at-a-time,)
+ 
+@@ -281,7 +281,7 @@
+ 	CPU_LDFLAGS-$(ARCH_LITTLE_ENDIAN)+=-Wl,-EL
+ 	CPU_LDFLAGS-$(ARCH_BIG_ENDIAN)+=-Wl,-EB
+ 	CPU_CFLAGS-$(CONFIG_MIPS_ISA_1)+=-mips1
+-	CPU_CFLAGS-$(CONFIG_MIPS_ISA_2)+=-mips2 -mtune=mips2
++	CPU_CFLAGS-$(CONFIG_MIPS_ISA_2)+=-march=mips2 -mtune=vr4120 -mfix-vr4120
+ 	CPU_CFLAGS-$(CONFIG_MIPS_ISA_3)+=-mips3 -mtune=mips3
+ 	CPU_CFLAGS-$(CONFIG_MIPS_ISA_4)+=-mips4 -mtune=mips4
+ 	CPU_CFLAGS-$(CONFIG_MIPS_ISA_MIPS32)+=-mips32 -mtune=mips32
