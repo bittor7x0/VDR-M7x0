@@ -1,0 +1,24 @@
+diff -Naur mpfr-3.0.0-orig/Makefile.am mpfr-3.0.0/Makefile.am
+--- mpfr-3.0.0-orig/Makefile.am	2010-06-10 13:00:14.000000000 +0200
++++ mpfr-3.0.0/Makefile.am	2010-09-01 18:05:22.065219000 +0200
+@@ -12,7 +12,7 @@
+ AUTOMAKE_OPTIONS = gnu ansi2knr
+ ACLOCAL_AMFLAGS = -I m4
+ 
+-SUBDIRS = tests
++SUBDIRS =
+ 
+ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER FAQ.html NEWS TODO \
+   examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
+diff -Naur mpfr-3.0.0-orig/Makefile.in mpfr-3.0.0/Makefile.in
+--- mpfr-3.0.0-orig/Makefile.in	2010-06-10 13:00:52.000000000 +0200
++++ mpfr-3.0.0/Makefile.in	2010-09-01 18:08:06.457213000 +0200
+@@ -356,7 +356,7 @@
+ top_srcdir = @top_srcdir@
+ AUTOMAKE_OPTIONS = gnu ansi2knr
+ ACLOCAL_AMFLAGS = -I m4
+-SUBDIRS = tests
++SUBDIRS =
+ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER FAQ.html NEWS TODO \
+   examples/ReadMe examples/divworst.c examples/rndo-add.c examples/sample.c \
+   examples/version.c

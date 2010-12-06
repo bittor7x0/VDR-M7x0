@@ -1,0 +1,94 @@
+--- noad-0.6.1.orig/vdr_cl.cpp	2005-09-01 12:58:05.000000000 +0200
++++ noad-0.6.1/vdr_cl.cpp	2009-10-28 19:11:52.669294647 +0100
+@@ -1,4 +1,7 @@
+ #include "vdr_cl.h"
++
++#define b2e(a) (((a)&0x000000FF)<<24) | ((((a)&0x0000FF00)>>8)<<16) | ((((a)&0x00FF0000)>>16)<<8) | (((a)&0xFF000000)>>24)
++
+ char MarksfileSuffix[256] = MARKSFILESUFFIX;
+  
+ bool setMarkfileName(const char *mname)
+@@ -363,13 +366,13 @@
+     if (Index >= 0 && Index <= last)
+     {
+       *FileNumber = index[Index].number;
+-      *FileOffset = index[Index].offset;
++      *FileOffset = b2e(index[Index].offset);
+       if (PictureType)
+         *PictureType = index[Index].type;
+       if (Length)
+       {
+         int fn = index[Index + 1].number;
+-        int fo = index[Index + 1].offset;
++        int fo = b2e(index[Index + 1].offset);
+         if (fn == *FileNumber)
+           *Length = fo - *FileOffset;
+         else
+@@ -400,14 +403,14 @@
+           else
+             FileNumber = &index[Index].number;
+           if (FileOffset)
+-            *FileOffset = index[Index].offset;
++            *FileOffset = b2e(index[Index].offset);
+           else
+             FileOffset = &index[Index].offset;
+           if (Length)
+           {
+             // all recordings end with a non-I_FRAME, so the following should be safe:
+             int fn = index[Index + 1].number;
+-            int fo = index[Index + 1].offset;
++            int fo = b2e(index[Index + 1].offset);
+             if (fn == *FileNumber)
+               *Length = fo - *FileOffset;
+             else
+@@ -435,7 +438,7 @@
+     int i;
+     for (i = 0; i < last; i++)
+     {
+-      if (index[i].number > FileNumber || (index[i].number == FileNumber) && index[i].offset >= FileOffset)
++      if (index[i].number > FileNumber || (index[i].number == FileNumber) && b2e(index[i].offset) >= FileOffset)
+         break;
+     }
+     return i;
+@@ -545,13 +548,13 @@
+     if (Index >= 0 && Index <= last)
+     {
+       *FileNumber = index[Index].number;
+-      *FileOffset = index[Index].offset;
++      *FileOffset = b2e(index[Index].offset);
+       if (PictureType)
+         *PictureType = index[Index].type;
+       if (Length)
+       {
+         int fn = index[Index + 1].number;
+-        int fo = index[Index + 1].offset;
++        int fo = b2e(index[Index + 1].offset);
+         if (fn == *FileNumber)
+           *Length = fo - *FileOffset;
+         else
+@@ -592,14 +595,14 @@
+           else
+             FileNumber = &index[Index].number;
+           if (FileOffset)
+-            *FileOffset = index[Index].offset;
++            *FileOffset = b2e(index[Index].offset);
+           else
+             FileOffset = &index[Index].offset;
+           if (Length)
+           {
+             // all recordings end with a non-I_FRAME, so the following should be safe:
+             int fn = index[Index + 1].number;
+-            int fo = index[Index + 1].offset;
++            int fo = b2e(index[Index + 1].offset);
+             if (fn == *FileNumber)
+               *Length = fo - *FileOffset;
+             else
+@@ -626,7 +629,7 @@
+     int i;
+     for (i = 0; i < last; i++)
+     {
+-      if (index[i].number > FileNumber || (index[i].number == FileNumber) && index[i].offset >= FileOffset)
++      if (index[i].number > FileNumber || (index[i].number == FileNumber) && b2e(index[i].offset) >= FileOffset)
+         break;
+     }
+     return i;

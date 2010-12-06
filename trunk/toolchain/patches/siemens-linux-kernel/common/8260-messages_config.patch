@@ -1,0 +1,282 @@
+diff -Naur slin_m740_orig/arch/mips/config-shared.in slin_m740/arch/mips/config-shared.in
+--- slin_m740_orig/arch/mips/config-shared.in	2009-12-04 19:12:37.000000000 +0100
++++ slin_m740/arch/mips/config-shared.in	2009-12-04 20:57:52.000000000 +0100
+@@ -626,6 +626,7 @@
+ bool 'System V IPC' CONFIG_SYSVIPC
+ bool 'BSD Process Accounting' CONFIG_BSD_PROCESS_ACCT
+ bool 'Sysctl support' CONFIG_SYSCTL
++bool 'Generate kernel messages' CONFIG_MESSAGES
+ define_bool CONFIG_KCORE_ELF y
+ define_bool CONFIG_KCORE_AOUT n
+ define_bool CONFIG_BINFMT_AOUT n
+diff -Naur slin_m740_orig/Documentation/Configure.help slin_m740/Documentation/Configure.help
+--- slin_m740_orig/Documentation/Configure.help	2009-12-04 19:12:37.000000000 +0100
++++ slin_m740/Documentation/Configure.help	2009-12-04 20:57:52.000000000 +0100
+@@ -4053,6 +4053,21 @@
+   building a kernel for install/rescue disks or your system is very
+   limited in memory.
+ 
++Kernel messages
++CONFIG_MESSAGES
++  Kernel messages are invaluable for a wide range of system monitoring
++  and diagnostic uses. These include boot-time messages, messages sent
++  to the syslog daemon, debugging output and the strings printed during
++  kernel panics. However, they waste valuable runtime space in deeply
++  embedded systems which have no way to display them, so you can disable
++  them by saying N here. Beware that doing so will silence all human-
++  readable output from the kernel, making it virtually impossible to
++  diagnose boot and runtime problems.
++
++  You should almost certainly say Y, unless you are building for a
++  deeply embedded system which you are certain has no need for kernel
++  messages.
++
+ # Choice: kcore
+ Kernel core (/proc/kcore) format
+ CONFIG_KCORE_ELF
+diff -Naur slin_m740_orig/drivers/char/tty_io.c slin_m740/drivers/char/tty_io.c
+--- slin_m740_orig/drivers/char/tty_io.c	2004-05-29 14:44:54.000000000 +0200
++++ slin_m740/drivers/char/tty_io.c	2009-12-04 20:57:52.000000000 +0100
+@@ -115,8 +115,10 @@
+ 
+ #undef TTY_DEBUG_HANGUP
+ 
++#ifdef CONFIG_MESSAGES
+ #define TTY_PARANOIA_CHECK 1
+ #define CHECK_TTY_COUNT 1
++#endif
+ 
+ struct termios tty_std_termios;		/* for the benefit of tty drivers  */
+ struct tty_driver *tty_drivers;		/* linked list of tty drivers */
+diff -Naur slin_m740_orig/fs/proc/Makefile slin_m740/fs/proc/Makefile
+--- slin_m740_orig/fs/proc/Makefile	2004-05-29 14:45:45.000000000 +0200
++++ slin_m740/fs/proc/Makefile	2009-12-04 20:57:52.000000000 +0100
+@@ -12,10 +12,14 @@
+ export-objs := root.o
+ 
+ obj-y    := inode.o root.o base.o generic.o array.o \
+-		kmsg.o proc_tty.o proc_misc.o kcore.o
++		proc_tty.o proc_misc.o kcore.o
+ 
+ ifeq ($(CONFIG_PROC_DEVICETREE),y)
+ obj-y += proc_devtree.o
+ endif
+ 
++ifeq ($(CONFIG_MESSAGES),y)
++obj-y += kmsg.o
++endif
++
+ include $(TOPDIR)/Rules.make
+diff -Naur slin_m740_orig/fs/proc/proc_misc.c slin_m740/fs/proc/proc_misc.c
+--- slin_m740_orig/fs/proc/proc_misc.c	2004-05-29 14:45:45.000000000 +0200
++++ slin_m740/fs/proc/proc_misc.c	2009-12-04 20:57:52.000000000 +0100
+@@ -609,9 +609,11 @@
+ 	proc_symlink("mounts", NULL, "self/mounts");
+ 
+ 	/* And now for trickier ones */
++#ifdef CONFIG_MESSAGES
+ 	entry = create_proc_entry("kmsg", S_IRUSR, &proc_root);
+ 	if (entry)
+ 		entry->proc_fops = &proc_kmsg_operations;
++#endif
+ 	create_seq_entry("cpuinfo", 0, &proc_cpuinfo_operations);
+ 	create_seq_entry("partitions", 0, &proc_partitions_operations);
+ 	create_seq_entry("slabinfo",S_IWUSR|S_IRUGO,&proc_slabinfo_operations);
+diff -Naur slin_m740_orig/include/asm-mips/asm.h slin_m740/include/asm-mips/asm.h
+--- slin_m740_orig/include/asm-mips/asm.h	2004-05-29 14:46:13.000000000 +0200
++++ slin_m740/include/asm-mips/asm.h	2009-12-04 20:57:52.000000000 +0100
+@@ -105,6 +105,7 @@
+ /*
+  * Print formatted string
+  */
++#ifdef CONFIG_MESSAGES
+ #define PRINT(string)                                   \
+ 		.set	push;				\
+ 		.set	reorder;                        \
+@@ -112,6 +113,9 @@
+ 		jal	printk;                         \
+ 		.set	pop;				\
+ 		TEXT(string)
++#else
++#define PRINT(string)
++#endif
+ 
+ #define	TEXT(msg)                                       \
+ 		.pushsection .data;			\
+diff -Naur slin_m740_orig/include/linux/kernel.h slin_m740/include/linux/kernel.h
+--- slin_m740_orig/include/linux/kernel.h	2009-12-04 19:13:37.000000000 +0100
++++ slin_m740/include/linux/kernel.h	2009-12-04 20:57:52.000000000 +0100
+@@ -58,8 +58,6 @@
+ struct completion;
+ 
+ extern struct notifier_block *panic_notifier_list;
+-NORET_TYPE void panic(const char * fmt, ...)
+-	__attribute__ ((NORET_AND format (printf, 1, 2)));
+ asmlinkage NORET_TYPE void do_exit(long error_code)
+ 	ATTRIB_NORET;
+ NORET_TYPE void complete_and_exit(struct completion *, long)
+@@ -88,8 +86,17 @@
+ 
+ extern int session_of_pgrp(int pgrp);
+ 
++#ifdef CONFIG_MESSAGES
++NORET_TYPE void panic(const char * fmt, ...)
++ __attribute__ ((NORET_AND format (printf, 1, 2)));
+ asmlinkage int printk(const char * fmt, ...)
+ 	__attribute__ ((format (printf, 1, 2)));
++#else
++#define panic(fmt, args...) abort()
++#define printk(fmt, args...)
++#endif
++
++NORET_TYPE void abort(void) ATTRIB_NORET; /* use panic instead */
+ 
+ static inline void console_silent(void)
+ {
+diff -Naur slin_m740_orig/init/main.c slin_m740/init/main.c
+--- slin_m740_orig/init/main.c	2009-12-04 19:12:37.000000000 +0100
++++ slin_m740/init/main.c	2009-12-04 21:44:53.000000000 +0100
+@@ -202,6 +202,7 @@
+ 		(loops_per_jiffy/(5000/HZ)) % 100);
+ }
+ 
++#ifdef CONFIG_MESSAGES
+ static int __init debug_kernel(char *str)
+ {
+ 	if (*str)
+@@ -209,16 +210,23 @@
+ 	console_loglevel = 10;
+ 	return 1;
+ }
++#endif
+ 
+ static int __init quiet_kernel(char *str)
+ {
++#ifdef CONFIG_MESSAGES
+ 	if (*str)
+ 		return 0;
+ 	console_loglevel = 4;
++#else
++	console_loglevel = 0;
++#endif
+ 	return 1;
+ }
+ 
++#ifdef CONFIG_MESSAGES
+ __setup("debug", debug_kernel);
++#endif
+ __setup("quiet", quiet_kernel);
+ 
+ /*
+diff -Naur slin_m740_orig/kernel/ksyms.c slin_m740/kernel/ksyms.c
+--- slin_m740_orig/kernel/ksyms.c	2009-12-04 19:12:37.000000000 +0100
++++ slin_m740/kernel/ksyms.c	2009-12-05 20:49:23.000000000 +0100
+@@ -502,7 +502,11 @@
+ EXPORT_SYMBOL(nr_running);
+ 
+ /* misc */
++#if CONFIG_MESSAGES
+ EXPORT_SYMBOL(panic);
++#else
++EXPORT_SYMBOL(abort);
++#endif
+ EXPORT_SYMBOL(panic_notifier_list);
+ EXPORT_SYMBOL(panic_timeout);
+ EXPORT_SYMBOL(__out_of_line_bug);
+diff -Naur slin_m740_orig/kernel/panic.c slin_m740/kernel/panic.c
+--- slin_m740_orig/kernel/panic.c	2004-05-29 14:46:28.000000000 +0200
++++ slin_m740/kernel/panic.c	2009-12-04 20:57:52.000000000 +0100
+@@ -41,6 +41,7 @@
+  *	This function never returns.
+  */
+  
++#ifdef CONFIG_MESSAGES
+ NORET_TYPE void panic(const char * fmt, ...)
+ {
+ 	static char buf[1024];
+@@ -54,13 +55,20 @@
+ 	vsprintf(buf, fmt, args);
+ 	va_end(args);
+ 	printk(KERN_EMERG "Kernel panic: %s\n",buf);
++	bust_spinlocks(0);
++
++	abort();
++}
++#endif
++
++NORET_TYPE void abort()
++{
+ 	if (in_interrupt())
+ 		printk(KERN_EMERG "In interrupt handler - not syncing\n");
+ 	else if (!current->pid)
+ 		printk(KERN_EMERG "In idle task - not syncing\n");
+ 	else
+ 		sys_sync();
+-	bust_spinlocks(0);
+ 
+ #ifdef CONFIG_SMP
+ 	smp_send_stop();
+diff -Naur slin_m740_orig/kernel/printk.c slin_m740/kernel/printk.c
+--- slin_m740_orig/kernel/printk.c	2004-05-29 14:46:28.000000000 +0200
++++ slin_m740/kernel/printk.c	2009-12-13 12:07:24.000000000 +0100
+@@ -151,6 +151,7 @@
+ 
+ __setup("console=", console_setup);
+ 
++#ifdef CONFIG_MESSAGES
+ /*
+  * Commands to do_syslog:
+  *
+@@ -312,6 +313,12 @@
+ 		return -EPERM;
+ 	return do_syslog(type, buf, len);
+ }
++#else /* CONFIG_MESSAGES */
++asmlinkage long sys_syslog(int type, char * buf, int len)
++{
++	return -EINVAL;
++}
++#endif /* CONFIG_MESSAGES */
+ 
+ /*
+  * Call the console drivers on a range of log_buf
+@@ -405,6 +412,7 @@
+ 		logged_chars++;
+ }
+ 
++#ifdef CONFIG_MESSAGES
+ /*
+  * This is printk.  It can be called from any context.  We want it to work.
+  * 
+@@ -488,6 +496,17 @@
+ 	return printed_len;
+ }
+ EXPORT_SYMBOL(printk);
++#else
++#undef printk
++
++#include <linux/module.h>
++
++asmlinkage int printk(const char *fmt, ...)
++{
++	return 0;
++}
++EXPORT_SYMBOL_NOVERS(printk);
++#endif
+ 
+ /**
+  * acquire_console_sem - lock the console system for exclusive use.
+diff -Naur slin_m740_orig/kernel/sysctl.c slin_m740/kernel/sysctl.c
+--- slin_m740_orig/kernel/sysctl.c	2009-12-04 19:12:37.000000000 +0100
++++ slin_m740/kernel/sysctl.c	2009-12-04 20:57:52.000000000 +0100
+@@ -201,8 +201,10 @@
+ #endif
+ 	{KERN_CTLALTDEL, "ctrl-alt-del", &C_A_D, sizeof(int),
+ 	 0644, NULL, &proc_dointvec},
++#ifdef CONFIG_MESSAGES
+ 	{KERN_PRINTK, "printk", &console_loglevel, 4*sizeof(int),
+ 	 0644, NULL, &proc_dointvec},
++#endif
+ #ifdef CONFIG_KMOD
+ 	{KERN_MODPROBE, "modprobe", &modprobe_path, 256,
+ 	 0644, NULL, &proc_dostring, &sysctl_string },

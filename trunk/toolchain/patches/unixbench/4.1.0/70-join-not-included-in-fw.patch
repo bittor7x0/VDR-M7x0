@@ -1,0 +1,20 @@
+diff -Naur unixbench-4.1.0-orig/pgms/index.sh unixbench-4.1.0/pgms/index.sh
+--- unixbench-4.1.0-orig/pgms/index.sh	1995-11-28 23:46:18.000000000 +0100
++++ unixbench-4.1.0/pgms/index.sh	2009-05-12 20:12:01.000000000 +0200
+@@ -55,16 +55,6 @@
+ #
+ # make dat file for results
+  sort $TARGET > ${TEMP}
+-#
+-# DESTINATION
+-#
+-if [ $# -eq 3 ]
+-then
+-	DEST=$3
+-	join -t'|' ${BASE} ${TEMP} | awk -f ${BINDIR}/index.awk > ${DEST}
+-else
+-	join -t'|' ${BASE} ${TEMP} | awk -f ${BINDIR}/index.awk
+-fi
+ 
+ # cleanup
+ rm -f ${TEMP}

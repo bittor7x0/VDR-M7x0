@@ -1,0 +1,3 @@
+usr/sbin/ntpclient     usr/sbin/ntpclient  f 755 0 0 - - - - -
+usr/sbin/ntpclient     -                   s   - - - - - - - -
+etc/ntp                -                   d 755 0 0 - - - - -

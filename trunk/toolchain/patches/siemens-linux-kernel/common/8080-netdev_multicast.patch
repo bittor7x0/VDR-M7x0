@@ -1,0 +1,49 @@
+diff -Naur slin_m740_orig/include/linux/netdevice.h slin_m740/include/linux/netdevice.h
+--- slin_m740_orig/include/linux/netdevice.h	2005-05-04 13:00:44.000000000 +0200
++++ slin_m740/include/linux/netdevice.h	2009-02-14 12:03:02.000000000 +0100
+@@ -798,16 +798,25 @@
+ extern int		register_netdev(struct net_device *dev);
+ extern void		unregister_netdev(struct net_device *dev);
+ /* Functions used for multicast support */
++#ifdef CONFIG_IP_MULTICAST
+ extern void		dev_mc_upload(struct net_device *dev);
+ extern int 		dev_mc_delete(struct net_device *dev, void *addr, int alen, int all);
+ extern int		dev_mc_add(struct net_device *dev, void *addr, int alen, int newonly);
+ extern void		dev_mc_discard(struct net_device *dev);
++extern void		dev_mcast_init(void);
++#else
++static inline void	dev_mc_upload(struct net_device *dev) { return 0; }
++static inline int	dev_mc_delete(struct net_device *dev, void *addr, int alen, int all) { return 0; }
++static inline int	dev_mc_add(struct net_device *dev, void *addr, int alen, int newonly) { return 0; }
++#define dev_mc_discard(a)
++#define dev_mcast_init()
++#endif
++
+ extern void		dev_set_promiscuity(struct net_device *dev, int inc);
+ extern void		dev_set_allmulti(struct net_device *dev, int inc);
+ extern void		netdev_state_change(struct net_device *dev);
+ /* Load a device via the kmod */
+ extern void		dev_load(const char *name);
+-extern void		dev_mcast_init(void);
+ extern int		netdev_register_fc(struct net_device *dev, void (*stimul)(struct net_device *dev));
+ extern void		netdev_unregister_fc(int bit);
+ extern int		netdev_max_backlog;
+diff -Naur slin_m740_orig/net/core/Makefile slin_m740/net/core/Makefile
+--- slin_m740_orig/net/core/Makefile	2004-05-29 14:46:37.000000000 +0200
++++ slin_m740/net/core/Makefile	2009-02-14 11:59:47.000000000 +0100
+@@ -21,7 +21,7 @@
+ 
+ obj-$(CONFIG_FILTER) += filter.o
+ 
+-obj-$(CONFIG_NET) += dev.o dev_mcast.o dst.o neighbour.o rtnetlink.o utils.o
++obj-$(CONFIG_NET) += dev.o dst.o neighbour.o rtnetlink.o utils.o
+ 
+ obj-$(CONFIG_NETFILTER) += netfilter.o
+ obj-$(CONFIG_NET_DIVERT) += dv.o
+@@ -30,5 +30,6 @@
+ obj-$(CONFIG_NET_RADIO) += wireless.o
+ # Ugly. I wish all wireless drivers were moved in drivers/net/wireless
+ obj-$(CONFIG_NET_PCMCIA_RADIO) += wireless.o
++obj-$(CONFIG_IP_MULTICAST) += dev_mcast.o
+ 
+ include $(TOPDIR)/Rules.make

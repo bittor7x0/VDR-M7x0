@@ -1,0 +1,31 @@
+diff -rP -U 5 uClibc/libpthread/linuxthreads/Makefile.in uClibc.patched/libpthread/linuxthreads/Makefile.in
+--- uClibc/libpthread/linuxthreads/Makefile.in	2006-03-04 09:12:05.000000000 +0100
++++ uClibc.patched/libpthread/linuxthreads/Makefile.in	2006-03-04 16:47:10.000000000 +0100
+@@ -63,11 +63,11 @@
+ CFLAGS-OMIT-libc-cancellation.c := $(CFLAGS-dir_linuxthreads)
+ CFLAGS-OMIT-libc_pthread_init.c := $(CFLAGS-dir_linuxthreads)
+ libpthread_libc_CSRC := \
+ 	forward.c libc-cancellation.c libc_pthread_init.c # alloca_cutoff.c
+ libpthread_libc_OBJ  := $(patsubst %.c, $(libpthread_OUT)/%.o,$(libpthread_libc_CSRC))
+-libc-static-y += $(libpthread_OUT)/libc_pthread_init.o
++libc-static-y += $(libpthread_OUT)/libc_pthread_init.o $(libpthread_OUT)/libc-cancellation.o
+ libc-shared-y += $(libpthread_libc_OBJ:.o=.oS)
+ 
+ libpthread-static-y += $(patsubst %,$(libpthread_OUT)/%.o,$(libpthread_static_SRC))
+ 
+ libpthread-nonshared-y += $(patsubst %,$(libpthread_OUT)/%.oS,$(libpthread_static_SRC))
+diff -rP -U 5 uClibc/libpthread/linuxthreads/sysdeps/unix/sysv/linux/mips/sysdep-cancel.h uClibc.patched/libpthread/linuxthreads/sysdeps/unix/sysv/linux/mips/sysdep-cancel.h
+--- uClibc/libpthread/linuxthreads/sysdeps/unix/sysv/linux/mips/sysdep-cancel.h	2006-03-04 09:12:03.000000000 +0100
++++ uClibc.patched/libpthread/linuxthreads/sysdeps/unix/sysv/linux/mips/sysdep-cancel.h	2006-03-04 18:24:11.000000000 +0100
+@@ -15,11 +15,10 @@
+    You should have received a copy of the GNU Lesser General Public
+    License along with the GNU C Library; if not, write to the Free
+    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+    02111-1307 USA.  */
+ 
+-#include <sysdep.h>
+ #ifndef __ASSEMBLER__
+ # include <linuxthreads/internals.h>
+ #endif
+ 
+ #if !defined NOT_IN_libc || defined IS_IN_libpthread || defined IS_IN_librt

@@ -1,0 +1,99 @@
+diff -u --recursive --new-file linux-2.5.20-odirect/fs/lockd/svc4proc.c linux-2.5.20-fix_lockd1/fs/lockd/svc4proc.c
+--- linux-2.5.20-odirect/fs/lockd/svc4proc.c	Sun Aug 11 13:55:07 2002
++++ linux-2.5.20-fix_lockd1/fs/lockd/svc4proc.c	Wed Aug 21 18:57:54 2002
+@@ -462,6 +462,24 @@
+ }
+ 
+ /*
++ * client sent a GRANTED_RES, let's remove the associated block
++ */
++static int
++nlm4svc_proc_granted_res(struct svc_rqst *rqstp, struct nlm_res  *argp,
++                                                void            *resp)
++{
++        if (!nlmsvc_ops)
++                return rpc_success;
++
++        dprintk("lockd: GRANTED_RES   called\n");
++
++        nlmsvc_grant_reply(&argp->cookie, argp->status);
++        return rpc_success;
++}
++
++
++
++/*
+  * This is the generic lockd callback for async RPC calls
+  */
+ static u32
+@@ -524,7 +542,6 @@
+ #define nlm4svc_proc_lock_res	nlm4svc_proc_null
+ #define nlm4svc_proc_cancel_res	nlm4svc_proc_null
+ #define nlm4svc_proc_unlock_res	nlm4svc_proc_null
+-#define nlm4svc_proc_granted_res	nlm4svc_proc_null
+ 
+ struct nlm_void			{ int dummy; };
+ 
+@@ -559,7 +576,7 @@
+   PROC(lock_res,	lockres,	norep,		res,	void, 1),
+   PROC(cancel_res,	cancelres,	norep,		res,	void, 1),
+   PROC(unlock_res,	unlockres,	norep,		res,	void, 1),
+-  PROC(granted_res,	grantedres,	norep,		res,	void, 1),
++  PROC(granted_res,	res,		norep,		res,	void, 1),
+   /* statd callback */
+   PROC(sm_notify,	reboot,		void,		reboot,	void, 1),
+   PROC(none,		void,		void,		void,	void, 0),
+diff -u --recursive --new-file linux-2.5.20-odirect/fs/lockd/svcproc.c linux-2.5.20-fix_lockd1/fs/lockd/svcproc.c
+--- linux-2.5.20-odirect/fs/lockd/svcproc.c	Sun Aug 11 13:55:07 2002
++++ linux-2.5.20-fix_lockd1/fs/lockd/svcproc.c	Wed Aug 21 18:57:20 2002
+@@ -490,6 +490,22 @@
+ }
+ 
+ /*
++ * client sent a GRANTED_RES, let's remove the associated block
++ */
++static int
++nlmsvc_proc_granted_res(struct svc_rqst *rqstp, struct nlm_res  *argp,
++                                                void            *resp)
++{
++	if (!nlmsvc_ops)
++		return rpc_success;
++
++	dprintk("lockd: GRANTED_RES   called\n");
++
++	nlmsvc_grant_reply(&argp->cookie, argp->status);
++	return rpc_success;
++}
++
++/*
+  * This is the generic lockd callback for async RPC calls
+  */
+ static u32
+@@ -552,7 +568,6 @@
+ #define nlmsvc_proc_lock_res	nlmsvc_proc_null
+ #define nlmsvc_proc_cancel_res	nlmsvc_proc_null
+ #define nlmsvc_proc_unlock_res	nlmsvc_proc_null
+-#define nlmsvc_proc_granted_res	nlmsvc_proc_null
+ 
+ struct nlm_void			{ int dummy; };
+ 
+@@ -589,7 +604,7 @@
+   PROC(lock_res,	lockres,	norep,		res,	void, 1),
+   PROC(cancel_res,	cancelres,	norep,		res,	void, 1),
+   PROC(unlock_res,	unlockres,	norep,		res,	void, 1),
+-  PROC(granted_res,	grantedres,	norep,		res,	void, 1),
++  PROC(granted_res,	res,		norep,		res,	void, 1),
+   /* statd callback */
+   PROC(sm_notify,	reboot,		void,		reboot,	void, 1),
+   PROC(none,		void,		void,		void,	void, 1),
+diff -u --recursive --new-file linux-2.5.20-odirect/include/linux/lockd/lockd.h linux-2.5.20-fix_lockd1/include/linux/lockd/lockd.h
+--- linux-2.5.20-odirect/include/linux/lockd/lockd.h	Tue Feb  5 08:49:27 2002
++++ linux-2.5.20-fix_lockd1/include/linux/lockd/lockd.h	Wed Aug 21 18:55:16 2002
+@@ -164,6 +164,7 @@
+ unsigned long	  nlmsvc_retry_blocked(void);
+ int		  nlmsvc_traverse_blocks(struct nlm_host *, struct nlm_file *,
+ 					int action);
++void	  nlmsvc_grant_reply(struct nlm_cookie *cookie, u32 status);
+ 
+ /*
+  * File handling for the server personality

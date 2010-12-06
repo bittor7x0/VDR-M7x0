@@ -1,0 +1,4 @@
+usr/lib/libuuid.so.1.2  usr/lib/libuuid.so.1.2  f 755 0 0 - - - - -
+usr/lib/libuuid.so.1.2  -                       s   - - - - - - - -
+usr/lib/libuuid.so.1    libuuid.so.1.2          l 777 0 0 - - - - -
+usr/lib/libuuid.so      libuuid.so.1.2          l 777 0 0 - - - - -

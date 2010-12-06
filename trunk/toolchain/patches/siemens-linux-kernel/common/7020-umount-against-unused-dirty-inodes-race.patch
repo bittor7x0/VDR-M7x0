@@ -1,0 +1,54 @@
+diff -urNp x-ref/fs/inode.c 2.4.20aa1/fs/inode.c
+--- x-ref/fs/inode.c	2002-12-02 01:41:20.000000000 +0100
++++ 2.4.20aa1/fs/inode.c	2002-12-02 01:41:34.000000000 +0100
+@@ -285,6 +285,7 @@ static inline int try_to_sync_unused_lis
+ 	struct list_head *tmp = head;
+ 	struct inode *inode;
+ 
++	spin_lock(&inode_lock);
+ 	while (nr_inodes && (tmp = tmp->prev) != head) {
+ 		inode = list_entry(tmp, struct inode, i_list);
+ 
+@@ -305,6 +306,7 @@ static inline int try_to_sync_unused_lis
+ 			}
+ 		}
+ 	}
++	spin_unlock(&inode_lock);
+ 
+ 	return nr_inodes;
+ }
+@@ -406,19 +408,28 @@ static void try_to_sync_unused_inodes(vo
+ {
+ 	struct super_block * sb;
+ 	int nr_inodes = inodes_stat.nr_unused;
++	int global_pass = 0, local_pass;
+ 
+-	spin_lock(&inode_lock);
++ restart:
+ 	spin_lock(&sb_lock);
++	local_pass = 0;
+ 	sb = sb_entry(super_blocks.next);
+-	for (; nr_inodes && sb != sb_entry(&super_blocks); sb = sb_entry(sb->s_list.next)) {
+-		if (list_empty(&sb->s_dirty))
++	while (nr_inodes && sb != sb_entry(&super_blocks)) {
++		if (local_pass < global_pass || list_empty(&sb->s_dirty)) {
++			sb = sb_entry(sb->s_list.next);
++			local_pass++;
+ 			continue;
++		}
++		sb->s_count++;
+ 		spin_unlock(&sb_lock);
+-		nr_inodes = try_to_sync_unused_list(&sb->s_dirty, nr_inodes);
+-		spin_lock(&sb_lock);
++		down_read(&sb->s_umount);
++		if (sb->s_root)
++			nr_inodes = try_to_sync_unused_list(&sb->s_dirty, nr_inodes);
++		drop_super(sb);
++		global_pass = local_pass + 1;
++		goto restart;
+ 	}
+ 	spin_unlock(&sb_lock);
+-	spin_unlock(&inode_lock);
+ }
+ 
+ static struct tq_struct unused_inodes_flush_task;

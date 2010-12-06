@@ -1,0 +1,28 @@
+--- linux-2.4.21-fix_mmap/fs/nfs/inode.c.orig	2002-08-15 03:05:32.000000000 +0200
++++ linux-2.4.21-fix_mmap/fs/nfs/inode.c	2003-04-07 23:24:49.000000000 +0200
+@@ -767,19 +767,18 @@
+ 	if (error)
+ 		goto out;
+ 
++	/* Truncate now in order to avoid races on the client side */
++	if (attr->ia_valid & ATTR_SIZE)
++		vmtruncate(inode, attr->ia_size);
++
+ 	error = NFS_PROTO(inode)->setattr(inode, &fattr, attr);
+ 	if (error)
+ 		goto out;
+-	/*
+-	 * If we changed the size or mtime, update the inode
+-	 * now to avoid invalidating the page cache.
+-	 */
+-	if (attr->ia_valid & ATTR_SIZE) {
++
++	if (attr->ia_valid & ATTR_SIZE)
+ 		if (attr->ia_size != fattr.size)
+ 			printk("nfs_notify_change: attr=%Ld, fattr=%Ld??\n",
+ 			       (long long) attr->ia_size, (long long)fattr.size);
+-		vmtruncate(inode, attr->ia_size);
+-	}
+ 
+ 	/*
+ 	 * If we changed the size or mtime, update the inode

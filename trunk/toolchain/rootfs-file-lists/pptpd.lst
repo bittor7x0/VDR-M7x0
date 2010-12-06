@@ -1,0 +1,5 @@
+usr/sbin/pptpctrl     usr/sbin/pptpctrl     f 755 0 0 - - - - -
+usr/sbin/pptpctrl     -                     s   - - - - - - - -
+etc/ppp               -                     d 755 0 0 - - - - -
+etc/ppp/options       etc/ppp/options       f 664 0 0 - - - - -
+etc/ppp/chap-secrets  etc/ppp/chap-secrets  f 664 0 0 - - - - -

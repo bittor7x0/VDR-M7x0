@@ -1,0 +1,4 @@
+usr/lib/libsqlite3.so.0.8.6  usr/lib/libsqlite3.so.0.8.6  f 755 0 0 - - - - -
+usr/lib/libsqlite3.so.0.8.6  -                            s   - - - - - - - -
+usr/lib/libsqlite3.so.0      libsqlite3.so.0.8.6          l 777 0 0 - - - - -
+usr/lib/libsqlite3.so        libsqlite3.so.0.8.6          l 777 0 0 - - - - -

@@ -1,0 +1,72 @@
+diff -u --recursive --new-file linux-2.4.21-11-fix_tcprace3/net/sunrpc/xprt.c linux-2.4.21-12-fix_tcpcorrupt/net/sunrpc/xprt.c
+--- linux-2.4.21-11-fix_tcprace3/net/sunrpc/xprt.c	2003-06-15 14:49:10.000000000 -0700
++++ linux-2.4.21-12-fix_tcpcorrupt/net/sunrpc/xprt.c	2003-06-15 15:12:52.000000000 -0700
+@@ -139,8 +139,11 @@
+ __xprt_lock_write(struct rpc_xprt *xprt, struct rpc_task *task)
+ {
+ 	if (!xprt->snd_task) {
+-		if (xprt->nocong || __xprt_get_cong(xprt, task))
++		if (xprt->nocong || __xprt_get_cong(xprt, task)) {
+ 			xprt->snd_task = task;
++			if (task->tk_rqstp)
++				task->tk_rqstp->rq_bytes_sent = 0;
++		}
+ 	}
+ 	if (xprt->snd_task != task) {
+ 		dprintk("RPC: %4d TCP write queue full\n", task->tk_pid);
+@@ -179,8 +182,11 @@
+ 		if (!task)
+ 			return;
+ 	}
+-	if (xprt->nocong || __xprt_get_cong(xprt, task))
++	if (xprt->nocong || __xprt_get_cong(xprt, task)) {
+ 		xprt->snd_task = task;
++		if (task->tk_rqstp)
++			task->tk_rqstp->rq_bytes_sent = 0;
++	}
+ }
+ 
+ /*
+@@ -449,6 +455,9 @@
+ 	if (xprt_connected(xprt))
+ 		goto out_write;
+ 
++	if (task->tk_rqstp)
++		task->tk_rqstp->rq_bytes_sent = 0;
++
+ 	xprt_close(xprt);
+ 	/* Create an unconnected socket */
+ 	sock = xprt_create_socket(xprt->prot, &xprt->timeout, xprt->resvport);
+@@ -1182,11 +1191,12 @@
+ 			break;
+ 	}
+ 
+-	/* Note: at this point, task->tk_sleeping has not yet been set,
+-	 *	 hence there is no danger of the waking up task being put on
+-	 *	 schedq, and being picked up by a parallel run of rpciod().
++	/* If we're doing a resend and have received a reply already,
++	 * then exit early.
++	 * Note, though, that we can't do this if we've already started
++	 * resending down a TCP stream.
+ 	 */
+-	if (req->rq_received)
++	if (req->rq_received && !req->rq_bytes_sent)
+ 		goto out_release;
+ 
+ 	task->tk_status = status;
+@@ -1220,7 +1230,6 @@
+ 	}
+  out_release:
+ 	xprt_release_write(xprt, task);
+-	req->rq_bytes_sent = 0;
+ 	return;
+  out_receive:
+ 	dprintk("RPC: %4d xmit complete\n", task->tk_pid);
+@@ -1241,7 +1250,6 @@
+ 		rpc_sleep_on(&xprt->pending, task, NULL, xprt_timer);
+ 	__xprt_release_write(xprt, task);
+ 	spin_unlock_bh(&xprt->sock_lock);
+-	req->rq_bytes_sent = 0;
+ }
+ 
+ /*

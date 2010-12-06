@@ -1,0 +1,149 @@
+diff -u --recursive --new-file linux-2.4.21-17-fix_tcprace3/fs/lockd/host.c linux-2.4.21-18-fix_lockdmon/fs/lockd/host.c
+--- linux-2.4.21-17-fix_tcprace3/fs/lockd/host.c	2002-02-05 08:49:27.000000000 +0100
++++ linux-2.4.21-18-fix_lockdmon/fs/lockd/host.c	2003-05-06 17:14:48.000000000 +0200
+@@ -187,15 +187,7 @@
+ 					host->h_nextrebind - jiffies);
+ 		}
+ 	} else {
+-		uid_t saved_fsuid = current->fsuid;
+-		kernel_cap_t saved_cap = current->cap_effective;
+-
+-		/* Create RPC socket as root user so we get a priv port */
+-		current->fsuid = 0;
+-		cap_raise (current->cap_effective, CAP_NET_BIND_SERVICE);
+ 		xprt = xprt_create_proto(host->h_proto, &host->h_addr, NULL);
+-		current->fsuid = saved_fsuid;
+-		current->cap_effective = saved_cap;
+ 		if (xprt == NULL)
+ 			goto forgetit;
+ 
+@@ -209,6 +201,7 @@
+ 		}
+ 		clnt->cl_autobind = 1;	/* turn on pmap queries */
+ 		xprt->nocong = 1;	/* No congestion control for NLM */
++		xprt->resvport = 1;	/* NLM requires a reserved port */
+ 
+ 		host->h_rpcclnt = clnt;
+ 	}
+diff -u --recursive --new-file linux-2.4.21-17-fix_tcprace3/fs/lockd/mon.c linux-2.4.21-18-fix_lockdmon/fs/lockd/mon.c
+--- linux-2.4.21-17-fix_tcprace3/fs/lockd/mon.c	2002-02-05 08:49:27.000000000 +0100
++++ linux-2.4.21-18-fix_lockdmon/fs/lockd/mon.c	2003-05-06 17:14:48.000000000 +0200
+@@ -122,6 +122,7 @@
+ 	clnt->cl_softrtry = 1;
+ 	clnt->cl_chatty   = 1;
+ 	clnt->cl_oneshot  = 1;
++	xprt->resvport = 1;	/* NSM requires a reserved port */
+ out:
+ 	return clnt;
+ 
+diff -u --recursive --new-file linux-2.4.21-17-fix_tcprace3/include/linux/sunrpc/xprt.h linux-2.4.21-18-fix_lockdmon/include/linux/sunrpc/xprt.h
+--- linux-2.4.21-17-fix_tcprace3/include/linux/sunrpc/xprt.h	2003-05-06 17:22:01.000000000 +0200
++++ linux-2.4.21-18-fix_lockdmon/include/linux/sunrpc/xprt.h	2003-05-06 17:48:04.000000000 +0200
+@@ -197,7 +197,7 @@
+ 
+ #define XPRT_CONNECT	0
+ 
+-#define xprt_connected(xp)		(!(xp)->stream || test_bit(XPRT_CONNECT, &(xp)->sockstate))
++#define xprt_connected(xp)		(test_bit(XPRT_CONNECT, &(xp)->sockstate))
+ #define xprt_set_connected(xp)		(set_bit(XPRT_CONNECT, &(xp)->sockstate))
+ #define xprt_test_and_set_connected(xp)	(test_and_set_bit(XPRT_CONNECT, &(xp)->sockstate))
+ #define xprt_clear_connected(xp)	(clear_bit(XPRT_CONNECT, &(xp)->sockstate))
+diff -u --recursive --new-file linux-2.4.21-17-fix_tcprace3/net/sunrpc/clnt.c linux-2.4.21-18-fix_lockdmon/net/sunrpc/clnt.c
+--- linux-2.4.21-17-fix_tcprace3/net/sunrpc/clnt.c	2003-05-06 17:14:22.000000000 +0200
++++ linux-2.4.21-18-fix_lockdmon/net/sunrpc/clnt.c	2003-05-06 17:38:05.000000000 +0200
+@@ -562,7 +562,8 @@
+ }
+ 
+ /*
+- * 4a.	Reconnect to the RPC server (TCP case)
++ * 4a.	Establish socket
++ *	Connect to the RPC server (TCP case)
+  */
+ static void
+ call_connect(struct rpc_task *task)
+@@ -572,7 +573,7 @@
+ 	dprintk("RPC: %4d call_connect status %d\n",
+ 				task->tk_pid, task->tk_status);
+ 
+-	if (!clnt->cl_xprt->stream) {
++	if (xprt_connected(clnt->cl_xprt)) {
+ 		task->tk_action = call_transmit;
+ 		return;
+ 	}
+@@ -670,10 +671,8 @@
+ 			task->tk_action = call_bind;
+ 			break;
+ 		}
+-		if (xprt->stream) {
+-			task->tk_action = call_connect;
+-			break;
+-		}
++		task->tk_action = call_connect;
++		break;
+ 		/*
+ 		 * Sleep and dream of an open connection
+ 		 */
+diff -u --recursive --new-file linux-2.4.21-17-fix_tcprace3/net/sunrpc/xprt.c linux-2.4.21-18-fix_lockdmon/net/sunrpc/xprt.c
+--- linux-2.4.21-17-fix_tcprace3/net/sunrpc/xprt.c	2003-05-06 17:14:35.000000000 +0200
++++ linux-2.4.21-18-fix_lockdmon/net/sunrpc/xprt.c	2003-05-06 17:14:48.000000000 +0200
+@@ -398,12 +398,6 @@
+ 	sk->no_check	 = 0;
+ 
+ 	sock_release(sock);
+-	/*
+-	 *	TCP doesn't require the rpciod now - other things may
+-	 *	but rpciod handles that not us.
+-	 */
+-	if(xprt->stream)
+-		rpciod_down();
+ }
+ 
+ /*
+@@ -436,9 +430,6 @@
+ 	if (xprt->shutdown)
+ 		return;
+ 
+-	if (!xprt->stream)
+-		return;
+-
+ 	if (!xprt->addr.sin_port) {
+ 		task->tk_status = -EIO;
+ 		return;
+@@ -459,6 +450,10 @@
+ 		goto out_write;
+ 	}
+ 	xprt_bind_socket(xprt, sock);
++
++	if (!xprt->stream)
++		goto out_write;
++
+ 	inet = sock->sk;
+ 
+ 	/* Now connect it asynchronously. */
+@@ -1494,11 +1489,6 @@
+ 	xprt->sock = sock;
+ 	xprt->inet = sk;
+ 	write_unlock_bh(&sk->callback_lock);
+-	/*
+-	 *	TCP requires the rpc I/O daemon is present
+-	 */
+-	if(xprt->stream)
+-		rpciod_up();
+ 
+ 	return 0;
+ }
+@@ -1566,14 +1556,6 @@
+ 	if (!xprt)
+ 		goto out_bad;
+ 
+-	if (!xprt->stream) {
+-		struct socket	*sock;
+-		sock = xprt_create_socket(proto, to, xprt->resvport);
+-		if (!sock)
+-			goto out_bad;
+-		xprt_bind_socket(xprt, sock);
+-	}
+-
+ 	dprintk("RPC:      xprt_create_proto created xprt %p\n", xprt);
+ 	return xprt;
+ out_bad:

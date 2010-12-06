@@ -1,0 +1,6 @@
+#!/bin/ash
+
+
+/usr/bin/kill-vdr
+
+/usr/bin/start-vdr

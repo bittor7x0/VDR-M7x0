@@ -15,19 +15,22 @@
 # The project's page is at http://www.open7x0.org
 #
 #
+
+# Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 WEBIF_DEPS = $(BASE_BUILD_STAGEFILE)
 
-KLONE_VERSION := klone-2.1.1rc9
-KLONE_FILE := $(KLONE_VERSION).tar.gz
+KLONE_VERSION := 2.1.1
+KLONE_FILE := klone-$(KLONE_VERSION).tar.gz
 KLONE_DLFILE := $(DOWNLOAD_DIR)/$(KLONE_FILE)
 KLONE_URL := http://koanlogic.com/download/klone/$(KLONE_FILE)
-
+LOGOS_FILE := logos-webif.tgz
+LOGOS_DLFILE := $(DOWNLOAD_DIR)/logos-webif.4.tgz
+LOGOS_URL := https://www.assembla.com/spaces/VDR-M7x0/documents/c6zJ780MGr36EzeJe5cbCb/download/$(LOGOS_FILE)
 ifeq ($(strip $(CONFIG_WEBIF_TREE)),)
-  WEBIF_BRANCH := branches/testing
+  WEBIF_BRANCH := branches/atinar-unstable
 else
   WEBIF_BRANCH := $(or $(strip $(filter trunk,$(CONFIG_WEBIF_TREE))),branches/$(CONFIG_WEBIF_TREE))
 endif
-WEBIF_SVN := svn://open7x0.org/vdr-htdocs
 WEBIF_DIR := $(BUILD_DIR)/webif
 WEBIF_TC_FILE := $(WEBIF_DIR)/linux-mips-uclibc.tc
 
@@ -39,18 +42,6 @@ FILE_LISTS_$(CONFIG_WEBIF) += webif.lst
 CLEAN_RULES += clean-webif
 DISTCLEAN_RULES += distclean-webif
 
-ifneq ($(and $(filter y,$(CONFIG_WEBIF)), $(wildcard $(WEBIF_DIR))),)
-$(info Updating webif download ...)
-webif_svn_changed := $(call svn_changed, $(WEBIF_DIR))
-
-ifeq ($(webif_svn_changed),0)
-$(info webif is up to date)
-else
-$(info $(webif_svn_changed) file(s) updated)
-webif_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded)
-endif
-endif
-
 #
 # download webif
 #
@@ -59,15 +50,16 @@ $(KLONE_DLFILE): $(TC_INIT_RULE)
 	$(WGET) $(KLONE_URL) -O $(KLONE_DLFILE) ; \
 	fi );
 	$(TOUCH) $(KLONE_DLFILE)
+
 #
 # unpack webif
 #
 $(STAGEFILES_DIR)/.webif_unpacked: $(KLONE_DLFILE) 
 	-$(RM) -rf $(WEBIF_DIR)
 	$(TAR) -C $(BUILD_DIR) -zf $(KLONE_DLFILE)
-	$(MV) $(BUILD_DIR)/$(KLONE_VERSION) $(WEBIF_DIR)
-	$(RM) -rf $(WEBIF_DIR)/webapp
-	$(RM) -rf $(WEBIF_DIR)/Makefile
+	$(MV) $(BUILD_DIR)/klone-$(KLONE_VERSION) $(WEBIF_DIR)
+	-$(RM) -rf $(WEBIF_DIR)/webapp
+	-$(RM) -rf $(WEBIF_DIR)/Makefile
 	$(MV) $(WEBIF_DIR)/README $(WEBIF_DIR)/README.klone
 	$(MV) $(WEBIF_DIR)/LICENSE $(WEBIF_DIR)/LICENSE.klone
 	$(MV) $(WEBIF_DIR)/ChangeLog $(WEBIF_DIR)/ChangeLog.klone
@@ -76,10 +68,10 @@ $(STAGEFILES_DIR)/.webif_unpacked: $(KLONE_DLFILE)
 #
 # webapp download
 #
-
 $(STAGEFILES_DIR)/.webapp_downloaded: $(STAGEFILES_DIR)/.webif_unpacked
-	$(SVN) co $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
+	$(CP) -Trf ../webif/$(WEBIF_BRANCH) $(WEBIF_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
+
 #
 # compile webif
 #
@@ -96,16 +88,28 @@ $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF
 	$(CD) $(WEBIF_DIR) && \
 		env PATH="$(PREFIX_BIN):$(PATH)" ./configure && \
 		env PATH="$(PREFIX_BIN):$(PATH)" $(MAKE) clean && \
-		env PATH="$(PREFIX_BIN):$(PATH)" $(MAKE)
+		env PATH="$(PREFIX_BIN):$(PATH)" KLONE_VERSION=$(KLONE_VERSION) XENO_NO_FETCH=1 $(MAKE)
 	$(CD) $(LASTDIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_compiled
 
 #
+# download logos
+#
+$(LOGOS_DLFILE): $(TC_INIT_RULE)
+	(if [ ! -f $(LOGOS_DLFILE) ] ; then \
+	$(WGET) $(LOGOS_URL) -O $(LOGOS_DLFILE) ; \
+	fi );
+	$(TOUCH) $(LOGOS_DLFILE)
+
+#
 # install webif
 #
-$(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled
-	-$(MKDIR) -p $(TARGET_ROOT)/usr/sbin
+$(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled $(LOGOS_DLFILE)
+	$(MKDIR) -p $(TARGET_ROOT)/usr/sbin
 	$(CP) $(WEBIF_DIR)/kloned $(TARGET_ROOT)/usr/sbin/webifd
+	-$(RM) -rf $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
+	$(MKDIR) -p $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
+	$(TAR) -C $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images -zf $(LOGOS_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_installed
 
 $(FILELIST_DIR)/webif.lst: $(STAGEFILES_DIR)/.webif_installed
@@ -123,4 +127,5 @@ distclean-webif:
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
 	-$(RM) -f $(STAGEFILES_DIR)/.webapp_downloaded
-
+#	-$(RM) -f $(LOGOS_DLFILE)
+	-$(RM) -rf $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images

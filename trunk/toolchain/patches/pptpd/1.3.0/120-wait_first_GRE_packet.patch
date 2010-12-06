@@ -1,0 +1,14 @@
+--- pptpd-1.3.0-orig/pptpgre.c	2009-04-09 04:15:08.000000000 +0200
++++ pptpd-1.3.0/pptpgre.c	2009-04-09 03:55:36.000000000 +0200
+@@ -467,6 +471,11 @@
+ 		stats.tx_oversize++;
+ 		return 0;	/* drop this, it's too big */
+ 	}
++	if(gre.seq_recv==0xFFFFFFFF)
++	{
++	        syslog(LOG_DEBUG, "GRE: packet dropped waiting peer");
++		return header_len+len;
++	}
+ #ifdef HAVE_WRITEV
+ 	/* write header and buffer without copying. */
+ 	iovec[0].iov_base = u.buffer;

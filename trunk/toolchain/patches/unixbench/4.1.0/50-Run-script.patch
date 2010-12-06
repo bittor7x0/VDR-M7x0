@@ -1,0 +1,27 @@
+diff -Naur unixbench-4.1.0-orig/Run unixbench-4.1.0/Run
+--- unixbench-4.1.0-orig/Run	1999-07-29 00:04:47.000000000 +0200
++++ unixbench-4.1.0/Run	2009-03-07 18:18:40.000000000 +0100
+@@ -1,7 +1,7 @@
+ #! /bin/sh
+ #
+ #################### set your defaults here ##############
+-#FLAVOR= # flavor of UNIX: if not determined by script: SysV or BSD
++FLAVOR=Linux
+ FULL_SUITE="dhry2reg whetstone-double syscall pipe context1 spawn execl \
+ 	fstime fsbuffer fsdisk shell short int long float double arithoh \
+ 	C dc hanoi"
+@@ -87,14 +87,6 @@
+ 	UNAME="uname -a"
+ fi
+ 
+-# check that the required files are in the proper places
+-if make check; then
+-        :
+-else
+-	make all
+-fi
+-
+-
+ # establish full paths to directories
+ _WD=`pwd`
+ HOMEDIR=${HOMEDIR-.}

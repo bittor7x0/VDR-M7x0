@@ -1,0 +1,13 @@
+--- x/drivers/block/ll_rw_blk.c.~1~	2003-02-14 03:55:54.000000000 +0100
++++ x/drivers/block/ll_rw_blk.c	2003-02-14 03:59:07.000000000 +0100
+@@ -1473,9 +1473,7 @@ void ll_rw_block(int rw, int nr, struct 
+ 	for (i = 0; i < nr; i++) {
+ 		struct buffer_head *bh = bhs[i];
+ 
+-		/* Only one thread can actually submit the I/O. */
+-		if (test_and_set_bit(BH_Lock, &bh->b_state))
+-			continue;
++		lock_buffer(bh);
+ 
+ 		/* We have the buffer lock */
+ 		atomic_inc(&bh->b_count);

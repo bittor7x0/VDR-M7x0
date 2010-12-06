@@ -1,0 +1,5 @@
+#!/bin/ash
+# (c) Lemmi, m740av (at) cle-mens.de, 2007-01-03, GPL2
+
+mntpt="`realpath "$1" 2>/dev/null`"
+exec awk '{print $2}' /proc/mounts | grep -q "^${mntpt}$"

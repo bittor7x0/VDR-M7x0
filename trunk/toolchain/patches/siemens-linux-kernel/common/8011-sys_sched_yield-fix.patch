@@ -1,0 +1,23 @@
+diff -Naur slin_m740_orig/include/linux/sched.h slin_m740/include/linux/sched.h
+--- slin_m740_orig/include/linux/sched.h	2009-12-05 13:21:10.000000000 +0100
++++ slin_m740/include/linux/sched.h	2009-12-07 12:14:33.000000000 +0100
+@@ -486,6 +486,7 @@
+ #ifndef CONFIG_RTSCHED
+ extern void yield(void);
+ #else
++asmlinkage long sys_sched_yield(void);
+ #define yield() sys_sched_yield()
+ #endif
+ 
+diff -Naur slin_m740_orig/kernel/ksyms.c slin_m740/kernel/ksyms.c
+--- slin_m740_orig/kernel/ksyms.c	2009-12-07 12:23:14.000000000 +0100
++++ slin_m740/kernel/ksyms.c	2009-12-07 12:15:14.000000000 +0100
+@@ -481,6 +481,8 @@
+ #ifndef CONFIG_RTSCHED
+ EXPORT_SYMBOL(yield);
+ EXPORT_SYMBOL(__cond_resched);
++#else
++EXPORT_SYMBOL(sys_sched_yield);
+ #endif
+ EXPORT_SYMBOL(jiffies);
+ EXPORT_SYMBOL(xtime);

@@ -1,0 +1,4 @@
+usr/lib/libdlna.so.0.2.3  usr/lib/libdlna.so.0.2.3  f 755 0 0 - - - - -
+usr/lib/libdlna.so.0.2.3  -                         s   - - - - - - - -
+usr/lib/libdlna.so.0      libdlna.so.0.2.3          l 777 0 0 - - - - -
+usr/lib/libdlna.so        libdlna.so.0.2.3          l 777 0 0 - - - - -

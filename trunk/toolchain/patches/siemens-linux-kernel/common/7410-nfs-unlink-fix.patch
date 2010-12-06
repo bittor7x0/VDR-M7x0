@@ -1,0 +1,104 @@
+diff -u --recursive --new-file linux-2.4.21-18-fix_lockdmon/fs/nfs/dir.c linux-2.4.21-19-fix_unlink/fs/nfs/dir.c
+--- linux-2.4.21-18-fix_lockdmon/fs/nfs/dir.c	2003-05-29 15:23:26.000000000 +0200
++++ linux-2.4.21-19-fix_unlink/fs/nfs/dir.c	2003-05-29 16:02:10.000000000 +0200
+@@ -1137,7 +1137,7 @@
+ 	struct inode *old_inode = old_dentry->d_inode;
+ 	struct inode *new_inode = new_dentry->d_inode;
+ 	struct dentry *dentry = NULL, *rehash = NULL;
+-	int error = -EBUSY;
++	int error;
+ 
+ 	/*
+ 	 * To prevent any new references to the target during the rename,
+@@ -1041,6 +1165,12 @@
+ 	 */
+ 	if (!new_inode)
+ 		goto go_ahead;
++	/* If target is a hard link to the source, then noop */
++	error = 0;
++	if (NFS_FILEID(new_inode) == NFS_FILEID(old_inode))
++		goto out;
++
++	error = -EBUSY;
+ 	if (S_ISDIR(new_inode->i_mode)) {
+ 		error = -EISDIR;
+ 		if (!S_ISDIR(old_inode->i_mode))
+diff -u --recursive --new-file linux-2.4.21-18-fix_lockdmon/fs/nfs/nfs3proc.c linux-2.4.21-19-fix_unlink/fs/nfs/nfs3proc.c
+--- linux-2.4.21-18-fix_lockdmon/fs/nfs/nfs3proc.c	2003-05-29 15:23:28.000000000 +0200
++++ linux-2.4.21-19-fix_unlink/fs/nfs/nfs3proc.c	2003-05-29 16:11:10.000000000 +0200
+@@ -298,16 +298,21 @@
+ static int
+ nfs3_proc_unlink_setup(struct rpc_message *msg, struct dentry *dir, struct qstr *name)
+ {
++	struct {
++		struct nfs3_diropargs arg;
++		struct nfs_fattr res;
++	} *data;
+ 	struct nfs3_diropargs	*arg;
+ 	struct nfs_fattr	*res;
+ 
+-	arg = (struct nfs3_diropargs *)kmalloc(sizeof(*arg)+sizeof(*res), GFP_KERNEL);
+-	if (!arg)
++	data = kmalloc(sizeof(*data), GFP_KERNEL);
++	if (!data)
+ 		return -ENOMEM;
+-	res = (struct nfs_fattr*)(arg + 1);
++	arg = &data->arg;
+ 	arg->fh = NFS_FH(dir->d_inode);
+ 	arg->name = name->name;
+ 	arg->len = name->len;
++	res = &data->res;
+ 	res->valid = 0;
+ 	msg->rpc_proc = NFS3PROC_REMOVE;
+ 	msg->rpc_argp = arg;
+diff -u --recursive --new-file linux-2.4.21-18-fix_lockdmon/fs/nfs/unlink.c linux-2.4.21-19-fix_unlink/fs/nfs/unlink.c
+--- linux-2.4.21-18-fix_lockdmon/fs/nfs/unlink.c	2002-08-11 13:34:02.000000000 +0200
++++ linux-2.4.21-19-fix_unlink/fs/nfs/unlink.c	2003-05-29 16:01:09.000000000 +0200
+@@ -12,6 +12,7 @@
+ #include <linux/sunrpc/sched.h>
+ #include <linux/sunrpc/clnt.h>
+ #include <linux/nfs_fs.h>
++#include <linux/wait.h>
+ 
+ 
+ struct nfs_unlinkdata {
+@@ -21,6 +22,9 @@
+ 	struct rpc_task	task;
+ 	struct rpc_cred	*cred;
+ 	unsigned int	count;
++
++	wait_queue_head_t waitq;
++	int completed;
+ };
+ 
+ static struct nfs_unlinkdata	*nfs_deletes;
+@@ -133,6 +137,8 @@
+ 	put_rpccred(data->cred);
+ 	data->cred = NULL;
+ 	dput(dir);
++	data->completed = 1;
++	wake_up(&data->waitq);
+ }
+ 
+ /**
+@@ -175,6 +181,8 @@
+ 	nfs_deletes = data;
+ 	data->count = 1;
+ 
++	init_waitqueue_head(&data->waitq);
++
+ 	task = &data->task;
+ 	rpc_init_task(task, clnt, nfs_async_unlink_done , RPC_TASK_ASYNC);
+ 	task->tk_calldata = data;
+@@ -212,7 +220,10 @@
+ 	data->count++;
+ 	nfs_copy_dname(dentry, data);
+ 	dentry->d_flags &= ~DCACHE_NFSFS_RENAMED;
+-	if (data->task.tk_rpcwait == &nfs_delete_queue)
++	if (data->task.tk_rpcwait == &nfs_delete_queue) {
++		struct rpc_clnt *clnt = data->task.tk_client;
+ 		rpc_wake_up_task(&data->task);
++		nfs_wait_event(clnt, data->waitq, data->completed == 1);
++	}
+ 	nfs_put_unlinkdata(data);
+ }

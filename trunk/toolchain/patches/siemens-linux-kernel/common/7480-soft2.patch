@@ -1,0 +1,176 @@
+diff -u --recursive --new-file linux-2.4.21-21-soft/include/linux/sunrpc/clnt.h linux-2.4.21-22-soft2/include/linux/sunrpc/clnt.h
+--- linux-2.4.21-21-soft/include/linux/sunrpc/clnt.h	2003-06-16 17:28:59.000000000 -0700
++++ linux-2.4.21-22-soft2/include/linux/sunrpc/clnt.h	2003-06-16 18:41:52.000000000 -0700
+@@ -49,8 +49,8 @@
+ 				cl_droppriv : 1,/* enable NFS suid hack */
+ 				cl_oneshot  : 1,/* dispose after use */
+ 				cl_dead     : 1;/* abandoned */
+-	unsigned int		cl_flags;	/* misc client flags */
+-	unsigned long		cl_hardmax;	/* max hard timeout */
++	unsigned long		cl_flags;	/* misc client flags */
++	unsigned long		cl_timeo;	/* last timeout message */
+ 
+ 	struct rpc_rtt		cl_rtt;		/* RTO estimator data */
+ 
+@@ -66,6 +66,8 @@
+ #define cl_port			cl_pmap.pm_port
+ #define cl_prot			cl_pmap.pm_prot
+ 
++#define RPC_CLNT_NORESPONSE	1
++
+ /*
+  * General RPC program info
+  */
+diff -u --recursive --new-file linux-2.4.21-21-soft/include/linux/sunrpc/sched.h linux-2.4.21-22-soft2/include/linux/sunrpc/sched.h
+--- linux-2.4.21-21-soft/include/linux/sunrpc/sched.h	2003-06-15 13:12:30.000000000 -0700
++++ linux-2.4.21-22-soft2/include/linux/sunrpc/sched.h	2003-06-16 18:41:22.000000000 -0700
+@@ -108,10 +108,10 @@
+ #define RPC_TASK_SETUID		0x0004		/* is setuid process */
+ #define RPC_TASK_CHILD		0x0008		/* is child of other task */
+ #define RPC_CALL_REALUID	0x0010		/* try using real uid */
+-#define RPC_CALL_MAJORSEEN	0x0020		/* major timeout seen */
+-#define RPC_TASK_ROOTCREDS	0x0040		/* force root creds */
+-#define RPC_TASK_DYNAMIC	0x0080		/* task was kmalloc'ed */
+-#define RPC_TASK_KILLED		0x0100		/* task was killed */
++#define RPC_TASK_ROOTCREDS	0x0020		/* force root creds */
++#define RPC_TASK_KILLED		0x0040		/* task was killed */
++#define RPC_TASK_SOFT		0x0080		/* soft time out */
++#define RPC_TASK_RTT		0x0100		/* use round trip timer */
+ 
+ #define RPC_IS_ASYNC(t)		((t)->tk_flags & RPC_TASK_ASYNC)
+ #define RPC_IS_SETUID(t)	((t)->tk_flags & RPC_TASK_SETUID)
+@@ -121,6 +121,8 @@
+ #define RPC_ASSASSINATED(t)	((t)->tk_flags & RPC_TASK_KILLED)
+ #define RPC_IS_ACTIVATED(t)	((t)->tk_active)
+ #define RPC_DO_CALLBACK(t)	((t)->tk_callback != NULL)
++#define RPC_IS_SOFT(t)		((t)->tk_flags & RPC_TASK_SOFT)
++#define RPC_USE_RTT(t)		((t)->tk_flags & RPC_TASK_RTT)
+ 
+ #define RPC_TASK_SLEEPING	0
+ #define RPC_TASK_RUNNING	1
+diff -u --recursive --new-file linux-2.4.21-21-soft/net/sunrpc/clnt.c linux-2.4.21-22-soft2/net/sunrpc/clnt.c
+--- linux-2.4.21-21-soft/net/sunrpc/clnt.c	2003-06-17 10:38:56.000000000 -0700
++++ linux-2.4.21-22-soft2/net/sunrpc/clnt.c	2003-06-16 18:36:37.000000000 -0700
+@@ -708,19 +708,31 @@
+ 	to->to_retries = clnt->cl_timeout.to_retries;
+ 
+ 	dprintk("RPC: %4d call_timeout (major)\n", task->tk_pid);
+-	if (clnt->cl_softrtry) {
+-		if (clnt->cl_chatty)
+-			printk(KERN_NOTICE "%s: server %s not responding, timed out\n",
+-				clnt->cl_protname, clnt->cl_server);
++	if (RPC_IS_SOFT(task)) {
++		if (clnt->cl_chatty) {
++			if (!test_and_set_bit(RPC_CLNT_NORESPONSE, &clnt->cl_flags)
++					|| time_after(jiffies, clnt->cl_timeo + 20*HZ)) {
++				printk(KERN_NOTICE "%s: server %s is not responding, timed out\n",
++						clnt->cl_protname, clnt->cl_server);
++				clnt->cl_timeo = jiffies;
++			}
++		}
+ 		rpc_exit(task, -EIO);
+ 		return;
+ 	}
+ 
+-	if (clnt->cl_chatty && !(task->tk_flags & RPC_CALL_MAJORSEEN)) {
+-		task->tk_flags |= RPC_CALL_MAJORSEEN;
+-		printk(KERN_NOTICE "%s: server %s not responding, still trying\n",
+-			clnt->cl_protname, clnt->cl_server);
+-	}
++	if (clnt->cl_chatty) {
++		if (!test_and_set_bit(RPC_CLNT_NORESPONSE, &clnt->cl_flags)) {
++			clnt->cl_flags |= RPC_CLNT_NORESPONSE;
++			printk(KERN_NOTICE "%s: server %s is not responding\n",
++					clnt->cl_protname, clnt->cl_server);
++			clnt->cl_timeo = jiffies;
++		} else if (time_after(jiffies, clnt->cl_timeo + 20*HZ)) {
++			printk(KERN_NOTICE "%s: server %s  is not responding, still trying\n",
++					clnt->cl_protname, clnt->cl_server);
++			clnt->cl_timeo = jiffies;
++		}
++	} else
+ 	if (clnt->cl_autobind)
+ 		clnt->cl_port = 0;
+ 
+@@ -744,14 +756,13 @@
+ 	dprintk("RPC: %4d call_decode (status %d)\n", 
+ 				task->tk_pid, task->tk_status);
+ 
+-	if (clnt->cl_chatty && (task->tk_flags & RPC_CALL_MAJORSEEN)) {
++	if (clnt->cl_chatty && test_and_clear_bit(RPC_CLNT_NORESPONSE, &clnt->cl_flags)) {
+ 		printk(KERN_NOTICE "%s: server %s OK\n",
+ 			clnt->cl_protname, clnt->cl_server);
+-		task->tk_flags &= ~RPC_CALL_MAJORSEEN;
+ 	}
+ 
+ 	if (task->tk_status < 12) {
+-		if (!clnt->cl_softrtry) {
++		if (!RPC_IS_SOFT(task)) {
+ 			task->tk_action = call_transmit;
+ 			clnt->cl_stats->rpcretrans++;
+ 		} else {
+diff -u --recursive --new-file linux-2.4.21-21-soft/net/sunrpc/sched.c linux-2.4.21-22-soft2/net/sunrpc/sched.c
+--- linux-2.4.21-21-soft/net/sunrpc/sched.c	2003-06-13 07:51:39.000000000 -0700
++++ linux-2.4.21-22-soft2/net/sunrpc/sched.c	2003-06-16 18:41:42.000000000 -0700
+@@ -761,8 +761,13 @@
+ 	list_add(&task->tk_task, &all_tasks);
+ 	spin_unlock(&rpc_sched_lock);
+ 
+-	if (clnt)
++	if (clnt) {
+ 		atomic_inc(&clnt->cl_users);
++		if (clnt->cl_softrtry)
++			task->tk_flags |= RPC_TASK_SOFT;
++		if (clnt->cl_prot == IPPROTO_UDP)
++			task->tk_flags |= RPC_TASK_RTT;
++	}
+ 
+ #ifdef RPC_DEBUG
+ 	task->tk_magic = 0xf00baa;
+@@ -799,7 +804,6 @@
+ 	task->tk_release = rpc_default_free_task;
+ 
+ 	dprintk("RPC: %4d allocated task\n", task->tk_pid);
+-	task->tk_flags |= RPC_TASK_DYNAMIC;
+ out:
+ 	return task;
+ 
+diff -u --recursive --new-file linux-2.4.21-21-soft/net/sunrpc/xprt.c linux-2.4.21-22-soft2/net/sunrpc/xprt.c
+--- linux-2.4.21-21-soft/net/sunrpc/xprt.c	2003-06-17 09:48:18.000000000 -0700
++++ linux-2.4.21-22-soft2/net/sunrpc/xprt.c	2003-06-17 09:47:56.000000000 -0700
+@@ -495,7 +495,7 @@
+ 	case -ECONNREFUSED:
+ 	case -ECONNRESET:
+ 	case -ENOTCONN:
+-		if (!task->tk_client->cl_softrtry) {
++		if (!RPC_IS_SOFT(task)) {
+ 			rpc_delay(task, RPC_REESTABLISH_TIMEOUT);
+ 			task->tk_status = -ENOTCONN;
+ 			break;
+@@ -503,7 +503,7 @@
+ 	default:
+ 		/* Report myriad other possible returns.  If this file
+ 		 * system is soft mounted, just error out, like Solaris.  */
+-		if (task->tk_client->cl_softrtry) {
++		if (RPC_IS_SOFT(task)) {
+ 			printk(KERN_WARNING
+ 					"RPC: error %d connecting to server %s, exiting\n",
+ 					-status, task->tk_client->cl_server);
+@@ -537,7 +537,7 @@
+ 	}
+ 
+ 	/* if soft mounted, cause this RPC to fail */
+-	if (task->tk_client->cl_softrtry)
++	if (RPC_IS_SOFT(task))
+ 		task->tk_status = -EIO;
+ 
+ 	switch (task->tk_status) {
+@@ -1207,7 +1207,7 @@
+ 	dprintk("RPC: %4d xmit complete\n", task->tk_pid);
+ 	spin_lock_bh(&xprt->sock_lock);
+ 	/* Set the task's receive timeout value */
+-	if (!xprt->nocong) {
++	if (RPC_USE_RTT(task)) {
+ 		task->tk_timeout = rpc_calc_rto(&clnt->cl_rtt,
+ 				rpcproc_timer(clnt, task->tk_msg.rpc_proc));
+ 		task->tk_timeout <<= clnt->cl_timeout.to_retries

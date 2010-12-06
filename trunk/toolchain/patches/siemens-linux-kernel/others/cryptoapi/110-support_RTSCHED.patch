@@ -1,0 +1,15 @@
+diff -Naur slin_m740-orig/crypto/internal.h slin_m740/crypto/internal.h
+--- slin_m740-orig/crypto/internal.h	2009-04-22 12:16:55.000000000 +0200
++++ slin_m740/crypto/internal.h	2009-04-22 12:16:20.000000000 +0200
+@@ -39,7 +39,11 @@
+ static inline void crypto_yield(struct crypto_tfm *tfm)
+ {
+ 	if (!in_softirq())
++#ifdef CONFIG_RTSCHED
++		schedule();
++#else
+ 		cond_resched();
++#endif
+ }
+ 
+ static inline void *crypto_tfm_ctx(struct crypto_tfm *tfm)

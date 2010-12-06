@@ -1,0 +1,12 @@
+diff -Naur slin_m740_orig/mm/oom_kill.c slin_m740/mm/oom_kill.c
+--- slin_m740_orig/mm/oom_kill.c	Wed Jul 27 19:12:16 2005
++++ slin_m740/mm/oom_kill.c	Wed Feb 25 17:06:24 2009
+@@ -22,7 +22,7 @@
+ #include <linux/timex.h>
+ 
+ /* #define DEBUG */
+-#define DEBUG1
++/* #define DEBUG1 */
+ 
+ /**
+  * int_sqrt - oom_kill.c internal function, rough approximation to sqrt

@@ -1,0 +1,12 @@
+diff -Naur slin_m740_orig/include/net/af_unix.h slin_m740/include/net/af_unix.h
+--- slin_m740_orig/include/net/af_unix.h	Sat May 29 14:46:22 2004
++++ slin_m740/include/net/af_unix.h	Fri Dec 19 09:36:46 2008
+@@ -6,7 +6,7 @@
+ typedef struct sock unix_socket;
+ extern void unix_gc(void);
+ 
+-#define UNIX_HASH_SIZE	256
++#define UNIX_HASH_SIZE	16
+ 
+ extern unix_socket *unix_socket_table[UNIX_HASH_SIZE+1];
+ extern rwlock_t unix_table_lock;

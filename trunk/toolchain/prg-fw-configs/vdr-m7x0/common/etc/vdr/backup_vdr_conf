@@ -1,0 +1,151 @@
+#!/bin/ash
+
+set -o nounset
+
+. /etc/rc.local.conf
+
+first_video_dir=`echo $vdr_videodirs | cut -d ' ' -f 1`
+
+usage_and_exit () {
+    echo "Uso: $0 [save|load|info] [archivo]"
+    echo
+    echo "$0 guarda (o recupera) la configuración de VDR en (o desde) un archivo"
+    echo
+    echo "Si no existe el argumento 'archivo' se usa un nombre de archivo fijo"
+    echo "y se guarda en el directorio de grabaciones configurado."
+    exit 1
+}
+
+quote_grave_accent () {
+
+    sed 's/=`\(.*\)`/="`\1`"/g' $1 | sed 's/`\(.*\)`/\\`\1\\`/g'
+
+}
+    
+
+restore_configuration () {
+
+    mkdir /tmp/backup-$$
+    mkdir /tmp/work-$$
+
+    tar -C /tmp/backup-$$/ -xf "$conf_tar"
+    
+    if [ ! $? -eq 0 ]; then
+	logger -s user.warning "Ocurrió un error al intentar desempaquetar la configuración"
+    fi
+    for file in rc.conf rc.local.conf; do
+	quote_grave_accent /etc/$file > /tmp/work-$$/$file
+	quote_grave_accent /tmp/backup-$$/etc/$file > /tmp/work-$$/backup-$file
+    done
+    source /tmp/work-$$/rc.conf
+    source /tmp/work-$$/rc.local.conf
+    source /tmp/work-$$/backup-rc.conf
+    source /tmp/work-$$/backup-rc.local.conf
+    for file in rc.conf rc.local.conf; do
+	echo 'cat << ---EOT--- >' /tmp/backup-$$/etc/$file > /tmp/work-$$/$file.sh
+	awk -v FS== '
+                          /[a-z_]+=/ {print $1 "=\"${" $1 "}\""; next}
+                          {print}
+                        ' /tmp/work-$$/$file >> /tmp/work-$$/$file.sh
+	echo '---EOT---' >> /tmp/work-$$/$file.sh
+	source /tmp/work-$$/$file.sh
+    done
+    cp -a /tmp/backup-$$/etc /
+    if [ -f /etc/webif.conf ]; then
+        ( [ -d /etc/webif ] ||  mkdir /etc/webif ) && mv /etc/webif.conf /etc/webif/webif.conf
+    fi
+    
+    if [ ! $? -eq 0 ]; then
+	logger -s user.warning "Ocurrió un error al intentar recuperar la configuración"
+    else
+	logger -s user.info "Configuración recuperada correctamente"	
+    fi
+
+    rm -rf /tmp/work-$$ /tmp/backup-$$
+
+}
+
+case $# in
+    1)
+	conf_tar="$first_video_dir/vdr_conf.vcf"
+	vcf_dir="$first_video_dir"
+
+	if [ ! -d "$first_video_dir" ]; then
+	    echo "No existe el directorio de grabaciones $first_video_dir"
+	    echo "Revise la configuración en:"
+	    echo "   Configuración > Configuración Firmware > Configuración de directorios > Directorio de grabaciones"
+	    exit 2
+	fi
+
+	;;
+    2)
+	conf_tar="$2"
+	vcf_dir=$(basename "$conf_tar")
+	;;
+    *)
+	usage_and_exit	
+esac
+
+case $1 in
+    save)
+	if [ ! -w "$vcf_dir" ]; then
+	    echo "No se puede escribir en el directorio $vcf_dir"
+	    if [ "$vcf_dir" = "$first_video_dir" ]; then
+		echo "Configure un directorio correcto en:"
+		echo "   Configuración > Configuración Firmware > Configuración de directorios > Directorio de grabaciones"
+	    fi
+	    exit 3
+	else
+	    cp /etc/fw-version /tmp
+	    file_list=`ls -d $vdr_confdir/setup.conf $vdr_confdir/svdrphosts.conf $vdr_confdir/timers.conf $vdr_confdir/channels.conf $vdr_confdir/plugins/streamdevhosts.conf $vdr_confdir/plugins/MainMenu.conf $vdr_confdir/epgmodes.conf $vdr_confdir/plugins/rssreader.conf $vdr_confdir/plugins/scheduler/tasks.conf $vdr_confdir/keymacros.conf $vdr_confdir/plugins/playlists*.conf $vdr_confdir/plugins/epgsearch/*.conf $vdr_confdir/plugins/pin/*.conf $vdr_confdir/plugins/mp3sources.conf /etc/hosts /etc/rc.local.conf /etc/resolv.conf /etc/rc.conf /etc/samba/smb.conf /etc/ssmtp/ssmtp.conf /etc/ssmtp/revaliases /etc/ppp/chap-secrets /etc/ppp/options /etc/lircrc /etc/fstab /tmp/fw-version /etc/webif /etc/ushare.conf 2> /dev/null`
+	    tar -cf "$conf_tar" $file_list 2> /tmp/tar_backup.$$.err
+	    if [ $? -eq 0 ]; then
+		echo "Configuración guardada correctamente en $conf_tar"
+		rm /tmp/tar_backup.$$.err
+	    else
+		cat /tmp/tar_backup.$$.err
+		echo "Ocurrió un error al intentar guardar la configuración"
+		rm /tmp/tar_backup.$$.err
+		exit 4
+	    fi
+	fi
+	;;
+    load)
+	if [ ! -r "$conf_tar" ]; then
+	    echo "No existe el archivo $conf_tar del que recuperar la configuración."
+	    echo "Ha de guardar la configuración primero."
+	    exit 5
+	else
+
+	    if [ -f /var/run/runvdr.pid ]; then
+		echo "VDR se reiniciará ahora para aplicar la nueva configuración"
+
+		# No se puede imprimir nada a partir de aqui o recibiremos SIGPIPE
+		{
+		    kill-vdr
+		    restore_configuration
+		    start-vdr
+
+		} > /dev/null 2>&1 &
+		
+	    else
+		restore_configuration
+	    fi
+	fi
+
+	;;
+    info)
+	if [ ! -r "$conf_tar" ]; then
+	    echo "No existe el archivo $conf_tar del que recuperar la configuración"
+	    exit 7
+	else
+	    echo "Configuración guardada en:"
+	    ls -lh "$conf_tar"
+	    echo
+	    echo "Contenido del archivo:"
+	    tar -tf "$conf_tar"
+	fi
+	;;
+    *)
+    usage_and_exit
+esac

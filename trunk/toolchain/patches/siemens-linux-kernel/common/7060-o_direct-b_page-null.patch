@@ -1,0 +1,11 @@
+diff -urNp page/fs/buffer.c 2.4.20pre5aa1-old/fs/buffer.c
+--- page/fs/buffer.c	Wed Sep  4 04:24:23 2002
++++ 2.4.20pre5aa1-old/fs/buffer.c	Wed Sep  4 04:24:49 2002
+@@ -2109,6 +2109,7 @@ int generic_direct_IO(int rw, struct ino
+ 		bh.b_state = 0;
+ 		bh.b_dev = inode->i_dev;
+ 		bh.b_size = blocksize;
++		bh.b_page = NULL;
+ 
+ 		retval = get_block(inode, blocknr, &bh, rw == READ ? 0 : 1);
+ 		if (retval) {

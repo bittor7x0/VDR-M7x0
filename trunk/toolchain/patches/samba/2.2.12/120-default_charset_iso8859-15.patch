@@ -1,0 +1,24 @@
+diff -Naur samba-2.2.12-orig/source/client/smbmount.c samba-2.2.12/source/client/smbmount.c
+--- samba-2.2.12-orig/source/client/smbmount.c	2009-03-11 13:48:39.000000000 +0100
++++ samba-2.2.12/source/client/smbmount.c	2009-03-11 13:57:37.000000000 +0100
+@@ -646,7 +646,7 @@
+       workgroup=<arg>                 workgroup on destination\n\
+       sockopt=<arg>                   TCP socket options\n\
+       scope=<arg>                     NetBIOS scope\n\
+-      iocharset=<arg>                 Linux charset (iso8859-1, utf8)\n\
++      iocharset=<arg>                 Linux charset (iso8859-15, utf8)\n\
+       codepage=<arg>                  server codepage (cp850)\n\
+       ttl=<arg>                       dircache time to live\n\
+       guest                           don't prompt for a password\n\
+diff -Naur samba-2.2.12-orig/source/lib/charset.c samba-2.2.12/source/lib/charset.c
+--- samba-2.2.12-orig/source/lib/charset.c	2009-03-11 09:59:30.000000000 +0100
++++ samba-2.2.12/source/lib/charset.c	2009-03-11 13:57:37.000000000 +0100
+@@ -370,7 +370,7 @@
+ 
+   /* Try and load the unicode map. */
+   load_dos_unicode_map(client_codepage);
+-  load_unix_unicode_map("iso8859-1", False); /* This will be reset by character set = XXX */
++  load_unix_unicode_map("iso8859-15", False); /* This will be reset by character set = XXX */
+ }
+ 
+ /*******************************************************************

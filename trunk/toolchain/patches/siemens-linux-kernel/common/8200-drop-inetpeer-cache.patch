@@ -1,0 +1,1382 @@
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/drivers/char/random.c x/drivers/char/random.c
+--- x-ref/drivers/char/random.c	2003-04-05 00:12:53.000000000 +0200
++++ x/drivers/char/random.c	2003-04-05 05:06:49.000000000 +0200
+@@ -2122,15 +2122,6 @@ __u32 secure_tcpv6_sequence_number(__u32
+ 	return seq;
+ }
+ 
+-__u32 secure_ipv6_id(__u32 *daddr)
+-{
+-	struct keydata *keyptr;
+-
+-	keyptr = check_and_rekey(CURRENT_TIME);
+-
+-	return halfMD4Transform(daddr, keyptr->secret);
+-}
+-
+ #endif
+ 
+ 
+@@ -2177,29 +2168,6 @@ __u32 secure_tcp_sequence_number(__u32 s
+ 	return seq;
+ }
+ 
+-/*  The code below is shamelessly stolen from secure_tcp_sequence_number().
+- *  All blames to Andrey V. Savochkin <saw@msu.ru>.
+- */
+-__u32 secure_ip_id(__u32 daddr)
+-{
+-	struct keydata *keyptr;
+-	__u32 hash[4];
+-
+-	keyptr = check_and_rekey(CURRENT_TIME);
+-
+-	/*
+-	 *  Pick a unique starting offset for each IP destination.
+-	 *  The dest ip address is placed in the starting vector,
+-	 *  which is then hashed with random data.
+-	 */
+-	hash[0] = daddr;
+-	hash[1] = keyptr->secret[9];
+-	hash[2] = keyptr->secret[10];
+-	hash[3] = keyptr->secret[11];
+-
+-	return halfMD4Transform(hash, keyptr->secret);
+-}
+-
+ #ifdef CONFIG_SYN_COOKIES
+ /*
+  * Secure SYN cookie computation. This is the algorithm worked out by
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/include/linux/random.h x/include/linux/random.h
+--- x-ref/include/linux/random.h	2002-12-18 23:51:41.000000000 +0100
++++ x/include/linux/random.h	2003-04-05 05:06:14.000000000 +0200
+@@ -56,7 +56,6 @@ extern void add_blkdev_randomness(int ma
+ extern void get_random_bytes(void *buf, int nbytes);
+ void generate_random_uuid(unsigned char uuid_out[16]);
+ 
+-extern __u32 secure_ip_id(__u32 daddr);
+ extern __u32 secure_tcp_sequence_number(__u32 saddr, __u32 daddr,
+ 					__u16 sport, __u16 dport);
+ extern __u32 secure_tcp_syn_cookie(__u32 saddr, __u32 daddr,
+@@ -70,7 +69,6 @@ extern __u32 check_tcp_syn_cookie(__u32 
+ extern __u32 secure_tcpv6_sequence_number(__u32 *saddr, __u32 *daddr,
+ 					  __u16 sport, __u16 dport);
+ 
+-extern __u32 secure_ipv6_id(__u32 *daddr);
+ 
+ #ifndef MODULE
+ extern struct file_operations random_fops, urandom_fops;
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/include/net/inetpeer.h x/include/net/inetpeer.h
+--- x-ref/include/net/inetpeer.h	2003-02-14 07:03:28.000000000 +0100
++++ x/include/net/inetpeer.h	1970-01-01 01:00:00.000000000 +0100
+@@ -1,66 +0,0 @@
+-/*
+- *		INETPEER - A storage for permanent information about peers
+- *
+- *  Version:	$Id: inetpeer.h,v 1.1.2.1 2002/01/12 07:53:15 davem Exp $
+- *
+- *  Authors:	Andrey V. Savochkin <saw@msu.ru>
+- */
+-
+-#ifndef _NET_INETPEER_H
+-#define _NET_INETPEER_H
+-
+-#include <linux/types.h>
+-#include <linux/init.h>
+-#include <linux/sched.h>
+-#include <linux/spinlock.h>
+-#include <asm/atomic.h>
+-
+-struct inet_peer
+-{
+-	struct inet_peer	*avl_left, *avl_right;
+-	struct inet_peer	*unused_next, **unused_prevp;
+-	atomic_t		refcnt;
+-	unsigned long		dtime;		/* the time of last use of not
+-						 * referenced entries */
+-	__u32			v4daddr;	/* peer's address */
+-	__u16			avl_height;
+-	__u16			ip_id_count;	/* IP ID for the next packet */
+-	__u32			tcp_ts;
+-	unsigned long		tcp_ts_stamp;
+-};
+-
+-void			inet_initpeers(void) __init;
+-
+-/* can be called with or without local BH being disabled */
+-struct inet_peer	*inet_getpeer(__u32 daddr, int create);
+-
+-extern spinlock_t inet_peer_unused_lock;
+-extern struct inet_peer *inet_peer_unused_head;
+-extern struct inet_peer **inet_peer_unused_tailp;
+-/* can be called from BH context or outside */
+-static inline void	inet_putpeer(struct inet_peer *p)
+-{
+-	spin_lock_bh(&inet_peer_unused_lock);
+-	if (atomic_dec_and_test(&p->refcnt)) {
+-		p->unused_prevp = inet_peer_unused_tailp;
+-		p->unused_next = NULL;
+-		*inet_peer_unused_tailp = p;
+-		inet_peer_unused_tailp = &p->unused_next;
+-		p->dtime = jiffies;
+-	}
+-	spin_unlock_bh(&inet_peer_unused_lock);
+-}
+-
+-extern spinlock_t inet_peer_idlock;
+-/* can be called with or without local BH being disabled */
+-static inline __u16	inet_getid(struct inet_peer *p)
+-{
+-	__u16 id;
+-
+-	spin_lock_bh(&inet_peer_idlock);
+-	id = p->ip_id_count++;
+-	spin_unlock_bh(&inet_peer_idlock);
+-	return id;
+-}
+-
+-#endif /* _NET_INETPEER_H */
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/include/net/ip.h x/include/net/ip.h
+--- x-ref/include/net/ip.h	2003-02-14 07:03:28.000000000 +0100
++++ x/include/net/ip.h	2003-04-05 05:06:14.000000000 +0200
+@@ -186,20 +186,20 @@ int ip_dont_fragment(struct sock *sk, st
+ 		 !(dst->mxlock&(1<<RTAX_MTU))));
+ }
+ 
+-extern void __ip_select_ident(struct iphdr *iph, struct dst_entry *dst);
++#define IPID_CPU_GRAB 4
++#define IPID_GRAB_EXPIRE (HZ)
+ 
+-static inline void ip_select_ident(struct iphdr *iph, struct dst_entry *dst, struct sock *sk)
+-{
+-	if (iph->frag_off&__constant_htons(IP_DF)) {
+-		/* This is only to work around buggy Windows95/2000
+-		 * VJ compression implementations.  If the ID field
+-		 * does not change, they drop every other packet in
+-		 * a TCP stream using header compression.
+-		 */
+-		iph->id = ((sk && sk->daddr) ? htons(sk->protinfo.af_inet.id++) : 0);
+-	} else
+-		__ip_select_ident(iph, dst);
+-}
++struct ip_local_data { 
++	unsigned long ipid_grab_time; 
++	int   ipid_left;
++	__u16 ipid; 
++} ____cacheline_aligned; 
++
++extern struct ip_local_data ip_local_data[NR_CPUS]; 
++
++#define IP_LOCAL_DATA (&ip_local_data[smp_processor_id()])
++
++extern void ip_select_ident(struct iphdr *iph);
+ 
+ /*
+  *	Map a multicast IP onto multicast MAC for type ethernet.
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/include/net/ipip.h x/include/net/ipip.h
+--- x-ref/include/net/ipip.h	2001-05-01 19:35:32.000000000 +0200
++++ x/include/net/ipip.h	2003-04-05 05:06:14.000000000 +0200
+@@ -31,7 +31,7 @@ struct ip_tunnel
+ 									\
+ 	skb->ip_summed = CHECKSUM_NONE;					\
+ 	iph->tot_len = htons(skb->len);					\
+-	ip_select_ident(iph, &rt->u.dst, NULL);				\
++	ip_select_ident(iph);				\
+ 	ip_send_check(iph);						\
+ 									\
+ 	err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, skb, NULL, rt->u.dst.dev, do_ip_send); \
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/include/net/route.h x/include/net/route.h
+--- x-ref/include/net/route.h	2003-02-14 07:03:28.000000000 +0100
++++ x/include/net/route.h	2003-04-05 05:06:14.000000000 +0200
+@@ -26,7 +26,6 @@
+ 
+ #include <linux/config.h>
+ #include <net/dst.h>
+-#include <net/inetpeer.h>
+ #include <linux/in_route.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/route.h>
+@@ -58,7 +57,6 @@ struct rt_key
+ 	__u8			scope;
+ };
+ 
+-struct inet_peer;
+ struct rtable
+ {
+ 	union
+@@ -82,7 +80,6 @@ struct rtable
+ 
+ 	/* Miscellaneous cached information */
+ 	__u32			rt_spec_dst; /* RFC1122 specific destination */
+-	struct inet_peer	*peer; /* long-living peer info */
+ 
+ #ifdef CONFIG_IP_ROUTE_NAT
+ 	__u32			rt_src_map;
+@@ -174,15 +171,4 @@ static inline int ip_route_connect(struc
+ 	return ip_route_output(rp, dst, src, tos, oif);
+ }
+ 
+-extern void rt_bind_peer(struct rtable *rt, int create);
+-
+-static inline struct inet_peer *rt_get_peer(struct rtable *rt)
+-{
+-	if (rt->peer)
+-		return rt->peer;
+-
+-	rt_bind_peer(rt, 0);
+-	return rt->peer;
+-}
+-
+ #endif	/* _ROUTE_H */
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/include/net/sock.h x/include/net/sock.h
+--- x-ref/include/net/sock.h	2003-04-05 00:13:29.000000000 +0200
++++ x/include/net/sock.h	2003-04-05 05:06:14.000000000 +0200
+@@ -215,7 +215,6 @@ struct inet_opt
+ 	__u8			mc_loop;		/* Loopback */
+ 	unsigned		recverr : 1,
+ 				freebind : 1;
+-	__u16			id;			/* ID counter for DF pkts */
+ 	__u8			pmtudisc;
+ 	int			mc_index;		/* Multicast device index */
+ 	__u32			mc_addr;
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/include/net/tcp.h x/include/net/tcp.h
+--- x-ref/include/net/tcp.h	2003-04-05 00:13:29.000000000 +0200
++++ x/include/net/tcp.h	2003-04-05 05:06:14.000000000 +0200
+@@ -571,8 +571,6 @@ struct tcp_func {
+ 							 struct open_request *req,
+ 							 struct dst_entry *dst);
+     
+-	int			(*remember_stamp)	(struct sock *sk);
+-
+ 	__u16			net_header_len;
+ 
+ 	int			(*setsockopt)		(struct sock *sk, 
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/Makefile x/net/ipv4/Makefile
+--- x-ref/net/ipv4/Makefile	2002-01-22 18:56:30.000000000 +0100
++++ x/net/ipv4/Makefile	2003-04-05 05:06:14.000000000 +0200
+@@ -11,7 +11,7 @@ O_TARGET := ipv4.o
+ 
+ export-objs = ipip.o ip_gre.o
+ 
+-obj-y     := utils.o route.o inetpeer.o proc.o protocol.o \
++obj-y     := utils.o route.o proc.o protocol.o \
+ 	     ip_input.o ip_fragment.o ip_forward.o ip_options.o \
+ 	     ip_output.o ip_sockglue.o \
+ 	     tcp.o tcp_input.o tcp_output.o tcp_timer.o tcp_ipv4.o tcp_minisocks.o \
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/af_inet.c x/net/ipv4/af_inet.c
+--- x-ref/net/ipv4/af_inet.c	2003-04-05 00:13:29.000000000 +0200
++++ x/net/ipv4/af_inet.c	2003-04-05 05:06:14.000000000 +0200
+@@ -374,8 +374,6 @@ static int inet_create(struct socket *so
+ 	else
+ 		sk->protinfo.af_inet.pmtudisc = IP_PMTUDISC_WANT;
+ 
+-	sk->protinfo.af_inet.id = 0;
+-
+ 	sock_init_data(sock,sk);
+ 
+ 	sk->destruct = inet_sock_destruct;
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/igmp.c x/net/ipv4/igmp.c
+--- x-ref/net/ipv4/igmp.c	2002-11-29 02:23:19.000000000 +0100
++++ x/net/ipv4/igmp.c	2003-04-05 05:06:14.000000000 +0200
+@@ -235,7 +235,7 @@ static int igmp_send_report(struct net_d
+ 	iph->saddr    = rt->rt_src;
+ 	iph->protocol = IPPROTO_IGMP;
+ 	iph->tot_len  = htons(IGMP_SIZE);
+-	ip_select_ident(iph, &rt->u.dst, NULL);
++	ip_select_ident(iph);
+ 	((u8*)&iph[1])[0] = IPOPT_RA;
+ 	((u8*)&iph[1])[1] = 4;
+ 	((u8*)&iph[1])[2] = 0;
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/inetpeer.c x/net/ipv4/inetpeer.c
+--- x-ref/net/ipv4/inetpeer.c	2002-01-22 18:54:27.000000000 +0100
++++ x/net/ipv4/inetpeer.c	1970-01-01 01:00:00.000000000 +0100
+@@ -1,453 +0,0 @@
+-/*
+- *		INETPEER - A storage for permanent information about peers
+- *
+- *  This source is covered by the GNU GPL, the same as all kernel sources.
+- *
+- *  Version:	$Id: inetpeer.c,v 1.7 2001/09/20 21:22:50 davem Exp $
+- *
+- *  Authors:	Andrey V. Savochkin <saw@msu.ru>
+- */
+-
+-#include <linux/types.h>
+-#include <linux/slab.h>
+-#include <linux/interrupt.h>
+-#include <linux/spinlock.h>
+-#include <linux/random.h>
+-#include <linux/sched.h>
+-#include <linux/timer.h>
+-#include <linux/time.h>
+-#include <linux/kernel.h>
+-#include <linux/mm.h>
+-#include <net/inetpeer.h>
+-
+-/*
+- *  Theory of operations.
+- *  We keep one entry for each peer IP address.  The nodes contains long-living
+- *  information about the peer which doesn't depend on routes.
+- *  At this moment this information consists only of ID field for the next
+- *  outgoing IP packet.  This field is incremented with each packet as encoded
+- *  in inet_getid() function (include/net/inetpeer.h).
+- *  At the moment of writing this notes identifier of IP packets is generated
+- *  to be unpredictable using this code only for packets subjected
+- *  (actually or potentially) to defragmentation.  I.e. DF packets less than
+- *  PMTU in size uses a constant ID and do not use this code (see
+- *  ip_select_ident() in include/net/ip.h).
+- *
+- *  Route cache entries hold references to our nodes.
+- *  New cache entries get references via lookup by destination IP address in
+- *  the avl tree.  The reference is grabbed only when it's needed i.e. only
+- *  when we try to output IP packet which needs an unpredictable ID (see
+- *  __ip_select_ident() in net/ipv4/route.c).
+- *  Nodes are removed only when reference counter goes to 0.
+- *  When it's happened the node may be removed when a sufficient amount of
+- *  time has been passed since its last use.  The less-recently-used entry can
+- *  also be removed if the pool is overloaded i.e. if the total amount of
+- *  entries is greater-or-equal than the threshold.
+- *
+- *  Node pool is organised as an AVL tree.
+- *  Such an implementation has been chosen not just for fun.  It's a way to
+- *  prevent easy and efficient DoS attacks by creating hash collisions.  A huge
+- *  amount of long living nodes in a single hash slot would significantly delay
+- *  lookups performed with disabled BHs.
+- *
+- *  Serialisation issues.
+- *  1.  Nodes may appear in the tree only with the pool write lock held.
+- *  2.  Nodes may disappear from the tree only with the pool write lock held
+- *      AND reference count being 0.
+- *  3.  Nodes appears and disappears from unused node list only under
+- *      "inet_peer_unused_lock".
+- *  4.  Global variable peer_total is modified under the pool lock.
+- *  5.  struct inet_peer fields modification:
+- *		avl_left, avl_right, avl_parent, avl_height: pool lock
+- *		unused_next, unused_prevp: unused node list lock
+- *		refcnt: atomically against modifications on other CPU;
+- *		   usually under some other lock to prevent node disappearing
+- *		dtime: unused node list lock
+- *		v4daddr: unchangeable
+- *		ip_id_count: idlock
+- */
+-
+-/* Exported for inet_getid inline function.  */
+-spinlock_t inet_peer_idlock = SPIN_LOCK_UNLOCKED;
+-
+-static kmem_cache_t *peer_cachep;
+-
+-#define node_height(x) x->avl_height
+-static struct inet_peer peer_fake_node = {
+-	avl_left : &peer_fake_node,
+-	avl_right : &peer_fake_node,
+-	avl_height : 0
+-};
+-#define peer_avl_empty (&peer_fake_node)
+-static struct inet_peer *peer_root = peer_avl_empty;
+-static rwlock_t peer_pool_lock = RW_LOCK_UNLOCKED;
+-#define PEER_MAXDEPTH 40 /* sufficient for about 2^27 nodes */
+-
+-static volatile int peer_total;
+-/* Exported for sysctl_net_ipv4.  */
+-int inet_peer_threshold = 65536 + 128;	/* start to throw entries more
+-					 * aggressively at this stage */
+-int inet_peer_minttl = 120 * HZ;	/* TTL under high load: 120 sec */
+-int inet_peer_maxttl = 10 * 60 * HZ;	/* usual time to live: 10 min */
+-
+-/* Exported for inet_putpeer inline function.  */
+-struct inet_peer *inet_peer_unused_head,
+-		**inet_peer_unused_tailp = &inet_peer_unused_head;
+-spinlock_t inet_peer_unused_lock = SPIN_LOCK_UNLOCKED;
+-#define PEER_MAX_CLEANUP_WORK 30
+-
+-static void peer_check_expire(unsigned long dummy);
+-static struct timer_list peer_periodic_timer =
+-	{ { NULL, NULL }, 0, 0, &peer_check_expire };
+-
+-/* Exported for sysctl_net_ipv4.  */
+-int inet_peer_gc_mintime = 10 * HZ,
+-    inet_peer_gc_maxtime = 120 * HZ;
+-
+-/* Called from ip_output.c:ip_init  */
+-void __init inet_initpeers(void)
+-{
+-	struct sysinfo si;
+-
+-	/* Use the straight interface to information about memory. */
+-	si_meminfo(&si);
+-	/* The values below were suggested by Alexey Kuznetsov
+-	 * <kuznet@ms2.inr.ac.ru>.  I don't have any opinion about the values
+-	 * myself.  --SAW
+-	 */
+-	if (si.totalram <= (32768*1024)/PAGE_SIZE)
+-		inet_peer_threshold >>= 1; /* max pool size about 1MB on IA32 */
+-	if (si.totalram <= (16384*1024)/PAGE_SIZE)
+-		inet_peer_threshold >>= 1; /* about 512KB */
+-	if (si.totalram <= (8192*1024)/PAGE_SIZE)
+-		inet_peer_threshold >>= 2; /* about 128KB */
+-
+-	peer_cachep = kmem_cache_create("inet_peer_cache",
+-			sizeof(struct inet_peer),
+-			0, SLAB_HWCACHE_ALIGN,
+-			NULL, NULL);
+-
+-	/* All the timers, started at system startup tend
+-	   to synchronize. Perturb it a bit.
+-	 */
+-	peer_periodic_timer.expires = jiffies
+-		+ net_random() % inet_peer_gc_maxtime
+-		+ inet_peer_gc_maxtime;
+-	add_timer(&peer_periodic_timer);
+-}
+-
+-/* Called with or without local BH being disabled. */
+-static void unlink_from_unused(struct inet_peer *p)
+-{
+-	spin_lock_bh(&inet_peer_unused_lock);
+-	if (p->unused_prevp != NULL) {
+-		/* On unused list. */
+-		*p->unused_prevp = p->unused_next;
+-		if (p->unused_next != NULL)
+-			p->unused_next->unused_prevp = p->unused_prevp;
+-		else
+-			inet_peer_unused_tailp = p->unused_prevp;
+-		p->unused_prevp = NULL; /* mark it as removed */
+-	}
+-	spin_unlock_bh(&inet_peer_unused_lock);
+-}
+-
+-/* Called with local BH disabled and the pool lock held. */
+-#define lookup(daddr) 						\
+-({								\
+-	struct inet_peer *u, **v;				\
+-	stackptr = stack;					\
+-	*stackptr++ = &peer_root;				\
+-	for (u = peer_root; u != peer_avl_empty; ) {		\
+-		if (daddr == u->v4daddr)			\
+-			break;					\
+-		if (daddr < u->v4daddr)				\
+-			v = &u->avl_left;			\
+-		else						\
+-			v = &u->avl_right;			\
+-		*stackptr++ = v;				\
+-		u = *v;						\
+-	}							\
+-	u;							\
+-})
+-
+-/* Called with local BH disabled and the pool write lock held. */
+-#define lookup_rightempty(start)				\
+-({								\
+-	struct inet_peer *u, **v;				\
+-	*stackptr++ = &start->avl_left;				\
+-	v = &start->avl_left;					\
+-	for (u = *v; u->avl_right != peer_avl_empty; ) {	\
+-		v = &u->avl_right;				\
+-		*stackptr++ = v;				\
+-		u = *v;						\
+-	}							\
+-	u;							\
+-})
+-
+-/* Called with local BH disabled and the pool write lock held.
+- * Variable names are the proof of operation correctness.
+- * Look into mm/map_avl.c for more detail description of the ideas.  */
+-static void peer_avl_rebalance(struct inet_peer **stack[],
+-		struct inet_peer ***stackend)
+-{
+-	struct inet_peer **nodep, *node, *l, *r;
+-	int lh, rh;
+-
+-	while (stackend > stack) {
+-		nodep = *--stackend;
+-		node = *nodep;
+-		l = node->avl_left;
+-		r = node->avl_right;
+-		lh = node_height(l);
+-		rh = node_height(r);
+-		if (lh > rh + 1) { /* l: RH+2 */
+-			struct inet_peer *ll, *lr, *lrl, *lrr;
+-			int lrh;
+-			ll = l->avl_left;
+-			lr = l->avl_right;
+-			lrh = node_height(lr);
+-			if (lrh <= node_height(ll)) {	/* ll: RH+1 */
+-				node->avl_left = lr;	/* lr: RH or RH+1 */
+-				node->avl_right = r;	/* r: RH */
+-				node->avl_height = lrh + 1; /* RH+1 or RH+2 */
+-				l->avl_left = ll;	/* ll: RH+1 */
+-				l->avl_right = node;	/* node: RH+1 or RH+2 */
+-				l->avl_height = node->avl_height + 1;
+-				*nodep = l;
+-			} else { /* ll: RH, lr: RH+1 */
+-				lrl = lr->avl_left;	/* lrl: RH or RH-1 */
+-				lrr = lr->avl_right;	/* lrr: RH or RH-1 */
+-				node->avl_left = lrr;	/* lrr: RH or RH-1 */
+-				node->avl_right = r;	/* r: RH */
+-				node->avl_height = rh + 1; /* node: RH+1 */
+-				l->avl_left = ll;	/* ll: RH */
+-				l->avl_right = lrl;	/* lrl: RH or RH-1 */
+-				l->avl_height = rh + 1;	/* l: RH+1 */
+-				lr->avl_left = l;	/* l: RH+1 */
+-				lr->avl_right = node;	/* node: RH+1 */
+-				lr->avl_height = rh + 2;
+-				*nodep = lr;
+-			}
+-		} else if (rh > lh + 1) { /* r: LH+2 */
+-			struct inet_peer *rr, *rl, *rlr, *rll;
+-			int rlh;
+-			rr = r->avl_right;
+-			rl = r->avl_left;
+-			rlh = node_height(rl);
+-			if (rlh <= node_height(rr)) {	/* rr: LH+1 */
+-				node->avl_right = rl;	/* rl: LH or LH+1 */
+-				node->avl_left = l;	/* l: LH */
+-				node->avl_height = rlh + 1; /* LH+1 or LH+2 */
+-				r->avl_right = rr;	/* rr: LH+1 */
+-				r->avl_left = node;	/* node: LH+1 or LH+2 */
+-				r->avl_height = node->avl_height + 1;
+-				*nodep = r;
+-			} else { /* rr: RH, rl: RH+1 */
+-				rlr = rl->avl_right;	/* rlr: LH or LH-1 */
+-				rll = rl->avl_left;	/* rll: LH or LH-1 */
+-				node->avl_right = rll;	/* rll: LH or LH-1 */
+-				node->avl_left = l;	/* l: LH */
+-				node->avl_height = lh + 1; /* node: LH+1 */
+-				r->avl_right = rr;	/* rr: LH */
+-				r->avl_left = rlr;	/* rlr: LH or LH-1 */
+-				r->avl_height = lh + 1;	/* r: LH+1 */
+-				rl->avl_right = r;	/* r: LH+1 */
+-				rl->avl_left = node;	/* node: LH+1 */
+-				rl->avl_height = lh + 2;
+-				*nodep = rl;
+-			}
+-		} else {
+-			node->avl_height = (lh > rh ? lh : rh) + 1;
+-		}
+-	}
+-}
+-
+-/* Called with local BH disabled and the pool write lock held. */
+-#define link_to_pool(n)						\
+-do {								\
+-	n->avl_height = 1;					\
+-	n->avl_left = peer_avl_empty;				\
+-	n->avl_right = peer_avl_empty;				\
+-	**--stackptr = n;					\
+-	peer_avl_rebalance(stack, stackptr);			\
+-} while(0)
+-
+-/* May be called with local BH enabled. */
+-static void unlink_from_pool(struct inet_peer *p)
+-{
+-	int do_free;
+-
+-	do_free = 0;
+-
+-	write_lock_bh(&peer_pool_lock);
+-	/* Check the reference counter.  It was artificially incremented by 1
+-	 * in cleanup() function to prevent sudden disappearing.  If the
+-	 * reference count is still 1 then the node is referenced only as `p'
+-	 * here and from the pool.  So under the exclusive pool lock it's safe
+-	 * to remove the node and free it later. */
+-	if (atomic_read(&p->refcnt) == 1) {
+-		struct inet_peer **stack[PEER_MAXDEPTH];
+-		struct inet_peer ***stackptr, ***delp;
+-		if (lookup(p->v4daddr) != p)
+-			BUG();
+-		delp = stackptr - 1; /* *delp[0] == p */
+-		if (p->avl_left == peer_avl_empty) {
+-			*delp[0] = p->avl_right;
+-			--stackptr;
+-		} else {
+-			/* look for a node to insert instead of p */
+-			struct inet_peer *t;
+-			t = lookup_rightempty(p);
+-			if (*stackptr[-1] != t)
+-				BUG();
+-			**--stackptr = t->avl_left;
+-			/* t is removed, t->v4daddr > x->v4daddr for any
+-			 * x in p->avl_left subtree.
+-			 * Put t in the old place of p. */
+-			*delp[0] = t;
+-			t->avl_left = p->avl_left;
+-			t->avl_right = p->avl_right;
+-			t->avl_height = p->avl_height;
+-			if (delp[1] != &p->avl_left)
+-				BUG();
+-			delp[1] = &t->avl_left; /* was &p->avl_left */
+-		}
+-		peer_avl_rebalance(stack, stackptr);
+-		peer_total--;
+-		do_free = 1;
+-	}
+-	write_unlock_bh(&peer_pool_lock);
+-
+-	if (do_free)
+-		kmem_cache_free(peer_cachep, p);
+-	else
+-		/* The node is used again.  Decrease the reference counter
+-		 * back.  The loop "cleanup -> unlink_from_unused
+-		 *   -> unlink_from_pool -> putpeer -> link_to_unused
+-		 *   -> cleanup (for the same node)"
+-		 * doesn't really exist because the entry will have a
+-		 * recent deletion time and will not be cleaned again soon. */
+-		inet_putpeer(p);
+-}
+-
+-/* May be called with local BH enabled. */
+-static int cleanup_once(unsigned long ttl)
+-{
+-	struct inet_peer *p;
+-
+-	/* Remove the first entry from the list of unused nodes. */
+-	spin_lock_bh(&inet_peer_unused_lock);
+-	p = inet_peer_unused_head;
+-	if (p != NULL) {
+-		if (time_after(p->dtime + ttl, jiffies)) {
+-			/* Do not prune fresh entries. */
+-			spin_unlock_bh(&inet_peer_unused_lock);
+-			return -1;
+-		}
+-		inet_peer_unused_head = p->unused_next;
+-		if (p->unused_next != NULL)
+-			p->unused_next->unused_prevp = p->unused_prevp;
+-		else
+-			inet_peer_unused_tailp = p->unused_prevp;
+-		p->unused_prevp = NULL; /* mark as not on the list */
+-		/* Grab an extra reference to prevent node disappearing
+-		 * before unlink_from_pool() call. */
+-		atomic_inc(&p->refcnt);
+-	}
+-	spin_unlock_bh(&inet_peer_unused_lock);
+-
+-	if (p == NULL)
+-		/* It means that the total number of USED entries has
+-		 * grown over inet_peer_threshold.  It shouldn't really
+-		 * happen because of entry limits in route cache. */
+-		return -1;
+-
+-	unlink_from_pool(p);
+-	return 0;
+-}
+-
+-/* Called with or without local BH being disabled. */
+-struct inet_peer *inet_getpeer(__u32 daddr, int create)
+-{
+-	struct inet_peer *p, *n;
+-	struct inet_peer **stack[PEER_MAXDEPTH], ***stackptr;
+-
+-	/* Look up for the address quickly. */
+-	read_lock_bh(&peer_pool_lock);
+-	p = lookup(daddr);
+-	if (p != peer_avl_empty)
+-		atomic_inc(&p->refcnt);
+-	read_unlock_bh(&peer_pool_lock);
+-
+-	if (p != peer_avl_empty) {
+-		/* The existing node has been found. */
+-		/* Remove the entry from unused list if it was there. */
+-		unlink_from_unused(p);
+-		return p;
+-	}
+-
+-	if (!create)
+-		return NULL;
+-
+-	/* Allocate the space outside the locked region. */
+-	n = kmem_cache_alloc(peer_cachep, GFP_ATOMIC);
+-	if (n == NULL)
+-		return NULL;
+-	n->v4daddr = daddr;
+-	atomic_set(&n->refcnt, 1);
+-	n->ip_id_count = secure_ip_id(daddr);
+-	n->tcp_ts_stamp = 0;
+-
+-	write_lock_bh(&peer_pool_lock);
+-	/* Check if an entry has suddenly appeared. */
+-	p = lookup(daddr);
+-	if (p != peer_avl_empty)
+-		goto out_free;
+-
+-	/* Link the node. */
+-	link_to_pool(n);
+-	n->unused_prevp = NULL; /* not on the list */
+-	peer_total++;
+-	write_unlock_bh(&peer_pool_lock);
+-
+-	if (peer_total >= inet_peer_threshold)
+-		/* Remove one less-recently-used entry. */
+-		cleanup_once(0);
+-
+-	return n;
+-
+-out_free:
+-	/* The appropriate node is already in the pool. */
+-	atomic_inc(&p->refcnt);
+-	write_unlock_bh(&peer_pool_lock);
+-	/* Remove the entry from unused list if it was there. */
+-	unlink_from_unused(p);
+-	/* Free preallocated the preallocated node. */
+-	kmem_cache_free(peer_cachep, n);
+-	return p;
+-}
+-
+-/* Called with local BH disabled. */
+-static void peer_check_expire(unsigned long dummy)
+-{
+-	int i;
+-	int ttl;
+-
+-	if (peer_total >= inet_peer_threshold)
+-		ttl = inet_peer_minttl;
+-	else
+-		ttl = inet_peer_maxttl
+-				- (inet_peer_maxttl - inet_peer_minttl) / HZ *
+-					peer_total / inet_peer_threshold * HZ;
+-	for (i = 0; i < PEER_MAX_CLEANUP_WORK && !cleanup_once(ttl); i++);
+-
+-	/* Trigger the timer after inet_peer_gc_mintime .. inet_peer_gc_maxtime
+-	 * interval depending on the total number of entries (more entries,
+-	 * less interval). */
+-	peer_periodic_timer.expires = jiffies
+-		+ inet_peer_gc_maxtime
+-		- (inet_peer_gc_maxtime - inet_peer_gc_mintime) / HZ *
+-			peer_total / inet_peer_threshold * HZ;
+-	add_timer(&peer_periodic_timer);
+-}
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/ip_output.c x/net/ipv4/ip_output.c
+--- x-ref/net/ipv4/ip_output.c	2002-11-29 02:23:19.000000000 +0100
++++ x/net/ipv4/ip_output.c	2003-04-05 05:06:14.000000000 +0200
+@@ -72,12 +72,13 @@
+ #include <net/icmp.h>
+ #include <net/raw.h>
+ #include <net/checksum.h>
+-#include <net/inetpeer.h>
+ #include <linux/igmp.h>
+ #include <linux/netfilter_ipv4.h>
+ #include <linux/mroute.h>
+ #include <linux/netlink.h>
+ 
++struct ip_local_data ip_local_data[NR_CPUS]; 
++
+ /*
+  *      Shall we try to damage output packets if routing dev changes?
+  */
+@@ -143,7 +144,7 @@ int ip_build_and_send_pkt(struct sk_buff
+ 	iph->saddr    = rt->rt_src;
+ 	iph->protocol = sk->protocol;
+ 	iph->tot_len  = htons(skb->len);
+-	ip_select_ident(iph, &rt->u.dst, sk);
++	ip_select_ident(iph);
+ 	skb->nh.iph   = iph;
+ 
+ 	if (opt && opt->optlen) {
+@@ -308,7 +309,7 @@ static inline int ip_queue_xmit2(struct 
+ 	if (skb->len > rt->u.dst.pmtu)
+ 		goto fragment;
+ 
+-	ip_select_ident(iph, &rt->u.dst, sk);
++	ip_select_ident(iph);
+ 
+ 	/* Add an IP checksum. */
+ 	ip_send_check(iph);
+@@ -329,7 +330,7 @@ fragment:
+ 		kfree_skb(skb);
+ 		return -EMSGSIZE;
+ 	}
+-	ip_select_ident(iph, &rt->u.dst, sk);
++	ip_select_ident(iph);
+ 	if (skb->ip_summed == CHECKSUM_HW &&
+ 	    (skb = skb_checksum_help(skb)) == NULL)
+ 		return -ENOMEM;
+@@ -441,7 +442,7 @@ static int ip_build_xmit_slow(struct soc
+ 	int err;
+ 	int offset, mf;
+ 	int mtu;
+-	u16 id;
++	int id = INT_MAX;
+ 
+ 	int hh_len = (rt->u.dst.dev->hard_header_len + 15)&~15;
+ 	int nfrags=0;
+@@ -511,8 +512,6 @@ static int ip_build_xmit_slow(struct soc
+ 	 *	Begin outputting the bytes.
+ 	 */
+ 
+-	id = sk->protinfo.af_inet.id++;
+-
+ 	do {
+ 		char *data;
+ 		struct sk_buff * skb;
+@@ -567,17 +566,14 @@ static int ip_build_xmit_slow(struct soc
+ 			iph->tos = sk->protinfo.af_inet.tos;
+ 			iph->tot_len = htons(fraglen - fragheaderlen + iph->ihl*4);
+ 			iph->frag_off = htons(offset>>3)|mf|df;
+-			iph->id = id;
+-			if (!mf) {
+-				if (offset || !df) {
+-					/* Select an unpredictable ident only
+-					 * for packets without DF or having
+-					 * been fragmented.
+-					 */
+-					__ip_select_ident(iph, &rt->u.dst);
+-					id = iph->id;
+-				}
++			if (id == INT_MAX) {
++				ip_select_ident(iph);
++				id = iph->id;
++			} else {
++				iph->id = id;
++			} 
+ 
++			if (!mf) {
+ 				/*
+ 				 *	Any further fragments will have MF set.
+ 				 */
+@@ -705,7 +701,7 @@ int ip_build_xmit(struct sock *sk, 
+ 		iph->tot_len = htons(length);
+ 		iph->frag_off = df;
+ 		iph->ttl=sk->protinfo.af_inet.mc_ttl;
+-		ip_select_ident(iph, &rt->u.dst, sk);
++		ip_select_ident(iph);
+ 		if (rt->rt_type != RTN_MULTICAST)
+ 			iph->ttl=sk->protinfo.af_inet.ttl;
+ 		iph->protocol=sk->protocol;
+@@ -1016,7 +1012,6 @@ void __init ip_init(void)
+ 	dev_add_pack(&ip_packet_type);
+ 
+ 	ip_rt_init();
+-	inet_initpeers();
+ 
+ #ifdef CONFIG_IP_MULTICAST
+ 	proc_net_create("igmp", 0, ip_mc_procinfo);
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/ipmr.c x/net/ipv4/ipmr.c
+--- x-ref/net/ipv4/ipmr.c	2002-11-29 02:23:19.000000000 +0100
++++ x/net/ipv4/ipmr.c	2003-04-05 05:06:14.000000000 +0200
+@@ -1091,7 +1091,7 @@ static void ip_encap(struct sk_buff *skb
+ 	iph->protocol	=	IPPROTO_IPIP;
+ 	iph->ihl	=	5;
+ 	iph->tot_len	=	htons(skb->len);
+-	ip_select_ident(iph, skb->dst, NULL);
++	ip_select_ident(iph);
+ 	ip_send_check(iph);
+ 
+ 	skb->h.ipiph = skb->nh.iph;
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/netfilter/ipt_REJECT.c x/net/ipv4/netfilter/ipt_REJECT.c
+--- x-ref/net/ipv4/netfilter/ipt_REJECT.c	2003-04-05 00:13:29.000000000 +0200
++++ x/net/ipv4/netfilter/ipt_REJECT.c	2003-04-05 05:06:14.000000000 +0200
+@@ -258,7 +258,7 @@ static void send_unreach(struct sk_buff 
+ 	iph->frag_off = 0;
+ 
+ 	iph->ttl = MAXTTL;
+-	ip_select_ident(iph, &rt->u.dst, NULL);
++	ip_select_ident(iph);
+ 	iph->protocol=IPPROTO_ICMP;
+ 	iph->saddr=rt->rt_src;
+ 	iph->daddr=rt->rt_dst;
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/raw.c x/net/ipv4/raw.c
+--- x-ref/net/ipv4/raw.c	2002-08-09 14:52:29.000000000 +0200
++++ x/net/ipv4/raw.c	2003-04-05 05:06:14.000000000 +0200
+@@ -296,7 +296,7 @@ static int raw_getrawfrag(const void *p,
+ 	 	 *	ip_build_xmit clean (well less messy).
+ 		 */
+ 		if (!iph->id)
+-			ip_select_ident(iph, rfh->dst, NULL);
++			ip_select_ident(iph);
+ 		iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
+ 	}
+ 	return 0;
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/route.c x/net/ipv4/route.c
+--- x-ref/net/ipv4/route.c	2003-04-05 00:13:29.000000000 +0200
++++ x/net/ipv4/route.c	2003-04-05 05:06:14.000000000 +0200
+@@ -88,7 +88,6 @@
+ #include <net/protocol.h>
+ #include <net/ip.h>
+ #include <net/route.h>
+-#include <net/inetpeer.h>
+ #include <net/sock.h>
+ #include <net/ip_fib.h>
+ #include <net/arp.h>
+@@ -695,63 +694,35 @@ restart:
+ 	return 0;
+ }
+ 
+-void rt_bind_peer(struct rtable *rt, int create)
+-{
+-	static spinlock_t rt_peer_lock = SPIN_LOCK_UNLOCKED;
+-	struct inet_peer *peer;
+-
+-	peer = inet_getpeer(rt->rt_dst, create);
+-
+-	spin_lock_bh(&rt_peer_lock);
+-	if (rt->peer == NULL) {
+-		rt->peer = peer;
+-		peer = NULL;
+-	}
+-	spin_unlock_bh(&rt_peer_lock);
+-	if (peer)
+-		inet_putpeer(peer);
+-}
+-
+-/*
+- * Peer allocation may fail only in serious out-of-memory conditions.  However
+- * we still can generate some output.
+- * Random ID selection looks a bit dangerous because we have no chances to
+- * select ID being unique in a reasonable period of time.
+- * But broken packet identifier may be better than no packet at all.
+- */
+-static void ip_select_fb_ident(struct iphdr *iph)
+-{
+-	static spinlock_t ip_fb_id_lock = SPIN_LOCK_UNLOCKED;
+-	static u32 ip_fallback_id;
+-	u32 salt;
+-
+-	spin_lock_bh(&ip_fb_id_lock);
+-	salt = secure_ip_id(ip_fallback_id ^ iph->daddr);
+-	iph->id = htons(salt & 0xFFFF);
+-	ip_fallback_id = salt;
+-	spin_unlock_bh(&ip_fb_id_lock);
+-}
+-
+-void __ip_select_ident(struct iphdr *iph, struct dst_entry *dst)
+-{
+-	struct rtable *rt = (struct rtable *) dst;
+-
+-	if (rt) {
+-		if (rt->peer == NULL)
+-			rt_bind_peer(rt, 1);
+-
+-		/* If peer is attached to destination, it is never detached,
+-		   so that we need not to grab a lock to dereference it.
+-		 */
+-		if (rt->peer) {
+-			iph->id = htons(inet_getid(rt->peer));
+-			return;
+-		}
+-	} else
+-		printk(KERN_DEBUG "rt_bind_peer(0) @%p\n", NET_CALLER(iph));
+-
+-	ip_select_fb_ident(iph);
+-}
++void ip_select_ident(struct iphdr *iph) 
++{ 
++	static int ip_id_counter; 
++	local_bh_disable(); 
++#ifdef CONFIG_SMP
++	{
++		static spinlock_t ip_id_lock = SPIN_LOCK_UNLOCKED;
++		struct ip_local_data *ipl = IP_LOCAL_DATA; 
++		
++		if (ipl->ipid_left == 0 || 
++		    time_before(ipl->ipid_grab_time, jiffies-IPID_GRAB_EXPIRE)) { 
++			/* Fetch some new cookies for the local lair. */
++			spin_lock(&ip_id_lock);
++			ipl->ipid = ip_id_counter; 
++			ip_id_counter += IPID_CPU_GRAB; 			
++			spin_unlock(&ip_id_lock);  
++			ipl->ipid_left = IPID_CPU_GRAB; 
++			ipl->ipid_grab_time = jiffies;
++		} 
++		iph->id = htons(ipl->ipid);
++		ipl->ipid++;
++		ipl->ipid_left--;		
++	} 
++#else
++	iph->id = htons(ip_id_counter);
++	ip_id_counter++;
++#endif
++	local_bh_enable();
++} 
+ 
+ static void rt_del(unsigned hash, struct rtable *rt)
+ {
+@@ -854,9 +825,6 @@ void ip_rt_redirect(u32 old_gw, u32 dadd
+ 				/* Redirect received -> path was valid */
+ 				dst_confirm(&rth->u.dst);
+ 
+-				if (rt->peer)
+-					atomic_inc(&rt->peer->refcnt);
+-
+ 				if (arp_bind_neighbour(&rt->u.dst) ||
+ 				    !(rt->u.dst.neighbour->nud_state &
+ 					    NUD_VALID)) {
+@@ -1122,13 +1090,6 @@ static struct dst_entry *ipv4_dst_rerout
+ 
+ static void ipv4_dst_destroy(struct dst_entry *dst)
+ {
+-	struct rtable *rt = (struct rtable *) dst;
+-	struct inet_peer *peer = rt->peer;
+-
+-	if (peer) {
+-		rt->peer = NULL;
+-		inet_putpeer(peer);
+-	}
+ }
+ 
+ static void ipv4_link_failure(struct sk_buff *skb)
+@@ -2081,13 +2042,6 @@ static int rt_fill_info(struct sk_buff *
+ 		ci.rta_expires = 0;
+ 	ci.rta_error	= rt->u.dst.error;
+ 	ci.rta_id	= ci.rta_ts = ci.rta_tsage = 0;
+-	if (rt->peer) {
+-		ci.rta_id = rt->peer->ip_id_count;
+-		if (rt->peer->tcp_ts_stamp) {
+-			ci.rta_ts = rt->peer->tcp_ts;
+-			ci.rta_tsage = xtime.tv_sec - rt->peer->tcp_ts_stamp;
+-		}
+-	}
+ #ifdef CONFIG_IP_MROUTE
+ 	eptr = (struct rtattr*)skb->tail;
+ #endif
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/sysctl_net_ipv4.c x/net/ipv4/sysctl_net_ipv4.c
+--- x-ref/net/ipv4/sysctl_net_ipv4.c	2003-04-05 00:13:29.000000000 +0200
++++ x/net/ipv4/sysctl_net_ipv4.c	2003-04-05 05:06:14.000000000 +0200
+@@ -38,13 +38,6 @@ extern int sysctl_icmp_ratemask;
+ /* From igmp.c */
+ extern int sysctl_igmp_max_memberships;
+ 
+-/* From inetpeer.c */
+-extern int inet_peer_threshold;
+-extern int inet_peer_minttl;
+-extern int inet_peer_maxttl;
+-extern int inet_peer_gc_mintime;
+-extern int inet_peer_gc_maxtime;
+-
+ #ifdef CONFIG_SYSCTL
+ static int tcp_retr1_max = 255; 
+ static int ip_local_port_range_min[] = { 1, 1 };
+@@ -153,8 +146,6 @@ ctl_table ipv4_table[] = {
+ 	{NET_TCP_SYNCOOKIES, "tcp_syncookies",
+ 	 &sysctl_tcp_syncookies, sizeof(int), 0644, NULL, &proc_dointvec},
+ #endif
+-	{NET_TCP_TW_RECYCLE, "tcp_tw_recycle",
+-	 &sysctl_tcp_tw_recycle, sizeof(int), 0644, NULL, &proc_dointvec},
+ 	{NET_TCP_ABORT_ON_OVERFLOW, "tcp_abort_on_overflow",
+ 	 &sysctl_tcp_abort_on_overflow, sizeof(int), 0644, NULL, &proc_dointvec},
+ 	{NET_TCP_STDURG, "tcp_stdurg", &sysctl_tcp_stdurg,
+@@ -181,20 +172,6 @@ ctl_table ipv4_table[] = {
+ 	{NET_IPV4_IGMP_MAX_MEMBERSHIPS, "igmp_max_memberships",
+ 	 &sysctl_igmp_max_memberships, sizeof(int), 0644, NULL, &proc_dointvec},
+ #endif
+-	{NET_IPV4_INET_PEER_THRESHOLD, "inet_peer_threshold",
+-	 &inet_peer_threshold, sizeof(int), 0644, NULL, &proc_dointvec},
+-	{NET_IPV4_INET_PEER_MINTTL, "inet_peer_minttl",
+-	 &inet_peer_minttl, sizeof(int), 0644, NULL,
+-	 &proc_dointvec_jiffies, &sysctl_jiffies},
+-	{NET_IPV4_INET_PEER_MAXTTL, "inet_peer_maxttl",
+-	 &inet_peer_maxttl, sizeof(int), 0644, NULL,
+-	 &proc_dointvec_jiffies, &sysctl_jiffies},
+-	{NET_IPV4_INET_PEER_GC_MINTIME, "inet_peer_gc_mintime",
+-	 &inet_peer_gc_mintime, sizeof(int), 0644, NULL,
+-	 &proc_dointvec_jiffies, &sysctl_jiffies},
+-	{NET_IPV4_INET_PEER_GC_MAXTIME, "inet_peer_gc_maxtime",
+-	 &inet_peer_gc_maxtime, sizeof(int), 0644, NULL,
+-	 &proc_dointvec_jiffies, &sysctl_jiffies},
+ 	{NET_TCP_ORPHAN_RETRIES, "tcp_orphan_retries",
+ 	 &sysctl_tcp_orphan_retries, sizeof(int), 0644, NULL, &proc_dointvec},
+ 	{NET_TCP_FACK, "tcp_fack",
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/tcp_ipv4.c x/net/ipv4/tcp_ipv4.c
+--- x-ref/net/ipv4/tcp_ipv4.c	2003-04-05 00:13:30.000000000 +0200
++++ x/net/ipv4/tcp_ipv4.c	2003-04-05 05:06:14.000000000 +0200
+@@ -585,9 +585,6 @@ static int __tcp_v4_check_established(st
+ 			   but per port pair and TW bucket is used
+ 			   as state holder.
+ 
+-			   If TW bucket has been already destroyed we
+-			   fall back to VJ's scheme and use initial
+-			   timestamp retrieved from peer table.
+ 			 */
+ 			if (tw->ts_recent_stamp &&
+ 			    (!twp || (sysctl_tcp_tw_reuse &&
+@@ -808,22 +805,6 @@ int tcp_v4_connect(struct sock *sk, stru
+ 		tp->write_seq = 0;
+ 	}
+ 
+-	if (sysctl_tcp_tw_recycle &&
+-	    !tp->ts_recent_stamp &&
+-	    rt->rt_dst == daddr) {
+-		struct inet_peer *peer = rt_get_peer(rt);
+-
+-		/* VJ's idea. We save last timestamp seen from
+-		 * the destination in peer table, when entering state TIME-WAIT
+-		 * and initialize ts_recent from it, when trying new connection.
+-		 */
+-
+-		if (peer && peer->tcp_ts_stamp + TCP_PAWS_MSL >= xtime.tv_sec) {
+-			tp->ts_recent_stamp = peer->tcp_ts_stamp;
+-			tp->ts_recent = peer->tcp_ts;
+-		}
+-	}
+-
+ 	sk->dport = usin->sin_port;
+ 	sk->daddr = daddr;
+ 
+@@ -847,8 +828,6 @@ int tcp_v4_connect(struct sock *sk, stru
+ 		tp->write_seq = secure_tcp_sequence_number(sk->saddr, sk->daddr,
+ 							   sk->sport, usin->sin_port);
+ 
+-	sk->protinfo.af_inet.id = tp->write_seq^jiffies;
+-
+ 	err = tcp_connect(sk);
+ 	if (err)
+ 		goto failure;
+@@ -1472,34 +1451,11 @@ int tcp_v4_conn_request(struct sock *sk,
+ #endif
+ 		isn = cookie_v4_init_sequence(sk, skb, &req->mss);
+ 	} else if (isn == 0) {
+-		struct inet_peer *peer = NULL;
+-
+-		/* VJ's idea. We save last timestamp seen
+-		 * from the destination in peer table, when entering
+-		 * state TIME-WAIT, and check against it before
+-		 * accepting new connection request.
+-		 *
+-		 * If "isn" is not zero, this request hit alive
+-		 * timewait bucket, so that all the necessary checks
+-		 * are made in the function processing timewait state.
+-		 */
+-		if (tp.saw_tstamp &&
+-		    sysctl_tcp_tw_recycle &&
+-		    (dst = tcp_v4_route_req(sk, req)) != NULL &&
+-		    (peer = rt_get_peer((struct rtable*)dst)) != NULL &&
+-		    peer->v4daddr == saddr) {
+-			if (xtime.tv_sec < peer->tcp_ts_stamp + TCP_PAWS_MSL &&
+-			    (s32)(peer->tcp_ts - req->ts_recent) > TCP_PAWS_WINDOW) {
+-				NET_INC_STATS_BH(PAWSPassiveRejected);
+-				dst_release(dst);
+-				goto drop_and_free;
+-			}
+-		}
+ 		/* Kill the following clause, if you dislike this way. */
+-		else if (!sysctl_tcp_syncookies &&
++		/* Certainly a rather strange way -AK */
++		if (!sysctl_tcp_syncookies &&
+ 			 (sysctl_max_syn_backlog - tcp_synq_len(sk)
+ 			  < (sysctl_max_syn_backlog>>2)) &&
+-			 (!peer || !peer->tcp_ts_stamp) &&
+ 			 (!dst || !dst->rtt)) {
+ 			/* Without syncookies last quarter of
+ 			 * backlog is filled with destinations, proven to be alive.
+@@ -1572,7 +1528,6 @@ struct sock * tcp_v4_syn_recv_sock(struc
+ 	newtp->ext_header_len = 0;
+ 	if (newsk->protinfo.af_inet.opt)
+ 		newtp->ext_header_len = newsk->protinfo.af_inet.opt->optlen;
+-	newsk->protinfo.af_inet.id = newtp->write_seq^jiffies;
+ 
+ 	tcp_sync_mss(newsk, dst->pmtu);
+ 	newtp->advmss = dst->advmss;
+@@ -1932,70 +1887,12 @@ static void v4_addr2sockaddr(struct sock
+ 	sin->sin_port		= sk->dport;
+ }
+ 
+-/* VJ's idea. Save last timestamp seen from this destination
+- * and hold it at least for normal timewait interval to use for duplicate
+- * segment detection in subsequent connections, before they enter synchronized
+- * state.
+- */
+-
+-int tcp_v4_remember_stamp(struct sock *sk)
+-{
+-	struct tcp_opt *tp = &sk->tp_pinfo.af_tcp;
+-	struct rtable *rt = (struct rtable*)__sk_dst_get(sk);
+-	struct inet_peer *peer = NULL;
+-	int release_it = 0;
+-
+-	if (rt == NULL || rt->rt_dst != sk->daddr) {
+-		peer = inet_getpeer(sk->daddr, 1);
+-		release_it = 1;
+-	} else {
+-		if (rt->peer == NULL)
+-			rt_bind_peer(rt, 1);
+-		peer = rt->peer;
+-	}
+-
+-	if (peer) {
+-		if ((s32)(peer->tcp_ts - tp->ts_recent) <= 0 ||
+-		    (peer->tcp_ts_stamp + TCP_PAWS_MSL < xtime.tv_sec &&
+-		     peer->tcp_ts_stamp <= tp->ts_recent_stamp)) {
+-			peer->tcp_ts_stamp = tp->ts_recent_stamp;
+-			peer->tcp_ts = tp->ts_recent;
+-		}
+-		if (release_it)
+-			inet_putpeer(peer);
+-		return 1;
+-	}
+-
+-	return 0;
+-}
+-
+-int tcp_v4_tw_remember_stamp(struct tcp_tw_bucket *tw)
+-{
+-	struct inet_peer *peer = NULL;
+-
+-	peer = inet_getpeer(tw->daddr, 1);
+-
+-	if (peer) {
+-		if ((s32)(peer->tcp_ts - tw->ts_recent) <= 0 ||
+-		    (peer->tcp_ts_stamp + TCP_PAWS_MSL < xtime.tv_sec &&
+-		     peer->tcp_ts_stamp <= tw->ts_recent_stamp)) {
+-			peer->tcp_ts_stamp = tw->ts_recent_stamp;
+-			peer->tcp_ts = tw->ts_recent;
+-		}
+-		inet_putpeer(peer);
+-		return 1;
+-	}
+-
+-	return 0;
+-}
+-
+ struct tcp_func ipv4_specific = {
+ 	ip_queue_xmit,
+ 	tcp_v4_send_check,
+ 	tcp_v4_rebuild_header,
+ 	tcp_v4_conn_request,
+ 	tcp_v4_syn_recv_sock,
+-	tcp_v4_remember_stamp,
+ 	sizeof(struct iphdr),
+ 
+ 	ip_setsockopt,
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/tcp_minisocks.c x/net/ipv4/tcp_minisocks.c
+--- x-ref/net/ipv4/tcp_minisocks.c	2003-04-05 00:13:30.000000000 +0200
++++ x/net/ipv4/tcp_minisocks.c	2003-04-05 05:06:14.000000000 +0200
+@@ -32,7 +32,6 @@
+ #define SYNC_INIT 1
+ #endif
+ 
+-int sysctl_tcp_tw_recycle = 0;
+ int sysctl_tcp_max_tw_buckets = NR_FILE*2;
+ 
+ int sysctl_tcp_syncookies = SYNC_INIT; 
+@@ -117,12 +116,6 @@ void tcp_timewait_kill(struct tcp_tw_buc
+  * The algorithm below is based on FORMAL INTERPRETATION of RFCs.
+  * When you compare it to RFCs, please, read section SEGMENT ARRIVES
+  * from the very beginning.
+- *
+- * NOTE. With recycling (and later with fin-wait-2) TW bucket
+- * is _not_ stateless. It means, that strictly speaking we must
+- * spinlock it. I do not want! Well, probability of misbehaviour
+- * is ridiculously low and, seems, we could use some mb() tricks
+- * to avoid misread sequence numbers, states etc.  --ANK
+  */
+ enum tcp_tw_status
+ tcp_timewait_state_process(struct tcp_tw_bucket *tw, struct sk_buff *skb,
+@@ -183,17 +176,7 @@ kill_with_rst:
+ 			tw->ts_recent = tp.rcv_tsval;
+ 		}
+ 
+-		/* I am shamed, but failed to make it more elegant.
+-		 * Yes, it is direct reference to IP, which is impossible
+-		 * to generalize to IPv6. Taking into account that IPv6
+-		 * do not undertsnad recycling in any case, it not
+-		 * a big problem in practice. --ANK */
+-		if (tw->family == AF_INET &&
+-		    sysctl_tcp_tw_recycle && tw->ts_recent_stamp &&
+-		    tcp_v4_tw_remember_stamp(tw))
+-			tcp_tw_schedule(tw, tw->timeout);
+-		else
+-			tcp_tw_schedule(tw, TCP_TIMEWAIT_LEN);
++		tcp_tw_schedule(tw, TCP_TIMEWAIT_LEN);
+ 		return TCP_TW_ACK;
+ 	}
+ 
+@@ -347,10 +330,6 @@ void tcp_time_wait(struct sock *sk, int 
+ {
+ 	struct tcp_tw_bucket *tw = NULL;
+ 	struct tcp_opt *tp = &(sk->tp_pinfo.af_tcp);
+-	int recycle_ok = 0;
+-
+-	if (sysctl_tcp_tw_recycle && tp->ts_recent_stamp)
+-		recycle_ok = tp->af_specific->remember_stamp(sk);
+ 
+ 	if (tcp_tw_count < sysctl_tcp_max_tw_buckets)
+ 		tw = kmem_cache_alloc(tcp_timewait_cachep, SLAB_ATOMIC);
+@@ -397,13 +376,9 @@ void tcp_time_wait(struct sock *sk, int 
+ 		if (timeo < rto)
+ 			timeo = rto;
+ 
+-		if (recycle_ok) {
+-			tw->timeout = rto;
+-		} else {
+-			tw->timeout = TCP_TIMEWAIT_LEN;
+-			if (state == TCP_TIME_WAIT)
+-				timeo = TCP_TIMEWAIT_LEN;
+-		}
++		tw->timeout = TCP_TIMEWAIT_LEN;
++		if (state == TCP_TIME_WAIT)
++			timeo = TCP_TIMEWAIT_LEN;
+ 
+ 		tcp_tw_schedule(tw, timeo);
+ 		tcp_tw_put(tw);
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv4/udp.c x/net/ipv4/udp.c
+--- x-ref/net/ipv4/udp.c	2003-04-05 00:13:30.000000000 +0200
++++ x/net/ipv4/udp.c	2003-04-05 05:06:14.000000000 +0200
+@@ -759,7 +759,6 @@ int udp_connect(struct sock *sk, struct 
+ 	sk->daddr = rt->rt_dst;
+ 	sk->dport = usin->sin_port;
+ 	sk->state = TCP_ESTABLISHED;
+-	sk->protinfo.af_inet.id = jiffies;
+ 
+ 	sk_dst_set(sk, &rt->u.dst);
+ 	return(0);
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/ipv6/tcp_ipv6.c x/net/ipv6/tcp_ipv6.c
+--- x-ref/net/ipv6/tcp_ipv6.c	2003-04-05 00:13:30.000000000 +0200
++++ x/net/ipv6/tcp_ipv6.c	2003-04-05 05:06:14.000000000 +0200
+@@ -1760,19 +1760,12 @@ static void v6_addr2sockaddr(struct sock
+ 		sin6->sin6_scope_id = sk->bound_dev_if;
+ }
+ 
+-static int tcp_v6_remember_stamp(struct sock *sk)
+-{
+-	/* Alas, not yet... */
+-	return 0;
+-}
+-
+ static struct tcp_func ipv6_specific = {
+ 	tcp_v6_xmit,
+ 	tcp_v6_send_check,
+ 	tcp_v6_rebuild_header,
+ 	tcp_v6_conn_request,
+ 	tcp_v6_syn_recv_sock,
+-	tcp_v6_remember_stamp,
+ 	sizeof(struct ipv6hdr),
+ 
+ 	ipv6_setsockopt,
+@@ -1791,7 +1784,6 @@ static struct tcp_func ipv6_mapped = {
+ 	tcp_v4_rebuild_header,
+ 	tcp_v6_conn_request,
+ 	tcp_v6_syn_recv_sock,
+-	tcp_v4_remember_stamp,
+ 	sizeof(struct iphdr),
+ 
+ 	ipv6_setsockopt,
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/net/netsyms.c x/net/netsyms.c
+--- x-ref/net/netsyms.c	2003-04-05 00:13:30.000000000 +0200
++++ x/net/netsyms.c	2003-04-05 05:06:14.000000000 +0200
+@@ -254,7 +254,7 @@ EXPORT_SYMBOL(ip_options_compile);
+ EXPORT_SYMBOL(ip_options_undo);
+ EXPORT_SYMBOL(arp_send);
+ EXPORT_SYMBOL(arp_broken_ops);
+-EXPORT_SYMBOL(__ip_select_ident);
++EXPORT_SYMBOL(ip_select_ident);
+ EXPORT_SYMBOL(ip_send_check);
+ EXPORT_SYMBOL(ip_fragment);
+ EXPORT_SYMBOL(inet_family_ops);
+@@ -397,18 +397,13 @@ EXPORT_SYMBOL(sysctl_tcp_low_latency);
+ 
+ EXPORT_SYMBOL(tcp_write_xmit);
+ 
+-EXPORT_SYMBOL(tcp_v4_remember_stamp); 
+-
+-extern int sysctl_tcp_tw_recycle;
+-
++/* AK: why is this exported for sysctl?? */
+ #ifdef CONFIG_SYSCTL
+-EXPORT_SYMBOL(sysctl_tcp_tw_recycle); 
+ EXPORT_SYMBOL(sysctl_max_syn_backlog);
+ #endif
+ 
+ #if defined (CONFIG_IPV6_MODULE)
+ EXPORT_SYMBOL(secure_tcpv6_sequence_number);
+-EXPORT_SYMBOL(secure_ipv6_id);
+ #endif
+ 
+ #endif

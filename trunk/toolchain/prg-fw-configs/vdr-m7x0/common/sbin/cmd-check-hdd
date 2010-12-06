@@ -1,0 +1,27 @@
+#!/bin/ash
+
+{
+# Exit without parameters
+[ X"$1" = X"" ] && exit 1
+
+# Umount disks
+/sbin/cmd-svdrpsend "MESG Desmontando discos duros"
+/sbin/usbautomounter umount nofsck nolazy
+
+# Get partitions available in the system
+partitions=`grep -v "sd[a-z]$" /proc/partitions \
+       |awk '{if ($3>1) print "/dev/"$4}'`
+
+for partition in ${partitions} ; do
+	# Interval check changed
+	/sbin/cmd-svdrpsend "MESG Comprobación periódica a $1 en ${partition}"
+	/sbin/tune2fs -i $1 -c 0 ${partition}
+	# Sleep 5 seconds betwen SVDRP messages
+	/bin/sleep 5
+done
+
+# Mount disks
+/sbin/cmd-svdrpsend "MESG Montando discos duros"
+/sbin/usbautomounter mount nofsck
+
+} > /dev/null 2>&1 &

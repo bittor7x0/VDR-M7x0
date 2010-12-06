@@ -1,0 +1,9 @@
+#!/bin/ash
+
+if is-mounted "/rw-flash" ; then
+    echo ">> umount /etc" >&2
+    umount /etc || umount -l /etc
+
+    echo ">> umount /rw-flash" >&2
+    umount /rw-flash || umount -l /rw-flash
+fi

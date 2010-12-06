@@ -1,0 +1,42 @@
+diff -Nru linux/mm/memory.c.orig linux/mm/memory.c
+--- linux/mm/memory.c.orig	Tue Jun  3 14:15:32 2003
++++ linux/mm/memory.c	Tue Jun  3 14:18:00 2003
+@@ -553,6 +553,11 @@
+ 	if (err)
+ 		return err;
+ 
++#if defined(__mips__)
++	/* flushd_dcache_page() is broken on MIPS (and probably other arches) */
++	flush_cache_all();
++#endif
++
+ 	iobuf->locked = 0;
+ 	iobuf->offset = va & (PAGE_SIZE-1);
+ 	iobuf->length = len;
+@@ -569,15 +574,10 @@
+ 		return err;
+ 	}
+ 	iobuf->nr_pages = err;
+-#if 0 // DEBUG_JAN
++#if !defined(__mips__)
+ 	while (pgcount--) {
+-		/* FIXME: flush superflous for rw==READ,
+-		 * probably wrong function for rw==WRITE
+-		 */
+ 		flush_dcache_page(iobuf->maplist[pgcount]);
+ 	}
+-#else
+-	__flush_cache_all(); // DEBUG_JAN
+ #endif
+ 	dprintk ("map_user_kiobuf: end OK\n");
+ 	return 0;
+@@ -632,9 +632,6 @@
+ 		if (map) {
+ 			if (iobuf->locked)
+ 				UnlockPage(map);
+-			/* FIXME: cache flush missing for rw==READ
+-			 * FIXME: call the correct reference counting function
+-			 */
+ 			page_cache_release(map);
+ 		}
+ 	}
