@@ -1,0 +1,447 @@
+VDR Plugin Revision History
+---------------------------
+
+27.08.2007: Version 0.10.1 (vdr 1.4.7 / 1.5.9)
+- Fixed segfault in MP3 infocache purge on plugin exit.
+- Added support for VDR 1.5.7+ gettext internationalization.
+
+17.06.2007: Version 0.10.0 (vdr 1.4.7 / 1.5.2)
+- Fixed directory scaning in file browser if remembered directory has been
+  removed meanwhile. Reported by Halim Sahin.
+- Added processing of kNext/kPrev to skip songs. Patch provided by Peter Pinnau.
+- Made subsampling mode selection for ppmtoy4m call in example image convert
+  script backward compatible. Suggested by C.Y.M.
+- Fixed a missing include in mplayer.c. Reported by Dirk Vornheder.
+- Now closing all unused filedescriptors in MPlayer child thread. Suggested by
+  Anssi Hannula.
+- Now defaults to slavemode enabled in MPlayer plugin.
+- Adapted to the API changes in vdr 1.5.0+.
+- Documentation updates.
+
+----------------------------------------------------------------------
+
+21.09.2006: Version 0.9.15 development (vdr 1.4.1-4)
+- NOTE: This version has been tested with VDR 1.4.x only. It might be still
+  compatible with VDR 1.2.x or 1.3.x, but this wasn't verified.
+- In MPlayer filebrowser you can display a summary text file with key "0".
+  Filename convention: video filename extended with ".summary", e.g.
+  "somefile.avi" -> "somefile.avi.summary". Summary files are not shown in the
+  browsers filelist. (was in 0.9.14 already, but was missing in history)
+- Using ".txt" and ".nfo" as alternative extention for MPlayer summary file
+  display. Suggested by Soeren Sonnenburg.
+- Additionaly searching for a MPlayer summary file with the video filename
+  extention stripped of (e.g. "somefile.summary").
+- Added SVDR and service support to MP3 and MPlayer plugin. Based on a patches
+  provided by Olivier Jacques and Holger Brunn.
+- Added setup option to reverse title/artist display in MP3 plugin.
+- Added support for basic HTTP authorization in MP3 streaming.
+- Now passing correct name & path to VDR's status class during MPlayer playback.
+- Added commandline option to specify a subdirectory to load sources file from.
+  Suggested by Ronny Kornexl.
+- Added commandline option to specify a directory for the global MPlayer resume
+  file. Suggested by Ronny Kornexl.
+- Added -S option to ppmtoy4m call in example image convert script. Suggested by
+  Thorsten Gehrig.
+- Replaced leftover usleep() calls. Thanks to Malte Schröder.
+- Moved cleanup of ID3 cache to a seperate thread to prevent watchdog timeout.
+  Suggested by Peter Holik.
+- Fixed browser excludes taking effect only after the first directory change.
+  Reported by Soeren Sonnenburg.
+- Fixed parsing the filename from MPlayer output. Based on a fix from TomG.
+- Fixed MPlayer volume changes. Take non-linear changes in VDR into account.
+  Reported by Daniel Karsubka.
+- Fixed delay when MPlayer process exits at EOF. Reported by Daniel Karsubka.
+- Fixed MPlayer volumen handling for VDR 1.4.1-2. Note that the current code
+  doesn't work with VDR 1.4.1 and 1.4.1-1.
+- Fixed button translations with vdr 1.3.38+. Thanks to Ville Skyttä.
+- Fixed some gcc 4.1 issues. Thanks to Ville Skyttä.
+- Removed explizit libz dependency from Makefile. Suggested by Ville Skyttä.
+- Updated Makefile according to changes in VDR 1.3.47 & 1.4.1.
+- Updated finish translations. Provided by Rolf Ahrenberg.
+
+08.01.2006: Version 0.9.14 development (vdr 1.2.6/1.3.38)
+- Fixed VDR hanging for some seconds when skipping songs and fixed pause mode 
+  freezing live background when using OSS output. Reported by Andy Grobb.
+- Now muting DVB audio while using OSS output.
+- Finaly restored the function of the back key (jumps directly to plugin main
+  menu) (vdr >= 1.3.32 only). Thanks to Sascha Volkenandt for the hint.
+- During MPlayer playback, the name of the current videofile is now parsed from
+  the MPlayer output. If you're using some kind of playlist hack, the MPlayer
+  plugin will now report the correct filename. Based on suggestions from Ronny
+  Kornexl.
+- Extended the example mplayer.sh file to show how a playlist can be passed to
+  MPLayer.
+- Fixed segfault in progress display with skincurses. Thanks to Pasi Juppo for
+  reporting.
+- Adapted to the API changes in vdr 1.3.38.
+
+31.07.2005: Version 0.9.13 development (vdr 1.2.6/1.3.24)
+- Moved OSD position selection to plugin setup menu (as before this works for
+  non-skined vdr <1.3.7 only).
+- Removed DVD navigation from MPlayer slavemode.
+- Added support for configurable keys (0-9) in MPlayer slavemode. The slave
+  command can be entered in the plugin setup menu and is sent to MPlayer during
+  playback if the key is pressed.
+- Added support to display a summary file (plain ascii) in the MPlayer browser.
+  If you are on a video file, press '0' to display the summary. The summary file
+  has to be named like the video file but with ".summary" appended (e.g.
+  video.mpeg -> video.mpeg.summary).
+- New MP3 plugin setup option to keep the selection menu opened after selection.
+  Suggested by Mikko Mäkinen.
+- Fixed ringbuffer timeouts in network code.
+- Fixed ID3 V2 tag handling. Unusual big tags caused the ID3 scanner to mark the
+  file as bad. Now correctly skipping ID3 tags during playback too. Reported by
+  Olaf Henkel.
+- Prevent writing to a broken pipe in mplayer slave control. Reported by Gerhard
+  Steiner.
+- Fixed passing AID 0 to mplayer.sh. To allow MPlayer autoselect the audio
+  stream, set AID to -1 (this can only be achieved by entering 0 and than
+  pressing left).
+- Improved creation of LPCM frames. Based on the changes in muggle 0.1.8.
+- Updated french translations. Provided by Jerome Rousset.
+
+17.03.2005: Version 0.9.12 development (vdr 1.2.6/1.3.22)
+- Fixed background image convert hanging a long time and some other oddities.
+- Now filtering image files in the song browser display.
+- Extended include field in mp3sources.conf to allow multiple patterns seperated
+  by '/' e.g. *.mp3/*.ogg/*.txt
+- Enhanced image convert script for NTSC format. Thanks to Cym.
+- Fixed list sorting for vdr versions before 1.3.15.
+- Fixed MPlayer slavemode progress display reappearing on user requested close.
+- Now explicitly setting C locale in example image convert script. Thanks to
+  Tobias Grimm.
+- Changed the location where cStatus::MsgReplaying is called. Helps to prevent a
+  crash in graphlcd. In my opinion cControl API should be called from the
+  foreground thread only. Reported by Wolfgang Fritz.
+- Fixed a huge bunch of typos in the documentation. Thanks to Ville Skyttä.
+- Updated finish translations. Provided by Rolf Ahrenberg & Ville Skyttä.
+
+20.02.2005: Version 0.9.11 development (vdr 1.2.6/1.3.21)
+- Now using propper readdir() to scan directory contents rather than the
+  external find & sort tools.
+- Added cover image display during MP3 replay. See the README on how this has
+  to be configured. If you was using the old image patch, be aware that there
+  are now new commandline options and that the layout of the cache directory
+  has changed. Initial patch made by Eloy, currently maintained by Tobias Grimm
+  for ctvdr-debian package.
+
+06.02.2005: Version 0.9.10 development (vdr 1.2.6/1.3.20)
+- Fixed MPlayer resume for filenames/directories containing whitespace
+  characters.
+- Fixed vdr 1.3.18+ compatibility with BROKEN_PCM=1.
+- Fixed MP3 replay with vdr 1.3.19+. Thanks to Tobias Grimm.
+- Fixed huge memory leak in song/decoder handling (approx 22kB/song). Thanks to
+  the great valgrind tool.
+- Fixed some mismatched new[]/delete calls.
+- Reduced MP3 decoder memory footprint (stopped state, from 22k to 308).
+- Fixed crashes on status display from background threads (e.g. connect to
+  streamserver). An asyncronous status display was added.
+- Updated finnish translations. Provided by Rolf Ahrenberg.
+- Updated recommended library versions to libmad/libid3tag 0.15.1b and
+  libsndfile 1.0.11.
+- Updated patch for cdfs 0.5c. Correct tracksize for last audio track if a data
+  track follows. Thanks to Merten Falk.
+
+10.01.2005: Version 0.9.9 development (vdr 1.2.6/1.3.18)
+- Added global MPlayer resume file. This is used if the directory of the video
+  file is not writeable. The global resume file is located in the video
+  directory.
+- Added DVD navigation to MPlayer slavemode. Due to this some other functions
+  have been moved to new keys. See MANUAL file.
+- Added some glue for vdr 1.3.18.
+- Fixed saving of MPlayer setup option "ResumeMode". You can select if you want
+  "local/global" or "global only" resume files too.
+- Fixed thread deadlock in playmanager and non-blocking libsndfile reader
+  (appearently only with some pthread versions) and high cpu usage of
+  background scan thread when using libsndfile decoder. Thanks to Tobias Grimm
+  for debugging.
+- Removed workarounds for broken PCM handling in firmware (PCM pause &
+  samplerate changes). This requires DVB firmware 261d-rc6 or newer. If you
+  prefer to use an older firmware, you can use the make commandline option
+  BROKEN_PCM=1 to enable old behaviour.
+- Fixed handling of sym-links in source base path and playlists.
+- Fixed path generation for "wide" sym-links.
+- Replaced non-reentrant glibc functions with reentrant versions.
+- Updated finnish translations. Provided by Rolf Ahrenberg.
+
+28.11.2004: Version 0.9.8 development (vdr 1.2.6/1.3.14)
+- Added MPlayer audiostream selection. Audiostream is selected with the blue
+  key in the MPlayer menu. The selected stream is passed to the mplayer.sh
+  script as "AID x" where x is the stream number. For compatibility reasons the
+  AID parameter is passed after the SLAVE parameter. Due to this, parameter
+  positions aren't fixed any more. You have to implement a flexible parameter
+  parsing in mplayer.sh. See the example file how this can be done. Based on a
+  patch from VDR-Portal.
+- Fixed segfault in shuffle code when adding a single song to the current
+  playlist. Reported by Malte Schröder.
+- Fixed segfault in network code (pthread_cancel). Reported by Malte Schröder.
+- Fixed mounting/unmounting sources in MPlayer plugin. Reported by Guy Roussin.
+- Fixed status display with open (classic) progress display for vdr 1.3.7+.
+- Added russian translations (vdr >= 1.3.2). Provided by Vyacheslav Dikonov.
+
+24.09.2004: Version 0.9.7 development (vdr 1.2.6/1.3.12)
+- Added non-blocking reader thread to libsndfile decoder.
+- Fixed backward skip and progress display. Reported by Burkhardt Petermann.
+- Fixed some locking problems in play manager.
+- Fixed handling of samplerate changes for DVB & OSS output.
+
+13.09.2004: Version 0.9.6 development (vdr 1.2.6/1.3.12)
+- Changed the way how the player maintains the ringbuffer to prevent audio
+  dropouts while background scan is active.
+- Increased player ringbuffer size and take care of ringbuffer contents when
+  skipping forward.
+- Prevent full file scan on MP3 decoder check.
+- Flushing playlist on playback abort to unblock removable sources. This also
+  prevents the background scanner to continue after playback was aborted.
+- Removed a buffer-to-buffer copy in DVB output.
+- Fixed several race conditions where the play manager could discard the
+  currently played or scanned song.
+- Added a patch for cdfs 0.5c to correct discid calculation (applies to cdfs
+  2.4.20 as well).
+
+07.09.2004: Version 0.9.5 development (vdr 1.2.6/1.3.12)
+- Resolved several oddities in progress display if the player is idle.
+- Now removing trailing '/' from source definitions in *sources.conf and warn
+  the user about this.
+- Outdated entries in the MPlayer resume file are removed now.
+- Fixed playback start delay in case the background scanner is working on the
+  current song.
+- Fixed progress display for net streams. Reported by Wolfgang Fritz.
+- Fixed MPlayer rewind button (broken by sources fix in 0.9.4). Reported by
+  Sebastian Kemper.
+- Updated finnish translations. Provided by Rolf Ahrenberg.
+- Added a patch that prevents the VDR core from aborting the MP3 player in
+  black background mode (see patches subdirectory).
+
+03.09.2004: Version 0.9.4 development (vdr 1.2.6/1.3.12)
+- Added a queue manager. During playback you can add new songs to the playlist
+  by selecting them from the MP3 menu/browser. To flush the playlist you have
+  to stop the player for now. You can add new songs even if the player is kept
+  idle (see below).
+- Replaced setup option "mute at end of list" with "abort player at end of
+  list". If you set this option to "no" and the end of playlist is reached, the
+  player is kept idle. To restart playback select a song to restart from there
+  or "up" to restart from the begining.
+- Background scan (formerly known as ID3 prescan) now also can determine the
+  song level. Note that level scan requires to decode the complete song. This is
+  done on a seperate thread with nice 5 but nevertheless it needs CPU cycles. If
+  your system crawls, you can set background scan to "ID3 only" in the plugin
+  setup menu.
+- Added commanline option -C to specify the directory to place the id3cache
+  file. The default is to place the file into the video directory.
+- MPlayer resume feature can now be disabled in the plugin setup menu. No resume
+  file is created in this case.
+- Another fix to the OSS output. Now using little-endian samples only (which
+  should be supported by all soundcard drivers).
+- Fixed mounting/unmounting of MPlayer sources (Bug introduced in 0.9.2). Thanks
+  to Bill Blough for spotting this one.
+- Updated finnish translations. Provided by Rolf Ahrenberg.
+
+03.07.2004: Version 0.9.3 development (vdr 1.2.6/1.3.11)
+- If a (single) selected file in the MP3 browser is actualy a playlist (*.m3u),
+  load the playlist rather than trying to play the file. This allows to have
+  playlists in subdirectories (by now only selectable from the browser not from
+  the main menu). Note that song paths must be either absolute or relative to
+  the location of the playlist file. Suggested by Helmut Auer.
+- Now returning replay mode information in MP3 replay. Suggested by Sascha
+  Volkenandt.
+- Now paying attention to values returned by OSS ioctl's. This fixes playback
+  for sound drivers which doesn't support big-endian samples. Thanks to
+  Antti-Pekka Liedes for reporting and testing the fix.
+- Added setup option to hide the mainmenu entry.
+- Updated finnish translations. Provided by Rolf Ahrenberg.
+- Fixed VDR 1.2.x compile issues.
+- Fixed crash on status message display while the classic replay display is
+  open.
+
+24.06.2004: Version 0.9.2 development (vdr 1.2.6/1.3.11)
+- Added a setup option to toggle MP3 replay display between classic and skin
+  version. Note that the big playlist display isn't available in skin mode.
+- Added rewind button to MPlayer menu. Suggested by Sebastian Kemper.
+- Updated finnish translations. Provided by Rolf Ahrenberg.
+- Fixed current play time calculation for MPlayer without slave-patch.
+  Reported by Uwe Scheffler.
+- Fixed status messages which were displayed for ever. Reported by Sascha
+  Volkenandt.
+
+05.06.2004: Version 0.9.1 development (vdr 1.2.6/1.3.9)
+- Added finnish translations. Provided by Rolf Ahrenberg.
+- Adapted to the changes in VDR 1.3.7+. Based on patches provided by Sascha
+  Volkenandt & Sven Goethel.
+- Fixed long standing bug in ID3 tag parsing, when the file contains an
+  incomplete ID3 tag at the end of file. Thanks to Matt Tovey for debugging.
+- Better german translations. Suggested by Andreas Brachold.
+- Now ignoring dot-files in file browser. Suggested by Patrick Cernko.
+- Now showing total play time in MPlayer progress display. The value may be
+  inaccurate. Suggested by Patrick Cernko.
+- Added resume capability for MPlayer. The resume position is stored in a file
+  called ".mplayer.resume" in the directory of the MPlayer file. Based on a
+  patch provided by Patrick Cernko.
+- Added a setup option to mute audio at end of playlist. Based on a patch
+  provided by Christoph Gohle.
+- Now accepting absolute paths in playlists, even though the path must point to
+  somewhere inside the defined source directory. Suggested by Niklaus Stutz.
+
+08.05.2004: Version 0.9.0 development (vdr 1.2.6/1.3.1)
+- Added OSS soundcard output. Use make option WITH_OSS_OUTPUT=1 to compile
+  support, commandline option -D to change DSP device and plugin setup menu to
+  select output mode. Thanks to Gunnar Roth.
+- Added shoutcast/icecast metadata parsing. Thanks to Andreas Brachold.
+- Now restoring locale settings in MPlayer plugin.
+- Fixed MPlayer exit problem while paused.
+- Fixed showing outdated song name shortly after start of a new song.
+
+----------------------------------------------------------------------
+
+16.01.2004: Version 0.8.3 (vdr 1.2.6/1.3.1)
+- Fixed shutting down network connection (race condition).
+- Added a pointer to Juri's mplayer.sh in the README.
+- Fixed compilation problem with VDR 1.3.x and Beauty-Patch.
+
+16.11.2003: Version 0.8.2 (vdr 1.2.6)
+- Fixed quoting special shell characters when calling MPlayer.
+- Now sending a "quit" to MPlayer when in slave mode rather than killing the
+  process.
+- Updated recommended library versions to libmad/libid3tag 0.15.0b and
+  libsndfile 1.0.5.
+
+08.08.2003: Version 0.8.1 (vdr 1.2.2)
+- Fixed network code for DOS-style \r\n (Thanks to Roland Praml).
+
+01.06.2003: Version 0.8.0 (vdr 1.2.0)
+- Fixed thread cancelation in network code (valgrind hits).
+- Stable release 0.8.0.
+
+----------------------------------------------------------------------
+
+25.05.2003: Version 0.7.15 plugin development (vdr 1.1.33)
+- Adapted to the changes in vdr 1.1.33.
+- Corrected the README about the fact that the plugins require vdr 1.1.29+.
+- Added Spanish & Catalan translations. Thanks to Ramon Roca.
+
+18.05.2003: Version 0.7.14 plugin development (vdr 1.1.32)
+- Fixed ringbuffer handling for changes in vdr 1.1.31/32.
+- MPlayer progressbar can be moved up/down now. Use keys 6/9 while the
+  progressbar is displayed.
+- Added Swedish translations. Thanks to Jan Ekholm.
+
+27.04.2003: Version 0.7.13 plugin development (vdr 1.1.29)
+- Fixed compile error due to changes in vdr 1.1.29.
+- Fixed VDR version check.
+
+18.04.2003: Version 0.7.12 plugin development (vdr 1.1.27)
+- Added support for MPlayers slave commands "get_percent_pos" &
+  "get_time_length". Gives better results for the progressbar. The slavemode
+  patch for MPlayer is still needed as not all video formats provide
+  information through these slave commands.
+- Fixed s/ms mixup in remote CDDB connect.
+- Fixed possible deadlock-race in mp3 & snd decoder.
+- Added OggVorbis decoder. libvorbis & libvorbisfile needed.
+- Updated French translations. Thanks to Pierre-Henri Beguin.
+- Added VDR version check.
+
+27.03.2003: Version 0.7.11 plugin development (vdr 1.1.26)
+- Fixed MPlayer AudioDelay(). Thanks to Sven Goethel.
+- Fixed MPlayer key repeat. Thanks to Reinhard Walter Buchner.
+- Added yellow/green key to MPlayer control to skip back/forward a minute.
+  Key assignment may change in future for these keys.
+- Fixed Makefile for DVB includes.
+- Fixed creation of cMPlayerStatus according to the rules.
+- Fixed pipe reading and parse code. Caused all kind of weird behaviour.
+- Some changes to the MPlayer pipe handling.
+- Changed the network ringbuffer handling. You should use VDR version 1.1.25+
+  or you may suffer from high cpu load during network streaming.
+- Added a console message if a plugin fails to start due to a missing
+  sources.conf.
+
+03.02.2003: Version 0.7.10 plugin development (vdr 1.1.23)
+- Added patches for MPlayer 0.90rc1 (contributed by Beppe on the VDR ML).
+- Adapted to the API changes in vdr 1.1.22.
+- Removed speed drift detection. Makes not much sense with HEAD driver, as this
+  supports non-48kHz modes anyways.
+
+18.12.2002: Version 0.7.9 plugin development (vdr 1.1.20)
+- Added commandline option to specify a script which is called before & after
+  network access (e.g. for dial-up networking) (suggested by Matthias Raus).
+- Fixed playback speed check for (partly) corrupted files.
+- Fixed blocking frontend thread during possibly slow playback startup.
+- Added support for shoutcast/icecast streams. See MANUAL for URL file format
+  and setup menu options.
+
+24.11.2002: Version 0.7.8 plugin development (vdr 1.1.16)
+- Speed up local CDDB database search with huge databases. Due to this, only
+  one subdirectory level is allowed in the database directory (usually the
+  category name). This follows the common xmcd database layout.
+- Added code for remote CDDB lookups. cddb.sh script is no longer needed. Please
+  note, that the commandline options have changed.
+- Added some status output while scanning/loading playlists to inform the user.
+
+13.11.2002: Version 0.7.7 plugin development (vdr 1.1.16)
+- Updated Makefile to support Make.config.
+- Removed a deadlock together with the rt-patch.
+- Added support for the new remote keys (play,pause,fastfwd/rwd).
+
+06.10.2002: Version 0.7.6 plugin development (vdr 1.1.12)
+- Removed a class name conflict (cSource) introduced with the changes in
+  vdr 1.1.12.
+- Added a field to the sources.conf files to specify which kind of files should
+  be used on a source (see mp3sources.conf.example).
+
+06.09.2002: Version 0.7.5 plugin development (vdr 1.1.8)
+- Fixed bug in new status string code, which crashed VDR if a song without
+  artist tag was played.
+- Fixed parsing error of MPlayer output in slavemode if "C" is not the current
+  locale.
+- Fixed jump to minute in MPlayer slavemode.
+- If you have installed the "replay mode beauty patch" the new symbols are used
+  for MPlayer progressbar too. This feature is auto-detected in the Makefile.
+
+01.09.2002: Version 0.7.4 plugin development (vdr 1.1.8)
+- Changed the status string to show the loop/shuffle state too.
+- Fixed replay problem with background mode "black". With vdr 1.1.8 you must
+  apply the included patch to the base source.
+- Changed the way mplayer.sh is called. Now it shouldn't be necessary to give
+  the full path to the script if the script is in the current PATH.
+- Added MANUAL a file.
+- New setup option SlaveMode for MPlayer. With SlaveMode enabled you can
+  control MPlayer via VDR. A progress display is available too. See MANUAL for
+  details (thanks to Dariush Forouher).
+
+23.08.2002: Version 0.7.3 plugin development (vdr 1.1.7)
+- Now using libsndfile 1.x.x. You must update you system. The plugin won't
+  compile with version 0.0.x.
+- Fixed detection if MPlayer is still running.
+- Fixed GetIndex() to return frames rather than seconds (thanks to Martin
+  Hammerschmidt).
+- The last second of the last song in a playlist wasn't played. Now waiting
+  until the ringbuffer is really empty.
+
+16.08.2002: Version 0.7.2 plugin development (vdr 1.1.7)
+- Fixed gcc 2.96 compiling error due to variable name "not".
+- Fixed a undefined symbol error when compiling without libsndfile.
+- Fixed a deadlock in the MP3 player.
+- Removed old stale LCD code parts.
+- Now using free() on all strings.
+- Adapted to the API changes in vdr 1.1.7.
+
+11.08.2002: Version 0.7.1 plugin development (vdr 1.1.6)
+- Added some calls to the status monitor.
+- Fixed internationalization (thanks to David Spiller).
+- Fixed jump to the next song at the end of current song (thanks to David
+  Spiller).
+- Replaced all busy usleep wait loops with proper condition variables.
+- Removed one thread level in the MPlayer plugin.
+
+08.08.2002: Version 0.7.0 plugin development (vdr 1.1.6)
+- Updated the source base to release version 0.6.2.
+- Added MPlayer plugin.
+- MP3 playback now functionaly.
+
+13.05.2002: Version 0.0.2 plugin development (vdr 1.1.2)
+- Added setup menu page and saving of setup options.
+- Adding to playlist and playlist rename now functional. Beside playback all
+  menus are (better should be) working.
+- Now using confdir/plugins/mp3sources.conf for sources config.
+
+10.05.2002: Version 0.0.1 plugin development (vdr 1.1.1)
+- Initial revision.

@@ -1,0 +1,472 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Stefan Huelswitt <s.huelswitt@gmx.de>
+# This file is distributed under the same license as the VDR package.
+# Jan Ekholm <chakie@infa.abo.fi
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.9\n"
+"Report-Msgid-Bugs-To: <s.huelswitt@gmx.de>\n"
+"POT-Creation-Date: 2007-08-27 18:11+0200\n"
+"PO-Revision-Date: 2007-08-27 16:33+0200\n"
+"Last-Translator: Stefan Huelswitt <s.huelswitt@gmx.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: decoder-snd.c:564
+msgid "unknown"
+msgstr "okänd"
+
+#: decoder-snd.c:703
+msgid "Remote CDDB lookup..."
+msgstr "Fjärrförfrågan till CDDB..."
+
+#: menu.c:128 mp3.c:1018
+msgid "ID3 info"
+msgstr "ID3 info"
+
+#: menu.c:128 mp3.c:1018
+msgid "Parent"
+msgstr "Tillbaka"
+
+#: menu.c:128 menu.c:289
+msgid "Select"
+msgstr "Välj"
+
+#: menu.c:143 mp3.c:1138
+msgid "Scanning directory..."
+msgstr "Söker igenom katalog..."
+
+#: menu.c:174 mp3.c:1163
+msgid "Error scanning directory!"
+msgstr "Kunde inte läsa katalogen!"
+
+#: menu.c:289
+msgid "Eject"
+msgstr ""
+
+#: menu.c:289
+msgid "Mount"
+msgstr "Montera"
+
+#: menu.c:289
+msgid "Unmount"
+msgstr "Avmontera"
+
+#: menu.c:305
+msgid "Selected source is not mounted!"
+msgstr "Den valda källan är inte monterad!"
+
+#: menu.c:317 menu.c:333
+msgid "Mount failed!"
+msgstr "Monteringen misslyckades!"
+
+#: menu.c:332
+msgid "Mount succeeded"
+msgstr "Monteringen lyckades"
+
+#: menu.c:347
+msgid "Unmount succeeded"
+msgstr "Avmonteringen lyckades"
+
+#: menu.c:348
+msgid "Unmount failed!"
+msgstr "Avmonteringen misslyckades!"
+
+#: menu.c:362
+msgid "Eject failed!"
+msgstr "Mata ut!"
+
+#: mp3.c:79
+msgid "OSS"
+msgstr "OSS"
+
+#: mp3.c:86 mp3.c:1327
+msgid "MP3"
+msgstr "MP3"
+
+#: mp3.c:87
+msgid "Setup.MP3$Audio output mode"
+msgstr ""
+
+#: mp3.c:88
+msgid "Dither"
+msgstr ""
+
+#: mp3.c:88
+msgid "Round"
+msgstr "Avrunda"
+
+#: mp3.c:88
+msgid "Setup.MP3$Audio mode"
+msgstr "Audioläge"
+
+#: mp3.c:89
+msgid "Setup.MP3$Use 48kHz mode only"
+msgstr "Använd endast 48Khz-läge"
+
+#: mp3.c:91
+msgid "classic"
+msgstr ""
+
+#: mp3.c:92
+msgid "via skin"
+msgstr ""
+
+#: mp3.c:93
+msgid "Setup.MP3$Replay display"
+msgstr ""
+
+#: mp3.c:95
+msgid "Setup.MP3$Display mode"
+msgstr "Visuellt läge"
+
+#: mp3.c:96
+msgid "Black"
+msgstr "Svart"
+
+#: mp3.c:97
+msgid "Live"
+msgstr "Live"
+
+#: mp3.c:98
+msgid "Images"
+msgstr ""
+
+#: mp3.c:99
+msgid "Setup.MP3$Background mode"
+msgstr "Bakgrundsläge"
+
+#: mp3.c:100
+msgid "Setup.MP3$Initial loop mode"
+msgstr "Normalt upprepningsläge"
+
+#: mp3.c:101
+msgid "Setup.MP3$Initial shuffle mode"
+msgstr "Normalt blandläge"
+
+#: mp3.c:102
+msgid "Setup.MP3$Abort player at end of list"
+msgstr ""
+
+#: mp3.c:103 mp3.c:117 mplayer.c:101
+msgid "disabled"
+msgstr "avstängd"
+
+#: mp3.c:104
+msgid "ID3 only"
+msgstr ""
+
+#: mp3.c:105
+msgid "ID3 & Level"
+msgstr ""
+
+#: mp3.c:106
+msgid "Setup.MP3$Background scan"
+msgstr ""
+
+#: mp3.c:107 mp3.c:1122
+msgid "Filenames"
+msgstr "Filnamn"
+
+#: mp3.c:107 mp3.c:1122
+msgid "ID3 names"
+msgstr "ID3 namn"
+
+#: mp3.c:107
+msgid "Setup.MP3$Editor display mode"
+msgstr "Redigerarens visuella läge"
+
+#: mp3.c:108
+msgid "Browser"
+msgstr "Bläddra"
+
+#: mp3.c:108
+msgid "Playlists"
+msgstr "Spellistor"
+
+#: mp3.c:108
+msgid "Setup.MP3$Mainmenu mode"
+msgstr "Huvudmenyläge"
+
+#: mp3.c:109
+msgid "Setup.MP3$Keep selection menu"
+msgstr ""
+
+#: mp3.c:110
+msgid "Normal"
+msgstr ""
+
+#: mp3.c:110
+msgid "Reversed"
+msgstr ""
+
+#: mp3.c:110
+msgid "Setup.MP3$Title/Artist order"
+msgstr ""
+
+#: mp3.c:111 mplayer.c:105
+msgid "Hide mainmenu entry"
+msgstr ""
+
+#: mp3.c:112
+msgid "Setup.MP3$Normalizer level"
+msgstr "Normaliseringsnivå"
+
+#: mp3.c:113
+msgid "Setup.MP3$Limiter level"
+msgstr "Begränsningsnivå"
+
+#: mp3.c:114
+msgid "Setup.MP3$Use HTTP proxy"
+msgstr "Använd en HTTP-proxy"
+
+#: mp3.c:115
+msgid "Setup.MP3$HTTP proxy host"
+msgstr "HTTP-proxyns namn"
+
+#: mp3.c:116
+msgid "Setup.MP3$HTTP proxy port"
+msgstr "HTTP-proxyns port"
+
+#: mp3.c:118
+msgid "local only"
+msgstr ""
+
+#: mp3.c:119
+msgid "local&remote"
+msgstr ""
+
+#: mp3.c:120
+msgid "Setup.MP3$CDDB for CD-Audio"
+msgstr "CDDB för CD-audio"
+
+#: mp3.c:121
+msgid "Setup.MP3$CDDB server"
+msgstr "CDDB server"
+
+#: mp3.c:122
+msgid "Setup.MP3$CDDB port"
+msgstr "CDDB port"
+
+#: mp3.c:921 mp3.c:927
+msgid "ID3 information"
+msgstr "ID3 information"
+
+#: mp3.c:935
+msgid "Filename"
+msgstr "Filnamn"
+
+#: mp3.c:939
+msgid "Length"
+msgstr "Längd"
+
+#: mp3.c:941
+msgid "Title"
+msgstr "Tittel"
+
+#: mp3.c:942
+msgid "Artist"
+msgstr "Artist"
+
+#: mp3.c:943
+msgid "Album"
+msgstr "Album"
+
+#: mp3.c:944
+msgid "Year"
+msgstr "År"
+
+#: mp3.c:945
+msgid "Samplerate"
+msgstr "Samplingshastighet"
+
+#: mp3.c:946
+msgid "Bitrate"
+msgstr "Bithastighet"
+
+#: mp3.c:1010
+msgid "Directory browser"
+msgstr "Katalogbläddrare"
+
+#: mp3.c:1106
+msgid "Playlist editor"
+msgstr "Spellisteditor"
+
+#: mp3.c:1122 mp3.c:1215
+msgid "Add"
+msgstr "Lägg till"
+
+#: mp3.c:1122
+msgid "Remove"
+msgstr "Radera"
+
+#: mp3.c:1142
+msgid "Add recursivly?"
+msgstr "Lägg till rekursivt?"
+
+#: mp3.c:1161
+msgid "Empty directory!"
+msgstr "Tom katalog!"
+
+#: mp3.c:1196
+msgid "Remove entry?"
+msgstr "Radera post?"
+
+#: mp3.c:1215
+msgid "Add all"
+msgstr "Lägg till alla"
+
+#: mp3.c:1242
+msgid "Rename playlist"
+msgstr "Döp om spellistan"
+
+#: mp3.c:1248
+msgid "Old name:"
+msgstr "Gammalt namn:"
+
+#: mp3.c:1259
+msgid "New name"
+msgstr "Nytt namn"
+
+#: mp3.c:1344
+msgid "Browse"
+msgstr "Bläddra"
+
+#: mp3.c:1344 mplayer.c:634
+msgid "Source"
+msgstr "Källa"
+
+#: mp3.c:1347
+msgid "Rename"
+msgstr "Döp om"
+
+#: mp3.c:1357
+msgid "Scanning playlists..."
+msgstr "Söker spellistor..."
+
+#: mp3.c:1367
+msgid "Error scanning playlists!"
+msgstr "Fel uppstod då spellistorna lästes!"
+
+#: mp3.c:1373
+msgid "Delete playlist?"
+msgstr "Radera spellista?"
+
+#: mp3.c:1374
+msgid "Are you sure?"
+msgstr "Är du säker?"
+
+#: mp3.c:1381
+msgid "Error deleting playlist!"
+msgstr "Fel uppstod då spellistan raderades!"
+
+#: mp3.c:1393 mp3.c:1394
+msgid "unnamed"
+msgstr "namnlös"
+
+#: mp3.c:1404
+msgid "Error creating playlist!"
+msgstr "Fel uppstod då spellistan skapades!"
+
+#: mp3.c:1425
+msgid "Error renaming playlist!"
+msgstr "Fel uppstod då spellistan döptes om!"
+
+#: mp3.c:1435 mp3.c:1458
+msgid "Error loading playlist!"
+msgstr "Fel uppstod då spellistan lästes in!"
+
+#: mp3.c:1440
+msgid "Can't edit a WinAmp playlist!"
+msgstr "Kan inte redigera en WinAmp-spellista!"
+
+#: mp3.c:1448
+msgid "Loading playlist..."
+msgstr "Läser in spellista..."
+
+#: mp3.c:1468
+msgid "MP3 source"
+msgstr "MP3 källa"
+
+#: mp3.c:1486
+msgid "Play all"
+msgstr "Spela alla"
+
+#: mp3.c:1491
+msgid "Building playlist..."
+msgstr "Skapar en spellista..."
+
+#: mp3.c:1501
+msgid "Error building playlist!"
+msgstr "Fel uppstod då spellistan skapades!"
+
+#: mp3.c:1541
+msgid "A versatile audio player"
+msgstr ""
+
+#: mplayer.c:96
+msgid "MPlayer"
+msgstr "MPlayer"
+
+#: mplayer.c:97
+msgid "Setup.MPlayer$Control mode"
+msgstr "Kontrolläge"
+
+#: mplayer.c:97
+msgid "Slave"
+msgstr "Slav"
+
+#: mplayer.c:97
+msgid "Traditional"
+msgstr "Traditionell"
+
+#: mplayer.c:99
+msgid "Setup.MPlayer$OSD position"
+msgstr ""
+
+#: mplayer.c:102
+msgid "global only"
+msgstr ""
+
+#: mplayer.c:103
+msgid "local first"
+msgstr ""
+
+#: mplayer.c:104
+msgid "Setup.MPlayer$Resume mode"
+msgstr ""
+
+#: mplayer.c:108
+msgid "Setup.MPlayer$Slave command key"
+msgstr ""
+
+#: mplayer.c:589
+msgid "MPlayer Audio ID"
+msgstr ""
+
+#: mplayer.c:591
+msgid "Audiostream ID"
+msgstr ""
+
+#: mplayer.c:624
+msgid "MPlayer browser"
+msgstr "MPlayer-bläddrare"
+
+#: mplayer.c:644
+msgid "MPlayer source"
+msgstr "MPlayer källa"
+
+#: mplayer.c:677
+msgid "Summary"
+msgstr ""
+
+#: mplayer.c:732
+msgid "Media replay via MPlayer"
+msgstr ""
+
+#: stream.c:395
+msgid "Connecting to stream server ..."
+msgstr "Kontaktar stream-server..."

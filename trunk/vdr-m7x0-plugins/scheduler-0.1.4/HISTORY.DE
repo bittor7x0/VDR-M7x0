@@ -1,0 +1,22 @@
+VDR Plugin 'scheduler' Revision History
+-------------------------------------
+
+2008-07-15: Version 0.1.4
+- Neues Feature "Abbruch nach ... Minuten" beendet einen Job nach den 
+  angegebenen Minuten nach Start um endlose Jobs zu vermeiden (Mit 0 wird
+  das Feature deaktiviert).
+- Update der italienischen Übersetzung, Danke an Diego Pierotto
+
+2008-02-17: Version 0.1.3
+- fixes für vdr-1.5.15
+
+2008-01-20: Version 0.1.2
+- Italienische Übersetzung, Danke an Diego Pierotto
+
+2008-01-18: Version 0.1.1
+- Korrekturen für gcc-4.3alpha und 64 bit-Systeme, Danke an Grégoire Favre
+- Spanische Übersetzung, Danke an Bittor Corl
+- Korrekturen für die Übersetzung auf open7x0, Danke an zjuanma
+
+2007-10-03: Version 0.1.0
+- Erste Version.

@@ -1,0 +1,48 @@
+diff -Nur vdr-1.2.6.orig/menu.c vdr-1.2.6/menu.c
+--- vdr-1.2.6.orig/menu.c	2003-10-03 16:36:20.000000000 +0200
++++ vdr-1.2.6/menu.c	2004-03-18 06:04:00.000000000 +0100
+@@ -268,17 +268,6 @@
+ 
+ // --- cMenuEditTimeItem -----------------------------------------------------
+ 
+-class cMenuEditTimeItem : public cMenuEditItem {
+-protected:
+-  int *value;
+-  int hh, mm;
+-  int pos;
+-  virtual void Set(void);
+-public:
+-  cMenuEditTimeItem(const char *Name, int *Value);
+-  virtual eOSState ProcessKey(eKeys Key);
+-  };
+-
+ cMenuEditTimeItem::cMenuEditTimeItem(const char *Name, int *Value)
+ :cMenuEditItem(Name)
+ {
+diff -Nur vdr-1.2.6.orig/menu.h vdr-1.2.6/menu.h
+--- vdr-1.2.6.orig/menu.h	2003-08-03 11:37:18.000000000 +0200
++++ vdr-1.2.6/menu.h	2004-03-18 06:04:00.000000000 +0100
+@@ -16,6 +16,7 @@
+ #include "dvbplayer.h"
+ #include "recorder.h"
+ #include "recording.h"
++#include "menuitems.h"
+ 
+ class cMenuMain : public cOsdMenu {
+ private:
+@@ -179,4 +180,15 @@
+   static void ClearLastReplayed(const char *FileName);
+   };
+ 
++class cMenuEditTimeItem : public cMenuEditItem {
++protected:
++  int *value;
++  int hh, mm;
++  int pos;
++  virtual void Set(void);
++public:
++  cMenuEditTimeItem(const char *Name, int *Value);
++  virtual eOSState ProcessKey(eKeys Key);
++  };
++
+ #endif //__MENU_H

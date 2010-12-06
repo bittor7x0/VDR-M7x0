@@ -1,0 +1,23 @@
+VDR Plugin 'blink' Revision History
+-----------------------------------
+2007-11-09: Version 0.0.4
+- added a check for the change of the iaMode to wair loop
+  This speed up that the LEDs as set to the current iaMode
+
+2007-11-05: Version 0.0.3
+- changed wait code to as the PIC if the current dim is till running
+  instead of waiting for a specified time
+
+2007-10-09: Version 0.0.3
+- added blink for recordings
+- support for on delay in blink
+- added config value for delay between on binks
+
+2007-10-07: Version 0.0.2
+- use dim for blinking
+- new blink mode for shutdown
+- many samll fixes
+
+2007-10-05: Version 0.0.1
+
+- Initial revision.

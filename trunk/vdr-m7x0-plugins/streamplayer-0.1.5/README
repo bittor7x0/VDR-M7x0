@@ -1,0 +1,202 @@
+        
+                       VDR Streamplayer
+
+
+Written by:                Udo Richter <udo_richter@gmx.de>
+Project's homepage:        http://www.udo-richter.de/vdr/streamplayer.en.html
+Compatibility:             VDR-1.2.6 to VDR-1.5.7 should work
+See the file COPYING for license information.
+
+
+
+About
+--------------------------------------------------------------------------
+Streamplayer is a plugin to receive and display network video streams 
+on VDR, turning VDR into a streaming client. The plugin is intentionally
+limited to DVB compatible MPEG1/2 streams that can be displayed without 
+high CPU usage. One possible stream server is the VLC media player
+(http://www.videolan.org/), another one is the HTTP server of the 
+streamdev plugin.
+
+
+Supported Protocols
+--------------------------------------------------------------------------
+Currently, two protocols are implemented:
+
+-HTTP streaming requests the video stream from a web server. HTTP is based 
+ on TCP, a reliable error tolerant internet protocol that is less 
+ practicable for realtime streaming. On the other hand, its more tolerant 
+ on difficult networks.
+
+-UDP streaming listens to all UDP packets received on an UPD port, regardless where
+ they're coming from. Since UDP protocol will not re-request lost data 
+ packets, UDP will recover quickly on data losses by skipping parts of the
+ video. UDP is the only format that can do multicast transmissions.
+ 
+ If your machine is directly connected to the internet, you should block
+ the selected UDP port, or anyone will be able to take over your TV. ;)
+
+
+Supported Formats
+--------------------------------------------------------------------------
+Currently, the plugin only accepts MPEG Transport Streams (TS) with
+encapsulated MPEG1/2 Video Streams. The video stream must use a DVB 
+compatible resolution of {720,704,640,512,480,352}x{576,480,288,240}. Not 
+all of these combinations will work. Note that based on frame rate the DVB 
+card may switch to NTSC or PAL output. Its a good idea to use 240 or 480
+lines together with 30fps for NTSC output and 288 or 576 lines with 25fps
+for PAL output.
+
+
+Installation
+--------------------------------------------------------------------------
+Extract and compile like other plugins:
+
+   cd vdr-x.x.xx/PLUGINS/src
+   tar xzf vdr-streamplayer-x.x.x.tgz
+   ln -s streamplayer-x.x.x streamplayer
+   cd ../..
+   make plugins
+
+If you encounter errors regarding #include linux/dvb, add this to your 
+VDR global Make.config or to a local Make.config in the streamplayer folder:
+
+   INCLUDES += -I/path/to/DVB/driver/include
+
+You can then eiter do a 'make plugins' in VDR directory or simply 'make' 
+in the streamplayer directory.
+
+
+Usage
+--------------------------------------------------------------------------
+As soon as the plugin's main menu item is selected, a bookmark-like dialog
+opens. Streamplayer uses URL-like identifiers for network stream 
+selection. The first line shows the last used URL and is editable. Below 
+that, a list of bookmarked URL's is available. On these entries, 'Ok' key 
+will start playing directly, 'Red' will show an edit dialog for this 
+bookmark, 'Green' will show the same dialog for a new bookmark, and 'Blue'
+copies the selected URL into the top editable line, for modification.
+
+The bookmark file also can be edited in the file 
+/video/plugins/streamplayer-bookmarks.conf (or where your plugin config 
+folder is). The syntax is title:url.
+
+On first launch, a small bookmark file is generated to start with. The 
+first entry listens on UDP port 1234 that is commonly used by VideoLan
+player, the second connects to a Streamdev HTTP server on the local 
+machine, requesting channel 1.
+
+UDP protocol:
+The URL for UDP protocol is udp://['@'[server][':'port]]. server is the 
+optional remote server to accept data from, and port is the local port 
+number to listen on. Usually, you will use something like udp://@:port or
+udp://@server:port. 
+Streamplayer just listens, you have to get the video source to transmit 
+data to the VDR machine yourself. 
+If the server has a class D IP address (224.0.0.0 - 239.255.255.255), 
+streamplayer will try to join this multicast group.
+The old style udp:port is also supported.
+
+HTTP protocol:
+The URL for HTTP is as usual: "http://server[:port]/path". The port numer 
+is optional and as usual defaults to 80.
+
+When playing, the 'Ok' button brings up a small status display, showing
+the current status and receive data rate. 
+
+
+Examples
+--------------------------------------------------------------------------
+Some examples, how VLC media player and Streamplayer work together:
+
+Lets assume, source.local is your stream source computer, vdr.local is 
+your VDR machine. If there is no DNS server running in your local network,
+you can use IP adresses too. Of course, both addresses can be the same 
+too, if only one computer is used.
+
+
+http streaming of mpeg
+----------------------
+
+If you have some video.mpg that is in VCD/SVCD/DVD format. This can be 
+streamed right away. 
+To play back using HTTP streaming, use this for VLC invoking:
+
+  vlc video.mpg --sout "#std{access=http,mux=ts,url=:1234}"
+
+On Streamplayer, use this URL:
+ 
+  http://source.local:1234/
+  
+Thats it.
+
+
+udp streaming of mpeg
+---------------------
+
+If you want to try UDP streaming:
+
+  vlc video.mpg --sout "#std{access=udp,mux=ts,url=vdr.local:1234}"
+
+Note that its the IP address of the VDR machine this time. On 
+Streamplayer, use:
+
+  udp://@:1234
+
+
+http streaming and transcoding
+------------------------------
+
+If your source is not MPEG1/2 compatible, you can transcode the video:
+
+  vlc video.avi --sout "#transcode{vcodec=mpgv,vb=4000,acodec=mpga,ab=192}
+  :std{access=http,mux=ts,url=:1234}"
+
+To get a compatible DVB resolution, you can resize:
+
+  vlc video.avi --sout "#transcode{vcodec=mpgv,vb=4000,acodec=mpga,ab=192,
+  width=720,height=576}:std{access=http,mux=ts,url=:1234}"
+
+Unfortunately, there's one drawback: Since the DVB cards expect 4:3 video 
+material, any 16:9 or similar source needs to be padded with black 
+borders to 4:3 format, and thats only possible with VLC 0.8.5 and newer.
+
+
+VLC-0.8.5 streaming
+-------------------
+
+With VLC-0.8.5 and newer, the 4:3 format issues can be solved. You can also
+use a patch for previous VLC versions available here: 
+http://www.udo-richter.de/vdr/streamplayer.en.html#vlc-croppadd
+
+The newer version allows mostly automatic scaling to 720x576 4:3 video as 
+needed for streamplayer. This one works nicely:
+
+  vlc video.avi --sout "#transcode{vcodec=mpgv,vb=4000,acodec=mpga,ab=192,
+  width=720,height=576,canvas-width=720,canvas-height=576,canvas-aspect=4:3,
+  fps=25}:std{access=http,mux=ts,url=:1234}"
+
+This will scale any video to 720x576 format and will letterbox the video, 
+to ensure that the 720x576 output is proper 4:3 material. Additionally,
+the source is converted to 25fps. You can even set canvas-aspect=16:9 to
+stream anamorphic video, but be aware that 4:3 material will be 
+pillar-boxed of course.
+For ac3 mixdown, an additional channels=2 might help.
+
+You can also scale to a different width/height or decide not to scale at 
+all, in any case the canvas-width and canvas-height parameters will be 
+honored.
+
+
+Future Plans
+--------------------------------------------------------------------------
+This is no promise, just a white board of things that sound nice. No 
+guarantee whether and when this will happen...
+
+-Deleting/moving bookmarks
+-RTP/RTSP protocol for real video-on-demand
+-PS/PES stream formats
+-Improved PID detection, read PAT tables etc.
+-Dynamic PID changes while running?
+-Support pure audio streams
+-Support multiple audio streams

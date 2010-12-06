@@ -1,0 +1,38 @@
+--- discid.c.orig	2001-12-27 19:48:57.000000000 +0100
++++ discid.c	2004-02-23 20:18:45.000000000 +0100
+@@ -5,14 +5,18 @@
+ 
+ 
+ unsigned long discid(cd * this_cd) {
+-  unsigned int i=0, t, n = 0;
++  unsigned int i=0, t, n = 0, trks=0, l=0;
+ 
+   for (i=0; i< this_cd->tracks; i++)
+-    n += cddb_sum((this_cd->track[T2I(i)].start_lba+CD_MSF_OFFSET)/CD_FRAMES);
++    if(this_cd->track[T2I(i)].type==AUDIO) {
++      n += cddb_sum((this_cd->track[T2I(i)].start_lba+CD_MSF_OFFSET)/CD_FRAMES);
++      trks++; l=i;
++      }
+ 
+-  t = this_cd->track[T2I(this_cd->tracks-1)].stop_lba/CD_FRAMES;
++  t = (this_cd->track[T2I(l+1)].start_lba-
++       this_cd->track[T2I(0)].start_lba)/CD_FRAMES;
+ 
+-  return (((n % 0xFF) << 24) | (t << 8) | this_cd->tracks);
++  return (((n % 0xFF) << 24) | (t << 8) | trks);
+ }
+ 
+ 
+--- root.c.orig	2002-04-07 18:31:39.000000000 +0200
++++ root.c	2005-02-05 17:27:48.000000000 +0100
+@@ -146,6 +146,10 @@
+         this_cd->track[i].type        = AUDIO;
+         this_cd->track[i].time        = CURRENT_TIME;
+         this_cd->track[i].iso_size    = 0;
++        if ((t!=(this_cd->tracks - 1)) && t > 0 && (this_cd->track[i + 1].type!=AUDIO)) {
++          this_cd->track[i].track_size = this_cd->track[i].track_size - 11400;
++          this_cd->track[i].stop_lba = this_cd->track[i].stop_lba -11400;
++        }
+         this_cd->track[i].track_size  = this_cd->track[i].track_size * CD_FRAMESIZE_RAW + ((this_cd->raw_audio==0)?WAV_HEADER_SIZE:0);
+         this_cd->track[i].size        = this_cd->track[i].track_size;
+ 	this_cd->track[i].avi         = 0;

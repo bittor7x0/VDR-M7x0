@@ -1,0 +1,473 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Stefan Huelswitt <s.huelswitt@gmx.de>
+# This file is distributed under the same license as the VDR package.
+# Rolf Ahrenberg <rahrenbe@cc.hut.fi>
+# Ville Skyttä <ville.skytta@iki.fi>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.9\n"
+"Report-Msgid-Bugs-To: <s.huelswitt@gmx.de>\n"
+"POT-Creation-Date: 2007-08-27 18:11+0200\n"
+"PO-Revision-Date: 2007-08-27 16:33+0200\n"
+"Last-Translator: Stefan Huelswitt <s.huelswitt@gmx.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: decoder-snd.c:564
+msgid "unknown"
+msgstr "tuntematon"
+
+#: decoder-snd.c:703
+msgid "Remote CDDB lookup..."
+msgstr "Kysytään CDDB-tietoja..."
+
+#: menu.c:128 mp3.c:1018
+msgid "ID3 info"
+msgstr "ID3-info"
+
+#: menu.c:128 mp3.c:1018
+msgid "Parent"
+msgstr "Takaisin"
+
+#: menu.c:128 menu.c:289
+msgid "Select"
+msgstr "Valitse"
+
+#: menu.c:143 mp3.c:1138
+msgid "Scanning directory..."
+msgstr "Selataan hakemistoa..."
+
+#: menu.c:174 mp3.c:1163
+msgid "Error scanning directory!"
+msgstr "Hakemiston avaaminen epäonnistui!"
+
+#: menu.c:289
+msgid "Eject"
+msgstr "Avaa"
+
+#: menu.c:289
+msgid "Mount"
+msgstr "Kiinnitä"
+
+#: menu.c:289
+msgid "Unmount"
+msgstr "Irrota"
+
+#: menu.c:305
+msgid "Selected source is not mounted!"
+msgstr "Valittu lähde ei ole kiinnitetty!"
+
+#: menu.c:317 menu.c:333
+msgid "Mount failed!"
+msgstr "Kiinnittäminen epäonnistui!"
+
+#: menu.c:332
+msgid "Mount succeeded"
+msgstr "Kiinnittäminen onnistui"
+
+#: menu.c:347
+msgid "Unmount succeeded"
+msgstr "Irrottaminen onnistui"
+
+#: menu.c:348
+msgid "Unmount failed!"
+msgstr "Irrottaminen epäonnistui!"
+
+#: menu.c:362
+msgid "Eject failed!"
+msgstr "Aseman avaaminen epäonnistui!"
+
+#: mp3.c:79
+msgid "OSS"
+msgstr "OSS"
+
+#: mp3.c:86 mp3.c:1327
+msgid "MP3"
+msgstr "MP3-soitin"
+
+#: mp3.c:87
+msgid "Setup.MP3$Audio output mode"
+msgstr "Äänen ulostulomoodi"
+
+#: mp3.c:88
+msgid "Dither"
+msgstr "ditteroitu"
+
+#: mp3.c:88
+msgid "Round"
+msgstr "pyöristetty"
+
+#: mp3.c:88
+msgid "Setup.MP3$Audio mode"
+msgstr "Äänimoodi"
+
+#: mp3.c:89
+msgid "Setup.MP3$Use 48kHz mode only"
+msgstr "Käytä vain 48kHz moodia"
+
+#: mp3.c:91
+msgid "classic"
+msgstr "klassinen"
+
+#: mp3.c:92
+msgid "via skin"
+msgstr "ulkoasun mukaan"
+
+#: mp3.c:93
+msgid "Setup.MP3$Replay display"
+msgstr "Toistotilan näyttömoodi"
+
+#: mp3.c:95
+msgid "Setup.MP3$Display mode"
+msgstr "Näyttömoodi"
+
+#: mp3.c:96
+msgid "Black"
+msgstr "musta"
+
+#: mp3.c:97
+msgid "Live"
+msgstr "live"
+
+#: mp3.c:98
+msgid "Images"
+msgstr "kansikuva"
+
+#: mp3.c:99
+msgid "Setup.MP3$Background mode"
+msgstr "Taustamoodi"
+
+#: mp3.c:100
+msgid "Setup.MP3$Initial loop mode"
+msgstr "Jatkuva soitto oletuksena"
+
+#: mp3.c:101
+msgid "Setup.MP3$Initial shuffle mode"
+msgstr "Satunnaissoitto oletuksena"
+
+#: mp3.c:102
+msgid "Setup.MP3$Abort player at end of list"
+msgstr "Keskeytä soittolistan loputtua"
+
+#: mp3.c:103 mp3.c:117 mplayer.c:101
+msgid "disabled"
+msgstr "pois"
+
+#: mp3.c:104
+msgid "ID3 only"
+msgstr "vain ID3"
+
+#: mp3.c:105
+msgid "ID3 & Level"
+msgstr "ID3 & taso"
+
+#: mp3.c:106
+msgid "Setup.MP3$Background scan"
+msgstr "Taustaskannaus"
+
+#: mp3.c:107 mp3.c:1122
+msgid "Filenames"
+msgstr "tiedostonimet"
+
+#: mp3.c:107 mp3.c:1122
+msgid "ID3 names"
+msgstr "ID3-nimet"
+
+#: mp3.c:107
+msgid "Setup.MP3$Editor display mode"
+msgstr "Muokkaustilan näyttömoodi"
+
+#: mp3.c:108
+msgid "Browser"
+msgstr "selain"
+
+#: mp3.c:108
+msgid "Playlists"
+msgstr "soittolistat"
+
+#: mp3.c:108
+msgid "Setup.MP3$Mainmenu mode"
+msgstr "Päävalikon tila"
+
+#: mp3.c:109
+msgid "Setup.MP3$Keep selection menu"
+msgstr "Pidä valintaikkunaa auki"
+
+#: mp3.c:110
+msgid "Normal"
+msgstr "normaalisti"
+
+#: mp3.c:110
+msgid "Reversed"
+msgstr "käännettynä"
+
+#: mp3.c:110
+msgid "Setup.MP3$Title/Artist order"
+msgstr "Näytä kappale ja esittäjä"
+
+#: mp3.c:111 mplayer.c:105
+msgid "Hide mainmenu entry"
+msgstr "Piilota valinta päävalikosta"
+
+#: mp3.c:112
+msgid "Setup.MP3$Normalizer level"
+msgstr "Normalisoinnin taso"
+
+#: mp3.c:113
+msgid "Setup.MP3$Limiter level"
+msgstr "Rajoittimen taso"
+
+#: mp3.c:114
+msgid "Setup.MP3$Use HTTP proxy"
+msgstr "Käytä HTTP-välityspalvelinta"
+
+#: mp3.c:115
+msgid "Setup.MP3$HTTP proxy host"
+msgstr "HTTP-välityspalvelimen osoite"
+
+#: mp3.c:116
+msgid "Setup.MP3$HTTP proxy port"
+msgstr "HTTP-välityspalvelimen portti"
+
+#: mp3.c:118
+msgid "local only"
+msgstr "vain paikallinen"
+
+#: mp3.c:119
+msgid "local&remote"
+msgstr "paikallinen & etä"
+
+#: mp3.c:120
+msgid "Setup.MP3$CDDB for CD-Audio"
+msgstr "CDDB-tietokanta"
+
+#: mp3.c:121
+msgid "Setup.MP3$CDDB server"
+msgstr "CDDB-palvelin"
+
+#: mp3.c:122
+msgid "Setup.MP3$CDDB port"
+msgstr "CDDB-palvelimen portti"
+
+#: mp3.c:921 mp3.c:927
+msgid "ID3 information"
+msgstr "ID3-informaatio"
+
+#: mp3.c:935
+msgid "Filename"
+msgstr "Tiedostonimi"
+
+#: mp3.c:939
+msgid "Length"
+msgstr "Pituus"
+
+#: mp3.c:941
+msgid "Title"
+msgstr "Kappale"
+
+#: mp3.c:942
+msgid "Artist"
+msgstr "Esittäjä"
+
+#: mp3.c:943
+msgid "Album"
+msgstr "Albumi"
+
+#: mp3.c:944
+msgid "Year"
+msgstr "Vuosi"
+
+#: mp3.c:945
+msgid "Samplerate"
+msgstr "Näytteenottotaajuus"
+
+#: mp3.c:946
+msgid "Bitrate"
+msgstr "Bittinopeus"
+
+#: mp3.c:1010
+msgid "Directory browser"
+msgstr "Hakemistoselain"
+
+#: mp3.c:1106
+msgid "Playlist editor"
+msgstr "Soittolistan muokkaus"
+
+#: mp3.c:1122 mp3.c:1215
+msgid "Add"
+msgstr "Lisää"
+
+#: mp3.c:1122
+msgid "Remove"
+msgstr "Poista"
+
+#: mp3.c:1142
+msgid "Add recursivly?"
+msgstr "Lisää rekursiivisesti?"
+
+#: mp3.c:1161
+msgid "Empty directory!"
+msgstr "Hakemisto on tyhjä!"
+
+#: mp3.c:1196
+msgid "Remove entry?"
+msgstr "Poistetaanko merkintä?"
+
+#: mp3.c:1215
+msgid "Add all"
+msgstr "Lisää kaikki"
+
+#: mp3.c:1242
+msgid "Rename playlist"
+msgstr "Nimeä soittolista"
+
+#: mp3.c:1248
+msgid "Old name:"
+msgstr "Vanha nimi"
+
+#: mp3.c:1259
+msgid "New name"
+msgstr "Uusi nimi"
+
+#: mp3.c:1344
+msgid "Browse"
+msgstr "Selaa"
+
+#: mp3.c:1344 mplayer.c:634
+msgid "Source"
+msgstr "Lähde"
+
+#: mp3.c:1347
+msgid "Rename"
+msgstr "Nimeä"
+
+#: mp3.c:1357
+msgid "Scanning playlists..."
+msgstr "Selataan soittolistoja..."
+
+#: mp3.c:1367
+msgid "Error scanning playlists!"
+msgstr "Soittolistojen lukeminen epäonnistui!"
+
+#: mp3.c:1373
+msgid "Delete playlist?"
+msgstr "Poistetaanko soittolista?"
+
+#: mp3.c:1374
+msgid "Are you sure?"
+msgstr "Oletko varma?"
+
+#: mp3.c:1381
+msgid "Error deleting playlist!"
+msgstr "Soittolistan poistaminen epäonnistui!"
+
+#: mp3.c:1393 mp3.c:1394
+msgid "unnamed"
+msgstr "nimetön"
+
+#: mp3.c:1404
+msgid "Error creating playlist!"
+msgstr "Soittolistan luominen epäonnistui!"
+
+#: mp3.c:1425
+msgid "Error renaming playlist!"
+msgstr "Soittolistan uudelleennimeäminen epäonnistui!"
+
+#: mp3.c:1435 mp3.c:1458
+msgid "Error loading playlist!"
+msgstr "Soittolistan avaaminen epäonnistui!"
+
+#: mp3.c:1440
+msgid "Can't edit a WinAmp playlist!"
+msgstr "WinAmp-soittolistaa ei voida muokata!"
+
+#: mp3.c:1448
+msgid "Loading playlist..."
+msgstr "Avataan soittolistaa..."
+
+#: mp3.c:1468
+msgid "MP3 source"
+msgstr "MP3-lähde"
+
+#: mp3.c:1486
+msgid "Play all"
+msgstr "Soita kaikki"
+
+#: mp3.c:1491
+msgid "Building playlist..."
+msgstr "Muodostetaan soittolistaa..."
+
+#: mp3.c:1501
+msgid "Error building playlist!"
+msgstr "Soittolistan muodostaminen epäonnistui!"
+
+#: mp3.c:1541
+msgid "A versatile audio player"
+msgstr "Monipuolinen audiosoitin"
+
+#: mplayer.c:96
+msgid "MPlayer"
+msgstr "MPlayer-mediasoitin"
+
+#: mplayer.c:97
+msgid "Setup.MPlayer$Control mode"
+msgstr "Komentotila"
+
+#: mplayer.c:97
+msgid "Slave"
+msgstr "orja"
+
+#: mplayer.c:97
+msgid "Traditional"
+msgstr "perinteinen"
+
+#: mplayer.c:99
+msgid "Setup.MPlayer$OSD position"
+msgstr "Kuvaruutunäytön sijainti"
+
+#: mplayer.c:102
+msgid "global only"
+msgstr "globaali"
+
+#: mplayer.c:103
+msgid "local first"
+msgstr "paikallinen"
+
+#: mplayer.c:104
+msgid "Setup.MPlayer$Resume mode"
+msgstr "Resume-toiminto"
+
+#: mplayer.c:108
+msgid "Setup.MPlayer$Slave command key"
+msgstr "Orjakomento näppäimelle"
+
+#: mplayer.c:589
+msgid "MPlayer Audio ID"
+msgstr "MPlayerin ääniraidan valinta"
+
+#: mplayer.c:591
+msgid "Audiostream ID"
+msgstr "Ääniraidan ID"
+
+#: mplayer.c:624
+msgid "MPlayer browser"
+msgstr "MPlayer-hakemistoselain"
+
+#: mplayer.c:644
+msgid "MPlayer source"
+msgstr "MPlayer-lähde"
+
+#: mplayer.c:677
+msgid "Summary"
+msgstr ""
+
+#: mplayer.c:732
+msgid "Media replay via MPlayer"
+msgstr "MPlayeriin perustuva mediasoitin"
+
+#: stream.c:395
+msgid "Connecting to stream server ..."
+msgstr "Yhdistetään palvelimeen..."
