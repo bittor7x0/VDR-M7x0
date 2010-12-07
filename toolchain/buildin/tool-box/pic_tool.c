@@ -674,6 +674,8 @@ static int flash_content_valid(uint8_t *buf, int size)
 
 	if (!strcasecmp(systype,"m740")) {
 		return !memcmp(buf + 16,"M740AV",6);
+	} else if (!strcasecmp(systype,"m750t")) {
+		return !memcmp(buf + 16,"M750T_EPG",9);
 	} else if (!strcasecmp(systype,"m750s")) {
 		return !memcmp(buf + 16,"M750AV",6);
 	}
@@ -714,6 +716,9 @@ static void gen_flash_content(uint8_t buf[FLASH_CONTENT_SIZE])
 
 	if (!strcasecmp(systype,"m740")) {
 		memcpy(buf + 16,"M740AV",6);
+		return;
+	} else if (!strcasecmp(systype,"m750t")) {
+		memcpy(buf + 16,"M750T_EPG",9);
 		return;
 	} else if (!strcasecmp(systype,"m750s")) {
 		memcpy(buf + 16,"M750AV",6);
