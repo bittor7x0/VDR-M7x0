@@ -847,14 +847,11 @@ int main(int argc, char **argv)
 			
 	int res=1;
 	if (!strcasecmp(argv[1],"mount")) {
-		int autoboot = 0;
-		if (argc >= 3 && !strcasecmp(argv[2],"alarm"))
-			autoboot = 1;
-		res=do_auto_all(0,autoboot,force_fsck);
+		res=do_auto_all(0,1,force_fsck);
 	}
 	if (!strcasecmp(argv[1],"usb") ||
 			!strcasecmp(argv[1],"remount")) {
-		res=do_auto_all(1,0,force_fsck);
+		res=do_auto_all(1,1,force_fsck);
 	}
 
 	if (!strcasecmp(argv[1],"umount")) {
