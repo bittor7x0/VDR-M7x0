@@ -663,8 +663,7 @@ static void mount_partitions(struct usbmounter_context *cont)
 					(part->tab_entry->mounter_flags & (VOL_UNCLEAN_MOUNTED | VOL_UNCLEAN))) {
 				part->flags |= PART_FS_UNCLEAN;
 			}
-			if ((part->flags & (PART_FS_UNCLEAN | PART_FS_HAS_ERROR |
-					PART_FS_MOUNT_INTERVAL)) && !part->dev_mounted) {
+			if ((part->flags & (PART_FS_UNCLEAN | PART_FS_HAS_ERROR)) && !part->dev_mounted) {
 				handle_fsck_case(cont, part);
 			}
 
@@ -759,6 +758,10 @@ static void umount_partitions(struct usbmounter_context *cont)
 	part = cont->part_list.first;
 	while (part) {
 		struct partition *tmp_part = part->next;
+		if ((part->flags & PART_FS_MOUNT_INTERVAL) && !part->dev_mounted) {
+			handle_fsck_case(cont, part);
+		}
+
 		if ((part->flags & PART_FS_CLEAN_UNKNOWN) &&
 				(part->tab_entry->mounter_flags & VOL_UNCLEAN)) {
 			part->tab_entry->mounter_flags &= ~VOL_UNCLEAN;
