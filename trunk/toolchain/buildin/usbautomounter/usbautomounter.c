@@ -462,7 +462,7 @@ static int read_line_exec(int fd, char **buf, int *size,
 }
 
 static void handle_fsck_case(struct usbmounter_context *cont,
-	struct partition *part)
+	struct partition *part, int force_fsck)
 {
 	int check_ret;
 	char checker_bin[128];
@@ -470,6 +470,9 @@ static void handle_fsck_case(struct usbmounter_context *cont,
 
 	SYSLOG_INFO("Device '%s' is unclean needs checking",
 			part->devname);
+
+	if(force_fsck<0)
+		return;
 
 	snprintf(checker_bin, 128, "/sbin/fsck.%s",part->fstypename);
 	checker_bin[127] = 0;
@@ -480,7 +483,12 @@ static void handle_fsck_case(struct usbmounter_context *cont,
 		if (cont->conf.action_fsck)
 			EXEC_SIMPLE(cont->conf.action_fsck, 3, part->devname,
 				part->mountpoint, "start");
-		EXEC_SIMPLE_RET(check_ret,checker_bin, 2, "-y", part->devname);
+
+		if (force_fsck && !strncasecmp(part->fstypename,"ext",3))
+			EXEC_SIMPLE_RET(check_ret,checker_bin, 2, "-yf", part->devname);
+		else
+			EXEC_SIMPLE_RET(check_ret,checker_bin, 2, "-y", part->devname);
+
 		if (cont->conf.action_fsck)
 			EXEC_SIMPLE(cont->conf.action_fsck, 3, part->devname,
 				part->mountpoint, "stop");
@@ -526,8 +534,14 @@ static void handle_fsck_case(struct usbmounter_context *cont,
 			close(progress_pipe[1]);
 			goto out;
 		}
-		exec_cmd(&wpipefd, &rpipefd, progress_pipe[1], &cpid, checker_bin, 4,
-			"-y", "-C", tmp, part->devname);
+
+		if (force_fsck && !strncasecmp(part->fstypename,"ext",3))
+			exec_cmd(&wpipefd, &rpipefd, progress_pipe[1], &cpid, checker_bin, 4,
+				"-yf", "-C", tmp, part->devname);
+		else
+			exec_cmd(&wpipefd, &rpipefd, progress_pipe[1], &cpid, checker_bin, 4,
+				"-y", "-C", tmp, part->devname);
+
 		close(wpipefd);
 		close(progress_pipe[1]);
 
@@ -629,7 +643,7 @@ out:
 	}
 }
 
-static void mount_partitions(struct usbmounter_context *cont)
+static void mount_partitions(struct usbmounter_context *cont, int force_fsck)
 {
 	struct partition *part;
 	struct mounted *cur_mnt;
@@ -663,8 +677,8 @@ static void mount_partitions(struct usbmounter_context *cont)
 					(part->tab_entry->mounter_flags & (VOL_UNCLEAN_MOUNTED | VOL_UNCLEAN))) {
 				part->flags |= PART_FS_UNCLEAN;
 			}
-			if ((part->flags & (PART_FS_UNCLEAN | PART_FS_HAS_ERROR)) && !part->dev_mounted) {
-				handle_fsck_case(cont, part);
+			if ((force_fsck>0) || ((part->flags & (PART_FS_UNCLEAN | PART_FS_HAS_ERROR)) && !part->dev_mounted)) {
+				handle_fsck_case(cont, part, force_fsck);
 			}
 
 			if (part->flags & (PART_FS_UNCLEAN | PART_FS_HAS_ERROR)) {
@@ -708,7 +722,7 @@ static void mount_partitions(struct usbmounter_context *cont)
 	}
 }
 
-static int do_auto_all(int ashotplug, int autoboot)
+static int do_auto_all(int ashotplug, int autoboot, int force_fsck)
 {
 	struct usbmounter_context context;
 	openlog("usbautomounter", LOG_PID | LOG_CONS, LOG_DAEMON);
@@ -720,7 +734,7 @@ static int do_auto_all(int ashotplug, int autoboot)
 	umount_lost_volumes(&context);
 	check_dup_mountpoints(&context);
 	setup_mount_order(&context);
-	mount_partitions(&context);
+	mount_partitions(&context, force_fsck);
 	write_mount_table(&context.conf, context.table_file, &context.table);
 	close_mount_table_file(context.table_file);
 	free_config(&context.conf);
@@ -730,7 +744,7 @@ static int do_auto_all(int ashotplug, int autoboot)
 	return 0;
 }
 
-static void umount_partitions(struct usbmounter_context *cont)
+static void umount_partitions(struct usbmounter_context *cont, int force_fsck)
 {
 	struct partition *part;
 	struct mounted *cur_mnt;
@@ -758,8 +772,8 @@ static void umount_partitions(struct usbmounter_context *cont)
 	part = cont->part_list.first;
 	while (part) {
 		struct partition *tmp_part = part->next;
-		if ((part->flags & PART_FS_MOUNT_INTERVAL) && !part->dev_mounted) {
-			handle_fsck_case(cont, part);
+		if ((force_fsck>0) || ((part->flags & PART_FS_MOUNT_INTERVAL) && !part->dev_mounted)) {
+			handle_fsck_case(cont, part, force_fsck);
 		}
 
 		if ((part->flags & PART_FS_CLEAN_UNKNOWN) &&
@@ -772,7 +786,7 @@ static void umount_partitions(struct usbmounter_context *cont)
 		part = tmp_part;
 	}
 }
-static int do_auto_umount_mounted(void)
+static int do_auto_umount_mounted(int force_fsck)
 {
 	struct usbmounter_context context;
 	openlog("usbautomounter", LOG_PID | LOG_CONS, LOG_DAEMON);
@@ -780,7 +794,7 @@ static int do_auto_umount_mounted(void)
 	get_context(&context);
 	check_devs_mounted(&context);
 	umount_lost_volumes(&context);
-	umount_partitions(&context);
+	umount_partitions(&context, force_fsck);
 	write_mount_table(&context.conf, context.table_file, &context.table);
 	close_mount_table_file(context.table_file);
 	free_config(&context.conf);
@@ -791,10 +805,11 @@ static int do_auto_umount_mounted(void)
 
 static void print_usage() {
 	fprintf(stderr, "usbautomounter " USB_MOUNTER_VERSION_STR "\n\n");
-	fprintf(stderr, "usbautomounter <command>\n");
+	fprintf(stderr, "usbautomounter <command> [fsck|nofsck]\n");
 	fprintf(stderr, "\t<command> := usb | mount | remount | umount\n");
 	fprintf(stderr, "\tusb | mount | remount\tmounts/remounts all usb storage devices\n");
-	fprintf(stderr, "\tumount\tumounts all mounted usb storage devices\n");
+	fprintf(stderr, "\tumount\t\tumounts all mounted usb storage devices\n");
+	fprintf(stderr, "\tfsck|nofsck\toptional, force or disable filesystems check\n");
 }
 
 int main(int argc, char **argv)
@@ -804,19 +819,29 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	int force_fsck = 0;
+	int f;
+	for(f=2;f<argc;f++)
+	{
+		if(!strcasecmp(argv[f],"fsck"))
+			force_fsck=1;
+		else if(!strcasecmp(argv[f],"nofsck"))
+			force_fsck=-1;
+	}
+
 	if (!strcasecmp(argv[1],"mount")) {
 		int autoboot = 0;
 		if (argc >= 3 && !strcasecmp(argv[2],"alarm"))
 			autoboot = 1;
-		return do_auto_all(0,autoboot);
+		return do_auto_all(0,autoboot,force_fsck);
 	}
 	if (!strcasecmp(argv[1],"usb") ||
 			!strcasecmp(argv[1],"remount")) {
-		return do_auto_all(1,0);
+		return do_auto_all(1,0,force_fsck);
 	}
 
 	if (!strcasecmp(argv[1],"umount")) {
-		return do_auto_umount_mounted();
+		return do_auto_umount_mounted(force_fsck);
 	}
 	return 1;
 }
