@@ -259,6 +259,7 @@ int do_mount(char *mnt_prefix, char *dev, char *mnt_point, char *type,
 
 	flags = parse_mount_opts(mnt_flags, default_flags);
 
+	SYSLOG_INFO("mounting '%s' on '%s'",dev,mnt_point);
 	if (mount(dev, mnt_point, type, flags, NULL)) {
 		SYSLOG_ERR("Cannot mount '%s' to '%s'", dev, mnt_point);
 		rm_all_dirs_prefixed(mnt_prefix, mnt_point);
@@ -268,9 +269,10 @@ int do_mount(char *mnt_prefix, char *dev, char *mnt_point, char *type,
 	return 0;
 }
 
-int do_umount(char *mnt_prefix, struct mounted *mounted)
+int do_umount(char *mnt_prefix, struct mounted *mounted, int lazy)
 {
 	int r;
+	SYSLOG_INFO("unmounting '%s' on '%s'",mounted->dev,mounted->mountpoint);
 	if ((r = umount2(mounted->mountpoint, 0))) {
 		if (errno != EBUSY) {
 			SYSLOG_ERR("Cannot umount '%s' on '%s'", mounted->dev,
@@ -279,6 +281,8 @@ int do_umount(char *mnt_prefix, struct mounted *mounted)
 		}
 		SYSLOG_WARN("Mount point '%s' on '%s' busy try lazy umount.",
 				mounted->dev, mounted->mountpoint);
+		if(!lazy)
+			return r;
 		r = umount2(mounted->mountpoint, MNT_DETACH);
 		if (r && errno != EBUSY) {
 			SYSLOG_ERR("Lazy umount '%s' on '%s' failed", mounted->dev,
@@ -291,23 +295,23 @@ int do_umount(char *mnt_prefix, struct mounted *mounted)
 	return 0;
 }
 
-void do_umount_all(char *mnt_prefix, struct mounted_list *mounts)
+int do_umount_all(char *mnt_prefix, struct mounted_list *mounts, int lazy)
 {
 	struct mounted *cur_mnt;
 	cur_mnt = mounts->last; /* Umount in reverse order */
+	int res=0;
 	while (cur_mnt) {
-		do_umount(mnt_prefix, cur_mnt);
-		mounts->last = cur_mnt->prev;
-		if (mounts->last) {
-			mounts->last->next =  NULL;
-		} else {
-			mounts->first = NULL;
+		if(do_umount(mnt_prefix,cur_mnt,lazy))
+		{
+			cur_mnt=cur_mnt->prev;
+			res++;
+			continue;
 		}
-		free(cur_mnt->dev);
-		free(cur_mnt->mountpoint);
-		free(cur_mnt);
-		cur_mnt = mounts->last;
+		struct mounted *prev=cur_mnt->prev;
+		delete_mounted(mounts,cur_mnt);
+		cur_mnt=prev;
 	}
+	return res;
 }
 
 struct mounted *get_mounted_by(struct mounted_list *mounts,

@@ -45,7 +45,7 @@ struct mounted *get_mounted_by(struct mounted_list *mounts,
 		const char *dev, const char *mountpoint);
 int do_mount(char *mnt_prefix, char *dev, char *mnt_point, char *type,
 		const char *mnt_flags, int default_flags);
-int do_umount(char *mnt_prefix, struct mounted *mounted);
-void do_umount_all(char *mnt_prefix, struct mounted_list *mounts);
+int do_umount(char *mnt_prefix, struct mounted *mounted, int lazy);
+int do_umount_all(char *mnt_prefix, struct mounted_list *mounts, int lazy);
 void delete_mounted(struct mounted_list *mounts, struct mounted *mounted);
 #endif

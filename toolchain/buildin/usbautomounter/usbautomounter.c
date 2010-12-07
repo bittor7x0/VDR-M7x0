@@ -37,6 +37,7 @@
 #include "config.h"
 #include "display.h"
 
+int useSVDRP=0;
 struct usbmounter_context {
 	int ashotplug;
 	int autoboot;
@@ -202,7 +203,7 @@ static void umount_lost_volumes(struct usbmounter_context *cont)
 			EXEC_SIMPLE(cont->conf.action_volume_lost, 2, cur_mounted->dev,
 					cur_mounted->mountpoint);
 
-		do_umount(cont->conf.mount_prefix, cur_mounted);
+		do_umount(cont->conf.mount_prefix, cur_mounted, 1);
 
 		tmp = cur_mounted->prev;
 		delete_mounted(&cont->mounted_list, cur_mounted);
@@ -476,7 +477,7 @@ static void handle_fsck_case(struct usbmounter_context *cont,
 
 	snprintf(checker_bin, 128, "/sbin/fsck.%s",part->fstypename);
 	checker_bin[127] = 0;
-	if (cont->ashotplug) {
+	if((cont->ashotplug)&&((useSVDRP<=0)||(!cont->conf.fsck_as_hotplug))){
 		if (!cont->conf.fsck_as_hotplug)
 			return;
 
@@ -621,7 +622,7 @@ static void handle_fsck_case(struct usbmounter_context *cont,
 
 out:
 	if (check_ret >= 0 && check_ret < 4) {
-		if (!cont->ashotplug) {
+		if((!cont->ashotplug)||(useSVDRP>0)){
 			display_msg(tr("Check successful"));
 			sleep(2);
 		}
@@ -636,7 +637,7 @@ out:
 	} else {
 		SYSLOG_INFO("Device '%s' remains unclean after fsck",
 			part->devname);
-		if (!cont->ashotplug) {
+		if((!cont->ashotplug)||(useSVDRP>0)){
 			display_msg(tr("Check failed"));
 			sleep(2);
 		}
@@ -667,7 +668,7 @@ static void mount_partitions(struct usbmounter_context *cont, int force_fsck)
 		cur_mnt = tmp_mnt;
 	}
 
-	do_umount_all(cont->conf.mount_prefix, &cont->mounted_list);
+	do_umount_all(cont->conf.mount_prefix, &cont->mounted_list, 1);
 
 	part = cont->part_list.first;
 	while (part) {
@@ -744,7 +745,7 @@ static int do_auto_all(int ashotplug, int autoboot, int force_fsck)
 	return 0;
 }
 
-static void umount_partitions(struct usbmounter_context *cont, int force_fsck)
+static int umount_partitions(struct usbmounter_context *cont, int force_fsck ,int lazy)
 {
 	struct partition *part;
 	struct mounted *cur_mnt;
@@ -767,7 +768,7 @@ static void umount_partitions(struct usbmounter_context *cont, int force_fsck)
 		cur_mnt = tmp_mnt;
 	}
 
-	do_umount_all(cont->conf.mount_prefix, &cont->mounted_list);
+	int res=do_umount_all(cont->conf.mount_prefix, &cont->mounted_list, lazy);
 
 	part = cont->part_list.first;
 	while (part) {
@@ -785,8 +786,9 @@ static void umount_partitions(struct usbmounter_context *cont, int force_fsck)
 		delete_partition(&cont->part_list, part);
 		part = tmp_part;
 	}
+	return res;
 }
-static int do_auto_umount_mounted(int force_fsck)
+static int do_auto_umount_mounted(int force_fsck, int lazy)
 {
 	struct usbmounter_context context;
 	openlog("usbautomounter", LOG_PID | LOG_CONS, LOG_DAEMON);
@@ -794,22 +796,24 @@ static int do_auto_umount_mounted(int force_fsck)
 	get_context(&context);
 	check_devs_mounted(&context);
 	umount_lost_volumes(&context);
-	umount_partitions(&context, force_fsck);
+	int res=umount_partitions(&context, force_fsck, lazy);
 	write_mount_table(&context.conf, context.table_file, &context.table);
 	close_mount_table_file(context.table_file);
 	free_config(&context.conf);
 	SYSLOG_INFO("usb auto mounter finished");
 	closelog();
-	return 0;
+	return res;
 }
 
 static void print_usage() {
 	fprintf(stderr, "usbautomounter " USB_MOUNTER_VERSION_STR "\n\n");
-	fprintf(stderr, "usbautomounter <command> [fsck|nofsck]\n");
+	fprintf(stderr, "usbautomounter <command> [fsck|nofsck] [nolazy] [SVDRP|noSVDRP]\n");
 	fprintf(stderr, "\t<command> := usb | mount | remount | umount\n");
 	fprintf(stderr, "\tusb | mount | remount\tmounts/remounts all usb storage devices\n");
 	fprintf(stderr, "\tumount\t\tumounts all mounted usb storage devices\n");
 	fprintf(stderr, "\tfsck|nofsck\toptional, force or disable filesystems check\n");
+	fprintf(stderr, "\tnolazy\t\toptional, not unmount busy devices\n");
+	fprintf(stderr, "\tSVDRP|noSVDRP\toptional, use or disable SVDRP\n");
 }
 
 int main(int argc, char **argv)
@@ -819,6 +823,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	int lazy=1;
 	int force_fsck = 0;
 	int f;
 	for(f=2;f<argc;f++)
@@ -827,6 +832,12 @@ int main(int argc, char **argv)
 			force_fsck=1;
 		else if(!strcasecmp(argv[f],"nofsck"))
 			force_fsck=-1;
+		else if(!strcasecmp(argv[f],"nolazy"))
+			lazy=0;
+		else if(!strcasecmp(argv[f],"SVDRP"))
+			useSVDRP=1;
+		else if(!strcasecmp(argv[f],"noSVDRP"))
+			useSVDRP=-1;
 	}
 
 	if (!strcasecmp(argv[1],"mount")) {
@@ -841,7 +852,7 @@ int main(int argc, char **argv)
 	}
 
 	if (!strcasecmp(argv[1],"umount")) {
-		return do_auto_umount_mounted(force_fsck);
+		return do_auto_umount_mounted(force_fsck,lazy);
 	}
 	return 1;
 }

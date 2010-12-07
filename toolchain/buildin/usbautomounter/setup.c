@@ -296,6 +296,7 @@ void free_config(struct usbautomounter_config *conf)
 	free(conf->action_volume_lost);
 }
 
+extern int useSVDRP;
 int read_config_file(struct usbautomounter_config *conf)
 {
 	FILE *conf_file;
@@ -343,6 +344,12 @@ int read_config_file(struct usbautomounter_config *conf)
 		} else if (!strcasecmp(key, "FsckAsHotplug")) {
 			conf->fsck_as_hotplug = atoi(value);
          free(value);
+		}
+		else if(!strcasecmp(key,"SVDRP"))
+		{
+			if(useSVDRP==0)
+				useSVDRP=atoi(value);
+			free(value);
 		} else {
 			SYSLOG_WARN("Unknown config file Entry '%s = %s'", key, value);
 			free(value);
