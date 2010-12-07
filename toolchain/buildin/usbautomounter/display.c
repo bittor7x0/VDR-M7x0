@@ -112,7 +112,7 @@ static const i18n_text_t mounter_texts[] = {
 		"",
 		"",
 		"",
-		"Disco %s demasiado tiempo sin comprobar",
+		"Mucho tiempo sin comprobar disco %s",
 		"",
 		"",
 		"",
