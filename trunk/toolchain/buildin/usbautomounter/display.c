@@ -25,6 +25,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <errno.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <string.h>
+#include <unistd.h>
 #include "display.h"
 #include "tools.h"
 
@@ -35,6 +41,11 @@
 #define BAR_WIDTH (OSD_WIDTH - (2 * (OSD_HKEEPOUT + 20)))
 #define BAR_HEIGHT 30
 #define BAR_XPOS ((OSD_WIDTH - BAR_WIDTH) / 2)
+#define SVDRADDRESS "localhost"
+#define SVDRPORT 2001
+#define SVDRPBarStep 10
+#define SVDRPBarMinTime 30
+#define SVDRPBarMaxTime 60
 
 /* Texts for flasher */
 static const i18n_text_t mounter_texts[] = {
@@ -177,6 +188,9 @@ static struct {
 	int init;
 	struct osd_progress_bar bar;
 } display_ctx;
+extern int useSVDRP;
+int SendSVDRPMessage(const char* Message);
+void CloseSVDRP();
 
 static void get_vdr_config(void)
 {
@@ -256,6 +270,15 @@ static void get_vdr_config(void)
 
 int display_init(int autoboot)
 {
+	if(useSVDRP>0)
+	{
+		get_vdr_config();
+		i18n_init(-1);
+		if(i18n_register(mounter_texts))
+			SYSLOG_ERR("Cannot init translation");
+		SendSVDRPMessage(tr("Filesystem Check"));
+		return 0;
+	}
 	int text_height;
 	int y;
 
@@ -321,12 +344,36 @@ int display_init(int autoboot)
 
 void display_deinit(void)
 {
+	if(useSVDRP>0)
+	{
+		CloseSVDRP();		
+		i18n_deinit();
+		return;
+	}
 	if (display_ctx.init)
 		libosd_deinit(display_ctx.autoboot,1);
 }
 
+#define MAXBUF 512
+int LastBar=0;
+int LastBarTime=0;
 int display_update_bar(int value)
 {
+	if(useSVDRP>0)
+	{
+		time_t Now=time(NULL);
+		if(Now-LastBarTime<SVDRPBarMinTime)
+			return;
+		if((value>LastBar)&&(value-LastBar<SVDRPBarStep)&&(Now-LastBarTime<SVDRPBarMaxTime))
+			return;
+		LastBar=(value/SVDRPBarStep)*SVDRPBarStep;
+		LastBarTime=Now;
+		char Buffer[MAXBUF];
+		snprintf(Buffer,MAXBUF,"%s (%d%%)",tr("Filesystem Check"),LastBar);
+		Buffer[MAXBUF-1]=0;
+		SendSVDRPMessage(Buffer);
+		return;
+	}
 	int r;
 	r = osd_progress_update(&display_ctx.bar, 1, value);
 	osd_flush();
@@ -335,10 +382,112 @@ int display_update_bar(int value)
 
 void display_msg(const char *txt)
 {
+	if(useSVDRP>0)
+	{
+		LastBarTime=0;
+		SendSVDRPMessage(txt);
+		return;
+	}
 	int text_height;
 	text_height = font_get_line_height();
 	osd_draw_text_line(0, display_ctx.y_msg, OSD_WIDTH , text_height, txt,
 		COLOR_INDEX_BACKGROUND, display_ctx.text_color,
 		TEXT_ALIGN_CENTER | TEXT_ALIGN_TOP);
 	osd_flush();
+}
+
+int sd=-1;
+int RecvSVDRP()
+{
+	if(sd==-1)
+		return 0;
+	char buf1[MAXBUF];
+	struct timeval tv;
+	fd_set rfds;
+	FD_ZERO(&rfds);
+	FD_SET(sd,&rfds);
+	while(1)
+	{
+		tv.tv_sec=1;
+		tv.tv_usec=0;
+		if(select(sd+1,&rfds,NULL,NULL,&tv)<1)
+		{
+			close(sd);
+			sd=-1;
+			return 0;
+		}
+		int Received=recv(sd,buf1,MAXBUF,0);
+		if(Received<1)
+		{
+			close(sd);
+			sd=-1;
+			return 0;
+		}
+		int f;		
+		for(f=0;f<Received;f++)
+			if(buf1[f]=='\n')
+				return 1;
+	}     
+	return 0;
+}
+int OpenSVDRP()
+{
+	if(sd!=-1)
+		return 1;
+	struct hostent *hostaddr=gethostbyname(SVDRADDRESS);
+	if(!hostaddr)
+		return 0;
+
+	sd=socket(PF_INET,SOCK_STREAM,6);
+	if(sd==-1)
+		return 0;
+
+	struct sockaddr_in socketaddr;
+	memset(&socketaddr,0,sizeof(socketaddr));
+	socketaddr.sin_family=AF_INET;
+	socketaddr.sin_port=htons(SVDRPORT);
+
+	memcpy(&socketaddr.sin_addr,hostaddr->h_addr,hostaddr->h_length);
+
+	if(connect(sd,(struct sockaddr *)&socketaddr,sizeof(socketaddr))==-1)
+	{
+		close(sd);
+		sd=-1;
+		return 0;
+	}
+	return 1;
+}
+int SendSVDRP(const char *msg)
+{
+	if(!OpenSVDRP())
+		return 0;
+	if(send(sd,msg,strlen(msg),0)!=strlen(msg))
+	{
+		close(sd);
+		sd=-1;
+		return 0;	
+	}
+	return 1;
+}
+void CloseSVDRP()
+{
+	if(sd==-1)
+		return;
+	if(!SendSVDRP("QUIT\n\r"))
+		return;
+	if(!RecvSVDRP())
+		return;
+	close(sd);
+	sd=-1;
+}
+int SendSVDRPMessage(const char* Message)
+{
+	char Buffer[MAXBUF];
+	snprintf(Buffer,MAXBUF,"MESG %s\n\r",Message);
+	Buffer[MAXBUF-1]=0;
+	if(!SendSVDRP(Buffer))
+		return 0;
+	if(RecvSVDRP())
+		CloseSVDRP();
+	return 1;
 }
