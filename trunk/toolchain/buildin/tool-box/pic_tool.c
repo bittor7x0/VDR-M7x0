@@ -56,6 +56,11 @@ struct flash_conf {
 	uint8_t *buf;
 };
 
+enum boot_counter_set_mode {
+  boot_counter_reset,
+  boot_counter_set_max
+};
+
 static int do_pic_ioctl(int cmd, struct pic_ioctl_arg *arg, int retrys)
 {
 	int fd;
@@ -535,7 +540,7 @@ static int pic_set_reboot(int retrys, int halt_sec, int reboot_sec, int wait)
 	return 1;
 }
 
-static int reset_boot_counter(void)
+static int set_boot_counter(enum boot_counter_set_mode set_mode)
 {
 	struct flash_conf conf;
 	uint8_t buf[16];
@@ -568,17 +573,39 @@ static int reset_boot_counter(void)
 		return -1;
 	}
 
-	if (!i) {
+	switch (set_mode) {
+	
+	case boot_counter_reset:
+	  if (!i) {
 		INFO_LOG("Boot counter is 0 no need to reset");
 		close_mtd(&conf);
 		return 0;
-	}
+	  }
 
-	INFO_LOG("Boot count is %d", i>>1);
+	  INFO_LOG("Boot count is %d", i>>1);
 
-	i = erase_mtd_sector(&conf, BOOTCOUNTSECTOR);
-	close_mtd(&conf);
-	return i;
+	  i = erase_mtd_sector(&conf, BOOTCOUNTSECTOR);
+	  close_mtd(&conf);
+	  return i;
+	  break;
+
+        case boot_counter_set_max:
+	  memset(buf, 0, 16);
+	  if (lseek(conf.fd_char, BOOTCOUNTSECTOR * SECTORSIZE, SEEK_SET) !=
+	      BOOTCOUNTSECTOR * SECTORSIZE) {
+	    ERROR_LOG("Cannot seek to boot counter");
+	    close_mtd(&conf);
+	    return -1;
+	  }
+	  if (write(conf.fd_char, buf, 16) != 16) {
+	    ERROR_LOG("Cannot write boot counter");
+	    close_mtd(&conf);
+	    return -1;
+	  }
+	  close_mtd(&conf);
+	  return 1;
+        }
+        
 }
 
 /* MAC commands */
@@ -1138,7 +1165,10 @@ static int parse_args(int argc, char **argv)
 			test_write_mtd();
 			argsu++;
 		} else if (!strcasecmp(argv[argsu],"reset-boot")) {
-			reset_boot_counter();
+			set_boot_counter(boot_counter_reset);
+			argsu++;
+		} else if (!strcasecmp(argv[argsu],"set-boot-max")) {
+			set_boot_counter(boot_counter_set_max);
 			argsu++;
 		} else if (!strcasecmp(argv[argsu],"start-mode")) {
 			enum pic_start_mode start_mode;
@@ -1190,6 +1220,7 @@ static void print_usage(void)
 		"\tled get-dim\t\t\t\t\tget dim led\n\n"
 		"\treboot <n> <m> [wait]\t\t\t\tshutdown in <n> s reboot in <m> s\n\n"
 		"\treset-boot\t\t\t\t\treset boot counter\n\n"
+		"\tset-boot-max\t\t\t\t\tset boot counter to maximum value\n\n"
 		"\tshutdown <n> [wait]\t\t\t\tshutdown in <n> s\n\n"
 		"\tstart-mode\t\t\t\t\tget start mode\n\n"
 		"\ttime get\t\t\t\t\tget time\n"
