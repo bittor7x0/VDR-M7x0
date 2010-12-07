@@ -88,7 +88,7 @@ static void setup_part_asso(struct usbmounter_context *cont) {
 	}
 }
 
-static void get_context(struct usbmounter_context *cont)
+static void get_context(struct usbmounter_context *cont,int mounting)
 {
 	int scsi_usb_devs_count;
 	char **scsi_usb_devs;
@@ -114,7 +114,7 @@ static void get_context(struct usbmounter_context *cont)
 		free(scsi_usb_devs[i]);
 	}
 	free(scsi_usb_devs);
-	read_all_fs_ids(&cont->part_list);
+	read_all_fs_ids(&cont->part_list,mounting);
 	setup_part_asso(cont);
 }
 
@@ -728,7 +728,7 @@ static int do_auto_all(int ashotplug, int autoboot, int force_fsck)
 	struct usbmounter_context context;
 	openlog("usbautomounter", LOG_PID | LOG_CONS, LOG_DAEMON);
 	SYSLOG_INFO("usb auto mounter started in auto mode");
-	get_context(&context);
+	get_context(&context,1);
 	context.ashotplug = ashotplug;
 	context.autoboot = autoboot;
 	check_devs_mounted(&context);
@@ -793,7 +793,7 @@ static int do_auto_umount_mounted(int force_fsck, int lazy)
 	struct usbmounter_context context;
 	openlog("usbautomounter", LOG_PID | LOG_CONS, LOG_DAEMON);
 	SYSLOG_INFO("usb auto mounter started in umount mode");
-	get_context(&context);
+	get_context(&context,0);
 	check_devs_mounted(&context);
 	umount_lost_volumes(&context);
 	int res=umount_partitions(&context, force_fsck, lazy);
