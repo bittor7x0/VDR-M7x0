@@ -348,6 +348,7 @@ static int pic_set_time(int retrys, int new_time)
 	return -1;
 }
 
+static int pic_get_start(int retrys, enum pic_start_mode *start_mode);
 static int pic_time_to_sys(int retrys)
 {
 	struct timeval tv;
@@ -356,7 +357,17 @@ static int pic_time_to_sys(int retrys)
 
 	r = pic_get_time(retrys, &pic_time);
 	if (r < 0)
-		return r;
+		pic_time=0;
+	enum pic_start_mode start_mode;
+	if(pic_get_start(retrys,&start_mode))
+		start_mode=pstm_powerfail;
+	if((!pic_time)||(start_mode==pstm_powerfail))
+	{
+		struct stat fs;
+		if(!stat(TOUCH_FILE,&fs))
+			if(fs.st_mtime>pic_time)
+				pic_time=fs.st_mtime;
+	}
 
 	tv.tv_sec = pic_time;
 	tv.tv_usec = 0;
@@ -369,6 +380,7 @@ static int pic_time_to_sys(int retrys)
 
 static int sys_time_to_pic(int retrys)
 {
+	utime(TOUCH_FILE,NULL);
 	int now;
 	now = time(NULL);
 	if (now < 0) {

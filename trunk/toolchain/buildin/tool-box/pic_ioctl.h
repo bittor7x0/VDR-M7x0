@@ -68,4 +68,6 @@ enum pic_start_mode {
 #define PIC_IOCTL_GET_VOLTAGE 0xe
 #define PIC_IOCTL_SET_WD 0xf
 #define PIC_IOCTL_GET_CHIP_NR 0x100
+
+#define TOUCH_FILE "/etc/fw-version"
 #endif
