@@ -42,6 +42,8 @@ const struct fs_id_reader fs_id_readers[FS_ID_READER_COUNT] = {
 
 static int read_fs_id(struct partition *part)
 {
+	if(part->type==130) /*usbautomaounter don't touch swap partitions*/
+		return 1;
 	int i;
 	int r;
 
