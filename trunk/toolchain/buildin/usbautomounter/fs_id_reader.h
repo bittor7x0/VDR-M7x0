@@ -26,5 +26,5 @@
 
 #include "partitions_reader.h"
 
-void read_all_fs_ids(struct partition_list *parts);
+void read_all_fs_ids(struct partition_list *parts,int mounting);
 #endif

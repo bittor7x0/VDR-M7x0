@@ -28,6 +28,7 @@
 #include "fs_id_fat_reader.h"
 #include "fs_id_ext2_3_reader.h"
 #include "tools.h"
+#include "sys/swap.h"
 
 struct fs_id_reader {
 	const uint8_t *partition_types;
@@ -40,10 +41,23 @@ const struct fs_id_reader fs_id_readers[FS_ID_READER_COUNT] = {
 	{ fs_id_ext2_3_types,	fs_id_ext2_3_reader	}
 };
 
-static int read_fs_id(struct partition *part)
+static int read_fs_id(struct partition *part,int mounting)
 {
-	if(part->type==130) /*usbautomaounter don't touch swap partitions*/
+	if(part->type==130) 
+	{
+		if(mounting)
+		{
+			char *Action=getenv("ACTION");
+			if(Action)
+				if(strcmp(Action,"add"))		
+					return 1;
+			if(!swapon(part->devname,0))
+				SYSLOG_INFO("swapon %s",part->devname);
+			else if(errno!=EBUSY)
+				SYSLOG_ERR("swapon %s error number %d",part->devname,errno);
+		}
 		return 1;
+	}
 	int i;
 	int r;
 
@@ -70,7 +84,7 @@ static int read_fs_id(struct partition *part)
 	return 1;
 }
 
-void read_all_fs_ids(struct partition_list *parts)
+void read_all_fs_ids(struct partition_list *parts,int mounting)
 {
 	struct partition *part;
 	part = parts->first;
@@ -78,7 +92,7 @@ void read_all_fs_ids(struct partition_list *parts)
 	while (part) {
 		struct partition *part_cur = part;
 		part = part->next;
-		if (read_fs_id(part_cur)) {
+		if (read_fs_id(part_cur,mounting)) {
 			delete_partition(parts, part_cur);
 		} else if (part_cur->label) {
 			tmp = part_cur->label;
