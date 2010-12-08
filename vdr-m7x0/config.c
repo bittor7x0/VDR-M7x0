@@ -286,6 +286,7 @@ cSetup::cSetup(void)
   CurrentChannel = -1;
   CurrentVolume = MAXVOLUME;
   CurrentDolby = 0;
+  ChannelFilter = 0;
   InitialChannel = 0;
   InitialVolume = -1;
   ShowRecDate = 1;
@@ -469,6 +470,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "CurrentChannel"))      CurrentChannel     = atoi(Value);
   else if (!strcasecmp(Name, "CurrentVolume"))       CurrentVolume      = atoi(Value);
   else if (!strcasecmp(Name, "CurrentDolby"))        CurrentDolby       = atoi(Value);
+  else if (!strcasecmp(Name, "ChannelFilter"))       ChannelFilter      = atoi(Value);
   else if (!strcasecmp(Name, "InitialChannel"))      InitialChannel     = atoi(Value);
   else if (!strcasecmp(Name, "InitialVolume"))       InitialVolume      = atoi(Value);
   else if (!strcasecmp(Name, "ShowRecDate"))         ShowRecDate        = atoi(Value);
@@ -559,6 +561,7 @@ bool cSetup::Save(void)
   Store("CurrentChannel",     CurrentChannel);
   Store("CurrentVolume",      CurrentVolume);
   Store("CurrentDolby",       CurrentDolby);
+  Store("ChannelFilter",      ChannelFilter);
   Store("InitialChannel",     InitialChannel);
   Store("InitialVolume",      InitialVolume);
   Store("ShowRecDate",        ShowRecDate);

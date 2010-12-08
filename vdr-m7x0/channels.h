@@ -216,6 +216,7 @@ public:
   void SetCaDescriptors(int Level);
   void SetLinkChannels(cLinkChannels *LinkChannels);
   void SetRefChannel(cChannel *RefChannel);
+  bool Filtered(void);
   };
 
 class cChannels : public cRwLock, public cConfig<cChannel> {
