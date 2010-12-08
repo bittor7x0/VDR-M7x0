@@ -6588,6 +6588,358 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
   },
+  { "Rename recording",
+    "Aufzeichnung umbenennen",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Renommer l'enregistrement",
+    "",//TODO
+    "Nimeä tallenne",
+    "",//TODO
+    "Renombrar grabación",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "¿ÕàÕØÜÕÝÞÒÐâì ×ÐßØáì",
+    "",//TODO
+    "Ümbernimetamine",
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.OSD$Main menu command position",
+    "Befehle Position im Hauptmenü",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Position des commandes dans le menu",
+    "",//TODO
+    "Komentojen sijainti päävalikossa",
+    "",//TODO
+    "Posición comandos menú principal",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "ÀÐ×ÜÕéÕÝØÕ ÚÞÜÐÝÔ Ò ÓÛÐÒÝÞÜ ÜÕÝî",
+    "",//TODO
+    "Käsu asukoht peamenüüs",
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Show progress bar",
+    "Zeitbalken anzeigen",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Montrer la barre de progression",
+    "",//TODO
+    "Näytä aikajana",
+    "",//TODO
+    "Mostrar barra de progreso",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Edenemisriba",
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.Recording$Show date",
+    "Aufnahmedatum anzeigen",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Montrer la date d'enregistrement",
+    "",//TODO
+    "Näytä tallenteen päiväys",
+    "",//TODO
+    "Mostrar fecha de la grabación",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "¿ÞÚÐ×ëÒÐâì ÔÐâã",
+    "",//TODO
+    "Salvestuse kuupäev",
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.Recording$Show time",
+    "AufnahmeZeit anzeigen",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Montrer l'heure d'enregistrement",
+    "",//TODO
+    "Näytä tallenteen ajankohta",
+    "",//TODO
+    "Mostrar hora de la grabación",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "¿ÞÚÐ×ëÒÐâì ÒàÕÜï ×ÐßØáØ",
+    "",//TODO
+    "Salvestuse kellaaeg",
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.Recording$Show length",
+    "Länge der Aufnahme anzeigen",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Monter la longueur de l'enregistrement",
+    "",//TODO
+    "Näytä tallenteen kesto",
+    "",//TODO
+    "Mostrar duración de la grabación",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "¿ÞÚÐ×ëÒÐâì ßàÞÔÞÛÖØâÕÛìÝÞáâì ×ÐßØáØ",
+    "",//TODO
+    "Salvestuse pikkus",
+    "",//TODO
+    "",//TODO
+  },
+  { "Path",
+    "Pfad",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Dossiers",
+    "",//TODO
+    "Polku",
+    "",//TODO
+    "Ruta",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Teekond",
+    "",//TODO
+    "",//TODO
+  },
+  { "Date",
+    "Datum",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Päiväys",
+    "",//TODO
+    "Fecha",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Length",
+    "Länge",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Pituus",
+    "",//TODO
+    "Duración",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Size",
+    "Größe",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Koko",
+    "",//TODO
+    "Tamaño",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Delete marks information?",
+    "Marks löschen?",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Poista tallenteen merkinnät?",
+    "",//TODO
+    "¿Borrar marcas de información?",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Delete resume information?",
+    "Resume löschen?",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Poista tallenteen paluutiedot?",
+    "",//TODO
+    "¿Borrar información de continuación?",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Rename$Up",
+    "Höher",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Haut",
+    "",//TODO
+    "Ylemmäs",
+    "",//TODO
+    "Arriba",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Üles",
+    "",//TODO
+    "",//TODO
+  },
+  { "Rename$Down",
+    "Tiefer",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Bas",
+    "",//TODO
+    "Alemmas",
+    "",//TODO
+    "Abajo",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Alla",
+    "",//TODO
+    "",//TODO
+  },
+  { "Rename$Next",
+    "Nächster",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Suivant",
+    "",//TODO
+    "Seuraava",
+    "",//TODO
+    "Siguiente",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Järgmine",
+    "",//TODO
+    "",//TODO
+  },
+  { "Rename$Previous",
+    "Vorheriger",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Précédent",
+    "",//TODO
+    "Edellinen",
+    "",//TODO
+    "Anterior",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Eelmine",
+    "",//TODO
+    "",//TODO
+  },
   { NULL }
   };
 

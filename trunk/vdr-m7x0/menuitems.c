@@ -553,6 +553,156 @@ eOSState cMenuEditStrItem::ProcessKey(eKeys Key)
   return osContinue;
 }
 
+// --- cMenuEditRecPathItem --------------------------------------------------
+
+cMenuEditRecPathItem::cMenuEditRecPathItem(const char* Name, char* Path,
+   int Length): cMenuEditStrItem(Name, Path, Length, tr(FileNameChars))
+{
+  SetBase(Path);
+}
+
+cMenuEditRecPathItem::~cMenuEditRecPathItem()
+{
+}
+
+void cMenuEditRecPathItem::SetBase(const char* Path)
+{
+  if (!Path)
+      base[0] = 0;
+  strn0cpy(base, Path, sizeof(base));
+  char* p = strrchr(base, '~');
+  if (p)
+     p[0] = 0; 
+  else
+     base[0] = 0;
+}
+
+void cMenuEditRecPathItem::FindNextLevel()
+{
+  char item[MaxFileName];
+
+  for (cRecording *recording = Recordings.First(); recording; recording = Recordings.Next(recording))
+  {
+     char* p;
+     strn0cpy(item, recording->Name(), sizeof(item));
+     stripspace(value);
+     if (!strlen(value))
+        p = strchr(item, '~');
+     else {
+        if (strstr(item, value) != item)
+           continue;
+        if (item[strlen(value)] != '~')
+           continue;
+        p = strchr(item + strlen(value) + 1, '~');
+        }
+     if (!p)
+        continue;
+     p[0] = 0;
+     strn0cpy(base, value, length);
+     strn0cpy(value, item, length);
+     return;
+     }
+}
+
+void cMenuEditRecPathItem::Find(bool Next)
+{
+  char item[MaxFileName];
+  char lastItem[MaxFileName] = "";
+
+  for (cRecording *recording = Recordings.First(); recording; recording = Recordings.Next(recording))
+  {
+     const char* recName = recording->Name();
+     if (strlen(base) && strstr(recName, base) != recName)
+        continue;
+     if (strlen(base) && recName[strlen(base)] != '~')
+        continue;
+     strn0cpy(item, recName, sizeof(item));
+     char* p = strchr(item + strlen(base) + 1, '~');
+     if (!p)
+        continue;
+     p[0] = 0;
+     if (!Next && (strcmp(item, value) == 0)) {
+        if (strlen(lastItem))
+           strn0cpy(value, lastItem, length);
+        return;
+        }
+     if (strcmp(lastItem, item) != 0) {
+        if(Next && strlen(lastItem) && strcmp(lastItem, value) == 0) {
+           strn0cpy(value, item, length);
+           return;
+           }
+        strn0cpy(lastItem, item, sizeof(lastItem));
+        }
+     }
+}
+
+void cMenuEditRecPathItem::SetHelpKeys(void)
+{
+  cSkinDisplay::Current()->SetButtons(tr("Rename$Up"), tr("Rename$Down"), tr("Rename$Previous"), tr("Rename$Next"));
+}
+
+eOSState cMenuEditRecPathItem::ProcessKey(eKeys Key)
+{
+  switch (Key) {
+    case kLeft:
+    case kRed:    // one level up
+                  if (!InEditMode())
+                     return cMenuEditItem::ProcessKey(Key);
+                  strn0cpy(value, base, length);
+                  SetBase(base);
+                  pos = strlen(base);
+                  if (pos)
+                     pos++;
+                  if (!strlen(value))
+                     strn0cpy(value, " ", length);
+                  break;
+    case kRight:
+    case kGreen:  // one level down
+                  if (InEditMode())
+                     FindNextLevel();
+                  if (!strlen(value))
+                     strn0cpy(value, " ", length);
+                  pos = strlen(base);
+                  if (pos)
+                     pos++;
+                  SetHelpKeys();
+                  break;
+    case kUp|k_Repeat:
+    case kUp:
+    case kYellow|k_Repeat:
+    case kYellow: // previous directory in list
+                  if (!InEditMode())
+                     return cMenuEditItem::ProcessKey(Key);
+                  Find(false);
+                  pos = strlen(base);
+                  if (pos)
+                     pos++;
+                  break;
+    case kDown|k_Repeat:
+    case kDown:
+    case kBlue|k_Repeat:
+    case kBlue:   // next directory in list
+                  if (!InEditMode())
+                     return cMenuEditItem::ProcessKey(Key);
+                  Find(true);
+                  pos = strlen(base);
+                  if (pos)
+                     pos++;
+                  break;
+    case kOk:     // done
+                  if (!InEditMode())
+                     return cMenuEditItem::ProcessKey(Key);
+                  stripspace(value);
+                  cSkinDisplay::Current()->SetButtons(NULL);
+                  pos = -1;
+                  break;
+    default:
+                  return cMenuEditItem::ProcessKey(Key);
+    }
+  Set();
+  return osContinue;
+}
+
 // --- cMenuEditStraItem -----------------------------------------------------
 
 cMenuEditStraItem::cMenuEditStraItem(const char *Name, int *Value, int NumStrings, const char * const *Strings)

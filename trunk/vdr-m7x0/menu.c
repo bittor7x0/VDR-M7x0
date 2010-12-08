@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "channels.h"
 #include "config.h"
 #include "cutter.h"
@@ -668,7 +669,21 @@ cMenuEditTimer::cMenuEditTimer(cTimer *Timer, bool New)
      Add(new cMenuEditBitItem( tr("VPS"),          &data.flags, tfVps));
      Add(new cMenuEditIntItem( tr("Priority"),     &data.priority, 0, MAXPRIORITY));
      Add(new cMenuEditIntItem( tr("Lifetime"),     &data.lifetime, 0, MAXLIFETIME));
-     Add(new cMenuEditStrItem( tr("File"),          data.file, sizeof(data.file), tr(FileNameChars)));
+     char* p = strrchr(data.file, '~');
+     if (p) {
+        p++;
+        strn0cpy(name, p, sizeof(name));
+        strn0cpy(path, data.file, sizeof(path));
+        p = strrchr(path, '~');
+        if (p)
+           p[0] = 0;
+        }   
+     else {
+        strn0cpy(name, data.file, sizeof(name));
+        strn0cpy(path, "", sizeof(path));
+        }
+     Add(new cMenuEditStrItem( tr("File"),          name, sizeof(name), tr(FileNameChars)));
+     Add(new cMenuEditRecPathItem(tr("Path"),       path, sizeof(path)));
      SetFirstDayItem();
      }
   Timers.IncBeingEdited();
@@ -708,6 +723,10 @@ eOSState cMenuEditTimer::ProcessKey(eKeys Key)
                           Skins.Message(mtError, tr("*** Invalid Channel ***"));
                           break;
                           }
+                       if(strlen(path))
+                          snprintf(data.file, sizeof(data.file), "%s~%s", path, name);
+                       else
+                          snprintf(data.file, sizeof(data.file), "%s", name);
                        if (!*data.file)
                           strcpy(data.file, data.Channel()->ShortName(true));
                        if (timer) {
@@ -1011,7 +1030,8 @@ public:
   const cChannel *channel;
   bool withDate;
   int timerMatch;
-  cMenuScheduleItem(const cEvent *Event, cChannel *Channel = NULL, bool WithDate = false);
+  bool withBar;
+  cMenuScheduleItem(const cEvent *Event, cChannel *Channel = NULL, bool WithDate = false, bool WithBar = false);
   static void SetSortMode(eScheduleSortMode SortMode) { sortMode = SortMode; }
   static void IncSortMode(void) { sortMode = eScheduleSortMode((sortMode == ssmAllAll) ? ssmAllThis : sortMode + 1); }
   static eScheduleSortMode SortMode(void) { return sortMode; }
@@ -1021,12 +1041,13 @@ public:
 
 cMenuScheduleItem::eScheduleSortMode cMenuScheduleItem::sortMode = ssmAllThis;
 
-cMenuScheduleItem::cMenuScheduleItem(const cEvent *Event, cChannel *Channel, bool WithDate)
+cMenuScheduleItem::cMenuScheduleItem(const cEvent *Event, cChannel *Channel, bool WithDate, bool WithBar)
 {
   event = Event;
   channel = Channel;
   withDate = WithDate;
   timerMatch = tmNone;
+  withBar = WithBar;
   Update(true);
 }
 
@@ -1043,6 +1064,17 @@ int cMenuScheduleItem::Compare(const cListObject &ListObject) const
 
 static const char *TimerMatchChars = " tT";
 
+static const char * const ProgressBar[7] =
+{
+  "[      ]",
+  "[|     ]",
+  "[||    ]",
+  "[|||   ]",
+  "[||||  ]",
+  "[||||| ]",
+  "[||||||]"
+};
+
 bool cMenuScheduleItem::Update(bool Force)
 {
   bool result = false;
@@ -1056,7 +1088,14 @@ bool cMenuScheduleItem::Update(bool Force)
      if (channel && withDate)
         asprintf(&buffer, "%d\t%.*s\t%.*s\t%s\t%c%c%c\t%s", channel->Number(), 6, channel->ShortName(true), 6, *event->GetDateString(), *event->GetTimeString(), t, v, r, event->Title());
      else if (channel)
-        asprintf(&buffer, "%d\t%.*s\t%s\t%c%c%c\t%s", channel->Number(), 6, channel->ShortName(true), *event->GetTimeString(), t, v, r, event->Title());
+        if (Setup.ShowProgressBar && withBar) {
+           int progress = (int)roundf( (float)(time(NULL) - event->StartTime()) / (float)(event->Duration()) * 6.0 );
+           if (progress < 0) progress = 0;
+           else if (progress > 6) progress = 6;
+           asprintf(&buffer, "%d\t%.*s\t%s\t%s\t%c%c%c\t%s", channel->Number(), 6, channel->ShortName(true), *event->GetTimeString(), ProgressBar[progress], t, v, r, event->Title());
+           }
+        else
+           asprintf(&buffer, "%d\t%.*s\t%s\t%c%c%c\t%s", channel->Number(), 6, channel->ShortName(true), *event->GetTimeString(), t, v, r, event->Title());
      else
         asprintf(&buffer, "%.*s\t%s\t%c%c%c\t%s", 6, *event->GetDateString(), *event->GetTimeString(), t, v, r, event->Title());
      SetText(buffer, false);
@@ -1090,7 +1129,7 @@ int cMenuWhatsOn::currentChannel = 0;
 const cEvent *cMenuWhatsOn::scheduleEvent = NULL;
 
 cMenuWhatsOn::cMenuWhatsOn(const cSchedules *Schedules, bool Now, int CurrentChannelNr)
-:cOsdMenu(Now ? tr("What's on now?") : tr("What's on next?"), CHNUMWIDTH, 7, 6, 4)
+:cOsdMenu(Now ? tr("What's on now?") : tr("What's on next?"), CHNUMWIDTH, 7, 6, 4, 4)
 {
   now = Now;
   helpKeys = -1;
@@ -1102,7 +1141,7 @@ cMenuWhatsOn::cMenuWhatsOn(const cSchedules *Schedules, bool Now, int CurrentCha
          if (Schedule) {
             const cEvent *Event = Now ? Schedule->GetPresentEvent() : Schedule->GetFollowingEvent();
             if (Event)
-               Add(new cMenuScheduleItem(Event, Channel), Channel->Number() == CurrentChannelNr);
+               Add(new cMenuScheduleItem(Event, Channel, false, Now), Channel->Number() == CurrentChannelNr);
             }
          }
       }
@@ -1827,7 +1866,7 @@ cMenuRecordingItem::cMenuRecordingItem(cRecording *Recording, int Level)
   fileName = strdup(Recording->FileName());
   name = NULL;
   totalEntries = newEntries = 0;
-  SetText(Recording->Title('\t', true, Level));
+  SetText(Recording->Title('\t', true, Level, false));
   if (*Text() == '\t')
      name = strdup(Text() + 2); // 'Text() + 2' to skip the two '\t'
 }
@@ -1844,14 +1883,166 @@ void cMenuRecordingItem::IncrementCounter(bool New)
   if (New)
      newEntries++;
   char *buffer = NULL;
-  asprintf(&buffer, "%d\t%d\t%s", totalEntries, newEntries, name);
+  switch (Setup.ShowRecTime + Setup.ShowRecDate + Setup.ShowRecLength) {
+     case 0:
+          asprintf(&buffer, "%s", name);
+          break;
+     case 1:
+          asprintf(&buffer, "%d\t%s", totalEntries, name);
+          break;
+     case 2:
+     default:
+          asprintf(&buffer, "%d\t%d\t%s", totalEntries, newEntries, name);
+          break;
+     case 3:
+          asprintf(&buffer, "%d\t%d\t\t%s", totalEntries, newEntries, name);
+          break;
+     }
   SetText(buffer, false);
+}
+
+// --- cMenuRenameRecording --------------------------------------------------
+
+class cMenuRenameRecording : public cOsdMenu {
+private:
+  int lifetime;
+  int priority;
+  char name[MaxFileName];
+  char path[MaxFileName];
+  cOsdItem *marksItem, *resumeItem;
+  bool isResume, isMarks;
+  cRecording *recording;
+public:
+  cMenuRenameRecording(cRecording *Recording);
+  virtual eOSState ProcessKey(eKeys Key);
+};
+
+cMenuRenameRecording::cMenuRenameRecording(cRecording *Recording)
+:cOsdMenu(tr("Rename recording"), 12)
+{
+  cMarks marks;
+  char *buffer = NULL;
+
+  recording = Recording;
+  priority = recording->priority;
+  lifetime = recording->lifetime;
+
+  char* p = strrchr(recording->Name(), '~');
+  if (p) {
+     p++;
+     strn0cpy(name, p, sizeof(name));
+     strn0cpy(path, recording->Name(), sizeof(path));
+     p = strrchr(path, '~');
+     if (p)
+        p[0] = 0;
+     }
+  else {
+     strn0cpy(name, recording->Name(), sizeof(name));
+     strn0cpy(path, "", sizeof(path));
+     }
+  Add(new cMenuEditStrItem(tr("Name"),      name,     sizeof(name), tr(FileNameChars)));
+  Add(new cMenuEditRecPathItem(tr("Path"),  path,     sizeof(path)                   ));
+  Add(new cMenuEditIntItem(tr("Priority"), &priority, 0,            MAXPRIORITY      ));
+  Add(new cMenuEditIntItem(tr("Lifetime"), &lifetime, 0,            MAXLIFETIME      ));
+
+  Add(new cOsdItem("",                     osUnknown, false));
+
+  asprintf(&buffer, "%s:\t%s", tr("Date"), *DayDateTime(recording->start));
+  Add(new cOsdItem(buffer,                 osUnknown, false));
+  free(buffer);
+
+  cChannel *channel = Channels.GetByChannelID(((cRecordingInfo *)recording->Info())->ChannelID());
+  if (channel) {
+     asprintf(&buffer, "%s:\t%s", tr("Channel"), *ChannelString(channel, 0));
+     Add(new cOsdItem(buffer,              osUnknown, false));
+     free(buffer);
+     }
+
+  cIndexFile *index = new cIndexFile(recording->FileName(), false);
+  if (index) {
+     asprintf(&buffer, "%s:\t%s", tr("Length"), *IndexToHMSF(index->Last()));
+     Add(new cOsdItem(buffer,              osUnknown, false));
+     free(buffer);
+     }
+  delete index;
+
+  int dirSize = DirSizeMB(recording->FileName());
+  if (dirSize > 9999)
+     asprintf(&buffer, "%s:\t%.2f GB", tr("Size"), dirSize / 1024.0);
+  else
+     asprintf(&buffer, "%s:\t%d MB", tr("Size"), dirSize);
+  Add(new cOsdItem(buffer,                 osUnknown, false));
+  free(buffer);
+
+  Add(new cOsdItem("",                     osUnknown, false));
+
+  isMarks = marks.Load(recording->FileName()) && marks.Count();
+  marksItem = new cOsdItem(tr("Delete marks information?"),   osUser1, isMarks);
+  Add(marksItem);
+
+  cResumeFile ResumeFile(recording->FileName());
+  isResume = (ResumeFile.Read() != -1); 
+  resumeItem = new cOsdItem(tr("Delete resume information?"), osUser2, isResume);
+  Add(resumeItem);
+}
+
+eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
+{
+  eOSState state = cOsdMenu::ProcessKey(Key);
+
+  if (state == osUnknown) {
+     if (Key == kOk) {
+        char buffer[MaxFileName];
+        if (strlen(path))
+           snprintf(buffer, sizeof(buffer), "%s~%s", path, name);
+        else
+           snprintf(buffer, sizeof(buffer), "%s", name);
+        if (recording->Rename(buffer, &priority, &lifetime)) {
+           Recordings.ChangeState();
+           Recordings.TouchUpdate();
+           return osRecordings;
+           }
+        else
+           Skins.Message(mtError, tr("Error while accessing recording!"));
+        }
+     return osContinue;
+     }
+  else if (state == osUser1) {
+     if (isMarks && Interface->Confirm(tr("Delete marks information?"))) {
+        cMarks marks;
+        marks.Load(recording->FileName());
+        cMark *mark = marks.First();
+        while (mark) {
+          cMark *nextmark = marks.Next(mark);
+          marks.Del(mark);
+          mark = nextmark;
+          }
+        marks.Save();
+        isMarks = false;
+        marksItem->SetSelectable(isMarks);
+        SetCurrent(First());
+        Display();
+        }
+     return osContinue;
+     }
+  else if (state == osUser2) {
+     if (isResume && Interface->Confirm(tr("Delete resume information?"))) {
+        cResumeFile ResumeFile(recording->FileName());
+        ResumeFile.Delete();
+        isResume = false;
+        resumeItem->SetSelectable(isResume);
+        SetCurrent(First());
+        Display();
+        }
+     return osContinue;
+     }
+  return state;
 }
 
 // --- cMenuRecordings -------------------------------------------------------
 
 cMenuRecordings::cMenuRecordings(const char *Base, int Level, bool OpenSubMenus)
-:cOsdMenu(Base ? Base : tr("Recordings"), 9, 7)
+:cOsdMenu(Base ? Base : tr("Recordings"), 9, 7, 7)
 {
   base = Base ? strdup(Base) : NULL;
   level = Setup.RecordingDirs ? Level : -1;
@@ -2071,6 +2262,19 @@ eOSState cMenuRecordings::Commands(eKeys Key)
   return osContinue;
 }
 
+eOSState cMenuRecordings::Rename(void)
+{
+  if (HasSubMenu() || Count() == 0)
+     return osContinue;
+  cMenuRecordingItem *ri = (cMenuRecordingItem *)Get(Current());
+  if (ri && !ri->IsDirectory()) {
+     cRecording *recording = GetRecording(ri);
+     if (recording)
+        return AddSubMenu(new cMenuRenameRecording(recording));
+     }
+  return osContinue;
+}
+
 eOSState cMenuRecordings::ProcessKey(eKeys Key)
 {
   bool HadSubMenu = HasSubMenu();
@@ -2083,7 +2287,12 @@ eOSState cMenuRecordings::ProcessKey(eKeys Key)
        case kGreen:  return Rewind();
        case kYellow: return Delete();
        case kBlue:   return Info();
-       case k1...k9: return Commands(Key);
+       case k0:      DirOrderState = !DirOrderState;
+                     Set(true);
+                     return osContinue;
+       case k8:      return Rename();
+       case k9:
+       case k1...k7: return Commands(Key);
        case kNone:   if (Recordings.StateChanged(recordingsState))
                         Set(true);
                      break;
@@ -2185,6 +2394,7 @@ void cMenuSetupOSD::Set(void)
   Add(new cMenuEditBoolItem(tr("Setup.OSD$Scroll wraps"),           &data.MenuScrollWrap));
   Add(new cMenuEditBoolItem(tr("Setup.OSD$Menu button closes"),     &data.MenuButtonCloses));
   Add(new cMenuEditBoolItem(tr("Setup.OSD$Recording directories"),  &data.RecordingDirs));
+  Add(new cMenuEditBoolItem(tr("Setup.OSD$Main menu command position"), &data.MenuCmdPosition, tr("bottom"), tr("top")));
   SetCurrent(Get(current));
   Display();
 }
@@ -2263,6 +2473,7 @@ void cMenuSetupEPG::Setup(void)
   Add(new cMenuEditIntItem( tr("Setup.EPG$EPG scan timeout (h)"),      &data.EPGScanTimeout));
   Add(new cMenuEditIntItem( tr("Setup.EPG$EPG bugfix level"),          &data.EPGBugfixLevel, 0, MAXEPGBUGFIXLEVEL));
   Add(new cMenuEditIntItem( tr("Setup.EPG$EPG linger time (min)"),     &data.EPGLinger, 0));
+  Add(new cMenuEditBoolItem(tr("Setup.EPG$Show progress bar"),         &data.ShowProgressBar));
   Add(new cMenuEditBoolItem(tr("Setup.EPG$Set system time"),           &data.SetSystemTime));
   if (data.SetSystemTime)
      Add(new cMenuEditTranItem(tr("Setup.EPG$Use time from transponder"), &data.TimeTransponder, &data.TimeSource));
@@ -2687,6 +2898,9 @@ cMenuSetupRecord::cMenuSetupRecord(void)
   Add(new cMenuEditIntItem( tr("Setup.Recording$Instant rec. time (min)"),   &data.InstantRecordTime, 1, MAXINSTANTRECTIME));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Max. video file size (MB)"), &data.MaxVideoFileSize, MINVIDEOFILESIZE, MAXVIDEOFILESIZE));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Split edited files"),        &data.SplitEditedFiles));
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Show date"),                 &data.ShowRecDate));
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Show time"),                 &data.ShowRecTime));
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Show length"),               &data.ShowRecLength));
 }
 
 // --- cMenuSetupReplay ------------------------------------------------------
@@ -2994,6 +3208,7 @@ bool cMenuMain::Update(bool Force)
      replaying = NewReplaying;
      // Replay control:
      if (replaying && !stopReplayItem)
+        if (Setup.MenuCmdPosition) Ins(stopReplayItem = new cOsdItem(tr(" Stop replaying"), osStopReplay)); else
         Add(stopReplayItem = new cOsdItem(tr(" Stop replaying"), osStopReplay));
      else if (stopReplayItem && !replaying) {
         Del(stopReplayItem->Index());
@@ -3007,6 +3222,7 @@ bool cMenuMain::Update(bool Force)
   // Editing control:
   bool CutterActive = cCutter::Active();
   if (CutterActive && !cancelEditingItem) {
+     if (Setup.MenuCmdPosition) Ins(cancelEditingItem = new cOsdItem(tr(" Cancel editing"), osCancelEdit)); else
      Add(cancelEditingItem = new cOsdItem(tr(" Cancel editing"), osCancelEdit));
      result = true;
      }
@@ -3029,6 +3245,7 @@ bool cMenuMain::Update(bool Force)
            asprintf(&buffer, "%s%s", STOP_RECORDING, s);
            cOsdItem *item = new cOsdItem(osStopRecord);
            item->SetText(buffer, false);
+           if (Setup.MenuCmdPosition) Ins(item); else
            Add(item);
            if (!stopRecordingItem)
               stopRecordingItem = item;
@@ -4316,6 +4533,10 @@ eOSState cReplayControl::ProcessKey(eKeys Key)
     case kFastFwd:
     case kRight:   Forward(); break;
     case kRed:     TimeSearch(); break;
+    case k1|k_Repeat:
+    case k1:       SkipSeconds(-20); break;
+    case k3|k_Repeat:
+    case k3:       SkipSeconds( 20); break;
     case kGreen|k_Repeat:
     case kGreen:   SkipSeconds(-60); break;
     case kYellow|k_Repeat:

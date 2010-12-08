@@ -36,6 +36,8 @@
 // VDR header files have changed.
 
 
+#define LIEMIKUUTIO  113
+
 #define MAXPRIORITY 99
 #define MAXLIFETIME 99
 
@@ -262,6 +264,7 @@ public:
   int CurrentDolby;
   int InitialChannel;
   int InitialVolume;
+  int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;
   int __EndData__;
   cSetup(void);
   cSetup& operator= (const cSetup &s);

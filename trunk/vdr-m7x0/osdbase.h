@@ -94,6 +94,8 @@ private:
   char *status;
   int digit;
   bool hasHotkeys;
+  int key_nr;
+  cTimeMs lastActivity;
 protected:
   cSkinDisplayMenu *DisplayMenu(void) { return displayMenu; }
   const char *hk(const char *s);
