@@ -260,6 +260,8 @@ cSetup::cSetup(void)
   RecordingsSortMode = 0;
   RecordingsSortDirsFirst = 0;
   CutterAutoDelete = 1;
+  CutterMaxBandwidth = 10;
+  CutterRelBandwidth = 75;
   HotStandby = 0;
   TvMode = 0;
   VCRMode = 0;
@@ -445,6 +447,8 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "RecordingsSortMode"))  RecordingsSortMode = atoi(Value);
   else if (!strcasecmp(Name, "RecordingsSortDirsFirst")) RecordingsSortDirsFirst = atoi(Value);
   else if (!strcasecmp(Name, "CutterAutoDelete"))    CutterAutoDelete   = atoi(Value);
+  else if (!strcasecmp(Name, "CutterMaxBandwidth"))  CutterMaxBandwidth = atoi(Value);
+  else if (!strcasecmp(Name, "CutterRelBandwidth"))  CutterRelBandwidth = atoi(Value);
   else if (!strcasecmp(Name, "HotStandby"))          HotStandby         = atoi(Value);
   else if (!strcasecmp(Name, "TvMode"))              TvMode             = atoi(Value);
   else if (!strcasecmp(Name, "VCRMode"))             VCRMode            = atoi(Value);
@@ -537,6 +541,8 @@ bool cSetup::Save(void)
   Store("RecordingsSortMode", RecordingsSortMode);
   Store("RecordingsSortDirsFirst", RecordingsSortDirsFirst);
   Store("CutterAutoDelete",   CutterAutoDelete);
+  Store("CutterMaxBandwidth", CutterMaxBandwidth);
+  Store("CutterRelBandwidth", CutterRelBandwidth);
   Store("HotStandby", 	      HotStandby);
   Store("TvMode", 	      TvMode);
   Store("VCRMode", 	      VCRMode);

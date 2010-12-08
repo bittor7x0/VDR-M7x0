@@ -13,7 +13,13 @@
 #include "thread.h"
 #include "videodir.h"
 
+
 // --- cCuttingThread --------------------------------------------------------
+
+#ifndef CUTTER_PRIORITY
+#  define CUTTER_PRIORITY sched_get_priority_min(SCHED_OTHER)
+#endif
+#define CUTTER_TIMESLICE   100   // ms
 
 class cCuttingThread : public cThread {
 private:
@@ -60,6 +66,17 @@ cCuttingThread::~cCuttingThread()
 
 void cCuttingThread::Action(void)
 {
+  {
+    sched_param tmp;
+    tmp.sched_priority = CUTTER_PRIORITY;
+    if(!pthread_setschedparam(pthread_self(), SCHED_OTHER, &tmp))
+      printf("cCuttingThread::Action: cant set priority\n");
+  }
+
+  int bytes = 0;
+  int __attribute__((unused)) burst_size = MEGABYTE(Setup.CutterMaxBandwidth) * CUTTER_TIMESLICE / 1000; // max bytes/timeslice 
+  cTimeMs __attribute__((unused)) t;
+
 //M7X0 BEGIN AK
   SetPriority(19);
 //M7X0 END AK
@@ -173,6 +190,32 @@ void cCuttingThread::Action(void)
               else
                  LastMark = true;
               }
+
+	   bytes += Length;
+	   if(bytes >= burst_size) {
+	     int elapsed = t.Elapsed();
+	     int sleep = 0;
+	     
+	     if (Setup.CutterRelBandwidth > 0 &&  Setup.CutterRelBandwidth < 100) {
+	       // stay under max. relative bandwidth
+
+	       sleep = (elapsed * 100 / Setup.CutterRelBandwidth) - elapsed;
+	       //if(sleep<=0 && elapsed<=2) sleep = 1; 
+	       //if(sleep) esyslog("cutter: relative bandwidth limit, sleep %d ms (chunk %dk / %dms)", sleep, burst_size/1024, CUTTER_TIMESLICE);
+	     }
+
+	     // stay under max. absolute bandwidth
+	     if(elapsed < CUTTER_TIMESLICE) {
+	       sleep = max(CUTTER_TIMESLICE - elapsed, sleep);
+	       //if(sleep) esyslog("cutter: absolute bandwidth limit, sleep %d ms (chunk %dk / %dms)", sleep, burst_size/1024, CUTTER_TIMESLICE);
+	     }
+
+	     if(sleep>0)
+	       cCondWait::SleepMs(sleep);
+	     t.Set();
+	     bytes = 0;
+	   }
+
            }
      Recordings.TouchUpdate();
      }
