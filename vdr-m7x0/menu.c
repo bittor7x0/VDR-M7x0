@@ -49,6 +49,8 @@
 
 #define CHNUMWIDTH  (numdigits(Channels.MaxNumber()) + 1)
 
+#define MB_PER_MINUTE 25.75 // this is just an estimate!
+
 // --- cMenuEditCaItem -------------------------------------------------------
 
 class cMenuEditCaItem : public cMenuEditIntItem {
@@ -759,8 +761,10 @@ eOSState cMenuEditTimer::ProcessKey(eKeys Key)
 class cMenuTimerItem : public cOsdItem {
 private:
   cTimer *timer;
+  char diskStatus;
 public:
   cMenuTimerItem(cTimer *Timer);
+  void SetDiskStatus(char DiskStatus);
   virtual int Compare(const cListObject &ListObject) const;
   virtual void Set(void);
   cTimer *Timer(void) { return timer; }
@@ -769,6 +773,7 @@ public:
 cMenuTimerItem::cMenuTimerItem(cTimer *Timer)
 {
   timer = Timer;
+  diskStatus = ' ';
   Set();
 }
 
@@ -806,7 +811,62 @@ void cMenuTimerItem::Set(void)
                     timer->Stop() / 100,
                     timer->Stop() % 100,
                     timer->File());
+  char *buffer2 = buffer;
+  buffer = NULL;
+  asprintf(&buffer, "%c%s", diskStatus, buffer2);
+  free(buffer2);
   SetText(buffer, false);
+}
+
+void cMenuTimerItem::SetDiskStatus(char DiskStatus)
+{
+  diskStatus = DiskStatus;
+  Set();
+}
+
+// --- cTimerEntry -----------------------------------------------------------
+
+class cTimerEntry : public cListObject {
+private:
+  cMenuTimerItem *item;
+  const cTimer *timer;
+  time_t start;
+public:
+  cTimerEntry(cMenuTimerItem *item) : item(item), timer(item->Timer()), start(timer->StartTime()) {}
+  cTimerEntry(const cTimer *timer, time_t start) : item(NULL), timer(timer), start(start) {}
+  virtual int Compare(const cListObject &ListObject) const;
+  bool active(void) const { return timer->HasFlags(tfActive); }
+  time_t startTime(void) const { return start; }
+  int priority(void) const { return timer->Priority(); }
+  int duration(void) const;
+  bool repTimer(void) const { return !timer->IsSingleEvent(); }
+  bool isDummy(void) const { return item == NULL; }
+  const cTimer *Timer(void) const { return timer; }
+  void SetDiskStatus(char DiskStatus);
+  };
+
+int cTimerEntry::Compare(const cListObject &ListObject) const
+{
+  cTimerEntry *entry = (cTimerEntry *)&ListObject;
+  int r = startTime() - entry->startTime();
+  if (r == 0)
+     r = entry->priority() - priority();
+  return r;
+}
+
+int cTimerEntry::duration(void) const
+{
+  int dur = (timer->Stop()  / 100 * 60 + timer->Stop()  % 100) -
+            (timer->Start() / 100 * 60 + timer->Start() % 100);
+  if (dur < 0)
+     dur += 24 * 60;
+  return dur;
+}
+
+void cTimerEntry::SetDiskStatus(char DiskStatus)
+{
+  if (item)
+     item->SetDiskStatus(DiskStatus);
 }
 
 // --- cMenuTimers -----------------------------------------------------------
@@ -821,14 +881,17 @@ private:
   eOSState Info(void);
   cTimer *CurrentTimer(void);
   void SetHelpKeys(void);
+  void ActualiseDiskStatus(void);
+  bool actualiseDiskStatus;
 public:
   cMenuTimers(void);
   virtual ~cMenuTimers();
+  virtual void Display(void);
   virtual eOSState ProcessKey(eKeys Key);
   };
 
 cMenuTimers::cMenuTimers(void)
-:cOsdMenu(tr("Timers"), 2, CHNUMWIDTH, 10, 6, 6)
+:cOsdMenu(tr("Timers"), 3, CHNUMWIDTH, 10, 6, 6)
 {
   helpKeys = -1;
   for (cTimer *timer = Timers.First(); timer; timer = Timers.Next(timer)) {
@@ -839,6 +902,7 @@ cMenuTimers::cMenuTimers(void)
   SetCurrent(First());
   SetHelpKeys();
   Timers.IncBeingEdited();
+  actualiseDiskStatus = true;
 }
 
 cMenuTimers::~cMenuTimers()
@@ -877,7 +941,7 @@ eOSState cMenuTimers::OnOff(void)
      timer->OnOff();
      timer->SetEventFromSchedule();
      RefreshCurrent();
-     DisplayCurrent(true);
+     Display();
      if (timer->FirstDay())
         isyslog("timer %s first day set to %s", *timer->ToDescr(), *timer->PrintFirstDay());
      else
@@ -936,6 +1000,67 @@ eOSState cMenuTimers::Info(void)
   return osContinue;
 }
 
+void cMenuTimers::ActualiseDiskStatus(void)
+{
+  if (!actualiseDiskStatus || !Count())
+     return;
+
+  // compute free disk space
+  int freeMB, freeMinutes, runshortMinutes;
+  VideoDiskSpace(&freeMB);
+  freeMinutes = int(double(freeMB) * 1.1 / MB_PER_MINUTE); // overestimate by 10 percent
+  runshortMinutes = freeMinutes / 5; // 20 Percent
+
+  // fill entries list
+  cTimerEntry *entry;
+  cList<cTimerEntry> entries;
+  for (cOsdItem *item = First(); item; item = Next(item))
+     entries.Add(new cTimerEntry((cMenuTimerItem *)item));
+
+  // search last start time
+  time_t last = 0;
+  for (entry = entries.First(); entry; entry = entries.Next(entry))
+     last = max(entry->startTime(), last);
+
+  // add entries for repeating timers
+  for (entry = entries.First(); entry; entry = entries.Next(entry))
+     if (entry->repTimer() && !entry->isDummy())
+        for (time_t start = cTimer::IncDay(entry->startTime(), 1);
+             start <= last;
+             start = cTimer::IncDay(start, 1))
+           if (entry->Timer()->DayMatches(start))
+              entries.Add(new cTimerEntry(entry->Timer(), start));
+
+  // set the disk-status
+  entries.Sort();
+  for (entry = entries.First(); entry; entry = entries.Next(entry)) {
+     char status = ' ';
+     if (entry->active()) {
+        freeMinutes -= entry->duration();
+        status = freeMinutes > runshortMinutes ? '+' : freeMinutes > 0 ? 177 /* +/- */ : '-';
+        }
+     entry->SetDiskStatus(status);
+#ifdef DEBUG_TIMER_INFO
+     dsyslog("timer-info: %c | %d | %s | %s | %3d | %+5d -> %+5d",
+             status,
+             entry->startTime(),
+             entry->active() ? "aktiv " : "n.akt.",
+             entry->repTimer() ? entry->isDummy() ? "  dummy  " : "mehrmalig" : "einmalig ",
+             entry->duration(),
+             entry->active() ? freeMinutes + entry->duration() : freeMinutes,
+             freeMinutes);
+#endif
+     }
+
+  actualiseDiskStatus = false;
+}
+
+void cMenuTimers::Display(void)
+{
+  ActualiseDiskStatus();
+  cOsdMenu::Display();
+}
+
 eOSState cMenuTimers::ProcessKey(eKeys Key)
 {
   int TimerNumber = HasSubMenu() ? Count() : -1;
@@ -944,17 +1069,21 @@ eOSState cMenuTimers::ProcessKey(eKeys Key)
   if (state == osUnknown) {
      switch (Key) {
        case kOk:     return Edit();
-       case kRed:    state = OnOff(); break; // must go through SetHelpKeys()!
+       case kRed:    actualiseDiskStatus = true;
+                     state = OnOff(); break; // must go through SetHelpKeys()!
        case kGreen:  return New();
-       case kYellow: state = Delete(); break;
+       case kYellow: actualiseDiskStatus = true;
+                     state = Delete(); break;
        case kBlue:   return Info();
                      break;
        default: break;
        }
      }
-  if (TimerNumber >= 0 && !HasSubMenu() && Timers.Get(TimerNumber)) {
-     // a newly created timer was confirmed with Ok
-     Add(new cMenuTimerItem(Timers.Get(TimerNumber)), true);
+  if (TimerNumber >= 0 && !HasSubMenu()) {
+     if (Timers.Get(TimerNumber)) // a newly created timer was confirmed with Ok
+        Add(new cMenuTimerItem(Timers.Get(TimerNumber)), true);
+     Sort();
+     actualiseDiskStatus = true;
      Display();
      }
   if (Key != kNone)
@@ -3241,8 +3370,6 @@ void cMenuMain::Set(void)
 
   Display();
 }
-
-#define MB_PER_MINUTE 25.75 // this is just an estimate!
 
 bool cMenuMain::Update(bool Force)
 {
