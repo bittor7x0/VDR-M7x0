@@ -1,5 +1,11 @@
 #include "aideplayer.h"
-#include <linux/dvb/video.h>
+
+#ifdef VDRO7OVERSION
+ #include "m7x0_dvb/video.h"
+#else
+ #include <linux/dvb/video.h>
+#endif
+
 #include <vdr/plugin.h>
 
 cAidePlayer::cAidePlayer(void)
