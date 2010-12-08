@@ -229,7 +229,7 @@ eOSState cMenuRecordingSelect::MarkSel(void)
 {
   if (singleselect)
     return osContinue;
-  INFO("kommt noch ...?");
+  INFO(tr("Still unsupported..."));
   return osContinue;
 }
 
