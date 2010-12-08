@@ -831,6 +831,15 @@ const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level, bool
   return titleBuffer;
 }
 
+void cRecording::SetStartTime(time_t Start) 
+{
+  start=Start;
+  if (fileName) {
+  	 free(fileName);
+  	 fileName = NULL;
+  	 }
+}
+
 const char *cRecording::PrefixFileName(char Prefix)
 {
   cString p = PrefixVideoFileName(FileName(), Prefix);

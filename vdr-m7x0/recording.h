@@ -98,6 +98,7 @@ public:
   const char *FileName(void) const;
   const char *Title(char Delimiter = ' ', bool NewIndicator = false, int Level = -1, bool Original = true) const;
   const cRecordingInfo *Info(void) const { return info; }
+  void SetStartTime(time_t Start);
   const char *PrefixFileName(char Prefix);
   int HierarchyLevels(void) const;
   void ResetResume(void) const;
