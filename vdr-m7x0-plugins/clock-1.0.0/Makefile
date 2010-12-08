@@ -20,8 +20,8 @@ CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual
 
 ### The directory environment:
 
-VDRDIR = ../../..
-LIBDIR = ../../lib
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### Allow user defined options to overwrite defaults:
@@ -57,7 +57,7 @@ OBJS = $(PLUGIN).o i18n.o enhancedbitmap.o
 
 # Dependencies:
 
-MAKEDEP = g++ -MM -MG
+MAKEDEP = $(CXX) -MM -MG
 DEPFILE = .dependencies
 $(DEPFILE): Makefile
 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
@@ -70,7 +70,7 @@ all: libvdr-$(PLUGIN).so
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
+	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
