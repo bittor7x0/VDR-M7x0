@@ -1,0 +1,65 @@
+Liemikuutio Revision History
+----------------------------
+
+2006-01-08: Version 1.0
+
+- Based on enAIO with these original patches:
+  Simple recordings sorting by Walter@VDRPortal
+  Alternate rename recordings by Ralf Müller
+  Menu selection by Peter Dittmann
+  Recording length by Tobias Faust
+
+2006-01-15: Version 1.1
+
+- Removed patches already found in vdr-1.3.39.
+
+2006-01-25: Version 1.2
+
+- Added "Main menu command position" feature.
+
+2006-02-05: Version 1.3
+
+- Improved menu selection response.
+
+2006-04-18: Version 1.4
+
+- Added Estonian translation (Thanks to Arthur Konovalov).
+
+2006-04-30: Version 1.5
+
+- Added progress bar view into "What's on now?" menu.
+
+2006-06-06: Version 1.6
+
+- Added French translation (Thanks to ECLiPSE).
+
+2006-06-14: Version 1.7
+
+- Fixed RENR crash.
+
+2006-07-14: Version 1.8
+
+- Fixed RENR/OSD bug.
+
+2006-08-27: Version 1.9
+
+- Some modifications to the recording length and
+  rename recordings patches (Thanks to Firefly).
+- Added k1_k3_jumps_20s patch by Petri Hintukainen.
+
+2006-08-29: Version 1.10
+
+- The cRecording:Title() method now defaults to original formatting.
+
+2006-09-04: Version 1.11
+
+- Removed unused variable from cRecording::Title() method (Thanks to C.Y.M.).
+- Some modifications to the rename recordings patch (Thanks to Firefly).
+
+2006-09-13: Version 1.12
+
+- More modifications to the rename recordings patch (Thanks to Firefly).
+
+2006-10-01: Version 1.13
+
+- Removed unnecessary syslog printing (Thanks to Firefly).

@@ -1,0 +1,34 @@
+Sort Recordings patch for VDR
+-----------------------------
+
+This patch changes the sort behaviour of the recordings menu. There
+are now four sorting modes:
+
+mode   behaviour
+       main directory     sub directories
+--------------------------------------------------------------------------
+  0    alphabetically     if special character(*) is found alphabetically,
+                          else by date
+  1    by date            if special character(*) is found alphabetically,
+                          else by date
+  2    alphabetically     alphabetically
+  3    by date            by date
+
+(*) if a subdirectory name ends with one of ".-$ª·" (dot, hyphen, dollar sign, 
+    ASCII-170 or ASCII-183) it is sorted alphabetically in sort mode 0 and 1
+
+Sort mode 0 with none of the special characters at the end of any subdir 
+corresponds to the default sorting mode of the original VDR.
+
+The sorting mode can be switched through in the recording menu with the '0' key 
+(0->1->2->3->0->...), a default for startup can be set in the setup->recordings menu.
+
+Additionally the sort order (ascending/descending) can be toggled by the '9' key
+(which is always set to ascending after a restart)
+
+If you like the to see subdirectories before recordings you can select to put 
+directories first in the setup->recordings menu. 
+
+If you would like the sorting to ignore a leading '%' as they appear before cutted 
+recordings this can be achived by setting the environment variable LC_COLLATE properly
+(eg. LC_COLLATE=de_DE@euo in runvdr for germany).
