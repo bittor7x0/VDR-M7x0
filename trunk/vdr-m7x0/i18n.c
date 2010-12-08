@@ -3237,6 +3237,28 @@ const tI18nPhrase Phrases[] = {
     "Optagelse",
     "Nahrávání",
   },
+  { "Cutter",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Opciones de edición",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Replay",
     "Wiedergabe",
     "Predvajanje",

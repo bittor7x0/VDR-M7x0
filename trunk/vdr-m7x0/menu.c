@@ -3134,6 +3134,18 @@ cMenuSetupRecord::cMenuSetupRecord(void)
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Sort directories before recordings"), &data.RecordingsSortDirsFirst));
 }
 
+// --- cMenuSetupCutter ------------------------------------------------------
+
+class cMenuSetupCutter : public cMenuSetupBase {
+public:
+  cMenuSetupCutter(void);
+  };
+
+cMenuSetupCutter::cMenuSetupCutter(void)
+{
+  SetSection(tr("Cutter"));
+}
+
 // --- cMenuSetupReplay ------------------------------------------------------
 
 class cMenuSetupReplay : public cMenuSetupBase {
@@ -3284,11 +3296,12 @@ void cMenuSetup::Set(void)
   Add(new cOsdItem(hk(tr("LNB")),           osUser5));
   Add(new cOsdItem(hk(tr("CICAM")),         osUser6));
   Add(new cOsdItem(hk(tr("Recording")),     osUser7));
-  Add(new cOsdItem(hk(tr("Replay")),        osUser8));
-  Add(new cOsdItem(hk(tr("Miscellaneous")), osUser9));
+  Add(new cOsdItem(hk(tr("Cutter")),        osUser8));
+  Add(new cOsdItem(hk(tr("Replay")),        osUser9));
+  Add(new cOsdItem(hk(tr("Miscellaneous")), osUser10));
   if (cPluginManager::HasPlugins())
-  Add(new cOsdItem(hk(tr("Plugins")),       osUser10));
-  Add(new cOsdItem(hk(tr("Restart")),       (eOSState) (osUser10 + 1)));
+  Add(new cOsdItem(hk(tr("Plugins")),       osUser11));
+  Add(new cOsdItem(hk(tr("Restart")),       (eOSState) (osUser11 + 1)));
 //M7X0 END AK
 }
 
@@ -3315,10 +3328,11 @@ eOSState cMenuSetup::ProcessKey(eKeys Key)
     case osUser5: return AddSubMenu(new cMenuSetupLNB);
     case osUser6: return AddSubMenu(new cMenuSetupCICAM);
     case osUser7: return AddSubMenu(new cMenuSetupRecord);
-    case osUser8: return AddSubMenu(new cMenuSetupReplay);
-    case osUser9: return AddSubMenu(new cMenuSetupMisc);
-    case osUser10: return AddSubMenu(new cMenuSetupPlugins);
-    case osUser10 + 1: return Restart();
+    case osUser8: return AddSubMenu(new cMenuSetupCutter);
+    case osUser9: return AddSubMenu(new cMenuSetupReplay);
+    case osUser10: return AddSubMenu(new cMenuSetupMisc);
+    case osUser11: return AddSubMenu(new cMenuSetupPlugins);
+    case osUser11 + 1: return Restart();
 //M7X0 BEGIN AK
     default: ;
     }

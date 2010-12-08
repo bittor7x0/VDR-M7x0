@@ -44,6 +44,7 @@ enum eOSState { osUnknown,
                 osUser8,
                 osUser9,
                 osUser10,
+                osUser11,
               };
 
 class cOsdItem : public cListObject {
