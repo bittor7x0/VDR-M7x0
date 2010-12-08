@@ -30,9 +30,9 @@ cWetterSetup::cWetterSetup(void)
 	w_osdoffset_y = 0;
 	w_inverted = 1;
 	w_corner = 1;
-	strcpy(st_data1,"GMXX0040");
-	strcpy(st_data2,"GMXX0040");
-	strcpy(st_data3,"GMXX0040");
+	strcpy(st_data1,"SPXX0050");
+	strcpy(st_data2,"SPXX0015");
+	strcpy(st_data3,"SPXX0016");
 	st_pic0=NULL;
 	st_pic1=NULL;
 	st_pic2=NULL;
