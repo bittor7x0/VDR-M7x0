@@ -19,7 +19,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "S‰‰ennuste",
     "",// TODO
-    "",// TODO
+    "PrevisiÛn meteorolÛgica",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -37,7 +37,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Weather.com:in s‰‰ennusteet",
     "",// TODO
-    "",// TODO
+    "Weather.com: PrevisiÛn meteorolÛgica",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -55,7 +55,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "S‰‰",
     "",// TODO
-    "",// TODO
+    "PrevisiÛn",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -73,7 +73,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Virhe: S‰‰tietoja ei saatavilla!",
     "",// TODO
-    "",// TODO
+    "No hay datos",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -91,7 +91,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Paina 'OK' p‰ivitt‰‰ksesi s‰‰ennusteet ja tutkakartat",
     "",// TODO
-    "",// TODO
+    "Pulsa OK para descargar informaciÛn",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -109,7 +109,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Olethan muokannut weatherng.sh:n toimivaksi?",
     "",// TODO
-    "",// TODO
+    "øHas editado weather.sh?",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -127,7 +127,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Weatherng.sh:n sijainti:",
     "",// TODO
-    "",// TODO
+    "La ruta a weather.sh es: ",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -145,7 +145,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "S‰‰tietojen sijainti:",
     "",// TODO
-    "",// TODO
+    "La ruta a weatherdata es: ",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -163,7 +163,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Aurinko laskee: ",
     "",// TODO
-    "",// TODO
+    "Puesta de sol: ",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -181,7 +181,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Aurinko nousee:",
     "",// TODO
-    "",// TODO
+    "Amanecer: ",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -199,7 +199,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "S‰‰tila: ",
     "",// TODO
-    "",// TODO
+    "PrevisiÛn",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -217,7 +217,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Alin l‰mpˆtila: ",
     "",// TODO
-    "",// TODO
+    "MÌnima",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -235,7 +235,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Ylin l‰mpˆtila: ",
     "",// TODO
-    "",// TODO
+    "M·xima",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -253,7 +253,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "S‰‰: ",
     "",// TODO
-    "",// TODO
+    "PrevisiÛn para: ",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -271,7 +271,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Tuulen suunta: ",
     "",// TODO
-    "",// TODO
+    "DirecciÛn del viento:",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -289,7 +289,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Tuulen nopeus: ",
     "",// TODO
-    "",// TODO
+    "Viento:",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -307,7 +307,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     " km/h",
     "",// TODO
-    "",// TODO
+    " km/h",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -325,7 +325,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Ilmankosteus: ",
     "",// TODO
-    "",// TODO
+    "Humedad: ",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -343,7 +343,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Sateen tod.n‰k.: ",
     "",// TODO
-    "",// TODO
+    "PrecipitaciÛn: ",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -361,7 +361,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     " %",
     "",// TODO
-    "",// TODO
+    " %",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -379,7 +379,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "∞C",
     "",// TODO
-    "",// TODO
+    "∞C",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -397,7 +397,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "P‰ivit‰ s‰‰tiedot k‰ynnistett‰ess‰",
     "",// TODO
-    "",// TODO
+    "Actualizar datos al arranque de VDR",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -415,7 +415,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Tutkakuvan vaakakeskitys",
     "",// TODO
-    "",// TODO
+    "PosiciÛn imagen radar (izquierda)",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -433,7 +433,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Tutkakuvan pystykeskitys",
     "",// TODO
-    "",// TODO
+    "PosiciÛn imagen radar (arriba)",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -451,7 +451,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Tutkakuvan leveys",
     "",// TODO
-    "",// TODO
+    "Ancho imagen de radar",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -469,7 +469,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Tutkakuvan korkeus",
     "",// TODO
-    "",// TODO
+    "Alto imagen de radar",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -487,7 +487,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "N‰yt‰ tutkakuvat 256 v‰rill‰",
     "",// TODO
-    "",// TODO
+    "Usar 256 colores para radarmaps",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -505,7 +505,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "K‰yt‰ pieni‰ kirjasimia",
     "",// TODO
-    "",// TODO
+    "Usar fuentes pequeÒas",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -523,7 +523,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Klassinen",
     "",// TODO
-    "",// TODO
+    "Cl·sico",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -541,7 +541,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "enElchi",
     "",// TODO
-    "",// TODO
+    "enElchi",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -559,7 +559,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Moronimo",
     "",// TODO
-    "",// TODO
+    "Moronimo",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -577,7 +577,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "DeepBlue",
     "",// TODO
-    "",// TODO
+    "DeepBlue",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -595,7 +595,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Enigma",
     "",// TODO
-    "",// TODO
+    "Enigma",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -613,7 +613,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "SilverGreen",
     "",// TODO
-    "",// TODO
+    "SilverGreen",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -631,7 +631,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "MoronimoMKII",
     "",// TODO
-    "",// TODO
+    "MoronimoMKII",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -649,7 +649,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "MoronimoMKIII",
     "",// TODO
-    "",// TODO
+    "MoronimoMKIII",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -667,7 +667,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "MoronimoMKIV",
     "",// TODO
-    "",// TODO
+    "MoronimoMKIV",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -685,7 +685,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Teema",
     "",// TODO
-    "",// TODO
+    "Tema",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -703,7 +703,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Korkeus",
     "",// TODO
-    "",// TODO
+    "Altura",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -721,7 +721,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Vaakakeskitys",
     "",// TODO
-    "",// TODO
+    "Desplazamiento horizontal",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -739,7 +739,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Pystykeskitys",
     "",// TODO
-    "",// TODO
+    "Desplazamiento vertical",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -757,7 +757,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "N‰yt‰ symbolit invertoituna",
     "",// TODO
-    "",// TODO
+    "Invertir sÌmbolos",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -775,7 +775,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "K‰yt‰ pyˆristettyj‰ kulmia",
     "",// TODO
-    "",// TODO
+    "Bordes redondeados",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -793,7 +793,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "PƒIVƒ",
     "",// TODO
-    "",// TODO
+    "DIA",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -811,7 +811,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Y÷",
     "",// TODO
-    "",// TODO
+    "NOCHE",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -829,7 +829,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Maanantai",
     "",// TODO
-    "",// TODO
+    "Lunes",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -847,7 +847,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Tiistai",
     "",// TODO
-    "",// TODO
+    "Martes",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -865,7 +865,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Keskiviikko",
     "",// TODO
-    "",// TODO
+    "MiÈrcoles",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -883,7 +883,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Torstai",
     "",// TODO
-    "",// TODO
+    "Jueves",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -901,7 +901,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Perjantai",
     "",// TODO
-    "",// TODO
+    "Viernes",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -919,7 +919,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Lauantai",
     "",// TODO
-    "",// TODO
+    "S·bado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -937,7 +937,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Sunnuntai",
     "",// TODO
-    "",// TODO
+    "Domingo",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -955,7 +955,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "aurinkoista",
     "",// TODO
-    "",// TODO
+    "Soleado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -973,7 +973,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "sateista",
     "",// TODO
-    "",// TODO
+    "Lluvia",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -991,7 +991,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "ukkosta",
     "",// TODO
-    "",// TODO
+    "Truenos",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1009,7 +1009,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "pilvist‰",
     "",// TODO
-    "",// TODO
+    "Nublado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1027,7 +1027,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "enimm‰kseen pilvist‰",
     "",// TODO
-    "",// TODO
+    "Parcialmente nublado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1045,7 +1045,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "iltap‰iv‰ll‰ ukkoskuuroja",
     "",// TODO
-    "",// TODO
+    "Tormenta elÈctrica nocturna",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1063,7 +1063,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "aamup‰iv‰ll‰ ukkoskuuroja",
     "",// TODO
-    "",// TODO
+    "Tormenta elÈctrica matinal",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1081,7 +1081,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "kevytt‰ sadetta",
     "",// TODO
-    "",// TODO
+    "Lluvia ligera",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1099,7 +1099,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "lumisadetta",
     "",// TODO
-    "",// TODO
+    "Nieve",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1117,7 +1117,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "sadekuuroja",
     "",// TODO
-    "",// TODO
+    "Chubascos",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1135,16 +1135,16 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "aamup‰iv‰ll‰ sadekuuroja",
     "",// TODO
+    "Chubascos matinales",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
-    "",// TODO
-    "ø‡ÿ“’‚!",                                                                                        
+    "ø‡ÿ“’‚!",
   },
-  { "PM Showers",                                                                                     
-    "nachmittags Schauer",                                                                        
+  { "PM Showers",
+    "nachmittags Schauer",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1153,13 +1153,13 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "iltap‰iv‰ll‰ sadekuuroja",
     "",// TODO
+    "Chubascos nocturnos",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
-    "",// TODO
-    "ø‡ÿ“’‚!",                                                                                        
+    "ø‡ÿ“’‚!",
   },
   { "Scattered Showers",
     "vereinzelt Schauer",
@@ -1171,7 +1171,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "hajanaisia sadekuuroja",
     "",// TODO
-    "",// TODO
+    "Chubascos dispersos",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1189,7 +1189,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "sadetta / ukkosta",
     "",// TODO
-    "",// TODO
+    "Lluvia / Truenos",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1207,7 +1207,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "sadetta / tuulista",
     "",// TODO
-    "",// TODO
+    "Lluvia / Viento",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1225,7 +1225,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "enimm‰kseen selke‰‰",
     "",// TODO
-    "",// TODO
+    "Parcialmente despejado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1243,7 +1243,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "utua",
     "",// TODO
-    "",// TODO
+    "Bruma",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1261,7 +1261,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "sumua",
     "",// TODO
-    "",// TODO
+    "Niebla",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1279,7 +1279,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "tuulista",
     "",// TODO
-    "",// TODO
+    "Viento",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1297,7 +1297,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "poutaa",
     "",// TODO
-    "",// TODO
+    "Buen tiempo",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1315,7 +1315,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "selke‰‰",
     "",// TODO
-    "",// TODO
+    "Despejado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1333,7 +1333,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "tuulista",
     "",// TODO
-    "",// TODO
+    "Ventoso",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1351,7 +1351,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "tihkua",
     "",// TODO
-    "",// TODO
+    "Llovizna",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1369,7 +1369,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "hallaa",
     "",// TODO
-    "",// TODO
+    "Heladas",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1387,7 +1387,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "enimm‰kseen pilvist‰",
     "",// TODO
-    "",// TODO
+    "Principalmente nublado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1405,13 +1405,13 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "osittain pilvist‰",
     "",// TODO
+    "Parcialmente nublado",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
-    "",// TODO
-    "ø‡ÿ“’‚!",                                                                                        
+    "ø‡ÿ“’‚!",
   },
   { "M Clear",
     "meist klar",
@@ -1423,7 +1423,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "enimm‰kseen selke‰‰",
     "",// TODO
-    "",// TODO
+    "Principalmente despejado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1441,7 +1441,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "ei tietoja",
     "",// TODO
-    "",// TODO
+    "N/D",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1459,7 +1459,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "enimm‰kseen aurinkoista",
     "",// TODO
-    "",// TODO
+    "Principalmente soleado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1477,7 +1477,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "osittain pilvist‰",
     "",// TODO
-    "",// TODO
+    "Parcialmente nublado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1495,7 +1495,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "sadetta myˆhemmin",
     "",// TODO
-    "",// TODO
+    "Lluvia por la tarde",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1513,7 +1513,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "aamup‰iv‰ll‰ pilvist‰ / iltap‰iv‰ll‰ aurinkoista",
     "",// TODO
-    "",// TODO
+    "MaÒana nubes / Tarde sol",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1532,7 +1532,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "hajanaisia ukkosmyrskyj‰",
     "",// TODO
-    "",// TODO
+    "Tormentas elÈctricas dispersas",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1550,7 +1550,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "pilvist‰",
     "",// TODO
-    "",// TODO
+    "Encapotado",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1568,7 +1568,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "sumua",
     "",// TODO
-    "",// TODO
+    "Niebla",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1586,7 +1586,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "usvaa",
     "",// TODO
-    "",// TODO
+    "Niebla ligera",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1604,7 +1604,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "hernerokkasumua",
     "",// TODO
-    "",// TODO
+    "Niebla densa (maze)",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1622,7 +1622,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "myrsky‰",
     "",// TODO
-    "",// TODO
+    "Tormenta",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1640,7 +1640,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "lumisadetta",
     "",// TODO
-    "",// TODO
+    "Nieve",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1658,7 +1658,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "kevytt‰ sadetta",
     "",// TODO
-    "",// TODO
+    "Lluvia ligera",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -1676,14 +1676,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "kevytt‰ lumisadetta",
     "",// TODO
-    "",// TODO
+    "Nieve ligera",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Few Snow",
     "wenig Schnee",
     "",// TODO
@@ -1694,14 +1694,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "heikkoa lumisadetta",
     "",// TODO
-    "",// TODO
+    "Algo de nieve",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  }, 
+  },
     { "Clear",
     "Klar",
     "",// TODO
@@ -1712,14 +1712,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "selke‰‰",
     "",// TODO
-    "",// TODO
+    "Despejado",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },   
+  },
     { "Light Drizzle",
     "wenig Nieselregen",
     "",// TODO
@@ -1730,14 +1730,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "kevytt‰ tihkua",
     "",// TODO
-    "",// TODO
+    "Llovizna",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Scattered",
     "vereinzelt",
     "",// TODO
@@ -1748,14 +1748,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "hajanaista",
     "",// TODO
-    "",// TODO
+    "Nubes dispersas",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Smoke",
     "dichter Nebel",
     "",// TODO
@@ -1766,14 +1766,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "paksua sumua",
     "",// TODO
-    "",// TODO
+    "Humo",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Drifting Snow",
     "starkes Schneetreiben",
     "",// TODO
@@ -1784,14 +1784,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "voimakasta lumisadetta",
     "",// TODO
-    "",// TODO
+    "Nieve levantada por el viento",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "steady",
     "",
     "",// TODO
@@ -1802,14 +1802,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "tasaista",
     "",// TODO
-    "",// TODO
+    "constante",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "rising",
     "",
     "",// TODO
@@ -1820,14 +1820,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "alkavaa",
     "",// TODO
-    "",// TODO
+    "el aumento de ",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "falling",
     "",
     "",// TODO
@@ -1838,14 +1838,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "laantuvaa",
     "",// TODO
-    "",// TODO
+    "caÌda",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Unlimited",
     "",
     "",// TODO
@@ -1856,14 +1856,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "m‰‰rittelem‰tˆnt‰",
     "",// TODO
-    "",// TODO
+    "Ilimitado",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Showers in the Vicinity",
     "",
     "",// TODO
@@ -1874,14 +1874,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "todenn‰kˆisesti sadekuuroja",
     "",// TODO
-    "",// TODO
+    "Chubascos en los alrededores",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Waning Crescent",
     "",
     "",// TODO
@@ -1892,14 +1892,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "v‰istyv‰ t‰ysikuu",
     "",// TODO
-    "",// TODO
+    "Nueva visible",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Waxing Crescent",
     "",
     "",// TODO
@@ -1910,14 +1910,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "alkava t‰ysikuu",
     "",// TODO
-    "",// TODO
+    "Media luna creciente",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Waxing Gibbous",
     "",
     "",// TODO
@@ -1928,14 +1928,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "v‰istyv‰ uusikuu",
     "",// TODO
-    "",// TODO
+    "Gibada creciente",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Waning Gibbous",
     "",
     "",// TODO
@@ -1946,14 +1946,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "v‰istyv‰ t‰ysikuu",
     "",// TODO
-    "",// TODO
+    "Gibada menguante",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "T-Storms",
     "st¸rmisches Gewitter",
     "",// TODO
@@ -1964,14 +1964,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "ukkosmyrskyj‰",
     "",// TODO
-    "",// TODO
+    "Tormentas elÈctricas",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "T-Storms Early",
     "zun‰chst schweres Gewitter",
     "",// TODO
@@ -1982,14 +1982,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "ukkosmyrskyj‰ aikaisin",
     "",// TODO
-    "",// TODO
+    "Tormentas elÈctricas tempranas",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Light Rain Early",
     "zun‰chst leichter Regen",
     "",// TODO
@@ -2000,14 +2000,14 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "kevytt‰ sadetta aikaisin",
     "",// TODO
-    "",// TODO
+    "Lluvia fina de maÒana",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
-  },  
+  },
     { "Showers Early",
     "zun‰chst Regenschauer",
     "",// TODO
@@ -2018,7 +2018,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "sadekuuroja aikaisin",
     "",// TODO
-    "",// TODO
+    "Chubascos de maÒana",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -2036,7 +2036,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "pilvist‰ aikaisin",
     "",// TODO
-    "",// TODO
+    "Nublado de maÒana",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -2054,7 +2054,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "iltap‰iv‰ll‰ kevytt‰ sadetta",
     "",// TODO
-    "",// TODO
+    "Lluvia ligera por la tarde",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -2072,7 +2072,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "aamup‰iv‰ll‰ kevytt‰ sadetta",
     "",// TODO
-    "",// TODO
+    "Lluvia ligera por la maÒana",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -2090,7 +2090,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "kevytt‰ sadetta myˆh‰‰n",
     "",// TODO
-    "",// TODO
+    "Lluvia ligera por la tarde",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -2108,13 +2108,67 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "ajoittaisia sadekuuroja",
     "",// TODO
-    "",// TODO
+    "Algunos chubascos",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "ø‡ÿ“’‚!",
+  },
+      { "Weather station 1",
+      "",
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",
+      "",// TODO
+      "EstaciÛn meteorolÛgica 1",
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "ø‡ÿ“’‚!",
+  },
+      { "Weather station 2",
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "EstaciÛn meteorolÛgica 2",
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "ø‡ÿ“’‚!",
+  },
+      { "Weather station 3",
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "EstaciÛn meteorolÛgica 3",
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "ø‡ÿ“’‚!",
   },
   { NULL }
   };
