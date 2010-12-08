@@ -750,6 +750,20 @@ eOSState cCridReplayControl::ProcessKey(eKeys Key)
      return osContinue;
      }
   bool DoShowMode = true;
+  if (!Setup.LRForwardRewind || (Setup.LRForwardRewind == 1 && !visible)) {
+    switch (Key) {
+      // Left/Right volume control
+      case kLeft|k_Repeat:
+      case kLeft:
+      case kRight|k_Repeat:
+      case kRight:
+	  cRemote::Put(NORMALKEY(Key) == kLeft ? kVolDn : kVolUp, true);
+        return osContinue;
+        break;
+      default:
+        break;
+    }
+  }
   switch (Key) {
     // Positioning:
     case kPlay:
@@ -767,10 +781,10 @@ eOSState cCridReplayControl::ProcessKey(eKeys Key)
     case kFastFwd:
     case kRight:   Forward(); break;
     case kRed:     TimeSearch(); break;
-    case kGreen|k_Repeat:
-    case kGreen:   SkipSeconds(-60); break;
-    case kYellow|k_Repeat:
-    case kYellow:  SkipSeconds( 60); break;
+    case kGreen|k_Repeat:   SkipSeconds(-(Setup.JumpSecondsRepeat)); break;
+    case kGreen:   SkipSeconds(-(Setup.JumpSeconds)); break;
+    case kYellow|k_Repeat:  SkipSeconds(Setup.JumpSecondsRepeat); break;
+    case kYellow:    SkipSeconds(Setup.JumpSeconds); break;
     case kStop:
     case kBlue:    Hide();
                    Stop();
