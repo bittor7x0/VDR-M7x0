@@ -33,7 +33,7 @@ private:
   int Width(const char* str) const;
   void Text(int x, int y, const char* str, tColor fg, tColor bg);
   void Fill(int x1, int y1, int x2, int y2, tColor c);
-  void Darken(int x1, int y1, int x2, int x2, int d = 2, tColor c = clrBlack);
+  void Darken(int x1, int y1, int x2, int y2, int d = 2, tColor c = clrBlack);
   void DarkenBg(void);
   
   void UpdateSelTime(void);

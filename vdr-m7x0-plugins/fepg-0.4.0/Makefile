@@ -20,8 +20,8 @@ CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual
 
 ### The directory environment:
 
-VDRDIR = ../../..
-LIBDIR = ../../lib
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### Allow user defined options to overwrite defaults:
@@ -58,7 +58,7 @@ OBJS = $(PLUGIN).o fepgOsd.o menu.o tools.o screenMenu.o colorMenu.o i18n.o text
 
 # Dependencies:
 
-MAKEDEP = g++ -MM -MG
+MAKEDEP = $(CXX) -MM -MG
 DEPFILE = .dependencies
 $(DEPFILE): Makefile
 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(subst i18n.c,,$(OBJS:%.o=%.c)) > $@
@@ -118,7 +118,7 @@ all: libvdr-$(PLUGIN).so i18n
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
+	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
