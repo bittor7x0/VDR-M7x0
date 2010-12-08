@@ -8,6 +8,7 @@
  */
 
 #include "menu.h"
+#include "iconpatch.h"
 #include <ctype.h>
 #include <limits.h>
 #include <stdio.h>
@@ -370,6 +371,14 @@ void cMenuChannelItem::Set(void)
   if (!channel->GroupSep()) {
      if (sortMode == csmProvider)
         asprintf(&buffer, "%d\t%s - %s", channel->Number(), channel->Provider(), channel->Name());
+     else if (Setup.WarEagleIcons) {
+        if (channel->Vpid() == 1 || channel->Vpid() == 0)
+            asprintf(&buffer, "%d\t%c %-30s", channel->Number(), ICON_RADIO, channel->Name());
+        else if (channel->Ca() == 0)
+            asprintf(&buffer, "%d\t%c %-30s", channel->Number(), ICON_TV, channel->Name());
+        else
+            asprintf(&buffer, "%d\t%c %-30s", channel->Number(), ICON_TV_VERSCHL, channel->Name());
+        }
      else
         asprintf(&buffer, "%d\t%s", channel->Number(), channel->Name());
      }
@@ -801,7 +810,7 @@ void cMenuTimerItem::Set(void)
      }
   char *buffer = NULL;
   asprintf(&buffer, "%c\t%d\t%s%s%s\t%02d:%02d\t%02d:%02d\t%s",
-                    !(timer->HasFlags(tfActive)) ? ' ' : timer->FirstDay() ? '!' : timer->Recording() ? '#' : '>',
+                    !(timer->HasFlags(tfActive)) ? ' ' : timer->FirstDay() ? Setup.WarEagleIcons ? ICON_PFEIL : '!' : timer->Recording() ? Setup.WarEagleIcons ? ICON_REC : '#' : Setup.WarEagleIcons ? ICON_UHR : '>',
                     timer->Channel()->Number(),
                     *name,
                     *name && **name ? " " : "",
@@ -2542,6 +2551,7 @@ void cMenuSetupOSD::Set(void)
   Add(new cMenuEditStraItem(tr("Setup.OSD$Skin"),                   &skinIndex, numSkins, skinDescriptions));
   if (themes.NumThemes())
   Add(new cMenuEditStraItem(tr("Setup.OSD$Theme"),                  &themeIndex, themes.NumThemes(), themes.Descriptions()));
+  Add(new cMenuEditBoolItem(tr("Setup.OSD$WarEagle icons"),         &data.WarEagleIcons));
   Add(new cMenuEditIntItem( tr("Setup.OSD$Left"),                   &data.OSDLeft, 0, MAXOSDWIDTH));
   Add(new cMenuEditIntItem( tr("Setup.OSD$Top"),                    &data.OSDTop, 0, MAXOSDHEIGHT));
   Add(new cMenuEditIntItem( tr("Setup.OSD$Width"),                  &data.OSDWidth, MINOSDWIDTH, MAXOSDWIDTH));

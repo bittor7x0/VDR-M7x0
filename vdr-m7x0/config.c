@@ -217,6 +217,7 @@ cSetup::cSetup(void)
   OSDLanguage = 0;
   strcpy(OSDSkin, "sttng");
   strcpy(OSDTheme, "default");
+  WarEagleIcons = 1;
   PrimaryDVB = 1;
   ShowInfoOnChSwitch = 1;
   TimeoutRequChInfo = 1;
@@ -399,6 +400,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   if      (!strcasecmp(Name, "OSDLanguage"))         OSDLanguage        = atoi(Value);
   else if (!strcasecmp(Name, "OSDSkin"))             strn0cpy(OSDSkin, Value, MaxSkinName);
   else if (!strcasecmp(Name, "OSDTheme"))            strn0cpy(OSDTheme, Value, MaxThemeName);
+  else if (!strcasecmp(Name, "WarEagleIcons"))       WarEagleIcons      = atoi(Value);
   else if (!strcasecmp(Name, "PrimaryDVB"))          PrimaryDVB         = atoi(Value);
   else if (!strcasecmp(Name, "ShowInfoOnChSwitch"))  ShowInfoOnChSwitch = atoi(Value);
   else if (!strcasecmp(Name, "TimeoutRequChInfo"))   TimeoutRequChInfo  = atoi(Value);
@@ -488,6 +490,7 @@ bool cSetup::Save(void)
   Store("OSDLanguage",        OSDLanguage);
   Store("OSDSkin",            OSDSkin);
   Store("OSDTheme",           OSDTheme);
+  Store("WarEagleIcons",      WarEagleIcons);
   Store("PrimaryDVB",         PrimaryDVB);
   Store("ShowInfoOnChSwitch", ShowInfoOnChSwitch);
   Store("TimeoutRequChInfo",  TimeoutRequChInfo);
