@@ -19,7 +19,7 @@ const tI18nPhrase aidePhrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Ayuda VDR", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -38,7 +38,7 @@ const tI18nPhrase aidePhrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Ayuda", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -57,7 +57,7 @@ const tI18nPhrase aidePhrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Temas de ayuda disponibles:", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -76,7 +76,7 @@ const tI18nPhrase aidePhrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Imagen", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -95,7 +95,7 @@ const tI18nPhrase aidePhrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    " %sPlugin : %s", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -114,7 +114,7 @@ const tI18nPhrase aidePhrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    " %sVersión : %s", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -126,14 +126,14 @@ const tI18nPhrase aidePhrases[] = {
   { " %sBy : %s", // English
     "", // Deutsch
     "", // Slovenski
-    " %sDa : %s"", // Italiano
+    " %sDa : %s", // Italiano
     "", // Nederlands
     "", // Português
     " %sPar : %s", // Français
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    " %sPor : %s", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste

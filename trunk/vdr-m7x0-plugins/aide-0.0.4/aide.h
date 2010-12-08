@@ -3,7 +3,7 @@
 
 #include <vdr/plugin.h>
 
-static const char *VERSION        = "0.0.2";
+static const char *VERSION        = "0.0.4";
 static const char *DESCRIPTION    = "VDR Help";
 static const char *MAINMENUENTRY  = "Help";
 
