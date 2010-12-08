@@ -2680,6 +2680,7 @@ void cDvbDevice::SetTvSettings(bool settv){
     if(settv){
       SetVolumeDevice(IsMute() ? 0 : CurrentVolume());
       SetTvMode(Setup.TvMode);
+      SetVCRMode(Setup.VCRMode);
       SetVideoFormat(eVideoFormat(Setup.VideoFormat));
     }else{
       int avs = open("/dev/avswitch", O_WRONLY);
@@ -2688,7 +2689,7 @@ void cDvbDevice::SetTvSettings(bool settv){
       CHECK(ioctl(avs, AVSWCMD_TV_OFF, 0));
       CHECK(ioctl(avs, AVSWCMD_TV_VCR, 0));
       close(avs);
-      SetVCRMode(Setup.VCRMode);
+
     }
 }
 

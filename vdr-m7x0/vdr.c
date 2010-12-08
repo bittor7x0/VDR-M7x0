@@ -735,6 +735,7 @@ int main(int argc, char *argv[])
      cDevice::PrimaryDevice()->ToggleMute();
   else
      cDevice::PrimaryDevice()->SetVolume(Setup.CurrentVolume, true);
+  cDevice::PrimaryDevice()->SetTvSettings(getIaMode());
 
 
 // Signal handlers:
