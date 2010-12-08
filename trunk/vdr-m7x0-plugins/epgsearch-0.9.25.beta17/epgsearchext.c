@@ -647,7 +647,9 @@ char* cSearchExt::BuildFile(const cEvent* pEvent) const
    else if (Utf8StrLen(Subtitle) > MAX_SUBTITLE_LENGTH) 
    {
       Utf8Strn0Cpy(SubtitleBuffer, Subtitle, sizeof(SubtitleBuffer));
+#if APIVERSNUM > 10503 
       SubtitleBuffer[Utf8SymChars(SubtitleBuffer, MAX_SUBTITLE_LENGTH)] = 0;
+#endif
       Subtitle = SubtitleBuffer;
    }
 

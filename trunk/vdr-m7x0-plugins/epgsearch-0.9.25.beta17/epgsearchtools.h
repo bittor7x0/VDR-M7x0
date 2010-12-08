@@ -92,7 +92,7 @@ using std::string;
 #define ICON_VPS               0x93
 #else
 // previous WAREAGLE icons
-#define ICON_REC               0xF9
+#define ICON_REC               0xF0
 #define ICON_RUNNING           0xFB
 #define ICON_CLOCK             0xFD
 #define ICON_CLOCK_HALF        0x74
@@ -116,6 +116,8 @@ using std::string;
 
 #if APIVERSNUM < 10503 
 #define Utf8BufSize(s) ((s) * 4)
+#define Utf8StrLen(s) strlen(s)
+#define Utf8Strn0Cpy(d, s, n) strn0cpy(d, s, n)
 #endif
 
 extern const char AllowedChars[];

@@ -860,7 +860,10 @@ int ChannelNrFromEvent(const cEvent* pEvent)
 
 void DelTimer(int index)
 {
-  cString cmdbuf = cString::sprintf("DELT %d", index);    
+  cString cmdbuf = cString::sprintf("MODT %d off", index);
+  LogFile.Log(2, "deactivate timer %d", index);
+  SendViaSVDRP(cmdbuf);
+  cmdbuf = cString::sprintf("DELT %d", index);
   LogFile.Log(2, "delete timer %d", index);
   SendViaSVDRP(cmdbuf);
   gl_timerStatusMonitor->SetConflictCheckAdvised(); 

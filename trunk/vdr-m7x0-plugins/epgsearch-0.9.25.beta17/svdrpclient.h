@@ -131,6 +131,8 @@ public:
 		{
 		    bCheckMultiLine = false;
 		    rc = atol(csResp);
+		    if (rc != CMDSUCCESS )
+		    LogFile.eSysLog("EPGSearch: SVDRP response '%s'", csResp);
 		}
 		free(csResp);
 		csResp = strdup("");

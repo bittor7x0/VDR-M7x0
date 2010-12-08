@@ -403,35 +403,28 @@ msgid "Help$Set this to 'yes' if you want timers to be recreated with the next s
 msgstr "Establecer a 'sí' cuando desee que las programaciones se creen de nuevo con la siguiente actualización de programación por búsqueda después de borrarlas."
 
 msgid "Check if EPG exists for ... [h]"
-msgstr ""
+msgstr "Comprobar si hay EPG durante ... [h]"
 
-#, fuzzy
 msgid "Help$Specify how many hours of future EPG there should be and get warned else after a search timer update."
-msgstr "Establecer a 'sí' cuando desee comprobar conflictos después de actualizar cada programación por búsqueda."
+msgstr "Especifique el número de horas futuras de EPG que debería haber y si no las hay será avisado después de actualizar una programación por búsqueda."
 
-#, fuzzy
 msgid "Warn by OSD"
-msgstr "Sólo avisar"
+msgstr "Avisar por el OSD"
 
-#, fuzzy
 msgid "Help$Set this to 'yes' if you want get warnings from the EPG check via OSD."
-msgstr "Establecer a 'sí' cuando desee recibir una notificación por correo sobre los conflictos de programación."
+msgstr "Establecer a 'sí' cuando desee recibir avisos de las comprobaciones EPG por el OSD."
 
-#, fuzzy
 msgid "Warn by mail"
-msgstr "Sólo avisar"
+msgstr "Avisar por correo"
 
-#, fuzzy
 msgid "Help$Set this to 'yes' if you want get warnings from the EPG check by mail."
-msgstr "Establecer a 'sí' cuando su cuenta necesite autenticación para enviar correos."
+msgstr "Establecer a 'sí' cuando desee recibir avisos de las comprobaciones EPG por correo."
 
-#, fuzzy
 msgid "Channel group to check"
-msgstr "Grupo de canales"
+msgstr "Grupo de canales a comprobar"
 
-#, fuzzy
 msgid "Help$Specify the channel group to check."
-msgstr "Especifique el nombre de la plantilla."
+msgstr "Especifique el grupo de canales a comprobar."
 
 msgid "Ignore PayTV channels"
 msgstr "Ignorar los canales de pago"
@@ -522,14 +515,14 @@ msgid "Help$Set this to 'yes' if you want to get an email notification about the
 msgstr "Establecer a 'sí' cuando desee tener una notificación por correo de las programaciones por búsqueda que fueron creadas automáticamente."
 
 msgid "Time between mails [h]"
-msgstr ""
+msgstr "Tiempo entre correos [h]"
 
 msgid ""
 "Help$Specifiy how much time in [h] you would\n"
 "like to have atleast between two mails.\n"
 "With '0' you get a new mail after each\n"
 "search timer update with new results."
-msgstr ""
+msgstr "Especifique cuánto tiempo en [h] le gustaría\ntener como mínimo entre dos correos.\nCon '0' obtendrá un nuevo correo después de cada\nprogramación por búsqueda con nuevos resultados."
 
 msgid "Timer conflict notification"
 msgstr "Notificar conflicto en programación"
@@ -615,7 +608,7 @@ msgid "No timers were deleted."
 msgstr "No se borraron programaciones."
 
 msgid "No new events to announce."
-msgstr ""
+msgstr "No hay nuevos eventos que avisar."
 
 msgid "This version of EPGSearch does not support this service!"
 msgstr "¡Esta versión de EPGSearch no soporta este servicio!"
@@ -981,9 +974,8 @@ msgstr "Editar búsqueda"
 msgid "Record"
 msgstr "Grabar"
 
-#, fuzzy
 msgid "Announce by OSD"
-msgstr "Sólo avisar"
+msgstr "Avisar por el OSD"
 
 msgid "Switch only"
 msgstr "Cambiar de canal"
@@ -991,9 +983,8 @@ msgstr "Cambiar de canal"
 msgid "Announce and switch"
 msgstr "Avisar y cambiar"
 
-#, fuzzy
 msgid "Announce by mail"
-msgstr "Sólo avisar"
+msgstr "Avisar por correo"
 
 msgid "Selection"
 msgstr "selección"
@@ -1113,9 +1104,8 @@ msgstr "Comparar subtítulo"
 msgid "Compare summary"
 msgstr "Comparar resumen"
 
-#, fuzzy
 msgid "Min. match in %"
-msgstr "  Duración mín."
+msgstr "  Coincidencia mín. en %"
 
 msgid "Compare categories"
 msgstr "Comparar categorías"
@@ -1252,10 +1242,10 @@ msgstr "¡Programación por búsqueda actualizada!"
 
 #, c-format
 msgid "small EPG content on:%s"
-msgstr ""
+msgstr "poco contenido EPG en:%s"
 
 msgid "VDR EPG check warning"
-msgstr ""
+msgstr "VDR aviso al comprobar EPG"
 
 #, c-format
 msgid "Switch to (%d) '%s'?"
