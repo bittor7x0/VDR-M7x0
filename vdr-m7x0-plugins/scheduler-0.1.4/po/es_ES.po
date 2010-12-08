@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <see README>\n"
 "POT-Creation-Date: 2008-08-17 21:22+0200\n"
-"PO-Revision-Date: 2007-12-07 19:31+0200\n"
+"PO-Revision-Date: 2009-10-15 20:45+0200\n"
 "Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
 "MIME-Version: 1.0\n"
@@ -67,7 +67,7 @@ msgid "Save ... logs"
 msgstr "Guardar ... registros"
 
 msgid "Kill after ... minutes"
-msgstr ""
+msgstr "Detener a los ... minutos"
 
 msgid "Next executions:"
 msgstr "Próximas ejecuciones:"
@@ -75,15 +75,12 @@ msgstr "Próximas ejecuciones:"
 msgid "Tasks"
 msgstr "Tareas"
 
-#, fuzzy
 msgid "Button$New"
-msgstr "Detener"
+msgstr "Nuevo"
 
-#, fuzzy
 msgid "Button$Stop"
 msgstr "Detener"
 
-#, fuzzy
 msgid "Button$Start"
 msgstr "Iniciar"
 
