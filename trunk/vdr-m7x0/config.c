@@ -146,6 +146,7 @@ bool cSVDRPhost::Accepts(in_addr_t Address)
 
 cCommands Commands;
 cCommands RecordingCommands;
+cCommands TimerCommands;
 
 void cCommands::AddConfig(cCommand *Object)
 {

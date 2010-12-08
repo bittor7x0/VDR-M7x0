@@ -610,6 +610,7 @@ int main(int argc, char *argv[])
         Timers.Load(AddDirectory(ConfigDirectory, "timers.conf")) &&
         Commands.Load(AddDirectory(ConfigDirectory, "commands.conf"), true) &&
         RecordingCommands.Load(AddDirectory(ConfigDirectory, "reccmds.conf"), true) &&
+        TimerCommands.Load(AddDirectory(ConfigDirectory, "timercmds.conf"), true) &&
         SVDRPhosts.Load(AddDirectory(ConfigDirectory, "svdrphosts.conf"), true) &&
         Keys.Load(AddDirectory(ConfigDirectory, "remote.conf")) &&
         KeyMacros.Load(AddDirectory(ConfigDirectory, "keymacros.conf"), true)

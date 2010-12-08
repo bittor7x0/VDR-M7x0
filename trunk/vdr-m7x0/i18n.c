@@ -349,6 +349,27 @@ const tI18nPhrase Phrases[] = {
     "Optage kommandoer",
     "Pøíkazy nahrávání",
   },
+  { "Timer commands",
+    "Befehle für Timer",
+    "Ukazi za termine",
+    "Timer comandi",
+    "",// "Nederlands"
+    "",// "Português"
+    "Commandes de programmation",
+    "Timer kommandoer",
+    "Ajastinkomennot",
+    "",// "Polski"
+    "Órdenes de programación",
+    "",// "ÅëëçíéêÜ", // Greek
+    "Timer kommandon",
+    "Comenzi timer",
+    "",// "Magyar"
+    "Ordres de programació",
+    "",// "ÀãááÚØÙ", // Russian
+    "Naredbe za termine",
+    "",// "Eesti"
+    "",// "Dansk"
+  },
   { "Edit channel",
     "Kanal editieren",
     "Uredi kanal",
