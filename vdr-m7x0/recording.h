@@ -206,7 +206,15 @@ public:
 // may be slightly higher because we stop recording only before the next
 // 'I' frame, to have a complete Group Of Pictures):
 #define MAXVIDEOFILESIZE 2000 // MB
-#define MINVIDEOFILESIZE  100 // MB
+#define MINVIDEOFILESIZE    1 // MB
+
+#define MINRECORDINGSIZE      25 // GB
+#define MAXRECORDINGSIZE     500 // GB
+#define DEFAULTRECORDINGSIZE 100 // GB
+// Dynamic recording size:
+// Keep recording file size at Setup.MaxVideoFileSize for as long as possible,
+// but switch to MAXVIDEOFILESIZE early enough, so that Setup.MaxRecordingSize
+// will be reached, before recording to file 255.vdr
 
 class cIndexFile {
 private:
@@ -259,6 +267,8 @@ public:
   void Close(void);
   int Unlink(void);
   cUnbufferedFile *SetOffset(int Number, int Offset = 0);
+  int MaxFileSize();
+      // Dynamic file size for this file
   cUnbufferedFile *NextFile(void);
   };
 

@@ -4916,6 +4916,50 @@ const tI18nPhrase Phrases[] = {
     "Max. video filstørrelse (MB)",
     "Maximální velikost nahrávky (MB)",
   },
+  { "Setup.Recording$Max. recording size (GB)",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Tamaño máximo grabación (GB)",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Setup.Cutter$Hard Link Cutter",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Editar con enlaces duros",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Setup.Recording$Split edited files",
     "Editierte Dateien aufteilen",
     "Razdeli urejene datoteke",
