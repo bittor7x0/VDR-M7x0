@@ -249,6 +249,7 @@ public:
   int VideoFormat;
   int UpdateChannels;
   int UseDolbyDigital;
+  int UseDolbyInRecordings;
   int ChannelInfoPos;
   int ChannelInfoTime;
   int OSDLeft, OSDTop, OSDWidth, OSDHeight;
