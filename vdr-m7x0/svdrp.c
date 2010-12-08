@@ -187,6 +187,8 @@ const char *HelpPages[] = {
   "    it returns the current channel number and name.",
   "CLRE\n"
   "    Clear the entire EPG list.",
+  "CTRL <on|off>\n"
+  "    Enable/Disable Input devices.",
   "DELC <number>\n"
   "    Delete channel.",
   "DELR <number>\n"
@@ -537,6 +539,26 @@ void cSVDRP::CmdCLRE(const char *Option)
 {
   cSchedules::ClearAll();
   Reply(250, "EPG data cleared");
+}
+
+void cSVDRP::CmdCTRL(const char *Option)
+{
+  if (*Option) {
+    if (!strcasecmp( Option, "on" )) {
+      cRemote::Enable();
+      Reply(250, "Input Control enabled");
+      }
+    else {
+      if (!strcasecmp( Option, "off" )) {
+        cRemote::Disable();
+        Reply(250, "Input Control disabled");
+        }
+      else
+        Reply(250, "Illegal Command %s", Option);
+      }
+    }
+  else
+    Reply(250, "Parameter missing");
 }
 
 void cSVDRP::CmdDELC(const char *Option)
@@ -1538,6 +1560,7 @@ void cSVDRP::Execute(char *Cmd)
   s = skipspace(s);
   if      (CMD("CHAN"))  CmdCHAN(s);
   else if (CMD("CLRE"))  CmdCLRE(s);
+  else if (CMD("CTRL"))  CmdCTRL(s);
   else if (CMD("DELC"))  CmdDELC(s);
   else if (CMD("DELR"))  CmdDELR(s);
   else if (CMD("DELT"))  CmdDELT(s);

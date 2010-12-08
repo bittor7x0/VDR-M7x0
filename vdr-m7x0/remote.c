@@ -22,6 +22,7 @@
 #define REPEATTIMEOUT  1000 // ms
 
 eKeys cRemote::keys[MaxKeys];
+bool cRemote::disabled = false;
 int cRemote::in = 0;
 int cRemote::out = 0;
 cTimeMs cRemote::repeatTimeout;
@@ -185,7 +186,7 @@ eKeys cRemote::Get(int WaitMs, char **UnknownCode)
          if ((k & k_Repeat) != 0)
             repeatTimeout.Set(REPEATTIMEOUT);
          lastActivity = time(NULL);
-         return k;
+         return disabled ? kNone : k;
          }
       else if (!WaitMs || (!keyPressed.TimedWait(mutex, WaitMs) && repeatTimeout.TimedOut()))
          return kNone;

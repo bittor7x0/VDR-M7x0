@@ -56,6 +56,7 @@ private:
   void PrintHelpTopics(const char **hp);
   void CmdCHAN(const char *Option);
   void CmdCLRE(const char *Option);
+  void CmdCTRL(const char *Option);
   void CmdDELC(const char *Option);
   void CmdDELR(const char *Option);
   void CmdDELT(const char *Option);

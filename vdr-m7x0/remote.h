@@ -32,6 +32,7 @@ private:
   static const char *keyMacroPlugin;
   static const char *callPlugin;
   char *name;
+  static bool disabled;
 protected:
   cRemote(const char *Name);
   const char *GetSetup(void);
@@ -45,6 +46,8 @@ public:
   const char *Name(void) { return name; }
   static void SetLearning(cRemote *Learning) { learning = Learning; }
   static bool IsLearning() { return learning != NULL; }
+  static void Disable() { disabled = true; }
+  static void Enable() { disabled = false; }
   static void Clear(void);
   static bool Put(eKeys Key, bool AtFront = false);
   static bool PutMacro(eKeys Key);
