@@ -1,0 +1,73 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Yarema P. aka Knedlyk <yupadmin@gmail.com>, 2008
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <nobody@nowhere.org>\n"
+"POT-Creation-Date: 2008-12-20 21:45+0100\n"
+"PO-Revision-Date: 2009-05-25 20:33+0200\n"
+"Last-Translator: Yarema P. aka Knedlyk <yupadmin@gmail.com>\n"
+"Language-Team: Ukrainian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel (press OK): "
+msgstr "Канал (натисніть ОК): "
+
+msgid "Page"
+msgstr "Сторінка"
+
+msgid "not found"
+msgstr "не знайдена"
+
+msgid "Displays teletext on the OSD"
+msgstr "Показувати телетекст в меню"
+
+msgid "Teletext"
+msgstr "Телетекст"
+
+msgid "Zoom"
+msgstr "Збільшити"
+
+msgid "Half page"
+msgstr "Пів сторінки"
+
+msgid "Change channel"
+msgstr "Змінити канал"
+
+msgid "Switch background"
+msgstr "Переключити фон"
+
+msgid "Jump to..."
+msgstr "Перейти до..."
+
+msgid "Background transparency"
+msgstr "Ступінь прозорості фону"
+
+msgid "Show clock"
+msgstr "Показувати годинник"
+
+msgid "Auto-update pages"
+msgstr "Автооновлення сторінок"
+
+msgid "OSD height"
+msgstr "Висота OSD"
+
+msgid "OSD width"
+msgstr "Ширина OSD"
+
+msgid "OSD horizontal align"
+msgstr "Горизонтальне положення OSD"
+
+msgid "OSD vertical align"
+msgstr "Вертикальне положення OSD"
+
+msgid "Key bindings"
+msgstr "Призначення клавіш"
+
+msgid "  Page number"
+msgstr "  Номер сторінки"

@@ -1,0 +1,11 @@
+VDR po2i18n script Revision History
+-----------------------------------
+
+2007-08-26: Version 0.2
+
+- Improved Makefile, skip unneeded stuff depending on version
+- Handle multi-line strings in po files
+
+2007-08-18: Version 0.1
+
+- Initial revision.

@@ -1,0 +1,31 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr 1.5.7\n"
+"Report-Msgid-Bugs-To: <vdr@joachim-wilke.de>\n"
+"POT-Creation-Date: 2008-03-02 18:57+0100\n"
+"PO-Revision-Date: 2007-08-19 16:05+0200\n"
+"Last-Translator: Oktay\tYolgecen <oktay_73@yahoo.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-9\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: mlist.c:15
+msgid "Displays the message history"
+msgstr "Geçmiþ mesajlarý gösterir"
+
+#: mlist.c:16
+msgid "Message History"
+msgstr "Geçmiþ mesajlar"
+
+#: mlist.c:48
+msgid "Hide mainmenu entry"
+msgstr "Ana menüde sakla"
+
+#: mlist.c:81
+msgid "Delete"
+msgstr "Sil"

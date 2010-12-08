@@ -1,0 +1,73 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Ruben Nunez Francisco <ruben.nunez@tang-it.com>, 2002
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <nobody@nowhere.org>\n"
+"POT-Creation-Date: 2008-12-20 10:45+0100\n"
+"PO-Revision-Date: 2008-05-04 15:33+0200\n"
+"Last-Translator: Ruben Nunez Francisco <ruben.nunez@tang-it.com>\n"
+"Language-Team: Spanish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel (press OK): "
+msgstr "Canal (pulse OK):"
+
+msgid "Page"
+msgstr "Página"
+
+msgid "not found"
+msgstr "no encontrada"
+
+msgid "Displays teletext on the OSD"
+msgstr "Visualiza el teletexto en el OSD"
+
+msgid "Teletext"
+msgstr "Teletexto"
+
+msgid "Zoom"
+msgstr "Zoom"
+
+msgid "Half page"
+msgstr "Media página"
+
+msgid "Change channel"
+msgstr "Cambio cadena"
+
+msgid "Switch background"
+msgstr "Cambia el fondo"
+
+msgid "Jump to..."
+msgstr "Salta a..."
+
+msgid "Background transparency"
+msgstr "Transparencia del fondo"
+
+msgid "Show clock"
+msgstr "Visualiza el reloj"
+
+msgid "Auto-update pages"
+msgstr ""
+
+msgid "OSD height"
+msgstr "Altura OSD"
+
+msgid "OSD width"
+msgstr "Anchura OSD"
+
+msgid "OSD horizontal align"
+msgstr ""
+
+msgid "OSD vertical align"
+msgstr ""
+
+msgid "Key bindings"
+msgstr ""
+
+msgid "  Page number"
+msgstr "  Número de página"

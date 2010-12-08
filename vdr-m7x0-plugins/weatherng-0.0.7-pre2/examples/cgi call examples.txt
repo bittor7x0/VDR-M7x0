@@ -1,0 +1,9 @@
+
+http://10.10.11.254/cgi-bin/jpg2xpm.cgi?http://www.dwd.de/scripts/getimg.php%3Fsrc%3D/wundk/Wetter.jpg
+http://10.10.11.254/cgi-bin/jpg2xpm.cgi?http://www.tagesschau.de/import/wetter/de-vs-tn.jpg
+http://10.10.11.254/cgi-bin/jpg2xpm.cgi?http://www.tagesschau.de/import/wetter/de-vs-tt.jpg
+http://10.10.11.254/cgi-bin/jpg2xpm.cgi?http://www.tagesschau.de/import/wetter/de-vs-3t.jpg
+http://www.intellicast.com/WeatherImg/Satellite/europ.jpg
+http://www.intellicast.com/WeatherImg/Satellite/hieusat.gif
+http://www.intellicast.com/WeatherImg/Satellite/hieusat.png
+http://www.intellicast.com/WeatherImg/Satellite/nweur.jpg

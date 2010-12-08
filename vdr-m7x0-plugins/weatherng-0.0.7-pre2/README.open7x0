@@ -1,0 +1,52 @@
+Folgendes funktioniert anders als im Wiki/Readme beschrieben:
+- es werden nur XMP Bilder für die Wetter Images unterstützt
+- Das shell script weatherng.sh zum herunterladen der Wetterinformationen
+  wird nicht mehr benötigt. Dies macht das Plugin selber. Die Lokationen können
+  direkt im Setup eingestellt werden. 
+- Die URLS zum Herunterladen der XMP Radarbilder konnen nur manuell in der 
+  setup.conf des VDR eingestellt werden.
+- im examples Ordner befindet sich ein jpg2xpm.sh mit welchem man Radarbilder
+  aus dem Internet laden und in das XMP Format umsetzen kann um diese dann mit
+  dem Plugin von einem lokalen http Server zu laden
+
+Zur Installation:
+1) Das angehängte Plugin (weatherng_src.zip) mit der TC übersetzen.
+2) Die benötigten Konfigurationsdaten in das plugins Verzeichnis Kopieren 
+   (auf der Box normalerweise /etc/vdr/plugins)
+3) Das übersetzte Plugin in den Plugin Ordner kopieren und den VDR neu starten
+
+Nun sollte das Plugin laufen. Man muss aber noch den Ort einstellen für den man 
+die Wetterinformationen sehen will. Dies passiert über eine ID im Setup Menu 
+des Plugins.
+
+Die ID kann wie folgt ermittelt werden:
+Ruft die Seite http://www.weather.com auf. 
+
+Geb dort eure Stadt ein zb "Herne"
+
+Nach dem Suchen bekommt Ihr ein Link zur eurer Stadt, in der URL steht ein Code,
+der wie folgt aufgebaut ist 
+GMXX0056 (Angabe für den Ort Herne)
+wobei 0056 ausgetauscht wird, mit der Nummer die für den jeweiligen Ort angegeben 
+wurde.
+
+Das Plugin kann auch Radarbilder anzeigen. Dies aber nur mit der Einschränkung das 
+diese im XMP Format vorliegen. Bei den meisten im Netz verfügbaren Bildern ist das 
+nicht der Fall :-)
+
+Deshalb liegt im Ordner example ein shell script mit dem namen jpg2xmp.sh. Dieses 
+holt die Radarbilder aus dem Internet konvertiert sie in das XMP Format und kopiert 
+sie in den http Ordner des webservers. Von diesem kann sich das Plugin die Bilder 
+dann abholen. Das script wird dann bei mir auf dem Server per cron jede Stunde 
+ausgeführt. Nein das script ist und wird auch nie auf der Box lauffähig sein.
+
+Der Ordner kann in der setup.conf des VDR eingestellt werden, da es hier führ keine 
+Einträge im Setup Menu des Plugins gibt:
+weatherng.Pic0 = http://x.x.x.x/wetter/pic0.xpm
+weatherng.Pic1 = http://x.x.x.x/wetter/pic1.xpm
+weatherng.Pic2 = http://x.x.x.x/wetter/pic2.xpm
+weatherng.Pic3 = http://x.x.x.x/wetter/pic3.xpm
+weatherng.Pic4 = http://x.x.x.x/wetter/pic4.xpm
+
+Viel Spaß
+    Hanspeter

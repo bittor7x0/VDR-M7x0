@@ -1,0 +1,77 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Jean-Claude Repetto <jc@repetto.org>, 2001
+# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+# Gregoire Favre <greg@magma.unil.ch>, 2003
+# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <nobody@nowhere.org>\n"
+"POT-Creation-Date: 2008-12-20 10:45+0100\n"
+"PO-Revision-Date: 2009-01-10 19:32+0100\n"
+"Last-Translator: Nival Michaël\n"
+"Language-Team: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel (press OK): "
+msgstr "Chaine (Appuyer sur OK): "
+
+msgid "Page"
+msgstr "Page"
+
+msgid "not found"
+msgstr "pas trouvé"
+
+msgid "Displays teletext on the OSD"
+msgstr "Affiche le télétexte sur l'OSD"
+
+msgid "Teletext"
+msgstr "Teletexte"
+
+msgid "Zoom"
+msgstr "Zoom"
+
+msgid "Half page"
+msgstr "Demi-Page"
+
+msgid "Change channel"
+msgstr "Changer la chaîne"
+
+msgid "Switch background"
+msgstr "Change le fond d'écran"
+
+msgid "Jump to..."
+msgstr "Aller à..."
+
+msgid "Background transparency"
+msgstr "Fond transparent"
+
+msgid "Show clock"
+msgstr "Afficher l'heure"
+
+msgid "Auto-update pages"
+msgstr "Mise à jour des pages"
+
+msgid "OSD height"
+msgstr "Hauteur OSD"
+
+msgid "OSD width"
+msgstr "Largeur OSD"
+
+msgid "OSD horizontal align"
+msgstr "Alignement horizontal de l'OSD"
+
+msgid "OSD vertical align"
+msgstr "Alignement vertical de l'OSD"
+
+msgid "Key bindings"
+msgstr "Attribution des touches"
+
+msgid "  Page number"
+msgstr "  Nombre de pages"
+

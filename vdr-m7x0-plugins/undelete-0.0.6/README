@@ -1,0 +1,28 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Hardy Flor <HFlor@web.de>
+
+Project's homepage:          www.fast-info.de/vdr/undelete
+
+See the file COPYING for license information.
+
+undelete-plugin version 0.0.6
+
+This plugin allow the undelete from deleted recordings for a short time
+
+If the VDR idle then erase all deleted recordings! 
+
+Handling:
+
+You can build the list from plugin-setup (by 'Display deleted recordings now') or is the
+mainmenuentry visible from then mainmenu.
+
+The keys for purge and salvage can you change in the setup of plugin
+
+control with SVDRP is also allow:
+
+PLUG undelte LSTD    [ <number> ]   List deleted recordings
+PLUG undelte SIZED   [ -h ]         Caclulate the size of deleted recordings
+PLUG undelte RMDIR                  Start remove empty directory
+PLUG undelte PURGE   ALL | <number> purge the selected deleted recording
+PLUG undelte SALVAGE ALL | <number> salvage the selected deleted recording

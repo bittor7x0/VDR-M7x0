@@ -1,0 +1,8 @@
+
+cat $1 | awk 'BEGIN                                  { insidecom=0; }
+                                  /[<][!][-][-]/     { insidecom=1; } 
+                                  /[-][-][>]/        { insidecom=0; }  
+                                  /^[^-]/            { if (!insidecom) { printf( "%s\n", $0); begin=0 } }' | \
+egrep "<(system|menu|command) " | sed s/"^.* name=\""/""/ | sed s/"\".*"/""/ | sort | uniq | awk '{ printf("%s:no:0000:2359:%s:exact\n", $0, $0) }'
+
+

@@ -1,0 +1,134 @@
+# French translations for vdr-sudoku package.
+# Copyright (C) 2007-2008 Thomas Günther <tom@toms-cafe.de>
+# This file is distributed under the same license as the vdr-sudoku package.
+# Patrice Staudt <patr.staudt@laposte.net>, 2008.
+# NIVAL Michaël <mnival@vdrbox.lautre.net>, 2008.
+#
+# $Id: fr_FR.po 164 2008-11-27 00:00:38Z tom $
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr-sudoku 0.3.4\n"
+"Report-Msgid-Bugs-To: <tom@toms-cafe.de>\n"
+"POT-Creation-Date: 2008-11-21 00:36+0100\n"
+"PO-Revision-Date: 2008-11-24 19:06+0100\n"
+"Last-Translator: NIVAL Michaël <mnival@vdrbox.lautre.net>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Generate a new puzzle"
+msgstr "Créer un nouveau puzzle"
+
+msgid "Load a puzzle"
+msgstr "Charger un puzzle"
+
+msgid "Save the puzzle"
+msgstr "Sauvegarder le puzzle"
+
+msgid "Undo last action"
+msgstr "Annuler la dernière action"
+
+msgid "Redo last action"
+msgstr "Répéter la dernière action"
+
+msgid "Mark/unmark"
+msgstr "Marquer/Démarquer"
+
+msgid "Next cell"
+msgstr "Cellule suivante"
+
+msgid "Next number"
+msgstr "Nombre suivant"
+
+msgid "Reset the puzzle"
+msgstr "Remise à zéro du puzzle"
+
+msgid "Open setup menu"
+msgstr "Ouvrir le menu de configuration"
+
+msgid "Exit"
+msgstr "Terminer"
+
+msgid "Sudoku list"
+msgstr "Liste Sudoku"
+
+msgid "Delete the puzzle?"
+msgstr "Supprimer le puzzle ?"
+
+msgid "Button$Load"
+msgstr "Charger"
+
+msgid "Button$Back"
+msgstr "Retour"
+
+msgid "Edit sudoku list"
+msgstr "Editer la liste Sudoku"
+
+msgid "Description"
+msgstr "Description"
+
+msgid ""
+"Congratulations!\n"
+"Press OK to start a new puzzle"
+msgstr ""
+"Félicitation!\n"
+"Avec OK vous lancez un nouveau puzzle"
+
+msgid "Givens count"
+msgstr "Nombre de chiffre donné"
+
+msgid "Symmetric givens"
+msgstr "Chiffre donné symétrique"
+
+msgid "Mark errors"
+msgstr "Marquer les erreurs"
+
+msgid "Mark ambiguous numbers"
+msgstr "Marquer les chiffres anbigus"
+
+msgid "Show possible numbers as pattern"
+msgstr "Afficher les chiffres possible comme modèle"
+
+msgid "Show possible numbers as digits"
+msgstr "Afficher les chiffres possible comme chiffre"
+
+msgid "Clear marks on reset"
+msgstr "Effacer les marques lors de la mise à zéro"
+
+msgid "Key Red"
+msgstr "Bouton rouge"
+
+msgid "Key Green"
+msgstr "Bouton vert"
+
+msgid "Key Yellow"
+msgstr "Bouton jaune"
+
+msgid "Large font"
+msgstr "Grande police"
+
+msgid "Large font height (pixel)"
+msgstr "Hauteur grande police (pixel)"
+
+msgid "Large font width (pixel)"
+msgstr "Largeur grande police (pixel)"
+
+msgid "Small font"
+msgstr "Petite police"
+
+msgid "Small font height (pixel)"
+msgstr "Hauteur petite police (pixel)"
+
+msgid "Small font width (pixel)"
+msgstr "Largeur petite police (pixel)"
+
+msgid "Transparency (%)"
+msgstr "Transparence (%)"
+
+msgid "Sudoku - generate and solve Number Place puzzles"
+msgstr "Sudoku - créer et résoudre des puzzles de chiffres"
+
+msgid "Sudoku"
+msgstr "Sudoku"
