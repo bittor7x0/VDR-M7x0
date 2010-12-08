@@ -14,7 +14,7 @@
 cSoppalusikkaConfig SoppalusikkaConfig;
 
 cSoppalusikkaConfig::cSoppalusikkaConfig()
-: usesinglearea(0), showauxinfo(1), showlogo(0), showvps(1),
+: usesinglearea(1), showauxinfo(1), showlogo(0), showvps(1),
   showsymbols(0), showprogressbar(1), cachesize(50), usechannelid(0)
 {
   memset(logodir, 0, sizeof(logodir));

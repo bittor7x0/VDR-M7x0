@@ -85,7 +85,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "Stereo", // suomi (Finnish)
     "Stereo", // Polski
-    "Estereo", // Español
+    "Estéreo", // Español
     "", // ÅëëçíéêÜ (Greek)
     "Stereo", // Svenska
     "", // Românã
@@ -217,7 +217,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "Tunnista kanava", // suomi (Finnish)
     "Rozpoznaj kana³ po", // Polski
-    "Identificar el canal por...", // Español
+    "Identificar el canal por", // Español
     "", // ÅëëçíéêÜ (Greek)
     "Identifiera kanal med", // Svenska
     "", // Românã
@@ -283,7 +283,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "Välimuistin koko kanavalogoille", // suomi (Finnish)
     "Rozmiar cache dla logo kana³u", // Polski
-    "Tamaño de la cache de los logos", // Español
+    "Tamaño de la caché para logos", // Español
     "", // ÅëëçíéêÜ (Greek)
     "Cachestorlek för logotyper", // Svenska
     "", // Românã
@@ -305,7 +305,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "Tyhjennä", // suomi (Finnish)
     "Opró¿nij cache", // Polski
-    "Limpiar la cache", // Español
+    "Limpiar la caché", // Español
     "", // ÅëëçíéêÜ (Greek)
     "Töm cachen", // Svenska
     "", // Românã
@@ -327,7 +327,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "Tyhjennetään välimuistia...", // suomi (Finnish)
     "Opró¿niam cache logo kana³u...", // Polski
-    "Limpiando la cache...", // Español
+    "Limpiando caché de logos...", // Español
     "", // ÅëëçíéêÜ (Greek)
     "Tömmer cachen...", // Svenska
     "", // Românã
@@ -349,7 +349,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "Kielet", // suomi (Finnish)
     "Jêzyki", // Polski
-    "Lenguajes", // Español
+    "Idiomas", // Español
     "", // ÅëëçíéêÜ (Greek)
     "Språk", // Svenska
     "", // Românã
@@ -459,7 +459,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "Näytä VPS kanavatiedossa", // suomi (Finnish)
     "", // Polski
-    "", // Español
+    "Mostrar VPS en info del canal", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Românã
@@ -471,6 +471,7 @@ const tI18nPhrase Phrases[] = {
     "", // Dansk
     "", // Èesky (Czech)
   },
+#ifndef VDRO7OVERSION
   { "Use single area (8bpp)", // English
     "Ein Bildbereich benutzen (8bpp)", // Deutsch
     "", // Slovenski
@@ -481,7 +482,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "Käytä yksittäistä kuva-aluetta (8bpp)", // suomi (Finnish)
     "", // Polski
-    "", // Español
+    "Sólo usar un área (8bpp)", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Românã
@@ -493,5 +494,6 @@ const tI18nPhrase Phrases[] = {
     "", // Dansk
     "", // Èesky (Czech)
   },
+#endif
   { NULL }
 };
