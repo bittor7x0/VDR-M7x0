@@ -22,8 +22,8 @@ CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
 
 ### The directory environment:
 #DVBDIR = ../../../../DVB
-VDRDIR = ../../..
-LIBDIR = ../../lib
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### Allow user defined options to overwrite defaults:
@@ -44,7 +44,7 @@ ARCHIVE = $(PLUGIN)-$(VERSION)
 PACKAGE = vdr-$(ARCHIVE)
 
 ### Includes and Defines (add further entries here):
-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
+INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
@@ -96,7 +96,7 @@ i18n: $(I18Nmo)
 ### Targets:
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
+	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)

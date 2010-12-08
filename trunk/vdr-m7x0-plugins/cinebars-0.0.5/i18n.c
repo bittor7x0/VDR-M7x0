@@ -19,7 +19,7 @@ const tI18nPhrase Phrases[] = {
     "",// Norsk
     "",// suomi
     "",// Polski
-    "",// Español
+    "Superposición \"bandas de cine\"",	// Español
     "",// ÅëëçíéêÜ
     "",// Svenska
     "",// Romaneste
@@ -39,7 +39,7 @@ const tI18nPhrase Phrases[] = {
     "",// Norsk
     "",// suomi
     "",// Polski
-    "",// Español
+    "Bandas de cine",	// Español
     "",// ÅëëçíéêÜ
     "",// Svenska
     "",// Romaneste
@@ -59,7 +59,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "Piilota valinta päävalikosta", 		// suomi
     "", // Polski
-    "", // Español
+    "Ocultar entrada en menú principal",	// Español
     "", // ÅëëçíéêÜ
     "", // Svenska
     "", // Romaneste
@@ -79,7 +79,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "",// TODO
+    "Banda superior",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -99,7 +99,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "",// TODO
+    "Altura banda superior",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -119,7 +119,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "",// TODO
+    "Banda inferior",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -139,7 +139,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "",// TODO
+    "Altura banda inferior",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -159,7 +159,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "",// TODO
+    "Incremento de altura",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -179,7 +179,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "",// TODO
+    "Modo OSD",
     "",// TODO
     "",// TODO
     "",// TODO
