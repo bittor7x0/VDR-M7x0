@@ -5004,6 +5004,63 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
   },
+  { "Setup.Miscellaneous$Filter channels",
+    "",// TODO
+    "",// TODO
+    "Filtra canali",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Filtrar canales",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Filtra canals",
+    "",// TODO
+    "",// hrv TODO
+  },
+  { "Tv only",
+    "",// TODO
+    "",// TODO
+    "Solo Tv",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Sólo TV",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Només Tv",
+    "",// TODO
+    "",// hrv TODO
+  },
+  { "Radio only",
+    "",// TODO
+    "",// TODO
+    "Solo Radio",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Sólo Radio",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Només Radio",
+    "",// TODO
+    "",// hrv TODO
+  },
   // The days of the week:
   { "MTWTFSS",
     "MDMDFSS",

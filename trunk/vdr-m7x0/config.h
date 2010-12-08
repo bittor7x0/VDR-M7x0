@@ -266,6 +266,7 @@ public:
   int CurrentChannel;
   int CurrentVolume;
   int CurrentDolby;
+  int ChannelFilter;
   int InitialChannel;
   int InitialVolume;
   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;

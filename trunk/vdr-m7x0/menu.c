@@ -432,7 +432,7 @@ void cMenuChannels::Setup(void)
   cMenuChannelItem *currentItem = NULL;
   Clear();
   for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
-      if (!channel->GroupSep() || (cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && *channel->Name())) {
+      if ((!channel->GroupSep() || (cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && *channel->Name()) && ( channel == currentChannel || channel->Filtered() ))) {
          cMenuChannelItem *item = new cMenuChannelItem(channel);
          Add(item);
          if (channel == currentChannel)
@@ -3115,6 +3115,8 @@ void cMenuSetupReplay::Store(void)
 // --- cMenuSetupMisc --------------------------------------------------------
 
 class cMenuSetupMisc : public cMenuSetupBase {
+private:
+  const char *channelFilterTexts[3];
 public:
   cMenuSetupMisc(void);
   };
@@ -3122,10 +3124,14 @@ public:
 cMenuSetupMisc::cMenuSetupMisc(void)
 {
   SetSection(tr("Miscellaneous"));
+  channelFilterTexts[0] = tr("no");
+  channelFilterTexts[1] = tr("Tv only");
+  channelFilterTexts[2] = tr("Radio only");
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. event timeout (min)"),   &data.MinEventTimeout));
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. user inactivity (min)"), &data.MinUserInactivity));
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$SVDRP timeout (s)"),          &data.SVDRPTimeout));
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Zap timeout (s)"),            &data.ZapTimeout));
+  Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
   Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
   Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Abort when Plugin fails to load"), &data.AbortWhenPluginFails));
@@ -3690,7 +3696,7 @@ cChannel *cDisplayChannel::NextAvailableChannel(cChannel *Channel, int Direction
   if (Direction) {
      while (Channel) {
            Channel = Direction > 0 ? Channels.Next(Channel) : Channels.Prev(Channel);
-           if (Channel && !Channel->GroupSep() && (cDevice::PrimaryDevice()->ProvidesChannel(Channel, Setup.PrimaryLimit, NULL, true) || cDevice::GetDevice(Channel, 0, NULL, true)))
+           if (Channel && Channel->Filtered() && !Channel->GroupSep() && (cDevice::PrimaryDevice()->ProvidesChannel(Channel, Setup.PrimaryLimit, NULL, true) || cDevice::GetDevice(Channel, 0, NULL, true)))
               return Channel;
            }
      }

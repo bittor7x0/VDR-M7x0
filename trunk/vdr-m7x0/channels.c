@@ -861,6 +861,15 @@ public:
     }
   };
 
+bool cChannel::Filtered(void)
+{
+  switch(Setup.ChannelFilter) {
+    case 1:    return (groupSep || vpid != 0);
+    case 2:    return (groupSep || vpid == 0);
+    default:   return true;
+  } 
+}
+
 // -- cChannels --------------------------------------------------------------
 
 cChannels Channels;
