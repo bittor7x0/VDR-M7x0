@@ -735,7 +735,7 @@ cOsdObject *cMpgReplayControl::GetInfo(void)
 {
   return new cMpgMenuRecording(Recording(), false);
 }
-
+//
 eOSState cMpgReplayControl::ProcessKey(eKeys Key)
 {
   if (!Active())
@@ -764,6 +764,20 @@ eOSState cMpgReplayControl::ProcessKey(eKeys Key)
      return osContinue;
      }
   bool DoShowMode = true;
+  if (!Setup.LRForwardRewind || (Setup.LRForwardRewind == 1 && !visible)) {
+    switch (Key) {
+      // Left/Right volume control
+      case kLeft|k_Repeat:
+      case kLeft:
+      case kRight|k_Repeat:
+      case kRight:
+	  cRemote::Put(NORMALKEY(Key) == kLeft ? kVolDn : kVolUp, true);
+        return osContinue;
+        break;
+      default:
+        break;
+    }
+  }
   switch (Key) {
     // Positioning:
     case kPlay:
@@ -783,10 +797,11 @@ eOSState cMpgReplayControl::ProcessKey(eKeys Key)
 //    case kRed:     TimeSearch(); break;
     case kRed|k_Repeat:
     case kRed:   SkipSeconds(-100); break;
-    case kGreen|k_Repeat:
-    case kGreen:   SkipSeconds(-10); break;
-    case kYellow|k_Repeat:
-    case kYellow:  SkipSeconds( 10); break;
+    case kGreen|k_Repeat:   SkipSeconds(-(Setup.JumpSecondsRepeat)); break;
+    case kGreen:   SkipSeconds(-(Setup.JumpSeconds)); break;
+    case kYellow|k_Repeat: 
+                   SkipSeconds(Setup.JumpSecondsRepeat); break;
+    case kYellow:  SkipSeconds(Setup.JumpSeconds); break;
     case kBlue|k_Repeat:
     case kBlue:    SkipSeconds( 100); break;
     case kStop:
@@ -835,7 +850,7 @@ eOSState cMpgReplayControl::ProcessKey(eKeys Key)
      ShowMode();
   return osContinue;
 }
-
+//
 // --- cMpgSetupMenu --------------------------------------------------------
 
 cMpgSetupMenu::cMpgSetupMenu(cMpgController *Controller)
