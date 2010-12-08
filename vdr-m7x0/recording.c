@@ -921,8 +921,15 @@ bool cRecording::Rename(const char *newName, int *newPriority, int *newLifetime)
            fileName = strdup(newFileName);
            free(name);
            name = strdup(newName);
+#ifdef SORTRECORDINGSVERSNUM
+           for (int i = 0; i < MAXSORTMODES; i++) {
+              free(sortBuffer[i]);
+              sortBuffer[i] = NULL;
+           }
+#else
            free(sortBuffer);
            sortBuffer = NULL;
+#endif
            free(titleBuffer);
            titleBuffer = NULL;
            }

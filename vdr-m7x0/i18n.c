@@ -6808,6 +6808,50 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
   },
+  { "est. bit-rate",
+    "Bitrate ca.",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Bitrate est.",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "%s:\t%.2f MBit/s (Video+Audio)",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "%s:\t%.2f MBit/s (Vídeo+Audio)",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
   { "Delete marks information?",
     "Marks löschen?",
     "",//TODO
