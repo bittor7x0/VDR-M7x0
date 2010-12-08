@@ -19,7 +19,7 @@ const tI18nPhrase Phrases[] = {
         "", // Norsk
         "", // Suomi
         "", // Polski
-        "", // Español
+        "Ajustes de imagen", // Español
         "", // Ellinika
         "", // Svenska
         "", // Romaneste
@@ -39,7 +39,7 @@ const tI18nPhrase Phrases[] = {
         "", // Norsk
         "", // Suomi
         "", // Polski
-        "", // Español
+        "Contraste", // Español
         "", // Ellinika
         "", // Svenska
         "", // Romaneste
@@ -59,7 +59,7 @@ const tI18nPhrase Phrases[] = {
         "", // Norsk
         "", // Suomi
         "", // Polski
-        "", // Español
+        "Color", // Español
         "", // Ellinika
         "", // Svenska
         "", // Romaneste
@@ -79,7 +79,7 @@ const tI18nPhrase Phrases[] = {
         "", // Norsk
         "", // Suomi
         "", // Polski
-        "", // Español
+        "Brillo", // Español
         "", // Ellinika
         "", // Svenska
         "", // Romaneste
@@ -99,7 +99,7 @@ const tI18nPhrase Phrases[] = {
         "", // Norsk
         "", // Suomi
         "", // Polski
-        "", // Español
+        "Contraste", // Español
         "", // Ellinika
         "", // Svenska
         "", // Romaneste
