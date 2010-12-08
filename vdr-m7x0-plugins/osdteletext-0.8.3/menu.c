@@ -12,9 +12,11 @@
 #include <time.h>
     
 #include <vdr/interface.h>
+#include <vdr/i18n.h>
 #include <vdr/config.h>
 
 #include "menu.h"
+#include "i18n.h"
 #include "display.h"
 #include "setup.h"
 #include "txtrecv.h"
@@ -319,7 +321,7 @@ void TeletextBrowser::ExecuteAction(eTeletextAction e) {
                //This means, we convert the number to what it would be if the string
                //had been parsed with hexadecimal base.
                int pageNr=PSEUDO_HEX_TO_DECIMAL((int)e);
-               if (0x100<=pageNr<=0x899) {
+               if (0x100<=pageNr && pageNr<=0x899) {
                   if (selectingChannel) {
                       selectingChannel=false;
                       Display::ClearMessage();
@@ -571,7 +573,7 @@ void TeletextBrowser::ShowAskForChannel() {
 //this is taken and adapted from the teletext plugin since it uses its data
 bool TeletextBrowser::DecodePage() {
    // Load the page and decodes it
-   unsigned char cache[40*24+12];
+   unsigned char cache[(40*24)*TXT_CHARSIZE+12];
    StorageHandle fd;
    // Take a look if there is a xxx-00 page
    Storage *s=Storage::instance();
@@ -604,7 +606,7 @@ bool TeletextBrowser::DecodePage() {
       Display::HoldFlush();
       ShowPageNumber();
       char str[80];
-      snprintf(str,80, "%s %3x-%02x %s",tr("Page"),currentPage, currentSubPage,tr("not found"));
+      snprintf(str,80, "%s %3x-%02x %s",tr("Page"),currentPage, currentSubPage,tr("not found until now, searching"));
       Display::DrawMessage(str);
       Display::ReleaseFlush();
 
@@ -623,7 +625,7 @@ int TeletextBrowser::PageCheckSum() {
    
    Storage *s=Storage::instance();
    if ((fd=s->openForReading(PageID(channel, currentPage, currentSubPage), false)) ) {
-      uchar cache[960];
+      uchar cache[960*TXT_CHARSIZE];
       s->read(cache, 12, fd); //skip
       s->read(cache, sizeof(cache), fd);
       s->close(fd);

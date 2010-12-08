@@ -21,7 +21,7 @@ msgstr "Sender (OK drücken): "
 msgid "Page"
 msgstr "Seite"
 
-msgid "not found"
+msgid "not found until now, searching"
 msgstr "nicht gefunden"
 
 msgid "Displays teletext on the OSD"

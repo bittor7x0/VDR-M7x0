@@ -23,7 +23,7 @@ msgstr "Canal (premi OK):"
 msgid "Page"
 msgstr "Pàgina"
 
-msgid "not found"
+msgid "not found until now, searching"
 msgstr "no trobada"
 
 msgid "Displays teletext on the OSD"

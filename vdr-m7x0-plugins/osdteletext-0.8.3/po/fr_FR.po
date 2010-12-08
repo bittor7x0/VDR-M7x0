@@ -24,7 +24,7 @@ msgstr "Chaine (Appuyer sur OK): "
 msgid "Page"
 msgstr "Page"
 
-msgid "not found"
+msgid "not found until now, searching"
 msgstr "pas trouvé"
 
 msgid "Displays teletext on the OSD"

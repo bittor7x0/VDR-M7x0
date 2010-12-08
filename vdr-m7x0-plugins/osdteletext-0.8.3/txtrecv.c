@@ -14,6 +14,8 @@
 #include "tables.h"
 #include "setup.h"
 #include "menu.h"
+#include "txtfont.h"
+#include "hamm.h"
 
 #include <vdr/channels.h>
 #include <vdr/device.h>
@@ -106,7 +108,11 @@ Storage::StorageSystem Storage::system = Storage::StorageSystemPacked;
 Storage::Storage() {
    s_self=this;
    byteCount=0;
+#ifdef VDR_M7x0_VERSION
+   storageOption=10;
+#else
    storageOption=-1;
+#endif
    failedFreeSpace=false;
 }
 
@@ -137,6 +143,10 @@ void Storage::setMaxStorage(int maxMB) {
 }
 
 void Storage::init() {
+#ifdef VDR_M7x0_VERSION
+   // create cache dir
+   MakeDirs(RootDir::getRootDir(), true);
+#endif
    cleanUp();
    initMaxStorage(storageOption);
 }
@@ -147,11 +157,14 @@ void Storage::freeSpace() {
    if (failedFreeSpace)
       return;
 
-   //printf("freeSpace()\n");
+   dsyslog("OSD-Teletext: freeSpace()\n");
    time_t min=time(0);
    char minDir[PATH_MAX];
    char fullPath[PATH_MAX];
    int haveDir=0;
+#ifdef VDR_M7x0_VERSION
+   int i_bytesCleared=0;
+#endif
    DIR *top=opendir(getRootDir());
    if (top) {
       struct dirent *chandir, path;
@@ -173,10 +186,18 @@ void Storage::freeSpace() {
       closedir(top);
 
       //if haveDir, only current directory present, which must not be deleted
-      if (haveDir>=2)
+      if (haveDir>=2) {
+#ifdef VDR_M7x0_VERSION
+         i_bytesCleared=cleanSubDir(minDir);
+         byteCount-=i_bytesCleared;
+         dsyslog("OSD-Teletext: Removed cache dir '%s', freed %i bytes,new cache size is %i", minDir, i_bytesCleared, (int)byteCount);
+#else
          byteCount-=cleanSubDir(minDir);
-      else
+#endif
+      } else {
+         esyslog("OSD-Teletext: Caching problem!, no old cache files left to remove. Cache size is %i", (int)byteCount);
          failedFreeSpace=true;
+      }
    }
 }
 
@@ -200,7 +221,7 @@ void Storage::prepareDirectory(tChannelID chan) {
    failedFreeSpace=false;
 }
 
-#define TELETEXT_PAGESIZE 972
+#define TELETEXT_PAGESIZE (972*TXT_CHARSIZE)
 
 LegacyStorage::LegacyStorage() {
    maxBytes=0;
@@ -248,6 +269,7 @@ void LegacyStorage::initMaxStorage(int maxMB) {
          maxMB=3;
       }
       maxBytes=MEGABYTE(maxMB);
+      dsyslog("OSD-Teletext: Set maxBytes to %ld", maxBytes);
    } else if (maxMB==-1) {
       //calculate a default value
       double blocksPerMeg = 1024.0 * 1024.0 / fs.f_bsize;
@@ -266,7 +288,7 @@ void LegacyStorage::initMaxStorage(int maxMB) {
          //the maximum default size is set to 50 MB
          maxBytes=MEGABYTE(50);
       }
-      //printf("Set maxBytes to %ld, %.2f %.2f\n", maxBytes, capacityMB, freeMB);
+      dsyslog("OSD-Teletext: Set maxBytes to %ld, cap:%.2f free:%.2f\n", maxBytes, capacityMB, freeMB);
    }
 }
 
@@ -461,9 +483,17 @@ cTelePage::cTelePage(PageID t_page, uchar t_flags, uchar t_lang,int t_mag)
   : mag(t_mag), flags(t_flags), lang(t_lang), page(t_page)
 {
    memset(pagebuf,' ',26*40);
+   memset(pagebuf_ext,' ',26*40*TXT_CHARSIZE);
 }
 
 cTelePage::~cTelePage() {
+}
+
+void cTelePage::SetData(int line,int col, uchar c,uchar mode)
+{
+  int pos = (40*line + col)* TXT_CHARSIZE;
+  pagebuf_ext[pos]=mode;
+  pagebuf_ext[pos+1]=c;
 }
 
 void cTelePage::SetLine(int line, uchar *myptr)
@@ -476,6 +506,20 @@ void cTelePage::save()
    Storage *s=Storage::instance();
    unsigned char buf;
    StorageHandle fd;
+
+   // Set extended characters
+   int i, j, pos, pos_ext;
+   for (i=0; i<24; i++) {
+      for (j=0; j<40 ; j++) {
+         pos = (i*40+j);
+         pos_ext = pos*TXT_CHARSIZE;
+         if (pagebuf_ext[pos_ext] == ' ')
+            pagebuf_ext[pos_ext+1]= pagebuf[pos];
+         /*else
+            dsyslog("OSD-Teletext: SetData: pagebuf %x->%x", pagebuf[pos], pagebuf_ext[pos_ext]);*/
+      }
+   }
+
    if ( (fd=s->openForWriting(page)) ) {
       s->write("VTXV4",5,fd);
       buf=0x01; s->write(&buf,1,fd);
@@ -485,7 +529,7 @@ void cTelePage::save()
       buf=lang; s->write(&buf,1,fd);
       buf=0x00; s->write(&buf,1,fd);
       buf=0x00; s->write(&buf,1,fd);
-      s->write(pagebuf,24*40,fd);
+      s->write(pagebuf_ext,24*40*TXT_CHARSIZE,fd);
       s->close(fd);
    }         
 }
@@ -528,6 +572,11 @@ void cTxtStatus::ChannelSwitch(const cDevice *Device, int ChannelNumber)
    delete receiver;
    receiver = NULL;
 
+#ifdef VDR_M7x0_VERSION
+   // Clean cache here because M7x0 have a limited storage
+   Storage::instance()->cleanUp();
+#endif
+
    int TPid = newLiveChannel->Tpid();
 
    if (TPid) {
@@ -540,7 +589,12 @@ void cTxtStatus::ChannelSwitch(const cDevice *Device, int ChannelNumber)
 
 
 cTxtReceiver::cTxtReceiver(int TPid, tChannelID chan)
- : cReceiver(chan, -1, TPid), cThread("osdteletext-receiver"),
+#if VDRVERSNUM >= 10500
+ : cReceiver(chan, -1, TPid), 
+#else
+ : cReceiver(0, -1, TPid), 
+#endif
+ cThread("osdteletext-receiver"),
    chan(chan), TxtPage(0), buffer((188+60)*75), running(false)
 {
    Storage::instance()->prepareDirectory(chan);
@@ -583,19 +637,34 @@ void cTxtReceiver::Activate(bool On)
 
 void cTxtReceiver::Receive(uchar *Data, int Length)
 {
-   int len = Length+60;
-
-   if (!buffer.Check(len)) {
-      // Buffer overrun
-      buffer.Signal();
+#ifdef VDR_M7x0_VERSION
+   uchar *ts_data = MALLOC(uchar, 188);
+   if (!ts_data) {
+      esyslog ("OSD-Teletext: Memory allocation error in txtreceiver");
       return;
    }
-   cFrame *frame=new cFrame(Data, len);
-   if (frame && !buffer.Put(frame)) {
+
+   while (Length >= 188) {
+      memcpy(ts_data, Data, 188);
+      Data += 188;
+      cFrame *frame = new cFrame(ts_data, 188);
+      if (!buffer.Put(frame)) {
+         delete frame;
+         buffer.Signal();
+         break;
+      }
+      Length -= 188;
+   }
+
+   free(ts_data);
+#else
+   cFrame *frame=new cFrame(Data, Length);
+   if (!buffer.Put(frame)) {
       // Buffer overrun
       delete frame;
       buffer.Signal();
    }
+#endif
 }
 
 void cTxtReceiver::Action() {
@@ -664,6 +733,12 @@ void cTxtReceiver::DecodeTXT(uchar* TXT_buf)
    int hdr,mag,mag8,line;
    uchar *ptr;
    uchar flags,lang;
+   int i = 1;
+   uchar *aptr;
+   int triplet;
+   uchar address=0;
+   uchar mode=0,data=0;
+   uchar active_row=0;
 
    hdr = unham16 (&TXT_buf[0x8]);
    mag = hdr & 0x07;
@@ -716,6 +791,20 @@ void cTxtReceiver::DecodeTXT(uchar* TXT_buf)
       if (TxtPage) TxtPage->SetLine((int)line,(uchar *)ptr); 
       break;
       }
+   case 26:{ // Extended characters Level 1.5 - diacritical mark
+      aptr=ptr+1;
+      for (i = 0; i < 13; i++) {
+          triplet = vbi3_unham24p (aptr+(i*3));
+          address=triplet & 0x3f;
+          mode=(triplet >> 6) & 0x1f;
+          data=(triplet >>11) & 0x7f;
+          if (address > 39 && mode == 4)
+             active_row = address-40;
+          if (address <=39 && mode >=16 && mode < 31) {
+             if (TxtPage) TxtPage->SetData(active_row,address,data,mode);
+          }
+      }
+   }
    /*case 23: 
       {
       if (TxtPage) {
