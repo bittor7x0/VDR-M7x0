@@ -57,11 +57,6 @@ char        plugin_name[MaxFileName]  = "Undelete";
 cPlugin     *plugin = NULL;
 bool        PurgeRecording = false;
 bool        SalvageRecording = false;
-#if VDRVERSNUM >= 10311
-cRecordings DeletedRecordings(true);
-#else
-cRecordings DeletedRecordings;
-#endif
 bool        MenuIsOpen = false;
 char        *SVDRP_Process = NULL;
 char        *WorkFilename = NULL;
