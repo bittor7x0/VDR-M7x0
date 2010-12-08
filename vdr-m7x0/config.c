@@ -289,6 +289,9 @@ cSetup::cSetup(void)
   ShowRecLength = 1;
   ShowProgressBar = 1;
   MenuCmdPosition = 1;
+  JumpSeconds = 60;
+  JumpSecondsRepeat = 120;
+  JumpFramesRepeat = 15;
 }
 
 cSetup& cSetup::operator= (const cSetup &s)
@@ -464,6 +467,9 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "ShowRecLength"))       ShowRecLength      = atoi(Value);
   else if (!strcasecmp(Name, "ShowProgressBar"))     ShowProgressBar    = atoi(Value);
   else if (!strcasecmp(Name, "MenuCmdPosition"))     MenuCmdPosition    = atoi(Value);
+  else if (!strcasecmp(Name, "JumpSeconds"))         JumpSeconds        = atoi(Value);
+  else if (!strcasecmp(Name, "JumpSecondsRepeat"))   JumpSecondsRepeat  = atoi(Value);
+  else if (!strcasecmp(Name, "JumpFramesRepeat"))    JumpFramesRepeat   = atoi(Value);
   else
      return false;
   return true;
@@ -546,6 +552,9 @@ bool cSetup::Save(void)
   Store("ShowRecLength",      ShowRecLength);
   Store("ShowProgressBar",    ShowProgressBar);
   Store("MenuCmdPosition",    MenuCmdPosition);
+  Store("JumpSeconds",        JumpSeconds);
+  Store("JumpSecondsRepeat",  JumpSecondsRepeat);
+  Store("JumpFramesRepeat",   JumpFramesRepeat);
 
   Sort();
 

@@ -2918,6 +2918,9 @@ cMenuSetupReplay::cMenuSetupReplay(void)
   Add(new cMenuEditBoolItem(tr("Setup.Replay$Multi speed mode"), &data.MultiSpeedMode));
   Add(new cMenuEditBoolItem(tr("Setup.Replay$Show replay mode"), &data.ShowReplayMode));
   Add(new cMenuEditIntItem(tr("Setup.Replay$Resume ID"), &data.ResumeID, 0, 99));
+  Add(new cMenuEditIntItem( tr("Setup.Replay$Jump Seconds"), &data.JumpSeconds));
+  Add(new cMenuEditIntItem( tr("Setup.Replay$Jump Seconds (repeated)"), &data.JumpSecondsRepeat));
+  Add(new cMenuEditIntItem( tr("Setup.Replay$Jump Frames (repeated)"), &data.JumpFramesRepeat));
 }
 
 void cMenuSetupReplay::Store(void)
@@ -4496,6 +4499,9 @@ cOsdObject *cReplayControl::GetInfo(void)
 
 eOSState cReplayControl::ProcessKey(eKeys Key)
 {
+  static int jmpWidth = 1;
+  int pkw = 0;
+
   if (!Active())
      return osEnd;
   if (visible) {
@@ -4533,18 +4539,43 @@ eOSState cReplayControl::ProcessKey(eKeys Key)
     case kFastFwd:
     case kRight:   Forward(); break;
     case kRed:     TimeSearch(); break;
-    case k1|k_Repeat:
-    case k1:       SkipSeconds(-20); break;
-    case k3|k_Repeat:
-    case k3:       SkipSeconds( 20); break;
-    case kGreen|k_Repeat:
-    case kGreen:   SkipSeconds(-60); break;
-    case kYellow|k_Repeat:
-    case kYellow:  SkipSeconds( 60); break;
+    case kGreen|k_Repeat: 
+                   SkipSeconds(-(Setup.JumpSecondsRepeat)); break;
+    case kGreen:   SkipSeconds(-(Setup.JumpSeconds)); break;
+    case kYellow|k_Repeat: 
+                   SkipSeconds(Setup.JumpSecondsRepeat); break;
+    case kYellow:  SkipSeconds(Setup.JumpSeconds); break;
     case kStop:
     case kBlue:    Hide();
                    Stop();
                    return osEnd;
+//begin kw-Jumpseconds etc.
+     case k1|k_Repeat:
+            jmpWidth += Setup.JumpFramesRepeat;
+                    displayFrames = false;
+                    pkw = SkipFrames(-jmpWidth);
+                    Goto(pkw, true);
+                    break;
+     case k1:
+            jmpWidth = 1;
+                    displayFrames = true;
+                    pkw = SkipFrames(-1);
+                    Goto(pkw, true);
+                    break;
+     case k3|k_Repeat:
+            jmpWidth += Setup.JumpFramesRepeat;
+                    displayFrames = false;
+                    pkw = SkipFrames(jmpWidth);
+                    Goto(pkw, true);
+                    break;
+     case k3:
+            jmpWidth = 1;
+                    displayFrames = true;
+                    pkw = SkipFrames(1);
+                    Goto(pkw, true);
+                    break;
+//begin kw-Jumpseconds etc.
+
     default: {
       DoShowMode = false;
       switch (Key) {
