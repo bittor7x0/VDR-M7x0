@@ -3222,6 +3222,9 @@ cMenuSetupReplay::cMenuSetupReplay(void)
   Add(new cMenuEditIntItem( tr("Setup.Replay$Jump Seconds"), &data.JumpSeconds));
   Add(new cMenuEditIntItem( tr("Setup.Replay$Jump Seconds (repeated)"), &data.JumpSecondsRepeat));
   Add(new cMenuEditIntItem( tr("Setup.Replay$Jump Frames (repeated)"), &data.JumpFramesRepeat));
+#ifdef USE_DIRECT_IO
+  Add(new cMenuEditBoolItem(tr("Setup.Replay$Use Direct I/O"), &data.ReplayUseDirectIO));
+#endif
 }
 
 void cMenuSetupReplay::Store(void)
