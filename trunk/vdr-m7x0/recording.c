@@ -8,6 +8,7 @@
  */
 
 #include "recording.h"
+#include "iconpatch.h"
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -744,7 +745,7 @@ const char *cRecording::FileName(void) const
 
 const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level, bool Original) const
 {
-  char New = NewIndicator && IsNew() ? '*' : ' ';
+  char New = NewIndicator && IsNew() ? Setup.WarEagleIcons ? ICON_NEU : '*' : ' ';
   free(titleBuffer);
   titleBuffer = NULL;
   if (Level < 0 || Level == HierarchyLevels()) {

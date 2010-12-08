@@ -3414,6 +3414,35 @@ const tI18nPhrase Phrases[] = {
     "Tema",
     "Téma",
   },
+  { "Setup.OSD$WarEagle icons",
+    "WarEagle-Symbole",
+    "", // Slovenski
+    "", // Italiano
+    "", // Nederlands
+    "", // Português
+    "", // Français
+    "", // Norsk
+    "", // Suomi
+    "", // Polski
+    "Iconos WarEagle",
+    "", // Greek
+    "", // Svenska
+    "", // Romaneste
+    "", // Magyar
+    "", // Català
+#if VDRVERSNUM > 10302                                                         
+    "", // Russian
+#if VDRVERSNUM > 10307                                                         
+    "", // Hrvatski
+#if VDRVERSNUM > 10313                                                         
+    "", // Eesti
+#if VDRVERSNUM > 10316                                                         
+    "", // Dansk
+#endif
+#endif
+#endif
+#endif
+  },  
   { "Setup.OSD$Left",
     "Links",
     "Levo",

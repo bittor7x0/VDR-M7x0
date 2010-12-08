@@ -206,6 +206,7 @@ public:
   int OSDLanguage;
   char OSDSkin[MaxSkinName];
   char OSDTheme[MaxThemeName];
+  int WarEagleIcons;
   int PrimaryDVB;
   int ShowInfoOnChSwitch;
   int TimeoutRequChInfo;
