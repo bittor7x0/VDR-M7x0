@@ -315,7 +315,9 @@ cSetup::cSetup(void)
   OSDMessageTime = 1;
   UseSmallFont = 1;
   MaxVideoFileSize = MAXVIDEOFILESIZE;
+  MaxRecordingSize = DEFAULTRECORDINGSIZE;
   SplitEditedFiles = 0;
+  HardLinkCutter = 0;
   MinEventTimeout = 30;
   MinUserInactivity = 300;
   NextWakeupTime = 0;
@@ -505,7 +507,9 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "OSDMessageTime"))      OSDMessageTime     = atoi(Value);
   else if (!strcasecmp(Name, "UseSmallFont"))        UseSmallFont       = atoi(Value);
   else if (!strcasecmp(Name, "MaxVideoFileSize"))    MaxVideoFileSize   = atoi(Value);
+  else if (!strcasecmp(Name, "MaxRecordingSize"))    MaxRecordingSize   = atoi(Value);
   else if (!strcasecmp(Name, "SplitEditedFiles"))    SplitEditedFiles   = atoi(Value);
+  else if (!strcasecmp(Name, "HardLinkCutter"))      HardLinkCutter     = atoi(Value);
   else if (!strcasecmp(Name, "MinEventTimeout"))     MinEventTimeout    = atoi(Value);
   else if (!strcasecmp(Name, "MinUserInactivity"))   MinUserInactivity  = atoi(Value);
   else if (!strcasecmp(Name, "NextWakeupTime"))      NextWakeupTime     = atoi(Value);
@@ -602,7 +606,9 @@ bool cSetup::Save(void)
   Store("OSDMessageTime",     OSDMessageTime);
   Store("UseSmallFont",       UseSmallFont);
   Store("MaxVideoFileSize",   MaxVideoFileSize);
+  Store("MaxRecordingSize",   MaxRecordingSize);
   Store("SplitEditedFiles",   SplitEditedFiles);
+  Store("HardLinkCutter",     HardLinkCutter);
   Store("MinEventTimeout",    MinEventTimeout);
   Store("MinUserInactivity",  MinUserInactivity);
   Store("NextWakeupTime",     NextWakeupTime);

@@ -91,6 +91,7 @@ void cCuttingThread::Action(void)
      Mark = fromMarks.Next(Mark);
      int FileSize = 0;
      int CurrentFileNumber = 0;
+     bool SkipThisSourceFile = false;
      int LastIFrame = 0;
      toMarks.Add(0);
      toMarks.Save();
@@ -108,12 +109,92 @@ void cCuttingThread::Action(void)
 
            // Read one frame:
 
-           if (fromIndex->Get(Index++, &FileNumber, &FileOffset, &PictureType, &Length)) {
-              if (FileNumber != CurrentFileNumber) {
-                 fromFile = fromFileName->SetOffset(FileNumber, FileOffset);
-                 fromFile->SetReadAhead(MEGABYTE(20));
-                 CurrentFileNumber = FileNumber;
-                 }
+           if (!fromIndex->Get(Index++, &FileNumber, &FileOffset, &PictureType, &Length)) {
+              // Error, unless we're past last cut-in and there's no cut-out
+              if (Mark || LastMark)
+                 error = "index";
+              break;
+              }
+
+           if (FileNumber != CurrentFileNumber) {
+              fromFile = fromFileName->SetOffset(FileNumber, FileOffset);
+              fromFile->SetReadAhead(MEGABYTE(20));
+              CurrentFileNumber = FileNumber;
+              if (SkipThisSourceFile) {
+                 // At end of fast forward: Always skip to next file
+                 toFile = toFileName->NextFile();
+                 if (!toFile) {
+                    error = "toFile 4";
+                    break;
+                    }
+                 FileSize = 0;
+                 SkipThisSourceFile = false;
+                 }                 
+              
+
+              if (Setup.HardLinkCutter && FileOffset == 0) {
+                 // We are at the beginning of a new source file.
+                 // Do we need to copy the whole file?
+
+                 // if !Mark && LastMark, then we're past the last cut-out and continue to next I-frame
+                 // if !Mark && !LastMark, then there's just a cut-in, but no cut-out
+                 // if Mark, then we're between a cut-in and a cut-out
+                 
+                 uchar MarkFileNumber;
+                 int MarkFileOffset;
+                 // Get file number of next cut mark
+                 if (!Mark && !LastMark
+                     || Mark
+                        && fromIndex->Get(Mark->position, &MarkFileNumber, &MarkFileOffset)
+                        && (MarkFileNumber != CurrentFileNumber)) {
+                    // The current source file will be copied completely.
+                    // Start new output file unless we did that already
+                    if (FileSize != 0) {
+                       toFile = toFileName->NextFile();
+                       if (!toFile) {
+                          error = "toFile 3";
+                          break;
+                          }
+                       FileSize = 0;
+                       }
+
+                    // Safety check that file has zero size
+                    struct stat buf;
+                    if (stat(toFileName->Name(), &buf) == 0) {
+                       if (buf.st_size != 0) {
+                          esyslog("cCuttingThread: File %s exists and has nonzero size", toFileName->Name());
+                          error = "nonzero file exist";
+                          break;
+                          }
+                       }
+                    else if (errno != ENOENT) {
+                       esyslog("cCuttingThread: stat failed on %s", toFileName->Name());
+                       error = "stat";
+                       break;
+                       }
+
+                    // Clean the existing 0-byte file
+                    toFileName->Close();
+                    cString ActualToFileName(ReadLink(toFileName->Name()), true);
+                    unlink(ActualToFileName);
+                    unlink(toFileName->Name());
+
+                    // Try to create a hard link
+                    if (HardLinkVideoFile(fromFileName->Name(), toFileName->Name())) {
+                       // Success. Skip all data transfer for this file
+                       SkipThisSourceFile = true;
+                       cutIn = false;
+                       toFile = NULL; // was deleted by toFileName->Close()
+                       } 
+                    else {
+                       // Fallback: Re-open the file if necessary
+                       toFile = toFileName->Open();
+                       }
+                    }
+                 } 
+              }
+
+           if (!SkipThisSourceFile) {
               if (fromFile) {
                  int len = ReadFrame(fromFile, buffer,  Length, sizeof(buffer));
                  if (len < 0) {
@@ -130,15 +211,12 @@ void cCuttingThread::Action(void)
                  break;
                  }
               }
-           else
-              break;
-
            // Write one frame:
 
            if (PictureType == I_FRAME) { // every file shall start with an I_FRAME
               if (LastMark) // edited version shall end before next I-frame
                  break;
-              if (FileSize > MEGABYTE(Setup.MaxVideoFileSize)) {
+              if (!SkipThisSourceFile && FileSize > toFileName->MaxFileSize()) {
                  toFile = toFileName->NextFile();
                  if (!toFile) {
                     error = "toFile 1";
@@ -148,12 +226,12 @@ void cCuttingThread::Action(void)
                  }
               LastIFrame = 0;
 
-              if (cutIn) {
+              if (!SkipThisSourceFile && cutIn) {
                  cRemux::SetBrokenLink(buffer, Length);
                  cutIn = false;
                  }
               }
-           if (toFile->Write(buffer, Length) < 0) {
+           if (!SkipThisSourceFile && toFile->Write(buffer, Length) < 0) {
               error = "safe_write";
               break;
               }
@@ -188,7 +266,7 @@ void cCuttingThread::Action(void)
                     }
                  }
               else
-                 LastMark = true;
+                 LastMark = true; // After last cut-out: Write on until next I-frame, then exit
               }
 
 	   bytes += Length;

@@ -274,7 +274,9 @@ public:
   int OSDMessageTime;
   int UseSmallFont;
   int MaxVideoFileSize;
+  int MaxRecordingSize;
   int SplitEditedFiles;
+  int HardLinkCutter;
   int MinEventTimeout, MinUserInactivity;
   time_t NextWakeupTime;
   int MultiSpeedMode;

@@ -19,6 +19,7 @@ cUnbufferedFile *OpenVideoFile(const char *FileName, int Flags);
 int CloseVideoFile(cUnbufferedFile *File);
 bool RenameVideoFile(const char *OldName, const char *NewName);
 bool RemoveVideoFile(const char *FileName);
+bool HardLinkVideoFile(const char *OldName, const char *NewName);
 //M7X0 BEGIN AK 
 bool RemoveSingleVideoFile(const char *FileName);
 //M7X0 END AK 

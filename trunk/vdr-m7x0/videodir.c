@@ -19,6 +19,9 @@
 #include "recording.h"
 #include "tools.h"
 
+
+//#define HARDLINK_TEST_ONLY
+
 const char *VideoDirectory = VIDEODIR;
 
 class cVideoDirectory {
@@ -205,6 +208,120 @@ bool RemoveSingleVideoFile(const char *FileName)
   return unlink(FileName);
 }
 //M7X0 END AK 
+
+static bool StatNearestDir(const char *FileName, struct stat *Stat)
+{
+  cString Name(FileName);
+  char *p;
+  while ((p = strrchr((const char*)Name + 1, '/')) != NULL) {
+        *p = 0; // truncate at last '/'
+        if (stat(Name, Stat) == 0) {
+           isyslog("StatNearestDir: Stating %s", (const char*)Name);
+           return true;
+           }
+        }
+  return false;
+}
+
+bool HardLinkVideoFile(const char *OldName, const char *NewName)
+{
+  // Incoming name must be in base video directory:
+  if (strstr(OldName, VideoDirectory) != OldName) {
+     esyslog("ERROR: %s not in %s", OldName, VideoDirectory);
+     return false;
+     }
+  if (strstr(NewName, VideoDirectory) != NewName) {
+     esyslog("ERROR: %s not in %s", NewName, VideoDirectory);
+     return false;
+     }
+
+  const char *ActualNewName = NewName;
+  cString ActualOldName(ReadLink(OldName), true);
+
+  // Some safety checks:
+  struct stat StatOldName;
+  if (lstat(ActualOldName, &StatOldName) == 0) {
+     if (S_ISLNK(StatOldName.st_mode)) {
+        esyslog("HardLinkVideoFile: Failed to resolve symbolic link %s", (const char*)ActualOldName);
+        return false;
+        }
+     }
+  else {
+     esyslog("HardLinkVideoFile: lstat failed on %s", (const char*)ActualOldName);
+     return false;
+     }
+  isyslog("HardLinkVideoFile: %s is on %i", (const char*)ActualOldName, (int)StatOldName.st_dev);
+
+  // Find the video directory where ActualOldName is located
+
+  cVideoDirectory Dir;
+  struct stat StatDir;
+  if (!StatNearestDir(NewName, &StatDir)) {
+     esyslog("HardLinkVideoFile: stat failed on %s", NewName);
+     return false;
+     }
+  
+  isyslog("HardLinkVideoFile: %s is on %i", NewName, (int)StatDir.st_dev);
+  if (StatDir.st_dev != StatOldName.st_dev) {
+     // Not yet found.
+     
+     if (!Dir.IsDistributed()) {
+        esyslog("HardLinkVideoFile: No matching video folder to hard link %s", (const char*)ActualOldName);
+        return false;
+        }
+
+     // Search in video01 and upwards
+     bool found = false;
+     while (Dir.Next()) {
+           Dir.Store();
+           const char *TmpNewName = Dir.Adjust(NewName);
+           if (StatNearestDir(TmpNewName, &StatDir) && StatDir.st_dev == StatOldName.st_dev) {
+              isyslog("HardLinkVideoFile: %s is on %i (match)", TmpNewName, (int)StatDir.st_dev);
+              ActualNewName = TmpNewName;
+              found = true;
+              break;
+              }
+           isyslog("HardLinkVideoFile: %s is on %i", TmpNewName, (int)StatDir.st_dev);
+           }
+     if (ActualNewName == NewName) {
+        esyslog("HardLinkVideoFile: No matching video folder to hard link %s", (const char*)ActualOldName);
+        return false;
+        }
+
+     // Looking good, we have a match. Create necessary folders.
+     if (!MakeDirs(ActualNewName, false))
+        return false;
+     // There's no guarantee that the directory of ActualNewName 
+     // is on the same device as the dir that StatNearestDir found.
+     // But worst case is that the link fails.
+     }
+
+#ifdef HARDLINK_TEST_ONLY
+  // Do the hard link to *.vdr_ for testing only
+  char *name = NULL;
+  asprintf(&name, "%s_",ActualNewName);
+  link(ActualOldName, name); 
+  free(name);
+  return false;
+#endif // HARDLINK_TEST_ONLY
+  
+  // Try creating the hard link
+  if (link(ActualOldName, ActualNewName) != 0) {
+     // Failed to hard link. Maybe not allowed on file system.
+     LOG_ERROR_STR(ActualNewName);
+     isyslog("HardLinkVideoFile: failed to hard link from %s to %s", (const char*)ActualOldName, ActualNewName);
+     return false;
+     }
+  
+  if (ActualNewName != NewName) {
+     // video01 and up. Do the remaining symlink
+     if (symlink(ActualNewName, NewName) < 0) {
+        LOG_ERROR_STR(NewName);
+        return false;
+        }
+     }
+  return true;
+}
 
 bool VideoFileSpaceAvailable(int SizeMB)
 {

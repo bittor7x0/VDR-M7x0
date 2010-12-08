@@ -89,7 +89,7 @@ bool cFileWriter::RunningLowOnDiskSpace(void)
 bool cFileWriter::NextFile(void)
 {
   if (recordFile && pictureType == I_FRAME) { // every file shall start with an I_FRAME
-     if (fileSize > MEGABYTE(Setup.MaxVideoFileSize) || RunningLowOnDiskSpace()) {
+     if (fileSize > fileName->MaxFileSize() || RunningLowOnDiskSpace()) {
         recordFile = fileName->NextFile();
         fileSize = 0;
         }

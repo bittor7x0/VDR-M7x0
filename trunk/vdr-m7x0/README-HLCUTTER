@@ -1,0 +1,117 @@
+
+                    VDR-HLCUTTER README
+
+
+Written by:           Udo Richter
+Available at:         http://www.udo-richter.de/vdr/patches.html#hlcutter
+                      http://www.udo-richter.de/vdr/patches.en.html#hlcutter
+Contact:              udo_richter@gmx.de
+
+
+
+About
+-----
+
+The hard link cutter patch changes the recording editing algorithms of VDR to
+use filesystem hard links to 'copy' recording files whenever possible to speed
+up editing recordings noticeably.
+
+The patch has matured to be quite stable, at least I'm using it without issues.
+Nevertheless the patch is still in development and should be used with caution. 
+The patch is EXPERIMENTAL for multiple /videoxx folders. The safety checks 
+should prevent data loss, but you should always carefully check the results.
+
+While editing a recording, the patch searches for any 00x.vdr files that dont
+contain editing marks and would normally be copied 1:1 unmodified to the edited
+recording. In this case the current target 00x.vdr file will be aborted, and 
+the cutter process attempts to duplicate the source file as a hard link, so 
+that both files share the same disk space. If this succeeds, the editing 
+process fast-forwards through the duplicated file and continues normally 
+beginning with the next source file. If hard linking fails, the cutter process
+continues with plain old copying. (but does not take up the aborted last file.)
+
+After editing, the un-edited recording can be deleted as usual, the hard linked
+copies will continue to exist as the only remaining copy.
+
+To be effective, the default 'Max. video file size (MB)' should be lowered. 
+The patch lowers the smallest possible file size to 1mb. Since VDR only 
+supports up to 255 files, this would limit the recording size to 255Mb or
+10 minutes, in other words: This setting is insane!
+
+To make sure that the 255 file limit will not be reached, the patch also 
+introduces "Max. recording size (GB)" with a default of 100Gb (66 hours), and 
+increases the file size to 2000Mb early enough, so that 100Gb-recordings will
+fit into the 255 files.
+
+Picking the right parameters can be tricky. The smaller the file size, the 
+faster the editing process works. However, with a small file size, long 
+recordings will fall back to 2000Mb files soon, that are slow on editing again.
+
+Here are some examples:
+
+Max file size:      100Gb   100Gb   100Gb   100Gb   100Gb   100Gb   100Gb
+Max recording size: 1Mb     10Mb    20Mb    30Mb    40Mb    50Mb    100Mb
+
+Small files:        1-203   1-204   1-205   1-206   1-207   1-209   1-214
+  GBytes:           0.2     2.0     4.0     6.0     8.1     10.2    20.9
+  Hours:            0.13    1.3     2.65    4       5.4     6.8     13.9
+
+Big (2000mb) files: 204-255 204-255 206-255 207-255 208-255 210-255 215-255
+  GBytes:           101.5   99.6    97.7    95.7    93.8    89.8    80.1
+  Hours:            67      66      65      63      62      60      53
+
+A recording limit of 100Gb keeps plenty of reserve without blocking too much
+file numbers. And with a file size of 30-40Mb, recordings of 4-5 hours fit into
+small files completely. (depends on bit rate of course)
+
+
+
+The patch must be enabled in Setup-> Recordings-> Hard Link Cutter. When 
+disabled, the cutter process behaves identical to VDR's default cutter.
+
+There's a //#define HARDLINK_TEST_ONLY in the videodir.c file that enables a
+test-mode that hard-links 00x.vdr_ files only, and continues the classic 
+editing. The resulting 00x.vdr and 00x.vdr_ files should be identical. If you 
+delete the un-edited recording, dont forget to delete the *.vdr_ files too, 
+they will now eat real disk space.
+
+Note: 'du' displays the disk space of hard links only on first appearance, and
+usually you will see a noticeably smaller size on the edited recording.
+
+
+History
+-------
+
+Version 0.2.0
+  New: Support for multiple /videoXX recording folders, using advanced searching
+       for matching file systems where a hard link can be created.
+       Also supports deep mounted file systems.
+  Fix: Do not fail if last mark is a cut-in. (Again.)
+
+Version 0.1.4
+  New: Dynamic increase of file size before running out of xxx.vdr files
+  Fix: Last edit mark is not a cut-out
+  Fix: Write error if link-copied file is smaller than allowed file size
+  Fix: Broken index/marks if cut-in is at the start of a new file
+  Fix: Clear dangeling pointer to free'd cUnbufferedFile, 
+       thx to Matthias Schwarzott
+
+Version 0.1.0
+  Initial release
+
+
+
+
+Future plans
+------------
+
+Since original and edited copy share disk space, free space is wrong if one of
+them is moved to *.del. Free space should only count files with hard link 
+count = 1. This still goes wrong if all copies get deleted.
+
+
+For more safety, the hard-linked files may be made read-only, as modifications
+to one copy will affect the other copy too. (except deleting, of course)
+
+
+SetBrokenLink may get lost on rare cases, this needs some more thoughts.

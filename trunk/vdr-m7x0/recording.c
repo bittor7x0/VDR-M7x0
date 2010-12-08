@@ -1749,6 +1749,16 @@ cUnbufferedFile *cFileName::SetOffset(int Number, int Offset)
   return NULL;
 }
 
+int cFileName::MaxFileSize() {
+  const int smallFiles = (255 * MAXVIDEOFILESIZE - 1024 * Setup.MaxRecordingSize)
+                          / max(MAXVIDEOFILESIZE - Setup.MaxVideoFileSize, 1);
+
+  if (fileNumber <= smallFiles)
+     return MEGABYTE(Setup.MaxVideoFileSize);
+  
+  return MEGABYTE(MAXVIDEOFILESIZE);
+}
+
 cUnbufferedFile *cFileName::NextFile(void)
 {
   return SetOffset(fileNumber + 1);
