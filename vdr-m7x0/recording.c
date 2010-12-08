@@ -45,6 +45,7 @@
 #endif
 #define INFOFILESUFFIX    "/info.vdr"
 #define MARKSFILESUFFIX   "/marks.vdr"
+#define INDEXFILESUFFIX   "/index.vdr"
 
 #define MINDISKSPACE 1024 // MB
 
@@ -61,6 +62,7 @@
 #define MAX_LINK_LEVEL  6
 
 bool VfatFileSystem = false;
+bool DirOrderState = false;
 
 cRecordings DeletedRecordings(true);
 
@@ -705,6 +707,8 @@ int cRecording::GetResume(void) const
 int cRecording::Compare(const cListObject &ListObject) const
 {
   cRecording *r = (cRecording *)&ListObject;
+  if (DirOrderState)
+     return strcasecmp(FileName(), r->FileName());
   return strcasecmp(SortName(), r->SortName());
 }
 
@@ -720,7 +724,7 @@ const char *cRecording::FileName(void) const
   return fileName;
 }
 
-const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level) const
+const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level, bool Original) const
 {
   char New = NewIndicator && IsNew() ? '*' : ' ';
   free(titleBuffer);
@@ -733,6 +737,7 @@ const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level) cons
         s++;
      else
         s = name;
+     if (Original) {
      asprintf(&titleBuffer, "%02d.%02d.%02d%c%02d:%02d%c%c%s",
                             t->tm_mday,
                             t->tm_mon + 1,
@@ -743,6 +748,42 @@ const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level) cons
                             New,
                             Delimiter,
                             s);
+        }
+     else {
+        char RecLength[5], RecDate[9], RecTime[6], RecDelimiter[2];
+        snprintf(RecLength, sizeof(RecLength), "---");
+        if (Setup.ShowRecLength && FileName()) {
+           char *filename = NULL;
+           asprintf(&filename, "%s%s", FileName(), INDEXFILESUFFIX);
+           if (filename) {
+              if (access(filename, R_OK) == 0) {
+                 struct stat buf;
+                 if (stat(filename, &buf) == 0) {
+                    struct tIndex { int offset; uchar type; uchar number; short reserved; };   
+                    int delta = buf.st_size % sizeof(tIndex);
+                    if (delta) {
+                       delta = sizeof(tIndex) - delta;
+                       esyslog("ERROR: invalid file size (%ld) in '%s'", buf.st_size, filename);
+                       }
+                    snprintf(RecLength, sizeof(RecLength), "%ld'", (buf.st_size + delta) / sizeof(tIndex) / SecondsToFrames(60));
+                    }
+                 }
+              free(filename);
+              }
+           }
+        snprintf(RecDate, sizeof(RecDate), "%02d.%02d.%02d", t->tm_mday, t->tm_mon + 1, t->tm_year % 100);
+        snprintf(RecTime, sizeof(RecTime), "%02d:%02d", t->tm_hour, t->tm_min);
+        snprintf(RecDelimiter, sizeof(RecDelimiter), "%c", Delimiter);
+        asprintf(&titleBuffer, "%s%s%s%c%s%s%s%s",
+                               (Setup.ShowRecDate ? RecDate        : ""),
+                               (Setup.ShowRecDate && Setup.ShowRecTime ? RecDelimiter : ""),
+                               (Setup.ShowRecTime ? RecTime        : ""),
+                               New,
+                               (Setup.ShowRecTime || Setup.ShowRecDate ? RecDelimiter : ""),
+                               (Setup.ShowRecLength ? RecLength    : ""),
+                               (Setup.ShowRecLength ? RecDelimiter : ""),
+                               s);
+        }
      // let's not display a trailing '~':
      if (!NewIndicator)
         stripspace(titleBuffer);
@@ -853,6 +894,42 @@ bool cRecording::Remove(void)
 void cRecording::ResetResume(void) const
 {
   resume = RESUME_NOT_INITIALIZED;
+}
+
+bool cRecording::Rename(const char *newName, int *newPriority, int *newLifetime)
+{
+  bool result = false;
+  char *newFileName;
+  struct tm tm_r;
+  struct tm *t = localtime_r(&start, &tm_r);
+  char *localNewName = ExchangeChars(strdup(newName), true);
+  asprintf(&newFileName, NAMEFORMAT, VideoDirectory, localNewName, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, *newPriority, *newLifetime);
+  free(localNewName);
+  if (strcmp(FileName(), newFileName)) {
+     if (access(newFileName, F_OK) == 0) {
+        isyslog("recording %s already exists", newFileName);
+        }
+     else {
+        isyslog("renaming recording %s to %s", FileName(), newFileName);
+        result = MakeDirs(newFileName, true);
+        if (result)
+           result = RenameVideoFile(FileName(), newFileName);
+        if (result) {
+           priority = *newPriority;
+           lifetime = *newLifetime;
+           free(fileName);
+           fileName = strdup(newFileName);
+           free(name);
+           name = strdup(newName);
+           free(sortBuffer);
+           sortBuffer = NULL;
+           free(titleBuffer);
+           titleBuffer = NULL;
+           }
+        }
+     }
+  free(newFileName);
+  return result;
 }
 
 // --- cRecordings -----------------------------------------------------------
@@ -1168,8 +1245,6 @@ void cRecordingUserCommand::InvokeCommand(const char *State, const char *Recordi
 
 //XXX+ somewhere else???
 // --- cIndexFile ------------------------------------------------------------
-
-#define INDEXFILESUFFIX     "/index.vdr"
 
 // The number of frames to stay off the end in case of time shift:
 #define INDEXSAFETYLIMIT 150 // frames

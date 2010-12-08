@@ -284,6 +284,11 @@ cSetup::cSetup(void)
   CurrentDolby = 0;
   InitialChannel = 0;
   InitialVolume = -1;
+  ShowRecDate = 1;
+  ShowRecTime = 1;
+  ShowRecLength = 1;
+  ShowProgressBar = 1;
+  MenuCmdPosition = 1;
 }
 
 cSetup& cSetup::operator= (const cSetup &s)
@@ -454,6 +459,11 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "CurrentDolby"))        CurrentDolby       = atoi(Value);
   else if (!strcasecmp(Name, "InitialChannel"))      InitialChannel     = atoi(Value);
   else if (!strcasecmp(Name, "InitialVolume"))       InitialVolume      = atoi(Value);
+  else if (!strcasecmp(Name, "ShowRecDate"))         ShowRecDate        = atoi(Value);
+  else if (!strcasecmp(Name, "ShowRecTime"))         ShowRecTime        = atoi(Value);
+  else if (!strcasecmp(Name, "ShowRecLength"))       ShowRecLength      = atoi(Value);
+  else if (!strcasecmp(Name, "ShowProgressBar"))     ShowProgressBar    = atoi(Value);
+  else if (!strcasecmp(Name, "MenuCmdPosition"))     MenuCmdPosition    = atoi(Value);
   else
      return false;
   return true;
@@ -531,6 +541,11 @@ bool cSetup::Save(void)
   Store("CurrentDolby",       CurrentDolby);
   Store("InitialChannel",     InitialChannel);
   Store("InitialVolume",      InitialVolume);
+  Store("ShowRecDate",        ShowRecDate);
+  Store("ShowRecTime",        ShowRecTime);
+  Store("ShowRecLength",      ShowRecLength);
+  Store("ShowProgressBar",    ShowProgressBar);
+  Store("MenuCmdPosition",    MenuCmdPosition);
 
   Sort();
 

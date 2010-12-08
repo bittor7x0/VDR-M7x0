@@ -26,6 +26,7 @@
 //M7X0 BEGIN AK
 
 extern bool VfatFileSystem;
+extern bool DirOrderState;
 
 void RemoveDeletedRecordings(void);
 void AssertFreeDiskSpace(int Priority = 0, bool Force = false);
@@ -91,7 +92,7 @@ public:
   virtual int Compare(const cListObject &ListObject) const;
   const char *Name(void) const { return name; }
   const char *FileName(void) const;
-  const char *Title(char Delimiter = ' ', bool NewIndicator = false, int Level = -1) const;
+  const char *Title(char Delimiter = ' ', bool NewIndicator = false, int Level = -1, bool Original = true) const;
   const cRecordingInfo *Info(void) const { return info; }
   const char *PrefixFileName(char Prefix);
   int HierarchyLevels(void) const;
@@ -104,6 +105,9 @@ public:
        // Returns false in case of error
   bool Remove(void);
        // Actually removes the file from the disk
+       // Returns false in case of error
+  bool Rename(const char *newName, int *newPriority, int *newLifetime);
+       // Changes the file name
        // Returns false in case of error
   };
 
