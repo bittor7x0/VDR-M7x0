@@ -265,6 +265,7 @@ public:
   int InitialChannel;
   int InitialVolume;
   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;
+  int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
   int __EndData__;
   cSetup(void);
   cSetup& operator= (const cSetup &s);
