@@ -268,6 +268,7 @@ public:
   int RecordingsSortMode;
   int RecordingsSortDirsFirst;
   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
+  int AbortWhenPluginFails;
   int __EndData__;
   cSetup(void);
   cSetup& operator= (const cSetup &s);

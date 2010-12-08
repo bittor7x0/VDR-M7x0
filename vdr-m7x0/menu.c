@@ -2975,6 +2975,7 @@ cMenuSetupMisc::cMenuSetupMisc(void)
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Zap timeout (s)"),            &data.ZapTimeout));
   Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
+  Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Abort when Plugin fails to load"), &data.AbortWhenPluginFails));
 }
 
 // --- cMenuSetupPluginItem --------------------------------------------------
