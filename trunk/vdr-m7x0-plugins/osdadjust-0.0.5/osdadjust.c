@@ -7,6 +7,7 @@
 
 #include <vdr/plugin.h>
 #include "config.h"
+#include "i18n.h"
 #include "menu.h"
 #include "screenmenu.h"
 
@@ -77,6 +78,9 @@ bool cPluginOsdadjust::ProcessArgs(int argc, char *argv[])
 bool cPluginOsdadjust::Initialize(void)
 {
   // Initialize any background activities the plugin shall perform.
+#if VDRVERSNUM < 10507
+  RegisterI18n(Phrases);
+#endif
   return true;
 }
 

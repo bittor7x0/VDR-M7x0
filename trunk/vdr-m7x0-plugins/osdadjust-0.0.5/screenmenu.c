@@ -3,6 +3,7 @@
 #include <vdr/interface.h>
 //#include <vdr/osd.h>
 #include <vdr/menu.h>
+#include "i18n.h"
 #include "screenmenu.h"
 
 int DEBUG_OSD = 1;  // 0, 1, 2, 3

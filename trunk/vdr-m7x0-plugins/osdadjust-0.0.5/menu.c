@@ -1,5 +1,6 @@
 #include <vdr/plugin.h>
 #include <vdr/interface.h>
+#include "i18n.h"
 #include "menu.h"
 
 
