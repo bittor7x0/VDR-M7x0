@@ -33,7 +33,7 @@ const tI18nPhrase mpgplayer_phrases[] = {
   },
   {
      "A player for Mpg-PS-Recordings",
-     "Ein Player fï¿½r Mpg PS Aufnahmen",
+     "Ein Player für Mpg PS Aufnahmen",
      "",
      "",
      "",
@@ -56,7 +56,7 @@ const tI18nPhrase mpgplayer_phrases[] = {
   },
   {
      "Cannot open directory",
-     "Kann Verzeichnis nicht ï¿½ffnen",
+     "Kann Verzeichnis nicht öffnen",
      "",
      "",
      "",
@@ -79,7 +79,7 @@ const tI18nPhrase mpgplayer_phrases[] = {
   },
   {
      "Cannot delete running recording",
-     "Kann laufende Aufnahme nicht lï¿½schen",
+     "Kann laufende Aufnahme nicht löschen",
      "",
      "",
      "",
@@ -88,7 +88,7 @@ const tI18nPhrase mpgplayer_phrases[] = {
      "",
      "",
      "",
-     "No puedo borrar grabaciï¿½n actual",
+     "No puedo borrar grabación actual",
      "",
      "",
      "",
@@ -102,7 +102,7 @@ const tI18nPhrase mpgplayer_phrases[] = {
   },
   {
      "Cannot delete recording",
-     "Kann Aufnahme nicht lï¿½schen",
+     "Kann Aufnahme nicht löschen",
      "",
      "",
      "",
@@ -111,7 +111,7 @@ const tI18nPhrase mpgplayer_phrases[] = {
      "",
      "",
      "",
-     "No puedo borrar grabaciï¿½n",
+     "No puedo borrar grabación",
      "",
      "",
      "",
