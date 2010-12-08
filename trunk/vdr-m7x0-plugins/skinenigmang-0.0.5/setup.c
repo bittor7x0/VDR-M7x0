@@ -211,7 +211,9 @@ void cMenuSetupGeneral::Set(void)
   int current = Current();
   Clear();
 
+#ifndef VDRO7OVERSION
   Add(new cMenuEditBoolItem(tr("Try 8bpp single area"), &data->singleArea8Bpp));
+#endif
   Add(new cMenuEditBoolItem(tr("Show info area in main menu"), &data->showInfo));
   Add(new cMenuEditBoolItem(tr("Show auxiliary information"), &data->showAuxInfo, tr("top"), tr("bottom")));
   Add(new cMenuEditStraItem(tr("Show recording's size"), &data->showRecSize, 3, showRecSizeTexts));

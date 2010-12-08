@@ -26,6 +26,8 @@
 #include <vdr/osd.h>
 #include <vdr/themes.h>
 #include <vdr/plugin.h>
+#include <vdr/tshift.h>
+
 
 #ifdef SKINENIGMA_HAVE_EPGSEARCH
 #include "../epgsearch/services.h"
@@ -61,6 +63,33 @@
 #include "symbols/small/recording.xpm"
 #include "symbols/small/timer.xpm"
 #include "symbols/small/run.xpm"
+#include "symbols/small/tshift.xpm"
+#include "symbols/small/tshiftplay.xpm"
+#include "symbols/small/tshift1.xpm"
+#include "symbols/small/tshift2.xpm"
+#include "symbols/small/tshift3.xpm"
+#include "symbols/small/tshift4.xpm"
+#include "symbols/small/tshift5.xpm"
+#include "symbols/small/tshift6.xpm"
+#include "symbols/small/tshift7.xpm"
+#include "symbols/small/tshift8.xpm"
+#include "symbols/small/tshift9.xpm"
+#include "symbols/small/tshift11.xpm"
+#include "symbols/small/tshift12.xpm"
+#include "symbols/small/tshift13.xpm"
+#include "symbols/small/tshift14.xpm"
+#include "symbols/small/tshift15.xpm"
+#include "symbols/small/tshift16.xpm"
+#include "symbols/small/tshift17.xpm"
+#include "symbols/small/tshift18.xpm"
+#include "symbols/small/tshift19.xpm"
+#include "symbols/small/tshifts1.xpm"
+#include "symbols/small/tshifts2.xpm"
+#include "symbols/small/tshifts3.xpm"
+#include "symbols/small/tshifts11.xpm"
+#include "symbols/small/tshifts12.xpm"
+#include "symbols/small/tshifts13.xpm"
+#include "symbols/small/tshiftpause.xpm"
 #ifdef USE_PLUGIN_MAILBOX
 #include "symbols/small/mail.xpm"
 #endif
@@ -88,6 +117,16 @@ static cBitmap bmTeletext(teletext_xpm);
 static cBitmap bmVPS(vps_xpm);
 static cBitmap bmRun(run_xpm);
 static cBitmap bmTimer(timer_xpm);
+static cBitmap bmTShift(tshift_xpm);
+static const char *const *TShiftSymbolsFast[2][10] = {
+    { tshift11_xpm, tshift11_xpm, tshift12_xpm, tshift13_xpm, tshift14_xpm, tshift15_xpm, tshift16_xpm, tshift17_xpm, tshift18_xpm, tshift19_xpm },
+    { tshift11_xpm, tshift1_xpm, tshift2_xpm, tshift3_xpm, tshift4_xpm, tshift5_xpm, tshift6_xpm, tshift7_xpm, tshift8_xpm, tshift9_xpm }
+  };
+
+static const char *const *TShiftSymbolsSlow[2][4] = {
+    { tshifts11_xpm, tshifts11_xpm, tshifts12_xpm, tshifts13_xpm },
+    { tshifts1_xpm, tshifts1_xpm, tshifts2_xpm, tshifts3_xpm }
+  };
 #ifdef USE_PLUGIN_MAILBOX
 static cBitmap bmMail(mail_xpm);
 #endif
@@ -219,6 +258,9 @@ THEME_CLR(Theme, clrReplayProgressCurrent, 0xFFFF0000);
 // --- cSkinEnigmaDisplayChannel --------------------------------------------
 
 class cSkinEnigmaDisplayChannel : public cSkinDisplayChannel, public cSkinEnigmaOsd {
+  int channelNumber;
+  int TShiftX;
+  int TShiftY;
 private:
   cOsd *osd;
   bool fShowLogo;
@@ -577,6 +619,19 @@ void cSkinEnigmaDisplayChannel::DrawChannelInfo(const cChannel *Channel, int Num
     osd->DrawBitmap(xs, ys, bmRecording,
                     Theme.Color(clrBottomBg), Theme.Color(clrSymbolInactive));
 
+  if(Setup.TShift)
+  {
+     channelNumber = Channel->Number();
+     xs -= (bmTShift.Width() + SmallGap);
+     TShiftX = xs;
+     TShiftY = ys;
+     switch(cTShiftControl::GetTShiftInfo(channelNumber)) {
+        case 1: osd->DrawBitmap(xs, ys, bmTShift, Theme.Color(clrSymbolInactive), Theme.Color(clrBottomBg)); break;
+        case 2: osd->DrawBitmap(xs, ys, bmTShift, Theme.Color(clrSymbolActive), Theme.Color(clrBottomBg)); break;
+        case 3:
+        case 4: osd->DrawBitmap(xs, ys, bmTShift, Theme.Color(clrSymbolRecordBg), Theme.Color(clrSymbolRecord)); break;
+        }
+     }
 #ifdef USE_PLUGIN_MAILBOX
   if (EnigmaConfig.showMailIcon) {
     cPlugin *MailBoxPlugin = cPluginManager::GetPlugin("mailbox");
@@ -759,6 +814,7 @@ void cSkinEnigmaDisplayChannel::SetEvents(const cEvent *Present,
                     Theme.Color(clrBackground), pFontSubtitle, xDurationWidth,
                     lineHeightSubtitle, taRight);
     }
+    if (!Setup.TShift) {
     // draw timebar
     int xBarLeft = xBottomLeft + Roundness;
     int xBarWidth = (xFirstSymbol > xBarLeft ? (xFirstSymbol - Gap - xBarLeft) : 124);
@@ -772,6 +828,7 @@ void cSkinEnigmaDisplayChannel::SetEvents(const cEvent *Present,
                        yBottomTop + SmallGap + SmallGap + SmallGap, x,
                        yBottomBottom - SmallGap - SmallGap - SmallGap - 1,
                        Theme.Color(clrBotProgBarFg));
+       }
   }
 
   e = Following;                // Next event
@@ -868,6 +925,76 @@ void cSkinEnigmaDisplayChannel::Flush(void)
                   Theme.Color(clrTitleFg), Theme.Color(clrTitleBg),
                   pFontDate, w, yTitleBottom - yTitleTop, taCenter);
   }
+    if (Setup.TShift) {
+       int xBarLeft = xBottomLeft + Roundness;
+       int xBarWidth = (xFirstSymbol > xBarLeft ? (xFirstSymbol - Gap - xBarLeft) : 124);
+       osd->DrawRectangle(xBarLeft, yBottomTop, xBarLeft + xBarWidth - 1, yBottomBottom - 1, Theme.Color(clrBottomBg));
+       TShiftPlayerMode Mode;
+       int Record;
+       switch (cTShiftControl::GetTShiftInfo(channelNumber, &Mode, &Record)) {
+          case 0: osd->DrawRectangle(TShiftX, TShiftY, TShiftX + bmTShift.Width() - 1, TShiftY + bmTShift.Height() - 1, Theme.Color(clrBottomBg)); break;
+          case 1: osd->DrawBitmap(TShiftX, TShiftY, bmTShift, Theme.Color(clrSymbolInactive), Theme.Color(clrBottomBg)); break;
+          case 2: osd->DrawBitmap(TShiftX, TShiftY, bmTShift, Theme.Color(clrSymbolActive), Theme.Color(clrBottomBg)); break;
+          case 3:
+          case 4: osd->DrawBitmap(TShiftX, TShiftY, bmTShift, Theme.Color(clrSymbolRecordBg), Theme.Color(clrSymbolRecord)); break;
+          }
+           if (Record > 0) {
+              const char *const *nameBitmap = NULL;
+              bool Play,Forward;
+              int Speed;
+              switch (Mode) {
+                 case TShiftPlayerLive: nameBitmap = tshift_xpm; break;
+                 case TShiftPlayerDelay: nameBitmap = tshiftplay_xpm; break;
+                 case TShiftPlayerPlay:
+                 case TShiftPlayerPause:
+                    if (cTShiftControl::ReplayInfo(channelNumber, &Play, &Forward, &Speed))
+                    {
+                       if (Play)
+                          if (Speed < 0)
+                             nameBitmap = tshiftplay_xpm;
+                          else {
+                             if (Speed > 9)
+                                Speed = 9;
+                             nameBitmap = TShiftSymbolsFast[Forward][Speed];
+                             }                             
+                       else
+                          if (Speed < 0)
+                             nameBitmap = tshiftpause_xpm;
+                          else {
+                             if (Speed > 3)
+                                Speed = 3;
+                             nameBitmap = TShiftSymbolsSlow[Forward][Speed];
+                             }
+                    }
+                    else
+                       nameBitmap = (Mode = TShiftPlayerPlay) ? tshiftplay_xpm : tshiftpause_xpm;
+                    break;
+                 }
+              if (nameBitmap) {
+                 cBitmap bitmap(nameBitmap);
+                 osd->DrawBitmap(xBarLeft, yBottomTop + SmallGap, bitmap, Theme.Color(Record>1 ? clrSymbolActive : clrSymbolInactive),  Theme.Color(clrBottomBg));
+                 }
+              int Current, Total;
+              if (cTShiftControl::BufferInfo(channelNumber, &Total, &Current)) {
+                 if (Total > 0) {
+                    int x = xBarLeft + bmTShift.Width() + SmallGap + pFontDate->Width("00:00:00");
+                    int xf = xBarLeft + xBarWidth - 2 - SmallGap - pFontDate->Width("00:00:00") - SmallGap;
+                    int yi = yBottomTop + SmallGap + SmallGap;
+                    int yf = yBottomBottom - SmallGap - SmallGap - 1;
+                    cString time(IndexToHMSF(Current, false));
+                    osd->DrawText(x - pFontDate->Width(time), yBottomBottom - pFontDate->Height(time), time, Theme.Color(clrBotProgBarFg), Theme.Color(clrBottomBg), pFontDate);
+                    x += SmallGap;
+                    Current=((xf - x) * Current) / Total;
+                    if(Current < xf - x - 1)
+                       osd->DrawRectangle(x + Current, yi, xf - 1, yf, Theme.Color(clrBotProgBarBg));
+                    if(Current > 0)
+                       osd->DrawRectangle(x , yi, x + Current - 1, yf, Theme.Color(clrBotProgBarFg));
+                    time = IndexToHMSF(Total, false);
+                    osd->DrawText(xBarLeft + xBarWidth - 2 - SmallGap - pFontDate->Width("00:00:00"), yBottomBottom - pFontDate->Height(time), time, Theme.Color(clrBotProgBarFg), Theme.Color(clrBottomBg), pFontDate);
+                    }
+                 }
+              }
+           }
   osd->Flush();
 
 #ifndef DISABLE_ANIMATED_TEXT
@@ -2120,12 +2247,38 @@ void cSkinEnigmaDisplayMenu::SetEvent(const cEvent *Event)
     xs -= Gap;
   }
   std::string stringInfo;
+  std::stringstream sstrInfo, sstrInfoContent;
+
+  bool fFirst = true;
+  for (int i = 0; Event->Contents(i); i++) {
+    const char *s = Event->ContentToString(Event->Contents(i));
+    if (!isempty(s)) {
+      if (fFirst) {
+        fFirst = false;
+        sstrInfoContent << tr("Content: ");
+      } else {
+        sstrInfoContent << ", ";
+      }
+      sstrInfoContent << s;
+    }
+  }
+  if (!fFirst)
+    sstrInfoContent << std::endl;
+
+  if (Event->ParentalRating()) {
+    sstrInfoContent << *Event->GetParentalRatingString() << std::endl;
+  }
+
+  fFirst = true;
   const cComponents *Components = Event->Components();
   if (Components) {
-    std::stringstream sstrInfo;
     for (int i = 0; i < Components->NumComponents(); i++) {
       const tComponent *p = Components->Component(i);
       if (p && (p->stream == 2) && p->language) {
+        if (fFirst) {
+          fFirst = false;
+          sstrInfo << tr("Languages") << ": ";
+        }
         if (p->description) {
           sstrInfo << p->description
                    << " (" << p->language << "), ";
@@ -2135,10 +2288,10 @@ void cSkinEnigmaDisplayMenu::SetEvent(const cEvent *Event)
 //        DrawFlag(p); //TODO
       }
     }
+    if (!sstrInfoContent.str().empty())
+      stringInfo += sstrInfoContent.str();
     // strip out the last delimiter
     if (!sstrInfo.str().empty())
-      stringInfo = tr("Languages");
-      stringInfo += ": "; 
       stringInfo += sstrInfo.str().substr(0, sstrInfo.str().length() - 2);
   }
   int yHeadlineBottom = yDateBottom;
@@ -2337,6 +2490,27 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
 
   // draw additional information
   std::stringstream sstrInfo;
+
+  bool fFirst = true;
+  for (int i = 0; Info->GetEvent()->Contents(i); i++) {
+    const char *s = Info->GetEvent()->ContentToString(Info->GetEvent()->Contents(i));
+    if (!isempty(s)) {
+      if (fFirst) {
+        fFirst = false;
+        sstrInfo << tr("Content: ");
+      } else {
+        sstrInfo << ", ";
+      }
+      sstrInfo << s;
+    }
+  }
+  if (!fFirst)
+    sstrInfo << std::endl;
+
+  if (Info->GetEvent()->ParentalRating()) {
+    sstrInfo << *Info->GetEvent()->GetParentalRatingString() << std::endl;
+  }
+
   int dirSize = -1;
   if (EnigmaConfig.showRecSize > 0) {
     if ((dirSize = ReadSizeVdr(Recording->FileName())) < 0 && EnigmaConfig.showRecSize == 2) {

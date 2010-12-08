@@ -1,0 +1,39 @@
+EnigmaNG compiled for the vdr on the M7x0
+--------------------------------------------
+
+The file "libvdr-skinenigmang.so.1.4.4" needs to be copied into the .../PLUGIN/lib folder.
+All files and folder in the "conf" folder needs to be copied into your configuration folder. 
+This folder is normally there were you have your vdr and is named "conf-DNS name-MAC address".
+
+On my disk it looks like this:
++---PLUGINS
+|   \---lib
+|           libvdr-setup.so.1.4.4
+|           libvdr-skinenigmang.so.1.4.4
+|
++---conf-M740AV2-0XA163F48FD3
+    +---themes
+    |       EnigmaNG-AppleGreen.theme
+    |       EnigmaNG-DarkBlue.theme
+    |       EnigmaNG-WineRed.theme
+    |       EnigmaNG-WomenLike.theme
+    |       EnigmaNG-default.theme
+    |       EnigmaNG-YellowSun.theme
+    |
+    \---plugins
+        +---setup
+        |   \---help
+        \---skinenigmang
+            +---flags
+            +---hqlogos
+            +---icons
+            |   +---message
+            |   +---replay
+            |   +---audio
+            |   +---volume
+            |   \---menu
+            \---logos
+(I have removed the files below conf-M740AV2-0001E3FA8FD3/plugins/skinenigmang )
+
+Have fun
+    Hanspeter
