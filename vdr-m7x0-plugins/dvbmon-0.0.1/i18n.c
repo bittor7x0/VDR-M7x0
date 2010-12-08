@@ -19,7 +19,7 @@
     "", // Norsk
     "", // FI
     "", // Polski
-    "", // Español
+    "Monitor DVB", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -41,7 +41,7 @@
     "", // Norsk
     "Kanavahaku DVB-transpondereille",// FI
     "", // Polski
-    "Buscar transponders de canales DVB", // Español
+    "Monitor de señal para canales DVB", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -63,7 +63,7 @@
     "", // Norsk
     "", // FI
     "", // Polski
-    "", // Español
+    "Aceptar", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -85,7 +85,7 @@
     "", // Norsk
     "", // FI
     "", // Polski
-    "", // Español
+    "Freq+", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -107,7 +107,7 @@
     "", // Norsk
     "", // FI
     "", // Polski
-    "", // Español
+    "Freq-", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -129,7 +129,7 @@
     "", // Norsk
     "", // FI
     "", // Polski
-    "", // Español
+    "Auto", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -151,7 +151,7 @@
     "", // Norsk
     "", // FI
     "", // Polski
-    "", // Español
+    "Manualmente", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
