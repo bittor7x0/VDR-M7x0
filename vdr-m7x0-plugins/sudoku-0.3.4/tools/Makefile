@@ -34,7 +34,7 @@ VERSION = $(shell sed -ne '/static .* VERSION *=/s/^.*"\(.*\)".*$$/\1/p' \
                       ../sudoku.cpp)
 
 CXX      ?= g++
-CXXFLAGS ?= -g -O2 -Wall -Woverloaded-virtual
+CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual
 DEFINES  += -D_GNU_SOURCE -DVERSION=\"$(VERSION)\"
 
 ifdef STATIC_LINK
@@ -58,6 +58,10 @@ INSTALL = install
 INSTALL_DIRS = $(INSTALL) -d
 INSTALL_PROG = $(INSTALL)
 INSTALL_DATA = $(INSTALL) -m u=rw,g=r,o=r
+
+### Allow user defined options to overwrite defaults:
+
+-include $(VDRDIR)/Make.config
 
 ### Targets:
 
