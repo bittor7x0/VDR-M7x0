@@ -1,0 +1,53 @@
++------------------------------------------------------------------------------+
+|               Info about the timer-info-patch by Brougs78                    |
+|                brougs78@gmx.net / home.pages.at/brougs78                     |
++------------------------------------------------------------------------------+
+
+
+README timer-info:
+------------------
+
+Features:
+ - Shows info, if it is possible to record an event in the timer menu of vdr.
+   For calculations the free space incl. the deleted recordings is used,
+   considering an average consumtion of 25.75 MB/min (also used by vdr itself).
+   The first column in the timer-list shows:
+      ( + ) recording will be most probably possible (enough space)
+      (+/-) recording may be possible
+      ( - ) recording will most probably fail (to less space)
+   The calculations also consider repeating timers.
+ - It is possible to deactivate the patch in the OSD-menu of VDR.
+
+
+HISTORY timer-info:
+-------------------
+
+25.11.2004: v0.1
+ - Initial release
+
+11.01.2005: v0.1b
+ - Bugfixes for vdr-1.3.18
+ - In the menu the free recording-time no longer includes the space of the
+   deleted recordings, because this slowed the vdr down to much.
+
+08.07.2005: v0.1c
+ - Made the patch configurable
+
+29.01.2006: v0.2 - Thomas Günther <tom@toms-cafe.de>
+ - Rewritten great parts for vdr-1.3.38+
+   http://toms-cafe.de/vdr/download/vdr-timer-info-0.2-1.3.38+.diff
+
+05.02.2006: v0.3 - Thomas Günther <tom@toms-cafe.de>
+ - Fixed refresh of timer menu in cMenuTimers::OnOff
+ - Fixed check of repeating timers
+ - Syslog debug messages can be enabled with Define DEBUG_TIMER_INFO
+   http://toms-cafe.de/vdr/download/vdr-timer-info-0.3-1.3.38+.diff
+
+03.03.2006: v0.4 - Thomas Günther <tom@toms-cafe.de>
+ - Adapted to vdr-1.3.44
+ - Removed setup parameter "Show timer-info"
+   http://toms-cafe.de/vdr/download/vdr-timer-info-0.4-1.3.44.diff
+
+03.03.2006: v0.5 - Tobias Grimm <tg@e-tobi.net>
+ - Adapted to vdr-1.3.45
+   http://toms-cafe.de/vdr/download/vdr-timer-info-0.4-1.3.45.diff
