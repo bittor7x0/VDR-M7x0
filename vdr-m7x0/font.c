@@ -39,15 +39,17 @@
 #include "fontosd-iso8859-15.c"
 #include "fontsml-iso8859-15.c"
 
+#include "fontsym.c"
+
 // --- cFont -----------------------------------------------------------------
 
 static const void *const FontData[eDvbCodeSize][eDvbFontSize] = {
-  { FontOsd_iso8859_1,  FontFix_iso8859_1,  FontSml_iso8859_1 },
-  { FontOsd_iso8859_2,  FontFix_iso8859_2,  FontSml_iso8859_2 },
-  { FontOsd_iso8859_5,  FontFix_iso8859_5,  FontSml_iso8859_5 },
-  { FontOsd_iso8859_7,  FontFix_iso8859_7,  FontSml_iso8859_7 },
-  { FontOsd_iso8859_13, FontFix_iso8859_13, FontSml_iso8859_13 },
-  { FontOsd_iso8859_15, FontFix_iso8859_15, FontSml_iso8859_15 },
+  { FontOsd_iso8859_1,  FontFix_iso8859_1,  FontSml_iso8859_1,  FontSym },
+  { FontOsd_iso8859_2,  FontFix_iso8859_2,  FontSml_iso8859_2,  FontSym },
+  { FontOsd_iso8859_5,  FontFix_iso8859_5,  FontSml_iso8859_5,  FontSym },
+  { FontOsd_iso8859_7,  FontFix_iso8859_7,  FontSml_iso8859_7,  FontSym },
+  { FontOsd_iso8859_13, FontFix_iso8859_13, FontSml_iso8859_13, FontSym },
+  { FontOsd_iso8859_15, FontFix_iso8859_15, FontSml_iso8859_15, FontSym },
   };
 
 static const char *FontCode[eDvbCodeSize] = {

@@ -12,6 +12,7 @@
 #include "i18n.h"
 #include "osd.h"
 #include "themes.h"
+#include "fontsym.h"
 
 #define ScrollWidth  5
 
@@ -432,6 +433,7 @@ void cSkinClassicDisplayReplay::SetTitle(const char *Title)
 void cSkinClassicDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
 {
   if (Setup.ShowReplayMode) {
+/*
      const char *Mode;
      if (Speed == -1) Mode = Play    ? "  >  " : " ||  ";
      else if (Play)   Mode = Forward ? " X>> " : " <<X ";
@@ -442,6 +444,15 @@ void cSkinClassicDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
      if (p)
         *p = Speed > 0 ? '1' + Speed - 1 : ' ';
      SetJump(buf);
+*/
+     static const int forwSym[] = { FSYM_FORW,FSYM_FORW1,FSYM_FORW2,FSYM_FORW3 };
+     static const int backSym[] = { FSYM_BACK,FSYM_BACK1,FSYM_BACK2,FSYM_BACK3 };
+     char buf[4];
+     buf[0]=(Speed>=0 && !Forward) ? backSym[Speed] : FSYM_EMPTY;
+     buf[1]=Play ? (Speed==-1 ? FSYM_PLAY : FSYM_EMPTY) : FSYM_PAUSE;
+     buf[2]=(Speed>=0 && Forward) ? forwSym[Speed] : FSYM_EMPTY;
+     buf[3]=0;
+     osd->DrawText(x0 + (x1 - x0) / 4, y2, buf, Theme.Color(clrReplayModeJump), Theme.Color(clrBackground), cFont::GetFont(fontSym), (x1 - x0) / 2, 0, taCenter);
      }
 }
 

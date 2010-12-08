@@ -1,0 +1,10 @@
+Replaymode display beauty
+
+The replaymode display feature was included into VDR as of version 0.95.
+Unfortunaly Klaus decided to use some standard characters for the display.
+This patch brings back the special symbols used before.
+
+Beside applying the patch, there is no additional configuration needed.
+
+Stefan Huelswitt <s.huelswitt@gmx.de>
+<http://www.muempf.de/>
