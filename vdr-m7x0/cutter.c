@@ -182,13 +182,54 @@ void cCuttingThread::Action(void)
 
 // --- cCutter ---------------------------------------------------------------
 
+#define WAIT_BEFORE_NEXT_CUT   (10*1000)  // 10 seconds
+
+#define CUTTER_QUEUE
+
+class cStringListObject : public cListObject {
+  public:
+    cStringListObject(const char *s) { str = strdup(s); }
+    ~cStringListObject() { free(str); }
+
+    const char *Value() { return str; }
+    operator const char * () { return str; }
+
+  private:  
+    char *str;
+};
+
 char *cCutter::editedVersionName = NULL;
 cCuttingThread *cCutter::cuttingThread = NULL;
 bool cCutter::error = false;
 bool cCutter::ended = false;
+cMutex *cCutter::cutterLock = new cMutex();
+
+static uint64 /*cCutter::*/lastCuttingEndTime = 0;
+static cList<cStringListObject> /**cCutter::*/cutterQueue /*= new cList<cStringListObject>*/;
 
 bool cCutter::Start(const char *FileName)
 {
+  cMutexLock(cutterLock);
+
+#ifdef CUTTER_QUEUE
+  if(FileName) {
+    /* Add file to queue.
+     * If cutter is still active, next cutting will be started 
+     * when vdr.c:main calls cCutter::Active and previous cutting has 
+     * been stopped > 10 s before 
+     */
+    cutterQueue.Add(new cStringListObject(FileName));
+  }
+
+  if (cuttingThread) 
+    return true;
+
+  /* cut next file from queue */
+  if(!(cutterQueue.First()))
+    return false;
+  FileName = cutterQueue.First()->Value();
+#endif
+
   if (!cuttingThread) {
      error = false;
      ended = false;
@@ -200,6 +241,19 @@ bool cCutter::Start(const char *FileName)
      if (First) Recording.SetStartTime(Recording.start+((First->position/FRAMESPERSEC+30)/60)*60);
      
      const char *evn = Recording.PrefixFileName('%');
+
+     if(!(Recordings.GetByName(FileName))) {
+       // Should _not_ remove any cutted recordings 
+       // (original recording already deleted ?)
+       // so, just pop item from queue and return.
+       esyslog("can't cut non-existing recording %s", FileName);
+#ifdef CUTTER_QUEUE
+       cutterQueue.Del(cutterQueue.First());       
+       return true; // might be already queued recording
+#else
+       return false;
+#endif
+     }
      if (evn && RemoveVideoFile(evn) && MakeDirs(evn, true)) {
         // XXX this can be removed once RenameVideoFile() follows symlinks (see videodir.c)
         // remove a possible deleted recording with the same name to avoid symlink mixups:
@@ -225,6 +279,8 @@ bool cCutter::Start(const char *FileName)
 
 void cCutter::Stop(void)
 {
+  cMutexLock(cutterLock);
+
   bool Interrupted = cuttingThread && cuttingThread->Active();
   const char *Error = cuttingThread ? cuttingThread->Error() : NULL;
   delete cuttingThread;
@@ -236,11 +292,19 @@ void cCutter::Stop(void)
         esyslog("ERROR: '%s' during editing process", Error);
      RemoveVideoFile(editedVersionName); //XXX what if this file is currently being replayed?
      Recordings.DelByName(editedVersionName);
+#ifdef CUTTER_QUEUE
+     cutterQueue.Del(cutterQueue.First());
+#endif
      }
+#ifdef CUTTER_QUEUE
+  lastCuttingEndTime = cTimeMs::Now();
+#endif
 }
 
 bool cCutter::Active(void)
 {
+  cMutexLock(cutterLock);
+
   if (cuttingThread) {
      if (cuttingThread->Active())
         return true;
@@ -251,12 +315,42 @@ bool cCutter::Active(void)
      free(editedVersionName);
      editedVersionName = NULL;
      ended = true;
+     if(Setup.CutterAutoDelete){
+        /* Remove original (if cutting was successful) */
+        if(!error) {
+          cRecording *recording = Recordings.GetByName(*cutterQueue.First());
+          if (!recording) {
+             esyslog("ERROR: Can't found '%s' after editing process", cutterQueue.First()->Value());
+          } else {
+             if (recording->Delete()) {
+	        //Recordings.Del(recording);
+                //cReplayControl::ClearLastReplayed(ri->FileName());
+                Recordings.DelByName(recording->FileName());
+             } else {
+                esyslog("ERROR: Can't delete '%s' after editing process", cutterQueue.First()->Value());
+             }
+          }
+        }
+        lastCuttingEndTime = cTimeMs::Now();
      }
+#ifdef CUTTER_QUEUE
+     cutterQueue.Del(cutterQueue.First());
+#endif
+  }
+#ifdef CUTTER_QUEUE
+  if(!cuttingThread && cutterQueue.First()) {
+    /* start next cutting from queue*/
+    if(cTimeMs::Now() > lastCuttingEndTime + WAIT_BEFORE_NEXT_CUT)
+      Start(NULL);
+  }
+#endif
+
   return false;
 }
 
 bool cCutter::Error(void)
 {
+  cMutexLock(cutterLock);
   bool result = error;
   error = false;
   return result;
@@ -264,6 +358,7 @@ bool cCutter::Error(void)
 
 bool cCutter::Ended(void)
 {
+  cMutexLock(cutterLock);
   bool result = ended;
   ended = false;
   return result;

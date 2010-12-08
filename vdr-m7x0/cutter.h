@@ -11,6 +11,7 @@
 #define __CUTTER_H
 
 class cCuttingThread;
+class cMutex;
 
 class cCutter {
 private:
@@ -18,6 +19,7 @@ private:
   static cCuttingThread *cuttingThread;
   static bool error;
   static bool ended;
+  static cMutex *cutterLock;
 public:
   static bool Start(const char *FileName);
   static void Stop(void);

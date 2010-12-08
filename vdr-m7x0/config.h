@@ -272,6 +272,7 @@ public:
   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;
   int RecordingsSortMode;
   int RecordingsSortDirsFirst;
+  int CutterAutoDelete;
   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
   int AbortWhenPluginFails;
   int __EndData__;
