@@ -344,7 +344,8 @@ bool cPluginManager::LoadPlugins(bool Log)
 {
   for (cDll *dll = dlls.First(); dll; dll = dlls.Next(dll)) {
       if (!dll->Load(Log))
-         return false;
+         if (Setup.AbortWhenPluginFails)
+            return false;
       }
   return true;
 }

@@ -294,6 +294,7 @@ cSetup::cSetup(void)
   JumpSeconds = 60;
   JumpSecondsRepeat = 120;
   JumpFramesRepeat = 15;
+  AbortWhenPluginFails = 0;
 }
 
 cSetup& cSetup::operator= (const cSetup &s)
@@ -474,6 +475,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "JumpSeconds"))         JumpSeconds        = atoi(Value);
   else if (!strcasecmp(Name, "JumpSecondsRepeat"))   JumpSecondsRepeat  = atoi(Value);
   else if (!strcasecmp(Name, "JumpFramesRepeat"))    JumpFramesRepeat   = atoi(Value);
+  else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
   else
      return false;
   return true;
@@ -561,6 +563,7 @@ bool cSetup::Save(void)
   Store("JumpSeconds",        JumpSeconds);
   Store("JumpSecondsRepeat",  JumpSecondsRepeat);
   Store("JumpFramesRepeat",   JumpFramesRepeat);
+  Store("AbortWhenPluginFails", AbortWhenPluginFails);
 
   Sort();
 

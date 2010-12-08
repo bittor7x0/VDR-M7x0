@@ -4932,6 +4932,27 @@ const tI18nPhrase Phrases[] = {
     "som før",
     "jako naposledy",
   },
+  { "Setup.Miscellaneous$Abort when Plugin fails to load",
+    "Abbrechen wenn Plugin nicht lädt",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Detener si un plugin falla al cargar",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   // The days of the week:
   { "MTWTFSS",
     "MDMDFSS",
