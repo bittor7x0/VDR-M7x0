@@ -4096,6 +4096,28 @@ const tI18nPhrase Phrases[] = {
     "Anvend Dolby Digital",
     "Pou¾ívat zvuk v Dolby Digital",
   },
+  { "Setup.Recording$Record Dolby Digital",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Grabar Dolby Digital",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Setup.DVB$Update channels",
     "Kanäle aktualisieren",
     "Posodobi kanale",
