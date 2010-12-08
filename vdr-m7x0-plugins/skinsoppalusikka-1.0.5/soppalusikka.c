@@ -171,6 +171,9 @@ class cSkinSoppalusikkaDisplayChannel : public cSkinDisplayChannel {
 private:
   cOsd *osd;
   bool islogo;
+
+  time_t lastTime; //Last time on info bar
+
   int x0, x1;
   int xt0, xt1, xt2, xt3, xt4, xt5, xt6, xt7, xt8, xt9;
   int xb0, xb1, xb2, xb3, xb4, xb5, xb6;
@@ -553,8 +556,13 @@ void cSkinSoppalusikkaDisplayChannel::SetMessage(eMessageType Type, const char *
 void cSkinSoppalusikkaDisplayChannel::Flush(void)
 {
   cString date = DayDateTime();
+  time_t now = time(NULL);
   // draw updated date string
-  osd->DrawText(xt3, yt0, date, Theme.Color(clrChannelNumberDateFg), Theme.Color(clrChannelNumberDateBg), cFont::GetFont(fontSml), xt4 - xt3, yt2 - yt0, taRight);
+  if (now != lastTime) { //Update date only if the second value has changed to avoid OSD flushes
+     osd->DrawText(xt3, yt0, date, Theme.Color(clrChannelNumberDateFg), Theme.Color(clrChannelNumberDateBg), cFont::GetFont(fontSml), xt4 - xt3, yt2 - yt0, taRight);
+     lastTime = now;
+  };
+
   osd->Flush();
 }
 

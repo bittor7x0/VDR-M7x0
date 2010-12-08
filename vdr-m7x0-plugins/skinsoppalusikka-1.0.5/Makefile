@@ -7,7 +7,7 @@
 #SKINSOPPALUSIKKA_DEBUG = 1
 
 # Strip debug symbols?  Set eg. to /bin/true if not
-STRIP = strip
+STRIP = mips-linux-strip
 
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.
@@ -26,8 +26,8 @@ CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual
 
 ### The directory environment:
 
-VDRDIR = ../../..
-LIBDIR = ../../lib
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### Allow user defined options to overwrite defaults:
@@ -48,6 +48,10 @@ PACKAGE = vdr-$(ARCHIVE)
 INCLUDES += -I$(VDRDIR)/include
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+
+# Compiled for VDR-M7x0 Siemens Gigaset from open7x0.org
+# Comment following line in other cases
+DEFINES += -DVDRO7OVERSION
 
 ifdef SKINSOPPALUSIKKA_DEBUG
 DEFINES += -DDEBUG

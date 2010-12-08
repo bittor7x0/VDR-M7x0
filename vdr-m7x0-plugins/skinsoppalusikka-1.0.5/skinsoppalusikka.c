@@ -198,7 +198,9 @@ void cPluginSkinSoppalusikkaSetup::Setup(void)
 
   Clear();
 
+#ifndef VDRO7OVERSION
   Add(new cMenuEditBoolItem(   tr("Use single area (8bpp)"),     &data.usesinglearea));
+#endif
   Add(new cMenuEditBoolItem(   tr("Show auxiliary information"), &data.showauxinfo));
   Add(new cMenuEditBoolItem(   tr("Show progressbar"),           &data.showprogressbar));
   Add(new cMenuEditBoolItem(   tr("Show symbols"),               &data.showsymbols));
