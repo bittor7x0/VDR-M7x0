@@ -1771,6 +1771,10 @@ eOSState cMenuCommands::Execute(void)
   if (command) {
      char *buffer = NULL;
      bool confirmed = true;
+     if (command->hasChilds()) {
+        AddSubMenu(new cMenuCommands(command->Title(), command->getChilds(), parameters));
+        return osContinue;
+        }
      if (command->Confirm()) {
         asprintf(&buffer, "%s?", command->Title());
         confirmed = Interface->Confirm(buffer);

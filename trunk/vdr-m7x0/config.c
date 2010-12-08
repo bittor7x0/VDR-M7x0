@@ -28,18 +28,26 @@ cCommand::cCommand(void)
 {
   title = command = NULL;
   confirm = false;
+  nIndent = 0;
+  childs = NULL;
 }
 
 cCommand::~cCommand()
 {
   free(title);
   free(command);
+  delete childs;
 }
 
 bool cCommand::Parse(const char *s)
 {
   const char *p = strchr(s, ':');
   if (p) {
+     nIndent = 0;
+     while (*s == '-') {
+           nIndent++;
+           s++;
+           }
      int l = p - s;
      if (l > 0) {
         title = MALLOC(char, l + 1);
@@ -86,6 +94,18 @@ const char *cCommand::Execute(const char *Parameters)
   return result;
 }
 
+int cCommand::getChildCount(void)
+{
+  return childs ? childs->Count() : 0;
+}
+
+void cCommand::addChild(cCommand *newChild)
+{
+  if (!childs)
+     childs = new cCommands();
+  childs->AddConfig(newChild);
+}
+
 // -- cSVDRPhost -------------------------------------------------------------
 
 cSVDRPhost::cSVDRPhost(void)
@@ -126,6 +146,21 @@ bool cSVDRPhost::Accepts(in_addr_t Address)
 
 cCommands Commands;
 cCommands RecordingCommands;
+
+void cCommands::AddConfig(cCommand *Object)
+{
+  if (!Object)
+     return;
+  //isyslog ("Indent %d %s\n", Object->getIndent(), Object->Title());
+  for (int index = Count() - 1; index >= 0; index--) {
+      cCommand *parent = Get(index);
+      if (parent->getIndent() < Object->getIndent()) {
+         parent->addChild(Object);
+         return;
+         }
+      }
+  cConfig<cCommand>::Add(Object);
+}
 
 // -- cSVDRPhosts ------------------------------------------------------------
 

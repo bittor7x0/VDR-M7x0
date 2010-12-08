@@ -40,6 +40,8 @@
 
 #define MAINMENUHOOKSVERSNUM 1.0
 
+#define CMDSUBMENUVERSNUM 7
+
 #define MAXPRIORITY 99
 #define MAXLIFETIME 99
 
@@ -52,11 +54,15 @@
 #define MaxSkinName 16
 #define MaxThemeName 16
 
+class cCommands;
+
 class cCommand : public cListObject {
 private:
   char *title;
   char *command;
   bool confirm;
+  int nIndent;
+  cCommands *childs;
   static char *result;
 public:
   cCommand(void);
@@ -65,6 +71,12 @@ public:
   const char *Title(void) { return title; }
   bool Confirm(void) { return confirm; }
   const char *Execute(const char *Parameters = NULL);
+  int getIndent(void) { return nIndent; }
+  void setIndent(int nNewIndent) { nIndent = nNewIndent; }
+  cCommands *getChilds(void) { return childs; }
+  int getChildCount(void);
+  bool hasChilds(void) { return getChildCount() > 0; }
+  void addChild(cCommand *newChild);
   };
 
 typedef uint32_t in_addr_t; //XXX from /usr/include/netinet/in.h (apparently this is not defined on systems with glibc < 2.2)
@@ -92,6 +104,7 @@ private:
 public:
   cConfig(void) { fileName = NULL; }
   virtual ~cConfig() { free(fileName); }
+  virtual void AddConfig(T *Object) { cList<T>::Add(Object); }
   const char *FileName(void) { return fileName; }
   bool Load(const char *FileName = NULL, bool AllowComments = false, bool MustExist = false)
   {
@@ -121,7 +134,7 @@ public:
                 if (!isempty(s)) {
                    T *l = new T;
                    if (l->Parse(s))
-                      Add(l);
+                      AddConfig(l);
                    else {
                       esyslog("ERROR: error in %s, line %d", fileName, line);
                       delete l;
@@ -163,7 +176,10 @@ public:
   }
   };
 
-class cCommands : public cConfig<cCommand> {};
+class cCommands : public cConfig<cCommand> {
+public:
+  virtual void AddConfig(cCommand *Object);
+  };
 
 class cSVDRPhosts : public cConfig<cSVDRPhost> {
 public:
