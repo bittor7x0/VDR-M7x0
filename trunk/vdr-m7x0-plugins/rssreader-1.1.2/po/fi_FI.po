@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: Rolf Ahrenberg\n"
-"POT-Creation-Date: 2007-08-28 23:51+0300\n"
+"POT-Creation-Date: 2007-12-22 13:05+0100\n"
 "PO-Revision-Date: 2007-08-12 18:35+0300\n"
 "Last-Translator: Rolf Ahrenberg\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -25,9 +25,6 @@ msgstr "<otsikko ei ole saatavilla>"
 
 msgid "<no description available>"
 msgstr "<kuvaus ei ole saatavilla>"
-
-msgid "<no link available>"
-msgstr "<linkki ei ole saatavilla>"
 
 msgid "Select RSS item"
 msgstr "Valitse RSS-artikkeli"
@@ -61,3 +58,6 @@ msgstr "Käytä HTTP-välityspalvelinta"
 
 msgid "HTTP proxy server"
 msgstr "HTTP-välityspalvelimen osoite"
+
+#~ msgid "<no link available>"
+#~ msgstr "<linkki ei ole saatavilla>"

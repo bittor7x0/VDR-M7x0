@@ -11,12 +11,12 @@
 #include "menu.h"
 #include "config.h"
 #include "common.h"
+#include "i18n.h"
 
-#if defined(APIVERSNUM) && APIVERSNUM < 10508
-#error "VDR-1.5.8 API version or greater is required!"
-#endif
 
-static const char VERSION[]       = "1.1.2";
+#define trNOOP(x) x
+
+static const char VERSION[]       = "1.1.3";
 static const char DESCRIPTION[]   = trNOOP("RSS Reader for OSD");
 static const char MAINMENUENTRY[] = trNOOP("RSS Reader");
 
@@ -84,6 +84,9 @@ bool cPluginRssReader::ProcessArgs(int argc, char *argv[])
 bool cPluginRssReader::Initialize(void)
 {
   // Initialize any background activities the plugin shall perform.
+#if VDRVERSNUM < 10507
+  RegisterI18n(StreamplayerPhrases);
+#endif
   return true;
 }
 

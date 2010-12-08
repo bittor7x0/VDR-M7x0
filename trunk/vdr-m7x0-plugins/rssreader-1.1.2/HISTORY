@@ -88,3 +88,7 @@ VDR Plugin 'rssreader' Revision History
 
 - Cleaned up translations.
 - Improved html tag stripping.
+
+2007-10-12: Version 1.1.3
+- Version vdr-m740x
+- Fix bug in html tag stripping.

@@ -66,7 +66,7 @@ cRssMenuItem::cRssMenuItem(const char *Date, const char *Title, const char *Link
            (*Title       || !RssConfig.hideelem) ? "\n\n" : "",
            *Description  ? strdup(Description)   : RssConfig.hideelem ? "" : tr("<no description available>"),
            (*Description || !RssConfig.hideelem) ? "\n\n" : "",
-           *Link         ? strdup(Link)          : RssConfig.hideelem ? "" : tr("<no link available>"));
+           *Link         ? strdup("")          : RssConfig.hideelem ? "" : "");
 }
 
 cRssMenuItem::~cRssMenuItem()
@@ -168,7 +168,10 @@ eOSState cRssStreamsMenu::Select(void)
      debug("cRssStreamsMenu::Select(): downloading and parsing '%s'", rssItem->Title());
      // the following message generates an annoying slowdown 
      //Skins.Message(mtInfo, tr("Loading RSS stream..."));
-     switch (Parser.DownloadAndParse(rssItem->Url())) {
+     SetStatus(tr("Loading RSS stream..."));
+     int result = Parser.DownloadAndParse(rssItem->Url());
+     SetStatus(NULL);
+     switch (result) {
        case (cParser::RSS_PARSING_OK):
             return AddSubMenu(new cRssItemsMenu);
        case (cParser::RSS_PARSING_ERROR):
@@ -182,6 +185,7 @@ eOSState cRssStreamsMenu::Select(void)
             Skins.Message(mtError, tr("Unknown error!"));
             return osContinue;
        }
+       
      }
   return osEnd;
 }
