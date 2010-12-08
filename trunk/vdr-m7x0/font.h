@@ -13,11 +13,16 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#ifndef HAVE_BEAUTYPATCH
+#define HAVE_BEAUTYPATCH
+#endif
+
 enum eDvbFont {
   fontOsd,
   fontFix,
-  fontSml
-#define eDvbFontSize (fontSml + 1)
+  fontSml,
+  fontSym
+#define eDvbFontSize (fontSym + 1)
   };
 
 
