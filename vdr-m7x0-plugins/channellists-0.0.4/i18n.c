@@ -18,7 +18,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Canales presintonizados", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -40,7 +40,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Administra tus listas de canales", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -62,7 +62,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Ocultar entrada del menú principal", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -84,7 +84,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Acción después de cambiar", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -128,7 +128,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Cerrar", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -150,7 +150,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Nada", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -172,7 +172,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Botón rojo", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -194,7 +194,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Botón verde", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -216,7 +216,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "¿Cambiar la lista de canales actual?", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -238,7 +238,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Script", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -260,7 +260,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Renombrar", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -282,7 +282,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Copiar", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -304,7 +304,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Guardar", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -348,7 +348,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "¿Borrar la lista de canales?", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -370,7 +370,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "¿Ejecutar script de actualización?", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -392,7 +392,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Espere...", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -414,7 +414,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Se produjo un error, ver syslog...", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -436,7 +436,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Renombrar", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -458,7 +458,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Script", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -480,7 +480,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Copiar", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
@@ -524,7 +524,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "", // Español
+    "Guardar", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste
