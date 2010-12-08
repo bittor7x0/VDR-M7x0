@@ -193,6 +193,12 @@ bool cCutter::Start(const char *FileName)
      error = false;
      ended = false;
      cRecording Recording(FileName);
+     
+     cMarks FromMarks;
+     FromMarks.Load(FileName);
+     cMark *First=FromMarks.First();
+     if (First) Recording.SetStartTime(Recording.start+((First->position/FRAMESPERSEC+30)/60)*60);
+     
      const char *evn = Recording.PrefixFileName('%');
      if (evn && RemoveVideoFile(evn) && MakeDirs(evn, true)) {
         // XXX this can be removed once RenameVideoFile() follows symlinks (see videodir.c)
