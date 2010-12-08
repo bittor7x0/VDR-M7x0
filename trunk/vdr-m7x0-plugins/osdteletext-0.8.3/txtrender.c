@@ -323,13 +323,15 @@ void cRenderPage::RenderTeletextCode(unsigned char *PageCode) {
         // Pre-scan for double-height and double-size codes
         for (x=0;x<40;x++) {
             if (y==0 && x<8) x=8;
-            if ((PageCode[x+40*y] & 0x7f)==0x0D || (PageCode[x+40*y] & 0x7f)==0x0F)
+            if ((PageCode[((x+40*y)*TXT_CHARSIZE)+1] & 0x7f)==0x0D || (PageCode[((x+40*y)*TXT_CHARSIZE)+1] & 0x7f)==0x0F)
                 EmptyNextLine=true;
         }
 
         // Move through line
         for (x=0;x<40;x++) {
-            unsigned char ttc=PageCode[x+40*y] & 0x7f;
+            unsigned char ttc=PageCode[((x+40*y)*TXT_CHARSIZE)+1] & 0x7f;
+            unsigned char mode=PageCode[(x+40*y)*TXT_CHARSIZE];
+
             // skip parity check
 
             if (y==0 && x<8) continue;
@@ -396,7 +398,7 @@ void cRenderPage::RenderTeletextCode(unsigned char *PageCode) {
                 }
             } else {
                 // Character code               
-                c2.SetChar(ttc);
+                c2.SetChar(ttc, mode);
                 if (GraphicCharset) {
                     if (ttc&0x20) {
                         // real graphics code, remember for HoldMosaics

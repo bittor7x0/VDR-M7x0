@@ -21,7 +21,7 @@ msgstr "Kanava (paina OK):"
 msgid "Page"
 msgstr "Sivua"
 
-msgid "not found"
+msgid "not found until now, searching"
 msgstr "ei löydy"
 
 msgid "Displays teletext on the OSD"

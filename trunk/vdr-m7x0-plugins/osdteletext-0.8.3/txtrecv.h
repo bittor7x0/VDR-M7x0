@@ -143,12 +143,14 @@ class cTelePage {
   unsigned char lang;
   PageID page;
   unsigned char pagebuf[27*40];
+  unsigned char pagebuf_ext[27*40*TXT_CHARSIZE]; // diacritical-mark
   char Directory [255];
  public:
   cTelePage(PageID page, uchar flags, uchar lang, int mag);
   ~cTelePage();
   void SetLine(int, uchar*);
   void save();
+  void SetData(int line, int col, uchar c, uchar mode);
  };
 
 class cRingTxtFrames : public cRingBufferFrame {
@@ -157,7 +159,6 @@ class cRingTxtFrames : public cRingBufferFrame {
   ~cRingTxtFrames() { Clear(); };
   void Wait(void) { WaitForGet(); };
   void Signal(void) { EnableGet(); };
-  bool Check(int Size) { return (Free() >= Size); };
 };
 
 class cTxtReceiver : public cReceiver, public cThread {

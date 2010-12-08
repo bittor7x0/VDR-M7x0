@@ -21,7 +21,7 @@ msgstr "Sender (Prima OK): "
 msgid "Page"
 msgstr "Página"
 
-msgid "not found"
+msgid "not found until now, searching"
 msgstr "Não encontrado"
 
 msgid "Displays teletext on the OSD"

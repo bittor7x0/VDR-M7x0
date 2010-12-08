@@ -21,7 +21,7 @@ msgstr "Канал (натисніть ОК): "
 msgid "Page"
 msgstr "Сторінка"
 
-msgid "not found"
+msgid "not found until now, searching"
 msgstr "не знайдена"
 
 msgid "Displays teletext on the OSD"
