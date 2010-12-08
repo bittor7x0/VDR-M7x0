@@ -183,7 +183,7 @@ const tI18nPhrase Phrases[] = {
     "Programmer",
     "Ohjelmisto",
     "Program",
-    "Guía de Programación",
+    "Guía de programación",
     "Ğñüãñáììá",
     "Program",
     "Program (EPG)",
@@ -227,7 +227,7 @@ const tI18nPhrase Phrases[] = {
     "Timere",
     "Ajastimet",
     "Timery",
-    "Programar grabaciones",
+    "Programaciones",
     "×ñïíïğñïãñáììáôéóìïß",
     "Timers",
     "Timer-e",
@@ -293,7 +293,7 @@ const tI18nPhrase Phrases[] = {
     "Konfigurasjon",
     "Asetukset",
     "Ustawienia",
-    "Configuración",
+    "Configuración VDR",
     "Ñõèìéóåéò",
     "Inställningar",
     "Configuraşie",
@@ -668,7 +668,7 @@ const tI18nPhrase Phrases[] = {
     "Av/På",
     "Päällä/Pois",
     "W³/Wy³",
-    "On/Off",
+    "Activo/Desact.",
     "Aíïé÷/Këåéóôü",
     "På/Av",
     "Act./Inact.",
@@ -690,7 +690,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Ajastin",
     "Timer",
-    "Programa",
+    "Programar",
     "",// TODO
     "Timer",
     "Timer",
@@ -756,7 +756,7 @@ const tI18nPhrase Phrases[] = {
     "Spill av",
     "Toista",
     "Odtwórz",
-    "Play",
+    "Reproducir",
     "ÁíáğáñáãùãŞ",
     "Spela upp",
     "Redare",
@@ -1351,7 +1351,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
     "",//TODO
-    "",//TODO
+    "Editando - ¿reiniciar igualmente?",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -1417,7 +1417,7 @@ const tI18nPhrase Phrases[] = {
     "Trykk en tast for ikke å slå av",
     "Peru sammutus painamalla mitä tahansa näppäintä",
     "Naci¶nij dowolny klawisz aby nie wy³±czaæ",
-    "Pulse una tecla para interrumpir apagar",
+    "Pulse un botón para interrumpir apagado",
     "Ğßåóå İíá ğëŞêôñï ãéÜ áêıñùäç ôåñìáôéóìïı",
     "Tryck valfri knapp för att återkalla avstängningen",
     "Apasã orice tastã pentru a anula închiderea",
@@ -1439,7 +1439,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
     "",//TODO
-    "",//TODO
+    "Pulse un botón para interrumpir reinicio",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -1461,7 +1461,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "VDR sammuu myöhemmin - pakota virtakytkimellä",
     "",//TODO
-    "",//TODO
+    "VDR se apagará más tarde - pulse Apagar para forzar",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -1483,7 +1483,29 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "VDR sammuu %s minuutin kuluttua",
     "",//TODO
+    "VDR se apagará en %s minutos",
     "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "VDR will go in HotStandby in %s minutes",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "VDR hará un apagado rápido en %s minutos",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -1505,7 +1527,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "Leikkaus kesken - sammutetaanko?",
     "",//TODO
-    "",//TODO
+    "Editando - ¿apagar igualmente?",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -1527,7 +1549,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "Laajennos %s herää %ld minuutin kuluttua - sammutetaanko?",
     "",//TODO
-    "",//TODO
+    "El plugin %s iniciará en %ld min, ¿continuar?",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -2255,7 +2277,7 @@ const tI18nPhrase Phrases[] = {
     "Filnavn",
     "Tiedosto",
     "Plik",
-    "Fichero",
+    "Archivo",
     "Áñ÷åßï",
     "Filnamn",
     "Fiºier",
@@ -2873,7 +2895,7 @@ const tI18nPhrase Phrases[] = {
     "Programoversikt",
     "Ohjelmaopas",
     "EPG",
-    "Guía de Programación",
+    "Guía de programación",
     "Çëåêôñïíéêüò ïäçãüò ğñïãñÜììáôïò",
     "EPG",
     "EPG",
@@ -2884,6 +2906,248 @@ const tI18nPhrase Phrases[] = {
     "EPG",
     "EPG",
     "EPG",
+  },
+  { "EPG Channel Modes",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Modos EPG por canal",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Channel Default Mode",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Modo por defecto para canales",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Channel Inverse Mode",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Modo inverso para canales",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Channel Limit",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Límite para canales",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Default Mode",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Por defecto",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Do not save",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "No guardar",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Foreign EPG",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "EPG externa",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Full EPG",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "EPG completa",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Inverse Mode",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Modo inverso",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$No EPG",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Sin EPG",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "Setup.EPG$Now and Next only",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Ahora y Después",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
   },
   { "DVB",
     "DVB",
@@ -4150,7 +4414,7 @@ const tI18nPhrase Phrases[] = {
     "Opptaksmargin slutt (min)",
     "Lopetusmarginaali (min)",
     "Margines na koñcu (min)",
-    "Acabar grabación después (min)",
+    "Acabar grabación después de (min)",
     "Ğñüóèåôïò ÷ñüíïò óôü ôİëïò (ëåğôÜ)",
     "Marginal för stopp (min)",
     "Marjã la oprire (min)",
@@ -4282,7 +4546,7 @@ const tI18nPhrase Phrases[] = {
     "Bruk episodenavn",
     "Käytä jakson nimeä",
     "U¿ywaj nazwy epizodu",
-    "Utilizar nombre de episodo",
+    "Utilizar nombre de episodio",
     "×ñŞóç ïíüìáôïò åğåéóïäßïõ",
     "Använd episodnamn",
     "Utilizeazã numele episodului",
@@ -4414,7 +4678,7 @@ const tI18nPhrase Phrases[] = {
     "Maksimal størrelse på videofiler (MB)",
     "Suurin tiedostokoko (Mt)",
     "Maksymalny rozmiar pliku (MB)",
-    "Tamaño máximo de fichero (MB)",
+    "Tamaño máximo de archivo (MB)",
     "Ìİãéóôï ìİãåèïò áñ÷åßïõ (MB)",
     "Maximal filstorlek för inspelning (MB)",
     "Dimensiune maximã a fiºierului video (MB)",
@@ -4436,7 +4700,7 @@ const tI18nPhrase Phrases[] = {
     "Splitt redigerte filer",
     "Jaottele muokatut tallenteet",
     "Dziel edytowane pliki",
-    "Partir ficheros editados",
+    "Partir archivos editados",
     "Äéáìİëéóìüò åğåîåñãáóìİíùí áñ÷åßùí",
     "Dela upp redigerade filer",
     "Separare fiºiere montate",
@@ -4701,7 +4965,7 @@ const tI18nPhrase Phrases[] = {
     "ManTirOnsTorFreLørSøn",
     "Ma Ti Ke To Pe La Su ",
     "PonWto¦roCzwPi±SobNie",
-    "LunMarMieJueVieSabDom",
+    "LunMarMiéJueVieSábDom",
     "ÄåõÔñßÔåôĞİìĞáñÓÜâKõñ",
     "MånTisOnsTorFreLörSön",
     "LunMarMieJoiVinSâmDum",
@@ -4724,7 +4988,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
     " a±bcædeêfghijkl³mnñoópqrs¶tuvwxyz¼¿0123456789-.#~,/_@",
-    " aábcçdeéfghiíjklmnñoópqrstuúvwxyz0123456789-.#~,/_@",
+    " aábcçdeéfghiíjklmnñoópqrstuúüvwxyz0123456789-.#~,/_@",
     " áÜâãäåİæçŞèéßêëìíîïüğñóòôõıö÷øùş0123456789-.#~,/_@abcdefghijklmnopqrstuvwxyz",
     " abcdefghijklmnopqrstuvwxyzåäö0123456789-.#~,/_@",
     " aãâbcdefghiîjklmnopqrsºtşuvwxyz0123456789-.#~,/_@",
@@ -4747,7 +5011,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     " 0\t-.#~,/_@1\tabcäå2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz9",
     " 0\t-.#~,/_@1\tabc2±æ\tdef3ê\tghi4\tjkl5³\tmno6ñó\tpqrs7¶\ttuv8\twxyz9¼¿",
-    " 0\t-.#~,/_@1\tabcáç2\tdefé3\tghií4\tjkl5\tmnoñó6\tpqrs7\ttuvú8\twxyz9",
+    " 0\t-.#~,/_@1\tabcáç2\tdefé3\tghií4\tjkl5\tmnoñó6\tpqrs7\ttuvúü8\twxyz9",
     "",//TODO
     " 0\t-.#~,/_@1\tabcåä2\tdef3\tghi4\tjkl5\tmnoö6\tpqrs7\ttuv8\twxyz",
     " 0\t-.#~,/_@1\taãâbc2\tdef3\tghiî4\tjkl5\tmno6\tpqrsº7\ttşuv8\twxyz9",
@@ -4770,7 +5034,7 @@ const tI18nPhrase Phrases[] = {
     "Lære fjernkontrolltaster",
     "Kaukosäätimen opettaminen",
     "Nauka klawiszy pilota",
-    "Aprendiendo teclas del mando",
+    "Aprendiendo botones del mando",
     "ÅêìÜèçóç ğëŞêôñùí ôçëå÷åéñéóìïı",
     "Inlärning av fjärrkontrollsknappar",
     "Învãşare taste telecomandã",
@@ -4814,7 +5078,7 @@ const tI18nPhrase Phrases[] = {
     "Trykk en av tastene på fjernkontrollen",
     "Paina mitä tahansa kaukosäätimen näppäintä",
     "Naci¶nij dowolny klawisz na pilocie",
-    "Pulse cualquier tecla en el mando",
+    "Pulse cualquier botón en el mando",
     "Ğßåóå İíá ğëŞêôñï óôï ôçëå÷åéñéóôŞñéï",
     "Tryck valfri tangent på fjärrkontrollen",
     "Apãsaşi o tastã pe telecomandã",
@@ -4858,7 +5122,7 @@ const tI18nPhrase Phrases[] = {
     "Ikke trykk på noen av tastene...",
     "Älä paina kaukosäätimen näppäimiä...",
     "Nie naciskaj teraz ¿adnego klawisza...",
-    "No pulse ninguna tecla...",
+    "No pulse ningún botón...",
     "ÌŞí ğáôÜò ğëŞêôñá...",
     "Tryck inte på någon knapp...",
     "Nu apãsaşi nici o tastã...",
@@ -4902,7 +5166,7 @@ const tI18nPhrase Phrases[] = {
     "Trykk tasten for '%s'",
     "Paina näppäintä toiminnolle '%s'",
     "Naci¶nij klawisz dla '%s'",
-    "Pulse la tecla para '%s'",
+    "Pulse un botón para '%s'",
     "Ğßåóå ôï ğëŞêôñï ãéÜ '%s'",
     "Tryck på knappen för '%s'",
     "Apãsaşi tasta pentru '%s'",
@@ -5012,7 +5276,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "näppäimen puuttuessa paina 'Valikko'",
     "(naci¶nij 'Menu' aby pomin±æ ten klawisz)",
-    "Pulse 'Menú' para omitir esta tecla",
+    "Pulse 'Menú' para omitir este botón",
     "Ğßåóå 'ìåíïı' ãéá ğñïóğİñáóç áõôïı ôïı ğëŞêôñïõ",
     "(Tryck 'Meny' för att hoppa över knappen.)",
     "Apãsaşi 'Meniu' pentru a sãri peste aceastã tastã",
@@ -5034,7 +5298,7 @@ const tI18nPhrase Phrases[] = {
     "Fase 3: Lagre tastekoder",
     "Vaihe 3: Näppäinkoodien tallentaminen",
     "Etap 3: Zapisywanie kodów klawiszy",
-    "Fase 3: Guardando los códigos de teclas",
+    "Fase 3: Guardando los códigos de botones",
     "Öáóç 3: ÁğïèŞêåõóç êùäéêşí",
     "Fas 3: Spara knappkoder",
     "Faza 3: Salvarea codurilor de taste",
@@ -5938,7 +6202,7 @@ const tI18nPhrase Phrases[] = {
     " Stopp avspilling",
     " Lopeta toisto",
     " Zatrzymaj odtwarzanie",
-    " Parar reprodución",
+    " Parar reproducción",
     " Ôİëïò áíáğáñáãùãŞò",
     " Avsluta uppspelning",
     " Opreºte redarea",
