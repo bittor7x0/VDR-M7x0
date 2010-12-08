@@ -35,7 +35,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Canal", // ES
     "Czatoma", // HU
     "", // TODO
     "", // TODO
@@ -57,7 +57,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Posición X", // ES
     "X helyzet", // HU
     "", // TODO
     "", // TODO
@@ -79,7 +79,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Posición Y", // ES
     "Y helyzet", // HU
     "", // TODO
     "", // TODO
@@ -101,7 +101,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Ancho", // ES
     "Szélesség", // HU
     "", // TODO
     "", // TODO
@@ -123,7 +123,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Añadir canal", // ES
     "Adj csatornát hozza", // HU
     "", // TODO
     "", // TODO
@@ -145,7 +145,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Borrar canal", // ES
     "Fok csatornát", // HU
     "", // TODO
     "", // TODO
@@ -168,7 +168,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Opacidad fondo", // ES
     "", // TODO
   },
   { "Selected channel opacity",
@@ -181,7 +181,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Opacidad canal seleccionado", // ES
     "", // TODO
   },
   { "Border opacity",
@@ -194,7 +194,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Opacidad borde", // ES
     "Alpha szegély", // HU
   },
 */
@@ -208,7 +208,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Ordenar por", // ES
     "", // TODO
   },
   { "None",
@@ -221,7 +221,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Ninguno", // ES
     "", // TODO
   },
   { "Name",
@@ -234,7 +234,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Nombre", // ES
     "", // TODO
   },
   { "As entered",
@@ -247,7 +247,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Según entró", // ES
     "", // TODO
   },
   { "Close on switch",
@@ -260,7 +260,20 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
+    "Cerrar al cambiar", // ES
     "", // TODO
+  },
+  { "Number of channels",
+    "", // TODO
+    "", // TODO
+    "", // ITALIAN
+    "", // TODO
+    "", // TODO
+    "",
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "Número de canales", // ES
     "", // TODO
   },
 
