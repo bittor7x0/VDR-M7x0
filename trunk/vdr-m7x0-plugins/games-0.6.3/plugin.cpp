@@ -1,5 +1,6 @@
 #include <plugin.h>
 #include <osd.h>
+#include "gamesi18n.h"
 
 extern int launcher_menu(char ***m);
 extern int launcher_start(int g, int x, int y, int s, int c);
@@ -47,15 +48,16 @@ private:
 
 class GamePlugin : public cPlugin {
 public:
-	bool SetupParse(const char *Name, const char *Value);
-	const char     *Version(void)        { return VERSION;       }
-	const char     *Description(void)    { return DESCRIPTION;   }
-	const char     *MainMenuEntry(void)  { return MAINMENUENTRY; }
-	cMenuSetupPage *SetupMenu(void)      { return new GameSetup; }
+	bool           SetupParse(const char *Name, const char *Value);
+	bool           Start(void);
+	const char     *Version(void)        { return VERSION;           }
+	const char     *Description(void)    { return tr(DESCRIPTION);   }
+	const char     *MainMenuEntry(void)  { return tr(MAINMENUENTRY); }
+	cMenuSetupPage *SetupMenu(void)      { return new GameSetup;     }
 	cOsdObject     *MainMenuAction(void);
 };
 
-GameMenu::GameMenu(void) : cOsdMenu("Games") {
+GameMenu::GameMenu(void) : cOsdMenu(tr("Games")) {
 	char **menu;
 	int games;
 
@@ -119,11 +121,11 @@ GameStart::ProcessKey(eKeys k) {
 }
 
 GameSetup::GameSetup(void) {
-	new_s = s; Add(new cMenuEditIntItem(      "OSD Size", &new_s,     1,    3));
-	new_x = x; Add(new cMenuEditIntItem(    "X Position", &new_x,    -9,    9));
-	new_y = y; Add(new cMenuEditIntItem(    "Y Position", &new_y,    -9,    9));
-	new_c = c; Add(new cMenuEditIntItem("Computer Skill", &new_c,     1,    3));
-	new_r = r; Add(new cMenuEditBoolItem(   "Key Repeat", &new_r, "Off", "On"));
+	new_s = s; Add(new cMenuEditIntItem(      tr("OSD Size"), &new_s,     1,    3));
+	new_x = x; Add(new cMenuEditIntItem(    tr("X Position"), &new_x,    -9,    9));
+	new_y = y; Add(new cMenuEditIntItem(    tr("Y Position"), &new_y,    -9,    9));
+	new_c = c; Add(new cMenuEditIntItem(tr("Computer Skill"), &new_c,     1,    3));
+	new_r = r; Add(new cMenuEditBoolItem(   tr("Key Repeat"), &new_r, tr("Off"), tr("On")));
 }
 
 void
@@ -133,6 +135,12 @@ GameSetup::Store(void) {
 	SetupStore("YPosition", y = new_y);
 	SetupStore("Skill",     c = new_c);
 	SetupStore("KeyRepeat", r = new_r);
+}
+
+bool
+GamePlugin::Start(void) {
+	RegisterI18n(Phrases);
+	return true;
 }
 
 cOsdObject *

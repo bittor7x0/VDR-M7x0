@@ -12,12 +12,11 @@ OBJS      = launcher.o  \
             text.o
 VDROBJS   = plugin.o
 SDLOBJS   = main.o
-DEFINES   = -DVERSION=\"$(VERSION)\"
+DEFINES   = -DVERSION=\"$(VERSION)\" -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 CFLAGS    = -g -pipe -O2 -Wall -Woverloaded-virtual
 LFLAGS    = -pthread
-VDRDIR    = ../../..
-LIBDIR    = ../../lib
-DVBDIR    = ../../../../DVB
+VDRDIR    ?= ../../..
+LIBDIR    ?= ../../lib
 PACKAGE   = vdr-games-$(VERSION)
 ARCHIVES  = $(shell for GAME in $(GAMES); do echo $$GAME/$$GAME.a; done)
 SDLGAMES  = $(shell test -f $(VDRDIR)/config.h || echo true )
@@ -25,6 +24,7 @@ VDRVER    = $(shell grep 'define VDRVERSION ' $(VDRDIR)/config.h | \
                     awk '{ print $$3 }' | sed -e 's/"//g' )
 VDRNUM    = $(shell grep 'define VDRVERSNUM ' $(VDRDIR)/config.h | \
                     awk '{ print $$3 }' | sed -e 's/"//g' )
+APIVERSION= $(shell grep 'define APIVERSION ' $(VDRDIR)/config.h | awk '{ print $$3 }' | sed -e 's/"//g')
 
 ifeq "$(SDLGAMES)" "true"
 
@@ -48,7 +48,7 @@ else
 
 	TARGET    = libvdr-games.so
 	OBJS     += $(VDROBJS)
-	CFLAGS   += -fPIC -I$(VDRDIR) -I$(DVBDIR)/include
+	CFLAGS   += -fPIC -I$(VDRDIR)
 	LFLAGS   += -shared --whole-archive
 	DEFINES  += -D_GNU_SOURCE -DVDRVERSNUM=$(VDRNUM)
 
@@ -57,18 +57,18 @@ endif
 all:
 	@echo
 	@echo -n "Building $(TARGET) "
-	@for GAME in $(GAMES); do cd $$GAME; make -s all; cd -; done
+	for GAME in $(GAMES); do AR=$(AR) CXX=$(CXX) make -C $$GAME -s all; done
 	@rm -f $(TARGET)
-	@make -s $(TARGET)
+	@make $(TARGET)
 	@echo " done"
 	@echo
 
 libvdr-games.so: $(OBJS)
-	@g++ $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@
-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
+	$(CXX) $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@
+	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 sdl-games: $(OBJS)
-	@g++ $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@
+	$(CXX) $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@
 
 install: all
 	@cp $(LIBDIR)/libvdr-games.so.$(VDRVER) /mnt/vdr/lib/plugins/
@@ -86,11 +86,11 @@ tar: clean
 clean:
 	@echo
 	@echo -n "Cleaning source tree "
-	@for GAME in $(GAMES); do cd $$GAME; make -s clean; cd -; done
+	@for GAME in $(GAMES); do cd $$GAME; make clean; cd -; done
 	@rm -f *.o *.a $(TARGET)
 	@echo " done"
 	@echo
 
 .cpp.o:
 	@echo -n "."
-	@$(COMPILE.cpp) $(DEFINES) $(CFLAGS) -c $< $(OUTPUT_OPTION)
+	$(COMPILE.cpp) $(DEFINES) $(CFLAGS) -c $< $(OUTPUT_OPTION)
