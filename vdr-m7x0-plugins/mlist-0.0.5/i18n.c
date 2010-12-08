@@ -18,7 +18,7 @@ const tI18nPhrase Phrases[] = {
     "",// Norsk
     "",// suomi
     "",// Polski
-    "",// Español
+    "Muestra historial de mensajes",// Español
     "",// ÅëëçíéêÜ
     "",// Svenska
     "",// Romaneste
@@ -38,7 +38,7 @@ const tI18nPhrase Phrases[] = {
     "",// Norsk
     "",// suomi
     "",// Polski
-    "",// Español
+    "Historial de mensajes",// Español
     "",// ÅëëçíéêÜ
     "",// Svenska
     "",// Romaneste
@@ -58,7 +58,7 @@ const tI18nPhrase Phrases[] = {
     "",// Norsk
     "",// suomi
     "",// Polski
-    "",// Español
+    "Borrar",// Español
     "",// ÅëëçíéêÜ
     "",// Svenska
     "",// Romaneste
@@ -78,7 +78,7 @@ const tI18nPhrase Phrases[] = {
     "",// Norsk
     "",// suomi
     "",// Polski
-    "",// Español
+    "Ocultar entrada en menú principal",// Español
     "",// ÅëëçíéêÜ
     "",// Svenska
     "",// Romaneste
