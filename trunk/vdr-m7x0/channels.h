@@ -184,6 +184,8 @@ public:
   int Tid(void) const { return tid; }
   int Sid(void) const { return sid; }
   int Rid(void) const { return rid; }
+  bool IsTV(void)    const { return (vpid > 0)  && (Apid(0)>0); }
+  bool IsRadio(void) const { return (vpid == 0) && (Apid(0)>0); }
   int Number(void) const { return number; }
   void SetNumber(int Number) { number = Number; }
   bool GroupSep(void) const { return groupSep; }
