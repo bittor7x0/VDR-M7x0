@@ -13,7 +13,7 @@ Common
            implement (hardware like) sprite engine
            more games (pacman, breakout, space invaders, ...)
            saved highscore list
-           i18n support
+     DONE  i18n support
            use pthread_cond_* for keys
 
 
