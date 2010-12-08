@@ -37,7 +37,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Kanavapilotti", // FINNISH
     "", // TODO
-    "", // TODO
+    "Pilotskin", // Español
     "", // TODO
     "", // TODO
     "", // TODO
@@ -57,7 +57,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Kanavapilotti ohjelmaoppaalle", // FINNISH
     "", // TODO
-    "", // TODO
+    "Un copiloto para el zapping", // Español
     "", // TODO
     "", // TODO
     "", // TODO
@@ -77,7 +77,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Sulje painamalla OK", // FINNISH
     "", // TODO
-    "", // TODO
+    "Cerrar al OK", // Español
     "", // TODO
     "", // TODO
     "", // TODO
@@ -117,7 +117,107 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // FINNISH
     "", // TODO
+    "Cerrar", // Español
     "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+#if VDRVERSNUM>10301
+    "", // TODO
+#endif
+  },
+  { "AutoTimer", // English
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "AutoProgramador", // Español
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+#if VDRVERSNUM>10301
+    "", // TODO
+#endif
+  },
+  { "Button$Record", // English
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "Grabar", // Español
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+#if VDRVERSNUM>10301
+    "", // TODO
+#endif
+  },
+  { "Search", // English
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "Buscar", // Español
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+#if VDRVERSNUM>10301
+    "", // TODO
+#endif
+  },
+  { "no", // English
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "no", // Español
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+#if VDRVERSNUM>10301
+    "", // TODO
+#endif
+  },
+  { "yes", // English
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "", // TODO
+    "sí", // Español
     "", // TODO
     "", // TODO
     "", // TODO
