@@ -500,7 +500,10 @@ cRecording::cRecording(cTimer *Timer, const cEvent *Event)
 {
   resume = RESUME_NOT_INITIALIZED;
   titleBuffer = NULL;
-  sortBuffer = NULL;
+  for (int i = 0; i < MAXSORTMODES; i++) {
+     sortBuffer[i] = NULL;
+     lastDirsFirst[i] = -1;
+  }
   fileName = NULL;
   name = NULL;
   fileSizeMB = -1; // unknown
@@ -557,7 +560,10 @@ cRecording::cRecording(const char *FileName)
   fileSizeMB = -1; // unknown
   deleted = 0;
   titleBuffer = NULL;
-  sortBuffer = NULL;
+  for (int i = 0; i < MAXSORTMODES; i++) {
+     sortBuffer[i] = NULL;
+     lastDirsFirst[i] = -1;
+  }
   fileName = strdup(FileName);
   FileName += strlen(VideoDirectory) + 1;
   char *p = strrchr(FileName, '/');
@@ -656,7 +662,9 @@ cRecording::cRecording(const char *FileName)
 cRecording::~cRecording()
 {
   free(titleBuffer);
-  free(sortBuffer);
+  for (int i = 0; i < MAXSORTMODES; i++) {
+     free(sortBuffer[i]);
+  }
   free(fileName);
   free(name);
   delete info;
@@ -677,22 +685,34 @@ char *cRecording::StripEpisodeName(char *s)
            }
         t++;
         }
-  if (s1 && s2)
+
+  if (s1 && s2) {
+    if (Setup.RecordingsSortDirsFirst)
+      *s1 = 'b';
+
+    if ((Setup.RecordingsSortMode <= 1 && s1 != s && !strchr(".-$ª·", *(s1 - 1))) ||
+        (Setup.RecordingsSortMode == 1 && s1 == s) ||
+        (Setup.RecordingsSortMode == 3))	    
      memmove(s1 + 1, s2, t - s2 + 1);
+  }
+
   return s;
 }
 
 char *cRecording::SortName(void) const
 {
-  if (!sortBuffer) {
-     char *s = StripEpisodeName(strdup(FileName() + strlen(VideoDirectory) + 1));
+  if (!sortBuffer[Setup.RecordingsSortMode] ||
+        lastDirsFirst[Setup.RecordingsSortMode] != Setup.RecordingsSortDirsFirst) {
+     free(sortBuffer[Setup.RecordingsSortMode]);
+     lastDirsFirst[Setup.RecordingsSortMode] = Setup.RecordingsSortDirsFirst;
+     char *s = StripEpisodeName(strdup(FileName() + strlen(VideoDirectory)));
      strreplace(s, '/', 'a'); // some locales ignore '/' when sorting
      int l = strxfrm(NULL, s, 0) + 1;
-     sortBuffer = MALLOC(char, l);
-     strxfrm(sortBuffer, s, l);
+     sortBuffer[Setup.RecordingsSortMode] = MALLOC(char, l);
+     strxfrm(sortBuffer[Setup.RecordingsSortMode], s, l);
      free(s);
      }
-  return sortBuffer;
+  return sortBuffer[Setup.RecordingsSortMode];
 }
 
 int cRecording::GetResume(void) const
@@ -707,9 +727,7 @@ int cRecording::GetResume(void) const
 int cRecording::Compare(const cListObject &ListObject) const
 {
   cRecording *r = (cRecording *)&ListObject;
-  if (DirOrderState)
-     return strcasecmp(FileName(), r->FileName());
-  return strcasecmp(SortName(), r->SortName());
+  return Recordings.GetSortOrder() * strcasecmp(SortName(), r->SortName());
 }
 
 const char *cRecording::FileName(void) const
@@ -951,6 +969,7 @@ cRecordings::cRecordings(bool Deleted)
   deleted = Deleted;
   lastUpdate = 0;
   state = 0;
+  SortOrder = 1;
 }
 
 cRecordings::~cRecordings()

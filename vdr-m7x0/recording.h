@@ -68,12 +68,16 @@ public:
   bool Write(FILE *f, const char *Prefix = "") const;
   };
 
+#define SORTRECORDINGSVERSNUM 3
+#define MAXSORTMODES 4 
+
 class cRecording : public cListObject {
   friend class cRecordings;
 private:
   mutable int resume;
   mutable char *titleBuffer;
-  mutable char *sortBuffer;
+  mutable char *sortBuffer[MAXSORTMODES];
+  mutable char lastDirsFirst[MAXSORTMODES];
   mutable char *fileName;
   mutable char *name;
   mutable int fileSizeMB;
@@ -117,6 +121,7 @@ private:
   bool deleted;
   time_t lastUpdate;
   int state;
+  int SortOrder;
   const char *UpdateFileName(void);
   void Refresh(bool Foreground = false);
   void ScanVideoDir(const char *DirName, bool Foreground = false, int LinkLevel = 0);
@@ -147,6 +152,8 @@ public:
   void AddByName(const char *FileName, bool TriggerUpdate = true);
   void DelByName(const char *FileName);
   int TotalFileSizeMB(void); ///< Only for deleted recordings!
+  void ToggleSortOrder(void) { SortOrder *= -1; }
+  const int GetSortOrder(void) { return SortOrder; }
   };
 
 extern cRecordings Recordings;

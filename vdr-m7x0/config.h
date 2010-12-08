@@ -265,6 +265,8 @@ public:
   int InitialChannel;
   int InitialVolume;
   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;
+  int RecordingsSortMode;
+  int RecordingsSortDirsFirst;
   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
   int __EndData__;
   cSetup(void);

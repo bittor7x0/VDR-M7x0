@@ -2289,18 +2289,30 @@ eOSState cMenuRecordings::ProcessKey(eKeys Key)
   eOSState state = cOsdMenu::ProcessKey(Key);
 
   if (state == osUnknown) {
+     char *buffer = NULL;
+     const char *RecordingsSortModeTexts[MAXSORTMODES];
+     RecordingsSortModeTexts[0] = tr("main dir alphabetically, subdirs flexible");
+     RecordingsSortModeTexts[1] = tr("main dir by date, subdirs flexible");
+     RecordingsSortModeTexts[2] = tr("all alphabetically");
+     RecordingsSortModeTexts[3] = tr("all by date");
+
      switch (Key) {
        case kOk:     return Play();
        case kRed:    return (helpKeys > 1 && RecordingCommands.Count()) ? Commands() : Play();
        case kGreen:  return Rewind();
        case kYellow: return Delete();
        case kBlue:   return Info();
-       case k0:      DirOrderState = !DirOrderState;
+       case k0:      Setup.RecordingsSortMode = ++Setup.RecordingsSortMode % MAXSORTMODES;
+                     Set(true);
+                     asprintf(&buffer, "%s %d: %s", tr("Sorting"), Setup.RecordingsSortMode, RecordingsSortModeTexts[Setup.RecordingsSortMode]);
+                     Skins.Message(mtStatus, buffer);
+                     free(buffer);
+                     return osContinue;
+       case k1...k7: return Commands(Key);
+       case k8:      return Rename();
+       case k9:      Recordings.ToggleSortOrder();
                      Set(true);
                      return osContinue;
-       case k8:      return Rename();
-       case k9:
-       case k1...k7: return Commands(Key);
        case kNone:   if (Recordings.StateChanged(recordingsState))
                         Set(true);
                      break;
@@ -2884,12 +2896,19 @@ eOSState cMenuSetupCICAM::ProcessKey(eKeys Key)
 // --- cMenuSetupRecord ------------------------------------------------------
 
 class cMenuSetupRecord : public cMenuSetupBase {
+private:
+  const char *RecordingsSortModeTexts[MAXSORTMODES];
 public:
   cMenuSetupRecord(void);
   };
 
 cMenuSetupRecord::cMenuSetupRecord(void)
 {
+  RecordingsSortModeTexts[0] = tr("main dir alphabetically, subdirs flexible");
+  RecordingsSortModeTexts[1] = tr("main dir by date, subdirs flexible");
+  RecordingsSortModeTexts[2] = tr("all alphabetically");
+  RecordingsSortModeTexts[3] = tr("all by date");
+
   SetSection(tr("Recording"));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Margin at start (min)"),     &data.MarginStart));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Margin at stop (min)"),      &data.MarginStop));
@@ -2909,6 +2928,8 @@ cMenuSetupRecord::cMenuSetupRecord(void)
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show date"),                 &data.ShowRecDate));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show time"),                 &data.ShowRecTime));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show length"),               &data.ShowRecLength));
+  Add(new cMenuEditStraItem(tr("Setup.Recording$Sort recordings by"),        &data.RecordingsSortMode, MAXSORTMODES, RecordingsSortModeTexts));
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Sort directories before recordings"), &data.RecordingsSortDirsFirst));
 }
 
 // --- cMenuSetupReplay ------------------------------------------------------

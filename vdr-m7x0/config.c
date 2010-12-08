@@ -256,6 +256,8 @@ cSetup::cSetup(void)
   UseVps = 0;
   VpsMargin = 120;
   RecordingDirs = 1;
+  RecordingsSortMode = 0;
+  RecordingsSortDirsFirst = 0;
   HotStandby = 0;
   TvMode = 0;
   VCRMode = 0;
@@ -434,6 +436,8 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "UseVps"))              UseVps             = atoi(Value);
   else if (!strcasecmp(Name, "VpsMargin"))           VpsMargin          = atoi(Value);
   else if (!strcasecmp(Name, "RecordingDirs"))       RecordingDirs      = atoi(Value);
+  else if (!strcasecmp(Name, "RecordingsSortMode"))  RecordingsSortMode = atoi(Value);
+  else if (!strcasecmp(Name, "RecordingsSortDirsFirst")) RecordingsSortDirsFirst = atoi(Value);
   else if (!strcasecmp(Name, "HotStandby"))          HotStandby         = atoi(Value);
   else if (!strcasecmp(Name, "TvMode"))              TvMode             = atoi(Value);
   else if (!strcasecmp(Name, "VCRMode"))             VCRMode            = atoi(Value);
@@ -519,6 +523,8 @@ bool cSetup::Save(void)
   Store("UseVps",             UseVps);
   Store("VpsMargin",          VpsMargin);
   Store("RecordingDirs",      RecordingDirs);
+  Store("RecordingsSortMode", RecordingsSortMode);
+  Store("RecordingsSortDirsFirst", RecordingsSortDirsFirst);
   Store("HotStandby", 	      HotStandby);
   Store("TvMode", 	      TvMode);
   Store("VCRMode", 	      VCRMode);
