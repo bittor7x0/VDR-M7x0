@@ -293,6 +293,9 @@ public:
   int CutterMaxBandwidth;
   int CutterRelBandwidth;
   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
+#ifdef USE_DIRECT_IO
+  int ReplayUseDirectIO;
+#endif
   int AbortWhenPluginFails;
   int __EndData__;
   cSetup(void);

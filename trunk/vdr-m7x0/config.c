@@ -336,6 +336,9 @@ cSetup::cSetup(void)
   JumpSeconds = 60;
   JumpSecondsRepeat = 120;
   JumpFramesRepeat = 15;
+#ifdef USE_DIRECT_IO
+  ReplayUseDirectIO = 1;
+#endif
   AbortWhenPluginFails = 0;
 }
 
@@ -523,6 +526,9 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "JumpSeconds"))         JumpSeconds        = atoi(Value);
   else if (!strcasecmp(Name, "JumpSecondsRepeat"))   JumpSecondsRepeat  = atoi(Value);
   else if (!strcasecmp(Name, "JumpFramesRepeat"))    JumpFramesRepeat   = atoi(Value);
+#ifdef USE_DIRECT_IO
+  else if (!strcasecmp(Name, "ReplayUseDirectIO"))   ReplayUseDirectIO  = atoi(Value);
+#endif
   else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
   else
      return false;
@@ -617,6 +623,9 @@ bool cSetup::Save(void)
   Store("JumpSeconds",        JumpSeconds);
   Store("JumpSecondsRepeat",  JumpSecondsRepeat);
   Store("JumpFramesRepeat",   JumpFramesRepeat);
+#ifdef USE_DIRECT_IO
+  Store("ReplayUseDirectIO",  ReplayUseDirectIO);
+#endif
   Store("AbortWhenPluginFails", AbortWhenPluginFails);
 
   Sort();

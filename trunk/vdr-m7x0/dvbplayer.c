@@ -355,10 +355,11 @@ cDvbPlayer::cDvbPlayer(const char *FileName)
   isyslog("replay %s", FileName);
 //M7X0 BEGIN AK
 #ifdef USE_DIRECT_IO
+if(Setup.ReplayUseDirectIO)
   fileName = new cFileName(FileName, false, true, true);
-#else
-  fileName = new cFileName(FileName, false);
+else
 #endif
+  fileName = new cFileName(FileName, false);
 //M7X0 END AK
   replayFile = fileName->Open();
   if (!replayFile)
