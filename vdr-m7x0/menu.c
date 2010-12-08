@@ -814,8 +814,20 @@ eOSState cMenuEditTimer::ProcessKey(eKeys Key)
   return state;
 }
 
-// --- cMenuTimerItem --------------------------------------------------------
+// --- cMenuCommands ---------------------------------------------------------
+// declaration shifted so it can be used in cMenuTimers
+class cMenuCommands : public cOsdMenu {
+private:
+  cCommands *commands;
+  char *parameters;
+  eOSState Execute(void);
+public:
+  cMenuCommands(const char *Title, cCommands *Commands, const char *Parameters = NULL);
+  virtual ~cMenuCommands();
+  virtual eOSState ProcessKey(eKeys Key);
+  };
 
+// --- cMenuTimerItem --------------------------------------------------------
 class cMenuTimerItem : public cOsdItem {
 private:
   cTimer *timer;
@@ -945,6 +957,7 @@ public:
   cMenuTimers(void);
   virtual ~cMenuTimers();
   virtual void Display(void);
+  virtual eOSState Commands(eKeys Key = kNone);
   virtual eOSState ProcessKey(eKeys Key);
   };
 
@@ -1119,6 +1132,53 @@ void cMenuTimers::Display(void)
   cOsdMenu::Display();
 }
 
+#define CHECK_2PTR_NULL(x_,y_) ((x_)? ((y_)? y_:""):"")
+
+eOSState cMenuTimers::Commands(eKeys Key)
+{
+  if (HasSubMenu() || Count() == 0)
+     return osContinue;
+  cTimer *ti = CurrentTimer();
+  if (ti) {
+     char *parameter = NULL;
+     const cEvent *pEvent = ti->Event();
+     int iRecNumber=0;
+
+     if(!pEvent) {
+        Timers.SetEvents();
+        pEvent = ti->Event();
+     }
+     if(pEvent) {
+// create a dummy recording to get the real filename
+        cRecording *rc_dummy = new cRecording(ti, pEvent);
+        Recordings.Load();
+        cRecording *rc = Recordings.GetByName(rc_dummy->FileName());
+     
+        delete rc_dummy;
+        if(rc)
+           iRecNumber=rc->Index() + 1;
+     }
+//Parameter format TimerNumber 'ChannelId' Start Stop 'Titel' 'Subtitel' 'file' RecNumer
+//                 1           2           3     4    5       6          7      8
+     asprintf(&parameter, "%d '%s' %d %d '%s' '%s' '%s' %d", ti->Index(), 
+                                                             *ti->Channel()->GetChannelID().ToString(),
+                                                             (int)ti->StartTime(),
+                                                             (int)ti->StopTime(),
+                                                             CHECK_2PTR_NULL(pEvent, pEvent->Title()),
+                                                             CHECK_2PTR_NULL(pEvent, pEvent->ShortText()),
+                                                             ti->File(),
+                                                             iRecNumber);
+     isyslog("timercmd: %s", parameter);
+     cMenuCommands *menu;
+     eOSState state = AddSubMenu(menu = new cMenuCommands(tr("Timer commands"), &TimerCommands, parameter));
+     free(parameter);
+     if (Key != kNone)
+        state = menu->ProcessKey(Key);
+     return state;
+     }
+  return osContinue;
+}
+
 eOSState cMenuTimers::ProcessKey(eKeys Key)
 {
   int TimerNumber = HasSubMenu() ? Count() : -1;
@@ -1134,6 +1194,8 @@ eOSState cMenuTimers::ProcessKey(eKeys Key)
                      state = Delete(); break;
        case kBlue:   return Info();
                      break;
+       case k1...k9: return Commands(Key);
+       case k0:      return (TimerCommands.Count()? Commands():osContinue);
        default: break;
        }
      }
@@ -1738,17 +1800,6 @@ eOSState cMenuSchedule::ProcessKey(eKeys Key)
 }
 
 // --- cMenuCommands ---------------------------------------------------------
-
-class cMenuCommands : public cOsdMenu {
-private:
-  cCommands *commands;
-  char *parameters;
-  eOSState Execute(void);
-public:
-  cMenuCommands(const char *Title, cCommands *Commands, const char *Parameters = NULL);
-  virtual ~cMenuCommands();
-  virtual eOSState ProcessKey(eKeys Key);
-  };
 
 cMenuCommands::cMenuCommands(const char *Title, cCommands *Commands, const char *Parameters)
 :cOsdMenu(Title)

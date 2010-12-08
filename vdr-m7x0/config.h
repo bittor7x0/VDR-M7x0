@@ -188,6 +188,7 @@ public:
 
 extern cCommands Commands;
 extern cCommands RecordingCommands;
+extern cCommands TimerCommands;
 extern cSVDRPhosts SVDRPhosts;
 
 class cSetupLine : public cListObject {
