@@ -1,5 +1,14 @@
 VDR Plugin 'osdadjust' Revision History
 ----------------------------------
+
+20xx-xx-xx: version x.x.x
+- Backward compatibility to VDR 1.4.5 based in EPGSearch - thanks to Bittor Corl
+  In VDR < 1.5.7 the translation is built from the po files calling to:
+    make generate-i18n
+  from osdadjust's source directory (this calls buildutil/pot2i18n.pl which
+  may need to install Locale::PO in the pearl cpan shell)
+- Added spanish translation - thanks to Bittor Corl
+
 2009-05-08: Version 0.0.5
 - Save Setup in procent (vdr-1.7.7)
 
