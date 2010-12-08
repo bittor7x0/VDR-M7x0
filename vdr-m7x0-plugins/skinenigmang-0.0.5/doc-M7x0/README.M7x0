@@ -1,0 +1,39 @@
+EnigmaNG Kompiliert für den VDR auf der M7x0
+--------------------------------------------
+
+Die Datei "libvdr-skinenigmang.so.1.4.4" muß in den Ordner .../PLUGIN/lib kopiert werden.
+Die Dateien und Ordner unter "conf" müssen in den Konfigurationsordner kopiert werde. 
+Dieser befindet sich normalerweise dort wo auch das vdr Programm liegt und heißt conf-Name der Box-MAC Adresse der Box.
+
+Bei mir sieht das dann so aus:
++---PLUGINS
+|   \---lib
+|           libvdr-setup.so.1.4.4
+|           libvdr-skinenigmang.so.1.4.4
+|
++---conf-M740AV2-0XA163F48FD3
+    +---themes
+    |       EnigmaNG-AppleGreen.theme
+    |       EnigmaNG-DarkBlue.theme
+    |       EnigmaNG-WineRed.theme
+    |       EnigmaNG-WomenLike.theme
+    |       EnigmaNG-default.theme
+    |       EnigmaNG-YellowSun.theme
+    |
+    \---plugins
+        +---setup
+        |   \---help
+        \---skinenigmang
+            +---flags
+            +---hqlogos
+            +---icons
+            |   +---message
+            |   +---replay
+            |   +---audio
+            |   +---volume
+            |   \---menu
+            \---logos
+(Die Dateien unterhalb von conf-M740AV2-0001E3FA8FD3/plugins/skinenigmang habe ich der Übersichtlichkeit weggelassen.)
+
+Viel Spaß 
+    Hanspeter

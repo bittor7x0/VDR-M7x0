@@ -5,7 +5,7 @@
 
 # If you are using the epgsearch plugin and want to see the number of
 # timer conflicts in the main menu's info area.
-#SKINENIGMA_HAVE_EPGSEARCH = 1
+SKINENIGMA_HAVE_EPGSEARCH = 1
 
 # This turns usage of logos in the main menu complete. This might also
 # improve the performance of the menus. EXPERIMENTAL!!!
@@ -21,7 +21,7 @@
 # If you use the mailbox plugin this will include support for it.
 # NOTE: this can also be defined if you don't know if the mailbox
 # plugin will be used because it has no compile time requirements.
-SKINENIGMA_USE_PLUGIN_MAILBOX = 1
+#SKINENIGMA_USE_PLUGIN_MAILBOX = 1
 
 # EXPERIMENTAL!!! NOT YET OFFICIALY SUPPORTED!!!
 #
@@ -61,8 +61,8 @@ CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual
 
 ### The directory environment:
 
-VDRDIR = ../../..
-LIBDIR = ../../lib
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### Allow user defined options to overwrite defaults:
@@ -81,9 +81,13 @@ PACKAGE = vdr-$(ARCHIVE)
 
 ### Includes and Defines (add further entries here):
 
-INCLUDES += -I$(VDRDIR)/include
+INCLUDES += -I$(VDRDIR)/include -I$(VDRDIR)
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+
+# Compiled for VDR-M7x0 Siemens Gigaset from open7x0.org
+# Comment following line in other cases
+DEFINES += -DVDRO7OVERSION
 
 ifdef SKINENIGMA_HAVE_EPGSEARCH
 DEFINES += -DSKINENIGMA_HAVE_EPGSEARCH
