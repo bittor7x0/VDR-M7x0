@@ -4960,7 +4960,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
   },
-  { "Setup.Recording$Split edited files",
+  { "Setup.Cutter$Split edited files",
     "Editierte Dateien aufteilen",
     "Razdeli urejene datoteke",
     "Dividi i file modificati",

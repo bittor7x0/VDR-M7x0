@@ -3182,7 +3182,6 @@ cMenuSetupRecord::cMenuSetupRecord(void)
   Add(new cMenuEditIntItem( tr("Setup.Recording$Instant rec. time (min)"),   &data.InstantRecordTime, 1, MAXINSTANTRECTIME));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Max. video file size (MB)"), &data.MaxVideoFileSize, MINVIDEOFILESIZE, MAXVIDEOFILESIZE));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Max. recording size (GB)"),  &data.MaxRecordingSize, MINRECORDINGSIZE, MAXRECORDINGSIZE));
-  Add(new cMenuEditBoolItem(tr("Setup.Recording$Split edited files"),        &data.SplitEditedFiles));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show date"),                 &data.ShowRecDate));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show time"),                 &data.ShowRecTime));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show length"),               &data.ShowRecLength));
@@ -3200,6 +3199,7 @@ public:
 cMenuSetupCutter::cMenuSetupCutter(void)
 {
   SetSection(tr("Cutter"));
+  Add(new cMenuEditBoolItem(tr("Setup.Cutter$Split edited files"),           &data.SplitEditedFiles));
   Add(new cMenuEditBoolItem(tr("Setup.Cutter$Auto delete original record"),  &data.CutterAutoDelete));
   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum MB per second"),        &data.CutterMaxBandwidth, 1, 60));
   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum bandwidth used in %"),  &data.CutterRelBandwidth, 1, 100));
