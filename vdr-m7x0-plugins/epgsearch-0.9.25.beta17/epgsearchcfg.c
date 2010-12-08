@@ -62,7 +62,16 @@ cEPGSearchConfig::cEPGSearchConfig(void)
   DefSearchTemplateID = -1;
   addSubtitleToTimer = addSubtitleSmart;
   strcpy(mainmenuentry, "");
-  WarEagle = 0;
+#if APIVERSNUM >= 10503
+  if (strstr(Setup.FontOsd, "VDRSymbols") == Setup.FontOsd)
+    WarEagle = 1;
+  else
+    WarEagle = 0;
+#elif HAVE_ICONPATCH
+    WarEagle = Setup.WarEagleIcons;
+#else
+    WarEagle = 0;
+#endif
   showRadioChannels = 1;
   onePressTimerCreation = 1;
   conflictCheckIntervall = 30;

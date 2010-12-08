@@ -18,7 +18,7 @@
 #WITHOUT_QUICKSEARCH=1
 
 ### comment this if you don't want epgsearch to auto config itself
-AUTOCONFIG=1
+#AUTOCONFIG=1
 
 ### if AUTOCONFIG is not active (i.e. commented) you can manually enable the 
 ### optional modules or patches for other plugins
@@ -31,7 +31,7 @@ ifndef AUTOCONFIG
 
 # uncomment this to enable support for the pin plugin.
 
-#USE_PINPLUGIN = 1
+USE_PINPLUGIN = 1
 
 # uncomment this to enable support for the graphtft plugin.
 #USE_GRAPHTFT = 1
@@ -64,9 +64,9 @@ CXXFLAGS ?= -g -O2 -Wall -Woverloaded-virtual -Wno-parentheses -Wno-format-y2k
 
 ### The directory environment:
 
-DVBDIR = ../../../../DVB
-VDRDIR = ../../..
-LIBDIR = ../../lib
+DVBDIR ?= ../../../../DVB
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### auto configuring modules
@@ -118,7 +118,7 @@ PACKAGE = vdr-$(ARCHIVE)
 
 ### Includes and Defines (add further entries here):
 
-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
+INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
 #INCLUDES += -I$(VDRDIR)/include
 
 EPGSEARCH_DEFINES += -D_GNU_SOURCE
@@ -134,6 +134,11 @@ DEFINES4 += $(EPGSEARCH_DEFINES) -DPLUGIN_NAME_I18N='"$(PLUGIN4)"'
 ### The object files (add further files here):
 
 OBJS = afuzzy.o blacklist.o changrp.o confdloader.o conflictcheck.o conflictcheck_thread.o distance.o $(PLUGIN).o epgsearchcats.o epgsearchcfg.o epgsearchext.o epgsearchsetup.o  epgsearchsvdrp.o epgsearchtools.o i18n.o mail.o md5.o menu_announcelist.o menu_blacklistedit.o menu_blacklists.o menu_commands.o menu_conflictcheck.o menu_deftimercheckmethod.o menu_dirselect.o menu_event.o menu_favorites.o menu_main.o menu_myedittimer.o menu_quicksearch.o menu_recsdone.o menu_search.o menu_searchactions.o menu_searchedit.o menu_searchresults.o menu_searchtemplate.o menu_switchtimers.o menu_templateedit.o menu_timersdone.o menu_whatson.o noannounce.o pending_notifications.o rcfile.o  recdone.o recstatus.o searchtimer_thread.o services.o switchtimer.o switchtimer_thread.o templatefile.o timer_thread.o timerdone.o timerstatus.o uservars.o varparser.o  
+
+# Check WarEagleIcons patch
+ifeq (exists, $(shell test -e $(VDRDIR)/iconpatch.h && echo exists))
+   DEFINES += -DHAVE_ICONPATCH
+endif
 
 ifeq ($(REGEXLIB), pcre)
 LIBS += $(shell pcre-config --libs-posix)
