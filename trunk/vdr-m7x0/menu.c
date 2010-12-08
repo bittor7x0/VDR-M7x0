@@ -1959,20 +1959,28 @@ cMenuRenameRecording::cMenuRenameRecording(cRecording *Recording)
      }
 
   cIndexFile *index = new cIndexFile(recording->FileName(), false);
+  int lastIndex = 0;
   if (index) {
-     asprintf(&buffer, "%s:\t%s", tr("Length"), *IndexToHMSF(index->Last()));
+     lastIndex = index->Last();
+     asprintf(&buffer, "%s:\t%s", tr("Length"), *IndexToHMSF(lastIndex));
      Add(new cOsdItem(buffer,              osUnknown, false));
      free(buffer);
      }
   delete index;
 
   int dirSize = DirSizeMB(recording->FileName());
-  if (dirSize > 9999)
+  if (dirSize > 1023)
      asprintf(&buffer, "%s:\t%.2f GB", tr("Size"), dirSize / 1024.0);
   else
      asprintf(&buffer, "%s:\t%d MB", tr("Size"), dirSize);
   Add(new cOsdItem(buffer,                 osUnknown, false));
   free(buffer);
+
+  if (lastIndex) {
+     asprintf (&buffer, tr("%s:\t%.2f MBit/s (Video+Audio)"), tr("est. bit-rate"), (float)dirSize/lastIndex*FRAMESPERSEC*8);
+     Add(new cOsdItem(buffer,                 osUnknown, false));
+     free(buffer);
+     }
 
   Add(new cOsdItem("",                     osUnknown, false));
 
