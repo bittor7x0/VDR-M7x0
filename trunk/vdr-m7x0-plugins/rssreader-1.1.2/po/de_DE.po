@@ -1,0 +1,64 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Siegfried Düngler
+# Walter Koch
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: Rolf Ahrenberg\n"
+"POT-Creation-Date: 2007-08-28 23:51+0300\n"
+"PO-Revision-Date: 2007-08-12 21:33+0300\n"
+"Last-Translator: Walter Koch\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "RSS item"
+msgstr "RSS-Artikel"
+
+msgid "<no date available>"
+msgstr "<kein Datum vorhanden>"
+
+msgid "<no title available>"
+msgstr "<kein Titel vorhanden>"
+
+msgid "<no description available>"
+msgstr "<keine Beschreibung vorhanden>"
+
+msgid "<no link available>"
+msgstr "<kein Link vorhanden>"
+
+msgid "Select RSS item"
+msgstr "Auswahl RSS-Artikel"
+
+msgid "Select RSS stream"
+msgstr "Auswahl RSS-Stream"
+
+msgid "Can't parse RSS stream!"
+msgstr "Kann den RSS-Stream nicht parsen!"
+
+msgid "Can't download RSS stream!"
+msgstr "Kann den RSS-Stream nicht laden!"
+
+msgid "Unknown error!"
+msgstr "Unbekannt Fehler!"
+
+msgid "RSS Reader for OSD"
+msgstr "RSS-Reader für OSD"
+
+msgid "RSS Reader"
+msgstr "RSS-Reader"
+
+msgid "Hide main menu entry"
+msgstr "Hauptmenüeintrag verstecken"
+
+msgid "Hide non-existent elements"
+msgstr "Nur vorhandene Elemente zeigen"
+
+msgid "Use HTTP proxy server"
+msgstr "HTTP Proxy benutzen"
+
+msgid "HTTP proxy server"
+msgstr "HTTP Proxy Name"

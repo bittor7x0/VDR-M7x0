@@ -1,0 +1,124 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Jean-Claude Repetto <jc@repetto.org>, 2001
+# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+# Gregoire Favre <greg@magma.unil.ch>, 2003
+# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.6.0\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2009-01-08 20:29+0100\n"
+"PO-Revision-Date: 2009-01-08 20:19+0100\n"
+"Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Transparent"
+msgstr "Transparent"
+
+msgid "Transparent 50"
+msgstr "Transparent 50"
+
+msgid "Black"
+msgstr "Noir"
+
+msgid "Red"
+msgstr "Rouge"
+
+msgid "Green"
+msgstr "Vert"
+
+msgid "Yellow"
+msgstr "Jaune"
+
+msgid "Magenta"
+msgstr "Magenta"
+
+msgid "Blue"
+msgstr "Bleu"
+
+msgid "Cyan"
+msgstr "Cyan"
+
+msgid "White"
+msgstr "Blanc"
+
+msgid "Gray"
+msgstr "Gris"
+
+msgid "Size and Position"
+msgstr "Taille et Position"
+
+msgid "Video Format"
+msgstr "Format Video"
+
+msgid "General Options"
+msgstr "Options Générales"
+
+msgid "Hide main menu entry"
+msgstr "Invisible dans le menu principal"
+
+msgid "Hide help text"
+msgstr "Masquer l'aide contextuelle"
+
+msgid "Mute on open"
+msgstr "Muet à l'ouverture"
+
+msgid "Background color"
+msgstr "Couleur de l'arrière plan"
+
+msgid "Foreground color"
+msgstr "Couleur du premier plan"
+
+msgid "Line thickness"
+msgstr "Épaisseur de ligne"
+
+msgid "Gauge"
+msgstr "Gauge"
+
+msgid "Aspect Ratio"
+msgstr "Aspect Ratio"
+
+msgid "Show grid"
+msgstr "Afficher la grille"
+
+msgid "Adjust OSD Size and Position"
+msgstr "Ajuster Taille et Position de l'OSD"
+
+msgid "OSD adjust"
+msgstr "Ajuster OSD"
+
+msgid "Press 1-9 to move,"
+msgstr "Presser 1-9 pour déplacer,"
+
+msgid "Up/Down & Left/Right to resize,"
+msgstr "Haut/Bas & Gauche/Droite pour redimensionner"
+
+msgid "Ok to save, Back to cancel."
+msgstr "Ok pour sauvegarder, Retour pour annuler."
+
+msgid "Top"
+msgstr "Haut"
+
+msgid "Bottom"
+msgstr "Bouton"
+
+msgid "Left"
+msgstr "Gauche"
+
+msgid "Right"
+msgstr "Droite"
+
+msgid "Width"
+msgstr "Largeur"
+
+msgid "Height"
+msgstr "Hauteur"
+
+msgid "Width must be a multiple of 8!"
+msgstr "La largeur doit être un multiple de 8 !"

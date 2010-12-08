@@ -1,0 +1,35 @@
+TODO
+====
+
+Common
+------
+
+     DONE  common usable status line in display.cpp
+     DONE  fix drawing code, when frame is off
+           precise timing of main loop on different hardware
+           help screen (README browser)
+           add game specific settings
+           remember gamestate, when quitting game
+           implement (hardware like) sprite engine
+           more games (pacman, breakout, space invaders, ...)
+           saved highscore list
+           i18n support
+           use pthread_cond_* for keys
+
+
+Tetris
+------
+
+           prevent rising pieces, by fast rotation
+
+
+Tron
+----
+
+     DONE  fix pixel errors
+
+
+Minesweeper
+-----------
+
+           switch icon drawing code to make use of Bitmap class

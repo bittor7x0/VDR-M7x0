@@ -1,0 +1,73 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <nobody@nowhere.org>\n"
+"POT-Creation-Date: 2008-12-20 10:45+0100\n"
+"PO-Revision-Date: 2008-05-04 15:33+0200\n"
+"Last-Translator: Chris Silva <hudokkow@gmail.com>\n"
+"Language-Team: Portuguese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel (press OK): "
+msgstr "Sender (Prima OK): "
+
+msgid "Page"
+msgstr "Página"
+
+msgid "not found"
+msgstr "Não encontrado"
+
+msgid "Displays teletext on the OSD"
+msgstr "Mostra o teletexto no OSD"
+
+msgid "Teletext"
+msgstr "Teletexto"
+
+msgid "Zoom"
+msgstr "Zoom"
+
+msgid "Half page"
+msgstr "Meia Página"
+
+msgid "Change channel"
+msgstr "Mudar canal"
+
+msgid "Switch background"
+msgstr "Mudar fundo"
+
+msgid "Jump to..."
+msgstr "Ir para"
+
+msgid "Background transparency"
+msgstr "Transparência do Fundo"
+
+msgid "Show clock"
+msgstr "Mostrar Relógio"
+
+msgid "Auto-update pages"
+msgstr "Auto actualizar páginas"
+
+msgid "OSD height"
+msgstr "Altura do OSD"
+
+msgid "OSD width"
+msgstr "Largura do OSD"
+
+msgid "OSD horizontal align"
+msgstr "Alinhamento Horizontal do OSD"
+
+msgid "OSD vertical align"
+msgstr "Alinhamento Vertical do OSD"
+
+msgid "Key bindings"
+msgstr "Tecla alocada"
+
+msgid "  Page number"
+msgstr "  Número de Página"

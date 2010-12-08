@@ -1,0 +1,52 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <egal@egal-vdr.de>\n"
+"POT-Creation-Date: 2008-01-17 14:47+0100\n"
+"PO-Revision-Date: 2007-08-24 18:40+0200\n"
+"Last-Translator: Uwe Hanke egal@egal-vdr.de\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: cinebars.c:19
+msgid "Overlays \"cinebars\""
+msgstr "Legt \"Kinobalken\" aufs Bild"
+
+#: cinebars.c:20
+msgid "Cinebars"
+msgstr "Kinobalken"
+
+#: cinebars.c:248
+msgid "Hide mainmenu entry"
+msgstr "Hauptmenüeintrag verstecken"
+
+#: cinebars.c:249
+msgid "Top Bar"
+msgstr "Balken Oben"
+
+#: cinebars.c:250
+msgid "Top BarHeight"
+msgstr "Balkenhöhe Oben"
+
+#: cinebars.c:251
+msgid "Bottom Bar"
+msgstr "Balken Unten"
+
+#: cinebars.c:252
+msgid "Bottom BarHeight"
+msgstr "Balkenhöhe Unten"
+
+#: cinebars.c:253
+msgid "StepHeight"
+msgstr "Schrittweite Höhe"
+
+#: cinebars.c:255
+msgid "OSD-Mode"
+msgstr "OSD-Modus"

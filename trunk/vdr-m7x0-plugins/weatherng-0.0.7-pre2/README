@@ -1,0 +1,87 @@
+Special Version for open7x0.org
+
+see README.open7x0 for details
+
+===============================================================================
+*******************************************************************************
+===============================================================================
+
+
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Sascha Bajonczak <BEE-JAY@gmx.net>
+
+Project's homepage:          http://beejay.vdr-developer.org/devel/
+
+Latest version available at: http://beejay.vdr-developer.org/devel/
+
+See the file COPYING for license information.
+
+Description:
+=============
+10 days weather forecast 
+
+For now have a look in the german README.DE , only short description here;)
+
+Short (and maybe not completed) way:
+
+You need imagemagick (tested with newest one).
+
+Unpack and Compile the plugin (see VDR docs).
+Copy examples/weatherng.sh to &PLUGINCONFIGDIR
+Edit "weatherng.sh".
+Copy folder images to &PLUGINCONFIGDIR
+Start VDR with "-P weatherng".
+
+(
+optional :
+Commandline parameters : -D --data  -I --images -S --script
+
+-D = Path to your data and radarmaps (data1.xml)
+-I = Path to folder "images"
+-S = Path to weatherng.sh
+
+If you dont set parameters , the default for them are:
+$PLUGINCONFIG/weatherng
+
+structure:
+$PLUGINCONFIG/weatherng
+$PLUGINCONFIG/weatherng/images/
+$PLUGINCONFIG/weatherng/weatherng.sh
+
+e.g. : /etc/vdr/weatherng/...
+)
+
+
+=================================================================================
+Before you use the examples of URLs in weatherng.sh ,you agree with the "Terms of Use" from
+"The Weather Channel" , short TWC , which you can found at http://www.weather.com 
+and that you have the permission to use the downloaded files.
+The same for copyrighted radarmaps.
+=================================================================================
+
+Then start VDR again with  or without commandline parameter (-P weatherng).
+Goto setup and change what you like.
+
+
+To get your Station Id move with your internetbrowser to :
+http://www.weather.com
+Type in the name of your town (e.g. "London" and hit enter.
+Now have a look at the link for your town which you hopefully got after you hit return.
+If you dont got one , try with a bigger town next to you.
+For "Herne, Germany" you get something like ....GMXX0056.... .
+so GMXX0056 is the StationId for you if you live in "Herne,Germany" ;)
+
+
+Key RIGHT                    : day forward
+Key LEFT                     : previous day
+Key UP                       : weather at night
+Key DOWN                     : weather at day
+Key 5,RED,GREEN,YELLOW,BLUE  : radarmaps
+Key 1			     : Display Station ID 1
+Key 2			     : Display Station ID 2
+Key 3			     : Display Station ID 3
+Key OK			     : Download/update radarmaps and weatherdata
+
+If you dont update , you wont see any radarmaps/weatherdata.
+So press Key OK after first run.

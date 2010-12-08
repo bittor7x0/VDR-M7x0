@@ -1,0 +1,48 @@
+This is an RSS Reader for the Video Disk Recorder (VDR).
+
+Written by:                  Rolf Ahrenberg
+                             < R o l f . A h r e n b e r g @ s c i .f i >
+
+Project's homepage:          http://www.saunalahti.fi/~rahrenbe/vdr/rssreader/
+
+Latest version available at:  http://www.saunalahti.fi/~rahrenbe/vdr/rssreader/
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+See the file COPYING for license information.
+
+Requirements:
+
+- Expat XML Parser library version 1.95.8 or newer (http://expat.sourceforge.net/)
+- CURL library 7.15.1 or newer (http://curl.haxx.se/)
+
+Description:
+
+The RSS Reader plugin provides a simple OSD menu based user interface
+for reading user-defined RSS streams.
+
+The current code is heavily reusing the VOD plugin by Olivier Jacques.
+Huge thanks to the original author!
+
+Installation:
+
+cd /put/your/path/here/VDR/PLUGINS/src
+tar -xzf /put/your/path/here/vdr-rssreader-X.Y.Z.tgz
+ln -s rssreader-X.Y.Z rssreader
+cp rssreader/example/rssreader.conf /path/to/vdrconf/plugins/
+cd /put/your/path/here/VDR
+make
+make plugins
+./vdr -P rssreader
+
+Configuration:
+
+RSS streams are defined in rssreader.conf located in VDR's configuration
+directory for plugins. Check the configuration file under "example"
+subdirectory for further information.
+
+Notes:
+
+- No news is good news.

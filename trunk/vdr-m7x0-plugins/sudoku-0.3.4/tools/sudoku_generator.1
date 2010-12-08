@@ -1,0 +1,74 @@
+.\"
+.\" Sudoku: A plug-in for the Video Disk Recorder
+.\"
+.\" Copyright (C) 2008, Thomas Günther <tom@toms-cafe.de>
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License along
+.\" with this program; if not, write to the Free Software Foundation, Inc.,
+.\" 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+.\"
+.\" $Id: sudoku_generator.1 165 2008-11-29 00:09:41Z tom $
+.\"
+.TH sudoku_generator "1" "November 2008" "sudoku_generator 0.3.4" "User Commands"
+
+.SH NAME
+sudoku_generator \- generate and solve Sudoku puzzles
+
+.SH SYNOPSIS
+.B sudoku_generator
+[\fI-n|--non-sym\fR] [\fI-d|--dump\fR] [\fIgivens_count\fR]
+.br
+.B sudoku_generator
+\fI-s|--solve|-p|--print\fR \fIsudoku_dump\fR
+
+.SH DESCRIPTION
+.B sudoku_generator
+generates, solves and prints Number Place puzzles, so called Sudokus.
+A Sudoku puzzle consists of 9 x 9 cells subdivided into 9 regions with 3 x 3
+cells. The rules are simple. There have to be the numbers from 1 to 9 in every
+row, column and region.
+
+.TP
+\fBgivens_count\fR
+Number of givens (<= 81). Default is 36.
+Generation of Sudoku puzzles with less than 26 givens takes very long.
+.TP
+\fBsudoku_dump\fR
+String with 81 * 1\-9 or _ (+ ignored).
+
+.SH OPTIONS
+.TP
+\fB\-n\fR, \fB\-\-non\-sym\fR
+Generate a non\-symmetric Sudoku puzzle. Default is symmetric.
+.TP
+\fB\-d\fR, \fB\-\-dump\fR
+Dump the generated Sudoku puzzle (don't print).
+.TP
+\fB\-s\fR, \fB\-\-solve\fR \fIsudoku_dump\fR
+Solve a Sudoku puzzle.
+.TP
+\fB\-p\fR, \fB\-\-print\fR \fIsudoku_dump\fR
+Print a Sudoku puzzle.
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+Print version information and exit.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print help message and exit.
+
+.SH COPYRIGHT
+Copyright \(co 2005-2008, Thomas G\(:unther <tom@toms-cafe.de>
+.br
+This GPL program comes with ABSOLUTELY NO WARRANTY;
+this is free software, and you are welcome to redistribute it
+under certain conditions; see the source for details.

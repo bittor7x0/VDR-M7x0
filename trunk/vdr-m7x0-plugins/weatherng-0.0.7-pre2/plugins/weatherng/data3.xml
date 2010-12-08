@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--This document is intended only for use by authorized licensees of The Weather Channel. Unauthorized use is prohibited. Copyright 1995-2005, The Weather Channel Interactive, Inc. All Rights Reserved.-->
+<weather ver="2.0">
+  <head>
+    <locale>en_US</locale>
+    <form>MEDIUM</form>
+    <ut>C</ut>
+    <ud>km</ud>
+    <us>km/h</us>
+    <up>mb</up>
+    <ur>mm</ur>
+  </head>
+  <loc id="GMXX0050">
+    <dnam>Hanau Am Main, Germany</dnam>
+    <tm>1:59 PM</tm>
+    <lat>50.14</lat>
+    <lon>8.92</lon>
+    <sunr>5:58 AM</sunr>
+    <suns>8:45 PM</suns>
+    <zone>2</zone>
+  </loc>
+  <dayf>
+    <lsup>5/2/08 1:33 PM Local Time</lsup>
+    <day d="0" t="Friday" dt="May 2">
+      <hi>N/A</hi>
+      <low>7</low>
+      <sunr>5:58 AM</sunr>
+      <suns>8:45 PM</suns>
+      <part p="d">
+        <icon>44</icon>
+        <t>N/A</t>
+        <wind>
+          <s>N/A</s>
+          <gust>N/A</gust>
+          <d>N/A</d>
+          <t>N/A</t>
+        </wind>
+        <bt>N/A</bt>
+        <ppcp>50</ppcp>
+        <hmid>N/A</hmid>
+      </part>
+      <part p="n">
+        <icon>45</icon>
+        <t>Showers Early</t>
+        <wind>
+          <s>10</s>
+          <gust>N/A</gust>
+          <d>357</d>
+          <t>N</t>
+        </wind>
+        <bt>Shwrs Early</bt>
+        <ppcp>50</ppcp>
+        <hmid>77</hmid>
+      </part>
+    </day>
+    <day d="1" t="Saturday" dt="May 3">
+      <hi>21</hi>
+      <low>9</low>
+      <sunr>5:56 AM</sunr>
+      <suns>8:47 PM</suns>
+      <part p="d">
+        <icon>30</icon>
+        <t>Partly Cloudy</t>
+        <wind>
+          <s>6</s>
+          <gust>N/A</gust>
+          <d>76</d>
+          <t>ENE</t>
+        </wind>
+        <bt>P Cloudy</bt>
+        <ppcp>20</ppcp>
+        <hmid>58</hmid>
+      </part>
+      <part p="n">
+        <icon>29</icon>
+        <t>Partly Cloudy</t>
+        <wind>
+          <s>10</s>
+          <gust>N/A</gust>
+          <d>70</d>
+          <t>ENE</t>
+        </wind>
+        <bt>P Cloudy</bt>
+        <ppcp>20</ppcp>
+        <hmid>71</hmid>
+      </part>
+    </day>
+    <day d="2" t="Sunday" dt="May 4">
+      <hi>21</hi>
+      <low>9</low>
+      <sunr>5:55 AM</sunr>
+      <suns>8:48 PM</suns>
+      <part p="d">
+        <icon>32</icon>
+        <t>Sunny</t>
+        <wind>
+          <s>10</s>
+          <gust>N/A</gust>
+          <d>79</d>
+          <t>E</t>
+        </wind>
+        <bt>Sunny</bt>
+        <ppcp>20</ppcp>
+        <hmid>55</hmid>
+      </part>
+      <part p="n">
+        <icon>33</icon>
+        <t>Mostly Clear</t>
+        <wind>
+          <s>8</s>
+          <gust>N/A</gust>
+          <d>68</d>
+          <t>ENE</t>
+        </wind>
+        <bt>M Clear</bt>
+        <ppcp>10</ppcp>
+        <hmid>62</hmid>
+      </part>
+    </day>
+    <day d="3" t="Monday" dt="May 5">
+      <hi>21</hi>
+      <low>9</low>
+      <sunr>5:53 AM</sunr>
+      <suns>8:50 PM</suns>
+      <part p="d">
+        <icon>30</icon>
+        <t>Partly Cloudy</t>
+        <wind>
+          <s>8</s>
+          <gust>N/A</gust>
+          <d>70</d>
+          <t>ENE</t>
+        </wind>
+        <bt>P Cloudy</bt>
+        <ppcp>0</ppcp>
+        <hmid>55</hmid>
+      </part>
+      <part p="n">
+        <icon>29</icon>
+        <t>Partly Cloudy</t>
+        <wind>
+          <s>6</s>
+          <gust>N/A</gust>
+          <d>65</d>
+          <t>ENE</t>
+        </wind>
+        <bt>P Cloudy</bt>
+        <ppcp>0</ppcp>
+        <hmid>66</hmid>
+      </part>
+    </day>
+    <day d="4" t="Tuesday" dt="May 6">
+      <hi>22</hi>
+      <low>11</low>
+      <sunr>5:51 AM</sunr>
+      <suns>8:51 PM</suns>
+      <part p="d">
+        <icon>34</icon>
+        <t>Mostly Sunny</t>
+        <wind>
+          <s>13</s>
+          <gust>N/A</gust>
+          <d>76</d>
+          <t>ENE</t>
+        </wind>
+        <bt>M Sunny</bt>
+        <ppcp>0</ppcp>
+        <hmid>58</hmid>
+      </part>
+      <part p="n">
+        <icon>31</icon>
+        <t>Clear</t>
+        <wind>
+          <s>10</s>
+          <gust>N/A</gust>
+          <d>68</d>
+          <t>ENE</t>
+        </wind>
+        <bt>Clear</bt>
+        <ppcp>0</ppcp>
+        <hmid>64</hmid>
+      </part>
+    </day>
+    <day d="5" t="Wednesday" dt="May 7">
+      <hi>21</hi>
+      <low>12</low>
+      <sunr>5:50 AM</sunr>
+      <suns>8:53 PM</suns>
+      <part p="d">
+        <icon>34</icon>
+        <t>Mostly Sunny</t>
+        <wind>
+          <s>13</s>
+          <gust>N/A</gust>
+          <d>74</d>
+          <t>ENE</t>
+        </wind>
+        <bt>M Sunny</bt>
+        <ppcp>0</ppcp>
+        <hmid>58</hmid>
+      </part>
+      <part p="n">
+        <icon>33</icon>
+        <t>Mostly Clear</t>
+        <wind>
+          <s>8</s>
+          <gust>N/A</gust>
+          <d>63</d>
+          <t>ENE</t>
+        </wind>
+        <bt>M Clear</bt>
+        <ppcp>0</ppcp>
+        <hmid>65</hmid>
+      </part>
+    </day>
+    <day d="6" t="Thursday" dt="May 8">
+      <hi>21</hi>
+      <low>12</low>
+      <sunr>5:48 AM</sunr>
+      <suns>8:55 PM</suns>
+      <part p="d">
+        <icon>30</icon>
+        <t>Partly Cloudy</t>
+        <wind>
+          <s>8</s>
+          <gust>N/A</gust>
+          <d>70</d>
+          <t>ENE</t>
+        </wind>
+        <bt>P Cloudy</bt>
+        <ppcp>0</ppcp>
+        <hmid>57</hmid>
+      </part>
+      <part p="n">
+        <icon>29</icon>
+        <t>Partly Cloudy</t>
+        <wind>
+          <s>6</s>
+          <gust>N/A</gust>
+          <d>62</d>
+          <t>ENE</t>
+        </wind>
+        <bt>P Cloudy</bt>
+        <ppcp>0</ppcp>
+        <hmid>66</hmid>
+      </part>
+    </day>
+    <day d="7" t="Friday" dt="May 9">
+      <hi>21</hi>
+      <low>10</low>
+      <sunr>5:47 AM</sunr>
+      <suns>8:56 PM</suns>
+      <part p="d">
+        <icon>30</icon>
+        <t>Partly Cloudy</t>
+        <wind>
+          <s>11</s>
+          <gust>N/A</gust>
+          <d>54</d>
+          <t>NE</t>
+        </wind>
+        <bt>P Cloudy</bt>
+        <ppcp>0</ppcp>
+        <hmid>61</hmid>
+      </part>
+      <part p="n">
+        <icon>29</icon>
+        <t>Partly Cloudy</t>
+        <wind>
+          <s>6</s>
+          <gust>N/A</gust>
+          <d>2</d>
+          <t>N</t>
+        </wind>
+        <bt>P Cloudy</bt>
+        <ppcp>20</ppcp>
+        <hmid>71</hmid>
+      </part>
+    </day>
+    <day d="8" t="Saturday" dt="May 10">
+      <hi>19</hi>
+      <low>10</low>
+      <sunr>5:45 AM</sunr>
+      <suns>8:58 PM</suns>
+      <part p="d">
+        <icon>32</icon>
+        <t>Sunny</t>
+        <wind>
+          <s>13</s>
+          <gust>N/A</gust>
+          <d>317</d>
+          <t>NW</t>
+        </wind>
+        <bt>Sunny</bt>
+        <ppcp>20</ppcp>
+        <hmid>62</hmid>
+      </part>
+      <part p="n">
+        <icon>33</icon>
+        <t>Mostly Clear</t>
+        <wind>
+          <s>6</s>
+          <gust>N/A</gust>
+          <d>16</d>
+          <t>NNE</t>
+        </wind>
+        <bt>M Clear</bt>
+        <ppcp>10</ppcp>
+        <hmid>72</hmid>
+      </part>
+    </day>
+    <day d="9" t="Sunday" dt="May 11">
+      <hi>22</hi>
+      <low>10</low>
+      <sunr>5:44 AM</sunr>
+      <suns>8:59 PM</suns>
+      <part p="d">
+        <icon>30</icon>
+        <t>Partly Cloudy</t>
+        <wind>
+          <s>11</s>
+          <gust>N/A</gust>
+          <d>190</d>
+          <t>S</t>
+        </wind>
+        <bt>P Cloudy</bt>
+        <ppcp>10</ppcp>
+        <hmid>61</hmid>
+      </part>
+      <part p="n">
+        <icon>11</icon>
+        <t>Showers</t>
+        <wind>
+          <s>8</s>
+          <gust>N/A</gust>
+          <d>205</d>
+          <t>SSW</t>
+        </wind>
+        <bt>Showers</bt>
+        <ppcp>30</ppcp>
+        <hmid>72</hmid>
+      </part>
+    </day>
+  </dayf>
+</weather>
+
