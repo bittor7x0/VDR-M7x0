@@ -445,8 +445,8 @@ void cSkinClassicDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
         *p = Speed > 0 ? '1' + Speed - 1 : ' ';
      SetJump(buf);
 */
-     static const int forwSym[] = { FSYM_FORW,FSYM_FORW1,FSYM_FORW2,FSYM_FORW3 };
-     static const int backSym[] = { FSYM_BACK,FSYM_BACK1,FSYM_BACK2,FSYM_BACK3 };
+     static const int forwSym[] = { FSYM_FORW,FSYM_FORW1,FSYM_FORW2,FSYM_FORW3,FSYM_FORW4,FSYM_FORW5,FSYM_FORW6,FSYM_FORW7,FSYM_FORW8,FSYM_FORW9 };
+     static const int backSym[] = { FSYM_BACK,FSYM_BACK1,FSYM_BACK2,FSYM_BACK3,FSYM_BACK4,FSYM_BACK5,FSYM_BACK6,FSYM_BACK7,FSYM_BACK8,FSYM_BACK9 };
      char buf[4];
      buf[0]=(Speed>=0 && !Forward) ? backSym[Speed] : FSYM_EMPTY;
      buf[1]=Play ? (Speed==-1 ? FSYM_PLAY : FSYM_EMPTY) : FSYM_PAUSE;

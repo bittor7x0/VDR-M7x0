@@ -332,7 +332,8 @@ public:
 
 
 #define NORMAL_SPEED  0
-#define MAX_SPEEDS    3
+#define MAX_SPEEDS    9
+#define MAX_SLOWSPEEDS 3
 #define LOW_SPEEDS    0
 cDvbPlayer::cDvbPlayer(const char *FileName)
 :cThread("dvbplayer")
@@ -463,11 +464,11 @@ void cDvbPlayer::TrickSpeed(int Increment, bool lock)
      else
         Pause();
      }
-  else if (nts >= -MAX_SPEEDS && nts <= MAX_SPEEDS) {
+  else if (nts >= -MAX_SLOWSPEEDS && nts <= MAX_SPEEDS) {
      if (lock)
         FasterLockOther();
      int sp = nts - LOW_SPEEDS;
-     sp = nts > 0 ? (sp >= 0 ? 1 : 1 << (-sp)) : 1 << (MAX_SPEEDS + nts + 1);
+     sp = nts > 0 ? (sp >= 0 ? 1 : 1 << (-sp)) : 1 << (MAX_SLOWSPEEDS + nts + 1);
      if (playMode == pmSlow && playDir == pdBackward)
         sp <<= 2;
      DeviceTrickSpeed(sp,playMode==pmFast||playDir==pdBackward);
@@ -815,7 +816,7 @@ void cDvbPlayer::Forward(void)
             playDir = pdForward;
             playMode = pmSlow;
             trickSpeed = NORMAL_SPEED;
-            TrickSpeed(Setup.MultiSpeedMode ? -1 : -MAX_SPEEDS, false);
+            TrickSpeed(Setup.MultiSpeedMode ? -1 : -MAX_SLOWSPEEDS, false);
             FasterUnlockOther();
             }
             break;
@@ -868,7 +869,7 @@ void cDvbPlayer::Backward(void)
             playMode = pmSlow;
             playDir = pdBackward;
             trickSpeed = NORMAL_SPEED;
-            TrickSpeed(Setup.MultiSpeedMode ? -1 : -MAX_SPEEDS, false);
+            TrickSpeed(Setup.MultiSpeedMode ? -1 : -MAX_SLOWSPEEDS, false);
             FasterUnlockOther();
             }
             break;
