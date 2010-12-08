@@ -259,6 +259,7 @@ cSetup::cSetup(void)
   RecordingDirs = 1;
   RecordingsSortMode = 0;
   RecordingsSortDirsFirst = 0;
+  CutterAutoDelete = 1;
   HotStandby = 0;
   TvMode = 0;
   VCRMode = 0;
@@ -443,6 +444,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "RecordingDirs"))       RecordingDirs      = atoi(Value);
   else if (!strcasecmp(Name, "RecordingsSortMode"))  RecordingsSortMode = atoi(Value);
   else if (!strcasecmp(Name, "RecordingsSortDirsFirst")) RecordingsSortDirsFirst = atoi(Value);
+  else if (!strcasecmp(Name, "CutterAutoDelete"))    CutterAutoDelete   = atoi(Value);
   else if (!strcasecmp(Name, "HotStandby"))          HotStandby         = atoi(Value);
   else if (!strcasecmp(Name, "TvMode"))              TvMode             = atoi(Value);
   else if (!strcasecmp(Name, "VCRMode"))             VCRMode            = atoi(Value);
@@ -534,6 +536,7 @@ bool cSetup::Save(void)
   Store("RecordingDirs",      RecordingDirs);
   Store("RecordingsSortMode", RecordingsSortMode);
   Store("RecordingsSortDirsFirst", RecordingsSortDirsFirst);
+  Store("CutterAutoDelete",   CutterAutoDelete);
   Store("HotStandby", 	      HotStandby);
   Store("TvMode", 	      TvMode);
   Store("VCRMode", 	      VCRMode);

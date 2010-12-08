@@ -3259,6 +3259,28 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
   },
+  { "Setup.Cutter$Auto delete original record",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Auto borrar grabación original",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Replay",
     "Wiedergabe",
     "Predvajanje",
@@ -7410,6 +7432,28 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "Ordenando",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Cutter already running - Add to cutting queue?",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Edición ya en proceso - ¿Añadir a cola de espera?",
     "",// TODO
     "",// TODO
     "",// TODO

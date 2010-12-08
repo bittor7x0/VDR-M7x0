@@ -3144,6 +3144,7 @@ public:
 cMenuSetupCutter::cMenuSetupCutter(void)
 {
   SetSection(tr("Cutter"));
+  Add(new cMenuEditBoolItem(tr("Setup.Cutter$Auto delete original record"),  &data.CutterAutoDelete));
 }
 
 // --- cMenuSetupReplay ------------------------------------------------------
@@ -4745,7 +4746,11 @@ void cReplayControl::EditCut(void)
 {
   if (fileName) {
      Hide();
+#if 0
      if (!cCutter::Active()) {
+#else
+     if (!cCutter::Active() || Interface->Confirm(tr("Cutter already running - Add to cutting queue?"))) {
+#endif
         if (!marks.Count())
            Skins.Message(mtError, tr("No editing marks defined!"));
         else if (!cCutter::Start(fileName))
