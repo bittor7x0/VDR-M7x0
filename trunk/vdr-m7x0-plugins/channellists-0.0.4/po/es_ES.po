@@ -1,88 +1,88 @@
 # VDR plugin language source file.
 # Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
 # This file is distributed under the same license as the VDR package.
-# Ruben Nunez Francisco <ruben.nunez@tang-it.com>, 2002
+# bittor from open7x0.org <bittor7x0 _at_ gmail.com>, 2008
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <see README>\n"
 "POT-Creation-Date: 2008-01-21 18:23+0100\n"
-"PO-Revision-Date: 2008-01-21 18:12+0100\n"
-"Last-Translator: Ruben Nunez Francisco <ruben.nunez@tang-it.com>\n"
+"PO-Revision-Date: 2008-01-25 14:21+0100\n"
+"Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Manage your channellists"
-msgstr ""
+msgstr "Administra tus listas de canales"
 
 msgid "Channellists"
-msgstr ""
+msgstr "Canales presintonizados"
 
 msgid "Menu"
 msgstr "Menú"
 
 msgid "close"
-msgstr ""
+msgstr "Cerrar"
 
 msgid "none"
-msgstr ""
+msgstr "Nada"
 
 msgid "Hide main menu entry"
-msgstr ""
+msgstr "Ocultar entrada del menú principal"
 
 msgid "Action after switch"
-msgstr ""
+msgstr "Acción después de cambiar"
 
 msgid "Button Red"
-msgstr ""
+msgstr "Botón Rojo"
 
 msgid "Rename"
-msgstr ""
+msgstr "Renombrar"
 
 msgid "Script"
-msgstr ""
+msgstr "Script"
 
 msgid "Button Green"
-msgstr ""
+msgstr "Botón Verde"
 
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 msgid "Name"
 msgstr "Nombre"
 
 msgid "An error occurs, see syslog..."
-msgstr ""
+msgstr "Se produjo un error, ver syslog..."
 
 msgid "Switch current channellist?"
-msgstr ""
+msgstr "¿Cambiar la lista de canales actual?"
 
 msgid "Delete channellist?"
-msgstr ""
+msgstr "¿Borrar la lista de canales?"
 
 msgid "Save"
-msgstr ""
+msgstr "Guardar"
 
 msgid "Execute update script?"
-msgstr ""
+msgstr "¿Ejecutar script de actualización?"
 
 msgid "Waiting..."
-msgstr ""
+msgstr "Espere..."
 
 msgid "Button$Script"
-msgstr ""
+msgstr "Script"
 
 msgid "Button$Rename"
-msgstr ""
+msgstr "Renombrar"
 
 msgid "Button$Copy"
-msgstr ""
+msgstr "Copiar"
 
 msgid "Button$Delete"
 msgstr "Borrar"
 
 msgid "Button$Save"
-msgstr ""
+msgstr "Guardar"
