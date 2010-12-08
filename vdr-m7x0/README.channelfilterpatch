@@ -1,0 +1,27 @@
+This patch filters the channel list on demand. 
+A additional column of channel attributes is also added:
+ "t" = TV
+ "r" = radio
+
+Pressing the key "2" in the channel list hides all non TV channels.
+
+Pressing the key "3" hides all non radio channels.
+
+This works also in conjunction with the other filters.
+
+The filtering works also together with vdr's own sorting (key "0")
+
+Pressing "1" or closing and reopening the channel list
+resets any filtering.
+
+I tested the patch against vdr 1.3.31 and vdr 1.3.33. It should 
+also works with older 1.3.x-Versions.
+
+Install it as usual in the source directory of vdr
+  patch -p1 < vdr-1.3.xx-channelfilter-0.1.diff
+  make
+  make plugins
+(a header file was changed, so plugin needs to be rebuild too)
+
+Homepage www.u32.de/vdr.html#patches
+Reports Bugs to vdrpatch@u32.de

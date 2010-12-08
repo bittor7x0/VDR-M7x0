@@ -380,7 +380,11 @@ void cMenuChannelItem::Set(void)
             asprintf(&buffer, "%d\t%c %-30s", channel->Number(), ICON_TV_VERSCHL, channel->Name());
         }
      else
-        asprintf(&buffer, "%d\t%s", channel->Number(), channel->Name());
+        asprintf(&buffer, "%2d  %s%s  %s", channel->Number(), 
+	                                 channel->Vpid()>0 ? "t":" ", 
+					 (channel->Vpid()==0) && (channel->Apid(0) > 0) ? "r":" ",
+					 channel->Name()
+	);
      }
   else
      asprintf(&buffer, "---\t%s ----------------------------------------------------------------", channel->Name());
@@ -398,6 +402,8 @@ private:
   void Setup(void);
   cChannel *GetChannel(int Index);
   void Propagate(void);
+  bool IsFiltered(void);
+  int onlyTV, onlyRadio;
 protected:
   eOSState Number(eKeys Key);
   eOSState Switch(void);
@@ -415,6 +421,7 @@ cMenuChannels::cMenuChannels(void)
 :cOsdMenu(tr("Channels"), CHNUMWIDTH)
 {
   number = 0;
+  onlyTV = onlyRadio = 0;
   Setup();
   Channels.IncBeingEdited();
 }
@@ -430,17 +437,35 @@ void cMenuChannels::Setup(void)
   if (!currentChannel)
      currentChannel = Channels.GetByNumber(cDevice::CurrentChannel());
   cMenuChannelItem *currentItem = NULL;
+  cMenuChannelItem *lastUsedItem = NULL;
+  cMenuChannelItem *firstUsedItem = NULL;
   Clear();
+
   for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
-      if ((!channel->GroupSep() || (cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && *channel->Name()) && ( channel == currentChannel || channel->Filtered() ))) {
-         cMenuChannelItem *item = new cMenuChannelItem(channel);
-         Add(item);
-         if (channel == currentChannel)
-            currentItem = item;
-         }
+       if ((!channel->GroupSep() || (cMenuChannelItem::SortMode() == cMenuChannelItem::csmNumber && ( channel == currentChannel || channel->Filtered() )))
+            && *channel->Name()  //Channel must have a name
+ 	    && (channel->GroupSep() || //Do not filter Groupseperators
+             	(  !(onlyTV      && !channel->IsTV()     ) 
+   		&& !(onlyRadio   && !channel->IsRadio()  )
+ 	    ))) {
+             cMenuChannelItem *item = new cMenuChannelItem(channel);
+             Add(item);
+            if (channel == currentChannel)
+         	currentItem = item;
+ 	    if (!channel->GroupSep()) {
+ 		lastUsedItem = item;
+ 		if( !firstUsedItem )
+ 		    firstUsedItem = item;
+ 	    }
+       } else {
+             if (channel == currentChannel)
+         	currentItem = lastUsedItem; // current channel is now invisible, so we use the nearest channel
       }
+  }
   if (cMenuChannelItem::SortMode() != cMenuChannelItem::csmNumber)
      Sort();
+  if (!currentItem) // happens, if after filtering the first line is a groupsep
+     currentItem = firstUsedItem;
   SetCurrent(currentItem);
   SetHelp(tr("Button$Edit"), tr("Button$New"), tr("Button$Delete"), tr("Button$Mark"));
   Display();
@@ -483,6 +508,11 @@ eOSState cMenuChannels::Number(eKeys Key)
      numberTimer.Set(CHANNELNUMBERTIMEOUT);
      }
   return osContinue;
+}
+
+bool cMenuChannels::IsFiltered(void)
+{
+  return onlyTV || onlyRadio;
 }
 
 eOSState cMenuChannels::Switch(void)
@@ -586,8 +616,27 @@ eOSState cMenuChannels::ProcessKey(eKeys Key)
     default:
          if (state == osUnknown) {
             switch (Key) {
-              case k0 ... k9:
-                            return Number(Key);
+              case k0:
+	                    cMenuChannelItem::IncSortMode();
+	                    Setup();
+	                    break;
+              case k1:      // show all channels (default)
+	                    onlyTV = onlyRadio = 0;
+                            Setup();
+			    Skins.Message(mtStatus, tr("All channels"));
+                            break;
+              case k2:      // show only TV-channels with sound
+	                    onlyTV = !0;
+			    onlyRadio = 0;
+                            Setup();
+			    Skins.Message(mtStatus, tr("Show only tv channels"));
+                            break;
+              case k3:      // show only radio/broadcast
+	                    onlyTV = 0;
+	                    onlyRadio = !0;
+                            Setup();
+			    Skins.Message(mtStatus, tr("Show only radio channels"));
+                            break;
               case kOk:     return Switch();
               case kRed:    return Edit();
               case kGreen:  return New();
