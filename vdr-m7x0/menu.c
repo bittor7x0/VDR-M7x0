@@ -2133,6 +2133,19 @@ void cMenuRecordings::Set(bool Refresh)
          }
       }
   free(LastItemText);
+
+//kw
+  char *buffer = NULL;
+  int FreeMB;
+  int Percent = VideoDiskSpace(&FreeMB);
+  int Minutes = int(double(FreeMB) / MB_PER_MINUTE);
+  int Hours = Minutes / 60;
+  Minutes %= 60;
+  asprintf(&buffer, "%s   %d%%  %2d:%02d %s  (%.1f GB)", tr("Disk"), Percent, Hours, Minutes, tr("free"), FreeMB / 1024.0 );
+  SetTitle(buffer);
+  free(buffer);
+//kw
+
   if (Refresh)
      Display();
 }
