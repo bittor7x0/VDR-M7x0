@@ -3145,6 +3145,8 @@ cMenuSetupCutter::cMenuSetupCutter(void)
 {
   SetSection(tr("Cutter"));
   Add(new cMenuEditBoolItem(tr("Setup.Cutter$Auto delete original record"),  &data.CutterAutoDelete));
+  Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum MB per second"),        &data.CutterMaxBandwidth, 1, 60));
+  Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum bandwidth used in %"),  &data.CutterRelBandwidth, 1, 100));
 }
 
 // --- cMenuSetupReplay ------------------------------------------------------

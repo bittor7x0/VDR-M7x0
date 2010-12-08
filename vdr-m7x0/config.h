@@ -273,6 +273,8 @@ public:
   int RecordingsSortMode;
   int RecordingsSortDirsFirst;
   int CutterAutoDelete;
+  int CutterMaxBandwidth;
+  int CutterRelBandwidth;
   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
   int AbortWhenPluginFails;
   int __EndData__;
