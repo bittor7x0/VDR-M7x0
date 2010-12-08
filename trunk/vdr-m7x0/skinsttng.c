@@ -29,10 +29,22 @@
 #include "symbols/ffwd1.xpm"
 #include "symbols/ffwd2.xpm"
 #include "symbols/ffwd3.xpm"
+#include "symbols/ffwd4.xpm"
+#include "symbols/ffwd5.xpm"
+#include "symbols/ffwd6.xpm"
+#include "symbols/ffwd7.xpm"
+#include "symbols/ffwd8.xpm"
+#include "symbols/ffwd9.xpm"
 #include "symbols/frew.xpm"
 #include "symbols/frew1.xpm"
 #include "symbols/frew2.xpm"
 #include "symbols/frew3.xpm"
+#include "symbols/frew4.xpm"
+#include "symbols/frew5.xpm"
+#include "symbols/frew6.xpm"
+#include "symbols/frew7.xpm"
+#include "symbols/frew8.xpm"
+#include "symbols/frew9.xpm"
 #include "symbols/mute.xpm"
 #include "symbols/pause.xpm"
 #include "symbols/play.xpm"
@@ -733,19 +745,19 @@ void cSkinSTTNGDisplayReplay::SetTitle(const char *Title)
   osd->DrawText(x3 + 5, y0, Title, Theme.Color(clrReplayTitle), frameColor, cFont::GetFont(fontSml), x4 - x3 - 5);
 }
 
-static const char *const *ReplaySymbols[2][2][5] = {
-  { { pause_xpm, srew_xpm, srew1_xpm, srew2_xpm, srew3_xpm },
-    { pause_xpm, sfwd_xpm, sfwd1_xpm, sfwd2_xpm, sfwd3_xpm }, },
-  { { play_xpm,  frew_xpm, frew1_xpm, frew2_xpm, frew3_xpm },
-    { play_xpm,  ffwd_xpm, ffwd1_xpm, ffwd2_xpm, ffwd3_xpm } }
+static const char *const *ReplaySymbols[2][2][11] = {
+  { { pause_xpm, srew_xpm, srew1_xpm, srew2_xpm, srew3_xpm, srew3_xpm, srew3_xpm, srew3_xpm, srew3_xpm, srew3_xpm, srew3_xpm },
+    { pause_xpm, sfwd_xpm, sfwd1_xpm, sfwd2_xpm, sfwd3_xpm, sfwd3_xpm, sfwd3_xpm, sfwd3_xpm, sfwd3_xpm, sfwd3_xpm, sfwd3_xpm }, },
+  { { play_xpm,  frew_xpm, frew1_xpm, frew2_xpm, frew3_xpm, frew4_xpm, frew5_xpm, frew6_xpm, frew7_xpm, frew8_xpm, frew9_xpm },
+    { play_xpm,  ffwd_xpm, ffwd1_xpm, ffwd2_xpm, ffwd3_xpm, ffwd4_xpm, ffwd5_xpm, ffwd6_xpm, ffwd7_xpm, ffwd8_xpm, ffwd9_xpm } }
   };
 
 void cSkinSTTNGDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
 {
   if (Speed < -1)
      Speed = -1;
-  if (Speed > 3)
-     Speed = 3;
+  if (Speed > 9)
+     Speed = 9;
   cBitmap bm(ReplaySymbols[Play][Forward][Speed + 1]);
   osd->DrawBitmap(x0 + (x1 - x0 - bm.Width()) / 2, y3 + (y4 - y3 - bm.Height()) / 2, bm, Theme.Color(clrReplayMode), frameColor);
 }

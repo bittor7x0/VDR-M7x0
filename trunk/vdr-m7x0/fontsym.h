@@ -21,5 +21,17 @@
 #define FSYM_EMPTY	41
 #define FSYM_FORW       42
 #define FSYM_BACK       43
+#define FSYM_FORW4	44
+#define FSYM_FORW5	45
+#define FSYM_FORW6	46
+#define FSYM_FORW7	47
+#define FSYM_FORW8	48
+#define FSYM_FORW9	49
+#define FSYM_BACK4	50
+#define FSYM_BACK5	51
+#define FSYM_BACK6	52
+#define FSYM_BACK7	53
+#define FSYM_BACK8	54
+#define FSYM_BACK9	55
 
 #endif
