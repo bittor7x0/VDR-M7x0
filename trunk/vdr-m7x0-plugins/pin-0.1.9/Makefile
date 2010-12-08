@@ -21,13 +21,13 @@ VERSION = $(shell grep 'static const char \*VERSION *=' $(PLUGIN).h | awk '{ pri
 
 CXX      ?= g++
 #CXXFLAGS ?= -ggdb -O2 -Wall -Woverloaded-virtual
-CXXFLAGS ?= -O2 -Wall -Woverloaded-virtual
+CXXFLAGS ?= -fPIC -O2 -Wall -Woverloaded-virtual
 
 ### The directory environment:
 
-DVBDIR = ../../../../DVB
-VDRDIR = ../../..
-LIBDIR = ../../lib
+DVBDIR ?= ../../..
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 FSKCHKDIR = /usr/bin
 
@@ -46,7 +46,7 @@ PACKAGE = vdr-$(ARCHIVE)
 
 ### Includes and Defines (add further entries here):
 
-INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
+INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -D__EXCL_PLUGINS='""$(EXCLUDEPLUGINS)""'
 
@@ -62,7 +62,7 @@ CMDOBJS = fskcheck.o talk.o def.o
 
 # Dependencies:
 
-MAKEDEP = g++ -MM -MG
+MAKEDEP = $(CXX) -MM -MG
 DEPFILE = .dependencies
 $(DEPFILE): Makefile
 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
@@ -79,12 +79,11 @@ plugin: libvdr-$(PLUGIN).so
 
 fskcheck: $(CMDOBJS)
 	$(CXX) $(CXXFLAGS) $(CMDOBJS) -o $@
-	@strip $@
-	@cp $@ $(FSKCHKDIR)
+	@mips-linux-uclibc-strip $@
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
-	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
+	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
