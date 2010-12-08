@@ -10,6 +10,10 @@
 #define __RSSREADER_PARSER_H
 
 #include "common.h"
+#include "compatibility.h"
+#include <string>
+
+using namespace std;
 
 // --- Defines ----------------------------------------------------------
 
@@ -19,23 +23,25 @@
 // --- cItem(s) ---------------------------------------------------------
 
 class cItem : public cListObject {
+	
 private:
   cCharSetConv conv;
-  char date[SHORT_TEXT_LEN];
-  char title[SHORT_TEXT_LEN];
-  char link[SHORT_TEXT_LEN];
-  char description[LONG_TEXT_LEN];
+  string date;
+  string title;
+  string link;
+  string description; 
 public:
-  cItem();
+  cItem(const char *e);
+//  ~cItem(){debug ("destruir citem [%s]",title.c_str());};
   void Clear(void);
-  char *GetDate(void) { return date; }
-  char *GetTitle(void) { return title; }
-  char *GetLink(void) { return link; }
-  char *GetDescription(void)  { return description; }
+  const char *GetDate(void) { return date.c_str(); }
+  const char *GetTitle(void) { return title.c_str(); }
+  const char *GetLink(void) { return link.c_str(); }
+  const char *GetDescription(void)  { return description.c_str(); }
   void SetDate(const char *str);
   void SetTitle(const char *str);
   void SetLink(const char *str);
-  void SetDescription(const char *str);
+  void SetDescription(const char *str);  
 };
 
 class cItems : public cList<cItem> {
@@ -53,6 +59,8 @@ struct MemoryStruct {
 class cParser {
 private:
   struct MemoryStruct data;
+  char encoding[SHORT_TEXT_LEN];
+  void SetEncoding(const char *str);
 public:
   enum {
     RSS_PARSING_OK     =  0,

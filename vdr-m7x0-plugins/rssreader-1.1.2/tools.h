@@ -10,9 +10,14 @@
 #define __RSSREADER_TOOLS_H
 
 #include <vdr/tools.h>
+#include <string>
 
-char *striphtml(char *str);
-void *myrealloc(void *ptr, size_t size);
+#define DEFAULT_ENCONDING "ISO-8859-1"
+
+using namespace std;
+
+void striphtml(string &str);
+
 
 #endif // __RSSREADER_TOOLS_H
 
