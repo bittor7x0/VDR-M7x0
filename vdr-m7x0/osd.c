@@ -773,6 +773,7 @@ const tIndex *cBitmap::Data(int x, int y)
 // --- cOsd ------------------------------------------------------------------
 
 int cOsd::isOpen = 0;
+bool cOsd::pinValid = false;   // PIN PATCH
 
 cOsd::cOsd(int Left, int Top)
 {

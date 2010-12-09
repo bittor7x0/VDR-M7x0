@@ -112,3 +112,55 @@ void cStatus::MsgOsdProgramme(time_t PresentTime, const char *PresentTitle, cons
   for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))
       sm->OsdProgramme(PresentTime, PresentTitle, PresentSubtitle, FollowingTime, FollowingTitle, FollowingSubtitle);
 }
+
+bool cStatus::MsgChannelProtected(const cDevice* Device, const cChannel* Channel)     // PIN PATCH
+{
+  for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))
+      if (sm->ChannelProtected(Device, Channel) == true)
+ 	 return true;
+
+  return false;
+}
+
+bool cStatus::MsgReplayProtected(const cRecording* Recording, const char* Name, 
+                                 const char* Base, bool isDirectory, int menuView)    // PIN PATCH
+{
+  for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))
+     if (sm->ReplayProtected(Recording, Name, Base, isDirectory, menuView) == true)
+         return true;
+      return false;
+}
+
+void cStatus::MsgRecordingFile(const char* FileName)
+{
+  for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))   // PIN PATCH
+      sm->RecordingFile(FileName);
+}
+
+void cStatus::MsgTimerCreation(cTimer* Timer, const cEvent *Event)
+{
+  for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))   // PIN PATCH
+     sm->TimerCreation(Timer, Event);
+}
+
+bool cStatus::MsgPluginProtected(cPlugin* Plugin, int menuView)                  // PIN PATCH
+{
+  for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))
+     if (sm->PluginProtected(Plugin, menuView) == true)
+         return true;
+      return false;
+}
+
+void cStatus::MsgUserAction(const eKeys key, const cOsdObject* Interact)         // PIN PATCH
+{
+  for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))
+     sm->UserAction(key, Interact);
+}
+
+bool cStatus::MsgMenuItemProtected(const char* Name, int menuView)               // PIN PATCH
+{
+  for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))
+     if (sm->MenuItemProtected(Name, menuView) == true)
+         return true;
+      return false;
+}
