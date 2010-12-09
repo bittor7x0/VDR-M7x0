@@ -701,8 +701,9 @@ void cDvbPlayer::Action(void)
                  data2 = playFrame->Data2();
                  count2 = playFrame->Count2();
                  if (firstPacket) {
+                    if(cRemux::SetBrokenLink(data1, count1)==2)
+                       DeviceSetPlayMode(pmAudioOnlyBlack);
                     PlayPes(NULL, 0);
-                    cRemux::SetBrokenLink(data1, count1);
                     firstPacket = false;
                     }
                  }

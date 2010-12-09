@@ -35,6 +35,7 @@ protected:
   void DevicePlay(void) { if (device) device->Play(); }
   void DeviceFreeze(void) { if (device) device->Freeze(); }
   void DeviceMute(void) { if (device) device->Mute(); }
+  void DeviceSetPlayMode(ePlayMode PlayMode) { if (device) device->SetPlayMode(PlayMode); }
   void DeviceSetVideoDisplayFormat(eVideoDisplayFormat VideoDisplayFormat) { if (device) device->SetVideoDisplayFormat(VideoDisplayFormat); }
   void DeviceStillPicture(const uchar *Data, int Length) { if (device) device->StillPicture(Data, Length); }
   void DeviceSetTsPids(int pmtPid, int videoPid) { if (device) device->SetTsReplayPids(pmtPid, videoPid); }
