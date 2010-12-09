@@ -1076,7 +1076,8 @@ bool cDevice::ToggleMute(void)
   mute = !mute;
   //XXX why is it necessary to use different sequences???
   if (mute) {
-     SetVolume(0, true);
+     SetVolumeDevice(0);
+     cStatus::MsgSetVolume(0, true);
      Audios.MuteAudio(mute); // Mute external audio after analog audio
      }
   else {
@@ -1103,13 +1104,15 @@ void cDevice::SetVolume(int Volume, bool Absolute)
 {
   int OldVolume = volume;
   volume = min(max(Absolute ? Volume : volume + Volume, 0), MAXVOLUME);
-  SetVolumeDevice(volume);
   Absolute |= mute;
   cStatus::MsgSetVolume(Absolute ? volume : volume - OldVolume, Absolute);
-  if (volume > 0) {
-     mute = false;
-     Audios.MuteAudio(mute);
-     }
+  if(!(mute && volume<OldVolume)) { // effectively change volume
+    SetVolumeDevice(volume);
+    if (mute) {
+       mute = false;
+       Audios.MuteAudio(mute);
+       }
+    }  
 }
 
 void cDevice::ClrAvailableTracks(bool DescriptionsOnly, bool IdsOnly)
