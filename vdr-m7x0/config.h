@@ -301,6 +301,7 @@ public:
   int CutterAutoDelete;
   int CutterMaxBandwidth;
   int CutterRelBandwidth;
+  int CutterWithMarks;
   int JumpSeconds, JumpSecondsRepeat, JumpFramesRepeat;
 #ifdef USE_DIRECT_IO
   int ReplayUseDirectIO;
