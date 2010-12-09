@@ -1164,10 +1164,16 @@ int main(int argc, char *argv[])
                    ShutdownHandler.SetUserInactive();
                    break;
                    }
+		   if(Setup.ShutdownMessage){
                 // Ask the final question:
                 if (!Interface->Confirm(tr("Press any key to cancel shutdown"), SHUTDOWNCANCELROMPT, true))
                    // If final question was canceled, continue to be active:
                    break;
+		   } else {
+                setIaMode(0);
+                cDevice::PrimaryDevice()->SetTvSettings(0);
+           }
+
                 // Ok, now call the shutdown script:
                 ShutdownHandler.DoShutdown(true);
                 // Set VDR to be non-interactive and power down again later:
