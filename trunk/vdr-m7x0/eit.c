@@ -309,7 +309,7 @@ cTDT::cTDT(const u_char *Data)
   time_t loctim = time(NULL);
 
   int diff = abs(sattim - loctim);
-  if (diff > 2) {
+  if (diff > 5) {
      mutex.Lock();
      if (abs(diff - lastDiff) < 3) {
         isyslog("System Time = %s (%ld)", *TimeToString(loctim), loctim);

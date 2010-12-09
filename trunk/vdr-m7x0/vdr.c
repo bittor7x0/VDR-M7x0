@@ -200,6 +200,7 @@ static void Watchdog(int signum)
 
 int main(int argc, char *argv[])
 {
+	int TimeAdjust=0;
   // Save terminal settings:
 
   struct termios savedTm;
@@ -312,6 +313,8 @@ int main(int argc, char *argv[])
                 	break;
 		      }else{
 		        setIaMode(1);
+			if((!strcmp(optarg,"powerfail"))||(!strcmp(optarg,"unknown")))
+				TimeAdjust=1;
 			break;
 			}
 		    }
@@ -723,6 +726,24 @@ int main(int argc, char *argv[])
 
   if (!cDevice::WaitForAllDevicesReady(DEVICEREADYTIMEOUT))
      dsyslog("not all devices ready after %d seconds", DEVICEREADYTIMEOUT);
+	if(TimeAdjust)
+	{
+		isyslog("Set time needed");
+		if((Setup.SetSystemTime)&&(Setup.TimeTransponder))
+		{
+			cChannel *channel=Channels.First();
+			while(channel)
+			{
+				if((!channel->GroupSep())&&(Setup.TimeSource==channel->Source())&&(ISTRANSPONDER(channel->Transponder(),Setup.TimeTransponder)))
+				{
+					Setup.CurrentChannel=channel->Number();
+					break;
+			        }
+			        channel=(cChannel *)channel->Next();
+			}
+		}
+	}
+	else
   if (Setup.InitialChannel > 0)
      Setup.CurrentChannel = Setup.InitialChannel;
   if (Setup.InitialVolume >= 0)
