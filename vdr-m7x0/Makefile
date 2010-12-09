@@ -102,7 +102,7 @@ font: genfontfile\
 	@echo "font files created."
 
 builddate.h: $(OBJS:%.o=%.c)
-	@echo "#define VDRM7X0VERSION \"Preview `date -u +"%F %H:%M"` (o7o version: `cat o7o-version`)\"" > builddate.h
+	@echo "#define VDRM7X0VERSION \"Preview `date -u +"%F %H:%M"` (VDR-NG-EM version: `cat o7o-version`)\"" > builddate.h
 
 # Implicit rules:
 
