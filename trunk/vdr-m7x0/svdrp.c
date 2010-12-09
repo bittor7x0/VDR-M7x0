@@ -224,12 +224,13 @@ const char *HelpPages[] = {
   "    List channels. Without option, all channels are listed. Otherwise\n"
   "    only the given channel is listed. If a name is given, all channels\n"
   "    containing the given string as part of their name are listed.",
-  "LSTE [ <channel> ] [ now | next | at <time> ]\n"
+  "LSTE [ <channel> ] [ now | next | nownext | at <time> | between <time> <time> | withid <number> ]\n"
   "    List EPG data. Without any parameters all data of all channels is\n"
   "    listed. If a channel is given (either by number or by channel ID),\n"
-  "    only data for that channel is listed. 'now', 'next', or 'at <time>'\n"
-  "    restricts the returned data to present events, following events, or\n"
-  "    events at the given time (which must be in time_t form).",
+  "    only data for that channel is listed. 'now', 'next', 'at <time>'\n"
+  "    or 'between <time> <time>' restricts the returned data to present events, \n"
+  "    following events, events at the given time, events between given times \n"
+  "    (which must be in time_t form) or event with given id.",
   "LSTR [ <number> | <path> ] [path]\n"
   "    List recordings. Without option, all recordings are listed. Otherwise\n"
   "    the information for the given recording is listed. If the keyword 'path'\n ",
@@ -1020,6 +1021,8 @@ void cSVDRP::CmdLSTE(const char *Option)
      const cSchedule* Schedule = NULL;
      eDumpMode DumpMode = dmAll;
      time_t AtTime = 0;
+     time_t BeforeTime = 0;
+     tEventID EventID = 0;
      if (*Option) {
         char buf[strlen(Option) + 1];
         strcpy(buf, Option);
@@ -1031,6 +1034,8 @@ void cSVDRP::CmdLSTE(const char *Option)
                  DumpMode = dmPresent;
               else if (strcasecmp(p, "NEXT") == 0)
                  DumpMode = dmFollowing;
+              else if (strcasecmp(p, "NOWNEXT") == 0)
+                 DumpMode = dmPresentAndFollowing;
               else if (strcasecmp(p, "AT") == 0) {
                  DumpMode = dmAtTime;
                  if ((p = strtok_r(NULL, delim, &strtok_next)) != NULL) {
@@ -1043,6 +1048,44 @@ void cSVDRP::CmdLSTE(const char *Option)
                     }
                  else {
                     Reply(501, "Missing time");
+                    return;
+                    }
+                 }
+              else if (strcasecmp(p, "BETWEEN") == 0) {
+                 DumpMode = dmBetween;
+                 time_t *a_time[]={&AtTime,&BeforeTime};
+                 int i;
+                 for (i=0;i<2;i++){
+                    if ((p = strtok_r(NULL, delim, &strtok_next)) != NULL) {
+                       if (isnumber(p)) 
+                          *a_time[i] = strtol(p, NULL, 10);
+                       else {
+                           Reply(501, (i==0) ? "Invalid start time" : "Invalid end time");
+                           return;
+                           }
+                       }
+                   else {
+                       Reply(501, (i==0) ? "Missing start time" : "Missing end time");
+                       return;
+                       }
+                   }
+                 if (AtTime>=BeforeTime) {
+                    Reply(501, "End time must be greater than start time");
+                    return;
+                    }
+                }
+              else if (strcasecmp(p, "WITHID") == 0) {
+                 DumpMode = dmWithID;
+                 if ((p = strtok_r(NULL, delim, &strtok_next)) != NULL) {
+                    if (isnumber(p)) 
+                       EventID = strtol(p, NULL, 10);
+                    else {
+                       Reply(501, "Invalid event ID");
+                       return;
+                       }
+                    }
+                 else {
+                    Reply(501, "Missing event ID");
                     return;
                     }
                  }
@@ -1076,9 +1119,9 @@ void cSVDRP::CmdLSTE(const char *Option)
         FILE *f = fdopen(fd, "w");
         if (f) {
            if (Schedule)
-              Schedule->Dump(f, "215-", DumpMode, AtTime);
+              Schedule->Dump(f, "215-", DumpMode, AtTime, BeforeTime, EventID);
            else
-              Schedules->Dump(f, "215-", DumpMode, AtTime);
+              Schedules->Dump(f, "215-", DumpMode, AtTime, BeforeTime, EventID);
            fflush(f);
            Reply(215, "End of EPG data");
            fclose(f);

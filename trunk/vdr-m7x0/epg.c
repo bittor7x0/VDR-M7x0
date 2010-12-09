@@ -862,7 +862,7 @@ void cSchedule::Cleanup(time_t Time)
         }
 }
 
-void cSchedule::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtTime) const
+void cSchedule::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtTime, time_t BeforeTime, tEventID EventID) const
 {
 //M7X0 BEGIN AK
   if (EpgModes.GetModeByChannelID(&channelID)->GetMode() >= emNoSave)
@@ -888,9 +888,33 @@ void cSchedule::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtT
                p->Dump(f, Prefix);
             }
             break;
+       case dmPresentAndFollowing: {
+            if ((p = GetPresentEvent()) != NULL)
+               p->Dump(f, Prefix);
+               if ((p = events.Next(p)) != NULL)
+                  p->Dump(f,Prefix);
+            }
+            break;
        case dmAtTime: {
             if ((p = GetEventAround(AtTime)) != NULL)
                p->Dump(f, Prefix);
+            }
+            break;
+       case dmBetween: if (BeforeTime > AtTime) {
+            for (p = events.First(); p; p = events.Next(p)) {
+               if ((AtTime <= p->EndTime()) && (p->StartTime() <= BeforeTime)) {
+                  p->Dump(f, Prefix);
+                  }
+               }
+            }
+            break;
+       case dmWithID: if (EventID > 0) {
+            for (p = events.First(); p; p = events.Next(p)) {
+               if (EventID==p->eventID) {
+                  p->Dump(f, Prefix);
+                  break;
+                  }
+               }
             }
             break;
        }
@@ -1051,13 +1075,13 @@ bool cSchedules::ClearAll(void)
   return false;
 }
 
-bool cSchedules::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtTime)
+bool cSchedules::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtTime, time_t BeforeTime, tEventID EventID)
 {
   cSchedulesLock SchedulesLock(false, 1000);
   cSchedules *s = (cSchedules *)Schedules(SchedulesLock);
   if (s) {
      for (cSchedule *p = s->First(); p; p = s->Next(p))
-         p->Dump(f, Prefix, DumpMode, AtTime);
+         p->Dump(f, Prefix, DumpMode, AtTime, BeforeTime, EventID);
      return true;
      }
   return false;
