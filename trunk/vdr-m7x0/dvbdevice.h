@@ -169,7 +169,9 @@ private:
 protected:
   ePlayMode playMode;
   virtual bool CanReplay(void) const;
+public:
   virtual bool SetPlayMode(ePlayMode PlayMode);
+protected:
   virtual int PlayVideo(const uchar *Data, int Length);
   virtual int PlayAudio(const uchar *Data, int Length, uchar Id);
 public:

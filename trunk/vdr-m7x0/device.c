@@ -1489,9 +1489,15 @@ int cDevice::PlayPes(const uchar *Data, int Length, bool VideoOnly)
         if (!pData)
            continue;
 
+        for (;;) {
         int w = PlayPesPacket(pData, pLength, VideoOnly);
-        if (w < 0)
+        if (w < 0) {
+           if ((errno == EAGAIN) && (Result != used))
+              continue;
            return w;
+           }
+        break;
+        }
         }
   return Result;
 }

@@ -470,9 +470,11 @@ private:
 protected:
   virtual bool CanReplay(void) const;
        ///< Returns true if this device can currently start a replay session.
+public:
   virtual bool SetPlayMode(ePlayMode PlayMode);
        ///< Sets the device into the given play mode.
        ///< \return true if the operation was successful.
+protected:
   virtual int PlayVideo(const uchar *Data, int Length);
        ///< Plays the given data block as video.
        ///< Data points to exactly one complete PES packet of the given Length.

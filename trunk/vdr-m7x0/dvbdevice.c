@@ -3758,7 +3758,7 @@ void cDvbDevice::PESPacket2TS(const uchar *Data, int Length, int Pid, int &CCoun
 
 int cDvbDevice::PlayVideo(const uchar *Data, int Length)
 {
-  if (Data[3] == 0xBE) // skip padding stream
+  if ((Data[3] == 0xBE) || (playMode == pmAudioOnlyBlack)) // skip padding stream or video packets in audio mode
      return Length;
 
   if (!playTrickSpeed) {
@@ -3936,6 +3936,10 @@ int cDvbDevice::PlayAudioOnly(const uchar *Data, int Length, uchar Id)
      }
 
   int r;
+  int new_errno = 0;
+  int ret = Length;
+  if(write_length>=KILOBYTE(3))
+  {
   do {
      r = write(fd_audio, write_data, write_length);
      if (r < 0) {
@@ -3957,13 +3961,12 @@ int cDvbDevice::PlayAudioOnly(const uchar *Data, int Length, uchar Id)
   write_data += r;
   write_length -= r;
 
-  int new_errno = 0;
-  int ret = Length;
   if (write_length >= cur_data_length) {
      write_length -= cur_data_length;
      new_errno = EAGAIN;
      ret = -1;
      }
+  }
 
   playBufferFill = write_length;
   if (write_length > 0)

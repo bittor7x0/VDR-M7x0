@@ -874,6 +874,8 @@ private:
   int state;
   int frameTodo;
   int frameSize;
+  int samples;
+  int keyFrame;
 
   inline bool IsValidAudioHeader(void) __attribute__ ((always_inline));
   inline bool ScanDataForStartCode (const uchar *&Data, const uchar *const Limit) __attribute__ ((always_inline));
@@ -903,6 +905,8 @@ void cAudioRepacker::Reset(void)
   state = syncing;
   frameTodo = 0;
   frameSize = 0;
+  samples=0;
+  keyFrame=0;
 
 
   curPacketDataHeader.pesPacketType = pesPtAudio;
@@ -913,6 +917,11 @@ void cAudioRepacker::Reset(void)
 
 bool cAudioRepacker::IsValidAudioHeader(void)
 {
+  static const int keyFrames[2][3] = {  // packets*576 per keyFrame
+        { 2646, 960, 640 }, // MPEG 1 / Layer 1,2,3
+        { 1323, 576, 576 }  // MPEG 2 / Layer 1,2,3
+  };
+
   static const int slots[2][3][3][14] = {
     {
       {
@@ -966,6 +975,8 @@ bool cAudioRepacker::IsValidAudioHeader(void)
 
   if ((scanner & 0x00000003) == 2) // emphasis 2 reserved
      return false;
+
+  keyFrame=keyFrames[mpegIndex][layer];
 
   if (bitrate_index == -1) {
      frameSize = 0;
@@ -1172,8 +1183,17 @@ void cAudioRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
 
         frameTodo = frameSize -4;
 
+	if(samples>=0)
+	{
+		curPacketDataHeader.pictureType=I_FRAME;
+		samples+=576-keyFrame;
+	}
+	else
+	{
+		curPacketDataHeader.pictureType = NO_PICTURE;
+		samples+=576;
+	}
 
-        curPacketDataHeader.pictureType = I_FRAME; // Always I-Frames for audio frames
         state = scanFrame;
         }
 
@@ -1704,19 +1724,27 @@ void cRemux::Clear(void)
 }
 
 
-void cRemux::SetBrokenLink(uchar *Data, int Length)
+int cRemux::SetBrokenLink(uchar *Data, int Length)
 {
   int PesPayloadOffset = 0;
-  if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1 && (Data[3] & 0xF0) == VIDEO_STREAM_S) {
+  if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1) {
+     if ((Data[3] & 0xF0) == VIDEO_STREAM_S) {
      for (int i = PesPayloadOffset; i < Length - 7; i++) {
          if (Data[i] == 0 && Data[i + 1] == 0 && Data[i + 2] == 1 && Data[i + 3] == 0xB8) {
             if (!(Data[i + 7] & 0x40)) // set flag only if GOP is not closed
                Data[i + 7] |= 0x20;
-            return;
+            return 0;
             }
          }
      dsyslog("SetBrokenLink: no GOP header found in video packet");
+     return 1;
+     }
+     else if ((Data[3] & 0xE0) == AUDIO_STREAM_S) {
+        isyslog("Audio stream detected");
+        return 2;
+        }
      }
   else
      dsyslog("SetBrokenLink: no video packet in frame");
+  return 1;
 }
