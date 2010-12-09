@@ -30,7 +30,7 @@ enum {
   clrWhite       = 0xFFFCFCFC,
   };
 
-enum eOsdError { oeOk,
+enum eOsdError { oeOk, // see also OsdErrorTexts in osd.c
                  oeTooManyAreas,
                  oeTooManyColors,
                  oeBppNotSupported,

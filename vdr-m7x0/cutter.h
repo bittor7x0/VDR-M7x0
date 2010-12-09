@@ -28,4 +28,6 @@ public:
   static bool Ended(void);
   };
 
+bool CutRecording(const char *FileName);
+
 #endif //__CUTTER_H

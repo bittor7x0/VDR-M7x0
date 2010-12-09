@@ -198,7 +198,7 @@ public:
   virtual ~cRecordControl();
   bool Process(time_t t);
   cDevice *Device(void) { return device; }
-  void Stop(void);
+  void Stop(bool ExecuteUserCommand = true);
   const char *InstantId(void) { return instantId; }
   const char *FileName(void) { return fileName; }
   cTimer *Timer(void) { return timer; }
@@ -251,6 +251,7 @@ private:
 public:
   cReplayControl(void);
   virtual ~cReplayControl();
+  void Stop(void);
   virtual cOsdObject *GetInfo(void);
   virtual eOSState ProcessKey(eKeys Key);
   virtual void Show(void);

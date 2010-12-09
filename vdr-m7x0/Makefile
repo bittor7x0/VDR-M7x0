@@ -92,11 +92,6 @@ DEFINES += -DPLUGINDIR=\"$(PLUGINLIBDIR)\"
 VDRVERSION = $(shell sed -ne '/define VDRVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
 APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' config.h)
 
-ifdef VFAT
-# for people who want their video directory on a VFAT partition
-DEFINES += -DVFAT
-endif
-
 all: vdr
 font: genfontfile\
       fontfix-iso8859-1.c fontosd-iso8859-1.c fontsml-iso8859-1.c\

@@ -172,15 +172,15 @@ cDll::~cDll()
 static char *SkipQuote(char *s)
 {
   char c = *s;
-  strcpy(s, s + 1);
+  memmove(s, s + 1, strlen(s));
   while (*s && *s != c) {
         if (*s == '\\')
-           strcpy(s, s + 1);
+           memmove(s, s + 1, strlen(s));
         if (*s)
            s++;
         }
   if (*s) {
-     strcpy(s, s + 1);
+     memmove(s, s + 1, strlen(s));
      return s;
      }
   esyslog("ERROR: missing closing %c", c);
@@ -231,7 +231,7 @@ bool cDll::Load(bool Log)
               if (!q)
                  q = p;
               switch (*p) {
-                case '\\': strcpy(p, p + 1);
+                case '\\': memmove(p, p + 1, strlen(p));
                            if (*p)
                               p++;
                            else {

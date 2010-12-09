@@ -71,42 +71,28 @@ void cLircRemote::Action(void)
   char buf[LIRC_BUFFER_SIZE];
   char LastKeyName[LIRC_KEY_BUF] = "";
   bool repeat = false;
-//M7X0 BEGIN AK
-// This should fix broken shutdown
+  int ret, ch;
   int timeout = DEFAULTTIMEOUT;
-  int i,ret=0;
-  char *end=NULL;
-//M7X0 END AK
 
   while (Running() && f >= 0) {
-        int endcount = end ? end - buf + 1 : ret;
-        if (endcount < ret) {
-           memcpy (buf,buf + endcount, ret - endcount);
-           ret -= endcount;
-           end = NULL;
-           }
-        else if (ret < 0 || endcount == ret || ret >= LIRC_BUFFER_SIZE) {
-           ret = 0;
-           end = NULL;
-           }
         bool ready = cFile::FileReady(f, timeout);
-//M7X0 BEGIN AK
+        ret = -1;
         if (ready) {
-           //ret = 0;
-           do {
-              i = safe_read(f, buf + ret, LIRC_BUFFER_SIZE - ret);
-              if (i < 0) {
-                 ret = i;
-                 break;
-                 }
-              ret += i;
-              } while ((!ret || !(end = (char *)memchr(buf,'\n',ret))) && ret < LIRC_BUFFER_SIZE);
-           buf[ret<0 ? 0 : (ret<LIRC_BUFFER_SIZE?ret:LIRC_BUFFER_SIZE-1)]=0;
-          // dsyslog("LIRC Buffer '%s' read with %d Bytes",buf,ret);
+           // read one line of the line oriented lirc protocol
+           for (ret = 0; ret < (int)sizeof(buf); ret++) {
+               ch = readchar(f);
+               if (ch < 0) {
+                  ret = -1;
+                  break;
+                  }
+               if (ch == '\n') {
+                  buf[ret++] = '\0';
+                  break;
+                  }
+               buf[ret] = ch;
+               }
            }
-        //else
-        //   ret = -1;
-//M7X0 END AK
+
         if (ready && ret <= 0 ) {
            esyslog("ERROR: lircd connection broken, trying to reconnect every %.1f seconds", float(RECONNECTDELAY) / 1000);
            close(f);

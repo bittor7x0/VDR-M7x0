@@ -92,6 +92,7 @@ cTimer::cTimer(const cTimer &Timer)
   channel = NULL;
   aux = NULL;
   event = NULL;
+  flags = tfNone;
   *this = Timer;
 }
 

@@ -147,9 +147,12 @@ private:
   int modification;
   mutable const cSchedule *schedule;
   cLinkChannels *linkChannels;
-  cChannel *refChannel;
+  cLinkChannels *refChannels;
   cString ParametersToString(void) const;
   bool StringToParameters(const char *s);
+  void AddRefChannel(cChannel *RefChannel);
+  void DelRefChannel(cChannel *RefChannel);
+  void DelLinkChannel(cChannel *RefChannel);
 public:
   cChannel(void);
   cChannel(const cChannel &Channel);
@@ -199,7 +202,8 @@ public:
   int Guard(void) const { return guard; }
   int Hierarchy(void) const { return hierarchy; }
   const cLinkChannels* LinkChannels(void) const { return linkChannels; }
-  const cChannel *RefChannel(void) const { return refChannel; }
+  const cChannel *RefChannel(void) const { return refChannels ? refChannels->Last()->Channel() : 0; }
+  const cLinkChannels* RefChannels(void) const { return refChannels; }
   bool IsCable(void) const { return cSource::IsCable(source); }
   bool IsSat(void) const { return cSource::IsSat(source); }
   bool IsTerr(void) const { return cSource::IsTerr(source); }
@@ -217,8 +221,40 @@ public:
   void SetCaIds(const int *CaIds); // list must be zero-terminated
   void SetCaDescriptors(int Level);
   void SetLinkChannels(cLinkChannels *LinkChannels);
-  void SetRefChannel(cChannel *RefChannel);
   bool Filtered(void);
+  };
+
+class cIteratorImpl {
+private:
+  int refCount;
+  cIteratorImpl(const cIteratorImpl &);
+  const cIteratorImpl &operator =(const cIteratorImpl &);
+public:
+  cIteratorImpl(void) { refCount = 0; }
+  virtual ~cIteratorImpl() {}
+  virtual int AddRef(void) { return ++refCount; }
+  virtual int DelRef(void) { int RefCount = --refCount; if (RefCount <= 0) delete this; return RefCount; }
+  virtual void *First(void) = 0;
+  virtual void *Last(void)  = 0;
+  virtual void *Prev(void)  = 0;
+  virtual void *Next(void)  = 0;
+  virtual void *Current(void) const = 0;
+  };
+
+template <class T> class cIterator
+{
+private:
+  cIteratorImpl *impl;
+public:
+  cIterator(cIteratorImpl *Impl) { impl = Impl; impl->AddRef(); }
+  cIterator(const cIterator &rhs) { impl = rhs.impl; impl->AddRef(); }
+  ~cIterator() { impl->DelRef(); }
+  const cIterator &operator =(const cIterator &rhs) { rhs.impl->AddRef(); impl->DelRef(); impl = rhs.impl; return *this; }
+  T *First(void) const   { return (T *)impl->First(); }
+  T *Last(void) const    { return (T *)impl->Last(); }
+  T *Prev(void) const    { return (T *)impl->Prev(); }
+  T *Next(void) const    { return (T *)impl->Next(); }
+  T *Current(void) const { return (T *)impl->Current(); }
   };
 
 class cChannels : public cRwLock, public cConfig<cChannel> {
@@ -227,7 +263,10 @@ private:
   int modified;
   int beingEdited;
   cHash<cChannel> channelsHashSid;
+  cHash<cChannel> channelsHashNidTid;
   void DeleteDuplicateChannels(void);
+  void ClearChannelHashes(void);
+  static unsigned int HashKeyNidTid(unsigned short Nid, unsigned short Tid);
 public:
   cChannels(void);
   bool Load(const char *FileName, bool AllowComments = false, bool MustExist = false);
@@ -241,6 +280,7 @@ public:
   cChannel *GetByNumber(int Number, int SkipGap = 0);
   cChannel *GetByServiceID(int Source, int Transponder, unsigned short ServiceID);
   cChannel *GetByChannelID(tChannelID ChannelID, bool TryWithoutRid = false, bool TryWithoutPolarization = false);
+  cIterator<cChannel> GetChannelsBySourceNidTid(int Source, unsigned short Nid, unsigned short Tid);
   int BeingEdited(void) { return beingEdited; }
   void IncBeingEdited(void) { beingEdited++; }
   void DecBeingEdited(void) { beingEdited--; }

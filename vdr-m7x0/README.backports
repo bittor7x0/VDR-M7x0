@@ -1,0 +1,158 @@
+Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
+
+VDR 1.7.14 backports applied in this patch:
+* Implemented handling the "Content Descriptor" (based on a patch from Rolf
+  Ahrenberg). The 'classic' and 'sttng' skins display the textual
+  representation of the content descriptors as "genre". The epg.data file stores
+  the genre using the tag character 'G'.
+* Implemented handling the "Parental Rating Descriptor" (based on a patch from Rolf
+  Ahrenberg). The 'classic' and 'sttng' skins display the parental
+  rating (if given) in their event displays. The epg.data file stores
+  the parental rating using the tag character 'R'.
+  IMPORTANT NOTE: if VDR doesn't display a parental rating, this does not
+  necessarily mean that the given programme is suitable for all audiences!
+* The new Setup parameter "Channel entry timeout" can be used to customize the time
+  since the last keypress until a numerically entered channel number is considered
+  complete, and the channel is switched (suggested by Helmut Auer). Setting this
+  parameter to 0 turns off the automatic channel switching, and the user will
+  have to confirm the entry by pressing the "Ok" key.
+* The "Source" item in the "Edit channel" menu now wraps around the list of sources
+  (suggested by Halim Sahin).
+* The new setup option "Recording/Pause key handling" can be used to define
+  what happens if the Pause key on the remote control is pressed during
+  live tv (thanks to Timo Eskola).
+* The new setup option "Recording/Delete timeshift recording" controls whether a timeshift
+  recording is automatically deleted after viewing it.
+  This obsoletes the DELTIMESHIFTREC patch.
+  Note that the meaning of the values for this option is different from the DELTIMESHIFTREC
+  patch: 0 means timeshift recordings are not automatically deleted (the default behavior
+  as in previous versions), while 1 means to ask the user whether the recording shall be
+  deleted.
+* Removed the compile time option VFAT to allow users of precompiled binary
+  distributions to have full control over whether or not to use the --vfat option
+  at runtime (suggested by Michael Nork).
+* Modified handling invalid characters in VFAT mode.
+* Made MAXFRAMESIZE a multiple of TS_SIZE to avoid breaking up TS packets.
+* Improved logging system time changes to avoid problems on slow systems under
+  heavy load (suggested by Helmut Auer).
+* Running the thread that removes deleted recordings at a low priority to (maybe)
+  avoid stuttering replay in case the thread is run during replay.
+* Reduced the number of time(NULL) calls in vdr.c's main loop to a single call
+  (thanks to Tobias Bratfisch).
+* Improved numdigits(), isnumber() and strreplace() (thanks to Tobias Bratfisch).
+* Made skipspace() an inline function (suggested by Tobias Bratfisch) and changed
+  it to handle the most common case of 'no leading space' very fast, and avoid
+  calling isspace(), which made the whole function a lot faster.
+* Fixed a problem with characters >0x7F in the modified version of skipspace()
+  (thanks to Marco Schlüßler).
+* Changed the EIT filter setup to save a few handles on devices that do hardware
+  filtering.
+* Changed the EVCONTENTMASK_* macros to enums and changed "mask" to "group".
+* Ignoring "repeat" and "release" keys in the time search entry mode during replay,
+  to avoid inadvertently leaving it in case a key is pressed too long (suggested
+  by Andreas Brugger).
+* Improved cControl::Launch() to keep 'control' from pointing to uninitialized
+  memory (thanks to Rolf Ahrenberg).
+* Removed unneeded include files <linux/dvb/dmx.h> and <time.h> from remux.h
+  (reported by Tobias Grimm).
+* Stripping control codes 0x86 and 0x87 from SI strings.
+* Optimized cNitFilter::Process() (thanks to Tobias Bratfisch).
+* Optimized cMenuEditChrItem::Set() (thanks to Tobias Bratfisch).
+* Improved performance of the SVDRP commands LSTC and CHAN when used with a
+  channel name.
+* The SVDRP command LSTC can now list the channels with group separators if the
+  option ':groups' is given (thanks to Andreas Mair).
+* The SVDRP command PUTE now supports reading the EPG data from a given file
+  (thanks to Helmut Auer).
+* Added a debug error message to cReceiver::~cReceiver() in case it is still
+  attached to a device (thanks to Reinhard Nissl).
+* cBitmap::SetXpm() now checks whether the given Xpm pointer is not NULL, to
+  avoid a crash with files that only contain "/* XPM */" (suggested by Andreas
+  Mair).
+* Resetting a timer's 'pending' flag when it has ended.
+* Added some missing 'const' keywords (thanks to Sascha Volkenandt).
+* Added some missing 'const' keywords to avoid compilation errors with gcc 4.4
+  (thanks to Ville Skyttä and Ludwig Nussel).
+* Added the backslash ('\') to the list of characters that need to be escaped
+  when executing external commands (thanks to Peter Bieringer for reporting this one).
+* The section handler is now stopped before the device is destroyed, to avoid
+  accessing file handles after they have become invalid (thanks to Reinhard
+  Nissl for reporting an invalid access when ending VDR, and to Deti Fliegl for
+  a patch that was used to implement StopSectionHandler()).
+* Fixed the format in cRemote::Put() to use "%016llX" instead of "%016LX" (thanks
+  to Ludwig Nussel for pointing this out).
+* Fixed variable types in cIndexFile (reported by Udo Richter).
+* Fixed cOsdMenu::Display() in case the menu size has changed (thanks to
+  Reinhard Nissl).
+* Added plain text error messages to log entries from cOsd::SetAreas() (suggested
+  by Rolf Ahrenberg).
+* Added a missing Channels.SetModified(true) call when deleting or moving a
+  channel in the Channels menu (reported by Halim Sahin).
+* Added a missing SetVolumeDevice() call in cDevice::SetPrimaryDevice() (reported
+  by Reinhard Nissl).
+* Fixed a problem with calling isyslog() from within the SignalHandler() (thanks
+  to Udo Richter).
+* Fixed handling kLeft in the calls to cStatus::MsgOsdTextItem() (thanks to
+  Alexander Rieger).
+* Fixed a possible integer overflow in GetAbsTime() (thanks to Alexander Rieger).
+* Fixed wrong value for TableIdBAT in libsi/si.h (thanks to Winfried Köhler).
+* Fixed initializing the timer's flags in the cTimer copy constructor (thanks to
+  Andreas Mair).
+* Fixed the MEGABYTE() macro to make it correctly handle parameters resulting in
+  values larger than 2GB.
+* Added a missing 'P' to vdr.c's SHUTDOWNCANCELROMPT macro (reported by Marco
+  Schlüßler).
+* Fixed checking for ttDolbyLast in cDevice::SetCurrentAudioTrack() (thanks
+  to Marco Schlüßler).
+* Fixed handling address masks in SVDRP host settings (thanks to Frank Schmirler).
+* If svdrphosts.conf contains only the address of the local host, the SVDRP port
+  is opened only for the local host (thanks to Manuel Reimer).
+* Added a missing reset of maxNumber in cChannels::Renumber() (reported by Sundararaj
+  Reel).
+* Fixed tuning to a live channel after a recording has been stopped using the
+  'Back' key.
+* Added a missing '.' to the date returned by DayDateTime() (thanks to Lauri Nurmi).
+* Fixed decoding filename characters in case there are not two hex digits after
+  the '#' (reported by Helmut Auer).
+* Fixed selecting the audio track when pressing Ok in the Audio menu (thanks
+  to Marco Schlüßler).
+* Fixed a missing '-' at the next to last line of SVDRP help texts (reported by
+  Denis Knauf).
+* Fixed a crash when pressing Left while at the first character of a cMenuEditStrItem
+  (thanks to Christian Wieninger).
+* Channel names containing commas are now handled correctly in channels.conf.
+  If a channel's short name contains a comma, it is replaced with a '.'.
+* Removed the workaround for short channel names of "Kabel Deutschland", because
+  apparently they now have their data according to the DVB standard (thanks to
+  Johann Friedrichs).
+* cDevice now logs the device number when a new device is created.
+* Improved SPU handling on devices with limited OSD capabilities (thanks to
+  Matthieu Castet).
+* Improved cDvbSpuBitmap::getMinBpp() (thanks to Matthieu Castet and Johann
+  Friedrichs).
+* Some fixes to dvbspu.[hc] (thanks to Johann Friedrichs).
+* Fixed plugin arguments corruption with glibc 2.11 on x86_64 (thanks to
+  Anssi Hannula).
+* cPatFilter::Process() now only stores CA descriptors for video and audio pids
+  (thanks to Francesco Saverio Schiavarelli for reporting a problem with channels
+  that have some encrypted components that VDR doesn't use).
+* Several code modifications to avoid compiler warnings (thanks to Winfried Köhler).
+* Fixed compiler warnings "format not a string literal and no format arguments"
+  in some syslog calls (thanks to Rolf Ahrenberg).
+* Fixed not logging changes for channels that have no number
+  (reported by Timothy D. Lenz).
+* Fixed saving terminal settings when running in background (thanks to Manuel
+  Reimer).
+* The new command line option --edit can be used to edit a recording without
+  actually starting the entire VDR (based on a patch from Helmut Auer).
+* Rearranged cEvent members to minimize memory waste.
+* After a CLRE command, no further EPG processing is now done for 10 seconds,
+  so that data sent with subsequent PUTE commands doesn't interfere with data
+  from the broadcasters (suggested by Helmut Auer).
+* Fixed adding new transponders in case there is only a single channel in the
+  channel list (reported by Halim Sahin).
+* The new setup option "Folders in timer menu" controls whether the file names in
+  the timer menu are shown with their full folder path.
+* The full timer file name is now displayed if it ends with "TITLE" or "EPISODE"
+  (pointed out by Udo Richter).
+* cSafeFile::Close() now flushes the file (suggested by Stephan Austermühle).

@@ -26,7 +26,7 @@ const tChannelParameterMap InversionValues[] = {
   {   0, INVERSION_OFF },
   {   1, INVERSION_ON },
   { 999, INVERSION_AUTO },
-  { -1 }
+  {  -1, 0 }
   };
 
 const tChannelParameterMap BandwidthValues[] = {
@@ -34,7 +34,7 @@ const tChannelParameterMap BandwidthValues[] = {
   {   7, BANDWIDTH_7_MHZ },
   {   8, BANDWIDTH_8_MHZ },
   { 999, BANDWIDTH_AUTO },
-  { -1 }
+  {  -1, 0 }
   };
 
 const tChannelParameterMap CoderateValues[] = {
@@ -48,7 +48,7 @@ const tChannelParameterMap CoderateValues[] = {
   {  78, FEC_7_8 },
   {  89, FEC_8_9 },
   { 999, FEC_AUTO },
-  { -1 }
+  {  -1, 0 }
   };
 
 const tChannelParameterMap ModulationValues[] = {
@@ -59,14 +59,14 @@ const tChannelParameterMap ModulationValues[] = {
   { 128, QAM_128 },
   { 256, QAM_256 },
   { 999, QAM_AUTO },
-  { -1 }
+  {  -1, 0 }
   };
 
 const tChannelParameterMap TransmissionValues[] = {
   {   2, TRANSMISSION_MODE_2K },
   {   8, TRANSMISSION_MODE_8K },
   { 999, TRANSMISSION_MODE_AUTO },
-  { -1 }
+  {  -1, 0 }
   };
 
 const tChannelParameterMap GuardValues[] = {
@@ -75,7 +75,7 @@ const tChannelParameterMap GuardValues[] = {
   {  16, GUARD_INTERVAL_1_16 },
   {  32, GUARD_INTERVAL_1_32 },
   { 999, GUARD_INTERVAL_AUTO },
-  { -1 }
+  {  -1, 0 }
   };
 
 const tChannelParameterMap HierarchyValues[] = {
@@ -84,7 +84,7 @@ const tChannelParameterMap HierarchyValues[] = {
   {   2, HIERARCHY_2 },
   {   4, HIERARCHY_4 },
   { 999, HIERARCHY_AUTO },
-  { -1 }
+  {  -1, 0 }
   };
 
 int UserIndex(int Value, const tChannelParameterMap *Map)
@@ -180,7 +180,7 @@ cChannel::cChannel(void)
   modification = CHANNELMOD_NONE;
   schedule     = NULL;
   linkChannels = NULL;
-  refChannel   = NULL;
+  refChannels  = NULL;
 }
 
 cChannel::cChannel(const cChannel &Channel)
@@ -191,28 +191,26 @@ cChannel::cChannel(const cChannel &Channel)
   portalName = NULL;
   schedule     = NULL;
   linkChannels = NULL;
-  refChannel   = NULL;
+  refChannels  = NULL;
   *this = Channel;
 }
 
 cChannel::~cChannel()
 {
-  delete linkChannels;
-  linkChannels = NULL; // more than one channel can link to this one, so we need the following loop
-  for (cChannel *Channel = Channels.First(); Channel; Channel = Channels.Next(Channel)) {
-      if (Channel->linkChannels) {
-         for (cLinkChannel *lc = Channel->linkChannels->First(); lc; lc = Channel->linkChannels->Next(lc)) {
-             if (lc->Channel() == this) {
-                Channel->linkChannels->Del(lc);
-                break;
-                }
-             }
-         if (Channel->linkChannels->Count() == 0) {
-            delete Channel->linkChannels;
-            Channel->linkChannels = NULL;
-            }
-         }
-      }
+  if (linkChannels) {
+     // in all channels which we link to remove the reference to us
+     for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc))
+         lc->Channel()->DelRefChannel(this);
+     delete linkChannels;
+     linkChannels = NULL;
+     }
+  if (refChannels) {
+     // in all channels which reference us remove their link to us
+     for (cLinkChannel *lc = refChannels->First(); lc; lc = refChannels->Next(lc))
+         lc->Channel()->DelLinkChannel(this);
+     delete refChannels;
+     refChannels = NULL;
+     }
   free(name);
   free(shortName);
   free(provider);
@@ -237,6 +235,7 @@ int cChannel::Transponder(int Frequency, char Polarization)
     case 'v': Frequency += 200000; break;
     case 'l': Frequency += 300000; break;
     case 'r': Frequency += 400000; break;
+    default: esyslog("ERROR: invalid value for Polarization '%c'", Polarization);
     }
   return Frequency;
 }
@@ -470,7 +469,8 @@ void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE
         q += IntArrayToString(q, Dpids, 10, DLangs);
         }
      *q = 0;
-     dsyslog("changing pids of channel %d from %d+%d:%s:%d to %d+%d:%s:%d", Number(), vpid, ppid, OldApidsBuf, tpid, Vpid, Ppid, NewApidsBuf, Tpid);
+     if (Number())
+         dsyslog("changing pids of channel %d from %d+%d:%s:%d to %d+%d:%s:%d", Number(), vpid, ppid, OldApidsBuf, tpid, Vpid, Ppid, NewApidsBuf, Tpid);
      vpid = Vpid;
      ppid = Ppid;
      for (int i = 0; i < MAXAPIDS; i++) {
@@ -491,14 +491,15 @@ void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE
 
 void cChannel::SetCaIds(const int *CaIds)
 {
-  if (caids[0] && caids[0] <= 0x00FF)
+  if (caids[0] && caids[0] <= CA_USER_MAX)
      return; // special values will not be overwritten
   if (IntArraysDiffer(caids, CaIds)) {
      char OldCaIdsBuf[MAXCAIDS * 5 + 10]; // 5: 4 digits plus delimiting ',', 10: paranoia
      char NewCaIdsBuf[MAXCAIDS * 5 + 10];
      IntArrayToString(OldCaIdsBuf, caids, 16);
      IntArrayToString(NewCaIdsBuf, CaIds, 16);
-     dsyslog("changing caids of channel %d from %s to %s", Number(), OldCaIdsBuf, NewCaIdsBuf);
+     if (Number())
+         dsyslog("changing caids of channel %d from %s to %s", Number(), OldCaIdsBuf, NewCaIdsBuf);
      for (int i = 0; i <= MAXCAIDS; i++) { // <= to copy the terminating 0
          caids[i] = CaIds[i];
          if (!CaIds[i])
@@ -514,7 +515,7 @@ void cChannel::SetCaDescriptors(int Level)
   if (Level > 0) {
      modification |= CHANNELMOD_CA;
      Channels.SetModified();
-     if (Level > 1)
+     if (Number() && Level > 1)
         dsyslog("changing ca descriptors of channel %d", Number());
      }
 }
@@ -544,7 +545,7 @@ void cChannel::SetLinkChannels(cLinkChannels *LinkChannels)
   q += sprintf(q, "linking channel %d from", Number());
   if (linkChannels) {
      for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc)) {
-         lc->Channel()->SetRefChannel(NULL);
+         lc->Channel()->DelRefChannel(this);
          q += sprintf(q, " %d", lc->Channel()->Number());
          }
      delete linkChannels;
@@ -555,19 +556,50 @@ void cChannel::SetLinkChannels(cLinkChannels *LinkChannels)
   linkChannels = LinkChannels;
   if (linkChannels) {
      for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc)) {
-         lc->Channel()->SetRefChannel(this);
+         lc->Channel()->AddRefChannel(this);
          q += sprintf(q, " %d", lc->Channel()->Number());
          //dsyslog("link %4d -> %4d: %s", Number(), lc->Channel()->Number(), lc->Channel()->Name());
          }
      }
   else
      q += sprintf(q, " none");
-  dsyslog(buffer);
+  if (Number())
+     dsyslog("%s", buffer);
 }
 
-void cChannel::SetRefChannel(cChannel *RefChannel)
+void cChannel::AddRefChannel(cChannel *RefChannel)
 {
-  refChannel = RefChannel;
+  if (!refChannels)
+     refChannels = new cLinkChannels;
+  refChannels->Add(new cLinkChannel(RefChannel));
+}
+
+void cChannel::DelRefChannel(cChannel *RefChannel)
+{
+  for (cLinkChannel *lc = refChannels->First(); lc; lc = refChannels->Next(lc)) {
+      if (lc->Channel() == RefChannel) {
+         refChannels->Del(lc);
+         if (refChannels->Count() <= 0) {
+            delete refChannels;
+            refChannels = NULL;
+            }
+         return;
+         }
+      }
+}
+
+void cChannel::DelLinkChannel(cChannel *LinkChannel)
+{
+  for (cLinkChannel *lc = linkChannels->First(); lc; lc = linkChannels->Next(lc)) {
+      if (lc->Channel() == LinkChannel) {
+         linkChannels->Del(lc);
+         if (linkChannels->Count() <= 0) {
+            delete linkChannels;
+            linkChannels = NULL;
+            }
+         return;
+         }
+      }
 }
 
 static int PrintParameter(char *p, char Name, int Value)
@@ -649,6 +681,8 @@ cString cChannel::ToText(const cChannel *Channel)
   q += sprintf(q, "%s", Channel->name);
   if (!isempty(Channel->shortName))
      q += sprintf(q, ",%s", Channel->shortName);
+  else if (strchr(Channel->name, ','))
+     q += sprintf(q, ",");
   if (!isempty(Channel->provider))
      q += sprintf(q, ";%s", Channel->provider);
   *q = 0;
@@ -799,7 +833,7 @@ bool cChannel::Parse(const char *s)
               while ((q = strtok_r(p, ",", &strtok_next)) != NULL) {
                     if (NumCaIds < MAXCAIDS) {
                        caids[NumCaIds++] = strtol(q, NULL, 16) & 0xFFFF;
-                       if (NumCaIds == 1 && caids[0] <= 0x00FF)
+                       if (NumCaIds == 1 && caids[0] <= CA_USER_MAX)
                           break;
                        }
                     else
@@ -816,7 +850,7 @@ bool cChannel::Parse(const char *s)
            *p++ = 0;
            provider = strcpyrealloc(provider, p);
            }
-        p = strchr(namebuf, ',');
+        p = strrchr(namebuf, ','); // long name might contain a ',', so search for the rightmost one
         if (p) {
            *p++ = 0;
            shortName = strcpyrealloc(shortName, p);
@@ -910,14 +944,72 @@ bool cChannels::Load(const char *FileName, bool AllowComments, bool MustExist)
   return false;
 }
 
+void cChannels::ClearChannelHashes(void)
+{
+  channelsHashSid.Clear();
+  channelsHashNidTid.Clear();
+}
+
 void cChannels::HashChannel(cChannel *Channel)
 {
   channelsHashSid.Add(Channel, Channel->Sid());
+  channelsHashNidTid.Add(Channel, HashKeyNidTid(Channel->Nid(), Channel->Tid()));
 }
 
 void cChannels::UnhashChannel(cChannel *Channel)
 {
   channelsHashSid.Del(Channel, Channel->Sid());
+  channelsHashNidTid.Del(Channel, HashKeyNidTid(Channel->Nid(), Channel->Tid()));
+}
+
+unsigned int cChannels::HashKeyNidTid(unsigned short Nid, unsigned short Tid)
+{
+  return Nid << 16 | Tid;
+}
+
+cIterator<cChannel> cChannels::GetChannelsBySourceNidTid(int Source, unsigned short Nid, unsigned short Tid)
+{
+  class cIteratorImplSourceNidTid : public cIteratorImpl {
+  private:
+    cList<cHashObject> *hashList;
+    cHashObject *current;
+    int source;
+    unsigned short nid;
+    unsigned short tid;
+    cChannel *FindMatchingChannel(bool reverse, bool reset = false) {
+      if (!hashList || (!current && !reset))
+         return NULL;
+      while (true) {
+            if (reset) {
+               reset = false;
+               current = reverse ? hashList->Last() : hashList->First();
+               }
+            else
+               current = reverse ? hashList->Prev(current) : hashList->Next(current);
+            if (!current)
+               break;
+            cChannel *Channel = (cChannel *)current->Object();
+            if (Channel->Source() == source && Channel->Nid() == nid && Channel->Tid() == tid)
+               return Channel;
+            }
+      return NULL;
+      }
+  public:
+    cIteratorImplSourceNidTid(cList<cHashObject> *HashList, int Source, unsigned short Nid, unsigned short Tid) {
+       hashList = HashList;
+       source = Source;
+       nid = Nid;
+       tid = Tid;
+       current = NULL;
+       }
+    virtual void *First(void) { return FindMatchingChannel(false, true); }
+    virtual void *Last(void)  { return FindMatchingChannel(true,  true); }
+    virtual void *Prev(void)  { return FindMatchingChannel(true);  }
+    virtual void *Next(void)  { return FindMatchingChannel(false); }
+    virtual void *Current(void) const  { return current ? (cChannel *)current->Object() : NULL; }
+    };
+
+  return cIterator<cChannel>(new cIteratorImplSourceNidTid(channelsHashNidTid.GetList(HashKeyNidTid(Nid, Tid)), Source, Nid, Tid));
 }
 
 int cChannels::GetNextGroup(int Idx)
@@ -952,9 +1044,10 @@ int cChannels::GetPrevNormal(int Idx)
   return channel ? Idx : -1;
 }
 
-void cChannels::ReNumber( void )
+void cChannels::ReNumber(void)
 {
-  channelsHashSid.Clear();
+  ClearChannelHashes();
+  maxNumber = 0;
   int Number = 1;
   for (cChannel *channel = First(); channel; channel = Next(channel)) {
       if (channel->GroupSep()) {

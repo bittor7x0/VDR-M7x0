@@ -302,6 +302,8 @@ bool cBitmap::LoadXpm(const char *FileName)
 
 bool cBitmap::SetXpm(const char *const Xpm[], bool IgnoreNone)
 {
+  if (!Xpm)
+     return false;
   const char *const *p = Xpm;
   int w, h, n, c;
   if (4 != sscanf(*p, "%d %d %d %d", &w, &h, &n, &c)) {
@@ -657,6 +659,7 @@ void cBitmap::DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quad
     case 6:          cy = y2; rx /= 2; break;
     case 7: cx = x2;          ry /= 2; break;
     case 8:          cy = y1; rx /= 2; break;
+    default: ;
     }
   int TwoASquare = 2 * rx * rx;
   int TwoBSquare = 2 * ry * ry;
@@ -682,6 +685,7 @@ void cBitmap::DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quad
           case -2: DrawRectangle(x1,     cy - y, cx - x, cy - y, Color); break;
           case -3: DrawRectangle(x1,     cy + y, cx - x, cy + y, Color); break;
           case -4: DrawRectangle(cx + x, cy + y, x2,     cy + y, Color); break;
+          default: ;
           }
         y++;
         StoppingY += TwoASquare;
@@ -716,6 +720,7 @@ void cBitmap::DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quad
           case -2: DrawRectangle(x1,     cy - y, cx - x, cy - y, Color); break;
           case -3: DrawRectangle(x1,     cy + y, cx - x, cy + y, Color); break;
           case -4: DrawRectangle(cx + x, cy + y, x2,     cy + y, Color); break;
+          default: ;
           }
         x++;
         StoppingX += TwoBSquare;
@@ -771,6 +776,18 @@ const tIndex *cBitmap::Data(int x, int y)
 }
 
 // --- cOsd ------------------------------------------------------------------
+
+static const char *OsdErrorTexts[] = {
+  "ok",
+  "too many areas",
+  "too many colors",
+  "bpp not supported",
+  "areas overlap",
+  "wrong alignment",
+  "out of memory",
+  "wrong area size",
+  "unknown",
+  };
 
 int cOsd::isOpen = 0;
 bool cOsd::pinValid = false;   // PIN PATCH
@@ -833,7 +850,7 @@ eOsdError cOsd::SetAreas(const tArea *Areas, int NumAreas)
         }
      }
   if (Result != oeOk)
-     esyslog("ERROR: cOsd::SetAreas returned %d", Result);
+     esyslog("ERROR: cOsd::SetAreas returned %d (%s)", Result, Result < oeUnknown ? OsdErrorTexts[Result] : OsdErrorTexts[oeUnknown]);
   return Result;
 }
 

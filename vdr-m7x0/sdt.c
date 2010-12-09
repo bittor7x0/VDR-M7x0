@@ -64,15 +64,17 @@ void cSdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                         char *ps = compactspace(ShortNameBuf);
                         if (!*ps && cSource::IsCable(Source())) {
                            // Some cable providers don't mark short channel names according to the
-                           // standard, but rather go their own way and use "name>short name" or
-                           // "name, short name":
+                           // standard, but rather go their own way and use "name>short name":
                            char *p = strchr(pn, '>'); // fix for UPC Wien
-                           if (!p)
-                              p = strchr(pn, ','); // fix for "Kabel Deutschland"
                            if (p && p > pn) {
                               *p++ = 0;
                               strcpy(ShortNameBuf, skipspace(p));
                               }
+                           }
+                        // Avoid ',' in short name (would cause trouble in channels.conf):
+                        for (char *p = ShortNameBuf; *p; p++) {
+                           if (*p == ',')
+                              *p = '.';
                            }
                         sd->providerName.getText(ProviderNameBuf, sizeof(ProviderNameBuf));
                         char *pp = compactspace(ProviderNameBuf);
@@ -91,6 +93,7 @@ void cSdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                            patFilter->Trigger();
                            }
                         }
+                   default: ;
                    }
                  }
                  break;

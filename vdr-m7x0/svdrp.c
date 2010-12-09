@@ -79,7 +79,7 @@ bool cSocket::Open(void)
      struct sockaddr_in name;
      name.sin_family = AF_INET;
      name.sin_port = htons(port);
-     name.sin_addr.s_addr = htonl(INADDR_ANY);
+     name.sin_addr.s_addr = SVDRPhosts.LocalhostOnly() ? htonl(INADDR_LOOPBACK) : htonl(INADDR_ANY);
      if (bind(sock, (struct sockaddr *)&name, sizeof(name)) < 0) {
         LOG_ERROR;
         Close();
@@ -179,6 +179,8 @@ bool cPUTEhandler::Process(const char *s)
 // --- cSVDRP ----------------------------------------------------------------
 
 #define MAXHELPTOPIC 10
+#define EITDISABLETIME 10 // seconds until EIT processing is enabled again after a CLRE command
+                          // adjust the help for CLRE accordingly if changing this!
 
 const char *HelpPages[] = {
   "CHAN [ + | - | <number> | <name> | <id> ]\n"
@@ -187,7 +189,10 @@ const char *HelpPages[] = {
   "    it returns the current channel number and name.",
   "CLRE [<number> | <name> | <id>]\n"
   "    Clear the EPG list of the given channel number, name or id. \n"
-  "    Without option it clears the entire EPG list.",
+  "    Without option it clears the entire EPG list.\n"
+  "    After a CLRE command, no further EPG processing is done for 10\n"
+  "    seconds, so that data sent with subsequent PUTE commands doesn't\n"
+  "    interfere with data from the broadcasters.",
   "CTRL <on|off>\n"
   "    Enable/Disable Input devices.",
   "DELC <number>\n"
@@ -220,10 +225,12 @@ const char *HelpPages[] = {
   "HITK [ <key> ]\n"
   "    Hit the given remote control key. Without option a list of all\n"
   "    valid key names is given.",
-  "LSTC [ <number> | <name> ]\n"
+  "LSTC [ :groups | <number> | <name> ]\n"
   "    List channels. Without option, all channels are listed. Otherwise\n"
   "    only the given channel is listed. If a name is given, all channels\n"
-  "    containing the given string as part of their name are listed.",
+  "    containing the given string as part of their name are listed.\n"
+  "    If ':groups' is given, all channels are listed including group\n"
+  "    separators. The channel number of a group separator is always 0.",
   "LSTE [ <channel> ] [ now | next | nownext | at <time> | between <time> <time> | withid <number> ]\n"
   "    List EPG data. Without any parameters all data of all channels is\n"
   "    listed. If a channel is given (either by number or by channel ID),\n"
@@ -291,11 +298,14 @@ const char *HelpPages[] = {
   "    If 'help' is followed by a command, the detailed help for that command is\n"
   "    given. The keyword 'main' initiates a call to the main menu function of the\n"
   "    given plugin.\n",
-  "PUTE\n"
+  "PUTE [ file ]\n"
   "    Put data into the EPG list. The data entered has to strictly follow the\n"
   "    format defined in vdr(5) for the 'epg.data' file.  A '.' on a line\n"
   "    by itself terminates the input and starts processing of the data (all\n"
-  "    entered data is buffered until the terminating '.' is seen).",
+  "    entered data is buffered until the terminating '.' is seen).\n"
+  "    If a file name is given, epg data will be read from this file (which\n"
+  "    must be accessible under the given name from the machine VDR is running\n"
+  "    on). In case of file input, no terminating '.' shall be given.\n",
   "RENR [<number> | <path>] <new name>\n"
   "    Rename recording. If a number is used, it must be the Number as \n"
   "    returned by LSTR command.",
@@ -503,14 +513,14 @@ void cSVDRP::CmdCHAN(const char *Option)
         if (channel)
            n = channel->Number();
         else {
-           int i = 1;
-           while ((channel = Channels.GetByNumber(i, 1)) != NULL) {
-                 if (strcasecmp(channel->Name(), Option) == 0) {
-                    n = channel->Number();
-                    break;
-                    }
-                 i = channel->Number() + 1;
-                 }
+           for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
+               if (!channel->GroupSep()) {
+                  if (strcasecmp(channel->Name(), Option) == 0) {
+                     n = channel->Number();
+                     break;
+                     }
+                  }
+               }
            }
         }
      if (n < 0) {
@@ -577,7 +587,7 @@ void cSVDRP::CmdCLRE(const char *Option)
         
         if(schedule) {
           schedule->Cleanup(INT_MAX);
-          
+          cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME);
           Reply(250, "EPG data from channel \"%s\" cleared", Option);
         } else {
           Reply(550, "No schedule found");
@@ -591,6 +601,7 @@ void cSVDRP::CmdCLRE(const char *Option)
     }
   } else {
     cSchedules::ClearAll();
+    cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME);
     Reply(250, "EPG data cleared");
   }
   
@@ -790,7 +801,7 @@ void cSVDRP::CmdGRAB(const char *Option)
      char *strtok_next;
      FileName = strtok_r(p, delim, &strtok_next);
      // image type:
-     char *Extension = strrchr(FileName, '.');
+     const char *Extension = strrchr(FileName, '.');
      if (Extension) {
         if (strcasecmp(Extension, ".jpg") == 0 || strcasecmp(Extension, ".jpeg") == 0)
            Jpeg = true;
@@ -921,7 +932,7 @@ void cSVDRP::CmdHELP(const char *Option)
   if (*Option) {
      const char *hp = GetHelpPage(Option, HelpPages);
      if (hp)
-        Reply(214, "%s", hp);
+        Reply(-214, "%s", hp);
      else {
         Reply(504, "HELP topic \"%s\" unknown", Option);
         return;
@@ -966,7 +977,8 @@ void cSVDRP::CmdHITK(const char *Option)
 
 void cSVDRP::CmdLSTC(const char *Option)
 {
-  if (*Option) {
+  bool WithGroupSeps = strcasecmp(Option, ":groups") == 0;
+  if (*Option && !WithGroupSeps) {
      if (isnumber(Option)) {
         cChannel *channel = Channels.GetByNumber(strtol(Option, NULL, 10));
         if (channel)
@@ -975,23 +987,16 @@ void cSVDRP::CmdLSTC(const char *Option)
            Reply(501, "Channel \"%s\" not defined", Option);
         }
      else {
-        int i = 1;
         cChannel *next = NULL;
-        while (i <= Channels.MaxNumber()) {
-              cChannel *channel = Channels.GetByNumber(i, 1);
-              if (channel) {
-                 if (strcasestr(channel->Name(), Option)) {
-                    if (next)
-                       Reply(-250, "%d %s", next->Number(), *next->ToText());
-                    next = channel;
-                    }
-                 }
-              else {
-                 Reply(501, "Channel \"%d\" not found", i);
-                 return;
-                 }
-              i = channel->Number() + 1;
-              }
+        for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
+            if (!channel->GroupSep()) {
+               if (strcasestr(channel->Name(), Option)) {
+                  if (next)
+                     Reply(-250, "%d %s", next->Number(), *next->ToText());
+                  next = channel;
+                  }
+               }
+            }
         if (next)
            Reply(250, "%d %s", next->Number(), *next->ToText());
         else
@@ -999,15 +1004,12 @@ void cSVDRP::CmdLSTC(const char *Option)
         }
      }
   else if (Channels.MaxNumber() >= 1) {
-     int i = 1;
-     while (i <= Channels.MaxNumber()) {
-           cChannel *channel = Channels.GetByNumber(i, 1);
-           if (channel)
-              Reply(channel->Number() < Channels.MaxNumber() ? -250 : 250, "%d %s", channel->Number(), *channel->ToText());
-           else
-              Reply(501, "Channel \"%d\" not found", i);
-           i = channel->Number() + 1;
-           }
+     for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
+         if (WithGroupSeps)
+            Reply(channel->Next() ? -250: 250, "%d %s", channel->GroupSep() ? 0 : channel->Number(), *channel->ToText());
+         else if (!channel->GroupSep())
+            Reply(channel->Number() < Channels.MaxNumber() ? -250 : 250, "%d %s", channel->Number(), *channel->ToText());
+         }
      }
   else
      Reply(550, "No channels defined");
@@ -1590,11 +1592,27 @@ void cSVDRP::CmdPLUG(const char *Option)
 
 void cSVDRP::CmdPUTE(const char *Option)
 {
-  delete PUTEhandler;
-  PUTEhandler = new cPUTEhandler;
-  Reply(PUTEhandler->Status(), "%s", PUTEhandler->Message());
-  if (PUTEhandler->Status() != 354)
-     DELETENULL(PUTEhandler);
+  if (*Option) {
+     FILE *f = fopen(Option, "r");
+     if (f) {
+        if (cSchedules::Read(f)) {
+           cSchedules::Cleanup(true);
+           Reply(250, "EPG data processed from \"%s\"", Option);
+           }
+        else
+           Reply(451, "Error while processing EPG from \"%s\"", Option);
+        fclose(f);
+        }
+     else
+        Reply(501, "Cannot open file \"%s\"", Option);
+     }
+  else {     
+     delete PUTEhandler;
+     PUTEhandler = new cPUTEhandler;
+     Reply(PUTEhandler->Status(), "%s", PUTEhandler->Message());
+     if (PUTEhandler->Status() != 354)
+        DELETENULL(PUTEhandler);
+     }
 }
 
 void cSVDRP::CmdSCAN(const char *Option)

@@ -13,6 +13,8 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <float.h>
+#include <math.h>
 #include <poll.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -78,7 +80,7 @@ void setIaMode(bool mode);
 #define SECSINDAY  86400
 
 #define KILOBYTE(n) ((n) * 1024)
-#define MEGABYTE(n) ((n) * 1024 * 1024)
+#define MEGABYTE(n) ((n) * 1024LL * 1024LL)
 
 #define MALLOC(type, size)  (type *)malloc(sizeof(type) * (size))
 
@@ -113,7 +115,7 @@ void syslog_with_tid(int priority, const char *format, ...) __attribute__ ((form
 int BCD2INT(int x);
 
 // Unfortunately there are no platform independent macros for unaligned
-// access. so we do it this way:
+// access, so we do it this way:
 
 template<class T> inline T get_unaligned(const T *const p)
 {
@@ -125,6 +127,14 @@ template<class T> inline void put_unaligned(/*unsigned int*/ const T i, T *const
 {
   struct s { T v; } __attribute__((packed));
   ((s *)p)->v = i;
+}
+
+// Comparing doubles for equality is unsafe, but unfortunately we can't
+// overwrite operator==(double, double), so this will have to do:
+
+inline bool DoubleEqual(double a, double b)
+{
+  return fabs(a - b) <= DBL_EPSILON;
 }
 
 class cString {
@@ -142,6 +152,7 @@ public:
 
 ssize_t safe_read(int filedes, void *buffer, size_t size);
 ssize_t safe_write(int filedes, const void *buffer, size_t size);
+int readchar(int filedes);
 void writechar(int filedes, char c);
 int WriteAllOrNothing(int fd, const uchar *Data, int Length, int TimeoutMs = 0, int RetryMs = 0);
     ///< Writes either all Data to the given file descriptor, or nothing at all.
@@ -151,7 +162,14 @@ char *strcpyrealloc(char *dest, const char *src);
 char *strn0cpy(char *dest, const char *src, size_t n);
 char *strreplace(char *s, char c1, char c2);
 char *strreplace(char *s, const char *s1, const char *s2); ///< re-allocates 's' and deletes the original string if necessary!
-char *skipspace(const char *s);
+inline char *skipspace(const char *s)
+{
+  if ((uchar)*s > ' ') // most strings don't have any leading space, so handle this case as fast as possible
+     return (char *)s;
+  while (*s && (uchar)*s <= ' ') // avoiding isspace() here, because it is much slower
+        s++;
+  return (char *)s;
+}
 char *stripspace(char *s);
 char *compactspace(char *s);
 cString strescape(const char *s, const char *chars);

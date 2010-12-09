@@ -32,10 +32,10 @@ typedef struct sDvbSpuRect {
     int x1, y1;
     int x2, y2;
 
-    int width() {
+    int width() const {
         return x2 - x1 + 1;
     };
-    int height() {
+    int height() const {
         return y2 - y1 + 1;
     };
 
@@ -63,8 +63,6 @@ class cDvbSpuPalette {
 // --- cDvbSpuBitmap----------------------------------------------------------
 
 class cDvbSpuBitmap {
-
-  public:
   private:
     sDvbSpuRect bmpsize;
     sDvbSpuRect minsize[4];
@@ -82,6 +80,7 @@ class cDvbSpuBitmap {
 
     bool getMinSize(const aDvbSpuPalDescr paldescr,
                     sDvbSpuRect & size) const;
+    int getMinBpp(const aDvbSpuPalDescr paldescr);
     cBitmap *getBitmap(const aDvbSpuPalDescr paldescr,
                        const cDvbSpuPalette & pal,
                        sDvbSpuRect & size) const;
@@ -99,6 +98,7 @@ class cDvbSpuDecoder:public cSpuDecoder {
     uint32_t spupts;
     bool clean;
     bool ready;
+    bool restricted_osd;
 
     enum spFlag { spNONE, spHIDE, spSHOW, spMENU };
     spFlag state;
@@ -131,6 +131,7 @@ class cDvbSpuDecoder:public cSpuDecoder {
     };
 
     sDvbSpuRect CalcAreaSize(sDvbSpuRect fgsize, cBitmap *fgbmp, sDvbSpuRect bgsize, cBitmap *bgbmp);
+    int CalcAreaBpp(cBitmap *fgbmp, cBitmap *bgbmp);
 
   public:
     cDvbSpuDecoder();
@@ -196,8 +197,7 @@ inline uint32_t cDvbSpuPalette::yuv2rgb(uint32_t yuv_color)
 
 inline uint32_t cDvbSpuPalette::getColor(uint8_t idx, uint8_t trans) const
 {
-    uint8_t t = trans == 0x0f ? 0xff : trans << 4;
-    return palette[idx] | (t << 24);
+    return palette[idx] | ((trans == 0x0f) ? 0xff000000 : (trans << 28));
 }
 
 #endif                          // __DVBSPU_H

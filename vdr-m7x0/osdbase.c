@@ -41,7 +41,7 @@ cOsdItem::~cOsdItem()
 void cOsdItem::SetText(const char *Text, bool Copy)
 {
   free(text);
-  text = Copy ? strdup(Text) : (char *)Text; // text assumes ownership!
+  text = Copy ? strdup(Text ? Text : "") : (char *)Text; // text assumes ownership!
 }
 
 void cOsdItem::SetSelectable(bool Selectable)
@@ -210,6 +210,7 @@ void cOsdMenu::Display(void)
          }
      if (current < 0)
         current = 0; // just for safety - there HAS to be a current item!
+     first = min(first, max(0, count - displayMenuItems)); // in case the menu size has changed
      if (current - first >= displayMenuItems || current < first) {
         first = current - displayMenuItems / 2;
         if (first + displayMenuItems > count)

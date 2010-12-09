@@ -77,8 +77,9 @@ cControl *cControl::Control(void)
 void cControl::Launch(cControl *Control)
 {
   cMutexLock MutexLock(&mutex);
-  delete control;
+  cControl *c = control; // keeps control from pointing to uninitialized memory
   control = Control;
+  delete c;
 }
 
 void cControl::Attach(void)

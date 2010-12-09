@@ -291,6 +291,7 @@ bool cDvbTuner::SetFrontend(void)
                           }
                        }
                        break;
+                  default: esyslog("ERROR: unknown diseqc command %d", da);
                   }
                 }
             frequency -= diseqc->Lof();
@@ -409,6 +410,8 @@ void cDvbTuner::Action(void)
                   lastTimeoutReport = 0;
                   continue;
                   }
+               break;
+          default: esyslog("ERROR: unknown tuner status %d", tunerStatus);
           }
 
         if (ciHandler)
@@ -2389,6 +2392,7 @@ cDvbDevice::~cDvbDevice()
   if (tsreplayer != NULL)
      delete tsreplayer;
 //M7X0 END AK
+  StopSectionHandler();
   delete spuDecoder;
   delete dvbTuner;
   // We're not explicitly closing any device files here, since this sometimes
@@ -2398,7 +2402,6 @@ cDvbDevice::~cDvbDevice()
 bool cDvbDevice::Probe(const char *FileName)
 {
   if (access(FileName, F_OK) == 0) {
-     dsyslog("probing %s", FileName);
      int f = open(FileName, O_RDONLY);
      if (f >= 0) {
         close(f);
@@ -2607,6 +2610,7 @@ void cDvbDevice::SetVideoDisplayFormat(eVideoDisplayFormat VideoDisplayFormat)
              CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_MODE, M7X0_VIDEO_LETTER_BOX));
              dsyslog("DEBUG: set mode -> letterbox");
              break;
+        default: esyslog("ERROR: unknown video display format %d", VideoDisplayFormat);
         }
       //}
    }
@@ -2636,16 +2640,17 @@ void cDvbDevice::SetVideoFormat(eVideoFormat VideoFormat)
         	dsyslog("DEBUG: set 16/9");
         	CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_RATIO, M7X0_VIDEO_FORMAT_16_9));
         	CHECK(ioctl(avs, AVSWCMD_MODE_16_9, 0));
-		break;
-    	    case vf4_3:
+        	break;
+	    case vf4_3:
         	dsyslog("DEBUG: set 4/3");
         	CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_RATIO, M7X0_VIDEO_FORMAT_4_3));
         	CHECK(ioctl(avs, AVSWCMD_MODE_4_3, 0));
-		break;
+        	break;
 	    case vfauto:
-		dsyslog("DEBUG: m7x0 auto aspect");
-		CheckStreamAspect(1);
-		break;
+        	dsyslog("DEBUG: m7x0 auto aspect");
+        	CheckStreamAspect(1);
+        	break;
+		default: esyslog("ERROR: unknown video format %d", VideoFormat);
       }
       close(avs);
       SetVideoDisplayFormat(eVideoDisplayFormat(Setup.VideoDisplayFormat));
@@ -3396,6 +3401,7 @@ bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
     case pmTransfererAudioOnly:
          TurnOffLiveMode(true,pidHandles[cDevice::ptVideo].pid);
          break;
+    default: esyslog("ERROR: unknown play mode %d", PlayMode);
     }
   playMode = PlayMode;
   return true;

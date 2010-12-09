@@ -280,7 +280,6 @@ void String::decodeText(char *buffer, int size) {
       if (    ((' ' <= *from) && (*from <= '~'))
            || (*from == '\n')
            || (0xA0 <= *from)
-           || (*from == 0x86 || *from == 0x87)
          )
          *to++ = *from;
       else if (*from == 0x8A)
@@ -543,6 +542,7 @@ Descriptor *Descriptor::getDescriptor(CharArray da, DescriptorTagDomain domain, 
             break;
       }
       break;
+   default: ; // unknown domain, nothing to do
    }
    d->setData(da);
    return d;

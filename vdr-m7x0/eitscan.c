@@ -141,7 +141,7 @@ void cEITScanner::Activity(void)
 
 void cEITScanner::Process(void)
 {
-  if ((Setup.EPGScanTimeout || !lastActivity) && Channels.MaxNumber() > 1) { // !lastActivity means a scan was forced
+  if (Setup.EPGScanTimeout || !lastActivity) { // !lastActivity means a scan was forced
      time_t now = time(NULL);
      if (now - lastScan > ScanTimeout && now - lastActivity > ActivityTimeout) {
         if (Channels.Lock(false, 10)) {
