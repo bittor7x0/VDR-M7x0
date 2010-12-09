@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <regex.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -278,6 +279,11 @@ const char *HelpPages[] = {
   "    zero, this means that the timer is currently recording and has started\n"
   "    at the given time. The first value in the resulting line is the number\n"
   "    of the timer.",
+  "PARG [ <regex> ]\n"
+  "    Get setup params.\n"
+  "    If <regex> is given, only params which name match <regex> are returned.\n",
+  "PARS <name>=<value>\n"
+  "    Change setup param.\n",
   "PLAY <number> [ begin | <position> ]\n"
   "    Play the recording with the given number. Before a recording can be\n"
   "    played, an LSTR command must have been executed in order to retrieve\n"
@@ -1750,6 +1756,87 @@ void cSVDRP::CmdVOLU(const char *Option)
      Reply(250, "Audio volume is %d", cDevice::CurrentVolume());
 }
 
+void cSVDRP::CmdPARG(const char *Option)
+{
+	cSetupLine *param;
+	bool filter=false;
+	regex_t regex;
+	if (Option && strcmp(Option,".") && strcmp(Option,".*") ){
+		filter=true;
+		if (regcomp(&regex,Option,REG_EXTENDED|REG_NOSUB)) {
+			Reply(501, "Not a regex: \"%s\"", Option);
+		}
+	}
+	cSetupLine *pending=NULL; //if filtering we don't know which param is last
+	for (param=Setup.First(); param; param=Setup.Next(param)){
+		char *fullName=NULL;
+		if (param->Plugin()){
+			asprintf(&fullName, "%s.%s", param->Plugin(), param->Name());
+		}
+		if (!filter || regexec(&regex,(fullName)?fullName:param->Name(),0,NULL,0)==0){
+			if (pending){
+				if (pending->Plugin()){
+					Reply(-250,"%s.%s = %s", pending->Plugin(), pending->Name(), pending->Value());
+				} else {
+					Reply(-250,"%s = %s", pending->Name(), pending->Value());
+				}
+			}
+			pending=param;
+		}
+		if (fullName) free(fullName);
+	}
+	if (pending) {
+		if (pending->Plugin()){
+			Reply(250,"%s.%s = %s", pending->Plugin(), pending->Name(), pending->Value());
+		} else {
+			Reply(250,"%s = %s", pending->Name(), pending->Value());
+		}
+	} else {
+		Reply(550, "No params found");
+	}
+	if (filter){
+		regfree(&regex);
+	}
+}
+
+void cSVDRP::CmdPARS(const char *Option)
+{
+	dsyslog("Option %s", Option);
+	if (*Option){
+		cSetupLine param;
+		char *nameval=strdup(Option);
+		if (param.Parse(nameval)){
+			dsyslog("CmdPARS: Plugin [%s], Name [%s], Value [%s]",param.Plugin(),param.Name(),param.Value());
+			bool error = false;
+			if (param.Plugin()) {
+				cPlugin *plugin = cPluginManager::GetPlugin(param.Plugin());
+				dsyslog("CmdPARS: plugin %p", plugin);
+				if (plugin && !plugin->SetupParse(param.Name(), param.Value())){
+					error = true;
+				} else {
+					dsyslog("No plugin found");
+				}
+			}
+			else {
+				if (!Setup.Parse(param.Name(), param.Value())){
+					error = true;
+				}
+			}
+			if (error) {
+				Reply(501, "Unknown config parameter: \"%s\"", Option);
+			} else {
+				Setup.Store(param.Name(), param.Value(), param.Plugin());
+				Reply(250, "Param set");
+			}
+		} else {
+			Reply(501, "Wrong param format: \"%s\"", Option);
+		}
+		free(nameval);
+	} else {
+		Reply(501, "Missing parameters");
+	}
+}
+
 #define CMD(c) (strcasecmp(Cmd, c) == 0)
 
 void cSVDRP::Execute(char *Cmd)
@@ -1793,6 +1880,8 @@ void cSVDRP::Execute(char *Cmd)
   else if (CMD("NEWC"))  CmdNEWC(s);
   else if (CMD("NEWT"))  CmdNEWT(s);
   else if (CMD("NEXT"))  CmdNEXT(s);
+  else if (CMD("PARG"))  CmdPARG(s);
+  else if (CMD("PARS"))  CmdPARS(s);
   else if (CMD("PLAY"))  CmdPLAY(s);
   else if (CMD("PLUG"))  CmdPLUG(s);
   else if (CMD("PUTE"))  CmdPUTE(s);

@@ -76,6 +76,8 @@ private:
   void CmdNEWC(const char *Option);
   void CmdNEWT(const char *Option);
   void CmdNEXT(const char *Option);
+  void CmdPARG(const char *Option);
+  void CmdPARS(const char *Option);
   void CmdPLAY(const char *Option);
   void CmdPLUG(const char *Option);
   void CmdPUTE(const char *Option);
