@@ -19,7 +19,7 @@
 
 #define MAXEPGBUGFIXLEVEL 3
 
-enum eDumpMode { dmAll, dmPresent, dmFollowing, dmAtTime };
+enum eDumpMode { dmAll, dmPresent, dmFollowing, dmPresentAndFollowing, dmAtTime, dmBetween, dmWithID };
 
 struct tComponent {
   uchar stream;
@@ -154,7 +154,7 @@ public:
   const cEvent *GetFollowingEvent(void) const;
   const cEvent *GetEvent(tEventID EventID, time_t StartTime = 0) const;
   const cEvent *GetEventAround(time_t Time) const;
-  void Dump(FILE *f, const char *Prefix = "", eDumpMode DumpMode = dmAll, time_t AtTime = 0) const;
+  void Dump(FILE *f, const char *Prefix = "", eDumpMode DumpMode = dmAll, time_t AtTime = 0, time_t BeforeTime = 0, tEventID EventID = 0) const;
   static bool Read(FILE *f, cSchedules *Schedules);
   };
 
@@ -188,7 +188,7 @@ public:
   static void Cleanup(bool Force = false);
   static void ResetVersions(void);
   static bool ClearAll(void);
-  static bool Dump(FILE *f, const char *Prefix = "", eDumpMode DumpMode = dmAll, time_t AtTime = 0);
+  static bool Dump(FILE *f, const char *Prefix = "", eDumpMode DumpMode = dmAll, time_t AtTime = 0, time_t BeforeTime = 0, tEventID EventID = 0);
   static bool Read(FILE *f = NULL);
   cSchedule *AddSchedule(tChannelID ChannelID);
   const cSchedule *GetSchedule(tChannelID ChannelID) const;
