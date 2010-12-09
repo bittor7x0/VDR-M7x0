@@ -1094,38 +1094,19 @@ int main(int argc, char *argv[])
           case kVolDn|k_Repeat:
           case kVolDn:
           case kMute:
-//M7X0 BEGIN AK
-// Taken from gambler
-          // m7x0 volume control via left/right
-          case kLeft|k_Repeat:
-          case kLeft:
-          case kRight|k_Repeat:
-          case kRight:
                if (key == kMute) {
                   if (!cDevice::PrimaryDevice()->ToggleMute() && !Menu) {
                      key = kNone; // nobody else needs to see these keys
                      break; // no need to display "mute off"
                      }
-
-                  if (!Menu && !cOsd::IsOpen())
-                     Menu = cDisplayVolume::Create();
-
-                  cDisplayVolume::Process(key);
-                  key = kNone;
                   }
-               else if ((!Menu && !cOsd::IsOpen()) || NORMALKEY(key) == kVolUp  || NORMALKEY(key) == kVolDn) {
-                  if (NORMALKEY(key) == kVolUp  || NORMALKEY(key) == kVolDn)
-                     cDevice::PrimaryDevice()->SetVolume(NORMALKEY(key) == kVolDn ? -VOLUMEDELTA : VOLUMEDELTA);
-                  if (!Menu && !cOsd::IsOpen())
-                     Menu = cDisplayVolume::Create();
-
-                  cDisplayVolume::Process(key);
-                  key = kNone; // nobody else needs to see these keys
-                               // m7x0 we need the l/r keys in setup menu,
-                               // keep it in menu mode
-                  }
+               else
+                  cDevice::PrimaryDevice()->SetVolume(NORMALKEY(key) == kVolDn ? -VOLUMEDELTA : VOLUMEDELTA);
+               if (!Menu && !cOsd::IsOpen())
+                  Menu = cDisplayVolume::Create();
+               cDisplayVolume::Process(key);
+               key = kNone; // nobody else needs to see these keys
                break;
-//M7X0 END AK
           // Audio track control:
           case kAudio:
                if (cControl::Control())
@@ -1277,18 +1258,23 @@ int main(int argc, char *argv[])
                   Channels.SwitchTo(PreviousChannel[PreviousChannelIndex ^= 1]);
                   break;
                   }
+             // Left/Right volume control
+             case kLeft|k_Repeat:
+             case kLeft:
+             case kRight|k_Repeat:
+             case kRight:
+		  if (Setup.LRChannelGroups < 2) {
+                     cRemote::Put(NORMALKEY(key) == kLeft ? kVolDn : kVolUp, true);
+                     break;
+                     }
+                  // else fall through
              // Direct Channel Select:
              case k1 ... k9:
-//M7X0 BEGIN AK
              // Previous/Next rotates through channel groups:
              case kPrev|k_Repeat:
              case kPrev:
              case kNext|k_Repeat:
              case kNext:
-             //case kLeft|k_Repeat:
-             //case kLeft:
-             //case kRight|k_Repeat:
-             //case kRight:
              // Up/Down Channel Select:
              case kUp|k_Repeat:
              case kUp:
@@ -1296,7 +1282,6 @@ int main(int argc, char *argv[])
              case kDown:
                   Menu = new cDisplayChannel(NORMALKEY(key));
                   break;
-//M7X0 END AK
              // Viewing Control:
              case kOk:   LastChannel = -1; break; // forces channel display
              // Instant resume of the last viewed recording:

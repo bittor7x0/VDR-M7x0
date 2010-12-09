@@ -287,6 +287,8 @@ public:
   int ChannelFilter;
   int InitialChannel;
   int InitialVolume;
+  int LRChannelGroups;
+  int LRForwardRewind;
   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;
   int RecordingsSortMode;
   int RecordingsSortDirsFirst;
