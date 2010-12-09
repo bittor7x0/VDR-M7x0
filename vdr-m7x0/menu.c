@@ -3531,7 +3531,7 @@ void cMenuMain::Set(void)
   SetHasHotkeys();
 
   // PIN PATCH + SubMenu Patch
-  bool SubMenuActive=cPluginManager::GetPlugin("submenu");
+  bool SubMenuActive=1;
   if (SubMenuActive)
   submenu.offset = Count();
   
@@ -3667,7 +3667,7 @@ void cMenuMain::Set(void)
 bool cMenuMain::Update(bool Force)
 {
   bool result = false;
-  bool SubMenuActive=cPluginManager::GetPlugin("submenu");
+  bool SubMenuActive=1;
   cOsdItem* first = NULL;
   if (SubMenuActive)
      first = Get(submenu.offset);
