@@ -317,6 +317,7 @@ cSetup::cSetup(void)
   CutterAutoDelete = 1;
   CutterMaxBandwidth = 10;
   CutterRelBandwidth = 75;
+  CutterWithMarks = 0;
   HotStandby = 0;
   TvMode = 0;
   VCRMode = 0;
@@ -519,6 +520,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "CutterAutoDelete"))    CutterAutoDelete   = atoi(Value);
   else if (!strcasecmp(Name, "CutterMaxBandwidth"))  CutterMaxBandwidth = atoi(Value);
   else if (!strcasecmp(Name, "CutterRelBandwidth"))  CutterRelBandwidth = atoi(Value);
+  else if (!strcasecmp(Name, "CutterWithMarks"))     CutterWithMarks    = atoi(Value);
   else if (!strcasecmp(Name, "HotStandby"))          HotStandby         = atoi(Value);
   else if (!strcasecmp(Name, "TvMode"))              TvMode             = atoi(Value);
   else if (!strcasecmp(Name, "VCRMode"))             VCRMode            = atoi(Value);
@@ -628,6 +630,7 @@ bool cSetup::Save(void)
   Store("CutterAutoDelete",   CutterAutoDelete);
   Store("CutterMaxBandwidth", CutterMaxBandwidth);
   Store("CutterRelBandwidth", CutterRelBandwidth);
+  Store("CutterWithMarks",    CutterWithMarks);
   Store("HotStandby", 	      HotStandby);
   Store("TvMode", 	      TvMode);
   Store("VCRMode", 	      VCRMode);

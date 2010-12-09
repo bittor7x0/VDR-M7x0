@@ -48,7 +48,8 @@ cCuttingThread::cCuttingThread(const char *FromFileName, const char *ToFileName)
      toFileName = new cFileName(ToFileName, true, true);
      fromIndex = new cIndexFile(FromFileName, false);
      toIndex = new cIndexFile(ToFileName, true);
-     toMarks.Load(ToFileName); // doesn't actually load marks, just sets the file name
+     if (Setup.CutterWithMarks)
+        toMarks.Load(ToFileName); // doesn't actually load marks, just sets the file name
      Start();
      }
   else
@@ -93,8 +94,10 @@ void cCuttingThread::Action(void)
      int CurrentFileNumber = 0;
      bool SkipThisSourceFile = false;
      int LastIFrame = 0;
-     toMarks.Add(0);
-     toMarks.Save();
+     if (Setup.CutterWithMarks) {
+        toMarks.Add(0);
+        toMarks.Save();
+        }
      uchar buffer[MAXFRAMESIZE];
      bool LastMark = false;
      bool cutIn = true;
@@ -224,7 +227,8 @@ void cCuttingThread::Action(void)
                     }
                  FileSize = 0;
                  }
-              LastIFrame = 0;
+              if (Setup.CutterWithMarks)
+                 LastIFrame = 0;
 
               if (!SkipThisSourceFile && cutIn) {
                  cRemux::SetBrokenLink(buffer, Length);
@@ -240,17 +244,19 @@ void cCuttingThread::Action(void)
               break;
               }
            FileSize += Length;
-           if (!LastIFrame)
-              LastIFrame = toIndex->Last();
+           if (Setup.CutterWithMarks && !LastIFrame)
+                 LastIFrame = toIndex->Last();
 
            // Check editing marks:
 
            if (Mark && Index >= Mark->position) {
               Mark = fromMarks.Next(Mark);
-              toMarks.Add(LastIFrame);
-              if (Mark)
-                 toMarks.Add(toIndex->Last() + 1);
-              toMarks.Save();
+              if (Setup.CutterWithMarks) {
+                 toMarks.Add(LastIFrame);
+                 if (Mark)
+                    toMarks.Add(toIndex->Last() + 1);
+                 toMarks.Save();
+                 }
               if (Mark) {
                  Index = Mark->position;
                  Mark = fromMarks.Next(Mark);

@@ -3273,6 +3273,7 @@ cMenuSetupCutter::cMenuSetupCutter(void)
   Add(new cMenuEditBoolItem(tr("Setup.Cutter$Auto delete original record"),  &data.CutterAutoDelete));
   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum MB per second"),        &data.CutterMaxBandwidth, 1, 60));
   Add(new cMenuEditIntItem( tr("Setup.Cutter$Maximum bandwidth used in %"),  &data.CutterRelBandwidth, 1, 100));
+  Add(new cMenuEditBoolItem(tr("Setup.Cutter$Cutted recordings with marks"), &data.CutterWithMarks));
   Add(new cMenuEditBoolItem(tr("Setup.Cutter$Hard Link Cutter"),             &data.HardLinkCutter));
 }
 
