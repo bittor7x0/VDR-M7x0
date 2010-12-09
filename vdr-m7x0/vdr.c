@@ -1392,7 +1392,7 @@ Exit:
   // Reset all signal handlers to default before Interface gets deleted:
   signal(SIGHUP,  SIG_DFL);
   signal(SIGINT,  SIG_DFL);
-  signal(SIGTERM, SIG_DFL);
+  signal(SIGTERM, SIG_IGN);
   signal(SIGPIPE, SIG_DFL);
   signal(SIGALRM, SIG_DFL);
 //M7X0 END AK
