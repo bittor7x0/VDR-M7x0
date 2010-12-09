@@ -299,6 +299,7 @@ public:
   int ReplayUseDirectIO;
 #endif
   int AbortWhenPluginFails;
+  int EmergencyExit;
   int __EndData__;
   cSetup(void);
   cSetup& operator= (const cSetup &s);

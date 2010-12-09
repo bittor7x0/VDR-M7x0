@@ -342,6 +342,7 @@ cSetup::cSetup(void)
   ReplayUseDirectIO = 1;
 #endif
   AbortWhenPluginFails = 0;
+  EmergencyExit = 0;
 }
 
 cSetup& cSetup::operator= (const cSetup &s)
@@ -534,6 +535,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "ReplayUseDirectIO"))   ReplayUseDirectIO  = atoi(Value);
 #endif
   else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
+  else if (!strcasecmp(Name, "EmergencyExit"))       EmergencyExit      = atoi(Value);
   else
      return false;
   return true;
@@ -633,6 +635,7 @@ bool cSetup::Save(void)
   Store("ReplayUseDirectIO",  ReplayUseDirectIO);
 #endif
   Store("AbortWhenPluginFails", AbortWhenPluginFails);
+  Store("EmergencyExit",      EmergencyExit);
 
   Sort();
 

@@ -95,9 +95,13 @@ cShutdownHandler::~cShutdownHandler()
 
 void cShutdownHandler::RequestEmergencyExit(void)
 {
-  esyslog("initiating emergency exit");
-  emergencyExitRequested = true;
-  Exit(1);
+  if (Setup.EmergencyExit) {
+     esyslog("initiating emergency exit");
+     emergencyExitRequested = true;
+     Exit(1);
+     }
+  else
+     dsyslog("emergency exit request ignored according to setup");
 }
 
 void cShutdownHandler::CheckManualStart(int ManualStart)
