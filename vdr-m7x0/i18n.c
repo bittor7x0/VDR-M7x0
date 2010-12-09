@@ -5223,6 +5223,27 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
   },
+  { "Setup.Miscellaneous$Emergency exit",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Salida de emergencia",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Setup.Miscellaneous$Filter channels",
     "",// TODO
     "",// TODO
