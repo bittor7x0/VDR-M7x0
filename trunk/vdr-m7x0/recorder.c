@@ -182,7 +182,7 @@ void cFileWriter::Action(void)
 
 }
 
-cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift, int VType)
+cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift, int VType, const int *DPPids)
 :cReceiver(Ca, Priority, VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids)
 #ifndef DISABLE_RINGBUFFER_IN_RECEIVER
 ,cThread("recording")
@@ -205,7 +205,7 @@ cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const
   ringBuffer->SetTimeouts(0, 500);
   ringBuffer->SetLimits(TS_SIZE, TS_SIZE * 1024);
 #endif
-  remux = new cRemux(VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids, true, VType);
+  remux = new cRemux(VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids, true, VType, DPPids);
   writer = new cFileWriter(FileName, remux, IsTShift);
 }
 

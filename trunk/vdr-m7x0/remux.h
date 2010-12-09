@@ -52,7 +52,7 @@ private:
   int resultSkipped;
   int GetPid(const uchar *Data);
 public:
-  cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure = false, int VType = 0);
+  cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure = false, int VType = 0, const int *DPPids = NULL);
        ///< Creates a new remuxer for the given PIDs. VPid is the video PID, while
        ///< APids, DPids and SPids are pointers to zero terminated lists of audio,
        ///< dolby and subtitle PIDs (the pointers may be NULL if there is no such

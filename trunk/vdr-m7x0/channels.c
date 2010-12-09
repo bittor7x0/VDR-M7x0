@@ -425,12 +425,25 @@ static int IntArraysDiffer(const int *a, const int *b, const char na[][MAXLANGCO
   return result;
 }
 
-static int IntArrayToString(char *s, const int *a, int Base = 10, const char n[][MAXLANGCODE2] = NULL)
+static int IntArraysDiffer(const int *a, const int *b, const int *aPlus, const int *bPlus)
+{
+  for (int i = 0; a[i] || b[i]; i++) {
+      int aP = aPlus ? aPlus[i] : 0;
+      int bP = bPlus ? bPlus[i] : 0;
+      if ((a[i] != b[i]) || (aP != bP))
+         return VALDIFF;
+      }
+  return 0;
+}
+
+static int IntArrayToString(char *s, const int *a, int Base = 10, const char n[][MAXLANGCODE2] = NULL, const int *aPlus = NULL)
 {
   char *q = s;
   int i = 0;
   while (a[i] || i == 0) {
         q += sprintf(q, Base == 16 ? "%s%X" : "%s%d", i ? "," : "", a[i]);
+        if (a[i] && aPlus && aPlus[i])
+           q += sprintf(q, "+%d", aPlus[i]);
         if (a[i] && n && *n[i])
            q += sprintf(q, "=%s", n[i]);
         if (!a[i])
@@ -441,12 +454,12 @@ static int IntArrayToString(char *s, const int *a, int Base = 10, const char n[]
   return q - s;
 }
 
-void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype)
+void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype, int *DPpids)
 {
   int mod = CHANNELMOD_NONE;
   if (vpid != Vpid || vtype != Vtype || ppid != Ppid || tpid != Tpid)
      mod |= CHANNELMOD_PIDS;
-  int m = IntArraysDiffer(apids, Apids, alangs, ALangs) | IntArraysDiffer(dpids, Dpids, dlangs, DLangs);
+  int m = IntArraysDiffer(apids, Apids, alangs, ALangs) | IntArraysDiffer(dpids, Dpids, dlangs, DLangs) | IntArraysDiffer(dpids, Dpids, dppids, DPpids);
   if (m & STRDIFF)
      mod |= CHANNELMOD_LANGS;
   if (m & VALDIFF)
@@ -459,14 +472,14 @@ void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE
      q += IntArrayToString(q, apids, 10, alangs);
      if (dpids[0]) {
         *q++ = ';';
-        q += IntArrayToString(q, dpids, 10, dlangs);
+        q += IntArrayToString(q, dpids, 10, dlangs, dppids);
         }
      *q = 0;
      q = NewApidsBuf;
      q += IntArrayToString(q, Apids, 10, ALangs);
      if (Dpids[0]) {
         *q++ = ';';
-        q += IntArrayToString(q, Dpids, 10, DLangs);
+        q += IntArrayToString(q, Dpids, 10, DLangs, DPpids);
         }
      *q = 0;
      if (Number())
@@ -481,6 +494,7 @@ void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE
      apids[MAXAPIDS] = 0;
      for (int i = 0; i < MAXDPIDS; i++) {
          dpids[i] = Dpids[i];
+         dppids[i] = DPpids ? DPpids[i] : 0;
          strn0cpy(dlangs[i], DLangs[i], MAXLANGCODE2);
          }
      dpids[MAXDPIDS] = 0;
@@ -704,13 +718,13 @@ cString cChannel::ToText(const cChannel *Channel)
      if (Channel->vpid && Channel->vtype)
         q += snprintf(q, sizeof(vpidbuf) - (q - vpidbuf), "=%d", Channel->vtype);
      *q = 0;
-     const int BufferSize = (MAXAPIDS + MAXDPIDS) * (5 + 1 + MAXLANGCODE2) + 10; // 5 digits plus delimiting ',' or ';' plus optional '=cod+cod', +10: paranoia
+     const int BufferSize = (MAXAPIDS + MAXDPIDS) * (5 + 1 + 5 + 1 + MAXLANGCODE2) + 10; // 2*(5 digits plus delimiting ',' or ';' or '+') plus optional '=cod+cod',  +10: paranoia
      char apidbuf[BufferSize];
      q = apidbuf;
      q += IntArrayToString(q, Channel->apids, 10, Channel->alangs);
      if (Channel->dpids[0]) {
         *q++ = ';';
-        q += IntArrayToString(q, Channel->dpids, 10, Channel->dlangs);
+        q += IntArrayToString(q, Channel->dpids, 10, Channel->dlangs, Channel->dppids);
         }
      *q = 0;
      char caidbuf[MAXCAIDS * 5 + 10]; // 5: 4 digits plus delimiting ',', 10: paranoia
@@ -825,6 +839,13 @@ bool cChannel::Parse(const char *s)
                           }
                        else
                           *dlangs[NumDpids] = 0;
+                       l = strchr(q, '+');
+                       if (l) {
+                          *l++ = 0;
+                          dppids[NumDpids] = strtol(l, NULL, 10);
+                          }
+                       else
+                          dppids[NumDpids] = 0;
                        dpids[NumDpids++] = strtol(q, NULL, 10);
                        }
                     else

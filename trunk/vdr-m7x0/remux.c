@@ -1736,6 +1736,162 @@ void cDolbyRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
 }
 
 
+// --- cDolbyPlusRepacker --------------------------------------------------------
+
+class cDolbyPlusRepacker : public cRepacker {
+private:
+  enum eState {
+    syncing,
+    scanFrame
+    };
+  int frameSize;
+  int frameTodo;
+  int state;
+
+  inline void AppendSubStreamHeader(bool ContinuationFrame = false)  __attribute__ ((always_inline));
+  inline bool ScanDataForStartCode(const uchar *&Data, const uchar *Limit)  __attribute__ ((always_inline));
+#ifdef USE_HW_VIDEO_FRAME_EVENTS
+  virtual void Repack(uchar *Data, int Count, const bool PacketStart, const eTsVideoFrame videoFrame);
+#else
+  virtual void Repack(uchar *Data, int Count, const bool PacketStart);
+#endif
+public:
+
+  cDolbyPlusRepacker(int Pid, cRingBufferResult *ResultBuffer, int MaxPacketSize, uint8_t StreamId, uint8_t SubStreamId = 0);
+
+  virtual void Reset(void);
+
+  };
+
+
+cDolbyPlusRepacker::cDolbyPlusRepacker(int Pid, cRingBufferResult *ResultBuffer, int MaxPacketSize, uint8_t StreamId, uint8_t SubStreamId)
+: cRepacker(Pid, ResultBuffer, MaxPacketSize, StreamId, SubStreamId)
+{
+  Reset();
+}
+
+void cDolbyPlusRepacker::AppendSubStreamHeader(bool ContinuationFrame)
+{
+   fragmentData[fragmentLen++] = subStreamId;
+   // number of ac3 frames "starting" in this packet (1 by design).
+   fragmentData[fragmentLen++] = 0x01;
+   // offset to start of first ac3 frame (0 means "no ac3 frame starting"
+   // so 1 (by design) addresses the first byte after the next two bytes).
+   fragmentData[fragmentLen++] = 0x00;
+   fragmentData[fragmentLen++] = (ContinuationFrame ? 0x00 : 0x01);
+}
+
+bool cDolbyPlusRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *const Limit)
+{
+  register const uchar *data = Data;
+  if (!skippedBytes && Limit - data >= 4) {
+        scanner = BE2HOST(get_unaligned((uint32_t *)data));
+        data += 4;
+        if ((scanner & 0xFFFF0000) == 0x0B770000) {
+           frameSize=((scanner & 0x7FF)+1)*2;
+           skippedBytes = 4;
+           Data = data;
+           return true;
+           }
+     }
+
+  while (data < Limit) {
+        if ((scanner & 0xFFFF0000) == 0x0B770000) {
+           frameSize=((scanner & 0x7FF)+1)*2;
+           skippedBytes += data - Data;
+           Data = data;
+           return true;
+           }
+        scanner <<= 8;
+        scanner |= *data;
+        data++;
+        }
+
+  skippedBytes += data - Data;
+  // Data = data;
+  return false;
+}
+
+void cDolbyPlusRepacker::Reset(void)
+{
+  cRepacker::Reset();
+  state = syncing;
+  frameSize = 0;
+  frameTodo = 0;
+  scanner = 0;
+
+  curPacketDataHeader.pesPacketType = pesPtDolby;
+  curPacketDataHeader.pictureType = NO_PICTURE;
+}
+
+#ifdef USE_HW_VIDEO_FRAME_EVENTS
+void cDolbyPlusRepacker::Repack(uchar *Data, int Count, const bool PacketStart, const eTsVideoFrame videoFrame)
+#else
+void cDolbyPlusRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
+#endif
+{
+  // check for MPEG 2
+  if (mpegLevel != phMPEG2) {
+     DroppedData("cDolbyPlusRepacker: MPEG 2 PES header expected", Count);
+     return;
+     }
+
+  const uchar *data = Data;
+  const uchar *const limit = Data + Count;
+
+  while (data < limit) {
+        // Have we a frame needs finishing?
+        if (state == scanFrame) {
+           const int bite = min(limit - data, min(frameTodo, packetTodo));
+           packetTodo -= bite;
+           frameTodo -= bite;
+
+           if (frameTodo && packetTodo) {
+              // All remaining data contains to current frame
+              // And frame is not fully present
+              memcpy(fragmentData + fragmentLen, data, bite);
+              fragmentLen += bite;
+              return;
+              }
+
+           PushOutPacket(data,bite);
+           data += bite;
+           if (!frameTodo) {
+               state=syncing;
+               scanner = 0;
+               continue;
+               }
+
+           CreatePesHeader(true);
+           AppendSubStreamHeader(true);
+           packetTodo = maxPacketSize - fragmentLen;
+           continue;
+           }
+
+        if (!ScanDataForStartCode(data,limit))
+           return; // No frame start and we are syncing
+
+        if (initiallySyncing) // omit report for the typical initial case
+           initiallySyncing = false;
+        else if (skippedBytes > 4) // report that syncing dropped some bytes
+           LOG("cDolbyPlusRepacker: skipped %d bytes to sync on next E-AC3 frame", skippedBytes - 4);
+        skippedBytes = 0;
+
+        CreatePesHeader(false, inputPesHeaderBackupLen && inputPacketDone - inputPesHeaderBackupLen - (data - Data) >= 4 );
+        AppendSubStreamHeader(false);
+        put_unaligned(HOST2BE(scanner), (uint32_t *)(fragmentData + fragmentLen));
+        fragmentLen += 4;
+        packetTodo = maxPacketSize - fragmentLen;
+        frameTodo = frameSize - 4;
+
+
+        curPacketDataHeader.pictureType = I_FRAME;
+
+        state=scanFrame;
+        }
+}
+
+
 // --- cRemux ----------------------------------------------------------------
 #ifdef DISABLE_RINGBUFFER_IN_RECEIVER
 #define RESULTBUFFERSIZE MEGABYTE(3) //(256)
@@ -1744,7 +1900,7 @@ void cDolbyRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
 #endif
 #define MAXRESTARTS 10
 
-cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure, int VType)
+cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure, int VType, const int *DPPids)
 {
   exitOnFailure = ExitOnFailure;
   isRadio = VPid == 0 || VPid == 1 || VPid == 0x1FFF;
@@ -1775,6 +1931,9 @@ cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, b
   if (DPids) {
      int n = 0;
      while (*DPids && numTracks < MAXTRACKS && n < MAXDPIDS)
+        if ((DPPids) && (DPPids[n] == 0x7A))
+           repacker[numTracks++] = new cDolbyPlusRepacker(*DPids++, resultBuffer, IPACKS, 0xBD, 0x80 + n++);
+        else
            repacker[numTracks++] = new cDolbyRepacker(*DPids++, resultBuffer, IPACKS, 0xBD, 0x80 + n++);
      }
   /* future...

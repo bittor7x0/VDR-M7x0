@@ -122,6 +122,7 @@ enum DescriptorTag {
                AdaptationFieldDataDescriptorTag = 0x70,
                ServiceIdentifierDescriptorTag = 0x71,
                ServiceAvailabilityDescriptorTag = 0x72,
+               EAC3DescriptorTag = 0x7A,
  // Defined by ETSI TS 102 812 (MHP)
                // They once again start with 0x00 (see page 234, MHP specification)
                MHP_ApplicationDescriptorTag = 0x00,
