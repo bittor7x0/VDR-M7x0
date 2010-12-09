@@ -37,6 +37,7 @@ private:
   int start;
   int stop;
   int priority;
+  int fskProtection;                                               // PIN PATCH
   int lifetime;
   char file[MaxFileName];
   char *aux;
@@ -58,6 +59,7 @@ public:
   int Start(void) const { return start; }
   int Stop(void) const { return stop; }
   int Priority(void) const { return priority; }
+  int FskProtection(void) const { return fskProtection; }          // PIN PATCH
   int Lifetime(void) const { return lifetime; }
   const char *File(void) const { return file; }
   time_t FirstDay(void) const { return weekdays ? day : 0; }
@@ -86,6 +88,7 @@ public:
   void SetInVpsMargin(bool InVpsMargin);
   void SetPriority(int Priority);
   void SetFlags(uint Flags);
+  void SetFskProtection(int aFlag);                                // PIN PATCH
   void ClrFlags(uint Flags);
   void InvFlags(uint Flags);
   bool HasFlags(uint Flags) const;

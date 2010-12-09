@@ -886,8 +886,10 @@ bool cDevice::SwitchChannel(int Direction)
      int n = CurrentChannel() + Direction;
      int first = n;
      cChannel *channel;
-     while ((channel = Channels.GetByNumber(n, Direction)) != NULL) {
+     while ((channel = Channels.GetByNumber(n, Direction)) != NULL) 
+     {
            // try only channels which are currently available
+        if (cStatus::MsgChannelProtected(0, channel) == false)      // PIN PATCH
            if (channel->Filtered() && (PrimaryDevice()->ProvidesChannel(channel, Setup.PrimaryLimit) || /* PrimaryDevice()->CanReplay() && */ GetDevice(channel, 0)))
               break;
            n = channel->Number() + Direction;
@@ -909,6 +911,11 @@ bool cDevice::SwitchChannel(int Direction)
 
 eSetChannelResult cDevice::SetChannel(const cChannel *Channel, bool LiveView)
 {
+  // I hope 'LiveView = false' indicates a channel switch for recording, // PIN PATCH
+  // I really don't know, but it works ...                               // PIN PATCH
+  if (LiveView && cStatus::MsgChannelProtected(this, Channel) == true)   // PIN PATCH
+     return scrNotAvailable;                                             // PIN PATCH
+   
   if (LiveView)
      StopReplay();
 

@@ -7598,6 +7598,27 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
   },
+  { "Childlock",                        // PIN PATCH
+    "Kindersicherung",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Adulte",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Bloqueo niños",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
   { NULL }
   };
 

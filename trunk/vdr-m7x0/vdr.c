@@ -962,6 +962,7 @@ int main(int argc, char *argv[])
         eKeys key = Interface->GetKey((!Interact || !Interact->NeedsFastResponse()) && time(NULL) - LastCamMenu > LASTCAMMENUTIMEOUT);
 
         if (ISREALKEY(key)) {
+           cStatus::MsgUserAction(key, Interact);          // PIN PATCH
            EITScanner.Activity();
            // Cancel shutdown countdown:
            if (ShutdownHandler.countdown)
@@ -1044,10 +1045,12 @@ int main(int argc, char *argv[])
                      cControl::Control()->Hide();
                   cPlugin *plugin = cPluginManager::GetPlugin(PluginName);
                   if (plugin) {
+                   if (!cStatus::MsgPluginProtected(plugin)) {
                      Menu = plugin->MainMenuAction();
                      if (Menu)
                         Menu->Show();
                      }
+                  }
                   else
                      esyslog("ERROR: unknown plugin '%s'", PluginName);
                   }
@@ -1277,8 +1280,10 @@ int main(int argc, char *argv[])
              // Instant resume of the last viewed recording:
              case kPlay:
                   if (cReplayControl::LastReplayed()) {
+                     if (cStatus::MsgReplayProtected(0, cReplayControl::LastReplayed(), 0, false) == false) {  // PIN PATCH
                      cControl::Shutdown();
                      cControl::Launch(new cReplayControl);
+                     }
                      }
                   break;
              default: break;
