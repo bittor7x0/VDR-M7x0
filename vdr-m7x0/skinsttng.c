@@ -148,6 +148,7 @@ public:
   cSkinSTTNGDisplayChannel(bool WithInfo);
   virtual ~cSkinSTTNGDisplayChannel();
   virtual void SetChannel(const cChannel *Channel, int Number);
+  bool HasChannelTimerRecording(const cChannel *Channel);
   virtual void SetEvents(const cEvent *Present, const cEvent *Following);
   virtual void SetMessage(eMessageType Type, const char *Text);
   virtual void Flush(void);
@@ -238,6 +239,16 @@ cSkinSTTNGDisplayChannel::~cSkinSTTNGDisplayChannel()
   delete osd;
 }
 
+bool cSkinSTTNGDisplayChannel::HasChannelTimerRecording(const cChannel *Channel)
+{
+  // try to find current channel from timers
+  for (cTimer * t = Timers.First(); t; t = Timers.Next(t)) {
+    if ((t->Channel() == Channel) && t->Recording())
+      return true;
+  }
+  return false;
+}
+
 void cSkinSTTNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
 {
   osd->DrawRectangle(x3, y0, x4 - 1, y1 - 1, frameColor);
@@ -246,7 +257,13 @@ void cSkinSTTNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
      int d = 3;
      bool rec = cRecordControls::Active();
      x -= bmRecording.Width() + d;
-     osd->DrawBitmap(x, y0 + (y1 - y0 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOff), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
+     if(rec)
+     {
+          rec=HasChannelTimerRecording(Channel);
+          osd->DrawBitmap(x, y0 + (y1 - y0 - bmRecording.Height()) / 2, bmRecording, Theme.Color(rec ? clrChannelSymbolRecFg : clrChannelSymbolOn), rec ? Theme.Color(clrChannelSymbolRecBg) : frameColor);
+     }
+     else
+     osd->DrawBitmap(x, y0 + (y1 - y0 - bmRecording.Height()) / 2, bmRecording, Theme.Color(clrChannelSymbolOff), frameColor);
      x -= bmEncrypted.Width() + d;
      osd->DrawBitmap(x, y0 + (y1 - y0 - bmEncrypted.Height()) / 2, bmEncrypted, Theme.Color(Channel->Ca() ? clrChannelSymbolOn : clrChannelSymbolOff), frameColor);
      x -= bmDolbyDigital.Width() + d;
