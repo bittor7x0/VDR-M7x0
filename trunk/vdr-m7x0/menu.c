@@ -3284,6 +3284,8 @@ void cMenuSetupReplay::Store(void)
 class cMenuSetupMisc : public cMenuSetupBase {
 private:
   const char *channelFilterTexts[3];
+  const char *lrChannelGroupsTexts[3];
+  const char *lrForwardRewindTexts[3];
 public:
   cMenuSetupMisc(void);
   };
@@ -3294,6 +3296,12 @@ cMenuSetupMisc::cMenuSetupMisc(void)
   channelFilterTexts[0] = tr("no");
   channelFilterTexts[1] = tr("Tv only");
   channelFilterTexts[2] = tr("Radio only");
+  lrChannelGroupsTexts[0] = tr("no");
+  lrChannelGroupsTexts[1] = tr("Setup.Miscellaneous$only in channelinfo");
+  lrChannelGroupsTexts[2] = tr("yes");
+  lrForwardRewindTexts[0] = tr("no");
+  lrForwardRewindTexts[1] = tr("Setup.Miscellaneous$only in progress display");
+  lrForwardRewindTexts[2] = tr("yes");
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. event timeout (min)"),   &data.MinEventTimeout));
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Min. user inactivity (min)"), &data.MinUserInactivity));
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$SVDRP timeout (s)"),          &data.SVDRPTimeout));
@@ -3301,6 +3309,8 @@ cMenuSetupMisc::cMenuSetupMisc(void)
   Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Filter channels"),            &data.ChannelFilter, 3, channelFilterTexts));;    
   Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
+  Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Channelgroups with left/right"),   &data.LRChannelGroups, 3, lrChannelGroupsTexts));
+  Add(new cMenuEditStraItem(tr("Setup.Miscellaneous$Search fwd/back with left/right"), &data.LRForwardRewind, 3, lrForwardRewindTexts));
   Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Show cancel message at shutdown"), &data.ShutdownMessage, tr("no"), tr("yes")));
   Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Abort when Plugin fails to load"), &data.AbortWhenPluginFails));
   Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Emergency exit"),             &data.EmergencyExit));
@@ -4081,6 +4091,11 @@ eOSState cDisplayChannel::ProcessKey(eKeys Key)
     case kLeft:
     case kRight|k_Repeat:
     case kRight:
+         if (!Setup.LRChannelGroups) {
+	    cRemote::Put(NORMALKEY(Key) == kLeft ? kVolDn : kVolUp, true);
+	    break;
+            }
+         // else fall through
     case kNext|k_Repeat:
     case kNext:
     case kPrev|k_Repeat:
@@ -4262,18 +4277,13 @@ void cDisplayVolume::Process(eKeys Key)
 eOSState cDisplayVolume::ProcessKey(eKeys Key)
 {
   switch (Key) {
-//M7X0 BEGIN AK
-// Support Volume Change via Left/Right added
-//M7X0TODO: Make this working in replaying mode as well
-		case kLeft|k_Repeat:
-		case kLeft:
-		case kRight|k_Repeat:
-		case kRight:
-			cDevice::PrimaryDevice()->SetVolume(NORMALKEY(Key) == kLeft ? -VOLUMEDELTA : VOLUMEDELTA);
-			Show();
-			timeout.Set(VOLUMETIMEOUT);
-			break;
-//M7X0 END AK
+    case kLeft|k_Repeat:
+    case kLeft:
+    case kRight|k_Repeat:
+    case kRight:
+         cRemote::Put(NORMALKEY(Key) == kLeft ? kVolDn : kVolUp, true);
+         break;
+         // else fall through
     case kVolUp|k_Repeat:
     case kVolUp:
     case kVolDn|k_Repeat:
@@ -5100,6 +5110,20 @@ eOSState cReplayControl::ProcessKey(eKeys Key)
      return osContinue;
      }
   bool DoShowMode = true;
+  if (!Setup.LRForwardRewind || (Setup.LRForwardRewind == 1 && !visible)) {
+    switch (Key) {
+      // Left/Right volume control
+      case kLeft|k_Repeat:
+      case kLeft:
+      case kRight|k_Repeat:
+      case kRight:
+	  cRemote::Put(NORMALKEY(Key) == kLeft ? kVolDn : kVolUp, true);
+        return osContinue;
+        break;
+      default:
+        break;
+    }
+  }
   switch (Key) {
     // Positioning:
     case kPlay:

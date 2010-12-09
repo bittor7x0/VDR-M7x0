@@ -329,6 +329,8 @@ cSetup::cSetup(void)
   ChannelFilter = 0;
   InitialChannel = 0;
   InitialVolume = -1;
+  LRChannelGroups = 0;
+  LRForwardRewind = 0;
   ShowRecDate = 1;
   ShowRecTime = 1;
   ShowRecLength = 1;
@@ -525,6 +527,8 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "ChannelFilter"))       ChannelFilter      = atoi(Value);
   else if (!strcasecmp(Name, "InitialChannel"))      InitialChannel     = atoi(Value);
   else if (!strcasecmp(Name, "InitialVolume"))       InitialVolume      = atoi(Value);
+  else if (!strcasecmp(Name, "LRChannelGroups"))     LRChannelGroups    = atoi(Value);
+  else if (!strcasecmp(Name, "LRForwardRewind"))     LRForwardRewind    = atoi(Value);
   else if (!strcasecmp(Name, "ShowRecDate"))         ShowRecDate        = atoi(Value);
   else if (!strcasecmp(Name, "ShowRecTime"))         ShowRecTime        = atoi(Value);
   else if (!strcasecmp(Name, "ShowRecLength"))       ShowRecLength      = atoi(Value);
@@ -628,6 +632,8 @@ bool cSetup::Save(void)
   Store("ChannelFilter",      ChannelFilter);
   Store("InitialChannel",     InitialChannel);
   Store("InitialVolume",      InitialVolume);
+  Store("LRChannelGroups",    LRChannelGroups);
+  Store("LRForwardRewind",    LRForwardRewind);
   Store("ShowRecDate",        ShowRecDate);
   Store("ShowRecTime",        ShowRecTime);
   Store("ShowRecLength",      ShowRecLength);
