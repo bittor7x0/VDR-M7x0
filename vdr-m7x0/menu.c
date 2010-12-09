@@ -3530,9 +3530,107 @@ void cMenuMain::Set(void)
   SetTitle("VDR");
   SetHasHotkeys();
 
+  // PIN PATCH + SubMenu Patch
+  bool SubMenuActive=cPluginManager::GetPlugin("submenu");
+  if (SubMenuActive)
+  submenu.offset = Count();
+  
+  if (SubMenuActive) // if ( SubmenuActive && !Plugin)
+  {
+  cPlugin *p;
+  /*
+  0::Schedule
+  0::Channels
+  0:1:Games
+  1::games
+  1::freecell
+  1::solitaire
+  */
+  
+  // Parse info of current Menu
+  // add item of menu
+  	for( int i = 0; i < submenu.nbSubMenuItem; i++)
+  	{
+  		if( submenu.subMenuItem[i].menuLevel == submenu.currentMenuLevel )
+  		{
+  			if( submenu.subMenuItem[i].kindOfItem == 0 )
+  			{
+  			// Basic menu items:
+  				if( strcmp(submenu.subMenuItem[i].name,"Schedule") == 0 )
+  					if (!cStatus::MsgMenuItemProtected("Schedule", true))   Add(new cOsdItem(hk(tr("Schedule")),   osSchedule));
+  
+  				if( strcmp(submenu.subMenuItem[i].name,"Channels") == 0 )
+  					if (!cStatus::MsgMenuItemProtected("Channels", true))   Add(new cOsdItem(hk(tr("Channels")),   osChannels));
+  
+  				if( strcmp(submenu.subMenuItem[i].name,"Timers") == 0 )
+  					if (!cStatus::MsgMenuItemProtected("Timers", true))     Add(new cOsdItem(hk(tr("Timers")),     osTimers));
+  
+  				if( strcmp(submenu.subMenuItem[i].name,"Recordings") == 0 )
+  					Add(new cOsdItem(hk(tr("Recordings")), osRecordings));
+                                  if( strcmp(submenu.subMenuItem[i].name,"Setup") == 0 )
+  					                                        Add(new cOsdItem(hk(tr("Setup")),      osSetup));
+  
+  				if( strcmp(submenu.subMenuItem[i].name,"Commands") == 0 )
+  				{
+  					if (Commands.Count())
+  						Add(new cOsdItem(hk(tr("Commands")),  osCommands));
+  				}
+  				// Plugins Item:
+  				int j=0;
+  				do
+  				{
+  					p = cPluginManager::GetPlugin(j);
+  					if( p != NULL )
+  					{
+  						const char *item = p->MainMenuEntry();
+  						if (item)
+  						{
+  							if( strcmp( submenu.subMenuItem[i].name , p->Name() ) == 0 )
+  							Add(new cMenuPluginItem(hk(item), j));
+  						}
+  				}
+  				j++;
+  		}
+  		while( p != NULL);
+  	}
+          else
+  	{
+  		Add(new cOsdItem(hk(submenu.subMenuItem[i].name), osUser9));
+  	}
+      }
+  }
+        /* Add all plugin entry not listed in config file  */
+  if ( submenu.currentMenuLevel == 0 )
+  {
+  	int j=0;
+  	do
+  	{
+  		p = cPluginManager::GetPlugin(j);
+  		if( p != NULL )
+  		{
+  			const char *item = p->MainMenuEntry();
+  			if (item)
+  			{
+  				int trv = 0;
+  				for( int i = 0; i < submenu.nbSubMenuItem; i++)
+  				{
+  					if( strcmp( submenu.subMenuItem[i].name , p->Name() ) == 0 )
+  						trv = 1;
+  				}
+  				if(trv == 0)
+  					Add(new cMenuPluginItem(hk(item), j));
+  			}
+  		}
+  		j++;
+  	}
+  	while( p != NULL);
+  	}
+  
+  }
+  else
+  {
   // Basic menu items:
-
-  // PIN PATCH
+  
   if (!cStatus::MsgMenuItemProtected("Schedule", true))   Add(new cOsdItem(hk(tr("Schedule")),   osSchedule));
   if (!cStatus::MsgMenuItemProtected("Channels", true))   Add(new cOsdItem(hk(tr("Channels")),   osChannels));
   if (!cStatus::MsgMenuItemProtected("Timers", true))     Add(new cOsdItem(hk(tr("Timers")),     osTimers));
@@ -3559,6 +3657,7 @@ void cMenuMain::Set(void)
   if (Commands.Count())
      if (!cStatus::MsgMenuItemProtected("Commands", true))     // PIN PATCH
      Add(new cOsdItem(hk(tr("Commands")),  osCommands));
+}
 
   Update(true);
 
@@ -3568,6 +3667,10 @@ void cMenuMain::Set(void)
 bool cMenuMain::Update(bool Force)
 {
   bool result = false;
+  bool SubMenuActive=cPluginManager::GetPlugin("submenu");
+  cOsdItem* first = NULL;
+  if (SubMenuActive)
+     first = Get(submenu.offset);
 
   // Title with disk usage:
   if (Force || time(NULL) - lastDiskSpaceCheck > DISKSPACECHEK) {
@@ -3636,6 +3739,9 @@ bool cMenuMain::Update(bool Force)
      result = true;
      }
 
+  if (SubMenuActive && first)
+     submenu.offset = first->Index();
+
   return result;
 }
 
@@ -3695,6 +3801,24 @@ eOSState cMenuMain::ProcessKey(eKeys Key)
                           return osEnd;
                           }
                        break;
+    case osBack:
+		       if (submenu.nbLevelMenu > 0)
+		       {
+			       submenu.nbLevelMenu--;
+			       submenu.currentMenuLevel = submenu.oldNumberMenu[ submenu.nbLevelMenu ];
+			       Set();
+			       return osContinue;
+		       }	
+		       else
+			       return osEnd;
+		       break;
+    case osUser9:
+		       submenu.oldNumberMenu[ submenu.nbLevelMenu] = submenu.currentMenuLevel;
+		       submenu.nbLevelMenu++;
+		       submenu.currentMenuLevel = submenu.GetByLevel(submenu.currentMenuLevel,Current()-submenu.offset);
+		       Set();
+		       return osContinue;
+		       break;
     case osPlugin:     {
                          cMenuPluginItem *item = (cMenuPluginItem *)Get(Current());
                          if (item) {

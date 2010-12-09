@@ -18,6 +18,7 @@
 #include "menuitems.h"
 #include "recorder.h"
 #include "skins.h"
+#include "submenu.h"
 
 class cMenuText : public cOsdMenu {
 private:
@@ -58,6 +59,7 @@ public:
 
 class cMenuMain : public cOsdMenu {
 private:
+  cSubMenu submenu;
   time_t lastDiskSpaceCheck;
   int lastFreeMB;
   bool replaying;
