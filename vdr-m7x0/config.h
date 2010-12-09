@@ -212,6 +212,7 @@ public:
 
 class cSetup : public cConfig<cSetupLine> {
   friend class cPlugin; // needs to be able to call Store()
+  friend class cSVDRP;
 private:
   void StoreLanguages(const char *Name, int *Values);
   bool ParseLanguages(const char *Value, int *Values);
