@@ -329,6 +329,7 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
         SI::PMT::Stream stream;
         int Vpid = 0;
         int Ppid = pmt.getPCRPid();
+        int Vtype = 0;
         int Apids[MAXAPIDS + 1] = { 0 }; // these lists are zero-terminated
         int Dpids[MAXDPIDS + 1] = { 0 };
         char ALangs[MAXAPIDS][MAXLANGCODE2] = { "" };
@@ -341,7 +342,9 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
             switch (stream.getStreamType()) {
               case 1: // STREAMTYPE_11172_VIDEO
               case 2: // STREAMTYPE_13818_VIDEO
+              case 0x1B: // MPEG4
                       Vpid = stream.getPid();
+                      Vtype = stream.getStreamType();
                       ProcessCaDescriptors = true;
                       break;
               case 3: // STREAMTYPE_11172_AUDIO
@@ -422,7 +425,7 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                 }
             }
         if (Setup.UpdateChannels >= 2) {
-           Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid);
+           Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid, Vtype);
            Channel->SetCaIds(CaDescriptors->CaIds());
            }
         Channel->SetCaDescriptors(CaDescriptorHandler.AddCaDescriptors(CaDescriptors));

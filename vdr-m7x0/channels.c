@@ -441,10 +441,10 @@ static int IntArrayToString(char *s, const int *a, int Base = 10, const char n[]
   return q - s;
 }
 
-void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid)
+void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype)
 {
   int mod = CHANNELMOD_NONE;
-  if (vpid != Vpid || ppid != Ppid || tpid != Tpid)
+  if (vpid != Vpid || vtype != Vtype || ppid != Ppid || tpid != Tpid)
      mod |= CHANNELMOD_PIDS;
   int m = IntArraysDiffer(apids, Apids, alangs, ALangs) | IntArraysDiffer(dpids, Dpids, dlangs, DLangs);
   if (m & STRDIFF)
@@ -470,9 +470,10 @@ void cChannel::SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE
         }
      *q = 0;
      if (Number())
-         dsyslog("changing pids of channel %d from %d+%d:%s:%d to %d+%d:%s:%d", Number(), vpid, ppid, OldApidsBuf, tpid, Vpid, Ppid, NewApidsBuf, Tpid);
+         dsyslog("changing pids of channel %d from %d+%d=%d:%s:%d to %d+%d=%d:%s:%d", Number(), vpid, ppid, vtype, OldApidsBuf, tpid, Vpid, Ppid, Vtype, NewApidsBuf, Tpid);
      vpid = Vpid;
      ppid = Ppid;
+     vtype = Vtype;
      for (int i = 0; i < MAXAPIDS; i++) {
          apids[i] = Apids[i];
          strn0cpy(alangs[i], ALangs[i], MAXLANGCODE2);
@@ -700,6 +701,8 @@ cString cChannel::ToText(const cChannel *Channel)
      q += snprintf(q, sizeof(vpidbuf), "%d", Channel->vpid);
      if (Channel->ppid && Channel->ppid != Channel->vpid)
         q += snprintf(q, sizeof(vpidbuf) - (q - vpidbuf), "+%d", Channel->ppid);
+     if (Channel->vpid && Channel->vtype)
+        q += snprintf(q, sizeof(vpidbuf) - (q - vpidbuf), "=%d", Channel->vtype);
      *q = 0;
      const int BufferSize = (MAXAPIDS + MAXDPIDS) * (5 + 1 + MAXLANGCODE2) + 10; // 5 digits plus delimiting ',' or ';' plus optional '=cod+cod', +10: paranoia
      char apidbuf[BufferSize];
@@ -761,13 +764,19 @@ bool cChannel::Parse(const char *s)
            tpid = 0;
            }
         vpid = ppid = 0;
+        vtype = 0;
         apids[0] = 0;
         dpids[0] = 0;
         ok = false;
         if (parambuf && sourcebuf && vpidbuf && apidbuf) {
            ok = StringToParameters(parambuf) && (source = cSource::FromString(sourcebuf)) >= 0;
 
-           char *p = strchr(vpidbuf, '+');
+           char *p = strchr(vpidbuf, '=');
+           if (p) {
+              *p++ = 0;
+              sscanf(p, "%d", &vtype);
+              }
+           p = strchr(vpidbuf, '+');
            if (p)
               *p++ = 0;
            if (sscanf(vpidbuf, "%d", &vpid) != 1)

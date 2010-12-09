@@ -861,6 +861,297 @@ void cVideoRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
   put_unaligned(save_scan, ((uint32_t *)(Data - 4)));
 }
 
+// --- cHDVideoRepacker --------------------------------------------------------
+
+
+class cHDVideoRepacker : public cRepacker {
+private:
+  enum eState {
+    syncing,
+    findPicture,
+    scanPicture
+    };
+  int state;
+
+#ifdef USE_HW_VIDEO_FRAME_EVENTS
+  eTsVideoFrame videoFrameSave;
+#endif
+
+  int picTypeOffset;
+  inline void PushOutVideoPacket(const uchar *const Data, const int Count)  __attribute__ ((always_inline));
+
+  inline void HandleStartCode(const uchar *const Data, const uchar *&Payload, const bool UseCurrentHeader)  __attribute__ ((always_inline));
+
+  inline bool ScanDataForStartCode(const uchar *&Data, const uchar *const Limit)  __attribute__ ((always_inline));
+#ifdef USE_HW_VIDEO_FRAME_EVENTS
+  virtual void Repack(uchar *Data, int Count, const bool PacketStart, const eTsVideoFrame videoFrame);
+#else
+  virtual void Repack(uchar *Data, int Count, const bool PacketStart);
+#endif
+public:
+
+  cHDVideoRepacker(int Pid, cRingBufferResult *ResultBuffer, int MaxPacketSize, uint8_t StreamId, uint8_t SubStreamId = 0);
+
+  virtual void Reset(void);
+
+  int currentField;
+  };
+
+
+cHDVideoRepacker::cHDVideoRepacker(int Pid, cRingBufferResult *ResultBuffer, int MaxPacketSize, uint8_t StreamId, uint8_t SubStreamId)
+: cRepacker(Pid, ResultBuffer, MaxPacketSize, StreamId, SubStreamId)
+{
+  Reset();
+}
+
+void cHDVideoRepacker::Reset(void)
+{
+  cRepacker::Reset();
+  scanner = 0xFFFFFFFF;
+  state = syncing;
+#ifdef USE_HW_VIDEO_FRAME_EVENTS
+  videoFrameSave = tsVideoFrameUnknown;
+#endif
+
+  curPacketDataHeader.pesPacketType = pesPtVideo;
+  curPacketDataHeader.pictureType = NO_PICTURE;
+  picTypeOffset = -1;
+  currentField=0;
+}
+
+
+void cHDVideoRepacker::PushOutVideoPacket(const uchar *const Data, const int Count)
+{
+  // Check for not yet known picture type and read it
+  if (picTypeOffset != -1) {
+     int pictureType;
+     if (picTypeOffset < fragmentLen)
+        pictureType = (fragmentData[picTypeOffset] >> 5) + 1;
+     else {
+        const int i = picTypeOffset - fragmentLen;
+        if (i < Count)
+           pictureType = (Data[i] >> 5) + 1;
+        else {
+           dsyslog("picTypeOffset - fragmentLen >= count ???");
+           pictureType = I_FRAME;
+           }
+        }
+//TODO - Progresive video
+     if ((currentField >= 0)||((pictureType == I_FRAME)&&(currentField > -25))) {
+        curPacketDataHeader.pictureType = pictureType;
+        currentField--;
+        }
+     else
+        currentField++;
+     picTypeOffset = -1;
+     }
+  PushOutPacket(Data, Count);
+}
+
+void cHDVideoRepacker::HandleStartCode(const uchar *const Data, const uchar *&Payload, const bool UseCurrentHeader)
+{
+
+  if (state == scanPicture) {
+     // the start codes indicate that the current picture is done. So
+     // push out the packet to start a new packet for the next picuture. If
+     // the byte count get's negative then the current buffer ends in a
+     // partitial start code that must be stripped off, as it shall be put
+     // in the next packet.
+
+     if (packetTodo + 3 < 0) {
+        int bite = Data + packetTodo - Payload;
+             // This may get negative, if we have copied to much in the last
+             // run. In this case data gets striped off.
+             // The overcommited Data may be at maximum 2 bytes long in this case.
+             // This data is saved in scanner and put before start of this run,
+             // so we need not copy anything in here.
+        PushOutVideoPacket(Payload,bite);
+
+        CreatePesHeader(true);
+        Payload += bite;
+        }
+
+     PushOutVideoPacket(Payload, Data - 3 - Payload);
+     // go on with syncing to the next picture
+     state = syncing;
+     }
+
+  if (state == syncing) {
+     if (initiallySyncing) // omit report for the typical initial case
+        initiallySyncing = false;
+     else if (skippedBytes > 3) // report that syncing dropped some bytes
+        LOG("cHDVideoRepacker: skipped %d bytes to sync on next picture", skippedBytes - 3);
+     skippedBytes = 0;
+
+     CreatePesHeader(false, UseCurrentHeader);
+
+
+     // Scanner is copied befor payload of this run. So startcode
+     // is allways fully present.
+     Payload = Data - 3;
+     // as there is no length information available, assume the
+     // maximum we can hold in one PES packet
+     packetTodo = maxPacketSize - fragmentLen - 3;
+     // go on with finding the picture data
+     state = findPicture;
+     }
+
+  if (*Data == 0x09) {
+     state = scanPicture;
+     picTypeOffset = maxPacketSize - packetTodo + 1;
+     }
+}
+
+
+
+bool cHDVideoRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *const Limit)
+{
+  // Scanner is saved at Data - 4, 4 bytes are always free,
+  // TS-Header is at least 4 bytes long.
+  register const uchar *data = Data;
+  register const uchar *const limit = Limit - 1;
+  while (data < limit)
+        if (data[0] > 1)
+           data += 3;
+        else if (!data[0])
+           data++;
+        else {
+           if (!(data[-2] | data[-1])) {
+              register const uchar code = *++data;
+              if (code == 9) {
+                 Data = data;
+                 return true;
+                 }
+              }
+           data += 3;
+           }
+
+  return false;
+}
+
+#ifdef USE_HW_VIDEO_FRAME_EVENTS
+void cHDVideoRepacker::Repack(uchar *Data, int Count, const bool PacketStart, const eTsVideoFrame videoFrame)
+#else
+void cHDVideoRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
+#endif
+{
+  const uchar *const limit = Data + Count;
+  uint32_t save_scan;
+  // Store scanner at Data -4, we have always 4 bytes free from ts-header
+  save_scan = get_unaligned((uint32_t *)(Data - 4));
+  put_unaligned(scanner, (uint32_t *)(Data - 4));
+  scanner = get_unaligned((uint32_t *)(limit - 4));
+
+  const uchar *data = Data - 1; // 1 of startcode may be in scanner
+
+ // remember start of the data
+  const uchar *payload = Data;
+  // remember start of handled data
+  const uchar *data_save = Data;
+
+#ifdef USE_HW_VIDEO_FRAME_EVENTS
+  if (videoFrameSave <= tsVideoFrameNone) {
+     videoFrameSave = videoFrame;
+     if (videoFrameSave == tsVideoFrameNone && state == findPicture)
+        videoFrameSave = tsVideoFrameUnknown;
+     }
+#endif
+
+  // Search for startcodes and handle them.
+  while (
+#ifdef USE_HW_VIDEO_FRAME_EVENTS
+           videoFrameSave != tsVideoFrameNone &&
+#endif
+           ScanDataForStartCode(data, limit)) {
+
+        packetTodo -= data - data_save;
+        //dsyslog("DEBUG: In with Events %d %d",videoFrameSave, videoFrame);
+        if (state == syncing)
+           skippedBytes += data - data_save;
+
+        HandleStartCode(data, payload, inputPesHeaderBackupLen && inputPacketDone - inputPesHeaderBackupLen + (data - Data) >= 3);
+
+        data_save = data;
+        data += 3; // Next 1 of startcode  is at least 3 bytes away.
+
+#ifdef USE_HW_VIDEO_FRAME_EVENTS
+        if (videoFrameSave != tsVideoFrameUnknown && state == scanPicture) {
+           // curPacketDataHeader.pictureType = videoFrameSave - tsVideoFrameNone;
+           // state = scanPicture;
+           videoFrameSave = tsVideoFrameUnknown;
+           //break;
+           }
+#endif
+        }
+
+  if (state == syncing) {
+     put_unaligned(save_scan, ((uint32_t *)(Data - 4)));
+     skippedBytes += limit - data_save;
+     return;
+     }
+
+  packetTodo -= limit - data_save;
+
+
+  // Check if we need to spilt the packet.
+  // But be careful there may be a partial startcode at end
+  // of packet which should not be spilted.
+  // In this cases copy the partial one and strip overcommited
+  // data off in the next runns (normaly the next).
+  // Case (| := marks the splitpoint):
+  // Todo : Scanner     | Possible follwing : Result
+  // -----:---------------------------------:------
+  //      : XX 00 00 01 | YY XX XX          :
+  //   0  :             |                   : Wait
+  //  -1  :         |                       : Wait
+  //  -2  :      |                          : Wait
+  //  -3  :   |                             : Push
+  //   <  :                                 : Push
+  // -----:---------------------------------:------
+  //      : XX XX 00 00 | 01 YY XX          :
+  //   0  :             |                   : Wait
+  //  -1  :         |                       : Wait
+  //  -2  :      |                          : Push
+  //  -3  :   |                             : Push
+  //   <  :                                 : Push
+  // -----:---------------------------------:------
+  //      : XX XX XX 00 | 00 01 YY          :
+  //   0  :             |                   : Wait
+  //  -1  :         |                       : Push
+  //  -2  :      |                          : Push
+  //  -3  :   |                             : Push
+  //   <  :                                 : Push
+  if (packetTodo <= 0 && (packetTodo < -2 ||
+                           ((scanner & 0x00FFFFFF) != 0x00000001  &&
+        (packetTodo < -1 || (scanner & 0x0000FFFF) != 0x00000000) &&
+        (packetTodo <  0 || (scanner & 0x000000FF) != 0x00000000)))) {
+
+     int bite = limit + packetTodo - payload;
+             // This may get negative, if we have copied to much in the last
+             // run. In this case data gets striped off.
+             // The overcommited Data may be at maximum 2 bytes long in this case.
+             // This data is saved in scanner and put before start of this run,
+             // so we need not copy anything in here.
+
+
+     PushOutVideoPacket(payload, bite);
+
+     CreatePesHeader(true);
+     payload = limit + packetTodo;
+     packetTodo += maxPacketSize - fragmentLen;
+     }
+
+  // the packet is done. Now store any remaining data into fragment buffer
+  // It may contain part of a start code at it's end,
+  // which will be removed when the next packet gets processed.
+  const int bite = limit - payload;
+  if (bite > 0) {
+     memcpy(fragmentData + fragmentLen, payload, bite);
+     fragmentLen += bite;
+     }
+  put_unaligned(save_scan, ((uint32_t *)(Data - 4)));
+}
+
 
 
 // --- cAudioRepacker --------------------------------------------------------
@@ -1453,7 +1744,7 @@ void cDolbyRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
 #endif
 #define MAXRESTARTS 10
 
-cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure)
+cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, bool ExitOnFailure, int VType)
 {
   exitOnFailure = ExitOnFailure;
   isRadio = VPid == 0 || VPid == 1 || VPid == 0x1FFF;
@@ -1468,8 +1759,12 @@ cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, b
 
   resultBuffer->SetTimeouts(0, 500);
   resultBuffer->SetLimits(2 * IPACKS, 2 * RESULT_BUFFER_ALIGNMENT);
-  if (VPid)
+  if (VPid) {
+    if (VType != 0x1B)
      repacker[numTracks++] = new cVideoRepacker(VPid, resultBuffer, IPACKS, 0xE0, 0x00);
+    else
+     repacker[numTracks++] = new cHDVideoRepacker(VPid, resultBuffer, IPACKS, 0xE0, 0x00);
+    }
 
   if (APids) {
      int n = 0;
@@ -1729,6 +2024,12 @@ int cRemux::SetBrokenLink(uchar *Data, int Length)
   int PesPayloadOffset = 0;
   if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1) {
      if ((Data[3] & 0xF0) == VIDEO_STREAM_S) {
+     if (PesPayloadOffset<Length-3) {
+        if (Data[PesPayloadOffset] == 0 && Data[PesPayloadOffset + 1] == 0 && Data[PesPayloadOffset + 2] == 1 && Data[PesPayloadOffset + 3] == 0x09) {
+	    isyslog("H.264 video detected");
+           return 2;
+           }
+        }
      for (int i = PesPayloadOffset; i < Length - 7; i++) {
          if (Data[i] == 0 && Data[i + 1] == 0 && Data[i + 2] == 1 && Data[i + 3] == 0xB8) {
             if (!(Data[i + 7] & 0x40)) // set flag only if GOP is not closed

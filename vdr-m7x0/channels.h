@@ -120,6 +120,7 @@ private:
   int srate;
   int vpid;
   int ppid;
+  int vtype;
   int apids[MAXAPIDS + 1]; // list is zero-terminated
   char alangs[MAXAPIDS][MAXLANGCODE2];
   int dpids[MAXDPIDS + 1]; // list is zero-terminated
@@ -170,8 +171,9 @@ public:
   static int Transponder(int Frequency, char Polarization); ///< builds the transponder from the given Frequency and Polarization
   int Source(void) const { return source; }
   int Srate(void) const { return srate; }
-  int Vpid(void) const { return vpid; }
-  int Ppid(void) const { return ppid; }
+  int Vpid(bool AcceptHD = false) const { return (AcceptHD || (vtype != 0x1B)) ? vpid : 0; }
+  int Ppid(bool AcceptHD = false) const { return (AcceptHD || (vtype != 0x1B)) ? ppid : 0; }
+  int Vtype(void) const { return vtype; }
   const int *Apids(void) const { return apids; }
   const int *Dpids(void) const { return dpids; }
   const int *Spids(void) const { return spids; }
@@ -187,8 +189,8 @@ public:
   int Tid(void) const { return tid; }
   int Sid(void) const { return sid; }
   int Rid(void) const { return rid; }
-  bool IsTV(void)    const { return (vpid > 0)  && (Apid(0)>0); }
-  bool IsRadio(void) const { return (vpid == 0) && (Apid(0)>0); }
+  bool IsTV(bool AcceptHD = false)    const { return (Vpid(AcceptHD) > 0)  && (Apid(0)>0); }
+  bool IsRadio(bool AcceptHD = false) const { return (Vpid(AcceptHD) == 0) && (Apid(0)>0); }
   int Number(void) const { return number; }
   void SetNumber(int Number) { number = Number; }
   bool GroupSep(void) const { return groupSep; }
@@ -217,7 +219,7 @@ public:
   void SetId(int Nid, int Tid, int Sid, int Rid = 0);
   void SetName(const char *Name, const char *ShortName, const char *Provider);
   void SetPortalName(const char *PortalName);
-  void SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid);
+  void SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype = 0);
   void SetCaIds(const int *CaIds); // list must be zero-terminated
   void SetCaDescriptors(int Level);
   void SetLinkChannels(cLinkChannels *LinkChannels);
