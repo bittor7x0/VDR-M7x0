@@ -3882,8 +3882,21 @@ cChannel *cDisplayChannel::NextAvailableChannel(cChannel *Channel, int Direction
 {
 //M7X0 BEGIN AK
   if (Direction) {
+     cChannel *Current=Channel;
      while (Channel) {
            Channel = Direction > 0 ? Channels.Next(Channel) : Channels.Prev(Channel);
+           if(Current) {
+              if((!Channel)||(Channel&&(Channel->GroupSep()))) {
+                 Current=Direction>0?Channels.Prev(Current):Channels.Next(Current);
+                 if((!Current)||(Current&&(Current->GroupSep())))
+                    return NULL;
+                 while(Current&&(!Current->GroupSep())) {
+                    Channel=Current;
+                    Current=Direction>0?Channels.Prev(Current):Channels.Next(Current);
+                 }
+              Current=NULL;
+           }
+     }
 	if (cStatus::MsgChannelProtected(0, Channel) == false)                     // PIN PATCH
            if (Channel && Channel->Filtered() && !Channel->GroupSep() && (cDevice::PrimaryDevice()->ProvidesChannel(Channel, Setup.PrimaryLimit, NULL, true) || cDevice::GetDevice(Channel, 0, NULL, true)))
               return Channel;
