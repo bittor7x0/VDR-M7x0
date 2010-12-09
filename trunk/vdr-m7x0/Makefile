@@ -195,9 +195,12 @@ plugins: include-dir
 	for i in `ls $(PLUGINDIR)/src | grep -v '[^a-z0-9]'`; do\
 	    echo "Plugin $$i:";\
 	    if ! grep -q "\$$(LIBDIR)/.*\$$(APIVERSION)" "$(PLUGINDIR)/src/$$i/Makefile" ; then\
-	       echo "ERROR: plugin $$i doesn't honor APIVERSION - not compiled!";\
-	       noapiv="$$noapiv $$i";\
-	       continue;\
+	       sed -i -e s/VDRVERSION/APIVERSION/g $(PLUGINDIR)/src/$$i/Makefile;\
+	       if ! grep -q "\$$(LIBDIR)/.*\$$(APIVERSION)" "$(PLUGINDIR)/src/$$i/Makefile" ; then\
+	         echo "ERROR: plugin $$i doesn't honor APIVERSION - not compiled!";\
+	         noapiv="$$noapiv $$i";\
+	         continue;\
+	         fi;\
 	       fi;\
 	    DVBDIR=$(abspath .) VDRDIR=$(abspath .) LIBDIR=$(abspath $(PLUGINLIBDIR)) $(MAKE) -C "$(PLUGINDIR)/src/$$i" all || failed="$$failed $$i";\
 	    done;\
