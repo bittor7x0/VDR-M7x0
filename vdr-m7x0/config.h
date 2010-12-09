@@ -278,7 +278,6 @@ public:
   int SplitEditedFiles;
   int HardLinkCutter;
   int MinEventTimeout, MinUserInactivity;
-  time_t NextWakeupTime;
   int MultiSpeedMode;
   int ShowReplayMode;
   int ResumeID;

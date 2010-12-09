@@ -96,7 +96,6 @@
 #define SHUTDOWNFORCEPROMPT 5 // seconds to wait in user prompt to allow forcing shutdown
 #define SHUTDOWNCANCELROMPT 5 // seconds to wait in user prompt to allow canceling shutdown
 #define RESTARTCANCELPROMPT 5 // seconds to wait in user prompt before restarting on SIGHUP
-#define MANUALSTART       600 // seconds the next timer must be in the future to assume manual start
 #define CHANNELSAVEDELTA  600 // seconds before saving channels.conf after automatic modifications
 #define LASTCAMMENUTIMEOUT  3 // seconds to run the main loop 'fast' after a CAM menu has been closed
                               // in order to react on a possible new CAM menu as soon as possible
@@ -678,12 +677,9 @@ int main(int argc, char *argv[])
         }
      }
 
-     if(!getIaMode())
-        cDevice::PrimaryDevice()->SetTvSettings(0);
-
   // Check for timers in automatic start time window:
 
-  ShutdownHandler.CheckManualStart(MANUALSTART);
+  ShutdownHandler.CheckManualStart();
 
   // User interface:
 
