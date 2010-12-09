@@ -1159,6 +1159,7 @@ int main(int argc, char *argv[])
                 if (!ShutdownHandler.ConfirmShutdown(false)){
 		   setIaMode(0);
 		   cDevice::PrimaryDevice()->SetTvSettings(0);
+		   cControl::Shutdown();
 		   // Not pressed power - set VDR to be non-interactive and power down later:
                    ShutdownHandler.SetUserInactive();
                    break;
@@ -1177,6 +1178,7 @@ int main(int argc, char *argv[])
 		   } else {
                 setIaMode(0);
                 cDevice::PrimaryDevice()->SetTvSettings(0);
+                cControl::Shutdown();
            }
 
                 // Ok, now call the shutdown script:
@@ -1350,7 +1352,10 @@ int main(int argc, char *argv[])
                // Timed out, now do a final check:
 	       if (!Setup.HotStandby) {
                if (ShutdownHandler.IsUserInactive() && ShutdownHandler.ConfirmShutdown(false))
+               {
+                  cControl::Shutdown();
                   ShutdownHandler.DoShutdown(false);
+               }
                // Do this again a bit later:
                ShutdownHandler.SetRetry(SHUTDOWNRETRY);
                } else {
@@ -1358,6 +1363,7 @@ int main(int argc, char *argv[])
 			dsyslog("DEBUG: HotStandby ACTIVITYTIMEOUT");
 			setIaMode(0);
 			cDevice::PrimaryDevice()->SetTvSettings(0);
+			cControl::Shutdown();
 		    }
 		}
 		}
