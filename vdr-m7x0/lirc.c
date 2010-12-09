@@ -12,6 +12,7 @@
 #include "lirc.h"
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include "config.h"
 
 #define REPEATDELAY 350 // ms
 #define REPEATFREQ 100 // ms
@@ -127,7 +128,7 @@ void cLircRemote::Action(void)
               continue;
               }
            if (count == 0) {
-              if (strcmp(KeyName, LastKeyName) == 0 && FirstTime.Elapsed() < REPEATDELAY)
+              if (strcmp(KeyName, LastKeyName) == 0 && FirstTime.Elapsed() < (unsigned int)Setup.LircRepeatDelay)
                  continue; // skip keys coming in too fast
               if (repeat)
                  Put(LastKeyName, false, true);
@@ -139,18 +140,18 @@ void cLircRemote::Action(void)
 //M7X0 END AK
               }
            else {
-              if (LastTime.Elapsed() < REPEATFREQ)
+              if (LastTime.Elapsed() < (unsigned int)Setup.LircRepeatFreq)
                  continue; // repeat function kicks in after a short delay (after last key instead of first key)
-              if (FirstTime.Elapsed() < REPEATDELAY)
+              if (FirstTime.Elapsed() < (unsigned int)Setup.LircRepeatDelay)
                  continue; // skip keys coming in too fast (for count != 0 as well)
               repeat = true;
-              timeout = REPEATDELAY;
+              timeout = Setup.LircRepeatDelay;
               }
            LastTime.Set();
            Put(KeyName, repeat);
            }
         else if (repeat) { // the last one was a repeat, so let's generate a release
-           if (LastTime.Elapsed() >= REPEATTIMEOUT) {
+           if (LastTime.Elapsed() >= (unsigned int)Setup.LircRepeatTimeout) {
               Put(LastKeyName, false, true);
               repeat = false;
               *LastKeyName = 0;

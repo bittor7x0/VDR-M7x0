@@ -3303,6 +3303,9 @@ cMenuSetupMisc::cMenuSetupMisc(void)
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Initial volume"),             &data.InitialVolume, -1, 255, tr("Setup.Miscellaneous$as before")));
   Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Abort when Plugin fails to load"), &data.AbortWhenPluginFails));
   Add(new cMenuEditBoolItem(tr("Setup.Miscellaneous$Emergency exit"),             &data.EmergencyExit));
+  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat delay"),          &data.LircRepeatDelay, 0, 1000));
+  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat freq"),           &data.LircRepeatFreq, 0, 1000));
+  Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat timeout"),        &data.LircRepeatTimeout, 0, 5000));
 }
 
 // --- cMenuSetupPluginItem --------------------------------------------------

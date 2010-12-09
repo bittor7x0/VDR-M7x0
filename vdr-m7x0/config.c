@@ -343,6 +343,9 @@ cSetup::cSetup(void)
 #endif
   AbortWhenPluginFails = 0;
   EmergencyExit = 0;
+  LircRepeatDelay = 350;
+  LircRepeatFreq = 100;
+  LircRepeatTimeout = 500;
 }
 
 cSetup& cSetup::operator= (const cSetup &s)
@@ -536,6 +539,9 @@ bool cSetup::Parse(const char *Name, const char *Value)
 #endif
   else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
   else if (!strcasecmp(Name, "EmergencyExit"))       EmergencyExit      = atoi(Value);
+  else if (!strcasecmp(Name, "LircRepeatDelay"))     LircRepeatDelay    = atoi(Value);
+  else if (!strcasecmp(Name, "LircRepeatFreq"))      LircRepeatFreq     = atoi(Value);
+  else if (!strcasecmp(Name, "LircRepeatTimeout"))   LircRepeatTimeout  = atoi(Value);
   else
      return false;
   return true;
@@ -636,6 +642,9 @@ bool cSetup::Save(void)
 #endif
   Store("AbortWhenPluginFails", AbortWhenPluginFails);
   Store("EmergencyExit",      EmergencyExit);
+  Store("LircRepeatDelay",    LircRepeatDelay);
+  Store("LircRepeatFreq",     LircRepeatFreq);
+  Store("LircRepeatTimeout",  LircRepeatTimeout);
 
   Sort();
 
