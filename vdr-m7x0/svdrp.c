@@ -192,8 +192,9 @@ const char *HelpPages[] = {
   "    Enable/Disable Input devices.",
   "DELC <number>\n"
   "    Delete channel.",
-  "DELR <number>\n"
-  "    Delete the recording with the given number. Before a recording can be\n"
+  "DELR [<number> | <path>]\n"
+  "    Delete the recording with the given number or path. \n"
+  "    If a number is to be used, before a recording can be\n"
   "    deleted, an LSTR command must have been executed in order to retrieve\n"
   "    the recording numbers. The numbers don't change during subsequent DELR\n"
   "    commands. CAUTION: THERE IS NO CONFIRMATION PROMPT WHEN DELETING A\n"
@@ -229,9 +230,10 @@ const char *HelpPages[] = {
   "    only data for that channel is listed. 'now', 'next', or 'at <time>'\n"
   "    restricts the returned data to present events, following events, or\n"
   "    events at the given time (which must be in time_t form).",
-  "LSTR [ <number> ]\n"
+  "LSTR [ <number> | <path> ] [path]\n"
   "    List recordings. Without option, all recordings are listed. Otherwise\n"
-  "    the information for the given recording is listed.",
+  "    the information for the given recording is listed. If the keyword 'path'\n ",
+  "    is given, the path to the recording(s) is included.",
   "LSTT [ <number> ] [ id ]\n"
   "    List timers. Without option, all timers are listed. Otherwise\n"
   "    only the given timer is listed. If the keyword 'id' is given, the\n"
@@ -293,8 +295,9 @@ const char *HelpPages[] = {
   "    format defined in vdr(5) for the 'epg.data' file.  A '.' on a line\n"
   "    by itself terminates the input and starts processing of the data (all\n"
   "    entered data is buffered until the terminating '.' is seen).",
-  "RENR <number> <new name>\n"
-  "    Rename recording. Number must be the Number as returned by LSTR command.",
+  "RENR [<number> | <path>] <new name>\n"
+  "    Rename recording. If a number is used, it must be the Number as \n"
+  "    returned by LSTR command.",
   "SCAN\n"
   "    Forces an EPG scan. If this is a single DVB device system, the scan\n"
   "    will be done on the primary device unless it is currently recording.",
@@ -661,30 +664,58 @@ void cSVDRP::CmdDELC(const char *Option)
 
 void cSVDRP::CmdDELR(const char *Option)
 {
-  if (*Option) {
-     if (isnumber(Option)) {
-        cRecording *recording = Recordings.Get(strtol(Option, NULL, 10) - 1);
-        if (recording) {
-           cRecordControl *rc = cRecordControls::GetRecordControl(recording->FileName());
-           if (!rc) {
-              if (recording->Delete()) {
-                 Reply(250, "Recording \"%s\" deleted", Option);
-                 ::Recordings.DelByName(recording->FileName());
-                 }
-              else
-                 Reply(554, "Error while deleting recording!");
-              }
-           else
-              Reply(550, "Recording \"%s\" is in use by timer %d", Option, rc->Timer()->Index() + 1);
-           }
-        else
-           Reply(550, "Recording \"%s\" not found%s", Option, Recordings.Count() ? "" : " (use LSTR before deleting)");
-        }
-     else
-        Reply(501, "Error in recording number \"%s\"", Option);
-     }
-  else
-     Reply(501, "Missing recording number");
+   if (*Option) {
+      bool isNumber=true;
+      bool isPath=false;
+      const char *s=Option;
+      while (*s && !isspace(*s)){
+         if (!isdigit(*s)){
+            isNumber=false;
+            if (*s=='/')
+               isPath=true;
+            }
+         s++;
+         }
+      int l=s-Option;
+      if (isNumber || isPath){
+         cRecording *recording = NULL;
+         if (isNumber)
+            recording = Recordings.Get(strtol(Option,NULL,10) - 1);
+         else {
+            char *fullPath;
+            if (Option[0]=='/')
+               fullPath=strndup(Option,l);
+            else 
+               asprintf(&fullPath,"%s/%.*s",VideoDirectory,l,Option);
+            if (Recordings.Count())
+               recording = Recordings.GetByName(fullPath);
+            if (!recording && ::Recordings.Count())
+               recording = ::Recordings.GetByName(fullPath);
+            if (!recording && ::Recordings.Update(true))
+               recording = ::Recordings.GetByName(fullPath);
+            free(fullPath);
+            }
+         if (recording) {
+            cRecordControl *rc = cRecordControls::GetRecordControl(recording->FileName());
+            if (!rc) {
+               if (recording->Delete()) {
+                  Reply(250, "Recording \"%.*s\" deleted", l, Option);
+                  ::Recordings.DelByName(recording->FileName());
+                  }
+               else
+                  Reply(554, "Error while deleting recording!");
+               }
+            else
+               Reply(550, "Recording \"%s\" is in use by timer %d", Option, rc->Timer()->Index() + 1);
+            }
+         else
+            Reply(550, "Recording \"%s\" not found%s", Option, (isNumber && !Recordings.Count()) ? " (use LSTR before deleting)" : "");
+         }
+      else
+         Reply(501, "Wrong arguments %s", Option);
+      }
+   else
+      Reply(501, "Missing recording number or path");
 }
 
 void cSVDRP::CmdDELT(const char *Option)
@@ -1066,35 +1097,77 @@ void cSVDRP::CmdLSTE(const char *Option)
 
 void cSVDRP::CmdLSTR(const char *Option)
 {
-  bool recordings = Recordings.Update(true);
-  if (*Option) {
-     if (isnumber(Option)) {
-        cRecording *recording = Recordings.Get(strtol(Option, NULL, 10) - 1);
-        if (recording) {
-           FILE *f = fdopen(file, "w");
-           if (f) {
-              recording->Info()->Write(f, "215-");
-              fflush(f);
-              Reply(215, "End of recording information");
-              // don't 'fclose(f)' here!
+   bool recordings = Recordings.Update(true);
+   if (recordings) {
+      bool isNumber=false;
+      bool isPath=false;
+      bool withPath=false;
+      int l=0; //length first argument
+      cRecording *recording = NULL;
+      if (*Option) {
+         const char *s=Option;
+         isNumber=true;
+         while (*s && !isspace(*s)){
+            if (!isdigit(*s)){
+               isNumber=false;
+               if (*s=='/')
+                  isPath=true;
+               }
+            s++;
+            }
+         l=s-Option;
+         if (isNumber)
+            recording = Recordings.Get(strtol(Option,NULL,10) - 1);
+         else if (isPath) {
+            char *fullPath;
+            if (Option[0]=='/')
+               fullPath=strndup(Option,l);
+            else 
+              asprintf(&fullPath,"%s/%.*s",VideoDirectory,l,Option);
+            recording = Recordings.GetByName(fullPath);
+            free(fullPath);
+            }
+         if (!isNumber && !isPath) 
+            s=Option;
+         s=skipspace(s);
+         withPath=((*s) && (strncmp(s,"path",4)==0) && (s[4]==0 || isspace(s[4])));
+         }
+      if (isNumber || isPath) {
+         if (recording) {
+            FILE *f = fdopen(file, "w");
+            if (f) {
+               recording->Info()->Write(f, "215-");
+               fflush(f);
+               if (withPath) {
+                  const char *path=recording->FileName();
+                  if (strncmp(path,VideoDirectory,strlen(VideoDirectory))==0) path+=strlen(VideoDirectory)+1;
+                  Reply(-215, "P %s", path);
+                  }
+               Reply(215, "End of recording information");
+               // don't 'fclose(f)' here!
+               }
+            else
+               Reply(451, "Can't open file connection");
+            }
+         else
+            Reply(550, "Recording \"%.*s\" not found", l, Option);
+         }
+     else {
+        recording = Recordings.First();
+        while (recording) {
+           if (withPath) {
+              const char *path=recording->FileName();
+              if (strncmp(path,VideoDirectory,strlen(VideoDirectory))==0) path+=strlen(VideoDirectory)+1;
+              Reply(recording == Recordings.Last() ? 250 : -250, "%d %s %s", recording->Index() + 1, path, recording->Title(' ', true));
               }
-           else
-              Reply(451, "Can't open file connection");
-           }
-        else
-           Reply(550, "Recording \"%s\" not found", Option);
-        }
-     else
-        Reply(501, "Error in recording number \"%s\"", Option);
-     }
-  else if (recordings) {
-     cRecording *recording = Recordings.First();
-     while (recording) {
-           Reply(recording == Recordings.Last() ? 250 : -250, "%d %s", recording->Index() + 1, recording->Title(' ', true));
+           else {
+              Reply(recording == Recordings.Last() ? 250 : -250, "%d %s", recording->Index() + 1, recording->Title(' ', true));
+              }
            recording = Recordings.Next(recording);
            }
+        }
      }
-  else
+   else
      Reply(550, "No recordings available");
 }
 
@@ -1489,36 +1562,64 @@ void cSVDRP::CmdSCAN(const char *Option)
 
 void cSVDRP::CmdRENR(const char *Option)
 {
-  bool recordings = Recordings.Update(true);
-  if (recordings) {
-     if (*Option) {
-        char *tail;
-        int n = strtol(Option, &tail, 10);
-        cRecording *recording = Recordings.Get(n - 1);
-        if (recording && tail && tail != Option) {
-           int priority = recording->priority;
-           int lifetime = recording->lifetime;
-           char *oldName = strdup(recording->Name());
-           tail = skipspace(tail);
-           if (recording->Rename(tail, &priority, &lifetime)) {
-              Reply(250, "Renamed \"%s\" to \"%s\"", oldName, recording->Name());
-              Recordings.ChangeState();
-              Recordings.TouchUpdate();
-              }
-           else
-              Reply(501, "Renaming \"%s\" to \"%s\" failed", oldName, tail);
-           free(oldName);
-           }
-        else
-          Reply(501, "Recording not found or wrong syntax");
-        }
-     else
-        Reply(501, "Missing Input settings");
-     }
-  else
-     Reply(550, "No recordings available");
+   if (Recordings.Update(true)) {
+      if (*Option) {
+         bool isNumber=true;
+         bool isPath=false;
+         const char *s=Option;
+         while (*s && !isspace(*s)){
+            if (!isdigit(*s)){
+               isNumber=false;
+               if (*s=='/')
+                  isPath=true;
+               }
+            s++;
+            }
+         int l=s-Option;
+         const char *newName=skipspace(s);
+         if (*newName && (isNumber || isPath)){
+            cRecording *recording = NULL;
+            if (isNumber)
+               recording = Recordings.Get(strtol(Option,NULL,10) - 1);
+            else {
+               char *fullPath;
+               if (Option[0]=='/')
+                  fullPath=strndup(Option,l);
+               else 
+                  asprintf(&fullPath,"%s/%.*s",VideoDirectory,l,Option);
+               recording = Recordings.GetByName(fullPath);
+               free(fullPath);
+               }
+            if (recording){
+               if (strcmp(newName,recording->Name())) {
+                  int priority = recording->priority;
+                  int lifetime = recording->lifetime;
+                  char *oldName = strdup(recording->Name());
+                  if (recording->Rename(newName, &priority, &lifetime)) {
+                    Reply(250, "Renamed \"%s\" to \"%s\"", oldName, recording->Name());
+                    Recordings.ChangeState();
+                    Recordings.TouchUpdate();
+                    }
+                  else 
+                    Reply(501, "Renaming \"%s\" to \"%s\" failed", oldName, newName);
+                  free(oldName);
+                  }
+               else
+                  Reply(550, "Same name given");
+               }
+            else
+               Reply(501, "Recording not found");
+            }
+         else
+            Reply(501, "Wrong arguments %s", Option);
+         }
+      else
+         Reply(501, "No option given");
+      }
+   else
+      Reply(550, "No recordings available");
 }
-						
+
 void cSVDRP::CmdSTAT(const char *Option)
 {
   if (*Option) {
