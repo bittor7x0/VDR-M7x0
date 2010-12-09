@@ -313,8 +313,6 @@ int FreeDiskSpaceMB(const char *Directory, int *UsedMB)
         *UsedMB = int((statFs.f_blocks - statFs.f_bfree) / blocksPerMeg);
      Free = int(statFs.f_bavail / blocksPerMeg);
      }
-  else
-     LOG_ERROR_STR(Directory);
   return Free;
 }
 
@@ -331,8 +329,6 @@ bool DirectoryOk(const char *DirName, bool LogErrors)
      else if (LogErrors)
         esyslog("ERROR: %s is not a directory", DirName);
      }
-  else if (LogErrors)
-     LOG_ERROR_STR(DirName);
   return false;
 }
 
@@ -457,8 +453,6 @@ bool RemoveEmptyDirectories(const char *DirName, bool RemoveThis)
         }
      return empty;
      }
-  else
-     LOG_ERROR_STR(DirName);
   return false;
 }
 
@@ -493,8 +487,6 @@ int DirSizeMB(const char *DirName)
            }
      return size;
      }
-  else
-     LOG_ERROR_STR(DirName);
   return -1;
 }
 
@@ -559,11 +551,58 @@ void TouchFile(const char *FileName)
      LOG_ERROR_STR(FileName);
 }
 
+bool DirectoryNotEmpty(const char *DirName)
+{
+  cReadDir d(DirName);
+  if (d.Ok()) {
+     struct dirent *e;
+     while ((e = d.Next()) != NULL)
+           if (strcmp(e->d_name, ".") && strcmp(e->d_name, ".."))
+              return true;
+  }
+  return false;
+}
+extern const char *VideoDirectory;
+static time_t FirstUpdateFileTime=0;
+static time_t LastUpdateFileTime=0;
 time_t LastModifiedTime(const char *FileName)
 {
   struct stat fs;
   if (stat(FileName, &fs) == 0)
+  {
+     if(!strncmp(FileName,VideoDirectory,strlen(VideoDirectory)))
+     {
+        if(!FirstUpdateFileTime) 
+        {
+           LastUpdateFileTime=0;
+           FirstUpdateFileTime=time(NULL);
+           isyslog("VideoDirectory detected %s %ld file(%ld)",FileName,FirstUpdateFileTime,fs.st_mtime);
+        }
+        if(FirstUpdateFileTime>fs.st_mtime) 
+           return FirstUpdateFileTime; 
+     }
      return fs.st_mtime;
+  } 
+  if(!strncmp(FileName,VideoDirectory,strlen(VideoDirectory)))
+  { 
+     if(DirectoryNotEmpty(VideoDirectory))
+     {
+        if(!FirstUpdateFileTime) 
+        {
+           LastUpdateFileTime=0;
+           FirstUpdateFileTime=time(NULL);
+           isyslog("VideoDirectory detected %s %ld",FileName,FirstUpdateFileTime);
+        }
+        return FirstUpdateFileTime;     
+     }
+     if((!LastUpdateFileTime)&&(FirstUpdateFileTime))
+     {
+        FirstUpdateFileTime=0;
+        LastUpdateFileTime=time(NULL);
+        isyslog("VideoDirectory lost %s %ld",FileName,LastUpdateFileTime);
+     }
+     return LastUpdateFileTime; 
+  }
   return 0;
 }
 
