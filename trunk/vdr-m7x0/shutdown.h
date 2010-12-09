@@ -62,9 +62,9 @@ public:
        ///< Returns true if an emergency exit was requested.
   void RequestEmergencyExit(void);
        ///< Requests an emergency exit of the VDR main loop.
-  void CheckManualStart(int ManualStart);
-       ///< Check whether the next timer is in ManualStart time window.
-       ///< If yes, assume non-interactive use.
+  void CheckManualStart();
+       ///< Check whether the interactive mode is started.
+       ///< If no, assume non-interactive use.
   void SetShutdownCommand(const char *ShutdownCommand);
        ///< Set the command string for shutdown command.
   void CallShutdownCommand(time_t WakeupTime, int Channel, const char *File, bool UserShutdown);

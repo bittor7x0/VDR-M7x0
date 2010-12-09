@@ -104,11 +104,9 @@ void cShutdownHandler::RequestEmergencyExit(void)
      dsyslog("emergency exit request ignored according to setup");
 }
 
-void cShutdownHandler::CheckManualStart(int ManualStart)
+void cShutdownHandler::CheckManualStart()
 {
-  time_t Delta = Setup.NextWakeupTime ? Setup.NextWakeupTime - time(NULL) : 0;
-
-  if (!Setup.NextWakeupTime || abs(Delta) > ManualStart) {
+  if (getIaMode()) {
      // Apparently the user started VDR manually
      dsyslog("assuming manual start of VDR");
      // Set inactive after MinUserInactivity
@@ -116,7 +114,8 @@ void cShutdownHandler::CheckManualStart(int ManualStart)
      }
   else {
      // Set inactive from now on
-     dsyslog("scheduled wakeup time in %ld minutes, assuming automatic start of VDR", Delta / 60);
+     cDevice::PrimaryDevice()->SetTvSettings(0);
+     dsyslog("assuming automatic start of VDR");
      SetUserInactive();
      }
 }
@@ -135,10 +134,8 @@ void cShutdownHandler::CallShutdownCommand(time_t WakeupTime, int Channel, const
   int Status = SystemExec(cmd, true);
   if (!WIFEXITED(Status) || WEXITSTATUS(Status))
      esyslog("SystemExec() failed with status %d", Status);
-  else {
-     Setup.NextWakeupTime = WakeupTime; // Remember this wakeup time for comparison on reboot
+  else
      Setup.Save();
-     }
 }
 
 void cShutdownHandler::SetUserInactiveTimeout(int Seconds, bool Force)
