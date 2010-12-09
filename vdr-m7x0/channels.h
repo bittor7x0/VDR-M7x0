@@ -124,6 +124,7 @@ private:
   int apids[MAXAPIDS + 1]; // list is zero-terminated
   char alangs[MAXAPIDS][MAXLANGCODE2];
   int dpids[MAXDPIDS + 1]; // list is zero-terminated
+  int dppids[MAXDPIDS + 1]; // list is zero-terminated
   char dlangs[MAXDPIDS][MAXLANGCODE2];
   int spids[MAXSPIDS + 1]; // list is zero-terminated
   char slangs[MAXSPIDS][MAXLANGCODE2];
@@ -176,9 +177,11 @@ public:
   int Vtype(void) const { return vtype; }
   const int *Apids(void) const { return apids; }
   const int *Dpids(void) const { return dpids; }
+  const int *DPpids(void) const { return dppids; }
   const int *Spids(void) const { return spids; }
   int Apid(int i) const { return (0 <= i && i < MAXAPIDS) ? apids[i] : 0; }
   int Dpid(int i) const { return (0 <= i && i < MAXDPIDS) ? dpids[i] : 0; }
+  int DPpid(int i) const { return (0 <= i && i < MAXDPIDS) ? dppids[i] : 0; }
   int Spid(int i) const { return (0 <= i && i < MAXSPIDS) ? spids[i] : 0; }
   const char *Alang(int i) const { return (0 <= i && i < MAXAPIDS) ? alangs[i] : ""; }
   const char *Dlang(int i) const { return (0 <= i && i < MAXDPIDS) ? dlangs[i] : ""; }
@@ -219,7 +222,7 @@ public:
   void SetId(int Nid, int Tid, int Sid, int Rid = 0);
   void SetName(const char *Name, const char *ShortName, const char *Provider);
   void SetPortalName(const char *PortalName);
-  void SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype = 0);
+  void SetPids(int Vpid, int Ppid, int *Apids, char ALangs[][MAXLANGCODE2], int *Dpids, char DLangs[][MAXLANGCODE2], int Tpid, int Vtype = 0, int *DPpids = NULL);
   void SetCaIds(const int *CaIds); // list must be zero-terminated
   void SetCaDescriptors(int Level);
   void SetLinkChannels(cLinkChannels *LinkChannels);

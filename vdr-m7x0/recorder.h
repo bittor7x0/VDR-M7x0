@@ -52,7 +52,7 @@ protected:
 #endif
 
 public:
-  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift = false, int VType = 0);
+  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift = false, int VType = 0, const int *DPPids = NULL);
                // Creates a new recorder that requires conditional access Ca, has
                // the given Priority and will record the given PIDs into the file FileName.
   virtual ~cRecorder();

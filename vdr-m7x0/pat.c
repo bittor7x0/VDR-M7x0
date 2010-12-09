@@ -332,6 +332,7 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
         int Vtype = 0;
         int Apids[MAXAPIDS + 1] = { 0 }; // these lists are zero-terminated
         int Dpids[MAXDPIDS + 1] = { 0 };
+        int DPpids[MAXDPIDS + 1] = { 0 };
         char ALangs[MAXAPIDS][MAXLANGCODE2] = { "" };
         char DLangs[MAXDPIDS][MAXLANGCODE2] = { "" };
         int Tpid = 0;
@@ -386,12 +387,15 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
               //XXX case 8: // STREAMTYPE_13818_DSMCC
                       {
                       int dpid = 0;
+                      int dppid = 0;
                       char lang[MAXLANGCODE1] = { 0 };
                       SI::Descriptor *d;
                       for (SI::Loop::Iterator it; (d = stream.streamDescriptors.getNext(it)); ) {
                           switch (d->getDescriptorTag()) {
                             case SI::AC3DescriptorTag:
+                            case SI::EAC3DescriptorTag:
                                  dpid = stream.getPid();
+                                 dppid = d->getDescriptorTag();
                                  ProcessCaDescriptors = true;
                                  break;
                             case SI::TeletextDescriptorTag:
@@ -409,6 +413,7 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                       if (dpid) {
                          if (NumDpids < MAXDPIDS) {
                             Dpids[NumDpids] = dpid;
+                            DPpids[NumDpids] = dppid;
                             strn0cpy(DLangs[NumDpids], lang, MAXLANGCODE1);
                             NumDpids++;
                             }
@@ -425,7 +430,7 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                 }
             }
         if (Setup.UpdateChannels >= 2) {
-           Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid, Vtype);
+           Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid, Vtype, DPpids);
            Channel->SetCaIds(CaDescriptors->CaIds());
            }
         Channel->SetCaDescriptors(CaDescriptorHandler.AddCaDescriptors(CaDescriptors));

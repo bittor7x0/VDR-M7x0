@@ -292,7 +292,7 @@ void cTShiftData::SetMode(cTShiftPlayerControl *player)
 // --- cTShiftRecorder -------------------------------------------------------------
 
 cTShiftRecorder::cTShiftRecorder(const cChannel *Channel,time_t BeginChannel)
-:cRecorder(cTShiftFileName::newFileName(&file),0,BASEPRIORITY,Channel->Vpid(),Channel->Apids(),Channel->Dpids(),Channel->Spids(),true),data(BeginChannel)
+:cRecorder(cTShiftFileName::newFileName(&file),0,BASEPRIORITY,Channel->Vpid(),Channel->Apids(),Channel->Dpids(),Channel->Spids(),true,0,Channel->DPpids()),data(BeginChannel)
 {
   player=NULL;
   channelNumber=Channel->Number();

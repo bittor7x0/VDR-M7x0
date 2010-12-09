@@ -4579,7 +4579,7 @@ cRecordControl::cRecordControl(cDevice *Device, cTimer *Timer, bool Pause)
   isyslog("record %s", fileName);
   if (MakeDirs(fileName, true)) {
      const cChannel *ch = timer->Channel();
-     recorder = new cRecorder(fileName, ch->Ca(), timer->Priority(), ch->Vpid(Setup.UseHDInRecordings), ch->Apids(), ch->Dpids(), ch->Spids(), false,  ch->Vtype());
+     recorder = new cRecorder(fileName, ch->Ca(), timer->Priority(), ch->Vpid(Setup.UseHDInRecordings), ch->Apids(), ch->Dpids(), ch->Spids(), false,  ch->Vtype(), ch->DPpids());
      if (device->AttachReceiver(recorder)) {
         Recording.WriteInfo();
         cStatus::MsgRecording(device, Recording.Name(), Recording.FileName(), true);
