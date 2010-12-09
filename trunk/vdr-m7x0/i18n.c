@@ -4322,6 +4322,28 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
   },
+  { "Setup.Recording$Record HD Video",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Grabar Video HD",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Setup.DVB$Update channels",
     "Kanäle aktualisieren",
     "Posodobi kanale",

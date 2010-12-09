@@ -274,6 +274,7 @@ public:
   int UpdateChannels;
   int UseDolbyDigital;
   int UseDolbyInRecordings;
+  int UseHDInRecordings;
   int ChannelInfoPos;
   int ChannelInfoTime;
   int OSDLeft, OSDTop, OSDWidth, OSDHeight;
