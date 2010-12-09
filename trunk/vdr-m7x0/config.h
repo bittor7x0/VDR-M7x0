@@ -300,6 +300,9 @@ public:
 #endif
   int AbortWhenPluginFails;
   int EmergencyExit;
+  int LircRepeatDelay;
+  int LircRepeatFreq;
+  int LircRepeatTimeout;
   int __EndData__;
   cSetup(void);
   cSetup& operator= (const cSetup &s);
