@@ -1415,6 +1415,7 @@ Exit:
   cDevice::Shutdown();
   PluginManager.Shutdown(true);
   cSchedules::Cleanup(true);
+  cSchedules::ClearAll();
   ReportEpgBugFixStats();
   if (WatchdogTimeout > 0)
      dsyslog("max. latency time %d seconds", MaxLatencyTime);
