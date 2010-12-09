@@ -19,6 +19,23 @@
 
 #define MAXEPGBUGFIXLEVEL 3
 
+enum { MaxEventContents = 4 };
+
+enum eEventContentGroup {
+  ecgMovieDrama               = 0x10,
+  ecgNewsCurrentAffairs       = 0x20,
+  ecgShow                     = 0x30,
+  ecgSports                   = 0x40,
+  ecgChildrenYouth            = 0x50,
+  ecgMusicBalletDance         = 0x60,
+  ecgArtsCulture              = 0x70,
+  ecgSocialPoliticalEconomics = 0x80,
+  ecgEducationalScience       = 0x90,
+  ecgLeisureHobbies           = 0xA0,
+  ecgSpecial                  = 0xB0,
+  ecgUserDefined              = 0xF0
+  };
+
 enum eDumpMode { dmAll, dmPresent, dmFollowing, dmPresentAndFollowing, dmAtTime, dmBetween, dmWithID };
 
 struct tComponent {
@@ -53,15 +70,18 @@ typedef u_int32_t tEventID;
 class cEvent : public cListObject {
   friend class cSchedule;
 private:
+  // The sequence of these parameters is optimized for minimal memory waste!
   cSchedule *schedule;     // The Schedule this event belongs to
   tEventID eventID;        // Event ID of this event
   uchar tableID;           // Table ID this event came from
   uchar version;           // Version number of section this event came from
-  int runningStatus;       // 0=undefined, 1=not running, 2=starts in a few seconds, 3=pausing, 4=running
+  uchar runningStatus;     // 0=undefined, 1=not running, 2=starts in a few seconds, 3=pausing, 4=running
+  uchar parentalRating;    // Parental rating of this event
   char *title;             // Title of this event
   char *shortText;         // Short description of this event (typically the episode name in case of a series)
   char *description;       // Description of this event
   cComponents *components; // The stream components of this event
+  uchar contents[MaxEventContents]; // Contents of this event
   time_t startTime;        // Start time of this event
   int duration;            // Duration of this event in seconds
   time_t vps;              // Video Programming Service timestamp (VPS, aka "Programme Identification Label", PIL)
@@ -86,6 +106,8 @@ public:
   const char *ShortText(void) const { return shortText; }
   const char *Description(void) const { return description; }
   const cComponents *Components(void) const { return components; }
+  uchar Contents(int i = 0) const { return (0 <= i && i < MaxEventContents) ? contents[i] : 0; }
+  int ParentalRating(void) const { return parentalRating; }
   time_t StartTime(void) const { return startTime; }
   time_t EndTime(void) const { return startTime + duration; }
   int Duration(void) const { return duration; }
@@ -96,6 +118,8 @@ public:
   void IncTimerUse(void) const { usedByTimers++; }
   void DecTimerUse(void) const { usedByTimers--; }
   bool IsRunning(bool OrAboutToStart = false) const;
+  static const char *ContentToString(uchar Content);
+  cString GetParentalRatingString(void) const;
   cString GetDateString(void) const;
   cString GetTimeString(void) const;
   cString GetEndTimeString(void) const;
@@ -108,6 +132,8 @@ public:
   void SetShortText(const char *ShortText);
   void SetDescription(const char *Description);
   void SetComponents(cComponents *Components); // Will take ownership of Components!
+  void SetContents(uchar *Contents);
+  void SetParentalRating(int ParentalRating);
   void SetStartTime(time_t StartTime);
   void SetDuration(int Duration);
   void SetVps(time_t Vps);
@@ -172,11 +198,15 @@ class cSchedules : public cList<cSchedule> {
   friend class cSchedulesLock;
 private:
   cRwLock rwlock;
+  cHash<cSchedule> schedulesHash;
   static cSchedules schedules;
   static const char *epgDataFileName;
   static time_t lastCleanup;
   static time_t lastDump;
   static time_t modified;
+  void HashSchedule(cSchedule *Schedule);
+  void UnhashSchedule(cSchedule *Schedule);
+  static unsigned int HashKey(tChannelID ChannelID);
 public:
   static void SetEpgDataFileName(const char *FileName);
   static const cSchedules *Schedules(cSchedulesLock &SchedulesLock);

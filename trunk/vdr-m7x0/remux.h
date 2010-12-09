@@ -12,10 +12,6 @@
 #ifdef USE_HW_VIDEO_FRAME_EVENTS
 #define USE_DATAHEADER_IN_RECEIVER 1
 #endif
-#include <time.h> //XXX FIXME: DVB/linux/dvb/dmx.h should include <time.h> itself!!!
-//M7X0 BEGIN AK
-#include "m7x0_dvb/dmx.h"
-//M7X0 END AK
 #include "ringbuffer.h"
 #include "tools.h"
 

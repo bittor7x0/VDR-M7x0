@@ -82,7 +82,7 @@ const char *cCommand::Execute(const char *Parameters)
      while ((c = fgetc(p)) != EOF) {
            if (l % 20 == 0)
               result = (char *)realloc(result, l + 21);
-           result[l++] = c;
+           result[l++] = char(c);
            }
      if (result)
         result[l] = 0;
@@ -137,9 +137,14 @@ bool cSVDRPhost::Parse(const char *s)
   return result != 0 && (mask != 0 || addr.s_addr == 0);
 }
 
+bool cSVDRPhost::IsLocalhost(void)
+{
+  return addr.s_addr == htonl(INADDR_LOOPBACK);
+}
+
 bool cSVDRPhost::Accepts(in_addr_t Address)
 {
-  return (Address & mask) == addr.s_addr;
+  return (Address & mask) == (addr.s_addr & mask);
 }
 
 // -- cCommands --------------------------------------------------------------
@@ -166,6 +171,17 @@ void cCommands::AddConfig(cCommand *Object)
 // -- cSVDRPhosts ------------------------------------------------------------
 
 cSVDRPhosts SVDRPhosts;
+
+bool cSVDRPhosts::LocalhostOnly(void)
+{
+  cSVDRPhost *h = First();
+  while (h) {
+        if (!h->IsLocalhost())
+           return false;
+        h = (cSVDRPhost *)h->Next();
+        }
+  return true;
+}
 
 bool cSVDRPhosts::Acceptable(in_addr_t Address)
 {
@@ -284,15 +300,18 @@ cSetup::cSetup(void)
 //M7X0 END AK
   SVDRPTimeout = 300;
   ZapTimeout = 3;
+  ChannelEntryTimeout = 1000;
   PrimaryLimit = 0;
   DefaultPriority = 50;
   DefaultLifetime = 99;
+  PauseKeyHandling = 2;
   PausePriority = 10;
   PauseLifetime = 1;
   UseSubtitle = 1;
   UseVps = 0;
   VpsMargin = 120;
   RecordingDirs = 1;
+  FoldersInTimerMenu = 1;
   RecordingsSortMode = 0;
   RecordingsSortDirsFirst = 0;
   CutterAutoDelete = 1;
@@ -317,6 +336,7 @@ cSetup::cSetup(void)
   MaxVideoFileSize = MAXVIDEOFILESIZE;
   MaxRecordingSize = DEFAULTRECORDINGSIZE;
   SplitEditedFiles = 0;
+  DelTimeshiftRec = 0;
   HardLinkCutter = 0;
   MinEventTimeout = 30;
   MinUserInactivity = 300;
@@ -482,15 +502,18 @@ bool cSetup::Parse(const char *Name, const char *Value)
 //M7X0 END AK
   else if (!strcasecmp(Name, "SVDRPTimeout"))        SVDRPTimeout       = atoi(Value);
   else if (!strcasecmp(Name, "ZapTimeout"))          ZapTimeout         = atoi(Value);
+  else if (!strcasecmp(Name, "ChannelEntryTimeout")) ChannelEntryTimeout= atoi(Value);
   else if (!strcasecmp(Name, "PrimaryLimit"))        PrimaryLimit       = atoi(Value);
   else if (!strcasecmp(Name, "DefaultPriority"))     DefaultPriority    = atoi(Value);
   else if (!strcasecmp(Name, "DefaultLifetime"))     DefaultLifetime    = atoi(Value);
+  else if (!strcasecmp(Name, "PauseKeyHandling"))    PauseKeyHandling   = atoi(Value);
   else if (!strcasecmp(Name, "PausePriority"))       PausePriority      = atoi(Value);
   else if (!strcasecmp(Name, "PauseLifetime"))       PauseLifetime      = atoi(Value);
   else if (!strcasecmp(Name, "UseSubtitle"))         UseSubtitle        = atoi(Value);
   else if (!strcasecmp(Name, "UseVps"))              UseVps             = atoi(Value);
   else if (!strcasecmp(Name, "VpsMargin"))           VpsMargin          = atoi(Value);
   else if (!strcasecmp(Name, "RecordingDirs"))       RecordingDirs      = atoi(Value);
+  else if (!strcasecmp(Name, "FoldersInTimerMenu"))  FoldersInTimerMenu = atoi(Value);
   else if (!strcasecmp(Name, "RecordingsSortMode"))  RecordingsSortMode = atoi(Value);
   else if (!strcasecmp(Name, "RecordingsSortDirsFirst")) RecordingsSortDirsFirst = atoi(Value);
   else if (!strcasecmp(Name, "CutterAutoDelete"))    CutterAutoDelete   = atoi(Value);
@@ -515,6 +538,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "MaxVideoFileSize"))    MaxVideoFileSize   = atoi(Value);
   else if (!strcasecmp(Name, "MaxRecordingSize"))    MaxRecordingSize   = atoi(Value);
   else if (!strcasecmp(Name, "SplitEditedFiles"))    SplitEditedFiles   = atoi(Value);
+  else if (!strcasecmp(Name, "DelTimeshiftRec"))     DelTimeshiftRec    = atoi(Value);
   else if (!strcasecmp(Name, "HardLinkCutter"))      HardLinkCutter     = atoi(Value);
   else if (!strcasecmp(Name, "MinEventTimeout"))     MinEventTimeout    = atoi(Value);
   else if (!strcasecmp(Name, "MinUserInactivity"))   MinUserInactivity  = atoi(Value);
@@ -587,15 +611,18 @@ bool cSetup::Save(void)
 //M7X0 END AK
   Store("SVDRPTimeout",       SVDRPTimeout);
   Store("ZapTimeout",         ZapTimeout);
+  Store("ChannelEntryTimeout",ChannelEntryTimeout);
   Store("PrimaryLimit",       PrimaryLimit);
   Store("DefaultPriority",    DefaultPriority);
   Store("DefaultLifetime",    DefaultLifetime);
+  Store("PauseKeyHandling",   PauseKeyHandling);
   Store("PausePriority",      PausePriority);
   Store("PauseLifetime",      PauseLifetime);
   Store("UseSubtitle",        UseSubtitle);
   Store("UseVps",             UseVps);
   Store("VpsMargin",          VpsMargin);
   Store("RecordingDirs",      RecordingDirs);
+  Store("FoldersInTimerMenu", FoldersInTimerMenu);
   Store("RecordingsSortMode", RecordingsSortMode);
   Store("RecordingsSortDirsFirst", RecordingsSortDirsFirst);
   Store("CutterAutoDelete",   CutterAutoDelete);
@@ -620,6 +647,7 @@ bool cSetup::Save(void)
   Store("MaxVideoFileSize",   MaxVideoFileSize);
   Store("MaxRecordingSize",   MaxRecordingSize);
   Store("SplitEditedFiles",   SplitEditedFiles);
+  Store("DelTimeshiftRec",    DelTimeshiftRec);
   Store("HardLinkCutter",     HardLinkCutter);
   Store("MinEventTimeout",    MinEventTimeout);
   Store("MinUserInactivity",  MinUserInactivity);

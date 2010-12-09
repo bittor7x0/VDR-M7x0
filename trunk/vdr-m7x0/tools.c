@@ -100,6 +100,14 @@ ssize_t safe_write(int filedes, const void *buffer, size_t size)
   return p < 0 ? p : written;
 }
 
+int readchar(int filedes)
+{
+  char c;
+  if (safe_read(filedes, &c, sizeof(c)) != 1)
+     return -1;
+  return c;
+}
+
 void writechar(int filedes, char c)
 {
   safe_write(filedes, &c, sizeof(c));
@@ -158,11 +166,8 @@ char *strreplace(char *s, char c1, char c2)
 {
   if (s) {
      char *p = s;
-     while (*p) {
-           if (*p == c1)
-              *p = c2;
-           p++;
-           }
+     while ((p = strchr(p, c1)))
+           *p++ = c2;
      }
   return s;
 }
@@ -176,19 +181,13 @@ char *strreplace(char *s, const char *s1, const char *s2)
      int l1 = strlen(s1);
      int l2 = strlen(s2);
      if (l2 > l1)
-        s = (char *)realloc(s, strlen(s) + l2 - l1 + 1);
+        s = (char *)realloc(s, l + l2 - l1 + 1);
+     char *sof = s + of;
      if (l2 != l1)
-        memmove(s + of + l2, s + of + l1, l - of - l1 + 1);
-     strncpy(s + of, s2, l2);
+        memmove(sof + l2, sof + l1, l - of - l1 + 1);
+     strncpy(sof, s2, l2);
      }
   return s;
-}
-
-char *skipspace(const char *s)
-{
-  while (*s && isspace(*s))
-        s++;
-  return (char *)s;
 }
 
 char *stripspace(char *s)
@@ -270,20 +269,22 @@ bool isempty(const char *s)
 
 int numdigits(int n)
 {
-  char buf[16];
-  snprintf(buf, sizeof(buf), "%d", n);
-  return strlen(buf);
+  int res = 1;
+  while (n >= 10) {
+        n /= 10;
+        res++;
+        }
+  return res;
 }
 
 bool isnumber(const char *s)
 {
   if (!*s)
      return false;
-  while (*s) {
-        if (!isdigit(*s))
-           return false;
-        s++;
-        }
+  do {
+     if (!isdigit(*s))
+        return false;
+     } while (*++s);
   return true;
 }
 
@@ -698,7 +699,7 @@ cString DayDateTime(time_t t)
      time(&t);
   struct tm tm_r;
   tm *tm = localtime_r(&t, &tm_r);
-  snprintf(buffer, sizeof(buffer), "%s %02d.%02d %02d:%02d", *WeekDayName(tm->tm_wday), tm->tm_mday, tm->tm_mon + 1, tm->tm_hour, tm->tm_min);
+  snprintf(buffer, sizeof(buffer), "%s %02d.%02d. %02d:%02d", *WeekDayName(tm->tm_wday), tm->tm_mday, tm->tm_mon + 1, tm->tm_hour, tm->tm_min);
   return buffer;
 }
 
@@ -1121,6 +1122,8 @@ bool cSafeFile::Close(bool ok)
         LOG_ERROR_STR(tempName);
         result = false;
         }
+     fflush(f);
+     fsync(fileno(f));
      if (fclose(f) < 0) {
         LOG_ERROR_STR(tempName);
         result = false;

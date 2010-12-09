@@ -144,7 +144,7 @@ void cCaDescriptors::AddCaDescriptor(SI::CaDescriptor *d, bool Stream)
   q += sprintf(q, "CAM: %04X %5d %5d %04X %d -", source, transponder, serviceId, d->getCaType(), Stream);
   for (int i = 0; i < nca->Length(); i++)
       q += sprintf(q, " %02X", nca->Data()[i]);
-  dsyslog(buffer);
+  dsyslog("%s", buffer);
 #endif
 }
 
@@ -337,10 +337,12 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
         int NumApids = 0;
         int NumDpids = 0;
         for (SI::Loop::Iterator it; pmt.streamLoop.getNext(stream, it); ) {
+            bool ProcessCaDescriptors = false;
             switch (stream.getStreamType()) {
               case 1: // STREAMTYPE_11172_VIDEO
               case 2: // STREAMTYPE_13818_VIDEO
                       Vpid = stream.getPid();
+                      ProcessCaDescriptors = true;
                       break;
               case 3: // STREAMTYPE_11172_AUDIO
               case 4: // STREAMTYPE_13818_AUDIO
@@ -373,6 +375,7 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                              }
                          NumApids++;
                          }
+                      ProcessCaDescriptors = true;
                       }
                       break;
               case 5: // STREAMTYPE_13818_PRIVATE
@@ -386,6 +389,7 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                           switch (d->getDescriptorTag()) {
                             case SI::AC3DescriptorTag:
                                  dpid = stream.getPid();
+                                 ProcessCaDescriptors = true;
                                  break;
                             case SI::TeletextDescriptorTag:
                                  Tpid = stream.getPid();
@@ -408,11 +412,13 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                          }
                       }
                       break;
-              //default: printf("PID: %5d %5d %2d %3d %3d\n", pmt.getServiceId(), stream.getPid(), stream.getStreamType(), pmt.getVersionNumber(), Channel->Number());//XXX
+              default: ;//printf("PID: %5d %5d %2d %3d %3d\n", pmt.getServiceId(), stream.getPid(), stream.getStreamType(), pmt.getVersionNumber(), Channel->Number());
               }
-            for (SI::Loop::Iterator it; (d = (SI::CaDescriptor*)stream.streamDescriptors.getNext(it, SI::CaDescriptorTag)); ) {
-                CaDescriptors->AddCaDescriptor(d, true);
-                delete d;
+            if (ProcessCaDescriptors) {
+                for (SI::Loop::Iterator it; (d = (SI::CaDescriptor*)stream.streamDescriptors.getNext(it, SI::CaDescriptorTag)); ) {
+                    CaDescriptors->AddCaDescriptor(d, true);
+                    delete d;
+                    }
                 }
             }
         if (Setup.UpdateChannels >= 2) {

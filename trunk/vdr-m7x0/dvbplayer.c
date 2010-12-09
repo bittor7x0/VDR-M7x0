@@ -820,6 +820,7 @@ void cDvbPlayer::Forward(void)
             FasterUnlockOther();
             }
             break;
+       default: esyslog("ERROR: unknown playMode %d (%s)", playMode, __FUNCTION__);
        }
      }
 }
@@ -873,6 +874,7 @@ void cDvbPlayer::Backward(void)
             FasterUnlockOther();
             }
             break;
+       default: esyslog("ERROR: unknown playMode %d (%s)", playMode, __FUNCTION__);
        }
      }
 }

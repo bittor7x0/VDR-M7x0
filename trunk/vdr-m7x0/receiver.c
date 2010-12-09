@@ -41,7 +41,12 @@ cReceiver::cReceiver(int Ca, int Priority, int Pid, const int *Pids1, const int 
 
 cReceiver::~cReceiver()
 {
-  Detach();
+  if (device) {
+     const char *msg = "ERROR: cReceiver has not been detached yet! This is a design fault and VDR will segfault now!";
+     esyslog("%s", msg);
+     fprintf(stderr, "%s\n", msg);
+     *(char *)0 = 0; // cause a segfault
+     }
 }
 
 bool cReceiver::WantsPid(int Pid)

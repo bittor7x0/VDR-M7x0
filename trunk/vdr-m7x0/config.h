@@ -88,6 +88,7 @@ private:
 public:
   cSVDRPhost(void);
   bool Parse(const char *s);
+  bool IsLocalhost(void);
   bool Accepts(in_addr_t Address);
   };
 
@@ -183,6 +184,7 @@ public:
 
 class cSVDRPhosts : public cConfig<cSVDRPhost> {
 public:
+  bool LocalhostOnly(void);
   bool Acceptable(in_addr_t Address);
   };
 
@@ -253,13 +255,16 @@ public:
 //M7X0 END AK
   int SVDRPTimeout;
   int ZapTimeout;
+  int ChannelEntryTimeout;
   int PrimaryLimit;
   int DefaultPriority, DefaultLifetime;
   int PausePriority, PauseLifetime;
+  int PauseKeyHandling;
   int UseSubtitle;
   int UseVps;
   int VpsMargin;
   int RecordingDirs;
+  int FoldersInTimerMenu;
   int HotStandby;
   int TvMode;
   int VCRMode;
@@ -276,6 +281,7 @@ public:
   int MaxVideoFileSize;
   int MaxRecordingSize;
   int SplitEditedFiles;
+  int DelTimeshiftRec;
   int HardLinkCutter;
   int MinEventTimeout, MinUserInactivity;
   int MultiSpeedMode;

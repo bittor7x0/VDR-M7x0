@@ -312,6 +312,11 @@ void cSkinClassicDisplayMenu::SetEvent(const cEvent *Event)
      free(buffer);
      }
   y += ts.Height();
+  if (Event->ParentalRating()) {
+     cString buffer = cString::sprintf(" %s ", *Event->GetParentalRatingString());
+     const cFont *font = cFont::GetFont(fontSml);
+     osd->DrawText(x1 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVpsFg), Theme.Color(clrMenuEventVpsBg), font);
+     }
   y += font->Height();
   ts.Set(osd, xl, y, x1 - xl, y3 - y, Event->Title(), font, Theme.Color(clrMenuEventTitle), Theme.Color(clrBackground));
   y += ts.Height();
@@ -319,6 +324,14 @@ void cSkinClassicDisplayMenu::SetEvent(const cEvent *Event)
      const cFont *font = cFont::GetFont(fontSml);
      ts.Set(osd, xl, y, x1 - xl, y3 - y, Event->ShortText(), font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
      y += ts.Height();
+     }
+  for (int i = 0; Event->Contents(i); i++) {
+     const char *s = Event->ContentToString(Event->Contents(i));
+     if (!isempty(s)) {
+         const cFont *font = cFont::GetFont(fontSml);
+         ts.Set(osd, xl, y, x1 - xl, y3 - y, s, font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
+         y += ts.Height();
+         }
      }
   y += font->Height();
   if (!isempty(Event->Description())) {
@@ -340,6 +353,11 @@ void cSkinClassicDisplayMenu::SetRecording(const cRecording *Recording)
   snprintf(t, sizeof(t), "%s  %s", *DateString(Recording->start), *TimeString(Recording->start));
   ts.Set(osd, xl, y, x1 - xl, y3 - y, t, font, Theme.Color(clrMenuEventTime), Theme.Color(clrBackground));
   y += ts.Height();
+  if (Info->GetEvent()->ParentalRating()) {
+     cString buffer = cString::sprintf(" %s ", *Info->GetEvent()->GetParentalRatingString());
+     const cFont *font = cFont::GetFont(fontSml);
+     osd->DrawText(x1 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVpsFg), Theme.Color(clrMenuEventVpsBg), font);
+     }
   y += font->Height();
   const char *Title = Info->Title();
   if (isempty(Title))
@@ -350,6 +368,14 @@ void cSkinClassicDisplayMenu::SetRecording(const cRecording *Recording)
      const cFont *font = cFont::GetFont(fontSml);
      ts.Set(osd, xl, y, x1 - xl, y3 - y, Info->ShortText(), font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
      y += ts.Height();
+     }
+  for (int i = 0; Info->GetEvent()->Contents(i); i++) {
+     const char *s = Info->GetEvent()->ContentToString(Info->GetEvent()->Contents(i));
+     if (!isempty(s)) {
+         const cFont *font = cFont::GetFont(fontSml);
+         ts.Set(osd, xl, y, x1 - xl, y3 - y, s, font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
+         y += ts.Height();
+         }
      }
   y += font->Height();
   if (!isempty(Info->Description())) {

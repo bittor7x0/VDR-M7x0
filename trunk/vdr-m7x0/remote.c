@@ -121,7 +121,7 @@ bool cRemote::PutMacro(eKeys Key)
 bool cRemote::Put(uint64_t Code, bool Repeat, bool Release)
 {
   char buffer[32];
-  snprintf(buffer, sizeof(buffer), "%016LX", Code);
+  snprintf(buffer, sizeof(buffer), "%016llX", Code);
   return Put(buffer, Repeat, Release);
 }
 
@@ -282,7 +282,9 @@ int cKbdRemote::MapCodeToFunc(uint64_t Code)
       if (p->code == Code)
          return p->func;
       }
-  return (Code <= 0xFF) ? Code : kfNone;
+  if (Code <= 0xFF)
+     return Code;
+  return kfNone;
 }
 
 int cKbdRemote::ReadKey(void)
@@ -332,9 +334,11 @@ uint64_t cKbdRemote::ReadKeySequence(void)
                                 k |= key1 & 0xFF;
                                 } while (key1 != 0x7E);
                              break;
+                        default: ;
                         }
                       }
                    break;
+              default: ;
               }
             }
         }

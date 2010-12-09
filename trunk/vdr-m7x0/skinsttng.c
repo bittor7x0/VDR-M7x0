@@ -572,6 +572,14 @@ void cSkinSTTNGDisplayMenu::SetEvent(const cEvent *Event)
      free(buffer);
      }
   y += ts.Height();
+  if (Event->ParentalRating()) {
+     cString buffer = cString::sprintf(" %s ", *Event->GetParentalRatingString());
+     const cFont *font = cFont::GetFont(fontSml);
+     osd->DrawText(x4 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVps), frameColor, font);
+     int yb = y + font->Height();
+     osd->DrawRectangle(x5, y, x6 - 1, yb - 1, frameColor);
+     osd->DrawEllipse  (x6, y, x7 - 1, yb - 1, frameColor, 5);
+     }
   y += font->Height();
   ts.Set(osd, xl, y, x4 - xl, y4 - y, Event->Title(), font, Theme.Color(clrMenuEventTitle), Theme.Color(clrBackground));
   y += ts.Height();
@@ -579,6 +587,14 @@ void cSkinSTTNGDisplayMenu::SetEvent(const cEvent *Event)
      const cFont *font = cFont::GetFont(fontSml);
      ts.Set(osd, xl, y, x4 - xl, y4 - y, Event->ShortText(), font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
      y += ts.Height();
+     }
+  for (int i = 0; Event->Contents(i); i++) {
+     const char *s = Event->ContentToString(Event->Contents(i));
+     if (!isempty(s)) {
+         const cFont *font = cFont::GetFont(fontSml);
+         ts.Set(osd, xl, y, x4 - xl, y4 - y, s, font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
+         y += ts.Height();
+         }
      }
   y += font->Height();
   if (!isempty(Event->Description())) {
@@ -606,6 +622,14 @@ void cSkinSTTNGDisplayMenu::SetRecording(const cRecording *Recording)
   snprintf(t, sizeof(t), "%s  %s", *DateString(Recording->start), *TimeString(Recording->start));
   ts.Set(osd, xl, y, x4 - xl, y4 - y, t, font, Theme.Color(clrMenuEventTime), Theme.Color(clrBackground));
   y += ts.Height();
+  if (Info->GetEvent()->ParentalRating()) {
+     cString buffer = cString::sprintf(" %s ", *Info->GetEvent()->GetParentalRatingString());
+     const cFont *font = cFont::GetFont(fontSml);
+     osd->DrawText(x4 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVps), frameColor, font);
+     int yb = y + font->Height();
+     osd->DrawRectangle(x5, y, x6 - 1, yb - 1, frameColor);
+     osd->DrawEllipse  (x6, y, x7 - 1, yb - 1, frameColor, 5);
+     }
   y += font->Height();
   const char *Title = Info->Title();
   if (isempty(Title))
@@ -616,6 +640,14 @@ void cSkinSTTNGDisplayMenu::SetRecording(const cRecording *Recording)
      const cFont *font = cFont::GetFont(fontSml);
      ts.Set(osd, xl, y, x4 - xl, y4 - y, Info->ShortText(), font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
      y += ts.Height();
+     }
+  for (int i = 0; Info->GetEvent()->Contents(i); i++) {
+     const char *s = Info->GetEvent()->ContentToString(Info->GetEvent()->Contents(i));
+     if (!isempty(s)) {
+         const cFont *font = cFont::GetFont(fontSml);
+         ts.Set(osd, xl, y, x4 - xl, y4 - y, s, font, Theme.Color(clrMenuEventShortText), Theme.Color(clrBackground));
+         y += ts.Height();
+         }
      }
   y += font->Height();
   if (!isempty(Info->Description())) {
@@ -1027,6 +1059,7 @@ void cSkinSTTNGDisplayTracks::SetAudioChannel(int AudioChannel)
     case 0: bm = &bmAudioStereo; break;
     case 1: bm = &bmAudioLeft;   break;
     case 2: bm = &bmAudioRight;  break;
+    default: ;
     }
   if (bm)
      osd->DrawBitmap(x3 + 5, y6 + (y7 - y6 - bm->Height()) / 2, *bm, Theme.Color(clrChannelSymbolOn), frameColor);

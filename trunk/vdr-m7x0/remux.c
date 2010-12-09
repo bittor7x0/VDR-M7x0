@@ -1528,6 +1528,7 @@ int cRemux::ScanVideoPacket(const uchar *Data, int Count, int Offset, uchar &Pic
                  switch (p[1]) {
                    case SC_PICTURE: PictureType = (p[3] >> 3) & 0x07;
                                     return Length;
+                   default: ;
                    }
                  p += 4; // continue scanning after 0x01ssxxyy
                  }

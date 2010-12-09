@@ -8,6 +8,7 @@
  */
 
 #include "recording.h"
+#include <ctype.h>
 #include "iconpatch.h"
 #include <dirent.h>
 #include <errno.h>
@@ -31,8 +32,8 @@
 /* This was the original code, which works fine in a Linux only environment.
    Unfortunately, because of Windows and its brain dead file system, we have
    to use a more complicated approach, in order to allow users who have enabled
-   the VFAT compile time option to see their recordings even if they forget to
-   enable VFAT when compiling a new version of VDR... Gee, do I hate Windows.
+   the --vfat command line option to see their recordings even if they forget to
+   enable --vfat when restarting VDR... Gee, do I hate Windows.
    (kls 2002-07-27)
 #define DATAFORMAT   "%4d-%02d-%02d.%02d:%02d.%02d.%02d" RECEXT
 #define NAMEFORMAT   "%s/%s/" DATAFORMAT
@@ -54,9 +55,6 @@
 #define DELETEDLIFETIME   300 // seconds after which a deleted recording will be actually removed
 #define DISKCHECKDELTA    100 // seconds between checks for free disk space
 #define REMOVELATENCY      10 // seconds to wait until next check after removing a file
-
-#define TIMERMACRO_TITLE    "TITLE"
-#define TIMERMACRO_EPISODE  "EPISODE"
 
 #define MAX_SUBTITLE_LENGTH  40
 
@@ -83,6 +81,7 @@ cRemoveDeletedRecordingsThread::cRemoveDeletedRecordingsThread(void)
 
 void cRemoveDeletedRecordingsThread::Action(void)
 {
+  SetPriority(19);
   // Make sure only one instance of VDR does this:
   cLockFile LockFile(VideoDirectory);
   if (LockFile.Lock()) {
@@ -367,8 +366,8 @@ bool cRecordingInfo::Read(FILE *f)
                             ownEvent->SetEventID(EventID);
                             ownEvent->SetStartTime(StartTime);
                             ownEvent->SetDuration(Duration);
-                            ownEvent->SetTableID(TableID);
-                            ownEvent->SetVersion(Version);
+                            ownEvent->SetTableID(uchar(TableID));
+                            ownEvent->SetVersion(uchar(Version));
                             }
                        }
                        break;
@@ -404,8 +403,8 @@ bool cRecordingInfo::Write(FILE *f, const char *Prefix) const
 
 struct tCharExchange { char a; char b; };
 tCharExchange CharExchange[] = {
-  { '~',  '/'    },
-  { '/',  '~'    },
+  { FOLDERDELIMCHAR,  '/'    },
+  { '/',  FOLDERDELIMCHAR    },
   { ' ',  '_'    },
   // backwards compatibility:
   { '\'', '\''   },
@@ -422,34 +421,14 @@ char *ExchangeChars(char *s, bool ToFileSystem)
            // The VFAT file system can't handle all characters, so we
            // have to take extra efforts to encode/decode them:
            if (ToFileSystem) {
+              const char *InvalidChars = "\"\\/:*?|<>#";
               switch (*p) {
-                     // characters that can be used "as is":
-                     case '!':
-                     case '@':
-                     case '$':
-                     case '%':
-                     case '&':
-                     case '(':
-                     case ')':
-                     case '+':
-                     case ',':
-                     case '-':
-                     case ';':
-                     case '=':
-                     case '0' ... '9':
-                     case 'a' ... 'z':
-                     case 'A' ... 'Z':
-                     case 'ä': case 'Ä':
-                     case 'ö': case 'Ö':
-                     case 'ü': case 'Ü':
-                     case 'ß':
-                          break;
                      // characters that can be mapped to other characters:
                      case ' ': *p = '_'; break;
-                     case '~': *p = '/'; break;
+                     case FOLDERDELIMCHAR: *p = '/'; break;
                      // characters that have to be encoded:
                      default:
-                       if (*p != '.' || !*(p + 1) || *(p + 1) == '~') { // Windows can't handle '.' at the end of directory names
+                       if (strchr(InvalidChars, *p) || *p == '.' && (!*(p + 1) || *(p + 1) == FOLDERDELIMCHAR)) { // Windows can't handle '.' at the end of file/directory names
                           int l = p - s;
                           s = (char *)realloc(s, strlen(s) + 10);
                           p = s + l;
@@ -465,15 +444,17 @@ char *ExchangeChars(char *s, bool ToFileSystem)
               switch (*p) {
                 // mapped characters:
                 case '_': *p = ' '; break;
-                case '/': *p = '~'; break;
-                // encodes characters:
+                case '/': *p = FOLDERDELIMCHAR; break;
+                // encoded characters:
                 case '#': {
-                     if (strlen(p) > 2) {
+                     if (strlen(p) > 2 && isxdigit(*(p + 1)) && isxdigit(*(p + 2))) {
                         char buf[3];
                         sprintf(buf, "%c%c", *(p + 1), *(p + 2));
-                        unsigned char c = strtol(buf, NULL, 16);
-                        *p = c;
-                        memmove(p + 1, p + 3, strlen(p) - 2);
+                        uchar c = uchar(strtol(buf, NULL, 16));
+                        if (c) {
+                           *p = c;
+                           memmove(p + 1, p + 3, strlen(p) - 2);
+                           }
                         }
                      }
                      break;
@@ -481,6 +462,7 @@ char *ExchangeChars(char *s, bool ToFileSystem)
                 case '\x01': *p = '\''; break;
                 case '\x02': *p = '/';  break;
                 case '\x03': *p = ':';  break;
+                default: ;
                 }
               }
            }
@@ -522,8 +504,8 @@ cRecording::cRecording(cTimer *Timer, const cEvent *Event)
      strn0cpy(SubtitleBuffer, Subtitle, MAX_SUBTITLE_LENGTH);
      Subtitle = SubtitleBuffer;
      }
-  char *macroTITLE   = strstr(Timer->File(), TIMERMACRO_TITLE);
-  char *macroEPISODE = strstr(Timer->File(), TIMERMACRO_EPISODE);
+  const char *macroTITLE   = strstr(Timer->File(), TIMERMACRO_TITLE);
+  const char *macroEPISODE = strstr(Timer->File(), TIMERMACRO_EPISODE);
   if (macroTITLE || macroEPISODE) {
      name = strdup(Timer->File());
      name = strreplace(name, TIMERMACRO_TITLE, Title);
@@ -531,7 +513,7 @@ cRecording::cRecording(cTimer *Timer, const cEvent *Event)
      // avoid blanks at the end:
      int l = strlen(name);
      while (l-- > 2) {
-           if (name[l] == ' ' && name[l - 1] != '~')
+           if (name[l] == ' ' && name[l - 1] != FOLDERDELIMCHAR)
               name[l] = 0;
            else
               break;
@@ -565,9 +547,11 @@ cRecording::cRecording(const char *FileName)
      sortBuffer[i] = NULL;
      lastDirsFirst[i] = -1;
   }
-  fileName = strdup(FileName);
+  FileName = fileName = strdup(FileName);
+  if (*(fileName + strlen(fileName) - 1) == '/')
+     *(fileName + strlen(fileName) - 1) = 0;
   FileName += strlen(VideoDirectory) + 1;
-  char *p = strrchr(FileName, '/');
+  const char *p = strrchr(FileName, '/');
 
   name = NULL;
   info = new cRecordingInfo;
@@ -752,7 +736,7 @@ const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level, bool
      struct tm tm_r;
      struct tm *t = localtime_r(&start, &tm_r);
      char *s;
-     if (Level > 0 && (s = strrchr(name, '~')) != NULL)
+     if (Level > 0 && (s = strrchr(name, FOLDERDELIMCHAR)) != NULL)
         s++;
      else
         s = name;
@@ -803,18 +787,18 @@ const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level, bool
                                (Setup.ShowRecLength ? RecDelimiter : ""),
                                s);
         }
-     // let's not display a trailing '~':
+     // let's not display a trailing FOLDERDELIMCHAR:
      if (!NewIndicator)
         stripspace(titleBuffer);
      s = &titleBuffer[strlen(titleBuffer) - 1];
-     if (*s == '~')
+     if (*s == FOLDERDELIMCHAR)
         *s = 0;
      }
   else if (Level < HierarchyLevels()) {
      const char *s = name;
      const char *p = s;
      while (*++s) {
-           if (*s == '~') {
+           if (*s == FOLDERDELIMCHAR) {
               if (Level--)
                  p = s + 1;
               else
@@ -856,7 +840,7 @@ int cRecording::HierarchyLevels(void) const
   const char *s = name;
   int level = 0;
   while (*++s) {
-        if (*s == '~')
+        if (*s == FOLDERDELIMCHAR)
            level++;
         }
   return level;
@@ -864,7 +848,7 @@ int cRecording::HierarchyLevels(void) const
 
 bool cRecording::IsEdited(void) const
 {
-  const char *s = strrchr(name, '~');
+  const char *s = strrchr(name, FOLDERDELIMCHAR);
   s = !s ? name : s + 1;
   return *s == '%';
 }
@@ -1270,7 +1254,7 @@ void cRecordingUserCommand::InvokeCommand(const char *State, const char *Recordi
 {
   if (command) {
      char *cmd;
-     asprintf(&cmd, "%s %s \"%s\"", command, State, *strescape(RecordingFileName, "\"$"));
+     asprintf(&cmd, "%s %s \"%s\"", command, State, *strescape(RecordingFileName, "\\\"$"));
      isyslog("executing '%s'", cmd);
      SystemExec(cmd);
      free(cmd);
@@ -1309,19 +1293,19 @@ cIndexFile::cIndexFile(const char *FileName, bool Record)
         if (access(fileName, R_OK) == 0) {
            struct stat buf;
            if (stat(fileName, &buf) == 0) {
-              delta = buf.st_size % sizeof(tIndex);
+              delta = int(buf.st_size % sizeof(tIndex));
               if (delta) {
                  delta = sizeof(tIndex) - delta;
                  esyslog("ERROR: invalid file size (%ld) in '%s'", buf.st_size, fileName);
                  }
-              last = (buf.st_size + delta) / sizeof(tIndex) - 1;
+              last = int((buf.st_size + delta) / sizeof(tIndex) - 1);
               if (!Record && last >= 0) {
                  size = last + 1;
                  index = MALLOC(tIndex, size);
                  if (index) {
                     f = open(fileName, O_RDONLY);
                     if (f >= 0) {
-                       if ((int)safe_read(f, index, buf.st_size) != buf.st_size) {
+                       if (safe_read(f, index, size_t(buf.st_size)) != buf.st_size) {
                           esyslog("ERROR: can't read from file '%s'", fileName);
                           free(index);
                           index = NULL;
@@ -1540,10 +1524,10 @@ bool cIndexFile::Get(int Index, uchar *FileNumber, int *FileOffset, uchar *Pictu
         if (PictureType)
            *PictureType = index[Index].type;
         if (Length) {
-           int fn = index[Index + 1].number;
-           int fo = index[Index + 1].offset;
+           uint16_t fn = index[Index + 1].number;
+           off_t fo = index[Index + 1].offset;
            if (fn == *FileNumber)
-              *Length = fo - *FileOffset;
+              *Length = int(fo - *FileOffset);
            else
               *Length = -1; // this means "everything up to EOF" (the buffer's Read function will act accordingly)
            }
@@ -1571,10 +1555,10 @@ int cIndexFile::GetNextIFrame(int Index, bool Forward, uchar *FileNumber, int *F
                   FileOffset = &index[Index].offset;
                if (Length) {
                   // all recordings end with a non-I_FRAME, so the following should be safe:
-                  int fn = index[Index + 1].number;
-                  int fo = index[Index + 1].offset;
+                  uint16_t fn = index[Index + 1].number;
+                  off_t fo = index[Index + 1].offset;
                   if (fn == *FileNumber)
-                     *Length = fo - *FileOffset;
+                     *Length = int(fo - *FileOffset);
                   else {
                      esyslog("ERROR: 'I' frame at end of file #%d", *FileNumber);
                      *Length = -1;
@@ -1708,11 +1692,11 @@ cUnbufferedFile *cFileName::SetOffset(int Number, int Offset)
   if (fileNumber != Number)
      Close();
   if (0 < Number && Number <= MAXFILESPERRECORDING) {
-     fileNumber = Number;
+     fileNumber = uint16_t(Number);
      sprintf(pFileNumber, RECORDFILESUFFIX, fileNumber);
      if (record) {
         if (access(fileName, F_OK) == 0) {
-           // files exists, check if it has non-zero size
+           // file exists, check if it has non-zero size
            struct stat buf;
            if (stat(fileName, &buf) == 0) {
               if (buf.st_size != 0)

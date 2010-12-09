@@ -220,6 +220,7 @@ cDevice *cDevice::primaryDevice = NULL;
 cDevice::cDevice(void)
 {
   cardIndex = nextCardIndex++;
+  dsyslog("new device number %d", CardIndex() + 1);
 
   SetDescription("receiver on device %d", CardIndex() + 1);
 
@@ -330,6 +331,7 @@ bool cDevice::SetPrimaryDevice(int n)
      primaryDevice->MakePrimaryDevice(true);
      primaryDevice->SetTvMode(Setup.TvMode);
      primaryDevice->SetVideoFormat(eVideoFormat(Setup.VideoFormat));
+     primaryDevice->SetVolumeDevice(Setup.CurrentVolume);
      return true;
      }
   esyslog("ERROR: invalid primary device number: %d", n + 1);
@@ -468,6 +470,7 @@ void cDevice::SetVideoDisplayFormat(eVideoDisplayFormat VideoDisplayFormat)
                case vdfLetterBox:
                     spuDecoder->setScaleMode(cSpuDecoder::eSpuLetterBox);
                     break;
+               default: esyslog("ERROR: invalid value for VideoDisplayFormat '%d'", VideoDisplayFormat);
                }
         }
      }
@@ -483,7 +486,7 @@ eVideoSystem cDevice::GetVideoSystem(void)
   return vsPAL;
 }
 
-//#define PRINTPIDS(s) { char b[500]; char *q = b; q += sprintf(q, "%d %s ", CardIndex(), s); for (int i = 0; i < MAXPIDHANDLES; i++) q += sprintf(q, " %s%4d %d", i == ptOther ? "* " : "", pidHandles[i].pid, pidHandles[i].used); dsyslog(b); }
+//#define PRINTPIDS(s) { char b[500]; char *q = b; q += sprintf(q, "%d %s ", CardIndex(), s); for (int i = 0; i < MAXPIDHANDLES; i++) q += sprintf(q, " %s%4d %d", i == ptOther ? "* " : "", pidHandles[i].pid, pidHandles[i].used); dsyslog("%s", b); }
 #define PRINTPIDS(s)
 
 bool cDevice::HasPid(int Pid) const
@@ -808,6 +811,22 @@ void cDevice::StartSectionHandler(void)
      }
 }
 
+void cDevice::StopSectionHandler(void)
+{
+  if (sectionHandler) {
+     delete nitFilter;
+     delete sdtFilter;
+     delete patFilter;
+     delete eitFilter;
+     delete sectionHandler;
+     nitFilter = NULL;
+     sdtFilter = NULL;
+     patFilter = NULL;
+     eitFilter = NULL;
+     sectionHandler = NULL;
+     }
+}
+
 int cDevice::OpenFilter(u_short Pid, u_char Tid, u_char Mask)
 {
   return -1;
@@ -871,6 +890,7 @@ bool cDevice::SwitchChannel(const cChannel *Channel, bool LiveView)
         case scrNoTransfer:   Skins.Message(mtError, tr("Can't start Transfer Mode!"));
                               return false;
         case scrFailed:       break; // loop will retry
+        default:              esyslog("ERROR: invalid return value from SetChannel");
         }
       esyslog("retrying");
       }
@@ -1183,7 +1203,7 @@ int cDevice::NumAudioTracks(void) const
 
 bool cDevice::SetCurrentAudioTrack(eTrackType Type)
 {
-  if (ttNone < Type && Type < ttDolbyLast) {
+  if (ttNone < Type && Type <= ttDolbyLast) {
      cMutexLock MutexLock(&mutexCurrentAudioTrack);
      if (IS_DOLBY_TRACK(Type))
         SetDigitalAudioDevice(true);

@@ -103,7 +103,7 @@ eOSState cMenuEditIntItem::ProcessKey(eKeys Key)
             if (*value > max) { *value = max; Set(); }
             return state;
        }
-     if (newValue != *value && (!fresh || min <= newValue) && newValue <= max) {
+     if (!DoubleEqual(newValue, *value) && (!fresh || min <= newValue) && newValue <= max) {
         *value = newValue;
         Set();
         }
@@ -221,7 +221,8 @@ cMenuEditChrItem::~cMenuEditChrItem()
 void cMenuEditChrItem::Set(void)
 {
   char buf[2];
-  snprintf(buf, sizeof(buf), "%c", *value);
+  buf[0] = *value;
+  buf[1] = '\0';
   SetValue(buf);
 }
 
@@ -412,9 +413,7 @@ eOSState cMenuEditStrItem::ProcessKey(eKeys Key)
                  break;
     case kBlue|k_Repeat:
     case kBlue:  // consume the key only if in edit-mode
-                 if (InEditMode())
-                    ;
-                 else
+                 if (!InEditMode())
                     return osUnknown;
                  break;
     case kLeft|k_Repeat:
@@ -422,9 +421,9 @@ eOSState cMenuEditStrItem::ProcessKey(eKeys Key)
                     if (!insert || newchar)
                        pos--;
                     newchar = true;
+                    if (!insert && isalpha(value[pos]))
+                       uppercase = isupper(value[pos]);
                     }
-                 if (!insert && isalpha(value[pos]))
-                    uppercase = isupper(value[pos]);
                  break;
     case kRight|k_Repeat:
     case kRight: AdvancePos();
@@ -993,6 +992,7 @@ eOSState cMenuEditTimeItem::ProcessKey(eKeys Key)
                      pos++;
                      }
                   break;
+          default: ;
           }
         }
      else if (NORMALKEY(Key) == kLeft) { // TODO might want to increase the delta if repeated quickly?

@@ -13,6 +13,7 @@
 #include <time.h>
 #include "channels.h"
 #include "config.h"
+#include "device.h"
 #include "epg.h"
 #include "thread.h"
 #include "timers.h"
@@ -24,6 +25,10 @@
 #include <byteswap.h>
 #endif
 //M7X0 BEGIN AK
+
+#define FOLDERDELIMCHAR '~'
+#define TIMERMACRO_TITLE    "TITLE"
+#define TIMERMACRO_EPISODE  "EPISODE"
 
 extern bool VfatFileSystem;
 extern bool DirOrderState;
@@ -59,6 +64,7 @@ private:
 public:
   ~cRecordingInfo();
   tChannelID ChannelID(void) const { return channelID; }
+  const cEvent *GetEvent(void) const { return event; }
   const char *Title(void) const { return event->Title(); }
   const char *ShortText(void) const { return event->ShortText(); }
   const char *Description(void) const { return event->Description(); }
@@ -197,7 +203,7 @@ public:
 #define FRAMESPERSEC 25
 
 // The maximum size of a single frame (up to HDTV 1920x1080):
-#define MAXFRAMESIZE  KILOBYTE(512)
+#define MAXFRAMESIZE  (KILOBYTE(512) / TS_SIZE * TS_SIZE) // multiple of TS_SIZE to avoid breaking up TS packets
 
 // The maximum file size is limited by the range that can be covered
 // with 'int'. 4GB might be possible (if the range is considered
@@ -247,7 +253,7 @@ public:
 class cFileName {
 private:
   cUnbufferedFile *file;
-  int fileNumber;
+  uint16_t fileNumber;
   char *fileName, *pFileNumber;
   bool record;
   bool blocking;
@@ -262,11 +268,11 @@ public:
 #endif
   ~cFileName();
   const char *Name(void) { return fileName; }
-  int Number(void) { return fileNumber; }
+  uint16_t Number(void) { return fileNumber; }
   cUnbufferedFile *Open(void);
   void Close(void);
   int Unlink(void);
-  cUnbufferedFile *SetOffset(int Number, int Offset = 0);
+  cUnbufferedFile *SetOffset(int Number, int Offset = 0); // yes, Number is int for easier internal calculating
   int MaxFileSize();
       // Dynamic file size for this file
   cUnbufferedFile *NextFile(void);

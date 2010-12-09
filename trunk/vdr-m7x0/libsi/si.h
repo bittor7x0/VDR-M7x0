@@ -28,7 +28,7 @@ enum TableId { TableIdPAT = 0x00, //program association section
                TableIdNIT_other  = 0x41, //network information section, other network
                TableIdSDT = 0x42, //service description section
                TableIdSDT_other  = 0x46,
-               TableIdBAT = 0x46, //bouquet association section
+               TableIdBAT = 0x4A, //bouquet association section
                TableIdEIT_presentFollowing = 0x4E, //event information section
                TableIdEIT_presentFollowing_other = 0x4F,
                //range from 0x50 to 0x5F
@@ -398,6 +398,8 @@ public:
             return data.FourBytes(index);
          case 8:
             return (SixtyFourBit(data.FourBytes(index)) << 32) | data.FourBytes(index+4);
+         default:
+            return 0; // just to avoid a compiler warning
          }
          return 0; // just to avoid a compiler warning
       }
