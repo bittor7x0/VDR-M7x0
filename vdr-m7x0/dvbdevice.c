@@ -28,6 +28,7 @@
 #include "receiver.h"
 #include "status.h"
 #include "transfer.h"
+#include "audio.h"
 
 #define DO_REC_AND_PLAY_ON_PRIMARY_DEVICE 1
 #define DO_MULTIPLE_RECORDINGS 1
@@ -2678,11 +2679,13 @@ void cDvbDevice::CheckStreamAspect(bool force)
 void cDvbDevice::SetTvSettings(bool settv){
     dsyslog("DEBUG: set tv settings-> %d", settv);
     if(settv){
+      Audios.MuteAudio(IsMute());
       SetVolumeDevice(IsMute() ? 0 : CurrentVolume());
       SetTvMode(Setup.TvMode);
       SetVCRMode(Setup.VCRMode);
       SetVideoFormat(eVideoFormat(Setup.VideoFormat));
     }else{
+      Audios.MuteAudio(true);
       int avs = open("/dev/avswitch", O_WRONLY);
       if(avs== -1)
         esyslog("m7x0 can not open /dev/avswitch");
