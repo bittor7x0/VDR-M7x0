@@ -223,31 +223,48 @@ public:
 // will be reached, before recording to file 255.vdr
 
 class cIndexFile {
-private:
+protected:
   struct tIndex { int offset; uchar type; uchar number; short reserved; };
   int f;
+private:
   char *fileName;
+protected:
   int size, last;
   tIndex *index;
+private:
   cResumeFile resumeFile;
   cMutex mutex;
+protected:
+virtual
   bool CatchUp(int Index = -1);
 public:
   cIndexFile(const char *FileName, bool Record);
+virtual
   ~cIndexFile();
   bool Ok(void) { return index != NULL; }
+virtual
   bool Write(uchar PictureType, uchar FileNumber, int FileOffset);
 //M7X0 BEGIN AK
+virtual
   bool Write(sPesResult *Picture, int PictureCount , uchar FileNumber, int FileOffset);
+virtual
   int StripOffToLastIFrame(int number);
 //M7X0 END AK
+virtual 
   bool Get(int Index, uchar *FileNumber, int *FileOffset, uchar *PictureType = NULL, int *Length = NULL);
+virtual
   int GetNextIFrame(int Index, bool Forward, uchar *FileNumber = NULL, int *FileOffset = NULL, int *Length = NULL, bool StayOffEnd = false);
+virtual
   int Get(uchar FileNumber, int FileOffset);
   int Last(void) { CatchUp(); return last; }
+virtual
   int GetResume(void) { return resumeFile.Read(); }
+virtual
   bool StoreResume(int Index) { return resumeFile.Save(Index); }
+virtual
   bool IsStillRecording(void);
+  virtual cUnbufferedFile *NextFile(cFileName *FileName, bool Record);
+  virtual int WaitIndex(int Index);
   };
 
 class cFileName {

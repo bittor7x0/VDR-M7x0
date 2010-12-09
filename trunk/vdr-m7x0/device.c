@@ -18,6 +18,7 @@
 #include "receiver.h"
 #include "status.h"
 #include "transfer.h"
+#include "tshift.h"
 
 bool scanning_on_receiving_device = false;
 
@@ -401,6 +402,8 @@ cDevice *cDevice::GetDevice(const cChannel *Channel, int Priority, bool *NeedsDe
          imp <<= 1; imp |= device[i] == cTransferControl::ReceiverDevice();        // avoid the Transfer Mode receiver device
          imp <<= 8; imp |= min(max(device[i]->Priority() + MAXPRIORITY, 0), 0xFF); // use the device with the lowest priority (+MAXPRIORITY to assure that values -99..99 can be used)
          imp <<= 8; imp |= min(max(device[i]->ProvidesCa(Channel), 0), 0xFF);      // use the device that provides the lowest number of conditional access methods
+         imp <<= 1; imp |= ndr;                                                    // avoid detach receivers
+         imp <<= 1; imp |= cTShiftControl::Impact(device[i],ndr);                  // avoid last TShift device
          imp <<= 1; imp |= device[i]->IsPrimaryDevice();                           // avoid the primary device
          imp <<= 1; imp |= device[i]->HasDecoder();                                // avoid full featured cards
          if (imp < Impact) {
@@ -942,12 +945,13 @@ eSetChannelResult cDevice::SetChannel(const cChannel *Channel, bool LiveView)
   // If this card is switched to an other transponder, any receivers still
   // attached to it need to be automatically detached:
   bool NeedsDetachReceivers = false;
+  bool provides=ProvidesChannel(Channel, Setup.PrimaryLimit, &NeedsDetachReceivers, true);
 
   // If this card can't receive this channel, we must not actually switch
   // the channel here, because that would irritate the driver when we
   // start replaying in Transfer Mode immediately after switching the channel:
 //M7X0 BEGIN AK
-  bool NeedsTransferMode = (LiveView && IsPrimaryDevice() && !ProvidesChannel(Channel, Setup.PrimaryLimit, &NeedsDetachReceivers, true));
+  bool NeedsTransferMode = (LiveView && IsPrimaryDevice() && (Setup.TShift || !provides));
 //M7X0 END AK
   eSetChannelResult Result = scrOk;
 
@@ -970,7 +974,10 @@ eSetChannelResult cDevice::SetChannel(const cChannel *Channel, bool LiveView)
         if (CaDevice->SetChannel(Channel, false) == scrOk) { // calling SetChannel() directly, not SwitchChannel()!
            if (NeedsDetachReceivers)
               CaDevice->DetachAllReceivers();
-           cControl::Launch(new cTransferControl(CaDevice,Channel->Ppid(), Channel->Vpid(), Channel->Apid(0),Channel->Tpid()));
+	   if(Setup.TShift)
+           	cControl::Launch(new cTShiftControl(CaDevice,Channel));
+	   else
+           	cControl::Launch(new cTransferControl(CaDevice,Channel->Ppid(), Channel->Vpid(), Channel->Apid(0),Channel->Tpid()));
            }
         else
            Result = scrNoTransfer;

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "shutdown.h"
+#include "tshift.h"
 
 #define RECORDERBUFSIZE  MEGABYTE(4)
 
@@ -36,11 +37,12 @@ private:
 protected:
   virtual void Action(void);
 public:
-  cFileWriter(const char *FileName, cRemux *Remux);
+  cFileWriter(const char *FileName, cRemux *Remux, bool IsTShift = false);
   virtual ~cFileWriter();
+  cIndexFile *GetIndexFile(void) { return index; }
   };
 //M7X0 BEGIN AK
-cFileWriter::cFileWriter(const char *FileName, cRemux *Remux)
+cFileWriter::cFileWriter(const char *FileName, cRemux *Remux, bool IsTShift)
 :cThread("file writer")
 {
   fileName = NULL;
@@ -59,6 +61,9 @@ cFileWriter::cFileWriter(const char *FileName, cRemux *Remux)
      LOG_ERROR;
      return;
      }
+  if (IsTShift)
+     index=new cTShiftIndexFile(FileName);
+  else
   // Create the index file:
   index = new cIndexFile(FileName, true);
   if (!index)
@@ -126,6 +131,14 @@ void cFileWriter::Action(void)
 
               recordFile->Truncate(fileSize + Header[FirstIFrame].offset);
 
+              if (index) {
+                 if (!(recordFile = index->NextFile(fileName, true))) {
+                    LOG_ERROR;
+                    esyslog("Cannot open next recording file '%s' ... giving up",fileName->Name());
+                    break;
+                    }
+                 }
+              else
               if (!(recordFile = fileName->NextFile())) {
                  LOG_ERROR;
                  esyslog("Cannot open next recording file '%s' ... giving up",fileName->Name());
@@ -169,7 +182,7 @@ void cFileWriter::Action(void)
 
 }
 
-cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids)
+cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift)
 :cReceiver(Ca, Priority, VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids)
 #ifndef DISABLE_RINGBUFFER_IN_RECEIVER
 ,cThread("recording")
@@ -193,7 +206,7 @@ cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const
   ringBuffer->SetLimits(TS_SIZE, TS_SIZE * 1024);
 #endif
   remux = new cRemux(VPid, APids, Setup.UseDolbyInRecordings ? DPids : NULL, SPids, true);
-  writer = new cFileWriter(FileName, remux);
+  writer = new cFileWriter(FileName, remux, IsTShift);
 }
 
 cRecorder::~cRecorder()
@@ -286,3 +299,11 @@ void cRecorder::Action(void)
 #endif
 #endif
 //M7X0 END AK
+
+cIndexFile *cRecorder::GetIndexFile(void)
+{
+	if(writer)
+		return writer->GetIndexFile();
+	return NULL;
+}
+

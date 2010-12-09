@@ -1273,7 +1273,7 @@ void cRecordingUserCommand::InvokeCommand(const char *State, const char *Recordi
 #define MAXINDEXCATCHUP   8 // seconds
 
 // The minimum age of an index file for considering it no longer to be written:
-#define MININDEXAGE    3600 // seconds
+#define MININDEXAGE    60 // seconds
 
 cIndexFile::cIndexFile(const char *FileName, bool Record)
 :resumeFile(FileName)
@@ -1591,6 +1591,18 @@ int cIndexFile::Get(uchar FileNumber, int FileOffset)
 bool cIndexFile::IsStillRecording()
 {
   return f >= 0;
+}
+
+cUnbufferedFile *cIndexFile::NextFile(cFileName *FileName, bool Record)
+{
+  return FileName->NextFile();
+}
+
+int cIndexFile::WaitIndex(int Index)
+{
+	if (!IsStillRecording())
+		return -1;
+	return Index-1;
 }
 
 // --- cFileName -------------------------------------------------------------

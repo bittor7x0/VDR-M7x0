@@ -52,12 +52,14 @@ protected:
 #endif
 
 public:
-  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids);
+  cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift = false);
                // Creates a new recorder that requires conditional access Ca, has
                // the given Priority and will record the given PIDs into the file FileName.
   virtual ~cRecorder();
   bool Activated(void) const { return activated; }
 //M7X0 END AK
+protected:
+  cIndexFile *GetIndexFile(void);
   };
 
 #endif //__RECORDER_H

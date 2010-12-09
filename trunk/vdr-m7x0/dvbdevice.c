@@ -3012,7 +3012,7 @@ bool cDvbDevice::SetChannelDevice(const cChannel *Channel, bool LiveView)
 
   bool TurnOffLivePIDs = HasDecoder()
                          && (DoTune
-                            || !IsPrimaryDevice()
+                            || (!IsPrimaryDevice() && !Setup.TShift)
                             || LiveView // for a new live view the old PIDs need to be turned off
                             );
 
@@ -3242,6 +3242,9 @@ bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
          if ((playMode == pmAudioOnly) | (playMode == pmAudioOnlyBlack))
             TurnOffLiveMode(true, true);
 
+         if((playMode==pmTransfererAudioOnly)&&(Setup.TShift))
+            TurnOffLiveMode(true, true);
+
          if (tsreplayer != NULL) {
             delete tsreplayer;
             tsreplayer=NULL;
@@ -3253,7 +3256,7 @@ bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
             delete tsreplayer;
             tsreplayer=NULL;
          }
-         TurnOffLiveMode(true, !pidHandles[cDevice::ptVideo].pid |
+         TurnOffLiveMode(true, (!pidHandles[cDevice::ptVideo].pid&&!Setup.TShift) |
               (playMode == pmAudioOnly) | (playMode == pmAudioOnlyBlack));
          CHECK(ioctl(fd_audio, AUDIO_STOP,0));
          CHECK(ioctl(fd_video, VIDEO_STOP, 1));
@@ -3396,10 +3399,10 @@ bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
          break;
 
     case pmTransferer:
-         TurnOffLiveMode(true,!pidHandles[cDevice::ptVideo].pid);
+         TurnOffLiveMode(true,!pidHandles[cDevice::ptVideo].pid&&!Setup.TShift);
          break;
     case pmTransfererAudioOnly:
-         TurnOffLiveMode(true,pidHandles[cDevice::ptVideo].pid);
+         TurnOffLiveMode(true,pidHandles[cDevice::ptVideo].pid||Setup.TShift);
          break;
     default: esyslog("ERROR: unknown play mode %d", PlayMode);
     }

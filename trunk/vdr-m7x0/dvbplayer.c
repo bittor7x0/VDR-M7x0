@@ -14,6 +14,7 @@
 #include "ringbuffer.h"
 #include "thread.h"
 #include "tools.h"
+#include "tshift.h"
 
 // --- cBackTrace ------------------------------------------------------------
 
@@ -278,6 +279,7 @@ bool cNonBlockingFileReader::WaitForDataMs(int msToWait)
 
 class cDvbPlayer : public cPlayer, cThread {
 private:
+  bool mustDeleteIndex;
   enum ePlayModes { pmPlay, pmPause, pmSlow, pmFast, pmStill };
   enum ePlayDirs { pdForward, pdBackward };
   //static int Speeds[];
@@ -316,7 +318,7 @@ protected:
   virtual void Activate(bool On);
   virtual void Action(void);
 public:
-  cDvbPlayer(const char *FileName);
+  cDvbPlayer(const char *FileName, cTShiftIndexFile *newIndex = NULL);
   virtual ~cDvbPlayer();
   bool Active(void) { return cThread::Running(); }
   void Pause(void);
@@ -335,9 +337,10 @@ public:
 #define MAX_SPEEDS    9
 #define MAX_SLOWSPEEDS 3
 #define LOW_SPEEDS    0
-cDvbPlayer::cDvbPlayer(const char *FileName)
+cDvbPlayer::cDvbPlayer(const char *FileName, cTShiftIndexFile *newIndex)
 :cThread("dvbplayer")
 {
+  mustDeleteIndex = !newIndex;
   nonBlockingFileReader = NULL;
   ringBuffer = NULL;
   backTrace = NULL;
@@ -362,6 +365,9 @@ else
 #endif
   fileName = new cFileName(FileName, false);
 //M7X0 END AK
+  if (newIndex)
+     replayFile=newIndex->GetReplayFile(fileName);
+  else
   replayFile = fileName->Open();
   if (!replayFile)
      return;
@@ -369,6 +375,10 @@ else
 
   ringBuffer = new cRingBufferFrameM7x0(PLAYERBUFSIZE, PLAYERBUFALIGNMENT);
   ringBuffer->SetTimeouts(40,0);
+  if (newIndex)
+     index=newIndex;
+  else
+  {
   // Create the index file:
   index = new cIndexFile(FileName, false);
   if (!index)
@@ -377,6 +387,7 @@ else
      delete index;
      index = NULL;
      }
+  }
   backTrace = new cBackTrace;
 }
 
@@ -384,6 +395,7 @@ cDvbPlayer::~cDvbPlayer()
 {
   Detach();
   Save();
+  if (mustDeleteIndex)
   delete index;
   delete fileName;
   delete backTrace;
@@ -483,7 +495,7 @@ void cDvbPlayer::Empty(void)
   //LOCK_THREAD;
   if (nonBlockingFileReader)
      nonBlockingFileReader->Clear();
-  if (playMode == pmFast || playMode == pmSlow || (readIndex = backTrace->Get(playDir == pdForward)) < 0)
+  if ((writeIndex>=0)&&(playMode == pmFast || playMode == pmSlow || (readIndex = backTrace->Get(playDir == pdForward)) < 0))
      readIndex = writeIndex;
   writeIndex = readIndex;
   if ((readIndex = index->GetNextIFrame(readIndex + (playDir == pdBackward ? -1 : 1) ,playDir == pdBackward) - 1) < 0)
@@ -499,6 +511,9 @@ void cDvbPlayer::Empty(void)
 bool cDvbPlayer::NextFile(void)
 {
   if (replayFile && eof) {
+     if (index)
+        replayFile = index->NextFile(fileName, false);
+     else
      replayFile = fileName->NextFile();
      fileNr = fileName->Number();
      fileOffset = 0;
@@ -635,7 +650,12 @@ void cDvbPlayer::Action(void)
                  else if (index) {  // Normal play mode
                     readIndex++;
                     if (!index->Get(readIndex, &fileNr, &fileOffset, NULL, &readFrameLength)) {
-                       readIndex = -1;
+                       readIndex = index->WaitIndex(readIndex);
+                       if (readIndex>=0) {
+                          Sleep = true;
+                          FasterUnlockAction();
+                          continue;
+                          }
                        eof = true;
                        FasterUnlockAction();
                        continue;
@@ -1028,8 +1048,8 @@ bool cDvbPlayer::GetReplayMode(bool &Play, bool &Forward, int &Speed)
 
 // --- cDvbPlayerControl -----------------------------------------------------
 
-cDvbPlayerControl::cDvbPlayerControl(const char *FileName)
-:cControl(player = new cDvbPlayer(FileName))
+cDvbPlayerControl::cDvbPlayerControl(const char *FileName, cTShiftIndexFile *newIndex)
+:cControl(player = new cDvbPlayer(FileName, newIndex))
 {
 }
 
