@@ -63,25 +63,24 @@ void cSubMenu::LoadInfoSubMenu(void)
 		if (fo!=NULL)
 		{
 			fprintf(fo,"0::Schedule\n");
-			fprintf(fo,"0::Channels\n");
-			fprintf(fo,"0:1:Recorder\n");
-			fprintf(fo,"0:2:Plugins\n");
-			fprintf(fo,"0:3:Games\n");
-			fprintf(fo,"0:4:Installation\n");
+			fprintf(fo,"0::Timers\n");
+			fprintf(fo,"0::Recordings\n");
+			fprintf(fo,"0:1:Plugins\n");
+			fprintf(fo,"0:2:Configuraci%cn\n", 243);
 
-			fprintf(fo,"1::Timers\n");
-			fprintf(fo,"1::Recordings\n");
-			fprintf(fo,"4::Setup\n");
-			fprintf(fo,"4::Commands\n");
+			fprintf(fo,"2::Channels\n");
+			fprintf(fo,"2::Setup\n");
+			fprintf(fo,"2::setup\n");
+			fprintf(fo,"2::Commands\n");
 
 			// Plugins Item:
 			j=0;
 			do
 			{
 				p = cPluginManager::GetPlugin(j);
-				if ( p != NULL )
+				if ( p != NULL && strcmp( p->Name(), "setup" ) )
 				{
-					fprintf(fo,"2::%s\n",p->Name());
+					fprintf(fo,"1::%s\n",p->Name());
 				}
 				j++;
 			}
