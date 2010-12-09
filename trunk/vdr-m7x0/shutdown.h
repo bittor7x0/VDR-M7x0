@@ -14,6 +14,11 @@
 
 #include <time.h>
 
+class cUsbAutomounter {
+public:
+  static bool Active(void);
+};
+
 class cCountdown {
 private:
   time_t timeout;      ///< 5-minute countdown timer

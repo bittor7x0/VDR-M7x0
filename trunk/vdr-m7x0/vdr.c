@@ -527,7 +527,6 @@ int main(int argc, char *argv[])
 
   if (!DirectoryOk(VideoDirectory, true)) {
      fprintf(stderr, "vdr: can't access video directory %s\n", VideoDirectory);
-     return 2;
      }
 
   // Daemon mode:
@@ -1337,7 +1336,7 @@ int main(int argc, char *argv[])
                ShutdownHandler.countdown.Cancel();
             }
 
-         if (!Interact && !cRecordControls::Active() && !cCutter::Active() && !Interface->HasSVDRPConnection() && (time(NULL) - cRemote::LastActivity()) > ACTIVITYTIMEOUT) {
+         if (!Interact && !cRecordControls::Active() && !cCutter::Active() && !cUsbAutomounter::Active() && !Interface->HasSVDRPConnection() && (time(NULL) - cRemote::LastActivity()) > ACTIVITYTIMEOUT) {
             // Handle housekeeping tasks
 
             // Shutdown:

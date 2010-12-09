@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/file.h>
+#include <errno.h>
 #include "channels.h"
 #include "config.h"
 #include "cutter.h"
@@ -25,6 +27,26 @@
 #include "tools.h"
 
 cShutdownHandler ShutdownHandler;
+
+bool cUsbAutomounter::Active(void)
+{
+	int file=open("/var/usbautomounter",O_CREAT|O_WRONLY);
+	if(file!=-1)
+	{
+		if(flock(file,LOCK_EX|LOCK_NB))
+		{
+			if(errno==EWOULDBLOCK)
+			{
+				close(file);
+				return true;
+			}
+		}
+		else
+			flock(file,LOCK_UN);
+		close(file);
+	}
+	return false;
+}
 
 cCountdown::cCountdown(void)
 {
@@ -160,6 +182,11 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
 	setIaMode(0);
 	cDevice::PrimaryDevice()->SetTvSettings(0);
      //if (!Interactive || !Interface->Confirm(tr("Editing - shut down anyway?")))
+        return false;
+     }
+  if (cUsbAutomounter::Active()) {
+	setIaMode(0);
+	cDevice::PrimaryDevice()->SetTvSettings(0);
         return false;
      }
 
