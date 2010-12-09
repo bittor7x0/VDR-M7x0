@@ -341,6 +341,7 @@ cSetup::cSetup(void)
 #ifdef USE_DIRECT_IO
   ReplayUseDirectIO = 1;
 #endif
+  ShutdownMessage = 0;
   AbortWhenPluginFails = 0;
   EmergencyExit = 0;
   LircRepeatDelay = 350;
@@ -537,6 +538,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
 #ifdef USE_DIRECT_IO
   else if (!strcasecmp(Name, "ReplayUseDirectIO"))   ReplayUseDirectIO  = atoi(Value);
 #endif
+  else if (!strcasecmp(Name, "ShutdownMessage"))     ShutdownMessage    = atoi(Value);
   else if (!strcasecmp(Name, "AbortWhenPluginFails")) AbortWhenPluginFails = atoi(Value);
   else if (!strcasecmp(Name, "EmergencyExit"))       EmergencyExit      = atoi(Value);
   else if (!strcasecmp(Name, "LircRepeatDelay"))     LircRepeatDelay    = atoi(Value);
@@ -640,6 +642,7 @@ bool cSetup::Save(void)
 #ifdef USE_DIRECT_IO
   Store("ReplayUseDirectIO",  ReplayUseDirectIO);
 #endif
+  Store("ShutdownMessage",    ShutdownMessage);
   Store("AbortWhenPluginFails", AbortWhenPluginFails);
   Store("EmergencyExit",      EmergencyExit);
   Store("LircRepeatDelay",    LircRepeatDelay);

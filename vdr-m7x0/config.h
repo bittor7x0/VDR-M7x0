@@ -298,6 +298,7 @@ public:
 #ifdef USE_DIRECT_IO
   int ReplayUseDirectIO;
 #endif
+  int ShutdownMessage;
   int AbortWhenPluginFails;
   int EmergencyExit;
   int LircRepeatDelay;

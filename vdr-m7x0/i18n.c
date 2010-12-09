@@ -5202,6 +5202,27 @@ const tI18nPhrase Phrases[] = {
     "som før",
     "jako naposledy",
   },
+  { "Setup.Miscellaneous$Show cancel message at shutdown",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Mensaje de cancelación al apagar",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Setup.Miscellaneous$Abort when Plugin fails to load",
     "Abbrechen wenn Plugin nicht lädt",
     "",// TODO
