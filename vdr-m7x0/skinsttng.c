@@ -16,6 +16,7 @@
 #include "osd.h"
 #include "menu.h"
 #include "themes.h"
+#include "tshift.h"
 
 #include "symbols/arrowdown.xpm"
 #include "symbols/arrowup.xpm"
@@ -60,6 +61,33 @@
 #include "symbols/srew3.xpm"
 #include "symbols/teletext.xpm"
 #include "symbols/volume.xpm"
+#include "symbols/tshift.xpm"
+#include "symbols/tshiftplay.xpm"
+#include "symbols/tshift1.xpm"
+#include "symbols/tshift2.xpm"
+#include "symbols/tshift3.xpm"
+#include "symbols/tshift4.xpm"
+#include "symbols/tshift5.xpm"
+#include "symbols/tshift6.xpm"
+#include "symbols/tshift7.xpm"
+#include "symbols/tshift8.xpm"
+#include "symbols/tshift9.xpm"
+#include "symbols/tshift11.xpm"
+#include "symbols/tshift12.xpm"
+#include "symbols/tshift13.xpm"
+#include "symbols/tshift14.xpm"
+#include "symbols/tshift15.xpm"
+#include "symbols/tshift16.xpm"
+#include "symbols/tshift17.xpm"
+#include "symbols/tshift18.xpm"
+#include "symbols/tshift19.xpm"
+#include "symbols/tshifts1.xpm"
+#include "symbols/tshifts2.xpm"
+#include "symbols/tshifts3.xpm"
+#include "symbols/tshifts11.xpm"
+#include "symbols/tshifts12.xpm"
+#include "symbols/tshifts13.xpm"
+#include "symbols/tshiftpause.xpm"
 
 #define Roundness   10
 #define Gap          5
@@ -144,6 +172,10 @@ private:
   int lastSeen;
   tTrackId lastTrackId;
   static cBitmap bmTeletext, bmRadio, bmAudio, bmDolbyDigital, bmEncrypted, bmRecording;
+  static cBitmap bmTShift;
+  static const char *const *TShiftSymbolsFast[2][10];
+  static const char *const *TShiftSymbolsSlow[2][4];
+  int channelNumber;
 public:
   cSkinSTTNGDisplayChannel(bool WithInfo);
   virtual ~cSkinSTTNGDisplayChannel();
@@ -160,6 +192,17 @@ cBitmap cSkinSTTNGDisplayChannel::bmAudio(audio_xpm);
 cBitmap cSkinSTTNGDisplayChannel::bmDolbyDigital(dolbydigital_xpm);
 cBitmap cSkinSTTNGDisplayChannel::bmEncrypted(encrypted_xpm);
 cBitmap cSkinSTTNGDisplayChannel::bmRecording(recording_xpm);
+cBitmap cSkinSTTNGDisplayChannel::bmTShift(tshift_xpm);
+
+const char *const *cSkinSTTNGDisplayChannel::TShiftSymbolsFast[2][10] = {
+    { tshift11_xpm, tshift11_xpm, tshift12_xpm, tshift13_xpm, tshift14_xpm, tshift15_xpm, tshift16_xpm, tshift17_xpm, tshift18_xpm, tshift19_xpm },
+    { tshift11_xpm, tshift1_xpm, tshift2_xpm, tshift3_xpm, tshift4_xpm, tshift5_xpm, tshift6_xpm, tshift7_xpm, tshift8_xpm, tshift9_xpm }
+  };
+
+const char *const *cSkinSTTNGDisplayChannel::TShiftSymbolsSlow[2][4] = {
+    { tshifts11_xpm, tshifts11_xpm, tshifts12_xpm, tshifts13_xpm },
+    { tshifts1_xpm, tshifts1_xpm, tshifts2_xpm, tshifts3_xpm }
+  };
 
 cSkinSTTNGDisplayChannel::cSkinSTTNGDisplayChannel(bool WithInfo)
 {
@@ -171,6 +214,7 @@ cSkinSTTNGDisplayChannel::cSkinSTTNGDisplayChannel(bool WithInfo)
   lineHeight = font->Height();
   frameColor = Theme.Color(clrChannelFrame);
   message = false;
+  channelNumber = -1;
   if (withInfo) {
      x0 = 0;
      x1 = x0 + font->Width("00:00") + 4;
@@ -255,6 +299,17 @@ void cSkinSTTNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
   int x = x4 - 5;
   if (Channel && !Channel->GroupSep()) {
      int d = 3;
+     if(Setup.TShift)
+     {
+        channelNumber = Channel->Number();
+        x -= bmTShift.Width() + d;
+        switch(cTShiftControl::GetTShiftInfo(channelNumber)) {
+           case 1: osd->DrawBitmap(x, y0 + (y1 - y0 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolOff), frameColor); break;
+           case 2: osd->DrawBitmap(x, y0 + (y1 - y0 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolOn), frameColor); break;
+           case 3:
+           case 4: osd->DrawBitmap(x, y0 + (y1 - y0 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolRecFg), Theme.Color(clrChannelSymbolRecBg)); break;
+           }
+        }
      bool rec = cRecordControls::Active();
      x -= bmRecording.Width() + d;
      if(rec)
@@ -280,6 +335,7 @@ void cSkinSTTNGDisplayChannel::SetChannel(const cChannel *Channel, int Number)
         }
      }
   osd->DrawText(x3 + 2, y0, ChannelString(Channel, Number), Theme.Color(clrChannelName), frameColor, cFont::GetFont(fontOsd), x - x3 - 2);
+  osd->DrawRectangle(x1,y6,x4-3-cFont::GetFont(fontSml)->Width((const char *)DayDateTime()),y7-1,frameColor);
 }
 
 void cSkinSTTNGDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Following)
@@ -332,6 +388,74 @@ void cSkinSTTNGDisplayChannel::Flush(void)
         if ((!Track && *lastTrackId.description) || (Track && strcmp(lastTrackId.description, Track->description))) {
            osd->DrawText(x3 + 2, y6, Track ? Track->description : "", Theme.Color(clrChannelName), frameColor, font, x4 - x3 - w - 4);
            strn0cpy(lastTrackId.description, Track ? Track->description : "", sizeof(lastTrackId.description));
+           }
+        osd->DrawRectangle(x1,y6,x4-w-3,y7-1,frameColor);
+        if (Setup.TShift) {
+           TShiftPlayerMode Mode;
+           int Record;
+           switch (cTShiftControl::GetTShiftInfo(channelNumber, &Mode, &Record)) {
+              case 0: osd->DrawRectangle(x4 - 8 - bmTShift.Width(), (y0 + y1 - bmTShift.Height()) / 2, x4 - 9, (y0 + y1 + bmTShift.Height()) / 2 - 1, frameColor); break;
+              case 1: osd->DrawBitmap(x4 - 8 - bmTShift.Width(), (y0 + y1 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolOff), frameColor); break;
+              case 2: osd->DrawBitmap(x4 - 8 - bmTShift.Width(), (y0 + y1 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolOn), frameColor); break;
+              case 3:
+              case 4: osd->DrawBitmap(x4 - 8 - bmTShift.Width(), (y0 + y1 - bmTShift.Height()) / 2, bmTShift, Theme.Color(clrChannelSymbolRecFg), Theme.Color(clrChannelSymbolRecBg)); break;
+              }
+           if (Record > 0) {
+              const char *const *nameBitmap = NULL;
+              bool Play,Forward;
+              int Speed;
+              switch (Mode) {
+                 case TShiftPlayerLive: nameBitmap = tshift_xpm; break;
+                 case TShiftPlayerDelay: nameBitmap = tshiftplay_xpm; break;
+                 case TShiftPlayerPlay:
+                 case TShiftPlayerPause:
+                    if (cTShiftControl::ReplayInfo(channelNumber, &Play, &Forward, &Speed))
+                    {
+                       if (Play)
+                          if (Speed < 0)
+                             nameBitmap = tshiftplay_xpm;
+                          else {
+                             if (Speed > 9)
+                                Speed = 9;
+                             nameBitmap = TShiftSymbolsFast[Forward][Speed];
+                             }                             
+                       else
+                          if (Speed < 0)
+                             nameBitmap = tshiftpause_xpm;
+                          else {
+                             if (Speed > 3)
+                                Speed = 3;
+                             nameBitmap = TShiftSymbolsSlow[Forward][Speed];
+                             }
+                    }
+                    else
+                       nameBitmap = (Mode = TShiftPlayerPlay) ? tshiftplay_xpm : tshiftpause_xpm;
+                    break;
+                 }
+              if (nameBitmap) {
+                 cBitmap bitmap(nameBitmap);
+                 osd->DrawBitmap(x1, y6 + (y7 - y6 - bitmap.Height()) / 2, bitmap, Theme.Color(Record>1 ? clrChannelSymbolOn : clrChannelSymbolOff),  frameColor);
+                 }
+              int Current, Total;
+              if (cTShiftControl::BufferInfo(channelNumber, &Total, &Current)) {
+                 if (Total > 0) {
+                    int x = x1 + bmTShift.Width() + Gap + font->Width("00:00:00");
+                    int xf = x4 - w - 2 - Gap - font->Width("00:00:00") - Gap;
+                    int yi = y6 + (y7 - y6) / 2 - ScrollWidth;
+                    int yf = y6 + (y7 - y6) / 2 + ScrollWidth - 1;
+                    cString time(IndexToHMSF(Current, false));
+                    osd->DrawText(x - font->Width(time), y7 - font->Height(time), time, Theme.Color(clrChannelDate), frameColor, font);
+                    x += Gap;
+                    Current=((xf - x) * Current) / Total;
+                    if(Current < xf - x - 1)
+                       osd->DrawRectangle(x + Current, yi, xf - 1, yf, Theme.Color(clrChannelTimebarRest));
+                    if(Current > 0)
+                       osd->DrawRectangle(x , yi, x + Current - 1, yf, Theme.Color(clrChannelTimebarSeen));
+                    time = IndexToHMSF(Total, false);
+                    osd->DrawText(x4 - w - 2 - Gap - font->Width("00:00:00"), y7 - font->Height(time), time, Theme.Color(clrChannelDate), frameColor, font);
+                    }
+                 }
+              }
            }
         }
 

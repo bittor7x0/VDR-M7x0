@@ -83,6 +83,7 @@
 #include "timers.h"
 #include "tools.h"
 #include "transfer.h"
+#include "tshift.h"
 #include "videodir.h"
 //M7X0 BEGIN AK
 #include "builddate.h"
@@ -640,6 +641,7 @@ int main(int argc, char *argv[])
      cSchedulesReaderThread::getInstance()->ReadEPG();
      }
 
+  cTShiftControl::InitializeTShift();
   // DVB interfaces:
 
   cDvbDevice::Initialize();
@@ -999,10 +1001,12 @@ int main(int argc, char *argv[])
 	      dsyslog("DEBUG: wakeup from IaMode");
 	      setIaMode(1);
 	      cDevice::PrimaryDevice()->SetTvSettings(1);
+	      if(Setup.TShift)
+	         cTShiftControl::StartTShift();
 	      key = kNone;
 	   }
 	}
-
+	key=cTShiftControl::FilterKey(key,&LastChannel,Menu);
         // Keys that must work independent of any interactive mode:
         switch (key) {
           // Menu control:
@@ -1152,6 +1156,7 @@ int main(int argc, char *argv[])
 		    setIaMode(0);
 		    cDevice::PrimaryDevice()->SetTvSettings(0);
 		    cControl::Shutdown();
+		    cTShiftControl::ShutdownTShift();
 		    break;
 		}
                 // Check for activity, request power button again if active:
@@ -1160,6 +1165,7 @@ int main(int argc, char *argv[])
 		   setIaMode(0);
 		   cDevice::PrimaryDevice()->SetTvSettings(0);
 		   cControl::Shutdown();
+		    cTShiftControl::ShutdownTShift();
 		   // Not pressed power - set VDR to be non-interactive and power down later:
                    ShutdownHandler.SetUserInactive();
                    break;
@@ -1179,6 +1185,7 @@ int main(int argc, char *argv[])
                 setIaMode(0);
                 cDevice::PrimaryDevice()->SetTvSettings(0);
                 cControl::Shutdown();
+                cTShiftControl::ShutdownTShift();
            }
 
                 // Ok, now call the shutdown script:
@@ -1354,6 +1361,7 @@ int main(int argc, char *argv[])
                if (ShutdownHandler.IsUserInactive() && ShutdownHandler.ConfirmShutdown(false))
                {
                   cControl::Shutdown();
+                  cTShiftControl::ShutdownTShift();
                   ShutdownHandler.DoShutdown(false);
                }
                // Do this again a bit later:
@@ -1364,6 +1372,7 @@ int main(int argc, char *argv[])
 			setIaMode(0);
 			cDevice::PrimaryDevice()->SetTvSettings(0);
 			cControl::Shutdown();
+			cTShiftControl::ShutdownTShift();
 		    }
 		}
 		}
@@ -1401,6 +1410,7 @@ Exit:
   cRecordControls::Shutdown();
   cCutter::Stop();
   delete Menu;
+  cTShiftControl::ShutdownTShift();
   cControl::Shutdown();
   delete Interface;
   cOsdProvider::Shutdown();

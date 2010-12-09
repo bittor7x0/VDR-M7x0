@@ -14,12 +14,13 @@
 #include "thread.h"
 
 class cDvbPlayer;
+class cTShiftIndexFile;
 
 class cDvbPlayerControl : public cControl {
 private:
   cDvbPlayer *player;
 public:
-  cDvbPlayerControl(const char *FileName);
+  cDvbPlayerControl(const char *FileName, cTShiftIndexFile *newIndex = NULL);
        // Sets up a player for the given file.
   virtual ~cDvbPlayerControl();
   bool Active(void);

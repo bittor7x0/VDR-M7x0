@@ -293,6 +293,13 @@ public:
   int ChannelFilter;
   int InitialChannel;
   int InitialVolume;
+  int TShift;
+  int TShiftBufferSize;
+  int TShiftStartRecord;
+  int TShiftDelayed;
+  int TShiftPriority;
+  int TShiftPause;
+  int TShiftTimeout;
   int LRChannelGroups;
   int LRForwardRewind;
   int ShowRecDate, ShowRecTime, ShowRecLength, ShowProgressBar, MenuCmdPosition;

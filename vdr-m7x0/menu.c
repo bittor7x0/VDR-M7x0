@@ -34,6 +34,7 @@
 #include "timers.h"
 #include "transfer.h"
 #include "videodir.h"
+#include "tshift.h"
 
 #define MAXWAIT4EPGINFO   3 // seconds
 #define MODETIMEOUT       3 // seconds
@@ -3348,6 +3349,69 @@ cMenuSetupMisc::cMenuSetupMisc(void)
   Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$LIRC repeat timeout"),        &data.LircRepeatTimeout, 0, 5000));
 }
 
+// --- cMenuSetupTShift --------------------------------------------------
+
+class cMenuSetupTShift : public cMenuSetupBase {
+private:
+  const char *modes[3];
+  const char *delayed[3];
+  void Setup();
+public:
+  eOSState ProcessKey(eKeys Key);
+  cMenuSetupTShift(void);
+  };
+
+cMenuSetupTShift::cMenuSetupTShift(void)
+{ 
+  SetSection(tr("Delayed TV"));
+  modes[0] = tr("never");
+  modes[1] = tr("always");
+  modes[2] = tr("using play");
+  delayed[0] = tr("never");
+  delayed[1] = tr("always");
+  delayed[2] = tr("delayed");
+  Setup();
+}
+
+void cMenuSetupTShift::Setup(void)
+{
+  int current=Current();
+  Clear();
+  Add(new cMenuEditStraItem(tr("Delayed TV"),&data.TShift,3,modes));
+  Add(new cMenuEditIntItem(tr("Setup.TShift$Buffer size (min)"), &data.TShiftBufferSize, 10, 180));
+  Add(new cMenuEditIntItem(tr("Setup.TShift$Start records after (s)"), &data.TShiftStartRecord, 0, 3600));
+  Add(new cMenuEditIntItem(tr("Setup.TShift$Inactivity timeout (min)"),&data.TShiftTimeout, 0, 180));
+  Add(new cMenuEditStraItem(tr("Setup.TShift$Keep recordings"),&data.TShiftDelayed,3,delayed));
+  Add(new cMenuEditIntItem(tr("Setup.TShift$Delayed rec priority"),&data.TShiftPriority, 0, MAXPRIORITY));
+  Add(new cMenuEditBoolItem(tr("Setup.TShift$Pause on channel switching"),&data.TShiftPause));
+  SetCurrent(Get(current));
+  Display();
+}
+
+eOSState cMenuSetupTShift::ProcessKey(eKeys Key)
+{
+  int oldTShift = data.TShift;
+  int oldTShiftBufferSize = data.TShiftBufferSize; 
+  int oldTShiftStartRecord = data.TShiftStartRecord;
+  int oldTShiftDelayed = data.TShiftDelayed;
+  int oldTShiftPriority = data.TShiftPriority;
+  int oldTShiftPause = data.TShiftPause;
+  int oldTShiftTimeout = data.TShiftTimeout;
+  eOSState state = cMenuSetupBase::ProcessKey(Key);
+
+  if (Key != kNone && (data.TShift != oldTShift || data.TShiftBufferSize != oldTShiftBufferSize || data.TShiftStartRecord != oldTShiftStartRecord || data.TShiftDelayed != oldTShiftDelayed || data.TShiftPriority != oldTShiftPriority || data.TShiftPause != oldTShiftPause || data.TShiftTimeout != oldTShiftTimeout)) {
+     Setup();
+     if (!data.TShift != !oldTShift) {
+       if (!data.TShift)
+	 cTShiftControl::ShutdownTShift();
+       else
+	 cTShiftControl::StartTShift();
+       }
+     }
+  return state;
+}
+
+
 // --- cMenuSetupPluginItem --------------------------------------------------
 
 class cMenuSetupPluginItem : public cOsdItem {
@@ -3449,6 +3513,7 @@ void cMenuSetup::Set(void)
   Add(new cOsdItem(hk(tr("Cutter")),        osUser8));
   Add(new cOsdItem(hk(tr("Replay")),        osUser9));
   Add(new cOsdItem(hk(tr("Miscellaneous")), osUser10));
+  Add(new cOsdItem(hk(tr("Delayed TV")),osTShift));
   if (cPluginManager::HasPlugins())
   Add(new cOsdItem(hk(tr("Plugins")),       osUser11));
   Add(new cOsdItem(hk(tr("Restart")),       (eOSState) (osUser11 + 1)));
@@ -3482,7 +3547,8 @@ eOSState cMenuSetup::ProcessKey(eKeys Key)
     case osUser9: return AddSubMenu(new cMenuSetupReplay);
     case osUser10: return AddSubMenu(new cMenuSetupMisc);
     case osUser11: return AddSubMenu(new cMenuSetupPlugins);
-    case osUser11 + 1: return Restart();
+    case osUserRestart: return Restart();
+    case osTShift: return AddSubMenu(new cMenuSetupTShift);
 //M7X0 BEGIN AK
     default: ;
     }
@@ -4069,6 +4135,7 @@ cChannel *cDisplayChannel::NextAvailableChannel(cChannel *Channel, int Direction
 
 eOSState cDisplayChannel::ProcessKey(eKeys Key)
 {
+  Key=cTShiftControl::FilterKeyFromMenu(Key);
   cChannel *NewChannel = NULL;
   if (Key != kNone)
      lastTime.Set();

@@ -27,10 +27,13 @@ class cReceiver {
 //M7X0 BEGIN AK
   friend class cTransfer;
 //M7X0 END AK
-private:
+protected:
   cDevice *device;
+private:
   int ca;
+protected:
   int priority;
+private:
   int pids[MAXRECEIVEPIDS];
   int numPids;
   bool WantsPid(int Pid);
