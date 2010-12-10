@@ -1,0 +1,133 @@
+# CONFIG_PREFIX is not set
+# CONFIG_BOOTLOADER is not set
+CONFIG_GENERATE_ROOTFS_DIR = y
+# CONFIG_ROOTFS_DIR is not set
+# CONFIG_GENERATE_EXT2_ROOTFS_IMAGE is no set
+# CONFIG_EXT2_ROOTFS_SIZE is not set
+# CONFIG_EXT2_ROOTFS_IMG is not set
+# CONFIG_GENERATE_CRAM_ROOTFS_IMAGE is not set
+CONFIG_CRAMFS_NEEDS_SWAP = y
+# CONFIG_CRAM_ROOTFS_IMG is not set
+CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE = y
+# CONFIG_SQUASH_ROOTFS_IMG is not set
+# Add LZMA support to SquashFS, if you change this parameter run: make distclean-squashfs-host distclean-siemens-linux-kernel
+# CONFIG_SQUASHFS_LZMA is not set
+# CONFIG_JFFS2_DIR is not set
+CONFIG_GENERATE_JFFS2_DIR = y
+CONFIG_GENERATE_JFFS2_IMAGE = y
+# CONFIG_JFFS2_IMG is not set
+# Add LZO support (faster than zlib) to JFFS2, if you change this parameter run: make distclean-mtd-utils-host distclean-siemens-linux-kernel
+# WARNING: Set CONFIG_GENERATE_JFFS2_DIR and CONFIG_GENERATE_JFFS2_IMAGE to "y" for generate a firmware with a JFFS2-LZO image or your M7x0 will not start
+CONFIG_JFFS2_LZO = y
+# type is m740 or m750s
+CONFIG_M7X0_TYPE = m740
+CONFIG_BUSYBOX = y
+# CONFIG_GDB is not set
+# CONFIG_ZLIB is not set
+# CONFIG_ZLIB_STATIC is not set
+# CONFIG_READLINE is not set
+# CONFIG_NCURSES is not set
+# If you change bash shell parameter, run: make distclean-busybox
+# CONFIG_BASH is not set
+CONFIG_DOSFSTOOLS = y
+CONFIG_E2FSPROGS = y
+# CONFIG_LIBUUID is not set
+CONFIG_LIRC = y
+# CONFIG_PURE-FTPD is not set
+# CONFIG_MINI-SENDMAIL is not set
+# CONFIG_SSMTP is not set
+CONFIG_EGCS = y
+CONFIG_VDR = y
+CONFIG_VDR_TREE = andreas-unstable
+# CONFIG_VDR_LOCAL_PATH is not set
+CONFIG_VDR-PLUGINS = unstable/epgsearch unstable/filebrowser unstable/skinenigmang unstable/blink unstable/channelscan unstable/osdteletext unstable/setup unstable/aide unstable/cinebars unstable/channellists unstable/cridplayer unstable/osdadjust unstable/scheduler unstable/undelete unstable/pilotskin unstable/fepg
+CONFIG_VDR-PLUGINS-LIBS = epgsearch epgsearchonly conflictcheckonly filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars channellists cridplayer osdadjust scheduler undelete pilotskin fepg
+CONFIG_USBAUTOMOUNTER = y
+CONFIG_M7X0-MODULES = y
+CONFIG_SIEMENS-LINUX-KERNEL = y
+CONFIG_GENERATE_SIEMENS-LINUX-KERNEL-IMG = y
+# CONFIG_SIEMENS-LINUX-KERNEL-IMG is not set
+CONFIG_GENERATE_WSW-IMG = y
+# CONFIG_WSW-IMG is not set
+CONFIG_GENERATE_OFI-IMG = y
+# CONFIG_OFI-IMG is not set
+CONFIG_SCRIPT_BASE = base-lite
+CONFIG_LIBOSD = y
+CONFIG_O7O_FLASHER = y
+CONFIG_TOOL-BOX = y
+# CONFIG_WEBIF is not set
+# CONFIG_WEBIF_TREE is not set
+# CONFIG_BOOTMENU is not set
+
+# Extra packs
+CONFIG_TOOL-BOX-EXTRA = y
+# CONFIG_RUNIT is not set
+CONFIG_SPINDOWN = y
+CONFIG_SCSI-SPIN = y
+# CONFIG_DROPBEAR is not set
+# CONFIG_OPENNTPD is not set
+# CONFIG_NTPCLIENT is not set
+# CONFIG_SAMBA is not set
+# CONFIG_PPTPD is not set
+# CONFIG_PPP is not set
+# CONFIG_VSFTPD is not set
+# CONFIG_CTORRENT_DNH is not set
+# CONFIG_DVBSNOOP is not set
+# CONFIG_HTOP is not set
+# CONFIG_FREETYPE is not set
+# CONFIG_LIBMPEG2 is not set
+# CONFIG_NOAD is not set
+# CONFIG_FFMPEG is not set
+# CONFIG_VDR2TS is not set
+# CONFIG_LIBJPEG is not set
+# CONFIG_LIBPNG is not set
+# CONFIG_GRAPHICSMAGICK is not set
+# CONFIG_LYNX is not set
+# CONFIG_SQLITE is not set
+# CONFIG_BOOST is not set
+# CONFIG_BOOST-date_time is not set
+# CONFIG_BOOST-filesystem is not set
+# CONFIG_BOOST-graph is not set
+# CONFIG_BOOST-graph_parallel is not set
+# CONFIG_BOOST-iostreams is not set
+# CONFIG_BOOST-math is not set
+# CONFIG_BOOST-mpi is not set
+# CONFIG_BOOST-program_options is not set
+# CONFIG_BOOST-python is not set
+# CONFIG_BOOST-random is not set
+# CONFIG_BOOST-regex is not set
+# CONFIG_BOOST-serialization is not set
+# CONFIG_BOOST-signals is not set
+# CONFIG_BOOST-system is not set
+# CONFIG_BOOST-test is not set
+# CONFIG_BOOST-thread is not set
+# CONFIG_BOOST-wave is not set
+
+# Performance Testing Tools
+# CONFIG_MINI_SNMPD is not set
+# CONFIG_HACKBENCH is not set
+# CONFIG_PIPE-TEST is not set
+# CONFIG_BONNIE++ is not set
+# CONFIG_DBENCH is not set
+# CONFIG_LMBENCH is not set
+# CONFIG_UNIXBENCH is not set
+
+# uPnP and DLNA server
+# CONFIG_USHARE is not set
+
+# uPnP client
+# CONFIG_MINIUPNPC is not set
+# CONFIG_MINISSDPD is not set
+
+# uPnP and DLNA libraries
+# CONFIG_LIBUPNP is not set
+# CONFIG_LIBUPNP_DLNA is not set
+# CONFIG_LIBDLNA is not set
+
+# NFS v3 Server
+# CONFIG_UNFS3 is not set
+
+# Kernel NFS server utils
+# CONFIG_NFS-UTILS is not set
+# CONFIG_PORTMAP is not set
+# CONFIG_TCP_WRAPPERS is not set
