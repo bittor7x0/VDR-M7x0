@@ -60,6 +60,17 @@ SIEMENS-LINUX-KERNEL_MODLST := \
    lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
    lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o \
    lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o 
+
+ifeq ($(CONFIG_PPTPD),y)
+   SIEMENS-LINUX-KERNEL_MODLST += \
+	lib/modules/2.4.21-xfs/kernel/crypto/sha1.o \
+	lib/modules/2.4.21-xfs/kernel/crypto/arc4.o \
+	lib/modules/2.4.21-xfs/kernel/drivers/net/slhc.o \
+	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_generic.o \
+	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_async.o \
+	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_mppe.o
+endif
+
 SIEMENS-LINUX-KERNEL_DIRLST := \
    lib/modules \
    lib/modules/2.4.21-xfs \
@@ -69,6 +80,13 @@ SIEMENS-LINUX-KERNEL_DIRLST := \
    lib/modules/2.4.21-xfs/kernel/drivers \
    lib/modules/2.4.21-xfs/kernel/drivers/usb \
    lib/modules/2.4.21-xfs/kernel/drivers/usb/host     
+
+ifeq ($(CONFIG_PPTPD),y)
+   SIEMENS-LINUX-KERNEL_DIRLST += \
+	lib/modules/2.4.21-xfs/kernel/crypto \
+	lib/modules/2.4.21-xfs/kernel/drivers/net
+endif
+
 #
 # unpack siemens linux kernel
 #
@@ -104,6 +122,12 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_patched: \
 # There are some hard coded defines in tree, which are system type depending
 	$(call patch_package, $(SIEMENS-LINUX-KERNEL_DIR), \
 		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_M7X0_TYPE))
+	if [ X"$(CONFIG_PPTPD)" = X"y" ] ; then \
+		$(call patch_package, $(SIEMENS-LINUX-KERNEL_DIR), \
+			$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/others/cryptoapi) ; \
+		$(call patch_package, $(SIEMENS-LINUX-KERNEL_DIR), \
+			$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/others/mppe) ; \
+	fi
 	$(TOUCH) $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_patched
 
 #
@@ -167,6 +191,26 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed: \
 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
 		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) \
 		INSTALL_MOD_PATH=$(TARGET_ROOT)/$(M7X0_KERNEL_DIR) modules_install
+ifeq ($(CONFIG_PPTPD),y)
+	(if [ X"`$(GREP) sha1\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
+		$(SED) -i 's/\/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/\/sbin\/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/crypto\/sha1.o\n\ \ \ \ \/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
+	fi);
+	(if [ X"`$(GREP) arc4\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
+		$(SED) -i 's/\/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/\/sbin\/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/crypto\/arc4.o\n\ \ \ \ \/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
+	fi);
+	(if [ X"`$(GREP) slhc\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
+		$(SED) -i 's/\/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/\/sbin\/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/slhc.o\n\ \ \ \ \/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
+	fi);
+	(if [ X"`$(GREP) ppp_generic\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
+		$(SED) -i 's/\/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/\/sbin\/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_generic.o\n\ \ \ \ \/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
+	fi);
+	(if [ X"`$(GREP) ppp_async\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
+		$(SED) -i 's/\/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/\/sbin\/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_async.o\n\ \ \ \ \/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
+	fi);
+	(if [ X"`$(GREP) ppp_mppe\.o $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
+		$(SED) -i 's/\/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/\/sbin\/insmod\ \/lib\/modules\/2.4.21-xfs\/kernel\/drivers\/net\/ppp_mppe.o\n\ \ \ \ \/usr\/sbin\/inetd\ \/etc\/inetd.conf\ \&/g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
+	fi);
+endif
 	$(TOUCH) $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed
 
 
