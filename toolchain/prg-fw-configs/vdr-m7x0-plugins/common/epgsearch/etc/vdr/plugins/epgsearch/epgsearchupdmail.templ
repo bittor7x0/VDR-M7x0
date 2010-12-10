@@ -1,0 +1,215 @@
+#########################################################################
+# Esta es una plantilla para notificaciones por email de cambios en 
+# programaciones.
+#
+# Se han de definir tres secciones:
+#  - "subject" como asunto del mensaje.
+#  - "mailbody" como cuerpo del mensaje.
+#    Las variables %update.newtimers%, %update.modtimers% y %update.deltimers% 
+#    serán sustituidas respectivamente por las listas de programaciones nuevas,
+#    modificadas y borradas.
+#  - "timer" es la sección que describe una programación dentro de una de las
+#    listas.
+#
+# ¡Se debe cerrar cada sección con la correspondiente etiqueta!
+# En el MANUAL se describern las variables disponibles.
+#
+#
+# Version: 0.3    Date: 24.09.2006
+#
+#  Author: Mike Constabel      <vejoun @ vdrportal>
+#          Christian Wieninger <winni  @ vdrportal>
+#
+#  Traducido/adaptado: Atinar  <atinar1 @ hotmail . com>    30.04.2010
+#
+#########################################################################
+
+#########################################################################
+# Asunto del mensaje (no poner salto de línea)
+#########################################################################
+<subject>[epgsearch] Cambios en programaciones</subject>
+
+
+#########################################################################
+# Cuerpo del mensaje
+#########################################################################
+<mailbody>
+<html>
+<head>
+	<title>Cambios en programaciones<br/>por epgsearch</title>
+
+	<style type="text/css">
+		div.level0 {
+			font-family: Bitstream Vera Sans;
+			background-color: White;
+			margin: 0;
+			padding: 5px;
+			}
+		table {
+			border: medium none;
+			border-collapse: separate;
+			border-spacing: 2px;
+			empty-cells: show;
+			}
+		th, td {
+			border: medium none;
+			word-wrap: break-word;
+			padding: 5px;
+			text-align: left;
+			vertical-align: middle;
+			}
+		th {
+			background-color: AntiqueWhite;
+			font-weight: normal;
+			width: 10ex;
+			}
+		th.caption {
+			background-color: transparent;
+			font-weight: bold;
+			min-width: 50ex;
+			width: auto;
+			}
+		td {
+			background-color: Linen;
+			}
+		td.container {
+			background-color: transparent;
+			padding:0 5px;
+			}
+		table.main {
+			max-width: 120ex;
+			margin-top: 1.5em;
+			background-color: Gainsboro;
+			border-spacing: 5px;
+			}
+		table#info {
+			border: 3px solid Gainsboro;
+			border-spacing: 2px;
+			}
+		table.timer {
+			margin: 5px 0;
+			width: 100%;
+			background-color: transparent;
+			}
+		a {
+			color: DarkSlateBlue;
+			text-decoration: none;
+			}
+		a:hover {
+			text-decoration: underline;
+			}
+		a.gotop {
+			margin: 0 1ex;
+			float: right;
+			}
+		.title,
+		.subtitle,
+		.description {
+			margin: 0 0 0.3em;
+			}
+		.title a {
+			font-weight: bold;
+			}
+		.subtitle {
+			font-style: italic;
+			}
+	</style>
+</head>
+<body>
+	<div class="level0">
+		<table id="info" class="main">
+			<tr>
+				<th colspan="2" class="caption">Detalles de la actualización</th>
+			</tr>
+			<tr>
+				<th>Actualizado el</a></th><td>%datenow% %timenow%</td>
+			</tr>
+			<tr>
+				<th><a href="#new">Programaciones nuevas</a></th><td>%update.countnewtimers%</td>
+			</tr>
+			<tr>
+				<th><a href="#mod">Programaciones modificadas</a></th><td>%update.countmodtimers%</td>
+			</tr>
+			<tr>
+				<th><a href="#del">Programaciones borradas</a></th><td>%update.countdeltimers%</td>
+			</tr>
+		</table>
+		<table id="new" class="main">
+			<tr>
+				<th class="caption">
+					<a href="#info" class="gotop">&uarr; Subir</a> Programaciones nuevas
+				</th>
+			</tr>
+			<tr>
+				<td class="container">
+					%update.newtimers%
+				</td>
+			</tr>
+		</table>
+		<table id="mod" class="main">
+			<tr>
+				<th class="caption">
+					<a href="#info" class="gotop">&uarr; Subir</a> Programaciones modificadas
+				</th>
+			</tr>
+			<tr>
+				<td class="container">
+					%update.modtimers%
+				</td>
+			</tr>
+		</table>
+		<table id="del" class="main">
+			<tr>
+				<th class="caption">
+					<a href="#info" class="gotop">&uarr; Subir</a> Programaciones borradas
+				</th>
+			</tr>
+			<tr>
+				<td class="container">
+					%update.deltimers%
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
+</mailbody>
+
+##############################################################################
+# Descripción de cada programación de las listas anteriores.
+# Se pueden usar variables referidas a la programación o al envento EPG.
+# Se debe tener en cuenta que la programación es posible que no tenga evento 
+# asociado, en cuyo caso las variables se sustituyen por espacios.
+# También se pueden utilizar variables definidas por el usuario en 
+# epgsearchuservars.conf (ejemplo: webif_url_base).
+#########################################################################
+<timer>
+					<table class="timer">
+						<tr class="event">
+							<th>Programa</th>
+							<td>
+								<p class="title"><a href="%webif_url_base%/epgGrid.kl1?start=l%time_lng%">%title%</a></p>
+								<p class="subtitle">%subtitle%</p>
+								<div class="desc">%htmlsummary%</div>
+							</td>
+						</tr>
+						<tr class="date">
+							<th>Fecha</td><td>%time_w% %date%</td>
+						</tr>
+						<tr class="timespan">
+							<th>Duración<br/>evento</th><td>%time%-%timeend%</td>
+						</tr>
+						<tr class="timespan">
+							<th>Duración<br/>programación</th><td>%timer.start%-%timer.stop%</td>
+						</tr>
+						<tr class="channel">
+							<th>Canal</th><td>%timer.chlng% (%timer.chnr%)</td>
+						</tr>
+						<tr class="file">
+							<th>Archivo</th><td>%timer.file%</td>
+						</tr>
+						<tr class="search">
+							<th>Búsqueda</th><td>%timer.search% (%timer.searchid%)</td>
+						</tr>
+					</table>
+</timer>
