@@ -1,0 +1,41 @@
+<!--
+-   open7x0-VDR Configuration File
+-   based on Minisetup by Ralf Dotzert
+-->
+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="/etc/vdr/rebootvdr" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
+    <plugins sysconfig="rc.local.conf--vdr_pluginopts" protected="setup">
+    </plugins>
+    <menus>
+        <menu name="Gestionar plugins" help1="Activar y desactivar plugins" system="ActPlugins" />
+        <menu name="Configuración general">
+            <entry name="Tiempo de inicio" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Segundos para iniciar VDR antes de una grab. programada" />
+            <entry name="Iniciar botones de rescate" sysconfig="rc.local.conf--rescue_keys" type="bool" value="NO" help1="Reinicia M7x0 con HELP+EXIT y el VDR con HELP+PIP" />
+            <entry name="Opciones del VDR" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0 -p 0" help1="Opciones pasadas al ejecutar el VDR (Ver documentación)" />
+        </menu>
+        <menu name="Configuración de directorios">
+            <entry name="Dir. archivos configuración" sysconfig="rc.local.conf--vdr_confdir" type="directory" value='&quot;/etc/vdr&quot;' help1="Directorio donde están los archivos de configuración" />
+            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="directory" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
+            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="directory" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorios separados por espacios donde están los plugins" />
+        </menu>
+        <menu name="Configuración de la EPG">
+            <entry name="Archivo EPG" sysconfig="rc.local.conf--vdr_epgfile" type="file" value='&quot;/etc/vdr/epg.data&quot;' help1="Archivo donde se almacena la información de la EPG" />
+            <entry name="EPG inmediata" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="Guardar inmediatamente la EPG o sólo al apagar el VDR" />
+        </menu>
+        <menu name="Configuración de discos USB">
+            <entry name="Dispositivos a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivos USB a detener separados por espacios. Ej.: /dev/sda" />
+            <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="300" help1="Tiempo de inactividad para detener el disco duro USB" />
+            <entry name="Parar dispositivos al apagar" sysconfig="rc.local.conf--hd_spindown_shutdown" type="bool" value="NO" help1="Detener dispositivos al apagar el sistema" />
+            <entry name="Desactivar swaps al apagar" sysconfig="rc.local.conf--hd_swap" type="bool" value="NO" help1="Desactivar las particiones swap al apagar" />
+        </menu>
+        <menu name="Depuración">
+            <entry name="Activar servicio syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="Registro del sistema. Dejarlo vacío para activarlo" />
+            <entry name="Mostrar mensajes en OSD" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Mostrar en el OSD la info de procesos al arrancar" />
+            <entry name="Monitor de memoria" sysconfig="rc.local.conf--memwatch" type="bool" value="NO" help1="Guardar registros del uso de memoria" />
+            <entry name="Mon. memoria - Intervalo" sysconfig="rc.local.conf--memwatch_interval" type="number" value="60" help1="Intervalo de minutos en el que guardar registros de memoria" />
+            <entry name="Mon. memoria - Directorio" sysconfig="rc.local.conf--memwatch_dir" type="text" value='&quot;/var/media/disk-volume-0/memwatch&quot;' help1="Directorio donde guardar los registros de memoria" />
+        </menu>
+        <menu name="Control parental">
+            <entry name="Código secreto (0000=DES)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" help1="Código para proteger el acceso a la configuración del FW" />
+        </menu>
+    </menus>
+</setup>
