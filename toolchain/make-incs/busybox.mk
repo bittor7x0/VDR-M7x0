@@ -78,6 +78,12 @@ $(STAGEFILES_DIR)/.busybox_patched: $(STAGEFILES_DIR)/.busybox_unpacked
 $(STAGEFILES_DIR)/.busybox_configured: $(STAGEFILES_DIR)/.busybox_patched
 	$(SED) -ne 's,^CONFIG_PREFIX=.*,CONFIG_PREFIX=\"$(TARGET_ROOT)\",g' \
 		-e 'w$(BUSYBOX_DIR)/.config' $(BUSYBOX_CONFIG)
+  ifeq ($(CONFIG_BASH),y)
+	$(SED) -i -e 's,^CONFIG_FEATURE_SH_IS_ASH=.*,# CONFIG_FEATURE_SH_IS_ASH is not set,g' \
+		$(BUSYBOX_DIR)/.config
+	$(SED) -i -e 's,^# CONFIG_FEATURE_SH_IS_NONE.*,CONFIG_FEATURE_SH_IS_NONE=y,g' \
+		$(BUSYBOX_DIR)/.config
+  endif
 	$(UCLIBC_ENV) $(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		ARCH=mips oldconfig
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_configured
