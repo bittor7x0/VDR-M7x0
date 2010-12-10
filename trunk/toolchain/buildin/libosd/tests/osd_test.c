@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 	struct osd_progress_bar bar;
 	int i;
 	int val;
-	if (libosd_init()) {
+	if (libosd_init(1)) {
 		PRINT_ERROR("Cannot init libosd");
 		return 1;
 	}
@@ -98,6 +98,6 @@ int main(int argc, char **argv)
 		}
 	}
 	sleep(10);
-	libosd_deinit();
+	libosd_deinit(0,0);
 	return 0;
 }
