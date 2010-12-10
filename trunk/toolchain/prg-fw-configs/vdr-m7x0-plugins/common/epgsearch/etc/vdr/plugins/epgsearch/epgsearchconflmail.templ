@@ -1,0 +1,183 @@
+#########################################################################
+# Plantilla de correo de notificación de conflictos.
+# 
+# Se han de definir cuatro secciones:
+#  - subject: asunto del mensaje
+#  - mailbody: texto del mensaje (la variable %conflict.conflicts% representa 
+#           la lista de conflictos)
+#  - conflictsat: descripción del momento en que hay un conflicto entre
+#           programaciones (la variable %conflict.confltimers% representa
+#           la lista de programaciones afectadas)
+#  - "confltimer" descripción de un conflicto de programación
+#
+# ¡Cerrar cada sección con la correspondiente etiqueta!
+#
+#
+#  Version: 0.1   Fecha: 29/04/2010
+#  Autor: Atinar  <atinar1 @ hotmail . com>
+#
+#########################################################################
+
+
+#########################################################################
+# Asunto del mensaje (no poner salto de línea)
+#########################################################################
+<subject>[epgsearch] Conflictos de programación</subject>
+
+
+#########################################################################
+# Cuerpo del mensaje
+#########################################################################
+<mailbody>
+<html>
+<head>
+	<title>Comprobación de conflictos en programaciones.</title>
+	<style type="text/css">
+		div.level0 {
+			font-family: Bitstream Vera Sans;
+			background-color: White;
+			margin: 0;
+			padding: 5px;
+			}
+		table {
+			border: medium none;
+			border-collapse: separate;
+			border-spacing: 2px;
+			empty-cells: show;
+			}
+		th, td {
+			border: medium none;
+			word-wrap: break-word;
+			padding: 5px;
+			text-align: left;
+			vertical-align: middle;
+			}
+		th {
+			background-color: AntiqueWhite;
+			font-weight: normal;
+			width: 10ex;
+			}
+		th.caption {
+			background-color: transparent;
+			font-weight: bold;
+			min-width: 50ex;
+			width: auto;
+			}
+		td {
+			background-color: Linen;
+			}
+		td.container {
+			background-color: transparent;
+			padding:0 5px;
+			}
+		table.main {
+			max-width: 120ex;
+			margin-top: 1.5em;
+			background-color: Gainsboro;
+			border-spacing: 5px;
+			}
+		table#info {
+			border: 3px solid Gainsboro;
+			border-spacing: 2px;
+			}
+		table.timer {
+			margin: 5px 0;
+			width: 100%;
+			background-color: transparent;
+			}
+		a {
+			color: DarkSlateBlue;
+			text-decoration: none;
+			}
+		a:hover {
+			text-decoration: underline;
+			}
+		a.gotop {
+			margin: 0 1ex;
+			float: right;
+			}
+		.title,
+		.subtitle,
+		.description {
+			margin: 0 0 0.3em;
+			}
+		.title a {
+			font-weight: bold;
+			}
+		.subtitle {
+			font-style: italic;
+			}
+	</style>
+</head>
+<body>
+	<div class="level0">
+		<table id="info" class="main">
+			<tr>
+				<th colspan="2" class="caption">Comprobación de conflictos en programaciones.</th>
+			</tr>
+			<tr><th>Comprobado</a></th><td>%datenow% %timenow%</td></tr>
+			<tr><th>Nº conflictos</th><td>%conflict.count%</td></tr>
+		</table>
+		%conflict.conflicts%
+	</div>
+</body>
+</html>
+</mailbody>
+
+#########################################################################
+# Descripción de un conflicto
+#########################################################################
+<conflictsat>
+		<table class="main">
+			<tr>
+				<th class="caption">
+					<a href="#info" class="gotop">&uarr; Subir</a> Conflicto %conflict.date% %conflict.time%
+				</th>
+			</tr>
+			<tr>
+				<td class="container">
+					%conflict.confltimers%
+				</td>
+			</tr>
+		</table>
+</conflictsat>
+
+
+#########################################################################
+# Programación afectada por un conflicto.
+# Se pueden usar variables referidas a la programación o al envento EPG.
+# Se debe tener en cuenta que la programación es posible que no tenga evento 
+# asociado, en cuyo caso las variables se sustituyen por espacios.
+# También se pueden utilizar variables definidas por el usuario en 
+# epgsearchuservars.conf (ejemplo: webif_url_base).
+#########################################################################
+<conflicttimer>
+					<table class="timer">
+						<tr class="event">
+							<th>Programa</th>
+							<td>
+								<p class="title"><a href="%webif_url_base%/epgGrid.kl1?start=l%time_lng%">%title%</a></p>
+								<p class="subtitle">%subtitle%</p>
+								<div class="desc">%htmlsummary%</div>
+							</td>
+						</tr>
+						<tr class="date">
+							<th>Fecha</td><td>%time_w% %date%</td>
+						</tr>
+						<tr class="timespan">
+							<th>Duración<br/>evento</th><td>%time%-%timeend%</td>
+						</tr>
+						<tr class="timespan">
+							<th>Duración<br/>programación</th><td>%timer.start%-%timer.stop%</td>
+						</tr>
+						<tr class="channel">
+							<th>Canal</th><td>%timer.chlng% (%timer.chnr%)</td>
+						</tr>
+						<tr class="file">
+							<th>Archivo</th><td>%timer.file%</td>
+						</tr>
+						<tr class="search">
+							<th>Búsqueda</th><td>%timer.search% (%timer.searchid%)</td>
+						</tr>
+					</table>
+</conflicttimer>

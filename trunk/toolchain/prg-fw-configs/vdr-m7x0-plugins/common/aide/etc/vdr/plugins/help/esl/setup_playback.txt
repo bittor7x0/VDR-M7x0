@@ -1,0 +1,12 @@
+Modo multi-velocidad = no
+     
+     Define el funcionamiento de las teclas "Izquierda" y "Derecha" en el modo de repetición. Si se establece como "no", sólo se utilizará una única velocidad, mientras que si se establece a "sí", habrá tres velocidades, para la búsqueda rápida y lenta, respectivamente.
+     
+Mostrar modo de reproducción = no
+
+     Activa o desactiva la visualización del modo de reproducción.
+     
+ID de continuación = 0
+
+     Establece identificadores adicionales para poderlos utilizar en entornos donde existan varios usuarios, con lo que cada usuario/a pueda disponer de su propio archivo de "resumen/pausa" de cada grabación. Los valores validos van del 0 al 99. Con el valor 0, se creará "resume.vdr" como nombre de archivo y si se especifica cualquier otro valor, el archivo que se creará se llamará "resume.n.vdr". 
+     
