@@ -1,0 +1,21 @@
+#!/bin/ash
+
+if [ X"${OSDLOG}" = X"YES" ]; then
+    source /etc/rc.debug
+fi
+
+source /etc/rc.conf
+
+if [ X"${syslogd_flags}" != X"NO" ]; then
+    /bin/mv /rw-flash/log/messages* /var/log
+    echo -n "starting syslogd ... "
+    /sbin/syslogd ${syslogd_flags}
+fi
+
+echo -n "execute pic_tool ... "
+/usr/sbin/pic_tool ${pic_tool_flags} &
+
+echo "lircd daemon"
+/usr/sbin/lircd ${lircd_flags}
+
+exec /bin/ash /etc/rc.local

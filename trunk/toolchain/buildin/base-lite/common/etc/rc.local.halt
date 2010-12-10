@@ -1,0 +1,71 @@
+#!/bin/ash
+
+source /etc/rc.local.conf
+
+echo -n 'stopping local stuff:'
+
+# put optional stuff after
+
+# put optional stuff before
+
+for bpath in ${bind_paths} ; do
+        echo -n " Umount binding ${bpath}"
+        /bin/umount ${bpath} || /bin/umount -l ${bpath}
+done
+
+echo -n ' usb-umount nolazy'
+/bin/sync
+/sbin/usbautomounter umount nolazy
+lazyumount=$?
+
+echo -n ' vdr'
+trys=0
+while [ -e /var/run/runvdr.pid -a ${trys} -le 300 ] ; do
+     [ $(( ${trys} % 30 )) -eq 0 ] && /usr/bin/killall -15 vdr
+     trys=$(( ${trys} + 1 ))
+     /bin/sleep 1
+done
+
+[ -f /var/run/runvdr.pid ] && /usr/bin/killall -9 vdr
+
+[ -f /var/vdr/epg.data -a "${vdr_epgdirect}" = "NO" ] && /bin/mv /var/vdr/epg.data ${vdr_epgfile}
+
+if [ ${lazyumount} -ne 0 ] ; then
+	echo -n ' usb-umount'
+	/bin/sync
+	/sbin/usbautomounter umount noSVDRP
+fi
+
+if [ X"${hd_swap}" != X"NO" ] ; then
+        while read hd_swp_dev ignore ; do
+                if [ ${hd_swp_dev} != "Filename" ] ; then
+                        echo -n " setting down swap in ${hd_swp_dev}"
+                        /sbin/swapoff ${hd_swp_dev}
+                fi
+        done < /proc/swaps
+fi
+
+if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_shutdown}" != X"NO" ] ; then
+	for hd_sd_dev in ${hd_spindown_dev} ; do
+		echo " starting scsi-spin in ${hd_sd_dev}"
+		/usr/sbin/scsi-spin -d -f ${hd_sd_dev}
+	done
+fi
+
+if [ X"${osddebug}" != X"NO" ] ; then
+    [ -f /rw-flash/.nodebug ] && /bin/rm /rw-flash/.nodebug
+else
+    /bin/touch /rw-flash/.nodebug
+fi
+
+echo ' '
+
+if [ -x "${fw_update_file}" ] ; then
+    export VDR_TV_MODE=`/bin/grep -i TvMode ${vdr_confdir}/setup.conf | /usr/bin/cut -d '=' -f 2 | /usr/bin/tr -d " "`
+    export VDR_LANG=`/bin/grep -i OSDLanguage ${vdr_confdir}/setup.conf | /usr/bin/cut -d '=' -f 2 | /usr/bin/tr -d " "`
+    /bin/umount /etc || /bin/umount -l /etc
+    /bin/umount /rw-flash || /bin/umount -l /rw-flash
+    ${fw_update_file}
+fi
+
+exec /bin/ash /etc/rc.halt $1

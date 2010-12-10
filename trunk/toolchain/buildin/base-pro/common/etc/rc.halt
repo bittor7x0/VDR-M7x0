@@ -1,0 +1,40 @@
+#!/bin/ash
+
+source /etc/rc.conf
+
+echo -n 'stopping daemons:'
+echo -n ' lircd'
+while read pid; do /bin/kill -15 $pid; done < /var/run/lircd.pid
+
+/usr/sbin/pic_tool -s time systopic
+
+if [ X"${syslogd_flags}" != X"NO" ]; then
+    echo -n ' syslogd'
+    while read pid; do /bin/kill -15 $pid; done < /var/run/syslogd.pid
+    /bin/mv /var/log/messages* /rw-flash/log
+fi 
+
+/bin/sync
+/bin/umount -a -l
+
+if [ X"$1" != X"reboot" ]; then
+    action1="shutdown 3"
+    action2="shutdown 1 wait"
+else
+    action1="reboot 3 10"
+    action2="reboot 3 10"
+fi
+
+# be careful /proc might not be available anymore
+/usr/sbin/pic_tool ${action1}
+/usr/bin/killall5 -15
+/bin/sleep 1
+/usr/bin/killall5 -9
+/bin/sleep 10
+# should never be reached
+/usr/sbin/pic_tool ${action2}
+# should really never be reached
+while true; do
+      echo "Point reached never should be..."
+      /bin/sleep 10
+done

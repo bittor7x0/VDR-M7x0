@@ -1,0 +1,67 @@
+#!/bin/ash
+
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export SYSTEMTYPE=`/bin/cat /etc/systemtype`
+
+# mount rw parts
+echo -n "Mounting /rw-flash ... " 
+/bin/mount -o rw,noatime,nodiratime -n -t jffs2 /dev/mtdblock2 /rw-flash
+echo "Done"
+
+# check for first start, factory reset or .nodebug flag
+# something went really bad so enter osd debug mode
+if [ -d /rw-flash/SI -o ! -d /rw-flash/etc -o ! -f /rw-flash/.nodebug ]; then
+    export OSDLOG="YES"
+
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_bios.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/iic_int.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/pic16f73.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_osd.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_av.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000
+
+    /usr/bin/set-video &
+    echo "Enter osd debugging mode" | /usr/bin/osddrawtext -a 8 -c 1 -b 0xFFFF0000
+    source /etc/rc.debug
+fi
+
+# Factory reset
+if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
+	echo -n "Factory reset: "
+	[ -f /rw-flash/etc/flash_content ] && /bin/mv /rw-flash/etc/flash_content \
+		/var/tmp/flash_content.etc
+	if [ ${SYSTEMTYPE} != m750s ] ; then
+		/bin/cp /rw-flash/flash_content /var/tmp
+		/bin/rm -rf /rw-flash/* /rw-flash/.[a-zA-Z1-9]*
+		/bin/mv /var/tmp/flash_content /rw-flash
+	fi
+	[ -f /rw-flash/etc/raidtab ] && /bin/cp /rw-flash/etc/raidtab /var/tmp
+	/bin/rm -rf /rw-flash/.timer /rw-flash/PLAYLISTS /rw-flash/SI \
+		/rw-flash/etc /rw-flash/EPG /rw-flash/Application \
+		/rw-flash/root /rw-flash/home /rw-flash/EPG_disk \
+		/rw-flash/EPG_flash /rw-flash/RA_FILE /rw-flash/SM_FILE \
+		/rw-flash/RECORDER_LOG /rw-flash/START_RECORDER_LOG
+	/bin/cp -a /etc /rw-flash/etc
+	[ -f /var/tmp/raidtab ] && /bin/mv /var/tmp/raidtab /rw-flash/etc
+	/bin/cp -a /root /rw-flash/root
+	/bin/cp -a /home /rw-flash/home
+	/bin/mkdir /rw-flash/log
+	[ -f /var/tmp/flash_content.etc ] && /bin/mv /var/tmp/flash_content.etc \
+		/rw-flash/etc/flash_content
+	echo "Done"
+fi
+
+# mount var
+echo -n "Mounting /var ... "
+/bin/mount -o rw,noatime,nodiratime,nosuid,nodev -n -t tmpfs tmpfs /var
+/bin/mkdir -p -m 1777 /var/tmp &
+/bin/mkdir -p -m 755 /var/run /var/log /var/media /var/lock
+/bin/touch /var/media/.ignore &
+echo "Done"
+
+echo -n "Binding /etc ... "
+/bin/mount -o bind /rw-flash/etc /etc
+echo "Done"
+
+exec /bin/ash /etc/rc.modules

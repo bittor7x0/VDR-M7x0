@@ -1,0 +1,14 @@
+#!/bin/ash
+
+source /etc/rc.local.conf
+
+echo -n 'starting local stuff:'
+
+echo -n ' vdr'
+export ${runvdr_vars}
+/bin/ash ${runvdr} &
+
+# With this sleep VDR start faster
+/bin/sleep 5
+
+exec /bin/ash /etc/rc.local.usb
