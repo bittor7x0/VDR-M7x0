@@ -79,7 +79,7 @@ plugin: libvdr-$(PLUGIN).so
 
 fskcheck: $(CMDOBJS)
 	$(CXX) $(CXXFLAGS) $(CMDOBJS) -o $@
-	@mips-linux-uclibc-strip $@
+	@$(STRIP) $@
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
