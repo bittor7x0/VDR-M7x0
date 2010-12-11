@@ -22,7 +22,7 @@
 # $Id: gcc.mk 403 2009-08-11 22:40:16Z andreas $
 #
 
-GCC_VERSION := 4.4.1
+GCC_VERSION := 4.5.1
 GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
 
 GCC_FILE1 := gcc-core-$(GCC_VERSION).tar.bz2
@@ -83,6 +83,7 @@ $(STAGEFILES_DIR)/.gcc_patched: $(STAGEFILES_DIR)/.gcc_unpacked
 
 $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                           $$(BINUTILS_INSTALLED) \
+                                          $$(MPC_INSTALLED) \
                                           $$(UCLIBC_PRE_ALL_GCC)
 	-$(RM) -rf $(GCC_STAGE1_BUILD_DIR)
 	$(MKDIR) -p $(GCC_STAGE1_BUILD_DIR)
@@ -94,6 +95,7 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-gnu-as \
 			--with-ld=$(PREFIX_BIN)/$(UCLIBC_LD) \
 			--with-gnu-ld \
+			--with-system-zlib \
 			--target=$(UCLIBC_TARGET) \
 			--enable-languages=c \
 			--enable-__cxa_atexit \
@@ -102,6 +104,12 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
+			--with-gmp=$(PREFIX) \
+			--with-mpc=$(PREFIX) \
+			--with-mpfr=$(PREFIX) \
+			--disable-decimal-float \
+			--disable-libgomp \
+			--disable-libmudflap \
 			--nfp \
 			--enable-multilib \
 			--enable-softfloat \
@@ -131,6 +139,7 @@ $(STAGEFILES_DIR)/.gcc_stage1_installed: $(STAGEFILES_DIR)/.gcc_stage1_compiled
 
 $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                    $$(BINUTILS_INSTALLED) \
+                                   $$(MPC_INSTALLED) \
                                    $$(UCLIBC_INSTALLED)
 	-$(RM) -rf $(GCC_BUILD_DIR)
 	$(MKDIR) -p $(GCC_BUILD_DIR)
@@ -140,6 +149,7 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-sysroot=$(TARGET_ROOT) \
 			--with-gnu-as \
 			--with-gnu-ld \
+			--with-system-zlib \
 			--target=$(UCLIBC_TARGET) \
 			--enable-languages=c,c++ \
 			--enable-__cxa_atexit \
@@ -148,6 +158,12 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
+			--with-gmp=$(PREFIX) \
+			--with-mpc=$(PREFIX) \
+			--with-mpfr=$(PREFIX) \
+			--disable-decimal-float \
+			--disable-libgomp \
+			--disable-libmudflap \
 			--nfp \
 			--enable-multilib \
 			--enable-softfloat \

@@ -24,7 +24,7 @@
 
 ZLIB_DEPS = $(BASE_BUILD_STAGEFILE)
 
-ZLIB_VERSION := 1.2.3
+ZLIB_VERSION := 1.2.5
 ZLIB_PATCHES_DIR := $(PATCHES_DIR)/zlib/$(ZLIB_VERSION)
 
 ZLIB_FILE := zlib-$(ZLIB_VERSION).tar.bz2
@@ -56,7 +56,8 @@ $(ZLIB_DLFILE): $(TC_INIT_RULE)
 # unpack zlib
 #
 
-$(STAGEFILES_DIR)/.zlib_unpacked: $(ZLIB_DLFILE) $(ZLIB_PATCHES_DIR)/*.patch \
+$(STAGEFILES_DIR)/.zlib_unpacked: $(ZLIB_DLFILE) \
+                                  $(wildcard $(ZLIB_PATCHES_DIR)/*.patch) \
                                   $$(ZLIB_DEPS)
 	-$(RM) -rf $(ZLIB_DIR)
 	$(BZCAT) $(ZLIB_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
