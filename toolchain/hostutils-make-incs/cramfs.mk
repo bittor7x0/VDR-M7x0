@@ -32,7 +32,7 @@ CRAMFS_HOSTFILE := cramfs-$(CRAMFS_HOSTVERSION).tar.gz
 CRAMFS_HOSTDLFILE := $(DOWNLOAD_DIR)/$(CRAMFS_HOSTFILE)
 
 CRAMFS_HOSTPATCHES_DIR := $(PATCHES_DIR)/cramfs/$(CRAMFS_HOSTVERSION)
-CRAMFS_HOSTURL := http://dfn.dl.sourceforge.net/sourceforge/cramfs/$(CRAMFS_HOSTFILE)
+CRAMFS_HOSTURL := http://sourceforge.net/projects/cramfs/files/cramfs/$(CRAMFS_HOSTVERSION)/$(CRAMFS_HOSTFILE)/download
 CRAMFS_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/cramfs-$(CRAMFS_HOSTVERSION)
 
 CLEAN_RULES += clean-cramfs-host

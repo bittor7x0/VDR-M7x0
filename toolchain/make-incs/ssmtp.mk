@@ -25,11 +25,11 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SSMTP_DEPS = $(BASE_BUILD_STAGEFILE)
 
-SSMTP_VERSION := 2.63
+SSMTP_VERSION := 2.64
 SSMTP_PATCHES_DIR := $(PATCHES_DIR)/ssmtp/$(SSMTP_VERSION)
 
 #http://ftp.de.debian.org/debian/pool/main/s/ssmtp/ssmtp_2.61.orig.tar.gz
-SSMTP_FILE := ssmtp_$(SSMTP_VERSION).orig.tar.gz
+SSMTP_FILE := ssmtp_$(SSMTP_VERSION).orig.tar.bz2
 SSMTP_DLFILE := $(DOWNLOAD_DIR)/$(SSMTP_FILE)
 SSMTP_URL := http://ftp.de.debian.org/debian/pool/main/s/ssmtp/$(SSMTP_FILE)
 SSMTP_DIR := $(BUILD_DIR)/ssmtp-$(SSMTP_VERSION)
@@ -60,7 +60,7 @@ $(STAGEFILES_DIR)/.ssmtp_unpacked: $(SSMTP_DLFILE) \
                                            $(wildcard $(SSMTP_PATCHES_DIR)/*.patch) \
                                            $$(SSMTP_DEPS)
 	-$(RM) -rf $(SSMTP_DIR)
-	$(TAR) -C $(BUILD_DIR) -zf $(SSMTP_DLFILE)
+	$(TAR) -C $(BUILD_DIR) -jf $(SSMTP_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.ssmtp_unpacked
 
 #

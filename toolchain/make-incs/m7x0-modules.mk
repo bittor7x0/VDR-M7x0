@@ -68,12 +68,12 @@ M7X0-MODULES-FW-m740-VERSION := 2.4
 M7X0-MODULES-FW-m750s-VERSION := 2.4
 M7X0-MODULES_FILE := fw-siemens-$(CONFIG_M7X0_TYPE)-$(M7X0-MODULES-FW-$(CONFIG_M7X0_TYPE)-VERSION).zip
 M7X0-MODULES_DLFILE := $(DOWNLOAD_DIR)/$(M7X0-MODULES_FILE)
-M7X0-REFERER_URL := http://gigaset.siemens.com/
+M7X0-REFERER_URL := http://gigaset.com/
 
 ifeq ($(CONFIG_M7X0_TYPE),m740)
-M7X0-MODULES_URL := http://shc-download.siemens.com/repository/1374/137469/Gigaset_M740_AV_V_2.4.exe
+M7X0-MODULES_URL := http://gigaset.com/medias/sys_master/Gigaset_M740_AV_V_2.4.exe
 else ifeq ($(CONFIG_M7X0_TYPE),m750s)
-M7X0-MODULES_URL := http://shc-download.siemens.com/repository/1374/137472/Gigaset_M750_S_V_2.4.exe
+M7X0-MODULES_URL := http://gigaset.com/medias/sys_master/Gigaset_M750_S_V_2.4.exe
 else
 $(error unknown system type given)
 endif

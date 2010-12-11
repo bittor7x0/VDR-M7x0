@@ -33,8 +33,8 @@ SIEMENS-GPL-SRC_DLFILE = $(DOWNLOAD_DIR)/$(SIEMENS-GPL-SRC_FILE)
 SIEMENS-BUILD-ENV_FILE := siemens-build_env.tar.gz
 SIEMENS-BUILD-ENV_DLFILE = $(DOWNLOAD_DIR)/$(SIEMENS-BUILD-ENV_FILE)
 
-SIEMENS-GPL-SRC_URL := http://gigaset.siemens.com/repository/1222/122244/gigaset_m750_gplsw_1_4_3_tar.bz2
-SIEMENS-BUILD-ENV_URL := http://gigaset.siemens.com/repository/1237/123736/wavebox_build_env.tar.gz
+SIEMENS-GPL-SRC_URL := http://zenvoid.org/software/m7x0/siemens-m750-gpl-src.tar.bz2
+SIEMENS-BUILD-ENV_URL := http://zenvoid.org/software/m7x0/wavebox_build_env.tar.gz
 # As the extracted archive is very big (around 1GB) and
 # we need only a very small part of it we don't extracted fully
 # BTW: This thing has wrong naming it should called siemens-gpl-trash ...

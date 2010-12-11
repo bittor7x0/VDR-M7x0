@@ -30,7 +30,7 @@ ZLIB_PATCHES_DIR := $(PATCHES_DIR)/zlib/$(ZLIB_VERSION)
 ZLIB_FILE := zlib-$(ZLIB_VERSION).tar.bz2
 ZLIB_DLFILE := $(DOWNLOAD_DIR)/$(ZLIB_FILE)
 ZLIB_DIR := $(BUILD_DIR)/zlib-$(ZLIB_VERSION)
-ZLIB_URL := http://www.zlib.net/$(ZLIB_FILE)
+ZLIB_URL := http://sourceforge.net/projects/libpng/files/zlib/$(ZLIB_VERSION)/$(ZLIB_FILE)/download
 
 ZLIB_INSTALLED = $(STAGEFILES_DIR)/.zlib_installed
 
