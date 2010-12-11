@@ -47,7 +47,7 @@ SIEMENS-LINUX-KERNEL-IMG = $(TOP_DIR)/$(or $(notdir \
 SIEMENS-LINUX-KERNEL_PATCHES_DIR := $(PATCHES_DIR)/siemens-linux-kernel
 SIEMENS-LINUX-KERNEL_BASEDIR := slin_$(CONFIG_M7X0_TYPE)
 SIEMENS-LINUX-KERNEL_DIR := $(BUILD_DIR)/$(SIEMENS-LINUX-KERNEL_BASEDIR)
-SIEMENS-LINUX-KERNEL_CONFIG := $(CONFIGS_DIR)/siemens-linux-kernel/$(CONFIG_M7X0_TYPE).config
+SIEMENS-LINUX-KERNEL_CONFIG := $(CONFIGS_DIR)/siemens-linux-kernel/$(CONFIG_M7X0_TYPE)-$(CONFIG_FW_VERSION).config
 
 SIEMENS-LINUX-KERNEL_INSTALLED = $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed
 
@@ -60,17 +60,12 @@ CLEAN_RULES += clean-siemens-linux-kernel
 DISTCLEAN_RULES += distclean-siemens-linux-kernel
 
 SIEMENS-LINUX-KERNEL_MODLST := \
-   lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
    lib/modules/2.4.21-xfs/kernel/fs/ext2/ext2.o \
    lib/modules/2.4.21-xfs/kernel/fs/ext3/ext3.o \
    lib/modules/2.4.21-xfs/kernel/fs/fat/fat.o \
    lib/modules/2.4.21-xfs/kernel/fs/jbd/jbd.o \
-   lib/modules/2.4.21-xfs/kernel/fs/lockd/lockd.o \
-   lib/modules/2.4.21-xfs/kernel/fs/nfs/nfs.o \
    lib/modules/2.4.21-xfs/kernel/fs/nls/nls_iso8859-15.o \
    lib/modules/2.4.21-xfs/kernel/fs/vfat/vfat.o \
-   lib/modules/2.4.21-xfs/kernel/net/packet/af_packet.o \
-   lib/modules/2.4.21-xfs/kernel/net/sunrpc/sunrpc.o \
    lib/modules/2.4.21-xfs/kernel/drivers/scsi/scsi_mod.o \
    lib/modules/2.4.21-xfs/kernel/drivers/scsi/sd_mod.o \
    lib/modules/2.4.21-xfs/kernel/drivers/usb/usbcore.o \
@@ -78,14 +73,23 @@ SIEMENS-LINUX-KERNEL_MODLST := \
    lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o \
    lib/modules/2.4.21-xfs/kernel/drivers/usb/storage/usb-storage.o
 
-ifeq ($(CONFIG_PPTPD),y)
-   SIEMENS-LINUX-KERNEL_MODLST += \
-	lib/modules/2.4.21-xfs/kernel/crypto/sha1.o \
-	lib/modules/2.4.21-xfs/kernel/crypto/arc4.o \
-	lib/modules/2.4.21-xfs/kernel/drivers/net/slhc.o \
-	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_generic.o \
-	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_async.o \
-	lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_mppe.o
+ifeq ($(CONFIG_FW_VERSION),pro)
+	SIEMENS-LINUX-KERNEL_MODLST += \
+		lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
+		lib/modules/2.4.21-xfs/kernel/fs/lockd/lockd.o \
+		lib/modules/2.4.21-xfs/kernel/fs/nfs/nfs.o \
+		lib/modules/2.4.21-xfs/kernel/net/packet/af_packet.o \
+		lib/modules/2.4.21-xfs/kernel/net/sunrpc/sunrpc.o
+
+	ifeq ($(CONFIG_PPTPD),y)
+	SIEMENS-LINUX-KERNEL_MODLST += \
+		lib/modules/2.4.21-xfs/kernel/crypto/sha1.o \
+		lib/modules/2.4.21-xfs/kernel/crypto/arc4.o \
+		lib/modules/2.4.21-xfs/kernel/drivers/net/slhc.o \
+		lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_generic.o \
+		lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_async.o \
+		lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_mppe.o
+	endif
 endif
 
 SIEMENS-LINUX-KERNEL_DIRLST := \
@@ -93,28 +97,32 @@ SIEMENS-LINUX-KERNEL_DIRLST := \
    lib/modules/2.4.21-xfs \
    lib/modules/2.4.21-xfs/kernel \
    lib/modules/2.4.21-xfs/kernel/fs \
-   lib/modules/2.4.21-xfs/kernel/fs/cifs \
    lib/modules/2.4.21-xfs/kernel/fs/ext2 \
    lib/modules/2.4.21-xfs/kernel/fs/ext3 \
    lib/modules/2.4.21-xfs/kernel/fs/fat \
    lib/modules/2.4.21-xfs/kernel/fs/jbd \
-   lib/modules/2.4.21-xfs/kernel/fs/lockd \
-   lib/modules/2.4.21-xfs/kernel/fs/nfs \
    lib/modules/2.4.21-xfs/kernel/fs/nls \
    lib/modules/2.4.21-xfs/kernel/fs/vfat \
-   lib/modules/2.4.21-xfs/kernel/net \
-   lib/modules/2.4.21-xfs/kernel/net/packet \
-   lib/modules/2.4.21-xfs/kernel/net/sunrpc \
    lib/modules/2.4.21-xfs/kernel/drivers \
    lib/modules/2.4.21-xfs/kernel/drivers/scsi \
    lib/modules/2.4.21-xfs/kernel/drivers/usb \
    lib/modules/2.4.21-xfs/kernel/drivers/usb/host \
    lib/modules/2.4.21-xfs/kernel/drivers/usb/storage
 
-ifeq ($(CONFIG_PPTPD),y)
-   SIEMENS-LINUX-KERNEL_DIRLST += \
-	lib/modules/2.4.21-xfs/kernel/crypto \
-	lib/modules/2.4.21-xfs/kernel/drivers/net
+ifeq ($(CONFIG_FW_VERSION),pro)
+	SIEMENS-LINUX-KERNEL_DIRLST += \
+		lib/modules/2.4.21-xfs/kernel/fs/cifs \
+		lib/modules/2.4.21-xfs/kernel/fs/lockd \
+		lib/modules/2.4.21-xfs/kernel/fs/nfs \
+		lib/modules/2.4.21-xfs/kernel/net \
+		lib/modules/2.4.21-xfs/kernel/net/packet \
+		lib/modules/2.4.21-xfs/kernel/net/sunrpc
+
+	ifeq ($(CONFIG_PPTPD),y)
+	SIEMENS-LINUX-KERNEL_DIRLST += \
+		lib/modules/2.4.21-xfs/kernel/crypto \
+		lib/modules/2.4.21-xfs/kernel/drivers/net
+	endif
 endif
 
 #
@@ -124,7 +132,7 @@ endif
 $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked: \
       $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/*.patch) \
       $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_M7X0_TYPE)/*.patch) \
-      $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/cifs-fs.tar.bz2 \
+      $(if $(filter pro,$(CONFIG_FW_VERSION)),$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/cifs-fs.tar.bz2) \
       $$(SIEMENS-LINUX-KERNEL_DEPS) $(SIEMENS-LINUX-KERNEL_CONFIG)
 	-$(RM) -rf $(SIEMENS-LINUX-KERNEL_DIR)
 	$(BZCAT) $(SIEMENS-GPL-SRC_DLFILE) | $(TAR) -C $(BUILD_DIR) \
@@ -141,8 +149,10 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked: \
 $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_patched: \
       $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked
 # CIFS for 2.4er kernel (it's much easier to handle as smbfs and faster)
+ifeq ($(CONFIG_FW_VERSION),pro)
 	$(BZCAT) $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/cifs-fs.tar.bz2 | \
 		 $(TAR) -C $(SIEMENS-LINUX-KERNEL_DIR) -f -
+endif
 # Needed patches to get kernel compiling
 	$(call patch_package, $(SIEMENS-LINUX-KERNEL_DIR), \
 		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common)
@@ -171,7 +181,7 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_configured: \
 # the source they are providing is a dump
 # the only reason we using this are some very broken blobs which cannot
 # be easily replaced. AFAIK there is no documentation for the mpeg stuff
-# of the NEC µPD61130AS1 (mpeg-dec aka emma2). Please contact me if
+# of the NEC ÂµPD61130AS1 (mpeg-dec aka emma2). Please contact me if
 # I'm wrong ... I would like to replace this broken mpeg-drivers.
 	if [ ! -e $(PREFIX)/$(UCLIBC_TARGET)/bin/as.orig ] ; then \
 		$(MV) $(PREFIX)/$(UCLIBC_TARGET)/bin/as $(PREFIX)/$(UCLIBC_TARGET)/bin/as.orig ; \
