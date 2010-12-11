@@ -67,7 +67,8 @@ $(STAGEFILES_DIR)/.uclibc_unpacked: $(UCLIBC_DLFILE) \
                                     $(UCLIBC_PATCHES_DIR)/*.patch \
                                     $$(LINUX_HEADERS_INSTALLED) \
                                     $(UCLIBC_CONFIG) \
-                                    $$(BINUTILS_INSTALLED)
+                                    $$(BINUTILS_INSTALLED) \
+                                    $$(SSTRIP_HOSTINSTALLED)
 	-$(RM) -rf $(UCLIBC_DIR)
 	$(BZCAT) $(UCLIBC_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_unpacked
