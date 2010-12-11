@@ -81,7 +81,7 @@ $(STAGEFILES_DIR)/.zlib_configured: $(STAGEFILES_DIR)/.zlib_patched \
                                       $(filter y,$(CONFIG_ZLIB_STATIC)))
 	# -$(RM) -f $(STAGEFILES_DIR)/.zlib_static_configured
 	-$(UCLIBC_ENV) $(MAKE) -C $(ZLIB_DIR) distclean
-	($(CD) $(ZLIB_DIR) ; $(UCLIBC_ENV) \
+	($(CD) $(ZLIB_DIR) ; $(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fPIC" \
 		$(ZLIB_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--shared) # This is really needed otherwise _only_ static is build
