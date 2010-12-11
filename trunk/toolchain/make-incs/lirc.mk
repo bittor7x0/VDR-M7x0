@@ -29,7 +29,7 @@ LIRC_VERSION := 0.6.4
 LIRC_PATCHES_DIR := $(PATCHES_DIR)/lirc/$(LIRC_VERSION)
 LIRC_FILE := lirc-$(LIRC_VERSION).tar.bz2
 LIRC_DLFILE := $(DOWNLOAD_DIR)/$(LIRC_FILE)
-LIRC_URL := http://dfn.dl.sourceforge.net/sourceforge/lirc/$(LIRC_FILE)
+LIRC_URL := http://sourceforge.net/projects/lirc/files/LIRC/$(LIRC_VERSION)/$(LIRC_FILE)/download
 LIRC_DIR := $(BUILD_DIR)/lirc-$(LIRC_VERSION)
 
 LIRC_INSTALLED = $(STAGEFILES_DIR)/.lirc_installed

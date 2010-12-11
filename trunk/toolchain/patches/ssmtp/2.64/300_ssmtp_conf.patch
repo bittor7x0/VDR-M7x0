@@ -1,0 +1,64 @@
+--- ssmtp-2.61-13/ssmtp.conf	2007-11-18 19:34:23.000000000 +0100
++++ conf-m740av/ssmtp.conf	2007-11-18 21:27:01.000000000 +0100
+@@ -1,15 +1,18 @@
+ #
+-# /etc/ssmtp.conf -- a config file for sSMTP sendmail.
++# Config file for sSMTP sendmail
+ #
++# Get enhanced (*really* enhanced) debugging information in the logs
++# If you want to have debugging of the config file parsing, move this option
++# to the top of the config file and uncomment
++#Debug=YES
+ 
+ # The person who gets all mail for userids < 1000
+ # Make this empty to disable rewriting.
+ root=postmaster
+ 
+-# The place where the mail goes. The actual machine name is required
+-# no MX records are consulted. Commonly mailhosts are named mail.domain.com
+-# The example will fit if you are in domain.com and your mailhub is so named.
+-mailhub=mail
++# The place where the mail goes. The actual machine name is required no
++# MX records are consulted. Commonly mailhosts are named mail.domain.com
++mailhub=mail.your_provider.de
+ 
+ # Example for SMTP port number 2525
+ # mailhub=mail.your.domain:2525
+@@ -18,26 +21,18 @@
+ # Example for SSL encrypted connection
+ # mailhub=mail.your.domain:465
+ 
+-# Where will the mail seem to come from?
+-rewriteDomain=
+-
+-# The full hostname
+-hostname=_HOSTNAME_
+-
+-# Set this to never rewrite the "From:" line (unless not given) and to
+-# use that address in the "from line" of the envelope.
+-#FromLineOverride=YES
+ 
+-# Use SSL/TLS to send secure messages to server.
+-#UseTLS=YES
++# Falls SMTP-AUTH verwendet :
++AuthUser=KlausMaier
++AuthPass=geheim
+ 
+-# Use SSL/TLS certificate to authenticate against smtp host.
+-#UseTLSCert=YES
++# Where will the mail seem to come from?
++#rewriteDomain=
+ 
+-# Use this RSA certificate.
+-#TLSCert=/etc/ssl/certs/ssmtp.pem
++# The full hostname
++hostname=m740av
+ 
+-# Get enhanced (*really* enhanced) debugging information in the logs
+-# If you want to have debugging of the config file parsing, move this option
+-# to the top of the config file and uncomment
+-#Debug=YES
++# Are users allowed to set their own From: address?
++# YES - Allow the user to specify their own From: address
++# NO - Use the system generated From: address
++# FromLineOverride=YES
