@@ -31,7 +31,7 @@ endif
 ROOTFS_FILE_TABLE := $(STAGEFILES_DIR)/file_tab$(subst /,.,$(subst $(TOP_DIR),,$(ROOTFS_DIR))).lst
 FQ_FILE_LISTS = $(addprefix $(FILELIST_DIR)/, $(FILE_LISTS))
 ROOTFS_DIR_DEPS = $(PACKS_BUILD_STAGEFILE) $$(FQ_FILE_LISTS) \
-   $(COPY_LISTS_BIN) $(TOP_DIR)/.config
+   $(COPY_LISTS_BIN) $(UPX_BIN) $(TOP_DIR)/.config
 
 ifndef CONFIG_EXT2_ROOTFS_SIZE
   EXT2_ROOTFS_SIZE := 65536
@@ -64,7 +64,7 @@ POST_RULES_$(CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE) += $(TOP_DIR)/$(SQUASH_ROOTFS_
 
 DISTCLEAN_RULES += distclean-generate-rootfs
 
-AWK_LST_TRANS_PRG := '$$1 !~ /\#/ && $$3 !~ /l/ && $$3 !~ /s/ \
+AWK_LST_TRANS_PRG := '$$1 !~ /\#/ && $$3 !~ /l/ && $$3 !~ /s/ && $$3 !~ /u/ \
    { file="/"$$1 ; gsub("//","/",file) ; \
     print file, $$3, $$4, $$5, $$6, $$7, $$8, $$9, $$10, $$11}'
 
@@ -104,7 +104,7 @@ $(ROOTFS_FILE_TABLE): $(ROOTFS_DIR_DEPS)
 		) \
 	)
 	$(COPY_LISTS_BIN) -s '$(ROOTFS_DIR)' '$(TARGET_ROOT)' \
-		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' $(FQ_FILE_LISTS)
+		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(FQ_FILE_LISTS)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(ROOTFS_DIR)/etc/systemtype`,g" $(ROOTFS_DIR)/etc/rc.mini
 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG) > \
 		$(ROOTFS_FILE_TABLE)
