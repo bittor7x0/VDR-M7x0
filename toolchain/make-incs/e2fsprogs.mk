@@ -91,6 +91,7 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
 			--disable-fsck \
 			--disable-e2initrd-helper \
 			--disable-blkid-devmapper \
+			$(if $(CONFIG_LIBUUID),--enable-elf-shlibs) \
 			--disable-nls )
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_configured
 
