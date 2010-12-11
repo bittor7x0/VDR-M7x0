@@ -22,8 +22,13 @@
 # $Id: squashfs.mk 401 2009-03-26 12:29:09Z andreas $
 #
 
+ifeq ($(CONFIG_SQUASHFS_LZMA),y)
+MKSQUASHFS := mksquashfs-lzma
+else
+MKSQUASHFS := mksquashfs
+endif
 
-MKSQUASHFS_BIN := $(HOSTUTILS_PREFIX_BIN)/mksquashfs
+MKSQUASHFS_BIN := $(HOSTUTILS_PREFIX_BIN)/$(MKSQUASHFS)
 
 SQUASHFS_HOSTVERSION := 3.1-r2
 SQUASHFS_HOSTFILE := squashfs$(SQUASHFS_HOSTVERSION).tar.gz
@@ -70,15 +75,15 @@ $(STAGEFILES_DIR)/.squashfs_host_patched: $(STAGEFILES_DIR)/.squashfs_host_unpac
 
 $(STAGEFILES_DIR)/.squashfs_host_compiled: $(STAGEFILES_DIR)/.squashfs_host_patched
 	$(MAKE) -C $(SQUASHFS_HOSTDIR)/squashfs-tools clean
-	$(MAKE) -C $(SQUASHFS_HOSTDIR)/squashfs-tools all
+	$(MAKE) -C $(SQUASHFS_HOSTDIR)/squashfs-tools LZMAPATH=$(LZMA_HOSTLIBDIR) $(MKSQUASHFS)
 	$(TOUCH) $(STAGEFILES_DIR)/.squashfs_host_compiled
 
 #
 # install squashfs
 #
 
-$(HOSTUTILS_PREFIX_BIN)/mksquashfs: $(STAGEFILES_DIR)/.squashfs_host_compiled
-	$(CP) $(SQUASHFS_HOSTDIR)/squashfs-tools/mksquashfs $(HOSTUTILS_PREFIX_BIN)/mksquashfs
+$(MKSQUASHFS_BIN): $(STAGEFILES_DIR)/.squashfs_host_compiled
+	$(CP) $(SQUASHFS_HOSTDIR)/squashfs-tools/$(MKSQUASHFS) $(MKSQUASHFS_BIN)
 
 .PHONY: clean-squashfs-host distclean-squashfs-host
 
@@ -89,7 +94,7 @@ distclean-squashfs-host:
 	-$(RM) -f $(STAGEFILES_DIR)/.squashfs_host_unpacked
 	-$(RM) -f $(STAGEFILES_DIR)/.squashfs_host_patched
 	-$(RM) -f $(STAGEFILES_DIR)/.squashfs_host_compiled
-	-$(RM) -f $(HOSTUTILS_PREFIX_BIN)/mksquashfs
+	-$(RM) -f $(MKSQUASHFS_BIN)
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -rf $(SQUASHFS_HOSTDLFILE)
 endif
