@@ -200,6 +200,19 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_configured: \
 		$(SIEMENS-LINUX-KERNEL_DIR)/.config
   endif
   endif
+  # Enable LZO and disable any JFFS2 compressors
+  ifeq ($(CONFIG_JFFS2_LZO),y)
+	$(SED) -i -e 's,^# CONFIG_LZO_COMPRESS is not set,CONFIG_LZO_COMPRESS=y,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^# CONFIG_LZO_DECOMPRESS is not set,CONFIG_LZO_DECOMPRESS=y,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^# CONFIG_JFFS2_LZO is not set,CONFIG_JFFS2_LZO=y,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_JFFS2_ZLIB=y,# CONFIG_JFFS2_ZLIB is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_JFFS2_RUBIN=y,# CONFIG_JFFS2_RUBIN is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+  endif
 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
 		BASH=$(BASH) CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) oldconfig
 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
