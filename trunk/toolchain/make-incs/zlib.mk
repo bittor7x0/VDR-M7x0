@@ -139,7 +139,7 @@ $(FILELIST_DIR)/zlib.lst: $(STAGEFILES_DIR)/.zlib_installed
 clean-zlib-uclibc:
 	-$(RM) -rf $(ZLIB_DIR)
 
-distclean-zlib-uclibc:
+distclean-zlib:
 	-$(RM) -f $(STAGEFILES_DIR)/.zlib_unpacked
 	-$(RM) -f $(STAGEFILES_DIR)/.zlib_patched
 	-$(RM) -f $(STAGEFILES_DIR)/.zlib_configured
