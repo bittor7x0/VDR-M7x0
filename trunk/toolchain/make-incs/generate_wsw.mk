@@ -53,6 +53,11 @@ ifeq ($(CONFIG_GENERATE_SIEMENS-LINUX-KERNEL-IMG),y)
    WSW-IMG_DEPS += $(SIEMENS-LINUX-KERNEL-IMG)
    WSW-IMG_TIME_REF_all += $(SIEMENS-LINUX-KERNEL-IMG)
 endif
+ifeq ($(CONFIG_GENERATE_JFFS2_IMAGE),y)
+   GEN_WSW_CMD_LINE += -d $(TOP_DIR)/$(JFFS2_IMG)
+   WSW-IMG_DEPS += $(TOP_DIR)/$(JFFS2_IMG)
+   WSW-IMG_TIME_REF_all += $(TOP_DIR)/$(JFFS2_IMG)
+endif
 GEN_WSW_FWNAME = $(or $(subst .wsw,,$(notdir $(CONFIG_WSW-IMG))), \
                  open7x0.org-$(CONFIG_M7X0_TYPE)-%Y-%m-%d-%M%H)
 WSW-IMG := $(TOP_DIR)/$(or $(notdir $(CONFIG_WSW-IMG)),open7x0.org-$(CONFIG_M7X0_TYPE).wsw)
