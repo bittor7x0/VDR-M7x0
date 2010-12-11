@@ -1,3 +1,9 @@
+# Firmware version type: pro (with network support) or lite (mini version without network support)
+CONFIG_FW_VERSION = lite
+
+# Language by default for firmware: en (English), es (Spanish), de (German) or fr (French)
+CONFIG_LANGUAGE = es
+
 # CONFIG_PREFIX is not set
 # CONFIG_BOOTLOADER is not set
 CONFIG_GENERATE_ROOTFS_DIR = y
@@ -84,24 +90,6 @@ CONFIG_SCSI-SPIN = y
 # CONFIG_GRAPHICSMAGICK is not set
 # CONFIG_LYNX is not set
 # CONFIG_SQLITE is not set
-# CONFIG_BOOST is not set
-# CONFIG_BOOST-date_time is not set
-# CONFIG_BOOST-filesystem is not set
-# CONFIG_BOOST-graph is not set
-# CONFIG_BOOST-graph_parallel is not set
-# CONFIG_BOOST-iostreams is not set
-# CONFIG_BOOST-math is not set
-# CONFIG_BOOST-mpi is not set
-# CONFIG_BOOST-program_options is not set
-# CONFIG_BOOST-python is not set
-# CONFIG_BOOST-random is not set
-# CONFIG_BOOST-regex is not set
-# CONFIG_BOOST-serialization is not set
-# CONFIG_BOOST-signals is not set
-# CONFIG_BOOST-system is not set
-# CONFIG_BOOST-test is not set
-# CONFIG_BOOST-thread is not set
-# CONFIG_BOOST-wave is not set
 
 # Performance Testing Tools
 # CONFIG_MINI_SNMPD is not set
