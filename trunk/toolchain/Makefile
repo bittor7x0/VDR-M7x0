@@ -108,6 +108,7 @@ UCLIBC_AR := $(UCLIBC_TARGET)-ar
 UCLIBC_CPP := $(UCLIBC_TARGET)-cpp
 UCLIBC_RANLIB := $(UCLIBC_TARGET)-ranlib
 UCLIBC_LD := $(UCLIBC_TARGET)-ld
+UCLIBC_NM := $(UCLIBC_TARGET)-nm
 UCLIBC_STRIP := sstrip
 UCLIBC_OBJCOPY := $(UCLIBC_TARGET)-objcopy
 UCLIBC_CFLAGS := -march=mips2 -mtune=vr4120 -O3 -msoft-float -mfix-vr4120
@@ -115,7 +116,7 @@ UCLIBC_CXXFLAGS := $(UCLIBC_CFLAGS)
 
 UCLIBC_ENV = PATH="$(PREFIX_BIN):$(PATH)" CC="$(UCLIBC_CC)" \
    CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
-   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" STRIP="$(UCLIBC_STRIP)" \
+   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
    CFLAGS="$(UCLIBC_CFLAGS)" CXXFLAGS="$(UCLIBC_CXXFLAGS)"
 
 .SECONDEXPANSION:
@@ -126,7 +127,7 @@ all: $(STAGEFILES_DIR)/.toolchain-ready ;
 define no_config_errormsg
 *
 Configuration needed.
-You need to edit .config by hand or copy configs/default-config to .config
+You need to edit .config by hand or copy configs/default-config-pro or configs/default-config-lite to .config
 Interactive generation of .config not yet implemented.
 *
 endef
