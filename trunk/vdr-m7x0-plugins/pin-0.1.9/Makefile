@@ -80,6 +80,7 @@ plugin: libvdr-$(PLUGIN).so
 fskcheck: $(CMDOBJS)
 	$(CXX) $(CXXFLAGS) $(CMDOBJS) -o $@
 	@$(STRIP) $@
+	@cp -f $@ $(FSKCHKDIR)
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
