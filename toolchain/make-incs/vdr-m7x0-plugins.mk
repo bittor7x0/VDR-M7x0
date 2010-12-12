@@ -95,7 +95,11 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 	-$(FIND) $(VDR_DIR)/PLUGINS/src -type l -exec $(RM) -f {} \;
 	$(foreach plugin,$(vdr_plugins_pathes), \
 		$(LN) -sf $(VDR-PLUGINS_DIR)/$(plugin) \
-		$(VDR_DIR)/PLUGINS/src/$(lastword $(subst /, ,$(plugin)));)
+		$(VDR_DIR)/PLUGINS/src/$(lastword $(subst /, ,$(plugin)));) \
+	(if [ -f $(VDR_DIR)/PLUGINS/src/pin/Makefile ]; then \
+		$(SED) -i -e 's,^FSKCHKDIR = .*,FSKCHKDIR = \"$(TOP_DIR)\/prg-fw-configs\/vdr-m7x0-plugins\/common\/pin\/usr\/bin\",g' \
+			$(VDR_DIR)/PLUGINS/src/pin/Makefile; \
+	fi);
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_configured
 
 #
