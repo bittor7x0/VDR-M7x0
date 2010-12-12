@@ -24,7 +24,7 @@
 
 
 ifeq ($(strip $(CONFIG_ROOTFS_DIR)),)
-  ROOTFS_DIR = $(TOP_DIR)/rootfs_dir_$(CONFIG_M7X0_TYPE)_$(CONFIG_VDR_TREE)
+  ROOTFS_DIR = $(TOP_DIR)/rootfs_dir_$(CONFIG_M7X0_TYPE)
 else
   ROOTFS_DIR := $(abspath $(CONFIG_ROOTFS_DIR))
 endif
@@ -40,19 +40,19 @@ else
 endif
 
 ifeq ($(strip $(notdir $(CONFIG_EXT2_ROOTFS_IMG))),)
-  EXT2_ROOTFS_IMG := rootfs-ext2_$(CONFIG_M7X0_TYPE)_$(CONFIG_VDR_TREE).img
+  EXT2_ROOTFS_IMG := rootfs-ext2_$(CONFIG_M7X0_TYPE).img
 else
   EXT2_ROOTFS_IMG :=$(notdir $(CONFIG_EXT2_ROOTFS_IMG))
 endif
 
 ifeq ($(strip $(notdir $(CONFIG_CRAM_ROOTFS_IMG))),)
-  CRAM_ROOTFS_IMG = rootfs-cram_$(CONFIG_M7X0_TYPE)_$(CONFIG_VDR_TREE).img
+  CRAM_ROOTFS_IMG = rootfs-cram_$(CONFIG_M7X0_TYPE).img
 else
   CRAM_ROOTFS_IMG =$(notdir $(CONFIG_CRAM_ROOTFS_IMG))
 endif
 
 ifeq ($(strip $(notdir $(CONFIG_SQUASH_ROOTFS_IMG))),)
-  SQUASH_ROOTFS_IMG = rootfs-squash_$(CONFIG_M7X0_TYPE)_$(CONFIG_VDR_TREE).img
+  SQUASH_ROOTFS_IMG = rootfs-squash_$(CONFIG_M7X0_TYPE).img
 else
   SQUASH_ROOTFS_IMG =$(notdir $(CONFIG_SQUASH_ROOTFS_IMG))
 endif

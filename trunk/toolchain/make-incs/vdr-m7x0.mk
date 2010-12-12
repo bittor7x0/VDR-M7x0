@@ -22,15 +22,11 @@
 
 VDR_DEPS = $(BASE_BUILD_STAGEFILE)
 
-VDR_SVN_URL := svn://open7x0.org/vdr-m7x0
+VDR_SVN_URL := http://svn.assembla.com/svn/VDR-M7x0/trunk/vdr-m7x0
 VDR_DIR := $(BUILD_DIR)/vdr-m7x0
 VDR_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/common
 VDR_CONF_SYSTYPE_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/$(CONFIG_M7X0_TYPE)
-
-VDR_BRANCH_DIR = $(VDR_DIR)/$(or $(strip $(filter trunk,$(CONFIG_VDR_TREE))), \
-                                 branches/$(CONFIG_VDR_TREE))
-
-VDR_INSTALLED = $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_installed
+VDR_INSTALLED = $(STAGEFILES_DIR)/.vdr_installed
 
 PACKS_RULES_$(CONFIG_VDR) += $(VDR_INSTALLED)
 FILE_LISTS_$(CONFIG_VDR) += vdr.lst vdr-configs.lst vdr-configs-$(CONFIG_M7X0_TYPE).lst
@@ -38,8 +34,7 @@ FILE_LISTS_$(CONFIG_VDR) += vdr.lst vdr-configs.lst vdr-configs-$(CONFIG_M7X0_TY
 CLEAN_RULES += clean-vdr
 DISTCLEAN_RULES += distclean-vdr
 
-ifneq ($(and $(filter y,$(CONFIG_VDR)), $(wildcard $(VDR_DIR)), \
-       $(subst local,,$(CONFIG_VDR_TREE))),)
+ifneq ($(and $(filter y,$(CONFIG_VDR)), $(wildcard $(VDR_DIR))),)
 $(info Updating vdr download ...)
 vdr_svn_changed := $(call svn_changed, $(VDR_DIR))
 
@@ -48,14 +43,6 @@ $(info vdr is up to date)
 else
 $(info $(vdr_svn_changed) file(s) updated)
 vdr_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.vdr_downloaded)
-endif
-endif
-
-ifeq ($(filter y,$(CONFIG_VDR)),y)
-ifeq ($(CONFIG_VDR_TREE),)
-$(error you need to configure an vdr svn tree)
-else ifeq ($(VDR_DIR)/,$(VDR_BRANCH_DIR))
-$(error your make is broken)
 endif
 endif
 
@@ -71,31 +58,31 @@ $(STAGEFILES_DIR)/.vdr_local_downloaded: $(CONFIG_VDR_LOCAL_PATH)/*.c \
                                          $(CONFIG_VDR_LOCAL_PATH)/*.h \
                                          $(CONFIG_VDR_LOCAL_PATH)/libsi/*.c \
                                          $(CONFIG_VDR_LOCAL_PATH)/libsi/*.h
-	-$(MKDIR) -p $(VDR_BRANCH_DIR)
-	$(CP) -RPp $(CONFIG_VDR_LOCAL_PATH)/* $(VDR_BRANCH_DIR)
+	-$(MKDIR) -p $(VDR_DIR)
+	$(CP) -RPp $(CONFIG_VDR_LOCAL_PATH)/* $(VDR_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_local_downloaded
 
 #
 # compile vdr
 #
 
-$(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_compiled: $$(VDR_DEPS) \
-        $(STAGEFILES_DIR)/.vdr_$(filter local_,$(CONFIG_VDR_TREE)_)downloaded
-	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) clean
-	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) all
-	$(TOUCH) $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_compiled
+$(STAGEFILES_DIR)/.vdr_compiled: $$(VDR_DEPS) \
+        $(STAGEFILES_DIR)/.vdr_$(filter local_,_)downloaded
+	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) clean
+	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) all
+	$(TOUCH) $(STAGEFILES_DIR)/.vdr_compiled
 
 #
 # install vdr
 #
 
-$(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_installed: $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) BINDIR=$(TARGET_ROOT)/usr/bin \
+$(STAGEFILES_DIR)/.vdr_installed: $(STAGEFILES_DIR)/.vdr_compiled
+	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) BINDIR=$(TARGET_ROOT)/usr/bin \
 		 install-bin
-	$(TOUCH) $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_installed
+	$(TOUCH) $(STAGEFILES_DIR)/.vdr_installed
 
 
-$(FILELIST_DIR)/vdr.lst: $(STAGEFILES_DIR)/.vdr_$(CONFIG_VDR_TREE)_installed
+$(FILELIST_DIR)/vdr.lst: $(STAGEFILES_DIR)/.vdr_installed
 	$(TOUCH) $(FILELIST_DIR)/vdr.lst
 
 $(eval $(call gen_copy_file_lst,$(VDR_CONF_COMMON_DIR),,0,0,vdr-configs.lst,check))

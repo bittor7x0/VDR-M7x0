@@ -22,7 +22,7 @@
 
 VDR-PLUGINS_DEPS = $(BASE_BUILD_STAGEFILE) $(VDR_INSTALLED) $(TOP_DIR)/.config
 
-VDR-PLUGINS_SVN_URL := svn://open7x0.org/vdr-m7x0-PLUGINS
+VDR-PLUGINS_SVN_URL := http://svn.assembla.com/svn/VDR-M7x0/trunk/vdr-m7x0-plugins
 VDR-PLUGINS_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS
 VDR-PLUGINS_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/common
 VDR-PLUGINS_CONF_SYSTYPE_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/$(CONFIG_M7X0_TYPE)
@@ -59,7 +59,7 @@ CLEAN_RULES += clean-vdr-plugins
 DISTCLEAN_RULES += distclean-vdr-plugins
 
 VDR-PLUGINS_APIVERSION = \
-   $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' $(VDR_BRANCH_DIR)/config.h)
+   $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' $(VDR_DIR)/config.h)
 
 VDR-PLUGINS_LIBNAMES = $(foreach plug,$(CONFIG_VDR-PLUGINS-LIBS), \
    libvdr-$(plug).so.$(VDR-PLUGINS_APIVERSION))
@@ -88,14 +88,14 @@ $(STAGEFILES_DIR)/.vdr-plugins_downloaded: $(TC_INIT_RULE)
 #
 
 vdr_plugins_pathes = $(filter trunk/%, $(CONFIG_VDR-PLUGINS)) \
-   $(foreach p2, $(filter-out trunk/%, $(CONFIG_VDR-PLUGINS)), branches/$(p2))
+   $(foreach p2, $(filter-out trunk/%, $(CONFIG_VDR-PLUGINS)), $(p2))
 
 $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
                                       $(STAGEFILES_DIR)/.vdr-plugins_downloaded
-	-$(FIND) $(VDR_BRANCH_DIR)/PLUGINS/src -type l -exec $(RM) -f {} \;
+	-$(FIND) $(VDR_DIR)/PLUGINS/src -type l -exec $(RM) -f {} \;
 	$(foreach plugin,$(vdr_plugins_pathes), \
 		$(LN) -sf $(VDR-PLUGINS_DIR)/$(plugin) \
-		$(VDR_BRANCH_DIR)/PLUGINS/src/$(lastword $(subst /, ,$(plugin)));)
+		$(VDR_DIR)/PLUGINS/src/$(lastword $(subst /, ,$(plugin)));)
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_configured
 
 #
@@ -103,8 +103,8 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 #
 
 $(STAGEFILES_DIR)/.vdr-plugins_compiled: $(STAGEFILES_DIR)/.vdr-plugins_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) clean-plugins
-	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) plugins
+	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) clean-plugins
+	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) plugins
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_compiled
 
 #
@@ -112,13 +112,14 @@ $(STAGEFILES_DIR)/.vdr-plugins_compiled: $(STAGEFILES_DIR)/.vdr-plugins_configur
 #
 
 $(STAGEFILES_DIR)/.vdr-plugins_installed: $(STAGEFILES_DIR)/.vdr-plugins_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(VDR_BRANCH_DIR) \
+	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) \
 		PLUGINLIBDIR=$(TARGET_ROOT)/usr/lib/vdr install-plugins
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_installed
 
 
 $(FILELIST_DIR)/vdr-plugins.lst: $(STAGEFILES_DIR)/.vdr-plugins_installed
 	($(ECHO)   "usr/lib/vdr       -                 d 755 0 0 - - - - -"; \
+	 $(ECHO)   "etc/plugins-lib   -                 d 755 0 0 - - - - -"; \
 	for lib in $(VDR-PLUGINS_LIBNAMES) ; do \
 		$(ECHO) "usr/lib/vdr/$$lib usr/lib/vdr/$$lib f 755 0 0 - - - - -"; \
 		$(ECHO) "usr/lib/vdr/$$lib -                 s   - - - - - - - -"; \
