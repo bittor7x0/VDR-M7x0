@@ -1,7 +1,0 @@
-.revert {
-	display:none;
-}
-.changed .revert {
-	display:block;
-	float:left;
-}
