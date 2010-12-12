@@ -44,9 +44,8 @@ CONFIG_LIRC = y
 CONFIG_SSMTP = y
 CONFIG_EGCS = y
 CONFIG_VDR = y
-CONFIG_VDR_TREE = andreas-unstable
 # CONFIG_VDR_LOCAL_PATH is not set
-CONFIG_VDR-PLUGINS = unstable/epgsearch unstable/filebrowser unstable/skinenigmang unstable/blink unstable/channelscan unstable/osdteletext unstable/setup unstable/aide unstable/cinebars unstable/streamdev unstable/channellists unstable/cridplayer unstable/osdadjust unstable/scheduler unstable/rssreader unstable/undelete unstable/pilotskin unstable/fepg
+CONFIG_VDR-PLUGINS = epgsearch filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev channellists cridplayer osdadjust scheduler rssreader undelete pilotskin fepg
 CONFIG_VDR-PLUGINS-LIBS = epgsearch epgsearchonly conflictcheckonly filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev-server channellists cridplayer osdadjust scheduler rssreader undelete pilotskin fepg
 CONFIG_USBAUTOMOUNTER = y
 CONFIG_M7X0-MODULES = y
@@ -62,7 +61,6 @@ CONFIG_LIBOSD = y
 CONFIG_O7O_FLASHER = y
 CONFIG_TOOL-BOX = y
 CONFIG_WEBIF = y
-CONFIG_WEBIF_TREE = atinar-unstable
 # CONFIG_BOOTMENU is not set
 
 # Extra packs

@@ -26,12 +26,8 @@ KLONE_URL := http://koanlogic.com/download/klone/$(KLONE_FILE)
 LOGOS_FILE := logos-webif.tgz
 LOGOS_DLFILE := $(DOWNLOAD_DIR)/logos-webif.4.tgz
 LOGOS_URL := https://www.assembla.com/spaces/VDR-M7x0/documents/c6zJ780MGr36EzeJe5cbCb/download/$(LOGOS_FILE)
-ifeq ($(strip $(CONFIG_WEBIF_TREE)),)
-  WEBIF_BRANCH := branches/atinar-unstable
-else
-  WEBIF_BRANCH := $(or $(strip $(filter trunk,$(CONFIG_WEBIF_TREE))),branches/$(CONFIG_WEBIF_TREE))
-endif
 WEBIF_DIR := $(BUILD_DIR)/webif
+WEBIF_SVN := http://svn.assembla.com/svn/VDR-M7x0/trunk/webif
 WEBIF_TC_FILE := $(WEBIF_DIR)/linux-mips-uclibc.tc
 
 LASTDIR := `pwd`
@@ -41,6 +37,18 @@ FILE_LISTS_$(CONFIG_WEBIF) += webif.lst
 
 CLEAN_RULES += clean-webif
 DISTCLEAN_RULES += distclean-webif
+
+ifneq ($(and $(filter y,$(CONFIG_WEBIF)), $(wildcard $(WEBIF_DIR))),)
+$(info Updating webif download ...)
+webif_svn_changed := $(call svn_changed, $(WEBIF_DIR))
+
+ifeq ($(webif_svn_changed),0)
+$(info webif is up to date)
+else
+$(info $(webif_svn_changed) file(s) updated)
+webif_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded)
+endif
+endif
 
 #
 # download webif
@@ -69,7 +77,7 @@ $(STAGEFILES_DIR)/.webif_unpacked: $(KLONE_DLFILE)
 # webapp download
 #
 $(STAGEFILES_DIR)/.webapp_downloaded: $(STAGEFILES_DIR)/.webif_unpacked
-	$(CP) -Trf ../webif/$(WEBIF_BRANCH) $(WEBIF_DIR)
+	$(SVN) co $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
 
 #
@@ -127,5 +135,7 @@ distclean-webif:
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
 	-$(RM) -f $(STAGEFILES_DIR)/.webapp_downloaded
-#	-$(RM) -f $(LOGOS_DLFILE)
+ifeq ($(DISTCLEAN_DLFILE),y)
+	-$(RM) -f $(LOGOS_DLFILE)
+endif
 	-$(RM) -rf $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
