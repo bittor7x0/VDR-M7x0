@@ -19,18 +19,12 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 WEBIF_DEPS = $(BASE_BUILD_STAGEFILE)
 
-KLONE_VERSION := 2.1.1
-KLONE_FILE := klone-$(KLONE_VERSION).tar.gz
-KLONE_DLFILE := $(DOWNLOAD_DIR)/$(KLONE_FILE)
-KLONE_URL := http://koanlogic.com/download/klone/$(KLONE_FILE)
-LOGOS_FILE := logos-webif.tgz
-LOGOS_DLFILE := $(DOWNLOAD_DIR)/logos-webif.4.tgz
-LOGOS_URL := https://www.assembla.com/spaces/VDR-M7x0/documents/c6zJ780MGr36EzeJe5cbCb/download/$(LOGOS_FILE)
 WEBIF_DIR := $(BUILD_DIR)/webif
 WEBIF_SVN := http://svn.assembla.com/svn/VDR-M7x0/trunk/webif
 WEBIF_TC_FILE := $(WEBIF_DIR)/linux-mips-uclibc.tc
-
-LASTDIR := `pwd`
+LOGOS_FILE := logos-webif.tgz
+LOGOS_DLFILE := $(DOWNLOAD_DIR)/logos-webif.4.tgz
+LOGOS_URL := https://www.assembla.com/spaces/VDR-M7x0/documents/c6zJ780MGr36EzeJe5cbCb/download/$(LOGOS_FILE)
 
 PACKS_RULES_$(CONFIG_WEBIF) += $(STAGEFILES_DIR)/.webif_installed
 FILE_LISTS_$(CONFIG_WEBIF) += webif.lst
@@ -51,33 +45,10 @@ endif
 endif
 
 #
-# download webif
-#
-$(KLONE_DLFILE): $(TC_INIT_RULE)
-	(if [ ! -f $(KLONE_DLFILE) ] ; then \
-	$(WGET) $(KLONE_URL) -O $(KLONE_DLFILE) ; \
-	fi );
-	$(TOUCH) $(KLONE_DLFILE)
-
-#
-# unpack webif
-#
-$(STAGEFILES_DIR)/.webif_unpacked: $(KLONE_DLFILE) 
-	-$(RM) -rf $(WEBIF_DIR)
-	$(TAR) -C $(BUILD_DIR) -zf $(KLONE_DLFILE)
-	$(MV) $(BUILD_DIR)/klone-$(KLONE_VERSION) $(WEBIF_DIR)
-	-$(RM) -rf $(WEBIF_DIR)/webapp
-	-$(RM) -rf $(WEBIF_DIR)/Makefile
-	$(MV) $(WEBIF_DIR)/README $(WEBIF_DIR)/README.klone
-	$(MV) $(WEBIF_DIR)/LICENSE $(WEBIF_DIR)/LICENSE.klone
-	$(MV) $(WEBIF_DIR)/ChangeLog $(WEBIF_DIR)/ChangeLog.klone
-	$(TOUCH) $(STAGEFILES_DIR)/.webif_unpacked
-
-#
 # webapp download
 #
-$(STAGEFILES_DIR)/.webapp_downloaded: $(STAGEFILES_DIR)/.webif_unpacked
-	$(SVN) co $(WEBIF_SVN)/$(WEBIF_BRANCH) $(WEBIF_DIR)
+$(STAGEFILES_DIR)/.webapp_downloaded: $(TC_INIT_RULE)
+	$(SVN) co $(WEBIF_SVN) $(WEBIF_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
 
 #
@@ -94,10 +65,8 @@ $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF
 	$(ECHO) STRIP = $(UCLIBC_STRIP) >> $(WEBIF_TC_FILE)
 	$(ECHO) MAKE = $(MAKE) >> $(WEBIF_TC_FILE)
 	$(CD) $(WEBIF_DIR) && \
-		env PATH="$(PREFIX_BIN):$(PATH)" ./configure && \
 		env PATH="$(PREFIX_BIN):$(PATH)" $(MAKE) clean && \
-		env PATH="$(PREFIX_BIN):$(PATH)" KLONE_VERSION=$(KLONE_VERSION) XENO_NO_FETCH=1 $(MAKE)
-	$(CD) $(LASTDIR)
+		env PATH="$(PREFIX_BIN):$(PATH)" KLONE_CUSTOM_TC=$(WEBIF_TC_FILE) $(MAKE)
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_compiled
 
 #
@@ -131,7 +100,6 @@ clean-webif:
 	fi );
 
 distclean-webif:
-	-$(RM) -f $(STAGEFILES_DIR)/.webif_unpacked
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
 	-$(RM) -f $(STAGEFILES_DIR)/.webapp_downloaded
