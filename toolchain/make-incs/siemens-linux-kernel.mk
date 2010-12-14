@@ -131,8 +131,9 @@ endif
 
 $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked: \
       $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/*.patch) \
+      $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_FW_VERSION)/*.patch) \
       $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_M7X0_TYPE)/*.patch) \
-      $(if $(filter pro,$(CONFIG_FW_VERSION)),$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/cifs-fs.tar.bz2) \
+      $(if $(filter pro,$(CONFIG_FW_VERSION)),$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/pro/cifs-fs.tar.bz2) \
       $$(SIEMENS-LINUX-KERNEL_DEPS) $(SIEMENS-LINUX-KERNEL_CONFIG)
 	-$(RM) -rf $(SIEMENS-LINUX-KERNEL_DIR)
 	$(BZCAT) $(SIEMENS-GPL-SRC_DLFILE) | $(TAR) -C $(BUILD_DIR) \
@@ -150,12 +151,15 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_patched: \
       $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked
 # CIFS for 2.4er kernel (it's much easier to handle as smbfs and faster)
 ifeq ($(CONFIG_FW_VERSION),pro)
-	$(BZCAT) $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/cifs-fs.tar.bz2 | \
+	$(BZCAT) $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/pro/cifs-fs.tar.bz2 | \
 		 $(TAR) -C $(SIEMENS-LINUX-KERNEL_DIR) -f -
 endif
 # Needed patches to get kernel compiling
 	$(call patch_package, $(SIEMENS-LINUX-KERNEL_DIR), \
 		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common)
+# Needed patches for lite or pro version
+	$(call patch_package, $(SIEMENS-LINUX-KERNEL_DIR), \
+		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_FW_VERSION))
 # Needed patches for other operating systems
 	$(call patch_package, $(SIEMENS-LINUX-KERNEL_DIR), \
 		$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/host/$(HOST_BS))
