@@ -64,7 +64,7 @@ $(GCC_DLFILE1) $(GCC_DLFILE2): $(TC_INIT_RULE)
 # unpack gcc
 #
 
-$(STAGEFILES_DIR)/.gcc_unpacked: $(GCC_DLFILE1) $(GCC_DLFILE2) $(GCC_PATCHES_DIR)/*.patch
+$(STAGEFILES_DIR)/.gcc_unpacked: $(GCC_DLFILE1) $(GCC_DLFILE2) $(wildcard $(GCC_PATCHES_DIR)/*.patch)
 	-$(RM) -rf $(GCC_DIR)
 	$(BZCAT) $(GCC_DLFILE1) | $(TAR) -C $(BUILD_DIR) -f -
 	$(BZCAT) $(GCC_DLFILE2) | $(TAR) -C $(BUILD_DIR) -f -

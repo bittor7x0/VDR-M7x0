@@ -52,7 +52,7 @@ $(BINUTILS_DLFILE): $(TC_INIT_RULE)
 #
 
 $(STAGEFILES_DIR)/.binutils_unpacked: $(BINUTILS_DLFILE) \
-                                 $(BINUTILS_PATCHES_DIR)/*.patch
+                                 $(wildcard $(BINUTILS_PATCHES_DIR)/*.patch)
 	-$(RM) -rf $(BINUTILS_DIR)
 	$(BZCAT) $(BINUTILS_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.binutils_unpacked

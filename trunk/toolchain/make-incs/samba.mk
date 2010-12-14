@@ -63,11 +63,9 @@ $(SAMBA_DLFILE): $(TC_INIT_RULE)
 # unpack samba
 #
 
-#$(STAGEFILES_DIR)/.samba_unpacked: $(SAMBA_DLFILE) \
-#                                       $(wildcard $(SAMBA_PATCHES_DIR)/*.patch) \
-#                                       $(SAMBA_DEPS)
 $(STAGEFILES_DIR)/.samba_unpacked: $(SAMBA_DLFILE) \
-                                       $(SAMBA_DEPS)
+                                       $(wildcard $(SAMBA_PATCHES_DIR)/*.patch) \
+                                       $$(SAMBA_DEPS)
 	-$(RM) -rf $(SAMBA_DIR)
 	$(GZIP) -d -c $(SAMBA_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.samba_unpacked
