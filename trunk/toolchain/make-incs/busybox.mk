@@ -57,7 +57,8 @@ $(BUSYBOX_DLFILE): $(TC_INIT_RULE)
 #
 
 $(STAGEFILES_DIR)/.busybox_unpacked: $(BUSYBOX_DLFILE) \
-                                     $(BUSYBOX_PATCHES_DIR)/*.patch \
+                                     $(wildcard $(BUSYBOX_PATCHES_DIR)/common/*.patch) \
+                                     $(wildcard $(BUSYBOX_PATCHES_DIR)/$(CONFIG_FW_VERSION)/*.patch) \
                                      $(BUSYBOX_CONFIG) $$(BUSYBOX_DEPS)
 	-$(RM) -rf $(BUSYBOX_DIR)
 	$(BZCAT) $(BUSYBOX_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
@@ -68,7 +69,8 @@ $(STAGEFILES_DIR)/.busybox_unpacked: $(BUSYBOX_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.busybox_patched: $(STAGEFILES_DIR)/.busybox_unpacked
-	$(call patch_package, $(BUSYBOX_DIR), $(BUSYBOX_PATCHES_DIR))
+	$(call patch_package, $(BUSYBOX_DIR), $(BUSYBOX_PATCHES_DIR)/common)
+	$(call patch_package, $(BUSYBOX_DIR), $(BUSYBOX_PATCHES_DIR)/$(CONFIG_FW_VERSION))
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_patched
 
 #
