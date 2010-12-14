@@ -55,7 +55,7 @@ $(GDB_DLFILE): $(TC_INIT_RULE)
 # unpack gdb
 #
 
-$(STAGEFILES_DIR)/.gdb_unpacked: $(GDB_DLFILE) $(GDB_PATCHES_DIR)/*.patch
+$(STAGEFILES_DIR)/.gdb_unpacked: $(GDB_DLFILE) $(wildcard $(GDB_PATCHES_DIR)/*.patch)
 	-$(RM) -rf $(GDB_DIR)
 	$(BZCAT) $(GDB_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.gdb_unpacked

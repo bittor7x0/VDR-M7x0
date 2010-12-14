@@ -39,7 +39,7 @@ UCLIBC_DIR := $(BUILD_DIR)/uClibc-$(UCLIBC_VERSION)
 UCLIBC_URL := http://www.uclibc.org/downloads/$(UCLIBC_FILE)
 endif
 
-UCLIBC_PRE_ALL_GCC = $(UCLIBC_DLFILE) $(UCLIBC_PATCHES_DIR)/*.patch $(UCLIBC_CONFIG) \
+UCLIBC_PRE_ALL_GCC = $(UCLIBC_DLFILE) $(wildcard $(UCLIBC_PATCHES_DIR)/*.patch) $(UCLIBC_CONFIG) \
    $(STAGEFILES_DIR)/.uclibc_headers_installed
 UCLIBC_INSTALLED = $(STAGEFILES_DIR)/.uclibc_installed
 
@@ -64,7 +64,7 @@ $(UCLIBC_DLFILE): $(TC_INIT_RULE)
 #
 
 $(STAGEFILES_DIR)/.uclibc_unpacked: $(UCLIBC_DLFILE) \
-                                    $(UCLIBC_PATCHES_DIR)/*.patch \
+                                    $(wildcard $(UCLIBC_PATCHES_DIR)/*.patch) \
                                     $$(LINUX_HEADERS_INSTALLED) \
                                     $(UCLIBC_CONFIG) \
                                     $$(BINUTILS_INSTALLED) \
@@ -120,7 +120,7 @@ $(STAGEFILES_DIR)/.uclibc_installed: $(STAGEFILES_DIR)/.uclibc_compiled
 	PATH='$(GCC_STAGE1_PREFIX_BIN):$(PREFIX_BIN):$(PATH)' \
 		$(MAKE) -j1 -C $(UCLIBC_DIR) PREFIX=$(TARGET_ROOT) install
 	echo "#define O7OTOOLCHAINVERSION \"$(UCLIBC_VERSION)" \
-		"`$(CAT) $(UCLIBC_CONFIG) $(UCLIBC_PATCHES_DIR)/*.patch \
+		"`$(CAT) $(UCLIBC_CONFIG) $(wildcard $(UCLIBC_PATCHES_DIR)/*.patch) \
 			| $(MD5) | $(CUT) -d " " -f 1`\"" \
 		> $(TARGET_ROOT)/usr/include/$(UCLIBC_O7OVERSION_H)
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_installed

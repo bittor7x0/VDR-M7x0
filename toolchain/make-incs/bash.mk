@@ -56,7 +56,7 @@ $(BASH_DLFILE): $(TC_INIT_RULE)
 # unpack bash
 #
 
-$(STAGEFILES_DIR)/.bash_unpacked: $(BASH_DLFILE) $(BASH_PATCHES_DIR)/*.patch
+$(STAGEFILES_DIR)/.bash_unpacked: $(BASH_DLFILE) $(wildcard $(BASH_PATCHES_DIR)/*.patch)
 	-rm -rf $(BASH_DIR)
 	$(TAR) -C $(BUILD_DIR) -zf $(BASH_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.bash_unpacked
