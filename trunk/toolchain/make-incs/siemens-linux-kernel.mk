@@ -28,6 +28,10 @@ ifeq ($(CONFIG_SQUASHFS_LZMA),y)
    SIEMENS-LINUX-KERNEL_DEPS += $(LZMA_BIN)
 endif
 
+ifeq ($(CONFIG_BOOTLOADER),y)
+   SIEMENS-LINUX-KERNEL_DEPS += $(BOOTLOADER_INSTALLED) $(LZMA_BIN)
+endif
+
 ifeq ($(CONFIG_SIEMENS-LINUX-KERNEL),y)
 ifneq ($(CONFIG_EGCS),y)
 # Siemens has chosen this old compiler for compiling the kernel not me.
@@ -139,8 +143,7 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked: \
 	$(BZCAT) $(SIEMENS-GPL-SRC_DLFILE) | $(TAR) -C $(BUILD_DIR) \
 		-f - gigaset_m740av_gplsw/linux-2.4-xfs/linux
 	$(MV) $(BUILD_DIR)/gigaset_m740av_gplsw/linux-2.4-xfs/linux $(SIEMENS-LINUX-KERNEL_DIR)
-	$(RMDIR) $(BUILD_DIR)/gigaset_m740av_gplsw/linux-2.4-xfs
-	$(RMDIR) $(BUILD_DIR)/gigaset_m740av_gplsw
+	-$(RM) -rf $(BUILD_DIR)/gigaset_m740av_gplsw
 	$(TOUCH) $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked
 
 #
@@ -263,8 +266,13 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed: \
 	$(PREFIX_BIN)/$(UCLIBC_OBJCOPY) --strip-all -O binary \
 		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux \
 		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
+ifeq ($(CONFIG_BOOTLOADER),y)
+	-$(RM) -f $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.lzma
+	$(LZMA_BIN) e -lc1 -lp2 -pb2 -eos $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.lzma
+else
 	-$(RM) -f $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.gz
 	$(GZIP) -1 $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
+endif
 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
 		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) \
 		INSTALL_MOD_PATH=$(TARGET_ROOT)/$(M7X0_KERNEL_DIR) modules_install
@@ -296,11 +304,20 @@ endif
 #
 $(SIEMENS-LINUX-KERNEL-IMG): \
       $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed \
-      $(GEN_KERNEL_HEADER_BIN)
+      $(if $(CONFIG_BOOTLOADER),$(GEN_KERNEL_IMG_BIN) $(BOOTLOADER_BIN),$(GEN_KERNEL_HEADER_BIN))
+ifeq ($(CONFIG_BOOTLOADER),y)
+	$(TOUCH) dummy.bin
+	$(GZIP) dummy.bin
+	$(GEN_KERNEL_IMG_BIN) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.lzma \
+		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/System.map dummy.bin.gz $(BOOTLOADER_BIN) \
+		$(SIEMENS-LINUX-KERNEL-IMG) -$(CONFIG_M7X0_TYPE)
+	$(RM) -f dummy.bin.gz
+else
 	($(GEN_KERNEL_HEADER_BIN) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.gz \
 		$(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/System.map && \
 		cat $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.gz ) \
 	> $(SIEMENS-LINUX-KERNEL-IMG)
+endif
 ifeq ($(strip $(HOST_BS)), OpenBSD)
 	@if	$(TEST) `$(STAT) -f b $(SIEMENS-LINUX-KERNEL-IMG)` \
 			-gt $(KERNEL_MAX_IMGSIZE); then \
