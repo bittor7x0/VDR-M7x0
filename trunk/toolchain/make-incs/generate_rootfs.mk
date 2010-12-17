@@ -71,7 +71,7 @@ AWK_LST_TRANS_PRG := '$$1 !~ /\#/ && $$3 !~ /l/ && $$3 !~ /s/ && $$3 !~ /u/ \
 # Strip modules (based in rstrip.sh from OpenWrt.org)
 STRIP_KMOD = "$(PREFIX_BIN)/$(UCLIBC_TARGET)-strip --strip-unneeded --remove-section=.comment --remove-section=.note"
 define find_modparams
-	$(PREFIX_BIN)/$(UCLIBC_TARGET)-nm "$1" | $(AWK) ' \
+	$(PREFIX_BIN)/$(UCLIBC_NM) "$1" | $(AWK) ' \
 	BEGIN { \
 		FS=" " \
 	} \
