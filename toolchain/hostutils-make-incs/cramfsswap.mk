@@ -88,6 +88,7 @@ clean-cramfsswap-host:
 
 distclean-cramfsswap-host:
 	-$(RM) -f $(STAGEFILES_DIR)/.cramfsswap_host_unpacked
+	-$(RM) -f $(STAGEFILES_DIR)/.cramfsswap_host_patched
 	-$(RM) -f $(STAGEFILES_DIR)/.cramfsswap_host_compiled
 	-$(RM) -f $(HOSTUTILS_PREFIX_BIN)/cramfsswap
 ifeq ($(DISTCLEAN_DLFILE),y)
