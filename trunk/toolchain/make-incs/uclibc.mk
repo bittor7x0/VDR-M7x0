@@ -68,6 +68,7 @@ $(STAGEFILES_DIR)/.uclibc_unpacked: $(UCLIBC_DLFILE) \
                                     $$(LINUX_HEADERS_INSTALLED) \
                                     $(UCLIBC_CONFIG) \
                                     $$(BINUTILS_INSTALLED) \
+                                    $(if $(CONFIG_CCACHE),$$(CCACHE_HOSTINSTALLED)) \
                                     $$(SSTRIP_HOSTINSTALLED)
 	-$(RM) -rf $(UCLIBC_DIR)
 	$(BZCAT) $(UCLIBC_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -

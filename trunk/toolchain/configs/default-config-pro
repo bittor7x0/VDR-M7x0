@@ -4,6 +4,9 @@ CONFIG_FW_VERSION = pro
 # Language by default for firmware: en (English), es (Spanish), de (German) or fr (French)
 CONFIG_LANGUAGE = es
 
+# Set ccache (compiler cache): http://ccache.samba.org
+# CONFIG_CCACHE is not set
+
 # CONFIG_PREFIX is not set
 # CONFIG_BOOTLOADER is not set
 CONFIG_GENERATE_ROOTFS_DIR = y
