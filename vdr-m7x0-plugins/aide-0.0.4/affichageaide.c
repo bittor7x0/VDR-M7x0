@@ -1,5 +1,7 @@
 #include "affichageaide.h"
 #include "aideplayer.h"
+#include <vdr/status.h>
+#include <string>
 
 char *mpgfile;
 
@@ -17,18 +19,21 @@ cAffichageAide::cAffichageAide(const char* selpath,const char* Title) : cOsdMenu
 	asprintf(&txtfile,"%s.%s",selpath,"txt");
 
 	FILE *f = fopen(txtfile,"r");
+	free(txtfile);
 	if (f)
 	{
-
+	        text = "";
 		char buff[8192];
-		char *buff2;
+		std::string buff2 = "";
 		cOsdItem *item;
 		while (fgets(buff,sizeof(buff),f)) {
 			if (!strcmp(buff,":HEADER\n"))
 			{
-				char *Header;
-				asprintf(&Header,"%s","");
+				char *Header ="";
+				char *Header2 ="";
 				char *fgetresult=buff;
+				asprintf(&Header2,"%s", "");
+
 				while(fgetresult && strcmp(buff,":BODY\n"))
 				{
 					char *tmp;
@@ -37,37 +42,36 @@ cAffichageAide::cAffichageAide(const char* selpath,const char* Title) : cOsdMenu
 					{
 						tmp=strtok(NULL,"=");
 						asprintf(&Header,tr(" %sPlugin : %s"),Header,tmp);
+						free(Header2);
+						Header2=Header;
 					}
 					else if (!strcmp(buff,"VERSION"))
 					{
 						tmp=strtok(NULL,"=");
 						asprintf(&Header,tr(" %sVersion : %s"),Header,tmp);
+						free(Header2);
+						Header2=Header;
+
 					}
 					else if (!strcmp(buff,"AUTOR"))
 					{
 						tmp=strtok(NULL,"=");
 						asprintf(&Header,tr(" %sBy : %s"),Header,tmp);
+						free(Header2);
+						Header2=Header;
 					}
 					fgetresult=fgets(buff,sizeof(buff),f);
 				}
 				fgets(buff,sizeof(buff),f);
 				item = new cOsdItem(Header);
 				Add(item);
+				free(Header);
 
 			}
-			/*int loop = ((int)strlen(buff)/60);
-			int nbr=0;
-			for (int i=0; i < (loop + 1);i++)
-			{
-				i<loop ? nbr=60 : nbr=strlen(buff)%60 ; 
-				strncpy(buff2,buff+(60*i),nbr );
-				buff2[nbr]='\0';
-				item = new cOsdItem(buff2);
-				Add(item);	
-			}*/
-			
-			char *buff3="";
-			char *margin="";
+
+			std::string buff3 = "";
+			char *buff3_cstr;
+			std::string margin = "";
 			bool ismargin=true;
 			
 			for (int i=0;i<(int) strlen(buff);i++)
@@ -76,64 +80,105 @@ cAffichageAide::cAffichageAide(const char* selpath,const char* Title) : cOsdMenu
 			    
 			    if (ismargin)
 			    {
-				asprintf(&margin,"%s%c",margin,buff[i]);
+			      margin += buff[1];
 			    } else {
-				asprintf(&buff3,"%s%c",buff3,buff[i]);
+			      buff3 += buff[i];
 			    }			
 			}
 			
 	
-			asprintf(&buff2,"%s",margin);
-			strtok(buff3," ");
-			while (buff3)
+			buff2 = margin;
+			buff3_cstr = new char [buff3.size()+1];
+			strcpy (buff3_cstr, buff3.c_str());
+			strtok(buff3_cstr," ");
+			while (buff3_cstr)
 			{
-				if ((strlen(buff2)+strlen(buff3)+strlen(margin))<(Setup.OSDWidth/10))
+			  if ((buff2.length()+strlen(buff3_cstr)+margin.length())<(Setup.OSDWidth/11))
 				{
-					if (strlen(buff2)>strlen(margin))
+				  if (buff2.length()>margin.length())
 					{
-					    asprintf(&buff2,"%s %s",buff2,buff3);
+					  buff2 += " ";
+					  buff2 += buff3_cstr;
 					} else {
-					    asprintf(&buff2,"%s%s",buff2,buff3);
+					  buff2 += buff3_cstr;
 					}
 				}
 				else
 				{
-					item=new cOsdItem(buff2);
-					Add(item);
-					asprintf(&buff2,"%s%s",margin,buff3);
+				  text += buff2;
+				  text += "\n";
+				  buff2 = margin;
+				  buff2 += buff3_cstr;
 				}
-				buff3=strtok(NULL," ");
-			}	
-			item=new cOsdItem(buff2);
-			Add(item);
-			asprintf(&buff2,"%s","");
+				buff3_cstr=strtok(NULL," ");
+			}
+			delete[] buff3_cstr;  
+			text += buff2;
+
+			buff2 = "";
+			buff3 = "";
+			margin = "";
 		}
+
 		fclose(f);
 	}
 }
 
 cAffichageAide::~cAffichageAide(void)
 {
+  free(mpgfile);
+}
+
+void cAffichageAide::Display(void)
+{
+  cOsdMenu::Display();
+  DisplayMenu()->SetText(text.c_str(), false);
+  cStatus::MsgOsdTextItem(text.c_str());
 }
 
 eOSState cAffichageAide::ProcessKey(eKeys Key)
 {
-	eOSState state = cOsdMenu::ProcessKey(Key);
-		switch(Key)
-		{
-			case kRed:
-			    {
-			    	FILE *fmpg = fopen(mpgfile,"r");
-				if (fmpg)
-				{
-				    fclose(fmpg);
-				    CloseSubMenu();
-				    cControl::Launch(new cAidePlayerControl(mpgfile));
-				    return osEnd;
-				};
-			    };
-			    break;
-			default : break;
-		}
-	return state;
+
+  switch (Key) {
+    case kUp|k_Repeat:
+    case kUp:
+    case kDown|k_Repeat:
+    case kDown:
+    case kLeft|k_Repeat:
+    case kLeft:
+    case kRight|k_Repeat:
+    case kRight:
+         DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
+         cStatus::MsgOsdTextItem(NULL, NORMALKEY(Key) == kUp);
+         return osContinue;
+    default:
+         break;
+    }
+
+  eOSState state = cOsdMenu::ProcessKey(Key);
+
+  if (state == osUnknown) {
+    switch (Key) {
+    case kOk:
+      return osBack;
+      
+    case kRed:
+      {
+	FILE *fmpg = fopen(mpgfile,"r");
+	if (fmpg)
+	  {
+	    fclose(fmpg);
+	    CloseSubMenu();
+	    cControl::Launch(new cAidePlayerControl(mpgfile));
+	    return osEnd;
+	  };
+      };
+      break;
+    default:
+      state = osContinue;
+    }
+    state = osContinue;
+  }
+  return state;
+  
 }
