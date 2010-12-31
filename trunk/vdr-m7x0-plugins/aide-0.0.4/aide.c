@@ -12,6 +12,7 @@ cPluginAide::cPluginAide(void)
 
 cPluginAide::~cPluginAide(void)
 {
+  free (PlugAide.OsdAideName);
 }
 
 bool cPluginAide::Initialize(void)

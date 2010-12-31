@@ -51,6 +51,7 @@ cAidePlayerControl::cAidePlayerControl(const char* AideFile) : cControl(player =
 
 cAidePlayerControl::~cAidePlayerControl(void)
 {
+	free (player->Image);
 	delete player;
 }
 

@@ -1,10 +1,12 @@
 #ifndef __MENUAIDE_H
 #define __MENUAIDE_H
 #include <vdr/plugin.h>
-
+#include <string>
 
 class cMenuAide : public cOsdMenu
 {
+ private:
+  char *AideFilesDir;
 	public : 
 		cMenuAide(void);
 		~cMenuAide(void);
@@ -12,6 +14,6 @@ class cMenuAide : public cOsdMenu
 		void FindAide(const char *);
 		char *FindPath(const char *);
 		void Draw(void);
-		char *Trim(const char *);
+		std::string Trim(const char *);
 };
 #endif

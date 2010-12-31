@@ -5,8 +5,6 @@
 #include <vdr/player.h>
 #include <dirent.h>
 
-char *AideFilesDir;
-
 cMenuAide::cMenuAide(void) : cOsdMenu (tr("VDR Help"),20)
 {
 	Draw();
@@ -42,6 +40,7 @@ if(d)
 			    asprintf (&aidefile,"%s/%s.%s",dir,name,ext);
 			    FILE *f;
 			    f=fopen(aidefile,"r");
+			    free (aidefile);
 			    if (f)
 			    {
 			        char buff[256];
@@ -57,12 +56,14 @@ if(d)
 					file=strtok(NULL,"=");
 					file=strtok(file,"\n"); //strip parasitic symbols
 					asprintf (&path,"%s/%s.%s",dir,file,"txt"); //fullpath of the link
-
+					
 					FILE *ftest = fopen(path,"r"); //check if it is a real file
+					free (path);
 					if(ftest)
 					{
     					    asprintf(&AideLine,"   %s",title); 
     					    Add(new cOsdItem(AideLine,osUser1));
+					    free (AideLine);
 					    fclose(ftest);
 					}
 				    } else { // Group entries in the Help menu
@@ -85,10 +86,12 @@ if(d)
 
 cMenuAide::~cMenuAide(void)
 {
+  free (AideFilesDir);
 }
 
 char *cMenuAide::FindPath(const char *seltitle)
 {
+  std::string trimseltitle = Trim (seltitle);
     char *result="";
     if (!strncmp(seltitle,"+",1))
     {
@@ -116,6 +119,7 @@ char *cMenuAide::FindPath(const char *seltitle)
 
     			FILE *f;
 			f=fopen(aidefile,"r");
+			free (aidefile);
 			if (f)
 			{
 			    char buff[256];
@@ -128,7 +132,7 @@ char *cMenuAide::FindPath(const char *seltitle)
     			    	    title=strtok(buff,"=");
 				    file=strtok(NULL,"=");
 				    file=strtok(file,"\n"); //strip parasitic symbols
-				    if (!strcmp(Trim(seltitle),Trim(title))) //Check if current title matches the requested one
+				    if (trimseltitle.compare (Trim(title)) == 0) //Check if current title matches the requested one
 				    {
 					asprintf (&result,"%s/%s",AideFilesDir,file);
 				    }
@@ -147,14 +151,17 @@ char *cMenuAide::FindPath(const char *seltitle)
 
 eOSState cMenuAide::ProcessKey(eKeys Key)
 {
-char *seltitle;
-
+  char *seltitle;
+  char *selpath;
 	eOSState state = cOsdMenu::ProcessKey(Key);
 	switch (state)
 	{
 		case osUser1:
 			asprintf (&seltitle,"%s",Get(Current())->Text()); //get selected title
-			return (AddSubMenu(new cAffichageAide(FindPath(seltitle),seltitle)));
+			selpath = FindPath(seltitle);
+			state = AddSubMenu(new cAffichageAide(FindPath(seltitle),seltitle));
+			free (selpath);
+			free (seltitle);
 			break;
 		default : break;
 	}
@@ -162,14 +169,14 @@ char *seltitle;
 }
 
 
-char *cMenuAide::Trim(const char *totrim)
+std::string cMenuAide::Trim(const char *totrim)
 {
-	char *result="";
+  std::string result="";
 	for (int i=0;i<(int) strlen(totrim);i++)
 	{
 		if (totrim[i]!=' ')
 		{
-			asprintf(&result,"%s%c",result,totrim[i]);
+			result += totrim[i];
 		}
 	}
 	return result;
