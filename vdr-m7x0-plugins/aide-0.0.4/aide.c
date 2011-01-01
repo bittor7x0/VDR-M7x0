@@ -2,17 +2,12 @@
 #include "menuaide.h"
 #include "aidei18n.h"
 
-cPluginAide PlugAide;
-
 cPluginAide::cPluginAide(void)
 {
-	asprintf(&PlugAide.OsdAideName,"%s","");
-	PlugAide.Osd=false;
 }
 
 cPluginAide::~cPluginAide(void)
 {
-  free (PlugAide.OsdAideName);
 }
 
 bool cPluginAide::Initialize(void)
