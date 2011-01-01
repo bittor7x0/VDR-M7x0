@@ -12,7 +12,6 @@ static const char *MAINMENUENTRY  = "Help";
 class cPluginAide : public cPlugin {
 private:
 public:
-  bool Osd;
   cPluginAide(void);
   virtual ~cPluginAide(void);
   virtual const char *Version(void) { return VERSION; }
@@ -23,9 +22,6 @@ public:
   virtual bool ProcessArgs(int argc, char *argv[]);
   virtual bool Initialize(void);
   virtual bool Start(void);
-  bool ShowOsd;
-  char *OsdAideName;
-  const char *ShowOsdFile;
   virtual const char *MainMenuEntry(void) { return tr(MAINMENUENTRY); }
   virtual cOsdObject *MainMenuAction(void);
   //void Store(void);

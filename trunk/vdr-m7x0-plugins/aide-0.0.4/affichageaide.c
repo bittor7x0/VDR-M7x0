@@ -3,8 +3,6 @@
 #include <vdr/status.h>
 #include <string>
 
-char *mpgfile;
-
 cAffichageAide::cAffichageAide(const char* selpath,const char* Title) : cOsdMenu (Title)
 {
 	asprintf(&mpgfile,"%s.%s",selpath,"mpg");
