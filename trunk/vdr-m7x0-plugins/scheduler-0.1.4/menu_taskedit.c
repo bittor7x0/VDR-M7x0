@@ -29,6 +29,7 @@ The project's page is at http://winni.vdr-developer.org/taskman
 using namespace std;
 
 const char TimeSpecChars[] = "0123456789, -*/";
+const char WeekdaySpecChars[] = "0123456, -*/";
 
 // --- cMenuTaskEdit -------------------------------------------------------
 cMenuTaskEdit::cMenuTaskEdit(cTask* Task, bool New)
@@ -59,7 +60,7 @@ void cMenuTaskEdit::Set()
    Add(new cMenuEditStrItem(tr("Command"), data.cmd, sizeof(data.cmd), trVDR(FileNameChars)));
    Add(new cMenuEditStrItem(tr("Minute"), data.minute, sizeof(data.minute), TimeSpecChars));
    Add(new cMenuEditStrItem(tr("Hour"), data.hour, sizeof(data.hour), TimeSpecChars));
-   Add(new cMenuEditStrItem(tr("Day of week"), data.dayofweek, sizeof(data.dayofweek), TimeSpecChars));
+   Add(new cMenuEditStrItem(tr("Day of week"), data.dayofweek, sizeof(data.dayofweek), WeekdaySpecChars));
    Add(new cMenuEditStrItem(tr("Day"), data.dayofmonth, sizeof(data.dayofmonth), TimeSpecChars));
    Add(new cMenuEditStrItem(tr("Month"), data.month, sizeof(data.month), TimeSpecChars));
    Add(new cMenuEditBoolItem(tr("Wakeup VDR"), &data.wakeup));
@@ -73,7 +74,7 @@ void cMenuTaskEdit::Set()
    Add(pInfoItem);
    
    time_t nextExecution = time(NULL);
-   for(int i=0; i<3; i++)
+   for(int i=0; i<2; i++)
      {
        char* info = NULL;
        nextExecution = data.NextExecution(nextExecution + 60);
