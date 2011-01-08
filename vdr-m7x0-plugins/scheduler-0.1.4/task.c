@@ -204,7 +204,14 @@ time_t cTask::NextExecution(time_t start)
   cValueSpec dayofmonthValues(dayofmonth, 1, 31);
   cValueSpec dayofweekValues(dayofweek, 0, 6);
   cValueSpec monthValues(month, 1, 12);
-
+  
+  if (! minuteValues.IsValid () ||
+      ! hourValues.IsValid () ||
+      ! dayofmonthValues.IsValid () ||
+      ! dayofweekValues.IsValid () ||
+      ! monthValues.IsValid ())
+    return 0;
+      
   do
     {
       if (minuteValues.Matches(time_start->tm_min) &&
@@ -217,7 +224,7 @@ time_t cTask::NextExecution(time_t start)
 	{
 	  start += 60;
 	  time_start = localtime_r(&start, &tm_r);
-	  if (time_start->tm_year - startYear > 4) return 0; // calc max 4 years
+	  if (time_start->tm_year - startYear > 2) return 0; // calc max 2 years
 	}
     }
   while(true);
@@ -400,11 +407,12 @@ vector< string > StringSplit( string const& text, char delimiter )
 
 
 // -- cValueSpec -----------------------------------------------------------------
-cValueSpec::cValueSpec(string value, int range_from, int range_to)
+cValueSpec::cValueSpec(string value, int range_from, int range_to) :
+rangeFrom (range_from), rangeTo (range_to), valid (true)
 {
   if (value.empty())
     for(int value = range_from; value <= range_to; value++)
-      values.insert(value);
+      Insert(value);
   else
     {
       vector<string> parts = StringSplit(value, ',');
@@ -428,17 +436,33 @@ cValueSpec::cValueSpec(string value, int range_from, int range_to)
 	      int y=0;
 	      for(set<int>::iterator it = partvalues.begin(); it != partvalues.end(); ++it, y++)
 		if (y%step == 0)
-		  values.insert(*it);
+		  Insert(*it);
 	    }
 	  else
-	    values.insert(partvalues.begin(), partvalues.end());
+	    for(set<int>::iterator it = partvalues.begin(); it != partvalues.end(); ++it)
+	      Insert(*it);
 	}
     }
 }
- 
+
+void cValueSpec::Insert(int value)
+{
+  // Insert with validation on the range
+  if (value >= rangeFrom && value <= rangeTo) {
+    values.insert(value);
+  } else {
+    valid = false;
+  }
+}
+
 bool cValueSpec::Matches(int value)
 {
   return (values.find(value) != values.end());
+}
+
+bool cValueSpec::IsValid() 
+{
+  return valid;
 }
 
 // -- cTaskLog -----------------------------------------------------------------

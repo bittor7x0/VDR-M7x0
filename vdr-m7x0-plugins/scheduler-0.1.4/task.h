@@ -33,10 +33,15 @@ The project's page is at http://winni.vdr-developer.org/taskman
 class cValueSpec
 {
   std::set<int> values;
+  int rangeFrom;
+  int rangeTo;
+  void Insert(int value);
+  bool valid;
  public:
   
   cValueSpec(std::string value, int range_from, int range_to);
   bool Matches(int value);
+  bool IsValid();
 };
 
 class cTask;
