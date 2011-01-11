@@ -1,0 +1,125 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# bittor from open7x0.org <bittor7x0 _at_ gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2010-01-03 20:39+0100\n"
+"PO-Revision-Date: 2007-12-07 19:31+0200\n"
+"Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Start"
+msgstr "Inicio"
+
+msgid "Current output"
+msgstr "Salida actual"
+
+msgid "Log entries"
+msgstr "Entradas del registro"
+
+msgid "Hide main menu entry"
+msgstr "Ocultar entrada del menú principal"
+
+msgid "Task settings"
+msgstr "Configurar tarea"
+
+msgid "End"
+msgstr "Final"
+
+msgid "Start and end"
+msgstr "Inicio y final"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "Command"
+msgstr "Comando"
+
+msgid "Minute"
+msgstr "Minuto"
+
+msgid "Hour"
+msgstr "Hora"
+
+msgid "Day of week"
+msgstr "Día de la semana"
+
+msgid "Day"
+msgstr "Día"
+
+msgid "Month"
+msgstr "Mes"
+
+msgid "Wakeup VDR"
+msgstr "Despertar VDR"
+
+msgid "Shutdown VDR"
+msgstr "Apagar VDR"
+
+msgid "OSD announce"
+msgstr "Aviso OSD"
+
+msgid "Save ... logs"
+msgstr "Guardar ... registros"
+
+msgid "Kill after ... minutes"
+msgstr "Detener a los ... minutos"
+
+msgid "Next executions:"
+msgstr "Próximas ejecuciones:"
+
+msgid "Tasks"
+msgstr "Tareas"
+
+msgid "Button$New"
+msgstr "Nueva"
+
+msgid "Button$Stop"
+msgstr "Detener"
+
+msgid "Button$Start"
+msgstr "Iniciar"
+
+#, c-format
+msgid "%s currently running"
+msgstr "%s ejecutándose actualmente"
+
+msgid "Delete task?"
+msgstr "¿Borrar tarea?"
+
+msgid "Abort this task?"
+msgstr "¿Cancelar esta tarea?"
+
+msgid "Execute this task?"
+msgstr "¿Ejecutar esta tarea?"
+
+msgid "Job scheduler and manager"
+msgstr "Administrar y programar tareas"
+
+msgid "Job scheduler"
+msgstr "Programador de tareas"
+
+msgid "active"
+msgstr "activa"
+
+#, c-format
+msgid "'%s' still runs!"
+msgstr "¡'%s' ejecutándose todavía!"
+
+msgid "Output"
+msgstr "Salida"
+
+#, c-format
+msgid "%s started"
+msgstr "%s iniciado"
+
+#, c-format
+msgid "%s finished"
+msgstr "%s finalizado"

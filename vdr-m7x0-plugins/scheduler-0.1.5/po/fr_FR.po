@@ -1,0 +1,139 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Jean-Claude Repetto <jc@repetto.org>, 2001
+# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+# Gregoire Favre <greg@magma.unil.ch>, 2003
+# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2010-01-03 20:39+0100\n"
+"PO-Revision-Date: 2007-08-14 20:21+0200\n"
+"Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#, fuzzy
+msgid "Start"
+msgstr "Menue de départ"
+
+msgid "Current output"
+msgstr ""
+
+msgid "Log entries"
+msgstr ""
+
+msgid "Hide main menu entry"
+msgstr ""
+
+msgid "Task settings"
+msgstr ""
+
+msgid "End"
+msgstr ""
+
+#, fuzzy
+msgid "Start and end"
+msgstr "Standart"
+
+msgid "Description"
+msgstr "Description"
+
+#, fuzzy
+msgid "Command"
+msgstr "Commande EPG"
+
+msgid "Minute"
+msgstr ""
+
+msgid "Hour"
+msgstr ""
+
+msgid "Day of week"
+msgstr "Jours de la semaine"
+
+msgid "Day"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+msgid "Wakeup VDR"
+msgstr ""
+
+msgid "Shutdown VDR"
+msgstr ""
+
+#, fuzzy
+msgid "OSD announce"
+msgstr "Annoncer à nouveau"
+
+msgid "Save ... logs"
+msgstr ""
+
+msgid "Kill after ... minutes"
+msgstr ""
+
+#, fuzzy
+msgid "Next executions:"
+msgstr "Selection"
+
+msgid "Tasks"
+msgstr ""
+
+#, fuzzy
+msgid "Button$New"
+msgstr "Test"
+
+#, fuzzy
+msgid "Button$Stop"
+msgstr "Test"
+
+#, fuzzy
+msgid "Button$Start"
+msgstr "Test"
+
+#, fuzzy, c-format
+msgid "%s currently running"
+msgstr "Est déjà en cours"
+
+#, fuzzy
+msgid "Delete task?"
+msgstr "Effacer le modèle"
+
+#, fuzzy
+msgid "Abort this task?"
+msgstr "Effectuer la recherche"
+
+#, fuzzy
+msgid "Execute this task?"
+msgstr "Effectuer la recherche"
+
+msgid "Job scheduler and manager"
+msgstr ""
+
+msgid "Job scheduler"
+msgstr ""
+
+msgid "active"
+msgstr ""
+
+#, c-format
+msgid "'%s' still runs!"
+msgstr ""
+
+msgid "Output"
+msgstr ""
+
+#, c-format
+msgid "%s started"
+msgstr ""
+
+#, c-format
+msgid "%s finished"
+msgstr ""

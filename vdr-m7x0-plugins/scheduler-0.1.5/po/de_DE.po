@@ -1,0 +1,125 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2010-01-03 20:39+0100\n"
+"PO-Revision-Date: 2007-08-14 20:21+0200\n"
+"Last-Translator: Klaus Schmidinger <kls@cadsoft.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Start"
+msgstr "Start"
+
+msgid "Current output"
+msgstr "Aktuelle Ausgabe"
+
+msgid "Log entries"
+msgstr "Log-Einträge"
+
+msgid "Hide main menu entry"
+msgstr "Hauptmenüentrag ausblenden"
+
+msgid "Task settings"
+msgstr "Job-Einstellungen"
+
+msgid "End"
+msgstr "Ende"
+
+msgid "Start and end"
+msgstr "Start und Ende"
+
+msgid "Description"
+msgstr "Bezeichnung"
+
+msgid "Command"
+msgstr "Befehl"
+
+msgid "Minute"
+msgstr "Minute"
+
+msgid "Hour"
+msgstr "Stunde"
+
+msgid "Day of week"
+msgstr "Wochentag"
+
+msgid "Day"
+msgstr "Tag"
+
+msgid "Month"
+msgstr "Monat"
+
+msgid "Wakeup VDR"
+msgstr "VDR wecken"
+
+msgid "Shutdown VDR"
+msgstr "VDR herunterfahren"
+
+msgid "OSD announce"
+msgstr "OSD Ankündigung"
+
+msgid "Save ... logs"
+msgstr "Speichere ... Logs"
+
+msgid "Kill after ... minutes"
+msgstr "Abbruch nach ... Minuten"
+
+msgid "Next executions:"
+msgstr "Nächste Startzeiten:"
+
+msgid "Tasks"
+msgstr "Jobs"
+
+msgid "Button$New"
+msgstr "Neu"
+
+msgid "Button$Stop"
+msgstr "Stop"
+
+msgid "Button$Start"
+msgstr "Start"
+
+#, c-format
+msgid "%s currently running"
+msgstr "%s läuft bereits"
+
+msgid "Delete task?"
+msgstr "Job löschen?"
+
+msgid "Abort this task?"
+msgstr "Job abbrechen?"
+
+msgid "Execute this task?"
+msgstr "Job starten?"
+
+msgid "Job scheduler and manager"
+msgstr "Job-Planer und -manager"
+
+msgid "Job scheduler"
+msgstr "Job-Planer"
+
+msgid "active"
+msgstr "aktiv"
+
+#, c-format
+msgid "'%s' still runs!"
+msgstr "'%s' läuft noch!"
+
+msgid "Output"
+msgstr "Ausgabe"
+
+#, c-format
+msgid "%s started"
+msgstr "%s gestartet"
+
+#, c-format
+msgid "%s finished"
+msgstr "%s beendet"

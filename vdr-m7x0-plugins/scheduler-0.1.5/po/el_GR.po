@@ -1,0 +1,129 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Dimitrios Dimitrakos <mail@dimitrios.de>, 2002
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2010-01-03 20:39+0100\n"
+"PO-Revision-Date: 2007-08-14 20:21+0200\n"
+"Last-Translator: Dimitrios Dimitrakos <mail@dimitrios.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-7\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Start"
+msgstr ""
+
+msgid "Current output"
+msgstr ""
+
+msgid "Log entries"
+msgstr ""
+
+msgid "Hide main menu entry"
+msgstr ""
+
+msgid "Task settings"
+msgstr ""
+
+msgid "End"
+msgstr ""
+
+msgid "Start and end"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+#, fuzzy
+msgid "Command"
+msgstr "Εγγραφή"
+
+msgid "Minute"
+msgstr ""
+
+msgid "Hour"
+msgstr ""
+
+msgid "Day of week"
+msgstr ""
+
+msgid "Day"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+msgid "Wakeup VDR"
+msgstr ""
+
+msgid "Shutdown VDR"
+msgstr ""
+
+msgid "OSD announce"
+msgstr ""
+
+msgid "Save ... logs"
+msgstr ""
+
+msgid "Kill after ... minutes"
+msgstr ""
+
+msgid "Next executions:"
+msgstr ""
+
+msgid "Tasks"
+msgstr ""
+
+#, fuzzy
+msgid "Button$New"
+msgstr "Ρυθμισεις"
+
+#, fuzzy
+msgid "Button$Stop"
+msgstr "Ρυθμισεις"
+
+#, fuzzy
+msgid "Button$Start"
+msgstr "Ρυθμισεις"
+
+#, c-format
+msgid "%s currently running"
+msgstr ""
+
+msgid "Delete task?"
+msgstr ""
+
+msgid "Abort this task?"
+msgstr ""
+
+msgid "Execute this task?"
+msgstr ""
+
+msgid "Job scheduler and manager"
+msgstr ""
+
+msgid "Job scheduler"
+msgstr ""
+
+msgid "active"
+msgstr ""
+
+#, c-format
+msgid "'%s' still runs!"
+msgstr ""
+
+msgid "Output"
+msgstr ""
+
+#, c-format
+msgid "%s started"
+msgstr ""
+
+#, c-format
+msgid "%s finished"
+msgstr ""
