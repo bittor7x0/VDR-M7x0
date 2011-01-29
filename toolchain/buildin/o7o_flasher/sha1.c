@@ -20,8 +20,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: sha1.c 148 2007-08-30 15:58:15Z andreas $
- *
  */
 #include <endian.h>
 #include <byteswap.h>

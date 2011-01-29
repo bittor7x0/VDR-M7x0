@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: uclibc.mk 401 2009-03-26 12:29:09Z andreas $
-#
 
 UCLIBC_VERSION := 0.9.30.3
 UCLIBC_IS_SNAPSHOT := n

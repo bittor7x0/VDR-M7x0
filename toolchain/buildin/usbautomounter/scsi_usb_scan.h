@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: scsi_usb_scan.h 133 2007-07-16 13:52:26Z andreas $
- *
  */
 #ifndef __SCSI_USB_SCAN_H
 #define __SCSI_USB_SCAN_H 1

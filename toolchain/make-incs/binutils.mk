@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: binutils.mk 401 2009-03-26 12:29:09Z andreas $
-#
 
 BINUTILS_VERSION := 2.20.1
 BINUTILS_PATCHES_DIR := $(PATCHES_DIR)/binutils/$(BINUTILS_VERSION)

@@ -6,8 +6,6 @@
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
  *                                                                         *
- *   $Id: section.c 170 2007-03-06 07:49:43Z andreas $
- *                                                                         *
  ***************************************************************************/
 
 #include "section.h"

@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: tools.c 149 2007-09-04 15:41:55Z andreas $
- *
  */
 #include <stdint.h>
 #include <sys/mman.h>

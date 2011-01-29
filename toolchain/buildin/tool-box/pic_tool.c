@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: pic_tool.c 208 2007-10-03 16:01:59Z andreas $
- *
  */
 
 #include <stdio.h>

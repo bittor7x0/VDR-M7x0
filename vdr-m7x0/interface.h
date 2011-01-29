@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: interface.h 170 2007-03-06 07:49:43Z andreas $
  */
 
 #ifndef __INTERFACE_H

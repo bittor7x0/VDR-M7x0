@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: siemens-linux-kernel.mk 401 2009-03-26 12:29:09Z andreas $
-#
 
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SIEMENS-LINUX-KERNEL_DEPS = $(BASE_BUILD_STAGEFILE) $(SIEMENS-GPL-SRC_DLFILE) $(EGCS_INSTALLED)
@@ -362,4 +360,3 @@ distclean-siemens-linux-kernel:
 	-$(RM) -f $(STAGEFILES_DIR)/.siemens-linux-kernel_*
 	-$(RM) -f $(SIEMENS-LINUX-KERNEL-IMG)
 	-$(RM) -f $(FILELIST_DIR)/siemens-linux-kernel_*.lst
-

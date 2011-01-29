@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: gcc.mk 403 2009-08-11 22:40:16Z andreas $
-#
 
 GCC_VERSION := 4.5.1
 GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)

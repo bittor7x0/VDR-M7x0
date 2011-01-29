@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: dvbdevice.c 366 2009-08-25 21:25:26Z andreas $
  */
 
 #include "dvbdevice.h"

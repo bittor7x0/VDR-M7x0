@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: gen_wsw.c 152 2007-09-05 09:55:48Z andreas $
- *
  */
 
 #define _GNU_SOURCE 1

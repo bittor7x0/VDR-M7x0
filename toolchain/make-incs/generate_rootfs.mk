@@ -19,9 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: generate_rootfs.mk 374 2008-09-01 18:22:42Z andreas $
-#
-
 
 ifeq ($(strip $(CONFIG_ROOTFS_DIR)),)
   ROOTFS_DIR = $(TOP_DIR)/rootfs_dir_$(CONFIG_M7X0_TYPE)

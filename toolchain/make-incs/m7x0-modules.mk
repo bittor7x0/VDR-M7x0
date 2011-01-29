@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: m7x0-modules.mk 374 2008-09-01 18:22:42Z andreas $
-#
 
 M7X0-MODULES_DEPS = $(BASE_BUILD_STAGEFILE) $(CRAMFSCK_BIN)
 ifeq ($(CONFIG_CRAMFS_NEEDS_SWAP),y)

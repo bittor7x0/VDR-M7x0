@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: osd.c 343 2008-07-24 10:12:23Z andreas $
- *
  */
 
 #include <stdint.h>

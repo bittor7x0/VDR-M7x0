@@ -8,7 +8,6 @@
  *
  * parts of this file are derived from the OMS program.
  *
- * $Id: dvbspu.c 184 2007-06-10 11:22:37Z andreas $
  */
 
 #include "dvbspu.h"

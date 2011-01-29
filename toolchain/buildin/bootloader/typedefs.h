@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: typedefs.h 362 2008-08-17 17:14:52Z andreas $
- *
  */
 #ifndef _TYPEDEFS_H
 #define _TYPEDEFS_H

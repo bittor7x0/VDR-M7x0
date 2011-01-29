@@ -34,7 +34,6 @@
  *
  * The project's page is at http://www.cadsoft.de/vdr
  *
- * $Id: vdr.c 349 2009-03-12 15:20:27Z andreas $
  */
 
 #include <getopt.h>

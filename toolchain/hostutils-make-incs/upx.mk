@@ -11,14 +11,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
 # The project's page is at http://www.open7x0.org
 #
-#
-
 
 UPX_BIN := $(HOSTUTILS_PREFIX_BIN)/upx
-
 
 UPX_HOSTVERSION := 3.07
 UPX_HOSTFILE := upx-$(UPX_HOSTVERSION)-src.tar.bz2

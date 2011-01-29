@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: pic_ioctl.h 171 2007-09-17 18:35:04Z andreas $
- *
  */
 #ifndef __PIC_IOCTL_H
 #define __PIC_IOCTL_H 1

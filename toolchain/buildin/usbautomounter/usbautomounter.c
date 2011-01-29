@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: usbautomounter.c 201 2007-09-25 17:42:55Z andreas $
- *
  */
 #include <stdio.h>
 #include <stdlib.h>

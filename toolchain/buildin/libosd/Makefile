@@ -18,8 +18,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: Makefile 203 2007-09-27 11:07:18Z andreas $
-#
 
 AR := ar
 ARFLAGS := r

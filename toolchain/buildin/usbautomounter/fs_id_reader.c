@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: fs_id_reader.c 134 2007-07-16 15:39:47Z andreas $
- *
  */
 
 #include <stdint.h>

@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: cache_func.c 376 2008-09-01 19:15:23Z andreas $
- *
  */
 #include "cache.h"
 

@@ -11,9 +11,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
 # The project's page is at http://www.open7x0.org
-#
 #
 
 BOOTMENU_DEPS = $(BASE_BUILD_STAGEFILE) $(LIBOSD_INSTALLED)
@@ -101,4 +99,3 @@ distclean-bootmenu:
 	-$(RM) -f $(STAGEFILES_DIR)/.bootmenu_unpacked
 	-$(RM) -f $(STAGEFILES_DIR)/.bootmenu_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.bootmenu_installed
-

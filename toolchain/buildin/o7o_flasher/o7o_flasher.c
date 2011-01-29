@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: o7o_flasher.c 362 2008-08-17 17:14:52Z andreas $
- *
  */
 #include <stdio.h>
 #include <stdlib.h>

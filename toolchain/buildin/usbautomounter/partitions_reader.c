@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: partitions_reader.c 161 2007-09-12 06:48:56Z andreas $
- *
  */
 #include <stdint.h>
 #include <sys/types.h>

@@ -1,4 +1,3 @@
-#
 # Copyright (C) 2007 Andreas Koch - the open7x0.org group
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,9 +16,6 @@
 # The author can be reached at andreas@open7x0.org
 #
 # The project's page is at http://www.open7x0.org
-#
-# $Id: usbautomounter.mk 321 2008-02-22 17:21:34Z andreas $
-#
 #
 
 USBAUTOMOUNTER_DEPS = $(BASE_BUILD_STAGEFILE) $(LIBOSD_INSTALLED)
@@ -79,4 +75,3 @@ distclean-usbautomounter:
 	-$(RM) -f $(STAGEFILES_DIR)/.usbautomounter_copied
 	-$(RM) -f $(STAGEFILES_DIR)/.usbautomounter_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.usbautomounter_installed
-

@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: display.c 321 2008-02-22 17:21:34Z andreas $
- *
  */
 #include <stdint.h>
 #include <stdio.h>

@@ -20,8 +20,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: sha1.h 148 2007-08-30 15:58:15Z andreas $
- *
  */
 #ifndef __SHA1_H
 #define __SHA1_H 1

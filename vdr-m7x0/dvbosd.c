@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: dvbosd.c 289 2008-09-09 15:07:06Z andreas $
  */
 
 #include "dvbosd.h"

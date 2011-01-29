@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: osd.h 296 2008-09-16 14:30:46Z andreas $
  */
 
 #ifndef __OSD_H

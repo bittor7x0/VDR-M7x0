@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: gen_ofi.c 363 2008-08-17 17:27:39Z andreas $
- *
  */
 #include <stdint.h>
 #include <stdlib.h>

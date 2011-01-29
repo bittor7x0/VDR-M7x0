@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: e2fsprogs.mk 403 2009-08-11 22:40:16Z andreas $
-#
 
 E2FSPROGS_DEPS = $(BASE_BUILD_STAGEFILE)
 

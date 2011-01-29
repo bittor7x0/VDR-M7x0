@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: fs_id_fat_reader.h 133 2007-07-16 13:52:26Z andreas $
- *
  */
 #ifndef __FS_ID_FAT_READER_H
 #define __FS_ID_FAT_READER 1

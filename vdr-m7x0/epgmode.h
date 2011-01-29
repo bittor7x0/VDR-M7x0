@@ -22,7 +22,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: epgmode.h 224 2008-02-17 14:53:58Z andreas $
  *
  */
 

@@ -1,4 +1,3 @@
-#
 # Copyright (C) 2007 Andreas Koch - the open7x0.org group
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,9 +16,6 @@
 # The author can be reached at andreas@open7x0.org
 #
 # The project's page is at http://www.open7x0.org
-#
-# $Id: o7o_flasher.mk 154 2007-09-05 16:10:23Z andreas $
-#
 #
 
 O7O_FLASHER_DEPS = $(BASE_BUILD_STAGEFILE) $(LIBOSD_INSTALLED)
@@ -75,4 +71,3 @@ distclean-o7o_flasher:
 	-$(RM) -f $(STAGEFILES_DIR)/.o7o_flasher_copied
 	-$(RM) -f $(STAGEFILES_DIR)/.o7o_flasher_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.o7o_flasher_installed
-

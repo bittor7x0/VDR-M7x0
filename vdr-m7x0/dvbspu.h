@@ -8,7 +8,6 @@
  *
  * parts of this file are derived from the OMS program.
  *
- * $Id: dvbspu.h 170 2007-03-06 07:49:43Z andreas $
  */
 
 #ifndef __DVBSPU_H

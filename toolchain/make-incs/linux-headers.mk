@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: linux-headers.mk 374 2008-09-01 18:22:42Z andreas $
-#
 
 LINUX_HEADERS_FILE := m7x0-linux-headers.tar.bz2
 LINUX_HEADERS_DLFILE := $(DOWNLOAD_DIR)/$(LINUX_HEADERS_FILE)

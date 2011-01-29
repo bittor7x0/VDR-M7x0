@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: kernel_args.h 362 2008-08-17 17:14:52Z andreas $
- *
  */
 #define KERNEL_ARGS_COUNT 4
 

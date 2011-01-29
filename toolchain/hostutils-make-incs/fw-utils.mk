@@ -19,9 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: fw-utils.mk 401 2009-03-26 12:29:09Z andreas $
-#
-
 
 GEN_KERNEL_HEADER_BIN := $(HOSTUTILS_PREFIX_BIN)/gen_kernel_header
 GEN_KERNEL_IMG_BIN := $(HOSTUTILS_PREFIX_BIN)/gen_kernel_img
@@ -91,4 +88,3 @@ distclean-fw-utils-host:
 	-$(RM) -f $(STAGEFILES_DIR)/.fw-utils_host_copied
 	-$(RM) -f $(STAGEFILES_DIR)/.fw-utils_host_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.fw-utils_host_installed
-
