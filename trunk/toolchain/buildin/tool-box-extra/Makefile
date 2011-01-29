@@ -14,7 +14,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-#
 
 CC := gcc
 CFLAGS := -Wall -O2

@@ -11,9 +11,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
 # The project's page is at http://www.open7x0.org
-#
 #
 
 TOOL-BOX-EXTRA_DEPS = $(BASE_BUILD_STAGEFILE)
@@ -66,4 +64,3 @@ distclean-tool-box-extra:
 	-$(RM) -f $(STAGEFILES_DIR)/.tool-box-extra_copied
 	-$(RM) -f $(STAGEFILES_DIR)/.tool-box-extra_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.tool-box-extra_installed
-

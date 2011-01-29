@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: mount.h 133 2007-07-16 13:52:26Z andreas $
- *
  */
 #ifndef __MOUNT_H
 #define __MOUNT_H 1

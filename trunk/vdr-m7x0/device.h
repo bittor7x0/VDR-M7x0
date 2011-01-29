@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: device.h 275 2008-09-09 11:56:37Z andreas $
  */
 
 #ifndef __DEVICE_H

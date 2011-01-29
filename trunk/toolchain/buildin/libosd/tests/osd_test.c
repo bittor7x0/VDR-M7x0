@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: osd_test.c 263 2007-10-22 20:04:12Z gambler $
- *
  */
 
 #include <stdio.h>

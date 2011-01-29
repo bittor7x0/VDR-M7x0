@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: font.h 227 2008-02-26 16:51:52Z andreas $
  */
 
 #ifndef __FONT_H

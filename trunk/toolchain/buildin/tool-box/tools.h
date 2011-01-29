@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: tools.h 169 2007-09-17 17:36:43Z andreas $
- *
  */
 #ifndef __TOOLS_H
 #define __TOOLS_H 1

@@ -11,14 +11,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
 # The project's page is at http://www.open7x0.org
 #
-#
-
 
 MKJFFS2_BIN := $(HOSTUTILS_PREFIX_BIN)/mkfs.jffs2
-
 
 MTD-UTILS_HOSTVERSION := 20050122
 MTD-UTILS_HOSTFILE := mtd_$(MTD-UTILS_HOSTVERSION).orig.tar.gz

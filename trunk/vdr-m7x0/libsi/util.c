@@ -6,8 +6,6 @@
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
  *                                                                         *
- *   $Id: util.c 305 2008-09-22 20:25:37Z andreas $
- *                                                                         *
  ***************************************************************************/
 
 #include <string.h>

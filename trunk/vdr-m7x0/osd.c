@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: osd.c 319 2008-09-28 19:46:15Z andreas $
  */
 
 #include "osd.h"

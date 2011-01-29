@@ -6,8 +6,6 @@
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
  *                                                                         *
- *   $Id: si.h 170 2007-03-06 07:49:43Z andreas $
- *                                                                         *
  ***************************************************************************/
 
 #ifndef LIBSI_SI_H

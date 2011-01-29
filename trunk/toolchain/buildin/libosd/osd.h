@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: osd.h 316 2008-02-19 19:36:28Z andreas $
- *
  */
 #ifndef __LIBOSD_OSD_H
 #define __LIBOSD_OSD_H 1

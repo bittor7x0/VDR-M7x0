@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: font.c 147 2007-08-07 13:07:56Z andreas $
- *
  */
 
 #include <stdint.h>

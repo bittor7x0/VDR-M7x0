@@ -1,4 +1,3 @@
-#
 # Copyright (C) 2007 Andreas Koch - the open7x0.org group
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,9 +16,6 @@
 # The author can be reached at andreas@open7x0.org
 #
 # The project's page is at http://www.open7x0.org
-#
-# $Id: tool-box.mk 321 2008-02-22 17:21:34Z andreas $
-#
 #
 
 TOOL-BOX_DEPS = $(BASE_BUILD_STAGEFILE) $(LIBOSD_INSTALLED)
@@ -78,4 +74,3 @@ distclean-tool-box:
 	-$(RM) -f $(STAGEFILES_DIR)/.tool-box_copied
 	-$(RM) -f $(STAGEFILES_DIR)/.tool-box_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.tool-box_installed
-

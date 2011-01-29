@@ -24,8 +24,6 @@
  *
  * Some parts are taken from vdr main sources.
  *
- * $Id: correctPesHeader.c 179 2007-06-05 12:32:15Z andreas $
- *
  */
 
 #include <stdio.h>

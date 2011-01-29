@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: pure-ftpd.mk 406 2009-08-18 10:27:40Z andreas $
-#
 
 PURE-FTPD_DEPS = $(BASE_BUILD_STAGEFILE)
 

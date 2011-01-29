@@ -17,8 +17,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: vdr-m7x0.mk 374 2008-09-01 18:22:42Z andreas $
-#
 
 VDR_DEPS = $(BASE_BUILD_STAGEFILE)
 
@@ -98,4 +96,3 @@ clean-vdr:
 distclean-vdr:
 	-$(RM) -f $(STAGEFILES_DIR)/.vdr_*
 	-$(RM) -f $(FILELIST_DIR)/vdr-configs*.lst
-

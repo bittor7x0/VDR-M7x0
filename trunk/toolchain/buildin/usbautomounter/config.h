@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: config.h 138 2007-07-17 08:32:24Z andreas $
- *
  */
 #ifndef __CONFIG_H
 #define __CONFIG_H 1

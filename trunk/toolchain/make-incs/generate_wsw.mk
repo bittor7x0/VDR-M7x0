@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: generate_wsw.mk 366 2008-08-17 18:54:21Z andreas $
-#
 
 WSW-IMG_DEPS = $(GEN_WSW_BIN) $(RSAENCODE_BIN)
 

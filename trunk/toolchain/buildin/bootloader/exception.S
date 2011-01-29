@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: exception.S 373 2008-08-30 16:30:20Z andreas $
- *
  */
 #include "regdef.h"
 #include "bootdefs.h"

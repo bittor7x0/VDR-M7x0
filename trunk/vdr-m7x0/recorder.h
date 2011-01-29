@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: recorder.h 199 2007-09-16 23:15:47Z andreas $
  */
 
 #ifndef __RECORDER_H

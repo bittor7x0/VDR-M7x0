@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: o7o_flasher.h 148 2007-08-30 15:58:15Z andreas $
- *
  */
 #ifndef __O7O_FLASHER_H
 #define __O7O_FLASHER_H 1

@@ -18,8 +18,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id$
-#
 
 MAKE_MAJOR = $(word 1, $(subst ., ,$(MAKE_VERSION)))
 MAKE_MINOR = $(word 2, $(subst beta, ,$(subst ., ,$(MAKE_VERSION))))

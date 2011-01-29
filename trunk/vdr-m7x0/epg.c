@@ -7,7 +7,6 @@
  * Original version (as used in VDR before 1.3.0) written by
  * Robert Schneider <Robert.Schneider@web.de> and Rolf Hakenes <hakenes@hippomi.de>.
  *
- * $Id: epg.c 345 2009-03-04 10:55:20Z andreas $
  */
 
 #include "epg.h"

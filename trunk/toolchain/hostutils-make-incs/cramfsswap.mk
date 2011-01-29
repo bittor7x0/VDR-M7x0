@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: cramfsswap.mk 401 2009-03-26 12:29:09Z andreas $
-#
 
 CRAMFSSWAP_BIN := $(firstword $(wildcard $(addsuffix /cramfsswap, $(subst :, ,$(PATH)))))
 

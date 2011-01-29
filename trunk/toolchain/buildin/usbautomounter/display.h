@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: display.h 202 2007-09-25 17:48:35Z andreas $
- *
  */
 #ifndef __DISPLAY_H
 #define __DISPLAY_H 1

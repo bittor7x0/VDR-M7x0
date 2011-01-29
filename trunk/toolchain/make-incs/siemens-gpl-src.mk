@@ -19,9 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: siemens-gpl-src.mk 374 2008-09-01 18:22:42Z andreas $
-#
-
 
 # We are using m750 src for both system types as there are nearly no difference
 # the kernel has some very small patches attached.

@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: ssmtp.mk 111 2007-06-08 23:32:50Z andreas $
-#
 
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SSMTP_DEPS = $(BASE_BUILD_STAGEFILE)

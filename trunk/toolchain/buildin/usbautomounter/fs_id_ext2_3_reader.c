@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: fs_id_ext2_3_reader.c 298 2007-12-11 17:55:28Z andreas $
- *
  */
 #include <stdint.h>
 #include <stdio.h>

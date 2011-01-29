@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: nit.c 184 2007-06-10 11:22:37Z andreas $
  */
 
 #include "nit.h"

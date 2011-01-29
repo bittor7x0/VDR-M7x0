@@ -1,7 +1,6 @@
 #
 # Makefile for a libsi
 #
-# $Id: Makefile 170 2007-03-06 07:49:43Z andreas $
 
 ### The C++ compiler and options:
 -include ../Make.config

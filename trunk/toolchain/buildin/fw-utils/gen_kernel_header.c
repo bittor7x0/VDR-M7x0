@@ -20,8 +20,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: gen_kernel_header.c 151 2007-09-05 09:32:38Z andreas $
- *
  */
 
 #include <stdio.h>

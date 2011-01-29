@@ -17,8 +17,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: vdr-m7x0-plugins.mk 374 2008-09-01 18:22:42Z andreas $
-#
 
 VDR-PLUGINS_DEPS = $(BASE_BUILD_STAGEFILE) $(VDR_INSTALLED) $(TOP_DIR)/.config
 
@@ -146,4 +144,3 @@ distclean-vdr-plugins:
 	-$(RM) -f $(STAGEFILES_DIR)/.vdr-plugins_*
 	-$(RM) -f $(FILELIST_DIR)/vdr-plugins.lst
 	-$(RM) -f $(FILELIST_DIR)/vdr-plugin-*.lst
-

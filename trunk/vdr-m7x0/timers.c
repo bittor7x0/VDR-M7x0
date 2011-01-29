@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: timers.c 343 2009-03-04 10:32:35Z andreas $
  */
 
 #include "timers.h"

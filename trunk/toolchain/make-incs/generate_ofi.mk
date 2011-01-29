@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: generate_ofi.mk 366 2008-08-17 18:54:21Z andreas $
-#
 
 OFI-IMG_DEPS = $(GEN_OFI_BIN) $(O7O_FLASHER_INSTALLED)
 

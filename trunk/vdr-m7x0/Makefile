@@ -4,7 +4,6 @@
 # See the main source file 'vdr.c' for copyright information and
 # how to reach the author.
 #
-# $Id: Makefile 277 2008-09-09 11:57:00Z andreas $
 
 
 .DELETE_ON_ERROR:

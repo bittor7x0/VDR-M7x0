@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: osd_progress_bar.h 148 2007-08-30 15:58:15Z andreas $
- *
  */
 #ifndef __LIBOSD_OSD_PROGRESS_BAR_H
 #define __LIBOSD_OSD_PROGRESS_BAR_H 1

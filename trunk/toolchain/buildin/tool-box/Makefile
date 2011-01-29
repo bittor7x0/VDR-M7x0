@@ -18,8 +18,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: Makefile 359 2008-08-17 13:44:59Z andreas $
-#
 
 CC := gcc
 CFLAGS := -Wall -O2

@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: tools.c 169 2007-09-17 17:36:43Z andreas $
- *
  */
 #include "tools.h"
 

@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: copy_lists.c 228 2007-10-15 11:42:02Z andreas $
- *
  */
 
 #include <stdio.h>

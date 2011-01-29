@@ -1,4 +1,3 @@
-#
 # Copyright (C) 2007 Andreas Koch - the open7x0.org group
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,9 +16,6 @@
 # The author can be reached at andreas@open7x0.org
 #
 # The project's page is at http://www.open7x0.org
-#
-# $Id: libosd.mk 203 2007-09-27 11:07:18Z andreas $
-#
 #
 
 LIBOSD_DEPS = $(BASE_BUILD_STAGEFILE)
@@ -71,4 +67,3 @@ distclean-libosd:
 	-$(RM) -f $(STAGEFILES_DIR)/.libosd_copied
 	-$(RM) -f $(STAGEFILES_DIR)/.libosd_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.libosd_installed
-

@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: gdb.mk 410 2010-02-02 21:50:18Z glotzi $
-#
 
 GDB_DEPS = $(BASE_BUILD_STAGEFILE)
 

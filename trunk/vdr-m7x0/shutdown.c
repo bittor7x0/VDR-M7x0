@@ -6,7 +6,6 @@
  *
  * Original version written by Udo Richter <udo_richter@gmx.de>.
  *
- * $Id: $
  */
 
 #include "shutdown.h"

@@ -19,8 +19,6 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: dosfstools.mk 401 2009-03-26 12:29:09Z andreas $
-#
 
 DOSFSTOOLS_DEPS = $(BASE_BUILD_STAGEFILE)
 

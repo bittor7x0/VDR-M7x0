@@ -18,8 +18,6 @@
  *
  * The project's page is at http://www.open7x0.org
  *
- * $Id: sha1_test.c 148 2007-08-30 15:58:15Z andreas $
- *
  */
 #include <stdio.h>
 #include <stdlib.h>

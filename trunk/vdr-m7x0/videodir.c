@@ -4,7 +4,6 @@
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
  *
- * $Id: videodir.c 364 2009-08-18 15:48:56Z andreas $
  */
 
 #include "videodir.h"

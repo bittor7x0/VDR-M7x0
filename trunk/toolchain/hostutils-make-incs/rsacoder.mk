@@ -19,13 +19,9 @@
 #
 # The project's page is at http://www.open7x0.org
 #
-# $Id: rsacoder.mk 374 2008-09-01 18:22:42Z andreas $
-#
-
 
 RSAENCODE_BIN := $(HOSTUTILS_PREFIX_BIN)/rsaencode
 RSADECODE_BIN := $(HOSTUTILS_PREFIX_BIN)/rsadecode
-
 
 RSACODER_HOSTFILE := rsacoder.tar.bz2
 RSACODER_HOSTDLFILE := $(DOWNLOAD_DIR)/$(RSACODER_HOSTFILE)
