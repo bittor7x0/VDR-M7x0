@@ -173,7 +173,7 @@ distclean-uclibc:
 	-$(RM) -f $(STAGEFILES_DIR)/.uclibc_configured
 	-$(RM) -f $(STAGEFILES_DIR)/.uclibc_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.uclibc_installed
-	-$(RM) -f $(STAGEFILES_DIR)/.uclibc_utilsinstalled
+	-$(RM) -f $(STAGEFILES_DIR)/.uclibc_utils_installed
 	-$(RM) -f $(STAGEFILES_DIR)/.uclibc_headers_installed
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -rf $(UCLIBC_DLFILE)
