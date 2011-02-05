@@ -144,3 +144,8 @@ distclean-vdr-plugins:
 	-$(RM) -f $(STAGEFILES_DIR)/.vdr-plugins_*
 	-$(RM) -f $(FILELIST_DIR)/vdr-plugins.lst
 	-$(RM) -f $(FILELIST_DIR)/vdr-plugin-*.lst
+
+recompile-vdr-plugins:
+	-$(RM) -rf $(STAGEFILES_DIR)/.vdr-plugins_configured
+	-$(RM) -rf $(STAGEFILES_DIR)/.vdr-plugins_compiled
+	-$(RM) -rf $(STAGEFILES_DIR)/.vdr-plugins_installed

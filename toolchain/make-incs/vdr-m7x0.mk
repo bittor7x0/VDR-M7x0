@@ -96,3 +96,7 @@ clean-vdr:
 distclean-vdr:
 	-$(RM) -f $(STAGEFILES_DIR)/.vdr_*
 	-$(RM) -f $(FILELIST_DIR)/vdr-configs*.lst
+
+recompile-vdr:
+	-$(RM) -rf $(STAGEFILES_DIR)/.vdr_compiled
+	-$(RM) -rf $(STAGEFILES_DIR)/.vdr_installed
