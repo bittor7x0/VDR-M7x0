@@ -97,7 +97,25 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 	(if [ -f $(VDR_DIR)/PLUGINS/src/pin/Makefile ]; then \
 		$(SED) -i -e 's,^FSKCHKDIR = .*,FSKCHKDIR = \"$(TOP_DIR)\/prg-fw-configs\/vdr-m7x0-plugins\/common\/pin\/usr\/bin\",g' \
 			$(VDR_DIR)/PLUGINS/src/pin/Makefile; \
-	fi);
+	fi; \
+	if [ -f $(VDR_DIR)/PLUGINS/src/epgsearch/Makefile ]; then \
+		if [ -f $(VDR_DIR)/PLUGINS/src/pin/Makefile ]; then \
+			$(SED) -i -e 's,^#USE_PINPLUGIN = 1,USE_PINPLUGIN = 1,g' \
+				$(VDR_DIR)/PLUGINS/src/epgsearch/Makefile; \
+		else \
+			$(SED) -i -e 's,^USE_PINPLUGIN = 1,#USE_PINPLUGIN = 1,g' \
+				$(VDR_DIR)/PLUGINS/src/epgsearch/Makefile; \
+		fi; \
+		if [ X"$(CONFIG_PCRE)" = X"y" ]; then \
+			$(SED) -i -e 's,^#REGEXLIB = pcre,REGEXLIB = pcre,g' \
+				$(VDR_DIR)/PLUGINS/src/epgsearch/Makefile; \
+			$(SED) -i -e 's,shell.*pcre-config"\?,shell \"$(TARGET_ROOT)/usr/bin/pcre-config\",g' \
+				$(VDR_DIR)/PLUGINS/src/epgsearch/Makefile; \
+		else \
+			$(SED) -i -e 's,^REGEXLIB = pcre,#REGEXLIB = pcre,g' \
+				$(VDR_DIR)/PLUGINS/src/epgsearch/Makefile; \
+		fi; \
+	fi;)
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_configured
 
 #
