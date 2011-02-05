@@ -1,0 +1,8 @@
+usr/lib/libcharset.so.1.0.0  usr/lib/libcharset.so.1.0.0  f 755 0 0 - - - - -
+usr/lib/libcharset.so.1.0.0  -                            s   - - - - - - - -
+usr/lib/libcharset.so.1      libcharset.so.1.0.0          l 777 0 0 - - - - -
+usr/lib/libcharset.so        libcharset.so.1.0.0          l 777 0 0 - - - - -
+usr/lib/libiconv.so.2.4.0    usr/lib/libiconv.so.2.4.0    f 755 0 0 - - - - -
+usr/lib/libiconv.so.2.4.0    -                            s   - - - - - - - -
+usr/lib/libiconv.so.2        libiconv.so.2.4.0            l 777 0 0 - - - - -
+usr/lib/libiconv.so          libiconv.so.2.4.0            l 777 0 0 - - - - -

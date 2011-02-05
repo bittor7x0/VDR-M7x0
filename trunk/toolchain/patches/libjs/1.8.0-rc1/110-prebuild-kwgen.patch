@@ -1,0 +1,36 @@
+diff -Naur libjs-1.8.0-rc1-orig/src/Makefile.ref libjs-1.8.0-rc1/src/Makefile.ref
+--- libjs-1.8.0-rc1-orig/src/Makefile.ref	2009-02-25 14:24:29.000000000 +0100
++++ libjs-1.8.0-rc1/src/Makefile.ref	2010-11-20 15:18:02.000000000 +0100
+@@ -202,7 +202,9 @@
+ ifndef PREBUILT_CPUCFG
+ OTHER_HFILES += $(OBJDIR)/jsautocfg.h
+ endif
++ifndef PREBUILT_KWGEN
+ OTHER_HFILES += $(OBJDIR)/jsautokw.h
++endif
+ 
+ HFILES = $(JS_HFILES) $(API_HFILES) $(OTHER_HFILES)
+ 
+@@ -280,15 +282,20 @@
+ # Rules for keyword switch generation
+ #
+ 
++ifndef PREBUILT_KWGEN
+ GARBAGE += $(OBJDIR)/jsautokw.h $(OBJDIR)/jskwgen$(HOST_BIN_SUFFIX)
+ GARBAGE += $(OBJDIR)/jskwgen.$(OBJ_SUFFIX)
+ 
+-$(OBJDIR)/jsscan.$(OBJ_SUFFIX): $(OBJDIR)/jsautokw.h jskeyword.tbl
+-
+ $(OBJDIR)/jskwgen.$(OBJ_SUFFIX): jskwgen.c jskeyword.tbl
+ 
+ $(OBJDIR)/jsautokw.h: $(OBJDIR)/jskwgen$(HOST_BIN_SUFFIX) jskeyword.tbl
+ 	$(OBJDIR)/jskwgen$(HOST_BIN_SUFFIX) $@
++else
++$(OBJDIR)/jsautokw.h:
++	cp jsautokw.h $@
++endif
++
++$(OBJDIR)/jsscan.$(OBJ_SUFFIX): $(OBJDIR)/jsautokw.h jskeyword.tbl
+ 
+ ifdef USE_MSVC
+ 

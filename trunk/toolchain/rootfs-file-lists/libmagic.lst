@@ -1,0 +1,6 @@
+usr/lib/libmagic.so.1.0.0  usr/lib/libmagic.so.1.0.0  f 755 0 0 - - - - -
+usr/lib/libmagic.so.1.0.0  -                          s   - - - - - - - -
+usr/lib/libmagic.so.1      libmagic.so.1.0.0          l 777 0 0 - - - - -
+usr/lib/libmagic.so        libmagic.so.1.0.0          l 777 0 0 - - - - -
+usr/share/file             -                          d 755 0 0 - - - - -
+usr/share/file/magic       usr/share/file/magic       f 664 0 0 - - - - -
