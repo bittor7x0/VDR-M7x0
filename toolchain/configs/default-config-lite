@@ -101,8 +101,11 @@ CONFIG_SCSI-SPIN = y
 # CONFIG_LMBENCH is not set
 # CONFIG_UNIXBENCH is not set
 
-# uPnP and DLNA server
+# uPnP and DLNA servers
 # CONFIG_USHARE is not set
+# CONFIG_GMEDIASERVER is not set
+# CONFIG_MEDIATOMB is not set
+# CONFIG_FUPPES is not set
 
 # uPnP client
 # CONFIG_MINIUPNPC is not set
@@ -112,6 +115,19 @@ CONFIG_SCSI-SPIN = y
 # CONFIG_LIBUPNP is not set
 # CONFIG_LIBUPNP_DLNA is not set
 # CONFIG_LIBDLNA is not set
+
+# Other libraries
+# CONFIG_LIBXML2 is not set
+# CONFIG_PCRE is not set
+# CONFIG_LIBMAGIC is not set
+# CONFIG_EXPAT is not set
+# CONFIG_CURL is not set
+# CONFIG_LIBEXIF is not set
+# CONFIG_LIBFFMPEGTHUMBNAILER is not set
+# CONFIG_LIBJS is not set
+# CONFIG_LIBICONV is not set
+# CONFIG_ID3LIB is not set
+# CONFIG_TAGLIB is not set
 
 # NFS v3 Server
 # CONFIG_UNFS3 is not set

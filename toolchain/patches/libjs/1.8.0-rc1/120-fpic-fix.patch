@@ -1,0 +1,14 @@
+diff -Naur libjs-1.8.0-rc1-orig/src/config/Linux_All.mk libjs-1.8.0-rc1/src/config/Linux_All.mk
+--- libjs-1.8.0-rc1-orig/src/config/Linux_All.mk	2010-11-20 19:15:21.000000000 +0100
++++ libjs-1.8.0-rc1/src/config/Linux_All.mk	2010-11-20 19:14:36.000000000 +0100
+@@ -43,8 +43,8 @@
+ 
+ CC = gcc
+ CCC = g++
+-CFLAGS +=  -Wall -Wno-format -MMD
+-OS_CFLAGS = -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DHAVE_LOCALTIME_R
++CFLAGS +=  -Wall -Wno-format -MMD -fPIC
++OS_CFLAGS = -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DHAVE_LOCALTIME_R -fPIC
+ 
+ RANLIB = echo
+ MKSHLIB = $(LD) -shared $(XMKSHLIBOPTS)
