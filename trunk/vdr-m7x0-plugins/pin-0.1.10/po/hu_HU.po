@@ -1,0 +1,221 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Istvan Koenigsberger <istvnko@hotmail.com>, 2002
+# Guido Josten <guido.josten@t-online.de>, 2002
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <vdr@jwendel.de>\n"
+"POT-Creation-Date: 2008-06-13 20:38+0200\n"
+"PO-Revision-Date: 2008-05-05 08:09+0200\n"
+"Last-Translator: Istvan Koenigsberger <istvnko@hotmail.com>, Guido Josten <guido.josten@t-online.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: menu.c:37 menu.c:144 menu.c:145
+msgid "Setup"
+msgstr ""
+
+#: menu.c:46
+msgid "Add current channel to protection list"
+msgstr "Aktuális csatorna zároltakhoz adása"
+
+#: menu.c:47
+msgid "Add current broadcast to protection list"
+msgstr "Aktuális adás zároltakhoz adása"
+
+#: menu.c:48
+msgid "Edit channel locks"
+msgstr "Zárolt csatornák szerkesztése"
+
+#: menu.c:49
+msgid "Edit broadcast locks"
+msgstr "Zárolt adások szerkesztése"
+
+#: menu.c:50
+msgid "Edit plugin locks"
+msgstr ""
+
+#: menu.c:51
+msgid "Edit menu locks"
+msgstr ""
+
+#: menu.c:52 menu.c:119
+msgid "Lock setup"
+msgstr ""
+
+#: menu.c:52 menu.c:119
+msgid "Unlock setup"
+msgstr ""
+
+#: menu.c:53
+msgid "Activate childlock"
+msgstr "Gyerekzár aktiválása"
+
+#: menu.c:83
+msgid "Activated pin protection"
+msgstr "Gyerekzár aktiválva"
+
+#: menu.c:87
+msgid "Please setup a pin code first!"
+msgstr ""
+
+#: menu.c:97
+msgid "Protected channels"
+msgstr "Védett csatornák"
+
+#: menu.c:101
+msgid "Protected broadcasts"
+msgstr "Védett adások"
+
+#: menu.c:105
+msgid "Plugin protections"
+msgstr ""
+
+#: menu.c:109
+msgid "Menu protections"
+msgstr ""
+
+#: menu.c:155
+msgid "locked"
+msgstr ""
+
+#: menu.c:155
+msgid "unlocked"
+msgstr ""
+
+#: menu.c:176
+msgid "already in list"
+msgstr "mar a zaroltak között"
+
+#: menu.c:183 menu.c:221
+msgid "added to protection list"
+msgstr "Zároltakhoz hozzáadva"
+
+#: menu.c:265 menu.c:267
+msgid "Edit"
+msgstr ""
+
+#: menu.c:265 menu.c:267
+msgid "On/Off"
+msgstr ""
+
+#: menu.c:267
+msgid "Add"
+msgstr "Hozzáadás"
+
+#: menu.c:267
+msgid "Delete"
+msgstr "Törlés"
+
+#: menu.c:329
+msgid "Remove entry?"
+msgstr "Törlése?"
+
+#: menu.c:429
+msgid "Name"
+msgstr ""
+
+#: menu.c:430
+msgid "Lock active"
+msgstr "Zár aktiválva"
+
+#: menu.c:431
+msgid "Keyword"
+msgstr "Kulcsszó"
+
+#: menu.c:432
+msgid "Search mode"
+msgstr ""
+
+#: menu.c:443
+msgid "Start"
+msgstr ""
+
+#: menu.c:444
+msgid "Stop"
+msgstr ""
+
+#: pin.c:61
+msgid "Setup your pin code: "
+msgstr ""
+
+#: pin.c:63
+msgid "Pin Code: "
+msgstr "Pin kód"
+
+#: pin.c:162 pin.c:163
+msgid "Pin code successfully setup"
+msgstr ""
+
+#: pin.c:175 pin.c:176
+msgid "Code accepted"
+msgstr ""
+
+#: pin.c:175 pin.c:176
+msgid "Invalid Code !"
+msgstr ""
+
+#: pin.c:347
+msgid "Please enter pin code first"
+msgstr ""
+
+#: pin.c:594
+msgid "Recording protected, enter pin code first"
+msgstr "Kérem oldja fel a gyerekzárat"
+
+#: pin.c:630
+msgid "channel is protected"
+msgstr "Csatorna zárolva"
+
+#: pin.c:649
+msgid "broadcast is protected"
+msgstr "Adás zárolva"
+
+#: pin.c:780 pin.c:832
+msgid "is protected"
+msgstr ""
+
+#: setupmenu.c:48 setupmenu.c:50
+msgid "Pin code"
+msgstr ""
+
+#: setupmenu.c:52
+msgid "Skip protected channel silent"
+msgstr "Zárolt csatornákat nem megjeleníteni"
+
+#: setupmenu.c:53
+msgid "Hide protected menus"
+msgstr ""
+
+#: setupmenu.c:54
+msgid "Hide protected plugins"
+msgstr ""
+
+#: setupmenu.c:55
+msgid "Hide protected recordings"
+msgstr ""
+
+#: setupmenu.c:56
+msgid "Open menu after pin request"
+msgstr ""
+
+#: setupmenu.c:57
+msgid "Pin inactivity time [min]"
+msgstr "Zár aktiválása [perc] inaktivitás után"
+
+#: setupmenu.c:58
+msgid "Autoprotection of recordings"
+msgstr "Automatikus védelem felvétel ellen"
+
+#: setupmenu.c:60
+msgid "Log Level [0-5]"
+msgstr ""
+
+#: setupmenu.c:108
+msgid "Ignoring invalid pin"
+msgstr "Érvénytelen pin kód"

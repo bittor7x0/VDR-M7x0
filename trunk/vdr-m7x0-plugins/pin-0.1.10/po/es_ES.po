@@ -1,0 +1,220 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Bittor Corl <bittor7x0 _at_ gmail.com>, 2011
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <vdr@jwendel.de>\n"
+"POT-Creation-Date: 2011-02-05 15:02+0100\n"
+"PO-Revision-Date: 2011-02-05 15:02+0100\n"
+"Last-Translator: Bittor Corl <bittor7x0 _at_ gmail.com>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: menu.c:37 menu.c:144 menu.c:145
+msgid "Setup"
+msgstr "Configuración"
+
+#: menu.c:46
+msgid "Add current channel to protection list"
+msgstr "Añadir canal actual a la lista de protección"
+
+#: menu.c:47
+msgid "Add current broadcast to protection list"
+msgstr "Añadir emisión actual a la lista de protección"
+
+#: menu.c:48
+msgid "Edit channel locks"
+msgstr "Editar canales bloqueados"
+
+#: menu.c:49
+msgid "Edit broadcast locks"
+msgstr "Editar emisiones bloqueadas"
+
+#: menu.c:50
+msgid "Edit plugin locks"
+msgstr "Editar plugins bloqueados"
+
+#: menu.c:51
+msgid "Edit menu locks"
+msgstr "Editar menús bloqueados"
+
+#: menu.c:52 menu.c:119
+msgid "Lock setup"
+msgstr "Bloquear configuración"
+
+#: menu.c:52 menu.c:119
+msgid "Unlock setup"
+msgstr "Desbloquear configuración"
+
+#: menu.c:53
+msgid "Activate childlock"
+msgstr "Activar bloqueo para niños"
+
+#: menu.c:83
+msgid "Activated pin protection"
+msgstr "Protección PIN activada"
+
+#: menu.c:87
+msgid "Please setup a pin code first!"
+msgstr "¡Establezca primero un código PIN!"
+
+#: menu.c:97
+msgid "Protected channels"
+msgstr "Canales protegidos"
+
+#: menu.c:101
+msgid "Protected broadcasts"
+msgstr "Emisiones protegidas"
+
+#: menu.c:105
+msgid "Plugin protections"
+msgstr "Plugins protegidos"
+
+#: menu.c:109
+msgid "Menu protections"
+msgstr "Protecciones de menú"
+
+#: menu.c:155
+msgid "locked"
+msgstr "bloqueado"
+
+#: menu.c:155
+msgid "unlocked"
+msgstr "desbloqueado"
+
+#: menu.c:176
+msgid "already in list"
+msgstr "ya está en la lista"
+
+#: menu.c:183 menu.c:221
+msgid "added to protection list"
+msgstr "añadido a la lista de protección"
+
+#: menu.c:265 menu.c:267
+msgid "Edit"
+msgstr "Editar"
+
+#: menu.c:265 menu.c:267
+msgid "On/Off"
+msgstr "On/Off"
+
+#: menu.c:267
+msgid "Add"
+msgstr "Añadir"
+
+#: menu.c:267
+msgid "Delete"
+msgstr "Borrar"
+
+#: menu.c:329
+msgid "Remove entry?"
+msgstr "¿Borrar entrada?"
+
+#: menu.c:429
+msgid "Name"
+msgstr "Nombre"
+
+#: menu.c:430
+msgid "Lock active"
+msgstr "Bloqueo activo"
+
+#: menu.c:431
+msgid "Keyword"
+msgstr "Palabra clave"
+
+#: menu.c:432
+msgid "Search mode"
+msgstr "Modo de búsqueda"
+
+#: menu.c:443
+msgid "Start"
+msgstr "Inicio"
+
+#: menu.c:444
+msgid "Stop"
+msgstr "Final"
+
+#: pin.c:61
+msgid "Setup your pin code: "
+msgstr "Establezca su código PIN: "
+
+#: pin.c:63
+msgid "Pin Code: "
+msgstr "Código PIN: "
+
+#: pin.c:162 pin.c:163
+msgid "Pin code successfully setup"
+msgstr "Código PIN configurado correctamente"
+
+#: pin.c:175 pin.c:176
+msgid "Code accepted"
+msgstr "Código aceptado"
+
+#: pin.c:175 pin.c:176
+msgid "Invalid Code !"
+msgstr "¡Código no válido!"
+
+#: pin.c:347
+msgid "Please enter pin code first"
+msgstr "Introduzca primero el código PIN"
+
+#: pin.c:594
+msgid "Recording protected, enter pin code first"
+msgstr "Grabación protegida, primero introduzca el PIN"
+
+#: pin.c:630
+msgid "channel is protected"
+msgstr "canal protegido"
+
+#: pin.c:649
+msgid "broadcast is protected"
+msgstr "emisión protegida"
+
+#: pin.c:780 pin.c:832
+msgid "is protected"
+msgstr "está protegido"
+
+#: setupmenu.c:48 setupmenu.c:50
+msgid "Pin code"
+msgstr "Código PIN"
+
+#: setupmenu.c:52
+msgid "Skip protected channel silent"
+msgstr "Saltar canal protegido silenciosamente"
+
+#: setupmenu.c:53
+msgid "Hide protected menus"
+msgstr "Ocultar menús protegidos"
+
+#: setupmenu.c:54
+msgid "Hide protected plugins"
+msgstr "Ocultar plugins protegidos"
+
+#: setupmenu.c:55
+msgid "Hide protected recordings"
+msgstr "Ocultar grabaciones protegidas"
+
+#: setupmenu.c:56
+msgid "Open menu after pin request"
+msgstr "Abrir menú despues de pedir el PIN"
+
+#: setupmenu.c:57
+msgid "Pin inactivity time [min]"
+msgstr "Tiempo inactividad PIN [min]"
+
+#: setupmenu.c:58
+msgid "Autoprotection of recordings"
+msgstr "Autoprotección de grabaciones"
+
+#: setupmenu.c:60
+msgid "Log Level [0-5]"
+msgstr "Nivel de registro [0-5]"
+
+#: setupmenu.c:108
+msgid "Ignoring invalid pin"
+msgstr "Ignorando PIN no válido"

@@ -1,0 +1,223 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Jean-Claude Repetto <jc@repetto.org>, 2001
+# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+# Gregoire Favre <greg@magma.unil.ch>, 2003
+# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <vdr@jwendel.de>\n"
+"POT-Creation-Date: 2008-06-13 20:38+0200\n"
+"PO-Revision-Date: 2008-05-05 08:09+0200\n"
+"Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: menu.c:37 menu.c:144 menu.c:145
+msgid "Setup"
+msgstr ""
+
+#: menu.c:46
+msgid "Add current channel to protection list"
+msgstr "Ajouter la chaîne actuelle à la protection parentale"
+
+#: menu.c:47
+msgid "Add current broadcast to protection list"
+msgstr "Ajouter l'émission actuelle dans la liste de protection parentale"
+
+#: menu.c:48
+msgid "Edit channel locks"
+msgstr "Editer la liste de chaînes"
+
+#: menu.c:49
+msgid "Edit broadcast locks"
+msgstr "Editer les émissions protégés"
+
+#: menu.c:50
+msgid "Edit plugin locks"
+msgstr "editer la protection de plugin"
+
+#: menu.c:51
+msgid "Edit menu locks"
+msgstr ""
+
+#: menu.c:52 menu.c:119
+msgid "Lock setup"
+msgstr ""
+
+#: menu.c:52 menu.c:119
+msgid "Unlock setup"
+msgstr ""
+
+#: menu.c:53
+msgid "Activate childlock"
+msgstr "Protection parentales activée"
+
+#: menu.c:83
+msgid "Activated pin protection"
+msgstr "Activé la protection parentale"
+
+#: menu.c:87
+msgid "Please setup a pin code first!"
+msgstr "Entrer le code de protection d'abord!"
+
+#: menu.c:97
+msgid "Protected channels"
+msgstr "Protéger chaîne"
+
+#: menu.c:101
+msgid "Protected broadcasts"
+msgstr "Proteger l'émission"
+
+#: menu.c:105
+msgid "Plugin protections"
+msgstr "Plugin sous protection"
+
+#: menu.c:109
+msgid "Menu protections"
+msgstr "Protégier des menus"
+
+#: menu.c:155
+msgid "locked"
+msgstr "protégé"
+
+#: menu.c:155
+msgid "unlocked"
+msgstr "libéré"
+
+#: menu.c:176
+msgid "already in list"
+msgstr "Toujours dans la liste"
+
+#: menu.c:183 menu.c:221
+msgid "added to protection list"
+msgstr "ajouter"
+
+#: menu.c:265 menu.c:267
+msgid "Edit"
+msgstr "Editer"
+
+#: menu.c:265 menu.c:267
+msgid "On/Off"
+msgstr "Enclencher/déclencher"
+
+#: menu.c:267
+msgid "Add"
+msgstr "Ajouter"
+
+#: menu.c:267
+msgid "Delete"
+msgstr "Effacer"
+
+#: menu.c:329
+msgid "Remove entry?"
+msgstr "Enlever?"
+
+#: menu.c:429
+msgid "Name"
+msgstr ""
+
+#: menu.c:430
+msgid "Lock active"
+msgstr "Protection active"
+
+#: menu.c:431
+msgid "Keyword"
+msgstr "Expression de recherche"
+
+#: menu.c:432
+msgid "Search mode"
+msgstr ""
+
+#: menu.c:443
+msgid "Start"
+msgstr ""
+
+#: menu.c:444
+msgid "Stop"
+msgstr ""
+
+#: pin.c:61
+msgid "Setup your pin code: "
+msgstr "Introduisez le code d'accès:"
+
+#: pin.c:63
+msgid "Pin Code: "
+msgstr "Le code pin"
+
+#: pin.c:162 pin.c:163
+msgid "Pin code successfully setup"
+msgstr "Le code d'accès est accepté"
+
+#: pin.c:175 pin.c:176
+msgid "Code accepted"
+msgstr "Le code est accepté"
+
+#: pin.c:175 pin.c:176
+msgid "Invalid Code !"
+msgstr "Le code est faux!"
+
+#: pin.c:347
+msgid "Please enter pin code first"
+msgstr "Entré d'abord le code"
+
+#: pin.c:594
+msgid "Recording protected, enter pin code first"
+msgstr "Entrée le code de protection"
+
+#: pin.c:630
+msgid "channel is protected"
+msgstr "Chaînes protégée"
+
+#: pin.c:649
+msgid "broadcast is protected"
+msgstr "Emission protégée"
+
+#: pin.c:780 pin.c:832
+msgid "is protected"
+msgstr "est protégé"
+
+#: setupmenu.c:48 setupmenu.c:50
+msgid "Pin code"
+msgstr ""
+
+#: setupmenu.c:52
+msgid "Skip protected channel silent"
+msgstr "Les chaînes protégés seront ignorées sans infos"
+
+#: setupmenu.c:53
+msgid "Hide protected menus"
+msgstr "Menu protégés sont invisibles"
+
+#: setupmenu.c:54
+msgid "Hide protected plugins"
+msgstr "Plugins protégés sont invisibles"
+
+#: setupmenu.c:55
+msgid "Hide protected recordings"
+msgstr "Enregistrements protégés sont invisibles"
+
+#: setupmenu.c:56
+msgid "Open menu after pin request"
+msgstr "Ouvrir le menu après la rentré de la cléed"
+
+#: setupmenu.c:57
+msgid "Pin inactivity time [min]"
+msgstr "Protection après une inactivitées de [min]"
+
+#: setupmenu.c:58
+msgid "Autoprotection of recordings"
+msgstr "Protection automatique des enregistrement"
+
+#: setupmenu.c:60
+msgid "Log Level [0-5]"
+msgstr ""
+
+#: setupmenu.c:108
+msgid "Ignoring invalid pin"
+msgstr "Le code est fau"
