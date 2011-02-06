@@ -17,10 +17,15 @@
 #include "pin.h"
 #include "menu.h"
 #include "setupmenu.h"
+#include "childlockservice.h"
+
+using namespace PinPatch;
 
 //***************************************************************************
 // Pin Service
 //***************************************************************************
+
+int PinService::pinValid = 0;
 
 void Translations::append(const char* in, const char* out)
 {
@@ -80,7 +85,7 @@ cPin::~cPin()
 void cPin::clear()
 {
    *code = 0;
-   cOsd::pinValid = no;
+   PinService::pinValid = no;
 }
 
 //***************************************************************************
@@ -136,7 +141,7 @@ eOSState cPin::ProcessKey(eKeys Key)
          
          case kOk:
          {
-            cOsd::pinValid = no;
+            PinService::pinValid = no;
 
             if (!pinSetup || (pinSetup && *code))
             {
@@ -144,7 +149,7 @@ eOSState cPin::ProcessKey(eKeys Key)
                   strcpy(cPinPlugin::pinCode, code);   // setup pin code
                
                if (strcmp(code, cPinPlugin::pinCode) == 0)
-                  cOsd::pinValid = yes;
+                  PinService::pinValid = yes;
             }
 
             state = osEnd;
@@ -156,7 +161,7 @@ eOSState cPin::ProcessKey(eKeys Key)
       
       if (state == osEnd)
       {
-         if (pinSetup && cOsd::pinValid)
+         if (pinSetup && PinService::pinValid)
          {
             (cPinPlugin::getObject())->StorePin();
             display->SetMessage(mtInfo, tr("Pin code successfully setup"));
@@ -165,15 +170,15 @@ eOSState cPin::ProcessKey(eKeys Key)
             sleep(2);
          }
             
-         if (cOsd::pinValid && cPinPlugin::autoMenuOpen)
+         if (PinService::pinValid && cPinPlugin::autoMenuOpen)
          {
             cRemote::CallPlugin("pin");
          }
          else
          {
-            display->SetMessage(cOsd::pinValid ? mtInfo : mtWarning,
-                                cOsd::pinValid ? tr("Code accepted") : tr("Invalid Code !"));
-            cStatus::MsgOsdStatusMessage(cOsd::pinValid ? tr("Code accepted") : tr("Invalid Code !"));
+            display->SetMessage(PinService::pinValid ? mtInfo : mtWarning,
+                                PinService::pinValid ? tr("Code accepted") : tr("Invalid Code !"));
+            cStatus::MsgOsdStatusMessage(PinService::pinValid ? tr("Code accepted") : tr("Invalid Code !"));
             display->Flush();
             sleep(1);
          }
@@ -238,13 +243,14 @@ cPinPlugin::cPinPlugin(void)
    statusMonitor = 0;
    lastAction = time(0);
    receiver = 0;
-   cOsd::pinValid = no;            // initial sperren
+   PinService::pinValid = no;            // initial sperren
 }
 
 cPinPlugin::~cPinPlugin()
 {
    if (receiver) delete receiver;
    if (statusMonitor) delete statusMonitor;
+   if (childLockService) delete childLockService;
 }
 
 //***************************************************************************
@@ -302,7 +308,7 @@ cOsdObject* cPinPlugin::MainMenuAction(void)
 {
    initPluginList();
 
-   if (cOsd::pinValid)
+   if (PinService::pinValid)
       return new cPinMenu(MAINMENUENTRY, &lockedChannels, 
                           &lockedBroadcasts, &lockedPlugins, 
                           &lockedMenuItems);
@@ -317,6 +323,7 @@ cOsdObject* cPinPlugin::MainMenuAction(void)
 bool cPinPlugin::Start(void)
 {
    statusMonitor = new cPinStatusMonitor;
+   childLockService = new ChildLockService(statusMonitor);
    object = this;
    RegisterI18n(Phrases);
 
@@ -341,7 +348,7 @@ void cPinPlugin::Stop(void)
 
 cMenuSetupPage* cPinPlugin::SetupMenu(void)
 {
-   if (cOsd::pinValid)
+   if (PinService::pinValid)
       return new PinSetupMenu;
 
    Skins.Message(mtInfo, tr("Please enter pin code first"));
@@ -440,14 +447,14 @@ void cPinPlugin::checkActivity()
 {
    time_t lNow = time(0);
 
-   if (pinResetTime > 0 && lNow > lastAction+(pinResetTime*60) && cOsd::pinValid)
+   if (pinResetTime > 0 && lNow > lastAction+(pinResetTime*60) && PinService::pinValid)
    {
       // keine User Aktion, Kindersicherung aktivieren ..
 
       tell(eloAlways, "Pin: Locking pin due to no user inactivity of (%ld) seconds",
               lNow-lastAction);
 
-      cOsd::pinValid = no;
+      PinService::pinValid = no;
    }
 
    lastAction = lNow;
@@ -509,6 +516,33 @@ int cPinPlugin::initPluginList()
    return done;
 }
 
+bool cPinPlugin::Service(const char *Id, void *Data)
+{
+    if (strcmp(Id, CHILDLOCK_SERVICE_ID) == 0) 
+    {
+        if (childLockService)
+        {
+            IChildLockService** ptr = (IChildLockService**)Data;
+            *ptr = childLockService;
+
+            return true;
+        }
+    }
+
+    if (strcmp(Id, NOTIFICATION_SERVICE_ID) == 0) 
+    {
+        if (childLockService)
+        {
+            INotificationService** ptr = (INotificationService**)Data;
+            *ptr = childLockService;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
 //***************************************************************************
 // Channel Switch
 //***************************************************************************
@@ -562,7 +596,7 @@ bool cPinStatusMonitor::ReplayProtected(const cRecording* Recording, const char*
            isDirectory && base ? "/" : "",
            isDirectory || !Recording ? name : Recording->Name());
 
-   if (cOsd::pinValid)
+   if (PinService::pinValid)
       return false;
 
    if (menuView && !cPinPlugin::hideProtectedRecordings)
@@ -603,12 +637,12 @@ bool cPinStatusMonitor::ReplayProtected(const cRecording* Recording, const char*
 // Channel Protected
 //***************************************************************************
 
-bool cPinStatusMonitor::ChannelProtected(const cDevice *Device, const cChannel* Channel)
+bool cPinStatusMonitor::ChannelProtected(const cChannel* Channel)
 {
    char* buf;
    const cEvent* event;
 
-   if (cOsd::pinValid)
+   if (PinService::pinValid)
       return false;
 
    if (!Channel || !Channel->Name() || Channel->GroupSep())
@@ -676,12 +710,12 @@ void cPinStatusMonitor::RecordingFile(const char* FileName)
 
    if (rc && rc->Timer() && rc->Timer()->Channel())
    {
-      if (rc->Timer()->FskProtection())
+      if (rc->Timer()->HasFlags(tfProtected))
       {
          asprintf(&path, "%s/%s", FileName, PROTECTION_FILE);
          
          tell(eloDebug, "autoprotecting recording due to '%s'; channel '%s'; file '%s'", 
-                 rc->Timer()->FskProtection() ? "timer configuration" : "of protected channel", 
+                 rc->Timer()->HasFlags(tfProtected) ? "timer configuration" : "of protected channel", 
                  rc->Timer()->Channel()->Name(), path);
 
          f = fopen(path, "w");
@@ -747,7 +781,10 @@ void cPinStatusMonitor::TimerCreation(cTimer* Timer, const cEvent* Event)
       }
    }
 
-   Timer->SetFskProtection(fsk);
+   if (fsk == 1)
+   {
+      Timer->SetFlags(tfProtected);
+   }
 }
 
 //***************************************************************************
@@ -758,7 +795,7 @@ bool cPinStatusMonitor::PluginProtected(cPlugin* Plugin, int menuView)
 {
    char* buf;
 
-   if (cOsd::pinValid)
+   if (PinService::pinValid)
       return false;
 
    if (menuView && !cPinPlugin::hideProtectedPlugins)
@@ -781,9 +818,9 @@ bool cPinStatusMonitor::PluginProtected(cPlugin* Plugin, int menuView)
          Skins.Message(mtInfo, buf);
          free(buf);
       }
-
       return true;
    }
+  
 
    return false;
 }
@@ -812,7 +849,7 @@ bool cPinStatusMonitor::MenuItemProtected(const char* Name, int menuView)
    if (menuView)
       (cPinPlugin::getObject())->menuItemAppend(name);
 
-   if (cOsd::pinValid)
+   if (PinService::pinValid)
       return false;
 
    if (menuView && !cPinPlugin::hideProtectedMenus)

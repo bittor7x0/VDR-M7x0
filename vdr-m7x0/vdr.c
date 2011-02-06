@@ -82,6 +82,7 @@
 #include "timers.h"
 #include "tools.h"
 #include "transfer.h"
+#include "childlock.h"
 #include "tshift.h"
 #include "videodir.h"
 //M7X0 BEGIN AK
@@ -983,7 +984,7 @@ int main(int argc, char *argv[])
         eKeys key = Interface->GetKey((!Interact || !Interact->NeedsFastResponse()) && Now - LastCamMenu > LASTCAMMENUTIMEOUT);
 
         if (ISREALKEY(key)) {
-           cStatus::MsgUserAction(key, Interact);          // PIN PATCH
+           PinPatch::ChildLock::NotifyUserAction(key, Interact);
            EITScanner.Activity();
            // Cancel shutdown countdown:
            if (ShutdownHandler.countdown)
@@ -1068,12 +1069,12 @@ int main(int argc, char *argv[])
                      cControl::Control()->Hide();
                   cPlugin *plugin = cPluginManager::GetPlugin(PluginName);
                   if (plugin) {
-                   if (!cStatus::MsgPluginProtected(plugin)) {
+                     if (!PinPatch::ChildLock::IsPluginProtected(plugin)) {
                      Menu = plugin->MainMenuAction();
                      if (Menu)
                         Menu->Show();
                      }
-                  }
+                     }
                   else
                      esyslog("ERROR: unknown plugin '%s'", PluginName);
                   }
@@ -1304,7 +1305,7 @@ int main(int argc, char *argv[])
              // Instant resume of the last viewed recording:
              case kPlay:
                   if (cReplayControl::LastReplayed()) {
-                     if (cStatus::MsgReplayProtected(0, cReplayControl::LastReplayed(), 0, false) == false) {  // PIN PATCH
+                     if (!PinPatch::ChildLock::IsRecordingProtected(0, cReplayControl::LastReplayed(), 0, false)) {
                      cControl::Shutdown();
                      cControl::Launch(new cReplayControl);
                      }

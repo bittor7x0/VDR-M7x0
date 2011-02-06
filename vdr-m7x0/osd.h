@@ -337,7 +337,6 @@ public:
        ///< 7: vertical,   falling, upper
   virtual void Flush(void);
        ///< Actually commits all data to the OSD hardware.
-  static bool pinValid;   // PIN PATCH
   };
 
 class cOsdProvider {

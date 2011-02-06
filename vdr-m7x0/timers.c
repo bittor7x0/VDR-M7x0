@@ -13,7 +13,7 @@
 #include "i18n.h"
 #include "libsi/si.h"
 #include "remote.h"
-#include "status.h"             // PIN PATCH
+#include "childlock.h"
 
 // IMPORTANT NOTE: in the 'sscanf()' calls there is a blank after the '%d'
 // format characters in order to allow any number of blanks after a numeric
@@ -23,6 +23,7 @@
 
 cTimer::cTimer(bool Instant, bool Pause, cChannel *Channel)
 {
+  aux = NULL;
   startTime = stopTime = 0;
   lastSetEvent = 0;
   recording = pending = inVpsMargin = false;
@@ -42,9 +43,7 @@ cTimer::cTimer(bool Instant, bool Pause, cChannel *Channel)
      stop -= 2400;
   priority = Pause ? Setup.PausePriority : Setup.DefaultPriority;
   lifetime = Pause ? Setup.PauseLifetime : Setup.DefaultLifetime;
-  fskProtection = 0;                                        // PIN PATCH
   *file = 0;
-  aux = NULL;
   event = NULL;
   if (Instant && channel)
      snprintf(file, sizeof(file), "%s%s", Setup.MarkInstantRecord ? "@" : "", *Setup.NameInstantRecord ? Setup.NameInstantRecord : channel->Name());
@@ -52,6 +51,7 @@ cTimer::cTimer(bool Instant, bool Pause, cChannel *Channel)
 
 cTimer::cTimer(const cEvent *Event)
 {
+  aux = NULL;
   startTime = stopTime = 0;
   lastSetEvent = 0;
   recording = pending = inVpsMargin = false;
@@ -76,14 +76,12 @@ cTimer::cTimer(const cEvent *Event)
      stop -= 2400;
   priority = Setup.DefaultPriority;
   lifetime = Setup.DefaultLifetime;
-  fskProtection = 0;                                        // PIN PATCH
   *file = 0;
   const char *Title = Event->Title();
   if (!isempty(Title))
      strn0cpy(file, Event->Title(), sizeof(file));
-  aux = NULL;
   event = NULL; // let SetEvent() be called to get a log message
-  cStatus::MsgTimerCreation(this, Event);                   // PIN PATCH
+  PinPatch::ChildLock::NotifyTimerCreation(this, Event);
 }
 
 cTimer::cTimer(const cTimer &Timer)
@@ -119,7 +117,6 @@ cTimer& cTimer::operator= (const cTimer &Timer)
      stop         = Timer.stop;
      priority     = Timer.priority;
      lifetime     = Timer.lifetime;
-     fskProtection = Timer.fskProtection;    // PIN PATCH
      strncpy(file, Timer.file, sizeof(file));
      free(aux);
      aux = Timer.aux ? strdup(Timer.aux) : NULL;
@@ -253,6 +250,8 @@ cString cTimer::PrintFirstDay(void) const
   return ""; // not NULL, so the caller can always use the result
 }
 
+#define AUX_STR_PROTECTED "<pin-plugin><protected>yes</protected></pin-plugin>"
+
 bool cTimer::Parse(const char *s)
 {
   char *channelbuffer = NULL;
@@ -295,7 +294,8 @@ bool cTimer::Parse(const char *s)
         result = false;
         }
      }
-  fskProtection = aux && strstr(aux, "<pin-plugin><protected>yes</protected></pin-plugin>");  // PIN PATCH
+  if (aux && strstr(aux, AUX_STR_PROTECTED))
+     SetFlags(tfProtected);
   free(channelbuffer);
   free(daybuffer);
   free(filebuffer);
@@ -569,6 +569,26 @@ void cTimer::SetPriority(int Priority)
 void cTimer::SetFlags(uint Flags)
 {
   flags |= Flags;
+
+  char* tmp = NULL;
+  char* position;
+
+  if (HasFlags(tfProtected)) {
+     if (!aux || !strstr(aux, AUX_STR_PROTECTED)) {
+        if (aux) {
+           tmp = strdup(aux);
+           free(aux);
+           }
+        asprintf(&aux,"%s%s", tmp ? tmp : "", AUX_STR_PROTECTED);
+        }
+     }
+  else if (aux && (position = strstr(aux, AUX_STR_PROTECTED))) {
+     asprintf(&tmp, "%.*s%s", position-aux, aux, position+strlen(AUX_STR_PROTECTED));
+     free(aux);
+     aux = strdup(tmp);
+     }
+
+  free(tmp);
 }
 
 void cTimer::ClrFlags(uint Flags)
@@ -607,33 +627,6 @@ void cTimer::OnOff(void)
      SetFlags(tfActive);
   SetEvent(NULL);
   Matches(); // refresh start and end time
-}
-
-void cTimer::SetFskProtection(int aFlag)                 // PIN PATCH
-{ 
-   char* p;
-   char* tmp = 0;
-
-   fskProtection = aFlag;
-
-   if (fskProtection && (!aux || !strstr(aux, "<pin-plugin><protected>yes</protected></pin-plugin>")))
-   {
-      // add protection info to aux
-
-      if (aux) { tmp = strdup(aux); free(aux); }
-      asprintf(&aux,"%s<pin-plugin><protected>yes</protected></pin-plugin>", tmp ? tmp : "");
-   }
-   else if (!fskProtection && aux && (p = strstr(aux, "<pin-plugin><protected>yes</protected></pin-plugin>")))
-   {
-      // remove protection info to aux
-
-      asprintf(&tmp, "%.*s%s", p-aux, aux, p+strlen("<pin-plugin><protected>yes</protected></pin-plugin>"));
-      free(aux);
-      aux = strdup(tmp);
-   }
-
-   if (tmp) 
-      free(tmp);  
 }
 
 // -- cTimers ----------------------------------------------------------------

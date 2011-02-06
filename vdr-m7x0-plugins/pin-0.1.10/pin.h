@@ -183,6 +183,8 @@ class PinService
             char in[200+TB];
             char out[200+TB];
       };
+      
+      static int pinValid;
 };
 
 class Translations : public cList<PinService::Translation>, PinService
@@ -231,14 +233,16 @@ class cPinStatusMonitor : public cStatus
       // interface
 
       virtual void ChannelSwitch(const cDevice *Device, int ChannelNumber);
-      virtual bool ChannelProtected(const cDevice *Device, const cChannel* Channel);
-      virtual bool ReplayProtected(const cRecording* Recording, const char* Name, 
+
+  public:
+      void RecordingFile(const char* FileName);     
+      void TimerCreation(cTimer* Timer, const cEvent *Event);
+      void UserAction(const eKeys key, const cOsdObject* Interact);
+      bool ChannelProtected(const cChannel* Channel);
+      bool ReplayProtected(const cRecording* Recording, const char* Name, 
                                    const char* Base, bool isDirectory, int menuView = false);
-      virtual void RecordingFile(const char* FileName);     
-      virtual void TimerCreation(cTimer* Timer, const cEvent *Event);
-      virtual bool PluginProtected(cPlugin* Plugin, int menuView = false);
-      virtual bool MenuItemProtected(const char* Name, int menuView = false);
-      virtual void UserAction(const eKeys key, const cOsdObject* Interact);
+      bool PluginProtected(cPlugin* Plugin, int menuView = false);
+      bool MenuItemProtected(const char* Name, int menuView = false);
 
       // internal stuff
 
@@ -275,6 +279,8 @@ class cPin : public cOsdObject, public PinService
 // Pin Plugin
 //***************************************************************************
 
+class ChildLockService;
+
 class cPinPlugin : public cPlugin, public PinService
 {
   public:
@@ -306,6 +312,7 @@ class cPinPlugin : public cPlugin, public PinService
       virtual bool Initialize(void);
       virtual const char* MainMenuEntry(void)  { return tr(MAINMENUENTRY); }
       virtual cOsdObject* MainMenuAction(void);
+      virtual bool Service(const char *Id, void *Data = NULL);
 
       void addChannel();
       void delChannel();
@@ -345,6 +352,7 @@ class cPinPlugin : public cPlugin, public PinService
       cLockItems lockedMenuItems;
       time_t lastAction;
       cPinStatusMonitor* statusMonitor;
+      ChildLockService* childLockService;
       MessageReceiver* receiver;
 
       static cPinPlugin* object;    // the object

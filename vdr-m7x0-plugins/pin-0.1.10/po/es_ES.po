@@ -139,43 +139,43 @@ msgstr "Inicio"
 msgid "Stop"
 msgstr "Final"
 
-#: pin.c:61
+#: pin.c:66
 msgid "Setup your pin code: "
 msgstr "Establezca su código PIN: "
 
-#: pin.c:63
+#: pin.c:68
 msgid "Pin Code: "
 msgstr "Código PIN: "
 
-#: pin.c:162 pin.c:163
+#: pin.c:167 pin.c:168
 msgid "Pin code successfully setup"
 msgstr "Código PIN configurado correctamente"
 
-#: pin.c:175 pin.c:176
+#: pin.c:180 pin.c:181
 msgid "Code accepted"
 msgstr "Código aceptado"
 
-#: pin.c:175 pin.c:176
+#: pin.c:180 pin.c:181
 msgid "Invalid Code !"
 msgstr "¡Código no válido!"
 
-#: pin.c:347
+#: pin.c:354
 msgid "Please enter pin code first"
 msgstr "Introduzca primero el código PIN"
 
-#: pin.c:594
+#: pin.c:628
 msgid "Recording protected, enter pin code first"
 msgstr "Grabación protegida, primero introduzca el PIN"
 
-#: pin.c:630
+#: pin.c:664
 msgid "channel is protected"
 msgstr "canal protegido"
 
-#: pin.c:649
+#: pin.c:683
 msgid "broadcast is protected"
 msgstr "emisión protegida"
 
-#: pin.c:780 pin.c:832
+#: pin.c:817 pin.c:869
 msgid "is protected"
 msgstr "está protegido"
 
