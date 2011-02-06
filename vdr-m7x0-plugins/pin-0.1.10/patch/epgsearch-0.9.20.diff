@@ -1,0 +1,221 @@
+--- ../plain/epgsearch-0.9.20//i18n.c	2007-01-28 16:29:57.000000000 +0100
++++ i18n.c	2007-02-03 16:54:11.000000000 +0100
+@@ -7327,6 +7327,28 @@
+     "",// TODO
+     "",// TODO
+   },
++  { "Childlock",
++    "Kindersicherung",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "Adulte",
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++    "",//TODO
++  },
+ { NULL }
+   };
+ 
+--- ../plain/epgsearch-0.9.20//menu_commands.c	2007-01-13 15:20:59.000000000 +0100
++++ menu_commands.c	2007-02-10 09:38:32.000000000 +0100
+@@ -135,11 +135,11 @@
+     else
+     {
+ 	string fullaux = "";
++   string aux = "";
+ 	if (event)
+ 	{
+ 	    int bstart = event->StartTime() - timer->StartTime();
+ 	    int bstop = timer->StopTime() - event->EndTime();
+-	    string aux = "";
+ 	    int checkmode = DefTimerCheckModes.GetMode(timer->Channel());
+ 	    aux = UpdateAuxValue(aux, "update", checkmode);
+ 	    aux = UpdateAuxValue(aux, "eventid", event->EventID());
+@@ -147,6 +147,12 @@
+ 	    aux = UpdateAuxValue(aux, "bstop", bstop);
+ 	    fullaux = UpdateAuxValue(fullaux, "epgsearch", aux);
+ 	}
++
++   // #PIN PATCH
++   aux = "";
++   aux = UpdateAuxValue(aux, "protected", timer->FskProtection() ? "yes" : "no");
++   fullaux = UpdateAuxValue(fullaux, "pin-plugin", aux);
++
+ 	SetAux(timer, fullaux);
+ 	Timers.Add(timer);
+ 	timer->Matches();
+--- ../plain/epgsearch-0.9.20//menu_main.c	2007-01-16 23:38:11.000000000 +0100
++++ menu_main.c	2007-02-10 09:38:47.000000000 +0100
+@@ -159,12 +159,12 @@
+      else
+      {
+ 	 string fullaux = "";
++    string aux = "";
+ 	 if (item->event)
+ 	 {
+ 	     const cEvent* event = item->event;
+ 	     int bstart = event->StartTime() - timer->StartTime();
+ 	     int bstop = timer->StopTime() - event->EndTime();
+-	     string aux = "";
+ 	     int checkmode = DefTimerCheckModes.GetMode(timer->Channel());
+ 	     aux = UpdateAuxValue(aux, "update", checkmode);
+ 	     aux = UpdateAuxValue(aux, "eventid", event->EventID());
+@@ -172,6 +172,12 @@
+ 	     aux = UpdateAuxValue(aux, "bstop", bstop);
+ 	     fullaux = UpdateAuxValue(fullaux, "epgsearch", aux);
+ 	 }
++
++    // #PIN PATCH
++    aux = "";
++    aux = UpdateAuxValue(aux, "protected", timer->FskProtection() ? "yes" : "no");
++    fullaux = UpdateAuxValue(fullaux, "pin-plugin", aux);
++
+ 	 SetAux(timer, fullaux);
+ 	 Timers.Add(timer);
+ 	 timer->Matches();
+--- ../plain/epgsearch-0.9.20//menu_myedittimer.c	2007-01-23 20:26:12.000000000 +0100
++++ menu_myedittimer.c	2007-02-10 09:40:33.000000000 +0100
+@@ -36,6 +36,7 @@
+ 	stop = Timer->Stop();
+ 	priority = Timer->Priority();
+ 	lifetime = Timer->Lifetime();
++	fskProtection = Timer->FskProtection();                                        // PIN PATCH
+ 	strcpy(file, Timer->File());
+ 	channel = Timer->Channel()->Number();
+ 	if (forcechannel)
+@@ -107,6 +108,14 @@
+     Add(new cMenuEditBitItem( tr("VPS"),          &flags, tfVps));
+     Add(new cMenuEditIntItem( tr("Priority"),     &priority, 0, MAXPRIORITY));
+     Add(new cMenuEditIntItem( tr("Lifetime"),     &lifetime, 0, MAXLIFETIME));
++    // PIN PATCH
++    if (cOsd::pinValid || !fskProtection) Add(new cMenuEditBoolItem(tr("Childlock"),&fskProtection));
++    else { 
++       char* buf = 0;
++       asprintf(&buf, "%s\t%s", tr("Childlock"), fskProtection ? tr("yes") : tr("no")); 
++       Add(new cOsdItem(buf));
++       free(buf);
++       }
+     Add(new cMenuEditStrItem( tr("File"), file, MaxFileName, tr(FileNameChars)));
+     Add(new cMenuEditStrItem( tr("Directory"), directory, MaxFileName, tr(AllowedChars)));
+ 
+@@ -211,6 +220,33 @@
+     return osContinue;
+ }
+ 
++char* cMenuMyEditTimer::SetFskProtection(int fskProtection, char* aux)                 // PIN PATCH
++{ 
++   char* p;
++   char* tmp = 0;
++
++   if (fskProtection && (!aux || !strstr(aux, "<pin-plugin><protected>yes</protected></pin-plugin>")))
++   {
++      // add protection info to aux
++
++      if (aux) { tmp = strdup(aux); free(aux); }
++      asprintf(&aux,"%s<pin-plugin><protected>yes</protected></pin-plugin>", tmp ? tmp : "");
++   }
++   else if (!fskProtection && aux && (p = strstr(aux, "<pin-plugin><protected>yes</protected></pin-plugin>")))
++   {
++      // remove protection info to aux
++
++      asprintf(&tmp, "%.*s%s", p-aux, aux, p+strlen("<pin-plugin><protected>yes</protected></pin-plugin>"));
++      free(aux);
++      aux = strdup(tmp);
++   }
++
++   if (tmp) 
++      free(tmp);  
++
++   return aux;
++}
++
+ eOSState cMenuMyEditTimer::ProcessKey(eKeys Key)
+ {
+     bool bWasSingleEvent = IsSingleEvent();
+@@ -290,6 +326,7 @@
+ 		}
+ 		
+ 		string fullaux = "";
++      string aux = "";
+ 		if (timer && timer->Aux())
+ 		    fullaux = timer->Aux();
+ 
+@@ -307,7 +344,6 @@
+ 		    bstop = stopTime - event->EndTime();
+ 
+ 		    char* epgsearchaux = GetAuxValue(timer, "epgsearch");
+-		    string aux = "";
+ 		    if (epgsearchaux)
+ 		    {
+ 			aux = epgsearchaux;
+@@ -320,6 +356,10 @@
+ 		    fullaux = UpdateAuxValue(fullaux, "epgsearch", aux);
+ 		}
+ 		
++      // #PIN PATCH
++      aux = "";
++      aux = UpdateAuxValue(aux, "protected", timer->FskProtection() ? "yes" : "no");
++      fullaux = UpdateAuxValue(fullaux, "pin-plugin", aux);
+ 		
+ 		char* tmpFile = strdup(file);
+ 		tmpFile = strreplace(tmpFile, ':', '|');
+--- ../plain/epgsearch-0.9.20//menu_myedittimer.h	2006-12-08 21:50:22.000000000 +0100
++++ menu_myedittimer.h	2007-02-03 16:40:11.000000000 +0100
+@@ -13,6 +13,7 @@
+   bool addIfConfirmed;
+   int UserDefDaysOfWeek;
+   cMenuEditStrItem* m_DirItem;
++  char* SetFskProtection(int fskProtection, char* aux);             // PIN PATCH
+ 
+   uint flags;
+   time_t day;
+@@ -23,6 +24,7 @@
+   int lifetime;
+   char file[MaxFileName];
+   char directory[MaxFileName];
++  int fskProtection;                                               // PIN PATCH
+   int checkmode;
+ public:
+   cMenuMyEditTimer(cTimer *Timer, bool New, const cEvent* event, const cChannel* forcechannel=NULL);
+--- ../plain/epgsearch-0.9.20//menu_whatson.c	2007-01-27 14:30:52.000000000 +0100
++++ menu_whatson.c	2007-02-10 09:39:52.000000000 +0100
+@@ -450,12 +450,12 @@
+       else
+       {
+ 	  string fullaux = "";
++     string aux = "";
+ 	  if (item->event)
+ 	  {
+ 	      const cEvent* event = item->event;
+ 	      int bstart = event->StartTime() - timer->StartTime();
+ 	      int bstop = timer->StopTime() - event->EndTime();
+-	      string aux = "";
+ 	      int checkmode = DefTimerCheckModes.GetMode(timer->Channel());
+ 	      aux = UpdateAuxValue(aux, "update", checkmode);
+ 	      aux = UpdateAuxValue(aux, "eventid", event->EventID());
+@@ -463,6 +463,12 @@
+ 	      aux = UpdateAuxValue(aux, "bstop", bstop);
+ 	      fullaux = UpdateAuxValue(fullaux, "epgsearch", aux);
+ 	  }
++
++     // #PIN PATCH
++     aux = "";
++     aux = UpdateAuxValue(aux, "protected", timer->FskProtection() ? "yes" : "no");
++     fullaux = UpdateAuxValue(fullaux, "pin-plugin", aux);
++
+ 	  SetAux(timer, fullaux);
+ 	  Timers.Add(timer);
+ 	  timer->Matches();
