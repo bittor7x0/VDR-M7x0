@@ -52,7 +52,7 @@ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -D__EXCL_PLUGINS='""$(
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o setupmenu.o def.o menu.o locks.o brdclocks.o i18n.o rep.o msgreceiver.o talk.o
+OBJS = $(PLUGIN).o setupmenu.o def.o menu.o locks.o brdclocks.o i18n.o rep.o msgreceiver.o talk.o childlockservice.o
 CMDOBJS = fskcheck.o talk.o def.o
 
 ### Implicit rules:

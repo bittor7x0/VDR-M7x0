@@ -130,7 +130,7 @@ int MessageReceiver::wait()
 
       case Talk::evtCheck:
       {
-         int evt = cOsd::pinValid ? Talk::evtConfirm : Talk::evtAbort;
+         int evt = PinService::pinValid ? Talk::evtConfirm : Talk::evtAbort;
 
          if (talk->send(11, evt) != success)
             tell(eloDebug, "Sending event (%d) to (%d) failed", evt, 11);

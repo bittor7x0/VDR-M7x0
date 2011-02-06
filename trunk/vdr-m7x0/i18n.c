@@ -10099,7 +10099,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
   },
-  { "Childlock",                        // PIN PATCH
+  { "Timer$Childlock",                        // PIN PATCH
     "Kindersicherung",
     "",//TODO
     "",//TODO

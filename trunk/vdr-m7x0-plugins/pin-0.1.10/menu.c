@@ -79,7 +79,7 @@ eOSState cPinMenu::ProcessKey(eKeys key)
       {
          if (*cPinPlugin::pinCode)
          {
-            cOsd::pinValid = false;
+            PinService::pinValid = false;
             Skins.Message(mtInfo, tr("Activated pin protection"));
          }
          else
