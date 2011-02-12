@@ -148,6 +148,7 @@ public:
    static bool isValid(const char *d, int len, u_int32_t CRCvalue=0xFFFFFFFF) { return crc32(d, len, CRCvalue) == 0; }
 protected:
    static u_int32_t crc_table[256];
+public:
    static u_int32_t crc32 (const char *d, int len, u_int32_t CRCvalue);
 
    const char *data;

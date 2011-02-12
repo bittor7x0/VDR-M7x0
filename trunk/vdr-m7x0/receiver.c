@@ -11,12 +11,14 @@
 #include <stdio.h>
 #include "tools.h"
 
-cReceiver::cReceiver(int Ca, int Priority, int Pid, const int *Pids1, const int *Pids2, const int *Pids3)
+cReceiver::cReceiver(int Ca, int Priority, int Pid, const int *Pids1, const int *Pids2, const int *Pids3, int Pid2, int Pid3)
 {
   device = NULL;
   ca = Ca;
   priority = Priority;
   numPids = 0;
+  activated = false;
+  lastPid = 0;
 #ifdef USE_HW_VIDEO_FRAME_EVENTS
   frameEventsWanted = false;
 #endif
@@ -34,6 +36,10 @@ cReceiver::cReceiver(int Ca, int Priority, int Pid, const int *Pids1, const int 
      while (*Pids3 && numPids < MAXRECEIVEPIDS)
            pids[numPids++] = *Pids3++;
      }
+  if ((Pid2) && (numPids < MAXRECEIVEPIDS))
+     pids[numPids++] = Pid2;
+  if ((Pid3) && (numPids < MAXRECEIVEPIDS))
+     pids[numPids++] = Pid3;
   if (numPids >= MAXRECEIVEPIDS)
      dsyslog("too many PIDs in cReceiver");
 }
@@ -52,8 +58,10 @@ bool cReceiver::WantsPid(int Pid)
 {
   if (Pid) {
      for (int i = 0; i < numPids; i++) {
-         if (pids[i] == Pid)
+         if (pids[i] == Pid) {
+            lastPid = i;
             return true;
+            }
          }
      }
   return false;

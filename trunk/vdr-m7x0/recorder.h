@@ -25,7 +25,6 @@ class cRecorder : public cReceiver
 #endif
 private:
 //M7X0 BEGIN AK
-  bool activated;
 #ifdef DISABLE_RINGBUFFER_IN_RECEIVER
   int lostBytes;
 #else
@@ -55,10 +54,47 @@ public:
                // Creates a new recorder that requires conditional access Ca, has
                // the given Priority and will record the given PIDs into the file FileName.
   virtual ~cRecorder();
-  bool Activated(void) const { return activated; }
 //M7X0 END AK
 protected:
   cIndexFile *GetIndexFile(void);
   };
+
+class cTSRecorder : public cReceiver
+{
+private:
+  int lostBytes;
+  int bytesToSync[MAXRECEIVEPIDS];
+  bool HaveTime;
+  unsigned int LastTime;
+  unsigned int LastDiff;
+  sPesResult packets[MAXRECEIVEPIDS];
+  int firstPacket[MAXRECEIVEPIDS];
+
+  cRingBufferResult *resultBuffer;
+  cFileWriter *writer;
+
+  unsigned char TSPAT[TS_SIZE*2];  //Program Association Table + PMS
+  unsigned char *TSPMS; //Program Map Section
+  int vPid;
+  int vType;
+  int PCRPid;
+protected:
+  virtual void Activate(bool On);
+  virtual void Receive(uchar *Data, int Length);
+  virtual void Receive(uchar *Data, int Length, const sTsDataHeader *const Header);
+
+public:
+  cTSRecorder(const char *FileName, const cChannel *Channel, int Priority, bool IsTShift);
+               // Creates a new recorder that requires conditional access Ca, has
+               // the given Priority and will record the given PIDs into the file FileName.
+  virtual ~cTSRecorder();
+  uchar* Get(int &Count, sPesResult *&Header, int &HeaderCount, int &FirstIFrame);
+  void Del(int Count);
+protected:
+  cIndexFile *GetIndexFile(void);
+private:
+  unsigned char *GetPat();
+  void MakePat(const cChannel *Channel);
+};
 
 #endif //__RECORDER_H

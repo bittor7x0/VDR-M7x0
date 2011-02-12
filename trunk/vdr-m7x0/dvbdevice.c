@@ -438,6 +438,7 @@ private:
   int fd_dmx_video;
   int fd_dmx_audio;
   int fd_dmx_pcr;
+  int fd_dmx_teletext;
 
   struct {
     int patVersion;
@@ -459,6 +460,7 @@ private:
 
   int videoStreamId;
   int pcrStreamId;
+  int teletextStreamId;
 
   eTrackType curAudioTrack;
   int curAudioStreamId;
@@ -503,7 +505,7 @@ private:
                 bool &Current, int &SectionNo, int &LastSectionNo);
 
   inline int HandlePmtElemInfo(const uchar *Data, int Length, int &Vpid,
-                     int &Apid, int &Dpid, char *Alangs, char *Dlangs);
+                     int &Apid, int &Dpid, char *Alangs, char *Dlangs, int &Tpid);
 
   inline bool HandlePesTrickspeed(const uchar *&Data,
           const uchar *const Limit, bool payloadStart);
@@ -513,7 +515,7 @@ private:
   inline int CheckPmtIds(const int Pid);
 
   void CheckAndSetupAudio(bool idsChanged = false);
-  void CheckAndSetupVideo(int PcrId, int VideoId);
+  void CheckAndSetupVideo(int PcrId, int VideoId, int TeletextId);
   int ScanDataForPacketStartCode(const uchar *&Data,const uchar *const Limit);
   int HandleTrickspeed(const uchar *Data);
   bool CheckTimeout(void);
@@ -542,6 +544,7 @@ void c7x0TsReplayer::Reset(void)
 
   videoStreamId = -1;
   pcrStreamId = -1;
+  teletextStreamId = -1;
 
   sPatInfo.patVersion = -1;
   sPatInfo.readVersion = -1;
@@ -621,20 +624,21 @@ void c7x0TsReplayer::OpenDvr(void)
   if (fd_dvr <0 )
      return;
 
-  CHECK(ioctl(fd_dvr,DVR_SET_STREAM_TYPE, DVR_MPEG2_TS));
+  //CHECK(ioctl(fd_dvr,DVR_SET_STREAM_TYPE, DVR_MPEG2_TS));
 
   CHECK(ioctl(dvbDevice->fd_audio,AUDIO_SET_AV_SYNC,dvbDevice->playMode == pmTsAudioVideo));
 
   fd_dmx_audio = -1;
   fd_dmx_video = -1;
   fd_dmx_pcr   = -1;
+  fd_dmx_teletext   = -1;
   curAudioTrack = ttNone;
-  CheckAndSetupVideo(pcrStreamId, videoStreamId);
+  CheckAndSetupVideo(pcrStreamId, videoStreamId, teletextStreamId);
   CheckAndSetupAudio();
   lastPlaytime = time(NULL);
 }
 
-void c7x0TsReplayer::CheckAndSetupVideo(int PcrId, int VideoId)
+void c7x0TsReplayer::CheckAndSetupVideo(int PcrId, int VideoId, int TeletextId)
 {
   if (fd_dvr < 0)
      return;
@@ -729,6 +733,50 @@ void c7x0TsReplayer::CheckAndSetupVideo(int PcrId, int VideoId)
      videoStreamId = VideoId;
      CHECK(ioctl(dvbDevice->fd_video,VIDEO_PLAY,0));
      }
+  if (TeletextId >= 0 && (TeletextId != teletextStreamId || fd_dmx_teletext < 0)) {
+     if (fd_dmx_teletext >= 0) {
+        CHECK(ioctl(fd_dmx_teletext, DMX_STOP,1));
+        }
+     else {
+        fd_dmx_teletext = DvbOpen(DEV_DVB_ADAPTER DEV_DVB_DEMUX, 0, O_RDWR | O_NONBLOCK, true);
+        if (fd_dmx_teletext < 0) {
+           return;
+           }
+        }
+     dmx_pes_filter_params pesFilterParams;
+     memset(&pesFilterParams, 0, sizeof(pesFilterParams));
+
+     //CHECK(ioctl(fd_dmx_teletext, DMX_SET_BUFFER_SIZE,0x100000));
+
+     pesFilterParams.pid      = TeletextId;
+     pesFilterParams.input    = DMX_IN_DVR;
+     pesFilterParams.output   = DMX_OUT_DECODER0;
+     pesFilterParams.pes_type = DMX_PES_TELETEXT;
+     pesFilterParams.flags    = DMX_IMMEDIATE_START;
+
+     int r, i = 0, errnoSave;
+
+     // Is this loop really nessesary any more.
+     // In earllier Versions the driver returns with EBUSY sometimes
+     do {
+        if ((r = ioctl(fd_dmx_teletext,DMX_SET_PES_FILTER, &pesFilterParams)) < 0) {
+           errnoSave = errno;
+           CHECK(r);
+           cCondWait::SleepMs(3);
+           }
+        else
+           errnoSave = 0;
+        i++;
+        } while (errnoSave == EBUSY && i <= 100);
+
+     if (errnoSave != 0) {
+        close(fd_dmx_teletext);
+        fd_dmx_teletext = -1;
+        return;
+        }
+     teletextStreamId = TeletextId;
+     }
+
 }
 
 void c7x0TsReplayer::CheckAndSetupAudio(bool idsChanged)
@@ -821,6 +869,12 @@ void c7x0TsReplayer::CloseDvr()
      CHECK(ioctl(fd_dmx_pcr, DMX_STOP,1));
      close(fd_dmx_pcr);
      fd_dmx_pcr = -1;
+     }
+
+  if (fd_dmx_teletext >= 0) {
+     CHECK(ioctl(fd_dmx_teletext, DMX_STOP,1));
+     close(fd_dmx_teletext);
+     fd_dmx_teletext = -1;
      }
 
   close(fd_dvr);
@@ -1008,7 +1062,7 @@ void c7x0TsReplayer::HandlePat(const uchar *Data)
            return;
            }
 
-        if (patBufLength < sectionLen);
+        if (patBufLength < sectionLen)
            return;
 
         if (!currentApp || sPatInfo.patVersion == sectionVer ||
@@ -1038,10 +1092,10 @@ void c7x0TsReplayer::HandlePat(const uchar *Data)
         if (entryCount + sPatInfo.numPmtIds > MAXPMTIDS)
            entryCount = MAXPMTIDS - sPatInfo.numPmtIds;
 
-        uint16_t *tmp = (uint16_t *) (patBuf + 8);
+        unsigned char *tmp = patBuf + 8;
         for (int i = 0; i < entryCount; i++) {
-            if (tmp[i<<1]) {
-               sPatInfo.pmtIds[sPatInfo.numPmtIds++] = tmp[(i<<1)+1] & 0x1FFF;
+            if (tmp[i<<2]||tmp[(i<<2)+1]) {
+               sPatInfo.pmtIds[sPatInfo.numPmtIds++] = ((tmp[(i<<2)+2]<<8)|tmp[(i<<2)+3])&0x1FFF;
                }
             }
 
@@ -1057,7 +1111,7 @@ void c7x0TsReplayer::HandlePat(const uchar *Data)
               curPmtVersion = -1;
               pmtCCounter = -1;
               if (sPatInfo.numPmtIds == 1)
-                 curPmtId = sPatInfo.pmtIds[1];
+                 curPmtId = sPatInfo.pmtIds[0];
               }
            }
         else {
@@ -1077,7 +1131,7 @@ void c7x0TsReplayer::HandlePat(const uchar *Data)
 }
 
 int c7x0TsReplayer::HandlePmtElemInfo(const uchar *Data, int Length,
-      int &Vpid, int &Apid, int &Dpid, char *Alangs, char *Dlangs)
+      int &Vpid, int &Apid, int &Dpid, char *Alangs, char *Dlangs, int &Tpid)
 {
 
   const int streamType = Data[0];
@@ -1090,7 +1144,7 @@ int c7x0TsReplayer::HandlePmtElemInfo(const uchar *Data, int Length,
      }
 
   Apid = Dpid = 0;
-
+  Tpid = -1;
 
   char *curLangStr;
   bool AC3DescFound = false;
@@ -1139,8 +1193,11 @@ int c7x0TsReplayer::HandlePmtElemInfo(const uchar *Data, int Length,
                curLangStr += strlen(curLangStr);
                }
            }
-        else if (descriptorTag == 0x6A) { // AC3 Descriptor
+        else if ((descriptorTag == 0x6A)||(descriptorTag == 0x7A)) { // AC3 Descriptor
            AC3DescFound = true;
+           }
+        else if (descriptorTag == 0x56) { // Teletext
+           Tpid = Dpid;
            }
 
         offset += descriptorLen;
@@ -1213,13 +1270,14 @@ void c7x0TsReplayer::HandlePmt(const uchar *Data)
         char DolbyLangs[MAXDPIDS + 1][MAXLANGCODE2];
         int NumAudioPids = 0;
         int NumDolbyPids = 0;
+	int TeletextPid = -1;
 
 
         int offset = (((pmtBuf[10] << 8) | pmtBuf[11]) & 0xFFF) + 12;
         while (offset < sectionLen - 4) { // ES Info Loop
               int r = HandlePmtElemInfo(pmtBuf + offset, sectionLen - offset - 4,
                   VideoPid, AudioPids[NumAudioPids], DolbyPids[NumDolbyPids],
-                          AudioLangs[NumAudioPids], DolbyLangs[NumDolbyPids]);
+                          AudioLangs[NumAudioPids], DolbyLangs[NumDolbyPids], TeletextPid);
 
               if (r < 0) {
                  pmtBufLength = 0;
@@ -1235,7 +1293,7 @@ void c7x0TsReplayer::HandlePmt(const uchar *Data)
               offset += r;
               }
 
-        CheckAndSetupVideo(PcrPid, VideoPid);
+        CheckAndSetupVideo(PcrPid, VideoPid, TeletextPid);
         dvbDevice->ClrAvailableTracks();
         for (int i = 0; i < NumAudioPids; i++)
             dvbDevice->SetAvailableTrack(ttAudio, i, AudioPids[i], AudioLangs[i]);
@@ -1660,6 +1718,10 @@ int c7x0TsReplayer::WriteOutPacket(const uchar *Data, int Count)
 
   while (Count) {
         if ((r = write(fd_dvr,Data,Count)) < 0) {
+           if ((errno == EBUSY) | (errno == EAGAIN)) {
+              cCondWait::SleepMs(3);
+              continue;
+              }
            LOG_ERROR;
            return r;
            }
@@ -1706,9 +1768,9 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
         if (fragmentLen == 188) {
            int r = WriteOutPacket(fragmentData,188);
            if (r < 0) {
+	       LOG_ERROR;
                return r;
                }
-           writeOutCount -= 188;
            fragmentLen = 0;
            }
 
@@ -1726,6 +1788,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
            if (writeOutCount) {
               int r = WriteOutPacket(writeOutStart,writeOutCount);
               if (r < 0) {
+		 LOG_ERROR;
                  return r;
                  }
               writeOutCount = 0;
@@ -1742,6 +1805,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
            if (writeOutCount) {
               int r = WriteOutPacket(writeOutStart,writeOutCount);
               if (r < 0) {
+		 LOG_ERROR;
                  return r;
                  }
               writeOutCount = 0;
@@ -1769,6 +1833,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
            if (writeOutCount) {
               int r = WriteOutPacket(writeOutStart,writeOutCount);
               if (r < 0) {
+		 LOG_ERROR;
                  return r;
                  }
               writeOutCount = 0;
@@ -1820,7 +1885,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
            continue;
            }
 
-        if (streamId == videoStreamId || streamId == pcrStreamId) {
+        if (streamId == videoStreamId || streamId == pcrStreamId || streamId == teletextStreamId) {
            if (!fragmentLen)
               data += 188;
            writeOutCount += 188;
@@ -1840,6 +1905,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
         if (writeOutCount) {
            int r = WriteOutPacket(writeOutStart,writeOutCount);
            if (r < 0) {
+	      LOG_ERROR;
               return r;
               }
            writeOutCount = 0;
@@ -1847,7 +1913,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
 
         unusableDataCount += 188;
         if (unusableDataCount > REPLAY_MAX_UNUSABLE_DATA) {
-           esyslog("ERROR: %d bytes of recoding unusable while in trickspeed - giving up!", unusableDataCount);
+           esyslog("ERROR: %d bytes of recoding unusable - giving up!", unusableDataCount);
            errno = EDEADLK; // Any ideas for a better errorcode
            return -1;
            }
@@ -1860,6 +1926,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
   if (writeOutCount) {
      int r = WriteOutPacket(writeOutStart,writeOutCount);
      if (r < 0) {
+	LOG_ERROR;
         return r;
         }
      }
@@ -1959,7 +2026,7 @@ void c7x0TsReplayer::SetPids(int PmtPid, int VideoPid)
      curPmtVersion = -1;
      }
 
-  CheckAndSetupVideo(-1, VideoPid);
+  CheckAndSetupVideo(-1, VideoPid, -1);
   if (inTrickspeed && VideoPid > 0 && videoStreamId != VideoPid) {
      videoStreamId = VideoPid;
      trickspeedState = syncing;

@@ -292,6 +292,7 @@ private:
   bool firstPacket;
   ePlayModes playMode;
   ePlayDirs playDir;
+  bool playTS;
   int trickSpeed;
 
   int readIndex, writeIndex;
@@ -313,6 +314,7 @@ private:
   bool NextFile(void);
   int Resume(void);
   bool Save(void);
+  int PlayPesOrTs(const uchar *Data, int Length, bool VideoOnly) __attribute__ ((always_inline)){if(playTS)return PlayTs(Data,Length);return PlayPes(Data,Length,VideoOnly);}
 protected:
   virtual void Activate(bool On);
   virtual void Action(void);
@@ -348,6 +350,7 @@ cDvbPlayer::cDvbPlayer(const char *FileName, cTShiftIndexFile *newIndex)
   firstPacket = true;
   playMode = pmPlay;
   playDir = pdForward;
+  playTS=false;
   trickSpeed = NORMAL_SPEED;
   readIndex = writeIndex = -1;
 
@@ -700,14 +703,26 @@ void cDvbPlayer::Action(void)
                  data2 = playFrame->Data2();
                  count2 = playFrame->Count2();
                  if (firstPacket) {
-                    if(cRemux::SetBrokenLink(data1, count1)==2)
-                       DeviceSetPlayMode(pmAudioOnlyBlack);
-                    PlayPes(NULL, 0);
+                    switch(cRemux::SetBrokenLink(data1, count1)) {
+                       case 0x02:
+                          DeviceSetPlayMode(pmAudioOnlyBlack);
+                          break;
+                       case 0x100:
+                       case 0x101:
+                          playTS=true;
+                          DeviceSetPlayMode(pmTsAudioVideo);
+                          break;
+                       case 0x102:
+                          playTS=true;
+                          DeviceSetPlayMode(pmTsAudioOnlyBlack);
+                          break;
+                       }
+                    PlayPesOrTs(NULL, 0, false);
                     firstPacket = false;
                     }
                  }
 
-              int playedBytes = PlayPes(data1, count1, playMode != pmPlay);
+              int playedBytes = PlayPesOrTs(data1, count1, playMode != pmPlay);
               if (playedBytes < 0) {
                  if (FATALERRNO) {
                     LOG_ERROR;
@@ -725,7 +740,7 @@ void cDvbPlayer::Action(void)
                  count1 = count2;
                  count2 = 0;
 
-                 playedBytes = PlayPes(data1, count1, playMode != pmPlay);
+                 playedBytes = PlayPesOrTs(data1, count1, playMode != pmPlay);
                  if (playedBytes < 0) {
                     if (FATALERRNO) {
                        LOG_ERROR;

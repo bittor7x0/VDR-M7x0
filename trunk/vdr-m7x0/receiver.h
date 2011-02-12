@@ -37,6 +37,8 @@ private:
   int numPids;
   bool WantsPid(int Pid);
 //M7X0 BEGIN AK
+  bool activated;
+  int lastPid;
 #ifdef USE_HW_VIDEO_FRAME_EVENTS
   bool frameEventsWanted;
   bool WantsFrameEvents(void) { return frameEventsWanted;}
@@ -44,7 +46,8 @@ private:
 //M7X0 END AK
 protected:
   void Detach(void);
-  virtual void Activate(bool On) {}
+  virtual void Activate(bool On) {activated = On;}
+  int GetLastPid(void) {return lastPid;}
                ///< This function is called just before the cReceiver gets attached to
                ///< (On == true) or detached from (On == false) a cDevice. It can be used
                ///< to do things like starting/stopping a thread.
@@ -65,7 +68,7 @@ protected:
 #endif
 //M7X0 END AK
 public:
-  cReceiver(int Ca, int Priority, int Pid, const int *Pids1 = NULL, const int *Pids2 = NULL, const int *Pids3 = NULL);
+  cReceiver(int Ca, int Priority, int Pid, const int *Pids1 = NULL, const int *Pids2 = NULL, const int *Pids3 = NULL, int Pid2 = 0, int Pid3 = 0);
                ///< Creates a new receiver that requires conditional access Ca and has
                ///< the given Priority. Pid is a single PID (typically the video PID), while
                ///< Pids1...Pids3 are pointers to zero terminated lists of PIDs.
@@ -75,6 +78,7 @@ public:
                ///< that this cReceiver may be detached at any time (without blocking the
                ///< cDevice it is attached to).
   virtual ~cReceiver();
+  virtual bool Activated(void) const { return activated; }
   };
 
 #endif //__RECEIVER_H
