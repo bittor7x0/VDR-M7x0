@@ -187,7 +187,7 @@ class cRecordControl {
 private:
   cDevice *device;
   cTimer *timer;
-  cRecorder *recorder;
+  cReceiver *recorder;
   const cEvent *event;
   char *instantId;
   char *fileName;

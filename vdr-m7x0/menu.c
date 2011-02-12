@@ -3242,6 +3242,11 @@ cMenuSetupRecord::cMenuSetupRecord(void)
   Add(new cMenuEditIntItem( tr("Setup.Recording$VPS margin (s)"),            &data.VpsMargin, 0));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Record Dolby Digital"),      &data.UseDolbyInRecordings));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Record HD Video"),      &data.UseHDInRecordings));
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Record HD in TS"),           &data.UseTSInHD));
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Record SD in TS"),           &data.UseTSInSD));
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Record Audio in TS"),           &data.UseTSInAudio));
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Include Teletext in TS"),           &data.UseTeletextInTSRecordings));
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Include Subtitles in TS"),           &data.UseSubtitlesInTSRecordings));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Mark instant recording"),    &data.MarkInstantRecord));
   Add(new cMenuEditStrItem( tr("Setup.Recording$Name instant recording"),     data.NameInstantRecord, sizeof(data.NameInstantRecord), tr(FileNameChars)));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Instant rec. time (min)"),   &data.InstantRecordTime, 1, MAXINSTANTRECTIME));
@@ -4583,6 +4588,14 @@ cRecordControl::cRecordControl(cDevice *Device, cTimer *Timer, bool Pause)
   isyslog("record %s", fileName);
   if (MakeDirs(fileName, true)) {
      const cChannel *ch = timer->Channel();
+     if ( ((Setup.UseTSInHD)&&(ch->Vpid(Setup.UseHDInRecordings))&&(ch->Vtype()==0x1B))
+        ||((Setup.UseTSInSD)&&(ch->Vpid(false)))
+        ||((Setup.UseTSInAudio)&&(!ch->Vpid(Setup.UseHDInRecordings))) )
+     {
+        dsyslog("Starting TS record");
+	recorder = new cTSRecorder(fileName, ch, timer->Priority(), false);
+        }
+     else
      recorder = new cRecorder(fileName, ch->Ca(), timer->Priority(), ch->Vpid(Setup.UseHDInRecordings), ch->Apids(), ch->Dpids(), ch->Spids(), false,  ch->Vtype(), ch->DPpids());
      if (device->AttachReceiver(recorder)) {
         Recording.WriteInfo();

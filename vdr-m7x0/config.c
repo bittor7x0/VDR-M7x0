@@ -326,6 +326,11 @@ cSetup::cSetup(void)
   UseDolbyDigital = 1;
   UseDolbyInRecordings = 1;
   UseHDInRecordings = 0;
+  UseTSInHD = 0;
+  UseTSInSD = 0;
+  UseTSInAudio = 0;
+  UseTeletextInTSRecordings = 0;
+  UseSubtitlesInTSRecordings = 0;
   ChannelInfoPos = 0;
   ChannelInfoTime = 5;
   OSDLeft = 54;
@@ -537,6 +542,11 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "UseDolbyDigital"))     UseDolbyDigital    = atoi(Value);
   else if (!strcasecmp(Name, "UseDolbyInRecordings")) UseDolbyInRecordings = atoi(Value);
   else if (!strcasecmp(Name, "UseHDInRecordings")) UseHDInRecordings = atoi(Value);
+  else if (!strcasecmp(Name, "UseTSInHD"))           UseTSInHD          = atoi(Value);
+  else if (!strcasecmp(Name, "UseTSInSD"))           UseTSInSD          = atoi(Value);
+  else if (!strcasecmp(Name, "UseTSInAudio"))        UseTSInAudio       = atoi(Value);
+  else if (!strcasecmp(Name, "UseTeletextInTSRecordings")) UseTeletextInTSRecordings = atoi(Value);
+  else if (!strcasecmp(Name, "UseSubtitlesInTSRecordings")) UseSubtitlesInTSRecordings = atoi(Value);
   else if (!strcasecmp(Name, "ChannelInfoPos"))      ChannelInfoPos     = atoi(Value);
   else if (!strcasecmp(Name, "ChannelInfoTime"))     ChannelInfoTime    = atoi(Value);
   else if (!strcasecmp(Name, "OSDLeft"))             OSDLeft            = atoi(Value);
@@ -655,6 +665,11 @@ bool cSetup::Save(void)
   Store("UseDolbyDigital",    UseDolbyDigital);
   Store("UseDolbyInRecordings", UseDolbyInRecordings);
   Store("UseHDInRecordings", UseHDInRecordings);
+  Store("UseTSInHD", UseTSInHD);
+  Store("UseTSInSD", UseTSInSD);
+  Store("UseTSInAudio", UseTSInAudio);
+  Store("UseTeletextInTSRecordings", UseTeletextInTSRecordings);
+  Store("UseSubtitlesInTSRecordings", UseSubtitlesInTSRecordings);
   Store("ChannelInfoPos",     ChannelInfoPos);
   Store("ChannelInfoTime",    ChannelInfoTime);
   Store("OSDLeft",            OSDLeft);

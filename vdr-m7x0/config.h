@@ -274,6 +274,11 @@ public:
   int UseDolbyDigital;
   int UseDolbyInRecordings;
   int UseHDInRecordings;
+  int UseTSInHD;
+  int UseTSInSD;
+  int UseTSInAudio;
+  int UseTeletextInTSRecordings;
+  int UseSubtitlesInTSRecordings;
   int ChannelInfoPos;
   int ChannelInfoTime;
   int OSDLeft, OSDTop, OSDWidth, OSDHeight;

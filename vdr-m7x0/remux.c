@@ -2179,31 +2179,57 @@ void cRemux::Clear(void)
 
 int cRemux::SetBrokenLink(uchar *Data, int Length)
 {
+  int TS=0x0;
+  while(Length>3) {
+     if(*Data!=0x47)
+        break;
+     if((Data[1]&0x40)&&((Data[1]&0x1F)||(Data[2]))) {
+        int PES=4;
+        if(Data[3]&0x20)
+           PES+=Data[4]+1;
+        if(PES+2<Length) {
+           if((!Data[PES])&&(!Data[PES+1])&&(Data[PES+2]==0x01)) {
+              Data+=PES;
+              Length-=PES;
+              TS=0x100;
+              isyslog("TS stream detected");
+              break;
+              }
+           }
+        }
+     Data+=188;
+     Length-=188;
+     }
   int PesPayloadOffset = 0;
   if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1) {
      if ((Data[3] & 0xF0) == VIDEO_STREAM_S) {
      if (PesPayloadOffset<Length-3) {
         if (Data[PesPayloadOffset] == 0 && Data[PesPayloadOffset + 1] == 0 && Data[PesPayloadOffset + 2] == 1 && Data[PesPayloadOffset + 3] == 0x09) {
 	    isyslog("H.264 video detected");
-           return 2;
+           return TS+2;
            }
+        if (PesPayloadOffset<Length-4)
+           if (Data[PesPayloadOffset] == 0 && Data[PesPayloadOffset + 1] == 0 && Data[PesPayloadOffset + 2] == 0 && Data[PesPayloadOffset + 3] == 1 && Data[PesPayloadOffset + 4] == 0x09) {
+              isyslog("H.264 video detected");
+              return TS+2;
+              }
         }
      for (int i = PesPayloadOffset; i < Length - 7; i++) {
          if (Data[i] == 0 && Data[i + 1] == 0 && Data[i + 2] == 1 && Data[i + 3] == 0xB8) {
             if (!(Data[i + 7] & 0x40)) // set flag only if GOP is not closed
                Data[i + 7] |= 0x20;
-            return 0;
+            return TS;
             }
          }
      dsyslog("SetBrokenLink: no GOP header found in video packet");
-     return 1;
+     return TS+1;
      }
      else if ((Data[3] & 0xE0) == AUDIO_STREAM_S) {
         isyslog("Audio stream detected");
-        return 2;
+        return TS+2;
         }
      }
   else
      dsyslog("SetBrokenLink: no video packet in frame");
-  return 1;
+  return TS+1;
 }

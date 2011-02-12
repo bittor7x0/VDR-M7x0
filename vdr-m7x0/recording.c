@@ -528,6 +528,13 @@ cRecording::cRecording(cTimer *Timer, const cEvent *Event)
      asprintf(&name, "%s~%s", Timer->File(), Subtitle);
   // substitute characters that would cause problems in file names:
   strreplace(name, '\n', ' ');
+  if((Timer->Channel())&&(Setup.UseHDInRecordings))
+     if(Timer->Channel()->Vtype()==0x1B) {
+        char *newName=NULL;
+        asprintf(&newName,"%s (HD)",name);
+        free(name);
+        name=newName;
+        }
   start = Timer->StartTime();
   priority = Timer->Priority();
   lifetime = Timer->Lifetime();
