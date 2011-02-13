@@ -170,7 +170,7 @@ bool RemoveVideoFile(const char *FileName)
   return RemoveFileOrDir(FileName, true);
 }
 
-//M7X0 BEGIN AK 
+//M7X0 BEGIN AK
 bool RemoveSingleVideoFile(const char *FileName)
 {
   struct stat st;
@@ -206,7 +206,7 @@ bool RemoveSingleVideoFile(const char *FileName)
   RemoveEmptyDirectories(buf, true);
   return unlink(FileName);
 }
-//M7X0 END AK 
+//M7X0 END AK
 
 static bool StatNearestDir(const char *FileName, struct stat *Stat)
 {
@@ -259,11 +259,11 @@ bool HardLinkVideoFile(const char *OldName, const char *NewName)
      esyslog("HardLinkVideoFile: stat failed on %s", NewName);
      return false;
      }
-  
+
   isyslog("HardLinkVideoFile: %s is on %i", NewName, (int)StatDir.st_dev);
   if (StatDir.st_dev != StatOldName.st_dev) {
      // Not yet found.
-     
+
      if (!Dir.IsDistributed()) {
         esyslog("HardLinkVideoFile: No matching video folder to hard link %s", (const char*)ActualOldName);
         return false;
@@ -290,20 +290,17 @@ bool HardLinkVideoFile(const char *OldName, const char *NewName)
      // Looking good, we have a match. Create necessary folders.
      if (!MakeDirs(ActualNewName, false))
         return false;
-     // There's no guarantee that the directory of ActualNewName 
+     // There's no guarantee that the directory of ActualNewName
      // is on the same device as the dir that StatNearestDir found.
      // But worst case is that the link fails.
      }
 
 #ifdef HARDLINK_TEST_ONLY
   // Do the hard link to *.vdr_ for testing only
-  char *name = NULL;
-  asprintf(&name, "%s_",ActualNewName);
-  link(ActualOldName, name); 
-  free(name);
+  link(ActualOldName, cString::sprintf("%s_",ActualNewName));
   return false;
 #endif // HARDLINK_TEST_ONLY
-  
+
   // Try creating the hard link
   if (link(ActualOldName, ActualNewName) != 0) {
      // Failed to hard link. Maybe not allowed on file system.
@@ -311,7 +308,7 @@ bool HardLinkVideoFile(const char *OldName, const char *NewName)
      isyslog("HardLinkVideoFile: failed to hard link from %s to %s", (const char*)ActualOldName, ActualNewName);
      return false;
      }
-  
+
   if (ActualNewName != NewName) {
      // video01 and up. Do the remaining symlink
      if (symlink(ActualNewName, NewName) < 0) {

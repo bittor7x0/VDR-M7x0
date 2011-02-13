@@ -31,23 +31,19 @@ void cSubMenuItemInfo::setname(const char *n)
 	}
     name[i]=0;
     name[l]=0;
-} 
-
+}
 
 void cSubMenu::LoadInfoSubMenu(void)
 {
-	FILE *f;
-	char *fichier;
 	char lig[80];
 	int j;
 
-	
 	nbSubMenuItem = 0;
-	asprintf(&fichier,"%s/MainMenu.conf",cPlugin::ConfigDirectory());
-	f = fopen(fichier,"rt");
+	cString fichier = cString::sprintf("%s/MainMenu.conf",cPlugin::ConfigDirectory());
+	FILE *f = fopen(fichier,"rt");
 	if ( f != NULL)
 	{
-		while (fgets(lig,80,f) ) 
+		while (fgets(lig,80,f) )
 		{
 			ParseOneLigOfFile( lig );
 		}
@@ -56,10 +52,9 @@ void cSubMenu::LoadInfoSubMenu(void)
 	else
 	{
 		/* -- create example file -- */
-		FILE *fo;
 		cPlugin *p;
 
-		fo=fopen(fichier,"wt");
+		FILE *fo = fopen(fichier,"wt");
 		if (fo!=NULL)
 		{
 			fprintf(fo,"0::Schedule\n");
@@ -92,7 +87,6 @@ void cSubMenu::LoadInfoSubMenu(void)
 		}
 		/* -- Create example file -- */
 	}
-	free(fichier);
 }
 
 void cSubMenu::ParseOneLigOfFile(const char *lig)
@@ -175,11 +169,8 @@ void cSubMenu::ParseOneLigOfFile(const char *lig)
 
 void cSubMenu::SaveInfoSubMenu()
 {
-	//Dump();
-	FILE *f;
-	char *fichier;
-	asprintf(&fichier,"%s/MainMenu.conf",cPlugin::ConfigDirectory());
-	f=fopen(fichier,"w");
+	cString fichier = cString::sprintf("%s/MainMenu.conf",cPlugin::ConfigDirectory());
+	FILE *f = fopen(fichier,"w");
 	if (f)
 	{
 	  for (int i=0;i<nbSubMenuItem;i++)
@@ -188,7 +179,6 @@ void cSubMenu::SaveInfoSubMenu()
 	  }
 	  fclose(f);
 	}
-	free(fichier);
 }
 
 cSubMenu::~cSubMenu()
@@ -241,7 +231,7 @@ int cSubMenu::GetByLevel (int Level)
 }
 
 void cSubMenu::CreateItem(int type,int position,int where,char *Name)
-{ 
+{
 	int OldMenuLevel;
 	switch(type)
 	{
@@ -255,7 +245,7 @@ void cSubMenu::CreateItem(int type,int position,int where,char *Name)
 					subMenuItem[position].menuLevel=OldMenuLevel;
 					subMenuItem[position].kindOfItem=Arbo.MaxLevel+1;
 					break;
-				case 1: 
+				case 1:
 					OldMenuLevel=subMenuItem[position].menuLevel;
 					InsertItem(position);
 					subMenuItem[position+1].setname(Name);
@@ -322,7 +312,7 @@ void cSubMenu::DeleteItem(int position,int kindItem)
 		Kind=subMenuItem[position].kindOfItem;
 	for(int i=position;i<nbSubMenuItem;i++)
 	{
-		subMenuItem[i]=subMenuItem[i+1];	
+		subMenuItem[i]=subMenuItem[i+1];
 	}
 	nbSubMenuItem--;
 	Arbo.Populate(this);
@@ -384,7 +374,7 @@ void cArbo::Populate(cSubMenu *submenu)
   {
   Index[ submenu->subMenuItem[i].menuLevel ][ submenu->Arbo.MaxItem[submenu->subMenuItem[i].menuLevel]] = i;
   submenu->Arbo.MaxItem[submenu->subMenuItem[i].menuLevel]++;
-  if (submenu->subMenuItem[i].menuLevel > submenu->Arbo.MaxLevel) 
+  if (submenu->subMenuItem[i].menuLevel > submenu->Arbo.MaxLevel)
 	  {
 		  submenu->Arbo.MaxLevel = submenu->subMenuItem[i].menuLevel;
 	  }

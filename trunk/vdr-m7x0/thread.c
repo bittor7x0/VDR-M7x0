@@ -261,7 +261,7 @@ void cThread::SetDescription(const char *Description, ...)
   if (Description) {
      va_list ap;
      va_start(ap, Description);
-     vasprintf(&description, Description, ap);
+     description = strdup(cString::sprintf(Description, ap));
      va_end(ap);
      }
 }

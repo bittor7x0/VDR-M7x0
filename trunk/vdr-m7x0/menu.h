@@ -189,7 +189,7 @@ private:
   cTimer *timer;
   cReceiver *recorder;
   const cEvent *event;
-  char *instantId;
+  cString instantId;
   char *fileName;
   bool GetEvent(void);
 public:

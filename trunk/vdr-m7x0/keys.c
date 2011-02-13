@@ -120,18 +120,29 @@ eKeys cKey::FromString(const char *Name)
 {
   if (Name) {
      for (tKey *k = keyTable; k->name; k++) {
-         if (strcasecmp(k->name, Name) == 0)
+         const char *n = k->name;
+         const char *p = strchr(n, '$');
+         if (p)
+            n = p + 1;
+         if (strcasecmp(n, Name) == 0)
             return k->type;
          }
      }
   return kNone;
 }
 
-const char *cKey::ToString(eKeys Key)
+const char *cKey::ToString(eKeys Key, bool Translate)
 {
   for (tKey *k = keyTable; k->name; k++) {
-      if (k->type == Key)
-         return k->name;
+      if (k->type == Key) {
+         const char *n = k->name;
+         if (Translate)
+            n = tr(n);
+         const char *p = strchr(n, '$');
+         if (p)
+            n = p + 1;
+         return n;
+         }
       }
   return NULL;
 }

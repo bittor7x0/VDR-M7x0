@@ -417,7 +417,7 @@ void cSkinSTTNGDisplayChannel::Flush(void)
                              if (Speed > 9)
                                 Speed = 9;
                              nameBitmap = TShiftSymbolsFast[Forward][Speed];
-                             }                             
+                             }
                        else
                           if (Speed < 0)
                              nameBitmap = tshiftpause_xpm;
@@ -702,14 +702,12 @@ void cSkinSTTNGDisplayMenu::SetEvent(const cEvent *Event)
   snprintf(t, sizeof(t), "%s  %s - %s", *Event->GetDateString(), *Event->GetTimeString(), *Event->GetEndTimeString());
   ts.Set(osd, xl, y, x4 - xl, y4 - y, t, font, Theme.Color(clrMenuEventTime), Theme.Color(clrBackground));
   if (Event->Vps() && Event->Vps() != Event->StartTime()) {
-     char *buffer;
-     asprintf(&buffer, " VPS: %s", *Event->GetVpsString());
+     cString buffer = cString::sprintf(" VPS: %s", *Event->GetVpsString());
      const cFont *font = cFont::GetFont(fontSml);
      osd->DrawText(x4 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVps), frameColor, font);
      int yb = y + font->Height();
      osd->DrawRectangle(x5, y, x6 - 1, yb - 1, frameColor);
      osd->DrawEllipse  (x6, y, x7 - 1, yb - 1, frameColor, 5);
-     free(buffer);
      }
   y += ts.Height();
   if (Event->ParentalRating()) {

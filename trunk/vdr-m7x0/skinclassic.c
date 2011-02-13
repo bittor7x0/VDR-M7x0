@@ -304,11 +304,9 @@ void cSkinClassicDisplayMenu::SetEvent(const cEvent *Event)
   snprintf(t, sizeof(t), "%s  %s - %s", *Event->GetDateString(), *Event->GetTimeString(), *Event->GetEndTimeString());
   ts.Set(osd, xl, y, x1 - xl, y3 - y, t, font, Theme.Color(clrMenuEventTime), Theme.Color(clrBackground));
   if (Event->Vps() && Event->Vps() != Event->StartTime()) {
-     char *buffer;
-     asprintf(&buffer, " VPS: %s", *Event->GetVpsString());
+     cString buffer = cString::sprintf(" VPS: %s", *Event->GetVpsString());
      const cFont *font = cFont::GetFont(fontSml);
      osd->DrawText(x1 - font->Width(buffer), y, buffer, Theme.Color(clrMenuEventVpsFg), Theme.Color(clrMenuEventVpsBg), font);
-     free(buffer);
      }
   y += ts.Height();
   if (Event->ParentalRating()) {

@@ -87,12 +87,7 @@ bool cInterface::QueryKeys(cRemote *Remote, cSkinDisplayMenu *DisplayMenu)
      DisplayMenu->SetItem(tr("Phase 2: Learning specific key codes"), 2, false, false);
      eKeys NewKey = kUp;
      while (NewKey != kNone) {
-           char *Prompt;
-           char buf[32];
-           snprintf(buf, sizeof(buf), "Key$%s", cKey::ToString(NewKey));
-           asprintf(&Prompt, tr("Press key for '%s'"), tr(buf));
-           DisplayMenu->SetItem(Prompt, 4, false, false);
-           free(Prompt);
+           DisplayMenu->SetItem(cString::sprintf(tr("Press key for '%s'"), cKey::ToString(NewKey, true)), 4, false, false);
            cRemote::Clear();
            DisplayMenu->Flush();
            for (eKeys k = NewKey; k == NewKey; ) {

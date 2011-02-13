@@ -386,10 +386,8 @@ void cSkinCursesDisplayMenu::SetEvent(const cEvent *Event)
   snprintf(t, sizeof(t), "%s  %s - %s", *Event->GetDateString(), *Event->GetTimeString(), *Event->GetEndTimeString());
   ts.Set(osd, 0, y, OsdWidth, OsdHeight - y - 2, t, &Font, clrYellow, clrBackground);
   if (Event->Vps() && Event->Vps() != Event->StartTime()) {
-     char *buffer;
-     asprintf(&buffer, " VPS: %s", *Event->GetVpsString());
+     cString buffer = cString::sprintf(" VPS: %s", *Event->GetVpsString());
      osd->DrawText(OsdWidth - strlen(buffer), y, buffer, clrBlack, clrYellow, &Font);
-     free(buffer);
      }
   y += ts.Height();
   y += 1;

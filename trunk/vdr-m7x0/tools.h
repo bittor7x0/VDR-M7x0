@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <syslog.h>
 #include <sys/stat.h>
@@ -147,6 +148,7 @@ public:
   const char * operator*() const { return s; } // for use in (const void *) context (printf() etc.)
   cString &operator=(const cString &String);
   static cString sprintf(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
+  static cString sprintf(const char *fmt, va_list &ap);
   };
 
 ssize_t safe_read(int filedes, void *buffer, size_t size);

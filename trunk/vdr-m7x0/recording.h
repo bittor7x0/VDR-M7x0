@@ -74,7 +74,7 @@ public:
   };
 
 #define SORTRECORDINGSVERSNUM 3
-#define MAXSORTMODES 4 
+#define MAXSORTMODES 4
 
 class cRecording : public cListObject {
   friend class cRecordings;
@@ -249,7 +249,7 @@ virtual
 virtual
   int StripOffToLastIFrame(int number);
 //M7X0 END AK
-virtual 
+virtual
   bool Get(int Index, uchar *FileNumber, int *FileOffset, uchar *PictureType = NULL, int *Length = NULL);
 virtual
   int GetNextIFrame(int Index, bool Forward, uchar *FileNumber = NULL, int *FileOffset = NULL, int *Length = NULL, bool StayOffEnd = false);

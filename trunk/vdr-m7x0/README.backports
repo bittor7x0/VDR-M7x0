@@ -156,3 +156,7 @@ VDR 1.7.14 backports applied in this patch:
 * The full timer file name is now displayed if it ends with "TITLE" or "EPISODE"
   (pointed out by Udo Richter).
 * cSafeFile::Close() now flushes the file (suggested by Stephan Austermühle).
+* Using cString::sprintf() instead of asprintf() (thanks to Wolfgang Rohdewald
+  for pointing out a possible problem if the return value is not checked).
+  Plugin authors may want to consider doing the same. For convenience there is now
+  an additional version of cString::sprintf() that accepts a va_list parameter.
