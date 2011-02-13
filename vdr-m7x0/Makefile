@@ -251,7 +251,7 @@ srcdoc:
 
 clean:
 	$(MAKE) -C $(LSIDIR) clean
-	-rm -f $(OBJS) $(DEPFILE) vdr genfontfile genfontfile.o core* *~
+	-rm -f $(OBJS) $(DEPFILE) vdr builddate.h genfontfile genfontfile.o core* *~
 	-rm -rf include
 	-rm -rf srcdoc
 fontclean:

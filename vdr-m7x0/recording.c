@@ -525,16 +525,12 @@ cRecording::cRecording(cTimer *Timer, const cEvent *Event)
   else if (Timer->IsSingleEvent() || !Setup.UseSubtitle)
      name = strdup(Timer->File());
   else
-     asprintf(&name, "%s~%s", Timer->File(), Subtitle);
+     name = strdup(cString::sprintf("%s~%s", Timer->File(), Subtitle));
   // substitute characters that would cause problems in file names:
   strreplace(name, '\n', ' ');
   if((Timer->Channel())&&(Setup.UseHDInRecordings))
-     if(Timer->Channel()->Vtype()==0x1B) {
-        char *newName=NULL;
-        asprintf(&newName,"%s (HD)",name);
-        free(name);
-        name=newName;
-        }
+     if(Timer->Channel()->Vtype()==0x1B)
+        name = strdup(cString::sprintf("%s (HD)",name));
   start = Timer->StartTime();
   priority = Timer->Priority();
   lifetime = Timer->Lifetime();
@@ -578,24 +574,22 @@ cRecording::cRecording(const char *FileName)
         }
      GetResume();
      // read an optional info file:
-     char *InfoFileName = NULL;
-     asprintf(&InfoFileName, "%s%s", fileName, INFOFILESUFFIX);
+     cString InfoFileName = cString::sprintf("%s%s", fileName, INFOFILESUFFIX);
      FILE *f = fopen(InfoFileName, "r");
      while (!f && !FATALERRNO)
            f = fopen(InfoFileName, "r");
      if (f) {
         if (!info->Read(f))
-           esyslog("ERROR: EPG data problem in file %s", InfoFileName);
+           esyslog("ERROR: EPG data problem in file %s", *InfoFileName);
         fclose(f);
         }
      else if (errno != ENOENT)
-        LOG_ERROR_STR(InfoFileName);
-     free(InfoFileName);
+        LOG_ERROR_STR(*InfoFileName);
+
 #ifdef SUMMARYFALLBACK
      // fall back to the old 'summary.vdr' if there was no 'info.vdr':
      if (isempty(info->Title())) {
-        char *SummaryFileName = NULL;
-        asprintf(&SummaryFileName, "%s%s", fileName, SUMMARYFILESUFFIX);
+        cString SummaryFileName = cString::sprintf("%s%s", fileName, SUMMARYFILESUFFIX);
         FILE *f = fopen(SummaryFileName, "r");
         while (!f && !FATALERRNO)
               f = fopen(SummaryFileName, "r");
@@ -643,8 +637,7 @@ cRecording::cRecording(const char *FileName)
                free(data[i]);
            }
         else if (errno != ENOENT)
-           LOG_ERROR_STR(SummaryFileName);
-        free(SummaryFileName);
+           LOG_ERROR_STR(*SummaryFileName);
         }
 #endif
      }
@@ -683,7 +676,7 @@ char *cRecording::StripEpisodeName(char *s)
 
     if ((Setup.RecordingsSortMode <= 1 && s1 != s && !strchr(".-$ª·", *(s1 - 1))) ||
         (Setup.RecordingsSortMode == 1 && s1 == s) ||
-        (Setup.RecordingsSortMode == 3))	    
+        (Setup.RecordingsSortMode == 3))
      memmove(s1 + 1, s2, t - s2 + 1);
   }
 
@@ -727,7 +720,7 @@ const char *cRecording::FileName(void) const
      struct tm tm_r;
      struct tm *t = localtime_r(&start, &tm_r);
      name = ExchangeChars(name, true);
-     asprintf(&fileName, NAMEFORMAT, VideoDirectory, name, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, priority, lifetime);
+     fileName = strdup(cString::sprintf(NAMEFORMAT, VideoDirectory, name, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, priority, lifetime));
      name = ExchangeChars(name, false);
      }
   return fileName;
@@ -747,7 +740,7 @@ const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level, bool
      else
         s = name;
      if (Original) {
-     asprintf(&titleBuffer, "%02d.%02d.%02d%c%02d:%02d%c%c%s",
+     titleBuffer = strdup(cString::sprintf("%02d.%02d.%02d%c%02d:%02d%c%c%s",
                             t->tm_mday,
                             t->tm_mon + 1,
                             t->tm_year % 100,
@@ -756,34 +749,32 @@ const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level, bool
                             t->tm_min,
                             New,
                             Delimiter,
-                            s);
+                            s));
         }
      else {
         char RecLength[5], RecDate[9], RecTime[6], RecDelimiter[2];
         snprintf(RecLength, sizeof(RecLength), "---");
         if (Setup.ShowRecLength && FileName()) {
-           char *filename = NULL;
-           asprintf(&filename, "%s%s", FileName(), INDEXFILESUFFIX);
+           cString filename = cString::sprintf("%s%s", FileName(), INDEXFILESUFFIX);
            if (filename) {
               if (access(filename, R_OK) == 0) {
                  struct stat buf;
                  if (stat(filename, &buf) == 0) {
-                    struct tIndex { int offset; uchar type; uchar number; short reserved; };   
+                    struct tIndex { int offset; uchar type; uchar number; short reserved; };
                     int delta = buf.st_size % sizeof(tIndex);
                     if (delta) {
                        delta = sizeof(tIndex) - delta;
-                       esyslog("ERROR: invalid file size (%ld) in '%s'", buf.st_size, filename);
+                       esyslog("ERROR: invalid file size (%ld) in '%s'", buf.st_size, *filename);
                        }
                     snprintf(RecLength, sizeof(RecLength), "%ld'", (buf.st_size + delta) / sizeof(tIndex) / SecondsToFrames(60));
                     }
                  }
-              free(filename);
               }
            }
         snprintf(RecDate, sizeof(RecDate), "%02d.%02d.%02d", t->tm_mday, t->tm_mon + 1, t->tm_year % 100);
         snprintf(RecTime, sizeof(RecTime), "%02d:%02d", t->tm_hour, t->tm_min);
         snprintf(RecDelimiter, sizeof(RecDelimiter), "%c", Delimiter);
-        asprintf(&titleBuffer, "%s%s%s%c%s%s%s%s",
+        titleBuffer = strdup(cString::sprintf("%s%s%s%c%s%s%s%s",
                                (Setup.ShowRecDate ? RecDate        : ""),
                                (Setup.ShowRecDate && Setup.ShowRecTime ? RecDelimiter : ""),
                                (Setup.ShowRecTime ? RecTime        : ""),
@@ -791,7 +782,7 @@ const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level, bool
                                (Setup.ShowRecTime || Setup.ShowRecDate ? RecDelimiter : ""),
                                (Setup.ShowRecLength ? RecLength    : ""),
                                (Setup.ShowRecLength ? RecDelimiter : ""),
-                               s);
+                               s));
         }
      // let's not display a trailing FOLDERDELIMCHAR:
      if (!NewIndicator)
@@ -821,7 +812,7 @@ const char *cRecording::Title(char Delimiter, bool NewIndicator, int Level, bool
   return titleBuffer;
 }
 
-void cRecording::SetStartTime(time_t Start) 
+void cRecording::SetStartTime(time_t Start)
 {
   start=Start;
   if (fileName) {
@@ -861,16 +852,14 @@ bool cRecording::IsEdited(void) const
 
 bool cRecording::WriteInfo(void)
 {
-  char *InfoFileName = NULL;
-  asprintf(&InfoFileName, "%s%s", fileName, INFOFILESUFFIX);
+  cString InfoFileName = cString::sprintf("%s%s", fileName, INFOFILESUFFIX);
   FILE *f = fopen(InfoFileName, "w");
   if (f) {
      info->Write(f);
      fclose(f);
      }
   else
-     LOG_ERROR_STR(InfoFileName);
-  free(InfoFileName);
+     LOG_ERROR_STR(*InfoFileName);
   return true;
 }
 
@@ -917,18 +906,17 @@ void cRecording::ResetResume(void) const
 bool cRecording::Rename(const char *newName, int *newPriority, int *newLifetime)
 {
   bool result = false;
-  char *newFileName;
   struct tm tm_r;
   struct tm *t = localtime_r(&start, &tm_r);
   char *localNewName = ExchangeChars(strdup(newName), true);
-  asprintf(&newFileName, NAMEFORMAT, VideoDirectory, localNewName, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, *newPriority, *newLifetime);
+  cString newFileName = cString::sprintf(NAMEFORMAT, VideoDirectory, localNewName, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, *newPriority, *newLifetime);
   free(localNewName);
   if (strcmp(FileName(), newFileName)) {
      if (access(newFileName, F_OK) == 0) {
-        isyslog("recording %s already exists", newFileName);
+        isyslog("recording %s already exists", *newFileName);
         }
      else {
-        isyslog("renaming recording %s to %s", FileName(), newFileName);
+        isyslog("renaming recording %s to %s", FileName(), *newFileName);
         result = MakeDirs(newFileName, true);
         if (result)
            result = RenameVideoFile(FileName(), newFileName);
@@ -953,7 +941,6 @@ bool cRecording::Rename(const char *newName, int *newPriority, int *newLifetime)
            }
         }
      }
-  free(newFileName);
   return result;
 }
 
@@ -1008,8 +995,7 @@ void cRecordings::ScanVideoDir(const char *DirName, bool Foreground, int LinkLev
   struct dirent *e;
   while ((Foreground || Running()) && (e = d.Next()) != NULL) {
         if (strcmp(e->d_name, ".") && strcmp(e->d_name, "..")) {
-           char *buffer;
-           asprintf(&buffer, "%s/%s", DirName, e->d_name);
+           char *buffer = strdup(AddDirectory(DirName, e->d_name));
            struct stat st;
            if (stat(buffer, &st) == 0) {
               int Link = 0;
@@ -1091,10 +1077,12 @@ bool cRecordings::Update(bool Wait)
 
 cRecording *cRecordings::GetByName(const char *FileName)
 {
-  for (cRecording *recording = First(); recording; recording = Next(recording)) {
-      if (strcmp(recording->FileName(), FileName) == 0)
-         return recording;
-      }
+  if (FileName) {
+     for (cRecording *recording = First(); recording; recording = Next(recording)) {
+         if (strcmp(recording->FileName(), FileName) == 0)
+            return recording;
+         }
+     }
   return NULL;
 }
 
@@ -1168,9 +1156,7 @@ cMark::~cMark()
 
 cString cMark::ToText(void)
 {
-  char *buffer;
-  asprintf(&buffer, "%s%s%s\n", *IndexToHMSF(position, true), comment ? " " : "", comment ? comment : "");
-  return cString(buffer, true);
+  return cString::sprintf("%s%s%s\n", *IndexToHMSF(position, true), comment ? " " : "", comment ? comment : "");
 }
 
 bool cMark::Parse(const char *s)
@@ -1259,11 +1245,10 @@ const char *cRecordingUserCommand::command = NULL;
 void cRecordingUserCommand::InvokeCommand(const char *State, const char *RecordingFileName)
 {
   if (command) {
-     char *cmd;
-     asprintf(&cmd, "%s %s \"%s\"", command, State, *strescape(RecordingFileName, "\\\"$"));
-     isyslog("executing '%s'", cmd);
+
+     cString cmd = cString::sprintf("%s %s \"%s\"", command, State, *strescape(RecordingFileName, "\\\"$"));
+     isyslog("executing '%s'", *cmd);
      SystemExec(cmd);
-     free(cmd);
      }
 }
 
@@ -1481,7 +1466,7 @@ bool cIndexFile::Write(sPesResult *Picture,  int PictureCount , uchar FileNumber
   return f >= 0;
 }
 
-int cIndexFile::StripOffToLastIFrame(int number) 
+int cIndexFile::StripOffToLastIFrame(int number)
 {
   if (f < 0)
      return -1;
@@ -1506,7 +1491,7 @@ int cIndexFile::StripOffToLastIFrame(int number)
            }
         }
 
-  // This should not happen -- to be safe 
+  // This should not happen -- to be safe
   if (ind.number != number) {
      esyslog("Internal Error: Recoding file starts not with I-Frame");
      newEnd += sizeof(tIndex);
@@ -1757,7 +1742,7 @@ int cFileName::MaxFileSize() {
 
   if (fileNumber <= smallFiles)
      return MEGABYTE(Setup.MaxVideoFileSize);
-  
+
   return MEGABYTE(MAXVIDEOFILESIZE);
 }
 

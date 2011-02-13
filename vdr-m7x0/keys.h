@@ -99,7 +99,7 @@ public:
   bool Parse(char *s);
   bool Save(FILE *f);
   static eKeys FromString(const char *Name);
-  static const char *ToString(eKeys Key);
+  static const char *ToString(eKeys Key, bool Translate = false);
   };
 
 class cKeys : public cConfig<cKey> {

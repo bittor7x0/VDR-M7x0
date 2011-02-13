@@ -141,12 +141,11 @@ void cPlugin::SetConfigDirectory(const char *Dir)
 
 const char *cPlugin::ConfigDirectory(const char *PluginName)
 {
-  static char *buffer = NULL;
+  static cString buffer;
   if (!cThread::IsMainThread())
      esyslog("ERROR: plugin '%s' called cPlugin::ConfigDirectory(), which is not thread safe!", PluginName ? PluginName : "<no name given>");
-  free(buffer);
-  asprintf(&buffer, "%s/plugins%s%s", configDirectory, PluginName ? "/" : "", PluginName ? PluginName : "");
-  return MakeDirs(buffer, true) ? buffer : NULL;
+  buffer = cString::sprintf("%s/plugins%s%s", configDirectory, PluginName ? "/" : "", PluginName ? PluginName : "");
+  return MakeDirs(buffer, true) ? *buffer : NULL;
 }
 
 // --- cDll ------------------------------------------------------------------
@@ -332,10 +331,7 @@ void cPluginManager::AddPlugin(const char *Args)
   char *p = strchr(s, ' ');
   if (p)
      *p = 0;
-  char *buffer = NULL;
-  asprintf(&buffer, "%s/%s%s%s%s", directory, LIBVDR_PREFIX, s, SO_INDICATOR, APIVERSION);
-  dlls.Add(new cDll(buffer, Args));
-  free(buffer);
+  dlls.Add(new cDll(cString::sprintf("%s/%s%s%s%s", directory, LIBVDR_PREFIX, s, SO_INDICATOR, APIVERSION), Args));
   free(s);
 }
 

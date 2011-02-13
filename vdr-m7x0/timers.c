@@ -136,20 +136,17 @@ int cTimer::Compare(const cListObject &ListObject) const
   return r;
 }
 
-cString cTimer::ToText(bool UseChannelID)
+cString cTimer::ToText(bool UseChannelID) const
 {
-  char *buffer;
   strreplace(file, ':', '|');
-  asprintf(&buffer, "%u:%s:%s:%04d:%04d:%d:%d:%s:%s\n", flags, UseChannelID ? *Channel()->GetChannelID().ToString() : *itoa(Channel()->Number()), *PrintDay(day, weekdays), start, stop, priority, lifetime, file, aux ? aux : "");
+  cString buffer = cString::sprintf("%u:%s:%s:%04d:%04d:%d:%d:%s:%s\n", flags, UseChannelID ? *Channel()->GetChannelID().ToString() : *itoa(Channel()->Number()), *PrintDay(day, weekdays), start, stop, priority, lifetime, file, aux ? aux : "");
   strreplace(file, '|', ':');
-  return cString(buffer, true);
+  return buffer;
 }
 
 cString cTimer::ToDescr(void) const
 {
-  char *buffer;
-  asprintf(&buffer, "%d (%d %04d-%04d %s'%s')", Index() + 1, Channel()->Number(), start, stop, HasFlags(tfVps) ? "VPS " : "", file);
-  return cString(buffer, true);
+  return cString::sprintf("%d (%d %04d-%04d %s'%s')", Index() + 1, Channel()->Number(), start, stop, HasFlags(tfVps) ? "VPS " : "", file);
 }
 
 int cTimer::TimeToInt(int t)
@@ -579,11 +576,11 @@ void cTimer::SetFlags(uint Flags)
            tmp = strdup(aux);
            free(aux);
            }
-        asprintf(&aux,"%s%s", tmp ? tmp : "", AUX_STR_PROTECTED);
+        aux = strdup(cString::sprintf("%s%s", tmp ? tmp : "", AUX_STR_PROTECTED));
         }
      }
   else if (aux && (position = strstr(aux, AUX_STR_PROTECTED))) {
-     asprintf(&tmp, "%.*s%s", position-aux, aux, position+strlen(AUX_STR_PROTECTED));
+     tmp = strdup(cString::sprintf("%.*s%s", position-aux, aux, position+strlen(AUX_STR_PROTECTED)));
      free(aux);
      aux = strdup(tmp);
      }

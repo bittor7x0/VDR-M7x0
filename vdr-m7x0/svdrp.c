@@ -439,8 +439,8 @@ void cSVDRP::Reply(int Code, const char *fmt, ...)
      if (Code != 0) {
         va_list ap;
         va_start(ap, fmt);
-        char *buffer;
-        vasprintf(&buffer, fmt, ap);
+        cString buffer = cString::sprintf(fmt, ap);
+        va_end(ap);
         const char *s = buffer;
         while (s && *s) {
               const char *n = strchr(s, '\n');
@@ -453,8 +453,6 @@ void cSVDRP::Reply(int Code, const char *fmt, ...)
                  break;
               s = n ? n + 1 : NULL;
               }
-        free(buffer);
-        va_end(ap);
         }
      else {
         Reply(451, "Zero return code - looks like a programming error!");
@@ -559,7 +557,7 @@ void cSVDRP::CmdCLRE(const char *Option)
 {
   if(*Option) {
      tChannelID channelID = tChannelID::InvalidID;
-     
+
     if (isnumber(Option)) {
       int o = strtol(Option, NULL, 10);
       if (o >= 1 && o <= Channels.MaxNumber()) {
@@ -581,7 +579,7 @@ void cSVDRP::CmdCLRE(const char *Option)
     if(!(channelID == tChannelID::InvalidID)) {
       cSchedulesLock SchedulesLock(true, 1000);
       cSchedules *s = (cSchedules *)cSchedules::Schedules(SchedulesLock);
-      
+
       if(s) {
         cSchedule* schedule = NULL;
         channelID.ClrRid();
@@ -589,7 +587,7 @@ void cSVDRP::CmdCLRE(const char *Option)
           if (p->ChannelID() == channelID)
             schedule = p;
         }
-        
+
         if(schedule) {
           schedule->Cleanup(INT_MAX);
           cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME);
@@ -609,7 +607,7 @@ void cSVDRP::CmdCLRE(const char *Option)
     cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME);
     Reply(250, "EPG data cleared");
   }
-  
+
 }
 
 void cSVDRP::CmdCTRL(const char *Option)
@@ -699,18 +697,17 @@ void cSVDRP::CmdDELR(const char *Option)
          if (isNumber)
             recording = Recordings.Get(strtol(Option,NULL,10) - 1);
          else {
-            char *fullPath;
+            cString fullPath;
             if (Option[0]=='/')
                fullPath=strndup(Option,l);
-            else 
-               asprintf(&fullPath,"%s/%.*s",VideoDirectory,l,Option);
+            else
+               fullPath = cString::sprintf("%s/%.*s",VideoDirectory,l,Option);
             if (Recordings.Count())
                recording = Recordings.GetByName(fullPath);
             if (!recording && ::Recordings.Count())
                recording = ::Recordings.GetByName(fullPath);
             if (!recording && ::Recordings.Update(true))
                recording = ::Recordings.GetByName(fullPath);
-            free(fullPath);
             }
          if (recording) {
             cRecordControl *rc = cRecordControls::GetRecordControl(recording->FileName());
@@ -796,7 +793,7 @@ void cSVDRP::CmdEDIT(const char *Option)
 
 void cSVDRP::CmdGRAB(const char *Option)
 {
-  char *FileName = NULL;
+  const char *FileName = NULL;
   bool Jpeg = true;
   int Quality = -1, SizeX = -1, SizeY = -1;
   if (*Option) {
@@ -865,10 +862,10 @@ void cSVDRP::CmdGRAB(const char *Option)
      char RealFileName[PATH_MAX];
      if (FileName) {
         if (grabImageDir) {
-           char *s = 0;
+           cString s;
            char *slash = strrchr(FileName, '/');
            if (!slash) {
-              asprintf(&s, "%s/%s", grabImageDir, FileName);
+              s = AddDirectory(grabImageDir, FileName);
               FileName = s;
               }
            slash = strrchr(FileName, '/'); // there definitely is one
@@ -878,12 +875,10 @@ void cSVDRP::CmdGRAB(const char *Option)
            if (!r) {
               LOG_ERROR_STR(FileName);
               Reply(501, "Invalid file name \"%s\"", FileName);
-              free(s);
               return;
               }
            strcat(RealFileName, slash);
            FileName = RealFileName;
-           free(s);
            if (strncmp(FileName, grabImageDir, strlen(grabImageDir)) != 0) {
               Reply(501, "Invalid file name \"%s\"", FileName);
               return;
@@ -1064,7 +1059,7 @@ void cSVDRP::CmdLSTE(const char *Option)
                  int i;
                  for (i=0;i<2;i++){
                     if ((p = strtok_r(NULL, delim, &strtok_next)) != NULL) {
-                       if (isnumber(p)) 
+                       if (isnumber(p))
                           *a_time[i] = strtol(p, NULL, 10);
                        else {
                            Reply(501, (i==0) ? "Invalid start time" : "Invalid end time");
@@ -1084,7 +1079,7 @@ void cSVDRP::CmdLSTE(const char *Option)
               else if (strcasecmp(p, "WITHID") == 0) {
                  DumpMode = dmWithID;
                  if ((p = strtok_r(NULL, delim, &strtok_next)) != NULL) {
-                    if (isnumber(p)) 
+                    if (isnumber(p))
                        EventID = strtol(p, NULL, 10);
                     else {
                        Reply(501, "Invalid event ID");
@@ -1169,15 +1164,14 @@ void cSVDRP::CmdLSTR(const char *Option)
          if (isNumber)
             recording = Recordings.Get(strtol(Option,NULL,10) - 1);
          else if (isPath) {
-            char *fullPath;
+            cString fullPath;
             if (Option[0]=='/')
                fullPath=strndup(Option,l);
-            else 
-              asprintf(&fullPath,"%s/%.*s",VideoDirectory,l,Option);
+            else
+              fullPath = cString::sprintf("%s/%.*s",VideoDirectory,l,Option);
             recording = Recordings.GetByName(fullPath);
-            free(fullPath);
             }
-         if (!isNumber && !isPath) 
+         if (!isNumber && !isPath)
             s=Option;
          s=skipspace(s);
          withPath=((*s) && (strncmp(s,"path",4)==0) && (s[4]==0 || isspace(s[4])));
@@ -1576,7 +1570,7 @@ void cSVDRP::CmdPLUG(const char *Option)
         else {
            int ReplyCode = 900;
            cString s = plugin->SVDRPCommand(cmd, option, ReplyCode);
-           if (s)
+           if (*s)
               Reply(abs(ReplyCode), "%s", *s);
            else
               Reply(500, "Command unrecognized: \"%s\"", cmd);
@@ -1611,7 +1605,7 @@ void cSVDRP::CmdPUTE(const char *Option)
      else
         Reply(501, "Cannot open file \"%s\"", Option);
      }
-  else {     
+  else {
      delete PUTEhandler;
      PUTEhandler = new cPUTEhandler;
      Reply(PUTEhandler->Status(), "%s", PUTEhandler->Message());
@@ -1648,13 +1642,12 @@ void cSVDRP::CmdRENR(const char *Option)
             if (isNumber)
                recording = Recordings.Get(strtol(Option,NULL,10) - 1);
             else {
-               char *fullPath;
+               cString fullPath;
                if (Option[0]=='/')
                   fullPath=strndup(Option,l);
-               else 
-                  asprintf(&fullPath,"%s/%.*s",VideoDirectory,l,Option);
+               else
+                  fullPath = cString::sprintf("%s/%.*s",VideoDirectory,l,Option);
                recording = Recordings.GetByName(fullPath);
-               free(fullPath);
                }
             if (recording){
                if (strcmp(newName,recording->Name())) {
@@ -1666,7 +1659,7 @@ void cSVDRP::CmdRENR(const char *Option)
                     Recordings.ChangeState();
                     Recordings.TouchUpdate();
                     }
-                  else 
+                  else
                     Reply(501, "Renaming \"%s\" to \"%s\" failed", oldName, newName);
                   free(oldName);
                   }
@@ -1768,11 +1761,10 @@ void cSVDRP::CmdPARG(const char *Option)
 	}
 	cSetupLine *pending=NULL; //if filtering we don't know which param is last
 	for (param=Setup.First(); param; param=Setup.Next(param)){
-		char *fullName=NULL;
-		if (param->Plugin()){
-			asprintf(&fullName, "%s.%s", param->Plugin(), param->Name());
-		}
-		if (!filter || regexec(&regex,(fullName)?fullName:param->Name(),0,NULL,0)==0){
+		cString fullName;
+		if (param->Plugin())
+			fullName = cString::sprintf("%s.%s", param->Plugin(), param->Name());
+		if (!filter || regexec(&regex,(fullName)?*fullName:param->Name(),0,NULL,0)==0){
 			if (pending){
 				if (pending->Plugin()){
 					Reply(-250,"%s.%s = %s", pending->Plugin(), pending->Name(), pending->Value());
@@ -1782,7 +1774,6 @@ void cSVDRP::CmdPARG(const char *Option)
 			}
 			pending=param;
 		}
-		if (fullName) free(fullName);
 	}
 	if (pending) {
 		if (pending->Plugin()){

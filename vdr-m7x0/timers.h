@@ -38,7 +38,7 @@ private:
   int stop;
   int priority;
   int lifetime;
-  char file[MaxFileName];
+  mutable char file[MaxFileName];
   char *aux;
   const cEvent *event;
 public:
@@ -62,7 +62,7 @@ public:
   const char *File(void) const { return file; }
   time_t FirstDay(void) const { return weekdays ? day : 0; }
   const char *Aux(void) const { return aux; }
-  cString ToText(bool UseChannelID = false);
+  cString ToText(bool UseChannelID = false) const;
   cString ToDescr(void) const;
   const cEvent *Event(void) const { return event; }
   bool Parse(const char *s);
