@@ -333,14 +333,22 @@ endif
 ifeq ($(strip $(HOST_BS)), OpenBSD)
 	@if	$(TEST) `$(STAT) -f b $(SIEMENS-LINUX-KERNEL-IMG)` \
 			-gt $(KERNEL_MAX_IMGSIZE); then \
-		$(ECHO) kernel image too big!; \
+		$(ECHO) Error: Kernel image too big!; \
+		$(ECHO) "       You can increase gzip compression level setting in .config:"; \
+		$(ECHO) "          CONFIG_SIEMENS-LINUX-KERNEL_GZIP_LEVEL = 9"; \
+		$(ECHO) "       or you can try to use LZMA compression setting:"; \
+		$(ECHO) "          CONFIG_BOOTLOADER = Y"; \
 		$(RM) -f $(SIEMENS-LINUX-KERNEL-IMG); \
 		exit 1; \
 	fi
 else
 	@if	$(TEST) `$(STAT) --format="%s" $(SIEMENS-LINUX-KERNEL-IMG)` \
 			-gt $(KERNEL_MAX_IMGSIZE); then \
-		$(ECHO) kernel image too big!; \
+		$(ECHO) Error: Kernel image too big!; \
+		$(ECHO) "       You can increase gzip compression level setting in .config:"; \
+		$(ECHO) "          CONFIG_SIEMENS-LINUX-KERNEL_GZIP_LEVEL = 9"; \
+		$(ECHO) "       or you can try to use LZMA compression setting:"; \
+		$(ECHO) "          CONFIG_BOOTLOADER = Y"; \
 		$(RM) -f $(SIEMENS-LINUX-KERNEL-IMG); \
 		exit 1; \
 	fi
