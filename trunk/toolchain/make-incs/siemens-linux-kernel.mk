@@ -58,6 +58,9 @@ SIEMENS-LINUX-KERNEL_CONFIG := $(CONFIGS_DIR)/siemens-linux-kernel/$(CONFIG_M7X0
 
 SIEMENS-LINUX-KERNEL_INSTALLED = $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed
 
+ifeq ($(strip $(CONFIG_SIEMENS-LINUX-KERNEL_GZIP_LEVEL)),)
+  CONFIG_SIEMENS-LINUX-KERNEL_GZIP_LEVEL := 9
+endif
 
 PACKS_RULES_$(CONFIG_SIEMENS-LINUX-KERNEL) += $(SIEMENS-LINUX-KERNEL_INSTALLED)
 FILE_LISTS_$(CONFIG_SIEMENS-LINUX-KERNEL) += siemens-linux-kernel_$(CONFIG_M7X0_TYPE).lst
@@ -281,7 +284,7 @@ ifeq ($(CONFIG_BOOTLOADER),y)
 	$(LZMA_BIN) e -lc1 -lp2 -pb2 -eos $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.lzma
 else
 	-$(RM) -f $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin.gz
-	$(GZIP) -1 $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
+	$(GZIP) -$(CONFIG_SIEMENS-LINUX-KERNEL_GZIP_LEVEL) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/vmlinux.bin
 endif
 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
 		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) \
@@ -307,7 +310,6 @@ ifeq ($(CONFIG_PPTPD),y)
 	fi);
 endif
 	$(TOUCH) $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed
-
 
 #
 # generate siemens linux kernel flash image
