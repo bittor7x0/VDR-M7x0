@@ -29,9 +29,9 @@ ifeq ($(CONFIG_GENERATE_WSW-IMG),y)
      $(error dependency error: wsw needs cramfs,squashfs or kernel image enabled)
   endif
 endif
-RSAKEYS_TARGET_DIR := $(TARGET_ROOT)/etc/rsa
-RSAPRIVKEY1 := $(RSAKEYS_TARGET_DIR)/rsaprivate1.key
-RSAPRIVKEY2 := $(RSAKEYS_TARGET_DIR)/rsaprivate2.key
+RSAKEYS_DIR := $(BUILDIN_DIR)/m7x0-keys
+RSAPRIVKEY1 := $(RSAKEYS_DIR)/rsaprivate1.key
+RSAPRIVKEY2 := $(RSAKEYS_DIR)/rsaprivate2.key
 
 GEN_WSW_CMD_LINE = -m $(MD5) -c $(RSAENCODE_BIN) -1 $(RSAPRIVKEY1) -2 $(RSAPRIVKEY2) \
                     --$(CONFIG_M7X0_TYPE)
@@ -62,32 +62,15 @@ WSW-IMG := $(TOP_DIR)/$(or $(notdir $(CONFIG_WSW-IMG)),open7x0.org-$(CONFIG_M7X0
 WSW-IMG_TIME_REF = $(firstword $(WSW-IMG_TIME_REF_all))
 GEN_WSW_CMD_LINE += -o $(WSW-IMG)
 
-
-RSAKEYS_BUILD_BASEDIR = siemens-build-env-rsakeys
-RSAKEYS_BUILD_DIR := $(BUILD_DIR)/$(RSAKEYS_BUILD_BASEDIR)
-
 POST_RULES_$(CONFIG_GENERATE_WSW-IMG) += $(WSW-IMG)
-CLEAN_RULES += clean-generate-wsw
 DISTCLEAN_RULES += distclean-generate-wsw
-
-$(RSAPRIVKEY1) $(RSAPRIVKEY2): $$(SIEMENS-BUILD-ENV_DLFILE)
-	-$(RM) -rf $(RSAKEYS_BUILD_DIR)
-	$(TAR) --wildcards -C $(BUILD_DIR) -xzf $(SIEMENS-BUILD-ENV_DLFILE) \
-		'$(SIEMENS-BUILD-ENV_TAR_BASE_DIR)/.rsa*'
-	$(MV) $(BUILD_DIR)/$(SIEMENS-BUILD-ENV_TAR_BASE_DIR) $(RSAKEYS_BUILD_DIR)
-	-$(MKDIR) -p $(RSAKEYS_TARGET_DIR)
-	$(CP) $(RSAKEYS_BUILD_DIR)/.rsasecret $(RSAPRIVKEY1)
-	$(CP) $(RSAKEYS_BUILD_DIR)/.rsasecret2 $(RSAPRIVKEY2)
 
 $(WSW-IMG): $$(WSW-IMG_DEPS) $(RSAPRIVKEY1) $(RSAPRIVKEY2)
 	$(GEN_WSW_BIN) $(GEN_WSW_CMD_LINE) \
 		-s `$(DATE) -r $(WSW-IMG_TIME_REF) +"%s"` \
 		-n `$(DATE) -r $(WSW-IMG_TIME_REF) +"$(GEN_WSW_FWNAME)"`
 
-.PHONY: clean-generate-wsw distclean-generate-wsw
-
-clean-generate-wsw:
-	-$(RM) -rf $(RSAKEYS_BUILD_DIR)
+.PHONY: distclean-generate-wsw
 
 distclean-generate-wsw:
 	-$(RM) -f $(WSW-IMG)

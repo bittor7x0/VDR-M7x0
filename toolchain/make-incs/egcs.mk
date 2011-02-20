@@ -23,7 +23,7 @@
 EGCS_DEPS = $(BASE_BUILD_STAGEFILE)
 
 ifeq ($(CONFIG_EGCS),y)
-# egcs will only compile with gcc < 4.0.0
+# egcs will only compile with gcc < 5.0.0
 ALL_GCCS := $(wildcard $(addsuffix /gcc,$(subst :, ,$(PATH))) \
                       $(addsuffix /gcc-*,$(subst :, ,$(PATH))))
 GCC_FOR_EGCS := $(firstword \
@@ -31,10 +31,10 @@ GCC_FOR_EGCS := $(firstword \
                        $(shell test \
                           $(firstword \
                              $(subst ., ,$(shell $(gcc) -dumpversion))) \
-                       -le 3 && echo $(gcc))))
+                       -le 4 && echo $(gcc))))
 
 ifeq ($(strip $(GCC_FOR_EGCS)),)
-  $(error egcs needs gcc version < 4.0)
+  $(error egcs needs gcc version < 5.0)
 endif
 endif
 

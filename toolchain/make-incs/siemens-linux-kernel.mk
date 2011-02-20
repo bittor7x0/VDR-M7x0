@@ -21,7 +21,7 @@
 #
 
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-SIEMENS-LINUX-KERNEL_DEPS = $(BASE_BUILD_STAGEFILE) $(SIEMENS-GPL-SRC_DLFILE) $(EGCS_INSTALLED)
+SIEMENS-LINUX-KERNEL_DEPS = $(BASE_BUILD_STAGEFILE) $(EGCS_INSTALLED)
 ifeq ($(CONFIG_SQUASHFS_LZMA),y)
    SIEMENS-LINUX-KERNEL_DEPS += $(LZMA_BIN)
 endif
@@ -46,9 +46,14 @@ endif
 SIEMENS-LINUX-KERNEL-IMG = $(TOP_DIR)/$(or $(notdir \
    $(CONFIG_SIEMENS-LINUX-KERNEL-IMG)),siemens-linux-kernel-$(CONFIG_M7X0_TYPE).img)
 
+SIEMENS-LINUX-KERNEL_FILE := siemens-linux-kernel.tar.bz2
+SIEMENS-LINUX-KERNEL_DLFILE := $(DOWNLOAD_DIR)/$(SIEMENS-LINUX-KERNEL_FILE)
+SIEMENS-LINUX-KERNEL_URL := http://www.open7x0.org/downloads/$(SIEMENS-LINUX-KERNEL_FILE)
 SIEMENS-LINUX-KERNEL_PATCHES_DIR := $(PATCHES_DIR)/siemens-linux-kernel
 SIEMENS-LINUX-KERNEL_BASEDIR := slin_$(CONFIG_M7X0_TYPE)
 SIEMENS-LINUX-KERNEL_DIR := $(BUILD_DIR)/$(SIEMENS-LINUX-KERNEL_BASEDIR)
+SIEMENS-LINUX-KERNEL_ARCHBASEDIR := siemens-linux-kernel
+SIEMENS-LINUX-KERNEL_ARCHDIR := $(BUILD_DIR)/$(SIEMENS-LINUX-KERNEL_ARCHBASEDIR)
 SIEMENS-LINUX-KERNEL_CONFIG := $(CONFIGS_DIR)/siemens-linux-kernel/$(CONFIG_M7X0_TYPE)-$(CONFIG_FW_VERSION).config
 
 SIEMENS-LINUX-KERNEL_INSTALLED = $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_installed
@@ -128,20 +133,29 @@ ifeq ($(CONFIG_FW_VERSION),pro)
 endif
 
 #
+# download siemens linux kernel
+#
+
+$(SIEMENS-LINUX-KERNEL_DLFILE): $(TC_INIT_RULE)
+	(if [ ! -f $(SIEMENS-LINUX-KERNEL_DLFILE) ] ; then \
+	$(WGET) $(SIEMENS-LINUX-KERNEL_URL) -O $(SIEMENS-LINUX-KERNEL_DLFILE) ; \
+	fi );
+	$(TOUCH) $(SIEMENS-LINUX-KERNEL_DLFILE)
+
+#
 # unpack siemens linux kernel
 #
 
 $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked: \
+      $(SIEMENS-LINUX-KERNEL_DLFILE) \
       $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/common/*.patch) \
       $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_FW_VERSION)/*.patch) \
       $(wildcard $(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/$(CONFIG_M7X0_TYPE)/*.patch) \
       $(if $(filter pro,$(CONFIG_FW_VERSION)),$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/pro/cifs-fs.tar.bz2) \
       $$(SIEMENS-LINUX-KERNEL_DEPS) $(SIEMENS-LINUX-KERNEL_CONFIG)
 	-$(RM) -rf $(SIEMENS-LINUX-KERNEL_DIR)
-	$(BZCAT) $(SIEMENS-GPL-SRC_DLFILE) | $(TAR) -C $(BUILD_DIR) \
-		-f - gigaset_m740av_gplsw/linux-2.4-xfs/linux
-	$(MV) $(BUILD_DIR)/gigaset_m740av_gplsw/linux-2.4-xfs/linux $(SIEMENS-LINUX-KERNEL_DIR)
-	-$(RM) -rf $(BUILD_DIR)/gigaset_m740av_gplsw
+	$(BZCAT) $(SIEMENS-LINUX-KERNEL_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(MV) $(SIEMENS-LINUX-KERNEL_ARCHDIR) $(SIEMENS-LINUX-KERNEL_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_unpacked
 
 #
@@ -192,8 +206,6 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_configured: \
 		$(MV) $(PREFIX)/$(UCLIBC_TARGET)/bin/as $(PREFIX)/$(UCLIBC_TARGET)/bin/as.orig ; \
 		$(CP) $(SCRIPTS_DIR)/as_wa.sh $(PREFIX)/$(UCLIBC_TARGET)/bin/as ; \
 	fi
-	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \
-		CC=$(EGCS_BIN) -C $(SIEMENS-LINUX-KERNEL_DIR) distclean
 	$(CP) $(SIEMENS-LINUX-KERNEL_CONFIG) $(SIEMENS-LINUX-KERNEL_DIR)/.config
   # Disable CramFS support if Squash RootFS image is generated and viceversa
   ifeq ($(CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE),y)
