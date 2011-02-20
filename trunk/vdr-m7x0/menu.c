@@ -5137,20 +5137,15 @@ void cReplayControl::EditCut(void)
 {
   if (fileName) {
      Hide();
-#if 0
-     if (!cCutter::Active()) {
-#else
-     if (!cCutter::Active() || Interface->Confirm(tr("Cutter already running - Add to cutting queue?"))) {
-#endif
-        if (!marks.Count())
-           Skins.Message(mtError, tr("No editing marks defined!"));
-        else if (!cCutter::Start(fileName))
-           Skins.Message(mtError, tr("Can't start editing process!"));
-        else
-           Skins.Message(mtInfo, tr("Editing process started"));
-        }
+     bool CutterActive = cCutter::Active();
+     if (!marks.Count())
+        Skins.Message(mtError, tr("No editing marks defined!"));
+     else if (!cCutter::Start(fileName))
+        Skins.Message(mtError, tr("Can't start editing process!"));
+     else if (!CutterActive)
+        Skins.Message(mtInfo, tr("Editing process started"));
      else
-        Skins.Message(mtError, tr("Editing process already active!"));
+        Skins.Message(mtInfo, tr("Adding to cutting queue"));
      ShowMode();
      }
 }

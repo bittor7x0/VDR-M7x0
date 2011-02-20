@@ -2639,28 +2639,6 @@ const tI18nPhrase Phrases[] = {
     "Kan ikke starte redigeringsprocessen!",
     "Nelze zaèít editaèní proces!",
   },
-  { "Editing process already active!",
-    "Schnitt bereits aktiv!",
-    "Urejanje je ¾e aktivno!",
-    "Processo di modifica gia' attivo!",
-    "Bewerken is al actief!",
-    "Processo de modificação já activo!",
-    "Montage déjà en cours!",
-    "Redigeringsprosessen er allerede aktiv!",
-    "Muokkaus on jo käynnissä!",
-    "Proces edycji jest ju¿ aktywny!",
-    "¡El proceso de edición ya está activo!",
-    "Åğåîåñãáóßá âñßóêåôáé óİ åîİëéîç!",
-    "Redigeringen är redan aktiv!",
-    "Montajul înregistrãrii este deja activ!",
-    "A vágás már aktivált!",
-    "Procés d'edició iniciat anteriorment!",
-    "¿àŞæÕáá ÒØÔÕŞÜŞİâĞÖĞ ãÖÕ ×ĞßãéÕİ!",
-    "Ureğivanje je veæ aktivirano!",
-    "Redigeerimine juba aktiivne!",
-    "Redigeringsproces er allerede aktiv!",
-    "Editaèní proces je ji¾ aktivní!",
-  },
   { "Can't shutdown - option '-s' not given!",
     "Ausschalten unmöglich - Option '-s' fehlt!",
     "Zaustavitev ni izvedljiva - opcija '-s' ni podana!",
@@ -10187,7 +10165,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
   },
-  { "Cutter already running - Add to cutting queue?",
+  { "Adding to cutting queue",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -10197,7 +10175,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Edición ya en proceso - ¿Añadir a cola de espera?",
+    "Añadiendo a cola de edición",
     "",// TODO
     "",// TODO
     "",// TODO
