@@ -118,14 +118,22 @@ $(TOP_DIR)/$(SQUASH_ROOTFS_IMG): $$(MKSQUASHFS_BIN) $(ROOTFS_FILE_TABLE)
 ifeq ($(strip $(HOST_BS)),OpenBSD)
 	@if	$(TEST) `$(STAT) -f b $(TOP_DIR)/$(SQUASH_ROOTFS_IMG)` \
 	    		-gt $(ROOTFS_MAX_IMGSIZE); then \
-	    	$(ECHO) squashfs image too big!; \
+		$(ECHO) Error: SquashFS image too big!; \
+		$(ECHO) "       You can use SquashFS image with LZMA compression setting in .config:"; \
+		$(ECHO) "          CONFIG_SQUASHFS_LZMA = y"; \
+		$(ECHO) "       and running this command before you recompile with 'make':"; \
+		$(ECHO) "          make distclean-squashfs-host distclean-siemens-linux-kernel"; \
 	    	$(RM) -f $(TOP_DIR)/$(SQUASH_ROOTFS_IMG); \
 	    	exit 1; \
 	fi
 else
 	@if	$(TEST) `$(STAT) --format="%s" $(TOP_DIR)/$(SQUASH_ROOTFS_IMG)` \
 	    		-gt $(ROOTFS_MAX_IMGSIZE); then \
-	    	$(ECHO) squashfs image too big!; \
+		$(ECHO) Error: SquashFS image too big!; \
+		$(ECHO) "       You can use SquashFS image with LZMA compression setting in .config:"; \
+		$(ECHO) "          CONFIG_SQUASHFS_LZMA = y"; \
+		$(ECHO) "       and running this command before you recompile with 'make':"; \
+		$(ECHO) "          make distclean-squashfs-host distclean-siemens-linux-kernel"; \
 	    	$(RM) -f $(TOP_DIR)/$(SQUASH_ROOTFS_IMG); \
 	    	exit 1; \
 	fi
@@ -145,14 +153,22 @@ $(TOP_DIR)/$(CRAM_ROOTFS_IMG): $$(MKCRAMFS_BIN) $$(CRAMFSSWAP_BIN) $(ROOTFS_FILE
 ifeq ($(strip $(HOST_BS)),OpenBSD)
 	@if	$(TEST) `$(STAT) -f b $(TOP_DIR)/$(CRAM_ROOTFS_IMG)` \
 	    		-gt $(ROOTFS_MAX_IMGSIZE); then \
-	    	$(ECHO) cramfs image too big!; \
+		$(ECHO) Error: CramFS image too big!; \
+		$(ECHO) "       You can use SquashFS image setting in .config:"; \
+		$(ECHO) "          CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE = y"; \
+		$(ECHO) "       and disabling CramFS image:"; \
+		$(ECHO) "          # CONFIG_CRAM_ROOTFS_IMG is not set"; \
 	    	$(RM) -f $(TOP_DIR)/$(CRAM_ROOTFS_IMG); \
 	    	exit 1; \
 	fi
 else
 	@if	$(TEST) `$(STAT) --format="%s" $(TOP_DIR)/$(CRAM_ROOTFS_IMG)` \
 	    		-gt $(ROOTFS_MAX_IMGSIZE); then \
-	    	$(ECHO) cramfs image too big!; \
+		$(ECHO) Error: CramFS image too big!; \
+		$(ECHO) "       You can use SquashFS image setting in .config:"; \
+		$(ECHO) "          CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE = y"; \
+		$(ECHO) "       and disabling CramFS image:"; \
+		$(ECHO) "          # CONFIG_CRAM_ROOTFS_IMG is not set"; \
 	    	$(RM) -f $(TOP_DIR)/$(CRAM_ROOTFS_IMG); \
 	    	exit 1; \
 	fi
@@ -168,14 +184,22 @@ $(TOP_DIR)/$(CRAM_ROOTFS_IMG): $$(MKCRAMFS_BIN) $(ROOTFS_FILE_TABLE)
 ifeq ($(strip $(HOST_BS)),OpenBSD)
 	@if	$(TEST) `$(STAT) -f b $(TOP_DIR)/$(CRAM_ROOTFS_IMG)` \
 			-gt $(CRAMFS_MAX_IMGSIZE); then \
-		$(ECHO) cramfs image too big!; \
+		$(ECHO) Error: CramFS image too big!; \
+		$(ECHO) "       You can use SquashFS image setting in .config:"; \
+		$(ECHO) "          CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE = y"; \
+		$(ECHO) "       and disabling CramFS image:"; \
+		$(ECHO) "          # CONFIG_CRAM_ROOTFS_IMG is not set"; \
 		$(RM) -f $(TOP_DIR)/$(CRAM_ROOTFS_IMG); \
 		exit 1; \
 	fi
 else
 	@if	$(TEST) `$(STAT) --format="%s" $(TOP_DIR)/$(CRAM_ROOTFS_IMG)` \
 			-gt $(CRAMFS_MAX_IMGSIZE); then \
-		$(ECHO) cramfs image too big!; \
+		$(ECHO) Error: CramFS image too big!; \
+		$(ECHO) "       You can use SquashFS image setting in .config:"; \
+		$(ECHO) "          CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE = y"; \
+		$(ECHO) "       and disabling CramFS image:"; \
+		$(ECHO) "          # CONFIG_CRAM_ROOTFS_IMG is not set"; \
 		$(RM) -f $(TOP_DIR)/$(CRAM_ROOTFS_IMG); \
 		exit 1; \
 	fi
