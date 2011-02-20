@@ -1,0 +1,163 @@
+diff -Naur slin_m740_orig/lib/lzo1x_compress.c slin_m740/lib/lzo1x_compress.c
+--- slin_m740_orig/lib/lzo1x_compress.c	2011-02-18 20:36:01.000000000 +0100
++++ slin_m740/lib/lzo1x_compress.c	2011-02-19 10:10:26.000000000 +0100
+@@ -61,8 +61,12 @@
+ 		goto literal;
+ 
+ try_match:
++#ifdef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+ 		if (get_unaligned((const unsigned short *)m_pos)
+ 				== get_unaligned((const unsigned short *)ip)) {
++#else
++		if (m_pos[0] == ip[0] && m_pos[1] == ip[1]) {
++#endif
+ 			if (likely(m_pos[2] == ip[2]))
+ 					goto match;
+ 		}
+@@ -93,9 +97,14 @@
+ 				}
+ 				*op++ = tt;
+ 			}
+-			do {
+-				*op++ = *ii++;
+-			} while (--t > 0);
++			if (t >= 2 * 4) {
++				memcpy(op, ii, t);
++				op += t;
++				ii += t;
++			} else
++				do {
++					*op++ = *ii++;
++				} while (--t > 0);
+ 		}
+ 
+ 		ip += 3;
+@@ -207,9 +216,14 @@
+ 
+ 			*op++ = tt;
+ 		}
+-		do {
+-			*op++ = *ii++;
+-		} while (--t > 0);
++		if (t >= 2 * 4) {
++			memcpy(op, ii, t);
++			op += t;
++			ii += t;
++		} else
++			do {
++				*op++ = *ii++;
++			} while (--t > 0);
+ 	}
+ 
+ 	*op++ = M4_MARKER | 1;
+@@ -223,4 +237,3 @@
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("LZO1X-1 Compressor");
+-
+diff -Naur slin_m740_orig/lib/lzo1x_decompress.c slin_m740/lib/lzo1x_decompress.c
+--- slin_m740_orig/lib/lzo1x_decompress.c	2011-02-18 20:36:01.000000000 +0100
++++ slin_m740/lib/lzo1x_decompress.c	2011-02-19 10:27:43.000000000 +0100
+@@ -44,10 +44,7 @@
+ 			goto output_overrun;
+ 		if (HAVE_IP(t + 1, ip_end, ip))
+ 			goto input_overrun;
+-		do {
+-			*op++ = *ip++;
+-		} while (--t > 0);
+-		goto first_literal_run;
++		goto prep_first_literal_run;
+ 	}
+ 
+ 	while ((ip < ip_end)) {
+@@ -70,30 +67,27 @@
+ 		if (HAVE_IP(t + 4, ip_end, ip))
+ 			goto input_overrun;
+ 
+-		COPY4(op, ip);
+-		op += 4;
+-		ip += 4;
+-		if (--t > 0) {
+-			if (t >= 4) {
+-				do {
+-					COPY4(op, ip);
+-					op += 4;
+-					ip += 4;
+-					t -= 4;
+-				} while (t >= 4);
+-				if (t > 0) {
+-					do {
+-						*op++ = *ip++;
+-					} while (--t > 0);
+-				}
+-			} else {
++		t += (4 - 1);
++		if (t >= 2 * 4) {
++			memcpy(op, ip, t);
++			op += t;
++			ip += t;
++		} else {
++			do {
++				COPY4(op, ip);
++				op += 4;
++				ip += 4;
++				t -= 4;
++			} while (t >= 4);
++			if (t > 0) {
++prep_first_literal_run:
+ 				do {
+ 					*op++ = *ip++;
+ 				} while (--t > 0);
+ 			}
+ 		}
+ 
+-first_literal_run:
++//first_literal_run:
+ 		t = *ip++;
+ 		if (t >= 16)
+ 			goto match;
+@@ -183,21 +175,33 @@
+ 			if (HAVE_OP(t + 3 - 1, op_end, op))
+ 				goto output_overrun;
+ 
+-			if (t >= 2 * 4 - (3 - 1) && (op - m_pos) >= 4) {
+-				COPY4(op, m_pos);
+-				op += 4;
+-				m_pos += 4;
+-				t -= 4 - (3 - 1);
+-				do {
++			if (t >= 2 * 4 - (3 - 1)) {
++				/*
++				 *  Assume memcpy don't copy
++				 *  more than 32 bytes at once
++				 */
++				if ((op - m_pos) >= 32) {
++					t += (3 - 1);
++					memcpy(op, m_pos, t);
++					op += t;
++					m_pos += t;
++				} else if ((op - m_pos) >= 4) {
+ 					COPY4(op, m_pos);
+ 					op += 4;
+ 					m_pos += 4;
+-					t -= 4;
+-				} while (t >= 4);
+-				if (t > 0)
++					t -= 4 - (3 - 1);
+ 					do {
+-						*op++ = *m_pos++;
+-					} while (--t > 0);
++						COPY4(op, m_pos);
++						op += 4;
++						m_pos += 4;
++						t -= 4;
++					} while (t >= 4);
++					if (t > 0)
++						do {
++							*op++ = *m_pos++;
++						} while (--t > 0);
++				} else
++					goto copy_match;
+ 			} else {
+ copy_match:
+ 				*op++ = *m_pos++;
