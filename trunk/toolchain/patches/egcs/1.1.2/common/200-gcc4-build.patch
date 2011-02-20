@@ -1,0 +1,12 @@
+--- egcs-1.1.2/gcc/obstack.h.orig	2010-10-12 14:24:12.000000000 +0200
++++ egcs-1.1.2/gcc/obstack.h	2010-10-12 14:43:24.000000000 +0200
+@@ -417,7 +417,8 @@
+ ({ struct obstack *__o = (OBSTACK);					\
+    if (__o->next_free + sizeof (void *) > __o->chunk_limit)		\
+      _obstack_newchunk (__o, sizeof (void *));				\
+-   *((void **)__o->next_free)++ = ((void *)datum);			\
++   *((void **)__o->next_free) = ((void *)datum);			\
++   __o->next_free += sizeof(void *);					\
+    (void) 0; })
+ 
+ # define obstack_int_grow(OBSTACK,datum)				\

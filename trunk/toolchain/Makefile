@@ -240,6 +240,7 @@ endif
 	-$(MKDIR) -p $(TARGET_ROOT)/etc
 	-$(MKDIR) -p $(STAGEFILES_DIR)
 	-$(MKDIR) -p $(HOSTUTILS_BUILD_DIR)
+	-$(MKDIR) -p $(HOSTUTILS_PREFIX_BIN)
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibctoolchaindirs
 
 $(BASE_BUILD_STAGEFILE): $(BASE_RULES)
