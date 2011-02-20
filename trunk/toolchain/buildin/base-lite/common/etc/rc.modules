@@ -27,6 +27,12 @@ if [ X"${OSDLOG}" = X"YES" ]; then
     /usr/bin/set-video &
 fi
 
+# load usb/scsi modules
+echo "ehci-hcd.o"
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o
+echo "usb-ohci.o"
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o
+
 # select tuner
 if  [ ${SYSTEMTYPE} = m750s ] ; then
 	/sbin/insmod /lib/modules/2.4.21-xfs/tainted/tda10086.o TDA10086_NO_PRINT=1

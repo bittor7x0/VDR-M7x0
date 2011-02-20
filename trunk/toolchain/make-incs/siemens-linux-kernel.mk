@@ -70,26 +70,12 @@ CLEAN_RULES += clean-siemens-linux-kernel
 DISTCLEAN_RULES += distclean-siemens-linux-kernel
 
 SIEMENS-LINUX-KERNEL_MODLST := \
-   lib/modules/2.4.21-xfs/kernel/fs/ext2/ext2.o \
-   lib/modules/2.4.21-xfs/kernel/fs/ext3/ext3.o \
-   lib/modules/2.4.21-xfs/kernel/fs/fat/fat.o \
-   lib/modules/2.4.21-xfs/kernel/fs/jbd/jbd.o \
-   lib/modules/2.4.21-xfs/kernel/fs/nls/nls_iso8859-15.o \
-   lib/modules/2.4.21-xfs/kernel/fs/vfat/vfat.o \
-   lib/modules/2.4.21-xfs/kernel/drivers/scsi/scsi_mod.o \
-   lib/modules/2.4.21-xfs/kernel/drivers/scsi/sd_mod.o \
-   lib/modules/2.4.21-xfs/kernel/drivers/usb/usbcore.o \
    lib/modules/2.4.21-xfs/kernel/drivers/usb/host/ehci-hcd.o \
-   lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o \
-   lib/modules/2.4.21-xfs/kernel/drivers/usb/storage/usb-storage.o
+   lib/modules/2.4.21-xfs/kernel/drivers/usb/host/usb-ohci.o
 
 ifeq ($(CONFIG_FW_VERSION),pro)
 	SIEMENS-LINUX-KERNEL_MODLST += \
-		lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
-		lib/modules/2.4.21-xfs/kernel/fs/lockd/lockd.o \
-		lib/modules/2.4.21-xfs/kernel/fs/nfs/nfs.o \
-		lib/modules/2.4.21-xfs/kernel/net/packet/af_packet.o \
-		lib/modules/2.4.21-xfs/kernel/net/sunrpc/sunrpc.o
+		lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o
 
 	ifeq ($(CONFIG_PPTPD),y)
 	SIEMENS-LINUX-KERNEL_MODLST += \
@@ -106,27 +92,14 @@ SIEMENS-LINUX-KERNEL_DIRLST := \
    lib/modules \
    lib/modules/2.4.21-xfs \
    lib/modules/2.4.21-xfs/kernel \
-   lib/modules/2.4.21-xfs/kernel/fs \
-   lib/modules/2.4.21-xfs/kernel/fs/ext2 \
-   lib/modules/2.4.21-xfs/kernel/fs/ext3 \
-   lib/modules/2.4.21-xfs/kernel/fs/fat \
-   lib/modules/2.4.21-xfs/kernel/fs/jbd \
-   lib/modules/2.4.21-xfs/kernel/fs/nls \
-   lib/modules/2.4.21-xfs/kernel/fs/vfat \
    lib/modules/2.4.21-xfs/kernel/drivers \
-   lib/modules/2.4.21-xfs/kernel/drivers/scsi \
    lib/modules/2.4.21-xfs/kernel/drivers/usb \
-   lib/modules/2.4.21-xfs/kernel/drivers/usb/host \
-   lib/modules/2.4.21-xfs/kernel/drivers/usb/storage
+   lib/modules/2.4.21-xfs/kernel/drivers/usb/host
 
 ifeq ($(CONFIG_FW_VERSION),pro)
 	SIEMENS-LINUX-KERNEL_DIRLST += \
-		lib/modules/2.4.21-xfs/kernel/fs/cifs \
-		lib/modules/2.4.21-xfs/kernel/fs/lockd \
-		lib/modules/2.4.21-xfs/kernel/fs/nfs \
-		lib/modules/2.4.21-xfs/kernel/net \
-		lib/modules/2.4.21-xfs/kernel/net/packet \
-		lib/modules/2.4.21-xfs/kernel/net/sunrpc
+		lib/modules/2.4.21-xfs/kernel/fs \
+		lib/modules/2.4.21-xfs/kernel/fs/cifs
 
 	ifeq ($(CONFIG_PPTPD),y)
 	SIEMENS-LINUX-KERNEL_DIRLST += \
