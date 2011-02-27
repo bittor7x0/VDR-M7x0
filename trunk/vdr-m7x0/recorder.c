@@ -585,11 +585,15 @@ void cTSRecorder::Receive(uchar *Data, int Length, const sTsDataHeader *const He
 							if((!Data[PESPayload])&&(!Data[PESPayload+1])&&(Data[PESPayload+2]==0x01)&&((Data[PESPayload+3]&0xF0)==0xE0)){
 								PESPayload+=Data[PESPayload+8]+9;
 								if(vType==0x1B){
-									if(PESPayload<ToWrite+183){
-										if((!Data[PESPayload])&&(!Data[PESPayload+1])&&(!Data[PESPayload+2])&&(Data[PESPayload+3]==0x01)&&
-										  (Data[PESPayload+4]==0x09)){
-											nextPictureType=(Data[PESPayload+5]>>5)+1;
-											break;
+									if(PESPayload<ToWrite+184){
+										if((!Data[PESPayload])&&(!Data[PESPayload+1])){
+											PESPayload+=2;
+											while((!Data[PESPayload])&&(PESPayload<ToWrite+185))
+												PESPayload++;
+											if((Data[PESPayload]==0x01)&&(Data[PESPayload+1]==0x09)){
+												nextPictureType=(Data[PESPayload+2]>>5)+1;
+												break;
+												}
 											}
 										}
 									}
