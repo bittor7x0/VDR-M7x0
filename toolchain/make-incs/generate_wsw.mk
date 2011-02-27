@@ -57,8 +57,8 @@ ifeq ($(CONFIG_GENERATE_JFFS2_IMAGE),y)
    WSW-IMG_TIME_REF_all += $(TOP_DIR)/$(JFFS2_IMG)
 endif
 GEN_WSW_FWNAME = $(or $(subst .wsw,,$(notdir $(CONFIG_WSW-IMG))), \
-                 open7x0.org-$(CONFIG_M7X0_TYPE)-%Y-%m-%d-%M%H)
-WSW-IMG := $(TOP_DIR)/$(or $(notdir $(CONFIG_WSW-IMG)),open7x0.org-$(CONFIG_M7X0_TYPE).wsw)
+                 open7x0.org-$(CONFIG_M7X0_TYPE)-$(CONFIG_FW_VERSION)-%Y-%m-%d-%M%H)
+WSW-IMG := $(TOP_DIR)/$(or $(notdir $(CONFIG_WSW-IMG)),open7x0.org-$(CONFIG_M7X0_TYPE)-$(CONFIG_FW_VERSION).wsw)
 WSW-IMG_TIME_REF = $(firstword $(WSW-IMG_TIME_REF_all))
 GEN_WSW_CMD_LINE += -o $(WSW-IMG)
 

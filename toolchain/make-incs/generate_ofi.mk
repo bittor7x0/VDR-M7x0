@@ -57,7 +57,7 @@ ifeq ($(CONFIG_GENERATE_JFFS2_IMAGE),y)
    OFI-IMG_DEPS += $(TOP_DIR)/$(JFFS2_IMG)
    OFI-IMG_TIME_REF_all += $(TOP_DIR)/$(JFFS2_IMG)
 endif
-OFI-IMG := $(TOP_DIR)/$(or $(notdir $(CONFIG_OFI-IMG)),open7x0.org-$(CONFIG_M7X0_TYPE).ofi)
+OFI-IMG := $(TOP_DIR)/$(or $(notdir $(CONFIG_OFI-IMG)),open7x0.org-$(CONFIG_M7X0_TYPE)-$(CONFIG_FW_VERSION).ofi)
 OFI-IMG_TIME_REF = $(firstword $(OFI-IMG_TIME_REF_all))
 GEN_OFI_CMD_LINE += -o $(OFI-IMG)
 
