@@ -530,7 +530,7 @@ cRecording::cRecording(cTimer *Timer, const cEvent *Event)
   strreplace(name, '\n', ' ');
   if((Timer->Channel())&&(Setup.UseHDInRecordings))
      if(Timer->Channel()->Vtype()==0x1B)
-        name = strdup(cString::sprintf("%s (HD)",name));
+        name = strdup(cString::sprintf("%s (HD)",(const char *)cString(name,true)));
   start = Timer->StartTime();
   priority = Timer->Priority();
   lifetime = Timer->Lifetime();
