@@ -17,7 +17,7 @@
 JFFS2_DIR_DEPS = $(PACKS_BUILD_STAGEFILE) $(TOP_DIR)/.config
 
 ifeq ($(strip $(CONFIG_JFFS2_DIR)),)
-  JFFS2_DIR = $(TOP_DIR)/jffs2_dir_$(CONFIG_M7X0_TYPE)
+  JFFS2_DIR = $(TOP_DIR)/jffs2_dir_$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION)
 else
   JFFS2_DIR := $(abspath $(CONFIG_JFFS2_DIR))
 endif
@@ -31,7 +31,7 @@ $(error unknown system type given)
 endif
 
 ifeq ($(strip $(notdir $(CONFIG_JFFS2_IMG))),)
-  JFFS2_IMG = jffs2-$(CONFIG_M7X0_TYPE).img
+  JFFS2_IMG = jffs2-$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION).img
 else
   JFFS2_IMG =$(notdir $(CONFIG_JFFS2_IMG))
 endif
