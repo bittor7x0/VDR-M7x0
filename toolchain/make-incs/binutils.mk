@@ -20,7 +20,7 @@
 # The project's page is at http://www.open7x0.org
 #
 
-BINUTILS_VERSION := 2.20.1
+BINUTILS_VERSION := 2.21
 BINUTILS_PATCHES_DIR := $(PATCHES_DIR)/binutils/$(BINUTILS_VERSION)
 
 BINUTILS_DIR := $(BUILD_DIR)/binutils-$(BINUTILS_VERSION)
