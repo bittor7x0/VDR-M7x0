@@ -17,7 +17,11 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 DROPBEAR_DEPS = $(BASE_BUILD_STAGEFILE)
 
-DROPBEAR_VERSION := 0.52
+ifeq ($(CONFIG_ZLIB),y)
+	DROPBEAR_DEPS +=  $(ZLIB_INSTALLED)
+endif 
+
+DROPBEAR_VERSION := 0.53.1
 DROPBEAR_PATCHES_DIR := $(PATCHES_DIR)/dropbear/$(DROPBEAR_VERSION)
 
 DROPBEAR_FILE := dropbear-$(DROPBEAR_VERSION).tar.bz2
@@ -68,11 +72,14 @@ $(STAGEFILES_DIR)/.dropbear_patched: $(STAGEFILES_DIR)/.dropbear_unpacked
 
 $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
 	($(CD) $(DROPBEAR_DIR) ; $(UCLIBC_ENV) \
+		CFLAGS="$(UCLIBC_CFLAGS) -DARGTYPE=3 -ffunction-sections -fdata-sections" \
+		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,--gc-sections" \
 		$(DROPBEAR_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--disable-pam \
 			--enable-syslog \
+			--enable-bundled-libtom \
 			--disable-lastlog \
 			--disable-utmp \
 			--disable-utmpx \
@@ -81,7 +88,7 @@ $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
 			--disable-loginfunc \
 			--disable-pututline \
 			--disable-pututxline \
-			--disable-zlib \
+			$(if $(CONFIG_ZLIB),--enable-zlib,--disable-zlib) \
 			--sysconfdir=/etc/dropbear)
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_configured
 
