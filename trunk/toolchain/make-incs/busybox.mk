@@ -96,6 +96,7 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
 	$(UCLIBC_ENV) $(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
+		SKIP_STRIP=y \
 		ARCH=mips all
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled
 
