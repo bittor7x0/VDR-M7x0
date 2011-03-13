@@ -1028,9 +1028,11 @@ int main(int argc, char *argv[])
                break;
           // Info:
           case kInfo: {
-               bool WasInfoMenu = IsInfoMenu;
-               DELETE_MENU;
-               if (!WasInfoMenu) {
+               if (IsInfoMenu) {
+                  key = kNone; // nobody else needs to see this key
+                  DELETE_MENU;
+                  }
+               else if (!Menu) {
                   IsInfoMenu = true;
                   if (cControl::Control()) {
                      cControl::Control()->Hide();
@@ -1044,6 +1046,7 @@ int main(int argc, char *argv[])
                      cRemote::Put(kOk, true);
                      cRemote::Put(kSchedule, true);
                      }
+                  key = kNone; // nobody else needs to see this key
                   }
                }
                break;

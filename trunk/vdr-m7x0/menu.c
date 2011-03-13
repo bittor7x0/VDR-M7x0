@@ -753,7 +753,7 @@ cMenuEditTimer::cMenuEditTimer(cTimer *Timer, bool New)
         strn0cpy(path, "", sizeof(path));
         }
      Add(new cMenuEditStrItem( tr("File"),          name, sizeof(name), tr(FileNameChars)));
-     Add(new cMenuEditRecPathItem(tr("Path"),       path, sizeof(path)));
+     Add(new cMenuEditRecPathItem(tr("Directory"),  path, sizeof(path)));
      SetFirstDayItem();
      }
   Timers.IncBeingEdited();
@@ -1021,7 +1021,7 @@ void cMenuTimers::SetHelpKeys(void)
      }
   if (NewHelpKeys != helpKeys) {
      helpKeys = NewHelpKeys;
-     SetHelp(helpKeys > 0 ? tr("Button$On/Off") : NULL, tr("Button$New"), helpKeys > 0 ? tr("Button$Delete") : NULL, helpKeys == 2 ? tr("Button$Info") : NULL);
+     SetHelp(helpKeys > 0 ? tr("Button$On/Off") : NULL, tr("Button$New"), helpKeys > 0 ? tr("Button$Delete") : NULL, helpKeys > 0 ? tr("Button$Edit") : NULL);
      }
 }
 
@@ -1218,13 +1218,14 @@ eOSState cMenuTimers::ProcessKey(eKeys Key)
 
   if (state == osUnknown) {
      switch (Key) {
+       case kBlue:
        case kOk:     return Edit();
        case kRed:    actualiseDiskStatus = true;
                      state = OnOff(); break; // must go through SetHelpKeys()!
        case kGreen:  return Edit(true);
        case kYellow: actualiseDiskStatus = true;
                      state = Delete(); break;
-       case kBlue:   return Info();
+       case kInfo:   return Info();
                      break;
        case k1...k9: return Commands(Key);
        case k0:      return (TimerCommands.Count()? Commands():osContinue);
@@ -1288,6 +1289,7 @@ eOSState cMenuEvent::ProcessKey(eKeys Key)
                   DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
                   cStatus::MsgOsdTextItem(NULL, NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft);
                   return osContinue;
+    case kInfo:   return osBack;
     default: break;
     }
 
@@ -1537,6 +1539,7 @@ eOSState cMenuWhatsOn::ProcessKey(eKeys Key)
                      }
                      break;
        case kBlue:   return Switch();
+       case kInfo:
        case kOk:     if (Count())
                         return AddSubMenu(new cMenuEvent(((cMenuScheduleItem *)Get(Current()))->event, true, true));
                      break;
@@ -1802,6 +1805,7 @@ eOSState cMenuSchedule::ProcessKey(eKeys Key)
        case kBlue:   if (Count() && otherChannel)
                         return Switch();
                      break;
+       case kInfo:
        case kOk:     if (Count())
                         return AddSubMenu(new cMenuEvent(((cMenuScheduleItem *)Get(Current()))->event, otherChannel, true));
                      break;
@@ -2093,6 +2097,7 @@ eOSState cMenuRecording::ProcessKey(eKeys Key)
                   DisplayMenu()->Scroll(NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft, NORMALKEY(Key) == kLeft || NORMALKEY(Key) == kRight);
                   cStatus::MsgOsdTextItem(NULL, NORMALKEY(Key) == kUp || NORMALKEY(Key) == kLeft);
                   return osContinue;
+    case kInfo:   return osBack;
     default: break;
     }
 
@@ -2205,8 +2210,8 @@ cMenuRenameRecording::cMenuRenameRecording(cRecording *Recording)
      strn0cpy(name, recording->Name(), sizeof(name));
      strn0cpy(path, "", sizeof(path));
      }
-  Add(new cMenuEditStrItem(tr("Name"),      name,     sizeof(name), tr(FileNameChars)));
-  Add(new cMenuEditRecPathItem(tr("Path"),  path,     sizeof(path)                   ));
+  Add(new cMenuEditStrItem(tr("File"),          name, sizeof(name), tr(FileNameChars)));
+  Add(new cMenuEditRecPathItem(tr("Directory"), path, sizeof(path)                   ));
   Add(new cMenuEditIntItem(tr("Priority"), &priority, 0,            MAXPRIORITY      ));
   Add(new cMenuEditIntItem(tr("Lifetime"), &lifetime, 0,            MAXLIFETIME      ));
 
@@ -2344,7 +2349,7 @@ void cMenuRecordings::SetHelpKeys(void)
        case 0: SetHelp(NULL); break;
        case 1: SetHelp(tr("Button$Open")); break;
        case 2:
-       case 3: SetHelp(RecordingCommands.Count() ? tr("Commands") : tr("Button$Play"), tr("Button$Rewind"), tr("Button$Delete"), NewHelpKeys == 3 ? tr("Button$Info") : NULL);
+       case 3: SetHelp(RecordingCommands.Count() ? tr("Commands") : tr("Button$Play"), tr("Button$Rewind"), tr("Button$Delete"), tr("Button$Edit"));
        default: ;
        }
      helpKeys = NewHelpKeys;
@@ -2564,12 +2569,13 @@ eOSState cMenuRecordings::ProcessKey(eKeys Key)
        case kRed:    return (helpKeys > 1 && RecordingCommands.Count()) ? Commands() : Play();
        case kGreen:  return Rewind();
        case kYellow: return Delete();
-       case kBlue:   return Info();
+       case kInfo:   return Info();
        case k0:      Setup.RecordingsSortMode = ++Setup.RecordingsSortMode % MAXSORTMODES;
                      Set(true);
                      Skins.Message(mtStatus, cString::sprintf("%s %d: %s", tr("Sorting"), Setup.RecordingsSortMode, RecordingsSortModeTexts[Setup.RecordingsSortMode]));
                      return osContinue;
        case k1...k7: return Commands(Key);
+       case kBlue:
        case k8:      return Rename();
        case k9:      Recordings.ToggleSortOrder();
                      Set(true);
