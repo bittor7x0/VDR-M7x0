@@ -110,7 +110,14 @@ $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
 			--host=$(TARGET) \
 			--enable-sqlite3 \
 			--disable-mysql \
+			--disable-db-autocreate \
+			--enable-pthread-lib \
 			--disable-rpl-malloc \
+			--disable-tombdebug \
+			--disable-upnpdebug \
+			--disable-log \
+			--disable-debug-log \
+			--disable-external-transcoding \
 			$(if $(CONFIG_ZLIB),--enable-zlib,--disable-zlib) \
 			$(if $(filter yy,$(CONFIG_TAGLIB)$(CONFIG_ID3LIB)),--enable-taglib --with-taglib-cfg=$(TARGET_ROOT)/usr/bin/taglib-config --disable-id3lib, \
 			$(if $(CONFIG_TAGLIB),--enable-taglib --with-taglib-cfg=$(TARGET_ROOT)/usr/bin/taglib-config,--disable-taglib) \
@@ -141,6 +148,11 @@ $(STAGEFILES_DIR)/.mediatomb_compiled: $(STAGEFILES_DIR)/.mediatomb_configured
 
 $(STAGEFILES_DIR)/.mediatomb_installed: $(STAGEFILES_DIR)/.mediatomb_compiled
 	$(UCLIBC_ENV) $(MAKE) -C $(MEDIATOMB_DIR) install
+	-$(RM) -rf $(TARGET_ROOT)/etc/mediatomb
+	$(MV) $(TARGET_ROOT)/usr/share/mediatomb $(TARGET_ROOT)/etc
+	$(CAT) $(TARGET_ROOT)/etc/mediatomb/sqlite3.sql | \
+		$(HOSTUTILS_PREFIX_BIN)/sqlite3 \
+		$(TARGET_ROOT)/etc/mediatomb/mediatomb.db
 	$(TOUCH) $(STAGEFILES_DIR)/.mediatomb_installed
 
 
