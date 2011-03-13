@@ -270,6 +270,7 @@ public:
   int VCRMode;
   int VideoDisplayFormat;
   int VideoFormat;
+  int VideoWithoutSignal;
   int UpdateChannels;
   int UseDolbyDigital;
   int UseDolbyInRecordings;

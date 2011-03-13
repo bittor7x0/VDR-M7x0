@@ -321,6 +321,7 @@ cSetup::cSetup(void)
   VCRMode = 0;
   VideoDisplayFormat = 1;
   VideoFormat = 0;
+  VideoWithoutSignal = 0;
   UpdateChannels = 5;
   UseDolbyDigital = 1;
   UseDolbyInRecordings = 1;
@@ -534,6 +535,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "VCRMode"))             VCRMode            = atoi(Value);
   else if (!strcasecmp(Name, "VideoDisplayFormat"))  VideoDisplayFormat = atoi(Value);
   else if (!strcasecmp(Name, "VideoFormat"))         VideoFormat        = atoi(Value);
+  else if (!strcasecmp(Name, "VideoWithoutSignal"))  VideoWithoutSignal = atoi(Value);
   else if (!strcasecmp(Name, "UpdateChannels"))      UpdateChannels     = atoi(Value);
   else if (!strcasecmp(Name, "UseDolbyDigital"))     UseDolbyDigital    = atoi(Value);
   else if (!strcasecmp(Name, "UseDolbyInRecordings")) UseDolbyInRecordings = atoi(Value);
@@ -657,6 +659,7 @@ bool cSetup::Save(void)
   Store("VCRMode", 	      VCRMode);
   Store("VideoDisplayFormat", VideoDisplayFormat);
   Store("VideoFormat",        VideoFormat);
+  Store("VideoWithoutSignal", VideoWithoutSignal);
   Store("UpdateChannels",     UpdateChannels);
   Store("UseDolbyDigital",    UseDolbyDigital);
   Store("UseDolbyInRecordings", UseDolbyInRecordings);

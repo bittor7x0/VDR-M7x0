@@ -4254,6 +4254,28 @@ const tI18nPhrase Phrases[] = {
     "Video format",
     "Formát videa",
   },
+  { "Setup.DVB$Enable video output without signal",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Activar salida de vídeo sin señal",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Setup.DVB$Use Dolby Digital",
     "Dolby-Digital-Ton benutzen",
     "Uporabljaj Dolby Digital",
