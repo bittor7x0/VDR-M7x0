@@ -111,6 +111,7 @@ public:
   static cDisplayVolume *Create(void);
   static void Process(eKeys Key);
   eOSState ProcessKey(eKeys Key);
+  static bool IsOpen(void) { return currentDisplayVolume != NULL; }
   };
 
 class cDisplayTracks : public cOsdObject {
