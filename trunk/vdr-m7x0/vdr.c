@@ -1110,8 +1110,13 @@ int main(int argc, char *argv[])
                   }
                else
                   cDevice::PrimaryDevice()->SetVolume(NORMALKEY(key) == kVolDn ? -VOLUMEDELTA : VOLUMEDELTA);
-               if (!Menu && !cOsd::IsOpen())
+               if (cControl::Control())
+                  cControl::Control()->Hide();
+               if (!cDisplayVolume::IsOpen()) {
+                  DELETE_MENU;
                   Menu = cDisplayVolume::Create();
+	       }
+	       else
                cDisplayVolume::Process(key);
                key = kNone; // nobody else needs to see these keys
                break;
