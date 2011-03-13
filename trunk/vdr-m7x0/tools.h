@@ -25,6 +25,9 @@
 #include <sys/types.h>
 #include <endian.h>
 #include <byteswap.h>
+#ifdef MEMWATCH
+#include "memwatch.h"
+#endif
 
 typedef unsigned char uchar;
 #define uint64 uint64_t // for compatibility - TODO remove in version 1.5
