@@ -2961,6 +2961,7 @@ void cMenuSetupDVB::Setup(void)
 
   Add(new cMenuEditStraItem(tr("Setup.DVB$Video display format"), &data.VideoDisplayFormat, 2, videoDisplayFormatTexts));
 //M7X0 END GA
+  Add(new cMenuEditBoolItem(tr("Setup.DVB$Enable video output without signal"), &data.VideoWithoutSignal, tr("no"), tr("yes")));
   Add(new cMenuEditBoolItem(tr("Setup.DVB$Use Dolby Digital"),     &data.UseDolbyDigital));
   Add(new cMenuEditStraItem(tr("Setup.DVB$Update channels"),       &data.UpdateChannels, 6, updateChannelsTexts));
   Add(new cMenuEditIntItem( tr("Setup.DVB$Audio languages"),       &numAudioLanguages, 0, I18nNumLanguages));

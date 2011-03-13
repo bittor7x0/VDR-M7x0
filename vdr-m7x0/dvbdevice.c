@@ -2430,6 +2430,9 @@ cDvbDevice::cDvbDevice(int n)
      }
   devVideoIndex = (devVideoOffset >= 0 && HasDecoder()) ? devVideoOffset++ : -1;
 
+  if(Setup.VideoWithoutSignal)
+     SetVideoFormat(eVideoFormat(Setup.VideoFormat));
+
   // We only check the devices that must be present - the others will be checked before accessing them://XXX
 
   if (fd_frontend >= 0) {
