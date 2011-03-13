@@ -24,8 +24,9 @@ SQLITE_FILE := sqlite-$(SQLITE_VERSION).tar.bz2
 SQLITE_DLFILE := $(DOWNLOAD_DIR)/$(SQLITE_FILE)
 SQLITE_URL := http://www.sqlite.org/sqlite-amalgamation-$(SQLITE_VERSION).tar.gz
 SQLITE_DIR := $(BUILD_DIR)/sqlite-$(SQLITE_VERSION)
+SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-$(SQLITE_VERSION)
 
-SQLITE_INSTALLED = $(STAGEFILES_DIR)/.sqlite_installed
+SQLITE_INSTALLED = $(STAGEFILES_DIR)/.sqlite_host_installed $(STAGEFILES_DIR)/.sqlite_installed
 
 PACKS_RULES_$(CONFIG_SQLITE) += $(SQLITE_INSTALLED)
 FILE_LISTS_$(CONFIG_SQLITE) += sqlite.lst
@@ -60,7 +61,35 @@ $(STAGEFILES_DIR)/.sqlite_unpacked: $(SQLITE_DLFILE) \
 
 $(STAGEFILES_DIR)/.sqlite_patched: $(STAGEFILES_DIR)/.sqlite_unpacked
 	$(call patch_package, $(SQLITE_DIR), $(SQLITE_PATCHES_DIR))
+	-$(RM) -rf $(SQLITE_HOSTDIR)
+	$(CP) -RPp $(SQLITE_DIR) $(HOSTUTILS_BUILD_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_patched
+
+#
+# configure sqlite in host
+#
+
+$(STAGEFILES_DIR)/.sqlite_host_configured: $(STAGEFILES_DIR)/.sqlite_patched
+	($(CD) $(SQLITE_HOSTDIR) ; \
+		$(SQLITE_HOSTDIR)/configure \
+			--prefix=$(HOSTUTILS_PREFIX))
+	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_configured
+
+#
+# compile sqlite in host
+#
+
+$(STAGEFILES_DIR)/.sqlite_host_compiled: $(STAGEFILES_DIR)/.sqlite_host_configured
+	$(UCLIBC_ENV) $(MAKE) -C $(SQLITE_HOSTDIR) all
+	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_compiled
+
+#
+# install sqlite in host
+#
+
+$(STAGEFILES_DIR)/.sqlite_host_installed: $(STAGEFILES_DIR)/.sqlite_host_compiled
+	$(UCLIBC_ENV) $(MAKE) -C $(SQLITE_HOSTDIR) install
+	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_installed
 
 #
 # configure sqlite
@@ -92,13 +121,15 @@ $(STAGEFILES_DIR)/.sqlite_installed: $(STAGEFILES_DIR)/.sqlite_compiled
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_installed
 
 
-$(FILELIST_DIR)/sqlite.lst: $(STAGEFILES_DIR)/.sqlite_installed
+$(FILELIST_DIR)/sqlite.lst: $(STAGEFILES_DIR)/.sqlite_host_installed \
+				$(STAGEFILES_DIR)/.sqlite_installed
 	$(TOUCH) $(FILELIST_DIR)/sqlite.lst
 
 .PHONY: clean-sqlite distclean-sqlite
 
 clean-sqlite:
 	-$(RM) -rf $(SQLITE_DIR)
+	-$(RM) -rf $(SQLITE_HOSTDIR)
 
 #
 # clean everthing else
@@ -110,6 +141,9 @@ distclean-sqlite:
 	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_configured
 	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_installed
+	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_host_configured
+	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_host_compiled
+	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_host_installed
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -rf $(SQLITE_DLFILE)
 endif
