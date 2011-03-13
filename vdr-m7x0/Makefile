@@ -75,6 +75,10 @@ endif
 ifdef VDR_USER
 DEFINES += -DVDR_USER=\"$(VDR_USER)\"
 endif
+ifdef MEMWATCH
+OBJS += memwatch.o
+DEFINES += -DMEMWATCH
+endif
 
 LIRC_DEVICE ?= /dev/lircd
 RCU_DEVICE  ?= /dev/ttyS1
