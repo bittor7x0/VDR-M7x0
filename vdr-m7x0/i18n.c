@@ -9679,25 +9679,25 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
   },
-  { "Path",
-    "Pfad",
+  { "Directory",
+    "Verzeichnis",
     "",//TODO
     "",//TODO
     "",//TODO
     "",//TODO
-    "Dossiers",
+    "Dossier",
     "",//TODO
-    "Polku",
+    "Hakemisto",
     "",//TODO
-    "Ruta",
-    "",//TODO
-    "",//TODO
+    "Directorio",
     "",//TODO
     "",//TODO
     "",//TODO
     "",//TODO
     "",//TODO
-    "Teekond",
+    "",//TODO
+    "",//TODO
+    "",
     "",//TODO
     "",//TODO
   },
