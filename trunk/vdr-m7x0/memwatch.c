@@ -418,7 +418,7 @@ void mwInit( void ) {
 	MW_MUTEX_INIT();
 
     /* start a log if none is running */
-    if( mwLogR() == NULL ) mwLogFile( "/var/log/memwatch.log" );
+    if( mwLogR() == NULL ) mwLogFile( "/var/log/vdr-memwatch.log" );
     if( mwLogR() == NULL ) {
         int i;
         char buf[32];
@@ -1068,9 +1068,11 @@ void mwFree( void* p, const char* file, int line ) {
 
     /* on NULL free, write a warning and return */
     if( p == NULL ) {
+#ifdef MEMWATCH_FREE_NULL_LOG
         mwWrite( "NULL free: <%ld> %s(%d), NULL pointer free'd\n",
             mwCounter, file, line );
         FLUSH();
+#endif
 		MW_MUTEX_UNLOCK();
         return;
         }
