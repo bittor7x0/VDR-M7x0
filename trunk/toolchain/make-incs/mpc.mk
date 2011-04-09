@@ -17,7 +17,7 @@
 # Put dependencies here
 MPC_DEPS = $(GMP_INSTALLED) $(MPFR_INSTALLED)
 
-MPC_VERSION := 0.8.2
+MPC_VERSION := 0.9
 MPC_PATCHES_DIR := $(PATCHES_DIR)/mpc/$(MPC_VERSION)
 
 MPC_FILE := mpc-$(MPC_VERSION).tar.gz

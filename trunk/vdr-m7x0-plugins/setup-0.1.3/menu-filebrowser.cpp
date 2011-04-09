@@ -135,7 +135,7 @@ cOsdMenuFilebrowser::~cOsdMenuFilebrowser()
   if(BaseDirectory) delete BaseDirectory;
 }
 
-int cOsdMenuFilebrowser::DirectorySort(const void* File1, const void* File2)
+int cOsdMenuFilebrowser::DirectorySort(const dirent64** File1, const dirent64** File2)
 {
   struct dirent64* ent1=*(struct dirent64**)File1;
   struct dirent64* ent2=*(struct dirent64**)File2;
