@@ -7,7 +7,7 @@
 #RSSREADER_DEBUG = 1
 
 # Strip debug symbols?  Set eg. to /bin/true if not
-STRIP = strip
+STRIP = /bin/true
 
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.

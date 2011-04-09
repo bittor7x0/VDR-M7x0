@@ -9,7 +9,7 @@ DEBUG = -DDEBUG
 
 
 # Strip debug symbols?  Set eg. to /bin/true if not
-STRIP = mips-linux-uclibc-strip
+STRIP = /bin/true
 
 
 # The official name of this plugin.
@@ -92,9 +92,9 @@ all: libvdr-$(PLUGIN).so
 
 libvdr-$(PLUGIN).so: setupsystemmenu.cpp $(OBJS) 
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
-#	ifndef OPEN7x0_Setup_DEBUG
-#		@$(STRIP) $@
-#	endif
+	ifndef OPEN7x0_Setup_DEBUG
+		@$(STRIP) $@
+	endif
 	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 setupsystemmenu.cpp:  $(VDRDIR)/menu.c

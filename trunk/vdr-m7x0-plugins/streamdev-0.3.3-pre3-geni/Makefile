@@ -68,8 +68,6 @@ SERVEROBJS = $(PLUGIN)-server.o \
 ifdef DEBUG
 	DEFINES += -DDEBUG
 	CXXFLAGS += -g
-else
-	CXXFLAGS += -O2
 endif
 
 ifeq ($(shell test -f $(VDRDIR)/fontsym.h ; echo $$?),0)

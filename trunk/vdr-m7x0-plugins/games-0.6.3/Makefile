@@ -13,7 +13,7 @@ OBJS      = launcher.o  \
 VDROBJS   = plugin.o
 SDLOBJS   = main.o
 DEFINES   = -DVERSION=\"$(VERSION)\" -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
-CFLAGS    = -g -pipe -O2 -Wall -Woverloaded-virtual
+CFLAGS    += -pipe
 LFLAGS    = -pthread
 VDRDIR    ?= ../../..
 LIBDIR    ?= ../../lib
@@ -49,7 +49,7 @@ else
 	TARGET    = libvdr-games.so
 	OBJS     += $(VDROBJS)
 	CFLAGS   += -fPIC -I$(VDRDIR)
-	LFLAGS   += -shared --whole-archive
+	LFLAGS   += -shared
 	DEFINES  += -D_GNU_SOURCE -DVDRVERSNUM=$(VDRNUM)
 
 endif

@@ -1,6 +1,6 @@
 GAME     = tron
 OBJS     = tron.o
-CFLAGS   = -fPIC -g -pipe -O2 -Wall -Woverloaded-virtual
+CFLAGS   += -pipe
 
 all: $(OBJS)
 	@$(AR) -r $(GAME).a $(OBJS)
