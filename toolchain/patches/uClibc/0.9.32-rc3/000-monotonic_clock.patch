@@ -1,0 +1,13 @@
+diff -Naur uClibc-0.9.32-rc3-orig/libc/unistd/sysconf.c uClibc-0.9.32-rc3/libc/unistd/sysconf.c
+--- uClibc-0.9.32-rc3-orig/libc/unistd/sysconf.c	2011-04-08 13:19:04.987254269 +0200
++++ uClibc-0.9.32-rc3/libc/unistd/sysconf.c	2011-04-08 13:12:49.267256000 +0200
+@@ -982,8 +982,8 @@
+       RETURN_NEG_1;
+ #endif
+ 
+-    case _SC_MONOTONIC_CLOCK:
+ #ifdef __NR_clock_getres
++    case _SC_MONOTONIC_CLOCK:
+     /* Check using the clock_getres system call.  */
+ # ifdef __UCLIBC_HAS_THREADS_NATIVE__
+     {

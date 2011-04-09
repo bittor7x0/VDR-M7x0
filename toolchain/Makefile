@@ -109,7 +109,7 @@ UCLIBC_LD := $(UCLIBC_TARGET)-ld
 UCLIBC_NM := $(UCLIBC_TARGET)-nm
 UCLIBC_STRIP := sstrip
 UCLIBC_OBJCOPY := $(UCLIBC_TARGET)-objcopy
-UCLIBC_CFLAGS := -march=mips2 -mtune=vr4120 -O3 -msoft-float -mfix-vr4120
+UCLIBC_CFLAGS := -march=mips2 -mtune=vr4120 -Ofast -msoft-float -mfix-vr4120
 UCLIBC_CXXFLAGS := $(UCLIBC_CFLAGS)
 
 ifneq ($(CONFIG_CCACHE),)

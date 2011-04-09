@@ -29,6 +29,7 @@ KLONE_IMPORT_ARGS = -x */.svn/*
 
 # patch klone to include partial content responses
 KLONE_TARGET_PATCH_FILE = $(CURDIR)/klone-core-${KLONE_VERSION}-atinar.patch 
+KLONE_TARGET_PATCH_FILE += $(CURDIR)/klone-core-${KLONE_VERSION}-gcc.patch 
 KLONE_HOST_PATCH_FILE= $(KLONE_TARGET_PATCH_FILE)
 
 # cross-compiling (see build/makl/tc/* for the list of supported platforms)

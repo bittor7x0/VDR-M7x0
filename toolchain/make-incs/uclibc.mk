@@ -20,7 +20,7 @@
 # The project's page is at http://www.open7x0.org
 #
 
-UCLIBC_VERSION := 0.9.30.3
+UCLIBC_VERSION := 0.9.32-rc3
 UCLIBC_IS_SNAPSHOT := n
 UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/$(UCLIBC_VERSION)
 
@@ -108,7 +108,7 @@ $(STAGEFILES_DIR)/.uclibc_compiled:  $(STAGEFILES_DIR)/.uclibc_configured \
 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) -C $(UCLIBC_DIR) distclean
 	$(MV) $(UCLIBC_DIR)/m7x0_config $(UCLIBC_DIR)/.config
 	PATH='$(GCC_STAGE1_PREFIX_BIN):$(PREFIX_BIN):$(PATH)' \
-		$(MAKE) -j1 -C $(UCLIBC_DIR) all
+		$(MAKE) -j1 -C $(UCLIBC_DIR) headers all
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_compiled
 
 #
