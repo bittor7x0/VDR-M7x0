@@ -226,10 +226,12 @@
 **      Detect: delete or free() of the offending pointer.
 **      Action: The delete or free() is cancelled, execution continues.
 **  NULL free:
-**      It's unclear to me whether or not freeing of NULL pointers
-**      is legal in ANSI C, therefore a warning is written to the log file,
-**      but the error counter remains the same. This is legal using C++,
-**      so the warning does not appear with delete.
+**      Freeing of NULL pointers is legal in ANSI C, although if you
+**      define MEMWATCH_FREE_NULL_LOG a warning is written to the log file,
+**      but the error counter remains the same.
+**      Quoted from "The C Programming Language" second edition by Kernighan
+**      and Ritchie with the subtitle "ANSI C":
+**      "free deallocates the space pointed to by p: it does nothing if p is NULL."
 **      Detect: When you free(NULL).
 **      Action: The free() is cancelled.
 **  Failed:
