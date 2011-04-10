@@ -1,0 +1,10 @@
+diff -Naur scsi-spin-0.9-orig/Makefile scsi-spin-0.9/Makefile
+--- scsi-spin-0.9-orig/Makefile	2007-02-02 19:48:43.000000000 +0100
++++ scsi-spin-0.9/Makefile	2011-04-10 10:52:49.000000000 +0200
+@@ -1,5 +1,5 @@
+ #CFLAGS=-g -Wall -O2 -I/usr/src/linux/include
+-CFLAGS=-g -Wall -O2
++CFLAGS+=-g -Wall
+ LDFLAGS=-s
+ 
+ TARGETS=scsi-spin
