@@ -92,9 +92,9 @@ all: libvdr-$(PLUGIN).so
 
 libvdr-$(PLUGIN).so: setupsystemmenu.cpp $(OBJS) 
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
-	ifndef OPEN7x0_Setup_DEBUG
-		@$(STRIP) $@
-	endif
+ifndef OPEN7x0_Setup_DEBUG
+	@$(STRIP) $@
+endif
 	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 setupsystemmenu.cpp:  $(VDRDIR)/menu.c
