@@ -1,8 +1,12 @@
 diff -Naur ntpclient-2007-orig/Makefile ntpclient-2007/Makefile
 --- ntpclient-2007-orig/Makefile	2007-12-31 18:13:56.000000000 +0100
 +++ ntpclient-2007/Makefile	2009-03-07 00:00:46.000000000 +0100
-@@ -11,7 +11,7 @@
- CFLAGS += -O2
+@@ -8,10 +8,10 @@
+ CFLAGS += -std=c99 -W -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wshadow \
+  -Waggregate-return -Wnested-externs -Winline -Wwrite-strings -Wstrict-prototypes
+ 
+-CFLAGS += -O2
++# CFLAGS += -O2
  # CFLAGS += -DPRECISION_SIOCGSTAMP
  CFLAGS += -DENABLE_DEBUG
 -CFLAGS += -DENABLE_REPLAY

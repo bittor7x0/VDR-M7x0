@@ -91,7 +91,7 @@ $(STAGEFILES_DIR)/.lirc_configured: $(STAGEFILES_DIR)/.lirc_patched
 #
 
 $(STAGEFILES_DIR)/.lirc_compiled: $(STAGEFILES_DIR)/.lirc_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(LIRC_DIR) all
+	$(MAKE) -C $(LIRC_DIR) $(UCLIBC_ENV) all
 	$(TOUCH) $(STAGEFILES_DIR)/.lirc_compiled
 
 #
