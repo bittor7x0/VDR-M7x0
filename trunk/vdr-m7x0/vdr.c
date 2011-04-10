@@ -1368,6 +1368,8 @@ int main(int argc, char *argv[])
 	       if (!Setup.HotStandby) {
                if (ShutdownHandler.IsUserInactive() && ShutdownHandler.ConfirmShutdown(false))
                {
+                  setIaMode(0);
+                  cDevice::PrimaryDevice()->SetTvSettings(0);
                   cControl::Shutdown();
                   cTShiftControl::ShutdownTShift();
                   ShutdownHandler.DoShutdown(false);
