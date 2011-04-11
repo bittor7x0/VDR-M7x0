@@ -97,6 +97,7 @@ $(STAGEFILES_DIR)/.sqlite_host_installed: $(STAGEFILES_DIR)/.sqlite_host_compile
 
 $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 	($(CD) $(SQLITE_DIR) ; $(UCLIBC_ENV) \
+		CFLAGS="$(UCLIBC_CFLAGS) -fno-fast-math" \
 		$(SQLITE_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
