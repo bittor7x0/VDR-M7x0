@@ -17,12 +17,12 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 LIBPNG_DEPS = $(BASE_BUILD_STAGEFILE) $(ZLIB_INSTALLED)
 
-LIBPNG_VERSION := 1.4.2
+LIBPNG_VERSION := 1.4.7
 LIBPNG_PATCHES_DIR := $(PATCHES_DIR)/libpng/$(LIBPNG_VERSION)
 
 LIBPNG_FILE := libpng-$(LIBPNG_VERSION).tar.bz2
 LIBPNG_DLFILE := $(DOWNLOAD_DIR)/$(LIBPNG_FILE)
-LIBPNG_URL := http://sourceforge.net/projects/libpng/files/01-libpng-master/$(LIBPNG_VERSION)/$(LIBPNG_FILE)/download
+LIBPNG_URL := http://sourceforge.net/projects/libpng/files/libpng14/$(LIBPNG_VERSION)/$(LIBPNG_FILE)/download
 LIBPNG_DIR := $(BUILD_DIR)/libpng-$(LIBPNG_VERSION)
 
 LIBPNG_INSTALLED = $(STAGEFILES_DIR)/.libpng_installed

@@ -1,0 +1,28 @@
+diff -Naur bonnie++-1.03e-orig/Makefile.in bonnie++-1.03e/Makefile.in
+--- bonnie++-1.03e-orig/Makefile.in	2002-10-13 22:26:36.000000000 +0200
++++ bonnie++-1.03e/Makefile.in	2011-04-15 10:35:40.457451256 +0200
+@@ -8,8 +8,9 @@
+ eprefix=@exec_prefix@
+ #MORE_WARNINGS=-Weffc++ -Wcast-align
+ WFLAGS=-Wall -W -Wshadow -Wpointer-arith -Wwrite-strings -pedantic -ffor-scope $(MORE_WARNINGS)
+-CFLAGS=-O2 @debug@ -DNDEBUG $(WFLAGS) $(MORECFLAGS)
+-CXX=@CXX@ $(CFLAGS)
++CXXFLAGS += @debug@ -DNDEBUG $(WFLAGS)
++CXX=@CXX@ $(CXXFLAGS)
++LDFLAGS = @LDFLAGS@
+ 
+ INSTALL=@INSTALL@
+ INSTALL_PROGRAM=@INSTALL_PROGRAM@
+@@ -27,10 +28,10 @@
+ ALLOBJS=$(BONOBJS) $(ZCAVOBJS)
+ 
+ bonnie++: bonnie++.cpp $(BONOBJS)
+-	$(CXX) bonnie++.cpp -o bonnie++ $(BONOBJS) $(LFLAGS)
++	$(CXX) $(LDFLAGS) bonnie++.cpp -o bonnie++ $(BONOBJS)
+ 
+ zcav: zcav.cpp $(ZCAVOBJS)
+-	$(CXX) zcav.cpp -o zcav $(ZCAVOBJS) $(LFLAGS)
++	$(CXX) $(LDFLAGS) zcav.cpp -o zcav $(ZCAVOBJS)
+ 
+ install-bin: $(EXES)
+ 	mkdir -p $(eprefix)/bin $(eprefix)/sbin

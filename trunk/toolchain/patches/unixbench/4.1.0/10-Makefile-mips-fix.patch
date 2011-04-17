@@ -15,7 +15,7 @@ diff -Naur unixbench-4.1.0-orig/Makefile unixbench-4.1.0/Makefile
  
  ## For Solaris 2, or general-purpose GCC 2.7.x
 -OPTON = -O2 -fomit-frame-pointer -fforce-addr -fforce-mem -ffast-math -Wall
-+OPTON = -O2 -fomit-frame-pointer -fforce-addr -ffast-math -Wall
++OPTON = -fomit-frame-pointer -fforce-addr -ffast-math -Wall
  
  ## Very generic
  #OPTON = -O

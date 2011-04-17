@@ -79,7 +79,8 @@ $(STAGEFILES_DIR)/.bonnie++_configured: $(STAGEFILES_DIR)/.bonnie++_patched
 
 $(STAGEFILES_DIR)/.bonnie++_compiled: $(STAGEFILES_DIR)/.bonnie++_configured
 	$(UCLIBC_ENV) $(MAKE) \
-		-C $(BONNIE++_DIR)
+		-C $(BONNIE++_DIR) \
+		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib"
 	$(TOUCH) $(STAGEFILES_DIR)/.bonnie++_compiled
 
 #

@@ -59,7 +59,7 @@ $(STAGEFILES_DIR)/.ppp_unpacked: $(PPP_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.ppp_patched: $(STAGEFILES_DIR)/.ppp_unpacked
-	$(call patch package, $(PPP_DIR), $(PPP_PATCHES_DIR))
+	$(call patch_package, $(PPP_DIR), $(PPP_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.ppp_patched
 
 #
@@ -79,7 +79,8 @@ $(STAGEFILES_DIR)/.ppp_configured: $(STAGEFILES_DIR)/.ppp_patched
 
 $(STAGEFILES_DIR)/.ppp_compiled: $(STAGEFILES_DIR)/.ppp_configured
 	$(UCLIBC_ENV) $(MAKE) \
-		-C $(PPP_DIR)
+		-C $(PPP_DIR)/pppd \
+		COPTS="$(UCLIBC_CFLAGS) -pipe -Wall -g"
 	$(TOUCH) $(STAGEFILES_DIR)/.ppp_compiled
 
 #

@@ -79,7 +79,9 @@ $(STAGEFILES_DIR)/.pptpd_configured: $(STAGEFILES_DIR)/.pptpd_patched
 
 $(STAGEFILES_DIR)/.pptpd_compiled: $(STAGEFILES_DIR)/.pptpd_configured
 	$(UCLIBC_ENV) $(MAKE) \
-		-C $(PPTPD_DIR)
+		-C $(PPTPD_DIR) \
+		CC="$(UCLIBC_CC)" COPTS="$(UCLIBC_CFLAGS)" \
+		EXEEXT="" pptpctrl
 	$(TOUCH) $(STAGEFILES_DIR)/.pptpd_compiled
 
 #
