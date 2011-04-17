@@ -771,17 +771,13 @@ char *ezxml_toxml(ezxml_t xml)
     return (char*)realloc(s, len + 1);
 }
 
-// free the memory allocated for the ezxml structure
-void ezxml_free(ezxml_t xml)
+static void ezxml_free_root_stuff (ezxml_t xml)
 {
     ezxml_root_t root = (ezxml_root_t)xml;
     int i, j;
     char **a, *s;
 
     if (! xml) return;
-    ezxml_free(xml->child);
-    ezxml_free(xml->ordered);
-
     if (! xml->parent) { // free root tag allocations
         for (i = 10; root->ent[i]; i += 2) // 0 - 9 are default entites (<>&"')
             if ((s = root->ent[i + 1]) < root->s || s > root->e) free(s);
@@ -798,13 +794,22 @@ void ezxml_free(ezxml_t xml)
             for (j = 1; root->pi[i][j]; j++);
             free(root->pi[i][j + 1]);
             free(root->pi[i]);
-        }            
+        }
         if (root->pi[0]) free(root->pi); // free processing instructions
 
         if (root->len == -1) free(root->m); // malloced xml data
 
         if (root->u) free(root->u); // utf8 conversion
     }
+}
+
+// free the memory allocated for the ezxml structure
+void ezxml_free(ezxml_t xml)
+{
+    if (! xml) return;
+    ezxml_free(xml->child);
+    ezxml_free(xml->ordered);
+    ezxml_free_root_stuff (xml);
 
     ezxml_free_attr(xml->attr); // tag attributes
     if ((xml->flags & EZXML_TXTM)) free(xml->txt); // character content
@@ -839,6 +844,7 @@ ezxml_t ezxml_insert(ezxml_t xml, ezxml_t dest, size_t off)
 {
     ezxml_t cur, prev, head;
 
+    ezxml_free_root_stuff (xml);
     xml->next = xml->sibling = xml->ordered = NULL;
     xml->off = off;
     xml->parent = dest;
