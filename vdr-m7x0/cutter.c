@@ -77,11 +77,9 @@ void cCuttingThread::Action(void)
   int __attribute__((unused)) burst_size = MEGABYTE(Setup.CutterMaxBandwidth) * CUTTER_TIMESLICE / 1000; // max bytes/timeslice 
   cTimeMs __attribute__((unused)) t;
 
-//M7X0 BEGIN AK
-  SetPriority(19);
-//M7X0 END AK
   cMark *Mark = fromMarks.First();
   if (Mark) {
+     SetPriority(19);
      fromFile = fromFileName->Open();
      toFile = toFileName->Open();
      if (!fromFile || !toFile)

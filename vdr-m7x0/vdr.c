@@ -1008,7 +1008,7 @@ int main(int argc, char *argv[])
 	}
 	key=cTShiftControl::FilterKey(key,&LastChannel,Menu);
         // Keys that must work independent of any interactive mode:
-        switch (key) {
+        switch (int(key)) {
           // Menu control:
           case kMenu: {
                key = kNone; // nobody else needs to see this key
@@ -1275,7 +1275,7 @@ int main(int argc, char *argv[])
               cRemote::PutMacro(key);
               key = kNone;
               }
-           switch (key) {
+           switch (int(key)) {
              // Toggle channels:
              case kChanPrev:
              case k0: {

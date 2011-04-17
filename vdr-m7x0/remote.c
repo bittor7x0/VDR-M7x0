@@ -41,6 +41,7 @@ cRemote::cRemote(const char *Name)
 
 cRemote::~cRemote()
 {
+  Remotes.Del(this, false);
   free(name);
 }
 

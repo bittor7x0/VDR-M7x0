@@ -802,14 +802,15 @@ uchar *cRingBufferResult::Get(int &Count, sPesResult *&Headers, int &HeaderCount
   sPesResult *headers = pesHeadersGotten;
   while (i != LastHeader && pesHeader[i].offset >= Tail && pesHeader[i].offset < end) {
         if (pesHeadersGottenSize <= count) {
-           headers = (sPesResult *) realloc(headers, sizeof(sPesResult) * (count + 16));
-           if (!headers) {
-              esyslog("ERROR Cannot alloc get headers");
+           if (sPesResult *NewBuffer = (sPesResult *)realloc(headers, sizeof(sPesResult) * (count + 16))) {
+              pesHeadersGotten = NewBuffer;
+              pesHeadersGottenSize = count + 16;
+              }
+           else {
+              esyslog("ERROR: out of memory");
               gotten = 0;
               return NULL;
               }
-           pesHeadersGottenSize = count + 16;
-           pesHeadersGotten = headers;
            }
         memcpy(&headers[count], &pesHeader[i], sizeof(sPesResult));
         headers[count].offset -= Tail;
@@ -818,7 +819,6 @@ uchar *cRingBufferResult::Get(int &Count, sPesResult *&Headers, int &HeaderCount
         if (i == headersSize)
            i = 0;
         }
-
 
   headersGotten = count;
   HeaderCount = count;

@@ -178,8 +178,14 @@ char *strreplace(char *s, const char *s1, const char *s2)
      int l  = strlen(s);
      int l1 = strlen(s1);
      int l2 = strlen(s2);
-     if (l2 > l1)
-        s = (char *)realloc(s, l + l2 - l1 + 1);
+     if (l2 > l1) {
+        if (char *NewBuffer = (char *)realloc(s, l + l2 - l1 + 1))
+           s = NewBuffer;
+        else {
+           esyslog("ERROR: out of memory");
+           return s;
+           }
+        }
      char *sof = s + of;
      if (l2 != l1)
         memmove(sof + l2, sof + l1, l - of - l1 + 1);
@@ -369,22 +375,29 @@ bool RemoveFileOrDir(const char *FileName, bool FollowSymlinks)
                  if (strcmp(e->d_name, ".") && strcmp(e->d_name, "..")) {
                     cString buffer = AddDirectory(FileName, e->d_name);
                     if (FollowSymlinks) {
-                       int size = strlen(buffer) * 2; // should be large enough
-                       char *l = MALLOC(char, size);
-                       int n = readlink(buffer, l, size);
-                       if (n < 0) {
-                          if (errno != EINVAL)
-                             LOG_ERROR_STR(*buffer);
+                       struct stat st2;
+                       if (lstat(buffer, &st2) == 0) {
+                          if (S_ISLNK(st2.st_mode)) {
+                             int size = st2.st_size + 1;
+                             char *l = MALLOC(char, size);
+                             int n = readlink(buffer, l, size - 1);
+                             if (n < 0) {
+                                if (errno != EINVAL)
+                                   LOG_ERROR_STR(*buffer);
+                                }
+                             else {
+                                l[n] = 0;
+                                dsyslog("removing %s", l);
+                                if (remove(l) < 0)
+                                   LOG_ERROR_STR(l);
+                                }
+                             free(l);
+                             }
                           }
-                       else if (n < size) {
-                          l[n] = 0;
-                          dsyslog("removing %s", l);
-                          if (remove(l) < 0)
-                             LOG_ERROR_STR(l);
+                       else if (errno != ENOENT) {
+                          LOG_ERROR_STR(FileName);
+                          return false;
                           }
-                       else
-                          esyslog("ERROR: symlink name length (%d) exceeded anticipated buffer size (%d)", n, size);
-                       free(l);
                        }
                     dsyslog("removing %s", *buffer);
                     if (remove(buffer) < 0)

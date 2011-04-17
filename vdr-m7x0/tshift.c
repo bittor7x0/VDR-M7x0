@@ -1014,7 +1014,7 @@ bool cTShiftControl::Forget(void)
 
 bool cTShiftControl::OnlyProcessKey(eKeys Key,int *LastChannel)
 {
-  switch(Key)
+  switch(int(Key))
   {
     case kPlay:   if(LastChannel) *LastChannel=-1;
 		   Play();
@@ -1358,17 +1358,19 @@ bool cTShiftIndexFile::Grow(int needed,int FileNumber)
 		if(size>maxSize)
 			size=maxSize;
 		currentMutex.Lock();
-		tIndex *newIndex=(tIndex *)realloc(index,size*sizeof(tIndex));
-		if(!newIndex)
+		if(tIndex *newIndex=(tIndex *)realloc(index,size*sizeof(tIndex)))
 		{
-			esyslog("ERROR: can't realloc() index in Grow()");
+			index=newIndex;
+			currentMutex.Unlock();
+			dsyslog("TShift: cTShiftIndexFile realloc %d indexes,f=%d,l=%d,m=%d",size,first,last,maxSize);
+		}
+		else
+		{
+			esyslog("ERROR: out of memory");
 			WriteIndex();
 			currentMutex.Unlock();
 			return false;
 		}
-		index=newIndex;
-		currentMutex.Unlock();
-		dsyslog("TShift: cTShiftIndexFile realloc %d indexes,f=%d,l=%d,m=%d",size,first,last,maxSize);
 	}
 	if(last+needed-first>=maxSize)
 		IncFirst(last+needed+1-first-maxSize);
@@ -1882,4 +1884,3 @@ bool cTShiftIndexFile::Write(sPesResult *Picture,int PictureCount,uchar FileNumb
 	indexLock.Unlock();
 	return true;
 }
-
