@@ -83,6 +83,7 @@
 #include "tools.h"
 #include "transfer.h"
 #include "childlock.h"
+#include "dummyplayer.h"
 #include "tshift.h"
 #include "videodir.h"
 //M7X0 BEGIN AK
@@ -1165,6 +1166,8 @@ int main(int argc, char *argv[])
 		    cDevice::PrimaryDevice()->SetTvSettings(0);
 		    cControl::Shutdown();
 		    cTShiftControl::ShutdownTShift();
+		    // launch the dummy player
+		    cControl::Launch(new cDummyPlayerControl);
 		    break;
 		}
                 // Check for activity, request power button again if active:
@@ -1173,7 +1176,9 @@ int main(int argc, char *argv[])
 		   setIaMode(0);
 		   cDevice::PrimaryDevice()->SetTvSettings(0);
 		   cControl::Shutdown();
-		    cTShiftControl::ShutdownTShift();
+		   cTShiftControl::ShutdownTShift();
+		   // launch the dummy player
+		   cControl::Launch(new cDummyPlayerControl);
 		   // Not pressed power - set VDR to be non-interactive and power down later:
                    ShutdownHandler.SetUserInactive();
                    break;
@@ -1383,6 +1388,8 @@ int main(int argc, char *argv[])
 			cDevice::PrimaryDevice()->SetTvSettings(0);
 			cControl::Shutdown();
 			cTShiftControl::ShutdownTShift();
+			// launch the dummy player
+			cControl::Launch(new cDummyPlayerControl);
 		    }
 		}
 		}
