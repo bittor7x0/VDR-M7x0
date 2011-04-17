@@ -110,7 +110,9 @@ $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 #
 
 $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(SQLITE_DIR) all
+	$(MAKE) -C $(SQLITE_DIR) \
+		$(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fno-fast-math" \
+		all
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_compiled
 
 #
@@ -118,7 +120,9 @@ $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
 #
 
 $(STAGEFILES_DIR)/.sqlite_installed: $(STAGEFILES_DIR)/.sqlite_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(SQLITE_DIR) install
+	$(MAKE) -C $(SQLITE_DIR) \
+		$(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fno-fast-math" \
+		install
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_installed
 
 

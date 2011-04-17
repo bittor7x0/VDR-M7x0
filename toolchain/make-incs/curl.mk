@@ -116,7 +116,7 @@ $(STAGEFILES_DIR)/.curl_configured: $(STAGEFILES_DIR)/.curl_patched
 #
 
 $(STAGEFILES_DIR)/.curl_compiled: $(STAGEFILES_DIR)/.curl_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(CURL_DIR)
+	$(MAKE) -C $(CURL_DIR) $(UCLIBC_ENV)
 	$(TOUCH) $(STAGEFILES_DIR)/.curl_compiled
 
 #
@@ -124,7 +124,7 @@ $(STAGEFILES_DIR)/.curl_compiled: $(STAGEFILES_DIR)/.curl_configured
 #
 
 $(STAGEFILES_DIR)/.curl_installed: $(STAGEFILES_DIR)/.curl_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(CURL_DIR) install
+	$(MAKE) -C $(CURL_DIR) $(UCLIBC_ENV) install
 	$(TOUCH) $(STAGEFILES_DIR)/.curl_installed
 
 

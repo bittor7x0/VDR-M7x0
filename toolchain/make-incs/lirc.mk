@@ -99,7 +99,7 @@ $(STAGEFILES_DIR)/.lirc_compiled: $(STAGEFILES_DIR)/.lirc_configured
 #
 
 $(STAGEFILES_DIR)/.lirc_installed: $(STAGEFILES_DIR)/.lirc_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(LIRC_DIR) install
+	$(MAKE) -C $(LIRC_DIR) $(UCLIBC_ENV) install
 	$(TOUCH) $(STAGEFILES_DIR)/.lirc_installed
 
 

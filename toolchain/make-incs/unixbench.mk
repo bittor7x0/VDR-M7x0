@@ -66,8 +66,9 @@ $(STAGEFILES_DIR)/.unixbench_patched: $(STAGEFILES_DIR)/.unixbench_unpacked
 #
 
 $(STAGEFILES_DIR)/.unixbench_compiled: $(STAGEFILES_DIR)/.unixbench_patched
-	$(UCLIBC_ENV) $(MAKE) \
-		-C $(UNIXBENCH_DIR)
+	$(MAKE) -C $(UNIXBENCH_DIR) \
+		$(UCLIBC_ENV) \
+		CFLAGS="$(UCLIBC_CFLAGS) -DTIME -Wall -pedantic -ansi"
 	$(TOUCH) $(STAGEFILES_DIR)/.unixbench_compiled
 
 #
@@ -75,8 +76,10 @@ $(STAGEFILES_DIR)/.unixbench_compiled: $(STAGEFILES_DIR)/.unixbench_patched
 #
 
 $(STAGEFILES_DIR)/.unixbench_stripped: $(STAGEFILES_DIR)/.unixbench_compiled
-	$(UCLIBC_ENV) $(MAKE) strip \
-		-C $(UNIXBENCH_DIR)
+	$(MAKE) -C $(UNIXBENCH_DIR) \
+		$(UCLIBC_ENV) \
+		CFLAGS="$(UCLIBC_CFLAGS) -DTIME -Wall -pedantic -ansi" \
+		strip
 	$(TOUCH) $(STAGEFILES_DIR)/.unixbench_stripped
 
 #
