@@ -1,0 +1,166 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Vyacheslav Dikonov <sdiconov@mail.ru>, 2004
+# Vyacheslav Dikonov <sdiconov@mail.ru>, 2009.
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <koch@u32.de>\n"
+"POT-Creation-Date: 2009-02-18 22:05+0100\n"
+"PO-Revision-Date: 2009-02-15 15:52+0300\n"
+"Last-Translator: 1455 (1455) <.g.prosat@tochka.ru>\n"
+"Language-Team: Russian <ru@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: devstatus.c:18
+msgid "Status of dvb devices"
+msgstr "Статус DVB устройств"
+
+#: devstatus.c:19 devstatus.c:217
+msgid "Device status"
+msgstr "Статус устройства"
+
+#: devstatus.c:40
+msgid "satellite card"
+msgstr "DVB-S карта"
+
+#: devstatus.c:41
+msgid "cable card"
+msgstr "DVB-C карта"
+
+#: devstatus.c:42
+msgid "terrestrial card"
+msgstr "DVB-T карта"
+
+#: devstatus.c:43
+msgid "unknown cardtype"
+msgstr "неизвестный тип"
+
+#: devstatus.c:203
+#, c-format
+msgid "frequency: %d MHz, signal: %d%%, s/n: %d%%"
+msgstr "частота:·%d·МГц,·сигнал:·%d%%,·с/ш:·%d%%"
+
+#: devstatus.c:207
+#, c-format
+msgid "no signal information available (rc=%d)"
+msgstr "нет информации о сигнале (rc=%d)"
+
+#: devstatus.c:232 devstatus.c:563
+msgid "device with decoder"
+msgstr "с декодером"
+
+#: devstatus.c:234 devstatus.c:563
+msgid "primary device"
+msgstr "первичная"
+
+#: devstatus.c:238 devstatus.c:564 devstatus.c:599
+msgid "Device"
+msgstr "Карта"
+
+#: devstatus.c:240
+msgid "-- Live"
+msgstr "-- В режиме приёма"
+
+#: devstatus.c:265 devstatus.c:584
+msgid "currently no recordings"
+msgstr "сейчас не записывает"
+
+#. TRANSLATORS: printf string for channel line
+#: devstatus.c:284
+#, c-format
+msgid "%5d  %s %s  %s  %s%s%s"
+msgstr "%5d··%s·%s··%s··%s%s%s"
+
+#. TRANSLATORS: abbr. for tv-channels
+#: devstatus.c:288
+msgid "t"
+msgstr "t"
+
+#. TRANSLATORS: abbr. for video only-channels
+#: devstatus.c:290
+msgid "v"
+msgstr "v"
+
+#. TRANSLATORS: abbr. for radio-channels
+#: devstatus.c:292
+msgid "r"
+msgstr "r"
+
+#. TRANSLATORS: abbr. for no signal-channels
+#: devstatus.c:294
+msgid "-"
+msgstr "-"
+
+#. TRANSLATORS: abbr. for live channel
+#: devstatus.c:297
+msgid "+"
+msgstr "+"
+
+#. TRANSLATORS: abbr. for crypted channels
+#: devstatus.c:299
+msgid "x"
+msgstr "x"
+
+#. TRANSLATORS: abbr. for FTA channels
+#: devstatus.c:301
+#, fuzzy
+msgid " "
+msgstr "F"
+
+#: devstatus.c:335
+msgid "no recordings"
+msgstr "без запис."
+
+#: devstatus.c:335
+msgid "recordings"
+msgstr "записи"
+
+#: devstatus.c:336
+msgid "no strength"
+msgstr "список"
+
+#: devstatus.c:336
+msgid "strength"
+msgstr "имеется"
+
+#: devstatus.c:337
+msgid "channels"
+msgstr "каналы"
+
+#: devstatus.c:337
+msgid "no channels"
+msgstr "без кан-в"
+
+#: devstatus.c:338
+msgid "Refresh display"
+msgstr "Сброс инфо"
+
+#: devstatus.c:467
+msgid "Show recordings"
+msgstr "Показ записей"
+
+#: devstatus.c:468
+msgid "Show signals"
+msgstr "Показ сигнала"
+
+#: devstatus.c:469
+msgid "Show channels"
+msgstr "Показ каналов"
+
+#: devstatus.c:470
+msgid "Show channel provider"
+msgstr "Показ провайдера"
+
+#: devstatus.c:557
+msgid "List of DVB devices"
+msgstr "Список DVB карт"
+
+#: devstatus.c:595
+msgid "Number of concurrent recordings"
+msgstr "Кол-во одновременных записей"

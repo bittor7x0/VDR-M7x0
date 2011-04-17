@@ -1,0 +1,75 @@
+Moin,
+
+ich habe das allseits bekannte recstatus-Plugin ein wenig aufgeblasen. 
+
+Es zeigt Infos zu allen von vdr verwendeten DVB-Devices an. Und zwar 
+den Typ (DVB-T, -S und -C), den Namen (meist den des Tunerchipsatzes), 
+die Signalstärke und der Rauschabstand (sofern die Karte das 
+unterstützt) sowie alle Kanäle, auf die das Gerät gerade abgestimmt 
+ist (und somit bei Aufnahmen gleichzeitig benutzen kann). 
+
+Die Infos zum Signal, zu den Kanälen und zu den Aufnahmen lassen sich 
+mit den Farbtasten einzeln aus- und einblenden.
+
+Die Ausgabe sieht bei mir so aus: 
+
+                                      Gerätestatus
+
+--- Gerät 1   (Gerät hat Dekoder, Primärgerät) ---
+Satellitenkarte (ST STV0299 DVB-S) - /dev/dvb/adapter0/frontend0
+Frequenz: 12070 MHz, Signalstärke: 65%, Rauschabstand 81%
+keine laufenden Aufnahmen
+ 1045  t x  PREMIERE START  (PREMIERE)
+ 3080  t x  TNT SERIE  (PREMIERE)
+ 3133  t x  BLUE MOVIE Extra  ()
+ 3134  t x  BLUE MOVIE Gay  ()
+ 3135  t x  BLUE MOVIE  ()
+ 3264  t x  Erotik 1  ()
+ 3265  t x  Erotik 2  ()
+ 3326  t x  GOLDSTAR TV  (PREMIERE)
+ 3337  t x  HEIMATKANAL  (PREMIERE)
+ 3342  t x  HIT24  (PREMIERE)
+ 3468  t x  RTL CRIME  (PREMIERE)
+ 3471  t x  RTL PASSION  (PREMIERE)
+ 3684  r x  P-60ER/70ER  (PREMIERE)
+ 3685  r x  P-80ER/90ER  (PREMIERE)
+ 3686  r x  P-COUNTRY  (PREMIERE)
+ 3687  r x  P-DEUTSCHE CHARTS  (PREMIERE)
+ 3689  r x  P-LOVE SONGS  (PREMIERE)
+ 3690  r x  P-RnB/HIP HOP  (PREMIERE)
+ 3691  r x  P-ROCK HYMNEN  (PREMIERE)
+
+--- Gerät 2 -- Live  ---
+Terristische Karte (Philips TDA10045H DVB-T) - /dev/dvb/adapter1/frontend0
+Frequenz: 706 MHz, Signalstärke: 80%, Rauschabstand 99%
+keine laufenden Aufnahmen
+  101  t +  Das Erste  (ARD)
+  104  t    arte  (ARD)
+  118  t    EinsFestival  (ARD)
+  120  t    Phoenix  (ARD)
+
+--- Gerät 3   ---
+Terristische Karte (Afatech AF9013 DVB-T) - /dev/dvb/adapter2/frontend0
+Frequenz: 746 MHz, Signalstärke: 100%, Rauschabstand 0%
+keine laufenden Aufnahmen
+  107  t    SAT.1  (ProSiebenSat.1)
+  108  t    ProSieben  (ProSiebenSat.1)
+  109  t    kabel eins  (ProSiebenSat.1)
+  121  t    N24  (ProSiebenSat.1)
+
+
+  Aufn.verbergen      Signal verbergen     Kanäle verbergen    aktualisieren
+
+
+Nicht jeder Treiber gibt die Werte für Signalstärke und Rauschabstand 
+zurück. In so einem Fall (wie beim Gerät 3) sind die Angaben dann, äh, 
+unplausibel. 
+Der angezeigt Name kommt ebenfalls vom Treiber; mithin wird oft der Name 
+des Chipsatzes des Tuners angezeigt und nicht den der Karte selber. 
+
+Mit den Tasten 7 und 9 kann man für die Karte den benutzten Transponder 
+wechseln; das Live-Bild wird dabei nicht umgeschaltet (damit man z.B. auch 
+auf versclüsselte Kanäle wechseln kann). 
+Achtung: Läuft auf dem DEV-Gerät in dem Moment eine Aufnahme, wird diese 
+abgebrochen ohne, dass das gemeldet oder sonstwie offensichtlich wird.
+
