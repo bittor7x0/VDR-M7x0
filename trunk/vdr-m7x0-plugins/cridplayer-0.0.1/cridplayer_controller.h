@@ -67,7 +67,7 @@ public:
         playingRecording = NULL;
      }
   void ReplayEnded(void) { free(playingRecording); playingRecording = NULL; }
-  bool ReplayRecordingDeleted(void) { return  playingRecordingDeleted; }
+  bool ReplayRecordingDeleted(void) const { return  playingRecordingDeleted; }
   const char *GetCurrentPath(void) { return dirScanner->Path(); }
   void SetBasePath(const char *Path) {
      dirScanner->SetBasePath(Path);

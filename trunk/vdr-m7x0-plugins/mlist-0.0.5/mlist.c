@@ -62,9 +62,14 @@ public:
     msg_time = time(NULL);
     strcpy(msg, Message); 
   }
+  virtual ~cMessage();
   char *Message() { return msg; }
   time_t* MessageTime() { return &msg_time; }
 };
+
+cMessage::~cMessage() {
+  delete[] msg;
+}
 
 // --------------------------- cMlistMenu --------------------------------------
 

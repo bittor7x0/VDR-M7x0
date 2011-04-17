@@ -270,14 +270,12 @@ bool HardLinkVideoFile(const char *OldName, const char *NewName)
         }
 
      // Search in video01 and upwards
-     bool found = false;
      while (Dir.Next()) {
            Dir.Store();
            const char *TmpNewName = Dir.Adjust(NewName);
            if (StatNearestDir(TmpNewName, &StatDir) && StatDir.st_dev == StatOldName.st_dev) {
               isyslog("HardLinkVideoFile: %s is on %i (match)", TmpNewName, (int)StatDir.st_dev);
               ActualNewName = TmpNewName;
-              found = true;
               break;
               }
            isyslog("HardLinkVideoFile: %s is on %i", TmpNewName, (int)StatDir.st_dev);

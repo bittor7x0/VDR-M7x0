@@ -621,7 +621,7 @@ void cMP3Control::ShowProgress(bool open, bool bigWin)
             int hash=MakeHash(buf);
             if(num==mode->Num) { fg=clrBlack; bg=clrCyan; hash=(hash^77) + 23; }
             if(all || hash!=hashlist[i]) {
-              char *s=rindex(buf,'\t');
+              char *s=strrchr(buf,'\t');
               if(s) {
                 *s++=0;
                 Write(0,i,5,buf,fg,bg);

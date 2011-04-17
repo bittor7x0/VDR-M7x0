@@ -118,11 +118,11 @@ void cColorMenu::Draw(void)
 
 eOSState cColorMenu::ProcessKey(eKeys Key)
 {  
-  int newInputNum = 0;
   eOSState state = cOsdObject::ProcessKey(Key);
 
   if (state == osUnknown) {
     state = osContinue;
+    int newInputNum = 0;
     switch (Key & ~k_Repeat) {
       case kDown:  
         sel = (sel==5) ? 0 : sel+1; 

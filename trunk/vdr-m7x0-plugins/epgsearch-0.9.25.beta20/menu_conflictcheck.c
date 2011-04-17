@@ -104,7 +104,7 @@ bool cMenuConflictCheck::BuildList()
 	    if (!showAll && ct->ignore) continue;
 	    Add(new cMenuConflictCheckItem(ct));
 	    std::set<cConflictCheckTimerObj*,TimerObjSort>::iterator it;
-	    for (it = ct->failedTimers.begin(); it != ct->failedTimers.end(); it++) 
+	    for (it = ct->failedTimers.begin(); it != ct->failedTimers.end(); ++it) 
 		if (!(*it)->ignore || showAll)
 		    Add(new cMenuConflictCheckItem(ct, *it));
 	}
@@ -210,7 +210,7 @@ bool cMenuConflictCheckDetails::BuildList()
     
     std::set<cConflictCheckTimerObj*,TimerObjSort>::iterator it;
     if (timerObj->concurrentTimers)
-	for (it = timerObj->concurrentTimers->begin(); it != timerObj->concurrentTimers->end(); it++) 
+	for (it = timerObj->concurrentTimers->begin(); it != timerObj->concurrentTimers->end(); ++it) 
 	{
 	    Add(new cMenuConflictCheckDetailsItem(*it));
         if ((*it)->Event())
@@ -225,9 +225,12 @@ void cMenuConflictCheckDetails::SetHelpKeys()
 {
     cConflictCheckTimerObj* curTimerObj = CurrentTimerObj();
     bool hasTimer = true;
+    bool hasEvent = true;
     if (curTimerObj)
+    {
 	hasTimer = curTimerObj->timer->HasFlags(tfActive);
-    bool hasEvent = curTimerObj->Event();
+	hasEvent = curTimerObj->Event();
+    }
     SetHelp(hasEvent?tr("Button$Repeats"):NULL, trVDR("Button$On/Off"), hasTimer?trVDR("Button$Delete"):NULL, tr("Button$Commands"));
 }
 
@@ -394,7 +397,7 @@ eOSState cMenuConflictCheckDetails::ProcessKey(eKeys Key)
 	    std::set<cConflictCheckTimerObj*,TimerObjSort>::iterator it;
 	    if (timerObj->concurrentTimers)
 	    {
-		for (it = timerObj->concurrentTimers->begin(); it != timerObj->concurrentTimers->end(); it++) 
+		for (it = timerObj->concurrentTimers->begin(); it != timerObj->concurrentTimers->end(); ++it) 
 		{
 		    bool found = false;
 		    for(cTimer* checkT = Timers.First(); checkT; checkT = Timers.Next(checkT)) 

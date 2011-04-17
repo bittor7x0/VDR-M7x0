@@ -402,10 +402,10 @@ void Config::savePlugins(Plugins *plugins, TiXmlElement *xml)
  ***************************/
 void Config::dumpXMLError()
 {
-  const char *errStr;
-  int  col, row;
   if(_xmlDoc.Error())
   {
+    const char *errStr;
+    int col, row;
     errStr = _xmlDoc.ErrorDesc();
     col    = _xmlDoc.ErrorCol();
     row    = _xmlDoc.ErrorRow();
@@ -414,11 +414,10 @@ void Config::dumpXMLError()
 }
 void Config::dumpXMLError(const char* myErrStr)
 {
-  const char *errStr;
-  int  col, row;
-
   if(_xmlDoc.Error())
   {
+    const char *errStr;
+    int col, row;
     errStr = _xmlDoc.ErrorDesc();
     col    = _xmlDoc.ErrorCol();
     row    = _xmlDoc.ErrorRow();

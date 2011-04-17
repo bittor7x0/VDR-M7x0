@@ -231,7 +231,7 @@ bool cEnigmaLogoCache::Flush(void)
   if (!cacheMapM.empty()) {
     debug("cPluginSkinEnigma::Flush() NON-EMPTY");
     // delete bitmaps and clear map
-    for (std::map<std::string, cBitmap *>::iterator i = cacheMapM.begin(); i != cacheMapM.end(); i++) {
+    for (std::map<std::string, cBitmap *>::iterator i = cacheMapM.begin(); i != cacheMapM.end(); ++i) {
       delete((*i).second);
     }
     cacheMapM.clear();

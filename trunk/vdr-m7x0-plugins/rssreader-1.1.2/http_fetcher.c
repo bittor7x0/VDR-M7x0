@@ -584,7 +584,7 @@ int http_parseFilename(const char *url, char **filename)
 		return -1;
 		}
 
-	ptr = (char *)rindex(url, '/');
+	ptr = (char *)strrchr(url, '/');
 	if(ptr == NULL)
 		/* Root level request, apparently */
 		return 1;

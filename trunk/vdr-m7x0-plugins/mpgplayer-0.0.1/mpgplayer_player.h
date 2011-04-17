@@ -206,7 +206,7 @@ public:
   void Backward(void);
        // Runs the current replay session backwards at a higher speed.
 
-  int  SkipFrames(int Frames);
+/*  int  SkipFrames(int Frames);*/
        // Returns the new index into the current replay session after skipping
        // the given number of frames (no actual repositioning is done!).
        // The sign of 'Frames' determines the direction in which to skip.

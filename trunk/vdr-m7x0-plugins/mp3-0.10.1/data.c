@@ -253,7 +253,7 @@ void cFileObj::SplitAndSet(const char *Path)
       }
     }
 
-  const char *s=rindex(p,'/');
+  const char *s=strrchr(p,'/');
   if(s) {
     const int l=s-p+1;
     subdir=MALLOC(char,l);

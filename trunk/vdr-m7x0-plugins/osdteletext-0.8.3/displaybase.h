@@ -88,7 +88,7 @@ protected:
 public:
     cDisplay(int width, int height);
     virtual ~cDisplay();
-    bool Valid() { return (osd!=NULL); }
+    bool Valid() const { return (osd!=NULL); }
     // After creation, check for Valid(). Destroy, if not valid.
         
 protected:  
@@ -109,22 +109,22 @@ protected:
     // but may be used differently.
 
 public:
-    bool GetBlink() { return Blinked; }
+    bool GetBlink() const { return Blinked; }
     bool SetBlink(bool blink);
     // Switch blink frequently to get blinking chars
     // Returns true if there are blinking characters.
     
-    bool GetConceal() { return Concealed; }
+    bool GetConceal() const { return Concealed; }
     bool SetConceal(bool conceal);
     // Hidden text. Set to true to see hidden text.
     // Returns true if there are concealed characters.
     
-    enumZoom GetZoom() { return Zoom; }
+    enumZoom GetZoom() const { return Zoom; }
     void SetZoom(enumZoom zoom);
     // Zoom to upper/lower half of page
 
     void SetBackgroundColor(tColor c);
-    tColor GetBackgroundColor() { return Background; }
+    tColor GetBackgroundColor() const { return Background; }
     // Set the background color for black. Allows transparent black.
 
     // Color mapping interface.

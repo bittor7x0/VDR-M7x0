@@ -279,6 +279,7 @@ const char * Util::typeToStr( Type type )
 
 void Util::SwitchChannelList( const char * selectedChannelList )
 {
+  char * ConfigDir=NULL;
   char * channelDir  =NULL;
   char * channelFile =NULL;
   char   resolvedPath[PATH_MAX];
@@ -287,13 +288,13 @@ void Util::SwitchChannelList( const char * selectedChannelList )
   if( selectedChannelList == NULL)
     return;
 
-  asprintf(&channelDir,"%s", cPlugin::ConfigDirectory());
-  char *tmp = strrchr(channelDir,'/');
+  asprintf(&ConfigDir,"%s", cPlugin::ConfigDirectory());
+  char *tmp = strrchr(ConfigDir,'/');
   *tmp = '\0';
 
-  asprintf(&channelFile,    "%s/channels.conf",channelDir);
-  asprintf(&channelDir,     "%s/channels",channelDir);
-  asprintf(&newChannelFile, "%s/%s.conf", channelDir, selectedChannelList);
+  asprintf(&channelFile,    "%s/channels.conf",ConfigDir);
+  asprintf(&channelDir,     "%s/channels",ConfigDir);
+  asprintf(&newChannelFile, "%s/%s.conf", ConfigDir, selectedChannelList);
 
   if( realpath(channelFile, resolvedPath) == NULL)
   {
@@ -324,6 +325,7 @@ void Util::SwitchChannelList( const char * selectedChannelList )
   free(channelDir);
   free(channelFile);
   free(newChannelFile);
+  free(ConfigDir);
 }
 
 

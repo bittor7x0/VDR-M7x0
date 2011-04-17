@@ -213,7 +213,7 @@ void cMenuDirSelect::Load()
 
     CreateDirSet();
     std::set<string>::iterator it;
-    for (it = directorySet.begin(); it != directorySet.end(); it++) 
+    for (it = directorySet.begin(); it != directorySet.end(); ++it) 
 	AddDistinct((*it).c_str());
 
     Sort();

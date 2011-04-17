@@ -56,7 +56,7 @@ private:
 	void Hist3d(long *vwt, long *vmr, long *vmg, long *vmb, float *m_2);
 	void Momt3d(long *vwt, long *vmr, long *vmg, long *vmb, float *m_2);
 	int Cut(struct box * set1, struct box * set2);
-	long Vol(struct box * cube, long mmt[BOX][BOX][BOX]);
+	long Vol(struct box * cube, long mmt[BOX][BOX][BOX]) const;
 	float Maximize(struct box * cube, unsigned char dir, int first, int last, int * cut, long whole_r, long whole_g, long whole_b, long whole_w);
 	float Var(struct box * cube);
 	long Top(struct box * cube, unsigned char dir, int pos, long mmt[BOX][BOX][BOX]);

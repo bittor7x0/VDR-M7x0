@@ -849,18 +849,18 @@ bool MenuEntry::ChannelList( )
 {
   bool ok = true;
   DIR        *dirFP = NULL;
+  char * ConfigDir=NULL;
   char * channelDir=NULL;
   char * channelFile=NULL;
   struct dirent *entry = NULL;
 
-  asprintf(&channelDir,"%s", cPlugin::ConfigDirectory());
-  char *tmp = strrchr(channelDir,'/');
+  asprintf(&ConfigDir,"%s", cPlugin::ConfigDirectory());
+  char *tmp = strrchr(ConfigDir,'/');
   *tmp = '\0';
 
-  asprintf(&channelFile, "%s/channels.conf",channelDir);
-  asprintf(&channelDir,  "%s/channels",channelDir);
+  asprintf(&channelFile, "%s/channels.conf",ConfigDir);
+  asprintf(&channelDir,  "%s/channels",ConfigDir);
 
-  
    if(  (dirFP = opendir(channelDir))!= NULL)
    {
         while( (entry=readdir(dirFP))!=NULL)
@@ -873,6 +873,7 @@ bool MenuEntry::ChannelList( )
               _selectionValues.Add(entry->d_name);
             }
         }
+        closedir(dirFP);
         char buf[PATH_MAX];
         if( realpath(channelFile, buf) != NULL)
         {
@@ -888,13 +889,12 @@ bool MenuEntry::ChannelList( )
    {
      debug("Can not read directory:%s  errno=%d", channelDir, errno);
    }
-   
-   if( dirFP!=NULL ) closedir(dirFP);
-   if( channelDir != NULL) free(channelDir);
-   if( channelFile != NULL) free(channelFile);
-   
+
+   free(channelDir);
+   free(channelFile);
+   free(ConfigDir);
+
    return(ok);
-  
 }
 
 

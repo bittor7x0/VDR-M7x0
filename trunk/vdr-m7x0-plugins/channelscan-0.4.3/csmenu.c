@@ -932,7 +932,7 @@ cMenuStatusBar::cMenuStatusBar(int Total, int Current, int Channel, int Mode, bo
    // GetReal EditableWidth
    percent = static_cast<int>(((Current) * barWidth/(Total)));
 
-   char buffer[barWidth+1];
+   char buffer[barWidth+2];
    int i;
 
    buffer[0] = '[';

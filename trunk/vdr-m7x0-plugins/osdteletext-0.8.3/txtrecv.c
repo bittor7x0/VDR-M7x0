@@ -67,7 +67,7 @@ int Storage::cleanSubDir(const char *dir) {
    static bool reportedError=false; //avoid filling up syslog
    DIR *d=opendir(dir);
    bool hadError=false;
-   int bytesDeleted=0, filesize;
+   int bytesDeleted=0;
    if (d) {
       struct dirent *txtfile, path;
       struct stat txtfilestat;
@@ -78,7 +78,7 @@ int Storage::cleanSubDir(const char *dir) {
          if (strcmp(txtfile->d_name+len-4, ".vtx")==0) {
             snprintf(fullPath, PATH_MAX, "%s/%s", dir, txtfile->d_name);
             stat(fullPath, &txtfilestat);
-            filesize=actualFileSize(txtfilestat.st_size);
+            int filesize=actualFileSize(txtfilestat.st_size);
             int ret=unlink(fullPath);
             if (ret==0)
                bytesDeleted+=filesize;
@@ -161,12 +161,9 @@ void Storage::freeSpace() {
    time_t min=time(0);
    char minDir[PATH_MAX];
    char fullPath[PATH_MAX];
-   int haveDir=0;
-#ifdef VDR_M7x0_VERSION
-   int i_bytesCleared=0;
-#endif
    DIR *top=opendir(getRootDir());
    if (top) {
+      int haveDir=0;
       struct dirent *chandir, path;
       struct stat chandirstat;
       while ( (!readdir_r(top, &path, &chandir) && chandir != NULL) ) {
@@ -188,7 +185,7 @@ void Storage::freeSpace() {
       //if haveDir, only current directory present, which must not be deleted
       if (haveDir>=2) {
 #ifdef VDR_M7x0_VERSION
-         i_bytesCleared=cleanSubDir(minDir);
+         int i_bytesCleared=cleanSubDir(minDir);
          byteCount-=i_bytesCleared;
          dsyslog("OSD-Teletext: Removed cache dir '%s', freed %i bytes,new cache size is %i", minDir, i_bytesCleared, (int)byteCount);
 #else

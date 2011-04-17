@@ -358,7 +358,6 @@ cString cPluginChannellists::SVDRPCommand(const char *Command, const char *Optio
      }
   else if (strcasecmp(Command, "LOAD") == 0) {
      if ((*Option) && (strcmp(Option, ChannelsConf)!= 0)) {
-        int c;
         FILE *in,*out;
         in=fopen(Option,"r");
         if (in) {
@@ -367,6 +366,7 @@ cString cPluginChannellists::SVDRPCommand(const char *Command, const char *Optio
            timers.SaveTimer();
            out=fopen(ChannelsConf,"w");
            if (out) {
+              int c;
               while ((c=fgetc(in))!=EOF) {
                  fputc(c,out);
                  }
@@ -469,7 +469,6 @@ eOSState cMenuEditChannellist::ProcessKey(eKeys Key) {
         case kOk: {
            if ((strcmp(newname, "") == 0) || ((strcmp(newname, oldname) == 0) && (savecurrent == 0))) return osContinue;
 
-           int c;
            char *ToLoad;
            char *ToReload;
 
@@ -484,6 +483,7 @@ eOSState cMenuEditChannellist::ProcessKey(eKeys Key) {
            if (in) {
               out=fopen(ToReload,"w");
               if (out) {
+                 int c;
                  while ((c=fgetc(in))!=EOF) {
                     fputc(c,out);
                     }
@@ -573,7 +573,6 @@ eOSState cSwitchMenu::SwitchChannellist() {
   eOSState state = osContinue;
   if (Count() == 0) return state;
   if (Interface->Confirm(tr("Switch current channellist?"))) {
-     int c;
      char *ToLoad;
 
      asprintf(&ToLoad, "%s/channels.conf.%s", ConfigDir, switcher->List[Current()]);
@@ -586,6 +585,7 @@ eOSState cSwitchMenu::SwitchChannellist() {
         timers.SaveTimer();
         out=fopen(ChannelsConf,"w");
         if (out) {
+           int c;
            while ((c=fgetc(in))!=EOF) {
               fputc(c,out);
               }

@@ -380,7 +380,7 @@ int cID3Reader::readIDv1Tag(void)
 
   free(year);
   year = MALLOC(char, 5);
-  if (!album) {
+  if (!year) {
      esyslog("MP3: no memory");
      return -1;
      }
@@ -1955,11 +1955,10 @@ bool cMP3Decoder::Init(void)
      return false;
      }
 
-  int id3 = 0;
   if (!isStream) {
      const uint8_t *buffer = NULL;
      uint32_t length = 0;
-     id3 = id3Reader->ReadID3(str, buffer, length, true);
+     int id3 = id3Reader->ReadID3(str, buffer, length, true);
      if (id3 < 0)
         return false;
 

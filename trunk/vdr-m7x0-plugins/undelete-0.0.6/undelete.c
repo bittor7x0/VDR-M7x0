@@ -232,7 +232,7 @@ cPluginUndelete::cPluginUndelete(void)
   // DON'T DO ANYTHING ELSE THAT MAY HAVE SIDE EFFECTS, REQUIRE GLOBAL
   // VDR OBJECTS TO EXIST OR PRODUCE ANY OUTPUT!
   plugin = this;
-  memset(KeysName, sizeof(KeysName), 0);
+  memset(KeysName, 0, sizeof(KeysName));
 }
 
 cPluginUndelete::~cPluginUndelete()

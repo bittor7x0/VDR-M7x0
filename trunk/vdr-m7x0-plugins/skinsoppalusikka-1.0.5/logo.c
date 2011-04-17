@@ -124,11 +124,9 @@ bool cSoppalusikkaLogoCache::Flush(void)
      debug("cPluginSkinSoppalusikka::Flush() NON-EMPTY");
      // delete bitmaps and clear map
      for (std::map<std::string, cBitmap*>::iterator i = cacheMapM.begin(); i != cacheMapM.end(); ++i) {
-         cBitmap *bmp = i->second;
-         if (bmp)
-            DELETENULL(bmp);
-         cacheMapM.erase(i);
+         delete((*i).second);
          }
+     cacheMapM.clear();
      // nullify bitmap pointer
      bitmapM = NULL;
      }

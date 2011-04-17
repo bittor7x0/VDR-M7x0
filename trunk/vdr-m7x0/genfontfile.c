@@ -338,7 +338,6 @@ main(int argc, char *argv[])
   int usageError = 0;
   char *varname, *fontname;
   XFontStruct *xfont;
-  int i;
 
   if (argc == 3) {
      varname  = argv[1];

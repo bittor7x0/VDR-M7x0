@@ -10,15 +10,15 @@ cDataStreamProcessor::cDataStreamProcessor(cDataStreamSource *Src)
 uchar* cDataStreamProcessor::Get(int &Count) {
 	uchar *Data;
 	int avail;
-	int forward=0,deletable=0;
 
 	// See whats available from source:
 	Data=cDataStreamFilter::Get(avail);
 	if (Data==NULL) return NULL;
 
 	if (avail>ForwardableInBuffer) {
-		// New data in buffer that is not yet processed by ProcessData.
+		int forward=0,deletable=0;
 
+		// New data in buffer that is not yet processed by ProcessData.
 		ProcessData(Data+ForwardableInBuffer,avail-ForwardableInBuffer,forward,deletable);
 
 		if (deletable>0) {

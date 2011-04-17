@@ -298,7 +298,6 @@ void write_pes(int fd, pes_packet *p){
 }
 
 static unsigned int find_length(int f){
-	uint64_t p = 0;
 	uint64_t start = 0;
 	uint64_t q = 0;
 	int found = 0;
@@ -309,7 +308,7 @@ static unsigned int find_length(int f){
 	start -=2;
         lseek(f,start,SEEK_SET);
 	while ( neof > 0 && !found ){
-		p = lseek(f,0,SEEK_CUR);
+		uint64_t p = lseek(f,0,SEEK_CUR);
 		neof = save_read(f,&sync4,4);
 		if (sync4[0] == 0x00 && sync4[1] == 0x00 && sync4[2] == 0x01) {
 			switch ( sync4[3] ) {
@@ -344,7 +343,6 @@ static unsigned int find_length(int f){
 void cread_pes(char *buf, pes_packet *p){
 	
 	uint8_t count, dummy, check;
-	int i;
 	uint64_t po = 0;
 	int c=0;
 
@@ -480,6 +478,7 @@ void cread_pes(char *buf, pes_packet *p){
 			}
 		}
 		p->stuffing = count;
+		int i;
 		for(i = 0; i< count ;i++){ 
 			memcpy(&dummy,buf+c,1);
 			c++;
@@ -596,7 +595,10 @@ int read_pes(int f, pes_packet *p){
 	
 	if (p->length >0){
 		buf = (uint8_t *) malloc(p->length);
-		if((neof = save_read(f,buf,p->length))< p->length) return -1;
+		if((neof = save_read(f,buf,p->length))< p->length){
+			free(buf);
+			return -1;
+		}
 		cread_pes((char *)buf,p);
 		free(buf);
 	} else return 0;
@@ -640,7 +642,7 @@ unsigned short pid_ts(ts_packet *p)
 }
 
 int cwrite_ts(uint8_t *buf, ts_packet *p, long length){
-	long count,i;
+	long count;
 	uint8_t sync,dummy;
 
 	sync = 0x47;
@@ -700,6 +702,7 @@ int cwrite_ts(uint8_t *buf, ts_packet *p, long length){
 			}
 		}
 		dummy = 0xFF;
+		long i;
 		for(i=0; i < p->stuffing ; i++){
 			memcpy(buf+count,&dummy,1);
 			count++;
@@ -979,7 +982,7 @@ uint16_t scr_ext_ps(ps_packet *p)
 
 int cwrite_ps(uint8_t *buf, ps_packet *p, long length)
 {
-	long count,i;
+	long count;
 	uint8_t headr1[4] = {0x00, 0x00, 0x01, 0xBA };
 	uint8_t headr2[4] = {0x00, 0x00, 0x01, 0xBB };
 	uint8_t buffy = 0xFF;
@@ -994,6 +997,7 @@ int cwrite_ps(uint8_t *buf, ps_packet *p, long length)
 		count += 3;
 		memcpy(buf+count,&p->stuff_length,1);
 		count++;
+		long i;
 		for(i=0; i< (p->stuff_length & 3); i++){
 			memcpy(buf+count,&buffy,1);
 			count++;
@@ -1234,15 +1238,13 @@ void init_trans(trans *p)
 
 int set_trans_filt(trans *p, int filtn, uint16_t pid, uint8_t *mask, uint8_t *filt, int pes)
 {
-	int i;
-	int off;
-
 	if ( filtn > MAXFILT-1 || filtn<0 ) return -1;
 	p->pid[filtn] = pid;
 	if (pes) p->pes |= (tflags)(1 << filtn);
 	else {
-		off = MASKL*filtn;
+		int off = MASKL*filtn;
 		p->pes &= ~((tflags) (1 << filtn) );
+		int i;
 		for (i = 0; i < MASKL ; i++){
 			p->mask[off+i] = mask[i];
 			p->filt[off+i] = filt[i];
@@ -1329,7 +1331,7 @@ void trans_filt(uint8_t *buf, int count, trans *p)
 
 void tfilter(trans *p)
 {
-	int l,c;
+	int c;
 	int tpid;
 	uint8_t flag,flags;
 	uint8_t adapt_length = 0;
@@ -1357,6 +1359,7 @@ void tfilter(trans *p)
 
 	c = 5 + adapt_length - (int)(!(flags & ADAPT_FIELD));
 	if (flags & PAYLOAD){
+		int l;
 		for ( l = 0; l < MAXFILT ; l++){
 			if ( filt_is_set(p,l) ) {
 				if ( p->pid[l] == tpid) {
@@ -1943,7 +1946,6 @@ int seek_mpg_start(uint8_t *buf, int size)
 	int found = 0;
 	int c=0;
 	int seq = 0;
-	int mpeg = 0;
 	int mark = 0;
 
 	while ( !seq ){
@@ -1980,13 +1982,11 @@ int seek_mpg_start(uint8_t *buf, int size)
 			if (c >= size) return -1;
 
 			if ( (buf[c] & 0xC0) == 0x80 ){
-				mpeg = 2;
 				c += 2;
 				if (c >= size) return -1;
 				c += buf[c]+1;
 				if (c >= size) return -1;
 			} else {
-				mpeg = 1;
 				while( buf[c] == 0xFF ) {
 					c++;
 					if (c >= size) return -1;
@@ -2082,6 +2082,7 @@ void split_mpg(char *name, uint64_t size)
 	read(fdin, buf, csize);
 	if ( (mark = seek_mpg_start(buf,csize)) < 0){
 		fprintf(stderr,"Couldn't find sequence header\n");
+		close(fdin);
 		exit(1);
 	}
 
@@ -2095,6 +2096,7 @@ void split_mpg(char *name, uint64_t size)
 		read(fdin, buf, csize);
 		if ( (mark = seek_mpg_start(buf,csize)) < 0){
 			fprintf(stderr,"Couldn't find sequence header\n");
+			close(fdin);
 			exit(1);
 		}
 
@@ -2106,9 +2108,11 @@ void split_mpg(char *name, uint64_t size)
 				   S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|
 				   S_IROTH|S_IWOTH)) < 0){
 			fprintf(stderr,"Can't open %s\n",new_name);
+			close(fdin);
 			exit(1);
 		}
 		write_mpg(last, size-mark, fdin, fdout);
+		close(fdout);
 		last = last + size - mark;
 	}
 	sprintf(new_name,"%s-%03d.%s",base_name,i,ext);
@@ -2122,6 +2126,8 @@ void split_mpg(char *name, uint64_t size)
 		exit(1);
 	}
 	write_mpg(last, length-last, fdin, fdout);
+	close(fdin);
+	close(fdout);
 }
 
 
@@ -2166,6 +2172,7 @@ void cut_mpg(char *name, uint64_t size)
 	read(fdin, buf, csize);
 	if ( (mark = seek_mpg_start(buf,csize)) < 0){
 		fprintf(stderr,"Couldn't find sequence header\n");
+		close(fdin);
 		exit(1);
 	}
 
@@ -2176,6 +2183,7 @@ void cut_mpg(char *name, uint64_t size)
 	read(fdin, buf, csize);
 	if ( (mark = seek_mpg_start(buf,csize)) < 0){
 		fprintf(stderr,"Couldn't find sequence header\n");
+		close(fdin);
 		exit(1);
 	}
 
@@ -2187,9 +2195,11 @@ void cut_mpg(char *name, uint64_t size)
 			   S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|
 			   S_IROTH|S_IWOTH)) < 0){
 		fprintf(stderr,"Can't open %s\n",new_name);
+		close(fdin);
 		exit(1);
 	}
 	write_mpg(last, size-mark, fdin, fdout);
+	close(fdout);
 	last = last + size - mark;
 
 	sprintf(new_name,"%s-2.%s",base_name,ext);
@@ -2200,9 +2210,12 @@ void cut_mpg(char *name, uint64_t size)
 			   S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|
 			   S_IROTH|S_IWOTH)) < 0){
 		fprintf(stderr,"Can't open %s\n",new_name);
+		close(fdin);
 		exit(1);
 	}
 	write_mpg(last, length-last, fdin, fdout);
+	close(fdin);
+	close(fdout);
 }
 
 

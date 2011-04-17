@@ -38,6 +38,7 @@ struct tIndex *readIndexFile(const char *path, int *count)
 
   if (!indices) {
      fprintf(stderr, "Cannot alloc memory for index entries\n");
+     fclose(indexFile);
      return NULL;
      }
 

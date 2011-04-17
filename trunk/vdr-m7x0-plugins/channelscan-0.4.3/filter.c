@@ -329,12 +329,9 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
         return;
       SI::PAT::Association assoc;
 
-      int tnum=0,tSid[100];
-
       for (SI::Loop::Iterator it; pat.associationLoop.getNext(assoc, it); ) {
         int xSid=assoc.getServiceId();
 
-        tSid[tnum++]=xSid;
         int sidfound=0;
 
         for(int n=0;n<pSidCnt;n++) {

@@ -61,12 +61,10 @@ void cTransfer::SetAudioTrack(eTrackType Type, const tTrackId *TrackId)
      cPlayer::device->StartLiveView(false,true);
      cReceiver::device->SetAudioTrackDevice(Type,TrackId);
      cPlayer::device->StartLiveView(true,true);
-     if (IS_DOLBY_TRACK(Type)) {
-        int diff; int stat;
-        if (cReceiver::device->pidHandles[cDevice::ptPcr].handle >= 0) {
-           stat = ioctl(cReceiver::device->pidHandles[cDevice::ptPcr].handle,DMX_GET_AUDIO_SYNC_DIFF,&diff);
-           dsyslog("cTransfer DEBUG: AC3 Audio Snyc Diff ioctl-Status %d Difference %d", stat, diff);
-           }
+     if (IS_DOLBY_TRACK(Type) && (cReceiver::device->pidHandles[cDevice::ptPcr].handle >= 0)) {
+        int diff, stat;
+        stat = ioctl(cReceiver::device->pidHandles[cDevice::ptPcr].handle,DMX_GET_AUDIO_SYNC_DIFF,&diff);
+        dsyslog("cTransfer DEBUG: AC3 Audio Snyc Diff ioctl-Status %d Difference %d", stat, diff);
         }
      }
 }

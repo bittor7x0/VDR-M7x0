@@ -88,11 +88,9 @@ void cPlaylistRecord::SetName(const char *Filename)
 {
   if (Filename)
   {
-    char *buffer = strdup(Filename + strlen(VideoDirectory) + 1);
+    char *buffer = ExchangeChars(strdup(Filename + strlen(VideoDirectory) + 1), false);
 
 //suche record ..
-
-    buffer = ExchangeChars(buffer, false);
 
     char *temp = strrchr(buffer, '~');
     if (temp)
@@ -189,8 +187,7 @@ bool cPlaylistRecord::Parse(const char *s)
   if (filename)
   {
     strreplace(filename, '|', ':');
-    char *buffer = strdup(filename + strlen(VideoDirectory) + 1);
-    buffer = ExchangeChars(buffer, false);
+    char *buffer = ExchangeChars(strdup(filename + strlen(VideoDirectory) + 1), false);
     char *temp = strrchr(buffer, '~');
     if (temp)
       *temp = 0;

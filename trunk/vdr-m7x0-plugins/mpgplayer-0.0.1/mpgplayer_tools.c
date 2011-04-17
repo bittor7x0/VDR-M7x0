@@ -491,11 +491,13 @@ int cMpgUnbufferedFile::Close(void)
 #define FADVGRAN   KILOBYTE(4) // AKA fadvise-chunk-size; PAGE_SIZE or getpagesize(2) would also work.
 #define READCHUNK  MEGABYTE(8)
 
+#ifdef USE_FADVISE
 int cMpgUnbufferedFile::FadviseDrop(off64_t Offset, off_t Len)
 {
   // rounding up the window to make sure that not PAGE_SIZE-aligned data gets freed.
   return posix_fadvise(fd, Offset - (FADVGRAN - 1), Len + (FADVGRAN - 1) * 2, POSIX_FADV_DONTNEED);
 }
+#endif
 #ifdef USE_DIRECT_IO
 int cMpgUnbufferedFile::FallBackFromDirectIO(void)
 {

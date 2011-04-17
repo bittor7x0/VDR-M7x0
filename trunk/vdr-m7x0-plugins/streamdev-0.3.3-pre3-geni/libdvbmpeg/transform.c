@@ -191,7 +191,6 @@ uint16_t get_pid(uint8_t *pid)
 int write_ts_header(uint16_t pid, uint8_t *counter, int pes_start, 
 		    uint8_t *buf, uint8_t length)
 {
-	int i;
 	int c = 0;
 	int fill;
 	uint8_t tshead[4] = { 0x47, 0x00, 0x00, 0x10}; 
@@ -214,6 +213,7 @@ int write_ts_header(uint16_t pid, uint8_t *counter, int pes_start,
 			buf[5] = 0x00;
 			c++;
 		}
+		int i;
 		for ( i = 6; i < fill+4; i++){
 			buf[i] = 0xFF;
 			c++;
@@ -1936,7 +1936,6 @@ int get_ac3info(uint8_t *mbuf, int count, AudioInfo *ai, int pr)
 
 void ps_pes(ipack *p)
 {
-	int check;
 	uint8_t pbuf[PS_HEADER_L2];
 	static int muxr = 0;
 	static int ai = 0;
@@ -1968,6 +1967,8 @@ void ps_pes(ipack *p)
 		if (p->has_vi && vi && !muxr){
 			muxr = (vi+ai)/400;
 		}
+
+		int check;
 
 		if ( start && muxr && (p->buf[7] & PTS_ONLY) && (p->has_ai || 
 				       p->buf[9+p->buf[8]+4] == 0xb3)){  

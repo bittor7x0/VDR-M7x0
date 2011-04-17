@@ -252,9 +252,9 @@ bool cDvbTuner::SetFrontend(void)
             break;
             }
 
-         int diseqc_idx = 0;
          cDiseqc *diseqc = Diseqcs.Get(channel.Source(), channel.Frequency(), channel.Polarization());
          if (diseqc) {
+            int diseqc_idx = 0;
             cDiseqc::eDiseqcActions da;
             for (char *CurrentAction = NULL; (da = diseqc->Execute(&CurrentAction)) != cDiseqc::daNone; ) {
                 switch (da) {
@@ -3224,12 +3224,11 @@ void cDvbDevice::SetAudioTrackDevice(eTrackType Type, const tTrackId *TrackId)
               ciHandler->StartDecrypting();
               }
 
-           if (startStopAudio)
+           if (startStopAudio) {
               CHECK(ioctl(fd_audio,AUDIO_PLAY))
 
-           if (IS_DOLBY_TRACK(Type) && startStopAudio) {
-              int diff; int stat;
-              if (pidHandles[ptPcr].handle >= 0) {
+              if (IS_DOLBY_TRACK(Type) && (pidHandles[ptPcr].handle >= 0)) {
+                 int diff, stat;
                  stat = ioctl(pidHandles[ptPcr].handle,DMX_GET_AUDIO_SYNC_DIFF,&diff);
                  dsyslog("cDvbDevice DEBUG: AC3 Audio Snyc Diff ioctl-Status %d Difference %d", stat, diff);
                  }
@@ -4005,11 +4004,11 @@ int cDvbDevice::PlayAudioOnly(const uchar *Data, int Length, uchar Id)
      fp_memcpy = &memmove;
      }
 
-  int r;
   int new_errno = 0;
   int ret = Length;
   if(write_length>=KILOBYTE(3))
   {
+  int r;
   do {
      r = write(fd_audio, write_data, write_length);
      if (r < 0) {

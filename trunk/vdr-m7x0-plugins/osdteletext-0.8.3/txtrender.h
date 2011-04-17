@@ -144,80 +144,80 @@ public:
     // a Get...() to read, a Set...() to write, and a To...() to
     // return a modified copy
     
-    inline unsigned char GetChar() 
+    inline unsigned char GetChar() const
         { return c&CHAR; }
     inline void SetChar(unsigned char chr, unsigned char mode=' ')
         { c=(c&~CHAR)|chr; m=mode; }
-    inline unsigned char GetExtMode()
+    inline unsigned char GetExtMode() const
         { return m; }
     inline cTeletextChar ToChar(unsigned char chr)
         { return cTeletextChar((c&~CHAR)|chr); }
         
-    inline enumCharsets GetCharset() 
+    inline enumCharsets GetCharset() const
         { return (enumCharsets)(c&CHARSET); }
     inline void SetCharset(enumCharsets charset) 
         { c=(c&~CHARSET)|charset; }
     inline cTeletextChar ToCharset(enumCharsets charset) 
         { return cTeletextChar((c&~CHARSET)|charset, m); }
     
-    inline enumTeletextColor GetFGColor() 
+    inline enumTeletextColor GetFGColor() const
         { return (enumTeletextColor)((c&FGCOLOR) >> LowestSet32Bit(FGCOLOR)); }
     inline void SetFGColor(enumTeletextColor fgc) 
         { c=(c&~FGCOLOR) | (fgc << LowestSet32Bit(FGCOLOR)); }
     inline cTeletextChar ToFGColor(enumTeletextColor fgc) 
         { return cTeletextChar((c&~FGCOLOR) | (fgc << LowestSet32Bit(FGCOLOR)), m); }
     
-    inline enumTeletextColor GetBGColor() 
+    inline enumTeletextColor GetBGColor() const
         { return (enumTeletextColor)((c&BGCOLOR) >> LowestSet32Bit(BGCOLOR)); }
     inline void SetBGColor(enumTeletextColor bgc) 
         { c=(c&~BGCOLOR) | (bgc << LowestSet32Bit(BGCOLOR)); }
     inline cTeletextChar ToBGColor(enumTeletextColor bgc) 
         { return cTeletextChar((c&~BGCOLOR) | (bgc << LowestSet32Bit(BGCOLOR)), m); }
     
-    inline bool GetBoxedOut() 
+    inline bool GetBoxedOut() const
         { return c&BOXOUT; }
     inline void SetBoxedOut(bool BoxedOut) 
         { c=(BoxedOut)?(c|BOXOUT):(c&~BOXOUT); }
     inline cTeletextChar ToBoxedOut(bool BoxedOut) 
         { return cTeletextChar((BoxedOut)?(c|BOXOUT):(c&~BOXOUT), m); }
     
-    inline bool GetDirty() 
+    inline bool GetDirty() const
         { return c&DIRTY; }
     inline void SetDirty(bool Dirty) 
         { c=(Dirty)?(c|DIRTY):(c&~DIRTY); }
     inline cTeletextChar ToDirty(bool Dirty) 
         { return cTeletextChar((Dirty)?(c|DIRTY):(c&~DIRTY), m); }
     
-    inline enumDblHeight GetDblHeight() 
+    inline enumDblHeight GetDblHeight() const
         { return (enumDblHeight)(c&DBLHEIGHT); }
     inline void SetDblHeight(enumDblHeight dh) 
         { c=(c&~(DBLHEIGHT)) | dh; }
     inline cTeletextChar ToDblHeight(enumDblHeight dh) 
         { return cTeletextChar((c&~(DBLHEIGHT)) | dh, m); }
     
-    inline enumDblWidth GetDblWidth() 
+    inline enumDblWidth GetDblWidth() const
         { return (enumDblWidth)(c&DBLWIDTH); }
     inline void SetDblWidth(enumDblWidth dw) 
         { c=(c&~(DBLWIDTH)) | dw; }
     inline cTeletextChar ToDblWidth(enumDblWidth dw) 
         { return cTeletextChar((c&~(DBLWIDTH)) | dw, m); }
     
-    inline bool GetConceal() 
+    inline bool GetConceal() const
         { return c&CONCEAL; }
     inline void SetConceal(bool Conceal) 
         { c=(Conceal)?(c|CONCEAL):(c&~CONCEAL); }
     inline cTeletextChar ToConceal(bool Conceal) 
         { return cTeletextChar((Conceal)?(c|CONCEAL):(c&~CONCEAL), m); }
     
-    inline bool GetBlink() 
+    inline bool GetBlink() const
         { return c&BLINK; }
     inline void SetBlink(bool Blink) 
         { c=(Blink)?(c|BLINK):(c&~BLINK); }
     inline cTeletextChar ToBlink(bool Blink) 
         { return cTeletextChar((Blink)?(c|BLINK):(c&~BLINK), m); }
         
-    bool operator==(cTeletextChar &chr) { return c==chr.c && m==chr.m; }
-    bool operator!=(cTeletextChar &chr) { return c!=chr.c || m!=chr.m; }
+    bool operator==(cTeletextChar &chr) const { return c==chr.c && m==chr.m; }
+    bool operator!=(cTeletextChar &chr) const { return c!=chr.c || m!=chr.m; }
 };
 
 
@@ -262,7 +262,7 @@ public:
         return Page[x][y].ToDirty(false);
     }
 
-    bool IsDirty() {
+    bool IsDirty() const {
         // global dirty status
         return Dirty;   
     }

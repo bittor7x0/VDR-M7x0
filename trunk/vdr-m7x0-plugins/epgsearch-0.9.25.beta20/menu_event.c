@@ -61,7 +61,7 @@ cEventObj* cMenuEventSearch::GetNext(const cEvent* Event)
       if (*i && (*i)->Event() == Event)
       {
          cEventObjects::iterator nexti = i;
-         nexti++;
+         ++nexti;
          return nexti != eventObjects.end() ? *nexti : NULL; 
       }
 
@@ -234,12 +234,8 @@ void cMenuEventSearchSimple::Set()
    if (event) 
    {
       cChannel *channel = Channels.GetByChannelID(event->ChannelID(), true, true);
-      bool canSwitch = false;
       if (channel) 
-      {
          SetTitle(channel->Name());
-         canSwitch = channel->Number() != cDevice::CurrentChannel();
-      }
 
       cEventObj* eventObjPrev = GetPrev(event);
       cEventObj* eventObjNext = GetNext(event);

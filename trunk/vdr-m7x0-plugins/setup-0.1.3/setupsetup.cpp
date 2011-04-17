@@ -59,7 +59,7 @@ void cSetupSetupPage::Store( void )
 eOSState cSetupSetupPage::ProcessKey( eKeys Key )
 {
 //  cSubMenu vdrSubMenu;
-  char *menuXML = NULL;
+//  char *menuXML = NULL;
   eOSState state = cOsdMenu::ProcessKey(Key);
 
   switch(Key)

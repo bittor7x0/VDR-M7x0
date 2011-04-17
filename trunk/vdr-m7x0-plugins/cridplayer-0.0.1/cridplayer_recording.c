@@ -372,6 +372,7 @@ cCridCridFile::cCridCridFile(const char *Path, const char *Filename)
 
 cCridCridFile::cCridCridFile(const cCridCridFile &cridFile)
 {
+  if(path) free(path);
   path = strdup(cridFile.path);
   filename = strdup(cridFile.filename);
   idFilenameLen = cridFile.idFilenameLen;

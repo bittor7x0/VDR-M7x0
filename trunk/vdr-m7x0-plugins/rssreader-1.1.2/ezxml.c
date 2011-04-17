@@ -236,7 +236,6 @@ void ezxml_char_content(ezxml_root_t root, char *s, size_t len, char t)
 {
     ezxml_t xml = root->cur;
     char *m = s;
-    size_t l;
 
     if (! xml || ! xml->name || ! len) return; // sanity check
 
@@ -245,6 +244,7 @@ void ezxml_char_content(ezxml_root_t root, char *s, size_t len, char t)
 
     if (! *(xml->txt)) xml->txt = s; // initial character content
     else { // allocate our own memory and make a copy
+        size_t l;
         xml->txt = (xml->flags & EZXML_TXTM) // allocate some space
                    ? (char*)realloc(xml->txt, (l = strlen(xml->txt)) + len)
                    : strcpy((char*)malloc((l = strlen(xml->txt)) + len), xml->txt);
@@ -449,7 +449,8 @@ char *ezxml_str2utf8(char **s, size_t *len)
             while (b) u[l++] = 0x80 | ((c >> (6 * --b)) & 0x3F); // payload
         }
     }
-    return *s = (char*)realloc(u, *len = l);
+    *s = (char*)realloc(u, *len = l);
+    return *s;
 }
 
 // frees a tag attribute list
@@ -755,7 +756,8 @@ char *ezxml_toxml(ezxml_t xml)
     }
 
     xml->parent = xml->ordered = NULL;
-    s = ezxml_toxml_r(xml, &s, &len, &max, 0, root->attr);
+    char *s2;
+    s2 = ezxml_toxml_r(xml, &s, &len, &max, 0, root->attr);
     xml->parent = p;
     xml->ordered = o;
 
@@ -764,21 +766,23 @@ char *ezxml_toxml(ezxml_t xml)
         for (j = 1; (n = root->pi[i][j]); j++) {
             if (root->pi[i][k][j - 1] == '<') continue; // not post-root
             while (len + strlen(t = root->pi[i][0]) + strlen(n) + 7 > max)
-                s = (char*)realloc(s, max += EZXML_BUFSIZE);
-            len += sprintf(s + len, "\n<?%s%s%s?>", t, *n ? " " : "", n);
+                s2 = (char*)realloc(s2, max += EZXML_BUFSIZE);
+            len += sprintf(s2 + len, "\n<?%s%s%s?>", t, *n ? " " : "", n);
         }
     }
-    return (char*)realloc(s, len + 1);
+    s = (char*)realloc(s2, len + 1);
+    return s;
 }
 
 static void ezxml_free_root_stuff (ezxml_t xml)
 {
     ezxml_root_t root = (ezxml_root_t)xml;
-    int i, j;
     char **a, *s;
 
     if (! xml) return;
+
     if (! xml->parent) { // free root tag allocations
+        int i, j;
         for (i = 10; root->ent[i]; i += 2) // 0 - 9 are default entites (<>&"')
             if ((s = root->ent[i + 1]) < root->s || s > root->e) free(s);
         free(root->ent); // free list of general entities

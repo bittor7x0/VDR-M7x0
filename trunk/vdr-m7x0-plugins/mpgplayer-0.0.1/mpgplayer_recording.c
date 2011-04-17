@@ -344,6 +344,7 @@ cMpgCridFile::cMpgCridFile(const char *Path, const char *Filename)
 
 cMpgCridFile::cMpgCridFile(const cMpgCridFile &mpgFile)
 {
+  if(path) free(path);
   path = strdup(mpgFile.path);
   filename = strdup(mpgFile.filename);
   idFilenameLen = mpgFile.idFilenameLen;

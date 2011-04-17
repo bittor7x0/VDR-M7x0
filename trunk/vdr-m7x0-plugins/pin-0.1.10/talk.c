@@ -55,7 +55,7 @@ Talk::~Talk()
 // Init
 //***************************************************************************
 
-int Talk::init()
+int Talk::init() const
 {
    return success;
 }
@@ -84,7 +84,6 @@ int Talk::open(long port)
 
 int Talk::wait()
 {
-   int result;
    int status = success;
    struct itimerval oldTimer,  newTimer;
    struct sigaction oldAction, newAction;
@@ -120,7 +119,7 @@ int Talk::wait()
 
    // receive auf
 
-   if ((result = msgrcv(msgID, theMsg, sizeBuffer, 0, 0)) < 0)
+   if (msgrcv(msgID, theMsg, sizeBuffer, 0, 0) < 0)
    {
       if (!fTimeout)
       {

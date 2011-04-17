@@ -71,7 +71,6 @@ PinSetupMenu::~PinSetupMenu()
 
 void PinSetupMenu::Store(void)
 {
-   int i = 0;
    int pinValid = yes;
    
    if (hidePinCode)
@@ -79,7 +78,7 @@ void PinSetupMenu::Store(void)
       int pinChanged = no;
 
       // store only numerical pin codes
-
+      int i = 0;
       for (i = 0; i < cPinPlugin::sizePinCode; i++)
       {
          if (pinCode[i] != '*')

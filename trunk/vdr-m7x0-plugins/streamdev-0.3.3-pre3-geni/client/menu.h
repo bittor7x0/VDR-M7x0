@@ -104,7 +104,7 @@ private:
 protected:
 	bool Open(bool OpenSubMenus = false);
 	void SetHelpKeys();
-	cRemoteRecording *cStreamdevMenuRecordings::GetRecording(
+	cRemoteRecording *GetRecording(
 		cStreamdevMenuRecordingItem *Item);
 
 	eOSState Select(void);

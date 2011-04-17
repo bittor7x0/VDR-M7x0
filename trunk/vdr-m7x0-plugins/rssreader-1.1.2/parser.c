@@ -209,8 +209,8 @@ int cParser::DownloadAndParse(const char *url)
 
 void cParser::SetEncoding(const char *str) {
   char *aux;
-  int len=0,ini=0;
   if ((aux=strstr(str, "encoding")))  {
+     int len=0,ini=0;
      ini= strspn(aux + 8," ='\"") + 8;
      len= strcspn(aux + ini , "'\"");
      debug("[%s] %d %d\n",aux+ini,ini,len);

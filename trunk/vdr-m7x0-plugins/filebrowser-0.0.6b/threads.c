@@ -48,7 +48,7 @@ cCommandThread::~cCommandThread()
   if(Description) free (Description);
   if(DestinationFile) free (DestinationFile);
   if(CurrentFile) free (CurrentFile);
-  if(SelectedFiles) free(SelectedFiles);
+  if(SelectedFiles) delete(SelectedFiles);
 }
 
 cOsdMenu* cCommandThread::GetMenu()
@@ -194,7 +194,8 @@ void cCommandThreadTextOutput::Action()
           else
           {
             D(fprintf(stderr, "couldn't resize output buffer\n"));
-            OutputBuffer=TmpBuffer ? TmpBuffer : OutputBuffer;
+            if(TmpBuffer)
+              OutputBuffer=TmpBuffer;
             caret=OutputBuffer;
             OutputBufferLength/=2;
             memset(caret, 0, OutputBufferLength);

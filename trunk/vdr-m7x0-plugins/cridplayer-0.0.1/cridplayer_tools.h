@@ -142,7 +142,7 @@ public:
   cList<cPathObject> *MutableFileList() { return &fileList; }
   bool IsRead(void) const { return readOkay; }
   bool SetBasePath(const char *Path);
-  const char *GetBasePath(void) { return basePath; }
+  const char *GetBasePath(void) const { return basePath; }
   void SetReadHidden(bool ReadHidden) {
       if (readHidden != ReadHidden) {
          readHidden = ReadHidden;
@@ -162,7 +162,7 @@ private:
 public:
   cReadDir64(const char *Directory);
   ~cReadDir64();
-  bool Ok(void) { return directory != NULL; }
+  bool Ok(void) const { return directory != NULL; }
   struct dirent64 *Next(void);
   };
 

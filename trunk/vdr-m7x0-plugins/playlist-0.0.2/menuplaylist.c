@@ -514,9 +514,9 @@ eOSState cMenuRecordingEdit::ProcessKey(eKeys Key)
   }
 #endif
 
-  char *buffer = NULL;
+/*  char *buffer = NULL;
   eOptions display = (Current() >= 0) && (Current() < MAXOptionLines) ? displayoption[Current()] : Option_max;
-/*  if (display < Option_max && data.OptionInherited(display))
+  if (display < Option_max && data.OptionInherited(display))
     asprintf(&buffer, "%s %s", tr("OptionPL$Effective setting is:"), NoYesDefault[data.Option(display)]);
   if (buffer)
   {

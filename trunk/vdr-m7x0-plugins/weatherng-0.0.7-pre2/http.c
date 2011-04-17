@@ -49,7 +49,7 @@
 #include "http.h"
 
 int httpGet(char *stUrl, char *outfile) {
-	int c, last, iRet;
+	int iRet;
 	FILE *outfp = NULL;
 	FILE *rfp = NULL;
 	struct uri_t uri;
@@ -63,7 +63,7 @@ int httpGet(char *stUrl, char *outfile) {
 	}
 
 	if (iRet==1 && !outfile) {
-		outfile = rindex(uri.path, '/');
+		outfile = strrchr(uri.path, '/');
 		if (!outfile || !outfile[1]) {
 			outfile = DEFAULT_INDEX_FILE;
 		} else {
@@ -93,6 +93,7 @@ int httpGet(char *stUrl, char *outfile) {
 	if (iRet==1) {
 		char *buf1=NULL, *buf2=NULL;
 
+		int c, last;
 		c = last = 0;
 		for (;;) {
 			c = fgetc(rfp);

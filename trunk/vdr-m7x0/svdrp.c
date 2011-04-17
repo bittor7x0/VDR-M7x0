@@ -463,28 +463,28 @@ void cSVDRP::Reply(int Code, const char *fmt, ...)
 
 void cSVDRP::PrintHelpTopics(const char **hp)
 {
-  int NumPages = 0;
   if (hp) {
+     int NumPages = 0;
      while (*hp) {
            NumPages++;
            hp++;
            }
      hp -= NumPages;
+     const int TopicsPerLine = 5;
+     int x = 0;
+     for (int y = 0; (y * TopicsPerLine + x) < NumPages; y++) {
+         char buffer[TopicsPerLine * MAXHELPTOPIC + 5];
+         char *q = buffer;
+         q += sprintf(q, "    ");
+         for (x = 0; x < TopicsPerLine && (y * TopicsPerLine + x) < NumPages; x++) {
+             const char *topic = GetHelpTopic(hp[(y * TopicsPerLine + x)]);
+             if (topic)
+                q += sprintf(q, "%*s", -MAXHELPTOPIC, topic);
+             }
+         x = 0;
+         Reply(-214, "%s", buffer);
+         }
      }
-  const int TopicsPerLine = 5;
-  int x = 0;
-  for (int y = 0; (y * TopicsPerLine + x) < NumPages; y++) {
-      char buffer[TopicsPerLine * MAXHELPTOPIC + 5];
-      char *q = buffer;
-      q += sprintf(q, "    ");
-      for (x = 0; x < TopicsPerLine && (y * TopicsPerLine + x) < NumPages; x++) {
-          const char *topic = GetHelpTopic(hp[(y * TopicsPerLine + x)]);
-          if (topic)
-             q += sprintf(q, "%*s", -MAXHELPTOPIC, topic);
-          }
-      x = 0;
-      Reply(-214, "%s", buffer);
-      }
 }
 
 void cSVDRP::CmdCHAN(const char *Option)
@@ -795,8 +795,8 @@ void cSVDRP::CmdGRAB(const char *Option)
 {
   const char *FileName = NULL;
   bool Jpeg = true;
-  int Quality = -1, SizeX = -1, SizeY = -1;
   if (*Option) {
+     int Quality = -1, SizeX = -1, SizeY = -1;
      char buf[strlen(Option) + 1];
      char *p = strcpy(buf, Option);
      const char *delim = " \t";

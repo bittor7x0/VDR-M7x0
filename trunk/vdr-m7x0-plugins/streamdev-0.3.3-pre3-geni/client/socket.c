@@ -104,8 +104,8 @@ bool cClientSocket::CheckConnection(void) {
 		// There REALLY shouldn't be anything readable according to PROTOCOL here
 		// If there is, assume it's an eof signal (subseq. read would return 0)
 		select.Add(*this, false);
-		int res;
-		if ((res = select.Select(0)) == 0) {
+		int res = select.Select(0);
+		if (res == 0) {
 			Dprintf("select said nothing happened\n");
 			return true;
 		}

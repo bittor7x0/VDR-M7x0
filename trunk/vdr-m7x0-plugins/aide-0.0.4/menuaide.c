@@ -81,6 +81,7 @@ if(d)
 			}
 		}
 	}
+	closedir(d);
 }
 }
 
@@ -143,6 +144,7 @@ char *cMenuAide::FindPath(const char *seltitle)
 		    }
 		}
 	    }
+	    closedir(d);
 	}
     }
     return result;
