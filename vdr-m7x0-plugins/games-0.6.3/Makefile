@@ -49,7 +49,7 @@ else
 	TARGET    = libvdr-games.so
 	OBJS     += $(VDROBJS)
 	CFLAGS   += -fPIC -I$(VDRDIR)
-	LFLAGS   += -shared
+	LFLAGS   += -shared -Wl,--whole-archive
 	DEFINES  += -D_GNU_SOURCE -DVDRVERSNUM=$(VDRNUM)
 
 endif
