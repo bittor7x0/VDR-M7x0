@@ -1,0 +1,175 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Alberto Carraro <bertocar@tin.it>, 2001
+# Antonio Ospite <ospite@studenti.unina.it>, 2003
+# Sean Carlos <seanc@libero.it>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <koch@u32.de>\n"
+"POT-Creation-Date: 2009-02-14 15:31+0100\n"
+"PO-Revision-Date: 2009-02-15 00:59+0100\n"
+"Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: ITALY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: devstatus.c:18
+msgid "Status of dvb devices"
+msgstr "Stato schede DVB"
+
+#: devstatus.c:19
+#: devstatus.c:217
+msgid "Device status"
+msgstr "Stato scheda"
+
+#: devstatus.c:40
+msgid "satellite card"
+msgstr "Scheda satellite"
+
+#: devstatus.c:41
+msgid "cable card"
+msgstr "Scheda via cavo"
+
+#: devstatus.c:42
+msgid "terrestrial card"
+msgstr "Scheda terrestre"
+
+#: devstatus.c:43
+msgid "unknown cardtype"
+msgstr "Tipo scheda sconosciuta"
+
+#: devstatus.c:203
+#, c-format
+msgid "frequency: %d MHz, signal: %d%%, s/n: %d%%"
+msgstr "Frequenza: %d MHz, Segnale: %d%%, s/n: %d%%"
+
+#: devstatus.c:207
+#, c-format
+msgid "no signal information available (rc=%d)"
+msgstr "Nessuna info di segnale disponibile (rc=%d)"
+
+#: devstatus.c:232
+#: devstatus.c:563
+msgid "device with decoder"
+msgstr "sch. con decoder"
+
+#: devstatus.c:234
+#: devstatus.c:563
+msgid "primary device"
+msgstr "sch. primaria"
+
+#: devstatus.c:238
+#: devstatus.c:564
+#: devstatus.c:599
+msgid "Device"
+msgstr "Scheda"
+
+#: devstatus.c:240
+msgid "-- Live"
+msgstr "-- Dal vivo"
+
+#: devstatus.c:265
+#: devstatus.c:584
+msgid "currently no recordings"
+msgstr "Nessuna registrazione in corso"
+
+#. TRANSLATORS: printf string for channel line
+#: devstatus.c:284
+#, c-format
+msgid "%5d  %s %s  %s  %s%s%s"
+msgstr "%5d  %s %s  %s  %s%s%s"
+
+#. TRANSLATORS: abbr. for tv-channels
+#: devstatus.c:288
+msgid "t"
+msgstr "t"
+
+#. TRANSLATORS: abbr. for video only-channels
+#: devstatus.c:290
+msgid "v"
+msgstr "v"
+
+#. TRANSLATORS: abbr. for radio-channels
+#: devstatus.c:292
+msgid "r"
+msgstr "r"
+
+#. TRANSLATORS: abbr. for no signal-channels
+#: devstatus.c:294
+msgid "-"
+msgstr "-"
+
+#. TRANSLATORS: abbr. for live channel
+#: devstatus.c:297
+msgid "+"
+msgstr "+"
+
+#. TRANSLATORS: abbr. for crypted channels
+#: devstatus.c:299
+msgid "x"
+msgstr "x"
+
+#. TRANSLATORS: abbr. for FTA channels
+#: devstatus.c:301
+msgid " "
+msgstr " "
+
+#: devstatus.c:335
+msgid "no recordings"
+msgstr "Nessuna registrazione"
+
+#: devstatus.c:335
+msgid "recordings"
+msgstr "Registrazioni"
+
+#: devstatus.c:336
+msgid "no strength"
+msgstr "Nessuna intensità"
+
+#: devstatus.c:336
+msgid "strength"
+msgstr "Intensità"
+
+#: devstatus.c:337
+msgid "channels"
+msgstr "Canali"
+
+#: devstatus.c:337
+msgid "no channels"
+msgstr "Nessun canale"
+
+#: devstatus.c:338
+msgid "Refresh display"
+msgstr "Aggiorna visualizzazione"
+
+#: devstatus.c:467
+msgid "Show recordings"
+msgstr "Mostra registrazioni"
+
+#: devstatus.c:468
+msgid "Show signals"
+msgstr "Mostra segnali"
+
+#: devstatus.c:469
+msgid "Show channels"
+msgstr "Mostra canali"
+
+#: devstatus.c:470
+msgid "Show channel provider"
+msgstr "Mostra emittente"
+
+#: devstatus.c:557
+msgid "List of DVB devices"
+msgstr "Elenco schede DVB"
+
+#: devstatus.c:595
+msgid "Number of concurrent recordings"
+msgstr "Numero di registrazioni simultanee"
+
