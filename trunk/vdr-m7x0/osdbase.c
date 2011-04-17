@@ -517,7 +517,7 @@ eOSState cOsdMenu::ProcessKey(eKeys Key)
         return state;
         }
      }
-  switch (Key) {
+  switch (int(Key)) {
     case kNone:
     case k0...k9: return hasHotkeys ? HotKey(Key) : osUnknown;
     case kUp|k_Repeat:

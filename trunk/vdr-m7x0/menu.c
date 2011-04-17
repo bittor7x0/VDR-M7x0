@@ -688,7 +688,7 @@ void cMenuText::Display(void)
 
 eOSState cMenuText::ProcessKey(eKeys Key)
 {
-  switch (Key) {
+  switch (int(Key)) {
     case kUp|k_Repeat:
     case kUp:
     case kDown|k_Repeat:
@@ -1277,7 +1277,7 @@ void cMenuEvent::Display(void)
 
 eOSState cMenuEvent::ProcessKey(eKeys Key)
 {
-  switch (Key) {
+  switch (int(Key)) {
     case kUp|k_Repeat:
     case kUp:
     case kDown|k_Repeat:
@@ -2085,7 +2085,7 @@ void cMenuRecording::Display(void)
 
 eOSState cMenuRecording::ProcessKey(eKeys Key)
 {
-  switch (Key) {
+  switch (int(Key)) {
     case kUp|k_Repeat:
     case kUp:
     case kDown|k_Repeat:
@@ -2375,7 +2375,7 @@ void cMenuRecordings::Set(bool Refresh)
   for (cRecording *recording = Recordings.First(); recording; recording = Recordings.Next(recording)) {
       if (!base || (strstr(recording->Name(), base) == recording->Name() && recording->Name()[strlen(base)] == FOLDERDELIMCHAR)) {
          cMenuRecordingItem *Item = new cMenuRecordingItem(recording, level);
-         if ((*Item->Text() && (!LastItem || strcmp(Item->Text(), LastItemText) != 0))
+         if ((*Item->Text() && (!Item->IsDirectory() || (!LastItem || !LastItem->IsDirectory() || strcmp(Item->Text(), LastItemText) != 0)))
             && (!PinPatch::ChildLock::IsRecordingHidden(GetRecording(Item), Item->Name(), base, Item->IsDirectory()))) {
             Add(Item);
             LastItem = Item;
@@ -2564,7 +2564,7 @@ eOSState cMenuRecordings::ProcessKey(eKeys Key)
      RecordingsSortModeTexts[2] = tr("all alphabetically");
      RecordingsSortModeTexts[3] = tr("all by date");
 
-     switch (Key) {
+     switch (int(Key)) {
        case kOk:     return Play();
        case kRed:    return (helpKeys > 1 && RecordingCommands.Count()) ? Commands() : Play();
        case kGreen:  return Rewind();
@@ -4103,7 +4103,7 @@ eOSState cDisplayChannel::ProcessKey(eKeys Key)
   cChannel *NewChannel = NULL;
   if (Key != kNone)
      lastTime.Set();
-  switch (Key) {
+  switch (int(Key)) {
     case k0:
          if (number == 0) {
             // keep the "Toggle channels" function working
@@ -4334,7 +4334,7 @@ void cDisplayVolume::Process(eKeys Key)
 
 eOSState cDisplayVolume::ProcessKey(eKeys Key)
 {
-  switch (Key) {
+  switch (int(Key)) {
     case kLeft|k_Repeat:
     case kLeft:
     case kRight|k_Repeat:
@@ -4438,7 +4438,7 @@ eOSState cDisplayTracks::ProcessKey(eKeys Key)
 {
   int oldTrack = track;
   int oldAudioChannel = audioChannel;
-  switch (Key) {
+  switch (int(Key)) {
     case kUp|k_Repeat:
     case kUp:
     case kDown|k_Repeat:
@@ -5209,7 +5209,7 @@ eOSState cReplayControl::ProcessKey(eKeys Key)
      }
   bool DoShowMode = true;
   if (!Setup.LRForwardRewind || (Setup.LRForwardRewind == 1 && !visible)) {
-    switch (Key) {
+    switch (int(Key)) {
       // Left/Right volume control
       case kLeft|k_Repeat:
       case kLeft:
@@ -5222,7 +5222,7 @@ eOSState cReplayControl::ProcessKey(eKeys Key)
         break;
     }
   }
-  switch (Key) {
+  switch (int(Key)) {
     // Positioning:
     case kPlay:
     case kUp:      Play(); break;
@@ -5278,7 +5278,7 @@ eOSState cReplayControl::ProcessKey(eKeys Key)
 
     default: {
       DoShowMode = false;
-      switch (Key) {
+      switch (int(Key)) {
         // Editing:
         case kMarkToggle:      MarkToggle(); break;
         case kPrev|k_Repeat:

@@ -1932,8 +1932,16 @@ bool cSVDRP::Process(void)
                  }
               else {
                  if (numChars >= length - 1) {
-                    length += BUFSIZ;
-                    cmdLine = (char *)realloc(cmdLine, length);
+                    int NewLength = length + BUFSIZ;
+                    if (char *NewBuffer = (char *)realloc(cmdLine, NewLength)) {
+                       length = NewLength;
+                       cmdLine = NewBuffer;
+                       }
+                    else {
+                       esyslog("ERROR: out of memory");
+                       Close();
+                       break;
+                       }
                     }
                  cmdLine[numChars++] = c;
                  cmdLine[numChars] = 0;

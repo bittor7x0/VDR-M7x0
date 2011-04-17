@@ -429,13 +429,17 @@ char *ExchangeChars(char *s, bool ToFileSystem)
                      default:
                        if (strchr(InvalidChars, *p) || *p == '.' && (!*(p + 1) || *(p + 1) == FOLDERDELIMCHAR)) { // Windows can't handle '.' at the end of file/directory names
                           int l = p - s;
-                          s = (char *)realloc(s, strlen(s) + 10);
-                          p = s + l;
-                          char buf[4];
-                          sprintf(buf, "#%02X", (unsigned char)*p);
-                          memmove(p + 2, p, strlen(p) + 1);
-                          strncpy(p, buf, 3);
-                          p += 2;
+                          if (char *NewBuffer = (char *)realloc(s, strlen(s) + 10)) {
+                             s = NewBuffer;
+                             p = s + l;
+                             char buf[4];
+                             sprintf(buf, "#%02X", (unsigned char)*p);
+                             memmove(p + 2, p, strlen(p) + 1);
+                             strncpy(p, buf, 3);
+                             p += 2;
+                             }
+                          else
+                             esyslog("ERROR: out of memory");
                           }
                      }
               }
@@ -603,9 +607,13 @@ cRecording::cRecording(const char *FileName)
                     if (data[line]) {
                        int len = strlen(s);
                        len += strlen(data[line]) + 1;
-                       data[line] = (char *)realloc(data[line], len + 1);
-                       strcat(data[line], "\n");
-                       strcat(data[line], s);
+                       if (char *NewBuffer = (char *)realloc(data[line], len + 1)) {
+                          data[line] = NewBuffer;
+                          strcat(data[line], "\n");
+                          strcat(data[line], s);
+                          }
+                       else
+                          esyslog("ERROR: out of memory");
                        }
                     else
                        data[line] = strdup(s);
@@ -624,12 +632,16 @@ cRecording::cRecording(const char *FileName)
               // line 1 and line 2 to be the long text:
               int len = strlen(data[1]);
               if (len > 80) {
-                 data[1] = (char *)realloc(data[1], len + 1 + strlen(data[2]) + 1);
-                 strcat(data[1], "\n");
-                 strcat(data[1], data[2]);
-                 free(data[2]);
-                 data[2] = data[1];
-                 data[1] = NULL;
+                 if (char *NewBuffer = (char *)realloc(data[1], len + 1 + strlen(data[2]) + 1)) {
+                    data[1] = NewBuffer;
+                    strcat(data[1], "\n");
+                    strcat(data[1], data[2]);
+                    free(data[2]);
+                    data[2] = data[1];
+                    data[1] = NULL;
+                    }
+                 else
+                    esyslog("ERROR: out of memory");
                  }
               }
            info->SetData(data[0], data[1], data[2]);
@@ -1368,13 +1380,15 @@ bool cIndexFile::CatchUp(int Index)
                }
             int newLast = buf.st_size / sizeof(tIndex) - 1;
             if (newLast > last) {
-               if (size <= newLast) {
-                  size *= 2;
-                  if (size <= newLast)
-                     size = newLast + 1;
+               int NewSize = size;
+               if (NewSize <= newLast) {
+                  NewSize *= 2;
+                  if (NewSize <= newLast)
+                     NewSize = newLast + 1;
                   }
-               index = (tIndex *)realloc(index, size * sizeof(tIndex));
-               if (index) {
+               if (tIndex *NewBuffer = (tIndex *)realloc(index, NewSize * sizeof(tIndex))) {
+                  size = NewSize;
+                  index = NewBuffer;
                   int offset = (last + 1) * sizeof(tIndex);
                   int delta = (newLast - last) * sizeof(tIndex);
                   if (lseek(f, offset, SEEK_SET) == offset) {
@@ -1397,8 +1411,10 @@ bool cIndexFile::CatchUp(int Index)
                   else
                      LOG_ERROR_STR(fileName);
                   }
-               else
+               else {
                   esyslog("ERROR: can't realloc() index");
+                  break;
+                  }
                }
             }
          else

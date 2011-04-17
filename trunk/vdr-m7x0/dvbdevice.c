@@ -601,14 +601,15 @@ bool c7x0TsReplayer::ReallocTrickspeedBuffer(const int Size)
   if (Size <= trickspeedSize)
      return true;
 
-  uchar *tmp = (uchar *) realloc(trickspeedData,Size);
-  if (!tmp) {
-     esyslog("m7x0 Replayer cannot alloc memory!");
+  if (uchar *NewBuffer = (uchar *)realloc(trickspeedData, Size)) {
+     trickspeedData = NewBuffer;
+     trickspeedSize = Size;
+     }
+  else {
+     esyslog("ERROR: out of memory");
      return false;
      }
 
-  trickspeedSize=Size;
-  trickspeedData=tmp;
   return true;
 }
 

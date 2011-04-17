@@ -50,7 +50,7 @@ class cComponents {
 private:
   int numComponents;
   tComponent *components;
-  void Realloc(int Index);
+  bool Realloc(int Index);
 public:
   cComponents(void);
   ~cComponents(void);

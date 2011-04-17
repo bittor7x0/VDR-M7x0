@@ -414,12 +414,14 @@ static int IntArraysDiffer(const int *a, const int *b, const char na[][MAXLANGCO
 {
   int result = 0;
   for (int i = 0; a[i] || b[i]; i++) {
-      if (a[i] && na && nb && strcmp(na[i], nb[i]) != 0)
+      if (!a[i] || !b[i]) {
+         result |= VALDIFF;
+         break;
+         }
+      if (na && nb && strcmp(na[i], nb[i]) != 0)
          result |= STRDIFF;
       if (a[i] != b[i])
          result |= VALDIFF;
-      if (!a[i] || !b[i])
-         break;
       }
   return result;
 }

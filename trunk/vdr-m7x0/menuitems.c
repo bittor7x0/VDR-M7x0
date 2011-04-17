@@ -368,7 +368,7 @@ eOSState cMenuEditStrItem::ProcessKey(eKeys Key)
      Set();
      return osContinue;
      }
-  switch (Key) {
+  switch (int(Key)) {
     case kRed:   // Switch between upper- and lowercase characters
                  if (InEditMode()) {
                     if (!insert || !newchar) {
@@ -640,7 +640,7 @@ void cMenuEditRecPathItem::SetHelpKeys(void)
 
 eOSState cMenuEditRecPathItem::ProcessKey(eKeys Key)
 {
-  switch (Key) {
+  switch (int(Key)) {
     case kLeft:
     case kRed:    // one level up
                   if (!InEditMode())
@@ -739,7 +739,7 @@ eOSState cMenuEditChanItem::ProcessKey(eKeys Key)
 {
   int delta = 1;
 
-  switch (Key) {
+  switch (int(Key)) {
     case kLeft|k_Repeat:
     case kLeft:  delta = -1;
     case kRight|k_Repeat:
@@ -1028,9 +1028,7 @@ cMenuSetupPage::cMenuSetupPage(void)
 
 void cMenuSetupPage::SetSection(const char *Section)
 {
-  char buf[40];
-  snprintf(buf, sizeof(buf), "%s - %s", tr("Setup"), Section);
-  SetTitle(buf);
+  SetTitle(cString::sprintf("%s - %s", tr("Setup"), Section));
 }
 
 eOSState cMenuSetupPage::ProcessKey(eKeys Key)
@@ -1051,9 +1049,7 @@ eOSState cMenuSetupPage::ProcessKey(eKeys Key)
 void cMenuSetupPage::SetPlugin(cPlugin *Plugin)
 {
   plugin = Plugin;
-  char buf[40];
-  snprintf(buf, sizeof(buf), "%s '%s'", tr("Plugin"), plugin->Name());
-  SetSection(buf);
+  SetSection(cString::sprintf("%s '%s'", tr("Plugin"), plugin->Name()));
 }
 
 void cMenuSetupPage::SetupStore(const char *Name, const char *Value)

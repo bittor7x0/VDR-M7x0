@@ -105,7 +105,8 @@ void cLircRemote::Action(void)
                  }
            }
 
-        if (ready && ret > 21) {
+        if (ready && ret > 0) {
+           buf[ret - 1] = 0;
            int count;
            char KeyName[LIRC_KEY_BUF];
            if (sscanf(buf, "%*x %x %29s", &count, KeyName) != 2) { // '29' in '%29s' is LIRC_KEY_BUF-1!
