@@ -5,7 +5,7 @@
  
  # Flags in OPTIMIZATION are used only for non-debug builds
 -OPTIMIZATION:=
-+OPTIMIZATION:= -O3
++OPTIMIZATION:= -Ofast
  # Use '-Os' optimization if available, else use -O2, allow Config to override
 -OPTIMIZATION+=$(call check_gcc,-Os,-O2)
 +# OPTIMIZATION+=$(call check_gcc,-Os,-O2)
