@@ -6,12 +6,12 @@
  */
 
 #include <sys/ioctl.h>
-#include <linux/dvb/frontend.h>
+#include "m7x0_dvb/frontend.h"
 
 #include <vdr/plugin.h>
 #include <vdr/status.h>
 #include <vdr/menu.h>
-#include <vdr/i18n.h>
+#include "i18n.h"
 
 
 static const char *VERSION        = "0.4.1";
@@ -169,7 +169,7 @@ public:
         // uint32_t ber = 0;
         char* output = NULL;
 
-        #define FRONTEND_DEVICE "/dev/dvb/adapter%d/frontend%d"
+        #define FRONTEND_DEVICE "/dev/ost/frontend%d"
         cString dev = cString::sprintf(FRONTEND_DEVICE, d->CardIndex(), 0);
         m_Frontend = open(dev, O_RDONLY | O_NONBLOCK);
         if (m_Frontend < 0) {

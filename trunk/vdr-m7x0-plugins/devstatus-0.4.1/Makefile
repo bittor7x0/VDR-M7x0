@@ -16,12 +16,12 @@ VERSION = $(shell grep 'static const char \*VERSION *=' $(PLUGIN).c | awk '{ pri
 ### The C++ compiler and options:
 
 OPTLEVEL ?= 2
-CXXFLAGS = -O$(OPTLEVEL) -Wall -Woverloaded-virtual
+CXXFLAGS ?= -O$(OPTLEVEL) -Wall -Woverloaded-virtual
 
 ### The directory environment:
 
-VDRDIR = ../../..
-LIBDIR = ../../lib
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### Allow user defined options to overwrite defaults:
@@ -29,7 +29,7 @@ TMPDIR = /tmp
 -include $(VDRDIR)/Make.config
 
 # Strip debug symbols?  Set eg. to /bin/true if not
-STRIP = strip
+STRIP = /bin/true
 
 
 ### The version number of VDR's plugin API (taken from VDR's "config.h"):
@@ -49,7 +49,7 @@ DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o 
+OBJS = $(PLUGIN).o i18n.o
 
 ### Implicit rules:
 
@@ -74,6 +74,9 @@ I18Nmo    = $(addsuffix .mo, $(foreach file, $(I18Npo), $(basename $(file))))
 I18Ndirs  = $(notdir $(foreach file, $(I18Npo), $(basename $(file))))
 I18Npot   = $(PODIR)/$(PLUGIN).pot
 I18Nvdrmo = vdr-$(PLUGIN).mo
+ifeq ($(strip $(APIVERSION)),1.5.7)
+  I18Nvdrmo = $(PLUGIN).mo
+endif
 
 %.mo: %.po
 	msgfmt -c -o $@ $<
@@ -92,6 +95,9 @@ i18n: $(I18Nmo)
 	    cp $(PODIR)/$$i.mo $(LOCALEDIR)/$$i/LC_MESSAGES/$(I18Nvdrmo);\
 	    done
 
+generate-i18n: i18n-template.h $(I18Npot) $(I18Npo) buildutil/pot2i18n.pl
+	@chmod +x buildutil/pot2i18n.pl
+	buildutil/pot2i18n.pl $(I18Npot) i18n-template.h > i18n-generated.h
 
 ### Targets:
 
