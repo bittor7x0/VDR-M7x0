@@ -825,13 +825,13 @@ cMenuEditDaysOfWeek::cMenuEditDaysOfWeek(int* DaysOfWeek, int Offset, bool Negat
 
 eOSState cMenuEditDaysOfWeek::ProcessKey(eKeys Key)
 {
-   int i=0;
    if (Key == kBack && negate)
       *pDaysOfWeek = -*pDaysOfWeek;		 
 
    eOSState state = cOsdMenu::ProcessKey(Key);
 
    if (state == osUnknown) {
+      int i=0;
       switch (Key) {
          case kOk:
             *pDaysOfWeek = 0;

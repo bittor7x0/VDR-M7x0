@@ -198,7 +198,6 @@ ostream & operator << (ostream & stream, PES_Packet & x){
 }
 
 static unsigned int find_length(istream & stream){
-	streampos p = 0;
 	streampos start = 0;
 	streampos q = 0;
 	int found = 0;
@@ -208,7 +207,7 @@ static unsigned int find_length(istream & stream){
 	start -=2;
 	stream.seekg(start);
 	while ( !stream.eof() && !found ){
-		p = stream.tellg();
+		streampos p = stream.tellg();
 		stream.read((char *)&sync4,4);
 		if (sync4[0] == 0x00 && sync4[1] == 0x00 && sync4[2] == 0x01) {
 			switch ( sync4[3] ) {

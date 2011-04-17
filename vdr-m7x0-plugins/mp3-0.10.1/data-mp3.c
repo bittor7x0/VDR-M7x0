@@ -173,19 +173,19 @@ bool cSong::FindImage(void)
   di(isyslog("image: checking image for %s\n",obj->Path()))
 
   // song specific image
-  char *m=rindex(base,'.');
+  char *m=strrchr(base,'.');
   if(m) *m=0;
   if((image=CheckImage(base))) return true;
 
   // album specific image in song directory
-  if(!(m=rindex(base,'/'))) m=base-1;
+  if(!(m=strrchr(base,'/'))) m=base-1;
   strcpy(m+1,"folder");
   if((image=CheckImage(base))) return true;
 
   // artist specific image in parent directory
-  if((m=rindex(base,'/'))) {
+  if((m=strrchr(base,'/'))) {
     *m=0;
-    if(!(m=rindex(base,'/'))) m=base-1;
+    if(!(m=strrchr(base,'/'))) m=base-1;
     strcpy(m+1,"folder");
     if((image=CheckImage(base))) return true;
     }

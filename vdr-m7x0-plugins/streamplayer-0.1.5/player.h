@@ -47,7 +47,7 @@ public:
 	bool Poll();
 	// Get data from source. Return false if no data available.
 
-	bool BufferFull() { return full; }
+	bool BufferFull() const { return full; }
 	int Available() { return Buffer->Available(); }
 	virtual uchar* Get(int &Count);
 	virtual void Del(int Count);

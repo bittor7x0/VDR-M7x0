@@ -55,14 +55,17 @@ void Solver::set_first_at(unsigned int level)
   if (level == 0)
     random = random_init;
 
-  unsigned int i, count = puzzle.numbers_count(p);
+  unsigned int count = puzzle.numbers_count(p);
   if (count != 0)
   {
     puzzle.set(p, puzzle.next_number(p));
 
     if (random)
+    {
+      unsigned int i;
       for (count = rand(count), i = 0; i < count; ++i)
         puzzle.set(p, puzzle.next_number(p));
+    }
   }
   else
     puzzle.set(p, 1);

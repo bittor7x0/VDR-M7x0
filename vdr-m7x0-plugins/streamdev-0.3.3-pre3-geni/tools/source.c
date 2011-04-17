@@ -64,12 +64,11 @@ bool cTBSource::TimedWrite(const void *Buffer, size_t Length, uint TimeoutMs) {
 	sel.Clear();
 	sel.Add(m_Filed, true);
 	while (Length > 0) {
-		int b;
-
 		if (sel.Select(ms) == -1)
 			return false;
 
 		if (sel.CanWrite(m_Filed)) {
+			int b;
 			if ((b = Write((char*)Buffer + offs, Length)) == -1)
 				return false;
 			offs += b;
@@ -93,12 +92,11 @@ bool cTBSource::SafeWrite(const void *Buffer, size_t Length) {
 	sel.Clear();
 	sel.Add(m_Filed, true);
 	while (Length > 0) {
-		int b;
-
 		if (sel.Select() == -1)
 			return false;
 
 		if (sel.CanWrite(m_Filed)) {
+			int b;
 			if ((b = Write((char*)Buffer + offs, Length)) == -1)
 				return false;
 			offs += b;

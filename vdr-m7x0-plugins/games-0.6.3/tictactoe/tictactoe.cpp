@@ -300,9 +300,8 @@ reset_game(void) {
 
 static void
 place_mark(int x, int y) {
-	int winner;
-
 	if (field[y][x] == EMPTY) {
+		int winner;
 		moves++;
 		if (plr == PLAYER1) {
 			draw_piece(bmpo, x, y);
@@ -389,7 +388,6 @@ move_to_block(int pl) {
 static int
 move_to_good(int pl) {
 	char tmp[4];
-	int j = 0;
 
 	pl = other_player();
 	if (moves==1) {
@@ -397,6 +395,7 @@ move_to_good(int pl) {
 	}
 	if (moves == 3) {
 		if ((who(0)==pl) && (who(8)==pl) || (who(2)==pl) && (who(6)==pl)) {
+			int j = 0;
 			if (who(1)==EMPTY) tmp[j++] = 1;
 			if (who(3)==EMPTY) tmp[j++] = 3;
 			if (who(5)==EMPTY) tmp[j++] = 5;

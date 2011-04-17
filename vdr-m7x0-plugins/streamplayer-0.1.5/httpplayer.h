@@ -12,7 +12,7 @@ public:
 	enum eState { esStart,esEatHeader,esFinished,esErrorHTTPNotFound,esErrorHTTPResponseFailed };
 
 	cFilterHTTPHeader(cDataStreamSource *Src);
-	eState GetState() { return State; }
+	eState GetState() const { return State; }
 
 protected:
 	eState State;
@@ -34,8 +34,8 @@ public:
 	virtual void Reset();
 	virtual int GetPollHandle();
 	
-	eState GetState() { return State; }
-	int GetActivityCounter() { return activitycounter; }
+	eState GetState() const { return State; }
+	int GetActivityCounter() const { return activitycounter; }
 
 protected:
 	static const int CONNECT_WAIT=2;

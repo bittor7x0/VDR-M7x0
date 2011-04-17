@@ -327,12 +327,14 @@ unsigned int Puzzle::next_number(Pos pos) const
 {
   assert(pos <= Pos::last());
   unsigned int n = get(pos);
-  unsigned int i;
 
   if (!given(pos))
+  {
+    unsigned int i;
     for (n = (n+1)%(DIM+1), i = 0; i < DIM+1; ++i, n = (n+1)%(DIM+1))
       if (numbers[pos][n])
         break;
+  }
 
   return n;
 }

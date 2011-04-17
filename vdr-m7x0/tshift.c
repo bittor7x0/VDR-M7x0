@@ -843,7 +843,6 @@ void cTShiftControl::ShutdownTShift()
 
 cTShiftControl::~cTShiftControl()
 {
-  int f=0;
   controlLock.Lock();
   if(currentControl==this)
 	currentControl=NULL;
@@ -857,6 +856,7 @@ cTShiftControl::~cTShiftControl()
 	{
 		if((Setup.TShiftDelayed==1)||((Setup.TShiftDelayed)&&(IsDelayed())))
 		{
+			int f=0;
 			for(;f<MAXTSHIFT;f++)
 				if(!receivers[f])
 					break;

@@ -85,7 +85,7 @@ void cEnigmaTextEffects::Action(void)
     int nSleepMs = 0;
 
     TE_LOCK; //This causes an initial wait until thet first Flush() is called (which TE_UNKOCKs)
-    for (tEffects::iterator effect = vecEffects.begin(); (effect != vecEffects.end()) && osd; effect++) {
+    for (tEffects::iterator effect = vecEffects.begin(); (effect != vecEffects.end()) && osd; ++effect) {
       tEffect *e = (*effect);
       if (e == NULL)
         continue;
@@ -253,7 +253,7 @@ void cEnigmaTextEffects::Clear(void)
 
   //Must be TE_LOCKed by caller
 
-  for (tEffects::iterator effect = vecEffects.begin(); effect != vecEffects.end(); effect++) {
+  for (tEffects::iterator effect = vecEffects.begin(); effect != vecEffects.end(); ++effect) {
     delete(*effect);
   }
 
@@ -430,7 +430,7 @@ const char **cEnigmaTextEffects::GetAvailTTFs(void)
       availTTFs = (char **)calloc(vecFonts.size() + 1, sizeof(char*));
       if (availTTFs) {
         char **ptr = availTTFs;
-        for (std::vector<std::string>::iterator i = vecFonts.begin(); i != vecFonts.end(); i++) {
+        for (std::vector<std::string>::iterator i = vecFonts.begin(); i != vecFonts.end(); ++i) {
           if (!(*i).empty()) {
             *ptr = strdup((*i).c_str());
             ptr++;

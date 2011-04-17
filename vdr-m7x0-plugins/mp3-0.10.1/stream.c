@@ -282,7 +282,7 @@ bool cNetStream::ParseURL(const char *line, bool log)
     d(isyslog("netstream: parsed proto='%s' host='%s' path='%s' auth='%s'\n",pr,h,p,a))
     if(!strcasecmp(pr,"http")) {
       int pp=DEFAULT_PORT;
-      s=rindex(h,':');
+      s=strrchr(h,':');
       if(s) { *s++=0; pp=atoi(s); }
 
       free(host); host=strdup(h);

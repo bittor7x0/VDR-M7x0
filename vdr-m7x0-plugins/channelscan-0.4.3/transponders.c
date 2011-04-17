@@ -86,8 +86,8 @@ cTransponder::cTransponder(int Frequency)
 
 int cTransponder::IntToFec(int val)
 {
-   int fec;
    switch (val) {
+     int fec;
      case 12: return fec = FEC_1_2;
      case 23: return fec = FEC_2_3;
      case 34: return fec = FEC_3_4;

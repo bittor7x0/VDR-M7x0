@@ -58,15 +58,14 @@ cPilotskinOsd::~cPilotskinOsd(void)
 
 void cPilotskinOsd::DisplayChannel(const cChannel *Channel)
 {
-  int BufSize = 255;
   if (Channel) {
+     int BufSize = 255;
      if (Channel->GroupSep())
         snprintf(ChanName, BufSize, "* %s *", Channel->Name());
      else {
         snprintf(ChanNumber, BufSize, "%d%s", Channel->Number(), number ? "-" : "");
         snprintf(ChanName, BufSize, "%s", Channel->Name());
      }
-   
   }
   DrawMenu(0,0);
   DisplayBitmap();
@@ -113,16 +112,16 @@ void cPilotskinOsd::UpdateEPGInfo(int NowNextPrev)
                     pArray[numreal++] = EventInfo;
               }
               qsort(pArray, numreal, sizeof(cEvent *), CompareEventTime);
-            }
-            // Find the current event
-            while ( (a < num) && ( (pArray[a])->StartTime() + (pArray[a])->Duration() < now ) ) {
-              a++;
-            }
-            currentEvent = a;
-            if (a<num) {
-              Present = pArray[currentEvent];
-              if (currentEvent + 1 < num)
-                Following = pArray[currentEvent + 1];
+              // Find the current event
+              while ( (a < num) && ( (pArray[a])->StartTime() + (pArray[a])->Duration() < now ) ) {
+                a++;
+              }
+              currentEvent = a;
+              if (a<num) {
+                Present = pArray[currentEvent];
+                if (currentEvent + 1 < num)
+                  Following = pArray[currentEvent + 1];
+              }
             }
             break;
 	  case 2: // Next

@@ -354,7 +354,11 @@ void cFEpgOsd::DrawEvent(const cEvent* event, time_t startTime, time_t endTime, 
   int padLeft  = 10;
   int padRight = 10;
   
-  if (cellWidth < 20) return;
+  if (cellWidth < 20)
+  {
+    free(newTitle);
+    return;
+  }
 
   // Draw arrow if startTime is before times[0]
   if (startTime < times[0])

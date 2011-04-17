@@ -1593,10 +1593,14 @@ void cSkinEnigmaDisplayMenu::SetTitle(const char *Title)
 {
   debug("cSkinEnigmaDisplayMenu::SetTitle(%s)", Title);
 
+#ifndef DISABLE_ANIMATED_TEXT
   bool fTitleChanged = false;
+#endif
   if (Title && strTitle) {
     if (strcmp(Title, strTitle) != 0) {
+#ifndef DISABLE_ANIMATED_TEXT
       fTitleChanged = true;
+#endif
       free(strTitle);
       strTitle = strdup(Title);
     }

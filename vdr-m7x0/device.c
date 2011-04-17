@@ -1636,12 +1636,12 @@ void cDevice::FasterUnlockOther(void)
 void cDevice::Action(void)
 {
   uchar *b = NULL;
-  int Length;
 #if defined(USE_RECEIVER_RINGBUFFER) || defined(DISABLE_RINGBUFFER_IN_RECEIVER)
   sTsDataHeader header;
   header.startsWithVideoFrame = tsVideoFrameUnknown;
 #endif
   if (Running() && OpenDvr()) {
+     int Length;
      while (Running()) {
            // Read data from the DVR device:
 #ifdef USE_HW_VIDEO_FRAME_EVENTS

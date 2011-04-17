@@ -118,7 +118,7 @@ class cDisplay4BPPHalf : public cDisplay {
 
 public:
     cDisplay4BPPHalf(int x0, int y0, int width, int height, bool upper);
-    bool GetUpper() { return Upper; }
+    bool GetUpper() const { return Upper; }
     void SetUpper(bool upper) 
         { if (Upper!=upper) { Upper=upper; InitOSD(); } }
 protected:

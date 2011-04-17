@@ -11,7 +11,7 @@ public:
  
   void Set(const char *Text, const cFont *Font, int Width, int MaxLines);
   const char *Text(void);
-  int Lines(void) { return lines; }
+  int Lines(void) const { return lines; }
   const char *GetLine(int Line);
 
 private:

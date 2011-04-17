@@ -68,15 +68,15 @@ class Talk
       // functions
 
       int wait();
-      int init();
+      int init() const;
       int send(long to, int event, const char* msg = 0);
       int open(long port);
 
-      int isOpen()               { return opened; }
-      long getTimeout()          { return timeout; }
-      int getEvent()             { return event; } 
-      long getFrom()             { return from; } 
-      const char* getMessage()   { return message; }
+      int isOpen() const               { return opened; }
+      long getTimeout() const          { return timeout; }
+      int getEvent() const             { return event; } 
+      long getFrom() const             { return from; } 
+      const char* getMessage() const   { return message; }
 
       void setTimeout(long t)    { timeout = t; } 
 

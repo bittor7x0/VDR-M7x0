@@ -38,6 +38,7 @@ void cAidePlayer::Activate(bool On)
 					DeviceStillPicture(buffer,sp.size);
 				}
 			}
+			close(filefd);
 		}
 		else Detach();
 	}

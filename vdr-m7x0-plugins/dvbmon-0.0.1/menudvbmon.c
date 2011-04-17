@@ -92,13 +92,13 @@ bool cMenuDVBmon::changeFrequency(bool up) {
       return false;
    } else {
       if (up) {
-         f_current++;
+         ++f_current;
          if (f_current == frequencies.end())
             f_current = frequencies.begin();
       } else {
          if (f_current == frequencies.begin())
             f_current = frequencies.end();
-         f_current--;
+         --f_current;
       }
       return true;
    }
@@ -203,7 +203,7 @@ void cMenuDVBmon::Setup()
       }
       
       Add(new cMenuTextInfo("Frequency  Q curr.    Q prev."));
-      for (FREQ2CHANNEL::iterator f_iter = frequencies.begin( ); f_iter != frequencies.end( ); f_iter++ ) {
+      for (FREQ2CHANNEL::iterator f_iter = frequencies.begin( ); f_iter != frequencies.end( ); ++f_iter ) {
          snprintf(buf, sizeof(buf), "%6.1fMHz  %s   %s", f_iter->first*1e-6, f_iter->second.currentInfo, f_iter->second.previousInfo);
          Add(new cMenuTextInfo(buf));
       }
@@ -352,7 +352,7 @@ cMenuStatusBar::cMenuStatusBar(int Total, int Current, int Mode)
    // GetReal EditableWidth
    percent = static_cast<int>(((Current) * barWidth/(Total)));
 
-   char buffer[barWidth+1];
+   char buffer[barWidth+2];
    int i;
 
    buffer[0] = '[';

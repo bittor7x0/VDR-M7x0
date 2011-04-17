@@ -45,7 +45,7 @@ Bitmap::pixel(int x, int y, int idx) {
 }
 
 int
-Bitmap::pixel(int x, int y) {
+Bitmap::pixel(int x, int y) const {
 	if (data && x>=0 && x<width && y>=0 && y<height) {
 		return (data[width * y + x]);
 	}

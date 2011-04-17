@@ -171,7 +171,6 @@ cSetupPluginParameter::~ cSetupPluginParameter( )
 
 void cSetupPluginParameter::Set( )
 {
-  char *tmp=NULL;
   const char *param = _plugin->GetParameter();
   Clear();
   if( param == NULL)
@@ -179,10 +178,11 @@ void cSetupPluginParameter::Set( )
   else
   {
     strncpy(_editParameter, param, sizeof(_editParameter));
-    _editParameter[sizeof(_editParameter)]='\0';
+    _editParameter[sizeof(_editParameter)-1]='\0';
   }
   Add(new cMenuEditStrItem(tr("Plugin-Parameter"), _editParameter, sizeof(_editParameter), ALLOW_ALL_PARAM_CHARS));
 /*JMG
+  char *tmp=NULL;
   asprintf(&tmp, "%s: %s", tr("Plugin"), _plugin->GetName());
   SetStatus(tmp);
   free(tmp);
@@ -468,10 +468,10 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
 void cSetupGenericMenu::ExecuteCommand( const char * cmd )
 {
   char *tmp=NULL;
-  int   status=0;
 
   if( cmd != NULL)
   {
+    int status=0;
     asprintf(&tmp, "%s: %s", tr("Execute"), cmd);
     SetStatus(tmp);
     free(tmp);
@@ -752,13 +752,18 @@ eOSState cSetupMenu::GetCodeProcessKey( eKeys Key )
 {
   int num;
   eOSState state = cOsdMenu::ProcessKey(Key);
+  char *tmp = NULL;
     
     switch(Key)
     {
             case k0 ... k9:
                 num = Key - k0;
-                sprintf(_childLockEntered, "%s%d", _childLockEntered, num);
-                sprintf(_childLockEnteredHidden, "%s*", _childLockEnteredHidden);
+                tmp = _childLockEntered;
+                sprintf(_childLockEntered, "%s%d", tmp, num);
+                delete [] tmp;
+                tmp = _childLockEnteredHidden;
+                sprintf(_childLockEnteredHidden, "%s*", tmp);
+                delete [] tmp;
                 SetAskChildCode();
                 if(strlen(_childLockEntered) == strlen(_config->GetChildLock()))
                 {

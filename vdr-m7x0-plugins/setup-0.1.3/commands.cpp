@@ -209,7 +209,7 @@ cFilebrowserConfigCommand* cFilebrowserConfigCommand::Parse(char* Config, cFileb
 
 cFilebrowserConfigCommand::~cFilebrowserConfigCommand()
 {
-  if(Command) free(Command);
+  if(Command) delete(Command);
 }
 
 bool cFilebrowserConfigCommand::Execute(cOsdMenu* Menu, char* DestinationFile, char* CurrentFile)

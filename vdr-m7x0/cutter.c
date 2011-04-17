@@ -73,7 +73,6 @@ void cCuttingThread::Action(void)
       printf("cCuttingThread::Action: cant set priority\n");
   }
 
-  int bytes = 0;
   int __attribute__((unused)) burst_size = MEGABYTE(Setup.CutterMaxBandwidth) * CUTTER_TIMESLICE / 1000; // max bytes/timeslice 
   cTimeMs __attribute__((unused)) t;
 
@@ -98,6 +97,7 @@ void cCuttingThread::Action(void)
      uchar buffer[MAXFRAMESIZE];
      bool LastMark = false;
      bool cutIn = true;
+     int bytes = 0;
      while (Running()) {
            uchar FileNumber;
            int FileOffset, Length;

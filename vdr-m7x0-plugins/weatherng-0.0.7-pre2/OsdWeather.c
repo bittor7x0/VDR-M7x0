@@ -591,12 +591,10 @@ void cWetterOsd::Show(void)
 
 				osd->DrawText(8, OSDHEIGHT - ((4 * row_y)+5), tr("Sunrise: "), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 				ausgabe = parser.sunrise.c_str();
-				ausgabe = ausgabe;
 				osd->DrawText(CELLWIDTH - 8, OSDHEIGHT - ((4 * row_y)+5), ausgabe.c_str(), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font,CELLWIDTH,20,taRight);
 
 				osd->DrawText(8, OSDHEIGHT - ((3 * row_y)+5), tr("Sunset: "), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 				ausgabe = parser.sunset.c_str();
-				ausgabe = ausgabe;
 				osd->DrawText(CELLWIDTH - 8, OSDHEIGHT - ((3 * row_y)+5), ausgabe.c_str(), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font,CELLWIDTH,20,taRight);
 
 				ausgabe = parser.wetter;

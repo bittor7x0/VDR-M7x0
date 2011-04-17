@@ -487,6 +487,8 @@ int cPinPlugin::initPluginList()
       if (strcasecmp(plugin->Name(), "pin") != 0
 #ifdef __EXCL_PLUGINS
           && !strstr(__EXCL_PLUGINS, plugin->Name()))
+#else
+          )
 #endif
       {
          // nicht das pin plugin und nicht in der Exclude Liste
@@ -597,10 +599,18 @@ bool cPinStatusMonitor::ReplayProtected(const cRecording* Recording, const char*
            isDirectory || !Recording ? name : Recording->Name());
 
    if (PinService::pinValid)
+   {
+      if (base) free(base);
+      if (name) free(name);
       return false;
+   }
 
    if (menuView && !cPinPlugin::hideProtectedRecordings)
+   {
+      if (base) free(base);
+      if (name) free(name);
       return false;
+   }
 
    if (isDirectory)
       asprintf(&path, "%s%s%s/%s/%s", 

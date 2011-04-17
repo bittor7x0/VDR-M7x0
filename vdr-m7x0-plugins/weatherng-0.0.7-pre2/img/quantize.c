@@ -258,7 +258,7 @@ int cQuantizeWu::Cut(struct box * set1, struct box * set2)
     return 1;
 }
 
-long cQuantizeWu::Vol(struct box * cube, long mmt[BOX][BOX][BOX])
+long cQuantizeWu::Vol(struct box * cube, long mmt[BOX][BOX][BOX]) const
 {
 	return (mmt[cube->r1][cube->g1][cube->b1]
 		- mmt[cube->r1][cube->g1][cube->b0]

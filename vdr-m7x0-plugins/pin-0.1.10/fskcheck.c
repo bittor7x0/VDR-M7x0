@@ -54,13 +54,12 @@ enum Command
 int main(int argc, char** argv)
 {
    Talk sender;
-   int status;
    int event = Talk::evtUnknown;
    const char* msg;
    int cmd;
    long t;
 
-   if ((status = sender.open(11)) != success)
+   if (sender.open(11) != success)
    {
       printf("Falal: Can't init message queue, '%s'!\n", strerror(errno));
       return fail;

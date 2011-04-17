@@ -80,19 +80,19 @@ private:
 	void	Decode(uint4* dest, uchar* src, uint4 nLength);
 
 
-	inline	uint4	rotate_left(uint4 x, uint4 n)
+	inline	uint4	rotate_left(uint4 x, uint4 n) const
 	                 { return ((x << n) | (x >> (32-n))); }
 
-	inline	uint4	F(uint4 x, uint4 y, uint4 z)
+	inline	uint4	F(uint4 x, uint4 y, uint4 z) const
 	                 { return ((x & y) | (~x & z)); }
 
-	inline  uint4	G(uint4 x, uint4 y, uint4 z)
+	inline  uint4	G(uint4 x, uint4 y, uint4 z) const
 	                 { return ((x & z) | (y & ~z)); }
 
-	inline  uint4	H(uint4 x, uint4 y, uint4 z)
+	inline  uint4	H(uint4 x, uint4 y, uint4 z) const
 	                 { return (x ^ y ^ z); }
 
-	inline  uint4	I(uint4 x, uint4 y, uint4 z)
+	inline  uint4	I(uint4 x, uint4 y, uint4 z) const
 	                 { return (y ^ (x | ~z)); }
 
 	inline	void	FF(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac)

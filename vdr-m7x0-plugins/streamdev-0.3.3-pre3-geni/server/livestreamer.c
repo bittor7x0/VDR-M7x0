@@ -410,10 +410,12 @@ bool cStreamdevLiveStreamer::SetChannel(const cChannel *Channel, eStreamType Str
 	//printf("ca pid: %d\n", Channel->Ca());
 	m_Channel = Channel;
 	m_StreamType = StreamType;
-
+/*
 	int apid[2] = { Apid, 0 };
+
 	const int *Apids = Apid ? apid : m_Channel->Apids();
 	const int *Dpids = Apid ? NULL : m_Channel->Dpids();
+*/
 
 	switch (m_StreamType) {
 	case stES: 

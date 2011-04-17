@@ -187,7 +187,7 @@ public:
    Object(CharArray &d);
    //can only be called once since data is immutable
    void setData(const unsigned char*data, int size, bool doCopy=true);
-   CharArray getData() { return data; }
+   CharArray getData() const { return data; }
    //returns the valid flag which indicates if data is all right or errors have been encountered
    bool isValid() { return data.isValid(); }
    virtual int getLength() = 0;
@@ -437,7 +437,7 @@ public:
    ~DescriptorGroup();
    void Add(GroupDescriptor *d);
    void Delete();
-   int getLength() { return length; }
+   int getLength() const { return length; }
    GroupDescriptor **getDescriptors() { return array; }
    bool isComplete(); //if all descriptors have been added
 protected:

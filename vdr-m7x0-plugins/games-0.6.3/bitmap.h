@@ -11,7 +11,7 @@ public:
 	~Bitmap(void);
 
 	int pixel(int x, int y, int idx);
-	int pixel(int x, int y);
+	int pixel(int x, int y) const;
 	int blit(int x, int y);
 
 	char *data;

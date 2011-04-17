@@ -410,7 +410,7 @@ public:
   void Play(void);
   void Forward(void);
   void Backward(void);
-  int SkipFrames(int Frames);
+  /*int SkipFrames(int Frames);*/
   void SkipSeconds(int Seconds);
   void Goto(int Position, bool Still = false);
   virtual bool GetIndex(int &Current, int &Total, int &CurrentTime, int &TotalTime );
@@ -990,7 +990,7 @@ void cMpgPlayer::Backward(void)
      }
 }
 
-int cMpgPlayer::SkipFrames(int Frames)
+/*int cMpgPlayer::SkipFrames(int Frames)
 {
   if (index && Frames) {
      int Current;
@@ -1004,7 +1004,7 @@ int cMpgPlayer::SkipFrames(int Frames)
      return Current >= 0 ? Current : OldCurrent;
      }
   return -1;
-}
+}*/
 
 void cMpgPlayer::SkipSeconds(int Seconds)
 {
@@ -1212,12 +1212,12 @@ void cMpgPlayerControl::SkipSeconds(int Seconds)
      player->SkipSeconds(Seconds);
 }
 
-int cMpgPlayerControl::SkipFrames(int Frames)
+/*int cMpgPlayerControl::SkipFrames(int Frames)
 {
   if (player)
      return player->SkipFrames(Frames);
   return -1;
-}
+}*/
 
 bool cMpgPlayerControl::GetIndex(int &Current, int &Total, bool SnapToIFrame)
 {

@@ -86,8 +86,15 @@ void cPicturePlayer::SetPicture(const char *FileName)
          length = read(f, buffer, size);
          if (length > 0) {
             if (length >= size) {
-               size = size * 3 / 2;
-               buffer = (uchar *)realloc(buffer, size);
+               int NewSize = size * 3 / 2;
+               if (uchar *NewBuffer = (uchar *)realloc(buffer, NewSize)) {
+                  buffer = NewBuffer;
+                  size = NewSize;
+                  }
+               else {
+                  LOG_ERROR_STR("out of memory");
+                  break;
+                  }
                lseek(f, 0, SEEK_SET);
                continue;
                }

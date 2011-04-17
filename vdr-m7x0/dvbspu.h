@@ -22,7 +22,7 @@ typedef struct sDvbSpuPalDescr {
     uint8_t index;
     uint8_t trans;
 
-    bool operator != (const sDvbSpuPalDescr pd) const {
+    bool operator != (const sDvbSpuPalDescr &pd) const {
         return index != pd.index && trans != pd.trans;
     };
 } aDvbSpuPalDescr[4];
@@ -38,7 +38,7 @@ typedef struct sDvbSpuRect {
         return y2 - y1 + 1;
     };
 
-    bool operator != (const sDvbSpuRect r) const {
+    bool operator != (const sDvbSpuRect &r) const {
         return r.x1 != x1 || r.y1 != y1 || r.x2 != x2 || r.y2 != y2;
     };
 }

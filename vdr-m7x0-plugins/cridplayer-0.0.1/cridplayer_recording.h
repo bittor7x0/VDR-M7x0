@@ -191,22 +191,22 @@ public:
   bool GetIndexTimeRel(int32_t time, int &idx);
   int GetIndex(int idx, int &FileNo, int32_t &Offset, int &Size);
   int GetIFrameIndex(int idx, int &FileNo, int32_t &Offset, int &Size);
-  bool ReadOkay(void) { return readOkay; }
-  bool IndexOkay(void) { return readOkay && indexOkay; }
+  bool ReadOkay(void) const { return readOkay; }
+  bool IndexOkay(void) const { return readOkay && indexOkay; }
   cUnbufferedFile *GetMpegFile(int FileNo);
   cUnbufferedFile *GetNextMpegFile(void) {
      return GetMpegFile(curFileNo + 1);
      }
   bool GetPids(int FileNo, int &PmtPid, int &VideoPid);
   int32_t GetTime(int idx);
-  int32_t GetDuration(void) {
+  int32_t GetDuration(void) const {
      return index[startIndex - preGapIndexes].timestamp -
                                 index[endIndex].timestamp;
      }
-  int GetMpegFileNumber(void) { return curFileNo; }
+  int GetMpegFileNumber(void) const { return curFileNo; }
   int GetRealIndex(int idx)  { return min(max(idx + preGapIndexes, 0), endIndex - startIndex + preGapIndexes); }
   int GetIndexFromReal(int idx) { return min(max(idx - preGapIndexes, -preGapIndexes), endIndex - startIndex); }
-  int Last(void) { return endIndex - startIndex; }
+  int Last(void) const { return endIndex - startIndex; }
   };
 
 class cCridMark : public cMark {

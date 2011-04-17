@@ -128,7 +128,7 @@ void TiXmlString ::operator = (const TiXmlString & copy)
 void TiXmlString::append( const char* str, int len )
 {
     char * new_string;
-    unsigned new_alloc, new_size, size_suffix;
+    unsigned new_size, size_suffix;
 	
 	// don't use strlen - it can overrun the len passed in!
 	const char* p = str;
@@ -147,6 +147,7 @@ void TiXmlString::append( const char* str, int len )
     if (new_size > allocated)
     {
         // compute new size
+        unsigned new_alloc;
         new_alloc = assign_new_size (new_size);
 
         // allocate new buffer
@@ -189,13 +190,14 @@ void TiXmlString::append( const char* str, int len )
 void TiXmlString::append( const char * suffix )
 {
     char * new_string;
-    unsigned new_alloc, new_size;
+    unsigned new_size;
 
     new_size = length () + strlen (suffix) + 1;
     // check if we need to expand
     if (new_size > allocated)
     {
         // compute new size
+        unsigned new_alloc;
         new_alloc = assign_new_size (new_size);
 
         // allocate new buffer

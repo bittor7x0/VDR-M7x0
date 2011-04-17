@@ -337,9 +337,9 @@ eOSState cMenuMyEditTimer::ProcessKey(eKeys Key)
 		if (timer && timer->Aux())
 		    fullaux = timer->Aux();
 
-		int bstart = 0, bstop = 0; // calculate margins
 		if (event && IsSingleEvent())
 		{
+		    int bstart = 0, bstop = 0; // calculate margins
 		    time_t startTime = 0, stopTime = 0;;
 		    int begin  = cTimer::TimeToInt(start); // seconds from midnight
 		    int length = cTimer::TimeToInt(stop) - begin;		  
@@ -375,10 +375,8 @@ eOSState cMenuMyEditTimer::ProcessKey(eKeys Key)
         fullaux = UpdateAuxValue(fullaux, "pin-plugin", aux);
 #endif
 		
-		char* tmpFile = strdup(file);
-		tmpFile = strreplace(tmpFile, ':', '|');
-		char* tmpDir = strdup(directory);
-		tmpDir = strreplace(tmpDir, ':', '|');
+		char* tmpFile = strreplace(strdup(file), ':', '|');
+		char* tmpDir = strreplace(strdup(directory), ':', '|');
 		if (strlen(tmpFile) == 0)
 		    tmpFile = strdup(CHANNELNAME(ch));
 		
@@ -414,6 +412,9 @@ eOSState cMenuMyEditTimer::ProcessKey(eKeys Key)
                     gl_timerStatusMonitor->SetConflictCheckAdvised();
                     Timers.SetModified();
                     addIfConfirmed = false;
+                } else {
+                    free(tmpFile);
+                    free(tmpDir);
                 }
 	    }
 	    return osBack;
