@@ -396,10 +396,12 @@ const char * Plugins::GetActivePlugins( )
     if(plugin->GetActive() && plugin->GetInSystem() )
     {
       const char *p = plugin->GetParameter();
+      const char *tmp = Util::Strdupnew(buf);
       if( p == NULL)
-        sprintf(buf, "%s -P%s ", buf,  plugin->GetName());
+        sprintf(buf, "%s -P%s ", tmp,  plugin->GetName());
       else
-        sprintf(buf, "%s -P%s %s", buf, plugin->GetName(), p);
+        sprintf(buf, "%s -P%s %s", tmp, plugin->GetName(), p);
+      delete [] tmp;
     }
   } 
   //HaPe: Add " around the string
