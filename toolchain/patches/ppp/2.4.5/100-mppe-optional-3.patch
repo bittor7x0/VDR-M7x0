@@ -1,7 +1,7 @@
 diff -uNr ppp-2.4.4.orig/pppd/auth.c ppp-2.4.4/pppd/auth.c
 --- ppp-2.4.4.orig/pppd/auth.c	2006-06-18 13:26:00.000000000 +0200
 +++ ppp-2.4.4/pppd/auth.c	2010-10-05 13:54:13.000000000 +0200
-@@ -875,7 +875,7 @@
+@@ -885,7 +885,7 @@
       */
      ecp_required = ecp_gotoptions[unit].required;
      mppe_required = ccp_gotoptions[unit].mppe;
@@ -189,7 +189,7 @@ diff -uNr ppp-2.4.4.orig/pppd/ccp.h ppp-2.4.4/pppd/ccp.h
 diff -uNr ppp-2.4.4.orig/pppd/pppd.8 ppp-2.4.4/pppd/pppd.8
 --- ppp-2.4.4.orig/pppd/pppd.8	2006-06-16 02:01:23.000000000 +0200
 +++ ppp-2.4.4/pppd/pppd.8	2010-10-05 14:03:07.000000000 +0200
-@@ -770,6 +770,9 @@
+@@ -781,6 +781,9 @@
  .B nomppe
  Disables MPPE (Microsoft Point to Point Encryption).  This is the default.
  .TP
