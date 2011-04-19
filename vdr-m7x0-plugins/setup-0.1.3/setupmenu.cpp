@@ -758,10 +758,10 @@ eOSState cSetupMenu::GetCodeProcessKey( eKeys Key )
     {
             case k0 ... k9:
                 num = Key - k0;
-                tmp = _childLockEntered;
+                tmp = Util::Strdupnew(_childLockEntered);
                 sprintf(_childLockEntered, "%s%d", tmp, num);
                 delete [] tmp;
-                tmp = _childLockEnteredHidden;
+                tmp = Util::Strdupnew(_childLockEnteredHidden);
                 sprintf(_childLockEnteredHidden, "%s*", tmp);
                 delete [] tmp;
                 SetAskChildCode();
