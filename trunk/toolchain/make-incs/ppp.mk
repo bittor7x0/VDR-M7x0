@@ -17,7 +17,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 PPP_DEPS = $(BASE_BUILD_STAGEFILE)
 
-PPP_VERSION := 2.4.4
+PPP_VERSION := 2.4.5
 PPP_PATCHES_DIR := $(PATCHES_DIR)/ppp/$(PPP_VERSION)
 
 PPP_FILE := ppp-$(PPP_VERSION).tar.gz
