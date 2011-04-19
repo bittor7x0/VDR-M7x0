@@ -17,7 +17,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 PPTPD_DEPS = $(BASE_BUILD_STAGEFILE)
 
-PPTPD_VERSION := 1.3.0
+PPTPD_VERSION := 1.3.4
 PPTPD_PATCHES_DIR := $(PATCHES_DIR)/pptpd/$(PPTPD_VERSION)
 
 PPTPD_FILE := pptpd-$(PPTPD_VERSION).tar.gz
@@ -97,7 +97,7 @@ $(STAGEFILES_DIR)/.pptpd_installed: $(STAGEFILES_DIR)/.pptpd_compiled
 		$(SED) -i '$$apptpctrl\t1723/tcp' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/services ; \
 	fi);
 	(if [ X"`$(GREP) pptpctrl $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf`" = X"" ] ; then \
-		$(SED) -i '$$apptpctrl\tstream\ttcp\tnowait\troot\t/usr/sbin/pptpctrl ReservedToWriteCorrectNameAndAddressOfPeer 0 0 0 0 0 0 0' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf ; \
+		$(SED) -i '$$apptpctrl\tstream\ttcp\tnowait\troot\t/usr/sbin/pptpctrl ReservedToWriteCorrectNameAndAddressOfPeer 0 0 0 0 0 0' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/inetd.conf ; \
 	fi);
 	$(TOUCH) $(STAGEFILES_DIR)/.pptpd_installed
 
