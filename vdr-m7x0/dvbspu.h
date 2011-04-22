@@ -31,6 +31,9 @@ typedef struct sDvbSpuRect {
     int x1, y1;
     int x2, y2;
 
+    sDvbSpuRect(void) {
+        x1 = y1 = x2 = y2 = 0;
+    };
     int width() const {
         return x2 - x1 + 1;
     };

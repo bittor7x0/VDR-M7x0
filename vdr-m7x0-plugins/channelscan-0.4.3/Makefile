@@ -7,7 +7,7 @@
 # This name will be used in the '-P...' option of VDR to load the plugin.
 # By default the main source file also carries this name.
 #
-
+PLUGIN = channelscan
 
 ### The version number of this plugin (taken from the main source file):
 VERSION = $(shell grep 'static const char \*VERSION *=' channelscan.h | awk '{ print $$6 }' | sed -e 's/[";]//g')
@@ -26,10 +26,6 @@ TMPDIR = /tmp
 ### Allow user defined options to overwrite defaults:
 
 -include $(VDRDIR)/Make.config
-
-
-PLUGIN = channelscan
-#PLUGIN = reelchannelscan
 
 ### The version number of VDR (taken from VDR's "config.h"):
 
