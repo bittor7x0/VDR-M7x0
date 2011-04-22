@@ -569,11 +569,11 @@ cString cPluginDevstatus::SVDRPCommand(const char *Command, const char *Option, 
     int Count = 0;
     for (cRecObj *r = CurrentRecordings.First(); r; r = CurrentRecordings.Next(r)){ // add recordings to the output
       if (r && r->device == d){
-        char* Name = NULL;
         if (r->name){
-          Name = strdup(r->name);
+          char* Name = strdup(r->name);
           char* itemText = NULL;
           asprintf(&itemText, "%s %s", DAYDATETIME(r->timer->StartTime()), Name);
+          free(Name);
           asprintf(&output, "%s    %s\n", output , itemText);
           free(itemText);
         }

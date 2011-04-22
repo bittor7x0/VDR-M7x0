@@ -95,16 +95,16 @@ private:
 	inline  uint4	I(uint4 x, uint4 y, uint4 z) const
 	                 { return (y ^ (x | ~z)); }
 
-	inline	void	FF(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac)
+	inline	void	FF(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac) const
 	                 { a += F(b, c, d) + x + ac; a = rotate_left(a, s); a += b; }
 
-	inline	void	GG(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac)
+	inline	void	GG(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac) const
                      { a += G(b, c, d) + x + ac; a = rotate_left(a, s); a += b; }
 
-	inline	void	HH(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac)
+	inline	void	HH(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac) const
                      { a += H(b, c, d) + x + ac; a = rotate_left(a, s); a += b; }
 
-	inline	void	II(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac)
+	inline	void	II(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac) const
                      { a += I(b, c, d) + x + ac; a = rotate_left(a, s); a += b; }
 
 // Data
