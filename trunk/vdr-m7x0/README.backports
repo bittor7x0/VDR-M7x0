@@ -1,6 +1,6 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 1.7.17 backports applied in this patch:
+VDR 1.7.18 backports applied in this patch:
 * Implemented handling the "Content Descriptor" (based on a patch from Rolf
   Ahrenberg). The 'classic' and 'sttng' skins display the textual
   representation of the content descriptors as "genre". The epg.data file stores
@@ -176,3 +176,16 @@ VDR 1.7.17 backports applied in this patch:
   Steffen Barszus).
 * Fixed setting up the 'Recordings' menu in case there are several recordings
   with exactly the same name (reported by Marcus Hilbrich).
+* Added a missing initialization to sDvbSpuRect (reported by Sergiu Dotenco).
+* Avoiding an unecessary call to Recordings.ResetResume() (thanks to Reinhard
+  Nissl).
+* Replaced "%lld" and "%llX" print format specifiers with "PRId64" and "PRIX64" to
+  avoid compiler warnings with gcc 4.5.2 (thanks to Sergiu Dotenco).
+  On a personal note: I find it a step in the totally wrong direction that there
+  have been macros introduced to work around this problem in the first place. There
+  should have been "real" format specifiers defined that address this. These macros
+  are nothing but an ugly workaround.
+* Added '-Wno-parentheses' to the compiler options in order to avoid silly compiler
+  warnings for expressions like 'a || b && c', where GCC 4.3 wants to force the
+  programmer to write 'a || (b && c)', while everybody knows that '&&' links
+  stronger than '||' (reported by Tobias Grimm).

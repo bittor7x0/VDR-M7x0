@@ -17,6 +17,8 @@
 #include "m7x0_dvb/frontend.h"
 #include "m7x0_dvb/video.h"
 //M7X0 END AK
+#define __STDC_FORMAT_MACROS // Required for format specifiers
+#include <inttypes.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include "channels.h"
@@ -2156,7 +2158,7 @@ c7x0TSBuffer::~c7x0TSBuffer()
   CHECK(ioctl(f,DVR_GET_BYTESLOST,&lostbytes));
   munmap(dvrRingBuffer,DVR_RING_BUFFER_SIZE);
 #ifdef USE_HW_VIDEO_FRAME_EVENTS
-  isyslog("M7X0 TS-Buffer on device %d has lost %d of %lld Bytes during Recording. Buffer Stats %d Bytes (%d%%)", cardIndex, lostbytes, readBytes + lostbytes, maxFill, (maxFill*100)/DVR_RING_BUFFER_SIZE);
+  isyslog("M7X0 TS-Buffer on device %d has lost %d of %"PRId64" Bytes during Recording. Buffer Stats %d Bytes (%d%%)", cardIndex, lostbytes, readBytes + lostbytes, maxFill, (maxFill*100)/DVR_RING_BUFFER_SIZE);
 #else
   isyslog("M7X0 TS-Buffer on device %d has lost %d during Recording. Buffer Stats %d Bytes (%d%%)", cardIndex, lostbytes, maxFill, (maxFill*100)/DVR_RING_BUFFER_SIZE);
 #endif
@@ -2307,7 +2309,7 @@ uchar *c7x0TSBuffer::Get(int &Length,int &Pid)
               }
            else {
               if (curEventOffset != 0) {
-                 esyslog("ERROR: Frame Event not aligned to TS-Pack bounds (read %lld diff %d)", readBytes, curEventOffset);
+                 esyslog("ERROR: Frame Event not aligned to TS-Pack bounds (read %"PRId64" diff %d)", readBytes, curEventOffset);
                  }
               videoFrame = curEventFrameType;
               curEventAvail = false;
@@ -2348,7 +2350,7 @@ uchar *c7x0TSBuffer::Get(int &Length,int &Pid)
         }
      else {
         if (curEventOffset != 0) {
-           esyslog("ERROR: Frame Event not aligned to TS-Pack bounds (read %lld diff %d)", readBytes, curEventOffset);
+           esyslog("ERROR: Frame Event not aligned to TS-Pack bounds (read %"PRId64" diff %d)", readBytes, curEventOffset);
            }
         videoFrame = curEventFrameType;
         curEventAvail = false;

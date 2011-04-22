@@ -14,12 +14,12 @@ CC       = gcc
 CFLAGS   = -g -O2 -Wall
 
 CXX      = g++
-CXXFLAGS = -g -O2 -Wall -Woverloaded-virtual
+CXXFLAGS = -g -O2 -Wall -Woverloaded-virtual -Wno-parentheses
 
 ifdef PLUGIN
 CFLAGS   += -fPIC
 CXXFLAGS += -fPIC
-endif 
+endif
 
 ### The directory environment:
 

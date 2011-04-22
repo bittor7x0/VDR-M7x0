@@ -265,9 +265,10 @@ bool cResumeFile::Save(int Index)
 void cResumeFile::Delete(void)
 {
   if (fileName) {
-     if (remove(fileName) < 0 && errno != ENOENT)
+     if (remove(fileName) == 0)
+        Recordings.ResetResume(fileName);
+     else if (errno != ENOENT)
         LOG_ERROR_STR(fileName);
-     Recordings.ResetResume(fileName);
      }
 }
 
