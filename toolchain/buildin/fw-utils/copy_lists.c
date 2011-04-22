@@ -36,6 +36,7 @@
 #define COPY_BUFFER_SIZE (64 * 1024)
 
 int opt_skip_special = 0;
+int opt_only_mode = 0;
 struct list_entry {
 	char *file1;
 	char *file2;
@@ -154,8 +155,9 @@ static void change_permissons(char *file, uid_t owner, gid_t group,
 	if (opt_skip_special)
 		return;
 
-	if (lchown(file, owner, group))
-		die("Cannot set owner of file '%s'", file);
+	if (!opt_only_mode)
+		if (lchown(file, owner, group))
+			die("Cannot set owner of file '%s'", file);
 
 	if (mode == -1)
 		return;
@@ -169,7 +171,7 @@ static void mk_special_file(char *devname, char type, int major, int minor)
 {
 	mode_t mod;
 
-	if (opt_skip_special)
+	if (opt_skip_special || opt_only_mode)
 		return;
 
 	if (type == 'b')
@@ -496,7 +498,7 @@ static void handle_file(struct copy_context *cont, const char *filename)
 
 static void print_usage(void)
 {
-	printf("Usage: copy_lists [-s] <rootfs path> <target root path> <strip util> <upx util> <input file list>");
+	printf("Usage: copy_lists [-s|-m] <rootfs path> <target root path> <strip util> <upx util> <input file list>");
 }
 
 int main(int argc, char **argv)
@@ -506,9 +508,12 @@ int main(int argc, char **argv)
 	int i = 1;
 	memset(&cont, 0, sizeof(cont));
 
-	if (argc > 1 && !strcasecmp(argv[1],"-s")) {
+	if (argc > 1) {
 		i = 2;
-		opt_skip_special = 1;
+		if (!strcasecmp(argv[1],"-s"))
+			opt_skip_special = 1;
+		else if (!strcasecmp(argv[1],"-m"))
+			opt_only_mode = 1;
 	}
 
 	if (argc < i + 3) {
