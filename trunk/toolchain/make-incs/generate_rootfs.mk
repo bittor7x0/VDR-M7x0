@@ -26,6 +26,7 @@ else
   ROOTFS_DIR := $(abspath $(CONFIG_ROOTFS_DIR))
 endif
 ROOTFS_FILE_TABLE := $(STAGEFILES_DIR)/file_tab$(subst /,.,$(subst $(TOP_DIR),,$(ROOTFS_DIR))).lst
+ROOTFS_FILE_COPY := $(STAGEFILES_DIR)/file_copy$(subst /,.,$(subst $(TOP_DIR),,$(ROOTFS_DIR))).lst
 FQ_FILE_LISTS = $(addprefix $(FILELIST_DIR)/, $(FILE_LISTS))
 ROOTFS_DIR_DEPS = $(PACKS_BUILD_STAGEFILE) $$(FQ_FILE_LISTS) \
    $(COPY_LISTS_BIN) $(UPX_BIN) $(TOP_DIR)/.config
@@ -61,7 +62,32 @@ POST_RULES_$(CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE) += $(TOP_DIR)/$(SQUASH_ROOTFS_
 
 DISTCLEAN_RULES += distclean-generate-rootfs
 
+define awk_rootfs_lst_trans_prg
+$$1 ~ /^\/?etc\/passwd/ || \
+$$1 ~ /^\/?etc\/shadow/ || \
+$$1 ~ /^\/?etc\/group/ || \
+$$1 ~ /^\/?etc\/inittab/ || \
+$$1 ~ /^\/?etc\/rc.mini/ || \
+$$1 ~ /^\/?etc\/rc.debug/ || \
+$$1 ~ /^\/?etc\/systemtype/ || \
+$$1 ~ /^\/?etc\/.*\.conf/ || \
+$$1 ~ /^\/?etc\/usbautomounter$$/ || \
+$$1 ~ /^\/?etc\/webif$$/ || \
+$$1 ~ /^\/?etc\/ssmtp$$/ || \
+$$1 ~ /^\/?etc\/vdr$$/ || \
+$$1 ~ /^\/?etc\/vdr\/plugins$$/ || \
+$$1 ~ /^\/?etc\/vdr\/plugins\/epgsearch$$/ || \
+$$1 ~ /^\/?etc\/vdr\/plugins\/filebrowser$$/ || \
+$$1 ~ /^\/?etc\/vdr\/plugins\/channellists$$/ || \
+$$1 ~ /^\/?etc\/vdr\/plugins\/scheduler$$/
+endef
+
+AWK_LST_TRANS_PRG_COPY := '$$1 !~ /^\/?etc\// || $(call awk_rootfs_lst_trans_prg) \
+	{ print }'
+
 AWK_LST_TRANS_PRG := '$$1 !~ /\#/ && $$3 !~ /l/ && $$3 !~ /s/ && $$3 !~ /u/ \
+                   && ($$1 !~ /^\/?etc\// || $(call awk_rootfs_lst_trans_prg)) \
+                   && $$1 !~ /^\/?root/ && $$1 !~ /^\/?home/ \
    { file="/"$$1 ; gsub("//","/",file) ; \
     print file, $$3, $$4, $$5, $$6, $$7, $$8, $$9, $$10, $$11}'
 
@@ -100,8 +126,10 @@ $(ROOTFS_FILE_TABLE): $(ROOTFS_DIR_DEPS)
 			true ; \
 		) \
 	)
+	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG_COPY) > \
+		$(ROOTFS_FILE_COPY)
 	$(COPY_LISTS_BIN) -s '$(ROOTFS_DIR)' '$(TARGET_ROOT)' \
-		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(FQ_FILE_LISTS)
+		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(ROOTFS_FILE_COPY)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(ROOTFS_DIR)/etc/systemtype`,g" $(ROOTFS_DIR)/etc/rc.mini
 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG) > \
 		$(ROOTFS_FILE_TABLE)

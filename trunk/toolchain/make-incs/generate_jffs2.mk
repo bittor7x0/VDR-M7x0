@@ -14,13 +14,16 @@
 # The project's page is at http://www.open7x0.org
 #
 
-JFFS2_DIR_DEPS = $(PACKS_BUILD_STAGEFILE) $(TOP_DIR)/.config
+JFFS2_DIR_DEPS = $(PACKS_BUILD_STAGEFILE) $$(FQ_FILE_LISTS) \
+   $(COPY_LISTS_BIN) $(UPX_BIN) $$(ROOTFS_FILE_TABLE) $(TOP_DIR)/.config
 
 ifeq ($(strip $(CONFIG_JFFS2_DIR)),)
   JFFS2_DIR = $(TOP_DIR)/jffs2_dir_$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION)
 else
   JFFS2_DIR := $(abspath $(CONFIG_JFFS2_DIR))
 endif
+
+JFFS2_FILE_COPY :=  $(STAGEFILES_DIR)/file_copy$(subst /,.,$(subst $(TOP_DIR),,$(JFFS2_DIR))).lst
 
 ifeq ($(CONFIG_M7X0_TYPE),m740)
   JFFS2_MAX_IMGSIZE := 6029312
@@ -40,18 +43,28 @@ ifeq ($(CONFIG_JFFS2_LZO),y)
   JFFS2_OPTIONS := -x zlib -x lzari -X lzo -X rtime
 endif
 
-POST_RULES_$(CONFIG_GENERATE_JFFS2_DIR) += $(JFFS2_DIR)
+POST_RULES_$(CONFIG_GENERATE_JFFS2_DIR) += $(JFFS2_FILE_COPY)
 POST_RULES_$(CONFIG_GENERATE_JFFS2_IMAGE) += $(TOP_DIR)/$(JFFS2_IMG)
 
 DISTCLEAN_RULES += distclean-generate-jffs2
 
-$(JFFS2_DIR): $(JFFS2_DIR_DEPS)
-	-$(RM) -rf $(JFFS2_DIR)
-	# Create "SI" directory for factory reset
-	$(MKDIR) -p $(JFFS2_DIR)/SI
+AWK_JFFS2_LST_TRANS_PRG_COPY := '$$1 ~ /^\/?etc/ || $$1 ~ /^\/?root/ || $$1 ~ /^\/?home/ \
+	{ print }'
 
-$(TOP_DIR)/$(JFFS2_IMG): $$(MKJFFS2_BIN) $(JFFS2_DIR)
+$(JFFS2_FILE_COPY): $(JFFS2_DIR_DEPS)
+	-$(RM) -rf $(JFFS2_DIR)
+	-$(RM) -f $(JFFS2_FILE_COPY)
+	# Create "SI" directory for factory reset
+	$(MKDIR) -p $(JFFS2_DIR)/SI $(JFFS2_DIR)/log
+	$(TOUCH) $(JFFS2_DIR)/SI/.first_run
+	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_JFFS2_LST_TRANS_PRG_COPY) > \
+		$(JFFS2_FILE_COPY)
+
+$(TOP_DIR)/$(JFFS2_IMG): $$(MKJFFS2_BIN) $(JFFS2_FILE_COPY)
 	-$(RM) -f $(TOP_DIR)/$(JFFS2_IMG)
+	$(COPY_LISTS_BIN) -m '$(JFFS2_DIR)' '$(TARGET_ROOT)' \
+		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(JFFS2_FILE_COPY)
+	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(JFFS2_DIR)/etc/systemtype`,g" $(JFFS2_DIR)/etc/rc.mini
 	$(MKJFFS2_BIN) --big-endian --pad --squash \
 		$(JFFS2_OPTIONS) \
 		--root="$(JFFS2_DIR)" \
@@ -76,5 +89,6 @@ endif
 
 .PHONY: distclean-generate-jffs2
 distclean-generate-jffs2:
+	-$(RM) -f $(JFFS2_FILE_COPY)
 	-$(RM) -rf $(JFFS2_DIR)
 	-$(RM) -f $(TOP_DIR)/$(JFFS2_IMG)

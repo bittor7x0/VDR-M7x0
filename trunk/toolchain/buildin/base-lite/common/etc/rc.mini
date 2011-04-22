@@ -10,7 +10,7 @@ echo "Done"
 
 # check for first start, factory reset or .nodebug flag
 # something went really bad so enter osd debug mode
-if [ -d /rw-flash/SI -o ! -d /rw-flash/etc -o ! -f /rw-flash/.nodebug ]; then
+if [ -d /rw-flash/SI -o ! -f /rw-flash/.nodebug ]; then
     export OSDLOG="YES"
 
     /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
@@ -27,28 +27,14 @@ if [ -d /rw-flash/SI -o ! -d /rw-flash/etc -o ! -f /rw-flash/.nodebug ]; then
 fi
 
 # Factory reset
-if [ -d /rw-flash/SI -o ! -d /rw-flash/etc ] ; then
+if [ -d /rw-flash/SI ] ; then
 	echo -n "Factory reset: "
-	[ -f /rw-flash/etc/flash_content ] && /bin/mv /rw-flash/etc/flash_content \
-		/var/tmp/flash_content.etc
-	if [ ${SYSTEMTYPE} != m750s ] ; then
-		/bin/cp /rw-flash/flash_content /var/tmp
-		/bin/rm -rf /rw-flash/* /rw-flash/.[a-zA-Z1-9]*
-		/bin/mv /var/tmp/flash_content /rw-flash
+	if [ ! -f /rw-flash/SI/.first_run ] ; then
+		/bin/cp -af /etc /rw-flash/etc
 	fi
-	[ -f /rw-flash/etc/raidtab ] && /bin/cp /rw-flash/etc/raidtab /var/tmp
 	/bin/rm -rf /rw-flash/.timer /rw-flash/PLAYLISTS /rw-flash/SI \
-		/rw-flash/etc /rw-flash/EPG /rw-flash/Application \
-		/rw-flash/root /rw-flash/home /rw-flash/EPG_disk \
-		/rw-flash/EPG_flash /rw-flash/RA_FILE /rw-flash/SM_FILE \
-		/rw-flash/RECORDER_LOG /rw-flash/START_RECORDER_LOG
-	/bin/cp -a /etc /rw-flash/etc
-	[ -f /var/tmp/raidtab ] && /bin/mv /var/tmp/raidtab /rw-flash/etc
-	/bin/cp -a /root /rw-flash/root
-	/bin/cp -a /home /rw-flash/home
-	/bin/mkdir /rw-flash/log
-	[ -f /var/tmp/flash_content.etc ] && /bin/mv /var/tmp/flash_content.etc \
-		/rw-flash/etc/flash_content
+		/rw-flash/EPG /rw-flash/Application
+
 	echo "Done"
 fi
 
