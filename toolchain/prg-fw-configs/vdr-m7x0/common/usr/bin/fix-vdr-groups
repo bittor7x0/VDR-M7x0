@@ -1,0 +1,38 @@
+#!/bin/ash
+
+print_fixed_channels () {
+
+awk -v FS=: '
+BEGIN { num_radios=0; num_tv=0; num_tv_epg=0 }
+/^:/ { next }
+// {
+    if ($6 == 0) {
+       num_radios = num_radios + 1; radios[num_radios]= $0
+    } else if ($8 == 0) {
+	num_tv= num_tv + 1;  tv[num_tv]= $0
+    } else {
+	num_tv_epg= num_tv_epg + 1;  tv_epg[num_tv_epg]= $0
+    }
+}
+END {
+    print ":TV";
+    for (i=1; i<=num_tv_epg; ++i) {print tv_epg[i]};
+    # print ":TV sin EPG";
+    for (i=1; i<=num_tv; ++i) {print tv[i]};
+    print ":Radio";
+    for (i=1; i<=num_radios; ++i) {print radios[i]};
+}' $1
+
+
+}
+
+echo "Se van a reagrupar los canales de TV y radio en sus respectivos grupos. Además los canales con EPG adelantarán a los canales sin EPG en el grupo TV. El resto de posiciones relativas se respetarán. Se guardará una copia de respaldo en /etc/vdr/channels.conf.bk"
+echo
+echo "Ahora es necesario reiniciar VDR para aplicar el cambio de configuración"
+
+{           
+    kill-vdr
+    cp /etc/vdr/channels.conf /etc/vdr/channels.conf.bk
+    print_fixed_channels /etc/vdr/channels.conf.bk > /etc/vdr/channels.conf
+    start-vdr
+} > /dev/null 2>&1 &
