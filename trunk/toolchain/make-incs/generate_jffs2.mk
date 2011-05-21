@@ -65,6 +65,16 @@ $(TOP_DIR)/$(JFFS2_IMG): $$(MKJFFS2_BIN) $(JFFS2_FILE_COPY)
 	$(COPY_LISTS_BIN) -m '$(JFFS2_DIR)' '$(TARGET_ROOT)' \
 		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(JFFS2_FILE_COPY)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(JFFS2_DIR)/etc/systemtype`,g" $(JFFS2_DIR)/etc/rc.mini
+	$(ECHO) "SVN ToolChain `svnversion -c \"$(TOP_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
+ifneq ($(strip $(CONFIG_VDR)),)
+	$(ECHO) "SVN VDR `svnversion -c \"$(VDR_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
+endif
+ifneq ($(strip $(CONFIG_VDR-PLUGINS)),)
+	$(ECHO) "SVN VDR-plugins `svnversion -c \"$(VDR-PLUGINS_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
+endif
+ifneq ($(strip $(CONFIG_WEBIF)),)
+	$(ECHO) "SVN webif `svnversion -c \"$(WEBIF_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
+endif
 	$(MKJFFS2_BIN) --big-endian --pad --squash \
 		$(JFFS2_OPTIONS) \
 		--root="$(JFFS2_DIR)" \
