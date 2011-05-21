@@ -55,7 +55,7 @@ cSectionHandler::cSectionHandler(cDevice *Device)
 
 cSectionHandler::~cSectionHandler()
 {
-  Cancel(3);
+  Cancel(-1);
   cFilter *fi;
   while ((fi = filters.First()) != NULL)
         Detach(fi);
