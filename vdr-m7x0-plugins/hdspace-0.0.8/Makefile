@@ -11,7 +11,7 @@
 #
 
 # Debugging on/off 
-HDSPACE_DEBUG = 1
+#HDSPACE_DEBUG = 1
 
 # Use sendmail instead of minni_sendmail
 HAVE_SENDMAIL = 1

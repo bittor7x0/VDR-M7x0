@@ -11,7 +11,7 @@
 #
 
 # Debugging on/off 
-BLINK_DEBUG = 1
+#BLINK_DEBUG = 1
 
 # Support hotstanby
 HTB = 1

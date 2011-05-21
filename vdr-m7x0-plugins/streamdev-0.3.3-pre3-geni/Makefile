@@ -42,7 +42,7 @@ PACKAGE = vdr-$(ARCHIVE)
 
 INCLUDES += -I$(VDRDIR)/include -I.
 
-DEFINES += -D_GNU_SOURCE -DDEBUG
+DEFINES += -D_GNU_SOURCE
 
 ### The object files (add further files here):
 

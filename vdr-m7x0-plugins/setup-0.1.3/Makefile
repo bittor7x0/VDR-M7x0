@@ -3,20 +3,17 @@
 #
 # $Id: Makefile 43 2007-05-15 06:20:51Z hape $
 
-# Debugging on/off 
-OPEN7x0_Setup_DEBUG = 1
-DEBUG = -DDEBUG 
-
-
-# Strip debug symbols?  Set eg. to /bin/true if not
-STRIP = /bin/true
-
-
 # The official name of this plugin.
 # This name will be used in the '-P...' option of VDR to load the plugin.
 # By default the main source file also carries this name.
 #
 PLUGIN = setup
+
+# Debugging on/off 
+#OPEN7x0_Setup_DEBUG = 1
+
+# Strip debug symbols?  Set eg. to /bin/true if not
+STRIP = /bin/true
 
 ### The version number of this plugin (taken from the main source file):
 
@@ -58,8 +55,7 @@ INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
 #just for TESTING VDR SUBmenu
 INCLUDES += -I$(VDRDIR)
 
-DEFINES += $(DEBUG) -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRVERSION="\"$(VDRVERSION)\"" 
-
+DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRVERSION="\"$(VDRVERSION)\"" 
 
 ifdef OPEN7x0_Setup_DEBUG
 	DEFINES += -DDEBUG
