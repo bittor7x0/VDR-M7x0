@@ -79,6 +79,12 @@ ifdef MEMWATCH
 OBJS += memwatch.o
 DEFINES += -DMEMWATCH
 endif
+ifdef CRASHLOG
+LIBS     += -lubacktrace
+CFLAGS   += -fexceptions
+CXXFLAGS += -fexceptions
+DEFINES  += -DUSE_CRASHLOG
+endif
 
 LIRC_DEVICE ?= /dev/lircd
 RCU_DEVICE  ?= /dev/ttyS1

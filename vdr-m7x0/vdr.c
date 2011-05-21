@@ -113,6 +113,81 @@
 
 static int LastSignal = 0;
 
+#ifdef USE_CRASHLOG
+#include <execinfo.h>
+
+#define BACKTRACE_BUFFER_SIZE 128
+#define CRASH_DATE_SIZE       32
+#define CRASH_MSG_SIZE        (CRASH_DATE_SIZE+32)
+
+#define SIGNAL_STR(x) (\
+	(SIGHUP   ==x)?"SIGHUP":\
+	(SIGINT   ==x)?"SIGINT":\
+	(SIGQUIT  ==x)?"SIGQUIT":\
+	(SIGILL   ==x)?"SIGILL":\
+	(SIGTRAP  ==x)?"SIGTRAP":\
+	(SIGABRT  ==x)?"SIGABRT":\
+	(SIGIOT   ==x)?"SIGIOT":\
+	(SIGBUS   ==x)?"SIGBUS":\
+	(SIGFPE   ==x)?"SIGFPE":\
+	(SIGKILL  ==x)?"SIGKILL":\
+	(SIGUSR1  ==x)?"SIGUSR1":\
+	(SIGSEGV  ==x)?"SIGSEGV":\
+	(SIGUSR2  ==x)?"SIGUSR2":\
+	(SIGPIPE  ==x)?"SIGPIPE":\
+	(SIGALRM  ==x)?"SIGALRM":\
+	(SIGTERM  ==x)?"SIGTERM":\
+	(SIGCHLD  ==x)?"SIGCHLD":\
+	(SIGCONT  ==x)?"SIGCONT":\
+	(SIGSTOP  ==x)?"SIGSTOP":\
+	(SIGTSTP  ==x)?"SIGTSTP":\
+	(SIGTTIN  ==x)?"SIGTTIN":\
+	(SIGTTOU  ==x)?"SIGTTOU":\
+	(SIGURG   ==x)?"SIGURG":\
+	(SIGXCPU  ==x)?"SIGXCPU":\
+	(SIGXFSZ  ==x)?"SIGXFSZ":\
+	(SIGVTALRM==x)?"SIGVTALRM":\
+	(SIGPROF  ==x)?"SIGPROF":\
+	(SIGWINCH ==x)?"SIGWINCH":\
+	(SIGIO    ==x)?"SIGIO":\
+	(SIGPOLL  ==x)?"SIGPOLL":\
+	(SIGPWR   ==x)?"SIGPWR":\
+	(SIGSYS   ==x)?"SIGSYS":\
+	(SIGRTMIN ==x)?"SIGRTMIN":\
+	(SIGRTMAX ==x)?"SIGRTMAX":\
+	"UNKNOWN")
+
+static char crash_dtstr[CRASH_DATE_SIZE]={0};
+
+static void SetSignalHandlerCrashTime() {
+  time_t t=time(NULL);
+  struct tm lt;
+  localtime_r(&t, &lt);
+  asctime_r(&lt, crash_dtstr);
+  int len=strlen(crash_dtstr);
+  if(len>0)
+    crash_dtstr[len-1] = 0; // remove \n
+} // SetSignalHandlerCrashTime
+
+static void SignalHandlerCrash(int signum) {
+  void *array[BACKTRACE_BUFFER_SIZE]={0};
+  size_t size=0;
+  int fd=-1;
+  char buf[CRASH_MSG_SIZE]={0};
+  signal(signum,SIG_DFL); // Allow core dump
+
+  fd=open("/var/log/vdr-crash.log", O_CREAT|O_APPEND|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH);
+  if (fd != -1) {
+    size = backtrace (array, BACKTRACE_BUFFER_SIZE);
+    int ret = snprintf(buf, sizeof(buf), "%s ### Crash signal %i %s ###\n", crash_dtstr, signum, SIGNAL_STR(signum));
+    if(write(fd, buf, ret+1)){};
+    backtrace_symbols_fd(array, size, fd);
+    close(fd);
+  }
+} // SignalHandlerCrash
+
+#endif /* USE_CRASHLOG */
+
 static bool SetUser(const char *UserName)
 {
   if (UserName) {
@@ -421,6 +496,27 @@ int main(int argc, char *argv[])
            return 2;
         }
      }
+
+#ifdef USE_CRASHLOG
+  signal(SIGILL,  SignalHandlerCrash);
+  signal(SIGFPE,  SignalHandlerCrash);
+  signal(SIGSEGV, SignalHandlerCrash);
+  signal(SIGBUS,  SignalHandlerCrash);
+  signal(SIGABRT, SignalHandlerCrash);
+  signal(SIGHUP,  SignalHandlerCrash);
+  signal(SIGINT,  SignalHandlerCrash);
+  signal(SIGQUIT, SignalHandlerCrash);
+  signal(SIGIOT,  SignalHandlerCrash);
+  signal(SIGKILL, SignalHandlerCrash);
+  signal(SIGTERM, SignalHandlerCrash);
+  signal(SIGCONT, SignalHandlerCrash);
+  signal(SIGSTOP, SignalHandlerCrash);
+  signal(SIGTSTP, SignalHandlerCrash);
+  signal(SIGPWR,  SignalHandlerCrash);
+  signal(SIGSYS,  SignalHandlerCrash);
+
+  SetSignalHandlerCrashTime();
+#endif /* USE_CRASHLOG */
 
   // Help and version info:
 
@@ -787,6 +883,9 @@ int main(int argc, char *argv[])
 #define DELETE_MENU ((IsInfoMenu &= (Menu == NULL)), delete Menu, Menu = NULL)
 
   while (!ShutdownHandler.DoExit()) {
+#ifdef USE_CRASHLOG
+        SetSignalHandlerCrashTime();
+#endif /* USE_CRASHLOG */
 #ifdef DEBUGRINGBUFFERS
         cRingBufferLinear::PrintDebugRBL();
 #endif
