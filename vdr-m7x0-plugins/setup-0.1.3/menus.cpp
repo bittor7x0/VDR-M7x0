@@ -344,11 +344,11 @@ bool Menu::LoadXml( TiXmlNode * xmlNode )
   bool ok = true;
   TiXmlElement *elem = NULL;
 
-  if(xmlNode != NULL && xmlNode->Type() == TiXmlNode::ELEMENT)
+  if(xmlNode != NULL && xmlNode->Type() == TiXmlNode::TINYXML_ELEMENT)
   {
     do
     {
-        if(xmlNode->Type() == TiXmlNode::ELEMENT)
+        if(xmlNode->Type() == TiXmlNode::TINYXML_ELEMENT)
         {
           elem = xmlNode->ToElement ();
           if( strcmp(xmlNode->Value(), "menu")== 0)
@@ -828,7 +828,7 @@ bool MenuEntry::AddSelectionValues( TiXmlNode * node, const char*selection )
      }
     }
     else
-        if( node != NULL && node->Type() == TiXmlNode::ELEMENT)
+        if( node != NULL && node->Type() == TiXmlNode::TINYXML_ELEMENT)
         {
             do
             {
@@ -1009,7 +1009,7 @@ bool MenuEntry::AddEntry( TiXmlNode *node  )
     bool          ok   = true;
     TiXmlElement *elem = NULL;
 
-    if(node != NULL && node->Type() == TiXmlNode::ELEMENT)
+    if(node != NULL && node->Type() == TiXmlNode::TINYXML_ELEMENT)
     {
 
       elem = node->ToElement ();
@@ -1206,11 +1206,11 @@ bool Menus::LoadXml( TiXmlNode * node )
 {
    bool ok = true;
    TiXmlElement *elem = NULL;
-   if(node != NULL && node->Type() == TiXmlNode::ELEMENT && (node=node->FirstChild())!=NULL)
+   if(node != NULL && node->Type() == TiXmlNode::TINYXML_ELEMENT && (node=node->FirstChild())!=NULL)
    {
         do
         {
-           if(node->Type() == TiXmlNode::ELEMENT && strcmp(node->Value(), "menu")== 0)
+           if(node->Type() == TiXmlNode::TINYXML_ELEMENT && strcmp(node->Value(), "menu")== 0)
            {
             elem = node->ToElement ();
             const char* name = elem->Attribute("name");
