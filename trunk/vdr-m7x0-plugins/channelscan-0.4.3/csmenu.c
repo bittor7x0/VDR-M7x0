@@ -111,6 +111,10 @@ cMenuChannelscan::cMenuChannelscan(int CurrentChannelNr)
   searchTexts[0] = tr("Manual");
   searchTexts[1] = tr("SearchMode$Auto");
   searchTexts[2] = tr("SearchMode$Auto NIT");
+
+  serviceTypeTexts[0] = tr(serviceTypeTxts[0]);
+  serviceTypeTexts[1] = tr(serviceTypeTxts[1]);
+  serviceTypeTexts[2] = tr(serviceTypeTxts[2]);
    
   searchStat = 2;
 
@@ -252,6 +256,8 @@ void cMenuChannelscan::Set()
 
 
    */
+  Add(new cMenuEditStraItem(tr("Service Type"), &cMenuChannelscanSetup::SetupServiceType, 3, serviceTypeTexts));
+
    Add(new cMenuEditBoolItem(tr("Setup.DVB$Update channels"),           &data.UpdateChannels, tr("no"), tr("yes") ));
 
 #if 0
@@ -635,7 +641,6 @@ void cMenuScanActive::Setup()
 
   if (cMenuChannelscan::scanState <= ssGetChannels)
   {
-     const char *txts[3]={"TV only","Radio only","Radio + TV"};
 
      if (cMenuChannelscan::scanState == ssGetTransponders)
      {
@@ -649,7 +654,7 @@ void cMenuScanActive::Setup()
        if (scp->type==SAT) 
        {
           snprintf(buffer,sizeof(buffer), tr("Scanning %s (%iMHz)\t%s"), cTransponders::GetInstance().Position().c_str(), 
-             Scan->GetCurrentFrequency(),tr(txts[cMenuChannelscanSetup::SetupServiceType]));
+		   Scan->GetCurrentFrequency(),tr(cMenuChannelscan::serviceTypeTxts[cMenuChannelscanSetup::SetupServiceType]));
           Add(new cMenuStatusBar(transponderNum_, Scan->GetCurrentTransponderNr(), Scan->GetCurrentChannelNumber(), 0));
 	  Add(new cMenuStatusBar(200,Scan->getSignal(),200, 1));
 	  Add(new cMenuStatusBar(20 ,Scan->getSNR(),20, 3));
@@ -657,7 +662,7 @@ void cMenuScanActive::Setup()
        else
        {
           snprintf(buffer,sizeof(buffer), tr("Scanning %s (%.3fMHz)\t%s"), tr(cTransponders::GetInstance().Position().c_str()), 
-             Scan->GetCurrentFrequency()/(1000.0*1000),tr(txts[cMenuChannelscanSetup::SetupServiceType]));
+             Scan->GetCurrentFrequency()/(1000.0*1000),tr(cMenuChannelscan::serviceTypeTxts[cMenuChannelscanSetup::SetupServiceType]));
           Add(new cMenuStatusBar(transponderNum_, Scan->GetCurrentTransponderNr(), Scan->GetCurrentChannelNumber(), 0));
 	  Add(new cMenuStatusBar(150,Scan->getSignal(),150, 1));
 	  Add(new cMenuStatusBar(25 ,Scan->getBER(),25, 2));
