@@ -58,6 +58,7 @@ private:
   const char *modTexts[10];
   const char *sRateItem[3];
   const char *searchTexts[3];
+  const char *serviceTypeTexts[3];
   const char *sSRScanMode[3];
   const char *sBwItem[3];
 
@@ -85,6 +86,8 @@ private:
    
   int lnbs;
   int currentChannel;
+
+  static const char *serviceTypeTxts[3]={"TV only","Radio only","Radio + TV"};
 
   void Set();
   void InitLnbs();
