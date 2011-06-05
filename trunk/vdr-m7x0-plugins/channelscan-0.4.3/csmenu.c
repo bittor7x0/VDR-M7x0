@@ -58,6 +58,8 @@ volatile int cMenuChannelscan::scanState = ssInit;
 int cMenuChannelscan::sourceStat = 0; // XXX
 cTransponders *cTransponders::instance_ = NULL;
 
+const char *cMenuChannelscan::serviceTypeTxts[3] = {"TV only", "Radio only", "Radio + TV"};
+
 #define SAT   0
 #define CABLE 1
 #define TERR  2

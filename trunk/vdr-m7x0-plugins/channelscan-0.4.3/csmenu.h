@@ -87,7 +87,6 @@ private:
   int lnbs;
   int currentChannel;
 
-  static const char *serviceTypeTxts[3]={"TV only","Radio only","Radio + TV"};
 
   void Set();
   void InitLnbs();
@@ -105,6 +104,8 @@ public:
   //static volatile bool scanning;
   static volatile int scanState;
   ///< internal scan state used to display correct messages in menues  
+
+  static const char *serviceTypeTxts[3];
   
 };
 
