@@ -59,23 +59,6 @@
 #include	<unistd.h>
 #include	<fcntl.h>
 #include	<elf.h>
-#ifdef __FreeBSD__
-/**
- * This seems to work on FreeBSD 5.3, should
- * work on all newer versions as well. I have
- * no idea if it will work on versions < 5.3
- *
- * Joe Estock (guru) <jestock at nutextonline.com>
- */
-#include <sys/endian.h>
-#define bswap_64 __bswap64
-#define bswap_32 __bswap32
-#define bswap_16 __bswap16
-#else
-#include	<endian.h>
-#include	<byteswap.h>
-#endif /* defined(__FreeBSD__) */
-
 
 #ifndef TRUE
 #define	TRUE		1
@@ -268,8 +251,7 @@ static int modifyheaders ## CLASS (Elf ## CLASS ## _Ehdr *ehdr, \
 			ESET(phdr->p_offset,newsize); \
 			ESET(phdr->p_filesz,0); \
 		} else if (EGET(phdr->p_offset) + EGET(phdr->p_filesz) > newsize) { \
-			newsize -= EGET(phdr->p_offset); \
-			ESET(phdr->p_filesz, newsize); \
+			ESET(phdr->p_filesz, newsize - EGET(phdr->p_offset)); \
 		} \
 	} \
  \
@@ -446,39 +428,39 @@ int main(int argc, char *argv[])
 	for (arg = argv + 1 ; *arg != NULL ; ++arg) {
 		filename = *arg;
 
-		if (strncasecmp(filename, "-", 1)) {
-			fd = open(*arg, O_RDWR);
-			if (fd < 0) {
-				ferr("can't open");
-				++failures;
-				continue;
-			}
-	
-			switch (readelfheaderident(fd, &e.ehdr32)) {
-				case ELFCLASS32:
-					if (!(readelfheader32(fd, &e.ehdr32)					&&
-						readphdrtable32(fd, &e.ehdr32, &p.phdrs32)		&&
-						getmemorysize32(&e.ehdr32, p.phdrs32, &newsize)	&&
-						truncatezeros(fd, &newsize)						&&
-						modifyheaders32(&e.ehdr32, p.phdrs32, newsize)	&&
-						commitchanges32(fd, &e.ehdr32, p.phdrs32, newsize)))
-						++failures;
-					break;
-				case ELFCLASS64:
-					if (!(readelfheader64(fd, &e.ehdr64)					&&
-						readphdrtable64(fd, &e.ehdr64, &p.phdrs64)		&&
-						getmemorysize64(&e.ehdr64, p.phdrs64, &newsize)	&&
-						truncatezeros(fd, &newsize)						&&
-						modifyheaders64(&e.ehdr64, p.phdrs64, newsize)	&&
-						commitchanges64(fd, &e.ehdr64, p.phdrs64, newsize)))
-						++failures;
-					break;
-				default:
-					++failures;
-					break;
-			}
-			close(fd);
+	  if (strncasecmp(filename, "-", 1)) {
+		fd = open(*arg, O_RDWR);
+		if (fd < 0) {
+			ferr("can't open");
+			++failures;
+			continue;
 		}
+
+		switch (readelfheaderident(fd, &e.ehdr32)) {
+			case ELFCLASS32:
+				if (!(readelfheader32(fd, &e.ehdr32)					&&
+					  readphdrtable32(fd, &e.ehdr32, &p.phdrs32)		&&
+					  getmemorysize32(&e.ehdr32, p.phdrs32, &newsize)	&&
+					  truncatezeros(fd, &newsize)						&&
+					  modifyheaders32(&e.ehdr32, p.phdrs32, newsize)	&&
+					  commitchanges32(fd, &e.ehdr32, p.phdrs32, newsize)))
+					++failures;
+				break;
+			case ELFCLASS64:
+				if (!(readelfheader64(fd, &e.ehdr64)					&&
+					  readphdrtable64(fd, &e.ehdr64, &p.phdrs64)		&&
+					  getmemorysize64(&e.ehdr64, p.phdrs64, &newsize)	&&
+					  truncatezeros(fd, &newsize)						&&
+					  modifyheaders64(&e.ehdr64, p.phdrs64, newsize)	&&
+					  commitchanges64(fd, &e.ehdr64, p.phdrs64, newsize)))
+					++failures;
+				break;
+			default:
+				++failures;
+				break;
+		}
+		close(fd);
+	  }
 	}
 
 	return failures ? EXIT_FAILURE : EXIT_SUCCESS;
