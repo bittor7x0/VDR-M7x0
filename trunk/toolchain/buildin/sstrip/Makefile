@@ -16,7 +16,7 @@
 #
 
 CC := gcc
-CFLAGS := -Wall -O2 -I.
+CFLAGS := -Wall -O2 -I. -include endian.h -include byteswap.h
 CPPFLAGS := -D_GNU_SOURCE
 LDFLAGS :=
 PREFIX := /usr/local
