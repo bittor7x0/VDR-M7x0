@@ -3168,6 +3168,7 @@ const tI18nPhrase Phrases[] = {
     "DVB",
     "DVB",
   },
+#ifdef M750S
   { "LNB",
     "LNB",
     "LNB",
@@ -3212,6 +3213,7 @@ const tI18nPhrase Phrases[] = {
     "CICAM",
     "CICAM",
   },
+#endif
   { "Recording",
     "Aufnahme",
     "Snemanje",
@@ -4694,6 +4696,7 @@ const tI18nPhrase Phrases[] = {
     "Audio sprog",
     "Jazyk zvuku",
   },
+#ifdef M750S
   { "Setup.LNB$SLOF (MHz)",
     "SLOF (MHz)",
     "Frekvenca preklopa (MHz)",
@@ -4804,6 +4807,7 @@ const tI18nPhrase Phrases[] = {
     "CICAM DVB",
     "CICAM DVB",
   },
+#endif
   { "Setup.Recording$Margin at start (min)",
     "Vorlauf zum Timer-Beginn (min)",
     "Premik zaèetka snemanja (min)",

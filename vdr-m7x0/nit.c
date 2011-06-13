@@ -123,6 +123,7 @@ void cNitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
 
       for (SI::Loop::Iterator it2; (d = ts.transportStreamDescriptors.getNext(it2)); ) {
           switch (d->getDescriptorTag()) {
+#ifdef M750S
             case SI::SatelliteDeliverySystemDescriptorTag: {
                  SI::SatelliteDeliverySystemDescriptor *sd = (SI::SatelliteDeliverySystemDescriptor *)d;
                  int Source = cSource::FromData(cSource::stSat, BCD2INT(sd->getOrbitalPosition()), sd->getWestEastFlag());
@@ -222,6 +223,7 @@ void cNitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                     }
                  }
                  break;
+#endif // M750S
             case SI::TerrestrialDeliverySystemDescriptorTag: {
                  SI::TerrestrialDeliverySystemDescriptor *sd = (SI::TerrestrialDeliverySystemDescriptor *)d;
                  int Source = cSource::FromData(cSource::stTerr);

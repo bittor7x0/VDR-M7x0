@@ -208,15 +208,19 @@ public:
   const cLinkChannels* LinkChannels(void) const { return linkChannels; }
   const cChannel *RefChannel(void) const { return refChannels ? refChannels->Last()->Channel() : 0; }
   const cLinkChannels* RefChannels(void) const { return refChannels; }
+#ifdef M750S
   bool IsCable(void) const { return cSource::IsCable(source); }
   bool IsSat(void) const { return cSource::IsSat(source); }
+#endif
   bool IsTerr(void) const { return cSource::IsTerr(source); }
   tChannelID GetChannelID(void) const { return tChannelID(source, nid, (nid || tid) ? tid : Transponder(), sid, rid); }
   bool HasTimer(void) const;
   int Modification(int Mask = CHANNELMOD_ALL);
   void CopyTransponderData(const cChannel *Channel);
+#ifdef M750S
   bool SetSatTransponderData(int Source, int Frequency, char Polarization, int Srate, int CoderateH);
   bool SetCableTransponderData(int Source, int Frequency, int Modulation, int Srate, int CoderateH);
+#endif
   bool SetTerrTransponderData(int Source, int Frequency, int Bandwidth, int Modulation, int Hierarchy, int CodeRateH, int CodeRateL, int Guard, int Transmission);
   void SetId(int Nid, int Tid, int Sid, int Rid = 0);
   void SetName(const char *Name, const char *ShortName, const char *Provider);

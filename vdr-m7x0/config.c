@@ -284,10 +284,12 @@ cSetup::cSetup(void)
   MarkInstantRecord = 1;
   strcpy(NameInstantRecord, "TITLE EPISODE");
   InstantRecordTime = 180;
+#ifdef M750S
   LnbSLOF    = 11700;
   LnbFrequLo =  9750;
   LnbFrequHi = 10600;
   DiSEqC = 0;
+#endif
   SetSystemTime = 0;
   TimeSource = 0;
   TimeTransponder = 0;
@@ -498,10 +500,12 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "MarkInstantRecord"))   MarkInstantRecord  = atoi(Value);
   else if (!strcasecmp(Name, "NameInstantRecord"))   strn0cpy(NameInstantRecord, Value, MaxFileName);
   else if (!strcasecmp(Name, "InstantRecordTime"))   InstantRecordTime  = atoi(Value);
+#ifdef M750S
   else if (!strcasecmp(Name, "LnbSLOF"))             LnbSLOF            = atoi(Value);
   else if (!strcasecmp(Name, "LnbFrequLo"))          LnbFrequLo         = atoi(Value);
   else if (!strcasecmp(Name, "LnbFrequHi"))          LnbFrequHi         = atoi(Value);
   else if (!strcasecmp(Name, "DiSEqC"))              DiSEqC             = atoi(Value);
+#endif
   else if (!strcasecmp(Name, "SetSystemTime"))       SetSystemTime      = atoi(Value);
   else if (!strcasecmp(Name, "TimeSource"))          TimeSource         = cSource::FromString(Value);
   else if (!strcasecmp(Name, "TimeTransponder"))     TimeTransponder    = atoi(Value);
@@ -622,10 +626,12 @@ bool cSetup::Save(void)
   Store("MarkInstantRecord",  MarkInstantRecord);
   Store("NameInstantRecord",  NameInstantRecord);
   Store("InstantRecordTime",  InstantRecordTime);
+#ifdef M750S
   Store("LnbSLOF",            LnbSLOF);
   Store("LnbFrequLo",         LnbFrequLo);
   Store("LnbFrequHi",         LnbFrequHi);
   Store("DiSEqC",             DiSEqC);
+#endif
   Store("SetSystemTime",      SetSystemTime);
   Store("TimeSource",         cSource::ToString(TimeSource));
   Store("TimeTransponder",    TimeTransponder);

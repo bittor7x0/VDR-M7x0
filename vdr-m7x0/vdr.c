@@ -60,7 +60,9 @@
 #include "config.h"
 #include "cutter.h"
 #include "device.h"
+#ifdef M750S
 #include "diseqc.h"
+#endif
 #include "dvbdevice.h"
 #include "eitscan.h"
 #include "epg.h"
@@ -705,7 +707,9 @@ int main(int argc, char *argv[])
 
   Setup.Load(AddDirectory(ConfigDirectory, "setup.conf"));
   if (!(Sources.Load(AddDirectory(ConfigDirectory, "sources.conf"), true, true) &&
+#ifdef M750S
         Diseqcs.Load(AddDirectory(ConfigDirectory, "diseqc.conf"), true, Setup.DiSEqC) &&
+#endif
         Channels.Load(AddDirectory(ConfigDirectory, "channels.conf"), false, true) &&
         Timers.Load(AddDirectory(ConfigDirectory, "timers.conf")) &&
         Commands.Load(AddDirectory(ConfigDirectory, "commands.conf"), true) &&

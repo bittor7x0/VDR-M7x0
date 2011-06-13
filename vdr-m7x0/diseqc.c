@@ -5,6 +5,7 @@
  * how to reach the author.
  *
  */
+#ifdef M750S
 
 #include "diseqc.h"
 #include <ctype.h>
@@ -133,3 +134,5 @@ cDiseqc *cDiseqcs::Get(int Source, int Frequency, char Polarization)
       }
   return NULL;
 }
+
+#endif // M750S

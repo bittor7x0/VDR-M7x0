@@ -5,6 +5,7 @@
  * how to reach the author.
  *
  */
+#ifdef M750S
 
 #ifndef __DISEQC_H
 #define __DISEQC_H
@@ -63,3 +64,4 @@ public:
 extern cDiseqcs Diseqcs;
 
 #endif //__DISEQC_H
+#endif // M750S

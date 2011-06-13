@@ -244,8 +244,10 @@ int cChannel::Transponder(void) const
   int tf = frequency;
   while (tf > 20000)
         tf /= 1000;
+#ifdef M750S
   if (IsSat())
      tf = Transponder(tf, polarization);
+#endif
   return tf;
 }
 
@@ -283,6 +285,7 @@ void cChannel::CopyTransponderData(const cChannel *Channel)
      }
 }
 
+#ifdef M750S
 bool cChannel::SetSatTransponderData(int Source, int Frequency, char Polarization, int Srate, int CoderateH)
 {
   // Workarounds for broadcaster stupidity:
@@ -331,6 +334,7 @@ bool cChannel::SetCableTransponderData(int Source, int Frequency, int Modulation
      }
   return true;
 }
+#endif // M750S
 
 bool cChannel::SetTerrTransponderData(int Source, int Frequency, int Bandwidth, int Modulation, int Hierarchy, int CoderateH, int CoderateL, int Guard, int Transmission)
 {
