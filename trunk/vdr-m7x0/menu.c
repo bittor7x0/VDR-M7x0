@@ -3026,7 +3026,7 @@ eOSState cMenuSetupDVB::ProcessKey(eKeys Key)
      }
   return state;
 }
-
+#ifdef M750S
 // --- cMenuSetupLNB ---------------------------------------------------------
 
 class cMenuSetupLNB : public cMenuSetupBase {
@@ -3162,6 +3162,7 @@ eOSState cMenuSetupCICAM::ProcessKey(eKeys Key)
      }
   return state;
 }
+#endif // M750S
 
 // --- cMenuSetupRecord ------------------------------------------------------
 
@@ -3462,8 +3463,10 @@ void cMenuSetup::Set(void)
 //M7X0 BEGIN AK
   Add(new cOsdItem(hk(tr("EPG Channel Modes")), osUser3));
   Add(new cOsdItem(hk(tr("DVB")),           osUser4));
+#ifdef M750S
   Add(new cOsdItem(hk(tr("LNB")),           osUser5));
   Add(new cOsdItem(hk(tr("CICAM")),         osUser6));
+#endif
   Add(new cOsdItem(hk(tr("Recording")),     osUser7));
   Add(new cOsdItem(hk(tr("Cutter")),        osUser8));
   Add(new cOsdItem(hk(tr("Replay")),        osUser9));
@@ -3495,8 +3498,10 @@ eOSState cMenuSetup::ProcessKey(eKeys Key)
     case osUser2: return AddSubMenu(new cMenuSetupEPG);
     case osUser3: return AddSubMenu(new cMenuSetupEPGMode);
     case osUser4: return AddSubMenu(new cMenuSetupDVB);
+#ifdef M750S
     case osUser5: return AddSubMenu(new cMenuSetupLNB);
     case osUser6: return AddSubMenu(new cMenuSetupCICAM);
+#endif
     case osUser7: return AddSubMenu(new cMenuSetupRecord);
     case osUser8: return AddSubMenu(new cMenuSetupCutter);
     case osUser9: return AddSubMenu(new cMenuSetupReplay);

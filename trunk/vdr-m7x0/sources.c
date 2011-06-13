@@ -36,6 +36,7 @@ cString cSource::ToString(int Code)
   char buffer[16];
   char *q = buffer;
   switch (Code & st_Mask) {
+#ifdef M750S
     case stCable: *q++ = 'C'; break;
     case stSat:   *q++ = 'S';
                   {
@@ -44,6 +45,7 @@ cString cSource::ToString(int Code)
                     *q++ = (Code & st_Neg) ? 'E' : 'W';
                   }
                   break;
+#endif
     case stTerr:  *q++ = 'T'; break;
     default:      *q++ = Code + '0'; // backward compatibility
     }
@@ -55,14 +57,17 @@ int cSource::FromString(const char *s)
 {
   int type = stNone;
   switch (toupper(*s)) {
+#ifdef M750S
     case 'C': type = stCable; break;
     case 'S': type = stSat;   break;
+#endif
     case 'T': type = stTerr;  break;
     case '0' ... '9': type = *s - '0'; break; // backward compatibility
     default: esyslog("ERROR: unknown source key '%c'", *s);
              return stNone;
     }
   int code = type;
+#ifdef M750S
   if (type == stSat) {
      int pos = 0;
      bool dot = false;
@@ -86,17 +91,20 @@ int cSource::FromString(const char *s)
         pos |= st_Neg;
      code |= pos;
      }
+#endif
   return code;
 }
 
 int cSource::FromData(eSourceType SourceType, int Position, bool East)
 {
   int code = SourceType;
+#ifdef M750S
   if (SourceType == stSat) {
      if (East)
         code |= st_Neg;
      code |= (Position & st_Pos);;
      }
+#endif
   return code;
 }
 

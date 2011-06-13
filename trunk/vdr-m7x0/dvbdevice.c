@@ -22,7 +22,9 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include "channels.h"
+#ifdef M750S
 #include "diseqc.h"
+#endif
 #include "dvbosd.h"
 #include "eitscan.h"
 #include "player.h"
@@ -127,8 +129,10 @@ cDvbTuner::cDvbTuner(int Fd_Frontend, int CardIndex, fe_type_t FrontendType, cCi
   lockTimeout = 0;
   lastTimeoutReport = 0;
   tunerStatus = tsIdle;
+#ifdef M750S
   if (frontendType == FE_QPSK)
      CHECK(ioctl(fd_frontend, FE_SET_VOLTAGE, SEC_VOLTAGE_13)); // must explicitly turn on LNB power
+#endif
   SetDescription("tuner on device %d", cardIndex + 1);
   Start();
 }
@@ -224,6 +228,7 @@ bool cDvbTuner::SetFrontend(void)
   int set_call = FE_SET_FRONTEND;
 
   switch (frontendType) {
+#ifdef M750S
     case FE_QPSK: { // DVB-S
 //M7x0 BEGIN AK
          memset(&qpsk_Frontend, 0, sizeof(qpsk_Frontend));
@@ -328,6 +333,7 @@ bool cDvbTuner::SetFrontend(void)
          lockTimeout = DVBC_LOCK_TIMEOUT;
          }
          break;
+#endif // M750S
     case FE_OFDM: { // DVB-T
          memset(&ofdm_Frontend, 0, sizeof(ofdm_Frontend));
          // Frequency and OFDM paramaters:
@@ -3020,14 +3026,20 @@ bool cDvbDevice::ProvidesSource(int Source) const
 {
   int type = Source & cSource::st_Mask;
   return type == cSource::stNone
+#ifdef M750S
       || (type == cSource::stCable && frontendType == FE_QAM)
       || (type == cSource::stSat   && frontendType == FE_QPSK)
+#endif
       || (type == cSource::stTerr  && frontendType == FE_OFDM);
 }
 
 bool cDvbDevice::ProvidesTransponder(const cChannel *Channel) const
 {
+#ifdef M750S
   return ProvidesSource(Channel->Source()) && (!cSource::IsSat(Channel->Source()) || !Setup.DiSEqC || Diseqcs.Get(Channel->Source(), Channel->Frequency(), Channel->Polarization()));
+#else
+  return ProvidesSource(Channel->Source());
+#endif
 }
 //M7X0 BEGIN AK
 bool cDvbDevice::ProvidesChannel(const cChannel *Channel, int Priority, bool *NeedsDetachReceivers, bool forTransferer) const

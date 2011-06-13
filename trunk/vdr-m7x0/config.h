@@ -235,10 +235,12 @@ public:
   int MarkInstantRecord;
   char NameInstantRecord[MaxFileName];
   int InstantRecordTime;
+#ifdef M750S
   int LnbSLOF;
   int LnbFrequLo;
   int LnbFrequHi;
   int DiSEqC;
+#endif
   int SetSystemTime;
   int TimeSource;
   int TimeTransponder;
