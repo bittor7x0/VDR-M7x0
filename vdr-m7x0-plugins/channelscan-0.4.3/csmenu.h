@@ -83,13 +83,16 @@ private:
   int sRate6875;
   int sRateManual;
   int qam256;
-   
+#ifdef M750S   
   int lnbs;
+#endif
   int currentChannel;
 
 
   void Set();
+#ifdef M750S
   void InitLnbs();
+#endif
   void TunerDetection();
   void SetInfoBar();
 public:
@@ -153,7 +156,7 @@ public:
   cMenuSetupBase(void);
 };
 
-
+#ifdef M750S
 // --- cMenuSetupLNB ---------------------------------------------------------
 
 class cMenuSetupLNB : public cMenuSetupBase {
@@ -175,6 +178,7 @@ public:
   cMenuSetupLNB(void);
   virtual eOSState ProcessKey(eKeys Key);
 };
+#endif
 
 // --- Class cMenuEditSrcItem  ----------------------------------------------------
 

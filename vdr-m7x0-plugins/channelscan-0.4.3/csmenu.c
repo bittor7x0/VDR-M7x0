@@ -18,7 +18,9 @@
 
 #include "m7x0_dvb/frontend.h" 
 #include <vdr/interface.h>
+#ifdef M750S
 #include <vdr/diseqc.h> 
+#endif
 #include <vdr/menu.h> 
 
 #include "csmenu.h"
@@ -134,7 +136,7 @@ cMenuChannelscan::cMenuChannelscan(int CurrentChannelNr)
   sSRScanMode[2]= tr("Manual");
 
   srScanMode=0;
-  
+
   // CurrentChannel has to be greater than 0!
   currentChannel = CurrentChannelNr == 0 ? 1 : CurrentChannelNr;
   cChannel *channel = Channels.GetByNumber(currentChannel);
@@ -145,6 +147,7 @@ cMenuChannelscan::cMenuChannelscan(int CurrentChannelNr)
       source = channel->Source();
   }
 
+#ifdef M750S
   if (source == 0)
   {
      if (Setup.DiSEqC > 0)
@@ -160,11 +163,13 @@ cMenuChannelscan::cMenuChannelscan(int CurrentChannelNr)
        }
      }
   }
+#endif // M750s
 
   if (cPluginChannelscan::AutoScanStat != AssNone)
   {
       switch (cPluginChannelscan::AutoScanStat) 
       {
+#ifdef M750S
             case AssDvbS:
                  sourceType = SAT;
                  searchStat = 2; // 2: NIT scan, 1 OLD Atuo 
@@ -173,6 +178,7 @@ cMenuChannelscan::cMenuChannelscan(int CurrentChannelNr)
                  sourceType = CABLE;  
                  searchStat = 1; 
                  break;
+#endif
             case AssDvbT: 
                  sourceType = TERR;
                  searchStat = 1;
@@ -201,6 +207,7 @@ void cMenuChannelscan::TunerDetection()
          asprintf(&txt,"%s (%s %i)",tr("DVB-T - Terrestrial"),tr("Tuner"),i+1);
          stp=TERR;
       }
+#ifdef M750S
       else if (device->ProvidesSource(cSource::stCable)) {
          asprintf(&txt,"%s (%s %i)",tr("DVB-C - Cable"),tr("Tuner"),i+1);
          stp=CABLE;
@@ -209,6 +216,7 @@ void cMenuChannelscan::TunerDetection()
          asprintf(&txt,"%s (%s %i)",tr("DVB-S - Satellite"),tr("Tuner"),i+1);
          stp=SAT;
       }
+#endif
       if (txt) {
          srcTypes[srcTuners]=stp;
          srcTexts[srcTuners++]=txt;
@@ -217,6 +225,7 @@ void cMenuChannelscan::TunerDetection()
   }            
 }
 
+#ifdef M750S
 void cMenuChannelscan::InitLnbs()
 {
    lnbs = 0;
@@ -230,7 +239,7 @@ void cMenuChannelscan::InitLnbs()
       lnbs++;
    }
 }
-
+#endif
 
 void cMenuChannelscan::Set()
 {    
@@ -240,10 +249,12 @@ void cMenuChannelscan::Set()
 
   sourceType=srcTypes[sourceStat];
 
+#ifdef M750S
   // avoid C/T-positions for SAT 
   // and take Astra as start position
   if (srcTypes[sourceStat]==SAT  && (source==cSource::FromString("C") || source==cSource::FromString("T")))
     source = cSource::FromString("S19.2E"); 
+#endif
 
    int blankLines = 4;
   
@@ -270,6 +281,7 @@ void cMenuChannelscan::Set()
 
    Add(new cMenuEditStraItem(tr("Source"), &sourceStat, srcTuners, srcTexts));
       
+#ifdef M750S
    switch (sourceType) {
       case SAT:
          Add(new cMenuEditStraItem(tr("Search Mode"), &searchStat, 3, searchTexts)); 
@@ -283,6 +295,10 @@ void cMenuChannelscan::Set()
          Add(new cMenuEditBoolItem(tr("Search Mode"), &searchStat, tr("Manual"),  tr("SearchMode$Auto") ));
          break;
       }
+#else
+         Add(new cMenuEditBoolItem(tr("Detailed search"), &searchMode, tr("no"),tr("yes")));
+         Add(new cMenuEditBoolItem(tr("Search Mode"), &searchStat, tr("Manual"),  tr("SearchMode$Auto") ));      
+#endif
       
     AddBlankLineItem(1);
       
@@ -290,6 +306,7 @@ void cMenuChannelscan::Set()
     {
        switch (sourceType)
        { 
+#ifdef M750S
           case SAT:
                   frequency = 12551;
                   symbolrate = 22000;  // reset right default values
@@ -299,19 +316,20 @@ void cMenuChannelscan::Set()
                   Add(new cMenuEditStraItem("FEC", &fecStat, 10, fecTexts ));
                   break;          
           
-          case TERR:
+        case CABLE:
+                 frequency = 113000; // reset right default values 
+                 Add(new cMenuEditIntItem(tr("Frequency (kHz)"), &frequency));  
+                 Add(new cMenuEditBoolItem(tr("Bandwidth"), &bandwidth, "7 MHz", "8 MHz"));
+                 Add(new cMenuEditIntItem(tr("Symbolrate"), &symbolrate));
+                 Add(new cMenuEditStraItem(tr("Modulation"), &modStat, 6, modTexts));
+#endif
+        case TERR:
                   frequency = 212500; // reset right default values
                   Add(new cMenuEditIntItem(tr("Frequency (kHz)"), &frequency));  
                   Add(new cMenuEditStraItem(tr("Bandwidth"), &bandwidth, 3, sBwItem));
 
                   AddBlankLineItem(2);
                   break;
-          case CABLE:
-                 frequency = 113000; // reset right default values 
-                 Add(new cMenuEditIntItem(tr("Frequency (kHz)"), &frequency));  
-                 Add(new cMenuEditBoolItem(tr("Bandwidth"), &bandwidth, "7 MHz", "8 MHz"));
-                 Add(new cMenuEditIntItem(tr("Symbolrate"), &symbolrate));
-                 Add(new cMenuEditStraItem(tr("Modulation"), &modStat, 6, modTexts));
           default: esyslog ("ERROR in %s:%d\n", __FILE__, __LINE__);
                   break;
        }
@@ -346,11 +364,13 @@ void cMenuChannelscan::SetInfoBar() // Check with  cMenuScanActive
    switch (scanState) 
    {
       case ssInit:
+#ifdef M750S
            if (sourceType==SAT) 
            {
              Add(new cMenuInfoItem(tr("DiSEqC"), static_cast<bool>(::Setup.DiSEqC))); 
              if (::Setup.DiSEqC) DiseqShow();  // TODO  two columns display
            }
+#endif
            break;
       case ssInterrupted:
            Add(new cMenuInfoItem(tr("Scanning aborted")));
@@ -457,10 +477,12 @@ eOSState cMenuChannelscan::ProcessKey(eKeys Key)
          oldSourceStat != sourceStat ||
          oldSRScanMode != srScanMode)
      {
+#ifdef M750S
         if (sourceType == CABLE && symbolrate>8000)  // avoid DVB-S symbolrates in DVB-C
         {
            symbolrate=6900;
         }
+#endif
         oldSourceStat = sourceStat;
         Set();
      }
@@ -468,6 +490,7 @@ eOSState cMenuChannelscan::ProcessKey(eKeys Key)
   return state;
 }
 
+#ifdef M750S
 void cMenuChannelscan::DiseqShow()
 {
   for (iConstIter iter = loopSources.begin(); iter != loopSources.end(); ++iter)
@@ -479,6 +502,7 @@ void cMenuChannelscan::DiseqShow()
      Add(new cMenuInfoItem(buffer));
   }
 } 
+#endif
 
 cMenuChannelscan::~cMenuChannelscan()
 {
@@ -554,10 +578,13 @@ cMenuScanActive::cMenuScanActive(scanParameters *sp)
   tvChannelNames.clear();
   radioChannelNames.clear();
 
+#ifdef M750S
   if (cTransponders::GetInstance().GetNITStartTransponder())
   {
     cMenuChannelscan::scanState=ssGetTransponders;
   }
+#endif
+
   // auto_ptr
   Scan.reset(new cScan());
   
@@ -577,11 +604,15 @@ void cMenuScanActive::Setup()
   int num_tv=0,num_radio=0;
   uint displayChanLines;
   
+#ifdef M750S
   if(scp->type == SAT){
     displayChanLines = 8;
   }else{
     displayChanLines = 10;
     }
+#else
+  displayChanLines = 10;
+#endif
 
   Clear();
   mutexNames.Lock();

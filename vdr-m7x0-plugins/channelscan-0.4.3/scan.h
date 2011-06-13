@@ -46,12 +46,14 @@ private:
   cScan&operator=(const cScan&);
 
   void ScanServices();
+#ifdef M750S
   void ScanNitServices();
 
   void ScanNitDVB_S(cTransponder *tp,cChannel *c);
   void ScanDVB_S(cTransponder *tp,cChannel *c);
-  void ScanDVB_T(cTransponder *tp,cChannel *c);
   void ScanDVB_C(cTransponder *tp,cChannel *c);
+#endif
+  void ScanDVB_T(cTransponder *tp,cChannel *c);
 
   void AddTransponders();
   void ClearMap();

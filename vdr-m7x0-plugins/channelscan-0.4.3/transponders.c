@@ -100,6 +100,7 @@ int cTransponder::IntToFec(int val)
    return FEC_NONE;
 }
 
+#ifdef M750S
 //----------- Class cSatTransponder -------------------------------
 
 cSatTransponder::cSatTransponder()
@@ -179,7 +180,7 @@ bool cSatTransponder::Parse(const string& Line)
    return true;
 }
 
-
+#endif // M750S
 
 //----------- Class cTerrTransponder -------------------------------
 
@@ -223,6 +224,7 @@ bool cTerrTransponder::SetTransponderData(cChannel *c, int Code)
                                      fec_l_, guard_, transmission_);//
    
 }
+#ifdef M750S
 //----------- Class cCableTransponder -------------------------------
 
 cCableTransponder::cCableTransponder(int ChannelNr, int Frequency, int Bandwith, int sRate, int Mod)
@@ -254,6 +256,7 @@ bool cCableTransponder::SetTransponderData(cChannel *c, int Code)
    DEBUG_TRANSPONDER(DBG " SetCableTransponderData(f:%d, m :%d ,sRate: %d, fec %d", frequency_,modulation_, symbolrate_,fec_h_);
    return c->SetCableTransponderData(type, frequency_, modulation_, symbolrate_, fec_h_);
 }
+#endif
 
 //----------- Class Transponders -------------------------------
 
@@ -270,6 +273,7 @@ void cTransponders::Load(int Source, scanParameters *scp)
 
   sourceCode_ = Source;
 
+#ifdef M750S
   if (cSource::IsSat(sourceCode_))
   {
      lockMs_ = 500;
@@ -289,6 +293,7 @@ void cTransponders::Load(int Source, scanParameters *scp)
   }
   else if (cSource::IsTerr(sourceCode_))
   {
+#endif
      position_ = "Terrestrial";
      //if (scp->frequency == 0 || scp->frequency == -1) 
      if (scp->frequency == 1)
@@ -298,6 +303,7 @@ void cTransponders::Load(int Source, scanParameters *scp)
           cTerrTransponder *t = new cTerrTransponder(channel, scp->frequency*1000,  scp->bandwidth);
           v_tp_.push_back(t);
       }
+#ifdef M750S
   }
   else if (cSource::IsCable(sourceCode_))
   {
@@ -320,10 +326,11 @@ void cTransponders::Load(int Source, scanParameters *scp)
   }
   else 
     esyslog(DBG "   Wrong  sourceCode %d",sourceCode_);
-
+#endif
   DEBUG_TRANSPONDER(DBG "  %s end \n", __PRETTY_FUNCTION__);
 }
 
+#ifdef M750S
 void cTransponders::Add(int Source, const scanParameters& scp)
 {
   // type S/T/C
@@ -336,6 +343,7 @@ void cTransponders::Add(int Source, const scanParameters& scp)
   }
       
 }
+
 bool cTransponders::LoadNitTransponder(int Source)
 {
 
@@ -493,6 +501,7 @@ void cTransponders::CalcCableTpl(bool Complete, scanParameters *scp)
    }
 
 }
+#endif // M750S
 
 void cTransponders::CalcTerrTpl()
 {
@@ -513,6 +522,7 @@ void cTransponders::CalcTerrTpl()
    } 
 }
 
+#ifdef M750S
 string cTransponders::SetPosition(const string& tplPath)
 {
   if(cSource::IsSat(sourceCode_))
@@ -546,6 +556,7 @@ string cTransponders::TplFileName(int satCodec)
   tmp += ".tpl";
   return tmp;
 }
+#endif
 
 void cTransponders::Clear()
 {

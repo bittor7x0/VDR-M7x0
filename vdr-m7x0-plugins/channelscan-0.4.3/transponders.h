@@ -117,6 +117,7 @@ inline bool cTransponder::Scanned()
    return scanned_;
 }
 
+#ifdef M750S
 // --- class cSatTransponder ---------------------------------------------------
 
 class cSatTransponder : public cTransponder {
@@ -130,7 +131,7 @@ public:
    ///<  set transponder Data to channel
    bool Parse(const std::string& line);
 };
-
+#endif
 
 // --- class cTerrTransponder --------------------------------------------------
 
@@ -150,7 +151,7 @@ private:
    int guard_;
 };
 
-
+#ifdef M750S
 // --- class cCableTransponder -------------------------------------------------
 
 class cCableTransponder : public cTransponder {
@@ -164,6 +165,7 @@ private:
    int transmission_;
    int guard_;
 };
+#endif
 
 // ---- Class cTransponders --------------------------------------
 ///< Container class for cTransponder class
@@ -187,36 +189,44 @@ public:
    void Load(int source, scanParameters *scp);
    ///< loads complete transponder lists or single data for given source
 
+#ifdef M750S
    bool LoadNitTransponder(int Source);
    bool LoadTpl(const std::string& tpList);
    void Add(int Source, const scanParameters& scp);
-   void CalcTerrTpl(); 
-   ///< Calculates terrestrial transponder lists and load them to cTransponder 
    void CalcCableTpl(bool Complete, scanParameters *scp);
    ///< Calculates cable Transponder lists and load them to cTransponder 
+#endif
+   void CalcTerrTpl(); 
+   ///< Calculates terrestrial transponder lists and load them to cTransponder 
 
    static int channel2Frequency(int region, int channel, int& bandwidth );
    ///< Common data of signal source:
 
    int SourceCode() const { return sourceCode_; }
    ///< returns vdr internal code of signal source
+#ifdef M750S
    std::string TplFileName(int source);
    ///< returns complete path and filename to transponder list
+#endif
    std::string Position() const { return position_; }
    ///< returns abrev. of sources eg. S19.2E
    std::string Description() const { return description_; }
    ///< returns Descr. of sources eg. ASTRA ... 
    int LockMs() const { return lockMs_; }
+#ifdef M750S
    cTransponder *GetNITStartTransponder();
    //void ResetNITStartTransponder();
+#endif
    bool MissingTransponder(int Transponder);
 private:
    cTransponders();
    ~cTransponders();
    cTransponders(const cTransponders&);
    cTransponders &operator=(const cTransponders&);
+#ifdef M750S
    std::auto_ptr<cSatTransponder> nitStartTransponder_;
    //bool SetNITStartTransponder();
+#endif
    static cTransponders *instance_;
    int sourceCode_; 
 
@@ -257,7 +267,7 @@ inline void cTransponders::Destroy()
   delete instance_;
   instance_ = NULL;
 }
-
+#ifdef M750S
 inline cTransponder *cTransponders::GetNITStartTransponder()
 {
   return nitStartTransponder_.get();
@@ -272,5 +282,6 @@ inline void cTransponders::ResetNITStartTransponder()
    nitStartTransponder_ = NULL;
 }
 */
+#endif
 
 #endif //_TRANSPONDERS__H

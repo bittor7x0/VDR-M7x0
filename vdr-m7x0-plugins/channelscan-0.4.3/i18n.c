@@ -75,6 +75,7 @@
     "", // Dansk
     "", // Èesky (Czech)
   },
+#ifdef M750S
   { "Scanning configured satellites",
     "Durchsuche eingerichtete Satelliten",
     "",
@@ -119,6 +120,7 @@
     "", // Dansk
     "", // Èesky (Czech)
   },
+#endif
   { "FEC",
     "FEC",
     "",
@@ -856,7 +858,7 @@
     "",
     "",
     "",
-    "Frequencia (kHz)",
+    "Frecuencia (kHz)",
     "",
     "",
     "",
@@ -878,7 +880,7 @@
     "",
     "",
     "",
-    "Frequencia (MHz)",
+    "Frecuencia (MHz)",
     "",
     "",
     "",
@@ -934,6 +936,7 @@
     "", // Dansk
     "", // Èesky (Czech)
   },
+#ifdef M750S
   { "DVB-S - Satellite",
     "DVB-S - Satellit",
     "",
@@ -978,6 +981,7 @@
     "", // Dansk
     "", // Èesky (Czech)
   },
+#endif
   { "DVB-T - Terrestrial",
     "DVB-T - Terrestrisch",
     "",
@@ -1132,6 +1136,7 @@
     "", // Dansk
     "", // Èesky (Czech)
   },
+#ifdef M750S
   { "Cable",
     "Kabel",
     "",
@@ -1154,6 +1159,7 @@
     "", // Dansk
     "", // Èesky (Czech)
   },
+#endif
   { "Running services on transponder: %i / %i",
     "Aktive Dienste auf Transponder: %i / %i",
     "",

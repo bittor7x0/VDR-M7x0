@@ -253,10 +253,13 @@ void cScan::ScanServices()
       delete EFilter;
   EFilter = NULL;
 #endif
+#ifdef M750S
   if (nitScan)
      ScanNitServices();
-
+#endif
 }
+
+#ifdef M750S
 //-------------------------------------------------------------------------
 void cScan::ScanNitServices()
 {
@@ -351,6 +354,7 @@ void cScan::ScanDVB_S(cTransponder *tp, cChannel *c)
   }
 }
 //-------------------------------------------------------------------------
+#endif
 
 // detail bit 0: wait longer
 // detail bit 1: search also +-166kHz offset
@@ -415,6 +419,7 @@ void cScan::ScanDVB_T(cTransponder *tp, cChannel *c)
      retries++; 
   }
 }
+#ifdef M750S
 //-------------------------------------------------------------------------
 /*
   Scan algorithm for DVB-C: 
@@ -500,6 +505,7 @@ void cScan::ScanDVB_C(cTransponder *tp,cChannel *c)
             break;
   }
 }
+#endif // M750S
 
 //---------  cMainMenu::Action()  -----------------------------------
 
@@ -519,12 +525,14 @@ void cScan::Action()
 
   if (cMenuChannelscan::scanState == ssGetTransponders)
   {
+#ifdef M750S
     cTransponder *t = transponders.GetNITStartTransponder();
     if (t && device->ProvidesSource(cSource::stSat))
     {
         // fetch sat Transponders
         ScanDVB_S(t, c.get());
     }
+#endif
        // if scanState had been changed meanwhile
     if (cMenuChannelscan::scanState == ssGetTransponders)
     {
@@ -560,11 +568,12 @@ void cScan::Action()
   
        if (device->ProvidesSource(cSource::stTerr))
          ScanDVB_T(*tp,c.get());
+#ifdef M750S
        else if (device->ProvidesSource(cSource::stSat))
          ScanDVB_S(*tp,c.get());
        else if (device->ProvidesSource(cSource::stCable))
          ScanDVB_C(*tp,c.get());
-  
+#endif  
        ++tp;
     } // Scanning loop
   
