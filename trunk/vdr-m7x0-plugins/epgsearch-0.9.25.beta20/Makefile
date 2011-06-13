@@ -31,7 +31,7 @@ ifndef AUTOCONFIG
 
 # uncomment this to enable support for the pin plugin.
 
-USE_PINPLUGIN = 1
+#USE_PINPLUGIN = 1
 
 # uncomment this to enable support for the graphtft plugin.
 #USE_GRAPHTFT = 1

@@ -836,8 +836,6 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
       insert = false;
       //printf("found TS_ID %d\n",  ts.getTransportStreamId());
 
-      SI::Descriptor *d;
-
       SI::Loop::Iterator it2;
       SI::FrequencyListDescriptor *fld = (SI::FrequencyListDescriptor *)ts.transportStreamDescriptors.getNext(it2, SI::FrequencyListDescriptorTag);
       int NumFrequencies = fld ? fld->frequencies.getCount() + 1 : 1;
@@ -860,6 +858,9 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
             NumFrequencies = 1;
          }
       delete fld;
+
+#ifdef M750S
+      SI::Descriptor *d;
 
       for (SI::Loop::Iterator it2; (d = ts.transportStreamDescriptors.getNext(it2)); ) {
           switch (d->getDescriptorTag()) {
@@ -901,6 +902,7 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
 
           delete d;
           }
+#endif // M750S
       }
   found_ = insert;
   
