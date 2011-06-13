@@ -67,7 +67,7 @@ $(STAGEFILES_DIR)/.vdr_local_downloaded: $(CONFIG_VDR_LOCAL_PATH)/*.c \
 $(STAGEFILES_DIR)/.vdr_compiled: $$(VDR_DEPS) \
         $(STAGEFILES_DIR)/.vdr_$(filter local_,_)downloaded
 	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) clean
-	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) all
+	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) $(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) all
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_compiled
 
 #
