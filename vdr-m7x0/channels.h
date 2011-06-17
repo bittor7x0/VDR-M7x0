@@ -211,8 +211,11 @@ public:
 #ifdef M750S
   bool IsCable(void) const { return cSource::IsCable(source); }
   bool IsSat(void) const { return cSource::IsSat(source); }
-#endif
   bool IsTerr(void) const { return cSource::IsTerr(source); }
+#else
+  bool IsTerr(void) const { return true; }
+#endif
+
   tChannelID GetChannelID(void) const { return tChannelID(source, nid, (nid || tid) ? tid : Transponder(), sid, rid); }
   bool HasTimer(void) const;
   int Modification(int Mask = CHANNELMOD_ALL);

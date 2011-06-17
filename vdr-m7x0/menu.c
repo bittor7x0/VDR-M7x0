@@ -94,6 +94,8 @@ eOSState cMenuEditCaItem::ProcessKey(eKeys Key)
   return state;
 }
 
+#ifdef M750S
+
 // --- cMenuEditSrcItem ------------------------------------------------------
 
 class cMenuEditSrcItem : public cMenuEditIntItem {
@@ -156,6 +158,7 @@ eOSState cMenuEditSrcItem::ProcessKey(eKeys Key)
      }
   return state;
 }
+#endif
 
 // --- cMenuEditMapItem ------------------------------------------------------
 
@@ -253,15 +256,20 @@ cMenuEditChannel::cMenuEditChannel(cChannel *Channel, bool New)
 void cMenuEditChannel::Setup(void)
 {
   int current = Current();
+#ifdef M750S
   char type = **cSource::ToString(data.source);
 #define ST(s) if (strchr(s, type))
-
+#else
+#define ST(s) if (strchr(s, 'T'))
+#endif
   Clear();
 
   // Parameters for all types of sources:
   strn0cpy(name, data.name, sizeof(name));
   Add(new cMenuEditStrItem( tr("Name"),          name, sizeof(name), tr(FileNameChars)));
+#ifdef M750S
   Add(new cMenuEditSrcItem( tr("Source"),       &data.source));
+#endif
   Add(new cMenuEditIntItem( tr("Frequency"),    &data.frequency));
   Add(new cMenuEditIntItem( tr("Vpid"),         &data.vpid,  0, 0x1FFF));
   Add(new cMenuEditIntItem( tr("Ppid"),         &data.ppid,  0, 0x1FFF));
