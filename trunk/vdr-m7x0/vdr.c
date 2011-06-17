@@ -706,9 +706,10 @@ int main(int argc, char *argv[])
   cThemes::SetThemesDirectory(AddDirectory(ConfigDirectory, "themes"));
 
   Setup.Load(AddDirectory(ConfigDirectory, "setup.conf"));
-  if (!(Sources.Load(AddDirectory(ConfigDirectory, "sources.conf"), true, true) &&
+  if (!(
 #ifdef M750S
-        Diseqcs.Load(AddDirectory(ConfigDirectory, "diseqc.conf"), true, Setup.DiSEqC) &&
+        Sources.Load(AddDirectory(ConfigDirectory, "sources.conf"), true, true) &&
+	Diseqcs.Load(AddDirectory(ConfigDirectory, "diseqc.conf"), true, Setup.DiSEqC) &&
 #endif
         Channels.Load(AddDirectory(ConfigDirectory, "channels.conf"), false, true) &&
         Timers.Load(AddDirectory(ConfigDirectory, "timers.conf")) &&
