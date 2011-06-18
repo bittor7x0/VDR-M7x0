@@ -861,6 +861,8 @@ cMenuScanActiveItem::~cMenuScanActiveItem()
   free(radioChannel);
 }
 
+#ifdef M750S
+
 // cMenuEditSrcItem taken fron vdr/menu.c
 // --- cMenuEditSrcItem ------------------------------------------------------
 
@@ -921,6 +923,8 @@ eOSState cMenuEditSrcItem::ProcessKey(eKeys Key)
   }
   return state;
 }
+
+#endif // M750S
 
 //taken from rotor rotor plugin
 
