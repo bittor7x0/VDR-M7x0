@@ -1,0 +1,40 @@
+diff -Naur mediatomb-0.12.1-orig/src/layout/fallback_layout.cc mediatomb-0.12.1/src/layout/fallback_layout.cc
+--- mediatomb-0.12.1-orig/src/layout/fallback_layout.cc	2011-03-17 13:11:21.380294352 +0100
++++ mediatomb-0.12.1/src/layout/fallback_layout.cc	2011-03-17 13:25:52.723217071 +0100
+@@ -86,6 +86,36 @@
+ void FallbackLayout::addVideo(zmm::Ref<CdsObject> obj, String rootpath)
+ {
+     Ref<StringConverter> f2i = StringConverter::f2i();
++    if(obj->getLocation().substring(obj->getLocation().rindex('.')+1)=="vdr")
++    {
++        String fileName(obj->getLocation().substring(obj->getLocation().rindex('/')+1,obj->getLocation().length()-obj->getLocation().rindex('/')-5));
++	if((fileName.length()==3)&&(fileName.toLong())&&(obj->getLocation().length()>35))
++	{
++		String myLocation = obj->getLocation().substring(0,obj->getLocation().length()-8);
++		if(myLocation.substring(myLocation.length()-4)==".rec")
++		{
++			myLocation=myLocation.substring(0,myLocation.length()-10);
++			if(myLocation.charAt(myLocation.length()-17)=='/')
++				myLocation=myLocation.substring(0,myLocation.length()-17)+" "+myLocation.substring(myLocation.length()-16,10)+" ["+myLocation.substring(myLocation.length()-5,2)+":"+myLocation.substring(myLocation.length()-2,2)+"]";
++			if(myLocation.substring(0,16)=="/var/vdr/video0/")
++				myLocation=myLocation.substring(16);
++			else if(myLocation.substring(0,1)=='/')
++				myLocation=myLocation.substring(1);
++			int id=ContentManager::getInstance()->addContainerChain(_("/Vídeos/Grabaciones/")+f2i->convert(myLocation));
++			if(obj->getID()!=INVALID_OBJECT_ID)
++			{
++				obj->setRefID(obj->getID());
++				add(obj,id);
++			}
++			else
++			{
++				add(obj,id);
++				obj->setRefID(obj->getID());
++			}
++		}
++	}
++	return;
++    }
+     int id = ContentManager::getInstance()->addContainerChain(_("/Vídeos/Todo"));
+ 
+     if (obj->getID() != INVALID_OBJECT_ID)

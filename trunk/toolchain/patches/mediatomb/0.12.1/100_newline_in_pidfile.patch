@@ -1,0 +1,12 @@
+diff -Naur mediatomb-0.12.1-orig/src/main.cc mediatomb-0.12.1/src/main.cc
+--- mediatomb-0.12.1-orig/src/main.cc	2011-03-17 13:11:21.380294352 +0100
++++ mediatomb-0.12.1/src/main.cc	2011-03-17 13:25:52.723217071 +0100
+@@ -505,7 +505,7 @@
+         int     size;
+ 
+         cur_pid = getpid();
+-        String pid = String::from(cur_pid);
++        String pid = String::from(cur_pid)+'\n';
+ 
+         size = fwrite(pid.c_str(), sizeof(char), pid.length(), pid_fd);
+         fclose(pid_fd);
