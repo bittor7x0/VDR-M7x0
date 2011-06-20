@@ -206,12 +206,11 @@ plugins: include-dir
 	         continue;\
 	         fi;\
 	       fi;\
+	    if [ "$$i" = "skincurses" ]; then echo; echo "*** $$i plugin disabled "; echo; continue; fi;\
 	    DVBDIR=$(abspath .) VDRDIR=$(abspath .) LIBDIR=$(abspath $(PLUGINLIBDIR)) $(MAKE) -C "$(PLUGINDIR)/src/$$i" all || failed="$$failed $$i";\
 	    done;\
 	if [ -n "$$noapiv" ] ; then echo; echo "*** plugins without APIVERSION:$$noapiv"; echo; fi;\
 	if [ -n "$$failed" ] ; then echo; echo "*** failed plugins:$$failed"; echo; fi
-
-# $(MAKE) -C "$(PLUGINDIR)/src/$$i" all || failed="$$failed $$i";\
 
 clean-plugins:
 	@for i in `ls $(PLUGINDIR)/src | grep -v '[^a-z0-9]'`; do $(MAKE) -C "$(PLUGINDIR)/src/$$i" clean; done
