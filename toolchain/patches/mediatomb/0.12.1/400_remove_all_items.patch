@@ -1,0 +1,227 @@
+diff -Naur mediatomb-0.12.1-orig/src/layout/fallback_layout.cc mediatomb-0.12.1/src/layout/fallback_layout.cc
+--- mediatomb-0.12.1-orig/src/layout/fallback_layout.cc	2011-03-18 13:29:41.000000000 +0100
++++ mediatomb-0.12.1/src/layout/fallback_layout.cc	2011-03-18 17:06:23.025154269 +0100
+@@ -116,18 +116,6 @@
+ 	}
+ 	return;
+     }
+-    int id = ContentManager::getInstance()->addContainerChain(_("/Vídeos/Todo"));
+-
+-    if (obj->getID() != INVALID_OBJECT_ID)
+-    {
+-        obj->setRefID(obj->getID());
+-        add(obj, id);
+-    }
+-    else
+-    {
+-        add(obj, id);
+-        obj->setRefID(obj->getID());
+-    }
+ 
+     String dir;
+ 
+@@ -147,8 +135,17 @@
+ 
+     if (string_ok(dir))
+     {
+-        id = ContentManager::getInstance()->addContainerChain(_("/Vídeos/Directorios/") + dir);
+-        add(obj, id);
++        int id = ContentManager::getInstance()->addContainerChain(_("/Vídeos/Directorios/") + dir);
++        if (obj->getID() != INVALID_OBJECT_ID)
++        {
++            obj->setRefID(obj->getID());
++            add(obj, id);
++        }
++        else
++        {
++            add(obj, id);
++            obj->setRefID(obj->getID());
++        }
+     }
+ }
+ 
+@@ -322,8 +319,27 @@
+     int id;
+     Ref<StringConverter> f2i = StringConverter::f2i();
+ 
++    String dir;
++
++    if (string_ok(rootpath))
++    {
++        rootpath = rootpath.substring(0, rootpath.rindex(DIR_SEPARATOR));
++
++        dir = obj->getLocation().substring(rootpath.length(), obj->getLocation().rindex(DIR_SEPARATOR)-rootpath.length());
++
++        if (dir.startsWith(_DIR_SEPARATOR))
++            dir = dir.substring(1);
++
++        dir = f2i->convert(dir);
++    }
++    else
++        dir = esc(f2i->convert(get_last_path(obj->getLocation())));
++
++    if (string_ok(dir))
++        id = ContentManager::getInstance()->addContainerChain(_("/Fotos/Directorios/") + dir);
++    else
++        id = ContentManager::getInstance()->addContainerChain(_("/Fotos/Directorios"));
+     
+-    id = ContentManager::getInstance()->addContainerChain(_("/Fotos/Todo"));
+     if (obj->getID() != INVALID_OBJECT_ID)
+     {
+         obj->setRefID(obj->getID());
+@@ -361,31 +380,9 @@
+         }
+ 
+     }
+-
+-    String dir;
+-
+-    if (string_ok(rootpath))
+-    {
+-        rootpath = rootpath.substring(0, rootpath.rindex(DIR_SEPARATOR));
+-
+-        dir = obj->getLocation().substring(rootpath.length(), obj->getLocation().rindex(DIR_SEPARATOR)-rootpath.length());
+-
+-        if (dir.startsWith(_DIR_SEPARATOR))
+-            dir = dir.substring(1);
+-
+-        dir = f2i->convert(dir);
+-    }
+-    else
+-        dir = esc(f2i->convert(get_last_path(obj->getLocation())));
+-
+-    if (string_ok(dir))
+-    {
+-        id = ContentManager::getInstance()->addContainerChain(_("/Fotos/Directorios/") + dir);
+-        add(obj, id);
+-    }
+ }
+ 
+-void FallbackLayout::addAudio(zmm::Ref<CdsObject> obj)
++void FallbackLayout::addAudio(zmm::Ref<CdsObject> obj, String rootpath)
+ {
+     String desc;
+     String chain;
+@@ -451,9 +448,29 @@
+         obj->setMetadata(meta);
+     }
+ 
+-    id = ContentManager::getInstance()->addContainerChain(_("/Música/Todo"));
+     obj->setTitle(title);
+ 
++    Ref<StringConverter> f2i = StringConverter::f2i();
++    String dir;
++
++    if (string_ok(rootpath))
++    {
++        rootpath = rootpath.substring(0, rootpath.rindex(DIR_SEPARATOR));
++
++        dir = obj->getLocation().substring(rootpath.length(), obj->getLocation().rindex(DIR_SEPARATOR)-rootpath.length());
++
++        if (dir.startsWith(_DIR_SEPARATOR))
++            dir = dir.substring(1);
++
++        dir = f2i->convert(dir);
++    }
++    else
++        dir = esc(f2i->convert(get_last_path(obj->getLocation())));
++
++    if (string_ok(dir))
++        id = ContentManager::getInstance()->addContainerChain(_("/Música/Directorios/") + dir);
++    else
++        id = ContentManager::getInstance()->addContainerChain(_("/Música/Directorios"));
+     // we get the main object here, so the object that we will add below
+     // will be a reference of the main object, that's why we set the ref
+     // id to the object id - the add function will clear out the object
+@@ -474,10 +491,12 @@
+ 
+     artist = esc(artist);
+ 
+-    chain = _("/Música/Artistas/") + artist + "/Todo";
++ if(artist!="Desconocido")
++ {
++    chain = _("/Música/Artistas/") + artist;
+ 
+-    id = ContentManager::getInstance()->addContainerChain(chain);
+-    add(obj, id);
++    id = ContentManager::getInstance()->addContainerChain(chain, _(UPNP_DEFAULT_CLASS_MUSIC_ARTIST));
++ }
+ 
+     String temp;
+     if (string_ok(artist_full))
+@@ -489,32 +508,36 @@
+         temp = temp + " - ";
+ 
+     album = esc(album);
++ if((album!="Desconocido")||(artist!="Desconocido"))
++ {
++  if(artist!="Desconocido")
++  {
+     chain = _("/Música/Artistas/") +  artist + _("/") + album;
+     id = ContentManager::getInstance()->addContainerChain(chain, _(UPNP_DEFAULT_CLASS_MUSIC_ALBUM));
+     add(obj, id);
++  }
+ 
++  if(album!="Desconocido")
++  {
+     chain = _("/Música/Álbumes/") + album;
+     id = ContentManager::getInstance()->addContainerChain(chain, _(UPNP_DEFAULT_CLASS_MUSIC_ALBUM));
+     add(obj, id);
++  }
++ }
+ 
++  if(genre!="Desconocido")
++  {
+     chain = _("/Música/Géneros/") + esc(genre);
+     id = ContentManager::getInstance()->addContainerChain(chain, _(UPNP_DEFAULT_CLASS_MUSIC_GENRE));
+     add(obj, id);
++  }
+ 
++  if(date!="Desconocido")
++  {
+     chain = _("/Música/Años/") + esc(date);
+     id = ContentManager::getInstance()->addContainerChain(chain);
+     add(obj, id);
+-
+-    obj->setTitle(temp + title);
+-
+-    id = ContentManager::getInstance()->addContainerChain(_("/Música/Todo - nombre completo"));
+-    add(obj, id);
+-
+-    chain = _("/Música/Artistas/") + artist + "/Todo - nombre completo";
+-    id = ContentManager::getInstance()->addContainerChain(chain);
+-    add(obj, id);
+-
+-
++  }
+ }
+ #ifdef YOUTUBE
+ void FallbackLayout::addYouTube(zmm::Ref<CdsObject> obj)
+@@ -789,13 +812,13 @@
+             addImage(clone, rootpath);
+         else if ((mimetype.startsWith(_("audio")) && 
+                     (content_type != CONTENT_TYPE_PLAYLIST)))
+-            addAudio(clone);
++            addAudio(clone, rootpath);
+         else if (content_type == CONTENT_TYPE_OGG)
+         {
+             if (obj->getFlag(OBJECT_FLAG_OGG_THEORA))
+                 addVideo(clone, rootpath);
+             else
+-                addAudio(clone);
++                addAudio(clone, rootpath);
+         }
+ #ifdef HAVE_LIBDVDNAV
+         else if (content_type == CONTENT_TYPE_DVD)
+diff -Naur mediatomb-0.12.1-orig/src/layout/fallback_layout.h mediatomb-0.12.1/src/layout/fallback_layout.h
+--- mediatomb-0.12.1-orig/src/layout/fallback_layout.h	2010-03-25 15:58:08.000000000 +0100
++++ mediatomb-0.12.1/src/layout/fallback_layout.h	2011-03-18 12:11:17.405105945 +0100
+@@ -51,7 +51,7 @@
+     zmm::String esc(zmm::String str);
+     void addVideo(zmm::Ref<CdsObject> obj, zmm::String rootpath);
+     void addImage(zmm::Ref<CdsObject> obj, zmm::String rootpath);
+-    void addAudio(zmm::Ref<CdsObject> obj);
++    void addAudio(zmm::Ref<CdsObject> obj, zmm::String rootpath);
+ #ifdef HAVE_LIBDVDNAV
+     zmm::Ref<CdsObject> prepareChapter(zmm::Ref<CdsObject> obj, int title_idx,
+                                        int chapter_idx);
