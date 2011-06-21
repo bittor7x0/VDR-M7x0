@@ -60,7 +60,7 @@ $(STAGEFILES_DIR)/.pipe-test_compiled: $(STAGEFILES_DIR)/.pipe-test_patched
 	-$(RM) -rf $(PIPE-TEST_DIR)
 	$(MKDIR) -p $(PIPE-TEST_DIR)
 	$(CP) $(PIPE-TEST_DLFILE) $(PIPE-TEST_DIR)/pipe-test.c
-	$(PREFIX_BIN)/$(UCLIBC_CC) -g -Wall -o $(PIPE-TEST_DIR)/pipe-test $(PIPE-TEST_DIR)/pipe-test.c
+	$(PREFIX_BIN)/$(UCLIBC_CC) $(UCLIBC_CFLAGS) -Wall -o $(PIPE-TEST_DIR)/pipe-test $(PIPE-TEST_DIR)/pipe-test.c
 	$(TOUCH) $(STAGEFILES_DIR)/.pipe-test_compiled
 
 #

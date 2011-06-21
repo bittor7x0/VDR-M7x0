@@ -60,7 +60,7 @@ $(STAGEFILES_DIR)/.hackbench_compiled: $(STAGEFILES_DIR)/.hackbench_patched
 	-$(RM) -rf $(HACKBENCH_DIR)
 	$(MKDIR) -p $(HACKBENCH_DIR)
 	$(CP) $(HACKBENCH_DLFILE) $(HACKBENCH_DIR)/hackbench.c
-	$(PREFIX_BIN)/$(UCLIBC_CC) -g -Wall -o $(HACKBENCH_DIR)/hackbench $(HACKBENCH_DIR)/hackbench.c -lpthread
+	$(PREFIX_BIN)/$(UCLIBC_CC) $(UCLIBC_CFLAGS) -Wall -o $(HACKBENCH_DIR)/hackbench $(HACKBENCH_DIR)/hackbench.c -lpthread
 	$(TOUCH) $(STAGEFILES_DIR)/.hackbench_compiled
 
 #
