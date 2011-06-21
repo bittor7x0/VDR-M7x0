@@ -69,7 +69,9 @@ $(STAGEFILES_DIR)/.lmbench_compiled: $(STAGEFILES_DIR)/.lmbench_patched
 	$(UCLIBC_ENV) $(MAKE) \
 		-C $(LMBENCH_DIR) \
 		OS=mips-Linux \
-		CC=$(UCLIBC_CC)
+		CC=$(UCLIBC_CC) \
+		CFLAGS="$(UCLIBC_CFLAGS)" \
+		CPPFLAGS="$(UCLIBC_CXXFLAGS)"
 	$(TOUCH) $(STAGEFILES_DIR)/.lmbench_compiled
 
 #
@@ -80,7 +82,9 @@ $(STAGEFILES_DIR)/.lmbench_stripped: $(STAGEFILES_DIR)/.lmbench_compiled
 	$(UCLIBC_ENV) $(MAKE) strip \
 		-C $(LMBENCH_DIR) \
 		OS=mips-Linux \
-		CC=$(UCLIBC_CC)
+		CC=$(UCLIBC_CC) \
+		CFLAGS="$(UCLIBC_CFLAGS)" \
+		CPPFLAGS="$(UCLIBC_CXXFLAGS)"
 	$(TOUCH) $(STAGEFILES_DIR)/.lmbench_stripped
 
 #
