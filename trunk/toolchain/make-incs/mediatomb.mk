@@ -58,11 +58,12 @@ MEDIATOMB_FILE := mediatomb-$(MEDIATOMB_VERSION).tar.gz
 MEDIATOMB_DLFILE := $(DOWNLOAD_DIR)/$(MEDIATOMB_FILE)
 MEDIATOMB_URL := http://downloads.sourceforge.net/mediatomb/$(MEDIATOMB_FILE)
 MEDIATOMB_DIR := $(BUILD_DIR)/mediatomb-$(MEDIATOMB_VERSION)
+MEDIATOMB_CONF_DIR := $(PRG_CONFIGS_DIR)/mediatomb
 
 MEDIATOMB_INSTALLED = $(STAGEFILES_DIR)/.mediatomb_installed
 
 PACKS_RULES_$(CONFIG_MEDIATOMB) += $(MEDIATOMB_INSTALLED)
-FILE_LISTS_$(CONFIG_MEDIATOMB) += mediatomb.lst
+FILE_LISTS_$(CONFIG_MEDIATOMB) += mediatomb.lst mediatomb-configs.lst
 
 CLEAN_RULES += clean-mediatomb
 DISTCLEAN_RULES += distclean-mediatomb
@@ -158,6 +159,8 @@ $(STAGEFILES_DIR)/.mediatomb_installed: $(STAGEFILES_DIR)/.mediatomb_compiled
 
 $(FILELIST_DIR)/mediatomb.lst: $(STAGEFILES_DIR)/.mediatomb_installed
 	$(TOUCH) $(FILELIST_DIR)/mediatomb.lst
+
+$(eval $(call gen_copy_file_lst,$(MEDIATOMB_CONF_DIR),,0,0,mediatomb-configs.lst,check))
 
 .PHONY: clean-mediatomb distclean-mediatomb
 
