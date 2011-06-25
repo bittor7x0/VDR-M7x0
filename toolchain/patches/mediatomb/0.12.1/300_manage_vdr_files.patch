@@ -1,26 +1,29 @@
 diff -Naur mediatomb-0.12.1-orig/src/layout/fallback_layout.cc mediatomb-0.12.1/src/layout/fallback_layout.cc
 --- mediatomb-0.12.1-orig/src/layout/fallback_layout.cc	2011-03-17 13:11:21.380294352 +0100
 +++ mediatomb-0.12.1/src/layout/fallback_layout.cc	2011-03-17 13:25:52.723217071 +0100
-@@ -86,6 +86,36 @@
+@@ -86,6 +86,39 @@
  void FallbackLayout::addVideo(zmm::Ref<CdsObject> obj, String rootpath)
  {
      Ref<StringConverter> f2i = StringConverter::f2i();
 +    if(obj->getLocation().substring(obj->getLocation().rindex('.')+1)=="vdr")
 +    {
-+        String fileName(obj->getLocation().substring(obj->getLocation().rindex('/')+1));
-+	if((fileName=="index.vdr")&&(obj->getLocation().length()>35))
++	if((obj->getLocation().substring(obj->getLocation().rindex('/')+1)=="index.vdr")&&(obj->getLocation().length()>36))
 +	{
 +		String myLocation = obj->getLocation().substring(0,obj->getLocation().length()-10);
-+		if(myLocation.substring(myLocation.length()-4)==".rec")
++		if((myLocation.substring(myLocation.length()-4)==".rec")&&(myLocation.charAt(myLocation.length()-27)=='/'))
 +		{
-+			myLocation=myLocation.substring(0,myLocation.length()-10);
-+			if(myLocation.charAt(myLocation.length()-17)=='/')
-+				myLocation=myLocation.substring(0,myLocation.length()-17)+" "+myLocation.substring(myLocation.length()-16,10)+" ["+myLocation.substring(myLocation.length()-5,2)+":"+myLocation.substring(myLocation.length()-2,2)+"]";
-+			if(myLocation.substring(0,16)=="/var/vdr/video0/")
-+				myLocation=myLocation.substring(16);
-+			else if(myLocation.substring(0,1)=='/')
++			String title(myLocation.substring(myLocation.length()-26,10)+" ["+myLocation.substring(myLocation.length()-15,2)+":"+myLocation.substring(myLocation.length()-12,2)+"]");
++			myLocation=myLocation.substring(0,myLocation.length()-27);
++			if(myLocation.substring(0,15)=="/var/vdr/video0")
++				myLocation=myLocation.substring(15);
++			if(myLocation.substring(0,1)=='/')
 +				myLocation=myLocation.substring(1);
-+			int id=ContentManager::getInstance()->addContainerChain(_("/Vídeos/Grabaciones/")+f2i->convert(myLocation));
++			int id=myLocation.rindex('/');
++			obj->setTitle(f2i->convert(myLocation.substring(id+1)+" "+title));
++			if(id>0)
++				id=ContentManager::getInstance()->addContainerChain(_("/Vídeos/Grabaciones/")+f2i->convert(myLocation.substring(0,id)));
++			else
++				id=ContentManager::getInstance()->addContainerChain(_("/Vídeos/Grabaciones"));
 +			if(obj->getID()!=INVALID_OBJECT_ID)
 +			{
 +				obj->setRefID(obj->getID());
@@ -38,6 +41,35 @@ diff -Naur mediatomb-0.12.1-orig/src/layout/fallback_layout.cc mediatomb-0.12.1/
      int id = ContentManager::getInstance()->addContainerChain(_("/Vídeos/Todo"));
  
      if (obj->getID() != INVALID_OBJECT_ID)
+diff -Naur mediatomb-0.12.1-orig/src/content_manager.cc mediatomb-0.12.1/src/content_manager.cc
+--- mediatomb-0.12.1-orig/src/content_manager.cc	2011-03-17 13:11:21.380294352 +0100
++++ mediatomb-0.12.1/src/content_manager.cc	2011-03-17 13:25:52.723217071 +0100
+@@ -878,6 +878,12 @@
+                 continue;    
+             }
+         }
++	String myName(name);
++	if(myName.substring(myName.rindex('.')+1)=="vdr")
++		if(myName!="index.vdr")
++			continue;
++	if(myName.substring(myName.rindex('.')+1)=="del")
++		continue;
+ 
+         path = location + DIR_SEPARATOR + name; 
+         ret = stat(path.c_str(), &statbuf);
+@@ -1030,6 +1036,12 @@
+             else if (hidden == false)
+                 continue;
+         }
++	String myName(name);
++	if(myName.substring(myName.rindex('.')+1)=="vdr")
++		if(myName!="index.vdr")
++			continue;
++	if(myName.substring(myName.rindex('.')+1)=="del")
++		continue;
+         String newPath = path + DIR_SEPARATOR + name;
+ 
+         if (ConfigManager::getInstance()->getConfigFilename() == newPath)
 diff -Naur mediatomb-0.12.1-orig/src/file_request_handler.cc mediatomb-0.12.1/src/file_request_handler.cc
 --- mediatomb-0.12.1-orig/src/file_request_handler.cc	2010-03-25 15:58:11.000000000 +0100
 +++ mediatomb-0.12.1/src/file_request_handler.cc	2011-06-23 13:39:15.000000000 +0200
