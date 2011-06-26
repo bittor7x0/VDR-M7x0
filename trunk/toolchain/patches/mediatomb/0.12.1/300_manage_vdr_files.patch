@@ -212,7 +212,7 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.h mediatomb-0.12.1/src/vdr_i
 diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_io_handler.cc
 --- mediatomb-0.12.1-orig/src/vdr_io_handler.cc	1970-01-01 01:00:00.000000000 +0100
 +++ mediatomb-0.12.1/src/vdr_io_handler.cc	2011-06-23 13:35:09.000000000 +0200
-@@ -0,0 +1,204 @@
+@@ -0,0 +1,203 @@
 +/*MT*
 +    
 +    MediaTomb - http://www.mediatomb.cc/
@@ -285,17 +285,16 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_
 +    }
 +    else
 +    {
-+	int vdr_file_index;
++	int vdr_file_index = 0;
 +	String vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR));
 +	char vdr_filename[] = "001.vdr";
 +	vdr_path = vdr_path + DIR_SEPARATOR + vdr_filename;
-+	
-+	for (vdr_file_index = 0;
-+	     stat(vdr_path.c_str(), &stat_buf) != -1;
-+	     vdr_file_index++) {
-+	  
++
++       while (stat(vdr_path.c_str(), &stat_buf) != -1)
++	{
 +	  ret = ret + stat_buf.st_size;
 +	  
++	  vdr_file_index++;
 +	  sprintf(vdr_filename, "%03d.vdr", vdr_file_index + 1);
 +	  vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR)) + DIR_SEPARATOR + vdr_filename;
 +	}
@@ -316,10 +315,10 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_
 +    }
 +
 +    file_offsets [0] = 0;
++    vdr_file_index = 0;
 +
-+    for (vdr_file_index = 0;
-+         stat(vdr_path.c_str(), &stat_buf) != -1;
-+         vdr_file_index++) {
++    while (stat(vdr_path.c_str(), &stat_buf) != -1)
++    {
 +
 +      file_offsets[vdr_file_index+1] = file_offsets[vdr_file_index] +
 +	   stat_buf.st_size;
@@ -330,7 +329,7 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_
 +      {
 +	  throw _Exception(_("VDRIOHandler::open: failed to open: ") + vdr_path.c_str());
 +      }
-+
++      vdr_file_index++;
 +      sprintf(vdr_filename, "%03d.vdr", vdr_file_index + 1);
 +      vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR)) + DIR_SEPARATOR + vdr_filename;
 +    }
@@ -354,7 +353,7 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_
 +           }
 +           else 
 +           {
-+               return fread(buf+ret, sizeof(char), length - ret, f[file_i]);
++               ret = ret + fread(buf+ret, sizeof(char), length - ret, f[file_i]);
 +           }
 +        }
 +        else 
@@ -379,7 +378,7 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_
 +    {
 +    case SEEK_CUR:
 +       final_offset = file_offsets[file_i] + ftell(f[file_i]) + offset;
-+       log_info("seek0: final_offset=%d, file_i=%d, whence=%d, offset=%d, ftell=%d\n", final_offset, file_i, whence, offset, ftell(f[file_i]));
++       log_info("seek0: final_offset=%jd, file_i=%d, whence=%d, offset=%jd, ftell=%jd\n", (intmax_t)final_offset, file_i, whence, (intmax_t)offset, (intmax_t)ftell(f[file_i]));
 +       break;
 +    case SEEK_SET:
 +       final_offset = file_offsets[file_i] + offset;
@@ -390,14 +389,14 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_
 +    default:
 +       throw _Exception(_("fseek whence value not expected"));
 +    }
-+    log_info("seek1: final_offset=%d, file_i=%d, whence=%d, offset=%d\n", final_offset, file_i, whence, offset);
-+     
-+    for (int i = 0; file_offsets[i] <= final_offset; i++)
++    log_info("seek1: final_offset=%jd, file_i=%d, whence=%d, offset=%jd\n", (intmax_t)final_offset, file_i, whence, (intmax_t)offset);
++    file_i = 0;
++    for (int i = 0; file_offsets[i] < final_offset; i++)
 +    {
 +       file_i = i;
-+       log_info("for: file_i=%d, file_offsets[file_i]=%d\n", file_i, file_offsets[file_i]);
++       log_info("for: file_i=%d, file_offsets[file_i]=%jd\n", file_i, (intmax_t)file_offsets[file_i]);
 +    }
-+    log_info("seek2: final_offset=%d, file_i=%d, whence=%d, file_offsets[file_i]=%d\n", final_offset, file_i, whence, file_offsets[file_i]);
++    log_info("seek2: final_offset=%jd, file_i=%d, whence=%d, file_offsets[file_i]=%jd\n", (intmax_t)final_offset, file_i, whence, (intmax_t)file_offsets[file_i]);
 +
 +    if (fseeko(f[file_i], final_offset - file_offsets[file_i], SEEK_SET) != 0)
 +    {
