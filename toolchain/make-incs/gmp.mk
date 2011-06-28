@@ -14,7 +14,7 @@
 # The project's page is at http://www.open7x0.org
 #
 
-GMP_VERSION := 5.0.1
+GMP_VERSION := 5.0.2
 GMP_PATCHES_DIR := $(PATCHES_DIR)/gmp/$(GMP_VERSION)
 
 GMP_FILE := gmp-$(GMP_VERSION).tar.bz2
