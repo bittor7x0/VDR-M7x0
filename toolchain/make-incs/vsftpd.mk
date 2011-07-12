@@ -22,7 +22,7 @@ VSFTPD_PATCHES_DIR := $(PATCHES_DIR)/vsftpd/$(VSFTPD_VERSION)
 
 VSFTPD_FILE := vsftpd-$(VSFTPD_VERSION).tar.gz
 VSFTPD_DLFILE := $(DOWNLOAD_DIR)/$(VSFTPD_FILE)
-VSFTPD_URL := ftp://vsftpd.beasts.org/users/cevans/$(VSFTPD_FILE)
+VSFTPD_URL := https://security.appspot.com/downloads/$(VSFTPD_FILE)
 VSFTPD_DIR := $(BUILD_DIR)/vsftpd-$(VSFTPD_VERSION)
 
 VSFTPD_INSTALLED = $(STAGEFILES_DIR)/.vsftpd_installed
