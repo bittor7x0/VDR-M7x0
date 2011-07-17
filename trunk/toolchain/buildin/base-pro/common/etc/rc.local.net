@@ -47,4 +47,9 @@ if [ X"${webif_start}" != X"NO" ]; then
     /usr/sbin/webifd -p /var/run/webifd.pid &
 fi
 
+if [ X"${mediatomb_start}" != X"NO" ]; then
+    echo -n ' starting mediatomb'
+    /usr/bin/start-mediatomb &
+fi
+
 exec /bin/ash /etc/rc.local.post

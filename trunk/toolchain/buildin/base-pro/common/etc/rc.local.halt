@@ -40,6 +40,11 @@ if [ X"${webif_start}" != X"NO" ]; then
     while read pid; do /bin/kill -15 $pid; done < /var/run/webifd.pid
 fi
 
+if [ X"${mediatomb_start}" != X"NO" ]; then
+    echo -n ' stopping mediatomb'
+    /usr/bin/kill-mediatomb
+fi
+
 if [ X"${netdate}" != X"NO" ]; then
     echo -n "network time protocol daemon"
     while read pid; do /bin/kill -15 $pid; done < /var/run/ntpclient.pid
