@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config version="2" xmlns="http://mediatomb.cc/config/2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mediatomb.cc/config/2 http://mediatomb.cc/config/2.xsd">
+  <server>
+    <ui enabled="yes" show-tooltips="yes">
+      <accounts enabled="no" session-timeout="30">
+        <account user="mediatomb" password="mediatomb"/>
+      </accounts>
+    </ui>
+    <name>Mediatomb VDR-NG-EM</name>
+    <home>/etc/mediatomb</home>
+    <webroot>/etc/mediatomb/web</webroot>
+    <storage>
+      <sqlite3 enabled="yes">
+	<database-file>mediatomb.db</database-file>
+      </sqlite3>
+    </storage>
+    <pc-directory upnp-hide="yes"/>
+    <protocolInfo extend="yes"/><!-- For PS3 support change to "yes" -->
+    <!--
+      Uncomment the lines below to get rid of jerky avi playback on the
+      DSM320 or to enable subtitles support on the DSM units
+    -->
+    <custom-http-headers>
+      <add header="transferMode.dlna.org: Streaming"/>
+      <add header="contentFeatures.dlna.org: DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_PS=1;DLNA.ORG_FLAGS=21700000000000000000000000000000"/>
+    </custom-http-headers>
+    <!--
+    <custom-http-headers>
+      <add header="X-User-Agent: redsonic"/>
+    </custom-http-headers>
+
+    <manufacturerURL>redsonic.com</manufacturerURL>
+    <modelNumber>105</modelNumber>
+    -->
+    <!-- Uncomment the line below if you have a Telegent TG100 -->
+    <!--
+      <upnp-string-limit>101</upnp-string-limit>
+    -->
+    <extended-runtime-options>
+      <mark-played-items enabled="yes" suppress-cds-updates="yes">
+        <string mode="prepend">*</string>
+        <mark>
+          <content>video</content>
+        </mark>
+      </mark-played-items>
+    </extended-runtime-options>
+  </server>
+  <import hidden-files="no">
+    <filesystem-charset>ISO-8859-15</filesystem-charset>          
+    <metadata-charset>ISO-8859-15</metadata-charset>
+    <playlist-charset>ISO-8859-15</playlist-charset>
+    <scripting script-charset="ISO-8859-15">
+      <virtual-layout type="builtin"/>
+    </scripting>
+    <autoscan use-inotify="auto">
+      <directory location="/var/vdr/video0" mode="timed" interval="10000" level="full" recursive="yes" hidden-files="no"/>
+    </autoscan>
+    <mappings>
+      <extension-mimetype ignore-unknown="yes">
+        <map from="mp3" to="audio/mpeg"/>
+        <map from="ogx" to="application/ogg"/>
+        <map from="ogv" to="video/ogg"/>
+        <map from="oga" to="audio/ogg"/>
+        <map from="ogg" to="audio/ogg"/>
+        <map from="ogm" to="video/ogg"/>
+        <map from="asf" to="video/x-ms-asf"/>
+        <map from="asx" to="video/x-ms-asf"/>
+        <map from="wma" to="audio/x-ms-wma"/>
+        <map from="wax" to="audio/x-ms-wax"/>
+        <map from="wmv" to="video/x-ms-wmv"/>
+        <map from="wvx" to="video/x-ms-wvx"/>
+        <map from="wm" to="video/x-ms-wm"/>
+        <map from="wmx" to="video/x-ms-wmx"/>
+        <map from="m3u" to="audio/x-mpegurl"/>
+        <map from="pls" to="audio/x-scpls"/>
+        <map from="flv" to="video/x-flv"/>
+        <map from="mkv" to="video/x-matroska"/>
+        <map from="mka" to="audio/x-matroska"/>
+        <map from="vdr" to="video/mpeg"/>
+        <map from="mpg" to="video/mpeg"/>
+        <map from="mp4" to="video/mpeg"/>
+        <map from="jpg" to="image/jpeg"/>
+        <map from="jpeg" to="image/jpeg"/>
+        <!-- Uncomment the line below for PS3 divx support -->
+        <!-- <map from="avi" to="video/divx"/> -->
+        <!-- Uncomment the line below for D-Link DSM / ZyXEL DMA-1000 -->
+        <map from="avi" to="video/avi"/>
+      </extension-mimetype>
+      <mimetype-upnpclass>
+        <map from="audio/*" to="object.item.audioItem.musicTrack"/>
+        <map from="video/*" to="object.item.videoItem"/>
+        <map from="image/*" to="object.item.imageItem"/>
+      </mimetype-upnpclass>
+      <mimetype-contenttype>
+        <treat mimetype="audio/mpeg" as="mp3"/>
+        <treat mimetype="application/ogg" as="ogg"/>
+        <treat mimetype="audio/x-flac" as="flac"/>
+        <treat mimetype="image/jpeg" as="jpg"/>
+        <treat mimetype="audio/x-mpegurl" as="playlist"/>
+        <treat mimetype="audio/x-scpls" as="playlist"/>
+        <treat mimetype="audio/x-wav" as="pcm"/>
+        <treat mimetype="audio/L16" as="pcm"/>
+        <treat mimetype="video/x-msvideo" as="avi"/>
+        <treat mimetype="video/avi" as="avi"/>
+        <treat mimetype="video/mp4" as="mp4"/>
+        <treat mimetype="audio/mp4" as="mp4"/>
+        <treat mimetype="application/x-iso9660" as="dvd"/>
+        <treat mimetype="application/x-iso9660-image" as="dvd"/>
+      </mimetype-contenttype>
+    </mappings>
+  </import>
+</config>
+

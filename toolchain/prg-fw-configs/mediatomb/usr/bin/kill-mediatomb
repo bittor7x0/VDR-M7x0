@@ -1,0 +1,3 @@
+#!/bin/ash
+
+while read pid; do /bin/kill -15 $pid; done < /var/run/mediatomb.pid

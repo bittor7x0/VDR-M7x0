@@ -152,7 +152,7 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.h mediatomb-0.12.1/src/vdr_i
 +/// \brief Definition of the VDRIOHandler class.
 +#ifndef __VDR_IO_HANDLER_H__
 +#define __VDR_IO_HANDLER_H__
-+
++#define MAX_VDR_FILES 256
 +#include <sys/types.h>
 +
 +#include "common.h"
@@ -166,11 +166,11 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.h mediatomb-0.12.1/src/vdr_i
 +    zmm::String filename;
 +
 +    /// \brief Handles of the recording files.
-+    FILE *f[999];
++    FILE *f[MAX_VDR_FILES];
 +
-+    off_t file_offsets[999];
++    off_t file_offsets[MAX_VDR_FILES];
 +
-+    /// \brief Index of current file. Range 0 .. 999.
++    /// \brief Index of current file. Range 0 .. MAX_VDR_FILES-1.
 +    int file_i;
 +public:
 +    /// \brief Sets the filename to work with.
@@ -378,7 +378,7 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_
 +    {
 +    case SEEK_CUR:
 +       final_offset = file_offsets[file_i] + ftell(f[file_i]) + offset;
-+       log_info("seek0: final_offset=%jd, file_i=%d, whence=%d, offset=%jd, ftell=%jd\n", (intmax_t)final_offset, file_i, whence, (intmax_t)offset, (intmax_t)ftell(f[file_i]));
++       log_debug("seek0: final_offset=%jd, file_i=%d, whence=%d, offset=%jd, ftell=%jd\n", (intmax_t)final_offset, file_i, whence, (intmax_t)offset, (intmax_t)ftell(f[file_i]));
 +       break;
 +    case SEEK_SET:
 +       final_offset = file_offsets[file_i] + offset;
@@ -389,14 +389,14 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_
 +    default:
 +       throw _Exception(_("fseek whence value not expected"));
 +    }
-+    log_info("seek1: final_offset=%jd, file_i=%d, whence=%d, offset=%jd\n", (intmax_t)final_offset, file_i, whence, (intmax_t)offset);
++    log_debug("seek1: final_offset=%jd, file_i=%d, whence=%d, offset=%jd\n", (intmax_t)final_offset, file_i, whence, (intmax_t)offset);
 +    file_i = 0;
 +    for (int i = 0; file_offsets[i] < final_offset; i++)
 +    {
 +       file_i = i;
-+       log_info("for: file_i=%d, file_offsets[file_i]=%jd\n", file_i, (intmax_t)file_offsets[file_i]);
++       log_debug("for: file_i=%d, file_offsets[file_i]=%jd\n", file_i, (intmax_t)file_offsets[file_i]);
 +    }
-+    log_info("seek2: final_offset=%jd, file_i=%d, whence=%d, file_offsets[file_i]=%jd\n", (intmax_t)final_offset, file_i, whence, (intmax_t)file_offsets[file_i]);
++    log_debug("seek2: final_offset=%jd, file_i=%d, whence=%d, file_offsets[file_i]=%jd\n", (intmax_t)final_offset, file_i, whence, (intmax_t)file_offsets[file_i]);
 +
 +    if (fseeko(f[file_i], final_offset - file_offsets[file_i], SEEK_SET) != 0)
 +    {

@@ -43,6 +43,7 @@
         <menu name="Servicios">
             <entry name="Iniciar servicio inetd" sysconfig="rc.local.conf--inetd" type="bool" value="YES" help1="Iniciar el servicio inetd (ftp, telnet y ssh)" />
             <entry name="Iniciar interfaz web" sysconfig="rc.local.conf--webif_start" type="bool" value="NO" help1="Iniciar el interfaz web para la administración remota" />
+            <entry name="Servidor DLNA" sysconfig="rc.local.conf--mediatomb_start" type="bool" value="YES" help1="Arrancar servidor DLNA (Mediatomb)" />
             <entry name="Iniciar servicio NTP" sysconfig="rc.local.conf--netdate" type="bool" value="NO" help1="Iniciar el servicio para sincronizar la hora por red" />
             <entry name="Servidor NTP" sysconfig="rc.local.conf--netdate_server" type="text" value="europe.pool.ntp.org" help1="Servidor NTP del que obtener la hora" />
         </menu>

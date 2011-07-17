@@ -43,6 +43,7 @@
         <menu name="Services">
             <entry name="Start inetd daemon" sysconfig="rc.local.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />
             <entry name="Start web server" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Start administration web" />
+            <entry name="DLNA Server" sysconfig="rc.local.conf--mediatomb_start" type="bool" value="YES" help1="Start DLNA server (Mediatomb)" />
             <entry name="Start NTP daemon" sysconfig="rc.local.conf--netdate" type="bool" value="NO" help1="Start daemon for network time update" />
             <entry name="NTP server" sysconfig="rc.local.conf--netdate_server" type="text" value="europe.pool.ntp.org" help1="NTP server for clock update" />
         </menu>

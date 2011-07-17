@@ -1,0 +1,40 @@
+#!/bin/ash
+
+set -o nounset
+
+CONTINUE_WAITING="TRUE"
+NUM_CYCLES=0
+
+while [ $CONTINUE_WAITING == "TRUE" ]; do
+
+    DISK_VOLUME=$(mount | awk '/\/dev\/sda1/ {print $3}')
+
+    if [ -z $DISK_VOLUME ]; then
+	DISK_VOLUME=$(mount | awk '/\/dev\/sda2/ {print $3}')
+    fi
+    
+    if [ ! -z $DISK_VOLUME -o $NUM_CYCLES -eq 10 ]; then
+	CONTINUE_WAITING="FALSE"
+    else
+	NUM_CYCLES=$(expr $NUM_CYCLES + 1)
+	sleep 3
+    fi
+done
+
+if [ -z $DISK_VOLUME ]; then
+    logger -s -p user.err Mediatomb necesita un disco para funcionar
+    exit 1
+fi
+
+if [ ! -d $DISK_VOLUME/mediatomb ]; then
+    mkdir $DISK_VOLUME/mediatomb || exit 2
+fi
+
+if [ ! -f $DISK_VOLUME/mediatomb/mediatomb.db ]; then 
+    cp /etc/mediatomb/mediatomb.db $DISK_VOLUME/mediatomb/mediatomb.db
+fi
+
+cp /etc/mediatomb/config.xml $DISK_VOLUME/mediatomb/
+
+/usr/bin/mediatomb -p 49152 -m $DISK_VOLUME -f mediatomb -P /var/run/mediatomb.pid & 
+
