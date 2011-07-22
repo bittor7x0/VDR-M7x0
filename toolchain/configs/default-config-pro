@@ -236,7 +236,7 @@ CONFIG_WEBIF = y
 
 # MediaTomb: An open source UPnP MediaServer with a nice web user interface
 # URL: http://mediatomb.cc/
-# CONFIG_MEDIATOMB is not set
+CONFIG_MEDIATOMB = y
 
 # FUPPES: A free, multiplatform UPnP A/V Media Server
 # URL: http://fuppes.ulrich-voelkel.de/
@@ -288,7 +288,7 @@ CONFIG_WEBIF = y
 
 # SQLite: A library that implements a self-contained, serverless, zero-configuration, transactional SQL database engine
 # URL: http://www.sqlite.org/
-# CONFIG_SQLITE is not set
+CONFIG_SQLITE = y
 
 # libupnp: A portable SDK for UPnP Devices
 # URL: http://pupnp.sourceforge.net/
@@ -315,7 +315,7 @@ CONFIG_WEBIF = y
 
 # Expat: An XML parser library written in C
 # URL: http://expat.sourceforge.net/
-# CONFIG_EXPAT is not set
+CONFIG_EXPAT = y
 
 # cURL: The multiprotocol file transfer library
 # URL: http://curl.haxx.se/
