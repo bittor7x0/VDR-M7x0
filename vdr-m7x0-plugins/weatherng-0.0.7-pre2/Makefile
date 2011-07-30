@@ -60,6 +60,8 @@ endif
 ifdef HAVE_MAGICK
 	DEFINES += -DHAVE_MAGICK
 	LIBS += -lMagick -lMagick++
+	t_CXXFLAGS := $(CXXFLAGS)
+	CXXFLAGS = $(filter-out -fno-exceptions,$(t_CXXFLAGS))
 endif
 
 ifdef HAVE_XPM
@@ -101,7 +103,7 @@ $(DEPFILE): Makefile
 all: libvdr-$(PLUGIN).so
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@ $(LDFLAGS)
 	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean

@@ -87,7 +87,7 @@ $(STAGEFILES_DIR)/.gmediaserver_patched: $(STAGEFILES_DIR)/.gmediaserver_unpacke
 
 $(STAGEFILES_DIR)/.gmediaserver_configured: $(STAGEFILES_DIR)/.gmediaserver_patched
 	($(CD) $(GMEDIASERVER_DIR) ; $(UCLIBC_ENV) \
-		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib" \
+		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(GMEDIASERVER_DIR)/configure \

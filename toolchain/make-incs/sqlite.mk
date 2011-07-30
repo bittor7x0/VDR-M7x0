@@ -80,7 +80,7 @@ $(STAGEFILES_DIR)/.sqlite_host_configured: $(STAGEFILES_DIR)/.sqlite_patched
 #
 
 $(STAGEFILES_DIR)/.sqlite_host_compiled: $(STAGEFILES_DIR)/.sqlite_host_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(SQLITE_HOSTDIR) all
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(SQLITE_HOSTDIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_compiled
 
 #
@@ -88,7 +88,7 @@ $(STAGEFILES_DIR)/.sqlite_host_compiled: $(STAGEFILES_DIR)/.sqlite_host_configur
 #
 
 $(STAGEFILES_DIR)/.sqlite_host_installed: $(STAGEFILES_DIR)/.sqlite_host_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(SQLITE_HOSTDIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(SQLITE_HOSTDIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_installed
 
 #
@@ -96,8 +96,8 @@ $(STAGEFILES_DIR)/.sqlite_host_installed: $(STAGEFILES_DIR)/.sqlite_host_compile
 #
 
 $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
-	($(CD) $(SQLITE_DIR) ; $(UCLIBC_ENV) \
-		CFLAGS="$(UCLIBC_CFLAGS) -fno-fast-math" \
+	($(CD) $(SQLITE_DIR) ; $(UCLIBC_ENV_LTO_GC) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -fno-fast-math" \
 		$(SQLITE_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
@@ -111,7 +111,7 @@ $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 
 $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
 	$(MAKE) -C $(SQLITE_DIR) \
-		$(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fno-fast-math" \
+		$(UCLIBC_ENV_LTO_GC) CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -fno-fast-math" \
 		all
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_compiled
 
@@ -121,7 +121,7 @@ $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
 
 $(STAGEFILES_DIR)/.sqlite_installed: $(STAGEFILES_DIR)/.sqlite_compiled
 	$(MAKE) -C $(SQLITE_DIR) \
-		$(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fno-fast-math" \
+		$(UCLIBC_ENV_LTO_GC) CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -fno-fast-math" \
 		install
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_installed
 

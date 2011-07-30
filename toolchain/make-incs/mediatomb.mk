@@ -102,8 +102,8 @@ $(STAGEFILES_DIR)/.mediatomb_patched: $(STAGEFILES_DIR)/.mediatomb_unpacked
 # 
 
 $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
-	($(CD) $(MEDIATOMB_DIR) ; $(UCLIBC_ENV) \
-		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
+	($(CD) $(MEDIATOMB_DIR) ; $(UCLIBC_ENV_LTO_GC) \
+		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(MEDIATOMB_DIR)/configure \
@@ -116,7 +116,7 @@ $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
 			--disable-rpl-malloc \
 			--disable-tombdebug \
 			--disable-upnpdebug \
-			--disable-log \
+			--enable-log \
 			--disable-debug-log \
 			--disable-external-transcoding \
 			$(if $(CONFIG_ZLIB),--enable-zlib,--disable-zlib) \
@@ -140,7 +140,7 @@ $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
 #
 
 $(STAGEFILES_DIR)/.mediatomb_compiled: $(STAGEFILES_DIR)/.mediatomb_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(MEDIATOMB_DIR)
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(MEDIATOMB_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.mediatomb_compiled
 
 #
@@ -148,7 +148,7 @@ $(STAGEFILES_DIR)/.mediatomb_compiled: $(STAGEFILES_DIR)/.mediatomb_configured
 #
 
 $(STAGEFILES_DIR)/.mediatomb_installed: $(STAGEFILES_DIR)/.mediatomb_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(MEDIATOMB_DIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(MEDIATOMB_DIR) install
 	-$(RM) -rf $(TARGET_ROOT)/etc/mediatomb
 	$(MV) $(TARGET_ROOT)/usr/share/mediatomb $(TARGET_ROOT)/etc
 	$(CAT) $(TARGET_ROOT)/etc/mediatomb/sqlite3.sql | \

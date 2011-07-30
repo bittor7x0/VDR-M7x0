@@ -1,0 +1,4 @@
+lib/libuClibc++-0.2.2.so  lib/libuClibc++-0.2.2.so  f 755 0 0 - - - - -
+lib/libuClibc++-0.2.2.so  -                         s   - - - - - - - -
+lib/libuClibc++.so.0      libuClibc++-0.2.2.so      l 777 0 0 - - - - -
+lib/libuClibc++.so        libuClibc++-0.2.2.so      l 777 0 0 - - - - -

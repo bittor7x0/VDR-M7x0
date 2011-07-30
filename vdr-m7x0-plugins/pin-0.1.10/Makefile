@@ -103,12 +103,12 @@ all: i18n
 plugin: libvdr-$(PLUGIN).so
 
 fskcheck: $(CMDOBJS)
-	$(CXX) $(CXXFLAGS) $(CMDOBJS) -o $@
+	$(CXX) $(CXXFLAGS) $(CMDOBJS) -o $@ $(LDFLAGS)
 	@$(STRIP) $@
 	@cp -f $@ $(FSKCHKDIR)
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@ $(LDFLAGS)
 	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean

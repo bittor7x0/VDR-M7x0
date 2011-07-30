@@ -117,7 +117,7 @@ endif
 all: libvdr-$(PLUGIN).so i18n
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@ $(LDFLAGS)
 	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean

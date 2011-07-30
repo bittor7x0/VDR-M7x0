@@ -72,7 +72,7 @@ $(STAGEFILES_DIR)/.curl_patched: $(STAGEFILES_DIR)/.curl_unpacked
 
 $(STAGEFILES_DIR)/.curl_configured: $(STAGEFILES_DIR)/.curl_patched
 	($(CD) $(CURL_DIR) ; $(UCLIBC_ENV) \
-		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib $(if $(CONFIG_ZLIB),-lz)" \
+		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib $(if $(CONFIG_ZLIB),-lz)" \
 		$(CURL_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \

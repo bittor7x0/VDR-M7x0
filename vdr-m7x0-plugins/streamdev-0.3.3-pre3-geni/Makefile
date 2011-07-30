@@ -117,7 +117,7 @@ libvdr-$(PLUGIN)-client.so: $(CLIENTOBJS) $(COMMONOBJS) libdvbmpeg/libdvbmpegtoo
 libvdr-$(PLUGIN)-server.so: $(SERVEROBJS) $(COMMONOBJS) libdvbmpeg/libdvbmpegtools.a
 
 %.so: 
-	$(CXX) $(CXXFLAGS) -shared $^ -o $@
+	$(CXX) $(CXXFLAGS) -shared $^ -o $@ $(LDFLAGS)
 	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean

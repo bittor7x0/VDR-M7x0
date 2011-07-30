@@ -74,7 +74,7 @@ $(STAGEFILES_DIR)/.libffmpegthumbnailer_patched: $(STAGEFILES_DIR)/.libffmpegthu
 
 $(STAGEFILES_DIR)/.libffmpegthumbnailer_configured: $(STAGEFILES_DIR)/.libffmpegthumbnailer_patched
 	($(CD) $(LIBFFMPEGTHUMBNAILER_DIR) ; $(UCLIBC_ENV) \
-		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib" \
+		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(LIBFFMPEGTHUMBNAILER_DIR)/configure \

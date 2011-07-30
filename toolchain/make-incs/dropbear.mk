@@ -71,9 +71,9 @@ $(STAGEFILES_DIR)/.dropbear_patched: $(STAGEFILES_DIR)/.dropbear_unpacked
 #
 
 $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
-	($(CD) $(DROPBEAR_DIR) ; $(UCLIBC_ENV) \
-		CFLAGS="$(UCLIBC_CFLAGS) -DARGTYPE=3 -ffunction-sections -fdata-sections" \
-		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,--gc-sections" \
+	($(CD) $(DROPBEAR_DIR) ; $(UCLIBC_ENV_GC) \
+		CFLAGS="$(UCLIBC_CFLAGS_GC) -DARGTYPE=3" \
+		LDFLAGS="$(UCLIBC_LDFLAGS_GC) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib" \
 		$(DROPBEAR_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \

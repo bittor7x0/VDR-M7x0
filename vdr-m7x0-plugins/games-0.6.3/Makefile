@@ -64,11 +64,11 @@ all:
 	@echo
 
 libvdr-games.so: $(OBJS)
-	$(CXX) $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@
+	$(CXX) $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@ $(LDFLAGS)
 	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 sdl-games: $(OBJS)
-	$(CXX) $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@
+	$(CXX) $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@ $(LDFLAGS)
 
 install: all
 	@cp $(LIBDIR)/libvdr-games.so.$(VDRVER) /mnt/vdr/lib/plugins/

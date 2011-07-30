@@ -73,7 +73,7 @@ $(STAGEFILES_DIR)/.mini-sendmail_patched: $(STAGEFILES_DIR)/.mini-sendmail_unpac
 #
 
 $(STAGEFILES_DIR)/.mini-sendmail_compiled: $(STAGEFILES_DIR)/.mini-sendmail_patched
-	$(UCLIBC_ENV) $(MAKE) $(UCLIBC_ENV) LDFLAGS="" \
+	$(UCLIBC_ENV) $(MAKE) $(UCLIBC_ENV) \
 		BINDIR=$(TARGET_ROOT)/usr/sbin \
 		MANDIR=$(TARGET_ROOT)/usr/sbin \
 		-C $(MINI-SENDMAIL_DIR) all
@@ -84,7 +84,7 @@ $(STAGEFILES_DIR)/.mini-sendmail_compiled: $(STAGEFILES_DIR)/.mini-sendmail_patc
 #
 
 $(STAGEFILES_DIR)/.mini-sendmail_installed: $(STAGEFILES_DIR)/.mini-sendmail_compiled
-	$(UCLIBC_ENV) $(MAKE) $(UCLIBC_ENV) LDFLAGS="" \
+	$(UCLIBC_ENV) $(MAKE) $(UCLIBC_ENV) \
 		BINDIR=$(TARGET_ROOT)/usr/sbin \
 		MANDIR=$(TARGET_ROOT)/usr/man \
 		-C $(MINI-SENDMAIL_DIR) install
