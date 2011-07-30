@@ -81,9 +81,14 @@ DEFINES += -DMEMWATCH
 endif
 ifdef CRASHLOG
 LIBS     += -lubacktrace
-CFLAGS   += -fexceptions
 CXXFLAGS += -fexceptions
 DEFINES  += -DUSE_CRASHLOG
+else
+CXXFLAGS += -fno-exceptions
+endif
+ifdef DEBUG
+CXXFLAGS += -g
+DEFINES += -DDEBUG
 endif
 
 LIRC_DEVICE ?= /dev/lircd
@@ -130,7 +135,7 @@ $(DEPFILE): Makefile
 # The main program:
 
 vdr: $(OBJS) $(SILIB)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(NCURSESLIB) $(LIBS) $(LIBDIRS) $(SILIB) -o vdr
+	$(CXX) $(CXXFLAGS) -rdynamic $(OBJS) $(NCURSESLIB) $(LIBS) $(LDFLAGS) $(LIBDIRS) $(SILIB) -o vdr
 
 
 

@@ -74,7 +74,7 @@ $(STAGEFILES_DIR)/.libdlna_patched: $(STAGEFILES_DIR)/.libdlna_unpacked
 
 $(STAGEFILES_DIR)/.libdlna_configured: $(STAGEFILES_DIR)/.libdlna_patched
 	($(CD) $(LIBDLNA_DIR) ; $(UCLIBC_ENV) \
-		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib -lpthread" \
+		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib -lpthread" \
 		HOST_CC="$(CC)" \
 		$(LIBDLNA_DIR)/configure \
 		--cross-compile \

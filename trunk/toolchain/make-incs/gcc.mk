@@ -81,11 +81,16 @@ $(STAGEFILES_DIR)/.gcc_patched: $(STAGEFILES_DIR)/.gcc_unpacked
 
 $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                           $$(BINUTILS_INSTALLED) \
-                                          $$(MPC_INSTALLED) \
+                                          $$(GMP_HOSTINSTALLED) \
+                                          $$(MPFR_HOSTINSTALLED) \
+                                          $$(MPC_HOSTINSTALLED) \
                                           $$(UCLIBC_PRE_ALL_GCC)
 	-$(RM) -rf $(GCC_STAGE1_BUILD_DIR)
 	$(MKDIR) -p $(GCC_STAGE1_BUILD_DIR)
-	($(CD) $(GCC_STAGE1_BUILD_DIR) ; PATH='$(PREFIX_BIN):$(PATH)' \
+	($(CD) $(GCC_STAGE1_BUILD_DIR) ; \
+		export libgcc_cv_fixed_point=no ; \
+		export glibcxx_cv_c99_math_tr1=no ; \
+		PATH='$(PREFIX_BIN):$(PATH)' \
 		$(GCC_DIR)/configure \
 			--prefix=$(GCC_STAGE1_PREFIX) \
 			--with-sysroot=$(TARGET_ROOT) \
@@ -96,20 +101,27 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-system-zlib \
 			--target=$(UCLIBC_TARGET) \
 			--enable-languages=c \
-			--enable-__cxa_atexit \
+			--disable-__cxa_atexit \
 			--disable-shared \
-			--enable-threads=posix \
+			--disable-threads \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
 			--with-gmp=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
+			--without-ppl \
+			--without-cloog \
 			--disable-decimal-float \
 			--disable-libgomp \
 			--disable-libmudflap \
+			--disable-libquadmath \
+			--disable-libssp \
+			--disable-target-libiberty \
+			--disable-target-zlib \
+			--disable-target-libstdc++-v3 \
 			--nfp \
-			--enable-multilib \
+			--disable-multilib \
 			--enable-softfloat \
 			--disable-nls \
 			--disable-tls )
@@ -137,11 +149,19 @@ $(STAGEFILES_DIR)/.gcc_stage1_installed: $(STAGEFILES_DIR)/.gcc_stage1_compiled
 
 $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                    $$(BINUTILS_INSTALLED) \
-                                   $$(MPC_INSTALLED) \
+                                   $$(GMP_HOSTINSTALLED) \
+                                   $$(MPFR_HOSTINSTALLED) \
+                                   $$(MPC_HOSTINSTALLED) \
+                                   $$(LIBELF_HOSTINSTALLED) \
+                                   $$(PPL_HOSTINSTALLED) \
+                                   $$(CLOOG_HOSTINSTALLED) \
                                    $$(UCLIBC_INSTALLED)
 	-$(RM) -rf $(GCC_BUILD_DIR)
 	$(MKDIR) -p $(GCC_BUILD_DIR)
-	($(CD) $(GCC_BUILD_DIR) ; PATH='$(PREFIX_BIN):$(PATH)' \
+	($(CD) $(GCC_BUILD_DIR) ; \
+		export libgcc_cv_fixed_point=no ; \
+		export glibcxx_cv_c99_math_tr1=no ; \
+		PATH='$(PREFIX_BIN):$(PATH)' \
 		$(GCC_DIR)/configure \
 			--prefix=$(PREFIX) \
 			--with-sysroot=$(TARGET_ROOT) \
@@ -153,17 +173,26 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--enable-__cxa_atexit \
 			--enable-shared \
 			--enable-threads=posix \
+			--enable-lto \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
 			--with-gmp=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
+			--with-libelf=$(PREFIX) \
+			--with-ppl=$(PREFIX) \
+			--with-cloog=$(PREFIX) \
+			--with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' \
+			--disable-libstdcxx-pch \
 			--disable-decimal-float \
 			--disable-libgomp \
 			--disable-libmudflap \
+			--disable-libquadmath \
+			--disable-libssp \
+			--disable-target-zlib \
 			--nfp \
-			--enable-multilib \
+			--disable-multilib \
 			--enable-softfloat \
 			--disable-nls \
 			--disable-tls )
@@ -174,7 +203,11 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 #
 
 $(STAGEFILES_DIR)/.gcc_compiled: $(STAGEFILES_DIR)/.gcc_configured
-	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) -C $(GCC_BUILD_DIR) all
+	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) -C $(GCC_BUILD_DIR) \
+		CFLAGS_FOR_TARGET="$(UCLIBC_CFLAGS)" \
+		CXXFLAGS_FOR_TARGET="$(UCLIBC_CXXFLAGS)" \
+		LDFLAGS_FOR_TARGET="$(UCLIBC_LDFLAGS)" \
+		all
 	$(TOUCH) $(STAGEFILES_DIR)/.gcc_compiled
 
 #
@@ -182,7 +215,11 @@ $(STAGEFILES_DIR)/.gcc_compiled: $(STAGEFILES_DIR)/.gcc_configured
 #
 
 $(STAGEFILES_DIR)/.gcc_installed: $(STAGEFILES_DIR)/.gcc_compiled
-	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) -C $(GCC_BUILD_DIR) install
+	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) -C $(GCC_BUILD_DIR) \
+		CFLAGS_FOR_TARGET="$(UCLIBC_CFLAGS)" \
+		CXXFLAGS_FOR_TARGET="$(UCLIBC_CXXFLAGS)" \
+		LDFLAGS_FOR_TARGET="$(UCLIBC_LDFLAGS)" \
+		install
 	$(CP) -Pp '$(PREFIX)/$(UCLIBC_TARGET)/lib/lib'* '$(TARGET_ROOT)/lib'
 	$(TOUCH) $(STAGEFILES_DIR)/.gcc_installed
 
@@ -193,6 +230,7 @@ $(FILELIST_DIR)/gcc.lst: $(STAGEFILES_DIR)/.gcc_installed
 
 clean-gcc:
 	-$(RM) -rf $(GCC_BUILD_DIR)
+	-$(RM) -rf $(GCC_STAGE1_PREFIX)
 	-$(RM) -rf $(GCC_STAGE1_BUILD_DIR)
 	-$(RM) -rf $(GCC_DIR)
 

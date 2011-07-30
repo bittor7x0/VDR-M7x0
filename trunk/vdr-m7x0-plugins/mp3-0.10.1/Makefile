@@ -124,11 +124,11 @@ all: $(ALL)
 	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) $<
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@ $(LDFLAGS)
 	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
 
 libvdr-$(PLUGIN2).so: $(OBJS2)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS2) $(LIBS2) -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS2) $(LIBS2) -o $@ $(LDFLAGS)
 	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
 
 $(I18Npot): $(shell grep -rl '\(tr\|trNOOP\)(\".*\")' *.c $(SYSDIR))

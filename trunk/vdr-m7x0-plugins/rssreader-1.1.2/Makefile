@@ -111,7 +111,7 @@ $(DEPFILE): Makefile
 ### Targets:
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@ $(LDFLAGS)
 ifndef RSSREADER_DEBUG
 	@$(STRIP) $@
 endif

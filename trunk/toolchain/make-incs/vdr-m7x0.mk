@@ -20,6 +20,10 @@
 
 VDR_DEPS = $(BASE_BUILD_STAGEFILE)
 
+ifeq ($(CONFIG_UCLIBC++),y)
+	VDR_DEPS +=  $(UCLIBC++_INSTALLED)
+endif
+
 VDR_SVN_URL := http://svn.assembla.com/svn/VDR-M7x0/trunk/vdr-m7x0
 VDR_DIR := $(BUILD_DIR)/vdr-m7x0
 VDR_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/common
@@ -66,8 +70,14 @@ $(STAGEFILES_DIR)/.vdr_local_downloaded: $(CONFIG_VDR_LOCAL_PATH)/*.c \
 
 $(STAGEFILES_DIR)/.vdr_compiled: $$(VDR_DEPS) \
         $(STAGEFILES_DIR)/.vdr_$(filter local_,_)downloaded
-	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) clean
-	$(UCLIBC_ENV) $(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES+="-DM750S=1") $(MAKE) -C $(VDR_DIR) all
+	$(UCLIBC_ENV_LTO_GC) \
+		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
+		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES="-DM750S=1") \
+		$(MAKE) -C $(VDR_DIR) clean
+	$(UCLIBC_ENV_LTO_GC) \
+		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
+		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES="-DM750S=1") \
+		$(MAKE) -C $(VDR_DIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_compiled
 
 #
@@ -75,8 +85,10 @@ $(STAGEFILES_DIR)/.vdr_compiled: $$(VDR_DEPS) \
 #
 
 $(STAGEFILES_DIR)/.vdr_installed: $(STAGEFILES_DIR)/.vdr_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(VDR_DIR) BINDIR=$(TARGET_ROOT)/usr/bin \
-		 install-bin
+	$(UCLIBC_ENV_LTO_GC) \
+		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
+		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES="-DM750S=1") \
+		$(MAKE) -C $(VDR_DIR) BINDIR=$(TARGET_ROOT)/usr/bin install-bin
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_installed
 
 

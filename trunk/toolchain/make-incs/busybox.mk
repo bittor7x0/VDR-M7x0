@@ -22,7 +22,7 @@
 
 BUSYBOX_DEPS = $(BASE_BUILD_STAGEFILE)
 
-BUSYBOX_VERSION := 1.18.4
+BUSYBOX_VERSION := 1.18.5
 BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/$(BUSYBOX_VERSION)
 
 BUSYBOX_FILE := busybox-$(BUSYBOX_VERSION).tar.bz2
@@ -86,7 +86,12 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 	$(SED) -i -e 's,^# CONFIG_FEATURE_SH_IS_NONE.*,CONFIG_FEATURE_SH_IS_NONE=y,g' \
 		$(BUSYBOX_DIR)/.config
   endif
-	$(UCLIBC_ENV) $(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
+	$(UCLIBC_ENV_LTO) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO) -DLINK_TIME_OPTIMIZATION" \
+		LDFLAGS="-flto -fwhole-program" \
+		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
+		LDLIBS="m" \
+		SKIP_STRIP=y \
 		ARCH=mips oldconfig
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
 
@@ -95,7 +100,11 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 #
 
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
+	$(UCLIBC_ENV_LTO) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO) -DLINK_TIME_OPTIMIZATION" \
+		LDFLAGS="-flto -fwhole-program" \
+		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
+		LDLIBS="m" \
 		SKIP_STRIP=y \
 		ARCH=mips all
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled
@@ -107,7 +116,12 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.bus
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled \
 	$(TOP_DIR)/.config
 	$(FIND) $(TARGET_ROOT) -lname "*busybox" -exec rm \{\} \;
-	$(UCLIBC_ENV) $(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
+	$(UCLIBC_ENV_LTO) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO) -DLINK_TIME_OPTIMIZATION" \
+		LDFLAGS="-flto -fwhole-program" \
+		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
+		LDLIBS="m" \
+		SKIP_STRIP=y \
 		ARCH=mips install
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed
 

@@ -84,6 +84,7 @@ HOSTUTILS_MAKE_INC_DIR := $(TOP_DIR)/hostutils-make-incs
 include .config
 
 UCLIBC_TARGET := $(TARGET)-uclibc
+UCLIBC++_TARGET := $(TARGET)-uclibc++
 ifeq ($(strip $(CONFIG_PREFIX)),)
   PREFIX = $(TOP_DIR)/m7x0_xtc_uclibc_$(HOST_BS)-$(HOST_ARCH)
 else
@@ -98,19 +99,7 @@ HOSTUTILS_BUILD_DIR := $(TOP_DIR)/hostutils.build
 HOSTUTILS_PREFIX := $(PREFIX)
 HOSTUTILS_PREFIX_BIN := $(HOSTUTILS_PREFIX)/bin
 
-
-UCLIBC_CC := $(UCLIBC_TARGET)-gcc
-UCLIBC_CXX := $(UCLIBC_TARGET)-g++
-UCLIBC_AS := $(UCLIBC_TARGET)-as
-UCLIBC_AR := $(UCLIBC_TARGET)-ar
-UCLIBC_CPP := $(UCLIBC_TARGET)-cpp
-UCLIBC_RANLIB := $(UCLIBC_TARGET)-ranlib
-UCLIBC_LD := $(UCLIBC_TARGET)-ld
-UCLIBC_NM := $(UCLIBC_TARGET)-nm
-UCLIBC_STRIP := sstrip
-UCLIBC_OBJCOPY := $(UCLIBC_TARGET)-objcopy
-UCLIBC_CFLAGS := -march=mips2 -mtune=vr4120 -Ofast -msoft-float -mfix-vr4120
-UCLIBC_CXXFLAGS := $(UCLIBC_CFLAGS)
+LIBGCC_S=$(if $(wildcard $(TARGET_ROOT)/lib/libgcc_s.so),-L$(TARGET_ROOT)/lib -lgcc_s,$(wildcard $(GCC_BUILD_DIR)/$(UCLIBC_TARGET)/libgcc/libgcc.a))
 
 ifneq ($(CONFIG_CCACHE),)
   export CCACHE_DIR=$(STAGEFILES_DIR)/.ccache
@@ -119,10 +108,68 @@ else
   UCLIBC_PATH := $(PREFIX_BIN):$(PATH)
 endif
 
+UCLIBC_CC := $(UCLIBC_TARGET)-gcc
+UCLIBC_CXX := $(UCLIBC_TARGET)-g++
+UCLIBC++_CXX := $(UCLIBC++_TARGET)-g++
+UCLIBC++_CXX_STD := $(UCLIBC++_CXX)-std
+UCLIBC_AS := $(UCLIBC_TARGET)-as
+UCLIBC_AR := $(UCLIBC_TARGET)-ar
+UCLIBC_CPP := $(UCLIBC_TARGET)-cpp
+UCLIBC_RANLIB := $(UCLIBC_TARGET)-ranlib
+UCLIBC_LD := $(UCLIBC_TARGET)-ld
+UCLIBC_NM := $(UCLIBC_TARGET)-nm
+UCLIBC_STRIP := sstrip
+UCLIBC_OBJCOPY := $(UCLIBC_TARGET)-objcopy
+
+# Standard flags for any program
+UCLIBC_CFLAGS := -march=mips2 -mtune=vr4120 -mfix-vr4120 -Ofast -msoft-float -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear
+UCLIBC_CXXFLAGS := $(UCLIBC_CFLAGS) -fvisibility-inlines-hidden
+UCLIBC_LDFLAGS := -Wl,-O1 -Wl,--as-needed -Wl,--sort-common -Wl,--sort-section,alignment
+
 UCLIBC_ENV = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
    RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
-   CFLAGS="$(UCLIBC_CFLAGS)" CXXFLAGS="$(UCLIBC_CXXFLAGS)"
+   CFLAGS="$(UCLIBC_CFLAGS)" CXXFLAGS="$(UCLIBC_CXXFLAGS)" LDFLAGS="$(UCLIBC_LDFLAGS)"
+
+# Flags for remove unused sections
+UCLIBC_CFLAGS_GC := $(UCLIBC_CFLAGS) -ffunction-sections -fdata-sections
+UCLIBC_CXXFLAGS_GC := $(UCLIBC_CXXFLAGS) -ffunction-sections -fdata-sections
+UCLIBC_LDFLAGS_GC := $(UCLIBC_LDFLAGS) -Wl,--gc-sections
+
+UCLIBC_ENV_GC = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
+   CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
+   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
+   CFLAGS="$(UCLIBC_CFLAGS_GC)" CXXFLAGS="$(UCLIBC_CXXFLAGS_GC)" LDFLAGS="$(UCLIBC_LDFLAGS_GC)"
+
+# Flags for use Link Time Optimization
+UCLIBC_CFLAGS_LTO := $(UCLIBC_CFLAGS) -flto
+UCLIBC_CXXFLAGS_LTO := $(UCLIBC_CXXFLAGS) -flto
+UCLIBC_LDFLAGS_LTO := $(UCLIBC_LDFLAGS) -flto -fwhole-program
+
+UCLIBC_ENV_LTO = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
+   CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
+   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
+   CFLAGS="$(UCLIBC_CFLAGS_LTO)" CXXFLAGS="$(UCLIBC_CXXFLAGS_LTO)" LDFLAGS="$(UCLIBC_LDFLAGS_LTO)"
+
+# Flags for use Link Time Optimization and remove unused sections
+UCLIBC_CFLAGS_LTO_GC := $(UCLIBC_CFLAGS) -flto -ffunction-sections -fdata-sections
+UCLIBC_CXXFLAGS_LTO_GC := $(UCLIBC_CXXFLAGS) -flto -ffunction-sections -fdata-sections
+UCLIBC_LDFLAGS_LTO_GC := $(UCLIBC_LDFLAGS) -flto -fwhole-program -Wl,--gc-sections
+
+UCLIBC_ENV_LTO_GC = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
+   CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
+   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
+   CFLAGS="$(UCLIBC_CFLAGS_LTO_GC)" CXXFLAGS="$(UCLIBC_CXXFLAGS_LTO_GC)" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC)"
+
+# Flags for shrink size
+UCLIBC_CFLAGS_SIZE := $(UCLIBC_CFLAGS_GC) -mplt -mno-shared -mabicalls -fno-reorder-blocks -fno-tree-ch -fno-caller-saves
+UCLIBC_CXXFLAGS_SIZE := $(UCLIBC_CFLAGS_SIZE) -fvisibility-inlines-hidden
+UCLIBC_LDFLAGS_SIZE := $(UCLIBC_LDFLAGS_GC)
+
+UCLIBC_ENV_SIZE = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
+   CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
+   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
+   CFLAGS="$(UCLIBC_CFLAGS_SIZE)" CXXFLAGS="$(UCLIBC_CXXFLAGS_SIZE)" LDFLAGS="$(UCLIBC_LDFLAGS_SIZE)"
 
 .SECONDEXPANSION:
 .PHONY: all

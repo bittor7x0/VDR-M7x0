@@ -104,7 +104,7 @@ generate-i18n: i18n-template.h $(I18Npot) $(I18Npo) buildutil/pot2i18n.pl
 all: libvdr-$(PLUGIN).so i18n
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@ $(LDFLAGS)
 	@$(STRIP) $@
 	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
 

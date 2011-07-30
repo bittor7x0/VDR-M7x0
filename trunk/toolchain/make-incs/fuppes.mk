@@ -91,7 +91,7 @@ $(STAGEFILES_DIR)/.fuppes_patched: $(STAGEFILES_DIR)/.fuppes_unpacked
 
 $(STAGEFILES_DIR)/.fuppes_configured: $(STAGEFILES_DIR)/.fuppes_patched
 	($(CD) $(FUPPES_DIR) ; $(UCLIBC_ENV) \
-		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib -lpthread -lrt -ldl" \
+		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib -lpthread -lrt -ldl" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(FUPPES_DIR)/configure \

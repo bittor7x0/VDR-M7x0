@@ -76,7 +76,7 @@ all: libvdr-$(PLUGIN).so
 	@install README ../../man/$(PLUGIN).man
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@ $(LDFLAGS)
 	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 dist: clean

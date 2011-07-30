@@ -58,6 +58,8 @@ VERSION = $(shell grep 'static const char VERSION\[\] *=' $(PLUGIN).c | awk '{ p
 
 CXX      ?= g++
 CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual
+t_CXXFLAGS := $(CXXFLAGS)
+CXXFLAGS = $(filter-out -fno-exceptions,$(t_CXXFLAGS))
 
 ### The directory environment:
 
@@ -164,7 +166,7 @@ $(DEPFILE): Makefile
 all: libvdr-$(PLUGIN).so
 
 libvdr-$(PLUGIN).so: $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@ $(LDFLAGS)
 ifndef SKINENIGMA_DEBUG
 	@$(STRIP) $@
 endif

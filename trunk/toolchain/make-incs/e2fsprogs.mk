@@ -75,7 +75,7 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
                                          $$(E2FSPROGS_DEPS)
 	-$(RM) -rf $(E2FSPROGS_BUILD_DIR)
 	$(MKDIR) -p $(E2FSPROGS_BUILD_DIR)
-	($(CD) $(E2FSPROGS_BUILD_DIR) ; $(UCLIBC_ENV) \
+	($(CD) $(E2FSPROGS_BUILD_DIR) ; $(UCLIBC_ENV_SIZE) \
 		$(E2FSPROGS_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--sbindir=$(TARGET_ROOT)/sbin \
@@ -98,7 +98,7 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
 #
 
 $(STAGEFILES_DIR)/.e2fsprogs_compiled: $(STAGEFILES_DIR)/.e2fsprogs_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) all
+	$(UCLIBC_ENV_SIZE) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_compiled
 
 #
@@ -106,7 +106,7 @@ $(STAGEFILES_DIR)/.e2fsprogs_compiled: $(STAGEFILES_DIR)/.e2fsprogs_configured
 #
 
 $(STAGEFILES_DIR)/.e2fsprogs_installed: $(STAGEFILES_DIR)/.e2fsprogs_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) install
+	$(UCLIBC_ENV_SIZE) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_installed
 
 

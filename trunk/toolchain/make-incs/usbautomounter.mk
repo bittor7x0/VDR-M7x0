@@ -49,7 +49,7 @@ $(STAGEFILES_DIR)/.usbautomounter_copied: $(wildcard $(USBAUTOMOUNTER_DIR)/*) \
 #
 
 $(STAGEFILES_DIR)/.usbautomounter_compiled: $(STAGEFILES_DIR)/.usbautomounter_copied
-	$(UCLIBC_ENV) $(MAKE) -C $(USBAUTOMOUNTER_BUILDDIR) $(UCLIBC_ENV) \
+	$(UCLIBC_ENV_GC) $(MAKE) -C $(USBAUTOMOUNTER_BUILDDIR) $(UCLIBC_ENV_GC) \
 		PREFIX=$(TARGET_ROOT) all
 	$(TOUCH) $(STAGEFILES_DIR)/.usbautomounter_compiled
 
@@ -58,7 +58,7 @@ $(STAGEFILES_DIR)/.usbautomounter_compiled: $(STAGEFILES_DIR)/.usbautomounter_co
 #
 
 $(STAGEFILES_DIR)/.usbautomounter_installed: $(STAGEFILES_DIR)/.usbautomounter_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(USBAUTOMOUNTER_BUILDDIR) $(UCLIBC_ENV) \
+	$(UCLIBC_ENV_GC) $(MAKE) -C $(USBAUTOMOUNTER_BUILDDIR) $(UCLIBC_ENV_GC) \
 		PREFIX=$(TARGET_ROOT) install
 	$(TOUCH) $(STAGEFILES_DIR)/.usbautomounter_installed
 

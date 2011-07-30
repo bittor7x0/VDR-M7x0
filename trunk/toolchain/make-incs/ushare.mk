@@ -81,7 +81,7 @@ endif
 
 $(STAGEFILES_DIR)/.ushare_configured: $(STAGEFILES_DIR)/.ushare_patched
 	($(CD) $(USHARE_DIR) ; $(UCLIBC_ENV) \
-		LDFLAGS="-L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
+		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(USHARE_DIR)/configure \

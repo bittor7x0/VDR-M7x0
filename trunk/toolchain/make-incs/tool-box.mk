@@ -48,7 +48,7 @@ $(STAGEFILES_DIR)/.tool-box_copied: $(wildcard $(TOOL-BOX_DIR)/*) \
 #
 
 $(STAGEFILES_DIR)/.tool-box_compiled: $(STAGEFILES_DIR)/.tool-box_copied
-	$(UCLIBC_ENV) $(MAKE) -C $(TOOL-BOX_BUILDDIR) $(UCLIBC_ENV) \
+	$(UCLIBC_ENV_GC) $(MAKE) -C $(TOOL-BOX_BUILDDIR) $(UCLIBC_ENV_GC) \
 		PREFIX=$(TARGET_ROOT)/usr all
 	$(TOUCH) $(STAGEFILES_DIR)/.tool-box_compiled
 
@@ -57,7 +57,7 @@ $(STAGEFILES_DIR)/.tool-box_compiled: $(STAGEFILES_DIR)/.tool-box_copied
 #
 
 $(STAGEFILES_DIR)/.tool-box_installed: $(STAGEFILES_DIR)/.tool-box_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(TOOL-BOX_BUILDDIR) $(UCLIBC_ENV) \
+	$(UCLIBC_ENV_GC) $(MAKE) -C $(TOOL-BOX_BUILDDIR) $(UCLIBC_ENV_GC) \
 		PREFIX=$(TARGET_ROOT)/usr install
 	$(TOUCH) $(STAGEFILES_DIR)/.tool-box_installed
 

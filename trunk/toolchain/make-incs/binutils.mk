@@ -20,6 +20,9 @@
 # The project's page is at http://www.open7x0.org
 #
 
+# Put dependencies here
+BINUTILS_DEPS = $(GMP_HOSTINSTALLED) $(CLOOG_HOSTINSTALLED) $(PPL_HOSTINSTALLED)
+
 BINUTILS_VERSION := 2.21
 BINUTILS_PATCHES_DIR := $(PATCHES_DIR)/binutils/$(BINUTILS_VERSION)
 
@@ -50,7 +53,8 @@ $(BINUTILS_DLFILE): $(TC_INIT_RULE)
 #
 
 $(STAGEFILES_DIR)/.binutils_unpacked: $(BINUTILS_DLFILE) \
-                                 $(wildcard $(BINUTILS_PATCHES_DIR)/*.patch)
+                                 $(wildcard $(BINUTILS_PATCHES_DIR)/*.patch) \
+                                 $$(BINUTILS_DEPS)
 	-$(RM) -rf $(BINUTILS_DIR)
 	$(BZCAT) $(BINUTILS_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.binutils_unpacked
@@ -63,7 +67,7 @@ $(STAGEFILES_DIR)/.binutils_patched: $(STAGEFILES_DIR)/.binutils_unpacked
 	$(call patch_package, $(BINUTILS_DIR), $(BINUTILS_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.binutils_patched
 #
-# configure binutils
+# configure binutils (drop runtime libstdc++ dependency to avoid C++ ABI breakage)
 #
 
 $(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched
@@ -74,6 +78,12 @@ $(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched
 			--prefix=$(PREFIX) \
 			--with-sysroot=$(TARGET_ROOT) \
 			--target=$(UCLIBC_TARGET) \
+			--with-gmp=$(PREFIX) \
+			--with-ppl=$(PREFIX) \
+			--with-cloog=$(PREFIX) \
+			--disable-ppl-version-check \
+			--disable-cloog-version-check \
+			--with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' \
 			--disable-werror \
 			--disable-nls )
 	$(TOUCH) $(STAGEFILES_DIR)/.binutils_configured
