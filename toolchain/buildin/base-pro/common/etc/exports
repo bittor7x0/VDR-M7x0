@@ -1,0 +1,5 @@
+# Sample exports file.
+# You can read man page about it:
+# http://linux.die.net/man/5/exports
+
+#/var/media	*(rw,sync,no_subtree_check)

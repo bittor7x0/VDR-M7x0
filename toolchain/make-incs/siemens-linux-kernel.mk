@@ -75,7 +75,8 @@ SIEMENS-LINUX-KERNEL_MODLST := \
 
 ifeq ($(CONFIG_FW_VERSION),pro)
 	SIEMENS-LINUX-KERNEL_MODLST += \
-		lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o
+		lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o \
+		lib/modules/2.4.21-xfs/kernel/fs/nfsd/nfsd.o
 
 	ifeq ($(CONFIG_PPTPD),y)
 	SIEMENS-LINUX-KERNEL_MODLST += \
@@ -99,7 +100,8 @@ SIEMENS-LINUX-KERNEL_DIRLST := \
 ifeq ($(CONFIG_FW_VERSION),pro)
 	SIEMENS-LINUX-KERNEL_DIRLST += \
 		lib/modules/2.4.21-xfs/kernel/fs \
-		lib/modules/2.4.21-xfs/kernel/fs/cifs
+		lib/modules/2.4.21-xfs/kernel/fs/cifs \
+		lib/modules/2.4.21-xfs/kernel/fs/nfsd
 
 	ifeq ($(CONFIG_PPTPD),y)
 	SIEMENS-LINUX-KERNEL_DIRLST += \

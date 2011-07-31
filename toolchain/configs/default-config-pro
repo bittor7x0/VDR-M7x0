@@ -208,15 +208,15 @@ CONFIG_NTPCLIENT = y
 
 # nfs-utils: Provides a daemon for the kernel NFS server and related tools
 # URL: http://nfs.sourceforge.net/
-# CONFIG_NFS-UTILS is not set
+CONFIG_NFS-UTILS = y
 
 # portmap: A server that converts RPC program numbers into DARPA protocol port numbers
 # URL: http://linux.die.net/man/8/portmap
-# CONFIG_PORTMAP is not set
+CONFIG_PORTMAP = y
 
 # TCP Wrappers: IP packet filtering facility
 # URL: http://es.wikipedia.org/wiki/TCP_Wrapper
-# CONFIG_TCP_WRAPPERS is not set
+CONFIG_TCP_WRAPPERS = y
 
 # mini_sendmail: Accept email on behalf of real sendmail
 # URL: http://www.acme.com/software/mini_sendmail/
