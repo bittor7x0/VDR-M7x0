@@ -73,7 +73,7 @@ $(STAGEFILES_DIR)/.nfs-utils_patched: $(STAGEFILES_DIR)/.nfs-utils_unpacked
 #
 
 $(STAGEFILES_DIR)/.nfs-utils_configured: $(STAGEFILES_DIR)/.nfs-utils_patched
-	($(CD) $(NFS-UTILS_DIR) ; $(UCLIBC_ENV) \
+	($(CD) $(NFS-UTILS_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		CC_FOR_BUILD=$(UCLIBC_CC) \
 		$(NFS-UTILS_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
@@ -90,9 +90,9 @@ $(STAGEFILES_DIR)/.nfs-utils_configured: $(STAGEFILES_DIR)/.nfs-utils_patched
 #
 
 $(STAGEFILES_DIR)/.nfs-utils_compiled: $(STAGEFILES_DIR)/.nfs-utils_configured
-	$(UCLIBC_ENV) \
+	$(UCLIBC_ENV_LTO_GC) \
 	CC_FOR_BUILD=$(UCLIBC_CC) \
-	OPT="$(UCLIBC_CFLAGS) -I$(TARGET_ROOT)/lib " \
+	OPT="$(UCLIBC_CFLAGS_LTO_GC) -I$(TARGET_ROOT)/lib " \
 	INSTALLSUID="install -m 4755" \
 	DESTDIR="$(TARGET_ROOT)" \
 	$(MAKE) -C $(NFS-UTILS_DIR)

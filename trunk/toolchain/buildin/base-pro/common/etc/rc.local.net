@@ -30,6 +30,18 @@ if [ X"${do_net_mount}" != X"NO" ] ; then
     /bin/ash /etc/rc.netmount &
 fi
 
+if [ X"${nfsd}" != X"NO" ] ; then
+    echo -n ' nfsd'
+    /sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/nfsd/nfsd.o
+    mkdir -p /var/lib/nfs/sm
+    touch /var/lib/nfs/rmtab
+    /usr/sbin/portmap
+    /usr/sbin/rpc.statd -p 32778 -o 32779
+    /usr/sbin/exportfs -r
+    /usr/sbin/rpc.nfsd
+    /usr/sbin/rpc.mountd -p 32780
+fi
+
 if [ X"${inetd}" != X"NO" ]; then
     echo -n ' starting inetd';
 

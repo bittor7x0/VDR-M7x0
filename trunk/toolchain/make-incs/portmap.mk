@@ -73,9 +73,9 @@ $(STAGEFILES_DIR)/.portmap_patched: $(STAGEFILES_DIR)/.portmap_unpacked
 #
 
 $(STAGEFILES_DIR)/.portmap_compiled: $(STAGEFILES_DIR)/.portmap_patched
-	$(UCLIBC_ENV) $(MAKE) \
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) \
 		-C $(PORTMAP_DIR) \
-		CFLAGS="$(UCLIBC_CFLAGS) -I$(TARGET_ROOT)/usr/include -I$(TARGET_ROOT)/include -DHOSTS_ACCESS -DFACILITY=LOG_DAEMON -DIGNORE_SIGCHLD" \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -I$(TARGET_ROOT)/usr/include -I$(TARGET_ROOT)/include -DHOSTS_ACCESS -DFACILITY=LOG_DAEMON -DIGNORE_SIGCHLD" \
 		RPCUSER="nobody" \
 		WRAP_LIB="-L$(TARGET_ROOT)/usr/lib -L$(TARGET_ROOT)/lib -lwrap" \
 		all

@@ -8,6 +8,15 @@ echo -n 'stopping local stuff:'
 
 # put optional stuff before
 
+if [ X"${nfsd}" != X"NO" ] ; then
+    echo -n ' umount nfsd'
+    /usr/bin/killall -15 rpc.mountd
+    /usr/sbin/rpc.nfsd 0
+    /usr/sbin/exportfs -au
+    while read pid; do /bin/kill -15 $pid; done < /var/run/rpc.statd.pid
+    /usr/bin/killall -15 portmap
+fi
+
 for bpath in ${bind_paths} ; do
         echo -n " Umount binding ${bpath}"
         /bin/umount ${bpath} || /bin/umount -l ${bpath}
