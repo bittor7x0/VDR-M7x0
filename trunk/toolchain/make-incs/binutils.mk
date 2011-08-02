@@ -67,7 +67,7 @@ $(STAGEFILES_DIR)/.binutils_patched: $(STAGEFILES_DIR)/.binutils_unpacked
 	$(call patch_package, $(BINUTILS_DIR), $(BINUTILS_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.binutils_patched
 #
-# configure binutils (drop runtime libstdc++ dependency to avoid C++ ABI breakage)
+# configure binutils
 #
 
 $(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched
@@ -83,7 +83,7 @@ $(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched
 			--with-cloog=$(PREFIX) \
 			--disable-ppl-version-check \
 			--disable-cloog-version-check \
-			--with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' \
+			--with-host-libstdcxx='-lstdc++' \
 			--disable-werror \
 			--disable-nls )
 	$(TOUCH) $(STAGEFILES_DIR)/.binutils_configured

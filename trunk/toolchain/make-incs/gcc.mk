@@ -183,7 +183,7 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-libelf=$(PREFIX) \
 			--with-ppl=$(PREFIX) \
 			--with-cloog=$(PREFIX) \
-			--with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' \
+			--with-host-libstdcxx='-lstdc++' \
 			--disable-libstdcxx-pch \
 			--disable-decimal-float \
 			--disable-libgomp \
