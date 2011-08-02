@@ -70,7 +70,7 @@ $(STAGEFILES_DIR)/.cloog_host_configured: $(STAGEFILES_DIR)/.cloog_host_patched
 			--prefix=$(PREFIX) \
 			--enable-static \
 			--disable-shared \
-			--with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' \
+			--with-host-libstdcxx='-lstdc++' \
 			--with-ppl=$(PREFIX) \
 			--with-gmp=$(PREFIX))
 	$(TOUCH) $(STAGEFILES_DIR)/.cloog_host_configured
