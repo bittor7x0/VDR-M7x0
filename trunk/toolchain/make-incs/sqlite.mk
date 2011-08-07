@@ -25,6 +25,7 @@ SQLITE_DLFILE := $(DOWNLOAD_DIR)/$(SQLITE_FILE)
 SQLITE_URL := http://www.sqlite.org/sqlite-amalgamation-$(SQLITE_VERSION).tar.gz
 SQLITE_DIR := $(BUILD_DIR)/sqlite-$(SQLITE_VERSION)
 SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-$(SQLITE_VERSION)
+SQLITE_CFLAGS := -fno-fast-math -fno-exceptions -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_OMIT_UTF16
 
 SQLITE_INSTALLED = $(STAGEFILES_DIR)/.sqlite_host_installed $(STAGEFILES_DIR)/.sqlite_installed
 
@@ -72,7 +73,13 @@ $(STAGEFILES_DIR)/.sqlite_patched: $(STAGEFILES_DIR)/.sqlite_unpacked
 $(STAGEFILES_DIR)/.sqlite_host_configured: $(STAGEFILES_DIR)/.sqlite_patched
 	($(CD) $(SQLITE_HOSTDIR) ; \
 		$(SQLITE_HOSTDIR)/configure \
-			--prefix=$(HOSTUTILS_PREFIX))
+			CFLAGS="$(CFLAGS) $(SQLITE_CFLAGS)" \
+			--prefix=$(HOSTUTILS_PREFIX) \
+			--disable-shared \
+			--enable-static \
+			--disable-readline \
+			--enable-threadsafe \
+			--disable-dynamic-extensions)
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_configured
 
 #
@@ -80,7 +87,9 @@ $(STAGEFILES_DIR)/.sqlite_host_configured: $(STAGEFILES_DIR)/.sqlite_patched
 #
 
 $(STAGEFILES_DIR)/.sqlite_host_compiled: $(STAGEFILES_DIR)/.sqlite_host_configured
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(SQLITE_HOSTDIR) all
+	$(MAKE) -C $(SQLITE_HOSTDIR) \
+		CFLAGS="$(CFLAGS) $(SQLITE_CFLAGS)" \
+		all
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_compiled
 
 #
@@ -88,7 +97,9 @@ $(STAGEFILES_DIR)/.sqlite_host_compiled: $(STAGEFILES_DIR)/.sqlite_host_configur
 #
 
 $(STAGEFILES_DIR)/.sqlite_host_installed: $(STAGEFILES_DIR)/.sqlite_host_compiled
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(SQLITE_HOSTDIR) install
+	$(MAKE) -C $(SQLITE_HOSTDIR) \
+		CFLAGS="$(CFLAGS) $(SQLITE_CFLAGS)" \
+		install
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_installed
 
 #
@@ -96,13 +107,17 @@ $(STAGEFILES_DIR)/.sqlite_host_installed: $(STAGEFILES_DIR)/.sqlite_host_compile
 #
 
 $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
-	($(CD) $(SQLITE_DIR) ; $(UCLIBC_ENV_LTO_GC) \
-		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -fno-fast-math" \
+	($(CD) $(SQLITE_DIR) ; \
+		$(UCLIBC_ENV_LTO_GC) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(SQLITE_CFLAGS)" \
 		$(SQLITE_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--enable-shared \
-			--enable-static)
+			--enable-static \
+			--disable-readline \
+			--enable-threadsafe \
+			--disable-dynamic-extensions)
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_configured
 
 #
@@ -111,7 +126,8 @@ $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 
 $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
 	$(MAKE) -C $(SQLITE_DIR) \
-		$(UCLIBC_ENV_LTO_GC) CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -fno-fast-math" \
+		$(UCLIBC_ENV_LTO_GC) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(SQLITE_CFLAGS)" \
 		all
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_compiled
 
@@ -121,7 +137,8 @@ $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
 
 $(STAGEFILES_DIR)/.sqlite_installed: $(STAGEFILES_DIR)/.sqlite_compiled
 	$(MAKE) -C $(SQLITE_DIR) \
-		$(UCLIBC_ENV_LTO_GC) CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -fno-fast-math" \
+		$(UCLIBC_ENV_LTO_GC) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(SQLITE_CFLAGS)" \
 		install
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_installed
 
@@ -132,13 +149,26 @@ $(FILELIST_DIR)/sqlite.lst: $(STAGEFILES_DIR)/.sqlite_host_installed \
 
 .PHONY: clean-sqlite distclean-sqlite
 
+clean-sqlite-host:
+	-$(RM) -rf $(SQLITE_HOSTDIR)
+
 clean-sqlite:
 	-$(RM) -rf $(SQLITE_DIR)
-	-$(RM) -rf $(SQLITE_HOSTDIR)
 
 #
 # clean everthing else
 #
+
+distclean-sqlite-host:
+	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_unpacked
+	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_patched
+	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_host_configured
+	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_host_compiled
+	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_host_installed
+ifeq ($(DISTCLEAN_DLFILE),y)
+	-$(RM) -rf $(SQLITE_DLFILE)
+endif
+
 
 distclean-sqlite:
 	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_unpacked
@@ -146,9 +176,6 @@ distclean-sqlite:
 	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_configured
 	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_installed
-	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_host_configured
-	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_host_compiled
-	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_host_installed
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -rf $(SQLITE_DLFILE)
 endif

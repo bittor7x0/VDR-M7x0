@@ -70,11 +70,11 @@ $(STAGEFILES_DIR)/.vdr_local_downloaded: $(CONFIG_VDR_LOCAL_PATH)/*.c \
 
 $(STAGEFILES_DIR)/.vdr_compiled: $$(VDR_DEPS) \
         $(STAGEFILES_DIR)/.vdr_$(filter local_,_)downloaded
-	$(UCLIBC_ENV_LTO_GC) \
+	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES="-DM750S=1") \
 		$(MAKE) -C $(VDR_DIR) clean
-	$(UCLIBC_ENV_LTO_GC) \
+	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES="-DM750S=1") \
 		$(MAKE) -C $(VDR_DIR) all
@@ -85,7 +85,7 @@ $(STAGEFILES_DIR)/.vdr_compiled: $$(VDR_DEPS) \
 #
 
 $(STAGEFILES_DIR)/.vdr_installed: $(STAGEFILES_DIR)/.vdr_compiled
-	$(UCLIBC_ENV_LTO_GC) \
+	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES="-DM750S=1") \
 		$(MAKE) -C $(VDR_DIR) BINDIR=$(TARGET_ROOT)/usr/bin install-bin

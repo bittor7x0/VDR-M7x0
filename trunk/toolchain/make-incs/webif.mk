@@ -54,8 +54,8 @@ $(STAGEFILES_DIR)/.webapp_downloaded: $(TC_INIT_RULE)
 #
 $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF_DEPS)
 	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
-	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) >> $(WEBIF_TC_FILE)
-	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_SIZE) >> $(WEBIF_TC_FILE)
+	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) -flto >> $(WEBIF_TC_FILE)
+	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_SIZE) -flto >> $(WEBIF_TC_FILE)
 	$(ECHO) AR = $(UCLIBC_AR) >> $(WEBIF_TC_FILE)
 	$(ECHO) RANLIB = $(UCLIBC_RANLIB) >> $(WEBIF_TC_FILE)
 	$(ECHO) LD = $(UCLIBC_LD) >> $(WEBIF_TC_FILE)
@@ -65,7 +65,7 @@ $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF
 	$(CD) $(WEBIF_DIR) && \
 		env PATH="$(PREFIX_BIN):$(PATH)" $(MAKE) clean && \
 		env PATH="$(PREFIX_BIN):$(PATH)" KLONE_CUSTOM_TC=$(WEBIF_TC_FILE) \
-		WEBAPP_LDFLAGS="$(UCLIBC_LDFLAGS_SIZE)" $(MAKE)
+		WEBAPP_LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto -fwhole-program" $(MAKE)
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_compiled
 
 #
