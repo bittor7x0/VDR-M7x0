@@ -103,7 +103,7 @@ $(STAGEFILES_DIR)/.mediatomb_patched: $(STAGEFILES_DIR)/.mediatomb_unpacked
 
 $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
 	($(CD) $(MEDIATOMB_DIR) ; $(UCLIBC_ENV_LTO_GC) \
-		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
+		LDFLAGS="-flto -fwhole-program -Wl,--gc-sections -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(MEDIATOMB_DIR)/configure \
