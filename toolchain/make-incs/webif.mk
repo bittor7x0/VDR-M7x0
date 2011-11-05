@@ -17,6 +17,16 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 WEBIF_DEPS = $(BASE_BUILD_STAGEFILE)
 
+ifeq ($(CONFIG_CSSOPTIMIZER),y)
+	WEBIF_DEPS +=  $(CSSOPTIMIZER_BIN)
+endif
+ifeq ($(CONFIG_CLOSURE_COMPILER),y)
+	WEBIF_DEPS +=  $(CLOSURE_COMPILER_JAR)
+endif
+ifeq ($(CONFIG_PNGOUT),y)
+	WEBIF_DEPS +=  $(PNGOUT_BIN)
+endif
+
 WEBIF_DIR := $(BUILD_DIR)/webif
 WEBIF_SVN := http://svn.assembla.com/svn/VDR-M7x0/trunk/webif
 WEBIF_TC_FILE := $(WEBIF_DIR)/linux-mips-uclibc.tc
@@ -53,6 +63,15 @@ $(STAGEFILES_DIR)/.webapp_downloaded: $(TC_INIT_RULE)
 # compile webif
 #
 $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF_DEPS)
+ifeq ($(CONFIG_CSSOPTIMIZER),y)
+	$(call css_shrink_dir, $(WEBIF_DIR)/webapp/www/css)
+endif
+ifeq ($(CONFIG_CLOSURE_COMPILER),y)
+	$(call js_shrink_dir, $(WEBIF_DIR)/webapp/www/js)
+endif
+ifeq ($(CONFIG_PNGOUT),y)
+	$(call png_shrink_dir, $(WEBIF_DIR)/webapp/www/css/images)
+endif
 	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
 	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) -flto >> $(WEBIF_TC_FILE)
 	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_SIZE) -flto >> $(WEBIF_TC_FILE)
@@ -86,6 +105,9 @@ $(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled $(LOGOS_DL
 	-$(RM) -rf $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
 	$(MKDIR) -p $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images
 	$(TAR) -C $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images -zf $(LOGOS_DLFILE)
+ifeq ($(CONFIG_PNGOUT),y)
+	$(call png_shrink_dir, $(PRG_CONFIGS_DIR)/vdr-m7x0/common/etc/webif/www/images)
+endif
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_installed
 
 $(FILELIST_DIR)/webif.lst: $(STAGEFILES_DIR)/.webif_installed
