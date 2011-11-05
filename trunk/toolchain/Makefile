@@ -231,6 +231,32 @@ define patch_package
 	done
 endef
 
+# optimizes CSS code from a given css-dir. all *.css files are reduced with cssoptimizer
+# usage: $(call css_shrink_dir, <css_dir>)
+define css_shrink_dir
+	for css_file in `$(FIND) $(1) -type f -iname '*.css' | $(SORT)` ; do \
+		$(CSSOPTIMIZER_BIN) -lo $$css_file > $$css_file.opt ; \
+		$(MV) $$css_file.opt $$css_file ; \
+	done
+endef
+
+# optimizes javascript code from a given js-dir. all *.js files are reduced with Closure Compiler
+# usage: $(call js_shrink_dir, <js_dir>)
+define js_shrink_dir
+	for js_file in `$(FIND) $(1) -type f -iname '*.js' | $(SORT)` ; do \
+		$(shell which java) -jar $(CLOSURE_COMPILER_JAR) --js $$js_file --js_output_file $$js_file.opt ; \
+		$(MV) $$js_file.opt $$js_file ; \
+	done
+endef
+
+# optimizes png images from a given png-dir. all *.png files are reduced with pngout
+# usage: $(call png_shrink_dir, <png_dir>)
+define png_shrink_dir
+	for png_file in `$(FIND) $(1) -type f -iname '*.png' | $(SORT)` ; do \
+		$(PNGOUT_BIN) $$png_file -s0 -k0 -y ; \
+	done
+endef
+
 BASE_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.base_build
 PACKS_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.packs_build
 POST_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.post_build

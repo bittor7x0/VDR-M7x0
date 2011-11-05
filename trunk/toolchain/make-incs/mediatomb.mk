@@ -23,6 +23,9 @@ endif
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 MEDIATOMB_DEPS = $(BASE_BUILD_STAGEFILE) $(SQLITE_INSTALLED) $(EXPAT_INSTALLED)
 
+ifeq ($(CONFIG_UCLIBC++),y)
+	MEDIATOMB_DEPS +=  $(UCLIBC++_INSTALLED)
+endif
 ifeq ($(CONFIG_ZLIB),y)
 	MEDIATOMB_DEPS +=  $(ZLIB_INSTALLED)
 endif
@@ -49,6 +52,15 @@ ifeq ($(CONFIG_LIBJS),y)
 endif
 ifeq ($(CONFIG_LIBMAGIC),y)
 	MEDIATOMB_DEPS +=  $(LIBMAGIC_INSTALLED)
+endif
+ifeq ($(CONFIG_CSSOPTIMIZER),y)
+	MEDIATOMB_DEPS +=  $(CSSOPTIMIZER_BIN)
+endif
+ifeq ($(CONFIG_CLOSURE_COMPILER),y)
+	MEDIATOMB_DEPS +=  $(CLOSURE_COMPILER_JAR)
+endif
+ifeq ($(CONFIG_PNGOUT),y)
+	MEDIATOMB_DEPS +=  $(PNGOUT_BIN)
 endif
 
 MEDIATOMB_VERSION := 0.12.1
@@ -103,6 +115,7 @@ $(STAGEFILES_DIR)/.mediatomb_patched: $(STAGEFILES_DIR)/.mediatomb_unpacked
 
 $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
 	($(CD) $(MEDIATOMB_DIR) ; $(UCLIBC_ENV_LTO_GC) \
+		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		LDFLAGS="-flto -fwhole-program -Wl,--gc-sections -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
@@ -140,7 +153,9 @@ $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
 #
 
 $(STAGEFILES_DIR)/.mediatomb_compiled: $(STAGEFILES_DIR)/.mediatomb_configured
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(MEDIATOMB_DIR)
+	$(UCLIBC_ENV_LTO_GC) \
+	$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
+	$(MAKE) -C $(MEDIATOMB_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.mediatomb_compiled
 
 #
@@ -148,12 +163,24 @@ $(STAGEFILES_DIR)/.mediatomb_compiled: $(STAGEFILES_DIR)/.mediatomb_configured
 #
 
 $(STAGEFILES_DIR)/.mediatomb_installed: $(STAGEFILES_DIR)/.mediatomb_compiled
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(MEDIATOMB_DIR) install
+	$(UCLIBC_ENV_LTO_GC) \
+	$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
+	$(MAKE) -C $(MEDIATOMB_DIR) install
 	-$(RM) -rf $(TARGET_ROOT)/etc/mediatomb
 	$(MV) $(TARGET_ROOT)/usr/share/mediatomb $(TARGET_ROOT)/etc
 	$(CAT) $(TARGET_ROOT)/etc/mediatomb/sqlite3.sql | \
 		$(HOSTUTILS_PREFIX_BIN)/sqlite3 \
 		$(TARGET_ROOT)/etc/mediatomb/mediatomb.db
+ifeq ($(CONFIG_CSSOPTIMIZER),y)
+	$(call css_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web)
+endif
+ifeq ($(CONFIG_CLOSURE_COMPILER),y)
+	$(call js_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/js)
+	$(call js_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web/js)
+endif
+ifeq ($(CONFIG_PNGOUT),y)
+	$(call png_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web/icons)
+endif
 	$(TOUCH) $(STAGEFILES_DIR)/.mediatomb_installed
 
 

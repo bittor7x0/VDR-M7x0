@@ -148,6 +148,25 @@ CONFIG_O7O_FLASHER = y
 # CONFIG_GDB is not set
 
 
+#################
+#               #
+#  Utils (Host) #
+#               #
+#################
+
+# CSS Optimizer: Optimizes CSS code stripping unneeded characters
+# URL: http://mabblog.com/cssoptimizer/
+CONFIG_CSSOPTIMIZER = y
+
+# Closure Compiler: Tool for making JavaScript download and run faster
+# URL: http://code.google.com/closure/compiler/
+CONFIG_CLOSURE_COMPILER = y
+
+# PNGOUT: Optimizes the size of .PNG files losslessly
+# URL: http://www.jonof.id.au/kenutils
+CONFIG_PNGOUT = y
+
+
 #############
 #           #
 #  Network  #
