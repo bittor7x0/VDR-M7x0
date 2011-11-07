@@ -108,7 +108,6 @@ bool cSelectCommand::Execute(cOsdMenu* Menu, char* DestinationFile, char* Curren
 // --- cMenuEditFileItem ------------------------------------------------------  
 
 eOSState cMenuEditFileItem::ProcessKey(eKeys Key){
-  	debug("cMenuEditFileItem::ProcessKey [%s]", value);
   	switch(Key) {  		
   		case kLeft: 
   		case kRight:			            								  			
