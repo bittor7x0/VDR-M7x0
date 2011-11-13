@@ -105,13 +105,13 @@ cOsdMenu::~cOsdMenu()
 
 const char *cOsdMenu::hk(const char *s)
 {
-  static char buffer[64];
+  static cString buffer;
   if (s && hasHotkeys) {
      if (digit == 0 && '1' <= *s && *s <= '9' && *(s + 1) == ' ')
         digit = -1; // prevents automatic hotkeys - input already has them
      if (digit >= 0) {
         digit++;
-        snprintf(buffer, sizeof(buffer), " %2d%s %s", digit, (digit > 9) ? "" : " ", s);
+        buffer = cString::sprintf(" %2d%s %s", digit, (digit > 9) ? "" : " ", s);
         s = buffer;
         }
      }

@@ -3561,19 +3561,19 @@ const tI18nPhrase Phrases[] = {
     "", // Romaneste
     "", // Magyar
     "", // Català
-#if VDRVERSNUM > 10302                                                         
+#if VDRVERSNUM > 10302
     "", // Russian
-#if VDRVERSNUM > 10307                                                         
+#if VDRVERSNUM > 10307
     "", // Hrvatski
-#if VDRVERSNUM > 10313                                                         
+#if VDRVERSNUM > 10313
     "", // Eesti
-#if VDRVERSNUM > 10316                                                         
+#if VDRVERSNUM > 10316
     "", // Dansk
 #endif
 #endif
 #endif
 #endif
-  },  
+  },
   { "Setup.OSD$Left",
     "Links",
     "Levo",
@@ -3959,6 +3959,226 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "Mostrar directorios en programaciones",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Edit folder",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Editar directorio",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "New folder",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Nuevo directorio",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Sub folder",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Sub directorio",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Folder name already exists!",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "¡Ese nombre de directorio ya existe!",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Folder name must not contain '%c'!",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "¡El nombre del directorio no puede contener '%c'!",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Button$Select",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Seleccionar",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Delete folder and all sub folders?",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "¿Borrar directorio y todos sub directorios?",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Delete folder?",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "¿Borrar directorio?",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Button$Folder",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Directorio",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Select folder",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Seleccionar directorio",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -9683,28 +9903,6 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
   },
-  { "Directory",
-    "Verzeichnis",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "Dossier",
-    "",//TODO
-    "Hakemisto",
-    "",//TODO
-    "Directorio",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",
-    "",//TODO
-    "",//TODO
-  },
   { "Date",
     "Datum",
     "",//TODO
@@ -9771,8 +9969,9 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
   },
-  { "est. bit-rate",
-    "Bitrate ca.",
+/* M7X0 TODO: How detect if a record is in PES or TS format?
+  { "Format",
+    "Format",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -9781,29 +9980,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
     "",//TODO
-    "Bitrate est.",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-  },
-  { "%s:\t%.2f MBit/s (Video+Audio)",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "%s:\t%.2f MBit/s (Vídeo+Audio)",
+    "Formato",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -9815,6 +9992,51 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
   },
+  { "PES",
+    "PES",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "PES",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+  { "TS",
+    "TS",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "TS",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
+*/
   { "Delete marks information?",
     "Marks löschen?",
     "",//TODO
@@ -9825,7 +10047,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "Poista tallenteen merkinnät?",
     "",//TODO
-    "¿Borrar marcas de información?",
+    "¿Borrar marcas de edición?",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -9847,7 +10069,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "Poista tallenteen paluutiedot?",
     "",//TODO
-    "¿Borrar información de continuación?",
+    "¿Borrar marca de continuación?",
     "",//TODO
     "",//TODO
     "",//TODO
@@ -9856,94 +10078,6 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
     "",//TODO
-    "",//TODO
-    "",//TODO
-  },
-  { "Rename$Up",
-    "Höher",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "Haut",
-    "",//TODO
-    "Ylemmäs",
-    "",//TODO
-    "Arriba",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "Üles",
-    "",//TODO
-    "",//TODO
-  },
-  { "Rename$Down",
-    "Tiefer",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "Bas",
-    "",//TODO
-    "Alemmas",
-    "",//TODO
-    "Abajo",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "Alla",
-    "",//TODO
-    "",//TODO
-  },
-  { "Rename$Next",
-    "Nächster",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "Suivant",
-    "",//TODO
-    "Seuraava",
-    "",//TODO
-    "Siguiente",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "Järgmine",
-    "",//TODO
-    "",//TODO
-  },
-  { "Rename$Previous",
-    "Vorheriger",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "Précédent",
-    "",//TODO
-    "Edellinen",
-    "",//TODO
-    "Anterior",
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "",//TODO
-    "Eelmine",
     "",//TODO
     "",//TODO
   },

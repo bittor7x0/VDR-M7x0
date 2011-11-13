@@ -30,7 +30,6 @@
 #define TIMERMACRO_EPISODE  "EPISODE"
 
 extern bool VfatFileSystem;
-extern bool DirOrderState;
 
 void RemoveDeletedRecordings(void);
 void AssertFreeDiskSpace(int Priority = 0, bool Force = false);
@@ -116,7 +115,7 @@ public:
   bool Remove(void);
        // Actually removes the file from the disk
        // Returns false in case of error
-  bool Rename(const char *newName, int *newPriority, int *newLifetime);
+  bool Rename(const char *newName);
        // Changes the file name
        // Returns false in case of error
   };
@@ -264,6 +263,8 @@ virtual
   bool IsStillRecording(void);
   virtual cUnbufferedFile *NextFile(cFileName *FileName, bool Record);
   virtual int WaitIndex(int Index);
+  static int Length(const char *FileName);
+       ///< Calculates the recording length without reading the index.
   };
 
 class cFileName {

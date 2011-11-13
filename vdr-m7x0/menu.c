@@ -722,11 +722,276 @@ eOSState cMenuText::ProcessKey(eKeys Key)
   return state;
 }
 
+// --- cMenuFolderItem -------------------------------------------------------
+
+class cMenuFolderItem : public cOsdItem {
+private:
+  cNestedItem *folder;
+public:
+  cMenuFolderItem(cNestedItem *Folder);
+  cNestedItem *Folder(void) { return folder; }
+  };
+
+cMenuFolderItem::cMenuFolderItem(cNestedItem *Folder)
+:cOsdItem(Folder->Text())
+{
+  folder = Folder;
+  if (folder->SubItems())
+     SetText(cString::sprintf("%s...", folder->Text()));
+}
+
+// --- cMenuEditFolder -------------------------------------------------------
+
+class cMenuEditFolder : public cOsdMenu {
+private:
+  cList<cNestedItem> *list;
+  cNestedItem *folder;
+  char name[PATH_MAX];
+  int subFolder;
+  eOSState Confirm(void);
+public:
+  cMenuEditFolder(const char *Dir, cList<cNestedItem> *List, cNestedItem *Folder = NULL);
+  cString GetFolder(void);
+  virtual eOSState ProcessKey(eKeys Key);
+  };
+
+cMenuEditFolder::cMenuEditFolder(const char *Dir, cList<cNestedItem> *List, cNestedItem *Folder)
+:cOsdMenu(Folder ? tr("Edit folder") : tr("New folder"), 12)
+{
+  list = List;
+  folder = Folder;
+  if (folder) {
+     strn0cpy(name, folder->Text(), sizeof(name));
+     subFolder = folder->SubItems() != NULL;
+     }
+  else {
+     *name = 0;
+     subFolder = 0;
+     cRemote::Put(kRight, true); // go right into string editing mode
+     }
+  if (!isempty(Dir)) {
+     cOsdItem *DirItem = new cOsdItem(Dir);
+     DirItem->SetSelectable(false);
+     Add(DirItem);
+     }
+  Add(new cMenuEditStrItem( tr("Name"), name, sizeof(name), tr(FileNameChars)));
+  Add(new cMenuEditBoolItem(tr("Sub folder"), &subFolder));
+}
+
+cString cMenuEditFolder::GetFolder(void)
+{
+  return folder ? folder->Text() : "";
+}
+
+eOSState cMenuEditFolder::Confirm(void)
+{
+  if (!folder || strcmp(folder->Text(), name) != 0) {
+     // each name may occur only once in a folder list
+     for (cNestedItem *Folder = list->First(); Folder; Folder = list->Next(Folder)) {
+         if (strcmp(Folder->Text(), name) == 0) {
+            Skins.Message(mtError, tr("Folder name already exists!"));
+            return osContinue;
+            }
+         }
+     char *p = strpbrk(name, "\\{}#~"); // FOLDERDELIMCHAR
+     if (p) {
+        Skins.Message(mtError, cString::sprintf(tr("Folder name must not contain '%c'!"), *p));
+        return osContinue;
+        }
+     }
+  if (folder) {
+     folder->SetText(name);
+     folder->SetSubItems(subFolder);
+     }
+  else
+     list->Add(folder = new cNestedItem(name, subFolder));
+  return osEnd;
+}
+
+eOSState cMenuEditFolder::ProcessKey(eKeys Key)
+{
+  eOSState state = cOsdMenu::ProcessKey(Key);
+
+  if (state == osUnknown) {
+     switch (Key) {
+       case kOk:     return Confirm();
+       case kRed:
+       case kGreen:
+       case kYellow:
+       case kBlue:   return osContinue;
+       default: break;
+       }
+     }
+  return state;
+}
+
+// --- cMenuFolder -----------------------------------------------------------
+
+cMenuFolder::cMenuFolder(const char *Title, cNestedItemList *NestedItemList, const char *Path)
+:cOsdMenu(Title)
+{
+  list = nestedItemList = NestedItemList;
+  firstFolder = NULL;
+  editing = false;
+  Set();
+  SetHelpKeys();
+  DescendPath(Path);
+}
+
+cMenuFolder::cMenuFolder(const char *Title, cList<cNestedItem> *List, cNestedItemList *NestedItemList, const char *Dir, const char *Path)
+:cOsdMenu(Title)
+{
+  list = List;
+  nestedItemList = NestedItemList;
+  dir = Dir;
+  firstFolder = NULL;
+  editing = false;
+  Set();
+  SetHelpKeys();
+  DescendPath(Path);
+}
+
+void cMenuFolder::SetHelpKeys(void)
+{
+  SetHelp(firstFolder ? tr("Button$Select") : NULL, tr("Button$New"), firstFolder ? tr("Button$Delete") : NULL, firstFolder ? tr("Button$Edit") : NULL);
+}
+
+void cMenuFolder::Set(const char *CurrentFolder)
+{
+  firstFolder = NULL;
+  Clear();
+  if (!isempty(dir)) {
+     cOsdItem *DirItem = new cOsdItem(dir);
+     DirItem->SetSelectable(false);
+     Add(DirItem);
+     }
+  list->Sort();
+  for (cNestedItem *Folder = list->First(); Folder; Folder = list->Next(Folder)) {
+      cOsdItem *FolderItem = new cMenuFolderItem(Folder);
+      Add(FolderItem, CurrentFolder ? strcmp(Folder->Text(), CurrentFolder) == 0 : false);
+      if (!firstFolder)
+         firstFolder = FolderItem;
+      }
+}
+
+void cMenuFolder::DescendPath(const char *Path)
+{
+  if (Path) {
+     const char *p = strchr(Path, FOLDERDELIMCHAR);
+     if (p) {
+        for (cMenuFolderItem *Folder = (cMenuFolderItem *)firstFolder; Folder; Folder = (cMenuFolderItem *)Next(Folder)) {
+            if (strncmp(Folder->Folder()->Text(), Path, p - Path) == 0) {
+               SetCurrent(Folder);
+               if (Folder->Folder()->SubItems())
+                  AddSubMenu(new cMenuFolder(Title(), Folder->Folder()->SubItems(), nestedItemList, !isempty(dir) ? *cString::sprintf("%s%c%s", *dir, FOLDERDELIMCHAR, Folder->Folder()->Text()) : Folder->Folder()->Text(), p + 1));
+               break;
+               }
+            }
+        }
+    }
+}
+
+eOSState cMenuFolder::Select(void)
+{
+  if (firstFolder) {
+     cMenuFolderItem *Folder = (cMenuFolderItem *)Get(Current());
+     if (Folder) {
+        if (Folder->Folder()->SubItems())
+           return AddSubMenu(new cMenuFolder(Title(), Folder->Folder()->SubItems(), nestedItemList, !isempty(dir) ? *cString::sprintf("%s%c%s", *dir, FOLDERDELIMCHAR, Folder->Folder()->Text()) : Folder->Folder()->Text()));
+        else
+           return osEnd;
+        }
+     }
+  return osContinue;
+}
+
+eOSState cMenuFolder::New(void)
+{
+  editing = true;
+  return AddSubMenu(new cMenuEditFolder(dir, list));
+}
+
+eOSState cMenuFolder::Delete(void)
+{
+  if (!HasSubMenu() && firstFolder) {
+     cMenuFolderItem *Folder = (cMenuFolderItem *)Get(Current());
+     if (Folder && Interface->Confirm(Folder->Folder()->SubItems() ? tr("Delete folder and all sub folders?") : tr("Delete folder?"))) {
+        list->Del(Folder->Folder());
+        Del(Folder->Index());
+        firstFolder = Get(isempty(dir) ? 0 : 1);
+        Display();
+        SetHelpKeys();
+        nestedItemList->Save();
+        }
+     }
+  return osContinue;
+}
+
+eOSState cMenuFolder::Edit(void)
+{
+  if (!HasSubMenu() && firstFolder) {
+     cMenuFolderItem *Folder = (cMenuFolderItem *)Get(Current());
+     if (Folder) {
+        editing = true;
+        return AddSubMenu(new cMenuEditFolder(dir, list, Folder->Folder()));
+        }
+     }
+  return osContinue;
+}
+
+eOSState cMenuFolder::SetFolder(void)
+{
+  cMenuEditFolder *mef = (cMenuEditFolder *)SubMenu();
+  if (mef) {
+     Set(mef->GetFolder());
+     SetHelpKeys();
+     Display();
+     nestedItemList->Save();
+     }
+  return CloseSubMenu();
+}
+
+cString cMenuFolder::GetFolder(void)
+{
+  if (firstFolder) {
+     cMenuFolderItem *Folder = (cMenuFolderItem *)Get(Current());
+     if (Folder) {
+        cMenuFolder *mf = (cMenuFolder *)SubMenu();
+        if (mf)
+           return cString::sprintf("%s%c%s", Folder->Folder()->Text(), FOLDERDELIMCHAR, *mf->GetFolder());
+        return Folder->Folder()->Text();
+        }
+     }
+  return "";
+}
+
+eOSState cMenuFolder::ProcessKey(eKeys Key)
+{
+  if (!HasSubMenu())
+     editing = false;
+  eOSState state = cOsdMenu::ProcessKey(Key);
+
+  if (state == osUnknown) {
+     switch (Key) {
+       case kOk:
+       case kRed:    return Select();
+       case kGreen:  return New();
+       case kYellow: return Delete();
+       case kBlue:   return Edit();
+       default:      state = osContinue;
+       }
+     }
+  else if (state == osEnd && HasSubMenu() && editing)
+     state = SetFolder();
+  return state;
+}
+
 // --- cMenuEditTimer --------------------------------------------------------
 
 cMenuEditTimer::cMenuEditTimer(cTimer *Timer, bool New)
 :cOsdMenu(tr("Edit timer"), 12)
 {
+  file = NULL;
   firstday = NULL;
   timer = Timer;
   addIfConfirmed = New;
@@ -743,27 +1008,14 @@ cMenuEditTimer::cMenuEditTimer(cTimer *Timer, bool New)
      Add(new cMenuEditBitItem( tr("VPS"),          &data.flags, tfVps));
      Add(new cMenuEditIntItem( tr("Priority"),     &data.priority, 0, MAXPRIORITY));
      Add(new cMenuEditIntItem( tr("Lifetime"),     &data.lifetime, 0, MAXLIFETIME));
+     Add(file = new cMenuEditStrItem( tr("File"),  data.file, sizeof(data.file), tr(FileNameChars)));
 
      if (PinPatch::ChildLock::IsUnlocked())
         Add(new cMenuEditBitItem(tr("Timer$Childlock"), &data.flags, tfProtected));
 
-     char* p = strrchr(data.file, FOLDERDELIMCHAR);
-     if (p) {
-        p++;
-        strn0cpy(name, p, sizeof(name));
-        strn0cpy(path, data.file, sizeof(path));
-        p = strrchr(path, FOLDERDELIMCHAR);
-        if (p)
-           p[0] = 0;
-        }
-     else {
-        strn0cpy(name, data.file, sizeof(name));
-        strn0cpy(path, "", sizeof(path));
-        }
-     Add(new cMenuEditStrItem( tr("File"),          name, sizeof(name), tr(FileNameChars)));
-     Add(new cMenuEditRecPathItem(tr("Directory"),  path, sizeof(path)));
      SetFirstDayItem();
      }
+  SetHelpKeys();
   Timers.IncBeingEdited();
 }
 
@@ -772,6 +1024,11 @@ cMenuEditTimer::~cMenuEditTimer()
   if (timer && addIfConfirmed)
      delete timer; // apparently it wasn't confirmed
   Timers.DecBeingEdited();
+}
+
+void cMenuEditTimer::SetHelpKeys(void)
+{
+  SetHelp(tr("Button$Folder"));
 }
 
 void cMenuEditTimer::SetFirstDayItem(void)
@@ -785,6 +1042,26 @@ void cMenuEditTimer::SetFirstDayItem(void)
      firstday = NULL;
      Display();
      }
+}
+
+eOSState cMenuEditTimer::SetFolder(void)
+{
+  cMenuFolder *mf = (cMenuFolder *)SubMenu();
+  if (mf) {
+     cString Folder = mf->GetFolder();
+     char *p = strrchr(data.file, FOLDERDELIMCHAR);
+     if (p)
+        p++;
+     else
+        p = data.file;
+     if (!isempty(*Folder))
+        strn0cpy(data.file, cString::sprintf("%s%c%s", *Folder, FOLDERDELIMCHAR, p), sizeof(data.file));
+     else if (p != data.file)
+        memmove(data.file, p, strlen(p) + 1);
+     SetCurrent(file);
+     Display();
+     }
+  return CloseSubMenu();
 }
 
 eOSState cMenuEditTimer::ProcessKey(eKeys Key)
@@ -801,10 +1078,6 @@ eOSState cMenuEditTimer::ProcessKey(eKeys Key)
                           Skins.Message(mtError, tr("*** Invalid Channel ***"));
                           break;
                           }
-                       if(strlen(path))
-                          snprintf(data.file, sizeof(data.file), "%s~%s", path, name);
-                       else
-                          snprintf(data.file, sizeof(data.file), "%s", name);
                        if (!*data.file)
                           strcpy(data.file, data.Channel()->ShortName(true));
                        if (timer) {
@@ -820,13 +1093,15 @@ eOSState cMenuEditTimer::ProcessKey(eKeys Key)
                           }
                      }
                      return osBack;
-       case kRed:
+       case kRed:    return AddSubMenu(new cMenuFolder(tr("Select folder"), &Folders, data.file));
        case kGreen:
        case kYellow:
        case kBlue:   return osContinue;
        default: break;
        }
      }
+  else if (state == osEnd && HasSubMenu())
+     state = SetFolder();
   if (Key != kNone)
      SetFirstDayItem();
   return state;
@@ -836,11 +1111,16 @@ eOSState cMenuEditTimer::ProcessKey(eKeys Key)
 // declaration shifted so it can be used in cMenuTimers
 class cMenuCommands : public cOsdMenu {
 private:
-  cCommands *commands;
-  char *parameters;
+  cList<cNestedItem> *commands;
+  cString parameters;
+  cString title;
+  cString command;
+  bool confirm;
+  char *result;
+  bool Parse(const char *s);
   eOSState Execute(void);
 public:
-  cMenuCommands(const char *Title, cCommands *Commands, const char *Parameters = NULL);
+  cMenuCommands(const char *Title, cList<cNestedItem> *Commands, const char *Parameters = NULL);
   virtual ~cMenuCommands();
   virtual eOSState ProcessKey(eKeys Key);
   };
@@ -1845,39 +2125,86 @@ eOSState cMenuSchedule::ProcessKey(eKeys Key)
 
 // --- cMenuCommands ---------------------------------------------------------
 
-cMenuCommands::cMenuCommands(const char *Title, cCommands *Commands, const char *Parameters)
+cMenuCommands::cMenuCommands(const char *Title, cList<cNestedItem> *Commands, const char *Parameters)
 :cOsdMenu(Title)
 {
+  result = NULL;
   SetHasHotkeys();
   commands = Commands;
-  parameters = Parameters ? strdup(Parameters) : NULL;
-  for (cCommand *command = commands->First(); command; command = commands->Next(command))
-      Add(new cOsdItem(hk(command->Title())));
+  parameters = Parameters;
+  for (cNestedItem *Command = commands->First(); Command; Command = commands->Next(Command)) {
+      const char *s = Command->Text();
+      if (Command->SubItems())
+         Add(new cOsdItem(hk(cString::sprintf("%s...", s))));
+      else if (Parse(s))
+         Add(new cOsdItem(hk(title)));
+      }
 }
 
 cMenuCommands::~cMenuCommands()
 {
-  free(parameters);
+  free(result);
+}
+
+bool cMenuCommands::Parse(const char *s)
+{
+  const char *p = strchr(s, ':');
+  if (p) {
+     int l = p - s;
+     if (l > 0) {
+        char t[l + 1];
+        stripspace(strn0cpy(t, s, l + 1));
+        l = strlen(t);
+        if (l > 1 && t[l - 1] == '?') {
+           t[l - 1] = 0;
+           confirm = true;
+           }
+        else
+           confirm = false;
+        title = t;
+        command = skipspace(p + 1);
+        return true;
+        }
+     }
+  return false;
 }
 
 eOSState cMenuCommands::Execute(void)
 {
-  cCommand *command = commands->Get(Current());
-  if (command) {
-     bool confirmed = true;
-     if (command->hasChilds()) {
-        AddSubMenu(new cMenuCommands(command->Title(), command->getChilds(), parameters));
-        return osContinue;
-        }
-     if (command->Confirm())
-        confirmed = Interface->Confirm(cString::sprintf("%s?", command->Title()));
-     if (confirmed) {
-        Skins.Message(mtStatus, cString::sprintf("%s...", command->Title()));
-        const char *Result = command->Execute(parameters);
-        Skins.Message(mtStatus, NULL);
-        if (Result)
-           return AddSubMenu(new cMenuText(command->Title(), Result, fontFix));
-        return osEnd;
+  cNestedItem *Command = commands->Get(Current());
+  if (Command) {
+     if (Command->SubItems())
+        return AddSubMenu(new cMenuCommands(Title(), Command->SubItems(), parameters));
+     if (Parse(Command->Text())) {
+        if (!confirm || Interface->Confirm(cString::sprintf("%s?", *title))) {
+           Skins.Message(mtStatus, cString::sprintf("%s...", *title));
+           free(result);
+           result = NULL;
+           cString cmdbuf;
+           if (!isempty(parameters))
+              cmdbuf = cString::sprintf("%s %s", *command, *parameters);
+           const char *cmd = *cmdbuf ? *cmdbuf : *command;
+           dsyslog("executing command '%s'", cmd);
+           cPipe p;
+           if (p.Open(cmd, "r")) {
+              int l = 0;
+              int c;
+              while ((c = fgetc(p)) != EOF) {
+                    if (l % 20 == 0)
+                       result = (char *)realloc(result, l + 21);
+                    result[l++] = char(c);
+                    }
+              if (result)
+                 result[l] = 0;
+              p.Close();
+              }
+           else
+              esyslog("ERROR: can't open pipe for command '%s'", cmd);
+           Skins.Message(mtStatus, NULL);
+           if (result)
+              return AddSubMenu(new cMenuText(title, result, fontFix));
+           return osEnd;
+           }
         }
      }
   return osContinue;
@@ -2184,13 +2511,13 @@ void cMenuRecordingItem::IncrementCounter(bool New)
 
 class cMenuRenameRecording : public cOsdMenu {
 private:
-  int lifetime;
-  int priority;
   char name[MaxFileName];
-  char path[MaxFileName];
+  cMenuEditStrItem *file;
   cOsdItem *marksItem, *resumeItem;
   bool isResume, isMarks;
   cRecording *recording;
+  void SetHelpKeys(void);
+  eOSState SetFolder(void);
 public:
   cMenuRenameRecording(cRecording *Recording);
   virtual eOSState ProcessKey(eKeys Key);
@@ -2201,63 +2528,72 @@ cMenuRenameRecording::cMenuRenameRecording(cRecording *Recording)
 {
   cMarks marks;
 
+  file = NULL;
   recording = Recording;
-  priority = recording->priority;
-  lifetime = recording->lifetime;
-
-  char* p = strrchr(recording->Name(), FOLDERDELIMCHAR);
-  if (p) {
-     p++;
-     strn0cpy(name, p, sizeof(name));
-     strn0cpy(path, recording->Name(), sizeof(path));
-     p = strrchr(path, FOLDERDELIMCHAR);
-     if (p)
-        p[0] = 0;
-     }
-  else {
+  
+  if (recording) {
      strn0cpy(name, recording->Name(), sizeof(name));
-     strn0cpy(path, "", sizeof(path));
+     Add(file = new cMenuEditStrItem(tr("File"), name, sizeof(name), tr(FileNameChars)));
+
+     Add(new cOsdItem("", osUnknown, false));
+
+     Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Date"), *DayDateTime(recording->start)), osUnknown, false));
+
+     cChannel *channel = Channels.GetByChannelID(((cRecordingInfo *)recording->Info())->ChannelID());
+     if (channel)
+        Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Channel"), *ChannelString(channel, 0)), osUnknown, false));
+
+     int recLen = cIndexFile::Length(recording->FileName());
+     if (recLen >= 0)
+        Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Length"), *IndexToHMSF(recLen, false)), osUnknown, false));
+     else
+        recLen = 0;
+
+     int dirSize = DirSizeMB(recording->FileName());
+     double seconds = recLen / FRAMESPERSEC;
+     cString bitRate = seconds ? cString::sprintf(" (%.2f MBit/s)", 8.0 * dirSize / seconds) : cString("");
+     // M7X0 TODO: How detect if a record is in PES or TS format?
+     //Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Format"), recording->IsPesRecording() ? tr("PES") : tr("TS")), osUnknown, false));
+     Add(new cOsdItem((dirSize > 1023) ? cString::sprintf("%s:\t%.2f GB%s", tr("Size"), dirSize / 1024.0, *bitRate) : cString::sprintf("%s:\t%d MB%s", tr("Size"), dirSize, *bitRate), osUnknown, false));
+
+     Add(new cOsdItem("", osUnknown, false));
+
+     isMarks = marks.Load(recording->FileName()) && marks.Count();
+     marksItem = new cOsdItem(tr("Delete marks information?"), osUser1, isMarks);
+     Add(marksItem);
+
+     cResumeFile ResumeFile(recording->FileName());
+     isResume = (ResumeFile.Read() != -1);
+     resumeItem = new cOsdItem(tr("Delete resume information?"), osUser2, isResume);
+     Add(resumeItem);
      }
-  Add(new cMenuEditStrItem(tr("File"),          name, sizeof(name), tr(FileNameChars)));
-  Add(new cMenuEditRecPathItem(tr("Directory"), path, sizeof(path)                   ));
-  Add(new cMenuEditIntItem(tr("Priority"), &priority, 0,            MAXPRIORITY      ));
-  Add(new cMenuEditIntItem(tr("Lifetime"), &lifetime, 0,            MAXLIFETIME      ));
 
-  Add(new cOsdItem("",                     osUnknown, false));
+  SetHelpKeys();
+}
 
-  Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Date"), *DayDateTime(recording->start)), osUnknown, false));
+void cMenuRenameRecording::SetHelpKeys(void)
+{
+  SetHelp(tr("Button$Folder"));
+}
 
-  cChannel *channel = Channels.GetByChannelID(((cRecordingInfo *)recording->Info())->ChannelID());
-  if (channel)
-     Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Channel"), *ChannelString(channel, 0)), osUnknown, false));
-
-  cIndexFile *index = new cIndexFile(recording->FileName(), false);
-  int lastIndex = 0;
-  if (index) {
-     lastIndex = index->Last();
-     Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Length"), *IndexToHMSF(lastIndex)), osUnknown, false));
+eOSState cMenuRenameRecording::SetFolder(void)
+{
+  cMenuFolder *mf = (cMenuFolder *)SubMenu();
+  if (mf) {
+     cString Folder = mf->GetFolder();
+     char *p = strrchr(name, FOLDERDELIMCHAR);
+     if (p)
+        p++;
+     else
+        p = name;
+     if (!isempty(*Folder))
+        strn0cpy(name, cString::sprintf("%s%c%s", *Folder, FOLDERDELIMCHAR, p), sizeof(name));
+     else if (p != name)
+        memmove(name, p, strlen(p) + 1);
+     SetCurrent(file);
+     Display();
      }
-  delete index;
-
-  int dirSize = DirSizeMB(recording->FileName());
-  if (dirSize > 1023)
-     Add(new cOsdItem(cString::sprintf("%s:\t%.2f GB", tr("Size"), dirSize / 1024.0), osUnknown, false));
-  else
-     Add(new cOsdItem(cString::sprintf("%s:\t%d MB", tr("Size"), dirSize), osUnknown, false));
-
-  if (lastIndex)
-     Add(new cOsdItem(cString::sprintf(tr("%s:\t%.2f MBit/s (Video+Audio)"), tr("est. bit-rate"), (float)dirSize/lastIndex*FRAMESPERSEC*8), osUnknown, false));
-
-  Add(new cOsdItem("",                     osUnknown, false));
-
-  isMarks = marks.Load(recording->FileName()) && marks.Count();
-  marksItem = new cOsdItem(tr("Delete marks information?"),   osUser1, isMarks);
-  Add(marksItem);
-
-  cResumeFile ResumeFile(recording->FileName());
-  isResume = (ResumeFile.Read() != -1);
-  resumeItem = new cOsdItem(tr("Delete resume information?"), osUser2, isResume);
-  Add(resumeItem);
+  return CloseSubMenu();
 }
 
 eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
@@ -2265,22 +2601,28 @@ eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
   eOSState state = cOsdMenu::ProcessKey(Key);
 
   if (state == osUnknown) {
-     if (Key == kOk) {
-        char buffer[MaxFileName];
-        if (strlen(path))
-           snprintf(buffer, sizeof(buffer), "%s~%s", path, name);
-        else
-           snprintf(buffer, sizeof(buffer), "%s", name);
-        if (recording->Rename(buffer, &priority, &lifetime)) {
-           Recordings.ChangeState();
-           Recordings.TouchUpdate();
-           return osRecordings;
-           }
-        else
-           Skins.Message(mtError, tr("Error while accessing recording!"));
-        }
+     switch (Key) {
+       case kOk:
+            if (recording->Rename(name)) {
+               Recordings.ChangeState();
+               Recordings.TouchUpdate();
+               return osRecordings;
+               }
+            else
+               Skins.Message(mtError, tr("Error while accessing recording!"));
+            break;
+       case kRed:
+            return AddSubMenu(new cMenuFolder(tr("Select folder"), &Folders, name));
+            break;
+       default:
+            break;
+       }
+     if (Key != kNone)
+        SetHelpKeys();
      return osContinue;
      }
+  else if (state == osEnd && HasSubMenu())
+     state = SetFolder();
   else if (state == osUser1) {
      if (isMarks && Interface->Confirm(tr("Delete marks information?"))) {
         cMarks marks;
@@ -2310,6 +2652,7 @@ eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
         }
      return osContinue;
      }
+
   return state;
 }
 

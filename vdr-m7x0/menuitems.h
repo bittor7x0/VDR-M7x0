@@ -77,37 +77,24 @@ public:
 class cMenuEditStrItem : public cMenuEditItem {
 private:
   char *orgValue;
+  char *value;
+  int length;
+  char *allowed;
+  int pos;
   bool insert, newchar, uppercase;
   const char *charMap;
   const char *currentChar;
   eKeys lastKey;
   cTimeMs autoAdvanceTimeout;
+  void SetHelpKeys(void);
   void AdvancePos(void);
+  virtual void Set(void);
   char Inc(char c, bool Up);
 protected:
-  char *value;
-  int length;
-  char *allowed;
-  int pos;
-  virtual void SetHelpKeys(void);
-  virtual void Set(void);
   bool InEditMode(void) { return pos >= 0; }
 public:
   cMenuEditStrItem(const char *Name, char *Value, int Length, const char *Allowed);
   ~cMenuEditStrItem();
-  virtual eOSState ProcessKey(eKeys Key);
-  };
-
-class cMenuEditRecPathItem : public cMenuEditStrItem {
-protected:
-  char base[MaxFileName];
-  virtual void SetHelpKeys(void);
-  void SetBase(const char* Path);
-  void FindNextLevel();
-  void Find(bool Next);
-public:
-  cMenuEditRecPathItem(const char* Name, char* Path, int Length);
-  ~cMenuEditRecPathItem();
   virtual eOSState ProcessKey(eKeys Key);
   };
 

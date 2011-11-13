@@ -1,5 +1,8 @@
-Liemikuutio Revision History
-----------------------------
+-----------------------------------
+Liemikuutio for Video Disc Recorder
+
+Maintainer: Rolf Ahrenberg
+-----------------------------------
 
 2006-01-08: Version 1.0
 
@@ -43,8 +46,8 @@ Liemikuutio Revision History
 
 2006-08-27: Version 1.9
 
-- Some modifications to the recording length and
-  rename recordings patches (Thanks to Firefly).
+- Some modifications to the recording length and rename recordings
+  patches (Thanks to Firefly).
 - Added k1_k3_jumps_20s patch by Petri Hintukainen.
 
 2006-08-29: Version 1.10
@@ -53,7 +56,8 @@ Liemikuutio Revision History
 
 2006-09-04: Version 1.11
 
-- Removed unused variable from cRecording::Title() method (Thanks to C.Y.M.).
+- Removed unused variable from cRecording::Title() method (Thanks to
+  C.Y.M.).
 - Some modifications to the rename recordings patch (Thanks to Firefly).
 
 2006-09-13: Version 1.12
@@ -63,3 +67,78 @@ Liemikuutio Revision History
 2006-10-01: Version 1.13
 
 - Removed unnecessary syslog printing (Thanks to Firefly).
+
+2007-08-14: Version 1.14
+
+- Updated for vdr-1.5.7.
+
+2007-10-16: Version 1.15
+
+- Added recmenu play patch (Thanks to Ville Skyttä).
+- Updated French translation (Thanks to ECLiPSE).
+
+2007-11-04: Version 1.16
+
+- Updated for vdr-1.5.11.
+
+2007-12-08: Version 1.17
+
+- Added binary skip patch.
+- Removed k1_k3_jumps_20s patch.
+
+2008-02-17: Version 1.18
+
+- Updated for vdr-1.5.15.
+
+2008-03-02: Version 1.19
+
+- Modified binary skip to use kPrev and kNext keys and the skip is now
+  always shortened after a direction change (Thanks to Timo Eskola).
+- Readded k1_k3_jumps_20s patch.
+
+2008-04-04: Version 1.20
+
+- Added bitrate information into rename menu.
+- Readded the path editing support of rename recordings patch (Thanks
+  to Firefly).
+
+2008-05-08: Version 1.21
+
+- Fixed rename recordings (Thanks to Firefly).
+- Added a DVB subtitles hack for old recordings (Thanks to Anssi Hannula).
+
+2009-01-08: Version 1.22
+
+- Updated for vdr-1.7.3.
+
+2009-01-25: Version 1.23
+
+- Updated for vdr-1.7.4.
+
+2009-02-27: Version 1.24
+
+- Fixed compilation under gcc-4.4.
+
+2009-04-05: Version 1.25
+
+- Fixed the length detection of recordings (Thanks to Thomas Günther).
+
+2009-04-17: Version 1.26
+
+- Fixed the length detection of audio recordings (Thanks to Thomas Günther).
+
+2009-04-26: Version 1.27
+
+- Fixed the length detection of empty recordings (Thanks to Thomas Günther).
+
+2009-07-12: Version 1.28
+
+- Fixed the TS/PES detection of recording marks.
+
+2009-11-23: Version 1.29
+
+- Updated Estonian translation (Thanks to Arthur Konovalov).
+
+2010-02-01: Version 1.30
+
+- Updated for vdr-1.7.12.

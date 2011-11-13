@@ -104,6 +104,7 @@ protected:
   void SetCols(int c0, int c1 = 0, int c2 = 0, int c3 = 0, int c4 = 0);
   void SetHasHotkeys(void);
   virtual void Clear(void);
+  const char *Title(void) { return title; }
   bool SelectableItem(int idx);
   void SetCurrent(cOsdItem *Item);
   void RefreshCurrent(void);
@@ -117,6 +118,7 @@ protected:
   eOSState AddSubMenu(cOsdMenu *SubMenu);
   eOSState CloseSubMenu();
   bool HasSubMenu(void) { return subMenu; }
+  cOsdMenu *SubMenu(void) { return subMenu; }
   void SetStatus(const char *s);
   void SetTitle(const char *Title);
   void SetHelp(const char *Red, const char *Green = NULL, const char *Yellow = NULL, const char *Blue = NULL);
