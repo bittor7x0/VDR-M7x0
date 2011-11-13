@@ -713,12 +713,13 @@ int main(int argc, char *argv[])
 #endif
         Channels.Load(AddDirectory(ConfigDirectory, "channels.conf"), false, true) &&
         Timers.Load(AddDirectory(ConfigDirectory, "timers.conf")) &&
-        Commands.Load(AddDirectory(ConfigDirectory, "commands.conf"), true) &&
-        RecordingCommands.Load(AddDirectory(ConfigDirectory, "reccmds.conf"), true) &&
-        TimerCommands.Load(AddDirectory(ConfigDirectory, "timercmds.conf"), true) &&
+        Commands.Load(AddDirectory(ConfigDirectory, "commands.conf")) &&
+        RecordingCommands.Load(AddDirectory(ConfigDirectory, "reccmds.conf")) &&
+        TimerCommands.Load(AddDirectory(ConfigDirectory, "timercmds.conf")) &&
         SVDRPhosts.Load(AddDirectory(ConfigDirectory, "svdrphosts.conf"), true) &&
         Keys.Load(AddDirectory(ConfigDirectory, "remote.conf")) &&
-        KeyMacros.Load(AddDirectory(ConfigDirectory, "keymacros.conf"), true)
+        KeyMacros.Load(AddDirectory(ConfigDirectory, "keymacros.conf"), true) &&
+        Folders.Load(AddDirectory(ConfigDirectory, "folders.conf"))
         ))
      EXIT(2);
 

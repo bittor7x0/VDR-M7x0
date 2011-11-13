@@ -19,98 +19,6 @@
 // format characters in order to allow any number of blanks after a numeric
 // value!
 
-// --- cCommand --------------------------------------------------------------
-
-char *cCommand::result = NULL;
-
-cCommand::cCommand(void)
-{
-  title = command = NULL;
-  confirm = false;
-  nIndent = 0;
-  childs = NULL;
-}
-
-cCommand::~cCommand()
-{
-  free(title);
-  free(command);
-  delete childs;
-}
-
-bool cCommand::Parse(const char *s)
-{
-  const char *p = strchr(s, ':');
-  if (p) {
-     nIndent = 0;
-     while (*s == '-') {
-           nIndent++;
-           s++;
-           }
-     int l = p - s;
-     if (l > 0) {
-        title = MALLOC(char, l + 1);
-        stripspace(strn0cpy(title, s, l + 1));
-        if (!isempty(title)) {
-           int l = strlen(title);
-           if (l > 1 && title[l - 1] == '?') {
-              confirm = true;
-              title[l - 1] = 0;
-              }
-           command = stripspace(strdup(skipspace(p + 1)));
-           return !isempty(command);
-           }
-        }
-     }
-  return false;
-}
-
-const char *cCommand::Execute(const char *Parameters)
-{
-  free(result);
-  result = NULL;
-  cString cmdbuf;
-  if (Parameters)
-     cmdbuf = cString::sprintf("%s %s", command, Parameters);
-  const char *cmd = *cmdbuf ? *cmdbuf : command;
-  dsyslog("executing command '%s'", cmd);
-  cPipe p;
-  if (p.Open(cmd, "r")) {
-     int l = 0;
-     int c;
-     while ((c = fgetc(p)) != EOF) {
-           if (l % 20 == 0) {
-              if (char *NewBuffer = (char *)realloc(result, l + 21))
-                 result = NewBuffer;
-              else {
-                 esyslog("ERROR: out of memory");
-                 p.Close();
-                 return result;
-                 }
-              }
-           result[l++] = char(c);
-           }
-     if (result)
-        result[l] = 0;
-     p.Close();
-     }
-  else
-     esyslog("ERROR: can't open pipe for command '%s'", cmd);
-  return result;
-}
-
-int cCommand::getChildCount(void)
-{
-  return childs ? childs->Count() : 0;
-}
-
-void cCommand::addChild(cCommand *newChild)
-{
-  if (!childs)
-     childs = new cCommands();
-  childs->AddConfig(newChild);
-}
-
 // -- cSVDRPhost -------------------------------------------------------------
 
 cSVDRPhost::cSVDRPhost(void)
@@ -152,26 +60,155 @@ bool cSVDRPhost::Accepts(in_addr_t Address)
   return (Address & mask) == (addr.s_addr & mask);
 }
 
-// -- cCommands --------------------------------------------------------------
+// --- cNestedItem -----------------------------------------------------------
 
-cCommands Commands;
-cCommands RecordingCommands;
-cCommands TimerCommands;
-
-void cCommands::AddConfig(cCommand *Object)
+cNestedItem::cNestedItem(const char *Text, bool WithSubItems)
 {
-  if (!Object)
-     return;
-  //isyslog ("Indent %d %s\n", Object->getIndent(), Object->Title());
-  for (int index = Count() - 1; index >= 0; index--) {
-      cCommand *parent = Get(index);
-      if (parent->getIndent() < Object->getIndent()) {
-         parent->addChild(Object);
-         return;
-         }
-      }
-  cConfig<cCommand>::Add(Object);
+  text = strdup(Text ? Text : "");
+  subItems = WithSubItems ? new cList<cNestedItem> : NULL;
 }
+
+cNestedItem::~cNestedItem()
+{
+  delete subItems;
+  free(text);
+}
+
+int cNestedItem::Compare(const cListObject &ListObject) const
+{
+  return strcasecmp(text, ((cNestedItem *)&ListObject)->text);
+}
+
+void cNestedItem::AddSubItem(cNestedItem *Item)
+{
+  if (!subItems)
+     subItems = new cList<cNestedItem>;
+  if (Item)
+     subItems->Add(Item);
+}
+
+void cNestedItem::SetText(const char *Text)
+{
+  free(text);
+  text = strdup(Text ? Text : "");
+}
+
+void cNestedItem::SetSubItems(bool On)
+{
+  if (On && !subItems)
+     subItems = new cList<cNestedItem>;
+  else if (!On && subItems) {
+     delete subItems;
+     subItems = NULL;
+     }
+}
+
+// --- cNestedItemList -------------------------------------------------------
+
+cNestedItemList::cNestedItemList(void)
+{
+  fileName = NULL;
+}
+
+cNestedItemList::~cNestedItemList()
+{
+  free(fileName);
+}
+
+bool cNestedItemList::Parse(FILE *f, cList<cNestedItem> *List, int &Line)
+{
+  char *s;
+  cReadLine ReadLine;
+  while ((s = ReadLine.Read(f)) != NULL) {
+        Line++;
+        char *p = strchr(s, '#');
+        if (p)
+           *p = 0;
+        s = skipspace(stripspace(s));
+        if (!isempty(s)) {
+           p = s + strlen(s) - 1;
+           if (*p == '{') {
+              *p = 0;
+              stripspace(s);
+              cNestedItem *Item = new cNestedItem(s, true);
+              List->Add(Item);
+              if (!Parse(f, Item->SubItems(), Line))
+                 return false;
+              }
+           else if (*s == '}')
+              break;
+           else
+              List->Add(new cNestedItem(s));
+           }
+        }
+  return true;
+}
+
+bool cNestedItemList::Write(FILE *f, cList<cNestedItem> *List, int Indent)
+{
+  for (cNestedItem *Item = List->First(); Item; Item = List->Next(Item)) {
+      if (Item->SubItems()) {
+         fprintf(f, "%*s%s {\n", Indent, "", Item->Text());
+         Write(f, Item->SubItems(), Indent + 2);
+         fprintf(f, "%*s}\n", Indent + 2, "");
+         }
+      else
+         fprintf(f, "%*s%s\n", Indent, "", Item->Text());
+      }
+  return true;
+}
+
+void cNestedItemList::Clear(void)
+{
+  free(fileName);
+  fileName = NULL;
+  cList<cNestedItem>::Clear();
+}
+
+bool cNestedItemList::Load(const char *FileName)
+{
+  cList<cNestedItem>::Clear();
+  if (FileName) {
+     free(fileName);
+     fileName = strdup(FileName);
+     }
+  bool result = false;
+  if (fileName && access(fileName, F_OK) == 0) {
+     isyslog("loading %s", fileName);
+     FILE *f = fopen(fileName, "r");
+     if (f) {
+        int Line = 0;
+        result = Parse(f, this, Line);
+        fclose(f);
+        }
+     else {
+        LOG_ERROR_STR(fileName);
+        result = false;
+        }
+     }
+  return result;
+}
+
+bool cNestedItemList::Save(void)
+{
+  bool result = true;
+  cSafeFile f(fileName);
+  if (f.Open()) {
+     result = Write(f, this);
+     if (!f.Close())
+        result = false;
+     }
+  else
+     result = false;
+  return result;
+}
+
+// --- Folders and Commands --------------------------------------------------
+
+cNestedItemList Folders;
+cNestedItemList Commands;
+cNestedItemList RecordingCommands;
+cNestedItemList TimerCommands;
 
 // -- cSVDRPhosts ------------------------------------------------------------
 

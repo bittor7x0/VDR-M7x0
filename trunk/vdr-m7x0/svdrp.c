@@ -1651,10 +1651,8 @@ void cSVDRP::CmdRENR(const char *Option)
                }
             if (recording){
                if (strcmp(newName,recording->Name())) {
-                  int priority = recording->priority;
-                  int lifetime = recording->lifetime;
                   char *oldName = strdup(recording->Name());
-                  if (recording->Rename(newName, &priority, &lifetime)) {
+                  if (recording->Rename(newName)) {
                     Reply(250, "Renamed \"%s\" to \"%s\"", oldName, recording->Name());
                     Recordings.ChangeState();
                     Recordings.TouchUpdate();

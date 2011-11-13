@@ -35,11 +35,9 @@
 // VDR header files have changed.
 
 
-#define LIEMIKUUTIO  113
+#define LIEMIKUUTIO  130
 
 #define MAINMENUHOOKSVERSNUM 1.0
-
-#define CMDSUBMENUVERSNUM 7
 
 #define MAXPRIORITY 99
 #define MAXLIFETIME 99
@@ -52,31 +50,6 @@
 #define MaxFileName 256
 #define MaxSkinName 16
 #define MaxThemeName 16
-
-class cCommands;
-
-class cCommand : public cListObject {
-private:
-  char *title;
-  char *command;
-  bool confirm;
-  int nIndent;
-  cCommands *childs;
-  static char *result;
-public:
-  cCommand(void);
-  virtual ~cCommand();
-  bool Parse(const char *s);
-  const char *Title(void) { return title; }
-  bool Confirm(void) { return confirm; }
-  const char *Execute(const char *Parameters = NULL);
-  int getIndent(void) { return nIndent; }
-  void setIndent(int nNewIndent) { nIndent = nNewIndent; }
-  cCommands *getChilds(void) { return childs; }
-  int getChildCount(void);
-  bool hasChilds(void) { return getChildCount() > 0; }
-  void addChild(cCommand *newChild);
-  };
 
 typedef uint32_t in_addr_t; //XXX from /usr/include/netinet/in.h (apparently this is not defined on systems with glibc < 2.2)
 
@@ -104,7 +77,6 @@ private:
 public:
   cConfig(void) { fileName = NULL; }
   virtual ~cConfig() { free(fileName); }
-  virtual void AddConfig(T *Object) { cList<T>::Add(Object); }
   const char *FileName(void) { return fileName; }
   bool Load(const char *FileName = NULL, bool AllowComments = false, bool MustExist = false)
   {
@@ -134,7 +106,7 @@ public:
                 if (!isempty(s)) {
                    T *l = new T;
                    if (l->Parse(s))
-                      AddConfig(l);
+                      Add(l);
                    else {
                       esyslog("ERROR: error in %s, line %d", fileName, line);
                       delete l;
@@ -176,9 +148,32 @@ public:
   }
   };
 
-class cCommands : public cConfig<cCommand> {
+class cNestedItem : public cListObject {
+private:
+  char *text;
+  cList<cNestedItem> *subItems;
 public:
-  virtual void AddConfig(cCommand *Object);
+  cNestedItem(const char *Text, bool WithSubItems = false);
+  virtual ~cNestedItem();
+  virtual int Compare(const cListObject &ListObject) const;
+  const char *Text(void) const { return text; }
+  cList<cNestedItem> *SubItems(void) { return subItems; }
+  void AddSubItem(cNestedItem *Item);
+  void SetText(const char *Text);
+  void SetSubItems(bool On);
+  };
+
+class cNestedItemList : public cList<cNestedItem> {
+private:
+  char *fileName;
+  bool Parse(FILE *f, cList<cNestedItem> *List, int &Line);
+  bool Write(FILE *f, cList<cNestedItem> *List, int Indent = 0);
+public:
+  cNestedItemList(void);
+  virtual ~cNestedItemList();
+  void Clear(void);
+  bool Load(const char *FileName);
+  bool Save(void);
   };
 
 class cSVDRPhosts : public cConfig<cSVDRPhost> {
@@ -187,9 +182,10 @@ public:
   bool Acceptable(in_addr_t Address);
   };
 
-extern cCommands Commands;
-extern cCommands RecordingCommands;
-extern cCommands TimerCommands;
+extern cNestedItemList Folders;
+extern cNestedItemList Commands;
+extern cNestedItemList RecordingCommands;
+extern cNestedItemList TimerCommands;
 extern cSVDRPhosts SVDRPhosts;
 
 class cSetupLine : public cListObject {

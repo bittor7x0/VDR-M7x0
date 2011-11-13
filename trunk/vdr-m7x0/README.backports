@@ -189,3 +189,7 @@ VDR 1.7.18 backports applied in this patch:
   warnings for expressions like 'a || b && c', where GCC 4.3 wants to force the
   programmer to write 'a || (b && c)', while everybody knows that '&&' links
   stronger than '||' (reported by Tobias Grimm).
+* The "Edit timer" menu can now set the folder for the recording from a list of
+  folders stored in "folders.conf".
+* The files "commands.conf" and "reccmd.conf" can now contain nested lists of
+  commands. See vdr.5 for information about the new file format.
