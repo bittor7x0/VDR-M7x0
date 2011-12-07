@@ -1,0 +1,24 @@
+X-Git-Url: http://www.cs.unipr.it/git/gitweb.cgi?p=ppl%2Fppl.git;a=blobdiff_plain;f=interfaces%2FJava%2Ftests%2FMakefile.am;h=607bbc6566506103646e8968784da02843a9c5ec;hp=64ba86491a2fc0113f15b35b3494eb527052cc23;hb=25bb77587944768581225d1c0048facab32cf019;hpb=d118d742791b628a2e959180fdfa51e7cd0035fd
+
+diff --git a/interfaces/Java/tests/Makefile.am b/interfaces/Java/tests/Makefile.am
+index 64ba864..607bbc6 100644
+--- a/interfaces/Java/tests/Makefile.am
++++ b/interfaces/Java/tests/Makefile.am
+@@ -51,6 +51,8 @@ Parma_Polyhedra_Library_test2.java \
+ PPL_Test.java \
+ ppl_java_tests_common
+ 
++if ENABLE_SHARED
++
+ check_JAVA = \
+ ppl_java_generated_tests.java \
+ Test_Executor.java \
+@@ -62,8 +64,6 @@ Parma_Polyhedra_Library_test1.java \
+ Parma_Polyhedra_Library_test2.java \
+ PPL_Test.java
+ 
+-if ENABLE_SHARED
+-
+ CLASSPATH = ../ppl_java.jar:.
+ JAVACFLAGS = -classpath $(CLASSPATH)
+ 
