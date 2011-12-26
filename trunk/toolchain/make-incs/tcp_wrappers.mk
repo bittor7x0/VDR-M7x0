@@ -52,6 +52,7 @@ $(STAGEFILES_DIR)/.tcp_wrappers_unpacked: $(TCP_WRAPPERS_DLFILE) \
                                            $$(TCP_WRAPPERS_DEPS)
 	-$(RM) -rf $(TCP_WRAPPERS_DIR)
 	$(TAR) -C $(BUILD_DIR) -zf $(TCP_WRAPPERS_DLFILE)
+	chmod -R u+w $(TCP_WRAPPERS_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.tcp_wrappers_unpacked
 
 #
