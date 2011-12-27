@@ -287,7 +287,7 @@ FILE_LISTS_n =
 FILE_LISTS_ =
 FILE_LISTS = $(FILE_LISTS_y)
 
-MAKE_SUBS := $(wildcard $(HOSTUTILS_MAKE_INC_DIR)/*.mk) $(wildcard $(MAKE_INC_DIR)/*.mk)
+MAKE_SUBS := $(sort $(wildcard $(HOSTUTILS_MAKE_INC_DIR)/*.mk)) $(wildcard $(MAKE_INC_DIR)/*.mk)
 include $(MAKE_SUBS)
 
 GUI-TOOL-UTILS := $(STAGEFILES_DIR)/.base_build \
