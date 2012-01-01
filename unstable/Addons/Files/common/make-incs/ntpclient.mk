@@ -79,6 +79,7 @@ $(STAGEFILES_DIR)/.ntpclient_compiled: $(STAGEFILES_DIR)/.ntpclient_patched
 #
 
 $(STAGEFILES_DIR)/.ntpclient_installed: $(STAGEFILES_DIR)/.ntpclient_compiled
+	$(MKDIR) -p $(TARGET_ROOT)/usr/sbin
 	$(CP) $(NTPCLIENT_DIR)/ntpclient $(TARGET_ROOT)/usr/sbin/ntpclient
 	$(MKDIR) -p $(TARGET_ROOT)/etc/ntp
 	$(TOUCH) $(STAGEFILES_DIR)/.ntpclient_installed
