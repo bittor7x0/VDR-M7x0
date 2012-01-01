@@ -16,6 +16,9 @@
 #
 #
 
+# Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
+UPX_DEPS = $(BASE_BUILD_STAGEFILE) $(STAGEFILES_DIR)/.ucl_host_compiled
+# UPX_DEPS += $(UCL_LIB)
 
 UPX_BIN := $(HOSTUTILS_PREFIX_BIN)/upx
 
@@ -63,7 +66,7 @@ $(STAGEFILES_DIR)/.upx_host_patched: $(STAGEFILES_DIR)/.upx_host_unpacked
 # compile upx
 #
 
-$(STAGEFILES_DIR)/.upx_host_compiled: $(STAGEFILES_DIR)/.upx_host_patched $(UCL_LIB)
+$(STAGEFILES_DIR)/.upx_host_compiled: $(STAGEFILES_DIR)/.upx_host_patched $(UPX_DEPS)
 	$(MAKE) -C $(UPX_HOSTDIR) \
 		CXXFLAGS="$(CXXFLAGS) -Wl,-rpath,$(PREFIX)/lib" \
 		UPX_UCLDIR="$(UCL_HOSTDIR)" \
