@@ -21,7 +21,7 @@ echo -n "Formateando discos duros"
 
 for disk in ${disks} ; do
 	dev_disk="/dev/${disk}"
-	size_MiB=`fdisk -l ${dev_disk} | grep  "^Disk ${dev_disk}:" | awk '{print $5/1048576}'`
+	size_MiB=`fdisk -l ${dev_disk} | grep  "^Disk ${dev_disk}:" | awk '{OFMT = "%.0f" ; print $5/1048576}'`
 	partitions=$((${size_MiB}/${size_part_max}+1))
 	new_size_MiB=$((${size_MiB}/${partitions}))
 
