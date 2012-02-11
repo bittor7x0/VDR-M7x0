@@ -1,0 +1,73 @@
+http://sourceforge.net/projects/squashfs/forums/forum/215699/topic/1892634
+
+diff -Naur squashfs3.1-r2-orig/squashfs-tools/mksquashfs.c squashfs3.1-r2/squashfs-tools/mksquashfs.c
+--- squashfs3.1-r2-orig/squashfs-tools/mksquashfs.c	2010-07-16 12:25:20.000000000 +0200
++++ squashfs3.1-r2/squashfs-tools/mksquashfs.c	2010-07-16 12:30:37.924799602 +0200
+@@ -43,10 +43,17 @@
+ #include <pthread.h>
+ 
+ #ifndef linux
++#ifdef __CYGWIN__
++/* Fixes ERROR redinition warning */
++#define NOGDI
++/* To computes num cpu's in win32 */
++#include <windows.h>
++#else
+ #define __BYTE_ORDER BYTE_ORDER
+ #define __BIG_ENDIAN BIG_ENDIAN
+ #define __LITTLE_ENDIAN LITTLE_ENDIAN
+ #include <sys/sysctl.h>
++#endif /* __CYGWIN__ */
+ #else
+ #include <endian.h>
+ #include <sys/sysinfo.h>
+@@ -2989,6 +2996,11 @@
+ 
+ 	if(processors == -1) {
+ #ifndef linux
++#ifdef __CYGWIN__
++		SYSTEM_INFO si;
++		GetSystemInfo(&si);
++		processors = si.dwNumberOfProcessors;
++#else
+ 		int mib[2];
+ 		size_t len = sizeof(processors);
+ 
+@@ -3003,6 +3015,7 @@
+ 			ERROR("Failed to get number of available processors.  Defaulting to 1\n");
+ 			processors = 1;
+ 		}
++#endif /* __CYGWIN__ */
+ #else
+ 		processors = get_nprocs();
+ #endif
+diff -Naur squashfs3.1-r2-orig/squashfs-tools/read_fs.c squashfs3.1-r2/squashfs-tools/read_fs.c
+--- squashfs3.1-r2-orig/squashfs-tools/read_fs.c	2010-07-16 12:25:20.000000000 +0200
++++ squashfs3.1-r2/squashfs-tools/read_fs.c	2009-11-05 13:12:38.000000000 +0100
+@@ -36,9 +36,11 @@
+ #include <sys/mman.h>
+ 
+ #ifndef linux
++#ifndef __CYGWIN__
+ #define __BYTE_ORDER BYTE_ORDER
+ #define __BIG_ENDIAN BIG_ENDIAN
+ #define __LITTLE_ENDIAN LITTLE_ENDIAN
++#endif /* __CYGWIN__ */
+ #else
+ #include <endian.h>
+ #endif
+diff -Naur squashfs3.1-r2-orig/squashfs-tools/unsquashfs.c squashfs3.1-r2/squashfs-tools/unsquashfs.c
+--- squashfs3.1-r2-orig/squashfs-tools/unsquashfs.c	2010-07-16 12:25:20.000000000 +0200
++++ squashfs3.1-r2/squashfs-tools/unsquashfs.c	2009-11-05 13:21:02.000000000 +0100
+@@ -34,9 +34,11 @@
+ #include <utime.h>
+ 
+ #ifndef linux
++#ifndef __CYGWIN__
+ #define __BYTE_ORDER BYTE_ORDER
+ #define __BIG_ENDIAN BIG_ENDIAN
+ #define __LITTLE_ENDIAN LITTLE_ENDIAN
++#endif /* __CYGWIN__ */
+ #else
+ #include <endian.h>
+ #endif
