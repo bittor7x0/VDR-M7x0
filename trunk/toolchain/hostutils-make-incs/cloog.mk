@@ -66,7 +66,7 @@ $(STAGEFILES_DIR)/.cloog_host_patched: $(STAGEFILES_DIR)/.cloog_host_unpacked
 #
 
 $(STAGEFILES_DIR)/.cloog_host_configured: $(STAGEFILES_DIR)/.cloog_host_patched
-	($(CD) $(CLOOG_HOSTDIR) ; $(CLOOG_HOSTDIR)/configure \
+	($(CD) $(CLOOG_HOSTDIR) ; LIBS=-lm $(CLOOG_HOSTDIR)/configure \
 			--prefix=$(PREFIX) \
 			--enable-static \
 			--disable-shared \

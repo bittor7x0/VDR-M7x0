@@ -91,6 +91,7 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 		export libgcc_cv_fixed_point=no ; \
 		export glibcxx_cv_c99_math_tr1=no ; \
 		PATH='$(PREFIX_BIN):$(PATH)' \
+		LDFLAGS='-lm $(LDFLAGS)' \
 		$(GCC_DIR)/configure \
 			--prefix=$(GCC_STAGE1_PREFIX) \
 			--with-sysroot=$(TARGET_ROOT) \
@@ -162,6 +163,7 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 		export libgcc_cv_fixed_point=no ; \
 		export glibcxx_cv_c99_math_tr1=no ; \
 		PATH='$(PREFIX_BIN):$(PATH)' \
+		LDFLAGS='-lm $(LDFLAGS)' \
 		$(GCC_DIR)/configure \
 			--prefix=$(PREFIX) \
 			--with-sysroot=$(TARGET_ROOT) \

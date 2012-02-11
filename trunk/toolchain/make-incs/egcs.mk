@@ -84,8 +84,7 @@ $(STAGEFILES_DIR)/.egcs_unpacked: $(EGCS_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.egcs_patched: $(STAGEFILES_DIR)/.egcs_unpacked
-	$(call patch_package, $(EGCS_DIR), $(EGCS_PATCHES_DIR)/common)
-	$(call patch_package, $(EGCS_DIR), $(EGCS_PATCHES_DIR)/host/$(HOST_BS))
+	$(call patch_package, $(EGCS_DIR), $(EGCS_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.egcs_patched
 
 #

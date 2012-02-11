@@ -17,14 +17,14 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SQLITE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-SQLITE_VERSION := 3.6.12
+SQLITE_VERSION := 3071000
 SQLITE_PATCHES_DIR := $(PATCHES_DIR)/sqlite/$(SQLITE_VERSION)
 
-SQLITE_FILE := sqlite-$(SQLITE_VERSION).tar.bz2
+SQLITE_FILE := sqlite-autoconf-$(SQLITE_VERSION).tar.bz2
 SQLITE_DLFILE := $(DOWNLOAD_DIR)/$(SQLITE_FILE)
-SQLITE_URL := http://www.sqlite.org/sqlite-amalgamation-$(SQLITE_VERSION).tar.gz
-SQLITE_DIR := $(BUILD_DIR)/sqlite-$(SQLITE_VERSION)
-SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-$(SQLITE_VERSION)
+SQLITE_URL := http://www.sqlite.org/sqlite-autoconf-$(SQLITE_VERSION).tar.gz
+SQLITE_DIR := $(BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
+SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_CFLAGS := -fno-fast-math -fno-exceptions -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_OMIT_UTF16
 
 SQLITE_INSTALLED = $(STAGEFILES_DIR)/.sqlite_host_installed $(STAGEFILES_DIR)/.sqlite_installed
