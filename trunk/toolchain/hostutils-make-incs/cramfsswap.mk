@@ -61,6 +61,7 @@ $(STAGEFILES_DIR)/.cramfsswap_host_unpacked: $(CRAMFSSWAP_HOSTDLFILE)
 #
 
 $(STAGEFILES_DIR)/.cramfsswap_host_patched: $(STAGEFILES_DIR)/.cramfsswap_host_unpacked
+	$(call patch_package, $(CRAMFSSWAP_HOSTDIR), $(CRAMFSSWAP_HOSTPATCHES_DIR)/common)
 	$(call patch_package, $(CRAMFSSWAP_HOSTDIR), $(CRAMFSSWAP_HOSTPATCHES_DIR)/host/$(HOST_BS))
 	$(TOUCH) $(STAGEFILES_DIR)/.cramfsswap_host_patched
 #
