@@ -20,7 +20,7 @@
 # The project's page is at http://www.open7x0.org
 #
 
-GCC_VERSION := 4.6.2
+GCC_VERSION := 4.6.3
 GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
 
 GCC_FILE1 := gcc-core-$(GCC_VERSION).tar.bz2
