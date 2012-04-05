@@ -193,3 +193,4 @@ VDR 1.7.18 backports applied in this patch:
   folders stored in "folders.conf".
 * The files "commands.conf" and "reccmd.conf" can now contain nested lists of
   commands. See vdr.5 for information about the new file format.
+* Fixed cConfig::Load() for g++ version 4.7.0 (thanks to Ville Skyttä).

@@ -20,16 +20,13 @@
 # The project's page is at http://www.open7x0.org
 #
 
-GCC_VERSION := 4.6.3
+GCC_VERSION := 4.7.0
 GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
 
-GCC_FILE1 := gcc-core-$(GCC_VERSION).tar.bz2
-GCC_DLFILE1 := $(DOWNLOAD_DIR)/$(GCC_FILE1)
-GCC_FILE2 := gcc-g++-$(GCC_VERSION).tar.bz2
-GCC_DLFILE2 := $(DOWNLOAD_DIR)/$(GCC_FILE2)
+GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
+GCC_DLFILE := $(DOWNLOAD_DIR)/$(GCC_FILE)
 GCC_DIR := $(BUILD_DIR)/gcc-$(GCC_VERSION)
-GCC_URL1 := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE1)
-GCC_URL2 := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE2)
+GCC_URL := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE)
 GCC_BUILD_DIR := $(BUILD_DIR)/gcc.build
 GCC_STAGE1_BUILD_DIR := $(BUILD_DIR)/gcc.stage1.build
 
@@ -48,24 +45,19 @@ FILE_LISTS_y += gcc.lst
 #
 # download gcc
 #
-$(GCC_DLFILE1) $(GCC_DLFILE2): $(TC_INIT_RULE)
-	(if [ ! -f $(GCC_DLFILE1) ] ; then \
-	$(WGET) $(GCC_URL1) -O $(GCC_DLFILE1) ; \
+$(GCC_DLFILE): $(TC_INIT_RULE)
+	(if [ ! -f $(GCC_DLFILE) ] ; then \
+	$(WGET) $(GCC_URL) -O $(GCC_DLFILE) ; \
 	fi );
-	$(TOUCH) $(GCC_DLFILE1) ;
-	(if [ ! -f $(GCC_DLFILE2) ] ; then \
-	$(WGET) $(GCC_URL2) -O $(GCC_DLFILE2) ; \
-	fi );
-	$(TOUCH) $(GCC_DLFILE2) ;
+	$(TOUCH) $(GCC_DLFILE) ;
 
 #
 # unpack gcc
 #
 
-$(STAGEFILES_DIR)/.gcc_unpacked: $(GCC_DLFILE1) $(GCC_DLFILE2) $(wildcard $(GCC_PATCHES_DIR)/*.patch)
+$(STAGEFILES_DIR)/.gcc_unpacked: $(GCC_DLFILE) $(wildcard $(GCC_PATCHES_DIR)/*.patch)
 	-$(RM) -rf $(GCC_DIR)
-	$(BZCAT) $(GCC_DLFILE1) | $(TAR) -C $(BUILD_DIR) -f -
-	$(BZCAT) $(GCC_DLFILE2) | $(TAR) -C $(BUILD_DIR) -f -
+	$(BZCAT) $(GCC_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.gcc_unpacked
 #
 # patch gcc

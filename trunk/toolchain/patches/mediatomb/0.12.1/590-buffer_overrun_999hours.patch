@@ -1,0 +1,21 @@
+Description: Fixes issue for files with length > 999 hours.
+ Fixes issue where files > 999 hours in length overrun the minutes buffer. Some
+ shorter files may incorrectly be reported as over 999 hours and make the
+ program crash.
+Origin: other, http://pkgs.fedoraproject.org/gitweb/?p=mediatomb.git;a=commit;h=f648bc71
+Bug-Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=651414
+Last-Update: 2012-03-03
+
+diff -up ./src/tools.cc.fixbufferoverrun ./src/tools.cc
+--- ./src/tools.cc.fixbufferoverrun	2010-11-22 00:57:31.387188000 -0500
++++ ./src/tools.cc	2010-11-22 00:57:44.865188000 -0500
+@@ -665,6 +665,9 @@ String secondsToHMS(int seconds)
+     h = seconds / 60;
+ 
+     // XXX:XX:XX
++		// This fails if h goes over 999
++		if (h > 999)
++			h = 999;
+     char *str = (char *)malloc(10);
+     sprintf(str, "%02d:%02d:%02d", h, m, s);
+     return String::take(str);
