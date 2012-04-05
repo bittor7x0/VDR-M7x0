@@ -1,0 +1,52 @@
+Description: Add detection for libmozjs185.so during the configure script.
+ Use this library instead of the one provided by iceweasel. This enables js
+ support in mediatomb.
+Bug-Debian: http://bugs.debian.org/631046
+Author: Miguel Colon <debian.micove@gmail.com>
+Last-Update: 2012-03-03
+
+--- mediatomb-0.12.1.orig/configure.ac
++++ mediatomb-0.12.1/configure.ac
+@@ -1036,6 +1036,13 @@ if test "x$JS_OK" = xyes; then
+                 ],
+                 [
+                     unset ac_cv_lib_smjs_JS_NewObject
++                    AC_CHECK_LIB(mozjs185, JS_NewObject,
++                        [
++                            MOZLIB=mozjs185
++                            JS_LIBS="-lmozjs185"
++                        ],
++                        [
++                    unset ac_cv_lib_mozjs185_JS_NewObject
+                     AC_CHECK_LIB(mozjs, JS_NewObject,
+                         [
+                             MOZLIB=mozjs
+@@ -1057,6 +1064,13 @@ if test "x$JS_OK" = xyes; then
+                                             MOZLIB=smjs
+                                         ],
+                                         [
++                                    unset ac_cv_lib_mozjs185_JS_NewObject
++                                    AC_CHECK_LIB(mozjs185, JS_NewObject,
++                                        [
++                                            JS_LIBS="-L$SEARCH_DIR_LIBS -lmozjs185"
++                                            MOZLIB=mozjs185
++                                        ],
++                                        [
+                                             LDFLAGS="-L$SEARCH_DIR_LIBS $LDFLAGS_SAVE -lmozjs"
+                                             unset ac_cv_lib_mozjs_JS_NewObject
+                                             AC_CHECK_LIB(mozjs, JS_NewObject,
+@@ -1071,10 +1085,14 @@ if test "x$JS_OK" = xyes; then
+                                             )
+                                         ]
+                                     )
++                                        ]
++                                    )
+                                 ]
+                             )
+                         ]
+                     )
++                        ]
++                    )
+                 ]
+             )
+        ]

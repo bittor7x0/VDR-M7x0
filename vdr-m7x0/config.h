@@ -106,7 +106,7 @@ public:
                 if (!isempty(s)) {
                    T *l = new T;
                    if (l->Parse(s))
-                      Add(l);
+                      this->Add(l);
                    else {
                       esyslog("ERROR: error in %s, line %d", fileName, line);
                       delete l;
