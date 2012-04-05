@@ -40,7 +40,7 @@ _flush_dcache:  .frame  sp, 0, ra
 		
 		jr	ra
 		.end    _flush_dcache
-                .size   _flush_dcache,.-flush_dcache
+                .size   _flush_dcache,.-_flush_dcache
 
 		.section .init,"ax"
 		.globl  _flush_icache
@@ -59,4 +59,4 @@ _flush_icache:  .frame  sp, 0, ra
 		
 		jr	ra
 		.end    _flush_icache
-                .size   _flush_icache,.-flush_icache
+                .size   _flush_icache,.-_flush_icache
