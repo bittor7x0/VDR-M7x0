@@ -143,10 +143,6 @@ CONFIG_O7O_FLASHER = y
 # BootMenu: Graphical menu with configurable options for boot
 # CONFIG_BOOTMENU is not set
 
-# GDB: The GNU Project Debugger
-# URL: http://www.gnu.org/software/gdb/
-# CONFIG_GDB is not set
-
 
 #################
 #               #
@@ -398,3 +394,26 @@ CONFIG_EXPAT = y
 # UnixBench: A basic indicator of the performance of a Unix-like system
 # URL: http://code.google.com/p/byte-unixbench/
 # CONFIG_UNIXBENCH is not set
+
+
+###########
+#         #
+#  Debug  #
+#         #
+###########
+
+# GDB: The GNU Project Debugger
+# URL: http://www.gnu.org/software/gdb/
+# CONFIG_GDB is not set
+
+# dmalloc: Debug Malloc Library
+# URL: http://dmalloc.com/
+# CONFIG_DMALLOC is not set
+
+# DUMA: (Detect Unintended Memory Access) is a multi-platform memory debugging library
+# URL: http://sourceforge.net/projects/duma/
+# CONFIG_DUMA is not set
+
+# strace: A system call tracer
+# URL: http://sourceforge.net/projects/strace/
+# CONFIG_STRACE is not set
