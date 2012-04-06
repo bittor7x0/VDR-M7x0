@@ -1,0 +1,6 @@
+usr/lib/libdmalloc.so.5.5.2  usr/lib/libdmalloc.so.5.5.2  f 755 0 0 - - - - -
+usr/lib/libdmalloc.so.5.5.2  -                            s   - - - - - - - -
+usr/lib/libdmalloc.so        libdmalloc.so.5.5.2          l 777 0 0 - - - - -
+usr/lib/libdmalloc.so.5      libdmalloc.so.5.5.2          l 777 0 0 - - - - -
+usr/bin/dmalloc              usr/bin/dmalloc              f 755 0 0 - - - - -
+usr/bin/dmalloc              -                            s   - - - - - - - -

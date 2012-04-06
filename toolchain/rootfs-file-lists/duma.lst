@@ -1,0 +1,5 @@
+usr/lib/libduma.so.0.0.0  usr/lib/libduma.so.0.0.0  f 755 0 0 - - - - -
+usr/lib/libduma.so.0.0.0  -                         s   - - - - - - - -
+usr/lib/libduma.so        libduma.so.0.0.0          l 777 0 0 - - - - -
+usr/lib/libduma.so.0      libduma.so.0.0.0          l 777 0 0 - - - - -
+usr/bin/duma              usr/bin/duma              f 755 0 0 - - - - -
