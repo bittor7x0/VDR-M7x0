@@ -39,7 +39,7 @@ eEpgMode cEpgMode::GetMode(bool replaceDefault) const
   eEpgMode em = mode;
   cChannel *channel = Channels.GetByChannelID(channelID, true);
   if (channel && channel->Number() > Setup.EPGChannelNoLimit)
-     em = em == emDefault ? emInvDefault : emDefault;
+     em = emInvDefault;
   if (em == emDefault)
      return eEpgMode(Setup.EPGDefaultMode + emFull);
   return eEpgMode(Setup.EPGInvDefaultMode + emFull);

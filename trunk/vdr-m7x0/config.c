@@ -340,7 +340,7 @@ cSetup::cSetup(void)
 //M7X0 BEGIN AK
   EPGDefaultMode = 0;
   EPGInvDefaultMode = 2;
-  EPGChannelNoLimit = 30;
+  EPGChannelNoLimit = 99;
 //M7X0 END AK
   SVDRPTimeout = 300;
   ZapTimeout = 3;
