@@ -369,7 +369,7 @@ bool PackedStorage::seekTo(PageID page, int desc, bool create) {
       lseek(desc, 0, SEEK_CUR);
       for (int index=0; index<TOC_SIZE; index++) {
          if (addr[index]==page) {
-            lseek(desc, index*TELETEXT_PAGESIZE, SEEK_CUR);
+            lseek(desc, (off_t)(index*TELETEXT_PAGESIZE), SEEK_CUR);
             return true;
          } else if (addr[index].page==0) {
             //0 means: no more pages follow
@@ -381,7 +381,7 @@ bool PackedStorage::seekTo(PageID page, int desc, bool create) {
                if (::write(desc, addr, sizeof(addr)) != sizeof(addr))
                   return false;
                //seek to data position
-               lseek(desc, TELETEXT_PAGESIZE*index, SEEK_CUR);
+               lseek(desc, (off_t)(TELETEXT_PAGESIZE*index), SEEK_CUR);
                return true;
             } else
                return false;
@@ -389,7 +389,7 @@ bool PackedStorage::seekTo(PageID page, int desc, bool create) {
       }
 
       //seek over data area
-      lseek(desc, TELETEXT_PAGESIZE*TOC_SIZE, SEEK_CUR);
+      lseek(desc, (off_t)(TELETEXT_PAGESIZE*TOC_SIZE), SEEK_CUR);
    }
 
    int oldSize=actualFileSize(lseek(desc, 0, SEEK_CUR));
@@ -401,7 +401,7 @@ bool PackedStorage::seekTo(PageID page, int desc, bool create) {
       if (::write(desc, addr, sizeof(addr)) != sizeof(addr))
          return false;
       //seek beyond end of file
-      lseek(desc, (TELETEXT_PAGESIZE*TOC_SIZE)-1, SEEK_CUR);
+      lseek(desc, (off_t)(TELETEXT_PAGESIZE*TOC_SIZE)-1, SEEK_CUR);
       //write one byte to enlarge the file to the sought position
       char c=1;
       if (::write(desc, &c, 1) != 1)
