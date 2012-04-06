@@ -3,8 +3,6 @@
  * See the main source file 'cridplayer.c' for copyright information and
  * how to reach the author.
  *
- * $Id: cridplayer_recording.c 42 2007-04-30 14:25:31Z andreas $
- *
  */
 
 #include "cridplayer_recording.h"

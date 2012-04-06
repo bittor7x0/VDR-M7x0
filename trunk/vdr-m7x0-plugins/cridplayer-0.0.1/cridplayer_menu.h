@@ -3,8 +3,6 @@
  * See the main source file 'cridplayer.c' for copyright information and
  * how to reach the author.
  *
- * $Id: cridplayer_menu.h 13 2007-03-06 07:09:16Z andreas $
- *
  */
 
 #ifndef __CRIDPLAYER_MENU_H

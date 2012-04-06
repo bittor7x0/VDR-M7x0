@@ -24,8 +24,6 @@
  *
  * Some parts are taken from vdr main sources.
  *
- * $Id: cridplayer.c 42 2007-04-30 14:25:31Z andreas $
- *
  */
 
 #include <vdr/plugin.h>
