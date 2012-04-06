@@ -3,8 +3,6 @@
  * See the main source file 'cridplayer.c' for copyright information and
  * how to reach the author.
  *
- * $Id: cridplayer_controller.c 79 2007-10-22 15:37:19Z andreas $
- *
  */
 
 #include "cridplayer_controller.h"
@@ -473,8 +471,8 @@ void cCridRemoveDeleted::DeleteFiles(cList<cPathObject> *deletedFiles)
   for (cPathObject *pathObj = deletedFiles->First(); pathObj; ) {
       if (pathObj->IsDir()) {
          isyslog("Cridplayer: removing directory '%s'", pathObj->Name());
-#ifndef CRID_TEST_CLEANER
-#error "crid cleaner nearly untested don't use it without testmode you may lose data"
+
+         // crid cleaner nearly untested
          if (rmdir(pathObj->Name())) {
             if (errno != ENOENT && errno != ENOTDIR) {
                LOG_ERROR;
@@ -491,7 +489,7 @@ void cCridRemoveDeleted::DeleteFiles(cList<cPathObject> *deletedFiles)
                continue;
                }
             }
-#endif
+
          cPathObject *tmp = pathObj;
          pathObj = deletedFiles->Next(pathObj);
          deletedFiles->Del(tmp);
@@ -499,8 +497,8 @@ void cCridRemoveDeleted::DeleteFiles(cList<cPathObject> *deletedFiles)
          }
 
       isyslog("Cridplayer: removing file '%s'", pathObj->Name());
-#ifndef CRID_TEST_CLEANER
-#error "crid cleaner nearly untested don't use it without testmode you may lose data"
+
+      // crid cleaner nearly untested
       if (unlink(pathObj->Name())) {
           if (errno != ENOENT) {
              LOG_ERROR;
@@ -517,7 +515,7 @@ void cCridRemoveDeleted::DeleteFiles(cList<cPathObject> *deletedFiles)
              continue;
              }
          }
-#endif
+
       cPathObject *tmp = pathObj;
       pathObj = deletedFiles->Next(pathObj);
       deletedFiles->Del(tmp);
