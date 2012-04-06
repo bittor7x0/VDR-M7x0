@@ -223,7 +223,9 @@ bool cDvbTuner::SetFrontend(void)
 {
   dvb_frontend_parameters Frontend;
   dvb_set_ofdm_parameters ofdm_Frontend;
+#ifdef M750S
   dvb_set_qpsk_parameters qpsk_Frontend;
+#endif
   void *set_arg = &Frontend;
   int set_call = FE_SET_FRONTEND;
 
