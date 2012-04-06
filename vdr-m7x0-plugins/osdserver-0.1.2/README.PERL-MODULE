@@ -1,0 +1,230 @@
+                            OSDServer Perl Bindings
+
+
+
+The OSDServer Perl bindings allow OSDServer access for Perl scripts using an 
+encapsulated object-oriented interface that hides the necessary network 
+communication in a perl module.
+
+The examples folder contains the OSDServer.pm module and a ported version of 
+the OSDServer demo as demo-pm.pl. Also, simple helloworld-*.pl samples are
+available.
+
+THIS IS A FIRST DRAFT VERSION, THERE MAY BE BUGS AND THE INTERFACE MAY CHANGE
+IN FUTURE VERSIONS! THE DOCUMENTATION IS NOT YET COMPLETE!
+
+
+Usage
+-----
+
+use OSDServer;
+  loads the library
+
+my $server = OSDServer->Open($host, $port);
+my $server = OSDServer->Open($host);
+my $server = OSDServer->Open();
+  Open connection. $host defaults to localhost, $port defaults to 2010.
+  Returns server object or undef in case of error.
+
+my $server = OSDServer->new();
+$server->ConnectServer($host,$port);
+$server->SendGreeting();
+  Same as Open(), but in separate steps.
+
+$server->Close();
+  Sends QUIT and closes connection
+
+
+Comparison to network protocol
+------------------------------
+
+- Server side objects are named automatically.
+- Server objects are represented by local Perl objects
+- Server commands translate to Perl object methods
+- String quoting happens auto-magically
+- _FOCUS variable can be accessed by $server->GetFocusMenu().
+
+
+
+Global commands
+---------------
+
+$server->Message($message, %options)
+  Send MESSAGE command. Available %options that can be added:
+  Info => 1
+  Warn => 1
+  Error => 1
+  Queue => 1
+  Timeout => $timeout
+  Seconds => $seconds
+  Status => 1
+  StatusClear => 1
+    Hint: $message must be present for StatusClear option, but will be ignored.
+    
+  Returns key code, "" for timeout and undef for error.  
+  See main readme for explanations.  
+  
+$object = $server->NewMenu(...)
+$object = $server->NewOsdItem(...)
+$object = $server->NewEditStrItem(...)
+$object = $server->NewEditIntItem(...)
+$object = $server->NewEditListItem(...)
+  Object constructors. Return undef if error. See below for parameters.
+
+$server->Delete($object)
+  Deleting objects
+
+$server->EnterLocal()
+$server->LeaveLocal()
+  Provided for completeness, though not really necessary. Returns false if 
+  error.
+
+All objects
+-----------
+
+$object->EnableEvent(\@events)
+  Enable events, provided as refetrence to string list. Use like this:
+  $object->EnableEvent(["keyOk", "keyRed"]);
+  Returns false if error.
+  
+$object->Delete()
+  Deleting objects. Returns false if error.
+
+
+Menu objects
+------------
+
+$menu = $server->NewMenu($title)
+  Create new menu. Returns undef if error.
+
+$menu->Add($object)
+  Add menu item. Return false if error.
+  
+$object = $menu->AddNewOsdItem(...)
+$object = $menu->AddNewEditStrItem(...)
+$object = $menu->AddNewEditIntItem(...)
+$object = $menu->AddNewEditListItem(...)
+  Integrated 'adding' constructors. see below for parameters.
+  Return object or undef if error.
+
+$menu->AddSubMenu($menu2)
+  Add sub menu to menu. Returns false if error.
+
+$menu->SetColorKeyText(%options)
+  Set color buttons. Use like this:
+  $menu->SetColorKeyText(Red => "text", Green => "text");
+  Returns false if error.
+
+$menu->SetColumns(@cols)
+  Set columns. Use like this with up to 5 columns:
+  $menu->SetColumns(10, 20, 30)
+  Returns false if error.
+  
+$menu->SetCurrent($index)
+  Select menu item by number
+  Returns false if error.
+
+($itemno, $item, $itemid) = $menu->GetCurrent()
+  Get current item. $itemno is the number, $item is the Perl object
+  or "" if not a Perl object, $itemid the server side object name. 
+  Returns undef if error.
+  
+$menu->Show()
+  Show menu. Returns false if error.
+
+$menu->SendState($state)
+  Send state. Use like this:
+  $menu->SendState("osEnd");
+  Returns false if error.
+  
+($item, $itemid, $event) = $menu->SleepEvent(%options)
+  Sleep for event. $item is the Perl object or "" if not a Perl object, 
+  $itemid the server side object name, $event the occured event.
+  Returns undef if error.
+  Allowed options:
+  Timeout => $timeout
+  TimeoutMS => $timeoutms
+  
+
+
+All menu items
+--------------
+
+$menuitem->SetCurrent()
+  Make this menu item the currently selected item of the menu.
+  Returns false if error.
+
+
+
+OSD items
+---------
+
+$osditem = $server->NewOsdItem($text, %options)
+$osditem = $menu->AddNewOsdItem($text, %options)
+  Add OsdItem. Allowed options:
+  UnSelectable => 1
+  Returns undef if error.
+
+
+$osditem => SetUnSelectable()
+  Make this item un-selectable. Returns false if error.
+  
+
+$osditem->SetSelectable()
+  Make this item selectable again. Returns false if error.
+  
+
+$osditem->SetText($text)
+  Change the text of this item. Returns false if error.
+
+
+
+String edit items
+-----------------
+
+$edititem = $server->NewEditStrItem($description, $value)
+$edititem = $menu->AddNewEditStrItem($description, $value)
+  Create a new OSD menu edit item. Returns undef if error.
+
+
+$str = $edititem->GetValue()
+  Return the current value of the edit item. Returns undef if error.
+  
+
+
+Integer edit items
+------------------
+
+$intitem = $server->NewEditIntItem($description, $value, %options)
+  Create a new OSD menu integer item. Allowed options:
+  Min => $min
+  Max => $max
+  MinString => $minstring
+  MaxString => $maxstring
+  Returns undef if error.
+
+$int = $intitem->GetValue()
+  Return the current value of the integer item, always as number.
+  Returns undef if error.
+
+
+
+List edit items
+---------------
+
+$listitem = $server->NewEditListItem($description, \@listitems, %options)
+$listitem = $menu->AddNewEditListItem($description, \@listitems, %options)
+  Create a new OSD menu list item. One of the list of items can be picked.
+  Allowed options:
+  Select => $select
+  SelectName => $selectname
+  
+  Use like this:
+  $listitem = $server->NewEditListItem("description", ["item1", "item2"], SelectName => "item1");
+  Returns undef if error.
+
+$value = $listitem->GetValue(%options)
+  Returns the currently selected list item, either as number (0..n-1), 
+  or as text, if Name => 1 is specified as option. 
+  Returns undef if error.
+
