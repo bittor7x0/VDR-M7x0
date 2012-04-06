@@ -121,8 +121,11 @@ UCLIBC_NM := $(UCLIBC_TARGET)-nm
 UCLIBC_STRIP := sstrip
 UCLIBC_OBJCOPY := $(UCLIBC_TARGET)-objcopy
 
+# Flags for optimize loops
+UCLIBC_CFLAGS_LOOPS := -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear
+
 # Standard flags for any program
-UCLIBC_CFLAGS := -march=mips2 -mtune=vr4120 -mfix-vr4120 -Ofast -msoft-float -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear
+UCLIBC_CFLAGS := -march=mips2 -mtune=vr4120 -mfix-vr4120 -Ofast -msoft-float
 UCLIBC_CXXFLAGS := $(UCLIBC_CFLAGS) -fvisibility-inlines-hidden
 UCLIBC_LDFLAGS := -Wl,-O1 -Wl,--as-needed -Wl,--sort-common -Wl,--sort-section,alignment
 
