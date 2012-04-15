@@ -5818,7 +5818,7 @@ const tI18nPhrase Phrases[] = {
     "",
     " abcdefghijklmnopqrstuvwxyzÃ¥Ã¤Ã¶0123456789-.,#~\\^$[]|()*+?{}/:%@&",
     "",
-    " aábcçdeéfghiíjklmnñoópqrstuúüvwxyz0123456789-_.,#~\\^$[]|()*+?{}/:%@&_",
+    " aáàbcçdeéèfghiíïjklmnñoóòpqrstuúüvwxyz0123456789-_.,#~\\^$[]|()*+?{}/:%@&_",
     "",
     "",
     "",
