@@ -2,4 +2,4 @@
 # You can read man page about it:
 # http://linux.die.net/man/5/exports
 
-#/var/media	*(rw,sync,no_subtree_check)
+#/var/vdr/video0	*(rw,sync,no_subtree_check)
