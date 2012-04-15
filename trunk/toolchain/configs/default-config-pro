@@ -156,7 +156,7 @@ CONFIG_CSSOPTIMIZER = y
 
 # Closure Compiler: Tool for making JavaScript download and run faster
 # URL: http://code.google.com/closure/compiler/
-CONFIG_CLOSURE_COMPILER = y
+# CONFIG_CLOSURE_COMPILER is not set
 
 # PNGOUT: Optimizes the size of .PNG files losslessly
 # URL: http://www.jonof.id.au/kenutils
