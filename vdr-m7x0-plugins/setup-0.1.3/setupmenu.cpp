@@ -157,7 +157,7 @@ void cSetupPluginMenu::setHelp()
 //	cSetupPluginParameter
 //    Edit Plugin Parameter
 //################################################################################################
-static char *ALLOW_ALL_PARAM_CHARS =" aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789+-={}[]().,;#*?!@/~\"\'";
+const char *ALLOW_ALL_PARAM_CHARS =" abcdefghijklmnopqrstuvwxyz0123456789+-={}[]().,;#*?!_@/~\"\'";
 cSetupPluginParameter::cSetupPluginParameter( const char *title, Plugin * plugin ) : cOsdMenu(title, 25)
 {
   _plugin = plugin;
@@ -180,7 +180,7 @@ void cSetupPluginParameter::Set( )
     strncpy(_editParameter, param, sizeof(_editParameter));
     _editParameter[sizeof(_editParameter)-1]='\0';
   }
-  Add(new cMenuEditStrItem(tr("Plugin-Parameter"), _editParameter, sizeof(_editParameter), ALLOW_ALL_PARAM_CHARS));
+  Add(new cMenuEditStrItem(tr("Plugin-Parameter"), _editParameter, sizeof(_editParameter), tr(ALLOW_ALL_PARAM_CHARS)));
 /*JMG
   char *tmp=NULL;
   asprintf(&tmp, "%s: %s", tr("Plugin"), _plugin->GetName());
@@ -289,7 +289,7 @@ void cSetupGenericMenu::Set( )
              break;
         case Util::TEXT:
           Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
-                                      " aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789-+.#~_/:\"\'"));
+                                      tr(ALLOW_ALL_PARAM_CHARS)));
              break;
          case Util::NUMBER_TEXT:
            Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
@@ -322,7 +322,7 @@ void cSetupGenericMenu::Set( )
         case Util::FILE:          
         case Util::DIR:
           Add(new cMenuEditFileItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
-                                      " aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789-+.#~_/:\"\'"));
+                                      tr(ALLOW_ALL_PARAM_CHARS)));
              break;
         default:
                 break;

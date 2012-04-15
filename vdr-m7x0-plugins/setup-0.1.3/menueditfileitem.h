@@ -31,7 +31,7 @@
 class cMenuEditFileItem : public cMenuEditStrItem {
 
 public:
-  cMenuEditFileItem(const char *Name, char *Value,int len,char* chars):cMenuEditStrItem(Name,Value,len,chars){};
+  cMenuEditFileItem(const char *Name, char *Value,int len,const char* chars):cMenuEditStrItem(Name,Value,len,chars){};
   eOSState ProcessKey(eKeys Key);
 };
 

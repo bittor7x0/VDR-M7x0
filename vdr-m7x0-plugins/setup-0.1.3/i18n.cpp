@@ -1,12 +1,12 @@
 /****************************************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Internationalisation Strings
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  ****************************************************************************/
 #include "i18n.h"
 
@@ -948,7 +948,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 },
-{ "Loading configuration File",                        
+{ "Loading configuration File",
     "",
     "",//TODO
     "",//TODO
@@ -969,7 +969,7 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
 },
-{ "Saving configuration File",                        
+{ "Saving configuration File",
     "",
     "",//TODO
     "",//TODO
@@ -1316,6 +1316,27 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
     "Procesos",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ " abcdefghijklmnopqrstuvwxyz0123456789+-={}[]().,;#*?!_@/~\"\'",
+    " aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789+-={}[]().,;#*?!_@/~\"\'",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    " aábcçdeéfghiíjklmnñoópqrstuúüvwxyz0123456789+-={}[]().,;#*?!_@/~\"\'",
     "",//TODO
     "",//TODO
     "",//TODO
