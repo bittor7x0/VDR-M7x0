@@ -10,7 +10,7 @@
         <menu name="General Configuration">
             <entry name="Start time" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Start time" />
             <entry name="Start rescue keys" sysconfig="rc.local.conf--rescue_keys" type="bool" value="NO" help1="M7x0 restart with HELP+EXIT and VDR with HELP+PIP" />
-            <entry name="VDR Options" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0 -p 0" help1="Add options for VDR" />
+            <entry name="VDR Options" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0" help1="Add options for VDR" />
         </menu>
         <menu name="Directories">
             <entry name="Configuration" sysconfig="rc.local.conf--vdr_confdir" type="directory" value='&quot;/etc/vdr&quot;' help1="Configuration files. NOT MODIFY" />
@@ -22,6 +22,7 @@
             <entry name="EPG direct" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="EPG direct" />
         </menu>
         <menu name="USB HardDisk Configuration">
+            <entry name="Force USB mount" sysconfig="rc.local.conf--force_usb_mount" type="bool" value="NO" help1="Mount USB hard drives before running VDR" />
             <entry name="Devices to stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB devices to stop separated by spaces. Ex.: /dev/sda" />
             <entry name="Inactivity time" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Inactivity time to stop USB Hard disk" />
             <entry name="Stop devices in shutdown" sysconfig="rc.local.conf--hd_spindown_shutdown" type="bool" value="NO" help1="Stop devices in system shutdown" />

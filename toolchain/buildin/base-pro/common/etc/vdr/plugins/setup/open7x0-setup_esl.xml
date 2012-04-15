@@ -35,6 +35,7 @@
             <entry name="Dirección MAC" sysconfig="rc.local.conf--mac" type="text" value="00:01:02:03:04:05" help1="Dirección MAC del M7x0" />
         </menu>
         <menu name="Configuración de discos USB">
+            <entry name="Forzar a montar USB" sysconfig="rc.local.conf--force_usb_mount" type="bool" value="NO" help1="Montar discos duros USB antes de ejecutar el VDR" />
             <entry name="Dispositivos a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivos USB a detener separados por espacios. Ej.: /dev/sda" />
             <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="300" help1="Tiempo de inactividad para detener el disco duro USB" />
             <entry name="Parar dispositivos al apagar" sysconfig="rc.local.conf--hd_spindown_shutdown" type="bool" value="NO" help1="Detener dispositivos al apagar el sistema" />

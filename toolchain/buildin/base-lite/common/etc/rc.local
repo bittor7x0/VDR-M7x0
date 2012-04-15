@@ -4,6 +4,11 @@ source /etc/rc.local.conf
 
 echo -n 'starting local stuff:'
 
+if [ X"${force_usb_mount}" != X"NO" ] ; then
+	echo -n ' force usb-mount'
+	/sbin/usbautomounter mount
+fi
+
 echo -n ' vdr'
 export ${runvdr_vars}
 /bin/ash ${runvdr} &
