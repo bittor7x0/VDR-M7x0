@@ -10,11 +10,11 @@
         <menu name="Configuración general">
             <entry name="Tiempo de inicio" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Segundos para iniciar VDR antes de una grab. programada" />
             <entry name="Iniciar botones de rescate" sysconfig="rc.local.conf--rescue_keys" type="bool" value="NO" help1="Reinicia M7x0 con HELP+EXIT y el VDR con HELP+PIP" />
-            <entry name="Opciones del VDR" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0 -p 0" help1="Opciones pasadas al ejecutar el VDR (Ver documentación)" />
+            <entry name="Opciones del VDR" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0" help1="Opciones pasadas al ejecutar el VDR (Ver documentación)" />
         </menu>
         <menu name="Configuración de directorios">
             <entry name="Dir. archivos configuración" sysconfig="rc.local.conf--vdr_confdir" type="directory" value='&quot;/etc/vdr&quot;' help1="Directorio donde están los archivos de configuración" />
-            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="directory" value="/var/media/disk-volume-0/vdr/videoVDR" help1="Directorio donde se almacenan las grabaciones" />
+            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="directory" value='&quot;/var/media/disk-volume-0/vdr/videoVDR&quot;' help1="Directorio donde se almacenan las grabaciones" />
             <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="directory" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help1="Directorios separados por espacios donde están los plugins" />
         </menu>
         <menu name="Configuración de la EPG">
@@ -22,6 +22,7 @@
             <entry name="EPG inmediata" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="Guardar inmediatamente la EPG o sólo al apagar el VDR" />
         </menu>
         <menu name="Configuración de discos USB">
+            <entry name="Forzar a montar USB" sysconfig="rc.local.conf--force_usb_mount" type="bool" value="NO" help1="Montar discos duros USB antes de ejecutar el VDR" />
             <entry name="Dispositivos a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="Dispositivos USB a detener separados por espacios. Ej.: /dev/sda" />
             <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="300" help1="Tiempo de inactividad para detener el disco duro USB" />
             <entry name="Parar dispositivos al apagar" sysconfig="rc.local.conf--hd_spindown_shutdown" type="bool" value="NO" help1="Detener dispositivos al apagar el sistema" />
