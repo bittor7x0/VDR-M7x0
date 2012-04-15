@@ -468,6 +468,9 @@ eOSState cMenuChannelscan::ProcessKey(eKeys Key)
      }
   } 
 
+  if((kNone == Key) && !HadSubMenu)
+     state = osUnknown; // Allow closing of osd
+
   // forces setup if menu layout should be changed
   if (Key != kNone && !HadSubMenu)
   {

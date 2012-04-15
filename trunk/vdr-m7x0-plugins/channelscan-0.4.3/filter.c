@@ -392,8 +392,10 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
         SI::PMT::Stream stream;
         int Vpid = 0;
         int Ppid = pmt.getPCRPid();
+        int Vtype = 0;
         int Apids[MAXAPIDS + 1] = { 0 };
         int Dpids[MAXDPIDS + 1] = { 0 };
+        int DPpids[MAXDPIDS + 1] = { 0 };
 #if VDRVERSNUM >= 10332
         char ALangs[MAXAPIDS + 1][MAXLANGCODE2] = { "" };
         char DLangs[MAXDPIDS + 1][MAXLANGCODE2] = { "" };
@@ -410,7 +412,9 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
             switch (stream.getStreamType()) {
               case 1: // STREAMTYPE_11172_VIDEO
               case 2: // STREAMTYPE_13818_VIDEO
+              case 0x1B: // MPEG4 
                       Vpid = stream.getPid();
+                      Vtype = stream.getStreamType();
                       break;
               case 3: // STREAMTYPE_11172_AUDIO
               case 4: // STREAMTYPE_13818_AUDIO
@@ -441,12 +445,15 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
               //XXX case 8: // STREAMTYPE_13818_DSMCC
                       {
                       int dpid = 0;
+                      int dppid = 0;
                       char lang[4] = { 0 };
                       SI::Descriptor *d;
                       for (SI::Loop::Iterator it; (d = stream.streamDescriptors.getNext(it)); ) {
                           switch (d->getDescriptorTag()) {
                             case SI::AC3DescriptorTag:
+                            case SI::EAC3DescriptorTag:
                                  dpid = stream.getPid();
+                                 dppid = d->getDescriptorTag();
                                  break;
                             case SI::TeletextDescriptorTag:
                                  Tpid = stream.getPid();
@@ -463,6 +470,7 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                       if (dpid) {
                          if (NumDpids < MAXDPIDS) {
                             Dpids[NumDpids] = dpid;
+                            DPpids[NumDpids] = dppid;
                             strn0cpy(DLangs[NumDpids], lang, 4);
                             NumDpids++;
                             }
@@ -475,7 +483,7 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                 delete d;
                 }
             }
-        Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid);
+        Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid, Vtype, DPpids);
         //printf("#### %i %s %i %i SID  %i\n",num,Channel->Name(),Vpid, Apids[0], Channel->Sid());
         Channel->SetCaIds(CaDescriptors->CaIds());
         Channel->SetCaDescriptors(CaDescriptorHandler.AddCaDescriptors(CaDescriptors));
@@ -562,6 +570,7 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                    case 0x03: // DVB Subtitles
                    case 0x04: // NVOD reference service
                    case 0x05: // NVOD time-shifted service
+                   case 0x19: // digital HD television service
                    case 0x11: // digital television service MPEG-2 HD 
                    case 0xC3: // some french channels like kiosk
                         {
