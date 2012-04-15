@@ -10,3 +10,5 @@ usr/bin/genindex    usr/bin/genindex    f 755 0 0 - - - - -
 usr/bin/genindex    -                   s   - - - - - - - -
 usr/bin/io-test     usr/bin/io-test     f 755 0 0 - - - - -
 usr/bin/io-test     -                   s   - - - - - - - -
+usr/bin/vdron       usr/bin/vdron       f 755 0 0 - - - - -
+usr/bin/vdron       -                   s   - - - - - - - -

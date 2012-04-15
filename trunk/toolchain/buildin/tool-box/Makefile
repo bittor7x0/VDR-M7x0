@@ -27,7 +27,7 @@ PREFIX := /usr/local
 SBINDIR := $(PREFIX)/sbin
 BINDIR := $(PREFIX)/bin
 SPRGS := pic_tool avswctl
-PRGS := osddrawtext svdrpsend genindex io-test
+PRGS := osddrawtext svdrpsend genindex io-test vdron
 RM := rm
 CP := cp
 MKDIR := mkdir
@@ -46,6 +46,8 @@ genindex_OBJS := genindex.o
 genindex_LDADD :=
 io-test_OBJS := io-test.o
 io-test_LDADD :=
+vdron_OBJS := vdron.o
+vdron_LDADD :=
 
 # sort unifies (is the only reason for sorting)
 ALL_OBJS := $(sort $(foreach bin,$(SPRGS) $(PRGS),$($(bin)_OBJS)))

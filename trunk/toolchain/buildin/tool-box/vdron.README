@@ -1,0 +1,49 @@
+'vdronoff' is obsolete since vdr-0.94 can shutdown itself now.
+To power on a vdr-box, 'vdron' is sufficient.
+
+Description
+===========
+
+Since my vdr-box boots diskless from a server which runs 24/7
+I can use wake on lan to power on the box. After a recording
+is complete and no one used the remote control the box
+shuts itself down. The server has to have access to vdr's
+timers.conf file (keeping vdr's config files on the server
+and let the vdr box mount this directory should do the trick) 
+
+Server:
+/usr/local/sbin/vdron 2 /video/timers.conf "/usr/local/sbin/wakeup 192.168.1.4 eth0 00:01:81:04:20:61"
+is executed every minute by crond, it checks
+'timers.conf' and calls 'wakeup' to boot the vdr-client
+ 2 minutes before a timer gets active.
+
+
+Requirements:
+=============
+
+vdr       : http://www.cadsoft.de/people/kls/vdr/
+ether-wake: http://www.scyld.com/expert/wake-on-lan.html
+
+Files
+=====
+
+
+vdron:
+---------
+
+vdronoff has to be called with the following arguments:
+
+<min> ... 'command' will be executed 'min' minutes before the timer gets active.
+
+<timers.conf> ... timers.conf file
+
+<command> ... command that should be executed to power on a vdr box.
+
+
+wakeup:
+-------
+
+Script that calls 'ether-wake' when there was no 
+ping reply. (using ether-wake when my box is already
+running makes my box reboot instead of power off 
+when I shut it down.) 
