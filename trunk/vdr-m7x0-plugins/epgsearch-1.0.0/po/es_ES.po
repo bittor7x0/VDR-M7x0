@@ -591,7 +591,7 @@ msgid "Button$Test"
 msgstr "Probar"
 
 msgid "$ abcdefghijklmnopqrstuvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&_"
-msgstr " aábcçdeéfghiíjklmnñoópqrstuúüvwxyz0123456789-_.,#~\\^$[]|()*+?{}/:%@&_"
+msgstr " aáàbcçdeéèfghiíïjklmnñoóòpqrstuúüvwxyz0123456789-_.,#~\\^$[]|()*+?{}/:%@&_"
 
 msgid "Start/Stop time has changed"
 msgstr "Ha cambiado el tiempo inicial/final"
