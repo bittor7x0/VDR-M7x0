@@ -20,19 +20,18 @@ a.progressbar:hover {
 	border:none;
 }
 .progressbar .pbstart{
-	-moz-border-radius-topleft:3px;
-	-moz-border-radius-bottomleft:3px;
-	-webkit-border-top-left-radius:3px;
-	-webkit-border-bottom-left-radius:3px;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
 }
 .progressbar .pbend{
-	-moz-border-radius-topright:3px;
-	-moz-border-radius-bottomright:3px;
-	-webkit-border-top-right-radius:3px;
-	-webkit-border-bottom-right-radius:3px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
 .progressbar .pbenabled{
 	background:#005104 url(images/ui-bg_gloss-wave_75_005104_1x100.png) repeat-x scroll 50% 50%;
+}
+.timer.conflict {
+	background-color: transparent;
 }
 .conflict .progressbar .pbenabled {
 	background-color: #d93a3a;

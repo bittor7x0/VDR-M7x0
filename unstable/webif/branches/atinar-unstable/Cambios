@@ -1,3 +1,15 @@
+* Actualización a la versión 2.0 del vdrwi:
+* Reorganización/reescritura del código en torno a la idea de 'recurso'.
+* Migración del código de .kl1 a .c.
+* Posibilidad de configurar parámetros a nivel de cada navegador.
+* Temas css.
+* Estructura de html más homogénea.
+* Optimizaciones y corrección de errores.
+* Implementación inicial del método PROPFIND de WebDAV que permite ver los
+  recursos disponibles como carpetas web.
+2010-12-11
+* Reorganizados directorios para generar librería y no incrustar archivos innecesarios.
+* Actualizado a versión 2.3.0 del Klone
 2010-10-17
 * Mostrar logos en información de los canales.
 * Señalar gráficamente grabaciones editadas.

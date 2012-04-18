@@ -1,8 +1,69 @@
-table#recordings tr .controls {
-	float:right;
-	margin:0 2px;
+ul.path li.dir {
+	display: block;
+	float: left;
+	padding: 0;
+	margin: 1px 0.2em;
 }
-
+.path .dir a.act,
+.path .dir a:hover {
+	color: #ffff4f!important;
+}
+ul#folders {
+	margin: 0.25em;
+}
+.csscolumns ul#folders {
+	margin: 0.5em;
+	-moz-column-width: 22em;
+	-webkit-column-width: 22em;
+	column-width: 22em;
+	-moz-column-gap: 0.5em;
+	-webkit-column-gap: 0.5em;
+	column-gap: 0.5em;
+}
+li.itemDiv {
+    border-radius: 0.3em;
+}
+.boxshadow .theme1 li.itemDiv {
+	border: 1px solid #D2C1A0;
+	box-shadow: 0 0 3px #D0BF9D;
+}
+li.level4Div.itemDiv {
+	display: inline-block;
+	margin: 0.25em;
+	width: 22em;
+	overflow: hidden;
+}
+.csscolumns li.level4Div.itemDiv {
+	display: block;
+	margin: 0 0 0.5em;
+	width: auto;
+    overflow: visible;
+}
+.csscolumns li.itemDiv {
+    margin: 0 0 0.25em;
+}
+.csscolumns li.recDiv,
+.csscolumns li.mfDiv,
+.csscolumns div.rec,
+.csscolumns div.mf {
+	-webkit-column-break-inside: avoid;
+    column-break-inside: avoid;
+	break-inside: avoid-column;
+}
+.csscolumns li.recDiv,
+.csscolumns li.mfDiv {
+    /* workaround for break-inside absence in firefox */
+    display: inline-block !important;
+    width: 100% !important;
+}
+.theme1 li.itemDiv.folderDiv {
+	background-color: #FBF1DF;
+}
+table#recordings {
+    width: 60em;
+    min-width: 60%;
+	max-width: 95%;
+}
 table#recEdit {
 	min-width:70%;
 }
@@ -10,90 +71,4 @@ table#recEdit input,
 table#recEdit textarea {
 	width:98%;
 	margin:0;
-}
-/* Browse */
-.level3-top {
-	overflow:hidden;
-	padding:0.5em 0.5em;
-}
-.recPath .recDir {
-	display:block;
-	float:left;
-	padding:0;
-	margin:1px 0.2em;
-}
-.recPath .recDir a.act,
-.recPath .recDir a:hover {
-	color:#ffff4f!important;
-}
-.recPath .recDir a:before {
-	content: " / ";
-}
-li.level4-div {
-	display:inline-block;
-	width:295px;
-	position:relative;
-	margin-top:1em!important;
-	min-height:5em;
-	max-height:15em;
-	overflow:auto;
-}
-.recFolder {
-	padding:2px;
-	border:1px solid #6797E7;
-	-moz-border-radius:5px;
-	-webkit-border-radius:5px;
-}
-li.recFolder {
-	margin:2px;
-}
-ul li.recRec {
-	background-color:transparent;
-	border:none;
-	margin:0.1em 0.25em;
-	list-style-type:circle;
-	list-style-position:inside;
-	padding-left:0.5em;
-}
-ul li.recRec.recRecEdt {
-	list-style-type:disc!important;
-}
-.recRecDel {
-	text-decoration:line-through!important;
-}
-.recFolder a, 
-.recFolder a:link, 
-.recFolder a:visited {
-	color:#202040;
-}
-li.recRec:hover {
-	color:#272747;
-	background-color:#F0F0FF;
-}
-.recFolderHeader {
-	background-color:transparent;
-	display:block;
-	font-size:1.1em;
-	font-weight:bold;
-}
-.recFolderHeader a {
-	vertical-align:middle;
-}
-.recFolderHeader a:hover {
-	color:#234;
-	font-weight:bold;
-}
-.recDetails {
-	background-color:#FFCF9F;
-	padding:3px;
-	margin-bottom:1px;
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-}
-.recFolderFooter .field {
-	font-size:0.9em;
-	display:inline;
-}
-.recFolder .controls {
-	overflow:hidden;
 }

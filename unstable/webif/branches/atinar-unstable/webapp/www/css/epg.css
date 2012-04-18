@@ -1,141 +1,90 @@
 @import url('progressbar.css');
+@import url('infoLevel.css');
 table#epg th.timers,
 table#epg td.timers {
-	padding:0;
+    padding:0;
 }
 table#epg td.timers {
-	vertical-align:top;
-	padding-bottom:2px;
+    vertical-align:top;
+    padding-bottom:2px;
 }
-/*
-#epg .timers .timer {
-	border:1px solid #B8BFA0;
-}
-#epg .progressbar .pbenabled {
-	background-color:#949CA6;
-}
-*/
 a.timerCreate .ui-icon-rec {
-	background-image:url(images/rec16.png)!important;
-	background-position:0 0;
+    background-image:url(images/rec16.png)!important;
+    background-position:0 0;
 }
-h2.level2-top {
-	padding-left:60px;
-	position:relative;
+#channelLogo {
+    width:2.5em;
+    height:2.5em;
+    background: none #FFFFFF;
+    float: left;
+    margin: 0 1em 0 -1em;
 }
-h2.level2-top #logo {
-	width:40px;
-	height:40px;
-	background:transparent url(images/ui-bg_alpha50_ffffff_100.png) repeat-x 50% 50%;
-	position:absolute;
-	top:50%;
-	left:10px;
-	margin-top:-20px;
+.noChannelsLogo #channelLogo {
+    display: none;
 }
-.level4-div {
-	width:40ex;
-	display:inline-block;
+.level4Div.dayDiv {
+    width:32.9%;
+	max-width: 50ex;
+	padding: 0 0.25em;
+    display:inline-block;
 }
-.level4 .event {
-	background: white none;
-	margin:0.5ex 0;
-	padding:0.25ex;
-	/*border-top:1px solid #949CA6;*/
+.csscolumns .level4Div.dayDiv {
+    width: auto;
+	max-width: none;
+	padding: 0;
+    display: block;
 }
-.event .timers {
-	padding:0 2px;
+.csscolumns .level4.day {
+    padding: 5px 5px 0;
+    -moz-column-width: 40ex;
+    -webkit-column-width: 40ex;
+    column-width: 40ex;
 }
-.event .eventContent {
-	padding:2px;
+.csscolumns .eventDiv {
+	-webkit-column-break-inside: avoid;
+	break-inside: avoid-column;
 }
-.level4 .event .eventContent *{
-	vertical-align:top;
+.eventDiv.opened>.event {
+	padding-top: 0;
 }
-/*
-.level4 .event .eventContent .fromTo {
-	display:inline-block;
-	width:6ex;
+.eventDiv .event .shortdesc,
+.eventDiv .event .desc {
+    display: block;
+    clear: both;
 }
-.level4 .event .eventContent .title {
-	display:inline-block;
-	width:33ex;
+.eventHead .fromTo {
+    font-weight: normal;
 }
-*/
-.event .eventContent .controls {
-	display:none;
+.eventHead .fromTo .start .l {
+    display:none;
 }
-.event .eventContent.compact * {
-	display:none;
+.eventHead .fromTo .end,
+.eventHead .fromTo .duration {
+    display:none;
 }
-.event .eventContent .more {
-	display:none;
+.event .title {
+	display: none;
 }
-.event .eventContent.compact .more {
-	display:inline!important;
-	text-decoration:none!important;
-	vertical-align:top;
-	line-height:0.8!important;
+.eventInfo .event  .title {
+	display: block;
 }
-.event .eventInfo {
-	display:none;
+.item.event ul.controls {
 }
-.event.full .eventInfo {
-	display:block;
-	/*background-color:#FFEFAF;*/
-	background-color:PeachPuff;
-	padding:2px;
-	-moz-border-radius:2px;
-	-webkit-border-radius:2px;
+.event .fromTo {
+    display: block;
 }
-.event .eventContent .shortdesc,
-.event .eventContent .desc {
-	display:none;
+.event .fromTo {
+    margin-top:0;
 }
-.eventContent .fromTo .start .l {
-	display:none;
+.event .fromTo .t{
+    color: #26511A;
 }
-.eventContent .fromTo .end,
-.eventContent .fromTo .duration {
-	display:none;
+.event .fromTo .l{
+    font-weight:bold;
 }
-.eventInfoDiv {
-	background-color:Moccasin;
+.event .shortdesc {
+    font-style:italic;
 }
-.eventInfo ul.controls {
-	display:inline-block;
-	margin-bottom:0.25em;
-}
-.eventInfo .fromTo,
-.eventInfo .title {
-	display:block;
-}
-.eventInfo .fromTo {
-	margin-top:0;
-}
-.eventInfo .fromTo .t{
-	color:green;
-}
-.eventInfo .title,
-.eventInfo .fromTo .l{
-	font-weight:bold;
-	color:#444;
-}
-.eventInfo .shortdesc {
-	font-style:italic;
-}
-.level4 .eventInfo .fromTo .duration {
-	display:block;
-}
-.eventInfo a.button-i {
-	width:22px;
-	height:22px;
-	margin-right:0.25em;
-	position:relative;
-}
-.eventInfo a.button-i .ui-icon {
-	position:absolute;
-	top:50%;
-	left:50%;
-	margin-top:-8px;
-	margin-left:-8px;
+.event .fromTo .duration {
+    display:block;
 }

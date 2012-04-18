@@ -10,7 +10,6 @@
 }
 .sf-menu {
 	line-height:1.0;
-	font-family:sans-serif;
 }
 .sf-menu ul {
 	position:absolute;
@@ -29,15 +28,13 @@
 	border-style:solid;
 	margin-top:2px;
 	margin-right:2px!important;
-	-moz-border-radius:2px;
-	-webkit-border-radius:2px;
+	border-radius:2px;
 }
 .sf-menu li li {
 	background-color:#556;
 	border:medium none;
 	margin-top:0;
-	-moz-border-radius:0;
-	-webkit-border-radius:0;
+	border-radius:0;
 }
 .sf-menu li li li {
 	background:#9AAEDB;
@@ -128,8 +125,6 @@ li.sfHover > a > .sf-sub-indicator {
 .sf-shadow ul {
 	background:	url('images/shadow.png') no-repeat bottom right;
 	padding: 0 8px 9px 0;
-	-moz-border-radius-bottomleft: 17px;
-	-moz-border-radius-topright: 17px;
-	-webkit-border-top-right-radius: 17px;
-	-webkit-border-bottom-left-radius: 17px;
+	border-bottom-left-radius: 17px;
+	border-top-right-radius: 17px;
 }

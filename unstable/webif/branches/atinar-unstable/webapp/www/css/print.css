@@ -68,20 +68,6 @@ table#programs .boxRight {
 	margin:0;
 	padding:0;
 }
-table#programs .infobox {
-	display:block;
-	position:static;
-}
-table#programs .infobox .infoWrapper {
-	display:block;
-	position:static;
-	width:100%;
-}
-table#programs .infobox .infoWrapper info {
-	display:block;
-	position:static;
-}
-
 .boxRight img,
 .boxRight a {
 	display:none;
