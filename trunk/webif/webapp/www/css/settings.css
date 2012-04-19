@@ -1,7 +1,11 @@
+.param fieldset {
+	display: inline;
+}
 .revert {
 	display:none;
+	font-size: 0.7em;
 }
 .changed .revert {
 	display:block;
-	float:left;
+	float:right;
 }

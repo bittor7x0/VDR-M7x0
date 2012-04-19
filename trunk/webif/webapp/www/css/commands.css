@@ -1,6 +1,9 @@
 table#commands {
 	width:94%;
 	margin:0 3%;
+	border-collapse: separate;
+	border-spacing: 1em;
+	border: none;
 }
 table#commands col.menu {
 	width:25%;
@@ -23,9 +26,10 @@ ul.commands ul.commands li.command {
 #resultContainer {
 	border:1px solid #303030;
 	background-color:#F0F0F0;
+	padding: 0;
 }
 iframe#result {
 	width:100%;
-	height:600px;
+	height:40em;
 	border:none;
 }

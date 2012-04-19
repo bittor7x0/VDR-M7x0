@@ -1,0 +1,16 @@
+diff -Naur klone-2.4.0/makl/helpers/mkdep.gcc.sh klone-2.4.0-fixed/makl/helpers/mkdep.gcc.sh
+--- klone-2.4.0/makl/helpers/mkdep.gcc.sh	2010-12-09 11:41:25.000000000 +0100
++++ klone-2.4.0-fixed/makl/helpers/mkdep.gcc.sh	2011-04-08 21:42:46.000000000 +0200
+@@ -79,10 +79,11 @@
+ CC=${CC-"cc"}
+ MKDEP_CPP=${MKDEP_CPP-"${CC} -E"}
+ MKDEP_CPP_OPTS=${MKDEP_CPP_OPTS-"-M"};
++MKDEP_CPP_FILTERED=$(echo "$@" | sed s/-a\ // | sed s/-O2\ //)
+ 
+ echo "# $@" > $TMP	# store arguments for debugging
+ 
+-if $MKDEP_CPP $MKDEP_CPP_OPTS "$@" >> $TMP; then :
++if $MKDEP_CPP $MKDEP_CPP_OPTS $MKDEP_CPP_FILTERED >> $TMP; then :
+ else
+ 	echo 'mkdep: compile failed' >&2
+ 	exit 1

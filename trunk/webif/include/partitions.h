@@ -1,18 +1,13 @@
-/*
-* 
-* This source-code is licensed under GPL v2.
-* See ../../LICENSE for details
-* 
-* Originally written for http://vdr-m7x0.foroactivo.com.es by:
-* atinar <atinar1@hotmail.com>
-* 
-* You will need the KLONE web application development framework
-* from www.koanlogic.com Version 2.
-* 
-*/
+/**
+ * This source-code is licensed under GPL v2.
+ * See ../../LICENSE for details
+ * 
+ * @author: atinar <atinar1@hotmail.com>
+ * 
+ */
 
-#ifndef __PARTITIONS_H__
-#define __PARTITIONS_H__
+#ifndef WI_PARTITIONS_H
+#define WI_PARTITIONS_H
 
 #include "conf.h"
 #include "misc.h"

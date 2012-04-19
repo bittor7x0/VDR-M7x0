@@ -1,18 +1,13 @@
-/*
-* 
-* This source-code is licensed under GPL v2.
-* See ../../LICENSE for details
-* 
-* Originally written for http://vdr-m7x0.foroactivo.com.es by:
-* atinar <atinar1@hotmail.com>
-* 
-* You will need the KLONE web application development framework
-* from www.koanlogic.com Version 2.
-* 
-*/
+/**
+ * This source-code is licensed under GPL v2.
+ * See ../../LICENSE for details
+ * 
+ * @author: atinar <atinar1@hotmail.com>
+ * 
+ */
 
-#ifndef __HOOKS_H__
-#define __HOOKS_H__
+#ifndef WI_HOOKS_H
+#define WI_HOOKS_H
 
 #include <sys/stat.h>
 #include "misc.h"

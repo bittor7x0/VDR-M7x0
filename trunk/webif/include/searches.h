@@ -1,20 +1,13 @@
-/*
-* 
-* This source-code is licensed under GPL v2.
-* See ../../LICENSE for details
-* 
-* (c) Atinar <atinar1@hotmail.com>
-* Please checkout the README file!
-* 
-* Originally written for http://vdr-m7x0.foroactivo.com.es
-* 
-* You will need the KLONE web application development framework
-* from www.koanlogic.com Version 2.
-* 
-*/
+/**
+ * This source-code is licensed under GPL v2.
+ * See ../../LICENSE for details
+ * 
+ * @author: atinar <atinar1@hotmail.com>
+ * 
+ */
 
-#ifndef __SEARCHES_H__
-#define __SEARCHES_H__
+#ifndef WI_SEARCHES_H
+#define WI_SEARCHES_H
 
 #include "channels.h"
 #include "conf.h"
@@ -160,7 +153,7 @@ bool initSearchFromArgs(search_t *const search, vars_t *args, channelList_t *cha
 void freeSearch(search_t *const entry);
 void initSearchList(searchList_t *const searches);
 void freeSearchList(searchList_t *const searches);
-void getSearchList(searchList_t *const searchs, channelList_t const *const channels, const sortField_t sortBy, const sortDirection_t sortDirection);
+void getSearchList(searchList_t *const searchs, channelList_t const *const channels, const sortField_t sortField, const sortDirection_t sortDirection);
 bool parseSearch(const char *line, search_t *const search, channelList_t const *const channels);
 bool addSearch(wcontext_t *wctx, hostConf_t *host, const char *newSearchStr);
 bool editSearch(wcontext_t *wctx, hostConf_t *host, int id, const char *oldSearchStr, const char *newSearchStr);
@@ -175,5 +168,6 @@ void initSearchCatList(searchCatList_t *const cats);
 void freeSearchCatList(searchCatList_t *const cats);
 void getSearchCatList(searchCatList_t *const cats, hostConf_t *host);
 bool printSearchCatListFilter(wcontext_t *wctx,const search_t *search,const searchCatList_t * const cats,const char *fieldsetId );
+void printSearchesPage(wcontext_t *wctx);
 
 #endif

@@ -1,24 +1,14 @@
-/*
-* 
-* This source-code is licensed under GPL v2.
-* See ../../LICENSE for details
-* 
-* (c) Christian Kelinski <k@kille.cx>
-* Please checkout the README file!
-* 
-* Originally written for the open7x0.org VDR-FW project:
-* www.open7x0.org
-* 
-* Modified for http://vdr-m7x0.foroactivo.com.es by:
-* atinar <atinar1@hotmail.com>
-* 
-* You will need the KLONE web application development framework
-* from www.koanlogic.com Version 2.
-* 
-*/
+/**
+ * This source-code is licensed under GPL v2.
+ * See ../../LICENSE for details
+ * 
+ * @author: Christian Kelinski <k@kille.cx>
+ * @author: atinar <atinar1@hotmail.com>
+ * 
+ */
 
-#ifndef __TIMERS_H__
-#define __TIMERS_H__
+#ifndef WI_TIMERS_H
+#define WI_TIMERS_H
 
 #include "channels.h"
 #include "conf.h"
@@ -51,13 +41,12 @@ typedef struct vdrTimer_s {
 	int hostId;
  	time_t start;
 	time_t stop;
-	//TODO time_t eventStart;
-	//TODO time_t eventStop;
 	timerType_t type;
 	int priority;
 	int lifetime;
 	uint flags;
 	char wdays[8];
+	char *firstDay;
 	char *title;
 	char *aux;
 	int channelNum;
@@ -95,12 +84,12 @@ bool initTimerFromArgs(vdrTimer_t *const timer, vars_t *args, wcontext_t *wctx);
 void freeTimer(vdrTimer_t *const entry);
 void initTimerList(timerList_t *const list);
 void freeTimerList(timerList_t *const list);
-void getTimerList(timerList_t *const timers, channelList_t const *const channels, const sortField_t sortBy, const sortDirection_t sortDirection);
+void getTimerList(timerList_t *const timers, channelList_t const *const channels, const sortField_t sortField, const sortDirection_t sortDirection);
 bool addTimer(wcontext_t *wctx, hostConf_t *host, const char *newTimerStr);
 bool editTimer(wcontext_t *wctx, hostConf_t *host, int id, const char *oldTimerStr, const char *newTimerStr);
 bool deleteTimer(wcontext_t *wctx, hostConf_t *host, int id, const char *oldTimerStr);
 bool parseTimer(const char *line, vdrTimer_t *const timer);
-char *makeRegularTimerStr(uint flags,int channelNum,const char *wdays,time_t start,time_t stop,int priority,int lifetime,char *title,const char *aux);
+char *makeRegularTimerStr(uint flags,int channelNum,const char *wdays,const char *firstDay,time_t start,time_t stop,int priority,int lifetime,char *title,const char *aux);
 char *makeOneTimeTimerStr(uint flags,int channelNum,time_t start,time_t stop,int priority,int lifetime,char *title,const char *aux);
 char *makeTimerStr(vdrTimer_t *const timer);
 void printTimerForm(wcontext_t *wctx, vdrTimer_t *const timer, channelList_t const *const channels);
@@ -111,6 +100,6 @@ void freeConflict(conflict_t * const conflict);
 void initConflictList(conflictList_t * const conflicts);
 void freeConflictList(conflictList_t * const conflicts);
 void getConflictList(conflictList_t * const conflicts, timerList_t const * timers);
-
+void serveTimersPage(wcontext_t *wctx);
 
 #endif
