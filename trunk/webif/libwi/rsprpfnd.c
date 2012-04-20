@@ -98,7 +98,7 @@ void printMediaResourcePropFind(void *this, wcontext_t *wctx, const char *path, 
         u_string_cat(pstr, "</propstat>\n");
     } else {
         if (propFind->allProps || propFind->props.displayName) {
-            printPropStat(pstr, HTTP_STATUS_OK, true, DisplayName, "%s.%s", resource->getDisplayName(resource));
+            printPropStat(pstr, HTTP_STATUS_OK, true, DisplayName, "%s.%s", resource->getDisplayName(resource, false));
         }
         printWIPropStats(pstr, resource, propFind);
         if (propFind->allProps || propFind->props.resourceType) {
@@ -147,7 +147,7 @@ void printRsCollectionPropFind(void *this, wcontext_t *wctx, const char *path, c
         u_string_cat(pstr, "</propstat>\n");
     } else {
         if (propFind->allProps || propFind->props.displayName) {
-            printPropStat(pstr, HTTP_STATUS_OK, true, DisplayName, resource->getDisplayName(resource));
+            printPropStat(pstr, HTTP_STATUS_OK, true, DisplayName, resource->getDisplayName(resource, false));
         }
         printWIPropStats(pstr, resource, propFind);
         if (propFind->allProps || propFind->props.resourceType) {
