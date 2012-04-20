@@ -41,6 +41,8 @@ Content-Length: 303
 -----------------
  */
 
+#ifdef VDRWI_WEBDAV
+
 #include <strings.h>
 
 #include "resource.h"
@@ -187,3 +189,5 @@ void propFind(wcontext_t * wctx) {
 outOfMemory:
     exit(1);
 }
+
+#endif

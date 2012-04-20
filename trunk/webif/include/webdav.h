@@ -75,5 +75,4 @@ extern "C" {
 }
 #endif
 
-#endif	/* CSS_H */
-
+#endif	/* WI_WEBDAV_H */

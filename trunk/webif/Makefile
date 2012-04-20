@@ -40,8 +40,7 @@ KLONE_HOST_PATCH_FILE= $(KLONE_TARGET_PATCH_FILE)
 # KLONE_CUSTOM_TC = $(CURDIR)/linux-mips-uclibc.tc
 
 # helper libs
-SUBDIR = $(CURDIR)/libwi 
-#SUBDIR += $(CURDIR)/libwd
+SUBDIR = $(CURDIR)/libwi $(CURDIR)/libwd
 
 # web application directory (defaults to webapp/ in the current dir)
 WEBAPP_DIR = $(CURDIR)/webapp
@@ -53,8 +52,7 @@ COMMON_CFLAGS += -I$(KLONE_SRC) -I$(CURDIR)/include $(DEBUG) -D_GNU_SOURCE -D_FI
 export COMMON_CFLAGS
 WEBAPP_CFLAGS = $(COMMON_CFLAGS)
 #WEBAPP_LDFLAGS = -lexpat
-WEBAPP_LDADD = ${CURDIR}/libwi/libwi.a
-#WEBAPP_LDADD += $(CURDIR)/libwd/libwd.a
+WEBAPP_LDADD = ${CURDIR}/libwi/libwi.a $(CURDIR)/libwd/libwd.a
 
 include klapp.mk
 
