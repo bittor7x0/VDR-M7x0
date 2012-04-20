@@ -21,7 +21,7 @@ KLONE_VERSION = 2.4.0
 # klone configure arguments
 KLONE_CONF_ARGS = --disable-lib=openssl --disable-lib=z --disable_cxx
 KLONE_CONF_ARGS += --enable_fs --enable_hooks
-KLONE_CONF_ARGS += --enable_debug --enable_libu_debug
+# KLONE_CONF_ARGS += --enable_debug --enable_libu_debug
 # KLONE_CONF_ARGS += --prefix=$(DESTDIR) --libs=$(DESTDIR) --disable_libu_mini --disable_shared
 
 # exclude svn control files
