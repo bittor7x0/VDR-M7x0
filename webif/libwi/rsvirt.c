@@ -46,7 +46,7 @@ void printVirtPlaylistPropFind(void *this, wcontext_t *wctx, const char *path, c
         u_string_cat(pstr, "</propstat>\n");
     } else {
         if (propFind->allProps || propFind->props.displayName) {
-            printPropStat(pstr, HTTP_STATUS_OK, true, DisplayName, vpl->r.getDisplayName(vpl));
+            printPropStat(pstr, HTTP_STATUS_OK, true, DisplayName, vpl->r.getDisplayName(vpl, false));
         }
         if (propFind->allProps || propFind->props.getContentType) {
             printPropStat(pstr, HTTP_STATUS_OK, false, GetContentType, plMimeType[vpl->plType]);
@@ -128,7 +128,7 @@ void printDirectDownloadPropFind(void *this, wcontext_t *wctx, const char *path,
         u_string_cat(pstr, "</propstat>\n");
     } else {
         if (propFind->allProps || propFind->props.displayName) {
-            printPropStat(pstr, HTTP_STATUS_OK, true, DisplayName, dd->r.getDisplayName(dd));
+            printPropStat(pstr, HTTP_STATUS_OK, true, DisplayName, dd->r.getDisplayName(dd, false));
         }
         if (propFind->allProps || propFind->props.getContentType) {
             printPropStat(pstr, HTTP_STATUS_OK, false, GetContentType, parent->mimeType);
