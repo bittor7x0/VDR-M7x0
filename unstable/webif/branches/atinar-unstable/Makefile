@@ -47,7 +47,7 @@ SUBDIR = $(CURDIR)/libwi
 WEBAPP_DIR = $(CURDIR)/webapp
 
 # additional CFLAGS, LDFLAGS and LDADD (optional, use absolute paths for LDADD)
-DEBUG  = -g -ggdb -DDEBUG
+# DEBUG  = -g -ggdb -DDEBUG
 COMMON_CFLAGS += -I$(KLONE_SRC) -I$(CURDIR)/include $(DEBUG) -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 
 #COMMON_CFLAGS += -DVDRWI_WEBDAV
 export COMMON_CFLAGS
