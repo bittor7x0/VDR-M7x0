@@ -154,9 +154,9 @@ CONFIG_O7O_FLASHER = y
 # URL: http://mabblog.com/cssoptimizer/
 CONFIG_CSSOPTIMIZER = y
 
-# Closure Compiler: Tool for making JavaScript download and run faster
-# URL: http://code.google.com/closure/compiler/
-# CONFIG_CLOSURE_COMPILER is not set
+# YUI Compressor: Tool that supports the compression of JavaScript and CSS files
+# URL: http://developer.yahoo.com/yui/compressor/
+CONFIG_YUI_COMPRESSOR = y
 
 # PNGOUT: Optimizes the size of .PNG files losslessly
 # URL: http://www.jonof.id.au/kenutils
