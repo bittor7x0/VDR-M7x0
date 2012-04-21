@@ -165,7 +165,7 @@ UCLIBC_ENV_LTO_GC = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    CFLAGS="$(UCLIBC_CFLAGS_LTO_GC)" CXXFLAGS="$(UCLIBC_CXXFLAGS_LTO_GC)" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC)"
 
 # Flags for shrink size
-UCLIBC_CFLAGS_SIZE := $(UCLIBC_CFLAGS_GC) -mplt -mno-shared -mabicalls -fno-reorder-blocks -fno-tree-ch -fno-caller-saves
+UCLIBC_CFLAGS_SIZE := -march=mips2 -mtune=vr4120 -mfix-vr4120 -O2 -msoft-float -ffunction-sections -fdata-sections -mplt -mno-shared -mabicalls -fno-reorder-blocks -fno-tree-ch -fno-caller-saves
 UCLIBC_CXXFLAGS_SIZE := $(UCLIBC_CFLAGS_SIZE) -fvisibility-inlines-hidden
 UCLIBC_LDFLAGS_SIZE := $(UCLIBC_LDFLAGS_GC)
 
@@ -243,12 +243,11 @@ define css_shrink_dir
 	done
 endef
 
-# optimizes javascript code from a given js-dir. all *.js files are reduced with Closure Compiler
+# optimizes javascript code from a given js-dir. all *.js files are reduced with YUI Compressor
 # usage: $(call js_shrink_dir, <js_dir>)
 define js_shrink_dir
 	for js_file in `$(FIND) $(1) -type f -iname '*.js' | $(SORT)` ; do \
-		$(shell which java) -jar $(CLOSURE_COMPILER_JAR) --js $$js_file --js_output_file $$js_file.opt ; \
-		$(MV) $$js_file.opt $$js_file ; \
+		$(shell which java) -jar $(YUI_COMPRESSOR_JAR) --type js $$js_file -o $$js_file ; \
 	done
 endef
 

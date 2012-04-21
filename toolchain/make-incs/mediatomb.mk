@@ -56,8 +56,8 @@ endif
 ifeq ($(CONFIG_CSSOPTIMIZER),y)
 	MEDIATOMB_DEPS +=  $(CSSOPTIMIZER_BIN)
 endif
-ifeq ($(CONFIG_CLOSURE_COMPILER),y)
-	MEDIATOMB_DEPS +=  $(CLOSURE_COMPILER_JAR)
+ifeq ($(CONFIG_YUI_COMPRESSOR),y)
+	MEDIATOMB_DEPS +=  $(YUI_COMPRESSOR_JAR)
 endif
 ifeq ($(CONFIG_PNGOUT),y)
 	MEDIATOMB_DEPS +=  $(PNGOUT_BIN)
@@ -174,7 +174,7 @@ $(STAGEFILES_DIR)/.mediatomb_installed: $(STAGEFILES_DIR)/.mediatomb_compiled
 ifeq ($(CONFIG_CSSOPTIMIZER),y)
 	$(call css_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web)
 endif
-ifeq ($(CONFIG_CLOSURE_COMPILER),y)
+ifeq ($(CONFIG_YUI_COMPRESSOR),y)
 	$(call js_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/js)
 	$(call js_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web/js)
 endif
