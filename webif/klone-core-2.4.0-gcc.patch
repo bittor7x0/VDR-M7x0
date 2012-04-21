@@ -14,3 +14,18 @@ diff -Naur klone-2.4.0/makl/helpers/mkdep.gcc.sh klone-2.4.0-fixed/makl/helpers/
  else
  	echo 'mkdep: compile failed' >&2
  	exit 1
+diff -Naur klone-2.4.0-orig/configure klone-2.4.0/configure
+--- klone-2.4.0-orig/configure	2011-05-02 16:52:18.000000000 +0200
++++ klone-2.4.0/configure	2012-04-20 19:44:15.550995982 +0200
+@@ -190,11 +190,6 @@
+ # makl_add_var_mk "CFLAGS" "\$(LIBOPENSSL_CFLAGS)"
+ makl_add_var_mk "CFLAGS" "\$(LIBZ_CFLAGS)"
+
+-# if debug is not enabled add optimization flags
+-if [ -z "`makl_get_var_mk "KLONE_DEBUG"`" ]; then
+-    makl_append_var_mk "CFLAGS"   "-O2"
+-fi
+-
+ # adds -fstack-protector-all to the CFLAGS when supported by the compiler
+ if [ -z "`makl_get_var_mk "DISABLE_STACK_PROTECTOR"`" ]; then
+     if [ "`makl_get_var_mk "HAVE_STACK_PROTECTOR"`" ]; then
