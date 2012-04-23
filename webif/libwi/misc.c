@@ -147,10 +147,13 @@ bool initWCtx(wcontext_t *wctx, request_t *request, response_t *response, sessio
     wctx->response = response;
     wctx->pageContext = NULL;
     wctx->out = out;
+    wctx->bufferLength = 0;
+    wctx->buffer = NULL;
+    wctx->rsPath = NULL;
+    wctx->conf = webifConf;
     if (!isAuthorized(wctx)) {
         return false;
     }
-    wctx->conf = webifConf;
     if (true) { //read cookies based configuration (browser side)
         //TODO necesario siempre?
         int i;
@@ -201,12 +204,9 @@ bool initWCtx(wcontext_t *wctx, request_t *request, response_t *response, sessio
                     wctx->sortField = SF_START;
             }
         wctx->sortDirection = (vars_countn(rqargs, "direction") > 0) ? vars_get_value_i(rqargs, "direction") : SD_ASC;
-        wctx->bufferLength = 0;
-        wctx->buffer = NULL;
         wctx->decoratePage = true;
         wctx->rsType = (vars_countn(rqargs, "type") > 0) ? vars_get_value_i(rqargs, "type") : RT_UNKNOWN;
         if (true) { //path_info
-            wctx->rsPath = NULL;
             const char *pi = request_get_path_info(request);
             if (pi && pi[0]) {
                 while (pi[0] == '/')
@@ -498,7 +498,6 @@ void initHtmlPage(wcontext_t *wctx, const char *title,
             }
             WCTX_IPRINTT("$.extend(webif.conf,{\n", 0, 1);
             WCTX_IPRINTF("'ajaxDisabled':%s,\n", wctx->conf.ajaxDisabled ? "true" : "false");
-            WCTX_IPRINTF("'popupsDisabled':%s,\n", wctx->conf.popupsDisabled ? "true" : "false");
             WCTX_IPRINTF("'currentCssTheme':'%d'\n", wctx->conf.cssTheme);
             WCTX_IPRINTT("});\n", -1, 0);
 

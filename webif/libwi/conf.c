@@ -315,15 +315,6 @@ bool setPlaylistType(void *configurable, setting_t * const setting) {
     return false;
 }
 
-bool setPopupsDisabled(void *configurable, setting_t * const setting) {
-    if (configurable && setting && setting->value && setting->value[0]) {
-        webifConf_t * wc = (webifConf_t *) configurable;
-        wc->popupsDisabled = sameString(setting->value, "true");
-        return true;
-    }
-    return false;
-}
-
 bool setUseHtml5VideoTag(void *configurable, setting_t * const setting) {
     if (configurable && setting && setting->value && setting->value[0]) {
         webifConf_t * wc = (webifConf_t *) configurable;
@@ -562,16 +553,6 @@ settingConfig_t webifParamConfig[] = {
         .cookie = true,
         .printInput = &settingPrintSelect,
         .setField = &setPlaylistType
-    },
-    {
-        .name = "popups_disabled",
-        .displayOrder = popups_disabled,
-        .defaultValue = "false",
-        .options = "false|true",
-        .cookie = true,
-        .validate = &validateCheckbox,
-        .printInput = &settingPrintCheckbox,
-        .setField = &setPopupsDisabled
     },
     {
         .name = "use_external_www_folder",
@@ -1011,11 +992,8 @@ bool readConf(settingList_t * const settings) {
         if (u_buf_load(buffer, fileMapping[settings->fileId].fileName) == 0) {
             data = u_buf_ptr(buffer);
             u_buf_detach(buffer);
-            u_buf_free(buffer);
-        } else {
-            u_buf_free(buffer);
-            return false;
         }
+        u_buf_free(buffer);
     }
     if (data) {
         for (s = strtok(data, "\r\n"); s != 0; s = strtok(0, "\r\n")) {

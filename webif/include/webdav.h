@@ -6,6 +6,8 @@
  * 
  */
 
+#ifdef VDRWI_WEBDAV
+
 #ifndef WI_WEBDAV_H
 #define	WI_WEBDAV_H
 
@@ -76,3 +78,5 @@ extern "C" {
 #endif
 
 #endif	/* WI_WEBDAV_H */
+
+#endif /* VDRWI_WEBDAV */
