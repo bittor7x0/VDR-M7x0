@@ -878,6 +878,9 @@ msgstr "Verw. Ausschlusslisten"
 msgid "Edit$Search text too short - use anyway?"
 msgstr "Suchtext zu kurz - trotzdem verwenden?"
 
+msgid "Button$Orphaned"
+msgstr "Verwaiste"
+
 msgid "Button$by name"
 msgstr "nach Name"
 

@@ -886,6 +886,9 @@ msgstr "Naudoti juoduosius sąrašus"
 msgid "Edit$Search text too short - use anyway?"
 msgstr "Ieškomas tekstas per trumpas - vistiek naudoti?"
 
+msgid "Button$Orphaned"
+msgstr ""
+
 msgid "Button$by name"
 msgstr "pagal pavadinimą"
 

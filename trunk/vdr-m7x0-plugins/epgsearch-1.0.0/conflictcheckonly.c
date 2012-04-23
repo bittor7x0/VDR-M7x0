@@ -211,7 +211,7 @@ const char *cPluginConflictcheckonly::MainMenuText(void)
 #if APIVERSNUM < 10507
 		     tr("next"), *DateTime(serviceData->nextConflict)))
 #else
-	    I18nTranslate("next", I18nEpgsearch), *DateTime(serviceData->nextConflict)))
+	    I18nTranslate(trNOOP("next"), I18nEpgsearch), *DateTime(serviceData->nextConflict)))
 #endif	
             menuText = _menuText;
       }

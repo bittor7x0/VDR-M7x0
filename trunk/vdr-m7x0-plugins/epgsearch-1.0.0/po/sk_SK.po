@@ -881,6 +881,9 @@ msgstr "Pou¾i» èiernu listinu"
 msgid "Edit$Search text too short - use anyway?"
 msgstr "Hµadaný text je krátky - pou¾i» aj tak?"
 
+msgid "Button$Orphaned"
+msgstr ""
+
 msgid "Button$by name"
 msgstr "podµa mena"
 

@@ -350,6 +350,7 @@ int cRecsDone::GetCountRecordings(const cEvent* event, bool compareTitle, int co
 	else
 	  if (firstrecDone->startTime > recDone->startTime)
 	    firstrecDone = recDone;
+	LogFile.Log(3,"same event already recorded at %s", DAYDATETIME(recDone->startTime));
 	count++;
       }
 
@@ -396,9 +397,10 @@ bool cRecsDone::Load(const char *FileName)
 	LogFile.iSysLog("loading %s", fileName);
 	FILE *f = fopen(fileName, "r");
 	bool result = false;
-	if (f)
+	if (f) {
 	    result = cRecDone::Read(f);
-        fclose(f);
+	    fclose(f);
+	}
 	if (result)
 	    LogFile.Log(2,"loaded recordings done from %s (count: %d)", fileName, Count());
 	else

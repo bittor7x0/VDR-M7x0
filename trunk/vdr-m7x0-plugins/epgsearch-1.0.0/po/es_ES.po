@@ -873,6 +873,9 @@ msgstr "Usar listas negras"
 msgid "Edit$Search text too short - use anyway?"
 msgstr "El texto a buscar es muy corto - ¿usar de todas formas?"
 
+msgid "Button$Orphaned"
+msgstr "Huérfano"
+
 msgid "Button$by name"
 msgstr "por nombre"
 

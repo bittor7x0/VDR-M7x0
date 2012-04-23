@@ -403,7 +403,7 @@ cList<cConflictCheckTime>* cConflictCheck::CreateConflictList(cList<cConflictChe
     for(cConflictCheckTime* checkTime = EvalTimeList->First(); checkTime;) // clear the list
     {
 	cConflictCheckTime* checkTimeNext = EvalTimeList->Next(checkTime);
-	if (checkTime->failedTimers.size() == 0)
+	if (checkTime->failedTimers.empty())
 	    EvalTimeList->Del(checkTime);
 	else
 	{
@@ -710,7 +710,7 @@ void cConflictCheck::EvaluateConflCheckCmd()
 	{
 	  if (ct->ignore) continue;
 	  std::set<cConflictCheckTimerObj*,TimerObjSort>::iterator it;
-	  for (it = ct->failedTimers.begin(); it != ct->failedTimers.end(); it++) 
+	  for (it = ct->failedTimers.begin(); it != ct->failedTimers.end(); ++it)
 	    if ((*it) && !(*it)->ignore)
 	      {
 		string result = EPGSearchConfig.conflCheckCmd;
