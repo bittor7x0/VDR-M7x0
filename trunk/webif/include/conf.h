@@ -220,7 +220,6 @@ typedef struct webifConf_s {
     bool displayHostId; //display host id in recordings
     bool printRecFolderSummary;
     bool ajaxDisabled;
-    bool popupsDisabled;
     int maxDepth; //maximum directory depth while browsing
     int defaultMarginStart;
     int defaultMarginStop;

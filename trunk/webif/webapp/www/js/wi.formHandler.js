@@ -43,12 +43,8 @@ FormHandler.prototype = {
 		return webif.getHiddenDiv();
 	},
 	handleClick:function($anchor){
-		if (this.$responseContainer){
-			this.$responseContainer.empty();
-		} else {
-			this.$responseContainer=$('<div/>').appendTo(this.getTargetContainer()).uniqueId();
-		}
-		this.$responseContainer
+		var $responseContainer=$('<div/>').appendTo(this.getTargetContainer()).uniqueId();
+		$responseContainer
 		.attr('title',$anchor.attr('title'))
 		.load(
 			$anchor.attr('href'),
@@ -108,10 +104,9 @@ FormHandler.prototype = {
 				width: 'auto',
 				close: this.dialogCloseListener
 			})
-		} else {
-			$responseContainer.popMessageDialog();
 		}
-		$responseContainer.empty().removeAttr('title');
+		$responseContainer.popMessageDialog();
+		$responseContainer.remove();
 	}
 	,
 	prepareForm:function($form){

@@ -19,7 +19,6 @@ $.uniqueId = (function(prefix){
 var webif={
 	conf:{
 		ajaxDisabled: false,
-		popupsDisabled: false
 	},
 	state:{},
 	messages:{}, 
@@ -339,9 +338,7 @@ $(document)
 			pathClass:'act',
 			pathLevels:0
 		});
-		if (!webif.conf.popupsDisabled){
-			$('body').popMessageDialog(); 
-		}
+		$('body').popMessageDialog(); 
 		$('#loading')
 		.dialog({
 			modal:true,
