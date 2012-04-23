@@ -247,6 +247,7 @@ endef
 # usage: $(call js_shrink_dir, <js_dir>)
 define js_shrink_dir
 	for js_file in `$(FIND) $(1) -type f -iname '*.js' | $(SORT)` ; do \
+		$(SED) -i -e  "s,/\*\!,/\*,g" $$js_file ; \
 		$(shell which java) -jar $(YUI_COMPRESSOR_JAR) --type js $$js_file -o $$js_file ; \
 	done
 endef
