@@ -371,12 +371,12 @@ cSetup::cSetup(void)
   UpdateChannels = 5;
   UseDolbyDigital = 1;
   UseDolbyInRecordings = 1;
-  UseHDInRecordings = 0;
-  UseTSInHD = 0;
+  UseHDInRecordings = 1;
+  UseTSInHD = 1;
   UseTSInSD = 0;
   UseTSInAudio = 0;
   UseTeletextInTSRecordings = 0;
-  UseSubtitlesInTSRecordings = 0;
+  UseSubtitlesInTSRecordings = 1;
   ChannelInfoPos = 0;
   ChannelInfoTime = 5;
   OSDLeft = 54;
