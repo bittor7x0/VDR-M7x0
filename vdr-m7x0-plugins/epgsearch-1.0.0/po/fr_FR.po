@@ -881,6 +881,9 @@ msgstr "Utiliser la liste des exclus"
 msgid "Edit$Search text too short - use anyway?"
 msgstr "Texte de recherche est trop court - l'utiliser comme même?"
 
+msgid "Button$Orphaned"
+msgstr ""
+
 msgid "Button$by name"
 msgstr "par nom"
 

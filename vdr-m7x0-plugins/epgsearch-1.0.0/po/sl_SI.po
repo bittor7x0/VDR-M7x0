@@ -838,6 +838,9 @@ msgstr ""
 msgid "Edit$Search text too short - use anyway?"
 msgstr ""
 
+msgid "Button$Orphaned"
+msgstr ""
+
 msgid "Button$by name"
 msgstr ""
 
