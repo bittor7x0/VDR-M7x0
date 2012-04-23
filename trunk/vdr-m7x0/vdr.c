@@ -382,19 +382,15 @@ int main(int argc, char *argv[])
           case 'h': DisplayHelp = true;
                     break;
           case 'i': {
-		      if(strcmp(optarg,"alarm") == 0){
-			setIaMode(0);
-                	break;
-		      }else if(strcmp(optarg,"user") == 0){
-			setIaMode(1);
-                	break;
-		      }else{
-		        setIaMode(1);
-			if((!strcmp(optarg,"powerfail"))||(!strcmp(optarg,"unknown")))
-				TimeAdjust=1;
-			break;
-			}
-		    }
+                      if((!strcmp(optarg,"user")) || (!strcmp(optarg,"reboot")))
+                         setIaMode(1);
+                      else {
+                         setIaMode(0);
+                         if((!strcmp(optarg,"powerfail")) || (!strcmp(optarg,"unknown")))
+                            TimeAdjust=1;
+                      }
+                    }
+                    break;
           case 'l': {
                       char *p = strchr(optarg, '.');
                       if (p)
