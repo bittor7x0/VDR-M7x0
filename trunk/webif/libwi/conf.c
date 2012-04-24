@@ -463,7 +463,7 @@ settingConfig_t webifParamConfig[] = {
     {
         .name = "display_host_id",
         .displayOrder = display_host_id,
-        .defaultValue = "true",
+        .defaultValue = "false",
         .options = "false|true",
         .validate = &validateCheckbox,
         .printInput = &settingPrintCheckbox
