@@ -70,11 +70,13 @@ $$1 ~ /^\/?etc\/inittab/ || \
 $$1 ~ /^\/?etc\/rc.mini/ || \
 $$1 ~ /^\/?etc\/rc.debug/ || \
 $$1 ~ /^\/?etc\/systemtype/ || \
+$$1 ~ /^\/?etc\/hostname/ || \
 $$1 ~ /^\/?etc\/.*\.conf/ || \
 $$1 ~ /^\/?etc\/usbautomounter$$/ || \
 $$1 ~ /^\/?etc\/webif$$/ || \
 $$1 ~ /^\/?etc\/ssmtp$$/ || \
 $$1 ~ /^\/?etc\/vdr$$/ || \
+$$1 ~ /^\/?etc\/vdr\/runvdr/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/epgsearch$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/filebrowser$$/ || \
