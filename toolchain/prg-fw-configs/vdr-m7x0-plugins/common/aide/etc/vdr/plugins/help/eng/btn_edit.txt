@@ -1,0 +1,6 @@
+
+     0 - Toggles an editing mark. If the mark indicator shows a red triangle, the current mark is deleted. Otherwise a new mark is set at the current position.
+     4,6 - Move an editing mark back and forward. You need to first jump to an editing mark for this to work.
+     7,9 - Jump back and forward between editing marks. Replay goes into still mode after jumping to a mark.
+     8 - Positions replay at a point 3 seconds before the current or next "start" mark and starts replay.
+     2 - Start the actual cutting process.

@@ -1,0 +1,1 @@
+     "Plugins" menu is used to access and manage the plugins installed on VDR. When we talk about plugins, we refer to small programs that, once installed, giving VDR interact with new features and improvements.

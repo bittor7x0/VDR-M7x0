@@ -1,0 +1,19 @@
+The following keys have the listed meaning in Replay mode:
+
+     "Up" - Resumes normal replay from any "pause", "forward" or "backward" mode.
+
+     "Down" - Halts playback at the current position. Press again to continue playback.
+
+     "Blue" - Stops playback and stores the current position, so that playback can be resumed later at that point.
+
+     "Left" and "Right" - Runs playback forward or backward at a higher speed. Press again to resume normal speed. If in Pause mode, runs forward or backward at a slower speed; press again to return to pause mode. Pressing and holding down the button performs the function until the button is released again.
+
+     If "Multi Speed Mode" has been enabled in the "Setup" menu, the function of these buttons changes in a way that gives you three fast and slow speeds, through which you can switch by pressing the respective button several times.
+
+     "Red" - Jump to a specific location. Enter the time you want to jump to and then press "Left" or "Right" to jump relative to the current position, "Up" to jump to an absolute position, and "Down" to jump and pause at an absolute position.
+
+     "Green" - Yellow Skips about 60 seconds back or forward. Pressing and holding down the button performs the function until the button is released again.
+
+     "Ok" - Brings up the replay progress display, which shows the date, time and title of the recording, a progress bar and the current and total time of the recording. Press "Ok" again to turn off the progress display.
+
+     "Back" - Stops replaying and brings up the "Recordings" menu. This can be used to easily delete a recording after watching it, or to switch to a different recording.

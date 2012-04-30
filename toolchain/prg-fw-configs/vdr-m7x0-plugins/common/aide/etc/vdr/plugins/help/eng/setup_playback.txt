@@ -1,0 +1,11 @@
+Multi speed mode = no
+
+     Defines the function of the "Left" and "Right" keys in replay mode. If set to 'no', one speed will be used, while if set to 'yes' there will be three speeds for fast and slow search, respectively.
+
+Show replay mode = no
+
+     Turns displaying the current replay mode on or off.
+
+Resume ID = 0
+
+     Defines an additional ID that can be used in a multi user environment, so that every user has his/her own resume files for each recording. The valid range is 0...99, with 0 resulting in a file named 'resume.vdr', and any other value resulting in 'resume.n. vdr'.
