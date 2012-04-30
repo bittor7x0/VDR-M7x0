@@ -1,0 +1,49 @@
+Use the "Timer" menu to maintain your list of timer controlled recordings. The parameters in the "Edit Timer" menu have the following meanings:
+
+Active
+
+     Defines whether the timer will be processed (set it to 'no' to temporarily desable a timer).
+
+Channel
+
+     The channel to be recorded (as defined in the "Channels" list). Any changes made in the "Channels" list (like renaming or reordering channels) will be automatically reflected in the timers settings.
+
+Day
+
+     The day on which this timer shall start. This can be either a "day of month" (1..31), which allows programming a "single shot" timer that hits once and is deleted after it ends. Single shot timers can be programmed up to one month into the future. Another option here are "repeating timers" which are defined by listing the days of the week on which they shall record. For example, a timer that shall record every monday and wednesday would have a Day setting of "M-W----".
+
+Start
+
+     The start time of the timer in hh:mm as 24 hour ("military") time.
+
+Stop
+
+     The stop time of the timer.
+
+VPS
+
+     Defines whether the timer shall use VPS (if available). If this option is set to 'yes', the start time must exactly match the programme's VPS time, otherwise nothing will be recorded. If VPS is used, the stop time has no real meaning. However, it must be different than the start time, and should correspond to the actual stop time of the programme, just in case there is no real VPS data available at the time of recording, so VDR has to fall back to normal timer recording.
+
+Priority
+
+     The Priority (0..99) is used to decide which timer shall be started in case there are two or more timers with the exact same start time. The first timer in the list with the highest Priority will be used. This value is also stored with the recording and is later used to decide which recording to remove from disk in order to free space for a new recording. If the disk is full and a new recording needs more space, an existing recording with the lowest Priority (and which has exceeded its guaranteed Lifetime) will be removed . If all available DVB cards are currently occupied, a timer with a higher priority will interrupt the timer with the lowest priority in order to start recording.
+
+Lifetime
+
+     The number of days (0..99) a recording made through this timer is guaranteed to remain on disk before it is automatically removed to free up space for a new recording. Note that setting this parameter to very high values for all recordings may soon fill up the entire disk and cause new recordings to fail due to low disk space. The special value 99 means that this recording will live "forever", and a value of 0 means that this recording can be deleted any time if a recording with a higher priority needs disk spac e.
+
+File
+
+     The name under which a recording created through this timer will be stored on disk (the actual name will also contain the date and time, so it is possible to have a "repeating timer" store all its recordings under the same name; they will be distinguishabl e by their date and time).
+
+     If the file name contains the special character '~', the recording will be stored in a hierarchical directory structure. For instance, a file name of "Sci-Fi~Star Trek~Voyager" will result in a directory structure "/video/Sci-Fi/Star_Trek/Voyager". The '~' character has been chosen for this since the file system's directory delimiter '/' may be part of a regular programme name.
+
+     Repeating timers create recordings that contain the 'Episode name' information from the EPG data in their file name. Typically (on tv stations that care about their viewers) this contains the episode title of a series. The episode name is appended to the t imer's file name, separated by a '~' character, so that it results in all recordings of this timer being collected in a common subdirectory.
+
+     If this field is left blank, the channel name will be used to form the name of the recording.
+
+First day
+
+     The date of the first day when this timer shall start recording (only available for repeating timers).
+
+     A timer can also be programmed by pressing the "Red" button on the "Schedule", "Now", "Next" or "Event" menus.

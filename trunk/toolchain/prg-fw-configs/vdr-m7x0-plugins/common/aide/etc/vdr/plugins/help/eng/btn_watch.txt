@@ -1,0 +1,13 @@
+
+      Up - Ch up
+      Down - Ch down
+      Left - Prev group
+      Right - Next group
+      Ok - Ch display
+      Menu - Menu on
+      Back - ---
+      Red - ---
+      Green - ---
+      Yellow - ---
+      Blue - ---
+      0..9 - Ch select

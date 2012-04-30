@@ -1,0 +1,20 @@
+     The "Schedule" menu implements VDR's "Electronic Program Guide" (EPG).
+
+     Select "Schedule" from the "VDR" menu and you get a list of all upcoming broadcasts on the current channel.
+
+     "Up" and "Down" can be used to scroll through this list, and pressing "Ok" displays detailed information about the selected programme. Pressing "Ok" again (or pressing "Back") gets you back into the "Schedule" menu.
+
+     From the "Schedule" menu, the "Green" button opens the "What's on now?" menu, which displays all programmes that are currently running on all channels that broadcast their programme information on the current transponder, or from channels that have been current lately (VDR stores all information it gathers in an internal list). The more channels you have been switching through lately, the longer this list will be. The "Yellow" button opens the "What's on next?" menu, which lists all programmes that will s tart next on all channels.
+
+     Inside the "What's on now/next?" menus the "Green" button toggles between the "Now" and "Next" display, and the "Yellow" button takes you to the "Schedule" menu of the current channel in the list.
+
+     The "Red" button allows you to instantly program a timer to record the selected programme. You will get into the "Edit Timer" menu in which everything has already been filled in, and you can make any modifications you may want to apply. Note that the Start and Stop time are offset by the MarginStart and MarginStop parameters (see Setup) in order to make sure the entire programme is recorded in case it doesn't exactly adhere to its published start/stop times. Of course, no guarantee can be given that the default margin values will be sufficient, so in case this recording is really important you may want to add an extra margin ;-)
+
+     The "Blue" button can be pressed to switch to the channel with the selected programme.
+
+     The following markers in these menus give additional information about the status of the events:
+
+         t - there is a timer defined for this event which covers only part of the event
+         T - there is a timer defined for this event which covers the entire event
+         V - this event has a VPS time that's different than its start time
+         * - this event is currently running (the validity of this marker depends on whether there is currently a DVB card receiving the transponder this channel is on).

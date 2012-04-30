@@ -1,0 +1,53 @@
+Language = English
+
+     Defines the language used to display the OSD texts.
+
+Skin = ST:TNG Panels
+
+     Defines the "skin" used to display the OSD menus.
+
+Theme = Default
+
+     Defines the "theme" to use with the current skin.
+
+Left = 54
+Top = 45
+
+     The top and left offset of the OSD. The valid ranges are left=0...672, top=0...567.
+
+Width = 624
+Height = 486
+
+     The width and height of the OSD. The valid ranges are width=480...672, height=324...567. The Width must be a multiple of 8.
+
+Message time = 1
+
+     The time (in seconds) how long an informational message shall be displayed on the OSD. The valid range is 1...60.
+
+Use small font = 1
+
+     Defines whether the small font shall be used.
+
+         0 - Never use the small font
+         1 - Use the small font wherever the current skin wants to
+         2 - Always use the small font
+
+Channel info position = bottom
+
+     The position of the channel info window in the OSD (either 'bottom' or 'top').
+
+Info on channel switch = yes
+
+     Turns the display of the current/next information on or off when switching the channel. The information is always displayed when pressing the "Ok" button in normal viewing mode.
+
+Scroll pages = yes
+
+     When pressing the "Down" ("Up") key while the cursor is on the last (first) line of a list page, the list is advanced by a full page and the cursor will be at the top (bottom) of that page yes = dto., but the cursor remains at the bottom (top) of the page   (this mode allows for faster scrolling through long lists).
+
+Sort timers = yes
+
+     Turns sorting the timers in the "Timers" menu on/off. Timers are sorted by ascending start times, with the first one being the next timer that will start.
+
+Recording directories = yes
+
+     Turns displaying the Recordings menu as a hierarchical directory structure on or off.
