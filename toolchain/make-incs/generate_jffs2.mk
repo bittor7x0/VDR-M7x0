@@ -56,7 +56,9 @@ $(JFFS2_FILE_COPY): $(JFFS2_DIR_DEPS)
 	-$(RM) -f $(JFFS2_FILE_COPY)
 	# Create "SI" directory for factory reset
 	$(MKDIR) -p $(JFFS2_DIR)/SI $(JFFS2_DIR)/log
+ifeq ($(strip $(CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN)),)
 	$(TOUCH) $(JFFS2_DIR)/SI/.first_run
+endif
 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_JFFS2_LST_TRANS_PRG_COPY) > \
 		$(JFFS2_FILE_COPY)
 

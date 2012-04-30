@@ -21,6 +21,8 @@ CONFIG_M7X0_TYPE = m740
 
 # CONFIG_PREFIX is not set
 # CONFIG_BOOTLOADER is not set
+# Copy /etc dir from RootFS to JFFS2 in first run (necessary to fw-builder in Windows)
+# CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN is no set
 CONFIG_GENERATE_ROOTFS_DIR = y
 # CONFIG_ROOTFS_DIR is not set
 # CONFIG_GENERATE_EXT2_ROOTFS_IMAGE is no set
