@@ -30,7 +30,7 @@ fi
 if [ -d /rw-flash/SI ] ; then
 	echo -n "Factory reset: "
 	if [ ! -f /rw-flash/SI/.first_run ] ; then
-		/bin/cp -af /etc /rw-flash/etc
+		/bin/cp -af /etc/* /rw-flash/etc
 	fi
 	/bin/rm -rf /rw-flash/.timer /rw-flash/PLAYLISTS /rw-flash/SI \
 		/rw-flash/EPG /rw-flash/Application
