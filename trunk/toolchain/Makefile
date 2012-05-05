@@ -260,6 +260,56 @@ define png_shrink_dir
 	done
 endef
 
+# used in set_lang
+ifeq ($(CONFIG_LANGUAGE),es)
+   CONFIG_LANGUAGE_SETUP := esl
+   CONFIG_LANGUAGE_LC := es_ES
+   CONFIG_LANGUAGE_OSD := 10
+   CONFIG_LANGUAGE_WEB := 2
+else ifeq ($(CONFIG_LANGUAGE),en)
+   CONFIG_LANGUAGE_SETUP := eng
+   CONFIG_LANGUAGE_LC := en_US
+   CONFIG_LANGUAGE_OSD := 0
+   CONFIG_LANGUAGE_WEB := 0
+else ifeq ($(CONFIG_LANGUAGE),de)
+   CONFIG_LANGUAGE_SETUP := deu
+   CONFIG_LANGUAGE_LC := de_DE
+   CONFIG_LANGUAGE_OSD := 1
+   CONFIG_LANGUAGE_WEB := 1
+else ifeq ($(CONFIG_LANGUAGE),fr)
+   CONFIG_LANGUAGE_SETUP := fra
+   CONFIG_LANGUAGE_LC := fr_FR
+   CONFIG_LANGUAGE_OSD := 6
+   CONFIG_LANGUAGE_WEB := 3
+else
+   $(error unknown language given)
+endif
+
+# set language (CONFIG_LANGUAGE) in any files from a given dir.
+# usage: $(call set_lang, <path_of_files>)
+define set_lang
+	(if [ -f $(1)/etc/vdr/setup.conf ] ; then \
+		$(SED) -i -e "s/^AudioLanguages.*/AudioLanguages = $(CONFIG_LANGUAGE_SETUP)/" $(1)/etc/vdr/setup.conf ; \
+		$(SED) -i -e "s/^EPGLanguages.*/EPGLanguages = $(CONFIG_LANGUAGE_SETUP)/" $(1)/etc/vdr/setup.conf ; \
+		$(SED) -i -e "s/^OSDLanguage.*/OSDLanguage = $(CONFIG_LANGUAGE_OSD)/" $(1)/etc/vdr/setup.conf ; \
+	fi); \
+	(if [ -f $(1)/etc/vdr/runvdr ] ; then \
+		$(SED) -i -e "s/^export LC_ALL.*/export LC_ALL=$(CONFIG_LANGUAGE_LC)/" $(1)/etc/vdr/runvdr ; \
+	fi ); \
+	(if [ -f $(1)/etc/webif/webif.conf ] ; then \
+		$(SED) -i -e "s/^default language.*/default language = $(CONFIG_LANGUAGE_WEB)/" $(1)/etc/webif/webif.conf ; \
+	fi); \
+	(if [ -f $(1)/etc/vdr/plugins/epgsearch/epgsearchconflmail.templ.eng -a -f $(1)/etc/vdr/plugins/epgsearch/epgsearchupdmail.templ.eng ] ; then \
+		if [ $(CONFIG_LANGUAGE) == es ] ; then \
+			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchconflmail.templ.eng ; \
+			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchupdmail.templ.eng ; \
+		else \
+			$(MV) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchconflmail.templ.eng $(1)/etc/vdr/plugins/epgsearch/epgsearchconflmail.templ ; \
+			$(MV) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchupdmail.templ.eng $(1)/etc/vdr/plugins/epgsearch/epgsearchupdmail.templ ; \
+		fi; \
+	fi);
+endef
+
 BASE_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.base_build
 PACKS_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.packs_build
 POST_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.post_build
@@ -313,14 +363,14 @@ endif
 	-$(MKDIR) -p $(BUILD_DIR)
 	-$(MKDIR) -p $(PREFIX)
 	-$(MKDIR) -p $(TARGET_ROOT)
-	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/bin
-	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/etc
-	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/lib
-	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/sbin
-	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/usr
-	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/usr/bin
-	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/usr/lib
-	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/usr/sbin
+	-$(MKDIR) -p $(TARGET_ROOT)/bin
+	-$(MKDIR) -p $(TARGET_ROOT)/etc
+	-$(MKDIR) -p $(TARGET_ROOT)/lib
+	-$(MKDIR) -p $(TARGET_ROOT)/sbin
+	-$(MKDIR) -p $(TARGET_ROOT)/usr
+	-$(MKDIR) -p $(TARGET_ROOT)/usr/bin
+	-$(MKDIR) -p $(TARGET_ROOT)/usr/lib
+	-$(MKDIR) -p $(TARGET_ROOT)/usr/sbin
 	-$(MKDIR) -p $(STAGEFILES_DIR)
 	-$(MKDIR) -p $(HOSTUTILS_BUILD_DIR)
 	-$(MKDIR) -p $(HOSTUTILS_PREFIX_BIN)

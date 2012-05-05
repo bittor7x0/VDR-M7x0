@@ -1,0 +1,177 @@
+#########################################################################
+# This is a template for email notifications about timer conflicts.
+# 
+# There are 4 sections to be defined:
+#  - "subject" to be used as mail subject
+#  - "mailbody" the body of the mail (put %conflictss% in the place where the 
+#           list of conflicts should appear!)
+#  - "conflictsat" the description of one time where one or more conflicts
+#           exists (put %confltimers% in the place where the list of conflict
+#          timers should appear!)
+#  - "confltimer" the description of one conflicting timer
+#
+# close each section with the correspondig end tag!
+#
+#  Version: 0.1   Date: 29/04/2010
+#  Author: Atinar  <atinar1 @ hotmail . com>
+#
+#########################################################################
+
+
+#########################################################################
+# Subject definition (no CR!)
+#########################################################################
+<subject>[epgsearch] Timer conflicts</subject>
+
+
+#########################################################################
+# Body definition
+#########################################################################
+<mailbody>
+<html>
+<head>
+	<title>Timer conflicts check.</title>
+	<style type="text/css">
+		div.level0 {
+			font-family: Bitstream Vera Sans;
+			background-color: White;
+			margin: 0;
+			padding: 5px;
+			}
+		table {
+			border: medium none;
+			border-collapse: separate;
+			border-spacing: 2px;
+			empty-cells: show;
+			}
+		th, td {
+			border: medium none;
+			word-wrap: break-word;
+			padding: 5px;
+			text-align: left;
+			vertical-align: middle;
+			}
+		th {
+			background-color: AntiqueWhite;
+			font-weight: normal;
+			width: 10ex;
+			}
+		th.caption {
+			background-color: transparent;
+			font-weight: bold;
+			min-width: 50ex;
+			width: auto;
+			}
+		td {
+			background-color: Linen;
+			}
+		td.container {
+			background-color: transparent;
+			padding:0 5px;
+			}
+		table.main {
+			max-width: 120ex;
+			margin-top: 1.5em;
+			background-color: Gainsboro;
+			border-spacing: 5px;
+			}
+		table#info {
+			border: 3px solid Gainsboro;
+			border-spacing: 2px;
+			}
+		table.timer {
+			margin: 5px 0;
+			width: 100%;
+			background-color: transparent;
+			}
+		a {
+			color: DarkSlateBlue;
+			text-decoration: none;
+			}
+		a:hover {
+			text-decoration: underline;
+			}
+		a.gotop {
+			margin: 0 1ex;
+			float: right;
+			}
+		.title,
+		.subtitle,
+		.description {
+			margin: 0 0 0.3em;
+			}
+		.title a {
+			font-weight: bold;
+			}
+		.subtitle {
+			font-style: italic;
+			}
+	</style>
+</head>
+<body>
+	<div class="level0">
+		<table id="info" class="main">
+			<tr>
+				<th colspan="2" class="caption">Timer conflicts check.</th>
+			</tr>
+			<tr><th>Done at</a></th><td>%datenow% %timenow%</td></tr>
+			<tr><th>Conflicts</th><td>%conflict.count%</td></tr>
+		</table>
+		%conflict.conflicts%
+	</div>
+</body>
+</html>
+</mailbody>
+
+#########################################################################
+# Conflict definition
+#########################################################################
+<conflictsat>
+		<table class="main">
+			<tr>
+				<th class="caption">
+					<a href="#info" class="gotop">&uarr; Top</a> Conflict at %conflict.date% %conflict.time%
+				</th>
+			</tr>
+			<tr>
+				<td class="container">
+					%conflict.confltimers%
+				</td>
+			</tr>
+		</table>
+</conflictsat>
+
+
+#########################################################################
+# Definition of a conflict timer
+#########################################################################
+<conflicttimer>
+					<table class="timer">
+						<tr class="event">
+							<th>Event</th>
+							<td>
+								<p class="title"><a href="%webif_url_base%/epgGrid.kl1?start=l%time_lng%">%title%</a></p>
+								<p class="subtitle">%subtitle%</p>
+								<div class="desc">%htmlsummary%</div>
+							</td>
+						</tr>
+						<tr class="date">
+							<th>Date</td><td>%time_w% %date%</td>
+						</tr>
+						<tr class="timespan">
+							<th>Event<br/>duration</th><td>%time%-%timeend%</td>
+						</tr>
+						<tr class="timespan">
+							<th>Timer<br/>duration</th><td>%timer.start%-%timer.stop%</td>
+						</tr>
+						<tr class="channel">
+							<th>Channel</th><td>%timer.chlng% (%timer.chnr%)</td>
+						</tr>
+						<tr class="file">
+							<th>File</th><td>%timer.file%</td>
+						</tr>
+						<tr class="search">
+							<th>Search</th><td>%timer.search% (%timer.searchid%)</td>
+						</tr>
+					</table>
+</conflicttimer>
