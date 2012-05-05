@@ -152,10 +152,6 @@ CONFIG_O7O_FLASHER = y
 #               #
 #################
 
-# CSS Optimizer: Optimizes CSS code stripping unneeded characters
-# URL: http://mabblog.com/cssoptimizer/
-# CONFIG_CSSOPTIMIZER is not set
-
 # YUI Compressor: Tool that supports the compression of JavaScript and CSS files
 # URL: http://developer.yahoo.com/yui/compressor/
 # CONFIG_YUI_COMPRESSOR is not set

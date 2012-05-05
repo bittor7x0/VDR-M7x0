@@ -234,12 +234,12 @@ define patch_package
 	done
 endef
 
-# optimizes CSS code from a given css-dir. all *.css files are reduced with cssoptimizer
+# optimizes CSS code from a given css-dir. all *.css files are reduced with YUI Compressor
 # usage: $(call css_shrink_dir, <css_dir>)
 define css_shrink_dir
 	for css_file in `$(FIND) $(1) -type f -iname '*.css' | $(SORT)` ; do \
-		$(CSSOPTIMIZER_BIN) -lo $$css_file > $$css_file.opt ; \
-		$(MV) $$css_file.opt $$css_file ; \
+		$(SED) -i -e  "s,/\*\!,/\*,g" $$css_file ; \
+		$(shell which java) -jar $(YUI_COMPRESSOR_JAR) --type css $$css_file -o $$css_file ; \
 	done
 endef
 
