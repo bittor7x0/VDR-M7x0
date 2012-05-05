@@ -134,6 +134,7 @@ $(ROOTFS_FILE_TABLE): $(ROOTFS_DIR_DEPS)
 	$(COPY_LISTS_BIN) -s '$(ROOTFS_DIR)' '$(TARGET_ROOT)' \
 		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(ROOTFS_FILE_COPY)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(ROOTFS_DIR)/etc/systemtype`,g" $(ROOTFS_DIR)/etc/rc.mini
+	$(call set_lang, $(ROOTFS_DIR))
 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG) > \
 		$(ROOTFS_FILE_TABLE)
 
