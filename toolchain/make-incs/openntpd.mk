@@ -1,3 +1,9 @@
+# --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
+#
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VDR-NG-EM Project
+#
+# More information can be found in the files COPYING and README.
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -11,8 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The project's page is at http://www.open7x0.org
+# The project's page is at http://www.assembla.com/spaces/VDR-M7x0
+# Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
 #
+# --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 OPENNTPD_DEPS = $(BASE_BUILD_STAGEFILE)
