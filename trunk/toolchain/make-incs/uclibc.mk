@@ -1,9 +1,14 @@
-# Copyright (C) 2006,2007 Andreas Koch - the open7x0.org group
+# --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
+# Copyright (C) 2006, 2007 Andreas Koch - the open7x0.org group
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VDR-NG-EM Project
+#
+# More information can be found in the files COPYING and README.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,14 +16,13 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-# Or, point your browser to http://www.gnu.org/copyleft/gpl.html
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The author can be reached at andreas@open7x0.org
+# The project's page is at http://www.assembla.com/spaces/VDR-M7x0
+# Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
 #
-# The project's page is at http://www.open7x0.org
-#
+# --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
 UCLIBC_VERSION := 0.9.30.3
 UCLIBC_IS_SNAPSHOT := n

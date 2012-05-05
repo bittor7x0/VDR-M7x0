@@ -1,17 +1,23 @@
 /*
  * vdr.c: Video Disk Recorder main program
  *
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VDR-NG-EM Project
+ * 
+ * The project's page is at http://www.assembla.com/spaces/VDR-M7x0
+ * Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
+ * Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
+ *
  * Many things have been changed allover the source of the vdr, in
- * order to port it to Gxgaxxt x7x0xx Set-Top-Box.
- * The orginal vdr was written by Klaus Schmidinger (see Copyright below).
- * As the orginal the newly written Parts of the Port are distributed
+ * order to port it to Gigaset M7x0 Set-Top-Box.
+ * The original vdr was written by Klaus Schmidinger (see Copyright below).
+ * As the original the newly written Parts of the Port are distributed
  * under the terms of the GNU General Public License (see below)
  * For these Parts:
  * Copyright (C) 2006 Andreas Koch from the Open7x0-Group
  * The author can be reached at andreas@open7x0.org
  * The project's page is at http://www.open7x0.opg
  *
- * Origial Authors Copyright:
+ * Original Authors Copyright:
  *
  * Copyright (C) 2000, 2003, 2006 Klaus Schmidinger
  *
