@@ -313,14 +313,14 @@ endif
 	-$(MKDIR) -p $(BUILD_DIR)
 	-$(MKDIR) -p $(PREFIX)
 	-$(MKDIR) -p $(TARGET_ROOT)
-	-$(MKDIR) -p $(TARGET_ROOT)/bin
-	-$(MKDIR) -p $(TARGET_ROOT)/etc
-	-$(MKDIR) -p $(TARGET_ROOT)/lib
-	-$(MKDIR) -p $(TARGET_ROOT)/sbin
-	-$(MKDIR) -p $(TARGET_ROOT)/usr
-	-$(MKDIR) -p $(TARGET_ROOT)/usr/bin
-	-$(MKDIR) -p $(TARGET_ROOT)/usr/lib
-	-$(MKDIR) -p $(TARGET_ROOT)/usr/sbin
+	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/bin
+	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/etc
+	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/lib
+	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/sbin
+	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/usr
+	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/usr/bin
+	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/usr/lib
+	-$(MKDIR) -p -m 755 $(TARGET_ROOT)/usr/sbin
 	-$(MKDIR) -p $(STAGEFILES_DIR)
 	-$(MKDIR) -p $(HOSTUTILS_BUILD_DIR)
 	-$(MKDIR) -p $(HOSTUTILS_PREFIX_BIN)
