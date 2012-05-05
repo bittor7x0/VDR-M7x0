@@ -25,6 +25,7 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 #define __EPGSEARCH_TOOLS_INC__
 
 #include <string>
+#include <cctype>
 #include <vdr/config.h> // For VDRVERSNUM only
 #include <vdr/font.h>
 #include "epgsearchext.h"

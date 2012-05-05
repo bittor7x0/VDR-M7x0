@@ -77,7 +77,7 @@ PACKAGE = vdr-$(ARCHIVE)
 ### Includes and Defines (add further entries here):
 
 INCLUDES += -I$(VDRDIR)/include
-DEFINES  += -D_GNU_SOURCE -DAPIVERSNUM=$(APIVERSNUM)
+DEFINES  += -D_GNU_SOURCE
 
 ### The object files (add further files here):
 

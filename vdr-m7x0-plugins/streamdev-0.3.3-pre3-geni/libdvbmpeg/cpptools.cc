@@ -467,7 +467,7 @@ ostream & operator << (ostream & stream, TS_Packet & x){
 istream & operator >> (istream & stream, TS_Packet & x){
 	uint8_t sync;
 	int found=0;
-	streampos p,q;
+	streampos p=0, q=0;
 
 	sync=0;
 	while (!stream.eof() && !found) {

@@ -7,7 +7,8 @@
 # This name will be used in the '-P...' option of VDR to load the plugin.
 # By default the main source file also carries this name.
 #
-PLUGIN  = servicedemo # dummy name for Make.config
+# dummy name for Make.config
+PLUGIN  = servicedemo
 PLUGIN1 = svccli
 PLUGIN2 = svcsvr
 
@@ -56,7 +57,7 @@ OBJS = $(PLUGIN1).o $(PLUGIN2).o
 
 # Dependencies:
 
-MAKEDEP = g++ -MM -MG
+MAKEDEP = z -MM -MG
 DEPFILE = .dependencies
 $(DEPFILE): Makefile
 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
