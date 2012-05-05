@@ -57,7 +57,7 @@ OBJS = $(PLUGIN1).o $(PLUGIN2).o
 
 # Dependencies:
 
-MAKEDEP = z -MM -MG
+MAKEDEP = g++ -MM -MG
 DEPFILE = .dependencies
 $(DEPFILE): Makefile
 	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
