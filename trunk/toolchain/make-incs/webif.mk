@@ -55,7 +55,11 @@ endif
 # download webapp
 #
 $(STAGEFILES_DIR)/.webapp_downloaded: $(TC_INIT_RULE)
-	$(SVN) co $(WEBIF_SVN) $(WEBIF_DIR)
+	(if [ ! -d $(WEBIF_DIR) ] ; then \
+		$(SVN) co $(WEBIF_SVN) $(WEBIF_DIR) ; \
+	else \
+		$(SVN) up $(WEBIF_DIR) ; \
+	fi );
 	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
 
 #
@@ -135,6 +139,5 @@ distclean-webif:
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -f $(LOGOS_DLFILE)
 endif
-	-$(RM) -rf $(WEBIF_DIR)
 	-$(RM) -rf $(WEBIF_BUILD_DIR)
 	-$(RM) -rf $(WEBIF_CONF_DIR)/etc/webif/www/images
