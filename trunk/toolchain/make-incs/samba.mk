@@ -128,7 +128,7 @@ $(STAGEFILES_DIR)/.samba_configured: $(STAGEFILES_DIR)/.samba_patched
 		samba_cv_have_getgroups_too_many_egids=no \
 		$(SAMBA_DIR)/source/configure \
 			--host=$(TARGET) \
-			--build=i486-linux-gnu \
+			--build=$(HOST_TARGET) \
 			--prefix=/usr \
 			--sysconfdir=/etc \
 			--localstatedir=/var \
