@@ -51,7 +51,7 @@ fi
 
 if [ X"${mediatomb_start}" != X"NO" ]; then
     echo -n ' stopping mediatomb'
-    /usr/bin/kill-mediatomb
+    while read pid; do /bin/kill -15 $pid; done < /var/run/mediatomb.pid
 fi
 
 if [ X"${netdate}" != X"NO" ]; then
@@ -96,5 +96,7 @@ if [ -x "${fw_update_file}" ] ; then
     /bin/umount /rw-flash || /bin/umount -l /rw-flash
     ${fw_update_file}
 fi
+
+/usr/sbin/avswctl tv-vcr tv-off &
 
 exec /bin/ash /etc/rc.halt $1
