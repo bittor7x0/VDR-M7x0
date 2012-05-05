@@ -17,9 +17,6 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 WEBIF_DEPS = $(BASE_BUILD_STAGEFILE)
 
-ifeq ($(CONFIG_CSSOPTIMIZER),y)
-	WEBIF_DEPS +=  $(CSSOPTIMIZER_BIN)
-endif
 ifeq ($(CONFIG_YUI_COMPRESSOR),y)
 	WEBIF_DEPS +=  $(YUI_COMPRESSOR_JAR)
 endif
@@ -68,10 +65,8 @@ $(STAGEFILES_DIR)/.webif_copied: $(STAGEFILES_DIR)/.webapp_downloaded
 	-$(RM) -rf $(WEBIF_BUILD_DIR)
 	$(MKDIR) -p $(WEBIF_BUILD_DIR)
 	$(CP) -RPp $(WEBIF_DIR)/* $(WEBIF_BUILD_DIR)
-ifeq ($(CONFIG_CSSOPTIMIZER),y)
-	$(call css_shrink_dir, $(WEBIF_BUILD_DIR)/webapp/www/css)
-endif
 ifeq ($(CONFIG_YUI_COMPRESSOR),y)
+	$(call css_shrink_dir, $(WEBIF_BUILD_DIR)/webapp/www/css)
 	$(call js_shrink_dir, $(WEBIF_BUILD_DIR)/webapp/www/js)
 endif
 ifeq ($(CONFIG_PNGOUT),y)

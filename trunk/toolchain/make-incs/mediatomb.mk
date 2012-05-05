@@ -53,9 +53,6 @@ endif
 ifeq ($(CONFIG_LIBMAGIC),y)
 	MEDIATOMB_DEPS +=  $(LIBMAGIC_INSTALLED)
 endif
-ifeq ($(CONFIG_CSSOPTIMIZER),y)
-	MEDIATOMB_DEPS +=  $(CSSOPTIMIZER_BIN)
-endif
 ifeq ($(CONFIG_YUI_COMPRESSOR),y)
 	MEDIATOMB_DEPS +=  $(YUI_COMPRESSOR_JAR)
 endif
@@ -171,10 +168,8 @@ $(STAGEFILES_DIR)/.mediatomb_installed: $(STAGEFILES_DIR)/.mediatomb_compiled
 	$(CAT) $(TARGET_ROOT)/etc/mediatomb/sqlite3.sql | \
 		$(HOSTUTILS_PREFIX_BIN)/sqlite3 \
 		$(TARGET_ROOT)/etc/mediatomb/mediatomb.db
-ifeq ($(CONFIG_CSSOPTIMIZER),y)
-	$(call css_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web)
-endif
 ifeq ($(CONFIG_YUI_COMPRESSOR),y)
+	$(call css_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web)
 	$(call js_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/js)
 	$(call js_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web/js)
 endif
