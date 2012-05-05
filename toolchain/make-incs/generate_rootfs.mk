@@ -73,6 +73,7 @@ $$1 ~ /^\/?etc\/systemtype/ || \
 $$1 ~ /^\/?etc\/hostname/ || \
 $$1 ~ /^\/?etc\/.*\.conf/ || \
 $$1 ~ /^\/?etc\/usbautomounter$$/ || \
+$$1 ~ /^\/?etc\/samba$$/ || \
 $$1 ~ /^\/?etc\/webif$$/ || \
 $$1 ~ /^\/?etc\/ssmtp$$/ || \
 $$1 ~ /^\/?etc\/vdr$$/ || \
