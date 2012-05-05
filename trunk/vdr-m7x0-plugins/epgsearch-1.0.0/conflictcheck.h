@@ -105,14 +105,14 @@ class cConflictCheckDevice
     int Priority() const
 	{
 	    int prio = -1;
-	    for(std::set<cConflictCheckTimerObj*,TimerObjSort>::iterator it = recTimers.begin(); it != recTimers.end(); it++)
+	    for(std::set<cConflictCheckTimerObj*,TimerObjSort>::const_iterator it = recTimers.begin(); it != recTimers.end(); it++)
 		prio = max(prio, (*it)->timer->Priority());
 	    return prio;
 	};
     bool Receiving() const { return !recTimers.empty(); }
     bool IsTunedTo (const cChannel* Channel) const
 	{
-	    for(std::set<cConflictCheckTimerObj*,TimerObjSort>::iterator it = recTimers.begin(); it != recTimers.end(); it++)
+	    for(std::set<cConflictCheckTimerObj*,TimerObjSort>::const_iterator it = recTimers.begin(); it != recTimers.end(); it++)
 		if ((*it)->timer->Channel()->Source() == Channel->Source() && 
 		    (*it)->timer->Channel()->Transponder() == Channel->Transponder())
 		    return true;
@@ -135,7 +135,7 @@ class cConflictCheckDevice
     int ProvidesCa(const cChannel* Channel) const { if (device) return device->ProvidesCa(Channel); else return true; }
     int Ca() const
 	{
-	    for(std::set<cConflictCheckTimerObj*,TimerObjSort>::iterator it = recTimers.begin(); it != recTimers.end(); it++)
+	    for(std::set<cConflictCheckTimerObj*,TimerObjSort>::const_iterator it = recTimers.begin(); it != recTimers.end(); it++)
 		return (*it)->timer->Channel()->Ca();
 	    return 0;
 	}
