@@ -17,7 +17,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 UCLIBC++_DEPS = $(BASE_BUILD_STAGEFILE)
 
-UCLIBC++_VERSION := 0.2.2
+UCLIBC++_VERSION := 0.2.3
 UCLIBC++_PATCHES_DIR := $(PATCHES_DIR)/uClibc++/$(UCLIBC++_VERSION)
 UCLIBC++_CONFIG := $(CONFIGS_DIR)/uClibc++/$(UCLIBC++_VERSION)/uclibc++.config
 
