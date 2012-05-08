@@ -83,7 +83,8 @@ bison, gettext, genext2fs, pkg-config, unzip, libz-dev and openjdk-7-jre (or
 openjdk-6-jre).
 
 Run in console:
-svn checkout -q http://svn.assembla.com/svn/VDR-M7x0/trunk/toolchain ./vdr-ng-em
+umask 022
+svn checkout http://svn.assembla.com/svn/VDR-M7x0/trunk/toolchain ./vdr-ng-em
 cd ./vdr-ng-em
 cp configs/default-config-pro .config
 # If you want Lite version, run: cp configs/default-config-lite .config
