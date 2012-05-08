@@ -246,6 +246,7 @@ endif
 .PHONY: distclean-generate-rootfs
 distclean-generate-rootfs:
 	-$(RM) -f $(ROOTFS_FILE_TABLE)
+	-$(RM) -f $(ROOTFS_FILE_COPY)
 	-$(RM) -rf $(ROOTFS_DIR)
 	-$(RM) -f $(TOP_DIR)/$(EXT2_ROOTFS_IMG)
 	-$(RM) -f $(TOP_DIR)/$(CRAM_ROOTFS_IMG)
