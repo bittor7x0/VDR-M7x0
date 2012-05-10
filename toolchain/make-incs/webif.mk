@@ -145,6 +145,7 @@ distclean-webif:
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_copied
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
+	-$(RM) -f $(FILELIST_DIR)/webif-configs.lst
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -f $(LOGOS_DLFILE)
 endif
