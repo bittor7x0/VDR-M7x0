@@ -208,6 +208,7 @@ distclean-mediatomb:
 	-$(RM) -f $(STAGEFILES_DIR)/.mediatomb_configured
 	-$(RM) -f $(STAGEFILES_DIR)/.mediatomb_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.mediatomb_installed
+	-$(RM) -f $(FILELIST_DIR)/mediatomb-configs.lst
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -rf $(MEDIATOMB_DLFILE)
 endif
