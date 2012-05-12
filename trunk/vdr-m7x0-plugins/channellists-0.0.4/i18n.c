@@ -18,7 +18,7 @@ const tI18nPhrase Phrases[] = {
     "", // Norsk
     "", // suomi
     "", // Polski
-    "Canales presintonizados", // Español
+    "Usar canales presintonizados", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Romaneste

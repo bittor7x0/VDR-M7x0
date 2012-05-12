@@ -215,6 +215,27 @@ const tI18nPhrase Phrases[] = {
     "Kanaler",
     "Kanály",
   },
+  { "Channels setup",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Configuración de canales",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+  },
   { "Timers",
     "Timer",
     "Termini",
@@ -291,7 +312,7 @@ const tI18nPhrase Phrases[] = {
     "Konfigurasjon",
     "Asetukset",
     "Ustawienia",
-    "Configuración VDR",
+    "Configuración del VDR",
     "Ñõèìéóåéò",
     "Inställningar",
     "Configuraþie",
@@ -313,7 +334,7 @@ const tI18nPhrase Phrases[] = {
     "Kommandoer",
     "Komennot",
     "Polecenia",
-    "Órdenes",
+    "Utilidades del sistema",
     "ÅíôïëÝò",
     "Kommandon",
     "Comenzi",
@@ -2870,7 +2891,7 @@ const tI18nPhrase Phrases[] = {
     "OSD",
     "Kuvaruutunäyttö",
     "OSD",
-    "Menús en pantalla",
+    "Vista de menús y OSD",
     "OSD",
     "OSD",
     "OSD",
@@ -3156,7 +3177,7 @@ const tI18nPhrase Phrases[] = {
     "DVB-enheter",
     "DVB",
     "DVB",
-    "DVB",
+    "Modos de vídeo y sintonizadores",
     "DVB",
     "DVB",
     "Dispozitiv DVB",

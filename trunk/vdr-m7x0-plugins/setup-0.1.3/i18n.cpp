@@ -22,7 +22,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    "Configuración Firmware",
+    "Configuración del sistema",
     "",
     "",
     "",

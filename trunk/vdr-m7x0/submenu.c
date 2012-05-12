@@ -58,22 +58,42 @@ void cSubMenu::LoadInfoSubMenu(void)
 		if (fo!=NULL)
 		{
 			fprintf(fo,"0::Schedule\n");
-			fprintf(fo,"0::Timers\n");
 			fprintf(fo,"0::Recordings\n");
+			fprintf(fo,"0::Timers\n");
+			if (cPluginManager::GetPlugin("epgsearchonly"))
+                           fprintf(fo,"0::epgsearchonly\n");
+			if (cPluginManager::GetPlugin("conflictcheckonly"))
+                           fprintf(fo,"0::conflictcheckonly\n");
 			fprintf(fo,"0:1:Plugins\n");
 			fprintf(fo,"0:2:Configuraci%cn\n", 243);
-
-			fprintf(fo,"2::Channels\n");
 			fprintf(fo,"2::Setup\n");
-			fprintf(fo,"2::setup\n");
-			fprintf(fo,"2::Commands\n");
+			if (cPluginManager::GetPlugin("setup"))
+                           fprintf(fo,"2::setup\n");
+			fprintf(fo,"2:3:%s\n", tr("Channels"));
+			if (cPluginManager::GetPlugin("channelscan"))
+                           fprintf(fo,"3::channelscan\n");
+			if (cPluginManager::GetPlugin("channellists"))
+                           fprintf(fo,"3::channellists\n");
+			fprintf(fo,"3::Channels\n");
+			fprintf(fo,"0::Commands\n");
+			if (cPluginManager::GetPlugin("aide"))
+                           fprintf(fo,"0::aide\n");
 
 			// Plugins Item:
 			j=0;
 			do
 			{
 				p = cPluginManager::GetPlugin(j);
-				if ( p != NULL && strcmp( p->Name(), "setup" ) )
+				if ( p != NULL && strcmp(p->Name(), "aide")
+                                               && strcmp(p->Name(), "channellists")
+                                               && strcmp(p->Name(), "channelscan")
+                                               && strcmp(p->Name(), "conflictcheckonly")
+                                               && strcmp(p->Name(), "epgsearch")
+                                               && strcmp(p->Name(), "epgsearchonly")
+                                               && strcmp(p->Name(), "setup")
+                                               && strcmp(p->Name(), "skinenigmang")
+                                               && strcmp(p->Name(), "skinreel")
+                                               && strcmp(p->Name(), "skinsoppalusikka") )
 				{
 					fprintf(fo,"1::%s\n",p->Name());
 				}
