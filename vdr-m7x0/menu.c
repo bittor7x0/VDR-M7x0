@@ -430,7 +430,7 @@ public:
   };
 
 cMenuChannels::cMenuChannels(void)
-:cOsdMenu(tr("Channels"), CHNUMWIDTH)
+:cOsdMenu(tr("Channels setup"), CHNUMWIDTH)
 {
   number = 0;
   onlyTV = onlyRadio = 0;
@@ -3978,7 +3978,7 @@ void cMenuMain::Set(void)
 
   				if( strcmp(submenu.subMenuItem[i].name,"Channels") == 0 )
   					if (!PinPatch::ChildLock::IsMenuHidden("Channels"))
-  					Add(new cOsdItem(hk(tr("Channels")),   osChannels));
+  					Add(new cOsdItem(hk(tr("Channels setup")),   osChannels));
 
   				if( strcmp(submenu.subMenuItem[i].name,"Timers") == 0 )
   					if (!PinPatch::ChildLock::IsMenuHidden("Timers"))
@@ -4059,7 +4059,7 @@ void cMenuMain::Set(void)
   if (!PinPatch::ChildLock::IsMenuHidden("Schedule"))
   Add(new cOsdItem(hk(tr("Schedule")),   osSchedule));
   if (!PinPatch::ChildLock::IsMenuHidden("Channels"))
-  Add(new cOsdItem(hk(tr("Channels")),   osChannels));
+  Add(new cOsdItem(hk(tr("Channels setup")),   osChannels));
   if (!PinPatch::ChildLock::IsMenuHidden("Timers"))
   Add(new cOsdItem(hk(tr("Timers")),     osTimers));
   if (!PinPatch::ChildLock::IsMenuHidden("Recordings"))
