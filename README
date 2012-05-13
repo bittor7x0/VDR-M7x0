@@ -1,0 +1,119 @@
+NOTE: This file is incomplete (also can have some error) and will be completed
+      gradually.
+
+
+What is VDR-NG-EM ?
+-------------------
+VDR-NG-EM is a Open Source firmware (except drivers) for Siemens Gigaset M740AV,
+M750T EPG and M750S (without support), based in VDR-NG from open7x0.org with nice
+new features.
+
+His full name is: Video Disk Recorder - Next Generation - Edición Mejorada
+Initially it was just a version translated to spanish called VDR-NG-ES and later
+were added some improvements and changed to VDR-NG-EM "Edición Mejorada" (in
+english "Enhanced Edition").
+
+Our original target were spanish users and many texts are hardcoded in scripts
+and source code.
+Due to the interest of some german and french users we are gradually
+internationalizing the firmware, but there is still work to do.
+
+
+Main new features in firmware
+-----------------------------
+* Speed up boot and shutdown.
+* USB hard disks to 2 times faster.
+* All binaries are stripped with sstrip tool (files smaller).
+* Removed all symbols and sections not needed in modules (tainted modules from
+  DiscVision are 20% smaller).
+* Kernel smaller and faster, with real time scheduler, low latency, network
+  hashes shrinked, NFS and CRC32 (JFFS2 is very fast with it) backports from 2.6
+  and many fixes and speed ups.
+* JFFS2 with LZO compressor (faster).
+* vsftpd as FTP server.
+* Hard disks spindown.
+* Swap partitions support.
+* New webif.
+* NTP client.
+* SAMBA server.
+* DLNA server.
+* NFS server.
+* Recover time from file on powerfail.
+* usbautomounter with SVDRP support, interval check on umount and new paremeters.
+
+You can change .config in Linux for add:
+* Bash shell.
+* BitTorrent client.
+* SquashFS with LZMA compression.
+* VPN.
+* Other programs as dvbsnoop, htop, ...
+
+
+Main new features in VDR
+------------------------
+* Backports from VDR 1.7.x.
+* Speed ups from VDR-Extensions-Patch-72 for VDR 1.7.7.
+* WarEagle icons for REC, timers, TV and radio channels, ...
+* Rename recordings, move to other directory, change priority and lifetime,
+  show estimated bitrate, ....
+* Sort recordings (button number 0) in recordings menu.
+* TimeShift.
+* Play and record MPEG-TS files.
+* Record HD channels.
+* commands.conf (at moment only in spanish).
+* Rescue menu x4 unplug from commands.conf.
+* Plugins can to replace the VDR mainmenus "Schedule", "Channels", "Timers" and
+  "Recordings" by a different implementation.
+* Player with x9 speeds.
+* Replaymode display with symbols (instead of characters) in Skin Classic.
+* Shows info, if it is possible to record an event in the timer menu of VDR.
+  The first column in the timer-list shows:
+     ( + ) recording will be most probably possible (enough space)
+     (+/-) recording may be possible
+     ( - ) recording will most probably fail (to less space)
+  The calculations also consider repeating timers.
+* Parental control with PIN plugin.
+* New plugins and updated.
+
+
+Firmware builder for Linux
+--------------------------
+You need to have installed gcc, binutils, patch, bzip2, flex, make, automake,
+bison, gettext, genext2fs, pkg-config, unzip, libz-dev and openjdk-7-jre (or
+openjdk-6-jre).
+
+Run in console:
+umask 022
+svn checkout http://svn.assembla.com/svn/VDR-M7x0/tags/0.7/toolchain ./vdr-ng-em
+cd ./vdr-ng-em
+cp configs/default-config-pro .config
+# If you want Lite version, run: cp configs/default-config-lite .config
+# Edit .config and change parameters if it is necessary (for example language)
+make
+
+If you have any problems or doubts you can send it to international forum:
+http://vdr-m7x0.foroactivo.com.es/international-forum-f19/
+
+
+License
+---------
+VDR-NG-EM is licensed under the GPL v3, see the file COPYING in this directory.
+This copyright does not cover the packages VDR-NG-EM is based on or VDR-NG-EM
+is able to build. They have their own copyrights.
+
+This copyright covers all VDR-NG-EM specific parts like Makefiles, configs,
+scripts, patches and files.
+
+
+Warranties
+----------
+This firmware is distributed without warranty of any kind.
+You assume all responsibility for the use of it.
+
+
+Directory structure in SVN
+--------------------------
+toolchain         ToolChain for build VDR-NG-EM firmware
+vdr-m7x0          VDR-NG-EM source code
+vdr-m7x0-plugins  All plugins that work with VDR-NG-EM
+webif             Web interface for VDR-NG-EM
