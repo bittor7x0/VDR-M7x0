@@ -1,0 +1,85 @@
+--- ../epgsearch-0.9.19/menu_myedittimer.c	2006-09-24 20:05:41.000000000 +0200
++++ menu_myedittimer.c	2006-11-28 13:50:41.000000000 +0100
+@@ -29,6 +29,7 @@
+ 	stop = Timer->Stop();
+ 	priority = Timer->Priority();
+ 	lifetime = Timer->Lifetime();
++	fskProtection = Timer->FskProtection();                                        // PIN PATCH
+ 	strcpy(file, Timer->File());
+ 	channel = Timer->Channel()->Number();
+ 	if (forcechannel)
+@@ -94,6 +95,14 @@
+     Add(new cMenuEditBitItem( tr("VPS"),          &flags, tfVps));
+     Add(new cMenuEditIntItem( tr("Priority"),     &priority, 0, MAXPRIORITY));
+     Add(new cMenuEditIntItem( tr("Lifetime"),     &lifetime, 0, MAXLIFETIME));
++    // PIN PATCH
++    if (cOsd::pinValid || !fskProtection) Add(new cMenuEditBoolItem(tr("Childlock"),&fskProtection));
++    else { 
++       char* buf = 0;
++       asprintf(&buf, "%s\t%s", tr("Childlock"), fskProtection ? tr("yes") : tr("no")); 
++       Add(new cOsdItem(buf));
++       free(buf);
++       }
+     Add(new cMenuEditStrItem( tr("File"), file, MaxFileName, tr(FileNameChars)));
+     Add(new cMenuEditStrItem( tr("Directory"), directory, MaxFileName, tr(AllowedChars)));
+ 
+@@ -204,6 +213,33 @@
+     return osContinue;
+ }
+ 
++char* cMenuMyEditTimer::SetFskProtection(int fskProtection, char* aux)                 // PIN PATCH
++{ 
++   char* p;
++   char* tmp = 0;
++
++   if (fskProtection && (!aux || !strstr(aux, "<pin-plugin><protected>yes</protected></pin-plugin>")))
++   {
++      // add protection info to aux
++
++      if (aux) { tmp = strdup(aux); free(aux); }
++      asprintf(&aux,"%s<pin-plugin><protected>yes</protected></pin-plugin>", tmp ? tmp : "");
++   }
++   else if (!fskProtection && aux && (p = strstr(aux, "<pin-plugin><protected>yes</protected></pin-plugin>")))
++   {
++      // remove protection info to aux
++
++      asprintf(&tmp, "%.*s%s", p-aux, aux, p+strlen("<pin-plugin><protected>yes</protected></pin-plugin>"));
++      free(aux);
++      aux = strdup(tmp);
++   }
++
++   if (tmp) 
++      free(tmp);  
++
++   return aux;
++}
++
+ eOSState cMenuMyEditTimer::ProcessKey(eKeys Key)
+ {
+   eOSState state = cOsdMenu::ProcessKey(Key);
+@@ -284,6 +320,7 @@
+ 	      char* tmpSummary = NULL;
+ 	      if (timer && timer->Aux())
+ 		  tmpSummary = strdup(timer->Aux());
++         tmpSummary = SetFskProtection(fskProtection, tmpSummary);        // PIN PATCH
+ 	      if (timer) 
+ 	      {
+ 		  char* cmdbuf = NULL;
+--- ../epgsearch-0.9.19/menu_myedittimer.h	2006-09-24 20:05:41.000000000 +0200
++++ menu_myedittimer.h	2006-11-28 13:48:45.000000000 +0100
+@@ -15,6 +15,7 @@
+   cMenuEditDateItem *firstday;
+   void SetFirstDayItem(void);
+   cMenuEditStrItem* m_DirItem;
++  char* SetFskProtection(int fskProtection, char* aux);             // PIN PATCH
+ 
+   uint flags;
+   time_t day;
+@@ -25,6 +26,7 @@
+   int lifetime;
+   char file[MaxFileName];
+   char directory[MaxFileName];
++  int fskProtection;                                               // PIN PATCH
+ public:
+   cMenuMyEditTimer(cTimer *Timer, bool New, const cEvent* event, const cChannel* forcechannel=NULL);
+   virtual ~cMenuMyEditTimer();

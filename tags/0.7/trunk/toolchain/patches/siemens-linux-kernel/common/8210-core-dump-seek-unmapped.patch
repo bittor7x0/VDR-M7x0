@@ -1,0 +1,64 @@
+--- 2.4.19pre7aa2/mm/memory.c.~1~	Fri Apr 26 08:35:08 2002
++++ 2.4.19pre7aa2/mm/memory.c	Fri Apr 26 09:08:33 2002
+@@ -402,20 +402,26 @@
+ /*
+  * Do a quick page-table lookup for a single page. 
+  */
+-static struct page * follow_page(struct mm_struct *mm, unsigned long address, int write) 
++static struct page * follow_page(struct mm_struct *mm, unsigned long address, int write, int file_backed)
+ {
+ 	pgd_t *pgd;
+ 	pmd_t *pmd;
+ 	pte_t *ptep, pte;
++	int none = 1;
+ 
+ 	pgd = pgd_offset(mm, address);
+-	if (pgd_none(*pgd) || pgd_bad(*pgd))
++	if (pgd_none(*pgd))
+ 		goto out;
++	if (pgd_bad(*pgd))
++		BUG();
+ 
+ 	pmd = pmd_offset(pgd, address);
+-	if (pmd_none(*pmd) || pmd_bad(*pmd))
++	if (pmd_none(*pmd))
+ 		goto out;
++	if (pmd_bad(*pmd))
++		BUG();
+ 
++	none = 0;
+ 	ptep = pte_offset(pmd, address);
+ 	if (!ptep)
+ 		goto out;
+@@ -426,8 +432,22 @@
+ 		    (pte_write(pte) && pte_dirty(pte)))
+ 			return pte_page(pte);
+ 	}
++	if (pte_none(pte))
++		none = 1;
+ 
+ out:
++	if (!write && none && !file_backed)
++		/*
++		 * Optimization to avoid building the pagetable layout
++		 * during core dumps of unmapped areas where we only
++		 * want to seek and to create an hole in the dump:
++		 * if 1) the pte is null, 2) the file isn't filebacked and
++		 * 3) this is a read, then we can let the reader to read
++		 * from the zero page (the coredump will also notice
++		 * this is the magic zeropage and it will seek accordingly).
++		 */
++		return ZERO_PAGE(address);
++
+ 	return 0;
+ }
+ 
+@@ -476,7 +496,7 @@
+ 		spin_lock(&mm->page_table_lock);
+ 		do {
+ 			struct page *map;
+-			while (!(map = follow_page(mm, start, write))) {
++			while (!(map = follow_page(mm, start, write, vma->vm_file != 0))) {
+ 				spin_unlock(&mm->page_table_lock);
+ 				switch (handle_mm_fault(mm, vma, start, write)) {
+ 				case 1:

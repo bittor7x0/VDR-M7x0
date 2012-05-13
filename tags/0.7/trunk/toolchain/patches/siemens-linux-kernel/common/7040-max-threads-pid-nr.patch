@@ -1,0 +1,13 @@
+--- xx/kernel/fork.c.~1~	2003-05-22 17:19:21.000000000 +0200
++++ xx/kernel/fork.c	2003-05-22 17:22:09.000000000 +0200
+@@ -93,6 +93,10 @@ void __init fork_init(unsigned long memp
+ 	 */
+ 	max_threads = mempages / (THREAD_SIZE/PAGE_SIZE) / 8;
+ 
++	/* don't let threads go beyond PID_NR */
++	if (max_threads > PID_NR)
++		max_threads = PID_NR;
++
+ 	init_task.rlim[RLIMIT_NPROC].rlim_cur = max_threads/2;
+ 	init_task.rlim[RLIMIT_NPROC].rlim_max = max_threads/2;
+ }

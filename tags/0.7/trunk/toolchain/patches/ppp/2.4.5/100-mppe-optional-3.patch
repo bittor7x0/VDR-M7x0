@@ -1,0 +1,201 @@
+diff -uNr ppp-2.4.4.orig/pppd/auth.c ppp-2.4.4/pppd/auth.c
+--- ppp-2.4.4.orig/pppd/auth.c	2006-06-18 13:26:00.000000000 +0200
++++ ppp-2.4.4/pppd/auth.c	2010-10-05 13:54:13.000000000 +0200
+@@ -885,7 +885,7 @@
+      */
+     ecp_required = ecp_gotoptions[unit].required;
+     mppe_required = ccp_gotoptions[unit].mppe;
+-    if (!ecp_required && !mppe_required)
++    if (!ecp_required && (!mppe_required || allow_mppe_fallback))
+ 	continue_networks(unit);
+ }
+ 
+diff -uNr ppp-2.4.4.orig/pppd/ccp.c ppp-2.4.4/pppd/ccp.c
+--- ppp-2.4.4.orig/pppd/ccp.c	2010-12-08 15:38:30.000000000 +0100
++++ ppp-2.4.4/pppd/ccp.c	2010-12-10 12:46:14.000000000 +0100
+@@ -120,6 +120,8 @@
+       "don't allow MPPE encryption", OPT_PRIO },
+     { "-mppe", o_bool, &ccp_wantoptions[0].mppe,
+       "don't allow MPPE encryption", OPT_ALIAS | OPT_PRIO },
++    { "mppe-optional", o_bool, &allow_mppe_fallback,
++      "allow falling back to unencrypted connection mode", OPT_PRIO | 1 },
+ 
+     /* We use ccp_allowoptions[0].mppe as a junk var ... it is reset later */
+     { "require-mppe-40", o_bool, &ccp_allowoptions[0].mppe,
+@@ -516,8 +518,12 @@
+ 
+ #ifdef MPPE
+     if (ccp_gotoptions[unit].mppe) {
+-	error("MPPE required but peer negotiation failed");
+-	lcp_close(unit, "MPPE required but peer negotiation failed");
++        if(!allow_mppe_fallback) {
++	    error("MPPE required but peer negotiation failed");
++	    lcp_close(unit, "MPPE required but peer negotiation failed");
++        } else {
++            error("MPPE protocol reject. MPPE is optional. Falling back to non-mppe");
++        }
+     }
+ #endif
+ 
+@@ -563,40 +569,64 @@
+ 	    auth_mschap_bits >>= 1;
+ 	} while (auth_mschap_bits);
+ 	if (numbits > 1) {
+-	    error("MPPE required, but auth done in both directions.");
+-	    lcp_close(f->unit, "MPPE required but not available");
+-	    return;
++            if(!allow_mppe_fallback) {
++                error("MPPE required, but auth done in both directions.");
++                lcp_close(f->unit, "MPPE required but not available");
++                return;
++            } else {
++                go->mppe = 0;
++                error("MPPE required, but auth done in both directions. Falling back and disabling MPPE.");
++            }
+ 	}
+ 	if (!numbits) {
+-	    error("MPPE required, but MS-CHAP[v2] auth not performed.");
+-	    lcp_close(f->unit, "MPPE required but not available");
+-	    return;
++            if(!allow_mppe_fallback) {
++                error("MPPE required, but MS-CHAP[v2] auth not performed.");
++                lcp_close(f->unit, "MPPE required but not available");
++                return;
++            } else {
++                go->mppe = 0;
++                error("MPPE required, but MS-CHAP[v2] auth not performed. Falling back and disabling MPPE.");
++            }
+ 	}
+ 
+ 	/* A plugin (eg radius) may not have obtained key material. */
+-	if (!mppe_keys_set) {
+-	    error("MPPE required, but keys are not available.  "
+-		  "Possible plugin problem?");
+-	    lcp_close(f->unit, "MPPE required but not available");
+-	    return;
++	if (go->mppe) {
++		if (!mppe_keys_set) {
++		    if(!allow_mppe_fallback) {
++		        error("MPPE required, but keys are not available.  "
++		              "Possible plugin problem?");
++		        lcp_close(f->unit, "MPPE required but not available");
++		        return;
++		    } else {
++		        go->mppe = 0;
++		        error("MPPE required, but keys are not available.  "
++		              "Possible plugin problem?  "
++		              "Falling back and disabling MPPE");
++		    }
++		}
+ 	}
+-
+-	/* LM auth not supported for MPPE */
+-	if (auth_done[f->unit] & (CHAP_MS_WITHPEER | CHAP_MS_PEER)) {
+-	    /* This might be noise */
+-	    if (go->mppe & MPPE_OPT_40) {
+-		notice("Disabling 40-bit MPPE; MS-CHAP LM not supported");
+-		go->mppe &= ~MPPE_OPT_40;
+-		ccp_wantoptions[f->unit].mppe &= ~MPPE_OPT_40;
+-	    }
++	
++	if (go->mppe) {
++		/* LM auth not supported for MPPE */
++		if (auth_done[f->unit] & (CHAP_MS_WITHPEER | CHAP_MS_PEER)) {
++		    /* This might be noise */
++		    if (go->mppe & MPPE_OPT_40) {
++			notice("Disabling 40-bit MPPE; MS-CHAP LM not supported");
++			go->mppe &= ~MPPE_OPT_40;
++			ccp_wantoptions[f->unit].mppe &= ~MPPE_OPT_40;
++		    }
++		}
+ 	}
+-
+-	/* Last check: can we actually negotiate something? */
+-	if (!(go->mppe & (MPPE_OPT_40 | MPPE_OPT_128))) {
+-	    /* Could be misconfig, could be 40-bit disabled above. */
+-	    error("MPPE required, but both 40-bit and 128-bit disabled.");
+-	    lcp_close(f->unit, "MPPE required but not available");
+-	    return;
++	
++	
++	if (go->mppe) {
++		/* Last check: can we actually negotiate something? */
++		if (!(go->mppe & (MPPE_OPT_40 | MPPE_OPT_128))) {
++		    /* Could be misconfig, could be 40-bit disabled above. */
++		    error("MPPE required, but both 40-bit and 128-bit disabled.");
++		    lcp_close(f->unit, "MPPE required but not available");
++		    return;
++		}
+ 	}
+ 
+ 	/* sync options */
+@@ -925,8 +955,13 @@
+ 	}
+ 
+ 	if (!try.mppe) {
+-	    error("MPPE required but peer negotiation failed");
+-	    lcp_close(f->unit, "MPPE required but peer negotiation failed");
++            if(!allow_mppe_fallback) {
++                error("MPPE required but peer negotiation failed");
++                lcp_close(f->unit, "MPPE required but peer negotiation failed");
++            } else {
++                error("MPPE required but peer negotiation failed. Falling back and disabling MPPE");
++                try.mppe = 0;
++            }
+ 	}
+     }
+ #endif /* MPPE */
+@@ -1004,8 +1039,13 @@
+ #ifdef MPPE
+     if (go->mppe && len >= CILEN_MPPE
+ 	&& p[0] == CI_MPPE && p[1] == CILEN_MPPE) {
+-	error("MPPE required but peer refused");
+-	lcp_close(f->unit, "MPPE required but peer refused");
++        if(!allow_mppe_fallback) {
++            error("MPPE required but peer refused");
++            lcp_close(f->unit, "MPPE required but peer refused");
++        } else {
++            try.mppe = 0;
++            error("MPPE required but MPPE is optional. Falling back and disabling MPPE");
++        }
+ 	p += CILEN_MPPE;
+ 	len -= CILEN_MPPE;
+     }
+@@ -1346,8 +1386,10 @@
+     }
+ #ifdef MPPE
+     if (ret == CONFREJ && ao->mppe && rej_for_ci_mppe) {
+-	error("MPPE required but peer negotiation failed");
+-	lcp_close(f->unit, "MPPE required but peer negotiation failed");
++    if(!allow_mppe_fallback) {
++		error("MPPE required but peer negotiation failed");
++		lcp_close(f->unit, "MPPE required but peer negotiation failed");
++	}
+     }
+ #endif
+     return ret;
+diff -uNr ppp-2.4.4.orig/pppd/ccp.h ppp-2.4.4/pppd/ccp.h
+--- ppp-2.4.4.orig/pppd/ccp.h	2004-11-04 11:02:26.000000000 +0100
++++ ppp-2.4.4/pppd/ccp.h	2010-10-05 14:02:36.000000000 +0200
+@@ -43,6 +43,8 @@
+     short method;		/* code for chosen compression method */
+ } ccp_options;
+ 
++bool allow_mppe_fallback;
++
+ extern fsm ccp_fsm[];
+ extern ccp_options ccp_wantoptions[];
+ extern ccp_options ccp_gotoptions[];
+diff -uNr ppp-2.4.4.orig/pppd/pppd.8 ppp-2.4.4/pppd/pppd.8
+--- ppp-2.4.4.orig/pppd/pppd.8	2006-06-16 02:01:23.000000000 +0200
++++ ppp-2.4.4/pppd/pppd.8	2010-10-05 14:03:07.000000000 +0200
+@@ -781,6 +781,9 @@
+ .B nomppe
+ Disables MPPE (Microsoft Point to Point Encryption).  This is the default.
+ .TP
++.B mppe\-optional
++Makes MPPE optional, allowing both MPPE and non-MPPE clients
++.TP
+ .B nomppe\-40
+ Disable 40-bit encryption with MPPE.
+ .TP

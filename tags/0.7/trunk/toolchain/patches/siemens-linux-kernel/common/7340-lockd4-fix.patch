@@ -1,0 +1,12 @@
+diff -u --recursive --new-file linux-2.4.19-fix_lockd3/fs/lockd/svclock.c linux-2.4.19-fix_lockd4/fs/lockd/svclock.c
+--- linux-2.4.19-fix_lockd3/fs/lockd/svclock.c	Tue Jul 23 18:08:35 2002
++++ linux-2.4.19-fix_lockd4/fs/lockd/svclock.c	Tue Jul 23 18:07:56 2002
+@@ -64,7 +64,7 @@
+ 	if (when != NLM_NEVER) {
+ 		if ((when += jiffies) == NLM_NEVER)
+ 			when ++;
+-		while ((b = *bp) && time_before_eq(b->b_when,when))
++		while ((b = *bp) && time_before_eq(b->b_when,when) && b->b_when != NLM_NEVER)
+ 			bp = &b->b_next;
+ 	} else
+ 		while ((b = *bp))

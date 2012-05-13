@@ -1,0 +1,39 @@
+diff -urNp --exclude CVS --exclude BitKeeper x-ref/fs/fcntl.c x/fs/fcntl.c
+--- x-ref/fs/fcntl.c	2002-11-29 02:23:15.000000000 +0100
++++ x/fs/fcntl.c	2003-05-27 19:17:55.000000000 +0200
+@@ -58,11 +58,11 @@ static int expand_files(struct files_str
+  */
+ 
+ static int locate_fd(struct files_struct *files, 
+-			    struct file *file, int orig_start)
++		     struct file *file, unsigned int orig_start)
+ {
+ 	unsigned int newfd;
+ 	int error;
+-	int start;
++	unsigned int start;
+ 
+ 	write_lock(&files->file_lock);
+ 	
+@@ -118,7 +118,7 @@ static inline void allocate_fd(struct fi
+ 	fd_install(fd, file);
+ }
+ 
+-static int dupfd(struct file *file, int start)
++static int dupfd(struct file *file, unsigned int start)
+ {
+ 	struct files_struct * files = current->files;
+ 	int ret;
+@@ -257,10 +257,8 @@ static long do_fcntl(unsigned int fd, un
+ 
+ 	switch (cmd) {
+ 		case F_DUPFD:
+-			if (arg < NR_OPEN) {
+-				get_file(filp);
+-				err = dupfd(filp, arg);
+-			}
++			get_file(filp);
++			err = dupfd(filp, arg);
+ 			break;
+ 		case F_GETFD:
+ 			err = get_close_on_exec(fd);

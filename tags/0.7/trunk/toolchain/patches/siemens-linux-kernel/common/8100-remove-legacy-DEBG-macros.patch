@@ -1,0 +1,291 @@
+diff -Naur slin_m740_orig/lib/inflate.c slin_m740/lib/inflate.c
+--- slin_m740_orig/lib/inflate.c	Sat May 29 14:46:30 2004
++++ slin_m740/lib/inflate.c	Mon Nov 24 11:55:32 2008
+@@ -1,5 +1,3 @@
+-#define DEBG(x)
+-#define DEBG1(x)
+ /* inflate.c -- Not copyrighted 1992 by Mark Adler
+    version c10p1, 10 January 1993 */
+ 
+@@ -305,8 +303,6 @@
+   int y;                        /* number of dummy codes added */
+   unsigned z;                   /* number of entries in current table */
+ 
+-DEBG("huft1 ");
+-
+   /* Generate counts for each bit length */
+   memzero(c, sizeof(c));
+   p = b;  i = n;
+@@ -323,8 +319,6 @@
+     return 0;
+   }
+ 
+-DEBG("huft2 ");
+-
+   /* Find minimum and maximum length, bound *m by those */
+   l = *m;
+   for (j = 1; j <= BMAX; j++)
+@@ -341,8 +335,6 @@
+     l = i;
+   *m = l;
+ 
+-DEBG("huft3 ");
+-
+   /* Adjust last length count to fill out codes, if needed */
+   for (y = 1 << j; j < i; j++, y <<= 1)
+     if ((y -= c[j]) < 0)
+@@ -351,8 +343,6 @@
+     return 2;
+   c[i] += y;
+ 
+-DEBG("huft4 ");
+-
+   /* Generate starting offsets into the value table for each length */
+   x[1] = j = 0;
+   p = c + 1;  xp = x + 2;
+@@ -360,8 +350,6 @@
+     *xp++ = (j += *p++);
+   }
+ 
+-DEBG("huft5 ");
+-
+   /* Make a table of values in order of bit lengths */
+   p = b;  i = 0;
+   do {
+@@ -369,8 +357,6 @@
+       v[x[j]++] = i;
+   } while (++i < n);
+ 
+-DEBG("h6 ");
+-
+   /* Generate the Huffman codes and for each, make the table entries */
+   x[0] = i = 0;                 /* first Huffman code is zero */
+   p = v;                        /* grab values in bit order */
+@@ -379,21 +365,17 @@
+   u[0] = (struct huft *)NULL;   /* just to keep compilers happy */
+   q = (struct huft *)NULL;      /* ditto */
+   z = 0;                        /* ditto */
+-DEBG("h6a ");
+ 
+   /* go through the bit lengths (k already is bits in shortest code) */
+   for (; k <= g; k++)
+   {
+-DEBG("h6b ");
+     a = c[k];
+     while (a--)
+     {
+-DEBG("h6b1 ");
+       /* here i is the Huffman code of length k bits for value *p */
+       /* make tables up to required level */
+       while (k > w + l)
+       {
+-DEBG1("1 ");
+         h++;
+         w += l;                 /* previous table always l bits */
+ 
+@@ -401,7 +383,6 @@
+         z = (z = g - w) > (unsigned)l ? l : z;  /* upper limit on table size */
+         if ((f = 1 << (j = k - w)) > a + 1)     /* try a k-w bit table */
+         {                       /* too few codes for k-w bit table */
+-DEBG1("2 ");
+           f -= a + 1;           /* deduct codes from patterns left */
+           xp = c + k;
+           while (++j < z)       /* try smaller tables up to z bits */
+@@ -411,7 +392,6 @@
+             f -= *xp;           /* else deduct codes from patterns */
+           }
+         }
+-DEBG1("3 ");
+         z = 1 << j;             /* table entries for j-bit table */
+ 
+         /* allocate and link in new table */
+@@ -422,13 +402,11 @@
+             huft_free(u[0]);
+           return 3;             /* not enough memory */
+         }
+-DEBG1("4 ");
+         hufts += z + 1;         /* track memory usage */
+         *t = q + 1;             /* link to list for huft_free() */
+         *(t = &(q->v.t)) = (struct huft *)NULL;
+         u[h] = ++q;             /* table starts after link */
+ 
+-DEBG1("5 ");
+         /* connect to last table, if there is one */
+         if (h)
+         {
+@@ -439,9 +417,7 @@
+           j = i >> (w - l);     /* (get around Turbo C bug) */
+           u[h-1][j] = r;        /* connect to last table */
+         }
+-DEBG1("6 ");
+       }
+-DEBG("h6c ");
+ 
+       /* set up table entry in r */
+       r.b = (uch)(k - w);
+@@ -458,7 +434,6 @@
+         r.e = (uch)e[*p - s];   /* non-simple--look up in lists */
+         r.v.n = d[*p++ - s];
+       }
+-DEBG("h6d ");
+ 
+       /* fill code-like entries with r */
+       f = 1 << (k - w);
+@@ -476,13 +451,9 @@
+         h--;                    /* don't need to update q */
+         w -= l;
+       }
+-DEBG("h6e ");
+     }
+-DEBG("h6f ");
+   }
+ 
+-DEBG("huft7 ");
+-
+   /* Return true (1) if we were given an incomplete table */
+   return y != 0 && g != 1;
+ }
+@@ -627,8 +598,6 @@
+   register ulg b;       /* bit buffer */
+   register unsigned k;  /* number of bits in bit buffer */
+ 
+-DEBG("<stor");
+-
+   /* make local copies of globals */
+   b = bb;                       /* initialize bit buffer */
+   k = bk;
+@@ -669,7 +638,6 @@
+   bb = b;                       /* restore global bit buffer */
+   bk = k;
+ 
+-  DEBG(">");
+   return 0;
+ }
+ 
+@@ -687,8 +655,6 @@
+   int bd;               /* lookup bits for td */
+   unsigned l[288];      /* length list for huft_build */
+ 
+-DEBG("<fix");
+-
+   /* set up literal table */
+   for (i = 0; i < 144; i++)
+     l[i] = 8;
+@@ -711,7 +677,6 @@
+   {
+     huft_free(tl);
+ 
+-    DEBG(">");
+     return i;
+   }
+ 
+@@ -752,8 +717,6 @@
+   register ulg b;       /* bit buffer */
+   register unsigned k;  /* number of bits in bit buffer */
+ 
+-DEBG("<dyn");
+-
+   /* make local bit buffer */
+   b = bb;
+   k = bk;
+@@ -776,8 +739,6 @@
+ #endif
+     return 1;                   /* bad lengths */
+ 
+-DEBG("dyn1 ");
+-
+   /* read in bit-length-code lengths */
+   for (j = 0; j < nb; j++)
+   {
+@@ -788,8 +749,6 @@
+   for (; j < 19; j++)
+     ll[border[j]] = 0;
+ 
+-DEBG("dyn2 ");
+-
+   /* build decoding table for trees--single level, 7 bit lookup */
+   bl = 7;
+   if ((i = huft_build(ll, 19, 19, NULL, NULL, &tl, &bl)) != 0)
+@@ -799,8 +758,6 @@
+     return i;                   /* incomplete code set */
+   }
+ 
+-DEBG("dyn3 ");
+-
+   /* read in literal and distance code lengths */
+   n = nl + nd;
+   m = mask_bits[bl];
+@@ -847,35 +804,26 @@
+     }
+   }
+ 
+-DEBG("dyn4 ");
+-
+   /* free decoding table for trees */
+   huft_free(tl);
+ 
+-DEBG("dyn5 ");
+-
+   /* restore the global bit buffer */
+   bb = b;
+   bk = k;
+ 
+-DEBG("dyn5a ");
+-
+   /* build the decoding tables for literal/length and distance codes */
+   bl = lbits;
+   if ((i = huft_build(ll, nl, 257, cplens, cplext, &tl, &bl)) != 0)
+   {
+-DEBG("dyn5b ");
+     if (i == 1) {
+       error(" incomplete literal tree\n");
+       huft_free(tl);
+     }
+     return i;                   /* incomplete code set */
+   }
+-DEBG("dyn5c ");
+   bd = dbits;
+   if ((i = huft_build(ll + nl, nd, 0, cpdist, cpdext, &td, &bd)) != 0)
+   {
+-DEBG("dyn5d ");
+     if (i == 1) {
+       error(" incomplete distance tree\n");
+ #ifdef PKZIP_BUG_WORKAROUND
+@@ -889,19 +837,14 @@
+ #endif
+   }
+ 
+-DEBG("dyn6 ");
+-
+   /* decompress until an end-of-block code */
+   if (inflate_codes(tl, td, bl, bd))
+     return 1;
+ 
+-DEBG("dyn7 ");
+-
+   /* free the decoding tables, return */
+   huft_free(tl);
+   huft_free(td);
+ 
+-  DEBG(">");
+   return 0;
+ }
+ 
+@@ -915,8 +858,6 @@
+   register ulg b;       /* bit buffer */
+   register unsigned k;  /* number of bits in bit buffer */
+ 
+-  DEBG("<blk");
+-
+   /* make local bit buffer */
+   b = bb;
+   k = bk;
+@@ -945,8 +886,6 @@
+     return inflate_stored();
+   if (t == 1)
+     return inflate_fixed();
+-
+-  DEBG(">");
+ 
+   /* bad block type */
+   return 2;

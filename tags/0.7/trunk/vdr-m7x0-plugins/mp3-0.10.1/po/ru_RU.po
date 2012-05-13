@@ -1,0 +1,472 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Stefan Huelswitt <s.huelswitt@gmx.de>
+# This file is distributed under the same license as the VDR package.
+# Vyacheslav Dikonov <sdiconov@mail.ru>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.9\n"
+"Report-Msgid-Bugs-To: <s.huelswitt@gmx.de>\n"
+"POT-Creation-Date: 2007-08-27 18:11+0200\n"
+"PO-Revision-Date: 2007-08-27 16:33+0200\n"
+"Last-Translator: Stefan Huelswitt <s.huelswitt@gmx.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-5\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: decoder-snd.c:564
+msgid "unknown"
+msgstr "неизвестный"
+
+#: decoder-snd.c:703
+msgid "Remote CDDB lookup..."
+msgstr "Запрос к удалённой базе CDDB..."
+
+#: menu.c:128 mp3.c:1018
+msgid "ID3 info"
+msgstr "данные ID3"
+
+#: menu.c:128 mp3.c:1018
+msgid "Parent"
+msgstr "Вверх"
+
+#: menu.c:128 menu.c:289
+msgid "Select"
+msgstr "Выбрать"
+
+#: menu.c:143 mp3.c:1138
+msgid "Scanning directory..."
+msgstr "Сканирование каталогов..."
+
+#: menu.c:174 mp3.c:1163
+msgid "Error scanning directory!"
+msgstr "Ошибка сканирования каталога!"
+
+#: menu.c:289
+msgid "Eject"
+msgstr ""
+
+#: menu.c:289
+msgid "Mount"
+msgstr "Подключить"
+
+#: menu.c:289
+msgid "Unmount"
+msgstr "Отключить"
+
+#: menu.c:305
+msgid "Selected source is not mounted!"
+msgstr "Выбранный диск не подключен!"
+
+#: menu.c:317 menu.c:333
+msgid "Mount failed!"
+msgstr "Ошибка подключения диска!"
+
+#: menu.c:332
+msgid "Mount succeeded"
+msgstr "Диск подключен"
+
+#: menu.c:347
+msgid "Unmount succeeded"
+msgstr "Диск отключен"
+
+#: menu.c:348
+msgid "Unmount failed!"
+msgstr "Ошибка отключения диска!"
+
+#: menu.c:362
+msgid "Eject failed!"
+msgstr "Ошибка извлечения диска!"
+
+#: mp3.c:79
+msgid "OSS"
+msgstr "OSS"
+
+#: mp3.c:86 mp3.c:1327
+msgid "MP3"
+msgstr "Проигрыватель MP3"
+
+#: mp3.c:87
+msgid "Setup.MP3$Audio output mode"
+msgstr "Режим вывода звука"
+
+#: mp3.c:88
+msgid "Dither"
+msgstr "сглаживание"
+
+#: mp3.c:88
+msgid "Round"
+msgstr "приближение"
+
+#: mp3.c:88
+msgid "Setup.MP3$Audio mode"
+msgstr "Режим переоцифровки звука"
+
+#: mp3.c:89
+msgid "Setup.MP3$Use 48kHz mode only"
+msgstr "Только 48 кГц"
+
+#: mp3.c:91
+msgid "classic"
+msgstr "классический"
+
+#: mp3.c:92
+msgid "via skin"
+msgstr "согласно теме"
+
+#: mp3.c:93
+msgid "Setup.MP3$Replay display"
+msgstr "Интерфейс в режиме воспроизведения"
+
+#: mp3.c:95
+msgid "Setup.MP3$Display mode"
+msgstr "Режим интерфейса"
+
+#: mp3.c:96
+msgid "Black"
+msgstr "чёрный экран"
+
+#: mp3.c:97
+msgid "Live"
+msgstr "телевидение"
+
+#: mp3.c:98
+msgid "Images"
+msgstr ""
+
+#: mp3.c:99
+msgid "Setup.MP3$Background mode"
+msgstr "Режим фона"
+
+#: mp3.c:100
+msgid "Setup.MP3$Initial loop mode"
+msgstr "Режим повтора по умолчанию"
+
+#: mp3.c:101
+msgid "Setup.MP3$Initial shuffle mode"
+msgstr "Режим случайн. выбора по умолчанию"
+
+#: mp3.c:102
+msgid "Setup.MP3$Abort player at end of list"
+msgstr "Выход в конце списка песен"
+
+#: mp3.c:103 mp3.c:117 mplayer.c:101
+msgid "disabled"
+msgstr "выкл"
+
+#: mp3.c:104
+msgid "ID3 only"
+msgstr "Только ID3"
+
+#: mp3.c:105
+msgid "ID3 & Level"
+msgstr "ID3 и уровень"
+
+#: mp3.c:106
+msgid "Setup.MP3$Background scan"
+msgstr "Фоновое сканирование"
+
+#: mp3.c:107 mp3.c:1122
+msgid "Filenames"
+msgstr "имена файлов"
+
+#: mp3.c:107 mp3.c:1122
+msgid "ID3 names"
+msgstr "ID3-имена"
+
+#: mp3.c:107
+msgid "Setup.MP3$Editor display mode"
+msgstr "Режим редактора списков"
+
+#: mp3.c:108
+msgid "Browser"
+msgstr "каталоги"
+
+#: mp3.c:108
+msgid "Playlists"
+msgstr "списки песен"
+
+#: mp3.c:108
+msgid "Setup.MP3$Mainmenu mode"
+msgstr "Режим главного меню"
+
+#: mp3.c:109
+msgid "Setup.MP3$Keep selection menu"
+msgstr ""
+
+#: mp3.c:110
+msgid "Normal"
+msgstr ""
+
+#: mp3.c:110
+msgid "Reversed"
+msgstr ""
+
+#: mp3.c:110
+msgid "Setup.MP3$Title/Artist order"
+msgstr ""
+
+#: mp3.c:111 mplayer.c:105
+msgid "Hide mainmenu entry"
+msgstr "Скрыть команду в меню"
+
+#: mp3.c:112
+msgid "Setup.MP3$Normalizer level"
+msgstr "Уровень нормализации"
+
+#: mp3.c:113
+msgid "Setup.MP3$Limiter level"
+msgstr "Порог ограничителя пиков"
+
+#: mp3.c:114
+msgid "Setup.MP3$Use HTTP proxy"
+msgstr "Использовать HTTP прокси"
+
+#: mp3.c:115
+msgid "Setup.MP3$HTTP proxy host"
+msgstr "Сервер HTTP прокси"
+
+#: mp3.c:116
+msgid "Setup.MP3$HTTP proxy port"
+msgstr "Порт HTTP прокси"
+
+#: mp3.c:118
+msgid "local only"
+msgstr "только локальн."
+
+#: mp3.c:119
+msgid "local&remote"
+msgstr "локальн. и удалён."
+
+#: mp3.c:120
+msgid "Setup.MP3$CDDB for CD-Audio"
+msgstr "CDDB для аудио-CD"
+
+#: mp3.c:121
+msgid "Setup.MP3$CDDB server"
+msgstr "Сервер CDDB"
+
+#: mp3.c:122
+msgid "Setup.MP3$CDDB port"
+msgstr "Порт CDDB"
+
+#: mp3.c:921 mp3.c:927
+msgid "ID3 information"
+msgstr "ID3-метки"
+
+#: mp3.c:935
+msgid "Filename"
+msgstr "Имя файла"
+
+#: mp3.c:939
+msgid "Length"
+msgstr "Длина"
+
+#: mp3.c:941
+msgid "Title"
+msgstr "Название"
+
+#: mp3.c:942
+msgid "Artist"
+msgstr "Исполнитель"
+
+#: mp3.c:943
+msgid "Album"
+msgstr "Альбом"
+
+#: mp3.c:944
+msgid "Year"
+msgstr "Год"
+
+#: mp3.c:945
+msgid "Samplerate"
+msgstr "Частота"
+
+#: mp3.c:946
+msgid "Bitrate"
+msgstr "Поток"
+
+#: mp3.c:1010
+msgid "Directory browser"
+msgstr "Просмотр каталогов"
+
+#: mp3.c:1106
+msgid "Playlist editor"
+msgstr "Редактор списка песен"
+
+#: mp3.c:1122 mp3.c:1215
+msgid "Add"
+msgstr "Добавить"
+
+#: mp3.c:1122
+msgid "Remove"
+msgstr "Удалить"
+
+#: mp3.c:1142
+msgid "Add recursivly?"
+msgstr "Добавить рекурсивно?"
+
+#: mp3.c:1161
+msgid "Empty directory!"
+msgstr "Пустой каталог!"
+
+#: mp3.c:1196
+msgid "Remove entry?"
+msgstr "Удалить запись?"
+
+#: mp3.c:1215
+msgid "Add all"
+msgstr "Добавить всё"
+
+#: mp3.c:1242
+msgid "Rename playlist"
+msgstr "Переименовать список песен"
+
+#: mp3.c:1248
+msgid "Old name:"
+msgstr "Старое имя:"
+
+#: mp3.c:1259
+msgid "New name"
+msgstr "Новое имя:"
+
+#: mp3.c:1344
+msgid "Browse"
+msgstr "Каталоги"
+
+#: mp3.c:1344 mplayer.c:634
+msgid "Source"
+msgstr "Диск"
+
+#: mp3.c:1347
+msgid "Rename"
+msgstr "Переименовать"
+
+#: mp3.c:1357
+msgid "Scanning playlists..."
+msgstr "Поиск списков песен..."
+
+#: mp3.c:1367
+msgid "Error scanning playlists!"
+msgstr "Ошибка поиска списков песен!"
+
+#: mp3.c:1373
+msgid "Delete playlist?"
+msgstr "Удалить список"
+
+#: mp3.c:1374
+msgid "Are you sure?"
+msgstr "Вы уверены?"
+
+#: mp3.c:1381
+msgid "Error deleting playlist!"
+msgstr "Ошибка удаления списка песен!"
+
+#: mp3.c:1393 mp3.c:1394
+msgid "unnamed"
+msgstr "безымянный"
+
+#: mp3.c:1404
+msgid "Error creating playlist!"
+msgstr "Ошибка создания списка песен!"
+
+#: mp3.c:1425
+msgid "Error renaming playlist!"
+msgstr "Ошибка переименования списка!"
+
+#: mp3.c:1435 mp3.c:1458
+msgid "Error loading playlist!"
+msgstr "Ошибка чтения списка песен!"
+
+#: mp3.c:1440
+msgid "Can't edit a WinAmp playlist!"
+msgstr "Невозможно редактировать список WinAmp!"
+
+#: mp3.c:1448
+msgid "Loading playlist..."
+msgstr "Чтение списка песен..."
+
+#: mp3.c:1468
+msgid "MP3 source"
+msgstr "Диск MP3"
+
+#: mp3.c:1486
+msgid "Play all"
+msgstr "Воспроизвести всё"
+
+#: mp3.c:1491
+msgid "Building playlist..."
+msgstr "Построение списка песен..."
+
+#: mp3.c:1501
+msgid "Error building playlist!"
+msgstr "Ошибка построения списка песен!"
+
+#: mp3.c:1541
+msgid "A versatile audio player"
+msgstr "Проигрыватель аудиофайлов"
+
+#: mplayer.c:96
+msgid "MPlayer"
+msgstr "Проигрыватель видео"
+
+#: mplayer.c:97
+msgid "Setup.MPlayer$Control mode"
+msgstr "Режим управления"
+
+#: mplayer.c:97
+msgid "Slave"
+msgstr "расширенный"
+
+#: mplayer.c:97
+msgid "Traditional"
+msgstr "обычный"
+
+#: mplayer.c:99
+msgid "Setup.MPlayer$OSD position"
+msgstr ""
+
+#: mplayer.c:102
+msgid "global only"
+msgstr ""
+
+#: mplayer.c:103
+msgid "local first"
+msgstr ""
+
+#: mplayer.c:104
+msgid "Setup.MPlayer$Resume mode"
+msgstr ""
+
+#: mplayer.c:108
+msgid "Setup.MPlayer$Slave command key"
+msgstr ""
+
+#: mplayer.c:589
+msgid "MPlayer Audio ID"
+msgstr ""
+
+#: mplayer.c:591
+msgid "Audiostream ID"
+msgstr ""
+
+#: mplayer.c:624
+msgid "MPlayer browser"
+msgstr "Просмотр каталогов MPlayer"
+
+#: mplayer.c:644
+msgid "MPlayer source"
+msgstr "Источник видео MPlayer"
+
+#: mplayer.c:677
+msgid "Summary"
+msgstr ""
+
+#: mplayer.c:732
+msgid "Media replay via MPlayer"
+msgstr "Проигрыватель видеофайлов"
+
+#: stream.c:395
+msgid "Connecting to stream server ..."
+msgstr "Подключение к серверу потоков..."

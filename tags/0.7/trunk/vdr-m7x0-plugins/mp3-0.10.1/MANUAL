@@ -1,0 +1,300 @@
+
+This is a plugin for VDR.
+The "MP3-Plugin" allows playback of MP3 audio files.
+
+Original written by:
+Written by:                  Stefan Hülswitt <s.huelswitt@gmx.de>
+Project's homepage:          http://www.muempf.de/
+Latest version available at: http://www.muempf.de/down/
+
+See the file COPYING for license information.
+
+----------------------------------------------------------------------
+
+For install instructions see the README file.
+ 
+****
+****
+**** MP3 plugin
+****
+****
+
+The basic concept of the MP3 plugin is to use playlists for the songs you want
+to play. So most things designed toward playlists, but you can play directories
+and single files as well.
+
+The starting point for all MP3 actions (or more generally: all song actions)
+is the MP3 menu. Select the MP3 entry from VDR's main menu to enter
+this menu.
+
+The MP3 menu:
+-------------
+
+If you enter the browser you can browser through your song files. You can
+start playback for individual files, playlists and whole directories from here
+too.
+
+Position on a file or directory and select "red" to start playback. A "instant"
+playlist is created which contains either the selected file or all files from
+the selected directory and its subdirectories. When scanning directories, all
+files matching "*.m3u" (playlists) are ignored. The "instant" playlist is
+deleted if you stop playback.
+
+In the basedir you can press "yellow" to play all files in all directories.
+Press "blue" over an entry to display the song information page.
+
+If you press exit in the base dir you will get into the playlist mode (There
+is a switch to set the Playlist mode as default if you like).
+A list of available playlists is displayed (only playlists in your base
+directory of the selected source are displayed, there is no recursive scanning
+for playlists). Select the a playlist with "up" and "down". Press "OK" to start
+playback with the selected playlist.
+
+Press the "blue" key to see a second level of buttons. If you are on the second
+level, press the "red" button to return to the first level.
+
+If you are on the first level, press "red" to enter the playlist editor with
+the selected playlist (see Playlist editor). Press "green" to enter the source
+selector (see Sources). Press "yellow" to enter the file browser (see Browsing
+and instant playlists).
+
+On the second level, press "green" to create a new, empty playlist and enter
+the playlist editor. The new playlist will be named "unnamed" followed by a
+number. Press "yellow" to delete a playlist. There is a double confirmation
+needed to really delete the playlist. Press "blue" to rename a playlist. You
+are prompted for a new name. Press "back" to abort renaming.
+
+During playback:
+----------------
+
+During playback you will see the channel which was tuned last or a black screen
+depending on what you choose in setup (see Setup options). You can use some
+keys to control playback:
+
+Up          skips back to the start of current song or to previous song if you
+            are at the beginning of current song.
+
+Down        skips forward to the start of next song.
+
+Right/Left  skips back/forward 30 seconds in current song. Hold key to scan
+            through song.
+
+Red         enters jump mode. Enter the number of minutes/seconds you want to
+            jump with the number keys. Press "left" to jump backwards, "right"
+            to jump forward and "up" to jump to the absolute position. Press
+            "blue" to toggle the jump unit between minute (m) and seconds (s).
+            Any other key cancels jump mode.
+            Note: jumping forward requires to scan all frame headers until
+            the new position. On slow media or with long jumps this may be
+            visible in the progress display.
+
+Green       toggles loop and shuffle mode. Press once to enable loop, twice for
+            loop and shuffle and three times for shuffle only. To disable
+            shuffle, wait >4 seconds and press again.
+
+Yellow      is pause/unpause.
+
+Blue        aborts playback.
+
+Back        aborts playback and returns to MP3 menu.
+
+Ok          toggles progress display. If "ok" is pressed again within 4
+            seconds, the playlist window is opened (playlist window is
+            available with classic progress display mode only). The color bar
+            marks the current song. If the playlist window is open, you can
+            page through the playlist with "left" and "right". If available
+            title/artist is displayed. This is true for songs already played or
+            which have been scanned in background (see Setup options).
+
+Menu        enters VDR's main menu.
+
+0-9         direct song selection. Selection timeout is 1 second.
+
+The progress display shows various information bits which are flipped every few
+seconds. You can adjust which information is shown (see Setup options).
+
+The playlist editor:
+--------------------
+
+In the playlist editor you can add and remove files and shuffle them around.
+
+Press "red" to add songs to the playlist. A directory browser is started. You
+will see the directories and files you created beneath you the base directory
+of the current source. The entries surrounded by [ ] are directories. If you
+press "ok" on a directory, you will decent to this directory. Press "red" to
+add the current file/directory to the playlist. Selecting a directory adds
+recursively all files from the directory and subdirectories. If you have
+selected more than one file, you have to confirm the action. The new file(s)
+will be inserted below the currently selected file in the playlist.
+
+Press "green" to toggle between display of filenames and titles/artists (if
+available). The initial display of title/artist may take some time as all the
+files have to be scanned. You can configure if the editor is started with
+title/artist or filename display (see Setup options). Press "ok" over an entry
+to display a information page for this file.
+
+Song information which have been scanned in the playlist editor or during
+playback are saved to a file called "id3info.cache" located in the video
+directory. This file is used to speed up display of title/artist for files you
+already touched. The file is loaded on startup and saved regularly while VDR is
+running.
+
+Press "yellow" to remove a song from the playlist (the file IS NOT removed from
+disk, of course). Press "blue" to reorder the songs in the playlist.
+
+Sources and playlists:
+----------------------
+
+You can define multiple sources from which your songs could be played. At
+runtime you can select which source to use, you can mount, unmount and eject
+the source at runtime, too. This is done through a config file and a simple
+shell script.
+
+First you have to create a config file named "mp3sources.conf" located in the
+"plugins" subdirectory of the directory where you keep the other config files
+for VDR (e.g. the default on the M7x0 file system is 
+"/etc/vdr/plugins/mp3sources.conf").
+
+Every line defines a source (see the example config file which comes with the
+archive). You need three information for a source: the base directory, a
+description and a flag which determines if a mount/unmount/eject command is
+applicable to this source. Optionally you can give a fourth information to
+specify which kind of files should be used on this source. The fields must be
+separated by a semicolon. The basedir must be a real directory. Using a symlink
+to a directory will not work.
+
+So a valid line could be:
+  /mp3;Local files;0
+This means that the base directory is /mp3, the description say that these are
+local files and mount/unmount/eject commands can not be applied here.
+
+If you want to ignore all files without the ".mp3" extension, you could use:
+  /mp3;Local files;0;*.mp3
+You can give multiple patterns separated with a slash:
+  /mp3;Local files;0;*.mp3/*.url
+
+Another useful one:
+  /cdrom;CDROM;1
+This means that the base directory is /cdrom, which is obviously a CDROM drive
+and mount/unmount/eject commands can be applied here.
+
+Note some important things for using mount/unmount/eject commands here:
+ - You must have defined an entry in your /etc/fstab for the base directory.
+ - The user running VDR must have permission to mount/unmount the device (e.g.
+   add "users" to the options in /etc/fstab).
+ - You must have a mount script which can be called from VDR (see below).
+
+The actual mount/unmount/eject action is done with a script. See the README
+file and the example "mount.sh" which comes with the archive.
+
+You can create arbitrary directories below the base directory to group your
+songs. BUT all playlists have to be located in the base directory (the tree is
+not scanned recursively for playlists).
+
+A playlist is a simple text file which contains the paths of the songs to play.
+One path/filename on every line. The paths must be relative to the base
+directory (e.g. if you have a MP3 file /mp3/rock/bon_jovi/sample.mp3 a proper
+line in a playlist would be rock/bon_jovi/sample.mp3). All playlist must have
+the extension ".m3u".
+
+You also can load WinAmp-style playlists, this means that comment lines
+starting with "#" are ignored and if a line "#EXTM3U" is found, the pathnames
+are converted from DOS-style to UNIX-style (changing "\" to "/"). The DOS-style
+pathnames must not contain "/" for proper conversion.
+
+The sources menu:
+-----------------
+
+If you enter this menu, you will get the list of the sources which you have
+defined in "mp3sources.conf". Entries marked with ">" can be mounted/unmounted.
+An entry marked with "*" is currently mounted.
+
+Use the "red" key to select a source. All playback and editing functions will
+refer only to the selected source. Press "green" to mount the source, "yellow"
+to unmount and "blue" to eject the media.
+
+Setup options:
+--------------
+
+There are various configuration options which can be changed from the plugin
+setup menu. Select VDR's setup menu, select "Plugins" and select "mp3" to enter
+the setup menu.
+
+Display mode:         Choose which information is shown in the progress
+                      display:
+                        1 - shows only title and artist.
+                        2 - additionally shows album and year.
+                        3 - additionally shows samplerate, bitrate and number
+                            of channels.
+
+Background mode:      Choose what you want to see during playback:
+                      Black  - a black screen
+                      Images - display cover images (if available)
+
+Initial loop mode:    Choose if loop mode should be enabled by default.
+
+Initial shuffle mode: Choose if shuffle mode should be enabled by default.
+
+Abort player at end of list: If you set this option to "no" and the end of
+                      playlist is reached, the player is kept idle. To restart
+                      playback select a song to restart from there or "up" to
+                      restart from the beginning.
+
+Background mode:      Choose if the background scanner is enabled during
+                      playback. In the playlist window, title/artist is shown
+                      only for songs already played or which have been scanned
+                      in background. This is done on a separate thread with
+                      nice 5 but nevertheless it needs CPU cycles. If you have
+                      a slow CPU your system may crawl.
+
+Editor display mode:  Choose if the playlist editor shows title/artist or
+                      filenames by default. Be warned: the initial display of
+                      the title/artist may take some time, as all the files in
+                      the playlist have to be scanned. This is specially true
+                      for slower storage media.
+
+Main menu mode:       Choose if you want to see your playlists or if you want
+                      to jump to the directory browser when entering the MP3
+                      menu.
+
+Use HTTP proxy:       Enables use of a HTTP proxy server when playing
+                      Shoutcast/Icecast streams.
+
+HTTP proxy host:      The hostname of the HTTP proxy (used only if you have
+                      enabled HTTP proxy option above).
+
+HTTP proxy port:      The port number to use on the HTTP proxy server (used
+                      only if you have enabled HTTP proxy option above).
+
+
+Playing Shoutcast/Icecast streams:
+----------------------------------
+
+The plugin is able to play Shoutcast and Icecast streams (which in fact are
+just streamed MP3's). This feature needs some special setup:
+
+First, your VDR machine must have a connection to the internet (either directly
+or through a proxy).
+
+Second, you have to create a simple text file with the extetion .url in any of 
+your MP3 source directories for every stream you want to play. The file must 
+contain a single line of text with the complete URL of the stream. E.g. the 
+file could contain (no guarantee that this link still works):
+http://152.163.134.164:80/stream/1012
+
+You can find some examples in the in the examples folder:
+http://www.open7x0.org/svnweb/vdr-m7x0-PLUGINS/browse/branches/unstable/mp3/examples
+
+The link must point to the stream itself and not to any kind of playlist.
+
+To play the stream, add the text file to a playlist or select the file from the
+browser. You cannot pause, FWD or REW a stream.
+
+Note:
+- If you internet connection doesn't provides the bandwidth the stream
+  requires, playback will be distorted.
+- Any network operation has a timeout of 30 seconds (in case the stream server
+  stalls). You should not set VDR's watchdog timer below this value.
+- If the stream server provides special Icecast headers or metadata, these
+  values are displayed in the progress display.
+

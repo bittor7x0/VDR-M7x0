@@ -1,0 +1,4 @@
+usr/lib/libexif.so.12.3.1  usr/lib/libexif.so.12.3.1  f 755 0 0 - - - - -
+usr/lib/libexif.so.12.3.1  -                          s   - - - - - - - -
+usr/lib/libexif.so.12      libexif.so.12.3.1          l 777 0 0 - - - - -
+usr/lib/libexif.so         libexif.so.12.3.1          l 777 0 0 - - - - -

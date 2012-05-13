@@ -1,0 +1,13 @@
+--- lirc-0.6.4/daemons/Makefile.in	Wed Aug 15 14:49:52 2001
++++ lirc-0.6.4/daemons/Makefile.in-common	Fri Nov 30 19:24:34 2007
+@@ -480,8 +480,8 @@
+ 	test "$(lircmd_conf)" = "" || test -e $(DESTDIR)$(sysconfdir)/lircmd.conf || ($(mkinstalldirs) $(DESTDIR)$(sysconfdir) && $(INSTALL_DATA) $(top_srcdir)/remotes/$(lircmd_conf) $(DESTDIR)$(sysconfdir)/lircmd.conf)
+ 
+ mkdev:
+-	test -e $(DESTDIR)$(devdir)/lircd || ($(mkinstalldirs) $(DESTDIR)$(devdir) && @mknod@ $(DESTDIR)$(devdir)/lircd p)
+-	test -e $(DESTDIR)$(devdir)/lircm || ($(mkinstalldirs) $(DESTDIR)$(devdir) && @mknod@ $(DESTDIR)$(devdir)/lircm p)
++#	test -e $(DESTDIR)$(devdir)/lircd || ($(mkinstalldirs) $(DESTDIR)$(devdir) && @mknod@ $(DESTDIR)$(devdir)/lircd p)
++#	test -e $(DESTDIR)$(devdir)/lircm || ($(mkinstalldirs) $(DESTDIR)$(devdir) && @mknod@ $(DESTDIR)$(devdir)/lircm p)
+ 
+ rmdev:
+ 	-$(RM) $(DESTDIR)$(devdir)/lircd

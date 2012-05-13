@@ -1,0 +1,20 @@
+#!/bin/ash
+
+# Load cifs fs module
+if [ ! -f /var/run/cifs_fs ] ; then
+	/bin/touch /var/run/cifs_fs
+	/sbin/insmod /lib/modules/2.4.21-xfs/kernel/fs/cifs/cifs.o
+fi
+
+# Disable extensions
+echo 0 > /proc/fs/cifs/LinuxExtensionsEnabled
+
+while read netshare mountpoint fstype mountopts ignore ; do
+	if [ -n "${netshare###*}" -a -n "${mountopts##*noauto*}" -a \
+			! -e "${mountpoint}" -a \( "${fstype}" = "nfs" -o \
+			"${fstype}" = "cifs" \) ] ; then
+		/bin/mkdir -p "${mountpoint}"
+		/bin/mount -t ${fstype} -o ${mountopts} "${netshare}" \
+			 "${mountpoint}" || /bin/rmdir -p "${mountpoint}"
+	fi
+done < /etc/fstab

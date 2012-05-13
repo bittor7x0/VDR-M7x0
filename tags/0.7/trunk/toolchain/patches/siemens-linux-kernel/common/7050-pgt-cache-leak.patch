@@ -1,0 +1,30 @@
+diff -urN 2.4.19pre6/kernel/fork.c pgt-cache/kernel/fork.c
+--- 2.4.19pre6/kernel/fork.c	Fri Apr  5 10:11:17 2002
++++ pgt-cache/kernel/fork.c	Fri Apr  5 18:07:17 2002
+@@ -254,6 +254,7 @@
+ {
+ 	BUG_ON(mm == &init_mm);
+ 	pgd_free(mm->pgd);
++	check_pgt_cache();
+ 	destroy_context(mm);
+ 	free_mm(mm);
+ }
+diff -urN 2.4.19pre6/mm/memory.c pgt-cache/mm/memory.c
+--- 2.4.19pre6/mm/memory.c	Fri Apr  5 10:11:18 2002
++++ pgt-cache/mm/memory.c	Fri Apr  5 18:06:57 2002
+@@ -1412,6 +1412,7 @@
+ 		 */
+ 		if (!pgd_none(*pgd)) {
+ 			pmd_free(new);
++			check_pgt_cache();
+ 			goto out;
+ 		}
+ 	}
+@@ -1446,6 +1447,7 @@
+ 			 */
+ 			if (!pmd_none(*pmd)) {
+ 				pte_free(new);
++				check_pgt_cache();
+ 				goto out;
+ 			}
+ 		}

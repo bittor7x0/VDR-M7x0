@@ -1,0 +1,25 @@
+--- speedup.3/mm/filemap.c Mon, 28 Jan 2002 09:51:50 -0500 
++++ speedup.3(w)/mm/filemap.c Sun, 12 May 2002 16:16:59 -0400 
+@@ -3123,13 +3123,20 @@
+ 		goto out;
+ 
+ 	remove_suid(inode);
+-	inode->i_ctime = inode->i_mtime = CURRENT_TIME;
+-	mark_inode_dirty_sync(inode);
++	update_inode_times(inode);
+ 
+ out:
+ 	return err;
+ }
+ 
++static void update_inode_times(struct inode *inode) 
++{
++	time_t now = CURRENT_TIME;
++	if (inode->i_ctime != now || inode->i_mtime != now) {
++	    inode->i_ctime = inode->i_mtime = now;
++	    mark_inode_dirty_sync(inode);
++	} 
++}
+ /*
+  * Write to a file through the page cache. 
+  *

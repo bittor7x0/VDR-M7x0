@@ -1,0 +1,30 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Your Name <email@host.dom>
+
+Project's homepage:          URL
+
+Latest version available at: URL
+
+See the file COPYING for license information.
+
+Description:
+
+This is a plugin that demonstrates how to use filebrowser's classes in your own plugin.
+I decided against relying on Service() for I don't see much advantages with this but the problem that all plugins using this would depend on the existence of the filebrowser plugin on the target system.
+For your plugin, you would copy the files I have linked into this directory to be really independent.
+
+You have three ways to use the classes:
+
+1) Create a filebrowser menu and add some custom commands (inherited from cFilebrowserCommand)
+   - this is covered in filebrowserdemo.c
+   You can recycle internal filebrowser commands like Sources, Mark, Unmark etc.
+   Your custom commands should set State to a value that you can read in the menu that hosts
+   the filebrowser menu.
+
+2) If you just want to show a list of files and have the user press OK, you want to inherit from
+   cOsdMenuFilebrowser and override ProcessKey to catch this keystroke.
+   Cast the current entry to cOsdItemFileEntry to check for a directory and call cOsdMenuFilebrowser's
+   ProcessKey method to handle that, do your own stuff if it is a file you want to work on.
+
+3) Mix 1) and 2)

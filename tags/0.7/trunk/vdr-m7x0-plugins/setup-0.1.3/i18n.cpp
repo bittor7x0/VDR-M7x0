@@ -1,0 +1,1351 @@
+/****************************************************************************
+ * DESCRIPTION:
+ *             Internationalisation Strings
+ *
+ * $Id$
+ *
+ * Contact:    ranga@vdrtools.de
+ *
+ * Copyright (C) 2004 by Ralf Dotzert
+ ****************************************************************************/
+#include "i18n.h"
+
+const tI18nPhrase Phrases[] = {
+  {
+    "Firmware Setup",
+    "Firmware Setup",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Configuración del sistema",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "VDR-NG Firmware Setup",
+    "VDR-NG Firmware Setup",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Configuración del Firmware VDR-NG",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Menu Edit",
+    "VDR-Menü bearbeiten",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Editar Menú",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Move",
+    "Verschieben",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Mover",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Create",
+    "Neu",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Crear",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Edit",
+    "Edit",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Editar",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Delete Menu?",
+    "Menü löschen?",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "¿Borrar Menú?",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "change menu name",
+    "Menü Name ändern",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "cambiar nombre menú",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Delete",
+    "Löschen",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Borrar",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Parameter",
+    "Parameter",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Parámetro",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Before",
+    "Davor",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Antes",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "After",
+    "Dahinter",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Después",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Into",
+    "Hinein",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Dentro",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Plugin-Parameter",
+    "Plugin-Parameter",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Parámetro-Plugin",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Plugins activate / deactivate",
+    "Plugins aktivieren / sortieren",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Activar / Desactivar Plugins",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Reboot",
+    "Reboot",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Reiniciar",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Restart VDR",
+    "Starte VDR",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Reiniciar VDR",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "protected",
+    "geschützt",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "protegido",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Error in configuration files",
+    "Fehler in MiniVDR-Konfigration",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Error en archivos de configuración",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Enter Pin",
+    "Bitte Pin eingeben:",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Introducir Pin",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Invalid Pin !",
+    "Ungültige Pin !",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "¡Pin no válido!",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "Plugin",
+    "Plugin",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Plugin",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+  },
+  {
+    "missing channels/*.conf",
+    "fehlende channels/*.conf",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "falta channels/*.conf",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+},
+{
+  "Execute",
+  "Starte",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Ejecutar",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+},
+  // Standard VDR Setup pages:
+{ "OSD",
+    "OSD",
+    "OSD",
+    "OSD",
+    "OSD",
+    "OSD",
+    "Affichage des menus",
+    "OSD",
+    "Kuvaruutunäyttö",
+    "OSD",
+    "Menús en pantalla",
+    "OSD",
+    "OSD",
+    "OSD",
+    "OSD",
+    "Informació en pantalla",
+    "¼ÕÝî",
+    "OSD",
+    "Ekraanimenüü",
+    "OSD",
+},
+{ "EPG",
+    "EPG",
+    "Programski vodnik",
+    "Guida programmi EPG",
+    "EPG",
+    "EPG",
+    "Guide des programmes",
+    "Programoversikt",
+    "Ohjelmaopas",
+    "EPG",
+    "Guía de Programación",
+    "Ïäçãüò ðñïãñÜììáôïò",
+    "Elektronisk programguide",
+    "EPG",
+    "EPG",
+    "Guia de Programes",
+    "ÂÕÛÕÓØÔ",
+    "Pregled emisija (EPG)",
+    "EPG",
+    "EPG",
+},
+{ "DVB",
+    "DVB",
+    "DVB",
+    "Scheda DVB",
+    "DVB",
+    "DVB",
+    "Cartes DVB",
+    "DVB-enheter",
+    "DVB",
+    "DVB",
+    "DVB",
+    "DVB",
+    "DVB",
+    "Dispozitiv DVB",
+    "DVB",
+    "Tarja DVB",
+    "DVB",
+    "DVB",
+    "DVB",
+    "DVB",
+},
+{ "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "LNB",
+    "Configuració de l'LNB",
+    "ºÞÝÒÕàâÕà",
+    "LNB",
+    "LNB",
+    "LNB",
+},
+{ "CICAM",
+    "CICAM",
+    "CICAM",
+    "Accesso condizionato CICAM",
+    "CICAM",
+    "CICAM",
+    "Accès conditionnel",
+    "CICAM",
+    "CI-moduuli",
+    "CICAM",
+    "CICAM",
+    "CICAM",
+    "CICAM",
+    "CICAM",
+    "CICAM",
+    "CI Accés condicional",
+    "ÃáÛÞÒÝëÙ ÔÞáâãß",
+    "CICAM",
+    "CICAM",
+    "CICAM",
+},
+{ "Recording",
+    "Aufnahme",
+    "Snemanje",
+    "Registrazione",
+    "Opname",
+    "A gravar",
+    "Enregistrement",
+    "Opptak",
+    "Tallennus",
+    "Nagranie",
+    "Opciones de Grabación",
+    "ÅããñáöÞ",
+    "Inspelning",
+    "Înregistrare",
+    "Felvétel",
+    "Opcions de Gravació",
+    "·ÐßØáì",
+    "Snimanje",
+    "Salvestamine",
+    "Optagelse",
+},
+{ "Replay",
+    "Wiedergabe",
+    "Predvajanje",
+    "Replay",
+    "Afspelen",
+    "Replay",
+    "Lecture",
+    "Spill av",
+    "Toisto",
+    "Odtwarzanie",
+    "Opciones de Reproducción",
+    "ÁíáìåôÜäïóç",
+    "Uppspelning",
+    "Redare",
+    "Lejátszás",
+    "Opcions de Reproducció",
+    "²ÞáßàÞØ×ÒÕÔÕÝØÕ",
+    "Reprodukcija",
+    "Taasesitus",
+    "Afspilning",
+},
+{ "Miscellaneous",
+    "Sonstiges",
+    "Ostalo",
+    "Generici",
+    "Overig",
+    "Outros",
+    "Divers",
+    "Forskjellig",
+    "Sekalaiset",
+    "Pozostale",
+    "Varios",
+    "ÄéÜöïñá",
+    "Diverse",
+    "Diverse",
+    "Egyéb",
+    "Miscel·lània",
+    "¿àÞçÕÕ",
+    "Ostalo",
+    "Muud sätted",
+    "Diverse",
+},
+{ "Plugins",
+    "Plugins",
+    "Plugins",
+    "Plugins",
+    "Plugins",
+    "Plugins",
+    "Plugins",
+    "Plugins",
+    "Laajennokset",
+    "Plugins",
+    "Plugins",
+    "Âßóìáôá",
+    "Moduler",
+    "Plugin-uri",
+    "Plugins",
+    "Plugins",
+    "¼ÞÔãÛØ àÐáèØàÕÝØï",
+    "Dodaci (Plugins)",
+    "Laiendusmoodulid",
+    "Plugins",
+},
+{ "Plugin",
+    "Plugin",
+    "Plugin",
+    "Plugin",
+    "Plugin",
+    "Plugin",
+    "Plugin",
+    "Plugin",
+    "Laajennos",
+    "Plugin",
+    "Plugin",
+    "Âßóìá",
+    "Modul",
+    "Plugin (modul adiþional)",
+    "Plugin",
+    "Plugin",
+    "¼ÞÔãÛì",
+    "Plugin",
+    "Laiendusmoodul",
+    "Plugin",
+},
+{ "Restart",
+    "Neustart",
+    "Ponoven zagon",
+    "Riavvio",
+    "Herstart",
+    "Reiniciar",
+    "Redémarrer",
+    "Start på nytt",
+    "Käynnistä uudelleen",
+    "Zastartowac",
+    "Reiniciar",
+    "Åðáíåêêßíçóç",
+    "Omstart",
+    "Repornire",
+    "Ùjraindítás",
+    "Reiniciar",
+    "¿ÕàÕ×ÐßãáâØâì",
+    "Restart sistema",
+    "Restart",
+    "Genstart",
+},
+{
+  "PageUp",
+  "Seite ^",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "PágArriba",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+},
+{
+  "PageDown",
+  "Seite v",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "PágAbajo",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+},
+{
+  "Menu Suffix",
+  "Menü Suffix",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Sufijo Menú",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+},
+{
+  "Entry Prefix",
+  "Entry Prefix",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Prefijo Entrada",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+},
+{
+  "Up/Dn for new location - color key to move",
+  "Auf/Ab für neue Position - dann Farbtaste",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Arriba/Abajo nueva entrada - botón color mueve",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+},
+{
+  "Help",
+  "Hilfe",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Ayuda",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+},
+{ "Really restart?",
+    "Wirklich neu starten?",
+    "Zares ponoven zagon?",
+    "Eseguo un restart?",
+    "Werkelijk opnieuw starten?",
+    "Tem a certeza que quer reiniciar?",
+    "Redémarrer?",
+    "Vil du virkelig starte på nytt?",
+    "Käynnistetäänkö uudelleen?",
+    "Rzeczywiscie nowy start?",
+    "¿Reiniciar realmente?",
+    "Ná ãßíåé óßãïõñá åðáíåêêßíçóç?",
+    "Vill du verkligen starta om?",
+    "Sigur repornesc?",
+    "Tényleg újraindítani?",
+    "Segur que voleu reiniciar?",
+    "´ÕÙáâÒØâÕÛìÝÞ ßÕàÕ×ÐßãáâØâì?",
+    "Zaista ponovo pokrenuti?",
+    "Restart?",
+    "Vil du virkelig genstarte?",
+},
+{ "Really reboot?",
+    "Wirklich neu booten?",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "¿Reiniciar realmente?",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Reboot?",
+    "",
+},
+{ "YES",
+    "ja",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "sí",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+},
+{ "NO",
+    "nein",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "no",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+},
+{ "Select",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Seleccionar",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+},
+{ "Loading configuration File",
+    "",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Cargando configuración",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Saving configuration File",
+    "",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Guardando configuración",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Recording - restart anyway?",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Grabación en curso - ¿reiniciar igualmente?",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Filebrowser",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Explorador de archivos",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Select Destination",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Seleccionar destino",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Failed to load directory",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Fallo al abrir el directorio",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "New",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Nuevo",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "New file",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Nuevo archivo",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Access code needed",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Código de acceso necesario",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Code",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Código",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Wrong code!",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "¡Código erróneo!",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Mark",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Marcar",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Mark all",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Marcar todo",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Unmark",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Desmarcar",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Unm. all",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Desm. todo",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "OK",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Aceptar",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Abort",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Cancelar",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ "Threads",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "Procesos",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ " abcdefghijklmnopqrstuvwxyz0123456789+-={}[]().,;#*?!_@/~\"\'",
+    " aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789+-={}[]().,;#*?!_@/~\"\'",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    " aábcçdeéfghiíjklmnñoópqrstuúüvwxyz0123456789+-={}[]().,;#*?!_@/~\"\'",
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+    "",//TODO
+},
+{ NULL }
+};

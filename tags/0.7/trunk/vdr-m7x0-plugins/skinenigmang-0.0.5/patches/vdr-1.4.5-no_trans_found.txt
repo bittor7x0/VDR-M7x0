@@ -1,0 +1,26 @@
+WHO
+---
+Andreas Mair (andreas AT vdr DASH developer DOT org)
+
+WHAT
+-----
+This patch removes the "no translation found for" warnings in the VDR log.
+
+WHY
+----
+This might be useful if you have enabled the symbols in the main menu
+because in that case EnigmaNG has to compare every main menu entry with
+a localized text to find out what symbol has to be shown.
+
+FOR
+---
+This patch has been tested with vanilla VDR 1.4.5 but should apply to other
+releases too. Anyway, it's not hard to fix reject...
+
+HOW
+---
+Change to VDR source directory and run
+vdr-1.4.5$ patch <PLUGINS/src/skinenigmang/patches/vdr-1.4.5-no_trans_found.diff
+
+
+2007-01-31, Andreas Mair

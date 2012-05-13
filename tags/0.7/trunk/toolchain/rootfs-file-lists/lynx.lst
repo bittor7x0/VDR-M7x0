@@ -1,0 +1,5 @@
+usr/bin/lynx       usr/bin/lynx       f 755 0 0 - - - - -
+usr/bin/lynx       -                  s   - - - - - - - -
+etc/lynx           -                  d 755 0 0 - - - - - 
+etc/lynx/lynx.cfg  etc/lynx/lynx.cfg  f 644 0 0 - - - - -
+etc/lynx/lynx.lss  etc/lynx/lynx.lss  f 644 0 0 - - - - -

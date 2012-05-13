@@ -1,0 +1,33 @@
+diff -Naur htop-0.8.1-orig/configure htop-0.8.1/configure
+--- htop-0.8.1-orig/configure	2008-09-23 07:14:26.000000000 +0200
++++ htop-0.8.1/configure	2008-11-12 23:06:38.000000000 +0100
+@@ -21686,12 +21686,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+-if test -r "$PROCDIR/stat"; then
+-  eval "$as_ac_File=yes"
+-else
+-  eval "$as_ac_File=no"
+-fi
++  }
++eval "$as_ac_File=yes"
+ fi
+ ac_res=`eval echo '${'$as_ac_File'}'`
+ 	       { echo "$as_me:$LINENO: result: $ac_res" >&5
+@@ -21713,12 +21709,8 @@
+   test "$cross_compiling" = yes &&
+   { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+ echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+-   { (exit 1); exit 1; }; }
+-if test -r "$PROCDIR/meminfo"; then
+-  eval "$as_ac_File=yes"
+-else
+-  eval "$as_ac_File=no"
+-fi
++  }
++eval "$as_ac_File=yes"
+ fi
+ ac_res=`eval echo '${'$as_ac_File'}'`
+ 	       { echo "$as_me:$LINENO: result: $ac_res" >&5

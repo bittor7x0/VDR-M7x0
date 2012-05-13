@@ -1,0 +1,121 @@
+WARNING: Default LPJ changed for M740AV and M750T EPG hardware.
+
+[PATCH] Patch for pre-calculated loops_per_jiffy
+
+loops_per_jiffy (LPJ) is the value used internally
+by the kernel for the delay() function.  Normally, LPJ is
+determined at boot time by the routine calibrate_delay(), in
+init/main.c.  This routine takes approximately 250 ms to complete
+on my test machine.  Note that the routine uses a sequence of programmed
+waits to determine the correct LPJ value, with each wait taking about 1 HZ
+(usually 10 ms) period.  With a pre-calculated value, this calibration
+is eliminated.
+
+To use the patch, apply it and boot your machine with Fast booting
+off.  You can determine the correct value for Loops per jiffy by examining
+the printk output from the kernel boot.  Now configure the kernel with
+Fast booting on, and with the correct LPJ value.
+
+Alternatively, you can set the LPJ value to 5000 times the value of
+BogoMips, if you know that for your target.
+
+With this patch applied (and configured) you should notice an
+approximately 1/4 second speedup in booting.
+
+Signed-off-by: Tim Bird <tim.bird@am.sony.com>
+
+
+diff -Naur slin_m740_orig/arch/mips/config-shared.in slin_m740/arch/mips/config-shared.in
+--- slin_m740_orig/arch/mips/config-shared.in	Tue Dec 21 12:28:18 2004
++++ slin_m740/arch/mips/config-shared.in	Thu Jan 28 18:01:32 2010
+@@ -629,6 +629,12 @@
+ tristate 'Kernel support for MISC binaries' CONFIG_BINFMT_MISC
+ 
+ dep_bool 'Power Management support (EXPERIMENTAL)' CONFIG_PM $CONFIG_EXPERIMENTAL 
++
++bool 'Fast booting' CONFIG_FASTBOOT
++if [ "$CONFIG_FASTBOOT" = "y" ]; then
++   int '  Loops per jiffy' CONFIG_FASTBOOT_LPJ 829440
++fi
++
+ endmenu
+ 
+ source drivers/mtd/Config.in
+diff -Naur slin_m740_orig/arch/mips/kernel/proc.c slin_m740/arch/mips/kernel/proc.c
+--- slin_m740_orig/arch/mips/kernel/proc.c	Sat May 29 14:44:24 2004
++++ slin_m740/arch/mips/kernel/proc.c	Tue Jan 26 18:29:52 2010
+@@ -107,6 +107,9 @@
+ 	seq_printf(m, "BogoMIPS\t\t: %lu.%02lu\n",
+ 	              loops_per_jiffy / (500000/HZ),
+ 	              (loops_per_jiffy / (5000/HZ)) % 100);
++#ifndef CONFIG_FASTBOOT_LPJ
++	seq_printf(m, "Loops per jiffy\t\t: %lu\n", loops_per_jiffy);
++#endif /* CONFIG_FASTBOOT_LPJ */
+ 	seq_printf(m, "wait instruction\t: %s\n", cpu_wait ? "yes" : "no");
+ 	seq_printf(m, "microsecond timers\t: %s\n",
+ 	              (mips_cpu.options & MIPS_CPU_COUNTER) ? "yes" : "no");
+diff -Naur slin_m740_orig/Documentation/Configure.help slin_m740/Documentation/Configure.help
+--- slin_m740_orig/Documentation/Configure.help	Sat May 29 14:44:12 2004
++++ slin_m740/Documentation/Configure.help	Thu Jan 28 18:06:01 2010
+@@ -5326,6 +5326,29 @@
+   replacement for kerneld.) Say Y here and read about configuring it
+   in <file:Documentation/kmod.txt>.
+ 
++Fast booting support
++CONFIG_FASTBOOT
++  Say Y here to enable faster booting of the Linux kernel.  If you say
++  Y here, you will be asked to provide hardcoded values for some
++  parameters that the kernel usually probes for or determines at boot
++  time.  This is primarily of interest in embedded devices where
++  quick boot time is a requirement.
++
++  If unsure, say N.
++
++Fast boot loops-per-jiffy
++CONFIG_FASTBOOT_LPJ
++  This is the number of loops passed to delay() to achieve a single
++  HZ of delay inside the kernel.  It is roughly BogoMips * 5000.
++  To determine the correct value for your kernel, first turn off
++  the fast booting option, compile and boot the kernel on your target
++  hardware, then see what value is printed during the kernel boot.
++  Use that value here.
++
++  If unsure, don't use the fast booting option.  An incorrect value
++  will cause delays in the kernel to be incorrect.  Although unlikely,
++  in the extreme case this might damage your hardware.
++
+ ARP daemon support
+ CONFIG_ARPD
+   Normally, the kernel maintains an internal cache which maps IP
+diff -Naur slin_m740_orig/init/main.c slin_m740/init/main.c
+--- slin_m740_orig/init/main.c	Sat May 29 14:46:26 2004
++++ slin_m740/init/main.c	Tue Jan 26 18:34:08 2010
+@@ -168,6 +168,10 @@
+ 
+ 	loops_per_jiffy = (1<<12);
+ 
++#ifdef CONFIG_FASTBOOT_LPJ
++	loops_per_jiffy = CONFIG_FASTBOOT_LPJ;
++	printk("Calibrating delay loop (skipped)... ");
++#else /* CONFIG_FASTBOOT_LPJ */
+ 	printk("Calibrating delay loop... ");
+ 	while (loops_per_jiffy <<= 1) {
+ 		/* wait for "start of" clock tick */
+@@ -195,11 +199,17 @@
+ 		if (jiffies != ticks)	/* longer than 1 tick */
+ 			loops_per_jiffy &= ~loopbit;
+ 	}
++#endif /* CONFIG_FASTBOOT_LPJ */
+ 
+ /* Round the value and print it */	
+ 	printk("%lu.%02lu BogoMIPS\n",
+ 		loops_per_jiffy/(500000/HZ),
+ 		(loops_per_jiffy/(5000/HZ)) % 100);
++
++#ifndef CONFIG_FASTBOOT_LPJ
++	printk("Use 'Loops per jiffy'=%lu for fast boot.\n",
++		loops_per_jiffy);
++#endif /* CONFIG_FASTBOOT_LPJ */
+ }
+ 
+ static int __init debug_kernel(char *str)

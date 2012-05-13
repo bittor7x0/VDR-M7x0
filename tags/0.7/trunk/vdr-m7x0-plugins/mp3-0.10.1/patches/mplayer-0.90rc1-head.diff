@@ -1,0 +1,51 @@
+diff -ruN ./libao2/ao_mpegpes.c /usr/src/MPlayer-0.90rc1/libao2/ao_mpegpes.c
+--- ./libao2/ao_mpegpes.c	Sun Oct  6 03:08:04 2002
++++ /usr/src/MPlayer-0.90rc1/libao2/ao_mpegpes.c	Wed Dec 11 15:47:20 2002
+@@ -15,7 +15,7 @@
+ #include "../mp_msg.h"
+ 
+ #ifdef HAVE_DVB
+-#include <ost/audio.h>
+-audioMixer_t dvb_mixer={255,255};
++#include <linux/dvb/audio.h>
++audio_mixer_t dvb_mixer={255,255};
+ #endif
+ extern int vo_mpegpes_fd;
+diff -ruN ./libvo/vo_mpegpes.c /usr/src/MPlayer-0.90rc1/libvo/vo_mpegpes.c
+--- ./libvo/vo_mpegpes.c	Mon Nov 11 16:20:26 2002
++++ /usr/src/MPlayer-0.90rc1/libvo/vo_mpegpes.c	Wed Dec 11 15:54:49 2002
+@@ -35,12 +35,14 @@
+ #include <stdio.h>
+ #include <time.h>
+ 
+-#include <ost/dmx.h>
+-#include <ost/frontend.h>
+-#include <ost/sec.h>
+-#include <ost/video.h>
+-#include <ost/audio.h>
+-
++#include <linux/dvb/video.h>
++#include <linux/dvb/audio.h>
++#ifndef true
++#define true 1
++#endif
++#ifndef false
++#define false 0
++#endif
+ #endif
+ 
+ #include "config.h"
+@@ -86,11 +88,11 @@
+ #ifdef HAVE_DVB
+     if(!arg){
+     //|O_NONBLOCK
+-	if((vo_mpegpes_fd = open("/dev/ost/video",O_RDWR)) < 0){
++	if((vo_mpegpes_fd = open("/dev/dvb/adapter0/video0",O_RDWR)) < 0){
+ 		perror("DVB VIDEO DEVICE: ");
+ 		return -1;
+ 	}
+-	if((vo_mpegpes_fd2 = open("/dev/ost/audio",O_RDWR|O_NONBLOCK)) < 0){
++	if((vo_mpegpes_fd2 = open("/dev/dvb/adapter0/audio0",O_RDWR|O_NONBLOCK)) < 0){
+ 		perror("DVB AUDIO DEVICE: ");
+ 		return -1;
+ 	}

@@ -1,0 +1,12 @@
+--- gcc-4.3.2/gcc/config/mips/t-mips.orig	2008-08-30 17:48:34.000000000 +0200
++++ gcc-4.3.2/gcc/config/mips/t-mips	2008-08-30 17:49:22.000000000 +0200
+@@ -2,6 +2,9 @@
+ # them to be built correctly, so... [taken from t-sparclite]
+ # We want fine grained libraries, so use the new code to build the
+ # floating point emulation libraries.
++
++LIB2FUNCS_STATIC_EXTRA = $(srcdir)/config/mips/vr4120-div.S
++
+ FPBIT = fp-bit.c
+ DPBIT = dp-bit.c
+ 

@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2008 Andreas Koch - the open7x0.org group
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * The author can be reached at andreas@open7x0.org
+ *
+ * The project's page is at http://www.open7x0.org
+ *
+ */
+ENTRY(boot_entry)
+SECTIONS
+{
+	. = 0x9FC00000 + 0x400 + 64 * 1024;
+	.entry :
+	{ 
+		*(.entry) 
+	}
+	.init :
+	{ 
+		*(.init) 
+	}
+	.ex_entry 0x80000000 : AT( ALIGN(LOADADDR(.init) + SIZEOF(.init),4) )
+	{
+		*(.ex_entry)
+	}
+	. = 0x80002000;
+	.text : AT( ALIGN(LOADADDR(.ex_entry) + SIZEOF(.ex_entry),4) )
+	{
+		 *(.text) 
+	}
+	.rodata : AT( ALIGN(LOADADDR(.text) + SIZEOF(.text),4) )
+	{
+		*(.rodata)
+	}
+        .rodata.str1.4 : AT( ALIGN(LOADADDR(.rodata) + SIZEOF(.rodata),4) )
+	{
+		*(.rodata.str1.4)
+	}
+	.data : AT( ALIGN(LOADADDR(.rodata.str1.4) + SIZEOF(.rodata.str1.4),4) ) 
+	{ 
+		*(.data) 
+	}
+	.bss : {
+		 _bss_start = .;
+		  *(.bss)
+		 _bss_end = .;
+	}
+
+	_loader_start = LOADADDR(.text);
+	_loader_end = LOADADDR(.data) + SIZEOF(.data);
+	_loader_mem_start = ADDR(.text);
+	_ex_entry_start = LOADADDR(.ex_entry);
+	_ex_entry_end = LOADADDR(.ex_entry) + SIZEOF(.ex_entry);
+	/DISCARD/ : {
+	 *(.reginfo) 
+	 *(.mdebug.mips32)
+	 *(.comment)
+	 *(.gnu.attributes)
+	 }
+}
+

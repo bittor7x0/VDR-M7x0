@@ -1,0 +1,34 @@
+diff -Naur cramfs-1.1-orig//cramfsck.c cramfs-1.1/cramfsck.c
+--- cramfs-1.1-orig//cramfsck.c	2011-11-22 18:46:03.369366100 +0100
++++ cramfs-1.1/cramfsck.c	2011-11-22 18:46:59.875016100 +0100
+@@ -48,12 +48,18 @@
+ #include <errno.h>
+ #include <string.h>
+ #include <sys/sysmacros.h>
++#ifndef __CYGWIN__
+ #include <utime.h>
++#endif /* __CYGWIN__ */
+ #include <sys/ioctl.h>
+ #define _LINUX_STRING_H_
+ #include "linux/cramfs_fs.h"
+ #include <zlib.h>
+
++#ifdef __CYGWIN__
++#define _IO(type,nr)	_IOC(_IOC_NONE,(type),(nr),0)
++#endif /* __CYGWIN__ */
++
+ #define BLKGETSIZE	_IO(0x12,96) /* return device size /512 (long *arg) */
+
+ /* Exit codes used by fsck-type programs */
+@@ -426,9 +432,11 @@
+ 	}
+ 	if (S_ISLNK(i->mode))
+ 		return;
++#ifndef __CYGWIN__
+ 	if (utime(path, &epoch) < 0) {
+ 		die(FSCK_ERROR, 1, "utime failed: %s", path);
+ 	}
++#endif /* __CYGWIN__ */
+ }
+
+ static void do_directory(char *path, struct cramfs_inode *i)

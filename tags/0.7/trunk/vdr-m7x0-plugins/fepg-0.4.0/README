@@ -1,0 +1,89 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Alex Lasnier <alex@fepg.org>
+
+Project's homepage:          http://www.fepg.org
+
+Latest version available at: http://www.fepg.org
+
+See the file COPYING for license information.
+
+
+
+Description
+-----------
+fEPG is a plugin for VDR that provides a graphical way of viewing and navigating 
+through EPG data. 
+
+
+Controls
+--------
+These can be changed in the setup menu
+
+Up ...... Move up by one channel
+
+Down .... Move down by one channel
+
+Left .... Move to the left by -30 minutes
+          If there is numerical input: Jump back by inputed number of hours
+
+Right ... Move to the right by 30 minutes
+          If there is numerical input: Jump forward by inputed number of hours
+
+Green ... Open/Close the info window; displays info about the 
+          currently selected event
+
+Red ..... Scroll up by one page
+
+Yellow .. Scroll down by one page
+
+Blue .... Set a timer for the currently selected event
+
+Back .... Exit without changing the channel
+          If info window is open: Closes info window
+
+Ok ...... If a current event is selected: Changes to selected channel and exit
+          If a non-current event is selected: Opens the info window
+          If the info window is open: Closes info window
+
+0 to 9 .. Used for numerical input. Jumps to given channel number (if valid).
+          If Left (Right) is pressed while there is numerical input
+   
+          
+Controls for the display setup screen
+------------------------------------
+
+Up/Down/Left/Right .. Move upper left corner
+2 / 8  / 4  / 6 ..... Move lower right corner
+Red / Green ......... Increase / decrease width of channel column   
+Blue / Yellow ....... Increase / decrease height of time row
+
+
+Controls for the color setup screen
+-----------------------------------
+
+Up / Down ..... Select value to be modified
+Right / Left .. Increase / decrease value
+0 to 9 ........ Directly input value
+
+
+Notes
+-----
+- North American users have the option of applying the ratings patch to VDR.
+  Parental and star ratings will then be displayed in fEPG's info window.
+  The patch can be found in the 'patches' directory.
+  
+- PAL mode will not work on full featured cards due to lack of OSD memory.
+
+- If you are using a software output device, you might have to use PAL mode
+  even on an NTSC television.
+
+- You might find it useful to add the following line (or something similar) 
+  to keymacros.conf
+  ...
+  User1   @fepg
+  ...
+  This way you can access fEPG with the press of a button  
+
+
+

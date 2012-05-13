@@ -1,0 +1,12 @@
+diff -Naur mediatomb-0.12.1-orig/build/libmediatomb_src mediatomb-0.12.1/build/libmediatomb_src
+--- mediatomb-0.12.1-orig/build/libmediatomb_src	2010-03-22 18:09:53.000000000 +0100
++++ mediatomb-0.12.1/build/libmediatomb_src	2012-03-29 21:46:08.793652388 +0200
+@@ -42,6 +42,8 @@
+ ../src/fd_io_handler.h \
+ ../src/file_io_handler.cc \
+ ../src/file_io_handler.h \
++../src/vdr_io_handler.cc \
++../src/vdr_io_handler.h \
+ ../src/file_request_handler.cc \
+ ../src/file_request_handler.h \
+ ../src/filesystem.cc \

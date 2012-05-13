@@ -1,0 +1,13 @@
+--- 2.4.19rc2aa1/fs/buffer.c.~1~	Wed Jul 17 15:38:07 2002
++++ 2.4.19rc2aa1/fs/buffer.c	Wed Jul 17 15:45:13 2002
+@@ -2197,9 +2197,7 @@ static int wait_kio(int rw, int nr, stru
+ 	for (i = nr; --i >= 0; ) {
+ 		iosize += size;
+ 		tmp = bh[i];
+-		if (buffer_locked(tmp)) {
+-			wait_on_buffer(tmp);
+-		}
++		wait_on_buffer(tmp);
+ 		
+ 		if (!buffer_uptodate(tmp)) {
+ 			/* We are traversing bh'es in reverse order so

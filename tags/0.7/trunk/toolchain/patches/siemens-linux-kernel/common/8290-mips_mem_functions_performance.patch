@@ -1,0 +1,97 @@
+diff -Naur slin_m740_orig/arch/mips/kernel/mips_ksyms.c slin_m740/arch/mips/kernel/mips_ksyms.c
+--- slin_m740_orig/arch/mips/kernel/mips_ksyms.c	2004-05-29 14:44:23.000000000 +0200
++++ slin_m740/arch/mips/kernel/mips_ksyms.c	2011-05-27 11:03:26.109667809 +0200
+@@ -52,7 +52,6 @@
+ /*
+  * String functions
+  */
+-EXPORT_SYMBOL_NOVERS(memcmp);
+ EXPORT_SYMBOL_NOVERS(memset);
+ EXPORT_SYMBOL_NOVERS(memcpy);
+ EXPORT_SYMBOL_NOVERS(memmove);
+diff -Naur slin_m740_orig/arch/mips/lib/Makefile slin_m740/arch/mips/lib/Makefile
+--- slin_m740_orig/arch/mips/lib/Makefile	2004-05-29 14:44:23.000000000 +0200
++++ slin_m740/arch/mips/lib/Makefile	2011-05-26 13:12:12.632952000 +0200
+@@ -9,7 +9,7 @@
+ obj-y				+= csum_partial.o csum_partial_copy.o \
+ 				   rtc-std.o rtc-no.o memcpy.o memset.o \
+ 				   watch.o strlen_user.o strncpy_user.o \
+-				   strnlen_user.o
++				   strnlen_user.o memcmp.o
+ 
+ ifeq ($(CONFIG_CPU_R3000)$(CONFIG_CPU_TX39XX),y)
+   obj-y	+= r3k_dump_tlb.o
+@@ -21,4 +21,7 @@
+ obj-$(CONFIG_IDE)		+= ide-std.o ide-no.o
+ obj-$(CONFIG_PC_KEYB)		+= kbd-std.o kbd-no.o
+ 
++# Objects that export symbols.
++export-objs			:= memcmp.o
++
+ include $(TOPDIR)/Rules.make
+diff -Naur slin_m740_orig/arch/mips/lib/memcmp.c slin_m740/arch/mips/lib/memcmp.c
+--- slin_m740_orig/arch/mips/lib/memcmp.c	1970-01-01 01:00:00.000000000 +0100
++++ slin_m740/arch/mips/lib/memcmp.c	2011-05-27 11:13:14.395065429 +0200
+@@ -0,0 +1,22 @@
++/*
++ *  copied from linux/lib/string.c
++ *
++ *  Copyright (C) 1991, 1992  Linus Torvalds
++ */
++
++#include <linux/module.h>
++#include <linux/string.h>
++
++#undef memcmp
++int memcmp(const void *cs, const void *ct, size_t count)
++{
++	const unsigned char *su1, *su2;
++	int res = 0;
++
++	for (su1 = cs, su2 = ct; 0 < count; ++su1, ++su2, count--)
++		if ((res = *su1 - *su2) != 0)
++			break;
++	return res;
++}
++EXPORT_SYMBOL_NOVERS(memcmp);
++
+diff -Naur slin_m740_orig/include/asm-mips/string.h slin_m740/include/asm-mips/string.h
+--- slin_m740_orig/include/asm-mips/string.h	2004-11-08 11:55:31.000000000 +0100
++++ slin_m740/include/asm-mips/string.h	2011-05-26 13:18:29.292821000 +0200
+@@ -122,13 +122,36 @@
+ 
+ #define __HAVE_ARCH_MEMSET
+ extern void *memset(void *__s, int __c, size_t __count);
++#define memset(__s, __c, len)					\
++({								\
++	size_t __len = (len);					\
++	void *__ret;						\
++	if (__builtin_constant_p(len) && __len >= 64)		\
++		__ret = memset((__s), (__c), __len);		\
++	else							\
++		__ret = __builtin_memset((__s), (__c), __len);	\
++	__ret;							\
++})
+ 
+ #define __HAVE_ARCH_MEMCPY
+ extern void *memcpy(void *__to, __const__ void *__from, size_t __n);
++#define memcpy(dst, src, len)					\
++({								\
++	size_t __len = (len);					\
++	void *__ret;						\
++	if (__builtin_constant_p(len) && __len >= 64)		\
++		__ret = memcpy((dst), (src), __len);		\
++	else							\
++		__ret = __builtin_memcpy((dst), (src), __len);	\
++	__ret;							\
++})
+ 
+ #define __HAVE_ARCH_MEMMOVE
+ extern void *memmove(void *__dest, __const__ void *__src, size_t __n);
+ 
++#define __HAVE_ARCH_MEMCMP
++#define memcmp(src1, src2, len) __builtin_memcmp((src1), (src2), (len))
++
+ /* Don't build bcopy at all ...  */
+ #define __HAVE_ARCH_BCOPY
+ 

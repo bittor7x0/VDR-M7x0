@@ -1,0 +1,33 @@
+--- slin_m740/include/asm-mips/checksum.h.orig	2007-12-23 11:59:54.000000000 +0100
++++ slin_m740/include/asm-mips/checksum.h	2007-12-23 12:11:00.000000000 +0100
+@@ -104,25 +104,25 @@
+ 	__asm__ __volatile__(
+ 	".set\tnoreorder\t\t\t# ip_fast_csum\n\t"
+ 	".set\tnoat\n\t"
+-	"lw\t%0, (%1)\n\t"
++	"ulw\t%0, (%1)\n\t"
+ 	"subu\t%2, 4\n\t"
+ 	"#blez\t%2, 2f\n\t"
+ 	" sll\t%2, 2\n\t"
+-	"lw\t%3, 4(%1)\n\t"
++	"ulw\t%3, 4(%1)\n\t"
+ 	"addu\t%2, %1\n\t"
+ 	"addu\t%0, %3\n\t"
+ 	"sltu\t$1, %0, %3\n\t"
+-	"lw\t%3, 8(%1)\n\t"
++	"ulw\t%3, 8(%1)\n\t"
+ 	"addu\t%0, $1\n\t"
+ 	"addu\t%0, %3\n\t"
+ 	"sltu\t$1, %0, %3\n\t"
+-	"lw\t%3, 12(%1)\n\t"
++	"ulw\t%3, 12(%1)\n\t"
+ 	"addu\t%0, $1\n\t"
+ 	"addu\t%0, %3\n\t"
+ 	"sltu\t$1, %0, %3\n\t"
+ 	"addu\t%0, $1\n"
+ 
+-	"1:\tlw\t%3, 16(%1)\n\t"
++	"1:\tulw\t%3, 16(%1)\n\t"
+ 	"addiu\t%1, 4\n\t"
+ 	"addu\t%0, %3\n\t"
+ 	"sltu\t$1, %0, %3\n\t"

@@ -1,0 +1,513 @@
+diff -Naur klone-core-2.4.0/klone/http.h klone-core-2.4.0-atinar/klone/http.h
+--- klone-core-2.4.0/klone/http.h	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/klone/http.h	2011-12-10 04:24:44.193000034 +0100
+@@ -31,6 +31,10 @@
+     /**< request accepted but processing not completed */
+     HTTP_STATUS_NO_CONTENT                = 204,
+     /**< no body returned */
++    HTTP_STATUS_PARTIAL_CONTENT           = 206,
++    /**< partial content returned */
++    HTTP_STATUS_MULTI_STATUS              = 207,
++    /**< status for multiple independent operations (WebDAV)*/
+     HTTP_STATUS_MOVED_PERMANENTLY         = 301,
+     /**< resource relocated permanently */
+     HTTP_STATUS_MOVED_TEMPORARILY         = 302,
+@@ -53,14 +57,23 @@
+     /**< decryption key is needed - KLone extension */
+     HTTP_STATUS_EXT_KEY_NEEDED            = 430,
+     /**< request PDU too big */
++    HTTP_STATUS_UNPROCESSABLE_ENTITY      = 422,
++    /**< server was unable to process the contained instructions (WebDAV)*/
++    HTTP_STATUS_LOCKED                    = 423,
++    /**<source or destination resource of a method is locked (WebDAV) */
++    HTTP_STATUS_FAILED_DEPENDENCY         = 424,
++    /**<the requested action depended on another action and that action failed (WebDAV)*/
+     HTTP_STATUS_INTERNAL_SERVER_ERROR     = 500,
+     /**< unexpected condition caused an error */
+     HTTP_STATUS_NOT_IMPLEMENTED           = 501,
+     /**< request method not supported */
+     HTTP_STATUS_BAD_GATEWAY               = 502,
+     /**< invalid response while acting as gateway or proxy */
+-    HTTP_STATUS_SERVICE_UNAVAILABLE       = 503 
++    HTTP_STATUS_SERVICE_UNAVAILABLE       = 503, 
+     /**< server unavailable due to temporary overloading or maintenance */
++    HTTP_STATUS_INSUFFICIENT_STORAGE      = 507
++    /**<the server is unable to store the representation needed 
++     * to successfully complete the request (WebDAV)*/
+ };
+ 
+ /** HTTP Methods */
+@@ -71,7 +84,15 @@
+     HM_HEAD,      /**< ~HM_GET with headers only */
+     HM_POST,      /**< create new object subordinate to specified object */
+     HM_PUT,       /**< data in body is to be stored under URL */
+-    HM_DELETE     /**< deletion request at given URL */
++    HM_DELETE,    /**< deletion request at given URL */
++	/**< used by WebDav: */
++    HM_PROPFIND,   
++    HM_PROPPATCH,
++    HM_MKCOL,
++    HM_COPY,
++    HM_MOVE,
++    HM_LOCK,
++    HM_UNLOCK
+ };
+ 
+ struct http_s;
+diff -Naur klone-core-2.4.0/klone/request.h klone-core-2.4.0-atinar/klone/request.h
+--- klone-core-2.4.0/klone/request.h	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/klone/request.h	2011-12-11 05:53:57.687000091 +0100
+@@ -53,6 +53,7 @@
+ const char *request_get_resolved_path_info(request_t *rq);
+ int request_get_method(request_t *rq);
+ ssize_t request_get_content_length(request_t *rq);
++const char *request_get_content(request_t *rq);
+ time_t request_get_if_modified_since(request_t *rq);
+ int request_is_encoding_accepted(request_t *rq, const char *encoding);
+ 
+diff -Naur klone-core-2.4.0/klone/utils.h klone-core-2.4.0-atinar/klone/utils.h
+--- klone-core-2.4.0/klone/utils.h	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/klone/utils.h	2011-12-17 08:22:25.491000053 +0100
+@@ -57,6 +57,7 @@
+ enum { U_COPY_VERBATIM, U_COPY_ENCODE, U_COPY_DECODE };
+ 
+ enum { URLCPY_VERBATIM, URLCPY_ENCODE, URLCPY_DECODE };
++ssize_t u_urlncpy_encode(char *d, const char *s, size_t slen, const char *keep);
+ ssize_t u_urlncpy(char *dst, const char *src, size_t slen, int flags);
+ 
+ enum { HEXCPY_VERBATIM, HEXCPY_ENCODE, HEXCPY_DECODE };
+@@ -91,6 +92,7 @@
+ const char* u_guess_mime_type(const char *file_name);
+ const mime_map_t* u_get_mime_map(const char *file_name);
+ int u_match_ext(const char *filename, const char *extension);
++short htoi(unsigned char c);
+ 
+ /* date time conversion funcs */
+ #define RFC822_DATE_BUFSZ   32
+diff -Naur klone-core-2.4.0/libu/include/missing/strlncpy.h klone-core-2.4.0-atinar/libu/include/missing/strlncpy.h
+--- klone-core-2.4.0/libu/include/missing/strlncpy.h	1970-01-01 01:00:00.000000000 +0100
++++ klone-core-2.4.0-atinar/libu/include/missing/strlncpy.h	2011-12-11 03:07:52.000000000 +0100
+@@ -0,0 +1,26 @@
++/* 
++ * Copyright (c) 2011 by atinar.  
++ */
++#ifndef _LIBU_STRLNCPY_H_
++#define _LIBU_STRLNCPY_H_
++
++#include <u/libu_conf.h>
++#include <sys/types.h>
++
++#ifdef HAVE_STRLNCPY
++#include <string.h>
++#else   /* !HAVE_STRLNCPY */
++
++#ifdef __cplusplus
++extern "C" {
++#endif  /* __cplusplus */
++
++size_t strlncpy(char *dst, const char *src, size_t siz, size_t n);
++
++#ifdef __cplusplus
++}
++#endif  /* __cplusplus */
++
++#endif  /* HAVE_STRLNCPY */
++
++#endif  /* !_LIBU_STRLNCPY_H_ */
+diff -Naur klone-core-2.4.0/libu/include/toolbox/str.h klone-core-2.4.0-atinar/libu/include/toolbox/str.h
+--- klone-core-2.4.0/libu/include/toolbox/str.h	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/libu/include/toolbox/str.h	2011-12-21 05:16:00.264000082 +0100
+@@ -60,6 +60,8 @@
+ const char *u_string_c (u_string_t *s);
+ int u_string_append (u_string_t *s, const char *buf, size_t len);
+ int u_string_aprintf (u_string_t *s, const char *fmt, ...);
++int u_string_vaprintf (u_string_t *, const char *, va_list);
++int u_string_aiconv (u_string_t *s, const char *tocode, const char *fromcode, const char *fromstr, size_t len);
+ int u_string_clear (u_string_t *s);
+ int u_string_copy (u_string_t *dst, u_string_t *src);
+ int u_string_create (const char *buf, size_t len, u_string_t **ps);
+@@ -69,6 +71,7 @@
+ int u_string_set (u_string_t *s, const char *buf, size_t len);
+ int u_string_set_length (u_string_t *s, size_t len); 
+ int u_string_sprintf (u_string_t *s, const char *fmt, ...);
++int u_string_vsprintf (u_string_t *, const char *, va_list);
+ int u_string_trim (u_string_t *s);
+ size_t u_string_len (u_string_t *s);
+ char *u_string_detach_cstr (u_string_t *s);
+diff -Naur klone-core-2.4.0/libu/include/u/missing.h klone-core-2.4.0-atinar/libu/include/u/missing.h
+--- klone-core-2.4.0/libu/include/u/missing.h	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/libu/include/u/missing.h	2011-12-11 03:30:11.000000000 +0100
+@@ -15,6 +15,7 @@
+ #include <u/missing/timegm.h>
+ #include <u/missing/strsep.h>
+ #include <u/missing/strlcpy.h>
++#include <u/missing/strlncpy.h>
+ #include <u/missing/strlcat.h>
+ #include <u/missing/gettimeofday.h>
+ #include <u/missing/daemon.h>
+diff -Naur klone-core-2.4.0/libu/srcs/Makefile klone-core-2.4.0-atinar/libu/srcs/Makefile
+--- klone-core-2.4.0/libu/srcs/Makefile	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/libu/srcs/Makefile	2011-12-11 03:36:41.039000085 +0100
+@@ -94,6 +94,9 @@
+ ifndef HAVE_STRLCPY
+     SRCS += missing/strlcpy.c
+ endif
++ifndef HAVE_STRLNCPY
++    SRCS += missing/strlncpy.c
++endif
+ ifndef HAVE_STRLCAT
+     SRCS += missing/strlcat.c
+ endif
+diff -Naur klone-core-2.4.0/libu/srcs/missing/strlncpy.c klone-core-2.4.0-atinar/libu/srcs/missing/strlncpy.c
+--- klone-core-2.4.0/libu/srcs/missing/strlncpy.c	1970-01-01 01:00:00.000000000 +0100
++++ klone-core-2.4.0-atinar/libu/srcs/missing/strlncpy.c	2011-12-11 20:51:31.413000091 +0100
+@@ -0,0 +1,48 @@
++/*
++ * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
++ * Copyright (c) 2011 atinar <atinar1@hotmail.com>
++ *
++ * Permission to use, copy, modify, and distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS" AND TODD C. MILLER DISCLAIMS ALL
++ * WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
++ * OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL TODD C. MILLER BE LIABLE
++ * FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
++ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
++ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
++ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
++ */
++#include <u/missing/strlncpy.h>
++
++#ifndef HAVE_STRLNCPY
++/*
++ * Copy src to string dst of size siz.  At most n characters
++ * will be copied.  Always NUL terminates (unless siz == 0).
++ * Returns number of characters copied; if retval > n, truncation occurred.
++ */
++size_t strlncpy(char *dst, const char *src, size_t siz, size_t n)
++{
++	char *d = dst;
++	const char *s = src;
++    n++;
++	if (n > siz) n = siz;
++
++	/* Copy as many bytes as will fit */
++	if (n != 0 && --n != 0) {
++		do {
++			if ((*d++ = *s++) == 0)
++				break;
++		} while (--n != 0);
++	}
++
++	/* Not enough room in dst, add NUL */
++	if (n == 0 && siz != 0)
++    	*d = '\0';		/* NUL-terminate dst */
++
++	return(d - dst);	/* count does not include NUL */
++}
++#else   /* HAVE_STRLNCPY */
++size_t strlncpy (char *, const char *, size_t, size_t);
++#endif  /* !HAVE_STRLNCPY */
+diff -Naur klone-core-2.4.0/libu/srcs/toolbox/misc.c klone-core-2.4.0-atinar/libu/srcs/toolbox/misc.c
+--- klone-core-2.4.0/libu/srcs/toolbox/misc.c	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/libu/srcs/toolbox/misc.c	2011-12-11 03:45:22.058000085 +0100
+@@ -206,6 +206,27 @@
+ }
+ 
+ /** 
++ *  \brief  Wrapper to strlncpy(3) 
++ * 
++ *  Wrapper to strlncpy(3) that will check whether \p n is too big to fit 
++ *  \p dst.  In case of overflow, at least \p size bytes will be copied anyway
++ *  from \p src to \p dst.
++ * 
++ *  \param  dst     buffer of at least \p size bytes where bytes from \p src 
++ *                  will be copied
++ *  \param  src     NUL-terminated string that is (possibly) copied to \p dst
++ *  \param  size    full size of the destination buffer \p dst
++ *  \param  n       number of characters to copy to \p dst
++ *  
++ *  \retval  0  copy is ok
++ *  \retval ~0  copy would overflow the destination buffer
++ */
++inline int u_strlncpy(char *dst, const char *src, size_t size, size_t n)
++{
++    return (strlncpy(dst, src, size, n) < n ? ~0 : 0);
++}
++
++/** 
+  *  \brief  Wrapper to strlcat(3) 
+  * 
+  *  Wrapper to strlcat(3) that will check whether \p src is too big to fit 
+diff -Naur klone-core-2.4.0/libu/srcs/toolbox/str.c klone-core-2.4.0-atinar/libu/srcs/toolbox/str.c
+--- klone-core-2.4.0/libu/srcs/toolbox/str.c	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/libu/srcs/toolbox/str.c	2011-12-21 22:49:06.508000002 +0100
+@@ -4,6 +4,7 @@
+ 
+ #include <stdlib.h>
+ #include <errno.h>
++#include <iconv.h>
+ #include <toolbox/str.h>
+ #include <toolbox/misc.h>
+ #include <toolbox/carpal.h>
+@@ -405,6 +406,46 @@
+     return ~0;
+ }
+ 
++int u_string_aiconv (u_string_t *s, const char *tocode, const char *fromcode, const char *fromstr, size_t len)
++{
++    size_t nsz, min;
++
++    dbg_return_if (s == NULL, ~0);
++    dbg_return_if (fromstr == NULL, ~0);
++    nop_return_if (len == 0, 0);    /* nothing to do */
++
++    iconv_t iconv_cd = iconv_open(tocode, fromcode);
++    warn_return_sif(iconv_cd == (iconv_t) (-1), ~0);
++    
++    size_t inbytesleft = len;
++    size_t outbytesleft = 2*len;
++    char *inbufptr = (char *) fromstr;
++    /* if there's not enough space on s->data alloc a bigger buffer */
++    if (s->data_len + outbytesleft + 1 > s->data_sz)
++    {
++        min = s->data_len + outbytesleft + 1; /* min required buffer length */
++        nsz = s->data_sz;
++        while (nsz <= min)
++            nsz += (BLOCK_SIZE << s->shift_cnt++);
++
++        dbg_err_if (u_string_reserve(s, nsz));
++    }
++
++    /* append this chunk converted to the data buffer */
++    char *outbufptr = s->data + s->data_len;
++    size_t chars = iconv(iconv_cd, &inbufptr, &inbytesleft, &outbufptr, &outbytesleft);
++    warn_err_sif(chars == -1);
++    s->data_len = outbufptr - s->data;
++    *outbufptr = '\0';
++    
++    if (iconv_close(iconv_cd)) warn_strerror(errno);
++    return 0;
++err:
++    s->data[s->data_len] = '\0';
++    if (iconv_close(iconv_cd)) warn_strerror(errno);
++    return ~0;
++}
++
+ /**
+  *  \brief  Set the string from sprintf-style arguments
+  *
+@@ -453,6 +494,16 @@
+     return rc;
+ }
+ 
++int u_string_vsprintf (u_string_t *s, const char *fmt, va_list ap)
++{
++    return u_string_do_vprintf(s, 1, fmt, ap);
++}
++
++int u_string_vaprintf (u_string_t *s, const char *fmt, va_list ap)
++{
++    return u_string_do_vprintf(s, 0, fmt, ap);
++}
++
+ /**
+  *      \}
+  */
+diff -Naur klone-core-2.4.0/src/libhttp/http.c klone-core-2.4.0-atinar/src/libhttp/http.c
+--- klone-core-2.4.0/src/libhttp/http.c	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/src/libhttp/http.c	2011-12-11 03:57:51.052000085 +0100
+@@ -60,6 +60,13 @@
+     { HTTP_STATUS_NOT_IMPLEMENTED       , "Not Implemented"         },
+     { HTTP_STATUS_BAD_GATEWAY           , "Bad Gateway"             },
+     { HTTP_STATUS_SERVICE_UNAVAILABLE   , "Service Unavailable"     },
++    { HTTP_STATUS_PARTIAL_CONTENT       , "Partial Content"         },
++    { HTTP_STATUS_MULTI_STATUS          , "Multi status"            },
++    { HTTP_STATUS_UNPROCESSABLE_ENTITY  , "Unprocessable entity"    },
++    { HTTP_STATUS_LOCKED                , "Locked"                  },
++    { HTTP_STATUS_FAILED_DEPENDENCY     , "Failed dependency"       },
++    { HTTP_STATUS_INSUFFICIENT_STORAGE  , "Insuficient storage"     },
++    { HTTP_STATUS_LOCKED                , "Locked"                  },
+     { 0                                 , NULL                      }
+ };
+ 
+@@ -227,7 +234,7 @@
+     dbg_err_if (buf == NULL);
+ 
+     dbg_err_if ((h = request_get_http(rq)) == NULL);
+-    dbg_err_if (u_strlcpy(uri, buf, sizeof uri));
++    dbg_err_if (u_strlncpy(uri, buf, sizeof uri, len));
+     
+     /* try the url itself */
+     if(broker_is_valid_uri(h->broker, h, rq, uri, strlen(uri)))
+diff -Naur klone-core-2.4.0/src/libpage/request.c klone-core-2.4.0-atinar/src/libpage/request.c
+--- klone-core-2.4.0/src/libpage/request.c	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/src/libpage/request.c	2011-12-11 06:02:38.886000000 +0100
+@@ -48,6 +48,7 @@
+     char *content_type;         /* type/subtype                             */
+     char *content_encoding;     /* 7bit/8bit/base64/qp, etc                 */
+ 	size_t content_length;      /* content-length http header field         */
++    char *content;              /* extra content in the request             */
+     time_t if_modified_since;   /* time_t IMS header                        */
+     kaddr_t local_addr, peer_addr; /* local and perr address                 */
+     int cgi;                    /* if running in cgi mode                   */
+@@ -747,8 +748,23 @@
+         rq->method = HM_PUT;
+     else if(!strcasecmp(method, "delete"))
+         rq->method = HM_DELETE;
++	else if(!strcasecmp(method, "propfind"))
++		rq->method = HM_PROPFIND;
++	else if(!strcasecmp(method, "proppatch"))
++		rq->method = HM_PROPPATCH;
++	else if(!strcasecmp(method, "propfind"))
++		rq->method = HM_PROPFIND;
++	else if(!strcasecmp(method, "mkcol"))
++		rq->method = HM_MKCOL;
++	else if(!strcasecmp(method, "copy"))
++		rq->method = HM_COPY;
++	else if(!strcasecmp(method, "move"))
++		rq->method = HM_MOVE;
++	else if(!strcasecmp(method, "lock"))
++		rq->method = HM_LOCK;
++	else if(!strcasecmp(method, "unlock"))
++		rq->method = HM_UNLOCK;
+     else {
+-        /* put, delete, * */
+         rq->method = HM_UNKNOWN;
+         return ~0; /* unknown or unsupported method */
+     }
+@@ -917,6 +933,13 @@
+     return (ssize_t) rq->content_length;
+ }
+ 
++const char *request_get_content(request_t *rq)
++{
++    dbg_return_if (rq == NULL, NULL);
++
++    return rq->content;
++}
++
+ static int match_content_type(header_t *h, const char *mime_type)
+ {
+     const char *ct;
+@@ -1616,6 +1639,23 @@
+ 
+         /* post timeout not expired, clear it */
+         dbg_if(timerm_del(al)); al = NULL;
++    } else if(rq->method == HM_PROPFIND || rq->method == HM_PROPPATCH
++			|| rq->method == HM_MKCOL || rq->method == HM_COPY 
++			|| rq->method == HM_MOVE || rq->method == HM_LOCK || rq->method == HM_UNLOCK
++			)
++    {
++        /* some vars may be urlencoded */
++        dbg_err_if(request_parse_query_args(rq));
++
++        /* Content-Length is required */
++        dbg_err_if(request_set_content_length(rq) && 
++            (rc = HTTP_STATUS_LENGTH_REQUIRED));
++        if (rq->content_length > 0) {
++            dbg_err_if((rq->content = u_malloc(rq->content_length + 1))==NULL);
++            io_read(rq->io, rq->content, rq->content_length);
++            rq->content[rq->content_length] = '\0';
++        }
++
+     } else {
+         /* parse urlencoded variables and set var_t* array */
+         dbg_err_if(request_parse_query_args(rq));
+@@ -1709,8 +1749,8 @@
+     /* parse "Cookie:" fields and set the cookies vars_t */
+     dbg_err_if(request_parse_cookies(rq));
+ 
+-    /* Content-Length is required when using POST */
+-    if(request_get_method(rq) == HM_POST)
++    /* Content-Length is required when using POST or PROPFIND*/
++    if(request_get_method(rq) == HM_POST || request_get_method(rq) == HM_PROPFIND)
+         dbg_err_if(request_set_content_length(rq));
+ 
+     /* idle timeout not expired, clear it */
+@@ -1935,6 +1975,8 @@
+         if(rq->args)
+             vars_free(rq->args);
+ 
++        U_FREE(rq->content);
++        
+         U_FREE(rq);
+     }
+ 
+diff -Naur klone-core-2.4.0/src/libutils/mime_map.c klone-core-2.4.0-atinar/src/libutils/mime_map.c
+--- klone-core-2.4.0/src/libutils/mime_map.c	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/src/libutils/mime_map.c	2012-01-03 01:35:27.653000029 +0100
+@@ -81,10 +81,14 @@
+     { "mesh",       "model/mesh",                       1 }, 
+     { "mid",        "audio/midi",                       0 }, 
+     { "midi",       "audio/midi",                       0 }, 
++    { "mka",        "audio/x-matroska",                 0 }, 
++    { "mkv",        "video/x-matroska",                 0 }, 
++    { "midi",       "audio/midi",                       0 }, 
+     { "mov",        "video/quicktime",                  0 }, 
+     { "movie",      "video/x-sgi-movie",                0 }, 
+     { "mp2",        "audio/mpeg",                       0 }, 
+     { "mp3",        "audio/mpeg",                       0 }, 
++    { "mp4",        "video/mp4",                        0 }, 
+     { "mpe",        "video/mpeg",                       0 }, 
+     { "mpeg",       "video/mpeg",                       0 }, 
+     { "mpg",        "video/mpeg",                       0 }, 
+@@ -94,7 +98,9 @@
+     { "mxu",        "video/vnd.mpegurl",                1 }, 
+     { "nc",         "application/x-netcdf",             1 }, 
+     { "oda",        "application/oda",                  1 }, 
++    { "oga",        "audio/ogg",                        0 }, 
+     { "ogg",        "application/ogg",                  0 }, 
++    { "ogv",        "video/ogg",                        0 }, 
+     { "pbm",        "image/x-portable-bitmap",          1 }, 
+     { "pdb",        "chemical/x-pdb",                   1 }, 
+     { "pdf",        "application/pdf",                  0 }, 
+@@ -148,6 +154,7 @@
+     { "txt",        "text/plain",                       1 }, 
+     { "ustar",      "application/x-ustar",              1 }, 
+     { "vcd",        "application/x-cdlink",             1 }, 
++    { "vob",        "video/mpeg",                       1 }, 
+     { "vrml",       "model/vrml",                       1 }, 
+     { "vxml",       "application/voicexml+xml",         1 }, 
+     { "wav",        "audio/x-wav",                      1 }, 
+diff -Naur klone-core-2.4.0/src/libutils/utils.c klone-core-2.4.0-atinar/src/libutils/utils.c
+--- klone-core-2.4.0/src/libutils/utils.c	2011-05-02 16:52:18.000000000 +0200
++++ klone-core-2.4.0-atinar/src/libutils/utils.c	2011-12-17 08:22:40.398000052 +0100
+@@ -211,7 +211,7 @@
+ }
+ 
+ /* hex char to int */
+-static short htoi(unsigned char c)
++short htoi(unsigned char c)
+ {
+     c = tolower(c);
+ 
+@@ -312,7 +312,7 @@
+     return -1;
+ }
+ 
+-static ssize_t u_urlncpy_encode(char *d, const char *s, size_t slen)
++ssize_t u_urlncpy_encode(char *d, const char *s, size_t slen, const char *keep)
+ {
+     const char hexc[] = "0123456789ABCDEF";
+     ssize_t wr = 0;
+@@ -327,7 +327,7 @@
+         if(c == ' ') {
+             *d++ = '+';
+             wr++;
+-        } else if(isalnum(c) || c == '_' || c == '-' || c == '.') {
++        } else if ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c>='0' && c<='9') || c == '_' || c == '-' || c == '.' || (keep && strchr(keep, c))) {
+             *d++ = c;
+             wr++;
+         } else {
+@@ -399,7 +399,7 @@
+     switch(flags)
+     {
+     case URLCPY_ENCODE:
+-        return u_urlncpy_encode(d, s, slen);
++        return u_urlncpy_encode(d, s, slen, NULL);
+     case URLCPY_DECODE:
+         return u_urlncpy_decode(d, s, slen);
+     default:

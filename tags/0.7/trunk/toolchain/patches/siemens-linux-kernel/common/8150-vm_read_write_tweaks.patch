@@ -1,0 +1,26 @@
+- In generic_file_write(), only set the page's Referenced bit once,
+  when the write touches the start of the page.  This is a
+  microoptimisation.
+
+
+=====================================
+
+--- 2.4.19-pre4/mm/filemap.c~aa-150-read_write_tweaks	Tue Mar 26 23:11:33 2002
++++ 2.4.19-pre4-akpm/mm/filemap.c	Tue Mar 26 23:11:33 2002
+@@ -3092,8 +3091,15 @@ generic_file_write(struct file *file,con
+ 		}
+ unlock:
+ 		kunmap(page);
++
++		/*
++		 * Mark the page accessed if we wrote the
++		 * beginning or we just did an lseek.
++		 */
++		if (!offset || !file->f_reada)
++			SetPageReferenced(page);
++
+ 		/* Mark it unlocked again and drop the page.. */
+-		SetPageReferenced(page);
+ 		UnlockPage(page);
+ 		page_cache_release(page);
+ 

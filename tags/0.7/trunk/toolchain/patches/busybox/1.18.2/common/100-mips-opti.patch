@@ -1,0 +1,6 @@
+diff -rNu busybox-1.4.2/arch.old/mips/Makefile busybox-1.4.2/arch/mips/Makefile
+--- busybox-1.4.2/arch.old/mips/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ busybox-1.4.2/arch/mips/Makefile	2007-04-02 18:57:43.000000000 +0200
+@@ -0,0 +1,2 @@
++t_CFLAGS := $(CFLAGS)
++CFLAGS = $(filter-out -ffunction-sections -Os -fdata-sections -fno-guess-branch-probability -finline-limit=0 -falign-functions=1 -falign-jumps=1 -falign-labels=1 -falign-loops=1,$(t_CFLAGS)) -O3 -march=mips2 -mtune=vr4120 -msoft-float -mfix-vr4120 -Wno-error 

@@ -1,0 +1,10 @@
+#!/bin/ash
+
+directoriofich=$1
+directoriograb=$(grep "vdr_videodirs=" /etc/rc.local.conf |cut -d "=" -f2|cut -d'"' -f2)
+for i in $(find "$directoriofich" -iname resume.vdr|sed -e 's/ /#DEBIANJOKER#/g'); do
+        a=$(echo $i|sed -e 's/#DEBIANJOKER#/ /g')
+        rm -f "$a"
+done
+cd "$directoriograb"
+touch .update 

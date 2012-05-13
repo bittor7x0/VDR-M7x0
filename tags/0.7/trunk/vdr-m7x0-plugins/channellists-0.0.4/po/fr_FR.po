@@ -1,0 +1,91 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Jean-Claude Repetto <jc@repetto.org>, 2001
+# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+# Gregoire Favre <greg@magma.unil.ch>, 2003
+# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2008-01-21 18:23+0100\n"
+"PO-Revision-Date: 2008-01-21 18:12+0100\n"
+"Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Manage your channellists"
+msgstr "Organiser la liste des chaînes"
+
+msgid "Channellists"
+msgstr "Liste des chaînes"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "close"
+msgstr ""
+
+msgid "none"
+msgstr ""
+
+msgid "Hide main menu entry"
+msgstr "Invisible dans le menu principale"
+
+msgid "Action after switch"
+msgstr ""
+
+msgid "Button Red"
+msgstr "Button rouge"
+
+msgid "Rename"
+msgstr "Renommer"
+
+msgid "Script"
+msgstr "Script"
+
+msgid "Button Green"
+msgstr "Button vert"
+
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "An error occurs, see syslog..."
+msgstr "Une erreur se produit, voir syslog..."
+
+msgid "Switch current channellist?"
+msgstr "Changer la liste de chaînes actuelle?"
+
+msgid "Delete channellist?"
+msgstr "Effacer la liste de chaînes?"
+
+msgid "Save"
+msgstr "Sauvegarder"
+
+msgid "Execute update script?"
+msgstr "Effectuer le script de mise à jours"
+
+msgid "Waiting..."
+msgstr "Patience..."
+
+msgid "Button$Script"
+msgstr "Script"
+
+msgid "Button$Rename"
+msgstr "Renommer"
+
+msgid "Button$Copy"
+msgstr "Copier"
+
+msgid "Button$Delete"
+msgstr "Supprimer"
+
+msgid "Button$Save"
+msgstr "Sauvegarder"

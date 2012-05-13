@@ -1,0 +1,16 @@
+
+      Up - Crsr up
+      Down - Crsr down
+      Left - Page up
+      Right - Page down
+      Ok - Edit
+      Menu - Menu off
+      Back - VDR menu
+      Red - Edit
+      Green - New
+      Yellow - Delete
+      Blue - On/Off
+      0..9 - ---
+
+
+    The "On/Off" button in the "Timers" menu only works if sorting the timers has been enabled in the "Setup" menu. Otherwise the Blue button is used to "mark" a timer for moving.

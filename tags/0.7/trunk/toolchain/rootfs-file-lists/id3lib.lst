@@ -1,0 +1,4 @@
+usr/lib/libid3-3.8.so.3.0.0  usr/lib/libid3-3.8.so.3.0.0  f 755 0 0 - - - - -
+usr/lib/libid3-3.8.so.3.0.0  -                            s   - - - - - - - -
+usr/lib/libid3-3.8.so.3      libid3-3.8.so.3.0.0          l 777 0 0 - - - - -
+usr/lib/libid3.so            libid3-3.8.so.3.0.0          l 777 0 0 - - - - -

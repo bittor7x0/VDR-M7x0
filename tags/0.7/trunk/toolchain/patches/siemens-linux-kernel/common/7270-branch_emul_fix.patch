@@ -1,0 +1,21 @@
+In the branch emulation for floating-point exceptions, __compute_return_epc
+must determine for bc1f et al which condition code bit to test. This is
+based on bits <4:2> of the rt field. The switch statement to distinguish
+bc1f et al needs to use only the two low bits of rt, but the old code tests
+on the whole rt field. This patch masks off the proper bits.
+
+Signed-off-by: Win Treese <treese@xxxxxxx>
+Signed-off-by: Ralf Baechle <ralf@xxxxxxxxxxxxxx>
+Signed-off-by: Greg Kroah-Hartman <gregkh@xxxxxxx>
+
+--- a/arch/mips/kernel/branch.c
++++ b/arch/mips/kernel/branch.c
+@@ -170,7 +170,7 @@ int __compute_return_epc(struct pt_regs 
+ 		bit = (insn.i_format.rt >> 2);
+ 		bit += (bit != 0);
+ 		bit += 23;
+-		switch (insn.i_format.rt) {
++		switch (insn.i_format.rt & 3) {
+ 		case 0:	/* bc1f */
+ 		case 2:	/* bc1fl */
+ 			if (~fcr31 & (1 << bit))

@@ -1,0 +1,47 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Mario Aistleitner <vdr@aistleitner.info>
+
+Project's homepage:          http://vdr.aistleitner.info
+
+Latest version available at: http://vdr.aistleitner.info
+
+
+
+Copying (for details see the file COPYING):
+
+Clock Plugin for VDR. See http://vdr.aistleitner.info for download.
+Copyright (C) 2007  Mario Aistleitner <vdr@aistleitner.info>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
+
+Description:
+
+My Humax Receiver has a Clock Function that I enjoy very much.
+So I decided to write a Plugin for VDR which allows me to see
+a small clock in the Top right corner.
+
+The Idea is to set a unused key from your remote control
+(for example the key User1) to show the clock.
+
+This can easily be done by adding the following line to
+your keymacros.conf
+
+User1 @clock
+
+The clock will be disabled as soon as you press any other button.
+Otherwise there would be a mess in the OSD. 

@@ -1,0 +1,97 @@
+# Patch from: Con Kolivas (private Mail) / me
+
+diff -ruN linux-old/Documentation/Configure.help linux-wolk/Documentation/Configure.help
+--- linux-old/Documentation/Configure.help	Mon Feb 25 20:37:51 2002
++++ linux-wolk/Documentation/Configure.help	Sat Apr 27 23:52:48 2002
+@@ -867,6 +867,18 @@
+ 
+   If unsure, say N.
+ 
++Low Latency Elevator
++CONFIG_BLK_DEV_ELEVATOR_LOWLAT
++  If you are building your kernel for desktop usage it is highly
++  recommended to say Y here. With this option set, you can have the
++  highest disk i/o you ever dreamed of and still have interactive
++  behaviour of your kernel without stops/pauses or kinda that.
++  For sure, this decreases throughput, for me from 22mb/s to 14mb/s
++  but this is unrelevant for desktop usage.
++
++  If unsure, or if you're building a kernel for serverusage,
++  say N, otherwise say Y.
++
+ ISA-PNP EIDE support
+ CONFIG_BLK_DEV_ISAPNP
+   If you have an ISA EIDE card that is PnP (Plug and Play) and
+diff -urN linux-old/drivers/block/Config-elevator.in linux-wolk/drivers/block/Config-elevator.in
+--- linux-old/drivers/block/Config-elevator.in	Thu Jan  1 01:00:00 1970
++++ linux-wolk/drivers/block/Config-elevator.in	Mon Sep 17 13:46:19 2001
+@@ -0,0 +1,10 @@
++#
++# Elevator configuration
++#
++mainmenu_option next_comment
++comment 'Elevator'
++
++bool 'Low Latency Elevator' CONFIG_BLK_DEV_ELEVATOR_LOWLAT
++
++endmenu
++
+diff -urN linux-old/arch/mips/config-shared.in linux-wolk/arch/mips/config-shared.in
+--- linux-old/arch/mips/config-shared.in	Thu Jan  1 01:00:00 1970
++++ linux-wolk/arch/mips/config-shared.in	Mon Sep 17 13:46:19 2001
+@@ -645,6 +645,8 @@
+    endmenu
+ fi
+ 
++source drivers/block/Config-elevator.in
++
+ source drivers/md/Config.in
+ 
+ if [ "$CONFIG_NET" = "y" ]; then
+diff -urN linux-2.4.19/drivers/block/ll_rw_blk.c linux-2.4.19-ck14/drivers/block/ll_rw_blk.c
+--- linux-2.4.19/drivers/block/ll_rw_blk.c	2002-08-03 13:14:45.000000000 +1000
++++ linux-2.4.19-ck14/drivers/block/ll_rw_blk.c	2002-11-26 21:55:18.000000000 +1100
+@@ -432,9 +433,13 @@
+ 
+ 	si_meminfo(&si);
+ 	megs = si.totalram >> (20 - PAGE_SHIFT);
++#ifndef CONFIG_BLK_DEV_ELEVATOR_LOWLAT
+ 	nr_requests = 128;
+ 	if (megs < 32)
+ 		nr_requests /= 2;
++#else
++	nr_requests = 4;
++#endif
+ 	blk_grow_request_list(q, nr_requests);
+ 
+ 	init_waitqueue_head(&q->wait_for_requests[0]);
+diff -urN linux-2.4.19/include/linux/elevator.h linux-2.4.19-ck14/include/linux/elevator.h
+--- linux-2.4.19/include/linux/elevator.h	2001-02-16 11:58:34.000000000 +1100
++++ linux-2.4.19-ck14/include/linux/elevator.h	2002-11-26 22:45:01.000000000 +1100
+@@ -91,6 +91,7 @@
+ 	elevator_noop_merge_req,	/* elevator_merge_req_fn */	\
+ 	})
+ 
++#ifndef CONFIG_BLK_DEV_ELEVATOR_LOWLAT
+ #define ELEVATOR_LINUS							\
+ ((elevator_t) {								\
+ 	2048,				/* read passovers */		\
+@@ -100,4 +101,17 @@
+ 	elevator_linus_merge_req,	/* elevator_merge_req_fn */	\
+ 	})
+ 
+-#endif
++#else	/* CONFIG_BLK_DEV_ELEVATOR_LOWLAT */
++
++#define ELEVATOR_LINUS							\
++((elevator_t) {								\
++	0,				/* read passovers */		\
++	0,				/* write passovers */		\
++									\
++	elevator_linus_merge,		/* elevator_merge_fn */		\
++	elevator_linus_merge_req,	/* elevator_merge_req_fn */	\
++	})
++
++#endif	/* CONFIG_BLK_DEV_ELEVATOR_LOWLAT */
++
++#endif	/* _LINUX_ELEVATOR_H */

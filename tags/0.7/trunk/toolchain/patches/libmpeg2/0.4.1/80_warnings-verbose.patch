@@ -1,0 +1,12 @@
+diff -Naur mpeg2dec-0.4.1/configure mpeg2dec-0.4.1.new/configure
+--- mpeg2dec-0.4.1/configure	2009-10-31 23:33:39.000000000 +0100
++++ mpeg2dec-0.4.1.new/configure	2009-10-31 23:36:38.000000000 +0100
+@@ -4458,7 +4458,7 @@
+ elif test x"$GCC" = x"yes"; then
+ 
+ 
+-            TRY_CFLAGS="$OPT_CFLAGS -Wall"
++            TRY_CFLAGS="$OPT_CFLAGS -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
+     { echo "$as_me:$LINENO: checking if $CC supports $TRY_CFLAGS $CFLAGS flags" >&5
+ echo $ECHO_N "checking if $CC supports $TRY_CFLAGS $CFLAGS flags... $ECHO_C" >&6; }
+     SAVE_CFLAGS="$CFLAGS"

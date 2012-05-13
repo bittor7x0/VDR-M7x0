@@ -1,0 +1,2 @@
+sbin/usbautomounter   sbin/usbautomounter   f 755 0 0 - - - - -
+sbin/usbautomounter   -                     s   - - - - - - - -

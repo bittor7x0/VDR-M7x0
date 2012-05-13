@@ -1,0 +1,218 @@
+VDR Plugin 'teletextosd' Revision History
+-----------------------------------------
+
+2007-11-06: version 0.5.1 open7x0
+- changes to work with the special vdr version for the Siemens Gigaset
+- default cache path is now /tmp/vtx
+- cache path is created when the plugin starts
+- default max cache size is 10MB
+- the task to load the pages is only running when the plugin entry is selected.
+  This was needed to change to avoid CPU problems.
+  This results in a delay until the first page is shown
+- The cache is cleared if you switch the channel to avoid space problems
+
+
+2005-08-16: version 0.5.1
+
+- show page if it was initially not found
+  but is received later
+  (suggested by Luca Olivetti)
+- added timeout for user inactivity after 
+  which the plugin is closed. Without timeout the plugin would
+  prevent VDR's auto-shutdown mechanism if it remains open.
+  The value is the same as VDR's min user inactivity
+  setup option.
+  (suggested by Peter Bieringer)
+- fixed gcc4 warnings
+  (thanks to Ville Skyttä)
+- updated Finnish translation
+  (thanks to Rolf Ahrenberg)
+- added command line parameter documentation
+  to READMEs
+- added /var/cache/vdr/osdteletext to the list of recommended
+  cache directories
+  (suggested by Ville Skyttä)
+
+2005-04-21: version 0.5
+
+  Udo Richter:
+- font subsystem now supports Teletext level 1.
+  Fonts are provided for English, German, French,
+  Italian, Spanish, Portuguese, Swedish and Finnish.
+  The correct font is chosen automatically.
+- support for "boxed mode" (newstickers, subtitles):
+  in 4Bpp mode the area not covered by the box
+  will be completely transparent
+- OSD can now be aligned on screen:
+  - in horizontal alignment mode, 0 means on the left, 
+    50 in the center and 100 on the right
+  - in vertical alignment mode, 0 means at the top,
+    50 in the center and 100 at the bottom
+  - default is central alignment
+- changed palette system, no longer depending on 
+  order of indexing
+- fixed compilation failure with gcc 2.95
+- changed OSD minimum size from 480x324 to 320x250
+- some bugfixes and comments in txtrecv.c
+  Marcel Wiesweg:
+- avoid crash and improve behavior when an
+  invalid channel number is entered
+
+2005-03-30: version 0.5-pre1
+
+  Udo Richter:
+- extensive rewrite of display code
+- removed display.*, txtbitmap.*, colormapping.h
+- added txtrender.*, displaybase.*, display.*
+- menu.c adapted to new display engine
+- speed improvements by incremental drawing
+- strict adherence to standard
+
+2005-03-21: version 0.4.9-inofficial
+
+- rewrite of scaling and drawing code, better scaling
+  algorithm, removed inefficient double painting.
+  Increases speed by a factor of 4. (Udo Richter)
+- minor fixes for pagenumber, channel number and clock
+  fields to minimize overdrawing (Rolf Ahrenberg)
+- fix for graphical errors if normal characters are 
+  introduced after double high ones (Rolf Ahrenberg)
+- fix in receiving code to make osdteletext work
+  with some Swedish channels (thanks to Magnus Andersson)
+- pseudo target in Makefile allows a simple "make".
+  Previously, this would fail and you needed "make all"
+
+2005-03-03: version 0.4.2
+
+- fixes for double-high characters, scaling and localization
+  (thanks to Rolf Ahrenberg for his patch edition)
+- adapted to VDR API >= 1.3.18, reentrancy fixes
+- added Spanish and Catalan translation
+  (thanks to Luca Olivetti)
+- create stored files with 644 permissions
+  (suggested by Andreas Brachold)
+
+2004-09-21: version 0.4.1
+
+- fixed problem with undefined file permissions 
+  of created files (thanks to whoever created the patch)
+- fixed hexadecimal/decimal misinterpretation for "Jump to" 
+  key bindings (thanks to Peter Bieringer for pointing this out)
+- cosmetic change: key Left when entering channel number
+  now resets the cursor by one position, other keys stop
+  entering of page number
+
+2004-06-18: version 0.4
+
+- ported to VDR 1.3/1.4 series (>=1.3.8 now required)
+  This mostly involved changes in the OSD graphics code,
+- now supports OSDs with color depth of 3 
+  (thanks to Sascha Volkenandt)
+- rewrote the storage system:
+  - cache directory is now configurable (option -d)
+    Default value is still /vtx to allow seamless migration,
+    but /tmp/vtx is recommended (conforms to LSB etc.)
+  - changed the default file format: Now more than one
+    page is stored in one file. On filesystems that depend
+    on a blocksize the increases storage efficiency.
+    For tmpfs the improvement factor is approx. 4.
+  - The old system is still available via a
+    command line option (though it now uses a slightly
+    different naming)
+  - when no more space is available on disk
+    or a specified number of harddisk space is exceeded
+    (option -n) the folder least recently modified
+    will be deleted.
+    On exit, all files will be deleted, i.e.
+    (!) on exit, all files with suffix .vtx
+    below the storage directory will be deleted
+  - the option -r is now obsolete (will be ignored)
+    option -R/--no-receive is deprecated
+- code cleanups, removed broken or unused code
+- fixed quite a few bugs
+- Added Russian translation (thanks to Vyacheslav Dikonov)
+
+2003-12-2: version 0.3.2
+
+- receiver now uses a ring buffer and a thread to reduce
+  time spent in Receive() function, thus delaying VDR's
+  receiver thread (several people reported problems
+  with bitstreamout - thanks to Christian Jacobsen
+  and Dr. Werner Fink)
+- fixed and improved the newly introduced receiver thread
+  (thanks to Dr. Werner Fink)
+- fixed a bug that if there is a double high title on a page,
+  the last line on that page will be missing
+  (fixed by Rolf Ahrenberg)
+- fixed Finnish translation (thanks to Rolf Ahrenberg)
+- added Italian translation (thanks to "kikko77")
+- fixed bug that you could not enter 0 when switching
+  channel (thanks to Dietmar Hilbrich)
+
+2003-04-28: version 0.3.1
+
+- added support for DXR3 systems. Patches contributed by Kai Moeller
+  and Sascha Volkenandt, thanks to them.
+- the "0" if pressed as first digit now switches between current
+  and last page (as VDR does it with channels)
+- fixed autosuspend thread
+
+2003-04-03: version 0.3
+
+- fixed two serious memory leaks, thanks to Martin Pley
+- added feature to automatically update the page if it changed.
+- moved color definitions to colormapping.h
+- made width and height configurable, independent from, but with the same
+  mechanism as VDR
+- made setup menu items dynamic, i.e. the "Page Number" entries are hidden
+  when "Jump to..." is not selected
+- Experimental: added option to suspend the receiving automatically
+  for 5min after 30s. This may enable you to use your TV set's 
+  teletext decoder if you like to. (patch to VDR needed)
+- Experimental: added an action to immediately suspend receiving,
+  respectively reenable it
+- added an action to switch the background color between the value
+  you configured in the setup and black
+- improved color handling when foreground and background
+  color are the same, thanks to Martin Pley
+- fixed small bug in ChangePageRelative, thanks to Martin Pley
+- improvements in page switching, thanks to Martin Pley
+- rewrote parts of the README
+- added a German README.DE
+- several fixes and code clean-ups
+
+
+
+2003-02-26: version 0.2.1
+
+- fixed two compiling problems with gcc versions other than 3.2
+  (asprintf, <map>)
+- included Finnish translations, thanks to Lauri Tischler
+- improved Makefile, now uses install instead of mkdir/cp
+
+2003-02-15: version 0.2
+
+- Copied code to receive and save teletext data from original teletext plugin.
+  (appreciating Peter Seyringer's great work)
+- added command line option to enable the receiving code
+- added setup options to make key bindings fully configurable.
+  For each key you can choose between the three actions "Zoom", "Half page" or
+  "Switch channel" or use it to jump to a page
+- added setup option to make background transparency configurable 
+  (0...255, VDR's default value being 127)
+- included Emil Naepflein's patch to improve changing pages relatively
+- added feature to view saved pages of other channels than the current
+  ("Switch Channel"). Last pages are remembered over channel switching.
+- fixed bug when the upper half of a page was not automatically shown
+  when using the number keys
+- page and channel numbers now persist when returning to VDR
+- added clock which can regularly be updated.
+  (the clock shows the system time, which may definitely be different
+   from the time broadcast via teletext)
+- added setup option to enable clock
+- now copies README to ../../man, as Reinhard Walter Buchner suggested
+
+
+2003-02-05: Version 0.1
+
+- Initial revision.

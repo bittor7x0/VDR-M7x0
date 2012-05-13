@@ -1,0 +1,25 @@
+diff -Naur slin_m740_orig/mm/filemap.c slin_m740/mm/filemap.c
+--- slin_m740_orig/mm/filemap.c	2009-06-15 21:09:16.000000000 +0200
++++ slin_m740/mm/filemap.c	2009-06-15 21:13:20.000000000 +0200
+@@ -1776,7 +1776,8 @@
+ 		}
+ 		up(&inode->i_sem);
+ 		up_read(&inode->i_alloc_sem);
+-		UPDATE_ATIME(filp->f_dentry->d_inode);
++		if (!S_ISBLK(inode->i_mode))
++			UPDATE_ATIME(filp->f_dentry->d_inode);
+ 		goto out;
+ 	}
+ }
+@@ -3123,7 +3124,10 @@
+ 		goto out;
+ 
+ 	remove_suid(inode);
+-	update_inode_times(inode);
++
++	/* Don't update times for block devices using O_DIRECT */
++	if (!(file->f_flags & O_DIRECT) || !S_ISBLK(inode->i_mode))
++		update_inode_times(inode);
+ 
+ out:
+ 	return err;

@@ -1,0 +1,5 @@
+#!/bin/ash
+source /etc/rc.local.conf
+
+export ${runvdr_vars}
+ash ${runvdr} &

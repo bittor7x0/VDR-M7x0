@@ -1,0 +1,7 @@
+usr/sbin/ssmtp          usr/sbin/ssmtp             f 755 0 0 - - - - -
+usr/sbin/ssmtp          -                          s   - - - - - - - -
+usr/sbin/sendmail       ssmtp                      l 777 0 0 - - - - -
+usr/lib/sendmail        ../sbin/ssmtp              l 777 0 0 - - - - -
+etc/ssmtp               -                          d 755 0 0 - - - - -
+etc/ssmtp/ssmtp.conf    etc/ssmtp/ssmtp.conf       f 664 0 0 - - - - -
+etc/ssmtp/revaliases    etc/ssmtp/revaliases       f 664 0 0 - - - - -

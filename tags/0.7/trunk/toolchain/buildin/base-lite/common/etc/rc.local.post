@@ -1,0 +1,20 @@
+#!/bin/ash
+
+source /etc/rc.local.conf
+
+for bpath in ${bind_paths} ; do
+    echo -n " Binding ${bpath}"
+    /bin/mount -o bind /rw-flash${bpath} ${bpath} &
+done
+
+if [ X"${memwatch}" != X"NO" -a -d ${memwatch_dir} ] ; then
+    echo -n ' starting memwatch'
+    memwatch_dest="${memwatch_dir}/`date +%F-%H%M`"
+    /bin/mkdir -p ${memwatch_dest}
+    /usr/sbin/memwatch "${memwatch_dest}" ${memwatch_interval} &
+fi
+
+if [ X"${rescue_keys}" != X"NO" ]; then
+    echo -n ' starting rescue keys'
+    /usr/bin/irexec -d /etc/lircrc &
+fi

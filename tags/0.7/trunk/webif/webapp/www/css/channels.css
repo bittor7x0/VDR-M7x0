@@ -1,0 +1,80 @@
+table.channels {
+	float:left;
+	width:45%;
+	min-width:45%;
+	margin:0 0 0 3.3%;
+}
+/*
+.csscolumns .level2 {
+	-moz-column-count: 2;
+	-webkit-column-count: 2;
+	column-count: 2;
+	-moz-column-gap: 1em;
+	-webkit-column-gap: 1em;
+	column-gap: 1em;
+}
+.csscolumns table.channels {
+	float: none;
+	width: 100%;
+	min-width: none;
+	margin: 0;
+	-webkit-column-break-after: always;
+	break-after: column;
+}
+*/
+.level2 {
+	padding-left: 0;
+	padding-right: 0;
+}
+td.channelInfo {
+	padding:0.25em;
+}
+td.channelInfo ul.controls {
+	float: left;
+}
+td.channelInfo img.channelLogo {
+	width:60px;
+	height:60px;
+	color: black;
+	border:1px solid silver;
+	background-color:White;
+	clear:left;
+	float:left;
+	margin-top:10px;
+	text-align: center;
+	overflow: hidden;
+}
+table.channelInfo {
+	background-color: #FFFFFF;
+	border-collapse:collapse;
+	border:1px solid silver;
+	margin:0 15% 1em;
+	width:68%;
+	padding:0;
+	font-size:0.9em;
+}
+.theme0 table.channelInfo {
+}
+.theme1 table.channelInfo {
+}
+table.channelInfo>caption {	
+	font-weight:bold;
+}
+table.channelInfo tr {
+	border-bottom: 1px solid silver;
+}
+table.channelInfo th,
+table.channelInfo td {
+	color:black;
+	background-color:transparent;
+	margin:0;
+	padding:0.35em;
+}
+table.channelInfo th{
+	padding-right:1em;
+	text-align: right;
+}
+.theme0 table.channelInfo th,
+.theme0 table.channelInfo td {
+	border:1px solid silver;
+}

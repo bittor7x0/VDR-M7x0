@@ -1,0 +1,152 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Maxime GUILBOT
+
+Updated by:                  Olivier JACQUES and an Anonymous Italian :)
+Project's homepage:          http://m.guilbot.online.fr/prefermenu
+
+Latest version available at: http://www.olivierjacques.com/vdr/prefermenu/
+
+See the file COPYING for license information.
+
+Description:
+-----------
+PreferMenu is a plugin that implements a preferred channel menu.
+It makes it easy to recall (switch to) your favorite channels.
+
+Installation:
+------------
+- Type "make plugins" at VDR directory level (or DEBUG=1 make plugins)
+- Edit the keymacros.conf file:
+  cd "VDR_CONFIG_DIR"
+  vi keymacros.conf
+
+  ---- sample keymacros.conf ----
+  Blue      Timers
+  Yellow    @prefermenu
+  ---- sample keymacros.conf ----
+  
+  Please check VDR manual (man 5 vdr) for more informations on keymacros.conf
+
+Customization:
+-------------
+Prefer channel menu plugin can be tuned to your own preferences.
+Go in Configuration/Plugins/prefermenu/ to access the setup menu.
+Origin X   : X coordinate of the menu
+Origin Y   : Y coordinate of the menu
+Width      : Width of the menu (to tune with the biggest channel name you have)
+Red        : Change this to change appearance of the menu (default is blue menu)
+Green      :
+Blue       :
+Background opacity      : Opacity of the selected channel
+                          (usually less than "selected channel opacity").
+Selected channel opacity: Opacity of selected channel
+Border opacity          : Opacity of menu borders
+Sort by                 : Way to sort channels in the menu.
+                           - "None": same order as channels.conf
+                           - "Name": sort by alphabetic order
+Close on switch         : Close the menu when switching to a channel.
+                          This allow to display channel information
+
+Usage:
+-----
+Add a prefered channel by pressing Green button.
+Remove a prefered channel by pressing Red button.
+
+Files:
+-----
+Prefered Channel List is in prefermenu.conf
+Configuration settings (color) are stored in VDR's setup.conf
+
+Contact:
+-------
+I am watching VDR's mailing list 
+(http://www.linuxtv.org/mailinglists/vdr/), so you can always contact 
+me there. I also try to look at http://www.vdrportal.de on a regular 
+basis and understand the german posts :) But I'll answer in english!
+
+History
+-------
+2006-05-06: Version 0.6.6 - C.Y.M.
+- Fix some colors on the OSD
+
+2006-05-04: Version 0.6.5 - Ronny Kornexl
+- Maintenance release for VDR 1.4.0
+
+2005-01-23: Version 0.6.4
+- Using the yellow and blue keys you can move channels up and down
+  PreferMenu's channel list. Thanks to Alex Stansfield.
+
+2005-01-12: Version 0.6.3 - Olivier Jacques, DOm and Ralf Klueber
+- Fixed sorting under new VDR versions (>=1.3.17). Thanks to Mark Watson.
+- Fixed some cString issues.
+
+2004-05-18: Version 0.6.2 - Olivier Jacques, DOm and Ralf Klueber
+- Transition Release to vdr-1.3.7, use cOsd insted of cOsdBase and chanches
+  like that. The Whole OSD handlink is now more straighforward.
+- Changed some method names to reflect the real use.
+
+2004-01-09: Version 0.6.1 - Olivier Jacques, DOm and Ralf Klueber
+- Added 'last channel' functionality, now you can tune to the
+  last visited channel (last with prefermenu, not VDR)
+  pressing the 0 key.
+- Reintroduced symbols and borders.
+
+2004-01-06: Version 0.6.0 - Olivier Jacques, DOm and Ralf Klueber
+- Code cleanup to be ready for eventual new vdr features: removed
+  duplicated code in favour of native vdr methods
+- Fixed a bug: the plugin crashed if using a prefermenu.conf with
+  more than 255 entries
+- Simplified prefermenu aspect using native vdr color definitions
+- Others many little changes
+
+2003-04-30: Version 0.5.3 - Olivier Jacques, DOm and Ralf Klueber
+- Added setup entry to either keep the preferred menu opened
+  when pressing OK or close it (and get the channel info).
+  Default is set to "yes" / close the preferred menu
+- Added a border around +/- buttons (thanks to DOm)
+- Possibility to sort by channel name, original VDR order or 
+  "as entered" (default).
+- Added setup entry which specifies the number of channels
+  to be displayed in the menu (3, 5 or 7). Contributed by 
+  Ralf Klueber.
+
+2003-04-13: Version 0.5.2 - Olivier Jacques and DOm
+- Added Alpha Border customization (thanks to DOm)
+- Added help buttons to add and remove channel
+- Fixed a crash when prefermenu is opened and one of the prefered 
+  channels has been removed in VDR's channels.conf (thanks to 
+  Manuel Hartl for reporting this one).
+
+2003-02-20: Version 0.5.1 - Olivier Jacques and DOm
+- Changed from channel number to unique channel IDs (thanks to DOm) 
+  Unfortunately, this broke the "closest channel" auto-selection. We 
+  are working on it :)
+- Added support for right and left keys (page jump)
+- Added support for repeated keys
+- re-Added color customization (R/G/B and alpha)
+
+2003-02-10: Version 0.5.0 - Never released / by DOm
+- Adapted for VDR 1.1.2x (cOsd class use)
+- Patch not needed anymore (use keymacros)
+- Code Reorganization in Multiple files for an easier mantainance
+- Changed the color for RemoveChannel ( Red is better )
+- Changed the default menu aspect, it'a now more readable.
+- Sorry for my english :)
+
+2002-11-17: Version 0.4.0 - Olivier Jacques
+- Adapted to changes in 1.1.14 and 1.1.15 related to channel switch
+- At opening, selected channel is the closest to the current one
+
+2002-09-07: Version 0.3.0 - Maxime Guilbot
+- Now you can choose Prefered Channel pressing Green button (to add), 
+yellow button (to remove)
+- You can choose the color you want, and transparency !
+- Now patched VDR can work without loading the plugin (before pressing 
+red button crashes)
+
+2002-09-05: Version 0.2.0 - Maxime Guilbot
+- Many bugfixes !
+
+2002-09-02: Version 0.1.0 - Maxime Guilbot
+- Initial revision.

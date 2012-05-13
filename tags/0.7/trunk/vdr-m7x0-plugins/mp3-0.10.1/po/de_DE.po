@@ -1,0 +1,472 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Stefan Huelswitt <s.huelswitt@gmx.de>
+# This file is distributed under the same license as the VDR package.
+# Stefan Huelswitt <s.huelswitt@gmx.de>, 2006
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.9\n"
+"Report-Msgid-Bugs-To: <s.huelswitt@gmx.de>\n"
+"POT-Creation-Date: 2007-08-27 18:11+0200\n"
+"PO-Revision-Date: 2007-08-27 16:33+0200\n"
+"Last-Translator: Stefan Huelswitt <s.huelswitt@gmx.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: decoder-snd.c:564
+msgid "unknown"
+msgstr "unbekannt"
+
+#: decoder-snd.c:703
+msgid "Remote CDDB lookup..."
+msgstr "Remote CDDB Abfrage..."
+
+#: menu.c:128 mp3.c:1018
+msgid "ID3 info"
+msgstr "ID3 Info"
+
+#: menu.c:128 mp3.c:1018
+msgid "Parent"
+msgstr "Zurück"
+
+#: menu.c:128 menu.c:289
+msgid "Select"
+msgstr "Auswählen"
+
+#: menu.c:143 mp3.c:1138
+msgid "Scanning directory..."
+msgstr "Durchsuche Verzeichnis..."
+
+#: menu.c:174 mp3.c:1163
+msgid "Error scanning directory!"
+msgstr "Fehler beim Lesen des Verzeichnisses!"
+
+#: menu.c:289
+msgid "Eject"
+msgstr "Auswerfen"
+
+#: menu.c:289
+msgid "Mount"
+msgstr "Einbinden"
+
+#: menu.c:289
+msgid "Unmount"
+msgstr "Aushängen"
+
+#: menu.c:305
+msgid "Selected source is not mounted!"
+msgstr "Ausgewählte Datenträger ist nicht eingebunden!"
+
+#: menu.c:317 menu.c:333
+msgid "Mount failed!"
+msgstr "Einbinden fehlgeschlagen!"
+
+#: menu.c:332
+msgid "Mount succeeded"
+msgstr "Einbinden erfolgreich"
+
+#: menu.c:347
+msgid "Unmount succeeded"
+msgstr "Aushängen erfolgreich"
+
+#: menu.c:348
+msgid "Unmount failed!"
+msgstr "Aushängen fehlgeschlagen!"
+
+#: menu.c:362
+msgid "Eject failed!"
+msgstr "Auswerfen fehlgeschlagen!"
+
+#: mp3.c:79
+msgid "OSS"
+msgstr "OSS"
+
+#: mp3.c:86 mp3.c:1327
+msgid "MP3"
+msgstr "MP3"
+
+#: mp3.c:87
+msgid "Setup.MP3$Audio output mode"
+msgstr "Audio Ausgabe Modus"
+
+#: mp3.c:88
+msgid "Dither"
+msgstr "Streuen"
+
+#: mp3.c:88
+msgid "Round"
+msgstr "Runden"
+
+#: mp3.c:88
+msgid "Setup.MP3$Audio mode"
+msgstr "Audio Modus"
+
+#: mp3.c:89
+msgid "Setup.MP3$Use 48kHz mode only"
+msgstr "Nur 48kHz Modus benutzen"
+
+#: mp3.c:91
+msgid "classic"
+msgstr "klassisch"
+
+#: mp3.c:92
+msgid "via skin"
+msgstr "über Skin"
+
+#: mp3.c:93
+msgid "Setup.MP3$Replay display"
+msgstr "Wiedergabe Anzeige"
+
+#: mp3.c:95
+msgid "Setup.MP3$Display mode"
+msgstr "Anzeige Modus"
+
+#: mp3.c:96
+msgid "Black"
+msgstr "Schwarz"
+
+#: mp3.c:97
+msgid "Live"
+msgstr "Live"
+
+#: mp3.c:98
+msgid "Images"
+msgstr "Bilder"
+
+#: mp3.c:99
+msgid "Setup.MP3$Background mode"
+msgstr "Hintergrund Modus"
+
+#: mp3.c:100
+msgid "Setup.MP3$Initial loop mode"
+msgstr "Default Loop Modus"
+
+#: mp3.c:101
+msgid "Setup.MP3$Initial shuffle mode"
+msgstr "Default Shuffle Modus"
+
+#: mp3.c:102
+msgid "Setup.MP3$Abort player at end of list"
+msgstr "Abspieler am Listenende beenden"
+
+#: mp3.c:103 mp3.c:117 mplayer.c:101
+msgid "disabled"
+msgstr "aus"
+
+#: mp3.c:104
+msgid "ID3 only"
+msgstr "nur ID3"
+
+#: mp3.c:105
+msgid "ID3 & Level"
+msgstr "ID3 & Pegel"
+
+#: mp3.c:106
+msgid "Setup.MP3$Background scan"
+msgstr "Hintergrund Scan"
+
+#: mp3.c:107 mp3.c:1122
+msgid "Filenames"
+msgstr "Dateinamen"
+
+#: mp3.c:107 mp3.c:1122
+msgid "ID3 names"
+msgstr "ID3 Namen"
+
+#: mp3.c:107
+msgid "Setup.MP3$Editor display mode"
+msgstr "Editor Anzeige Modus"
+
+#: mp3.c:108
+msgid "Browser"
+msgstr "Verz.anzeige"
+
+#: mp3.c:108
+msgid "Playlists"
+msgstr "Abspiellisten"
+
+#: mp3.c:108
+msgid "Setup.MP3$Mainmenu mode"
+msgstr "Hauptmenu Modus"
+
+#: mp3.c:109
+msgid "Setup.MP3$Keep selection menu"
+msgstr "Auswahlmenu geöffnet lassen"
+
+#: mp3.c:110
+msgid "Normal"
+msgstr "Normal"
+
+#: mp3.c:110
+msgid "Reversed"
+msgstr "Umgedreht"
+
+#: mp3.c:110
+msgid "Setup.MP3$Title/Artist order"
+msgstr "Title/Artist Reihenfolge"
+
+#: mp3.c:111 mplayer.c:105
+msgid "Hide mainmenu entry"
+msgstr "Hauptmenüeintrag verstecken"
+
+#: mp3.c:112
+msgid "Setup.MP3$Normalizer level"
+msgstr "Normalisierer Pegel"
+
+#: mp3.c:113
+msgid "Setup.MP3$Limiter level"
+msgstr "Begrenzer Pegel"
+
+#: mp3.c:114
+msgid "Setup.MP3$Use HTTP proxy"
+msgstr "HTTP Proxy benutzen"
+
+#: mp3.c:115
+msgid "Setup.MP3$HTTP proxy host"
+msgstr "HTTP Proxy Name"
+
+#: mp3.c:116
+msgid "Setup.MP3$HTTP proxy port"
+msgstr "HTTP Proxy Port"
+
+#: mp3.c:118
+msgid "local only"
+msgstr "nur lokal"
+
+#: mp3.c:119
+msgid "local&remote"
+msgstr "lokal und entfernt"
+
+#: mp3.c:120
+msgid "Setup.MP3$CDDB for CD-Audio"
+msgstr "CDDB für CD-Audio"
+
+#: mp3.c:121
+msgid "Setup.MP3$CDDB server"
+msgstr "CDDB Server"
+
+#: mp3.c:122
+msgid "Setup.MP3$CDDB port"
+msgstr "CDDB Port"
+
+#: mp3.c:921 mp3.c:927
+msgid "ID3 information"
+msgstr "ID3 Information"
+
+#: mp3.c:935
+msgid "Filename"
+msgstr "Dateiname"
+
+#: mp3.c:939
+msgid "Length"
+msgstr "Länge"
+
+#: mp3.c:941
+msgid "Title"
+msgstr "Titel"
+
+#: mp3.c:942
+msgid "Artist"
+msgstr "Interpret"
+
+#: mp3.c:943
+msgid "Album"
+msgstr "Album"
+
+#: mp3.c:944
+msgid "Year"
+msgstr "Jahr"
+
+#: mp3.c:945
+msgid "Samplerate"
+msgstr "Sample Rate"
+
+#: mp3.c:946
+msgid "Bitrate"
+msgstr "Bit Rate"
+
+#: mp3.c:1010
+msgid "Directory browser"
+msgstr "Verzeichnisanzeige"
+
+#: mp3.c:1106
+msgid "Playlist editor"
+msgstr "Abspielliste bearbeiten"
+
+#: mp3.c:1122 mp3.c:1215
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: mp3.c:1122
+msgid "Remove"
+msgstr "Entfernen"
+
+#: mp3.c:1142
+msgid "Add recursivly?"
+msgstr "Recursiv hinzufügen?"
+
+#: mp3.c:1161
+msgid "Empty directory!"
+msgstr "Leeres Verzeichnis!"
+
+#: mp3.c:1196
+msgid "Remove entry?"
+msgstr "Eintrag entfernen?"
+
+#: mp3.c:1215
+msgid "Add all"
+msgstr "Alle hinzufügen"
+
+#: mp3.c:1242
+msgid "Rename playlist"
+msgstr "Abspielliste umbenennen"
+
+#: mp3.c:1248
+msgid "Old name:"
+msgstr "Alter Name:"
+
+#: mp3.c:1259
+msgid "New name"
+msgstr "Neuer Name"
+
+#: mp3.c:1344
+msgid "Browse"
+msgstr "Blättern"
+
+#: mp3.c:1344 mplayer.c:634
+msgid "Source"
+msgstr "Datenträger"
+
+#: mp3.c:1347
+msgid "Rename"
+msgstr "Umbenennen"
+
+#: mp3.c:1357
+msgid "Scanning playlists..."
+msgstr "Durchsuche Abspiellisten..."
+
+#: mp3.c:1367
+msgid "Error scanning playlists!"
+msgstr "Fehler beim Einlesen der Abspiellisten!"
+
+#: mp3.c:1373
+msgid "Delete playlist?"
+msgstr "Abspielliste löschen?"
+
+#: mp3.c:1374
+msgid "Are you sure?"
+msgstr "Wirklich löschen?"
+
+#: mp3.c:1381
+msgid "Error deleting playlist!"
+msgstr "Fehler beim Löschen der Abspielliste!"
+
+#: mp3.c:1393 mp3.c:1394
+msgid "unnamed"
+msgstr "unbenannt"
+
+#: mp3.c:1404
+msgid "Error creating playlist!"
+msgstr "Fehler beim Erstellen der Abspielliste!"
+
+#: mp3.c:1425
+msgid "Error renaming playlist!"
+msgstr "Fehler beim Umbenennen der Abspielliste!"
+
+#: mp3.c:1435 mp3.c:1458
+msgid "Error loading playlist!"
+msgstr "Fehler beim Lesen der Abspielliste!"
+
+#: mp3.c:1440
+msgid "Can't edit a WinAmp playlist!"
+msgstr "Editieren von WinAmp Abspiellisten nicht möglich!"
+
+#: mp3.c:1448
+msgid "Loading playlist..."
+msgstr "Lade Abspielliste..."
+
+#: mp3.c:1468
+msgid "MP3 source"
+msgstr "MP3 Datenträger"
+
+#: mp3.c:1486
+msgid "Play all"
+msgstr "Alle abspielen"
+
+#: mp3.c:1491
+msgid "Building playlist..."
+msgstr "Baue Abspielliste auf..."
+
+#: mp3.c:1501
+msgid "Error building playlist!"
+msgstr "Fehler beim Aufbau der Abspielliste!"
+
+#: mp3.c:1541
+msgid "A versatile audio player"
+msgstr "Ein vielseitiger Audio-Player"
+
+#: mplayer.c:96
+msgid "MPlayer"
+msgstr "MPlayer"
+
+#: mplayer.c:97
+msgid "Setup.MPlayer$Control mode"
+msgstr "Kontroll Modus"
+
+#: mplayer.c:97
+msgid "Slave"
+msgstr "Slave"
+
+#: mplayer.c:97
+msgid "Traditional"
+msgstr "Traditionell"
+
+#: mplayer.c:99
+msgid "Setup.MPlayer$OSD position"
+msgstr "OSD Position"
+
+#: mplayer.c:102
+msgid "global only"
+msgstr "nur global"
+
+#: mplayer.c:103
+msgid "local first"
+msgstr "zuerst local"
+
+#: mplayer.c:104
+msgid "Setup.MPlayer$Resume mode"
+msgstr "Modus für Wiederaufnahme"
+
+#: mplayer.c:108
+msgid "Setup.MPlayer$Slave command key"
+msgstr "Slave Kommando Taste"
+
+#: mplayer.c:589
+msgid "MPlayer Audio ID"
+msgstr "MPlayer Audio ID"
+
+#: mplayer.c:591
+msgid "Audiostream ID"
+msgstr "Tonspur ID"
+
+#: mplayer.c:624
+msgid "MPlayer browser"
+msgstr "MPlayer Verzeichnisanzeige"
+
+#: mplayer.c:644
+msgid "MPlayer source"
+msgstr "MPlayer Datenträger"
+
+#: mplayer.c:677
+msgid "Summary"
+msgstr "Zusammenfassung"
+
+#: mplayer.c:732
+msgid "Media replay via MPlayer"
+msgstr "Medien Wiedergabe über MPlayer"
+
+#: stream.c:395
+msgid "Connecting to stream server ..."
+msgstr "Verbinde mit Stream Server..."

@@ -1,0 +1,11 @@
+#!/bin/ash
+
+if [ $1 -eq 0 ] ; then
+    /usr/sbin/pic_tool alarm clear
+else
+    source /etc/rc.local.conf
+    /usr/sbin/pic_tool alarm set $(( $1 - ${vdr_startup_time} ))
+fi
+
+/sbin/halt
+exit 0

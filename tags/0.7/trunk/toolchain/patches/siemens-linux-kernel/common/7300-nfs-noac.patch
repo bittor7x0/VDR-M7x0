@@ -1,0 +1,21 @@
+diff -u --recursive --new-file linux-2.4.19-rpcbuf/fs/nfs/write.c linux-2.4.19-noac/fs/nfs/write.c
+--- linux-2.4.19-rpcbuf/fs/nfs/write.c	Thu Jul 25 17:34:51 2002
++++ linux-2.4.19-noac/fs/nfs/write.c	Thu Jul 25 17:43:31 2002
+@@ -812,8 +812,15 @@
+ 	 * If wsize is smaller than page size, update and write
+ 	 * page synchronously.
+ 	 */
+-	if (NFS_SERVER(inode)->wsize < PAGE_CACHE_SIZE || IS_SYNC(inode))
+-		return nfs_writepage_sync(file, inode, page, offset, count);
++	if (NFS_SERVER(inode)->wsize < PAGE_CACHE_SIZE || IS_SYNC(inode)) {
++		status = nfs_writepage_sync(file, inode, page, offset, count);
++		if (status > 0) {
++			if (offset == 0 && status == PAGE_CACHE_SIZE)
++				SetPageUptodate(page);
++			return 0;
++		}
++		return status;
++	}
+ 
+ 	/*
+ 	 * Try to find an NFS request corresponding to this page

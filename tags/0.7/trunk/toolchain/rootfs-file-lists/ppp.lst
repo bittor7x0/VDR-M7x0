@@ -1,0 +1,3 @@
+dev/ppp               -                     c 600 0 0 108 0 - - -
+usr/sbin/pppd         usr/sbin/pppd         f 755 0 0   - - - - -
+usr/sbin/pppd         -                     s   - - -   - - - - -

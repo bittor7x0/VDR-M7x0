@@ -1,0 +1,11 @@
+#!/bin/ash
+
+source /etc/rc.local.conf
+
+if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_time}" != X"NO" ] ; then
+	for hd_sd_dev in ${hd_spindown_dev} ; do
+		/usr/sbin/spindown -d ${hd_spindown_time} +${hd_sd_dev} &
+	done
+fi
+
+exec /bin/ash /etc/rc.local.net

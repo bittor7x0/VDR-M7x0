@@ -1,0 +1,11 @@
+--- i18n.c.orig	2007-01-31 11:54:21.000000000 +0100
++++ i18n.c	2007-01-31 11:54:40.000000000 +0100
+@@ -6201,7 +6201,7 @@
+              }
+          p = Phrases;
+          }
+-     esyslog("%s%sno translation found for '%s' in language %d (%s)", Plugin ? Plugin : "", Plugin ? ": " : "", s, Setup.OSDLanguage, Phrases[0][Setup.OSDLanguage]);
++//AM     esyslog("%s%sno translation found for '%s' in language %d (%s)", Plugin ? Plugin : "", Plugin ? ": " : "", s, Setup.OSDLanguage, Phrases[0][Setup.OSDLanguage]);
+      }
+   const char *p = strchr(s, '$');
+   return p ? p + 1 : s;

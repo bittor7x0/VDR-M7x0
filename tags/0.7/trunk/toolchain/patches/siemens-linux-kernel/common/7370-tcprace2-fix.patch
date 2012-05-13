@@ -1,0 +1,179 @@
+diff -u --recursive --new-file linux-2.4.21-15-fix_tcprace/include/linux/sunrpc/xprt.h linux-2.4.21-16-fix_tcprace2/include/linux/sunrpc/xprt.h
+--- linux-2.4.21-15-fix_tcprace/include/linux/sunrpc/xprt.h	2003-05-03 15:40:28.000000000 +0200
++++ linux-2.4.21-16-fix_tcprace2/include/linux/sunrpc/xprt.h	2003-05-03 20:41:47.000000000 +0200
+@@ -177,7 +177,7 @@
+ void			xprt_receive(struct rpc_task *);
+ int			xprt_adjust_timeout(struct rpc_timeout *);
+ void			xprt_release(struct rpc_task *);
+-void			xprt_reconnect(struct rpc_task *);
++void			xprt_connect(struct rpc_task *);
+ int			xprt_clear_backlog(struct rpc_xprt *);
+ void			xprt_sock_setbufsize(struct rpc_xprt *);
+ 
+diff -u --recursive --new-file linux-2.4.21-15-fix_tcprace/net/sunrpc/clnt.c linux-2.4.21-16-fix_tcprace2/net/sunrpc/clnt.c
+--- linux-2.4.21-15-fix_tcprace/net/sunrpc/clnt.c	2003-05-03 15:40:28.000000000 +0200
++++ linux-2.4.21-16-fix_tcprace2/net/sunrpc/clnt.c	2003-05-06 16:05:05.000000000 +0200
+@@ -55,9 +55,8 @@
+ static void	call_refresh(struct rpc_task *task);
+ static void	call_refreshresult(struct rpc_task *task);
+ static void	call_timeout(struct rpc_task *task);
+-static void	call_reconnect(struct rpc_task *task);
+-static void	child_reconnect(struct rpc_task *);
+-static void	child_reconnect_status(struct rpc_task *);
++static void	call_connect(struct rpc_task *task);
++static void	call_connect_status(struct rpc_task *);
+ static u32 *	call_header(struct rpc_task *task);
+ static u32 *	call_verify(struct rpc_task *task);
+ 
+@@ -553,10 +552,10 @@
+ 	dprintk("RPC: %4d call_bind xprt %p %s connected\n", task->tk_pid,
+ 			xprt, (xprt_connected(xprt) ? "is" : "is not"));
+ 
+-	task->tk_action = (xprt_connected(xprt)) ? call_transmit : call_reconnect;
++	task->tk_action = (xprt_connected(xprt)) ? call_transmit : call_connect;
+ 
+ 	if (!clnt->cl_port) {
+-		task->tk_action = call_reconnect;
++		task->tk_action = call_connect;
+ 		task->tk_timeout = clnt->cl_timeout.to_maxval;
+ 		rpc_getport(task, clnt);
+ 	}
+@@ -566,40 +565,52 @@
+  * 4a.	Reconnect to the RPC server (TCP case)
+  */
+ static void
+-call_reconnect(struct rpc_task *task)
++call_connect(struct rpc_task *task)
+ {
+ 	struct rpc_clnt *clnt = task->tk_client;
+-	struct rpc_task *child;
+ 
+-	dprintk("RPC: %4d call_reconnect status %d\n",
++	dprintk("RPC: %4d call_connect status %d\n",
+ 				task->tk_pid, task->tk_status);
+ 
+-	task->tk_action = call_transmit;
+-	if (task->tk_status < 0 || !clnt->cl_xprt->stream)
++	if (!clnt->cl_xprt->stream) {
++		task->tk_action = call_transmit;
+ 		return;
+-
+-	/* Run as a child to ensure it runs as an rpciod task */
+-	child = rpc_new_child(clnt, task);
+-	if (child) {
+-		child->tk_action = child_reconnect;
+-		rpc_run_child(task, child, NULL);
+ 	}
++	task->tk_action = call_connect_status;
++	if (task->tk_status < 0)
++		return;
++	xprt_connect(task);
+ }
+ 
+-static void child_reconnect(struct rpc_task *task)
++/*
++ * 4b.	Sort out reconnection result
++ */
++static void call_connect_status(struct rpc_task *task)
+ {
+-	task->tk_client->cl_stats->netreconn++;
++	struct rpc_clnt *clnt = task->tk_client;
++	int status = task->tk_status;
++
+ 	task->tk_status = 0;
+-	task->tk_action = child_reconnect_status;
+-	xprt_reconnect(task);
+-}
++	if (status >= 0) {
++		clnt->cl_stats->netreconn++;
++		task->tk_action = call_transmit;
++		return;
++	}
+ 
+-static void child_reconnect_status(struct rpc_task *task)
+-{
+-	if (task->tk_status == -EAGAIN)
+-		task->tk_action = child_reconnect;
+-	else
+-		task->tk_action = NULL;
++	/* Something failed: we may have to rebind */
++	if (clnt->cl_autobind)
++		clnt->cl_port = 0;
++	switch (status) {
++	case -ECONNREFUSED:
++	case -ECONNRESET:
++	case -ENOTCONN:
++	case -ETIMEDOUT:
++	case -EAGAIN:
++		task->tk_action = (clnt->cl_port == 0) ? call_bind : call_connect;
++		break;
++	default:
++		rpc_exit(task, status);
++	}
+ }
+ 
+ /*
+@@ -660,7 +671,7 @@
+ 			break;
+ 		}
+ 		if (xprt->stream) {
+-			task->tk_action = call_reconnect;
++			task->tk_action = call_connect;
+ 			break;
+ 		}
+ 		/*
+diff -u --recursive --new-file linux-2.4.21-15-fix_tcprace/net/sunrpc/xprt.c linux-2.4.21-16-fix_tcprace2/net/sunrpc/xprt.c
+--- linux-2.4.21-15-fix_tcprace/net/sunrpc/xprt.c	2003-05-03 15:44:48.000000000 +0200
++++ linux-2.4.21-16-fix_tcprace2/net/sunrpc/xprt.c	2003-05-03 20:18:58.000000000 +0200
+@@ -85,7 +85,7 @@
+ static void	do_xprt_transmit(struct rpc_task *);
+ static inline void	do_xprt_reserve(struct rpc_task *);
+ static void	xprt_disconnect(struct rpc_xprt *);
+-static void	xprt_reconn_status(struct rpc_task *task);
++static void	xprt_connect_status(struct rpc_task *task);
+ static struct socket *xprt_create_socket(int, struct rpc_timeout *);
+ static int	xprt_bind_socket(struct rpc_xprt *, struct socket *);
+ static int      __xprt_get_cong(struct rpc_xprt *, struct rpc_task *);
+@@ -421,17 +421,16 @@
+ /*
+  * Reconnect a broken TCP connection.
+  *
+- * Note: This cannot collide with the TCP reads, as both run from rpciod
+  */
+ void
+-xprt_reconnect(struct rpc_task *task)
++xprt_connect(struct rpc_task *task)
+ {
+ 	struct rpc_xprt	*xprt = task->tk_xprt;
+ 	struct socket	*sock = xprt->sock;
+ 	struct sock	*inet;
+ 	int		status;
+ 
+-	dprintk("RPC: %4d xprt_reconnect %p connected %d\n",
++	dprintk("RPC: %4d xprt_connect %p connected %d\n",
+ 				task->tk_pid, xprt, xprt_connected(xprt));
+ 	if (xprt->shutdown)
+ 		return;
+@@ -492,7 +491,7 @@
+ 			/* if the socket is already closing, delay 5 secs */
+ 			if ((1<<inet->state) & ~(TCPF_SYN_SENT|TCPF_SYN_RECV))
+ 				task->tk_timeout = 5*HZ;
+-			rpc_sleep_on(&xprt->pending, task, xprt_reconn_status, NULL);
++			rpc_sleep_on(&xprt->pending, task, xprt_connect_status, NULL);
+ 			release_sock(inet);
+ 			return;
+ 		}
+@@ -512,11 +511,11 @@
+  * process of reconnecting, and leave the rest to the upper layers.
+  */
+ static void
+-xprt_reconn_status(struct rpc_task *task)
++xprt_connect_status(struct rpc_task *task)
+ {
+ 	struct rpc_xprt	*xprt = task->tk_xprt;
+ 
+-	dprintk("RPC: %4d xprt_reconn_timeout %d\n",
++	dprintk("RPC: %4d xprt_connect_status %d\n",
+ 				task->tk_pid, task->tk_status);
+ 
+ 	xprt_release_write(xprt, task);

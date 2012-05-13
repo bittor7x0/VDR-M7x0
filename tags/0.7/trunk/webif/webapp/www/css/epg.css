@@ -1,0 +1,90 @@
+@import url('progressbar.css');
+@import url('infoLevel.css');
+table#epg th.timers,
+table#epg td.timers {
+    padding:0;
+}
+table#epg td.timers {
+    vertical-align:top;
+    padding-bottom:2px;
+}
+a.timerCreate .ui-icon-rec {
+    background-image:url(images/rec16.png)!important;
+    background-position:0 0;
+}
+#channelLogo {
+    width:2.5em;
+    height:2.5em;
+    background: none #FFFFFF;
+    float: left;
+    margin: 0 1em 0 -1em;
+}
+.noChannelsLogo #channelLogo {
+    display: none;
+}
+.level4Div.dayDiv {
+    width:32.9%;
+	max-width: 50ex;
+	padding: 0 0.25em;
+    display:inline-block;
+}
+.csscolumns .level4Div.dayDiv {
+    width: auto;
+	max-width: none;
+	padding: 0;
+    display: block;
+}
+.csscolumns .level4.day {
+    padding: 5px 5px 0;
+    -moz-column-width: 40ex;
+    -webkit-column-width: 40ex;
+    column-width: 40ex;
+}
+.csscolumns .eventDiv {
+	-webkit-column-break-inside: avoid;
+	break-inside: avoid-column;
+}
+.eventDiv.opened>.event {
+	padding-top: 0;
+}
+.eventDiv .event .shortdesc,
+.eventDiv .event .desc {
+    display: block;
+    clear: both;
+}
+.eventHead .fromTo {
+    font-weight: normal;
+}
+.eventHead .fromTo .start .l {
+    display:none;
+}
+.eventHead .fromTo .end,
+.eventHead .fromTo .duration {
+    display:none;
+}
+.event .title {
+	display: none;
+}
+.eventInfo .event  .title {
+	display: block;
+}
+.item.event ul.controls {
+}
+.event .fromTo {
+    display: block;
+}
+.event .fromTo {
+    margin-top:0;
+}
+.event .fromTo .t{
+    color: #26511A;
+}
+.event .fromTo .l{
+    font-weight:bold;
+}
+.event .shortdesc {
+    font-style:italic;
+}
+.event .fromTo .duration {
+    display:block;
+}

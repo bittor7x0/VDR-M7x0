@@ -1,0 +1,97 @@
+VER LA TELE
+
+Cambiar de canales
+        
+        [/\] [\/] o introducir número 1-99
+        o EPG -> (elegir) -> [azul]
+        
+Volumen y audio 
+
+        Disminuir y aumentar volumen: [<] [>]
+        Cambiar idioma: [verde]
+        Activar/desactivar audio: mute [X]
+
+Zapeo entre dos canales
+        
+        Botón 0
+
+Ver la EPG
+
+        Botón [EPG] Navegación: [/\] [\/]
+        Alternar guía canal/ahora: [amarillo]
+        Salir: [EXIT]
+        
+
+Ver el Teletexto
+
+        [PIP] (asociado por defecto)
+        Salir: [EXIT]
+        
+Controlar salida de vídeo
+        
+        Desactivar salida: [<<]
+        Reactivar salida: [>>]
+
+
+GRABAR
+
+Grabar lo que estoy viendo
+        
+        Programa actual: [rojo] -> [OK] -> [EXIT]
+        o
+        Grabación inmediata de 3h: -> [rojo]
+
+Pausar la TV en directo
+
+       [||] Play/pausa
+
+Programar una grabación desde la vista de la EPG
+
+        [EPG] -> (elegir programa) -> [rojo] -> [OK]
+
+Programar una grabación manualmente (sin datos de EPG)
+        
+
+        [Amarillo] -> [rojo] -> elegir canal, fechas y horas inicial y final -> [OK]
+
+Programar grabaciones periódicas (series, con EPG)
+
+        [EPG] -> (elegir programa) -> 4 -> [OK] 
+
+Ver programaciones pendientes
+
+        [Amarillo]
+
+
+VER GRABACIONES
+
+Acceso a las grabaciones
+        
+        [Azul] -> (elegir grabación) -> [OK] (reproducirla)
+
+Control de la grabación 
+
+        Controles: Play/pausa [||], avance [>>], retroceso [<<]
+
+        Ver/ocultar barra progreso: [OK]
+
+        Salto por minuto: [verde] -1 min / [amarillo] +1 min
+
+        Salto a un minuto X: [rojo] -> X -> [OK]
+
+        Saltar X minutos hacia delante: [rojo] -> X -> [>>]
+
+        Saltar X minutos hacia atrás: [rojo] -> X -> [<<]
+
+        El valor X se introduce con las teclas numéricas 0-9
+
+        Salir: [EXIT] o Stop.
+
+Borrar grabación
+
+        (elegir grabación) -> [amarillo] -> [OK]
+
+Cambiar idioma en grabación
+
+        [MENU] -> [verde]
+

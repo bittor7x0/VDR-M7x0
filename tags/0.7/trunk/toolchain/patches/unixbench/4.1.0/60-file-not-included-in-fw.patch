@@ -1,0 +1,11 @@
+diff -Naur unixbench-4.1.0-orig/Run unixbench-4.1.0/Run
+--- unixbench-4.1.0-orig/Run	2009-05-09 22:00:45.000000000 +0200
++++ unixbench-4.1.0/Run	2009-05-10 10:38:18.000000000 +0200
+@@ -226,7 +226,6 @@
+ echo "|  " `who | wc -l` "interactive users." >>$LOGFILE
+ echo "|  `uptime`" >> $LOGFILE
+ echo "|  `ls -l /bin/sh`" >> $LOGFILE
+-echo "|  `file /bin/sh`" >> $LOGFILE
+ echo "|  `df -k . | tail -1`" >> $LOGFILE
+ #if not specified, do each bench 6 iterations
+ iter=${iterations-10}

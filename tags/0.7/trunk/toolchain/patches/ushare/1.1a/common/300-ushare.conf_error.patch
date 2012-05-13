@@ -1,0 +1,28 @@
+diff -Naur ushare-1.1a-orig/scripts/ushare.conf ushare-1.1a/scripts/ushare.conf
+--- ushare-1.1a-orig/scripts/ushare.conf	2007-12-09 14:03:36.000000000 +0100
++++ ushare-1.1a/scripts/ushare.conf	2010-10-20 18:28:09.687436551 +0200
+@@ -27,19 +27,19 @@
+ # handle it. Devices like Noxon 2 have no problem with strings being passed
+ # as is. (Umlauts for all!)
+ #
+-# Options are TRUE/YES/1 for override and anything else for default behaviour
++# Options are true/yes/1 for override and anything else for default behaviour
+ USHARE_OVERRIDE_ICONV_ERR=
+ 
+ # Enable Web interface (yes/no)
+-ENABLE_WEB=
++USHARE_ENABLE_WEB=
+ 
+ # Enable Telnet control interface (yes/no)
+-ENABLE_TELNET=
++USHARE_ENABLE_TELNET=
+ 
+ # Use XboX 360 compatibility mode (yes/no)
+-ENABLE_XBOX=
++USHARE_ENABLE_XBOX=
+ 
+ # Use DLNA profile (yes/no)
+ # This is needed for PlayStation3 to work (among other devices)
+-ENABLE_DLNA=
++USHARE_ENABLE_DLNA=
+ 

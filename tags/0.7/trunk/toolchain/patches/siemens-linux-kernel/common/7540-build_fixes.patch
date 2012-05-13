@@ -1,0 +1,33 @@
+diff -Naur slin_m740_orig/Makefile slin_m740/Makefile
+--- slin_m740_orig/Makefile	2009-11-14 11:04:41.000000000 +0100
++++ slin_m740/Makefile	2009-11-14 11:26:54.000000000 +0100
+@@ -383,7 +383,7 @@
+ 	@rm -f .ver1
+ 
+ include/linux/version.h: ./Makefile
+-	@expr length "$(KERNELRELEASE)" \<= $(uts_len) > /dev/null || \
++	@-expr length "$(KERNELRELEASE)" \<= $(uts_len) > /dev/null || \
+ 	  (echo KERNELRELEASE \"$(KERNELRELEASE)\" exceeds $(uts_len) characters >&2; false)
+ 	@echo \#define UTS_RELEASE \"$(KERNELRELEASE)\" > .ver
+ 	@echo \#define LINUX_VERSION_CODE `expr $(VERSION) \\* 65536 + $(PATCHLEVEL) \\* 256 + $(SUBLEVEL)` >> .ver
+@@ -520,7 +520,7 @@
+ ifdef CONFIG_MODVERSIONS
+ 	$(MAKE) update-modverfile
+ endif
+-	scripts/mkdep -- `find $(FINDHPATH) \( -name SCCS -o -name .svn \) -prune -o -follow -name \*.h ! -name modversions.h -print` > .hdepend
++	find $(FINDHPATH) \( -name SCCS -o -name .svn \) -prune -o -follow -name \*.h ! -name modversions.h -print | xargs scripts/mkdep -- > .hdepend
+ 	scripts/mkdep -- init/*.c > .depend
+ 
+ ifdef CONFIG_MODVERSIONS
+diff -Naur slin_m740_orig/Rules.make slin_m740/Rules.make
+--- slin_m740_orig/Rules.make	2004-05-29 14:44:13.000000000 +0200
++++ slin_m740/Rules.make	2009-11-14 11:26:54.000000000 +0100
+@@ -126,7 +126,7 @@
+ # This make dependencies quickly
+ #
+ fastdep: dummy
+-	$(TOPDIR)/scripts/mkdep $(CFLAGS) $(EXTRA_CFLAGS_nostdinc) -- $(wildcard *.[chS]) > .depend
++	find . -name '*.[chS]' | xargs $(TOPDIR)/scripts/mkdep $(CFLAGS) $(EXTRA_CFLAGS_nostdinc) -- > .depend
+ ifdef ALL_SUB_DIRS
+ 	$(MAKE) $(patsubst %,_sfdep_%,$(ALL_SUB_DIRS)) _FASTDEP_ALL_SUB_DIRS="$(ALL_SUB_DIRS)"
+ endif

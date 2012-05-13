@@ -1,0 +1,25 @@
+diff -Naur squashfs3.1-r2-orig/squashfs-tools/Makefile squashfs3.1-r2/squashfs-tools/Makefile
+--- squashfs3.1-r2-orig/squashfs-tools/Makefile	2009-08-14 21:18:11.000000000 +0200
++++ squashfs3.1-r2/squashfs-tools/Makefile	2009-10-20 20:42:11.000000000 +0200
+@@ -7,6 +7,9 @@
+ mksquashfs: mksquashfs.o read_fs.o sort.o
+ 	$(CC) mksquashfs.o read_fs.o sort.o -lz -lpthread -o $@
+ 
++mksquashfs-lzma: mksquashfs.o read_fs.o sort.o
++	$(CXX) mksquashfs.o read_fs.o sort.o -lpthread -L$(LZMAPATH) -llzma -o $@
++
+ mksquashfs.o: mksquashfs.c squashfs_fs.h mksquashfs.h global.h sort.h
+ 
+ read_fs.o: read_fs.c squashfs_fs.h read_fs.h global.h
+@@ -16,7 +19,10 @@
+ unsquashfs: unsquashfs.o
+ 	$(CC) unsquashfs.o -lz -o $@
+ 
++unsquashfs-lzma: unsquashfs.o
++	$(CXX) unsquashfs.o -L$(LZMAPATH) -llzma -o $@
++
+ unsquashfs.o: unsquashfs.c squashfs_fs.h read_fs.h global.h
+ 
+ clean:
+-	-rm -f *.o *~ unsquashfs mksquashfs
++	-rm -f *.o *~ unsquashfs mksquashfs unsquashfs-lzma mksquashfs-lzma

@@ -1,0 +1,180 @@
+* Actualización a la versión 2.0 del vdrwi:
+* Reorganización/reescritura del código en torno a la idea de 'recurso'.
+* Migración del código de .kl1 a .c.
+* Posibilidad de configurar parámetros a nivel de cada navegador.
+* Temas css.
+* Estructura de html más homogénea.
+* Optimizaciones y corrección de errores.
+* Implementación inicial del método PROPFIND de WebDAV que permite ver los
+  recursos disponibles como carpetas web.
+2010-12-11
+* Reorganizados directorios para generar librería y no incrustar archivos innecesarios.
+* Actualizado a versión 2.3.0 del Klone
+2010-10-17
+* Mostrar logos en información de los canales.
+* Señalar gráficamente grabaciones editadas.
+* Descartar fragmentos vacíos de grabaciones al servir.
+* Configuración del BOXAMP se tiene que activar mediante directiva de compilación.
+2010-06-06
+* Seguir enlaces en browse.
+2010-05-03
+* Posibilidad de hacer streaming de carpetas enteras.
+* Se señalan las programaciones con conflicto.
+* Opción para revertir cambios en parámetros de configuración.
+* La configuración del VDR se lee y graba por SVDRP (requiere parche en VDR).
+* Descartada posibilidad de compilar con la directiva EPG_STATIC_GRID.
+* Desactivada la página de error 404 personalizada porque requeriría 
+  leer la configuración para saber las rutas y no añade funcionalidad.
+* Borrado de búsqueda con programaciones.
+* Incluido enlace para búsqueda externa de información de programas.
+* Arrays en webifConf dinámicos para prevenir desbordamientos de búfer.
+* Modificada conversación SVDRP.
+2010-04-04
+* La parrilla de programación ajusta el ancho de forma dinámica (funcionamiento antiguo compilando con directiva EPG_STATIC_GRID).
+* Los eventos de corta duración se marcan como 'compactos' dinámicamente mediante javascript.
+* En CSS cambiado 'box-sizing' a 'border-box' y añadidos selectores de intersección de clases '.clase1.clase2'.
+2010-04-01
+* Convertir de UTF-8 en edición de búsquedas via ajax.
+* Ocultar shortdesc en guía de programación sólo si desc contiene el mismo texto.
+2010-03-21
+* Cambiada gestion de SIGPIPE en commands.kl1 y streamrec.kl1 para evitar seg-fault.
+2010-03-18
+* Refrescar listado al editar búsqueda via ajax.
+2010-03-06
+* Faltaba parametro size en algunas struct cfgParamConfig_t en searches.c.
+* No interceptar EDIT cuando isReload en searches.kl1.
+2010-02-27
+* Subir archivos para ejecutar comandos (...).
+* Ocultar password.
+* Permitir especificar logintud para inputs en configuración.
+* Eliminar algunos logs.
+2010-02-21
+* Implementación de ejecución de comandos.
+* Permitir filtrado por categorías extendidas en búsquedas.
+* Desactivado hook onServerInit, porque no se incluye logos.tgz embebido.
+* Evitar gotos en streamrec para asegurar que se liberan todas las variables.
+* Eliminada exigencia de metodo GET para streamrec. No recuerdo por qué la puse...
+2010-02-07
+* Enviar hostId en barras de programaciones.
+* Evitar codificaciones innecesarias en llamadas a printMessage.
+2010-02-05
+* Implementada autenticación HTTP básica.
+* Eliminado rss.kl1.
+* Usar stdbool.h para booleanos.
+* Renombrar tipo y variable de contexto para evitar coincidencia con contexto de aplicación.
+2010-01-24
+* Parcheada definicion erronea de request_get_uploaded_file en request.h de kloned.
+* Simplificado fork para extraer logos.
+2009-12-15
+* Agregada parrilla de programacion.
+* Gestion de formularios mediante llamadas ajax y refrescos parciales de las paginas.
+* Modularizacion del javascript y del css.
+* Cambiada estructura interna de la página.
+* Integrado browse.kl1 dentro de recordings.kl1.
+* Renombradas paginas program y watchit, por epg y live.
+* Eliminada pagina index.kl1. Se entra directamente a la parrilla de programación.
+* Simplificada creacion de programaciones a partir de id de eventos.
+* Introducido contexto para simplificar API.
+* Extracción de logos.tgz para posibilitar modificaciones.
+2009-06-24
+* Añadida gestión de búsquedas (epgsearch).
+* Verificado funcionamiento en IE7,IE8 y WebKit, además de Gecko.
+* Apariencia más homogénea.
+* Cambiado modelo de servidor de prefork a fork y reducido número de procesos, para reducir consumo de recursos.
+* Opciones de configuración: tamaño de video embebido y márgenes en grabaciones.
+* Video embebido gestionado por javascript, sin requerir refresco de página.
+* Corregido funcionamiento horrible de button en IE6 y IE7.
+* Iconos convertidos a png8 para tener transparencia mínima en IE.
+* Información de particiones extraida en modulo aparte.
+2009-05-27
+* Posibilidad de limitar número de niveles mostrados en browse.kl1.
+* Opción para cerrar conexión SVDRP después de cada orden (para depuración con múltiples hosts).
+* openSvdrp, writeSvdrp y readSvdrp son funciones privadas ahora.
+* Funcion parseTimer reescrita con mayor control de errores.
+* writeSvdr retorna true solo si los bytes escritos son los esperados.
+* Descargar información de las grabaciones remotas en diferido usando Ajax.
+* Marcado de los punteros propios en las structs, para permitir utilizar referencias directas 
+  a los argumentos de las páginas, sin que sea obligatorio duplicar.
+* Funciones anidadas para la ordenación de listas sin depender de variables globales.
+* Cambiada gestión de SIGPIPE en svdrp_comm para acceder al host correcto sin variables globales.
+* Integrada en browse.kl1 la navegación por grabaciones remotas.
+* Gestión simultánea de varios hosts (VDRs o servidores de ficheros).
+* Eliminado svdrp_parse y recolocadas las rutinas que quedaban.
+* Identificacion de grabaciones sólo por path relativo (no se usa nunca el id).
+* Fusionados recEntry_t y recInfo_t.
+* recInfo_t delega en eventEntry_t.
+* Resaltar por CSS las grabaciones editadas.
+* Acciones mediante <form> en browse (evita repetir paths).
+* Eliminado espacio extra en <button> en FF.
+* Permitir borrar grabaciones desde listado.
+* Refactorizadas funciones de browse.kl1 a browse.c 
+* Funcionalidad completa en browse.kl1.
+* Modo de indentar html más eficiente.
+* Timers tienen que ser htmlEncoded porque aux puede incluir xml.
+* Agregar parametros a URLs para no asociar fichero kl1 con tipo mime.
+* Timers mantienen aux para no desligarse de epgsearch.
+* Cambiado tipo MIME para listas m3u a audio/mpegurl
+
+2009-04-18
+* Utilizar rutas relativas para las grabaciones.
+* Mostrar fechas al navegar por series.
+* Corregida navegacion por series.
+* Corregido error en formatDate cuando se muestra la hora.
+* parseRec movido de svdrp_parse a recordings.
+
+2009-04-12
+* Incorporada posibilidad de usar css/js externo.
+* Generalizado el ajuste de Posix para IE7.
+* Página de navegacion por grabaciones rediseñada.
+* Eliminada get_config_info de svdr_parse e implementada en conf.
+* Eliminada funcion vdrRunning.
+* Eliminada funcion readBOXAMPCONF.
+* Eliminada funcion htmlEncode.
+* Integrados todos los iconos en ui-icon.
+* Gestion de grabaciones en listado mediante formularios en lugar de enlaces.
+* Streaming de grabaciones simplificado. Ya no se solicita el listado completo
+  al SVDRP (comando PLST eliminado en SVDRP), solo el directorio (comando LSTR modificado).
+  Requiere recompilado del VDR.
+* Opciones de configuración operativas, completadas y traducidas.
+* Corregida generacion de listas XSPF (que vlc sigue sin soportar bien...)
+* Gestionar todos los flags de las programaciones (no solo active).
+* Resaltado de programaciones inactivas.
+* Distinguir convenientemente las referencias al servidor SVDRP 
+  de las referencias al propio servidor HTTP.
+* Eliminada funcion whatsmyip. La direccion del servidor se extrae del header 'Host' en el HttpRequest.
+* Tablas list2.
+
+2009-03-21
+* Incorporado tema jQuery-UI. Generado sprite con los iconos propios.
+* Actualizado jQuery de 1.2.6 a 1.3.2
+* Se muestran graficamente todas las coincidencias de timers regulares en la EPG (no solo la primera).
+* Iframe en watchit se transforma en tabs via javascript.
+* Movidas imagenes a subdirectorio de css.
+* Evento hover gestionado mediante javascript.
+* El enlace a la EPG desde la pagina de timers dirige directamente al timer en cuestion.
+
+2009-03-14
+* Eliminadas hojas css antiguas.
+* Adaptado now-next.kl1 al nuevo formato.
+* Parcheado u_urlncpy_encode en klone.
+* Substituidos META tags en head por encabezado HTTP.
+* Tooltip en todos los enlaces.
+* Corregidos errores de validacion de html.
+* Lista de audio como array y enumeracion para tipos de video en recInfo_t.
+
+2009-03-10
+* I18n optimizada mediante busqueda binaria sobre claves breves.
+* Eliminado directorio components e implementada funcionalidad mediante procedimientos.
+* Incluida edicion (renombrado/borrado) de grabaciones.
+* Simplificada edicion/borrado de programaciones.
+* Mejorada pagina de inicio.
+* Mejorada presentacion de canales.
+* Visualizacion grafica de las programaciones sobre la vista de EPG.
+* Generacion de HTML correctamente indentado.
+* Apariencia grafica (iconos) especificada en CSS en lugar de en HTML.
+* Reestructuradas hojas de estilo CSS segun medio.
+* Iniciada adaptacion de clases CSS a jQuery-UI, de cara a permitir temas.
+* Corregidos algunos bugs en IE6. Pendiente de verificar en IE7.
+* Eliminado conf-i18n e integrada funcionalidad en i18n.
+* Completada la migracion de todas las paginas al nuevo formato.
+* Iniciado este registro de cambios.

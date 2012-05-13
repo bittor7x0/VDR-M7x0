@@ -1,0 +1,12 @@
+      Arriba - Carácter siguiente
+      Abajo - Carácter anterior
+      Izquierda - Retroceder
+      Derecha - Avanzar
+      Ok - Aceptar
+      MENU - Salir del menú
+      EXIT - Descartar cambios
+      Rojo - ABC/abc
+      Verde - Insertar/Sobrescribir
+      Amarillo - Borrar
+      Teclas del 0..9 - Caracteres numéricos y alfabéticos
+

@@ -1,0 +1,12 @@
+--- uClibc.orig/libpthread/linuxthreads/manager.c	2008-08-30 09:10:31.000000000 +0200
++++ uClibc/libpthread/linuxthreads/manager.c	2008-09-01 00:19:14.000000000 +0200
+@@ -1078,6 +1078,9 @@
+     waitpid(th->p_pid, NULL, __WCLONE);
+   }
+   __fresetlockfiles();
++  close(__pthread_manager_request);
++  close(__pthread_manager_reader);
++  __pthread_manager_reader = __pthread_manager_request = -1;
+   restart(issuing_thread);
+   _exit(0);
+ }

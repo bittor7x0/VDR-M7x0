@@ -1,0 +1,82 @@
+Ver. 0.0.7
+	-Moved "SatDownload" script to "weatherng.sh" (Ronny Kornexl)
+	-Moved directory "Tools" to "examples" (Ronny Kornexl)
+	-Moved "daten.dat" to "data[i].xml" (start to support 3 StationIDs Key 1,2,3)
+	-Filenames of radarmaps now pic0...pic1 (Ronny Kornexl)
+	-External download ( weatherng.sh ) of weatherdata and radarmaps inside plugin with wget. ( Faster start of plugin )
+	-Resized code , so compiled Plugin shrinked from ~ 1.8 MB to 800 kb
+	-some eyecandy again
+	-new weathersymbols from www.stardock.com ( now included , you can use old but get nopic.png/wait.png from new ones )
+	-new Commandline -S --script ( path to weatherng.sh )
+	-removed offlinemode ( plugin is even in offlinemode , hit Key Ok for update )
+	-removed support 256 colordepth ( was pretty slow , need fixing before )
+	-removed station IDs and URLs in setup ( NOW YOU MUST edit weatherng.sh )
+	-New requirement "wget" (Downloadtool)
+	..
+	.
+
+Ver. 0.0.6a
+	-Fixed 256 colormode ( wow , didnt know that its pretty slow)
+	-new option rounded corner no/yes
+	-clean up setup order
+
+Ver. 0.0.6
+	-new SatDownload script with support for other countries,languages(Rolf Ahrenberg, Ronny Kornexl)
+	-french translation (Eclipse)
+	-some new themes
+	-rebuild the OSD completely ,sizable ,fontsize now shrink or extend the OSD
+	-fixed day/night
+	-OSD should look like the real skins now
+	-round borders :D
+	-weathericons (images not included) are now 196x196
+	-quickinstall help in README.DE
+	-...
+
+Ver. 0.0.5
+
+	-Navigational crash bug fixed (Rolf Ahrenberg)
+	-Finnish translation (Rolf Ahrenberg)
+	-i18n
+	-OSD is themable now
+	-restructure the OSD
+	-Clean up code again
+	-Changed commandline option --dest to --data
+	-better weathericons, which not included anymore due restriction of author
+	        (no more "too much colors in use")
+	-alot more...
+
+Ver. 0.0.4
+
+	-more Bugfixes
+	-Option -S (deprecated)
+	-Commandline parameter -D or --dest now optional
+	-Some setup options (font , size , ...)
+	-Eyecandy
+	-SatDownoad script dont run endless anymore
+	-5! Radarmaps now
+	-New initialization
+	-begin i18n (not completed, help welcome)
+	-Offlinemode
+	-Radarmaps are sizable
+	-256 color support for 4mb modded cards
+	-SatDownload script extern again
+	-...
+
+
+Ver. 0.0.3
+       
+	-Bugfixes
+	-New Colorshema
+	-Added 2 needed options
+		-D /path/to/DataDir
+		-S /path/to/SatDownload
+	-SatDownload script is started from plugin, and don't need a manual start
+	
+
+Ver. 0.0.2
+	Bugfixes for new Weather.com Version
+
+
+2005-01-10: Ver. 0.0.1
+        -Initial revision
+       		 

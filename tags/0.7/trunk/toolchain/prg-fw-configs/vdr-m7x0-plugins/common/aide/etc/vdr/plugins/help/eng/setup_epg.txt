@@ -1,0 +1,32 @@
+EPG scan timeout = 5
+
+     The time (in hours) of user inactivity after which the DVB card in a single card system starts scanning channels to keep the EPG up-to-date. A value of '0' completely turns off scanning on both single and multiple card systems.
+
+EPG bugfix level = 2
+
+     Some tv stations transmit weirdly formatted EPG data. VDR attempts to fix these bugs up to the given level:
+
+          0 - no EPG fixing
+          1 - basic fixing of text location (Title, Episode and Extended Description)
+          2 - removal of excess whitespace and hyphens, mapping of wrongly used characters
+
+     Default is '2'.
+     Note that after changing the setting of this parameter any EPG data that has already been received will remain in its existing format - only newly received data will be fixed accordingly. Restart VDR if you want to make sure all data is fixed.
+
+EPG linger time = 0
+
+     The time (in minutes) within which old EPG information shall still be displayed in the "Schedule" menu.
+
+Set system time = no
+
+     Defines whether the system time will be set according to the time received from the DVB data stream.
+
+     Note that this works only if VDR is running under a user id that has permisson to set the system time. You also need to set the option "Use time from transponder" to a channel that you trust to transmit a reliable time base (not all channels seem to have a ccess to a correct time base...).
+
+Use time from transponder = 0
+
+     The frequency of the transponder that shall be used to set the system time. The Setup menu will offer the full list of channels, even if several of them are on the same transponder. Also, when selecting a channel, saving the Setup and opening the Setup menu again, there may be a different channel listed here, since the first one in 'channels.conf' that is on the given transponder will be taken. Note that in order to set the system time from the transponder data the option "Set system time" must also be enable d.
+
+Preferred languages = 0
+
+     Some tv stations broadcast their EPG data in various different languages. This option allows you to define which language(s) you prefer in such cases. By default, or if none of the preferred languages is broadcast, any language will be accepted and the EPG data will be displayed in the first language received from the data stream. If this option is set to a non-zero value, the menu page will contain that many "Preferred language" options which allow you to select the individual preferred languages. If an actual EPG data record is received in different languages, the preferred languages are checked in the given order to decide which one to take.

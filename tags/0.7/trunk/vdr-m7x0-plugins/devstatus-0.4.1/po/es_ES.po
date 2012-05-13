@@ -1,0 +1,166 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Bittor Corl <bittor7x0 _at_ gmail.com>, 2011
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <koch@u32.de>\n"
+"POT-Creation-Date: 2009-02-18 22:28+0100\n"
+"PO-Revision-Date: 2007-08-18 21:11+0200\n"
+"Last-Translator: Bittor Corl <bittor7x0 _at_ gmail.com>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: devstatus.c:18
+msgid "Status of dvb devices"
+msgstr "Estado de sintonizadores DVB"
+
+#: devstatus.c:19 devstatus.c:217
+msgid "Device status"
+msgstr "Estado del sintonizador"
+
+#: devstatus.c:40
+msgid "satellite card"
+msgstr "tarjeta satélite"
+
+#: devstatus.c:41
+msgid "cable card"
+msgstr "tarjeta cable"
+
+#: devstatus.c:42
+msgid "terrestrial card"
+msgstr "tarjeta terrestre"
+
+#: devstatus.c:43
+msgid "unknown cardtype"
+msgstr "tipo de tarjeta desconocido"
+
+#: devstatus.c:203
+#, c-format
+msgid "frequency: %d MHz, signal: %d%%, s/n: %d%%"
+msgstr "frequencia: %d MHz, señal: %d%%, s/n: %d%%"
+
+#: devstatus.c:207
+#, c-format
+msgid "no signal information available (rc=%d)"
+msgstr "ninguna información de señal disponible (rc=%d)"
+
+#: devstatus.c:232 devstatus.c:563
+msgid "device with decoder"
+msgstr "sintonizador con decodificador"
+
+#: devstatus.c:234 devstatus.c:563
+msgid "primary device"
+msgstr "sintonizador principal"
+
+#: devstatus.c:238 devstatus.c:564 devstatus.c:599
+msgid "Device"
+msgstr "Sintonizador"
+
+#: devstatus.c:240
+msgid "-- Live"
+msgstr "-- Directo"
+
+#: devstatus.c:265 devstatus.c:584
+msgid "currently no recordings"
+msgstr "actualmente no hay grabaciones"
+
+#. TRANSLATORS: printf string for channel line
+#: devstatus.c:284
+#, c-format
+msgid "%5d  %s %s  %s  %s%s%s"
+msgstr "%5d  %s %s  %s  %s%s%s"
+
+#. TRANSLATORS: abbr. for tv-channels
+#: devstatus.c:288
+msgid "t"
+msgstr "t"
+
+#. TRANSLATORS: abbr. for video only-channels
+#: devstatus.c:290
+msgid "v"
+msgstr "v"
+
+#. TRANSLATORS: abbr. for radio-channels
+#: devstatus.c:292
+msgid "r"
+msgstr "r"
+
+#. TRANSLATORS: abbr. for no signal-channels
+#: devstatus.c:294
+msgid "-"
+msgstr "-"
+
+#. TRANSLATORS: abbr. for live channel
+#: devstatus.c:297
+msgid "+"
+msgstr "+"
+
+#. TRANSLATORS: abbr. for crypted channels
+#: devstatus.c:299
+msgid "x"
+msgstr "x"
+
+#. TRANSLATORS: abbr. for FTA channels
+#: devstatus.c:301
+msgid " "
+msgstr " "
+
+#: devstatus.c:335
+msgid "no recordings"
+msgstr "sin grabaciones"
+
+#: devstatus.c:335
+msgid "recordings"
+msgstr "grabaciones"
+
+#: devstatus.c:336
+msgid "no strength"
+msgstr "sin intensidad"
+
+#: devstatus.c:336
+msgid "strength"
+msgstr "intensidad"
+
+#: devstatus.c:337
+msgid "channels"
+msgstr "canales"
+
+#: devstatus.c:337
+msgid "no channels"
+msgstr "sin canales"
+
+#: devstatus.c:338
+msgid "Refresh display"
+msgstr "Actualizar pantalla"
+
+#: devstatus.c:467
+msgid "Show recordings"
+msgstr "Mostrar grabaciones"
+
+#: devstatus.c:468
+msgid "Show signals"
+msgstr "Mostrar señales"
+
+#: devstatus.c:469
+msgid "Show channels"
+msgstr "Mostrar canales"
+
+#: devstatus.c:470
+msgid "Show channel provider"
+msgstr "Mostrar proveedor del canal"
+
+#: devstatus.c:557
+msgid "List of DVB devices"
+msgstr "Lista de sintonizadores DVB"
+
+#: devstatus.c:595
+msgid "Number of concurrent recordings"
+msgstr "Número de grabaciones concurrentes"
+
+#~ msgid "Recording status"
+#~ msgstr "Estado de la grabación"

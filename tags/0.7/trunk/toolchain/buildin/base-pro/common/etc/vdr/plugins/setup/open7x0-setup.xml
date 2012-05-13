@@ -1,0 +1,63 @@
+<!--
+-   open7x0-VDR Configuration File
+-   based on Minisetup by Ralf Dotzert
+-->
+<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="/etc/vdr/rebootvdr" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
+    <plugins sysconfig="rc.local.conf--vdr_pluginopts" protected="setup">
+    </plugins>
+    <menus>
+        <menu name="Manager plugins" help1="Enable and disable plugins" system="ActPlugins" />
+        <menu name="General Configuration">
+            <entry name="Mount Network" sysconfig="rc.local.conf--do_net_mount" type="bool" value="NO" help1="Mount network shared directories" />
+            <entry name="Start time" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help1="Start time" />
+            <entry name="Start rescue keys" sysconfig="rc.local.conf--rescue_keys" type="bool" value="NO" help1="M7x0 restart with HELP+EXIT and VDR with HELP+PIP" />
+            <entry name="VDR Options" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 2" help1="Add options for VDR" />
+        </menu>
+        <menu name="Directories">
+            <entry name="Configuration" sysconfig="rc.local.conf--vdr_confdir" type="directory" value='&quot;/etc/vdr&quot;' help1="Configuration files. NOT MODIFY" />
+            <entry name="Videos" sysconfig="rc.local.conf--vdr_videodirs" type="directory" value='&quot;/media/LACIE/vdr&quot;' help1="Videos directory" />
+            <entry name="Plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="directory" value='&quot;/var/media/disk-volume-3/vdr_ng&quot;' help1="Plugins Directories. NOT MODIFY" />
+        </menu>
+        <menu name="EPG Configuration">
+            <entry name="EPG File" sysconfig="rc.local.conf--vdr_epgfile" type="file" value='&quot;/etc/vdr/epg.data&quot;' help1="EPG file" />
+            <entry name="EPG direct" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help1="EPG direct" />
+        </menu>
+        <menu name="Network Configuration">
+            <entry name="Mode" sysconfig="rc.local.conf--net" type="selection" value="inet" help1="Configuration IP mode. DHCP/INET">
+                <value>DHCP</value>
+                <value>inet</value>
+            </entry>
+            <entry name="IP Address" sysconfig="rc.local.conf--ip" type="ip" value="192.168.2.100" help1="IP Address M7X0" />
+            <entry name="Network Mask" sysconfig="rc.local.conf--netmask" type="ip" value="255.255.255.0" help1="Network mask" />
+            <entry name="Gateway" sysconfig="rc.local.conf--gateway" type="ip" value='&quot;NO&quot;' help1="Gatewary IP address. default NO" />
+            <entry name="DNS 1" sysconfig="resolv.conf--nameserver1" type="ip" value="192.168.1.1" help1="DNS 1" />
+            <entry name="DNS 2" sysconfig="resolv.conf--nameserver2" type="ip" value="" help1="DNS 2" />
+            <entry name="MAC Address" sysconfig="rc.local.conf--mac" type="text" value="00:01:02:03:04:05" help1="MAC Address M7X0" />
+        </menu>
+        <menu name="USB HardDisk Configuration">
+            <entry name="Force USB mount" sysconfig="rc.local.conf--force_usb_mount" type="bool" value="NO" help1="Mount USB hard drives before running VDR" />
+            <entry name="Devices to stop" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help1="USB devices to stop separated by spaces. Ex.: /dev/sda" />
+            <entry name="Inactivity time" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="360" help1="Inactivity time to stop USB Hard disk" />
+            <entry name="Stop devices in shutdown" sysconfig="rc.local.conf--hd_spindown_shutdown" type="bool" value="NO" help1="Stop devices in system shutdown" />
+            <entry name="Disable swaps in shutdown" sysconfig="rc.local.conf--hd_swap" type="bool" value="NO" help1="Disable swap partitions in system shutdown" />
+        </menu>
+        <menu name="Services">
+            <entry name="Start inetd daemon" sysconfig="rc.local.conf--inetd" type="bool" value="YES" help1="Start inetd server (ftp,telnet)" />
+            <entry name="Start NFS server" sysconfig="rc.local.conf--nfsd" type="bool" value="NO" help1="Start NFS server in kernel space" />
+            <entry name="Start web server" sysconfig="rc.local.conf--webif_start" type="bool" value="YES" help1="Start administration web" />
+            <entry name="DLNA Server" sysconfig="rc.local.conf--mediatomb_start" type="bool" value="YES" help1="Start DLNA server (Mediatomb)" />
+            <entry name="Start NTP daemon" sysconfig="rc.local.conf--netdate" type="bool" value="NO" help1="Start daemon for network time update" />
+            <entry name="NTP server" sysconfig="rc.local.conf--netdate_server" type="text" value="europe.pool.ntp.org" help1="NTP server for clock update" />
+        </menu>
+        <menu name="Debug">
+            <entry name="Enable syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help1="System log daemon" />
+            <entry name="Show OSD messages" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help1="Show debug messages in OSD at startup" />
+            <entry name="Memory watch" sysconfig="rc.local.conf--memwatch" type="bool" value="NO" help1="Enable memory watch" />
+            <entry name="Memory watch - Interval" sysconfig="rc.local.conf--memwatch_interval" type="number" value="60" help1="Interval in minutes for save memory logs" />
+            <entry name="Memory watch - Directory" sysconfig="rc.local.conf--memwatch_dir" type="directory" value='&quot;/var/media/disk-volume-0/memwatch&quot;' help1="Directory for save memory logs" />
+        </menu>
+        <menu name="Parental control">
+            <entry name="Secret code (0000=DIS)" sysconfig="CHILDLOCK" type="numtext" setup="childlock" value="0000" />
+        </menu>
+    </menus>
+</setup>

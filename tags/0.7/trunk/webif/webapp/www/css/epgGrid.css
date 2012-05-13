@@ -1,0 +1,211 @@
+@import url('epg.css');
+.theme0 .gridDiv.level3Div {
+	padding: 2px 2px 6px;
+	background: #282A2D none;
+	border: none;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+.gridDiv.level3Div .grid.level3 {
+	font-size: 0.95em;
+	line-height: 1.1;
+	background-color: #A8CDFF;
+	background-image: none;
+	border: none;
+	color: black;
+	margin: 0;
+	padding: 0;
+}
+.gridDiv ul{
+	list-style-type: none;
+} 
+.gridDiv img { 
+	border: 0;
+	display: block;
+}  
+.gridDiv a {
+	text-decoration: none;
+}    
+.gridDiv a:hover {
+	text-decoration: underline;
+}
+.timeMarksDiv, 
+.timersDiv { 
+	overflow: hidden;
+	padding-left: 4em; 
+}
+.timeMarksDiv .timeMarks{
+	height: 28px;
+	width: 100%;
+	position: relative;
+	border-bottom: 1px solid #949CA6;
+}
+.timeMarksDiv .timeMarks .timeMark {
+	position: absolute;
+	height: 28px; /*timeTable.height*/
+	border-left: 1px solid #949CA6;
+	background: transparent;
+}
+.timeMarks .timeMark span.time,
+.timeMarks .timeMark .timeMarkControls,
+.timeMarks .timeMark .timeMarkControls a.change,
+.timeMarks .timeMark .timeMarkControls input#timepicker {
+	display: block;
+	position: absolute;
+	top: 50%;
+	z-index: 1;
+	text-align: center;
+}
+.timeMarks .timeMark .timeMarkControls {
+	width: 14ex;
+	height: 28px;
+	left: -7ex;
+	top: 0;
+	overflow: visible;
+}
+.timeMark .time {
+	color: #000000;
+	background-color: #A8CDFF;
+	border: none;
+	height: 1.2em;
+	margin-top: -0.6em;
+	width: 4em;
+	margin-left: -2em;
+}
+.timeMark input.time {
+	border: 1px solid #949CA6;
+	left: 50%;
+	height: 1.4em;
+	margin-top: -0.7em;
+	width: 7ex;
+	margin-left: -3.5ex;
+	background-color: #BFDFFF;
+	text-align: center;
+}
+.timeMark .change {
+	z-index: 2;
+	position: absolute;
+	top: 50%;
+	margin-top: -9px;
+	display: block;
+}
+.timeMark .change.previous {
+	left: 0px;
+}
+.timeMark .change.next {
+	right: 0px;
+}
+.grid .channels {
+	margin: 0 auto; 
+	background-color: #A8CDFF;
+	overflow: hidden;
+}
+.grid .channel { 
+	border-top: 1px solid #949CA6;
+	padding-left: 4em; 
+	position: relative;
+} 
+.grid .channel div.logo { 
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 4em;
+	height: 4em;
+	line-height: 4;
+	color: #000000;
+}
+.grid .channel div.logo a { 
+	width: 100%;
+	height: 100%;
+	font-family: "Times New Roman";
+	font-weight: bold;
+	font-size: small;
+	text-align: center;
+	line-height: inherit;
+	text-decoration: underline;
+}
+.grid .channel div.logo a:hover { 
+	text-decoration: underline;
+}
+.grid .channel div.logo img {
+	width: 100%; 
+	height: 100%; 
+	line-height: inherit; 
+	vertical-align: middle;
+	overflow: hidden;
+}
+.grid .channel .channelContent {
+	position: relative;
+	background-color: #949CA6;
+	border-left: 1px solid #949CA6
+}    
+.grid .channel .channelEvents { 
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+	min-height: 4em;
+}
+.grid .itemDiv {
+	margin-bottom: 0;
+	position: absolute;
+	border-style: none solid;
+	height: 4em;
+}
+.boxshadow .theme1 .grid .itemDiv {
+	border-style: none;
+	box-shadow: 0 0 4px #D04C4C;
+}
+.grid .itemDiv.started {
+	border-left-style: none !important;
+}
+.grid .itemHead {
+	padding: 0.25em;
+}
+.theme0 .grid .itemHead {
+	background: transparent none;
+}
+.theme0 .itemDiv.expanded,
+.theme0 .infoTarget {
+	background-color: #FFF2BE;
+}
+.theme1 .itemDiv.expanded,
+.theme1 .infoTarget {
+	background-color: #FFF2BE;
+}
+.infoTarget {
+	width: 100%;
+	overflow: hidden;
+	margin-top: -1px;
+	position: relative;
+}
+.gridHead * {
+	vertical-align: middle;
+}
+#ui-datepicker-div {
+	z-index: 10;
+}
+.gridHead img.ui-datepicker-trigger {
+	display: inline;
+	margin-left: 0.5em;
+}
+.gridDate .change {
+	display: inline;
+	display: inline-block;
+}
+.gridDate .day{
+	text-transform: capitalize;
+}
+.timersDiv {
+	background-color: #A8CDFF;
+}
+.timers {
+	border-left: 1px solid #949CA6;
+	padding: 1px 0;
+}
+/* css for timepicker */
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div dl { text-align: left; }
+.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }
+.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }

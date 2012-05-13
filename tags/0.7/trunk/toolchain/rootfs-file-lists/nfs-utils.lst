@@ -1,0 +1,16 @@
+usr/sbin/sm-notify   usr/sbin/sm-notify   f 755 0 0 - - - - -
+usr/sbin/sm-notify   -                    s   - - - - - - - -
+usr/sbin/rpc.statd   usr/sbin/rpc.statd   f 755 0 0 - - - - -
+usr/sbin/rpc.statd   -                    s   - - - - - - - -
+usr/sbin/rpc.nfsd    usr/sbin/rpc.nfsd    f 755 0 0 - - - - -
+usr/sbin/rpc.nfsd    -                    s   - - - - - - - -
+bin/mount.nfs        bin/mount.nfs        f 755 0 0 - - - - -
+bin/mount.nfs        -                    s   - - - - - - - -
+usr/sbin/rpc.mountd  usr/sbin/rpc.mountd  f 755 0 0 - - - - -
+usr/sbin/rpc.mountd  -                    s   - - - - - - - -
+usr/sbin/exportfs    usr/sbin/exportfs    f 755 0 0 - - - - -
+usr/sbin/exportfs    -                    s   - - - - - - - -
+usr/sbin/showmount   usr/sbin/showmount   f 755 0 0 - - - - -
+usr/sbin/showmount   -                    s   - - - - - - - -
+usr/sbin/nfsstat     usr/sbin/nfsstat     f 755 0 0 - - - - -
+usr/sbin/nfsstat     -                    s   - - - - - - - -

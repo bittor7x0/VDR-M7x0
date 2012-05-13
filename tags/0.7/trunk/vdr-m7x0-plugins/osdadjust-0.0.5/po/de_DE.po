@@ -1,0 +1,121 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.6.0\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2009-01-08 20:29+0100\n"
+"PO-Revision-Date: 2009-01-08 20:19+0100\n"
+"Last-Translator: Klaus Schmidinger <kls@cadsoft.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Transparent"
+msgstr "Transparent"
+
+msgid "Transparent 50"
+msgstr "Transparent 50"
+
+msgid "Black"
+msgstr "Schwarz"
+
+msgid "Red"
+msgstr "Rot"
+
+msgid "Green"
+msgstr "Grün"
+
+msgid "Yellow"
+msgstr "Gelb"
+
+msgid "Magenta"
+msgstr "Magenta"
+
+msgid "Blue"
+msgstr "Blau"
+
+msgid "Cyan"
+msgstr "Cyan"
+
+msgid "White"
+msgstr "Weiss"
+
+msgid "Gray"
+msgstr "Grau"
+
+msgid "Size and Position"
+msgstr "Größe und Position"
+
+msgid "Video Format"
+msgstr "Bildformat"
+
+msgid "General Options"
+msgstr "Generelle Optionen"
+
+msgid "Hide main menu entry"
+msgstr "Hauptmenüeintrag verstecken"
+
+msgid "Hide help text"
+msgstr "Hilfe verstecken"
+
+msgid "Mute on open"
+msgstr "Stumm beim öffnen"
+
+msgid "Background color"
+msgstr "Hintergrund Farbe"
+
+msgid "Foreground color"
+msgstr "Vordergrund Farbe"
+
+msgid "Line thickness"
+msgstr "Linienstärke"
+
+msgid "Gauge"
+msgstr "Sprungweite"
+
+msgid "Aspect Ratio"
+msgstr "Seitenverhältnis"
+
+msgid "Show grid"
+msgstr "Gitter einblenden"
+
+msgid "Adjust OSD Size and Position"
+msgstr "Anpassen von OSD Größe und Position"
+
+msgid "OSD adjust"
+msgstr "OSD anpassen"
+
+msgid "Press 1-9 to move,"
+msgstr "Drücke 1-9 zum verschieben,"
+
+msgid "Up/Down & Left/Right to resize,"
+msgstr "Auf/Ab & Links/Rechts zum ändern,"
+
+msgid "Ok to save, Back to cancel."
+msgstr "Ok speichert, Zurück bricht ab."
+
+msgid "Top"
+msgstr "Oben"
+
+msgid "Bottom"
+msgstr "Unten"
+
+msgid "Left"
+msgstr "Links"
+
+msgid "Right"
+msgstr "Rechts"
+
+msgid "Width"
+msgstr "Breite"
+
+msgid "Height"
+msgstr "Höhe"
+
+msgid "Width must be a multiple of 8!"
+msgstr "Breite muss ein Vielfaches von 8 sein!"

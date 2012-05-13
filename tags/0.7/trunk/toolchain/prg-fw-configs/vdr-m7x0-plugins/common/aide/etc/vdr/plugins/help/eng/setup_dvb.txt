@@ -1,0 +1,11 @@
+Primary DVB interface = 1
+
+     Defines the primary DVB interface (i.e. the one that will display the menus and will react on input through the remote control). Valid values range from '1' to the number of installed DVB cards. If more than one DVB card is installed and a recording is to be started, the program will try to use a free DVB card that is different from the primary DVB interface, so that the viewer will be disturbed as little as possible.
+
+Video format = 4:3
+
+     The video format (or aspect ratio) of the tv set in use (4:3 or 16:9).
+
+Update channels = 4
+
+     Controls the automatic channel update function. '0' means no update, '1' will only update channel names, '2' will update channel names and PIDs, '3' will perform all updates and also add newly found channels, and '4' will also add newly found transponders.

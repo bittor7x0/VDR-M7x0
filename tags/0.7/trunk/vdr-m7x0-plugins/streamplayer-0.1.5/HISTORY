@@ -1,0 +1,39 @@
+VDR Plugin 'streamplayer' Revision History
+------------------------------------------
+
+2004-08-15: Version 0.0.1
+
+- Initial revision.
+- HTTP and UDP streams in TS format
+- Bookmarks
+- Status display
+
+2005-10-11: Version 0.1.1
+
+- i18n support
+- Setup option to set receive buffer sizes
+- Avoid cRemux timeouts on all 1.3.x versions
+- Improved OSD error reporting
+- Handle the 'stop' remote key
+- Support Multicast UDP streaming
+- Improved data stream handling
+
+2005-11-07: Version 0.1.2
+
+- Fix compiling on VDR 1.3.36
+
+2006-04-23: Version 0.1.3
+
+- Adapt to VDR 1.3.47 Makefile changes
+- Fix minor compile issues
+
+2007-07-18: Version 0.1.4
+
+- Adapt to VDR 1.5.7 i18n system
+- Fix minor compile issue
+
+2008-02-24: Version 0.1.5
+
+- Fix: Crash on starting in UDP mode
+- New: Italian translation thanks to Diego, http://vdr-italia.phpbb24.com/
+- New: Revisited I18N system

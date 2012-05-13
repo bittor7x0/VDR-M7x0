@@ -1,0 +1,110 @@
+diff -Naur mpeg2dec-0.4.1-orig/autotools/Makefile.in mpeg2dec-0.4.1/autotools/Makefile.in
+--- mpeg2dec-0.4.1-orig/autotools/Makefile.in	2006-02-15 17:34:32.000000000 +0100
++++ mpeg2dec-0.4.1/autotools/Makefile.in	2009-11-01 11:25:00.000000000 +0100
+@@ -144,6 +144,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@
+diff -Naur mpeg2dec-0.4.1-orig/doc/Makefile.in mpeg2dec-0.4.1/doc/Makefile.in
+--- mpeg2dec-0.4.1-orig/doc/Makefile.in	2006-02-15 17:34:29.000000000 +0100
++++ mpeg2dec-0.4.1/doc/Makefile.in	2009-11-01 11:25:07.000000000 +0100
+@@ -184,6 +184,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@
+diff -Naur mpeg2dec-0.4.1-orig/include/Makefile.in mpeg2dec-0.4.1/include/Makefile.in
+--- mpeg2dec-0.4.1-orig/include/Makefile.in	2006-02-15 17:34:29.000000000 +0100
++++ mpeg2dec-0.4.1/include/Makefile.in	2009-11-01 11:25:14.000000000 +0100
+@@ -156,6 +156,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@
+diff -Naur mpeg2dec-0.4.1-orig/libmpeg2/convert/Makefile.in mpeg2dec-0.4.1/libmpeg2/convert/Makefile.in
+--- mpeg2dec-0.4.1-orig/libmpeg2/convert/Makefile.in	2006-02-15 17:34:30.000000000 +0100
++++ mpeg2dec-0.4.1/libmpeg2/convert/Makefile.in	2009-11-01 11:25:26.000000000 +0100
+@@ -179,6 +179,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@
+diff -Naur mpeg2dec-0.4.1-orig/libmpeg2/Makefile.in mpeg2dec-0.4.1/libmpeg2/Makefile.in
+--- mpeg2dec-0.4.1-orig/libmpeg2/Makefile.in	2006-02-15 17:34:30.000000000 +0100
++++ mpeg2dec-0.4.1/libmpeg2/Makefile.in	2009-11-01 11:25:21.000000000 +0100
+@@ -191,6 +191,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@
+diff -Naur mpeg2dec-0.4.1-orig/libvo/Makefile.in mpeg2dec-0.4.1/libvo/Makefile.in
+--- mpeg2dec-0.4.1-orig/libvo/Makefile.in	2006-02-15 17:34:31.000000000 +0100
++++ mpeg2dec-0.4.1/libvo/Makefile.in	2009-11-01 11:25:34.000000000 +0100
+@@ -165,6 +165,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@
+diff -Naur mpeg2dec-0.4.1-orig/Makefile.in mpeg2dec-0.4.1/Makefile.in
+--- mpeg2dec-0.4.1-orig/Makefile.in	2006-02-15 17:34:28.000000000 +0100
++++ mpeg2dec-0.4.1/Makefile.in	2009-11-01 11:25:58.000000000 +0100
+@@ -166,6 +166,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@
+diff -Naur mpeg2dec-0.4.1-orig/src/Makefile.in mpeg2dec-0.4.1/src/Makefile.in
+--- mpeg2dec-0.4.1-orig/src/Makefile.in	2006-02-15 17:34:31.000000000 +0100
++++ mpeg2dec-0.4.1/src/Makefile.in	2009-11-01 11:25:40.000000000 +0100
+@@ -184,6 +184,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@
+diff -Naur mpeg2dec-0.4.1-orig/test/Makefile.in mpeg2dec-0.4.1/test/Makefile.in
+--- mpeg2dec-0.4.1-orig/test/Makefile.in	2006-02-15 17:34:31.000000000 +0100
++++ mpeg2dec-0.4.1/test/Makefile.in	2009-11-01 11:25:46.000000000 +0100
+@@ -144,6 +144,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@
+diff -Naur mpeg2dec-0.4.1-orig/vc++/Makefile.in mpeg2dec-0.4.1/vc++/Makefile.in
+--- mpeg2dec-0.4.1-orig/vc++/Makefile.in	2006-02-15 17:34:31.000000000 +0100
++++ mpeg2dec-0.4.1/vc++/Makefile.in	2009-11-01 11:25:51.000000000 +0100
+@@ -143,6 +143,7 @@
+ build_cpu = @build_cpu@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
++datarootdir = @datarootdir@
+ datadir = @datadir@
+ exec_prefix = @exec_prefix@
+ host = @host@

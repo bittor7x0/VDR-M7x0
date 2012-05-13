@@ -1,0 +1,31 @@
+--- gdb-6.8/gdb/inflow.c.orig	2008-12-21 22:44:25.000000000 +0100
++++ gdb-6.8/gdb/inflow.c	2008-12-21 22:46:19.000000000 +0100
+@@ -513,6 +513,7 @@
+ new_tty (void)
+ {
+   int tty;
++  int unused;
+ 
+   if (inferior_thisrun_terminal == 0)
+     return;
+@@ -545,17 +546,17 @@
+   if (tty != 0)
+     {
+       close (0);
+-      dup (tty);
++      unused = dup (tty);
+     }
+   if (tty != 1)
+     {
+       close (1);
+-      dup (tty);
++      unused = dup (tty);
+     }
+   if (tty != 2)
+     {
+       close (2);
+-      dup (tty);
++      unused = dup (tty);
+     }
+   if (tty > 2)
+     close (tty);

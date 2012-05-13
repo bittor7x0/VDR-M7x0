@@ -1,0 +1,5 @@
+bin/bash    bin/bash    f 755 0 0 - - - - -
+bin/bash    -           s   - - - - - - - -
+bin/sh      bash        l 777 0 0 - - - - -
+bin/bashbug bin/bashbug f 755 0 0 - - - - -
+etc/profile etc/profile f 644 0 0 - - - - -

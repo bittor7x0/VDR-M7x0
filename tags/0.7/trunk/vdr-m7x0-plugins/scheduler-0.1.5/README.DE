@@ -1,0 +1,108 @@
+Dies ist ein "Plugin" für den Video Disk Recorder (VDR).
+
+Dieses Programm ist freie Software. Sie können es unter den Bedingungen
+der GNU General Public License, wie von der Free Software Foundation
+veröffentlicht, weitergeben und/oder modifizieren, entweder gemäß Version 2
+der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+
+Die Veröffentlichung dieses Programms erfolgt in der Hoffnung, dass es
+Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne
+die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN
+BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.
+
+Sie sollten ein Exemplar der GNU General Public License zusammen mit
+diesem Programm erhalten haben. Falls nicht, schreiben Sie an die Free
+Software Foundation, Inc. 59 Temple Place, Suite 330, Boston, MA
+02111-1307, USA.  Oder rufen Sie in Ihrem Browser
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html auf.
+
+Der Author kann über cwieninger@gmx.de erreicht werden.
+
+Die Projektseite ist http://winni.vdr-developer.org/scheduler
+
+Benötigt wird:
+- vdr >= 1.5.1 oder
+- vdr-1.4.5 mit dem backport des neuen Shutdown-Handlers (http://www.udo-richter.de/vdr/patches.html#shutdown)
+
+Beschreibung:
+
+Dieses Plugin erlaubt die Steuerung von externen Jobs innerhalb des VDRs.
+Dies ist vorallem dann nützlich, wenn VDR nicht kontinuierlich läuft.
+Beispielanwendungen könnten ein EPG-Update oder Backups sein.
+
+Features:
+
+- optionales Wecken von VDR um einen Job zu starten (keine dummy-Timer 
+  mehr notwendig)
+- verhindern des Herunterfahrens während ein Job noch ausgeführt wird.
+- optionales Ankündigen des Beginns oder Endes eines Jobs via OSD
+- Start von externen Jobs über SVDRP im Kontext von VDR
+- Anzeige der Ausgabe von laufenden oder beendeten Jobs
+
+Das Hauptmenü listet alle dauerhaft hinterlegten Jobs auf.
+Ein führendes '>' zeigt an, dass der Job aktiv ist und zu den angegebenen Zeiten
+gestartet wird. Ein führendes '#' zeigt an, dass der Job gerade ausgeführt wird.
+
+Die Tasten rot, grün, gelb werden zum Editieren, Anlegen und Löschen von Jobs ver-
+wendet. Die Taste blau dienst zum manuellen Starten eines Jobs oder zum Abbrechen,
+falls dieser gerade ausgeführt wird. Mit der Taste Ok wird ein Menü angezeigt, 
+womit man Informationen zum Job erhält, wie den letzten Start und die Ausgabe dazu.
+
+Das Editier-Menü besteht aus:
+- Aktiv: zum Ein-/Ausschalten des automatischen Starts
+- Beschreibung: eine kurze Beschreibung des Jobs
+- Befehl: das eigentliche Kommando, das ausgeführt werden soll
+- Minute, Stunde, Wochentag, Tag, Monat:
+  Hier können die Startzeiten mit einer Syntax ähnlich zu cron angegeben werden:
+  - '*' oder leer entspricht allen Werten
+  - eine Liste kann mit ',' getrennt werden, z.B. '1,5,10'
+  - es können auch Bereiche angegeben werden, z.B. '1-12'
+  - Bereiche können eine Schrittweite haben, z.B. ist '0-23/2' gleich '0,2,4,6,...'
+  Anmerkung: Wochentage beginnen mit '0'=Sonntag, '1'=Montag,...
+- VDR wecken: einschalten, wenn VDR geweckt werden soll
+- OSD Ankündigung: den gewünschten Wert wählen, wenn man über Start/Ende per OSD
+  benachrichtigt werden will
+- Speichere ... Logs: zum Speichern der Ausgabe der letzten ... Ausführungen
+- Abbruch nach ... Minuten: Beendet einen Job nach den angegebenen Minuten nach Start
+  um endlose Jobs zu vermeiden (Mit 0 wird das Feature deaktiviert).
+
+Am Ende des Editier-Menüs wird eine Liste der nächsten Startzeiten aufgeführt ent-
+sprechend den Einstellungen.
+
+Man kann ebenfalls das SVDRP-Interface zum Start vorhandener oder temporärer Jobs
+verwenden:
+
+svdrpsend.pl plug scheduler RUNT <taskname>
+  Damit wird ein existierender Job gestartet, auf den die Beschreibung <taskname>
+  passt. Rückgabe ist eine Task-ID.
+
+svdrpsend.pl plug scheduler RUNC <command>
+  Damit wird der angegebene Befehl gestartet. VDR wird nicht herunterfahren bevor 
+  dieser beendet ist. Als Rückgabe erhält man eine Task-ID, die im folgenden verwendet
+  werden kann:
+
+svdrpsend.pl plug scheduler STAT <taskId>
+  Liefert zurück, ob der Job noch läuft.
+
+Es gibt noch weitere svdrp-Befehle (LSTT, NEWT, DELT, EDIT) zum Auflisten aller Tasks,
+Anlegen, Löschen oder Ändern von Tasks.
+
+Installation:
+
+Diese läuft nach dem üblichem Schema:
+- Entpacken des Quelltext-Paktes nach <VDR-src-dir>/PLUGINS/src
+- verlinken mit 'ln -s <Plugin-src-dir> <VDR-src-dir>/PLUGINS/src/scheduler'
+- Aufruf von 'make plugins' in <VDR-src-dir>
+
+Parameter:
+
+Zum Aktivieren des Log-Files kann man folgende Parameter übergeben:
+
+  -l file,  --logfile=file zum Angeben eines abweichenden Logfiles für scheduler
+  -v n,  --verbose=n       Verbose-Level des Log-filesor mit n = 0..3
+
+
+Viel Spass!
+
+Christian Wieninger
+

@@ -1,0 +1,28 @@
+--- mplayer.c.orig	2003-03-10 15:02:18.000000000 +0100
++++ mplayer.c	2003-03-29 14:58:17.000000000 +0100
+@@ -3114,6 +3114,25 @@
+   loop_seek=0;
+ }
+ 
++#if 1
++  if(slave_mode){
++    float position=0.0;
++    float time=0.0;
++    if(demuxer->file_format==DEMUXER_TYPE_AVI && sh_video->video.dwLength>2) {
++      // get pos from frame number / total frames
++      position=(float)d_video->pack_no*100.0/(float)sh_video->video.dwLength;
++      }
++    else {
++      off_t len = ( demuxer->movi_end - demuxer->movi_start );
++      off_t pos = ( demuxer->file_format == DEMUXER_TYPE_AUDIO?stream->pos:demuxer->filepos );
++      if(len>0) position=( pos - demuxer->movi_start ) * 100.0 / len;
++      }
++    if(sh_video) time=d_video->pts;
++    else if(sh_audio) time=sh_audio->delay;
++    mp_msg(MSGT_OSD,MSGL_ERR,"SLAVE: time=%.2f position=%.2f\r",time,position);
++    }
++#endif
++
+ #ifdef HAVE_NEW_GUI
+       if(use_gui){
+         guiEventHandling();

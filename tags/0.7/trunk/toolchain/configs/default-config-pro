@@ -1,0 +1,417 @@
+####################
+#                  #
+#  Firmware setup  #
+#                  #
+####################
+
+# Firmware version type: pro (with network support) or lite (mini version without network support)
+CONFIG_FW_VERSION = pro
+
+# Language by default for firmware: en (English), es (Spanish), de (German) or fr (French)
+CONFIG_LANGUAGE = es
+
+# Type is m740 or m750s
+# Note: If you have a M750T EPG, set here m740 and change
+#       buildin/base-pro/m740/etc/systemtype content to m750t
+CONFIG_M7X0_TYPE = m740
+
+# ccache: A fast C/C++ compiler cache
+# URL: http://ccache.samba.org
+# CONFIG_CCACHE is not set
+
+# CONFIG_PREFIX is not set
+# CONFIG_BOOTLOADER is not set
+# Copy /etc dir from RootFS to JFFS2 in first run (necessary to fw-builder in Windows)
+# CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN is no set
+CONFIG_GENERATE_ROOTFS_DIR = y
+# CONFIG_ROOTFS_DIR is not set
+# CONFIG_GENERATE_EXT2_ROOTFS_IMAGE is no set
+# CONFIG_EXT2_ROOTFS_SIZE is not set
+# CONFIG_EXT2_ROOTFS_IMG is not set
+# CONFIG_GENERATE_CRAM_ROOTFS_IMAGE is not set
+CONFIG_CRAMFS_NEEDS_SWAP = y
+# CONFIG_CRAM_ROOTFS_IMG is not set
+CONFIG_GENERATE_SQUASH_ROOTFS_IMAGE = y
+# CONFIG_SQUASH_ROOTFS_IMG is not set
+# Add LZMA support to SquashFS, if you change this parameter run: make distclean-squashfs-host distclean-siemens-linux-kernel
+# CONFIG_SQUASHFS_LZMA is not set
+# CONFIG_JFFS2_DIR is not set
+CONFIG_GENERATE_JFFS2_DIR = y
+CONFIG_GENERATE_JFFS2_IMAGE = y
+# CONFIG_JFFS2_IMG is not set
+# Add LZO support (faster than zlib) to JFFS2, if you change this parameter run: make distclean-mtd-utils-host distclean-siemens-linux-kernel
+# WARNING: Set CONFIG_GENERATE_JFFS2_DIR and CONFIG_GENERATE_JFFS2_IMAGE to "y" for generate a firmware with a JFFS2-LZO image or your M7x0 will not start
+CONFIG_JFFS2_LZO = y
+CONFIG_EGCS = y
+CONFIG_M7X0-MODULES = y
+CONFIG_SIEMENS-LINUX-KERNEL = y
+# gzip compression level (from 1 to 9) for Kernel image
+CONFIG_SIEMENS-LINUX-KERNEL_GZIP_LEVEL = 3
+CONFIG_GENERATE_SIEMENS-LINUX-KERNEL-IMG = y
+# CONFIG_SIEMENS-LINUX-KERNEL-IMG is not set
+CONFIG_GENERATE_WSW-IMG = y
+# CONFIG_WSW-IMG is not set
+CONFIG_GENERATE_OFI-IMG = y
+# CONFIG_OFI-IMG is not set
+CONFIG_SCRIPT_BASE = base-pro
+CONFIG_TOOL-BOX = y
+
+
+###########
+#         #
+#  Utils  #
+#         #
+###########
+
+# BusyBox: Replacements for most of the utilities you usually find in GNU fileutils, shellutils, etc.
+# URL: http://www.busybox.net
+CONFIG_BUSYBOX = y
+
+# dosfstools: Utilities to create and check MS-DOS FAT filesystems
+# URL: http://www.daniel-baumann.ch/software/dosfstools/
+CONFIG_DOSFSTOOLS = y
+
+# e2fsprogs: Provides the filesystem utilities for use with the ext2/3 filesystem
+# URL: http://e2fsprogs.sourceforge.net/
+CONFIG_E2FSPROGS = y
+
+# spindown: Stops spinning a SCSI disk if it's idle for a while
+# URL: http://vladimir.grouzdev.free.fr/public/spindown/
+CONFIG_SPINDOWN = y
+
+# scsi-spin: Spin up and down a SCSI device
+# URL: http://manpages.ubuntu.com/manpages/hardy/man8/scsi-spin.8.html
+CONFIG_SCSI-SPIN = y
+
+# lynx: Text web browser
+# URL: http://lynx.isc.org/
+# CONFIG_LYNX is not set
+
+# runit: A cross-platform Unix init scheme with service supervision, a replacement for sysvinit, and other init schemes
+# URL: http://smarden.org/runit/
+# CONFIG_RUNIT is not set
+
+# dvbsnoop: A DVB/MPEG stream analyzer program, which enables you to watch stream information in human readable form
+# URL: http://dvbsnoop.sourceforge.net/
+# CONFIG_DVBSNOOP is not set
+
+# htop: An interactive process viewer for Linux
+# URL: http://htop.sourceforge.net/
+# CONFIG_HTOP is not set
+
+# noad: Program for detecting commercials in VDR recordings
+# URL: http://git.gekrumbel.de/?p=noad.git
+# Note: It's very slow in M7x0, but is here in case someone wants to improve it
+# CONFIG_NOAD is not set
+
+# ffmpeg: Complete, cross-platform solution to record, convert and stream audio and video
+# URL: http://www.ffmpeg.org/
+# CONFIG_FFMPEG is not set
+
+# vdr2ts: Convert PES records made with VDR to TS
+# CONFIG_VDR2TS is not set
+
+# BASH: The GNU Bourne-Again SHell
+# URL: http://www.gnu.org/software/bash/
+# Note: If you change this parameter, run: make distclean-busybox
+# CONFIG_BASH is not set
+
+# LIRC: Allows you to decode and send infra-red signals of many commonly used remote controls
+# URL: http://www.lirc.org/
+CONFIG_LIRC = y
+
+# VDR: Fully digital video recorder
+# URL: http://www.tvdr.de/
+CONFIG_VDR = y
+
+# VDR_LOCAL_PATH: Use a VDR's source code in local path
+# CONFIG_VDR_LOCAL_PATH is not set
+
+# VDR-PLUGINS: Plugins for VDR included in firmware
+CONFIG_VDR-PLUGINS = epgsearch filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev channellists cridplayer osdadjust scheduler rssreader pilotskin fepg
+
+# VDR-PLUGINS-LIBS: Libraries of plugins for VDR
+CONFIG_VDR-PLUGINS-LIBS = epgsearch epgsearchonly conflictcheckonly filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev-server channellists cridplayer osdadjust scheduler rssreader pilotskin fepg
+
+# usbautomounter: Automounter for usb devices
+CONFIG_USBAUTOMOUNTER = y
+
+# libosd: OSD library for M7x0 hardware
+CONFIG_LIBOSD = y
+
+# O7O Flasher: Flasher for firmwares in OFI format
+CONFIG_O7O_FLASHER = y
+
+# BootMenu: Graphical menu with configurable options for boot
+# CONFIG_BOOTMENU is not set
+
+
+#################
+#               #
+#  Utils (Host) #
+#               #
+#################
+
+# YUI Compressor: Tool that supports the compression of JavaScript and CSS files
+# URL: http://developer.yahoo.com/yui/compressor/
+CONFIG_YUI_COMPRESSOR = y
+
+# PNGOUT: Optimizes the size of .PNG files losslessly
+# URL: http://www.jonof.id.au/kenutils
+CONFIG_PNGOUT = y
+
+
+#############
+#           #
+#  Network  #
+#           #
+#############
+
+# vsftpd: A secure and extremely fast FTP server
+# URL: http://vsftpd.beasts.org/
+CONFIG_VSFTPD = y
+
+# Pure-FTPd: Secure FTP made easy!
+# URL: http://www.pureftpd.org/project/pure-ftpd
+# CONFIG_PURE-FTPD is not set
+
+# Dropbear: Small SSH 2 server and client
+# URL: http://matt.ucc.asn.au/dropbear/dropbear.html
+CONFIG_DROPBEAR = y
+
+# OpenNTPD: Easy to use implementation of the Network Time Protocol
+# URL: http://www.openntpd.org/
+# CONFIG_OPENNTPD is not set
+
+# ntpclient: An NTP client for unix-alike computers
+# URL: http://doolittle.icarus.com/ntpclient/
+CONFIG_NTPCLIENT = y
+
+# Samba: Provided secure, stable and fast file and print services for all clients using the SMB/CIFS protocol
+# URL: http://www.samba.org/
+# CONFIG_SAMBA is not set
+
+# PPTPD: Point-to-Point Tunneling Protocol is a method for implementing virtual private networks
+# URL: http://en.wikipedia.org/wiki/Point-to-Point_Tunneling_Protocol
+# CONFIG_PPTPD is not set
+
+# PPP: Point-to-Point Protocol is a data link protocol
+# URL: http://en.wikipedia.org/wiki/Point-to-Point_Protocol
+# CONFIG_PPP is not set
+
+# Enhanced CTorrent: BitTorrent client implemented in C++ to be lightweight and quick
+# URL: http://www.rahul.net/dholmes/ctorrent/
+# CONFIG_CTORRENT_DNH is not set
+
+# uShare: A UPnP (TM) A/V & DLNA Media Server
+# URL: http://ushare.geexbox.org/
+# CONFIG_USHARE is not set
+
+# MiniUPnPc: UPnP client
+# URL: http://miniupnp.free.fr/
+# CONFIG_MINIUPNPC is not set
+
+# MiniSSDPd: Daemon used by MiniUPnPc to speed up device discoveries
+# URL: http://miniupnp.free.fr/minissdpd.html
+# CONFIG_MINISSDPD is not set
+
+# UNFS3: A user-space implementation of the NFSv3 server specification
+# URL: http://unfs3.sourceforge.net/
+# CONFIG_UNFS3 is not set
+
+# nfs-utils: Provides a daemon for the kernel NFS server and related tools
+# URL: http://nfs.sourceforge.net/
+CONFIG_NFS-UTILS = y
+
+# portmap: A server that converts RPC program numbers into DARPA protocol port numbers
+# URL: http://linux.die.net/man/8/portmap
+CONFIG_PORTMAP = y
+
+# TCP Wrappers: IP packet filtering facility
+# URL: http://es.wikipedia.org/wiki/TCP_Wrapper
+CONFIG_TCP_WRAPPERS = y
+
+# mini_sendmail: Accept email on behalf of real sendmail
+# URL: http://www.acme.com/software/mini_sendmail/
+# CONFIG_MINI-SENDMAIL is not set
+
+# sSMTP: A simple alternative to sendmail
+# URL: https://wiki.archlinux.org/index.php/SSMTP
+CONFIG_SSMTP = y
+
+# webif: Web server for M7x0 using KLone FrameWork
+# URL: http://www.koanlogic.com/klone/index.html
+CONFIG_WEBIF = y
+
+# GMediaServer: A UPnP compatible media server
+# URL: http://www.gnu.org/software/gmediaserver/
+# CONFIG_GMEDIASERVER is not set
+
+# MediaTomb: An open source UPnP MediaServer with a nice web user interface
+# URL: http://mediatomb.cc/
+CONFIG_MEDIATOMB = y
+
+# FUPPES: A free, multiplatform UPnP A/V Media Server
+# URL: http://fuppes.ulrich-voelkel.de/
+# CONFIG_FUPPES is not set
+
+
+###############
+#             #
+#  Libraries  #
+#             #
+###############
+
+# zlib: A Massively Spiffy Yet Delicately Unobtrusive Compression Library
+# URL: http://www.zlib.net/
+# CONFIG_ZLIB is not set
+# CONFIG_ZLIB_STATIC is not set
+
+# readline: A set of functions for use by applications that allow users to edit command lines as they are typed in
+# URL: http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
+# CONFIG_READLINE is not set
+
+# ncurses: Terminal handling library
+# URL: http://www.gnu.org/software/ncurses/ncurses.html
+# CONFIG_NCURSES is not set
+
+# libuuid: UUID library from e2fsprogs package (still does not work correctly in firmware)
+# URL: http://e2fsprogs.sourceforge.net/
+# CONFIG_LIBUUID is not set
+
+# FreeType: A Free, High-Quality, and Portable Font Engine
+# URL: http://www.freetype.org/
+# CONFIG_FREETYPE is not set
+
+# libmpeg2: A free MPEG-2 video stream decoder
+# URL: http://libmpeg2.sourceforge.net/
+# CONFIG_LIBMPEG2 is not set
+
+# libjpeg: Free library for JPEG image compression
+# URL: http://www.ijg.org/
+# CONFIG_LIBJPEG is not set
+
+# libpng: The official PNG reference library
+# URL: http://www.libpng.org/pub/png/libpng.html
+# CONFIG_LIBPNG is not set
+
+# GraphicsMagick: An image manipulation library
+# URL: http://www.graphicsmagick.org/
+# CONFIG_GRAPHICSMAGICK is not set
+
+# SQLite: A library that implements a self-contained, serverless, zero-configuration, transactional SQL database engine
+# URL: http://www.sqlite.org/
+CONFIG_SQLITE = y
+
+# libupnp: A portable SDK for UPnP Devices
+# URL: http://pupnp.sourceforge.net/
+# CONFIG_LIBUPNP is not set
+
+# libupnp with DLNA support: Hack that add DLNA header to libupnp library
+# CONFIG_LIBUPNP_DLNA is not set
+
+# LIBDLNA: Libray for implementation of DLNA (Digital Living Network Alliance) standards
+# URL: http://libdlna.geexbox.org/
+# CONFIG_LIBDLNA is not set
+
+# libxml2: A library for manipulating XML and HTML resources
+# URL: http://www.xmlsoft.org/
+# CONFIG_LIBXML2 is not set
+
+# PCRE: Library that implement regular expression pattern matching using the same syntax and semantics as Perl 5
+# URL: http://www.pcre.org/
+# CONFIG_PCRE is not set
+
+# libmagic: A library for the file utility that can classify files according to magic number tests
+# URL: http://www.darwinsys.com/file/
+# CONFIG_LIBMAGIC is not set
+
+# Expat: An XML parser library written in C
+# URL: http://expat.sourceforge.net/
+CONFIG_EXPAT = y
+
+# cURL: The multiprotocol file transfer library
+# URL: http://curl.haxx.se/
+# CONFIG_CURL is not set
+
+# libexif: A library that reads and writes EXIF metainformation from and to image files
+# URL: http://libexif.sourceforge.net/
+# CONFIG_LIBEXIF is not set
+
+# ffmpegthumbnailer: Library that can be used to create thumbnails for your video files
+# URL: http://code.google.com/p/ffmpegthumbnailer/
+# CONFIG_LIBFFMPEGTHUMBNAILER is not set
+
+# libjs (SpiderMonkey): Mozilla's C implementation of JavaScript
+# URL: http://www.mozilla.org/js/spidermonkey/
+# CONFIG_LIBJS is not set
+
+# libiconv: Library that provides an iconv() implementation
+# URL: http://www.gnu.org/software/libiconv/
+# CONFIG_LIBICONV is not set
+
+# id3lib: Library for reading, writing, and manipulating ID3v1 and ID3v2 tags
+# URL: http://id3lib.sourceforge.net/
+# CONFIG_ID3LIB is not set
+
+# TagLib: Library for reading and editing the meta-data of several popular audio formats
+# URL: http://developer.kde.org/~wheeler/taglib.html
+# CONFIG_TAGLIB is not set
+
+
+###############################
+#                             #
+#  Performance Testing Tools  #
+#                             #
+###############################
+
+# Mini SNMPD: SNMP server for embedded systems
+# URL: http://members.aon.at/linuxfreak/linux/
+# CONFIG_MINI_SNMPD is not set
+
+# HackBench: Test scheduler and unix-socket (or pipe) performance
+# URL: http://people.redhat.com/mingo/cfs-scheduler/tools/hackbench.c
+# CONFIG_HACKBENCH is not set
+
+# pipe-test: Test pipe performance
+# URL: http://people.redhat.com/mingo/cfs-scheduler/tools/pipe-test.c
+# CONFIG_PIPE-TEST is not set
+
+# Bonnie++: Benchmark suite with a number of simple tests of hard drive and file system performance
+# URL: http://www.coker.com.au/bonnie++/
+# CONFIG_BONNIE++ is not set
+
+# DBENCH: Tool to generate I/O workloads to either a filesystem or to a networked CIFS or NFS server
+# URL: http://dbench.samba.org/
+# CONFIG_DBENCH is not set
+
+# LMbench: Tools for Performance Analysis 
+# URL: http://www.bitmover.com/lmbench/
+# CONFIG_LMBENCH is not set
+
+# UnixBench: A basic indicator of the performance of a Unix-like system
+# URL: http://code.google.com/p/byte-unixbench/
+# CONFIG_UNIXBENCH is not set
+
+
+###########
+#         #
+#  Debug  #
+#         #
+###########
+
+# GDB: The GNU Project Debugger
+# URL: http://www.gnu.org/software/gdb/
+# CONFIG_GDB is not set
+
+# dmalloc: Debug Malloc Library
+# URL: http://dmalloc.com/
+# CONFIG_DMALLOC is not set
+
+# DUMA: (Detect Unintended Memory Access) is a multi-platform memory debugging library
+# URL: http://sourceforge.net/projects/duma/
+# CONFIG_DUMA is not set
+
+# strace: A system call tracer
+# URL: http://sourceforge.net/projects/strace/
+# CONFIG_STRACE is not set

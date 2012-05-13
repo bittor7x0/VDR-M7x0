@@ -1,0 +1,13 @@
+
+      Up - Crsr up
+      Down Crsr down
+      Left - ---
+      Right - ---
+      Ok - Select
+      Menu - Menu off
+      Back - Menu off
+      Red - Record
+      Green - Language
+      Yellow - Pause live
+      Blue - Stop/Resume
+      0..9 - ---

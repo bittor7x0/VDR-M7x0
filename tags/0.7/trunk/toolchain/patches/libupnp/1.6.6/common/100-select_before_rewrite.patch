@@ -1,0 +1,23 @@
+diff -Naur libupnp-1.6.6-orig/upnp/src/genlib/net/sock.c libupnp-1.6.6/upnp/src/genlib/net/sock.c
+--- libupnp-1.6.6-orig/upnp/src/genlib/net/sock.c	2008-03-09 01:54:58.000000000 +0100
++++ libupnp-1.6.6/upnp/src/genlib/net/sock.c	2010-01-02 18:54:31.252250635 +0100
+@@ -260,6 +260,19 @@
+ 
+             byte_left = byte_left - num_written;
+             bytes_sent += num_written;
++            if( byte_left > 0 ) {
++               if( *timeoutSecs == 0 )
++                   retCode = select( sockfd + 1, &readSet, &writeSet, NULL, NULL );
++               else
++                   retCode = select( sockfd + 1, &readSet, &writeSet, NULL, &timeout );
++               if( retCode == 0 )
++                  return UPNP_E_TIMEDOUT;
++               if( retCode == -1 ) {
++                  if( errno == EINTR )
++                     continue;
++                  return UPNP_E_SOCKET_ERROR;
++                  }
++               }
+         }
+ 
+         numBytes = bytes_sent;

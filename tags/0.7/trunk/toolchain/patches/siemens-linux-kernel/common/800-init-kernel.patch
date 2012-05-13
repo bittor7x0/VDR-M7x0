@@ -1,0 +1,33 @@
+--- slin_m740/arch/mips/kernel/head.S.orig	2007-11-16 11:44:15.000000000 +0100
++++ slin_m740/arch/mips/kernel/head.S	2007-11-16 11:49:14.000000000 +0100
+@@ -149,14 +149,6 @@
+ 		NESTED(kernel_entry, 16, sp)
+ 		.set	noreorder
+ 
+-		/*
+-		 * Stack for kernel and init, current variable
+-		 */
+-		la	$28, init_task_union
+-		addiu	t0, $28, KERNEL_STACK_SIZE-32
+-		subu	sp, t0, 4*SZREG
+-
+-		sw	t0, kernelsp
+ 		/* The firmware/bootloader passes argc/argp/envp
+ 		 * to us as arguments.  But clear bss first because
+ 		 * the romvec and other important info is stored there
+@@ -170,6 +162,15 @@
+ 		bne	t0, t1, 1b
+ 		 sw	zero, (t0)
+ 
++		/*
++		 * Stack for kernel and init, current variable
++		 */
++		la	$28, init_task_union
++		addiu	t0, $28, KERNEL_STACK_SIZE-32
++		subu	sp, t0, 4*SZREG
++
++		sw	t0, kernelsp
++
+ 		jal	init_arch
+ 		 nop
+ 		END(kernel_entry)

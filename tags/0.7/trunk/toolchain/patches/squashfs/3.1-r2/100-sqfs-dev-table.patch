@@ -1,0 +1,585 @@
+diff -ruN squashfs3.1-r2/squashfs-tools.orig/Makefile squashfs3.1-r2/squashfs-tools/Makefile
+--- squashfs3.1-r2/squashfs-tools.orig/Makefile	2006-08-21 01:42:45.000000000 +0200
++++ squashfs3.1-r2/squashfs-tools/Makefile	2008-08-17 14:45:01.000000000 +0200
+@@ -17,3 +17,6 @@
+ 	$(CC) unsquashfs.o -lz -o $@
+ 
+ unsquashfs.o: unsquashfs.c squashfs_fs.h read_fs.h global.h
++
++clean:
++	-rm -f *.o *~ unsquashfs mksquashfs
+diff -ruN squashfs3.1-r2/squashfs-tools.orig/mksquashfs.c squashfs3.1-r2/squashfs-tools/mksquashfs.c
+--- squashfs3.1-r2/squashfs-tools.orig/mksquashfs.c	2006-08-31 00:07:37.000000000 +0200
++++ squashfs3.1-r2/squashfs-tools/mksquashfs.c	2008-08-17 14:05:06.000000000 +0200
+@@ -163,6 +163,29 @@
+ struct exclude_info *exclude_paths = NULL;
+ int excluded(char *filename, struct stat *buf);
+ 
++/* list of device Table files */
++#define DEV_TABLE_PSEUDO_DEV 0xFFFFFFFF
++struct dev_table_info {
++	int 			depth;
++	int 			dev_table_only;
++	char 			*name;
++	char 			*pathname;
++	ino_t     		st_ino;
++	mode_t 			st_mode;
++	uid_t			st_uid; 
++	gid_t			st_gid;
++	dev_t     		st_rdev;
++	struct dev_table_info	*dir_ents;
++	struct dev_table_info	*parent_dir;
++	struct dev_table_info 	*next;
++	struct dev_table_info 	*prev;
++	
++};
++
++int dev_table_depth = -1;
++struct dev_table_info *dev_table_root = NULL;
++struct dev_table_info *dev_table_cur_dir = NULL;
++
+ /* fragment block data structures */
+ int fragments = 0;
+ struct file_buffer *fragment_data = NULL;
+@@ -2187,20 +2210,352 @@
+ 		dir->dir_is_ldir = FALSE;
+ }
+ 
++#define DIR_SCAN_MAX 8192
++
++static char *strcpyunescape(char **dest, char *src)
++{
++	char *d;
++
++	while (src[0] && (src[0] == ' ' || src[0] == '\n' || src[0] == '\t'
++			|| src[0] == '\r'))
++			src++;
++
++	if (!src[0] || src[0] == '#') {
++		*dest = NULL;
++		return src;
++	}
++
++	*dest = d = malloc(strlen(src) + 1);
++	if (!d)
++		BAD_ERROR("Cannot alloc memory\n");
++
++	while (src[0] && src[0] != ' ' && src[0] != '\n' && src[0] != '\t' &&
++			src[0] != '\r') {
++		char c;
++		int i;
++		if (src[0] != '\\') {
++			d[0] = src[0];
++			d++;
++			src++;
++			continue;
++		}
++
++		i = 2;
++		switch (src[1]) {
++			case 'n':
++				c = '\n';
++				break;
++			case 't':
++				c = '\t';
++				break;
++			case 'r':
++				c = '\r';
++				break;
++			case ' ':
++				c = ' ';
++				break;
++			case '#':
++				c = '#';
++				break;
++			case '\\':
++				c = '\\';
++				break;
++			default:
++				c = '\\';
++				i = 1;
++		}
++		d[0] = c;
++		d++;
++		src += i;
++	}
++	d[0] = 0;
++	return src;
++}
++
++void free_dev_tab_entry(struct dev_table_info *ent, int report) 
++{
++	while (ent->dir_ents) {
++		if (report) {
++			ERROR("Unused device table entry %s found.\n", ent->dir_ents->pathname);
++		}
++		free_dev_tab_entry(ent->dir_ents, report);
++	}
++
++	if (ent->prev) {
++		ent->prev->next = ent->next;
++	} else if (ent->parent_dir) {
++		ent->parent_dir->dir_ents = ent->next;
++	}
++	
++	if (ent->next)
++		ent->next->prev = ent->prev;
++	free(ent->name);
++	free(ent->pathname);
++	free(ent);
++}
++
++void add_dev_tab_entry(struct dev_table_info *ent, struct dev_table_info *cur_dir, char *fname, int line) 
++{
++	char *fend;
++	fend = strchr(fname, '/');
++	
++	if (fend) {
++		*fend = 0;
++	}
++		
++	struct dev_table_info *cur= cur_dir->dir_ents;
++	while (cur && strcmp(fname,cur->name)) {
++		cur = cur->next;
++	}
++	ent->depth++;
++	if (fend) {
++		*fend = '/';
++		if (!cur)
++			BAD_ERROR("Cannot find directory in device table entry '%s' in line %d\n", ent->pathname, line);
++		if (!S_ISDIR(cur->st_mode)) 
++			BAD_ERROR("'%s' is not a directory in device table entry '%s' in line %d\n",
++				 cur->pathname, ent->pathname, line);
++		while (*fend == '/')
++			fend++;
++		add_dev_tab_entry(ent, cur, fend, line);
++		return;
++	}
++	
++	if (cur) {
++		if (cur->st_mode != ent->st_mode || cur->st_uid != ent->st_uid || cur->st_gid != ent->st_gid || cur->st_rdev != ent->st_rdev)
++			BAD_ERROR("Duplicate device table entry '%s' in line (differs) %d\n",  ent->pathname, line);
++		else {
++			ERROR("Duplicate device table entry '%s' in line  %d\n",  ent->pathname, line);
++			free_dev_tab_entry(ent,1);
++			return;	
++		}
++	}
++		
++	ent->parent_dir = cur_dir;
++	ent->prev = NULL;
++	ent->next = cur_dir->dir_ents;
++	if (cur_dir->dir_ents)
++		cur_dir->dir_ents->prev = ent;
++	cur_dir->dir_ents = ent;
++	
++}
++void read_dev_tab(char *fname) 
++{
++	ino_t cur_ino_no = 1;
++	FILE *dev_file;
++	
++	char *line;
++	size_t line_size;
++	int cur_line = 0;
++
++	line = NULL;
++	line_size = 0;
++	dev_file = fopen(fname,"r");
++	if (!dev_file)
++		BAD_ERROR("Cannot open device table file '%s'!\n", fname);
++	
++	
++	dev_table_root = malloc(sizeof(*dev_table_root));
++	memset(dev_table_root, 0, sizeof(*dev_table_root));
++	dev_table_root->st_mode = S_IFDIR | 0777;
++	
++	if (!dev_table_root) 
++		BAD_ERROR("Cannot alloc memory!\n");
++	
++		
++	while (getline(&line, &line_size, dev_file) >= 0) {
++		cur_line++;
++		char *file;
++		char *p;
++		char action;
++		mode_t mode;
++		uid_t uid;
++		gid_t gid;
++		int major;
++		int minor;
++		int dev_start;
++		int minor_inc;
++		int dev_count;
++		mode_t cur_fmode;
++		
++		file = NULL;
++		
++		p = strcpyunescape(&file, line);
++
++		if (!file)
++			continue;
++			
++		
++		dev_count = 0;
++		major = 0;
++		minor = 0;
++		int f = sscanf(p," %c %o %u %u %u %u %u %u %u ", &action, &mode,
++			&uid, &gid, &major, &minor, &dev_start, &minor_inc, &dev_count);
++		
++		if (f < 4) 
++			BAD_ERROR("Invalid line no %d in device table file '%s'\n", cur_line, fname);	
++		
++		cur_fmode = S_IFCHR;
++		switch (action) {
++			case 'b':
++				cur_fmode = S_IFBLK;
++			case 'c':
++				if (f < 6)
++					BAD_ERROR("Invalid line no %d in device table file '%s'\n", cur_line, fname);
++				break;
++			case 'd':
++				cur_fmode = S_IFDIR;
++				break;
++			case 'f':
++				cur_fmode = S_IFREG;
++				break;
++			case 'p':
++				cur_fmode = S_IFIFO;
++				break;
++			case 's':
++				cur_fmode = S_IFSOCK;
++				break;
++		}
++		mode = mode | cur_fmode;
++		
++		if (dev_count == 0) {
++			struct dev_table_info *ent;
++			ent = malloc(sizeof(*ent));
++			if (!ent) 
++				BAD_ERROR("Cannot alloc memory!\n");
++			
++			ent->pathname = file;
++			ent->name = strrchr(file,'/');
++			ent->name = ent->name ? ent->name + 1 : file;
++			ent->name = strdup(ent->name);
++			if (!ent->name[0]) 
++				BAD_ERROR("Invalid filename '%s' in device table entry line %d!\n", file, cur_line);
++			ent->depth = 0;
++			ent->dev_table_only = 0;
++			ent->st_ino = cur_ino_no++;
++			ent->st_mode = mode;
++			ent->st_uid = uid; 
++			ent->st_gid = gid;
++			ent->st_rdev = makedev(major, minor);
++			ent->dir_ents = NULL;
++			ent->parent_dir = NULL;
++			ent->next = NULL;
++			ent->prev = NULL;
++			
++			p = file;
++			while (*p == '/')
++				p++;
++			add_dev_tab_entry(ent,dev_table_root, p, cur_line);
++			continue;	
++		} 
++		
++		while (dev_count--) {
++			struct dev_table_info *ent;
++			ent = malloc(sizeof(*ent));
++			if (!ent) 
++				BAD_ERROR("Cannot alloc memory!\n");
++			
++			if (asprintf(&ent->pathname,"%s%d", file, dev_start) < 0)
++				BAD_ERROR("Cannot alloc memory!\n");
++			dev_start++;
++			ent->name = strrchr(ent->pathname,'/');
++			ent->name = ent->name ? ent->name + 1 : ent->pathname;
++			ent->name = strdup(ent->name);
++			ent->depth = 0;
++			ent->dev_table_only = 0;
++			ent->st_ino = cur_ino_no++;
++			ent->st_mode = mode;
++			ent->st_uid = uid; 
++			ent->st_gid = gid;
++			ent->st_rdev = makedev(major, minor);
++			minor += minor_inc;
++			ent->dir_ents = NULL;
++			ent->parent_dir = NULL;
++			ent->next = NULL;
++			ent->prev = NULL;
++			
++			p = ent->pathname;
++			while (*p == '/')
++				p++;
++			add_dev_tab_entry(ent,dev_table_root, p,cur_line);
++		}
++		free(file);
++	}
++	free(line);
++	fclose(dev_file);
++}
++
++
++
++void dev_tab_overwrite(char *dname, struct stat *buf)
++{
++	if (dev_table_cur_dir == NULL || dev_table_depth != dev_table_cur_dir->depth)
++		return;
++		
++	struct dev_table_info *cur = dev_table_cur_dir->dir_ents;
++	while (cur && strcmp(dname, cur->name))
++		cur = cur->next;
++	
++	if (!cur)
++		return;
++	
++	if (cur->dev_table_only) {
++		memset(buf, 0, sizeof(*buf));
++		buf->st_dev = DEV_TABLE_PSEUDO_DEV;
++		buf->st_ino = cur->st_ino;
++		buf->st_nlink = 1;
++		buf->st_atime = buf->st_mtime = buf->st_ctime = time(NULL);
++	}
++	
++	buf->st_mode = cur->st_mode;
++	buf->st_uid = cur->st_uid;
++	buf->st_gid = cur->st_gid;
++	buf->st_rdev = cur->st_rdev;
++	
++	if (S_ISDIR(cur->st_mode))
++		return;
++		
++	free_dev_tab_entry(cur, 1);
++}
+ 
+ struct dir_info *scan1_opendir(char *pathname)
+ {
+ 	DIR	*linuxdir;
+ 	struct dirent *d_name;
+ 	struct dir_info *dir;
+-
++	int dev_dir_avail = 0;
++	
+ 	if((dir = malloc(sizeof(struct dir_info))) == NULL)
+ 		return NULL;
+ 
+-	if(pathname[0] != '\0' && (dir->linuxdir = opendir(pathname)) == NULL) {
++	if (dev_table_depth == -1) {
++		dev_table_cur_dir = dev_table_root;
++		dev_dir_avail = dev_table_root != NULL;
++	} else if (dev_table_cur_dir != NULL && dev_table_depth == dev_table_cur_dir->depth) {
++		char *p = strrchr(pathname, '/');
++		p = p != NULL ? p + 1 : pathname;
++		struct dev_table_info *cur = dev_table_cur_dir->dir_ents;
++		while (cur && strcmp(p,cur->name))
++			cur = cur->next;
++		if (cur) {
++			dev_table_cur_dir = cur;
++			dev_dir_avail = 1;
++		}
++	}
++	dev_table_depth++;
++	
++	dir->linuxdir = NULL;
++	if (dev_dir_avail == 0 || dev_table_cur_dir->dev_table_only == 0)
++		dir->linuxdir = opendir(pathname);
++	
++	if (dev_dir_avail && !S_ISDIR(dev_table_cur_dir->st_mode)) 
++		BAD_ERROR("Try opening device table entry '%s' as directory, which is not an directory\n", dev_table_cur_dir->pathname);
++	
++	if(pathname[0] != '\0' && dir->linuxdir == NULL && dev_dir_avail == 0) {
+ 		free(dir);
+ 		return NULL;
+ 	}
++
+ 	dir->pathname = strdup(pathname);
+ 	dir->count = dir->directory_count = dir->current_count = dir->byte_count = 0;
+ 	dir->dir_is_ldir = TRUE;
+@@ -2242,6 +2597,23 @@
+ 		strcpy(pathname, source_path[index ++]);
+ 		return 1;
+ 	}
++	
++	while (dev_table_cur_dir != NULL && dev_table_depth == dev_table_cur_dir->depth &&
++	    		dev_table_cur_dir->dir_ents) {
++		for(n = 0; n < dir->count && strcmp(dir->list[n]->name, dev_table_cur_dir->dir_ents->name) != 0; n++);
++	    	if (n == dir->count) {
++	    		dev_table_cur_dir->dir_ents->dev_table_only=1;
++	    		strncpy(dir_name, dev_table_cur_dir->dir_ents->name,DIR_SCAN_MAX);
++	    		dir_name[DIR_SCAN_MAX-1] = 0;
++	    		strncpy(pathname, dev_table_cur_dir->dir_ents->pathname,DIR_SCAN_MAX);
++	    		pathname[DIR_SCAN_MAX-1] = 0;
++	    		return 2;
++		}
++		ERROR("Device table directory entry %s already used! - Skipping\n",dev_table_cur_dir->dir_ents->pathname);
++		free_dev_tab_entry(dev_table_cur_dir->dir_ents,0);
++	}
++	
++	
+ 	return 0;
+ }
+ 
+@@ -2258,7 +2630,11 @@
+ 			add_dir_entry(old_root_entry[i].name, "", NULL, NULL, &old_root_entry[i], dir);
+ 		}
+ 
+-	if((d_name = readdir(dir->linuxdir)) != NULL) {
++	if (!dir->linuxdir && (dev_table_cur_dir != NULL || dev_table_depth != dev_table_cur_dir->depth 
++			|| dev_table_cur_dir->dev_table_only == 0))
++		BAD_ERROR("No dir opened while no device table present\n");
++		
++	if(dir->linuxdir && (d_name = readdir(dir->linuxdir)) != NULL) {
+ 		strcpy(dir_name, d_name->d_name);
+ 		pass = 1;
+ 		for(;;) {
+@@ -2273,6 +2649,21 @@
+ 		return 1;
+ 	}
+ 
++	while (dev_table_cur_dir != NULL && dev_table_depth == dev_table_cur_dir->depth &&
++	    		dev_table_cur_dir->dir_ents) {
++		int n;
++		for(n = 0; n < dir->count && strcmp(dir->list[n]->name, dev_table_cur_dir->dir_ents->name) != 0; n++);
++	    	if (n == dir->count) {
++	    		dev_table_cur_dir->dir_ents->dev_table_only=1;
++	    		strncpy(dir_name, dev_table_cur_dir->dir_ents->name,DIR_SCAN_MAX);
++	    		dir_name[DIR_SCAN_MAX-1] = 0;
++	    		strncat(strncat(strncpy(pathname, dir->pathname,DIR_SCAN_MAX), "/", DIR_SCAN_MAX), dir_name, DIR_SCAN_MAX);
++	    		pathname[DIR_SCAN_MAX-1] = 0;
++	    		return 2;
++		}
++		ERROR("Device table directory entry %s already used! - Skipping\n",dev_table_cur_dir->dir_ents->pathname);
++		free_dev_tab_entry(dev_table_cur_dir->dir_ents,0);
++	}
+ 	return 0;
+ }
+ 
+@@ -2281,12 +2672,26 @@
+ {
+ 	struct dirent *d_name;
+ 
+-	if((d_name = readdir(dir->linuxdir)) != NULL) {
++	if (!dir->linuxdir && (dev_table_cur_dir != NULL || dev_table_depth != dev_table_cur_dir->depth 
++			|| dev_table_cur_dir->dev_table_only == 0))
++		BAD_ERROR("No dir opened while no device table present\n");
++		
++	if(dir->linuxdir && (d_name = readdir(dir->linuxdir)) != NULL) {
+ 		strcpy(dir_name, d_name->d_name);
+ 		strcat(strcat(strcpy(pathname, dir->pathname), "/"), d_name->d_name);
+ 		return 1;
+ 	}
+-
++	
++	if (dev_table_cur_dir != NULL && dev_table_depth == dev_table_cur_dir->depth &&
++	    		dev_table_cur_dir->dir_ents) {
++		dev_table_cur_dir->dir_ents->dev_table_only=1;
++	    	strncpy(dir_name, dev_table_cur_dir->dir_ents->name,DIR_SCAN_MAX);
++	    	dir_name[DIR_SCAN_MAX-1] = 0;
++	    	
++	    	strncat(strncat(strncpy(pathname, dir->pathname,DIR_SCAN_MAX), "/", DIR_SCAN_MAX), dir_name, DIR_SCAN_MAX);
++	    	pathname[DIR_SCAN_MAX-1] = 0;
++	    	return 2;
++	}
+ 	return 0;
+ }
+ 
+@@ -2307,8 +2712,15 @@
+ 
+ void scan1_freedir(struct dir_info *dir)
+ {
+-	if(dir->pathname[0] != '\0')
++	if(dir->linuxdir != NULL)
+ 		closedir(dir->linuxdir);
++	if (dev_table_cur_dir != NULL && dev_table_depth == dev_table_cur_dir->depth) {
++		struct dev_table_info *cur;
++		cur = dev_table_cur_dir;
++		dev_table_cur_dir = cur->parent_dir;
++		free_dev_tab_entry(cur,1);
++	}
++	dev_table_depth--;
+ }
+ 
+ 
+@@ -2375,18 +2787,22 @@
+ 		ERROR("Could not open %s, skipping...\n", pathname);
+ 		goto error;
+ 	}
+-
+-	while(_readdir(filename, dir_name, dir) != FALSE) {
++	int r;
++	while((r = _readdir(filename, dir_name, dir)) != FALSE) {
+ 
+ 		if(strcmp(dir_name, ".") == 0 || strcmp(dir_name, "..") == 0)
+ 			continue;
+ 
+-		if(lstat(filename, &buf) == -1) {
+-			char buffer[8192];
+-			sprintf(buffer, "Cannot stat dir/file %s, ignoring", filename);
+-			perror(buffer);
+-			continue;
+-		}
++		if (r != 2)
++			if(lstat(filename, &buf) == -1) {
++				char buffer[8192];
++				sprintf(buffer, "Cannot stat dir/file %s, ignoring", filename);
++				perror(buffer);
++				continue;
++			}
++		
++		dev_tab_overwrite(dir_name, &buf);
++		
+ 		if(excluded(filename, &buf))
+ 			continue;
+ 
+@@ -2683,6 +3099,7 @@
+ 	int be, nopad = FALSE, keep_as_directory = FALSE, orig_be;
+ 	squashfs_inode inode;
+ 	int readb_mbytes = READER_BUFFER_DEFAULT, writeb_mbytes = WRITER_BUFFER_DEFAULT;
++	char *device_table_filename = NULL;
+ 
+ #if __BYTE_ORDER == __BIG_ENDIAN
+ 	be = TRUE;
+@@ -2841,6 +3258,12 @@
+ 				exit(1);
+ 			}	
+ 			root_name = argv[i];
++		} else if (strcmp(argv[i], "-d") || strcmp(argv[i], "-device-table")) {
++			if(++i == argc) {
++				ERROR("%s: -d | -device-table: missing name\n", argv[0]);
++				exit(1);
++			}
++			device_table_filename = argv[i];
+ 		} else if(strcmp(argv[i], "-version") == 0) {
+ 			VERSION();
+ 		} else {
+@@ -2883,6 +3306,7 @@
+ 			ERROR("\t\t\tfile or dir with priority per line.  Priority -32768 to\n");
+ 			ERROR("\t\t\t32767, default priority 0\n");
+ 			ERROR("-ef <exclude_file>\tlist of exclude dirs/files.  One per line\n");
++			ERROR("-d|-device-table <name>\tsetup files by device table <name>\n");
+ 			exit(1);
+ 		}
+ 	}
+@@ -2954,7 +3378,7 @@
+ 			fclose(fd);
+ 		} else if(strcmp(argv[i], "-e") == 0)
+ 			break;
+-		else if(strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "-root-becomes") == 0 || strcmp(argv[i], "-sort") == 0)
++		else if(strcmp(argv[i], "-b") == 0 || strcmp(argv[i],"-d") || strcmp(argv[i],"-device-table") || strcmp(argv[i], "-root-becomes") == 0 || strcmp(argv[i], "-sort") == 0)
+ 			i++;
+ 
+ 	if(i != argc) {
+@@ -2972,8 +3396,11 @@
+ 			sorted ++;
+ 		} else if(strcmp(argv[i], "-e") == 0)
+ 			break;
+-		else if(strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "-root-becomes") == 0 || strcmp(argv[i], "-ef") == 0)
++		else if(strcmp(argv[i], "-b") == 0 || strcmp(argv[i],"-d") || strcmp(argv[i],"-device-table") || strcmp(argv[i], "-root-becomes") == 0 || strcmp(argv[i], "-ef") == 0)
+ 			i++;
++			
++	if (device_table_filename)
++		read_dev_tab(device_table_filename);
+ 
+ 	initialise_threads();
+ 

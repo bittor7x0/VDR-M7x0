@@ -1,0 +1,11 @@
+--- slin_m740/drivers/usb/hub.c.orig	2007-12-23 16:07:48.000000000 +0100
++++ slin_m740/drivers/usb/hub.c	2007-12-23 16:09:22.000000000 +0100
+@@ -179,7 +179,7 @@
+ 	dev->maxchild = hub->descriptor->bNbrPorts;
+ 	info("%d port%s detected", hub->descriptor->bNbrPorts, (hub->descriptor->bNbrPorts == 1) ? "" : "s");
+ 
+-	le16_to_cpus(&hub->descriptor->wHubCharacteristics);
++	hub->descriptor->wHubCharacteristics = le16_to_cpu(hub->descriptor->wHubCharacteristics);
+ 
+ 	if (hub->descriptor->wHubCharacteristics & HUB_CHAR_COMPOUND)
+ 		dbg("part of a compound device");

@@ -1,0 +1,41 @@
+VDR Plugin 'skincurses' Revision History
+----------------------------------------
+
+2004-05-31: Version 0.0.1
+
+- Initial revision.
+
+2004-05-31: Version 0.0.2
+
+- Fixed some default parameters.
+
+2005-01-02: Version 0.0.3
+
+- Made several functions threadsafe.
+- New audio track display.
+
+2005-05-16: Version 0.0.4
+
+- New "recording info" display.
+
+2005-10-01:
+
+- Added a note about using this skin to the README file.
+
+2005-11-26: Version 0.0.5
+
+- Fixed SetProgress() in case Total is 0.
+
+2006-04-14: Version 0.0.6
+
+- Added a missing "Key$" in skincurses.c.
+
+2006-06-03: Version 0.0.7
+
+- Fixed handling tabbed item display.
+- When the 'skincurses' plugin is loaded, it automatically sets the 'curses'
+  skin as the current one.
+
+2006-09-10: Version 0.0.8
+
+- The size of the OSD is now adjusted to the size of the console window.

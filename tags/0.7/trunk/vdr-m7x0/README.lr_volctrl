@@ -1,0 +1,29 @@
+Based in patch written by:   Frank Schmirler <vdrdev@schmirler.de>
+Project's homepage:          http://vdr.schmirler.de/
+
+Latest version available at: http://vdr.schmirler.de/volctrl/
+------------------------------------------------------------------------
+This patch enables volume control with the left/right of your remote
+control. Enabled it in OSD menu Setup > Miscellaneous.
+
+Setup options:
+- Channelgroups with left/right
+Affects the behaviour of left/right while watching live TV.
+  yes: Default VDR behaviour. No volume control with left/right
+  only in channelinfo: While channelinfo is open, left/right will switch
+       channelgroups (hit OK to display channelinfo if not visible).
+       Otherwise left/right controls the volume (hit OK to close
+       channelinfo if it is currently visible).
+  no:  You will loose the channelgroup feature. Left/right will always
+       control the volume
+- Search fwd/back with left/right
+Affects the behaviour of left/right during replay.
+  yes: Default VDR behaviour. No volume control with left/right
+  only in progress display: While progress bar is shown, left/right
+       controls speed and direction (hit OK to display progress bar if
+       not visible).
+       Otherwise left/right controls the volume (hit OK to close
+       progress bar if it is currently visible).
+  no:  You will loose the ability to search with left/right. Makes sense
+       if your remote control has dedicated keys for this.
+------------------------------------------------------------------------

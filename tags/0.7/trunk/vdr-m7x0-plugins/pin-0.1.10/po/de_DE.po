@@ -1,0 +1,220 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <vdr@jwendel.de>\n"
+"POT-Creation-Date: 2008-06-13 20:38+0200\n"
+"PO-Revision-Date: 2008-05-05 08:09+0200\n"
+"Last-Translator: Klaus Schmidinger <kls@cadsoft.de>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: menu.c:37 menu.c:144 menu.c:145
+msgid "Setup"
+msgstr ""
+
+#: menu.c:46
+msgid "Add current channel to protection list"
+msgstr "Aktuellen Kanal sperren"
+
+#: menu.c:47
+msgid "Add current broadcast to protection list"
+msgstr "Aktuelle Sendung sperren"
+
+#: menu.c:48
+msgid "Edit channel locks"
+msgstr "Gesperrte Kanäle bearbeiten"
+
+#: menu.c:49
+msgid "Edit broadcast locks"
+msgstr "Gesperrte Sendungen bearbeiten"
+
+#: menu.c:50
+msgid "Edit plugin locks"
+msgstr "Systemeinstellungen bearbeiten"
+
+#: menu.c:51
+msgid "Edit menu locks"
+msgstr "Menüsperren bearbeiten"
+
+#: menu.c:52 menu.c:119
+msgid "Lock setup"
+msgstr "Setup sperren"
+
+#: menu.c:52 menu.c:119
+msgid "Unlock setup"
+msgstr "Setup entsperren"
+
+#: menu.c:53
+msgid "Activate childlock"
+msgstr "Kindersicherung aktivieren"
+
+#: menu.c:83
+msgid "Activated pin protection"
+msgstr "Kindersicherung aktiviert"
+
+#: menu.c:87
+msgid "Please setup a pin code first!"
+msgstr "Bitte konfigurieren zuerst einen Pin Code!"
+
+#: menu.c:97
+msgid "Protected channels"
+msgstr "Gesperrte Kanäle"
+
+#: menu.c:101
+msgid "Protected broadcasts"
+msgstr "Gesperrte Sendungen"
+
+#: menu.c:105
+msgid "Plugin protections"
+msgstr "Sperren / Entsperren"
+
+#: menu.c:109
+msgid "Menu protections"
+msgstr "Menü sperren"
+
+#: menu.c:155
+msgid "locked"
+msgstr "gesperrt"
+
+#: menu.c:155
+msgid "unlocked"
+msgstr "entsperrt"
+
+#: menu.c:176
+msgid "already in list"
+msgstr "bereits in der Liste"
+
+#: menu.c:183 menu.c:221
+msgid "added to protection list"
+msgstr "hinzugefügt"
+
+#: menu.c:265 menu.c:267
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: menu.c:265 menu.c:267
+msgid "On/Off"
+msgstr "An/Aus"
+
+#: menu.c:267
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: menu.c:267
+msgid "Delete"
+msgstr "Löschen"
+
+#: menu.c:329
+msgid "Remove entry?"
+msgstr "Eintrag entfernen?"
+
+#: menu.c:429
+msgid "Name"
+msgstr ""
+
+#: menu.c:430
+msgid "Lock active"
+msgstr "Sperre aktiv"
+
+#: menu.c:431
+msgid "Keyword"
+msgstr "Suchbegriff"
+
+#: menu.c:432
+msgid "Search mode"
+msgstr ""
+
+#: menu.c:443
+msgid "Start"
+msgstr ""
+
+#: menu.c:444
+msgid "Stop"
+msgstr ""
+
+#: pin.c:66
+msgid "Setup your pin code: "
+msgstr "Bitte Pin Code festlegen: "
+
+#: pin.c:68
+msgid "Pin Code: "
+msgstr "Pin Eingabe: "
+
+#: pin.c:167 pin.c:168
+msgid "Pin code successfully setup"
+msgstr "Pin Code erfolgreich festgelegt."
+
+#: pin.c:180 pin.c:181
+msgid "Code accepted"
+msgstr "Eingabe angenommen"
+
+#: pin.c:180 pin.c:181
+msgid "Invalid Code !"
+msgstr "Falsche Eingabe !"
+
+#: pin.c:354
+msgid "Please enter pin code first"
+msgstr "Bitte zuerst Pin Code eingeben"
+
+#: pin.c:628
+msgid "Recording protected, enter pin code first"
+msgstr "Aufnahme gesperrt, bitte Kindersicherung freischalten"
+
+#: pin.c:664
+msgid "channel is protected"
+msgstr "Kanal gesperrt"
+
+#: pin.c:683
+msgid "broadcast is protected"
+msgstr "Sendung gesperrt"
+
+#: pin.c:817 pin.c:869
+msgid "is protected"
+msgstr "ist gesperrt"
+
+#: setupmenu.c:48 setupmenu.c:50
+msgid "Pin code"
+msgstr ""
+
+#: setupmenu.c:52
+msgid "Skip protected channel silent"
+msgstr "Gesperrte Kanäle ohne Meldung überspringen"
+
+#: setupmenu.c:53
+msgid "Hide protected menus"
+msgstr "Gesperrte Menüs verstecken"
+
+#: setupmenu.c:54
+msgid "Hide protected plugins"
+msgstr "Gesperrte Plugins verstecken"
+
+#: setupmenu.c:55
+msgid "Hide protected recordings"
+msgstr "Gesperrte Aufnahmen verstecken"
+
+#: setupmenu.c:56
+msgid "Open menu after pin request"
+msgstr "Menü nach Eingabe des Pin öffnen"
+
+#: setupmenu.c:57
+msgid "Pin inactivity time [min]"
+msgstr "Sperre aktivieren nach Inaktivität [min]"
+
+#: setupmenu.c:58
+msgid "Autoprotection of recordings"
+msgstr "Automatischer Schutz der Aufnahmen"
+
+#: setupmenu.c:60
+msgid "Log Level [0-5]"
+msgstr ""
+
+#: setupmenu.c:108
+msgid "Ignoring invalid pin"
+msgstr "Ungültiger code"

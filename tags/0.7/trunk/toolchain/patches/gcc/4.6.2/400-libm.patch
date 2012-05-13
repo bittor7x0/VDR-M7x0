@@ -1,0 +1,12 @@
+diff -Naur gcc-4.6.2-orig/gcc/Makefile.in gcc-4.6.2/gcc/Makefile.in
+--- gcc-4.6.2-orig/gcc/Makefile.in	2011-08-20 09:51:09.000000000 +0200
++++ gcc-4.6.2/gcc/Makefile.in	2012-03-18 17:26:29.503999720 +0100
+@@ -1037,7 +1037,7 @@
+ # and the system's installed libraries.
+ LIBS = @LIBS@ $(CPPLIB) $(LIBINTL) $(LIBICONV) $(LIBIBERTY) $(LIBDECNUMBER) \
+ 	$(HOST_LIBS)
+-BACKENDLIBS = $(CLOOGLIBS) $(PPLLIBS) $(GMPLIBS) $(PLUGINLIBS) $(HOST_LIBS) \
++BACKENDLIBS = $(CLOOGLIBS) $(PPLLIBS) $(GMPLIBS) -lm $(PLUGINLIBS) $(HOST_LIBS) \
+ 	$(ZLIB)
+ # Any system libraries needed just for GNAT.
+ SYSLIBS = @GNAT_LIBEXC@

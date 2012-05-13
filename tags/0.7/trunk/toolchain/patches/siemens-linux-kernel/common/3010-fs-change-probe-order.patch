@@ -1,0 +1,18 @@
+--- slin_m740/fs/Makefile.orig	2008-08-17 20:34:20.000000000 +0200
++++ slin_m740/fs/Makefile	2008-08-17 20:36:11.000000000 +0200
+@@ -24,6 +24,7 @@
+ subdir-y			+= partitions
+ 
+ # Do not add any filesystems before this line
++subdir-$(CONFIG_SQUASHFS)	+= squashfs
+ subdir-$(CONFIG_EXT3_FS)	+= ext3    # Before ext2 so root fs can be ext3
+ subdir-$(CONFIG_JBD)		+= jbd
+ subdir-$(CONFIG_EXT2_FS)	+= ext2
+@@ -66,7 +67,6 @@
+ subdir-$(CONFIG_DEVPTS_FS)	+= devpts
+ subdir-$(CONFIG_SUN_OPENPROMFS)	+= openpromfs
+ subdir-$(CONFIG_BEFS_FS)	+= befs
+-subdir-$(CONFIG_SQUASHFS)	+= squashfs
+ subdir-$(CONFIG_JFS_FS)		+= jfs
+ subdir-$(CONFIG_XFS_FS)		+= xfs
+ 

@@ -1,0 +1,69 @@
+Description = CoolBlue
+# MenueHauptfarbe
+clrBackground = EE000066
+# MenuFarbe RECHTS (neuer Timer Bereich)
+clrAltBackground = EE333388
+# Titleleiste ganz oben u. beim Umschalten blau: C8000088
+clrTitleBg = EEC40000
+clrLogoBg = EEAAAADD
+# Umschalten Kasten unten passend mit Titelleiste! C8000088
+clrBottomBg = EEC40000
+clrBotProgBarBg = FF808080
+#clrBotProgBarFg = FFDDDDDD
+clrBotProgBarFg = EEC4C400
+# Im Menue RECHTS OBEN bei Logo Schriftfarbe !
+# und in allen Programm u. Aufzeichnungsbeschreibungen !
+clrMenuTxtFg = FFDDDDDD
+# title-Text weiss
+clrTitleFg = FFDDDDDD
+clrTitleShadow = FF000000
+clrSymbolActive = FFC4C400
+clrSymbolInactive = FF808080
+clrSymbolRecord = FFC40000
+clrSymbolRecordBg = FFDDDDDD
+clrSymbolTimerActive = FF0000C4
+clrSymbolVpsActive = FFC4C400
+clrSymbolRecActive = FFC40000
+clrSymbolRunActive = FF00C400
+# 4 Farben buttons
+clrButtonRedFg = FFDDDDDD
+clrButtonRedBg = EEC40000
+clrButtonGreenFg = FF111111
+clrButtonGreenBg = EE00C400
+clrButtonYellowFg = FF111111
+clrButtonYellowBg = EEC4C400
+clrButtonBlueFg = FFDDDDDD
+clrButtonBlueBg = EE0000C4
+#clrMessageBorder = D8FF0000
+clrMessageStatusFg = FF111111
+clrMessageStatusBg = EEC4C400
+clrMessageInfoFg = FF111111
+clrMessageInfoBg = EEC4C400
+clrMessageWarningFg = FF111111
+clrMessageWarningBg = EEC4C400
+clrMessageErrorFg = FF111111
+clrMessageErrorBg = EEC4C400
+# jetzt ist das die Farbe des GELB-Buttons:
+#clrVolumeBar = EEC4C400
+clrVolumeBar = EE33CC33
+#clrVolumeBarMute = FFFF0000
+# bei Mute kein ProgressBar!
+clrVolumeBarMute = EE000066
+# Farbe Scrollbalken Menue TEXT ausgewaehlt (statt weiss gelb = zuviel)
+#clrMenuItemCurrentFg = FFDDDDDD
+# Scrollbar im Menue !!! = Farbe von Menue-Bereich rechts!
+#clrMenuHighlight = C8333388
+#clrAltBackground = EE333388
+# Schriftfarbe des Menues, PRG usw...
+clrMenuItemSelectableFg = FFDDDDDD
+# vorher B88EA4E3
+clrMenuItemNotSelectableFg = FFAAAADD
+# Bei Aufnahme Scrollbar selbsterklaerend
+clrReplayCurrent = EEC3CAFA
+clrReplayTotal = EEC3CAFA
+clrReplayModeJump = EEC3CAFA
+clrReplayBarAreaBg = EE191D6C
+clrReplayProgressSeen = EE33CC33
+clrReplayProgressRest = EE393D8C
+clrReplayProgressSelected = EEC3CAFA
+clrReplayProgressMark = EEC3CAFA

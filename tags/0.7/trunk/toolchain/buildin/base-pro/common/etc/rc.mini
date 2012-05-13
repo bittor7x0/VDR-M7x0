@@ -1,0 +1,69 @@
+#!/bin/ash
+
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export SYSTEMTYPE=`/bin/cat /etc/systemtype`
+
+# mount rw parts
+echo -n "Mounting /rw-flash ... " 
+/bin/mount -o rw,noatime,nodiratime -n -t jffs2 /dev/mtdblock2 /rw-flash
+echo "Done"
+
+# check for first start, factory reset or .nodebug flag
+# something went really bad so enter osd debug mode
+if [ -d /rw-flash/SI -o ! -f /rw-flash/.nodebug ]; then
+    export OSDLOG="YES"
+
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_rtos.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_bios.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/iic_int.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/pic16f73.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_osd.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_av.o
+    /sbin/insmod /lib/modules/2.4.21-xfs/tainted/emma_fb.o fb_bpp=8 fb_mem_max=0x100000
+
+    /usr/bin/set-video &
+    echo "Enter osd debugging mode" | /usr/bin/osddrawtext -a 8 -c 1 -b 0xFFFF0000
+    source /etc/rc.debug
+fi
+
+# Factory reset
+if [ -d /rw-flash/SI ] ; then
+	echo -n "Factory reset: "
+	if [ ! -f /rw-flash/SI/.first_run ] ; then
+		/bin/cp -af /etc/* /rw-flash/etc
+	fi
+	/bin/rm -rf /rw-flash/.timer /rw-flash/PLAYLISTS /rw-flash/SI \
+		/rw-flash/EPG /rw-flash/Application
+
+	# Set MAC address
+	mac_valid=00:01:E3:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]
+	mac=`/usr/sbin/pic_tool get-mac-direct`
+	if [ `expr match "${mac}" "${mac_valid}"` != "0" ] ; then
+		echo "Setting MAC address direct"
+		/bin/sed -i -e "s,^mac=.*,mac=\"${mac}\",g" /rw-flash/etc/rc.local.conf
+	else
+		mac=`/usr/sbin/pic_tool get-mac`
+		if [ `expr match "${mac}" "${mac_valid}"` != "0" ] ; then
+			echo "Setting MAC address"
+			/bin/sed -i -e "s,^mac=.*,mac=\"${mac}\",g" /rw-flash/etc/rc.local.conf
+		else
+			echo "Error: Impossible get MAC address"
+		fi
+	fi
+
+	echo "Done"
+fi
+
+# mount var
+echo -n "Mounting /var ... "
+/bin/mount -o rw,noatime,nodiratime,nosuid,nodev -n -t tmpfs tmpfs /var
+/bin/mkdir -p -m 1777 /var/tmp &
+/bin/mkdir -p -m 755 /var/run /var/log /var/media /var/lock
+/bin/touch /var/media/.ignore &
+echo "Done"
+
+echo -n "Binding /etc ... "
+/bin/mount -o bind /rw-flash/etc /etc
+echo "Done"
+
+exec /bin/ash /etc/rc.modules

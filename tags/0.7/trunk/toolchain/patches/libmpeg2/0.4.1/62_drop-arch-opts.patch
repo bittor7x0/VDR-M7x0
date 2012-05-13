@@ -1,0 +1,21 @@
+diff -Nur mpeg2dec-0.4.1/configure.in mpeg2dec-0.4.1.new/configure.in
+--- mpeg2dec-0.4.1/configure.in	2006-02-15 15:43:34.000000000 +0100
++++ mpeg2dec-0.4.1.new/configure.in	2007-12-16 16:45:31.000000000 +0100
+@@ -56,6 +56,9 @@
+     AC_TRY_CFLAGS([$TRY_CFLAGS $CFLAGS],[OPT_CFLAGS="$TRY_CFLAGS"])
+ 
+     dnl arch-specific flags
++# Debian: disable arch-specific opts as we simply want to use the gcc defaults
++# to run on all supported machines instead of using the buildd as references
++if test "x" = "y"; then
+     case "$host" in
+     i?86-* | k?-* | x86_64-* | amd64-*)
+ 	AC_DEFINE([ARCH_X86],,[x86 architecture])
+@@ -98,6 +101,7 @@
+     alpha*)
+ 	AC_DEFINE([ARCH_ALPHA],,[alpha architecture]);;
+     esac
++fi # Debian disable arch-specific opts
+ elif test x"$CC" = x"tendracc"; then
+     dnl TenDRA portability checking compiler
+     TENDRA=yes

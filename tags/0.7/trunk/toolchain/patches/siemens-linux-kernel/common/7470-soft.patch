@@ -1,0 +1,89 @@
+diff -u --recursive --new-file linux-2.4.21-20-rdplus/net/sunrpc/clnt.c linux-2.4.21-21-soft/net/sunrpc/clnt.c
+--- linux-2.4.21-20-rdplus/net/sunrpc/clnt.c	2003-06-15 14:49:35.000000000 -0700
++++ linux-2.4.21-21-soft/net/sunrpc/clnt.c	2003-06-17 10:38:56.000000000 -0700
+@@ -709,14 +709,14 @@
+ 
+ 	dprintk("RPC: %4d call_timeout (major)\n", task->tk_pid);
+ 	if (clnt->cl_softrtry) {
+-		if (clnt->cl_chatty && !task->tk_exit)
++		if (clnt->cl_chatty)
+ 			printk(KERN_NOTICE "%s: server %s not responding, timed out\n",
+ 				clnt->cl_protname, clnt->cl_server);
+ 		rpc_exit(task, -EIO);
+ 		return;
+ 	}
+ 
+-	if (clnt->cl_chatty && !(task->tk_flags & RPC_CALL_MAJORSEEN) && rpc_ntimeo(&clnt->cl_rtt) > 7) {
++	if (clnt->cl_chatty && !(task->tk_flags & RPC_CALL_MAJORSEEN)) {
+ 		task->tk_flags |= RPC_CALL_MAJORSEEN;
+ 		printk(KERN_NOTICE "%s: server %s not responding, still trying\n",
+ 			clnt->cl_protname, clnt->cl_server);
+diff -u --recursive --new-file linux-2.4.21-20-rdplus/net/sunrpc/xprt.c linux-2.4.21-21-soft/net/sunrpc/xprt.c
+--- linux-2.4.21-20-rdplus/net/sunrpc/xprt.c	2003-06-15 15:14:14.000000000 -0700
++++ linux-2.4.21-21-soft/net/sunrpc/xprt.c	2003-06-17 09:48:18.000000000 -0700
+@@ -1046,21 +1046,6 @@
+ }
+ 
+ /*
+- * Exponential backoff for UDP retries
+- */
+-static inline int
+-xprt_expbackoff(struct rpc_task *task, struct rpc_rqst *req)
+-{
+-	int backoff;
+-
+-	req->rq_ntimeo++;
+-	backoff = min(rpc_ntimeo(&task->tk_client->cl_rtt), XPRT_MAX_BACKOFF);
+-	if (req->rq_ntimeo < (1 << backoff))
+-		return 1;
+-	return 0;
+-}
+-
+-/*
+  * RPC receive timeout handler.
+  */
+ static void
+@@ -1073,14 +1058,7 @@
+ 	if (req->rq_received)
+ 		goto out;
+ 
+-	if (!xprt->nocong) {
+-		if (xprt_expbackoff(task, req)) {
+-			rpc_add_timer(task, xprt_timer);
+-			goto out_unlock;
+-		}
+-		rpc_inc_timeo(&task->tk_client->cl_rtt);
+-		xprt_adjust_cwnd(req->rq_xprt, -ETIMEDOUT);
+-	}
++	xprt_adjust_cwnd(req->rq_xprt, -ETIMEDOUT);
+ 	req->rq_nresend++;
+ 
+ 	dprintk("RPC: %4d xprt_timer (%s request)\n",
+@@ -1090,7 +1068,6 @@
+ out:
+ 	task->tk_timeout = 0;
+ 	rpc_wake_up_task(task);
+-out_unlock:
+ 	spin_unlock(&xprt->sock_lock);
+ }
+ 
+@@ -1228,16 +1205,17 @@
+ 	return;
+  out_receive:
+ 	dprintk("RPC: %4d xmit complete\n", task->tk_pid);
++	spin_lock_bh(&xprt->sock_lock);
+ 	/* Set the task's receive timeout value */
+ 	if (!xprt->nocong) {
+ 		task->tk_timeout = rpc_calc_rto(&clnt->cl_rtt,
+ 				rpcproc_timer(clnt, task->tk_msg.rpc_proc));
+-		req->rq_ntimeo = 0;
++		task->tk_timeout <<= clnt->cl_timeout.to_retries
++			- req->rq_timeout.to_retries;
+ 		if (task->tk_timeout > req->rq_timeout.to_maxval)
+ 			task->tk_timeout = req->rq_timeout.to_maxval;
+ 	} else
+ 		task->tk_timeout = req->rq_timeout.to_current;
+-	spin_lock_bh(&xprt->sock_lock);
+ 	/* Don't race with disconnect */
+ 	if (!xprt_connected(xprt))
+ 		task->tk_status = -ENOTCONN;

@@ -1,0 +1,38 @@
+.toggleInfo {
+	display: none;
+	color: #0d53b2;
+	font-weight: normal;
+	text-decoration: none;
+	vertical-align: top;
+	line-height: 0.8;
+}
+.toggleInfo:hover {
+	cursor: pointer;
+}
+.itemDiv.compact { 
+	padding: 0 !important;
+}
+.itemDiv.compact .itemHead {
+	padding: 0;
+	height: 100%;
+}
+.itemDiv.compact .itemHead * {
+	display: none;
+}
+.itemDiv.compact .itemHead .toggleInfo {
+	display: block !important;
+	height: 100%;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 4em;
+}
+.itemDiv.compact .itemHead .toggleInfo .more {
+	display: inline;
+}
+.itemDiv.compact .itemHead .toggleInfo .less {
+	display: none;
+}
+.itemDiv.compact.opened .itemHead .toggleInfo .less {
+	display: inline;
+}
+

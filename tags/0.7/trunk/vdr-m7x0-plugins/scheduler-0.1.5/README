@@ -1,0 +1,99 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Christian Wieninger <cwieninger@gmx.de>
+
+Project's homepage:          http://winni.vdr-developer.org/scheduler
+
+Latest version available at: http://winni.vdr-developer.org/scheduler
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+See the file COPYING for more information.
+
+Requirements:
+- vdr >= 1.5.1 or 
+- vdr-1.4.5 with the backport of the new shutdown handler (http://www.udo-richter.de/vdr/patches.html#shutdown)
+
+Description:
+
+This plugin allows to control external jobs from within VDR. This is
+especially useful if your VDR is not running continiously. Sample 
+applications could be an EPG update or backups.
+
+Features:
+
+- optional wakeup of VDR to execute a job (no dummy timers needed anymore)
+- prevent a shutdown while a job is still executed
+- optional announcements of job start/finish via OSD
+- start external jobs via SVDRP in the context of VDR
+- display current and previous job output
+
+The main menu lists all jobs that where permanently created. 
+A leading '>' indicates that the job is active and will be executed at 
+the given times. A leading '#' indicates that the job is currently running.
+
+The keys red, green, yellow are used to edit, add or delete jobs. The key blue
+can be used to execute a job for manual starting or to cancel a running job. 
+With key ok one gets a menu which displays some information about the job, 
+like its last start time and its output.
+
+The edit menu of a job consists of 
+- Activate: to enable/disable the automatic start
+- Description: a short description of the job
+- Command: the actual command to be executed
+- Minute, Hour, Weekday, Day, Month: 
+  Here you can specify the start times with a syntax similar to cron:
+  - '*' or empty means any value
+  - a list is separated with a ',' like in '1,5,10'
+  - you can also specify ranges like '1-12'
+  - ranges can have a step value like '0-23/2' which means '0,2,4,6,...'
+  Note: weekdays start with '0'=sunday, '1'=monday,...
+- Wakeup VDR: enable this if VDR should wakeup for this task
+- OSD announce: select one of the values to get informed about the 
+  start/finish of a task
+- Save ... logs: save the output of the last ... execution
+- Kill after ... minutes: kills a job after the given minutes of 
+  execution to avoid endless jobs (0 disables the feature)
+
+At the end of the edit menu you can see a list of the next starting times
+according to your settings.
+
+You can also use the SVDRP interface to start existing or temporary tasks:
+
+svdrpsend.pl plug scheduler RUNT <taskname>
+  This will execute an existing task that matches the description <taskname>
+  The return value is the task ID.
+  
+
+svdrpsend.pl plug scheduler RUNC <command>
+  This will execute the specified command. VDR will not shutdown before that
+  task has finished. The return value is a task ID that can be used
+  in following:
+
+svdrpsend.pl plug scheduler STAT <taskId>
+  This returns if the task is still running or not.
+
+further svdrp commands (LSTT, NEWT, DELT, EDIT) exist to list all tasks, 
+create, delete or edit them.
+
+Installation:
+
+This is done the common way:
+- unpack the source package in <VDR-src-dir>/PLUGINS/src
+- link it with 'ln -s <Plugin-src-dir> <VDR-src-dir>/PLUGINS/src/scheduler'
+- call 'make plugins' in <VDR-src-dir>
+
+Parameters:
+
+To enable logging you can pass the parameters
+
+  -l file,  --logfile=file to specify a specific logfile for scheduler
+  -v n,  --verbose=n       verbose level for logfile with n = 0..3
+
+
+Habe fun!
+
+Christian Wieninger
+
