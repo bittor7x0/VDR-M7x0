@@ -752,7 +752,7 @@ void printEvent(wcontext_t *wctx, epgEvent_t * const event, const int channelNum
     WCTX_IPRINT("<span class=\"fromTo\">");
     WCTX_PRINTF(EventFromSpan_d_d, startt.tm_hour, startt.tm_min);
     WCTX_PRINT("</span>\n");
-    WCTX_IPRINTF("<span class=\"title %s\">%s</span>\n"
+    WCTX_IPRINTF("<a href=\"#\" class=\"title %s\">%s</a>\n"
             , toggleInfoClass
             , wctxHtmlEncode(wctx, event->title));
     WCTX_IPRINTF("<a href=\"#\" class=\"toggleInfo %s\"><span class=\"more\">+</span><span class=\"less\">-</span></a>\n",
