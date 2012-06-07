@@ -37,6 +37,9 @@ a {
 	text-decoration: none;
 	color: inherit;
 }
+a:focus {
+    outline: none;
+}
 img {
 	display: inline;
 	border: medium none;
