@@ -1,7 +1,5 @@
 #!/bin/ash
 
-export TZ=`cat /etc/TZ`
-
 if [ X"${OSDLOG}" = X"YES" ]; then
     source /etc/rc.debug
 fi
