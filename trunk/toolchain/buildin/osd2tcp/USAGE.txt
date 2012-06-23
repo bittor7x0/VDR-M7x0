@@ -1,0 +1,204 @@
+*** osd2tcp V 0.0.4 - Andreas Koch <m740av@karlmarx.ping.de> - 2005-08-10 ***
+
+
+Was ist osd2tcp?
+----------------
+
+osd2tcp ist ein Tool zum Streamen des OSD des DVB-T Receivers Siemens
+Gigaset M740 AV über Netzwerk. Dazu wird der Inhalt des Framebuffers in
+Blöcken im RAW-Format oder im lauflängenkomprimierten RAW-Format (RLE) über
+eine TCP-Verbindung übertragen.
+
+
+Aufruf
+------
+
+osd2tcp [-v] [-x|--block_width n] [-y|--block_height n] 
+        [-p|--check_block_part n] [-b|--bits_per_pixel n] 
+        [-c|--compression_level n] [-w|--wait_frame n] port
+
+Die Parameter haben dabei folgende Bedeutungen:
+	-v : 
+		verbose
+
+	-x | --block_width n :
+		Breite eines Blocks des OSDs. n muss ein Teiler von 720 sein.
+		Bereich: 10..720
+		Standardwert: 60
+
+	-y | --block_height n :
+		Höhe eines Blocks des OSDs. n muss ein Teiler von 576 sein.
+		Bereich: 12..576
+		Standardwert: 32
+
+	-c | --compression_level n : 
+		Kompression des übertragenen Blocks
+		In dieser Version wird ein Block durch die zlib komprimiert,
+		wenn hier ein Wert größer 0 angeben wird.
+		Werte: 0 (keine Kompression), 1 (RLE)
+		Standardwert: 1 
+
+	-p | --check_block_part n :
+		n/1000 eines Blocks bei der Änderungserkennung verwenden.
+		Die Angabe wird aufgerundet. Minimal werden 3 Zeilen und in
+		jeder Zeile 3 Pixel geprüft.
+		Bereich: 1..500
+		Standardwert: 15
+
+ 	-b | --bits_per_pixel n :
+		Bits pro Pixel die übertragen werden
+		Mögliche Werte: 1 = 32 Bits/Pixel, 2 = 16 Bits/Pixel, 
+                3 = 8 Bits/Pixel
+		Standardwert: 3
+
+	-w | --wait_frames n :
+		n Frames (1/25 Sekunde) zwischen Änderungsprüfungen warten
+		Bereich: 1..50
+		Standardwert: 13
+
+	port : 
+		TCP-Port auf dem gelauscht wird.
+		Bereich: 1..65535
+		Standardwert: keiner
+
+
+
+Funktionsweise
+--------------
+
+Wenn ein Client am Tool angemeldet ist, überprüft das Tool das OSD laufend
+auf Änderungen. Es wird dazu eine Prüfsumme (ADLER32) jedes OSD-Blocks
+berechnet. Es werden jedoch nicht alle Pixel eines Blocks benutzt, sondern
+wie als Parameter ("-p" bzw. "--check_block_part") übergeben ein Anteil von
+Pixel eines Blocks. Die Abstände in denen diese Überprüfung stattfindet
+können über den Parameter "-w" bzw. "--wait_frames" eingestellt werden. Auch
+die Blockgröße kann über die Parameter "-x" bzw. "--block_width" und "-y"
+bzw. "--block_height", die die Breite und Höhe eines Blocks angeben,
+eingestellt werden . Zu beachten ist dabei, dass die Breite eines Blocks ein
+ganzzahliger Teiler der gesamt Breite des OSDs (720 Pixel) und die Höhe
+eines Blocks ein ganzzahliger Teiler der gesamt Höhe des OSDs (576 Pixel)
+sein muß. Das OSD wird dann in Blöcke der angegebenen Größe unterteilt. Dabei
+wird mit dem Block 0 in der oberen linken Ecke des OSDs begonnen. Die Blöcke
+werden dabei von links nach rechts durchnummeriert. Ist der rechte Rand des
+OSDs erreicht, wird die Nummerierung in der nächsten Zeile am linken Rand
+des OSD mit dem folgenden Block fortgesetzt.
+
+Beispiel Block-Nummerierung für 6 Blöcke (Breite 240, Höhe 288):
+
+0--------240-------480------720
+|         |         |         |
+|    0    |    1    |    2    |
+|         |         |         |
+288-------+---------+---------+
+|         |         |         |
+|    3    |    4    |    5    |
+|         |         |         |
+576-------+---------+---------+
+
+Erkennt das Tool Änderungen am OSD, wird übermittelt wieviele Blöcke bei der
+letzten Änderung und wieviel sich für den Client geändert haben.  Ein Client
+kann die Übertragung eines Blocks über seine Nummer anfordern. Ein Client
+kann auch alle Blöcke, die geändert wurden nachdem er sie das letzte mal
+angefordet hat (die sich also für den Client geändert habe), anfordern.
+
+Die Blöcke werden Zeilenweise im RAW-Format oder im RLE-RAW-Format
+übertragen, d.h. die Pixel einer Zeile eines Block werden hintereinanderweg
+übertragen, und nach dem Ende der Zeile am linken Rand des Blocks in der
+nächsten Zeile fortgesetzt. Ein Pixel besteht dabei aus 1,2 oder 4 Bytes
+(Konfigurations abhängig). Ein Pixel besteht aus den vier Farbkanälen
+Transparenz, Rot, Grün und Blau, die immer in dieser Reihenfolge übertragen
+werden. Werden 4 Bytes pro Pixel übertragen, wird je ein Byte pro Kanal
+verwendet; werden 2 Bytes übertragen, wird für die Tranzparenz nur 1 Bit und
+für die restlichen drei Kanäle je 5 Bits verwendet; wird 1 Byte übertragen,
+werden je 2 Bits pro Kanal verwendet. 
+
+Wird ein Block im RLE-Format übertragen, gibt das jeweils erste Byte an ob
+nun Pixel-Daten folgen und wie oft sie wiederholt dargestellt werden müssen.
+Das erste Bit des Bytes ist 0, wenn eine Anzahl transparenter Pixel
+dargestellt werde müssen, in diesem Fall werden keine Pixel-Daten übertragen
+und es folgt das nächste Zähler-Byte; ist es 1 sind die Pixel nicht
+transparent und es müssen die nachfolgenden Pixel-Daten, dargestellt werden.
+Bei 32 Bits/Pixel werden jedoch nur noch die untersten 3 Bytes übertragen,
+da die Transparenz der Pixel ja schon bekannt ist. Die restlichen 7 Bit des
+Zähler-Bytes geben an, wie oft das Pixel in Blockreihenfolge dargestellt
+werden muß; auf diesen Wert ist 1 zu addieren, da eine Anzahl von 0
+Wiederholungen keinen Sinn ergeben würde (es müßte gar nicht übertragen
+werden).
+
+Es kann auch vorkommen, dass ein Block vollständig transparent ist, dies
+erkennt das Tool, und übermittelt es dem Client in diesem Fall.
+
+Damit sich ein Client auf die Konfiguration des Tools einstellen kann, kann 
+diese über ein Kommando von ihm aus angefordert werden. Der Client kann
+durch ein Kommando auch eine Änderungsprüfung erzwingen.
+
+
+Übertragungs Format
+-------------------
+
+* Bei Änderungen von Blöcken sendet das Tool die Zeile an alle Clients:
+     OSD_BLOCKS_MODIFIED <Anzahl der zuletzt geänderten Blöcke> 
+          <Anzahl der Blöcke, die sich für den Client geänderten haben>
+
+   Kommandos:
+   ----------
+
+* Die Konfiguration kann durch folgende Zeile vom Client angefordert werden:
+     GET_CONFIG
+
+  Das Tool antwortet dann mit der Zeile:
+     OSD_BLOCK_CONFIG <Breite eines Block> <Höhe eines Blocks> <Bits pro Pixel>
+
+
+* Eine Änderungsüberprüfung kann durch die folgende Zeile erzwungen werden:
+     WAKEUP
+
+  Das Tool antwortet in diesem Fall gar nicht (bzw. nur wenn sich Blöcke
+  geändert haben). Es führt eine Änderungsüberprüfung der Blöcke sofort aus.
+
+
+* Die Version des Tools kann durch 
+     GET_VERSION
+
+  erfragt werden. Das Tool antwortet dann mit 
+     OSD2TCP_VERSION <Major-Version> <Minor-Version> <Revision>
+     In dieser Version also immer mit "OSD2TCP_VERSION 0 0 4"
+
+
+* Die Blöcke, die sich für den Client geändert haben, kann durch die Zeile
+     GET_WHICH_OSD_BLOCKS_MODIFIED
+
+  angefordert werden. Der Server antwortet dann für jeden gänderten Block
+  mit der Zeile:
+     BLOCK_MODIFIED <Block Nummer>
+
+
+* Ein Block kann durch die folgende Zeile angefordert werden:
+     GET_OSD_BLOCK <Block Nummer>
+
+  und alle Blocks, die sich für den Client geändert haben mit:
+     GET_OSD_BLOCKS MODIFIED
+
+  Das Tool antwortet dann (für jeden Block) mit einer der drei Zeilen:
+
+     OSD_BLOCK_CLEAR <Block Nummer> 
+     falls der Block vollständig transparent ist.
+
+     OSD_BLOCK_RAW <Block Nummer> <Länge der RAW-Daten>
+     falls der Block unkomprimiert übertragen wird.
+
+     OSD_BLOCK_RLE <Block Nummer> <Länge der lauflängencodierten RAW-Daten>
+     falls der Block komprimiert übertragen wird.
+
+     In den letzten beiden Fällen folgt dann die angegebene Anzahl an Bytes,
+     der entsprechenden Daten.
+
+
+Verwendete CPU-Zeit
+-------------------
+
+Die Überprüfung der Änderungen am OSD kostet so gut wie keine CPU-Zeit, bei
+der Komprimierung und/oder Übertragung des OSD-Bild kann die verwendet
+CPU-Zeit jedoch kurze Zeit auf über 90% ansteigen. Außerdem ist die Last der
+CPU abhängig vom Inhalt des OSDs.
+

@@ -1,0 +1,6 @@
+
+Alle Dateien in diesem Verzeichnis und in den Unterverzeichnissen
+stehen unter der GNU GENERAL PUBLIC LICENSE (siehe Datei GPL2.txt).
+
+Andreas Koch & Dirk Clemens, andreas & lemmi @open7x0.org, 2006-07-26
+
