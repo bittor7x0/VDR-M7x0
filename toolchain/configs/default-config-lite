@@ -255,6 +255,10 @@ CONFIG_O7O_FLASHER = y
 # URL: http://fuppes.ulrich-voelkel.de/
 # CONFIG_FUPPES is not set
 
+# osd2tcp: Send osd contents via tcp connection
+# URL: http://open7x0.org/wiki/Osd2tcp
+# CONFIG_OSD2TCP is not set
+
 
 ###############
 #             #
