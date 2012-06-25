@@ -138,7 +138,12 @@ extern "C" {
 		uint32_t time_off;
 	} Remux;
 
+#if !defined(TSPLAY_PATCH_VERSION)
 	enum { NONE, I_FRAME, P_FRAME, B_FRAME, D_FRAME };
+#else
+        #define NONE    0
+        #define D_FRAME 4
+#endif
 
 	void remux(int fin, int fout, int pack_size, int mult);
 	void remux2(int fdin, int fdout);

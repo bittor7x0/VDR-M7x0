@@ -16,12 +16,12 @@ VERSION = $(shell grep 'const char \*VERSION *=' common.c | awk '{ print $$5 }' 
 ### The C++ compiler and options:
 
 CXX      ?= g++
-CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual -Wno-parentheses
+CXXFLAGS ?= -fPIC -W -Woverloaded-virtual -Wno-parentheses
 
 ### The directory environment:
 
-VDRDIR = ../../..
-LIBDIR = ../../lib
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### Allow user defined options to overwrite defaults:
@@ -42,6 +42,15 @@ PACKAGE = vdr-$(ARCHIVE)
 INCLUDES += -I$(VDRDIR)/include -I.
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+
+# Enable stream type PES
+DEFINES += -DENABLE_STREAM_TYPE_PES
+
+# Enable stream type PS
+DEFINES += -DENABLE_STREAM_TYPE_PS
+
+# Enable stream type Extern
+DEFINES += -DENABLE_STREAM_TYPE_EXTERN
 
 ### The object files (add further files here):
 

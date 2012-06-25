@@ -11,12 +11,12 @@
 cStreamdevServerSetup StreamdevServerSetup;
 
 cStreamdevServerSetup::cStreamdevServerSetup(void) {
-	MaxClients      = 5;
+	MaxClients      = 2;
 	StartVTPServer  = true;
 	VTPServerPort   = 2004;
 	StartHTTPServer = true;
 	HTTPServerPort  = 3000;
-	HTTPStreamType  = stPES;
+	HTTPStreamType  = stTS;
 	StartIGMPServer = false;
 	IGMPClientPort  = 1234;
 	IGMPStreamType  = stTS;
@@ -48,10 +48,16 @@ bool cStreamdevServerSetup::SetupParse(const char *Name, const char *Value) {
 
 const char* cStreamdevServerMenuSetupPage::StreamTypes[st_Count - 1] = {
 	"TS",
+#ifdef ENABLE_STREAM_TYPE_PES
 	"PES",
+#endif
+#ifdef ENABLE_STREAM_TYPE_PS
 	"PS",
+#endif
 	"ES",
+#ifdef ENABLE_STREAM_TYPE_EXTERN
 	"EXT"
+#endif
 };
 
 const char* cStreamdevServerMenuSetupPage::SuspendModes[sm_Count] = {

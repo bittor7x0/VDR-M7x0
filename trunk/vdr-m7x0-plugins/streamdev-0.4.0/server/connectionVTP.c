@@ -851,20 +851,26 @@ bool cConnectionVTP::CmdCAPS(char *Opts)
 		return Respond(220, "Capability \"%s\" accepted", Opts);
 	}
 
+#ifdef ENABLE_STREAM_TYPE_PS
 	if (strcasecmp(Opts, "PS") == 0) {
 		m_StreamType = stPS;
 		return Respond(220, "Capability \"%s\" accepted", Opts);
 	}
+#endif
 
+#ifdef ENABLE_STREAM_TYPE_PES
 	if (strcasecmp(Opts, "PES") == 0) {
 		m_StreamType = stPES;
 		return Respond(220, "Capability \"%s\" accepted", Opts);
 	}
+#endif
 
+#ifdef ENABLE_STREAM_TYPE_EXTERN
 	if (strcasecmp(Opts, "EXT") == 0) {
 		m_StreamType = stEXT;
 		return Respond(220, "Capability \"%s\" accepted", Opts);
 	}
+#endif
 
 	//
 	// Deliver section filters data in separate, channel-independent data stream
@@ -1698,11 +1704,9 @@ bool cConnectionVTP::CmdRENR(const char *Option)
 			int n = strtol(Option, &tail, 10);
 			cRecording *recording = Recordings.Get(n - 1);
 			if (recording && tail && tail != Option) {
-				int priority = recording->priority;
-				int lifetime = recording->lifetime;
 				char *oldName = strdup(recording->Name());
 				tail = skipspace(tail);
-				if (recording->Rename(tail, &priority, &lifetime)) {
+				if (recording->Rename(tail)) {
 					Reply(250, "Renamed \"%s\" to \"%s\"", oldName, recording->Name());
 					Recordings.ChangeState();
 					Recordings.TouchUpdate();

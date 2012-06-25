@@ -199,14 +199,20 @@ std::string cHtmlChannelList::StreamTypeMenu()
 	std::string typeMenu;
 	typeMenu += (streamType == stTS ? (std::string) "[TS] " :
 			(std::string) "[<a href=\"/TS/" + self + "\">TS</a>] ");
+#ifdef ENABLE_STREAM_TYPE_PS
 	typeMenu += (streamType == stPS ? (std::string) "[PS] " :
 			(std::string) "[<a href=\"/PS/" + self + "\">PS</a>] ");
+#endif
+#ifdef ENABLE_STREAM_TYPE_PES
 	typeMenu += (streamType == stPES ? (std::string) "[PES] " :
 			(std::string) "[<a href=\"/PES/" + self + "\">PES</a>] ");
+#endif
 	typeMenu += (streamType == stES ? (std::string) "[ES] " :
 			(std::string) "[<a href=\"/ES/" + self + "\">ES</a>] ");
+#ifdef ENABLE_STREAM_TYPE_EXTERN
 	typeMenu += (streamType == stEXT ? (std::string) "[EXT] " :
 			(std::string) "[<a href=\"/EXT/" + self + "\">EXT</a>] ");
+#endif
 	return typeMenu;
 }
 
@@ -340,9 +346,13 @@ std::string cHtmlChannelList::ItemText()
 
 	switch (streamType) {
 		case stTS: suffix = (std::string) ".ts"; break;
+#ifdef ENABLE_STREAM_TYPE_PS
 		case stPS: suffix = (std::string) ".vob"; break;
+#endif
 		// for Network Media Tank
+#ifdef ENABLE_STREAM_TYPE_PES
 		case stPES: suffix = (std::string) ".vdr"; break; 
+#endif
 		default: suffix = "";
 	}
 	line += (std::string) "<li value=\"" + (const char*) itoa(current->Number()) + "\">";

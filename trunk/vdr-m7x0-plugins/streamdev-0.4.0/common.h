@@ -18,7 +18,7 @@
 
 #ifdef DEBUG
 #	include <stdio.h>
-#	define Dprintf(x...) fprintf(stderr, x)
+#	define Dprintf(x...) dsyslog(x)
 #else
 #	define Dprintf(x...)
 #endif
@@ -34,10 +34,16 @@ class cChannel;
 
 enum eStreamType {
 	stTS,
+#ifdef ENABLE_STREAM_TYPE_PES
 	stPES,
+#endif
+#ifdef ENABLE_STREAM_TYPE_PS
 	stPS,
+#endif
 	stES,
+#ifdef ENABLE_STREAM_TYPE_EXTERN
 	stEXT,
+#endif
 	stTSPIDS,
 	st_Count
 };
