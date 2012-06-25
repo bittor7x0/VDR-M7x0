@@ -43,6 +43,7 @@ private:
   time_t start;    // copy from cRecording
   char   *title;   // copy from cRecording
   bool   isedited; // copy from cRecording
+  bool   isPesRecording; // copy from cRecording
   char   *summary; // copy from cRecording
   int    options[Option_max];
   cPlaylistRecord *parent;
@@ -66,6 +67,7 @@ public:
   char *Filename(void)      { return filename; }
   bool IsNew(void)          { return isnew; }
   bool IsEdited(void)       { return isedited; }
+  bool IsPesRecording(void) const { return isPesRecording; }
   bool IsDir(void)          { return isdir; }
   bool IsDel(void)          { return isdel; }
   bool IsDirOrDel(void)     { return isdir || isdel; }

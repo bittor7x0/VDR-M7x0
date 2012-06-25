@@ -672,11 +672,20 @@ eOSState cMenuUndelete::ProcessKey(eKeys Key)
                                     processerror = true;
                                   }
                                   SalvageRecording = true;
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+                                  cIndexFile *index = new cIndexFile(NewName, false, recording->IsPesRecording());
+#else
                                   cIndexFile *index = new cIndexFile(NewName, false);
+#endif
                                   int LastFrame = index->Last() - 1;
                                   if (LastFrame > 0) {
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+                                    uint16_t FileNumber = 0;
+                                    off_t FileOffset = 0;
+#else
                                     uchar FileNumber = 0;
                                     int FileOffset = 0;
+#endif
                                     index->Get(LastFrame, &FileNumber, &FileOffset);
                                     delete index;
                                     if (FileNumber == 0) {
@@ -686,7 +695,11 @@ eOSState cMenuUndelete::ProcessKey(eKeys Key)
                                     } else {
                                       for (int i = 1; i <= FileNumber; i++) {
                                         char *temp;
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+                                        asprintf(&temp, recording->IsPesRecording() ? "%s/%03d.vdr" : "%s/%05d.ts", (const char *)NewName, i);
+#else
                                         asprintf(&temp, "%s/%03d.vdr", (const char *)NewName, i);
+#endif
                                         if (access(temp, R_OK) != 0) {
                                           i = FileNumber;                                          
                                           if (verbose.u)

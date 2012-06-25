@@ -13,6 +13,9 @@
 #include <vdr/osd.h>
 #include <vdr/osdbase.h>
 
+// for TSPlay patch detection
+#include <vdr/device.h>
+
 char *SkipQuote(char *s);
 char *ExchangeChars(char *s, bool ToFileSystem);
 bool DeleteRecording(const char *Filename, bool Confirm = true);

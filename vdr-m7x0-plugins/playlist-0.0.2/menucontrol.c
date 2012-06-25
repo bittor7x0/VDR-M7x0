@@ -188,7 +188,11 @@ eOSState cControlPlaylist::PlayRecording(cPlaylistRecord *PlaylistRecord, bool V
   {
     if (PlaylistRecord->IsNew() && !PlaylistRecord->IsEdited() && PlaylistRecord->Option(Option_jumpmark))
     {
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+      cResumeFile *resume = new cResumeFile(PlaylistRecord->Filename(), PlaylistRecord->IsPesRecording());
+#else
       cResumeFile *resume = new cResumeFile(PlaylistRecord->Filename());
+#endif
       int res = resume->Read();
       delete resume;
       if (res < 0) // new file
@@ -205,7 +209,11 @@ eOSState cControlPlaylist::PlayRecording(cPlaylistRecord *PlaylistRecord, bool V
               mark = marks->GetNext(mark)->position;
               mark = marks->GetNext(mark)->position;
             }
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+            cResumeFile *resume = new cResumeFile(PlaylistRecord->Filename(), PlaylistRecord->IsPesRecording());
+#else
             cResumeFile *resume = new cResumeFile(PlaylistRecord->Filename());
+#endif
             if (mark > 0 && resume)
             {
               resume->Save(mark);

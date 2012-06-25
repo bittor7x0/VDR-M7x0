@@ -123,6 +123,7 @@ void cPlaylistRecord::SetDefaults(cRecording *Recording)
   isdel = false;
   isnew = false;
   isedited = false;
+  isPesRecording = false;
   start = 0;
   title = NULL;
   summary = NULL;
@@ -137,6 +138,9 @@ bool cPlaylistRecord::CopyFromRecording(cRecording *Recording)
   if (recording)
   {
     isedited = recording->IsEdited();
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+    isPesRecording = recording->IsPesRecording();
+#endif
     isnew = recording->IsNew();
     start = recording->start;
     title = strdup(recording->Title('\t', true, recording->HierarchyLevels()));
