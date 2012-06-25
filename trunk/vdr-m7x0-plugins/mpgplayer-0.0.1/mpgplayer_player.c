@@ -14,6 +14,9 @@
 #include <vdr/thread.h>
 #include <vdr/tools.h>
 
+// for TSPlay patch detection
+#include <vdr/device.h>
+
 // --- cBackTrace ------------------------------------------------------------
 
 #define AVG_FRAME_SIZE 15000         // an assumption about the average frame size
@@ -1515,7 +1518,11 @@ void cMpgRingBufferFrameM7x0::Drop(cMpgFrameM7x0 *frame)
 #define MININDEXAGE    3600 // seconds
 
 cMpgIndexFile::cMpgIndexFile(const char *FileName, bool Record)
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+:resumeFile(FileName, true)
+#else
 :resumeFile(FileName)
+#endif
 {
   f = -1;
   fileName = NULL;
@@ -1535,7 +1542,7 @@ cMpgIndexFile::cMpgIndexFile(const char *FileName, bool Record)
               delta = buf.st_size % sizeof(tIndex);
               if (delta) {
                  delta = sizeof(tIndex) - delta;
-                 esyslog("ERROR: invalid file size (%ld) in '%s'", buf.st_size, fileName);
+                 esyslog("ERROR: invalid file size (%lld) in '%s'", buf.st_size, fileName);
                  }
               last = (buf.st_size + delta) / sizeof(tIndex) - 1;
               if (!Record && last >= 0) {

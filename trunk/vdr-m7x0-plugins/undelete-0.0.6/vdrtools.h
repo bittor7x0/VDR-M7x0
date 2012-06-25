@@ -13,6 +13,9 @@
 #include <vdr/osd.h>
 #include <vdr/osdbase.h>
 
+// for TSPlay patch detection
+#include <vdr/device.h>
+
 #if VDRVERSNUM < 10318
 class cReadLine {
 private:

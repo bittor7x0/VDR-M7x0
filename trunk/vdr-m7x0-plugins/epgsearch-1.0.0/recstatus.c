@@ -28,6 +28,9 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 #include "epgsearchcfg.h"
 #include <math.h>
 
+// for TSPlay patch detection
+#include <vdr/device.h>
+
 #define ALLOWED_BREAK_INSECS 2
 
 extern int updateForced;
@@ -203,7 +206,7 @@ int cRecStatusMonitor::TimerRecDevice(cTimer* timer)
 
 bool cRecStatusMonitor::IsPesRecording(cRecording *pRecording)
 {
-#if VDRVERSNUM < 10703
+#if VDRVERSNUM < 10703 && !defined(TSPLAY_PATCH_VERSION)
   return true;
 #else
   return pRecording && pRecording->IsPesRecording();
@@ -225,11 +228,32 @@ int cRecStatusMonitor::RecLengthInSecs(cRecording *pRecording)
     if (delta) 
     {
       delta = sizeof(tIndex) - delta;
-      esyslog("ERROR: invalid file size (%ld) in '%s'", buf.st_size, *fullname);
+      esyslog("ERROR: invalid file size (%lld) in '%s'", buf.st_size, *fullname);
     }
     return (buf.st_size + delta) / sizeof(tIndex) / SecondsToFrames(1);
   }
   else 
+    return -1;
+}
+
+#elif defined(TSPLAY_PATCH_VERSION)
+
+int cRecStatusMonitor::RecLengthInSecs(cRecording *pRecording)
+{
+  struct stat buf;
+  bool isPesRecording = IsPesRecording(pRecording);
+  cString fullname = cString::sprintf("%s%s", pRecording->FileName(), isPesRecording ? LOC_INDEXFILESUFFIX ".vdr" : LOC_INDEXFILESUFFIX);
+  if (stat(fullname, &buf) == 0)
+  {
+    int delta = buf.st_size % (isPesRecording ? sizeof(tIndexPes) : sizeof(tIndexTs));
+    if (delta)
+    {
+      delta = (isPesRecording ? sizeof(tIndexPes) : sizeof(tIndexTs)) - delta;
+      esyslog("ERROR: invalid file size (%lld) in '%s'", buf.st_size, *fullname);
+    }
+    return (buf.st_size + delta) / (isPesRecording ? sizeof(tIndexPes) : sizeof(tIndexTs)) / SecondsToFrames(1);
+  }
+  else
     return -1;
 }
 

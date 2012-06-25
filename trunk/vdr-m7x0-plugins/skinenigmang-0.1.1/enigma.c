@@ -2638,7 +2638,7 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
     cString filename;
     int rc = 0;
     do {
-#if VDRVERSNUM >= 10703
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
       if (Recording->IsPesRecording())
         filename = cString::sprintf("%s/%03d.vdr", Recording->FileName(), ++i);
       else
@@ -2662,6 +2662,9 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
 #if VDRVERSNUM >= 10703
   bool fHasMarks = marks.Load(Recording->FileName(), Recording->FramesPerSecond(), Recording->IsPesRecording()) && marks.Count();
   cIndexFile *index = new cIndexFile(Recording->FileName(), false, Recording->IsPesRecording());
+#elif defined(TSPLAY_PATCH_VERSION)
+  bool fHasMarks = marks.Load(Recording->FileName(), Recording->IsPesRecording()) && marks.Count();
+  cIndexFile *index = new cIndexFile(Recording->FileName(), false, Recording->IsPesRecording());
 #else
   bool fHasMarks = marks.Load(Recording->FileName()) && marks.Count();
   cIndexFile *index = new cIndexFile(Recording->FileName(), false);
@@ -2672,7 +2675,7 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
   unsigned long long nRecSizeCut = nRecSize < 0 ? -1 : 0;
   unsigned long long nCutInOffset = 0;
   if (fHasMarks && index) {
-#if VDRVERSNUM >= 10703
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
     uint16_t FileNumber;
     off_t FileOffset;
 #else
@@ -2784,6 +2787,8 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
 
 #if VDRVERSNUM >= 10703
       cString strBitrate = cString::sprintf("%s: %s\n%s: %.2f MBit/s (Video+Audio)", tr("Format"), Recording->IsPesRecording() ? "PES" : "TS", tr("Est. bitrate"), (float)nRecSize / nLastIndex * Recording->FramesPerSecond() * 8 / MEGABYTE(1));
+#elif defined(TSPLAY_PATCH_VERSION)
+      cString strBitrate = cString::sprintf("%s: %s\n%s: %.2f MBit/s (Video+Audio)", tr("Format"), Recording->IsPesRecording() ? "PES" : "TS", tr("Est. bitrate"), (float)nRecSize / nLastIndex * FRAMESPERSEC * 8 / MEGABYTE(1));
 #else
       cString strBitrate = cString::sprintf("%s: %.2f MBit/s (Video+Audio)", tr("Est. bitrate"), (float)nRecSize / nLastIndex * FRAMESPERSEC * 8 / MEGABYTE(1));
 #endif

@@ -951,17 +951,30 @@ cString cPluginUndelete::SVDRPCommand(const char *Command, const char *Option, i
             asprintf(&temp, "%sS#%d#", SVDRP_Process ? SVDRP_Process : "", recnumber);
             free(SVDRP_Process);
             SVDRP_Process = temp;
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+            cIndexFile *index = new cIndexFile(NewName, false, recording->IsPesRecording());
+#else
             cIndexFile *index = new cIndexFile(NewName, false);
+#endif
             int LastFrame = index->Last() - 1;
             if (LastFrame > 0) {
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+              uint16_t FileNumber = 0;
+              off_t FileOffset = 0;
+#else
               uchar FileNumber = 0;
               int FileOffset = 0;
+#endif
               index->Get(LastFrame, &FileNumber, &FileOffset);
               delete index;
               if (FileNumber == 0)
                 return cString::sprintf("error while read last filenumber for \"%s\" [%s]", Option, recording->Title());
               for (int i = 1; i <= FileNumber; i++) {
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
+                asprintf(&temp, recording->IsPesRecording() ? "%s/%03d.vdr" : "%s/%05d.ts", (const char *)NewName, i);
+#else
                 asprintf(&temp, "%s/%03d.vdr", (const char *)NewName, i);
+#endif
                 if (access(temp, R_OK) != 0) {
                   free(temp);
                   return cString::sprintf("error accessing vdrfile %03d for \"%s\" [%s]", i, Option, recording->Title());
