@@ -22,7 +22,11 @@ enum ePesHeader {
   };
 
 //M7X0 BEGIN AK
+#ifdef PLUGIN_NAME_I18N
+ePesHeader AnalyzePesHeader(const uchar *Data, int Count, int &PesPayloadOffset, bool *ContinuationHeader = NULL);
+#else
 inline ePesHeader AnalyzePesHeader(const uchar *Data, int Count, int &PesPayloadOffset, bool *ContinuationHeader = NULL) __attribute__ ((always_inline));
+#endif
 //M7X0 END AK
 
 // Picture types:

@@ -152,9 +152,12 @@ bool cConnectionHTTP::ProcessRequest(void)
 					m_LiveStreamer->SetDevice(device);
 					if (!SetDSCP())
 						LOG_ERROR_STR("unable to set DSCP sockopt");
+#ifdef ENABLE_STREAM_TYPE_EXTERN
 					if (m_StreamType == stEXT) {
 						return Respond("HTTP/1.0 200 OK");
-					} else if (ISRADIO(m_Channel) || (m_StreamType == stES && (m_Apid[0] || m_Dpid[0]))) {
+					} else
+#endif					
+					if (ISRADIO(m_Channel) || (m_StreamType == stES && (m_Apid[0] || m_Dpid[0]))) {
 						return Respond("HTTP/1.0 200 OK")
 						    && Respond("Content-Type: audio/mpeg")
 						    && Respond("icy-name: %s", true, m_Channel->Name())
@@ -183,11 +186,14 @@ bool cConnectionHTTP::ProcessRequest(void)
 		else if (m_Channel != NULL) {
 			cDevice *device = GetDevice(m_Channel, 0);
 			if (device != NULL) {
+#ifdef ENABLE_STREAM_TYPE_EXTERN
 				if (m_StreamType == stEXT) {
 					// TODO
 					return Respond("HTTP/1.0 200 OK")
 					    && Respond("");
-				} else if (ISRADIO(m_Channel) || (m_StreamType == stES && (m_Apid[0] || m_Dpid[0]))) {
+				} else
+#endif
+				if (ISRADIO(m_Channel) || (m_StreamType == stES && (m_Apid[0] || m_Dpid[0]))) {
 					return Respond("HTTP/1.0 200 OK")
 					    && Respond("Content-Type: audio/mpeg")
 					    && Respond("icy-name: %s", true, m_Channel->Name())
@@ -322,17 +328,27 @@ bool cConnectionHTTP::ProcessURI(const std::string& PathInfo)
 	// Streamtype with leading / stripped off
 	std::string type = PathInfo.substr(1, PathInfo.find_first_of("/;", 1) - 1);
 	const char* pType = type.c_str();
-	if (strcasecmp(pType, "PS") == 0) {
-		m_StreamType = stPS;
-	} else if (strcasecmp(pType, "PES") == 0) {
-		m_StreamType = stPES;
-	} else if (strcasecmp(pType, "TS") == 0) {
+	if (strcasecmp(pType, "TS") == 0) {
 		m_StreamType = stTS;
-	} else if (strcasecmp(pType, "ES") == 0) {
+	}
+#ifdef ENABLE_STREAM_TYPE_PS
+	else if (strcasecmp(pType, "PS") == 0) {
+		m_StreamType = stPS;
+	}
+#endif
+#ifdef ENABLE_STREAM_TYPE_PES
+	else if (strcasecmp(pType, "PES") == 0) {
+		m_StreamType = stPES;
+	}
+#endif
+	else if (strcasecmp(pType, "ES") == 0) {
 		m_StreamType = stES;
-	} else if (strcasecmp(pType, "EXT") == 0) {
+	}
+#ifdef ENABLE_STREAM_TYPE_EXTERN
+	else if (strcasecmp(pType, "EXT") == 0) {
 		m_StreamType = stEXT;
 	}
+#endif
 
 	Dprintf("before channelfromstring: type(%s) filespec(%s) fileext(%s)\n", type.c_str(), filespec.c_str(), fileext.c_str());
 

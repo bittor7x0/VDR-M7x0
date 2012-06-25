@@ -4,6 +4,8 @@
  
 #include <vdr/channels.h>
 #include <iostream>
+#include <endian.h>
+#include <byteswap.h>
 
 #include "common.h"
 #include "tools/select.h"
@@ -26,6 +28,12 @@ cMenuEditIpItem::cMenuEditIpItem(const char *Name, char *Value):
 cMenuEditIpItem::~cMenuEditIpItem() {
 }
 
+/*
+*
+* UHHH, find a nicer way to deal with bigendian, this sucks...
+*
+*/
+
 void cMenuEditIpItem::Set(void) {
 	char buf[1000];
 	if (pos >= 0) {
@@ -35,7 +43,7 @@ void cMenuEditIpItem::Set(void) {
 		int p = 0;
 		for (int i = 0; i < 4; ++i) {
 			p += snprintf(buf + p, sizeof(buf) - p, pos == i ? "[%d]" : "%d", 
-					pos == i ? curNum : (addr >> (i * 8)) & 0xff);
+					pos == i ? curNum : (bswap_32(addr) >> (i * 8)) & 0xff);
 			if (i < 3)
 				buf[p++] = '.';
 		}
@@ -70,8 +78,8 @@ eOSState cMenuEditIpItem::ProcessKey(eKeys Key) {
 			addr.s_addr = inet_addr(value);
 			if ((int)addr.s_addr == -1)
 				addr.s_addr = 0;
-			addr.s_addr &= ~(0xff << (pos * 8));
-			addr.s_addr |= curNum << (pos * 8);
+			addr.s_addr &= bswap_32(~(0xff << (pos * 8)));
+			addr.s_addr |= bswap_32(curNum << (pos * 8));
 			strcpy(value, inet_ntoa(addr));
 		} else
 			return cMenuEditItem::ProcessKey(Key);
@@ -84,8 +92,8 @@ eOSState cMenuEditIpItem::ProcessKey(eKeys Key) {
 			addr.s_addr = inet_addr(value);
 			if ((int)addr.s_addr == -1)
 				addr.s_addr = 0;
-			addr.s_addr &= ~(0xff << (pos * 8));
-			addr.s_addr |= curNum << (pos * 8);
+			addr.s_addr &= bswap_32(~(0xff << (pos * 8)));
+			addr.s_addr |= bswap_32(curNum << (pos * 8));
 			strcpy(value, inet_ntoa(addr));
 		}
 
@@ -94,7 +102,7 @@ eOSState cMenuEditIpItem::ProcessKey(eKeys Key) {
 		else
 			++pos;
 
-		curNum = (addr.s_addr >> (pos * 8)) & 0xff;
+		curNum = (bswap_32(addr.s_addr) >> (pos * 8 )) & 0xff;
 		step = true;
 		break;
 
@@ -103,8 +111,8 @@ eOSState cMenuEditIpItem::ProcessKey(eKeys Key) {
 			addr.s_addr = inet_addr(value);
 			if ((int)addr.s_addr == -1)
 				addr.s_addr = 0;
-			addr.s_addr &= ~(0xff << (pos * 8));
-			addr.s_addr |= curNum << (pos * 8);
+			addr.s_addr &= bswap_32(~(0xff << (pos * 8)));
+			addr.s_addr |= bswap_32(curNum << (pos * 8));
 			strcpy(value, inet_ntoa(addr));
 		}
 
@@ -113,7 +121,7 @@ eOSState cMenuEditIpItem::ProcessKey(eKeys Key) {
 		else
 			--pos;
 
-		curNum = (addr.s_addr >> (pos * 8)) & 0xff;
+		curNum = (bswap_32(addr.s_addr) >> (pos * 8 )) & 0xff;
 		step = true;
 		break;
 
@@ -132,12 +140,12 @@ eOSState cMenuEditIpItem::ProcessKey(eKeys Key) {
 			addr.s_addr = inet_addr(value);
 			if ((int)addr.s_addr == -1)
 				addr.s_addr = 0;
-			addr.s_addr &= ~(0xff << (pos * 8));
-			addr.s_addr |= curNum << (pos * 8);
+			addr.s_addr &= bswap_32(~(0xff << (pos * 8)));
+			addr.s_addr |= bswap_32(curNum << (pos * 8));
 			strcpy(value, inet_ntoa(addr));
 			if (++pos == 4)
 				pos = 0;
-			curNum = (addr.s_addr >> (pos * 8)) & 0xff;
+			curNum = (bswap_32(addr.s_addr) >> (pos * 8 )) & 0xff;
 			step = true;
 		}
 		break;

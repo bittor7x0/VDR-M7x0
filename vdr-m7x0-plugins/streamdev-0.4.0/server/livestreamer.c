@@ -481,17 +481,23 @@ bool cStreamdevLiveStreamer::SetChannel(const cChannel *Channel, eStreamType Str
 			return SetPids(pid);
 		}
 
+#ifdef ENABLE_STREAM_TYPE_PES
 	case stPES: 
 		m_Remux = new cTS2PESRemux(m_Channel->Vpid(), Apids, Dpids, m_Channel->Spids());
 		return SetPids(m_Channel->Vpid(), Apids, Dpids, m_Channel->Spids());
+#endif
 
+#ifdef ENABLE_STREAM_TYPE_PS
 	case stPS:  
 		m_Remux = new cTS2PSRemux(m_Channel->Vpid(), Apids, Dpids, m_Channel->Spids());
 		return SetPids(m_Channel->Vpid(), Apids, Dpids, m_Channel->Spids());
+#endif
 
+#ifdef ENABLE_STREAM_TYPE_EXTERN
 	case stEXT:
 		m_Remux = new cExternRemux(Connection(), m_Channel, Apids, Dpids);
 		// fall through
+#endif
 	case stTS:
 		// This should never happen, but ...
 		if (m_PatFilter) {
