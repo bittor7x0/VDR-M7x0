@@ -1,0 +1,131 @@
+Special thanks go to the following persons (if you think your name is missing
+here, please send an email to vdrdev@schmirler.de):
+
+Klaus Schmidinger
+  for VDR as a whole
+  for permission to use VDR 1.6.0 cRemux code for PES remuxing
+
+Sascha Volkenandt, the original author,
+  for this great plugin
+
+The Metzler Brothers
+  as a lot of code has been taken from their libdvbmpeg package
+
+Angelus (DOm)
+  for providing Italian language texts
+  for reporting problems with the Elchi-Patch
+
+Michal
+  for sending a patch to select the HTTP streamtype via remote
+
+Rolf Ahrenberg
+  for providing Finnish language texts
+  for adding externremux.sh commandline parameter
+  for silencing compiler warnings
+  for adding PAT, PMT, PCR and EIT to HTTP TS streams
+  for fixing a memory leak in buffer overflow situations
+  for adding a return code check to vasprintf()
+  for suggesting a fix of the Makefile's default target
+  for a TS PAT repacker based on Petri Laine's VDR TS recording patch
+  for making it possible to pass parameters to externremux.sh
+  for removing pre VDR 1.4 legacy code
+  for fixing output format of some debug messages
+  for replacing private members by cThread::Running()/Active()
+  for improving externremux script termination
+  for fixing PAT repacker version field
+  for suggesting to include the charset in HTTP replies
+  for requesting replacement of asprintf calls
+
+Rantanen Teemu
+  for providing vdr-incompletesections.diff
+
+Thomas Keil
+  for providing vdr-localchannelprovide.diff
+  for maintaining the plugin for a while
+
+Artur Skawina
+  for fixing an fd leak 
+
+Norad
+  for reporting a problem terminated externremux.sh children
+
+Udo Richter
+  for fixing streamdev-server shutdown
+  for speeding up cPluginStreamdevServer::Active()
+  for adapting to VDR 1.5.0 API
+
+greenman
+  for reporting that the log could get flooded on connection failures.
+
+Petri Hintukainen
+  for making section filtering work
+  for fixing a segfault with VDR 1.5
+  for fixing high CPU load when data stream is disconnected
+  for adding PAT, PMT and PCR to HTTP TS streams
+  for fixing a segfault / deadlock when shutting down
+  for fixing compiler warnings
+  for adding M3U playlists
+
+ollo
+  for suggesting support for WMM capable WLAN accesspoints
+ 
+vdr-freak
+  for reporting connection aborts when externremux ringbuffer is full
+
+alexw
+  for reporting client reconnect problems after a server restart
+  for a workaround for tuning problems with 1.5.x clients
+
+Olli Lammi
+  for fixing a busy wait when client isn't accepting data fast enough
+  for suggesting signaling instead of sleeping when writing to buffers
+
+Joerg Pulz
+  for his FreeBSD compatibility patch
+
+tobi
+  for pointing to unused files in the libdvbmpeg directory
+ 
+Diego Pierotto
+  for providing Italian language texts
+
+micky979
+  for providing French language texts
+
+Anssi Hannula
+  for fixing insecure format strings in LSTX handlers
+
+wirbel
+  for pointing out that section filtering is optional for VDR devices
+
+Jori Hamalainen
+  for extensive testing while making stream compatible to Network Media Tank
+  for adding Network Media Tank browser support to HTML pages
+
+owagner
+  for suggesting use of SO_KEEPALIVE socket option to detect dead sockets
+
+Joachim König-Baltes
+  for fixing Min/MaxPriority parsing
+
+Artem Makhutov
+  for suggesting and heavy testing IGMP based multicast streaming
+
+Alwin Esch
+  for adding XBMC support by extending VTP capabilities
+  for adding the DELT FORCE option to delete running timers
+
+BBlack
+  for reporting that updating recordings list on CmdPLAY is a bad idea
+
+lhanisch
+  for fixing a memory leak in cStreamdevPatFilter::GetPid
+
+carel
+  for helping to find a way to cleanly shutdown externremux with mencoder
+ 
+wolfi.m
+  for reporting a typo in externermux quality parameter value
+
+Norman Thiel
+  for reporting a wrong URL path in m3u playlists
