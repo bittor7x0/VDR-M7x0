@@ -86,7 +86,8 @@ $$1 ~ /^\/?etc\/vdr\/plugins$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/epgsearch$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/filebrowser$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/channellists$$/ || \
-$$1 ~ /^\/?etc\/vdr\/plugins\/scheduler$$/
+$$1 ~ /^\/?etc\/vdr\/plugins\/scheduler$$/ || \
+$$1 ~ /^\/?etc\/vdr\/plugins\/streamdev$$/
 endef
 
 AWK_LST_TRANS_PRG_COPY := '$$1 !~ /^\/?etc\// || $(call awk_rootfs_lst_trans_prg) \
