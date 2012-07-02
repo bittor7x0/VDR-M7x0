@@ -31,7 +31,7 @@ ifeq ($(CONFIG_EGCS),y)
 ALL_GCCS := $(wildcard $(addsuffix /gcc,$(subst :, ,$(PATH))) \
                       $(addsuffix /gcc-*,$(subst :, ,$(PATH))))
 GCC_FOR_EGCS := $(firstword \
-                    $(foreach gcc, $(ALL_GCCS), \
+                    $(foreach gcc, $(filter-out %/gcc-ar %/gcc-nm %/gcc-ranlib,$(ALL_GCCS)), \
                        $(shell test \
                           $(firstword \
                              $(subst ., ,$(shell $(gcc) -dumpversion))) \
