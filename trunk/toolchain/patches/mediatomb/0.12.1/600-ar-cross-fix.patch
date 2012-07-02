@@ -1,0 +1,22 @@
+diff -Naur mediatomb-0.12.1-orig/build/Makefile.in mediatomb-0.12.1/build/Makefile.in
+--- mediatomb-0.12.1-orig/build/Makefile.in	2012-06-24 12:47:15.000000000 +0200
++++ mediatomb-0.12.1/build/Makefile.in	2012-06-24 13:24:30.472631009 +0200
+@@ -50,7 +50,6 @@
+ CONFIG_CLEAN_FILES =
+ CONFIG_CLEAN_VPATH_FILES =
+ LIBRARIES = $(noinst_LIBRARIES)
+-AR = ar
+ ARFLAGS = cru
+ libmediatomb_a_AR = $(AR) $(ARFLAGS)
+ libmediatomb_a_LIBADD =
+diff -Naur mediatomb-0.12.1-orig/tombupnp/build/Makefile.in mediatomb-0.12.1/tombupnp/build/Makefile.in
+--- mediatomb-0.12.1-orig/tombupnp/build/Makefile.in	2012-06-24 12:47:15.000000000 +0200
++++ mediatomb-0.12.1/tombupnp/build/Makefile.in	2012-06-24 13:24:42.492630822 +0200
+@@ -48,7 +48,6 @@
+ CONFIG_CLEAN_FILES =
+ CONFIG_CLEAN_VPATH_FILES =
+ LIBRARIES = $(noinst_LIBRARIES)
+-AR = ar
+ ARFLAGS = cru
+ libtombupnp_a_AR = $(AR) $(ARFLAGS)
+ libtombupnp_a_LIBADD =
