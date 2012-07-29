@@ -7,7 +7,7 @@
 /* player does nothing 
  * useful when tuners need to be free
  */
-cDummyPlayer::cDummyPlayer() {
+cDummyPlayer::cDummyPlayer(ePlayMode PlayMode) : cPlayer(PlayMode) {
   //printf("%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
 }
 
@@ -19,8 +19,8 @@ cDummyPlayer::~cDummyPlayer() {
 
 
 //--------------------cDummyPlayerControl -------------
-cDummyPlayerControl::cDummyPlayerControl() 
-  : cControl(player=new cDummyPlayer) {
+cDummyPlayerControl::cDummyPlayerControl(ePlayMode PlayMode) 
+  : cControl(player=new cDummyPlayer (PlayMode)) {
     //printf("%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
 }
 

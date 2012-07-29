@@ -12,7 +12,7 @@
 class cDummyPlayer : public cPlayer {
 
 public:
-    cDummyPlayer();
+    cDummyPlayer(ePlayMode PlayMode = pmAudioVideo);
     virtual ~cDummyPlayer();
 };
 
@@ -21,7 +21,7 @@ class cDummyPlayerControl : public cControl {
     cDummyPlayer *player;
     
   public:
-    cDummyPlayerControl();
+    cDummyPlayerControl(ePlayMode PlayMode = pmAudioVideo);
     virtual ~cDummyPlayerControl();
     virtual void Hide();
 
