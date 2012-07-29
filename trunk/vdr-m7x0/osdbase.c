@@ -202,10 +202,14 @@ void cOsdMenu::Display(void)
   int count = Count();
   if (count > 0) {
      int ni = 0;
-     for (cOsdItem *item = First(); item; item = Next(item)) {
+     for (cOsdItem *item = Get(first); item; item = Next(item)) {
          cStatus::MsgOsdItem(item->Text(), ni++);
          if (current < 0 && item->Selectable())
             current = item->Index();
+         if (ni == displayMenuItems) {
+            dsyslog("WARNING: Reducing entries to only that ones that fits on VDR OSD!.");
+            break;
+            }
          }
      if (current < 0)
         current = 0; // just for safety - there HAS to be a current item!
