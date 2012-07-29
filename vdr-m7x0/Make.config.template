@@ -34,7 +34,6 @@ VIDEODIR = /video
 ### The remote control:
 
 LIRC_DEVICE = /dev/lircd
-RCU_DEVICE  = /dev/ttyS1
 
 ## Define if you want vdr to not run as root
 #VDR_USER = vdr

@@ -80,7 +80,6 @@
 #include "menu.h"
 #include "osdbase.h"
 #include "plugin.h"
-#include "rcu.h"
 #include "recording.h"
 #include "shutdown.h"
 #include "skinclassic.h"
@@ -317,14 +316,11 @@ int main(int argc, char *argv[])
 
   bool UseKbd = true;
   const char *LircDevice = NULL;
-  const char *RcuDevice = NULL;
 #if !defined(REMOTE_KBD)
   UseKbd = false;
 #endif
 #if defined(REMOTE_LIRC)
   LircDevice = LIRC_DEVICE;
-#elif defined(REMOTE_RCU)
-  RcuDevice = RCU_DEVICE;
 #endif
 #if defined(VDR_USER)
   VdrUser = VDR_USER;
@@ -349,7 +345,6 @@ int main(int argc, char *argv[])
       { "no-kbd",   no_argument,       NULL, 'n' | 0x100 },
       { "plugin",   required_argument, NULL, 'P' },
       { "port",     required_argument, NULL, 'p' },
-      { "rcu",      optional_argument, NULL, 'r' | 0x100 },
       { "record",   required_argument, NULL, 'r' },
       { "shutdown", required_argument, NULL, 's' },
       { "terminal", required_argument, NULL, 't' },
@@ -446,9 +441,6 @@ int main(int argc, char *argv[])
                        }
                     break;
           case 'P': PluginManager.AddPlugin(optarg);
-                    break;
-          case 'r' | 0x100:
-                    RcuDevice = optarg ? : RCU_DEVICE;
                     break;
           case 'r': cRecordingUserCommand::SetCommand(optarg);
                     break;
@@ -562,8 +554,6 @@ int main(int argc, char *argv[])
                "  -p PORT,  --port=PORT    use PORT for SVDRP (default: %d)\n"
                "                           0 turns off SVDRP\n"
                "  -P OPT,   --plugin=OPT   load a plugin defined by the given options\n"
-               "            --rcu[=PATH]   use a remote control device, attached to PATH\n"
-               "                           (default: %s)\n"
                "  -r CMD,   --record=CMD   call CMD before and after a recording\n"
                "  -s CMD,   --shutdown=CMD call CMD to shutdown the computer\n"
                "  -t TTY,   --terminal=TTY controlling tty\n"
@@ -580,7 +570,6 @@ int main(int argc, char *argv[])
                DEFAULTPLUGINDIR,
                LIRC_DEVICE,
                DEFAULTSVDRPPORT,
-               RCU_DEVICE,
                VideoDirectory,
                DEFAULTWATCHDOG
                );
@@ -816,8 +805,6 @@ int main(int argc, char *argv[])
      }
 
   // Remote Controls:
-  if (RcuDevice)
-     new cRcuRemote(RcuDevice);
   if (LircDevice)
      new cLircRemote(LircDevice);
   if (!DaemonMode && HasStdin && UseKbd)
