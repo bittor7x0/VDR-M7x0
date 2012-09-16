@@ -316,7 +316,8 @@ pre {
 }
 .boxshadow .theme1 .level3Div,
 .boxshadow .theme1 .list,
-.boxshadow .theme1 .form1Body {
+.boxshadow .theme1 .form1Body,
+.boxshadow .ui-dialog {
 	border-style: none;
 	box-shadow: 0 0 3px #4D3927;
 }
