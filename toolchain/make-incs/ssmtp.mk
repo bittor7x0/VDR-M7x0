@@ -30,7 +30,6 @@ SSMTP_DEPS = $(BASE_BUILD_STAGEFILE)
 SSMTP_VERSION := 2.64
 SSMTP_PATCHES_DIR := $(PATCHES_DIR)/ssmtp/$(SSMTP_VERSION)
 
-#http://ftp.de.debian.org/debian/pool/main/s/ssmtp/ssmtp_2.61.orig.tar.gz
 SSMTP_FILE := ssmtp_$(SSMTP_VERSION).orig.tar.bz2
 SSMTP_DLFILE := $(DOWNLOAD_DIR)/$(SSMTP_FILE)
 SSMTP_URL := http://ftp.de.debian.org/debian/pool/main/s/ssmtp/$(SSMTP_FILE)
