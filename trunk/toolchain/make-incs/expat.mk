@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 EXPAT_DEPS = $(BASE_BUILD_STAGEFILE)
 
-EXPAT_VERSION := 2.0.1
+EXPAT_VERSION := 2.1.0
 EXPAT_PATCHES_DIR := $(PATCHES_DIR)/expat/$(EXPAT_VERSION)
 
 EXPAT_FILE := expat-$(EXPAT_VERSION).tar.gz
