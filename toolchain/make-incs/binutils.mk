@@ -25,7 +25,7 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
 # Put dependencies here
-BINUTILS_DEPS = $(GMP_HOSTINSTALLED) $(CLOOG_HOSTINSTALLED) $(PPL_HOSTINSTALLED)
+BINUTILS_DEPS = $(GMP_HOSTINSTALLED) $(MPFR_HOSTINSTALLED) $(MPC_HOSTINSTALLED) $(ISL_HOSTINSTALLED) $(CLOOG_HOSTINSTALLED)
 
 BINUTILS_VERSION := 2.22
 BINUTILS_PATCHES_DIR := $(PATCHES_DIR)/binutils/$(BINUTILS_VERSION)
@@ -83,10 +83,12 @@ $(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched
 			--with-sysroot=$(TARGET_ROOT) \
 			--target=$(UCLIBC_TARGET) \
 			--with-gmp=$(PREFIX) \
-			--with-ppl=$(PREFIX) \
+			--with-mpfr=$(PREFIX) \
+			--with-mpc=$(PREFIX) \
 			--with-cloog=$(PREFIX) \
-			--disable-ppl-version-check \
+			--enable-cloog-backend=isl \
 			--disable-cloog-version-check \
+			--disable-ppl-version-check \
 			--with-host-libstdcxx='-lstdc++' \
 			--disable-werror \
 			--disable-nls )

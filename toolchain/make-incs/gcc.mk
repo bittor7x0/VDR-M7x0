@@ -24,7 +24,7 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-GCC_VERSION := 4.7.1
+GCC_VERSION := 4.7.2
 GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
 
 GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
@@ -107,7 +107,7 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-gmp=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
-			--without-ppl \
+			--without-isl \
 			--without-cloog \
 			--disable-decimal-float \
 			--disable-libgomp \
@@ -150,7 +150,7 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                    $$(MPFR_HOSTINSTALLED) \
                                    $$(MPC_HOSTINSTALLED) \
                                    $$(LIBELF_HOSTINSTALLED) \
-                                   $$(PPL_HOSTINSTALLED) \
+                                   $$(ISL_HOSTINSTALLED) \
                                    $$(CLOOG_HOSTINSTALLED) \
                                    $$(UCLIBC_INSTALLED)
 	-$(RM) -rf $(GCC_BUILD_DIR)
@@ -179,9 +179,12 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
 			--with-libelf=$(PREFIX) \
-			--with-ppl=$(PREFIX) \
+			--with-isl=$(PREFIX) \
 			--with-cloog=$(PREFIX) \
+			--enable-cloog-backend=isl \
 			--with-host-libstdcxx='-lstdc++' \
+			--disable-ppl-version-check \
+			--disable-cloog-version-check \
 			--disable-libstdcxx-pch \
 			--disable-decimal-float \
 			--disable-libgomp \

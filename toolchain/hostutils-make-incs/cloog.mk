@@ -24,15 +24,15 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
 # Put dependencies here
-CLOOG_HOSTDEPS = $(PPL_HOSTINSTALLED) $(GMP_HOSTINSTALLED)
+CLOOG_HOSTDEPS = $(ISL_HOSTINSTALLED) $(GMP_HOSTINSTALLED)
 
-CLOOG_HOSTVERSION := 0.15.11
+CLOOG_HOSTVERSION := 0.17.0
 CLOOG_HOSTPATCHES_DIR := $(PATCHES_DIR)/cloog/$(CLOOG_HOSTVERSION)
 
-CLOOG_HOSTFILE := cloog-ppl-$(CLOOG_HOSTVERSION).tar.gz
+CLOOG_HOSTFILE := cloog-$(CLOOG_HOSTVERSION).tar.gz
 CLOOG_HOSTDLFILE := $(DOWNLOAD_DIR)/$(CLOOG_HOSTFILE)
 CLOOG_HOSTURL := ftp://gcc.gnu.org/pub/gcc/infrastructure/$(CLOOG_HOSTFILE)
-CLOOG_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/cloog-ppl-$(CLOOG_HOSTVERSION)
+CLOOG_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/cloog-$(CLOOG_HOSTVERSION)
 
 CLOOG_HOSTINSTALLED = $(STAGEFILES_DIR)/.cloog_host_installed
 
@@ -75,13 +75,17 @@ $(STAGEFILES_DIR)/.cloog_host_patched: $(STAGEFILES_DIR)/.cloog_host_unpacked
 #
 
 $(STAGEFILES_DIR)/.cloog_host_configured: $(STAGEFILES_DIR)/.cloog_host_patched
-	($(CD) $(CLOOG_HOSTDIR) ; LIBS=-lm $(CLOOG_HOSTDIR)/configure \
+	($(CD) $(CLOOG_HOSTDIR) ; $(CLOOG_HOSTDIR)/configure \
 			--prefix=$(PREFIX) \
 			--enable-static \
 			--disable-shared \
 			--with-host-libstdcxx='-lstdc++' \
-			--with-ppl=$(PREFIX) \
-			--with-gmp=$(PREFIX))
+			--with-osl=no \
+			--with-isl=system \
+			--with-isl-prefix=$(PREFIX) \
+			--with-bits=gmp \
+			--with-gmp=system \
+			--with-gmp-prefix=$(PREFIX))
 	$(TOUCH) $(STAGEFILES_DIR)/.cloog_host_configured
 
 #
