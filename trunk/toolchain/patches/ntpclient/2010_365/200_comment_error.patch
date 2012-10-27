@@ -1,0 +1,12 @@
+diff -Naur ntpclient-2010-orig/ntpclient.c ntpclient-2010/ntpclient.c
+--- ntpclient-2010-orig/ntpclient.c	2012-10-26 23:10:22.000000000 +0200
++++ ntpclient-2010/ntpclient.c	2012-10-26 23:10:52.672763487 +0200
+@@ -541,7 +541,7 @@
+ 	st_time=ntpdiff(&rectime,&xmttime);  /* stall */
+ 	skew1=ntpdiff(&orgtime,&rectime);
+ 	skew2=ntpdiff(&xmttime,arrival);
+-	freq=0;//get_current_freq();
++	freq=0;
+ 	/*if (debug) {
+ 	printf("Total elapsed: %9.2f\n"
+ 	       "Server stall:  %9.2f\n"

@@ -1,4 +1,4 @@
-usr/lib/libexpat.so.1.5.2  usr/lib/libexpat.so.1.5.2  f 755 0 0 - - - - -
-usr/lib/libexpat.so.1.5.2  -                          s   - - - - - - - -
-usr/lib/libexpat.so.1      libexpat.so.1.5.2          l 777 0 0 - - - - -
-usr/lib/libexpat.so        libexpat.so.1.5.2          l 777 0 0 - - - - -
+usr/lib/libexpat.so.1.6.0  usr/lib/libexpat.so.1.6.0  f 755 0 0 - - - - -
+usr/lib/libexpat.so.1.6.0  -                          s   - - - - - - - -
+usr/lib/libexpat.so.1      libexpat.so.1.6.0          l 777 0 0 - - - - -
+usr/lib/libexpat.so        libexpat.so.1.6.0          l 777 0 0 - - - - -
