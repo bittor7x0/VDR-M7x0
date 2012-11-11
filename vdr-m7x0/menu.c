@@ -3907,7 +3907,7 @@ cMenuMain::cMenuMain(eOSState State)
 
   // Initial submenus:
 
-  cOsdMenu *menu = NULL;
+  cOsdObject *menu = NULL;
   switch (State) {
     case osSchedule:
         if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osSchedule", &menu))
@@ -3930,7 +3930,8 @@ cMenuMain::cMenuMain(eOSState State)
     default: break;
     }
   if (menu)
-      AddSubMenu(menu);
+     if (menu->IsMenu())
+        AddSubMenu((cOsdMenu *) menu);
 }
 
 cOsdObject *cMenuMain::PluginOsdObject(void)
@@ -4185,7 +4186,7 @@ eOSState cMenuMain::ProcessKey(eKeys Key)
      if (PinPatch::ChildLock::IsMenuProtected(item->Text()))
         return osContinue;
 
-  cOsdMenu *menu = NULL;
+  cOsdObject *menu = NULL;
   switch (state) {
     case osSchedule:
         if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osSchedule", &menu))
@@ -4284,8 +4285,12 @@ eOSState cMenuMain::ProcessKey(eKeys Key)
                default:      break;
                }
     }
-  if (menu)
-      return AddSubMenu(menu);
+  if (menu) {
+     if (menu->IsMenu())
+        return AddSubMenu((cOsdMenu *) menu);
+     pluginOsdObject = menu;
+     return osPlugin;
+  }
   if (!HasSubMenu() && Update(HadSubMenu))
      Display();
   if (Key != kNone) {
