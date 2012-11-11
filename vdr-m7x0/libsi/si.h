@@ -318,8 +318,10 @@ public:
          T *ret=new T();
          ret->setData(d);
          ret->CheckParse();
-         if (!checkSize(ret->getLength()))
+         if (!checkSize(ret->getLength())) {
+            delete ret;
             return 0;
+         }
          it.i+=ret->getLength();
          return ret;
       }
