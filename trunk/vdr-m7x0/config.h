@@ -37,7 +37,9 @@
 
 #define LIEMIKUUTIO  130
 
-#define MAINMENUHOOKSVERSNUM 1.0
+// The MainMenuHook Patch's version number:
+#define MAINMENUHOOKSVERSION "1.0.1"
+#define MAINMENUHOOKSVERSNUM 10001  // Version * 10000 + Major * 100 + Minor
 
 #define MAXPRIORITY 99
 #define MAXLIFETIME 99

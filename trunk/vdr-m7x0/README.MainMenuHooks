@@ -1,21 +1,34 @@
+* History
+2010-10-15: Version 1.0.1
+- return a cOsdObject instead of its subclass cOsdMenu (thanks to
+  Joe_D@vdrportal)
+- version number defines in config.h now follow the usual conventions:
+  MAINMENUHOOKSVERSNUM is now a number, the newly added define
+  MAINMENUHOOKSVERSION is a string (suggested by gnapheus@vdrportal)
+- patch is now based on VDR 1.6.0
+- updated documentation
+
+2007-02-26: Version 1.0
+- Initial revision.
+
 * Authors:
-Tobias Grimm <vdr at e-tobi dot net>
-Martin Prochnow <nordlicht at martins-kabuff dot de>  
-Frank Schmirler <vdrdev at schmirler dot de>
-Christian Wieninger <cwieninger at gmx dot de>
+Tobias Grimm  <vdr at e-tobi dot net>
+Martin Prochnow  <nordlicht at martins-kabuff dot de>
+Frank Schmirler  <vdrdev at schmirler dot de>
+Christian Wieninger  <cwieninger at gmx dot de>
 
 * Description:
 This patch allows plugins to replace the VDR mainmenus "Schedule",
 "Channels", "Timers" and "Recordings" by a different implementation.
 
-The patch is based on a suggestion of Christian Wieninger back in 2006.
+The patch is based on a suggestion of Christian Wieninger back in 2006
 (http://www.linuxtv.org/pipermail/vdr/2006-March/008234.html). It is
 meant to be an interim solution for VDR 1.4 until (maybe) VDR 1.5
 introduces an official API for this purpose.
 
 * Installation
 Change into the VDR source directory, then issue
-  patch -p1 < path/to/MainMenuHooks-v1_0.patch
+  patch -p1 < path/to/MainMenuHooks-v1_0_1.patch
 and recompile.
 
 * Notes for plugin authors
@@ -34,8 +47,12 @@ bool cMyPlugin::Service(const char *Id, void *Data)
   return false;
 }
 
+Since patch version 1.0.1 the service call may return a cOsdObject
+instead of a cOsdMenu. Use "#ifdef MAINMENUHOOKSVERSION" to detect
+version 1.0.1.
+
 A plugin can replace more than one menu at a time. Simply replace the
-call to MainMenuAction() in the sample above by appropriate code).
+call to MainMenuAction() in the sample above by appropriate code.
 
 Note that a plugin *should* offer a setup option which allows the user
 to enable or disable the replacement. "Disabled" would be a reasonable
