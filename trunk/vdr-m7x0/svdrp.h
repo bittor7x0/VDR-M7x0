@@ -48,7 +48,9 @@ private:
   int length;
   char *cmdLine;
   time_t lastActivity;
+#ifdef WITH_LIBJPEG
   static char *grabImageDir;
+#endif
   void Close(bool SendReply = false, bool Timeout = false);
   bool Send(const char *s, int length = -1);
   void Reply(int Code, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
@@ -60,7 +62,9 @@ private:
   void CmdDELR(const char *Option);
   void CmdDELT(const char *Option);
   void CmdEDIT(const char *Option);
+#ifdef WITH_LIBJPEG
   void CmdGRAB(const char *Option);
+#endif
   void CmdHELP(const char *Option);
   void CmdHITK(const char *Option);
   void CmdLSTC(const char *Option);
@@ -91,7 +95,9 @@ public:
   ~cSVDRP();
   bool HasConnection(void) { return file.IsOpen(); }
   bool Process(void);
+#ifdef WITH_LIBJPEG
   static void SetGrabImageDir(const char *GrabImageDir);
+#endif
   };
 
 #endif //__SVDRP_H

@@ -357,7 +357,11 @@ int main(int argc, char *argv[])
     };
 
   int c;
+#ifdef WITH_LIBJPEG
   while ((c = getopt_long(argc, argv, "a:c:dD:e:E:g:hi:l:L:mp:P:r:s:t:u:v:Vw:", long_options, NULL)) != -1) {
+#else
+  while ((c = getopt_long(argc, argv, "a:c:dD:e:E:hi:l:L:mp:P:r:s:t:u:v:Vw:", long_options, NULL)) != -1) {
+#endif
         switch (c) {
           case 'a': AudioCommand = optarg;
                     break;
@@ -378,7 +382,9 @@ int main(int argc, char *argv[])
                     return CutRecording(optarg) ? 0 : 2;
           case 'E': EpgDataFileName = (*optarg != '-' ? optarg : NULL);
                     break;
+#ifdef WITH_LIBJPEG
           case 'g': cSVDRP::SetGrabImageDir(*optarg != '-' ? optarg : NULL);
+#endif
                     break;
           case 'h': DisplayHelp = true;
                     break;

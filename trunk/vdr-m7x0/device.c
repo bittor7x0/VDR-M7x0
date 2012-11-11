@@ -428,6 +428,7 @@ void cDevice::Shutdown(void)
       }
 }
 
+#ifdef WITH_LIBJPEG
 uchar *cDevice::GrabImage(int &Size, bool Jpeg, int Quality, int SizeX, int SizeY)
 {
   return NULL;
@@ -459,6 +460,7 @@ bool cDevice::GrabImageFile(const char *FileName, bool Jpeg, int Quality, int Si
      }
   return result == 0;
 }
+#endif
 
 void cDevice::SetVideoDisplayFormat(eVideoDisplayFormat VideoDisplayFormat)
 {

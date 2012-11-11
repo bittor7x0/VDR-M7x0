@@ -351,7 +351,7 @@ public:
   cCiHandler *CiHandler(void) { return ciHandler; }
 
 // Image Grab facilities
-
+#ifdef WITH_LIBJPEG
 public:
   virtual uchar *GrabImage(int &Size, bool Jpeg = true, int Quality = -1, int SizeX = -1, int SizeY = -1);
          ///< Grabs the currently visible screen image.
@@ -370,6 +370,7 @@ public:
          ///< \return True if all went well.
          ///< The caller is responsible for making sure that the given file name
          ///< doesn't lead to overwriting any important other file.
+#endif
 
 // Video format facilities
 
