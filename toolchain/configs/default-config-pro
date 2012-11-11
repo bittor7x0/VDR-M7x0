@@ -207,14 +207,6 @@ CONFIG_NTPCLIENT = y
 # URL: http://ushare.geexbox.org/
 # CONFIG_USHARE is not set
 
-# MiniUPnPc: UPnP client
-# URL: http://miniupnp.free.fr/
-# CONFIG_MINIUPNPC is not set
-
-# MiniSSDPd: Daemon used by MiniUPnPc to speed up device discoveries
-# URL: http://miniupnp.free.fr/minissdpd.html
-# CONFIG_MINISSDPD is not set
-
 # UNFS3: A user-space implementation of the NFSv3 server specification
 # URL: http://unfs3.sourceforge.net/
 # CONFIG_UNFS3 is not set
