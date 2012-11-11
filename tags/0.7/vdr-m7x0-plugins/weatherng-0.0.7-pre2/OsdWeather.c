@@ -271,21 +271,21 @@ void cWetterOsd::GetData(void)
 	char *url;
 
 	asprintf(&buffer, "%s%s",ScriptDir,"/data1.xml");
-	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data1,"?cc=*&unit=m&dayf=10&prod=xoap&par=1149089868&key=8bfec04bc10dd216");
+	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data1,"?cc=*&unit=m&dayf=10&prod=xoap&par=1003666583&key=4128909340a9b2fc");
 	dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
 	httpGet(url,buffer);
 	free(buffer);
 	free(url);
 
 	asprintf(&buffer, "%s%s",ScriptDir,"/data2.xml");
-	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data2,"?cc=*&unit=m&dayf=10&prod=xoap&par=1149089868&key=8bfec04bc10dd216");
+	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data2,"?cc=*&unit=m&dayf=10&prod=xoap&par=1003666583&key=4128909340a9b2fc");
 	dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
 	httpGet(url,buffer);
 	free(buffer);
 	free(url);
 
 	asprintf(&buffer, "%s%s",ScriptDir,"/data3.xml");
-	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data3,"?cc=*&unit=m&dayf=10&prod=xoap&par=1149089868&key=8bfec04bc10dd216");
+	asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data3,"?cc=*&unit=m&dayf=10&prod=xoap&par=1003666583&key=4128909340a9b2fc");
 	dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
 	httpGet(url,buffer);
 	free(buffer);
