@@ -265,8 +265,7 @@ cDevice::cDevice(void)
 cDevice::~cDevice()
 {
   Detach(player);
-  for (int i = 0; i < MAXRECEIVERS; i++)
-      Detach(receiver[i]);
+  DetachAllReceivers();
   delete ciHandler;
   delete nitFilter;
   delete sdtFilter;
