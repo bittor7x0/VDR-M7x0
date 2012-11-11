@@ -528,7 +528,9 @@ private:
   void CheckAndSetupVideo(int PcrId, int VideoId, int TeletextId);
   int ScanDataForPacketStartCode(const uchar *&Data,const uchar *const Limit);
   int HandleTrickspeed(const uchar *Data);
+#ifdef USE_PLAYER_WATCHDOG
   bool CheckTimeout(void);
+#endif
 
   int WriteOutPacket(const uchar *Data, int Count);
 
@@ -1703,8 +1705,7 @@ int c7x0TsReplayer::HandleTrickspeed(const uchar *Data)
   return 0;
 }
 
-
-
+#ifdef USE_PLAYER_WATCHDOG
 bool c7x0TsReplayer::CheckTimeout(void)
 {
   time_t now = time(NULL);
@@ -1721,6 +1722,7 @@ bool c7x0TsReplayer::CheckTimeout(void)
      }
   return false;
 }
+#endif
 
 int c7x0TsReplayer::WriteOutPacket(const uchar *Data, int Count)
 {

@@ -200,6 +200,7 @@ cString DayDateTime(time_t t = 0);
 cString TimeToString(time_t t);
 cString DateString(time_t t);
 cString TimeString(time_t t);
+#ifdef WITH_LIBJPEG
 uchar *RgbToJpeg(uchar *Mem, int Width, int Height, int &Size, int Quality = 100);
     ///< Converts the given Memory to a JPEG image and returns a pointer
     ///< to the resulting image. Mem must point to a data block of exactly
@@ -209,6 +210,7 @@ uchar *RgbToJpeg(uchar *Mem, int Width, int Height, int &Size, int Quality = 100
     ///< resulting image, where 100 is "best". The caller takes ownership of
     ///< the result and has to delete it once it is no longer needed.
     ///< The result may be NULL in case of an error.
+#endif
 
 class cBase64Encoder {
 private:

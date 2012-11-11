@@ -387,7 +387,9 @@ const char *GetHelpPage(const char *Cmd, const char **p)
   return NULL;
 }
 
+#ifdef WITH_LIBJPEG
 char *cSVDRP::grabImageDir = NULL;
+#endif
 
 cSVDRP::cSVDRP(int Port)
 :socket(Port)
@@ -791,6 +793,7 @@ void cSVDRP::CmdEDIT(const char *Option)
      Reply(501, "Missing recording number");
 }
 
+#ifdef WITH_LIBJPEG
 void cSVDRP::CmdGRAB(const char *Option)
 {
   const char *FileName = NULL;
@@ -926,6 +929,7 @@ void cSVDRP::CmdGRAB(const char *Option)
   else
      Reply(501, "Missing filename");
 }
+#endif
 
 void cSVDRP::CmdHELP(const char *Option)
 {
@@ -1853,7 +1857,9 @@ void cSVDRP::Execute(char *Cmd)
   else if (CMD("DELR"))  CmdDELR(s);
   else if (CMD("DELT"))  CmdDELT(s);
   else if (CMD("EDIT"))  CmdEDIT(s);
+#ifdef WITH_LIBJPEG
   else if (CMD("GRAB"))  CmdGRAB(s);
+#endif
   else if (CMD("HELP"))  CmdHELP(s);
   else if (CMD("HITK"))  CmdHITK(s);
   else if (CMD("LSTC"))  CmdLSTC(s);
@@ -1960,10 +1966,12 @@ bool cSVDRP::Process(void)
   return false;
 }
 
+#ifdef WITH_LIBJPEG
 void cSVDRP::SetGrabImageDir(const char *GrabImageDir)
 {
   free(grabImageDir);
   grabImageDir = GrabImageDir ? strdup(GrabImageDir) : NULL;
 }
+#endif
 
 //TODO more than one connection???
