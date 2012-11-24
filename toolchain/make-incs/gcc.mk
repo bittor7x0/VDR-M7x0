@@ -108,6 +108,7 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
 			--without-isl \
+			--without-ppl \
 			--without-cloog \
 			--disable-decimal-float \
 			--disable-libgomp \
@@ -151,6 +152,7 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                    $$(MPC_HOSTINSTALLED) \
                                    $$(LIBELF_HOSTINSTALLED) \
                                    $$(ISL_HOSTINSTALLED) \
+                                   $$(PPL_HOSTINSTALLED) \
                                    $$(CLOOG_HOSTINSTALLED) \
                                    $$(UCLIBC_INSTALLED)
 	-$(RM) -rf $(GCC_BUILD_DIR)
@@ -180,6 +182,7 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-mpfr=$(PREFIX) \
 			--with-libelf=$(PREFIX) \
 			--with-isl=$(PREFIX) \
+			--with-ppl=$(PREFIX) \
 			--with-cloog=$(PREFIX) \
 			--enable-cloog-backend=isl \
 			--with-host-libstdcxx='-lstdc++' \
