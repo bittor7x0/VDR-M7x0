@@ -23,9 +23,9 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 
 #include <vdr/status.h>
 
-#if APIVERSNUM < 10515
-enum eTimerChange { tcMod, tcAdd, tcDel };
-#endif
+//#if APIVERSNUM < 10515
+//enum eTimerChange { tcMod, tcAdd, tcDel };
+//#endif
 
 class cTimerStatusMonitor : public cStatus
 {

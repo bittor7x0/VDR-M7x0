@@ -119,6 +119,9 @@ public:
       ///< Upon return the internal state will be stored in State.
   void SetEvents(void);
   void DeleteExpired(void);
+  void Add(cTimer *Timer, cTimer *After = NULL);
+  void Ins(cTimer *Timer, cTimer *Before = NULL);
+  void Del(cTimer *Timer, bool DeleteObject = true);
   };
 
 extern cTimers Timers;

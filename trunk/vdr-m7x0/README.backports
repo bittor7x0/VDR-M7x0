@@ -194,3 +194,8 @@ VDR 1.7.18 backports applied in this patch:
 * The files "commands.conf" and "reccmd.conf" can now contain nested lists of
   commands. See vdr.5 for information about the new file format.
 * Fixed cConfig::Load() for g++ version 4.7.0 (thanks to Ville Skyttä).
+* Added cStatus::TimerChange() to inform plugins about changes to the list of timers
+  (based on a patch from Benedikt Elser).
+* The info.vdr file now also stores the name of the channel, and the new function
+  cRecordingInfo::ChannelName() returns this information if available (based on
+  a patch from Alexander Hans).
