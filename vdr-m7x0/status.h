@@ -14,11 +14,21 @@
 #include "player.h"
 #include "tools.h"
 
+enum eTimerChange { tcMod, tcAdd, tcDel };
+
+class cTimer;
+
 class cStatus : public cListObject {
 private:
   static cList<cStatus> statusMonitors;
 protected:
   // These functions can be implemented by derived classes to receive status information:
+  virtual void TimerChange(const cTimer *Timer, eTimerChange Change) {}
+               // Indicates a change in the timer settings.
+               // If Change is tcAdd or tcDel, Timer points to the timer that has
+               // been added or will be deleted, respectively. In case of tcMod,
+               // Timer is NULL; this indicates that some timer has been changed.
+               // Note that tcAdd and tcDel are always also followed by a tcMod.
   virtual void ChannelSwitch(const cDevice *Device, int ChannelNumber) {}
                // Indicates a channel switch on the given DVB device.
                // If ChannelNumber is 0, this is before the channel is being switched,
@@ -70,6 +80,7 @@ public:
   cStatus(void);
   virtual ~cStatus();
   // These functions are called whenever the related status information changes:
+  static void MsgTimerChange(const cTimer *Timer, eTimerChange Change);
   static void MsgChannelSwitch(const cDevice *Device, int ChannelNumber);
   static void MsgRecording(const cDevice *Device, const char *Name, const char *FileName, bool On);
   static void MsgReplaying(const cControl *Control, const char *Name, const char *FileName, bool On);

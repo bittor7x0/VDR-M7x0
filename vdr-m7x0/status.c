@@ -22,6 +22,12 @@ cStatus::~cStatus()
   statusMonitors.Del(this, false);
 }
 
+void cStatus::MsgTimerChange(const cTimer *Timer, eTimerChange Change)
+{
+  for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))
+      sm->TimerChange(Timer, Change);
+}
+
 void cStatus::MsgChannelSwitch(const cDevice *Device, int ChannelNumber)
 {
   for (cStatus *sm = statusMonitors.First(); sm; sm = statusMonitors.Next(sm))

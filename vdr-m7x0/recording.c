@@ -276,6 +276,7 @@ void cResumeFile::Delete(void)
 cRecordingInfo::cRecordingInfo(const cChannel *Channel, const cEvent *Event)
 {
   channelID = Channel ? Channel->GetChannelID() : tChannelID::InvalidID;
+  channelName = Channel ? strdup(Channel->Name()) : NULL;
   ownEvent = Event ? NULL : new cEvent(0);
   event = ownEvent ? ownEvent : Event;
   aux = NULL;
@@ -318,6 +319,7 @@ cRecordingInfo::~cRecordingInfo()
 {
   delete ownEvent;
   free(aux);
+  free(channelName);
 }
 
 void cRecordingInfo::SetData(const char *Title, const char *ShortText, const char *Description)
@@ -348,8 +350,11 @@ bool cRecordingInfo::Read(FILE *f)
            switch (*s) {
              case 'C': {
                          char *p = strchr(t, ' ');
-                         if (p)
+                         if (p) {
+                            free(channelName);
+                            channelName = strdup(compactspace(p));
                             *p = 0; // strips optional channel name
+                            }
                          if (*t)
                             channelID = tChannelID::FromString(t);
                        }
@@ -389,7 +394,7 @@ bool cRecordingInfo::Read(FILE *f)
 bool cRecordingInfo::Write(FILE *f, const char *Prefix) const
 {
   if (channelID.Valid())
-     fprintf(f, "%sC %s\n", Prefix, *channelID.ToString());
+     fprintf(f, "%sC %s%s%s\n", Prefix, *channelID.ToString(), channelName ? " " : "", channelName ? channelName : "");
   event->Dump(f, Prefix, true);
   if (aux)
      fprintf(f, "%s@ %s\n", Prefix, aux);

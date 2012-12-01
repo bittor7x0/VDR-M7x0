@@ -53,6 +53,7 @@ class cRecordingInfo {
   friend class cRecording;
 private:
   tChannelID channelID;
+  char *channelName;
   const cEvent *event;
   cEvent *ownEvent;
   char *aux;
@@ -62,6 +63,7 @@ private:
 public:
   ~cRecordingInfo();
   tChannelID ChannelID(void) const { return channelID; }
+  const char *ChannelName(void) const { return channelName; }
   const cEvent *GetEvent(void) const { return event; }
   const char *Title(void) const { return event->Title(); }
   const char *ShortText(void) const { return event->ShortText(); }
