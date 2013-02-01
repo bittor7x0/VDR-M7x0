@@ -1,7 +1,7 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
 # Copyright (C) 2006, 2007 Andreas Koch - the open7x0.org group
-# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VDR-NG-EM Project
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 VDR-NG-EM Project
 #
 # More information can be found in the files COPYING and README.
 #
@@ -26,7 +26,7 @@
 
 E2FSPROGS_DEPS = $(BASE_BUILD_STAGEFILE)
 
-E2FSPROGS_VERSION := 1.42.5
+E2FSPROGS_VERSION := 1.42.7
 E2FSPROGS_PATCHES_DIR := $(PATCHES_DIR)/e2fsprogs/$(E2FSPROGS_VERSION)
 
 E2FSPROGS_FILE := e2fsprogs-$(E2FSPROGS_VERSION).tar.gz

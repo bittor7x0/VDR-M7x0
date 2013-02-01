@@ -1,6 +1,6 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
-# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VDR-NG-EM Project
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 VDR-NG-EM Project
 #
 # More information can be found in the files COPYING and README.
 #
@@ -26,7 +26,7 @@
 # Put dependencies here
 ISL_HOSTDEPS = $(GMP_HOSTINSTALLED)
 
-ISL_HOSTVERSION := 0.10
+ISL_HOSTVERSION := 0.11.1
 ISL_HOSTPATCHES_DIR := $(PATCHES_DIR)/isl/$(ISL_HOSTVERSION)
 
 ISL_HOSTFILE := isl-$(ISL_HOSTVERSION).tar.bz2

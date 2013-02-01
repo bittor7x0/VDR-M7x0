@@ -1,6 +1,6 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
-# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VDR-NG-EM Project
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 VDR-NG-EM Project
 #
 # More information can be found in the files COPYING and README.
 #
@@ -26,7 +26,7 @@
 # Put dependencies here
 CLOOG_HOSTDEPS = $(ISL_HOSTINSTALLED) $(GMP_HOSTINSTALLED)
 
-CLOOG_HOSTVERSION := 0.17.0
+CLOOG_HOSTVERSION := 0.18.0
 CLOOG_HOSTPATCHES_DIR := $(PATCHES_DIR)/cloog/$(CLOOG_HOSTVERSION)
 
 CLOOG_HOSTFILE := cloog-$(CLOOG_HOSTVERSION).tar.gz
