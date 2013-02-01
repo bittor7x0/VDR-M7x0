@@ -1,6 +1,6 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
-# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VDR-NG-EM Project
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 VDR-NG-EM Project
 #
 # More information can be found in the files COPYING and README.
 #
@@ -23,12 +23,12 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-GMP_HOSTVERSION := 5.0.5
+GMP_HOSTVERSION := 5.1.0
 GMP_HOSTPATCHES_DIR := $(PATCHES_DIR)/gmp/$(GMP_HOSTVERSION)
 
 GMP_HOSTFILE := gmp-$(GMP_HOSTVERSION).tar.bz2
 GMP_HOSTDLFILE := $(DOWNLOAD_DIR)/$(GMP_HOSTFILE)
-GMP_HOSTURL := http://ftp.gnu.org/gnu/gmp/$(GMP_HOSTFILE)
+GMP_HOSTURL := ftp://ftp.gmplib.org/pub/gmp-$(GMP_HOSTVERSION)/$(GMP_HOSTFILE)
 GMP_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/gmp-$(GMP_HOSTVERSION)
 
 GMP_HOSTINSTALLED = $(STAGEFILES_DIR)/.gmp_host_installed
