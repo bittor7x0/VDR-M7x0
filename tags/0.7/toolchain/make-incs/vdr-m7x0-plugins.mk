@@ -131,11 +131,11 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 $(STAGEFILES_DIR)/.vdr-plugins_compiled: $(STAGEFILES_DIR)/.vdr-plugins_configured
 	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
-		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES="-DM750S=1") \
+		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
 		$(MAKE) -C $(VDR_DIR) clean-plugins
 	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
-		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES="-DM750S=1") \
+		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
 		$(MAKE) -C $(VDR_DIR) plugins
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_compiled
 
@@ -146,7 +146,7 @@ $(STAGEFILES_DIR)/.vdr-plugins_compiled: $(STAGEFILES_DIR)/.vdr-plugins_configur
 $(STAGEFILES_DIR)/.vdr-plugins_installed: $(STAGEFILES_DIR)/.vdr-plugins_compiled
 	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
-		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),DEFINES="-DM750S=1") \
+		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
 		$(MAKE) -C $(VDR_DIR) PLUGINLIBDIR=$(TARGET_ROOT)/usr/lib/vdr install-plugins
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_installed
 
