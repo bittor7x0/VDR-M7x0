@@ -76,8 +76,7 @@ $(STAGEFILES_DIR)/.gmp_host_configured: $(STAGEFILES_DIR)/.gmp_host_patched
 			--prefix=$(PREFIX) \
 			--enable-static \
 			--disable-shared \
-			--enable-cxx \
-			--enable-mpbsd)
+			--enable-cxx)
 	$(TOUCH) $(STAGEFILES_DIR)/.gmp_host_configured
 
 #
