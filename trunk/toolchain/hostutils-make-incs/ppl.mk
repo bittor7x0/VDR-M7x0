@@ -80,7 +80,7 @@ $(STAGEFILES_DIR)/.ppl_host_configured: $(STAGEFILES_DIR)/.ppl_host_patched
 			--enable-static \
 			--disable-shared \
 			--disable-pch \
-			--enable-arch=$(HOST_ARCH) \
+			--enable-arch=$(subst x86_64,x86-64,$(HOST_ARCH)) \
 			--enable-optimization=sspeed \
 			--disable-ppl_lcdd \
 			--disable-ppl_lpsol \
