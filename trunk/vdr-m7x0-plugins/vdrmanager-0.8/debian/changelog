@@ -1,0 +1,15 @@
+vdr-plugin-vdrmanager (0.8-1) unstable; urgency=low
+
+  [lado]
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  
+  Important:
+  
+  If you intend to make this plugin available to others, please create an
+  ITP-bug (see http://www.debian.org/devel/wnpp ) and contact the
+  Debian VDR packaging team: pkg-vdr-dvb-devel@lists.alioth.debian.org
+
+  [lado]
+  * Bugfix http://projects.vdr-developer.org/versions/show/309
+
+ -- Lado Kumsiashvili <herrlado@gmail.com>  Tue, 27 Nov 2012 11:31:09 +0100

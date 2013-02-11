@@ -1,0 +1,16 @@
+Source: vdr-plugin-vdrmanager
+Section: video
+Priority: extra
+Maintainer: lado <herrlado@gmail.com>
+Build-Depends: cdbs, debhelper (>= 7), vdr-dev (>= 1.6.0), gettext, liblz-dev, zlib1g-dev
+Standards-Version: 3.8.4
+Vcs-Svn: svn://svn.debian.org/pkg-vdr-dvb/vdr/vdr-plugin-vdrmanager/trunk/
+Vcs-Browser: http://svn.debian.org/wsvn/pkg-vdr-dvb/vdr/vdr-plugin-vdrmanager/trunk/
+Homepage: http://projects.vdr-developer.org/projects/vdr-manager
+
+Package: vdr-plugin-vdrmanager
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${vdr:Depends}
+Description: Program VDR using Android
+ With VDR-Manager you can program VDR using mobile devices running Android.
+ So you can browse the EPG, manage timers and wakeup your VDR from anywhere.
