@@ -1,7 +1,7 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
 # Copyright (C) 2007 Andreas Koch - the open7x0.org group
-# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VDR-NG-EM Project
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 VDR-NG-EM Project
 #
 # More information can be found in the files COPYING and README.
 #
@@ -25,6 +25,10 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
 VDR-PLUGINS_DEPS = $(BASE_BUILD_STAGEFILE) $(VDR_INSTALLED) $(TOP_DIR)/.config
+
+ifeq ($(or $(filter y,$(CONFIG_ZLIB)),$(filter y,$(CONFIG_ZLIB_STATIC))),y)
+	VDR-PLUGINS_DEPS +=  $(ZLIB_INSTALLED)
+endif
 
 VDR-PLUGINS_SVN_URL := http://svn.assembla.com/svn/VDR-M7x0/trunk/vdr-m7x0-plugins
 VDR-PLUGINS_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS
@@ -103,6 +107,12 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 	(if [ -f $(VDR_DIR)/PLUGINS/src/pin/Makefile ]; then \
 		$(SED) -i -e 's,^FSKCHKDIR = .*,FSKCHKDIR = \"$(TOP_DIR)\/prg-fw-configs\/vdr-m7x0-plugins\/common\/pin\/usr\/bin\",g' \
 			$(VDR_DIR)/PLUGINS/src/pin/Makefile; \
+	fi; \
+	if [ -f $(VDR_DIR)/PLUGINS/src/vdrmanager/Makefile ]; then \
+		if [ X"$(CONFIG_ZLIB)" != X"y" -a X"$(CONFIG_ZLIB_STATIC)" != X"y" ]; then \
+			$(ECHO) dependency error: vdrmanager plugin needs zlib or zlib-static enabled; \
+			exit 1; \
+		fi; \
 	fi; \
 	if [ -f $(VDR_DIR)/PLUGINS/src/epgsearch/Makefile ]; then \
 		if [ -f $(VDR_DIR)/PLUGINS/src/pin/Makefile ]; then \

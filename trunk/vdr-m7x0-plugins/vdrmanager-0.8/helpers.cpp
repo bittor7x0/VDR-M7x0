@@ -462,9 +462,10 @@ string cHelpers::SearchEventsIntern(string wantedChannels, string pattern) {
 
 string cHelpers::ToText(cRecording * recording) {
 	const cRecordingInfo * info = recording->Info();
-#if APIVERSNUM >= 10705
+// GetEvent() is backported in VDR-NG-EM
+//#if APIVERSNUM >= 10705
 	const cEvent * event = info->GetEvent();
-#endif
+//#endif
 	/**
 	 tChannelID ChannelID(void) const;
 	 const cSchedule *Schedule(void) const { return schedule; }
@@ -497,13 +498,13 @@ string cHelpers::ToText(cRecording * recording) {
 	char buf[100];
 	string result = "";
 
-#if APIVERSNUM >= 10705
+//#if APIVERSNUM >= 10705
 	time_t startTime = event->StartTime();
 	time_t endTime = event->EndTime();
-#else
-	time_t startTime = 0L;
-	time_t endTime = 1L;
-#endif
+//#else
+//	time_t startTime = 0L;
+//	time_t endTime = 1L;
+//#endif
 	snprintf(buf, sizeof(buf) - 1, "%d", recording->Index());
 	result = buf;
 	result += ":";
@@ -525,10 +526,10 @@ string cHelpers::ToText(cRecording * recording) {
 
 	if (info->Title()) {
 		result += MapSpecialChars(info->Title());
-#if APIVERSNUM >= 10705
+//#if APIVERSNUM >= 10705
 	} else if (event->Title()) {
 		result += MapSpecialChars(event->Title());
-#endif
+//#endif
 	} else {
 		result += "<unknown>";
 	}
