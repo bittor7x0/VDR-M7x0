@@ -1,0 +1,2 @@
+plugin.vdrmanager.conf - example for e.a. Debian, ubuntu. This should be copied into /etc/vdr/plugins/
+vdr.vdrmanager - example for gentoo, this file should be copied into /etc/conf.d/

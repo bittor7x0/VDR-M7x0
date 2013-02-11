@@ -1,0 +1,13 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+See the file COPYING for license information.
+
+Description:
+
+This helper plugin allows remote programming VDR using
+VDR-Manager running on Android devices.
+
+Installation:
+- It's already debianized, so it can be build just by dpkg-buildpackage -b in the source folder
+- gentoo ebuilds can also be downloaded from the download section
+- Otherwise use Makfile 
