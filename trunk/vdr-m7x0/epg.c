@@ -779,6 +779,11 @@ void cEvent::FixEpgBugs(void)
   strreplace(title, '`', '\'');
   strreplace(shortText, '`', '\'');
   strreplace(description, '`', '\'');
+  // The same applies to the ISO 8859-1 acute accent. Moreover, it is another
+  // character when displayed in ISO 8859-15.
+  strreplace(title, '\xB4', '\'');
+  strreplace(shortText, '\xB4', '\'');
+  strreplace(description, '\xB4', '\'');
 
   if (Setup.EPGBugfixLevel <= 2)
      goto Final;
