@@ -81,7 +81,9 @@ $(STAGEFILES_DIR)/.libmpeg2_configured: $(STAGEFILES_DIR)/.libmpeg2_patched
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--enable-shared \
-			--enable-static)
+			--enable-static \
+			--disable-sdl \
+			--without-x)
 	$(TOUCH) $(STAGEFILES_DIR)/.libmpeg2_configured
 
 #

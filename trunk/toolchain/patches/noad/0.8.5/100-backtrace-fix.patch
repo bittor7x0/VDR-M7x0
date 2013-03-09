@@ -1,0 +1,56 @@
+diff -Naur noad-0.8.5-orig/main.cpp noad-0.8.5/main.cpp
+--- noad-0.8.5-orig/main.cpp	2012-10-23 18:59:31.000000000 +0200
++++ noad-0.8.5/main.cpp	2012-11-17 16:16:42.614296082 +0100
+@@ -24,7 +24,6 @@
+ #include <time.h>
+ #include <sys/wait.h>
+ #include <signal.h>
+-#include <execinfo.h>
+ #include "noad.h"
+ #include "svdrpc.h"
+ #include "tnoad.h"
+diff -Naur noad-0.8.5-orig/tools.cpp noad-0.8.5/tools.cpp
+--- noad-0.8.5-orig/tools.cpp	2012-10-16 13:57:28.000000000 +0200
++++ noad-0.8.5/tools.cpp	2012-11-17 16:19:24.464323782 +0100
+@@ -20,7 +20,6 @@
+ #include <sys/vfs.h>
+ #include <time.h>
+ #include <unistd.h>
+-#include <execinfo.h>
+ #include <signal.h>
+ #include <stdarg.h>
+ #include <cxxabi.h>
+@@ -1233,6 +1232,7 @@
+ {
+     fprintf(out, "stack trace:\n");
+ 
++/*
+     // storage array for stack trace address data
+     void* addrlist[max_frames+1];
+ 
+@@ -1307,10 +1307,16 @@
+ 
+     free(funcname);
+     free(symbollist);
++*/
+ }
+ 
+ void show_stackframe(bool bFork)
+ {
++  const char *msg = "[bt] Execution path: <Sorry, stackframe backtrace not available with uClibc>";
++  if (!bFork)
++    fprintf(stderr, "%s\n", msg);
++  syslog(LOG_INFO, msg);
++/*
+   void *trace[32];
+   char **messages = (char **)NULL;
+   int i, trace_size = 0;
+@@ -1386,7 +1392,7 @@
+ 
+   free(funcname);
+   free(messages);
+-  /*
++
+   for (i=0; i<trace_size; ++i)
+   {
+     if (!bFork)

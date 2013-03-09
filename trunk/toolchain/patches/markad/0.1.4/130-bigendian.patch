@@ -1,0 +1,29 @@
+diff -Naur markad-0.1.4-orig/command/marks.cpp markad-0.1.4/command/marks.cpp
+--- markad-0.1.4-orig/command/marks.cpp	2012-11-18 15:28:00.000000000 +0100
++++ markad-0.1.4/command/marks.cpp	2012-11-18 15:54:24.280754018 +0100
+@@ -17,6 +17,7 @@
+ 
+ #include "marks.h"
+ 
++#define b2e(a) (((a)&0x000000FF)<<24) | ((((a)&0x0000FF00)>>8)<<16) | ((((a)&0x00FF0000)>>16)<<8) | (((a)&0xFF000000)>>24)
+ 
+ clMark::clMark(int Type, int Position, const char *Comment)
+ {
+@@ -406,7 +407,7 @@
+             }
+             if (IndexTS.independent)
+             {
+-                *Offset=IndexTS.offset;
++                *Offset=b2e(IndexTS.offset);
+                 *Number=IndexTS.number;
+                 pos=lseek(ifd,0,SEEK_CUR);
+                 *Frame=(int) (pos/sizeof(IndexTS))-1;
+@@ -447,7 +448,7 @@
+             }
+             if (IndexVDR.type==1)
+             {
+-                *Offset=IndexVDR.offset;
++                *Offset=b2e(IndexVDR.offset);
+                 *Number=IndexVDR.number;
+                 pos=lseek(ifd,0,SEEK_CUR);
+                 *Frame=(int) (pos/sizeof(IndexVDR))-1;

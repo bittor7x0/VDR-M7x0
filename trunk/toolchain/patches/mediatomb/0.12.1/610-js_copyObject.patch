@@ -1,0 +1,51 @@
+Description: Fix segfaults caused by copyObject.
+Bug-Debian: http://bugs.debian.org/664967
+Author: Miguel A. Colón Vélez <debian.micove@gmail.com>
+Last-Update: 2012-03-24
+
+--- mediatomb-0.12.1.orig/src/scripting/js_functions.cc
++++ mediatomb-0.12.1/src/scripting/js_functions.cc
+@@ -83,26 +83,31 @@ js_print(JSContext *cx, uintN argc, jsva
+ JSBool
+ js_copyObject(JSContext *cx, uintN argc, jsval *argv)
+ {
+-    jsval arg;
+-    JSObject *js_cds_obj;
+-    JSObject *js_cds_clone_obj;
++    JSObject *js_cds_obj = NULL;
++    JSObject *js_cds_clone_obj = NULL;
+ 
+-    Script *self = (Script *)JS_GetPrivate(cx, JS_THIS_OBJECT(cx, argv));
++    JSObject *obj = JS_THIS_OBJECT(cx, argv);
++
++    Script *self = (Script *)JS_GetPrivate(cx, obj);
+ 
+     try
+     {
+-        arg = argv[0];
+-        if (!JSVAL_IS_OBJECT(arg))
+-            return JS_TRUE;
+-
+-        if (!JS_ValueToObject(cx, arg, &js_cds_obj))
++        if (argc != 1)
++        {
++            log_debug("Incorrect number of input arguments given, argc = %d\n",argc);
+             return JS_TRUE;
+-
+-        argv[0] = OBJECT_TO_JSVAL(js_cds_obj);
++        }
++        else
++        {
++            if(!JS_ConvertArguments(cx, 1, JS_ARGV(cx, argv), "o", &js_cds_obj))
++            {
++                log_debug("Could not parse input arguments\n");
++                return JS_TRUE;
++            }
++        }
+ 
+         Ref<CdsObject> cds_obj = self->jsObject2cdsObject(js_cds_obj, nil);
+         js_cds_clone_obj = JS_NewObject(cx, NULL, NULL, NULL);
+-        argv[1] = OBJECT_TO_JSVAL(js_cds_clone_obj);
+ 
+         self->cdsObject2jsObject(cds_obj, js_cds_clone_obj);
+ 

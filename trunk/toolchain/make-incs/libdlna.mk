@@ -24,15 +24,15 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
 ifeq ($(CONFIG_LIBDLNA),y)
-ifneq ($(CONFIG_FFMPEG),y)
-   $(error dependency error: libdlna needs ffmpeg enabled)
+ifneq ($(and $(filter y,$(CONFIG_FFMPEG)),$(filter y,$(CONFIG_FFMPEG_LIBAVCODEC)),$(filter y,$(CONFIG_FFMPEG_LIBAVUTIL))),y)
+   $(error dependency error: libdlna needs ffmpeg with libavcodec and libavutil libraries enabled)
 endif
 endif
 
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 LIBDLNA_DEPS = $(BASE_BUILD_STAGEFILE) $(FFMPEG_INSTALLED)
 
-LIBDLNA_VERSION := 0.2.3
+LIBDLNA_VERSION := 0.2.4
 LIBDLNA_PATCHES_DIR := $(PATCHES_DIR)/libdlna/$(LIBDLNA_VERSION)
 
 LIBDLNA_FILE := libdlna-$(LIBDLNA_VERSION).tar.bz2
@@ -89,10 +89,11 @@ $(STAGEFILES_DIR)/.libdlna_configured: $(STAGEFILES_DIR)/.libdlna_patched
 		--cross-compile \
 		--cross-prefix="$(UCLIBC_TARGET)-" \
 		--prefix=$(TARGET_ROOT)/usr \
+		--with-ffmpeg-dir=$(TARGET_ROOT) \
 		--enable-shared \
 		--enable-static \
 		--disable-debug \
-		--disable-optimize \
+		--disable-developer \
 		--disable-strip)
 	$(TOUCH) $(STAGEFILES_DIR)/.libdlna_configured
 

@@ -1,0 +1,11 @@
+--- markad-0.1.4-orig/command/Makefile	2012-11-17 16:06:44.590864953 +0100
++++ markad-0.1.4/command/Makefile	2012-11-17 16:03:59.930834032 +0100
+@@ -31,7 +31,7 @@
+ 
+ 
+ INCLUDES += $(shell $(PKG-CONFIG) --cflags $(PKG-INCLUDES))
+-LIBS     += $(shell $(PKG-CONFIG) --libs $(PKG-LIBS)) -pthread
++LIBS     += $(shell $(PKG-CONFIG) --libs $(PKG-LIBS)) -pthread -lintl
+ 
+ ### The object files (add further files here):
+ 

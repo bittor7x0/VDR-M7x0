@@ -1,0 +1,89 @@
+Description: Fix spelling errors.
+ Fix the spelling errors mentioned by lintian.
+Author: Miguel A. Colón Vélez <debian.micove@gmail.com>
+Last-Update: 2012-03-24
+
+--- mediatomb-0.12.1.orig/src/web_request_handler.h
++++ mediatomb-0.12.1/src/web_request_handler.h
+@@ -147,7 +147,7 @@ public:
+     /// \return the appropriate IOHandler for the request.
+     virtual zmm::Ref<IOHandler> open(IN const char *filename, OUT struct File_Info *info, IN enum UpnpOpenFileMode mode);
+     
+-    /// \brief This method must be overriden by the subclasses that actually process the given request.
++    /// \brief This method must be overridden by the subclasses that actually process the given request.
+     virtual void process() = 0;
+     
+     /// \brief builds full path to a script for the given relative filename
+--- mediatomb-0.12.1.orig/src/youtube_service.cc
++++ mediatomb-0.12.1/src/youtube_service.cc
+@@ -337,7 +337,7 @@ String YouTubeService::getCheckAttr(Ref<
+         return temp;
+     else
+         throw _Exception(_("Tag <") + xml->getName() +
+-                _("> is missing the requred \"") + attrname + 
++                _("> is missing the required \"") + attrname + 
+                 _("\" attribute!"));
+     return nil;
+ }
+@@ -350,7 +350,7 @@ int YouTubeService::getCheckPosIntAttr(R
+         itmp = temp.toInt();
+     else
+         throw _Exception(_("Tag <") + xml->getName() +
+-                _("> is missing the requred \"") + attrname + 
++                _("> is missing the required \"") + attrname + 
+                 _("\" attribute!"));
+ 
+     if (itmp < 1)
+--- mediatomb-0.12.1.orig/src/online_service.cc
++++ mediatomb-0.12.1/src/online_service.cc
+@@ -98,7 +98,7 @@ String OnlineService::getCheckAttr(Ref<E
+         return temp;
+     else
+         throw _Exception(getServiceName() + _(": Tag <") + xml->getName() +
+-                _("> is missing the requred \"") + attrname +
++                _("> is missing the required \"") + attrname +
+                 _("\" attribute!"));
+     return nil;
+ }
+@@ -111,7 +111,7 @@ int OnlineService::getCheckPosIntAttr(Re
+         itmp = temp.toInt();
+     else
+         throw _Exception(getServiceName() + _(": Tag <") + xml->getName() +
+-                _("> is missing the requred \"") + attrname +
++                _("> is missing the required \"") + attrname +
+                 _("\" attribute!"));
+ 
+     if (itmp < 1)
+--- mediatomb-0.12.1.orig/src/main.cc
++++ mediatomb-0.12.1/src/main.cc
+@@ -197,7 +197,7 @@ int main(int argc, char **argv, char **e
+                 break;
+ 
+             case 'd':
+-                log_debug("Starting in deamon mode...");
++                log_debug("Starting in daemon mode...");
+                 daemon = true;
+                 break;
+ 
+--- mediatomb-0.12.1.orig/src/storage/sql_storage.h
++++ mediatomb-0.12.1/src/storage/sql_storage.h
+@@ -242,7 +242,7 @@ private:
+     void addToInsertBuffer(zmm::Ref<zmm::StringBuffer> query);
+     void flushInsertBuffer(bool dontLock = false);
+     
+-    /* insert buffer functions to be overriden by implementing classes */
++    /* insert buffer functions to be overridden by implementing classes */
+     virtual void _addToInsertBuffer(zmm::Ref<zmm::StringBuffer> query) = 0;
+     virtual void _flushInsertBuffer() = 0;
+     
+--- mediatomb-0.12.1.orig/src/storage/sql_storage.cc
++++ mediatomb-0.12.1/src/storage/sql_storage.cc
+@@ -136,7 +136,7 @@ SQLStorage::SQLStorage() : Storage()
+ void SQLStorage::init()
+ {
+     if (table_quote_begin == '\0' || table_quote_end == '\0')
+-        throw _Exception(_("quote vars need to be overriden!"));
++        throw _Exception(_("quote vars need to be overridden!"));
+     
+     Ref<StringBuffer> buf(new StringBuffer());
+     *buf << SQL_QUERY_FOR_STRINGBUFFER;

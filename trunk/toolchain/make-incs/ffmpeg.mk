@@ -30,7 +30,7 @@ ifeq ($(CONFIG_ZLIB),y)
    FFMPEG_DEPS += $(ZLIB_INSTALLED)
 endif
 
-FFMPEG_VERSION := 0.5.2
+FFMPEG_VERSION := 1.0
 FFMPEG_PATCHES_DIR := $(PATCHES_DIR)/ffmpeg/$(FFMPEG_VERSION)
 
 FFMPEG_FILE := ffmpeg-$(FFMPEG_VERSION).tar.bz2
@@ -45,124 +45,6 @@ FILE_LISTS_$(CONFIG_FFMPEG) += ffmpeg.lst
 
 CLEAN_RULES += clean-ffmpeg
 DISTCLEAN_RULES += distclean-ffmpeg
-
-ifneq ($(CONFIG_LIBDLNA),y)
-	FFMPEG_CONFIGURE_OPTIONS:=--enable-cross-compile \
-			--cross-prefix=$(UCLIBC_TARGET)- \
-			--arch=mips \
-			--prefix=/usr \
-			--enable-shared \
-			--enable-static \
-			--disable-debug \
-			--enable-ffmpeg \
-			--disable-ffplay \
-			--disable-ffserver \
-			--disable-network \
-			--enable-gpl \
-			--disable-libfaad \
-			--disable-mmx \
-			--disable-mmx2 \
-			--enable-pthreads \
-			$(if $(CONFIG_SQUASHFS_LZMA),,--disable-optimizations --enable-small) \
-			--disable-stripping \
-			--disable-vhook \
-			$(if $(CONFIG_ZLIB),--enable-zlib,--disable-zlib) \
-			--enable-postproc \
-			--disable-ipv6 \
-			--disable-bsfs \
-			--disable-devices \
-			--disable-encoders \
-			--enable-encoder=ac3 \
-			--enable-encoder=mpeg1video \
-			--enable-encoder=mpeg2video \
-			--enable-encoder=pcm_s16be \
-			--enable-encoder=pcm_s16le \
-			$(if $(CONFIG_ZLIB),--enable-encoder=zlib,--disable-encoder=zlib) \
-			--disable-decoders \
-			--enable-decoder=ac3 \
-			--enable-decoder=mpeg1video \
-			--enable-decoder=mpeg2video \
-			--enable-decoder=mpegvideo \
-			--enable-decoder=pcm_s16be \
-			--enable-decoder=pcm_s16le \
-			$(if $(CONFIG_ZLIB),--enable-decoder=zlib,--disable-decoder=zlib) \
-			--disable-muxers \
-			--enable-muxer=ac3 \
-			--enable-muxer=mpeg1video \
-			--enable-muxer=mpeg2video \
-			--enable-muxer=mpegts \
-			--disable-demuxers \
-			--enable-demuxer=ac3 \
-			--enable-demuxer=mpegps \
-			--enable-demuxer=mpegts \
-			--enable-demuxer=mpegvideo \
-			--enable-demuxer=rm \
-			--enable-demuxer=v4l2 \
-			--disable-parsers \
-			--enable-parser=ac3 \
-			--enable-parser=mpegaudio \
-			--enable-parser=mpegvideo \
-			--disable-protocols \
-			--enable-protocol=file \
-			--enable-protocol=pipe \
-			--disable-filters
-else
-	FFMPEG_CONFIGURE_OPTIONS:=--enable-cross-compile \
-			--cross-prefix=$(UCLIBC_TARGET)- \
-			--arch=mips \
-			--prefix=/usr \
-			--enable-shared \
-			--enable-static \
-			--disable-debug \
-			--disable-ffmpeg \
-			--disable-ffplay \
-			--disable-ffserver \
-			--disable-network \
-			--enable-gpl \
-			--disable-libfaad \
-			--disable-mmx \
-			--disable-mmx2 \
-			--enable-pthreads \
-			$(if $(CONFIG_SQUASHFS_LZMA),,--disable-optimizations --enable-small) \
-			--disable-stripping \
-			--disable-vhook \
-			$(if $(CONFIG_ZLIB),--enable-zlib,--disable-zlib) \
-			--enable-postproc \
-			--disable-ipv6 \
-			--disable-bsfs \
-			--disable-devices \
-			--disable-encoders \
-			--disable-decoders \
-			--enable-decoder=ac3 \
-			--enable-decoder=atrac3 \
-			--enable-decoder=h264 \
-			--enable-decoder=jpegls \
-			--enable-decoder=mp3 \
-			--enable-decoder=mpeg1video \
-			--enable-decoder=mpeg2video \
-			--enable-decoder=mpeg4 \
-			--enable-decoder=mpeg4aac \
-			--enable-decoder=mpegvideo \
-			--enable-decoder=wmav1 \
-			--enable-decoder=wmav2 \
-			--enable-decoder=png \
-			$(if $(CONFIG_ZLIB),--enable-decoder=zlib,--disable-decoder=zlib) \
-			--disable-muxers \
-			--disable-demuxers \
-			--enable-demuxer=ac3 \
-			--enable-demuxer=h264 \
-			--enable-demuxer=mp3 \
-			--enable-demuxer=mpegvideo \
-			--disable-parsers \
-			--enable-parser=aac \
-			--enable-parser=ac3 \
-			--enable-parser=h264 \
-			--enable-parser=mpegaudio \
-			--enable-parser=mpegvideo \
-			--enable-parser=mpeg4video \
-			--disable-protocols \
-			--disable-filters
-endif
 
 #
 # download ffmpeg
@@ -199,7 +81,91 @@ $(STAGEFILES_DIR)/.ffmpeg_patched: $(STAGEFILES_DIR)/.ffmpeg_unpacked
 
 $(STAGEFILES_DIR)/.ffmpeg_configured: $(STAGEFILES_DIR)/.ffmpeg_patched
 	($(CD) $(FFMPEG_DIR) ; $(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fPIC" \
-		$(FFMPEG_DIR)/configure $(FFMPEG_CONFIGURE_OPTIONS))
+		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib" \
+		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
+		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
+		$(FFMPEG_DIR)/configure \
+			--enable-cross-compile \
+			--cross-prefix=$(UCLIBC_TARGET)- \
+			--arch=mips \
+			--target-os=linux \
+			--prefix="/usr" \
+			--enable-shared \
+			--enable-static \
+			--pkg-config=pkg-config \
+			--disable-debug \
+			--disable-ffmpeg \
+			--disable-ffplay \
+			--disable-ffprobe \
+			--disable-ffserver \
+			--disable-network \
+			--enable-gpl \
+			--enable-version3 \
+			--disable-doc \
+			--disable-htmlpages \
+			--disable-manpages \
+			--disable-podpages \
+			--disable-txtpages \
+			--disable-dxva2 \
+			--disable-vaapi \
+			--disable-vda \
+			--disable-vdpau \
+			--disable-mmx \
+			--disable-mmxext \
+			--disable-sse \
+			--disable-sse2 \
+			--disable-sse3 \
+			--disable-ssse3 \
+			--disable-sse4 \
+			--disable-sse42 \
+			--disable-mips32r2 \
+			--disable-mipsdspr1 \
+			--disable-mipsdspr2 \
+			--disable-mipsfpu \
+			--disable-fast-unaligned \
+			--enable-pthreads \
+			--disable-stripping \
+			$(if $(CONFIG_FFMPEG_SIZE),--disable-optimizations --enable-small,) \
+			$(if $(CONFIG_ZLIB),--enable-zlib,--disable-zlib) \
+			$(if $(CONFIG_FFMPEG_LIBAVCODEC),--enable-avcodec,--disable-avcodec) \
+			$(if $(CONFIG_FFMPEG_LIBAVDEVICE),--enable-avdevice,--disable-avdevice) \
+			$(if $(CONFIG_FFMPEG_LIBAVFORMAT),--enable-avformat,--disable-avformat) \
+			$(if $(CONFIG_FFMPEG_LIBPOSTPROC),--enable-postproc,--disable-postproc) \
+			$(if $(CONFIG_FFMPEG_LIBSWSCALE),--enable-swscale,--disable-swscale) \
+			--disable-bsfs \
+			--disable-devices \
+			--disable-encoders \
+			--disable-decoders \
+			--enable-decoder=ac3 \
+			--enable-decoder=h264 \
+			--enable-decoder=mpeg1video \
+			--enable-decoder=mpeg_xvmc \
+			--enable-decoder=mpeg2video \
+			--enable-decoder=h264 \
+			--enable-decoder=mpeg4 \
+			--enable-decoder=mpeg4aac \
+			--enable-decoder=mpegvideo \
+			--enable-decoder=pcm_s16be \
+			--enable-decoder=pcm_s16le \
+			$(if $(CONFIG_ZLIB),--enable-decoder=zlib,--disable-decoder=zlib) \
+			--disable-muxers \
+			--disable-demuxers \
+			--enable-demuxer=ac3 \
+			--enable-demuxer=h264 \
+			--enable-demuxer=mpegps \
+			--enable-demuxer=mpegts \
+			--enable-demuxer=mpegvideo \
+			--disable-parsers \
+			--enable-parser=aac \
+			--enable-parser=ac3 \
+			--enable-parser=h264 \
+			--enable-parser=mpegaudio \
+			--enable-parser=mpegvideo \
+			--enable-parser=mpeg4video \
+			--disable-protocols \
+			--disable-avfilter \
+			--disable-filters \
+			--disable-outdevs)
 	$(TOUCH) $(STAGEFILES_DIR)/.ffmpeg_configured
 
 #
@@ -226,12 +192,27 @@ $(STAGEFILES_DIR)/.ffmpeg_installed: $(STAGEFILES_DIR)/.ffmpeg_compiled
 
 
 $(FILELIST_DIR)/ffmpeg.lst: $(STAGEFILES_DIR)/.ffmpeg_installed
-ifneq ($(CONFIG_LIBDLNA),y)
-	$(CAT) $(FILELIST_DIR)/ffmpeg_bin.lst $(FILELIST_DIR)/ffmpeg_libs.lst > $(FILELIST_DIR)/ffmpeg.lst
-else
-	$(CP) -f $(FILELIST_DIR)/ffmpeg_libs.lst $(FILELIST_DIR)/ffmpeg.lst
+	-$(RM) -f $(FILELIST_DIR)/ffmpeg.lst
+	$(TOUCH) -f $(FILELIST_DIR)/ffmpeg.lst
+ifeq ($(CONFIG_FFMPEG_LIBAVCODEC),y)
+	$(CAT) $(FILELIST_DIR)/ffmpeg_libavcodec.lst >> $(FILELIST_DIR)/ffmpeg.lst
 endif
-	$(TOUCH) -f  $(FILELIST_DIR)/ffmpeg.lst
+ifeq ($(CONFIG_FFMPEG_LIBAVDEVICE),y)
+	$(CAT) $(FILELIST_DIR)/ffmpeg_libavdevice.lst >> $(FILELIST_DIR)/ffmpeg.lst
+endif
+ifeq ($(CONFIG_FFMPEG_LIBAVFORMAT),y)
+	$(CAT) $(FILELIST_DIR)/ffmpeg_libavformat.lst >> $(FILELIST_DIR)/ffmpeg.lst
+endif
+ifeq ($(CONFIG_FFMPEG_LIBAVUTIL),y)
+	$(CAT) $(FILELIST_DIR)/ffmpeg_libavutil.lst >> $(FILELIST_DIR)/ffmpeg.lst
+endif
+ifeq ($(CONFIG_FFMPEG_LIBPOSTPROC),y)
+	$(CAT) $(FILELIST_DIR)/ffmpeg_libpostproc.lst >> $(FILELIST_DIR)/ffmpeg.lst
+endif
+ifeq ($(CONFIG_FFMPEG_LIBSWSCALE),y)
+	$(CAT) $(FILELIST_DIR)/ffmpeg_libswscale.lst >> $(FILELIST_DIR)/ffmpeg.lst
+endif
+	$(TOUCH) -f $(FILELIST_DIR)/ffmpeg.lst
 
 .PHONY: clean-ffmpeg distclean-ffmpeg
 
@@ -248,6 +229,7 @@ distclean-ffmpeg:
 	-$(RM) -f $(STAGEFILES_DIR)/.ffmpeg_configured
 	-$(RM) -f $(STAGEFILES_DIR)/.ffmpeg_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.ffmpeg_installed
+	-$(RM) -f $(FILELIST_DIR)/ffmpeg.lst
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -rf $(FFMPEG_DLFILE)
 endif

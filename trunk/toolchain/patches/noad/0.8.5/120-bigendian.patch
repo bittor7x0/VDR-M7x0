@@ -1,0 +1,118 @@
+diff -Naur noad-0.8.5-orig/vdr_cl.cpp noad-0.8.5/vdr_cl.cpp
+--- noad-0.8.5-orig/vdr_cl.cpp	2012-10-23 10:48:13.000000000 +0200
++++ noad-0.8.5/vdr_cl.cpp	2012-11-18 16:01:00.904165231 +0100
+@@ -22,6 +22,7 @@
+ #define NAMEFORMAT   "%s/%s/" nameFORMAT
+ // end of implementation for brain dead systems
+ 
++#define b2e(a) (((a)&0x000000FF)<<24) | ((((a)&0x0000FF00)>>8)<<16) | ((((a)&0x00FF0000)>>16)<<8) | (((a)&0xFF000000)>>24)
+ 
+ #define FINDCMD      "cd '%s' && find '%s' -follow -type d -name '%s' 2> /dev/null"
+ 
+@@ -374,7 +375,7 @@
+ 	for(int i = 0; i < Count; i++ )
+ 	{
+ 		memcpy(&IndexPes, IndexTs, sizeof(IndexPes));
+-		IndexTs->offset = IndexPes.offset;
++		IndexTs->offset = b2e(IndexPes.offset);
+ 		IndexTs->independent = IndexPes.type == 1; // I_FRAME
+ 		IndexTs->number = IndexPes.number;
+ 		IndexTs->reserved = IndexPes.type;
+@@ -476,12 +477,12 @@
+   if (CatchUp(Index)) {
+      if (Index >= 0 && Index < last) {
+         *FileNumber = index[Index].number;
+-        *FileOffset = index[Index].offset;
++        *FileOffset = b2e(index[Index].offset);
+         if (Independent != NULL)
+            *Independent = index[Index].independent;
+         if (Length) {
+            int fn = index[Index + 1].number;
+-           int fo = index[Index + 1].offset;
++           int fo = b2e(index[Index + 1].offset);
+            if (fn == *FileNumber)
+               *Length = fo - *FileOffset;
+            else
+@@ -508,11 +509,11 @@
+                if (!FileOffset)
+                   FileOffset = &fo;
+                *FileNumber = index[Index].number;
+-               *FileOffset = index[Index].offset;
++               *FileOffset = b2e(index[Index].offset);
+                if (Length) {
+                   // all recordings end with a non-independent frame, so the following should be safe:
+                   int fn = index[Index + 1].number;
+-                  int fo = index[Index + 1].offset;
++                  int fo = b2e(index[Index + 1].offset);
+                   if (fn == *FileNumber)
+                      *Length = fo - *FileOffset;
+                   else {
+@@ -536,7 +537,7 @@
+      //TODO implement binary search!
+      int i;
+      for (i = 0; i < last; i++) {
+-         if (index[i].number > FileNumber || (index[i].number == FileNumber) && off_t(index[i].offset) >= FileOffset)
++         if (index[i].number > FileNumber || (index[i].number == FileNumber) && off_t(b2e(index[i].offset)) >= FileOffset)
+             break;
+          }
+      return i;
+@@ -551,15 +552,15 @@
+    for (i = start+1; i < last; i++)
+    {
+       int fn = index[i - 1].number;
+-      int fo = index[i - 1].offset;
++      int fo = b2e(index[i - 1].offset);
+       if (fn == index[i].number)
+-          Length = index[i].offset - fo;
++          Length = b2e(index[i].offset) - fo;
+       else
+-         Length = index[i].offset;
++         Length = b2e(index[i].offset);
+       if( Length < 0 )
+         fprintf(stdout, " Error: illegal length %d",Length);
+       if( i > 0 && index[i-1].number == index[i].number )
+-         if( index[i].offset < index[i-1].offset )
++         if( b2e(index[i].offset) < b2e(index[i-1].offset) )
+            fprintf(stdout, " Error: backjump at %d",i);
+    }
+ }
+@@ -668,13 +669,13 @@
+      if (Index >= 0 && Index < last) 
+ 	  {
+         *FileNumber = index[Index].number;
+-        *FileOffset = index[Index].offset;
++        *FileOffset = b2e(index[Index].offset);
+         if (Independent)
+            *Independent = index[Index].independent;
+         if (Length) 
+ 		  {
+            int fn = index[Index + 1].number;
+-           int fo = index[Index + 1].offset;
++           int fo = b2e(index[Index + 1].offset);
+            if (fn == *FileNumber)
+               *Length = fo - *FileOffset;
+            else
+@@ -718,12 +719,12 @@
+           if (!FileOffset)
+              FileOffset = &fo;
+           *FileNumber = index[Index].number;
+-          *FileOffset = index[Index].offset;
++          *FileOffset = b2e(index[Index].offset);
+           if (Length)
+           {
+             // all recordings end with a non-I_FRAME, so the following should be safe:
+             int fn = index[Index + 1].number;
+-            int fo = index[Index + 1].offset;
++            int fo = b2e(index[Index + 1].offset);
+             if (fn == *FileNumber)
+               *Length = fo - *FileOffset;
+             else
+@@ -751,7 +752,7 @@
+     int i;
+     for (i = 0; i < last; i++)
+     {
+-      if (index[i].number > FileNumber || (index[i].number == FileNumber) && index[i].offset >= FileOffset)
++      if (index[i].number > FileNumber || (index[i].number == FileNumber) && b2e(index[i].offset) >= FileOffset)
+         break;
+     }
+     return i;

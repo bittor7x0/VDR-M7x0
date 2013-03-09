@@ -7,5 +7,4 @@ usr/bin/allnoaduncut  usr/bin/allnoaduncut  f 755 0 0 - - - - -
 usr/bin/clearlogos    usr/bin/clearlogos    f 755 0 0 - - - - -
 usr/bin/noadifnew     usr/bin/noadifnew     f 755 0 0 - - - - -
 usr/bin/stat2html     usr/bin/stat2html     f 755 0 0 - - - - -
-usr/bin/statupd       usr/bin/statupd       f 755 0 0 - - - - -
 usr/bin/noadcall.sh   usr/bin/noadcall.sh   f 755 0 0 - - - - -
