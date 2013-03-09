@@ -16,6 +16,9 @@
 #include "vdrmanagerthread.h"
 #include <memory>
 
+// for TSPlay patch detection
+#include <vdr/device.h>
+
 #define TIMER_SEP		"#|#|#"
 
 string cHelpers::GetRecordings(string args) {
@@ -923,7 +926,7 @@ int nf = -1;
 	};
  
 	struct stat buf;
-#if APIVERSNUM >= 10703
+#if APIVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
 	cString fullname = cString::sprintf("%s%s", recording->FileName(), recording->IsPesRecording() ? "/index" ".vdr" : "/index");
 #else
         cString fullname = cString::sprintf("%s%s", recording->FileName(), "/index" ".vdr");
