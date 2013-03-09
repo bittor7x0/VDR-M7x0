@@ -12,10 +12,6 @@
 #include "player.h"
 
 #define MAXTSHIFT (MAXDEVICES * MAXRECEIVERS)
-#define MAXFILESPERRECORDING 255
-#define RECORDFILESUFFIX    "/%03d.vdr"
-#define RECORDFILESUFFIXLEN 20 // some additional bytes for safety...
-#define INDEXFILESUFFIX   "/index.vdr"
 #define REMOVEOLDFILESAFETYLIMIT 50 // delete old files
 #define MINFREEDISK       300 // minimum free disk space (in MB) required to start recording
 
@@ -82,16 +78,16 @@ class cTShiftIndexFile : public cIndexFile {
 	cMutex firstMutex;
 	char *contentFileName;
 	char *contentFileNumber;
-	int files[MAXFILESPERRECORDING];
+	int files[MAXFILESPERRECORDINGPES];
 	uchar nextFileToDelete;
 	void RemoveOldFiles(int First);
 	void SetFirst(int First);
 	int maxSize;
-	int lastFile;
+	uint16_t lastFile;
 	cMutex indexLock;
 	bool ReadIndex(void);
 	void WriteIndex(void);
-	bool Grow(int needed,int FileNumber);
+	bool Grow(int needed,uint16_t FileNumber);
 	int GetNextCurrent(int Current);
 	int GetCurrent(int Current);
 	void UnlockCurrent();
@@ -101,17 +97,19 @@ public:
 	cTShiftIndexFile *ActivatePlayer(int ResumeIndex);
 	void DeactivatePlayer(void);
 	int First(void){return first;}
+private:
+  bool isPesRecording;
 protected:
 	virtual bool CatchUp(int Index=-1){return index;}
 public:
 	cTShiftIndexFile(const char *FileName);
 	virtual ~cTShiftIndexFile();
-	virtual bool Write(uchar PictureType,uchar FileNumber,int FileOffset);
-	virtual bool Write(sPesResult *Picture,int PictureCount,uchar FileNumber,int FileOffset);
-	virtual int StripOffToLastIFrame(int number){return -1;}
-	virtual bool Get(int Index,uchar *FileNumber,int *FileOffset,uchar *PictureType=NULL,int *Length=NULL);
-	virtual int GetNextIFrame(int Index,bool Forward,uchar *FileNumber=NULL,int *FileOffset=NULL,int *Length=NULL,bool StayOffEnd=false);
-	virtual int Get(uchar FileNumber,int FileOffset);
+	virtual bool Write(uchar PictureType,uint16_t FileNumber,off_t FileOffset);
+	virtual bool Write(sPesResult *Picture,int PictureCount,uint16_t FileNumber,off_t FileOffset);
+	virtual int StripOffToLastIFrame(uint16_t number){return -1;}
+	virtual bool Get(int Index,uint16_t *FileNumber,off_t *FileOffset,uchar *PictureType=NULL,int *Length=NULL);
+	virtual int GetNextIFrame(int Index,bool Forward,uint16_t *FileNumber=NULL,off_t *FileOffset=NULL,int *Length=NULL,bool StayOffEnd=false);
+	virtual int Get(uint16_t FileNumber,off_t FileOffset);
 	virtual int GetResume(void);
 	virtual bool StoreResume(int Index);
 	virtual cUnbufferedFile *NextFile(cFileName *FileName,bool Record);

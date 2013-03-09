@@ -2543,7 +2543,7 @@ cMenuRenameRecording::cMenuRenameRecording(cRecording *Recording)
      if (channel)
         Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Channel"), *ChannelString(channel, 0)), osUnknown, false));
 
-     int recLen = cIndexFile::Length(recording->FileName());
+     int recLen = cIndexFile::GetLength(recording->FileName(), recording->IsPesRecording());
      if (recLen >= 0)
         Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Length"), *IndexToHMSF(recLen, false)), osUnknown, false));
      else
@@ -2552,17 +2552,16 @@ cMenuRenameRecording::cMenuRenameRecording(cRecording *Recording)
      int dirSize = DirSizeMB(recording->FileName());
      double seconds = recLen / FRAMESPERSEC;
      cString bitRate = seconds ? cString::sprintf(" (%.2f MBit/s)", 8.0 * dirSize / seconds) : cString("");
-     // M7X0 TODO: How detect if a record is in PES or TS format?
-     //Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Format"), recording->IsPesRecording() ? tr("PES") : tr("TS")), osUnknown, false));
+     Add(new cOsdItem(cString::sprintf("%s:\t%s", tr("Format"), recording->IsPesRecording() ? tr("PES") : tr("TS")), osUnknown, false));
      Add(new cOsdItem((dirSize > 1023) ? cString::sprintf("%s:\t%.2f GB%s", tr("Size"), dirSize / 1024.0, *bitRate) : cString::sprintf("%s:\t%d MB%s", tr("Size"), dirSize, *bitRate), osUnknown, false));
 
      Add(new cOsdItem("", osUnknown, false));
 
-     isMarks = marks.Load(recording->FileName()) && marks.Count();
+     isMarks = marks.Load(recording->FileName(), recording->IsPesRecording()) && marks.Count();
      marksItem = new cOsdItem(tr("Delete marks information?"), osUser1, isMarks);
      Add(marksItem);
 
-     cResumeFile ResumeFile(recording->FileName());
+     cResumeFile ResumeFile(recording->FileName(), recording->IsPesRecording());
      isResume = (ResumeFile.Read() != -1);
      resumeItem = new cOsdItem(tr("Delete resume information?"), osUser2, isResume);
      Add(resumeItem);
@@ -2626,7 +2625,7 @@ eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
   else if (state == osUser1) {
      if (isMarks && Interface->Confirm(tr("Delete marks information?"))) {
         cMarks marks;
-        marks.Load(recording->FileName());
+        marks.Load(recording->FileName(), recording->IsPesRecording());
         cMark *mark = marks.First();
         while (mark) {
           cMark *nextmark = marks.Next(mark);
@@ -2643,7 +2642,7 @@ eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
      }
   else if (state == osUser2) {
      if (isResume && Interface->Confirm(tr("Delete resume information?"))) {
-        cResumeFile ResumeFile(recording->FileName());
+        cResumeFile ResumeFile(recording->FileName(), recording->IsPesRecording());
         ResumeFile.Delete();
         isResume = false;
         resumeItem->SetSelectable(isResume);
@@ -2808,10 +2807,13 @@ eOSState cMenuRecordings::Rewind(void)
      return osContinue;
   cMenuRecordingItem *ri = (cMenuRecordingItem *)Get(Current());
   if (ri && !ri->IsDirectory()) {
-     cDevice::PrimaryDevice()->StopReplay(); // must do this first to be able to rewind the currently replayed recording
-     cResumeFile ResumeFile(ri->FileName());
-     ResumeFile.Delete();
-     return Play();
+     cRecording *recording = GetRecording(ri);
+     if (recording) {
+        cDevice::PrimaryDevice()->StopReplay(); // must do this first to be able to rewind the currently replayed recording
+        cResumeFile ResumeFile(ri->FileName(), recording->IsPesRecording());
+        ResumeFile.Delete();
+        return Play();
+        }
      }
   return osContinue;
 }
@@ -3562,7 +3564,7 @@ cMenuSetupRecord::cMenuSetupRecord(void)
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Mark instant recording"),    &data.MarkInstantRecord));
   Add(new cMenuEditStrItem( tr("Setup.Recording$Name instant recording"),     data.NameInstantRecord, sizeof(data.NameInstantRecord), tr(FileNameChars)));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Instant rec. time (min)"),   &data.InstantRecordTime, 1, MAXINSTANTRECTIME));
-  Add(new cMenuEditIntItem( tr("Setup.Recording$Max. video file size (MB)"), &data.MaxVideoFileSize, MINVIDEOFILESIZE, MAXVIDEOFILESIZE));
+  Add(new cMenuEditIntItem( tr("Setup.Recording$Max. video file size (MB)"), &data.MaxVideoFileSize, MINVIDEOFILESIZE, MAXVIDEOFILESIZETS));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Max. recording size (GB)"),  &data.MaxRecordingSize, MINRECORDINGSIZE, MAXRECORDINGSIZE));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show date"),                 &data.ShowRecDate));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Show time"),                 &data.ShowRecTime));
@@ -4902,9 +4904,7 @@ cRecordControl::cRecordControl(cDevice *Device, cTimer *Timer, bool Pause)
   isyslog("record %s", fileName);
   if (MakeDirs(fileName, true)) {
      const cChannel *ch = timer->Channel();
-     if ( ((Setup.UseTSInHD)&&(ch->Vpid(Setup.UseHDInRecordings))&&(ch->Vtype()==0x1B))
-        ||((Setup.UseTSInSD)&&(ch->Vpid(false)))
-        ||((Setup.UseTSInAudio)&&(!ch->Vpid(Setup.UseHDInRecordings))) )
+     if (!Recording.IsPesRecording())
      {
         dsyslog("Starting TS record");
 	recorder = new cTSRecorder(fileName, ch, timer->Priority(), false);
@@ -5198,9 +5198,9 @@ cReplayControl::cReplayControl(void)
   lastSpeed = -2; // an invalid value
   timeoutShow = 0;
   timeSearchActive = false;
-  marks.Load(fileName);
   cRecording Recording(fileName);
   cStatus::MsgReplaying(this, Recording.Name(), Recording.FileName(), true);
+  marks.Load(fileName, Recording.IsPesRecording());
   SetTrackDescriptions(false);
 }
 

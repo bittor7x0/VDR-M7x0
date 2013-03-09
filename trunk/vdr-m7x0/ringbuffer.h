@@ -270,7 +270,7 @@ private:
   int count2;
   eFrameType type;
   int index;
-  int fileNo;
+  uint16_t fileNo;
 
   void Reset(void) {
     data1 = NULL;
@@ -297,8 +297,8 @@ class cRingBufferFrameM7x0 : public cRingBuffer {
 private:
   int alignment;
 
-  int curFileNr;
-  int curFileOffset;
+  uint16_t curFileNr;
+  off_t curFileOffset;
   int readAHeadCount;
 
   uchar *buffer;
@@ -313,8 +313,8 @@ private:
 public:
   cRingBufferFrameM7x0(int Size, int Alignment, bool Statistics = false , const char *Description = NULL);
   virtual ~cRingBufferFrameM7x0();
-  int Read(cUnbufferedFile *file, int FileNr, int Offset, int FrameSize, int Index);
-  int Read(cFileName *fileName, int FileNr, int Offset, int Size, int Index);
+  int Read(cUnbufferedFile *file, uint16_t FileNr, off_t Offset, int FrameSize, int Index);
+  int Read(cFileName *fileName, uint16_t FileNr, off_t Offset, int Size, int Index);
   virtual int Available(void) {
     if (frameTail == frameHead)
        return 0;

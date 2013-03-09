@@ -435,6 +435,7 @@ void cDvbTuner::Action(void)
 #define REPLAY_MAX_UNUSABLE_DATA KILOBYTE(512)
 #define REPLAY_TIMEOUT 3
 
+#ifndef TS_PLAYER_BACKPORT
 // -----------------
 // c7x0Ts
 
@@ -2051,6 +2052,7 @@ void c7x0TsReplayer::SetPids(int PmtPid, int VideoPid)
      pesHeaderCompleted = false;
      }
 }
+#endif
 
 // --- c7x0TSBuffer ----------------------------------------------------------
 // This class is need cause m7x0 does not support poll()/select() calls on
@@ -2389,7 +2391,9 @@ cDvbDevice::cDvbDevice(int n)
   fd_playDvr = -1;
   fd_playDemux[0] = -1;
   fd_playDemux[1] = -1;
+#ifndef TS_PLAYER_BACKPORT
   tsreplayer = NULL;
+#endif
 //M7X0 END AK
   dvbTuner = NULL;
   frontendType = fe_type_t(-1); // don't know how else to initialize this - there is no FE_UNKNOWN
@@ -2467,8 +2471,10 @@ cDvbDevice::cDvbDevice(int n)
 cDvbDevice::~cDvbDevice()
 {
 //M7X0 BEGIN AK
+#ifndef TS_PLAYER_BACKPORT
   if (tsreplayer != NULL)
      delete tsreplayer;
+#endif
 //M7X0 END AK
   StopSectionHandler();
   delete spuDecoder;
@@ -3328,17 +3334,21 @@ bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
          if((playMode==pmTransfererAudioOnly)&&(Setup.TShift))
             TurnOffLiveMode(true, true);
 
+#ifndef TS_PLAYER_BACKPORT
          if (tsreplayer != NULL) {
             delete tsreplayer;
             tsreplayer=NULL;
          }
+#endif
          break;
     case pmAudioVideo:
     case pmVideoOnly: {
+#ifndef TS_PLAYER_BACKPORT
          if (tsreplayer != NULL) {
             delete tsreplayer;
             tsreplayer=NULL;
          }
+#endif
          TurnOffLiveMode(true, (!pidHandles[cDevice::ptVideo].pid&&!Setup.TShift) |
               (playMode == pmAudioOnly) | (playMode == pmAudioOnlyBlack));
          CHECK(ioctl(fd_audio, AUDIO_STOP,0));
@@ -3409,10 +3419,12 @@ bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
          break; }
     case pmAudioOnly:
     case pmAudioOnlyBlack:
+#ifndef TS_PLAYER_BACKPORT
          if (tsreplayer != NULL) {
             delete tsreplayer;
             tsreplayer=NULL;
          }
+#endif
 
          TurnOffLiveMode(true, true);
          CHECK(ioctl(fd_audio, AUDIO_STOP,0));
@@ -3440,17 +3452,22 @@ bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
             close(fd_playDvr);
             fd_playDvr = -1;
             }
-         DoBlank = !tsreplayer &&
+         DoBlank =
+#ifndef TS_PLAYER_BACKPORT
+            !tsreplayer &&
+#endif
            ((!pidHandles[cDevice::ptVideo].pid && PlayMode == pmTsAudioVideo) ||
             (pidHandles[cDevice::ptVideo].pid && PlayMode != pmTsAudioVideo));
          TurnOffLiveMode(true, DoBlank);
          CHECK(ioctl(fd_audio, AUDIO_STOP,0));
          CHECK(ioctl(fd_video, VIDEO_STOP, 1));
+#ifndef TS_PLAYER_BACKPORT
          if (tsreplayer == NULL){
             tsreplayer = new c7x0TsReplayer(this);
             }
          else
             tsreplayer->Reset();
+#endif
          break;
     case pmTsAudioOnly:
     case pmTsVideoOnly:
@@ -3471,11 +3488,13 @@ bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
             }
          CHECK(ioctl(fd_audio, AUDIO_STOP,0));
          CHECK(ioctl(fd_video, VIDEO_STOP, 1));
+#ifndef TS_PLAYER_BACKPORT
          if (tsreplayer == NULL){
             tsreplayer = new c7x0TsReplayer(this);
             }
          else
             tsreplayer->Reset();
+#endif
          break;
     case pmExtern_THIS_SHOULD_BE_AVOIDED:
          return false;
@@ -3512,10 +3531,12 @@ int64_t cDvbDevice::GetSTC(void)
 
 void cDvbDevice::TrickSpeed(int Speed, bool UseFastForward)
 {
+#ifndef TS_PLAYER_BACKPORT
   if (tsreplayer != NULL) {
      tsreplayer->TrickSpeed(Speed,UseFastForward);
      return;
      }
+#endif
 
   if ((playMode != pmAudioVideo) & (playMode != pmVideoOnly))
      return;
@@ -3545,8 +3566,10 @@ void cDvbDevice::Clear(void)
      playBufferFill = 0;
      playAudioId = 0;
      }
+#ifndef TS_PLAYER_BACKPORT
   else if (tsreplayer != NULL)
      tsreplayer->Clear();
+#endif
   cDevice::Clear();
 }
 
@@ -3564,8 +3587,10 @@ void cDvbDevice::Play(void)
      playBufferFill = 0;
      playAudioId = 0;
      }
+#ifndef TS_PLAYER_BACKPORT
   else if (tsreplayer != NULL)
      tsreplayer->Play();
+#endif
   cDevice::Play();
 }
 
@@ -3577,8 +3602,10 @@ void cDvbDevice::Freeze(void)
      CHECK(ioctl(fd_audio, AUDIO_STOP,0));
      CHECK(ioctl(fd_video, VIDEO_STOP,0));
      }
+#ifndef TS_PLAYER_BACKPORT
   else if (tsreplayer != NULL)
      tsreplayer->Freeze();
+#endif
   cDevice::Freeze();
 }
 
@@ -3593,7 +3620,13 @@ void cDvbDevice::Mute(void)
 
 void cDvbDevice::StillPicture(const uchar *Data, int Length)
 {
-  if (Data[0] == 0x00 && Data[1] == 0x00 && Data[2] == 0x01 && (Data[3] & 0xF0) == 0xE0) {
+  if (!Data || Length < TS_SIZE)
+     return;
+  if (Data[0] == 0x47) {
+     // TS data
+     cDevice::StillPicture(Data, Length);
+     }
+  else if (Data[0] == 0x00 && Data[1] == 0x00 && Data[2] == 0x01 && (Data[3] & 0xF0) == 0xE0) {
      // PES data
      char *buf = MALLOC(char, Length);
      if (!buf)
@@ -3668,16 +3701,20 @@ void cDvbDevice::StillPicture(const uchar *Data, int Length)
 
 bool cDvbDevice::Poll(cPoller &Poller, int TimeoutMs)
 {
+#ifndef TS_PLAYER_BACKPORT
   if (tsreplayer!=NULL)
      return tsreplayer->Poll(Poller, TimeoutMs);
+#endif
   return true;
 }
 
 bool cDvbDevice::Flush(int TimeoutMs)
 {
   //TODO actually this function should wait until all buffered data has been processed by the card, but how?
+#ifndef TS_PLAYER_BACKPORT
   if (tsreplayer!=NULL)
      return tsreplayer->Flush(TimeoutMs);
+#endif
   dsyslog("cDvbDevice::Flush called");
 
   if ((playMode == pmAudioOnly) | (playMode == pmAudioOnlyBlack)) {
@@ -3706,6 +3743,7 @@ bool cDvbDevice::Flush(int TimeoutMs)
   return true;
 }
 
+#ifndef TS_PLAYER_BACKPORT
 int cDvbDevice::PlayTs(const uchar *Data, int Length)
 {
   // cMutexLock MutexLock(&mutexCurrentAudioTrack);
@@ -3731,6 +3769,7 @@ int cDvbDevice::GetTsReplayVideoPid(void)
   esyslog("GetTsReplayVideoPid called without replayer");
   return 0;
 }
+#endif
 
 int cDvbDevice::PESPayload(const uchar *Data, int Length,
   int &TSOffset, int &TSLength)

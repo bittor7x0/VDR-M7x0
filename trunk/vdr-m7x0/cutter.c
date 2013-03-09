@@ -23,10 +23,12 @@
 class cCuttingThread : public cThread {
 private:
   const char *error;
+  bool isPesRecording;
   cUnbufferedFile *fromFile, *toFile;
   cFileName *fromFileName, *toFileName;
   cIndexFile *fromIndex, *toIndex;
   cMarks fromMarks, toMarks;
+  off_t maxVideoFileSize;
 protected:
   virtual void Action(void);
 public:
@@ -42,13 +44,18 @@ cCuttingThread::cCuttingThread(const char *FromFileName, const char *ToFileName)
   fromFile = toFile = NULL;
   fromFileName = toFileName = NULL;
   fromIndex = toIndex = NULL;
-  if (fromMarks.Load(FromFileName) && fromMarks.Count()) {
-     fromFileName = new cFileName(FromFileName, false, true);
-     toFileName = new cFileName(ToFileName, true, true);
-     fromIndex = new cIndexFile(FromFileName, false);
-     toIndex = new cIndexFile(ToFileName, true);
+  cRecording Recording(FromFileName);
+  isPesRecording = Recording.IsPesRecording();
+  if (fromMarks.Load(FromFileName, isPesRecording) && fromMarks.Count()) {
+     fromFileName = new cFileName(FromFileName, false, true, isPesRecording);
+     toFileName = new cFileName(ToFileName, true, true, isPesRecording);
+     fromIndex = new cIndexFile(FromFileName, false, isPesRecording);
+     toIndex = new cIndexFile(ToFileName, true, isPesRecording);
      if (Setup.CutterWithMarks)
-        toMarks.Load(ToFileName); // doesn't actually load marks, just sets the file name
+        toMarks.Load(ToFileName, isPesRecording); // doesn't actually load marks, just sets the file name
+     maxVideoFileSize = MEGABYTE(Setup.MaxVideoFileSize);
+     if (isPesRecording && maxVideoFileSize > MEGABYTE(MAXVIDEOFILESIZEPES))
+        maxVideoFileSize = MEGABYTE(MAXVIDEOFILESIZEPES);
      Start();
      }
   else
@@ -86,8 +93,8 @@ void cCuttingThread::Action(void)
      fromFile->SetReadAhead(MEGABYTE(20));
      int Index = Mark->position;
      Mark = fromMarks.Next(Mark);
-     int FileSize = 0;
-     int CurrentFileNumber = 0;
+     off_t FileSize = 0;
+     uint16_t CurrentFileNumber = 0;
      bool SkipThisSourceFile = false;
      int LastIFrame = 0;
      if (Setup.CutterWithMarks) {
@@ -99,8 +106,9 @@ void cCuttingThread::Action(void)
      bool cutIn = true;
      int bytes = 0;
      while (Running()) {
-           uchar FileNumber;
-           int FileOffset, Length;
+           uint16_t FileNumber;
+           off_t FileOffset;
+           int Length;
            uchar PictureType;
 
            // Make sure there is enough disk space:
@@ -140,8 +148,8 @@ void cCuttingThread::Action(void)
                  // if !Mark && !LastMark, then there's just a cut-in, but no cut-out
                  // if Mark, then we're between a cut-in and a cut-out
                  
-                 uchar MarkFileNumber;
-                 int MarkFileOffset;
+                 uint16_t MarkFileNumber;
+                 off_t MarkFileOffset;
                  // Get file number of next cut mark
                  if (!Mark && !LastMark
                      || Mark
@@ -228,7 +236,10 @@ void cCuttingThread::Action(void)
                  LastIFrame = 0;
 
               if (!SkipThisSourceFile && cutIn) {
-                 cRemux::SetBrokenLink(buffer, Length);
+                 if (isPesRecording)
+                    cRemux::SetBrokenLink(buffer, Length);
+                 else
+                    TsSetTeiOnBrokenPackets(buffer, Length);
                  cutIn = false;
                  }
               }
@@ -360,7 +371,7 @@ bool cCutter::Start(const char *FileName)
      cRecording Recording(FileName);
      
      cMarks FromMarks;
-     FromMarks.Load(FileName);
+     FromMarks.Load(FileName, Recording.IsPesRecording());
      cMark *First=FromMarks.First();
      if (First) Recording.SetStartTime(Recording.start+((First->position/FRAMESPERSEC+30)/60)*60);
      
@@ -496,7 +507,7 @@ bool CutRecording(const char *FileName)
      cRecording Recording(FileName);
      if (Recording.Name()) {
         cMarks Marks;
-        if (Marks.Load(FileName) && Marks.Count()) {
+        if (Marks.Load(FileName, Recording.IsPesRecording()) && Marks.Count()) {
            if (cCutter::Start(FileName)) {
               while (cCutter::Active())
                     cCondWait::SleepMs(CUTTINGCHECKINTERVAL);

@@ -334,7 +334,9 @@ private:
   size_t readahead;
   size_t written;
   size_t totwritten;
+#ifdef USE_FADVISE
   int FadviseDrop(off_t Offset, off_t Len);
+#endif
 //M7X0 BEGIN AK
 #ifdef USE_DIRECT_IO
   bool directIOused;

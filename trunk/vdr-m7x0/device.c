@@ -219,6 +219,7 @@ cDevice *cDevice::device[MAXDEVICES] = { NULL };
 cDevice *cDevice::primaryDevice = NULL;
 
 cDevice::cDevice(void)
+:patPmtParser(true)
 {
   cardIndex = nextCardIndex++;
   dsyslog("new device number %d", CardIndex() + 1);
@@ -236,6 +237,9 @@ cDevice::cDevice(void)
 
   ciHandler = NULL;
   player = NULL;
+#ifdef TS_PLAYER_BACKPORT
+  isPlayingVideo = false;
+#endif
   pesAssembler = new cPesAssembler;
   ClrAvailableTracks();
   currentAudioTrack = ttNone;
@@ -1300,6 +1304,47 @@ void cDevice::Mute(void)
 
 void cDevice::StillPicture(const uchar *Data, int Length)
 {
+  if (Data[0] == 0x47) {
+     // TS data
+     cTsToPes TsToPes;
+     uchar *buf = NULL;
+     int Size = 0;
+     while (Length >= TS_SIZE) {
+           int Pid = TsPid(Data);
+           if (Pid == 0)
+              patPmtParser.ParsePat(Data, TS_SIZE);
+           else if (Pid == patPmtParser.PmtPid())
+              patPmtParser.ParsePmt(Data, TS_SIZE);
+           else if (Pid == patPmtParser.Vpid()) {
+              if (TsPayloadStart(Data)) {
+                 int l;
+                 while (const uchar *p = TsToPes.GetPes(l)) {
+                       int Offset = Size;
+                       Size += l;
+                       buf = (uchar *)realloc(buf, Size);
+                       if (!buf)
+                          return;
+                       memcpy(buf + Offset, p, l);
+                       }
+                 TsToPes.Reset();
+                 }
+              TsToPes.PutTs(Data, TS_SIZE);
+              }
+           Length -= TS_SIZE;
+           Data += TS_SIZE;
+           }
+     int l;
+     while (const uchar *p = TsToPes.GetPes(l)) {
+           int Offset = Size;
+           Size += l;
+           buf = (uchar *)realloc(buf, Size);
+           if (!buf)
+              return;
+           memcpy(buf + Offset, p, l);
+           }
+     StillPicture(buf, Size);
+     free(buf);
+     }
 }
 
 bool cDevice::Replaying(void) const
@@ -1318,6 +1363,7 @@ bool cDevice::AttachPlayer(cPlayer *Player)
      if (player)
         Detach(player);
      pesAssembler->Reset();
+     patPmtParser.Reset();
      player = Player;
      if (!Transferring())
         ClrAvailableTracks(false, true);
@@ -1337,7 +1383,14 @@ void cDevice::Detach(cPlayer *Player)
      player = NULL;
      SetPlayMode(pmNone);
      SetVideoDisplayFormat(eVideoDisplayFormat(Setup.VideoDisplayFormat));
+#ifdef TS_PLAYER_BACKPORT
+     PlayTs(NULL, 0);
+#endif
+     patPmtParser.Reset();
      Audios.ClearAudio();
+#ifdef TS_PLAYER_BACKPORT
+     isPlayingVideo = false;
+#endif
      }
 }
 
@@ -1377,6 +1430,9 @@ int cDevice::PlayPesPacket(const uchar *Data, int Length, bool VideoOnly)
   switch (streamId) {
     case 0xBE:          // padding stream, needed for MPEG1
     case 0xE0 ... 0xEF: // video
+#ifdef TS_PLAYER_BACKPORT
+         isPlayingVideo = true;
+#endif
          do {
            int r = PlayVideo(Data + written, Length - written);
            if (r >= 0)
@@ -1517,6 +1573,130 @@ int cDevice::Ca(void) const
       }
   return ca;
 }
+
+#ifdef TS_PLAYER_BACKPORT
+int cDevice::PlayTsVideo(const uchar *Data, int Length)
+{
+  // Video PES has no explicit length, so we can only determine the end of
+  // a PES packet when the next TS packet that starts a payload comes in:
+  if (TsPayloadStart(Data)) {
+     int l;
+     while (const uchar *p = tsToPesVideo.GetPes(l)) {
+           int w = PlayVideo(p, l);
+           if (w <= 0) {
+              tsToPesVideo.SetRepeatLast();
+              return w;
+              }
+           }
+     tsToPesVideo.Reset();
+     }
+  tsToPesVideo.PutTs(Data, Length);
+  return Length;
+}
+
+int cDevice::PlayTsAudio(const uchar *Data, int Length)
+{
+  // Audio PES always has an explicit length and consists of single packets:
+  int l;
+  if (const uchar *p = tsToPesAudio.GetPes(l)) {
+     int w = PlayAudio(p, l, p[3]);
+     if (w <= 0) {
+        tsToPesAudio.SetRepeatLast();
+        return w;
+        }
+     tsToPesAudio.Reset();
+     }
+  tsToPesAudio.PutTs(Data, Length);
+  return Length;
+}
+
+/*
+int cDevice::PlayTsSubtitle(const uchar *Data, int Length)
+{
+  if (!dvbSubtitleConverter)
+     dvbSubtitleConverter = new cDvbSubtitleConverter;
+  tsToPesSubtitle.PutTs(Data, Length);
+  int l;
+  if (const uchar *p = tsToPesSubtitle.GetPes(l)) {
+     dvbSubtitleConverter->Convert(p, l);
+     tsToPesSubtitle.Reset();
+     }
+  return Length;
+}
+*/
+
+//TODO detect and report continuity errors?
+int cDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
+{
+  int Played = 0;
+  if (Data == NULL) {
+     tsToPesVideo.Reset();
+     tsToPesAudio.Reset();
+     //tsToPesSubtitle.Reset();
+     }
+  else if (Length < TS_SIZE) {
+     esyslog("ERROR: skipped %d bytes of TS fragment", Length);
+     return Length;
+     }
+  else {
+     cMutexLock MutexLock(&mutexCurrentAudioTrack);
+     while (Length >= TS_SIZE) {
+           if (Data[0] != TS_SYNC_BYTE) {
+              int Skipped = 1;
+              while (Skipped < Length && (Data[Skipped] != TS_SYNC_BYTE || Length - Skipped > TS_SIZE && Data[Skipped + TS_SIZE] != TS_SYNC_BYTE))
+                    Skipped++;
+              esyslog("ERROR: skipped %d bytes to sync on start of TS packet", Skipped);
+              return Played + Skipped;
+              }
+           int Pid = TsPid(Data);
+           if (TsHasPayload(Data)) { // silently ignore TS packets w/o payload
+              int PayloadOffset = TsPayloadOffset(Data);
+              if (PayloadOffset < TS_SIZE) {
+                 if (Pid == 0)
+                    patPmtParser.ParsePat(Data, TS_SIZE);
+                 else if (Pid == patPmtParser.PmtPid())
+                    patPmtParser.ParsePmt(Data, TS_SIZE);
+                 else if (Pid == patPmtParser.Vpid()) {
+                    isPlayingVideo = true;
+                    int w = PlayTsVideo(Data, TS_SIZE);
+                    if (w < 0)
+                       return Played ? Played : w;
+                    if (w == 0)
+                       break;
+                    }
+                 else if (Pid == availableTracks[currentAudioTrack].id) {
+                    if (!VideoOnly /*|| HasIBPTrickSpeed()*/) {
+                       int w = PlayTsAudio(Data, TS_SIZE);
+                       if (w < 0)
+                          return Played ? Played : w;
+                       if (w == 0)
+                          break;
+                       Audios.PlayTsAudio(Data, TS_SIZE);
+                       }
+                    }
+/*
+                 else if (Pid == availableTracks[currentSubtitleTrack].id) {
+                    if (!VideoOnly || HasIBPTrickSpeed())
+                       PlayTsSubtitle(Data, TS_SIZE);
+                    }
+*/
+                 }
+              }
+           else if (Pid == patPmtParser.Ppid()) {
+              int w = PlayTsVideo(Data, TS_SIZE);
+              if (w < 0)
+                 return Played ? Played : w;
+              if (w == 0)
+                 break;
+              }
+           Played += TS_SIZE;
+           Length -= TS_SIZE;
+           Data += TS_SIZE;
+           }
+     }
+  return Played;
+}
+#endif
 
 int cDevice::Priority(void) const
 {

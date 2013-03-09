@@ -29,6 +29,12 @@
 #define TIMERMACRO_TITLE    "TITLE"
 #define TIMERMACRO_EPISODE  "EPISODE"
 
+#define MAXFILESPERRECORDINGPES 255
+#define RECORDFILESUFFIXPES     "/%03d.vdr"
+#define MAXFILESPERRECORDINGTS  65535
+#define RECORDFILESUFFIXTS      "/%05d.ts"
+#define RECORDFILESUFFIXLEN 20 // some additional bytes for safety...
+
 extern bool VfatFileSystem;
 
 void RemoveDeletedRecordings(void);
@@ -41,8 +47,9 @@ void AssertFreeDiskSpace(int Priority = 0, bool Force = false);
 class cResumeFile {
 private:
   char *fileName;
+  bool isPesRecording;
 public:
-  cResumeFile(const char *FileName);
+  cResumeFile(const char *FileName, bool IsPesRecording);
   ~cResumeFile();
   int Read(void);
   bool Save(int Index);
@@ -57,10 +64,14 @@ private:
   const cEvent *event;
   cEvent *ownEvent;
   char *aux;
+  int priority;
+  int lifetime;
+  char *fileName;
   cRecordingInfo(const cChannel *Channel = NULL, const cEvent *Event = NULL);
   void SetData(const char *Title, const char *ShortText, const char *Description);
   void SetAux(const char *Aux);
 public:
+  cRecordingInfo(const char *FileName);
   ~cRecordingInfo();
   tChannelID ChannelID(void) const { return channelID; }
   const char *ChannelName(void) const { return channelName; }
@@ -72,6 +83,8 @@ public:
   const char *Aux(void) const { return aux; }
   bool Read(FILE *f);
   bool Write(FILE *f, const char *Prefix = "") const;
+  bool Read(void);
+  bool Write(void) const;
   };
 
 #define SORTRECORDINGSVERSNUM 3
@@ -87,6 +100,9 @@ private:
   mutable char *fileName;
   mutable char *name;
   mutable int fileSizeMB;
+  int channel;
+  int instanceId;
+  bool isPesRecording;
   cRecordingInfo *info;
   static char *StripEpisodeName(char *s);
   char *SortName(void) const;
@@ -110,6 +126,7 @@ public:
   void ResetResume(void) const;
   bool IsNew(void) const { return GetResume() <= 0; }
   bool IsEdited(void) const;
+  bool IsPesRecording(void) const { return isPesRecording; }
   bool WriteInfo(void);
   bool Delete(void);
        // Changes the file name so that it will no longer be visible in the "Recordings" menu
@@ -179,7 +196,7 @@ public:
 
 class cMarks : public cConfig<cMark> {
 public:
-  bool Load(const char *RecordingFileName);
+  bool Load(const char *RecordingFileName, bool IsPesRecording = true);
   void Sort(void);
   cMark *Add(int Position);
   cMark *Get(int Position);
@@ -206,13 +223,14 @@ public:
 #define MAXFRAMESIZE  (KILOBYTE(512) / TS_SIZE * TS_SIZE) // multiple of TS_SIZE to avoid breaking up TS packets
 
 // The maximum file size is limited by the range that can be covered
-// with 'int'. 4GB might be possible (if the range is considered
-// 'unsigned'), 2GB should be possible (even if the range is considered
-// 'signed'), so let's use 2000MB for absolute safety (the actual file size
-// may be slightly higher because we stop recording only before the next
-// 'I' frame, to have a complete Group Of Pictures):
-#define MAXVIDEOFILESIZE 2000 // MB
-#define MINVIDEOFILESIZE    1 // MB
+// with a 40 bit 'unsigned int', which is 1TB. The actual maximum value
+// used is 6MB below the theoretical maximum, to have some safety (the
+// actual file size may be slightly higher because we stop recording only
+// before the next independent frame, to have a complete Group Of Pictures):
+#define MAXVIDEOFILESIZETS  1048570 // MB
+#define MAXVIDEOFILESIZEPES    2000 // MB
+#define MINVIDEOFILESIZE          1 // MB
+#define MAXVIDEOFILESIZEDEFAULT MAXVIDEOFILESIZEPES
 
 #define MINRECORDINGSIZE      25 // GB
 #define MAXRECORDINGSIZE     500 // GB
@@ -220,42 +238,82 @@ public:
 // Dynamic recording size:
 // Keep recording file size at Setup.MaxVideoFileSize for as long as possible,
 // but switch to MAXVIDEOFILESIZE early enough, so that Setup.MaxRecordingSize
-// will be reached, before recording to file 255.vdr
+// will be reached, before recording to file 65535.vdr
+
+struct tIndexPes {
+  uint32_t offset;
+  uchar type;
+  uchar number;
+  uint16_t reserved;
+  };
+
+struct tIndexTs {
+  uint64_t offset:40; // up to 1TB per file (not using off_t here - must definitely be exactly 64 bit!)
+  int reserved:7;     // reserved for future use
+  int independent:1;  // marks frames that can be displayed by themselves (for trick modes)
+  uint16_t number:16; // up to 64K files per recording
+  };
 
 class cIndexFile {
 protected:
-  struct tIndex { int offset; uchar type; uchar number; short reserved; };
+  union tIndex {
+     tIndexTs ts;
+     tIndexPes pes;
+     void Set(bool IsPesRecording, uint64_t Offset, uchar Type, uint16_t Number) {
+        if (IsPesRecording) {
+           pes.offset = Offset;
+           pes.type = Type;
+           pes.number = Number;
+           pes.reserved = 0;
+           }
+        else {
+           ts.offset = Offset;
+           ts.independent = (Type == 1);
+           ts.number = Number;
+           ts.reserved = 0;
+           }
+        }
+     void SetOffset(bool IsPesRecording, uint64_t Offset) { IsPesRecording ? pes.offset = Offset : ts.offset = Offset; }
+     void SetType(bool IsPesRecording, uchar Type) { IsPesRecording ? pes.type = Type : ts.independent = (Type == 1); }
+     void SetNumber(bool IsPesRecording, uint16_t Number) { IsPesRecording ? pes.number = Number : ts.number = Number; }
+     void SetReserved(bool IsPesRecording) { IsPesRecording ? pes.reserved = 0 : ts.reserved = 0; }
+     uint64_t Offset(bool IsPesRecording) { return IsPesRecording ? pes.offset : ts.offset; }
+     uchar Type(bool IsPesRecording) { return IsPesRecording ? pes.type : (ts.independent ? 1 : 2); }
+     uint16_t Number(bool IsPesRecording) { return IsPesRecording ? pes.number : ts.number; }
+  };
   int f;
 private:
   char *fileName;
 protected:
   int size, last;
   tIndex *index;
+  bool isPesRecording;
 private:
   cResumeFile resumeFile;
   cMutex mutex;
+  static cString IndexFileName(const char *FileName, bool IsPesRecording);
 protected:
 virtual
   bool CatchUp(int Index = -1);
 public:
-  cIndexFile(const char *FileName, bool Record);
+  cIndexFile(const char *FileName, bool Record, bool IsPesRecording = true);
 virtual
   ~cIndexFile();
   bool Ok(void) { return index != NULL; }
 virtual
-  bool Write(uchar PictureType, uchar FileNumber, int FileOffset);
+  bool Write(uchar PictureType, uint16_t FileNumber, off_t FileOffset);
 //M7X0 BEGIN AK
 virtual
-  bool Write(sPesResult *Picture, int PictureCount , uchar FileNumber, int FileOffset);
+  bool Write(sPesResult *Picture, int PictureCount , uint16_t FileNumber, off_t FileOffset);
 virtual
-  int StripOffToLastIFrame(int number);
+  int StripOffToLastIFrame(uint16_t number);
 //M7X0 END AK
 virtual
-  bool Get(int Index, uchar *FileNumber, int *FileOffset, uchar *PictureType = NULL, int *Length = NULL);
+  bool Get(int Index, uint16_t *FileNumber, off_t *FileOffset, uchar *PictureType = NULL, int *Length = NULL);
 virtual
-  int GetNextIFrame(int Index, bool Forward, uchar *FileNumber = NULL, int *FileOffset = NULL, int *Length = NULL, bool StayOffEnd = false);
+  int GetNextIFrame(int Index, bool Forward, uint16_t *FileNumber = NULL, off_t *FileOffset = NULL, int *Length = NULL, bool StayOffEnd = false);
 virtual
-  int Get(uchar FileNumber, int FileOffset);
+  int Get(uint16_t FileNumber, off_t FileOffset);
   int Last(void) { CatchUp(); return last; }
 virtual
   int GetResume(void) { return resumeFile.Read(); }
@@ -265,7 +323,7 @@ virtual
   bool IsStillRecording(void);
   virtual cUnbufferedFile *NextFile(cFileName *FileName, bool Record);
   virtual int WaitIndex(int Index);
-  static int Length(const char *FileName);
+  static int GetLength(const char *FileName, bool IsPesRecording);
        ///< Calculates the recording length without reading the index.
   };
 
@@ -276,23 +334,25 @@ private:
   char *fileName, *pFileNumber;
   bool record;
   bool blocking;
+  bool isPesRecording;
 #ifdef USE_DIRECT_IO
   bool direct;
 #endif
 public:
 #ifdef USE_DIRECT_IO
-  cFileName(const char *FileName, bool Record, bool Blocking = false, bool Direct = false);
+  cFileName(const char *FileName, bool Record, bool Blocking = false, bool Direct = false, bool IsPesRecording = true);
 #else
-  cFileName(const char *FileName, bool Record, bool Blocking = false);
+  cFileName(const char *FileName, bool Record, bool Blocking = false, bool IsPesRecording = true);
 #endif
   ~cFileName();
   const char *Name(void) { return fileName; }
   uint16_t Number(void) { return fileNumber; }
+  bool GetLastPatPmtVersions(int &PatVersion, int &PmtVersion);
   cUnbufferedFile *Open(void);
   void Close(void);
   int Unlink(void);
-  cUnbufferedFile *SetOffset(int Number, int Offset = 0); // yes, Number is int for easier internal calculating
-  int MaxFileSize();
+  cUnbufferedFile *SetOffset(int Number, off_t Offset = 0); // yes, Number is int for easier internal calculating
+  off_t MaxFileSize();
       // Dynamic file size for this file
   cUnbufferedFile *NextFile(void);
   };

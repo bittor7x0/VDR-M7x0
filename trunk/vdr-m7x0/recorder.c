@@ -30,9 +30,10 @@ private:
   cFileName *fileName;
   cIndexFile *index;
   uchar pictureType;
-  int fileSize;
+  off_t fileSize;
   cUnbufferedFile *recordFile;
   time_t lastDiskSpaceCheck;
+  bool isPesRecording;
   bool RunningLowOnDiskSpace(void);
   bool NextFile(void);
 protected:
@@ -53,10 +54,11 @@ cFileWriter::cFileWriter(const char *FileName, cRemux *Remux, bool IsTShift, cTS
   pictureType = NO_PICTURE;
   fileSize = 0;
   lastDiskSpaceCheck = time(NULL);
+  isPesRecording = recorder == NULL;
 #ifdef USE_DIRECT_IO
-  fileName = new cFileName(FileName, true, true, true);
+  fileName = new cFileName(FileName, true, true, true, isPesRecording);
 #else
-  fileName = new cFileName(FileName, true);
+  fileName = new cFileName(FileName, true, false, isPesRecording);
 #endif
   recordFile = fileName->Open();
   if (!recordFile) {
@@ -67,7 +69,7 @@ cFileWriter::cFileWriter(const char *FileName, cRemux *Remux, bool IsTShift, cTS
      index=new cTShiftIndexFile(FileName);
   else
   // Create the index file:
-  index = new cIndexFile(FileName, true);
+  index = new cIndexFile(FileName, true, isPesRecording);
   if (!index)
      esyslog("ERROR: can't allocate index");
      // let's continue without index, so we'll at least have the recording

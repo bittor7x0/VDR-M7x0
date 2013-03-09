@@ -15,6 +15,7 @@
 #include "filter.h"
 #include "nit.h"
 #include "pat.h"
+#include "remux.h"
 #include "ringbuffer.h"
 #include "sdt.h"
 #include "sections.h"
@@ -34,6 +35,8 @@
 #define TS_SIZE          188
 #define TS_SYNC_BYTE     0x47
 #define PID_MASK_HI      0x1F
+
+#define TSPLAY_PATCH_VERSION 2 // Presence detection of TSPlay-Patch
 
 extern bool scanning_on_receiving_device;
 
@@ -467,7 +470,17 @@ public:
 private:
   cPlayer *player;
   cPesAssembler *pesAssembler;
+  cPatPmtParser patPmtParser;
+  cTsToPes tsToPesVideo;
+  cTsToPes tsToPesAudio;
+  //cTsToPes tsToPesSubtitle;
+#ifdef TS_PLAYER_BACKPORT
+  bool isPlayingVideo;
+#endif
 protected:
+  const cPatPmtParser *PatPmtParser(void) const { return &patPmtParser; }
+       ///< Returns a pointer to the patPmtParser, so that a derived device
+       ///< can use the stream information from it.
   virtual bool CanReplay(void) const;
        ///< Returns true if this device can currently start a replay session.
 public:
@@ -495,11 +508,44 @@ protected:
        ///< If VideoOnly is true, only the video will be displayed,
        ///< which is necessary for trick modes like 'fast forward'.
        ///< Data must point to one single, complete PES packet.
+#ifdef TS_PLAYER_BACKPORT
+  virtual int PlayTsVideo(const uchar *Data, int Length);
+       ///< Plays the given data block as video.
+       ///< Data points to exactly one complete TS packet of the given Length
+       ///< (which is always TS_SIZE).
+       ///< PlayTsVideo() shall process the packet either as a whole (returning
+       ///< Length) or not at all (returning 0 or -1 and setting 'errno' accordingly).
+       ///< The default implementation collects all incoming TS payload belonging
+       ///< to one PES packet and calls PlayVideo() with the resulting packet.
+  virtual int PlayTsAudio(const uchar *Data, int Length);
+       ///< Plays the given data block as audio.
+       ///< Data points to exactly one complete TS packet of the given Length
+       ///< (which is always TS_SIZE).
+       ///< PlayTsAudio() shall process the packet either as a whole (returning
+       ///< Length) or not at all (returning 0 or -1 and setting 'errno' accordingly).
+       ///< The default implementation collects all incoming TS payload belonging
+       ///< to one PES packet and calls PlayAudio() with the resulting packet.
+/*
+  virtual int PlayTsSubtitle(const uchar *Data, int Length);
+       ///< Plays the given data block as a subtitle.
+       ///< Data points to exactly one complete TS packet of the given Length
+       ///< (which is always TS_SIZE).
+       ///< PlayTsSubtitle() shall process the packet either as a whole (returning
+       ///< Length) or not at all (returning 0 or -1 and setting 'errno' accordingly).
+       ///< The default implementation collects all incoming TS payload belonging
+       ///< to one PES packet and displays the resulting subtitle via the OSD.
+*/
+#endif
 public:
   virtual int64_t GetSTC(void);
        ///< Gets the current System Time Counter, which can be used to
        ///< synchronize audio and video. If this device is unable to
        ///< provide the STC, -1 will be returned.
+#ifdef TS_PLAYER_BACKPORT
+  virtual bool IsPlayingVideo(void) const { return isPlayingVideo; }
+       ///< \return Returns true if the currently attached player has delivered
+       ///< any video packets.
+#endif
 //M7X0 BEGIN AK
   virtual void TrickSpeed(int Speed, bool UseFastForward);
 //M7X0 END AK
@@ -542,6 +588,7 @@ public:
        ///< to a complete packet with data from the next call to PlayPes().
        ///< That way any functions called from within PlayPes() will be
        ///< guaranteed to always receive complete PES packets.
+#ifndef TS_PLAYER_BACKPORT
   virtual int PlayTs(const uchar *Data, int Length) { return -1; }
        ///< Plays all valid TS packets in Data with the given Length.
        ///< If Data is NULL any leftover data from a previous call will be
@@ -553,6 +600,24 @@ public:
        ///< one program in the stream the first
   virtual void SetTsReplayPids(int pmtPid, int videoPid) { }
   virtual int GetTsReplayVideoPid(void) { return 0; }
+#else
+  virtual int PlayTs(const uchar *Data, int Length, bool VideoOnly = false);
+       ///< Plays the given TS packet.
+       ///< If VideoOnly is true, only the video will be displayed,
+       ///< which is necessary for trick modes like 'fast forward'.
+       ///< Data points to a single TS packet, Length is always TS_SIZE (the total
+       ///< size of a single TS packet).
+       ///< If Data is NULL any leftover data from a previous call will be
+       ///< discarded.
+       ///< A derived device can reimplement this function to handle the
+       ///< TS packets itself. Any packets the derived function can't handle
+       ///< must be sent to the base class function. This applies especially
+       ///< to the PAT/PMT packets.
+       ///< Returns -1 in case of error, otherwise the number of actually
+       ///< processed bytes is returned.
+       ///< PlayTs() shall process the TS packets either as a whole (returning
+       ///< n*TS_SIZE) or not at all, returning 0 or -1 and setting 'errno' accordingly).
+#endif
   bool Replaying(void) const;
        ///< Returns true if we are currently replaying.
   bool Transferring(void) const;

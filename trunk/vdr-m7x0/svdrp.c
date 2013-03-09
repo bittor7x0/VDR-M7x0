@@ -770,7 +770,7 @@ void cSVDRP::CmdEDIT(const char *Option)
         cRecording *recording = Recordings.Get(strtol(Option, NULL, 10) - 1);
         if (recording) {
            cMarks Marks;
-           if (Marks.Load(recording->FileName()) && Marks.Count()) {
+           if (Marks.Load(recording->FileName(), recording->IsPesRecording()) && Marks.Count()) {
               if (!cCutter::Active()) {
                  if (cCutter::Start(recording->FileName()))
                     Reply(250, "Editing recording \"%s\" [%s]", Option, recording->Title());
@@ -1500,7 +1500,7 @@ void cSVDRP::CmdPLAY(const char *Option)
                  else if (x >= 3)
                     pos = (h * 3600 + m * 60 + s) * FRAMESPERSEC + f - 1;
                  }
-              cResumeFile resume(recording->FileName());
+              cResumeFile resume(recording->FileName(), recording->IsPesRecording());
               if (pos <= 0)
                  resume.Delete();
               else

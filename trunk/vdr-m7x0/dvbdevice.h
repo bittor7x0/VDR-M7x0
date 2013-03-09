@@ -28,7 +28,9 @@
 class cDvbTuner;
 //M7X0 BEGIN AK
 class c7x0TSBuffer;
+#ifndef TS_PLAYER_BACKPORT
 class c7x0TsReplayer;
+#endif
 //M7X0 END AK
 /// The cDvbDevice implements a DVB device which can be accessed through the Linux DVB driver API.
 
@@ -161,8 +163,10 @@ private:
   int playBufferFill;
   int PESPayload(const uchar *Data, int Length, int &TSOffset, int &TSLength);
   void PESPacket2TS(const uchar *Data, int Length, int Pid, int &CCounter);
+#ifndef TS_PLAYER_BACKPORT
   friend class c7x0TsReplayer;
   c7x0TsReplayer *tsreplayer;
+#endif
   int PlayAudioOnly(const uchar *Data, int Length, uchar Id);
 //M7X0 END AK
 protected:
@@ -176,9 +180,11 @@ protected:
 public:
   virtual int64_t GetSTC(void);
 //M7X0 BEGIN AK
+#ifndef TS_PLAYER_BACKPORT
   virtual int PlayTs(const uchar *Data, int Length);
   virtual void SetTsReplayPids(int pmtPid, int videoPid);
   virtual int GetTsReplayVideoPid(void);
+#endif
   virtual void TrickSpeed(int Speed, bool UseFastForward);
 //M7X0 END AK
   virtual void Clear(void);

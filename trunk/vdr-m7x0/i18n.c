@@ -9990,7 +9990,6 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
   },
-/* M7X0 TODO: How detect if a record is in PES or TS format?
   { "Format",
     "Format",
     "",//TODO
@@ -10057,7 +10056,6 @@ const tI18nPhrase Phrases[] = {
     "",//TODO
     "",//TODO
   },
-*/
   { "Delete marks information?",
     "Marks löschen?",
     "",//TODO

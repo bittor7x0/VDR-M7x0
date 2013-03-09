@@ -1230,19 +1230,23 @@ int cUnbufferedFile::Close(void)
 // We try to handle the common cases such as PLAY->FF->PLAY, small
 // jumps, moving editing marks etc.
 
+#ifdef USE_FADVISE
 #define FADVGRAN   KILOBYTE(4) // AKA fadvise-chunk-size; PAGE_SIZE or getpagesize(2) would also work.
 #define READCHUNK  MEGABYTE(8)
+#endif
 
 void cUnbufferedFile::SetReadAhead(size_t ra)
 {
   readahead = ra;
 }
 
+#ifdef USE_FADVISE
 int cUnbufferedFile::FadviseDrop(off_t Offset, off_t Len)
 {
   // rounding up the window to make sure that not PAGE_SIZE-aligned data gets freed.
   return posix_fadvise(fd, Offset - (FADVGRAN - 1), Len + (FADVGRAN - 1) * 2, POSIX_FADV_DONTNEED);
 }
+#endif
 #ifdef USE_DIRECT_IO
 int cUnbufferedFile::FallBackFromDirectIO(void)
 {
@@ -1267,7 +1271,7 @@ off_t cUnbufferedFile::Seek(off_t Offset, int Whence)
         }
 #ifdef CHECK_DIRECT_IO_BUFFERS
      if (Offset & (blockSize -1)) {
-        esyslog("ERROR: Seek offset 0x%lX not aligned to fs block size 0x%X "
+        esyslog("ERROR: Seek offset 0x%llX not aligned to fs block size 0x%X "
                 "while using direct io. Falling back ... !",Offset, blockSize);
 
         int r = FallBackFromDirectIO();
@@ -1281,7 +1285,7 @@ off_t cUnbufferedFile::Seek(off_t Offset, int Whence)
      curpos = lseek(fd, Offset, Whence);
 
      if (curpos < 0) {
-        esyslog("ERROR: Cannot seek to offset 0x%lX fs block size 0x%X "
+        esyslog("ERROR: Cannot seek to offset 0x%llX fs block size 0x%X "
                 "while using direct io. Falling back ... !",Offset, blockSize);
 
         int r = FallBackFromDirectIO();
@@ -1439,7 +1443,7 @@ ssize_t cUnbufferedFile::Write(const void *Data, size_t Size)
               //    last (partial) page might be skipped, writeback will start only after
               //    second call; the third call will still include this page and finally
               //    drop it from cache.
-              off_t headdrop = min(begin, WRITE_BUFFER * 2L);
+              off_t headdrop = min(begin, off_t(WRITE_BUFFER * 2));
               posix_fadvise(fd, begin - headdrop, lastpos - begin + headdrop, POSIX_FADV_DONTNEED);
               }
            begin = lastpos = curpos;
@@ -1458,7 +1462,7 @@ ssize_t cUnbufferedFile::Write(const void *Data, size_t Size)
               // kind of write gathering enabled), but the syncs cause (io) load..
               // Uncomment the next line if you think you need them.
               //fdatasync(fd);
-              off_t headdrop = min(curpos - totwritten, totwritten * 2L);
+              off_t headdrop = min(off_t(curpos - totwritten), off_t(totwritten * 2));
               posix_fadvise(fd, curpos - totwritten - headdrop, totwritten + headdrop, POSIX_FADV_DONTNEED);
               totwritten = 0;
               }
