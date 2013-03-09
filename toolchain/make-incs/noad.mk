@@ -1,6 +1,6 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
-# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012 VDR-NG-EM Project
+# Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 VDR-NG-EM Project
 #
 # More information can be found in the files COPYING and README.
 #
@@ -23,21 +23,33 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-# Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-NOAD_DEPS = $(BASE_BUILD_STAGEFILE) $(LIBMPEG2_INSTALLED)
-
 ifeq ($(CONFIG_NOAD),y)
-ifneq ($(CONFIG_LIBMPEG2),y)
-   $(error dependency error: noad needs libmpeg2 enabled)
+ifneq ($(or $(CONFIG_FFMPEG),$(CONFIG_LIBMPEG2)),y)
+   $(error dependency error: noad needs ffmpeg or libmpeg2 enabled)
+endif
+ifeq ($(CONFIG_FFMPEG),y)
+ifneq ($(and $(filter y,$(CONFIG_FFMPEG_LIBAVCODEC)),$(filter y,$(CONFIG_FFMPEG_LIBAVUTIL)),$(filter y,$(CONFIG_FFMPEG_LIBAVFORMAT))),y)
+   $(error dependency error: noad needs ffmpeg with libavcodec, libavutil and libavformat libraries enabled)
+endif
 endif
 endif
 
-NOAD_VERSION := snapshot-20081021
+# Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
+NOAD_DEPS = $(BASE_BUILD_STAGEFILE)
+
+ifeq ($(CONFIG_FFMPEG),y)
+	NOAD_DEPS +=  $(FFMPEG_INSTALLED)
+endif
+ifeq ($(CONFIG_LIBMPEG2),y)
+	NOAD_DEPS +=  $(LIBMPEG2_INSTALLED)
+endif
+
+NOAD_VERSION := 0.8.5
 NOAD_PATCHES_DIR := $(PATCHES_DIR)/noad/$(NOAD_VERSION)
 
-NOAD_FILE := noad-$(NOAD_VERSION).tar.gz
+NOAD_FILE := noad-$(NOAD_VERSION).tar.bz2
 NOAD_DLFILE := $(DOWNLOAD_DIR)/$(NOAD_FILE)
-NOAD_URL := "http://git.gekrumbel.de/?p=noad.git;a=snapshot;h=e12eb6d8d02cc51d6e6dbe5e733009a354285700;sf=tgz"
+NOAD_URL := http://noad.net23.net/$(NOAD_FILE)
 NOAD_DIR := $(BUILD_DIR)/noad-$(NOAD_VERSION)
 
 NOAD_INSTALLED = $(STAGEFILES_DIR)/.noad_installed
@@ -66,8 +78,7 @@ $(STAGEFILES_DIR)/.noad_unpacked: $(NOAD_DLFILE) \
                                            $(wildcard $(NOAD_PATCHES_DIR)/*.patch) \
                                            $$(NOAD_DEPS)
 	-$(RM) -rf $(NOAD_DIR)
-	$(TAR) -C $(BUILD_DIR) -zf $(NOAD_DLFILE)
-	$(MV) $(BUILD_DIR)/noad $(NOAD_DIR)
+	$(BZCAT) $(NOAD_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.noad_unpacked
 
 #
@@ -84,12 +95,14 @@ $(STAGEFILES_DIR)/.noad_patched: $(STAGEFILES_DIR)/.noad_unpacked
 
 $(STAGEFILES_DIR)/.noad_configured: $(STAGEFILES_DIR)/.noad_patched
 	($(CD) $(NOAD_DIR) ; $(UCLIBC_ENV) \
+		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib" \
+		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
+		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(NOAD_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
-			--with-mpeginclude=$(TARGET_ROOT)/usr/include/mpeg2dec \
-			--with-mpeglibdir=$(TARGET_ROOT)/usr/lib \
-			--without-ffmpeg \
+			$(if $(CONFIG_FFMPEG),--with-ffmpeg,--without-ffmpeg) \
+			$(if $(CONFIG_LIBMPEG2),--with-libmpeg2,--without-libmpeg2) \
 			--without-magick)
 	$(TOUCH) $(STAGEFILES_DIR)/.noad_configured
 

@@ -101,12 +101,39 @@ CONFIG_SCSI-SPIN = y
 
 # noad: Program for detecting commercials in VDR recordings
 # URL: http://git.gekrumbel.de/?p=noad.git
-# Note: It's very slow in M7x0, but is here in case someone wants to improve it
+# Note: It's very slow in M7x0, but is here in case someone wants to improve it. This new version isn't working
 # CONFIG_NOAD is not set
+
+# markad: Advanced commercial detection for VDR
+# URL: http://projects.vdr-developer.org/projects/plg-markad
+# Note: It still isn't working
+# CONFIG_MARKAD is not set
 
 # ffmpeg: Complete, cross-platform solution to record, convert and stream audio and video
 # URL: http://www.ffmpeg.org/
+# Note: This package is necessary for libraries
 # CONFIG_FFMPEG is not set
+
+# Optimize ffmpeg for size instead of speed
+# CONFIG_FFMPEG_SIZE is not set
+
+# Add avcodec library from ffmpeg package to RootFS
+# CONFIG_FFMPEG_LIBAVCODEC is not set
+
+# Add avdevice library from ffmpeg package to RootFS
+# CONFIG_FFMPEG_LIBAVDEVICE is not set
+
+# Add avformat library from ffmpeg package to RootFS
+# CONFIG_FFMPEG_LIBAVFORMAT is not set
+
+# Add avutil library from ffmpeg package to RootFS
+# CONFIG_FFMPEG_LIBAVUTIL is not set
+
+# Add postproc library from ffmpeg package to RootFS
+# CONFIG_FFMPEG_LIBPOSTPROC is not set
+
+# Add swscale library from ffmpeg package to RootFS
+# CONFIG_FFMPEG_LIBSWSCALE is not set
 
 # vdr2ts: Convert PES records made with VDR to TS
 # CONFIG_VDR2TS is not set
@@ -262,6 +289,10 @@ CONFIG_O7O_FLASHER = y
 # URL: http://www.zlib.net/
 # CONFIG_ZLIB is not set
 # CONFIG_ZLIB_STATIC is not set
+
+# libintl-lite: A simple (but less powerful) GNU gettext libintl replacement 
+# URL: http://sourceforge.net/projects/libintl-lite/
+# CONFIG_LIBINTL-LITE is not set
 
 # readline: A set of functions for use by applications that allow users to edit command lines as they are typed in
 # URL: http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html

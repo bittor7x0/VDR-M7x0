@@ -1,0 +1,4 @@
+usr/lib/libavutil.so.51.73.101  usr/lib/libavutil.so.51.73.101  f 755 0 0 - - - - -
+usr/lib/libavutil.so.51.73.101  -                               s   - - - - - - - -
+usr/lib/libavutil.so.51         libavutil.so.51.73.101          l 777 0 0 - - - - -
+usr/lib/libavutil.so            libavutil.so.51.73.101          l 777 0 0 - - - - -

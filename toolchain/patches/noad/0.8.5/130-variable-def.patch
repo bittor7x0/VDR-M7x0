@@ -1,0 +1,15 @@
+diff -Naur noad-0.8.5-orig/noad.cpp noad-0.8.5/noad.cpp
+--- noad-0.8.5-orig/noad.cpp	2012-10-23 15:35:19.000000000 +0200
++++ noad-0.8.5/noad.cpp	2012-11-18 16:14:54.731000164 +0100
+@@ -26,6 +26,11 @@
+   #define DO_NEWPASS2
+   #define AUTO_CLEANUP
+ #endif
++#ifdef USE_FFMPEG
++#ifndef USE_LIBMPGE2
++  bool ignorevideo = false;
++#endif
++#endif
+ 
+ #include "noad.h"
+ 

@@ -1,0 +1,28 @@
+--- markad-0.1.4-orig/command/markad-standalone.cpp	2012-11-17 15:19:26.000000000 +0100
++++ markad-0.1.4/command/markad-standalone.cpp	2012-11-17 15:24:40.000461364 +0100
+@@ -23,7 +23,6 @@
+ #include <poll.h>
+ #include <locale.h>
+ #include <libintl.h>
+-#include <execinfo.h>
+ #include <mntent.h>
+ #include <utime.h>
+ #include <math.h>
+@@ -2436,7 +2435,8 @@
+         break;
+     case SIGSEGV:
+         esyslog("segmentation fault");
+-
++        esyslog("[bt] Execution path: <Sorry, stackframe backtrace not available with uClibc>");
++/*
+         trace_size = backtrace(trace, 32);
+         messages = backtrace_symbols(trace, trace_size);
+         esyslog("[bt] Execution path:");
+@@ -2444,6 +2444,7 @@
+         {
+             esyslog("[bt] %s", messages[i]);
+         }
++*/
+         _exit(1);
+         break;
+     case SIGTERM:

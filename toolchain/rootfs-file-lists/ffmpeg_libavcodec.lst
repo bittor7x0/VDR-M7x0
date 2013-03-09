@@ -1,0 +1,4 @@
+usr/lib/libavcodec.so.54.59.100  usr/lib/libavcodec.so.54.59.100  f 755 0 0 - - - - -
+usr/lib/libavcodec.so.54.59.100  -                                s   - - - - - - - -
+usr/lib/libavcodec.so.54         libavcodec.so.54.59.100          l 777 0 0 - - - - -
+usr/lib/libavcodec.so            libavcodec.so.54.59.100          l 777 0 0 - - - - -

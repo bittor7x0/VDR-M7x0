@@ -24,15 +24,25 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
 ifeq ($(CONFIG_LIBFFMPEGTHUMBNAILER),y)
-ifneq ($(CONFIG_FFMPEG),y)
-   $(error dependency error: libffmpegthumbnailer needs ffmpeg enabled)
+ifeq ($(and $(strip $(CONFIG_LIBPNG)),$(strip $(CONFIG_LIBJPEG))),)
+   $(error dependency error: libffmpegthumbnailer needs libpng or libjpeg enabled)
+endif
+ifneq ($(and $(filter y,$(CONFIG_FFMPEG)),$(filter y,$(CONFIG_FFMPEG_LIBAVUTIL)),$(filter y,$(CONFIG_FFMPEG_LIBAVFORMAT)),$(filter y,$(CONFIG_FFMPEG_LIBAVCODEC)),$(filter y,$(CONFIG_FFMPEG_LIBSWSCALE))),y)
+   $(error dependency error: libffmpegthumbnailer needs ffmpeg with libavutil, libavformat, libavcodec and libswscale libraries enabled)
 endif
 endif
 
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 LIBFFMPEGTHUMBNAILER_DEPS = $(BASE_BUILD_STAGEFILE) $(FFMPEG_INSTALLED)
 
-LIBFFMPEGTHUMBNAILER_VERSION := 2.0.4
+ifeq ($(CONFIG_LIBPNG),y)
+	LIBFFMPEGTHUMBNAILER_DEPS +=  $(LIBPNG_INSTALLED)
+endif
+ifeq ($(CONFIG_LIBJPEG),y)
+	LIBFFMPEGTHUMBNAILER_DEPS +=  $(LIBJPEG_INSTALLED)
+endif
+
+LIBFFMPEGTHUMBNAILER_VERSION := 2.0.8
 LIBFFMPEGTHUMBNAILER_PATCHES_DIR := $(PATCHES_DIR)/libffmpegthumbnailer/$(LIBFFMPEGTHUMBNAILER_VERSION)
 
 LIBFFMPEGTHUMBNAILER_FILE := ffmpegthumbnailer-$(LIBFFMPEGTHUMBNAILER_VERSION).tar.gz
@@ -90,7 +100,9 @@ $(STAGEFILES_DIR)/.libffmpegthumbnailer_configured: $(STAGEFILES_DIR)/.libffmpeg
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--enable-shared \
-			--enable-static)
+			--enable-static \
+			$(if $(CONFIG_LIBPNG),--enable-png,) \
+			$(if $(CONFIG_LIBJPEG),--enable-jpeg,))
 	$(TOUCH) $(STAGEFILES_DIR)/.libffmpegthumbnailer_configured
 
 #

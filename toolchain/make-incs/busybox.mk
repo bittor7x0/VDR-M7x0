@@ -91,10 +91,9 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 		$(BUSYBOX_DIR)/.config
   endif
 	$(UCLIBC_ENV_LTO) \
-		CFLAGS="$(UCLIBC_CFLAGS_LTO) -DLINK_TIME_OPTIMIZATION" \
-		LDFLAGS="-flto -fwhole-program" \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		LDLIBS="m" \
+		PKG_CONFIG="pkg-config" \
 		SKIP_STRIP=y \
 		ARCH=mips oldconfig
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
@@ -105,10 +104,9 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
 	$(UCLIBC_ENV_LTO) \
-		CFLAGS="$(UCLIBC_CFLAGS_LTO) -DLINK_TIME_OPTIMIZATION" \
-		LDFLAGS="-flto -fwhole-program" \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		LDLIBS="m" \
+		PKG_CONFIG="pkg-config" \
 		SKIP_STRIP=y \
 		ARCH=mips all
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled
@@ -121,10 +119,9 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed: $(STAGEFILES_DIR)/.bu
 	$(TOP_DIR)/.config
 	$(FIND) $(TARGET_ROOT) -lname "*busybox" -exec rm \{\} \;
 	$(UCLIBC_ENV_LTO) \
-		CFLAGS="$(UCLIBC_CFLAGS_LTO) -DLINK_TIME_OPTIMIZATION" \
-		LDFLAGS="-flto -fwhole-program" \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		LDLIBS="m" \
+		PKG_CONFIG="pkg-config" \
 		SKIP_STRIP=y \
 		ARCH=mips install
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed

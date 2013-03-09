@@ -1,0 +1,4 @@
+usr/lib/libintl.so.1.0.0  usr/lib/libintl.so.1.0.0  f 755 0 0 - - - - -
+usr/lib/libintl.so.1.0.0  -                         s   - - - - - - - -
+usr/lib/libintl.so.1      libintl.so.1.0.0          l 777 0 0 - - - - -
+usr/lib/libintl.so        libintl.so.1.0.0          l 777 0 0 - - - - -
