@@ -75,6 +75,9 @@ endif
 ifdef VDR_USER
 DEFINES += -DVDR_USER=\"$(VDR_USER)\"
 endif
+ifdef TS_PLAYER_BACKPORT
+DEFINES += -DTS_PLAYER_BACKPORT
+endif
 ifdef MEMWATCH
 OBJS += memwatch.o
 DEFINES += -DMEMWATCH

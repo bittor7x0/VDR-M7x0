@@ -23,6 +23,13 @@ public:
        ///< be copied and processed in a separate thread. The Data is always a
        ///< complete PES audio packet. Id indicates the type of audio data this
        ///< packet holds.
+#ifdef TS_PLAYER_BACKPORT
+  virtual void PlayTs(const uchar *Data, int Length) = 0;
+       ///< Plays the given block of audio Data. Must return as soon as possible.
+       ///< If the entire block of data can't be processed immediately, it must
+       ///< be copied and processed in a separate thread. The Data is always a
+       ///< complete TS audio packet.
+#endif
   virtual void Mute(bool On) = 0;
        ///< Immediately sets the audio device to be silent (On==true) or to
        ///< normal replay (On==false).
@@ -33,6 +40,9 @@ public:
 class cAudios : public cList<cAudio> {
 public:
   void PlayAudio(const uchar *Data, int Length, uchar Id);
+#ifdef TS_PLAYER_BACKPORT
+  void PlayTsAudio(const uchar *Data, int Length);
+#endif
   void MuteAudio(bool On);
   void ClearAudio(void);
   };
@@ -48,6 +58,9 @@ public:
   cExternalAudio(const char *Command);
   virtual ~cExternalAudio();
   virtual void Play(const uchar *Data, int Length, uchar Id);
+#ifdef TS_PLAYER_BACKPORT
+  virtual void PlayTs(const uchar *Data, int Length);
+#endif
   virtual void Mute(bool On);
   virtual void Clear(void);
   };

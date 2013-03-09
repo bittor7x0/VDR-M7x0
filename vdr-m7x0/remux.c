@@ -16,8 +16,17 @@
 #include "remux.h"
 #include <stdlib.h>
 #include "channels.h"
+#include "device.h"
+#include "libsi/si.h"
+#include "libsi/section.h"
+#include "libsi/descriptor.h"
 #include "shutdown.h"
 #include "tools.h"
+
+// Set these to 'true' for debug output:
+static bool DebugPatPmt = false;
+
+#define dbgpatpmt(a...) if (DebugPatPmt) fprintf(stderr, a)
 
 //M7X0 BEGIN AK
 ePesHeader AnalyzePesHeader(const uchar *Data, int Count, int &PesPayloadOffset, bool *ContinuationHeader)
@@ -2232,4 +2241,375 @@ int cRemux::SetBrokenLink(uchar *Data, int Length)
   else
      dsyslog("SetBrokenLink: no video packet in frame");
   return TS+1;
+}
+
+
+// --- Some TS handling tools ------------------------------------------------
+
+int64_t TsGetPts(const uchar *p, int l)
+{
+  // Find the first packet with a PTS and use it:
+  while (l > 0) {
+        const uchar *d = p;
+        if (TsPayloadStart(d) && TsGetPayload(&d) && PesHasPts(d))
+           return PesGetPts(d);
+        p += TS_SIZE;
+        l -= TS_SIZE;
+        }
+  return -1;
+}
+
+void TsSetTeiOnBrokenPackets(uchar *p, int l)
+{
+  bool Processed[MAXPID] = { false };
+  while (l >= TS_SIZE) {
+        if (*p != TS_SYNC_BYTE)
+           break;
+        int Pid = TsPid(p);
+        if (!Processed[Pid]) {
+           if (!TsPayloadStart(p))
+              p[1] |= TS_ERROR;
+           else
+              Processed[Pid] = true;
+           }
+        l -= TS_SIZE;
+        p += TS_SIZE;
+        }
+}
+
+// --- cPatPmtParser ---------------------------------------------------------
+
+cPatPmtParser::cPatPmtParser(bool UpdatePrimaryDevice)
+{
+  updatePrimaryDevice = UpdatePrimaryDevice;
+  Reset();
+}
+
+void cPatPmtParser::Reset(void)
+{
+  pmtSize = 0;
+  patVersion = pmtVersion = -1;
+  pmtPid = -1;
+  vpid = vtype = 0;
+  ppid = 0;
+}
+
+void cPatPmtParser::ParsePat(const uchar *Data, int Length)
+{
+  // Unpack the TS packet:
+  int PayloadOffset = TsPayloadOffset(Data);
+  Data += PayloadOffset;
+  Length -= PayloadOffset;
+  // The PAT is always assumed to fit into a single TS packet
+  if ((Length -= Data[0] + 1) <= 0)
+     return;
+  Data += Data[0] + 1; // process pointer_field
+  SI::PAT Pat(Data, false);
+  if (Pat.CheckCRCAndParse()) {
+     dbgpatpmt("PAT: TSid = %d, c/n = %d, v = %d, s = %d, ls = %d\n", Pat.getTransportStreamId(), Pat.getCurrentNextIndicator(), Pat.getVersionNumber(), Pat.getSectionNumber(), Pat.getLastSectionNumber());
+     if (patVersion == Pat.getVersionNumber())
+        return;
+     SI::PAT::Association assoc;
+     for (SI::Loop::Iterator it; Pat.associationLoop.getNext(assoc, it); ) {
+         dbgpatpmt("     isNITPid = %d\n", assoc.isNITPid());
+         if (!assoc.isNITPid()) {
+            pmtPid = assoc.getPid();
+            dbgpatpmt("     service id = %d, pid = %d\n", assoc.getServiceId(), assoc.getPid());
+            }
+         }
+     patVersion = Pat.getVersionNumber();
+     }
+  else
+     esyslog("ERROR: can't parse PAT");
+}
+
+void cPatPmtParser::ParsePmt(const uchar *Data, int Length)
+{
+  // Unpack the TS packet:
+  bool PayloadStart = TsPayloadStart(Data);
+  int PayloadOffset = TsPayloadOffset(Data);
+  Data += PayloadOffset;
+  Length -= PayloadOffset;
+  // The PMT may extend over several TS packets, so we need to assemble them
+  if (PayloadStart) {
+     pmtSize = 0;
+     if ((Length -= Data[0] + 1) <= 0)
+        return;
+     Data += Data[0] + 1; // this is the first packet
+     if (SectionLength(Data, Length) > Length) {
+        if (Length <= int(sizeof(pmt))) {
+           memcpy(pmt, Data, Length);
+           pmtSize = Length;
+           }
+        else
+           esyslog("ERROR: PMT packet length too big (%d byte)!", Length);
+        return;
+        }
+     // the packet contains the entire PMT section, so we run into the actual parsing
+     }
+  else if (pmtSize > 0) {
+     // this is a following packet, so we add it to the pmt storage
+     if (Length <= int(sizeof(pmt)) - pmtSize) {
+        memcpy(pmt + pmtSize, Data, Length);
+        pmtSize += Length;
+        }
+     else {
+        esyslog("ERROR: PMT section length too big (%d byte)!", pmtSize + Length);
+        pmtSize = 0;
+        }
+     if (SectionLength(pmt, pmtSize) > pmtSize)
+        return; // more packets to come
+     // the PMT section is now complete, so we run into the actual parsing
+     Data = pmt;
+     }
+  else
+     return; // fragment of broken packet - ignore
+  SI::PMT Pmt(Data, false);
+  if (Pmt.CheckCRCAndParse()) {
+     dbgpatpmt("PMT: sid = %d, c/n = %d, v = %d, s = %d, ls = %d\n", Pmt.getServiceId(), Pmt.getCurrentNextIndicator(), Pmt.getVersionNumber(), Pmt.getSectionNumber(), Pmt.getLastSectionNumber());
+     dbgpatpmt("     pcr = %d\n", Pmt.getPCRPid());
+     if (pmtVersion == Pmt.getVersionNumber())
+        return;
+     if (updatePrimaryDevice)
+        cDevice::PrimaryDevice()->ClrAvailableTracks(false, true);
+     int NumApids = 0;
+     int NumDpids = 0;
+     //int NumSpids = 0;
+     vpid = vtype = 0;
+     ppid = 0;
+     apids[0] = 0;
+     dpids[0] = 0;
+     spids[0] = 0;
+     atypes[0] = 0;
+     dtypes[0] = 0;
+     SI::PMT::Stream stream;
+     for (SI::Loop::Iterator it; Pmt.streamLoop.getNext(stream, it); ) {
+         dbgpatpmt("     stream type = %02X, pid = %d", stream.getStreamType(), stream.getPid());
+         switch (stream.getStreamType()) {
+           case 0x01: // STREAMTYPE_11172_VIDEO
+           case 0x02: // STREAMTYPE_13818_VIDEO
+           case 0x1B: // MPEG4
+                      vpid = stream.getPid();
+                      vtype = stream.getStreamType();
+                      ppid = Pmt.getPCRPid();
+                      break;
+           case 0x03: // STREAMTYPE_11172_AUDIO
+           case 0x04: // STREAMTYPE_13818_AUDIO
+                      {
+                      if (NumApids < MAXAPIDS) {
+                         apids[NumApids] = stream.getPid();
+                         atypes[NumApids] = stream.getStreamType();
+                         *alangs[NumApids] = 0;
+                         SI::Descriptor *d;
+                         for (SI::Loop::Iterator it; (d = stream.streamDescriptors.getNext(it)); ) {
+                             switch (d->getDescriptorTag()) {
+                               case SI::ISO639LanguageDescriptorTag: {
+                                    SI::ISO639LanguageDescriptor *ld = (SI::ISO639LanguageDescriptor *)d;
+                                    SI::ISO639LanguageDescriptor::Language l;
+                                    char *s = alangs[NumApids];
+                                    int n = 0;
+                                    for (SI::Loop::Iterator it; ld->languageLoop.getNext(l, it); ) {
+                                        if (*ld->languageCode != '-') { // some use "---" to indicate "none"
+                                           dbgpatpmt(" '%s'", l.languageCode);
+                                           if (n > 0)
+                                              *s++ = '+';
+                                           strn0cpy(s, I18nNormalizeLanguageCode(l.languageCode), MAXLANGCODE1);
+                                           s += strlen(s);
+                                           if (n++ > 1)
+                                              break;
+                                           }
+                                        }
+                                    }
+                                    break;
+                               default: ;
+                               }
+                             delete d;
+                             }
+                         if (updatePrimaryDevice)
+                            cDevice::PrimaryDevice()->SetAvailableTrack(ttAudio, NumApids, apids[NumApids], alangs[NumApids]);
+                         NumApids++;
+                         apids[NumApids]= 0;
+                         }
+                      }
+                      break;
+           case 0x06: // STREAMTYPE_13818_PES_PRIVATE
+                      {
+                      int dpid = 0;
+                      char lang[MAXLANGCODE1] = "";
+                      SI::Descriptor *d;
+                      for (SI::Loop::Iterator it; (d = stream.streamDescriptors.getNext(it)); ) {
+                          switch (d->getDescriptorTag()) {
+                            case SI::AC3DescriptorTag:
+                                 dbgpatpmt(" AC3");
+                                 dpid = stream.getPid();
+                                 break;
+/*
+                            case SI::SubtitlingDescriptorTag:
+                                 dbgpatpmt(" subtitling");
+                                 if (NumSpids < MAXSPIDS) {
+                                    spids[NumSpids] = stream.getPid();
+                                    *slangs[NumSpids] = 0;
+                                    subtitlingTypes[NumSpids] = 0;
+                                    compositionPageIds[NumSpids] = 0;
+                                    ancillaryPageIds[NumSpids] = 0;
+                                    SI::SubtitlingDescriptor *sd = (SI::SubtitlingDescriptor *)d;
+                                    SI::SubtitlingDescriptor::Subtitling sub;
+                                    char *s = slangs[NumSpids];
+                                    int n = 0;
+                                    for (SI::Loop::Iterator it; sd->subtitlingLoop.getNext(sub, it); ) {
+                                        if (sub.languageCode[0]) {
+                                           dbgpatpmt(" '%s'", sub.languageCode);
+                                           subtitlingTypes[NumSpids] = sub.getSubtitlingType();
+                                           compositionPageIds[NumSpids] = sub.getCompositionPageId();
+                                           ancillaryPageIds[NumSpids] = sub.getAncillaryPageId();
+                                           if (n > 0)
+                                              *s++ = '+';
+                                           strn0cpy(s, I18nNormalizeLanguageCode(sub.languageCode), MAXLANGCODE1);
+                                           s += strlen(s);
+                                           if (n++ > 1)
+                                              break;
+                                           }
+                                        }
+                                    if (updatePrimaryDevice)
+                                       cDevice::PrimaryDevice()->SetAvailableTrack(ttSubtitle, NumSpids, spids[NumSpids], slangs[NumSpids]);
+                                    NumSpids++;
+                                    spids[NumSpids]= 0;
+                                    }
+                                 break;
+*/
+                            case SI::ISO639LanguageDescriptorTag: {
+                                 SI::ISO639LanguageDescriptor *ld = (SI::ISO639LanguageDescriptor *)d;
+                                 dbgpatpmt(" '%s'", ld->languageCode);
+                                 strn0cpy(lang, I18nNormalizeLanguageCode(ld->languageCode), MAXLANGCODE1);
+                                 }
+                                 break;
+                            default: ;
+                            }
+                          delete d;
+                          }
+                      if (dpid) {
+                         if (NumDpids < MAXDPIDS) {
+                            dpids[NumDpids] = dpid;
+                            dtypes[NumDpids] = stream.getStreamType();
+                            strn0cpy(dlangs[NumDpids], lang, sizeof(dlangs[NumDpids]));
+                            if (updatePrimaryDevice && Setup.UseDolbyDigital)
+                               cDevice::PrimaryDevice()->SetAvailableTrack(ttDolby, NumDpids, dpid, lang);
+                            NumDpids++;
+                            dpids[NumDpids]= 0;
+                            }
+                         }
+                      }
+                      break;
+           default: ;
+           }
+         dbgpatpmt("\n");
+         if (updatePrimaryDevice) {
+            cDevice::PrimaryDevice()->EnsureAudioTrack(true);
+            //cDevice::PrimaryDevice()->EnsureSubtitleTrack();
+            }
+         }
+     pmtVersion = Pmt.getVersionNumber();
+     }
+  else
+     esyslog("ERROR: can't parse PMT");
+  pmtSize = 0;
+}
+
+bool cPatPmtParser::GetVersions(int &PatVersion, int &PmtVersion) const
+{
+  PatVersion = patVersion;
+  PmtVersion = pmtVersion;
+  return patVersion >= 0 && pmtVersion >= 0;
+}
+
+// --- cTsToPes --------------------------------------------------------------
+
+cTsToPes::cTsToPes(void)
+{
+  data = NULL;
+  size = 0;
+  Reset();
+}
+
+cTsToPes::~cTsToPes()
+{
+  free(data);
+}
+
+void cTsToPes::PutTs(const uchar *Data, int Length)
+{
+  if (TsError(Data)) {
+     Reset();
+     return; // ignore packets with TEI set, and drop any PES data collected so far
+     }
+  if (TsPayloadStart(Data))
+     Reset();
+  else if (!size)
+     return; // skip everything before the first payload start
+  Length = TsGetPayload(&Data);
+  if (length + Length > size) {
+     size = max(KILOBYTE(2), length + Length);
+     data = (uchar *)realloc(data, size);
+     }
+  memcpy(data + length, Data, Length);
+  length += Length;
+}
+
+#define MAXPESLENGTH 0xFFF0
+
+const uchar *cTsToPes::GetPes(int &Length)
+{
+  if (repeatLast) {
+     repeatLast = false;
+     Length = lastLength;
+     return lastData;
+     }
+  if (offset < length && PesLongEnough(length)) {
+     if (!PesHasLength(data)) // this is a video PES packet with undefined length
+        offset = 6; // trigger setting PES length for initial slice
+     if (offset) {
+        uchar *p = data + offset - 6;
+        if (p != data) {
+           p -= 3;
+           memmove(p, data, 4);
+           }
+        int l = min(length - offset, MAXPESLENGTH);
+        offset += l;
+        if (p != data) {
+           l += 3;
+           p[6]  = 0x80;
+           p[7]  = 0x00;
+           p[8]  = 0x00;
+           }
+        p[4] = l / 256;
+        p[5] = l & 0xFF;
+        Length = l + 6;
+        lastLength = Length;
+        lastData = p;
+        return p;
+        }
+     else {
+        Length = PesLength(data);
+        if (Length <= length) {
+           offset = Length; // to make sure we break out in case of garbage data
+           lastLength = Length;
+           lastData = data;
+           return data;
+           }
+        }
+     }
+  return NULL;
+}
+
+void cTsToPes::SetRepeatLast(void)
+{
+  repeatLast = true;
+}
+
+void cTsToPes::Reset(void)
+{
+  length = offset = 0;
+  lastData = NULL;
+  lastLength = 0;
+  repeatLast = false;
 }

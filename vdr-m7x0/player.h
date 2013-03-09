@@ -27,6 +27,9 @@ protected:
   bool DeviceSetCurrentAudioTrack(eTrackType Type) { return device ? device->SetCurrentAudioTrack(Type) : false; }
   bool DevicePoll(cPoller &Poller, int TimeoutMs = 0) { return device ? device->Poll(Poller, TimeoutMs) : false; }
   bool DeviceFlush(int TimeoutMs = 0) { return device ? device->Flush(TimeoutMs) : true; }
+#ifdef TS_PLAYER_BACKPORT
+  bool DeviceIsPlayingVideo(void) { return device ? device->IsPlayingVideo() : false; }
+#endif
 //M7X0 BEGIN AK
   void DeviceTrickSpeed(int Speed, bool UseFastForward) { if (device) device->TrickSpeed(Speed,UseFastForward); }
 //M7X0 BEGIN AK
@@ -37,8 +40,10 @@ protected:
   void DeviceSetPlayMode(ePlayMode PlayMode) { if (device) device->SetPlayMode(PlayMode); }
   void DeviceSetVideoDisplayFormat(eVideoDisplayFormat VideoDisplayFormat) { if (device) device->SetVideoDisplayFormat(VideoDisplayFormat); }
   void DeviceStillPicture(const uchar *Data, int Length) { if (device) device->StillPicture(Data, Length); }
+#ifndef TS_PLAYER_BACKPORT
   void DeviceSetTsPids(int pmtPid, int videoPid) { if (device) device->SetTsReplayPids(pmtPid, videoPid); }
   int  DeviceGetVideoPid(void) { if (device) return device->GetTsReplayVideoPid(); return 0; }
+#endif
   void Detach(void);
   virtual void Activate(bool On) {}
        // This function is called right after the cPlayer has been attached to
@@ -48,10 +53,17 @@ protected:
        // Sends the given PES Data to the device and returns the number of
        // bytes that have actually been accepted by the device (or a
        // negative value in case of an error).
+#ifndef TS_PLAYER_BACKPORT
   int PlayTs(const uchar *Data, int Length);
        // Sends the given TS Data to the device and returns the number of
        // bytes that have actually been accepted by the device (or a
        // negative value in case of an error).
+#else
+  int PlayTs(const uchar *Data, int Length, bool VideoOnly = false) { return device ? device->PlayTs(Data, Length, VideoOnly) : -1; }
+       // Sends the given TS packet to the device and returns a positive number
+       // if the packet has been accepted by the device, or a negative value in
+       // case of an error.
+#endif
 public:
   cPlayer(ePlayMode PlayMode = pmAudioVideo);
   virtual ~cPlayer();

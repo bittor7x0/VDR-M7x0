@@ -385,7 +385,7 @@ cSetup::cSetup(void)
   OSDHeight = 486;
   OSDMessageTime = 1;
   UseSmallFont = 1;
-  MaxVideoFileSize = MAXVIDEOFILESIZE;
+  MaxVideoFileSize = MAXVIDEOFILESIZEDEFAULT;
   MaxRecordingSize = DEFAULTRECORDINGSIZE;
   SplitEditedFiles = 0;
   DelTimeshiftRec = 0;

@@ -30,6 +30,7 @@ int cPlayer::PlayPes(const uchar *Data, int Length, bool VideoOnly)
   return -1;
 }
 
+#ifndef TS_PLAYER_BACKPORT
 int cPlayer::PlayTs(const uchar *Data, int Length)
 {
   if (device)
@@ -37,6 +38,7 @@ int cPlayer::PlayTs(const uchar *Data, int Length)
   esyslog("ERROR: attempt to use cPlayer::PlayTs() without attaching to a cDevice!");
   return -1;
 }
+#endif
 
 void cPlayer::Detach(void)
 {

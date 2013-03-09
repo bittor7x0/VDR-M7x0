@@ -212,7 +212,7 @@ static bool StatNearestDir(const char *FileName, struct stat *Stat)
 {
   cString Name(FileName);
   char *p;
-  while ((p = strrchr((const char*)Name + 1, '/')) != NULL) {
+  while ((p = strrchr((char*)(const char*)Name + 1, '/')) != NULL) {
         *p = 0; // truncate at last '/'
         if (stat(Name, Stat) == 0) {
            isyslog("StatNearestDir: Stating %s", (const char*)Name);

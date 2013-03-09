@@ -76,8 +76,8 @@ class cNonBlockingFileReader : public cThread {
 private:
   cFileName *file;
   cRingBufferFrameM7x0 *ringBuffer;
-  int fileNr;
-  int offset;
+  uint16_t fileNr;
+  off_t offset;
   int index;
   int wanted;
   int length;
@@ -99,7 +99,7 @@ public:
   cNonBlockingFileReader(cRingBufferFrameM7x0 *RingBuffer);
   ~cNonBlockingFileReader();
   void Clear(void);
-  int Read(cFileName *File, int FileNr, int Offset, int Length, int Index);
+  int Read(cFileName *File, uint16_t FileNr, off_t Offset, int Length, int Index);
   bool Reading(void) { return file; }
   bool WaitForDataMs(int msToWait);
   };
@@ -203,7 +203,7 @@ void cNonBlockingFileReader::Clear(void)
 
 }
 
-int cNonBlockingFileReader::Read(cFileName *File, int FileNr, int Offset, int Length, int Index)
+int cNonBlockingFileReader::Read(cFileName *File, uint16_t FileNr, off_t Offset, int Length, int Index)
 {
   if (hasData && file) {
      if (fileNr != FileNr || offset != Offset || wanted != Length) {
@@ -288,6 +288,7 @@ private:
   cFileName *fileName;
   cIndexFile *index;
   cUnbufferedFile *replayFile;
+  bool isPesRecording;
   bool eof;
   bool firstPacket;
   ePlayModes playMode;
@@ -296,8 +297,8 @@ private:
   int trickSpeed;
 
   int readIndex, writeIndex;
-  uchar fileNr;
-  int fileOffset;
+  uint16_t fileNr;
+  off_t fileOffset;
   int readFrameLength;
   cFrameM7x0 *playFrame;
 
@@ -314,7 +315,15 @@ private:
   bool NextFile(void);
   int Resume(void);
   bool Save(void);
-  int PlayPesOrTs(const uchar *Data, int Length, bool VideoOnly) __attribute__ ((always_inline)){if(playTS)return PlayTs(Data,Length);return PlayPes(Data,Length,VideoOnly);}
+
+  int PlayPesOrTs(const uchar *Data, int Length, bool VideoOnly) __attribute__ ((always_inline)) {
+     if(playTS)
+#ifndef TS_PLAYER_BACKPORT
+        return PlayTs(Data, Length);
+#else
+        return PlayTs(Data, Length, VideoOnly);
+#endif
+     return PlayPes(Data, Length, VideoOnly); }
 protected:
   virtual void Activate(bool On);
   virtual void Action(void);
@@ -346,6 +355,8 @@ cDvbPlayer::cDvbPlayer(const char *FileName, cTShiftIndexFile *newIndex)
   ringBuffer = NULL;
   backTrace = NULL;
   index = NULL;
+  cRecording Recording(FileName);
+  isPesRecording = Recording.IsPesRecording();
   eof = false;
   firstPacket = true;
   playMode = pmPlay;
@@ -362,10 +373,10 @@ cDvbPlayer::cDvbPlayer(const char *FileName, cTShiftIndexFile *newIndex)
 //M7X0 BEGIN AK
 #ifdef USE_DIRECT_IO
 if(Setup.ReplayUseDirectIO)
-  fileName = new cFileName(FileName, false, true, true);
+  fileName = new cFileName(FileName, false, true, true, isPesRecording);
 else
 #endif
-  fileName = new cFileName(FileName, false);
+  fileName = new cFileName(FileName, false, false, isPesRecording);
 //M7X0 END AK
   if (newIndex)
      replayFile=newIndex->GetReplayFile(fileName);
@@ -382,7 +393,7 @@ else
   else
   {
   // Create the index file:
-  index = new cIndexFile(FileName, false);
+  index = new cIndexFile(FileName, false, isPesRecording);
   if (!index)
      esyslog("ERROR: can't allocate index");
   else if (!index->Ok()) {
@@ -825,7 +836,10 @@ void cDvbPlayer::Forward(void)
             //LOCK_THREAD;
             FasterLockOther();
             Empty();
-            DeviceMute();
+#ifdef TS_PLAYER_BACKPORT
+            if (DeviceIsPlayingVideo())
+#endif
+               DeviceMute();
             playMode = pmFast;
             playDir = pdForward;
             trickSpeed = NORMAL_SPEED;
@@ -878,7 +892,10 @@ void cDvbPlayer::Backward(void)
             //LOCK_THREAD;
             FasterLockOther();
             Empty();
-            DeviceMute();
+#ifdef TS_PLAYER_BACKPORT
+            if (DeviceIsPlayingVideo())
+#endif
+               DeviceMute();
             playMode = pmFast;
             playDir = pdBackward;
             trickSpeed = NORMAL_SPEED;
@@ -957,8 +974,9 @@ void cDvbPlayer::Goto(int Index, bool Still)
      Empty();
      if (++Index <= 0)
         Index = 1; // not '0', to allow GetNextIFrame() below to work!
-     uchar FileNumber;
-     int FileOffset, Length;
+     uint16_t FileNumber;
+     off_t FileOffset;
+     int Length;
      Index = index->GetNextIFrame(Index, false, &FileNumber, &FileOffset, &Length);
      if (Index >= 0 && Still) {
         int r = 0;

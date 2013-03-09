@@ -1349,7 +1349,7 @@ bool cTShiftControl::Impact(cDevice *Device,bool NeedDetach)
 }
 
 
-bool cTShiftIndexFile::Grow(int needed,int FileNumber)
+bool cTShiftIndexFile::Grow(int needed,uint16_t FileNumber)
 {
 	lastFile=FileNumber;
 	if((index)&&(size<maxSize)&&(last+needed>=size))
@@ -1433,9 +1433,9 @@ void cTShiftIndexFile::WriteIndex()
 		realSize=maxSize;
 #if BYTE_ORDER == BIG_ENDIAN
 	for(int j=0;j<realSize;j++)
-		index[j].offset=bswap_32(index[j].offset);
+		index[j].SetOffset(isPesRecording, bswap_32(index[j].Offset(isPesRecording)));
 #endif
-	realSize*=sizeof(tIndex);
+	realSize*=sizeof(tIndexPes);
 	if(safe_write(f,index,realSize)!=realSize)
 	{
 		LOG_ERROR;
@@ -1446,7 +1446,7 @@ void cTShiftIndexFile::WriteIndex()
 	index=NULL;
 	if((f>=0)&&(last+1>=maxSize))
 	{
-		realSize=((last+1)%maxSize)*sizeof(tIndex);
+		realSize=((last+1)%maxSize)*sizeof(tIndexPes);
 		if(lseek(f,realSize,SEEK_SET)!=realSize)
 		{
 			LOG_ERROR;
@@ -1489,7 +1489,7 @@ bool cTShiftIndexFile::ReadIndex()
 			index=NULL;
 			return false;
 		}
-		int toRead=realSize*sizeof(tIndex);
+		int toRead=realSize*sizeof(tIndexPes);
 		if(safe_read(f,index,toRead)!=toRead)
 		{
 			LOG_ERROR;
@@ -1501,7 +1501,7 @@ bool cTShiftIndexFile::ReadIndex()
 		}
 #if BYTE_ORDER == BIG_ENDIAN
 		for(int j=0;j<realSize;j++)
-			index[j].offset=bswap_32(index[j].offset);
+			index[j].SetOffset(isPesRecording, bswap_32(index[j].Offset(isPesRecording)));
 #endif
 	}
 	return true;
@@ -1510,11 +1510,11 @@ bool cTShiftIndexFile::ReadIndex()
 cUnbufferedFile *cTShiftIndexFile::NextFile(cFileName *FileName, bool Record)
 {
 	if(!Record)
-		return FileName->SetOffset((FileName->Number()%MAXFILESPERRECORDING)+1);
-	int FileNumber=FileName->Number();
+		return FileName->SetOffset((FileName->Number()%MAXFILESPERRECORDINGPES)+1);
+	uint16_t FileNumber=FileName->Number();
 	files[FileNumber-1]=last+1;
-	FileNumber%=MAXFILESPERRECORDING;
-	int NextFile=(((FileNumber+1)%MAXFILESPERRECORDING)+1)%MAXFILESPERRECORDING;
+	FileNumber%=MAXFILESPERRECORDINGPES;
+	uint16_t NextFile=(((FileNumber+1)%MAXFILESPERRECORDINGPES)+1)%MAXFILESPERRECORDINGPES;
 	if(files[NextFile])
 		SetFirst(files[NextFile]);
 	if(!files[FileNumber])
@@ -1543,8 +1543,8 @@ void cTShiftIndexFile::RemoveOldFiles(int First)
 	while((files[nextFileToDelete])&&(First>=files[nextFileToDelete]+REMOVEOLDFILESAFETYLIMIT))
 	{
 		files[nextFileToDelete]=0;
-		sprintf(contentFileNumber,RECORDFILESUFFIX,++nextFileToDelete);
-		if(nextFileToDelete==MAXFILESPERRECORDING)
+		sprintf(contentFileNumber,RECORDFILESUFFIXPES,++nextFileToDelete);
+		if(nextFileToDelete==MAXFILESPERRECORDINGPES)
 			nextFileToDelete=0;
 		dsyslog("TShift: removing %s",contentFileName);
 		RemoveSingleVideoFile(contentFileName);
@@ -1621,14 +1621,15 @@ void cTShiftIndexFile::SetFirst(int First)
 	RemoveOldFiles(First);
 }
 
-cTShiftIndexFile::cTShiftIndexFile(const char *FileName):cIndexFile(FileName,true)
+cTShiftIndexFile::cTShiftIndexFile(const char *FileName):cIndexFile(FileName,true,true)
 {
 	maxSize=Setup.TShiftBufferSize*60*FRAMESPERSEC;
 	lastFile=0;
 	current=INT_MAX;
 	first=0;
+	isPesRecording=true;
 	resume=-1;
-	memset(files,0,sizeof(int)*MAXFILESPERRECORDING);
+	memset(files,0,sizeof(int)*MAXFILESPERRECORDINGPES);
 	nextFileToDelete=0;
 	contentFileName=MALLOC(char,strlen(FileName)+RECORDFILESUFFIXLEN);
 	if(!contentFileName)
@@ -1663,7 +1664,7 @@ cTShiftIndexFile::~cTShiftIndexFile()
 {
 	free(contentFileName);
 }
-bool cTShiftIndexFile::Get(int Index, uchar *FileNumber, int *FileOffset, uchar *PictureType, int *Length)
+bool cTShiftIndexFile::Get(int Index, uint16_t *FileNumber, off_t *FileOffset, uchar *PictureType, int *Length)
 {
 	Index=GetCurrent(Index);
 	if(Index<0)
@@ -1671,15 +1672,15 @@ bool cTShiftIndexFile::Get(int Index, uchar *FileNumber, int *FileOffset, uchar 
 	if((index)&&(Index<last))
 	{
 		int realIndex=Index%maxSize;
-		*FileNumber=index[realIndex].number;
-		*FileOffset=index[realIndex].offset;
+		*FileNumber=index[realIndex].Number(isPesRecording);
+		*FileOffset=index[realIndex].Offset(isPesRecording);
 		if(PictureType)
-			*PictureType=index[realIndex].type;
+			*PictureType=index[realIndex].Type(isPesRecording);
 		if(Length)
 		{
 			int nextIndex=(realIndex+1)%maxSize;
-			if(index[nextIndex].number==*FileNumber)
-				*Length=index[nextIndex].offset-*FileOffset;
+			if(index[nextIndex].Number(isPesRecording)==*FileNumber)
+				*Length=off_t(index[nextIndex].Offset(isPesRecording))-*FileOffset;
 			else
 				*Length=-1;
 		}
@@ -1698,7 +1699,7 @@ int cTShiftIndexFile::WaitIndex(int Index)
 }
 
 
-int cTShiftIndexFile::GetNextIFrame(int Index, bool Forward, uchar *FileNumber, int *FileOffset, int *Length, bool StayOffEnd)
+int cTShiftIndexFile::GetNextIFrame(int Index, bool Forward, uint16_t *FileNumber, off_t *FileOffset, int *Length, bool StayOffEnd)
 {
 	for(Index=(Forward?GetNextCurrent(Index+1):GetCurrent(Index-1));Index>=0;Index=(Forward?GetNextCurrent(Index+1):GetCurrent(Index-1)))
 	{
@@ -1708,17 +1709,17 @@ int cTShiftIndexFile::GetNextIFrame(int Index, bool Forward, uchar *FileNumber, 
 			return -1;
 		}
 		int realIndex=Index%maxSize;
-		if(index[realIndex].type==I_FRAME)
+		if(index[realIndex].Type(isPesRecording)==I_FRAME)
 		{
 			if(FileNumber)
-				*FileNumber=index[realIndex].number;
+				*FileNumber=index[realIndex].Number(isPesRecording);
 			if(FileOffset)
-				*FileOffset=index[realIndex].offset;
+				*FileOffset=index[realIndex].Offset(isPesRecording);
 			if(Length)
 			{
 				int nextIndex=(realIndex+1)%maxSize;
-				if(index[nextIndex].number==index[realIndex].number)
-					*Length=index[nextIndex].offset-index[realIndex].offset;
+				if(index[nextIndex].Number(isPesRecording)==index[realIndex].Number(isPesRecording))
+					*Length=off_t(index[nextIndex].Offset(isPesRecording))-off_t(index[realIndex].Offset(isPesRecording));
 				else
 					*Length=-1;
 			}
@@ -1730,9 +1731,9 @@ int cTShiftIndexFile::GetNextIFrame(int Index, bool Forward, uchar *FileNumber, 
 	return -1;
 }
 
-int cTShiftIndexFile::Get(uchar FileNumber, int FileOffset)
+int cTShiftIndexFile::Get(uint16_t FileNumber, off_t FileOffset)
 {
-	int LastFile=lastFile;
+	uint16_t LastFile=lastFile;
 	int i;
 	for(i=0;i<last;i++)
 	{
@@ -1743,23 +1744,30 @@ int cTShiftIndexFile::Get(uchar FileNumber, int FileOffset)
 			return -1;
 		}
 		if(LastFile)
-			if(index[i%maxSize].number<=LastFile)
+			if(index[i%maxSize].Number(isPesRecording)<=LastFile)
 				LastFile=0;
 		int realIndex=i%maxSize;
-		if(((index[realIndex].number>FileNumber)&&(LastFile<FileNumber))||((index[realIndex].number==FileNumber)&&(index[realIndex].offset>=FileOffset)))
+		if(((index[realIndex].Number(isPesRecording)>FileNumber)&&(LastFile<FileNumber))||((index[realIndex].Number(isPesRecording)==FileNumber)&&(off_t(index[realIndex].Offset(isPesRecording))>=FileOffset)))
 			break;
 		UnlockCurrent();
 	}
 	return i;
 }
 
-bool cTShiftIndexFile::Write(uchar PictureType, uchar FileNumber, int FileOffset)
+bool cTShiftIndexFile::Write(uchar PictureType, uint16_t FileNumber, off_t FileOffset)
 {
 	indexLock.Lock();
-	tIndex i={FileOffset,PictureType,FileNumber,0};
+	tIndex i;
+	
+#if BYTE_ORDER == BIG_ENDIAN
+     i.Set(isPesRecording, bswap_32(FileOffset), PictureType, FileNumber);
+#else
+     i.Set(isPesRecording, FileOffset, PictureType, FileNumber);
+#endif
+
 	if(Grow(1,FileNumber))
 	{
-		memcpy(index+((last+1)%maxSize),&i,sizeof(tIndex));
+		memcpy(index+((last+1)%maxSize),&i,sizeof(tIndexPes));
 		last++;
 		indexLock.Unlock();
 		return true;
@@ -1769,9 +1777,6 @@ bool cTShiftIndexFile::Write(uchar PictureType, uchar FileNumber, int FileOffset
 		indexLock.Unlock();
 		return false;
 	}
-#if BYTE_ORDER == BIG_ENDIAN
-	i.offset=bswap_32(i.offset);
-#endif
 	if((!((last+1)%maxSize))&&(last>=0))
 		if(lseek(f,0,SEEK_SET))
 		{
@@ -1781,7 +1786,7 @@ bool cTShiftIndexFile::Write(uchar PictureType, uchar FileNumber, int FileOffset
 			indexLock.Unlock();
 			return false;
 		}
-	if(safe_write(f,&i,sizeof(tIndex))<0)
+	if(safe_write(f,&i,sizeof(tIndexPes))<0)
 	{
 		LOG_ERROR;
 		close(f);
@@ -1794,8 +1799,7 @@ bool cTShiftIndexFile::Write(uchar PictureType, uchar FileNumber, int FileOffset
 	return true;
 }
 
-//M7X0 BEGIN AK
-bool cTShiftIndexFile::Write(sPesResult *Picture,int PictureCount,uchar FileNumber,int FileOffset)
+bool cTShiftIndexFile::Write(sPesResult *Picture,int PictureCount,uint16_t FileNumber,off_t FileOffset)
 {
 	tIndex inds[PictureCount];
 	int count=0;
@@ -1807,10 +1811,16 @@ bool cTShiftIndexFile::Write(sPesResult *Picture,int PictureCount,uchar FileNumb
 	{
 		if(Picture[i].pictureType)
 		{
-			inds[count].offset=FileOffset+Picture[i].offset;
-			inds[count].type=Picture[i].pictureType;
-			inds[count].number=FileNumber;
-			inds[count++].reserved=0;
+
+#if BYTE_ORDER == BIG_ENDIAN
+            inds[count].SetOffset(isPesRecording, bswap_32(FileOffset + Picture[i].offset));
+#else
+            inds[count].SetOffset(isPesRecording, FileOffset + Picture[i].offset);
+#endif
+
+            inds[count].SetType(isPesRecording, Picture[i].pictureType);
+            inds[count].SetNumber(isPesRecording, FileNumber);
+            inds[count++].SetReserved(isPesRecording);
 		}
 	}
 	if(count)
@@ -1821,17 +1831,17 @@ bool cTShiftIndexFile::Write(sPesResult *Picture,int PictureCount,uchar FileNumb
 			{
 				if(realLeft)
 				{
-					memcpy(index+((last+1)%maxSize),inds,realLeft*sizeof(tIndex));
-					memcpy(index,inds+realLeft,(count-realLeft)*sizeof(tIndex));
+					memcpy(index+((last+1)%maxSize),inds,realLeft*sizeof(tIndexPes));
+					memcpy(index,inds+realLeft,(count-realLeft)*sizeof(tIndexPes));
 				}
 				else
 				{
-					memcpy(index,inds,count*sizeof(tIndex));
+					memcpy(index,inds,count*sizeof(tIndexPes));
 				}
 			}
 			else
 			{
-				memcpy(index+((last+1)%maxSize),inds,count*sizeof(tIndex));
+				memcpy(index+((last+1)%maxSize),inds,count*sizeof(tIndexPes));
 			}
 			last+=count;
 			indexLock.Unlock();
@@ -1844,13 +1854,13 @@ bool cTShiftIndexFile::Write(sPesResult *Picture,int PictureCount,uchar FileNumb
 		}
 #if BYTE_ORDER == BIG_ENDIAN
 		for(int i=0;i<count;i++)
-			inds[i].offset=bswap_32(inds[i].offset);
+			inds[i].SetOffset(isPesRecording, bswap_32(inds[i].Offset(isPesRecording)));
 #endif
 		if(count>realLeft)
 		{
 			if(realLeft)
 			{
-				if(safe_write(f,inds,sizeof(tIndex)*realLeft)<0)
+				if(safe_write(f,inds,sizeof(tIndexPes)*realLeft)<0)
 				{
 					LOG_ERROR;
 					close(f);
@@ -1871,7 +1881,7 @@ bool cTShiftIndexFile::Write(sPesResult *Picture,int PictureCount,uchar FileNumb
 		}
 		else
 			realLeft=0;
-		if(safe_write(f,inds+realLeft,sizeof(tIndex)*(count-realLeft))<0)
+		if(safe_write(f,inds+realLeft,sizeof(tIndexPes)*(count-realLeft))<0)
 		{
 			LOG_ERROR;
 			close(f);

@@ -1037,14 +1037,14 @@ int cRingBufferFrameM7x0::ReadReal(cUnbufferedFile *file, uchar *buf, int count)
   return bytesRead;
 }
 
-int cRingBufferFrameM7x0::Read(cUnbufferedFile *file, int FileNr, int Offset, int FrameSize, int Index)
+int cRingBufferFrameM7x0::Read(cUnbufferedFile *file, uint16_t FileNr, off_t Offset, int FrameSize, int Index)
 {
 
   int ReadAHeadCount = readAHeadCount;
-  int CurFileNr = curFileNr;
-  int CurFileOffset = curFileOffset;
-  int readDirectOffset;
-  int readFrameOffset;
+  uint16_t CurFileNr = curFileNr;
+  off_t CurFileOffset = curFileOffset;
+  off_t readDirectOffset;
+  off_t readFrameOffset;
 
   if (CurFileNr == FileNr && CurFileOffset == Offset) {
      readDirectOffset = (Offset + (alignment -1)) & ~(alignment -1);
@@ -1181,7 +1181,7 @@ int cRingBufferFrameM7x0::Read(cUnbufferedFile *file, int FileNr, int Offset, in
   return frameSizeRead;
 }
 
-int cRingBufferFrameM7x0::Read(cFileName *fileName, int FileNr, int Offset, int Size, int Index)
+int cRingBufferFrameM7x0::Read(cFileName *fileName, uint16_t FileNr, off_t Offset, int Size, int Index)
 {
   cUnbufferedFile *file = fileName->SetOffset(FileNr, -1);
   return (file ? Read(file, FileNr, Offset, Size, Index) : 0);
