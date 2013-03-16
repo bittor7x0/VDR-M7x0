@@ -25,6 +25,9 @@
 #include <sys/types.h>
 #include <endian.h>
 #include <byteswap.h>
+#ifdef XVDR_PLUGIN_ENABLE
+#include <stdlib.h>
+#endif
 #ifdef MEMWATCH
 #include "memwatch.h"
 #endif
@@ -445,5 +448,90 @@ public:
   cHash(int Size = HASHSIZE) : cHashBase(Size) {}
   T *Get(unsigned int Id) const { return (T *)cHashBase::Get(Id); }
 };
+
+#ifdef XVDR_PLUGIN_ENABLE
+template<class T> inline T constrain(T v, T l, T h) { return v < l ? l : v > h ? h : v; }
+
+template<class T> class cVector {
+  ///< cVector may only be used for *simple* types, like int or pointers - not for class objects that allocate additional memory!
+private:
+  mutable int allocated;
+  mutable int size;
+  mutable T *data;
+  cVector(const cVector &Vector) {} // don't copy...
+  cVector &operator=(const cVector &Vector) { return *this; } // ...or assign this!
+  void Realloc(int Index) const
+  {
+    if (++Index > allocated) {
+       data = (T *)realloc(data, Index * sizeof(T));
+       if (!data) {
+          esyslog("ERROR: out of memory - abort!");
+          abort();
+          }
+       for (int i = allocated; i < Index; i++)
+           data[i] = T(0);
+       allocated = Index;
+       }
+  }
+public:
+  cVector(int Allocated = 10)
+  {
+    allocated = 0;
+    size = 0;
+    data = NULL;
+    Realloc(Allocated);
+  }
+  virtual ~cVector() { free(data); }
+  T& At(int Index) const
+  {
+    Realloc(Index);
+    if (Index >= size)
+       size = Index + 1;
+    return data[Index];
+  }
+  const T& operator[](int Index) const
+  {
+    return At(Index);
+  }
+  T& operator[](int Index)
+  {
+    return At(Index);
+  }
+  int Size(void) const { return size; }
+  virtual void Insert(T Data, int Before = 0)
+  {
+    if (Before < size) {
+       Realloc(size);
+       memmove(&data[Before + 1], &data[Before], (size - Before) * sizeof(T));
+       size++;
+       data[Before] = Data;
+       }
+    else
+       Append(Data);
+  }
+  virtual void Append(T Data)
+  {
+    if (size >= allocated)
+       Realloc(allocated * 3 / 2); // increase size by 50%
+    data[size++] = Data;
+  }
+  virtual void Remove(int Index)
+  {
+    if (Index < size - 1)
+       memmove(&data[Index], &data[Index + 1], (size - Index) * sizeof(T));
+    size--;
+  }
+  virtual void Clear(void)
+  {
+    for (int i = 0; i < size; i++)
+        data[i] = T(0);
+    size = 0;
+  }
+  void Sort(__compar_fn_t Compare)
+  {
+    qsort(data, size, sizeof(T), Compare);
+  }
+  };
+#endif
 
 #endif //__TOOLS_H
