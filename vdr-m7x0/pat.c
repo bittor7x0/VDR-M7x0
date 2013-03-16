@@ -392,7 +392,7 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                       for (SI::Loop::Iterator it; (d = stream.streamDescriptors.getNext(it)); ) {
                           switch (d->getDescriptorTag()) {
                             case SI::AC3DescriptorTag:
-                            case SI::EAC3DescriptorTag:
+                            case SI::EnhancedAC3DescriptorTag:
                                  dpid = stream.getPid();
                                  dppid = d->getDescriptorTag();
                                  ProcessCaDescriptors = true;

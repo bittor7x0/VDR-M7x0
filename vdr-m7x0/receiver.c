@@ -11,6 +11,16 @@
 #include <stdio.h>
 #include "tools.h"
 
+#ifdef XVDR_PLUGIN_ENABLE
+cReceiver::cReceiver(const cChannel *Channel, int Priority)
+{
+  device = NULL;
+  priority = constrain(Priority, MINPRIORITY, MAXPRIORITY);
+  numPids = 0;
+  SetPids(Channel);
+}
+#endif
+
 cReceiver::cReceiver(int Ca, int Priority, int Pid, const int *Pids1, const int *Pids2, const int *Pids3, int Pid2, int Pid3)
 {
   device = NULL;
@@ -53,6 +63,51 @@ cReceiver::~cReceiver()
      *(char *)0 = 0; // cause a segfault
      }
 }
+
+#ifdef XVDR_PLUGIN_ENABLE
+bool cReceiver::AddPid(int Pid)
+{
+  if (Pid) {
+     if (numPids < MAXRECEIVEPIDS)
+        pids[numPids++] = Pid;
+     else {
+        dsyslog("too many PIDs in cReceiver (Pid = %d)", Pid);
+        return false;
+        }
+     }
+  return true;
+}
+
+bool cReceiver::AddPids(const int *Pids)
+{
+  if (Pids) {
+     while (*Pids) {
+           if (!AddPid(*Pids++))
+              return false;
+           }
+     }
+  return true;
+}
+
+bool cReceiver::AddPids(int Pid1, int Pid2, int Pid3, int Pid4, int Pid5, int Pid6, int Pid7, int Pid8, int Pid9)
+{
+  return AddPid(Pid1) && AddPid(Pid2) && AddPid(Pid3) && AddPid(Pid4) && AddPid(Pid5) && AddPid(Pid6) && AddPid(Pid7) && AddPid(Pid8) && AddPid(Pid9);
+}
+
+bool cReceiver::SetPids(const cChannel *Channel)
+{
+  numPids = 0;
+  if (Channel) {
+     channelID = Channel->GetChannelID();
+     return AddPid(Channel->Vpid()) &&
+            (Channel->Ppid() == Channel->Vpid() || AddPid(Channel->Ppid())) &&
+            AddPids(Channel->Apids()) &&
+            AddPids(Channel->Dpids()) &&
+            AddPids(Channel->Spids());
+     }
+  return true;
+}
+#endif
 
 bool cReceiver::WantsPid(int Pid)
 {
