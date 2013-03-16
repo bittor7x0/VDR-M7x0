@@ -77,6 +77,10 @@ $$1 ~ /^\/?etc\/systemtype/ || \
 $$1 ~ /^\/?etc\/hostname/ || \
 $$1 ~ /^\/?etc\/.*\.conf/ || \
 $$1 ~ /^\/?etc\/usbautomounter$$/ || \
+$$1 ~ /^\/?etc\/mediatomb$$/ || \
+$$1 ~ /^\/?etc\/mediatomb\/config.xml/ || \
+$$1 ~ /^\/?etc\/mediatomb\/mappings.xml/ || \
+$$1 ~ /^\/?etc\/mediatomb\/mediatomb.db/ || \
 $$1 ~ /^\/?etc\/samba$$/ || \
 $$1 ~ /^\/?etc\/webif$$/ || \
 $$1 ~ /^\/?etc\/ssmtp$$/ || \
@@ -87,7 +91,8 @@ $$1 ~ /^\/?etc\/vdr\/plugins\/epgsearch$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/filebrowser$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/channellists$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/scheduler$$/ || \
-$$1 ~ /^\/?etc\/vdr\/plugins\/streamdev$$/
+$$1 ~ /^\/?etc\/vdr\/plugins\/streamdev$$/ || \
+$$1 ~ /^\/?etc\/vdr\/plugins\/xvdr$$/
 endef
 
 AWK_LST_TRANS_PRG_COPY := '$$1 !~ /^\/?etc\// || $(call awk_rootfs_lst_trans_prg) \
