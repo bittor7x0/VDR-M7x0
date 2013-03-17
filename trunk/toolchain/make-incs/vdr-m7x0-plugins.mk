@@ -114,6 +114,12 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 			exit 1; \
 		fi; \
 	fi; \
+	if [ -f $(VDR_DIR)/PLUGINS/src/markad/Makefile ]; then \
+		if [ X"$(CONFIG_MARKAD)" != X"y" ]; then \
+			$(ECHO) dependency error: markad plugin needs markad program enabled; \
+			exit 1; \
+		fi; \
+	fi; \
 	if [ -f $(VDR_DIR)/PLUGINS/src/epgsearch/Makefile ]; then \
 		if [ -f $(VDR_DIR)/PLUGINS/src/pin/Makefile ]; then \
 			$(SED) -i -e 's,^#USE_PINPLUGIN = 1,USE_PINPLUGIN = 1,g' \

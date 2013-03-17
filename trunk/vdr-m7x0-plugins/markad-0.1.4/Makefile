@@ -21,8 +21,8 @@ CXXFLAGS ?= -fPIC -g -O2 -Wall -Wextra -Woverloaded-virtual -Wno-parentheses
 
 ### The directory environment:
 
-VDRDIR = ../../../..
-LIBDIR = ../../../lib
+VDRDIR ?= ../../../..
+LIBDIR ?= ../../../lib
 TMPDIR = /tmp
 
 ### Make sure that necessary options are included:
@@ -51,7 +51,7 @@ DEFINES += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o status.o menu.o setup.o 
+OBJS = $(PLUGIN).o status.o menu.o setup.o i18n.o
 
 ### The main target:
 
@@ -96,6 +96,10 @@ $(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
 .PHONY: i18n
 i18n: $(I18Nmsgs) $(I18Npot)
 
+generate-i18n: i18n-template.h $(I18Npot) $(I18Npo) buildutil/pot2i18n.pl
+	@chmod +x buildutil/pot2i18n.pl
+	buildutil/pot2i18n.pl $(I18Npot) i18n-template.h > i18n-generated.h
+
 ### Targets:
 
 install: all 
@@ -106,4 +110,4 @@ libvdr-$(PLUGIN).so: $(OBJS)
 	cp --remove-destination libvdr-$(PLUGIN).so $(LIBDIR)/libvdr-$(PLUGIN).so.$(APIVERSION)
 
 clean:
-	@-rm -f $(OBJS) $(DEPFILE) *.so *.so.* *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot
+	@-rm -f $(OBJS) $(DEPFILE) *.so *.so.* *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot pod2*.tmp
