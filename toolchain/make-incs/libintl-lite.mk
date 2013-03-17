@@ -87,6 +87,8 @@ $(STAGEFILES_DIR)/.libintl-lite_compiled: $(STAGEFILES_DIR)/.libintl-lite_patche
 $(STAGEFILES_DIR)/.libintl-lite_installed: $(STAGEFILES_DIR)/.libintl-lite_compiled
 	$(CP) $(LIBINTL-LITE_DIR)/libintl.h $(TARGET_ROOT)/usr/include/libintl.h
 	$(CP) $(LIBINTL-LITE_DIR)/libintl.so.1.0.0 $(TARGET_ROOT)/usr/lib/libintl.so.1.0.0
+	$(LN) -sf $(TARGET_ROOT)/usr/lib/libintl.so.1.0.0 $(TARGET_ROOT)/usr/lib/libintl.so
+	$(LN) -sf $(TARGET_ROOT)/usr/lib/libintl.so.1.0.0 $(TARGET_ROOT)/usr/lib/libintl.so.1
 	$(TOUCH) $(STAGEFILES_DIR)/.libintl-lite_installed
 
 
