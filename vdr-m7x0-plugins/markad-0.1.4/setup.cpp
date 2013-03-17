@@ -5,6 +5,7 @@
  *
  */
 
+#include "i18n.h"
 #include "setup.h"
 
 cSetupMarkAd::cSetupMarkAd(struct setup *Setup)

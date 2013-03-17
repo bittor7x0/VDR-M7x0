@@ -11,8 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <vdr/i18n.h>
 #include <vdr/plugin.h>
 
+#include "i18n.h"
 #include "markad.h"
 
 #define DEF_BINDIR "/usr/bin"
@@ -113,6 +115,7 @@ bool cPluginMarkAd::ProcessArgs(int argc, char *argv[])
 bool cPluginMarkAd::Initialize(void)
 {
     // Initialize any background activities the plugin shall perform.
+    RegisterI18n(Phrases);
     char *path;
     if (asprintf(&path,"%s/markad",bindir)==-1) return false;
     struct stat statbuf;

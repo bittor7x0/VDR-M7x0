@@ -10,23 +10,23 @@ msgstr ""
 "Language-Team: Spanish <vdr@linuxtv.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Spanish\n"
 "X-Poedit-Country: SPAIN\n"
-"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SourceCharset: ISO-8859-15\n"
 
 msgid "markad still running"
-msgstr "Markad todav√≠a ejecut√°ndose"
+msgstr "Markad todavÌa ejecut·ndose"
 
 msgid "markad status"
 msgstr "Estado de markad"
 
 msgid "running"
-msgstr "Ejecut√°ndose"
+msgstr "Ejecut·ndose"
 
 msgid "sleeping"
-msgstr "En suspensi√≥n"
+msgstr "En suspensiÛn"
 
 msgid "inactive"
 msgstr "Inactivo"
@@ -41,49 +41,49 @@ msgid "unknown"
 msgstr "Desconocido"
 
 msgid "Recording\t Status"
-msgstr "Grabaci√≥n\t Estado"
+msgstr "GrabaciÛn\t Estado"
 
 msgid "no running markad found"
-msgstr "Ning√∫n markad en ejecuci√≥n"
+msgstr "Ning˙n markad en ejecuciÛn"
 
 msgid "Pause"
-msgstr "Pausa"
+msgstr "Pausar"
 
 msgid "Continue"
 msgstr "Continuar"
 
 msgid "after"
-msgstr "Despu√©s"
+msgstr "despuÈs"
 
 msgid "during"
-msgstr "Durante"
+msgstr "durante"
 
 msgid "execution"
-msgstr "Ejecuci√≥n"
+msgstr "EjecuciÛn"
 
 msgid "  during another recording"
-msgstr "  Durante otra grabaci√≥n"
+msgstr "  Durante otra grabaciÛn"
 
 msgid "  while replaying"
-msgstr "  Durante la reproducci√≥n"
+msgstr "  Durante la reproducciÛn"
 
 msgid "scan only channels with logo"
-msgstr "Escanea √∫nicamente canales con logo"
+msgstr "Escanea solamente canales con logo"
 
 msgid "deferred shutdown"
-msgstr ""
+msgstr "Apagado retrasado"
 
 msgid "ignore timer margins"
-msgstr "Ignora m√°rgenes de tiempo"
+msgstr "Ignorar m·rgenes de tiempo"
 
 msgid "detect overlaps"
 msgstr "Detectar solapamientos"
 
 msgid "recreate index"
-msgstr ""
+msgstr "Recrear archivo Ìndice"
 
 msgid "correct info file"
-msgstr "Corrige fichero de informaci√≥n"
+msgstr "Corregir archivo de informaciÛn"
 
 msgid "OSD message"
 msgstr "Mensaje OSD"
@@ -92,10 +92,10 @@ msgid "verbose logging"
 msgstr "Log detallado"
 
 msgid "log to recording directory"
-msgstr "Log en el directorio de grabaci√≥n"
+msgstr "Log en el directorio de grabaciÛn"
 
 msgid "hide mainmenu entry"
-msgstr "Ocultar en men√∫ principal"
+msgstr "Ocultar en men˙ principal"
 
 msgid "show list"
 msgstr "Mostrar lista"
@@ -104,7 +104,7 @@ msgid "list"
 msgstr "Lista"
 
 msgid "back"
-msgstr "Atr√°s"
+msgstr "Atr·s"
 
 msgid "Mark advertisements"
 msgstr "Marca anuncios"

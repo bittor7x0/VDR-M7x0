@@ -65,8 +65,8 @@ cMenuMarkAd::cMenuMarkAd(cStatusMarkAd *Status):cOsdMenu(tr("markad status"),15)
     }
     if (!width) width=Setup.OSDWidth;
 
-    int AvgCharWidth = Setup.FontOsdSize * 3 / 5; // see skins.c
-    if (AvgCharWidth<1) AvgCharWidth=1;
+    int AvgCharWidth = 1; //Setup.FontOsdSize * 3 / 5; // see skins.c
+    //if (AvgCharWidth<1) AvgCharWidth=1;
     int tab=(width-10*AvgCharWidth)/AvgCharWidth;
     SetCols(tab);
 
