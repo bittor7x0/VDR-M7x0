@@ -1,0 +1,98 @@
+xvdr-plugin for m740av is based on vdr-plugin-xvdr 0.96
+  https://github.com/pipelka/vdr-plugin-xvdr/tree/ba9187f93a88b49401e4e6fed7985dce32e23777
+  (Makefile from older vdr-plugin-xvdr)
+
+OPTIONS in toolchain .config
+  CONFIG_LIBICONV = y
+  CONFIG_SQUASHFS_LZMA = y (because squashfs was too big)
+  CONFIG_STRACE = y (for debugging)
+
+vdr-ng-em/build/vdr-m7x0/Make.config
+DEFINES += -DXVDR_PLUGIN_ENABLE -> must be enabled for xvdr-plugin (includes vdr changes for xvdr-plugin)
+# DEFINES += -DXVDR_PLUGIN_TODO -> don't use this (purpose: testing of not working functions)
+
+*.conf
+- allowed_hosts.conf and xvdr.conf need to be copied from vdr-ng-em/build/vdr-m7x0-PLUGINS/xvdr/xvdr/ to /etc/vdr/plugins/xvdr/
+- allowed_hosts.conf needs to be modified (see streamdevhosts.conf)
+
+*******************************************************************************
+*******************************************************************************
+*******************************************************************************
+
+- CHANGES outside xvdr-plugin (added / copy'n'paste from vdr 1.7.3):
+
+  libsi/si.h: EnhancedAC3DescriptorTag = 0x7A
+  libsi/si.h: DTSDescriptorTag = 0x7B
+  libsi/si.h: AACDescriptorTag = 0x7C
+  libsi/si.h: ExtensionDescriptorTag = 0x7F
+
+  vdr/config.h: #define MINPRIORITY    (-MAXPRIORITY)
+
+  vdr/receiver.c: bool AddPid
+  vdr/receiver.c: bool SetPids
+  vdr/receiver.c: cReceiver::cReceiver(const cChannel *Channel, int Priority)
+
+  vdr/receiver.h: cReceiver(...)
+  vdr/receiver.h: bool AddPid
+  vdr/receiver.h: bool SetPids
+  vdr/receiver.h: bool IsAttached
+
+  vdr/remux.h: Some TS handling tools
+
+  vdr/tools.h: #include <stdlib.h>
+  vdr/tools.h: template<class T> class cVector
+
+*******************************************************************************
+*******************************************************************************
+*******************************************************************************
+
+- CHANGES xvdr-plugin
+  src/net/msgpacket.c: byte order operations for big endian added
+
+  src/demuxer/demuxer_LATM.c: #include <stdlib.h> added
+
+  src/xvdr/xvdrclient.c: cXVDRClient::CreateServiceReference
+                         hash = 0xEEEE0000; // set to IsTerr -> Problem for m750 sat user!?
+                         some lines: #ifdef XVDR_PLUGIN_TODO
+  src/xvdr/xvdrclient.c: Printday function modified
+
+  src/xvdr/xvdrclient.h: #include "compatibility/compatibility.h"
+  src/xvdr/xvdrclient.h: #define trVDR(s) tr(s) added
+
+  src/live/livestreamer.c: cLiveStreamer::StreamChannel
+                           cDevice::GetDevice
+                           some lines: #ifdef XVDR_PLUGIN_TODO
+  src/live/livestreamer.c: cLiveStreamer::RequestSignalInfo
+                           some lines: #ifdef XVDR_PLUGIN_TODO
+
+  src/live/channelcache.c: cChannelCache::AddToCache
+                           some lines: #ifdef XVDR_PLUGIN_TODO
+
+*******************************************************************************
+*******************************************************************************
+*******************************************************************************
+
+- additional files for UTF8 support
+  src/compatibility/common.h
+  src/compatibility/compatibility.h
+  src/compatibility/compatibility.c
+
+*******************************************************************************
+*******************************************************************************
+*******************************************************************************
+
+- Makefile (from older xvdr plugin):
+  src/xvdr/xvdrchannels.o added in OBJS section
+  src/demuxer/streaminfo.o added in OBJS section
+  src/compatibility/compatibility.o" added in OBJS section
+  "?=" instead of "=" for CXXFLAGS and DVBDIR
+  "g++" replaced with "$(CXX)"
+
+*******************************************************************************
+*******************************************************************************
+*******************************************************************************
+
+- vdr-ng-em/build/vdr-m7x0/Make.config
+  DEFINES += -DXVDR_PLUGIN_ENABLE
+  # DEFINES += -DXVDR_PLUGIN_TODO
+
