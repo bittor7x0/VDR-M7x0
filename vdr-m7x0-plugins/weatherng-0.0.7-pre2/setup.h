@@ -18,7 +18,6 @@ struct cWetterSetup
 {
 public:
  cWetterSetup(void);
- int w_update;
  int w_left;
  int w_top;
  int w_width;

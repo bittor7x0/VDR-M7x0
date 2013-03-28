@@ -677,15 +677,13 @@ void cWetterOsd::Show(void)
 			} else {
 				perror(sat_file.c_str());
 
-				osd->DrawText(22, OSDHEIGHT - (7 * row_y), tr("ERROR : NO VAILD DATA"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
-				osd->DrawText(22, OSDHEIGHT - (6 * row_y), tr("PRESS OK to download/update data"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
+				osd->DrawText(22, OSDHEIGHT - (7 * row_y), tr("ERROR : NO VALID DATA"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
+				osd->DrawText(22, OSDHEIGHT - (6 * row_y), tr("PRESS OK to download/update data/radarmaps"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 
 				osd->DrawText(22, OSDHEIGHT - (5 * row_y), tr("Path to weatherdata is :"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 				osd->DrawText(22, OSDHEIGHT - (4 * row_y), DataDir, wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 
-				osd->DrawText(22, OSDHEIGHT - (3 * row_y), tr("Do you have vaild values in setup ?"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
-				//osd->DrawText(22, OSDHEIGHT - (2 * row_y), tr("Path to weatherng.sh is :"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
-				//osd->DrawText(22, OSDHEIGHT - row_y, ScriptDir, wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
+				osd->DrawText(22, OSDHEIGHT - (3 * row_y), tr("Do you have valid values in setup ?"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 
 				esyslog("ERROR : weatherng: Nowalid city name in XML !\n");
 				osd->Flush();
@@ -694,14 +692,12 @@ void cWetterOsd::Show(void)
 			perror(sat_file.c_str());
 
 			osd->DrawText(22, OSDHEIGHT - (7 * row_y), tr("ERROR : NO DATA"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
-			osd->DrawText(22, OSDHEIGHT - (6 * row_y), tr("PRESS OK to download/update data"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
+			osd->DrawText(22, OSDHEIGHT - (6 * row_y), tr("PRESS OK to download/update data/radarmaps"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 
 			osd->DrawText(22, OSDHEIGHT - (5 * row_y), tr("Path to weatherdata is :"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 			osd->DrawText(22, OSDHEIGHT - (4 * row_y), DataDir, wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 
 			osd->DrawText(22, OSDHEIGHT - (3 * row_y), tr("Please check IP/Gate configuration"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
-			//osd->DrawText(22, OSDHEIGHT - (2 * row_y), tr("Path to weatherng.sh is :"), wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
-			//osd->DrawText(22, OSDHEIGHT - row_y, ScriptDir, wetterTheme[wetterSetup.w_theme].clrFgText,clrTransparent,font);
 
 			esyslog("ERROR : weatherng: %s don't exist !\n", sat_file.c_str());
 			osd->Flush();

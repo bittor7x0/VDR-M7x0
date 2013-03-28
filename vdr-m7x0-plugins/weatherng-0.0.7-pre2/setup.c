@@ -4,7 +4,6 @@ cWetterSetup wetterSetup;
 
 cWetterSetup::cWetterSetup(void)
 {
-	w_update = 0;
 #ifdef HAVE_4MB
 	// 4 MB FF-CARD
 	////	w_left         =  50;

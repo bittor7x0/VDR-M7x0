@@ -25,7 +25,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Weather.com: Weather forecast",
     "Weather.com: 10 Tage Wettervorhersage",
@@ -43,7 +43,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Weather",
     "Wetter",
@@ -61,7 +61,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "ERROR : NO DATA",
     "FEHLER : KEINE DATEN VORHANDEN",
@@ -73,13 +73,49 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Virhe: Sффtietoja ei saatavilla!",
     "",// TODO
-    "No hay datos",
+    "Error: No hay datos",
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
+  },
+  { "ERROR : NO VALID DATA",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Error: No hay datos vсlidos",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
+  { "Do you have valid values in setup ?",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "ПHay datos vсlidos en la configuraciѓn?",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
   },
   { "PRESS OK to download/update data/radarmaps",
     "TASTE OK druecken um Daten zu aktualisieren",
@@ -97,43 +133,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
-  },
-  { "Have you edited weatherng.sh ?",
-    "Wurde weatherng.sh editiert ?",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
     "",
-    "",// TODO
-    "Olethan muokannut weatherng.sh:n toimivaksi?",
-    "",// TODO
-    "ПHas editado weather.sh?",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "Привет!",
-  },
-  { "Path to weatherng.sh is :",
-    "Pfad zu weatherng.sh ist :",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",
-    "",// TODO
-    "Weatherng.sh:n sijainti:",
-    "",// TODO
-    "La ruta a weather.sh es: ",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "Привет!",
   },
   { "Path to weatherdata is :",
     "Pfad zu den Wetterdaten ist :",
@@ -151,7 +151,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Sunset: ",
     "Sonnenuntergang: ",
@@ -169,7 +169,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Sunrise: ",
     "Sonnenaufgang: ",
@@ -187,7 +187,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Weather: ",
     "Wetter: ",
@@ -205,7 +205,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Low temperature: ",
     "Tiefsttemperatur: ",
@@ -223,7 +223,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "High temperature: ",
     "Hіchsttemperatur: ",
@@ -241,7 +241,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Weather for: ",
     "Wetter fќr: ",
@@ -259,7 +259,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Wind comes from: ",
     "Wind kommt von: ",
@@ -277,7 +277,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Wind speed: ",
     "Windgeschwind.: ",
@@ -295,7 +295,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { " km/h",
     " km/h",
@@ -313,7 +313,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Humitidy: ",
     "max. Luftfeuchte: ",
@@ -331,7 +331,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Precipitation: ",
     "Niederschlag: ",
@@ -349,7 +349,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { " %",
     " %",
@@ -367,7 +367,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "АC",
     "АC",
@@ -385,25 +385,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
-  },
-  { "Update data on start",
-    "Update von Daten bei Start",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
     "",
-    "",// TODO
-    "Pфivitф sффtiedot kфynnistettфessф",
-    "",// TODO
-    "Actualizar datos al arranque de VDR",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "Привет!",
   },
   { "Radarbitmap left",
     "Radarbild von links",
@@ -421,7 +403,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Radarbitmap top",
     "Radarbild von oben",
@@ -439,7 +421,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Radarbitmap width",
     "Radarbild Breite",
@@ -457,7 +439,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Radarbitmap height",
     "Radarbild Hіhe",
@@ -475,7 +457,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Use 256 colors for radarmaps",
     "Radarbilder mit 256 Farben",
@@ -493,7 +475,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Use small fonts",
     "Kleine Schriftart nutzen",
@@ -511,7 +493,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Classic",
     "Klassisch",
@@ -529,7 +511,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "enElchi",
     "enElchi",
@@ -547,7 +529,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Moronimo",
     "Moronimo",
@@ -565,7 +547,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "DeepBlue",
     "DeepBlue",
@@ -583,7 +565,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Enigma",
     "Enigma",
@@ -601,7 +583,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "SilverGreen",
     "SilverGreen",
@@ -619,7 +601,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "MoronimoMKII",
     "MoronimoMKII",
@@ -637,43 +619,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
-  },
-  { "MoronimoMKIII",
-    "MoronimoMKIII",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "MoronimoMKIII",
-    "",// TODO
-    "MoronimoMKIII",
-    "",// TODO
-    "MoronimoMKIII",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "Привет!",
-  },
-  { "MoronimoMKIV",
-    "MoronimoMKIV",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "MoronimoMKIV",
-    "",// TODO
-    "MoronimoMKIV",
-    "",// TODO
-    "MoronimoMKIV",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "Привет!",
+    "",
   },
   { "Theme",
     "Farbschema",
@@ -691,25 +637,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
-  },
-  { "Height",
-    "Hіhe",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "Hauteur",
-    "",// TODO
-    "Korkeus",
-    "",// TODO
-    "Altura",
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "",// TODO
-    "Привет!",
+    "",
   },
   { "Offset horizontal",
     "Offset horizontal",
@@ -727,7 +655,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Offset vertical",
     "Offset vertikal",
@@ -745,7 +673,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Symbols inverted",
     "Invertierte Symbole",
@@ -763,7 +691,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Corner rounded",
     "Abgerundete Ecken",
@@ -781,7 +709,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "DAY",
     "TAGSмBER",
@@ -799,7 +727,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "NIGHT",
     "NACHTS",
@@ -817,7 +745,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Monday",
     "Montag",
@@ -835,7 +763,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Tuesday",
     "Dienstag",
@@ -853,7 +781,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Wednesday",
     "Mittwoch",
@@ -871,7 +799,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Thursday",
     "Donnerstag",
@@ -889,7 +817,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Friday",
     "Freitag",
@@ -907,7 +835,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Saturday",
     "Samstag",
@@ -925,7 +853,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Sunday",
     "Sonntag",
@@ -943,7 +871,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Sunny",
     "sonnig",
@@ -961,7 +889,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Rain",
     "Regen",
@@ -979,7 +907,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Thunder",
     "Gewitter",
@@ -997,7 +925,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Cloudy",
     "bewіlkt",
@@ -1015,7 +943,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Mostly Cloudy",
     "meist bewіlkt",
@@ -1033,7 +961,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "PM T-Storms",
     "nachmittags Gewitter",
@@ -1051,7 +979,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "AM T-Storms",
     "vormittags Gewitter",
@@ -1069,7 +997,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Light Rain",
     "leichter Regen",
@@ -1087,7 +1015,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Snow",
     "Schnee",
@@ -1105,7 +1033,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Showers",
     "Regenschauer",
@@ -1123,7 +1051,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "AM Showers",
     "vormittags Schauer",
@@ -1141,7 +1069,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "PM Showers",
     "nachmittags Schauer",
@@ -1159,7 +1087,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Scattered Showers",
     "vereinzelt Schauer",
@@ -1177,7 +1105,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Rain / Thunder",
     "Regen / Gewitter",
@@ -1195,7 +1123,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Rain / Wind",
     "Regen / Windig",
@@ -1213,7 +1141,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Mostly Clear",
     "meist klar",
@@ -1231,7 +1159,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Haze",
     "dunstig",
@@ -1249,7 +1177,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Fog",
     "Nebel",
@@ -1267,7 +1195,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Wind",
     "windig",
@@ -1285,7 +1213,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Fair",
     "trocken",
@@ -1303,7 +1231,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Clear",
     "heiter",
@@ -1321,7 +1249,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Windy",
     "windig",
@@ -1339,7 +1267,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Drizzle",
     "Nieselregen",
@@ -1357,7 +1285,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Freezing",
     "Frost",
@@ -1375,7 +1303,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "M Cloudy",
     "meist bewіlkt",
@@ -1393,7 +1321,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Partly Cloudy",
     "teilweise bewіlkt",
@@ -1411,7 +1339,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "M Clear",
     "meist klar",
@@ -1429,7 +1357,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "N/A",
     "keine Angaben",
@@ -1447,7 +1375,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Mostly Sunny",
     "meist sonnig",
@@ -1465,7 +1393,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Partly Cloudy",
     "teilweise bewіlkt",
@@ -1483,7 +1411,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Showers Late",
     "Regen spфt",
@@ -1501,7 +1429,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "AM Clouds / PM Sun",
     "vormittags bewіlkt / nachmittags Sonne",
@@ -1519,7 +1447,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
 
   { "Scattered T-Storms",
@@ -1538,7 +1466,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Overcast",
     "bewіlkt",
@@ -1556,7 +1484,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Fog",
     "Nebel",
@@ -1574,7 +1502,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Mist",
     "Nebel",
@@ -1592,7 +1520,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
   { "Maze",
     "",
@@ -1610,7 +1538,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Storm",
     "Sturm",
@@ -1628,7 +1556,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Snow",
     "Schnee",
@@ -1646,7 +1574,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Light Rain",
     "Leichter Regen",
@@ -1664,7 +1592,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Light Snow",
     "Leichter Schnee",
@@ -1682,7 +1610,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Few Snow",
     "wenig Schnee",
@@ -1700,7 +1628,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Clear",
     "Klar",
@@ -1718,7 +1646,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Light Drizzle",
     "wenig Nieselregen",
@@ -1736,7 +1664,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Scattered",
     "vereinzelt",
@@ -1754,7 +1682,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Smoke",
     "dichter Nebel",
@@ -1772,7 +1700,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Drifting Snow",
     "starkes Schneetreiben",
@@ -1790,7 +1718,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "steady",
     "",
@@ -1808,7 +1736,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "rising",
     "",
@@ -1826,7 +1754,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "falling",
     "",
@@ -1844,7 +1772,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Unlimited",
     "",
@@ -1862,7 +1790,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Showers in the Vicinity",
     "",
@@ -1880,7 +1808,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Waning Crescent",
     "",
@@ -1898,7 +1826,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Waxing Crescent",
     "",
@@ -1916,7 +1844,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Waxing Gibbous",
     "",
@@ -1934,7 +1862,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Waning Gibbous",
     "",
@@ -1952,7 +1880,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "T-Storms",
     "stќrmisches Gewitter",
@@ -1970,7 +1898,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "T-Storms Early",
     "zunфchst schweres Gewitter",
@@ -1988,7 +1916,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Light Rain Early",
     "zunфchst leichter Regen",
@@ -2006,7 +1934,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Showers Early",
     "zunфchst Regenschauer",
@@ -2024,7 +1952,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Cloudly Early",
     "zunфchst bewіlkt",
@@ -2042,7 +1970,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "PM Light Rain",
     "nachmittags leicht regnerisch",
@@ -2060,7 +1988,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "AM Light Rain",
     "vormittags leicht regnerisch",
@@ -2078,7 +2006,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Light Rain Late",
     "spфter leicht regnerisch",
@@ -2096,7 +2024,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
     { "Few Showers",
     "vereinzelte Schauer",
@@ -2114,7 +2042,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Привет!",
+    "",
   },
       { "Weather station 1",
       "",
@@ -2132,7 +2060,7 @@ const tI18nPhrase Phrases[] = {
       "",// TODO
       "",// TODO
       "",// TODO
-      "Привет!",
+      "",
   },
       { "Weather station 2",
       "",// TODO
@@ -2150,7 +2078,7 @@ const tI18nPhrase Phrases[] = {
       "",// TODO
       "",// TODO
       "",// TODO
-      "Привет!",
+      "",
   },
       { "Weather station 3",
       "",// TODO
@@ -2168,7 +2096,25 @@ const tI18nPhrase Phrases[] = {
       "",// TODO
       "",// TODO
       "",// TODO
-      "Привет!",
+      "",
+  },
+      { "Please check IP/Gate configuration",
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "Comprueba la configuraciѓn de red",
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",// TODO
+      "",
   },
   { NULL }
   };
