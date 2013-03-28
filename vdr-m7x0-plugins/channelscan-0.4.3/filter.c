@@ -575,7 +575,7 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                    case 0xC3: // some french channels like kiosk
                         {
                         // Add only radio 
-                          if ((sd->getServiceType()==1 || sd->getServiceType()==0x11 || sd->getServiceType()==0xC3) && AddServiceType == 1) 
+                          if ((sd->getServiceType()==1 || sd->getServiceType()==0x11 || sd->getServiceType()==0x19 || sd->getServiceType()==0xC3) && AddServiceType == 1) 
                           { 
                              printf(" Add nur Radio  aber nur TV Sender gefunden  SID skip %d \n",sd->getServiceType());  
                              break;
@@ -598,21 +598,22 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                           mutexNames.Lock();
                           switch(sd->getServiceType())
                           {
-                             case 1: tvChannelNames.push_back(NameBuf); // if service wanted 
+                             case 0x01:
+                             case 0x11:
+                             case 0x19:
+                             case 0xC3:
+                                     tvChannelNames.push_back(NameBuf); // if service wanted 
                                      #ifdef DEBUG_CHANNELSCAN 
                                      tvChannelList.push_back(NameBuf);
                                      #endif
                                      break;
-                             case 2: radioChannelNames.push_back(NameBuf); // if serive wanted 
+                             case 0x02:
+                                     radioChannelNames.push_back(NameBuf); // if service wanted 
                                      #ifdef DEBUG_CHANNELSCAN 
                                      radioChannelList.push_back(NameBuf);
                                      #endif
                                      break;
-                             default : dataChannelNames.push_back(NameBuf);
-                                     #ifdef DEBUG_CHANNELSCAN 
-                                     dataChannelList.push_back(NameBuf);
-                                     #endif
-                                     break;
+                             default: ;
                           }
                           mutexNames.Unlock();
                     

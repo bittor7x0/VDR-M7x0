@@ -33,12 +33,10 @@
 extern cMutex mutexNames;
 extern std::vector<std::string> tvChannelNames;
 extern std::vector<std::string> radioChannelNames;
-extern std::vector<std::string> dataChannelNames;
 
 #ifdef DEBUG_CHANNELSCAN
 extern std::vector<std::string> tvChannelList;
 extern std::vector<std::string> radioChannelList;
-extern std::vector<std::string> dataChannelList;
 #endif 
 
 // --- cMenuChannelscan  ----------------------------------------------------
