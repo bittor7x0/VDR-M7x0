@@ -154,7 +154,7 @@ void cMenuDVBmon::Setup()
    }
    
    search = frequencies.find(freq);   
-   snprintf(buf, sizeof(buf), "Tuner 1: %6.1fMHz  %s", freq*1e-6, (search == frequencies.end() ? "empty channel list" : search->second.channels) );
+   snprintf(buf, sizeof(buf), tr("Tuner 1: %6.1fMHz  %s"), freq*1e-6, (search == frequencies.end() ? tr("empty channel list") : search->second.channels) );
    Add(new cMenuTextInfo(buf));
    Add(new cMenuStatusBar(150, getSignal(fd_frontend0), 1));
 	Add(new cMenuStatusBar(25 , getBER(fd_frontend0),    2));
@@ -177,10 +177,10 @@ void cMenuDVBmon::Setup()
    curBER    = getBER(fd_frontend1);
    
    if (!deviceAvailable) {
-      Add(new cMenuTextInfo("Tuner 2 not available!"));
+      Add(new cMenuTextInfo(tr("Tuner 2 not available!")));
       SetHelp(tr("Button$Done"), NULL, NULL, NULL);
    } else if (frequencies.begin() == frequencies.end()) {
-      Add(new cMenuTextInfo("Empty channel list ?!?"));
+      Add(new cMenuTextInfo(tr("Empty channel list?")));
       SetHelp(tr("Button$Done"), NULL, NULL, NULL);
    } else {   
       if (f_current != frequencies.end() && f_current->first == freq) {
@@ -202,7 +202,7 @@ void cMenuDVBmon::Setup()
          snprintf(f_current->second.currentInfo, sizeof(f_current->second.currentInfo), "%s", s);
       }
       
-      Add(new cMenuTextInfo("Frequency  Q curr.    Q prev."));
+      Add(new cMenuTextInfo(tr("Frequency  Q curr.    Q prev.")));
       for (FREQ2CHANNEL::iterator f_iter = frequencies.begin( ); f_iter != frequencies.end( ); ++f_iter ) {
          snprintf(buf, sizeof(buf), "%6.1fMHz  %s   %s", f_iter->first*1e-6, f_iter->second.currentInfo, f_iter->second.previousInfo);
          Add(new cMenuTextInfo(buf));
@@ -215,7 +215,7 @@ void cMenuDVBmon::Setup()
    }
    
    search = frequencies.find(freq);   
-   snprintf(buf, sizeof(buf), "Tuner 2: %6.1fMHz  %s", freq*1e-6, (search == frequencies.end() ? "empty channel list" : search->second.channels) );
+   snprintf(buf, sizeof(buf), tr("Tuner 2: %6.1fMHz  %s"), freq*1e-6, (search == frequencies.end() ? tr("empty channel list") : search->second.channels) );
    Add(new cMenuTextInfo(buf));
    Add(new cMenuStatusBar(150, curSignal, 1));
 	Add(new cMenuStatusBar(25 , curBER,    2));
@@ -366,11 +366,11 @@ cMenuStatusBar::cMenuStatusBar(int Total, int Current, int Mode)
    int l = 0;
    
    if(Mode == 1)
-      l = asprintf(&tmp,"%s   %d / %d  (Signal)", buffer, Current, Total);
+      l = asprintf(&tmp,"%s   %d / %d  (%s)", buffer, Current, Total, tr("Signal"));
    if(Mode == 2)
-      l = asprintf(&tmp,"%s   %d / %d  (BER)", buffer, Current, Total);
+      l = asprintf(&tmp,"%s   %d / %d  (%s)", buffer, Current, Total, tr("BER"));
    if(Mode == 3)
-      l = asprintf(&tmp,"%s   %d / %d  (SNR)", buffer, Current, Total);
+      l = asprintf(&tmp,"%s   %d / %d  (%s)", buffer, Current, Total, tr("SNR"));
 
    SetText(strndup(tmp,l), false);
    SetSelectable(false);
