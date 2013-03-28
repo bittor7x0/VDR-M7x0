@@ -44,12 +44,10 @@ typedef vector<int>::const_iterator iConstIter;
 
 vector<string> tvChannelNames;
 vector<string> radioChannelNames;
-vector<string> dataChannelNames;
 
 #ifdef DEBUG_CHANNELSCAN
 vector<string> tvChannelList;
 vector<string> radioChannelList;
-vector<string> dataChannelList;
 #endif 
 
 cMutex mutexNames;
@@ -521,7 +519,6 @@ cMenuChannelscan::~cMenuChannelscan()
 
   tvChannelNames.clear();
   radioChannelNames.clear();
-  dataChannelNames.clear();
   cPluginChannelscan::AutoScanStat = AssNone;
   cTransponders::Destroy();
 }
@@ -566,7 +563,6 @@ cMenuScanActive::cMenuScanActive(scanParameters *sp)
 #ifdef DEBUG_CHANNELSCAN
   tvChannelList.clear();
   radioChannelList.clear();
-  dataChannelList.clear();
 #endif
   scp=sp;
 
@@ -827,7 +823,6 @@ cMenuScanActive::~cMenuScanActive()
 
   tvChannelNames.clear();
   radioChannelNames.clear();
-  dataChannelNames.clear();
   // XXX
   //cMenuChannelscan::scanning = false;
   cMenuChannelscan::scanState = ssInterrupted; 
