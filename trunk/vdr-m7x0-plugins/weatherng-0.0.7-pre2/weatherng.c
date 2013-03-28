@@ -107,67 +107,6 @@ bool cPluginWetter::Initialize(void)
 
 bool cPluginWetter::Start(void)
 {
-	if ( wetterSetup.w_update == true ) {
-		char *buffer;
-		char *url;
-
-		asprintf(&buffer, "%s%s",ScriptDir,"/data1.xml");
-		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data1,"?cc=*&unit=m&dayf=10&prod=xoap&par=1003666583&key=4128909340a9b2fc");
-		dsyslog("DEBUG : weatherng: Autoupdate %s => %s",url, buffer);
-		httpGet(url,buffer);
-		free(buffer);
-		free(url);
-
-		asprintf(&buffer, "%s%s",ScriptDir,"/data2.xml");
-		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data2,"?cc=*&unit=m&dayf=10&prod=xoap&par=1003666583&key=4128909340a9b2fc");
-		dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
-		httpGet(url,buffer);
-		free(buffer);
-		free(url);
-
-		asprintf(&buffer, "%s%s",ScriptDir,"/data3.xml");
-		asprintf(&url, "%s%s%s","http://xoap.weather.com/weather/local/",wetterSetup.st_data3,"?cc=*&unit=m&dayf=10&prod=xoap&par=1003666583&key=4128909340a9b2fc");
-		dsyslog("DEBUG : weatherng: %s => %s",url, buffer);
-		httpGet(url,buffer);
-		free(buffer);
-		free(url);
-
-		if (wetterSetup.st_pic0!=NULL){
-			asprintf(&buffer, "%s%s",ScriptDir,"/pic0.xpm");
-			dsyslog("DEBUG : weatherng: %s => %s",wetterSetup.st_pic0, buffer);
-			httpGet(wetterSetup.st_pic0,buffer);
-			free(buffer);
-		}
-
-		if (wetterSetup.st_pic1!=NULL){
-			asprintf(&buffer, "%s%s",ScriptDir,"/pic1.xpm");
-			dsyslog("DEBUG : weatherng: %s => %s",wetterSetup.st_pic1, buffer);
-			httpGet(wetterSetup.st_pic1,buffer);
-			free(buffer);
-		}
-
-		if (wetterSetup.st_pic2!=NULL){
-			asprintf(&buffer, "%s%s",ScriptDir,"/pic2.xpm");
-			dsyslog("DEBUG : weatherng: %s => %s",wetterSetup.st_pic2, buffer);
-			httpGet(wetterSetup.st_pic2,buffer);
-			free(buffer);
-		}
-
-		if (wetterSetup.st_pic3!=NULL){
-			asprintf(&buffer, "%s%s",ScriptDir,"/pic3.xpm");
-			dsyslog("DEBUG : weatherng: %s => %s",wetterSetup.st_pic3, buffer);
-			httpGet(wetterSetup.st_pic3,buffer);
-			free(buffer);
-		}
-
-		if (wetterSetup.st_pic4!=NULL){
-			asprintf(&buffer, "%s%s",ScriptDir,"/pic4.xpm");
-			dsyslog("DEBUG : weatherng: %s => %s",wetterSetup.st_pic4, buffer);
-			httpGet(wetterSetup.st_pic4,buffer);
-			free(buffer);
-		}
-
-	}
 	RegisterI18n(Phrases);
 	return true;
 }
@@ -188,8 +127,7 @@ cMenuSetupPage *cPluginWetter::SetupMenu(void)
 
 bool cPluginWetter::SetupParse(const char *Name, const char *Value)
 {
-	if (!strcasecmp(Name, "AutoUpdate")) wetterSetup.w_update = atoi(Value);
-	else if (!strcasecmp(Name, "RadarLeft")) wetterSetup.w_left = atoi(Value);
+	if (!strcasecmp(Name, "RadarLeft")) wetterSetup.w_left = atoi(Value);
 	else if (!strcasecmp(Name, "RadarTop")) wetterSetup.w_top = atoi(Value);
 	else if (!strcasecmp(Name, "RadarWidth")) wetterSetup.w_width = atoi(Value);
 	else if (!strcasecmp(Name, "RadarHeight")) wetterSetup.w_height = atoi(Value);
@@ -226,7 +164,6 @@ cMenuWetterSetup::cMenuWetterSetup(void)
 	themes[eWetterThemeSilverGreen] = tr("SilverGreen");
 	themes[eWetterThemeMoronimoMKII] = tr("MoronimoMKII");
 
-	Add(new cMenuEditBoolItem(tr("Update data on start"), &wetterSetup.w_update));
 	Add(new cMenuEditIntItem(tr("Radarbitmap left"), &wetterSetup.w_left, 1, 200));
 	Add(new cMenuEditIntItem(tr("Radarbitmap top"), &wetterSetup.w_top, 1, 200));
 #ifdef HAVE_4MB
@@ -252,7 +189,6 @@ cMenuWetterSetup::cMenuWetterSetup(void)
 
 void cMenuWetterSetup::Store(void)
 {
-	SetupStore("AutoUpdate", wetterSetup.w_update);
 	SetupStore("RadarLeft", wetterSetup.w_left);
 	SetupStore("RadarTop", wetterSetup.w_top);
 	SetupStore("RadarWidth", wetterSetup.w_width);
