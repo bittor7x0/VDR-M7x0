@@ -245,19 +245,25 @@ cSubMenuSetup::cSubMenuSetup(void)
 void cSubMenuSetup::DrawSubMenu(int level)
 {
 	curLevel++;
-	char *line;
+	char *line, *tmp;
 	for(int i=0;i<SMSetup.Arbo.MaxItem[level];i++)
 	{
 		asprintf(&line,"%s","");
 		for (int z=0;z<curLevel*5;z++)
 		{
-			asprintf(&line,"%s ",line);
+			tmp = line;
+			asprintf(&line,"%s ",tmp);
+			free(tmp);
 		}
 		if (SMSetup.subMenuItem[SMSetup.Arbo.Index[level][i]].kindOfItem!=0)
 		{
-			asprintf(&line,"%s+",line);
+			tmp = line;
+			asprintf(&line,"%s+",tmp);
+			free(tmp);
 		}
-		asprintf(&line,"%s%s",line,tr(SMSetup.subMenuItem[SMSetup.Arbo.Index[level][i]].name));
+		tmp = line;
+		asprintf(&line,"%s%s",tmp,tr(SMSetup.subMenuItem[SMSetup.Arbo.Index[level][i]].name));
+		free(tmp);
 		Add (new cOsdItem(line),true);
 		SMSetup.Arbo.CurrentIndex[Current()]=SMSetup.Arbo.Index[level][i];
 		if (SMSetup.subMenuItem[SMSetup.Arbo.Index[level][i]].kindOfItem!=0)
@@ -265,23 +271,26 @@ void cSubMenuSetup::DrawSubMenu(int level)
 		   DrawSubMenu(SMSetup.subMenuItem[SMSetup.Arbo.Index[level][i]].kindOfItem);
 		   curLevel--;
 		}
+		free(line);
 	}
-	delete line;
 }
 
 void cSubMenuSetup::DrawMenu(void)
 {
 	int cur=Current();
 	Clear();
-	char *line;
+	char *line, *tmp;
 	for (int j=0;j<SMSetup.Arbo.MaxItem[0];j++)
 	{
 		asprintf(&line,"%s"," ");
 		if (SMSetup.subMenuItem[SMSetup.Arbo.Index[0][j]].kindOfItem!=0)
 		{
+			free(line);
 			asprintf(&line,"+");
 		}
-		asprintf(&line,"%s%s",line,tr(SMSetup.subMenuItem[SMSetup.Arbo.Index[0][j]].name));
+		tmp = line; 
+		asprintf(&line,"%s%s",tmp,tr(SMSetup.subMenuItem[SMSetup.Arbo.Index[0][j]].name));
+		free(tmp);
 		Add (new cOsdItem(line),true);
 		SMSetup.Arbo.CurrentIndex[Current()]=SMSetup.Arbo.Index[0][j];
 		if (SMSetup.subMenuItem[SMSetup.Arbo.Index[0][j]].kindOfItem!=0)
@@ -289,10 +298,10 @@ void cSubMenuSetup::DrawMenu(void)
 			DrawSubMenu(SMSetup.subMenuItem[SMSetup.Arbo.Index[0][j]].kindOfItem);
 			curLevel--;
 		}
+		free(line);
 	}
 	SetCurrent(Get(cur));
 	Display();
-	delete line;
 }
 
 
