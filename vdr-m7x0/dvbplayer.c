@@ -316,7 +316,7 @@ private:
   int Resume(void);
   bool Save(void);
 
-  int PlayPesOrTs(const uchar *Data, int Length, bool VideoOnly) __attribute__ ((always_inline)) {
+  inline int PlayPesOrTs(const uchar *Data, int Length, bool VideoOnly) __attribute__ ((always_inline)) {
      if(playTS)
 #ifndef TS_PLAYER_BACKPORT
         return PlayTs(Data, Length);
