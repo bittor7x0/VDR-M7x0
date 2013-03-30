@@ -3928,7 +3928,7 @@ cMenuMain::cMenuMain(eOSState State)
             menu = new cMenuRecordings(NULL, 0, true);
         break;
     case osSetup:      menu = new cMenuSetup; break;
-    case osCommands:   menu = new cMenuCommands(tr("Commands"), &Commands); break;
+    case osCommands:   menu = new cMenuCommands(tr("System Utilities"), &Commands); break;
     default: break;
     }
   if (menu)
@@ -3998,7 +3998,7 @@ void cMenuMain::Set(void)
   				if( strcmp(submenu.subMenuItem[i].name,"Commands") == 0 )
   					if (Commands.Count())
   						if (!PinPatch::ChildLock::IsMenuHidden("Commands"))
-  						Add(new cOsdItem(hk(tr("Commands")),  osCommands));
+  						Add(new cOsdItem(hk(tr("System Utilities")),  osCommands));
 
   				// Plugins Item:
   				int j=0;
@@ -4089,7 +4089,7 @@ void cMenuMain::Set(void)
   Add(new cOsdItem(hk(tr("Setup")),      osSetup));
   if (Commands.Count())
      if (!PinPatch::ChildLock::IsMenuHidden("Commands"))
-     Add(new cOsdItem(hk(tr("Commands")),  osCommands));
+     Add(new cOsdItem(hk(tr("System Utilities")),  osCommands));
 }
 
   Update(true);
@@ -4215,7 +4215,7 @@ eOSState cMenuMain::ProcessKey(eKeys Key)
             state = osContinue;
         break;
     case osSetup:      menu = new cMenuSetup; break;
-    case osCommands:   menu = new cMenuCommands(tr("Commands"), &Commands); break;
+    case osCommands:   menu = new cMenuCommands(tr("System Utilities"), &Commands); break;
     case osStopRecord: if (Interface->Confirm(tr("Stop recording?"))) {
                           cOsdItem *item = Get(Current());
                           if (item) {

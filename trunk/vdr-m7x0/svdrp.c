@@ -206,10 +206,12 @@ const char *HelpPages[] = {
   "    RECORDING - BE SURE YOU KNOW WHAT YOU ARE DOING!",
   "DELT <number>\n"
   "    Delete timer.",
-  "EDIT <number>\n"
+  "EDIT [<number>]\n"
   "    Edit the recording with the given number. Before a recording can be\n"
   "    edited, an LSTR command must have been executed in order to retrieve\n"
-  "    the recording numbers.",
+  "    the recording numbers.\n"
+  "    Without option it edits all recordings.",
+#ifdef WITH_LIBJPEG
   "GRAB <filename> [ <quality> [ <sizex> <sizey> ] ]\n"
   "    Grab the current frame and save it to the given file. Images can\n"
   "    be stored as JPEG or PNM, depending on the given file name extension.\n"
@@ -220,6 +222,7 @@ const char *HelpPages[] = {
   "    data will be sent to the SVDRP connection encoded in base64. The same\n"
   "    happens if '-' (a minus sign) is given as file name, in which case the\n"
   "    image format defaults to JPEG.",
+#endif
   "HELP [ <topic> ]\n"
   "    The HELP command gives help info.",
   "HITK [ <key> ]\n"
@@ -771,14 +774,13 @@ void cSVDRP::CmdEDIT(const char *Option)
         if (recording) {
            cMarks Marks;
            if (Marks.Load(recording->FileName(), recording->IsPesRecording()) && Marks.Count()) {
-              if (!cCutter::Active()) {
-                 if (cCutter::Start(recording->FileName()))
-                    Reply(250, "Editing recording \"%s\" [%s]", Option, recording->Title());
-                 else
-                    Reply(554, "Can't start editing process");
-                 }
+              bool CutterActive = cCutter::Active();
+              if (!cCutter::Start(recording->FileName()))
+                 Reply(554, "Can't start editing process");
+              else if (!CutterActive)
+                 Reply(250, "Editing recording \"%s\" [%s]", Option, recording->Title());
               else
-                 Reply(554, "Editing process already active");
+                 Reply(250, "Adding recording to cutting queue \"%s\" [%s]", Option, recording->Title());
               }
            else
               Reply(554, "No editing marks defined");
@@ -789,8 +791,28 @@ void cSVDRP::CmdEDIT(const char *Option)
      else
         Reply(501, "Error in recording number \"%s\"", Option);
      }
-  else
-     Reply(501, "Missing recording number");
+  else {
+     bool recordings = Recordings.Update(true);
+     if (recordings) {
+        cRecording *recording = NULL;
+        recording = Recordings.First();
+        while (recording) {
+           cMarks Marks;
+           if (Marks.Load(recording->FileName(), recording->IsPesRecording()) && Marks.Count()) {
+              bool CutterActive = cCutter::Active();
+              if (!cCutter::Start(recording->FileName()))
+                 Reply(554, "Can't start editing process");
+              else if (!CutterActive)
+                 Reply(250, "Editing recording [%s]", recording->Title());
+              else
+                 Reply(250, "Adding recording to cutting queue [%s]", recording->Title());
+              }
+           recording = Recordings.Next(recording);
+           }
+        }
+     else
+        Reply(550, "No recordings available");
+     }
 }
 
 #ifdef WITH_LIBJPEG
