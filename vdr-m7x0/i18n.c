@@ -324,6 +324,28 @@ const tI18nPhrase Phrases[] = {
     "Indstillinger",
     "NastavenÌ",
   },
+  { "System Utilities",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Utilidades del sistema",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Commands",
     "Befehle",
     "Ukazi",
@@ -334,7 +356,7 @@ const tI18nPhrase Phrases[] = {
     "Kommandoer",
     "Komennot",
     "Polecenia",
-    "Utilidades del sistema",
+    "”rdenes",
     "≈ÌÙÔÎ›Ú",
     "Kommandon",
     "Comenzi",
