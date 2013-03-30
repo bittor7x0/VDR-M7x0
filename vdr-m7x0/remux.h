@@ -92,7 +92,9 @@ public:
   void Clear(void);
        ///< Clears the remuxer of all data it might still contain, keeping the PID
        ///< settings as they are.
-  static int SetBrokenLink(uchar *Data, int Length);
+  static bool isTsHeader(uchar *Data);
+  static bool isAudioOrH264(uchar *Data, int Length, bool isTsData);
+  static void SetBrokenLink(uchar *Data, int Length);
   static int GetPacketLength(const uchar *Data, int Count, int Offset);
   static int ScanVideoPacket(const uchar *Data, int Count, int Offset, uchar &PictureType);
   };

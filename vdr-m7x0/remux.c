@@ -2097,7 +2097,7 @@ int cRemux::Put(uchar *Data, int Count)
          break; // A cTS2PES might write one full packet and also a small rest
          }
       int pid = GetPid(Data + i + 1);
-      if (Data[i + 3] & 0x10) { // got payload
+      if (Data[i + 3] & PAY_LOAD) { // got payload
          for (int t = 0; t < numTracks; t++) {
              if (repacker[t]->Pid() == pid) {
                 repacker[t]->ts_to_pes(Data + i);
@@ -2185,62 +2185,82 @@ void cRemux::Clear(void)
   resultSkipped = 0;
 }
 
-
-int cRemux::SetBrokenLink(uchar *Data, int Length)
+bool cRemux::isTsHeader(uchar *Data)
 {
-  int TS=0x0;
-  while(Length>3) {
-     if(*Data!=0x47)
-        break;
-     if((Data[1]&0x40)&&((Data[1]&0x1F)||(Data[2]))) {
-        int PES=4;
-        if(Data[3]&0x20)
-           PES+=Data[4]+1;
-        if(PES+2<Length) {
-           if((!Data[PES])&&(!Data[PES+1])&&(Data[PES+2]==0x01)) {
-              Data+=PES;
-              Length-=PES;
-              TS=0x100;
-              isyslog("TS stream detected");
-              break;
-              }
-           }
-        }
-     Data+=188;
-     Length-=188;
+  if (Data[0] == TS_SYNC_BYTE && Data[TS_SIZE] == TS_SYNC_BYTE /* && Data[1] == PAY_START && Data[TS_SIZE + 1] == PAY_START */) {
+     isyslog("TS stream detected");
+     return true;
      }
-  int PesPayloadOffset = 0;
-  if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1) {
-     if ((Data[3] & 0xF0) == VIDEO_STREAM_S) {
-     if (PesPayloadOffset<Length-3) {
-        if (Data[PesPayloadOffset] == 0 && Data[PesPayloadOffset + 1] == 0 && Data[PesPayloadOffset + 2] == 1 && Data[PesPayloadOffset + 3] == 0x09) {
-	    isyslog("H.264 video detected");
-           return TS+2;
+
+  isyslog("PES stream detected");
+  return false;
+}
+
+bool cRemux::isAudioOrH264(uchar *Data, int Length, bool isTsData)
+{
+  uchar *data = Data;
+  int length = Length;
+
+  if (isTsData) {
+     while(length > 3) {
+        if((data[1] & 0x40) && ((data[1] & 0x1F) || (data[2]))) {
+           int PES = 4;
+           if(data[3] & 0x20)
+              PES += data[4] + 1;
+           if(PES + 2 < length) {
+              if((!data[PES]) && (!data[PES + 1]) && (data[PES + 2] == 0x01)) {
+                 data += PES;
+                 length -= PES;
+                 break;
+                 }
+              }
            }
-        if (PesPayloadOffset<Length-4)
-           if (Data[PesPayloadOffset] == 0 && Data[PesPayloadOffset + 1] == 0 && Data[PesPayloadOffset + 2] == 0 && Data[PesPayloadOffset + 3] == 1 && Data[PesPayloadOffset + 4] == 0x09) {
+        data += 188;
+        length -= 188;
+        }
+     }
+
+  // Detect audio stream
+  if ((data[3] & 0xE0) == AUDIO_STREAM_S) {
+     isyslog("Audio stream detected");
+     return true;
+     }
+
+  // Detect H.264 video stream
+  int PesPayloadOffset = 0;
+  if ((data[3] & 0xF0) == VIDEO_STREAM_S && AnalyzePesHeader(data, length, PesPayloadOffset) >= phMPEG1) {
+     if (PesPayloadOffset < length - 3) {
+        if (data[PesPayloadOffset] == 0 && data[PesPayloadOffset + 1] == 0 && data[PesPayloadOffset + 2] == 1 && data[PesPayloadOffset + 3] == 0x09) {
+           isyslog("H.264 video detected");
+           return true;
+           }
+        if (PesPayloadOffset < length - 4)
+           if (data[PesPayloadOffset] == 0 && data[PesPayloadOffset + 1] == 0 && data[PesPayloadOffset + 2] == 0 && data[PesPayloadOffset + 3] == 1 && data[PesPayloadOffset + 4] == 0x09) {
               isyslog("H.264 video detected");
-              return TS+2;
+              return true;
               }
         }
+     }
+
+  isyslog("Neither audio nor H.264 video stream detected");
+  return false;
+}
+
+void cRemux::SetBrokenLink(uchar *Data, int Length)
+{
+  int PesPayloadOffset = 0;
+  if (AnalyzePesHeader(Data, Length, PesPayloadOffset) >= phMPEG1 && (Data[3] & 0xF0) == VIDEO_STREAM_S) {
      for (int i = PesPayloadOffset; i < Length - 7; i++) {
          if (Data[i] == 0 && Data[i + 1] == 0 && Data[i + 2] == 1 && Data[i + 3] == 0xB8) {
             if (!(Data[i + 7] & 0x40)) // set flag only if GOP is not closed
                Data[i + 7] |= 0x20;
-            return TS;
+            return;
             }
          }
      dsyslog("SetBrokenLink: no GOP header found in video packet");
-     return TS+1;
-     }
-     else if ((Data[3] & 0xE0) == AUDIO_STREAM_S) {
-        isyslog("Audio stream detected");
-        return TS+2;
-        }
      }
   else
      dsyslog("SetBrokenLink: no video packet in frame");
-  return TS+1;
 }
 
 

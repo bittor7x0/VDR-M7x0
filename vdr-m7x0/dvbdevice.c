@@ -1785,6 +1785,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
 	       LOG_ERROR;
                return r;
                }
+           writeOutCount -= 188;
            fragmentLen = 0;
            }
 
@@ -3300,6 +3301,12 @@ bool cDvbDevice::CanReplay(void) const
 //M7X0TODO: Get other playmodes working
 bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
 {
+  // Sanity check
+  if (playMode == PlayMode){
+     dsyslog("WARNING: Play mode %d already setted!", PlayMode);
+     return true;
+     }
+
   if (PlayMode != pmExtern_THIS_SHOULD_BE_AVOIDED && fd_video < 0 && fd_audio < 0) {
      // reopen the devices
      fd_video = DvbOpen(DEV_DVB_ADAPTER DEV_DVB_VIDEO,  CardIndex(), O_RDWR | O_NONBLOCK);
