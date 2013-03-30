@@ -129,6 +129,7 @@ void cShutdownHandler::CheckManualStart()
 {
   if (getIaMode()) {
      // Apparently the user started VDR manually
+     cDevice::PrimaryDevice()->SetTvSettings(1);
      dsyslog("assuming manual start of VDR");
      // Set inactive after MinUserInactivity
      SetUserInactiveTimeout();
