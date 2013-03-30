@@ -1099,6 +1099,7 @@ int main(int argc, char *argv[])
 	      key = kNone;
 	   }else{
 	      dsyslog("DEBUG: wakeup from IaMode");
+	      cControl::Shutdown();
 	      setIaMode(1);
 	      cDevice::PrimaryDevice()->SetTvSettings(1);
 	      if(Setup.TShift)
