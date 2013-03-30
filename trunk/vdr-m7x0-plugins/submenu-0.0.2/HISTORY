@@ -1,0 +1,30 @@
+v 0.0.2:
+  Correction de nombreux bugs:
+         Probleme de creation d'un repertoire (null), patch de Thomas Günther, merci a lui
+         Probleme lors de l'utilisation de l'option MenuCmdPosition de l'enAIO
+		Divers patchs sont disponibles en fonction de votre install
+	 Correction du probleme de creation du fichier MainMenu.conf lors du premier lancement
+	 Correction du probleme de support de la langue Russe, merci a Vyacheslav Dikonov de me l'avoir signalé
+
+v 0.0.1:
+  Premiere version "fonctionnelle"
+  Ce plugin permet de : Creer des elements, Supprimer des elements, Sauvegarder les modifications effectuées...
+  Cette version ne PERMET PAS de : Deplacer... pour l'instant, il faut supprimer et recreer a l'endroit desiré...
+
+v 0.0.0:
+  Preversion pour le patch submenu de Jlac!
+
+
+v 0.0.2:
+  Correcting lots of bugs:
+	(null) directory creation : patch by Thomas Günther, thanks to him
+	enAIO issues when using MenuCmdPosition parameter... more patches are availlable to match your install
+  	First Launch MainMenu.conf file creation fixed
+	Supporting Russian submenu, thanks to Vyacheslav Dikonov for reporting this one
+
+v 0.0.1:
+  First "working" version...
+  You can : Insert item, Delete Item, Save your modifications...
+  You still can't : Move anything... for now have to delete/recreate ...
+v 0.0.0:
+  Preversion for Jlac submenu patch!
