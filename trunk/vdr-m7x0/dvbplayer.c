@@ -291,6 +291,7 @@ private:
   bool isPesRecording;
   bool eof;
   bool firstPacket;
+  bool StreamNotDetected;
   ePlayModes playMode;
   ePlayDirs playDir;
   bool playTS;
@@ -359,6 +360,7 @@ cDvbPlayer::cDvbPlayer(const char *FileName, cTShiftIndexFile *newIndex)
   isPesRecording = Recording.IsPesRecording();
   eof = false;
   firstPacket = true;
+  StreamNotDetected = true;
   playMode = pmPlay;
   playDir = pdForward;
   playTS=false;
@@ -714,21 +716,26 @@ void cDvbPlayer::Action(void)
                  data2 = playFrame->Data2();
                  count2 = playFrame->Count2();
                  if (firstPacket) {
-                    switch(cRemux::SetBrokenLink(data1, count1)) {
-                       case 0x02:
-                          DeviceSetPlayMode(pmAudioOnlyBlack);
-                          break;
-                       case 0x100:
-                       case 0x101:
-                          playTS=true;
-                          DeviceSetPlayMode(pmTsAudioVideo);
-                          break;
-                       case 0x102:
-                          playTS=true;
-                          DeviceSetPlayMode(pmTsAudioOnlyBlack);
-                          break;
+                    if (StreamNotDetected)
+                       playTS = cRemux::isTsHeader(data1);
+                    if (playTS) {
+                       if (StreamNotDetected) {
+                          if (cRemux::isAudioOrH264(data1, count1, true))
+                             DeviceSetPlayMode(pmTsAudioOnlyBlack);
+                          else
+                             DeviceSetPlayMode(pmTsAudioVideo);
+                          StreamNotDetected = false;
+                          }
+                       PlayTs(NULL, 0);
+                    } else {
+                       if (StreamNotDetected) {
+                          if (cRemux::isAudioOrH264(data1, count1, false))
+                             DeviceSetPlayMode(pmAudioOnlyBlack);
+                          StreamNotDetected = false;
+                          }
+                       PlayPes(NULL, 0);
+                       cRemux::SetBrokenLink(data1, count1);
                        }
-                    PlayPesOrTs(NULL, 0, false);
                     firstPacket = false;
                     }
                  }
