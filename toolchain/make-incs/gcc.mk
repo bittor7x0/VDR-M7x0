@@ -24,7 +24,7 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-GCC_VERSION := 4.7.2
+GCC_VERSION := 4.8.0
 GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
 
 GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
@@ -115,8 +115,12 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--disable-libmudflap \
 			--disable-libquadmath \
 			--disable-libssp \
+			--disable-libitm \
+			--disable-libatomic \
+			--disable-libsanitizer \
 			--disable-target-libiberty \
 			--disable-target-zlib \
+			--disable-libstdcxx-verbose \
 			--disable-target-libstdc++-v3 \
 			--nfp \
 			--disable-multilib \
@@ -194,7 +198,11 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--disable-libmudflap \
 			--disable-libquadmath \
 			--disable-libssp \
+			--disable-libitm \
+			--disable-libatomic \
+			--disable-libsanitizer \
 			--disable-target-zlib \
+			--disable-libstdcxx-verbose \
 			--nfp \
 			--disable-multilib \
 			--enable-softfloat \
@@ -210,7 +218,7 @@ $(STAGEFILES_DIR)/.gcc_compiled: $(STAGEFILES_DIR)/.gcc_configured
 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) -C $(GCC_BUILD_DIR) \
 		CFLAGS_FOR_TARGET="$(UCLIBC_CFLAGS) $(UCLIBC_CFLAGS_LOOPS)" \
 		CXXFLAGS_FOR_TARGET="$(UCLIBC_CXXFLAGS) $(UCLIBC_CFLAGS_LOOPS)" \
-		LDFLAGS_FOR_TARGET="$(UCLIBC_LDFLAGS)" \
+		LDFLAGS_FOR_TARGET="$(UCLIBC_LDFLAGS) -lgcc" \
 		all
 	$(TOUCH) $(STAGEFILES_DIR)/.gcc_compiled
 
@@ -222,7 +230,7 @@ $(STAGEFILES_DIR)/.gcc_installed: $(STAGEFILES_DIR)/.gcc_compiled
 	PATH='$(PREFIX_BIN):$(PATH)' $(MAKE) -C $(GCC_BUILD_DIR) \
 		CFLAGS_FOR_TARGET="$(UCLIBC_CFLAGS) $(UCLIBC_CFLAGS_LOOPS)" \
 		CXXFLAGS_FOR_TARGET="$(UCLIBC_CXXFLAGS) $(UCLIBC_CFLAGS_LOOPS)" \
-		LDFLAGS_FOR_TARGET="$(UCLIBC_LDFLAGS)" \
+		LDFLAGS_FOR_TARGET="$(UCLIBC_LDFLAGS) -lgcc" \
 		install
 	$(CP) -Pp '$(PREFIX)/$(UCLIBC_TARGET)/lib/lib'* '$(TARGET_ROOT)/lib'
 	$(TOUCH) $(STAGEFILES_DIR)/.gcc_installed

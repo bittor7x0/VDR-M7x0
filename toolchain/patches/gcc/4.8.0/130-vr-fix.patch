@@ -1,0 +1,11 @@
+diff -Naur gcc-4.7.0-orig/libgcc/config/mips/t-mips gcc-4.7.0/libgcc/config/mips/t-mips
+--- gcc-4.7.0-orig/libgcc/config/mips/t-mips	2011-11-02 16:23:48.000000000 +0100
++++ gcc-4.7.0/libgcc/config/mips/t-mips	2012-03-26 20:46:27.572003986 +0200
+@@ -1,5 +1,7 @@
+ LIB2_SIDITI_CONV_FUNCS = yes
+ 
++LIB2ADD_ST = $(srcdir)/config/mips/vr4120-div.S
++
+ FPBIT = true
+ FPBIT_CFLAGS = -DQUIET_NAN_NEGATED
+ DPBIT = true
