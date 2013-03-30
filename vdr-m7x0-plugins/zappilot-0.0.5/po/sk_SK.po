@@ -1,0 +1,47 @@
+# VDR language source file.
+# Copyright (C) 2013 Klaus Schmidinger <vdr@tvdr.de>
+# This file is distributed under the same license as the VDR package.
+# Milan Hrala <hrala.milan@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: zappilot-0.0.4\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2013-03-16 13:01+0100\n"
+"PO-Revision-Date: 2011-02-15 21:31+0100\n"
+"Last-Translator: Milan Hrala <hrala.milan@gmail.com>\n"
+"Language-Team: Milan Hrala <hrala.milan@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "A zapping co-pilot"
+msgstr "Prepínanie co-pilota"
+
+msgid "ZapPilot"
+msgstr ""
+
+msgid "Switch timer added!"
+msgstr ""
+
+msgid "Switch timer deleted!"
+msgstr ""
+
+msgid "Close on OK"
+msgstr "Zavrie pri stlaèení OK"
+
+msgid "Hide main menu entry"
+msgstr "Schova v hlavnom menu"
+
+msgid "Fast browse"
+msgstr "Rýchlejšia navigácia"
+
+msgid "Fast browse (alt. key layout)"
+msgstr ""
+
+msgid "Switch timer"
+msgstr ""
+
+msgid "Switch ... minutes before start"
+msgstr "Rýchlejšia navigácia"
