@@ -1,0 +1,101 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Christophe Nouhet, Gnapheus
+
+Project's homepage:          http://projects.vdr-developer.org/projects/show/plg-zappilot
+
+Latest version available at: http://projects.vdr-developer.org/projects/show/plg-zappilot
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+See the file COPYING for more information.
+
+Description:
+-----------
+Zappilot is a plugin for VDR forked from the plugin pilotskin created by 
+Christophe Nouhet (original idea Olivier Jacques). It brings the ability 
+to browse fast the EPG information without being forced to switch to a
+channel. It makes it easy to see what is going on on other channels while
+still watching the current channel. The plugin adds the possibility of 
+having detailed information of the event and launching timers
+
+Installation:
+------------
+- Type "make plugins" at VDR directory level
+- Edit the keymacros.conf 
+  cd "VDR_CONFIG_DIR"
+  vi keymacros.conf
+----------------keymacros.conf
+Blue      Timers
+User1     @zappilot
+----------------
+  Please check VDR manual (man 5 vdr) for more informations on keymacros.conf
+
+Customization:
+-------------
+Zappilot plugin can be tuned to your own preferences.
+Go to Configuration/Plugins/zappilot to access the setup menu.
+Hide main menu entry    : Hide the plugin entry in the main menu
+Close on OK             : Close the Pilot plugin when pressing OK button 
+                          (in addition to switch to the selected channel). 
+                          Otherwise, switch to the channel but keep 
+                          the pilot opened.
+Fast browse             : Changes keys for faster EPG browsing
+
+Fast browse (alt. key layout) :
+                          like fast browse mode but up/down key switches channel and left/right the epg entries
+
+Switch timer		: If the plugin epgsearch is found, switch timer can
+                          be set by pressing 0. 
+Switch ... minutes
+before start            : lead time for switch timer.
+
+Usage normal:
+-------------
+
+UP     : go one channel up
+DOWN   : go one channel down
+LEFT   : go prev group
+RIGHT  : go next group
+OK     : switch to the selected channel
+BACK   : exit Zappilot plugin
+RED    : edit a timer
+GREEN  : Show extra infos
+YELLOW : previous event
+BLUE   : next event
+0      : adds/deletes epgsearch switch timer
+
+Usage fast browse:
+-----------------
+UP     : previous event
+DOWN   : next event
+LEFT   : prev channel
+RIGHT  : next channel up go next group
+OK     : switch to the selected channel
+BACK   : exit Zappilot plugin
+RED    : edit a timer
+GREEN  : Show extra infos
+YELLOW : go prev group
+BLUE   : go next group
+0      : adds/deletes epgsearch switch timer
+
+Usage fast browse (alt. key layout):
+-----------------
+UP     : next channel
+DOWN   : prev channel
+LEFT   : next event
+RIGHT  : prev event
+OK     : switch to the selected channel
+BACK   : exit Zappilot plugin
+RED    : edit a timer
+GREEN  : Show extra infos
+YELLOW : go prev group
+BLUE   : go next group
+0      : adds/deletes epgsearch switch timer
+   
+To do:
+------
+
+
