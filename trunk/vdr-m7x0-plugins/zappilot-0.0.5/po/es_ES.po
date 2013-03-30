@@ -1,47 +1,47 @@
 # VDR language source file.
 # Copyright (C) 2013 Klaus Schmidinger <vdr@tvdr.de>
 # This file is distributed under the same license as the VDR package.
-# Ruben Nunez Francisco <ruben.nunez@tang-it.com> 2007
+# Bittor Corl <bittor7x0 _at_ gmail.com> 2013
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: VDR 2.0.0\n"
 "Report-Msgid-Bugs-To: <see README>\n"
-"POT-Creation-Date: 2013-03-16 13:01+0100\n"
+"POT-Creation-Date: 2013-03-29 16:11+0100\n"
 "PO-Revision-Date: 2007-08-21 23:24+0200\n"
-"Last-Translator: Ruben Nunez Francisco <ruben.nunez@tang-it.com>\n"
+"Last-Translator: Bittor Corl <bittor7x0 _at_ gmail.com>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "A zapping co-pilot"
-msgstr ""
-
-msgid "ZapPilot"
-msgstr ""
-
-msgid "Switch timer added!"
-msgstr ""
-
-msgid "Switch timer deleted!"
-msgstr ""
-
 msgid "Close on OK"
-msgstr ""
+msgstr "Cerrar al OK"
 
 msgid "Hide main menu entry"
-msgstr "Ocultar en el menÃº principal"
+msgstr "Ocultar en el menú principal"
 
 msgid "Fast browse"
-msgstr ""
+msgstr "Navegar rápido"
 
 msgid "Fast browse (alt. key layout)"
-msgstr ""
+msgstr "Navegar rápido (botones alt.)"
 
 msgid "Switch timer"
-msgstr ""
+msgstr "Programación de cambio"
 
 msgid "Switch ... minutes before start"
-msgstr ""
+msgstr "Cambiar ... minutos antes del inicio"
+
+msgid "Switch timer added!"
+msgstr "¡Añadida programación de cambio!"
+
+msgid "Switch timer deleted!"
+msgstr "¡Borrada programación de cambio!"
+
+msgid "A zapping co-pilot"
+msgstr "Un copiloto para el zapping"
+
+msgid "ZapPilot"
+msgstr "ZapPilot"

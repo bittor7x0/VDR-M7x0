@@ -9,7 +9,9 @@
 #include "config.h"
 #include "zappilotosd.h"
 #include "zappilotsetup.h"
+#include "i18n.h"
 
+#include <vdr/i18n.h>
 #include <vdr/plugin.h>
 
 static const char *VERSION        = "0.0.5";
@@ -79,6 +81,7 @@ bool cPluginZappilot::Start(void)
 {
    // Start any background activities the plugin shall perform.
    // Default values for setup
+   RegisterI18n(Phrases);
    config.pEPGSearch = cPluginManager::GetPlugin("epgsearch");
    if (!config.pEPGSearch)
    {

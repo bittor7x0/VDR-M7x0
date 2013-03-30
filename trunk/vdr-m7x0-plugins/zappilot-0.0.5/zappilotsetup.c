@@ -8,6 +8,7 @@
 
 #include "zappilotsetup.h"
 #include "config.h"
+#include "i18n.h"
 
 cZappilotSetup::cZappilotSetup(void)
 {
