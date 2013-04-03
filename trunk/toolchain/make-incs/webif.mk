@@ -74,7 +74,7 @@ $(STAGEFILES_DIR)/.webapp_downloaded: $(TC_INIT_RULE)
 #
 # copy webapp
 #
-$(STAGEFILES_DIR)/.webif_copied: $(STAGEFILES_DIR)/.webapp_downloaded
+$(STAGEFILES_DIR)/.webif_copied: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF_DEPS)
 	-$(RM) -rf $(WEBIF_BUILD_DIR)
 	$(MKDIR) -p $(WEBIF_BUILD_DIR)
 	$(CP) -RPp $(WEBIF_DIR)/* $(WEBIF_BUILD_DIR)
@@ -90,7 +90,7 @@ endif
 #
 # compile webif
 #
-$(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webif_copied $$(WEBIF_DEPS)
+$(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webif_copied
 	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
 	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) -flto >> $(WEBIF_TC_FILE)
 	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_SIZE) -flto >> $(WEBIF_TC_FILE)
