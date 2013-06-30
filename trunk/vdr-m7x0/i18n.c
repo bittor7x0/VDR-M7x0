@@ -4067,7 +4067,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Sub directorio",
+    "Subdirectorio",
     "",// TODO
     "",// TODO
     "",// TODO
