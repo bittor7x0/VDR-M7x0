@@ -55,7 +55,9 @@ $(CRAMFSSWAP_HOSTDLFILE): $(TC_INIT_RULE)
 # unpack cramfsswap
 #
 
-$(STAGEFILES_DIR)/.cramfsswap_host_unpacked: $(CRAMFSSWAP_HOSTDLFILE)
+$(STAGEFILES_DIR)/.cramfsswap_host_unpacked: $(CRAMFSSWAP_HOSTDLFILE) \
+                                           $(wildcard $(CRAMFSSWAP_HOSTPATCHES_DIR)/common/*.patch) \
+                                           $(wildcard $(CRAMFSSWAP_HOSTPATCHES_DIR)/host/$(HOST_BS)/*.patch)
 	-$(RM) -rf $(CRAMFSSWAP_HOSTDIR)
 	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -zf $(CRAMFSSWAP_HOSTDLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.cramfsswap_host_unpacked
