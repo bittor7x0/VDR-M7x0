@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
-"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"POT-Creation-Date: 2013-06-23 14:06+0200\n"
 "PO-Revision-Date: 2010-10-23 22:43+0100\n"
 "Last-Translator: Innocent De Marchi <tangram.peces@gmail.com>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -29,6 +29,27 @@ msgstr "Verificació de temps"
 
 msgid "No timer check"
 msgstr "Sense verificació de temps"
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
 
 msgid "TrueType Font"
 msgstr "Font TrueType"
@@ -285,6 +306,9 @@ msgstr "Amplada"
 msgid "No TrueType fonts installed!"
 msgstr "No hi ha fonts TrueType instal·lades"
 
+msgid "No TTF support!"
+msgstr ""
+
 msgid "Fixed Font"
 msgstr "Font de mida fitxe"
 
@@ -354,6 +378,9 @@ msgstr "Fer servir sub-títols per les repeticions "
 msgid "Show timer conflicts"
 msgstr "Mostra els conflictes de temps"
 
+msgid "EnigmaNG skin"
+msgstr "EnigmaNG skin"
+
 msgid "Free-To-Air"
 msgstr "Free-To-Air"
 
@@ -416,6 +443,3 @@ msgstr "Volumen"
 
 msgid "EnigmaNG"
 msgstr "EnigmaNG"
-
-msgid "EnigmaNG skin"
-msgstr "EnigmaNG skin"

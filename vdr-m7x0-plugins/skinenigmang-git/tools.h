@@ -17,5 +17,10 @@ std::string parseaux(const char *str);
 bool ischaracters(const char *aux, const char *mask);
 std::string ExtractAttribute(const char* evDescription, const char* name);
 
+#if APIVERSNUM < 10505
+cString WeekDayNameFull(int WeekDay);
+cString WeekDayNameFull(time_t t);
+#endif
+
 #endif // __SKINENIGMA_TOOLS_H
 // vim:et:sw=2:ts=2:

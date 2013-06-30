@@ -14,11 +14,34 @@
 
 cGraphtftFont::cGraphtftFont()
 {
+#if VDRVERSNUM < 10503
+	_library = 0;
+	_face = 0;
+
+	// init freetype2 lib
+	int error = FT_Init_FreeType(&_library);
+	if (error)
+	{
+		error("ERROR: Could not init freetype library");	
+	}
+#endif
 }
 
 cGraphtftFont::~cGraphtftFont()
 {
 	Clear();
+
+#if VDRVERSNUM < 10503
+	if (_face)
+	{
+		FT_Done_Face(_face);
+	}
+
+	if (_library)
+	{
+		FT_Done_FreeType(_library);
+	}
+#endif
 }
 
 const cFont* cGraphtftFont::GetFont(const char *Filename, int Size, int Width)

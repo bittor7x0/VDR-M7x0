@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
-"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"POT-Creation-Date: 2013-06-23 14:06+0200\n"
 "PO-Revision-Date: 2007-12-18 08:11+0100\n"
 "Last-Translator: Patrice Staudt <patrice.staudt@laposte.net>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -27,6 +27,27 @@ msgstr "Observation de la programmation"
 
 msgid "No timer check"
 msgstr "Sans surveillance"
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
 
 msgid "TrueType Font"
 msgstr "TrueType"
@@ -287,6 +308,9 @@ msgstr "Largeur"
 msgid "No TrueType fonts installed!"
 msgstr "Il n'y a pas de police TrueType d'installé!"
 
+msgid "No TTF support!"
+msgstr ""
+
 msgid "Fixed Font"
 msgstr "Police avec une largeur fixe"
 
@@ -356,6 +380,9 @@ msgstr "Utilise sous-titres pour les répétitions"
 msgid "Show timer conflicts"
 msgstr "Afficher les conflits de programmation"
 
+msgid "EnigmaNG skin"
+msgstr "Skin EnigmaNG"
+
 msgid "Free-To-Air"
 msgstr ""
 
@@ -418,9 +445,6 @@ msgstr "Volume"
 
 msgid "EnigmaNG"
 msgstr "EnigmaNG"
-
-msgid "EnigmaNG skin"
-msgstr "Skin EnigmaNG"
 
 #~ msgid "Show progressbar"
 #~ msgstr "Afficher barre de progression"

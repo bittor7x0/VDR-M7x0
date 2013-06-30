@@ -1,0 +1,13 @@
+This is a modified version for M7x0 and is based in Git revision:
+0147c0ee6222bd10714ef36f42dcee94495bdb92
+
+Main changes:
+- Adapted for VDR-NG-EM by Bittor Corl
+- Backward compatibility to VDR 1.4.0 based in EPGSearch by Bittor Corl
+  In VDR < 1.5.7 the translation is built from the po files calling to:
+    make generate-i18n
+  from skinenigmang's source directory (this calls buildutil/pot2i18n.pl which
+  may need to install Locale::PO in the pearl cpan shell)
+- Fix signal info and testing by lopezm0
+- Fixed some memory leaks by Bittor Corl
+- Updated Spanish translation provided by Bittor Corl

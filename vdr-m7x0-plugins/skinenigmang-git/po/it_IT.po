@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
-"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"POT-Creation-Date: 2013-06-23 14:06+0200\n"
 "PO-Revision-Date: 2010-08-09 23:43+0100\n"
 "Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
 "Language-Team:  <vdr@linuxtv.org>\n"
@@ -32,6 +32,27 @@ msgstr "Verifica timer"
 
 msgid "No timer check"
 msgstr "Nessuna verifica timer"
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
 
 msgid "TrueType Font"
 msgstr "Car. TrueType"
@@ -288,6 +309,9 @@ msgstr "Larghezza"
 msgid "No TrueType fonts installed!"
 msgstr "Nessun car. TrueType installato!"
 
+msgid "No TTF support!"
+msgstr ""
+
 msgid "Fixed Font"
 msgstr "Carattere fisso"
 
@@ -357,6 +381,9 @@ msgstr "Utilizza sottotitoli repliche"
 msgid "Show timer conflicts"
 msgstr "Mostra conflitti timer"
 
+msgid "EnigmaNG skin"
+msgstr "Stile interfaccia EnigmaNG"
+
 msgid "Free-To-Air"
 msgstr "in chiaro"
 
@@ -419,9 +446,6 @@ msgstr "Volume"
 
 msgid "EnigmaNG"
 msgstr "EnigmaNG"
-
-msgid "EnigmaNG skin"
-msgstr "Stile interfaccia EnigmaNG"
 
 #~ msgid "Show progressbar"
 #~ msgstr "Mostra barra avanzamento"

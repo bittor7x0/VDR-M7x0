@@ -8,6 +8,7 @@
 #include "common.h"
 #include "config.h"
 #include "enigma.h"
+#include "i18n.h"
 #include "logo.h"
 #include "setup.h"
 #include "status.h"
@@ -15,8 +16,8 @@
 #include <getopt.h>
 #include <vdr/plugin.h>
 
-#if defined(APIVERSNUM) && APIVERSNUM < 10600
-#error "VDR-1.6.0 API version or greater is required!"
+#if defined(APIVERSNUM) && APIVERSNUM < 10400
+#error "VDR-1.4.0 API version or greater is required!"
 #endif
 
 
@@ -118,6 +119,7 @@ bool cPluginSkinEnigma::Start(void)
 {
   // start any background activities the plugin shall perform.
   debug("cPluginSkinEnigma::Start()");
+  RegisterI18n(Phrases);
 
   if (!fLogodirSet) {
     // set logo directory

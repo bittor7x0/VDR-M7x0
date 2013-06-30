@@ -19,16 +19,19 @@
 SKINENIGMA_USE_PLUGIN_EPGSEARCH = 1
 
 # If you use the mailbox plugin this will include support for it.
-SKINENIGMA_USE_PLUGIN_MAILBOX = 1
+#SKINENIGMA_USE_PLUGIN_MAILBOX = 1
 
 # Include code to support the Avards plugin:
 #  - Dynamic OSD size depending on current WSS mode.
 #  - Display current WSS mode in channel info and replay OSDs.
-SKINENIGMA_USE_PLUGIN_AVARDS = 1
+#SKINENIGMA_USE_PLUGIN_AVARDS = 1
 
 # Disable code to show signal strength and signal-to-noise ratio
 # in channel info OSD.
 #SKINENIGMA_DISABLE_SIGNALINFO = 1
+
+# If you have installed FreeType2 and want to use TrueTypeFonts.
+#HAVE_FREETYPE = 1
 
 # Strip debug symbols?  Set eg. to /bin/true if not
 #STRIP = strip
@@ -48,11 +51,13 @@ VERSION = $(shell grep 'static const char VERSION\[\] *=' $(PLUGIN).c | awk '{ p
 
 CXX      ?= g++
 CXXFLAGS ?= -g -O2 -Wall -Woverloaded-virtual -Wno-parentheses
+t_CXXFLAGS := $(CXXFLAGS)
+CXXFLAGS = $(filter-out -fno-exceptions,$(t_CXXFLAGS))
 
 ### The directory environment:
 
-VDRDIR = ../../..
-LIBDIR = ../../lib
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### Make sure that necessary options are included:
@@ -80,6 +85,10 @@ PACKAGE = vdr-$(ARCHIVE)
 INCLUDES += -I$(VDRDIR)/include
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+
+# Compiled for VDR-M7x0 Siemens Gigaset from open7x0.org
+# Comment following line in other cases
+DEFINES += -DVDRO7OVERSION
 
 ifdef SKINENIGMA_USE_PLUGIN_EPGSEARCH 
 DEFINES += -DUSE_PLUGIN_EPGSEARCH
@@ -125,7 +134,7 @@ endif
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o enigma.o config.o logo.o tools.o status.o texteffects.o setup.o font.o
+OBJS = $(PLUGIN).o enigma.o config.o i18n.o logo.o tools.o status.o texteffects.o setup.o
 
 ifdef HAVE_IMAGEMAGICK
 OBJS += bitmap.o
@@ -138,12 +147,16 @@ INCLUDES += $(shell pkg-config --cflags GraphicsMagick++)
 endif
 endif
 
+ifdef HAVE_FREETYPE
 ifneq ($(shell which freetype-config),)
 	INCLUDES += $(shell freetype-config --cflags)
 	LIBS += $(shell freetype-config --libs)
 else
 	INCLUDES += -I/usr/include/freetype -I/usr/local/include/freetype
 	LIBS += -lfreetype
+endif
+	DEFINES += -DHAVE_FREETYPE
+	OBJS += font.o
 endif
 
 ### The main target:
@@ -175,7 +188,7 @@ I18Npot   = $(PODIR)/$(PLUGIN).pot
 %.mo: %.po
 	msgfmt -c -o $@ $<
 
-$(I18Npot): $(wildcard *.c)
+$(I18Npot): $(wildcard *.[ch])
 	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --package-name=vdr-$(PLUGIN) --package-version=$(VERSION) --msgid-bugs-address='<andreas@vdr-developer.org>' -o $@ $^
 
 %.po: $(I18Npot)
@@ -189,6 +202,10 @@ $(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
 .PHONY: i18n
 i18n: $(I18Nmsgs) $(I18Npot)
 
+generate-i18n: i18n-template.h $(I18Npot) $(I18Npo) buildutil/pot2i18n.pl
+	@chmod +x buildutil/pot2i18n.pl
+	buildutil/pot2i18n.pl $(I18Npot) i18n-template.h > i18n-generated.h
+
 ### Targets:
 
 libvdr-$(PLUGIN).so: $(OBJS)
@@ -198,7 +215,7 @@ ifndef SKINENIGMA_DEBUG
 endif
 	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
 
-dist: clean
+dist: generate-i18n clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
 	@mkdir $(TMPDIR)/$(ARCHIVE)
 	@cp -a * $(TMPDIR)/$(ARCHIVE)
@@ -207,4 +224,4 @@ dist: clean
 	@echo Distribution package created as $(PACKAGE).tgz
 
 clean:
-	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot
+	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot pod2*.tmp

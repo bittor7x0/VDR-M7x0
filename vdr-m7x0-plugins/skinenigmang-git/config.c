@@ -23,7 +23,9 @@ const char *imageExtensionTexts[NUM_IMAGEEXTENSIONTEXTS] = { "xpm", "jpg", "png"
 
 cEnigmaConfig EnigmaConfig;
 
+#ifdef HAVE_FREETYPE
 cGraphtftFont FontCache;
+#endif
 
 FontConfig allFontConfig[FONT_NUMFONTS] =
 {
@@ -122,7 +124,11 @@ const cFont *cEnigmaConfig::GetFont(int id)
   if (::Setup.UseSmallFont == 1) { // if "Use small font" == "skin dependent"
     if (nVdrId == FONT_TRUETYPE) {
       if (!isempty(allFonts[id].Name)) {
+#ifdef HAVE_FREETYPE
         res = FontCache.GetFont(allFonts[id].Name, allFonts[id].Size, allFonts[id].Width);
+#else
+        error("ERROR: EnigmaNG: Font engine not enabled at compile time!");
+#endif
       }
     } else {
       if (nVdrId > FONT_TRUETYPE)
@@ -137,6 +143,7 @@ const cFont *cEnigmaConfig::GetFont(int id)
       nVdrId = fontOsd;
   }
 
+#ifdef HAVE_FREETYPE
   if (res == NULL) {
     switch (nVdrId) {
       case fontOsd: res = FontCache.GetFont(Setup.FontOsd, Setup.FontOsdSize); break;
@@ -144,6 +151,7 @@ const cFont *cEnigmaConfig::GetFont(int id)
       case fontFix: res = FontCache.GetFont(Setup.FontFix, Setup.FontFixSize); break;
     }
   }
+#endif
 
   if (res)
     return res;
@@ -185,12 +193,14 @@ void cEnigmaConfig::GetOsdSize(struct EnigmaOsdSize *size)
   size->w = Setup.OSDWidth;
   size->h = Setup.OSDHeight;
 
+#if VDRVERSNUM >= 10504
   if (dynOsd) {
     size->y = cOsd::OsdTop();
     size->x = cOsd::OsdLeft();
     size->w = cOsd::OsdWidth();
     size->h = cOsd::OsdHeight();
   }
+#endif
 
   if (size->w < MINOSDWIDTH)
     size->w = MINOSDWIDTH;

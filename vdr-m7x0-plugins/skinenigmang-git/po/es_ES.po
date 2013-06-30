@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
-"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"POT-Creation-Date: 2013-06-23 14:06+0200\n"
 "PO-Revision-Date: 2008-02-19 17:15+0100\n"
 "Last-Translator: bittor from open7x0.org <bittor7x0 _at_ gmail.com>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -27,6 +27,27 @@ msgstr "Comprobar programación"
 
 msgid "No timer check"
 msgstr "No comprobar programación"
+
+msgid "Monday"
+msgstr "Lunes"
+
+msgid "Tuesday"
+msgstr "Martes"
+
+msgid "Wednesday"
+msgstr "Miércoles"
+
+msgid "Thursday"
+msgstr "Jueves"
+
+msgid "Friday"
+msgstr "Viernes"
+
+msgid "Saturday"
+msgstr "Sábado"
+
+msgid "Sunday"
+msgstr "Domingo"
 
 msgid "TrueType Font"
 msgstr "Fuente TrueType"
@@ -64,9 +85,8 @@ msgstr "restante"
 msgid "percent"
 msgstr "porcentaje"
 
-#, fuzzy
 msgid "elapsed/remaining"
-msgstr "restante"
+msgstr "transcurrido/restante"
 
 msgid "never"
 msgstr "nunca"
@@ -87,13 +107,13 @@ msgid "Free last line"
 msgstr "Última línea libre"
 
 msgid "if required"
-msgstr ""
+msgstr "si es necesario"
 
 msgid "Try 8bpp single area"
 msgstr "Probar un área de 8bpp"
 
 msgid "Round corners"
-msgstr ""
+msgstr "Esquinas redondeadas"
 
 msgid "Full title width"
 msgstr "Ancho completo para título"
@@ -105,24 +125,22 @@ msgid "Dynamic OSD size"
 msgstr "Tamaño OSD dinámico"
 
 msgid "Menu OSD"
-msgstr ""
+msgstr "Menú OSD"
 
 msgid "Show info area in main menu"
 msgstr "Mostrar info en menú principal"
 
-#, fuzzy
 msgid "  Min width of info area"
-msgstr "  Scroll para el área info"
+msgstr "  Anchura mín. para la info"
 
 msgid "Show messages in menu on"
 msgstr "Mostrar mensajes en el menú"
 
-#, fuzzy
 msgid "Show scrollbar in menu"
-msgstr "  Mostrar símbolos en menú"
+msgstr "Mostrar barra de scroll en menú"
 
 msgid "EPG & Recording Details OSD"
-msgstr ""
+msgstr "EPG y detalles de grabación OSD"
 
 msgid "Show auxiliary information"
 msgstr "Mostrar información adicional"
@@ -131,26 +149,25 @@ msgid "Show recording's size"
 msgstr "Mostrar tamaño de grabación"
 
 msgid "Channel Info OSD"
-msgstr ""
+msgstr "Info canal OSD"
 
 msgid "Show remaining/elapsed time"
 msgstr "Mostrar tiempo restante/transcurrido"
 
 msgid "Width of progress bar"
-msgstr ""
+msgstr "Anchura para barra de progreso"
 
-#, fuzzy
 msgid "Show signal info"
-msgstr "  Mostrar icono correo"
+msgstr "Mostrar info de señal"
 
 msgid "  Width of signal info"
-msgstr ""
+msgstr "  Anchura para info de señal"
 
 msgid "Show CA system as text"
-msgstr ""
+msgstr "Mostrar sistema CA como texto"
 
 msgid "Show Category - Genre / Contents"
-msgstr ""
+msgstr "Mostrar Categoría - Género / Contenido"
 
 msgid "pixel algo"
 msgstr "Algoritmo píxel"
@@ -165,7 +182,7 @@ msgid "only if new mail present"
 msgstr "sólo si hay nuevo correo"
 
 msgid "active only"
-msgstr ""
+msgstr "sólo activo"
 
 msgid "Flushing channel logo cache..."
 msgstr "Limpiando la caché..."
@@ -186,13 +203,13 @@ msgid "  Show symbols in audio"
 msgstr "  Mostrar símbolos en audio"
 
 msgid "Colored status symbols in EPG details"
-msgstr ""
+msgstr "Símbolos de estado coloreados en la EPG"
 
 msgid "Show symbols in lists"
 msgstr "Mostrar símbolos en listas"
 
 msgid "Show progressbar in lists"
-msgstr ""
+msgstr "Mostrar barra de progreso en listas"
 
 msgid "Show marker in lists"
 msgstr "Mostrar marcador en listas"
@@ -207,7 +224,7 @@ msgid "  Show WSS mode symbols"
 msgstr "  Mostrar símbolos modo WSS"
 
 msgid "  Show mail icon"
-msgstr "  Mostrar icono correo"
+msgstr "  Mostrar icono de correo"
 
 msgid "Show event/recording images"
 msgstr "Mostrar imágenes grabación/suceso"
@@ -287,6 +304,9 @@ msgstr "Anchura"
 msgid "No TrueType fonts installed!"
 msgstr "¡Ninguna fuente TrueType instalada!"
 
+msgid "No TTF support!"
+msgstr "¡Sin soporte TTF!"
+
 msgid "Fixed Font"
 msgstr "Fuente Fija"
 
@@ -356,11 +376,14 @@ msgstr "Usar subtítulo para repeticiones"
 msgid "Show timer conflicts"
 msgstr "Mostrar conflictos de programación"
 
+msgid "EnigmaNG skin"
+msgstr "Piel EnigmaNG"
+
 msgid "Free-To-Air"
-msgstr ""
+msgstr "sin encriptar"
 
 msgid "encrypted"
-msgstr ""
+msgstr "encriptado"
 
 msgid "*** Invalid Channel ***"
 msgstr "*** Canal no válido ***"
@@ -381,31 +404,31 @@ msgid "min"
 msgstr "min"
 
 msgid "Content: "
-msgstr ""
+msgstr "Contenido: "
 
 msgid "Video"
-msgstr ""
+msgstr "Vídeo"
 
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 msgid "Subtitles"
-msgstr ""
+msgstr "Subtítulos"
 
 msgid "RERUNS OF THIS SHOW"
 msgstr "REPETICIONES"
 
 msgid "cut"
-msgstr ""
+msgstr "editado"
 
 msgid "Length"
-msgstr ""
+msgstr "Duración"
 
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
 msgid "Est. bitrate"
-msgstr ""
+msgstr "Bitrate est."
 
 msgid "Auxiliary information"
 msgstr "Información adicional"
@@ -418,12 +441,3 @@ msgstr "Volumen"
 
 msgid "EnigmaNG"
 msgstr "EnigmaNG"
-
-msgid "EnigmaNG skin"
-msgstr "Piel EnigmaNG"
-
-#~ msgid "Show progressbar"
-#~ msgstr "Mostrar barra de progreso"
-
-#~ msgid "Languages"
-#~ msgstr "Idiomas"
