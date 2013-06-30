@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
-"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"POT-Creation-Date: 2013-06-23 14:06+0200\n"
 "PO-Revision-Date: 2011-11-30 13:27+0200\n"
 "Last-Translator: jv\n"
 "Language-Team:  <vdr@linuxtv.org>\n"
@@ -28,6 +28,27 @@ msgstr "Idõzítõ ellenõrzése"
 
 msgid "No timer check"
 msgstr "Nincs idõzítõ ellenõrzés"
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
 
 msgid "TrueType Font"
 msgstr "TrueType betûtipus"
@@ -284,6 +305,9 @@ msgstr "Szélesség"
 msgid "No TrueType fonts installed!"
 msgstr "Nincs TrueType betûkészlet telepítve!"
 
+msgid "No TTF support!"
+msgstr ""
+
 msgid "Fixed Font"
 msgstr "Fixméretû betûkészlet"
 
@@ -353,6 +377,9 @@ msgstr "Alcímek használata ismétlésekhez"
 msgid "Show timer conflicts"
 msgstr "Idõzítõk ütközésének kijelzése"
 
+msgid "EnigmaNG skin"
+msgstr "EnigmaNG bõr"
+
 msgid "Free-To-Air"
 msgstr "kódolatlan"
 
@@ -415,6 +442,3 @@ msgstr "Hangerõ"
 
 msgid "EnigmaNG"
 msgstr "EnigmaNG"
-
-msgid "EnigmaNG skin"
-msgstr "EnigmaNG bõr"

@@ -9,6 +9,7 @@
 #include "config.h"
 #include "enigma.h"
 #include "logo.h"
+#include "i18n.h"
 #include "status.h"
 #include "texteffects.h"
 
@@ -29,7 +30,7 @@
 
 #ifndef DISABLE_SIGNALINFO
 #include <sys/ioctl.h>
-#include <linux/dvb/frontend.h>
+#include "m7x0_dvb/frontend.h"
 #endif //DISABLE_SIGNALINFO
 
 #ifdef USE_PLUGIN_EPGSEARCH
@@ -414,7 +415,7 @@ cSkinEnigmaDisplayChannel::cSkinEnigmaDisplayChannel(bool WithInfo)
     osd->SetAreas(SingleArea, sizeof(SingleArea) / sizeof(tArea));
     // clear all
     osd->DrawRectangle(0, 0, osd->Width(), osd->Height(), clrTransparent);
-    if (SingleArea[0].bpp >=8 && Setup.AntiAlias)
+    if (SingleArea[0].bpp >=8 /* && Setup.AntiAlias */)
       nBPP = 8;
   } else {
     debug("cSkinEnigmaDisplayChannel: using multiple areas");
@@ -663,7 +664,7 @@ void cSkinEnigmaDisplayChannel::DrawSymbols(const cChannel *Channel)
 }
 
 #ifndef DISABLE_SIGNALINFO
-#define FRONTEND_DEVICE "/dev/dvb/adapter%d/frontend%d"
+#define FRONTEND_DEVICE "/dev/ost/frontend%d"
 
 int cSkinEnigmaDisplayChannel::GetSignal(int &str, int &snr, fe_status_t & /* status */) {
 #if VDRVERSNUM < 10719
@@ -683,7 +684,8 @@ int cSkinEnigmaDisplayChannel::GetSignal(int &str, int &snr, fe_status_t & /* st
   }
 
   ::ioctl(m_Frontend, FE_READ_SIGNAL_STRENGTH, &str);
-  ::ioctl(m_Frontend, FE_READ_SNR, &snr);
+  //::ioctl(m_Frontend, FE_READ_SNR, &snr);
+  ::ioctl(m_Frontend, FE_READ_BER, &snr); // Read BER instead of SNR
 #else
   if (UpdateSignalTimer.Elapsed() < 500) {
     return 0;
@@ -714,8 +716,8 @@ void cSkinEnigmaDisplayChannel::UpdateSignal() {
   int xSignalBarRight = xSignalBarLeft + bw;
 
 #if VDRVERSNUM < 10719
-  str = str * bw / 0xFFFF;
-  snr = snr * bw / 0xFFFF;
+  str = str * bw / 0xAA; //0xFFFF;     // SIGNAL => Scale 0..255
+  snr = snr * bw / 0x19; //0xFFFF;     // BER    => Scale 0..25
 #else
   str = str * bw / 100;
   snr = snr * bw / 100;
@@ -724,6 +726,8 @@ void cSkinEnigmaDisplayChannel::UpdateSignal() {
   if (str != nStrBarWidth || snr != nSnrBarWidth) {
     nStrBarWidth = str;
     nSnrBarWidth = snr;
+
+    debug("Signal info: (BER:%d, STRENGTH:%d)", snr, str);
 
     int h = int((yBottomBottom - Gap - yBottomTop - Gap - Gap ) / 2);
     int yStr = yBottomTop + Gap;
@@ -792,7 +796,6 @@ int cSkinEnigmaDisplayChannel::FindCatTextAndLen(const cEvent* e, int& xTextWidt
     cat += " - ";
   cat += gen;
 
-#if VDRVERSNUM >= 10711
   if (cat.empty()) {
     std::string strInfo;
     bool fFirst = true;
@@ -807,7 +810,6 @@ int cSkinEnigmaDisplayChannel::FindCatTextAndLen(const cEvent* e, int& xTextWidt
     }
     cat += strInfo;
   }
-#endif
 
   if (!cat.empty()) {
     if (pFontSubtitle->Width(e->ShortText()) > xTextWidth * .5)
@@ -1332,7 +1334,7 @@ cSkinEnigmaDisplayMenu::cSkinEnigmaDisplayMenu(void)
     debug("cSkinEnigmaDisplayMenu: using %dbpp single area", SingleArea[0].bpp);
     osd->SetAreas(SingleArea, sizeof(SingleArea) / sizeof(tArea));
     nNumImageColors = 230; //TODO: find correct number of colors
-    if (SingleArea[0].bpp >=8 && Setup.AntiAlias)
+    if (SingleArea[0].bpp >=8 /* && Setup.AntiAlias */)
       nBPP = 8;
   } else {
     if (fShowLogoDefault || EnigmaConfig.showColSymbolsDetails) {
@@ -2760,7 +2762,7 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
     cString filename;
     int rc = 0;
     do {
-#if VDRVERSNUM >= 10703
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
       if (Recording->IsPesRecording())
         filename = cString::sprintf("%s/%03d.vdr", Recording->FileName(), ++i);
       else
@@ -2784,6 +2786,9 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
 #if VDRVERSNUM >= 10703
   bool fHasMarks = marks.Load(Recording->FileName(), Recording->FramesPerSecond(), Recording->IsPesRecording()) && marks.Count();
   cIndexFile *index = new cIndexFile(Recording->FileName(), false, Recording->IsPesRecording());
+#elif defined(TSPLAY_PATCH_VERSION)
+  bool fHasMarks = marks.Load(Recording->FileName(), Recording->IsPesRecording()) && marks.Count();
+  cIndexFile *index = new cIndexFile(Recording->FileName(), false, Recording->IsPesRecording());
 #else
   bool fHasMarks = marks.Load(Recording->FileName()) && marks.Count();
   cIndexFile *index = new cIndexFile(Recording->FileName(), false);
@@ -2794,7 +2799,7 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
   unsigned long long nRecSizeCut = nRecSize < 0 ? -1 : 0;
   unsigned long long nCutInOffset = 0;
   if (fHasMarks && index) {
-#if VDRVERSNUM >= 10703
+#if VDRVERSNUM >= 10703 || defined(TSPLAY_PATCH_VERSION)
     uint16_t FileNumber;
     off_t FileOffset;
 #else
@@ -2906,6 +2911,8 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
 
 #if VDRVERSNUM >= 10703
       cString strBitrate = cString::sprintf("%s: %s\n%s: %.2f MBit/s (Video+Audio)", tr("Format"), Recording->IsPesRecording() ? "PES" : "TS", tr("Est. bitrate"), (float)nRecSize / nLastIndex * Recording->FramesPerSecond() * 8 / MEGABYTE(1));
+#elif defined(TSPLAY_PATCH_VERSION)
+      cString strBitrate = cString::sprintf("%s: %s\n%s: %.2f MBit/s (Video+Audio)", tr("Format"), Recording->IsPesRecording() ? "PES" : "TS", tr("Est. bitrate"), (float)nRecSize / nLastIndex * FRAMESPERSEC * 8 / MEGABYTE(1));
 #else
       cString strBitrate = cString::sprintf("%s: %.2f MBit/s (Video+Audio)", tr("Est. bitrate"), (float)nRecSize / nLastIndex * FRAMESPERSEC * 8 / MEGABYTE(1));
 #endif
@@ -3269,7 +3276,7 @@ cSkinEnigmaDisplayReplay::cSkinEnigmaDisplayReplay(bool ModeOnly)
   if ((SingleArea[0].bpp < 8 || EnigmaConfig.singleArea8Bpp) && osd->CanHandleAreas(SingleArea, sizeof(SingleArea) / sizeof(tArea)) == oeOk) {
     debug("cSkinEnigmaDisplayReplay: using %dbpp single area", SingleArea[0].bpp);
     osd->SetAreas(SingleArea, sizeof(SingleArea) / sizeof(tArea));
-    if (SingleArea[0].bpp >=8 && Setup.AntiAlias)
+    if (SingleArea[0].bpp >=8 /* && Setup.AntiAlias */)
       nBPP = 8;
   } else {
     debug("cSkinEnigmaDisplayReplay: using multiple areas");
@@ -4055,7 +4062,7 @@ cSkinEnigmaDisplayMessage::cSkinEnigmaDisplayMessage()
   if ((SingleArea[0].bpp < 8 || EnigmaConfig.singleArea8Bpp) && osd->CanHandleAreas(SingleArea, sizeof(SingleArea) / sizeof(tArea)) == oeOk) {
     debug("cSkinEnigmaDisplayMessage: using %dbpp single area", SingleArea[0].bpp);
     osd->SetAreas(SingleArea, sizeof(SingleArea) / sizeof(tArea));
-    if (SingleArea[0].bpp >=8 && Setup.AntiAlias)
+    if (SingleArea[0].bpp >=8 /* && Setup.AntiAlias */)
       nBPP = 8;
   } else {
     debug("cSkinEnigmaDisplayMessage: using multiple areas");

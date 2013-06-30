@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
-"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"POT-Creation-Date: 2013-06-23 14:06+0200\n"
 "PO-Revision-Date: 2007-12-18 08:11+0100\n"
 "Last-Translator: dorpsgek @vdr-portal.de\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -27,6 +27,27 @@ msgstr "Monitoren"
 
 msgid "No timer check"
 msgstr "Geen controle"
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
 
 msgid "TrueType Font"
 msgstr "TrueType Font"
@@ -287,6 +308,9 @@ msgstr "Breedte"
 msgid "No TrueType fonts installed!"
 msgstr "Geen TrueType fonten geinstalleerd!"
 
+msgid "No TTF support!"
+msgstr ""
+
 msgid "Fixed Font"
 msgstr "Vaste waarde font"
 
@@ -356,6 +380,9 @@ msgstr "Gebr. ondertitlel voor herh."
 msgid "Show timer conflicts"
 msgstr "Timerconflict tonen"
 
+msgid "EnigmaNG skin"
+msgstr "EnigmaNG skin"
+
 msgid "Free-To-Air"
 msgstr ""
 
@@ -418,9 +445,6 @@ msgstr "Volume"
 
 msgid "EnigmaNG"
 msgstr "EnigmaNG"
-
-msgid "EnigmaNG skin"
-msgstr "EnigmaNG skin"
 
 #~ msgid "Show progressbar"
 #~ msgstr "Progressiebalk tonen"

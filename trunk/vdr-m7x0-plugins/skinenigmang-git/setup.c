@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "config.h"
+#include "i18n.h"
 #include "logo.h"
 #include "setup.h"
 #include "tools.h"
@@ -260,12 +261,15 @@ void cMenuSetupGeneral::Set(void)
 {
   int currentItem = Current();
   Clear();
-
+#ifndef VDRO7OVERSION
   Add(new cMenuEditBoolItem(tr("Try 8bpp single area"), &data->singleArea8Bpp));
+#endif
   Add(new cMenuEditBoolItem(tr("Round corners"), &data->drawRoundCorners));
   Add(new cMenuEditBoolItem(tr("Full title width"), &data->fullTitleWidth)); // channel info / replay / tracks
   Add(new cMenuEditBoolItem(tr("Show VPS"), &data->showVps)); // channel info / epg details
+#if VDRVERSNUM >= 10711
   Add(new cMenuEditBoolItem(tr("Dynamic OSD size"), &data->dynOsd));
+#endif
   AddCategory(tr("Menu OSD"));
   Add(new cMenuEditBoolItem(tr("Show info area in main menu"), &data->showInfo));
   if (data->showInfo)
@@ -472,6 +476,7 @@ void cMenuSetupAnimText::Set(void)
   SetHelp(NULL, NULL, NULL, NULL);
 }
 
+#ifdef HAVE_FREETYPE
 // Setup: TTF
 cMenuSetupTTF::cMenuSetupTTF(FontInfo* Data, cStringList* fonts) : cOsdMenu(tr("TrueType Font"), 10)
 {
@@ -535,20 +540,27 @@ void cMenuSetupTTF::Store(void)
     data->Size = nSize;
   }
 }
+#endif
 
 // Setup: Fonts
 cMenuSetupFonts::cMenuSetupFonts(cEnigmaConfig* Data) : cMenuSetupSubMenu(tr("Fonts"), Data)
 {
+#ifdef HAVE_FREETYPE
   allVdrFonts[0] = tr("TrueType Font");
+#else
+  allVdrFonts[0] = tr("No TTF support!");
+#endif
   allVdrFonts[1] = tr("Default OSD Font");
   allVdrFonts[2] = tr("Default Fixed Size Font");
   allVdrFonts[3] = tr("Default Small Font");
 
+#ifdef HAVE_FREETYPE
   cFont::GetAvailableFontNames(&fontMonoNames, true);
   cFont::GetAvailableFontNames(&fontNames);
   fontNames.Insert(strdup(DefaultFontSml));
   fontNames.Insert(strdup(DefaultFontOsd));
   fontMonoNames.Insert(strdup(DefaultFontFix));
+#endif
 
   Set();
 }
@@ -561,6 +573,7 @@ eOSState cMenuSetupFonts::ProcessKey(eKeys Key)
 {
   eOSState state = cMenuSetupSubMenu::ProcessKey(Key);
 
+#ifdef HAVE_FREETYPE
   if (state == osUnknown && Key == kBlue && data->allFonts[Current()].VdrId == FONT_TRUETYPE) {
     state = AddSubMenu(new cMenuSetupTTF(&data->allFonts[Current()], strncmp(Get(Current())->Text(), tr("Fixed Font"), strlen(tr("Fixed Font"))) == 0 ? &fontMonoNames : &fontNames));
   } else {
@@ -569,6 +582,7 @@ eOSState cMenuSetupFonts::ProcessKey(eKeys Key)
     else
       SetHelp(NULL, NULL, NULL, NULL);
   }
+#endif
 
   return state;
 }

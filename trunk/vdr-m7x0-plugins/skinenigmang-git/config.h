@@ -17,7 +17,9 @@ extern const char *imageExtensionTexts[NUM_IMAGEEXTENSIONTEXTS];
 #define NUM_IMAGEEXTENSIONTEXTS 0
 #endif
 
+#ifdef HAVE_FREETYPE
 #include "font.h"
+#endif
 
 #include <vdr/skins.h>
 #include <vdr/font.h>

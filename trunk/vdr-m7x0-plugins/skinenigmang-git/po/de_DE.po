@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
-"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"POT-Creation-Date: 2013-06-23 14:06+0200\n"
 "PO-Revision-Date: 2007-12-18 08:11+0100\n"
 "Last-Translator: Andreas Mair <andreas _@_ vdr-developer.org>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
@@ -27,6 +27,27 @@ msgstr "Überwachung"
 
 msgid "No timer check"
 msgstr "Ohne Überwachung"
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
 
 msgid "TrueType Font"
 msgstr "TrueType Schrift"
@@ -283,6 +304,9 @@ msgstr "Weite"
 msgid "No TrueType fonts installed!"
 msgstr "Keine TrueType Schriften installiert!"
 
+msgid "No TTF support!"
+msgstr ""
+
 msgid "Fixed Font"
 msgstr "Schrift mit fester Breite"
 
@@ -352,6 +376,9 @@ msgstr "Verw. Untertitel für Wdh."
 msgid "Show timer conflicts"
 msgstr "Timerkonflikte anzeigen"
 
+msgid "EnigmaNG skin"
+msgstr "EnigmaNG Oberfläche"
+
 msgid "Free-To-Air"
 msgstr "Free-To-Air"
 
@@ -414,6 +441,3 @@ msgstr "Lautstärke"
 
 msgid "EnigmaNG"
 msgstr "EnigmaNG"
-
-msgid "EnigmaNG skin"
-msgstr "EnigmaNG Oberfläche"

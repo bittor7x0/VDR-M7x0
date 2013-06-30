@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
-"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"POT-Creation-Date: 2013-06-23 14:06+0200\n"
 "PO-Revision-Date: 2012-05-22 22:25+0200\n"
 "Last-Translator: Ville Skyttä <ville.skytta@iki.fi>\n"
 "Language-Team: Finnish <vdr@linuxtv.org>\n"
@@ -27,6 +27,27 @@ msgstr "Ajastimien valvonta"
 
 msgid "No timer check"
 msgstr "Ei valvontaa"
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
 
 msgid "TrueType Font"
 msgstr "TrueType-kirjasin"
@@ -283,6 +304,9 @@ msgstr "Leveys"
 msgid "No TrueType fonts installed!"
 msgstr "TrueType-kirjasintyyppejä ei löydy!"
 
+msgid "No TTF support!"
+msgstr ""
+
 msgid "Fixed Font"
 msgstr "Tasavälinen kirjasintyyppi"
 
@@ -352,6 +376,9 @@ msgstr "Käytä lyhyttä kuvausta uusinnoille"
 msgid "Show timer conflicts"
 msgstr "Näytä päällekkäiset ajastimet"
 
+msgid "EnigmaNG skin"
+msgstr "EnigmaNG-ulkoasu"
+
 msgid "Free-To-Air"
 msgstr ""
 
@@ -414,9 +441,6 @@ msgstr "Äänenvoimakkuus"
 
 msgid "EnigmaNG"
 msgstr "EnigmaNG"
-
-msgid "EnigmaNG skin"
-msgstr "EnigmaNG-ulkoasu"
 
 #~ msgid "Show progressbar"
 #~ msgstr "Näytä aikajana"

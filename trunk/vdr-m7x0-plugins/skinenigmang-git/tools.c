@@ -6,6 +6,7 @@
  */
 
 #include "common.h"
+#include "i18n.h"
 
 #include <sstream>
 #include <string.h>
@@ -229,5 +230,28 @@ std::string ExtractAttribute(const char* evDescription, const char* name)
   }
   return attribute;
 }
+
+#if APIVERSNUM < 10505
+cString WeekDayNameFull(int WeekDay)
+{
+  WeekDay = WeekDay == 0 ? 6 : WeekDay - 1; // we start with Monday==0!
+  switch (WeekDay) {
+    case 0: return tr("Monday");
+    case 1: return tr("Tuesday");
+    case 2: return tr("Wednesday");
+    case 3: return tr("Thursday");
+    case 4: return tr("Friday");
+    case 5: return tr("Saturday");
+    case 6: return tr("Sunday");
+    }
+  return "???";
+}
+
+cString WeekDayNameFull(time_t t)
+{
+  struct tm tm_r;
+  return WeekDayNameFull(localtime_r(&t, &tm_r)->tm_wday);
+}
+#endif
 
 // vim:et:sw=2:ts=2:

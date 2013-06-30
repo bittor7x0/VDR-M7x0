@@ -69,6 +69,7 @@ public:
   cMenuSetupAnimText(cEnigmaConfig *Data);
 };
 
+#ifdef HAVE_FREETYPE
 class cMenuSetupTTF : public cOsdMenu {
 private:
   FontInfo *data;
@@ -83,11 +84,14 @@ protected:
 public:
   cMenuSetupTTF(FontInfo *fontinfo, cStringList* fontList);
 };
+#endif
 
 class cMenuSetupFonts : public cMenuSetupSubMenu {
+#ifdef HAVE_FREETYPE
 private:
   cStringList fontNames;
   cStringList fontMonoNames;
+#endif
 
 protected:
   virtual eOSState ProcessKey(eKeys Key);
