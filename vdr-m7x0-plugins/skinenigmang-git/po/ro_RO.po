@@ -1,0 +1,420 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Paul Lacatus <paul@campina.iiruc.ro>, 2002
+# Lucian Muresan <lucianm@users.sourceforge.net>, 2004
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
+"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"PO-Revision-Date: 2007-12-18 08:11+0100\n"
+"Last-Translator: Lucian Muresan <lucianm@users.sourceforge.net>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel:"
+msgstr ""
+
+msgid "Search pattern:"
+msgstr ""
+
+msgid "Timer check"
+msgstr ""
+
+msgid "No timer check"
+msgstr ""
+
+msgid "TrueType Font"
+msgstr ""
+
+msgid "Default OSD Font"
+msgstr ""
+
+msgid "Default Fixed Size Font"
+msgstr ""
+
+msgid "Default Small Font"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "Logos & Symbols"
+msgstr ""
+
+msgid "Animated Text"
+msgstr ""
+
+msgid "Fonts"
+msgstr ""
+
+msgid "EPGSearch"
+msgstr ""
+
+msgid "elapsed"
+msgstr ""
+
+msgid "remaining"
+msgstr ""
+
+msgid "percent"
+msgstr ""
+
+msgid "elapsed/remaining"
+msgstr ""
+
+msgid "never"
+msgstr ""
+
+msgid "use size.vdr only"
+msgstr ""
+
+msgid "always"
+msgstr ""
+
+msgid "Last line"
+msgstr ""
+
+msgid "Help buttons"
+msgstr ""
+
+msgid "Free last line"
+msgstr ""
+
+msgid "if required"
+msgstr ""
+
+msgid "Try 8bpp single area"
+msgstr ""
+
+msgid "Round corners"
+msgstr ""
+
+msgid "Full title width"
+msgstr ""
+
+msgid "Show VPS"
+msgstr ""
+
+msgid "Dynamic OSD size"
+msgstr ""
+
+msgid "Menu OSD"
+msgstr ""
+
+msgid "Show info area in main menu"
+msgstr ""
+
+msgid "  Min width of info area"
+msgstr ""
+
+msgid "Show messages in menu on"
+msgstr ""
+
+msgid "Show scrollbar in menu"
+msgstr ""
+
+msgid "EPG & Recording Details OSD"
+msgstr ""
+
+msgid "Show auxiliary information"
+msgstr ""
+
+msgid "Show recording's size"
+msgstr ""
+
+msgid "Channel Info OSD"
+msgstr ""
+
+msgid "Show remaining/elapsed time"
+msgstr ""
+
+msgid "Width of progress bar"
+msgstr ""
+
+msgid "Show signal info"
+msgstr ""
+
+msgid "  Width of signal info"
+msgstr ""
+
+msgid "Show CA system as text"
+msgstr ""
+
+msgid "Show Category - Genre / Contents"
+msgstr ""
+
+msgid "pixel algo"
+msgstr ""
+
+msgid "ratio algo"
+msgstr ""
+
+msgid "zoom image"
+msgstr ""
+
+msgid "only if new mail present"
+msgstr ""
+
+msgid "active only"
+msgstr ""
+
+msgid "Flushing channel logo cache..."
+msgstr ""
+
+msgid "Show symbols"
+msgstr ""
+
+msgid "  Show symbols in menu"
+msgstr ""
+
+msgid "  Show symbols in replay"
+msgstr ""
+
+msgid "  Show symbols in messages"
+msgstr ""
+
+msgid "  Show symbols in audio"
+msgstr ""
+
+msgid "Colored status symbols in EPG details"
+msgstr ""
+
+msgid "Show symbols in lists"
+msgstr ""
+
+msgid "Show progressbar in lists"
+msgstr ""
+
+msgid "Show marker in lists"
+msgstr ""
+
+msgid "Show status symbols"
+msgstr ""
+
+msgid "  Show flags"
+msgstr ""
+
+msgid "  Show WSS mode symbols"
+msgstr ""
+
+msgid "  Show mail icon"
+msgstr ""
+
+msgid "Show event/recording images"
+msgstr ""
+
+msgid "  Resize images"
+msgstr ""
+
+msgid "  Image width"
+msgstr ""
+
+msgid "  Image height"
+msgstr ""
+
+msgid "  Image format"
+msgstr ""
+
+msgid "Show channel logos"
+msgstr ""
+
+msgid "  Identify channel by"
+msgstr ""
+
+msgid "name"
+msgstr ""
+
+msgid "data"
+msgstr ""
+
+msgid "Channel logo cache size"
+msgstr ""
+
+msgid "Button$Flush cache"
+msgstr ""
+
+msgid "left and right"
+msgstr ""
+
+msgid "to the left"
+msgstr ""
+
+msgid "Enable"
+msgstr ""
+
+msgid "  Scroll OSD title"
+msgstr ""
+
+msgid "  Scroll info area"
+msgstr ""
+
+msgid "  Scroll active list items"
+msgstr ""
+
+msgid "  Scroll other items"
+msgstr ""
+
+msgid "  Scroll behaviour"
+msgstr ""
+
+msgid "  Scroll delay (ms)"
+msgstr ""
+
+msgid "  Scroll pause (ms)"
+msgstr ""
+
+msgid "  Blink pause (ms)"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Size"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "No TrueType fonts installed!"
+msgstr ""
+
+msgid "Fixed Font"
+msgstr ""
+
+msgid "Button$Set"
+msgstr ""
+
+msgid "OSD title"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Help keys"
+msgstr ""
+
+msgid "Channelinfo: title"
+msgstr ""
+
+msgid "Channelinfo: subtitle"
+msgstr ""
+
+msgid "Channelinfo: language"
+msgstr ""
+
+msgid "List items"
+msgstr ""
+
+msgid "Info area: timers title"
+msgstr ""
+
+msgid "Info area: timers text"
+msgstr ""
+
+msgid "Info area: warning title"
+msgstr ""
+
+msgid "Info area: warning text"
+msgstr ""
+
+msgid "Details: title"
+msgstr ""
+
+msgid "Details: subtitle"
+msgstr ""
+
+msgid "Details: date"
+msgstr ""
+
+msgid "Details: text"
+msgstr ""
+
+msgid "Replay: times"
+msgstr ""
+
+msgid "if exists"
+msgstr ""
+
+msgid "Number of Reruns"
+msgstr ""
+
+msgid "Use Subtitle for reruns"
+msgstr ""
+
+msgid "Show timer conflicts"
+msgstr ""
+
+msgid "Free-To-Air"
+msgstr ""
+
+msgid "encrypted"
+msgstr ""
+
+msgid "*** Invalid Channel ***"
+msgstr ""
+
+msgid "WARNING"
+msgstr ""
+
+msgid "Timer conflict"
+msgstr ""
+
+msgid "Timer conflicts"
+msgstr ""
+
+msgid "TIMERS"
+msgstr ""
+
+msgid "min"
+msgstr ""
+
+msgid "Content: "
+msgstr ""
+
+msgid "Video"
+msgstr ""
+
+msgid "Audio"
+msgstr ""
+
+msgid "Subtitles"
+msgstr ""
+
+msgid "RERUNS OF THIS SHOW"
+msgstr ""
+
+msgid "cut"
+msgstr ""
+
+msgid "Length"
+msgstr ""
+
+msgid "Format"
+msgstr ""
+
+msgid "Est. bitrate"
+msgstr ""
+
+msgid "Auxiliary information"
+msgstr ""
+
+msgid "Mute"
+msgstr ""
+
+msgid "Volume"
+msgstr ""
+
+msgid "EnigmaNG"
+msgstr ""
+
+msgid "EnigmaNG skin"
+msgstr ""

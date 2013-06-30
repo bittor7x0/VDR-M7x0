@@ -1,0 +1,429 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Johan Schuring <dorpsgek @vdr-portal.de>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
+"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"PO-Revision-Date: 2007-12-18 08:11+0100\n"
+"Last-Translator: dorpsgek @vdr-portal.de\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel:"
+msgstr "Kanaal:"
+
+msgid "Search pattern:"
+msgstr "Zoekpatroon:"
+
+msgid "Timer check"
+msgstr "Monitoren"
+
+msgid "No timer check"
+msgstr "Geen controle"
+
+msgid "TrueType Font"
+msgstr "TrueType Font"
+
+msgid "Default OSD Font"
+msgstr "Standaard OSDfont"
+
+msgid "Default Fixed Size Font"
+msgstr "Standaardwaarde font"
+
+msgid "Default Small Font"
+msgstr "Standaard klein font"
+
+msgid "General"
+msgstr "Algemeen"
+
+msgid "Logos & Symbols"
+msgstr "Logo's & Symbolen"
+
+msgid "Animated Text"
+msgstr "Geanimeerde tekst"
+
+msgid "Fonts"
+msgstr "Fonts"
+
+msgid "EPGSearch"
+msgstr "EPGsearch"
+
+msgid "elapsed"
+msgstr "gedane"
+
+msgid "remaining"
+msgstr "resterend"
+
+msgid "percent"
+msgstr "procent"
+
+#, fuzzy
+msgid "elapsed/remaining"
+msgstr "resterend"
+
+msgid "never"
+msgstr "nooit"
+
+msgid "use size.vdr only"
+msgstr "alleen size.vdr gebruiken"
+
+msgid "always"
+msgstr "Altijd"
+
+msgid "Last line"
+msgstr "Laatste lijn"
+
+msgid "Help buttons"
+msgstr "Help knoppen"
+
+msgid "Free last line"
+msgstr "Vrije laatste lijn"
+
+msgid "if required"
+msgstr ""
+
+msgid "Try 8bpp single area"
+msgstr "Op 8bpp bereik testen"
+
+msgid "Round corners"
+msgstr ""
+
+msgid "Full title width"
+msgstr "Volle titelbreedte"
+
+msgid "Show VPS"
+msgstr "VPS tonen"
+
+msgid "Dynamic OSD size"
+msgstr "Dynamische OSD grootte"
+
+msgid "Menu OSD"
+msgstr ""
+
+msgid "Show info area in main menu"
+msgstr "Info in hoofdmenu"
+
+#, fuzzy
+msgid "  Min width of info area"
+msgstr "  Infobereik scrollen"
+
+msgid "Show messages in menu on"
+msgstr "Toon berichten in menu aan"
+
+#, fuzzy
+msgid "Show scrollbar in menu"
+msgstr "  Symbolen in menu tonen"
+
+msgid "EPG & Recording Details OSD"
+msgstr ""
+
+msgid "Show auxiliary information"
+msgstr "Toon hulp informatie"
+
+msgid "Show recording's size"
+msgstr "Opnamegrootte tonen"
+
+msgid "Channel Info OSD"
+msgstr ""
+
+msgid "Show remaining/elapsed time"
+msgstr "Toon resterend/gedane tijd"
+
+msgid "Width of progress bar"
+msgstr ""
+
+#, fuzzy
+msgid "Show signal info"
+msgstr "  Mail-ikoon tonen"
+
+msgid "  Width of signal info"
+msgstr ""
+
+msgid "Show CA system as text"
+msgstr ""
+
+msgid "Show Category - Genre / Contents"
+msgstr ""
+
+msgid "pixel algo"
+msgstr "pixelalgoritme"
+
+msgid "ratio algo"
+msgstr "algoritmeratio"
+
+msgid "zoom image"
+msgstr "zoomen"
+
+msgid "only if new mail present"
+msgstr "alleen bij nieuwe mail"
+
+msgid "active only"
+msgstr ""
+
+msgid "Flushing channel logo cache..."
+msgstr "Kanaallogo cache legen..."
+
+msgid "Show symbols"
+msgstr "Symbolen tonen"
+
+msgid "  Show symbols in menu"
+msgstr "  Symbolen in menu tonen"
+
+msgid "  Show symbols in replay"
+msgstr "  Symbolen bij weergave tonen"
+
+msgid "  Show symbols in messages"
+msgstr "  Symbolen bij berichten tonen"
+
+msgid "  Show symbols in audio"
+msgstr "  Symbolen bij audio tonen"
+
+msgid "Colored status symbols in EPG details"
+msgstr ""
+
+msgid "Show symbols in lists"
+msgstr "Symbolen in lijsten tonen"
+
+msgid "Show progressbar in lists"
+msgstr ""
+
+msgid "Show marker in lists"
+msgstr "Markering in lijsten tonen"
+
+msgid "Show status symbols"
+msgstr "Status symbolen tonen"
+
+msgid "  Show flags"
+msgstr "  Vlaggen tonen"
+
+msgid "  Show WSS mode symbols"
+msgstr "WSS modus symbolen tonen"
+
+msgid "  Show mail icon"
+msgstr "  Mail-ikoon tonen"
+
+msgid "Show event/recording images"
+msgstr "Voorstelling/opname figuren tonen"
+
+msgid "  Resize images"
+msgstr "  Aanpassen beeldgrootte"
+
+msgid "  Image width"
+msgstr "  Beeldbreedte"
+
+msgid "  Image height"
+msgstr "  Beeldhoogte"
+
+msgid "  Image format"
+msgstr "  Beeldformaat"
+
+msgid "Show channel logos"
+msgstr "Toon kanaallogo's"
+
+msgid "  Identify channel by"
+msgstr "  Identificeer kanaal door"
+
+msgid "name"
+msgstr "naam"
+
+msgid "data"
+msgstr "data"
+
+msgid "Channel logo cache size"
+msgstr "Kanaallogo cache"
+
+msgid "Button$Flush cache"
+msgstr "Cache legen"
+
+msgid "left and right"
+msgstr "links en rechts"
+
+msgid "to the left"
+msgstr "naar links"
+
+msgid "Enable"
+msgstr "Toelaten"
+
+msgid "  Scroll OSD title"
+msgstr "  OSD titel scrollen"
+
+msgid "  Scroll info area"
+msgstr "  Infobereik scrollen"
+
+msgid "  Scroll active list items"
+msgstr "  Lijst aktieve punten scrollen"
+
+msgid "  Scroll other items"
+msgstr "  Andere punten scrollen"
+
+msgid "  Scroll behaviour"
+msgstr "  Scroll gedrag"
+
+msgid "  Scroll delay (ms)"
+msgstr "  Scrollvertraging (ms)"
+
+msgid "  Scroll pause (ms)"
+msgstr "  Scrollpause (ms)"
+
+msgid "  Blink pause (ms)"
+msgstr "  Blinkpauze (ms)"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "Size"
+msgstr "Grootte"
+
+msgid "Width"
+msgstr "Breedte"
+
+msgid "No TrueType fonts installed!"
+msgstr "Geen TrueType fonten geinstalleerd!"
+
+msgid "Fixed Font"
+msgstr "Vaste waarde font"
+
+msgid "Button$Set"
+msgstr "Veranderen"
+
+msgid "OSD title"
+msgstr "OSD titel"
+
+msgid "Messages"
+msgstr "Meldingen"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Help keys"
+msgstr "Help toetsen"
+
+msgid "Channelinfo: title"
+msgstr "Kanaalinfo: titel"
+
+msgid "Channelinfo: subtitle"
+msgstr "Kanaalinfo: ondertitel"
+
+msgid "Channelinfo: language"
+msgstr "Kanaalinfo: taal"
+
+msgid "List items"
+msgstr "Lijsten"
+
+msgid "Info area: timers title"
+msgstr "Infobereik: Timertitel"
+
+msgid "Info area: timers text"
+msgstr "Infobereik: Timertekst"
+
+msgid "Info area: warning title"
+msgstr "Infobereik: waarschuwing titel"
+
+msgid "Info area: warning text"
+msgstr "Infobereik: waarschuwing tekst"
+
+msgid "Details: title"
+msgstr "Details: titel"
+
+msgid "Details: subtitle"
+msgstr "Details: ondertitel"
+
+msgid "Details: date"
+msgstr "Details: datum"
+
+msgid "Details: text"
+msgstr "Details: tekst"
+
+msgid "Replay: times"
+msgstr "Weergave: tijden"
+
+msgid "if exists"
+msgstr "wanneer aanwezig"
+
+msgid "Number of Reruns"
+msgstr "aantal herhalingen"
+
+msgid "Use Subtitle for reruns"
+msgstr "Gebr. ondertitlel voor herh."
+
+msgid "Show timer conflicts"
+msgstr "Timerconflict tonen"
+
+msgid "Free-To-Air"
+msgstr ""
+
+msgid "encrypted"
+msgstr ""
+
+msgid "*** Invalid Channel ***"
+msgstr "*** Ongeldig Kanaal ***"
+
+msgid "WARNING"
+msgstr "WAARSCHUWING"
+
+msgid "Timer conflict"
+msgstr "Timerconflict"
+
+msgid "Timer conflicts"
+msgstr "Timerconflicten"
+
+msgid "TIMERS"
+msgstr "TIMER"
+
+msgid "min"
+msgstr "min"
+
+msgid "Content: "
+msgstr ""
+
+msgid "Video"
+msgstr ""
+
+msgid "Audio"
+msgstr ""
+
+msgid "Subtitles"
+msgstr ""
+
+msgid "RERUNS OF THIS SHOW"
+msgstr "HERHALINGEN"
+
+msgid "cut"
+msgstr ""
+
+msgid "Length"
+msgstr ""
+
+msgid "Format"
+msgstr ""
+
+msgid "Est. bitrate"
+msgstr ""
+
+msgid "Auxiliary information"
+msgstr "Hulp informatie"
+
+msgid "Mute"
+msgstr "Geluid uit"
+
+msgid "Volume"
+msgstr "Volume"
+
+msgid "EnigmaNG"
+msgstr "EnigmaNG"
+
+msgid "EnigmaNG skin"
+msgstr "EnigmaNG skin"
+
+#~ msgid "Show progressbar"
+#~ msgstr "Progressiebalk tonen"
+
+#~ msgid "Languages"
+#~ msgstr "Talen"
