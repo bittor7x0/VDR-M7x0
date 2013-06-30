@@ -37,7 +37,9 @@ FW-UTILS_HOSTBUILDDIR := $(HOSTUTILS_BUILD_DIR)/fw-utils
 CLEAN_RULES += clean-fw-utils_host
 DISTCLEAN_RULES += distclean-fw-utils_host
 
-$(STAGEFILES_DIR)/.fw-utils_host_copied: $(wildcard $(FW-UTILS_HOSTDIR)/*) $(TC_INIT_RULE)
+$(STAGEFILES_DIR)/.fw-utils_host_copied: $(wildcard $(FW-UTILS_HOSTDIR)/*) \
+                                           $(wildcard $(FW-UTILS_HOSTPATCHES_DIR)/host/$(HOST_BS)/*.patch) \
+                                           $(TC_INIT_RULE)
 	-$(RM) -rf $(FW-UTILS_HOSTBUILDDIR)
 	$(MKDIR) -p $(FW-UTILS_HOSTBUILDDIR)
 	$(CP) -RPp $(FW-UTILS_HOSTDIR)/* $(FW-UTILS_HOSTBUILDDIR)

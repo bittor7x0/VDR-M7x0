@@ -26,13 +26,13 @@
 
 ZLIB_DEPS = $(BASE_BUILD_STAGEFILE)
 
-ZLIB_VERSION := 1.2.7
+ZLIB_VERSION := 1.2.8
 ZLIB_PATCHES_DIR := $(PATCHES_DIR)/zlib/$(ZLIB_VERSION)
 
-ZLIB_FILE := zlib-$(ZLIB_VERSION).tar.bz2
+ZLIB_FILE := zlib-$(ZLIB_VERSION).tar.gz
 ZLIB_DLFILE := $(DOWNLOAD_DIR)/$(ZLIB_FILE)
 ZLIB_DIR := $(BUILD_DIR)/zlib-$(ZLIB_VERSION)
-ZLIB_URL := http://sourceforge.net/projects/libpng/files/zlib/$(ZLIB_VERSION)/$(ZLIB_FILE)/download
+ZLIB_URL := http://zlib.net/$(ZLIB_FILE)
 
 ZLIB_INSTALLED = $(STAGEFILES_DIR)/.zlib_installed
 
@@ -62,7 +62,7 @@ $(STAGEFILES_DIR)/.zlib_unpacked: $(ZLIB_DLFILE) \
                                   $(wildcard $(ZLIB_PATCHES_DIR)/*.patch) \
                                   $$(ZLIB_DEPS)
 	-$(RM) -rf $(ZLIB_DIR)
-	$(BZCAT) $(ZLIB_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(TAR) -C $(BUILD_DIR) -zf $(ZLIB_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.zlib_unpacked
 
 #
