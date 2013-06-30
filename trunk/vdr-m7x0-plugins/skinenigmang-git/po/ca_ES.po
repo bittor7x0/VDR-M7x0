@@ -1,0 +1,421 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Marc Rovira Vall <tm05462@salleURL.edu>, 2003
+# Ramon Roca <ramon.roca@xcombo.com>, 2003
+# Jordi Vilà <jvila@tinet.org>, 2003
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
+"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"PO-Revision-Date: 2010-10-23 22:43+0100\n"
+"Last-Translator: Innocent De Marchi <tangram.peces@gmail.com>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel:"
+msgstr "Canal:"
+
+msgid "Search pattern:"
+msgstr "Patró de recerca:"
+
+msgid "Timer check"
+msgstr "Verificació de temps"
+
+msgid "No timer check"
+msgstr "Sense verificació de temps"
+
+msgid "TrueType Font"
+msgstr "Font TrueType"
+
+msgid "Default OSD Font"
+msgstr "Font OSD per defecte"
+
+msgid "Default Fixed Size Font"
+msgstr "Font de mida fixa per defecte"
+
+msgid "Default Small Font"
+msgstr "Font petite per defecte"
+
+msgid "General"
+msgstr "General"
+
+msgid "Logos & Symbols"
+msgstr "Emblemes i simbols"
+
+msgid "Animated Text"
+msgstr "Texte animad"
+
+msgid "Fonts"
+msgstr "Fonts"
+
+msgid "EPGSearch"
+msgstr "EPGSearch"
+
+msgid "elapsed"
+msgstr "transcorregut"
+
+msgid "remaining"
+msgstr "falten"
+
+msgid "percent"
+msgstr "per cent"
+
+msgid "elapsed/remaining"
+msgstr "transcorregut/falten"
+
+msgid "never"
+msgstr "mai"
+
+msgid "use size.vdr only"
+msgstr "fer servir només tamany vdr"
+
+msgid "always"
+msgstr "sempre"
+
+msgid "Last line"
+msgstr "Darrera línia"
+
+msgid "Help buttons"
+msgstr "Botons d'ajuda"
+
+msgid "Free last line"
+msgstr "Darrera línia lliure"
+
+msgid "if required"
+msgstr "si és necessari"
+
+msgid "Try 8bpp single area"
+msgstr "Seleccioneu un àrea simple 8bpp"
+
+msgid "Round corners"
+msgstr "Cantons redons"
+
+msgid "Full title width"
+msgstr "Títol d'amplada completa"
+
+msgid "Show VPS"
+msgstr "Mostra VPS"
+
+msgid "Dynamic OSD size"
+msgstr "Mida OSD dinàmique"
+
+msgid "Menu OSD"
+msgstr "Menú oSD"
+
+msgid "Show info area in main menu"
+msgstr "Mostra l'àrea d'informació en el menú principal"
+
+msgid "  Min width of info area"
+msgstr "Amplada mínima de l'àrea d'informació"
+
+msgid "Show messages in menu on"
+msgstr "Mostra els missatges en el menú activat"
+
+msgid "Show scrollbar in menu"
+msgstr "Mostra barres de desplaçament en el menú"
+
+msgid "EPG & Recording Details OSD"
+msgstr "EPG y detalls de gravació OSD"
+
+msgid "Show auxiliary information"
+msgstr "Mostra la informació auxiliar"
+
+msgid "Show recording's size"
+msgstr "Mostra la mida de la gravació"
+
+msgid "Channel Info OSD"
+msgstr "Canal d'informació OSD"
+
+msgid "Show remaining/elapsed time"
+msgstr "Mostra el temps restant/transcorregut"
+
+msgid "Width of progress bar"
+msgstr ""
+
+msgid "Show signal info"
+msgstr "Mostra la senyal d'informació"
+
+msgid "  Width of signal info"
+msgstr ""
+
+msgid "Show CA system as text"
+msgstr "Mostra el sistema CA com a text"
+
+msgid "Show Category - Genre / Contents"
+msgstr ""
+
+msgid "pixel algo"
+msgstr "pixel algo"
+
+msgid "ratio algo"
+msgstr "raó algo"
+
+msgid "zoom image"
+msgstr "zoom de la imatge"
+
+msgid "only if new mail present"
+msgstr "només si hi ha nou correu"
+
+msgid "active only"
+msgstr "només actiu"
+
+msgid "Flushing channel logo cache..."
+msgstr "Flushing channel logo cache..."
+
+msgid "Show symbols"
+msgstr "Mostra els símbols"
+
+msgid "  Show symbols in menu"
+msgstr "  Mostra els símbols en el menú"
+
+msgid "  Show symbols in replay"
+msgstr "  Mostra els símbols en la reproducció"
+
+msgid "  Show symbols in messages"
+msgstr "  Mostra els símbols en els missatges"
+
+msgid "  Show symbols in audio"
+msgstr "  Mostra els símbols a en el so"
+
+msgid "Colored status symbols in EPG details"
+msgstr "Símbols d'estat en color en els detalls EPG"
+
+msgid "Show symbols in lists"
+msgstr "Mostra símbols a les llistes"
+
+msgid "Show progressbar in lists"
+msgstr "Mostra la barra de progrés a les llistes"
+
+msgid "Show marker in lists"
+msgstr "Mostra les marques a les llistes"
+
+msgid "Show status symbols"
+msgstr "Mostra els símbols d'estat"
+
+msgid "  Show flags"
+msgstr "  Mostra les marques"
+
+msgid "  Show WSS mode symbols"
+msgstr "  Mostra el mode de símbols WSS"
+
+msgid "  Show mail icon"
+msgstr "  Mostra els icones de correu"
+
+msgid "Show event/recording images"
+msgstr "Mostra les imatges d'esdeveniments/registre"
+
+msgid "  Resize images"
+msgstr "  Redimensiona imatges"
+
+msgid "  Image width"
+msgstr "  Amplada de la imatge"
+
+msgid "  Image height"
+msgstr "  Alçada de la imatge"
+
+msgid "  Image format"
+msgstr "  Format de la imatge"
+
+msgid "Show channel logos"
+msgstr "Mostra els logos del canal"
+
+msgid "  Identify channel by"
+msgstr "  Identifica el canal per"
+
+msgid "name"
+msgstr "nom"
+
+msgid "data"
+msgstr "data"
+
+msgid "Channel logo cache size"
+msgstr "MIda provisional del logo del canal"
+
+msgid "Button$Flush cache"
+msgstr "Botons$Flush cache"
+
+msgid "left and right"
+msgstr "esquerra i dreta"
+
+msgid "to the left"
+msgstr "a l'esquerra"
+
+msgid "Enable"
+msgstr "Activat"
+
+msgid "  Scroll OSD title"
+msgstr "  Mou el títol OSD"
+
+msgid "  Scroll info area"
+msgstr "  Mou l'àrea d'informació"
+
+msgid "  Scroll active list items"
+msgstr "  Mou la llista d'ítems actius"
+
+msgid "  Scroll other items"
+msgstr "  Mou altres ítems"
+
+msgid "  Scroll behaviour"
+msgstr "  Mou els comportaments"
+
+msgid "  Scroll delay (ms)"
+msgstr " Mou el retard (ms)"
+
+msgid "  Scroll pause (ms)"
+msgstr "  Mou la pausa (ms)"
+
+msgid "  Blink pause (ms)"
+msgstr "  Pausa \"Blink\" (ms)"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Size"
+msgstr "Tamany"
+
+msgid "Width"
+msgstr "Amplada"
+
+msgid "No TrueType fonts installed!"
+msgstr "No hi ha fonts TrueType instal·lades"
+
+msgid "Fixed Font"
+msgstr "Font de mida fitxe"
+
+msgid "Button$Set"
+msgstr "Button$Set"
+
+msgid "OSD title"
+msgstr "Títol OSD"
+
+msgid "Messages"
+msgstr "MIssatges"
+
+msgid "Date"
+msgstr "Data"
+
+msgid "Help keys"
+msgstr "Tecles d'ajuda"
+
+msgid "Channelinfo: title"
+msgstr "Canal d'informació: títol"
+
+msgid "Channelinfo: subtitle"
+msgstr "Canal d'informació: sub-títol"
+
+msgid "Channelinfo: language"
+msgstr "Canal d'informació: idioma"
+
+msgid "List items"
+msgstr "Llista d'ítems"
+
+msgid "Info area: timers title"
+msgstr "Àrea d'informació: títols de temporitzadors"
+
+msgid "Info area: timers text"
+msgstr "Àrea d'informació: text de temporitzadors"
+
+msgid "Info area: warning title"
+msgstr "Àrea d'informació: títol d'avís"
+
+msgid "Info area: warning text"
+msgstr "Àrea d'informació: text d'avís"
+
+msgid "Details: title"
+msgstr "Detalls: títol"
+
+msgid "Details: subtitle"
+msgstr "Detalls: sub-titol"
+
+msgid "Details: date"
+msgstr "Detalls: data"
+
+msgid "Details: text"
+msgstr "Detalls: texte"
+
+msgid "Replay: times"
+msgstr "Reproducció: temps"
+
+msgid "if exists"
+msgstr "si existeix"
+
+msgid "Number of Reruns"
+msgstr "Nombre de repeticions"
+
+msgid "Use Subtitle for reruns"
+msgstr "Fer servir sub-títols per les repeticions "
+
+msgid "Show timer conflicts"
+msgstr "Mostra els conflictes de temps"
+
+msgid "Free-To-Air"
+msgstr "Free-To-Air"
+
+msgid "encrypted"
+msgstr "encritat"
+
+msgid "*** Invalid Channel ***"
+msgstr "*** Canal no vàlid ***"
+
+msgid "WARNING"
+msgstr "PERILL"
+
+msgid "Timer conflict"
+msgstr "Conflicte d'hora"
+
+msgid "Timer conflicts"
+msgstr "Conflictes d'hores"
+
+msgid "TIMERS"
+msgstr "HORES"
+
+msgid "min"
+msgstr "mínim"
+
+msgid "Content: "
+msgstr "Contingut:"
+
+msgid "Video"
+msgstr "Vídeo"
+
+msgid "Audio"
+msgstr "Audio"
+
+msgid "Subtitles"
+msgstr "Subtitols"
+
+msgid "RERUNS OF THIS SHOW"
+msgstr "REPETICIONS D'AQUEST ESPECTACLE"
+
+msgid "cut"
+msgstr "talla"
+
+msgid "Length"
+msgstr "Longitud"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Est. bitrate"
+msgstr "Estat de la tasa de bits"
+
+msgid "Auxiliary information"
+msgstr "Informació auxiliar"
+
+msgid "Mute"
+msgstr "Silenci"
+
+msgid "Volume"
+msgstr "Volumen"
+
+msgid "EnigmaNG"
+msgstr "EnigmaNG"
+
+msgid "EnigmaNG skin"
+msgstr "EnigmaNG skin"

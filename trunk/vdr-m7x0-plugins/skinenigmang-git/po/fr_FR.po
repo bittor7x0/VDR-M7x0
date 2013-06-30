@@ -1,0 +1,429 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Patrice Staudt <patrice.staudt@laposte.net>, 2008
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
+"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"PO-Revision-Date: 2007-12-18 08:11+0100\n"
+"Last-Translator: Patrice Staudt <patrice.staudt@laposte.net>\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel:"
+msgstr "Chaîne:"
+
+msgid "Search pattern:"
+msgstr "Modèle de recherche"
+
+msgid "Timer check"
+msgstr "Observation de la programmation"
+
+msgid "No timer check"
+msgstr "Sans surveillance"
+
+msgid "TrueType Font"
+msgstr "TrueType"
+
+msgid "Default OSD Font"
+msgstr "OSD standard"
+
+msgid "Default Fixed Size Font"
+msgstr "Largeur fixe standard"
+
+msgid "Default Small Font"
+msgstr "Petite police standard"
+
+msgid "General"
+msgstr "Généralité"
+
+msgid "Logos & Symbols"
+msgstr "Logos et symboles"
+
+msgid "Animated Text"
+msgstr "Texte défilant"
+
+msgid "Fonts"
+msgstr "Les polices"
+
+msgid "EPGSearch"
+msgstr "Recherche EPG"
+
+msgid "elapsed"
+msgstr "écoulé"
+
+msgid "remaining"
+msgstr "restant"
+
+msgid "percent"
+msgstr "Pourcentage"
+
+#, fuzzy
+msgid "elapsed/remaining"
+msgstr "restant"
+
+msgid "never"
+msgstr "jamais"
+
+msgid "use size.vdr only"
+msgstr "utiliser seulement size.vdr"
+
+msgid "always"
+msgstr "toujours"
+
+msgid "Last line"
+msgstr "Dernière ligne"
+
+msgid "Help buttons"
+msgstr "Button aide"
+
+msgid "Free last line"
+msgstr "Dernière ligne libre"
+
+msgid "if required"
+msgstr ""
+
+msgid "Try 8bpp single area"
+msgstr "Essayer une surface à 8bpp"
+
+msgid "Round corners"
+msgstr ""
+
+msgid "Full title width"
+msgstr "Largeur totale pour le titre"
+
+msgid "Show VPS"
+msgstr "Afficher le VPS"
+
+msgid "Dynamic OSD size"
+msgstr "Taille dynamique de OSD"
+
+msgid "Menu OSD"
+msgstr ""
+
+msgid "Show info area in main menu"
+msgstr "Surface d'infos dans le menu principal"
+
+#, fuzzy
+msgid "  Min width of info area"
+msgstr "  Barre de défilement dans la surface info"
+
+msgid "Show messages in menu on"
+msgstr "Afficher les messages dans le menu"
+
+#, fuzzy
+msgid "Show scrollbar in menu"
+msgstr "  dans le menu"
+
+msgid "EPG & Recording Details OSD"
+msgstr ""
+
+msgid "Show auxiliary information"
+msgstr "Afficher informations auxiliaires"
+
+msgid "Show recording's size"
+msgstr "Afficher la taille des enregistrements"
+
+msgid "Channel Info OSD"
+msgstr ""
+
+msgid "Show remaining/elapsed time"
+msgstr "Afficher le temps écoulé/restant"
+
+msgid "Width of progress bar"
+msgstr ""
+
+#, fuzzy
+msgid "Show signal info"
+msgstr "  Afficher l'icône courriel"
+
+msgid "  Width of signal info"
+msgstr ""
+
+msgid "Show CA system as text"
+msgstr ""
+
+msgid "Show Category - Genre / Contents"
+msgstr ""
+
+msgid "pixel algo"
+msgstr "Algorithme pixel"
+
+msgid "ratio algo"
+msgstr "Algorithme ratio"
+
+msgid "zoom image"
+msgstr "Agrandir image"
+
+msgid "only if new mail present"
+msgstr "juste lors d'un courriel"
+
+msgid "active only"
+msgstr ""
+
+msgid "Flushing channel logo cache..."
+msgstr "Suppression du cache..."
+
+msgid "Show symbols"
+msgstr "Afficher symbole"
+
+msgid "  Show symbols in menu"
+msgstr "  dans le menu"
+
+msgid "  Show symbols in replay"
+msgstr "  dans lecture"
+
+msgid "  Show symbols in messages"
+msgstr "  dans les messages"
+
+msgid "  Show symbols in audio"
+msgstr "  dans audio"
+
+msgid "Colored status symbols in EPG details"
+msgstr ""
+
+msgid "Show symbols in lists"
+msgstr "Symboles dans les listes"
+
+msgid "Show progressbar in lists"
+msgstr ""
+
+msgid "Show marker in lists"
+msgstr "Marque devant les listes"
+
+msgid "Show status symbols"
+msgstr "Afficher symbole de status"
+
+msgid "  Show flags"
+msgstr "  Afficher drapeau"
+
+msgid "  Show WSS mode symbols"
+msgstr " Afficher mode symboles WSS"
+
+msgid "  Show mail icon"
+msgstr "  Afficher l'icône courriel"
+
+msgid "Show event/recording images"
+msgstr "Images dans les EPG et détails d'enregistrements"
+
+msgid "  Resize images"
+msgstr "  Redimensionne les images"
+
+msgid "  Image width"
+msgstr "  Largeur"
+
+msgid "  Image height"
+msgstr "  Hauteur"
+
+msgid "  Image format"
+msgstr "  Format d'image"
+
+msgid "Show channel logos"
+msgstr "Afficher logos des chaînes"
+
+msgid "  Identify channel by"
+msgstr "  Identifier chaîne par"
+
+msgid "name"
+msgstr "Nom"
+
+msgid "data"
+msgstr "Donnée"
+
+msgid "Channel logo cache size"
+msgstr "Taille du cache des logos"
+
+msgid "Button$Flush cache"
+msgstr "Supprimer cache"
+
+msgid "left and right"
+msgstr "gauche et droite"
+
+msgid "to the left"
+msgstr "vers la gauche"
+
+msgid "Enable"
+msgstr "Permettre"
+
+msgid "  Scroll OSD title"
+msgstr "  Défilement dans le titre du OSD"
+
+msgid "  Scroll info area"
+msgstr "  Barre de défilement dans la surface info"
+
+msgid "  Scroll active list items"
+msgstr "  Barre de défilement dans la liste active"
+
+msgid "  Scroll other items"
+msgstr "  Barre de défilement dans d'autres parties"
+
+msgid "  Scroll behaviour"
+msgstr "  Comportement de défilement"
+
+msgid "  Scroll delay (ms)"
+msgstr "  Délai de défilement (ms)"
+
+msgid "  Scroll pause (ms)"
+msgstr "  Pause de défilement (ms)"
+
+msgid "  Blink pause (ms)"
+msgstr "  Pause de clignotement (ms)"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Size"
+msgstr "Taille"
+
+msgid "Width"
+msgstr "Largeur"
+
+msgid "No TrueType fonts installed!"
+msgstr "Il n'y a pas de police TrueType d'installé!"
+
+msgid "Fixed Font"
+msgstr "Police avec une largeur fixe"
+
+msgid "Button$Set"
+msgstr "Changer"
+
+msgid "OSD title"
+msgstr "Titre OSD"
+
+msgid "Messages"
+msgstr "Message"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Help keys"
+msgstr "Touche couleur"
+
+msgid "Channelinfo: title"
+msgstr "Chaîne info: titre "
+
+msgid "Channelinfo: subtitle"
+msgstr "Chaîne info: sous-titres"
+
+msgid "Channelinfo: language"
+msgstr "Chaîne info: langue"
+
+msgid "List items"
+msgstr "Liste"
+
+msgid "Info area: timers title"
+msgstr "Barre d'information: Titre Progammation"
+
+msgid "Info area: timers text"
+msgstr "Barre d'information: Text programmation"
+
+msgid "Info area: warning title"
+msgstr "Barre d'information: avertissement titre"
+
+msgid "Info area: warning text"
+msgstr "Barre d'information: texte d'avertissement"
+
+msgid "Details: title"
+msgstr "Détails: Titre"
+
+msgid "Details: subtitle"
+msgstr "Détails: Sous-titre"
+
+msgid "Details: date"
+msgstr "Détails: date"
+
+msgid "Details: text"
+msgstr "Détails: Texte"
+
+msgid "Replay: times"
+msgstr "Rejouer : périodes"
+
+msgid "if exists"
+msgstr "si existant"
+
+msgid "Number of Reruns"
+msgstr "Nombre de répétitions"
+
+msgid "Use Subtitle for reruns"
+msgstr "Utilise sous-titres pour les répétitions"
+
+msgid "Show timer conflicts"
+msgstr "Afficher les conflits de programmation"
+
+msgid "Free-To-Air"
+msgstr ""
+
+msgid "encrypted"
+msgstr ""
+
+msgid "*** Invalid Channel ***"
+msgstr "*** Chaîne non valable ***"
+
+msgid "WARNING"
+msgstr "ATTENTION"
+
+msgid "Timer conflict"
+msgstr "Conflit de programmation"
+
+msgid "Timer conflicts"
+msgstr "Conflits de programmation"
+
+msgid "TIMERS"
+msgstr "PROGRAMMATION"
+
+msgid "min"
+msgstr "min"
+
+msgid "Content: "
+msgstr ""
+
+msgid "Video"
+msgstr ""
+
+msgid "Audio"
+msgstr ""
+
+msgid "Subtitles"
+msgstr ""
+
+msgid "RERUNS OF THIS SHOW"
+msgstr "REPETITION"
+
+msgid "cut"
+msgstr ""
+
+msgid "Length"
+msgstr ""
+
+msgid "Format"
+msgstr ""
+
+msgid "Est. bitrate"
+msgstr ""
+
+msgid "Auxiliary information"
+msgstr "Information auxiliare"
+
+msgid "Mute"
+msgstr "Silence"
+
+msgid "Volume"
+msgstr "Volume"
+
+msgid "EnigmaNG"
+msgstr "EnigmaNG"
+
+msgid "EnigmaNG skin"
+msgstr "Skin EnigmaNG"
+
+#~ msgid "Show progressbar"
+#~ msgstr "Afficher barre de progression"
+
+#~ msgid "Languages"
+#~ msgstr "Langues"

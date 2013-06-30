@@ -1,0 +1,420 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Istvan Koenigsberger <istvnko@hotmail.com>, 2002
+# Guido Josten <guido.josten@t-online.de>, 2002
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
+"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"PO-Revision-Date: 2011-11-30 13:27+0200\n"
+"Last-Translator: jv\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel:"
+msgstr "Csatorna:"
+
+msgid "Search pattern:"
+msgstr "Keresési minta:"
+
+msgid "Timer check"
+msgstr "Idõzítõ ellenõrzése"
+
+msgid "No timer check"
+msgstr "Nincs idõzítõ ellenõrzés"
+
+msgid "TrueType Font"
+msgstr "TrueType betûtipus"
+
+msgid "Default OSD Font"
+msgstr "Alapértelmezett OSD betûtipus"
+
+msgid "Default Fixed Size Font"
+msgstr "Alapértelmezett fixméretû betûtipus"
+
+msgid "Default Small Font"
+msgstr "Alapértelmezett kisméretû betûtipus"
+
+msgid "General"
+msgstr "Általános"
+
+msgid "Logos & Symbols"
+msgstr "Logók és szimbólumok"
+
+msgid "Animated Text"
+msgstr "Animált szöveg"
+
+msgid "Fonts"
+msgstr "Betûtipusok"
+
+msgid "EPGSearch"
+msgstr "EPGSearch"
+
+msgid "elapsed"
+msgstr "eltelt"
+
+msgid "remaining"
+msgstr "hátralevõ"
+
+msgid "percent"
+msgstr "hátralevõ"
+
+msgid "elapsed/remaining"
+msgstr "eltelt/hátralevõ"
+
+msgid "never"
+msgstr "soha"
+
+msgid "use size.vdr only"
+msgstr "csak a .vdr méret használata"
+
+msgid "always"
+msgstr "mindig"
+
+msgid "Last line"
+msgstr "Utolsó sor"
+
+msgid "Help buttons"
+msgstr "Help gombok"
+
+msgid "Free last line"
+msgstr "Utolsó üres sor"
+
+msgid "if required"
+msgstr "ha szükséges"
+
+msgid "Try 8bpp single area"
+msgstr ""
+
+msgid "Round corners"
+msgstr "Sarkok kerekítése"
+
+msgid "Full title width"
+msgstr "Teljes címsor szélesség"
+
+msgid "Show VPS"
+msgstr "VPS információ"
+
+msgid "Dynamic OSD size"
+msgstr "Dinamikus OSD méret"
+
+msgid "Menu OSD"
+msgstr "Menü OSD"
+
+msgid "Show info area in main menu"
+msgstr "Infó terület a fõmenüben"
+
+msgid "  Min width of info area"
+msgstr "  Infó terület min. szélessége"
+
+msgid "Show messages in menu on"
+msgstr "Üzenetek megjelenítése a menüben"
+
+msgid "Show scrollbar in menu"
+msgstr "Görgetõsáv a menüben"
+
+msgid "EPG & Recording Details OSD"
+msgstr "EPG és felvétel részl. OSDje"
+
+msgid "Show auxiliary information"
+msgstr "További információk"
+
+msgid "Show recording's size"
+msgstr "Felvételméretek"
+
+msgid "Channel Info OSD"
+msgstr "Csatorna infó OSDje"
+
+msgid "Show remaining/elapsed time"
+msgstr "Eltelt/hátralevõ idõ"
+
+msgid "Width of progress bar"
+msgstr ""
+
+msgid "Show signal info"
+msgstr "Jelszint"
+
+msgid "  Width of signal info"
+msgstr ""
+
+msgid "Show CA system as text"
+msgstr "Kódolási rendszer szövegként"
+
+msgid "Show Category - Genre / Contents"
+msgstr ""
+
+msgid "pixel algo"
+msgstr "pixel algo"
+
+msgid "ratio algo"
+msgstr "méretarány algo"
+
+msgid "zoom image"
+msgstr "kép nagyítása"
+
+msgid "only if new mail present"
+msgstr "csak ha új levél érkezett"
+
+msgid "active only"
+msgstr "csak ha aktív"
+
+msgid "Flushing channel logo cache..."
+msgstr "Csatornalogó tár ürítése..."
+
+msgid "Show symbols"
+msgstr "Szimbóiumok"
+
+msgid "  Show symbols in menu"
+msgstr "  Szimbóiumok a menüben"
+
+msgid "  Show symbols in replay"
+msgstr "  Szimbóiumok visszajátszáskor"
+
+msgid "  Show symbols in messages"
+msgstr "  Szimbóiumok üzenetekben"
+
+msgid "  Show symbols in audio"
+msgstr "  Szimbóiumok hangsávokban"
+
+msgid "Colored status symbols in EPG details"
+msgstr "EPG-ben színes állapotszimbólumok"
+
+msgid "Show symbols in lists"
+msgstr "Szimbóiumok listákban"
+
+msgid "Show progressbar in lists"
+msgstr "Állapotjelzõ a listákban"
+
+msgid "Show marker in lists"
+msgstr "Vágási pontok listákban"
+
+msgid "Show status symbols"
+msgstr "Állapotszimbólumok"
+
+msgid "  Show flags"
+msgstr "  Zászlók"
+
+msgid "  Show WSS mode symbols"
+msgstr "  WSS mód"
+
+msgid "  Show mail icon"
+msgstr "  Új levél ikon"
+
+msgid "Show event/recording images"
+msgstr "Esemény/felvétel képek"
+
+msgid "  Resize images"
+msgstr "  Képek átméretezése"
+
+msgid "  Image width"
+msgstr "  Kép szélessége"
+
+msgid "  Image height"
+msgstr "  Kép magassága"
+
+msgid "  Image format"
+msgstr "  Kép formátuma"
+
+msgid "Show channel logos"
+msgstr "Csatornalogók"
+
+msgid "  Identify channel by"
+msgstr "  Csatornák azonosítása"
+
+msgid "name"
+msgstr "név szerint"
+
+msgid "data"
+msgstr "adat szerint"
+
+msgid "Channel logo cache size"
+msgstr "Csatonalogó gyorsítótár mérete"
+
+msgid "Button$Flush cache"
+msgstr "gyorsítótár"
+
+msgid "left and right"
+msgstr "balra-jobbra"
+
+msgid "to the left"
+msgstr "balra"
+
+msgid "Enable"
+msgstr "Engedélyezve"
+
+msgid "  Scroll OSD title"
+msgstr "  OSD címsor görgetése"
+
+msgid "  Scroll info area"
+msgstr "  Infó mezõ görgetése"
+
+msgid "  Scroll active list items"
+msgstr "  Aktív listaelemek görgetése"
+
+msgid "  Scroll other items"
+msgstr "  Egyéb elemek görgetése"
+
+msgid "  Scroll behaviour"
+msgstr "  Görgetés viselkedése"
+
+msgid "  Scroll delay (ms)"
+msgstr "  Görgetés késleltetése (ms)"
+
+msgid "  Scroll pause (ms)"
+msgstr "  Görgetés leállítása (ms)"
+
+msgid "  Blink pause (ms)"
+msgstr "  Villogás leállítása (ms)"
+
+msgid "Name"
+msgstr "Név"
+
+msgid "Size"
+msgstr "Méret"
+
+msgid "Width"
+msgstr "Szélesség"
+
+msgid "No TrueType fonts installed!"
+msgstr "Nincs TrueType betûkészlet telepítve!"
+
+msgid "Fixed Font"
+msgstr "Fixméretû betûkészlet"
+
+msgid "Button$Set"
+msgstr "Beállítás"
+
+msgid "OSD title"
+msgstr "OSD címsor"
+
+msgid "Messages"
+msgstr "Üzenetek"
+
+msgid "Date"
+msgstr "Dátum"
+
+msgid "Help keys"
+msgstr "Help gombok"
+
+msgid "Channelinfo: title"
+msgstr "Csatornainfó: cím"
+
+msgid "Channelinfo: subtitle"
+msgstr "Csatornainfó: alcím"
+
+msgid "Channelinfo: language"
+msgstr "Csatornainfó: nyelv"
+
+msgid "List items"
+msgstr "Lista elemek"
+
+msgid "Info area: timers title"
+msgstr "Infó terület: idõzítõk címe"
+
+msgid "Info area: timers text"
+msgstr "Infó terület: idõzítõk leírása"
+
+msgid "Info area: warning title"
+msgstr "Infó terület: figyelmeztetés címe"
+
+msgid "Info area: warning text"
+msgstr "Infó terület: figyelmeztetés leírása"
+
+msgid "Details: title"
+msgstr "Részletek: cím"
+
+msgid "Details: subtitle"
+msgstr "Részletek: alcím"
+
+msgid "Details: date"
+msgstr "Részletek: dátum"
+
+msgid "Details: text"
+msgstr "Részletek: leírás"
+
+msgid "Replay: times"
+msgstr "Visszajátszás: idõpontok"
+
+msgid "if exists"
+msgstr "ha létezik"
+
+msgid "Number of Reruns"
+msgstr "Ismétlések száma"
+
+msgid "Use Subtitle for reruns"
+msgstr "Alcímek használata ismétlésekhez"
+
+msgid "Show timer conflicts"
+msgstr "Idõzítõk ütközésének kijelzése"
+
+msgid "Free-To-Air"
+msgstr "kódolatlan"
+
+msgid "encrypted"
+msgstr "kódolt"
+
+msgid "*** Invalid Channel ***"
+msgstr "*** Érvénytelen csatorna  ***"
+
+msgid "WARNING"
+msgstr "FIGYELEM"
+
+msgid "Timer conflict"
+msgstr "Idõzitõ átfedés"
+
+msgid "Timer conflicts"
+msgstr "Idõzítõ átfedések"
+
+msgid "TIMERS"
+msgstr "IDÕZÍTÕK"
+
+msgid "min"
+msgstr "min"
+
+msgid "Content: "
+msgstr "Tartalom:"
+
+msgid "Video"
+msgstr "Videó"
+
+msgid "Audio"
+msgstr "Hang"
+
+msgid "Subtitles"
+msgstr "Feliratok"
+
+msgid "RERUNS OF THIS SHOW"
+msgstr "ISMÉTLÉSEK"
+
+msgid "cut"
+msgstr "vágás"
+
+msgid "Length"
+msgstr "Hossz"
+
+msgid "Format"
+msgstr "Formátum"
+
+msgid "Est. bitrate"
+msgstr "Becsült bitr."
+
+msgid "Auxiliary information"
+msgstr "További információk"
+
+msgid "Mute"
+msgstr "Némítás"
+
+msgid "Volume"
+msgstr "Hangerõ"
+
+msgid "EnigmaNG"
+msgstr "EnigmaNG"
+
+msgid "EnigmaNG skin"
+msgstr "EnigmaNG bõr"

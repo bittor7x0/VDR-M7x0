@@ -1,0 +1,425 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Rolf Ahrenberg <rahrenbe@cc.hut.fi>, 2003
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <andreas@vdr-developer.org>\n"
+"POT-Creation-Date: 2013-03-02 14:52+0100\n"
+"PO-Revision-Date: 2012-05-22 22:25+0200\n"
+"Last-Translator: Ville Skyttä <ville.skytta@iki.fi>\n"
+"Language-Team: Finnish <vdr@linuxtv.org>\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Channel:"
+msgstr "Kanava:"
+
+msgid "Search pattern:"
+msgstr "Hakutapa:"
+
+msgid "Timer check"
+msgstr "Ajastimien valvonta"
+
+msgid "No timer check"
+msgstr "Ei valvontaa"
+
+msgid "TrueType Font"
+msgstr "TrueType-kirjasin"
+
+msgid "Default OSD Font"
+msgstr "oletuskirjasintyyppi"
+
+msgid "Default Fixed Size Font"
+msgstr "tasavälinen kirjasintyyppi"
+
+msgid "Default Small Font"
+msgstr "pieni kirjasintyyppi"
+
+msgid "General"
+msgstr "Yleiset"
+
+msgid "Logos & Symbols"
+msgstr "Logot ja symbolit"
+
+msgid "Animated Text"
+msgstr "Tekstien elävöinti"
+
+msgid "Fonts"
+msgstr "Kirjasintyypit"
+
+msgid "EPGSearch"
+msgstr "EPGSearch"
+
+msgid "elapsed"
+msgstr "kulunut"
+
+msgid "remaining"
+msgstr "jäljellä oleva"
+
+msgid "percent"
+msgstr "prosentti"
+
+msgid "elapsed/remaining"
+msgstr "jäljellä oleva"
+
+msgid "never"
+msgstr "ei koskaan"
+
+msgid "use size.vdr only"
+msgstr "vain jos size.vdr"
+
+msgid "always"
+msgstr "aina"
+
+msgid "Last line"
+msgstr "alimmalla rivillä"
+
+msgid "Help buttons"
+msgstr "värinäppäinrivillä"
+
+msgid "Free last line"
+msgstr "alimmalla vapaalla rivillä"
+
+msgid "if required"
+msgstr "tarvittaessa"
+
+msgid "Try 8bpp single area"
+msgstr "Suosi yhtä 8bpp kuva-aluetta"
+
+msgid "Round corners"
+msgstr ""
+
+msgid "Full title width"
+msgstr "Levitä otsikkopalkki"
+
+msgid "Show VPS"
+msgstr "Näytä VPS-tieto"
+
+msgid "Dynamic OSD size"
+msgstr "Mukauta kuvaruutunäytön kokoa"
+
+msgid "Menu OSD"
+msgstr ""
+
+msgid "Show info area in main menu"
+msgstr "Näytä infoalue päävalikossa"
+
+msgid "  Min width of info area"
+msgstr "  Infoalueen minimileveys"
+
+msgid "Show messages in menu on"
+msgstr "Näytä viestit valikossa"
+
+msgid "Show scrollbar in menu"
+msgstr "Näytä vierityspalkki valikossa"
+
+msgid "EPG & Recording Details OSD"
+msgstr ""
+
+msgid "Show auxiliary information"
+msgstr "Näytä lisätiedot"
+
+msgid "Show recording's size"
+msgstr "Näytä tallenteen koko"
+
+msgid "Channel Info OSD"
+msgstr ""
+
+msgid "Show remaining/elapsed time"
+msgstr "Näytä tapahtuman aika"
+
+msgid "Width of progress bar"
+msgstr ""
+
+msgid "Show signal info"
+msgstr "  Näytä sähköpostikuvake"
+
+msgid "  Width of signal info"
+msgstr ""
+
+msgid "Show CA system as text"
+msgstr ""
+
+msgid "Show Category - Genre / Contents"
+msgstr ""
+
+msgid "pixel algo"
+msgstr "näytteistys"
+
+msgid "ratio algo"
+msgstr "skaalaus"
+
+msgid "zoom image"
+msgstr "zoomaus"
+
+msgid "only if new mail present"
+msgstr "jos uutta postia"
+
+msgid "active only"
+msgstr ""
+
+msgid "Flushing channel logo cache..."
+msgstr "Tyhjennetään välimuistia..."
+
+msgid "Show symbols"
+msgstr "Näytä symbolit"
+
+msgid "  Show symbols in menu"
+msgstr "  Näytä symbolit valikossa"
+
+msgid "  Show symbols in replay"
+msgstr "  Näytä symbolit toistettaessa"
+
+msgid "  Show symbols in messages"
+msgstr "  Näytä symbolit viesteissä"
+
+msgid "  Show symbols in audio"
+msgstr "  Näytä symbolit äänivalikossa"
+
+msgid "Colored status symbols in EPG details"
+msgstr ""
+
+msgid "Show symbols in lists"
+msgstr "Näytä tapahtumien symbolit"
+
+msgid "Show progressbar in lists"
+msgstr ""
+
+msgid "Show marker in lists"
+msgstr "Näytä valintasymboli"
+
+msgid "Show status symbols"
+msgstr "Näytä symbolit"
+
+msgid "  Show flags"
+msgstr "  Näytä liput"
+
+msgid "  Show WSS mode symbols"
+msgstr "  Näytä WSS-symbolit"
+
+msgid "  Show mail icon"
+msgstr "  Näytä sähköpostikuvake"
+
+msgid "Show event/recording images"
+msgstr "Näytä kuvat lisätietovalikossa"
+
+msgid "  Resize images"
+msgstr "  Muokkaa kuvien kokoa"
+
+msgid "  Image width"
+msgstr "  Kuvien leveys"
+
+msgid "  Image height"
+msgstr "  Kuvien korkeus"
+
+msgid "  Image format"
+msgstr "  Kuvaformaatti"
+
+msgid "Show channel logos"
+msgstr "Näytä kanavalogot"
+
+msgid "  Identify channel by"
+msgstr "  Tunnista kanava"
+
+msgid "name"
+msgstr "nimestä"
+
+msgid "data"
+msgstr "tiedoista"
+
+msgid "Channel logo cache size"
+msgstr "Välimuistin koko kanavalogoille"
+
+msgid "Button$Flush cache"
+msgstr "Tyhjennä"
+
+msgid "left and right"
+msgstr "edestakaisin"
+
+msgid "to the left"
+msgstr "vasemmalle"
+
+msgid "Enable"
+msgstr "Käytä elävöintiä"
+
+msgid "  Scroll OSD title"
+msgstr "  Vieritä valikon otsikkoa"
+
+msgid "  Scroll info area"
+msgstr "  Vieritä infoaluetta"
+
+msgid "  Scroll active list items"
+msgstr "  Vieritä aktiivista valintaa"
+
+msgid "  Scroll other items"
+msgstr "  Vieritä muita alueita"
+
+msgid "  Scroll behaviour"
+msgstr "  Vieritystapa"
+
+msgid "  Scroll delay (ms)"
+msgstr "  Vierityksen viive (ms)"
+
+msgid "  Scroll pause (ms)"
+msgstr "  Vierityksen tauko (ms)"
+
+msgid "  Blink pause (ms)"
+msgstr "  Vilkutuksen tauko (ms)"
+
+msgid "Name"
+msgstr "Nimi"
+
+msgid "Size"
+msgstr "Koko"
+
+msgid "Width"
+msgstr "Leveys"
+
+msgid "No TrueType fonts installed!"
+msgstr "TrueType-kirjasintyyppejä ei löydy!"
+
+msgid "Fixed Font"
+msgstr "Tasavälinen kirjasintyyppi"
+
+msgid "Button$Set"
+msgstr "Aseta"
+
+msgid "OSD title"
+msgstr "Valikon otsikko"
+
+msgid "Messages"
+msgstr "Viestit"
+
+msgid "Date"
+msgstr "Päiväys"
+
+msgid "Help keys"
+msgstr "Värinäppäimet"
+
+msgid "Channelinfo: title"
+msgstr "Kanavatieto: ohjelman nimi"
+
+msgid "Channelinfo: subtitle"
+msgstr "Kanavatieto: ohjelman kuvaus"
+
+msgid "Channelinfo: language"
+msgstr "Kanavatieto: kieli"
+
+msgid "List items"
+msgstr "Listat"
+
+msgid "Info area: timers title"
+msgstr "Infoalue: ajastimen otsikko"
+
+msgid "Info area: timers text"
+msgstr "Infoalue: ajastimen leipäteksti"
+
+msgid "Info area: warning title"
+msgstr "Infoalue: varoituksen otsikko"
+
+msgid "Info area: warning text"
+msgstr "Infoalue: varoituksen leipäteksti"
+
+msgid "Details: title"
+msgstr "Lisätiedot: ohjelman nimi"
+
+msgid "Details: subtitle"
+msgstr "Lisätiedot: ohjelman kuvaus"
+
+msgid "Details: date"
+msgstr "Lisätiedot: päivämäärä"
+
+msgid "Details: text"
+msgstr "Lisätiedot: leipäteksti"
+
+msgid "Replay: times"
+msgstr "Toisto: kellonajat"
+
+msgid "if exists"
+msgstr "jos olemassa"
+
+msgid "Number of Reruns"
+msgstr "Uusintojen lukumäärä"
+
+msgid "Use Subtitle for reruns"
+msgstr "Käytä lyhyttä kuvausta uusinnoille"
+
+msgid "Show timer conflicts"
+msgstr "Näytä päällekkäiset ajastimet"
+
+msgid "Free-To-Air"
+msgstr ""
+
+msgid "encrypted"
+msgstr "salattu"
+
+msgid "*** Invalid Channel ***"
+msgstr "*** Virheellinen kanava ***"
+
+msgid "WARNING"
+msgstr "VAROITUS"
+
+msgid "Timer conflict"
+msgstr "Päällekkäinen ajastin"
+
+msgid "Timer conflicts"
+msgstr "Päällekkäisiä ajastimia"
+
+msgid "TIMERS"
+msgstr "AJASTIMET"
+
+msgid "min"
+msgstr "min"
+
+msgid "Content: "
+msgstr ""
+
+msgid "Video"
+msgstr ""
+
+msgid "Audio"
+msgstr ""
+
+msgid "Subtitles"
+msgstr "Tekstitys"
+
+msgid "RERUNS OF THIS SHOW"
+msgstr "TOISTUVAT TAPAHTUMAT"
+
+msgid "cut"
+msgstr ""
+
+msgid "Length"
+msgstr ""
+
+msgid "Format"
+msgstr ""
+
+msgid "Est. bitrate"
+msgstr ""
+
+msgid "Auxiliary information"
+msgstr "Lisätiedot"
+
+msgid "Mute"
+msgstr "Mykistetty"
+
+msgid "Volume"
+msgstr "Äänenvoimakkuus"
+
+msgid "EnigmaNG"
+msgstr "EnigmaNG"
+
+msgid "EnigmaNG skin"
+msgstr "EnigmaNG-ulkoasu"
+
+#~ msgid "Show progressbar"
+#~ msgstr "Näytä aikajana"
+
+#~ msgid "Languages"
+#~ msgstr "Kielet"
