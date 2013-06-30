@@ -71,7 +71,7 @@ void cPalette::SetColor(int Index, tColor Color)
      }
 }
 //M7X0 END AK
-const tColor *cPalette::Colors(int &NumColors)
+const tColor *cPalette::Colors(int &NumColors) const
 {
   NumColors = numColors;
   return numColors ? color : NULL;
@@ -181,14 +181,6 @@ bool cBitmap::Covers(int x1, int y1, int x2, int y2) const
   return (x1 <= 0) & (y1 <= 0) & (x2 >= width - 1) & (y2 >= height - 1);
 }
 
-bool cBitmap::Intersects(int x1, int y1, int x2, int y2) const
-{
-  x1 -= x0;
-  y1 -= y0;
-  x2 -= x0;
-  y2 -= y0;
-  return !((x2 < 0) | (x1 >= width) | (y2 < 0) | (y1 >= height));
-}
 //M7X0 END AK
 bool cBitmap::Dirty(int &x1, int &y1, int &x2, int &y2)
 {
@@ -470,14 +462,6 @@ void cBitmap::SetIndex(int x, int y, tIndex Index)
      }
 }
 //M7X0 BEGIN AK
-void cBitmap::AddDirty(int xmin, int ymin, int xmax, int ymax)
-{
-  if (dirtyX1 > xmin) dirtyX1=xmin;
-  if (dirtyY1 > ymin) dirtyY1=ymin;
-  if (dirtyX2 < xmax) dirtyX2=xmax;
-  if (dirtyY2 < ymax) dirtyY2=ymax;
-}
-
 void cBitmap::DrawPixel(int x, int y, tColor Color)
 {
   x -= x0;
@@ -767,11 +751,6 @@ void cBitmap::DrawSlope(int x1, int y1, int x2, int y2, tColor Color, int Type)
             DrawRectangle(x, (y1 + y2) / 2 + y, x, y2, Color);
          }
      }
-}
-
-const tIndex *cBitmap::Data(int x, int y)
-{
-  return &bitmap[y * width + x];
 }
 
 // --- cOsd ------------------------------------------------------------------

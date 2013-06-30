@@ -54,7 +54,7 @@ protected:
 public:
   cPalette(int Bpp = 8);
         ///< Initializes the palette with the given color depth.
-  int Bpp(void) { return bpp; }
+  inline int Bpp(void) const { return bpp; }
 //M7X0 BEGIN AK
   bool PaletteModified(void) { bool r = modified; modified = false; return r;}
 //M7X0 END AK
@@ -65,7 +65,7 @@ public:
         ///< If Color is not yet contained in this palette, it will be added if
         ///< there is a free slot. If the color can't be added to this palette,
         ///< 0 will be returned.
-  tColor Color(int Index) { return Index < maxColors ? color[Index] : 0; }
+  inline tColor Color(int Index) const { return Index < maxColors ? color[Index] : 0; }
         ///< Returns the color at the given Index. If Index is outside the valid
         ///< range, 0 will be returned.
   void SetBpp(int Bpp);
@@ -75,7 +75,7 @@ public:
         ///< Sets the palette entry at Index to Color. If Index is larger than
         ///< the number of currently used entries in this palette, the entries
         ///< in between will have undefined values.
-  const tColor *Colors(int &NumColors);
+  const tColor *Colors(int &NumColors) const;
         ///< Returns a pointer to the complete color table and stores the
         ///< number of valid entries in NumColors. If no colors have been
         ///< stored yet, NumColors will be set to 0 and the function will
@@ -117,10 +117,10 @@ public:
   cBitmap(const char *const Xpm[]);
        ///< Creates a bitmap from the given XPM data.
   virtual ~cBitmap();
-  int X0(void) const { return x0; }
-  int Y0(void) const { return y0; }
-  int Width(void) const { return width; }
-  int Height(void) const { return height; }
+  inline int X0(void) const { return x0; }
+  inline int Y0(void) const { return y0; }
+  inline int Width(void) const { return width; }
+  inline int Height(void) const { return height; }
   void SetSize(int Width, int Height);
        ///< Sets the size of this bitmap to the given values. Any previous
        ///< contents of the bitmap will be lost. If Width and Height are the same
@@ -131,7 +131,14 @@ public:
   bool Covers(int x1, int y1, int x2, int y2) const;
        ///< Returns true if the rectangle defined by the given coordinates
        ///< completely covers this bitmap.
-  bool Intersects(int x1, int y1, int x2, int y2) const;
+  inline bool Intersects(int x1, int y1, int x2, int y2) const
+  {
+    x1 -= x0;
+    y1 -= y0;
+    x2 -= x0;
+    y2 -= y0;
+    return !((x2 < 0) | (x1 >= width) | (y2 < 0) | (y1 >= height));
+  }
        ///< Returns true if the rectangle defined by the given coordinates
        ///< intersects with this bitmap.
   bool Dirty(int &x1, int &y1, int &x2, int &y2);
@@ -159,7 +166,13 @@ public:
   void SetIndexRaw(int x, int y, tIndex Index);
        ///< Just set the index without checking & update of the
        ///< dirty rect.
-  void AddDirty(int xmin, int ymin, int xmax, int ymax);
+  inline void AddDirty(int xmin, int ymin, int xmax, int ymax)
+  {
+    if (dirtyX1 > xmin) dirtyX1=xmin;
+    if (dirtyY1 > ymin) dirtyY1=ymin;
+    if (dirtyX2 < xmax) dirtyX2=xmax;
+    if (dirtyY2 < ymax) dirtyY2=ymax;
+  }
        ///< Expand the dirty rect to include the given rectangle.
   void DrawPixel(int x, int y, tColor Color);
        ///< Sets the pixel at the given coordinates to the given Color, which is
@@ -208,7 +221,10 @@ public:
        ///< 5: vertical,   rising,  upper
        ///< 6: vertical,   falling, lower
        ///< 7: vertical,   falling, upper
-  const tIndex *Data(int x, int y);
+  inline const tIndex *Data(int x, int y) const
+  {
+    return &bitmap[y * width + x];
+  }
        ///< Returns the address of the index byte at the given coordinates.
   tIndex *GetBuffer(void) { return bitmap; }
   };
@@ -256,10 +272,10 @@ public:
   virtual ~cOsd();
        ///< Shuts down the OSD.
   static int IsOpen(void) { return isOpen; }
-  int Left(void) { return left; }
-  int Top(void) { return top; }
-  int Width(void) { return width; }
-  int Height(void) { return height; }
+  inline int Left(void) const { return left; }
+  inline int Top(void) const { return top; }
+  inline int Width(void) const { return width; }
+  inline int Height(void) const { return height; }
   cBitmap *GetBitmap(int Area);
        ///< Returns a pointer to the bitmap for the given Area, or NULL if no
        ///< such bitmap exists.
