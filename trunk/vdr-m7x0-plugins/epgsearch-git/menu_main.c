@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -49,6 +49,9 @@ int cMenuSearchMain::forceMenu = 0; // 1 = now, 2 = schedule, 3 = summary
 cMenuSearchMain::cMenuSearchMain(void)
 :cOsdMenu("", GetTab(1), GetTab(2), GetTab(3), GetTab(4), GetTab(5))
 {
+#if VDRVERSNUM >= 10734
+  SetMenuCategory(mcSchedule);
+#endif
   helpKeys = -1;
   otherChannel = 0;
   toggleKeys = 0;
@@ -140,12 +143,7 @@ void cMenuSearchMain::PrepareSchedule(cChannel *Channel)
 			struct tm *t_event = localtime_r(&EventDate, &tm_rEvent);
 			struct tm *t_lastevent = localtime_r(&lastEventDate, &tm_rLastEvent);
 			if (t_event->tm_mday != t_lastevent->tm_mday)
-			{
-			  cString szSep = cString::sprintf("%s\t %s %s", MENU_SEPARATOR_ITEMS, GETDATESTRING(Event), MENU_SEPARATOR_ITEMS);
-			  cOsdItem* pSepItem = new cOsdItem(szSep);
-			  pSepItem->SetSelectable(false);
-			  Add(pSepItem);
-			}
+			  Add(new cMenuMyScheduleSepItem(Event));
 			lastEventDate = EventDate;
 		    }
 		    Add(new cMenuMyScheduleItem(Event, NULL, showNow, ScheduleTemplate), Event == PresentEvent);
@@ -181,7 +179,7 @@ eOSState cMenuSearchMain::Record(void)
   if (item) {
       if (item->timerMatch == tmFull)
       {
-	  int tm = tmNone;
+	  eTimerMatch tm = tmNone;
 	  cTimer *timer = Timers.GetMatch(item->event, &tm);
 	  if (timer)
 	    {
@@ -255,7 +253,7 @@ eOSState cMenuSearchMain::Switch(void)
      if (channel && cDevice::PrimaryDevice()->SwitchChannel(channel, true))
         return osEnd;
      }
-  Skins.Message(mtInfo, trVDR("Can't switch channel!"));
+  INFO(trVDR("Can't switch channel!"));
   return osContinue;
 }
 

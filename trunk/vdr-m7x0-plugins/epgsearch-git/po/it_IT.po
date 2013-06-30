@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
-"POT-Creation-Date: 2012-07-29 12:10+0200\n"
+"POT-Creation-Date: 2013-06-23 14:12+0200\n"
 "PO-Revision-Date: 2011-07-17 17:46+0100\n"
 "Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
 "Language-Team: Italian <vdr@linuxtv.org>\n"
@@ -54,6 +54,14 @@ msgstr "Il nome gruppo è vuoto!"
 msgid "Group name already exists!"
 msgstr "Nome gruppo già esistente!"
 
+#, c-format
+msgid "timer conflict at %s! Show it?"
+msgstr "Conflitto timer alle %s! Mostrare?"
+
+#, c-format
+msgid "%d timer conflicts! First at %s. Show them?"
+msgstr "%d conflitto timer! Primo alle %s. Mostrarli?"
+
 msgid "Direct access to epgsearch's conflict check menu"
 msgstr "Accesso diretto al menu di verifica conflitti di epgsearch"
 
@@ -65,10 +73,6 @@ msgstr "Informazioni conflitto nel menu principale"
 
 msgid "next"
 msgstr "prossimo"
-
-#, c-format
-msgid "%d timer conflict(s)! First at %s. Show them?"
-msgstr "%d conflitto timer! Primo alle %s. Mostrarli?"
 
 msgid "search the EPG for repeats and more"
 msgstr "Cerca nella guida EPG: per parole, repliche e altro"
@@ -309,8 +313,8 @@ msgid "Use VDR's timer edit menu"
 msgstr "Utilizza menu modifica timer VDR"
 
 msgid ""
-"Help$This plugin has it's own timer edit menu extending the original one with some extra functionality like\n"
-"- an addtional directory entry\n"
+"Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n"
+"- an additional directory entry\n"
 "- user-defined days of week for repeating timers\n"
 "- adding an episode name\n"
 "- support for EPG variables (see MANUAL)"
@@ -910,6 +914,21 @@ msgstr "Informazioni ausiliarie"
 msgid "Button$Aux info"
 msgstr "Info ausiliarie"
 
+msgid "Button$Actions"
+msgstr "Azioni"
+
+msgid "Search entries"
+msgstr "Valori ricerca"
+
+msgid "active"
+msgstr "attivo"
+
+msgid "Edit$Delete search?"
+msgstr "Eliminare criteri?"
+
+msgid "Delete all timers created from this search?"
+msgstr "Eliminare tutti i timer creati da questa ricerca?"
+
 msgid "Search actions"
 msgstr "Azioni ricerca"
 
@@ -966,21 +985,6 @@ msgstr "Copia"
 
 msgid "Copy this entry to templates?"
 msgstr "Copiare questo valore nei modelli?"
-
-msgid "Delete all timers created from this search?"
-msgstr "Eliminare tutti i timer creati da questa ricerca?"
-
-msgid "Button$Actions"
-msgstr "Azioni"
-
-msgid "Search entries"
-msgstr "Valori ricerca"
-
-msgid "active"
-msgstr "attivo"
-
-msgid "Edit$Delete search?"
-msgstr "Eliminare criteri?"
 
 msgid "Edit search"
 msgstr "Modifica ricerca"

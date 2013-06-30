@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -143,7 +143,7 @@ std::list<std::string> cEpgsearchServiceHandler::TranslateResults(cSearchResults
          strftime(bufStart, sizeof(bufStart), "%H%M", localtime_r(&start, &tm_r));
          strftime(bufEnd, sizeof(bufEnd), "%H%M", localtime_r(&stop, &tm_r));
 
-         int timerMatch;
+         eTimerMatch timerMatch;
          bool hasTimer = false;
          if (Timers.GetMatch(pEvent, &timerMatch))
             hasTimer = (timerMatch == tmFull);

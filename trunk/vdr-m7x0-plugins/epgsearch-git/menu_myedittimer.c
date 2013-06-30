@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -44,6 +44,9 @@ const char *cMenuMyEditTimer::CheckModes[3];
 cMenuMyEditTimer::cMenuMyEditTimer(cTimer *Timer, bool New, const cEvent* Event, const cChannel* forcechannel)
 :cOsdMenu(trVDR("Edit timer"), 14)
 {
+#if VDRVERSNUM >= 10734
+  SetMenuCategory(mcTimerEdit);
+#endif
     CheckModes[0] = tr("no check");
     CheckModes[UPD_CHDUR] = tr("by channel and time");
     CheckModes[UPD_EVENTID] = tr("by event ID");
@@ -328,8 +331,8 @@ eOSState cMenuMyEditTimer::ProcessKey(eKeys Key)
 		cChannel *ch = Channels.GetByNumber(channel);
 		if (!ch)
 		{
-		    Skins.Message(mtError, tr("*** Invalid Channel ***"));
-		    break;
+		  ERROR(tr("*** Invalid Channel ***"));
+		  break;
 		}
 
 		string fullaux = "";

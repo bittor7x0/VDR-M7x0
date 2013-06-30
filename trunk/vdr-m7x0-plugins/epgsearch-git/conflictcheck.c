@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -204,7 +204,32 @@ void cConflictCheck::InitDevicesInfo()
     for(int i=0; i<numDevices; i++)
 	devices[i].device = cDevice::GetDevice(i);
 #endif
+
+#if APIVERSNUM > 10721
+    BondDevices(Setup.DeviceBondings);
+#endif
 }
+
+void cConflictCheck::BondDevices(const char *Bondings)
+{
+#if APIVERSNUM > 10721
+  LogFile.Log(3, "Bond Devices");
+  if (Bondings) {
+    cSatCableNumbers SatCableNumbers(MAXDEVICES, Bondings);
+    int* array = SatCableNumbers.Array();
+    for (int i=0; i<SatCableNumbers.Size(); i++) {
+      for (int j=0; j<SatCableNumbers.Size(); j++) {
+	if (array[i] > 0 && array[i] == array[j] && i != j) {
+	  LogFile.Log(3, "Bond devices %i and %i.", i+1, j+1);
+	  devices[i].bondedDevices.push_back(&(devices[j]));
+	}
+      }
+    }
+  }
+  LogFile.Log(3, "Bond Devices done.");
+#endif
+}
+
 
 void cConflictCheck::Check()
 {
@@ -569,7 +594,7 @@ int cConflictCheck::GetDevice(cConflictCheckTimerObj* TimerObj, bool* NeedsDetac
           if (NumUsableSlots && !CamSlots.Get(j)->Assign(devices[i].device, true))
              continue; // CAM slot can't be used with this device
           bool ndr;
-          if (devices[i].ProvidesChannel(Channel, Priority, &ndr)) { // this device is basicly able to do the job
+          if (devices[i].ProvidesChannel(Channel, Priority, &ndr)) { // this device is basically able to do the job
              if (NumUsableSlots && devices[i].CamSlot() && devices[i].CamSlot() != CamSlots.Get(j))
                 ndr = true; // using a different CAM slot requires detaching receivers
              // Put together an integer number that reflects the "impact" using

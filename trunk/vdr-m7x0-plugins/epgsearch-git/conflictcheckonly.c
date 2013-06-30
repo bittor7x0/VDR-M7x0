@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -142,7 +142,7 @@ cString DateTime(time_t t)
   }
   struct tm tm_r;
   tm *tm = localtime_r(&t, &tm_r);
-  snprintf(buffer, sizeof(buffer), "%02d.%02d %02d:%02d", tm->tm_mday,
+  snprintf(buffer, sizeof(buffer), "%02d.%02d. %02d:%02d", tm->tm_mday,
 	   tm->tm_mon + 1, tm->tm_hour, tm->tm_min);
   return buffer;
 }

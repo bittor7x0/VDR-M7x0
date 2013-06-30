@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -108,6 +108,9 @@ int cMenuSearchExtItem::Compare(const cListObject &ListObject) const
 cMenuEPGSearchExt::cMenuEPGSearchExt()
 :cOsdMenu("", 2, 20, 11, 6, 5)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcPlugin);
+#endif
 	cMutexLock SearchExtsLock(&SearchExts);
 	cSearchExt *SearchExt = SearchExts.First();
 	while (SearchExt) {

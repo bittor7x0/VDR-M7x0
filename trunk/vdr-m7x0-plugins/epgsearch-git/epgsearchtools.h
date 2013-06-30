@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,6 +33,10 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 #include "i18n.h"
 
 using std::string;
+
+#if VDRVERSNUM < 10733
+#define eTimerMatch int
+#endif
 
 #define MAXPARSEBUFFER KILOBYTE(10)
 
@@ -127,6 +131,9 @@ using std::string;
 
 #define CONTENT_DESCRIPTOR_MAX 255
 
+#define ERROR(T) Skins.Message(mtError, T)
+#define INFO(I)  Skins.Message(mtInfo, I)
+
 extern const char AllowedChars[];
 
 extern char* ConfigDir;
@@ -136,7 +143,7 @@ class cSearchExt;
 class cSearchExtCat;
 class cEvent;
 
-char* IndentMenuItem(const char*, int indentions=1);
+cString IndentMenuItem(const char*, int indentions=1);
 void PatchFont(eDvbFont);
 bool MatchesSearchMode(const char* test, const char* values, int searchmode, const char* delim, int tolerance);
 char* GetExtEPGValue(const cEvent* e, cSearchExtCat* SearchExtCat);
@@ -167,7 +174,7 @@ inline char *strreplacei(char *s, const char *s1, const char s2)
 void sleepMSec(long ms);
 void sleepSec(long s);
 bool SendViaSVDRP(cString SVDRPcmd);
-int SendMsg(cString Message, bool confirm = false, int seconds = 0);
+int SendMsg(cString Message, bool confirm = false, int seconds = 0, eMessageType messageType = mtInfo);
 bool InEditMode(const char* ItemText, const char* ItemName, const char* ItemValue);
 cSearchExt* TriggeredFromSearchTimer(const cTimer* timer);
 int TriggeredFromSearchTimerID(const cTimer* timer);

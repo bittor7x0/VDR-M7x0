@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -88,6 +88,9 @@ eOSState cMenuAnnounceList::ProcessKey(eKeys Key)
 cMenuAnnounceDetails::cMenuAnnounceDetails(const cEvent* Event, const cSearchExt* Search)
    :cOsdMenu("", 25), event(Event)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcEvent);
+#endif
    cMenuAnnounceList::showsDetails = true;
    if (event && !isempty(event->Title()))
    {

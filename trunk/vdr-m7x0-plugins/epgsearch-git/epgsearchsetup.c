@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -55,6 +55,9 @@ const char *cMenuSetupMailNotification::MailBoxChars     = " abcdefghijklmnopqrs
 cMenuSetupSubMenu::cMenuSetupSubMenu(const char* Title, cEPGSearchConfig* Data)
     : cOsdMenu(Title, 33)
 {
+#if VDRVERSNUM >= 10734
+  SetMenuCategory(mcSetupPlugins);
+#endif
     data = Data;
 }
 
@@ -572,7 +575,7 @@ void cMenuSetupTimers::Set()
   helpTexts.clear();
 
   Add(new cMenuEditBoolItem(  tr("Use VDR's timer edit menu"),         &data->useVDRTimerEditMenu,       trVDR("no"),      trVDR("yes")));
-  AddHelp(tr("Help$This plugin has it's own timer edit menu extending the original one with some extra functionality like\n- an addtional directory entry\n- user-defined days of week for repeating timers\n- adding an episode name\n- support for EPG variables (see MANUAL)"));
+  AddHelp(tr("Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n- an additional directory entry\n- user-defined days of week for repeating timers\n- adding an episode name\n- support for EPG variables (see MANUAL)"));
   Add(new cMenuEditStrItem(tr("Default recording dir"), data->defrecdir, sizeof(data->defrecdir), tr(AllowedChars)));
   AddHelp(tr("Help$When creating a timer you can specify here a default recording directory."));
   Add(new cMenuEditStraItem(tr("Add episode to manual timers"), &data->addSubtitleToTimer, 3, AddSubtitleMode));
@@ -927,7 +930,7 @@ eOSState cMenuSetupMailNotification::TestMailAccount()
    if (M.TestMailAccount(data->MailAddressTo, data->MailAddress, data->MailServer, data->MailAuthUser, data->MailAuthPass))
       return AddSubMenu(new cMenuText("", M.scriptReply.c_str(), fontSml));
    else
-      Skins.Message(mtError, tr("Mail account check failed!"));
+     ERROR(tr("Mail account check failed!"));
    return osContinue;
 }
 

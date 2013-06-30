@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -50,7 +50,7 @@ class cMenuSearchResultsItem : public cOsdItem {
     bool episodeOnly;
     cMenuTemplate* menuTemplate;
  public:
-    int timerMatch;
+    eTimerMatch timerMatch;
     bool inSwitchList;
     const cEvent *event;
     const cSearchExt* search;
@@ -60,6 +60,7 @@ class cMenuSearchResultsItem : public cOsdItem {
                            const cSearchExt* Search = NULL);
     cMenuSearchResultsItem(cRecording *Recording);
     bool Update(bool Force = false);
+    void SetMenuItem(cSkinDisplayMenu *DisplayMenu, int Index, bool Current, bool Selectable);
 };
 
 // --- cMenuSearchResults ------------------------------------------------------

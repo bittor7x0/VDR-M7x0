@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -64,6 +64,10 @@ int cMenuDirItem::Compare(const cListObject &ListObject) const
 cMenuDirSelect::cMenuDirSelect(char* szDirectory)
     :cOsdMenu(tr("Select directory"))
 {
+#if VDRVERSNUM >= 10733
+  SetMenuCategory(mcTimerEdit);
+#endif
+
     Directory = szDirectory;
     yellow=NULL;
     MaxLevel = 1;
@@ -256,7 +260,7 @@ eOSState cMenuDirSelect::ProcessKey(eKeys Key)
   eOSState state = cOsdMenu::ProcessKey(Key);
 
   if (state == osUnknown) {
-     switch (Key) {
+    switch ((int)Key) {
 	 case kBlue|k_Repeat:
 	 case kYellow:
 	     if (++CurLevel>MaxLevel)

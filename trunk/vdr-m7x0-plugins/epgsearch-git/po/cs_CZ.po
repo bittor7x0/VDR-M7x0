@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.7.21\n"
 "Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
-"POT-Creation-Date: 2012-07-29 12:10+0200\n"
+"POT-Creation-Date: 2013-06-23 14:12+0200\n"
 "PO-Revision-Date: 2011-10-31 20:21+0200\n"
 "Last-Translator: Radek Stastny <dedkus@gmail.com>\n"
 "Language-Team: Czech <vdr@linuxtv.org>\n"
@@ -49,6 +49,14 @@ msgstr "Jméno nemůže být prázdné!"
 msgid "Group name already exists!"
 msgstr "Jméno již použito!"
 
+#, c-format
+msgid "timer conflict at %s! Show it?"
+msgstr "Konflikt Nahrávání %s! Zobrazit?"
+
+#, c-format
+msgid "%d timer conflicts! First at %s. Show them?"
+msgstr "Nahrávání - konflikty (%d)! Od %s. Zobrazit?"
+
 msgid "Direct access to epgsearch's conflict check menu"
 msgstr "Přímý vstup do menu konfliktů epgsearch"
 
@@ -60,10 +68,6 @@ msgstr "Konflikty do hlavního menu"
 
 msgid "next"
 msgstr "další"
-
-#, c-format
-msgid "%d timer conflict(s)! First at %s. Show them?"
-msgstr "Nahrávání - konflikty (%d)! Od %s. Zobrazit?"
 
 msgid "search the EPG for repeats and more"
 msgstr "hledat opakování v programu a další"
@@ -290,8 +294,8 @@ msgid "Use VDR's timer edit menu"
 msgstr "Použít výchozí menu pro nahrávání"
 
 msgid ""
-"Help$This plugin has it's own timer edit menu extending the original one with some extra functionality like\n"
-"- an addtional directory entry\n"
+"Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n"
+"- an additional directory entry\n"
 "- user-defined days of week for repeating timers\n"
 "- adding an episode name\n"
 "- support for EPG variables (see MANUAL)"
@@ -865,6 +869,21 @@ msgstr "Pomocné info"
 msgid "Button$Aux info"
 msgstr "Pom. info"
 
+msgid "Button$Actions"
+msgstr "Akce"
+
+msgid "Search entries"
+msgstr "Vyhledat položky"
+
+msgid "active"
+msgstr "povoleno"
+
+msgid "Edit$Delete search?"
+msgstr "Smazat?"
+
+msgid "Delete all timers created from this search?"
+msgstr "Smazat všechna Nahrávání z tohoto hledání?"
+
 msgid "Search actions"
 msgstr "Akce hledání"
 
@@ -921,21 +940,6 @@ msgstr "Kopírovat"
 
 msgid "Copy this entry to templates?"
 msgstr "Zkopírovat do vzorů?"
-
-msgid "Delete all timers created from this search?"
-msgstr "Smazat všechna Nahrávání z tohoto hledání?"
-
-msgid "Button$Actions"
-msgstr "Akce"
-
-msgid "Search entries"
-msgstr "Vyhledat položky"
-
-msgid "active"
-msgstr "povoleno"
-
-msgid "Edit$Delete search?"
-msgstr "Smazat?"
 
 msgid "Edit search"
 msgstr "Upravit hledání"

@@ -418,6 +418,76 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
+  { "timer conflict at %s! Show it?",
+    "Timer-Konflikt am %s! Anzeigen?",
+    "",
+    "Conflitto timer alle %s! Mostrare?",
+    "Timerconflict op %s! Tonen?",
+    "",
+    "conflit de programmation le %s! Afficher?",
+    "",
+    "PÃ¤Ã¤llekkÃ¤inen ajastin (%s)! NÃ¤ytetÃ¤Ã¤nkÃ¶?",
+    "",
+    "Conflicto de programación a las %s! ¿Mostrarlo?",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "Konflikt NahrÃ¡vÃ¡nÃ­ %s! Zobrazit?",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "%d timer conflicts! First at %s. Show them?",
+    "%d Timer-Konflikte! Erster am %s. Anzeigen?",
+    "",
+    "%d conflitto timer! Primo alle %s. Mostrarli?",
+    "%d timer conflicten! eerste op %s. Tonen?",
+    "",
+    "%d de conflits de programmation! Le premier le %s. Afficher?",
+    "",
+    "PÃ¤Ã¤llekkÃ¤isiÃ¤ ajastimia %d kpl (%s)! NÃ¤ytetÃ¤Ã¤nkÃ¶?",
+    "",
+    "¡%d conflictos de programación! El 1º a las %s. ¿Mostrarlos?",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "NahrÃ¡vÃ¡nÃ­ - konflikty (%d)! Od %s. Zobrazit?",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
   { "Direct access to epgsearch's conflict check menu",
     "Direkter Zugriff auf epgsearch's Konflikt-PrÃ¼fungs-MenÃ¼",
     "",
@@ -553,41 +623,6 @@ const tI18nPhrase Phrases[] = {
 #endif
 #if VDRVERSNUM >= 10342
     "dalÅ¡Ã­",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "%d timer conflict(s)! First at %s. Show them?",
-    "%d Timer-Konflikt(e)! Erster am %s. Anzeigen?",
-    "",
-    "%d conflitto timer! Primo alle %s. Mostrarli?",
-    "%d timer conflict(en)! eerste op %s. Tonen?",
-    "",
-    "%d de conflits de programmation! Le premier le %s. Afficher?",
-    "",
-    "PÃ¤Ã¤llekkÃ¤isiÃ¤ ajastimia (%d kpl %s)! NÃ¤ytetÃ¤Ã¤nkÃ¶?",
-    "",
-    "¡%d conflicto(s) de programación! El 1º a las %s. ¿Mostrarlos?",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "NahrÃ¡vÃ¡nÃ­ - konflikty (%d)! Od %s. Zobrazit?",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -884,7 +919,7 @@ const tI18nPhrase Phrases[] = {
     "Komennot",
     "",
     "Órdenes",
-    "ÅããñáöŞ",
+    "",
     "Inspelning",
     "",
     "",
@@ -3043,7 +3078,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
-  { "Help$This plugin has it's own timer edit menu extending the original one with some extra functionality like\n- an addtional directory entry\n- user-defined days of week for repeating timers\n- adding an episode name\n- support for EPG variables (see MANUAL)",
+  { "Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n- an additional directory entry\n- user-defined days of week for repeating timers\n- adding an episode name\n- support for EPG variables (see MANUAL)",
     "Diese Plugin hat sein eigenes Timer-Edit-MenÃ¼, das das orginale um einige zusÃ¤tzliche Funktionen erweitert:\n\n- ein zusÃ¤tzlicher Verzeichniseintrag\n- benutzerdef. Wochentage fÃ¼r Wiederh.-Timer\n- ErgÃ¤nzung um Episodenname\n- UnterstÃ¼tzung von EPG-Variablen (s.MANUAL)",
     "",
     "Questo plugin ha il suo menu modifica timer che estende quello originale con alcune funzionalitÃ  extra come:\n- un voce directory supplementare\n- giorni della settimana definiti dall'utente per i timer ripetuti\n- aggiunta nome episodio\n- supporto per variabili EPG (vedi MANUAL)",
@@ -3299,7 +3334,7 @@ const tI18nPhrase Phrases[] = {
     "Asetukset",
     "Nastawy",
     "Configuración",
-    "Ñõèìéóåéò",
+    "",
     "InstÃ¤llningar",
     "ConfiguraÅ£ie",
     "BeÃ¡llÃ­tÃ¡sok",
@@ -3856,7 +3891,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "Avec 'Oui' vous impliquez la vÃ©rification de conflits Ã  la mise Ã  jours de la recherche.",
     "",
-    "MÃ¤Ã¤rittelee vaadittavat tulevat ohjelmatietot tunteina hakuajastimien pÃ¤ivityksen yhteydessÃ¤, jonka jÃ¤lkeen kÃ¤yttÃ¤jÃ¤Ã¤ varoitetaan.",
+    "MÃ¤Ã¤rittelee vaadittavat tulevat ohjelmatiedot tunteina hakuajastimien pÃ¤ivityksen yhteydessÃ¤, jonka jÃ¤lkeen kÃ¤yttÃ¤jÃ¤Ã¤ varoitetaan.",
     "",
     "Especifique el número de horas futuras de EPG que debería haber y si no las hay será avisado después de actualizar una programación por búsqueda.",
     "",
@@ -9448,6 +9483,181 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
+  { "Button$Actions",
+    "Aktionen",
+    "",
+    "Azioni",
+    "Acties",
+    "",
+    "Actions",
+    "",
+    "Komennot",
+    "",
+    "Acciones",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "Akce",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Search entries",
+    "SucheintrÃ¤ge",
+    "",
+    "Valori ricerca",
+    "Zoekregels",
+    "",
+    "EntrÃ©e de recherche",
+    "",
+    "Hakutermit",
+    "",
+    "Entradas de búsqueda",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "Vyhledat poloÅ¾ky",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "active",
+    "aktiv",
+    "",
+    "attivo",
+    "actief",
+    "",
+    "actif",
+    "",
+    "aktiivista",
+    "",
+    "activa",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "povoleno",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Edit$Delete search?",
+    "Suche lÃ¶schen?",
+    "",
+    "Eliminare criteri?",
+    "Zoekcriterium wissen?",
+    "",
+    "Effacer la recherche",
+    "",
+    "Poistetaanko haku?",
+    "",
+    "¿Borrar la búsqueda?",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "Smazat?",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Delete all timers created from this search?",
+    "Alle Timer lÃ¶schen, die von dieser Suche erzeugt wurden?",
+    "",
+    "Eliminare tutti i timer creati da questa ricerca?",
+    "Verwijder alle timers aangemaakt door dit zoekcriterium?",
+    "",
+    "Effacer les programmations issues de cette recherche?",
+    "",
+    "Poistetaanko kaikki tÃ¤llÃ¤ haulla luodut ajastimet?",
+    "",
+    "¿Borrar las programaciones creadas por esta búsqueda?",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "Smazat vÅ¡echna NahrÃ¡vÃ¡nÃ­ z tohoto hledÃ¡nÃ­?",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
   { "Search actions",
     "Suchaktionen",
     "",
@@ -10113,181 +10323,6 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
-  { "Delete all timers created from this search?",
-    "Alle Timer lÃ¶schen, die von dieser Suche erzeugt wurden?",
-    "",
-    "Eliminare tutti i timer creati da questa ricerca?",
-    "Verwijder alle timers aangemaakt door dit zoekcriterium?",
-    "",
-    "Effacer les programmations issues de cette recherche?",
-    "",
-    "Poistetaanko kaikki tÃ¤llÃ¤ haulla luodut ajastimet?",
-    "",
-    "¿Borrar las programaciones creadas por esta búsqueda?",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Smazat vÅ¡echna NahrÃ¡vÃ¡nÃ­ z tohoto hledÃ¡nÃ­?",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Button$Actions",
-    "Aktionen",
-    "",
-    "Azioni",
-    "Acties",
-    "",
-    "Actions",
-    "",
-    "Komennot",
-    "",
-    "Acciones",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Akce",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Search entries",
-    "SucheintrÃ¤ge",
-    "",
-    "Valori ricerca",
-    "Zoekregels",
-    "",
-    "EntrÃ©e de recherche",
-    "",
-    "Hakutermit",
-    "",
-    "Entradas de búsqueda",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Vyhledat poloÅ¾ky",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "active",
-    "aktiv",
-    "",
-    "attivo",
-    "actief",
-    "",
-    "actif",
-    "",
-    "aktiivista",
-    "",
-    "activa",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "povoleno",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Edit$Delete search?",
-    "Suche lÃ¶schen?",
-    "",
-    "Eliminare criteri?",
-    "Zoekcriterium wissen?",
-    "",
-    "Effacer la recherche",
-    "",
-    "Poistetaanko haku?",
-    "",
-    "¿Borrar la búsqueda?",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Smazat?",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
   { "Edit search",
     "Suche editieren",
     "",
@@ -10334,7 +10369,7 @@ const tI18nPhrase Phrases[] = {
     "Tallenna",
     "Nagraj",
     "Grabar",
-    "ÅããñáöŞ",
+    "",
     "Inspelning",
     "Ãnregistr.",
     "Felvenni",
