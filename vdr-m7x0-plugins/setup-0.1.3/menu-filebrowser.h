@@ -73,7 +73,13 @@ class cOsdMenuFilebrowser : public cOsdMenu, public cStatus
 
     eMenuFilebrowserTask Task;
 
+#if defined(__UCLIBC__) && \
+       (__UCLIBC_MAJOR__ > 0 || __UCLIBC_MINOR__ > 9 || \
+       (__UCLIBC_MINOR__ == 9 && __UCLIBC_SUBLEVEL__ >= 32))
+    static int DirectorySort(const dirent64** File1, const dirent64** File2);
+#else
     static int DirectorySort(const void* File1, const void* File2);
+#endif
     /*
      *  This filters entries shown in Filebrowser
      *  The function uses Statebag->ShowHiddenFiles and Statebag->Filter

@@ -143,7 +143,7 @@ void cFileWriter::Action(void)
 
               recordFile->Truncate(fileSize + Header[FirstIFrame].offset);
 
-              if (index) {
+              if (index != NULL) {
                  if (!(recordFile = index->NextFile(fileName, true))) {
                     LOG_ERROR;
                     esyslog("Cannot open next recording file '%s' ... giving up",fileName->Name());
@@ -188,7 +188,7 @@ void cFileWriter::Action(void)
 #endif
         }
 
-  if (fileSize && recordFile && index) {
+  if (fileSize && recordFile && (index != NULL)) {
      fileSize = index->StripOffToLastIFrame(fileName->Number());
      if (fileSize > 0)
         recordFile->Truncate(fileSize);

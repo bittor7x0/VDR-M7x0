@@ -102,7 +102,7 @@
  	
 --- uClibc/libc/sysdeps/linux/mips/crtn.S.old	2007-04-02 17:29:54.000000000 +0200
 +++ uClibc/libc/sysdeps/linux/mips/crtn.S	2007-04-02 17:31:51.000000000 +0200
-@@ -4,17 +4,13 @@
+@@ -4,16 +4,12 @@
  	.section .mdebug.abi32
  	.previous
  	.abicalls
@@ -112,7 +112,6 @@
 -#NO_APP
  	.align	2
  	.globl	_init
- 	.ent	_init
  	.type	_init, @function
 -#NO_APP
  	lw	$31,28($sp)
@@ -120,17 +119,16 @@
  	.set	noreorder
  	.set	nomacro
  	j	$31
-@@ -23,17 +19,13 @@
+@@ -21,16 +17,12 @@
+ 	.set	macro
  	.set	reorder
  
- 	.end	_init
 -#APP
  	
  	.section .fini
 -#NO_APP
  	.align	2
  	.globl	_fini
- 	.ent	_fini
  	.type	_fini, @function
 -#NO_APP
  	lw	$31,28($sp)
@@ -138,15 +136,15 @@
  	.set	noreorder
  	.set	nomacro
  	j	$31
-@@ -42,7 +34,6 @@
+@@ -38,7 +30,6 @@
+ 	.set	macro
  	.set	reorder
  
- 	.end	_fini
 -#APP
  	
  	.ident	"GCC: (GNU) 3.3.2"
  #elif _MIPS_SIM == _MIPS_SIM_NABI32
-@@ -50,16 +41,13 @@
+@@ -46,14 +37,11 @@
  	.section .mdebug.abiN32
  	.previous
  	.abicalls
@@ -154,41 +152,37 @@
  	
  	.section .init
 -#NO_APP
- 	.align	2
  	.align	3
  	.globl	_init
- 	.ent	_init
  	.type	_init, @function
 -#NO_APP
  	ld	$31,8($sp)
  	ld	$28,0($sp)
  	.set	noreorder
-@@ -70,16 +58,13 @@
+@@ -62,14 +50,11 @@
+ 	addiu	$sp,$sp,16
+ 	.set	macro
  	.set	reorder
- 
- 	.end	_init
 -#APP
  	
  	.section .fini
 -#NO_APP
- 	.align	2
  	.align	3
  	.globl	_fini
- 	.ent	_fini
  	.type	_fini, @function
 -#NO_APP
  	ld	$31,8($sp)
  	ld	$28,0($sp)
  	.set	noreorder
-@@ -90,7 +75,6 @@
+@@ -79,7 +64,6 @@
+ 	.set	macro
  	.set	reorder
  
- 	.end	_fini
 -#APP
  	
  	.ident	"GCC: (GNU) 3.4.3"
  #else /* N64 */
-@@ -98,19 +82,15 @@
+@@ -87,18 +71,14 @@
  	.section .mdebug.abi64
  	.previous
  	.abicalls
@@ -199,7 +193,6 @@
 -#NO_APP
  	.align	2
  	.globl	_init
- 	.ent	_init
  	.type	_init, @function
 -#NO_APP
  	ld	$31,24($sp)
@@ -208,17 +201,16 @@
  	.set	noreorder
  	.set	nomacro
  	j	$31
-@@ -119,18 +99,14 @@
+@@ -106,17 +86,13 @@
+ 	.set	macro
  	.set	reorder
  
- 	.end	_init
 -#APP
  	
  	.section .fini
 -#NO_APP
  	.align	2
  	.globl	_fini
- 	.ent	_fini
  	.type	_fini, @function
 -#NO_APP
  	ld	$31,24($sp)
@@ -227,10 +219,10 @@
  	.set	noreorder
  	.set	nomacro
  	j	$31
-@@ -139,7 +115,6 @@
+@@ -124,7 +100,6 @@
+ 	.set	macro
  	.set	reorder
  
- 	.end	_fini
 -#APP
  	
  	.ident	"GCC: (GNU) 3.3.2"
