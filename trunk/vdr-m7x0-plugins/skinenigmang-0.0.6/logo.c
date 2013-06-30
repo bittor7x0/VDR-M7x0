@@ -155,8 +155,10 @@ bool cEnigmaLogoCache::Load(const char *fileNameP, int w, int h, bool fLogNotFou
     // no - cache miss!
     debug("cPluginSkinEnigma::Load() CACHE MISS!");
     // try to load xpm logo
-    if (!LoadXpm(strFilename, w, h, fLogNotFound))
+    if (!LoadXpm(strFilename, w, h, fLogNotFound)) {
+      free(strFilename);
       return false;
+    }
     // check if cache is active
     if (cacheSizeM) {
       // update map
