@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -99,6 +99,9 @@ int cMenuBlacklistsItem::Compare(const cListObject &ListObject) const
 cMenuBlacklists::cMenuBlacklists()
 :cOsdMenu(tr("Blacklists"), 3, 20, 11, 6, 5)
 {
+#if VDRVERSNUM >= 10734
+  SetMenuCategory(mcSetupPlugins);
+#endif
     cMutexLock BlacklistLock(&Blacklists);
     cBlacklist *Blacklist = Blacklists.First();
     while (Blacklist) {

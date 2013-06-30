@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -67,6 +67,10 @@ int cMenuTimerDoneItem::Compare(const cListObject &ListObject) const
 cMenuTimersDone::cMenuTimersDone(cSearchExt* Search)
    :cOsdMenu("", 4, 15)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcTimer);
+#endif
+
    search = Search;
    showAll = true;
    sortModeTimerDone = 0;

@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -49,6 +49,9 @@ cSearchExtCats SearchExtCats;
 cMenuEditSearchExt::cMenuEditSearchExt(cSearchExt *SearchExt, bool New, bool Template, bool FromEPG)
    :cOsdMenu(tr("Edit search"),32)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcPlugin);
+#endif
    templateMode = Template;
 
    SearchModes[0] = strdup(tr("phrase"));
@@ -640,21 +643,21 @@ eOSState cMenuEditSearchExt::ProcessKey(eKeys Key)
                   data.channelMin = ch;
                else
                {
-                  Skins.Message(mtError, tr("*** Invalid Channel ***"));
-                  break;
+		 ERROR(tr("*** Invalid Channel ***"));
+		 break;
                }
                ch = Channels.GetByNumber(channelMax);
                if (ch)
                   data.channelMax = ch;
                else
                {
-                  Skins.Message(mtError, tr("*** Invalid Channel ***"));
-                  break;
+		 ERROR(tr("*** Invalid Channel ***"));
+		 break;
                }
                if (channelMin > channelMax)
                {
-                  Skins.Message(mtError, tr("Please check channel criteria!"));
-                  return osContinue;
+		 ERROR(tr("Please check channel criteria!"));
+		 return osContinue;
                }
             }
             if (data.useChannel==2)
@@ -721,7 +724,7 @@ eOSState cMenuEditSearchExt::ProcessKey(eKeys Key)
                if (searchExt->useAsSearchTimer && !EPGSearchConfig.useSearchTimers) // enable search timer thread if necessary
                {
                   cSearchTimerThread::Init((cPluginEpgsearch*) cPluginManager::GetPlugin("epgsearch"), true);
-                  Skins.Message(mtInfo, tr("Search timers activated in setup."));
+                  INFO(tr("Search timers activated in setup."));
                }
 
                SearchExts.Save();
@@ -819,6 +822,9 @@ eOSState cMenuEditSearchExt::ProcessKey(eKeys Key)
 cMenuEditDaysOfWeek::cMenuEditDaysOfWeek(int* DaysOfWeek, int Offset, bool Negate)
    :cOsdMenu(tr("Edit user-defined days of week"),30)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcPlugin);
+#endif
    int i=0;
    offset = Offset;
    negate = Negate;
@@ -862,6 +868,9 @@ eOSState cMenuEditDaysOfWeek::ProcessKey(eKeys Key)
 cMenuSearchEditCompCats::cMenuSearchEditCompCats(int* catarrayAvoidRepeats)
    :cOsdMenu(tr("Compare categories"),30)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcPlugin);
+#endif
    search_catarrayAvoidRepeats = catarrayAvoidRepeats;
    edit_catarrayAvoidRepeats = (int*) malloc(SearchExtCats.Count() * sizeof(int));
    cSearchExtCat *SearchExtCat = SearchExtCats.First();
@@ -909,6 +918,9 @@ eOSState cMenuSearchEditCompCats::ProcessKey(eKeys Key)
 cMenuBlacklistsSelection::cMenuBlacklistsSelection(cList<cBlacklistObject>* pBlacklists)
 :cOsdMenu(tr("Select blacklists"),30)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcPlugin);
+#endif
    blacklists = pBlacklists;
    blacklistsSel = new int[Blacklists.Count()];
    cMutexLock BlacklistLock(&Blacklists);
@@ -1051,6 +1063,10 @@ eOSState cMenuBlacklistsSelection::ProcessKey(eKeys Key)
 cMenuCatValuesSelect::cMenuCatValuesSelect(char* CatValues, int CatIndex, int SearchMode)
    :cOsdMenu(tr("Values for EPG category"), 1, 40)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcPlugin);
+#endif
+
    catValues = CatValues;
    catIndex = CatIndex;
    searchMode = SearchMode;
@@ -1180,6 +1196,10 @@ eOSState cMenuCatValuesSelect::ProcessKey(eKeys Key)
 cMenuSearchActivSettings::cMenuSearchActivSettings(cSearchExt *SearchExt)
 :cOsdMenu(tr("Activation of search timer"), 25)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcPlugin);
+#endif
+
   searchExt = SearchExt;
   if (searchExt)
     {

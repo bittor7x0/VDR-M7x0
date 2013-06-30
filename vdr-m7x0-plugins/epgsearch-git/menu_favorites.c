@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,6 +36,28 @@ cMenuFavorites::cMenuFavorites()
 {
    BuildList();
 }
+
+#ifdef USE_GRAPHTFT
+const char* cMenuFavorites::MenuKind()
+{
+  return "MenuEpgsFavorites";
+}
+
+void cMenuFavorites::Display(void)
+{
+   cOsdMenu::Display();
+
+   if (Count() > 0)
+   {
+      int i = 0;
+
+      for (cOsdItem *item = First(); item; item = Next(item))
+         cStatus::MsgOsdEventItem(!item->Selectable() ? 0 :
+                                  ((cMenuSearchResultsItem*)item)->event,
+                                  item->Text(), i++, Count());
+   }
+}
+#endif /* GRAPHTFT */
 
 bool cMenuFavorites::BuildList()
 {

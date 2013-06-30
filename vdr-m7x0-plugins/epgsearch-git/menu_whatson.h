@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,12 +35,27 @@ public:
   const cEvent *event;
   cChannel *channel;
   showMode mode;
-  int timerMatch;
+  eTimerMatch timerMatch;
   bool inSwitchList;
   cMenuTemplate* menuTemplate;
 
   cMenuMyScheduleItem(const cEvent *Event, cChannel *Channel = NULL, showMode ShowMode = showNow, cMenuTemplate* menuTemplate = NULL);
-  bool Update(bool Force = false);
+  virtual bool Update(bool Force = false);
+  virtual void SetMenuItem(cSkinDisplayMenu *DisplayMenu, int Index, bool Current, bool Selectable);
+
+};
+
+// --- cMenuMyScheduleSepItem ------------------------------------------------------
+class cMenuMyScheduleSepItem : public cMenuMyScheduleItem {
+  cEvent *dummyEvent; // this event is used to store the text of the separator in its title
+                      // to pass it in SetMenuItem via the event argument. Would be nice
+                      // if VDR had a SetItemSeparator function for this
+public:
+
+  cMenuMyScheduleSepItem(const cEvent *Event, cChannel *Channel = NULL);
+  ~cMenuMyScheduleSepItem();
+  virtual bool Update(bool Force = false);
+  virtual void SetMenuItem(cSkinDisplayMenu *DisplayMenu, int Index, bool Current, bool Selectable);
 };
 
 // --- cMenuWhatsOnSearch ----------------------------------------------------------

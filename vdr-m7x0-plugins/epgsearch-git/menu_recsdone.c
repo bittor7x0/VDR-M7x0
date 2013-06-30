@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -71,6 +71,9 @@ int cMenuRecDoneItem::Compare(const cListObject &ListObject) const
 cMenuRecsDone::cMenuRecsDone(cSearchExt* Search)
 :cOsdMenu("", 16)
 {
+#if VDRVERSNUM >= 10734
+  SetMenuCategory(mcRecordingInfo);
+#endif
     search = Search;
     showMode = SHOW_RECDONE_ALL;
     showEpisodeOnly = false;

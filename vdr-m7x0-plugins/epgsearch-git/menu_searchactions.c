@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -48,6 +48,9 @@ extern int updateForced;
 cMenuSearchActions::cMenuSearchActions(cSearchExt* Search, bool DirectCall)
 :cOsdMenu(tr("Search actions"))
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcCommand);
+#endif
     directCall = DirectCall;
     SetHasHotkeys();
 
@@ -96,7 +99,7 @@ eOSState cMenuSearchActions::OnOffSearchtimer(void)
          if (!EPGSearchConfig.useSearchTimers) // enable search timer thread if necessary
          {
             cSearchTimerThread::Init((cPluginEpgsearch*) cPluginManager::GetPlugin("epgsearch"), true);
-            Skins.Message(mtInfo, tr("Search timers activated in setup."));
+            INFO(tr("Search timers activated in setup."));
          }
       }
   }
@@ -119,7 +122,7 @@ eOSState cMenuSearchActions::Execute()
          if (!EPGSearchConfig.useSearchTimers) // enable search timer thread if necessary
          {
             cSearchTimerThread::Init((cPluginEpgsearch*) cPluginManager::GetPlugin("epgsearch"), true);
-            Skins.Message(mtInfo, tr("Search timers activated in setup."));
+            INFO(tr("Search timers activated in setup."));
          }
          if (Interface->Confirm(tr("Run search timer update?")))
             updateForced = 3; // with message about completion

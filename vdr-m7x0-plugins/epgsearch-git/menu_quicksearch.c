@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -253,21 +253,21 @@ eOSState cMenuQuickSearch::ProcessKey(eKeys Key)
 			data.channelMin = ch;
 		    else
 		    {
-			Skins.Message(mtError, tr("*** Invalid Channel ***"));
-			break;
+		      ERROR(tr("*** Invalid Channel ***"));
+		      break;
 		    }
 		    ch = Channels.GetByNumber(channelMax);
 		    if (ch)
 			data.channelMax = ch;
 		    else
 		    {
-			Skins.Message(mtError, tr("*** Invalid Channel ***"));
-			break;
+		      ERROR(tr("*** Invalid Channel ***"));
+		      break;
 		    }
 		    if (channelMin > channelMax)
 		    {
-			Skins.Message(mtError, tr("Please check channel criteria!"));
-			return osContinue;
+		      ERROR(tr("Please check channel criteria!"));
+		      return osContinue;
 		    }
 		}
 		if (data.useChannel==2)

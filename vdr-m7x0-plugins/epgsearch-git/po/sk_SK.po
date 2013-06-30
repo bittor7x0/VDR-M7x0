@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: epgsearch\n"
 "Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
-"POT-Creation-Date: 2012-07-29 12:10+0200\n"
+"POT-Creation-Date: 2013-06-23 14:12+0200\n"
 "PO-Revision-Date: 2009-11-02 09:40+0100\n"
 "Last-Translator: Milan Hrala <hrala.milan@gmail.com>\n"
 "Language-Team: Slovak <hrala.milan@gmail.com>\n"
@@ -49,6 +49,14 @@ msgstr "Meno skupiny je prázdne!"
 msgid "Group name already exists!"
 msgstr "Meno skupiny existuje!"
 
+#, c-format
+msgid "timer conflict at %s! Show it?"
+msgstr "Konflikt plánu o %s! Zobraziť?"
+
+#, c-format
+msgid "%d timer conflicts! First at %s. Show them?"
+msgstr "%d  konflikty plánovania! Prvý o %s. Ukázať"
+
 msgid "Direct access to epgsearch's conflict check menu"
 msgstr "Priamy prístup EPGsearch k menu konfliktov"
 
@@ -60,10 +68,6 @@ msgstr "Informácie o konfliktoch v hlav menu"
 
 msgid "next"
 msgstr "ďalší"
-
-#, c-format
-msgid "%d timer conflict(s)! First at %s. Show them?"
-msgstr "%d  konflikt(y) plánovania! Prvý o %s. Ukázať"
 
 msgid "search the EPG for repeats and more"
 msgstr "Prehľadať televízny program, či nebude repríza"
@@ -305,8 +309,8 @@ msgid "Use VDR's timer edit menu"
 msgstr "Použiť menu úpravy VDR časovača"
 
 msgid ""
-"Help$This plugin has it's own timer edit menu extending the original one with some extra functionality like\n"
-"- an addtional directory entry\n"
+"Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n"
+"- an additional directory entry\n"
 "- user-defined days of week for repeating timers\n"
 "- adding an episode name\n"
 "- support for EPG variables (see MANUAL)"
@@ -907,6 +911,21 @@ msgstr "Doplňujúce informácie"
 msgid "Button$Aux info"
 msgstr "Pomocné informácie"
 
+msgid "Button$Actions"
+msgstr "Akcia"
+
+msgid "Search entries"
+msgstr "Vyhľadať údaje"
+
+msgid "active"
+msgstr "aktívne"
+
+msgid "Edit$Delete search?"
+msgstr "Vymazať vyhľadané?"
+
+msgid "Delete all timers created from this search?"
+msgstr "Vymazať všetky plány vytvorené cez vyhľadávač?"
+
 msgid "Search actions"
 msgstr "Hľadať akcie"
 
@@ -963,21 +982,6 @@ msgstr "Kopírovať"
 
 msgid "Copy this entry to templates?"
 msgstr "Kopírovať tieto údaje z šablon?"
-
-msgid "Delete all timers created from this search?"
-msgstr "Vymazať všetky plány vytvorené cez vyhľadávač?"
-
-msgid "Button$Actions"
-msgstr "Akcia"
-
-msgid "Search entries"
-msgstr "Vyhľadať údaje"
-
-msgid "active"
-msgstr "aktívne"
-
-msgid "Edit$Delete search?"
-msgstr "Vymazať vyhľadané?"
 
 msgid "Edit search"
 msgstr "Upraviť vyhladávanie"

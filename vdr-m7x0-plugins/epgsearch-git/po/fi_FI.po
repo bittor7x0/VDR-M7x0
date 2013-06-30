@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EPGSearch 0.9.25\n"
 "Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
-"POT-Creation-Date: 2012-07-29 12:10+0200\n"
+"POT-Creation-Date: 2013-06-23 14:12+0200\n"
 "PO-Revision-Date: 2011-01-04 21:07+0200\n"
 "Last-Translator: Ville Skyttä <ville.skytta@iki.fi>\n"
 "Language-Team: Finnish <vdr@linuxtv.org>\n"
@@ -52,6 +52,14 @@ msgstr "Kanavaryhmältä puuttuu nimi!"
 msgid "Group name already exists!"
 msgstr "Samanniminen kanavaryhmä on jo olemassa!"
 
+#, c-format
+msgid "timer conflict at %s! Show it?"
+msgstr "Päällekkäinen ajastin (%s)! Näytetäänkö?"
+
+#, c-format
+msgid "%d timer conflicts! First at %s. Show them?"
+msgstr "Päällekkäisiä ajastimia %d kpl (%s)! Näytetäänkö?"
+
 msgid "Direct access to epgsearch's conflict check menu"
 msgstr "Suoratoiminto EPGSearch-laajennoksen ajastimien tarkistukselle"
 
@@ -63,10 +71,6 @@ msgstr "Näytä päällekkäisyydet päävalikossa"
 
 msgid "next"
 msgstr "seuraava"
-
-#, c-format
-msgid "%d timer conflict(s)! First at %s. Show them?"
-msgstr "Päällekkäisiä ajastimia (%d kpl %s)! Näytetäänkö?"
 
 msgid "search the EPG for repeats and more"
 msgstr "Monipuolinen ohjelmaopas hakutoiminnolla"
@@ -307,8 +311,8 @@ msgid "Use VDR's timer edit menu"
 msgstr "Käytä alkuperäistä ajastinvalikkoa"
 
 msgid ""
-"Help$This plugin has it's own timer edit menu extending the original one with some extra functionality like\n"
-"- an addtional directory entry\n"
+"Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n"
+"- an additional directory entry\n"
 "- user-defined days of week for repeating timers\n"
 "- adding an episode name\n"
 "- support for EPG variables (see MANUAL)"
@@ -407,7 +411,7 @@ msgid "Check if EPG exists for ... [h]"
 msgstr "Tarkasta tulevat ohjelmatiedot... [h]"
 
 msgid "Help$Specify how many hours of future EPG there should be and get warned else after a search timer update."
-msgstr "Määrittelee vaadittavat tulevat ohjelmatietot tunteina hakuajastimien päivityksen yhteydessä, jonka jälkeen käyttäjää varoitetaan."
+msgstr "Määrittelee vaadittavat tulevat ohjelmatiedot tunteina hakuajastimien päivityksen yhteydessä, jonka jälkeen käyttäjää varoitetaan."
 
 msgid "Warn by OSD"
 msgstr "Muistuta kuvaruutunäytöllä"
@@ -907,6 +911,21 @@ msgstr "Lisätiedot"
 msgid "Button$Aux info"
 msgstr "Lisätiedot"
 
+msgid "Button$Actions"
+msgstr "Komennot"
+
+msgid "Search entries"
+msgstr "Hakutermit"
+
+msgid "active"
+msgstr "aktiivista"
+
+msgid "Edit$Delete search?"
+msgstr "Poistetaanko haku?"
+
+msgid "Delete all timers created from this search?"
+msgstr "Poistetaanko kaikki tällä haulla luodut ajastimet?"
+
 msgid "Search actions"
 msgstr "Hakukomennot"
 
@@ -963,21 +982,6 @@ msgstr "Kopio"
 
 msgid "Copy this entry to templates?"
 msgstr "Kopioidaanko hakutermi mallipohjaksi?"
-
-msgid "Delete all timers created from this search?"
-msgstr "Poistetaanko kaikki tällä haulla luodut ajastimet?"
-
-msgid "Button$Actions"
-msgstr "Komennot"
-
-msgid "Search entries"
-msgstr "Hakutermit"
-
-msgid "active"
-msgstr "aktiivista"
-
-msgid "Edit$Delete search?"
-msgstr "Poistetaanko haku?"
 
 msgid "Edit search"
 msgstr "Muokkaa hakua"

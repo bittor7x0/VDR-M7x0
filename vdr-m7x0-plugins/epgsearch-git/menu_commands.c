@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -45,6 +45,10 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 cMenuSearchCommands::cMenuSearchCommands(const char *Title, const cEvent* Event, bool DirectCall, cSearchExt* Search)
    :cOsdMenu(Title)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcCommand);
+#endif
+
    directCall = DirectCall;
    SetHasHotkeys();
    LoadCommands();
@@ -107,8 +111,8 @@ eOSState cMenuSearchCommands::Switch(void)
       return osEnd;
    else
    {
-      Skins.Message(mtInfo, trVDR("Can't switch channel!"));
-      return osContinue;
+     INFO(trVDR("Can't switch channel!"));
+     return osContinue;
    }
 }
 
@@ -121,7 +125,7 @@ eOSState cMenuSearchCommands::Record(void)
 {
    if (!event) return osContinue;
 
-   int timerMatch = tmNone;
+   eTimerMatch timerMatch = tmNone;
    cTimer* timer = Timers.GetMatch(event, &timerMatch);
    if (timerMatch == tmFull)
    {
@@ -200,7 +204,7 @@ eOSState cMenuSearchCommands::AddToSwitchList(void)
    time_t now = time(NULL);
    if (now >= event->StartTime())
    {
-      Skins.Message(mtError, tr("Already running!"));
+     ERROR(tr("Already running!"));
       return osBack;
    }
    cSwitchTimer* switchTimer = SwitchTimers.InSwitchList(event);

@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,8 +36,6 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 #include "epgsearchtools.h"
 
 #define MAXOSDTEXTWIDTH 45
-#define ERROR(T) Skins.Message(mtError, T)
-#define INFO(I)  Skins.Message(mtInfo, I)
 
 typedef enum
 {

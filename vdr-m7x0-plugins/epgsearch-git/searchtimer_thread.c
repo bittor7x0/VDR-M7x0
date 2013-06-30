@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -347,7 +347,7 @@ void cSearchTimerThread::Action(void)
                      continue;
                   }
 
-                  char* pFile = NULL; // File is prepared for svdrp, so prepare t->File for comparision too
+                  char* pFile = NULL; // File is prepared for svdrp, so prepare t->File for comparison too
                   msprintf(&pFile, "%s", t->File());
                   pFile = strreplace(pFile, ':', '|');
                   pFile = strreplace(pFile, " ~", "~");
@@ -523,7 +523,7 @@ void cSearchTimerThread::Action(void)
          if (announceList.Count() > 0)
          {
 	   cString msgfmt = cString::sprintf(tr("%d new broadcast(s) found! Show them?"), announceList.Count());
-	   if (SendMsg(msgfmt, true,7) == kOk)
+	   if (SendMsg(msgfmt, true, 7) == kOk)
 	     {
 	       m_plugin->showAnnounces = true;
 	       cRemote::CallPlugin("epgsearch");
@@ -551,14 +551,20 @@ void cSearchTimerThread::Action(void)
 
  	       conflictCheck.EvaluateConflCheckCmd();
 
-               cString msgfmt = cString::sprintf(tr("%d timer conflict(s)! First at %s. Show them?"),
-						 conflictCheck.relevantConflicts,
-						 *DateTime(conflictCheck.nextRelevantConflictDate));
+	       cString msgfmt = "";
+	       if (conflictCheck.relevantConflicts == 1)
+		 msgfmt = cString::sprintf(tr("timer conflict at %s! Show it?"),
+						*DateTime(conflictCheck.nextRelevantConflictDate));
+	       else
+		 msgfmt = cString::sprintf(tr("%d timer conflicts! First at %s. Show them?"),
+						conflictCheck.relevantConflicts,
+						*DateTime(conflictCheck.nextRelevantConflictDate));
+
                bool doMessage = EPGSearchConfig.noConflMsgWhileReplay == 0 ||
                   !cDevice::PrimaryDevice()->Replaying() ||
                   conflictCheck.nextRelevantConflictDate - now < 2*60*60 ||
 		 (updateForced & UPDS_WITH_OSD);
-               if (doMessage && SendMsg(msgfmt, true,7) == kOk)
+               if (doMessage && SendMsg(msgfmt, true,7,mtWarning) == kOk)
                {
                   m_plugin->showConflicts = true;
                   cRemote::CallPlugin("epgsearch");
@@ -681,7 +687,7 @@ bool cSearchTimerThread::AddModTimer(cTimer* Timer, int index, cSearchExt* searc
    strftime(bufStart, sizeof(bufStart), "%H%M", localtime_r(&start, &tm_r));
    strftime(bufEnd, sizeof(bufEnd), "%H%M", localtime_r(&stop, &tm_r));
 
-   // add additonal info
+   // add additional info
    char* tmpSummary = NULL;
    if (Summary)
    {
@@ -1052,7 +1058,7 @@ void cSearchTimerThread::CheckEPGHours()
       if (EPGSearchConfig.checkEPGWarnByOSD)
 	{
 	  cString msgfmt = cString::sprintf(tr("small EPG content on:%s"), sBuffer.c_str());
-	  SendMsg(msgfmt);
+	  SendMsg(msgfmt, false, 0, mtWarning);
 	}
       if (EPGSearchConfig.checkEPGWarnByMail)
 	{

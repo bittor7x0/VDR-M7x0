@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.7.10\n"
 "Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
-"POT-Creation-Date: 2012-07-29 12:10+0200\n"
+"POT-Creation-Date: 2013-06-23 14:12+0200\n"
 "PO-Revision-Date: 2007-08-14 20:21+0200\n"
 "Last-Translator: Valdemaras Pipiras <varas@ambernet.lt>\n"
 "Language-Team: Lithuanian <vdr@linuxtv.org>\n"
@@ -49,6 +49,14 @@ msgstr "Grupės pavadinimas tuščias!"
 msgid "Group name already exists!"
 msgstr "Toks grupės pavadinimas jau yra!"
 
+#, c-format
+msgid "timer conflict at %s! Show it?"
+msgstr "Laikmačio konflikas %s! Rodyti?"
+
+#, c-format
+msgid "%d timer conflicts! First at %s. Show them?"
+msgstr "%d kaikmačio konfliktas(ų)! Pirmasis %s. Rodyti juos?"
+
 msgid "Direct access to epgsearch's conflict check menu"
 msgstr "Tiesioginis priėjimas prie epgsearch įskiepo konflikto pasirinkimo meniu"
 
@@ -60,10 +68,6 @@ msgstr "KOnflikto informacija pagrindiniame meniu"
 
 msgid "next"
 msgstr "sekantis"
-
-#, c-format
-msgid "%d timer conflict(s)! First at %s. Show them?"
-msgstr "%d kaikmačio konfliktas(ų)! Pirmasis %s. Rodyti juos?"
 
 msgid "search the EPG for repeats and more"
 msgstr "paieška po EPG ieškant pasikartojimų ir kt."
@@ -305,8 +309,8 @@ msgid "Use VDR's timer edit menu"
 msgstr "Naudoti VDR'o laikmačio meniu"
 
 msgid ""
-"Help$This plugin has it's own timer edit menu extending the original one with some extra functionality like\n"
-"- an addtional directory entry\n"
+"Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n"
+"- an additional directory entry\n"
 "- user-defined days of week for repeating timers\n"
 "- adding an episode name\n"
 "- support for EPG variables (see MANUAL)"
@@ -912,6 +916,21 @@ msgstr "Papildoma informacija"
 msgid "Button$Aux info"
 msgstr "Pap. informacija"
 
+msgid "Button$Actions"
+msgstr "Veiksmai"
+
+msgid "Search entries"
+msgstr "Įrašų paieška"
+
+msgid "active"
+msgstr "aktyvus"
+
+msgid "Edit$Delete search?"
+msgstr "Ištrinti paiešką?"
+
+msgid "Delete all timers created from this search?"
+msgstr "Ištrinti visus šios paieškos sukurtus laikmačius?"
+
 msgid "Search actions"
 msgstr "Veiksmų paieška"
 
@@ -968,21 +987,6 @@ msgstr "Kopijuoti"
 
 msgid "Copy this entry to templates?"
 msgstr "Koreguoti šią įvestį į šabloną?"
-
-msgid "Delete all timers created from this search?"
-msgstr "Ištrinti visus šios paieškos sukurtus laikmačius?"
-
-msgid "Button$Actions"
-msgstr "Veiksmai"
-
-msgid "Search entries"
-msgstr "Įrašų paieška"
-
-msgid "active"
-msgstr "aktyvus"
-
-msgid "Edit$Delete search?"
-msgstr "Ištrinti paiešką?"
 
 msgid "Edit search"
 msgstr "Koreguoti paiešką"

@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -115,13 +115,18 @@ void cConflictCheckThread::Action(void)
 	    time_t nextConflict = 0;
 	    if (conflictCheck.relevantConflicts > 0)
 	    {
-	      cString msgfmt = cString::sprintf(tr("%d timer conflict(s)! First at %s. Show them?"),
+	      cString msgfmt = "";
+	      if (conflictCheck.relevantConflicts == 1)
+		msgfmt = cString::sprintf(tr("timer conflict at %s! Show it?"),
+						*DateTime(conflictCheck.nextRelevantConflictDate));
+	      else
+		msgfmt = cString::sprintf(tr("%d timer conflicts! First at %s. Show them?"),
 						conflictCheck.relevantConflicts,
 						*DateTime(conflictCheck.nextRelevantConflictDate));
 	      bool doMessage = EPGSearchConfig.noConflMsgWhileReplay == 0 ||
 		!cDevice::PrimaryDevice()->Replaying() ||
 		conflictCheck.nextRelevantConflictDate - now < 2*60*60;
-	      if (doMessage && SendMsg(msgfmt, true,7) == kOk)
+	      if (doMessage && SendMsg(msgfmt, true,7, mtWarning) == kOk)
 		{
 		  m_plugin->showConflicts = true;
 		  cRemote::CallPlugin("epgsearch");

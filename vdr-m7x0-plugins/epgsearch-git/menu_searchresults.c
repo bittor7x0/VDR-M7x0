@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -77,7 +77,7 @@ bool cMenuSearchResultsItem::Update(bool Force)
 
    bool result = false;
 
-   int OldTimerMatch = timerMatch;
+   eTimerMatch OldTimerMatch = timerMatch;
    bool OldInSwitchList = inSwitchList;
    bool hasMatch = false;
    cTimer* timer = NULL;
@@ -176,12 +176,23 @@ cMenuSearchResultsItem::cMenuSearchResultsItem(cRecording *Recording)
    previewTimer = false;
    episodeOnly = false;
    menuTemplate = NULL;
-   timerMatch = 0;
+   timerMatch = tmNone;
    inSwitchList = false;
    event = NULL;
    search = NULL;
    fileName = strdup(Recording->FileName());
    SetText(Recording->Title('\t'));
+}
+
+void cMenuSearchResultsItem::SetMenuItem(cSkinDisplayMenu *DisplayMenu, int Index, bool Current, bool Selectable)
+{
+#if APIVERSNUM >= 10733
+  cChannel *channel = event?Channels.GetByChannelID(event->ChannelID(), true, true):NULL;
+  if (!event)
+     DisplayMenu->SetItem(Text(), Index, Current, Selectable);
+  else if (!DisplayMenu->SetItemEvent(event, Index, Current, Selectable, channel, true, timerMatch))
+     DisplayMenu->SetItem(Text(), Index, Current, Selectable);
+#endif
 }
 
 // --- cMenuSearchResults -------------------------------------------------------
@@ -191,6 +202,10 @@ const cEvent *cMenuSearchResults::scheduleEventInfo = NULL;
 cMenuSearchResults::cMenuSearchResults(cMenuTemplate* MenuTemplate)
    :cOsdMenu("", MenuTemplate->Tab(0), MenuTemplate->Tab(1), MenuTemplate->Tab(2), MenuTemplate->Tab(3), MenuTemplate->Tab(4))
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcSchedule);
+#endif
+
   helpKeys = -1;
   menuTemplate = MenuTemplate;
   modeYellow = showTitleEpisode;
@@ -224,7 +239,7 @@ eOSState cMenuSearchResults::Record(void)
    if (item) {
       if (item->timerMatch == tmFull)
       {
-         int tm = tmNone;
+         eTimerMatch tm = tmNone;
          cTimer *timer = Timers.GetMatch(item->event, &tm);
          if (timer)
 	   {
@@ -301,7 +316,7 @@ eOSState cMenuSearchResults::Switch(void)
       if (channel && cDevice::PrimaryDevice()->SwitchChannel(channel, true))
          return osEnd;
    }
-   Skins.Message(mtInfo, trVDR("Can't switch channel!"));
+   INFO(trVDR("Can't switch channel!"));
    return osContinue;
 }
 
@@ -735,6 +750,9 @@ bool cMenuSearchResultsForQuery::BuildList()
 cMenuSearchResultsForRecs::cMenuSearchResultsForRecs(const char *query)
    :cMenuSearchResultsForQuery(NULL)
 {
+#if VDRVERSNUM >= 10728
+   SetMenuCategory(mcCommand);
+#endif
    SetTitle(tr("found recordings"));
    if (query)
    {
@@ -815,7 +833,7 @@ cRecording *cMenuSearchResultsForRecs::GetRecording(cMenuSearchResultsItem *Item
 {
    cRecording *recording = Recordings.GetByName(Item->FileName());
    if (!recording)
-      Skins.Message(mtError, tr("Error while accessing recording!"));
+     ERROR(tr("Error while accessing recording!"));
    return recording;
 }
 

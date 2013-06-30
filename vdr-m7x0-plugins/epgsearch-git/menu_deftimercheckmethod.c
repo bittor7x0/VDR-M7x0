@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -120,6 +120,9 @@ void cDefTimerCheckModes::SetMode(const cChannel* channel, int mode)
 cMenuDefTimerCheckMethod::cMenuDefTimerCheckMethod()
     :cOsdMenu(tr("Default timer check method"), 20)
 {
+#if VDRVERSNUM >= 10734
+  SetMenuCategory(mcSetupPlugins);
+#endif
     CheckModes[0] = tr("no check");
     CheckModes[UPD_CHDUR] = tr("by channel and time");
     CheckModes[UPD_EVENTID] = tr("by event ID");

@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -305,6 +305,9 @@ void cMenuChannelGroupItem::Set(void)
 cMenuChannelGroups::cMenuChannelGroups(char** GroupName)
 :cOsdMenu(tr("Channel groups"),20)
 {
+#if VDRVERSNUM >= 10734
+  SetMenuCategory(mcSetupPlugins);
+#endif
     groupSel = -1;
     groupName = GroupName;
     if (groupName && *groupName)
@@ -348,14 +351,14 @@ eOSState cMenuChannelGroups::Delete(void)
       if (search)
       {
 	cString Message = cString::sprintf("%s %s", tr("Channel group used by:"), search->search);
-	  Skins.Message(mtInfo, Message);
-	  return osContinue;
+	INFO(Message);
+	return osContinue;
       }
       if (Interface->Confirm(tr("Edit$Delete group?"))) {
-	  ChannelGroups.Del(curGroup);
-	  ChannelGroups.Save();
-	  cOsdMenu::Del(Current());
-	  Display();
+	ChannelGroups.Del(curGroup);
+	ChannelGroups.Save();
+	cOsdMenu::Del(Current());
+	Display();
       }
   }
   return osContinue;
@@ -407,6 +410,9 @@ eOSState cMenuChannelGroups::ProcessKey(eKeys Key)
 cMenuEditChannelGroup::cMenuEditChannelGroup(cChannelGroup *Group, bool New)
 :cOsdMenu(tr("Edit channel group"),30)
 {
+#if VDRVERSNUM >= 10734
+  SetMenuCategory(mcSetupPlugins);
+#endif
     group = Group;
     channelSel = group->CreateChannelSel();
     strcpy(name, group->name);
@@ -458,13 +464,13 @@ eOSState cMenuEditChannelGroup::ProcessKey(eKeys Key)
 	  case kOk:
 	      if (strlen(name) == 0)
 	      {
-		  Skins.Message(mtError, tr("Group name is empty!"));
-		  return osContinue;
+		ERROR(tr("Group name is empty!"));
+		return osContinue;
 	      }
 	      if (addIfConfirmed && ChannelGroups.GetGroupByName(name))
 	      {
-		  Skins.Message(mtError, tr("Group name already exists!"));
-		  return osContinue;
+		ERROR(tr("Group name already exists!"));
+		return osContinue;
 	      }
 
 	      {

@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -89,11 +89,12 @@ int CompareSearchExtPrioDescTerm(const void *p1, const void *p2)
      return strcmp((*(cSearchExt **)p1)->search, (*(cSearchExt **)p2)->search);
 }
 
-char* IndentMenuItem(const char* szString, int indentions)
+cString IndentMenuItem(const char* szString, int indentions)
 {
    char* szIndented = NULL;
    msprintf(&szIndented, "%*s", strlen(szString)+indentions*2, szString);
-   return szIndented;
+   cString szIndentedStr(szIndented, true /*take pointer*/);
+   return szIndentedStr;
 }
 
 // based on Nordlicht's EPG-Plugin
@@ -661,9 +662,9 @@ bool SendViaSVDRP(cString SVDRPcmd)
    return bSuccess;
 }
 
-int SendMsg(cString Message, bool confirm, int seconds)
+int SendMsg(cString Message, bool confirm, int seconds, eMessageType messageType)
 {
-   int Keys = Skins.QueueMessage(mtInfo, Message, seconds, confirm?seconds+2:0);
+   int Keys = Skins.QueueMessage(messageType, Message, seconds, confirm?seconds+2:0);
    return Keys;
 }
 
@@ -731,7 +732,7 @@ bool DescriptionMatches(const char* eDescr, const char* rDescr, int matchLimit)
    // last try with Levenshtein Distance, only compare the first 1000 chars
    double fMatch = FuzzyMatch(eDescr, rDescr, 1000);
    double tmp_matchlimit = matchLimit/100.0;
-   if(maxLength - minLength < 5)
+   if(maxLength - minLength < 5 && matchLimit < 95)
    {
       tmp_matchlimit = 0.95;
       LogFile.Log(2,"difference between both descriptions is < 5 setting matchlimit to: %.2f %%", tmp_matchlimit*100);
@@ -771,7 +772,7 @@ const cEvent* GetEvent(cTimer* timer)
 }
 
 // this extracts the real description from a given epg entry cutting all that looks like a category line
-// we asume, that a category has a name not longer than MAXCATNAMELENGTH and a value not longer than
+// we assume that a category has a name not longer than MAXCATNAMELENGTH and a value not longer than
 // MAXCATVALUELENGTH (so in most cases e.g. the 'cast' category will stay part of the description). name and
 // value are separated with ': '
 #define MAXCATNAMELENGTH 40
@@ -1000,7 +1001,7 @@ cString DateTime(time_t t)
       time(&t);
    struct tm tm_r;
    tm *tm = localtime_r(&t, &tm_r);
-   snprintf(buffer, sizeof(buffer), "%02d.%02d %02d:%02d", tm->tm_mday, tm->tm_mon + 1, tm->tm_hour, tm->tm_min);
+   snprintf(buffer, sizeof(buffer), "%02d.%02d. %02d:%02d", tm->tm_mday, tm->tm_mon + 1, tm->tm_hour, tm->tm_min);
    return buffer;
 }
 

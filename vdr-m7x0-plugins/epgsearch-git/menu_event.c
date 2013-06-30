@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -34,6 +34,9 @@ cMenuEventSearch::cMenuEventSearch(const cEvent* Event, cEventObjects& EventObje
    eventObjects(EventObjects),
    surfMode(SurfMode)
 {
+#if VDRVERSNUM >= 10728
+  SetMenuCategory(mcEvent);
+#endif
 
    eventObjects.SetCurrent(Event);
    szGreen = szYellow = NULL;
@@ -92,7 +95,7 @@ void cMenuEventSearch::Set()
       cEventObj* eventObjPrev = GetPrev(event);
       cEventObj* eventObjNext = GetNext(event);
 
-      int timerMatch = tmNone;
+      eTimerMatch timerMatch = tmNone;
       Timers.GetMatch(event, &timerMatch);
       const char* szRed = trVDR("Button$Record");
       if (timerMatch == tmFull)
@@ -154,7 +157,7 @@ eOSState cMenuEventSearch::ProcessKey(eKeys Key)
 {
    if (!HasSubMenu())
    {
-      switch (Key) {
+     switch ((int)Key) {
          case kUp|k_Repeat:
          case kUp:
          case kDown|k_Repeat:

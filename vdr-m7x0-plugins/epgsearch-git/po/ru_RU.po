@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
-"POT-Creation-Date: 2012-07-29 12:10+0200\n"
+"POT-Creation-Date: 2013-06-23 14:12+0200\n"
 "PO-Revision-Date: 2007-08-14 20:21+0200\n"
 "Last-Translator: Vyacheslav Dikonov <sdiconov@mail.ru>\n"
 "Language-Team: Russian <vdr@linuxtv.org>\n"
@@ -49,6 +49,14 @@ msgstr ""
 msgid "Group name already exists!"
 msgstr ""
 
+#, c-format
+msgid "timer conflict at %s! Show it?"
+msgstr ""
+
+#, c-format
+msgid "%d timer conflicts! First at %s. Show them?"
+msgstr ""
+
 msgid "Direct access to epgsearch's conflict check menu"
 msgstr ""
 
@@ -59,10 +67,6 @@ msgid "Conflict info in main menu"
 msgstr ""
 
 msgid "next"
-msgstr ""
-
-#, c-format
-msgid "%d timer conflict(s)! First at %s. Show them?"
 msgstr ""
 
 msgid "search the EPG for repeats and more"
@@ -290,8 +294,8 @@ msgid "Use VDR's timer edit menu"
 msgstr ""
 
 msgid ""
-"Help$This plugin has it's own timer edit menu extending the original one with some extra functionality like\n"
-"- an addtional directory entry\n"
+"Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n"
+"- an additional directory entry\n"
 "- user-defined days of week for repeating timers\n"
 "- adding an episode name\n"
 "- support for EPG variables (see MANUAL)"
@@ -864,6 +868,21 @@ msgstr ""
 msgid "Button$Aux info"
 msgstr ""
 
+msgid "Button$Actions"
+msgstr ""
+
+msgid "Search entries"
+msgstr ""
+
+msgid "active"
+msgstr ""
+
+msgid "Edit$Delete search?"
+msgstr ""
+
+msgid "Delete all timers created from this search?"
+msgstr ""
+
 msgid "Search actions"
 msgstr ""
 
@@ -919,21 +938,6 @@ msgid "Copy"
 msgstr ""
 
 msgid "Copy this entry to templates?"
-msgstr ""
-
-msgid "Delete all timers created from this search?"
-msgstr ""
-
-msgid "Button$Actions"
-msgstr ""
-
-msgid "Search entries"
-msgstr ""
-
-msgid "active"
-msgstr ""
-
-msgid "Edit$Delete search?"
 msgstr ""
 
 msgid "Edit search"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
 "Report-Msgid-Bugs-To: <cwieninger@gmx.de>\n"
-"POT-Creation-Date: 2012-07-29 12:10+0200\n"
+"POT-Creation-Date: 2013-06-23 14:12+0200\n"
 "PO-Revision-Date: 2007-11-18 20:09+0200\n"
 "Last-Translator: Bittor Corl <bittor7x0 _at_ gmail.com>\n"
 "Language-Team: Spanish <vdr@linuxtv.org>\n"
@@ -49,6 +49,14 @@ msgstr "¡Nombre del grupo vacío!"
 msgid "Group name already exists!"
 msgstr "¡Ya existe el nombre del grupo!"
 
+#, c-format
+msgid "timer conflict at %s! Show it?"
+msgstr "Conflicto de programación a las %s! ¿Mostrarlo?"
+
+#, c-format
+msgid "%d timer conflicts! First at %s. Show them?"
+msgstr "¡%d conflictos de programación! El 1º a las %s. ¿Mostrarlos?"
+
 msgid "Direct access to epgsearch's conflict check menu"
 msgstr "Acceso directo al menú de conflictos EPGSearch"
 
@@ -60,10 +68,6 @@ msgstr "Mostrar conflictos en menú principal"
 
 msgid "next"
 msgstr "siguiente"
-
-#, c-format
-msgid "%d timer conflict(s)! First at %s. Show them?"
-msgstr "¡%d conflicto(s) de programación! El 1º a las %s. ¿Mostrarlos?"
 
 msgid "search the EPG for repeats and more"
 msgstr "Buscar repeticiones en la EPG"
@@ -304,8 +308,8 @@ msgid "Use VDR's timer edit menu"
 msgstr "Usar menú editar programación VDR"
 
 msgid ""
-"Help$This plugin has it's own timer edit menu extending the original one with some extra functionality like\n"
-"- an addtional directory entry\n"
+"Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n"
+"- an additional directory entry\n"
 "- user-defined days of week for repeating timers\n"
 "- adding an episode name\n"
 "- support for EPG variables (see MANUAL)"
@@ -903,6 +907,21 @@ msgstr "Más información"
 msgid "Button$Aux info"
 msgstr "Más info"
 
+msgid "Button$Actions"
+msgstr "Acciones"
+
+msgid "Search entries"
+msgstr "Entradas de búsqueda"
+
+msgid "active"
+msgstr "activa"
+
+msgid "Edit$Delete search?"
+msgstr "¿Borrar la búsqueda?"
+
+msgid "Delete all timers created from this search?"
+msgstr "¿Borrar las programaciones creadas por esta búsqueda?"
+
 msgid "Search actions"
 msgstr "Acciones de búsqueda"
 
@@ -959,21 +978,6 @@ msgstr "Copiar"
 
 msgid "Copy this entry to templates?"
 msgstr "¿Copiar esta entrada a plantillas?"
-
-msgid "Delete all timers created from this search?"
-msgstr "¿Borrar las programaciones creadas por esta búsqueda?"
-
-msgid "Button$Actions"
-msgstr "Acciones"
-
-msgid "Search entries"
-msgstr "Entradas de búsqueda"
-
-msgid "active"
-msgstr "activa"
-
-msgid "Edit$Delete search?"
-msgstr "¿Borrar la búsqueda?"
 
 msgid "Edit search"
 msgstr "Editar búsqueda"
@@ -1293,3 +1297,6 @@ msgstr "en %02ldh"
 #, c-format
 msgid "in %02ldm"
 msgstr "en %02ldm"
+
+#~ msgid "Compare expression"
+#~ msgstr "Comparar expresión"

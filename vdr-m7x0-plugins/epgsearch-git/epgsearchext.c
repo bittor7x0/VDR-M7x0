@@ -1,5 +1,5 @@
 /*                                                                  -*- c++ -*-
-Copyright (C) 2004-2012 Christian Wieninger
+Copyright (C) 2004-2013 Christian Wieninger
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -959,7 +959,7 @@ cEvent * cSearchExt::GetEventBySearchExt(const cSchedule *schedules, const cEven
          {
             time_t tEvent = p->StartTime();
             struct tm tmEvent;
-            tm tm = *localtime_r(&tEvent, &tmEvent);
+            localtime_r(&tEvent, &tmEvent);
             if (DayOfWeek >= 0 && DayOfWeek != tmEvent.tm_wday)
                continue;
             if (DayOfWeek < 0)
@@ -1186,7 +1186,7 @@ void cSearchExt::CheckRepeatTimers(cSearchResults* pResults)
       if (records > allowedRepeats) // already recorded
       {
          LogFile.Log(3,"skip '%s~%s' (%s - %s, channel %d): already recorded %d equal event(s)", pEvent->Title()?pEvent->Title():"no title", pEvent->ShortText()?pEvent->ShortText():"no subtitle", GETDATESTRING(pEvent), GETTIMESTRING(pEvent), ChannelNrFromEvent(pEvent), records);
-         pResultObj->needsTimer = false; // first asume we need no timer
+         pResultObj->needsTimer = false; // first assume we need no timer
          continue;
       }
 
@@ -1203,7 +1203,7 @@ void cSearchExt::CheckRepeatTimers(cSearchResults* pResults)
 
          if (!pResultObjP->needsTimer) continue;
 
-         if (EventsMatch(pEvent, pEventP, compareTitle, compareSubtitle, compareSummary, compareDate, catvaluesAvoidRepeat))
+         if (EventsMatch(pEvent, pEventP, compareTitle, compareSubtitle, compareSummary, compareDate, catvaluesAvoidRepeat, compareSummaryMatchInPercent))
          {
             if (!pFirstResultMatching) pFirstResultMatching = pResultObjP;
             plannedTimers++;
