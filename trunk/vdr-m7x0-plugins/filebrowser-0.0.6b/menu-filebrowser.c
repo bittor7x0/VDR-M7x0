@@ -141,7 +141,7 @@ cOsdMenuFilebrowser::~cOsdMenuFilebrowser()
 int cOsdMenuFilebrowser::DirectorySort(const dirent64** File1, const dirent64** File2)
 #else
 int cOsdMenuFilebrowser::DirectorySort(const void* File1, const void* File2)
-#  endif
+#endif
 {
   struct dirent64* ent1=*(struct dirent64**)File1;
   struct dirent64* ent2=*(struct dirent64**)File2;

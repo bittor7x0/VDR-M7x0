@@ -4155,7 +4155,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "¿Borrar directorio y todos sub directorios?",
+    "¿Borrar directorio y todos subdirectorios?",
     "",// TODO
     "",// TODO
     "",// TODO
