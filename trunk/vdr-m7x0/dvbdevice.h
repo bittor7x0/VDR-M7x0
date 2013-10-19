@@ -83,7 +83,7 @@ public:
 protected:
   virtual bool SetChannelDevice(const cChannel *Channel, bool LiveView);
 public:
-  virtual bool HasLock(int TimeoutMs = 0);
+  virtual bool HasLock(int TimeoutMs = 0) const;
 
 
 // PID handle facilities

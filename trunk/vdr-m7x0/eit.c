@@ -363,8 +363,7 @@ time_t cEitFilter::disableUntil = 0;
 cEitFilter::cEitFilter(void)
 {
   Set(0x12, 0x40, 0xC0);  // event info now&next actual/other TS (0x4E/0x4F), future actual/other TS (0x5X/0x6X)
-  if (Setup.SetSystemTime && Setup.TimeTransponder)
-     Set(0x14, 0x70);     // TDT
+  Set(0x14, 0x70);        // TDT
 }
 
 void cEitFilter::SetDisableUntil(time_t Time)

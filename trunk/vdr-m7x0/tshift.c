@@ -403,7 +403,7 @@ cPlayer* cTShiftRecorder::GetPlayer()
 		for(int f=1;(f<15)&&(Activated())&&(!HaveRecord());f++)
 		{
 			dsyslog("TShift: try #%d waiting recorder, channel %d",f,channelNumber);
-			sleep(1);				
+			cCondWait::SleepMs(1000);				
 		}
 		if(!HaveRecord())
 		{

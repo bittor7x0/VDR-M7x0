@@ -855,10 +855,17 @@ void cEvent::FixEpgBugs(void)
 
 Final:
 
-  // VDR can't usefully handle newline characters in the title and shortText of EPG
+  // VDR can't usefully handle newline characters in the title, shortText or component description of EPG
   // data, so let's always convert them to blanks (independent of the setting of EPGBugfixLevel):
   strreplace(title, '\n', ' ');
   strreplace(shortText, '\n', ' ');
+  if (components) {
+     for (int i = 0; i < components->NumComponents(); i++) {
+         tComponent *p = components->Component(i);
+         if (p->description)
+            strreplace(p->description, '\n', ' ');
+         }
+     }
   // Same for control characters:
   strreplace(title, '\x86', ' ');
   strreplace(title, '\x87', ' ');

@@ -1545,7 +1545,7 @@ bool cLockFile::Lock(int WaitSeconds)
               break;
               }
            if (WaitSeconds)
-              sleep(1);
+              cCondWait::SleepMs(1000);
            }
         } while (f < 0 && time(NULL) < Timeout);
      }

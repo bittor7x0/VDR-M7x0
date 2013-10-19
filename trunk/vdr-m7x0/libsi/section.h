@@ -27,7 +27,7 @@ public:
       int getServiceId() const;
       int getPid() const;
       bool isNITPid() const { return getServiceId()==0; }
-      virtual int getLength() { return sizeof(pat_prog); }
+      virtual int getLength() { return int(sizeof(pat_prog)); }
    protected:
       virtual void Parse();
    private:
@@ -59,7 +59,7 @@ public:
       int getPid() const;
       int getStreamType() const;
       DescriptorLoop streamDescriptors;
-      virtual int getLength() { return sizeof(pmt_info)+streamDescriptors.getLength(); }
+      virtual int getLength() { return int(sizeof(pmt_info)+streamDescriptors.getLength()); }
    protected:
       virtual void Parse();
    private:
@@ -94,7 +94,7 @@ public:
    public:
       int getTransportStreamId() const;
       int getOriginalNetworkId() const;
-      virtual int getLength() { return sizeof(ni_ts)+transportStreamDescriptors.getLength(); }
+      virtual int getLength() { return int(sizeof(ni_ts)+transportStreamDescriptors.getLength()); }
       DescriptorLoop transportStreamDescriptors;
    protected:
       virtual void Parse();
@@ -129,7 +129,7 @@ public:
       int getEITpresentFollowingFlag() const;
       RunningStatus getRunningStatus() const;
       int getFreeCaMode() const;
-      virtual int getLength() { return sizeof(sdt_descr)+serviceDescriptors.getLength(); }
+      virtual int getLength() { return int(sizeof(sdt_descr)+serviceDescriptors.getLength()); }
       DescriptorLoop serviceDescriptors;
    protected:
       virtual void Parse();
@@ -166,7 +166,7 @@ public:
       int getFreeCaMode() const;
 
       DescriptorLoop eventDescriptors;
-      virtual int getLength() { return sizeof(eit_event)+eventDescriptors.getLength(); }
+      virtual int getLength() { return int(sizeof(eit_event)+eventDescriptors.getLength()); }
    protected:
       virtual void Parse();
    private:
@@ -223,7 +223,7 @@ public:
       int getServiceId() const;
       int getEventId() const;
       RunningStatus getRunningStatus() const;
-      virtual int getLength() { return sizeof(rst_info); }
+      virtual int getLength() { return int(sizeof(rst_info)); }
    protected:
       virtual void Parse();
    private:
@@ -240,7 +240,7 @@ public:
    AIT() {}
    class Application : public LoopElement {
    public:
-      virtual int getLength() { return sizeof(ait_app)+applicationDescriptors.getLength(); }
+      virtual int getLength() { return int(sizeof(ait_app)+applicationDescriptors.getLength()); }
       long getOrganisationId() const;
       int getApplicationId() const;
       int getControlCode() const;

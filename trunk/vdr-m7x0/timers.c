@@ -128,7 +128,7 @@ cTimer& cTimer::operator= (const cTimer &Timer)
 
 int cTimer::Compare(const cListObject &ListObject) const
 {
-  cTimer *ti = (cTimer *)&ListObject;
+  const cTimer *ti = (const cTimer *)&ListObject;
   time_t t1 = StartTime();
   time_t t2 = ti->StartTime();
   int r = t1 - t2;
