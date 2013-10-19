@@ -252,7 +252,12 @@ int cResumeFile::Read(void)
                  ++line;
                  char *t = skipspace(s + 1);
                  switch (*s) {
-                   case 'I': resume = atoi(t);
+                   case 'I':
+#if BYTE_ORDER == BIG_ENDIAN
+                             resume = bswap_32(atoi(t));
+#else
+                             resume = atoi(t);
+#endif
                              break;
                    }
                  }
