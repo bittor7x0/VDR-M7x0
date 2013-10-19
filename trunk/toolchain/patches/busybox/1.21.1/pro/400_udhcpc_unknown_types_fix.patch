@@ -1,0 +1,29 @@
+diff -Naur busybox-1.21.1_pro-orig/networking/udhcp/dhcpc.c busybox-1.21.1_pro/networking/udhcp/dhcpc.c
+--- busybox-1.21.1_pro-orig/networking/udhcp/dhcpc.c	2013-05-12 01:30:44.000000000 +0200
++++ busybox-1.21.1_pro/networking/udhcp/dhcpc.c	2013-10-19 11:06:45.413851839 +0200
+@@ -24,11 +24,24 @@
+ #include "common.h"
+ #include "dhcpd.h"
+ #include "dhcpc.h"
+-
++#include <asm/types.h>
+ #include <netinet/if_ether.h>
+ #include <linux/filter.h>
+ #include <linux/if_packet.h>
+ 
++#ifndef PACKET_AUXDATA
++#define PACKET_AUXDATA 8
++
++struct tpacket_auxdata
++{
++	__u32		tp_status;
++	__u32		tp_len;
++	__u32		tp_snaplen;
++	__u16		tp_mac;
++	__u16		tp_net;
++};
++#endif
++
+ /* "struct client_config_t client_config" is in bb_common_bufsiz1 */
+ 
+ 
