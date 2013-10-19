@@ -131,3 +131,6 @@ clean:
 install:
 	@install -d ../../man
 	@install README ../../man/$(PLUGIN).man
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)

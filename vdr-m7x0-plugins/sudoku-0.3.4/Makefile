@@ -125,3 +125,6 @@ clean:
 	@-rm -f $(DEPFILE) *.o *.so $(I18Npot) *.tgz core* *~
 	@-rm -rf srcdoc
 	@cd tools && $(MAKE) clean
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)
