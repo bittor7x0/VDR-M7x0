@@ -121,3 +121,12 @@ distclean-vdr:
 recompile-vdr:
 	-$(RM) -rf $(STAGEFILES_DIR)/.vdr_compiled
 	-$(RM) -rf $(STAGEFILES_DIR)/.vdr_installed
+
+cppcheck-vdr:
+	(if [ -d $(VDR_DIR) ] ; then \
+	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
+		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
+		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
+		$(if $(filter xvdr,$(CONFIG_VDR-PLUGINS)),XVDR_PLUGIN=1) \
+		$(MAKE) -C $(VDR_DIR) cppcheck ; \
+	fi );

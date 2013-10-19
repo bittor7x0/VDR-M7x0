@@ -275,3 +275,26 @@ fontclean:
 CLEAN: clean fontclean
 
 
+# Check source code with cppcheck
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)
+
+cppcheck-plugins: include-dir
+	@failed="";\
+	noapiv="";\
+	for i in `ls $(PLUGINDIR)/src | grep -v '[^a-z0-9]'`; do\
+	    echo "Plugin $$i:";\
+	    if ! grep -q "\$$(LIBDIR)/.*\$$(APIVERSION)" "$(PLUGINDIR)/src/$$i/Makefile" ; then\
+	       sed -i -e s/VDRVERSION/APIVERSION/g $(PLUGINDIR)/src/$$i/Makefile;\
+	       if ! grep -q "\$$(LIBDIR)/.*\$$(APIVERSION)" "$(PLUGINDIR)/src/$$i/Makefile" ; then\
+	         echo "ERROR: plugin $$i doesn't honor APIVERSION - not compiled!";\
+	         noapiv="$$noapiv $$i";\
+	         continue;\
+	         fi;\
+	       fi;\
+	    if [ "$$i" = "skincurses" ]; then echo; echo "*** $$i plugin disabled "; echo; continue; fi;\
+	    DVBDIR=$(abspath .) VDRDIR=$(abspath .) LIBDIR=$(abspath $(PLUGINLIBDIR)) $(MAKE) -C "$(PLUGINDIR)/src/$$i" cppcheck || failed="$$failed $$i";\
+	    done;\
+	if [ -n "$$noapiv" ] ; then echo; echo "*** plugins without APIVERSION:$$noapiv"; echo; fi;\
+	if [ -n "$$failed" ] ; then echo; echo "*** failed plugins:$$failed"; echo; fi

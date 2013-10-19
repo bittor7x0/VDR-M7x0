@@ -128,3 +128,6 @@ dist: clean
 clean:
 	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
 	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)

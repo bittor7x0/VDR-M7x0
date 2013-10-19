@@ -113,3 +113,6 @@ dist: generate-i18n clean
 clean:
 	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot $(PODIR)/*~
 	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ pod2*.tmp
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)

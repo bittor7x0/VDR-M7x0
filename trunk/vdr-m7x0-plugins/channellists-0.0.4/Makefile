@@ -108,3 +108,6 @@ dist: clean
 
 clean:
 	@-rm -f $(OBJS) $(DEPFILE) Makefile.new *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)

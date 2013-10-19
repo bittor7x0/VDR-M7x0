@@ -123,3 +123,5 @@ clean:
 	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
 	@-rm -f $(CMDOBJS) $(OBJS) $(DEPFILE) *.so *.tgz fskcheck core* *~ 
 
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)

@@ -131,3 +131,6 @@ dist: clean
 clean:
 	@-rm -f $(COMMONOBJS) $(CLIENTOBJS) $(SERVEROBJS) $(DEPFILE) *.so *.tgz core* *~
 	$(MAKE) -C ./libdvbmpeg clean
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)

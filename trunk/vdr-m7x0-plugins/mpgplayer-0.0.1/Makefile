@@ -84,3 +84,6 @@ dist: clean
 
 clean:
 	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)

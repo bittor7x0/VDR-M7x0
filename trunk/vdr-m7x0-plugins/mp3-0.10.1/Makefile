@@ -164,3 +164,6 @@ dist: clean
 clean:
 	@-rm -f $(OBJS) $(OBJS2) $(DEPFILE) libvdr-*.so $(PACKAGE).tar.gz core* *~
 	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)
