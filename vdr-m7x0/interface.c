@@ -80,7 +80,7 @@ bool cInterface::QueryKeys(cRemote *Remote, cSkinDisplayMenu *DisplayMenu)
      DisplayMenu->SetItem(tr("RC code detected!"), 4, false, false);
      DisplayMenu->SetItem(tr("Do not press any key..."), 5, false, false);
      DisplayMenu->Flush();
-     sleep(3);
+     cCondWait::SleepMs(3000);
      DisplayMenu->SetItem("", 4, false, false);
      DisplayMenu->SetItem("", 5, false, false);
 

@@ -116,7 +116,6 @@ public:
                       esyslog("ERROR: error in %s, line %d", fileName, line);
                       delete l;
                       result = false;
-                      break;
                       }
                    }
                 }

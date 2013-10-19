@@ -1068,12 +1068,12 @@ bool cDevice::SetChannelDevice(const cChannel *Channel, bool LiveView)
   return false;
 }
 
-bool cDevice::HasLock(int TimeoutMs)
+bool cDevice::HasLock(int TimeoutMs) const
 {
   return true;
 }
 
-bool cDevice::HasProgramme(void)
+bool cDevice::HasProgramme(void) const
 {
 //M7X0 BEGIN AK
   return Replaying() || ((pidHandles[ptAudio].pid || pidHandles[ptVideo].pid) && IsPrimaryDevice());

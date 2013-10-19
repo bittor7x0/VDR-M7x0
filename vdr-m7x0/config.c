@@ -245,9 +245,9 @@ cSetupLine::cSetupLine(void)
 
 cSetupLine::cSetupLine(const char *Name, const char *Value, const char *Plugin)
 {
-  name = strdup(Name);
-  value = strdup(Value);
-  plugin = Plugin ? strdup(Plugin) : NULL;
+  name = strreplace(strdup(Name), '\n', 0);
+  value = strreplace(strdup(Value), '\n', 0);
+  plugin = Plugin ? strreplace(strdup(Plugin), '\n', 0) : NULL;
 }
 
 cSetupLine::~cSetupLine()
@@ -464,7 +464,7 @@ void cSetup::Store(const char *Name, int Value, const char *Plugin)
 
 bool cSetup::Load(const char *FileName)
 {
-  if (cConfig<cSetupLine>::Load(FileName, true)) {
+  if (cConfig<cSetupLine>::Load(FileName)) {
      bool result = true;
      for (cSetupLine *l = First(); l; l = Next(l)) {
          bool error = false;

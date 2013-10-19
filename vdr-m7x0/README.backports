@@ -1,6 +1,6 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 1.7.18 backports applied in this patch:
+VDR 1.7.42 backports applied in this patch:
 * Implemented handling the "Content Descriptor" (based on a patch from Rolf
   Ahrenberg). The 'classic' and 'sttng' skins display the textual
   representation of the content descriptors as "genre". The epg.data file stores
@@ -199,3 +199,23 @@ VDR 1.7.18 backports applied in this patch:
 * The info.vdr file now also stores the name of the channel, and the new function
   cRecordingInfo::ChannelName() returns this information if available (based on
   a patch from Alexander Hans).
+* Fixed loading the setup.conf file in case a parameter contains the '#' character
+  (thanks to Johann Friedrichs).
+* Making sure setup strings don't contain any newline characters (thanks to Joachim
+  Wilke).
+* Added some missing 'const' to tChannelID (reported by Sundararaj Reel).
+* Removed a redundant NULL check in cDvbSpuDecoder::setTime() (thanks to Ville Skyttä).
+* Now always setting the TDT EIT filter, because otherwise when turning on using the
+  transponder time in the Setup menu, it would only be used after the next restart
+  of VDR (thanks to Sundararaj Reel).
+* Replaced all calls to sleep() with cCondWait::SleepMs() (thanks to Rolf Ahrenberg).
+* cEvent::FixEpgBugs() now replaces any newline characters in stream component
+  descriptions with blanks (thanks to Torsten Lang for reporting a problem with
+  EPG data from BSkyB's "MTV MUSIC", S28.2E-2-2010-7012).
+* Added missing 'const' to cDevice::HasProgramme() and cDevice::HasLock().
+* Fixed a crash with malformed SI data (patch from vdr-portal).
+* Added some typecasts to silence gcc compiler warnings (thanks to Rolf Ahrenberg).
+* Fixed handling symbolic links in cRecordings::ScanVideoDir() (reported by
+  Sundararaj Reel).
+* Fixed a memory leak in cRecordings::ScanVideoDir() in case there are too many
+  link levels (reported by Sundararaj Reel).

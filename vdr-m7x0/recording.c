@@ -1119,25 +1119,21 @@ void cRecordings::ScanVideoDir(const char *DirName, bool Foreground, int LinkLev
   struct dirent *e;
   while ((Foreground || Running()) && (e = d.Next()) != NULL) {
         if (strcmp(e->d_name, ".") && strcmp(e->d_name, "..")) {
-           char *buffer = strdup(AddDirectory(DirName, e->d_name));
+           cString buffer = AddDirectory(DirName, e->d_name);
            struct stat st;
-           if (stat(buffer, &st) == 0) {
+           if (lstat(buffer, &st) == 0) {
               int Link = 0;
               if (S_ISLNK(st.st_mode)) {
                  if (LinkLevel > MAX_LINK_LEVEL) {
-                    isyslog("max link level exceeded - not scanning %s", buffer);
+                    isyslog("max link level exceeded - not scanning %s", *buffer);
                     continue;
                     }
                  Link = 1;
-                 char *old = buffer;
-                 buffer = ReadLink(old);
-                 free(old);
-                 if (!buffer)
+                 buffer = ReadLink(buffer);
+                 if (!*buffer)
                     continue;
-                 if (stat(buffer, &st) != 0) {
-                    free(buffer);
+                 if (stat(buffer, &st) != 0)
                     continue;
-                    }
                  }
               if (S_ISDIR(st.st_mode)) {
                  if (endswith(buffer, deleted ? DELEXT : RECEXT)) {
@@ -1159,7 +1155,6 @@ void cRecordings::ScanVideoDir(const char *DirName, bool Foreground, int LinkLev
                     ScanVideoDir(buffer, Foreground, LinkLevel + Link);
                  }
               }
-           free(buffer);
            }
         }
 }

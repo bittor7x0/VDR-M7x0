@@ -273,13 +273,13 @@ public:
          ///< channel number while replaying.
   void ForceTransferMode(void);
          ///< Forces the device into transfermode for the current channel.
-  virtual bool HasLock(int TimeoutMs = 0);//XXX PLUGINS.html
+  virtual bool HasLock(int TimeoutMs = 0) const;//XXX PLUGINS.html
          ///< Returns true if the device has a lock on the requested transponder.
          ///< Default is true, a specific device implementation may return false
          ///< to indicate that it is not ready yet.
          ///< If TimeoutMs is not zero, waits for the given number of milliseconds
          ///< before returning false.
-  virtual bool HasProgramme(void);
+  virtual bool HasProgramme(void) const;
          ///< Returns true if the device is currently showing any programme to
          ///< the user, either through replaying or live.
 

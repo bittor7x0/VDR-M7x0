@@ -496,7 +496,7 @@ int cDvbSpuDecoder::setTime(uint32_t pts)
     if (!spu)
         return 0;
 
-    if (spu && !clean)
+    if (!clean)
         Draw();
 
     while (DCSQ_offset != prev_DCSQ_offset) {   /* Display Control Sequences */

@@ -3169,7 +3169,7 @@ bool cDvbDevice::SetChannelDevice(const cChannel *Channel, bool LiveView)
 }
 //M7X0 END AK
 
-bool cDvbDevice::HasLock(int TimeoutMs)
+bool cDvbDevice::HasLock(int TimeoutMs) const
 {
   return dvbTuner ? dvbTuner->Locked(TimeoutMs) : false;
 }

@@ -12,8 +12,10 @@
 #include "si.h"
 #include "descriptor.h"
 //M7X0 BEGIN AK
-//For debuging
+//For debuging in CheckCRCAndParse
+#if 0
 #include "../tools.h"
+#endif
 //M7X0 END AK
 
 namespace SI {
@@ -214,6 +216,8 @@ void DescriptorGroup::Add(GroupDescriptor *d) {
          array[i]=0;
    } else if (length != d->getLastDescriptorNumber()+1)
       return; //avoid crash in case of misuse
+   if (length <= d->getDescriptorNumber())
+      return; // see http://www.vdr-portal.de/board60-linux/board14-betriebssystem/board69-c-t-vdr/p1025777-segfault-mit-vdr-1-7-21/#post1025777
    array[d->getDescriptorNumber()]=d;
 }
 
