@@ -32,7 +32,7 @@ NTPCLIENT_PATCHES_DIR := $(PATCHES_DIR)/ntpclient/$(NTPCLIENT_VERSION)
 
 NTPCLIENT_FILE := ntpclient_$(NTPCLIENT_VERSION).tar.gz
 NTPCLIENT_DLFILE := $(DOWNLOAD_DIR)/$(NTPCLIENT_FILE)
-NTPCLIENT_URL := http://doolittle.icarus.com/ntpclient/$(NTPCLIENT_FILE)
+NTPCLIENT_URL := http://sourceforge.net/projects/cross-stuff/files/cross-stuff/1.0/$(NTPCLIENT_FILE)/download
 NTPCLIENT_DIR := $(BUILD_DIR)/ntpclient-$(NTPCLIENT_ANNO)
 
 NTPCLIENT_INSTALLED = $(STAGEFILES_DIR)/.ntpclient_installed
