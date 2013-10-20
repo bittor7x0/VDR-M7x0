@@ -32,7 +32,7 @@ NTPCLIENT_PATCHES_DIR := $(PATCHES_DIR)/ntpclient/$(NTPCLIENT_VERSION)
 
 NTPCLIENT_FILE := ntpclient_$(NTPCLIENT_VERSION).tar.gz
 NTPCLIENT_DLFILE := $(DOWNLOAD_DIR)/$(NTPCLIENT_FILE)
-NTPCLIENT_URL := http://doolittle.icarus.com/ntpclient/$(NTPCLIENT_FILE)
+NTPCLIENT_URL := http://www.spectrumcontrols.com/OpenSource/$(NTPCLIENT_FILE)
 NTPCLIENT_DIR := $(BUILD_DIR)/ntpclient-$(NTPCLIENT_YEAR)
 
 NTPCLIENT_INSTALLED = $(STAGEFILES_DIR)/.ntpclient_installed
@@ -62,6 +62,7 @@ $(STAGEFILES_DIR)/.ntpclient_unpacked: $(NTPCLIENT_DLFILE) \
                                            $$(NTPCLIENT_DEPS)
 	-$(RM) -rf $(NTPCLIENT_DIR)
 	$(TAR) -C $(BUILD_DIR) -zf $(NTPCLIENT_DLFILE)
+	$(MV) $(BUILD_DIR)/ntpclient $(NTPCLIENT_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.ntpclient_unpacked
 
 #

@@ -37,7 +37,7 @@ PORTMAP_PATCHES_DIR := $(PATCHES_DIR)/portmap/$(PORTMAP_VERSION)
 
 PORTMAP_FILE := portmap-$(PORTMAP_VERSION).tgz
 PORTMAP_DLFILE := $(DOWNLOAD_DIR)/$(PORTMAP_FILE)
-PORTMAP_URL := http://fossies.org/unix/misc/$(PORTMAP_FILE)
+PORTMAP_URL := http://fossies.org/linux/misc/old/$(PORTMAP_FILE)
 PORTMAP_DIR := $(BUILD_DIR)/portmap_$(PORTMAP_VERSION)
 
 PORTMAP_INSTALLED = $(STAGEFILES_DIR)/.portmap_installed

@@ -31,7 +31,7 @@ DOSFSTOOLS_PATCHES_DIR := $(PATCHES_DIR)/dosfstools/$(DOSFSTOOLS_VERSION)
 
 DOSFSTOOLS_FILE := dosfstools-$(DOSFSTOOLS_VERSION).src.tar.gz
 DOSFSTOOLS_DLFILE := $(DOWNLOAD_DIR)/$(DOSFSTOOLS_FILE)
-DOSFSTOOLS_URL := ftp://ftp.uni-erlangen.de/pub/Linux/LOCAL/dosfstools/$(DOSFSTOOLS_FILE)
+DOSFSTOOLS_URL := https://launchpad.net/dosfstools/main/$(DOSFSTOOLS_VERSION).src/+download/$(DOSFSTOOLS_FILE)
 DOSFSTOOLS_DIR := $(BUILD_DIR)/dosfstools-$(DOSFSTOOLS_VERSION)
 
 DOSFSTOOLS_INSTALLED = $(STAGEFILES_DIR)/.dosfstools_installed
