@@ -1,0 +1,6 @@
+sbin/smartctl         sbin/smartctl         f 755 0 0 - - - - -
+sbin/smartctl         -                     s   - - - - - - - -
+sbin/smartd           sbin/smartd           f 755 0 0 - - - - -
+sbin/smartd           -                     s   - - - - - - - -
+etc/smartd.conf       etc/smartd.conf       f 664 0 0 - - - - -
+etc/smart_drivedb.h   etc/smart_drivedb.h   f 664 0 0 - - - - -
