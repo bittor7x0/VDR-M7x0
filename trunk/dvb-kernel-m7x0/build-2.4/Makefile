@@ -2,7 +2,7 @@ ifeq ($(obj),)
 obj = .
 endif
 
-MDIR		:= misc
+MDIR		:= kernel/drivers/dvb
 
 saa7146-objs    := saa7146_core.o saa7146_i2c.o 
 saa7146-vv-objs	:= saa7146_fops.o saa7146_video.o saa7146_hlp.o saa7146_vbi.o saa7146_vv_ksyms.o
@@ -71,21 +71,21 @@ include $(TOPDIR)/Rules.make
 
 else
 # take version info from last module build if available
-KERNELRELEASE	:= $(shell cat $(obj)/.version 2>/dev/null || uname -r)
+KERNELRELEASE	:= $(shell cat $(obj)/.version 2>/dev/null || echo '2.4.21-xfs')
 endif
 
-KDIR		:= /lib/modules/$(KERNELRELEASE)/build
+KDIR		:= $(DESTDIR)/lib/modules/$(KERNELRELEASE)/build
 PWD		:= $(shell pwd)
-DEST		:= /lib/modules/$(KERNELRELEASE)/$(MDIR)
+DEST		:= $(DESTDIR)/lib/modules/$(KERNELRELEASE)/$(MDIR)
 
-include $(KDIR)/.config
+include .config
 
 build:
 	[ -L saa7146_video.c ] || ./getlinks
-	$(MAKE) -C $(KDIR) CC="gcc -I$(PWD)/include" SUBDIRS=$(PWD) modules
+	$(MAKE) -C $(KDIR) CC="$(CC) -I$(PWD)/include" SUBDIRS=$(PWD) modules
 
 install:
-	mkdir -p $(DESTDIR)$(DEST); cp -v $(filter-out %.txt,$(obj-m)) $(DESTDIR)$(DEST)
+	mkdir -p $(DEST); cp -v $(filter-out %.txt,$(obj-m)) $(DEST)
 
 clean:
 	find . -type l -exec rm {} \;
@@ -180,5 +180,5 @@ dsp_dec3000s.h: fdump
 	fi
 
 fdump:
-	$(CC) -o $@ fdump.c
+	$(HOSTCC) -o $@ fdump.c
 

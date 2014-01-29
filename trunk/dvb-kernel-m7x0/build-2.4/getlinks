@@ -5,18 +5,13 @@ BASE='..'
 echo "getting links from kernel-cvs driver"
 
 
-KERNELRELEASE=`cat .version 2>/dev/null || uname -r`
+KERNELRELEASE='2.4.21-xfs'
 make clean
 echo "$KERNELRELEASE" > .version
 
 mkdir -p include/linux
-ln -vs /lib/modules/$KERNELRELEASE/build/include/linux/videodev.h include/linux/videodev.h
-
-if [ ! -f /lib/modules/$KERNELRELEASE/build/include/linux/videodev2.h ] ; then
-	ln -vs `pwd`/videodev2.h include/linux/videodev2.h
-else
-	ln -vs /lib/modules/$KERNELRELEASE/build/include/linux/videodev2.h include/linux/videodev2.h
-fi
+ln -vs `pwd`/videodev.h include/linux/videodev.h
+ln -vs `pwd`/videodev2.h include/linux/videodev2.h
 
 for x in `find $BASE/linux/include/media/ -name "*.[hc]"` ; do
 	ln -vs ../../$x include/media/`basename $x`
