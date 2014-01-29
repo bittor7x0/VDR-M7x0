@@ -1,0 +1,51 @@
+******************************************************************************
+NOTE: This is the linux_2_4 CVS branch. Drivers for linux-2.6 are in CVS HEAD.
+******************************************************************************
+
+
+Instructions for patching a 2.6 kernel with this release
+--------------------------------------------------------
+
+(Note: Alternatively you can use build-2.6/ to build without
+patching the kernel, but this currently does not work for
+bt878 based cards due to include patch problems.)
+
+
+The DVB driver in 2.6.1 and above is regularly kept up-to-date, so it's  possible
+that it's even newer than the latest release tarball. There might be some cases
+though, where you want a specific release tarball driver compiled into the
+kernel. 
+
+There is a script called "makelinks" which -- well -- makes links from the 
+CVS version of the driver to the kernel tree you supply on the command line.
+The driver from the kernel is erased, instead the local source will be used if
+you compile your kernel again.
+
+Step-by-step instruction:
+
+1) Call "./makelinks <your-kernel-directory>. This will copy and link the
+driver files to your kernel, remove some old files, move some files around.
+
+2) Next, use "make menuconfig" or whatever and select the av7110 driver if
+you haven't done so before. 
+
+The av7110 driver needs a firmware to work properly.
+
+If you want to compile it into the driver as it used to be in the past, you can
+download firmware files from http://www.linuxtv.org/download/dvb/ The most
+recent version is dvb-ttpci-01.fw. You need to select "Compile av7110 firmware
+into the driver" and  specify the filename path (usually
+/usr/lib/hotplug/firmware/dvb-ttpci-01.fw) within the DVB subsystem configuration
+of the kernel.
+
+Alternatively, you can use the hotplug facilities of 2.6 to let the driver load 
+it's firmware upon driver insertion. Have a look at
+linux/documentation/firmware.txt for further details.
+
+*Pitfall*: 
+If you compile the driver statically into the kernel, you must make sure that
+you compile the firmware into the driver. There is currently no way to prevent
+in-kernel compilation without the firmware being compiled in. If you do it anyway,
+there will be no way that you can load the firmware.
+
+Build and install the new kernel as usual.

@@ -1,0 +1,14 @@
+List of CAM modules tested against the Technotrend Budget-ci CI interface. Any CAM
+not listed here has not been tested, and cannot be guaranteed to work.
+Please report any additional compatable/incompatable CAM modules to
+linux-dvb@linuxtv.org.
+
+
+Compatable CAMs:
+Philips Cryptoworks v1.0
+Aston AstonCrypt
+
+Incompatable CAMs:
+ZetaCAM (Hardware: 2.01/Software: 2.26)
+	The second write to IO space fails... timing issue?
+

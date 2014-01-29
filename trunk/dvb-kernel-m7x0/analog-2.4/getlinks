@@ -1,0 +1,43 @@
+#!/bin/sh
+
+BASE='..'
+
+echo "getting links from build-2.4"
+
+make clean
+
+ln -s /lib/modules/`uname -r`/build/include/linux/videodev.h include/linux/videodev.h
+
+if [ ! -f /lib/modules/`uname -r`/build/include/linux/videodev2.h ] ; then
+	ln -s ../../../build-2.4/videodev2.h include/linux/videodev2.h
+else
+	ln -s /lib/modules/`uname -r`/build/include/linux/videodev2.h include/linux/videodev2.h
+fi
+
+for x in `find $BASE/linux/drivers/media/common -name "saa*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/build-2.4/include/media -name "video*.[hc]"` ; do
+	ln -vs ../../$x include/media/`basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/dvb-core/ -name "*compat.h*"` ; do
+	ln -vs ../../$x include/media/`basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/dvb-core/ -name "*functions.h*"` ; do
+	ln -vs ../../$x include/media/`basename $x`
+done
+
+for x in `find $BASE/linux/include/media/ -name "*.[hc]"` ; do
+	ln -vs ../../$x include/media/`basename $x`
+done
+
+for x in `find $BASE/build-2.4/ -name "v4l*.[c]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/build-2.4/ -name "video*.[c]"` ; do
+	ln -vs $x `basename $x`
+done

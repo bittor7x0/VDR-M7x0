@@ -1,0 +1,46 @@
+#!/bin/sh
+
+BASE='..'
+
+echo "getting links from kernel-cvs driver"
+
+make clean
+
+#for x in `find $BASE/linux/include/media/ -name "*.[hc]"` ; do
+#	ln -vs $x include/media/`basename $x`
+#done
+
+#for x in `find $BASE/linux/drivers/media/dvb/ttpci/ -name "*.[hc]"` ; do
+#	ln -vs $x `basename $x`
+#done
+
+#for x in `find $BASE/linux/drivers/media/dvb/ttpci-budget/ -name "*.[hc]"` ; do
+#	ln -vs $x `basename $x`
+#done
+
+#for x in `find $BASE/linux/drivers/media/dvb/ttusb-budget/ -name "*.[hc]"` ; do
+#	ln -vs $x `basename $x`
+#done
+
+#for x in `find $BASE/linux/drivers/media/dvb/bt8xx/ -name "*.[hc]"` ; do
+#	ln -vs $x `basename $x`
+#done
+
+for x in `find $BASE/linux/drivers/media/dvb/dvb-core/ -name "*.[hc]" | grep -v compat | grep -v functions | grep -v ksyms` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/frontends -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+#for x in `find $BASE/linux/drivers/media/common -name "saa*.[hc]"` ; do
+#	ln -vs $x `basename $x`
+#done
+
+#for x in `find $BASE/linux/drivers/media/video -name "*.[hc]"` ; do
+#	ln -vs $x `basename $x`
+#done
+
+ln -vs $BASE/linux/include include
+

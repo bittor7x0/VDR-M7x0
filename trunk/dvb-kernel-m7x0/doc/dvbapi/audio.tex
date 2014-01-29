@@ -1,0 +1,454 @@
+\devsec{DVB Audio Device}
+
+The DVB audio device controls the MPEG2 audio decoder of the DVB hardware.
+It can be accessed through \texttt{/dev/dvb/adapter0/audio0}.
+Data types and and ioctl definitions can be accessed by including
+\texttt{linux/dvb/video.h} in your application.
+
+Please note that some DVB cards don't have their own
+MPEG decoder, which results in the omission of the audio and video
+device.
+
+
+\devsubsec{Audio Data Types}
+
+This section describes the structures, data types and defines used when 
+talking to the audio device.
+
+\devsubsubsec{audio\_stream\_source\_t}
+\label{audiostreamsource}
+The audio stream source is set through the AUDIO\_SELECT\_SOURCE
+call and can take the following values, depending on whether we are
+replaying from an internal (demux) or external (user write) source.
+\begin{verbatim}
+typedef enum {
+        AUDIO_SOURCE_DEMUX, 
+        AUDIO_SOURCE_MEMORY 
+} audio_stream_source_t;
+\end{verbatim}
+AUDIO\_SOURCE\_DEMUX selects the demultiplexer (fed
+either by the frontend or the DVR device) as the source of 
+the video stream.
+If AUDIO\_SOURCE\_MEMORY is selected the stream 
+comes from the application through the \texttt{write()} 
+system call.
+
+\devsubsubsec{audio\_play\_state\_t}
+The following values can be returned by the AUDIO\_GET\_STATUS call
+representing the state of audio playback.
+\label{audioplaystate}
+\begin{verbatim}
+typedef enum { 
+        AUDIO_STOPPED,
+        AUDIO_PLAYING,
+        AUDIO_PAUSED  
+} audio_play_state_t;
+\end{verbatim}
+
+\devsubsubsec{audio\_channel\_select\_t}
+\label{audiochannelselect}
+The audio channel selected via AUDIO\_CHANNEL\_SELECT is determined by
+the following values.
+\begin{verbatim}
+typedef enum {
+        AUDIO_STEREO,
+        AUDIO_MONO_LEFT, 
+        AUDIO_MONO_RIGHT, 
+} audio_channel_select_t;
+\end{verbatim}
+
+\devsubsubsec{struct audio\_status}
+\label{audiostatus}
+The AUDIO\_GET\_STATUS call returns the following structure informing
+about various states of the playback operation.
+\begin{verbatim}
+typedef struct audio_status { 
+        boolean AV_sync_state;
+        boolean mute_state;  
+        audio_play_state_t play_state;
+        audio_stream_source_t stream_source; 
+        audio_channel_select_t channel_select;
+        boolean bypass_mode;
+} audio_status_t;
+\end{verbatim}
+
+\devsubsubsec{struct audio\_mixer}
+\label{audiomixer}
+The following structure is used by the AUDIO\_SET\_MIXER call to set
+the audio volume.
+\begin{verbatim}
+typedef struct audio_mixer { 
+        unsigned int volume_left;
+        unsigned int volume_right;
+} audio_mixer_t;
+\end{verbatim}
+
+\devsubsubsec{audio encodings}
+\label{audiotypes}
+A call to AUDIO\_GET\_CAPABILITIES returns an unsigned integer with
+the following bits set according to the hardwares capabilities.
+\begin{verbatim}
+#define AUDIO_CAP_DTS    1
+#define AUDIO_CAP_LPCM   2
+#define AUDIO_CAP_MP1    4
+#define AUDIO_CAP_MP2    8
+#define AUDIO_CAP_MP3   16
+#define AUDIO_CAP_AAC   32
+#define AUDIO_CAP_OGG   64
+#define AUDIO_CAP_SDDS 128
+#define AUDIO_CAP_AC3  256
+\end{verbatim}
+
+
+\devsubsubsec{struct audio\_karaoke}
+\label{audiokaraoke}
+The ioctl AUDIO\_SET\_KARAOKE uses the following format:
+\begin{verbatim}
+typedef
+struct audio_karaoke{
+        int vocal1;  
+        int vocal2;  
+        int melody;  
+} audio_karaoke_t;
+\end{verbatim}
+
+If Vocal1 or Vocal2 are non-zero, they get mixed
+into left and right t at 70\% each.
+If both, Vocal1 and Vocal2 are non-zero, Vocal1 gets
+mixed into the left channel and
+Vocal2 into the right channel at 100\% each.
+Ff Melody is non-zero, the melody channel gets mixed
+into left and right.
+
+\devsubsubsec{audio attributes}
+\label{aattrib}
+The following attributes can be set by a call to AUDIO\_SET\_ATTRIBUTES:
+\begin{verbatim}
+typedef uint16_t audio_attributes_t;
+/*   bits: descr. */
+/*   15-13 audio coding mode (0=ac3, 2=mpeg1, 3=mpeg2ext, 4=LPCM, 6=DTS, */
+/*   12    multichannel extension */
+/*   11-10 audio type (0=not spec, 1=language included) */
+/*    9- 8 audio application mode (0=not spec, 1=karaoke, 2=surround) */
+/*    7- 6 Quantization / DRC (mpeg audio: 1=DRC exists)(lpcm: 0=16bit,  */
+/*    5- 4 Sample frequency fs (0=48kHz, 1=96kHz) */
+/*    2- 0 number of audio channels (n+1 channels) */
+\end{verbatim}
+
+
+\clearpage
+
+\devsubsec{Audio Function Calls}
+
+\function{open()}{
+  int open(const char *deviceName, int flags);}{
+  This system call opens a named audio device (e.g. /dev/dvb/adapter0/audio0) for subsequent
+  use. When an open() call has succeeded, the device will be ready for use.
+  The significance of blocking or non-blocking mode is described in the 
+  documentation for functions where there is a difference. It does not affect 
+  the semantics of the open() call itself. A device opened in blocking mode can
+  later be put into non-blocking mode (and vice versa) using the F\_SETFL command
+  of the fcntl system call.  This is a standard system call, documented in the 
+  Linux manual page for fcntl.
+  Only one user can open the Audio  Device in O\_RDWR mode. All other attempts to
+  open the device in this mode will fail, and an error code will be returned.
+  If the Audio Device is opened in O\_RDONLY mode, the only ioctl call that can 
+  be used is AUDIO\_GET\_STATUS. All other call will return with an error code.
+  }{
+  const char *deviceName & Name of specific audio device.\\
+  int flags & A bit-wise OR of the following flags:\\
+            & \hspace{1em} O\_RDONLY read-only access\\
+            & \hspace{1em} O\_RDWR read/write access\\
+            & \hspace{1em} O\_NONBLOCK open in non-blocking mode \\
+            & \hspace{1em} (blocking mode is the default)\\
+  }{
+  ENODEV    & Device driver not loaded/available.\\
+  EINTERNAL & Internal error.\\
+  EBUSY     & Device or resource busy.\\
+  EINVAL    & Invalid argument.\\
+}
+
+\function{close()}{
+  int close(int fd);}{
+  This system call closes a previously opened audio device.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  }{
+  EBADF & fd is not a valid open file descriptor.\\
+}
+
+\function{write()}{
+  size\_t write(int fd, const void *buf, size\_t count);}{
+  This system call can only be used if AUDIO\_SOURCE\_MEMORY is selected 
+  in the ioctl call AUDIO\_SELECT\_SOURCE. 
+  The data provided shall be in PES format.
+  If O\_NONBLOCK is not specified the function will block until buffer space is
+  available. The amount of data to be transferred is implied by count.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  void *buf   & Pointer to the buffer containing the PES data.\\
+  size\_t count& Size of buf.\\
+  }{
+  EPERM&  Mode AUDIO\_SOURCE\_MEMORY not selected.\\
+  ENOMEM& Attempted to write more data than the internal buffer can hold.\\
+  EBADF&  fd is not a valid open file descriptor.\\
+}
+
+\ifunction{AUDIO\_STOP}{
+  int ioctl(int fd, int request = AUDIO\_STOP);}{
+  This ioctl call asks the Audio Device to stop playing the current stream.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request& Equals AUDIO\_STOP for this command.
+  }{
+  EBADF&      fd is not a valid open file descriptor \\
+  EINTERNAL & Internal error.
+}
+
+\ifunction{AUDIO\_PLAY}{
+  int ioctl(int fd, int request = AUDIO\_PLAY);}{
+  This ioctl call asks the Audio Device to start playing an audio stream
+  from the selected source.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request& Equals AUDIO\_PLAY for this command.
+  }{
+  EBADF&      fd is not a valid open file descriptor \\
+  EINTERNAL & Internal error.
+}
+
+\ifunction{AUDIO\_PAUSE}{
+  int ioctl(int fd, int request = AUDIO\_PAUSE);}{
+  This ioctl call suspends the audio stream being played. 
+  Decoding and playing are paused. 
+  It is then possible to restart again decoding and playing process of the
+  audio stream using AUDIO\_CONTINUE command.\\
+  If  AUDIO\_SOURCE\_MEMORY is selected in the ioctl call 
+  AUDIO\_SELECT\_SOURCE, the DVB-subsystem will not decode (consume) 
+  any more data until the ioctl  call
+  AUDIO\_CONTINUE or AUDIO\_PLAY is performed.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request& Equals AUDIO\_PAUSE for this command.
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.
+}
+
+\ifunction{AUDIO\_SELECT\_SOURCE}{
+  int ioctl(int fd, int request = AUDIO\_SELECT\_SOURCE, 
+  audio\_stream\_source\_t source);}{
+  This ioctl call informs the audio device which source shall be used for the 
+  input data. The possible sources are demux or memory. 
+  If AUDIO\_SOURCE\_MEMORY 
+  is selected, the data is fed to the Audio Device through the write command.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_SELECT\_SOURCE for this command.\\
+  audio\_stream\_source\_t source& Indicates the source that shall be used for the
+  Audio stream.
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EINVAL    & Illegal input parameter.
+}
+
+\ifunction{AUDIO\_SET\_MUTE}{
+  int ioctl(int fd, int request = AUDIO\_SET\_MUTE, boolean state);}{
+  This ioctl call asks the audio device to mute the stream that is 
+  currently being played.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_SET\_MUTE for this command.\\
+  boolean state & Indicates if audio device shall mute or not.\\
+  &TRUE     Audio Mute\\
+  &FALSE   Audio Un-mute\\
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EINVAL    & Illegal input parameter.
+}
+
+\ifunction{AUDIO\_SET\_AV\_SYNC}{
+  int ioctl(int fd, int request = AUDIO\_SET\_AV\_SYNC, boolean state);}{
+  This ioctl call asks the Audio Device to turn ON or OFF A/V synchronization.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_AV\_SYNC for this command.\\
+  boolean state& Tells the DVB subsystem if A/V 
+  synchronization shall be ON or OFF.\\
+  & TRUE   AV-sync ON \\
+  & FALSE  AV-sync OFF\\
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EINVAL    & Illegal input parameter.
+}
+
+\ifunction{AUDIO\_SET\_BYPASS\_MODE}{
+  int ioctl(int fd, int request = AUDIO\_SET\_BYPASS\_MODE, boolean mode);}{
+  This ioctl call asks the Audio Device to bypass the Audio decoder and forward
+  the stream without decoding. This mode shall be used if streams that can't be
+  handled by the DVB system shall be decoded.
+  Dolby DigitalTM streams are automatically forwarded by the DVB 
+  subsystem if the hardware can handle it.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_SET\_BYPASS\_MODE for this command.\\
+  boolean mode& Enables or disables the decoding of the current
+  Audio stream in the DVB subsystem.\\
+  &TRUE    Bypass is disabled\\
+  &FALSE  Bypass is enabled\\
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EINVAL    & Illegal input parameter.
+}
+
+\ifunction{AUDIO\_CHANNEL\_SELECT}{
+  int ioctl(int fd, int request = AUDIO\_CHANNEL\_SELECT, 
+  audio\_channel\_select\_t);}{
+  This ioctl call asks the Audio Device to select the requested channel 
+  if possible.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_CHANNEL\_SELECT for this command.\\
+  audio\_channel\_select\_t ch &
+  Select the output format of the audio (mono left/right, stereo).
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EINVAL    & Illegal input parameter ch.
+}
+
+\ifunction{AUDIO\_GET\_STATUS}{
+  int ioctl(int fd, int request = AUDIO\_GET\_STATUS, 
+  struct audio\_status *status);}{
+  This ioctl call asks the Audio Device to return the current state 
+  of the Audio Device.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_GET\_STATUS for this command.\\
+  struct audio\_status *status & Returns the current state of Audio Device.
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EFAULT & status points to invalid address.
+}
+
+\ifunction{AUDIO\_GET\_CAPABILITIES}{
+  int ioctl(int fd, int request = AUDIO\_GET\_CAPABILITIES, 
+  unsigned int *cap);}{
+  This ioctl call asks the Audio Device to tell us about the 
+  decoding capabilities of the audio hardware.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_GET\_CAPABILITIES for this command.\\
+  unsigned int *cap & Returns a bit array of supported sound formats.
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EFAULT & cap points to an invalid address.
+}
+
+\ifunction{AUDIO\_CLEAR\_BUFFER}{
+  int ioctl(int fd, int request = AUDIO\_CLEAR\_BUFFER);}{
+  This ioctl call asks the Audio Device to clear all software 
+  and hardware buffers of the audio decoder device.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_CLEAR\_BUFFER for this command.
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.
+}
+
+\ifunction{AUDIO\_SET\_ID}{
+  int ioctl(int fd, int request = AUDIO\_SET\_ID, int id);}{
+  This ioctl selects which sub-stream is to be decoded if a program or
+  system stream is sent to the video device. If no audio stream type is set
+  the id has to be in [0xC0,0xDF] for MPEG sound, in [0x80,0x87] for
+  AC3 and in [0xA0,0xA7] for LPCM. More specifications may follow
+  for other stream types. If the stream type is set the id just
+  specifies the substream id of the audio stream and only the first 5
+  bits are recognized.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_SET\_ID for this command.\\
+  int id& audio sub-stream id
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EINVAL & Invalid sub-stream id.
+}
+
+\ifunction{AUDIO\_SET\_MIXER}{
+  int ioctl(int fd, int request = AUDIO\_SET\_MIXER, audio\_mixer\_t *mix);}{
+  This ioctl lets you adjust the mixer settings of the audio decoder.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_SET\_ID for this command.\\
+  audio\_mixer\_t *mix& mixer settings.
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EFAULT & mix points to an invalid address.
+}
+
+\ifunction{AUDIO\_SET\_STREAMTYPE}{
+  int ioctl(fd, int request = AUDIO\_SET\_STREAMTYPE, int type);}{
+  This ioctl tells the driver which kind of audio stream to expect.
+  This is useful if the stream offers several audio sub-streams 
+  like LPCM and AC3.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_SET\_STREAMTYPE for this command.\\
+  int type & stream type\\
+  }{
+  EBADF& fd is not a valid open file descriptor \\
+  EINVAL& type is not a valid or supported stream type.\\
+}
+
+
+\ifunction{AUDIO\_SET\_EXT\_ID}{
+  int ioctl(fd, int request = AUDIO\_SET\_EXT\_ID, int id);}{
+  This ioctl can be used to set the extension id for MPEG streams in 
+  DVD playback. Only the first 3 bits are recognized. 
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_SET\_EXT\_ID for this command.\\
+  int id & audio sub\_stream\_id\\
+  }{
+  EBADF& fd is not a valid open file descriptor \\
+  EINVAL& id  is not a valid id.\\
+}
+
+\ifunction{AUDIO\_SET\_ATTRIBUTES}{
+  int ioctl(fd, int request = AUDIO\_SET\_ATTRIBUTES, audio\_attributes\_t attr );}{
+  This ioctl is intended for DVD playback and allows you to set
+  certain information about the audio stream.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_SET\_ATTRIBUTES for this command.\\
+  audio\_attributes\_t attr & audio attributes according to section \ref{aattrib}\\
+  }{
+  EBADF& fd is not a valid open file descriptor \\
+  EINVAL& attr is not a valid or supported attribute setting.\\
+}
+
+\ifunction{AUDIO\_SET\_KARAOKE}{
+  int ioctl(fd, int request = AUDIO\_SET\_STREAMTYPE, audio\_karaoke\_t *karaoke);}{
+  This ioctl allows one to set the mixer settings for a karaoke DVD.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals AUDIO\_SET\_STREAMTYPE for this command.\\
+  audio\_karaoke\_t *karaoke & karaoke settings according to section \ref{audiokaraoke}.\\
+  }{
+  EBADF & fd is not a valid open file descriptor \\
+  EINVAL& karaoke is not a valid or supported karaoke setting.\\
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "dvbapi"
+%%% End: 

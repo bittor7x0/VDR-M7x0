@@ -1,0 +1,179 @@
+linuxtv-dvb-1.1.1
+=================
+
+Digital Video Broadcast drivers for Linux 2.4.19+ and Linux 2.6.x.
+
+Note: Unlike in previous releases, the test/utility programs have
+been unbundled and are released seperately as linuxtv-dvb-apps-1.1.0.
+
+
+Linux 2.6.x:
+  The DVB drivers are already included in Linux 2.6.x, so you usually
+  don't need this package. What you will need, hwoever, is firmware.
+  see below.
+
+Linux 2.4.19+:
+  Due to changes in the video4linux layer we don't support kernels
+  older than 2.4.19. If you need to use an older kernel you must
+  apply video4linux patches to the kernel first.
+
+
+Quick start:
+------------
+
+1. Get firmware:
+
+  Some DVB cards need firmware to operate. Due to licensing problems
+  we won't distribute the firmware binaries with the driver source,
+  you must get them seperately. See below for details about where
+  to get and where to put.
+
+  For Linux 2.6.x also see linux/Documentation/dvb/firmware.txt and
+  linux/Documentation/firmware_class/README.
+
+  Note: The firmware loader has been backported from 2.6 to 2.4.24,
+  but the drivers do not yet support this. You must compile the
+  firmwares into the drivers.
+
+
+2. cd build-2.4 or build-2.6
+
+3. make
+
+4. ./insmod.sh load
+
+  Note: Some of the drivers will refuse to load and spit out
+  error messages if they cannot find their hardware. You can
+  ignore them, or edit insmod.sh and comment out drivers that
+  you don't need.
+
+  You will have to load at least two drivers:
+  - one for the main DVB card / device
+  - one for the frontend (i.e. tuner + demodulator)
+
+
+Detailed instructions for building:
+-----------------------------------
+
+If you encounter any problems while executing the follwing steps please read
+the TROUBLESHOOTING file.
+
+Simply type 'make' to build the driver. The compiled modules will be located
+in directory ./build-2.4/ or ./build-2.6/, depening on the kernel version you
+are running. There you will also find scripts to load and unload the modules.
+
+For some cards or frontends you need to download additional firmware
+binaries:
+
+- dvb-ttpci: http://www.linuxtv.org/download/dvb/
+  => wget http://www.linuxtv.org/download/dvb/dvb-ttpci-01.fw
+  Place the "dvb-ttpci-01.fw" file in the build-2.4 and/or build-2.6
+  directory. The firmware will be compiled into the driver at it used to
+  be.
+
+- alps_tdlb7: 
+  This driver needs a copy of the firmware file 'Sc_main.mc' from the
+  Haupauge windows driver in the '/usr/lib/hotplug/firmware' directory.
+  Alternatively, you can also pass the complete filename with the module
+  parameter 'firmware_file'.
+
+- tda1004x:
+  This driver needs a copy of the DLL "ttlcdacc.dll" from the Haupauge or
+  Technotrend windows driver saved as
+  '/usr/lib/hotplug/firmware/tda1004x.bin'. You can also pass the complete
+  file name with the module parameter 'tda1004x_firmware'.
+  Currently the DLL from v2.15a, or 2.16a of the technotrend PCI driver is supported.
+  Please note, even if you're using a USB device, you _must_ get the
+  file from the TechnoTrend PCI driver.
+  Windows driver URL: http://www.technotrend.de/
+
+- ttusb-dec:
+  see "ttusb-dec.txt" in linux/Documentation for details
+
+If something is missing, you get notified in the build process or when
+loading the modules.
+
+Just in case you are wondering: the "alps_bsrv2" driver is gone, please use
+the new "ves1x93" driver instead.
+
+In ./build-2.4/ or ./build-2.6/ you find the insmod script.
+
+Use './insmod.sh load' to load the driver modules, './insmod.sh unload' to 
+remove them. './insmod debug' loads the drivers with debugging enabled. 
+These scripts load all drivers for all cards but the ones based on the bt8xx.
+For bt8xx based cards please use the insmod-bt8xx.sh script instead.
+
+Now check the klog and syslog (in doubt type 'dmesg') for error messages.
+
+When you reached this point successfully you probably want to start some
+test applications, download the linuxtv-dvb-apps-1.1.tar.gz package, unpack
+it and compile it. This package contains some tools to test and debug the
+driver:
+
+linuxtv-dvb-apps-1.1/apps/szap/ contains three simple applications called 
+szap, czap and tzap for zapping with DVB-S, DVB-C or DVB-T cards.
+Read linuxtv-dvb-apps-1.1/apps/szap/ README for usage instructions.
+
+Note 1: tuning succeeded if you see the FE_HAS_LOCK flag and "status 1f"; a
+good signal has a low bit error rate (ber) and zero uncorrectable packets (unc).
+
+Note 2: you must keep ?zap running, or the frontend will go to sleep (unless
+you load dvb-core.o with dvb_shutdown_timeout=0)
+
+If your card has a hardware MPEG decoder you can watch TV with xawtv (together
+with e.g. szap for DVB tuning); Note: xawtv cannot control the DVB tuner, you
+must use ?zap
+
+For cards without hardware MPEG decoder you need a software MPEG decoder, 
+e.g. mplayer or xine (you need *very* recent versions which understand MPEG2 
+transport streams; xine v0.9.21 and mplayer dev-CVS-030723-16:39-3.3.1 seem to 
+work); Note: You must run ?zap with the -r flag to enable stream output to the 
+dvr device, and keep it running while watching tv.  
+
+Examples: 
+	mplayer - < /dev/dvb/adapter0/dvr0 
+	xine stdin://mpeg2 < /dev/dvb/adapter0/dvr0
+	
+Note: Newest mplayer and xine versions are reported to have builtin DVB support
+(see ./linux/Documentation/dvb/faq.txt for more info).
+
+For 'real' everyday use you probably don't want to use these test applications 
+but install a program like VDR or MythTV.
+(Read ./linux/Documentation/dvb/faq.txt for some links)
+
+When everything is working you probably want to install the driver on your 
+system by typing 'make install'. If you want to load the modules automatically
+when an application tries to open the device you need to add lines like these 
+to your modules.conf:
+
+	probeall /dev/dvb dvb-ttpci
+	alias /dev/dvb/* /dev/dvb
+	below dvb-ttpci alps_bsrv2 alps_tdmb7 alps_tdlb7
+	add below dvb-ttpci grundig_29504-401 grundig_29504-491
+	add below dvb-ttpci stv0299 ves1820
+
+Note: this example is for people with Technotrend-based PCI cards, they must 
+load the dvb-ttpci driver and a matching frontend drivers that are potentially
+used on these cards. In order to find out which ones are required for your
+setup check the lsmod output after loading the driver like described above.
+Those DVB modules that have a usecount greater zero are required in your 
+setup - edit the modules.conf file appropriatly]
+
+Debian users don't edit modules.conf manually but add the lines above to a new
+file in /etc/modutils/ (e.g. /etc/modutils/dvb) and call 'update-modules' then.
+
+--------------------------------------------------------------------------------
+
+The build system has been tested down to 2.4.20, if you run an older kernel
+either update your kernel or just try - maybe you need to add some tweaks in
+the dvb_compat.[hc] files. Please report your modifications on the linux-dvb 
+mailing list.
+
+If you want to build a not-standalone driver but want to patch your 2.6 kernel
+source tree with this driver please read README-2.6.
+
+More documentation is located in ./linux/Documentation/dvb/.
+
+good luck,
+
+Holger

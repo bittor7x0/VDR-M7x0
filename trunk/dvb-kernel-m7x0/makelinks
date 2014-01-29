@@ -1,0 +1,46 @@
+#!/bin/sh
+# link drivers sources from CVS or release tarball into your 2.6.x kernel sources;
+# an alternative way of compiling is to use the build-2.6 stuff, but
+# buld-2.6 won't work for bt878 based cards due to include patch brain damage...
+
+
+if test -z $1 || ! test -d $1 ; then
+	echo
+	echo "  usage: $0 <path_to_kernel_to_patch>"
+	echo
+	exit 
+fi
+
+echo "patching $1..."
+
+cd linux
+PWD=`pwd`
+
+for x in `find drivers -type d | grep -v CVS | grep -v compat` ; do
+	mkdir -p -v $1/$x 
+done
+
+for x in `find Documentation -type d | grep -v CVS ` ; do
+	mkdir -p -v $1/$x 
+done
+
+for x in `find include -type d | grep -v CVS` ; do
+	mkdir -p -v $1/$x 
+done
+
+for x in `find Documentation -type f | grep -v CVS | grep -v .cvsignore` ; do
+	ln -v -f -s $PWD/$x $1/$x
+done
+
+for x in `find drivers -type f | grep -v CVS | grep -v .cvsignore` ; do
+	ln -v -f -s $PWD/$x $1/$x
+done
+
+for x in `find $1/drivers/media/dvb -type f | grep "saa"` ; do 
+	rm -rf $x
+done
+
+for x in `find include -type f | grep -v CVS | grep -v .cvsignore` ; do
+	ln -v -f -s $PWD/$x $1/$x
+done
+

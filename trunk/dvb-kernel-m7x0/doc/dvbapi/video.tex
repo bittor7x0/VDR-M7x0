@@ -1,0 +1,697 @@
+\devsec{DVB Video Device}
+
+The DVB video device controls the MPEG2 video decoder of the DVB hardware.
+It can be accessed through \texttt{/dev/dvb/adapter0/video0}.
+Data types and and ioctl definitions can be accessed by including
+\texttt{linux/dvb/video.h} in your application.
+
+
+Note that the DVB video device only controls decoding of the MPEG
+video stream, not its presentation on the TV or computer screen.
+On PCs this is typically handled by an associated video4linux device, e.g.
+\texttt{/dev/video}, which allows scaling and defining output windows.
+
+Some DVB cards don't have their own MPEG decoder, which results in the omission
+of the audio and video device as well as the video4linux device.
+
+The ioctls that deal with SPUs (sub picture units) and navigation
+packets are only supported on some MPEG decoders made for DVD playback.
+
+
+\devsubsec{Video Data Types}
+
+\devsubsubsec{video\_format\_t}
+\label{videoformat}
+
+The \texttt{video\_format\_t} data type defined by 
+\begin{verbatim}
+typedef enum {
+        VIDEO_FORMAT_4_3,
+        VIDEO_FORMAT_16_9
+} video_format_t;
+\end{verbatim}
+is used in the VIDEO\_SET\_FORMAT function (\ref{videosetformat}) to 
+tell the driver which aspect ratio the output hardware (e.g. TV) has.
+It is also used in the data structures video\_status (\ref{videostatus})
+returned by VIDEO\_GET\_STATUS  (\ref{videogetstatus}) and
+video\_event (\ref{videoevent}) returned by VIDEO\_GET\_EVENT (\ref{videogetevent}) 
+which report about the display format of the current video stream.
+
+\devsubsubsec{video\_display\_format\_t}
+\label{videodispformat}
+
+In case the display format of the video stream and of the 
+display hardware differ the application has to specify how to handle 
+the cropping of the picture.
+This can be done using the VIDEO\_SET\_DISPLAY\_FORMAT call
+(\ref{videosetdisplayformat}) which accepts 
+\begin{verbatim}
+typedef enum {   
+        VIDEO_PAN_SCAN,   
+        VIDEO_LETTER_BOX, 
+        VIDEO_CENTER_CUT_OUT
+} video_display_format_t;
+\end{verbatim}
+as argument.
+
+
+\devsubsubsec{video stream source}
+\label{videostreamsource}
+The video stream source is set through the VIDEO\_SELECT\_SOURCE
+call and can take the following values, depending on whether we are
+replaying from an internal (demuxer) or external (user write) source.
+\begin{verbatim}
+typedef enum {
+        VIDEO_SOURCE_DEMUX, 
+        VIDEO_SOURCE_MEMORY 
+} video_stream_source_t;
+\end{verbatim}
+VIDEO\_SOURCE\_DEMUX selects the demultiplexer (fed
+either by the frontend or the DVR device) as the source of 
+the video stream.
+If VIDEO\_SOURCE\_MEMORY is selected the stream 
+comes from the application through the \texttt{write()} 
+system call.
+
+\devsubsubsec{video play state}
+\label{videoplaystate}
+The following values can be returned by the VIDEO\_GET\_STATUS call
+representing the state of video playback.
+\begin{verbatim}
+typedef enum {
+        VIDEO_STOPPED, 
+        VIDEO_PLAYING, 
+        VIDEO_FREEZED  
+} video_play_state_t; 
+\end{verbatim}
+
+
+\devsubsubsec{struct video\_event}
+\label{videoevent}
+The following is the structure of a video event as it is returned by
+the VIDEO\_GET\_EVENT call.
+\begin{verbatim}
+struct video_event { 
+        int32_t type; 
+        time_t timestamp;
+        union { 
+                video_format_t video_format;
+        } u; 
+};
+\end{verbatim}
+
+\devsubsubsec{struct video\_status}
+\label{videostatus}
+The VIDEO\_GET\_STATUS call returns the following structure informing
+about various states of the playback operation.
+\begin{verbatim}
+struct video_status { 
+        boolean video_blank;                 
+        video_play_state_t play_state;         
+        video_stream_source_t stream_source;
+        video_format_t video_format;
+        video_displayformat_t display_format; 
+};
+\end{verbatim}
+If video\_blank is set video will be blanked out if the channel is changed or
+if playback is stopped. Otherwise, the last picture will be displayed.
+play\_state indicates if the video is currently frozen, stopped, or
+being played back. The stream\_source corresponds to the seleted source 
+for the video stream. It can come either from the demultiplexer or from memory.
+The video\_format indicates the aspect ratio (one of 4:3 or 16:9)
+of the currently played video stream.
+Finally, display\_format corresponds to the selected cropping mode in case the 
+source video format is not the same as the format of the output device.
+
+
+\devsubsubsec{struct video\_still\_picture}
+\label{videostill}
+An I-frame displayed via the VIDEO\_STILLPICTURE call is passed on
+within the following structure.
+\begin{verbatim}
+/* pointer to and size of a single iframe in memory */
+struct video_still_picture { 
+        char *iFrame; 
+        int32_t size; 
+};
+\end{verbatim}
+
+\devsubsubsec{video capabilities}
+\label{videocaps}
+A call to VIDEO\_GET\_CAPABILITIES returns an unsigned integer with
+the following bits set according to the hardwares capabilities.
+\begin{verbatim}
+/* bit definitions for capabilities: */
+/* can the hardware decode MPEG1 and/or MPEG2? */
+#define VIDEO_CAP_MPEG1   1 
+#define VIDEO_CAP_MPEG2   2
+/* can you send a system and/or program stream to video device?
+   (you still have to open the video and the audio device but only 
+    send the stream to the video device) */
+#define VIDEO_CAP_SYS     4
+#define VIDEO_CAP_PROG    8
+/* can the driver also handle SPU, NAVI and CSS encoded data? 
+   (CSS API is not present yet) */
+#define VIDEO_CAP_SPU    16
+#define VIDEO_CAP_NAVI   32
+#define VIDEO_CAP_CSS    64
+\end{verbatim}
+
+
+\devsubsubsec{video system}
+\label{videosys}
+A call to VIDEO\_SET\_SYSTEM sets the desired video system for TV
+output. The following  system types can be set:
+
+\begin{verbatim}
+typedef enum {
+         VIDEO_SYSTEM_PAL, 
+         VIDEO_SYSTEM_NTSC, 
+         VIDEO_SYSTEM_PALN, 
+         VIDEO_SYSTEM_PALNc, 
+         VIDEO_SYSTEM_PALM, 
+         VIDEO_SYSTEM_NTSC60, 
+         VIDEO_SYSTEM_PAL60,
+         VIDEO_SYSTEM_PALM60
+} video_system_t;
+\end{verbatim}
+
+
+
+\devsubsubsec{struct video\_highlight}
+\label{vhilite}
+Calling the ioctl VIDEO\_SET\_HIGHLIGHTS posts the SPU highlight
+information. The call expects the following format for that information:
+
+\begin{verbatim}
+typedef 
+struct video_highlight {
+        boolean active;      /*    1=show highlight, 0=hide highlight */
+        uint8_t contrast1;   /*    7- 4  Pattern pixel contrast */
+                             /*    3- 0  Background pixel contrast */
+        uint8_t contrast2;   /*    7- 4  Emphasis pixel-2 contrast */
+                             /*    3- 0  Emphasis pixel-1 contrast */
+        uint8_t color1;      /*    7- 4  Pattern pixel color */
+                             /*    3- 0  Background pixel color */
+        uint8_t color2;      /*    7- 4  Emphasis pixel-2 color */
+                             /*    3- 0  Emphasis pixel-1 color */
+        uint32_t ypos;       /*   23-22  auto action mode */
+                             /*   21-12  start y */
+                             /*    9- 0  end y */
+        uint32_t xpos;       /*   23-22  button color number */
+                             /*   21-12  start x */
+                             /*    9- 0  end x */
+} video_highlight_t;
+\end{verbatim}
+
+
+\devsubsubsec{video SPU}
+\label{videospu}
+Calling VIDEO\_SET\_SPU deactivates or activates SPU decoding,
+according to the following format:
+\begin{verbatim}
+typedef 
+struct video_spu {
+        boolean active;
+        int stream_id;
+} video_spu_t;
+\end{verbatim}
+
+
+\devsubsubsec{video SPU palette}
+\label{vspupal}
+The following structure is used to set the SPU palette by calling VIDEO\_SPU\_PALETTE:
+\begin{verbatim}
+typedef 
+struct video_spu_palette{
+        int length;
+        uint8_t *palette;
+} video_spu_palette_t;
+\end{verbatim}
+
+\devsubsubsec{video NAVI pack}
+\label{videonavi}
+In order to get the navigational data the following structure has to
+be passed to the ioctl VIDEO\_GET\_NAVI:
+\begin{verbatim}
+typedef 
+struct video_navi_pack{
+        int length;         /* 0 ... 1024 */
+        uint8_t data[1024];
+} video_navi_pack_t;
+\end{verbatim}
+
+
+\devsubsubsec{video attributes}
+\label{vattrib}
+The following attributes can be set by a call to VIDEO\_SET\_ATTRIBUTES:
+\begin{verbatim}
+typedef uint16_t video_attributes_t;
+/*   bits: descr. */
+/*   15-14 Video compression mode (0=MPEG-1, 1=MPEG-2) */
+/*   13-12 TV system (0=525/60, 1=625/50) */
+/*   11-10 Aspect ratio (0=4:3, 3=16:9) */
+/*    9- 8 permitted display mode on 4:3 monitor (0=both, 1=only pan-sca */
+/*    7    line 21-1 data present in GOP (1=yes, 0=no) */
+/*    6    line 21-2 data present in GOP (1=yes, 0=no) */
+/*    5- 3 source resolution (0=720x480/576, 1=704x480/576, 2=352x480/57 */
+/*    2    source letterboxed (1=yes, 0=no) */
+/*    0    film/camera mode (0=camera, 1=film (625/50 only)) */
+\end{verbatim}
+
+
+\clearpage
+
+\devsubsec{Video Function Calls}
+
+\function{open()}{
+  int open(const char *deviceName, int flags);}{
+  This system call opens a named video device (e.g. /dev/dvb/adapter0/video0) 
+  for subsequent use.
+  
+  When an open() call has succeeded, the device will be ready for use.
+  The significance of blocking or non-blocking mode is described in 
+  the documentation for functions where there is a difference. 
+  It does not affect the semantics of the open() call itself. 
+  A device opened in blocking mode can later be put into non-blocking mode 
+  (and vice versa) using the F\_SETFL command of the fcntl system
+  call.  
+  This is a standard system call, documented in the Linux manual 
+  page for fcntl.
+  Only one user can open the Video Device in O\_RDWR mode. All other attempts to
+  open the device in this mode will fail, and an error-code will be returned.
+  If the Video Device is opened in O\_RDONLY mode, the only ioctl call that can
+  be used is VIDEO\_GET\_STATUS. All other call will return an error code.
+  }{
+  const char *deviceName & Name of specific video device.\\
+  int flags & A bit-wise OR of the following flags:\\
+            & \hspace{1em} O\_RDONLY read-only access\\
+            & \hspace{1em} O\_RDWR read/write access\\
+            & \hspace{1em} O\_NONBLOCK open in non-blocking mode \\
+            & \hspace{1em} (blocking mode is the default)\\
+  }{
+  ENODEV    & Device driver not loaded/available.\\
+  EINTERNAL & Internal error.\\
+  EBUSY     & Device or resource busy.\\
+  EINVAL    & Invalid argument.\\
+}
+
+\function{close()}{
+  int close(int fd);}{
+  This system call closes a previously opened video device.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  }{
+  EBADF & fd is not a valid open file descriptor.\\
+}
+
+\function{write()}{
+  size\_t write(int fd, const void *buf, size\_t count);}{
+  This system call can only be used if VIDEO\_SOURCE\_MEMORY is selected in the 
+  ioctl call VIDEO\_SELECT\_SOURCE. The data provided shall be in PES
+  format, unless the capability allows other formats.
+  If O\_NONBLOCK is not specified the function will block until buffer space is
+  available. The amount of data to be transferred is implied by count.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  void *buf   & Pointer to the buffer containing the PES data.\\
+  size\_t count& Size of buf.\\
+  }{
+  EPERM&  Mode VIDEO\_SOURCE\_MEMORY not selected.\\
+  ENOMEM& Attempted to write more data than the internal buffer can hold.\\
+  EBADF&  fd is not a valid open file descriptor.\\
+}
+
+
+\ifunction{VIDEO\_STOP}{
+  int ioctl(fd, int request = VIDEO\_STOP, boolean mode);}{
+        This ioctl call asks the Video Device to stop playing the current stream.
+        Depending on the input parameter, the screen can be blanked out or
+        displaying the last decoded frame.
+}{
+int fd & File descriptor returned by a previous call to open(). \\
+int request &    Equals VIDEO\_STOP for this command. \\
+Boolean mode &   Indicates how the screen shall be handled. \\
+&  TRUE: Blank screen when stop. \\
+&  FALSE: Show last decoded frame.\\
+}{
+EBADF&           fd is not a valid open file descriptor \\
+EINTERNAL &      Internal error, possibly in the communication with 
+                        the DVB subsystem.\\
+}
+
+\ifunction{VIDEO\_PLAY}{
+  int ioctl(fd, int request = VIDEO\_PLAY);}{
+        This ioctl call asks the Video Device to start playing a video stream 
+        from the selected source.
+}{
+int fd & File descriptor returned by a previous call to open(). \\
+int request &    Equals VIDEO\_PLAY for this command. \\
+}{
+EBADF&           fd is not a valid open file descriptor \\
+EINTERNAL &      Internal error, possibly in the communication with 
+                        the DVB subsystem.\\
+}
+
+
+\ifunction{VIDEO\_FREEZE}{
+  int ioctl(fd, int request = VIDEO\_FREEZE);}{
+        This ioctl call suspends the live video stream being played. 
+        Decoding and playing are frozen. It is then possible to restart 
+        the decoding and playing process of the video stream using the
+        VIDEO\_CONTINUE command. If VIDEO\_SOURCE\_MEMORY is selected in the
+        ioctl call VIDEO\_SELECT\_SOURCE, the DVB subsystem will not decode 
+        any more data until the ioctl call VIDEO\_CONTINUE or VIDEO\_PLAY is 
+        performed.
+}{
+int fd & File descriptor returned by a previous call to open(). \\
+int request &    Equals VIDEO\_FREEZE for this command. \\
+}{
+EBADF&           fd is not a valid open file descriptor \\
+EINTERNAL &      Internal error, possibly in the communication with 
+                        the DVB subsystem.\\
+}
+
+\ifunction{VIDEO\_CONTINUE}{
+  int ioctl(fd, int request = VIDEO\_CONTINUE);}{
+  This ioctl call restarts decoding and playing processes of the video
+  stream which was played before a call to VIDEO\_FREEZE was made.
+  }{
+  int fd & File descriptor returned by a previous call to open(). \\
+  int request &    Equals VIDEO\_CONTINUE for this command. \\
+  }{
+  EBADF&           fd is not a valid open file descriptor \\
+  EINTERNAL &      Internal error, possibly in the communication with 
+  the DVB subsystem.\\
+  }
+
+
+\ifunction{VIDEO\_SELECT\_SOURCE}{
+  int ioctl(fd, int request = VIDEO\_SELECT\_SOURCE, video\_stream\_source\_t source);}{
+  This ioctl call informs the video device which source shall be used 
+  for the input data. The possible sources are demux or memory. If 
+  memory is selected, the data is fed to the video device through 
+  the write command.
+  }{
+  int fd     & File descriptor returned by a previous call to open().\\
+  int request& Equals VIDEO\_SELECT\_SOURCE for this command. \\
+  video\_stream\_source\_t source&Indicates which source shall be used for the Video stream.\\
+  }{
+  EBADF&       fd is not a valid open file descriptor \\
+  EINTERNAL &  Internal error, possibly in the communication with the DVB subsystem.\\
+}
+
+\ifunction{VIDEO\_SET\_BLANK}{
+  int ioctl(fd, int request = VIDEO\_SET\_BLANK, boolean mode);}{
+        This ioctl call asks the Video Device to blank out the picture.
+}{
+int fd     & File descriptor returned by a previous call to open().\\
+int request& Equals VIDEO\_SET\_BLANK for this command. \\
+boolean mode&TRUE: Blank screen when stop.\\
+            &FALSE:  Show last decoded frame.\\
+}{
+EBADF&      fd is not a valid open file descriptor \\
+EINTERNAL & Internal error, possibly in the communication with the DVB subsystem.\\
+EINVAL  &   Illegal input parameter\\
+}
+
+\ifunction{VIDEO\_GET\_STATUS}{
+\label{videogetstatus}
+  int ioctl(fd, int request = VIDEO\_GET\_STATUS, struct video\_status *status);}{
+  This ioctl call asks the Video Device to return the current status of the device.
+  }{
+  int fd     & File descriptor returned by a previous call to open().\\
+  int request& Equals VIDEO\_GET\_STATUS for this command.\\
+  struct video\_status *status & Returns the current status of the Video Device.\\
+}{
+EBADF&      fd is not a valid open file descriptor \\
+EINTERNAL & Internal error, possibly in the communication with the DVB subsystem.\\
+EFAULT  &                status points to invalid address\\
+}
+
+\ifunction{VIDEO\_GET\_EVENT}{
+\label{videogetevent}
+  int ioctl(fd, int request = VIDEO\_GET\_EVENT, struct video\_event *ev);}{
+        This ioctl call returns an event of type video\_event if available.
+        If an event is not available, the behavior depends on whether the device is in
+        blocking or non-blocking mode.  In the latter case, the call fails immediately
+        with errno set to EWOULDBLOCK. In the former case, the call blocks until an 
+        event becomes available.
+        The standard Linux poll() and/or select() system calls can be used with the 
+        device file descriptor to watch for new events.  For select(), the file 
+        descriptor should be included in the exceptfds argument, and for poll(), 
+        POLLPRI should be specified as the wake-up condition.
+        Read-only permissions are sufficient for this ioctl call.
+  }{
+  int fd     & File descriptor returned by a previous call to open().\\
+  int request& Equals VIDEO\_GET\_EVENT for this command.\\
+  struct video\_event *ev & Points to the location where the event, if any, is
+                                to be stored.\\
+}{
+EBADF  &  fd is not a valid open file descriptor \\
+EFAULT &  ev points to invalid address \\
+EWOULDBLOCK & There is no event pending, and the device is in non-blocking mode.\\
+EOVERFLOW & \\
+&Overflow in event queue - one or more events were lost.\\
+}
+
+\ifunction{VIDEO\_SET\_DISPLAY\_FORMAT}{
+\label{videosetdisplayformat}
+  int ioctl(fd, int request = VIDEO\_SET\_DISPLAY\_FORMAT, video\_display\_format\_t format);}{
+  This ioctl call asks the Video Device to select the video format to be applied
+  by the MPEG chip on the video.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals  VIDEO\_SET\_DISPLAY\_FORMAT for this command.\\
+  video\_display\_format\_t format & Selects the video format to be used.\\
+  }{
+  EBADF&      fd is not a valid open file descriptor \\
+  EINTERNAL & Internal error.\\
+  EINVAL & Illegal parameter format.\\
+}
+
+\ifunction{VIDEO\_STILLPICTURE}{
+  int ioctl(fd, int request = VIDEO\_STILLPICTURE, struct video\_still\_picture *sp);}{
+  This ioctl call asks the Video Device to display a still picture (I-frame). 
+  The input data shall contain an I-frame. If the pointer is NULL, then the 
+  current displayed still picture is blanked.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_STILLPICTURE for this command.\\
+  struct video\_still\_picture *sp& 
+  Pointer to a location where an I-frame and size is stored.\\
+  }{
+  EBADF&      fd is not a valid open file descriptor \\
+  EINTERNAL & Internal error.\\
+  EFAULT & sp points to an invalid iframe.\\
+}
+
+\ifunction{VIDEO\_FAST\_FORWARD}{
+  int ioctl(fd, int request = VIDEO\_FAST\_FORWARD, int nFrames);}{
+  This ioctl call asks the Video Device to skip decoding of N number of I-frames.
+  This call can only be used if VIDEO\_SOURCE\_MEMORY is selected.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_FAST\_FORWARD for this command.\\
+  int nFrames & The number of frames to skip.\\
+  }{
+  EBADF&      fd is not a valid open file descriptor \\
+  EINTERNAL & Internal error.\\
+  EPERM & Mode VIDEO\_SOURCE\_MEMORY not selected.\\
+  EINVAL & Illegal parameter format.\\
+}
+
+\ifunction{VIDEO\_SLOWMOTION}{
+  int ioctl(fd, int request = VIDEO\_SLOWMOTION, int nFrames);}{
+  This ioctl call asks the video device to repeat decoding frames N 
+  number of times.
+  This call can only be used if VIDEO\_SOURCE\_MEMORY is selected.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_SLOWMOTION for this command.\\
+  int nFrames & The number of times to repeat each frame.\\
+  }{
+  EBADF&      fd is not a valid open file descriptor \\
+  EINTERNAL & Internal error.\\
+  EPERM & Mode VIDEO\_SOURCE\_MEMORY not selected.\\
+  EINVAL & Illegal parameter format.\\
+}
+
+\ifunction{VIDEO\_GET\_CAPABILITIES}{
+  int ioctl(fd, int request = VIDEO\_GET\_CAPABILITIES, unsigned int *cap);}{
+  This ioctl call asks the video device about its decoding capabilities.
+  On success it returns and integer which has bits set according to the
+  defines in section \ref{videocaps}.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_GET\_CAPABILITIES for this command.\\
+  unsigned int *cap    & Pointer to a location where to store the 
+  capability information.\\
+  }{
+  EBADF& fd is not a valid open file descriptor \\
+  EFAULT & cap points to an invalid iframe.\\
+}
+
+\ifunction{VIDEO\_SET\_ID}{
+  int ioctl(int fd, int request = VIDEO\_SET\_ID, int id);}{
+  This ioctl selects which sub-stream is to be decoded if a program or
+  system stream is sent to the video device.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_SET\_ID for this command.\\
+  int id& video sub-stream id
+  }{
+  EBADF&      fd is not a valid open file descriptor.\\
+  EINTERNAL & Internal error.\\
+  EINVAL & Invalid sub-stream id.
+}
+
+\ifunction{VIDEO\_CLEAR\_BUFFER}{
+  int ioctl(fd, int request = VIDEO\_CLEAR\_BUFFER);}{
+  This ioctl call clears all video buffers in the driver and 
+  in the decoder hardware.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_CLEAR\_BUFFER for this command.\\
+  }{
+  EBADF& fd is not a valid open file descriptor \\
+}
+
+\ifunction{VIDEO\_SET\_STREAMTYPE}{
+  int ioctl(fd, int request = VIDEO\_SET\_STREAMTYPE, int type);}{
+  This ioctl tells the driver which kind of stream to expect 
+  being written to it. If this call is not used the default of video PES
+  is used. Some drivers might not support this call and always expect PES.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_SET\_STREAMTYPE for this command.\\
+  int type & stream type\\
+  }{
+  EBADF& fd is not a valid open file descriptor \\
+  EINVAL& type is not a valid or supported stream type.\\
+}
+
+\ifunction{VIDEO\_SET\_FORMAT}{
+\label{videosetformat}
+  int ioctl(fd, int request = VIDEO\_SET\_FORMAT, video\_format\_t format);
+}{
+  This ioctl sets the screen format (aspect ratio) of the connected
+  output device (TV) so that the output of the decoder can 
+  be adjusted accordingly.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_SET\_FORMAT for this command.\\
+  video\_format\_t format& video format of TV as defined in section \ref{videoformat}.\\
+  }{
+  EBADF& fd is not a valid open file descriptor \\
+  EINVAL& format is not a valid video format.\\
+}
+
+\ifunction{VIDEO\_SET\_SYSTEM}{
+\label{videosetsystem}
+  int ioctl(fd, int request = VIDEO\_SET\_SYSTEM , video\_system\_t system);
+}{
+  This ioctl sets the television output format. The format (see section
+  \ref{videosys}) may vary from the color format of the displayed MPEG
+  stream. If the hardware is not able to display the requested format
+  the call will return an error.
+}{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_SET\_FORMAT for this command.\\
+  video\_system\_t system& video system of TV output.\\
+}{
+  EBADF& fd is not a valid open file descriptor \\
+  EINVAL& system is not a valid or supported video system.\\
+}
+
+\ifunction{VIDEO\_SET\_HIGHLIGHT}{
+\label{videosethighlight}
+  int ioctl(fd, int request = VIDEO\_SET\_HIGHLIGHT ,video\_highlight\_t *vhilite) 
+}{
+  This ioctl sets the SPU highlight information for the menu access of
+  a DVD.
+}{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_SET\_HIGHLIGHT for this command.\\
+  video\_highlight\_t *vhilite& SPU Highlight information according to
+  section \ref{vhilite}.\\
+}{
+  EBADF& fd is not a valid open file descriptor. \\
+  EINVAL& input is not a valid highlight setting.\\
+}
+
+
+\ifunction{VIDEO\_SET\_SPU}{
+\label{videosetspu}
+  int ioctl(fd, int request = VIDEO\_SET\_SPU , video\_spu\_t *spu)
+}{
+  This ioctl activates or deactivates SPU decoding in a DVD input
+  stream. It can only be used, if the driver is able to handle a DVD
+  stream.
+}{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_SET\_SPU for this command.\\
+  video\_spu\_t *spu& SPU decoding (de)activation and subid setting
+  according to section \ref{videospu}.\\
+}{
+  EBADF& fd is not a valid open file descriptor \\
+  EINVAL& input is not a valid spu setting or driver cannot handle SPU.\\
+}
+
+
+\ifunction{VIDEO\_SET\_SPU\_PALETTE}{
+\label{videosetspupalette}
+  int ioctl(fd, int request = VIDEO\_SET\_SPU\_PALETTE ,video\_spu\_palette\_t *palette )
+}{
+  This ioctl sets the SPU color palette.
+}{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_SET\_SPU\_PALETTE for this command.\\
+  video\_spu\_palette\_t *palette& SPU palette according to section \ref{vspupal}.\\
+}{
+  EBADF& fd is not a valid open file descriptor \\
+  EINVAL& input is not a valid palette or driver doesn't handle SPU.\\
+}
+
+
+
+\ifunction{VIDEO\_GET\_NAVI}{
+\label{videosetnavi}
+  int ioctl(fd, int request = VIDEO\_GET\_NAVI , video\_navi\_pack\_t *navipack)
+}{
+  This ioctl returns navigational information from the DVD stream. This is
+  especially needed if an encoded stream has to be decoded by the hardware.
+}{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_GET\_NAVI for this command.\\
+  video\_navi\_pack\_t *navipack& PCI or DSI pack (private stream 2)
+  according to section \ref{videonavi}.\\
+}{
+  EBADF& fd is not a valid open file descriptor \\
+  EFAULT& driver is not able to return navigational information\\
+}
+
+
+\ifunction{VIDEO\_SET\_ATTRIBUTES}{
+\label{videosetattributes}
+  int ioctl(fd, int request = VIDEO\_SET\_ATTRIBUTE ,video\_attributes\_t
+  vattr) 
+}{
+  This ioctl is intended for DVD playback and allows you to set
+  certain information about the stream. Some hardware may not need
+  this information, but the call also tells the hardware to prepare
+  for DVD playback.
+}{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals VIDEO\_SET\_ATTRIBUTE for this command.\\
+  video\_attributes\_t vattr& video attributes according to section \ref{vattrib}.\\
+}{
+  EBADF& fd is not a valid open file descriptor \\
+  EINVAL& input is not a valid attribute setting.\\
+}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "dvbapi"
+%%% End: 

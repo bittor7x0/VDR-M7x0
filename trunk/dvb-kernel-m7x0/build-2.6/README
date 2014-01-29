@@ -1,0 +1,9 @@
+Instructions for building under 2.6.x outside of the kernel tree:
+-----------------------------------------------------------------
+
+Warning: DO NOT mix kernel DVB modules and this ones.
+
+1) make 
+
+2) ./insmod.sh load
+

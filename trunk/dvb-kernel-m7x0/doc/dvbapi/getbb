@@ -1,0 +1,12 @@
+#!/bin/sh
+f=`grep BoundingBox $2 | cut -d' ' -f2,3,4,5`
+g=`\
+echo $2" llx=";(echo $f|cut -d' ' -f1 );\
+echo " lly=";(echo $f|cut -d' ' -f2 );\
+echo " urx=";(echo $f|cut -d' ' -f3 );\
+echo " ury=";(echo $f|cut -d' ' -f4 );\
+echo " rwi=";(echo $f|cut -d' ' -f3 );\
+echo "0"
+`
+h=`echo $g| sed "s/= /=/g" | sed "s/ 0/0/g"`
+cat $1 | sed "s/psfile=$2/psfile=$h/"

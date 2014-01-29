@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# this is necessary for RedHat-distributions,
+# because all module tools (depmod, insmod, rmmod)
+# are located in /sbin, which is not included
+# in the standard search path for anyone
+export PATH=$PATH:/sbin 
+
+# fresh up the dependencies first
+depmod -ae
+
+case "$1" in
+
+    start)
+	echo -n -e "Inserting Hexium modules into kernel"
+	modprobe i2c-core i2c_debug=0;	
+	modprobe videodev
+	modprobe v4l1-compat
+	modprobe v4l2-common
+	modprobe video-buf
+	modprobe saa7146 saa7146_debug=0
+	modprobe saa7146_vv
+	modprobe hexium_gemini
+	modprobe hexium_orion
+	echo
+	;;
+    debug)
+	echo -n -e "Inserting Hexium modules with debug options into kernel"
+	modprobe i2c-core i2c_debug=0;			
+	modprobe videodev
+	modprobe v4l1-compat
+	modprobe video-buf
+	modprobe v4l2-common
+	modprobe saa7146 saa7146_debug=255
+	modprobe saa7146_vv
+	modprobe hexium_gemini debug=255
+	modprobe hexium_orion debug=255
+	echo
+	;;
+    stop)
+	echo -n -e "Deleting hexium modules from kernel"
+	rmmod hexium_gemini hexium_orion saa7146_vv saa7146 video-buf v4l2-common v4l1-compat videodev i2c-dev i2c-proc i2c-core /&> /dev/null  
+	echo
+	;;
+    restart|reload)
+	$0 stop && $0 debug
+	;;
+    *)
+	echo "Usage$0 {start|stop|debug|restart}"
+	exit 1
+esac
+
+exit 0

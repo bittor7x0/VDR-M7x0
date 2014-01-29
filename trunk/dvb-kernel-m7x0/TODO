@@ -1,0 +1,45 @@
+2.6:
+[ ] module stuff
+- change MODULE_PARM() to module_param(), have a look at
+http://lwn.net/Articles/22197/ for details
+
+
+all:
+[ ] code audit
+- code audit for return values, ie. change all -1 or -2 return
+codes to real ERRNO values. [Hmm, is this done already?]
+
+saa7146:
+[ }
+- add support for more planar capture modes, so that mp1e/nvrec work out of the box
+- replace vmalloc_32() with pci_alloc_consistent() for dma memory stuff
+
+dvb:
+[ ] general dvb core stuff
+- 2.5.x: replace "video_usercopy()" (or dvb_usercopy()) with
+  generic_usercopy(), make a patch for lkml. note: done, awaiting
+  approval from lkml
+
+[ ] dvb_demux.c: Fix module removal if in use.
+- If rmmod of dvb-core is attempted while demux is in use, 
+  by e.g. szap, non-fatal oops will follow: 
+  Code;  f88c0823 <[dvb-core]dvb_demux_release+7/18>   <=====
+  0:   8b 50 50                  mov    0x50(%eax),%edx   <=====
+
+[ ] budget: Fix coexistence of several ttpci-budget-* modules.
+- After one or two rmmod/insmod of dvb-kernel modules suite
+  when there are 2 or more different ttpci-budget-* moules,
+  an oops is issued during the remmod:
+  Code;  f88f01a9 <[dvb-core]dvb_unregister_device+d/2c>   <=====
+  0:   89 50 04                  mov    %edx,0x4(%eax)   <=====
+
+[ ] dummy: Add support for dummy (loopback) DVB interface
+- People without DVB hardware should be able to load drivers and
+  participate in development.
+
+[ ] sw_demux: intelligent 0x47 SYNC.
+- each TS packet should start with 0x47 byte. If there is no 0x47 byte
+  at expected position, search for first 0x47 byte and check if previous 
+  3 188-byte offsets also contain 0x47. If yes, consider this new sync 
+  position. vpeirq has to be changed a bit and some changes in sw_demux
+  too.

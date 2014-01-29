@@ -1,0 +1,110 @@
+Changes for linuxtv-dvb-1.1.1:
+o fixed various timing issues in frontend code to speed up tuning
+o fixed pointer bug in ring buffer handling which potentially
+  affected common interface communication
+o fixed av7110 debi functions for ARM64, added better error checking
+o fixed software demux section filter bug which caused data loss
+  if there were two sections in one TS packet and the first section
+  was smaller than 18 bytes
+o frontend fixes for ves1820 and stv0299
+o added support for Fujitsu-Siemens Activy card 
+o various minor cleanup things
+
+
+Changes for linuxtv-dvb-1.1.0:
+
+  Too many to list them all ;-)
+  The most important things:
+
+o This release is from a different CVS tree (dvb-kernel), which is
+  structured like the Linux kernel source tree.
+o test/demo applications and utilies are unbundled and released
+  seperately
+o support for Linux 2.6.x; in fact, this release is a snapshot of
+  the stuff which is part of the 2.6.x kernel
+o added support for bt8xx based DVB cards and various USB things
+o completely new saa7146 driver, which is shared among DVB and
+  some analog TV cards
+o firmware binaries are not part of the release because of licensing
+  problems; see the README for information where to get
+
+
+============================================================================
+
+Changes for linuxtv-dvb-1.0.1:
+o DMA fix by Jon Burgess
+o fixed PCI latency setting in SAA7146 driver
+o added module parameter 'latency' to dvb-ttpci (saa7146_core.c).  Default value is 0 -> latency settings are *not* modified.
+o fixes frontend drivers
+o allow readonly-open of video device
+o many improvements and bugfixes in scan utility
+o new keymaps for av7110_loadkeys utility
+o improvements in test_stillpicture demo
+
+
+Changes for linuxtv-dvb-1.0.0:
+o added backport of Technisat Skystar2 (B2C2 FlexCopII) driver from dvb-kernel
+o new frontends: tda1004x, mt312
+o various frontend fixes for grundig_29504-401, grundig_29504-491, ves1820, alps_tdlb7,
+  stv0299
+o subtle changes to core frontend code to improve tuning
+o dvb_net stability fixes
+o AV7110 driver fixes: OSD memory handling; v4l overlay window fixes for Zapping
+  (http://zapping.sourceforge.net/); SW section filter fix (stale data);
+  MAC handling for dvb_net; link-level CI fixes (for VDR); fix DMX_GET_STC to
+  get the msb right; I2C bus speedup; fix grabbing in VIDEO_PALETTE_UYVY mode;
+  added module parameter 'latency' to change PCI latency; added IR remote
+  control keymaps for Medion MD 4688 (medion_088.rc5 is for address 0,
+  medion_155.rc5 for address 2)
+o many fixes and extenstions to apps/scan, including correct output in VDR format
+o revise "make install" for drivers using DVB_MOD_SUBDIR / DVB_MOD_DIR / DESTDIR
+
+
+Changes for linuxtv-dvb-1.0.0-pre3:
+o scan: considerable rewrite of section I/O using poll() instead of busy waiting
+o scan: reports PCR PID and service type (01: TV, 02: radio, >=03: other)
+  in "pids" output format
+o ves1820 patch by <jaakko@hyvatti.iki.fi> to distinguish different 
+  PLL/Synthesizer combinations used by Siemens and Technotrend on their 
+  DVB-C cards
+o scan: attempt to parse the freqeuency-list descriptor for DVB-T (untested),
+  set INVERSION_AUTO for tuning (was 0 == INVERSION_OFF before),
+  patch from Franck Arnaud (with modifications) to restore scan output
+  to be usable by szap
+o av7110: Sharing SDRAM between TT re-insertion and OSD to have more 
+  video buffer; firmware version 0x2615
+o dvb-core: fixed a deadlock in dvb_frontend.c
+o av7110_loadkeys: keymap for universal remote controls by PHILIPS, BAUR, 
+  INTERFUNK, MARANTZ, NECKERMANN, OTTO VERSAND, QUELLE, THORN, LIESENKOTTER, 
+  contributed by Poul Py
+o API change: added VIDEO_EVENT_SIZE_CHANGED and VIDEO_GET_SIZE ioctl
+  (both implemented for AV7110 based PCI cards)
+o API change: added SEC_VOLTAGE_OFF to turn off satellite frontend power
+  (implemented for alps_bsrv2 and stv0299 frontend drivers)
+o various improvements to frontend drivers and frontend-thread handling
+  (ves1820, grundig_29504-401, alps_tdlb7, stv0299)
+o disabled frontend zig-zap scan for DVB-C (improved tuning behaviour)
+o fixes and extensions for the "scan" program, including VDR output format
+o fixed A/V sync bug with link-layer-CI firmware (always set PCR PID)
+o fixes for IR remote control handling (key repeat, device addressing)
+o added DMX_GET_STC ioctl
+o added software section filter capability to av7110 driver
+  (module parameter "hw_sections")
+o correct ADAC volume settings (av7110 driver)
+o msp3400 volume control fixes for Siemens DVB-C cards
+o ...and some things we don't remember. Check the CVS changelogs for
+  details, cvsps is your friend... 
+
+
+Changes for linuxtv-dvb-1.0.0-pre2:
+o AV7110 firmware update; fixes OSD problems with VDR
+o fixes to poll() handling for audio and video device
+o stop video DMA (overlay) when v4l device is closed
+o fixes to ring buffer handling for CI link layer interface
+o added PCI ids for "Technotrend/Hauppauge Nexus PCI DVB-S"
+
+
+Changes for linuxtv-dvb-1.0.0-pre1 from siemens_dvb-0.9.4:
+o overhauled Linux DVB API, especially for the frontends
+o new device naming scheme
+o unfortunately too many to list them all...

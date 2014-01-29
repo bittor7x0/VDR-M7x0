@@ -1,0 +1,41 @@
+Troubleshooting - or the most common problems...
+------------------------------------------------
+
+If you encounter any troubles building and installing the driver you might
+want to check that the following prerequisites are satisfied:
+
+You must have the kernel sources for the kernel you are currently using
+installed, and symlinked to /lib/modules/$(KERNEL_VERSION)/build. This should
+be the default in proper installations with installed kernel source package.
+
+If you are in doubt please get a fresh and clean kernel source tarball from
+http://www.kernel.org/, unpack, configure, install and boot this one before
+building the DVB driver. 80% of the bug reports on the linux-dvb mailing list
+have been related to not properly installed kernel source trees in the past.
+
+For cards with MPEG decoder onboard make sure that CONFIG_VIDEO_DEV is enabled
+in the config of your running kernel. If you get unresolved symbols named
+video_XXXX when loading the driver then you missed this option.
+
+For some cards you need Input and Event Device Support enabled to get the
+IR receiver on the card running. Be sure to enable CONFIG_INPUT and
+CONFIG_INPUT_EVDEV if you get unresolved symbols named input_XXX.
+
+For bttv cards you need a recent bttv driver installed, this is either part
+of the kernel or available as standalone driver on Gerd Knorr's website
+(http://bytesex.org/). Also you need to explicitly enable i2c and i2c bitbanging
+support in your kernel for those cards.
+
+If you get a message 'insmod: no such device' while loading the driver - don't
+worry, this is normal, since you load the drivers for all possible cards some
+of the drivers complain because they don't find a matching card in your system.
+You can safely remove those ones from the list in the insmod scripts.
+
+If you are sure that all the issues above don't cause your problems you might
+want to ask on the linux-dvb mailing list for further assistance
+(http://www.linuxtv.org/mailinglists/).
+
+good luck,
+
+Holger
+
