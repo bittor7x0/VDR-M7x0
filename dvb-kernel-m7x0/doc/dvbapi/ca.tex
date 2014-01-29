@@ -1,0 +1,129 @@
+\devsec{DVB CA Device}
+
+The DVB CA device controls the conditional access hardware.
+It can be accessed through \texttt{/dev/dvb/adapter0/ca0}.
+Data types and and ioctl definitions can be accessed by including
+\texttt{linux/dvb/ca.h} in your application.
+
+
+\devsubsec{CA Data Types}
+
+\devsubsubsec{ca\_slot\_info\_t}
+\label{caslotinfo}
+
+\begin{verbatim}
+/* slot interface types and info */
+
+typedef struct ca_slot_info_s {
+        int num;               /* slot number */
+
+        int type;           /* CA interface this slot supports */
+#define CA_CI            1  /* CI high level interface */
+#define CA_CI_LINK       2  /* CI link layer level interface */
+#define CA_CI_PHYS       4  /* CI physical layer level interface */
+#define CA_SC          128  /* simple smart card interface */
+
+        unsigned int flags;
+#define CA_CI_MODULE_PRESENT 1 /* module (or card) inserted */
+#define CA_CI_MODULE_READY   2
+} ca_slot_info_t;
+\end{verbatim}
+
+\devsubsubsec{ca\_descr\_info\_t}
+\label{cadescrinfo}
+
+\begin{verbatim}
+typedef struct ca_descr_info_s {
+        unsigned int num;  /* number of available descramblers (keys) */ 
+        unsigned int type; /* type of supported scrambling system */
+#define CA_ECD           1
+#define CA_NDS           2
+#define CA_DSS           4
+} ca_descr_info_t;
+\end{verbatim}
+
+\devsubsubsec{ca\_cap\_t}
+\label{cacap}
+
+\begin{verbatim}
+typedef struct ca_cap_s {
+        unsigned int slot_num;  /* total number of CA card and module slots */
+        unsigned int slot_type; /* OR of all supported types */
+        unsigned int descr_num; /* total number of descrambler slots (keys) */
+        unsigned int descr_type;/* OR of all supported types */
+} ca_cap_t;
+\end{verbatim}
+
+
+\devsubsubsec{ca\_msg\_t}
+\label{camsg}
+
+\begin{verbatim}
+/* a message to/from a CI-CAM */
+typedef struct ca_msg_s {   
+        unsigned int index;         
+        unsigned int type;
+        unsigned int length;
+        unsigned char msg[256];
+} ca_msg_t;
+\end{verbatim}
+
+
+\devsubsubsec{ca\_descr\_t}
+\label{cadescr}
+
+\begin{verbatim}
+typedef struct ca_descr_s {
+        unsigned int index;    
+        unsigned int parity;
+        unsigned char cw[8];
+} ca_descr_t;
+\end{verbatim}
+
+\clearpage
+
+\devsubsec{CA Function Calls}
+
+\function{open()}{
+  int open(const char *deviceName, int flags);}{
+  This system call opens a named ca device (e.g. /dev/ost/ca) 
+  for subsequent use.
+  
+  When an open() call has succeeded, the device will be ready for use.
+  The significance of blocking or non-blocking mode is described in 
+  the documentation for functions where there is a difference. 
+  It does not affect the semantics of the open() call itself. 
+  A device opened in blocking mode can later be put into non-blocking mode 
+  (and vice versa) using the F\_SETFL command of the fcntl system
+  call.  
+  This is a standard system call, documented in the Linux manual 
+  page for fcntl.
+  Only one user can open the CA Device in O\_RDWR mode. All other attempts to
+  open the device in this mode will fail, and an error code will be returned.
+  }{
+  const char *deviceName & Name of specific video device.\\
+  int flags & A bit-wise OR of the following flags:\\
+            & \hspace{1em} O\_RDONLY read-only access\\
+            & \hspace{1em} O\_RDWR read/write access\\
+            & \hspace{1em} O\_NONBLOCK open in non-blocking mode \\
+            & \hspace{1em} (blocking mode is the default)\\
+  }{
+  ENODEV    & Device driver not loaded/available.\\
+  EINTERNAL & Internal error.\\
+  EBUSY     & Device or resource busy.\\
+  EINVAL    & Invalid argument.\\
+}
+
+\function{close()}{
+  int close(int fd);}{
+  This system call closes a previously opened audio device.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  }{
+  EBADF & fd is not a valid open file descriptor.\\
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "dvbapi"
+%%% End: 

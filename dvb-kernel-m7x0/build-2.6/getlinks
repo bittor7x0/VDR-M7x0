@@ -1,0 +1,39 @@
+#!/bin/sh
+
+BASE='..'
+
+echo "getting links from kernel-cvs driver"
+
+make clean
+
+for x in `find $BASE/linux/drivers/media/dvb/ttpci/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/ttusb-budget/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/ttusb-dec/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/bt8xx/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/b2c2/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/dvb-core/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/frontends -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/common -name "saa*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done

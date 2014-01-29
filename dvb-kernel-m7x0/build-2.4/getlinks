@@ -1,0 +1,59 @@
+#!/bin/sh
+
+BASE='..'
+
+echo "getting links from kernel-cvs driver"
+
+
+KERNELRELEASE=`cat .version 2>/dev/null || uname -r`
+make clean
+echo "$KERNELRELEASE" > .version
+
+mkdir -p include/linux
+ln -vs /lib/modules/$KERNELRELEASE/build/include/linux/videodev.h include/linux/videodev.h
+
+if [ ! -f /lib/modules/$KERNELRELEASE/build/include/linux/videodev2.h ] ; then
+	ln -vs `pwd`/videodev2.h include/linux/videodev2.h
+else
+	ln -vs /lib/modules/$KERNELRELEASE/build/include/linux/videodev2.h include/linux/videodev2.h
+fi
+
+for x in `find $BASE/linux/include/media/ -name "*.[hc]"` ; do
+	ln -vs ../../$x include/media/`basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/ttpci/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/ttusb-budget/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/ttusb-dec/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/bt8xx/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/b2c2/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/cinergyT2/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/dvb-core/ -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/dvb/frontends -name "*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done
+
+for x in `find $BASE/linux/drivers/media/common -name "saa*.[hc]"` ; do
+	ln -vs $x `basename $x`
+done

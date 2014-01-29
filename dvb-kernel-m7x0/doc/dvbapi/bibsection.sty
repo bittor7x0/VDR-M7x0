@@ -1,0 +1,29 @@
+\def\thebibliography#1{\chapter*{\bibname\@mkboth
+  {\uppercase{\bibname}}{\uppercase{\bibname}}}
+  \setcounter{chapter}{0}
+  \setcounter{section}{0}
+  \def\thechapter{Bib}
+  \def\thesection{\Alph{section}}
+  \edef\biblab{#1}
+  \addcontentsline{toc}{chapter}{\bibname}
+  }
+
+\def\bibtitle#1#2{\expandafter\def\csname bibtitle#1\endcsname{
+    \bibsection{#2}} }
+
+\def\bibsection#1{\section{#1}
+ \begin{list}
+    {\@biblabel{\arabic{enumiv}}}{\settowidth\labelwidth{\@biblabel{\biblab}}%
+    \leftmargin\labelwidth
+    \advance\leftmargin\labelsep
+    \usecounter{enumiv}%
+    \let\p@enumiv\@empty
+    \def\theenumiv{\arabic{enumiv}}}%
+    \def\newblock{\hskip .11em plus.33em minus.07em}%
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=\@m}
+
+\def\endbibsection{\end{list}}
+
+\def\endthebibliography{\endbibsection}
+

@@ -1,0 +1,423 @@
+\devsec{DVB Demux Device}
+
+The DVB demux device controls the filters of the DVB hardware/software.
+It can be accessed through \texttt{/dev/adapter0/demux0}.
+Data types and and ioctl definitions can be accessed by including
+\texttt{linux/dvb/dmx.h} in your application.
+
+\devsubsec{Demux Data Types}
+
+
+\devsubsubsec{dmx\_output\_t}
+\label{dmxoutput}
+
+\begin{verbatim}
+typedef enum
+{
+        DMX_OUT_DECODER,
+        DMX_OUT_TAP,
+        DMX_OUT_TS_TAP
+} dmx_output_t;
+\end{verbatim}
+
+\noindent\texttt{DMX\_OUT\_TAP} delivers the stream output to the demux device
+on which the ioctl is called.
+
+\noindent\texttt{DMX\_OUT\_TS\_TAP} routes output to the logical DVR device
+\texttt{/dev/dvb/adapter0/dvr0}, which delivers a TS multiplexed from
+all filters for which \texttt{DMX\_OUT\_TS\_TAP} was specified.
+
+
+\devsubsubsec{dmx\_input\_t}
+\label{dmxinput}
+
+\begin{verbatim}
+typedef enum
+{
+        DMX_IN_FRONTEND,
+        DMX_IN_DVR
+} dmx_input_t;
+\end{verbatim}
+
+
+\devsubsubsec{dmx\_pes\_type\_t}
+\label{dmxpestype}
+
+\begin{verbatim}
+typedef enum
+{
+        DMX_PES_AUDIO,
+        DMX_PES_VIDEO,
+        DMX_PES_TELETEXT,
+        DMX_PES_SUBTITLE,
+        DMX_PES_PCR,
+        DMX_PES_OTHER
+} dmx_pes_type_t;
+\end{verbatim}
+
+
+\devsubsubsec{dmx\_event\_t}
+\label{dmxeventt}
+
+\begin{verbatim}
+typedef enum
+{
+        DMX_SCRAMBLING_EV,
+        DMX_FRONTEND_EV
+} dmx_event_t;
+\end{verbatim}
+
+
+\devsubsubsec{dmx\_scrambling\_status\_t}
+\label{dmxscramblingstatus}
+
+\begin{verbatim}
+typedef enum
+{
+        DMX_SCRAMBLING_OFF,
+        DMX_SCRAMBLING_ON
+} dmx_scrambling_status_t;
+\end{verbatim}
+
+
+\devsubsubsec{struct dmx\_filter}
+\label{dmxfilter}
+
+\begin{verbatim}
+typedef struct dmx_filter
+{
+        uint8_t         filter[DMX_FILTER_SIZE];
+        uint8_t         mask[DMX_FILTER_SIZE];
+} dmx_filter_t;
+\end{verbatim}
+
+
+\devsubsubsec{struct dmx\_sct\_filter\_params}
+\label{dmxsctfilterparams}
+
+\begin{verbatim}
+struct dmx_sct_filter_params
+{
+        uint16_t            pid;
+        dmx_filter_t        filter;
+        uint32_t            timeout;
+        uint32_t            flags;
+#define DMX_CHECK_CRC       1
+#define DMX_ONESHOT         2
+#define DMX_IMMEDIATE_START 4
+};
+\end{verbatim}
+
+
+\devsubsubsec{struct dmx\_pes\_filter\_params}
+\label{dmxpesfilterparams}
+
+\begin{verbatim}
+struct dmx_pes_filter_params
+{
+        uint16_t            pid;
+        dmx_input_t         input;
+        dmx_output_t        output;
+        dmx_pes_type_t      pes_type;
+        uint32_t            flags;
+};
+\end{verbatim}
+
+
+\devsubsubsec{struct dmx\_event}
+\label{dmxevent}
+
+\begin{verbatim}
+struct dmx_event
+{
+        dmx_event_t          event;
+        time_t               timeStamp;
+        union
+        {
+                dmx_scrambling_status_t scrambling;
+        } u;
+};
+\end{verbatim}
+
+\devsubsubsec{struct dmx\_stc}
+\label{dmxstc}
+
+\begin{verbatim}
+struct dmx_stc {
+        unsigned int num;       /* input : which STC? 0..N */
+        unsigned int base;      /* output: divisor for stc to get 90 kHz clock */
+        uint64_t stc;           /* output: stc in 'base'*90 kHz units */
+};
+\end{verbatim}
+
+\clearpage
+
+\devsubsec{Demux Function Calls}
+\function{open()}{
+  int open(const char *deviceName, int flags);}{
+  This system call, used with a device name of /dev/dvb/adapter0/demux0,
+  allocates a new filter 
+  and returns a handle which can be used for subsequent control of that 
+  filter. This call has to be made for each filter to be used, i.e. every
+  returned file descriptor is a reference to a single filter.
+  /dev/dvb/adapter0/dvr0 is a logical device to be used for retrieving Transport 
+  Streams for digital video recording. When reading from  
+  this device a transport stream containing the packets from all PES
+  filters set in the corresponding demux device (/dev/dvb/adapter0/demux0) 
+  having the output set to DMX\_OUT\_TS\_TAP.  A recorded Transport Stream 
+  is replayed by writing to this device.
+%  This device can only be opened in read-write mode.
+
+  The significance of blocking or non-blocking mode is described in the
+  documentation for functions where there is a difference. It does not 
+  affect the semantics of the open() call itself. A device opened in 
+  blocking mode can later be put into non-blocking mode
+  (and vice versa) using the F\_SETFL command of the fcntl system call.
+  }{
+  const char *deviceName & Name of demux device.\\
+  int flags & A bit-wise OR of the following flags:\\
+            & \hspace{1em} O\_RDWR read/write access\\
+            & \hspace{1em} O\_NONBLOCK open in non-blocking mode \\
+            & \hspace{1em} (blocking mode is the default)\\
+  }{
+  ENODEV    & Device driver not loaded/available.\\
+  EINVAL    & Invalid argument.\\
+  EMFILE    & ``Too many open files'', i.e. no more filters available.\\
+  ENOMEM    & The driver failed to allocate enough memory.\\
+}
+
+\function{close()}{
+  int close(int fd);}{
+  This system call deactivates and deallocates a filter that was previously
+  allocated via the open() call.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  }{
+  EBADF & fd is not a valid open file descriptor.\\
+}
+
+\function{read()}{
+  size\_t read(int fd, void *buf, size\_t count);
+  }{
+  This system call returns filtered data, which might be section or PES 
+  data. The filtered data is transferred from the driver's internal circular
+  buffer to buf. The maximum amount of data to be transferred is implied by
+  count.\\
+  When returning section data the driver always tries to return a complete 
+  single section (even though buf would provide buffer space for more data).
+  If the size of the buffer is smaller than the section as much as possible
+  will be returned, and the remaining data will be provided in subsequent 
+  calls.\\
+  The size of the internal buffer is 2 * 4096 bytes (the size of two maximum
+  sized sections) by default. The size of this buffer may be changed by 
+  using the DMX\_SET\_BUFFER\_SIZE function. If the buffer is not large enough,
+  or if the read operations are not performed fast enough, this may result 
+  in a buffer overflow error. In this case EOVERFLOW will be returned,
+  and the circular buffer will be emptied.
+  This call is blocking if there is no data to return, i.e. the process 
+  will be put to sleep waiting for data, unless the O\_NONBLOCK flag is 
+  specified.\\
+  Note that in order to be able to read, the filtering process has to be
+  started by defining either a section or a PES filter by means of the 
+  ioctl functions, and then starting the filtering process via the DMX\_START
+  ioctl function or by setting the DMX\_IMMEDIATE\_START flag.
+  If the reading is done from a logical DVR demux device, the data will 
+  constitute a Transport Stream including the packets from all PES filters
+  in the corresponding demux device /dev/dvb/adapter0/demux0 having the output set 
+  to DMX\_OUT\_TS\_TAP.
+  }{
+  int fd        & File descriptor returned by a previous call to open().\\
+  void *buf     & Pointer to the buffer to be used for returned filtered data.\\
+  size\_t count  & Size of buf.\\
+  }{
+  EWOULDBLOCK   & No data to return and O\_NONBLOCK was specified.\\
+  EBADF         & fd is not a valid open file descriptor.\\
+  ECRC          & Last section had a CRC error - no data returned. 
+                  The buffer is flushed.\\
+  EOVERFLOW & \\
+& The filtered data was not read from the buffer in
+                    due time, resulting in non-read data being lost.
+                    The buffer is flushed.\\
+  ETIMEDOUT       & The section was not loaded within the stated
+                    timeout period. See ioctl DMX\_SET\_FILTER for
+                    how to set a timeout.\\
+  EFAULT          & The driver failed to write to the callers buffer
+                    due to an invalid *buf pointer.\\
+}
+
+\function{write()}{
+  ssize\_t write(int fd, const void *buf, size\_t count);
+  }{
+  This system call is only provided by the logical device /dev/dvb/adapter0/dvr0, 
+  associated with the physical demux device that provides the actual 
+  DVR  functionality.  It is used for replay of a digitally recorded 
+  Transport Stream. Matching filters have to be defined in the 
+  corresponding physical demux device, /dev/dvb/adapter0/demux0.
+  The amount of data to be transferred is implied by count.
+  }{
+  int fd        & File descriptor returned by a previous call to open().\\
+  void *buf     & Pointer to the buffer containing the Transport Stream.\\
+  size\_t count & Size of buf.\\
+  }{
+  EWOULDBLOCK   & No data was written. This might happen if
+                  O\_NONBLOCK was specified and there is no more
+                  buffer space available (if O\_NONBLOCK is not
+                  specified the function will block until buffer 
+                  space is available).\\
+  EBUSY         & This error code indicates that there are
+                  conflicting requests. The corresponding demux
+                  device is setup to receive data from the front-
+                  end. Make sure that these filters are stopped
+                  and that the filters with input set to DMX\_IN\_DVR
+                  are started.\\
+  EBADF         & fd is not a valid open file descriptor.\\
+}
+
+\ifunction{DMX\_START}{
+  int ioctl( int fd, int request = DMX\_START);
+  }{
+  This ioctl call is used to start the actual filtering operation 
+  defined via the ioctl calls DMX\_SET\_FILTER or DMX\_SET\_PES\_FILTER.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals DMX\_START for this command.\\
+  }{
+  EBADF  & fd is not a valid file descriptor.\\
+  EINVAL & Invalid argument, i.e. no filtering parameters
+           provided via the DMX\_SET\_FILTER or
+           DMX\_SET\_PES\_FILTER functions.\\
+  EBUSY  & This error code indicates that there are
+           conflicting requests. There are active filters
+           filtering data from another input source. Make
+           sure that these filters are stopped before starting
+           this filter.\\
+}
+
+\ifunction{DMX\_STOP}{
+  int ioctl( int fd, int request = DMX\_STOP);
+  }{
+  This  ioctl call is used to stop the actual filtering operation defined 
+  via the ioctl  calls DMX\_SET\_FILTER or DMX\_SET\_PES\_FILTER and started via
+  the DMX\_START command.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals DMX\_STOP for this command.\\
+  }{
+  EBADF  & fd is not a valid file descriptor.\\
+}
+
+\ifunction{DMX\_SET\_FILTER}{
+  int ioctl( int fd, int request = DMX\_SET\_FILTER, struct dmx\_sct\_filter\_params *params);
+  }{
+  This ioctl call sets up a filter according to the filter and mask 
+  parameters provided. A timeout may be defined stating number of seconds 
+  to wait for a section to be loaded. A value of 0 means that no timeout 
+  should be applied. Finally there is a flag field where it is possible to
+  state whether a section should be CRC-checked, whether the filter should
+  be a "one-shot" filter, i.e. if the filtering operation should be stopped
+  after the first section is received, and whether the filtering operation 
+  should be started immediately (without waiting for a DMX\_START ioctl call).
+  If a filter was previously set-up, this filter will be canceled, and the
+  receive buffer will be flushed.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals DMX\_SET\_FILTER for this command.\\
+  struct dmx\_sct\_filter\_params *params
+  & Pointer to structure containing filter parameters.\\
+  }{
+  EBADF  & fd is not a valid file descriptor.\\
+  EINVAL & Invalid argument.\\
+}
+
+\ifunction{DMX\_SET\_PES\_FILTER}{
+  int ioctl( int fd, int request = DMX\_SET\_PES\_FILTER, 
+  struct dmx\_pes\_filter\_params *params);
+  }{
+  This ioctl call sets up a PES filter according to the parameters provided.
+  By a PES filter is meant a filter that is based just on the packet 
+  identifier (PID), i.e. no PES header or payload filtering capability is 
+  supported.\\
+  The transport stream destination for the filtered output may be set. Also
+  the PES type may be stated in order to be able to e.g. direct a video 
+  stream directly to the video decoder. Finally there is a flag field where
+  it is possible to state whether the filtering operation should be started
+  immediately (without waiting for a DMX\_START ioctl call).
+  If a filter was previously set-up, this filter will be cancelled, and the
+  receive buffer will be flushed.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals DMX\_SET\_PES\_FILTER for this command.\\
+  struct dmx\_pes\_filter\_params *params
+  & Pointer to structure containing filter parameters.\\
+  }{
+  EBADF  & fd is not a valid file descriptor.\\
+  EINVAL & Invalid argument.\\
+  EBUSY  & This error code indicates that there are
+           conflicting requests. There are active filters
+           filtering data from another input source. Make
+           sure that these filters are stopped before starting
+           this filter.\\
+}
+
+\ifunction{DMX\_SET\_BUFFER\_SIZE}{
+  int ioctl( int fd, int request = DMX\_SET\_BUFFER\_SIZE, unsigned long size);
+  }{
+  This ioctl call is used to set the size of the circular buffer used
+  for filtered data. The default size is two maximum sized sections, i.e. 
+  if this function is not called a buffer size of 2 * 4096 bytes will be
+  used.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals DMX\_SET\_BUFFER\_SIZE for this command.\\
+  unsigned long size & Size of circular buffer.\\
+  }{
+  EBADF  & fd is not a valid file descriptor.\\
+  ENOMEM & The driver was not able to allocate a buffer of the requested size.\\
+}
+
+\ifunction{DMX\_GET\_EVENT}{
+  int ioctl( int fd, int request = DMX\_GET\_EVENT, struct dmx\_event *ev);
+  }{
+  This ioctl call returns an event if available. If an event is not 
+  available, the behavior depends on whether the device is in blocking or 
+  non-blocking mode.  In the latter case, the call fails immediately with
+  errno set to EWOULDBLOCK. In the former case, the call blocks until an
+  event becomes available.\\
+  The standard Linux poll() and/or select() system calls can be used with
+  the device file descriptor to watch for new events.  For select(), the 
+  file descriptor should be included in the exceptfds argument, and for 
+  poll(), POLLPRI should be specified as the wake-up condition.
+  Only the latest event for each filter is saved.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals DMX\_GET\_EVENT for this command.\\
+  struct dmx\_event *ev & Pointer to the location where the event is to be stored.\\
+  }{
+  EBADF  & fd is not a valid file descriptor.\\
+  EFAULT & ev points to an invalid address.\\
+  EWOULDBLOCK & There is no event pending, and the device is in non-blocking mode.\\
+}
+
+\ifunction{DMX\_GET\_STC}{
+  int ioctl( int fd, int request = DMX\_GET\_STC, struct dmx\_stc *stc);
+  }{
+  This ioctl call returns the current value of the system time counter
+  (which is driven by a PES filter of type DMX\_PES\_PCR). Some hardware
+  supports more than one STC, so you must specify which one by setting
+  the num field of stc before the ioctl (range 0...n). The result is returned in form
+  of a ratio with a 64 bit numerator and a 32 bit denominator, so the
+  real 90kHz STC value is \begin{ttfamily}stc->stc / stc->base\end{ttfamily}.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals DMX\_GET\_STC for this command.\\
+  struct dmx\_stc *stc & Pointer to the location where the stc is to be stored.\\
+  }{
+  EBADF  & fd is not a valid file descriptor.\\
+  EFAULT & stc points to an invalid address.\\
+  EINVAL & Invalid stc number.\\
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "dvbapi"
+%%% End: 

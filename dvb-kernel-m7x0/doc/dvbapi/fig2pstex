@@ -1,0 +1,6 @@
+#!/bin/sh
+f=`basename $1 .fig`
+fig2dev -L pstex $f.fig $f.ps
+fig2dev -L pstex_t -p $f.ps $f.fig $f.pst2
+./getbb $f.pst2 $f.ps > $f.pst
+rm $f.pst2

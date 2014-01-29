@@ -1,0 +1,88 @@
+Instructions for building the "new" driver under 2.4.x:
+-------------------------------------------------------
+
+(This won't work with *2.6.x* or a kernel version < 2.4.23, so don't
+even try...)
+
+0. Introduction
+===============
+
+All saa7146 and dvb files are shared with the 2.6.x "dvb-kernel" tree, so
+the behaviour should be exactly the same on the DVB side.
+
+In contrast to the "DVB" driver, the "dvb-kernel" driver, however, supports
+Video4Linux-2 for the video back end. Due to this, old Video4Linux-1 
+applications will run through a compatibility layer, which does not always
+work as expected.
+
+The newest "xawtv" version will always work with this driver.
+
+Since kernel 2.4.19, the Video4Linux module "videodev.o" allows you to
+register devices with a new mechanism. Due to this, the necessary
+Video4Linux-2 modules can be compiled external and loaded as modules at a
+later time. These modules are:
+- v4l1-compat.o : helper module to translate v4l1 to v4l2
+- v4l2-common.o : common functions for all v4l2 drivers
+- video-buf.o   : common functions for capturing
+
+So it's necessary that you compile "Video4Linux" support (in the character
+devices section) either as a module or statically into the kernel. 
+
+1. Kernels < 2.4.19
+===================
+
+The main "videodev.c" source from a 2.4.21 kernel is included in this
+directory, but not compiled and installed by default. So if you have a
+kernel < 2.4.19, edit the "Makefile" to compile this module as well.
+
+2. bt878 based cards
+====================
+
+Have a look at ../README.bt8xx on how to get a bt8x8 based card to run.
+If you don't have such a card, you can safely ignore the messages about
+unresolved symbols that might appear.
+
+3. Build process
+================
+
+The build process uses a local version of the Video4Linux-2  header file
+"videodev2.h", that's needed if you want to compile real Video4Linux-2
+applications. 
+
+Old v4l1 applicatios *should* work without recompiling, through the
+compatiblity layer. 
+
+0) If you plan to use a DVB card with onboard MPEG decoder, you need
+to download the necessary firmware from the LinuxTV.org DVB download
+page and place it inside the "build-2.4" directory. The most recent
+version is "dvb-ttpci-01.fw".
+
+http://www.linuxtv.org/download/dvb/dvb-ttpci-01.fw.gz
+
+1) make clean && ./getlinks && make 
+
+"getlinks" will create the necessary links to the "dvb-kernel" tree.
+
+2) To compile the drivers locally *without* installing (and probably
+   overwriting any old driver) do:
+      make
+      ./insmod.sh load
+
+3) For your convenience, a script called "insmod.sh" is available
+to load and unload the driver easily.
+
+Make sure the appropriate frontend module for your hardware is loaded in
+"insmod.sh"
+
+4) Try your favourite programs, the behaviour should be exactly the same.
+Good luck!
+
+4. In case of problems
+======================
+
+If you have problems or questions:
+
+1) Look at the ../TODO file. If the problem is mentionend there,
+it will be fixed asap.
+
+2) Ask on the linux-dvb mailing list.

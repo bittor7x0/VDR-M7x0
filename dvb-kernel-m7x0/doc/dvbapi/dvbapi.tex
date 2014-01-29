@@ -1,0 +1,170 @@
+\documentclass[a4paper,10pt]{book}
+\usepackage[dvips,colorlinks=true]{hyperref}
+
+\usepackage{times}
+
+%\usepackage[hang]{caption}
+\usepackage{fancyheadings}
+%\usepackage{lucidabr}
+%\usepackage{fancybox}
+\usepackage{array}
+\usepackage{graphicx}
+%\usepackage{latexsym}
+%\usepackage{pstricks,pst-node,pst-tree}
+%\usepackage{verbatim}
+%\usepackage{rotating}
+%\usepackage{pdftex}
+%\usepackage{color}
+%\usepackage{subfigure}
+%\usepackage{wrapfig}
+
+\newcommand{\devsec}[1]{\chapter{#1}}
+\newcommand{\devsubsec}[1]{\section{#1}}
+\newcommand{\devsubsubsec}[1]{\subsection{#1}}
+\newcommand{\function}[5]{
+  \subsection{#1}
+
+  \noindent DESCRIPTION 
+  \medskip
+  
+  \begin{tabular}[h]{p{11cm}}
+    #3
+  \end{tabular}
+  
+  \medskip
+  \noindent SYNOPSIS 
+  \medskip
+
+  \begin{tabular}[h]{p{11cm}}
+    {\tt #2}
+  \end{tabular}
+    
+  %\item[] 
+\medskip
+\noindent PARAMETERS 
+\medskip
+    
+    \begin{tabular}[h]{p{3cm}p{8cm}}
+      #4
+    \end{tabular}
+    
+  %\item[] 
+\medskip
+\noindent ERRORS
+\medskip
+    
+    \begin{tabular}[h]{p{3cm}p{8cm}}
+      #5
+    \end{tabular}
+    
+  %\end{itemize}
+  
+\medskip
+}
+\def\ifunction#1#2#3#4#5{\function{#1\index{#1}}{#2}{#3}{#4}{#5}}
+
+\newcommand{\kfunction}[5]{
+  \subsection{#1}
+  \noindent DESCRIPTION 
+  \medskip
+
+  \begin{tabular}[h]{p{11cm}}
+    #3
+  \end{tabular}
+  
+  \medskip
+  \noindent SYNOPSIS 
+  \medskip
+
+  \begin{tabular}[h]{p{11cm}}
+    {\tt #2}
+  \end{tabular}
+    
+  %\item[] 
+\medskip
+\noindent PARAMETERS 
+\medskip
+    
+    \begin{tabular}[h]{p{3cm}p{8cm}}
+      #4
+    \end{tabular}
+    
+  %\item[] 
+\medskip
+\noindent RETURNS
+\medskip
+    
+    \begin{tabular}[h]{p{3cm}p{8cm}}
+      #5
+    \end{tabular}
+    
+  %\end{itemize}
+  
+\medskip
+}
+\def\kifunction#1#2#3#4#5{\kfunction{#1\index{#1}}{#2}{#3}{#4}{#5}}
+
+
+%\usepackage{index}
+%\makeindex
+
+
+\begin{document}
+
+\input{title.tex}
+
+\cleardoublepage
+
+\pagenumbering{roman}
+\pagestyle{fancyplain}
+
+
+\tableofcontents
+%\listoffigures
+%\listoftables
+
+\cleardoublepage
+
+\pagenumbering{arabic}
+
+\renewcommand{\chaptermark}[1]{\markboth{\uppercase{#1}}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}{}}
+\lhead[\fancyplain{}{\bfseries \thepage}]{\bfseries \rightmark}
+\rhead[\fancyplain{}{\bfseries \leftmark}]{\bfseries \thepage}
+%\cfoot{\copyright\ 2002, 2003 Convergence GmbH}
+
+\input{intro.tex}
+
+\input{devices.tex}
+
+\input{examples.tex}
+
+\cleardoublepage
+
+\appendix
+
+\cleardoublepage
+
+\input{fdl.tex}
+
+\cleardoublepage
+
+\thispagestyle{plain}\chaptermark{Bibliography}
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{bibsec}
+\bibliography{main}
+
+\cleardoublepage
+
+\thispagestyle{plain}\chaptermark{Subject Index}
+\addcontentsline{toc}{chapter}{Subject Index}
+%\printindex
+
+\cleardoublepage
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

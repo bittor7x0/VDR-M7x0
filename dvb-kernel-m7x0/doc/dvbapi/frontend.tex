@@ -1,0 +1,674 @@
+\devsec{DVB Frontend API}
+
+The DVB frontend device controls the tuner and DVB demodulator hardware.
+It can be accessed through \texttt{/dev/dvb/adapter0/frontend0}.
+Data types and and ioctl definitions can be accessed by including
+\texttt{linux/dvb/frontend.h} in your application.
+
+DVB frontends come in three varieties: DVB-S (satellite), DVB-C (cable)
+and DVB-T (terrestrial). Transmission via the internet (DVB-IP) is
+not yet handled by this API but a future extension is possible.
+For DVB-S the frontend device also supports satellite equipment control
+(SEC) via DiSEqC and V-SEC protocols. The DiSEqC (digital SEC) specification
+is available from Eutelsat \texttt{http://www.eutelsat.org/}.
+
+Note that the DVB API may also be used for MPEG decoder-only PCI cards,
+in which case there exists no frontend device.
+
+\devsubsec{Frontend Data Types}
+
+\devsubsubsec{frontend type}
+\label{frontendtype}
+
+For historical reasons frontend types are named after the
+type of modulation used in transmission.
+
+\begin{verbatim}
+typedef enum fe_type {
+        FE_QPSK,   /* DVB-S */
+        FE_QAM,    /* DVB-C */
+        FE_OFDM    /* DVB-T */
+} fe_type_t;
+\end{verbatim}
+
+\devsubsubsec{frontend capabilities}
+\label{frontendcaps}
+
+Capabilities describe what a frontend can do. Some capabilities
+can only be supported for a specific frontend type.
+
+\begin{verbatim}
+typedef enum fe_caps {
+        FE_IS_STUPID                  = 0,
+        FE_CAN_INVERSION_AUTO         = 0x1,
+        FE_CAN_FEC_1_2                = 0x2,
+        FE_CAN_FEC_2_3                = 0x4,
+        FE_CAN_FEC_3_4                = 0x8,
+        FE_CAN_FEC_4_5                = 0x10,
+        FE_CAN_FEC_5_6                = 0x20,
+        FE_CAN_FEC_6_7                = 0x40,
+        FE_CAN_FEC_7_8                = 0x80,
+        FE_CAN_FEC_8_9                = 0x100,
+        FE_CAN_FEC_AUTO               = 0x200,
+        FE_CAN_QPSK                   = 0x400,
+        FE_CAN_QAM_16                 = 0x800,
+        FE_CAN_QAM_32                 = 0x1000,
+        FE_CAN_QAM_64                 = 0x2000,
+        FE_CAN_QAM_128                = 0x4000,
+        FE_CAN_QAM_256                = 0x8000,
+        FE_CAN_QAM_AUTO               = 0x10000,
+        FE_CAN_TRANSMISSION_MODE_AUTO = 0x20000,
+        FE_CAN_BANDWIDTH_AUTO         = 0x40000,
+        FE_CAN_GUARD_INTERVAL_AUTO    = 0x80000,
+        FE_CAN_HIERARCHY_AUTO         = 0x100000,
+        FE_CAN_MUTE_TS                = 0x80000000,
+        FE_CAN_CLEAN_SETUP            = 0x40000000
+} fe_caps_t;
+\end{verbatim}
+
+\devsubsubsec{frontend information}
+\label{frontendinfo}
+
+Information about the frontend ca be queried with
+FE\_GET\_INFO (\ref{fegetinfo}).
+
+\begin{verbatim}
+struct dvb_frontend_info {
+        char       name[128];
+        fe_type_t  type;
+        uint32_t   frequency_min;
+        uint32_t   frequency_max;
+        uint32_t   frequency_stepsize;
+        uint32_t   frequency_tolerance;
+        uint32_t   symbol_rate_min;
+        uint32_t   symbol_rate_max;
+        uint32_t   symbol_rate_tolerance;     /* ppm */
+        uint32_t   notifier_delay;            /* ms */
+        fe_caps_t  caps;
+};
+\end{verbatim}
+
+\devsubsubsec{diseqc master command}
+\label{diseqcmastercmd}
+
+A message sent from the frontend to DiSEqC capable equipment.
+
+\begin{verbatim}
+struct dvb_diseqc_master_cmd {
+        uint8_t msg [6]; /*  { framing, address, command, data[3] } */
+        uint8_t msg_len; /*  valid values are 3...6  */
+};
+\end{verbatim}
+
+\devsubsubsec{diseqc slave reply}
+\label{diseqcslavereply}
+
+A reply to the frontend from DiSEqC 2.0 capable equipment.
+
+\begin{verbatim}
+struct dvb_diseqc_slave_reply {
+        uint8_t msg [4]; /*  { framing, data [3] } */
+        uint8_t msg_len; /*  valid values are 0...4, 0 means no msg  */
+        int     timeout; /*  return from ioctl after timeout ms with */
+};                       /*  errorcode when no message was received  */
+\end{verbatim}
+
+\devsubsubsec{SEC voltage}
+\label{secvoltage}
+
+The voltage is usually used with non-DiSEqC capable LNBs to
+switch the polarzation (horizontal/vertical). 
+When using DiSEqC epuipment this voltage has to be switched consistently 
+to the DiSEqC commands as described in the DiSEqC spec.
+
+\begin{verbatim}
+typedef enum fe_sec_voltage {
+        SEC_VOLTAGE_13,
+        SEC_VOLTAGE_18
+} fe_sec_voltage_t;
+\end{verbatim}
+
+\devsubsubsec{SEC continuous tone}
+\label{sectone}
+
+The continous 22KHz tone is usually used with non-DiSEqC capable LNBs to
+switch the high/low band of a dual-band LNB.
+When using DiSEqC epuipment this voltage has to be switched consistently 
+to the DiSEqC commands as described in the DiSEqC spec.
+
+\begin{verbatim}
+typedef enum fe_sec_tone_mode {
+        SEC_TONE_ON,
+        SEC_TONE_OFF
+} fe_sec_tone_mode_t;
+\end{verbatim}
+
+\devsubsubsec{SEC tone burst}
+\label{sectoneburst}
+
+The 22KHz tone burst is usually used with non-DiSEqC capable
+switches to select between two connected LNBs/satellites.
+When using DiSEqC epuipment this voltage has to be switched consistently 
+to the DiSEqC commands as described in the DiSEqC spec.
+
+\begin{verbatim}
+typedef enum fe_sec_mini_cmd {
+        SEC_MINI_A,
+        SEC_MINI_B
+} fe_sec_mini_cmd_t;
+\end{verbatim}
+
+
+\devsubsubsec{frontend status}
+\label{frontendstatus}
+
+Several functions of the frontend device use the fe\_status data 
+type defined by
+\begin{verbatim}
+typedef enum fe_status {
+        FE_HAS_SIGNAL     = 0x01,   /*  found something above the noise level */
+        FE_HAS_CARRIER    = 0x02,   /*  found a DVB signal  */
+        FE_HAS_VITERBI    = 0x04,   /*  FEC is stable  */
+        FE_HAS_SYNC       = 0x08,   /*  found sync bytes  */
+        FE_HAS_LOCK       = 0x10,   /*  everything's working... */
+        FE_TIMEDOUT       = 0x20,   /*  no lock within the last ~2 seconds */
+        FE_REINIT         = 0x40    /*  frontend was reinitialized,  */
+} fe_status_t;                      /*  application is recommned to reset */
+\end{verbatim}
+to indicate the current state and/or state changes of 
+the frontend hardware. 
+
+
+\devsubsubsec{frontend parameters}
+\label{frontendparameters}
+
+The kind of parameters passed to the frontend device for tuning 
+depend on the kind of hardware you are using.
+All kinds of parameters are combined as a union in the 
+FrontendParameters structure:
+\begin{verbatim}
+struct dvb_frontend_parameters {
+        uint32_t frequency;       /* (absolute) frequency in Hz for QAM/OFDM */
+                                  /* intermediate frequency in kHz for QPSK */
+        fe_spectral_inversion_t inversion;
+        union {
+                struct dvb_qpsk_parameters qpsk;
+                struct dvb_qam_parameters  qam;
+                struct dvb_ofdm_parameters ofdm;
+        } u;
+};
+\end{verbatim}
+
+For satellite QPSK frontends you have to use the \verb|QPSKParameters| member 
+defined by
+\begin{verbatim}
+struct dvb_qpsk_parameters {
+        uint32_t        symbol_rate;  /* symbol rate in Symbols per second */
+        fe_code_rate_t  fec_inner;    /* forward error correction (see above) */
+};
+\end{verbatim}
+for cable QAM frontend you use the \verb|QAMParameters| structure
+\begin{verbatim}
+struct dvb_qam_parameters {
+        uint32_t         symbol_rate; /* symbol rate in Symbols per second */
+        fe_code_rate_t   fec_inner;   /* forward error correction (see above) */
+        fe_modulation_t  modulation;  /* modulation type (see above) */
+};
+\end{verbatim}
+DVB-T frontends are supported by the \verb|OFDMParamters| structure
+\begin{verbatim}
+struct dvb_ofdm_parameters {
+        fe_bandwidth_t      bandwidth;
+        fe_code_rate_t      code_rate_HP;  /* high priority stream code rate */
+        fe_code_rate_t      code_rate_LP;  /* low priority stream code rate */
+        fe_modulation_t     constellation; /* modulation type (see above) */
+        fe_transmit_mode_t  transmission_mode;
+        fe_guard_interval_t guard_interval;
+        fe_hierarchy_t      hierarchy_information;
+};
+\end{verbatim}
+
+In the case of QPSK frontends the \verb|Frequency| field specifies the 
+intermediate frequency, i.e. the offset which is effectively added to the 
+local oscillator frequency (LOF) of the LNB.
+The intermediate frequency has to be specified in units of kHz.
+For QAM and OFDM frontends the Frequency specifies the absolute frequency
+and is given in Hz.
+
+The Inversion field can take one of these values:
+\begin{verbatim}
+typedef enum fe_spectral_inversion {
+        INVERSION_OFF,
+        INVERSION_ON,
+        INVERSION_AUTO
+} fe_spectral_inversion_t;
+\end{verbatim}
+It indicates if spectral inversion should be presumed or not. 
+In the automatic setting (\verb|INVERSION_AUTO|) the hardware will
+try to figure out the correct setting by itself.
+
+\noindent
+The possible values for the \verb|FEC_inner| field are
+\begin{verbatim}
+typedef enum fe_code_rate {
+        FEC_NONE = 0,
+        FEC_1_2,
+        FEC_2_3,
+        FEC_3_4,
+        FEC_4_5,
+        FEC_5_6,
+        FEC_6_7,
+        FEC_7_8,
+        FEC_8_9,
+        FEC_AUTO
+} fe_code_rate_t;
+\end{verbatim}
+which correspond to error correction rates of 1/2, 2/3, etc.,
+no error correction or auto detection.
+
+\noindent 
+For cable and terrestrial frontends (QAM and OFDM) one also has to 
+specify the quadrature modulation mode which can be one of the following:
+\begin{verbatim}
+typedef enum fe_modulation {
+	QPSK,
+        QAM_16,
+        QAM_32,
+        QAM_64,
+        QAM_128,
+        QAM_256,
+        QAM_AUTO
+} fe_modulation_t;
+\end{verbatim}
+
+Finally, there are several more parameters for OFDM:
+\begin{verbatim}
+typedef enum fe_transmit_mode {
+        TRANSMISSION_MODE_2K,
+        TRANSMISSION_MODE_8K,
+        TRANSMISSION_MODE_AUTO
+} fe_transmit_mode_t;
+\end{verbatim}
+
+\begin{verbatim}
+typedef enum fe_bandwidth {
+        BANDWIDTH_8_MHZ,
+        BANDWIDTH_7_MHZ,
+        BANDWIDTH_6_MHZ,
+        BANDWIDTH_AUTO
+} fe_bandwidth_t;
+\end{verbatim}
+
+\begin{verbatim}
+typedef enum fe_guard_interval {
+        GUARD_INTERVAL_1_32,
+        GUARD_INTERVAL_1_16,
+        GUARD_INTERVAL_1_8,
+        GUARD_INTERVAL_1_4,
+        GUARD_INTERVAL_AUTO
+} fe_guard_interval_t;
+\end{verbatim}
+
+\begin{verbatim}
+typedef enum fe_hierarchy {
+        HIERARCHY_NONE,
+        HIERARCHY_1,
+        HIERARCHY_2,
+        HIERARCHY_4,
+        HIERARCHY_AUTO
+} fe_hierarchy_t;
+\end{verbatim}
+
+
+\devsubsubsec{frontend events}
+\label{frontendevents}
+
+\begin{verbatim}
+struct dvb_frontend_event {
+        fe_status_t status;
+        struct dvb_frontend_parameters parameters;
+};
+\end{verbatim}
+
+\clearpage
+
+
+\devsubsec{Frontend Function Calls}
+
+\function{open()}{
+  int open(const char *deviceName, int flags);}{
+  This system call opens a named frontend device (/dev/dvb/adapter0/frontend0)
+  for subsequent use. Usually the first thing to do after a successful open
+  is to find out the frontend type with FE\_GET\_INFO.
+
+  The device can be opened in read-only mode, which only allows
+  monitoring of device status and statistics, or read/write mode, which allows 
+  any kind of use (e.g. performing tuning operations.)
+  
+  In a system with multiple front-ends, it is usually the case that multiple
+  devices cannot be open in read/write mode simultaneously.  As long as a 
+  front-end device is opened in read/write mode, other open() calls in 
+  read/write mode will either fail or block, depending on whether 
+  non-blocking or blocking mode was specified.
+  A front-end device opened in blocking mode can later be put into non-blocking
+  mode (and vice versa) using the F\_SETFL command of the fcntl system call.
+  This is a standard system call, documented in the Linux manual page for fcntl.
+  When an open() call has succeeded, the device will be ready for use in the 
+  specified mode. This implies that the corresponding hardware is powered up, 
+  and that other front-ends may have been powered down to make that possible.
+  
+  }{
+  const char *deviceName & Name of specific video device.\\
+  int flags & A bit-wise OR of the following flags:\\
+            & \hspace{1em} O\_RDONLY read-only access\\
+            & \hspace{1em} O\_RDWR read/write access\\
+            & \hspace{1em} O\_NONBLOCK open in non-blocking mode \\
+            & \hspace{1em} (blocking mode is the default)\\
+  }{
+  ENODEV    & Device driver not loaded/available.\\
+  EINTERNAL & Internal error.\\
+  EBUSY     & Device or resource busy.\\
+  EINVAL    & Invalid argument.\\
+}
+
+\function{close()}{
+  int close(int fd);}{
+  This system call closes a previously opened front-end device.  
+  After closing a front-end device, its corresponding hardware might be
+  powered down automatically.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  }{
+  EBADF & fd is not a valid open file descriptor.\\
+}
+
+\ifunction{FE\_READ\_STATUS}{
+  int ioctl(int fd, int request = FE\_READ\_STATUS, fe\_status\_t *status);}{
+  This ioctl call returns status information about the front-end.
+  This call only requires read-only access to the device.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_READ\_STATUS for this command.\\
+  struct fe\_status\_t *status & Points to the location where the front-end
+  status word is to be stored.
+  }{
+  EBADF& fd is not a valid open file descriptor.\\
+  EFAULT& status points to invalid address.\\
+}
+
+\ifunction{FE\_READ\_BER}{
+  int ioctl(int fd, int request = FE\_READ\_BER, uint32\_t *ber);}{
+  This ioctl call returns the bit error rate for the signal currently 
+  received/demodulated by the front-end. For this command, read-only access 
+  to the device is sufficient.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_READ\_BER for this command.\\
+  uint32\_t *ber & The bit error rate is stored into *ber.\\
+  }{
+  EBADF& fd is not a valid open file descriptor.\\
+  EFAULT& ber points to invalid address.\\
+  ENOSIGNAL& There is no signal, thus no meaningful bit error
+             rate.  Also returned if the front-end is not turned on.\\
+  ENOSYS&         Function not available for this device.
+}
+
+\ifunction{FE\_READ\_SNR}{
+  int ioctl(int fd, int request = FE\_READ\_SNR, int16\_t *snr);}{
+  This ioctl call returns the signal-to-noise ratio for the signal currently 
+  received by the front-end. For this command, read-only access to the device
+  is sufficient.
+  }{
+  int fd      & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_READ\_SNR for this command.\\
+  int16\_t *snr& The signal-to-noise ratio is stored into *snr.\\
+}{
+  EBADF& fd is not a valid open file descriptor.\\
+  EFAULT& snr points to invalid address.\\
+  ENOSIGNAL&        There is no signal, thus no meaningful signal
+  strength value.  Also returned if front-end is not  turned on.\\
+  ENOSYS&         Function not available for this device.
+}
+
+\ifunction{FE\_READ\_SIGNAL\_STRENGTH}{
+  int ioctl( int fd, int request = FE\_READ\_SIGNAL\_STRENGTH, int16\_t *strength);
+}{
+This ioctl call returns the signal strength value for the signal currently 
+received by the front-end. For this command, read-only access to the device 
+is sufficient.
+}{
+int fd      & File descriptor returned by a previous call to open().\\
+int request & Equals FE\_READ\_SIGNAL\_STRENGTH for this command.\\
+int16\_t *strength & The signal strength value is stored into *strength.\\
+}{
+  EBADF& fd is not a valid open file descriptor.\\
+  EFAULT& status points to invalid address.\\
+  ENOSIGNAL&        There is no signal, thus no meaningful signal
+  strength value.  Also returned if front-end is not  turned on.\\
+  ENOSYS&         Function not available for this device.
+}
+
+\ifunction{FE\_READ\_UNCORRECTED\_BLOCKS}{
+  int ioctl( int fd, int request = FE\_READ\_UNCORRECTED\_BLOCKS, uint32\_t *ublocks);  }{
+  This ioctl call returns the number of uncorrected blocks detected by 
+  the device driver during its lifetime.
+  For meaningful measurements, the increment in 
+  block count during a specific time interval should be calculated. 
+  For this command, read-only access to the device is sufficient.\\
+  Note that the counter will wrap to zero after its maximum count has 
+  been reached.
+}{
+int fd      & File descriptor returned by a previous call to open().\\
+int request & Equals FE\_READ\_UNCORRECTED\_BLOCKS for this command.\\
+uint32\_t *ublocks & The total number of uncorrected blocks seen
+by the driver so far.
+}{
+  EBADF& fd is not a valid open file descriptor.\\
+  EFAULT& ublocks points to invalid address.\\
+  ENOSYS&         Function not available for this device.
+}
+
+
+\ifunction{FE\_SET\_FRONTEND}{
+  int ioctl(int fd, int request = FE\_SET\_FRONTEND, struct dvb\_frontend\_parameters *p);}{
+        This ioctl call starts a tuning operation using specified parameters.  
+        The result of this call will be successful if the parameters were valid and 
+        the tuning could be initiated.
+        The result of the tuning operation in itself, however, will arrive 
+        asynchronously as an event (see documentation for FE\_GET\_EVENT 
+        and FrontendEvent.)
+        If a new FE\_SET\_FRONTEND operation is initiated before the previous
+        one was completed,
+        the previous operation will be aborted in favor of the new one.
+        This command requires read/write access to the device.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_SET\_FRONTEND for this command.\\
+  struct dvb\_frontend\_parameters *p& Points to parameters for tuning operation.\\
+  }{
+  EBADF& fd is not a valid open file descriptor.\\
+  EFAULT& p points to invalid address.\\
+  EINVAL& Maximum supported symbol rate reached.\\
+}
+
+\ifunction{FE\_GET\_FRONTEND}{
+  int ioctl(int fd, int request = FE\_GET\_FRONTEND, struct dvb\_frontend\_parameters *p);}{
+  This ioctl call queries the currently effective frontend parameters.  
+  For this command, read-only access to the device is sufficient.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_SET\_FRONTEND for this command.\\
+  struct dvb\_frontend\_parameters *p& Points to parameters for tuning operation.\\
+  }{
+  EBADF& fd is not a valid open file descriptor.\\
+  EFAULT& p points to invalid address.\\
+  EINVAL& Maximum supported symbol rate reached.\\
+}
+
+\ifunction{FE\_GET\_EVENT}{
+  int ioctl(int fd, int request = QPSK\_GET\_EVENT, struct dvb\_frontend\_event *ev);}{
+  This ioctl call returns a frontend event if available. If an event
+  is not available, the behavior depends on whether the device is in blocking 
+  or non-blocking mode.  In the latter case, the call fails immediately with 
+  errno set to EWOULDBLOCK. In the former case, the call blocks until an event
+  becomes available.\\
+  The standard Linux poll() and/or select() system calls can be used with the 
+  device file descriptor to watch for new events.  For select(), the file 
+  descriptor should be included in the exceptfds argument, and for poll(), 
+  POLLPRI should be specified as the wake-up condition.
+  Since the event queue allocated is rather small (room for 8 events), the queue
+  must be serviced regularly to avoid overflow.   If an overflow happens, the 
+  oldest event is discarded from the queue, and an error (EOVERFLOW) occurs 
+  the next time the queue is read. After reporting the error condition in this 
+  fashion, subsequent FE\_GET\_EVENT calls will return events from the queue as
+  usual.\\
+  For the sake of implementation simplicity, this command requires read/write 
+  access to the device.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_GET\_EVENT for this command.\\
+  struct dvb\_frontend\_event *ev & Points to the location where the event,\\
+                                  & if any, is to be stored.
+  }{
+  EBADF& fd is not a valid open file descriptor.\\
+  EFAULT& ev points to invalid address.\\
+  EWOULDBLOCK &              There is no event pending, and the device is in
+                                non-blocking mode.\\
+  EOVERFLOW &\\
+&   Overflow in event queue - one or more events were lost.\\
+}
+
+\ifunction{FE\_GET\_INFO}{
+\label{fegetinfo}
+  int ioctl(int fd, int request = FE\_GET\_INFO, struct dvb\_frontend\_info *info);}{
+  This ioctl call returns information about the front-end.
+  This call only requires read-only access to the device.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_GET\_INFO for this command.\\
+  struct dvb\_frontend\_info *info & Points to the location where the front-end
+  information is to be stored.
+  }{
+  EBADF& fd is not a valid open file descriptor.\\
+  EFAULT& info points to invalid address.\\
+}
+
+\ifunction{FE\_DISEQC\_RESET\_OVERLOAD}{
+  int ioctl(int fd, int request = FE\_DISEQC\_RESET\_OVERLOAD);}{
+  If the bus has been automatically powered off due to power overload, this
+  ioctl call restores the power to the bus. The call requires read/write 
+  access to the device.
+  This call has no effect if the device is manually powered off.
+  Not all DVB adapters support this ioctl.
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_DISEQC\_RESET\_OVERLOAD for this command.\\
+  }{
+  EBADF      & fd is not a valid file descriptor.\\
+  EPERM      & Permission denied (needs read/write access).\\
+  EINTERNAL  & Internal error in the device driver.\\
+}
+
+
+\ifunction{FE\_DISEQC\_SEND\_MASTER\_CMD}{
+int ioctl(int fd, int request = FE\_DISEQC\_SEND\_MASTER\_CMD, struct dvb\_diseqc\_master\_cmd *cmd);}{
+  This ioctl call is used to send a a DiSEqC command.\\
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_DISEQC\_SEND\_MASTER\_CMD for this command.\\
+  struct dvb\_diseqc\_master\_cmd *cmd & Pointer to the command to be transmitted.\\
+  }{
+  EBADF      & fd is not a valid file descriptor.\\
+  EFAULT     & Seq points to an invalid address.\\
+  EINVAL     & The data structure referred to by seq is invalid in some way.\\
+  EPERM      & Permission denied (needs read/write access).\\
+  EINTERNAL  & Internal error in the device driver.\\
+}
+
+\ifunction{FE\_DISEQC\_RECV\_SLAVE\_REPLY}{
+int ioctl(int fd, int request = FE\_DISEQC\_RECV\_SLAVE\_REPLY, struct dvb\_diseqc\_slave\_reply *reply);}{
+This ioctl call is used to receive reply to a DiSEqC 2.0 command.\\
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_DISEQC\_RECV\_SLAVE\_REPLY for this command.\\
+  struct dvb\_diseqc\_slave\_reply *reply & Pointer to the command to be received.\\
+  }{
+  EBADF      & fd is not a valid file descriptor.\\
+  EFAULT     & Seq points to an invalid address.\\
+  EINVAL     & The data structure referred to by seq is invalid in some way.\\
+  EPERM      & Permission denied (needs read/write access).\\
+  EINTERNAL  & Internal error in the device driver.\\
+}
+
+\ifunction{FE\_DISEQC\_SEND\_BURST}{
+int ioctl(int fd, int request = FE\_DISEQC\_SEND\_BURST, fe\_sec\_mini\_cmd\_t burst);}{
+This ioctl call is used to send a 22KHz tone burst.\\
+  }{
+  int fd & File descriptor returned by a previous call to open().\\
+  int request & Equals FE\_DISEQC\_SEND\_BURST for this command.\\
+  fe\_sec\_mini\_cmd\_t burst & burst A or B.\\
+  }{
+  EBADF      & fd is not a valid file descriptor.\\
+  EFAULT     & Seq points to an invalid address.\\
+  EINVAL     & The data structure referred to by seq is invalid in some way.\\
+  EPERM      & Permission denied (needs read/write access).\\
+  EINTERNAL  & Internal error in the device driver.\\
+}
+
+
+\ifunction{FE\_SET\_TONE}{
+int ioctl(int fd, int request = FE\_SET\_TONE, fe\_sec\_tone\_mode\_t tone);}{
+This call is used to set the generation of the continuous 22kHz tone. 
+This call requires read/write permissions.
+}{
+int fd & File descriptor returned by a previous call to open().\\
+int request & Equals FE\_SET\_TONE for this command.\\
+fe\_sec\_tone\_mode\_t tone & The requested tone generation mode (on/off).\\
+}{
+ENODEV    & Device driver not loaded/available.\\
+EBUSY     & Device or resource busy.\\
+EINVAL    & Invalid argument.\\
+EPERM     & File not opened with read permissions.\\
+EINTERNAL & Internal error in the device driver.\\
+}
+
+
+\ifunction{FE\_SET\_VOLTAGE}{
+int ioctl(int fd, int request = FE\_SET\_VOLTAGE, fe\_sec\_voltage\_t voltage);}{
+This call is used to set the bus voltage.
+This call requires read/write permissions.
+}{
+int fd & File descriptor returned by a previous call to open().\\
+int request & Equals FE\_SET\_VOLTAGE for this command.\\
+fe\_sec\_voltage\_t voltage & The requested bus voltage.\\
+}{
+ENODEV    & Device driver not loaded/available.\\
+EBUSY     & Device or resource busy.\\
+EINVAL    & Invalid argument.\\
+EPERM     & File not opened with read permissions.\\
+EINTERNAL & Internal error in the device driver.\\
+}
+
+\ifunction{FE\_ENABLE\_HIGH\_LNB\_VOLTAGE}{
+int ioctl(int fd, int request = FE\_ENABLE\_HIGH\_LNB\_VOLTAGE, int high);}{
+If high != 0 enables slightly higher voltages instead of 13/18V
+(to compensate for long cables).
+This call requires read/write permissions.
+Not all DVB adapters support this ioctl.
+}{
+int fd & File descriptor returned by a previous call to open().\\
+int request & Equals FE\_SET\_VOLTAGE for this command.\\
+int high & The requested bus voltage.\\
+}{
+ENODEV    & Device driver not loaded/available.\\
+EBUSY     & Device or resource busy.\\
+EINVAL    & Invalid argument.\\
+EPERM     & File not opened with read permissions.\\
+EINTERNAL & Internal error in the device driver.\\
+}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "dvbapi"
+%%% End: 

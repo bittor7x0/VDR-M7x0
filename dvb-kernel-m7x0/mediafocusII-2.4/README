@@ -1,0 +1,62 @@
+README (version: $Id: README,v 1.4.2.2 2004-09-04 16:41:59 ttittmann Exp $)
+======
+
+The MediafocusII is an *analog* satellite tv card based on the
+saa7146 chipset.
+
+Rolf Siebrecht has written a driver called "mediafocusII-0.0.9.tar.gz",
+which was forked off an early version of "Multimedia eXtension Board"
+Video4Linux-1 driver.
+
+Unfortunately his homepage has disappeared and he no longer responds to
+e-mails. 
+
+This is an attempt by Torsten Tittmann to port the "old" driver to my
+new saa7146 driver core. It's basically working.
+
+For further informations, have a look at the project page
+http://www.gdv.uni-hannover.de/~hunold1/linux/saa7146/mf2.html
+or mail to
+<Torsten.Tittmann@gmx.de>.
+
+
+Compiling and Installation under kernel 2.4:
+============================================
+ATTENTION, this driver was just an intermediate step to get familiar with
+Michael Hunold's saa7146 framework of the official kernel 2.6 code.
+Since I got this driver running under kernel 2.6 I will not spend time to
+this kernel 2.4 driver.
+
+If you like to use your "TechniSat MediaFocus II" card under kernel 2.4,
+you can also use Rolf Siebrecht's original driver "mediafocusII-0.0.9.tar.gz",
+which you will find at Michael Hunold's Website (see above) or in the
+CVS Repository.
+This driver is almost stable and supports the mfII card with more functions
+than this driver.
+
+
+If you like to try this driver, I'll give you some informations for compiling
+and installation now (don't use the single quotes!):
+- cd into the 'dvb-kernel/mediafocusII-2.4/' directory
+- call './getlinks'
+- call 'make'
+- call 'su -c "make install"'
+- call "su -c "depmod -ae; modprobe mfII"'
+- ensure that the driver mfII is loaded at startup
+- additional information about the needed adaption of xawtv is given at Michaels Website
+  (including some example files resp. tools)
+
+
+
+Meaning of module debug parameter:
+==================================
+The parameter are bit masked (following the new saa7146 driver core):
+
+-  1 = 0x01 = 0000 0001 > DEB_S(x)         /* simple debug messages */
+-  2 = 0x02 = 0000 0010 > DEB_D(x)         /* more detailed debug messages */
+-  4 = 0x04 = 0000 0100 > DEB_EE(x)        /* print enter and exit of functions */
+-  8 = 0x08 = 0000 1000 > DEB_I2C(x)       /* i2c debug messages */
+- 16 = 0x10 = 0001 0000 > DEB_VBI(x)       /* vbi debug messages */
+- 32 = 0x20 = 0010 0000 > DEB_INT(x)       /* interrupt debug messages */
+- 64 = 0x40 = 0100 0000 > DEB_CAP(x)       /* capture debug messages */
+
