@@ -100,7 +100,7 @@ $(STAGEFILES_DIR)/.smartmontools_compiled: $(STAGEFILES_DIR)/.smartmontools_conf
 
 $(STAGEFILES_DIR)/.smartmontools_installed: $(STAGEFILES_DIR)/.smartmontools_compiled
 	$(CP) -f $(SMARTMONTOOLS_DIR)/smartctl $(TARGET_ROOT)/sbin/smartctl
-	$(CP) -f $(SMARTMONTOOLS_DIR)/smartd $(TARGET_ROOT)/sbin/smartctl
+	$(CP) -f $(SMARTMONTOOLS_DIR)/smartd $(TARGET_ROOT)/sbin/smartd
 	$(CP) -f $(SMARTMONTOOLS_DIR)/smartd.conf $(TARGET_ROOT)/etc/smartd.conf
 	$(CP) -f $(SMARTMONTOOLS_DIR)/drivedb.h $(TARGET_ROOT)/etc/smart_drivedb.h
 	$(TOUCH) $(STAGEFILES_DIR)/.smartmontools_installed
