@@ -91,6 +91,14 @@ ifeq ($(CONFIG_FW_VERSION),pro)
 		lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_async.o \
 		lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_mppe.o
 	endif
+	ifeq ($(CONFIG_DVB-KERNEL),y)
+	SIEMENS-LINUX-KERNEL_MODLST += \
+		lib/modules/2.4.21-xfs/kernel/drivers/i2c/i2c-algo-bit.o \
+		lib/modules/2.4.21-xfs/kernel/drivers/i2c/i2c-dev.o \
+		lib/modules/2.4.21-xfs/kernel/drivers/i2c/i2c-proc.o \
+		lib/modules/2.4.21-xfs/kernel/drivers/input/evdev.o \
+		lib/modules/2.4.21-xfs/kernel/drivers/input/input.o
+	endif
 endif
 
 SIEMENS-LINUX-KERNEL_DIRLST := \
@@ -111,6 +119,11 @@ ifeq ($(CONFIG_FW_VERSION),pro)
 	SIEMENS-LINUX-KERNEL_DIRLST += \
 		lib/modules/2.4.21-xfs/kernel/crypto \
 		lib/modules/2.4.21-xfs/kernel/drivers/net
+	endif
+	ifeq ($(CONFIG_DVB-KERNEL),y)
+	SIEMENS-LINUX-KERNEL_DIRLST += \
+		lib/modules/2.4.21-xfs/kernel/drivers/i2c \
+		lib/modules/2.4.21-xfs/kernel/drivers/input
 	endif
 endif
 
@@ -220,6 +233,46 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION)
 	$(SED) -i -e 's,^CONFIG_JFFS2_ZLIB=y,# CONFIG_JFFS2_ZLIB is not set,g' \
 		$(SIEMENS-LINUX-KERNEL_DIR)/.config
 	$(SED) -i -e 's,^CONFIG_JFFS2_RUBIN=y,# CONFIG_JFFS2_RUBIN is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+  endif
+  # Enable/Disable DVB modules
+  ifeq ($(CONFIG_DVB-KERNEL),y)
+	$(SED) -i -e 's,^# CONFIG_INPUT is not set,CONFIG_INPUT=m,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^# CONFIG_INPUT_EVDEV is not set,CONFIG_INPUT_EVDEV=m,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^# CONFIG_I2C is not set,CONFIG_I2C=y\nCONFIG_I2C_ALGOBIT=m\nCONFIG_I2C_CHARDEV=m\nCONFIG_I2C_PROC=m,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_PROC=m,CONFIG_I2C_PROC=m\n# CONFIG_I2C_ELV is not set is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_PROC=m,CONFIG_I2C_PROC=m\n# CONFIG_I2C_VELLEMAN is not set is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_PROC=m,CONFIG_I2C_PROC=m\n# CONFIG_SCx200_I2C is not set is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_PROC=m,CONFIG_I2C_PROC=m\n# CONFIG_SCx200_ACB is not set is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_PROC=m,CONFIG_I2C_PROC=m\n# CONFIG_I2C_ALGOPCF is not set is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_PROC=m,CONFIG_I2C_PROC=m\n# CONFIG_INPUT_SERIO is not set is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_PROC=m,CONFIG_I2C_PROC=m\n# CONFIG_INPUT_IFORCE_USB is not set is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^# CONFIG_VIDEO_PROC_FS is not set,CONFIG_VIDEO_PROC_FS=y,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+  else
+	$(SED) -i -e 's,^CONFIG_INPUT=m,# CONFIG_INPUT is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_INPUT_EVDEV=m,# CONFIG_INPUT_EVDEV is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C=y,# CONFIG_I2C is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_ALGOBIT=m,# CONFIG_I2C_ALGOBIT is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_CHARDEV=m,# CONFIG_I2C_CHARDEV is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_I2C_PROC=m,# CONFIG_I2C_PROC is not set,g' \
+		$(SIEMENS-LINUX-KERNEL_DIR)/.config
+	$(SED) -i -e 's,^CONFIG_VIDEO_PROC_FS=y,# CONFIG_VIDEO_PROC_FS is not set,g' \
 		$(SIEMENS-LINUX-KERNEL_DIR)/.config
   endif
 	PATH='$(PREFIX_BIN):$(SIEMENS-LINUX-KERNEL_DIR):$(PATH)' $(MAKE) CROSS_COMPILE=$(TARGET)- ARCH=mips \

@@ -1,0 +1,41 @@
+#!/bin/ash
+
+echo -n -e "Inserting DVB modules into kernel"
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/i2c/i2c-algo-bit.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/i2c/i2c-dev.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/i2c/i2c-proc.o
+
+# make sure input stuff is there for IR remote controls
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/input/input.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/input/evdev.o
+
+# vide4linux for av7110 based "full featured" cards
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/v4l1-compat.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/v4l2-common.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/video-buf.o
+
+# DVB core
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/dvb-core.o
+
+# frontend drivers
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/ves1x93.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/alps_tdlb7.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/alps_tdmb7.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/stv0299.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/ves1820.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/tda1004x.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/grundig_29504-401.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/grundig_29504-491.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/cx24110.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/mt312.o
+
+# saa7146 based siemens/technotrend/hauppauge cards
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/saa7146.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/saa7146_vv.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/ttpci-eeprom.o
+
+# technotrend/hauppauge USB things
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/dvb-ttusb-budget.o
+/sbin/insmod /lib/modules/2.4.21-xfs/kernel/drivers/dvb/ttusb_dec.o
+
+echo
