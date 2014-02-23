@@ -1758,12 +1758,7 @@ bool cTShiftIndexFile::Write(uchar PictureType, uint16_t FileNumber, off_t FileO
 {
 	indexLock.Lock();
 	tIndex i;
-	
-#if BYTE_ORDER == BIG_ENDIAN
-     i.Set(isPesRecording, bswap_32(FileOffset), PictureType, FileNumber);
-#else
-     i.Set(isPesRecording, FileOffset, PictureType, FileNumber);
-#endif
+	i.Set(isPesRecording, FileOffset, PictureType, FileNumber);
 
 	if(Grow(1,FileNumber))
 	{
@@ -1777,6 +1772,9 @@ bool cTShiftIndexFile::Write(uchar PictureType, uint16_t FileNumber, off_t FileO
 		indexLock.Unlock();
 		return false;
 	}
+#if BYTE_ORDER == BIG_ENDIAN
+	i.SetOffset(isPesRecording, bswap_32(i.Offset(isPesRecording)));
+#endif
 	if((!((last+1)%maxSize))&&(last>=0))
 		if(lseek(f,0,SEEK_SET))
 		{
@@ -1811,13 +1809,7 @@ bool cTShiftIndexFile::Write(sPesResult *Picture,int PictureCount,uint16_t FileN
 	{
 		if(Picture[i].pictureType)
 		{
-
-#if BYTE_ORDER == BIG_ENDIAN
-            inds[count].SetOffset(isPesRecording, bswap_32(FileOffset + Picture[i].offset));
-#else
             inds[count].SetOffset(isPesRecording, FileOffset + Picture[i].offset);
-#endif
-
             inds[count].SetType(isPesRecording, Picture[i].pictureType);
             inds[count].SetNumber(isPesRecording, FileNumber);
             inds[count++].SetReserved(isPesRecording);
