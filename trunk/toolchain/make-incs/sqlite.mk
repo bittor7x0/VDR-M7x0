@@ -26,12 +26,12 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SQLITE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-SQLITE_VERSION := 3071700
+SQLITE_VERSION := 3080301
 SQLITE_PATCHES_DIR := $(PATCHES_DIR)/sqlite/$(SQLITE_VERSION)
 
 SQLITE_FILE := sqlite-autoconf-$(SQLITE_VERSION).tar.bz2
 SQLITE_DLFILE := $(DOWNLOAD_DIR)/$(SQLITE_FILE)
-SQLITE_URL := http://www.sqlite.org/2013/sqlite-autoconf-$(SQLITE_VERSION).tar.gz
+SQLITE_URL := http://www.sqlite.org/2014/sqlite-autoconf-$(SQLITE_VERSION).tar.gz
 SQLITE_DIR := $(BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_CFLAGS := -fno-fast-math -fno-exceptions -fno-reorder-blocks -fno-tree-ch -fno-caller-saves \

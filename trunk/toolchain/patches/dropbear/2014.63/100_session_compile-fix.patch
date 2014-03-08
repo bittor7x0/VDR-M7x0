@@ -1,0 +1,16 @@
+diff -Naur dropbear-2013.60-orig/session.h dropbear-2013.60/session.h
+--- dropbear-2013.60-orig/session.h	2013-10-16 16:34:53.000000000 +0200
++++ dropbear-2013.60/session.h	2013-10-18 20:07:53.688188761 +0200
+@@ -269,10 +269,10 @@
+ 	int interact_request_received; /* flag whether we've received an 
+ 									  info request from the server for
+ 									  interactive auth.*/
+-
++#endif
+ 	int cipher_none_after_auth; /* Set to 1 if the user requested "none"
+ 								   auth */
+-#endif
++
+ 	sign_key *lastprivkey;
+ 
+ 	int retval; /* What the command exit status was - we emulate it */
