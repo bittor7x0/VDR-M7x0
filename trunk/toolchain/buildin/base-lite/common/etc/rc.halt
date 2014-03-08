@@ -27,9 +27,9 @@ fi
 
 # be careful /proc might not be available anymore
 /usr/sbin/pic_tool ${action1}
-/usr/bin/killall5 -15
+/usr/sbin/killall5 -15
 /bin/sleep 1
-/usr/bin/killall5 -9
+/usr/sbin/killall5 -9
 /bin/sleep 10
 # should never be reached
 /usr/sbin/pic_tool ${action2}
