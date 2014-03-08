@@ -1,0 +1,13 @@
+diff -Naur libc-bench-20110206-orig/Makefile libc-bench-20110206/Makefile
+--- libc-bench-20110206-orig/Makefile	2011-01-31 08:13:00.000000000 +0100
++++ libc-bench-20110206/Makefile	2014-03-07 18:44:10.792998595 +0100
+@@ -9,6 +9,9 @@
+ 
+ all: libc-bench
+ 
++strip:
++	$(STRIP) libc-bench
++
+ clean:
+ 	rm -f $(OBJS) libc-bench
+ 
