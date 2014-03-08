@@ -1,0 +1,75 @@
+diff -Naur lirc-0.6.4-orig/configure lirc-0.6.4/configure
+--- lirc-0.6.4-orig/configure	2001-08-15 14:16:57.000000000 +0200
++++ lirc-0.6.4/configure	2013-12-14 19:55:06.834130577 +0100
+@@ -3708,35 +3708,6 @@
+   kerneldir=missing
+   no_kernel=yes
+ 
+-  if test `uname` != "Linux"; then
+-    kerneldir="not running Linux"
+-  else
+-    for dir in /usr/src/kernel-source-`uname -r` /usr/src/linux-`uname -r` /usr/src/linux ${ac_kerneldir}; do
+-      if test -d $dir; then
+-        kerneldir=`dirname $dir/Makefile`/
+-        no_kernel=no
+-      fi;
+-    done
+-  fi
+-
+-  if test x${no_kernel} != xyes; then
+-    if test -f ${kerneldir}/Makefile; then
+-      if test "${ac_pkss_mktemp}" = "yes"; then
+-        ac_pkss_makefile=`mktemp /tmp/LIRCMF.XXXXXX`
+-      else
+-        ac_pkss_makefile=/tmp/LIRCMF.XXXXXX
+-      fi
+-      cat ${kerneldir}/Makefile >${ac_pkss_makefile}
+-      echo "lirc_tell_me_what_cc_is:" >>${ac_pkss_makefile}
+-      echo "	echo \$(CC)" >>${ac_pkss_makefile}
+-
+-      kernelcc=`make -s -C ${kerneldir} -f ${ac_pkss_makefile} lirc_tell_me_what_cc_is`
+-      rm -f ${ac_pkss_makefile}
+-    else
+-      kerneldir="no Makefile found"
+-      no_kernel=yes
+-    fi
+-  fi
+   ac_cv_have_kernel="no_kernel=${no_kernel} \
+ 		kerneldir=\"${kerneldir}\" \
+ 		kernelcc=\"${kernelcc}\""
+@@ -3751,35 +3722,6 @@
+   kerneldir=missing
+   no_kernel=yes
+ 
+-  if test `uname` != "Linux"; then
+-    kerneldir="not running Linux"
+-  else
+-    for dir in /usr/src/kernel-source-`uname -r` /usr/src/linux-`uname -r` /usr/src/linux ${ac_kerneldir}; do
+-      if test -d $dir; then
+-        kerneldir=`dirname $dir/Makefile`/
+-        no_kernel=no
+-      fi;
+-    done
+-  fi
+-
+-  if test x${no_kernel} != xyes; then
+-    if test -f ${kerneldir}/Makefile; then
+-      if test "${ac_pkss_mktemp}" = "yes"; then
+-        ac_pkss_makefile=`mktemp /tmp/LIRCMF.XXXXXX`
+-      else
+-        ac_pkss_makefile=/tmp/LIRCMF.XXXXXX
+-      fi
+-      cat ${kerneldir}/Makefile >${ac_pkss_makefile}
+-      echo "lirc_tell_me_what_cc_is:" >>${ac_pkss_makefile}
+-      echo "	echo \$(CC)" >>${ac_pkss_makefile}
+-
+-      kernelcc=`make -s -C ${kerneldir} -f ${ac_pkss_makefile} lirc_tell_me_what_cc_is`
+-      rm -f ${ac_pkss_makefile}
+-    else
+-      kerneldir="no Makefile found"
+-      no_kernel=yes
+-    fi
+-  fi
+   ac_cv_have_kernel="no_kernel=${no_kernel} \
+ 		kerneldir=\"${kerneldir}\" \
+ 		kernelcc=\"${kernelcc}\""
