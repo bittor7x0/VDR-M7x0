@@ -27,12 +27,12 @@ ifeq ($(strip $(shell which java)),)
 	$(error dependency error: YUI Compressor needs Java Runtime Environment)
 endif
 
-YUI_COMPRESSOR_HOSTVERSION := 2.4.7
+YUI_COMPRESSOR_HOSTVERSION := 2.4.8
 YUI_COMPRESSOR_JAR := $(HOSTUTILS_PREFIX_BIN)/yuicompressor-$(YUI_COMPRESSOR_HOSTVERSION).jar
 YUI_COMPRESSOR_HOSTFILE := yuicompressor-$(YUI_COMPRESSOR_HOSTVERSION).zip
 YUI_COMPRESSOR_HOSTDLFILE := $(DOWNLOAD_DIR)/$(YUI_COMPRESSOR_HOSTFILE)
 
-YUI_COMPRESSOR_HOSTURL := http://yui.zenfs.com/releases/yuicompressor/$(YUI_COMPRESSOR_HOSTFILE)
+YUI_COMPRESSOR_HOSTURL := https://github.com/yui/yuicompressor/releases/download/v$(YUI_COMPRESSOR_HOSTVERSION)/$(YUI_COMPRESSOR_HOSTFILE)
 YUI_COMPRESSOR_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/yuicompressor-$(YUI_COMPRESSOR_HOSTVERSION)
 
 CLEAN_RULES += clean-yui_compressor-host
@@ -55,7 +55,7 @@ $(YUI_COMPRESSOR_HOSTDLFILE): $(TC_INIT_RULE)
 $(STAGEFILES_DIR)/.yui_compressor_host_unpacked: $(YUI_COMPRESSOR_HOSTDLFILE)
 	-$(RM) -rf $(YUI_COMPRESSOR_HOSTDIR)
 	$(MKDIR) -p $(YUI_COMPRESSOR_HOSTDIR)
-	(cd $(HOSTUTILS_BUILD_DIR) ; $(UNZIP) -x $(YUI_COMPRESSOR_HOSTDLFILE))
+	(cd $(YUI_COMPRESSOR_HOSTDIR) ; $(UNZIP) -x $(YUI_COMPRESSOR_HOSTDLFILE))
 	$(TOUCH) $(STAGEFILES_DIR)/.yui_compressor_host_unpacked
 
 #
@@ -63,7 +63,7 @@ $(STAGEFILES_DIR)/.yui_compressor_host_unpacked: $(YUI_COMPRESSOR_HOSTDLFILE)
 #
 
 $(YUI_COMPRESSOR_JAR): $(STAGEFILES_DIR)/.yui_compressor_host_unpacked
-	$(CP) $(YUI_COMPRESSOR_HOSTDIR)/build/yuicompressor-$(YUI_COMPRESSOR_HOSTVERSION).jar $(YUI_COMPRESSOR_JAR)
+	$(CP) $(YUI_COMPRESSOR_HOSTDIR)/yuicompressor-$(YUI_COMPRESSOR_HOSTVERSION).jar $(YUI_COMPRESSOR_JAR)
 
 .PHONY: clean-yui_compressor-host distclean-yui_compressor-host
 
