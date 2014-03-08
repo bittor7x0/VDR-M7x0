@@ -426,6 +426,10 @@ CONFIG_O7O_FLASHER = y
 # URL: http://code.google.com/p/byte-unixbench/
 # CONFIG_UNIXBENCH is not set
 
+# libc-bench: A set of time and memory efficiency tests to compare implementations of various C/POSIX standard library functions
+# URL: http://www.etalabs.net/libc-bench.html
+# CONFIG_LIBC-BENCH is not set
+
 
 ###########
 #         #
