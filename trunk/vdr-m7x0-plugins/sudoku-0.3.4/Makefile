@@ -127,4 +127,4 @@ clean:
 	@cd tools && $(MAKE) clean
 
 cppcheck:
-	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.cpp)
