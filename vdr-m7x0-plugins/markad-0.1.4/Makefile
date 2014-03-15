@@ -113,4 +113,4 @@ clean:
 	@-rm -f $(OBJS) $(DEPFILE) *.so *.so.* *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot pod2*.tmp
 
 cppcheck:
-	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.cpp)

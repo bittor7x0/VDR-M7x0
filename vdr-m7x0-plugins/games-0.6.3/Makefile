@@ -96,4 +96,4 @@ clean:
 	$(COMPILE.cpp) $(DEFINES) $(CFLAGS) -c $< $(OUTPUT_OPTION)
 
 cppcheck:
-	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.cpp)

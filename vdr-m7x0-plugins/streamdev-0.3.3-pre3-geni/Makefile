@@ -133,4 +133,4 @@ clean:
 	$(MAKE) -C ./libdvbmpeg clean
 
 cppcheck:
-	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.c)
+	@cppcheck --enable=information,style,unusedFunction -v -f $(COMMONOBJS:%.o=%.c) $(CLIENTOBJS:%.o=%.c) $(SERVEROBJS:%.o=%.c)
