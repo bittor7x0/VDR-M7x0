@@ -34,7 +34,7 @@ SAMBA_PATCHES_DIR := $(PATCHES_DIR)/samba/$(SAMBA_VERSION)
 
 SAMBA_FILE := samba-$(SAMBA_VERSION).tar.gz
 SAMBA_DLFILE := $(DOWNLOAD_DIR)/$(SAMBA_FILE)
-SAMBA_URL := http://us1.samba.org/samba/ftp/stable/$(SAMBA_FILE)
+SAMBA_URL := http://ftp.samba.org/pub/samba/old-versions/$(SAMBA_FILE)
 SAMBA_DIR := $(BUILD_DIR)/samba-$(SAMBA_VERSION)
 
 IVARS = BASEDIR=$(TARGET_ROOT)/usr \
