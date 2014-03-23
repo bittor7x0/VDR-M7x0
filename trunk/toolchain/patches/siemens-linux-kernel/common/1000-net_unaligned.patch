@@ -5,7 +5,7 @@
    unsigned char __pad2;
    unsigned char __data[0];
 -};
-+} __attribute__((packed));
++} __attribute__((packed, aligned(2)));
  
  #define optlength(opt) (sizeof(struct ip_options) + opt->optlen)
  #endif
@@ -14,7 +14,7 @@
  	__u32	daddr;
  	/*The options start here. */
 -};
-+} __attribute__((packed));
++} __attribute__((packed, aligned(2)));
  
  #endif	/* _LINUX_IP_H */
 --- slin_m740/include/linux/tcp.h.orig	2007-12-23 10:16:59.000000000 +0100
@@ -24,7 +24,7 @@
  	__u16	check;
  	__u16	urg_ptr;
 -};
-+} __attribute__((packed));
++} __attribute__((packed, aligned(2)));
  
  
  enum {
@@ -33,7 +33,7 @@
  	struct tcphdr hdr;
  	__u32 		  words[5];
 -}; 
-+} __attribute__((packed)); 
++} __attribute__((packed, aligned(2))); 
  
  #define tcp_flag_word(tp) ( ((union tcp_word_hdr *)(tp))->words [3]) 
  
@@ -44,7 +44,7 @@
  	__u32	start_seq;
  	__u32	end_seq;
 -};
-+} __attribute__((packed));
++} __attribute__((packed, aligned(2)));
  
  struct tcp_opt {
  	int	tcp_header_len;	/* Bytes of tcp header to send		*/
@@ -55,7 +55,40 @@
  	} frag;
    } un;
 -};
-+} __attribute__((packed));
++} __attribute__((packed, aligned(2)));
  
  /*
   *	constants for (set|get)sockopt
+--- a/include/linux/igmp.h	Sat May 29 14:46:20 2004
++++ b/include/linux/igmp.h	Tue Mar 11 23:09:56 2014
+@@ -30,7 +30,7 @@
+ 	__u8 code;		/* For newer IGMP */
+ 	__u16 csum;
+ 	__u32 group;
+-};
++} __attribute__((packed, aligned(2)));
+ 
+ #define IGMP_HOST_MEMBERSHIP_QUERY	0x11	/* From RFC1112 */
+ #define IGMP_HOST_MEMBERSHIP_REPORT	0x12	/* Ditto */
+--- a/include/linux/in.h	Mon Nov 08 11:55:33 2004
++++ b/include/linux/in.h	Tue Mar 11 23:10:27 2014
+@@ -50,7 +50,7 @@
+ /* Internet address. */
+ struct in_addr {
+ 	__u32	s_addr;
+-};
++} __attribute__((packed, aligned(2)));
+ 
+ #define IP_TOS		1
+ #define IP_TTL		2
+--- a/include/linux/udp.h	Sat May 29 14:46:21 2004
++++ b/include/linux/udp.h	Tue Mar 11 23:09:08 2014
+@@ -23,7 +23,7 @@
+ 	__u16	dest;
+ 	__u16	len;
+ 	__u16	check;
+-};
++} __attribute__((packed, aligned(2)));
+ 
+ 
+ #endif	/* _LINUX_UDP_H */
