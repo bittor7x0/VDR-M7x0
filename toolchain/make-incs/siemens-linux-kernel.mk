@@ -91,14 +91,15 @@ ifeq ($(CONFIG_FW_VERSION),pro)
 		lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_async.o \
 		lib/modules/2.4.21-xfs/kernel/drivers/net/ppp_mppe.o
 	endif
-	ifeq ($(CONFIG_DVB-KERNEL),y)
+endif
+
+ifeq ($(CONFIG_DVB-KERNEL),y)
 	SIEMENS-LINUX-KERNEL_MODLST += \
 		lib/modules/2.4.21-xfs/kernel/drivers/i2c/i2c-algo-bit.o \
 		lib/modules/2.4.21-xfs/kernel/drivers/i2c/i2c-dev.o \
 		lib/modules/2.4.21-xfs/kernel/drivers/i2c/i2c-proc.o \
 		lib/modules/2.4.21-xfs/kernel/drivers/input/evdev.o \
 		lib/modules/2.4.21-xfs/kernel/drivers/input/input.o
-	endif
 endif
 
 SIEMENS-LINUX-KERNEL_DIRLST := \
@@ -120,11 +121,12 @@ ifeq ($(CONFIG_FW_VERSION),pro)
 		lib/modules/2.4.21-xfs/kernel/crypto \
 		lib/modules/2.4.21-xfs/kernel/drivers/net
 	endif
-	ifeq ($(CONFIG_DVB-KERNEL),y)
+endif
+
+ifeq ($(CONFIG_DVB-KERNEL),y)
 	SIEMENS-LINUX-KERNEL_DIRLST += \
 		lib/modules/2.4.21-xfs/kernel/drivers/i2c \
 		lib/modules/2.4.21-xfs/kernel/drivers/input
-	endif
 endif
 
 #
