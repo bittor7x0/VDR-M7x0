@@ -339,8 +339,8 @@ POST_RULES = $(POST_RULES_y)
 CLEAN_RULES =
 DISTCLEAN_RULES =
 
-# base is alway needed
-FILE_LISTS_y = base.lst
+# base-common and base-<lite|pro> are alway needed
+FILE_LISTS_y = base-common.lst base-$(CONFIG_FW_VERSION).lst
 FILE_LISTS_n =
 FILE_LISTS_ =
 FILE_LISTS = $(FILE_LISTS_y)
