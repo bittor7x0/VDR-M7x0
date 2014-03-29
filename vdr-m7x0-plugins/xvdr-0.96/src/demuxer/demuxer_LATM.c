@@ -26,9 +26,7 @@
 #include "demuxer_LATM.h"
 #include "bitstream.h"
 #include "aaccommon.h"
-#ifdef XVDR_PLUGIN_ENABLE
 #include <stdlib.h>
-#endif
 
 static uint32_t LATMGetValue(cBitstream *bs) {
   return bs->readBits(bs->readBits(2) * 8);

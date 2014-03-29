@@ -3,12 +3,10 @@ xvdr-plugin for m740av is based on vdr-plugin-xvdr 0.96
   (Makefile from older vdr-plugin-xvdr)
 
 OPTIONS in toolchain .config
-  CONFIG_LIBICONV = y
   CONFIG_SQUASHFS_LZMA = y (because squashfs was too big)
   CONFIG_STRACE = y (for debugging)
 
-vdr-ng-em/build/vdr-m7x0/Make.config
-DEFINES += -DXVDR_PLUGIN_ENABLE -> must be enabled for xvdr-plugin (includes vdr changes for xvdr-plugin)
+vdr-ng-em/build/vdr-m7x0-plugins/xvdr/Makefile
 # DEFINES += -DXVDR_PLUGIN_TODO -> don't use this (purpose: testing of not working functions)
 
 *.conf
@@ -24,7 +22,6 @@ DEFINES += -DXVDR_PLUGIN_ENABLE -> must be enabled for xvdr-plugin (includes vdr
   libsi/si.h: EnhancedAC3DescriptorTag = 0x7A
   libsi/si.h: DTSDescriptorTag = 0x7B
   libsi/si.h: AACDescriptorTag = 0x7C
-  libsi/si.h: ExtensionDescriptorTag = 0x7F
 
   vdr/config.h: #define MINPRIORITY    (-MAXPRIORITY)
 
@@ -52,7 +49,7 @@ DEFINES += -DXVDR_PLUGIN_ENABLE -> must be enabled for xvdr-plugin (includes vdr
   src/demuxer/demuxer_LATM.c: #include <stdlib.h> added
 
   src/xvdr/xvdrclient.c: cXVDRClient::CreateServiceReference
-                         hash = 0xEEEE0000; // set to IsTerr -> Problem for m750 sat user!?
+                         hash = 0xEEEE0000; // set to IsTerr if M750S is not defined
                          some lines: #ifdef XVDR_PLUGIN_TODO
   src/xvdr/xvdrclient.c: Printday function modified
 
@@ -88,11 +85,4 @@ DEFINES += -DXVDR_PLUGIN_ENABLE -> must be enabled for xvdr-plugin (includes vdr
   "?=" instead of "=" for CXXFLAGS and DVBDIR
   "g++" replaced with "$(CXX)"
 
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-
-- vdr-ng-em/build/vdr-m7x0/Make.config
-  DEFINES += -DXVDR_PLUGIN_ENABLE
-  # DEFINES += -DXVDR_PLUGIN_TODO
 

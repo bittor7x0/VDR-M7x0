@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include "tools.h"
 
-#ifdef XVDR_PLUGIN_ENABLE
 cReceiver::cReceiver(const cChannel *Channel, int Priority)
 {
   device = NULL;
@@ -19,13 +18,12 @@ cReceiver::cReceiver(const cChannel *Channel, int Priority)
   numPids = 0;
   SetPids(Channel);
 }
-#endif
 
 cReceiver::cReceiver(int Ca, int Priority, int Pid, const int *Pids1, const int *Pids2, const int *Pids3, int Pid2, int Pid3)
 {
   device = NULL;
   ca = Ca;
-  priority = Priority;
+  priority = constrain(Priority, MINPRIORITY, MAXPRIORITY);
   numPids = 0;
   activated = false;
   lastPid = 0;
@@ -64,7 +62,6 @@ cReceiver::~cReceiver()
      }
 }
 
-#ifdef XVDR_PLUGIN_ENABLE
 bool cReceiver::AddPid(int Pid)
 {
   if (Pid) {
@@ -107,7 +104,6 @@ bool cReceiver::SetPids(const cChannel *Channel)
      }
   return true;
 }
-#endif
 
 bool cReceiver::WantsPid(int Pid)
 {

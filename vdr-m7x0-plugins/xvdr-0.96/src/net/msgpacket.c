@@ -11,12 +11,12 @@
 #include <sys/types.h>
 #include <iostream>
 #include <unistd.h>
+#include <endian.h>
 
 #include "os-config.h"
 #include "msgpacket.h"
 
-#ifdef XVDR_PLUGIN_ENABLE
-//m740av = big endian
+#if BYTE_ORDER == BIG_ENDIAN
 #define htobe16(x) (x)
 #define htole16(x) __bswap_16 (x)
 #define be16toh(x) (x)

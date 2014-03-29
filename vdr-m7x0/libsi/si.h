@@ -121,11 +121,8 @@ enum DescriptorTag {
                ServiceIdentifierDescriptorTag = 0x71,
                ServiceAvailabilityDescriptorTag = 0x72,
                EnhancedAC3DescriptorTag = 0x7A,
-#ifdef XVDR_PLUGIN_ENABLE
                DTSDescriptorTag = 0x7B,
                AACDescriptorTag = 0x7C,
-               ExtensionDescriptorTag = 0x7F,
-#endif
  // Defined by ETSI TS 102 812 (MHP)
                // They once again start with 0x00 (see page 234, MHP specification)
                MHP_ApplicationDescriptorTag = 0x00,
