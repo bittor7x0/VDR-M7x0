@@ -219,3 +219,4 @@ VDR 1.7.42 backports applied in this patch:
   Sundararaj Reel).
 * Fixed a memory leak in cRecordings::ScanVideoDir() in case there are too many
   link levels (reported by Sundararaj Reel).
+* Replaced min(max()) calls with the new function constrain().

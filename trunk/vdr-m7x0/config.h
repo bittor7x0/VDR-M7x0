@@ -42,9 +42,7 @@
 #define MAINMENUHOOKSVERSNUM 10001  // Version * 10000 + Major * 100 + Minor
 
 #define MAXPRIORITY 99
-#ifdef XVDR_PLUGIN_ENABLE
-#define MINPRIORITY       (-MAXPRIORITY)
-#endif
+#define MINPRIORITY (-MAXPRIORITY)
 #define MAXLIFETIME 99
 
 #define MINOSDWIDTH  480

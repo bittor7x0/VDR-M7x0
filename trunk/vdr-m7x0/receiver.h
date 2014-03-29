@@ -30,6 +30,7 @@ protected:
   cDevice *device;
 private:
   int ca;
+  tChannelID channelID;
 protected:
   int priority;
 private:
@@ -39,9 +40,6 @@ private:
 //M7X0 BEGIN AK
   bool activated;
   int lastPid;
-#ifdef XVDR_PLUGIN_ENABLE
-  tChannelID channelID;
-#endif
 #ifdef USE_HW_VIDEO_FRAME_EVENTS
   bool frameEventsWanted;
   bool WantsFrameEvents(void) { return frameEventsWanted;}
@@ -71,7 +69,6 @@ protected:
 #endif
 //M7X0 END AK
 public:
-#ifdef XVDR_PLUGIN_ENABLE
   cReceiver(const cChannel *Channel = NULL, int Priority = MINPRIORITY);
                ///< Creates a new receiver for the given Channel with the given Priority.
                ///< If Channel is not NULL, its pids are set by a call to SetPids().
@@ -81,8 +78,6 @@ public:
                ///< Priority may be any value in the range MINPRIORITY...MAXPRIORITY. Negative values indicate
                ///< that this cReceiver may be detached at any time in favor of a timer recording
                ///< or live viewing (without blocking the cDevice it is attached to).
-#endif
-
   cReceiver(int Ca, int Priority, int Pid, const int *Pids1 = NULL, const int *Pids2 = NULL, const int *Pids3 = NULL, int Pid2 = 0, int Pid3 = 0);
                ///< Creates a new receiver that requires conditional access Ca and has
                ///< the given Priority. Pid is a single PID (typically the video PID), while
@@ -94,8 +89,6 @@ public:
                ///< cDevice it is attached to).
   virtual ~cReceiver();
   virtual bool Activated(void) const { return activated; }
-
-#ifdef XVDR_PLUGIN_ENABLE
   bool AddPid(int Pid);
                ///< Adds the given Pid to the list of PIDs of this receiver.
   bool AddPids(const int *Pids);
@@ -118,7 +111,6 @@ public:
                ///< case the device is needed otherwise, so code that uses a cReceiver
                ///< should repeatedly check whether it is still attached, and if
                ///< it isn't, delete it (or take any other appropriate measures).
-#endif
   };
 
 #endif //__RECEIVER_H

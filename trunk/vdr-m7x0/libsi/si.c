@@ -480,6 +480,8 @@ Descriptor *Descriptor::getDescriptor(CharArray da, DescriptorTagDomain domain, 
          case AnnouncementSupportDescriptorTag:
          case AdaptationFieldDataDescriptorTag:
          case TransportStreamDescriptorTag:
+         case DTSDescriptorTag:
+         case AACDescriptorTag:
          default:
             if (!returnUnimplemetedDescriptor)
                return 0;

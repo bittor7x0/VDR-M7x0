@@ -44,12 +44,15 @@ PACKAGE = $(ARCHIVE)
 INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include -I$(VDRDIR) -I./src -I.
 
 DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DXVDR_VERSION='"$(VERSION)"'
-ifeq ($(DEBUG),1)
+#ifeq ($(DEBUG),1)
   DEFINES += -DDEBUG=1
-endif
+#endif
 ifeq ($(CONSOLEDEBUG),1)
   DEFINES += -DCONSOLEDEBUG=1
 endif
+
+# Used to test not working functions in xvdr plugin (e.g. live streaming)
+# DEFINES += -DXVDR_PLUGIN_TODO
 
 ### The object files (add further files here):
 

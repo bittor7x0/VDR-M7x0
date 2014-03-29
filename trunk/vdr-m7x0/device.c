@@ -405,8 +405,8 @@ cDevice *cDevice::GetDevice(const cChannel *Channel, int Priority, bool *NeedsDe
          imp <<= 1; imp |= !device[i]->Receiving() || ndr;                         // use receiving devices if we don't need to detach existing receivers
          imp <<= 1; imp |= device[i]->Receiving();                                 // avoid devices that are receiving
          imp <<= 1; imp |= device[i] == cTransferControl::ReceiverDevice();        // avoid the Transfer Mode receiver device
-         imp <<= 8; imp |= min(max(device[i]->Priority() + MAXPRIORITY, 0), 0xFF); // use the device with the lowest priority (+MAXPRIORITY to assure that values -99..99 can be used)
-         imp <<= 8; imp |= min(max(device[i]->ProvidesCa(Channel), 0), 0xFF);      // use the device that provides the lowest number of conditional access methods
+         imp <<= 8; imp |= constrain(device[i]->Priority() + MAXPRIORITY, 0, 0xFF); // use the device with the lowest priority (+MAXPRIORITY to assure that values -99..99 can be used)
+         imp <<= 8; imp |= constrain(device[i]->ProvidesCa(Channel), 0, 0xFF);      // use the device that provides the lowest number of conditional access methods
          imp <<= 1; imp |= ndr;                                                    // avoid detach receivers
          imp <<= 1; imp |= cTShiftControl::Impact(device[i],ndr);                  // avoid last TShift device
          imp <<= 1; imp |= device[i]->IsPrimaryDevice();                           // avoid the primary device
@@ -1134,7 +1134,7 @@ void cDevice::SetAudioChannel(int AudioChannel)
 void cDevice::SetVolume(int Volume, bool Absolute)
 {
   int OldVolume = volume;
-  volume = min(max(Absolute ? Volume : volume + Volume, 0), MAXVOLUME);
+  volume = constrain(Absolute ? Volume : volume + Volume, 0, MAXVOLUME);
   Absolute |= mute;
   cStatus::MsgSetVolume(Absolute ? volume : volume - OldVolume, Absolute);
   if(!(mute && volume<OldVolume)) { // effectively change volume

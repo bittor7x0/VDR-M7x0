@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <syslog.h>
@@ -25,9 +26,6 @@
 #include <sys/types.h>
 #include <endian.h>
 #include <byteswap.h>
-#ifdef XVDR_PLUGIN_ENABLE
-#include <stdlib.h>
-#endif
 #ifdef MEMWATCH
 #include "memwatch.h"
 #endif
@@ -449,7 +447,6 @@ public:
   T *Get(unsigned int Id) const { return (T *)cHashBase::Get(Id); }
 };
 
-#ifdef XVDR_PLUGIN_ENABLE
 template<class T> inline T constrain(T v, T l, T h) { return v < l ? l : v > h ? h : v; }
 
 template<class T> class cVector {
@@ -532,6 +529,5 @@ public:
     qsort(data, size, sizeof(T), Compare);
   }
   };
-#endif
 
 #endif //__TOOLS_H
