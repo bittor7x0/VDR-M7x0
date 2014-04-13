@@ -1,0 +1,12 @@
+diff -Naur a/include/errno.h b/include/errno.h
+--- a/include/errno.h	2014-02-18 23:30:28.000000000 +0100
++++ b/include/errno.h	2014-02-27 19:36:51.000000000 +0100
+@@ -46,7 +46,7 @@
+ extern int errno;
+ #endif
+ 
+-#ifdef _LIBC
++#if defined _LIBC && __UCLIBC_HAS___PROGNAME__
+ extern const char *__progname, *__progname_full;
+ #endif
+ #if defined __USE_GNU && defined __UCLIBC_HAS_PROGRAM_INVOCATION_NAME__

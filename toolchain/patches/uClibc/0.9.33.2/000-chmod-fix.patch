@@ -1,0 +1,63 @@
+From 82cab378652c1d1601545a80b7241090c55b1e37 Mon Sep 17 00:00:00 2001
+From: Markos Chandras <markos.chandras@imgtec.com>
+Date: Wed, 10 Oct 2012 12:41:18 +0000
+Subject: chmod: Use fchmodat if arch does not have the chmod syscall
+
+Signed-off-by: Markos Chandras <markos.chandras@imgtec.com>
+
+Signed-off-by: Bernhard Reutner-Fischer <rep.dot.nop@gmail.com>
+---
+diff --git a/include/sys/stat.h b/include/sys/stat.h
+index bff90cb..1709cec 100644
+--- a/include/sys/stat.h
++++ b/include/sys/stat.h
+@@ -309,6 +309,7 @@ extern int fchmod (int __fd, __mode_t __mode) __THROW;
+ extern int fchmodat (int __fd, const char *__file, __mode_t __mode,
+ 		     int __flag)
+      __THROW __nonnull ((2)) __wur;
++libc_hidden_proto(fchmodat)
+ #endif /* Use ATFILE.  */
+ 
+ 
+diff --git a/libc/sysdeps/linux/common/chmod.c b/libc/sysdeps/linux/common/chmod.c
+index 871e023..494ec66 100644
+--- a/libc/sysdeps/linux/common/chmod.c
++++ b/libc/sysdeps/linux/common/chmod.c
+@@ -9,13 +9,22 @@
+ 
+ #include <sys/syscall.h>
+ #include <sys/stat.h>
++#include <unistd.h>
+ 
++#if defined __NR_fchmodat && !defined __NR_chmod
++# include <fcntl.h>
++int chmod(const char *path, mode_t mode)
++{
++	return fchmodat(AT_FDCWD, path, mode, 0);
++}
+ 
+-#define __NR___syscall_chmod __NR_chmod
++#else
++# define __NR___syscall_chmod __NR_chmod
+ static __inline__ _syscall2(int, __syscall_chmod, const char *, path, __kernel_mode_t, mode)
+ 
+ int chmod(const char *path, mode_t mode)
+ {
+ 	return __syscall_chmod(path, mode);
+ }
++#endif
+ libc_hidden_def(chmod)
+diff --git a/libc/sysdeps/linux/common/fchmodat.c b/libc/sysdeps/linux/common/fchmodat.c
+index 8224a52..1e936e0 100644
+--- a/libc/sysdeps/linux/common/fchmodat.c
++++ b/libc/sysdeps/linux/common/fchmodat.c
+@@ -32,6 +32,7 @@ int fchmodat(int fd, const char *file, mode_t mode, int flag)
+ 
+ 	return INLINE_SYSCALL(fchmodat, 3, fd, file, mode);
+ }
++libc_hidden_def(fchmodat)
+ #else
+ /* should add emulation with fchmod() and /proc/self/fd/ ... */
+ #endif
+--
+cgit v0.9.1

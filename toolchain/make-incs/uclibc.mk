@@ -51,6 +51,10 @@ CLEAN_RULES += clean-uclibc
 DISTCLEAN_RULES += distclean-uclibc
 FILE_LISTS_y += uclibc.lst
 
+ifeq ($(CONFIG_UCLIBC_WITH_BACKTRACE),y)
+	FILE_LISTS_y +=  uclibc-backtrace.lst
+endif
+
 #
 # download uclibc
 #
@@ -91,6 +95,14 @@ $(STAGEFILES_DIR)/.uclibc_patched: $(STAGEFILES_DIR)/.uclibc_unpacked
 $(STAGEFILES_DIR)/.uclibc_configured: $(STAGEFILES_DIR)/.uclibc_patched
 	$(SED) -ne 's,^KERNEL_HEADERS=.*,KERNEL_HEADERS=\"$(LINUX_HEADERS_INSTALL_DIR)\",g' \
 		-e 'w$(UCLIBC_DIR)/.config' $(UCLIBC_CONFIG)
+  # Enable/Disable backtrace support
+  ifeq ($(CONFIG_UCLIBC_WITH_BACKTRACE),y)
+	$(SED) -i -e 's,^# UCLIBC_HAS_BACKTRACE is not set,UCLIBC_HAS_BACKTRACE=y,g' \
+		$(UCLIBC_DIR)/.config
+  else
+	$(SED) -i -e 's,^UCLIBC_HAS_BACKTRACE=y,# UCLIBC_HAS_BACKTRACE is not set,g' \
+		$(UCLIBC_DIR)/.config
+  endif
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_configured
 
 #

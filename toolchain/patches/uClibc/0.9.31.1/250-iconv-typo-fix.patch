@@ -1,0 +1,27 @@
+--- uClibc-0.9.30/libc/misc/wchar/wchar.c.orig	2008-12-17 18:28:15.000000000 +0100
++++ uClibc-0.9.30/libc/misc/wchar/wchar.c	2008-12-17 18:31:27.000000000 +0100
+@@ -1246,13 +1246,13 @@
+ 	"\x08\xec""UCS-4\x00"		/* always BE */
+ 	"\x0a\xec""UCS-4BE\x00"
+ 	"\x0a\xed""UCS-4LE\x00"
+-	"\x09\xe4""UTF-32\x00"		/* platform endian with BOM */
++	"\x09\xf4""UTF-32\x00"		/* platform endian with BOM */
+ 	"\x0b\xe4""UTF-32BE\x00"
+ 	"\x0b\xe5""UTF-32LE\x00"
+ 	"\x08\xe2""UCS-2\x00"		/* always BE */
+ 	"\x0a\xe2""UCS-2BE\x00"
+ 	"\x0a\xe3""UCS-2LE\x00"
+-	"\x09\xea""UTF-16\x00"		/* platform endian with BOM */
++	"\x09\xfa""UTF-16\x00"		/* platform endian with BOM */
+ 	"\x0b\xea""UTF-16BE\x00"
+ 	"\x0b\xeb""UTF-16LE\x00"
+ #elif __BYTE_ORDER == __LITTLE_ENDIAN
+@@ -1404,7 +1404,7 @@
+ 						px->fromcodeset ^= 1; /* toggle endianness */
+ 						wc = 0xfeffU;
+ 					}
+-					if (!px->frombom) {
++					if (!px->tobom) {
+ 						goto BOM_SKIP_OUTPUT;
+ 					}
+ 					goto GOT_BOM;

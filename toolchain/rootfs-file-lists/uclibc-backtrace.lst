@@ -1,0 +1,3 @@
+lib/libubacktrace-0.9.34-git.so   lib/libubacktrace-0.9.34-git.so   f 755 0 0 - - - - -
+lib/libubacktrace-0.9.34-git.so   -                                 s   - - - - - - - -
+lib/libubacktrace.so.0            libubacktrace-0.9.34-git.so       l 777 0 0 - - - - -
