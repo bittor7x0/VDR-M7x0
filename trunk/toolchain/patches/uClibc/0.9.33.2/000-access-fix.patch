@@ -1,0 +1,54 @@
+From 695e274cf7f24c596258827ee202d29ff735d9b9 Mon Sep 17 00:00:00 2001
+From: Markos Chandras <markos.chandras@imgtec.com>
+Date: Wed, 10 Oct 2012 12:44:07 +0000
+Subject: access: Use faccessat if arch does not have the access syscall
+
+Signed-off-by: Markos Chandras <markos.chandras@imgtec.com>
+
+Signed-off-by: Bernhard Reutner-Fischer <rep.dot.nop@gmail.com>
+---
+diff --git a/include/unistd.h b/include/unistd.h
+index 81f8e24..137b0db 100644
+--- a/include/unistd.h
++++ b/include/unistd.h
+@@ -307,6 +307,7 @@ extern int eaccess (const char *__name, int __type)
+    otherwise use real IDs like `access'.  */
+ extern int faccessat (int __fd, const char *__file, int __type, int __flag)
+      __THROW __nonnull ((2)) __wur;
++libc_hidden_proto(faccessat)
+ #endif /* Use GNU.  */
+ 
+ 
+diff --git a/libc/sysdeps/linux/common/access.c b/libc/sysdeps/linux/common/access.c
+index a075d42..139b7b7 100644
+--- a/libc/sysdeps/linux/common/access.c
++++ b/libc/sysdeps/linux/common/access.c
+@@ -9,4 +9,14 @@
+ 
+ #include <sys/syscall.h>
+ #include <unistd.h>
++
++#if defined __NR_faccessat && !defined __NR_access
++# include <fcntl.h>
++int access(const char *pathname, int mode)
++{
++	return faccessat(AT_FDCWD, pathname, mode, 0);
++}
++
++#else
+ _syscall2(int, access, const char *, pathname, int, mode)
++#endif
+diff --git a/libc/sysdeps/linux/common/faccessat.c b/libc/sysdeps/linux/common/faccessat.c
+index 09ca129..156df64 100644
+--- a/libc/sysdeps/linux/common/faccessat.c
++++ b/libc/sysdeps/linux/common/faccessat.c
+@@ -11,6 +11,7 @@
+ 
+ #ifdef __NR_faccessat
+ _syscall4(int, faccessat, int, fd, const char *, file, int, type, int, flag)
++libc_hidden_def(faccessat)
+ #else
+ /* should add emulation with faccess() and /proc/self/fd/ ... */
+ #endif
+--
+cgit v0.9.1
