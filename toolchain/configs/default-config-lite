@@ -391,6 +391,9 @@ CONFIG_O7O_FLASHER = y
 # URL: http://developer.kde.org/~wheeler/taglib.html
 # CONFIG_TAGLIB is not set
 
+# Add support for application self-debugging in uClibc library
+# CONFIG_UCLIBC_WITH_BACKTRACE is not set
+
 
 ###############################
 #                             #
