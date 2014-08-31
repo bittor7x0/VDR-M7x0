@@ -1320,11 +1320,17 @@ void cDevice::StillPicture(const uchar *Data, int Length)
                  int l;
                  while (const uchar *p = TsToPes.GetPes(l)) {
                        int Offset = Size;
-                       Size += l;
-                       buf = (uchar *)realloc(buf, Size);
-                       if (!buf)
+                       int NewSize = Size + l;
+                       if (uchar *NewBuffer = (uchar *)realloc(buf, NewSize)) {
+                          Size = NewSize;
+                          buf = NewBuffer;
+                          memcpy(buf + Offset, p, l);
+                          }
+                       else {
+                          LOG_ERROR_STR("out of memory");
+                          free(buf);
                           return;
-                       memcpy(buf + Offset, p, l);
+                          }
                        }
                  TsToPes.Reset();
                  }
@@ -1336,14 +1342,22 @@ void cDevice::StillPicture(const uchar *Data, int Length)
      int l;
      while (const uchar *p = TsToPes.GetPes(l)) {
            int Offset = Size;
-           Size += l;
-           buf = (uchar *)realloc(buf, Size);
-           if (!buf)
+           int NewSize = Size + l;
+           if (uchar *NewBuffer = (uchar *)realloc(buf, NewSize)) {
+              Size = NewSize;
+              buf = NewBuffer;
+              memcpy(buf + Offset, p, l);
+              }
+           else {
+              LOG_ERROR_STR("out of memory");
+              free(buf);
               return;
-           memcpy(buf + Offset, p, l);
+              }
            }
-     StillPicture(buf, Size);
-     free(buf);
+     if (buf) {
+        StillPicture(buf, Size);
+        free(buf);
+        }
      }
 }
 
@@ -1816,13 +1830,13 @@ void cDevice::FasterUnlockOther(void)
 
 void cDevice::Action(void)
 {
-  uchar *b = NULL;
 #if defined(USE_RECEIVER_RINGBUFFER) || defined(DISABLE_RINGBUFFER_IN_RECEIVER)
   sTsDataHeader header;
   header.startsWithVideoFrame = tsVideoFrameUnknown;
 #endif
   if (Running() && OpenDvr()) {
      int Length;
+     uchar *b = NULL;
      while (Running()) {
            // Read data from the DVR device:
 #ifdef USE_HW_VIDEO_FRAME_EVENTS

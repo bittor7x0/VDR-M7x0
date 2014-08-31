@@ -287,10 +287,7 @@ void cOSDClock::Action(void)
 	  DrawArrow(MinWidth,MinLength,ColorM,MinAng,Analog);
 	  if (ShowSec)
 	    DrawArrow(SecWidth,SecLength,ColorS,SecAng,Analog);
-	  if (FullScreen)
-	    osd->DrawBitmap(0, 0, Analog);
-	  else
-	    osd->DrawBitmap(0, 0, Analog);
+	  osd->DrawBitmap(0, 0, Analog);
 	  if (ShowSec)
 	    {
 	      DrawArrow(SecWidth,SecLength,ColorBackGround,SecAng,Analog);
@@ -314,10 +311,7 @@ void cOSDClock::Action(void)
 	  DrawArrow(MinWidth*0.7,MinLength,ColorM,MinAng,Analog);
 	  if (ShowSec)
 	    DrawModernSec(r, Sec, clrYellow, Analog);
-          if (FullScreen)
-	    osd->DrawBitmap(0, 0, Analog);
-	  else
-	    osd->DrawBitmap(0, 0, Analog);
+	  osd->DrawBitmap(0, 0, Analog);
 	  DrawArrow(MinWidth*0.7,MinLength,ColorBackGround,MinAng,Analog);
 	  DrawArrow(HourWidth*0.7,HourLength,ColorBackGround,HourAng,Analog);
 	  if (ShowSec)
@@ -339,10 +333,7 @@ void cOSDClock::Action(void)
 	  DrawArrow(MinWidth*0.8,MinLength*0.7,ColorM,MinAng,AnalogHigh);
 	  if (ShowSec)
 	    DrawArrow(SecWidth,SecLength*0.7,ColorS,SecAng,AnalogHigh);
-	  if (FullScreen)
-	    osd->DrawBitmap(0, 0, AnalogHigh);
-	  else
-	    osd->DrawBitmap(0, 0, AnalogHigh);
+	  osd->DrawBitmap(0, 0, AnalogHigh);
 	  if (ShowSec)
 	    {
 	      DrawArrow(SecWidth,SecLength*0.7,ColorBackGround,SecAng,AnalogHigh);

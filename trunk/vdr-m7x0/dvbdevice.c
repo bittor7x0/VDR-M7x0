@@ -1298,10 +1298,10 @@ void c7x0TsReplayer::HandlePmt(const uchar *Data)
                  return;
                  }
 
-              if (AudioPids[NumAudioPids] && NumAudioPids < MAXAPIDS)
+              if (NumAudioPids < MAXAPIDS && AudioPids[NumAudioPids])
                  NumAudioPids++;
 
-              if (DolbyPids[NumDolbyPids] && NumDolbyPids < MAXDPIDS)
+              if (NumDolbyPids < MAXDPIDS && DolbyPids[NumDolbyPids])
                  NumDolbyPids++;
 
               offset += r;
@@ -2933,9 +2933,9 @@ bool cDvbDevice::SetPid(cPidHandle *Handle, int Type, bool On)
            } while (errnoSave==EBUSY && i<=100);
 
         if (errnoSave != 0){
-           return false;
            close(Handle->handle);
            Handle->handle = -1;
+           return false;
            }
 
 #ifdef USE_HW_VIDEO_FRAME_EVENTS
@@ -3255,7 +3255,7 @@ void cDvbDevice::SetAudioTrackDevice(eTrackType Type, const tTrackId *TrackId)
               if (IS_DOLBY_TRACK(Type) && (pidHandles[ptPcr].handle >= 0)) {
                  int diff, stat;
                  stat = ioctl(pidHandles[ptPcr].handle,DMX_GET_AUDIO_SYNC_DIFF,&diff);
-                 dsyslog("cDvbDevice DEBUG: AC3 Audio Snyc Diff ioctl-Status %d Difference %d", stat, diff);
+                 dsyslog("cDvbDevice DEBUG: AC3 Audio Sync Diff ioctl-Status %d Difference %d", stat, diff);
                  }
               }
            }

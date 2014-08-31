@@ -590,7 +590,7 @@ void cTSRecorder::Receive(uchar *Data, int Length, const sTsDataHeader *const He
 									if(PESPayload<ToWrite+184){
 										if((!Data[PESPayload])&&(!Data[PESPayload+1])){
 											PESPayload+=2;
-											while((!Data[PESPayload])&&(PESPayload<ToWrite+185))
+											while((PESPayload<ToWrite+185)&&(!Data[PESPayload]))
 												PESPayload++;
 											if((Data[PESPayload]==0x01)&&(Data[PESPayload+1]==0x09)){
 												nextPictureType=(Data[PESPayload+2]>>5)+1;

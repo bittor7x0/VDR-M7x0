@@ -499,7 +499,6 @@ string cHelpers::ToText(cRecording * recording) {
 	 */
 
 	char buf[100];
-	string result = "";
 
 //#if APIVERSNUM >= 10705
 	time_t startTime = event->StartTime();
@@ -509,7 +508,7 @@ string cHelpers::ToText(cRecording * recording) {
 //	time_t endTime = 1L;
 //#endif
 	snprintf(buf, sizeof(buf) - 1, "%d", recording->Index());
-	result = buf;
+	string result = buf;
 	result += ":";
 
 	snprintf(buf, sizeof(buf) - 1, "%lu", startTime);
@@ -854,7 +853,7 @@ string cHelpers::MapSpecialChars(cString text) {
 	return MapSpecialChars((const char *) text);
 }
 
-string cHelpers::MapSpecialChars(const string text) {
+string cHelpers::MapSpecialChars(const string &text) {
 	return MapSpecialChars(text.c_str());
 }
 

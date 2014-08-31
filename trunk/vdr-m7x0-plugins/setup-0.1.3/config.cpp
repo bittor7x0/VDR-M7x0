@@ -66,11 +66,11 @@ bool Config::LoadFile()
 {
   bool ok = false;
   TiXmlElement *root;
-  const char* sysconfigFile=NULL;
     
   //Load XML Config file
   if( (ok=_xmlDoc.LoadFile()))
   { 
+    const char* sysconfigFile=NULL;
     if( (root = _xmlDoc.FirstChildElement("setup" ))!=NULL &&
         (sysconfigFile=root->Attribute("sysconfigFile")) )
    //    && (ok=_sysconfig.LoadFile(sysconfigFile)) == true )
@@ -326,17 +326,14 @@ bool Config::loadPlugins(TiXmlNode *node)
 bool Config::loadPlugins(TiXmlNode *node)
 {
   bool ok = true;
-   
+
   const char *loaded_plugins =  _sysconfig.GetVariable(_activePlugins.GetSysconfigName());
-  char *str_plugins = NULL ;
-  char *plugin = NULL;
-  
-      
+
   info("Loaded plugins: [%s]",loaded_plugins);
-  
+
   if ( loaded_plugins != NULL && strlen(loaded_plugins)>0) {
-    str_plugins =  Util::Strdupnew(loaded_plugins);
-    plugin = strtok(str_plugins," \"");
+    char *str_plugins =  Util::Strdupnew(loaded_plugins);
+    char *plugin = strtok(str_plugins," \"");
 
     while ( plugin != NULL ) {
       _activePlugins.AddPlugin(plugin+2, NULL,  plugin+2, true, _activePlugins.checkProtected(plugin+2),false);

@@ -118,9 +118,9 @@ public:
         bool HasMinArgument(unsigned int min) { return args.size()>=min; }
         int GetArgCount() { return args.size(); }
 
-        const char* GetArg(unsigned int i) { if (i>=0 && i<args.size()) return args[i].Text(); else return NULL; }
-        bool GetArgInt(unsigned int i, int &res) { if (i>=0 && i<args.size()) return args[i].GetInt(res); else return false; }
-        bool IsArgFlag(unsigned int i) { if (i>=0 && i<args.size()) return args[i].IsFlag(); else return false; }
+        const char* GetArg(unsigned int i) { if (i<args.size()) return args[i].Text(); else return NULL; }
+        bool GetArgInt(unsigned int i, int &res) { if (i<args.size()) return args[i].GetInt(res); else return false; }
+        bool IsArgFlag(unsigned int i) { if (i<args.size()) return args[i].IsFlag(); else return false; }
         void DropArgs(int start, int count);
         
         bool ArgScanFlag(const char *flag);

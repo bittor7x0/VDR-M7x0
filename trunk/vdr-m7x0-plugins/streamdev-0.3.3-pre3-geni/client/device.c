@@ -219,9 +219,9 @@ bool cStreamdevDevice::GetTSPacket(uchar *&Data) {
 	if (m_TSBuffer) {
 		Data = m_TSBuffer->Get();
 #if 1 // TODO: this should be fixed in vdr cTSBuffer
-		// simple disconnect detection
-		static int m_TSFails = 0;
 		if (!Data) {
+			// simple disconnect detection
+			static int m_TSFails = 0;
 			cPoller Poller(*ClientSocket.DataSocket(siLive));
 			errno = 0;
 			if (Poller.Poll() && !errno) {

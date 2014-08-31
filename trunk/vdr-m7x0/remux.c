@@ -2568,8 +2568,16 @@ void cTsToPes::PutTs(const uchar *Data, int Length)
      return; // skip everything before the first payload start
   Length = TsGetPayload(&Data);
   if (length + Length > size) {
-     size = max(KILOBYTE(2), length + Length);
-     data = (uchar *)realloc(data, size);
+     int NewSize = max(KILOBYTE(2), length + Length);
+     if (uchar *NewData = (uchar *)realloc(data, NewSize)) {
+        data = NewData;
+        size = NewSize;
+        }
+     else {
+        esyslog("ERROR: out of memory");
+        Reset();
+        return;
+        }
      }
   memcpy(data + length, Data, Length);
   length += Length;

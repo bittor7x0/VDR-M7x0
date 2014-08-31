@@ -3215,7 +3215,6 @@ unsigned int* GetFontChar(cTeletextChar c, unsigned int *buffer) {
     int chr=c.GetChar();
     unsigned char mode=c.GetExtMode();
     unsigned int *bitmap=NULL;
-    int i;
     int NationalOption=NationalOptionSubset(chr);
     int DiacriticalMarkNationalOption=0;
     DiacriticalMarkNationalOption=DiacriticalMarkNationalOptionChar(chr,mode);
@@ -3329,7 +3328,7 @@ unsigned int* GetFontChar(cTeletextChar c, unsigned int *buffer) {
             bitmap=TXT_Font[chr-0x60+0xE0];
         }
         if (bitmap) {
-            for (i=0;i<10;i++) buffer[i]=bitmap[i]&TXT_Mask[i];
+            for (int i=0;i<10;i++) buffer[i]=bitmap[i]&TXT_Mask[i];
             bitmap=buffer;
         }
         break;

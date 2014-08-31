@@ -53,7 +53,6 @@ ALGORITHM
 void afuzzy_init(const char *p, int kerr, int UseFilter, AFUZZY *fuzzy)
 {
 	int cnt, p_len, i, l, d, m;
-	char PatFilter[sizeof(Uint)*8 + 1];
 
 	fuzzy->k = kerr;
 	m = strlen(p);
@@ -107,6 +106,7 @@ void afuzzy_init(const char *p, int kerr, int UseFilter, AFUZZY *fuzzy)
 	{
 		if (UseFilter)
 		{
+			char PatFilter[sizeof(Uint)*8 + 1];
 			fuzzy->FilterSet = 1;
 			memset(fuzzy->FilterMap, 0 , sizeof(fuzzy->FilterMap) );
 			fuzzy->FilterS = (Uint *)calloc(m + 1, sizeof(Uint));

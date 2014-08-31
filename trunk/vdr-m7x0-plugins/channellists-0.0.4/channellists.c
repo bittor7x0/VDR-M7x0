@@ -358,13 +358,12 @@ cString cPluginChannellists::SVDRPCommand(const char *Command, const char *Optio
      }
   else if (strcasecmp(Command, "LOAD") == 0) {
      if ((*Option) && (strcmp(Option, ChannelsConf)!= 0)) {
-        FILE *in,*out;
-        in=fopen(Option,"r");
+        FILE *in=fopen(Option,"r");
         if (in) {
            Channels.SwitchTo(1);
            TimerList timers;
            timers.SaveTimer();
-           out=fopen(ChannelsConf,"w");
+           FILE *out=fopen(ChannelsConf,"w");
            if (out) {
               int c;
               while ((c=fgetc(in))!=EOF) {
@@ -478,10 +477,9 @@ eOSState cMenuEditChannellist::ProcessKey(eKeys Key) {
            else
               asprintf(&ToLoad, "%s/channels.conf.%s", ConfigDir, oldname);
 
-           FILE *in,*out;
-           in=fopen(ToLoad,"r");
+           FILE *in=fopen(ToLoad,"r");
            if (in) {
-              out=fopen(ToReload,"w");
+              FILE *out=fopen(ToReload,"w");
               if (out) {
                  int c;
                  while ((c=fgetc(in))!=EOF) {
@@ -577,13 +575,12 @@ eOSState cSwitchMenu::SwitchChannellist() {
 
      asprintf(&ToLoad, "%s/channels.conf.%s", ConfigDir, switcher->List[Current()]);
 
-     FILE *in,*out;
-     in=fopen(ToLoad,"r");
+     FILE *in=fopen(ToLoad,"r");
      if (in) {
         Channels.SwitchTo(1);
         TimerList timers;
         timers.SaveTimer();
-        out=fopen(ChannelsConf,"w");
+        FILE *out=fopen(ChannelsConf,"w");
         if (out) {
            int c;
            while ((c=fgetc(in))!=EOF) {

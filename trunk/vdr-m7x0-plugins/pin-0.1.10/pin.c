@@ -106,7 +106,6 @@ void cPin::Show(void)
 
 eOSState cPin::ProcessKey(eKeys Key)
 {
-   char txt[50+TB];
    int len = strlen(code);
    eOSState state = cOsdObject::ProcessKey(Key);
   
@@ -186,7 +185,7 @@ eOSState cPin::ProcessKey(eKeys Key)
       else
       {
          int i;
-
+         char txt[50+TB];
          strcpy(txt, pinTxt);
 
          for (i = 0; i < len; i++)
@@ -419,10 +418,9 @@ int cPinPlugin::menuItemProtected(const char* text)
 
 int cPinPlugin::menuItemAppend(const char* text)
 {
-   cLockItem* item;
-
    if (!lockedMenuItems.FindByName(text))
    {
+      cLockItem* item;
       lockedMenuItems.Add(item = new cLockItem(text));
       item->SetActive(no);
    }
@@ -709,7 +707,6 @@ void cPinStatusMonitor::RecordingFile(const char* FileName)
 {
    char* path = 0;
    cRecordControl* rc;
-   FILE* f;
 
    if (!FileName || !strlen(FileName))
       return;
@@ -728,7 +725,7 @@ void cPinStatusMonitor::RecordingFile(const char* FileName)
                  rc->Timer()->HasFlags(tfProtected) ? "timer configuration" : "of protected channel", 
                  rc->Timer()->Channel()->Name(), path);
 
-         f = fopen(path, "w");
+         FILE* f = fopen(path, "w");
          if (f) fclose(f);
 
          free(path);

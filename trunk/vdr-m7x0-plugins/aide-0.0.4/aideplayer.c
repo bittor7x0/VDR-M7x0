@@ -23,14 +23,13 @@ void cAidePlayer::Activate(bool On)
 		struct video_still_picture sp;
 		int filefd;
 		struct stat st;
-		ssize_t nRead;
 		if ( (filefd = open(Image,O_RDONLY)) >=0) {
 			fstat(filefd, &st);
 			if(st.st_size > 0){
 				sp.iFrame = (char *)malloc(st.st_size);
 				sp.size = st.st_size;	
 				if(sp.iFrame) {
-					nRead = read(filefd, sp.iFrame, sp.size);
+					ssize_t nRead = read(filefd, sp.iFrame, sp.size);
 					uchar *buffer;
 					buffer = (uchar *) sp.iFrame;
 					//for (int i = 1; i <= 25; ++i)

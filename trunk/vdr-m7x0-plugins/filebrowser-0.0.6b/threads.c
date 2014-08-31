@@ -333,7 +333,14 @@ char* cConfigCommandThread::SelectedFilesHandler(const char* OrgString, const ch
     D(fprintf(stderr, "adding file %s\n", File));
 
     FileNameLength++; /*\0 or IFS[0] */
-    Text=(char*)realloc(Text, TextLength + FileNameLength);
+    if (char *NewText = (char *)realloc(Text, TextLength + FileNameLength))
+      Text = NewText;
+    else
+    {
+      esyslog("ERROR: out of memory");
+      free(File);
+      break;
+    }
     sprintf(Text + TextLength - (TextLength > 0 ? 1 : 0), "%.1s%s", i > 0 ? (ifs ? ifs : " ") : "", File);
     TextLength+=FileNameLength;
     free(File);

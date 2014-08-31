@@ -178,11 +178,11 @@ cMenuEditIpItem::~cMenuEditIpItem() {
 */
 
 void cMenuEditIpItem::Set(void) {
-	char buf[1000];
 	if (pos >= 0) {
 		in_addr_t addr = inet_addr(value);	 
 		if ((int)addr == -1)
 			addr = 0;
+		char buf[1000];
 		int p = 0;
 		for (int i = 0; i < 4; ++i) {
 			p += snprintf(buf + p, sizeof(buf) - p, pos == i ? "[%d]" : "%d", 

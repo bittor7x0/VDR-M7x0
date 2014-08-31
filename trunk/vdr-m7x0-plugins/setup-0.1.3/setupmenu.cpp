@@ -500,7 +500,6 @@ void cSetupGenericMenu::ExecuteCommand( const char * cmd )
 cSetupMenu::cSetupMenu(bool load) : cOsdMenu(tr("VDR-NG Firmware Setup"))
 {
    char *configFile=NULL;
-   char *langs=NULL,*lang=NULL;
    int loaded=0;
    SetCols(20);
 	
@@ -509,8 +508,8 @@ cSetupMenu::cSetupMenu(bool load) : cOsdMenu(tr("VDR-NG Firmware Setup"))
 if (load) {
    SetStatus(tr("Loading configuration File"));
    //Get languages
-   langs  = Util::Strdupnew(I18nLanguageCode(Setup.OSDLanguage));      
-   lang = strtok(langs,",");
+   char *langs = Util::Strdupnew(I18nLanguageCode(Setup.OSDLanguage));      
+   char *lang = strtok(langs,",");
    while (lang != NULL) {
 	  asprintf(&configFile, "%s/setup/open7x0-setup_%s.xml", cPlugin::ConfigDirectory(),lang);
 	  debug("cSetupMenu.constr: Load config file %s", configFile);

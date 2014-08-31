@@ -197,27 +197,26 @@ int cPinMenu::addCurrentChannel()
 
 int cPinMenu::addCurrentBroadcast()
 {
-   cSchedulesLock schedLock;
-   const cSchedules* scheds;
-   const cSchedule *sched;
-   const cEvent* event;
-   char* buf;
-
    cChannel* channel = Channels.GetByNumber(cDevice::CurrentChannel());
 
    if (channel && !channel->GroupSep())
    {
+      cSchedulesLock schedLock;
+      const cSchedules* scheds;
       if (!(scheds = cSchedules::Schedules(schedLock)))
          return done;
 
+      const cSchedule *sched;
       if (!(sched = scheds->GetSchedule(channel->GetChannelID())))
          return done;
 
+      const cEvent* event;
       if (!(event = sched->GetPresentEvent()))
          return done;
 
       // Info
 
+      char* buf;
       asprintf(&buf, "%s - %s", event->Title(), tr("added to protection list"));
       Skins.Message(mtInfo, buf);
       free(buf);
@@ -302,10 +301,9 @@ eOSState cLockMenu::ProcessKey(eKeys key)
 
          case kGreen:                         // New
          {
-            cLockItem* item;
-
             if (type != ltPlugins)
             {
+               cLockItem* item;
                if (items->GetListType() == cPinPlugin::ltBroadcasts)
                   items->Add(item = new cLockedBroadcast("- new -"));
                else

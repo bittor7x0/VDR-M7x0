@@ -733,12 +733,11 @@ bool cXVDRClient::process_Login() /* OPCODE 1 */
   m_protocolVersion      = m_req->getProtocolVersion();
   m_compressionLevel     = m_req->get_U8();
   const char *clientName = m_req->get_String();
-  const char *language   = NULL;
 
   // get preferred language
   if(!m_req->eop())
   {
-    language = m_req->get_String();
+    const char *language = m_req->get_String();
     m_LanguageIndex = I18nLanguageIndex(language);
     m_LangStreamType = (cStreamInfo::Type)m_req->get_U8();
   }
@@ -751,7 +750,7 @@ bool cXVDRClient::process_Login() /* OPCODE 1 */
 
   INFOLOG("Welcome client '%s' with protocol version '%u'", clientName, m_protocolVersion);
 
-  if(!m_LanguageIndex != -1) {
+  if(m_LanguageIndex != -1) {
     INFOLOG("Preferred language: %s / type: %i", I18nLanguageCode(m_LanguageIndex), (int)m_LangStreamType);
   }
 

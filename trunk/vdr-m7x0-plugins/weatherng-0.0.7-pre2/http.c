@@ -188,8 +188,6 @@ FILE *http_open(const struct uri_t *urip) {
 	FILE *sfp, *rfp;
 	int sock;
 	struct sockaddr_in saddr;
-	struct hostent *hp;
-	struct servent *sp;
 
 	if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0)
 		return NULL;
@@ -199,16 +197,18 @@ FILE *http_open(const struct uri_t *urip) {
 	saddr.sin_family = AF_INET;
 
 	if (inet_aton(urip->host, &saddr.sin_addr) == 0) {
+		struct hostent *hp;
 		if ((hp = gethostbyname2(urip->host, AF_INET)) == NULL)
 			return NULL;
 		saddr.sin_addr = *(struct in_addr *)hp->h_addr_list[0];
 	}
 
-	sp = getservbyname("http", "tcp");
 	if (*(urip->port))
 		saddr.sin_port = atoi(urip->port);
-	else
+	else {
+		struct servent *sp = getservbyname("http", "tcp");
 		saddr.sin_port = sp->s_port;
+	}
 
 	if (connect(sock, (struct sockaddr *)&saddr, sizeof(saddr)) < 0)
 		return NULL;

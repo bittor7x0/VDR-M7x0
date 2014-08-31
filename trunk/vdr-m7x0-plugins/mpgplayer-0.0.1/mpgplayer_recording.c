@@ -1352,6 +1352,7 @@ const char *cMpgRecording::SortName(void) const
      sortBuffer = MALLOC(char, l);
      if (!sortBuffer) {
         LOG_ERROR;
+        free(s);
         return NULL;
         }
      strxfrm(sortBuffer, s, l);

@@ -609,9 +609,9 @@ void ReportEpgBugFixStats(bool Reset)
      bool GotHits = false;
      char buffer[1024];
      for (int i = 0; i < MAXEPGBUGFIXSTATS; i++) {
-         const char *delim = "\t";
          tEpgBugFixStats *p = &EpgBugFixStats[i];
          if (p->hits) {
+            const char *delim = "\t";
             bool PrintedStats = false;
             char *q = buffer;
             *buffer = 0;

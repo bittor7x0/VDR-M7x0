@@ -35,14 +35,12 @@ void cSubMenuItemInfo::setname(const char *n)
 
 void cSubMenu::LoadInfoSubMenu(void)
 {
-	char lig[80];
-	int j;
-
 	nbSubMenuItem = 0;
 	cString fichier = cString::sprintf("%s/MainMenu.conf",cPlugin::ConfigDirectory());
 	FILE *f = fopen(fichier,"rt");
 	if ( f != NULL)
 	{
+		char lig[80];
 		while (fgets(lig,80,f) )
 		{
 			ParseOneLigOfFile( lig );
@@ -80,7 +78,7 @@ void cSubMenu::LoadInfoSubMenu(void)
                            fprintf(fo,"0::aide\n");
 
 			// Plugins Item:
-			j=0;
+			int j=0;
 			do
 			{
 				p = cPluginManager::GetPlugin(j);

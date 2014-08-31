@@ -818,9 +818,9 @@ void cSVDRP::CmdEDIT(const char *Option)
 #ifdef WITH_LIBJPEG
 void cSVDRP::CmdGRAB(const char *Option)
 {
-  const char *FileName = NULL;
-  bool Jpeg = true;
   if (*Option) {
+     const char *FileName = NULL;
+     bool Jpeg = true;
      int Quality = -1, SizeX = -1, SizeY = -1;
      char buf[strlen(Option) + 1];
      char *p = strcpy(buf, Option);
