@@ -220,8 +220,6 @@ eOSState cMenuSetupPlayList::ProcessKey(eKeys Key)
     dsyslog("%s: cMenuSetupPlayList::ProcessKey Key=%s", plugin_name, KeyName(Key));
 #endif
   static char oldstatus[MAXOSDTEXTWIDTH];
-  char status[MAXOSDTEXTWIDTH];
-  int pathlen;
 
   int m_commandline_preference = commandline_preference.u;
   int m_mainmenu_visible = mainmenu_visible.u;
@@ -259,7 +257,8 @@ eOSState cMenuSetupPlayList::ProcessKey(eKeys Key)
   if (Current() == fileitempos)
   {
     const char *temp = PluginPlaylist->ExpandPath("", false);
-    pathlen = strlen(temp);
+    char status[MAXOSDTEXTWIDTH];
+    int pathlen = strlen(temp);
     if (pathlen > AKTOSDTEXTWIDTH - 10)
       sprintf(status, "...%s", temp + pathlen - AKTOSDTEXTWIDTH + 10);
     else

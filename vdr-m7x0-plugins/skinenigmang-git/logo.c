@@ -51,9 +51,10 @@ bool cEnigmaLogoCache::DrawEventImage(const cEvent *Event, int x, int y, int w, 
 
   char *strFilename = NULL;
   int rc = false;
-  if (-1 != asprintf(&strFilename, "%s/%d.%s", EnigmaConfig.GetImagesDir(), Event->EventID(), EnigmaConfig.GetImageExtension()))
+  if (-1 != asprintf(&strFilename, "%s/%d.%s", EnigmaConfig.GetImagesDir(), Event->EventID(), EnigmaConfig.GetImageExtension())) {
     rc = DrawImage(strFilename, x, y, w, h, c, bmp);
-  free(strFilename);
+    free (strFilename);
+  }
   return rc;
 }
 
@@ -64,9 +65,10 @@ bool cEnigmaLogoCache::DrawRecordingImage(const cRecording *Recording, int x, in
 
   char *strFilename = NULL;
   int rc = false;
-  if (-1 != asprintf(&strFilename, "%s/%s.%s", Recording->FileName(), RECORDING_COVER, EnigmaConfig.GetImageExtension()))
+  if (-1 != asprintf(&strFilename, "%s/%s.%s", Recording->FileName(), RECORDING_COVER, EnigmaConfig.GetImageExtension())) {
     rc = DrawImage(strFilename, x, y, w, h, c, bmp);
-  free(strFilename);
+    free (strFilename);
+  }
   return rc;
 }
 
@@ -143,10 +145,8 @@ bool cEnigmaLogoCache::Load(const char *fileNameP, int w, int h)
     return false;
 
   char *strFilename = NULL;
-  if (-1 == asprintf(&strFilename, "%s/%s.xpm", EnigmaConfig.GetLogoDir(), fileNameP)) {
-    free(strFilename);
+  if (-1 == asprintf(&strFilename, "%s/%s.xpm", EnigmaConfig.GetLogoDir(), fileNameP))
     return false;
-  }
 
   debug("cPluginSkinEnigma::Load(%s)", strFilename);
   // does the logo exist already in map

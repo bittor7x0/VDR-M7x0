@@ -69,9 +69,9 @@ cZappilotOsd::~cZappilotOsd(void)
 
 void cZappilotOsd::DisplayChannel(const cChannel *Channel)
 {
-   int BufSize = 255;
    if (Channel)
    {
+      int BufSize = 255;
       if (Channel->GroupSep())
          snprintf(ChanName, BufSize, "* %s *", Channel->Name());
       else
@@ -94,12 +94,12 @@ static int CompareEventTime(const void *p1, const void *p2)
 
 void cZappilotOsd::AddDelSwitchTimer(const cEvent *event)
 {
-   bool SwitchTimerExits = false;
    if (config.pEPGSearch && event)
    {
       Epgsearch_switchtimer_v1_0* serviceData = new Epgsearch_switchtimer_v1_0;
       serviceData->event = event;
       serviceData->mode = 0;
+      bool SwitchTimerExits = false;
       if (config.pEPGSearch->Service("Epgsearch-switchtimer-v1.0", serviceData))
       {
          SwitchTimerExits=serviceData->success;
@@ -197,6 +197,7 @@ void cZappilotOsd::UpdateEPGInfo(int NowNextPrev)
                pArray = MALLOC(const cEvent *, num);
                if (pArray)
                {
+                 {
                   int numreal = 0;
                   for (int a = 0; a < num; a++)
                   {
@@ -205,7 +206,7 @@ void cZappilotOsd::UpdateEPGInfo(int NowNextPrev)
                      pArray[numreal++] = EventInfo;
                   }
                   qsort(pArray, numreal, sizeof(cEvent *), CompareEventTime);
-               }
+                 }
                // Find the current event
                while ( (a < num) && ( (pArray[a])->StartTime() + (pArray[a])->Duration() < now ) )
                {
@@ -218,6 +219,8 @@ void cZappilotOsd::UpdateEPGInfo(int NowNextPrev)
                   if (currentEvent + 1 < num)
                      Following = pArray[currentEvent + 1];
                }
+               } else // if (pArray)
+                  esyslog("[ZapPilot] ERROR: can't allocate pArray!");
                break;
             case 2:              // Next
                if (currentEvent + 1 < num)
@@ -536,7 +539,6 @@ eOSState cZappilotOsd::ProcessKey(eKeys Key)
                UpdateEPGInfo(3);
                DrawMenu(0,0);
                return osContinue;
-               break;
             }
          }
          case kBlue|k_Repeat:
@@ -547,7 +549,6 @@ eOSState cZappilotOsd::ProcessKey(eKeys Key)
                UpdateEPGInfo(2);
                DrawMenu(0,0);
                return osContinue;
-               break;
             }
             else
             {
@@ -635,7 +636,6 @@ eOSState cZappilotOsd::ProcessKey(eKeys Key)
                DisplayTimer();
             }
             return osContinue;
-            break;
          }
          case kInfo:
          case kGreen:

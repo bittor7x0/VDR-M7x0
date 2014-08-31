@@ -688,9 +688,9 @@ cString cString::sprintf(const char *fmt, va_list &ap)
 
 cString WeekDayName(int WeekDay)
 {
-  char buffer[4];
   WeekDay = WeekDay == 0 ? 6 : WeekDay - 1; // we start with Monday==0!
   if (0 <= WeekDay && WeekDay <= 6) {
+     char buffer[4];
      const char *day = tr("MonTueWedThuFriSatSun");
      day += WeekDay * 3;
      strn0cpy(buffer, day, sizeof(buffer));

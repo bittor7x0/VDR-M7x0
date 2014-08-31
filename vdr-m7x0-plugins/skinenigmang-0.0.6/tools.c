@@ -41,7 +41,6 @@
 
 std::string parseaux(const char *aux)
 {
-  bool founditem = false;
   std::stringstream sstrReturn;
   char *start, *end;
   // check if egpsearch
@@ -52,6 +51,7 @@ std::string parseaux(const char *aux)
     sstrReturn << AUX_HEADER_EPGSEARCH;
     // parse first item
     char *tmp;
+    bool founditem = false;
     if ((tmp = strcasestr(start, AUX_TAGS_EPGSEARCH_ITEM_1A_START)) != NULL) {
       if (tmp < end) {
         tmp += strlen(AUX_TAGS_EPGSEARCH_ITEM_1A_START);
@@ -60,8 +60,6 @@ std::string parseaux(const char *aux)
           // add channel
           sstrReturn << tr("Channel:") << " " << std::string(tmp, tmp2 - tmp);
           founditem = true;
-        } else {
-          founditem = false;
         }
       }
     }

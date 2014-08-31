@@ -177,15 +177,13 @@ static void SetSignalHandlerCrashTime() {
 } // SetSignalHandlerCrashTime
 
 static void SignalHandlerCrash(int signum) {
-  void *array[BACKTRACE_BUFFER_SIZE]={0};
-  size_t size=0;
-  int fd=-1;
-  char buf[CRASH_MSG_SIZE]={0};
   signal(signum,SIG_DFL); // Allow core dump
 
-  fd=open("/var/log/vdr-crash.log", O_CREAT|O_APPEND|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH);
+  int fd=open("/var/log/vdr-crash.log", O_CREAT|O_APPEND|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH);
   if (fd != -1) {
-    size = backtrace (array, BACKTRACE_BUFFER_SIZE);
+    void *array[BACKTRACE_BUFFER_SIZE]={0};
+    size_t size = backtrace (array, BACKTRACE_BUFFER_SIZE);
+    char buf[CRASH_MSG_SIZE]={0};
     int ret = snprintf(buf, sizeof(buf), "%s ### Crash signal %i %s ###\n", crash_dtstr, signum, SIGNAL_STR(signum));
     if(write(fd, buf, ret+1)){};
     backtrace_symbols_fd(array, size, fd);
@@ -314,10 +312,12 @@ int main(int argc, char *argv[])
   int WatchdogTimeout = DEFAULTWATCHDOG;
   const char *Terminal = NULL;
 
-  bool UseKbd = true;
+  bool UseKbd;
   const char *LircDevice = NULL;
 #if !defined(REMOTE_KBD)
   UseKbd = false;
+#else
+  UseKbd = true;
 #endif
 #if defined(REMOTE_LIRC)
   LircDevice = LIRC_DEVICE;

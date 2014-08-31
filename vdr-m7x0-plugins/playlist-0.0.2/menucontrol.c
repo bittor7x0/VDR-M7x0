@@ -181,7 +181,6 @@ eOSState cControlPlaylist::PlayRecording(cPlaylistRecord *PlaylistRecord, bool V
   dsyslog("%s: cControlPlaylist::PlayRecording Name=%s FileName=%s", plugin_name, PlaylistRecord ? PlaylistRecord->Name() : NULL, PlaylistRecord ? PlaylistRecord->Filename() : NULL);
 #endif
 
-  static char title[MaxFileName];
   eOSState state = osEnd;
   DELETENULL(replaycontrol);
   if (PlaylistRecord)
@@ -231,6 +230,7 @@ eOSState cControlPlaylist::PlayRecording(cPlaylistRecord *PlaylistRecord, bool V
       PlaylistCol.Save();
     } else
       buffer = strdup(PlaylistRecord->Name());
+    static char title[MaxFileName];
     strn0cpy(title, buffer, MaxFileName);
     free(buffer);
     if (verbose.u)

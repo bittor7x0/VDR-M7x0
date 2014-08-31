@@ -155,10 +155,6 @@ cMenuChannelscan::cMenuChannelscan(int CurrentChannelNr)
        { 
          source = d->Source();
        }
-       else 
-       {
-         source = d->Source();
-       }
      }
   }
 #endif // M750s

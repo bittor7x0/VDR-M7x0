@@ -235,10 +235,8 @@ void cXVDRServer::Action(void)
 
   // get initial state of the recordings
   int recState = -1;
-  int recStateOld = -1;
-
   Recordings.StateChanged(recState);
-  recStateOld = recState;
+  int recStateOld = recState;
 
   while (Running())
   {

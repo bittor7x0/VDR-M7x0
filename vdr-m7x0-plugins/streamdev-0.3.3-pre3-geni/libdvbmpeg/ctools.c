@@ -298,6 +298,7 @@ void write_pes(int fd, pes_packet *p){
 }
 
 static unsigned int find_length(int f){
+	uint64_t p = 0;
 	uint64_t start = 0;
 	uint64_t q = 0;
 	int found = 0;
@@ -308,7 +309,7 @@ static unsigned int find_length(int f){
 	start -=2;
         lseek(f,start,SEEK_SET);
 	while ( neof > 0 && !found ){
-		uint64_t p = lseek(f,0,SEEK_CUR);
+		p = lseek(f,0,SEEK_CUR);
 		neof = save_read(f,&sync4,4);
 		if (sync4[0] == 0x00 && sync4[1] == 0x00 && sync4[2] == 0x01) {
 			switch ( sync4[3] ) {

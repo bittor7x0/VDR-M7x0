@@ -297,13 +297,12 @@ void cMenuEditStrItem::AdvancePos(void)
 
 void cMenuEditStrItem::Set(void)
 {
-  char buf[1000];
-
   if (InEditMode()) {
      // This is an ugly hack to make editing strings work with the 'skincurses' plugin.
      const cFont *font = dynamic_cast<cSkinDisplayMenu *>(cSkinDisplay::Current())->GetTextAreaFont(false);
      if (!font || font->Width("W") != 1) // all characters have with == 1 in the font used by 'skincurses'
         font = cFont::GetFont(fontOsd);
+     char buf[1000];
      strncpy(buf, value, pos);
      snprintf(buf + pos, sizeof(buf) - pos - 2, insert && newchar ? "[]%c%s" : "[%c]%s", *(value + pos), value + pos + 1);
      int width = cSkinDisplay::Current()->EditableWidth();

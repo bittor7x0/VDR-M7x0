@@ -67,7 +67,7 @@ int Storage::cleanSubDir(const char *dir) {
    static bool reportedError=false; //avoid filling up syslog
    DIR *d=opendir(dir);
    bool hadError=false;
-   int bytesDeleted=0;
+   int bytesDeleted=0, filesize;
    if (d) {
       struct dirent *txtfile, path;
       struct stat txtfilestat;
@@ -78,7 +78,7 @@ int Storage::cleanSubDir(const char *dir) {
          if (strcmp(txtfile->d_name+len-4, ".vtx")==0) {
             snprintf(fullPath, PATH_MAX, "%s/%s", dir, txtfile->d_name);
             stat(fullPath, &txtfilestat);
-            int filesize=actualFileSize(txtfilestat.st_size);
+            filesize=actualFileSize(txtfilestat.st_size);
             int ret=unlink(fullPath);
             if (ret==0)
                bytesDeleted+=filesize;
@@ -159,10 +159,10 @@ void Storage::freeSpace() {
 
    dsyslog("OSD-Teletext: freeSpace()\n");
    time_t min=time(0);
-   char minDir[PATH_MAX];
-   char fullPath[PATH_MAX];
    DIR *top=opendir(getRootDir());
    if (top) {
+      char minDir[PATH_MAX];
+      char fullPath[PATH_MAX];
       int haveDir=0;
       struct dirent *chandir, path;
       struct stat chandirstat;
@@ -730,9 +730,6 @@ void cTxtReceiver::DecodeTXT(uchar* TXT_buf)
    int hdr,mag,mag8,line;
    uchar *ptr;
    uchar flags,lang;
-   int i = 1;
-   uchar *aptr;
-   int triplet;
    uchar address=0;
    uchar mode=0,data=0;
    uchar active_row=0;
@@ -789,8 +786,9 @@ void cTxtReceiver::DecodeTXT(uchar* TXT_buf)
       break;
       }
    case 26:{ // Extended characters Level 1.5 - diacritical mark
-      aptr=ptr+1;
-      for (i = 0; i < 13; i++) {
+      uchar *aptr=ptr+1;
+      int triplet;
+      for (int i = 0; i < 13; i++) {
           triplet = vbi3_unham24p (aptr+(i*3));
           address=triplet & 0x3f;
           mode=(triplet >> 6) & 0x1f;

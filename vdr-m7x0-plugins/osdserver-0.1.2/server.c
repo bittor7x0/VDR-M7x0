@@ -105,8 +105,15 @@ char* cTCPConnection::ReadLine() {
 
     // need more data
     if (bufferLength==bufferFill) {
-        bufferLength+=256;
-        buffer=(char*)realloc(buffer,bufferLength);
+        int NewBufferLength = bufferLength + 256;
+        if (char *NewBuffer = (char *)realloc(buffer, NewBufferLength)) {
+           buffer = NewBuffer;
+           bufferLength = NewBufferLength;
+           }
+        else {
+           esyslog("ERROR: out of memory");
+           return NULL;
+           }
     }
     int len=read(fd,buffer+bufferFill,bufferLength-bufferFill);
     if (len==0) {

@@ -774,9 +774,9 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
   //int transportstreamId = SI::NIT::TransportStream::getTransportStreamId();
   found_ = endofScan = false;
   bool insert = false;     
-  int ThisNIT = -1;
   //if (!networkId) 
   if (true) {
+     int ThisNIT = -1;
      for (int i = 0; i < numNits; i++) {
          printf("DEBUG [nit]: ++ num Nits  %d\n", numNits);
          if (nits[i].networkId == nit.getNetworkId()) {
@@ -849,8 +849,8 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
       SI::Loop::Iterator it2;
       SI::FrequencyListDescriptor *fld = (SI::FrequencyListDescriptor *)ts.transportStreamDescriptors.getNext(it2, SI::FrequencyListDescriptorTag);
       int NumFrequencies = fld ? fld->frequencies.getCount() + 1 : 1;
-      int Frequencies[NumFrequencies];
       if (fld) {
+         int Frequencies[NumFrequencies];
          int ct = fld->getCodingType();
          if (ct > 0) {
             int n = 1;

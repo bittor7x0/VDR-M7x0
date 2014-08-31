@@ -2190,8 +2190,14 @@ eOSState cMenuCommands::Execute(void)
               int l = 0;
               int c;
               while ((c = fgetc(p)) != EOF) {
-                    if (l % 20 == 0)
-                       result = (char *)realloc(result, l + 21);
+                    if (l % 20 == 0) {
+                       if (char *NewBuffer = (char *)realloc(result, l + 21))
+                          result = NewBuffer;
+                       else {
+                          esyslog("ERROR: out of memory");
+                          break;
+                          }
+                       }
                     result[l++] = char(c);
                     }
               if (result)

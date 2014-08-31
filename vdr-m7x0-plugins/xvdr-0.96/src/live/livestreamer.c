@@ -209,11 +209,10 @@ int cLiveStreamer::StreamChannel(const cChannel *channel, int sock)
 
   m_uid = CreateChannelUID(channel);
 
-  // check if any device is able to decrypt the channel - code taken from VDR
-  int NumUsableSlots = 0;
-
 #ifdef XVDR_PLUGIN_TODO
   if (channel->Ca() >= CA_ENCRYPTED_MIN) {
+    // check if any device is able to decrypt the channel - code taken from VDR
+    int NumUsableSlots = 0;
     for (cCamSlot *CamSlot = CamSlots.First(); CamSlot; CamSlot = CamSlots.Next(CamSlot)) {
       if (CamSlot->ModuleStatus() == msReady) {
         if (CamSlot->ProvidesCa(channel->Caids())) {

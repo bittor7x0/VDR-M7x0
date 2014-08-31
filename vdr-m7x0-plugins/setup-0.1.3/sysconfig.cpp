@@ -197,11 +197,11 @@ const char * Sysconfig::readLine( FILE * fp )
  */
 void Sysconfig::addLine(const char * line )
 {
-  char *nam=NULL;
-  char *val=NULL;
   debug ("sysconfig add line:%s",line);
   if(strlen(line)>0 && line[0] != '#' )
   {//Line with variable
+    char *nam=NULL;
+    char *val=NULL;
     if( (nam =strtok((char*)line, "=")) != NULL &&
     	(val=strtok(NULL, "\0")) != NULL )
     {
@@ -211,8 +211,6 @@ void Sysconfig::addLine(const char * line )
       addVariable(compactspace(nam), value.c_str());
     }
   }
-  
- 
 }
 
 /**

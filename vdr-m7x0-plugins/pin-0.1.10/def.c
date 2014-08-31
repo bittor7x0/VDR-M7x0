@@ -23,13 +23,13 @@ int logLevel = eloOff;
 
 int tell(int eloquence, const char* format, ...)
 {
-   char tmp[1024];
    va_list ap;
 
    va_start(ap, format);
 
    if (logLevel >= eloquence)
    {
+      char tmp[1024];
       vsnprintf(tmp + 5, sizeof tmp - 5, format, ap);
       memcpy(tmp, "[pin] ", 5);
       syslog(LOG_INFO, "%s", tmp);

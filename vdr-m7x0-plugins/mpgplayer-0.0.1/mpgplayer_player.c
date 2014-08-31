@@ -1625,13 +1625,15 @@ bool cMpgIndexFile::CatchUp(int Index)
                }
             int newLast = buf.st_size / sizeof(tIndex) - 1;
             if (newLast > last) {
-               if (size <= newLast) {
-                  size *= 2;
-                  if (size <= newLast)
-                     size = newLast + 1;
+               int NewSize = size;
+               if (NewSize <= newLast) {
+                  NewSize *= 2;
+                  if (NewSize <= newLast)
+                     NewSize = newLast + 1;
                   }
-               index = (tIndex *)realloc(index, size * sizeof(tIndex));
-               if (index) {
+               if (tIndex *NewBuffer = (tIndex *)realloc(index, NewSize * sizeof(tIndex))) {
+                  size = NewSize;
+                  index = NewBuffer;
                   int offset = (last + 1) * sizeof(tIndex);
                   int delta = (newLast - last) * sizeof(tIndex);
                   if (lseek(f, offset, SEEK_SET) == offset) {
@@ -1654,8 +1656,10 @@ bool cMpgIndexFile::CatchUp(int Index)
                   else
                      LOG_ERROR_STR(fileName);
                   }
-               else
+               else {
                   esyslog("ERROR: can't realloc() index");
+                  break;
+                  }
                }
             }
          else

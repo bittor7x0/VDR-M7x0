@@ -78,9 +78,10 @@ launcher_start(int g, int x, int y, int s, int c) {
 int
 launcher_stop(void) {
 	if (game >= 0) {
-		// call the games stop function
-		return (menu[game].stop());
+		int game_stop = game;
 		game = -1;
+		// call the games stop function
+		return (menu[game_stop].stop());
 	}
 	return (0);
 }

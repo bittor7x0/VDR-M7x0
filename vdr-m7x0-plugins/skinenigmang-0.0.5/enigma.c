@@ -1989,16 +1989,16 @@ void cSkinEnigmaDisplayMenu::SetItem(const char *Text, int Index, bool Current, 
         int w = (Tab(i + 1) && HasTabbedText(Text, i + 1) ? (xItemLeft + Tab(i + 1)) : xItemRight) - xt;
         //TODO? int w = xItemRight - xt;
         // draw text
-        if (Current) {
 #ifndef DISABLE_ANIMATED_TEXT
+        if (Current) {
           if (fScrollListItem) {
 //            if (i > 0)
 //TODO?              EnigmaTextEffects.UpdateTextWidth(idListItem[i - 1], Tab(i) - Tab(i - 1));
             idListItem[i] = TE_MARQUEE(osd, idListItem[i], xt, y, s, ColorFg, ColorBg, FONT_LISTITEM, w, nMessagesShown ? std::min(yMessageTop - y, lineHeight) : 0 );
           } else
-#endif
             osd->DrawText(xt, y, s, ColorFg, ColorBg, pFontList, w, nMessagesShown ? std::min(yMessageTop - y, lineHeight) : 0 );
         } else
+#endif
           osd->DrawText(xt, y, s, ColorFg, ColorBg, pFontList, w, nMessagesShown ? std::min(yMessageTop - y, lineHeight) : 0 );
       }
     }

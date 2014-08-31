@@ -340,8 +340,15 @@ short ezxml_internal_dtd(ezxml_root_t root, char *s, size_t len)
                 continue;
             }
 
-            for (i = 0, ent = (*c == '%') ? pe : root->ent; ent[i]; i++);
-            ent = (char**)realloc(ent, (i + 3) * sizeof(char *)); // space for next ent
+            for (i = 0, ent = (*c == '%') ? pe : root->ent; ent[i]; i++) {
+                if (char **NewEnt = (char **)realloc(ent, (i + 3) * sizeof(char *))) // space for next ent
+                    ent = NewEnt;
+                else
+                {
+                    ezxml_err(root, v, "ERROR: out of memory");
+                    break;
+                }
+            }
             if (*c == '%') pe = ent;
             else root->ent = ent;
 
@@ -440,7 +447,15 @@ char *ezxml_str2utf8(char **s, size_t *len)
             c = (((c & 0x3FF) << 10) | (d & 0x3FF)) + 0x10000;
         }
 
-        while (l + 6 > max) u = (char*)realloc(u, max += EZXML_BUFSIZE);
+        while (l + 6 > max) {
+            if (char *NewU = (char *)realloc(u, max += EZXML_BUFSIZE))
+                u = NewU;
+            else
+            {
+                fprintf(stderr, "ERROR: out of memory");
+                break;
+            }
+        }
         if (c < 0x80) u[l++] = c; // US-ASCII subset
         else { // multi-byte UTF-8 sequence
             for (b = 0, d = c; d; d /= 2) b++; // bits in c
@@ -614,7 +629,15 @@ ezxml_t ezxml_parse_fp(FILE *fp)
     if (! (s = (char*)malloc(EZXML_BUFSIZE))) return NULL;
     do {
         len += (l = fread((s + len), 1, EZXML_BUFSIZE, fp));
-        if (l == EZXML_BUFSIZE) s = (char*)realloc(s, len + EZXML_BUFSIZE);
+        if (l == EZXML_BUFSIZE) {
+            if (char *NewS = (char *)realloc(s, len + EZXML_BUFSIZE))
+                s = NewS;
+            else
+            {
+                fprintf(stderr, "ERROR: out of memory");
+                break;
+            }
+        }
     } while (s && l == EZXML_BUFSIZE);
 
     if (! s) return NULL;
@@ -727,7 +750,7 @@ char *ezxml_toxml_r(ezxml_t xml, char **s, size_t *len, size_t *max,
 
     *len += sprintf(*s + *len, "</%s>", xml->name); // close tag
 
-    while (txt[off] && off < xml->off) off++; // make sure off is within bounds
+    while (off < xml->off && txt[off]) off++; // make sure off is within bounds
     return (xml->ordered) ? ezxml_toxml_r(xml->ordered, s, len, max, off, attr)
                           : ezxml_ampencode(txt + off, -1, s, len, max, 0);
 }
@@ -749,8 +772,15 @@ char *ezxml_toxml(ezxml_t xml)
         for (k = 2; root->pi[i][k - 1]; k++);
         for (j = 1; (n = root->pi[i][j]); j++) {
             if (root->pi[i][k][j - 1] == '>') continue; // not pre-root
-            while (len + strlen(t = root->pi[i][0]) + strlen(n) + 7 > max)
-                s = (char*)realloc(s, max += EZXML_BUFSIZE);
+            while (len + strlen(t = root->pi[i][0]) + strlen(n) + 7 > max) {
+                if (char *NewS = (char *)realloc(s, max += EZXML_BUFSIZE))
+                    s = NewS;
+                else
+                {
+                    ezxml_err(root, NULL, "ERROR: out of memory");
+                    break;
+                }
+            }
             len += sprintf(s + len, "<?%s%s%s?>\n", t, *n ? " " : "", n);
         }
     }
@@ -765,8 +795,15 @@ char *ezxml_toxml(ezxml_t xml)
         for (k = 2; root->pi[i][k - 1]; k++);
         for (j = 1; (n = root->pi[i][j]); j++) {
             if (root->pi[i][k][j - 1] == '<') continue; // not post-root
-            while (len + strlen(t = root->pi[i][0]) + strlen(n) + 7 > max)
-                s2 = (char*)realloc(s2, max += EZXML_BUFSIZE);
+            while (len + strlen(t = root->pi[i][0]) + strlen(n) + 7 > max) {
+                if (char *NewS2 = (char *)realloc(s2, max += EZXML_BUFSIZE))
+                    s2 = NewS2;
+                else
+                {
+                    ezxml_err(root, NULL, "ERROR: out of memory");
+                    break;
+                }
+            }
             len += sprintf(s2 + len, "\n<?%s%s%s?>", t, *n ? " " : "", n);
         }
     }
@@ -778,7 +815,6 @@ char *ezxml_toxml(ezxml_t xml)
 void ezxml_free(ezxml_t xml)
 {
     ezxml_root_t root = (ezxml_root_t)xml;
-    char **a, *s;
 
     if (! xml) return;
     ezxml_free(xml->child);
@@ -786,6 +822,7 @@ void ezxml_free(ezxml_t xml)
 
     if (! xml->parent) { // free root tag allocations
         int i, j;
+        char **a, *s;
         for (i = 10; root->ent[i]; i += 2) // 0 - 9 are default entites (<>&"')
             if ((s = root->ent[i + 1]) < root->s || s > root->e) free(s);
         free(root->ent); // free list of general entities

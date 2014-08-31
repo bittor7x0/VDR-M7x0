@@ -188,7 +188,7 @@ bool cVdrmanagerClientSocket::Read() {
 		return false;
 
 	int rc;
-	bool len = 0;
+	int len = 0;
 	char buf[2001];
 	while ((rc = read(sock, buf, sizeof(buf) - 1)) > 0) {
 		buf[rc] = 0;

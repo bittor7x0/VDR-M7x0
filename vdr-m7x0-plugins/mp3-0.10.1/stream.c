@@ -380,7 +380,7 @@ bool cNetStream::GetHTTPResponse(void)
     d(isyslog("netstream: <- %s\n",buff))
     hcount++;
     if(hcount==1) {   // parse status line
-      if(sscanf(buff,"%*[^ ] %d %128s",&code,text)!=2) {
+      if(sscanf(buff,"%*[^ ] %d %127s",&code,text)!=2) {
         esyslog("Bad HTTP response '%s' from %s:%d",buff,host,port);
         goto out;
         }

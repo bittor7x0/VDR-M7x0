@@ -92,7 +92,7 @@ void Numbers::set(Pos pos, unsigned int number)
 unsigned int Numbers::get(Pos pos) const
 {
   assert(pos <= Pos::last());
-  assert(0 <= content[pos] && content[pos] <= DIM);
+  assert(content[pos] <= DIM);
   return content[pos];
 }
 

@@ -89,7 +89,13 @@ cSubMenuPluginItem::cSubMenuPluginItem(int pos,int ou,cSubMenu &SM) : cOsdMenu(t
 		if (ToDisp[i]!=-1)
 		{
 			Add(new cOsdItem(tr(cPluginManager::GetPlugin(i)->Name()),osUser9));
-			DispOrder=(int *)realloc(DispOrder,(order+1)*sizeof(int));	
+			if (int *NewDispOrder = (int *)realloc(DispOrder, (order+1)*sizeof(int)))
+				DispOrder = NewDispOrder;
+			else
+			{
+				esyslog("ERROR: out of memory");
+				break;
+			}	
 			DispOrder[order]=i;
 			order++;
 		}
@@ -149,7 +155,13 @@ cSubMenuSystemItem::cSubMenuSystemItem(int pos,int ou,cSubMenu &SM) : cOsdMenu(t
 		if (ToDisplay[i]!=-1)
 		{
 			Add(new cOsdItem(tr(System[i]),osUser9));
-			DispOrder=(int *)realloc(DispOrder,sizeof(DispOrder)+sizeof(int));
+			if (int *NewDispOrder = (int *)realloc(DispOrder, sizeof(DispOrder)+sizeof(int)))
+				DispOrder = NewDispOrder;
+			else
+			{
+				esyslog("ERROR: out of memory");
+				break;
+			}
 			DispOrder[order]=i;
 			order++;
 		}

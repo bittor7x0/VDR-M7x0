@@ -691,7 +691,6 @@ eOSState cScreenMenu::ProcessKey(eKeys Key)
 //                      Setup.Save();
                       if (toggleOsd == 1) ColorBars();
                       else if (toggleOsd == 2) GrayBars();
-                      else if (toggleOsd == 4) DrawColor();
                       else DrawColor();
                       return osContinue;
                       }

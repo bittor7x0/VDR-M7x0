@@ -230,9 +230,9 @@ bool cStreamdevDevice::GetTSPacket(uchar *&Data) {
 	if (m_TSBuffer && m_Device) {
 		Data = m_TSBuffer->Get();
 #if 1 // TODO: this should be fixed in vdr cTSBuffer
-		// simple disconnect detection
-		static int m_TSFails = 0;
 		if (!Data) {
+			// simple disconnect detection
+			static int m_TSFails = 0;
 			LOCK_THREAD;
 			if(!ClientSocket.DataSocket(siLive)) {
 				return false; // triggers CloseDvr() + OpenDvr() in cDevice

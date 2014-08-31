@@ -50,7 +50,7 @@ private:
   static bool IsWantedTime(time_t when, cEvent * event);
   static string MapSpecialChars(const char * text);
   static string MapSpecialChars(const cString text);
-  static string MapSpecialChars(const string text);
+  static string MapSpecialChars(const string& text);
   static string ToText(const cEvent * event);
   static string ToText(cTimer * timer);
   static string ToText(cRecording * recording);
