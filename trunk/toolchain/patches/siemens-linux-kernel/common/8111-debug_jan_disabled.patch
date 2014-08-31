@@ -1,0 +1,668 @@
+--- slin_m740_orig/arch/mips/emma2/pci-emma2.c
++++ slin_m740/arch/mips/emma2/pci-emma2.c
+@@ -866,8 +866,9 @@
+ 		devfn_stop = hose->last_devfn;
+ 
+ 	for (pci_devfn=devfn_start; pci_devfn<devfn_stop; pci_devfn++) {
+-
++#ifdef DEBUG_JAN
+ 		printk("pci_devfn = %x\n",pci_devfn);
++#endif
+ 		if (PCI_FUNC(pci_devfn) && !found_multi)
+ 			continue;
+ 
+@@ -982,7 +983,9 @@
+ 		pciauto_assign_resources(busno, p);
+ 		busno *= 2;
+ 	}
++#ifdef DEBUG_JAN
+ 	printk("scan the buses\n"); // DEBUG_JAN
++#endif
+ 
+ 	/* scan the buses */
+ 	busno = 2;
+@@ -999,22 +1002,34 @@
+ 		    dev0.sysdata = bus->sysdata;
+ 
+ 		    dev0.devfn = 0;
++#ifdef DEBUG_JAN
+ 		    printk("scan_slot bus=%x\n",bus); // DEBUG_JAN
++#endif
+ 		    pci_scan_slot(&dev0);
++#ifdef DEBUG_JAN
+ 		    printk("fixup_bus\n"); // DEBUG_JAN
++#endif
+ 		    pcibios_fixup_bus(bus);
++#ifdef DEBUG_JAN
+ 		    printk("fixup_bus done\n"); // DEBUG_JAN
++#endif
+ 	    }
+ 	    busno *= 2;
+ 	}
++#ifdef DEBUG_JAN
+ 	printk("pcibios_fixup\n"); // DEBUG_JAN
++#endif
+ 
+ 	/* machine dependent fixups */
+ 	pcibios_fixup();
++#ifdef DEBUG_JAN
+ 	printk("pcibios_fixup_irqs\n"); // DEBUG_JAN
++#endif
+ 	/* fixup irqs (board specific routines) */
+ 	pcibios_fixup_irqs();
++#ifdef DEBUG_JAN
+ 	printk("pcibios_fixup_irqs done\n"); // DEBUG_JAN
++#endif
+ }
+ 
+ int pcibios_enable_device(struct pci_dev *dev,int mask)
+--- slin_m740_orig/arch/mips/emma2/serial.c
++++ slin_m740/arch/mips/emma2/serial.c
+@@ -793,12 +793,16 @@
+ 	info = IRQ_ports[56];
+ 	if(!info || !( ((unsigned int)info) & 0x80000000))
+ 	{
++#ifdef DEBUG_JAN
+ 		printk("info = %x\n",(unsigned int)info);
++#endif
+ 		return;
+ 	}
+ 	status = serial_inp(info, UART_LSR);
+ 	ier = info->IER;
++#ifdef DEBUG_JAN
+ 	printk("status = %x IER=%x\n", status,ier );
++#endif
+ }
+ /*
+  * This is the serial driver's interrupt routine for a single port
+@@ -3289,7 +3293,9 @@
+ 		panic("Couldn't register serial driver\n");
+ 	if (tty_register_driver(&callout_driver))
+ 		panic("Couldn't register callout driver\n");
++#ifdef DEBUG_JAN
+ 	printk("NR_PORTS = %d\n",NR_PORTS); // DEBUG_JAN
++#endif
+ 	
+ 	for (i = 0, state = rs_table; i < NR_PORTS; i++,state++) {
+ 		state->magic = SSTATE_MAGIC;
+@@ -3738,7 +3744,9 @@
+  */
+ void __init serial_console_init(void)
+ {
+-    	printk("serial_console_init\n"); // DEBUG_JAN
++#ifdef DEBUG_JAN
++	printk("serial_console_init\n"); // DEBUG_JAN
++#endif
+ 	register_console(&sercons);
+ }
+ #endif
+--- slin_m740_orig/arch/mips/emma2/setup.c
++++ slin_m740/arch/mips/emma2/setup.c
+@@ -90,7 +90,9 @@
+ 	isa_slot_offset = VR41XX_ISAMEM_BASE;  
+ 
+ #ifdef CONFIG_BLK_DEV_IDE
++#ifdef DEBUG_JAN
+ 	printk("setting ide_ops\n"); // DEBUG_JAN
++#endif
+ 	ide_nec_setup_hw();
+ 	ide_ops = &vr41xx_ide_ops;
+ #endif
+@@ -109,12 +111,16 @@
+ 
+ 	// Do platform-dependent setup.
+ 	// This is mostly stuff that doesn't fit well anywhere else.
++#ifdef DEBUG_JAN
+ 	printk("platdep_setup\n"); // DEBUG_JAN
++#endif
+ #ifdef CONFIG_PCI
+ 	vr41xx_pciu_init(&pci_address_map);
+ #endif
+ 	platdep_setup();
++#ifdef DEBUG_JAN
+ 	printk("vr41xx setup done\n"); // DEBUG_JAN
++#endif
+ 	emma2_mpeg_mem = alloc_bootmem(16*1024*1024);
+ 	emma2_mpeg_mem_size = 16*1024*1024;
+ 	printk("emma2_mpeg_mem = %08x\n",emma2_mpeg_mem);
+--- slin_m740_orig/arch/mips/emma2/time.c
++++ slin_m740/arch/mips/emma2/time.c
+@@ -64,10 +64,10 @@
+ 
+ unsigned long get_rtc_time(volatile unsigned short *reg)
+ {
+-	unsigned short regh, regm, regl;
+-
+ 	return 0; // DEBUG_JAN
+ 
++#if 0
++	unsigned short regh, regm, regl;
+ 	// why this crazy order, you ask?  to guarantee that neither m
+ 	// nor l wrap before all 3 read
+ 	do {
+@@ -78,16 +78,14 @@
+ 		regl = read_time_reg(reg);
+ 	} while (regm != read_time_reg(reg + 1));
+ 	return ((regh << 17) | (regm << 1) | (regl >> 15)) + epoch_adj;
++#endif
+ }
+ 
+ void set_rtc_time(unsigned long settime, volatile unsigned short *reg)
+ {
++#if 0 // DEBUG_JAN
+ 	unsigned short intreg;
+ 	unsigned long flags, timeval = settime - epoch_adj;
+-
+-	return; // DEBUG_JAN
+-#if 0
+-
+ 	spin_lock_irqsave(&rtc_lock, flags);
+ 	intreg = *VR41XX_RTCINTREG & 0x05;
+ 	barrier();
+@@ -106,9 +104,9 @@
+ //
+ static unsigned long do_gettimeoffset(void)
+ {
++#if 0 // DEBUG_JAN
+ 	unsigned short count;
+ 	unsigned long offset;
+-#if 0 // DEBUG_JAN
+ 	count = read_time_reg(VR41XX_RTCL1CNTLREG); 
+ 	count = 0
+ 	if (count == 1)
+--- slin_m740_orig/arch/mips/kernel/setup.c
++++ slin_m740/arch/mips/kernel/setup.c
+@@ -118,8 +118,7 @@
+ asmlinkage void __init
+ init_arch(int argc, char **argv, char **envp, int *prom_vec)
+ {
+-	unsigned int s;
+-	// DEBUG_JAN
++#ifdef DEBUG_JAN
+ 	if(argv < 0x80000000 || argv >= 0x82000000 || ( ((int) argv) & 1)
+ 	   || argv[0] < 0x80000000 || argv[0] > 0x82000000 || ( ((int)argv[0]) & 1)
+ 	   || strncmp(argv[0],"vmlinux",7) )  {
+@@ -138,22 +137,30 @@
+ 	      argv = a;
+ 	    }
+ 	}
+-
++#endif
+ 
+ 	/* Determine which MIPS variant we are running on. */
++#ifdef DEBUG_JAN
+ 	printk("cpu_probe\n");
++#endif
+ 	cpu_probe();
++#ifdef DEBUG_JAN
+ 	printk("cpu_probe done\n");
++#endif
+ 
+ 	prom_init(argc, argv, envp, prom_vec);
++#ifdef DEBUG_JAN
+ 	printk("after prom_init\n");
++#endif
+ 
+ #ifdef CONFIG_SGI_IP22
+ 	sgi_sysinit();
+ #endif
+ 
+ 	cpu_report();
++#ifdef DEBUG_JAN
+ 	printk("after cpu_report\n");
++#endif
+ 
+ 	/*
+ 	 * Determine the mmu/cache attached to this machine,
+@@ -161,12 +168,16 @@
+ 	 * variants this also sets CP0_WIRED to zero.
+ 	 */
+ 	loadmmu();
++#ifdef DEBUG_JAN
+ 	printk("after loadmmu\n");
++#endif
+ 
+ 	/* Disable coprocessors and set FPU for 16/32 FPR register model */
+ 	clear_cp0_status(ST0_CU1|ST0_CU2|ST0_CU3|ST0_KX|ST0_SX|ST0_FR);
+ 	set_cp0_status(ST0_CU0);
+-	printk("after start kernel\n");
++#ifdef DEBUG_JAN
++	printk("start kernel\n");
++#endif
+ 
+ 	start_kernel();
+ }
+--- slin_m740_orig/arch/mips/vr41xx/power.c
++++ slin_m740/arch/mips/vr41xx/power.c
+@@ -36,8 +36,8 @@
+ {
+ 	void* reset_addr = (void*)0xbfc00000;
+ 
+-	printk("try deadman reset\n");
+ #if 0 // DEBUG_JAN
++	printk("try deadman reset\n");
+ 	/*
+ 	* try deadman's reset first.
+ 	*/
+@@ -45,9 +45,10 @@
+ 	*(volatile int *)VR41XX_DSUSETREG = 1;  /* 1sec */
+ 	*(volatile int *)VR41XX_DSUCNTREG = 1;  /* enable deadman switch */
+ 	mdelay(2000);                           /* wait 2 second */
+-#endif
+ 
+ 	printk("try jump start address\n");
++#endif
++
+ 	/* jump start address */
+ 
+ 	goto *reset_addr;
+--- slin_m740_orig/arch/mips/vr41xx/serial.c
++++ slin_m740/arch/mips/vr41xx/serial.c
+@@ -790,12 +790,16 @@
+ 	info = IRQ_ports[56];
+ 	if(!info || !( ((unsigned int)info) & 0x80000000))
+ 	{
++#ifdef DEBUG_JAN
+ 		printk("info = %x\n",(unsigned int)info);
++#endif
+ 		return;
+ 	}
+ 	status = serial_inp(info, UART_LSR);
+ 	ier = info->IER;
++#ifdef DEBUG_JAN
+ 	printk("status = %x IER=%x\n", status,ier );
++#endif
+ }
+ /*
+  * This is the serial driver's interrupt routine for a single port
+@@ -3286,7 +3290,9 @@
+ 		panic("Couldn't register serial driver\n");
+ 	if (tty_register_driver(&callout_driver))
+ 		panic("Couldn't register callout driver\n");
++#ifdef DEBUG_JAN
+ 	printk("NR_PORTS = %d\n",NR_PORTS); // DEBUG_JAN
++#endif
+ 	
+ 	for (i = 0, state = rs_table; i < NR_PORTS; i++,state++) {
+ 		state->magic = SSTATE_MAGIC;
+@@ -3740,7 +3746,9 @@
+  */
+ void __init serial_console_init(void)
+ {
+-    	printk("serial_console_init\n"); // DEBUG_JAN
++#ifdef DEBUG_JAN
++	printk("serial_console_init\n"); // DEBUG_JAN
++#endif
+ 	register_console(&sercons);
+ }
+ #endif
+--- slin_m740_orig/arch/mips/vr41xx/setup.c
++++ slin_m740/arch/mips/vr41xx/setup.c
+@@ -81,7 +81,9 @@
+ 	isa_slot_offset = VR41XX_ISAMEM_BASE;  
+ 
+ #ifdef CONFIG_BLK_DEV_IDE
++#ifdef DEBUG_JAN
+ 	printk("setting ide_ops\n"); // DEBUG_JAN
++#endif
+ 	ide_nec_setup_hw();
+ 	ide_ops = &vr41xx_ide_ops;
+ #endif
+@@ -162,7 +164,11 @@
+ 
+ 	// Do platform-dependent setup.
+ 	// This is mostly stuff that doesn't fit well anywhere else.
++#ifdef DEBUG_JAN
+ 	printk("platdep_setup\n"); // DEBUG_JAN
++#endif	
+ 	platdep_setup();
++#ifdef DEBUG_JAN
+ 	printk("vr41xx setup done\n"); // DEBUG_JAN
++#endif
+ }
+--- slin_m740_orig/arch/mips/vr41xx/time.c
++++ slin_m740/arch/mips/vr41xx/time.c
+@@ -64,10 +64,10 @@
+ 
+ unsigned long get_rtc_time(volatile unsigned short *reg)
+ {
+-	unsigned short regh, regm, regl;
+-
+ 	return 0; // DEBUG_JAN
+ 
++#if 0
++	unsigned short regh, regm, regl;
+ 	// why this crazy order, you ask?  to guarantee that neither m
+ 	// nor l wrap before all 3 read
+ 	do {
+@@ -78,16 +78,14 @@
+ 		regl = read_time_reg(reg);
+ 	} while (regm != read_time_reg(reg + 1));
+ 	return ((regh << 17) | (regm << 1) | (regl >> 15)) + epoch_adj;
++#endif
+ }
+ 
+ void set_rtc_time(unsigned long settime, volatile unsigned short *reg)
+ {
++#if 0 // DEBUG_JAN
+ 	unsigned short intreg;
+ 	unsigned long flags, timeval = settime - epoch_adj;
+-
+-	return; // DEBUG_JAN
+-#if 0
+-
+ 	spin_lock_irqsave(&rtc_lock, flags);
+ 	intreg = *VR41XX_RTCINTREG & 0x05;
+ 	barrier();
+@@ -106,9 +104,9 @@
+ //
+ static unsigned long do_gettimeoffset(void)
+ {
++#if 0 // DEBUG_JAN
+ 	unsigned short count;
+ 	unsigned long offset;
+-#if 0 // DEBUG_JAN
+ 	count = read_time_reg(VR41XX_RTCL1CNTLREG); 
+ 	count = 0
+ 	if (count == 1)
+--- slin_m740_orig/drivers/mtd/chips/cfi_cmdset_0001.c
++++ slin_m740/drivers/mtd/chips/cfi_cmdset_0001.c
+@@ -64,8 +64,10 @@
+ 	module: THIS_MODULE
+ };
+ 
++#ifdef DEBUG_JAN
+ #define DEBUG_LOCK_BITS 
+ #define DEBUG_CFI_FEATURES  // DEBUG_JAN
++#endif
+ 
+ #ifdef DEBUG_CFI_FEATURES
+ static void cfi_tell_features(struct cfi_pri_intelext *extp)
+--- slin_m740_orig/drivers/mtd/chips/cfi_probe.c
++++ slin_m740/drivers/mtd/chips/cfi_probe.c
+@@ -18,7 +18,9 @@
+ #include <linux/mtd/cfi.h>
+ #include <linux/mtd/gen_probe.h>
+ 
++#ifdef DEBUG_JAN
+ #define DEBUG_CFI  // DEBUG_JAN
++#endif
+ 
+ #ifdef DEBUG_CFI
+ static void print_cfi_ident(struct cfi_ident *);
+@@ -69,10 +71,14 @@
+ 
+ 	if (!qry_present(map,base,cfi)) {
+ 	    volatile unsigned short *bas = 0xbf000000;
++#ifdef DEBUG_JAN
+ 	    printk("!qry_present type=%d interleave=%d base=%x\n",
+ 		    cfi->device_type,cfi->interleave,base); // DEBUG_JAN
++#endif
+ 	    bas[0] = 0xf0;
++#ifdef DEBUG_JAN
+ 	    printk("base[0] = %x\n",bas[0]);
++#endif
+ 	    return 0;
+ 	}
+ 
+--- slin_m740_orig/drivers/net/8139too.c
++++ slin_m740/drivers/net/8139too.c
+@@ -701,7 +701,9 @@
+ static void set_pin(int pin,int val) // DEBUG_JAN
+ {
+     if(pin < 32) {
++#ifdef DEBUG_JAN
+ 	printk("pin must be >= 32\n");
++#endif
+ 	return;
+     }
+     pin -= 32;
+@@ -710,7 +712,9 @@
+     	zpio_regs_base->port_data_1 |= 1<<pin;
+     else
+         zpio_regs_base->port_data_1 &= ~(1<<pin);
++#ifdef DEBUG_JAN
+     printk("pin = %d\n",(zpio_regs_base->port_data_1>>pin) & 1);
++#endif
+ }
+ 
+ static void __rtl8139_cleanup_dev (struct net_device *dev)
+@@ -2028,7 +2032,9 @@
+ 
+ 	/* Update the error count. */
+ 	tp->stats.rx_missed_errors += RTL_R32 (RxMissed);
++#ifdef DEBUG_JAN
+ 	printk("missed3 = %d\n",RTL_R32( RxMissed )); // DEBUG_JAN
++#endif
+ 	RTL_W32 (RxMissed, 0);
+ 
+ 	if ((status & RxUnderrun) && link_changed &&
+@@ -2174,7 +2180,9 @@
+ 
+ 	/* Update the error counts. */
+ 	tp->stats.rx_missed_errors += RTL_R32 (RxMissed);
++#ifdef DEBUG_JAN
+ 	printk("missed4 = %d\n",RTL_R32( RxMissed )); // DEBUG_JAN
++#endif
+ 	RTL_W32 (RxMissed, 0);
+ 
+ 	spin_unlock_irqrestore (&tp->lock, flags);
+@@ -2510,7 +2518,9 @@
+ 	if (netif_running(dev)) {
+ 		spin_lock_irqsave (&tp->lock, flags);
+ 		tp->stats.rx_missed_errors += RTL_R32 (RxMissed);
++#ifdef DEBUG_JAN
+ 		printk("missed1 = %d\n",RTL_R32( RxMissed )); // DEBUG_JAN
++#endif
+ 		RTL_W32 (RxMissed, 0);
+ 		spin_unlock_irqrestore (&tp->lock, flags);
+ 	}
+@@ -2601,7 +2611,9 @@
+ 
+ 	/* Update the error counts. */
+ 	tp->stats.rx_missed_errors += RTL_R32 (RxMissed);
++#ifdef DEBUG_JAN
+ 	printk("missed2 = %d\n",RTL_R32( RxMissed )); // DEBUG_JAN
++#endif
+ 	RTL_W32 (RxMissed, 0);
+ 
+ 	spin_unlock_irqrestore (&tp->lock, flags);
+--- slin_m740_orig/drivers/pci/pci.c
++++ slin_m740/drivers/pci/pci.c
+@@ -1439,7 +1439,9 @@
+ 
+ 	if (pci_read_config_dword(temp, PCI_VENDOR_ID, &l))
+ 		return NULL;
++#ifdef DEBUG_JAN
+ 	printk("vendor=%x\n",l); // DEBUG_JAN
++#endif
+ 
+ 	/* some broken boards return 0 or ~0 if a slot is empty: */
+ 	if (l == 0xffffffff || l == 0x00000000 || l == 0x0000ffff || l == 0xffff0000)
+@@ -1457,7 +1459,9 @@
+ 	   set this higher, assuming the system even supports it.  */
+ 	dev->dma_mask = 0xffffffff;
+ 	if (pci_setup_device(dev) < 0) {
+-	    	printk("pci_setup_device failed\n"); //DEBUG_JAN
++#ifdef DEBUG_JAN
++		printk("pci_setup_device failed\n"); //DEBUG_JAN
++#endif
+ 		kfree(dev);
+ 		dev = NULL;
+ 	}
+@@ -1478,7 +1482,9 @@
+ 			continue;
+ 		if (pci_read_config_byte(temp, PCI_HEADER_TYPE, &hdr_type))
+ 			continue;
++#ifdef DEBUG_JAN
+ 		printk("func = %x hdr_type=%x\n",func,hdr_type); // DEBUG_JAN
++#endif
+ 		temp->hdr_type = hdr_type & 0x7f;
+ 
+ 		dev = pci_scan_device(temp);
+@@ -2103,9 +2109,13 @@
+ 	pcibios_init();
+ 
+ 	pci_for_each_dev(dev) {
+-	    	printk("pci_fixup_device\n"); // DEBUG_JAN
++#ifdef DEBUG_JAN
++		printk("pci_fixup_device\n"); // DEBUG_JAN
++#endif
+ 		pci_fixup_device(PCI_FIXUP_FINAL, dev);
+-	    	printk("pci_fixup_device done\n"); // DEBUG_JAN
++#ifdef DEBUG_JAN
++		printk("pci_fixup_device done\n"); // DEBUG_JAN
++#endif
+ 	}
+ 
+ #ifdef CONFIG_PM
+--- slin_m740_orig/drivers/usb/host/usb-ohci.c
++++ slin_m740/drivers/usb/host/usb-ohci.c
+@@ -2506,34 +2506,50 @@
+ 	/* disconnect all devices */    
+ 	if (ohci->bus->root_hub)
+ 		usb_disconnect (&ohci->bus->root_hub);
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN2\n");
++#endif
+ 
+ 	if (!ohci->disabled)
+ 		hc_reset (ohci);
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN3\n");
++#endif
+ 	
+ 	if (ohci->irq >= 0) {
+ 		free_irq (ohci->irq, ohci);
+ 		ohci->irq = -1;
+ 	}
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN4\n");
++#endif
+ 	pci_set_drvdata(ohci->ohci_dev, NULL);
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN5\n");
++#endif
+ 	if (ohci->bus) {
+ 		if (ohci->bus->busnum != -1)
+ 			usb_deregister_bus (ohci->bus);
+-		printk("DEBUG_JAN6\n");
++#ifdef DEBUG_JAN
++	printk("DEBUG_JAN6\n");
++#endif
+ 
+ 		usb_free_bus (ohci->bus);
+ 	}
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN7\n");
++#endif
+ 
+ 	ohci_mem_cleanup (ohci);
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN8\n");
++#endif
+     
+ 	/* unmap the IO address space */
+ 	iounmap (ohci->regs);
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN9\n");
++#endif
+ 
+ 	pci_free_consistent (ohci->ohci_dev, sizeof *ohci->hcca,
+ 		ohci->hcca, ohci->hcca_dma);
+@@ -2734,7 +2750,9 @@
+ #ifdef	DEBUG
+ 	ohci_dump (ohci, 1);
+ #endif
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN1\n");
++#endif
+ 
+ 	/* don't wake up sleeping controllers, or block in interrupt context */
+ 	if ((ohci->hc_control & OHCI_CTRL_HCFS) != OHCI_USB_OPER || in_interrupt ()) {
+@@ -2747,14 +2765,22 @@
+ 		writel (ohci->hc_control = OHCI_USB_RESET,
+ 			&ohci->regs->control);
+ 
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN1\n");
++#endif
+ 	hc_release_ohci (ohci);
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN10\n");
++#endif
+ 
+ 	release_mem_region (pci_resource_start (dev, 0), pci_resource_len (dev, 0));
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN11\n");
++#endif
+ 	pci_disable_device (dev);
++#ifdef DEBUG_JAN
+ 	printk("DEBUG_JAN12\n");
++#endif
+ }
+ 
+ 
+--- slin_m740_orig/fs/cramfs/inode.c
++++ slin_m740/fs/cramfs/inode.c
+@@ -210,8 +210,10 @@
+ 
+ 	/* Do sanity checks on the superblock */
+ 	if (super.magic != CRAMFS_MAGIC) {
++#ifdef DEBUG_JAN
+ 	    	printk("cramfs: magic1 = %08x should be %08x\n",super.magic,
+ 			CRAMFS_MAGIC); // DEBUG_JAN
++#endif
+ 		/* check at 512 byte offset */
+ 		memcpy(&super, cramfs_read(sb, 512, sizeof(super)), sizeof(super));
+ 		if (super.magic != CRAMFS_MAGIC) {
+--- slin_m740_orig/fs/smbfs/proc.c
++++ slin_m740/fs/smbfs/proc.c
+@@ -189,8 +189,10 @@
+ 	int n = 0;
+ 
+ 	smb_lock_server(server);
++#ifdef DEBUG_JAN
+ 	printk("cp->remote_name=%s cp->local_name=%s\n",
+ 			cp->remote_name,cp->local_name); // DEBUG_JAN
++#endif
+ 
+ 	/* Don't load any nls_* at all, if no remote is requested */
+ 	if (!*cp->remote_name)
+@@ -208,10 +210,14 @@
+ out:
+ 	if (server->local_nls != NULL && server->remote_nls != NULL) {
+ 		server->convert = convert_cp;
++#ifdef DEBUG_JAN
+ 		printk("conver_cp\n"); // DEBUG_JAN
++#endif
+ 	} else {
+ 		server->convert = convert_memcpy;
++#ifdef DEBUG_JAN
+ 		printk("conver_memcpy\n"); // DEBUG_JAN
++#endif
+ 	}
+ 
+ 	smb_unlock_server(server);
+--- slin_m740_orig/mm/bootmem.c
++++ slin_m740/mm/bootmem.c
+@@ -53,7 +53,9 @@
+ 	pgdat_list = pgdat;
+ 
+ 	mapsize = (mapsize + (sizeof(long) - 1UL)) & ~(sizeof(long) - 1UL);
++#ifdef DEBUG_JAN
+ 	printk("mapsize = %d\n",mapsize); // DEBUG_JAN
++#endif
+ 	bdata->node_bootmem_map = phys_to_virt(mapstart << PAGE_SHIFT);
+ 	bdata->node_boot_start = (start << PAGE_SHIFT);
+ 	bdata->node_low_pfn = end;
+@@ -306,7 +308,9 @@
+ {
+ 	max_low_pfn = pages;
+ 	min_low_pfn = start;
++#ifdef DEBUG_JAN
+ 	printk("init_bootmem %d %d\n",start,pages); // DEBUG_JAN
++#endif
+ 	return(init_bootmem_core(&contig_page_data, start, 0, pages));
+ }
+ 
