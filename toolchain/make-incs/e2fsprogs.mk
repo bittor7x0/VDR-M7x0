@@ -93,6 +93,7 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
 			--disable-e2initrd-helper \
 			--disable-testio-debug \
 			--disable-uuidd \
+			--disable-rpath \
 			$(if $(CONFIG_LIBUUID),--enable-elf-shlibs) \
 			--disable-nls )
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_configured

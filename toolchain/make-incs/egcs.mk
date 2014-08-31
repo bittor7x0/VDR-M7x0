@@ -129,13 +129,17 @@ $(STAGEFILES_DIR)/.egcs_compiled: $(STAGEFILES_DIR)/.egcs_configured
 #
 
 $(STAGEFILES_DIR)/.egcs_installed: $(STAGEFILES_DIR)/.egcs_compiled
-	$(MV) -f $(PREFIX)/$(TARGET)/bin/gcc  $(PREFIX)/$(TARGET)/bin/gcc.save
+	if [ -e $(PREFIX)/$(TARGET)/bin/gcc ] ; then \
+		$(MV) -f $(PREFIX)/$(TARGET)/bin/gcc  $(PREFIX)/$(TARGET)/bin/gcc.save ; \
+	fi
 	$(MV) -f $(PREFIX_BIN)/$(TARGET)-gcc  $(PREFIX_BIN)/$(TARGET)-gcc.save
 	PATH='$(PREFIX_BIN):$(PATH)' CC=$(GCC_FOR_EGCS) \
 		$(MAKE) LANGUAGES="c" CFLAGS=-DSYS_SIGLIST_DECLARED \
 		-C $(EGCS_BUILD_DIR) install
 	$(MV) -f $(PREFIX)/$(TARGET)/bin/gcc  $(PREFIX)/$(TARGET)/bin/egcs
-	$(MV) -f $(PREFIX)/$(TARGET)/bin/gcc.save  $(PREFIX)/$(TARGET)/bin/gcc
+	if [ -e $(PREFIX)/$(TARGET)/bin/gcc.save ] ; then \
+		$(MV) -f $(PREFIX)/$(TARGET)/bin/gcc.save  $(PREFIX)/$(TARGET)/bin/gcc; \
+	fi
 	$(MV) -f $(PREFIX_BIN)/$(TARGET)-gcc  $(PREFIX_BIN)/$(TARGET)-egcs
 	$(MV) -f $(PREFIX_BIN)/$(TARGET)-gcc.save  $(PREFIX_BIN)/$(TARGET)-gcc
 	$(TOUCH) $(STAGEFILES_DIR)/.egcs_installed

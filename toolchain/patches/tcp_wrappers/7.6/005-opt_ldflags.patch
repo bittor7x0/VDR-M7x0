@@ -1,0 +1,12 @@
+diff -Naur a/Makefile b/Makefile
+--- a/Makefile	2014-06-14 14:48:25.000000000 +0200
++++ b/Makefile	2014-06-14 14:53:08.070032436 +0200
+@@ -697,7 +697,7 @@
+ 	$(UCHAR) $(TABLES) $(STRINGS) $(TLI) $(EXTRA_CFLAGS) $(DOT) \
+ 	$(VSYSLOG) $(HOSTNAME)
+ 
+-SHLINKFLAGS = -shared -Xlinker -soname -Xlinker libwrap.so.$(SOMAJOR) -lc $(LIBS)
++SHLINKFLAGS = $(OPT_LDLAGS) -shared -Xlinker -soname -Xlinker libwrap.so.$(SOMAJOR) -lc $(LIBS)
+ SHCFLAGS = -fPIC -shared -D_REENTRANT
+ 
+ LIB_OBJ= hosts_access.o options.o shell_cmd.o rfc931.o eval.o \

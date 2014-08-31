@@ -1,0 +1,14 @@
+diff -Naur lirc-0.6.4-orig/ltconfig lirc-0.6.4/ltconfig
+--- lirc-0.6.4-orig/ltconfig	2001-08-15 14:16:47.000000000 +0200
++++ lirc-0.6.4/ltconfig	2014-05-25 13:21:30.242564949 +0200
+@@ -1226,8 +1226,8 @@
+ 
+   *)
+     if $LD --help 2>&1 | egrep ': supported targets:.* elf' > /dev/null; then
+-      archive_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname -o $lib'
+-      archive_expsym_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname ${wl}-retain-symbols-file $wl$export_symbols -o $lib'
++      archive_cmds='$CC -shared -fPIC $libobjs $deplibs $linkopts ${wl}-soname $wl$soname -o $lib'
++      archive_expsym_cmds='$CC -shared -fPIC $libobjs $deplibs $linkopts ${wl}-soname $wl$soname ${wl}-retain-symbols-file $wl$export_symbols -o $lib'
+     else
+       ld_shlibs=no
+     fi

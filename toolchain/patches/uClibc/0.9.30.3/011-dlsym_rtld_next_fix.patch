@@ -1,0 +1,25 @@
+--- a/ldso/libdl/libdl.c
++++ b/ldso/libdl/libdl.c
+@@ -444,7 +444,7 @@
+ {
+ 	struct elf_resolve *tpnt, *tfrom;
+ 	struct dyn_elf *handle;
+-	ElfW(Addr) from;
++	ElfW(Addr) from = 0;
+ 	struct dyn_elf *rpnt;
+ 	void *ret;
+ 	/* Nastiness to support underscore prefixes.  */
+@@ -501,7 +501,12 @@
+ 	tpnt = NULL;
+ 	if (handle == _dl_symbol_tables)
+ 	   tpnt = handle->dyn; /* Only search RTLD_GLOBAL objs if global object */
+-	ret = _dl_find_hash(name2, handle, tpnt, ELF_RTYPE_CLASS_DLSYM);
++	do {
++		ret = _dl_find_hash(name2, handle, tpnt, ELF_RTYPE_CLASS_DLSYM);
++		if (ret != NULL)
++			break;
++		handle = handle->next;
++	} while (from && handle);
+ 
+ 	/*
+ 	 * Nothing found.
