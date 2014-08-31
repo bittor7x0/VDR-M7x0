@@ -76,7 +76,7 @@ $(STAGEFILES_DIR)/.vsftpd_patched: $(STAGEFILES_DIR)/.vsftpd_unpacked
 #
 
 $(STAGEFILES_DIR)/.vsftpd_compiled: $(STAGEFILES_DIR)/.vsftpd_patched
-	$(MAKE) -C $(VSFTPD_DIR) $(UCLIBC_ENV_GC) vsftpd
+	$(MAKE) -C $(VSFTPD_DIR) $(UCLIBC_ENV_LTO_GC) vsftpd
 	$(TOUCH) $(STAGEFILES_DIR)/.vsftpd_compiled
 
 #

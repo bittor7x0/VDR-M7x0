@@ -106,7 +106,7 @@ $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
 #
 
 $(STAGEFILES_DIR)/.dropbear_compiled: $(STAGEFILES_DIR)/.dropbear_configured
-	$(UCLIBC_ENV) $(MAKE) \
+	$(UCLIBC_ENV_GC) $(MAKE) \
 		-C $(DROPBEAR_DIR) PROGRAMS="dropbear dbclient dropbearkey scp" MULTI=1
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_compiled
 

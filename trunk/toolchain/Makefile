@@ -130,9 +130,9 @@ UCLIBC_OBJCOPY := $(UCLIBC_TARGET)-objcopy
 UCLIBC_CFLAGS_LOOPS := -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear
 
 # Standard flags for any program
-UCLIBC_CFLAGS := -march=mips2 -mtune=vr4120 -mfix-vr4120 -Ofast -msoft-float
+UCLIBC_CFLAGS := -DNDEBUG -march=mips2 -mtune=vr4120 -mfix-vr4120 -Ofast -msoft-float
 UCLIBC_CXXFLAGS := $(UCLIBC_CFLAGS) -fvisibility-inlines-hidden
-UCLIBC_LDFLAGS := -Wl,-O1 -Wl,--as-needed -Wl,--sort-common -Wl,--sort-section,alignment
+UCLIBC_LDFLAGS := -Wl,-O1 -Wl,--as-needed -Wl,--relax -Wl,--sort-common -Wl,--sort-section,alignment
 
 UCLIBC_ENV = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
@@ -170,7 +170,7 @@ UCLIBC_ENV_LTO_GC = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    CFLAGS="$(UCLIBC_CFLAGS_LTO_GC)" CXXFLAGS="$(UCLIBC_CXXFLAGS_LTO_GC)" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC)"
 
 # Flags for shrink size
-UCLIBC_CFLAGS_SIZE := -march=mips2 -mtune=vr4120 -mfix-vr4120 -O2 -msoft-float -ffunction-sections -fdata-sections -mplt -mno-shared -mabicalls -fno-reorder-blocks -fno-tree-ch -fno-caller-saves
+UCLIBC_CFLAGS_SIZE := $(filter-out -Ofast,$(UCLIBC_CFLAGS_GC)) -Os -mplt -mno-shared -mabicalls -fno-reorder-blocks -fno-tree-ch -fno-caller-saves -fno-inline-small-functions -fno-reorder-functions
 UCLIBC_CXXFLAGS_SIZE := $(UCLIBC_CFLAGS_SIZE) -fvisibility-inlines-hidden
 UCLIBC_LDFLAGS_SIZE := $(UCLIBC_LDFLAGS_GC)
 

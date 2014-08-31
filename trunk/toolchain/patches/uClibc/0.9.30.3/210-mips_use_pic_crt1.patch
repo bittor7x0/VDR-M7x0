@@ -1,0 +1,10 @@
+--- a/libc/sysdeps/linux/mips/Makefile.arch
++++ b/libc/sysdeps/linux/mips/Makefile.arch
+@@ -16,5 +16,7 @@
+ 
+ SSRC := bsd-_setjmp.S bsd-setjmp.S setjmp.S clone.S syscall.S pipe.S
+ 
++CFLAGS-crt1.S += $(PICFLAG)
++
+ ARCH_HEADERS := sgidefs.h
+ # regdef.h

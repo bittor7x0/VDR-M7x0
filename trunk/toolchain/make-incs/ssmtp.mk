@@ -77,7 +77,7 @@ $(STAGEFILES_DIR)/.ssmtp_patched: $(STAGEFILES_DIR)/.ssmtp_unpacked
 #
 
 $(STAGEFILES_DIR)/.ssmtp_configured: $(STAGEFILES_DIR)/.ssmtp_patched
-	($(CD) $(SSMTP_DIR) ; $(UCLIBC_ENV) \
+	($(CD) $(SSMTP_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		$(SSMTP_DIR)/configure \
 			--prefix=$(TARGET_ROOT) \
 			--sysconfdir="/etc" \
@@ -89,7 +89,7 @@ $(STAGEFILES_DIR)/.ssmtp_configured: $(STAGEFILES_DIR)/.ssmtp_patched
 #
 
 $(STAGEFILES_DIR)/.ssmtp_compiled: $(STAGEFILES_DIR)/.ssmtp_configured
-	$(UCLIBC_ENV) $(MAKE) \
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) \
 		-C $(SSMTP_DIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.ssmtp_compiled
 

@@ -76,7 +76,7 @@ $(STAGEFILES_DIR)/.scsi-spin_patched: $(STAGEFILES_DIR)/.scsi-spin_unpacked
 #
 
 $(STAGEFILES_DIR)/.scsi-spin_compiled: $(STAGEFILES_DIR)/.scsi-spin_patched
-	$(UCLIBC_ENV) $(MAKE) \
+	$(UCLIBC_ENV_GC) $(MAKE) \
 		-C $(SCSI-SPIN_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.scsi-spin_compiled
 
