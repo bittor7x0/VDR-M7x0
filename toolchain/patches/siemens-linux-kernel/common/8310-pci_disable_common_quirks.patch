@@ -1,0 +1,46 @@
+--- slin_m740_orig/arch/mips/config-shared.in
++++ slin_m740/arch/mips/config-shared.in
+@@ -788,6 +788,7 @@
+    define_bool CONFIG_ISA n
+    define_bool CONFIG_HAVE_IO_PORTS n
+    define_bool CONFIG_PCI y
++   define_bool CONFIG_PCI_DISABLE_COMMON_QUIRKS y
+    define_bool CONFIG_NEW_PCI n
+    define_bool CONFIG_BUTTONS n
+    define_bool CONFIG_CPU_HAS_LLSC n
+--- slin_m740_orig/drivers/pci/quirks.c
++++ slin_m740/drivers/pci/quirks.c
+@@ -21,6 +21,9 @@
+ 
+ #undef DEBUG
+ 
++#ifdef CONFIG_PCI_DISABLE_COMMON_QUIRKS
++	int isa_dma_bridge_buggy, pci_pci_problems, interrupt_line_quirk;
++#else
+ /* Deal with broken BIOS'es that neglect to enable passive release,
+    which can cause problems in combination with the 82441FX/PPro MTRRs */
+ static void __init quirk_passive_release(struct pci_dev *dev)
+@@ -646,12 +649,14 @@
+ 		quirk_ide_bases(pdev);
+ 	}
+ }
++#endif /* CONFIG_PCI_DISABLE_COMMON_QUIRKS */
+ 
+ /*
+  *  The main table of quirks.
+  */
+ 
+ static struct pci_fixup pci_fixups[] __initdata = {
++#ifndef CONFIG_PCI_DISABLE_COMMON_QUIRKS
+ 	{ PCI_FIXUP_HEADER,	PCI_VENDOR_ID_DUNORD,	PCI_DEVICE_ID_DUNORD_I3000,	quirk_dunord },
+ 	{ PCI_FIXUP_FINAL,	PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_82441,	quirk_passive_release },
+ 	{ PCI_FIXUP_FINAL,	PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_82441,	quirk_passive_release },
+@@ -724,7 +729,7 @@
+ 	{ PCI_FIXUP_FINAL,	PCI_VENDOR_ID_AMD,      PCI_DEVICE_ID_AMD_8131_APIC, 
+ 	  quirk_amd_8131_ioapic }, 
+ #endif
+-
++#endif /* !CONFIG_PCI_DISABLE_COMMON_QUIRKS */
+ 	{ 0 }
+ };
+ 
