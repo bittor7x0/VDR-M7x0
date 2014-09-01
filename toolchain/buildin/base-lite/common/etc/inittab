@@ -4,10 +4,10 @@
 
 #----- system start -----
 
-tty0::sysinit:/bin/mount -o rw,nosuid,nodev,noexec -t proc proc /proc
-tty0::sysinit:/sbin/ifconfig lo 127.0.0.1
-tty0::wait:/bin/ash /etc/rc.mini
+::sysinit:/bin/mount -o rw,nosuid,nodev,noexec -t proc proc /proc
+::sysinit:/sbin/ifconfig lo 127.0.0.1
+::wait:/bin/ash /etc/rc.mini
 
 #----- system halt -----
 
-tty0::shutdown:/bin/ash /etc/rc.local.halt
+::shutdown:/bin/ash /etc/rc.local.halt
