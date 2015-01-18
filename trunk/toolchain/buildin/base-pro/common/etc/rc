@@ -16,6 +16,6 @@ echo -n "execute pic_tool ... "
 /usr/sbin/pic_tool ${pic_tool_flags} &
 
 echo "lircd daemon"
-/usr/sbin/lircd ${lircd_flags}
+/usr/sbin/lircd ${lircd_flags} &
 
 exec /bin/ash /etc/rc.local
