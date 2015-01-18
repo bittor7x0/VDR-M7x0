@@ -1,11 +1,14 @@
 --- uClibc.orig/Rules.mak	2008-08-30 09:10:31.000000000 +0200
 +++ uClibc/Rules.mak	2008-08-30 23:16:13.000000000 +0200
-@@ -224,15 +224,15 @@
+@@ -267,18 +267,18 @@
  
  # Flags in OPTIMIZATION are used only for non-debug builds
  
 -OPTIMIZATION:=
 +OPTIMIZATION:= -Ofast
+ OPTIMIZATION-$(GCC_MAJOR_VER):=
+ OPTIMIZATION-$(GCC_MAJOR_VER).$(GCC_MINOR_VER):=
+ 
  # Use '-Os' optimization if available, else use -O2, allow Config to override
 -$(eval $(call check-gcc-var,-Os))
 -ifneq ($(CFLAG_-Os),)
@@ -23,7 +26,7 @@
 +#endif
  # Use the gcc 3.4 -funit-at-a-time optimization when available
  $(eval $(call check-gcc-var,-funit-at-a-time))
- OPTIMIZATION += $(CFLAG_-funit-at-a-time)
+ OPTIMIZATION-3.4 += $(CFLAG_-funit-at-a-time)
 @@ -400,7 +400,15 @@
  ifeq ($(TARGET_ARCH),mips)
  	OPTIMIZATION+=-mno-split-addresses
