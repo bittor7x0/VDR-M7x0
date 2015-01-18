@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 RUNIT_DEPS = $(BASE_BUILD_STAGEFILE)
 
-RUNIT_VERSION := 2.1.1
+RUNIT_VERSION := 2.1.2
 RUNIT_PATCHES_DIR := $(PATCHES_DIR)/runit/$(RUNIT_VERSION)
 
 RUNIT_FILE := runit-$(RUNIT_VERSION).tar.gz

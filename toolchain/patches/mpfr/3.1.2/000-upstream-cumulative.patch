@@ -1,7 +1,10 @@
 diff -Naur mpfr-3.1.2-orig/PATCHES mpfr-3.1.2/PATCHES
 --- mpfr-3.1.2-orig/PATCHES	2013-03-13 16:37:38.000000000 +0100
-+++ mpfr-3.1.2/PATCHES	2014-06-21 08:50:41.426344460 +0200
-@@ -0,0 +1,8 @@
++++ mpfr-3.1.2/PATCHES	2014-12-26 16:15:37.986340655 +0100
+@@ -0,0 +1,11 @@
++strtofr
++vasprintf
++div-overflow
 +gmp6-compat
 +exp3
 +li2-return
@@ -12,13 +15,13 @@ diff -Naur mpfr-3.1.2-orig/PATCHES mpfr-3.1.2/PATCHES
 +exp_2
 diff -Naur mpfr-3.1.2-orig/VERSION mpfr-3.1.2/VERSION
 --- mpfr-3.1.2-orig/VERSION	2013-03-13 16:37:28.000000000 +0100
-+++ mpfr-3.1.2/VERSION	2014-06-21 08:50:41.426344460 +0200
++++ mpfr-3.1.2/VERSION	2014-12-26 16:15:37.986340655 +0100
 @@ -1 +1 @@
 -3.1.2
-+3.1.2-p8
++3.1.2-p11
 diff -Naur mpfr-3.1.2-orig/configure mpfr-3.1.2/configure
 --- mpfr-3.1.2-orig/configure	2013-03-13 16:38:20.000000000 +0100
-+++ mpfr-3.1.2/configure	2014-04-16 00:21:38.821277476 +0200
++++ mpfr-3.1.2/configure	2014-12-26 16:15:37.946340655 +0100
 @@ -14545,26 +14545,30 @@
  rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
  fi
@@ -77,7 +80,7 @@ diff -Naur mpfr-3.1.2-orig/configure mpfr-3.1.2/configure
  if test "$dont_link_with_gmp" = yes ; then
 diff -Naur mpfr-3.1.2-orig/configure.ac mpfr-3.1.2/configure.ac
 --- mpfr-3.1.2-orig/configure.ac	2013-03-13 16:37:46.000000000 +0100
-+++ mpfr-3.1.2/configure.ac	2013-03-13 16:37:46.000000000 +0100
++++ mpfr-3.1.2/configure.ac	2014-12-26 16:15:37.953007322 +0100
 @@ -435,23 +435,29 @@
     ])
  fi
@@ -118,9 +121,34 @@ diff -Naur mpfr-3.1.2-orig/configure.ac mpfr-3.1.2/configure.ac
  
  
  dnl We really need to link using libtool. But it is impossible with the current
+diff -Naur mpfr-3.1.2-orig/src/div.c mpfr-3.1.2/src/div.c
+--- mpfr-3.1.2-orig/src/div.c	2013-03-13 16:37:33.000000000 +0100
++++ mpfr-3.1.2/src/div.c	2014-12-26 16:15:37.973007322 +0100
+@@ -750,7 +750,9 @@
+  truncate_check_qh:
+   if (qh)
+     {
+-      qexp ++;
++      if (MPFR_LIKELY (qexp < MPFR_EXP_MAX))
++        qexp ++;
++      /* else qexp is now incorrect, but one will still get an overflow */
+       q0p[q0size - 1] = MPFR_LIMB_HIGHBIT;
+     }
+   goto truncate;
+@@ -765,7 +767,9 @@
+   inex = 1; /* always here */
+   if (mpn_add_1 (q0p, q0p, q0size, MPFR_LIMB_ONE << sh))
+     {
+-      qexp ++;
++      if (MPFR_LIKELY (qexp < MPFR_EXP_MAX))
++        qexp ++;
++      /* else qexp is now incorrect, but one will still get an overflow */
+       q0p[q0size - 1] = MPFR_LIMB_HIGHBIT;
+     }
+ 
 diff -Naur mpfr-3.1.2-orig/src/exp3.c mpfr-3.1.2/src/exp3.c
 --- mpfr-3.1.2-orig/src/exp3.c	2013-03-13 16:37:34.000000000 +0100
-+++ mpfr-3.1.2/src/exp3.c	2014-04-16 00:04:57.126287230 +0200
++++ mpfr-3.1.2/src/exp3.c	2014-12-26 16:15:37.923007322 +0100
 @@ -283,7 +283,7 @@
              }
          }
@@ -132,7 +160,7 @@ diff -Naur mpfr-3.1.2-orig/src/exp3.c mpfr-3.1.2/src/exp3.c
            inexact = mpfr_set (y, shift_x > 0 ? t : tmp, rnd_mode);
 diff -Naur mpfr-3.1.2-orig/src/exp_2.c mpfr-3.1.2/src/exp_2.c
 --- mpfr-3.1.2-orig/src/exp_2.c	2013-03-13 16:37:28.000000000 +0100
-+++ mpfr-3.1.2/src/exp_2.c	2013-09-26 12:52:52.000000000 +0200
++++ mpfr-3.1.2/src/exp_2.c	2014-12-26 16:15:37.846340656 +0100
 @@ -204,7 +204,7 @@
            for (k = 0; k < K; k++)
              {
@@ -144,7 +172,7 @@ diff -Naur mpfr-3.1.2-orig/src/exp_2.c mpfr-3.1.2/src/exp_2.c
            mpfr_set_z (s, ss, MPFR_RNDN);
 diff -Naur mpfr-3.1.2-orig/src/fits_u.h mpfr-3.1.2/src/fits_u.h
 --- mpfr-3.1.2-orig/src/fits_u.h	2013-03-13 16:37:35.000000000 +0100
-+++ mpfr-3.1.2/src/fits_u.h	2013-09-26 12:56:55.000000000 +0200
++++ mpfr-3.1.2/src/fits_u.h	2014-12-26 16:15:37.863007323 +0100
 @@ -32,17 +32,20 @@
    int res;
  
@@ -176,7 +204,7 @@ diff -Naur mpfr-3.1.2-orig/src/fits_u.h mpfr-3.1.2/src/fits_u.h
  
 diff -Naur mpfr-3.1.2-orig/src/fits_uintmax.c mpfr-3.1.2/src/fits_uintmax.c
 --- mpfr-3.1.2-orig/src/fits_uintmax.c	2013-03-13 16:37:33.000000000 +0100
-+++ mpfr-3.1.2/src/fits_uintmax.c	2013-09-26 12:56:55.000000000 +0200
++++ mpfr-3.1.2/src/fits_uintmax.c	2014-12-26 16:15:37.863007323 +0100
 @@ -27,51 +27,19 @@
  #include "mpfr-intmax.h"
  #include "mpfr-impl.h"
@@ -242,7 +270,7 @@ diff -Naur mpfr-3.1.2-orig/src/fits_uintmax.c mpfr-3.1.2/src/fits_uintmax.c
  #endif
 diff -Naur mpfr-3.1.2-orig/src/init2.c mpfr-3.1.2/src/init2.c
 --- mpfr-3.1.2-orig/src/init2.c	2013-03-13 16:37:32.000000000 +0100
-+++ mpfr-3.1.2/src/init2.c	2014-04-16 00:21:06.220398489 +0200
++++ mpfr-3.1.2/src/init2.c	2014-12-26 16:15:37.953007322 +0100
 @@ -30,11 +30,11 @@
  
    /* Check if we can represent the number of limbs
@@ -261,7 +289,7 @@ diff -Naur mpfr-3.1.2-orig/src/init2.c mpfr-3.1.2/src/init2.c
  
 diff -Naur mpfr-3.1.2-orig/src/li2.c mpfr-3.1.2/src/li2.c
 --- mpfr-3.1.2-orig/src/li2.c	2013-03-13 16:37:32.000000000 +0100
-+++ mpfr-3.1.2/src/li2.c	2014-04-15 23:56:49.653058661 +0200
++++ mpfr-3.1.2/src/li2.c	2014-12-26 16:15:37.909673989 +0100
 @@ -630,5 +630,5 @@
        return mpfr_check_range (y, inexact, rnd_mode);
      }
@@ -271,7 +299,7 @@ diff -Naur mpfr-3.1.2-orig/src/li2.c mpfr-3.1.2/src/li2.c
  }
 diff -Naur mpfr-3.1.2-orig/src/mpfr-gmp.h mpfr-3.1.2/src/mpfr-gmp.h
 --- mpfr-3.1.2-orig/src/mpfr-gmp.h	2013-03-13 16:37:32.000000000 +0100
-+++ mpfr-3.1.2/src/mpfr-gmp.h	2014-04-16 00:21:06.220398489 +0200
++++ mpfr-3.1.2/src/mpfr-gmp.h	2014-12-26 16:15:37.953007322 +0100
 @@ -72,7 +72,6 @@
  #endif
  
@@ -308,7 +336,7 @@ diff -Naur mpfr-3.1.2-orig/src/mpfr-gmp.h mpfr-3.1.2/src/mpfr-gmp.h
    while (0)
 diff -Naur mpfr-3.1.2-orig/src/mpfr-impl.h mpfr-3.1.2/src/mpfr-impl.h
 --- mpfr-3.1.2-orig/src/mpfr-impl.h	2013-03-13 16:37:36.000000000 +0100
-+++ mpfr-3.1.2/src/mpfr-impl.h	2014-04-16 00:21:06.220398489 +0200
++++ mpfr-3.1.2/src/mpfr-impl.h	2014-12-26 16:15:37.956340655 +0100
 @@ -191,7 +191,7 @@
  # endif
  #endif
@@ -366,13 +394,13 @@ diff -Naur mpfr-3.1.2-orig/src/mpfr-impl.h mpfr-3.1.2/src/mpfr-impl.h
  /* The temporary var doesn't have any size field, but it doesn't matter
 diff -Naur mpfr-3.1.2-orig/src/mpfr.h mpfr-3.1.2/src/mpfr.h
 --- mpfr-3.1.2-orig/src/mpfr.h	2013-03-13 16:37:37.000000000 +0100
-+++ mpfr-3.1.2/src/mpfr.h	2014-06-21 08:50:41.456344459 +0200
++++ mpfr-3.1.2/src/mpfr.h	2014-12-26 16:15:37.989673989 +0100
 @@ -27,7 +27,7 @@
  #define MPFR_VERSION_MAJOR 3
  #define MPFR_VERSION_MINOR 1
  #define MPFR_VERSION_PATCHLEVEL 2
 -#define MPFR_VERSION_STRING "3.1.2"
-+#define MPFR_VERSION_STRING "3.1.2-p8"
++#define MPFR_VERSION_STRING "3.1.2-p11"
  
  /* Macros dealing with MPFR VERSION */
  #define MPFR_VERSION_NUM(a,b,c) (((a) << 16L) | ((b) << 8) | (c))
@@ -387,7 +415,7 @@ diff -Naur mpfr-3.1.2-orig/src/mpfr.h mpfr-3.1.2/src/mpfr.h
    _e = _t == MPFR_REGULAR_KIND ? (e) :                         \
 diff -Naur mpfr-3.1.2-orig/src/mul.c mpfr-3.1.2/src/mul.c
 --- mpfr-3.1.2-orig/src/mul.c	2013-03-13 16:37:37.000000000 +0100
-+++ mpfr-3.1.2/src/mul.c	2014-04-16 00:21:06.224398597 +0200
++++ mpfr-3.1.2/src/mul.c	2014-12-26 16:15:37.963007322 +0100
 @@ -106,7 +106,7 @@
    MPFR_ASSERTD(tn <= k);
  
@@ -408,7 +436,7 @@ diff -Naur mpfr-3.1.2-orig/src/mul.c mpfr-3.1.2/src/mul.c
  
 diff -Naur mpfr-3.1.2-orig/src/stack_interface.c mpfr-3.1.2/src/stack_interface.c
 --- mpfr-3.1.2-orig/src/stack_interface.c	2013-03-13 16:37:32.000000000 +0100
-+++ mpfr-3.1.2/src/stack_interface.c	2014-04-16 00:21:06.220398489 +0200
++++ mpfr-3.1.2/src/stack_interface.c	2014-12-26 16:15:37.963007322 +0100
 @@ -26,7 +26,7 @@
  size_t
  mpfr_custom_get_size (mpfr_prec_t prec)
@@ -418,10 +446,47 @@ diff -Naur mpfr-3.1.2-orig/src/stack_interface.c mpfr-3.1.2/src/stack_interface.
  }
  
  #undef mpfr_custom_init
+diff -Naur mpfr-3.1.2-orig/src/strtofr.c mpfr-3.1.2/src/strtofr.c
+--- mpfr-3.1.2-orig/src/strtofr.c	2013-03-13 16:37:32.000000000 +0100
++++ mpfr-3.1.2/src/strtofr.c	2014-12-26 16:15:37.989673989 +0100
+@@ -473,8 +473,10 @@
+       /* prec bits corresponds to ysize limbs */
+       ysize_bits = ysize * GMP_NUMB_BITS;
+       /* and to ysize_bits >= prec > MPFR_PREC (x) bits */
+-      y = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 1);
+-      y += ysize; /* y has (ysize+1) allocated limbs */
++      /* we need to allocate one more limb to work around bug
++         https://gmplib.org/list-archives/gmp-bugs/2013-December/003267.html */
++      y = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 2);
++      y += ysize; /* y has (ysize+2) allocated limbs */
+ 
+       /* pstr_size is the number of characters we read in pstr->mant
+          to have at least ysize full limbs.
 diff -Naur mpfr-3.1.2-orig/src/vasprintf.c mpfr-3.1.2/src/vasprintf.c
 --- mpfr-3.1.2-orig/src/vasprintf.c	2013-03-13 16:37:37.000000000 +0100
-+++ mpfr-3.1.2/src/vasprintf.c	2013-11-15 01:51:49.267334408 +0100
-@@ -1040,7 +1040,7 @@
++++ mpfr-3.1.2/src/vasprintf.c	2014-12-26 16:15:37.983007322 +0100
+@@ -884,14 +884,18 @@
+            first digit, we want the exponent for radix two and the decimal
+            point AFTER the first digit. */
+         {
+-          MPFR_ASSERTN (exp > MPFR_EMIN_MIN /4); /* possible overflow */
++          /* An integer overflow is normally not possible since MPFR_EXP_MIN
++             is twice as large as MPFR_EMIN_MIN. */
++          MPFR_ASSERTN (exp > (MPFR_EXP_MIN + 3) / 4);
+           exp = (exp - 1) * 4;
+         }
+       else
+         /* EXP is the exponent for decimal point BEFORE the first digit, we
+            want the exponent for decimal point AFTER the first digit. */
+         {
+-          MPFR_ASSERTN (exp > MPFR_EMIN_MIN); /* possible overflow */
++          /* An integer overflow is normally not possible since MPFR_EXP_MIN
++             is twice as large as MPFR_EMIN_MIN. */
++          MPFR_ASSERTN (exp > MPFR_EXP_MIN);
+           --exp;
+         }
+     }
+@@ -1040,7 +1044,7 @@
  }
  
  /* Determine the different parts of the string representation of the regular
@@ -430,7 +495,7 @@ diff -Naur mpfr-3.1.2-orig/src/vasprintf.c mpfr-3.1.2/src/vasprintf.c
     DEC_INFO contains the previously computed exponent and string or is NULL.
  
     return -1 if some field > INT_MAX */
-@@ -1167,7 +1167,7 @@
+@@ -1167,7 +1171,7 @@
  }
  
  /* Determine the different parts of the string representation of the regular
@@ -439,7 +504,7 @@ diff -Naur mpfr-3.1.2-orig/src/vasprintf.c mpfr-3.1.2/src/vasprintf.c
     DEC_INFO contains the previously computed exponent and string or is NULL.
  
     return -1 if some field of number_parts is greater than INT_MAX */
-@@ -1559,7 +1559,7 @@
+@@ -1559,7 +1563,7 @@
              /* fractional part */
              {
                np->point = MPFR_DECIMAL_POINT;
@@ -450,17 +515,125 @@ diff -Naur mpfr-3.1.2-orig/src/vasprintf.c mpfr-3.1.2/src/vasprintf.c
            else if (spec.alt)
 diff -Naur mpfr-3.1.2-orig/src/version.c mpfr-3.1.2/src/version.c
 --- mpfr-3.1.2-orig/src/version.c	2013-03-13 16:37:34.000000000 +0100
-+++ mpfr-3.1.2/src/version.c	2014-06-21 08:50:41.459677793 +0200
++++ mpfr-3.1.2/src/version.c	2014-12-26 16:15:37.993007322 +0100
 @@ -25,5 +25,5 @@
  const char *
  mpfr_get_version (void)
  {
 -  return "3.1.2";
-+  return "3.1.2-p8";
++  return "3.1.2-p11";
  }
+diff -Naur mpfr-3.1.2-orig/tests/tdiv.c mpfr-3.1.2/tests/tdiv.c
+--- mpfr-3.1.2-orig/tests/tdiv.c	2013-03-13 16:37:44.000000000 +0100
++++ mpfr-3.1.2/tests/tdiv.c	2014-12-26 16:15:37.976340655 +0100
+@@ -1104,6 +1104,96 @@
+ #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
+ #include "tgeneric.c"
+ 
++static void
++test_extreme (void)
++{
++  mpfr_t x, y, z;
++  mpfr_exp_t emin, emax;
++  mpfr_prec_t p[4] = { 8, 32, 64, 256 };
++  int xi, yi, zi, j, r;
++  unsigned int flags, ex_flags;
++
++  emin = mpfr_get_emin ();
++  emax = mpfr_get_emax ();
++
++  mpfr_set_emin (MPFR_EMIN_MIN);
++  mpfr_set_emax (MPFR_EMAX_MAX);
++
++  for (xi = 0; xi < 4; xi++)
++    {
++      mpfr_init2 (x, p[xi]);
++      mpfr_setmax (x, MPFR_EMAX_MAX);
++      MPFR_ASSERTN (mpfr_check (x));
++      for (yi = 0; yi < 4; yi++)
++        {
++          mpfr_init2 (y, p[yi]);
++          mpfr_setmin (y, MPFR_EMIN_MIN);
++          for (j = 0; j < 2; j++)
++            {
++              MPFR_ASSERTN (mpfr_check (y));
++              for (zi = 0; zi < 4; zi++)
++                {
++                  mpfr_init2 (z, p[zi]);
++                  RND_LOOP (r)
++                    {
++                      mpfr_clear_flags ();
++                      mpfr_div (z, x, y, (mpfr_rnd_t) r);
++                      flags = __gmpfr_flags;
++                      MPFR_ASSERTN (mpfr_check (z));
++                      ex_flags = MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT;
++                      if (flags != ex_flags)
++                        {
++                          printf ("Bad flags in test_extreme on z = a/b"
++                                  " with %s and\n",
++                                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
++                          printf ("a = ");
++                          mpfr_dump (x);
++                          printf ("b = ");
++                          mpfr_dump (y);
++                          printf ("Expected flags:");
++                          flags_out (ex_flags);
++                          printf ("Got flags:     ");
++                          flags_out (flags);
++                          printf ("z = ");
++                          mpfr_dump (z);
++                          exit (1);
++                        }
++                      mpfr_clear_flags ();
++                      mpfr_div (z, y, x, (mpfr_rnd_t) r);
++                      flags = __gmpfr_flags;
++                      MPFR_ASSERTN (mpfr_check (z));
++                      ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
++                      if (flags != ex_flags)
++                        {
++                          printf ("Bad flags in test_extreme on z = a/b"
++                                  " with %s and\n",
++                                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
++                          printf ("a = ");
++                          mpfr_dump (y);
++                          printf ("b = ");
++                          mpfr_dump (x);
++                          printf ("Expected flags:");
++                          flags_out (ex_flags);
++                          printf ("Got flags:     ");
++                          flags_out (flags);
++                          printf ("z = ");
++                          mpfr_dump (z);
++                          exit (1);
++                        }
++                    }
++                  mpfr_clear (z);
++                }  /* zi */
++              mpfr_nextabove (y);
++            }  /* j */
++          mpfr_clear (y);
++        }  /* yi */
++      mpfr_clear (x);
++    }  /* xi */
++
++  set_emin (emin);
++  set_emax (emax);
++}
++
+ int
+ main (int argc, char *argv[])
+ {
+@@ -1130,6 +1220,7 @@
+   test_20070603 ();
+   test_20070628 ();
+   test_generic (2, 800, 50);
++  test_extreme ();
+ 
+   tests_end_mpfr ();
+   return 0;
 diff -Naur mpfr-3.1.2-orig/tests/texp.c mpfr-3.1.2/tests/texp.c
 --- mpfr-3.1.2-orig/tests/texp.c	2013-03-13 16:37:44.000000000 +0100
-+++ mpfr-3.1.2/tests/texp.c	2014-04-16 00:04:57.126287230 +0200
++++ mpfr-3.1.2/tests/texp.c	2014-12-26 16:15:37.929673989 +0100
 @@ -150,6 +150,22 @@
        exit (1);
      }
@@ -486,7 +659,7 @@ diff -Naur mpfr-3.1.2-orig/tests/texp.c mpfr-3.1.2/tests/texp.c
    return 0;
 diff -Naur mpfr-3.1.2-orig/tests/tfits.c mpfr-3.1.2/tests/tfits.c
 --- mpfr-3.1.2-orig/tests/tfits.c	2013-03-13 16:37:45.000000000 +0100
-+++ mpfr-3.1.2/tests/tfits.c	2013-09-26 12:56:55.000000000 +0200
++++ mpfr-3.1.2/tests/tfits.c	2014-12-26 16:15:37.869673989 +0100
 @@ -33,155 +33,176 @@
  #include "mpfr-intmax.h"
  #include "mpfr-test.h"
@@ -975,7 +1148,7 @@ diff -Naur mpfr-3.1.2-orig/tests/tfits.c mpfr-3.1.2/tests/tfits.c
 -
 diff -Naur mpfr-3.1.2-orig/tests/tget_flt.c mpfr-3.1.2/tests/tget_flt.c
 --- mpfr-3.1.2-orig/tests/tget_flt.c	2013-03-13 16:37:44.000000000 +0100
-+++ mpfr-3.1.2/tests/tget_flt.c	2013-10-09 15:34:21.000000000 +0200
++++ mpfr-3.1.2/tests/tget_flt.c	2014-12-26 16:15:37.886340655 +0100
 @@ -28,9 +28,17 @@
  main (void)
  {
@@ -1023,7 +1196,7 @@ diff -Naur mpfr-3.1.2-orig/tests/tget_flt.c mpfr-3.1.2/tests/tget_flt.c
    mpfr_clear (y);
 diff -Naur mpfr-3.1.2-orig/tests/tset_ld.c mpfr-3.1.2/tests/tset_ld.c
 --- mpfr-3.1.2-orig/tests/tset_ld.c	2013-03-13 16:37:44.000000000 +0100
-+++ mpfr-3.1.2/tests/tset_ld.c	2013-10-09 15:34:21.000000000 +0200
++++ mpfr-3.1.2/tests/tset_ld.c	2014-12-26 16:15:37.886340655 +0100
 @@ -47,8 +47,11 @@
  static int
  Isnan_ld (long double d)
@@ -1040,7 +1213,7 @@ diff -Naur mpfr-3.1.2-orig/tests/tset_ld.c mpfr-3.1.2/tests/tset_ld.c
    return 0;
 diff -Naur mpfr-3.1.2-orig/tests/tsprintf.c mpfr-3.1.2/tests/tsprintf.c
 --- mpfr-3.1.2-orig/tests/tsprintf.c	2013-03-13 16:37:44.000000000 +0100
-+++ mpfr-3.1.2/tests/tsprintf.c	2013-11-15 01:51:49.267334408 +0100
++++ mpfr-3.1.2/tests/tsprintf.c	2014-12-26 16:15:37.986340655 +0100
 @@ -456,10 +456,16 @@
    check_sprintf ("1.999900  ", "%-#10.7RG", x);
    check_sprintf ("1.9999    ", "%-10.7RG", x);
@@ -1059,3 +1232,81 @@ diff -Naur mpfr-3.1.2-orig/tests/tsprintf.c mpfr-3.1.2/tests/tsprintf.c
    check_sprintf ("0", "%.30Rg", x);
  
    /* following tests with precision 53 bits */
+@@ -1178,6 +1184,69 @@
+   check_emax_aux (MPFR_EMAX_MAX);
+ }
+ 
++static void
++check_emin_aux (mpfr_exp_t e)
++{
++  mpfr_t x;
++  char *s1, s2[256];
++  int i;
++  mpfr_exp_t emin;
++  mpz_t ee;
++
++  MPFR_ASSERTN (e >= LONG_MIN);
++  emin = mpfr_get_emin ();
++  set_emin (e);
++
++  mpfr_init2 (x, 16);
++  mpz_init (ee);
++
++  mpfr_setmin (x, e);
++  mpz_set_si (ee, e);
++  mpz_sub_ui (ee, ee, 1);
++
++  i = mpfr_asprintf (&s1, "%Ra", x);
++  MPFR_ASSERTN (i > 0);
++
++  gmp_snprintf (s2, 256, "0x1p%Zd", ee);
++
++  if (strcmp (s1, s2) != 0)
++    {
++      printf ("Error in check_emin_aux for emin = %ld\n", (long) e);
++      printf ("Expected %s\n", s2);
++      printf ("Got      %s\n", s1);
++      exit (1);
++    }
++
++  mpfr_free_str (s1);
++
++  i = mpfr_asprintf (&s1, "%Rb", x);
++  MPFR_ASSERTN (i > 0);
++
++  gmp_snprintf (s2, 256, "1p%Zd", ee);
++
++  if (strcmp (s1, s2) != 0)
++    {
++      printf ("Error in check_emin_aux for emin = %ld\n", (long) e);
++      printf ("Expected %s\n", s2);
++      printf ("Got      %s\n", s1);
++      exit (1);
++    }
++
++  mpfr_free_str (s1);
++
++  mpfr_clear (x);
++  mpz_clear (ee);
++  set_emin (emin);
++}
++
++static void
++check_emin (void)
++{
++  check_emin_aux (-15);
++  check_emin_aux (mpfr_get_emin ());
++  check_emin_aux (MPFR_EMIN_MIN);
++}
++
+ int
+ main (int argc, char **argv)
+ {
+@@ -1197,6 +1266,7 @@
+   decimal ();
+   mixed ();
+   check_emax ();
++  check_emin ();
+ 
+ #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
+   locale_da_DK ();
