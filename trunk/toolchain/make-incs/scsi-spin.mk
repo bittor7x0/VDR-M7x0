@@ -31,7 +31,7 @@ SCSI-SPIN_PATCHES_DIR := $(PATCHES_DIR)/scsi-spin/$(SCSI-SPIN_VERSION)
 
 SCSI-SPIN_FILE := scsi-spin-$(SCSI-SPIN_VERSION).tar.gz
 SCSI-SPIN_DLFILE := $(DOWNLOAD_DIR)/$(SCSI-SPIN_FILE)
-SCSI-SPIN_URL := http://www.freewrt.org/distfiles/$(SCSI-SPIN_FILE)
+SCSI-SPIN_URL := http://www.mirbsd.org/.Archive/FreeWRT/$(SCSI-SPIN_FILE)
 SCSI-SPIN_DIR := $(BUILD_DIR)/scsi-spin-$(SCSI-SPIN_VERSION)
 
 SCSI-SPIN_INSTALLED = $(STAGEFILES_DIR)/.scsi-spin_installed
