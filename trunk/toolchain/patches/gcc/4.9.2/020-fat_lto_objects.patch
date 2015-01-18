@@ -1,0 +1,12 @@
+diff -Naur gcc-4.9.0-orig/gcc/common.opt gcc-4.9.0/gcc/common.opt
+--- gcc-4.9.0-orig/gcc/common.opt	Mon Apr 07 15:27:39 2014
++++ gcc-4.9.0/gcc/common.opt	Thu May 08 17:37:15 2014
+@@ -1160,7 +1160,7 @@
+ Common
+ 
+ ffat-lto-objects
+-Common Var(flag_fat_lto_objects)
++Common Var(flag_fat_lto_objects) Init(1)
+ Output lto objects containing both the intermediate language and binary output.
+ 
+ ffinite-math-only

@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SQLITE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-SQLITE_VERSION := 3080500
+SQLITE_VERSION := 3080701
 SQLITE_PATCHES_DIR := $(PATCHES_DIR)/sqlite/$(SQLITE_VERSION)
 
 SQLITE_FILE := sqlite-autoconf-$(SQLITE_VERSION).tar.bz2

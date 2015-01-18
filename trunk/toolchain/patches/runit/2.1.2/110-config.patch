@@ -1,0 +1,20 @@
+diff -Naur runit-2.1.1-orig/src/sv.c runit-2.1.1/src/sv.c
+--- runit-2.1.1-orig/src/sv.c	2009-10-04 22:44:02.000000000 +0200
++++ runit-2.1.1/src/sv.c	2010-02-04 17:53:38.968646691 +0100
+@@ -32,14 +32,14 @@
+ char *progname;
+ char *action;
+ char *acts;
+-char *varservice ="/service/";
++char *varservice ="/var/service/";
+ char **service;
+ char **servicex;
+ unsigned int services;
+ unsigned int rc =0;
+ unsigned int lsb;
+ unsigned int verbose =0;
+-unsigned long wait =7;
++unsigned long wait =30;
+ unsigned int kll =0;
+ struct taia tstart, tnow, tdiff;
+ struct tai tstatus;
