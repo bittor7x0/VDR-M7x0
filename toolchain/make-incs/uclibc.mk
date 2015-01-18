@@ -24,20 +24,22 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-UCLIBC_VERSION := 0.9.30.3
-UCLIBC_IS_SNAPSHOT := n
-UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/$(UCLIBC_VERSION)
+# http://git.uclibc.org/uClibc/commit/?id=638a23483b40c5b606ee323e6612e7e454e5154b
+UCLIBC_VERSION := 638a23483b40c5b606ee323e6612e7e454e5154b
+UCLIBC_IS_SNAPSHOT := y
 
-UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc/$(UCLIBC_VERSION)/uclibc.config
 UCLIBC_O7OVERSION_H := o7o-toolchain-version.h
 UCLIBC_FILE := uClibc-$(UCLIBC_VERSION).tar.bz2
 UCLIBC_DLFILE := $(DOWNLOAD_DIR)/$(UCLIBC_FILE)
+UCLIBC_DIR := $(BUILD_DIR)/uClibc-$(UCLIBC_VERSION)
 
 ifeq ($(UCLIBC_IS_SNAPSHOT),y)
-UCLIBC_DIR := $(BUILD_DIR)/uClibc
-UCLIBC_URL := http://www.uclibc.org/downloads/snapshots/$(UCLIBC_FILE)
+UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc/snapshot/uclibc.config
+UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/snapshot
+UCLIBC_URL := http://git.uclibc.org/uClibc/snapshot/$(UCLIBC_FILE)
 else
-UCLIBC_DIR := $(BUILD_DIR)/uClibc-$(UCLIBC_VERSION)
+UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc/$(UCLIBC_VERSION)/uclibc.config
+UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/$(UCLIBC_VERSION)
 UCLIBC_URL := http://www.uclibc.org/downloads/$(UCLIBC_FILE)
 endif
 
@@ -52,7 +54,7 @@ DISTCLEAN_RULES += distclean-uclibc
 FILE_LISTS_y += uclibc.lst
 
 ifeq ($(CONFIG_UCLIBC_WITH_BACKTRACE),y)
-	FILE_LISTS_y +=  uclibc-backtrace.lst
+FILE_LISTS_y +=  uclibc-backtrace.lst
 endif
 
 #
