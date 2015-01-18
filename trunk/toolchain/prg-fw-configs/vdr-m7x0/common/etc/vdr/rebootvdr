@@ -1,6 +1,7 @@
 #!/bin/ash
 
-/usr/bin/osddrawtext -c 0 -a 5  -b 0xFFFFFFFF -f 0xFFFF0000  "Forzando reinicio M7x"
+/usr/sbin/avswctl tv-vcr tv-off &
+/usr/sbin/pic_tool led outer off led blink &
 
 /bin/ash /etc/rc.local.halt reboot > /dev/null 2>&1 &
 
