@@ -57,7 +57,7 @@ int cBackTrace::Get(bool Forward)
 {
   int p = pos;
   int n = num;
-  int l = DVB_BUF_SIZE + (Forward ? 0 : 256 * 1024); //XXX (256 * 1024) == DVB_BUF_SIZE ???
+  int l = DVB_BUF_SIZE + (Forward ? 0 : DVB_BUF_SIZE);
   int i = -1;
 
   while (n && l > 0) {

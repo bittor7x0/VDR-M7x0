@@ -14,7 +14,7 @@
 #include "tshift.h"
 #include "libsi/util.h"
 
-#define RECORDERBUFSIZE  MEGABYTE(4)
+#define RECORDERBUFSIZE  (MEGABYTE(4) / TS_SIZE * TS_SIZE) // multiple of TS_SIZE
 
 // The maximum time we wait before assuming that a recorded video data stream
 // is broken:
