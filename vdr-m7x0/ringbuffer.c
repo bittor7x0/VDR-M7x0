@@ -803,7 +803,7 @@ uchar *cRingBufferResult::Get(int &Count, sPesResult *&Headers, int &HeaderCount
   while (i != LastHeader && pesHeader[i].offset >= Tail && pesHeader[i].offset < end) {
         if (pesHeadersGottenSize <= count) {
            if (sPesResult *NewBuffer = (sPesResult *)realloc(headers, sizeof(sPesResult) * (count + 16))) {
-              pesHeadersGotten = NewBuffer;
+              pesHeadersGotten = headers = NewBuffer;
               pesHeadersGottenSize = count + 16;
               }
            else {
