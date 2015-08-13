@@ -84,14 +84,13 @@ DEFINES += -DMEMWATCH
 endif
 ifdef CRASHLOG
 LIBS     += -lubacktrace
-CXXFLAGS += -fexceptions
+CXXFLAGS += -fexceptions -g3 -ggdb3 -O0 -fbuiltin
 DEFINES  += -DUSE_CRASHLOG
 else
 CXXFLAGS += -fno-exceptions
 endif
 ifdef DEBUG
-CXXFLAGS += -g
-DEFINES += -DDEBUG
+CXXFLAGS += -g3 -ggdb3 -O0 -fbuiltin
 endif
 
 LIRC_DEVICE ?= /dev/lircd
