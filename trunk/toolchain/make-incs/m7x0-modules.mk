@@ -70,10 +70,9 @@ M7X0-MODULES-FW-m740-VERSION := 2.4
 M7X0-MODULES-FW-m750s-VERSION := 2.4
 M7X0-MODULES_FILE := fw-siemens-$(CONFIG_M7X0_TYPE)-$(M7X0-MODULES-FW-$(CONFIG_M7X0_TYPE)-VERSION).zip
 M7X0-MODULES_DLFILE := $(DOWNLOAD_DIR)/$(M7X0-MODULES_FILE)
-M7X0-REFERER_URL := http://gigaset.com/
 
 ifeq ($(CONFIG_M7X0_TYPE),m740)
-M7X0-MODULES_URL := http://gigaset.com/medias/sys_master/Gigaset_M740_AV_V_2.4.exe
+M7X0-MODULES_URL := https://www.assembla.com/spaces/VDR-EM-NG_Test/documents/bYjC8MpCSr5yujacwqEsg8/download/bYjC8MpCSr5yujacwqEsg8?notinline=true
 else ifeq ($(CONFIG_M7X0_TYPE),m750s)
 M7X0-MODULES_URL := http://gigaset.com/medias/sys_master/Gigaset_M750_S_V_2.4.exe
 else
@@ -101,7 +100,7 @@ DISTCLEAN_RULES += distclean-m7x0-modules
 
 $(M7X0-MODULES_DLFILE): $(TC_INIT_RULE)
 	(if [ ! -f $(M7X0-MODULES_DLFILE) ] ; then \
-	$(WGET) $(M7X0-MODULES_URL) --referer=$(M7X0-REFERER_URL) -O $(M7X0-MODULES_DLFILE) ; \
+	$(WGET) $(M7X0-MODULES_URL) -O $(M7X0-MODULES_DLFILE) ; \
 	fi );
 	$(TOUCH) $(M7X0-MODULES_DLFILE)
 
