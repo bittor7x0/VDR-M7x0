@@ -1,9 +1,9 @@
 --- a/extra/Configs/Config.in
 +++ b/extra/Configs/Config.in
-@@ -255,6 +255,7 @@
- 	default "i486" if CONFIG_486
+@@ -256,6 +256,7 @@
  	default "i586" if CONFIG_586
  	default "i686" if CONFIG_686
+ 	default "arcv2" if CONFIG_ARC_CPU_HS
 +	default "mips64" if CONFIG_MIPS_N64_ABI
  	default ""
  

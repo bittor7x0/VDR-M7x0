@@ -24,7 +24,7 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-GCC_VERSION := 4.9.2
+GCC_VERSION := 5.2.0
 GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
 
 GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
@@ -80,6 +80,9 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                           $$(GMP_HOSTINSTALLED) \
                                           $$(MPFR_HOSTINSTALLED) \
                                           $$(MPC_HOSTINSTALLED) \
+                                          $$(ISL_HOSTINSTALLED) \
+                                          $$(PPL_HOSTINSTALLED) \
+                                          $$(CLOOG_HOSTINSTALLED) \
                                           $$(UCLIBC_PRE_ALL_GCC)
 	-$(RM) -rf $(GCC_STAGE1_BUILD_DIR)
 	$(MKDIR) -p $(GCC_STAGE1_BUILD_DIR)
@@ -107,9 +110,13 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-gmp=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
-			--without-isl \
-			--without-ppl \
-			--without-cloog \
+			--with-isl=$(PREFIX) \
+			--with-ppl=$(PREFIX) \
+			--with-cloog=$(PREFIX) \
+			--enable-cloog-backend=isl \
+			--disable-ppl-version-check \
+			--disable-cloog-version-check \
+			--disable-isl-version-check \
 			--disable-decimal-float \
 			--disable-libgomp \
 			--disable-libmudflap \

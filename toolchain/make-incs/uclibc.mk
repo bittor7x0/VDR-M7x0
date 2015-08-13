@@ -24,8 +24,8 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-# http://git.uclibc.org/uClibc/commit/?id=638a23483b40c5b606ee323e6612e7e454e5154b
-UCLIBC_VERSION := 638a23483b40c5b606ee323e6612e7e454e5154b
+# http://git.uclibc.org/uClibc/commit/?id=ca1c74d67dd115d059a875150e10b8560a9c35a8
+UCLIBC_VERSION := ca1c74d67dd115d059a875150e10b8560a9c35a8
 UCLIBC_IS_SNAPSHOT := y
 
 UCLIBC_O7OVERSION_H := o7o-toolchain-version.h

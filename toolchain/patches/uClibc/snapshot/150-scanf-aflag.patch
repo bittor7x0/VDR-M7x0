@@ -128,12 +128,27 @@ diff -Naur a/libc/stdio/_scanf.c b/libc/stdio/_scanf.c
  				*b = 0;
  				if (b == buf) { /* Bad conversion specifier! */
  					goto DONE;
-@@ -1355,12 +1372,32 @@
+@@ -1352,63 +1369,66 @@
+ 				(psfs.conv_num >= CONV_c)
+ #endif /* __UCLIBC_HAS_WCHAR__ */
+ 			{
+-				/* We might have to handle the allocation ourselves */
+-				int len;
+-				unsigned char **ptr;
+-
  				b = (psfs.store ? ((unsigned char *) psfs.cur_ptr) : buf);
- 				fail = 1;
+-				/* With 'm', we actually got a pointer to a pointer */
+-				ptr = (void *)b;
++				fail = 1;
  
 +#ifdef __UCLIBC_HAS_SCANF_GLIBC_A_FLAG__
-+				if (psfs.flags & FLAG_MALLOC) {
+ 				if (psfs.flags & FLAG_MALLOC) {
+-					len = 0;
+-					b = NULL;
+-				} else
+-					len = -1;
+-
+-				fail = 1;
 +					alen = MALLOC_CHUNK_SIZE;
 +					if ((abuf = (unsigned char *) malloc(alen)) == NULL) {
 +						goto NEXT_FMT;
@@ -141,12 +156,16 @@ diff -Naur a/libc/stdio/_scanf.c b/libc/stdio/_scanf.c
 +					b = abuf;
 +				}
 +#endif
-+
+ 
  				if (psfs.conv_num == CONV_c) {
  					if (sc.width == INT_MAX) {
  						sc.width = 1;
  					}
  
+-					if (psfs.flags & FLAG_MALLOC)
+-						b = malloc(sc.width);
+-
+-					i = 0;
  					while (__scan_getc(&sc) >= 0) {
 +#ifdef __UCLIBC_HAS_SCANF_GLIBC_A_FLAG__
 +						aoffset = (unsigned int) b - (unsigned int) abuf;
@@ -159,24 +178,24 @@ diff -Naur a/libc/stdio/_scanf.c b/libc/stdio/_scanf.c
 +						}
 +#endif
  						zero_conversions = 0;
- 						*b = sc.cc;
- 						b += psfs.store;
-@@ -1374,36 +1411,24 @@
+-						b[i] = sc.cc;
+-						i += psfs.store;
++						*b = sc.cc;
++						b += psfs.store;
+ 					}
+ 					__scan_ungetc(&sc);
+ 					if (sc.width > 0) {	/* Failed to read all required. */
+ 						goto DONE;
+ 					}
+-					if (psfs.flags & FLAG_MALLOC)
+-						*ptr = b;
+ 					psfs.cnt += psfs.store;
+ 					goto NEXT_FMT;
  				}
  
  				if (psfs.conv_num == CONV_s) {
--					/* We might have to handle the allocation ourselves */
--					int len;
--					/* With 'm', we actually got a pointer to a pointer */
--					unsigned char **ptr = (void *)b;
 -
 -					i = 0;
--					if (psfs.flags & FLAG_MALLOC) {
--						len = 0;
--						b = NULL;
--					} else
--						len = -1;
--
  					/* Yes, believe it or not, a %s conversion can store nuls. */
  					while ((__scan_getc(&sc) >= 0) && !isspace(sc.cc)) {
 -						zero_conversions = 0;
@@ -204,17 +223,24 @@ diff -Naur a/libc/stdio/_scanf.c b/libc/stdio/_scanf.c
  						fail = 0;
  					}
 -
--					if (psfs.flags & FLAG_MALLOC)
--						*ptr = b;
--					/* The code below takes care of terminating NUL */
--					b += i;
  				} else {
  #ifdef __UCLIBC_HAS_WCHAR__
  					assert((psfs.conv_num == CONV_LEFTBRACKET) || \
-@@ -1459,6 +1484,17 @@
+@@ -1459,32 +1479,39 @@
+ #endif /* __UCLIBC_HAS_WCHAR__ */
+ 
+ 
+-					i = 0;
+ 					while (__scan_getc(&sc) >= 0) {
+ 						zero_conversions = 0;
  						if (!scanset[sc.cc]) {
  							break;
  						}
+-						if (i == len) {
+-							/* Pick a size that won't trigger a lot of
+-							 * mallocs early on ... */
+-							len += 256;
+-							b = realloc(b, len + 1);
 +#ifdef __UCLIBC_HAS_SCANF_GLIBC_A_FLAG__
 +						aoffset = (unsigned int) b - (unsigned int) abuf;
 +						if ((psfs.flags & FLAG_MALLOC) && ( aoffset + psfs.store >= alen)) {
@@ -224,12 +250,14 @@ diff -Naur a/libc/stdio/_scanf.c b/libc/stdio/_scanf.c
 +								break;
 +							}
 +							b = abuf + aoffset;
-+						}
+ 						}
+-						b[i] = sc.cc;
+-						i += psfs.store;
 +#endif
- 						*b = sc.cc;
- 						b += psfs.store;
++						*b = sc.cc;
++						b += psfs.store;
  						fail = 0;
-@@ -1466,6 +1502,12 @@
+ 					}
  				}
  				/* Common tail for processing of %s and %[. */
  
@@ -242,3 +270,10 @@ diff -Naur a/libc/stdio/_scanf.c b/libc/stdio/_scanf.c
  				__scan_ungetc(&sc);
  				if (fail) {	/* nothing stored! */
  					goto DONE;
+ 				}
+-				if (psfs.flags & FLAG_MALLOC)
+-					*ptr = b;
+-				b += i;
+ 				*b = 0;		/* Nul-terminate string. */
+ 				psfs.cnt += psfs.store;
+ 				goto NEXT_FMT;

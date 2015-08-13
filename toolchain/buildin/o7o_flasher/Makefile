@@ -21,7 +21,7 @@
 
 CC := gcc
 CFLAGS := -Wall -O2
-CPPFLAGS := -D_GNU_SOURCE
+CPPFLAGS := -D_GNU_SOURCE -std=gnu90
 LDFLAGS := -static
 LIBS := -losd
 PREFIX := /usr/local

@@ -32,7 +32,7 @@
  	OPTIMIZATION+=-mno-split-addresses
  	CPU_CFLAGS-$(CONFIG_MIPS_ISA_1)+=-mips1
 -	CPU_CFLAGS-$(CONFIG_MIPS_ISA_2)+=-mips2 -mtune=mips2
-+	CPU_CFLAGS-$(CONFIG_MIPS_ISA_2)+=-march=mips2 -mtune=vr4120 -mfix-vr4120
++	CPU_CFLAGS-$(CONFIG_MIPS_ISA_2)+=-march=mips2 -mtune=vr4120 -mfix-vr4120 -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear
 +	CPU_CFLAGS-y  += $(call check_gcc,-ffunction-sections -fdata-sections,)
 +	CPU_LDFLAGS-y += -Wl,-O1
 +$(eval $(call check-ld-var,--sort-common))
