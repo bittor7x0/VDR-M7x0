@@ -26,10 +26,10 @@
 
 GDB_DEPS = $(BASE_BUILD_STAGEFILE)
 
-GDB_VERSION := 6.8
+GDB_VERSION := 7.8.2
 GDB_PATCHES_DIR := $(PATCHES_DIR)/gdb/$(GDB_VERSION)
 
-GDB_FILE := gdb-$(GDB_VERSION)a.tar.bz2
+GDB_FILE := gdb-$(GDB_VERSION).tar.xz
 GDB_DLFILE := $(DOWNLOAD_DIR)/$(GDB_FILE)
 GDB_DIR := $(BUILD_DIR)/gdb-$(GDB_VERSION)
 GDB_BUILD_DIR := $(BUILD_DIR)/gdb.build
@@ -59,7 +59,7 @@ $(GDB_DLFILE): $(TC_INIT_RULE)
 
 $(STAGEFILES_DIR)/.gdb_unpacked: $(GDB_DLFILE) $(wildcard $(GDB_PATCHES_DIR)/*.patch)
 	-$(RM) -rf $(GDB_DIR)
-	$(BZCAT) $(GDB_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(TAR) -C $(BUILD_DIR) -xJf $(GDB_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.gdb_unpacked
 
 #
