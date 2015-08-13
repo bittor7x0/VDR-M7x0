@@ -27,7 +27,7 @@
 EGCS_DEPS = $(BASE_BUILD_STAGEFILE)
 
 ifeq ($(CONFIG_EGCS),y)
-# egcs will only compile with gcc < 5.0.0
+# egcs will only compile with gcc < 6.0.0
 ALL_GCCS := $(wildcard $(addsuffix /gcc,$(subst :, ,$(PATH))) \
                       $(addsuffix /gcc-*,$(subst :, ,$(PATH))))
 GCC_FOR_EGCS := $(firstword \
@@ -35,10 +35,10 @@ GCC_FOR_EGCS := $(firstword \
                        $(shell test \
                           $(firstword \
                              $(subst ., ,$(shell $(gcc) -dumpversion))) \
-                       -le 4 && echo $(gcc))))
+                       -le 5 && echo $(gcc))))
 
 ifeq ($(strip $(GCC_FOR_EGCS)),)
-  $(error egcs needs gcc version < 5.0)
+  $(error egcs needs gcc version < 6.0)
 endif
 endif
 
@@ -53,6 +53,7 @@ EGCS_DLFILE := $(DOWNLOAD_DIR)/$(EGCS_FILE)
 EGCS_URL := ftp://ftp.fu-berlin.de/unix/languages/gcc/releases/egcs-$(EGCS_VERSION)/$(EGCS_FILE)
 EGCS_DIR := $(BUILD_DIR)/egcs-$(EGCS_VERSION)
 EGCS_BUILD_DIR := $(BUILD_DIR)/egcs.build
+EGCS_LIB_DIR := $(PREFIX)/lib/gcc-lib
 
 EGCS_INSTALLED = $(STAGEFILES_DIR)/.egcs_installed
 EGCS_BIN = mips-linux-egcs
@@ -79,7 +80,7 @@ $(EGCS_DLFILE): $(TC_INIT_RULE)
 
 $(STAGEFILES_DIR)/.egcs_unpacked: $(EGCS_DLFILE) \
                                   $(wildcard $(EGCS_PATCHES_DIR)/*.patch)
-	-$(RM) -rf $(EGCS_DIR)
+	-$(RM) -rf $(EGCS_DIR) $(EGCS_BUILD_DIR) $(EGCS_LIB_DIR)
 	$(BZCAT) $(EGCS_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.egcs_unpacked
 
@@ -103,6 +104,7 @@ $(STAGEFILES_DIR)/.egcs_configured: $(STAGEFILES_DIR)/.egcs_patched \
 	($(CD) $(EGCS_BUILD_DIR) ; PATH='$(PREFIX_BIN):$(PATH)' CC=$(GCC_FOR_EGCS) \
 		$(EGCS_DIR)/configure \
 			--prefix=$(PREFIX) \
+			--build=$(HOST_TARGET_FOR_EGCS) \
 			--host=$(HOST_TARGET_FOR_EGCS) \
 			--target=$(TARGET) \
 			--program-prefix=$(UCLIBC_TARGET)- \
@@ -120,7 +122,7 @@ $(STAGEFILES_DIR)/.egcs_configured: $(STAGEFILES_DIR)/.egcs_patched \
 
 $(STAGEFILES_DIR)/.egcs_compiled: $(STAGEFILES_DIR)/.egcs_configured
 	PATH='$(PREFIX_BIN):$(PATH)' CC=$(GCC_FOR_EGCS) \
-		$(MAKE) LANGUAGES="c" CFLAGS=-DSYS_SIGLIST_DECLARED \
+		$(MAKE) LANGUAGES="c" CFLAGS="-DSYS_SIGLIST_DECLARED -std=gnu90" \
 		-C $(EGCS_BUILD_DIR) all-gcc
 	$(TOUCH) $(STAGEFILES_DIR)/.egcs_compiled
 
@@ -134,7 +136,7 @@ $(STAGEFILES_DIR)/.egcs_installed: $(STAGEFILES_DIR)/.egcs_compiled
 	fi
 	$(MV) -f $(PREFIX_BIN)/$(TARGET)-gcc  $(PREFIX_BIN)/$(TARGET)-gcc.save
 	PATH='$(PREFIX_BIN):$(PATH)' CC=$(GCC_FOR_EGCS) \
-		$(MAKE) LANGUAGES="c" CFLAGS=-DSYS_SIGLIST_DECLARED \
+		$(MAKE) LANGUAGES="c" CFLAGS="-DSYS_SIGLIST_DECLARED -std=gnu90" \
 		-C $(EGCS_BUILD_DIR) install
 	$(MV) -f $(PREFIX)/$(TARGET)/bin/gcc  $(PREFIX)/$(TARGET)/bin/egcs
 	if [ -e $(PREFIX)/$(TARGET)/bin/gcc.save ] ; then \
@@ -158,6 +160,7 @@ $(STAGEFILES_DIR)/.egcs_installed: $(STAGEFILES_DIR)/.egcs_compiled
 #
 
 clean-egcs:
+	-$(RM) -rf $(EGCS_LIB_DIR)
 	-$(RM) -rf $(EGCS_BUILD_DIR)
 	-$(RM) -rf $(EGCS_DIR)
 

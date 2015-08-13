@@ -1,0 +1,18 @@
+diff -Naur a/gcc/Makefile.in b/gcc/Makefile.in
+--- a/gcc/Makefile.in	1999-03-08 01:22:20.000000000 +0100
++++ b/gcc/Makefile.in	2015-08-05 18:56:02.299356662 +0200
+@@ -325,12 +325,8 @@
+ LIBGCC2 = libgcc2.a
+ 
+ # Options to use when compiling libgcc2.a.
+-# -g1 causes output of debug info only for file-scope entities.
+-# we use this here because that should be enough, and also
+-# so that -g1 will be tested.
+-#
+-LIBGCC2_DEBUG_CFLAGS = -g1
+-LIBGCC2_CFLAGS = -O2 $(LIBGCC2_INCLUDES) $(GCC_CFLAGS) $(TARGET_LIBGCC2_CFLAGS) $(LIBGCC2_DEBUG_CFLAGS) $(GTHREAD_FLAGS) -DIN_LIBGCC2 -D__GCC_FLOAT_NOT_NEEDED @inhibit_libc@ 
++t_LIBGCC2_CFLAGS = -O2 $(LIBGCC2_INCLUDES) $(GCC_CFLAGS) $(TARGET_LIBGCC2_CFLAGS) $(GTHREAD_FLAGS) -DIN_LIBGCC2 -D__GCC_FLOAT_NOT_NEEDED @inhibit_libc@ 
++LIBGCC2_CFLAGS = $(filter-out -std=gnu90,$(t_LIBGCC2_CFLAGS))
+ 
+ # Additional options to use when compiling libgcc2.a.
+ # Some targets override this to -Iinclude
