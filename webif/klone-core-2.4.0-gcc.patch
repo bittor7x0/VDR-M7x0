@@ -29,3 +29,41 @@ diff -Naur klone-2.4.0-orig/configure klone-2.4.0/configure
  # adds -fstack-protector-all to the CFLAGS when supported by the compiler
  if [ -z "`makl_get_var_mk "DISABLE_STACK_PROTECTOR"`" ]; then
      if [ "`makl_get_var_mk "HAVE_STACK_PROTECTOR"`" ]; then
+diff -Naur klone-2.4.0-orig/libu/configure klone-2.4.0/libu/configure
+--- klone-2.4.0-orig/libu/configure	2015-08-06 16:26:40.730495500 +0200
++++ klone-2.4.0/libu/configure	2015-08-12 12:56:46.796601667 +0200
+@@ -153,6 +153,9 @@
+     makl_append_var_mk "CFLAGS" "-Dinline="
+ fi
+ 
++# Dirty hack for add "-std=gnu90" to CFLAGS because "makl_append_var_mk" doesn't allow a equal sign as parameter
++makl_append_var_mk "CFLAGS" "-D_STD_GNU90"
++
+ # Handle command-line arguments
+ makl_args_handle "$@"
+ 
+diff -Naur klone-core-2.4.0-orig/makl/cf/makl_conf.sh klone-core-2.4.0/makl/cf/makl_conf.sh
+--- klone-core-2.4.0-orig/makl/cf/makl_conf.sh	2015-08-06 16:26:40.753827800 +0200
++++ klone-core-2.4.0/makl/cf/makl_conf.sh	2015-08-07 12:37:31.756855330 +0200
+@@ -43,6 +43,9 @@
+ 
+     # terminate 
+     makl_term_conf_h
++
++    # Dirty hack for add "-std=gnu90" to CFLAGS because "makl_append_var_mk" doesn't allow a equal sign as parameter
++    sed -i -e 's,-D_STD_GNU90,-std=gnu90,g' "${makl_makefile_conf}"
+ }
+ 
+ #/*!
+diff -Naur klone-2.4.0-orig/makl/cf/makl_code.sh klone-2.4.0/makl/cf/makl_code.sh
+--- klone-2.4.0-orig/makl/cf/makl_code.sh	2015-08-06 16:26:40.753827800 +0200
++++ klone-2.4.0/makl/cf/makl_code.sh	2015-08-13 16:11:07.086672499 +0200
+@@ -22,7 +22,7 @@
+     c_file="$1"
+     shift
+     cc_flags=$*
+-    cc_cmd="${CC} ${CFLAGS} -o out `basename ${c_file}` ${cc_flags} ${LDFLAGS}"
++    cc_cmd="${CC} ${CFLAGS} -std=gnu90 -o out `basename ${c_file}` ${cc_flags} ${LDFLAGS}"
+ 
+     [ -z "${c_file}" ] && return 1
+ 

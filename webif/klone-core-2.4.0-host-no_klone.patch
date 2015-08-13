@@ -1,0 +1,12 @@
+diff -Naur klone-2.4.0-orig/Makefile klone-2.4.0/Makefile
+--- klone-2.4.0-orig/Makefile	2015-08-06 16:26:40.683830900 +0200
++++ klone-2.4.0/Makefile	2015-08-11 18:58:04.246605461 +0200
+@@ -5,7 +5,7 @@
+ export MAKL_DIR := ${KLONE_SRC_DIR}/makl
+ MAKEFLAGS := -I ${MAKL_DIR}/mk
+ 
+-SUBDIR = build/libu webapp site src klone doc 
++SUBDIR = build/libu webapp site src
+ 
+ ifeq ($(wildcard Makefile.conf),)
+ help:

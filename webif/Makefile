@@ -28,10 +28,11 @@ KLONE_CONF_ARGS += --enable_fs --enable_hooks
 KLONE_IMPORT_ARGS = -x */.svn/* -x *.*~
 #KLONE_IMPORT_ARGS += -x */css/* -x */js/*
 
-# patch klone to include partial content responses
-KLONE_TARGET_PATCH_FILE = $(CURDIR)/klone-core-${KLONE_VERSION}-atinar.patch 
-KLONE_TARGET_PATCH_FILE += $(CURDIR)/klone-core-${KLONE_VERSION}-gcc.patch 
+# patch klone to include partial content responses and some fixes for gcc
+KLONE_TARGET_PATCH_FILE = $(CURDIR)/klone-core-${KLONE_VERSION}-atinar.patch
+KLONE_TARGET_PATCH_FILE += $(CURDIR)/klone-core-${KLONE_VERSION}-gcc.patch
 KLONE_HOST_PATCH_FILE= $(KLONE_TARGET_PATCH_FILE)
+KLONE_HOST_PATCH_FILE += $(CURDIR)/klone-core-${KLONE_VERSION}-host-no_klone.patch
 
 # cross-compiling (see build/makl/tc/* for the list of supported platforms)
 # MAKL_PLATFORM =
@@ -57,5 +58,4 @@ WEBAPP_LDADD = ${CURDIR}/libwi/libwi.a $(CURDIR)/libwd/libwd.a
 include klapp.mk
 
 klapp.mk:
-	${FETCH_CMD} -O $@ -c http://koanlogic.com/klone/klapp-2.0.0.mk
-
+	${FETCH_CMD} -O $@ -c http://koanlogic.com/klone/klapp-2.0.2.mk
