@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 VSFTPD_DEPS = $(BASE_BUILD_STAGEFILE)
 
-VSFTPD_VERSION := 3.0.2
+VSFTPD_VERSION := 3.0.3
 VSFTPD_PATCHES_DIR := $(PATCHES_DIR)/vsftpd/$(VSFTPD_VERSION)
 
 VSFTPD_FILE := vsftpd-$(VSFTPD_VERSION).tar.gz

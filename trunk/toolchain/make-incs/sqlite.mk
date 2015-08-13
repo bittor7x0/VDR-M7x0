@@ -26,12 +26,12 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SQLITE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-SQLITE_VERSION := 3080701
+SQLITE_VERSION := 3081101
 SQLITE_PATCHES_DIR := $(PATCHES_DIR)/sqlite/$(SQLITE_VERSION)
 
-SQLITE_FILE := sqlite-autoconf-$(SQLITE_VERSION).tar.bz2
+SQLITE_FILE := sqlite-autoconf-$(SQLITE_VERSION).tar.gz
 SQLITE_DLFILE := $(DOWNLOAD_DIR)/$(SQLITE_FILE)
-SQLITE_URL := http://www.sqlite.org/2014/sqlite-autoconf-$(SQLITE_VERSION).tar.gz
+SQLITE_URL := https://www.sqlite.org/2015/sqlite-autoconf-$(SQLITE_VERSION).tar.gz
 SQLITE_DIR := $(BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_CFLAGS_SIZE := $(filter-out -mno-shared,$(UCLIBC_CFLAGS_SIZE)) -flto

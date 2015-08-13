@@ -92,7 +92,7 @@ endif
 #
 $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webif_copied
 	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
-	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) -flto >> $(WEBIF_TC_FILE)
+	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) -flto -std=gnu90 >> $(WEBIF_TC_FILE)
 	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_SIZE) -flto >> $(WEBIF_TC_FILE)
 	$(ECHO) AR = $(UCLIBC_AR) >> $(WEBIF_TC_FILE)
 	$(ECHO) RANLIB = $(UCLIBC_RANLIB) >> $(WEBIF_TC_FILE)
