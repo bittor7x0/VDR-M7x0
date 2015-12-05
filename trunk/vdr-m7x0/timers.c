@@ -281,7 +281,7 @@ bool cTimer::Parse(const char *s)
         }
      //TODO add more plausibility checks
      result = ParseDay(daybuffer, day, weekdays);
-     strn0cpy(file, filebuffer, MaxFileName);
+     strn0cpy(file, filebuffer, sizeof(file));
      strreplace(file, '|', ':');
      if (isnumber(channelbuffer))
         channel = Channels.GetByNumber(atoi(channelbuffer));

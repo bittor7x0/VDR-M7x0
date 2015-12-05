@@ -535,7 +535,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "MenuScrollWrap"))      MenuScrollWrap     = atoi(Value);
   else if (!strcasecmp(Name, "MenuButtonCloses"))    MenuButtonCloses   = atoi(Value);
   else if (!strcasecmp(Name, "MarkInstantRecord"))   MarkInstantRecord  = atoi(Value);
-  else if (!strcasecmp(Name, "NameInstantRecord"))   strn0cpy(NameInstantRecord, Value, MaxFileName);
+  else if (!strcasecmp(Name, "NameInstantRecord"))   strn0cpy(NameInstantRecord, Value, sizeof(NameInstantRecord));
   else if (!strcasecmp(Name, "InstantRecordTime"))   InstantRecordTime  = atoi(Value);
 #ifdef M750S
   else if (!strcasecmp(Name, "LnbSLOF"))             LnbSLOF            = atoi(Value);

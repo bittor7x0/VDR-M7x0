@@ -1,6 +1,6 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 2.0.5 backports applied in this patch:
+VDR 2.1.7 backports applied in this patch:
 * Implemented handling the "Content Descriptor" (based on a patch from Rolf
   Ahrenberg). The 'classic' and 'sttng' skins display the textual
   representation of the content descriptors as "genre". The epg.data file stores
@@ -222,3 +222,23 @@ VDR 2.0.5 backports applied in this patch:
 * Replaced min(max()) calls with the new function constrain().
 * The LIRC remote control now connects to the socket even if it doesn't yet exist when
   VDR is started (thanks to Lars Hanisch).
+* Now returning from removing deleted recordings after at most 10 seconds, or if the
+  user presses a remote control key, to keep the system from getting unresponsive
+  when removing a huge number of files (reported by Dieter Ferdinand).
+* Made DELETENULL() thread safe (reported by Rolf Ahrenberg).
+* Fixed clearing non-editable members in the channel editor (thanks to Rolf Ahrenberg).
+* Replaced the NULL pointer assignment in ~cReceiver() to force a segfault with
+  a call to abort() (suggested by Tony Houghten).
+* Deleted a superfluous assignment in cPipe::Open() (reported by Ville Skyttä).
+* Improved efficiency of cEIT::cEIT() (thanks to Tobias Bratfisch).
+* Fixed a possible access to uninitialized data in cEIT::cEIT() (reported by Dominik
+  Strasser).
+* EIT events are now only processed if a plausible system time is available, to
+  avoid wrong handling of PDC descriptors (thanks to Tobias Bratfisch).
+* Added missing channel locking to cEIT.
+* Fixed an endless loop in the DrawEllipse() functions for very small ellipses (reported
+  by Stefan Braun).
+* Fixed an endless loop in cTextWrapper::Set() in case the given Width is smaller than
+  one character (reported by Stefan Braun).
+* The macro MaxFileName is now obsolete and may be removed in future versions. Use
+  NAME_MAX directly instead.
