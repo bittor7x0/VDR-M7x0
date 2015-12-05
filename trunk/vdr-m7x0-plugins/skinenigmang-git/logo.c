@@ -44,37 +44,37 @@ bool cEnigmaLogoCache::Resize(unsigned int cacheSizeP)
   return true;
 }
 
-bool cEnigmaLogoCache::DrawEventImage(const cEvent *Event, int x, int y, int w, int h, int c, cBitmap *bmp)
+bool cEnigmaLogoCache::DrawEventImage(const cEvent *Event, int x, int y, int w, int h, int c, cOsd *osd)
 {
-  if (Event == NULL || bmp == NULL)
+  if (Event == NULL || osd == NULL)
     return false;
 
   char *strFilename = NULL;
   int rc = false;
   if (-1 != asprintf(&strFilename, "%s/%d.%s", EnigmaConfig.GetImagesDir(), Event->EventID(), EnigmaConfig.GetImageExtension())) {
-    rc = DrawImage(strFilename, x, y, w, h, c, bmp);
+    rc = DrawImage(strFilename, x, y, w, h, c, osd);
     free (strFilename);
   }
   return rc;
 }
 
-bool cEnigmaLogoCache::DrawRecordingImage(const cRecording *Recording, int x, int y, int w, int h, int c, cBitmap *bmp)
+bool cEnigmaLogoCache::DrawRecordingImage(const cRecording *Recording, int x, int y, int w, int h, int c, cOsd *osd)
 {
-  if (Recording == NULL || bmp == NULL)
+  if (Recording == NULL || osd == NULL)
     return false;
 
   char *strFilename = NULL;
   int rc = false;
   if (-1 != asprintf(&strFilename, "%s/%s.%s", Recording->FileName(), RECORDING_COVER, EnigmaConfig.GetImageExtension())) {
-    rc = DrawImage(strFilename, x, y, w, h, c, bmp);
+    rc = DrawImage(strFilename, x, y, w, h, c, osd);
     free (strFilename);
   }
   return rc;
 }
 
-bool cEnigmaLogoCache::DrawImage(const char *fileNameP, int x, int y, int w, int h, int c, cBitmap *bmp)
+bool cEnigmaLogoCache::DrawImage(const char *fileNameP, int x, int y, int w, int h, int c, cOsd *osd)
 {
-  if (fileNameP== NULL || bmp == NULL)
+  if (fileNameP== NULL || osd == NULL)
     return false;
 
   struct stat stbuf;
@@ -86,11 +86,11 @@ bool cEnigmaLogoCache::DrawImage(const char *fileNameP, int x, int y, int w, int
 
 #ifdef HAVE_IMAGEMAGICK
   bitmapM = NULL;
-  return image.DrawImage(fileNameP, x, y, w, h, c, bmp);
+  return image.DrawImage(fileNameP, x, y, w, h, c, osd);
 #else
   int rc = LoadXpm(fileNameP, w, h);
   if (rc)
-    bmp->DrawBitmap(x, y, *bitmapM); //TODO?
+    osd->DrawBitmap(x, y, *bitmapM); //TODO?
   return rc;
 #endif
 }

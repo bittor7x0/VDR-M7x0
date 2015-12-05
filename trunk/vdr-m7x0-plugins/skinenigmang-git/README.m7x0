@@ -1,5 +1,7 @@
 This is a modified version for M7x0 and is based in Git revision:
-0147c0ee6222bd10714ef36f42dcee94495bdb92
+3362ab0175c8e99375230627e772c1652559d9f4
+
+http://projects.vdr-developer.org/git/vdr-plugin-skinenigmang.git/commit/?id=3362ab0175c8e99375230627e772c1652559d9f4
 
 Main changes:
 - Adapted for VDR-NG-EM by Bittor Corl
