@@ -26,10 +26,10 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 STRACE_DEPS = $(BASE_BUILD_STAGEFILE) $(LINUX_HEADERS_INSTALLED)
 
-STRACE_VERSION := 4.5.20
+STRACE_VERSION := 4.6
 STRACE_PATCHES_DIR := $(PATCHES_DIR)/strace/$(STRACE_VERSION)
 
-STRACE_FILE := strace-$(STRACE_VERSION).tar.bz2
+STRACE_FILE := strace-$(STRACE_VERSION).tar.xz
 STRACE_DLFILE := $(DOWNLOAD_DIR)/$(STRACE_FILE)
 STRACE_URL := http://downloads.sourceforge.net/strace/$(STRACE_FILE)
 STRACE_DIR := $(BUILD_DIR)/strace-$(STRACE_VERSION)
@@ -60,7 +60,7 @@ $(STAGEFILES_DIR)/.strace_unpacked: $(STRACE_DLFILE) \
                                            $(wildcard $(STRACE_PATCHES_DIR)/*.patch) \
                                            $$(STRACE_DEPS)
 	-$(RM) -rf $(STRACE_DIR)
-	$(BZCAT) $(STRACE_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(TAR) -C $(BUILD_DIR) -xJf $(STRACE_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.strace_unpacked
 
 #

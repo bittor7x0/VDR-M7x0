@@ -1,0 +1,21 @@
+diff -Naur a/block.c b/block.c
+--- a/block.c	2011-01-17 00:07:51.000000000 +0100
++++ b/block.c	2015-01-24 14:52:25.955392903 +0100
+@@ -37,6 +37,9 @@
+  * added since then and headers containing them may not be available on
+  * every system. */
+ 
++/* Dirty hack */
++#undef  BLKGETSIZE64
++#define BLKGETSIZE64 _IOR(0x12,114,sizeof(uint64_t))
+ #define BLKTRACE_BDEV_SIZE      32
+ struct blk_user_trace_setup {
+ 	char name[BLKTRACE_BDEV_SIZE];	/* output */
+@@ -53,6 +56,7 @@
+ #endif
+ #ifndef BLKTRACESTART
+ #define BLKTRACESTART _IO(0x12,116)
++#define BLKTRACESTOP _IO(0x12,117)
+ #endif
+ #ifndef BLKTRACESTART
+ #define BLKTRACESTOP _IO(0x12,117)
