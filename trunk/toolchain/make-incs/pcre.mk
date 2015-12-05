@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 PCRE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-PCRE_VERSION := 8.36
+PCRE_VERSION := 8.37
 PCRE_PATCHES_DIR := $(PATCHES_DIR)/pcre/$(PCRE_VERSION)
 
 PCRE_FILE := pcre-$(PCRE_VERSION).tar.bz2
@@ -80,7 +80,7 @@ $(STAGEFILES_DIR)/.pcre_configured: $(STAGEFILES_DIR)/.pcre_patched
 		$(PCRE_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
-			--enable-utf8 \
+			--enable-jit \
 			--disable-cpp)
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_configured
 
