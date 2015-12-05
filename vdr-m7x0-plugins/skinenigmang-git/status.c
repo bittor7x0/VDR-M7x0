@@ -28,6 +28,9 @@ void cEnigmaStatus::Replaying(const cControl * /*Control */ , const char *Name,
   debug("cEnigmaStatus::Replaying(%s)", Name);
 
   if (Name != NULL) {
+#if VDRVERSNUM >= 20301
+    LOCK_RECORDINGS_READ
+#endif
     mReplayMode = replayMPlayer;
     if (strlen(Name) > 6 && Name[0] == '[' && Name[3] == ']' && Name[5] == '(') {
       int i;
@@ -40,7 +43,11 @@ void cEnigmaStatus::Replaying(const cControl * /*Control */ , const char *Name,
         mReplayIsLoop = Name[1] == 'L';
         mReplayIsShuffle = Name[2] == 'S';
       }
+#if VDRVERSNUM >= 20301
+    } else if (FileName ? Recordings->GetByName(FileName) : NULL) {
+#else
     } else if (FileName ? Recordings.GetByName(FileName) : NULL) {
+#endif
       mReplayMode = replayNormal;
     } else if (strcmp(Name, "DVD") == 0)
       mReplayMode = replayDVD;
@@ -86,9 +93,13 @@ void cEnigmaStatus::OsdItem(const char * /* Text */, int /* ItemIndex */)
 void cEnigmaStatus::UpdateActiveTimers(void)
 {
   mTimers.Clear();
+#if VDRVERSNUM >= 20301
+  LOCK_TIMERS_READ
+  for (const cTimer * tim = Timers->First(); tim; tim = Timers->Next(tim)) {
+#else
   Timers.IncBeingEdited();
-
   for (cTimer * tim = Timers.First(); tim; tim = Timers.Next(tim)) {
+#endif
     if (tim->HasFlags(tfActive)) {
       int i = 0;
       cTimer dummy;
@@ -112,7 +123,9 @@ void cEnigmaStatus::UpdateActiveTimers(void)
     }
   }
 
+#if VDRVERSNUM < 20301
   Timers.DecBeingEdited();
+#endif
   mTimers.Sort();
 }
 // vim:et:sw=2:ts=2:

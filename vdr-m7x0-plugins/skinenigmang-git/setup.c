@@ -27,7 +27,11 @@
 #include "texteffects.h"
 
 static const char *allVdrFonts[] = {
+#ifdef HAVE_FREETYPE
   trNOOP("TrueType Font"),
+#else
+  trNOOP("No TTF support!"),
+#endif
   trNOOP("Default OSD Font"),
   trNOOP("Default Fixed Size Font"),
   trNOOP("Default Small Font")
@@ -614,9 +618,11 @@ void cMenuSetupFonts::Set(void)
 
   SetCurrent(Get(currentItem));
   Display();
+#ifdef HAVE_FREETYPE
   if (data->allFonts[Current()].VdrId == FONT_TRUETYPE)
     SetHelp(NULL, NULL, NULL, tr("Button$Set"));
   else
+#endif
     SetHelp(NULL, NULL, NULL, NULL);
 }
 

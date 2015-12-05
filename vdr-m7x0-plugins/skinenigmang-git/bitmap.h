@@ -17,11 +17,11 @@ class cOSDImageBitmap {
 public:
   cOSDImageBitmap();
   ~cOSDImageBitmap();
-  bool DrawImage(const char *fileNameP, int x, int y, int w, int h, int colors, cBitmap *bmp);
+  bool DrawImage(const char *fileNameP, int x, int y, int w, int h, int colors, cOsd *osd);
   static void Init(void);
 
 private:
-  bool DrawMagick(const char *Filename, int x, int y, int height, int width, int colors, cBitmap *bmp);
+  bool DrawMagick(const char *Filename, int x, int y, int height, int width, int colors, cOsd *osd);
 };
 
 #endif

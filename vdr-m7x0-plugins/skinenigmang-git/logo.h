@@ -37,15 +37,15 @@ private:
   cBitmap *bmpImage;
 #endif
   std::map<std::string, cBitmap*> cacheMapM;
-  bool DrawImage(const char *fileNameP, int x, int y, int w, int h, int c, cBitmap *bmp);
+  bool DrawImage(const char *fileNameP, int x, int y, int w, int h, int c, cOsd *osd);
   bool LoadXpm(const char *fileNameP, int w, int h);
   bool Load(const char *fileNameP, int w, int h);
 public:
   cEnigmaLogoCache(unsigned int cacheSizeP);
   ~cEnigmaLogoCache();
   bool Resize(unsigned int cacheSizeP);
-  bool DrawEventImage(const cEvent *Event, int x, int y, int w, int h, int c, cBitmap *bmp);
-  bool DrawRecordingImage(const cRecording *Recording, int x, int y, int w, int h, int c, cBitmap *bmp);
+  bool DrawEventImage(const cEvent *Event, int x, int y, int w, int h, int c, cOsd *osd);
+  bool DrawRecordingImage(const cRecording *Recording, int x, int y, int w, int h, int c, cOsd *osd);
   bool LoadChannelLogo(const cChannel *Channel);
   bool LoadSymbol(const char *fileNameP);
   bool LoadIcon(const char *fileNameP);

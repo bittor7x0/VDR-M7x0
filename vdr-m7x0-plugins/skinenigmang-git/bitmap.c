@@ -28,12 +28,12 @@ cOSDImageBitmap::cOSDImageBitmap()
 cOSDImageBitmap::~cOSDImageBitmap()
 {}
 
-bool cOSDImageBitmap::DrawImage(const char *fileNameP, int x, int y, int w, int h, int colors, cBitmap *bmp)
+bool cOSDImageBitmap::DrawImage(const char *fileNameP, int x, int y, int w, int h, int colors, cOsd *osd)
 {
-  return DrawMagick(fileNameP, x, y, w, h, colors, bmp);
+  return DrawMagick(fileNameP, x, y, w, h, colors, osd);
 }
 
-bool cOSDImageBitmap::DrawMagick(const char *Filename, int x, int y, int width, int height, int colors, cBitmap *bmp)
+bool cOSDImageBitmap::DrawMagick(const char *Filename, int x, int y, int width, int height, int colors, cOsd *osd)
 {
   Image image;
   try {
@@ -80,7 +80,7 @@ bool cOSDImageBitmap::DrawMagick(const char *Filename, int x, int y, int width, 
                      | ((int)(pix->red * 255 / MaxRGB) << 16)
                      | ((int)(pix->green * 255 / MaxRGB) << 8)
                      | (int)(pix->blue * 255 / MaxRGB);
-        bmp->DrawPixel(x + ix, y + iy, col);
+        osd->DrawPixel(x + ix, y + iy, col);
         ++pix;
       }
     }
