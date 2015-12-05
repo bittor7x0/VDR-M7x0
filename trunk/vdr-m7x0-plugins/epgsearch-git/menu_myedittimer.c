@@ -132,7 +132,7 @@ void cMenuMyEditTimer::Set()
     Add(new cMenuEditStrItem( tr("Directory"), directory, MaxFileName, tr(AllowedChars)));
     Add(new cMenuEditBitItem( trVDR("Active"),       &flags, tfActive));
 #ifdef USE_PINPLUGIN
-    if (ChildLock::IsUnlocked()) Add(new cMenuEditChanItem(tr("Channel"), &channel));
+    if (ChildLock::IsUnlocked() || !fskProtection) Add(new cMenuEditChanItem(tr("Channel"), &channel));
     else {
       cString buf = cString::sprintf("%s\t%s", tr("Channel"), Channels.GetByNumber(channel)->Name());
       Add(new cOsdItem(buf));
