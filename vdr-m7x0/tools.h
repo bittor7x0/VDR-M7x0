@@ -88,7 +88,7 @@ void setIaMode(bool mode);
 
 #define MALLOC(type, size)  (type *)malloc(sizeof(type) * (size))
 
-#define DELETENULL(p) (delete (p), p = NULL)
+template<class T> inline void DELETENULL(T *&p) { T *q = p; p = NULL; delete q; }
 
 #define CHECK(s) { if ((s) < 0) LOG_ERROR } // used for 'ioctl()' calls
 #define FATALERRNO (errno && errno != EAGAIN && errno != EINTR && errno != EBUSY)

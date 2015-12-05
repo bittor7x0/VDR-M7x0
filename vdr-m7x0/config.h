@@ -50,7 +50,8 @@
 #define MINOSDHEIGHT 324
 #define MAXOSDHEIGHT 567
 
-#define MaxFileName 256
+#define MaxFileName NAME_MAX + 1 // obsolete - use NAME_MAX directly instead!
+                                 // NAME_MAX does not include '\0'
 #define MaxSkinName 16
 #define MaxThemeName 16
 
@@ -231,7 +232,7 @@ public:
   int MenuScrollWrap;
   int MenuButtonCloses;
   int MarkInstantRecord;
-  char NameInstantRecord[MaxFileName];
+  char NameInstantRecord[NAME_MAX + 1];
   int InstantRecordTime;
 #ifdef M750S
   int LnbSLOF;

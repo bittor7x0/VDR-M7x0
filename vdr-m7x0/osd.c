@@ -644,8 +644,8 @@ void cBitmap::DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quad
     case 8:          cy = y1; rx /= 2; break;
     default: ;
     }
-  int TwoASquare = 2 * rx * rx;
-  int TwoBSquare = 2 * ry * ry;
+  int TwoASquare = max(1, 2 * rx * rx);
+  int TwoBSquare = max(1, 2 * ry * ry);
   int x = rx;
   int y = 0;
   int XChange = ry * ry * (1 - 2 * rx);

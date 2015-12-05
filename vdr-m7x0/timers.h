@@ -38,7 +38,7 @@ private:
   int stop;
   int priority;
   int lifetime;
-  mutable char file[MaxFileName];
+  mutable char file[NAME_MAX * 2 + 1]; // *2 to be able to hold 'title' and 'episode', which can each be up to 255 characters long
   char *aux;
   const cEvent *event;
 public:

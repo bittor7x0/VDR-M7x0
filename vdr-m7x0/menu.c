@@ -245,9 +245,13 @@ cMenuEditChannel::cMenuEditChannel(cChannel *Channel, bool New)
      data = *channel;
      if (New) {
         channel = NULL;
+        // clear non-editable members:
         data.nid = 0;
         data.tid = 0;
         data.rid = 0;
+        *data.shortName  = 0;
+        *data.provider   = 0;
+        *data.portalName = 0;
         }
      Setup();
      }
@@ -2517,7 +2521,7 @@ void cMenuRecordingItem::IncrementCounter(bool New)
 
 class cMenuRenameRecording : public cOsdMenu {
 private:
-  char name[MaxFileName];
+  char name[NAME_MAX + 1];
   cMenuEditStrItem *file;
   cOsdItem *marksItem, *resumeItem;
   bool isResume, isMarks;
@@ -2778,7 +2782,7 @@ bool cMenuRecordings::Open(bool OpenSubMenus)
      const char *t = ri->Name();
      cString buffer;
      if (base) {
-        buffer = cString::sprintf("%s~%s", base, t);
+        buffer = cString::sprintf("%s%c%s", base, FOLDERDELIMCHAR, t);
         t = buffer;
         }
      AddSubMenu(new cMenuRecordings(t, level + 1, OpenSubMenus));

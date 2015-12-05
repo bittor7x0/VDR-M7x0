@@ -19,6 +19,8 @@
 #include "libsi/section.h"
 #include "libsi/descriptor.h"
 
+#define VALID_TIME (31536000 * 2) // two years
+
 // --- cEIT ------------------------------------------------------------------
 
 class cEIT : public SI::EIT {
@@ -32,17 +34,21 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
   if (!CheckCRCAndParse())
      return;
 
+  time_t Now = time(NULL);
+  if (Now < VALID_TIME)
+     return; // we need the current time for handling PDC descriptors
+
+  if (!Channels.Lock(false, 10))
+     return;
+
   tChannelID channelID(Source, getOriginalNetworkId(), getTransportStreamId(), getServiceId());
 
   cChannel *channel = Channels.GetByChannelID(channelID, true);
-  if (!channel)
-     return; // only collect data for known channels
-
-  //M7X0 BEGIN AK
   eEpgMode em = EpgModes.GetModeByChannelID(&channelID)->GetMode();
-  if ((em == emNone) | ((em == emNowNext) & (Tid != 0x4e) & (Tid != 0x4f)))
+  if (!channel || ((em == emNone) | ((em == emNowNext) & (Tid != 0x4e) & (Tid != 0x4f)))) {
+     Channels.Unlock();
      return;
-//M7X0 END AK
+     }
 
   cSchedule *pSchedule = (cSchedule *)Schedules->GetSchedule(channel, true);
 
@@ -51,28 +57,29 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
   bool HasExternalData = false;
   time_t SegmentStart = 0;
   time_t SegmentEnd = 0;
-  time_t now = time(NULL);
+  struct tm t = { 0 };
+  localtime_r(&Now, &t); // this initializes the time zone in 't'
 
   SI::EIT::Event SiEitEvent;
   for (SI::Loop::Iterator it; eventLoop.getNext(SiEitEvent, it); ) {
       bool ExternalData = false;
+      time_t StartTime = SiEitEvent.getStartTime();
+      time_t Duration = SiEitEvent.getDuration();
       // Drop bogus events - but keep NVOD reference events, where all bits of the start time field are set to 1, resulting in a negative number.
-      time_t si_stime = SiEitEvent.getStartTime();
-      time_t si_dur = SiEitEvent.getDuration();
-      if (si_stime == 0 || (si_stime > 0 && si_dur == 0))
+      if (StartTime == 0 || (StartTime > 0 && Duration == 0))
          continue;
       Empty = false;
-      if (((!SegmentStart) | (si_stime < SegmentStart)) & (si_stime > 0))
-         SegmentStart = si_stime;
-      if (si_stime + si_dur > SegmentEnd)
-         SegmentEnd = si_stime + si_dur;
+      if (((!SegmentStart) | (StartTime < SegmentStart)) & (StartTime > 0))
+         SegmentStart = StartTime;
+      if (StartTime + Duration > SegmentEnd)
+         SegmentEnd = StartTime + Duration;
 
       cEvent *newEvent = NULL;
       cEvent *rEvent = NULL;
-      cEvent *pEvent = (cEvent *)pSchedule->GetEvent(SiEitEvent.getEventId(), si_stime);
+      cEvent *pEvent = (cEvent *)pSchedule->GetEvent(SiEitEvent.getEventId(), StartTime);
       if (!pEvent) {
-         bool outdated = (si_stime > 0) &
-               (si_stime + si_dur + Setup.EPGLinger * 60 + 3600 < now);
+         bool outdated = (StartTime > 0) &
+               (StartTime + Duration + Setup.EPGLinger * 60 + 3600 < Now);
          if (OnlyRunningStatus | (em == emForeign) | outdated)
             continue;
          // If we don't have that event yet, we create a new one.
@@ -86,14 +93,15 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
          pEvent->SetSeen();
          // If the existing event has a zero table ID it was defined externally and shall
          // not be overwritten.
-         if (pEvent->TableID() == 0x00) {
+         uchar TableID = pEvent->TableID();
+         if (TableID == 0x00) {
             if (pEvent->Version() == getVersionNumber())
                continue;
             HasExternalData = ExternalData = true;
             }
          // If the new event has a higher table ID, let's skip it.
          // The lower the table ID, the more "current" the information.
-         else if (Tid > pEvent->TableID())
+         else if (Tid > TableID)
             continue;
          // If the new event comes from the same table and has the same version number
          // as the existing one, let's skip it to avoid unnecessary work.
@@ -101,14 +109,14 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
          // the actual Premiere transponder and the Sat.1/Pro7 transponder), but use different version numbers on
          // each of them :-( So if one DVB card is tuned to the Premiere transponder, while an other one is tuned
          // to the Sat.1/Pro7 transponder, events will keep toggling because of the bogus version numbers.
-         else if (Tid == pEvent->TableID() && pEvent->Version() == getVersionNumber())
+         else if (Tid == TableID && pEvent->Version() == getVersionNumber())
             continue;
          }
       if ((!ExternalData) & (!OnlyRunningStatus)) {
          pEvent->SetEventID(SiEitEvent.getEventId()); // unfortunately some stations use different event ids for the same event in different tables :-(
          pEvent->SetTableID(Tid);
-         pEvent->SetStartTime(si_stime);
-         pEvent->SetDuration(si_dur);
+         pEvent->SetStartTime(StartTime);
+         pEvent->SetDuration(Duration);
          }
       if (newEvent)
          pSchedule->AddEvent(newEvent);
@@ -195,9 +203,6 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
                  break;
             case SI::PDCDescriptorTag: {
                  SI::PDCDescriptor *pd = (SI::PDCDescriptor *)d;
-                 time_t now = time(NULL);
-                 struct tm tm_r;
-                 struct tm t = *localtime_r(&now, &tm_r); // this initializes the time zone in 't'
                  t.tm_isdst = -1; // makes sure mktime() will determine the correct DST setting
                  int month = t.tm_mon;
                  t.tm_mon = pd->getMonth() - 1;
@@ -230,8 +235,7 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
                  SI::LinkageDescriptor *ld = (SI::LinkageDescriptor *)d;
                  tChannelID linkID(Source, ld->getOriginalNetworkId(), ld->getTransportStreamId(), ld->getServiceId());
                  if (ld->getLinkageType() == 0xB0) { // Premiere World
-                    time_t now = time(NULL);
-                    bool hit = SiEitEvent.getStartTime() <= now && now < SiEitEvent.getStartTime() + SiEitEvent.getDuration();
+                    bool hit = StartTime <= Now && Now < StartTime + Duration;
                     if (hit) {
                        char linkName[ld->privateData.getLength() + 1];
                        strn0cpy(linkName, (const char *)ld->privateData.getData(), sizeof(linkName));
@@ -303,18 +307,18 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
          channel->SetLinkChannels(LinkChannels);
       Modified = true;
       }
-  if (Empty && Tid == 0x4E && getSectionNumber() == 0)
-     // ETR 211: an empty entry in section 0 of table 0x4E means there is currently no event running
-     pSchedule->ClrRunningStatus(channel);
-  if (Tid == 0x4E)
+  if (Tid == 0x4E) {
+     if (Empty && getSectionNumber() == 0)
+        // ETR 211: an empty entry in section 0 of table 0x4E means there is currently no event running
+        pSchedule->ClrRunningStatus(channel);
      pSchedule->SetPresentSeen();
-  if (OnlyRunningStatus)
-     return;
-  if (Modified) {
+     }
+  if (Modified && !OnlyRunningStatus) {
      pSchedule->Sort();
      pSchedule->DropOutdated(SegmentStart, SegmentEnd, Tid, getVersionNumber());
      Schedules->SetModified(pSchedule);
      }
+  Channels.Unlock();
 }
 
 // --- cTDT ------------------------------------------------------------------

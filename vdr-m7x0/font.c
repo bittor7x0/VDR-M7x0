@@ -191,7 +191,7 @@ void cTextWrapper::Set(const char *Text, const cFont *Font, int Width)
             p = Blank;
             continue;
             }
-         else {
+         else if (w > 0) { // there has to be at least one character before the newline
             // Here's the ugly part, where we don't have any whitespace to
             // punch in a newline, so we need to make room for it:
             if (Delim)
@@ -207,8 +207,7 @@ void cTextWrapper::Set(const char *Text, const cFont *Font, int Width)
             continue;
             }
          }
-      else
-         w += cw;
+      w += cw;
       if (strchr("-.,:;!?_", *p)) {
          Delim = p;
          Blank = NULL;

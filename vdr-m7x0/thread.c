@@ -460,7 +460,6 @@ bool cPipe::Open(const char *Command, const char *Mode)
   else { // child process
      int iofd = STDOUT_FILENO;
      if (strcmp(Mode, "w") == 0) {
-        mode = "r";
         iopipe = 1;
         iofd = STDIN_FILENO;
         }

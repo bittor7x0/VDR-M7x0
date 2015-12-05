@@ -57,6 +57,7 @@
 #define DELETEDLIFETIME   300 // seconds after which a deleted recording will be actually removed
 #define DISKCHECKDELTA    100 // seconds between checks for free disk space
 #define REMOVELATENCY      10 // seconds to wait until next check after removing a file
+#define MAXREMOVETIME      10 // seconds after which to return from removing deleted recordings
 
 #define MAX_SUBTITLE_LENGTH  40
 
@@ -86,9 +87,14 @@ void cRemoveDeletedRecordingsThread::Action(void)
   // Make sure only one instance of VDR does this:
   cLockFile LockFile(VideoDirectory);
   if (LockFile.Lock()) {
+     time_t StartTime = time(NULL);
      bool deleted = false;
      cThreadLock DeletedRecordingsLock(&DeletedRecordings);
      for (cRecording *r = DeletedRecordings.First(); r; ) {
+         if (time(NULL) - StartTime > MAXREMOVETIME)
+            return; // don't stay here too long
+         if (cRemote::HasKeys())
+            return; // react immediately on user input
          if (r->deleted && time(NULL) - r->deleted > DELETEDLIFETIME) {
             cRecording *next = DeletedRecordings.Next(r);
             r->Remove();
