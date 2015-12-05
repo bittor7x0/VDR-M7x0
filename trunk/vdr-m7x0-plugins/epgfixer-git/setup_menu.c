@@ -14,6 +14,7 @@
 #include "blacklist.h"
 #include "charset.h"
 #include "epgclone.h"
+#include "i18n.h"
 #include "regexp.h"
 #include "tools.h"
 #include "setup_menu.h"

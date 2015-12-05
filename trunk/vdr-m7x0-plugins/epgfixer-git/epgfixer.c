@@ -13,11 +13,12 @@
 #include "charset.h"
 #include "epgclone.h"
 #include "epghandler.h"
+#include "i18n.h"
 #include "regexp.h"
 #include "setup_menu.h"
 
-#if defined(APIVERSNUM) && APIVERSNUM < 10726
-#error "VDR-1.7.26 API version or greater is required!"
+#if defined(APIVERSNUM) && APIVERSNUM < 10400
+#error "VDR-1.4.0 API version or greater is required!"
 #endif
 
 #ifndef GITVERSION
@@ -94,6 +95,9 @@ bool cPluginEpgfixer::Initialize(void)
 bool cPluginEpgfixer::Start(void)
 {
   // Start any background activities the plugin shall perform.
+#if APIVERSNUM < 10507
+   RegisterI18n(Phrases);
+#endif
   return true;
 }
 
