@@ -679,6 +679,7 @@ void cMenuScanActive::Setup()
      }
      else if (cMenuChannelscan::scanState == ssGetChannels)
      {
+#ifdef M750S
        if (scp->type==SAT) 
        {
           snprintf(buffer,sizeof(buffer), tr("Scanning %s (%iMHz)\t%s"), cTransponders::GetInstance().Position().c_str(), 
@@ -688,6 +689,7 @@ void cMenuScanActive::Setup()
 	  Add(new cMenuStatusBar(20 ,Scan->getSNR(),20, 3));
        }
        else
+#endif
        {
           snprintf(buffer,sizeof(buffer), tr("Scanning %s (%.3fMHz)\t%s"), tr(cTransponders::GetInstance().Position().c_str()), 
              Scan->GetCurrentFrequency()/(1000.0*1000),tr(cMenuChannelscan::serviceTypeTxts[cMenuChannelscanSetup::SetupServiceType]));
