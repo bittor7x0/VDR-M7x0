@@ -18,6 +18,7 @@
 // by Klaus Schmidinger
 //
 
+#if APIVERSNUM >= 10731
 static void StripControlCharacters(char *s)
 {
   if (s) {
@@ -37,6 +38,7 @@ static void StripControlCharacters(char *s)
            }
      }
 }
+#endif
 
 void FixOriginalEpgBugs(cEvent *event)
 {
@@ -232,9 +234,18 @@ void FixOriginalEpgBugs(cEvent *event)
          }
      }
   // Same for control characters:
+#if APIVERSNUM >= 10731
   StripControlCharacters(title);
   StripControlCharacters(shortText);
   StripControlCharacters(description);
+#else
+  strreplace(title, '\x86', ' ');
+  strreplace(title, '\x87', ' ');
+  strreplace(shortText, '\x86', ' ');
+  strreplace(shortText, '\x87', ' ');
+  strreplace(description, '\x86', ' ');
+  strreplace(description, '\x87', ' ');
+#endif
   // Set modified data back to event
   event->SetTitle(title);
   event->SetShortText(shortText);

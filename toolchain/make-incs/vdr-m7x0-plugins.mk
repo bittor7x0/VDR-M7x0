@@ -120,6 +120,15 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 			exit 1; \
 		fi; \
 	fi; \
+	if [ -f $(VDR_DIR)/PLUGINS/src/epgfixer/Makefile ]; then \
+		if [ X"$(CONFIG_PCRE)" != X"y" ]; then \
+			$(ECHO) dependency error: epgfixer plugin needs pcre library enabled; \
+			exit 1; \
+		else \
+			$(SED) -i -e 's,shell.*pcre-config"\?,shell \"$(TARGET_ROOT)/usr/bin/pcre-config\",g' \
+				$(VDR_DIR)/PLUGINS/src/epgfixer/Makefile; \
+		fi; \
+	fi; \
 	if [ -f $(VDR_DIR)/PLUGINS/src/epgsearch/Makefile ]; then \
 		if [ -f $(VDR_DIR)/PLUGINS/src/pin/Makefile ]; then \
 			$(SED) -i -e 's,^#USE_PINPLUGIN = 1,USE_PINPLUGIN = 1,g' \
@@ -149,11 +158,13 @@ $(STAGEFILES_DIR)/.vdr-plugins_compiled: $(STAGEFILES_DIR)/.vdr-plugins_configur
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
+		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) clean-plugins
 	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
+		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) plugins
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_compiled
 
@@ -166,6 +177,7 @@ $(STAGEFILES_DIR)/.vdr-plugins_installed: $(STAGEFILES_DIR)/.vdr-plugins_compile
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
+		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) PLUGINLIBDIR=$(TARGET_ROOT)/usr/lib/vdr install-plugins
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_installed
 
@@ -209,5 +221,6 @@ cppcheck-vdr-plugins:
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
+		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) cppcheck-plugins ; \
 	fi );
