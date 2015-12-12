@@ -1,0 +1,12 @@
+diff -Naur a/networking/udhcp/dhcpc.c b/networking/udhcp/dhcpc.c
+--- a/networking/udhcp/dhcpc.c
++++ b/networking/udhcp/dhcpc.c
+@@ -24,7 +24,7 @@
+ #include "common.h"
+ #include "dhcpd.h"
+ #include "dhcpc.h"
+-
++#include <asm/types.h>
+ #include <netinet/if_ether.h>
+ #include <linux/filter.h>
+ #include <linux/if_packet.h>
