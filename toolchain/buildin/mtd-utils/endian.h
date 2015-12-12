@@ -1,7 +1,7 @@
 #ifndef __endian_compat_h
 #define __endian_compat_h
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__CYGWIN__)
 #include <byteswap.h>
 #include_next <endian.h>
 #elif defined(__APPLE__)
@@ -15,6 +15,11 @@
 #define bswap_16(x) bswap16(x)
 #define bswap_32(x) bswap32(x)
 #define bswap_64(x) bswap64(x)
+#elif defined(__OpenBSD__)
+#include <sys/types.h>
+#define bswap_16(x) __swap16(x)
+#define bswap_32(x) __swap32(x)
+#define bswap_64(x) __swap64(x)
 #else
 #include <machine/endian.h>
 #define bswap_16(x) swap16(x)
