@@ -1,3 +1,4 @@
 #!/bin/ash
 
-grep '^vdr_plugindirs' /etc/rc.local.conf | cut -d= -f2 | sed 's/^\"//' | sed 's/\"$//'
+eval $(/bin/grep "^vdr_plugindirs=" /etc/rc.local.conf)
+echo $vdr_plugindirs
