@@ -35,6 +35,7 @@ endif
 
 
 TOP_DIR := $(abspath .)
+HOST_CYGWIN := $(if $(filter Cygwin,$(shell uname -o)),y,n)
 HOST_BS := $(shell uname)
 HOST_ARCH := $(shell uname -m)
 HOST_TARGET := $(shell gcc -dumpmachine)

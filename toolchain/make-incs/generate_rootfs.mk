@@ -34,6 +34,11 @@ ROOTFS_FILE_COPY := $(STAGEFILES_DIR)/file_copy$(subst /,.,$(subst $(TOP_DIR),,$
 FQ_FILE_LISTS = $(addprefix $(FILELIST_DIR)/, $(FILE_LISTS))
 ROOTFS_DIR_DEPS = $(PACKS_BUILD_STAGEFILE) $$(FQ_FILE_LISTS) \
    $(COPY_LISTS_BIN) $(UPX_BIN) $(TOP_DIR)/.config
+ifeq ($(HOST_CYGWIN),y)
+	ROOTFS_DIR_DEPS += $(CRAMFSCK_BIN) $(CRAMFSSWAP_BIN)
+	CYGWIN_DIR_TMP_REL := cygwin_dir_$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION)
+	CYGWIN_DIR_TMP_ABS := $(TOP_DIR)/$(CYGWIN_DIR_TMP_REL)
+endif
 
 ifndef CONFIG_EXT2_ROOTFS_SIZE
   EXT2_ROOTFS_SIZE := 65536
@@ -146,6 +151,36 @@ $(ROOTFS_FILE_TABLE): $(ROOTFS_DIR_DEPS)
 		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(ROOTFS_FILE_COPY)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(ROOTFS_DIR)/etc/systemtype`,g" $(ROOTFS_DIR)/etc/rc.mini
 	$(call set_lang, $(ROOTFS_DIR))
+ifeq ($(HOST_CYGWIN),y)
+	-$(RM) -rf $(CYGWIN_DIR_TMP_ABS)
+	$(MKDIR) -p $(CYGWIN_DIR_TMP_ABS)
+	$(CP) $(HOSTUTILS_PREFIX_BIN)/cramfsck.exe $(CYGWIN_DIR_TMP_ABS)/cramfsck.exe
+	$(CP) $(HOSTUTILS_PREFIX_BIN)/cramfsswap.exe $(CYGWIN_DIR_TMP_ABS)/cramfsswap.exe
+	$(CP) $(HOSTUTILS_PREFIX_BIN)/gen_ofi.exe $(CYGWIN_DIR_TMP_ABS)/gen_ofi.exe
+	$(CP) $(HOSTUTILS_PREFIX_BIN)/gen_wsw.exe $(CYGWIN_DIR_TMP_ABS)/gen_wsw.exe
+	$(CP) $(HOSTUTILS_PREFIX_BIN)/mips-linux-uclibc-objcopy.exe $(CYGWIN_DIR_TMP_ABS)/mips-linux-uclibc-objcopy.exe
+	$(CP) $(HOSTUTILS_PREFIX_BIN)/mksquashfs.exe $(CYGWIN_DIR_TMP_ABS)/mksquashfs.exe
+	$(CP) $(HOSTUTILS_PREFIX_BIN)/rsaencode.exe $(CYGWIN_DIR_TMP_ABS)/rsaencode.exe
+	$(CP) $(shell which cat.exe) $(CYGWIN_DIR_TMP_ABS)/cat.exe
+	$(CP) $(shell which dd.exe) $(CYGWIN_DIR_TMP_ABS)/dd.exe
+	$(CP) $(shell which gzip.exe) $(CYGWIN_DIR_TMP_ABS)/gzip.exe
+	$(CP) $(shell which md5sum.exe) $(CYGWIN_DIR_TMP_ABS)/md5sum.exe	
+	$(CP) $(shell which sed.exe) $(CYGWIN_DIR_TMP_ABS)/sed.exe
+	$(CP) $(shell which sha1sum.exe) $(CYGWIN_DIR_TMP_ABS)/sha1sum.exe
+	$(CP) $(shell which tar.exe) $(CYGWIN_DIR_TMP_ABS)/tar.exe
+	$(CP) $(shell which unzip.exe) $(CYGWIN_DIR_TMP_ABS)/unzip.exe
+	for exe_file in `$(FIND) $(CYGWIN_DIR_TMP_ABS) -type f -iname '*.exe' | $(SORT)` ; do \
+		for exe_dep in `ldd.exe $$exe_file | grep.exe --invert-match Windows | cut.exe -d " " -f3` ; do \
+			[ ! -f $(CYGWIN_DIR_TMP_ABS)/$$(basename $$exe_dep) ] && \
+				$(CP) $$exe_dep $(CYGWIN_DIR_TMP_ABS)/$$(basename $$exe_dep) && \
+				strip.exe $(CYGWIN_DIR_TMP_ABS)/$$(basename $$exe_dep) ; \
+		done ; \
+		strip.exe $$exe_file ; \
+	done
+	-$(RM) -f $(TOP_DIR)/fw-builder-cygwin-bin.tar.bz2
+	tar jcvf $(TOP_DIR)/fw-builder-cygwin-bin.tar.bz2 \
+		--directory=$(TOP_DIR) $(CYGWIN_DIR_TMP_REL)/
+endif
 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG) > \
 		$(ROOTFS_FILE_TABLE)
 

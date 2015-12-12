@@ -97,6 +97,22 @@ $(STAGEFILES_DIR)/.uclibc_patched: $(STAGEFILES_DIR)/.uclibc_unpacked
 $(STAGEFILES_DIR)/.uclibc_configured: $(STAGEFILES_DIR)/.uclibc_patched
 	$(SED) -ne 's,^KERNEL_HEADERS=.*,KERNEL_HEADERS=\"$(LINUX_HEADERS_INSTALL_DIR)\",g' \
 		-e 'w$(UCLIBC_DIR)/.config' $(UCLIBC_CONFIG)
+  # Disable locale in Cygwin
+  ifeq ($(HOST_CYGWIN),y)
+	$(SED) -i -e 's,^UCLIBC_HAS_LOCALE=y,# UCLIBC_HAS_LOCALE is not set,g' \
+		$(UCLIBC_DIR)/.config
+	$(SED) -i -e 's,^UCLIBC_BUILD_MINIMAL_LOCALE=y,,g' \
+		$(UCLIBC_DIR)/.config
+	$(SED) -i -e 's,^UCLIBC_BUILD_MINIMAL_LOCALES="en_US es_ES de_DE fr_FR",,g' \
+		$(UCLIBC_DIR)/.config
+	$(SED) -i -e 's,^UCLIBC_HAS_XLOCALE=y,,g' \
+		$(UCLIBC_DIR)/.config
+	$(SED) -i -e 's,^# UCLIBC_HAS_GLIBC_DIGIT_GROUPING is not set,,g' \
+		$(UCLIBC_DIR)/.config
+  else
+	$(SED) -i -e 's,^# UCLIBC_HAS_LOCALE is not set,UCLIBC_HAS_LOCALE=y\n# UCLIBC_BUILD_ALL_LOCALE is not set\nUCLIBC_BUILD_MINIMAL_LOCALE=y\n# UCLIBC_PREGENERATED_LOCALE_DATA is not set\nUCLIBC_BUILD_MINIMAL_LOCALES="en_US es_ES de_DE fr_FR"\nUCLIBC_HAS_XLOCALE=y\n# UCLIBC_HAS_GLIBC_DIGIT_GROUPING is not set,g' \
+		$(UCLIBC_DIR)/.config
+  endif
   # Enable/Disable backtrace support
   ifeq ($(CONFIG_UCLIBC_WITH_BACKTRACE),y)
 	$(SED) -i -e 's,^# UCLIBC_HAS_BACKTRACE is not set,UCLIBC_HAS_BACKTRACE=y,g' \
