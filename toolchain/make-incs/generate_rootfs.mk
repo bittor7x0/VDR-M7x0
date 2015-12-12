@@ -88,6 +88,7 @@ $$1 ~ /^\/?etc\/vdr$$/ || \
 $$1 ~ /^\/?etc\/vdr\/runvdr/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/epgsearch$$/ || \
+$$1 ~ /^\/?etc\/vdr\/plugins\/epgfixer$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/filebrowser$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/channellists$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/scheduler$$/ || \
