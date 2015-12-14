@@ -53,8 +53,8 @@ $(STAGEFILES_DIR)/.linux_headers_unpacked: $(LINUX_HEADERS_DLFILE) $(TC_INIT_RUL
 	$(TOUCH) $(STAGEFILES_DIR)/.linux_headers_unpacked
 
 $(STAGEFILES_DIR)/.linux_headers_installed: $(STAGEFILES_DIR)/.linux_headers_unpacked
-	$(MKDIR) -p $(LINUX_HEADERS_INSTALL_DIR)
-	$(SVN) co http://svn.assembla.com/svn/VDR-M7x0/trunk/vdr-m7x0/m7x0_dvb $(LINUX_HEADERS_DIR)/include/linux/dvb
+	$(MKDIR) -p $(LINUX_HEADERS_INSTALL_DIR) $(LINUX_HEADERS_DIR)/include/linux/dvb
+	($(CD) $(LINUX_HEADERS_DIR)/include/linux/dvb ; $(SVN) co http://svn.assembla.com/svn/VDR-M7x0/trunk/vdr-m7x0/m7x0_dvb .)
 	$(CP) -RPp $(LINUX_HEADERS_DIR)/include/* \
 		$(LINUX_HEADERS_INSTALL_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.linux_headers_installed
