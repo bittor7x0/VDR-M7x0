@@ -1,0 +1,142 @@
+diff -Naur mediatomb-0.12.1-orig/src/layout/fallback_layout.cc mediatomb-0.12.1/src/layout/fallback_layout.cc
+--- mediatomb-0.12.1-orig/src/layout/fallback_layout.cc	2011-03-17 13:11:21.380294352 +0100
++++ mediatomb-0.12.1/src/layout/fallback_layout.cc	2011-03-17 13:25:52.723217071 +0100
+@@ -86,7 +86,7 @@
+ void FallbackLayout::addVideo(zmm::Ref<CdsObject> obj, String rootpath)
+ {
+     Ref<StringConverter> f2i = StringConverter::f2i();
+-    int id = ContentManager::getInstance()->addContainerChain(_("/Video/All Video"));
++    int id = ContentManager::getInstance()->addContainerChain(_("/Vídeos/Todo"));
+ 
+     if (obj->getID() != INVALID_OBJECT_ID)
+     {
+@@ -117,7 +117,7 @@
+ 
+     if (string_ok(dir))
+     {
+-        id = ContentManager::getInstance()->addContainerChain(_("/Video/Directories/") + dir);
++        id = ContentManager::getInstance()->addContainerChain(_("/Vídeos/Directorios/") + dir);
+         add(obj, id);
+     }
+ }
+@@ -293,7 +293,7 @@
+     Ref<StringConverter> f2i = StringConverter::f2i();
+ 
+     
+-    id = ContentManager::getInstance()->addContainerChain(_("/Photos/All Photos"));
++    id = ContentManager::getInstance()->addContainerChain(_("/Fotos/Todo"));
+     if (obj->getID() != INVALID_OBJECT_ID)
+     {
+         obj->setRefID(obj->getID());
+@@ -325,14 +325,11 @@
+         String chain;
+         if ((y > 0) && (m > 0))
+         {
+-            chain = _("/Photos/Year/") + esc(year) + "/" + esc(month);
++            chain = _("/Fotos/Fecha/") + esc(year) + "/" + esc(month);
+             id = ContentManager::getInstance()->addContainerChain(chain);
+             add(obj, id);
+         }
+ 
+-        chain = _("/Photos/Date/") + esc(date);
+-        id = ContentManager::getInstance()->addContainerChain(chain);
+-        add(obj, id);
+     }
+ 
+     String dir;
+@@ -353,7 +350,7 @@
+ 
+     if (string_ok(dir))
+     {
+-        id = ContentManager::getInstance()->addContainerChain(_("/Photos/Directories/") + dir);
++        id = ContentManager::getInstance()->addContainerChain(_("/Fotos/Directorios/") + dir);
+         add(obj, id);
+     }
+ }
+@@ -380,7 +377,7 @@
+         desc = artist;
+     }
+     else
+-        artist = _("Unknown");
++        artist = _("Desconocido");
+ 
+     String album = meta->get(MetadataHandler::getMetaFieldName(M_ALBUM));
+     if (string_ok(album))
+@@ -390,7 +387,7 @@
+     }
+     else
+     {
+-        album = _("Unknown");
++        album = _("Desconocido");
+     }
+ 
+     if (string_ok(desc))
+@@ -408,13 +405,13 @@
+         desc = desc + _(", ") + date;
+     }
+     else
+-        date = _("Unknown");
++        date = _("Desconocido");
+ 
+     String genre = meta->get(MetadataHandler::getMetaFieldName(M_GENRE));
+     if (string_ok(genre))
+         desc = desc + ", " + genre;
+     else
+-        genre = _("Unknown");
++        genre = _("Desconocido");
+ 
+ 
+     String description = meta->get(MetadataHandler::getMetaFieldName(M_DESCRIPTION));
+@@ -424,7 +421,7 @@
+         obj->setMetadata(meta);
+     }
+ 
+-    id = ContentManager::getInstance()->addContainerChain(_("/Audio/All Audio"));
++    id = ContentManager::getInstance()->addContainerChain(_("/Música/Todo"));
+     obj->setTitle(title);
+ 
+     // we get the main object here, so the object that we will add below
+@@ -447,7 +444,7 @@
+ 
+     artist = esc(artist);
+ 
+-    chain = _("/Audio/Artists/") + artist + "/All Songs";
++    chain = _("/Música/Artistas/") + artist + "/Todo";
+ 
+     id = ContentManager::getInstance()->addContainerChain(chain);
+     add(obj, id);
+@@ -462,28 +459,28 @@
+         temp = temp + " - ";
+ 
+     album = esc(album);
+-    chain = _("/Audio/Artists/") +  artist + _("/") + album;
++    chain = _("/Música/Artistas/") +  artist + _("/") + album;
+     id = ContentManager::getInstance()->addContainerChain(chain, _(UPNP_DEFAULT_CLASS_MUSIC_ALBUM));
+     add(obj, id);
+ 
+-    chain = _("/Audio/Albums/") + album;
++    chain = _("/Música/Álbumes/") + album;
+     id = ContentManager::getInstance()->addContainerChain(chain, _(UPNP_DEFAULT_CLASS_MUSIC_ALBUM));
+     add(obj, id);
+ 
+-    chain = _("/Audio/Genres/") + esc(genre);
++    chain = _("/Música/Géneros/") + esc(genre);
+     id = ContentManager::getInstance()->addContainerChain(chain, _(UPNP_DEFAULT_CLASS_MUSIC_GENRE));
+     add(obj, id);
+ 
+-    chain = _("/Audio/Year/") + esc(date);
++    chain = _("/Música/Años/") + esc(date);
+     id = ContentManager::getInstance()->addContainerChain(chain);
+     add(obj, id);
+ 
+     obj->setTitle(temp + title);
+ 
+-    id = ContentManager::getInstance()->addContainerChain(_("/Audio/All - full name"));
++    id = ContentManager::getInstance()->addContainerChain(_("/Música/Todo - nombre completo"));
+     add(obj, id);
+ 
+-    chain = _("/Audio/Artists/") + artist + "/All - full name";
++    chain = _("/Música/Artistas/") + artist + "/Todo - nombre completo";
+     id = ContentManager::getInstance()->addContainerChain(chain);
+     add(obj, id);
+ 

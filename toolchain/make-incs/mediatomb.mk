@@ -35,9 +35,6 @@ MEDIATOMB_DEPS = $(BASE_BUILD_STAGEFILE) $(SQLITE_INSTALLED) $(EXPAT_INSTALLED)
 ifeq ($(CONFIG_UCLIBC++),y)
 	MEDIATOMB_DEPS +=  $(UCLIBC++_INSTALLED)
 endif
-ifeq ($(CONFIG_ZLIB),y)
-	MEDIATOMB_DEPS +=  $(ZLIB_INSTALLED)
-endif
 ifeq ($(CONFIG_TAGLIB),y)
 	MEDIATOMB_DEPS +=  $(TAGLIB_INSTALLED)
 endif
@@ -69,12 +66,12 @@ ifeq ($(CONFIG_PNGOUT),y)
 	MEDIATOMB_DEPS +=  $(PNGOUT_BIN)
 endif
 
-MEDIATOMB_VERSION := 0.12.1
+MEDIATOMB_VERSION := 0.12.1-47-g7ab7616
 MEDIATOMB_PATCHES_DIR := $(PATCHES_DIR)/mediatomb/$(MEDIATOMB_VERSION)
 
-MEDIATOMB_FILE := mediatomb-$(MEDIATOMB_VERSION).tar.gz
+MEDIATOMB_FILE := mediatomb_$(MEDIATOMB_VERSION).orig.tar.xz
 MEDIATOMB_DLFILE := $(DOWNLOAD_DIR)/$(MEDIATOMB_FILE)
-MEDIATOMB_URL := http://downloads.sourceforge.net/mediatomb/$(MEDIATOMB_FILE)
+MEDIATOMB_URL := http://http.debian.net/debian/pool/main/m/mediatomb/$(MEDIATOMB_FILE)
 MEDIATOMB_DIR := $(BUILD_DIR)/mediatomb-$(MEDIATOMB_VERSION)
 MEDIATOMB_CONF_DIR := $(PRG_CONFIGS_DIR)/mediatomb
 
@@ -104,7 +101,7 @@ $(STAGEFILES_DIR)/.mediatomb_unpacked: $(MEDIATOMB_DLFILE) \
                                            $(wildcard $(MEDIATOMB_PATCHES_DIR)/*.patch) \
                                            $$(MEDIATOMB_DEPS)
 	-$(RM) -rf $(MEDIATOMB_DIR)
-	$(TAR) -C $(BUILD_DIR) -zf $(MEDIATOMB_DLFILE)
+	$(TAR) -C $(BUILD_DIR) -xJf $(MEDIATOMB_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.mediatomb_unpacked
 
 #
@@ -117,10 +114,10 @@ $(STAGEFILES_DIR)/.mediatomb_patched: $(STAGEFILES_DIR)/.mediatomb_unpacked
 
 #
 # configure mediatomb
-# 
+#
 
 $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
-	($(CD) $(MEDIATOMB_DIR) ; $(UCLIBC_ENV_LTO_GC) \
+	($(CD) $(MEDIATOMB_DIR) ; autoreconf -i ; $(UCLIBC_ENV_LTO_GC) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		LDFLAGS="-flto -fwhole-program -Wl,--gc-sections -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
@@ -138,7 +135,6 @@ $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
 			--enable-log \
 			--disable-debug-log \
 			--disable-external-transcoding \
-			$(if $(CONFIG_ZLIB),--enable-zlib,--disable-zlib) \
 			$(if $(filter yy,$(CONFIG_TAGLIB)$(CONFIG_ID3LIB)),--enable-taglib --with-taglib-cfg=$(TARGET_ROOT)/usr/bin/taglib-config --disable-id3lib, \
 			$(if $(CONFIG_TAGLIB),--enable-taglib --with-taglib-cfg=$(TARGET_ROOT)/usr/bin/taglib-config,--disable-taglib) \
 			$(if $(CONFIG_ID3LIB),--enable-id3lib,--disable-id3lib)) \
@@ -149,8 +145,8 @@ $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
 			$(if $(CONFIG_LIBMAGIC),--enable-libmagic,--disable-libmagic) \
 			$(if $(CONFIG_LIBJS),--enable-libjs --with-js-h=$(TARGET_ROOT)/usr/include/js,--disable-libjs) \
 			--disable-inotify \
-			--disable-libextractor \
-			--disable-lastfmlib \
+			--disable-lastfm \
+			--disable-flac \
 			--disable-libmp4v2)
 	$(TOUCH) $(STAGEFILES_DIR)/.mediatomb_configured
 
