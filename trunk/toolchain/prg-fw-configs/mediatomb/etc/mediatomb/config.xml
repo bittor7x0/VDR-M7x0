@@ -106,6 +106,8 @@
         <treat mimetype="audio/mp4" as="mp4"/>
         <treat mimetype="application/x-iso9660" as="dvd"/>
         <treat mimetype="application/x-iso9660-image" as="dvd"/>
+        <treat mimetype="video/x-matroska" as="mkv"/>
+        <treat mimetype="audio/x-matroska" as="mka"/>
       </mimetype-contenttype>
     </mappings>
   </import>
