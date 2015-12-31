@@ -130,7 +130,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Kiinnitä",
     "", // TODO
-    "Mount",
+    "Montar",
     "Sindesi",
     "Montera",
     "", // TODO
@@ -150,7 +150,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Irrota",
     "", // TODO
-    "Unmount",
+    "Desmontar",
     "Aposindesi",
     "Avmontera",
     "", // TODO
@@ -170,7 +170,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Avaa",
     "", // TODO
-    "", // TODO
+    "Expulsar",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -190,7 +190,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Valittu lähde ei ole kiinnitetty!",
     "", // TODO
-    "¡El origen deseado no està montado!",
+    "¡El origen deseado no está montado!",
     "Epilegmeni Pigi den ine sindemeni!",
     "Den valda källan är inte monterad!",
     "", // TODO
@@ -210,7 +210,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Kiinnittäminen onnistui",
     "", // TODO
-    "mount correcto",
+    "Montaje correcto",
     "I sindesi petixe",
     "Monteringen lyckades",
     "", // TODO
@@ -230,7 +230,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Kiinnittäminen epäonnistui!",
     "", // TODO
-    "¡No he podido montar!",
+    "¡Montaje erróneo!",
     "I sindesi apetixe!",
     "Monteringen misslyckades!",
     "", // TODO
@@ -250,7 +250,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Irrottaminen onnistui",
     "", // TODO
-    "Éxito al unmount",
+    "Desmontaje correcto",
     "I aposindesi itan epitixisi",
     "Avmonteringen lyckades",
     "", // TODO
@@ -270,7 +270,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Irrottaminen epäonnistui!",
     "", // TODO
-    "¡No puedo desmontar!",
+    "¡Desmontaje erróneo!",
     "I aposindesi den itan epitixis!",
     "Avmonteringen misslyckades!",
     "", // TODO
@@ -290,7 +290,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Aseman avaaminen epäonnistui!",
     "", // TODO
-    "¡No puedo expulsar!",
+    "¡Expulsión errónea!",
     "I apovoli apetixe!",
     "Mata ut!",
     "", // TODO
@@ -310,7 +310,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Piilota valinta päävalikosta",
     "", // TODO
-    "", // TODO
+    "Ocultar entrada en menú principal",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -353,7 +353,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Monipuolinen audiosoitin",
     "", // TODO
-    "", // TODO
+    "Reproductor de audio",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -473,7 +473,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Soita kaikki",
     "", // TODO
-    "Reproducirlo todo",
+    "Reproducir todo",
     "Peksimo olon",
     "Spela alla",
     "", // TODO
@@ -553,7 +553,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Poistetaanko merkintä?",
     "", // TODO
-    "¿Borrar la entrada?",
+    "¿Borrar entrada?",
     "Aferesi simiou?",
     "Radera post?",
     "", // TODO
@@ -593,7 +593,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Hakemistoselain",
     "", // TODO
-    "Explorar carpetes",
+    "Explorar carpetas",
     "Endiski fakelou",
     "Katalogbläddrare",
     "", // TODO
@@ -773,7 +773,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Soittolistan uudelleennimeäminen epäonnistui!",
     "", // TODO
-    "¡Errir al renombrar la lista!",
+    "¡Error al renombrar la lista!",
     "Latsos stin metonomasi tis Playlistas!",
     "Fel uppstod då spellistan döptes om!",
     "", // TODO
@@ -853,7 +853,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Selataan hakemistoa...",
     "", // TODO
-    "Leyendo las carpetas..",
+    "Leyendo las carpetas...",
     "", // TODO
     "Söker igenom katalog...",
     "", // TODO
@@ -1033,7 +1033,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "ID3-nimet",
     "", // TODO
-    "Nombre ID3",
+    "Nombres ID3",
     "ID3 onomata",
     "ID3 namn",
     "", // TODO
@@ -1073,7 +1073,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "ID3-info",
     "", // TODO
-    "ID3 info",
+    "Info ID3",
     "ID3 pliroforia",
     "ID3 info",
     "", // TODO
@@ -1173,7 +1173,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Albumi",
     "", // TODO
-    "Album",
+    "Álbum",
     "Album",
     "Album",
     "", // TODO
@@ -1193,7 +1193,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Vuosi",
     "", // TODO
-    "", // TODO
+    "Año",
     "Etos",
     "År",
     "", // TODO
@@ -1273,7 +1273,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Satunnaissoitto oletuksena",
     "", // TODO
-    "Lectura aleatória inicial",
+    "Lectura aleatoria inicial",
     "", // TODO
     "Normalt blandläge",
     "", // TODO
@@ -1293,7 +1293,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Näytä kappale ja esittäjä",
     "", // TODO
-    "", // TODO
+    "Orden Título/Artista",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1313,7 +1313,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "normaalisti",
     "", // TODO
-    "", // TODO
+    "Normal",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1333,7 +1333,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "käännettynä",
     "", // TODO
-    "", // TODO
+    "Inversa",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1353,7 +1353,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Äänen ulostulomoodi",
     "", // TODO
-    "", // TODO
+    "Modo de salida audio",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1393,7 +1393,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Taustaskannaus",
     "", // TODO
-    "",
+    "Explorar en segundo plano",
     "", // TODO
     "",
     "", // TODO
@@ -1413,7 +1413,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "vain ID3",
     "", // TODO
-    "",
+    "Etiquetas ID3",
     "",
     "",
     "", // TODO
@@ -1453,7 +1453,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Näyttömoodi",
     "", // TODO
-    "Modo de Visualización",
+    "Modo de visualización",
     "", // TODO
     "Visuellt läge",
     "", // TODO
@@ -1473,7 +1473,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "título, artista",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1493,7 +1493,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "álbum, año, título, artista",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1513,7 +1513,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "info, álbum, año, título, artista",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1533,7 +1533,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "", // TODO
+    "Lista de reproducción directa",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1553,7 +1553,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Taustamoodi",
     "", // TODO
-    "Ejecutar al fondo",
+    "Modo en segundo plano",
     "", // TODO
     "Bakgrundsläge",
     "", // TODO
@@ -1573,7 +1573,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "CDDB-tietokanta",
     "", // TODO
-    "CDDB para el Aidio-CD",
+    "CDDB para el Audio-CD",
     "", // TODO
     "CDDB för CD-audio",
     "", // TODO
@@ -1733,7 +1733,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "kansikuva",
     "", // TODO
-    "",
+    "Imágenes",
     "",
     "",
     "", // TODO
@@ -1813,7 +1813,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Keskeytä soittolistan loputtua",
     "", // TODO
-    "", // TODO
+    "Parar reproductor al final de la lista",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1833,7 +1833,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Toistotilan näyttömoodi",
     "", // TODO
-    "", // TODO
+    "Pantalla de reproducción",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1853,7 +1853,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "klassinen",
     "", // TODO
-    "", // TODO
+    "clásica",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1873,7 +1873,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "ulkoasun mukaan",
     "", // TODO
-    "", // TODO
+    "vía skin",
     "", // TODO
     "", // TODO
     "", // TODO
@@ -1893,7 +1893,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Pidä valintaikkunaa auki",
     "", // TODO
-    "", // TODO
+    "Mantener menú de selección",
     "", // TODO
     "", // TODO
     "", // TODO

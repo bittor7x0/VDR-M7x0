@@ -7,62 +7,62 @@ msgstr ""
 "Report-Msgid-Bugs-To: <udo_richter@gmx.de>\n"
 "POT-Creation-Date: 2007-08-18 19:03+0200\n"
 "PO-Revision-Date: 2008-02-24 13:00+0100\n"
-"Last-Translator: Udo Richter <udo_richter@gmx.de>\n"
-"Language-Team: <vdr@linuxtv.org>\n"
+"Last-Translator: Gringo <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Error"
-msgstr "Fehler"
+msgstr "Error"
 
 msgid "failed"
-msgstr "fehlgeschlagen"
+msgstr "falló"
 
 msgid "Connect timed out"
-msgstr "Verbindungs-Zeitlimit überschritten"
+msgstr "Tiempo de conexión agotado"
 
 msgid "connection closed by peer"
-msgstr "Verbindung von Gegenseite geschlossen"
+msgstr "conexión cerrada por cliente"
 
 msgid "Connection timed out"
-msgstr "Verbindungs-Zeitlimit überschritten"
+msgstr "Tiempo de conexión agotado"
 
 msgid "Expected HTTP header not found"
-msgstr "Erwarteter HTTP Header nicht gefunden"
+msgstr "No se encuentra la cabecera HTTP esperada"
 
 msgid "HTTP response"
-msgstr "HTTP Antwort"
+msgstr "Respuesta HTTP"
 
 msgid "Failed to connect to"
-msgstr "Konnte nicht verbinden zu"
+msgstr "Error al conectar a"
 
 msgid "waiting"
-msgstr "warte"
+msgstr "esperando"
 
 msgid "Connecting to"
-msgstr "Verbinde zu"
+msgstr "Conectando a"
 
 msgid "Waiting for response from"
-msgstr "Warte auf Antwort von"
+msgstr "Esperando respuesta de"
 
 msgid "Reading Headers from"
-msgstr "Lese Header von"
+msgstr "Leyendo Cabeceras de"
 
 msgid "Receiving from"
-msgstr "Empfange von"
+msgstr "Recibiendo de"
 
 msgid "HTTP header not found"
-msgstr "HTTP Header nicht gefunden"
+msgstr "Cabecera HTTP no encontrada"
 
 msgid "HTTP response error"
-msgstr "HTTP Antwort Fehler"
+msgstr "Error de respuesta HTTP"
 
 msgid "Edit Bookmark"
-msgstr "Lesezeichen bearbeiten"
+msgstr "Editar Marcador"
 
 msgid "Title"
-msgstr "Titel"
+msgstr "Título"
 
 msgid "URL"
 msgstr "URL"
@@ -71,34 +71,34 @@ msgid "Stream Player"
 msgstr "Stream Player"
 
 msgid "Edit"
-msgstr "Editieren"
+msgstr "Editar"
 
 msgid "New"
-msgstr "Neu"
+msgstr "Nuevo"
 
 msgid "Select"
-msgstr "Wählen"
+msgstr "Seleccionar"
 
 msgid "Bookmarks:"
-msgstr "Lesezeichen:"
+msgstr "Marcadores:"
 
 msgid "Receive buffer size (k)"
-msgstr "Größe Empfangspuffer (k)"
+msgstr "Tamaño del búfer de recepción (k)"
 
 msgid "fill up buffer at start (k)"
-msgstr "Puffer füllen bei Start (k)"
+msgstr "llenar búfer al inicio (k)"
 
 msgid "Stream video player"
-msgstr "Stream Videoplayer"
+msgstr "Reproductor de vídeo por stream"
 
 msgid "Streamplayer"
 msgstr "Streamplayer"
 
 msgid "Protocol type scan error"
-msgstr "Protokolltyp fehler"
+msgstr "Tipo de protocolo de escaneo erróneo"
 
 msgid "Unknown protocol type"
-msgstr "Unbekannter Protokolltyp"
+msgstr "Tipo de protocolo desconocido"
 
 msgid "Listening on UDP port"
-msgstr "Empfange auf UDP Port"
+msgstr "Escuchando en puerto UDP"
