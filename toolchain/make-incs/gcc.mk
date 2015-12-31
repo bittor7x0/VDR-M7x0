@@ -211,6 +211,8 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--disable-libsanitizer \
 			--disable-target-zlib \
 			--disable-libstdcxx-verbose \
+			--disable-libstdcxx-dual-abi \
+			--with-default-libstdcxx-abi=new \
 			--nfp \
 			--disable-multilib \
 			--enable-softfloat \
