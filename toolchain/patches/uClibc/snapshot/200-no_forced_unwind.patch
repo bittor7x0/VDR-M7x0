@@ -1,6 +1,12 @@
+forced unwind for pthread_cancel handling is broken and
+ triggers spurious abort() calls from libgcc. Disable it
+ and use the other method instead
+
+ OpenWRT patch
+
 --- a/Rules.mak
 +++ b/Rules.mak
-@@ -744,7 +744,7 @@
+@@ -658,7 +658,7 @@ endif
  ifeq ($(UCLIBC_HAS_THREADS),y)
  ifeq ($(UCLIBC_HAS_THREADS_NATIVE),y)
  	PTNAME := nptl
