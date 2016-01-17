@@ -2,8 +2,14 @@ Reduce the initial buffer size for open_memstream (used by vasprintf),
 as most strings are usually smaller than that.
 Realloc the buffer after finishing the string to further reduce size.
 
+Problem appears in case of UCLIBC_HAS_GLIBC_CUSTOM_STREAMS=y,
+see http://dev.openwrt.org/ticket/13024
+
 Signed-off-by: Felix Fietkau <nbd@openwrt.org>
 
+---
+
+diff --git a/libc/stdio/vasprintf.c b/libc/stdio/vasprintf.c
 --- a/libc/stdio/vasprintf.c
 +++ b/libc/stdio/vasprintf.c
 @@ -39,6 +39,8 @@ int vasprintf(char **__restrict buf, con
@@ -15,6 +21,7 @@ Signed-off-by: Felix Fietkau <nbd@openwrt.org>
  		}
  	}
  
+diff --git a/libc/stdio/open_memstream.c b/libc/stdio/open_memstream.c
 --- a/libc/stdio/open_memstream.c
 +++ b/libc/stdio/open_memstream.c
 @@ -17,6 +17,8 @@
@@ -35,3 +42,35 @@ Signed-off-by: Felix Fietkau <nbd@openwrt.org>
  			goto EXIT_cookie;
  		}
  		*cookie->buf = 0;		/* Set nul terminator for buffer. */
+diff --git /dev/null b/test/malloc/tst-asprintf.c
+--- /dev/null
++++ b/test/malloc/tst-asprintf.c
+@@ -0,0 +1,27 @@
++#include <unistd.h>
++#include <stdlib.h>
++#include <string.h>
++#include <stdio.h>
++#include <malloc.h>
++
++static void my_stats(void)
++{
++	malloc_stats();
++	fprintf(stderr, "\n");
++}
++
++int main(int argc, char *argv[])
++{
++	char *a, *b;
++
++	my_stats();
++	asprintf(&b, "asdsadasd %ssdf\n", "AAAA");
++	my_stats();
++	asprintf(&a, "asdsadasd %ssdf\n", "AAAA");
++	my_stats();
++	free(a);
++	free(b);
++	my_stats();
++
++	return 0;
++}
+-- 

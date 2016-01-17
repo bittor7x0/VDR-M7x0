@@ -90,6 +90,10 @@ $(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched
 			--disable-cloog-version-check \
 			--disable-ppl-version-check \
 			--with-host-libstdcxx='-lstdc++' \
+			--enable-deterministic-archives \
+			--disable-sim \
+			--disable-gdb \
+			--disable-multilib \
 			--disable-werror \
 			--disable-nls )
 	$(TOUCH) $(STAGEFILES_DIR)/.binutils_configured
