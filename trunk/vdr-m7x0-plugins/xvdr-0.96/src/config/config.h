@@ -34,19 +34,19 @@
 // log output configuration
 
 #ifdef CONSOLEDEBUG
-#define DEBUGLOG(x...) printf("XVDR: "x)
+#define DEBUGLOG(x...) printf("XVDR: " x)
 #elif defined  DEBUG
-#define DEBUGLOG(x...) dsyslog("XVDR: "x)
+#define DEBUGLOG(x...) dsyslog("XVDR: " x)
 #else
 #define DEBUGLOG(x...)
 #endif
 
 #ifdef CONSOLEDEBUG
-#define INFOLOG(x...) printf("XVDR: "x)
-#define ERRORLOG(x...) printf("XVDR-Error: "x)
+#define INFOLOG(x...) printf("XVDR: " x)
+#define ERRORLOG(x...) printf("XVDR-Error: " x)
 #else
-#define INFOLOG(x...) isyslog("XVDR: "x)
-#define ERRORLOG(x...) esyslog("XVDR-Error: "x)
+#define INFOLOG(x...) isyslog("XVDR: " x)
+#define ERRORLOG(x...) esyslog("XVDR-Error: " x)
 #endif
 
 // default settings

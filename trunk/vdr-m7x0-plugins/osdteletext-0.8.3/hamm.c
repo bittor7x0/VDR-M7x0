@@ -263,7 +263,7 @@ _vbi3_hamm24_val [128] = {
 /* Correction of single bit error in decoded word,
    according to test A ... F in table vbi3_hamm24_inv_tst.
    MSB indicates double bit error. */
-static const int32_t
+static const uint32_t
 _vbi3_hamm24_corr [64] = {
 	0x00000000, 0x80000000, 0x80000000, 0x80000000,
 	0x80000000, 0x80000000, 0x80000000, 0x80000000,
