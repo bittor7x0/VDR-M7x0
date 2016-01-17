@@ -1,7 +1,7 @@
 /*
  * vdr.c: Video Disk Recorder main program
  *
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 VDR-NG-EM Project
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 VDR-NG-EM Project
  * 
  * The project's page is at http://www.assembla.com/spaces/VDR-M7x0
  * Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
