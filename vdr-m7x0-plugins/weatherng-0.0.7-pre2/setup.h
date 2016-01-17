@@ -57,11 +57,11 @@ enum eWetterThemes
 
 struct cWetterTheme
 {
- int clrBackground;
- int clrBgBorder;
- int clrFgBorder;
- int clrFgText;
- int clrFgHiTemp;
+ unsigned int clrBackground;
+ unsigned int clrBgBorder;
+ unsigned int clrFgBorder;
+ unsigned int clrFgText;
+ unsigned int clrFgHiTemp;
 };
 
 extern const cWetterTheme wetterTheme[eWetterThemeMaxNumber];
