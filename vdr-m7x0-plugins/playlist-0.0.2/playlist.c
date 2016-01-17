@@ -27,9 +27,9 @@ option playonlynewrecords
 // var pos2
 tParamFile  playlistconfigfile       = { false, false, false, "playlist.conf", "playlist.conf" };
 #ifdef HAVE_ICONPATCH
-tParamChar  charentry                = { false, false, false, 236 };
-tParamChar  charfolder               = { false, false, false, 237 };
-tParamChar  charrecord               = { false, false, false, 249 };
+tParamChar  charentry                = { false, false, false, char(236) };
+tParamChar  charfolder               = { false, false, false, char(237) };
+tParamChar  charrecord               = { false, false, false, char(249) };
 #else
 tParamChar  charentry                = { false, false, false, 'e' };
 tParamChar  charfolder               = { false, false, false, 'f' };
