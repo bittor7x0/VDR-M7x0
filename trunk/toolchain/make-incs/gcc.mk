@@ -24,19 +24,25 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-GCC_VERSION := 5.3.0
-GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
+GCC_IS_SNAPSHOT := n
 
+ifeq ($(GCC_IS_SNAPSHOT),y)
+GCC_VERSION := 6-20160110
+GCC_URL := http://www.mirrorservice.org/sites/sourceware.org/pub/gcc/snapshots/$(GCC_VERSION)/$(GCC_FILE)
+else
+GCC_VERSION := 5.3.0
+GCC_URL := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE)
+endif
+
+GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
 GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
 GCC_DLFILE := $(DOWNLOAD_DIR)/$(GCC_FILE)
 GCC_DIR := $(BUILD_DIR)/gcc-$(GCC_VERSION)
-GCC_URL := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE)
 GCC_BUILD_DIR := $(BUILD_DIR)/gcc.build
 GCC_STAGE1_BUILD_DIR := $(BUILD_DIR)/gcc.stage1.build
 
 GCC_STAGE1_PREFIX = $(BUILD_DIR)/gcc.stage1
 GCC_STAGE1_PREFIX_BIN = $(GCC_STAGE1_PREFIX)/bin
-
 
 GCC_STAGE1_INSTALLED = $(STAGEFILES_DIR)/.gcc_stage1_installed
 GCC_INSTALLED = $(STAGEFILES_DIR)/.gcc_installed
