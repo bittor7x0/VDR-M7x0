@@ -111,7 +111,7 @@ AWK_LST_TRANS_PRG := '$$1 !~ /\#/ && $$3 !~ /l/ && $$3 !~ /s/ && $$3 !~ /u/ \
     print file, $$3, $$4, $$5, $$6, $$7, $$8, $$9, $$10, $$11}'
 
 # Strip modules (based in rstrip.sh from OpenWrt.org)
-STRIP_KMOD = "$(PREFIX_BIN)/$(UCLIBC_TARGET)-strip --strip-unneeded --remove-section=.comment --remove-section=.note --remove-section=.pdr --remove-section=.mdebug.abi32 --remove-section=.note.gnu.build-id --remove-section=.gnu.attributes --remove-section=.reginfo"
+STRIP_KMOD = "$(PREFIX_BIN)/$(UCLIBC_TARGET)-strip --strip-unneeded --remove-section=.comment --remove-section=.note --remove-section=.pdr --remove-section=.mdebug.abi32 --remove-section=.MIPS.abiflags --remove-section=.note.gnu.build-id --remove-section=.note.GNU-stack --remove-section=.gnu.attributes --remove-section=.reginfo"
 define find_modparams
 	$(PREFIX_BIN)/$(UCLIBC_NM) "$1" | $(AWK) ' \
 	BEGIN { \
