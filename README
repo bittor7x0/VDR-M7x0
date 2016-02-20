@@ -78,9 +78,9 @@ Main new features in VDR
 
 Firmware builder for Linux
 --------------------------
-You need to have installed gcc, binutils, patch, bzip2, flex, make, automake,
-bison, gettext, genext2fs, pkg-config, unzip, libz-dev and openjdk-7-jre (or
-openjdk-6-jre).
+You need to have installed gcc, binutils, patch, bzip2, flex, make, pkg-config,
+automake, bison, gettext, genext2fs, pkg-config, unzip, libz-dev and openjdk-8-jre
+(or openjdk-7-jre or openjdk-6-jre).
 
 Run in console:
 umask 022
