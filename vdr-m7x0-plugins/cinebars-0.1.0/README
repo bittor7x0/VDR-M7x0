@@ -1,0 +1,39 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Andreas Brugger <brougs78@gmx.net> (initiator)
+                             Uwe Hanke <egal@egal-vdr.de>
+
+Project's homepage:          http://home.pages.at/brougs78 (old version)
+                             http://www.egal-vdr.de/plugins 
+
+Latest version available at: http://www.egal-vdr.de/plugins 
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+The complete text of the GNU General Public License can be found
+in /usr/share/common-licenses/GPL on most Debian systems.
+
+
+Description
+-----------
+Overlays "cinema-bars" over the live picture
+
+ - keys 'Up/Down' toggles top/bottom bar
+ - keys 'Right/Left' increase/decrease barheight of actual visible bar(s)
+ - keys 'Back/Blue' exit plugin 
+ - key  'Red' close/open screen
+ - key  'Ok' close screen and exit plugin
+ - keys 'Green/Yellow' change color of bars
+ 

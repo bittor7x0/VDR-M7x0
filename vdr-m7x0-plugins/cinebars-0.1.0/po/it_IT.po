@@ -1,0 +1,74 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2013-04-25 13:00+0200\n"
+"PO-Revision-Date: 2007-12-29 18:35+0100\n"
+"Last-Translator: Gringo <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Overlays \"cinebars\""
+msgstr "Sovrappone barre cinematografiche"
+
+msgid "Cinebars"
+msgstr "Barre cinema"
+
+msgid "manual"
+msgstr "manuale"
+
+msgid "black"
+msgstr ""
+
+msgid "white"
+msgstr ""
+
+msgid "red"
+msgstr ""
+
+msgid "green"
+msgstr ""
+
+msgid "yellow"
+msgstr ""
+
+msgid "blue"
+msgstr ""
+
+msgid "Hide mainmenu entry"
+msgstr "Nascondi voce menu principale"
+
+msgid "Bar color"
+msgstr "Colore della barra"
+
+msgid "Top bar"
+msgstr "Barra superiore"
+
+msgid "Top bar height"
+msgstr "Altezza barra superiore"
+
+msgid "Bottom bar"
+msgstr "Barra inferiore"
+
+msgid "Bottom bar height"
+msgstr "Altezza barra inferiore"
+
+msgid "Step size"
+msgstr "Scala grandezza della barra"
+
+msgid "OSD size"
+msgstr "Grandezza OSD"
+
+msgid "OSD width"
+msgstr "Ampiezza OSD"
+
+msgid "OSD height"
+msgstr "Altezza OSD"
