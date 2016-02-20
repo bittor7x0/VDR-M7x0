@@ -1,0 +1,74 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2013-04-25 13:00+0200\n"
+"PO-Revision-Date: 2007-08-24 18:40+0200\n"
+"Last-Translator: Uwe Hanke egal@egal-vdr.de\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Overlays \"cinebars\""
+msgstr "Legt \"Kinobalken\" aufs Bild"
+
+msgid "Cinebars"
+msgstr "Kinobalken"
+
+msgid "manual"
+msgstr "manuell"
+
+msgid "black"
+msgstr "schwarz"
+
+msgid "white"
+msgstr "weiss"
+
+msgid "red"
+msgstr "rot"
+
+msgid "green"
+msgstr "grün"
+
+msgid "yellow"
+msgstr "gelb"
+
+msgid "blue"
+msgstr "blau"
+
+msgid "Hide mainmenu entry"
+msgstr "Hauptmenüeintrag verstecken"
+
+msgid "Bar color"
+msgstr "Balkenfarbe"
+
+msgid "Top bar"
+msgstr "Balken oben"
+
+msgid "Top bar height"
+msgstr "Balkenhöhe oben"
+
+msgid "Bottom bar"
+msgstr "Balken unten"
+
+msgid "Bottom bar height"
+msgstr "Balkenhöhe unten"
+
+msgid "Step size"
+msgstr "Schrittweite"
+
+msgid "OSD size"
+msgstr "OSD Größe"
+
+msgid "OSD width"
+msgstr "OSD Breite"
+
+msgid "OSD height"
+msgstr "OSD Höhe"

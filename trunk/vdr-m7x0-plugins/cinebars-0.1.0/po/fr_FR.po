@@ -1,0 +1,74 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2013-05-03 20:35+0200\n"
+"PO-Revision-Date: 2007-08-24 18:40+0200\n"
+"Last-Translator: Patrice Staudt patrice.staudt@laposte.net\n"
+"Language-Team: <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Overlays \"cinebars\""
+msgstr "Superposition \"des barres cinéna \" sur l'image"
+
+msgid "Cinebars"
+msgstr "Barre cinéma"
+
+msgid "manual"
+msgstr ""
+
+msgid "black"
+msgstr ""
+
+msgid "white"
+msgstr ""
+
+msgid "red"
+msgstr ""
+
+msgid "green"
+msgstr ""
+
+msgid "yellow"
+msgstr ""
+
+msgid "blue"
+msgstr ""
+
+msgid "Hide mainmenu entry"
+msgstr "Invisible dans le menu principale"
+
+msgid "Bar color"
+msgstr ""
+
+msgid "Top bar"
+msgstr "Barre en haut"
+
+msgid "Top bar height"
+msgstr "Hauteur barre en haut"
+
+msgid "Bottom bar"
+msgstr "Barre en bas"
+
+msgid "Bottom bar height"
+msgstr "Hauteur barre en bas"
+
+msgid "Step size"
+msgstr "Pas sur la hauteur de barre cinéma"
+
+msgid "OSD size"
+msgstr ""
+
+msgid "OSD width"
+msgstr ""
+
+msgid "OSD height"
+msgstr ""

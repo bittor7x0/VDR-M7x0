@@ -1,0 +1,74 @@
+# VDR plugin language source file.
+# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+# This file is distributed under the same license as the VDR package.
+# Klaus Schmidinger <kls@cadsoft.de>, 2000
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: <see README>\n"
+"POT-Creation-Date: 2013-04-25 13:00+0200\n"
+"PO-Revision-Date: 2015-11-21 11:32+0100\n"
+"Last-Translator: Bittor Corl <bittor7x0 _at_ gmail.com>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Overlays \"cinebars\""
+msgstr "Superposición \"bandas de cine\""
+
+msgid "Cinebars"
+msgstr "Bandas de cine"
+
+msgid "manual"
+msgstr "manual"
+
+msgid "black"
+msgstr "negro"
+
+msgid "white"
+msgstr "blanco"
+
+msgid "red"
+msgstr "rojo"
+
+msgid "green"
+msgstr "verde"
+
+msgid "yellow"
+msgstr "amarillo"
+
+msgid "blue"
+msgstr "azul"
+
+msgid "Hide mainmenu entry"
+msgstr "Ocultar entrada en menú principal"
+
+msgid "Bar color"
+msgstr "Color de la banda"
+
+msgid "Top bar"
+msgstr "Banda superior"
+
+msgid "Top bar height"
+msgstr "Altura banda superior"
+
+msgid "Bottom bar"
+msgstr "Banda inferior"
+
+msgid "Bottom bar height"
+msgstr "Altura banda inferior"
+
+msgid "Step size"
+msgstr "Incremento de tamaño"
+
+msgid "OSD size"
+msgstr "Tamaño del OSD"
+
+msgid "OSD width"
+msgstr "Anchura del OSD"
+
+msgid "OSD height"
+msgstr "Altura del OSD"
