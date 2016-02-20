@@ -1004,6 +1004,28 @@
     "", // Dansk
     "", // Èesky (Czech)
   },
+  { "Tuner",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Sintonizador",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "", // Hrvatski (Croatian)
+    "", // Eesti
+    "", // Dansk
+    "", // Èesky (Czech)
+  },
   { "Press OK to proceede",
     "Drücken Sie OK um fortzufahren",
     "",

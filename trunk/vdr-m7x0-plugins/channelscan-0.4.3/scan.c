@@ -18,8 +18,10 @@
 #include <stdio.h>
 #include "debug.h"
 
-#define SCAN_DELAY 30
+#define SCAN_DELAY 6
+#ifdef M750S
 #define DVBS_LOCK_TIMEOUT 8000
+#endif
 
 //bool scanning_on_receiving_device = false;
 
@@ -218,8 +220,9 @@ void cScan::ScanServices()
 
   while(!PFilter->EndOfScan() && (
      //(time(NULL) - start < SCAN_DELAY && cMenuChannelscan::scanning) ||
-     (time(NULL) - start < SCAN_DELAY && cMenuChannelscan::scanState == ssGetChannels || 
-       (time(NULL)-PFilter->LastFoundTime() < SCAN_DELAY)))) {
+     (time(NULL) - start < SCAN_DELAY && cMenuChannelscan::scanState == ssGetChannels
+     //|| (time(NULL)-PFilter->LastFoundTime() < SCAN_DELAY)
+     ))) {
 
         PFilter->GetFoundNum(foundNum,totalNum);
         if (totalNum && !foundSids) {
@@ -229,11 +232,11 @@ void cScan::ScanServices()
         usleep(200*1000);
     }
 
-  if (cMenuChannelscan::scanState>=ssInterrupted && !PFilter->EndOfScan())
+  /* if (cMenuChannelscan::scanState>=ssInterrupted && !PFilter->EndOfScan())
   {
     printf ("DEBUG [channelscan]: ScanServices aborted %d \n", cMenuChannelscan::scanState);
   }
-  usleep(200*1000);
+  usleep(200*1000); */
   PFilter->GetFoundNum(foundNum,totalNum);
 
   device->Detach(PFilter);
@@ -275,7 +278,7 @@ void cScan::ScanNitServices()
     transponderNr = 0;
                                    
   while (!NFilter->EndOfScan() && 
-          (time(NULL) - start < (SCAN_DELAY) && 
+          (time(NULL) - start < (SCAN_DELAY * 4) && 
            ( cMenuChannelscan::scanState == ssGetTransponders ||
              cMenuChannelscan::scanState == ssGetChannels)))
   {

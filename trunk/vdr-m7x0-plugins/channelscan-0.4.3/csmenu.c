@@ -110,9 +110,11 @@ cMenuChannelscan::cMenuChannelscan(int CurrentChannelNr)
 
   modStat = 0;
 
+#ifdef M750S
   searchTexts[0] = tr("Manual");
   searchTexts[1] = tr("SearchMode$Auto");
   searchTexts[2] = tr("SearchMode$Auto NIT");
+#endif
 
   serviceTypeTexts[0] = tr(serviceTypeTxts[0]);
   serviceTypeTexts[1] = tr(serviceTypeTxts[1]);
@@ -128,10 +130,6 @@ cMenuChannelscan::cMenuChannelscan(int CurrentChannelNr)
   sBwItem[0] = "Auto";
   sBwItem[1] = "7 MHz";
   sBwItem[2] = "8 MHz";
-
-  sSRScanMode[0]= tr("Intelligent 6900/6875/6111");
-  sSRScanMode[1]= tr("Try all 6900/6875/6111");
-  sSRScanMode[2]= tr("Manual");
 
   srScanMode=0;
 

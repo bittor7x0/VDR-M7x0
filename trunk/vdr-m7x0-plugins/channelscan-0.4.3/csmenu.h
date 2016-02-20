@@ -57,7 +57,6 @@ private:
   const char *sRateItem[3];
   const char *searchTexts[3];
   const char *serviceTypeTexts[3];
-  const char *sSRScanMode[3];
   const char *sBwItem[3];
 
   int fecStat;
