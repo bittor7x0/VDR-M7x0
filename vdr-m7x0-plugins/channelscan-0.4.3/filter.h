@@ -19,7 +19,7 @@
 #define CMAXPMTENTRIES 256
 #define CMAXSIDENTRIES 256
 #define MAXFILTERS 6
-#define FILTERTIMEOUT 10
+#define FILTERTIMEOUT 4
 
 extern std::map<int, cTransponder *> transponderMap;
 extern std::map<int, int> TblVersions;
