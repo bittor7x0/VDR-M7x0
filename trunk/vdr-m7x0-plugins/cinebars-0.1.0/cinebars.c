@@ -20,7 +20,7 @@ int barDn = true;
 int barDnHeight = 78;
 int barStep = 5;
 int osdMode = 1;
-int osdWidth = 768;
+int osdWidth = 720;
 int osdHeight = 576;
 int osdColor = 0;
 
