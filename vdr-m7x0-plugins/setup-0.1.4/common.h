@@ -20,7 +20,7 @@
 #define info(x...) isyslog("setup: " x);
 #define error(x...) esyslog("setup: " x);
 #else
-#define debug(x...) dsyslog("setup: " x);
+#define debug(x...)
 #define info(x...) isyslog("setup: " x);
 #define error(x...) esyslog("setup: " x);
 #endif

@@ -1,12 +1,12 @@
 /****************************************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Read / Write Config Data
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  ****************************************************************************/
 
 #include <stdio.h>
@@ -15,8 +15,6 @@
 #include "vdr/plugin.h"
 #include "tinyxml2.h"
 #include "config.h"
-#include "sysconfig.h"
-#include "plugins.h"
 #include "util.h"
 
 using namespace tinyxml2;
@@ -24,30 +22,26 @@ using namespace tinyxml2;
 /*
  * Constructor
  * @param fname  XML File
- * @return 
+ * @return
  */
 Config::Config(char *fname)
 {
-	debug("Config.constructor");
-	//Init sysconfig values
-  _filename  	= Util::Strdupnew(fname);
   debug("Load file: [%s]",fname);
-  // not supported in tinyxml2
-  //_xmlDoc    	= XmlDocument( fname );
-  debug("xml document created")
 
-  _sysconfigPre	= NULL;
-  _sysconfigPost= NULL;
-  _bootLinux    = NULL;
-  _libDir    	= NULL;
+  // Init sysconfig values
+  _filename  	 = Util::Strdupnew(fname);
+  _sysconfigFile = "/tmp/tmp.conf";
+  _sysconfigPre  = "/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc";
+  _sysconfigPost = "/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc";
+  _bootLinux     = "/etc/vdr/rebootvdr";
+  _libDir        = NULL;
+  _libDirCMD     = "/etc/vdr/plugins/setup/local-plugins";
 }
-
 
 Config::~Config()
 {
-  delete [] _bootLinux;
-  delete [] _libDir;
   delete [] _filename;
+  delete [] _libDir;
 }
 
 /************************
@@ -55,41 +49,24 @@ Config::~Config()
 *************************/
 /**
  * Decode XML File
- * @return 
+ * @return
  */
 bool Config::LoadFile()
 {
   bool ok = false;
   XMLElement *root;
-    
+
   //Load XML Config file
   if( (ok = _xmlDoc.LoadFile(_filename) == XML_NO_ERROR))
-  { 
-    const char* sysconfigFile=NULL;
-    if( (root = _xmlDoc.FirstChildElement("setup" ))!=NULL &&
-        (sysconfigFile=root->Attribute("sysconfigFile")) )
-   //    && (ok=_sysconfig.LoadFile(sysconfigFile)) == true )
+  {
+    if( (root = _xmlDoc.FirstChildElement("setup")) != NULL)
     {
-        // Set some default Values
-        const char *tmp=NULL;
-        if( (tmp =root->Attribute("bootLinux"))==NULL)
-          _bootLinux=Util::Strdupnew("pic_tool reboot 3 10");
-        else
-          _bootLinux=Util::Strdupnew(tmp);
-
-		//Read command to get plugin path from XML
-        if( (tmp =root->Attribute("VDRlibDirCMD"))==NULL)
-          _libDirCMD = Util::Strdupnew("/var/vdr/lib");
-        else
-          _libDirCMD = Util::Strdupnew(tmp);
-          
-        //get plugin path from env        
+        //get plugin path from env
         char *line = NULL;
 		FILE *p;
 		cReadLine ReadLine;
-		
-		debug("CMD to get Plugin path: %s", _libDirCMD );
-        
+        const char *tmp = NULL;
+
         p = popen(_libDirCMD, "r");
         if (p)
 		{//read response from command
@@ -106,27 +83,15 @@ bool Config::LoadFile()
 		}
 		debug("We found plugin path: %s", _libDir);
 
-
-        if( (tmp =root->Attribute("sysconfigPre"))==NULL)
-          _sysconfigPre=Util::Strdupnew("/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc");
-        else
-          _sysconfigPre=Util::Strdupnew(tmp);
-
-        if( (tmp =root->Attribute("sysconfigPost"))==NULL)
-          _sysconfigPost=Util::Strdupnew("/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc");
-        else
-          _sysconfigPost=Util::Strdupnew(tmp);
-		
 		//read sysconfig
 		//excecute pre sysconfig command
-  		debug("sysconfigPre: %s",_sysconfigPre);
   		ok = system(_sysconfigPre);
   		if( ok == 0) {//Load sysconfig
-  			if ((ok=_sysconfig.LoadFile(sysconfigFile)) != true){
-  					debug("Could not load sysconfig: [%s]",sysconfigFile);
+  			if ((ok=_sysconfig.LoadFile(_sysconfigFile)) != true){
+  					debug("Could not load sysconfig: [%s]",_sysconfigFile);
   			}
   	  } else{
-          error("Could not execute sysconfigPre: [%s], errno=%d", _sysconfigPre, ok);	
+          error("Could not execute sysconfigPre: [%s], errno=%d", _sysconfigPre, ok);
   		}
 
         root=root->FirstChildElement();
@@ -135,7 +100,7 @@ bool Config::LoadFile()
         {
           _activePlugins.SetProtectedList(root->Attribute("protected"));
           const char* nameSysconfig = root->Attribute("sysconfig");
-          
+
           if( nameSysconfig != NULL )
           {
            _activePlugins.SetSysconfigName(nameSysconfig);
@@ -154,14 +119,12 @@ bool Config::LoadFile()
   if(!ok )
    dumpXMLError("Error while Loading XML-FILE");
 
-  //XML read, now load Plugins
-  if( ok)
-  {	
+  // XML read, now load Plugins
+  if(ok)
+  {
   	ok=readVdrLib();
     info("Loaded config file: [%s]",_filename);
   }
-
- 
 
   return(ok);
 }
@@ -182,48 +145,20 @@ bool Config::SaveFile( )
  */
 bool Config::SaveFile(char * fname )
 {
-  bool ok = true;
-
   if(_filename != fname)
   {
     delete _filename;
     _filename=Util::Strdupnew(fname);
   }
 
-  _xmlDoc.LoadFile(fname);
-  XMLElement *root = _xmlDoc.NewElement("setup");
-  root->SetAttribute("sysconfigFile", _sysconfig.GetFileName());
-  root->SetAttribute("sysconfigPre",  _sysconfigPre);
-  root->SetAttribute("sysconfigPost", _sysconfigPost);
-  root->SetAttribute("bootLinux", _bootLinux);
-  root->SetAttribute("VDRlibDirCMD", _libDirCMD);
-
-  XMLElement *plugins=savePlugins();
-
-  if(plugins!= NULL &&
-       root->LinkEndChild(plugins)  != NULL &&
-       _menus.SaveXml(root)         == true &&
-       _xmlDoc.InsertEndChild(root) != NULL &&
-       _xmlDoc.SaveFile(fname)      == XML_NO_ERROR)
-       ok=true;
-  else
-  {
-    ok = false;
-    dumpXMLError("Error writing file");
-  }
-
- 	//XML saved, now save sysconfig
-  if( ok)
-  {
-   prepareSysConfig();
-   //Save sysconfig
-   ok=_sysconfig.SaveFile();
-  	if( ok) {//excecute pre sysconfig command
-  		debug("sysconfigPost: %s",_sysconfigPost);
-	  	ok = system(_sysconfigPost);
-  	}else{
-    	error("Could not execute sysconfigPost: [%s], errno=%d", _sysconfigPost, ok);	
-  	}	
+  // Save sysconfig
+  prepareSysConfig();
+  bool ok = _sysconfig.SaveFile();
+  if(ok) { //excecute pre sysconfig command
+    debug("sysconfigPost: %s",_sysconfigPost);
+    ok = system(_sysconfigPost);
+  } else {
+    error("Could not execute sysconfigPost: [%s], errno=%d", _sysconfigPost, ok);
   }
 
   return(ok);
@@ -235,60 +170,9 @@ bool Config::SaveFile(char * fname )
 //-------------------------------------------------------
 /**
  * Load XML Plugin Information
- * @param elem 
- * @return 
+ * @param elem
+ * @return
  */
-/*
-bool Config::loadPlugins(XMLNode *node)
-{
-  bool ok = true;
-  XMLElement *elem = NULL;
-
-  const char *loaded_plugins =  _sysconfig.GetVariable(_activePlugins.GetSysconfigName());
-  debug("Loaded plugins: [%s]",loaded_plugins);
-  debug("SysPlugin [%s]",_activePlugins.GetSysconfigName());
-
-  if(node == NULL || strcmp(node->Value(), "plugin") !=0 )
-  {
-    dumpXMLError("no <plugin> tag found");
-    ok=false;
-  }
-  else
-  {
-        do
-        {
-            elem = node->ToElement ();
-            const char* name = elem->Attribute("name");
-            const char* info = elem->Attribute("info");
-            const char* active = elem->Attribute("active");
-            const char* param = elem->Attribute("param");
-            const char* protect = elem->Attribute("protected");
-            bool  b_active;
-            bool  b_protect;
-            if( protect == NULL || Util::isBool(protect, b_protect) == false)
-              b_protect = false;
-
-            if( name != NULL && info != NULL ) {
-//ZJ                && active != NULL  && Util::isBool(active, b_active)) {
-              if ( loaded_plugins != NULL && strstr(loaded_plugins,name) == NULL ) {
-                debug("Plugin Desactivado en config [%s]",name);
-                b_active = false;
-              }else {
-                debug("Plugin Activo en config [%s]",name);
-                b_active = true;
-              } 
-              _activePlugins.AddPlugin(name, param,  info, b_active, b_protect);
-            }
-            else
-            {
-              ok = false;
-            }
-        }while( (node=node->NextSibling())!=NULL && ok == true);
-
-  }
-  return(ok) ;
-}
-*/
 bool Config::loadPlugins(XMLNode *node)
 {
   bool ok = true;
@@ -312,68 +196,12 @@ bool Config::loadPlugins(XMLNode *node)
     ok = false;
   }
 
-  
-  return(ok) ;
+  return(ok);
 }
 
-/**
- * Save Plugins
- * @return ptr to XML Element
- */
-XMLElement *Config::savePlugins()
-{
-  XMLElement *xml = _xmlDoc.NewElement("plugins");
-
-  xml->SetAttribute("sysconfig", _activePlugins.GetSysconfigName());
-  xml->SetAttribute("protected", _activePlugins.GetProtectedList());
-
-  return(xml);
-}
-
-
-/**
- * Save Plugins
- * @return ptr to XML Element
- */
-void Config::savePlugins(Plugins *plugins, XMLElement *xml)
-{
-  int           nr = plugins->GetNr();
-
-  for(int i=0; i<nr && xml != NULL; i++)
-  {
-    Plugin *p = plugins->Get(i);
-    if( p!= NULL)
-    {
-      XMLElement *pl =  _xmlDoc.NewElement("plugin");
-      if( pl != NULL )
-      {
-        pl->SetAttribute("name",   p->GetName());
-        if( p->GetParameter() != NULL)
-          pl->SetAttribute("param",  p->GetParameter());
-        pl->SetAttribute("info",   p->GetInfo());
-        pl->SetAttribute("active", p->GetActiveString());
-        if( p->GetProtect() == true)
-          pl->SetAttribute("protected",  Util::boolToStr(p->GetProtect()));
-
-        xml->LinkEndChild(pl);
-      }
-    }
-  }
-}
 /***************************
  * Dump XML-Error
  ***************************/
-void Config::dumpXMLError()
-{
-  if(_xmlDoc.Error())
-  {
-    XMLError    errID   = _xmlDoc.ErrorID();
-    const char *errName = _xmlDoc.ErrorName();
-    const char *errStr1 = _xmlDoc.GetErrorStr1();
-    const char *errStr2 = _xmlDoc.GetErrorStr2();
-    error("XMLDocument error in %s id=%d '%s' str1=%s str2=%s", _filename, static_cast<int>( errID ), errName, errStr1, errStr2 );
-  }
-}
 void Config::dumpXMLError(const char* myErrStr)
 {
   if(_xmlDoc.Error())
@@ -382,7 +210,7 @@ void Config::dumpXMLError(const char* myErrStr)
     const char *errName = _xmlDoc.ErrorName();
     const char *errStr1 = _xmlDoc.GetErrorStr1();
     const char *errStr2 = _xmlDoc.GetErrorStr2();
-    debug("%s: XMLDocument error in %s id=%d '%s' str1=%s str2=%s", myErrStr, _filename, static_cast<int>( errID ), errName, errStr1, errStr2);
+    error("%s: XMLDocument error in %s id=%d '%s' str1=%s str2=%s", myErrStr, _filename, static_cast<int>( errID ), errName, errStr1, errStr2);
   }
 }
 
@@ -391,7 +219,7 @@ void Config::dumpXMLError(const char* myErrStr)
  * @return plugins object
  */
 Plugins *Config::GetPlugins( )
-{ 
+{
   return(&_activePlugins);
 }
 
@@ -430,7 +258,7 @@ bool Config::readVdrLibDir(const char* libDir)
   struct dirent *entry = NULL;
   char          *module=NULL;
   char          *tmp=NULL;
-  char          *prefix ="libvdr-";
+  const char    *prefix ="libvdr-";
   char          *suffix = NULL;
 
   debug("config:ReadVdrLib %s",libDir);
@@ -449,7 +277,7 @@ bool Config::readVdrLibDir(const char* libDir)
           _activePlugins.SetLibDirPlugin(module);
         }
     }
-    
+
     closedir(dir);
   }
   else
@@ -457,20 +285,20 @@ bool Config::readVdrLibDir(const char* libDir)
     debug("Could not read directory: [%s]", _libDir);
     ok = false;
   }
-  
+
   if( suffix != NULL) free(suffix);
   return(ok);
 }
- 
+
 bool Config::readVdrLib()
 {
-  bool result =true;  
+  bool result =true;
   char *ldir = Util::Strdupnew(_libDir);
-  char *delim = " ";
+  const char *delim = " ";
   char *dir;
-  
+
   dir = strtok(ldir,delim);
-  
+
   while ( dir ) {
 	  result = readVdrLibDir(dir)  && result;
 	  dir = strtok(NULL,delim);
@@ -488,17 +316,12 @@ bool Config::readVdrLib()
       i--;
     }
   }
-  
-  if (ldir) delete (ldir);  
+
+  if (ldir) delete (ldir);
   return(result);
 }
 
-char * Config::GetBootLinux( )
+const char * Config::GetBootLinux( )
 {
  return(_bootLinux);
 }
-
-
-
-/******************************************************
- *****************************************************/

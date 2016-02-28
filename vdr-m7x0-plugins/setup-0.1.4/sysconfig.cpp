@@ -1,12 +1,12 @@
 /****************************************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Handles sysconfig File
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  ****************************************************************************/
 
 #include <stdio.h>
@@ -31,9 +31,6 @@ Variable::~ Variable( )
   delete [] _value;
 }
 
-
-
-
 void Variable::SetName( const char * nam )
 {
   delete [] _name;
@@ -55,26 +52,6 @@ const char * Variable::GetValue( )
 {
   return(_value);
 }
-/**
- * print Variable
- */
-void Variable::Print( )
-{
-  printf("Name=");
-  if( _name == NULL)
-    printf("NULL");
-  else
-    printf(_name);
-
-  printf(" Value=");
-  if( _value == NULL)
-    printf("NULL");
-  else
-    printf(_value);
-  printf("\n"); 
-}
-
-
 
 
 //------------------------------------------------------
@@ -89,7 +66,6 @@ Sysconfig::Sysconfig()
   _filename  = NULL;
   _nr        = 0;
 }
-
 
 Sysconfig::~Sysconfig()
 {
@@ -107,8 +83,6 @@ void Sysconfig::destroy( )
   _nr=0;
 }
 
-
-
 bool Sysconfig::LoadFile( const char*fname)
 {
    bool result = true;
@@ -117,15 +91,15 @@ bool Sysconfig::LoadFile( const char*fname)
    _filename = Util::Strdupnew(fname);
    FILE * fp = fopen(fname, "r");
 	debug("Load sysconf:[%s]",fname);
-	
+
    if( fp != NULL)
-   {     
+   {
      while( (line = readLine(fp)) != NULL)
      {
        addLine(line);
        delete [] line;
      }
-    
+
      fclose(fp);
    }
    else
@@ -205,7 +179,6 @@ void Sysconfig::addLine(const char * line )
     if( (nam =strtok((char*)line, "=")) != NULL &&
     	(val=strtok(NULL, "\0")) != NULL )
     {
-//      addVariable(Util::Strtrim(nam), Util::Strtrim(val));
 	  string value = val;
 	  Util::trim(value,"\t \"");
       addVariable(compactspace(nam), value.c_str());
@@ -222,7 +195,7 @@ void Sysconfig::addVariable( const char * name, const char * value )
 {
     Variable *v = new Variable[_nr+1];
 	debug ("sysconfig add variable:%s=\"%s\"",name,value);
- 
+
     //copy existing Array elements
     for(int i=0; i<_nr; i++)
     {
@@ -236,18 +209,7 @@ void Sysconfig::addVariable( const char * name, const char * value )
     v[_nr].SetName(name);
     v[_nr].SetValue(value);
     _variables=v;
-    _nr++;  
-}
-
-
-
-/**
- * 
- */
-void Sysconfig::Print( )
-{
-  for(int i=0; i<_nr; i++)
-    _variables[i].Print();
+    _nr++;
 }
 
 /**
@@ -270,7 +232,7 @@ void Sysconfig::SetVariable(const char * name, const char * value )
       index=i;
     }
   }
-  if( found)
+  if(found)
     _variables[index].SetValue(value);
   else
     addVariable(name, value);
@@ -302,12 +264,8 @@ const char * Sysconfig::GetVariable( const char * name )
       index=i;
     }
   }
-  if( found)
+  if(found)
     return(_variables[index].GetValue());
   else
     return(NULL);
 }
-
-
-
-

@@ -18,15 +18,9 @@
 #include "statebag.h"
 #include "tools.h"
 #include "commands.h"
-#ifdef FILEBROWSER_PLUGIN_BUILD
-#include "threads.h"
-#endif
 
 cFilebrowserStatebag::cFilebrowserStatebag()
 {
-#ifdef FILEBROWSER_PLUGIN_BUILD
-  Threads=new cThreadList();
-#endif
   SelectedFiles=new cStringList();
   Commands=new cFilebrowserCommands();
   BaseDir[0]='\0';
@@ -36,11 +30,7 @@ cFilebrowserStatebag::cFilebrowserStatebag()
 cFilebrowserStatebag::~cFilebrowserStatebag()
 {
   //this also frees objects
-#ifdef FILEBROWSER_PLUGIN_BUILD
-  if(Threads) delete Threads;
-#endif
   if(SelectedFiles) delete SelectedFiles;
   if(Commands) delete Commands;
   if(CurrentFiles) delete CurrentFiles;
 }
- 

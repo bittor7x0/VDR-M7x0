@@ -1,12 +1,12 @@
 /****************************************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Plugin Representation of XML Tree
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  ****************************************************************************/
 
 #include <stdio.h>
@@ -31,7 +31,7 @@ Plugins::Plugins()
 
 /**
  * Destructor
- * @return 
+ * @return
  */
 Plugins::~Plugins()
 {
@@ -61,7 +61,7 @@ void Plugins::AddPlugin(const char*name, const char*param, const char*info, bool
     p->SetActive(flag);
     p->SetProtect(protect);
     p->SetInSystem(inSystem);
-    debug("AddPlugin: [%s] act [%d] inSystem [%d] Protect[%d]\n", name,flag, inSystem,protect);	
+    debug("AddPlugin: [%s] act [%d] inSystem [%d] Protect[%d]\n", name,flag, inSystem,protect);
     Add(p);
 }
 
@@ -134,8 +134,8 @@ const char * Plugin::_trueStr =STR_YES;
 const char * Plugin::_falseStr = STR_NO;
 
 /**
- * Constructor 
- * @return 
+ * Constructor
+ * @return
  */
 Plugin::Plugin()
 {
@@ -149,7 +149,7 @@ Plugin::Plugin()
 
 /**
  * Destructor
- * @return 
+ * @return
  */
 Plugin::~Plugin()
 {
@@ -217,28 +217,6 @@ int Plugins::GetNr()
     return(Count());
 }
 
-/**
- * Prints the Plugins on stdout
- */
-void  Plugins::Print()
-{
-    int nr = Count();
-    for(int i=0; i<nr; i++)
-    {
-        debug("Plugin[%d] ", i);
-        Get(i)->Print();
-    }
-}
-
-
-/**
- * Prints a plugin on stdout
- */
-void  Plugin::Print()
-{
-    debug("Name=%s  Parameter=%s Info=%s Active=%d inSystem=%d\n",
-            _name, _parameter, _info, _active, _inSystem);
-}
 void Plugins::SetSysconfigName( const char * name )
 {
   delete [] _sysconfigName;
@@ -253,7 +231,7 @@ const char * Plugins::GetSysconfigName( )
 void Plugins::SetProtectedList( const char * name )
 {
   delete [] _protectedList;
-  debug("Protected plugins [%s]",name);  
+  debug("Protected plugins [%s]",name);
   if ( name != NULL ) {
     _protectedList =  Util::Strdupnew(name);
   }else {
@@ -263,7 +241,7 @@ void Plugins::SetProtectedList( const char * name )
 
 const char* Plugins::GetProtectedList()
 {
-  return _protectedList;  
+  return _protectedList;
 }
 
 bool Plugins::checkProtected(const char* pluginName)
@@ -297,7 +275,7 @@ const char * Plugin::Plugin::GetParameter( )
 }
 
 /**
- * set plugin command parameters 
+ * set plugin command parameters
  * @param p NULL or plugin parameter string
  */
 void Plugin::Plugin::SetParameter( const char * p )
@@ -312,7 +290,7 @@ void Plugin::Plugin::SetParameter( const char * p )
  */
 void Plugin::Plugin::SetActive( int flag )
 {
- _active=flag; 
+ _active=flag;
 }
 
 /**
@@ -381,7 +359,7 @@ bool Plugin::Plugin::GetProtect( )
 
 /**
  * returns a String holding space separated List of plugins
- * @return 
+ * @return
  */
 const char * Plugins::GetActivePlugins( )
 {
@@ -389,7 +367,7 @@ const char * Plugins::GetActivePlugins( )
   buf[0] = '"';
   buf[1] = '\0';
   int  nr =Count();
-  
+
   for(int i=0; i<nr; i++)
   {
     Plugin * plugin = Get(i);
@@ -403,7 +381,7 @@ const char * Plugins::GetActivePlugins( )
         sprintf(buf, "%s -P%s %s", tmp, plugin->GetName(), p);
       delete [] tmp;
     }
-  } 
+  }
   //HaPe: Add " around the string
   //sprintf(buf, "\"%s\"", buf);
   int iLen = strlen(buf);
@@ -412,7 +390,7 @@ const char * Plugins::GetActivePlugins( )
 
   if( _activePlugins != NULL)
     delete [] _activePlugins;
-    
+
   _activePlugins = new char[iLen+2];
   strcpy(_activePlugins, buf);
   return((const char*) _activePlugins);
@@ -421,13 +399,13 @@ const char * Plugins::GetActivePlugins( )
 /**
  * Sets the flag "inSystem" of the corresponding plugin to true.
  * If the plugin is not found an unknown Plugin will be added.
- * @param pluginName 
+ * @param pluginName
  */
 void Plugins::SetLibDirPlugin( const char * pluginName )
 {
   Plugin *p =GetPluginByName(pluginName);
   if( p != NULL)
-  { 
+  {
     p->SetInSystem(true);
     debug("In System plugin [%s]\n",pluginName);
   }
@@ -435,27 +413,25 @@ void Plugins::SetLibDirPlugin( const char * pluginName )
   {
     AddPlugin(pluginName,NULL,  pluginName, false, false, true);
   }
- 
+
 }
 
 /**
  * returns a pointer to the plugin with the specified name
  * or NULL if not found
- * @param name of the plugin 
+ * @param name of the plugin
  * @return pointer to plugin otherwise NULL
  */
 Plugin * Plugins::GetPluginByName( const char * name )
 {
   Plugin *p=NULL;
   int nr = Count();
- 
+
   for(int i=0; i<nr && p==NULL; i++)
-  { 
+  {
    if( strcmp(Get(i)->GetName(),name)==0) {
       p= Get(i);
    }
   }
   return(p);
 }
-
-

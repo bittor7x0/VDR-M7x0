@@ -9,7 +9,7 @@
 #
 PLUGIN = setup
 
-# Debugging on/off 
+# Debugging on/off
 #OPEN7x0_Setup_DEBUG = 1
 
 # Strip debug symbols?  Set eg. to /bin/true if not
@@ -55,14 +55,14 @@ INCLUDES += -I$(VDRDIR)/include -I$(DVBDIR)/include
 #just for TESTING VDR SUBmenu
 INCLUDES += -I$(VDRDIR)
 
-DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRVERSION="\"$(VDRVERSION)\"" 
+DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DVDRVERSION="\"$(VDRVERSION)\""
 
 ifdef OPEN7x0_Setup_DEBUG
 	DEFINES += -DDEBUG
 endif
 
 ### The object files (add further files here):
-FILEBROWSER_OBJS = commands.o menu-filebrowser.o tools.o menu-accesscode.o  statebag.o
+FILEBROWSER_OBJS = commands.o menu-filebrowser.o tools.o statebag.o
 
 OBJS     = $(PLUGIN).o $(FILEBROWSER_OBJS) menueditfileitem.o i18n.o setupmenu.o plugins.o sysconfig.o util.o setupsystemmenu.o tinyxml2.o config.o menus.o
 
@@ -86,7 +86,7 @@ $(DEPFILE): Makefile
 all: libvdr-$(PLUGIN).so
 
 
-libvdr-$(PLUGIN).so: $(OBJS) 
+libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@ $(LDFLAGS)
 ifndef OPEN7x0_Setup_DEBUG
 	@$(STRIP) $@

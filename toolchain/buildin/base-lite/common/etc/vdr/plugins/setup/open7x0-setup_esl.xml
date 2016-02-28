@@ -1,34 +1,33 @@
-<setup sysconfigFile="/tmp/tmp.conf" sysconfigPre="/etc/vdr/plugins/setup/local-conf -r -f /tmp/tmp.conf -c /etc" sysconfigPost="/etc/vdr/plugins/setup/local-conf -w -f /tmp/tmp.conf -c /etc" bootLinux="/etc/vdr/rebootvdr" VDRlibDirCMD="/etc/vdr/plugins/setup/local-plugins">
-    <plugins sysconfig="rc.local.conf--vdr_pluginopts" protected="setup">
-    </plugins>
+<setup>
+    <plugins sysconfig="rc.local.conf--vdr_pluginopts" protected="setup" />
     <menus>
         <menu name="Gestionar plugins" help="Activar y desactivar plugins" system="ActPlugins" />
         <menu name="Configuración general">
-            <entry name="Tiempo de inicio" sysconfig="rc.local.conf--vdr_startup_time" type="number" value="300" help="Segundos para iniciar VDR antes de una grab. programada" />
-            <entry name="Opciones del VDR" sysconfig="rc.local.conf--vdr_options" type="text" value="-l 0" help="Opciones pasadas al ejecutar el VDR (Ver documentación)" />
+            <entry name="Tiempo de inicio" sysconfig="rc.local.conf--vdr_startup_time" type="number" help="Segundos para iniciar VDR antes de una grab. programada" />
+            <entry name="Opciones del VDR" sysconfig="rc.local.conf--vdr_options" type="text" help="Opciones pasadas al ejecutar el VDR (Ver documentación)" />
         </menu>
         <menu name="Configuración de directorios">
-            <entry name="Dir. archivos configuración" sysconfig="rc.local.conf--vdr_confdir" type="directory" value='&quot;/etc/vdr&quot;' help="Directorio donde están los archivos de configuración" />
-            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="directory" value='&quot;/var/media/disk-volume-0/vdr/videoVDR&quot;' help="Directorio donde se almacenan las grabaciones" />
-            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="directory" value='&quot;/var/media/disk-volume-3/vdr/plugins&quot;' help="Directorios separados por espacios donde están los plugins" />
+            <entry name="Dir. archivos configuración" sysconfig="rc.local.conf--vdr_confdir" type="directory" help="Directorio donde están los archivos de configuración" />
+            <entry name="Directorio de grabaciones" sysconfig="rc.local.conf--vdr_videodirs" type="directory" help="Directorio donde se almacenan las grabaciones" />
+            <entry name="Directorio de plugins" sysconfig="rc.local.conf--vdr_plugindirs" type="directory" help="Directorios separados por espacios donde están los plugins" />
         </menu>
         <menu name="Configuración de la EPG">
-            <entry name="Archivo EPG" sysconfig="rc.local.conf--vdr_epgfile" type="file" value='&quot;/etc/vdr/epg.data&quot;' help="Archivo donde se almacena la información de la EPG" />
-            <entry name="EPG inmediata" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" value="NO" help="Guardar inmediatamente la EPG o sólo al apagar el VDR" />
+            <entry name="Archivo EPG" sysconfig="rc.local.conf--vdr_epgfile" type="file" help="Archivo donde se almacena la información de la EPG" />
+            <entry name="EPG inmediata" sysconfig="rc.local.conf--vdr_epgdirect" type="bool" help="Guardar inmediatamente la EPG o sólo al apagar el VDR" />
         </menu>
         <menu name="Configuración de discos USB">
-            <entry name="Forzar a montar USB" sysconfig="rc.local.conf--force_usb_mount" type="bool" value="NO" help="Montar discos duros USB antes de ejecutar el VDR" />
-            <entry name="Dispositivos a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" value="/dev/sda" help="Dispositivos USB a detener separados por espacios. Ej.: /dev/sda" />
-            <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" value="300" help="Tiempo de inactividad para detener el disco duro USB" />
-            <entry name="Parar dispositivos al apagar" sysconfig="rc.local.conf--hd_spindown_shutdown" type="bool" value="NO" help="Detener dispositivos al apagar el sistema" />
-            <entry name="Desactivar swaps al apagar" sysconfig="rc.local.conf--hd_swap" type="bool" value="NO" help="Desactivar las particiones swap al apagar" />
+            <entry name="Forzar a montar USB" sysconfig="rc.local.conf--force_usb_mount" type="bool" help="Montar discos duros USB antes de ejecutar el VDR" />
+            <entry name="Dispositivos a parar" sysconfig="rc.local.conf--hd_spindown_dev" type="text" help="Dispositivos USB a detener separados por espacios. Ej.: /dev/sda" />
+            <entry name="Tiempo de inactividad" sysconfig="rc.local.conf--hd_spindown_time" type="number" help="Tiempo de inactividad para detener el disco duro USB" />
+            <entry name="Parar dispositivos al apagar" sysconfig="rc.local.conf--hd_spindown_shutdown" type="bool" help="Detener dispositivos al apagar el sistema" />
+            <entry name="Desactivar swaps al apagar" sysconfig="rc.local.conf--hd_swap" type="bool" help="Desactivar las particiones swap al apagar" />
         </menu>
         <menu name="Depuración">
-            <entry name="Activar servicio syslog" sysconfig="rc.conf--syslogd_flags" type="text" value="NO" help="Registro del sistema. Dejarlo vacío para activarlo" />
-            <entry name="Mostrar mensajes en OSD" sysconfig="rc.local.conf--osddebug" type="bool" value="NO" help="Mostrar en el OSD la info de procesos al arrancar" />
-            <entry name="Monitor de memoria" sysconfig="rc.local.conf--memwatch" type="bool" value="NO" help="Guardar registros del uso de memoria" />
-            <entry name="Mon. memoria - Intervalo" sysconfig="rc.local.conf--memwatch_interval" type="number" value="60" help="Intervalo de minutos en el que guardar registros de memoria" />
-            <entry name="Mon. memoria - Directorio" sysconfig="rc.local.conf--memwatch_dir" type="directory" value='&quot;/var/media/disk-volume-0/memwatch&quot;' help="Directorio donde guardar los registros de memoria" />
+            <entry name="Activar servicio syslog" sysconfig="rc.conf--syslogd_flags" type="text" help="Registro del sistema. Dejarlo vacío para activarlo" />
+            <entry name="Mostrar mensajes en OSD" sysconfig="rc.local.conf--osddebug" type="bool" help="Mostrar en el OSD la info de procesos al arrancar" />
+            <entry name="Monitor de memoria" sysconfig="rc.local.conf--memwatch" type="bool" help="Guardar registros del uso de memoria" />
+            <entry name="Mon. memoria - Intervalo" sysconfig="rc.local.conf--memwatch_interval" type="number" help="Intervalo de minutos en el que guardar registros de memoria" />
+            <entry name="Mon. memoria - Directorio" sysconfig="rc.local.conf--memwatch_dir" type="directory" help="Directorio donde guardar los registros de memoria" />
         </menu>
     </menus>
 </setup>
