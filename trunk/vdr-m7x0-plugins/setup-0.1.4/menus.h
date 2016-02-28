@@ -1,17 +1,16 @@
 /*********************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Header File
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  *********************************************************/
 
 #ifndef MENUS_H
 #define MENUS_H
-//#include <vdr/tools.h>
 #include "common.h"
 #include "util.h"
 #include "tinyxml2.h"
@@ -22,8 +21,6 @@ using namespace tinyxml2;
 /**
 @author Ralf Dotzert
 */
-
-
 class Menu;
 class MenuEntry;
 class MenuEntryValueList;
@@ -31,11 +28,10 @@ class MenuNode;
 
 class SubMenus : public cList<MenuNode> {};
 
-
 class MenuNode :  public cListObject
 {
 public:
-enum Type { UNDEFINED, MENU, MENUSYSTEM, ENTRY};
+    enum Type {UNDEFINED, MENU, MENUSYSTEM, ENTRY};
     MenuNode();
     virtual ~MenuNode();
     void destroy();
@@ -47,27 +43,21 @@ enum Type { UNDEFINED, MENU, MENUSYSTEM, ENTRY};
     const char *GetName();
     int GetNr();
     MenuNode *GetNode(int index);
-    void Print();
-    void Print(int offset);
     void SetSysConfig(Sysconfig *sysconf);
 private:
-MenuNode::Type  _objType;
-Menu           *_menu;
-MenuEntry      *_menuEntry;
+    MenuNode::Type  _objType;
+    Menu           *_menu;
+    MenuEntry      *_menuEntry;
 };
-
-
-
 
 class Menu
 {
 protected:
-const char *_name;
-const char *_command;
-const char *_system;
-SubMenus   _subMenus;
-const char *_help;
-XMLDocument _xmlDoc;
+    const char *_name;
+    const char *_system;
+    SubMenus   _subMenus;
+    const char *_help;
+    XMLDocument _xmlDoc;
 public:
     Menu();
     Menu(const char *name);
@@ -75,8 +65,6 @@ public:
     void destroy();
     void SetName(const char *nam);
     const char *GetName();
-    void SetCommand(const char *command);
-    const char *GetCommand();
     void SetSystem(const char *system);
     const char *GetSystem();
     int  GetNr();
@@ -87,17 +75,14 @@ public:
     void AddNode(MenuEntry* menuEntry);
     bool LoadXml( XMLNode *node  );
     void SetSysConfig(Sysconfig *sysconf);
-    XMLNode *SaveXml();
-    virtual void Print();
-    virtual void Print(int offset);
 };
 
 class MenuEntryValueList
 {
   private:
-  const char **_values;
-  int          _nr;
-  int         _selection;
+    const char **_values;
+    int          _nr;
+    int         _selection;
   public:
     MenuEntryValueList();
     ~MenuEntryValueList();
@@ -111,31 +96,28 @@ class MenuEntryValueList
     int  *GetReferenceSelection();
     const char *GetSelectedValue();
     void SetSelection(const char *value);
-    void Print();
-    void Print(int offset);
 };
 
 class MenuEntry : public Menu
 {
 protected:
-const char *_sysconfigName;
-const char *_valueText;
-const char *_valueIp;
-const char *_setupCommand;
-int         _valueTextMaxLen;
-int         _valueIpMaxLen;
-int         _valueNumber;
-int         _valueBool;
-MenuEntryValueList  _selectionValues;
-Util::Type  _type;
+    const char *_sysconfigName;
+    const char *_valueText;
+    const char *_valueIp;
+    const char *_setupCommand;
+    int         _valueTextMaxLen;
+    int         _valueIpMaxLen;
+    int         _valueNumber;
+    int         _valueBool;
+    MenuEntryValueList  _selectionValues;
+    Util::Type  _type;
 public:
     MenuEntry();
     ~MenuEntry();
     void destroy();
-    bool AddEntry( XMLNode *node  );
-    bool AddSubEntry( XMLNode *node  );
-    bool AddSelectionValues( XMLNode *node, const char *selection);
-    XMLNode *SaveXml( );
+    bool AddEntry(XMLNode *node);
+    bool AddSubEntry(XMLNode *node);
+    bool AddSelectionValues(XMLNode *node, const char *selection);
     void SetSysconfigName(const char* nam);
     const char*GetSysconfigName();
     void SetValue(Util::Type type,const char* val);
@@ -157,25 +139,17 @@ public:
     void SetType(Util::Type typ);
     void SetSysConfig(Sysconfig *sysconf);
     Util::Type GetType();
-    void Print();
-    void Print(int offset);
 };
 
-
-class Menus : public cList<MenuNode> 
+class Menus : public cList<MenuNode>
 {
 public:
     Menus();
     ~Menus();
     bool LoadXml(XMLNode *node);
-    bool SaveXml(XMLNode *node);
     bool AddNode( Menu *menu );
     int  GetNr();
-
     MenuNode  *GetMenuNode(int index);
-    void Print();
-    
 };
-
 
 #endif

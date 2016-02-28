@@ -1,19 +1,18 @@
 /*********************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Header File
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  *********************************************************/
 
 #ifndef SETUPMENU_H
 #define SETUPMENU_H
 #include <vdr/menu.h>
 #include <vdr/interface.h>
-//#include <vdr/submenu.h>
 #include "config.h"
 #include "common.h"
 
@@ -33,8 +32,6 @@ class cSetupPluginParameter : public cOsdMenu
     eOSState ProcessKey(eKeys Key);
 };
 
-
-
 class cSetupPluginMenu : public cOsdMenu
 {
 private:
@@ -48,18 +45,14 @@ public:
     ~cSetupPluginMenu();
     void  Set();
     eOSState ProcessKey(eKeys Key);
-    void setHelp();
 };
-
 
 class cSetupMenu : public cOsdMenu
 {
 private:
-
    int      _number;
    bool     _error;
    bool     _loaded_config;
-
 protected:
    Config  *_config;
 public:
@@ -78,13 +71,11 @@ class cSetupGenericMenu : public cSetupMenu
     bool      _editItem;
     int       _currLine;
     Config   *_config;
-    const char * nohk(const char *str);
   public:
     cSetupGenericMenu(const char *title, MenuNode *node, Config  *config);
     ~cSetupGenericMenu();
     void       Set();
     eOSState  ProcessKey(eKeys Key);
-    void      ExecuteCommand(const char* cmd);
 };
 
 #endif

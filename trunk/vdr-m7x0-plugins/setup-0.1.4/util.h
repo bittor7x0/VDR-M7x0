@@ -1,12 +1,12 @@
 /*********************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Header File
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  *********************************************************/
 
 #ifndef UTIL_H
@@ -15,9 +15,6 @@
 #include <string>
 using namespace std;
 
-
-
-
 /**
 @author Ralf Dotzert
 */
@@ -25,12 +22,11 @@ class Util{
 public:
     Util();
     ~Util();
-    enum Type { UNDEFINED,TEXT, NUMBER_TEXT, HEX, IP, BOOL, NUMBER, SELECTION, FILE, DIR};
+    enum Type {UNDEFINED, TEXT, HEX, IP, BOOL, NUMBER, SELECTION, FILE, DIR};
     static char * Strdupnew(const char  *str);
     static char * Strdupnew(const char  *prefix, const char  *str);
     static char * Strdupnew( const char  *str, int size );
 	static void trim(string& str,const string& drop=" \t\n\r" );
-//    static char * Strtrim(char *str);
     static bool isBool(const char *string, bool &flag);
     static bool isBool(const char *string, int  &flag);
     static bool isType( const char * string, Util::Type & typ );

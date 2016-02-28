@@ -1,12 +1,12 @@
 /****************************************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Creates VDR Menus
  *
  * $Id$
  *
- * Contact:    ranga@vdrtools.de        
+ * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  ****************************************************************************/
 
 #include <stdlib.h>
@@ -15,14 +15,10 @@
 #include <string>
 
 #include "setupmenu.h"
-#include "config.h"
 #include "plugins.h"
 #include "i18n.h"
-#include "common.h"
 #include "setupsystemmenu.h"
 #include "menueditfileitem.h"
-
-
 
 //#################################################################################################
 //   cSetupPluginMenu
@@ -46,13 +42,13 @@ cSetupPluginMenu::~cSetupPluginMenu()
 }
 
 /**
- * 
+ *
  */
 void cSetupPluginMenu::Set( )
 {
 
   int current = Current();
-  
+
   Clear();
   for(int i=0; i<_plugins->GetNr(); i++)
   {
@@ -61,7 +57,7 @@ debug("===> %s",_plugins->Get(i)->GetInfo());
     {
         char *title = NULL;
 
-        asprintf(&title, "%s:\t%s", _plugins->Get(i)->GetInfo(),tr("protected")); 
+        asprintf(&title, "%s:\t%s", _plugins->Get(i)->GetInfo(),tr("protected"));
         Add(new cOsdItem (title));
         free(title);
     }
@@ -70,14 +66,13 @@ debug("===> %s",_plugins->Get(i)->GetInfo());
   }
   if( current == -1 && _plugins->GetNr() >0)
     current=0;
-    
+
   SetCurrent(Get(current));
   if( _moveMode)
     SetHelp(tr("PageUp"),  tr("PageDown"), tr("Before"), tr("After"));
   else
     SetHelp(tr("PageUp"),  tr("PageDown"), tr("Parameter"), tr("Move"));
-  
-  setHelp();
+
   Display();
 }
 
@@ -129,27 +124,9 @@ eOSState cSetupPluginMenu::ProcessKey( eKeys Key )
                       _moveMode = !_moveMode;
                       Set();
                       break;
-            case kDown:
-            case kUp:
-                    setHelp();
-                    break;
             default : break;
     }
     return state;
-}
-
-void cSetupPluginMenu::setHelp()
-{
-/*JMG
-  char *tmp=NULL;
-  int  current = Current();
-  if(current >= 0 )
-  {
-    asprintf(&tmp, "%s: %s", tr("Plugin"), _plugins->Get(current)->GetName());
-    SetStatus(tmp);
-    free(tmp);
-  }
-*/
 }
 
 
@@ -181,12 +158,6 @@ void cSetupPluginParameter::Set( )
     _editParameter[sizeof(_editParameter)-1]='\0';
   }
   Add(new cMenuEditStrItem(tr("Plugin-Parameter"), _editParameter, sizeof(_editParameter), tr(ALLOW_ALL_PARAM_CHARS)));
-/*JMG
-  char *tmp=NULL;
-  asprintf(&tmp, "%s: %s", tr("Plugin"), _plugin->GetName());
-  SetStatus(tmp);
-  free(tmp);
-  */
   Display();
 }
 
@@ -231,9 +202,9 @@ cSetupGenericMenu::cSetupGenericMenu(const char *title, MenuNode *node, Config  
   _config   = config;
 
   SetTitle(title);
-  SetCols(25); 
+  SetCols(25);
 
-  
+
   if( _node != NULL)
     Set();
 }
@@ -243,28 +214,9 @@ cSetupGenericMenu::~cSetupGenericMenu()
 {
 }
 
-const char * cSetupGenericMenu::nohk(const char *str)
-{
-  static std::string tmp;
-
-//changed to return default value as we have no menu prefix
-//  tmp = setupSetup._entryPrefix;
-
-//  if( strlen(setupSetup._entryPrefix)==0 || setupSetup._entryPrefix[0] == ' ')
-    tmp = "";
-//  else
-//  {
-//    tmp =  "  ";
-//    tmp += setupSetup._entryPrefix;
-//    tmp += "  ";
-//  }
-
-  tmp += str;
-  return(tmp.c_str());
-}
 
 /**
- * 
+ *
  */
 void cSetupGenericMenu::Set( )
 {
@@ -274,7 +226,7 @@ void cSetupGenericMenu::Set( )
   for(int i=0; i< _node->GetNr(); i++)
   {
     MenuNode::Type type = _node->GetNode(i)->GetType();
-    
+
     if( type == MenuNode::ENTRY )
     {
 
@@ -282,39 +234,34 @@ void cSetupGenericMenu::Set( )
       switch( e->GetType() )
       {
         case Util::BOOL:
-          Add(new cMenuEditBoolItem(nohk(e->GetName()), e->GetValueBoolRef(), tr(STR_NO), tr(STR_YES)));
+          Add(new cMenuEditBoolItem(e->GetName(), e->GetValueBoolRef(), tr(STR_NO), tr(STR_YES)));
              break;
         case Util::NUMBER:
-          Add(new cMenuEditIntItem(nohk(e->GetName()), e->GetValueNumberRef(), 0, 999999999));
+          Add(new cMenuEditIntItem(e->GetName(), e->GetValueNumberRef(), 0, 999999999));
              break;
         case Util::TEXT:
-          Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
+          Add(new cMenuEditStrItem((char*)e->GetName(), (char*)e->GetValue(), e->GetValueTextMaxLen(),
                                       tr(ALLOW_ALL_PARAM_CHARS)));
              break;
-         case Util::NUMBER_TEXT:
-           Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
-                                      "0123456789"));
-             break;
         case Util::IP:
-
-          Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValueIp(), e->GetValueIpMaxLen(),
+          Add(new cMenuEditStrItem((char*)e->GetName(), (char*)e->GetValueIp(), e->GetValueIpMaxLen(),
               ".0123456789"));
           break;
         case Util::HEX:
-          Add(new cMenuEditStrItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
+          Add(new cMenuEditStrItem((char*)e->GetName(), (char*)e->GetValue(), e->GetValueTextMaxLen(),
                                       "0123456789ABCDEF:"));
              break;
         case Util::SELECTION:
         {
               if(  e->GetNrOfSelectionValues() != 0 )
-                Add(new cMenuEditStraItem(nohk(e->GetName()), e->GetReferenceSelection(),
+                Add(new cMenuEditStraItem(e->GetName(), e->GetReferenceSelection(),
                                        e->GetNrOfSelectionValues(),
                                        e->GetSelectionValues()) );
         }
              break;
-        case Util::FILE:          
+        case Util::FILE:
         case Util::DIR:
-          Add(new cMenuEditFileItem(nohk((char*)e->GetName()), (char*)e->GetValue(), e->GetValueTextMaxLen(),
+          Add(new cMenuEditFileItem((char*)e->GetName(), (char*)e->GetValue(), e->GetValueTextMaxLen(),
                                       tr(ALLOW_ALL_PARAM_CHARS)));
              break;
         default:
@@ -324,9 +271,7 @@ void cSetupGenericMenu::Set( )
     else
     {
        char *tmp = NULL;
-//       asprintf(&tmp, "%s%s", _node->GetNode(i)->GetName(), setupSetup._menuSuffix);
-// we have no menu suffix
-    asprintf(&tmp, "%s...", _node->GetNode(i)->GetName());
+       asprintf(&tmp, "%s...", _node->GetNode(i)->GetName());
        Add(new cOsdItem(hk(tmp)));
        free(tmp);
     }
@@ -336,7 +281,7 @@ void cSetupGenericMenu::Set( )
 }
 
 eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
-{  
+{
     bool HadSubMenu = HasSubMenu();
     eOSState state = cOsdMenu::ProcessKey(Key);
 
@@ -345,15 +290,15 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
 
     MenuNode *n = _node->GetNode(Current());
 
-      
+
       switch(Key)
       {
-        case kOk : 
+        case kOk :
                        if( n!= NULL &&
                            (n->GetType() == MenuNode::MENU ||
                             n->GetType() == MenuNode::MENUSYSTEM) )
                      {
-                        if(n->GetType() == MenuNode::MENU){  							
+                        if(n->GetType() == MenuNode::MENU){
                           return(AddSubMenu(new cSetupGenericMenu(n->GetName(), n,  _config)));
                         }else{  // Menu "system"
                           cOsdMenu *menu = cSetupSystemMenu::GetSystemMenu(n->GetMenu()->GetSystem(), _config);
@@ -367,19 +312,12 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
                         {
                           state=osBack;
                           SetStatus(tr("Saving configuration File"));
-                          _config->SaveFile(); // Write New Configurationfile                          
-                          for(int i=0;  i < _node->GetNr(); i++)
-                          {
-                            n = _node->GetNode(i);
-                            if( n->GetType() == MenuNode::ENTRY)
-                              ExecuteCommand(n->GetMenuEntry()->GetCommand());
-                          }
-                          ExecuteCommand(_node->GetMenu()->GetCommand());
+                          _config->SaveFile(); // Write New Configurationfile
                         }
                         _editItem=false;
                       }
                       break;
-              case kRed:                        
+              case kRed:
                         break;
               case kYellow:
                         break;
@@ -391,28 +329,27 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
                         if( n!= NULL &&
                             n->GetType() == MenuNode::ENTRY &&
                             (n->GetMenuEntry()->GetType() == Util::TEXT ||
-                            n->GetMenuEntry()->GetType() == Util::NUMBER_TEXT ||
                             n->GetMenuEntry()->GetType() == Util::HEX ||
-                            n->GetMenuEntry()->GetType() == Util::NUMBER 
+                            n->GetMenuEntry()->GetType() == Util::NUMBER
                             )
                           ) {
                            _editItem = true;
                         }
-                         
+
                         if( !_editItem && n!= NULL &&
                             n->GetType() == MenuNode::ENTRY &&
                             n->GetMenuEntry()->GetType() == Util::DIR) {
                             cOsdMenu *menu = cOsdMenuFilebrowserSetup::CreateDirectorybrowser("/",n->GetMenuEntry());
-                           	if(menu != NULL) return(AddSubMenu(menu));                         	                        	
-						}   
-						
+                           	if(menu != NULL) return(AddSubMenu(menu));
+						}
+
 						if( !_editItem && n!= NULL &&
                             n->GetType() == MenuNode::ENTRY &&
                             n->GetMenuEntry()->GetType() == Util::FILE) {
                             cOsdMenu *menu = cOsdMenuFilebrowserSetup::CreateFilebrowser("/",n->GetMenuEntry());
-                           	if(menu != NULL) return(AddSubMenu(menu));                         	                        	
+                           	if(menu != NULL) return(AddSubMenu(menu));
 						}
-						
+
                         break;
 
                 default :if( n!= NULL)
@@ -435,35 +372,10 @@ eOSState cSetupGenericMenu::ProcessKey( eKeys Key )
     return state;
 }
 
-void cSetupGenericMenu::ExecuteCommand( const char * cmd )
-{
-  char *tmp=NULL;
-
-  if( cmd != NULL)
-  {
-    int status=0;
-    asprintf(&tmp, "%s: %s", tr("Execute"), cmd);
-    SetStatus(tmp);
-    free(tmp);
-    status=system(cmd);
-    if( status == -1 ) {
-      debug("fork of command %s failed", cmd);
-    }
-    else
-    {
-      if( WEXITSTATUS(status) != 0) {
-        debug("executing of command %s returned=%d", cmd, WEXITSTATUS(status));
-      }
-    }
-  }
-}
-
-
-
 
 //#############################################################################################
 // cSetupMenu
-// 	The main menu that is diplayed when the plugin ist selected in the main menu 
+// 	The main menu that is diplayed when the plugin ist selected in the main menu
 //#############################################################################################
 
 
@@ -472,13 +384,13 @@ cSetupMenu::cSetupMenu(bool load) : cOsdMenu(tr("VDR-NG Firmware Setup"))
    char *configFile=NULL;
    int loaded=0;
    SetCols(20);
-	
+
    _loaded_config = load;
-   	
+
 if (load) {
    SetStatus(tr("Loading configuration File"));
    //Get languages
-   char *langs = Util::Strdupnew(I18nLanguageCode(Setup.OSDLanguage));      
+   char *langs = Util::Strdupnew(I18nLanguageCode(Setup.OSDLanguage));
    char *lang = strtok(langs,",");
    while (lang != NULL) {
 	  asprintf(&configFile, "%s/setup/open7x0-setup_%s.xml", cPlugin::ConfigDirectory(),lang);
@@ -495,7 +407,7 @@ if (load) {
       lang = strtok(NULL,",");
    }
    if ( langs ) free(langs);
-   
+
    //Default language
    if ( !loaded ) {
       asprintf(&configFile, "%s/setup/open7x0-setup.xml", cPlugin::ConfigDirectory());
@@ -503,17 +415,17 @@ if (load) {
 	  _config = new Config( configFile );
 	  free(configFile);
 	  if ( _config!= NULL && _config->LoadFile() == true ) {
-		loaded=1;		
+		loaded=1;
 	  }
    }
-   SetStatus(NULL);   
+   SetStatus(NULL);
 }else {
 	loaded = true;
-}	
+}
 	//Check for child lock
   _number    = 0;
   _error     = false;
-  
+
   if( loaded )
   {
       if ( _loaded_config ) Set();
@@ -533,14 +445,14 @@ cSetupMenu::~cSetupMenu()
 }
 
 /**
- * 
+ *
  */
 void cSetupMenu::Set( )
 {
   int current = Current();
   Menus     *m=_config->GetMenus();
   MenuNode  *n = NULL;
-  
+
   Clear();
   SetHasHotkeys();
 
@@ -549,23 +461,21 @@ void cSetupMenu::Set( )
   {
     n = m->GetMenuNode(i);
     char *tmp = NULL;
-//    asprintf(&tmp, "%s%s", n->GetName(), setupSetup._menuSuffix);
-// we have no menu suffix
     asprintf(&tmp, "%s...", n->GetName());
     Add(new cOsdItem (hk(tmp)));
     free(tmp);
   }
   SetCurrent(Get(current));
   SetHelp(NULL,  NULL, tr("Restart VDR"), tr("Reboot"));
-  
+
   Display();
 }
 
 
 /**
  * Procss Key
- * @param Key 
- * @return 
+ * @param Key
+ * @return
  */
 eOSState cSetupMenu::ProcessKey( eKeys Key )
 {
@@ -574,8 +484,8 @@ eOSState cSetupMenu::ProcessKey( eKeys Key )
 
 /**
  * Standard Key Processing
- * @param Key 
- * @return 
+ * @param Key
+ * @return
  */
 eOSState cSetupMenu::StandardProcessKey( eKeys Key )
 {
@@ -585,7 +495,7 @@ eOSState cSetupMenu::StandardProcessKey( eKeys Key )
 
     if(HasSubMenu() || HadSubMenu)
       return(state);
-    
+
     int current = Current();
     MenuNode *node = _config->GetMenus()->GetMenuNode(current);
     switch(Key)
@@ -655,21 +565,14 @@ eOSState cSetupMenu::StandardProcessKey( eKeys Key )
 
 /**
  * Key Processing for fetching Secret Code
- * @param Key 
- * @return 
+ * @param Key
+ * @return
  */
 eOSState cSetupMenu::GetCodeProcessKey( eKeys Key )
 {
-  int num;
   eOSState state = cOsdMenu::ProcessKey(Key);
-  char *tmp = NULL;
-    
     switch(Key)
     {
-            case k0 ... k9:
-                num = Key - k0;
-                SetStatus(NULL);
-                break;
              case kBack:
                       return osBack;
                       break;

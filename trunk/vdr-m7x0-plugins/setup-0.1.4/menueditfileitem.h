@@ -1,18 +1,18 @@
 /*
- *      menueditfileitem.cpp
- *      
+ *      menueditfileitem.h
+ *
  *      Copyright 2008 zjuanma <zjuanma@yahoo.es>
- *      
+ *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *      
+ *
  *      This program is distributed in the hope that it will be useful,
  *      but WITHOUT ANY WARRANTY; without even the implied warranty of
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU General Public License for more details.
- *      
+ *
  *      You should have received a copy of the GNU General Public License
  *      along with this program; if not, write to the Free Software
  *      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -22,10 +22,9 @@
 #ifndef EDITFILE_H
 #define EDITFILE_H
 #include <vdr/menuitems.h>
-#include "common.h"
 #include "statebag.h"
 #include "menu-filebrowser.h"
-#include "commands.h" 
+#include "commands.h"
 #include "config.h"
 
 class cMenuEditFileItem : public cMenuEditStrItem {
@@ -35,42 +34,34 @@ public:
   eOSState ProcessKey(eKeys Key);
 };
 
-
 class cSelectCommand : public cFilebrowserCommand
 {
   private:
   	MenuEntry *_e;
-  	cFilebrowserStatebag* _Statebag;  	
+  	cFilebrowserStatebag* _Statebag;
   public:
     cSelectCommand(MenuEntry *e,cFilebrowserStatebag* Statebag);
     bool Execute(cOsdMenu* Menu, char* DestinationFile, char* CurrentFile);
-    bool Matches(const char* Filename) { return true; }; 
+    bool Matches(const char* Filename) { return true; };
 };
 
-  
 class cOsdMenuFilebrowserSetup : public cOsdMenuFilebrowser
-{   
+{
   protected:
-  
   	bool _onlyDir;
-  	
   public:
     cOsdMenuFilebrowserSetup(char* Directory,cFilebrowserStatebag* Statebag,MenuEntry *e,bool only_dir=false): cOsdMenuFilebrowser(Directory,Statebag) {
-    	_onlyDir = only_dir;    	
+    	_onlyDir = only_dir;
     	Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cSelectCommand(e,Statebag)));
     	Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cFilebrowserMarkCommand(Statebag)));
   		Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cFilebrowserUnmarkCommand(Statebag)));
   		Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cFilebrowserMarkAllCommand(Statebag)));
   		Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cFilebrowserUnmarkAllCommand(Statebag)));
     };
-    
-    bool MatchesFilter(dirent64* Entry);
-    
-    static cOsdMenuFilebrowserSetup* CreateFilebrowser(char* BaseDir,MenuEntry *e);
-    
-    static cOsdMenuFilebrowserSetup* CreateDirectorybrowser(char* BaseDir,MenuEntry *e);
-        
-};
-  
-#endif //EDITFILE_H
 
+    bool MatchesFilter(dirent64* Entry);
+    static cOsdMenuFilebrowserSetup* CreateFilebrowser(char* BaseDir,MenuEntry *e);
+    static cOsdMenuFilebrowserSetup* CreateDirectorybrowser(char* BaseDir,MenuEntry *e);
+};
+
+#endif //EDITFILE_H

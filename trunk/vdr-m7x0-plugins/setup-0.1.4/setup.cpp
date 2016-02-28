@@ -1,27 +1,21 @@
 /****************************************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Setup a Plugin vor VDR
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  ****************************************************************************/
 
 #include <vdr/plugin.h>
 #include "setupmenu.h"
-//not needed for open7x0 setup
-//#include "setupsetup.h"
 #include "i18n.h"
 
 static const char *VERSION        = "0.1.4";
 static const char *DESCRIPTION    = "VDR-NG Firmware Setup";
 static const char *MAINMENUENTRY  = "Firmware Setup";
-
-//holds setup configuration
-//not needed for open7x0 setup
-//cSetupSetup  setupSetup;
 
 class cPluginSetup : public cPlugin {
 private:
@@ -52,7 +46,6 @@ cPluginSetup::cPluginSetup(void)
 cPluginSetup::~cPluginSetup()
 {
   // Clean up after yourself!
- 
 }
 
 const char *cPluginSetup::CommandLineHelp(void)
@@ -96,17 +89,12 @@ cOsdObject *cPluginSetup::MainMenuAction(void)
 cMenuSetupPage *cPluginSetup::SetupMenu(void)
 {
   // Return a setup menu in case the plugin supports one.
-  
-  //not needed for open7x0 setup
-  //return new cSetupSetupPage;
-	return NULL;
+  return NULL;
 }
 
 bool cPluginSetup::SetupParse(const char *Name, const char *Value)
 {
   // Parse your own setup parameters and store their values.
-  //not needed for open7x0 setup
-  //return setupSetup.SetupParse(Name, Value);
   return false;
 }
 

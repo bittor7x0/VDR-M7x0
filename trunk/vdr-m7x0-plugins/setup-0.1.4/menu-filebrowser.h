@@ -33,13 +33,12 @@
 class cFilebrowserCommandContainer;
 class cFilebrowserDestinationContainerCommand;
 
-enum eMenuFilebrowserTask {taskBrowse, taskSelectDestination, taskRequireAccessCode};
+enum eMenuFilebrowserTask {taskBrowse, taskSelectDestination};
 
 enum eFilebrowserOSStates
 {
   osFilebrowserCloseRefresh = osUser1,
-  osFilebrowserCloseExec = osUser2,
-  osFilebrowserAccessCodeOk = osUser3
+  osFilebrowserCloseExec = osUser2
 };
 
 class cOsdMenuFilebrowser : public cOsdMenu, public cStatus
@@ -124,7 +123,7 @@ class cOsdItemNewFileEntry : public cMenuEditStrItem
     char* Directory;
     char* Name;
     char* Filename;
-    
+
   public:
     cOsdItemNewFileEntry(char* Value, cString Directory);
     ~cOsdItemNewFileEntry();

@@ -1,18 +1,16 @@
 /*********************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Header File
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  *********************************************************/
 
 #ifndef SYSCONFIG_H
 #define SYSCONFIG_H
-
-
 
 /**
 @author Ralf Dotzert
@@ -27,10 +25,7 @@ public:
     const char *GetName();
     void SetValue(const char *value);
     const char *GetValue();
-    void Print();
 };
-
-
 
 class Sysconfig{
 static Variable *_variables;
@@ -42,7 +37,6 @@ public:
      void destroy();
      bool LoadFile(const char*fname);
      bool SaveFile();
-     void Print();
      void SetVariable(const char* name, const char*value);
     static const char *GetVariable(const char *name);
      char *GetFileName();
@@ -51,8 +45,5 @@ private:
      void addLine(const char *line);
      void addVariable(const char *name, const char *value);
 };
-
-
-
 
 #endif

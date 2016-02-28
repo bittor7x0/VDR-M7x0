@@ -24,9 +24,6 @@
 #include <stdio.h>
 
 #include "tools.h"
-#ifdef FILEBROWSER_PLUGIN_BUILD
-#include "threads.h"
-#endif
 #include "statebag.h"
 #include "menu-filebrowser.h"
 
@@ -43,7 +40,6 @@ class cFilebrowserCommand
     bool UseCurrentFile;
     bool UseSelectedFiles;
     bool UseNewDestination;
-    bool PatternIsShellscript;
     bool Synchronous;
     bool Menu;
     bool RemoveFinished;
@@ -51,7 +47,6 @@ class cFilebrowserCommand
     cFilebrowserCommand(cFilebrowserStatebag* Statebag);
     bool MatchesSingleFile(const char* Filename);
     eOSState State;
-    char* AccessCode;
   public:
     virtual ~cFilebrowserCommand();
     virtual char* GetName();
@@ -67,7 +62,6 @@ class cFilebrowserCommand
     virtual bool ShowMenu() { return Menu; };
     virtual bool RemoveWhenFinished() { return RemoveFinished; };
     virtual bool Execute(cOsdMenu* Menu, char* DestinationFile, char* CurrentFile);
-    virtual char* GetAccessCode() { return AccessCode; };
     virtual eMenuFilebrowserTask Task() { return taskBrowse; };
     virtual eOSState GetState() { return State; };
 };
@@ -76,7 +70,6 @@ class cFilebrowserConfigCommand : public cFilebrowserCommand
 {
   protected:
     char* Command;
-    static char* FlagHandler(const char* OrgString, const char* CurrentPos, const cCommandParser::cHandlerParameters* Params);
   public:
     cFilebrowserConfigCommand(cFilebrowserStatebag* Statebag);
     ~cFilebrowserConfigCommand();
@@ -137,7 +130,6 @@ class cFilebrowserDestinationContainerCommand : public cFilebrowserCommand
     ~cFilebrowserDestinationContainerCommand();
     bool Execute(cOsdMenu* Menu, char* DestinationFile, char* CurrentFile);
     bool Matches(const char* Filename);
-    char* GetAccessCode();
 };
 
 class cFilebrowserDestinationAbortCommand : public cFilebrowserCommand
@@ -147,18 +139,6 @@ class cFilebrowserDestinationAbortCommand : public cFilebrowserCommand
     bool Execute(cOsdMenu* Menu, char* DestinationFile, char* CurrentFile);
     bool Matches(const char* Filename);
 };
-
-#ifdef FILEBROWSER_PLUGIN_BUILD
-
-class cFilebrowserCommandThreadList : public cFilebrowserCommand
-{
-  public:
-    cFilebrowserCommandThreadList(cFilebrowserStatebag* Statebag);
-    bool Execute(cOsdMenu* Menu, char* DestinationFile, char* SelectedFile);
-    bool Matches(const char* Filename);
-};
-
-#endif
 
 class cFilebrowserCommandContainer : public cListContainer<cFilebrowserCommand>
 {

@@ -13,7 +13,6 @@
 #define SETUPSYSTEMMENU_H
 
 #include "config.h"
-#include "common.h"
 
 class cSetupSystemMenu
 {

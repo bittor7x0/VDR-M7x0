@@ -23,18 +23,12 @@
 
 //Forward declarations for used classes
 class cStringList;
-#ifdef FILEBROWSER_PLUGIN_BUILD
-class cThreadList;
-#endif
 class cFilebrowserCommands;
 
 class cFilebrowserStatebag
 {
   protected:
     cStringList* SelectedFiles;
-#ifdef FILEBROWSER_PLUGIN_BUILD
-    cThreadList* Threads;
-#endif
     cFilebrowserCommands* Commands;
 
   public:
@@ -42,28 +36,16 @@ class cFilebrowserStatebag
     ~cFilebrowserStatebag();
 
     cStringList* GetSelectedFiles() { return SelectedFiles; };
-#ifdef FILEBROWSER_PLUGIN_BUILD
-    cThreadList* GetThreads() { return Threads; };
-#endif
     cFilebrowserCommands* GetCommands() { return Commands; };
 
     char BaseDir[_POSIX_PATH_MAX];
     bool ShowHiddenFiles;
     bool ShowFullPath;
-    
+
     cString Filter;
     cString CurrentDirectory;
     cString ConfigDirectory;
     cStringList* CurrentFiles;
-
-#ifdef FILEBROWSER_PLUGIN_BUILD
-    /*
-    Is an update requested by some thread?
-    */
-    bool UpdateRequested;
-
-    cPlugin* FilebrowserPlugin;
-#endif
 };
 
 #endif

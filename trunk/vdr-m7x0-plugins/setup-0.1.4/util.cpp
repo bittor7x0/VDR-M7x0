@@ -1,12 +1,12 @@
 /****************************************************************************
- * DESCRIPTION: 
+ * DESCRIPTION:
  *             Utitility Methods
  *
  * $Id$
  *
  * Contact:    ranga@vdrtools.de
  *
- * Copyright (C) 2004 by Ralf Dotzert 
+ * Copyright (C) 2004 by Ralf Dotzert
  ****************************************************************************/
 
 
@@ -29,20 +29,16 @@ Util::~Util()
 static const char *undefStr="undefined";
 static const char *boolStr="bool";
 static const char *textStr="text";
-static const char *numTextStr="numtext";
 static const char *hexStr="hex";
 static const char *ipStr="ip";
 static const char *numberStr="number";
 static const char *selectionStr="selection";
 static const char *fileStr="file";
 static const char *dirStr="directory";
-
-
 static const char *trueStr="true";
 static const char *falseStr="false";
 static const char *yesStr=STR_YES;
 static const char *noStr=STR_NO;
-
 
 void Util::trim(string& str,const std::string& drop )
 {
@@ -52,7 +48,7 @@ void Util::trim(string& str,const std::string& drop )
     pos = str.find_first_not_of(drop);
     if(pos != string::npos) str.erase(0, pos);
   }
-  else str.erase(str.begin(), str.end()); 
+  else str.erase(str.begin(), str.end());
 }
 
 
@@ -116,7 +112,7 @@ bool Util::isBool( const char * string, bool & flag )
 
   if(! ok)
     debug("Illegal Bool value %s found", string);
-    
+
   return(ok);
 }
 
@@ -132,7 +128,7 @@ bool Util::isBool( const char * string, int & flag )
     else
       flag=false;
   }
-   
+
   return(ok);
 }
 
@@ -151,14 +147,11 @@ bool Util::isType( const char * string, Util::Type & type )
 
   if( string != NULL)
   {
-    if(strcmp(string , boolStr) == 0)   
+    if(strcmp(string , boolStr) == 0)
       type = Util::BOOL;
     else
     if(strcmp(string , textStr) == 0 )
        type = Util::TEXT;
-    else
-    if(strcmp(string , numTextStr) == 0 )
-       type = Util::NUMBER_TEXT;
     else
     if(strcmp(string , hexStr) == 0 )
        type = Util::HEX;
@@ -174,7 +167,7 @@ bool Util::isType( const char * string, Util::Type & type )
     else
     if(strcmp(string , fileStr) == 0 )
        type = Util::FILE;
-    else      
+    else
     if(strcmp(string , dirStr) == 0 )
        type = Util::DIR;
     else
@@ -185,16 +178,16 @@ bool Util::isType( const char * string, Util::Type & type )
 
   if(! ok)
     error("Illegal Type value %s found", string);
-    
+
   return(ok);
 }
 
 
 /**
- * 
- * @param string 
- * @param number 
- * @return 
+ *
+ * @param string
+ * @param number
+ * @return
  */
 bool Util::isNumber( const char * string, int & number )
 {
@@ -212,16 +205,15 @@ bool Util::isNumber( const char * string, int & number )
   }
   else
     ok = false;
-  
+
   return(ok);
-  
 }
 
 
 /**
  * Returns the strung representation of given type
- * @param type 
- * @return 
+ * @param type
+ * @return
  */
 const char * Util::boolToStr( bool val )
 {
@@ -232,46 +224,41 @@ const char * Util::boolToStr( bool val )
   else
     result = noStr;
 
-  
   return(result);
 }
 
 
-
 /**
  * Returns the strung representation of given type
- * @param type 
- * @return 
+ * @param type
+ * @return
  */
 const char * Util::typeToStr( Type type )
 {
   const char * result = undefStr;
   switch(type)
   {
-    case BOOL:      result =boolStr;
+    case BOOL:      result = boolStr;
                     break;
-    case TEXT:      result =textStr;
+    case TEXT:      result = textStr;
                     break;
-    case NUMBER_TEXT:
-                    result=numTextStr;
+    case HEX:       result = hexStr;
                     break;
-    case HEX:       result=hexStr;
+    case NUMBER:    result = numberStr;
                     break;
-    case NUMBER:    result =numberStr;
-                    break;
-    case IP:        result =ipStr;
+    case IP:        result = ipStr;
                     break;
     case SELECTION:
-                    result =selectionStr;
+                    result = selectionStr;
                     break;
-    case FILE:		    
-    				result =fileStr;
-    				break;
+    case FILE:
+                    result = fileStr;
+                    break;
     case DIR:
-    				result = dirStr;
-    				break;
+                    result = dirStr;
+                    break;
     case UNDEFINED:
-                    result=undefStr;
+                    result = undefStr;
                     break;
   }
   return(result);

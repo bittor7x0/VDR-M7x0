@@ -25,12 +25,7 @@
 #include <vdr/interface.h>
 #include "menu-filebrowser.h"
 #include "commands.h"
-#ifdef FILEBROWSER_PLUGIN_BUILD
-#include "threads.h"
-#include "command-other.h"
-#endif
 #include "tools.h"
-#include "menu-accesscode.h"
 
 void cOsdItemFileEntry::UpdateText()
 {
@@ -68,7 +63,7 @@ bool cOsdItemFileEntry::IsDir()
 
   return stat64(Filename, &buf) == 0 && S_ISDIR(buf.st_mode);
 }
-    
+
 cOsdItemFileEntry::cOsdItemFileEntry(dirent64* DirectoryEntry, cString Directory, cFilebrowserStatebag* Statebag) : cOsdItem("")
 {
   Filename=(char*)malloc(strlen(Directory) + strlen(DirectoryEntry->d_name) + 2);
@@ -118,12 +113,12 @@ cOsdMenuFilebrowser::cOsdMenuFilebrowser(char* Directory, cFilebrowserStatebag* 
   {
     BaseDirectory=strdup("/");
   }
-  
+
   Task=taskBrowse;
 
   DestinationContainerCommand=NULL;
 
-  
+
 
   LoadDir(*(Statebag->CurrentDirectory) ? Statebag->CurrentDirectory : cString(BaseDirectory));
   UpdateHelp();
@@ -181,7 +176,7 @@ int cOsdMenuFilebrowser::DirectorySort(const void* File1, const void* File2)
 void cOsdMenuFilebrowser::LoadDir(cString Directory)
 {
   D(fprintf(stderr, "Current dir is %s, loading %s\n", *(Statebag->CurrentDirectory), *Directory));
-  
+
   char* CurrentFile=NULL;
   if(!*(Statebag->CurrentDirectory) || strcmp(Directory, "..") != 0)
   {
@@ -209,9 +204,9 @@ void cOsdMenuFilebrowser::LoadDir(cString Directory)
   }
 
   D(fprintf(stderr, "Current file is %s\n", CurrentFile ? CurrentFile : NULL));
-  
+
   Refresh(CurrentFile);
-  
+
   if(CurrentFile) free(CurrentFile);
 }
 
@@ -221,7 +216,7 @@ bool cOsdMenuFilebrowser::MatchesFilter(dirent64* Entry)
   {
     return false;
   }
-  
+
   return Entry->d_type==DT_DIR || !*Statebag->Filter || fnmatch(*Statebag->Filter, Entry->d_name, FNM_FILE_NAME | FNM_EXTMATCH) != FNM_NOMATCH;
 }
 
@@ -249,8 +244,8 @@ void cOsdMenuFilebrowser::Refresh(const char* CurrentFile)
   int count;
   if(chdir(Statebag->CurrentDirectory) == 0 && (count=scandir64(Statebag->CurrentDirectory, &entries, NULL, &cOsdMenuFilebrowser::DirectorySort)) > 0)
   {
-    
-    
+
+
     for(int i=0; i<count; i++)
     {
       if(strcmp(entries[i]->d_name, ".")==0 || (strcmp(entries[i]->d_name, "..")==0 && strcmp(Statebag->BaseDir, Statebag->CurrentDirectory)==0))
@@ -283,7 +278,7 @@ void cOsdMenuFilebrowser::Refresh(const char* CurrentFile)
     UpdateCommands(NULL, false, false);
     UpdateHelp();
   }
-  
+
   Display();
 }
 
@@ -377,19 +372,6 @@ eOSState cOsdMenuFilebrowser::ProcessKey(eKeys Key)
             LoadDir(cString(".."));
           }
         }
-#ifdef FILEBROWSER_PLUGIN_BUILD
-        else
-        {
-          for(cFilebrowserCommandContainer* i=ActualCommands->First(); i; i=i->Next())
-          {
-            if(dynamic_cast<cFilebrowserCommandOtherCommands*>(i->GetObject()))
-            {
-              ExecCommand=i->GetObject();
-              break;
-            }
-          }
-        }
-#endif
       break;
       case kBack:
         if(Statebag->CurrentFiles->Count() > 0)
@@ -402,13 +384,6 @@ eOSState cOsdMenuFilebrowser::ProcessKey(eKeys Key)
         }
       break;
       case kNone:
-#ifdef FILEBROWSER_PLUGIN_BUILD
-        if(Statebag->UpdateRequested)
-        {
-          Statebag->UpdateRequested=false;
-          Refresh(*cString(CurrentFilename()));
-        }
-#endif
       break;
       default:
         state=osUnknown;
@@ -424,26 +399,17 @@ eOSState cOsdMenuFilebrowser::ProcessKey(eKeys Key)
     }
     CloseSubMenu();
   }
-  else if(state==(eOSState)osFilebrowserAccessCodeOk)
-  {
-    if(ActualCommands->Count()>0)
-    {
-      ExecCommand=ActualCommands->Get(0)->GetObject();
-      D(fprintf(stderr, "Preparing for execution: %s\n", ExecCommand->GetName()));
-    }
-    CloseSubMenu();
-  }
 
   if(ExecCommand)
   {
     char* CurrentFile=CurrentFilename();
-    
+
     if(ExecCommand->UsesSelectedFiles() && Statebag->GetSelectedFiles()->Count()==0)
     {
       Statebag->GetSelectedFiles()->Add(new cStringContainer(strdup(CurrentFile)));
     }
-    
-    if(ExecCommand->UsesDestination() && Task!=taskSelectDestination && Task!=taskRequireAccessCode)
+
+    if(ExecCommand->UsesDestination() && Task!=taskSelectDestination)
     {
       Task=taskSelectDestination;
       SetTitle(tr("Select Destination"));
@@ -451,13 +417,6 @@ eOSState cOsdMenuFilebrowser::ProcessKey(eKeys Key)
       UpdateHelp();
       Display();
       state=ExecCommand->GetState();
-    }
-    else if (ExecCommand->GetAccessCode() && Task!=taskRequireAccessCode)
-    {
-      Task=taskRequireAccessCode;
-      ActualCommands->Clear();
-      ActualCommands->Add(new cFilebrowserCommandContainer(ExecCommand));
-      AddSubMenu(new cOsdMenuAccessCode(ExecCommand->GetAccessCode()));
     }
     else
     {
@@ -472,21 +431,7 @@ eOSState cOsdMenuFilebrowser::ProcessKey(eKeys Key)
       }
       if(Execute)
       {
-#ifdef FILEBROWSER_PLUGIN_BUILD
-        int ThreadCount=Statebag->GetThreads()->Count();
-#endif
         ExecCommand->Execute(this, NULL, CurrentFile);
-#ifdef FILEBROWSER_PLUGIN_BUILD
-        for(; ThreadCount < Statebag->GetThreads()->Count() && !ExecCommand->IsSynchronous(); ThreadCount++)
-        {
-          cCommandThread* Thread=Statebag->GetThreads()->Get(ThreadCount)->GetObject();
-          if(ExecCommand->ShowMenu())
-          {
-            AddSubMenu(Thread->GetMenu());
-          }
-          Thread->Start();
-        }
-#endif
         Task=ExecCommand->Task();
         if(ExecCommand->UsesSelectedFiles())
         {
@@ -507,7 +452,7 @@ eOSState cOsdMenuFilebrowser::ProcessKey(eKeys Key)
       }
     }
   }
-  
+
   return state;
 }
 
@@ -517,17 +462,17 @@ void cOsdMenuFilebrowser::OsdCurrentItem(const char *Text)
   {
     return;
   }
-  
+
   for(cOsdItem* i=First(); i!=NULL; i=cOsdMenu::Next(i))
   {
     if(!Text || strcmp(i->Text(), Text) == 0)
     {
       cOsdItemNewFileEntry* NewFileEntry=dynamic_cast<cOsdItemNewFileEntry*>(i);
-      
+
       UpdateCommands(((cOsdItemFileEntry*)i)->GetFilename(), NewFileEntry, NewFileEntry ? NewFileEntry->InEditMode() : false);
-      
+
       break;
-    }    
+    }
   }
 }
 
@@ -549,7 +494,7 @@ void cOsdMenuFilebrowser::UpdateCommands(const char* Filename, bool IsVirtualNew
   {
     Commands=Statebag->GetCommands();
   }
-      
+
   ActualCommands=new cFilebrowserCommands();
   for(cFilebrowserCommandContainer* i=Commands->First(); i; i=Commands->Next(i))
   {
@@ -569,10 +514,10 @@ void cOsdMenuFilebrowser::UpdateCommands(const char* Filename, bool IsVirtualNew
 
 void cOsdMenuFilebrowser::UpdateHelp()
 {
-  char* Red=NULL;
-  char* Green=NULL;
-  char* Yellow=NULL;
-  char* Blue=NULL;
+  const char* Red=NULL;
+  const char* Green=NULL;
+  const char* Yellow=NULL;
+  const char* Blue=NULL;
 
   int HelpPos=0;
 
@@ -623,7 +568,7 @@ char* cOsdMenuFilebrowser::CurrentFilename()
   {
     return NULL;
   }
-  
+
   if(dynamic_cast<cOsdItemFileEntry*>(Get(Current())))
   {
     return ((cOsdItemFileEntry*)Get(Current()))->GetFilename();
@@ -645,7 +590,7 @@ cOsdItemNewFileEntry::cOsdItemNewFileEntry(char* Value, cString Directory) : cMe
   Filename=NULL;
 
   strcpy(Name, Value);
-  
+
   this->Directory=strdup(*Directory);
 
   ProcessKey(kLeft);
