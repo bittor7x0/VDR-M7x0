@@ -1,0 +1,15 @@
+diff -Naur a/libc/sysdeps/linux/common/euidaccess.c b/libc/sysdeps/linux/common/euidaccess.c
+--- a/libc/sysdeps/linux/common/euidaccess.c	2016-02-01 16:40:56.000000000 +0100
++++ b/libc/sysdeps/linux/common/euidaccess.c	2016-02-27 13:47:23.302073047 +0100
+@@ -1,9 +1,11 @@
+ #include <unistd.h>
+ #include <fcntl.h>
+ 
++#ifdef __NR_faccessat
+ int euidaccess(const char *filename, int amode)
+ {
+ 	return faccessat(AT_FDCWD, filename, amode, AT_EACCESS);
+ }
+ 
+ weak_alias(euidaccess, eaccess);
++#endif
