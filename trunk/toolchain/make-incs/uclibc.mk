@@ -24,34 +24,62 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-# http://git.uclibc.org/uClibc/commit/?id=ca1c74d67dd115d059a875150e10b8560a9c35a8
-UCLIBC_VERSION := ca1c74d67dd115d059a875150e10b8560a9c35a8
+UCLIBC_IS_NG := n
 UCLIBC_IS_SNAPSHOT := y
 
 UCLIBC_O7OVERSION_H := o7o-toolchain-version.h
-UCLIBC_FILE := uClibc-$(UCLIBC_VERSION).tar.bz2
-UCLIBC_DLFILE := $(DOWNLOAD_DIR)/$(UCLIBC_FILE)
-UCLIBC_DIR := $(BUILD_DIR)/uClibc-$(UCLIBC_VERSION)
 
-ifeq ($(UCLIBC_IS_SNAPSHOT),y)
-UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc/snapshot/uclibc.config
-UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/snapshot
-UCLIBC_URL := http://git.uclibc.org/uClibc/snapshot/$(UCLIBC_FILE)
+ifeq ($(UCLIBC_IS_NG),y)
+  ifeq ($(UCLIBC_IS_SNAPSHOT),y)
+	# http://repo.or.cz/uclibc-ng.git/commit/c8d441345fb301e6f5aa828f217d377dbc4f252b
+	UCLIBC_VERSION := c8d4413
+	UCLIBC_VERSION_FULL := c8d441345fb301e6f5aa828f217d377dbc4f252b
+	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.gz
+	UCLIBC_DIR := $(BUILD_DIR)/uclibc-ng-$(UCLIBC_VERSION)
+	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/snapshot/uclibc-ng.config
+	UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc-ng/snapshot
+	UCLIBC_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_VERSION_FULL).tar.gz
+	UCLIBC_FILE_LIST += uclibc-ng-snapshot.lst
+  else
+	UCLIBC_VERSION := 1.0.12
+	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.bz2
+	UCLIBC_DIR := $(BUILD_DIR)/uClibc-ng-$(UCLIBC_VERSION)
+	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/$(UCLIBC_VERSION)/uclibc-ng.config
+	UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc-ng/$(UCLIBC_VERSION)
+	UCLIBC_URL := http://downloads.uclibc-ng.org/releases/$(UCLIBC_VERSION)/$(UCLIBC_FILE)
+	UCLIBC_FILE_LIST += uclibc-ng.lst
+  endif
 else
-UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc/$(UCLIBC_VERSION)/uclibc.config
-UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/$(UCLIBC_VERSION)
-UCLIBC_URL := http://www.uclibc.org/downloads/$(UCLIBC_FILE)
+  ifeq ($(UCLIBC_IS_SNAPSHOT),y)
+	# http://git.uclibc.org/uClibc/commit/?id=ca1c74d67dd115d059a875150e10b8560a9c35a8
+	UCLIBC_VERSION := ca1c74d67dd115d059a875150e10b8560a9c35a8
+	UCLIBC_FILE := uClibc-$(UCLIBC_VERSION).tar.gz
+	UCLIBC_DIR := $(BUILD_DIR)/uClibc-$(UCLIBC_VERSION)
+	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc/snapshot/uclibc.config
+	UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/snapshot
+	UCLIBC_URL := http://git.uclibc.org/uClibc/snapshot/$(UCLIBC_FILE)
+	UCLIBC_FILE_LIST += uclibc-snapshot.lst
+  else
+	UCLIBC_VERSION := 0.9.30.3
+	UCLIBC_FILE := uClibc-$(UCLIBC_VERSION).tar.bz2
+	UCLIBC_DIR := $(BUILD_DIR)/uClibc-$(UCLIBC_VERSION)
+	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc/$(UCLIBC_VERSION)/uclibc.config
+	UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc/$(UCLIBC_VERSION)
+	UCLIBC_URL := http://www.uclibc.org/downloads/$(UCLIBC_FILE)
+	UCLIBC_FILE_LIST += uclibc.lst
+  endif
 endif
+
+UCLIBC_DLFILE := $(DOWNLOAD_DIR)/$(UCLIBC_FILE)
 
 UCLIBC_PRE_ALL_GCC = $(UCLIBC_DLFILE) $(wildcard $(UCLIBC_PATCHES_DIR)/*.patch) $(UCLIBC_CONFIG) \
    $(STAGEFILES_DIR)/.uclibc_headers_installed
 UCLIBC_INSTALLED = $(STAGEFILES_DIR)/.uclibc_installed
 
-
 BASE_RULES_y += $(STAGEFILES_DIR)/.uclibc_utils_installed
 CLEAN_RULES += clean-uclibc
 DISTCLEAN_RULES += distclean-uclibc
-FILE_LISTS_y += uclibc.lst
+FILE_LISTS_y += $(UCLIBC_FILE_LIST)
 
 ifeq ($(CONFIG_UCLIBC_WITH_BACKTRACE),y)
 FILE_LISTS_y +=  uclibc-backtrace.lst
@@ -79,7 +107,11 @@ $(STAGEFILES_DIR)/.uclibc_unpacked: $(UCLIBC_DLFILE) \
                                     $(if $(CONFIG_CCACHE),$$(CCACHE_HOSTINSTALLED)) \
                                     $$(SSTRIP_HOSTINSTALLED)
 	-$(RM) -rf $(UCLIBC_DIR)
-	$(BZCAT) $(UCLIBC_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+ifeq ($(UCLIBC_IS_SNAPSHOT),y)
+	$(TAR) -C $(BUILD_DIR) -zf $(UCLIBC_DLFILE)
+else
+	$(TAR) -C $(BUILD_DIR) -jf $(UCLIBC_DLFILE)
+endif
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_unpacked
 
 #
@@ -193,8 +225,8 @@ $(STAGEFILES_DIR)/.uclibc_utils_installed: $$(GCC_INSTALLED) \
 		done)
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_utils_installed
 
-$(FILELIST_DIR)/uclibc.lst: $(STAGEFILES_DIR)/.uclibc_utils_installed
-	$(TOUCH) $(FILELIST_DIR)/uclibc.lst
+$(FILELIST_DIR)/$(UCLIBC_FILE_LIST): $(STAGEFILES_DIR)/.uclibc_utils_installed
+	$(TOUCH) $(FILELIST_DIR)/$(UCLIBC_FILE_LIST)
 
 .PHONY: clean-uclibc distclean-uclibc
 
