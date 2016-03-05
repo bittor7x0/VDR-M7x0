@@ -66,18 +66,6 @@ class cFilebrowserCommand
     virtual eOSState GetState() { return State; };
 };
 
-class cFilebrowserConfigCommand : public cFilebrowserCommand
-{
-  protected:
-    char* Command;
-  public:
-    cFilebrowserConfigCommand(cFilebrowserStatebag* Statebag);
-    ~cFilebrowserConfigCommand();
-    static cFilebrowserConfigCommand* Parse(char* Config, cFilebrowserStatebag* Statebag);
-    bool Execute(cOsdMenu* Menu, char* DestinationFile, char* CurrentFile);
-    char* GetCommand();
-};
-
 class cFilebrowserMarkCommand : public cFilebrowserCommand
 {
   public:

@@ -92,7 +92,7 @@ bool Sysconfig::LoadFile( const char*fname)
    FILE * fp = fopen(fname, "r");
 	debug("Load sysconf:[%s]",fname);
 
-   if( fp != NULL)
+   if(fp != NULL)
    {
      while( (line = readLine(fp)) != NULL)
      {
@@ -132,7 +132,7 @@ bool Sysconfig::SaveFile( )
    }
    else
     {
-     debug("Could not write file: [%s], errno=%d", _filename, errno);
+     error("Could not write file: [%s], errno=%d", _filename, errno);
      result=false;
     }
   return(result);
@@ -176,7 +176,7 @@ void Sysconfig::addLine(const char * line )
   {//Line with variable
     char *nam=NULL;
     char *val=NULL;
-    if( (nam =strtok((char*)line, "=")) != NULL &&
+    if( (nam=strtok((char*)line, "=")) != NULL &&
     	(val=strtok(NULL, "\0")) != NULL )
     {
 	  string value = val;

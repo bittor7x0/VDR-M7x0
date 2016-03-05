@@ -47,9 +47,6 @@ class cOsdMenuFilebrowser : public cOsdMenu, public cStatus
   friend class cFilebrowserMarkAllCommand;
   friend class cFilebrowserUnmarkCommand;
   friend class cFilebrowserUnmarkAllCommand;
-  friend class cFilebrowserCommandThreadList;
-  friend class cFilebrowserCommandSourcesList;
-  friend class cFilebrowserCommandOtherCommands;
   friend class cFilebrowserDestinationContainerCommand;
   friend class cFilebrowserDestinationAbortCommand;
   friend class cFilebrowserDestinationNewCommand;

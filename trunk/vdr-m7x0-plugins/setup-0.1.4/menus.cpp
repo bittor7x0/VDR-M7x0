@@ -98,7 +98,7 @@ MenuNode::Type MenuNode::GetType( )
  */
 Menu * MenuNode::GetMenu( )
 {
-  if( _objType == MENU || _objType == MENUSYSTEM)
+  if(_objType == MENU || _objType == MENUSYSTEM)
     return(_menu);
   else
     return(NULL);
@@ -110,7 +110,7 @@ Menu * MenuNode::GetMenu( )
  */
 MenuEntry * MenuNode::GetMenuEntry( )
 {
-  if( _objType == ENTRY)
+  if(_objType == ENTRY)
     return(_menuEntry);
   else
     return(NULL);
@@ -118,7 +118,7 @@ MenuEntry * MenuNode::GetMenuEntry( )
 
 int MenuNode::GetNr( )
 {
-  if( _objType == MENU)
+  if(_objType == MENU)
     return(_menu->GetNr());
   else
     return(_menuEntry->GetNr());
@@ -127,7 +127,7 @@ int MenuNode::GetNr( )
 
 MenuNode * MenuNode::GetNode( int index )
 {
-  if( _objType == MENU)
+  if(_objType == MENU)
     return(_menu->GetNode(index));
   else
     return(_menuEntry->GetNode(index));
@@ -142,16 +142,16 @@ const char * MenuNode::GetName( )
 {
   const char* result = NULL;
 
-  if( _menu != NULL)  result= _menu->GetName();
+  if(_menu != NULL)  result= _menu->GetName();
   else
-  if( _menuEntry != NULL)  result= _menuEntry->GetName();
+  if(_menuEntry != NULL)  result= _menuEntry->GetName();
 
   return(result);
 }
 
 void MenuNode::SetSysConfig( Sysconfig *sysconf )
 {
-  if( _objType == ENTRY)
+  if(_objType == ENTRY)
   {
      _menuEntry->SetSysConfig(sysconf);
   }
@@ -318,7 +318,7 @@ bool Menu::LoadXml( XMLNode * xmlNode )
 
            }
            else
-            if( strcmp(xmlNode->Value(), "entry")== 0)
+            if(strcmp(xmlNode->Value(), "entry")== 0)
             {
                 const char* help    = elem->Attribute("help");
                 MenuEntry * e = new MenuEntry();
@@ -640,8 +640,8 @@ bool MenuEntry::AddSelectionValues( XMLNode * node, const char*selection )
 {
     bool ok = true;
 
-    if( _setupCommand == NULL)
-        if( node != NULL && node->ToElement())
+    if(_setupCommand == NULL)
+        if(node != NULL && node->ToElement())
         {
             do
             {
@@ -865,7 +865,7 @@ void MenuEntryValueList::destroy( )
 
 MenuEntryValueList const &MenuEntryValueList::operator =(MenuEntryValueList const &right )
 {
- if( this != &right)
+ if(this != &right)
  {
    destroy();
    copy(right);
@@ -923,7 +923,7 @@ void MenuEntryValueList::SetSelection( const char * value )
 
   for(int i=0; i<_nr && found==false; i++)
   {
-    if( strcmp(_values[i], value)== 0)
+    if(strcmp(_values[i], value)== 0)
     {
       _selection =i;
       found=true;

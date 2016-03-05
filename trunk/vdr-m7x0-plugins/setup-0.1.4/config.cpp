@@ -26,7 +26,7 @@ using namespace tinyxml2;
  */
 Config::Config(char *fname)
 {
-  debug("Load file: [%s]",fname);
+  info("Load file: [%s]",fname);
 
   // Init sysconfig values
   _filename  	 = Util::Strdupnew(fname);
@@ -57,9 +57,9 @@ bool Config::LoadFile()
   XMLElement *root;
 
   //Load XML Config file
-  if( (ok = _xmlDoc.LoadFile(_filename) == XML_NO_ERROR))
+  if((ok = _xmlDoc.LoadFile(_filename) == XML_NO_ERROR))
   {
-    if( (root = _xmlDoc.FirstChildElement("setup")) != NULL)
+    if((root = _xmlDoc.FirstChildElement("setup")) != NULL)
     {
         //get plugin path from env
         char *line = NULL;
@@ -81,31 +81,31 @@ bool Config::LoadFile()
 		}else{
 			error("Error while opening pipe! Execute '%s' faild! Could not find plugin path", tmp);
 		}
-		debug("We found plugin path: %s", _libDir);
+		info("We found plugin path: %s", _libDir);
 
 		//read sysconfig
 		//excecute pre sysconfig command
   		ok = system(_sysconfigPre);
-  		if( ok == 0) {//Load sysconfig
+  		if(ok == 0) {//Load sysconfig
   			if ((ok=_sysconfig.LoadFile(_sysconfigFile)) != true){
-  					debug("Could not load sysconfig: [%s]",_sysconfigFile);
+  					error("Could not load sysconfig: [%s]",_sysconfigFile);
   			}
   	  } else{
           error("Could not execute sysconfigPre: [%s], errno=%d", _sysconfigPre, ok);
   		}
 
         root=root->FirstChildElement();
-        if( root!= NULL &&
+        if(root!= NULL &&
             strcmp(root->Value(), "plugins")==0)
         {
           _activePlugins.SetProtectedList(root->Attribute("protected"));
           const char* nameSysconfig = root->Attribute("sysconfig");
 
-          if( nameSysconfig != NULL )
+          if(nameSysconfig != NULL)
           {
            _activePlugins.SetSysconfigName(nameSysconfig);
            debug("SysPlugin [%s]",nameSysconfig);
-           if( ok=loadPlugins(root->FirstChildElement())) //Load Plugins
+           if(ok=loadPlugins(root->FirstChildElement())) //Load Plugins
            {
               ok = _menus.LoadXml(root->NextSiblingElement("menus"));//Load Menus
            }
@@ -264,12 +264,12 @@ bool Config::readVdrLibDir(const char* libDir)
   debug("config:ReadVdrLib %s",libDir);
   //accept only dynamic Link libs with the current vdr version
   asprintf(&suffix, ".so.%s", APIVERSION);
-  if( dir !=NULL)
+  if(dir !=NULL)
   {
     while( (entry=readdir(dir))!=NULL)
     {
       debug("Plugin en directorio[%s]\n",entry->d_name +7);
-      if( strncmp(entry->d_name, prefix,7)==0  &&
+      if(strncmp(entry->d_name, prefix,7)==0  &&
           (tmp=strstr(entry->d_name, suffix))!= NULL)
         {
           tmp[0]='\0';
@@ -282,11 +282,11 @@ bool Config::readVdrLibDir(const char* libDir)
   }
   else
   {
-    debug("Could not read directory: [%s]", _libDir);
+    error("Could not read directory: [%s]", _libDir);
     ok = false;
   }
 
-  if( suffix != NULL) free(suffix);
+  if(suffix != NULL) free(suffix);
   return(ok);
 }
 
@@ -308,7 +308,7 @@ bool Config::readVdrLib()
   {
     Plugin *p=  _activePlugins.Get(i);
 
-    if( p != NULL && p->GetInSystem()==false)
+    if(p != NULL && p->GetInSystem()==false)
     {
       _activePlugins.Del(p, false);
       _notInSystemPlugins.Add(p);

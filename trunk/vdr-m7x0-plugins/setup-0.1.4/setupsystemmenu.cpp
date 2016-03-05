@@ -31,12 +31,12 @@ cSetupSystemMenu::~cSetupSystemMenu()
 cOsdMenu *cSetupSystemMenu::GetSystemMenu(const char *sysCommand, Config  *config)
 {
  cOsdMenu *menu=NULL;
- if( sysCommand != NULL)
+ if(sysCommand != NULL)
  {
-    if( strcmp(sysCommand, "ActPlugins") == 0)
+    if(strcmp(sysCommand, "ActPlugins") == 0)
         menu =new cSetupPluginMenu(config);
     else
-      debug("<menu System=%s> not known", sysCommand);
+      error("<menu System=%s> not known", sysCommand);
   }
   return (menu);
 }

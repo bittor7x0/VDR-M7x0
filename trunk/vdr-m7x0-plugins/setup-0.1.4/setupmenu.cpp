@@ -46,13 +46,12 @@ cSetupPluginMenu::~cSetupPluginMenu()
  */
 void cSetupPluginMenu::Set( )
 {
-
   int current = Current();
 
   Clear();
   for(int i=0; i<_plugins->GetNr(); i++)
   {
-debug("===> %s",_plugins->Get(i)->GetInfo());
+    debug("===> %s",_plugins->Get(i)->GetInfo());
     if(_plugins->Get(i)->GetProtect())
     {
         char *title = NULL;
@@ -64,11 +63,11 @@ debug("===> %s",_plugins->Get(i)->GetInfo());
     else
        Add(new cMenuEditBoolItem(_plugins->Get(i)->GetInfo(), _plugins->Get(i)->GetActiveRef(), tr(STR_NO), tr(STR_YES)));
   }
-  if( current == -1 && _plugins->GetNr() >0)
+  if(current == -1 && _plugins->GetNr() >0)
     current=0;
 
   SetCurrent(Get(current));
-  if( _moveMode)
+  if(_moveMode)
     SetHelp(tr("PageUp"),  tr("PageDown"), tr("Before"), tr("After"));
   else
     SetHelp(tr("PageUp"),  tr("PageDown"), tr("Parameter"), tr("Move"));
@@ -91,7 +90,6 @@ eOSState cSetupPluginMenu::ProcessKey( eKeys Key )
                         debug("save1");
                         return osBack;
                         break;
-
             case kRed:   PageUp();
                          Set();
                          break;
@@ -150,7 +148,7 @@ void cSetupPluginParameter::Set( )
 {
   const char *param = _plugin->GetParameter();
   Clear();
-  if( param == NULL)
+  if(param == NULL)
     _editParameter[0]='\0';
   else
   {
@@ -205,7 +203,7 @@ cSetupGenericMenu::cSetupGenericMenu(const char *title, MenuNode *node, Config  
   SetCols(25);
 
 
-  if( _node != NULL)
+  if(_node != NULL)
     Set();
 }
 
@@ -253,7 +251,7 @@ void cSetupGenericMenu::Set( )
              break;
         case Util::SELECTION:
         {
-              if(  e->GetNrOfSelectionValues() != 0 )
+              if( e->GetNrOfSelectionValues() != 0 )
                 Add(new cMenuEditStraItem(e->GetName(), e->GetReferenceSelection(),
                                        e->GetNrOfSelectionValues(),
                                        e->GetSelectionValues()) );
@@ -401,7 +399,7 @@ if (load) {
 		loaded=1;
 		break;
 	  }else if (_config != NULL) {
-		debug("cSetupMenu.constr: error loading config file");
+		error("cSetupMenu.constr: error loading config file");
 		delete _config;
 	  }
       lang = strtok(NULL,",");
@@ -432,7 +430,7 @@ if (load) {
   }
   else
   {//Error loading config file
-  debug("cSetupMenu.constr: error loading config file");
+    error("cSetupMenu.constr: error loading config file");
     SetStatus(tr("Error in configuration files"));
     _error = true;
   }
@@ -528,7 +526,7 @@ eOSState cSetupMenu::StandardProcessKey( eKeys Key )
                         return osContinue;
                       break;
             case kBlue:  //Reeboot Linux
-                        if (Interface->Confirm(cRecordControls::Active() ? tr("Recording - restart anyway?") : tr("Really reboot?")))
+                        if (Interface->Confirm(cRecordControls::Active() ? tr("Recording - restart anyway?") : tr("Really restart?")))
                         {
                           cThread::EmergencyExit(true);
                           system(_config->GetBootLinux());
@@ -539,9 +537,10 @@ eOSState cSetupMenu::StandardProcessKey( eKeys Key )
             case kNone:
                       break;
 
-              default :if( node!= NULL)
+              default:
+              if(node!= NULL)
               {
-                if( node->GetType() == MenuNode::ENTRY)
+                if(node->GetType() == MenuNode::ENTRY)
                 {
                   SetStatus( node->GetMenuEntry()->GetHelp());
                   SetHelp(NULL, NULL,  tr("Restart VDR"), tr("Reboot"));
