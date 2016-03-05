@@ -5,9 +5,12 @@ RESOLV_CONF="resolv.conf"
 
 #Default options
 CONF_DIR=.
-CONF_FILES="rc.local.conf rc.conf $RESOLV_CONF"
+CONF_FILES="rc.local.conf rc.conf"
 OPTION=
 DATA_FILE=/tmp/conf.tmp
+
+# Pro firmware
+[ -f /etc/$RESOLV_CONF ] && CONF_FILES="$CONF_FILES $RESOLV_CONF"
 
 GREP_CMD=/bin/grep
 SED_CMD=/bin/sed
@@ -27,7 +30,7 @@ write_resolv()
 	Y=0
 	while read line
 	do
-          if [ "$X" != "$Y" ] && [ `echo $line | $GREP_CMD -c "^nameserver"` -eq 1 ] ; then 
+          if [ "$X" != "$Y" ] && [ `echo $line | $GREP_CMD -c "^nameserver"` -eq 1 ] ; then
             eval address="\$IP_$Y"
             echo "nameserver ${address}" >> $1.tmp
             Y=$((${Y} + 1))
@@ -76,7 +79,7 @@ done
 if [ "$OPTION" = "-w" ] ; then
   for f in `echo $CONF_FILES` ; do
     if [ "$f" = $RESOLV_CONF ] ; then
-      [ -f $CONF_DIR/$f ] && write_resolv $CONF_DIR/$f $f
+      write_resolv $CONF_DIR/$f $f
     else
       #Delete file
       `cat /dev/null > $CONF_DIR/$f`
@@ -90,7 +93,7 @@ else
 
     for f in `echo $CONF_FILES` ; do
       if [ "$f" = $RESOLV_CONF ] ; then
-        [ -f $CONF_DIR/$f ] && read_resolv $CONF_DIR/$f $f
+        read_resolv $CONF_DIR/$f $f
       else
         `$GREP_CMD "^[^#].*=" $CONF_DIR/$f | $SED_CMD -e "s/^/$f--/" -e "s/#.*$//" >> $DATA_FILE`
       fi
