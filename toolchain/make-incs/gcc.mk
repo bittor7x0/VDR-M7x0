@@ -27,15 +27,17 @@
 GCC_IS_SNAPSHOT := n
 
 ifeq ($(GCC_IS_SNAPSHOT),y)
-GCC_VERSION := 6-20160110
-GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
-GCC_URL := http://www.mirrorservice.org/sites/sourceware.org/pub/gcc/snapshots/$(GCC_VERSION)/$(GCC_FILE)
-GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/snapshot
+  GCC_VERSION := 6-20160110
+  GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
+  GCC_URL := http://www.mirrorservice.org/sites/sourceware.org/pub/gcc/snapshots/$(GCC_VERSION)/$(GCC_FILE)
+  GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/snapshot
+  GCC_FILE_LIST += gcc-snapshot.lst
 else
-GCC_VERSION := 5.3.0
-GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
-GCC_URL := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE)
-GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
+  GCC_VERSION := 5.3.0
+  GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
+  GCC_URL := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE)
+  GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
+  GCC_FILE_LIST += gcc.lst
 endif
 
 GCC_DLFILE := $(DOWNLOAD_DIR)/$(GCC_FILE)
@@ -52,7 +54,7 @@ GCC_INSTALLED = $(STAGEFILES_DIR)/.gcc_installed
 BASE_RULES_y += $(GCC_INSTALLED)
 CLEAN_RULES += clean-gcc
 DISTCLEAN_RULES += distclean-gcc
-FILE_LISTS_y += gcc.lst
+FILE_LISTS_y += $(GCC_FILE_LIST)
 
 #
 # download gcc
@@ -253,8 +255,8 @@ $(STAGEFILES_DIR)/.gcc_installed: $(STAGEFILES_DIR)/.gcc_compiled
 	$(CP) -Pp '$(PREFIX)/$(UCLIBC_TARGET)/lib/lib'* '$(TARGET_ROOT)/lib'
 	$(TOUCH) $(STAGEFILES_DIR)/.gcc_installed
 
-$(FILELIST_DIR)/gcc.lst: $(STAGEFILES_DIR)/.gcc_installed
-	$(TOUCH) $(FILELIST_DIR)/gcc.lst
+$(FILELIST_DIR)/$(GCC_FILE_LIST): $(STAGEFILES_DIR)/.gcc_installed
+	$(TOUCH) $(FILELIST_DIR)/$(GCC_FILE_LIST)
 
 .PHONY: clean-gcc distclean-gcc
 
