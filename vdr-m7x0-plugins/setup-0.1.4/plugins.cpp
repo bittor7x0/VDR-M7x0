@@ -80,16 +80,16 @@ void Plugins::MovePlugin( int index, int toindex, enum Where where)
        toindex<0 || toindex > nr)
         return;
 
-    if( index > toindex)
+    if(index > toindex)
     {
-       if( where == BEHIND)
+       if(where == BEHIND)
          toindex++;
        Move(index, toindex);
     }
     else
-     if( index <toindex)
+     if(index <toindex)
      {
-       if( where == BEFORE)
+       if(where == BEFORE)
          toindex--;
        Move(index, toindex);
      }
@@ -388,7 +388,7 @@ const char * Plugins::GetActivePlugins( )
   buf[iLen+1] = '\0';
   buf[iLen] = '"';
 
-  if( _activePlugins != NULL)
+  if(_activePlugins != NULL)
     delete [] _activePlugins;
 
   _activePlugins = new char[iLen+2];
@@ -404,7 +404,7 @@ const char * Plugins::GetActivePlugins( )
 void Plugins::SetLibDirPlugin( const char * pluginName )
 {
   Plugin *p =GetPluginByName(pluginName);
-  if( p != NULL)
+  if(p != NULL)
   {
     p->SetInSystem(true);
     debug("In System plugin [%s]\n",pluginName);
@@ -429,7 +429,7 @@ Plugin * Plugins::GetPluginByName( const char * name )
 
   for(int i=0; i<nr && p==NULL; i++)
   {
-   if( strcmp(Get(i)->GetName(),name)==0) {
+   if(strcmp(Get(i)->GetName(),name)==0) {
       p= Get(i);
    }
   }

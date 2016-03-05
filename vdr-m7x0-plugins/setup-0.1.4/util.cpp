@@ -60,7 +60,7 @@ char * Util::Strdupnew( const char  *str )
 char * Util::Strdupnew( const char  *str, int size )
 {
   char * result = NULL;
-  if( str != NULL)
+  if(str != NULL)
   {
     result = strncpy(new char[size+1],str, size);
     result[size] = '\0';
@@ -75,7 +75,7 @@ char * Util::Strdupnew( const char  *prefix, const char  *str )
 {
   char *newStr = NULL;
 
-  if( str != NULL && prefix != NULL)
+  if(str != NULL && prefix != NULL)
   {
     int len = strlen(prefix) +strlen(str);
     newStr = new char[(len+1)];
@@ -95,7 +95,7 @@ bool Util::isBool( const char * string, bool & flag )
 {
   bool ok=true;
 
-  if( string != NULL)
+  if(string != NULL)
   {
     if(strcmp(string , trueStr) == 0 ||
        strcmp(string , yesStr)  == 0)
@@ -111,7 +111,7 @@ bool Util::isBool( const char * string, bool & flag )
     ok = false;
 
   if(! ok)
-    debug("Illegal Bool value %s found", string);
+    error("Illegal Bool value %s found", string);
 
   return(ok);
 }
@@ -123,7 +123,7 @@ bool Util::isBool( const char * string, int & flag )
 
   if(isBool(string, boolVal))
   {
-    if( boolVal)
+    if(boolVal)
       flag=true;
     else
       flag=false;
@@ -145,7 +145,7 @@ bool Util::isType( const char * string, Util::Type & type )
 {
   bool ok=true;
 
-  if( string != NULL)
+  if(string != NULL)
   {
     if(strcmp(string , boolStr) == 0)
       type = Util::BOOL;
@@ -194,7 +194,7 @@ bool Util::isNumber( const char * string, int & number )
   bool ok = true;
   number = 0;
 
-  if( string != NULL)
+  if(string != NULL)
   {
     int len = strlen(string);
     for(int i=0; i<len && ok==true; i++)
@@ -219,7 +219,7 @@ const char * Util::boolToStr( bool val )
 {
   const char * result;
 
-  if( val == true)
+  if(val == true)
     result = yesStr;
   else
     result = noStr;
