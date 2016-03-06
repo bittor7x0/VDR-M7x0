@@ -15,9 +15,6 @@
 
 // --- cCuttingThread --------------------------------------------------------
 
-#ifndef CUTTER_PRIORITY
-#  define CUTTER_PRIORITY sched_get_priority_min(SCHED_OTHER)
-#endif
 #define CUTTER_TIMESLICE   100   // ms
 
 class cCuttingThread : public cThread {
@@ -73,16 +70,6 @@ cCuttingThread::~cCuttingThread()
 
 void cCuttingThread::Action(void)
 {
-  {
-    sched_param tmp;
-    tmp.sched_priority = CUTTER_PRIORITY;
-    if(!pthread_setschedparam(pthread_self(), SCHED_OTHER, &tmp))
-      printf("cCuttingThread::Action: cant set priority\n");
-  }
-
-  int __attribute__((unused)) burst_size = MEGABYTE(Setup.CutterMaxBandwidth) * CUTTER_TIMESLICE / 1000; // max bytes/timeslice 
-  cTimeMs __attribute__((unused)) t;
-
   cMark *Mark = fromMarks.First();
   if (Mark) {
      SetPriority(19);
@@ -105,6 +92,8 @@ void cCuttingThread::Action(void)
      bool LastMark = false;
      bool cutIn = true;
      int bytes = 0;
+     int burst_size = MEGABYTE(Setup.CutterMaxBandwidth) * CUTTER_TIMESLICE / 1000; // max bytes/timeslice
+     cTimeMs t;
      while (Running()) {
            uint16_t FileNumber;
            off_t FileOffset;
