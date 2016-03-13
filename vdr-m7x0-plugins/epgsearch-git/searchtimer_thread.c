@@ -359,7 +359,7 @@ void cSearchTimerThread::Action(void)
                       && (t->Aux() != NULL && strcmp(t->Aux(), Summary) == 0)
                      )
                   { // dir, title, episode name and summary have not changed
-                     if (Summary) free(Summary);
+                     free(Summary);
                      delete timer;
                      free(pFile);
                      continue;
@@ -813,8 +813,8 @@ void cSearchTimerThread::CheckExpiredRecs()
       cSearchExt* search = SearchExts.GetSearchFromID(atoi(searchID));
       if (!search || strcmp(search->search, searchName) != 0)
       {
-         if (searchID) free(searchID);
-         if (searchName) free(searchName);
+         free(searchID);
+         free(searchName);
          continue;
       }
       free(searchID);
@@ -995,7 +995,7 @@ void cSearchTimerThread::CheckManualTimers()
             else
                LogFile.Log(1,"ooops - no events found touching manual timer %d", ti->Index()+1);
          }
-         if (updateMethod) free(updateMethod);
+         free(updateMethod);
       }
    }
    LogFile.Log(1, "manual timer check finished");

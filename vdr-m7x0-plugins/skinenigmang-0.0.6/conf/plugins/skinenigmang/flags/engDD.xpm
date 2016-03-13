@@ -1,5 +1,5 @@
 /* XPM */
-static char * engDD_xpm[] = {
+static const char *const engDD_xpm[] = {
 "27 18 4 1",
 " 	c #000000",
 ".	c #000066",

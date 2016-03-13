@@ -1,5 +1,5 @@
 /* XPM */
-static char * tabline_xpm[] = {
+static const char *const tabline_xpm[] = {
 "1 27 15 1",
 " 	c #006795",
 ".	c #005073",

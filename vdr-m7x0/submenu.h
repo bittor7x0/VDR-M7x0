@@ -54,8 +54,8 @@ class cSubMenu
 		void SaveInfoSubMenu(void);
 		int GetByLevel(int Level, int curr);
 		int GetByLevel(int Level);
-	        void CreateItem(int type,int position,int where,char *Name="");
-	        void DeleteItem(int position,int kindItem=-1);
+		void CreateItem(int type,int position,int where,const char *Name="");
+		void DeleteItem(int position,int kindItem=-1);
 		void InsertItem(int position);
 		void Dump(void);
 };

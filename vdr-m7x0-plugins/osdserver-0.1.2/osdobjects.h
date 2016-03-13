@@ -56,12 +56,12 @@ class cOsdServerMenu : public cShadowObjectTemplate<cOsdMenu>, public cOpenOsd::
         }        
 
         // Make some protected stuff public
-        cOsdMenu::SetTitle;
-        cOsdMenu::SetCurrent;
-        cOsdMenu::SetCols;
-        cOsdMenu::Del;
-        cOsdMenu::HasSubMenu;
-        cOsdMenu::CloseSubMenu;
+        using cOsdMenu::SetTitle;
+        using cOsdMenu::SetCurrent;
+        using cOsdMenu::SetCols;
+        using cOsdMenu::Del;
+        using cOsdMenu::HasSubMenu;
+        using cOsdMenu::CloseSubMenu;
     };
     friend class cPrivateMenu;
     friend class cPrivate;

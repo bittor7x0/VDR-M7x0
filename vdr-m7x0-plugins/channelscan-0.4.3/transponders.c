@@ -13,8 +13,11 @@
 
 #define SAT_TPL "Sat.tpl"
 
+#ifdef DEBUG_CHANNELSCAN
 #define DEBUG_TRANSPONDER(format, args...) printf (format, ## args)
-//#define DEBUG_TRANSPONDER(format, args...)
+#else
+#define DEBUG_TRANSPONDER(format, args...)
+#endif
 
 using std::cerr;
 using std::endl;
@@ -87,15 +90,14 @@ cTransponder::cTransponder(int Frequency)
 int cTransponder::IntToFec(int val)
 {
    switch (val) {
-     int fec;
-     case 12: return fec = FEC_1_2;
-     case 23: return fec = FEC_2_3;
-     case 34: return fec = FEC_3_4;
-     case 45: return fec = FEC_4_5;
-     case 56: return fec = FEC_5_6;
-     case 67: return fec = FEC_6_7;
-     case 78: return fec = FEC_7_8;
-     default : return fec = FEC_AUTO;
+     case 12: return FEC_1_2;
+     case 23: return FEC_2_3;
+     case 34: return FEC_3_4;
+     case 45: return FEC_4_5;
+     case 56: return FEC_5_6;
+     case 67: return FEC_6_7;
+     case 78: return FEC_7_8;
+     default: return FEC_AUTO;
    }
    return FEC_NONE;
 }
@@ -353,7 +355,9 @@ bool cTransponders::LoadNitTransponder(int Source)
 
   fileName_ = TplFileName(0);
 
+#ifdef DEBUG_CHANNELSCAN
   printf (" load filename   %s  \n", fileName_.c_str()); 
+#endif
 
   ifstream tpStream(fileName_.c_str());
   position_ = *cSource::ToString(Source);
@@ -391,17 +395,23 @@ bool cTransponders::LoadNitTransponder(int Source)
        // second entry  
        if (found == lc-1)
        {
+#ifdef DEBUG_CHANNELSCAN
           printf (" \033[0;48m  found second entry at line %d: %s \033[0m\n",lc, l.c_str());
+#endif
           cSatTransponder *t = new cSatTransponder();
           if (t->Parse(l)) {
+#ifdef DEBUG_CHANNELSCAN
               printf ("\033[0;44m DEBUG [transponders]: add : %d  \033[0m \n", t->Frequency());
+#endif
               v_tp_.push_back(t);
           }
        }
        else 
        {
           found = lc;
+#ifdef DEBUG_CHANNELSCAN
           printf (" \033[0;43m  found first entry at line %d: %s\033[0m\n",lc, l.c_str());
+#endif
           nitStartTransponder_.reset(new cSatTransponder);
           nitStartTransponder_->Parse(l);
        }
@@ -560,11 +570,8 @@ string cTransponders::TplFileName(int satCodec)
 
 void cTransponders::Clear()
 {
-//   printf (" %s  %s\n", __FILE__, __PRETTY_FUNCTION__);  
    for (TpIter iter = v_tp_.begin(); iter != v_tp_.end(); ++iter)
    {
-  //    printf (" delete object    f: %d \n", (*iter)->Frequency());
-      //if ((*iter) != NULL) printf (" object  not deleted !!!!  f: %d \n", (*iter)->Frequency());
       delete *iter;
       *iter = NULL;
    }

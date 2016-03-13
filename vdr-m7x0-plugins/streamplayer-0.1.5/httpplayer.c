@@ -404,7 +404,7 @@ char* cStreamPlayerHTTP::GetStatus() {
 	int bps=0;
 	int buffered=0;
 	cFilterHTTPHeader::eState httpstate;
-	char *activity="........";
+	const char *activity="........";
 
 	if (Src==NULL) {
 		return NULL;

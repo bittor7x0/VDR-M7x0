@@ -1,5 +1,5 @@
 /* XPM */
-static char * c_top_xpm[] = {
+static const char *const c_top_xpm[] = {
 "215 30 135 2",
 "  	c #FFFFFF",
 ". 	c #FFFEFE",

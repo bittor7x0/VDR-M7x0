@@ -29,7 +29,7 @@ void cAidePlayer::Activate(bool On)
 				sp.iFrame = (char *)malloc(st.st_size);
 				sp.size = st.st_size;	
 				if(sp.iFrame) {
-					ssize_t nRead = read(filefd, sp.iFrame, sp.size);
+					read(filefd, sp.iFrame, sp.size);
 					uchar *buffer;
 					buffer = (uchar *) sp.iFrame;
 					//for (int i = 1; i <= 25; ++i)

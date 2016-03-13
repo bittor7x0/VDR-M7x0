@@ -1,5 +1,5 @@
 /* XPM */
-static char * catMONO_xpm[] = {
+static const char *const catMONO_xpm[] = {
 "27 18 5 1",
 " 	c None",
 ".	c #F9FC00",

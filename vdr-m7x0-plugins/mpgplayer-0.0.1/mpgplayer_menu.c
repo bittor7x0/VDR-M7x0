@@ -37,7 +37,7 @@ void cMpgMenuRecording::Display(void)
 }
 eOSState cMpgMenuRecording::ProcessKey(eKeys Key)
 {
-  switch (Key) {
+  switch (int(Key)) {
     case kUp|k_Repeat:
     case kUp:
     case kDown|k_Repeat:
@@ -765,7 +765,7 @@ eOSState cMpgReplayControl::ProcessKey(eKeys Key)
      }
   bool DoShowMode = true;
   if (!Setup.LRForwardRewind || (Setup.LRForwardRewind == 1 && !visible)) {
-    switch (Key) {
+    switch (int(Key)) {
       // Left/Right volume control
       case kLeft|k_Repeat:
       case kLeft:
@@ -778,7 +778,7 @@ eOSState cMpgReplayControl::ProcessKey(eKeys Key)
         break;
     }
   }
-  switch (Key) {
+  switch (int(Key)) {
     // Positioning:
     case kPlay:
     case kUp:      Play(); break;
@@ -811,7 +811,7 @@ eOSState cMpgReplayControl::ProcessKey(eKeys Key)
                    return osEnd;
     default: {
       DoShowMode = false;
-      switch (Key) {
+      switch (int(Key)) {
         // Editing:
         case kMarkToggle:      MarkToggle(); break;
         case kPrev|k_Repeat:

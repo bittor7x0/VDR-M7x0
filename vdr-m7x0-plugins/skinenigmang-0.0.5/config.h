@@ -76,8 +76,8 @@ struct FontInfo
 struct FontConfig
 {
   int Id;
-  char *KeyId;
-  char *KeyName;
+  const char *KeyId;
+  const char *KeyName;
 };
 
 extern FontConfig allFontConfig[FONT_NUMFONTS];

@@ -1,5 +1,5 @@
 /* XPM */
-static char * dutMONO_xpm[] = {
+static const char *const dutMONO_xpm[] = {
 "27 18 4 1",
 " 	c #000000",
 ".	c #012A87",

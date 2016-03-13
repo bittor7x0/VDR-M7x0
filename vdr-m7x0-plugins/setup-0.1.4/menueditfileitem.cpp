@@ -39,7 +39,7 @@ bool cOsdMenuFilebrowserSetup::MatchesFilter(dirent64* Entry)
   return cOsdMenuFilebrowser::MatchesFilter(Entry);
 }
 
-cOsdMenuFilebrowserSetup* cOsdMenuFilebrowserSetup::CreateFilebrowser(char* BaseDir,MenuEntry *e) {
+cOsdMenuFilebrowserSetup* cOsdMenuFilebrowserSetup::CreateFilebrowser(const char* BaseDir,MenuEntry *e) {
 	cFilebrowserStatebag* Statebag = new cFilebrowserStatebag();
 	//Set some flags
 	Statebag->ShowHiddenFiles = false;
@@ -48,7 +48,7 @@ cOsdMenuFilebrowserSetup* cOsdMenuFilebrowserSetup::CreateFilebrowser(char* Base
 	strcpy(Statebag->BaseDir, BaseDir);	
 	return new cOsdMenuFilebrowserSetup(DEFAULT_PATH,Statebag,e,false);
 }
-cOsdMenuFilebrowserSetup* cOsdMenuFilebrowserSetup::CreateDirectorybrowser(char* BaseDir,MenuEntry *e) {
+cOsdMenuFilebrowserSetup* cOsdMenuFilebrowserSetup::CreateDirectorybrowser(const char* BaseDir,MenuEntry *e) {
 	cFilebrowserStatebag* Statebag = new cFilebrowserStatebag();
 	//Set some flags
 	Statebag->ShowHiddenFiles = false;

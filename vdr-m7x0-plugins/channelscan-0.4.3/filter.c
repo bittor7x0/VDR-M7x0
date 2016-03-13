@@ -309,7 +309,6 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
     if (Tid == 0x00) {
       for (int i=0; i<MAXFILTERS; i++) {
         if (pmtPid[i] && (time(NULL) - lastPmtScan[i]) > FILTERTIMEOUT) {
-          // x printf("Del %i as %i\n", pmtPid[i], i); ///DBG
           Del(pmtPid[i], 0x02);
           pmtPid[i] =0; // Note for recycling, but do not remove from feed
           pSid[pSidCnt++]=Sids[i];
@@ -358,7 +357,6 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
             pmtPid[Index] = assoc.getPid();
             Sids[Index] = xSid;
             lastPmtScan[Index] = time(NULL);
-//            printf("ADD %i as %i, Sid %i\n",pmtPid[Index],Index,xSid);
             Add(pmtPid[Index], 0x02);
             pSid[pSidCnt++]=xSid;
           }
@@ -407,8 +405,6 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
         int NumApids = 0;
         int NumDpids = 0;
         for (SI::Loop::Iterator it; pmt.streamLoop.getNext(stream, it); ) {
-            //  printf("sid: %5d pid %5d str_t%2X \n", pmt.getServiceId(), stream.getPid(), stream.getStreamType());
-
             switch (stream.getStreamType()) {
               case 1: // STREAMTYPE_11172_VIDEO
               case 2: // STREAMTYPE_13818_VIDEO
@@ -484,11 +480,9 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                 }
             }
         Channel->SetPids(Vpid, Vpid ? Ppid : 0, Apids, ALangs, Dpids, DLangs, Tpid, Vtype, DPpids);
-        //printf("#### %i %s %i %i SID  %i\n",num,Channel->Name(),Vpid, Apids[0], Channel->Sid());
         Channel->SetCaIds(CaDescriptors->CaIds());
         Channel->SetCaDescriptors(CaDescriptorHandler.AddCaDescriptors(CaDescriptors));
 
-  //printf("Del %i as %i\n", pmtPid[Index], Index);
   Del(pmtPid[Index], 0x02);
   pmtPid[Index]=0;
 
@@ -503,7 +497,6 @@ void PatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
      Channels.Unlock();
      }
   if (sdtfinished && num>=sdtFilter->numUsefulSid) {
-      //printf("#### num %i sid %i  EOS \n", num,sdtFilter->numSid);
       endofScan=true;
   }
 }
@@ -561,9 +554,6 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                     char NameBufDeb[1024];
                     char ShortNameBufDeb[1024];
                  sd->serviceName.getText(NameBufDeb, ShortNameBufDeb, sizeof(NameBufDeb), sizeof(ShortNameBufDeb));
-                 // printf(" %s --  ServiceType: %X: AddServiceType %d, Sid %i, running %i\n",
-                 // NameBufDeb, sd->getServiceType(), AddServiceType, SiSdtService.getServiceId(), SiSdtService.getRunningStatus());
-
                  switch (sd->getServiceType()) {
                    case 0x01: // digital television service
                    case 0x02: // digital radio sound service
@@ -576,14 +566,18 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                         {
                         // Add only radio 
                           if ((sd->getServiceType()==1 || sd->getServiceType()==0x11 || sd->getServiceType()==0x19 || sd->getServiceType()==0xC3) && AddServiceType == 1) 
-                          { 
+                          {
+#ifdef DEBUG_CHANNELSCAN
                              printf(" Add nur Radio  aber nur TV Sender gefunden  SID skip %d \n",sd->getServiceType());  
+#endif
                              break;
                           }
                           // Add only tv
                           if (sd->getServiceType()==2 && (AddServiceType==0))
-                          { 
+                          {
+#ifdef DEBUG_CHANNELSCAN
                              printf(" Add nur TV  aber nur RadioSender gefunden  SID skip %d \n",sd->getServiceType());  
+#endif
                              break;
                           }
                           char NameBuf[1024];
@@ -627,7 +621,6 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                           sid[numSid++]=SiSdtService.getServiceId();
                     
                           if (channel) {
-                            //printf(" ---------------------- Channelscan Add Chanel pn %s ps %s pp %s -------------- \n",  pn, ps, pp); 
                             channel->SetId(sdt.getOriginalNetworkId(), sdt.getTransportStreamId(), SiSdtService.getServiceId(),channel->Rid());
                             //if (Setup.UpdateChannels >= 1)
                             channel->SetName(pn, ps, pp);
@@ -641,7 +634,6 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                                 channel = Channels.NewChannel(Channel(), pn, ps, pp, sdt.getOriginalNetworkId(), sdt.getTransportStreamId(), SiSdtService.getServiceId());
                                patFilter->Trigger();
                                if (SiSdtService.getServiceId() == 0x12) {
-                               //printf(DBG  "-------- found ServiceID for PremiereDirekt!  %s - %s - %s --------- \n",  pn, ps, pp);
                                //eitFilter->Trigger();
                                }
 
@@ -708,7 +700,9 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
 
 NitFilter::NitFilter(void)
 {
+#ifdef DEBUG_CHANNELSCAN
   printf(DBG " -- %s --  \n",  __PRETTY_FUNCTION__);
+#endif
   numNits = 0;
   networkId = 0;
   lastCount = 0;
@@ -733,7 +727,9 @@ void NitFilter::SetStatus(bool On)
 
 NitFilter::~NitFilter()
 {
+#ifdef DEBUG_CHANNELSCAN
   printf ( " debug [nit] ------------- %s --------------- ", __PRETTY_FUNCTION__);
+#endif
 }
 bool NitFilter::Found()
 {
@@ -750,21 +746,22 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
   // if versionsMap(nit.getVersionNumber()) == false)
   //  return;
 
+#ifdef DEBUG_CHANNELSCAN
   printf("DEBUG [nit]: ++ %s NIT ID  %d\n", __PRETTY_FUNCTION__, nit.getNetworkId());
-  //printf("DEBUG [nit]: ++ Version %d \n", nit.getVersionNumber());
   printf("DEBUG [nit]: ++ SectionNumber  %d\n", nit.getSectionNumber());
   printf("DEBUG [nit]: ++ LastSectionNumber  %d\n", nit.getLastSectionNumber());
   printf("DEBUG [nit]: ++ moreThanOneSection %d\n", nit.moreThanOneSection());
   printf("DEBUG [nit]: ++ num Nits  %d\n", numNits);
-  
-  
-  int getTransponderNum = 0;
+#endif
+
   // 
   // return if we have seen the Table already 
   int cnt = ++TblVersions[nit.getVersionNumber()];  
   if (cnt > nit.getLastSectionNumber()+1) 
-  { 
+  {
+#ifdef DEBUG_CHANNELSCAN
       printf("DEBUG [nit]: ++  NIT Version %d found %d times \n", cnt, nit.getVersionNumber());
+#endif
       endofScan = true;
       return; 
   }
@@ -778,26 +775,36 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
   if (true) {
      int ThisNIT = -1;
      for (int i = 0; i < numNits; i++) {
+#ifdef DEBUG_CHANNELSCAN
          printf("DEBUG [nit]: ++ num Nits  %d\n", numNits);
+#endif
          if (nits[i].networkId == nit.getNetworkId()) {
             if (nit.getSectionNumber() == 0) {
                // all NITs have passed by
                for (int j = 0; j < numNits; j++) {
+#ifdef DEBUG_CHANNELSCAN
                    printf("DEBUG [nit]: nits[%d] has Transponder ? %s \n",j ,nits[j].hasTransponder?"YES":"NO");
+#endif
                    if (nits[j].hasTransponder) {
                       networkId = nits[j].networkId;
+#ifdef DEBUG_CHANNELSCAN
                       printf("take  NIT with network ID %d\n", networkId);
+#endif
                       //XXX what if more than one NIT contains this transponder???
                       break;
                       }
                    }
                if (!networkId) {
+#ifdef DEBUG_CHANNELSCAN
                   printf("none of the NITs contains transponder %d\n", Transponder());
+#endif
                   return;
                   }
                }
             else {
+#ifdef DEBUG_CHANNELSCAN
                printf(" ----------- ThisNIT: %d --------------  \n", i);
+#endif
                ThisNIT = i;
                break;
                }
@@ -807,14 +814,17 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
         if (nit.getSectionNumber() == 0) {
            *nits[numNits].name = 0;
            SI::Descriptor *d;
+#ifdef DEBUG_CHANNELSCAN
            printf(" INFO [nit] ----------- loop common descriptors:  --------------  \n");
-
+#endif
            for (SI::Loop::Iterator it; (d = nit.commonDescriptors.getNext(it)); ) {
                switch (d->getDescriptorTag()) {
                  case SI::NetworkNameDescriptorTag: {
                       SI::NetworkNameDescriptor *nnd = (SI::NetworkNameDescriptor *)d;
                       nnd->name.getText(nits[numNits].name, MAXNETWORKNAME);
+#ifdef DEBUG_CHANNELSCAN
                       printf(" INFO [nit] ----------- Get Name %s   --------------  \n", nits[numNits].name);
+#endif
                       }
                       break;
                  default: ;
@@ -823,37 +833,47 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                }
            nits[numNits].networkId = nit.getNetworkId();
            nits[numNits].hasTransponder = false;
+#ifdef DEBUG_CHANNELSCAN
            printf(" INFO [nit] ---- NIT[%d] ID: %5d Proivider '%s'\n", numNits, nits[numNits].networkId, nits[numNits].name);
+#endif
            ThisNIT = numNits;
            numNits++;
            }
         }
      }
+#ifdef DEBUG_CHANNELSCAN
   else if (networkId != nit.getNetworkId()) {
       printf("found !!!! OTHER  NIT !!!!!  %d previos NIT %d \n", nit.getNetworkId(), networkId);
      //return; // ignore all other NITs
   }
+#endif
   else if (!sectionSyncer.Sync(nit.getVersionNumber(), nit.getSectionNumber(), nit.getLastSectionNumber()))
      return;
 
-
   sectionSeen_[nit.getSectionNumber()]++;
 
+#ifdef DEBUG_CHANNELSCAN
   printf("DEBUG [nit]: SectionNumber %d   \n", nit.getSectionNumber());
+#endif
 
   SI::NIT::TransportStream ts;
   for (SI::Loop::Iterator it; nit.transportStreamLoop.getNext(ts, it); ) {
       insert = false;
-      //printf("found TS_ID %d\n",  ts.getTransportStreamId());
 
       SI::Loop::Iterator it2;
       SI::FrequencyListDescriptor *fld = (SI::FrequencyListDescriptor *)ts.transportStreamDescriptors.getNext(it2, SI::FrequencyListDescriptorTag);
+#ifdef M750S
       int NumFrequencies = fld ? fld->frequencies.getCount() + 1 : 1;
+#endif
       if (fld) {
+#ifdef M750S
          int Frequencies[NumFrequencies];
+#endif
          int ct = fld->getCodingType();
          if (ct > 0) {
+#ifdef M750S
             int n = 1;
+#endif
             for (SI::Loop::Iterator it3; fld->frequencies.hasNext(it3); ) {
                 int f = fld->frequencies.getNext(it3);
                 switch (ct) {
@@ -861,15 +881,20 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                   case 2: f = BCD2INT(f) / 10; break;
                   case 3: f = f * 10;  break;
                   }
+#ifdef M750S
                 Frequencies[n++] = f;
+#endif
                 }
             }
+#ifdef M750S
          else
             NumFrequencies = 1;
+#endif
          }
       delete fld;
 
 #ifdef M750S
+      int getTransponderNum = 0;
       SI::Descriptor *d;
 
       for (SI::Loop::Iterator it2; (d = ts.transportStreamDescriptors.getNext(it2)); ) {
@@ -879,7 +904,6 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                  //int Source = cSource::FromData(cSource::stSat, BCD2INT(sd->getOrbitalPosition()), sd->getWestEastFlag());
                  int Frequency = Frequencies[0] = BCD2INT(sd->getFrequency()) / 100;
                  getTransponderNum++;
-                 //printf ("%s:%d DEBUG [nit]:  Get  Sat DSDT f: %d --   num %d   \n", __FILE__, __LINE__, Frequency, getTransponderNum++);
                  static char Polarizations[] = { 'h', 'v', 'l', 'r' };
                  char Polarization = Polarizations[sd->getPolarization()];
                  static int CodeRates[] = { FEC_NONE, FEC_1_2, FEC_2_3, FEC_3_4, FEC_5_6, FEC_7_8, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_NONE };
@@ -888,8 +912,10 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                     for (int n = 0; n < NumFrequencies; n++) {
                         cChannel *Channel = new cChannel;
                         Channel->SetId(ts.getOriginalNetworkId(), ts.getTransportStreamId(), 0, 0);
+#ifdef DEBUG_CHANNELSCAN
                         printf ("# %d Mhz  TSID %5d  orig NIT %6d \n",
                                  Frequencies[n], ts.getTransportStreamId(), ts.getOriginalNetworkId() ); 
+#endif
 
                         cSatTransponder *t = new cSatTransponder(Frequency, Polarization, SymbolRate, CodeRate);
                         if (!t)  {
@@ -898,11 +924,14 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                         else 
                         {
                            mapRet ret = transponderMap.insert(make_pair(Frequency, t));
+#ifdef DEBUG_CHANNELSCAN
                            if (ret.second)
                               printf (" New transponder f: %d  p: %c sr: %d  \n", Frequency, Polarization, SymbolRate);
-                           else {
+                           else
+#else
+                           if (!ret.second)
+#endif
                              delete t;
-                           }
                         }
                     }
                  }
@@ -915,7 +944,8 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
 #endif // M750S
       }
   found_ = insert;
-  
+
+#ifdef DEBUG_CHANNELSCAN
   printf("DEBUG [nit]:  End of ProcessLoop MapSize: %d  lastCount %d   \n", (int) transponderMap.size(), lastCount);
   printf("DEBUG [nit]:  -- NIT ID  %d\n", nit.getNetworkId());
   printf("DEBUG [nit]:  -- Version %d \n", nit.getVersionNumber());
@@ -923,7 +953,8 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
   printf("DEBUG [nit]:  -- SectionNumber  %d\n", nit.getSectionNumber());
   printf("DEBUG [nit]:  -- LastSectionNumber  %d\n", nit.getLastSectionNumber());
   printf("DEBUG [nit]:  -- moreThanOneSection %d\n", nit.moreThanOneSection());
-  
+#endif
+
   if (!nit.moreThanOneSection())
   {
      endofScan = true;
@@ -931,11 +962,15 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
   else 
   {
      endofScan = true;
+#ifdef DEBUG_CHANNELSCAN
      printf("DEBUG [nit]:  -- LastSectionNumber  %d\n", nit.getLastSectionNumber());
+#endif
      //for (int i = 0; i<sectionSeen.size();i++) 
      for (int i = 0; i<nit.getLastSectionNumber()+1;i++) 
      {
+#ifdef DEBUG_CHANNELSCAN
        printf("DEBUG [nit]:  -- Seen[%d] %s\n",i, sectionSeen_[i]?"YES":"NO");
+#endif
        if (sectionSeen_[i] == 0)
        {
           endofScan = false;
@@ -947,13 +982,17 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
 
   if (endofScan == true)
   {
+#ifdef DEBUG_CHANNELSCAN
      printf ("DEBUG [channescan ]: filter.c  End of ProcessLoop newMap size: %d  \n", (int)transponderMap.size());
+#endif
      vector<int> tmp(64,0);
      sectionSeen_ = tmp;
   }
   found_ = insert = false;
   lastCount = transponderMap.size();
+#ifdef DEBUG_CHANNELSCAN
   printf ("DEBUG [channescan ]: set endofScan %s \n",endofScan?"TRUE":"FALSE");
+#endif
 }
 
 

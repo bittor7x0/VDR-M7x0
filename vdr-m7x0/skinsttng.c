@@ -428,7 +428,7 @@ void cSkinSTTNGDisplayChannel::Flush(void)
                              }
                     }
                     else
-                       nameBitmap = (Mode = TShiftPlayerPlay) ? tshiftplay_xpm : tshiftpause_xpm;
+                       nameBitmap = (Mode == TShiftPlayerPlay) ? tshiftplay_xpm : tshiftpause_xpm;
                     break;
                  }
               if (nameBitmap) {

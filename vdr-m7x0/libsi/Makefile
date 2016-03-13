@@ -8,7 +8,7 @@
 CXX      ?= g++
 CXXFLAGS ?= -fPIC -O2 -g -Wall -Woverloaded-virtual
 AR ?= ar
-ARFLAGS = ru
+ARFLAGS = r
 RANLIB ?= ranlib
 
 

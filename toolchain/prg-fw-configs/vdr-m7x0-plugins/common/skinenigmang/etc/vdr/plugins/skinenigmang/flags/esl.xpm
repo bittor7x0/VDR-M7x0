@@ -1,5 +1,5 @@
 /* XPM */
-static char * esl_xpm[] = {
+static const char *const esl_xpm[] = {
 "27 18 5 1",
 " 	c None",
 ".	c #F40801",

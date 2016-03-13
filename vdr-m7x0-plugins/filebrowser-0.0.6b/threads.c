@@ -216,7 +216,7 @@ void cCommandThreadTextOutput::Action()
       if((long)strlen(OutputBuffer) == OutputBufferLength)
       {
         D(fprintf(stderr, "buffer ran full (%d)\n%s\n", strlen(OutputBuffer), OutputBuffer));
-        while((c=fgetc(out)) != EOF) {};
+        while((fgetc(out)) != EOF) {};
       }
       
       D(fprintf(stderr, "forked thread closed, output was:\n%s\n", OutputBuffer));

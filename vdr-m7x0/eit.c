@@ -234,7 +234,7 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
             case SI::LinkageDescriptorTag: {
                  SI::LinkageDescriptor *ld = (SI::LinkageDescriptor *)d;
                  tChannelID linkID(Source, ld->getOriginalNetworkId(), ld->getTransportStreamId(), ld->getServiceId());
-                 if (ld->getLinkageType() == 0xB0) { // Premiere World
+                 if (uint(ld->getLinkageType()) == 0xB0) { // Premiere World
                     bool hit = StartTime <= Now && Now < StartTime + Duration;
                     if (hit) {
                        char linkName[ld->privateData.getLength() + 1];

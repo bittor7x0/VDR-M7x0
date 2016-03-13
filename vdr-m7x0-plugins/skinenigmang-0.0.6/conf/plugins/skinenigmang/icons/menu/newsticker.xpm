@@ -1,5 +1,5 @@
 /* XPM */
-static char * newsticker_xpm[] = {
+static const char *const newsticker_xpm[] = {
 "80 80 7 1",
 " 	c None",
 ".	c #1C2A60",

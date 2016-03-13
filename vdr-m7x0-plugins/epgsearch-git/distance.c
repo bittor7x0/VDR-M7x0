@@ -100,23 +100,10 @@ int *pCell;
 
 int Distance::LD (char const *s, char const *t, int maxLength)
 {
-int *d; // pointer to matrix
-int n; // length of s
-int m; // length of t
-int i; // iterates through s
-int j; // iterates through t
-char s_i; // ith character of s
-char t_j; // jth character of t
-int cost; // cost
-int result; // result
-int cell; // contents of target cell
-int above; // contents of cell immediately above
-int left; // contents of cell immediately to left
-int diag; // contents of cell immediately above and to left
-int sz; // number of cells in matrix
-
   // Step 1
 
+  int n; // length of s
+  int m; // length of t
   n = min((int)strlen(s), maxLength);
   m = min((int)strlen(t), maxLength);
   if (n == 0) {
@@ -125,6 +112,19 @@ int sz; // number of cells in matrix
   if (m == 0) {
     return n;
   }
+
+  int *d; // pointer to matrix
+  int i; // iterates through s
+  int j; // iterates through t
+  char s_i; // ith character of s
+  char t_j; // jth character of t
+  int cost; // cost
+  int result; // result
+  int cell; // contents of target cell
+  int above; // contents of cell immediately above
+  int left; // contents of cell immediately to left
+  int diag; // contents of cell immediately above and to left
+  int sz; // number of cells in matrix
   sz = (n+1) * (m+1) * sizeof (int);
   d = (int *) malloc (sz);
 

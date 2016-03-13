@@ -67,11 +67,12 @@ int Storage::cleanSubDir(const char *dir) {
    static bool reportedError=false; //avoid filling up syslog
    DIR *d=opendir(dir);
    bool hadError=false;
-   int bytesDeleted=0, filesize;
+   int bytesDeleted=0;
    if (d) {
       struct dirent *txtfile, path;
       struct stat txtfilestat;
       char fullPath[PATH_MAX];
+      int filesize;
       while ( (!readdir_r(d, &path, &txtfile) && txtfile != NULL) ) {
          int len=strlen(txtfile->d_name);
          //check that the file end with .vtx to avoid accidents and disasters

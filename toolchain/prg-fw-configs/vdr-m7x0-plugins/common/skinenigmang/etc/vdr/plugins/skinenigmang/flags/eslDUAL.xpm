@@ -1,5 +1,5 @@
 /* XPM */
-static char * eslDUAL_xpm[] = {
+static const char *const eslDUAL_xpm[] = {
 "27 18 7 1",
 " 	c None",
 ".	c #F40801",

@@ -457,8 +457,6 @@ public:
    StructureLoop<Language> languageLoop;
 protected:
    virtual void Parse();
-private:
-   const descr_iso_639_language *s;
 };
 
 class PDCDescriptor : public Descriptor {

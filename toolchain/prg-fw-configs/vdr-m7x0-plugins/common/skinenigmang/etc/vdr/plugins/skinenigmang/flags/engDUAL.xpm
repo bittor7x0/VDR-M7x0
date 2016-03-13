@@ -1,5 +1,5 @@
 /* XPM */
-static char * engDUAL_xpm[] = {
+static const char *const engDUAL_xpm[] = {
 "27 18 4 1",
 " 	c #000000",
 ".	c #000066",

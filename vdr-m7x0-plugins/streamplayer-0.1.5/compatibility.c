@@ -7,6 +7,7 @@
   #undef private
 #endif
 
+#include "debug.h"
 #include "compatibility.h"
 
 #if VDRVERSNUM >= 10307
@@ -49,7 +50,7 @@ void cInterface::Open(int NumCols, int NumLines) {
 	Osd=cOsdProvider::NewOsd(x,y);
 
 	if (!Osd) {
-		printf("NewOsd(%i,%i) failed\n",x,y);
+		_dprintf("NewOsd(%i,%i) failed\n",x,y);
 		return;
 	}
 
@@ -57,31 +58,34 @@ void cInterface::Open(int NumCols, int NumLines) {
 	if (h / lineHeight == 5) { //XXX channel display
 		nAreas=1;
 		SetArea(Areas[0],0,0, w, h, 4);
-		if (!Osd->CanHandleAreas(Areas,nAreas)==oeOk) {
-			printf("CanHandleAreas(1) failed.\n");
-			printf("Area: %i %i %i %i %i\n",Areas[0].x1,Areas[0].y1,Areas[0].x2,Areas[0].y2,Areas[0].bpp);
+		if (Osd->CanHandleAreas(Areas,nAreas)==oeOk) {
+			Osd->SetAreas(Areas,nAreas);
+		} else {
+			_dprintf("CanHandleAreas(1) failed.\n");
+			_dprintf("Area: %i %i %i %i %i\n",Areas[0].x1,Areas[0].y1,Areas[0].x2,Areas[0].y2,Areas[0].bpp);
 		}
-		Osd->SetAreas(Areas,nAreas);
     } else if (h / lineHeight == 1) { //XXX info display
 		nAreas=1;
 		SetArea(Areas[0],0,0, w,h,4);
-		if (!Osd->CanHandleAreas(Areas,nAreas)==oeOk) {
-			printf("CanHandleAreas(2) failed.\n");
-			printf("Area: %i %i %i %i %i\n",Areas[0].x1,Areas[0].y1,Areas[0].x2,Areas[0].y2,Areas[0].bpp);
+		if (Osd->CanHandleAreas(Areas,nAreas)==oeOk) {
+			Osd->SetAreas(Areas,nAreas);
+		} else {
+			_dprintf("CanHandleAreas(2) failed.\n");
+			_dprintf("Area: %i %i %i %i %i\n",Areas[0].x1,Areas[0].y1,Areas[0].x2,Areas[0].y2,Areas[0].bpp);
 		}
-		Osd->SetAreas(Areas,nAreas);
     } else if (d == 0) { //XXX full menu
     	nAreas=3;
      	SetArea(Areas[0],0,0,w,lineHeight, 2);
      	SetArea(Areas[1],0,lineHeight,w,(Setup.OSDheight - 3) * lineHeight, 2);
      	SetArea(Areas[2],0, (Setup.OSDheight - 2) * lineHeight, w,2 * lineHeight, 4);
-		if (!Osd->CanHandleAreas(Areas,nAreas)==oeOk) {
-			printf("CanHandleAreas(3) failed.\n");
-			printf("Area: %i %i %i %i %i\n",Areas[0].x1,Areas[0].y1,Areas[0].x2,Areas[0].y2,Areas[0].bpp);
-			printf("Area: %i %i %i %i %i\n",Areas[1].x1,Areas[1].y1,Areas[1].x2,Areas[1].y2,Areas[1].bpp);
-			printf("Area: %i %i %i %i %i\n",Areas[2].x1,Areas[2].y1,Areas[2].x2,Areas[2].y2,Areas[2].bpp);
+		if (Osd->CanHandleAreas(Areas,nAreas)==oeOk) {
+			Osd->SetAreas(Areas,nAreas);
+		} else {
+			_dprintf("CanHandleAreas(3) failed.\n");
+			_dprintf("Area: %i %i %i %i %i\n",Areas[0].x1,Areas[0].y1,Areas[0].x2,Areas[0].y2,Areas[0].bpp);
+			_dprintf("Area: %i %i %i %i %i\n",Areas[1].x1,Areas[1].y1,Areas[1].x2,Areas[1].y2,Areas[1].bpp);
+			_dprintf("Area: %i %i %i %i %i\n",Areas[2].x1,Areas[2].y1,Areas[2].x2,Areas[2].y2,Areas[2].bpp);
 		}
-		Osd->SetAreas(Areas,nAreas);
 
      	Osd->GetBitmap(1)->Index(clrBackground);
      	Osd->GetBitmap(1)->Index(clrCyan);
@@ -91,11 +95,12 @@ void cInterface::Open(int NumCols, int NumLines) {
     } else { //XXX progress display
 		nAreas=1;
 		SetArea(Areas[0],0,0, w, h, 4);
-		if (!Osd->CanHandleAreas(Areas,nAreas)==oeOk) {
-			printf("CanHandleAreas(4) failed.\n");
-			printf("Area: %i %i %i %i %i\n",Areas[0].x1,Areas[0].y1,Areas[0].x2,Areas[0].y2,Areas[0].bpp);
+		if (Osd->CanHandleAreas(Areas,nAreas)==oeOk) {
+			Osd->SetAreas(Areas,nAreas);
+		} else {
+			_dprintf("CanHandleAreas(4) failed.\n");
+			_dprintf("Area: %i %i %i %i %i\n",Areas[0].x1,Areas[0].y1,Areas[0].x2,Areas[0].y2,Areas[0].bpp);
 		}
-		Osd->SetAreas(Areas,nAreas);
     }
 
 }

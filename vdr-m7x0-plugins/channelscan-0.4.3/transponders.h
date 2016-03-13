@@ -263,7 +263,9 @@ inline void cTransponders::Create()
 }
 inline void cTransponders::Destroy()
 {
+#ifdef DEBUG_CHANNELSCAN
   printf (" DEBUG [transponders] ---------- delete instance_ ----- \n");
+#endif
   delete instance_;
   instance_ = NULL;
 }
@@ -277,7 +279,9 @@ inline cTransponder *cTransponders::GetNITStartTransponder()
 /*
 inline void cTransponders::ResetNITStartTransponder()
 {
+#ifdef DEBUG_CHANNELSCAN
    printf("DEBUG [channelscan]: delete nitStartTransponder_ \n");
+#endif
    delete nitStartTransponder_;
    nitStartTransponder_ = NULL;
 }

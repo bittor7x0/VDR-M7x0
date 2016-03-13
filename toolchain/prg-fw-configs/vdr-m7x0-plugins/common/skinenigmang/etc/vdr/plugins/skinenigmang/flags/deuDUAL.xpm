@@ -1,5 +1,5 @@
 /* XPM */
-static char * deuDUAL_xpm[] = {
+static const char *const deuDUAL_xpm[] = {
 "27 18 4 1",
 " 	c #000000",
 ".	c #DB000D",

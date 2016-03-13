@@ -102,7 +102,7 @@ public:
   int GetCurrentMaxWaits() { return maxWaits_; }
   ///< GetCurrentTransponderNr returns the channel number according to frequencies 
   int GetCurrentFrequency() { return frequency; }
-  void GetFoundNum(int &current, int &total) {current=foundNum; total=abs(totalNum<200)?totalNum:0;};
+  void GetFoundNum(int &current, int &total) {current=foundNum; total=abs(totalNum)<200?totalNum:0;};
 
 
   uint32_t getSignal(void);

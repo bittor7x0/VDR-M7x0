@@ -225,7 +225,7 @@ void cPictureControl::DisplayCaption(void)
 
 eOSState cPictureControl::ProcessKey(eKeys Key)
 {
-  switch (Key) {
+  switch (int(Key)) {
     case kPlay:   if (slideShow == true){
 					slideShow = false;
 				  }else{

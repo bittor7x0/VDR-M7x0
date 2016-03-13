@@ -315,7 +315,7 @@ eOSState cZappilotOsd::ProcessKey(eKeys Key)
    }
    else if (displayChannel )
    {
-      switch (Key)
+      switch (int(Key))
       {
          case kUser1 ... kUser9:
          {
@@ -424,8 +424,6 @@ eOSState cZappilotOsd::ProcessKey(eKeys Key)
                         group = -1;
                      else
                      {
-                        const char *groupName;
-                        groupName = channel->Name();
                         channel = (cChannel *)channel->Next();
                         while (channel->GroupSep())
                         {
@@ -579,8 +577,6 @@ eOSState cZappilotOsd::ProcessKey(eKeys Key)
                         group = -1;
                      else
                      {
-                        const char *groupName;
-                        groupName = channel->Name();
                         channel = (cChannel *)channel->Next();
                         while (channel->GroupSep())
                         {

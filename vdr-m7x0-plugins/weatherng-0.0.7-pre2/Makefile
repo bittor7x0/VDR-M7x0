@@ -40,6 +40,8 @@ TMPDIR = /tmp
 ### Allow user defined options to overwrite defaults:
 
 -include $(VDRDIR)/Make.config
+t_CXXFLAGS := $(CXXFLAGS)
+CXXFLAGS = $(filter-out -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear,$(t_CXXFLAGS))
 
 ### The version number of VDR (taken from VDR's "config.h"):
 

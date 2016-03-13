@@ -1,5 +1,5 @@
 /* XPM */
-static char * slowRewind2_xpm[] = {
+static const char *const slowRewind2_xpm[] = {
 "80 80 5 1",
 " 	c None",
 ".	c #007F7F",

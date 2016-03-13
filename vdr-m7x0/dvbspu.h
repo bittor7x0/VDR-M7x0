@@ -99,7 +99,6 @@ class cDvbSpuDecoder:public cSpuDecoder {
     uint8_t *spu;
     uint32_t spupts;
     bool clean;
-    bool ready;
     bool restricted_osd;
 
     enum spFlag { spNONE, spHIDE, spSHOW, spMENU };

@@ -3,7 +3,7 @@
 #include <vdr/submenu.h>
 #include <vdr/interface.h>
 
-static char *System[6] = { "Channels","Recordings","Timers","Setup","Commands","Schedule"};
+static const char *System[6] = { "Channels","Recordings","Timers","Setup","Commands","Schedule"};
 
 
 // cSubMenuSelectType : Menu Osd pour la selection du Type d'Item a ajouter...
@@ -214,7 +214,7 @@ cSubMenuSubMenuItem::cSubMenuSubMenuItem(int position,int ou,cSubMenu &SM) : cOs
 
 cSubMenuSubMenuItem::~cSubMenuSubMenuItem()
 {
-	delete Name;
+	free(Name);
 }
 
 

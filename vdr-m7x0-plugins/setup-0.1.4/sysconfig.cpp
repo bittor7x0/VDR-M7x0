@@ -86,7 +86,6 @@ void Sysconfig::destroy( )
 bool Sysconfig::LoadFile( const char*fname)
 {
    bool result = true;
-   const char * line;
    destroy();
    _filename = Util::Strdupnew(fname);
    FILE * fp = fopen(fname, "r");
@@ -94,6 +93,7 @@ bool Sysconfig::LoadFile( const char*fname)
 
    if(fp != NULL)
    {
+     const char * line;
      while( (line = readLine(fp)) != NULL)
      {
        addLine(line);

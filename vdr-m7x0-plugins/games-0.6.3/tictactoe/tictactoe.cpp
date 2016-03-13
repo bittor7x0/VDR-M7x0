@@ -387,8 +387,6 @@ move_to_block(int pl) {
 
 static int
 move_to_good(int pl) {
-	char tmp[4];
-
 	pl = other_player();
 	if (moves==1) {
 		if (who(4)==EMPTY) return (4);
@@ -396,6 +394,7 @@ move_to_good(int pl) {
 	if (moves == 3) {
 		if ((who(0)==pl) && (who(8)==pl) || (who(2)==pl) && (who(6)==pl)) {
 			int j = 0;
+			char tmp[4];
 			if (who(1)==EMPTY) tmp[j++] = 1;
 			if (who(3)==EMPTY) tmp[j++] = 3;
 			if (who(5)==EMPTY) tmp[j++] = 5;

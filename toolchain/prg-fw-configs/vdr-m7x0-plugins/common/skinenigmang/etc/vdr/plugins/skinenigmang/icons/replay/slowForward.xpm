@@ -1,5 +1,5 @@
 /* XPM */
-static char * slowForward_xpm[] = {
+static const char *const slowForward_xpm[] = {
 "80 80 5 1",
 " 	c None",
 ".	c #007F7F",

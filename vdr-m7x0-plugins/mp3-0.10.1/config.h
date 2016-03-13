@@ -32,8 +32,8 @@
 
 // Uncomment to enable generic debugging messages to the console. This may slow
 // down operation in some cases.
-#define DEBUG
-//#define NO_DEBUG
+//#define DEBUG
+#define NO_DEBUG
 
 // Defines the filename extention to use for playlist files.
 #define PLAYLISTEXT ".m3u"

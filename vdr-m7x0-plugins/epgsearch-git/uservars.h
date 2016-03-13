@@ -450,7 +450,6 @@ public:
     string Evaluate(const cEvent* e, bool escapeStrings = false)
 	{
 	    if (!e) return "";
-	    ostringstream os;
 	    cChannel *channel = Channels.GetByChannelID(e->ChannelID(), true);
 	    while(channel && !channel->GroupSep())
 	      channel = Channels.Prev(channel);

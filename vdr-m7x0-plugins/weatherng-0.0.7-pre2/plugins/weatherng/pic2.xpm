@@ -1,5 +1,5 @@
 /* XPM */
-static char *pic2[] = {
+static const char *const pic2[] = {
 /* columns rows colors chars-per-pixel */
 "395 296 256 2",
 "   c #081307",

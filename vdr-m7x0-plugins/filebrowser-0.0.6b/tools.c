@@ -51,7 +51,7 @@ void cStringList::Remove(const char* String)
   Implementation of cConfigReader
 */
 
-cConfigReader::cConfigReader(cFilebrowserStatebag* Statebag, char* Filename)
+cConfigReader::cConfigReader(cFilebrowserStatebag* Statebag, const char* Filename)
 {
   char* Name=(char*)malloc(strlen(Statebag->ConfigDirectory) + strlen(Filename) + 2);
   sprintf(Name, "%s/%s", *(Statebag->ConfigDirectory), Filename);

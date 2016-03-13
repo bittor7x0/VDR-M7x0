@@ -73,7 +73,7 @@ eOSState cPreferOsd::ProcessKey(eKeys Key)
   if (state == osUnknown) 
   {
     //switch (Key & ~k_Repeat)
-    switch (Key)
+    switch (int(Key))
     { 
       case kUp:
       case kUp|k_Repeat:
@@ -429,7 +429,7 @@ void cPreferOsd::DrawChannelsNames(int delta)
   }
 }
 
-void cPreferOsd::DrawSymbol(int x, int y, char *SymbolName[], tColor ColorFg)
+void cPreferOsd::DrawSymbol(int x, int y, const char* const SymbolName[], tColor ColorFg)
 {
   cBitmap bm(SymbolName);
   osd->DrawBitmap(x, y, bm, ColorFg, clrBackground);

@@ -1,5 +1,5 @@
 /* XPM */
-static char * timers_xpm[] = {
+static const char *const timers_xpm[] = {
 "80 80 8 1",
 " 	c None",
 ".	c #294584",

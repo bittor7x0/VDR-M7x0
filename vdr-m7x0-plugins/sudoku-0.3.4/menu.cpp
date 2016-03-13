@@ -183,7 +183,7 @@ eOSState Menu::ProcessKey(eKeys key)
   {
     Pos curr = puzzle->get_pos();
     CommandType command = NULL;
-    switch (key)
+    switch (int(key))
     {
       case kLeft:
       case kLeft|k_Repeat:

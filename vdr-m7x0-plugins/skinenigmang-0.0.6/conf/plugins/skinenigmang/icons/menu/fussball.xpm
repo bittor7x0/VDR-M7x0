@@ -1,5 +1,5 @@
 /* XPM */
-static char * fussball_xpm[] = {
+static const char *const fussball_xpm[] = {
 "80 80 7 1",
 " 	c None",
 ".	c #1C2A60",

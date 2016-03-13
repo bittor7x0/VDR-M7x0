@@ -1244,7 +1244,6 @@ void insert_pat_pmt( int fdin, int fdout)
 	uint8_t buf[INN_SIZE];
 	uint8_t mbuf[TS_SIZE];
 	int i;
-	int count = 1;
 	uint16_t pida = 0;
 	uint16_t pidv = 0;
 	int written,c;
@@ -1256,7 +1255,7 @@ void insert_pat_pmt( int fdin, int fdout)
 
 	find_avpids(fdin, &pidv, &pida);
 	
- 	count = save_read(fdin,mbuf,TS_SIZE);
+ 	int count = save_read(fdin,mbuf,TS_SIZE);
 	for ( i = 0; i < 188 ; i++){
 		if ( mbuf[i] == 0x47 ) break;
 	}
@@ -2511,24 +2510,30 @@ int64_t ts_demux(int fdin, int fdv_out,int fda_out,uint16_t pida,
 					      get_vinfo( pay, l,&p->vi,1)+1) >0
 						){
 						vpts = trans_pts_dts(sb+9);
+#ifdef DEBUG
 						printf("vpts : %fs\n",
 						       vpts/90000.);
+#endif
 					}
 					if ( pid == pida && es==1 && 
 					     (p->start = 
 					      get_ainfo( pay, l,&p->ai,1)+1) >0
 						){
 						apts = trans_pts_dts(sb+9);
+#ifdef DEBUG
 						printf("apts : %fs\n",
 						       apts/90000.);
+#endif
 					}
 					if ( pid == pida && es==2 && 
 					     (p->start = 
 					      get_ac3info( pay, l,&p->ai,1)+1) >0
 						){
 						apts = trans_pts_dts(sb+9);
+#ifdef DEBUG
 						printf("apts : %fs\n",
 						       apts/90000.);
+#endif
 					}
 				}
 			}

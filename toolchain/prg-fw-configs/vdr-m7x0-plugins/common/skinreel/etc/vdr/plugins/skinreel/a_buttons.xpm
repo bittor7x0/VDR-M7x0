@@ -1,5 +1,5 @@
 /* XPM */
-static char * a_buttons_xpm[] = {
+static const char *const a_buttons_xpm[] = {
 "10 39 215 2",
 "  	c None",
 ". 	c #00F300",

@@ -118,7 +118,9 @@ bool cPluginChannelscan::Service(const char *Id, void *Data)
 
   if (Id && strcmp(Id,"AutoScan")==0)
   {
+#ifdef DEBUG_CHANNELSCAN
      printf( " [channelscan] Id Flag set: %s  DATA %s \n", Id, (char*)Data);
+#endif
      if (Data && strcmp(static_cast<const char *>(Data),"DVB-S")==0)
      {
         AutoScanStat = AssDvbS;

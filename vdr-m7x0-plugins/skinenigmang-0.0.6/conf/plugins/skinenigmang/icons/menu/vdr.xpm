@@ -1,5 +1,5 @@
 /* XPM */
-static char * vdr_xpm[] = {
+static const char *const vdr_xpm[] = {
 "80 80 9 1",
 " 	c None",
 ".	c #1C2A60",

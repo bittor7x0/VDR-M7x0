@@ -196,7 +196,6 @@ cSetupGenericMenu::cSetupGenericMenu(const char *title, MenuNode *node, Config  
   debug("cSetupGenericMenu::Constructor");
   _node     = node;
   _editItem = false;
-  _currLine = 0;
   _config   = config;
 
   SetTitle(title);
@@ -420,10 +419,6 @@ if (load) {
 }else {
 	loaded = true;
 }
-	//Check for child lock
-  _number    = 0;
-  _error     = false;
-
   if( loaded )
   {
       if ( _loaded_config ) Set();
@@ -432,7 +427,6 @@ if (load) {
   {//Error loading config file
     error("cSetupMenu.constr: error loading config file");
     SetStatus(tr("Error in configuration files"));
-    _error = true;
   }
 }
 

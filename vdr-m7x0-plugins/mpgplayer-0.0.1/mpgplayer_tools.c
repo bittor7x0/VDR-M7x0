@@ -537,7 +537,7 @@ off64_t cMpgUnbufferedFile::Seek(off64_t Offset, int Whence)
      curpos = lseek(fd, Offset, Whence);
 
      if (curpos < 0) {
-        esyslog("ERROR: Cannot seek to offset 0x%lX fs block size 0x%X "
+        esyslog("ERROR: Cannot seek to offset 0x%llX fs block size 0x%X "
                 "while using direct io. Falling back ... !", Offset, blockSize);
 
         int r = FallBackFromDirectIO();

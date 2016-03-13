@@ -263,7 +263,6 @@ cString cPluginMlist::SVDRPCommand(const char *Command, const char *Option, int 
   // Process SVDRP commands this plugin implements
   if (strcasecmp(Command, "LSTM") == 0){
     cString reply = "";
-    cString temp;
     if (mlist.Count() == 0)
       return cString::sprintf("Message History empty.");
     for (cMessage *msg = mlist.Last(); msg; msg = mlist.Prev(msg)) {

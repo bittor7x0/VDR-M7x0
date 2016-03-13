@@ -167,7 +167,7 @@ static void
 flags_show(void) {
 	for (int j=0; j<height; j++) {
 		for (int i=0; i<width; i++) {
-			if (hidden[i][j] != SHOWN && hidden[i][j] == MINE) {
+			if (hidden[i][j] == MINE) {
 				field[i][j] = FLAG;
 				draw_icon(i, j);
 			}

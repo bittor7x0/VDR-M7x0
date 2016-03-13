@@ -1,5 +1,5 @@
 /* XPM */
-static char * muteOff_xpm[] = {
+static const char *const muteOff_xpm[] = {
 "80 80 15 1",
 " 	c None",
 ".	c #000000",

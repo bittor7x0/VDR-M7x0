@@ -50,7 +50,7 @@ class cOsdMenuFilebrowserSetup : public cOsdMenuFilebrowser
   protected:
   	bool _onlyDir;
   public:
-    cOsdMenuFilebrowserSetup(char* Directory,cFilebrowserStatebag* Statebag,MenuEntry *e,bool only_dir=false): cOsdMenuFilebrowser(Directory,Statebag) {
+    cOsdMenuFilebrowserSetup(const char* Directory,cFilebrowserStatebag* Statebag,MenuEntry *e,bool only_dir=false): cOsdMenuFilebrowser(Directory,Statebag) {
     	_onlyDir = only_dir;
     	Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cSelectCommand(e,Statebag)));
     	Statebag->GetCommands()->Add(new cFilebrowserCommandContainer(new cFilebrowserMarkCommand(Statebag)));
@@ -60,8 +60,8 @@ class cOsdMenuFilebrowserSetup : public cOsdMenuFilebrowser
     };
 
     bool MatchesFilter(dirent64* Entry);
-    static cOsdMenuFilebrowserSetup* CreateFilebrowser(char* BaseDir,MenuEntry *e);
-    static cOsdMenuFilebrowserSetup* CreateDirectorybrowser(char* BaseDir,MenuEntry *e);
+    static cOsdMenuFilebrowserSetup* CreateFilebrowser(const char* BaseDir,MenuEntry *e);
+    static cOsdMenuFilebrowserSetup* CreateDirectorybrowser(const char* BaseDir,MenuEntry *e);
 };
 
 #endif //EDITFILE_H

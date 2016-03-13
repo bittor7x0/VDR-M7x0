@@ -1,5 +1,5 @@
 /* XPM */
-static char * c_header_xpm[] = {
+static const char *const c_header_xpm[] = {
 "10 37 210 2",
 "  	c None",
 ". 	c #00F300",

@@ -37,7 +37,7 @@ void cCridMenuRecording::Display(void)
 }
 eOSState cCridMenuRecording::ProcessKey(eKeys Key)
 {
-  switch (Key) {
+  switch (int(Key)) {
     case kUp|k_Repeat:
     case kUp:
     case kDown|k_Repeat:
@@ -749,7 +749,7 @@ eOSState cCridReplayControl::ProcessKey(eKeys Key)
      }
   bool DoShowMode = true;
   if (!Setup.LRForwardRewind || (Setup.LRForwardRewind == 1 && !visible)) {
-    switch (Key) {
+    switch (int(Key)) {
       // Left/Right volume control
       case kLeft|k_Repeat:
       case kLeft:
@@ -762,7 +762,7 @@ eOSState cCridReplayControl::ProcessKey(eKeys Key)
         break;
     }
   }
-  switch (Key) {
+  switch (int(Key)) {
     // Positioning:
     case kPlay:
     case kUp:      Play(); break;
@@ -790,7 +790,7 @@ eOSState cCridReplayControl::ProcessKey(eKeys Key)
                    return osEnd;
     default: {
       DoShowMode = false;
-      switch (Key) {
+      switch (int(Key)) {
         // Editing:
         case kMarkToggle:      MarkToggle(); break;
         case kPrev|k_Repeat:

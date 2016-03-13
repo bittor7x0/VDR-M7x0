@@ -1,5 +1,5 @@
 /* XPM */
-static char * fraDUAL_xpm[] = {
+static const char *const fraDUAL_xpm[] = {
 "27 18 4 1",
 " 	c #000000",
 ".	c #000066",
