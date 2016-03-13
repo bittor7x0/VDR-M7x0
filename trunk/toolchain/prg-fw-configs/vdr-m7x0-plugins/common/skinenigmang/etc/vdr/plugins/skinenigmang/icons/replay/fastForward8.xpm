@@ -1,5 +1,5 @@
 /* XPM */
-static char * fastForward8_xpm[] = {
+static const char *const fastForward8_xpm[] = {
 "80 80 3 1",
 " 	c None",
 ".	c #007F7F",

@@ -57,7 +57,7 @@ bool Config::LoadFile()
   XMLElement *root;
 
   //Load XML Config file
-  if((ok = _xmlDoc.LoadFile(_filename) == XML_NO_ERROR))
+  if(ok = (_xmlDoc.LoadFile(_filename) == XML_NO_ERROR))
   {
     if((root = _xmlDoc.FirstChildElement("setup")) != NULL)
     {
@@ -116,7 +116,7 @@ bool Config::LoadFile()
     }
   }
 
-  if(!ok )
+  if(!ok)
    dumpXMLError("Error while Loading XML-FILE");
 
   // XML read, now load Plugins
@@ -256,16 +256,16 @@ bool Config::readVdrLibDir(const char* libDir)
   bool ok =true;
   DIR           *dir = opendir(libDir);
   struct dirent *entry = NULL;
-  char          *module=NULL;
-  char          *tmp=NULL;
-  const char    *prefix ="libvdr-";
   char          *suffix = NULL;
 
   debug("config:ReadVdrLib %s",libDir);
   //accept only dynamic Link libs with the current vdr version
   asprintf(&suffix, ".so.%s", APIVERSION);
-  if(dir !=NULL)
+  if(dir != NULL)
   {
+    char *tmp = NULL;
+    char *module = NULL;
+    const char *prefix = "libvdr-";
     while( (entry=readdir(dir))!=NULL)
     {
       debug("Plugin en directorio[%s]\n",entry->d_name +7);

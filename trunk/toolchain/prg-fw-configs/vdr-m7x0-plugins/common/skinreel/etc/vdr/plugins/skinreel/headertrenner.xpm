@@ -1,5 +1,5 @@
 /* XPM */
-static char * headertrenner_xpm[] = {
+static const char *const headertrenner_xpm[] = {
 "1 16 14 1",
 " 	c #848484",
 ".	c #FFFFFF",

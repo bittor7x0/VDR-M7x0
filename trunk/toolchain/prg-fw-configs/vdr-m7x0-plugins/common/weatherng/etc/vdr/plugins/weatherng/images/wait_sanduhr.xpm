@@ -1,5 +1,5 @@
 /* XPM */
-static char *wait_sanduhr[] = {
+static const char *const wait_sanduhr[] = {
 /* width height num_colors chars_per_pixel */
 "   196   196        2            1",
 /* colors */

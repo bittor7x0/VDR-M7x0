@@ -1,5 +1,5 @@
 /* XPM */
-static char * a_button_grey_xpm[] = {
+static const char *const a_button_grey_xpm[] = {
 "15 31 59 1",
 " 	c #EBEBEB",
 ".	c #C6C6C6",

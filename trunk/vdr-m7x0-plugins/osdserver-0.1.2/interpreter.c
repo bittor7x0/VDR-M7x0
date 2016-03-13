@@ -216,11 +216,9 @@ void cCommandProcessor::cCommand::DropArgs(int start, int count) {
 }
 
 bool cCommandProcessor::cCommand::ArgScanFlag(const char *flag) {
-    int pos=0;
     args_iterator i;
     for (i=args.begin(); i!=args.end(); i++) {
         if (i->IsFlag() && 0==strcasecmp(flag,i->Text()+1)) break;
-        pos++;
     }
     if (i==args.end()) return false;
 
@@ -229,11 +227,9 @@ bool cCommandProcessor::cCommand::ArgScanFlag(const char *flag) {
 }
 
 const char* cCommandProcessor::cCommand::ArgScanFlagParam(const char *flag) {
-    int pos=0;
     args_iterator i;
     for (i=args.begin(); i!=args.end(); i++) {
         if (i->IsFlag() && 0==strcasecmp(flag,i->Text()+1)) break;
-        pos++;
     }
     if (i==args.end()) return NULL;
 

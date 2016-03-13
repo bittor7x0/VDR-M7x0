@@ -1,5 +1,5 @@
 /* XPM */
-static char * v_4_3_xpm[] = {
+static const char *const v_4_3_xpm[] = {
 "27 18 2 1",
 " 	c None",
 ".	c #B9C000",

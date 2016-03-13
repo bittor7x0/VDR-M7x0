@@ -84,7 +84,7 @@ void Numbers::set_contents(const Numbers& sudoku, const bool marks[SDIM])
 void Numbers::set(Pos pos, unsigned int number)
 {
   assert(pos <= Pos::last());
-  assert(0 <= number && number <= DIM);
+  assert(number <= DIM);
   content[pos] = number;
 }
 
@@ -190,7 +190,7 @@ void Puzzle::reset(bool clear_marks)
 void Puzzle::set(Pos pos, unsigned int number)
 {
   assert(pos <= Pos::last());
-  assert(0 <= number && number <= DIM);
+  assert(number <= DIM);
 
   if (!given(pos) && get(pos) != number)
   {
@@ -350,7 +350,7 @@ unsigned int Puzzle::numbers_count(Pos pos) const
 bool Puzzle::possible_number(Pos pos, unsigned int number) const
 {
   assert(pos <= Pos::last());
-  assert(0 <= number && number <= DIM);
+  assert(number <= DIM);
   return numbers[pos][number];
 }
 

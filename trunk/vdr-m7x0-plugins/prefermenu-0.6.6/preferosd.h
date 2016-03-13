@@ -36,7 +36,7 @@ public:
 private:
   void DrawPreferMenu(int delta, int highlight);
   void DrawChannelsNames(int delta);
-  void DrawSymbol(int x, int y, char *SymbolName[], tColor color);
+  void DrawSymbol(int x, int y, const char* const SymbolName[], tColor color);
   void DrawHLine(int xstart, int ystart, int width, tColor color);
   void DrawVLine(int xstart, int ystart, int height, tColor color);
 };

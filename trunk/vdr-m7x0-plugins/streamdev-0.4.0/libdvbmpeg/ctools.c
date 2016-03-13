@@ -2032,9 +2032,13 @@ void write_mpg(int fstart, uint64_t length, int fdin, int fdout)
 	while ( count < length && (l = read(fdin,buf,buf_size)) >= 0){
 		if (l > 0) count+=l;
 		write(fdout,buf,l);
+#ifdef DEBUG
 		printf("written %02.2f%%\r",(100.*count)/length);
+#endif
 	}
+#ifdef DEBUG
 	printf("\n");
+#endif
 
 	//write( fdout, mpeg_end, 4);
 }
@@ -2072,15 +2076,19 @@ void split_mpg(char *name, uint64_t size)
 	fstat (fdin, &sb);
 
 	length = sb.st_size;
+#ifdef DEBUG
 	if ( length < ONE_GIG )
 		printf("Filelength = %2.2f MB\n", length/1024./1024.);
 	else
 		printf("Filelength = %2.2f GB\n", length/1024./1024./1024.);
+#endif
 
 	if ( length < size ) length = size;
-	
+
+#ifdef DEBUG
 	printf("Splitting %s into Files with size <= %2.2f MB\n",name,
 	       size/1024./1024.);
+#endif
 	
 	csize = CHECKBUF;
 	read(fdin, buf, csize);
@@ -2103,7 +2111,9 @@ void split_mpg(char *name, uint64_t size)
 		}
 
 		sprintf(new_name,"%s-%03d.%s",base_name,i,ext);
+#ifdef DEBUG
 		printf("writing %s\n",new_name);
+#endif
 
 #ifdef __FreeBSD__
 		if ( (fdout = open(new_name,O_WRONLY|O_CREAT|O_TRUNC,
@@ -2120,7 +2130,9 @@ void split_mpg(char *name, uint64_t size)
 		last = last + size - mark;
 	}
 	sprintf(new_name,"%s-%03d.%s",base_name,i,ext);
+#ifdef DEBUG
 	printf("writing %s\n",new_name);
+#endif
 
 #ifdef __FreeBSD__
 	if ( (fdout = open(new_name,O_WRONLY|O_CREAT|O_TRUNC,
@@ -2168,15 +2180,19 @@ void cut_mpg(char *name, uint64_t size)
 	fstat (fdin, &sb);
 
 	length = sb.st_size;
+#ifdef DEBUG
 	if ( length < ONE_GIG )
 		printf("Filelength = %2.2f MB\n", length/1024./1024.);
 	else
 		printf("Filelength = %2.2f GB\n", length/1024./1024./1024.);
+#endif
 
 	if ( length < size ) length = size;
-	
+
+#ifdef DEBUG
 	printf("Splitting %s into 2 Files with length %.2f MB and %.2f MB\n",
 	       name, size/1024./1024., (length-size)/1024./1024.);
+#endif
 	
 	csize = CHECKBUF;
 	read(fdin, buf, csize);
@@ -2196,7 +2212,9 @@ void cut_mpg(char *name, uint64_t size)
 	}
 
 	sprintf(new_name,"%s-1.%s",base_name,ext);
+#ifdef DEBUG
 	printf("writing %s\n",new_name);
+#endif
 
 #ifdef __FreeBSD__
 	if ( (fdout = open(new_name,O_WRONLY|O_CREAT|O_TRUNC,
@@ -2213,7 +2231,9 @@ void cut_mpg(char *name, uint64_t size)
 	last = last + size - mark;
 
 	sprintf(new_name,"%s-2.%s",base_name,ext);
+#ifdef DEBUG
 	printf("writing %s\n",new_name);
+#endif
 
 #ifdef __FreeBSD__
 	if ( (fdout = open(new_name,O_WRONLY|O_CREAT|O_TRUNC,

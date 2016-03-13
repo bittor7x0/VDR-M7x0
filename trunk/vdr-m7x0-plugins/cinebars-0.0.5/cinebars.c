@@ -83,7 +83,7 @@ void cBars::Show(void)
 #endif
         Draw();
 	}
-    else  printf("Error creating OSD\n");
+    else  esyslog("cinebars: Error creating OSD");
 }
 
 

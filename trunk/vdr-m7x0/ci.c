@@ -1116,9 +1116,11 @@ bool cCiDateTime::SendDateTime(void)
      int D = tm_gmt.tm_mday;
      int L = (M == 1 || M == 2) ? 1 : 0;
      int MJD = 14956 + D + int((Y - L) * 365.25) + int((M + 1 + L * 12) * 30.6001);
-#define DEC2BCD(d) (((d / 10) << 4) + (d % 10))
-     struct tTime { unsigned short mjd; uint8_t h, m, s; short offset; };
-     tTime T = { mjd : htons(MJD), h : DEC2BCD(tm_gmt.tm_hour), m : DEC2BCD(tm_gmt.tm_min), s : DEC2BCD(tm_gmt.tm_sec), offset : htons(tm_loc.tm_gmtoff / 60) };
+#define DEC2BCD(d) uint8_t(((d / 10) << 4) + (d % 10))
+#pragma pack(1)
+     struct tTime { uint16_t mjd; uint8_t h, m, s; short offset; };
+#pragma pack()
+     tTime T = { .mjd = htons(MJD), .h = DEC2BCD(tm_gmt.tm_hour), .m = DEC2BCD(tm_gmt.tm_min), .s = DEC2BCD(tm_gmt.tm_sec), .offset = short(htons(tm_loc.tm_gmtoff / 60)) };
      dbgprotocol("%d: ==> Date Time\n", SessionId());
      SendData(AOT_DATE_TIME, 7, (uint8_t*)&T);
      //XXX return value of all SendData() calls???
@@ -1259,7 +1261,7 @@ bool cCiMMI::Process(int Length, const uint8_t *Data)
                  case DCC_SET_MMI_MODE:
                       if (l == 2 && *++d == MM_HIGH_LEVEL) {
                          struct tDisplayReply { uint8_t id; uint8_t mode; };
-                         tDisplayReply dr = { id : DRI_MMI_MODE_ACK, mode : MM_HIGH_LEVEL };
+                         tDisplayReply dr = { .id = DRI_MMI_MODE_ACK, .mode = MM_HIGH_LEVEL };
                          dbgprotocol("%d: ==> Display Reply\n", SessionId());
                          SendData(AOT_DISPLAY_REPLY, 2, (uint8_t *)&dr);
                          }

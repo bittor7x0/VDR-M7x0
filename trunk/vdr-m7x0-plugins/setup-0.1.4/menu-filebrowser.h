@@ -86,7 +86,7 @@ class cOsdMenuFilebrowser : public cOsdMenu, public cStatus
     void UpdateCommands(const char* Filename, bool IsVirtualNewFile, bool NewFileInEditMode);
 
   public:
-    cOsdMenuFilebrowser(char* Directory, cFilebrowserStatebag* Statebag);
+    cOsdMenuFilebrowser(const char* Directory, cFilebrowserStatebag* Statebag);
     ~cOsdMenuFilebrowser();
     virtual eOSState ProcessKey(eKeys Key);
     /* cStatus */

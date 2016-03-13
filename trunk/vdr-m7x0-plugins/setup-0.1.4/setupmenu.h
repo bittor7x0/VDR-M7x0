@@ -50,8 +50,6 @@ public:
 class cSetupMenu : public cOsdMenu
 {
 private:
-   int      _number;
-   bool     _error;
    bool     _loaded_config;
 protected:
    Config  *_config;
@@ -69,7 +67,6 @@ class cSetupGenericMenu : public cSetupMenu
   private:
     MenuNode *_node;
     bool      _editItem;
-    int       _currLine;
     Config   *_config;
   public:
     cSetupGenericMenu(const char *title, MenuNode *node, Config  *config);

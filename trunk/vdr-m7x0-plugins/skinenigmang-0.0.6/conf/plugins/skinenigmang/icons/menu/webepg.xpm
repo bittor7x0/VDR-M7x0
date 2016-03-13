@@ -1,5 +1,5 @@
 /* XPM */
-static char * webepg_xpm[] = {
+static const char *const webepg_xpm[] = {
 "80 80 8 1",
 " 	c None",
 ".	c #294584",

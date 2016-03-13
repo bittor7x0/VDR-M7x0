@@ -467,8 +467,6 @@ bool cPluginUndelete::Start(void)
     #define MAXARGS 100
     int fargc = 1;
     char *fargv[MAXARGS];
-    cReadLine ReadLine;
-    bool done;
     FILE *f;
 
     if (!access(undeleteconfigfile.u, F_OK))
@@ -487,6 +485,9 @@ bool cPluginUndelete::Start(void)
       esyslog("%s: ERROR: cannot open config file: [%s]%s", plugin_name, ConfigDirectory(), undeleteconfigfile.u);
       return false;
     }
+
+    cReadLine ReadLine;
+    bool done;
     while ((p = compactspace(ReadLine.Read(f))) != NULL)
     {
       q = NULL;
@@ -857,7 +858,7 @@ cString cPluginUndelete::SVDRPCommand(const char *Command, const char *Option, i
           if (!DeletedRecordings.Count())
             return "No deleted recordings available";
         }
-        int replycode = 0;
+        int replycode;
         char *list = NULL;
         for (cRecording *recording = DeletedRecordings.First(); recording; recording = DeletedRecordings.Next(recording))
         {
@@ -1004,7 +1005,7 @@ cString cPluginUndelete::SVDRPCommand(const char *Command, const char *Option, i
           if (!DeletedRecordings.Count())
             return "No deleted recordings available";
         }
-        int replycode = 0;
+        int replycode;
         char *list = NULL;
         for (cRecording *recording = DeletedRecordings.First(); recording; recording = DeletedRecordings.Next(recording))
         {

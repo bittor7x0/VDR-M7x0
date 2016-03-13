@@ -137,7 +137,7 @@ void cAffichageAide::Display(void)
 eOSState cAffichageAide::ProcessKey(eKeys Key)
 {
 
-  switch (Key) {
+  switch (int(Key)) {
     case kUp|k_Repeat:
     case kUp:
     case kDown|k_Repeat:

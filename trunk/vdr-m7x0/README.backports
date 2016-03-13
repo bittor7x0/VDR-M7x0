@@ -242,3 +242,4 @@ VDR 2.1.7 backports applied in this patch:
   one character (reported by Stefan Braun).
 * The macro MaxFileName is now obsolete and may be removed in future versions. Use
   NAME_MAX directly instead.
+* Fixed a wrong alignment in cCiDateTime::SendDateTime().

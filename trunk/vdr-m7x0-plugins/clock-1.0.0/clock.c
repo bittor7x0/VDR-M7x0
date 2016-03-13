@@ -474,7 +474,6 @@ public:
 
 cMenuSetupClock::cMenuSetupClock(void)
 {
-  cSetup data;
   newSize       = Size;
   newShowSec    = ShowSec;
   newShowAlarm  = ShowAlarm;

@@ -179,12 +179,12 @@ eOSState cMenuQuickSearch::ProcessKey(eKeys Key)
     int iOnUseBlacklistsSelection = 0;
     int iOnExtCatItemBrowsable = 0;
     int iCatIndex = -1;
-    char* catname = NULL;
 
     if (!HasSubMenu() && strlen(ItemText)>0)
     {
 	// check, if on an item of ext. EPG info
 	int iOnExtCatItem = 0;
+	char* catname = NULL;
 	cSearchExtCat *SearchExtCat = SearchExtCats.First();
 	int index = 0;
 	while (SearchExtCat)

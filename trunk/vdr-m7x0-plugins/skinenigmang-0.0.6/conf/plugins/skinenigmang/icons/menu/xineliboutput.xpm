@@ -1,5 +1,5 @@
 /* XPM */
-static char * xineliboutput_xpm[] = {
+static const char *const xineliboutput_xpm[] = {
 "80 80 7 1",
 " 	c None",
 ".	c #1C2A60",

@@ -442,10 +442,10 @@ bool cPipe::Open(const char *Command, const char *Mode)
      return false;
      }
 
-  const char *mode = "w";
   int iopipe = 0;
 
   if (pid > 0) { // parent process
+     const char *mode = "w";
      if (strcmp(Mode, "r") == 0) {
         mode = "r";
         iopipe = 1;

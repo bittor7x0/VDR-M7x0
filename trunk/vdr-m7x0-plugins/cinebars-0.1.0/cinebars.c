@@ -102,7 +102,7 @@ void cBars::Show(void)
      Draw();
 	 }
   else
-     printf("Error creating OSD\n");
+     esyslog("cinebars: Error creating OSD");
 }
 
 void cBars::Color(void)
@@ -138,7 +138,7 @@ void cBars::Color(void)
      Draw();
 	 }
   else
-     printf("Error creating OSD\n");
+     esyslog("cinebars: Error creating OSD");
 }
 
 void cBars::Draw(void)

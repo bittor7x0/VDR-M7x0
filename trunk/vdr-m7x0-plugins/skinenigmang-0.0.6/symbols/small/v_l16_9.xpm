@@ -1,5 +1,5 @@
 /* XPM */
-static char * v_l16_9_xpm[] = {
+static const char *const v_l16_9_xpm[] = {
 "27 18 2 1",
 " 	c None",
 ".	c #B9C000",

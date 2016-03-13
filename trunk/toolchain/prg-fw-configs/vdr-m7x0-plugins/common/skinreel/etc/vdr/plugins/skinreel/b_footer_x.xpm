@@ -1,5 +1,5 @@
 /* XPM */
-static char * b_footer_x_xpm[] = {
+static const char *const b_footer_x_xpm[] = {
 "1 14 12 1",
 " 	c #EDEDED",
 ".	c #E7E7E6",

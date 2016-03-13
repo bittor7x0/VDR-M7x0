@@ -1440,7 +1440,6 @@ bool cSearchExt::HasContent(int contentID)
 void cSearchExt::SetContentFilter(int* contentStringsFlags)
 {
   // create the hex array of content descriptor IDs
-  string tmp;
   contentsFilter = "";
   for(unsigned int i=0; contentStringsFlags && i<=CONTENT_DESCRIPTOR_MAX; i++)
     {

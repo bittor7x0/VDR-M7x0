@@ -99,7 +99,7 @@ void cOsdItemFileEntry::Mark(bool Marked)
 cOsdMenuFilebrowser
 */
 
-cOsdMenuFilebrowser::cOsdMenuFilebrowser(char* Directory, cFilebrowserStatebag* Statebag) : cOsdMenu(tr("Filebrowser"), 10)
+cOsdMenuFilebrowser::cOsdMenuFilebrowser(const char* Directory, cFilebrowserStatebag* Statebag) : cOsdMenu(tr("Filebrowser"), 10)
 {
   this->Statebag=Statebag;
 

@@ -1,5 +1,5 @@
 /* XPM */
-static char * b_volumeempty_x_xpm[] = {
+static const char *const b_volumeempty_x_xpm[] = {
 "1 37 25 1",
 " 	c None",
 ".	c #F5F5F5",

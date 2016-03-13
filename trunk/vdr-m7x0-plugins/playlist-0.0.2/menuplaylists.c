@@ -474,7 +474,6 @@ eOSState cMenuPlaylists::ProcessKey(eKeys Key)
   if (!noneKey)
     dsyslog("%s: cMenuPlaylists::ProcessKey Key=%s", plugin_name, KeyName(Key));
 #endif
-  cOsdItem *Item;
   int n;
   int nPlaylists = PlaylistCol.Count();
   bool hSubMenu = HasSubMenu();
@@ -490,6 +489,7 @@ eOSState cMenuPlaylists::ProcessKey(eKeys Key)
 
   if (!HasSubMenu() && hSubMenu)
   {
+    cOsdItem *Item;
     if (nPlaylists == PlaylistCol.Count())
     {
       Item = Get(Current());

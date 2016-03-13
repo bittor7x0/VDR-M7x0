@@ -1,5 +1,5 @@
 /* XPM */
-static const char * tux_xpm[] = {
+static const char *const tux_xpm[] = {
 "154 184 61 1",
 " 	c None",
 ".	c #040006",

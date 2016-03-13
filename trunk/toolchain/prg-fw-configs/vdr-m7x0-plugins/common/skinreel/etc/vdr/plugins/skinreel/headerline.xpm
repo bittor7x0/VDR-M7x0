@@ -1,5 +1,5 @@
 /* XPM */
-static char * headerline_xpm[] = {
+static const char *const headerline_xpm[] = {
 "1 35 19 1",
 " 	c #000041",
 ".	c #060647",

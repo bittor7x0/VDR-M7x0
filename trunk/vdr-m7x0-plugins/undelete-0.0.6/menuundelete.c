@@ -476,7 +476,7 @@ eOSState cMenuRecordingSelect::ProcessKey(eKeys Key)
   switch (state)
   {
     case osUnknown: keynumber = KeyState - 2; // KeyState is 1 or 2
-                    switch (Key)
+                    switch (int(Key))
                     {
                       case kBlue:           keynumber += 2;  // no break!
                       case kYellow:         keynumber += 2;  // no break!
@@ -622,7 +622,7 @@ eOSState cMenuUndelete::ProcessKey(eKeys Key)
     bool processrecording = false;
     if (WorkFilename && (Key == kPurgeRec || Key == kSalvageRec))
       STATUS(tr("Display$please wait ..."));
-    switch (Key)
+    switch (int(Key))
     {
       case kPurgeRec:   state = osContinue;
                         if (WorkFilename)

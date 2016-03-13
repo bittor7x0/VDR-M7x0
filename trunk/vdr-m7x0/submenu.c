@@ -248,7 +248,7 @@ int cSubMenu::GetByLevel (int Level)
 	return 0;
 }
 
-void cSubMenu::CreateItem(int type,int position,int where,char *Name)
+void cSubMenu::CreateItem(int type,int position,int where,const char *Name)
 {
 	int OldMenuLevel;
 	switch(type)

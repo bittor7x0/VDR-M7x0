@@ -569,10 +569,10 @@ void cOsdMenuFilebrowser::UpdateCommands(const char* Filename, bool IsVirtualNew
 
 void cOsdMenuFilebrowser::UpdateHelp()
 {
-  char* Red=NULL;
-  char* Green=NULL;
-  char* Yellow=NULL;
-  char* Blue=NULL;
+  const char* Red=NULL;
+  const char* Green=NULL;
+  const char* Yellow=NULL;
+  const char* Blue=NULL;
 
   int HelpPos=0;
 

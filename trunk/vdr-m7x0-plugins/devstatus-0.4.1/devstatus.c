@@ -170,7 +170,7 @@ public:
         char* output = NULL;
 
         #define FRONTEND_DEVICE "/dev/ost/frontend%d"
-        cString dev = cString::sprintf(FRONTEND_DEVICE, d->CardIndex(), 0);
+        cString dev = cString::sprintf(FRONTEND_DEVICE, d->CardIndex());
         m_Frontend = open(dev, O_RDONLY | O_NONBLOCK);
         if (m_Frontend < 0) {
            return;

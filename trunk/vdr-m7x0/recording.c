@@ -253,9 +253,7 @@ int cResumeFile::Read(void)
         if (f) {
            cReadLine ReadLine;
            char *s;
-           int line = 0;
            while ((s = ReadLine.Read(f)) != NULL) {
-                 ++line;
                  char *t = skipspace(s + 1);
                  switch (*s) {
                    case 'I':

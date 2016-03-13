@@ -225,8 +225,10 @@ void cMenuChannelscan::InitLnbs()
    {
       if (diseqc != Diseqcs.First() && diseqc->Source() == Diseqcs.Prev(diseqc)->Source() )
           continue;
-      
+
+#ifdef DEBUG_CHANNELSCAN
       printf (" --Menu --- Diseqc Sources  %d --- \n",   diseqc->Source());
+#endif
       loopSources.push_back(diseqc->Source());
       lnbs++;
    }
@@ -350,8 +352,9 @@ void cMenuChannelscan::Set()
 
 void cMenuChannelscan::SetInfoBar() // Check with  cMenuScanActive
 {
-
+#ifdef DEBUG_CHANNELSCAN
    printf (" Menus --- %s -- scanState %d ---  \n", __PRETTY_FUNCTION__, scanState);
+#endif
 
    switch (scanState) 
    {
@@ -491,9 +494,7 @@ void cMenuChannelscan::DiseqShow()
   for (iConstIter iter = loopSources.begin(); iter != loopSources.end(); ++iter)
   {
      char buffer[256];
-
      snprintf(buffer,sizeof(buffer),"LNB %c: %s", 'A'+ (int) (iter-loopSources.begin()), *cSource::ToString(*iter));
-     //DLOG ("Show fetch Source [%d] %d %s ", (int) iter-loopSources.begin() , *iter, buffer);
      Add(new cMenuInfoItem(buffer));
   }
 } 
@@ -751,8 +752,10 @@ void cMenuScanActive::ErrorMessage()
 
 void cMenuScanActive::DeleteDummy()
 {
+#ifdef DEBUG_CHANNELSCAN
    printf (" --- %s --- %d -- \n", __PRETTY_FUNCTION__, Channels.Count());
-   
+#endif
+
    if (Channels.Count()< 3) return; 
 
    cChannel *channel = Channels.GetByNumber(1); 

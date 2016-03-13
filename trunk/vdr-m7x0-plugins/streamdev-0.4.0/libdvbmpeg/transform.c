@@ -2510,24 +2510,30 @@ int64_t ts_demux(int fdin, int fdv_out,int fda_out,uint16_t pida,
 					      get_vinfo( pay, l,&p->vi,1)+1) >0
 						){
 						vpts = trans_pts_dts(sb+9);
+#ifdef DEBUG
 						printf("vpts : %fs\n",
 						       vpts/90000.);
+#endif
 					}
 					if ( pid == pida && es==1 && 
 					     (p->start = 
 					      get_ainfo( pay, l,&p->ai,1)+1) >0
 						){
 						apts = trans_pts_dts(sb+9);
+#ifdef DEBUG
 						printf("apts : %fs\n",
 						       apts/90000.);
+#endif
 					}
 					if ( pid == pida && es==2 && 
 					     (p->start = 
 					      get_ac3info( pay, l,&p->ai,1)+1) >0
 						){
 						apts = trans_pts_dts(sb+9);
+#ifdef DEBUG
 						printf("apts : %fs\n",
 						       apts/90000.);
+#endif
 					}
 				}
 			}

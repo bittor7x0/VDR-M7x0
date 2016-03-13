@@ -1,5 +1,5 @@
 /* XPM */
-static char * eventtimer_xpm[] = {
+static const char *const eventtimer_xpm[] = {
 "14 22 2 1",
 ".	c #FFFFFF",
 "+	c #000000",

@@ -1,5 +1,5 @@
 /* XPM */
-static char * dvdselect_xpm[] = {
+static const char *const dvdselect_xpm[] = {
 "80 80 7 1",
 " 	c None",
 ".	c #3D609B",

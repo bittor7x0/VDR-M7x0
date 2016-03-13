@@ -1,5 +1,5 @@
 /* XPM */
-static char * mp3_xpm[] = {
+static const char *const mp3_xpm[] = {
 "80 80 8 1",
 " 	c None",
 ".	c #294584",

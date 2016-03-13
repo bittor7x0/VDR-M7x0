@@ -30,16 +30,11 @@
 #include <vdr/diseqc.h> 
 #include <vdr/menu.h> 
 #include <sys/ioctl.h>
-
-#include "debug.h"
 #include "menudvbmon.h"
 
 #define DVBFRONTEND "/dev/ost/frontend%d"
 
 // --- cMenuDVBmon -------------------------------------------------------
-#ifndef DBG  
-#define DBG "DEBUG [cMenuDVBmon]: "
-#endif
 
 cMenuDVBmon::cMenuDVBmon(struct SetupData *pSetupData):cOsdMenu(tr("DVB Monitor"))
 {
@@ -51,8 +46,6 @@ cMenuDVBmon::cMenuDVBmon(struct SetupData *pSetupData):cOsdMenu(tr("DVB Monitor"
       cycleTime = 1000*5;
    }
    
-   DLOG(DBG " cMenuDVBmon()");
-
    fd_frontend0 = openFrontend(0);
    fd_frontend1 = openFrontend(1);
 
@@ -136,9 +129,7 @@ void cMenuDVBmon::Setup()
    static int old_freq = 0;
    int curBER, curSignal;
    FREQ2CHANNEL::iterator search;
-   
-   // DLOG(DBG " Setup()");
-   
+
    Clear();
 
    freq = 0;
@@ -278,7 +269,7 @@ int cMenuDVBmon::openFrontend(int cardnr)
    fd_frontend = open(buffer,O_RDONLY | O_NONBLOCK);
    if (fd_frontend<=0)
    {
-      DLOG(DBG "cant open device: %s ", buffer);
+      esyslog("dvbmon: can't open device %s", buffer);
    }
    return fd_frontend;
 }

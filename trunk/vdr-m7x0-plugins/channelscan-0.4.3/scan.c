@@ -30,8 +30,9 @@ using std::cout;
 cScan::cScan()
 {
   origUpdateChannels = Setup.UpdateChannels;
+#ifdef DEBUG_CHANNELSCAN
   printf ("DEBUG [channelscan]  %s  \n",__PRETTY_FUNCTION__);
-
+#endif
   ::Setup.UpdateChannels = 4;
   //cMenuChannelscan::scanState = 0;
   cTransponders &transponders = cTransponders::GetInstance();
@@ -58,8 +59,9 @@ cScan::cScan()
 cScan::~cScan()
 {
   Cancel(5000);
-
+#ifdef DEBUG_CHANNELSCAN
   printf ("DEBUG [channelscan]  %s  \n",__PRETTY_FUNCTION__);
+#endif
   ::Setup.UpdateChannels =  origUpdateChannels;
   //worst case
   //cMenuChannelscan::scanning = false;
@@ -95,7 +97,9 @@ cScan::~cScan()
     delete EFilter;
     EFilter=NULL;
   }
+#ifdef DEBUG_CHANNELSCAN
   printf ("DEBUG [channelscan]  %s end cTransponders::Destroy(); \n",__PRETTY_FUNCTION__);
+#endif
 }
 
 void cScan::ShutDown()
@@ -198,8 +202,10 @@ uint16_t cScan::getStatus()
 void cScan::ScanServices()
 {
   cMenuChannelscan::scanState = ssGetChannels;
-#ifdef WITH_EIT 
+#ifdef WITH_EIT
+#ifdef DEBUG_CHANNELSCAN
   printf ("DEBUG [channelscan]: With EIT\n");
+#endif
   EFilter = new cEitFilter();
 #endif
   PFilter = new PatFilter();
@@ -232,10 +238,13 @@ void cScan::ScanServices()
         usleep(200*1000);
     }
 
-  /* if (cMenuChannelscan::scanState>=ssInterrupted && !PFilter->EndOfScan())
+  /*
+#ifdef DEBUG_CHANNELSCAN
+  if (cMenuChannelscan::scanState>=ssInterrupted && !PFilter->EndOfScan())
   {
     printf ("DEBUG [channelscan]: ScanServices aborted %d \n", cMenuChannelscan::scanState);
   }
+#endif
   usleep(200*1000); */
   PFilter->GetFoundNum(foundNum,totalNum);
 
@@ -266,8 +275,9 @@ void cScan::ScanServices()
 //-------------------------------------------------------------------------
 void cScan::ScanNitServices()
 {
-
+#ifdef DEBUG_CHANNELSCAN
   printf (" DEBUG [cs]; ScanNITService \n");
+#endif
   NFilter = new NitFilter();
   time_t start=time(NULL);
    
@@ -307,22 +317,30 @@ void cScan::ScanNitServices()
   } 
   if (cMenuChannelscan::scanState == ssGetTransponders)
     transponderNr = 0;
-  
+
+#ifdef DEBUG_CHANNELSCAN
   printf (" DEBUG [cs]; ScanNITService end \n");
+#endif
 }
 //-------------------------------------------------------------------------
 
 void cScan::ScanDVB_S(cTransponder *tp, cChannel *c)
 {
+#ifdef DEBUG_CHANNELSCAN
   printf (" DEBUG [cs]; ScanDVB_S \n");
+#endif
   tp->SetTransponderData(c, sourceCode);
   if (!device->SwitchChannel(c,false)) 
   {
      esyslog(ERR "SwitchChannel(%d)  failed", c->Frequency());
+#ifdef DEBUG_CHANNELSCAN
      printf(ERR "SwitchChannel(%d)  failed\n", c->Frequency());
+#endif
 #if HAVE_ROTOR
      esyslog(ERR "try Switch rotor ");
+#ifdef DEBUG_CHANNELSCAN
      printf(ERR " try Switch rotor \n");
+#endif
 
      struct {
        cDevice* device;
@@ -452,11 +470,15 @@ void cScan::ScanDVB_C(cTransponder *tp,cChannel *c)
   for (m=0;m<3;m++) {
     if (scanMode!=2) { // not manual
       if (srstat!=-1) {
+#ifdef DEBUG_CHANNELSCAN
         printf("Use auto SR %i\n",srtab[srstat]);
+#endif
         tp->SetSymbolrate(srtab[srstat]);
       }
       else {
+#ifdef DEBUG_CHANNELSCAN
         printf("Use SR %i\n",srtab[m]);
+#endif
         tp->SetSymbolrate(srtab[m]);
       }
     }
@@ -480,14 +502,14 @@ void cScan::ScanDVB_C(cTransponder *tp,cChannel *c)
        str1=getSignal();
             
        if (lastLocked) {
+#ifdef DEBUG_CHANNELSCAN
          printf("Wait last lock\n");
+#endif
          sleep(3);  // avoid false lock
        }
             
        if (device->HasLock(timeout))
        {
-           //DLOG(DBG "  ------------- HAS LOCK -------------     ");
-          //printf("LOCK @ %.1f\n",tp->Frequency()/1.0e6);
           ScanServices();
           lastLocked=1;
           if (scanMode==0 && srstat==-1)
@@ -498,7 +520,6 @@ void cScan::ScanDVB_C(cTransponder *tp,cChannel *c)
        lastLocked=0;
             
        if (!fixedModulation && n==0 && str1>0x4000) {
-          //printf("QAM256 %x\n",str1);
          tp->SetModulation(QAM_256);
        }
        else break;
@@ -554,8 +575,9 @@ void cScan::Action()
   
   while (Running() && cMenuChannelscan::scanState == ssGetChannels)
   {
-  
+#ifdef DEBUG_CHANNELSCAN
     printf ("DEBUG [channelscan]: loop through  transponders ++++  size %d ++++++++\n", (int)transponders.v_tp_.size());
+#endif
   
     unsigned int oldTransponderMapSize = transponderMap.size();
     while (tp != transponders.v_tp_.end())
@@ -567,7 +589,9 @@ void cScan::Action()
        transponderNr = tp - transponders.v_tp_.begin();
        channelNumber = (*tp)->ChannelNum();
        frequency = (*tp)->Frequency();
+#ifdef DEBUG_CHANNELSCAN
        printf ("\033[0;44m DEBUG [channelscan]: scan f: %d  \033[0m \n", frequency);
+#endif
   
        if (device->ProvidesSource(cSource::stTerr))
          ScanDVB_T(*tp,c.get());
@@ -593,9 +617,10 @@ void cScan::Action()
   }
 
   int duration = time(NULL) - startTime;
-  DLOG(DBG " End of transponderlist. End of scan! Duratation %d ", duration);
+  dsyslog(DBG " End of transponderlist. End of scan! Duratation %d ", duration);
+#ifdef DEBUG_CHANNELSCAN
   printf( " --- End of transponderlist. End of scan! Duratation %d ---\n", duration);
-
+#endif
 
   if (cMenuChannelscan::scanState == ssGetChannels)
      cMenuChannelscan::scanState = ssSuccess;
@@ -612,14 +637,18 @@ void cScan::Action()
 
 void cScan::AddTransponders()
 {
-  printf( " --- AddTransponders \n");
+#ifdef DEBUG_CHANNELSCAN
+   printf( " --- AddTransponders \n");
+#endif
    cTransponders &transponders = cTransponders::GetInstance();
    for (tpMapIter itr = transponderMap.begin(); itr != transponderMap.end(); ++itr)
    {
       if (cMenuChannelscan::scanState == ssGetTransponders ||
            transponders.MissingTransponder(itr->first))
       {
+#ifdef DEBUG_CHANNELSCAN
           printf("add tp: %6d\n", itr->first);
+#endif
           transponders.v_tp_.push_back(itr->second);
       }
    }
@@ -631,12 +660,14 @@ void cScan::ClearMap()
 
    while (!transponderMap.empty()) 
    {
+#ifdef DEBUG_CHANNELSCAN
       if (transponderMap.begin()->second) {
          printf("delete tp: %6d\n", (*transponderMap.begin()).first);
          //delete transponderMap.begin()->second;
       }
-      else 
+      else
         printf(" tp: %6d deleted already\n", (*transponderMap.begin()).first);
+#endif
           
       transponderMap.erase(transponderMap.begin());  
    }

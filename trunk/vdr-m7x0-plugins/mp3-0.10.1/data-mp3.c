@@ -28,7 +28,7 @@
 #include "data.h"
 #include "decoder.h"
 
-#define DEBUG_IMAGE
+//#define DEBUG_IMAGE
 
 #ifdef DEBUG_IMAGE
 #define di(x) { (x); }

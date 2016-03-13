@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "quantize.h"
+#include <vdr/tools.h>
 
 cQuantizeWu::cQuantizeWu()
 {
@@ -368,7 +369,7 @@ long cQuantizeWu::Bottom(struct box * cube, unsigned char dir, long mmt[BOX][BOX
 				+ mmt[cube->r0][cube->g1][cube->b0]
 				- mmt[cube->r0][cube->g0][cube->b0]);
 	}
-	printf("error in Bottom()");
+	esyslog("weatherng: error in Bottom()");
 	return 0;
 }
 
@@ -392,7 +393,7 @@ long cQuantizeWu::Top(struct box * cube, unsigned char dir, int pos, long mmt[BO
 				- mmt[cube->r0][cube->g1][pos]
 				+ mmt[cube->r0][cube->g0][pos]);
 	}
-    printf("error in Top()");
+    esyslog("weatherng: error in Top()");
 	return 0;
 }
 

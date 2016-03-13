@@ -41,13 +41,13 @@
 
 std::string parseaux(const char *aux)
 {
-  bool founditem = false;
   std::stringstream sstrReturn;
   char *start, *end;
   // check if egpsearch
   start = strcasestr(aux, AUX_TAGS_EPGSEARCH_START);
   end = strcasestr(aux, AUX_TAGS_EPGSEARCH_END);
   if (start && end) {
+    bool founditem = false;
     // add header
     sstrReturn << AUX_HEADER_EPGSEARCH;
     // parse first item

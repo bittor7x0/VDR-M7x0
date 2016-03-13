@@ -1,5 +1,5 @@
 /* XPM */
-static char * a_bottom_xpm[] = {
+static const char *const a_bottom_xpm[] = {
 "150 14 80 1",
 "c  c #FFFFFF",
 " 	c #E7E7E7",

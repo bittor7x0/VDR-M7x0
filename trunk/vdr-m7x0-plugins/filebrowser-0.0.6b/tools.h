@@ -68,7 +68,7 @@ class cConfigReader
     cReadLine* Reader;
     FILE* File;
   public:
-    cConfigReader(cFilebrowserStatebag* Statebag, char* Filename);
+    cConfigReader(cFilebrowserStatebag* Statebag, const char* Filename);
     ~cConfigReader();
     char* Read();
   private:

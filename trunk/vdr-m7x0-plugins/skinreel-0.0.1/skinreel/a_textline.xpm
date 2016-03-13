@@ -1,5 +1,5 @@
 /* XPM */
-static char * a_textline_xpm[] = {
+static const char *const a_textline_xpm[] = {
 "10 37 69 1",
 " 	c None",
 ".	c #FCFCFC",

@@ -112,7 +112,7 @@ cCondVar cMainThreadLock::MainThreadContinue;
 cMainThreadLock::cCallbackList cMainThreadLock::Callbacks;
 
 
-#define DEBUG_LOCKING
+//#define DEBUG_LOCKING
 
 #ifdef DEBUG_LOCKING
 
@@ -125,10 +125,10 @@ inline bool ThreadHasLock() {
 
 inline void CheckThreads(char *file, unsigned int line) {
     if (!ThreadHasLock())
-        printf("ERROR Thread not main (%s,%d)\n", file, line);
+        esyslog("ERROR Thread not main (%s,%u)\n", file, line);
 
     if (LockCount<=0)
-        printf("ERROR Thread lock %i (%s,%d)\n",LockCount, file, line);
+        esyslog("ERROR Thread lock %i (%s,%u)\n", LockCount, file, line);
 }
 
 inline void LockMain(char *file, unsigned int line) {

@@ -17,7 +17,7 @@
 #define OSDTELETEXT_TXTRENDER_H_
 
 #include <stdio.h>
-
+#include <vdr/tools.h>
 
 // Teletext character sets
 enum enumCharsets {
@@ -256,7 +256,7 @@ public:
     cTeletextChar GetChar(int x, int y) {
         // Read character content from page
         if (x<0 || x>=40 || y<0 || y>=25) {
-            printf("Warning: out of bounds read access to teletext page\n");
+            isyslog("Warning: out of bounds read access to teletext page");
             return cTeletextChar();
         }
         return Page[x][y].ToDirty(false);
@@ -270,7 +270,7 @@ public:
     bool IsDirty(int x, int y) {
         // local dirty status
         if (x<0 || x>=40 || y<0 || y>=25) {
-            printf("Warning: out of bounds read access to teletext page\n");
+            isyslog("Warning: out of bounds read access to teletext page");
             return false;
         }
         return Page[x][y].GetDirty() | DirtyAll;    
@@ -279,7 +279,7 @@ public:
     void MakeDirty(int x, int y) {
         // force one character dirty
         if (x<0 || x>=40 || y<0 || y>=25) {
-            printf("Warning: out of bounds write access to teletext page\n");
+            isyslog("Warning: out of bounds write access to teletext page");
             return;
         }
         Page[x][y].SetDirty(true);
@@ -290,7 +290,7 @@ public:
         // Set character at given location
         
         if (x<0 || x>=40 || y<0 || y>=25) {
-            printf("Warning: out of bounds write access to teletext page\n");
+            isyslog("Warning: out of bounds write access to teletext page");
             return;
         }
         if (GetChar(x,y) != c) {

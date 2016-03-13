@@ -298,7 +298,6 @@ void write_pes(int fd, pes_packet *p){
 }
 
 static unsigned int find_length(int f){
-	uint64_t p = 0;
 	uint64_t start = 0;
 	uint64_t q = 0;
 	int found = 0;
@@ -309,7 +308,7 @@ static unsigned int find_length(int f){
 	start -=2;
         lseek(f,start,SEEK_SET);
 	while ( neof > 0 && !found ){
-		p = lseek(f,0,SEEK_CUR);
+		lseek(f,0,SEEK_CUR);
 		neof = save_read(f,&sync4,4);
 		if (sync4[0] == 0x00 && sync4[1] == 0x00 && sync4[2] == 0x01) {
 			switch ( sync4[3] ) {
@@ -1334,7 +1333,7 @@ void tfilter(trans *p)
 {
 	int c;
 	int tpid;
-	uint8_t flag,flags;
+	uint8_t flags;
 	uint8_t adapt_length = 0;
 	uint8_t cpid[2];
 
@@ -1350,7 +1349,6 @@ void tfilter(trans *p)
 			tpid);
 	}
 
-	flag = cpid[0];
 	flags = p->packet[3];
 	
 	if ( flags & ADAPT_FIELD ) {
@@ -2033,9 +2031,13 @@ void write_mpg(int fstart, uint64_t length, int fdin, int fdout)
 	while ( count < length && (l = read(fdin,buf,buf_size)) >= 0){
 		if (l > 0) count+=l;
 		write(fdout,buf,l);
+#ifdef DEBUG
 		printf("written %02.2f%%\r",(100.*count)/length);
+#endif
 	}
+#ifdef DEBUG
 	printf("\n");
+#endif
 
 	//write( fdout, mpeg_end, 4);
 }
@@ -2069,15 +2071,19 @@ void split_mpg(char *name, uint64_t size)
 	fstat (fdin, &sb);
 
 	length = sb.st_size;
+#ifdef DEBUG
 	if ( length < ONE_GIG )
 		printf("Filelength = %2.2f MB\n", length/1024./1024.);
 	else
 		printf("Filelength = %2.2f GB\n", length/1024./1024./1024.);
+#endif		
 
 	if ( length < size ) length = size;
-	
+
+#ifdef DEBUG
 	printf("Splitting %s into Files with size <= %2.2f MB\n",name,
 	       size/1024./1024.);
+#endif
 	
 	csize = CHECKBUF;
 	read(fdin, buf, csize);
@@ -2102,7 +2108,9 @@ void split_mpg(char *name, uint64_t size)
 		}
 
 		sprintf(new_name,"%s-%03d.%s",base_name,i,ext);
+#ifdef DEBUG
 		printf("writing %s\n",new_name);
+#endif
 
 		if ( (fdout = open(new_name,O_WRONLY|O_CREAT|O_TRUNC
 				   |O_LARGEFILE,
@@ -2117,7 +2125,9 @@ void split_mpg(char *name, uint64_t size)
 		last = last + size - mark;
 	}
 	sprintf(new_name,"%s-%03d.%s",base_name,i,ext);
+#ifdef DEBUG
 	printf("writing %s\n",new_name);
+#endif
 
 	if ( (fdout = open(new_name,O_WRONLY|O_CREAT|O_TRUNC
 			   |O_LARGEFILE,
@@ -2159,15 +2169,19 @@ void cut_mpg(char *name, uint64_t size)
 	fstat (fdin, &sb);
 
 	length = sb.st_size;
+#ifdef DEBUG
 	if ( length < ONE_GIG )
 		printf("Filelength = %2.2f MB\n", length/1024./1024.);
 	else
 		printf("Filelength = %2.2f GB\n", length/1024./1024./1024.);
+#endif
 
 	if ( length < size ) length = size;
-	
+
+#ifdef DEBUG	
 	printf("Splitting %s into 2 Files with length %.2f MB and %.2f MB\n",
 	       name, size/1024./1024., (length-size)/1024./1024.);
+#endif
 	
 	csize = CHECKBUF;
 	read(fdin, buf, csize);
@@ -2189,7 +2203,9 @@ void cut_mpg(char *name, uint64_t size)
 	}
 
 	sprintf(new_name,"%s-1.%s",base_name,ext);
+#ifdef DEBUG
 	printf("writing %s\n",new_name);
+#endif
 
 	if ( (fdout = open(new_name,O_WRONLY|O_CREAT|O_TRUNC
 			   |O_LARGEFILE,
@@ -2204,7 +2220,9 @@ void cut_mpg(char *name, uint64_t size)
 	last = last + size - mark;
 
 	sprintf(new_name,"%s-2.%s",base_name,ext);
+#ifdef DEBUG
 	printf("writing %s\n",new_name);
+#endif
 
 	if ( (fdout = open(new_name,O_WRONLY|O_CREAT|O_TRUNC
 			   |O_LARGEFILE,

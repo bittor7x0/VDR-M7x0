@@ -454,10 +454,11 @@ void cMP3Control::ShowProgress(bool open, bool bigWin)
         bigWin=false;
         }
       else {//Draw Status classic
-        int bt, bp;
+        int bt;
         fw=font->Width(' ')*2;
         fh=font->Height();
         if(bigWin) {
+          int bp;
           bw=Setup.OSDWidth;
           bh=Setup.OSDHeight;
           bt=0;
@@ -466,13 +467,11 @@ void cMP3Control::ShowProgress(bool open, bool bigWin)
           }
         else {
           bw=Setup.OSDWidth;
-          bh=bp=2*fh;
+          bh=2*fh;
           bt=Setup.OSDHeight-bh;
           rows=0;
           }
         bwc=bw/fw+1;
-        //d(isyslog("mp3: bw=%d bh=%d bt=%d bp=%d bwc=%d rows=%d fw=%d fh=%d\n",
-        //  bw,bh,bt,bp,bwc,rows,fw,fh))
         osd=cOsdProvider::NewOsd(Setup.OSDLeft,Setup.OSDTop+bt);
         if(!osd) return;
 
@@ -719,7 +718,7 @@ eOSState cMP3Control::ProcessKey(eKeys Key)
 
   if(jumpactive && Key!=kNone) { JumpProcess(Key); return osContinue; }
 
-  switch(Key) {
+  switch(int(Key)) {
     case kDown:
     case kDown|k_Repeat:
       mgr->Next(); player->Play();

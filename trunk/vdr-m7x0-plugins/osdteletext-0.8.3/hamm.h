@@ -116,17 +116,6 @@ vbi3_par8			(unsigned int		c)
 vbi3_inline int
 vbi3_unpar8			(unsigned int		c)
 {
-#ifdef __GNUC__
-#if #cpu (i686)
-	int r = c & 127;
-
-	/* This saves cache flushes and an explicit branch. */
-	__asm__ (" testb	%1,%1\n"
-		 " cmovp	%2,%0\n"
-		 : "+&a" (r) : "c" (c), "rm" (-1));
-	return r;
-#endif
-#endif
 	if (_vbi3_hamm24_inv_par[0][(uint8_t) c] & 32) {
 		return c & 127;
 	} else {

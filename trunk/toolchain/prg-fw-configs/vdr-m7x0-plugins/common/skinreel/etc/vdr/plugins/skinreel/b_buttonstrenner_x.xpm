@@ -1,5 +1,5 @@
 /* XPM */
-static char * b_buttonstrenner_x_xpm[] = {
+static const char *const b_buttonstrenner_x_xpm[] = {
 "1 7 7 1",
 " 	c #E6E6E6",
 ".	c #EBEBEB",

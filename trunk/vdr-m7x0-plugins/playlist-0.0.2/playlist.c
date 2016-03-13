@@ -383,7 +383,6 @@ bool cPluginPlaylist::Start(void)
     int fargc = 1;
     char *fargv[MAXARGS];
     cReadLine ReadLine;
-    bool done;
     FILE *f;
 
     if (!access(playlistconfigfile.u, F_OK))
@@ -406,6 +405,7 @@ bool cPluginPlaylist::Start(void)
       esyslog("%s: ERROR: cannot open config file: [%s]%s", plugin_name, ConfigDirectory(""), playlistconfigfile.u);
       return false;
     }
+    bool done;
     while ((s = ReadLine.Read(f)) != NULL)
     {
       p = skipspace(stripspace(s));

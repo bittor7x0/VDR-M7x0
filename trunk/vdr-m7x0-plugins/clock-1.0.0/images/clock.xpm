@@ -1,5 +1,5 @@
 /* XPM */
-static const char * clock_xpm[] = {
+static const char *const clock_xpm[] = {
 "80 77 126 2",
 "  	c #000000",
 ". 	c #838B93",
