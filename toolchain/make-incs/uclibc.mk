@@ -24,8 +24,8 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-UCLIBC_IS_NG := n
-UCLIBC_IS_SNAPSHOT := y
+UCLIBC_IS_NG := y
+UCLIBC_IS_SNAPSHOT := n
 
 UCLIBC_O7OVERSION_H := o7o-toolchain-version.h
 
