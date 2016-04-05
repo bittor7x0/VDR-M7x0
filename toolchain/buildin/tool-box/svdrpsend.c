@@ -78,9 +78,9 @@ int svdrprecv (int sd) {
 	l = 2;
       }
 
-      strncat (buf2, tmp, sizeof (tmp));
+      strncat (buf2, tmp, 6);
       bzero (tmp, sizeof (tmp));
-      strncat (buf2, buf1, sizeof (buf1));
+      strncat (buf2, buf1, sizeof (buf2) - strlen (buf2) - 1);
 
       if (l == 2) {
 	int i, j = 0;

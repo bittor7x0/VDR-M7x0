@@ -2396,6 +2396,7 @@ int http_open (char *url)
 					break;
 				case '3':
 					reloc = 1;
+					break;
 				default:
 					fprintf (stderr, "HTTP req failed:%s",
 						sptr+1); 

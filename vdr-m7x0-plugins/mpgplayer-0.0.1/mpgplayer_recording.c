@@ -1055,7 +1055,7 @@ cMpgMark::cMpgMark(int Position, int RealPosition, const char *Comment)
 
 cMpgMark::~cMpgMark()
 {
-  free(comment);
+  // "comment" is already freed in cMark::~cMark()
 }
 
 cString cMpgMark::ToText(void)

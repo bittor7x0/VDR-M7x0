@@ -27,5 +27,5 @@
 #define CONFIG_DEFAULT_TABLE_FILE "/etc/usbautomounter/usbam_mtable.conf"
 #define CONFIG_DEFAULT_MOUNT_PREFIX "/var/media"
 #define CONFIG_DEFAULT_MOUNT_UNKNOWN_PREFIX "disk-volume-"
-#define USB_MOUNTER_VERSION_STR "0.0.1"
+#define USB_MOUNTER_VERSION_STR "0.0.2"
 #endif

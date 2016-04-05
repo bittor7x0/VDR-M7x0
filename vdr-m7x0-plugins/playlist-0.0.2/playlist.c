@@ -463,7 +463,7 @@ bool cPluginPlaylist::Start(void)
         esyslog("%s: ERROR: cannot parse config file: [%s]%s", plugin_name, ConfigDirectory(""), playlistconfigfile.u);
         return false;
       }
-      while(fargc) free(fargv[--fargc]);
+    while(fargc) free(fargv[--fargc]);
   } else
   {
     free(p);

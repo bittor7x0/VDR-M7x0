@@ -235,7 +235,7 @@ const char * Util::boolToStr( bool val )
  */
 const char * Util::typeToStr( Type type )
 {
-  const char * result = undefStr;
+  const char * result;
   switch(type)
   {
     case BOOL:      result = boolStr;
@@ -257,7 +257,8 @@ const char * Util::typeToStr( Type type )
     case DIR:
                     result = dirStr;
                     break;
-    case UNDEFINED:
+    //case UNDEFINED:
+    default:
                     result = undefStr;
                     break;
   }

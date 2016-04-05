@@ -41,7 +41,7 @@ cSelect::~cSelect() {
 		delete handler;
 
 	if (pollfds)
-		delete pollfds;
+		delete[] pollfds;
 }
 
 void cSelect::SetServerSocket(cVdrmanagerServerSocket * sock) {
@@ -137,7 +137,7 @@ bool cSelect::Poll() {
 	}
 	if (rc < 0) {
 		LOG_ERROR;
-		delete pollfds;
+		delete[] pollfds;
 		return false;
 	}
 
@@ -176,7 +176,7 @@ bool cSelect::Poll() {
 		}
 	}
 
-	delete pollfds;
+	delete[] pollfds;
 
 	return true;
 }

@@ -9,6 +9,7 @@
 #ifndef __MENUITEMS_H
 #define __MENUITEMS_H
 
+#include <limits.h>
 #include "osdbase.h"
 
 extern const char *FileNameChars;

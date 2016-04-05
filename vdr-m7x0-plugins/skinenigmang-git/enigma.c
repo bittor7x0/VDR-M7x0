@@ -732,7 +732,7 @@ int cSkinEnigmaDisplayChannel::GetSignal(int &str, int &snr, fe_status_t & /* st
     int const cardIndex = cDevice::ActualDevice()->CardIndex();
     static char dev[256];
 
-    sprintf(dev, FRONTEND_DEVICE, cardIndex, 0);
+    sprintf(dev, FRONTEND_DEVICE, cardIndex);
     m_Frontend = open(dev, O_RDONLY | O_NONBLOCK);
     if (m_Frontend < 0)
       return -1;

@@ -30,10 +30,10 @@ cRingBuffer::cRingBuffer(int Size, bool Statistics, const char* Description)
   getWaitCounter = 0;
   putSignalCounter = 0;
   getSignalCounter = 0;
+  size = Size;
   minPutFree = size / 3;
   minGetAvail = size / 3;
 //M7X0 END AK
-  size = Size;
   statistics = Statistics;
   getThreadTid = 0;
   maxFill = 0;

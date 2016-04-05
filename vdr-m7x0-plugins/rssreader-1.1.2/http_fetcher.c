@@ -772,7 +772,9 @@ int makeSocket(const char *host)
         *p = '\0';
         }
     else
+        {
         port = PORT_NUMBER;
+        }
 
 	hp = gethostbyname(host);
 	if(hp == NULL) { errorSource = H_ERRNO; return -1; }

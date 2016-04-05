@@ -55,7 +55,7 @@
 #if 0
 #include <sys/capability.h>
 #endif
-#include <sys/sysmips.h>
+//#include <sys/sysmips.h>
 //M7X0 END AK
 
 #include <sys/prctl.h>

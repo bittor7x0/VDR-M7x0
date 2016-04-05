@@ -29,7 +29,7 @@ cShutdownHandler ShutdownHandler;
 
 bool cUsbAutomounter::Active(void)
 {
-	int file=open("/var/usbautomounter",O_CREAT|O_WRONLY);
+	int file=open("/var/usbautomounter", O_CREAT | O_WRONLY, DEFFILEMODE);
 	if(file!=-1)
 	{
 		if(flock(file,LOCK_EX|LOCK_NB))
@@ -223,10 +223,11 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
   Delta = Next ? Next - time(NULL) : 0;
   if (Next && Delta <= Setup.MinEventTimeout * 60) {
      // Plugin wakeup within Min Event Timeout
-     if (!Interactive)
-	setIaMode(0);
-	cDevice::PrimaryDevice()->SetTvSettings(0);
-	return false;
+     if (!Interactive) {
+        setIaMode(0);
+        cDevice::PrimaryDevice()->SetTvSettings(0);
+        return false;
+        }
      //cString buf = cString::sprintf(tr("Plugin %s wakes up in %ld min, continue?"), Plugin->Name(), Delta / 60);
      //if (!Interface->Confirm(buf))
      //   return false;

@@ -11,9 +11,9 @@
 #include <vdr/epg.h>
 #include <vdr/recording.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "mpgplayer_setup.h"
 #include "mpgplayer_tools.h"
-
 
 class cMpgMpegFile {
 private:

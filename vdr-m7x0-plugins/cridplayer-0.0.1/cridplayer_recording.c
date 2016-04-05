@@ -1124,7 +1124,7 @@ cCridMark::cCridMark(int Position, int RealPosition, const char *Comment)
 
 cCridMark::~cCridMark()
 {
-  free(comment);
+  // "comment" is already freed in cMark::~cMark()
 }
 
 cString cCridMark::ToText(void)

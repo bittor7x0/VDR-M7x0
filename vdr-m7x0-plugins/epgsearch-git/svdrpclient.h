@@ -51,6 +51,7 @@ public:
 	    AdrSock.sin_family = AF_INET;
 	    AdrSock.sin_port   = htons(EPGSearchConfig.SVDRPPort);
 	    inet_aton("127.0.0.1", &AdrSock.sin_addr);
+	    memset(&(AdrSock.sin_zero), '\0', 8);
 
 	    if (connect(sock, (struct sockaddr*)&AdrSock, sizeof(AdrSock)) == -1)
 	    {

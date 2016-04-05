@@ -107,7 +107,7 @@ eOSState cRssMenuItem::ProcessKey(eKeys Key)
        case kOk:
             return osBack;
        default:
-            state = osContinue;
+            break;
        }
      state = osContinue;
      }

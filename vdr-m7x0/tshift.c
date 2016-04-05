@@ -5,7 +5,9 @@
  * http://vdr-m7x0.foroactivo.com.es
  *
  */
+
 #include <sys/ioctl.h>
+#include <limits.h>
 #include "tshift.h"
 #include "m7x0_dvb/dmx_ext.h"
 #include "videodir.h"
@@ -14,7 +16,6 @@
 #include "dvbplayer.h"
 #include "transfer.h"
 #include "remote.h"
-
 
 extern const char *VideoDirectory;
 #define MAXTSHIFTFILES (MAXTSHIFT+1)
