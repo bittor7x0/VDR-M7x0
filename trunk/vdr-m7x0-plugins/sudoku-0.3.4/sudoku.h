@@ -23,6 +23,7 @@
 #ifndef VDR_SUDOKU_H
 #define VDR_SUDOKU_H
 
+#include <stdlib.h>
 #include <vector>
 
 
@@ -34,7 +35,6 @@ namespace Sudoku
 
 
 #ifdef USE_RAND
-#include <stdlib.h>
 #include <time.h>
   /** Random number 0 .. max-1 */
   static unsigned int rand(unsigned int max)
