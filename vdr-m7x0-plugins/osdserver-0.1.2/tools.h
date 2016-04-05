@@ -1,6 +1,7 @@
 #ifndef __OSDSERVER_TOOLS_H
 #define __OSDSERVER_TOOLS_H
 
+#include <algorithm>
 #include <ctype.h>
 
 #include <vdr/tools.h>
@@ -40,19 +41,19 @@ public:
     void SetRead(int fd) {
         if (fd >= 0 && fd < FD_SETSIZE) {
             FD_SET(fd,&readfds);
-            fdmax=max(fd,fdmax);
+            fdmax=std::max(fd,fdmax);
         }
     }
     void SetWrite(int fd) {
         if (fd >= 0 && fd < FD_SETSIZE) {
             FD_SET(fd,&writefds);
-            fdmax=max(fd,fdmax);
+            fdmax=std::max(fd,fdmax);
         }
     }
     void SetExcept(int fd) {
         if (fd >= 0 && fd < FD_SETSIZE) {
             FD_SET(fd,&exceptfds);
-            fdmax=max(fd,fdmax);
+            fdmax=std::max(fd,fdmax);
         }
     }
     void ClearRead(int fd) {

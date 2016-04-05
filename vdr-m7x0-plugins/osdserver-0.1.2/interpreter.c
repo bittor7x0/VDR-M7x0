@@ -5,6 +5,7 @@
 
 #include "interpreter.h"
 
+#include <algorithm>
 
 // ---------------
 //   cConnection
@@ -1325,7 +1326,7 @@ bool cCommandProcessor::HandleSleepEvent(int &timeout) {
         return true;
     }
 
-    timeout=min(ms,100);
+    timeout=std::min(ms,100);
     return false;
 }
 
