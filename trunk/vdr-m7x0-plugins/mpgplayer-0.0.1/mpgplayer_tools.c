@@ -230,6 +230,8 @@ cDirScanner::cDirScanner(const char *BasePath, const char *InitPath, const char 
 cDirScanner::~cDirScanner()
 {
   Clear();
+  if (curPath)
+     free(curPath);
   if (fileMatch) {
      regfree(fileMatch);
      free(fileMatch);

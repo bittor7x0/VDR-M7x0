@@ -78,7 +78,7 @@ $(TEST_PRGS): $$($$@_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $($@_OBJS)
 
 clean:
-	-$(RM) -f *~ *.o tests/*~ tests/*.o .depend
+	-$(RM) -f *~ *.o *.so tests/*~ tests/*.o .depend
 
 distclean: clean
 	-$(RM) -f $(TEST_PRGS) $(addsuffix .a,$(LIBS))

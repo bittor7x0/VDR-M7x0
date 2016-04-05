@@ -91,7 +91,7 @@ public:
      isDir = IsDir;
      cmpLength = 0;
      }
-  virtual ~cPathObject() { free(name); }
+  virtual ~cPathObject() { free(name); if (linkTo) free(linkTo); }
   const char *Name(void) const { return name; }
   const char *LinkTo(void) const { return linkTo; }
   bool IsDir(void) const { return isDir; }

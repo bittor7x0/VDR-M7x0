@@ -80,6 +80,7 @@ bool cSocket::Open(void)
      name.sin_family = AF_INET;
      name.sin_port = htons(port);
      name.sin_addr.s_addr = SVDRPhosts.LocalhostOnly() ? htonl(INADDR_LOOPBACK) : htonl(INADDR_ANY);
+     memset(&(name.sin_zero), '\0', 8);
      if (bind(sock, (struct sockaddr *)&name, sizeof(name)) < 0) {
         LOG_ERROR;
         Close();

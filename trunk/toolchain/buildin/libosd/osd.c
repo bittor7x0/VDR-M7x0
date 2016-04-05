@@ -126,7 +126,7 @@ int osd_init(int clear)
 			PROT_READ | PROT_WRITE, MAP_SHARED, osd_ctx.fb_fd, 0);
 	err = errno;
 	if (osd_ctx.fb_mem == MAP_FAILED)
-		goto err_out_close;
+		goto err_out_unmap;
 
 	osd_ctx.palette.start = 0;
 	osd_ctx.palette.len = 256;
@@ -377,9 +377,9 @@ int osd_draw_text_line(int x, int y, int width, int height, const char *text,
 	}
 	if (x + width > FB_WIDTH) {
 		width = FB_WIDTH - x;
-		if (width <= 0);
-			return 0;
 	}
+	if (width <= 0)
+		return 0;
 	if (y + height > FB_HEIGHT) {
 		height = FB_HEIGHT - y;
 	}

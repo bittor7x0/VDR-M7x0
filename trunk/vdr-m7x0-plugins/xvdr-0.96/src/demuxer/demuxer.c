@@ -23,6 +23,7 @@
  *
  */
 
+#include <limits.h>
 #include <vdr/remux.h>
 
 #include "config/config.h"

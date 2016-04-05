@@ -544,7 +544,7 @@ bool cPluginUndelete::Start(void)
         esyslog("%s: ERROR: cannot parse config file: [%s]%s", plugin_name, ConfigDirectory(), undeleteconfigfile.u);
         return false;
       }
-      while(fargc) free(fargv[--fargc]);
+    while(fargc) free(fargv[--fargc]);
   } else
   {
     free(p);

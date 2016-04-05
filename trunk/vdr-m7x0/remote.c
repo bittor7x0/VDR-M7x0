@@ -123,7 +123,7 @@ bool cRemote::PutMacro(eKeys Key)
 bool cRemote::Put(uint64_t Code, bool Repeat, bool Release)
 {
   char buffer[32];
-  snprintf(buffer, sizeof(buffer), "%016"PRIX64, Code);
+  snprintf(buffer, sizeof(buffer), "%016" PRIX64, Code);
   return Put(buffer, Repeat, Release);
 }
 

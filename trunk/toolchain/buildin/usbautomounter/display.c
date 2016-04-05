@@ -313,10 +313,9 @@ int display_init(int autoboot)
 	y += 2;
 	line_color = osd_add_palette(LINE_COLOR);
 	osd_draw_rectangle(0, y, OSD_WIDTH, 3, line_color);
-   y += 3 + 2;
+	y += 3 + 2;
 
 	display_ctx.y_msg = y;
-	y += text_height;
 
 	y = (OSD_HEIGHT - 2 - text_height - BAR_HEIGHT) / 2;
 
@@ -361,16 +360,16 @@ int display_update_bar(int value)
 	{
 		time_t Now=time(NULL);
 		if(Now-LastBarTime<SVDRPBarMinTime)
-			return;
+			return 0;
 		if((value>LastBar)&&(value-LastBar<SVDRPBarStep)&&(Now-LastBarTime<SVDRPBarMaxTime))
-			return;
+			return 0;
 		LastBar=(value/SVDRPBarStep)*SVDRPBarStep;
 		LastBarTime=Now;
 		char Buffer[MAXBUF];
 		snprintf(Buffer,MAXBUF,"%s (%d%%)",tr("Filesystem Check"),LastBar);
 		Buffer[MAXBUF-1]=0;
 		SendSVDRPMessage(Buffer);
-		return;
+		return 0;
 	}
 	int r;
 	r = osd_progress_update(&display_ctx.bar, 1, value);

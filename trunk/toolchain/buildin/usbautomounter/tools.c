@@ -265,7 +265,10 @@ void __cmd_out_for_exec(int fd, char *cmd)
 
 		if (tbuf_nl) {
 			tbuf_nl[0] = 0;
-			SYSLOG_INFO("output of '%s': %s", cmd, rbuf);
+			if (rbytes && !r) {
+				rbuf[rbytes] = 0;
+				SYSLOG_INFO("output of '%s': %s", cmd, rbuf);
+			}
 			tbuf_nl++;
 			memmove(rbuf, tbuf_nl, rbytes - (tbuf_nl - rbuf));
 			rbytes -= tbuf_nl - rbuf;

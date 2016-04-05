@@ -189,7 +189,7 @@ static void set_config_defaults(struct usbautomounter_config *conf)
 	conf->action_volume_found = NULL;
 
 	free(conf->action_volume_found_unclean);
-	conf->action_volume_found = NULL;
+	conf->action_volume_found_unclean = NULL;
 
 	free(conf->action_volume_lost);
 	conf->action_volume_lost = NULL;
@@ -271,8 +271,8 @@ static int check_config(struct usbautomounter_config *conf)
 	}
 
 	if (conf->action_volume_found_unclean && !conf->action_volume_found_unclean[0]) {
-		free(conf->action_volume_found);
-		conf->action_volume_found = NULL;
+		free(conf->action_volume_found_unclean);
+		conf->action_volume_found_unclean = NULL;
 	}
 
 	if (conf->action_volume_lost && !conf->action_volume_lost[0]) {
@@ -396,7 +396,7 @@ static void parse_mounter_opts(struct mount_table_entry *ent, char *mounter_opts
 	ent->mounter_flags = 0;
 	ent->unknown_n = -1;
 
-	opt = next_opt = mounter_opts;
+	next_opt = mounter_opts;
 	while (next_opt && next_opt[0]) {
 		opt = next_opt;
 		next_opt = strchr(opt,',');

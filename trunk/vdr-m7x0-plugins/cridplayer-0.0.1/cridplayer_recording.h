@@ -11,8 +11,8 @@
 #include <vdr/epg.h>
 #include <vdr/recording.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "cridplayer_setup.h"
-
 
 class cCridMpegFile {
 private:

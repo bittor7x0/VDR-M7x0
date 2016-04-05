@@ -24,6 +24,7 @@
 #include <string.h>
 #include <syslog.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "setup.h"
@@ -838,7 +839,7 @@ int main(int argc, char **argv)
 			useSVDRP=-1;
 	}
 
-	int file=open("/var/usbautomounter",O_CREAT|O_WRONLY);
+	int file=open("/var/usbautomounter", O_CREAT | O_WRONLY, DEFFILEMODE);
 	if(file!=-1)
 		if(flock(file,LOCK_EX))
 			SYSLOG_ERR("cannot lock usbautomounter access");

@@ -334,6 +334,11 @@ static void fat_decode_lfn(struct fat_lfn_context *context,
 		goto out_free_context;
 	}
 
+	if (context->unicode == NULL) {
+		msg = "FAT-LFN unicode NULL";
+		goto out_free_context;
+	}
+
 	slot--;
 	context->slots_left = slot;
 	offset = slot * 26;
@@ -460,7 +465,6 @@ static void fat_check_dir_entry_label(struct fat_fs *fs,
 {
 	time_t label_mtime;
 	char *long_name;
-	int i;
 
 	if (!(dent->attr & FAT_ATTR_VOLUME)) {
 		fat_lfn_reset(lfn_c, 1);
@@ -475,6 +479,7 @@ static void fat_check_dir_entry_label(struct fat_fs *fs,
 
 	long_name = fat_get_lfn(lfn_c, dent);
 	if (!long_name) {
+		int i;
 		for (i = 11; i > 0; i --) {
 			if (dent->name[i - 1] != ' ' && dent->name[i - 1]) {
 				long_name = pmalloc(i + 1);

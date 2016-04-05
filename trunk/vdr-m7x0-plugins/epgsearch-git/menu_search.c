@@ -207,8 +207,8 @@ eOSState cMenuEPGSearchExt::ProcessKey(eKeys Key)
 	    break;
 	case k1...k9:
 	    return Actions(Key);
-      	case kOk:
-	    state = Actions(k1);
+	case kOk:
+	    return Actions(k1);
 	case kBlue:
 	    if (HasSubMenu())
 		return osContinue;

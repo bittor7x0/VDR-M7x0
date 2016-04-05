@@ -467,6 +467,7 @@ MsgPacket* MsgPacket::read(int fd, bool& closed, int timeout_ms) {
 	uint8_t* header = p->getPacket();
 
 	if(header == NULL) {
+		delete p;
 		return NULL;
 	}
 

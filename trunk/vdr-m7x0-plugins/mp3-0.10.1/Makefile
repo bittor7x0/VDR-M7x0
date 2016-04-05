@@ -77,7 +77,7 @@ PACKAGE = vdr-$(ARCHIVE)
 ### Includes and Defines (add further entries here):
 
 INCLUDES += -I$(VDRDIR)/include
-DEFINES  += -D_GNU_SOURCE
+DEFINES  += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):
 

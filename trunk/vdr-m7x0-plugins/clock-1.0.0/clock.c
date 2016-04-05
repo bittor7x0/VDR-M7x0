@@ -138,7 +138,7 @@ cOSDClock::~cOSDClock()
   while (!shutdown) {
      if (AlarmTime == -1)
         Alarm = false;
-        usleep(100000);
+     usleep(100000);
      }
 
   if (osd)
