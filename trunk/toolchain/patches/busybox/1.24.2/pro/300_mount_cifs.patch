@@ -1,0 +1,36 @@
+diff -Naur busybox-1.21.1-orig/util-linux/mount.c busybox-1.21.1/util-linux/mount.c
+--- busybox-1.21.1-orig/util-linux/mount.c	2013-06-29 16:58:06.000000000 +0200
++++ busybox-1.21.1/util-linux/mount.c	2013-10-19 10:58:16.458064227 +0200
+@@ -1827,6 +1827,18 @@
+ 		char *hostname, *share;
+ 		char *dotted, *ip;
+ 		len_and_sockaddr *lsa;
++		char *s;
++
++		// Replace '/' with '\' and verify that unc points to "//server/share".
++		for (s = mp->mnt_fsname; *s; ++s)
++			if (*s == '/') *s = '\\';
++
++		// Get server IP
++		s = strrchr(mp->mnt_fsname, '\\');
++		if (s <= mp->mnt_fsname+1)
++			goto report_error;
++		*s = '\0';
++		*s = '\\';
+ 
+ 		// Parse mp->mnt_fsname of the form "//hostname/share[/dir1/dir2]"
+ 
+@@ -1868,8 +1880,11 @@
+ 		// Insert "ip=..." option into options
+ 		dotted = xmalloc_sockaddr2dotted_noport(&lsa->u.sa);
+ 		if (ENABLE_FEATURE_CLEAN_UP) free(lsa);
+-		ip = xasprintf("ip=%s", dotted);
+-		if (ENABLE_FEATURE_CLEAN_UP) free(dotted);
++		ip = xasprintf("ip=%s,unc=\\\\%s%s", dotted, dotted, s);
++		if (ENABLE_FEATURE_CLEAN_UP) {
++			free(dotted);
++			free(s);
++		}
+ 		parse_mount_options(ip, &filteropts);
+ 		if (ENABLE_FEATURE_CLEAN_UP) free(ip);
+ 
