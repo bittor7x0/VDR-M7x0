@@ -96,7 +96,7 @@ i18n: $(I18Nmo)
 
 ### Targets:
 
-all: i18n
+all:
 	@make fskcheck
 	@make plugin
 

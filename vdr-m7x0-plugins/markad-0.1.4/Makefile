@@ -55,7 +55,7 @@ OBJS = $(PLUGIN).o status.o menu.o setup.o i18n.o
 
 ### The main target:
 
-all: libvdr-$(PLUGIN).so i18n
+all: libvdr-$(PLUGIN).so
 
 ### Implicit rules:
 

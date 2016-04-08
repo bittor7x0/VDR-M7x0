@@ -59,7 +59,7 @@ OBJS = $(PLUGIN).o player.o menu.o httpplayer.o udpplayer.o fileplayer.o datastr
 
 ### The main target:
 
-all: libvdr-$(PLUGIN).so i18n
+all: libvdr-$(PLUGIN).so
 
 ### Implicit rules:
 

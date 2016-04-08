@@ -70,7 +70,7 @@ OBJS = $(SRCS:%.cpp=%.o)
 
 ### The main target:
 
-all: libvdr-$(PLUGIN).so i18n
+all: libvdr-$(PLUGIN).so
 	@cd tools && $(MAKE)
 
 ### Dependencies:

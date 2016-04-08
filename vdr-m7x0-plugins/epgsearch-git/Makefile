@@ -190,7 +190,7 @@ LIBS4    =
 
 ### The main target:
 
-all: $(ALL) i18n
+all: $(ALL)
 
 ### Implicit rules:
 

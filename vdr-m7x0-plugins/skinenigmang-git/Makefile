@@ -161,7 +161,7 @@ endif
 
 ### The main target:
 
-all: libvdr-$(PLUGIN).so i18n
+all: libvdr-$(PLUGIN).so
 
 ### Implicit rules:
 
