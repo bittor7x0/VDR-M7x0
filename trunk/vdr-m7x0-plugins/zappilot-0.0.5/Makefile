@@ -58,7 +58,7 @@ OBJS = $(PLUGIN).o zappilotosd.o zappilotsetup.o i18n.o
 
 ### The main target:
 
-all: libvdr-$(PLUGIN).so i18n
+all: libvdr-$(PLUGIN).so
 
 ### Implicit rules:
 

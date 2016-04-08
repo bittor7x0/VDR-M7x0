@@ -49,7 +49,7 @@ OBJS = $(PLUGIN).o i18n.o menu.o screenmenu.o
 
 ### The main target:
 
-all: libvdr-$(PLUGIN).so i18n
+all: libvdr-$(PLUGIN).so
 
 ### Implicit rules:
 

@@ -51,7 +51,7 @@ OBJS = $(PLUGIN).o task.o menu_logs.o menu_tasks.o menu_taskedit.o menu_setup.o 
 
 ### The main target:
 
-all: libvdr-$(PLUGIN).so i18n
+all: libvdr-$(PLUGIN).so
 
 ### Implicit rules:
 

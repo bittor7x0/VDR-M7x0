@@ -79,7 +79,7 @@ OBJS = \
 
 ### The main target:
 
-all: $(SOFILE) i18n
+all: $(SOFILE)
 
 ### Implicit rules:
 
