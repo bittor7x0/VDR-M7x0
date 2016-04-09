@@ -24,6 +24,7 @@
 #include "plugin.h"
 #include "timers.h"
 #include "tools.h"
+#include "dummyplayer.h"
 
 cShutdownHandler ShutdownHandler;
 
@@ -137,6 +138,8 @@ void cShutdownHandler::CheckManualStart()
   else {
      // Set inactive from now on
      cDevice::PrimaryDevice()->SetTvSettings(0);
+     // launch the dummy player
+     cControl::Launch(new cDummyPlayerControl);
      dsyslog("assuming automatic start of VDR");
      SetUserInactive();
      }
