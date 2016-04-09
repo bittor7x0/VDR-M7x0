@@ -26,10 +26,6 @@
 cRingBuffer::cRingBuffer(int Size, bool Statistics, const char* Description)
 {
   description = Description ? strdup(Description) : NULL;
-  putWaitCounter = 0;
-  getWaitCounter = 0;
-  putSignalCounter = 0;
-  getSignalCounter = 0;
   size = Size;
   minPutFree = size / 3;
   minGetAvail = size / 3;
@@ -50,10 +46,7 @@ cRingBuffer::~cRingBuffer()
   if (statistics)
      dsyslog("buffer stats%s%s: %d (%d%%) used",description?" for ":"",
     description?description:"", maxFill, maxFill * 100 / (size - 1));
-
-//  dsyslog("signal buffer stats%s%s: Wait: Put %llu Get %llu Signal: Put %llu Get %llu",description?" for ":"",
-//     description?description:"", putWaitCounter, getWaitCounter, putSignalCounter, getSignalCounter);
-	free(description);
+  free(description);
 //M7X0 END AK
 }
 
@@ -77,7 +70,6 @@ void cRingBuffer::WaitForPut(void)
 {
   if (putTimeout) {
      putWaiting = true;
-     // putWaitCounter++;
      readyForPut.Wait(putTimeout);
      putWaiting = false;
      }
@@ -87,7 +79,6 @@ void cRingBuffer::WaitForGet(void)
 {
   if (getTimeout) {
      getWaiting = true;
-     //getWaitCounter++;
      readyForGet.Wait(getTimeout);
      getWaiting = false;
      }
@@ -96,7 +87,6 @@ void cRingBuffer::WaitForGet(void)
 void cRingBuffer::EnablePut(void)
 {
   if (putTimeout && putWaiting && Free() > minPutFree) {
-     //putSignalCounter++;
      readyForPut.Signal();
      }
 }
@@ -104,7 +94,6 @@ void cRingBuffer::EnablePut(void)
 void cRingBuffer::EnableGet(void)
 {
   if (getTimeout && getWaiting && Available() > minGetAvail) {
-     // getSignalCounter++;
      readyForGet.Signal();
      }
 }
