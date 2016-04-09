@@ -59,45 +59,49 @@ void cSubMenu::LoadInfoSubMenu(void)
 			fprintf(fo,"0::Recordings\n");
 			fprintf(fo,"0::Timers\n");
 			if (cPluginManager::GetPlugin("epgsearchonly"))
-                           fprintf(fo,"0::epgsearchonly\n");
+				fprintf(fo,"0::epgsearchonly\n");
 			if (cPluginManager::GetPlugin("conflictcheckonly"))
-                           fprintf(fo,"0::conflictcheckonly\n");
-			fprintf(fo,"0:1:Plugins\n");
-			fprintf(fo,"0:2:Configuraci%cn\n", 243);
-			fprintf(fo,"2::Setup\n");
-			if (cPluginManager::GetPlugin("setup"))
-                           fprintf(fo,"2::setup\n");
-			fprintf(fo,"2:3:%s\n", tr("Channels"));
-			if (cPluginManager::GetPlugin("channelscan"))
-                           fprintf(fo,"3::channelscan\n");
-			if (cPluginManager::GetPlugin("channellists"))
-                           fprintf(fo,"3::channellists\n");
-			fprintf(fo,"3::Channels\n");
-			fprintf(fo,"0::Commands\n");
-			if (cPluginManager::GetPlugin("aide"))
-                           fprintf(fo,"0::aide\n");
+				fprintf(fo,"0::conflictcheckonly\n");
 
 			// Plugins Item:
 			int j=0;
+			int current=0;
 			do
 			{
 				p = cPluginManager::GetPlugin(j);
 				if ( p != NULL && strcmp(p->Name(), "aide")
-                                               && strcmp(p->Name(), "channellists")
-                                               && strcmp(p->Name(), "channelscan")
-                                               && strcmp(p->Name(), "conflictcheckonly")
-                                               && strcmp(p->Name(), "epgsearch")
-                                               && strcmp(p->Name(), "epgsearchonly")
-                                               && strcmp(p->Name(), "setup")
-                                               && strcmp(p->Name(), "skinenigmang")
-                                               && strcmp(p->Name(), "skinreel")
-                                               && strcmp(p->Name(), "skinsoppalusikka") )
+                               && strcmp(p->Name(), "channellists")
+                               && strcmp(p->Name(), "channelscan")
+                               && strcmp(p->Name(), "conflictcheckonly")
+                               && strcmp(p->Name(), "epgsearch")
+                               && strcmp(p->Name(), "epgsearchonly")
+                               && strcmp(p->Name(), "setup")
+                               && strcmp(p->Name(), "skinenigmang")
+                               && strcmp(p->Name(), "skinreel")
+                               && strcmp(p->Name(), "skinsoppalusikka") )
 				{
-					fprintf(fo,"1::%s\n",p->Name());
+					if (current == 0)
+						fprintf(fo,"0:%d:Plugins\n", ++current);
+					fprintf(fo, "%d::%s\n", current, p->Name());
 				}
 				j++;
 			}
 			while (p !=NULL);
+
+			fprintf(fo,"0:%d:Configuraci%cn\n", ++current, 243);
+			int setup = current++;
+			fprintf(fo,"%d::Setup\n", setup);
+			if (cPluginManager::GetPlugin("setup"))
+				fprintf(fo, "%d::setup\n", setup);
+			fprintf(fo, "%d:%d:%s\n", setup, current, tr("Channels"));
+			if (cPluginManager::GetPlugin("channelscan"))
+				fprintf(fo,"%d::channelscan\n", current);
+			if (cPluginManager::GetPlugin("channellists"))
+				fprintf(fo,"%d::channellists\n", current);
+			fprintf(fo,"%d::Channels\n", current);
+			fprintf(fo,"0::Commands\n");
+			if (cPluginManager::GetPlugin("aide"))
+				fprintf(fo,"0::aide\n");
 
 			fclose(fo);
 			LoadInfoSubMenu();
@@ -114,18 +118,16 @@ void cSubMenu::ParseOneLigOfFile(const char *lig)
 	int i,j,l;
 	char txt[SIZEMAXNAMESUBMENUITEMINFO];
 	char name[SIZEMAXNAMESUBMENUITEMINFO];
-	int fin,status = 0;
+	int status = 0;
 	int namefound = 0;
 
 	l = strlen(lig);
 
-	name[0]= 0;
+	name[0] = 0;
 
-	fin = 0;
+	i=0; j=0;
 
-	i=0;j=0;
-
-	while( fin == 0)
+	while(true)
 	{
 		switch(status)
 		{
@@ -134,18 +136,17 @@ void cSubMenu::ParseOneLigOfFile(const char *lig)
 				if ( lig[i] == ':' )
 				{
 					txt[j] = 0;
-					status ++;
+					status++;
 					level = atoi(txt);
 					j = 0;
 				}
-
 				break;
 			case 1:
 				txt[j++] = lig[i];
 				if (lig[i] == ':')
 				{
 					txt[j] = 0;
-					status ++;
+					status++;
 					kind = atoi(txt);
 					j = 0;
 				}
@@ -153,28 +154,27 @@ void cSubMenu::ParseOneLigOfFile(const char *lig)
 			case 2:
 				if (lig[i]>32 || lig[i]<0)
 					name[j++] = lig[i];
-				if(lig[i]== 0)
+				if(lig[i]==0)
 				{
 					name[j]=0;
 					namefound=1;
-					status++;
+					goto exit_loop;
 				}
-
 				break;
 			default:
 				break;
-
 		}
 		if (lig[i] == '/')
-			fin = 1;
+			break;
 		if (lig[i] == 0)
-			fin = 1;
-		if ( i == l )
-			fin = 1;
+			break;
+		if (i == l)
+			break;
 
 		i++;
 	}
 
+exit_loop:
 	if (level!=-1 && kind!=-1 && namefound==1)
 	{
 		name[j]=0;
