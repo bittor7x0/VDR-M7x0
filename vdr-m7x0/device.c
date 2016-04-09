@@ -2065,7 +2065,7 @@ cTSBuffer::cTSBuffer(int File, int Size, int CardIndex)
   f = File;
   cardIndex = CardIndex;
   delivered = false;
-  ringBuffer = new cRingBufferLinear(Size, TS_SIZE, true, "TS");
+  ringBuffer = new cRingBufferLinear(Size, TS_SIZE, false, "TS");
   ringBuffer->SetTimeouts(100, 100);
   Start();
 }

@@ -215,9 +215,9 @@ cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const
   lostBytes = 0;
 #else
 #ifdef USE_RECEIVER_RINGBUFFER
-  ringBuffer = new cRingBufferReceiver(RECORDERBUFSIZE, true, "Recorder");
+  ringBuffer = new cRingBufferReceiver(RECORDERBUFSIZE, false, "Recorder");
 #else
-  ringBuffer = new cRingBufferLinear(RECORDERBUFSIZE, TS_SIZE * 2, true, "Recorder");
+  ringBuffer = new cRingBufferLinear(RECORDERBUFSIZE, TS_SIZE * 2, false, "Recorder");
 #endif
   ringBuffer->SetTimeouts(0, 500);
   ringBuffer->SetLimits(TS_SIZE, TS_SIZE * 1024);
@@ -343,7 +343,7 @@ cTSRecorder::cTSRecorder(const char *FileName,const cChannel *Channel,int Priori
   memset(packets,0,sizeof(sPesResult)*MAXRECEIVEPIDS);
   memset(firstPacket,0,sizeof(int)*MAXRECEIVEPIDS);
   MakePat(Channel);
-  resultBuffer = new cRingBufferResult(RESULTBUFFERSIZE, false, true, "Result");
+  resultBuffer = new cRingBufferResult(RESULTBUFFERSIZE, false, false, "Result");
   writer = new cFileWriter(FileName, NULL, IsTShift, this);
 }
 cTSRecorder::~cTSRecorder()

@@ -1919,7 +1919,7 @@ cRemux::cRemux(int VPid, const int *APids, const int *DPids, const int *SPids, b
   resultSkipped = 0;
 
 
-  resultBuffer = new cRingBufferResult(RESULTBUFFERSIZE, isRadio, true, "Result");
+  resultBuffer = new cRingBufferResult(RESULTBUFFERSIZE, isRadio, false, "Result");
 
   resultBuffer->SetTimeouts(0, 500);
   resultBuffer->SetLimits(2 * IPACKS, 2 * RESULT_BUFFER_ALIGNMENT);
