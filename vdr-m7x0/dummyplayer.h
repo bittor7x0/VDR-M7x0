@@ -6,7 +6,7 @@
 
 /**
  * This player does NOTHING
- * Just exits when kPower is got
+ * Just exits when Interactive mode is got
  */
 
 class cDummyPlayer : public cPlayer {
@@ -26,7 +26,7 @@ class cDummyPlayerControl : public cControl {
     virtual void Hide();
 
     virtual eOSState ProcessKey(eKeys Key);
-    ///< handles kPower = end player, else does nothing
+    ///< end player in Interactive mode, else does nothing
 };
 
 
