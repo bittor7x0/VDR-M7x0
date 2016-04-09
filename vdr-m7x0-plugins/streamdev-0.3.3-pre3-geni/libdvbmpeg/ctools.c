@@ -327,7 +327,7 @@ static unsigned int find_length(int f){
 				found = 1;
 				break;
 			default:
-				q = lseek(f,0,SEEK_CUR);
+				lseek(f,0,SEEK_CUR);
 				break;
 			}	
 		} 
@@ -737,7 +737,7 @@ int read_ts (int f, ts_packet *p){
 		if (sync == 0x47) 
 			found = 1;
 	}
-	neof = save_read(f,p->pid,2);
+	save_read(f,p->pid,2);
 	neof = save_read(f,&p->flags,1);
 	p->count = p->flags & COUNT_MASK;
 	 
@@ -750,7 +750,7 @@ int read_ts (int f, ts_packet *p){
 
 	if ( p->flags & ADAPT_FIELD ) {
 		// adaption field
-		neof = save_read(f,&p->adapt_length,1);
+		save_read(f,&p->adapt_length,1);
 		po = lseek(f,0,SEEK_CUR);
 		neof = save_read(f,&p->adapt_flags,1);
 
@@ -764,13 +764,13 @@ int read_ts (int f, ts_packet *p){
 			neof = save_read(f, &p->splice_count,1);
 
 		if( p->adapt_flags & TRANS_PRIV){
-			neof = save_read(f,&p->priv_dat_len,1);
+			save_read(f,&p->priv_dat_len,1);
 			p->priv_dat = (uint8_t *) malloc(p->priv_dat_len);
 			neof = save_read(f,p->priv_dat,p->priv_dat_len);
 		}
 			
 		if( p->adapt_flags & ADAP_EXT_FLAG){
-			neof = save_read(f,&p->adapt_ext_len,1);
+			save_read(f,&p->adapt_ext_len,1);
 			neof = save_read(f,&p->adapt_eflags,1);
 			if( p->adapt_eflags & LTW_FLAG)
 				neof = save_read(f,p->ltw,2);
@@ -799,7 +799,6 @@ void cread_ts (char *buf, ts_packet *p, long length){
 	uint64_t po,q;
 	long count=0;
 	
-	sync=0;
 	while (count < length  && !found) {
 		sync=buf[count];
 		count++;
@@ -872,8 +871,7 @@ void cread_ts (char *buf, ts_packet *p, long length){
 		if (p->flags & PAYLOAD){ // payload
 			memcpy(p->data,buf+count,p->rest);
 			count += p->rest;
-		} else 
-			count = q+p->rest;
+		}
 	}
 }
 
@@ -1062,35 +1060,35 @@ int read_ps (int f, ps_packet *p){
 	}
 	
 	if (found){
-		neof = save_read(f,p->scr,6);
+		save_read(f,p->scr,6);
 		if (p->scr[0] & 0x40)
 			p->mpeg = 2;
 		else
 			p->mpeg = 1;
 
 		if (p->mpeg == 2){
-			neof = save_read(f,p->mux_rate,3);
-			neof = save_read(f,&p->stuff_length,1);
+			save_read(f,p->mux_rate,3);
+			save_read(f,&p->stuff_length,1);
 			po = lseek(f,0,SEEK_CUR);
 			lseek(f,po+(p->stuff_length & 3),SEEK_SET);
 		} else {
 			p->mux_rate[0] = p->scr[5]; //mpeg1 scr is only 5 bytes
-			neof = save_read(f,p->mux_rate+1,2);
+			save_read(f,p->mux_rate+1,2);
 		}
 			
 		po = lseek(f,0,SEEK_CUR);
-		neof = save_read(f,headr,4);
+		save_read(f,headr,4);
 		if (headr[0] == 0x00 && headr[1] == 0x00 && 
 		    headr[2] == 0x01 && headr[3] == 0xBB ) {
-			neof = save_read(f,p->sheader_llength,2);
+			save_read(f,p->sheader_llength,2);
 			setl_ps(p);
 			if (p->mpeg == 2){
-				neof = save_read(f,p->rate_bound,3);
-				neof = save_read(f,&p->audio_bound,1);
-				neof = save_read(f,&p->video_bound,1);
-				neof = save_read(f,&p->reserved,1);
+				save_read(f,p->rate_bound,3);
+				save_read(f,&p->audio_bound,1);
+				save_read(f,&p->video_bound,1);
+				save_read(f,&p->reserved,1);
 			}
-			neof = save_read(f,p->data,p->sheader_length);
+			save_read(f,p->data,p->sheader_length);
 		} else {
 			lseek(f,po,SEEK_SET);
 			p->sheader_length = 0;
@@ -1201,7 +1199,6 @@ void cread_ps (char *buf, ps_packet *p, long length){
 			kill_pes(&pes);
 		} while (c < length && !done);
 		p->npes = i;
-		c = q;
 	} 
 }
 
@@ -1653,7 +1650,6 @@ void pes_to_ts( uint8_t const *buf, long int length, uint16_t pid, p2t_t *p)
 	int check,rest;
 
 	c = 0;
-	c2 = 0;
 	if (p->frags){
 		check = 0;
 		switch(p->frags){

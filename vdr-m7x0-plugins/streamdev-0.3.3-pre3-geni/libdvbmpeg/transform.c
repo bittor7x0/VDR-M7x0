@@ -1148,7 +1148,6 @@ void ts_to_pes( int fdin, uint16_t pida, uint16_t pidv, int ps)
 	uint8_t buf[IN_SIZE];
 	uint8_t mbuf[TS_SIZE];
 	int i;
-	int count = 1;
 	uint16_t pid;
 	uint16_t dummy;
 	ipack pa, pv;
@@ -1160,7 +1159,7 @@ void ts_to_pes( int fdin, uint16_t pida, uint16_t pidv, int ps)
 	init_ipack(&pa, IPACKS,write_out, ps);
 	init_ipack(&pv, IPACKS,write_out, ps);
 
- 	if ((count = save_read(fdin,mbuf,TS_SIZE))<0)
+ 	if (save_read(fdin,mbuf,TS_SIZE)<0)
 	    perror("reading");
 
 	for ( i = 0; i < 188 ; i++){
@@ -1171,12 +1170,12 @@ void ts_to_pes( int fdin, uint16_t pida, uint16_t pidv, int ps)
 		return;
 	} else {
 		memcpy(buf,mbuf+i,TS_SIZE-i);
-		if ((count = save_read(fdin,mbuf,i))<0)
+		if (save_read(fdin,mbuf,i)<0)
 			perror("reading");
 		memcpy(buf+TS_SIZE-i,mbuf,i);
 		i = 188;
 	}
-	count = 1;
+	int count = 1;
 	while (count > 0){
 		if ((count = save_read(fdin,buf+i,IN_SIZE-i)+i)<0)
 			perror("reading");
@@ -1255,7 +1254,7 @@ void insert_pat_pmt( int fdin, int fdout)
 
 	find_avpids(fdin, &pidv, &pida);
 	
- 	int count = save_read(fdin,mbuf,TS_SIZE);
+ 	save_read(fdin,mbuf,TS_SIZE);
 	for ( i = 0; i < 188 ; i++){
 		if ( mbuf[i] == 0x47 ) break;
 	}
@@ -1264,12 +1263,12 @@ void insert_pat_pmt( int fdin, int fdout)
 		return;
 	} else {
 		memcpy(buf,mbuf+i,TS_SIZE-i);
-		count = save_read(fdin,mbuf,i);
+		save_read(fdin,mbuf,i);
 		memcpy(buf+TS_SIZE-i,mbuf,i);
 		i = 188;
 	}
 	
-	count = 1;
+	int count = 1;
         /* length is not correct, but we only create a very small
          * PMT, so it doesn't matter :-)
          */

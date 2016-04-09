@@ -445,7 +445,7 @@ bool cNetStream::Open(bool log)
 
 void cNetStream::Close(void)
 {
-  delete buffer; buffer=0;
+  delete[] buffer; buffer=0;
   delete net; net=0;
 }
 

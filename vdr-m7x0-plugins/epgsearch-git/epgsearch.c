@@ -189,6 +189,7 @@ bool cPluginEpgsearch::ProcessArgs(int argc, char *argv[])
             EPGSearchConfig.useExternalSVDRP = 1;
             break;
          case 'c':
+            if (ConfigDir) free(ConfigDir);
             ConfigDir = strdup(optarg);
             break;
          case 'l':
@@ -355,6 +356,7 @@ bool cPluginEpgsearch::Service(const char *Id, void *Data)
             result = results->Next(result);
          }
       }
+      delete SearchExt;
       return true;
    }
    if (strcmp(Id, "Epgsearch-switchtimer-v1.0") == 0) {

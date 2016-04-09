@@ -20,15 +20,14 @@ void cSubMenuItemInfo::setname(const char *n)
 	l = strlen(n);
 
 	for(i=0;i<SIZEMAXNAMESUBMENUITEMINFO;i++)
-	name[i] = 0;
+		name[i] = 0;
 
 	if( l >= SIZEMAXNAMESUBMENUITEMINFO )
-	l = SIZEMAXNAMESUBMENUITEMINFO;
+		l = SIZEMAXNAMESUBMENUITEMINFO - 1;
 
 	for(i=0;i<l;i++)
-	{
 		name[i] = n[i];
-	}
+
     name[i]=0;
     name[l]=0;
 }
@@ -86,7 +85,7 @@ void cSubMenu::LoadInfoSubMenu(void)
 				}
 				j++;
 			}
-			while (p !=NULL);
+			while (p != NULL);
 
 			fprintf(fo,"0:%d:Configuraci%cn\n", ++current, 243);
 			int setup = current++;

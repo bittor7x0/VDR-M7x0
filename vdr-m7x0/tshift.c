@@ -1414,6 +1414,13 @@ void cTShiftIndexFile::DeactivatePlayer()
 }
 void cTShiftIndexFile::WriteIndex()
 {
+	if(f<0)
+	{
+		free(index);
+		index=NULL;
+		return;
+	}
+
 	if(lseek(f,0,SEEK_SET))
 	{
 		LOG_ERROR;

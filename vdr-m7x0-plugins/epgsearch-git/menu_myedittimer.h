@@ -44,7 +44,7 @@ private:
   int stop;
   int priority;
   int lifetime;
-  char file[MaxFileName];
+  char file[NAME_MAX * 2 + 1];
   char directory[MaxFileName];
 #ifdef USE_PINPLUGIN
   int fskProtection;

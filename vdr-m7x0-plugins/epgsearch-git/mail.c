@@ -490,7 +490,8 @@ void cMailUpdateNotifier::SendUpdateNotifications()
     {
       cNoAnnounce* noAnnounce = new cNoAnnounce(itae->GetEvent());
       if (noAnnounce && noAnnounce->Valid())
-	NoAnnounces.Add(noAnnounce);
+        NoAnnounces.Add(noAnnounce);
+      delete noAnnounce;
     }
     if (!announceEvents.empty())
     {

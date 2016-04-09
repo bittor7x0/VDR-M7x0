@@ -214,7 +214,7 @@ cSubMenuSubMenuItem::cSubMenuSubMenuItem(int position,int ou,cSubMenu &SM) : cOs
 
 cSubMenuSubMenuItem::~cSubMenuSubMenuItem()
 {
-	free(Name);
+	free(this->Name);
 }
 
 

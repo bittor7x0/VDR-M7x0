@@ -1818,8 +1818,10 @@ bool cFileName::GetLastPatPmtVersions(int &PatVersion, int &PmtVersion)
                            else
                               break; // PAT/PMT is always in one sequence
                            }
-                        else
+                        else {
+                           close(fd);
                            return false;
+                           }
                         }
                   pos = lseek(fd, pos - TS_SIZE, SEEK_SET);
                   }

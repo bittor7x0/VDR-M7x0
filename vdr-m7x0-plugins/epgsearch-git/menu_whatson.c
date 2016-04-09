@@ -498,7 +498,7 @@ time_t cMenuWhatsOnSearch::GetTimeT(int iTime)
 
 showMode cMenuWhatsOnSearch::GetNextMode()
 {
-   showMode nextShowMode = currentShowMode;
+   showMode nextShowMode;
    cShowMode* Mode = GetShowMode(currentShowMode);
    if (Mode)
    {

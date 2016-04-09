@@ -184,6 +184,11 @@ cMenuSearchResultsItem::cMenuSearchResultsItem(cRecording *Recording)
    SetText(Recording->Title('\t'));
 }
 
+cMenuSearchResultsItem::~cMenuSearchResultsItem()
+{
+   free(fileName);
+}
+
 void cMenuSearchResultsItem::SetMenuItem(cSkinDisplayMenu *DisplayMenu, int Index, bool Current, bool Selectable)
 {
 #if APIVERSNUM >= 10733
@@ -688,11 +693,6 @@ void cMenuSearchResultsForBlacklist::SetHelpKeys(bool Force)
   bool hasTimer = (NewHelpKeys == 2);
   if (NewHelpKeys != helpKeys || Force)
     {
-
-      ModeBlueSR nextModeBlue = (ModeBlueSR)(((int)modeBlue+1)%3);
-      if (nextModeBlue == showTimerPreview)
-	nextModeBlue = (ModeBlueSR)(((int)nextModeBlue+1)%3);
-
       if (toggleKeys==0)
 	SetHelp((EPGSearchConfig.redkeymode==0?(hasTimer?trVDR("Button$Timer"):trVDR("Button$Record")):tr("Button$Commands")), m_bSort? tr("Button$by channel"):tr("Button$by time"), modeYellow==showTitleEpisode?tr("Button$Episode"):tr("Button$Title"), NULL);
       else
@@ -820,7 +820,7 @@ bool cMenuSearchResultsForRecs::BuildList()
    qsort(pArray, num, sizeof(cRecording *), CompareRecording);
    for (int a = 0; a < num; a++)
       Add(new cMenuSearchResultsItem(pArray[a]));
-   delete pArray;
+   free(pArray);
 
    SetHelp(NULL);
 
