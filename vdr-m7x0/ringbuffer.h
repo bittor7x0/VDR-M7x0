@@ -25,10 +25,6 @@ private:
 //M7X0 BEGIN AK
   volatile bool putWaiting;
   volatile bool getWaiting;
-  uint64_t getWaitCounter;
-  uint64_t putWaitCounter;
-  uint64_t getSignalCounter;
-  uint64_t putSignalCounter;
 //M7X0 END AK
 protected:
   tThreadId getThreadTid;

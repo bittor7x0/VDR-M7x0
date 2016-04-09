@@ -443,7 +443,6 @@ void cDvbTuner::Action(void)
 
 class c7x0TsReplayer {
 private:
-  FILE *testWriter;
   cDvbDevice *dvbDevice;
   int fd_dvr;
   int fd_dmx_video;
@@ -598,15 +597,12 @@ c7x0TsReplayer::c7x0TsReplayer(cDvbDevice *dev)
   trickspeedSize = 0;
   trickspeedData = NULL;
   ReallocTrickspeedBuffer(INITIAL_TRICKSPEED_BUFFER_SIZE);
-
-  //testWriter = fopen("/pc2/tests/trickSpeedTest.m2v","w");
 }
 
 c7x0TsReplayer::~c7x0TsReplayer()
 {
   CloseDvr();
   free(trickspeedData);
-  //fclose(testWriter);
 }
 
 bool c7x0TsReplayer::ReallocTrickspeedBuffer(const int Size)
@@ -1610,7 +1606,6 @@ int c7x0TsReplayer::HandleTrickspeed(const uchar *Data)
                LOG_ERROR;
                return r;
                }
-            //fwrite (trickspeedData, trickspeedLen, 1, testWriter);
             if (r != trickspeedLen) {
                esyslog("ERROR: Write of trickspeed data stripped off %d bytes",trickspeedLen - r);
                }
@@ -1653,7 +1648,6 @@ int c7x0TsReplayer::HandleTrickspeed(const uchar *Data)
               LOG_ERROR;
               return r;
               }
-           //fwrite (trickspeedData, trickspeedLen, 1, testWriter);
            if (r != trickspeedLen) {
               esyslog("ERROR: Write of trickspeed data stripped off %d bytes",trickspeedLen - r);
               }
