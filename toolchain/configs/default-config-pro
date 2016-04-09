@@ -171,9 +171,6 @@ CONFIG_LIBOSD = y
 # O7O Flasher: Flasher for firmwares in OFI format
 CONFIG_O7O_FLASHER = y
 
-# BootMenu: Graphical menu with configurable options for boot
-# CONFIG_BOOTMENU is not set
-
 # S.M.A.R.T. Monitoring Tools: Control and monitor storage systems using the Self-Monitoring, Analysis and Reporting Technology System
 # URL: http://sourceforge.net/apps/trac/smartmontools/
 # CONFIG_SMARTMONTOOLS is not set
