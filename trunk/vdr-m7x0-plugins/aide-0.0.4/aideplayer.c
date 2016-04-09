@@ -35,6 +35,7 @@ void cAidePlayer::Activate(bool On)
 					//for (int i = 1; i <= 25; ++i)
 					//	  send_pes_packet(buffer, sp.size, i);
 					DeviceStillPicture(buffer,sp.size);
+					free(buffer);
 				}
 			}
 			close(filefd);

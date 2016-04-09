@@ -272,8 +272,6 @@ void cMenuChannelGroupItem::Set(void)
 	channelNr = channelInGroup->channel->Number();
 	if (chIntBegin == -1)
 	    chIntBegin = channelNr;
-	if (chIntEnd == -1)
-	    chIntEnd = channelNr;
 
 	if (chLast == channelNr-1)
 	    chIntEnd = channelNr;

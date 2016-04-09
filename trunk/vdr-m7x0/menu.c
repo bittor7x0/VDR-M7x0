@@ -1085,7 +1085,7 @@ eOSState cMenuEditTimer::ProcessKey(eKeys Key)
                        if (!*data.file)
                           strcpy(data.file, data.Channel()->ShortName(true));
                        if (timer) {
-                          if (memcmp(timer, &data, sizeof(data)) != 0)
+                          if (memcmp((void *)timer, &data, sizeof(data)) != 0)
                              *timer = data;
                           if (addIfConfirmed)
                              Timers.Add(timer);
@@ -3937,8 +3937,8 @@ cMenuMain::cMenuMain(eOSState State)
         if (!cPluginManager::CallFirstService("MainMenuHooksPatch-v1.0::osRecordings", &menu))
             menu = new cMenuRecordings(NULL, 0, true);
         break;
-    case osSetup:      menu = new cMenuSetup; break;
-    case osCommands:   menu = new cMenuCommands(tr("System Utilities"), &Commands); break;
+    case osSetup:      AddSubMenu(new cMenuSetup); break;
+    case osCommands:   AddSubMenu(new cMenuCommands(tr("System Utilities"), &Commands)); break;
     default: break;
     }
   if (menu)

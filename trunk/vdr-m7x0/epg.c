@@ -15,6 +15,7 @@
 //M7X0 END AK
 #include <ctype.h>
 #include <time.h>
+#include <limits.h>
 #include "libsi/si.h"
 #include "timers.h"
 
@@ -1097,10 +1098,11 @@ void cSchedule::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtT
             }
             break;
        case dmPresentAndFollowing: {
-            if ((p = GetPresentEvent()) != NULL)
+            if ((p = GetPresentEvent()) != NULL) {
                p->Dump(f, Prefix);
                if ((p = events.Next(p)) != NULL)
                   p->Dump(f,Prefix);
+               }
             }
             break;
        case dmAtTime: {

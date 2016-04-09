@@ -301,7 +301,7 @@ cString cPluginEpgsearch::SVDRPCommand(const char *Command, const char *Option, 
                SearchExts.Save();
                if (searchTemp->useAsSearchTimer && !EPGSearchConfig.useSearchTimers) // enable search timer thread if necessary
                   cSearchTimerThread::Init((cPluginEpgsearch*) cPluginManager::GetPlugin("epgsearch"), true);
-
+               delete search;
                return cString::sprintf("search '%s' with %d modified", searchTemp->search, searchTemp->ID);
             }
             else
@@ -487,7 +487,6 @@ cString cPluginEpgsearch::SVDRPCommand(const char *Command, const char *Option, 
    }
    else if (strcasecmp(Command, "QRYS") == 0 || strcasecmp(Command, "QRYF") == 0)
    {
-      cSearchExt *temp_SearchExt = NULL;
       cSearchResults* pCompleteSearchResults = NULL;
       if (strcasecmp(Command, "QRYS") == 0) // query one or more searches
       {
@@ -498,6 +497,7 @@ cString cPluginEpgsearch::SVDRPCommand(const char *Command, const char *Option, 
                cSearchExt* temp_SearchExt = new cSearchExt;
                if (temp_SearchExt->Parse(Option))
                   pCompleteSearchResults = temp_SearchExt->Run();
+               delete temp_SearchExt;
             }
             else
             {
@@ -597,14 +597,12 @@ cString cPluginEpgsearch::SVDRPCommand(const char *Command, const char *Option, 
             delete(Timer);
             result = pCompleteSearchResults->Next(result);
          }
-         if (temp_SearchExt) delete temp_SearchExt;
          if (pCompleteSearchResults) delete pCompleteSearchResults;
          return sBuffer.c_str();
       }
       else
       {
          ReplyCode = 901;
-         if (temp_SearchExt) delete temp_SearchExt;
          return cString("no results");
       }
    }
@@ -693,6 +691,7 @@ cString cPluginEpgsearch::SVDRPCommand(const char *Command, const char *Option, 
                changrpTemp->Parse(Option);
                LogFile.Log(1,"modified channel group '%s' via SVDRP", changrpTemp->name);
                ChannelGroups.Save();
+               delete changrp;
                return cString::sprintf("channel group '%s' modified", changrpTemp->name);
             }
             else
@@ -941,6 +940,7 @@ cString cPluginEpgsearch::SVDRPCommand(const char *Command, const char *Option, 
                blacklistTemp->Parse(Option);
                LogFile.Log(1,"modified blacklist '%s' (%d) via SVDRP", blacklistTemp->search, blacklistTemp->ID);
                Blacklists.Save();
+               delete blacklist;
                return cString::sprintf("blacklist '%s' with ID %d modified", blacklistTemp->search, blacklistTemp->ID);
             }
             else
@@ -1202,6 +1202,7 @@ cString cPluginEpgsearch::SVDRPCommand(const char *Command, const char *Option, 
                searchTemp->Parse(Option);
                LogFile.Log(1,"modified search template '%s' (%d) via SVDRP", searchTemp->search, searchTemp->ID);
                SearchTemplates.Save();
+               delete search;
                return cString::sprintf("search template '%s' with ID %d modified", searchTemp->search, searchTemp->ID);
             }
             else

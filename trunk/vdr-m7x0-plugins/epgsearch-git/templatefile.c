@@ -200,6 +200,7 @@ bool cTemplFile::Parse(const char *Name, const char *Value)
 	    menuTemplates.insert(menuTemplate);
 	    return true;
 	}
+	delete menuTemplate;
     }
     else
     {
@@ -306,7 +307,11 @@ void cTemplFile::PrepareDefaultTemplates()
 	if (!strncasecmp("MenuSearchResults", (*it)->Name(), strlen("MenuSearchResults")))
 	{
 	    char* templateName = strdup((*it)->Name() + strlen("MenuSearchResults"));
-	    if (*templateName == 0) templateName = strdup(tr("Standard"));
+	    if (*templateName == 0)
+	    {
+	    	free(templateName);
+	    	templateName = strdup(tr("Standard"));
+	    }
 	    SearchTemplates[Count++] = templateName;
 	}
 }

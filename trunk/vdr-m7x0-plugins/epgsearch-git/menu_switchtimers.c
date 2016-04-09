@@ -172,8 +172,8 @@ void cMenuSwitchTimers::Set()
     {
       const cEvent* event = switchTimer->Event();
       if (event)
-	Add(new cMenuSwitchTimerItem(switchTimer, event));
-	switchTimer = SwitchTimers.Next(switchTimer);
+	    Add(new cMenuSwitchTimerItem(switchTimer, event));
+      switchTimer = SwitchTimers.Next(switchTimer);
     }
     Display();
     SetHelp(trVDR("Button$Edit"), tr("Button$Delete all"), trVDR("Button$Delete"), NULL);

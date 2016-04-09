@@ -1090,6 +1090,7 @@ string MD5(const string& input)
    char* szRes = MD5String(szInput);
    string res = szRes;
    free(szRes);
+   free(szInput);
    return res;
 }
 

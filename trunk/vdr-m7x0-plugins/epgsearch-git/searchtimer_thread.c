@@ -995,8 +995,8 @@ void cSearchTimerThread::CheckManualTimers()
             else
                LogFile.Log(1,"ooops - no events found touching manual timer %d", ti->Index()+1);
          }
-         free(updateMethod);
       }
+      if (updateMethod) free(updateMethod);
    }
    LogFile.Log(1, "manual timer check finished");
 }

@@ -934,6 +934,7 @@ cMenuScanInfoItem::cMenuScanInfoItem(const string& Pos, int f, char pol, int sr,
 
   SetText(strdup(buffer), false);
   SetSelectable(false);
+  free(buffer);
 }
 const char *cMenuScanInfoItem::FECToStr(int Index)
 {
@@ -985,11 +986,8 @@ cMenuStatusBar::cMenuStatusBar(int Total, int Current, int Channel, int Mode, bo
    int l = 0;
    if (BarOnly)
      l = asprintf(&tmp,"%s", buffer);
-   /*
-   else if (SAT)
-     l = asprintf(&tmp,"%s\t  %d / %d", buffer, Current, Total);
-   */
-   else 
+   else
+   {
      if(Mode == 0)
         l = asprintf(&tmp,"%s\t  %d / %d  (CH: %d)", buffer, Current, Total, Channel);
      if(Mode == 1)
@@ -998,11 +996,14 @@ cMenuStatusBar::cMenuStatusBar(int Total, int Current, int Channel, int Mode, bo
         l = asprintf(&tmp,"%s\t  %d / %d  (BER)", buffer, Current, Total);
      if(Mode == 3)
         l = asprintf(&tmp,"%s\t  %d / %d  (SNR)", buffer, Current, Total);
+   }
 
-
-   SetText(strndup(tmp,l), false);
-   SetSelectable(false);
-   free(tmp);
+   if (tmp)
+   {
+     SetText(strndup(tmp,l), false);
+     SetSelectable(false);
+     free(tmp);
+   }
 }
 
 // --- Class cMenuInfoItem -------------------------------------

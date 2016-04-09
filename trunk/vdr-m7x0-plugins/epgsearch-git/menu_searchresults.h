@@ -59,6 +59,7 @@ class cMenuSearchResultsItem : public cOsdItem {
                            bool PreviewTimer = false, cMenuTemplate* MenuTemplate = NULL,
                            const cSearchExt* Search = NULL);
     cMenuSearchResultsItem(cRecording *Recording);
+    ~cMenuSearchResultsItem();
     bool Update(bool Force = false);
     void SetMenuItem(cSkinDisplayMenu *DisplayMenu, int Index, bool Current, bool Selectable);
 };

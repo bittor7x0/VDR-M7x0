@@ -225,7 +225,6 @@ string cUserVar::EvaluateExtEPGVars(const string& Expr, const cEvent* e, bool es
       }
       // replace ext. EPG variables without leading namespace 
       varName = evar->second->Name();
-      varPos = 0;
       while((varPos = FindIgnoreCase(expr, varName)) >= 0)
       {
          expr.replace(varPos, varName.size(), evar->second->Evaluate(e, escapeStrings));
@@ -349,6 +348,7 @@ bool cUserVarLine::Parse(char *s)
 	UserVars.userVars.insert(userVar);
 	return true;
       }
+      delete userVar;
    }
    return false;
 }

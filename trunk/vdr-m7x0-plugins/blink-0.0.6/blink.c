@@ -305,7 +305,7 @@ void cBackgroundMonitor::Action(void){
    int i_numRec = 0;
 
 #ifdef HOTSBY
-   bool oldIaMode=getIaMode();
+   bool oldIaMode;
 #endif
 
    isActive=true;
