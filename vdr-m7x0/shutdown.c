@@ -24,8 +24,6 @@
 #include "plugin.h"
 #include "timers.h"
 #include "tools.h"
-#include "tshift.h"
-#include "dummyplayer.h"
 
 cShutdownHandler ShutdownHandler;
 
@@ -139,9 +137,6 @@ void cShutdownHandler::CheckManualStart()
   else {
      // Set inactive from now on
      cDevice::PrimaryDevice()->SetTvSettings(0);
-     // launch the dummy player
-     cControl::Shutdown();
-     cControl::Launch(new cDummyPlayerControl);
      dsyslog("assuming automatic start of VDR");
      SetUserInactive();
      }
@@ -184,23 +179,15 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
      return false;
      }
   if (cCutter::Active()) {
-     setIaMode(0);
-     cDevice::PrimaryDevice()->SetTvSettings(0);
-     cControl::Shutdown();
-     cTShiftControl::ShutdownTShift();
-     // launch the dummy player
-     cControl::Launch(new cDummyPlayerControl);
+	setIaMode(0);
+	cDevice::PrimaryDevice()->SetTvSettings(0);
      //if (!Interactive || !Interface->Confirm(tr("Editing - shut down anyway?")))
-     return false;
+        return false;
      }
   if (cUsbAutomounter::Active()) {
-     setIaMode(0);
-     cDevice::PrimaryDevice()->SetTvSettings(0);
-     cControl::Shutdown();
-     cTShiftControl::ShutdownTShift();
-     // launch the dummy player
-     cControl::Launch(new cDummyPlayerControl);
-     return false;
+	setIaMode(0);
+	cDevice::PrimaryDevice()->SetTvSettings(0);
+        return false;
      }
 
   cTimer *timer = Timers.GetNextActiveTimer();
@@ -210,10 +197,6 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
   if (cRecordControls::Active() || (Next && Delta <= 0)) {
 	setIaMode(0);
 	cDevice::PrimaryDevice()->SetTvSettings(0);
-	cControl::Shutdown();
-	cTShiftControl::ShutdownTShift();
-	// launch the dummy player
-	cControl::Launch(new cDummyPlayerControl);
 	return false;
 /*
      // VPS recordings in timer end margin may cause Delta <= 0
@@ -243,10 +226,6 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
      if (!Interactive) {
         setIaMode(0);
         cDevice::PrimaryDevice()->SetTvSettings(0);
-        cControl::Shutdown();
-        cTShiftControl::ShutdownTShift();
-        // launch the dummy player
-        cControl::Launch(new cDummyPlayerControl);
         return false;
         }
      //cString buf = cString::sprintf(tr("Plugin %s wakes up in %ld min, continue?"), Plugin->Name(), Delta / 60);
