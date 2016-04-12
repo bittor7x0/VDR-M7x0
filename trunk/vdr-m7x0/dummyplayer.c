@@ -38,7 +38,8 @@ void cDummyPlayerControl::Hide() {
 /* end player in Interactive mode
  **/
 eOSState cDummyPlayerControl::ProcessKey(eKeys key) {
-  if(getIaMode())
+  // DISABLED
+  //if(getIaMode())
     return osEnd;
-  return osContinue;
+  //return osContinue;
 }
