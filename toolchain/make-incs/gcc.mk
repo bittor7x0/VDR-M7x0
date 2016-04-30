@@ -24,16 +24,16 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-GCC_IS_SNAPSHOT := y
+GCC_IS_SNAPSHOT := n
 
 ifeq ($(GCC_IS_SNAPSHOT),y)
-  GCC_VERSION := 6-20160403
+  GCC_VERSION := 7-20160424
   GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
   GCC_URL := http://www.mirrorservice.org/sites/sourceware.org/pub/gcc/snapshots/$(GCC_VERSION)/$(GCC_FILE)
   GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/snapshot
   GCC_FILE_LIST += gcc-snapshot.lst
 else
-  GCC_VERSION := 5.3.0
+  GCC_VERSION := 6.1.0
   GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
   GCC_URL := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE)
   GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)

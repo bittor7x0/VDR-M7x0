@@ -1,0 +1,11 @@
+diff -Naur a/Makefile b/Makefile
+--- a/Makefile	2016-04-29 17:36:50.000000000 +0200
++++ b/Makefile	2016-04-29 17:39:06.267975638 +0200
+@@ -4,7 +4,6 @@
+ 
+ cramfsswap: cramfsswap.c
+ 	gcc -Wall -g -O -o cramfsswap cramfsswap.c -lz
+-	strip cramfsswap
+ 
+ install: cramfsswap
+ 	install cramfsswap $(DESTDIR)/usr/bin
