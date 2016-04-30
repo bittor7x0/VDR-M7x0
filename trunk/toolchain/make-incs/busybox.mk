@@ -90,7 +90,7 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 	$(SED) -i -e 's,^# CONFIG_FEATURE_SH_IS_NONE.*,CONFIG_FEATURE_SH_IS_NONE=y,g' \
 		$(BUSYBOX_DIR)/.config
   endif
-	$(UCLIBC_ENV_LTO) \
+	$(UCLIBC_ENV_LTO_GC) \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		LDLIBS="m" \
 		PKG_CONFIG="pkg-config" \
@@ -103,7 +103,7 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 #
 
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
-	$(UCLIBC_ENV_LTO) \
+	$(UCLIBC_ENV_LTO_GC) \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		LDLIBS="m" \
 		PKG_CONFIG="pkg-config" \
@@ -118,7 +118,7 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.bus
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled \
 	$(TOP_DIR)/.config
 	$(FIND) $(TARGET_ROOT) -lname "*busybox" -exec rm \{\} \;
-	$(UCLIBC_ENV_LTO) \
+	$(UCLIBC_ENV_LTO_GC) \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		LDLIBS="m" \
 		PKG_CONFIG="pkg-config" \

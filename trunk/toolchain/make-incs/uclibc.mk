@@ -31,9 +31,9 @@ UCLIBC_O7OVERSION_H := o7o-toolchain-version.h
 
 ifeq ($(UCLIBC_IS_NG),y)
   ifeq ($(UCLIBC_IS_SNAPSHOT),y)
-	# http://repo.or.cz/uclibc-ng.git/commit/50a5c1c36f39b3d0feffcbdf20d906508c545ffe
-	UCLIBC_VERSION := 50a5c1c
-	UCLIBC_VERSION_FULL := 50a5c1c36f39b3d0feffcbdf20d906508c545ffe
+	# http://repo.or.cz/uclibc-ng.git/commit/150e5d7b3978b378ee76eee796d8c8e389884cc3
+	UCLIBC_VERSION := 150e5d7
+	UCLIBC_VERSION_FULL := 150e5d7b3978b378ee76eee796d8c8e389884cc3
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.gz
 	UCLIBC_DIR := $(BUILD_DIR)/uclibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/snapshot/uclibc-ng.config
@@ -41,7 +41,7 @@ ifeq ($(UCLIBC_IS_NG),y)
 	UCLIBC_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_VERSION_FULL).tar.gz
 	UCLIBC_FILE_LIST += uclibc-ng-snapshot.lst
   else
-	UCLIBC_VERSION := 1.0.13
+	UCLIBC_VERSION := 1.0.14
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.bz2
 	UCLIBC_DIR := $(BUILD_DIR)/uClibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/$(UCLIBC_VERSION)/uclibc-ng.config
