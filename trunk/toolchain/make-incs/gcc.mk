@@ -114,6 +114,7 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--disable-__cxa_atexit \
 			--disable-shared \
 			--disable-threads \
+			--enable-lto \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
@@ -210,7 +211,6 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--disable-ppl-version-check \
 			--disable-cloog-version-check \
 			--disable-isl-version-check \
-			--disable-libstdcxx-pch \
 			--disable-decimal-float \
 			--disable-libgomp \
 			--disable-libmudflap \
@@ -219,7 +219,9 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--disable-libitm \
 			--disable-libatomic \
 			--disable-libsanitizer \
+			--disable-target-libiberty \
 			--disable-target-zlib \
+			--disable-libstdcxx-pch \
 			--disable-libstdcxx-verbose \
 			--disable-libstdcxx-dual-abi \
 			--with-default-libstdcxx-abi=new \

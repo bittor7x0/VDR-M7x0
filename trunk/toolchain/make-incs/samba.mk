@@ -91,10 +91,10 @@ $(STAGEFILES_DIR)/.samba_patched: $(STAGEFILES_DIR)/.samba_unpacked
 # dependencies should put here, second expansion is needed.
 # all packages should install somewhere below $(TARGET_ROOT)
 # and configured for $(TARGET) (or $(UCLIBC_TARGET) if this works)
-# $(UCLIBC_ENV) setups some environment variables as CFLAGS, PATH ...
+# $(UCLIBC_ENV_LTO_GC) setups some environment variables as CFLAGS, PATH ...
 
 $(STAGEFILES_DIR)/.samba_configured: $(STAGEFILES_DIR)/.samba_patched
-	($(CD) $(SAMBA_DIR)/source ; $(UCLIBC_ENV) \
+	($(CD) $(SAMBA_DIR)/source ; $(UCLIBC_ENV_LTO_GC) \
 		ac_cv_sizeof_int=4 \
 		ac_cv_sizeof_long=4 \
 		ac_cv_sizeof_short=2 \
@@ -158,7 +158,7 @@ $(STAGEFILES_DIR)/.samba_configured: $(STAGEFILES_DIR)/.samba_patched
 #
 
 $(STAGEFILES_DIR)/.samba_compiled: $(STAGEFILES_DIR)/.samba_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(SAMBA_DIR)/source
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(SAMBA_DIR)/source
 	$(TOUCH) $(STAGEFILES_DIR)/.samba_compiled
 
 #

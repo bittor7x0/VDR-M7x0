@@ -54,7 +54,7 @@ $(STAGEFILES_DIR)/.o7o_flasher_copied: $(wildcard $(O7O_FLASHER_DIR)/*) \
 #
 
 $(STAGEFILES_DIR)/.o7o_flasher_compiled: $(STAGEFILES_DIR)/.o7o_flasher_copied
-	$(UCLIBC_ENV) $(MAKE) -C $(O7O_FLASHER_BUILDDIR) $(UCLIBC_ENV) \
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(O7O_FLASHER_BUILDDIR) $(UCLIBC_ENV_LTO_GC) \
 		PREFIX=$(TARGET_ROOT)/usr all
 	$(TOUCH) $(STAGEFILES_DIR)/.o7o_flasher_compiled
 
@@ -63,7 +63,7 @@ $(STAGEFILES_DIR)/.o7o_flasher_compiled: $(STAGEFILES_DIR)/.o7o_flasher_copied
 #
 
 $(STAGEFILES_DIR)/.o7o_flasher_installed: $(STAGEFILES_DIR)/.o7o_flasher_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(O7O_FLASHER_BUILDDIR) $(UCLIBC_ENV) \
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(O7O_FLASHER_BUILDDIR) $(UCLIBC_ENV_LTO_GC) \
 		PREFIX=$(TARGET_ROOT)/usr install
 	$(TOUCH) $(STAGEFILES_DIR)/.o7o_flasher_installed
 
