@@ -32,10 +32,10 @@ diff -Naur a/Rules.mak b/Rules.mak
  	CPU_CFLAGS-$(CONFIG_MIPS_N64_ABI)+=-mabi=64
  	CPU_CFLAGS-$(CONFIG_MIPS_O32_ABI)+=-mabi=32
  	CPU_CFLAGS-$(CONFIG_MIPS_N32_ABI)+=-mabi=n32
-+	CPU_CFLAGS-y  +=-march=mips2 -mtune=vr4120 -mfix-vr4120 -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear
++	CPU_CFLAGS-y  +=-march=mips2 -mtune=vr4120 -mfix-vr4120 -flto -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear
 +	CPU_CFLAGS-y  += $(call check_gcc,-ffunction-sections -fdata-sections,)
  	CPU_LDFLAGS-y += $(CPU_CFLAGS)
-+	CPU_LDFLAGS-y += -Wl,-O1
++	CPU_LDFLAGS-y += -fPIC -flto -Wl,-O1
 +$(eval $(call check-ld-var,--sort-common))
 +	CPU_LDFLAGS-y += $(CFLAG_-Wl--sort-common)
 +$(eval $(call check-ld-var,--sort-section=alignment))

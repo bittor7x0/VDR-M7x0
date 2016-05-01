@@ -80,9 +80,9 @@ $(STAGEFILES_DIR)/.dropbear_patched: $(STAGEFILES_DIR)/.dropbear_unpacked
 #
 
 $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
-	($(CD) $(DROPBEAR_DIR) ; $(UCLIBC_ENV_GC) \
-		CFLAGS="$(UCLIBC_CFLAGS_GC) -DARGTYPE=3" \
-		LDFLAGS="$(UCLIBC_LDFLAGS_GC) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib" \
+	($(CD) $(DROPBEAR_DIR) ; $(UCLIBC_ENV_LTO_GC) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -DARGTYPE=3" \
+		LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib" \
 		$(DROPBEAR_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
@@ -106,7 +106,7 @@ $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
 #
 
 $(STAGEFILES_DIR)/.dropbear_compiled: $(STAGEFILES_DIR)/.dropbear_configured
-	$(UCLIBC_ENV_GC) $(MAKE) \
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) \
 		-C $(DROPBEAR_DIR) PROGRAMS="dropbear dbclient dropbearkey scp" MULTI=1
 	$(TOUCH) $(STAGEFILES_DIR)/.dropbear_compiled
 

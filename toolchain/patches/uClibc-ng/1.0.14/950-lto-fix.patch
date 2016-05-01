@@ -1,0 +1,12 @@
+diff -Naur a/ldso/ldso/ldso.c b/ldso/ldso/ldso.c
+--- a/ldso/ldso/ldso.c	2016-04-29 23:09:59.000000000 +0200
++++ b/ldso/ldso/ldso.c	2016-04-29 23:05:20.000000000 +0200
+@@ -81,7 +81,7 @@
+ void **_dl_ldso_dsbt = NULL;
+ #endif
+ 
+-unsigned long attribute_hidden _dl_skip_args = 0;
++unsigned long _dl_skip_args __attribute_used__ = 0;
+ 
+ const char *_dl_progname = UCLIBC_LDSO;      /* The name of the executable being run */
+ #include "dl-startup.c"

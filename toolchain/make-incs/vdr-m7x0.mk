@@ -76,13 +76,13 @@ $(STAGEFILES_DIR)/.vdr_local_downloaded: $(CONFIG_VDR_LOCAL_PATH)/*.c \
 
 $(STAGEFILES_DIR)/.vdr_compiled: $$(VDR_DEPS) \
         $(STAGEFILES_DIR)/.vdr_$(filter local_,_)downloaded
-	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
+	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -flto" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
 		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) clean
-	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
+	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -flto" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
@@ -95,7 +95,7 @@ $(STAGEFILES_DIR)/.vdr_compiled: $$(VDR_DEPS) \
 #
 
 $(STAGEFILES_DIR)/.vdr_installed: $(STAGEFILES_DIR)/.vdr_compiled
-	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
+	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -flto" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
@@ -127,7 +127,7 @@ recompile-vdr:
 
 cppcheck-vdr:
 	(if [ -d $(VDR_DIR) ] ; then \
-	$(UCLIBC_ENV) LDFLAGS="-Wl,-O1" \
+	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -flto" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \

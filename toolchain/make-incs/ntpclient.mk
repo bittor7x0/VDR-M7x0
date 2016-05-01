@@ -78,7 +78,7 @@ $(STAGEFILES_DIR)/.ntpclient_patched: $(STAGEFILES_DIR)/.ntpclient_unpacked
 #
 
 $(STAGEFILES_DIR)/.ntpclient_compiled: $(STAGEFILES_DIR)/.ntpclient_patched
-	$(UCLIBC_ENV_GC) $(MAKE) \
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) \
 		-C $(NTPCLIENT_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.ntpclient_compiled
 
