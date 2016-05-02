@@ -114,7 +114,6 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--disable-__cxa_atexit \
 			--disable-shared \
 			--disable-threads \
-			--enable-lto \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
