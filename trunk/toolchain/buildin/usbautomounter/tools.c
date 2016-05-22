@@ -265,7 +265,7 @@ void __cmd_out_for_exec(int fd, char *cmd)
 
 		if (tbuf_nl) {
 			tbuf_nl[0] = 0;
-			if (rbytes && !r) {
+			if (rbytes) {
 				rbuf[rbytes] = 0;
 				SYSLOG_INFO("output of '%s': %s", cmd, rbuf);
 			}

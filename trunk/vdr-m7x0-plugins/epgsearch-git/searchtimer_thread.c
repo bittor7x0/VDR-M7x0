@@ -180,7 +180,7 @@ bool cSearchTimerThread::TimerWasModified(cTimer* t)
    char* start = GetAuxValue(t, "start");
    char* stop = GetAuxValue(t, "stop");
    bool bMod = false;
-   if (start || stop)
+   if (start && stop)
    {
       time_t StartTime = time_t(atol(start));
       time_t StopTime = time_t(atol(stop));

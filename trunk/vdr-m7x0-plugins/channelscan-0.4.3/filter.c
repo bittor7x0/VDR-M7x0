@@ -560,12 +560,13 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                    case 0x03: // DVB Subtitles
                    case 0x04: // NVOD reference service
                    case 0x05: // NVOD time-shifted service
+                   case 0x16: // digital SD television service
                    case 0x19: // digital HD television service
                    case 0x11: // digital television service MPEG-2 HD 
                    case 0xC3: // some french channels like kiosk
                         {
                         // Add only radio 
-                          if ((sd->getServiceType()==1 || sd->getServiceType()==0x11 || sd->getServiceType()==0x19 || sd->getServiceType()==0xC3) && AddServiceType == 1) 
+                          if ((sd->getServiceType()==1 || sd->getServiceType()==0x11 || sd->getServiceType()==0x16 || sd->getServiceType()==0x19 || sd->getServiceType()==0xC3) && AddServiceType == 1) 
                           {
 #ifdef DEBUG_CHANNELSCAN
                              printf(" Add nur Radio  aber nur TV Sender gefunden  SID skip %d \n",sd->getServiceType());  
@@ -594,6 +595,7 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                           {
                              case 0x01:
                              case 0x11:
+                             case 0x16:
                              case 0x19:
                              case 0xC3:
                                      tvChannelNames.push_back(NameBuf); // if service wanted 
@@ -706,7 +708,10 @@ NitFilter::NitFilter(void)
   numNits = 0;
   networkId = 0;
   lastCount = 0;
-  found_ = endofScan = false;
+#ifdef M750S
+  found_ = false;
+#endif
+  endofScan = false;
   Set(0x10, 0x40);  // NIT
   //Set(0x10, 0x41);  // other NIT
   vector<int> tmp(64,0);
@@ -720,7 +725,10 @@ void NitFilter::SetStatus(bool On)
   networkId = 0;
   sectionSyncer.Reset();
   lastCount = 0;
-  found_ = endofScan = false;
+#ifdef M750S
+  found_ = false;
+#endif
+  endofScan = false;
   vector<int> tmp(64,0);
   sectionSeen_ = tmp;
 }
@@ -731,11 +739,12 @@ NitFilter::~NitFilter()
   printf ( " debug [nit] ------------- %s --------------- ", __PRETTY_FUNCTION__);
 #endif
 }
+#ifdef M750S
 bool NitFilter::Found()
 {
    return found_;
-
 }
+#endif
 void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
 {
   SI::NIT nit(Data, false);
@@ -769,8 +778,11 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
   // one is the right one to use. This is an attempt to find the NIT that contains
   // the transponder it was transmitted on and use only that one:
   //int transportstreamId = SI::NIT::TransportStream::getTransportStreamId();
-  found_ = endofScan = false;
-  bool insert = false;     
+  endofScan = false;
+#ifdef M750S
+  found_ = false;
+  bool insert = false;
+#endif
   //if (!networkId) 
   if (true) {
      int ThisNIT = -1;
@@ -856,24 +868,18 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
   printf("DEBUG [nit]: SectionNumber %d   \n", nit.getSectionNumber());
 #endif
 
+#ifdef M750S
   SI::NIT::TransportStream ts;
   for (SI::Loop::Iterator it; nit.transportStreamLoop.getNext(ts, it); ) {
       insert = false;
-
       SI::Loop::Iterator it2;
       SI::FrequencyListDescriptor *fld = (SI::FrequencyListDescriptor *)ts.transportStreamDescriptors.getNext(it2, SI::FrequencyListDescriptorTag);
-#ifdef M750S
       int NumFrequencies = fld ? fld->frequencies.getCount() + 1 : 1;
-#endif
+      int Frequencies[NumFrequencies];
       if (fld) {
-#ifdef M750S
-         int Frequencies[NumFrequencies];
-#endif
          int ct = fld->getCodingType();
          if (ct > 0) {
-#ifdef M750S
             int n = 1;
-#endif
             for (SI::Loop::Iterator it3; fld->frequencies.hasNext(it3); ) {
                 int f = fld->frequencies.getNext(it3);
                 switch (ct) {
@@ -881,19 +887,14 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                   case 2: f = BCD2INT(f) / 10; break;
                   case 3: f = f * 10;  break;
                   }
-#ifdef M750S
                 Frequencies[n++] = f;
-#endif
                 }
             }
-#ifdef M750S
          else
             NumFrequencies = 1;
-#endif
          }
       delete fld;
 
-#ifdef M750S
       int getTransponderNum = 0;
       SI::Descriptor *d;
 
@@ -941,9 +942,9 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
 
           delete d;
           }
-#endif // M750S
       }
   found_ = insert;
+#endif // M750S
 
 #ifdef DEBUG_CHANNELSCAN
   printf("DEBUG [nit]:  End of ProcessLoop MapSize: %d  lastCount %d   \n", (int) transponderMap.size(), lastCount);
@@ -988,7 +989,9 @@ void NitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
      vector<int> tmp(64,0);
      sectionSeen_ = tmp;
   }
+#ifdef M750S
   found_ = insert = false;
+#endif
   lastCount = transponderMap.size();
 #ifdef DEBUG_CHANNELSCAN
   printf ("DEBUG [channescan ]: set endofScan %s \n",endofScan?"TRUE":"FALSE");

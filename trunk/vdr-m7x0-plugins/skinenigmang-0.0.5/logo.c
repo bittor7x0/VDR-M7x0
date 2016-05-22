@@ -100,7 +100,10 @@ bool cEnigmaLogoCache::LoadChannelLogo(const cChannel *Channel)
   const char *logoname = EnigmaConfig.useChannelId ? strChannelID : Channel->Name();
   if (logoname) {
     char *filename = (char *)malloc(strlen(logoname) + 20 /* should be enough for folder */);
-    if (filename == NULL) return false;
+    if (filename == NULL) {
+      free(strChannelID);
+      return false;
+    }
     strcpy(filename, "hqlogos/");
     strcat(filename, logoname);
     if (!(fFoundLogo = Load(filename, ChannelLogoWidth, ChannelLogoHeight, false))) {

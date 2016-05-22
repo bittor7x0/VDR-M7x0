@@ -817,10 +817,12 @@ bool cMenuSearchResultsForRecs::BuildList()
      }
    }
 
-   qsort(pArray, num, sizeof(cRecording *), CompareRecording);
-   for (int a = 0; a < num; a++)
-      Add(new cMenuSearchResultsItem(pArray[a]));
-   free(pArray);
+   if (pArray != NULL) {
+     qsort(pArray, num, sizeof(cRecording *), CompareRecording);
+     for (int a = 0; a < num; a++)
+       Add(new cMenuSearchResultsItem(pArray[a]));
+     free(pArray);
+   }
 
    SetHelp(NULL);
 

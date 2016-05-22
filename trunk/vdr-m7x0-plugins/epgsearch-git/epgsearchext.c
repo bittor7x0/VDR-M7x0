@@ -446,7 +446,11 @@ bool cSearchExt::Parse(const char *s)
             pos = pos_next;
             switch (parameter) {
                case 1:
-                  if (!isnumber(value)) return false;
+                  if (!isnumber(value))
+                  {
+                     free(pos);
+                     return false;
+                  }
                   ID = atoi(value);
                   break;
                case 2:  strcpy(search, value);
