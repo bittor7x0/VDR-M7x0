@@ -33,7 +33,7 @@ ROOTFS_FILE_TABLE := $(STAGEFILES_DIR)/file_tab$(subst /,.,$(subst $(TOP_DIR),,$
 ROOTFS_FILE_COPY := $(STAGEFILES_DIR)/file_copy$(subst /,.,$(subst $(TOP_DIR),,$(ROOTFS_DIR))).lst
 FQ_FILE_LISTS = $(addprefix $(FILELIST_DIR)/, $(FILE_LISTS))
 ROOTFS_DIR_DEPS = $(PACKS_BUILD_STAGEFILE) $$(FQ_FILE_LISTS) \
-   $(COPY_LISTS_BIN) $(UPX_BIN) $(TOP_DIR)/.config
+   $(COPY_LISTS_BIN) $(TOP_DIR)/.config
 ifeq ($(HOST_CYGWIN),y)
 	ROOTFS_DIR_DEPS += $(CRAMFSCK_BIN) $(CRAMFSSWAP_BIN) $(MKSQUASHFS_BIN) $(RSAENCODE_BIN)
 	CYGWIN_DIR_TMP_REL := cygwin_dir_$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION)
@@ -104,7 +104,7 @@ endef
 AWK_LST_TRANS_PRG_COPY := '$$1 !~ /^\/?etc\// || $(call awk_rootfs_lst_trans_prg) \
 	{ print }'
 
-AWK_LST_TRANS_PRG := '$$1 !~ /\#/ && $$3 !~ /l/ && $$3 !~ /s/ && $$3 !~ /u/ \
+AWK_LST_TRANS_PRG := '$$1 !~ /\#/ && $$3 !~ /l/ && $$3 !~ /s/ \
                    && ($$1 !~ /^\/?etc\// || $(call awk_rootfs_lst_trans_prg)) \
                    && $$1 !~ /^\/?root/ && $$1 !~ /^\/?home/ \
    { file="/"$$1 ; gsub("//","/",file) ; \
@@ -148,7 +148,7 @@ $(ROOTFS_FILE_TABLE): $(ROOTFS_DIR_DEPS)
 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG_COPY) > \
 		$(ROOTFS_FILE_COPY)
 	$(COPY_LISTS_BIN) -s '$(ROOTFS_DIR)' '$(TARGET_ROOT)' \
-		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(ROOTFS_FILE_COPY)
+		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' $(ROOTFS_FILE_COPY)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(ROOTFS_DIR)/etc/systemtype`,g" $(ROOTFS_DIR)/etc/rc.mini
 	$(call set_lang, $(ROOTFS_DIR))
 ifeq ($(HOST_CYGWIN),y)
