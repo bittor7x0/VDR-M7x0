@@ -6,6 +6,7 @@
 
 ::sysinit:/bin/mount -o rw,nosuid,nodev,noexec -t proc proc /proc
 ::sysinit:/sbin/ifconfig lo 127.0.0.1
+::sysinit:/bin/hostname -F /etc/hostname
 ::wait:/bin/ash /etc/rc.mini
 
 #----- system halt -----
