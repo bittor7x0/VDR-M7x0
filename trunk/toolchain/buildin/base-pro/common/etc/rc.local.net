@@ -4,8 +4,6 @@ source /etc/rc.local.conf
 
 /bin/mount -o rw,nosuid,noexec -t devpts devpts /dev/pts
 
-/bin/hostname -F /etc/hostname
-
 /sbin/ifconfig ${if} hw ether ${mac}
 if [ X"${net}" = X"DHCP" ]; then
     echo "dhcp";
