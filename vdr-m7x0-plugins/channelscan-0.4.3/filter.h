@@ -99,7 +99,9 @@ private:
   int numNits;
   unsigned int lastCount;
   volatile bool endofScan;
+#ifdef M750S
   volatile bool found_;
+#endif
   std::vector<int> sectionSeen_;
 protected:
   virtual void Process(u_short Pid, u_char Tid, const u_char *Data, int Length);
@@ -110,7 +112,9 @@ public:
   bool EndOfScan() {return endofScan;};
   void Dump();
   //void Copy();
+#ifdef M750S
   bool Found();
+#endif
   };
 
 

@@ -982,7 +982,7 @@ cMenuStatusBar::cMenuStatusBar(int Total, int Current, int Channel, int Mode, bo
    buffer[i++] = ']';
    buffer[i] = '\0';
 
-   char *tmp;
+   char *tmp = NULL;
    int l = 0;
    if (BarOnly)
      l = asprintf(&tmp,"%s", buffer);

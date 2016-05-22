@@ -273,9 +273,7 @@ void cMenuChannelGroupItem::Set(void)
 	if (chIntBegin == -1)
 	    chIntBegin = channelNr;
 
-	if (chLast == channelNr-1)
-	    chIntEnd = channelNr;
-	else
+	if (chLast != channelNr-1)
 	{
 	    chIntEnd = chLast;
 	    if(chIntBegin == chIntEnd)

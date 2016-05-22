@@ -172,7 +172,8 @@ bool cTemplFile::Load(const char *FileName)
 
 bool cTemplFile::Parse(const char *Name, const char *Value)
 {
-    if (Name && Name[0] == '#') return true;
+    if (Name == NULL) return false;
+    if (Name[0] == '#') return true;
     if (!strcasecmp(Name, "WarEagleIcons"))
     {
 	EPGSearchConfig.WarEagle = atoi(Value);
