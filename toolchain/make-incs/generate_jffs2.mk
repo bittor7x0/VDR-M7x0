@@ -24,7 +24,7 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
 JFFS2_DIR_DEPS = $(PACKS_BUILD_STAGEFILE) $$(FQ_FILE_LISTS) \
-   $(COPY_LISTS_BIN) $(UPX_BIN) $$(ROOTFS_FILE_TABLE) $(TOP_DIR)/.config
+   $(COPY_LISTS_BIN) $$(ROOTFS_FILE_TABLE) $(TOP_DIR)/.config
 
 ifeq ($(strip $(CONFIG_JFFS2_DIR)),)
   JFFS2_DIR = $(TOP_DIR)/jffs2_dir_$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION)
@@ -74,7 +74,7 @@ endif
 $(TOP_DIR)/$(JFFS2_IMG): $$(MKJFFS2_BIN) $(JFFS2_FILE_COPY)
 	-$(RM) -f $(TOP_DIR)/$(JFFS2_IMG)
 	$(COPY_LISTS_BIN) -m '$(JFFS2_DIR)' '$(TARGET_ROOT)' \
-		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' '$(PREFIX_BIN)/upx' $(JFFS2_FILE_COPY)
+		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' $(JFFS2_FILE_COPY)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(JFFS2_DIR)/etc/systemtype`,g" $(JFFS2_DIR)/etc/rc.mini
 	$(call set_lang, $(JFFS2_DIR))
 	$(ECHO) "SVN ToolChain `svnversion -c \"$(TOP_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version

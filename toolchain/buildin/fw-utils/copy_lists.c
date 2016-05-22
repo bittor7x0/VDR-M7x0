@@ -55,7 +55,6 @@ struct copy_context {
 	const char *root_fs_path;
 	const char *target_root_path;
 	char *strip_tool;
-	char *upx_tool;
 	const char *cur_filename;
 	FILE *cur_file;
 	int cur_line;
@@ -282,24 +281,6 @@ static void do_strip(struct copy_context *cont)
 	free(full_name);
 }
 
-static void do_upx(struct copy_context *cont)
-{
-	char *full_name;
-
-	if (asprintf(&full_name,"%s/%s", cont->root_fs_path,
-			cont->cur_entry.file1) < 0)
-		die("Cannot alloc memory");
-
-	// UPX only work with executables files
-	int upx_chmod = chmod(full_name, 0755);
-	if (upx_chmod != 0)
-	    die("Cannot set execute permission to '%s'", full_name);
-	else
-	    EXEC_SIMPLE(cont->upx_tool, 2, "-9", full_name);
-
-	free(full_name);
-}
-
 static void do_copy(struct copy_context *cont)
 {
 	char *from;
@@ -469,9 +450,6 @@ static void handle_list_entry(struct copy_context *cont) {
 		case 's':
 			do_strip(cont);
 			break;
-		case 'u':
-			do_upx(cont);
-			break;
 		default:
 			die("Invalid action/filetype flag %c", cont->cur_entry.action);
 	}
@@ -498,7 +476,7 @@ static void handle_file(struct copy_context *cont, const char *filename)
 
 static void print_usage(void)
 {
-	printf("Usage: copy_lists [-s|-m] <rootfs path> <target root path> <strip util> <upx util> <input file list>");
+	printf("Usage: copy_lists [-s|-m] <rootfs path> <target root path> <strip util> <input file list>");
 }
 
 int main(int argc, char **argv)
@@ -536,12 +514,6 @@ int main(int argc, char **argv)
 	cont.strip_tool = argv[i];
 	if (stat(cont.strip_tool, &st) || !S_ISREG(st.st_mode)) {
 		die("strip tool '%s' not usable", cont.strip_tool);
-	}
-	i++;
-
-	cont.upx_tool = argv[i];
-	if (stat(cont.upx_tool, &st) || !S_ISREG(st.st_mode)) {
-		die("upx tool '%s' not usable", cont.upx_tool);
 	}
 	i++;
 
