@@ -74,7 +74,7 @@ M7X0-MODULES_DLFILE := $(DOWNLOAD_DIR)/$(M7X0-MODULES_FILE)
 ifeq ($(CONFIG_M7X0_TYPE),m740)
 M7X0-MODULES_URL := https://www.assembla.com/spaces/VDR-EM-NG_Test/documents/bYjC8MpCSr5yujacwqEsg8/download/bYjC8MpCSr5yujacwqEsg8?notinline=true
 else ifeq ($(CONFIG_M7X0_TYPE),m750s)
-M7X0-MODULES_URL := http://gigaset.com/medias/sys_master/Gigaset_M750_S_V_2.4.exe
+M7X0-MODULES_URL := https://www.assembla.com/spaces/VDR-EM-NG_Test/documents/d4X6yYhPir5PS3dmr6CpXy/download/d4X6yYhPir5PS3dmr6CpXy?notinline=true
 else
 $(error unknown system type given)
 endif
