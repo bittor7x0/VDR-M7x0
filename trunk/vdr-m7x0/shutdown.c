@@ -24,6 +24,7 @@
 #include "plugin.h"
 #include "timers.h"
 #include "tools.h"
+#include "dummyplayer.h"
 
 cShutdownHandler ShutdownHandler;
 
@@ -139,6 +140,9 @@ void cShutdownHandler::CheckManualStart()
      cDevice::PrimaryDevice()->SetTvSettings(0);
      dsyslog("assuming automatic start of VDR");
      SetUserInactive();
+     // launch the dummy player
+     cControl::Shutdown();
+     cControl::Launch(new cDummyPlayerControl);
      }
 }
 
@@ -178,15 +182,20 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
         Skins.Message(mtError, tr("Can't shutdown - option '-s' not given!"));
      return false;
      }
+  bool IaMode = getIaMode();
   if (cCutter::Active()) {
-	setIaMode(0);
-	cDevice::PrimaryDevice()->SetTvSettings(0);
+     if (IaMode) {
+        setIaMode(0);
+        cDevice::PrimaryDevice()->SetTvSettings(0);
+        }
      //if (!Interactive || !Interface->Confirm(tr("Editing - shut down anyway?")))
         return false;
      }
   if (cUsbAutomounter::Active()) {
-	setIaMode(0);
-	cDevice::PrimaryDevice()->SetTvSettings(0);
+     if (IaMode) {
+        setIaMode(0);
+        cDevice::PrimaryDevice()->SetTvSettings(0);
+        }
         return false;
      }
 
@@ -195,9 +204,11 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
   time_t Delta = timer ? Next - time(NULL) : 0;
 
   if (cRecordControls::Active() || (Next && Delta <= 0)) {
-	setIaMode(0);
-	cDevice::PrimaryDevice()->SetTvSettings(0);
-	return false;
+     if (IaMode) {
+        setIaMode(0);
+        cDevice::PrimaryDevice()->SetTvSettings(0);
+        }
+     return false;
 /*
      // VPS recordings in timer end margin may cause Delta <= 0
      if (!Interactive || !Interface->Confirm(tr("Recording - shut down anyway?")))
@@ -224,8 +235,10 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
   if (Next && Delta <= Setup.MinEventTimeout * 60) {
      // Plugin wakeup within Min Event Timeout
      if (!Interactive) {
-        setIaMode(0);
-        cDevice::PrimaryDevice()->SetTvSettings(0);
+        if (IaMode) {
+           setIaMode(0);
+           cDevice::PrimaryDevice()->SetTvSettings(0);
+           }
         return false;
         }
      //cString buf = cString::sprintf(tr("Plugin %s wakes up in %ld min, continue?"), Plugin->Name(), Delta / 60);
