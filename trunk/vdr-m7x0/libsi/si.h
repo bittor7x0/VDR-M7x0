@@ -167,7 +167,8 @@ enum LinkageType { LinkageTypeInformationService = 0x01,
                    LinkageTypeRCSMap = 0x07,
                    LinkageTypeMobileHandover = 0x08,
                    LinkageTypeSystemSoftwareUpdateService = 0x09,
-                   LinkageTypeTSContainingSsuBatOrNit = 0x0A
+                   LinkageTypeTSContainingSsuBatOrNit = 0x0A,
+                   LinkageTypePremiere = 0xB0
                  };
 
 enum AudioType { AudioTypeUndefined = 0x00,

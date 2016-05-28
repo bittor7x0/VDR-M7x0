@@ -207,7 +207,7 @@ void cOsdMenu::Display(void)
          if (current < 0 && item->Selectable())
             current = item->Index();
          if (ni == displayMenuItems) {
-            dsyslog("WARNING: Reducing entries to only that ones that fits on VDR OSD!.");
+            //dsyslog("Reducing entries to only that ones that fits on VDR OSD!.");
             break;
             }
          }
@@ -546,4 +546,3 @@ eOSState cOsdMenu::ProcessKey(eKeys Key)
     }
   return osContinue;
 }
-

@@ -90,7 +90,7 @@ void setIaMode(bool mode);
 
 template<class T> inline void DELETENULL(T *&p) { T *q = p; p = NULL; delete q; }
 
-#define CHECK(s) { if ((s) < 0) LOG_ERROR } // used for 'ioctl()' calls
+#define CHECK(s) { if ((s) < 0) LOG_ERROR; } // used for 'ioctl()' calls
 #define FATALERRNO (errno && errno != EAGAIN && errno != EINTR && errno != EBUSY)
 // Getting EBUSY in many cases on m7x0 where this should not break things.
 
@@ -244,8 +244,8 @@ public:
   cTimeMs(void);
   static uint64_t Now(void);
   void Set(int Ms = 0);
-  bool TimedOut(void);
-  uint64_t Elapsed(void);
+  bool TimedOut(void) const;
+  uint64_t Elapsed(void) const;
   };
 
 class cReadLine {
@@ -286,7 +286,6 @@ public:
   bool Ok(void) { return directory != NULL; }
   struct dirent *Next(void);
   };
-
 
 class cFile {
 private:

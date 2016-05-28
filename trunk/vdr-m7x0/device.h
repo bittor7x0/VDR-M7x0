@@ -126,7 +126,7 @@ public:
          ///< Waits until all devices have become ready, or the given Timeout
          ///< (seconds) has expired. While waiting, the Ready() function of each
          ///< device is called in turn, until they all return true.
-         ///< \return True if all devices have become ready within the given
+         ///< Returns true if all devices have become ready within the given
          ///< timeout.
   static void SetUseDevice(int n);
          ///< Sets the 'useDevice' flag of the given device.
@@ -137,8 +137,8 @@ public:
          ///< this instance of VDR.
   static bool SetPrimaryDevice(int n);
          ///< Sets the primary device to 'n'.
-         ///< \param n must be in the range 1...numDevices.
-         ///< \return true if this was possible.
+         ///< n must be in the range 1...numDevices.
+         ///< Returns true if this was possible.
   static cDevice *PrimaryDevice(void) { return primaryDevice; }
          ///< Returns the primary device.
   static cDevice *ActualDevice(void);
@@ -146,8 +146,8 @@ public:
          ///< primary device otherwise.
   static cDevice *GetDevice(int Index);
          ///< Gets the device with the given Index.
-         ///< \param Index must be in the range 0..numDevices-1.
-         ///< \return A pointer to the device, or NULL if the Index was invalid.
+         ///< Index must be in the range 0..numDevices-1.
+         ///< Returns a pointer to the device, or NULL if the Index was invalid.
 //M7X0 BEGIN AK
   static cDevice *GetDevice(const cChannel *Channel, int Priority = -1, bool *NeedsDetachReceivers = NULL, bool forTransferer = false);
 //M7X0 END AK
@@ -358,19 +358,19 @@ public:
 public:
   virtual uchar *GrabImage(int &Size, bool Jpeg = true, int Quality = -1, int SizeX = -1, int SizeY = -1);
          ///< Grabs the currently visible screen image.
-         ///< \param Size The size of the returned data block.
-         ///< \param Jpeg If true will write a JPEG file. Otherwise a PNM file will be written.
-         ///< \param Quality The compression factor for JPEG. 1 will create a very blocky
+         ///< Size is the size of the returned data block.
+         ///< If Jpeg is true it will write a JPEG file. Otherwise a PNM file will be written.
+         ///< Quality is the compression factor for JPEG. 1 will create a very blocky
          ///<        and small image, 70..80 will yield reasonable quality images while keeping the
          ///<        image file size around 50 KB for a full frame. The default will create a big
          ///<        but very high quality image.
-         ///< \param SizeX The number of horizontal pixels in the frame (default is the current screen width).
-         ///< \param SizeY The number of vertical pixels in the frame (default is the current screen height).
-         ///< \return A pointer to the grabbed image data, or NULL in case of an error.
+         ///< SizeX is the number of horizontal pixels in the frame (default is the current screen width).
+         ///< SizeY is the number of vertical pixels in the frame (default is the current screen height).
+         ///< Returns a pointer to the grabbed image data, or NULL in case of an error.
          ///< The caller takes ownership of the returned memory and must free() it once it isn't needed any more.
   bool GrabImageFile(const char *FileName, bool Jpeg = true, int Quality = -1, int SizeX = -1, int SizeY = -1);
          ///< Calls GrabImage() and stores the resulting image in a file with the given name.
-         ///< \return True if all went well.
+         ///< Returns true if all went well.
          ///< The caller is responsible for making sure that the given file name
          ///< doesn't lead to overwriting any important other file.
 #endif
@@ -407,7 +407,7 @@ protected:
 //M7X0 END AK
 public:
   void ClrAvailableTracks(bool DescriptionsOnly = false, bool IdsOnly = false);
-       ///< Clears the list of currently availabe tracks. If DescriptionsOnly
+       ///< Clears the list of currently available tracks. If DescriptionsOnly
        ///< is true, only the track descriptions will be cleared. With IdsOnly
        ///< set to true only the ids will be cleared. IdsOnly is only taken
        ///< into account if DescriptionsOnly is false.
@@ -417,7 +417,7 @@ public:
        ///< Index tells which track of the given basic type is meant.
        ///< If Id is 0 any existing id will be left untouched and only the
        ///< given Language and Description will be set.
-       ///< \return Returns true if the track was set correctly, false otherwise.
+       ///< Returns true if the track was set correctly, false otherwise.
   const tTrackId *GetTrack(eTrackType Type);
        ///< Returns a pointer to the given track id, or NULL if Type is not
        ///< less than ttMaxTrackTypes.
@@ -428,7 +428,7 @@ public:
   eTrackType GetCurrentAudioTrack(void) { return currentAudioTrack; }
   bool SetCurrentAudioTrack(eTrackType Type);
        ///< Sets the current audio track to the given Type.
-       ///< \return Returns true if Type is a valid audio track, false otherwise.
+       ///< Returns true if Type is a valid audio track, false otherwise.
   void EnsureAudioTrack(bool Force = false);
        ///< Makes sure an audio track is selected that is actually available.
        ///< If Force is true, the language and Dolby Digital settings will
@@ -486,14 +486,14 @@ protected:
 public:
   virtual bool SetPlayMode(ePlayMode PlayMode);
        ///< Sets the device into the given play mode.
-       ///< \return true if the operation was successful.
+       ///< Returns true if the operation was successful.
 protected:
   virtual int PlayVideo(const uchar *Data, int Length);
        ///< Plays the given data block as video.
        ///< Data points to exactly one complete PES packet of the given Length.
        ///< PlayVideo() shall process the packet either as a whole (returning
        ///< Length) or not at all (returning 0 or -1 and setting 'errno' to EAGAIN).
-       ///< \return Returns the number of bytes actually taken from Data, or -1
+       ///< Returns the number of bytes actually taken from Data, or -1
        ///< in case of an error.
   virtual int PlayAudio(const uchar *Data, int Length, uchar Id);
        ///< Plays the given data block as audio.
@@ -501,7 +501,7 @@ protected:
        ///< Id indicates the type of audio data this packet holds.
        ///< PlayAudio() shall process the packet either as a whole (returning
        ///< Length) or not at all (returning 0 or -1 and setting 'errno' to EAGAIN).
-       ///< \return Returns the number of bytes actually taken from Data, or -1
+       ///< Returns the number of bytes actually taken from Data, or -1
        ///< in case of an error.
   virtual int PlayPesPacket(const uchar *Data, int Length, bool VideoOnly = false);
        ///< Plays the single PES packet in Data with the given Length.
@@ -543,7 +543,7 @@ public:
        ///< provide the STC, -1 will be returned.
 #ifdef TS_PLAYER_BACKPORT
   virtual bool IsPlayingVideo(void) const { return isPlayingVideo; }
-       ///< \return Returns true if the currently attached player has delivered
+       ///< Returns true if the currently attached player has delivered
        ///< any video packets.
 #endif
 //M7X0 BEGIN AK
@@ -571,13 +571,13 @@ public:
        ///< Returns true if the device itself or any of the file handles in
        ///< Poller is ready for further action.
        ///< If TimeoutMs is not zero, the device will wait up to the given number
-       ///< of milleseconds before returning in case it can't accept any data.
+       ///< of milliseconds before returning in case it can't accept any data.
   virtual bool Flush(int TimeoutMs = 0);
        ///< Returns true if the device's output buffers are empty, i. e. any
-       ///< data which was bufferd so far has been processed.
+       ///< data which was buffered so far has been processed.
        ///< If TimeoutMs is not zero, the device will wait up to the given
        ///< number of milliseconds before returning in case there is still
-       ///< data in the buffers..
+       ///< data in the buffers.
   virtual int PlayPes(const uchar *Data, int Length, bool VideoOnly = false);
        ///< Plays all valid PES packets in Data with the given Length.
        ///< If Data is NULL any leftover data from a previous call will be
@@ -638,8 +638,6 @@ private:
 
   volatile int actionLock;
   volatile int otherLock;
-  uint64_t normalLockCounter;
-  uint64_t hardLockCounter;
   inline void FasterLockAction(void) __attribute__ ((always_inline));
   inline void FasterUnlockAction(void) __attribute__ ((always_inline));
   inline void FasterLockOther(void) __attribute__ ((always_inline));

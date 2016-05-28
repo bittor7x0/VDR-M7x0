@@ -13,9 +13,6 @@
 #include <sys/socket.h>
 #include "config.h"
 
-#define REPEATDELAY 350 // ms
-#define REPEATFREQ 100 // ms
-#define REPEATTIMEOUT 500 // ms
 #define RECONNECTDELAY 3000 // ms
 //M7X0 BEGIN AK
 #define DEFAULTTIMEOUT 2000 // ms

@@ -19,7 +19,7 @@
 // format characters in order to allow any number of blanks after a numeric
 // value!
 
-// -- cSVDRPhost -------------------------------------------------------------
+// --- cSVDRPhost ------------------------------------------------------------
 
 cSVDRPhost::cSVDRPhost(void)
 {
@@ -210,7 +210,7 @@ cNestedItemList Commands;
 cNestedItemList RecordingCommands;
 cNestedItemList TimerCommands;
 
-// -- cSVDRPhosts ------------------------------------------------------------
+// --- cSVDRPhosts -----------------------------------------------------------
 
 cSVDRPhosts SVDRPhosts;
 
@@ -236,7 +236,7 @@ bool cSVDRPhosts::Acceptable(in_addr_t Address)
   return false;
 }
 
-// -- cSetupLine -------------------------------------------------------------
+// --- cSetupLine ------------------------------------------------------------
 
 cSetupLine::cSetupLine(void)
 {
@@ -302,7 +302,7 @@ bool cSetupLine::Save(FILE *f)
   return fprintf(f, "%s%s%s = %s\n", plugin ? plugin : "", plugin ? "." : "", name, value) > 0;
 }
 
-// -- cSetup -----------------------------------------------------------------
+// --- cSetup ----------------------------------------------------------------
 
 cSetup Setup;
 

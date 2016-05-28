@@ -56,6 +56,7 @@ void syslog_with_tid(int priority, const char *format, ...)
   vsyslog(priority, fmt, ap);
   va_end(ap);
 }
+
 int BCD2INT(int x)
 {
   return ((1000000 * BCDCHARTOINT((x >> 24) & 0xFF)) +
@@ -82,7 +83,6 @@ ssize_t safe_write(int filedes, const void *buffer, size_t size)
   ssize_t p = 0;
   ssize_t written = size;
   const unsigned char *ptr = (const unsigned char *)buffer;
-
   while (size > 0) {
         p = write(filedes, ptr, size);
         if (p < 0) {
@@ -283,7 +283,7 @@ int numdigits(int n)
 
 bool isnumber(const char *s)
 {
-  if (!*s)
+  if (!s || !*s)
      return false;
   do {
      if (!isdigit(*s))
@@ -627,12 +627,12 @@ void cTimeMs::Set(int Ms)
   begin = Now() + Ms;
 }
 
-bool cTimeMs::TimedOut(void)
+bool cTimeMs::TimedOut(void) const
 {
   return Now() >= begin;
 }
 
-uint64_t cTimeMs::Elapsed(void)
+uint64_t cTimeMs::Elapsed(void) const
 {
   return Now() - begin;
 }
@@ -1169,7 +1169,6 @@ cUnbufferedFile::~cUnbufferedFile()
   Close();
 }
 
-
 int cUnbufferedFile::Open(const char *FileName, int Flags, mode_t Mode)
 {
   Close();
@@ -1212,17 +1211,18 @@ int cUnbufferedFile::Open(const char *FileName, int Flags, mode_t Mode)
 
 int cUnbufferedFile::Close(void)
 {
-#ifdef USE_FADVISE
   if (fd >= 0) {
+#ifdef USE_FADVISE
      if (totwritten)    // if we wrote anything make sure the data has hit the disk before
         fdatasync(fd);  // calling fadvise, as this is our last chance to un-cache it.
      posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED);
-     }
 #endif
-
-  int OldFd = fd;
-  fd = -1;
-  return close(OldFd);
+     int OldFd = fd;
+     fd = -1;
+     return close(OldFd);
+     }
+  errno = EBADF;
+  return -1;
 }
 
 // When replaying and going e.g. FF->PLAY the position jumps back 2..8M
@@ -1669,7 +1669,7 @@ void cListBase::Move(int From, int To)
 
 void cListBase::Move(cListObject *From, cListObject *To)
 {
-  if (From && To) {
+  if (From && To && From != To) {
      if (From->Index() < To->Index())
         To = To->Next();
      if (From == objects)
@@ -1722,7 +1722,9 @@ static int CompareListObjects(const void *a, const void *b)
 void cListBase::Sort(void)
 {
   int n = Count();
-  cListObject *a[n];
+  cListObject **a = MALLOC(cListObject *, n);
+  if (a == NULL)
+     return;
   cListObject *object = objects;
   int i = 0;
   while (object && i < n) {
@@ -1736,6 +1738,7 @@ void cListBase::Sort(void)
       count--;
       Add(a[i]);
       }
+  free(a);
 }
 
 // --- cHashBase -------------------------------------------------------------

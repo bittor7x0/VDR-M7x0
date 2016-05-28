@@ -128,7 +128,7 @@ cEvent::cEvent(tEventID EventID)
   vps = 0;
   SetSeen();
 //M7X0 BEGIN AK
- usedByTimers = 0;
+  usedByTimers = 0;
   cachedDateStringLang = -1;
 //M7X0 END AK
 }
@@ -554,7 +554,6 @@ bool cEvent::Read(FILE *f, cSchedule *Schedule)
                                 Event->SetTableID(TableID);
                                 Event->SetStartTime(StartTime);
                                 Event->SetDuration(Duration);
-
                                 if (newEvent)
                                    Schedule->AddEvent(newEvent);
                                 }

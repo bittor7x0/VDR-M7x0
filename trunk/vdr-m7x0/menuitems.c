@@ -300,7 +300,7 @@ void cMenuEditStrItem::Set(void)
   if (InEditMode()) {
      // This is an ugly hack to make editing strings work with the 'skincurses' plugin.
      const cFont *font = dynamic_cast<cSkinDisplayMenu *>(cSkinDisplay::Current())->GetTextAreaFont(false);
-     if (!font || font->Width("W") != 1) // all characters have with == 1 in the font used by 'skincurses'
+     if (!font || font->Width("W") != 1) // all characters have width == 1 in the font used by 'skincurses'
         font = cFont::GetFont(fontOsd);
      char buf[1000];
      strncpy(buf, value, pos);
@@ -388,7 +388,7 @@ eOSState cMenuEditStrItem::ProcessKey(eKeys Key)
                     return osUnknown;
                  break;
     case kYellow|k_Repeat:
-    case kYellow: // Remove the character at current position; in insert mode it is the character to the right of cursor
+    case kYellow: // Remove the character at the current position; in insert mode it is the character to the right of the cursor
                  if (InEditMode()) {
                     if (strlen(value) > 1) {
                        if (!insert || pos < int(strlen(value)) - 1)
@@ -530,6 +530,7 @@ eOSState cMenuEditStrItem::ProcessKey(eKeys Key)
                                           return ProcessKey(kYellow);
                                           }
                                        break;
+                            default: ;
                             }
                           }
                        }
@@ -539,6 +540,7 @@ eOSState cMenuEditStrItem::ProcessKey(eKeys Key)
                          case kfEnd:  pos = strlen(value) - 1; break;
                          case kfIns:  return ProcessKey(kGreen);
                          case kfDel:  return ProcessKey(kYellow);
+                         default: ;
                          }
                        }
                     }

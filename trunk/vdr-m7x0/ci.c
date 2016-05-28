@@ -56,7 +56,7 @@ static bool DebugProtocol = false;
 
 static const uint8_t *GetLength(const uint8_t *Data, int &Length)
 ///< Gets the length field from the beginning of Data.
-///< \return Returns a pointer to the first byte after the length and
+///< Returns a pointer to the first byte after the length and
 ///< stores the length value in Length.
 {
   Length = *Data++;
@@ -71,7 +71,7 @@ static const uint8_t *GetLength(const uint8_t *Data, int &Length)
 
 static uint8_t *SetLength(uint8_t *Data, int Length)
 ///< Sets the length field at the beginning of Data.
-///< \return Returns a pointer to the first byte after the length.
+///< Returns a pointer to the first byte after the length.
 {
   uint8_t *p = Data;
   if (Length < 128)
@@ -91,7 +91,7 @@ static uint8_t *SetLength(uint8_t *Data, int Length)
 
 static char *CopyString(int Length, const uint8_t *Data)
 ///< Copies the string at Data.
-///< \return Returns a pointer to a newly allocated string.
+///< Returns a pointer to a newly allocated string.
 {
   // Some CAMs send funny characters at the beginning of strings.
   // Let's just skip them:
@@ -109,7 +109,7 @@ static char *CopyString(int Length, const uint8_t *Data)
 
 static char *GetString(int &Length, const uint8_t **Data)
 ///< Gets the string at Data.
-///< \return Returns a pointer to a newly allocated string, or NULL in case of error.
+///< Returns a pointer to a newly allocated string, or NULL in case of error.
 ///< Upon return Length and Data represent the remaining data after the string has been skipped.
 {
   if (Length > 0 && Data && *Data) {
@@ -552,7 +552,7 @@ cCiTransportConnection *cCiTransportLayer::Process(int Slot)
   return NULL;
 }
 
-// -- cCiSession -------------------------------------------------------------
+// --- cCiSession -------------------------------------------------------------
 
 // Session Tags:
 
@@ -661,7 +661,7 @@ cCiSession::~cCiSession()
 
 int cCiSession::GetTag(int &Length, const uint8_t **Data)
 ///< Gets the tag at Data.
-///< \return Returns the actual tag, or AOT_NONE in case of error.
+///< Returns the actual tag, or AOT_NONE in case of error.
 ///< Upon return Length and Data represent the remaining data after the tag has been skipped.
 {
   if (Length >= 3 && Data && *Data) {
@@ -693,7 +693,8 @@ int cCiSession::SendData(int Tag, int Length, const uint8_t *Data)
   *p++ =  Tag        & 0xFF;
   p = SetLength(p, Length);
   if (p - buffer + Length < int(sizeof(buffer))) {
-     memcpy(p, Data, Length);
+     if (Data)
+        memcpy(p, Data, Length);
      p += Length;
      return tc->SendData(p - buffer, buffer);
      }
@@ -706,7 +707,7 @@ bool cCiSession::Process(int Length, const uint8_t *Data)
   return true;
 }
 
-// -- cCiResourceManager -----------------------------------------------------
+// --- cCiResourceManager ----------------------------------------------------
 
 class cCiResourceManager : public cCiSession {
 private:
@@ -1233,7 +1234,7 @@ cCiMMI::~cCiMMI()
 
 char *cCiMMI::GetText(int &Length, const uint8_t **Data)
 ///< Gets the text at Data.
-///< \return Returns a pointer to a newly allocated string, or NULL in case of error.
+///< Returns a pointer to a newly allocated string, or NULL in case of error.
 ///< Upon return Length and Data represent the remaining data after the text has been skipped.
 {
   int Tag = GetTag(Length, Data);
@@ -1480,7 +1481,7 @@ bool cCiEnquiry::Abort(void)
   return mmi && mmi->SendCloseMMI();
 }
 
-// -- cCiHandler -------------------------------------------------------------
+// --- cCiHandler -------------------------------------------------------------
 
 cCiHandler::cCiHandler(int Fd, int NumSlots)
 {

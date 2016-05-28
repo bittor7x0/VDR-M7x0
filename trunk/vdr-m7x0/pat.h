@@ -36,7 +36,7 @@ int GetCaDescriptors(int Source, int Transponder, int ServiceId, const unsigned 
          ///< Copies all available CA descriptors for the given Source, Transponder and ServiceId
          ///< into the provided buffer at Data (at most BufSize bytes). Only those CA descriptors
          ///< are copied that match one of the given CA system IDs.
-         ///< \return Returns the number of bytes copied into Data (0 if no CA descriptors are
+         ///< Returns the number of bytes copied into Data (0 if no CA descriptors are
          ///< available), or -1 if BufSize was too small to hold all CA descriptors.
          ///< The return value in StreamFlag tells whether these CA descriptors are to be used
          ///< for the individual streams.

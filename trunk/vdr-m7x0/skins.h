@@ -46,7 +46,7 @@ public:
 
 class cSkinDisplayChannel : public cSkinDisplay {
        ///< This class is used to display the current channel, together with
-       ///< the present and following EPG even. How and to what extent this
+       ///< the present and following EPG event. How and to what extent this
        ///< is done is totally up to the derived class.
 public:
   virtual void SetChannel(const cChannel *Channel, int Number) = 0;

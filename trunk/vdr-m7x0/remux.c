@@ -9,7 +9,7 @@
  * VDR's needs.
  *
  * The cRepacker family's code was originally written by Reinhard Nissl <rnissl@gmx.de>,
- * and adapted to the VDR coding style by Klaus.Schmidinger@cadsoft.de.
+ * and adapted to the VDR coding style by kls@tvdr.de.
  *
  */
 
@@ -73,7 +73,6 @@ ePesHeader AnalyzePesHeader(const uchar *Data, int Count, int &PesPayloadOffset,
 
   if (ContinuationHeader)
      *ContinuationHeader = false;
-
 
   if ((Data[PesPayloadOffset] & 0xF0) == 0x20) {
      // skip PTS only
@@ -2215,8 +2214,8 @@ bool cRemux::isAudioOrH264(uchar *Data, int Length, bool isTsData)
                  }
               }
            }
-        data += 188;
-        length -= 188;
+        data += TS_SIZE;
+        length -= TS_SIZE;
         }
      }
 
@@ -2289,8 +2288,11 @@ void TsSetTeiOnBrokenPackets(uchar *p, int l)
         if (!Processed[Pid]) {
            if (!TsPayloadStart(p))
               p[1] |= TS_ERROR;
-           else
+           else {
               Processed[Pid] = true;
+              int offs = TsPayloadOffset(p);
+              cRemux::SetBrokenLink(p + offs, TS_SIZE - offs);
+              }
            }
         l -= TS_SIZE;
         p += TS_SIZE;
@@ -2460,6 +2462,7 @@ void cPatPmtParser::ParsePmt(const uchar *Data, int Length)
                       for (SI::Loop::Iterator it; (d = stream.streamDescriptors.getNext(it)); ) {
                           switch (d->getDescriptorTag()) {
                             case SI::AC3DescriptorTag:
+                            case SI::EnhancedAC3DescriptorTag:
                                  dbgpatpmt(" AC3");
                                  dpid = stream.getPid();
                                  break;

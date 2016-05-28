@@ -125,7 +125,7 @@ void cFileWriter::Action(void)
         const uchar *p = NULL;
         if(recorder)
            p = recorder->Get(Count, Header, HeaderCount, FirstIFrame);
-	else
+        else
            p = remux->Get(Count, Header, HeaderCount, FirstIFrame);
         if (!p) {
            if(recorder)
@@ -151,18 +151,17 @@ void cFileWriter::Action(void)
                     }
                  }
               else
-              if (!(recordFile = fileName->NextFile())) {
-                 LOG_ERROR;
-                 esyslog("Cannot open next recording file '%s' ... giving up",fileName->Name());
-                 break;
-                 }
+                 if (!(recordFile = fileName->NextFile())) {
+                    LOG_ERROR;
+                    esyslog("Cannot open next recording file '%s' ... giving up",fileName->Name());
+                    break;
+                    }
 
               fileSize = 0;
               if(recorder)
                  recorder->Del(Header[FirstIFrame].offset);
               else
-              remux->Del(Header[FirstIFrame].offset);
-
+                 remux->Del(Header[FirstIFrame].offset);
               }
            else {
               if ((index != NULL) & (HeaderCount != 0))
@@ -171,7 +170,8 @@ void cFileWriter::Action(void)
               if(recorder)
                  recorder->Del(Count);
               else
-              remux->Del(Count);
+                 remux->Del(Count);
+
               fileSize += Count;
               }
 
@@ -194,10 +194,8 @@ void cFileWriter::Action(void)
         recordFile->Truncate(fileSize);
      }
 
-  if (fileSize == 0) {
+  if (fileSize == 0)
      fileName->Unlink();
-     }
-
 }
 
 cRecorder::cRecorder(const char *FileName, int Ca, int Priority, int VPid, const int *APids, const int *DPids, const int *SPids, bool IsTShift, int VType, const int *DPPids)

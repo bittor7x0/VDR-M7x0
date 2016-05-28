@@ -20,7 +20,7 @@
 // format characters in order to allow any number of blanks after a numeric
 // value!
 
-// -- cTimer -----------------------------------------------------------------
+// --- cTimer ----------------------------------------------------------------
 
 cTimer::cTimer(bool Instant, bool Pause, cChannel *Channel)
 {
@@ -258,7 +258,7 @@ bool cTimer::Parse(const char *s)
   free(aux);
   aux = NULL;
   //XXX Apparently sscanf() doesn't work correctly if the last %a argument
-  //XXX results in an empty string (this first occured when the EIT gathering
+  //XXX results in an empty string (this first occurred when the EIT gathering
   //XXX was put into a separate thread - don't know why this happens...
   //XXX As a cure we copy the original string and add a blank.
   //XXX If anybody can shed some light on why sscanf() failes here, I'd love
@@ -627,7 +627,7 @@ void cTimer::OnOff(void)
   Matches(); // refresh start and end time
 }
 
-// -- cTimers ----------------------------------------------------------------
+// --- cTimers ---------------------------------------------------------------
 
 cTimers Timers;
 
@@ -658,8 +658,10 @@ cTimer *cTimers::GetMatch(time_t t)
   for (cTimer *ti = First(); ti; ti = Next(ti)) {
       if (!ti->Recording() && ti->Matches(t)) {
          if (ti->Pending()) {
-            if (ti->Index() > LastPending)
+            if (ti->Index() > LastPending) {
                LastPending = ti->Index();
+               return ti;
+               }
             else
                continue;
             }

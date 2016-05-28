@@ -1,5 +1,5 @@
 /*
- * dvbdevice.h: The DVB device interface
+ * dvbdevice.h: The DVB device tuner interface
  *
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
@@ -43,7 +43,7 @@ public:
   static bool Initialize(void);
          ///< Initializes the DVB devices.
          ///< Must be called before accessing any DVB functions.
-         ///< \return True if any devices are available.
+         ///< Returns True if any devices are available.
 
 private:
   fe_type_t frontendType;
@@ -84,7 +84,6 @@ protected:
   virtual bool SetChannelDevice(const cChannel *Channel, bool LiveView);
 public:
   virtual bool HasLock(int TimeoutMs = 0) const;
-
 
 // PID handle facilities
 

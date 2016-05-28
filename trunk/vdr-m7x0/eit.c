@@ -234,14 +234,14 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
             case SI::LinkageDescriptorTag: {
                  SI::LinkageDescriptor *ld = (SI::LinkageDescriptor *)d;
                  tChannelID linkID(Source, ld->getOriginalNetworkId(), ld->getTransportStreamId(), ld->getServiceId());
-                 if (uint(ld->getLinkageType()) == 0xB0) { // Premiere World
+                 if (ld->getLinkageType() == SI::LinkageTypePremiere) { // Premiere World
                     bool hit = StartTime <= Now && Now < StartTime + Duration;
                     if (hit) {
                        char linkName[ld->privateData.getLength() + 1];
                        strn0cpy(linkName, (const char *)ld->privateData.getData(), sizeof(linkName));
+                       // TODO is there a standard way to determine the character set of this string?
                        cChannel *link = Channels.GetByChannelID(linkID);
                        if (link != channel) { // only link to other channels, not the same one
-                          //fprintf(stderr, "Linkage %s %4d %4d %5d %5d %5d %5d  %02X  '%s'\n", hit ? "*" : "", channel->Number(), link ? link->Number() : -1, SiEitEvent.getEventId(), ld->getOriginalNetworkId(), ld->getTransportStreamId(), ld->getServiceId(), ld->getLinkageType(), linkName);//XXX
                           if (link) {
                              if (Setup.UpdateChannels == 1 || Setup.UpdateChannels >= 3)
                                 link->SetName(linkName, "", "");

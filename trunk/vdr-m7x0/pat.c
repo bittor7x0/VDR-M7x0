@@ -342,7 +342,7 @@ void cPatFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
             switch (stream.getStreamType()) {
               case 1: // STREAMTYPE_11172_VIDEO
               case 2: // STREAMTYPE_13818_VIDEO
-              case 0x1B: // MPEG4
+              case 0x1B: // H.264
                       Vpid = stream.getPid();
                       Vtype = stream.getStreamType();
                       ProcessCaDescriptors = true;

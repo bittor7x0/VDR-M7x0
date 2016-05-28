@@ -597,7 +597,7 @@ void cSVDRP::CmdCLRE(const char *Option)
         if(schedule) {
           schedule->Cleanup(INT_MAX);
           cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME);
-          Reply(250, "EPG data from channel \"%s\" cleared", Option);
+          Reply(250, "EPG data of channel \"%s\" cleared", Option);
         } else {
           Reply(550, "No schedule found");
           return;
@@ -641,8 +641,7 @@ void cSVDRP::CmdDELC(const char *Option)
   if (*Option) {
      if (isnumber(Option)) {
         if (!Channels.BeingEdited()) {
-           cChannel *channel = Channels.GetByNumber(strtol(Option, NULL, 10));
-           if (channel) {
+           if (cChannel *channel = Channels.GetByNumber(strtol(Option, NULL, 10))) {
               for (cTimer *timer = Timers.First(); timer; timer = Timers.Next(timer)) {
                   if (timer->Channel() == channel) {
                      Reply(550, "Channel \"%s\" is in use by timer %d", Option, timer->Index() + 1);
@@ -977,7 +976,7 @@ void cSVDRP::CmdHELP(const char *Option)
          PrintHelpTopics(hp);
          }
      Reply(-214, "To report bugs in the implementation send email to");
-     Reply(-214, "    vdr-bugs@cadsoft.de");
+     Reply(-214, "    vdr-bugs@tvdr.de");
      }
   Reply(214, "End of HELP info");
 }

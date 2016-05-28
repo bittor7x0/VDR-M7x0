@@ -1,5 +1,5 @@
 /*
- * dvbdevice.c: The DVB device interface
+ * dvbdevice.c: The DVB device tuner interface
  *
  * See the main source file 'vdr.c' for copyright information and
  * how to reach the author.
@@ -221,13 +221,13 @@ static unsigned int FrequencyToHz(unsigned int f)
 
 bool cDvbTuner::SetFrontend(void)
 {
-  dvb_frontend_parameters Frontend;
-  dvb_set_ofdm_parameters ofdm_Frontend;
 #ifdef M750S
+  dvb_frontend_parameters Frontend;
   dvb_set_qpsk_parameters qpsk_Frontend;
 #endif
-  void *set_arg = &Frontend;
-  int set_call = FE_SET_FRONTEND;
+  dvb_set_ofdm_parameters ofdm_Frontend;
+  void *set_arg = &ofdm_Frontend;
+  int set_call = FE_SET_OFDM;
 
   switch (frontendType) {
 #ifdef M750S
@@ -315,7 +315,8 @@ bool cDvbTuner::SetFrontend(void)
     case FE_QAM: { // DVB-C
          memset(&Frontend, 0, sizeof(Frontend));
          // Frequency and symbol rate:
-
+         set_call = FE_SET_FRONTEND;
+         set_arg = &Frontend;
          Frontend.frequency = FrequencyToHz(channel.Frequency());
 #ifndef USE_TUNER_AUTOVALUES
          Frontend.inversion = fe_spectral_inversion_t(channel.Inversion());
@@ -338,11 +339,8 @@ bool cDvbTuner::SetFrontend(void)
 #endif // M750S
     case FE_OFDM: { // DVB-T
          memset(&ofdm_Frontend, 0, sizeof(ofdm_Frontend));
-         // Frequency and OFDM paramaters:
-         set_call = FE_SET_OFDM;
-         set_arg = &ofdm_Frontend;
+         // Frequency and timeout:
          ofdm_Frontend.frequency_khz = FrequencyToHz(channel.Frequency())/1000;
-
          tuneTimeout = DVBT_TUNE_TIMEOUT;
          lockTimeout = DVBT_LOCK_TIMEOUT;
          }
@@ -1785,7 +1783,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
 
         if ((streamId = ScanDataForPacketStartCode(data,limit)) == -1) {
            if (skippedBytes > REPLAY_MAX_UNUSABLE_DATA) {
-              esyslog("ERROR: %d bytes of recoding unusable while in initialization - giving up!", unusableDataCount);
+              esyslog("ERROR: %d bytes of recording unusable while in initialization - giving up!", unusableDataCount);
               errno = EDEADLK; // Any ideas for a better errorcode
               return -1;
               }
@@ -1887,7 +1885,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
 
            unusableDataCount += 188;
            if (unusableDataCount > REPLAY_MAX_UNUSABLE_DATA) {
-              esyslog("ERROR: %d bytes of recoding unusable while in trickspeed - giving up!", unusableDataCount);
+              esyslog("ERROR: %d bytes of recording unusable while in trickspeed - giving up!", unusableDataCount);
               errno = EDEADLK; // Any ideas for a better errorcode
               return -1;
               }
@@ -1922,7 +1920,7 @@ int c7x0TsReplayer::PlayTs(const uchar *Data, int Length)
 
         unusableDataCount += 188;
         if (unusableDataCount > REPLAY_MAX_UNUSABLE_DATA) {
-           esyslog("ERROR: %d bytes of recoding unusable - giving up!", unusableDataCount);
+           esyslog("ERROR: %d bytes of recording unusable - giving up!", unusableDataCount);
            errno = EDEADLK; // Any ideas for a better errorcode
            return -1;
            }
@@ -2711,25 +2709,25 @@ void cDvbDevice::SetVideoFormat(eVideoFormat VideoFormat)
    if (getIaMode() && HasDecoder()) {
 
      int avs = open("/dev/avswitch", O_WRONLY);
-     if(avs== -1)
+     if(avs == -1)
         esyslog("m7x0 can not open /dev/avswitch");
 
       switch(VideoFormat) {
-	    case vf16_9:
-        	dsyslog("DEBUG: set 16/9");
-        	CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_RATIO, M7X0_VIDEO_FORMAT_16_9));
-        	CHECK(ioctl(avs, AVSWCMD_MODE_16_9, 0));
-        	break;
-	    case vf4_3:
-        	dsyslog("DEBUG: set 4/3");
-        	CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_RATIO, M7X0_VIDEO_FORMAT_4_3));
-        	CHECK(ioctl(avs, AVSWCMD_MODE_4_3, 0));
-        	break;
-	    case vfauto:
-        	dsyslog("DEBUG: m7x0 auto aspect");
-        	CheckStreamAspect(1);
-        	break;
-		default: esyslog("ERROR: unknown video format %d", VideoFormat);
+        case vf16_9:
+             dsyslog("DEBUG: set 16/9");
+             CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_RATIO, M7X0_VIDEO_FORMAT_16_9));
+             CHECK(ioctl(avs, AVSWCMD_MODE_16_9, 0));
+             break;
+        case vf4_3:
+             dsyslog("DEBUG: set 4/3");
+             CHECK(ioctl(fd_video_v4l, M7X0_SET_TV_ASPECT_RATIO, M7X0_VIDEO_FORMAT_4_3));
+             CHECK(ioctl(avs, AVSWCMD_MODE_4_3, 0));
+             break;
+        case vfauto:
+             dsyslog("DEBUG: m7x0 auto aspect");
+             CheckStreamAspect(1);
+             break;
+        default: esyslog("ERROR: unknown video format %d", VideoFormat);
       }
       close(avs);
       SetVideoDisplayFormat(eVideoDisplayFormat(Setup.VideoDisplayFormat));
@@ -2771,12 +2769,11 @@ void cDvbDevice::SetTvSettings(bool settv){
     }else{
       Audios.MuteAudio(true);
       int avs = open("/dev/avswitch", O_WRONLY);
-      if(avs== -1)
+      if(avs == -1)
         esyslog("m7x0 can not open /dev/avswitch");
       CHECK(ioctl(avs, AVSWCMD_TV_OFF, 0));
       CHECK(ioctl(avs, AVSWCMD_TV_VCR, 0));
       close(avs);
-
     }
 }
 
@@ -2784,15 +2781,15 @@ void cDvbDevice::SetTvSettings(bool settv){
 void cDvbDevice::SetTvMode(bool tvmode){
     dsyslog("DEBUG: set tv mode -> %d", tvmode);
     if(getIaMode()){
-    int avs = open("/dev/avswitch", O_WRONLY);
-      if(avs== -1)
+      int avs = open("/dev/avswitch", O_WRONLY);
+      if(avs == -1)
         esyslog("m7x0 can not open /dev/avswitch");
       if(tvmode){
-	  CHECK(ioctl(avs, AVSWCMD_TV_SVIDEO, 0));
+        CHECK(ioctl(avs, AVSWCMD_TV_SVIDEO, 0));
       }else{
-	  CHECK(ioctl(avs, AVSWCMD_TV_FBAS, 0));
+        CHECK(ioctl(avs, AVSWCMD_TV_FBAS, 0));
       }
-    close(avs);
+      close(avs);
     }
 }
 
@@ -2800,12 +2797,12 @@ void cDvbDevice::SetTvMode(bool tvmode){
 void cDvbDevice::SetVCRMode(bool vcrmode){
     dsyslog("DEBUG: set vcr mode -> %d", vcrmode);
     int avs = open("/dev/avswitch", O_WRONLY);
-    if(avs== -1)
+    if(avs == -1)
       esyslog("m7x0 can not open /dev/avswitch");
     if(vcrmode){
-	CHECK(ioctl(avs, AVSWCMD_VCR_SVIDEO, 0));
+      CHECK(ioctl(avs, AVSWCMD_VCR_SVIDEO, 0));
     }else{
-	CHECK(ioctl(avs, AVSWCMD_VCR_FBAS, 0));
+      CHECK(ioctl(avs, AVSWCMD_VCR_FBAS, 0));
     }
     close(avs);
 }
@@ -2870,8 +2867,8 @@ bool cDvbDevice::SetPid(cPidHandle *Handle, int Type, bool On)
      memset(&pesFilterParams, 0, sizeof(pesFilterParams));
      if (On) {
 
-// For debuging only
-        dsyslog("DEBUG: Demux Setting PID: %u Type: %d", Handle->pid, Type);
+        // For debuging only
+        //dsyslog("DEBUG: Demux Setting PID: %u Type: %d", Handle->pid, Type);
 
         if (Handle->handle < 0) {
            Handle->handle = DvbOpen(DEV_DVB_ADAPTER DEV_DVB_DEMUX, CardIndex(), O_RDWR | O_NONBLOCK, true);
@@ -2939,7 +2936,7 @@ bool cDvbDevice::SetPid(cPidHandle *Handle, int Type, bool On)
         }
      else if (!Handle->used) {
         // For debuging only
-        dsyslog("DEBUG: Demux Stopping PID: %u Type: %d", Handle->pid, Type);
+        //dsyslog("DEBUG: Demux Stopping PID: %u Type: %d", Handle->pid, Type);
         CHECK(ioctl(Handle->handle, DMX_STOP));
         close(Handle->handle);
         Handle->handle = -1;
@@ -3297,7 +3294,7 @@ bool cDvbDevice::SetPlayMode(ePlayMode PlayMode)
 {
   // Sanity check
   if (playMode == PlayMode){
-     dsyslog("WARNING: Play mode %d already setted!", PlayMode);
+     dsyslog("WARNING: Play mode %d already set!", PlayMode);
      return true;
      }
 
