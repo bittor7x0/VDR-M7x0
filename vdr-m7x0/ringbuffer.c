@@ -54,7 +54,7 @@ void cRingBuffer::UpdatePercentage(int Fill)
 {
   if (Fill > maxFill)
      maxFill = Fill;
-  int percent = Fill * 100 / (Size() - 1) / PERCENTAGEDELTA * PERCENTAGEDELTA;
+  int percent = Fill * 100 / (Size() - 1) / PERCENTAGEDELTA * PERCENTAGEDELTA; // clamp down to nearest quantum
   if (percent != lastPercent) {
      if ((percent >= PERCENTAGETHRESHOLD && percent > lastPercent) || (percent < PERCENTAGETHRESHOLD && lastPercent >= PERCENTAGETHRESHOLD)) {
 //M7X0 BEGIN AK
@@ -229,7 +229,7 @@ int cRingBufferLinear::Available(void)
 
 void cRingBufferLinear::Clear(void)
 {
-  tail = head;
+  tail = head = margin;
 #ifdef DEBUGRINGBUFFERS
   lastHead = head;
   lastTail = tail;
@@ -246,11 +246,50 @@ int cRingBufferLinear::Read(int FileHandle, int Max)
   int free = (diff > 0) ? diff - 1 : Size() - head;
   if (Tail <= margin)
      free--;
-  int Count = 0;
+  int Count = -1;
+  errno = EAGAIN;
   if (free > 0) {
      if (0 < Max && Max < free)
         free = Max;
      Count = safe_read(FileHandle, buffer + head, free);
+     if (Count > 0) {
+        int Head = head + Count;
+        if (Head >= Size())
+           Head = margin;
+        head = Head;
+        if (statistics) {
+           int fill = head - Tail;
+           if (fill < 0)
+              fill = Size() + fill;
+           else if (fill >= Size())
+              fill = Size() - 1;
+           UpdatePercentage(fill);
+           }
+        }
+     }
+#ifdef DEBUGRINGBUFFERS
+  lastHead = head;
+  lastPut = Count;
+#endif
+  EnableGet();
+  if (free == 0)
+     WaitForPut();
+  return Count;
+}
+
+int cRingBufferLinear::Read(cUnbufferedFile *File, int Max)
+{
+  int Tail = tail;
+  int diff = Tail - head;
+  int free = (diff > 0) ? diff - 1 : Size() - head;
+  if (Tail <= margin)
+     free--;
+  int Count = -1;
+  errno = EAGAIN;
+  if (free > 0) {
+     if (0 < Max && Max < free)
+        free = Max;
+     Count = File->Read(buffer + head, free);
      if (Count > 0) {
         int Head = head + Count;
         if (Head >= Size())

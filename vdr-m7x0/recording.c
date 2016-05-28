@@ -25,7 +25,7 @@
 #include "tools.h"
 #include "videodir.h"
 
-#define SUMMARYFALLBACK
+//#define SUMMARYFALLBACK
 
 #define RECEXT       ".rec"
 #define DELEXT       ".del"
@@ -643,7 +643,7 @@ cRecording::cRecording(cTimer *Timer, const cEvent *Event)
   else if (Timer->IsSingleEvent() || !Setup.UseSubtitle)
      name = strdup(Timer->File());
   else
-     name = strdup(cString::sprintf("%s~%s", Timer->File(), Subtitle));
+     name = strdup(cString::sprintf("%s%c%s", Timer->File(), FOLDERDELIMCHAR, Subtitle));
   // substitute characters that would cause problems in file names:
   strreplace(name, '\n', ' ');
   if((Timer->Channel())&&(Setup.UseHDInRecordings))
@@ -1181,7 +1181,7 @@ void cRecordings::TouchUpdate(void)
   bool needsUpdate = NeedsUpdate();
   TouchFile(UpdateFileName());
   if (!needsUpdate)
-     lastUpdate = time(NULL); // make sure we don't tigger ourselves
+     lastUpdate = time(NULL); // make sure we don't trigger ourselves
 }
 
 bool cRecordings::NeedsUpdate(void)
@@ -1631,7 +1631,7 @@ int cIndexFile::StripOffToLastIFrame(uint16_t number)
 
   // This should not happen -- to be safe
   if (ind.Number(isPesRecording) != number) {
-     esyslog("Internal Error: Recoding file starts not with I-Frame");
+     esyslog("Internal Error: Recording file starts not with I-Frame");
      newEnd += (isPesRecording ? sizeof(tIndexPes) : sizeof(tIndexTs));
      ind.SetOffset(isPesRecording, 0);
      }
@@ -1806,7 +1806,7 @@ bool cFileName::GetLastPatPmtVersions(int &PatVersion, int &PmtVersion)
                   while (read(fd, buf, sizeof(buf)) == sizeof(buf)) {
                         if (buf[0] == TS_SYNC_BYTE) {
                            int Pid = TsPid(buf);
-                           if (Pid == 0)
+                           if (Pid == PATPID)
                               PatPmtParser.ParsePat(buf, sizeof(buf));
                            else if (Pid == PatPmtParser.PmtPid()) {
                               PatPmtParser.ParsePmt(buf, sizeof(buf));

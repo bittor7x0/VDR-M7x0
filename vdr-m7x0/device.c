@@ -150,7 +150,7 @@ int cPesAssembler::Put(const uchar *Data, int Length)
 
   if (!streamId && !ScanForStartCode(data, Length)) {
      if (skippedBytes >= REPLAY_MAX_UNUSABLE_DATA) {
-        esyslog("ERROR: %d bytes of recoding unusable - giving up!", skippedBytes);
+        esyslog("ERROR: %d bytes of recording unusable - giving up!", skippedBytes);
         errno = EDEADLK; // Any ideas for a better errorcode
         return -1;
         }
@@ -159,7 +159,7 @@ int cPesAssembler::Put(const uchar *Data, int Length)
 
   if (skippedBytes) {
      if (!initialSync) {
-        esyslog("WARNING: %d bytes of recoding unusable!", skippedBytes);
+        esyslog("WARNING: %d bytes of recording unusable!", skippedBytes);
         }
      skippedBytes = 0;
      initialSync = false;
@@ -261,8 +261,6 @@ cDevice::cDevice(void)
 #endif
   actionLock = 0;
   otherLock = 0;
-  normalLockCounter = 0;
-  hardLockCounter = 0;
 //M7X0 END AK
 }
 
@@ -284,8 +282,10 @@ bool cDevice::WaitForAllDevicesReady(int Timeout)
   for (time_t t0 = time(NULL); time(NULL) - t0 < Timeout; ) {
       bool ready = true;
       for (int i = 0; i < numDevices; i++) {
-          if (device[i] && !device[i]->Ready())
+          if (device[i] && !device[i]->Ready()) {
              ready = false;
+             cCondWait::SleepMs(100);
+             }
           }
       if (ready)
          return true;
@@ -307,7 +307,7 @@ int cDevice::NextCardIndex(int n)
         esyslog("ERROR: nextCardIndex too big (%d)", nextCardIndex);
      }
   else if (n < 0)
-     esyslog("ERROR: invalid value in IncCardIndex(%d)", n);
+     esyslog("ERROR: invalid value in NextCardIndex(%d)", n);
   return nextCardIndex;
 }
 
@@ -890,8 +890,11 @@ bool cDevice::MaySwitchTransponder(void)
 
 bool cDevice::SwitchChannel(const cChannel *Channel, bool LiveView)
 {
-  if (LiveView)
+  if (LiveView) {
      isyslog("switching to channel %d", Channel->Number());
+     if (getIaMode())
+        cControl::Shutdown(); // prevents old channel from being shown too long if GetDevice() takes longer
+     }
   for (int i = 3; i--;) {
       switch (SetChannel(Channel, LiveView)) {
         case scrOk:           return true;
@@ -913,6 +916,8 @@ bool cDevice::SwitchChannel(int Direction)
   bool result = false;
   Direction = sgn(Direction);
   if (Direction) {
+     if (getIaMode())
+        cControl::Shutdown(); // prevents old channel from being shown too long if GetDevice() takes longer
      int n = CurrentChannel() + Direction;
      int first = n;
      cChannel *channel;
@@ -986,7 +991,6 @@ eSetChannelResult cDevice::SetChannel(const cChannel *Channel, bool LiveView)
         else
            Result = scrNoTransfer;
         }
-
      else
         Result = scrNotAvailable;
      }
@@ -1311,7 +1315,7 @@ void cDevice::StillPicture(const uchar *Data, int Length)
      int Size = 0;
      while (Length >= TS_SIZE) {
            int Pid = TsPid(Data);
-           if (Pid == 0)
+           if (Pid == PATPID)
               patPmtParser.ParsePat(Data, TS_SIZE);
            else if (Pid == patPmtParser.PmtPid())
               patPmtParser.ParsePmt(Data, TS_SIZE);
@@ -1499,7 +1503,7 @@ int cDevice::PlayPesPacket(const uchar *Data, int Length, bool VideoOnly)
                 break;
            default:
                 SubStreamId = streamId;
-                SubStreamType = 0x80;
+                //SubStreamType = 0x80; // Value stored to 'SubStreamType' is never read
                 SubStreamIndex = 0;
                 if (Setup.UseDolbyDigital)
                    thisTrack = ttDolby;
@@ -1666,7 +1670,7 @@ int cDevice::PlayTs(const uchar *Data, int Length, bool VideoOnly)
            if (TsHasPayload(Data)) { // silently ignore TS packets w/o payload
               int PayloadOffset = TsPayloadOffset(Data);
               if (PayloadOffset < TS_SIZE) {
-                 if (Pid == 0)
+                 if (Pid == PATPID)
                     patPmtParser.ParsePat(Data, TS_SIZE);
                  else if (Pid == patPmtParser.PmtPid())
                     patPmtParser.ParsePmt(Data, TS_SIZE);
@@ -1771,7 +1775,6 @@ void cDevice::FasterLockAction(void)
      actionLock = 2;    // Own lock
      readLock = otherLock;
      if (readLock != 3) {  // Other are in hardlocking ?
-//        normalLockCounter++;
         return;
         }
      actionLock = 1;    // okay need hardlock
@@ -1779,7 +1782,6 @@ void cDevice::FasterLockAction(void)
 
   Lock();
   actionLock = 3;
-//  hardLockCounter++;
 
   readLock = otherLock;
   while (readLock == 2) {
@@ -1804,7 +1806,6 @@ void cDevice::FasterLockOther(void)
      otherLock = 2;    // Own lock
      readLock = actionLock;
      if (readLock != 3) {  // Other are in hardlocking ?
-//        normalLockCounter++;
         return;
         }
      otherLock = 1;    // okay need hardlock
@@ -1812,7 +1813,6 @@ void cDevice::FasterLockOther(void)
 
   Lock();
   otherLock = 3;
-//  hardLockCounter++;
 
   readLock = actionLock;
   while (readLock == 2) {
@@ -1881,9 +1881,6 @@ void cDevice::Action(void)
            }
      CloseDvr();
      }
- /* dsyslog("DEBUG: Lock statistics Normal %llu Hard %llu",normalLockCounter,hardLockCounter);
-  normalLockCounter = 0;
-  hardLockCounter = 0;*/
 }
 //M7X0 END AK
 

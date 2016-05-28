@@ -248,7 +248,7 @@ char *String::getText(char *buffer, int size) {
    return buffer;
 }
 
-//taken from VDR, Copyright Klaus Schmidinger <kls@cadsoft.de>
+//taken from VDR, Copyright Klaus Schmidinger <kls@tvdr.de>
 char *String::getText(char *buffer, char *shortVersion, int sizeBuffer, int sizeShortVersion) {
    int len=getLength();
    if (len < 0 || len >= sizeBuffer) {
@@ -480,6 +480,7 @@ Descriptor *Descriptor::getDescriptor(CharArray da, DescriptorTagDomain domain, 
          case AnnouncementSupportDescriptorTag:
          case AdaptationFieldDataDescriptorTag:
          case TransportStreamDescriptorTag:
+         case EnhancedAC3DescriptorTag:
          case DTSDescriptorTag:
          case AACDescriptorTag:
          default:

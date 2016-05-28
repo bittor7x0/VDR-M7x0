@@ -75,12 +75,12 @@ public:
 #else
   int Put(uchar *Data, int Count);
        ///< Puts at most Count bytes of Data into the remuxer.
-       ///< \return Returns the number of bytes actually consumed from Data.
+       ///< Returns the number of bytes actually consumed from Data.
 #endif
 
   uchar* Get(int &Count, sPesResult *&Header, int &HeaderCount, int &FirstIFrame);
        ///< Gets all currently available data from the remuxer.
-       ///< \return Count contains the number of bytes the result points to, and
+       ///< Returns Count contains the number of bytes the result points to, and
        ///< PictureType (if not NULL) will contain one of NO_PICTURE, I_FRAME, P_FRAME
        ///< or B_FRAME.
 //M7X0 END AK
@@ -121,6 +121,7 @@ public:
 #define TS_ADAPT_TP_PRIVATE   0x02
 #define TS_ADAPT_EXTENSION    0x01
 
+#define PATPID 0x0000 // PAT PID (constant 0)
 #define MAXPID 0x2000 // for arrays that use a PID as the index
 
 inline bool TsHasPayload(const uchar *p)
@@ -310,7 +311,7 @@ public:
   ~cTsToPes();
   void PutTs(const uchar *Data, int Length);
        ///< Puts the payload data of the single TS packet at Data into the converter.
-       ///< Length is always 188.
+       ///< Length is always TS_SIZE.
        ///< If the given TS packet starts a new PES payload packet, the converter
        ///< will be automatically reset. Any packets before the first one that starts
        ///< a new PES payload packet will be ignored.

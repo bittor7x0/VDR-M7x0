@@ -34,11 +34,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
+ * Or, point your browser to http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
- * The author can be reached at kls@cadsoft.de
+ * The author can be reached at vdr@tvdr.de
  *
- * The project's page is at http://www.cadsoft.de/vdr
+ * The project's page is at http://www.tvdr.de
  *
  */
 
@@ -432,7 +432,7 @@ int main(int argc, char *argv[])
                        }
                     break;
           case 'l' | 0x100:
-                    LircDevice = optarg ? : LIRC_DEVICE;
+                    LircDevice = optarg ? optarg : LIRC_DEVICE;
                     break;
           case 'm': MuteAudio = true;
                     break;
@@ -470,7 +470,8 @@ int main(int argc, char *argv[])
                     while (optarg && *optarg && optarg[strlen(optarg) - 1] == '/')
                           optarg[strlen(optarg) - 1] = 0;
                     break;
-          case 'w': if (isnumber(optarg)) { int t = atoi(optarg);
+          case 'w': if (isnumber(optarg)) {
+                       int t = atoi(optarg);
                        if (t >= 0) {
                           WatchdogTimeout = t;
                           break;
@@ -478,7 +479,6 @@ int main(int argc, char *argv[])
                        }
                     fprintf(stderr, "vdr: invalid watchdog timeout: %s\n", optarg);
                     return 2;
-                    break;
           default:  return 2;
           }
         }
@@ -547,7 +547,7 @@ int main(int argc, char *argv[])
                "                           or symlinks (default: none, same as -g-)\n"
                "  -h,       --help         print this help and exit\n"
                "  -i,       --interactive  start without TV initialisation\n"
-	       "  -l LEVEL, --log=LEVEL    set log level (default: 3)\n"
+               "  -l LEVEL, --log=LEVEL    set log level (default: 3)\n"
                "                           0 = no logging, 1 = errors only,\n"
                "                           2 = errors and info, 3 = errors, info and debug\n"
                "                           if logging should be done to LOG_LOCALn instead of\n"
@@ -854,8 +854,7 @@ int main(int argc, char *argv[])
   else
      cDevice::PrimaryDevice()->SetVolume(Setup.CurrentVolume, true);
 
-
-// Signal handlers:
+  // Signal handlers:
 
   if (signal(SIGHUP,  SignalHandler) == SIG_IGN) signal(SIGHUP,  SIG_IGN);
   if (signal(SIGINT,  SignalHandler) == SIG_IGN) signal(SIGINT,  SIG_IGN);
@@ -872,6 +871,8 @@ int main(int argc, char *argv[])
   DeletedRecordings.Update();
 
 // M7X0 END AK
+
+  // Watchdog:
 
   if (WatchdogTimeout > 0) {
      dsyslog("setting watchdog timer to %d seconds", WatchdogTimeout);

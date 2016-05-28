@@ -771,7 +771,6 @@ void PDCDescriptor::Parse() {
    data.setPointerAndOffset<const descr_pdc>(s, offset);
 }
 
-
 int PDCDescriptor::getDay() const {
    return ((s->pil0 & 0x0F) << 1) | ((s->pil1 & 0x80) >> 7);
 }

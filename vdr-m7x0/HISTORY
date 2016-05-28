@@ -922,7 +922,7 @@ Video Disk Recorder Revision History
   give the user some feedback in case this takes longer.
 - Status messages are now displayed centered.
 - Removed the 'Tools' subdirectory from the VDR archive. All contributed tools
-  can now be found at ftp://ftp.cadsoft.de/pub/people/kls/vdr/Tools.
+  can now be found at ftp://ftp.tvdr.de/vdr/Tools.
 
 2002-01-29: Version 0.99pre3
 

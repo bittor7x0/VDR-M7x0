@@ -108,7 +108,7 @@ public:
   const char *ShortText(void) const { return shortText; }
   const char *Description(void) const { return description; }
   const cComponents *Components(void) const { return components; }
-  uchar Contents(int i = 0) const { return (0 <= i && i < MaxEventContents) ? contents[i] : 0; }
+  uchar Contents(int i = 0) const { return (0 <= i && i < MaxEventContents) ? contents[i] : uchar(0); }
   int ParentalRating(void) const { return parentalRating; }
   time_t StartTime(void) const { return startTime; }
   time_t EndTime(void) const { return startTime + duration; }

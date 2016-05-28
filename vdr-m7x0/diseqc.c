@@ -12,7 +12,7 @@
 #include "sources.h"
 #include "thread.h"
 
-// -- cDiseqc ----------------------------------------------------------------
+// --- cDiseqc ----------------------------------------------------------------
 
 cDiseqc::cDiseqc(void)
 {
@@ -122,7 +122,7 @@ cDiseqc::eDiseqcActions cDiseqc::Execute(char **CurrentAction)
   return daNone;
 }
 
-// -- cDiseqcs ---------------------------------------------------------------
+// --- cDiseqcs ---------------------------------------------------------------
 
 cDiseqcs Diseqcs;
 

@@ -35,10 +35,10 @@ $User   = $opt_U;
 
 # See "Rules for using this data" on http://bleb.org/tv/data/listings.
 # In case you modify this script in a way that changes its behavior
-# towards the www.bleb.org website, please replace 'vdrbugs@cadsoft.de'
+# towards the www.bleb.org website, please replace 'kls@tvdr.de'
 # with your own email address! That way Andrew Flegg <andrew@bleb.org>,
 # who runs that web site, can contact you in case of problems.
-$IDENT = "VDR::getskyepg.pl, http://www.cadsoft.de/vdr - vdrbugs\@cadsoft.de";
+$IDENT = "VDR::getskyepg.pl, http://www.tvdr.de - kls\@tvdr.de";
 $GAP = 2;
 
 $SkyWebPage = "www.bleb.org/tv/data/listings";

@@ -129,14 +129,14 @@ public:
   bool IsPesRecording(void) const { return isPesRecording; }
   bool WriteInfo(void);
   bool Delete(void);
-       // Changes the file name so that it will no longer be visible in the "Recordings" menu
-       // Returns false in case of error
+       ///< Changes the file name so that it will no longer be visible in the "Recordings" menu
+       ///< Returns false in case of error
   bool Remove(void);
-       // Actually removes the file from the disk
-       // Returns false in case of error
+       ///< Actually removes the file from the disk
+       ///< Returns false in case of error
   bool Rename(const char *newName);
-       // Changes the file name
-       // Returns false in case of error
+       ///< Changes the file name
+       ///< Returns false in case of error
   };
 
 class cRecordings : public cList<cRecording>, public cThread {

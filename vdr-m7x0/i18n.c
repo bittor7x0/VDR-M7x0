@@ -61,7 +61,7 @@
  *    forget to adjust the files font.h and font.c accordingly.
  * 5. Compile VDR and test the new language by switching to it
  *    in the "Setup/OSD" menu.
- * 6. Send the modified files to <kls@cadsoft.de> to have
+ * 6. Send the modified files to <kls@tvdr.de> to have
  *    it included in the next version of VDR.
  *
  * In case an English phrase is used in more than one context (and might need

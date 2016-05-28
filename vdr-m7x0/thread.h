@@ -30,7 +30,7 @@ public:
   bool Wait(int TimeoutMs = 0);
        ///< Waits at most TimeoutMs milliseconds for a call to Signal(), or
        ///< forever if TimeoutMs is 0.
-       ///< \return Returns true if Signal() has been called, false it the given
+       ///< Returns true if Signal() has been called, false it the given
        ///< timeout has expired.
   void Signal(void);
        ///< Signals a caller of Wait() that the condition it is waiting for is met.
@@ -107,12 +107,17 @@ public:
   cThread(const char *Description = NULL);
        ///< Creates a new thread.
        ///< If Description is present, a log file entry will be made when
-       ///< the thread starts and stops. The Start() function must be called
-       ///< to actually start the thread.
+       ///< the thread starts and stops (see SetDescription()).
+       ///< The Start() function must be called to actually start the thread.
   virtual ~cThread();
   void SetDescription(const char *Description, ...) __attribute__ ((format (printf, 2, 3)));
+       ///< Sets the description of this thread, which will be used when logging
+       ///< starting or stopping of the thread. Make sure any important information
+       ///< is within the first 15 characters of Description, because only these
+       ///< may be displayed in thread listings (like 'htop', for instance).
   bool Start(void);
        ///< Actually starts the thread.
+       ///< If the thread is already running, nothing happens.
   bool Active(void);
        ///< Checks whether the thread is still alive.
   static bool EmergencyExit(bool Request = false);

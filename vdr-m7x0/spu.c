@@ -11,7 +11,7 @@
 #include "spu.h"
 #include <inttypes.h>
 
-// -- cSpuDecoder ------------------------------------------------------------
+// --- cSpuDecoder -----------------------------------------------------------
 /*
 cSpuDecoder::cSpuDecoder()
 {};

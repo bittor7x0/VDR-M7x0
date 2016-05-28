@@ -2,24 +2,15 @@
 # Makefile for a libsi
 #
 
-### The C++ compiler and options:
--include ../Make.config
+### The archiver options:
 
 CXX      ?= g++
 CXXFLAGS ?= -fPIC -O2 -g -Wall -Woverloaded-virtual
 AR ?= ar
-ARFLAGS = r
+ARFLAGS ?= r
 RANLIB ?= ranlib
 
-
-
-### The directory environment:
-
-INCLUDES +=
-
-DEFINES +=
-
-LIBS +=
+-include ../Make.config
 
 ### The object files (add further files here):
 
@@ -30,7 +21,7 @@ OBJS = util.o si.o section.o descriptor.o
 %.o: %.c
 	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) $<
 
-# Dependencies:
+### Dependencies:
 
 MAKEDEP = $(CXX) -MM -MG
 DEPFILE = .dependencies
@@ -42,6 +33,7 @@ $(DEPFILE): Makefile
 ### Targets:
 
 all: libsi.a
+	@:
 
 libsi.a : $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)

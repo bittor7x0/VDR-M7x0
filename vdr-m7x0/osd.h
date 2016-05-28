@@ -159,7 +159,6 @@ public:
        ///< data contains an unused "none" entry, it will be automatically
        ///< called again with IgnoreNone set to true.
        ///< Returns true if the operation was successful.
-
   void SetIndex(int x, int y, tIndex Index);
        ///< Sets the index at the given coordinates to Index.
        ///< Coordinates are relative to the bitmap's origin.

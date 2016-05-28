@@ -129,7 +129,7 @@ public:
        fprintf(stderr, "vdr: error while reading '%s'\n", fileName);
     return result;
   }
-  bool Save(void)
+  bool Save(void) const
   {
     bool result = true;
     T *l = (T *)this->First();

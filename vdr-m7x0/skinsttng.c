@@ -6,7 +6,7 @@
  *
  */
 
-// Star Trek: The Next Generation® is a registered trademark of Paramount Pictures
+// "Star Trek: The Next Generation"(R) is a registered trademark of Paramount Pictures
 // registered in the United States Patent and Trademark Office.
 // No infringement intended.
 

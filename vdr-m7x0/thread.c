@@ -46,7 +46,6 @@ cCondWait::cCondWait(void)
   signaled = false;
   pthread_mutex_init(&mutex, NULL);
   pthread_cond_init(&cond, NULL);
-
 }
 
 cCondWait::~cCondWait()
@@ -115,7 +114,6 @@ void cCondWait::Signal(void)
   signaled = true;
   pthread_cond_broadcast(&cond);
   pthread_mutex_unlock(&mutex);
-
 }
 
 // --- cCondVar --------------------------------------------------------------
@@ -563,4 +561,3 @@ int SystemExec(const char *Command, bool Detached)
      _exit(0);
      }
 }
-

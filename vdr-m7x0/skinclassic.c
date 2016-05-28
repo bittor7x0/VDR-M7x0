@@ -716,7 +716,6 @@ cSkinDisplayVolume *cSkinClassic::DisplayVolume(void)
   return new cSkinClassicDisplayVolume;
 }
 
-
 cSkinDisplayTracks *cSkinClassic::DisplayTracks(const char *Title, int NumTracks, const char * const *Tracks)
 {
   return new cSkinClassicDisplayTracks(Title, NumTracks, Tracks);

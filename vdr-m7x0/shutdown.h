@@ -85,7 +85,7 @@ public:
        ///< If MinUserInactivity = 0 and Force = false, Seconds is ignored and VDR will
        ///< stay interactive forever.
   void SetUserInactive(void) { SetUserInactiveTimeout(0, true); }
-       ///< Set VDR manually into non-interactive mode.
+       ///< Set VDR manually into non-interactive mode from now on.
   bool Retry(time_t AtTime = 0) { return retry <= (AtTime ? AtTime : time(NULL)); }
        ///< Check whether its time to re-try the shutdown.
        ///< AtTime checks whether VDR will probably be inactive at that time.
