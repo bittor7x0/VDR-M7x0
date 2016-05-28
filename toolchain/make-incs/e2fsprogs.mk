@@ -26,7 +26,7 @@
 
 E2FSPROGS_DEPS = $(BASE_BUILD_STAGEFILE)
 
-E2FSPROGS_VERSION := 1.42.13
+E2FSPROGS_VERSION := 1.43
 E2FSPROGS_PATCHES_DIR := $(PATCHES_DIR)/e2fsprogs/$(E2FSPROGS_VERSION)
 
 E2FSPROGS_FILE := e2fsprogs-$(E2FSPROGS_VERSION).tar.gz
@@ -92,6 +92,9 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
 			--disable-defrag \
 			--disable-e2initrd-helper \
 			--disable-testio-debug \
+			--disable-fuse2fs \
+			--disable-mmp \
+			--disable-bmap-stats \
 			--disable-uuidd \
 			--disable-rpath \
 			$(if $(CONFIG_LIBUUID),--enable-elf-shlibs) \
