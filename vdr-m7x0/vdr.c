@@ -1260,27 +1260,28 @@ int main(int argc, char *argv[])
                break;
           // Power off:
           case kPower: {
-                isyslog("Power button pressed");
-		DELETE_MENU;
-		if(Setup.HotStandby){
-		    setIaMode(0);
-		    cDevice::PrimaryDevice()->SetTvSettings(0);
-		    cControl::Shutdown();
-		    cTShiftControl::ShutdownTShift();
-		    // launch the dummy player
-		    cControl::Launch(new cDummyPlayerControl);
-		    break;
-		}
+                dsyslog("Power button pressed");
+                DELETE_MENU;
+                if (Setup.HotStandby) {
+                   setIaMode(0);
+                   cDevice::PrimaryDevice()->SetTvSettings(0);
+                   cControl::Shutdown();
+                   cTShiftControl::ShutdownTShift();
+                   // launch the dummy player
+                   cControl::Launch(new cDummyPlayerControl);
+                   ShutdownHandler.SetUserInactive();
+                   break;
+                   }
                 // Check for activity, request power button again if active:
                 //if (!ShutdownHandler.ConfirmShutdown(false) && Skins.Message(mtWarning, tr("VDR will shut down later - press Power to force"), SHUTDOWNFORCEPROMPT) != kPower) {
-                if (!ShutdownHandler.ConfirmShutdown(false)){
-		   setIaMode(0);
-		   cDevice::PrimaryDevice()->SetTvSettings(0);
-		   cControl::Shutdown();
-		   cTShiftControl::ShutdownTShift();
-		   // launch the dummy player
-		   cControl::Launch(new cDummyPlayerControl);
-		   // Not pressed power - set VDR to be non-interactive and power down later:
+                if (!ShutdownHandler.ConfirmShutdown(false)) {
+                   setIaMode(0);
+                   cDevice::PrimaryDevice()->SetTvSettings(0);
+                   cControl::Shutdown();
+                   cTShiftControl::ShutdownTShift();
+                   // launch the dummy player
+                   cControl::Launch(new cDummyPlayerControl);
+                   // Not pressed power - set VDR to be non-interactive and power down later:
                    ShutdownHandler.SetUserInactive();
                    break;
                    }
@@ -1308,7 +1309,7 @@ int main(int argc, char *argv[])
                 ShutdownHandler.SetUserInactive();
                 // Do not attempt to automatically shut down for a while:
                 ShutdownHandler.SetRetry(SHUTDOWNRETRY);
-                 break;
+                break;
           	default: break;
 		}
 	    }
@@ -1463,15 +1464,15 @@ int main(int argc, char *argv[])
                if (ShutdownHandler.ConfirmShutdown(false) && !Setup.HotStandby)
                   // Time to shut down - start final countdown:
                   ShutdownHandler.countdown.Start(tr("VDR will shut down in %s minutes"), SHUTDOWNWAIT); // the placeholder is really %s!
-		else if (getIaMode())
-		  ShutdownHandler.countdown.Start(tr("VDR will go in HotStandby in %s minutes"), SHUTDOWNWAIT);
+               else if (getIaMode())
+                  ShutdownHandler.countdown.Start(tr("VDR will go in HotStandby in %s minutes"), SHUTDOWNWAIT);
                // Dont try to shut down again for a while:
                ShutdownHandler.SetRetry(SHUTDOWNRETRY);
                }
             // Countdown run down to 0?
             if (ShutdownHandler.countdown.Done()) {
                // Timed out, now do a final check:
-	       if (!Setup.HotStandby) {
+             if (!Setup.HotStandby) {
                if (ShutdownHandler.IsUserInactive() && ShutdownHandler.ConfirmShutdown(false))
                {
                   setIaMode(0);
@@ -1482,18 +1483,19 @@ int main(int argc, char *argv[])
                }
                // Do this again a bit later:
                ShutdownHandler.SetRetry(SHUTDOWNRETRY);
-               } else {
-		    if(getIaMode()){
-			dsyslog("DEBUG: HotStandby ACTIVITYTIMEOUT");
-			setIaMode(0);
-			cDevice::PrimaryDevice()->SetTvSettings(0);
-			cControl::Shutdown();
-			cTShiftControl::ShutdownTShift();
-			// launch the dummy player
-			cControl::Launch(new cDummyPlayerControl);
-		    }
-		}
-		}
+             } else {
+               if (getIaMode()) {
+                  dsyslog("DEBUG: HotStandby ACTIVITYTIMEOUT");
+                  setIaMode(0);
+                  cDevice::PrimaryDevice()->SetTvSettings(0);
+                  cControl::Shutdown();
+                  cTShiftControl::ShutdownTShift();
+                  // launch the dummy player
+                  cControl::Launch(new cDummyPlayerControl);
+                  ShutdownHandler.SetUserInactive();
+               }
+             }
+            }
 
             // Disk housekeeping:
             RemoveDeletedRecordings();
