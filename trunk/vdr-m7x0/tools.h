@@ -326,6 +326,7 @@ class cUnbufferedFile {
 private:
   int fd;
   off_t curpos;
+#ifdef USE_FADVISE
   off_t cachedstart;
   off_t cachedend;
   off_t begin;
@@ -334,7 +335,6 @@ private:
   size_t readahead;
   size_t written;
   size_t totwritten;
-#ifdef USE_FADVISE
   int FadviseDrop(off_t Offset, off_t Len);
 #endif
 //M7X0 BEGIN AK
@@ -349,7 +349,9 @@ public:
   ~cUnbufferedFile();
   int Open(const char *FileName, int Flags, mode_t Mode = DEFFILEMODE);
   int Close(void);
+#ifdef USE_FADVISE
   void SetReadAhead(size_t ra);
+#endif
   off_t Seek(off_t Offset, int Whence);
   ssize_t Read(void *Data, size_t Size);
   ssize_t Write(const void *Data, size_t Size);

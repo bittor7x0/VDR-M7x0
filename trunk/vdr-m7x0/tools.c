@@ -1233,14 +1233,12 @@ int cUnbufferedFile::Close(void)
 #ifdef USE_FADVISE
 #define FADVGRAN   KILOBYTE(4) // AKA fadvise-chunk-size; PAGE_SIZE or getpagesize(2) would also work.
 #define READCHUNK  MEGABYTE(8)
-#endif
 
 void cUnbufferedFile::SetReadAhead(size_t ra)
 {
   readahead = ra;
 }
 
-#ifdef USE_FADVISE
 int cUnbufferedFile::FadviseDrop(off_t Offset, off_t Len)
 {
   // rounding up the window to make sure that not PAGE_SIZE-aligned data gets freed.

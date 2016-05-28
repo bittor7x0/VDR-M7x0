@@ -77,7 +77,9 @@ void cCuttingThread::Action(void)
      toFile = toFileName->Open();
      if (!fromFile || !toFile)
         return;
+#ifdef USE_FADVISE
      fromFile->SetReadAhead(MEGABYTE(20));
+#endif
      int Index = Mark->position;
      Mark = fromMarks.Next(Mark);
      off_t FileSize = 0;
@@ -115,7 +117,9 @@ void cCuttingThread::Action(void)
 
            if (FileNumber != CurrentFileNumber) {
               fromFile = fromFileName->SetOffset(FileNumber, FileOffset);
+#ifdef USE_FADVISE
               fromFile->SetReadAhead(MEGABYTE(20));
+#endif
               CurrentFileNumber = FileNumber;
               if (SkipThisSourceFile) {
                  // At end of fast forward: Always skip to next file
