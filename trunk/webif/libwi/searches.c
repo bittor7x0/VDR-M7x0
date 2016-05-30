@@ -655,7 +655,7 @@ bool parseSearch(const char *line, search_t * const search, channelList_t const 
                     if (fields == 0) { // stored with ID
                         char *channelMinbuffer = NULL;
                         char *channelMaxbuffer = NULL;
-                        int channelsFound = sscanf(r, "%a[^|:]|%a[^|:]", &channelMinbuffer, &channelMaxbuffer);
+                        int channelsFound = sscanf(r, "%m[^|:]|%m[^|:]", &channelMinbuffer, &channelMaxbuffer);
                         int c;
                         channel_t *channel;
                         for (c = 0, channel = channels->channel; c < channels->length; c++, channel++)

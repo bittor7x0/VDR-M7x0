@@ -30,9 +30,9 @@ bool cDiseqc::Parse(const char *s)
 {
   bool result = false;
   char *sourcebuf = NULL;
-  int fields = sscanf(s, "%a[^ ] %d %c %d %a[^\n]", &sourcebuf, &slof, &polarization, &lof, &commands);
+  int fields = sscanf(s, "%m[^ ] %d %c %d %m[^\n]", &sourcebuf, &slof, &polarization, &lof, &commands);
   if (fields == 4)
-     commands = NULL; //XXX Apparently sscanf() doesn't work correctly if the last %a argument results in an empty string
+     commands = NULL; //XXX Apparently sscanf() doesn't work correctly if the last %m argument results in an empty string
   if (4 <= fields && fields <= 5) {
      source = cSource::FromString(sourcebuf);
      if (Sources.Get(source)) {

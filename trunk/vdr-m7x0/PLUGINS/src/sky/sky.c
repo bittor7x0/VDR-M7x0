@@ -33,7 +33,7 @@ public:
 bool cSkyChannel::Parse(const char *s)
 {
   char *id = NULL;
-  if (2 == sscanf(s, "%a[^:]:%d", &id, &digiboxChannelNumber))
+  if (2 == sscanf(s, "%m[^:]:%d", &id, &digiboxChannelNumber))
      channelID = tChannelID::FromString(id);
   free(id);
   return digiboxChannelNumber && channelID.Valid();

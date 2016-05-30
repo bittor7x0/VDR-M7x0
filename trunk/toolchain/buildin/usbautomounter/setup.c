@@ -515,7 +515,7 @@ static int read_mount_table_entry(FILE *tab_file, struct mount_table *tab_list, 
 			continue;
 		}
 
-		fields = sscanf(line + i, "%as %as %as %as ", &ent->fs_id,
+		fields = sscanf(line + i, "%ms %ms %ms %ms ", &ent->fs_id,
 				&mount_suffix, &ent->mount_opts, &mounter_opts);
 
 		if (fields >= 2)
