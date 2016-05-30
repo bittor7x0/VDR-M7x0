@@ -167,7 +167,7 @@ bool cPlaylistRecord::Parse(const char *s)
   char *filenamebuf = NULL;
   int hasparent = false;
   int opt1, opt2, opt3;
-  int fields = sscanf(s, "%a[^:]:%a[^:]:%d:%d:%d:%d:%d:%d:%d:%d:%d[:%d]", &namebuf,
+  int fields = sscanf(s, "%m[^:]:%m[^:]:%d:%d:%d:%d:%d:%d:%d:%d:%d[:%d]", &namebuf,
                                                                           &filenamebuf,
                                                                           &hasparent,
                                                                           &isdel,
@@ -455,7 +455,7 @@ bool cPlaylist::Parse(const char *s)
   char *namebuf = NULL;
   char *lastbuf = NULL;
   int opt1, opt2, opt3, opt4;
-  int fields = sscanf(s, "%a[^:]:%a[^:]:%d:%d:%d:%d:%d:%d:%d:%d[:%d][:%d]", &namebuf,
+  int fields = sscanf(s, "%m[^:]:%m[^:]:%d:%d:%d:%d:%d:%d:%d:%d[:%d][:%d]", &namebuf,
                                                                             &lastbuf,
                                                                             &options[Option_confirmdeleterecord],
                                                                             &options[Option_confirmstartnewrecord],

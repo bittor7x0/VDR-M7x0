@@ -113,7 +113,7 @@ bool cLockItem::Parse(char* line)
    char* aPattern = 0;
    char* aSearchMode = 0;
 
-   fields = sscanf(line, "%a[^:]:%a[^:]:%a[^:]:%a[^:]:%a[^:]:%a[^\n]", 
+   fields = sscanf(line, "%m[^:]:%m[^:]:%m[^:]:%m[^:]:%m[^:]:%m[^\n]", 
                    &aName, &aActive, &aStart, &aEnd, 
                    &aPattern, &aSearchMode);
 

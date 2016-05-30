@@ -47,7 +47,7 @@ bool cLockedBroadcast::Parse(char* line)
    char* aSearchMode = 0;
    char* aActive = 0;
 
-   fields = sscanf(line, "%a[^:]:%a[^:]:%a[^:]:%a[^\n]", 
+   fields = sscanf(line, "%m[^:]:%m[^:]:%m[^:]:%m[^\n]", 
                    &aName, &aPattern, &aSearchMode, &aActive);
 
    if (fields == 4)

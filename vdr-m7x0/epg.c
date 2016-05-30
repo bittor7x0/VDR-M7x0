@@ -33,7 +33,7 @@ cString tComponent::ToString(void)
 bool tComponent::FromString(const char *s)
 {
   unsigned int Stream, Type;
-  int n = sscanf(s, "%X %02X %7s %a[^\n]", &Stream, &Type, language, &description); // 7 = MAXLANGCODE2 - 1
+  int n = sscanf(s, "%X %02X %7s %m[^\n]", &Stream, &Type, language, &description); // 7 = MAXLANGCODE2 - 1
   if (n != 4 || isempty(description)) {
      free(description);
      description = NULL;
