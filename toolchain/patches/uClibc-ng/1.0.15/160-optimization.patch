@@ -1,0 +1,47 @@
+diff -Naur a/Rules.mak b/Rules.mak
+--- a/Rules.mak
++++ b/Rules.mak
+@@ -266,18 +266,18 @@
+ 
+ # Flags in OPTIMIZATION are used only for non-debug builds
+ 
+-OPTIMIZATION:=
++OPTIMIZATION:= -Ofast
+ OPTIMIZATION-$(GCC_MAJOR_VER):=
+ OPTIMIZATION-$(GCC_MAJOR_VER).$(GCC_MINOR_VER):=
+ 
+ # Use '-Os' optimization if available, else use -O2, allow Config to override
+-$(eval $(call check-gcc-var,-Os))
+-ifneq ($(CFLAG_-Os),)
+-OPTIMIZATION += $(CFLAG_-Os)
+-else
+-$(eval $(call check-gcc-var,-O2))
+-OPTIMIZATION += $(CFLAG_-O2)
+-endif
++#$(eval $(call check-gcc-var,-Os))
++#ifneq ($(CFLAG_-Os),)
++#OPTIMIZATION += $(CFLAG_-Os)
++#else
++#$(eval $(call check-gcc-var,-O2))
++#OPTIMIZATION += $(CFLAG_-O2)
++#endif
+ # Use the gcc 3.4 -funit-at-a-time optimization when available
+ $(eval $(call check-gcc-var,-funit-at-a-time))
+ OPTIMIZATION-3.4 += $(CFLAG_-funit-at-a-time)
+@@ -406,7 +406,16 @@
+ 	CPU_CFLAGS-$(CONFIG_MIPS_N64_ABI)+=-mabi=64
+ 	CPU_CFLAGS-$(CONFIG_MIPS_O32_ABI)+=-mabi=32
+ 	CPU_CFLAGS-$(CONFIG_MIPS_N32_ABI)+=-mabi=n32
++	CPU_CFLAGS-y  +=-march=mips2 -mtune=vr4120 -mfix-vr4120 -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear
++	CPU_CFLAGS-y  += $(call check_gcc,-ffunction-sections -fdata-sections,)
+ 	CPU_LDFLAGS-y += $(CPU_CFLAGS)
++	CPU_LDFLAGS-y += -Wl,-O1
++$(eval $(call check-ld-var,--sort-common))
++	CPU_LDFLAGS-y += $(CFLAG_-Wl--sort-common)
++$(eval $(call check-ld-var,--sort-section=alignment))
++	CPU_LDFLAGS-y += $(CFLAG_-Wl--sort-section=alignment)
++$(eval $(call check-ld-var,--gc-sections))
++	CPU_LDFLAGS-y += $(CFLAG_-Wl--gc-sections)
+ endif
+ 
+ ifeq ($(TARGET_ARCH),sh)

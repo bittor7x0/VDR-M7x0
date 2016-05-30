@@ -1,3 +1,3 @@
-lib/libubacktrace-1.0.13.so   lib/libubacktrace-1.0.13.so   f 755 0 0 - - - - -
-lib/libubacktrace-1.0.13.so   -                             s   - - - - - - - -
-lib/libubacktrace.so.1        libubacktrace-1.0.13.so       l 777 0 0 - - - - -
+lib/libubacktrace-1.0.15.so   lib/libubacktrace-1.0.15.so   f 755 0 0 - - - - -
+lib/libubacktrace-1.0.15.so   -                             s   - - - - - - - -
+lib/libubacktrace.so.1        libubacktrace-1.0.15.so       l 777 0 0 - - - - -

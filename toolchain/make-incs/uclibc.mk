@@ -33,15 +33,15 @@ ifeq ($(UCLIBC_IS_NG),y)
   	# linuxthreads.new was removed in this commit (post uClibc-ng 1.0.14):
 	#   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=6a8ccc95528f5e86a8770ed15ce89609b5b3dee9
 	# but our kernel doesn't support NPTL/TLS, so we use linuxthreads.new from parent revision:
-	#   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=398a27a5b323956344b4f831d892fed3bd9813c7 
+	#   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=398a27a5b323956344b4f831d892fed3bd9813c7
 	UCLIBC_LINUXTHREADS_NEW_VERSION := 398a27a
 	UCLIBC_LINUXTHREADS_NEW_VERSION_FULL := 398a27a5b323956344b4f831d892fed3bd9813c7
 	UCLIBC_LINUXTHREADS_NEW_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_LINUXTHREADS_NEW_VERSION_FULL).tar.gz
 	UCLIBC_LINUXTHREADS_NEW_DLFILE := $(DOWNLOAD_DIR)/uClibc-ng-$(UCLIBC_LINUXTHREADS_NEW_VERSION)-linuxthreads-new.tar.gz
   ifeq ($(UCLIBC_IS_SNAPSHOT),y)
-	# http://repo.or.cz/uclibc-ng.git/commit/0ff3c7882867f1270e072a6d93dd085bf9728be1
-	UCLIBC_VERSION := 0ff3c78
-	UCLIBC_VERSION_FULL := 0ff3c7882867f1270e072a6d93dd085bf9728be1
+	# http://repo.or.cz/uclibc-ng.git/commit/95174cb69c523a1544e5f6f20e47f7d60007e569
+	UCLIBC_VERSION := 95174cb
+	UCLIBC_VERSION_FULL := 95174cb69c523a1544e5f6f20e47f7d60007e569
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.gz
 	UCLIBC_DIR := $(BUILD_DIR)/uclibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/snapshot/uclibc-ng.config
@@ -49,7 +49,7 @@ ifeq ($(UCLIBC_IS_NG),y)
 	UCLIBC_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_VERSION_FULL).tar.gz
 	UCLIBC_FILE_LIST += uclibc-ng-snapshot.lst
   else
-	UCLIBC_VERSION := 1.0.14
+	UCLIBC_VERSION := 1.0.15
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.bz2
 	UCLIBC_DIR := $(BUILD_DIR)/uClibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/$(UCLIBC_VERSION)/uclibc-ng.config
@@ -101,7 +101,7 @@ $(UCLIBC_DLFILE): $(TC_INIT_RULE)
 	(if [ ! -f $(UCLIBC_DLFILE) ] ; then \
 	$(WGET) $(UCLIBC_URL) -O $(UCLIBC_DLFILE) ; \
 	fi );
-ifeq ($(and $(filter y,$(UCLIBC_IS_NG)),$(filter y,$(UCLIBC_IS_SNAPSHOT))),y)
+ifeq ($(UCLIBC_IS_NG),y)
 	(if [ ! -f $(UCLIBC_LINUXTHREADS_NEW_DLFILE) ] ; then \
 	$(WGET) $(UCLIBC_LINUXTHREADS_NEW_URL) -O $(UCLIBC_LINUXTHREADS_NEW_DLFILE) ; \
 	fi );
@@ -125,7 +125,7 @@ ifeq ($(UCLIBC_IS_SNAPSHOT),y)
 else
 	$(TAR) -C $(BUILD_DIR) -jf $(UCLIBC_DLFILE)
 endif
-ifeq ($(and $(filter y,$(UCLIBC_IS_NG)),$(filter y,$(UCLIBC_IS_SNAPSHOT))),y)
+ifeq ($(UCLIBC_IS_NG),y)
 	-$(RM) -rf $(UCLIBC_DIR)/libpthread/linuxthreads $(UCLIBC_DIR)/libpthread/linuxthreads_db
 	$(TAR) -C $(UCLIBC_DIR) -zf $(UCLIBC_LINUXTHREADS_NEW_DLFILE) \
 		--strip-components=1 \
