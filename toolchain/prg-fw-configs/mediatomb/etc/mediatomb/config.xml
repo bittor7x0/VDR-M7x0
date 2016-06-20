@@ -77,6 +77,7 @@
         <map from="mkv" to="video/x-matroska"/>
         <map from="mka" to="audio/x-matroska"/>
         <map from="vdr" to="video/mpeg"/>
+        <map from="ts" to="video/mpeg"/>
         <map from="mpg" to="video/mpeg"/>
         <map from="mp4" to="video/mpeg"/>
         <map from="jpg" to="image/jpeg"/>
@@ -112,4 +113,3 @@
     </mappings>
   </import>
 </config>
-
