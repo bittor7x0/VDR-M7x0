@@ -1034,9 +1034,23 @@ void cRecording::ResetResume(void) const
   resume = RESUME_NOT_INITIALIZED;
 }
 
-bool cRecording::Rename(const char *newName)
+bool cRecording::Rename(const char *newName, int *newPriority, int *newLifetime)
 {
   bool result = false;
+  if (*newPriority != priority || *newLifetime != lifetime) {
+     dsyslog("changing priority/lifetime of '%s' to %d/%d", Name(), *newPriority, *newLifetime);
+     if (IsPesRecording()) {
+        priority = *newPriority;
+        lifetime = *newLifetime;
+        }
+     else {
+        priority = info->priority = *newPriority;
+        lifetime = info->lifetime = *newLifetime;
+        if (!WriteInfo())
+           return result;
+        result = true;
+        }
+     }
   struct tm tm_r;
   struct tm *t = localtime_r(&start, &tm_r);
   char *localNewName = ExchangeChars(strdup(newName), true);
@@ -1048,6 +1062,7 @@ bool cRecording::Rename(const char *newName)
   if (strcmp(FileName(), newFileName)) {
      if (access(newFileName, F_OK) == 0) {
         isyslog("recording %s already exists", newFileName);
+        result = false;
         }
      else {
         isyslog("renaming recording %s to %s", FileName(), newFileName);
