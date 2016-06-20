@@ -2514,6 +2514,8 @@ void cMenuRecordingItem::IncrementCounter(bool New)
 class cMenuRenameRecording : public cOsdMenu {
 private:
   char name[NAME_MAX + 1];
+  int priority;
+  int lifetime;
   cMenuEditStrItem *file;
   cOsdItem *marksItem, *resumeItem;
   bool isResume, isMarks;
@@ -2536,6 +2538,11 @@ cMenuRenameRecording::cMenuRenameRecording(cRecording *Recording)
   if (recording) {
      strn0cpy(name, recording->Name(), sizeof(name));
      Add(file = new cMenuEditStrItem(tr("File"), name, sizeof(name), tr(FileNameChars)));
+
+     priority = recording->priority;
+     lifetime = recording->lifetime;
+     Add(new cMenuEditIntItem(tr("Priority"), &priority, 0, MAXPRIORITY));
+     Add(new cMenuEditIntItem(tr("Lifetime"), &lifetime, 0, MAXLIFETIME));
 
      Add(new cOsdItem("", osUnknown, false));
 
@@ -2604,7 +2611,7 @@ eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
   if (state == osUnknown) {
      switch (Key) {
        case kOk:
-            if (recording->Rename(name)) {
+            if (recording->Rename(name, &priority, &lifetime)) {
                Recordings.ChangeState();
                Recordings.TouchUpdate();
                return osRecordings;

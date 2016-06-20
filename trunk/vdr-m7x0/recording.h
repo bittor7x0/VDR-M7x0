@@ -134,8 +134,8 @@ public:
   bool Remove(void);
        ///< Actually removes the file from the disk
        ///< Returns false in case of error
-  bool Rename(const char *newName);
-       ///< Changes the file name
+  bool Rename(const char *newName, int *newPriority, int *newLifetime);
+       ///< Changes the file name, priority and lifetime
        ///< Returns false in case of error
   };
 
