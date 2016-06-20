@@ -1,0 +1,224 @@
+diff -Naur a/src/content_manager.cc b/src/content_manager.cc
+--- a/src/content_manager.cc	2016-06-02 10:13:50.000000000 +0200
++++ b/src/content_manager.cc	2016-06-05 10:27:40.000000000 +0200
+@@ -879,10 +879,13 @@
+             }
+         }
+ 	String myName(name);
+-	if(myName.substring(myName.rindex('.')+1)=="vdr")
++	String myExtension = myName.substring(myName.rindex('.')+1);
++	if(myExtension=="ts")
++		continue;
++	if(myExtension=="vdr")
+ 		if(myName!="index.vdr")
+ 			continue;
+-	if(myName.substring(myName.rindex('.')+1)=="del")
++	if(myName=="info" || myName=="resume" || myName=="marks" || myExtension=="del")
+ 		continue;
+ 
+         path = location + DIR_SEPARATOR + name; 
+@@ -1037,10 +1040,13 @@
+                 continue;
+         }
+ 	String myName(name);
+-	if(myName.substring(myName.rindex('.')+1)=="vdr")
++	String myExtension = myName.substring(myName.rindex('.')+1);
++	if(myExtension=="ts")
++		continue;
++	if(myExtension=="vdr")
+ 		if(myName!="index.vdr")
+ 			continue;
+-	if(myName.substring(myName.rindex('.')+1)=="del")
++	if(myName=="info" || myName=="resume" || myName=="marks" || myExtension=="del")
+ 		continue;
+         String newPath = path + DIR_SEPARATOR + name;
+ 
+@@ -1386,10 +1392,17 @@
+         String upnp_class;
+         String extension;
+ 
++        if (filename == "index")
++        {
++            extension = "ts";
++        }
++        else
++        {
+         // get file extension
+         int dotIndex = filename.rindex('.');
+         if (dotIndex > 0)
+             extension = filename.substring(dotIndex + 1);
++        }
+ 
+         if (magic)
+             mimetype = extension2mimetype(extension);
+diff -Naur a/src/file_request_handler.cc b/src/file_request_handler.cc
+--- a/src/file_request_handler.cc	2016-06-02 10:13:50.000000000 +0200
++++ b/src/file_request_handler.cc	2016-06-05 10:39:08.000000000 +0200
+@@ -742,7 +742,8 @@
+                 info->http_header = ixmlCloneDOMString(header.c_str());
+ 
+             IOHandler *io_handler_ptr;
+-            if (path.substring(path.rindex(DIR_SEPARATOR)+1) == "index.vdr")
++            String vdr_filename = path.substring(path.rindex(DIR_SEPARATOR)+1);
++            if (vdr_filename == "index" || vdr_filename == "index.vdr")
+             {
+                 io_handler_ptr = new VDRIOHandler(path);
+             }
+diff -Naur a/src/layout/fallback_layout.cc b/src/layout/fallback_layout.cc
+--- a/src/layout/fallback_layout.cc	2016-06-02 10:13:50.000000000 +0200
++++ b/src/layout/fallback_layout.cc	2016-06-07 20:35:30.000000000 +0200
+@@ -86,15 +86,35 @@
+ void FallbackLayout::addVideo(zmm::Ref<CdsObject> obj, String rootpath)
+ {
+     Ref<StringConverter> f2i = StringConverter::f2i();
+-    if(obj->getLocation().substring(obj->getLocation().rindex('.')+1)=="vdr")
++    String myFilename = obj->getLocation().substring(obj->getLocation().rindex('/')+1);
++    String myExtension = obj->getLocation().substring(obj->getLocation().rindex('.')+1);
++    bool vdr_ts=myFilename=="index";
++    if((vdr_ts)||(myExtension=="ts")||(myExtension=="vdr")||(myFilename=="info")||(myFilename=="marks")||(myFilename=="resume"))
+     {
+-	if((obj->getLocation().substring(obj->getLocation().rindex('/')+1)=="index.vdr")&&(obj->getLocation().length()>36))
++	if(((vdr_ts)&&(obj->getLocation().length()>30))||((myFilename=="index.vdr")&&(obj->getLocation().length()>36)))
+ 	{
+-		String myLocation = obj->getLocation().substring(0,obj->getLocation().length()-10);
+-		if((myLocation.substring(myLocation.length()-4)==".rec")&&(myLocation.charAt(myLocation.length()-27)=='/'))
++		// PES directory: YYYY-MM-DD.hh[.:]mm.pr.lt.rec (pr=priority, lt=lifetime)
++		// TS  directory: YYYY-MM-DD.hh.mm.ch-ri.rec    (ch=channel,  ri=resumeId)
++		String myLocation;
++		if(vdr_ts)
++			myLocation = obj->getLocation().substring(0,obj->getLocation().length()-6); // remove "/index"
++		else
++			myLocation = obj->getLocation().substring(0,obj->getLocation().length()-10); // remove "/index.vdr"
++		String myLastDir = myLocation.substring(myLocation.rindex('/'));
++		bool isRec = (myLocation.substring(myLocation.length()-4)==".rec") &&
++					 (myLastDir.charAt(5) =='-') &&
++					 (myLastDir.charAt(8) =='-') &&
++					 (myLastDir.charAt(11)=='.') &&
++					 (myLastDir.charAt(17)=='.');
++		if(isRec)
+ 		{
+-			String title(myLocation.substring(myLocation.length()-26,10)+" ["+myLocation.substring(myLocation.length()-15,2)+":"+myLocation.substring(myLocation.length()-12,2)+"]");
+-			myLocation=myLocation.substring(0,myLocation.length()-27);
++			String day=myLastDir.substring(9,2);
++			String month=myLastDir.substring(6,2);
++			String year=myLastDir.substring(1,4);
++			String hour=myLastDir.substring(12,2);
++			String minute=myLastDir.substring(15,2);
++			String title=day+"/"+month+"/"+year+" ["+hour+":"+minute+"]";
++			myLocation=myLocation.substring(0,myLocation.rindex('/'));
+ 			if(myLocation.substring(0,15)=="/var/vdr/video0")
+ 				myLocation=myLocation.substring(15);
+ 			if(myLocation.substring(0,1)=='/')
+diff -Naur a/src/vdr_io_handler.cc b/src/vdr_io_handler.cc
+--- a/src/vdr_io_handler.cc	2016-06-02 10:13:50.000000000 +0200
++++ b/src/vdr_io_handler.cc	2016-06-05 14:58:43.000000000 +0200
+@@ -43,9 +43,9 @@
+ 
+ VDRIOHandler::VDRIOHandler(String filename) : IOHandler()
+ {
+-    if (filename.substring(filename.rindex(DIR_SEPARATOR)+1) != "index.vdr") {
+-
+-	  throw _Exception(_("VDRIOHandler::VDRIOHandler: invalid filename. Expected index.vdr"));
++    String vdr_findex = filename.substring(filename.rindex(DIR_SEPARATOR)+1);
++    if (vdr_findex != "index" && vdr_findex != "index.vdr" ) {
++	  throw _Exception(_("VDRIOHandler::VDRIOHandler: invalid filename. Expected index.vdr or index"));
+     }
+ 
+     this->filename = filename;
+@@ -57,7 +57,8 @@
+     struct stat stat_buf;
+     off_t ret = 0;
+ 
+-    if (filename.substring(filename.rindex(DIR_SEPARATOR)+1) != "index.vdr") {
++    String vdr_findex = filename.substring(filename.rindex(DIR_SEPARATOR)+1);
++    if (vdr_findex != "index" && vdr_findex != "index.vdr" ) {
+ 
+         if (stat(filename.c_str(), &stat_buf) != -1) 
+         {
+@@ -72,16 +73,27 @@
+     {
+ 	int vdr_file_index = 0;
+ 	String vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR));
+-	char vdr_filename[] = "001.vdr";
+-	vdr_path = vdr_path + DIR_SEPARATOR + vdr_filename;
++	char vdr_filename_pes[] = "001.vdr";
++	char vdr_filename_ts[] = "00001.ts";
++	struct stat vdr_ts_buf;
++	bool vdr_ts = stat((vdr_path + DIR_SEPARATOR + vdr_filename_ts).c_str(), &vdr_ts_buf) == 0;
++	vdr_path = vdr_path + DIR_SEPARATOR + (vdr_ts ? vdr_filename_ts : vdr_filename_pes);
+ 
+        while (stat(vdr_path.c_str(), &stat_buf) != -1)
+ 	{
+ 	  ret = ret + stat_buf.st_size;
+-	  
++
+ 	  vdr_file_index++;
+-	  sprintf(vdr_filename, "%03d.vdr", vdr_file_index + 1);
+-	  vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR)) + DIR_SEPARATOR + vdr_filename;
++	  if (vdr_ts)
++	  {
++	     sprintf(vdr_filename_ts, "%05d.ts", vdr_file_index + 1);
++	     vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR)) + DIR_SEPARATOR + vdr_filename_ts;
++	  }
++	  else
++	  {
++	     sprintf(vdr_filename_pes, "%03d.vdr", vdr_file_index + 1);
++	     vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR)) + DIR_SEPARATOR + vdr_filename_pes;
++	  }
+ 	}
+     }
+ 
+@@ -92,8 +104,11 @@
+     struct stat stat_buf;
+     int vdr_file_index;
+     String vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR));
+-    char vdr_filename[] = "001.vdr";
+-    vdr_path = vdr_path + DIR_SEPARATOR + vdr_filename;
++    char vdr_filename_pes[] = "001.vdr";
++    char vdr_filename_ts[] = "00001.ts";
++    struct stat vdr_ts_buf;
++    bool vdr_ts = stat((vdr_path + DIR_SEPARATOR + vdr_filename_ts).c_str(), &vdr_ts_buf) == 0;
++    vdr_path = vdr_path + DIR_SEPARATOR + (vdr_ts ? vdr_filename_ts : vdr_filename_pes);
+ 
+     if (mode != UPNP_READ) {
+        throw _Exception(_("VDRIOHandler::open: invalid mode"));
+@@ -115,8 +130,16 @@
+ 	  throw _Exception(_("VDRIOHandler::open: failed to open: ") + vdr_path.c_str());
+       }
+       vdr_file_index++;
+-      sprintf(vdr_filename, "%03d.vdr", vdr_file_index + 1);
+-      vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR)) + DIR_SEPARATOR + vdr_filename;
++      if (vdr_ts)
++      {
++         sprintf(vdr_filename_ts, "%05d.ts", vdr_file_index + 1);
++         vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR)) + DIR_SEPARATOR + vdr_filename_ts;
++      }
++      else
++      {
++         sprintf(vdr_filename_pes, "%03d.vdr", vdr_file_index + 1);
++         vdr_path = filename.substring(0, filename.rindex(DIR_SEPARATOR)) + DIR_SEPARATOR + vdr_filename_pes;
++      }
+     }
+   
+     f[vdr_file_index] = NULL;
+diff -Naur a/src/vdr_io_handler.h b/src/vdr_io_handler.h
+--- a/src/vdr_io_handler.h	2016-06-02 10:13:50.000000000 +0200
++++ b/src/vdr_io_handler.h	2016-06-04 13:11:53.000000000 +0200
+@@ -26,7 +26,7 @@
+ /// \brief Definition of the VDRIOHandler class.
+ #ifndef __VDR_IO_HANDLER_H__
+ #define __VDR_IO_HANDLER_H__
+-#define MAX_VDR_FILES 256
++#define MAX_VDR_FILES 65536
+ #include <sys/types.h>
+ 
+ #include "common.h"
+@@ -50,7 +50,7 @@
+     /// \brief Sets the filename to work with.
+     VDRIOHandler(zmm::String filename);
+ 
+-    /// \brief Gives the total size of the recording if index.vdr is passed,
++    /// \brief Gives the total size of the recording if index.vdr or index is passed,
+     /// otherwise the size of the passed single file.
+     static off_t size(zmm::String filename);
+ 
