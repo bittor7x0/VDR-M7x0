@@ -1,4 +1,4 @@
-ldso: fix dlsym hang when reloading DSOs
+[v3] ldso: fix dlsym hang when reloading DSOs
 
 It can happen under certain cases that the DSO had refcount 0,
 but was already loaded. (NODELETE flag is set, or it is pulled
@@ -29,15 +29,6 @@ diff --git a/ldso/ldso/dl-elf.c b/ldso/ldso/dl-elf.c
 diff --git a/ldso/libdl/libdl.c b/ldso/libdl/libdl.c
 --- a/ldso/libdl/libdl.c
 +++ b/ldso/libdl/libdl.c
-@@ -394,7 +396,7 @@ static void *do_dlopen(const char *libname, int flag, ElfW(Addr) from)
- 	dyn_chain->next_handle = _dl_handles;
- 	_dl_handles = dyn_ptr = dyn_chain;
- 
--	if (tpnt->usage_count > 1) {
-+	if (tpnt->init_flag & DL_OPENED) {
- 		_dl_if_debug_print("Lib: %s already opened\n", libname);
- 		/* see if there is a handle from a earlier dlopen */
- 		for (handle = _dl_handles->next_handle; handle; handle = handle->next_handle) {
 @@ -822,7 +822,7 @@ static int do_dlclose(void *vhandle, int need_fini)
  		_dl_handles = rpnt->next_handle;
  	_dl_if_debug_print("%s: usage count: %d\n",
