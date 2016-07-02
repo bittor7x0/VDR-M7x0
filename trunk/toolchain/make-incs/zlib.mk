@@ -138,15 +138,18 @@ $(FILELIST_DIR)/zlib.lst: $(STAGEFILES_DIR)/.zlib_installed
 
 .PHONY: clean-zlib distclean-zlib
 
-clean-zlib-uclibc:
+clean-zlib:
 	-$(RM) -rf $(ZLIB_DIR)
 
 distclean-zlib:
 	-$(RM) -f $(STAGEFILES_DIR)/.zlib_unpacked
 	-$(RM) -f $(STAGEFILES_DIR)/.zlib_patched
 	-$(RM) -f $(STAGEFILES_DIR)/.zlib_configured
+	-$(RM) -f $(STAGEFILES_DIR)/.zlib_static_configured
 	-$(RM) -f $(STAGEFILES_DIR)/.zlib_compiled
+	-$(RM) -f $(STAGEFILES_DIR)/.zlib_static_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.zlib_installed
+	-$(RM) -f $(STAGEFILES_DIR)/.zlib_static_installed
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -rf $(ZLIB_DLFILE)
 endif
