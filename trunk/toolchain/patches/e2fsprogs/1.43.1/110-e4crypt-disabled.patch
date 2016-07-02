@@ -1,0 +1,14 @@
+diff -Naur a/misc/Makefile.in b/misc/Makefile.in
+--- a/misc/Makefile.in	2016-03-18 20:14:18.000000000 +0100
++++ b/misc/Makefile.in	2016-05-26 21:44:50.548340200 +0200
+@@ -14,8 +14,8 @@
+ @DEFRAG_CMT@@LINUX_CMT@E4DEFRAG_PROG= e4defrag
+ @DEFRAG_CMT@@LINUX_CMT@E4DEFRAG_MAN= e4defrag.8
+ 
+-@LINUX_CMT@E4CRYPT_PROG = e4crypt
+-@LINUX_CMT@E4CRYPT_MAN= e4crypt.8
++#@LINUX_CMT@E4CRYPT_PROG = e4crypt
++#@LINUX_CMT@E4CRYPT_MAN= e4crypt.8
+ 
+ @IMAGER_CMT@E2IMAGE_PROG= e2image
+ @IMAGER_CMT@E2IMAGE_MAN= e2image.8
