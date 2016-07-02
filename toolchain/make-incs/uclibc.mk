@@ -39,9 +39,9 @@ ifeq ($(UCLIBC_IS_NG),y)
 	UCLIBC_LINUXTHREADS_NEW_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_LINUXTHREADS_NEW_VERSION_FULL).tar.gz
 	UCLIBC_LINUXTHREADS_NEW_DLFILE := $(DOWNLOAD_DIR)/uClibc-ng-$(UCLIBC_LINUXTHREADS_NEW_VERSION)-linuxthreads-new.tar.gz
   ifeq ($(UCLIBC_IS_SNAPSHOT),y)
-	# http://repo.or.cz/uclibc-ng.git/commit/95174cb69c523a1544e5f6f20e47f7d60007e569
-	UCLIBC_VERSION := 95174cb
-	UCLIBC_VERSION_FULL := 95174cb69c523a1544e5f6f20e47f7d60007e569
+	# http://repo.or.cz/uclibc-ng.git/commit/5427b1a0a6b088df0866601a4cb52cf3a06ea650
+	UCLIBC_VERSION := 5427b1a
+	UCLIBC_VERSION_FULL := 5427b1a0a6b088df0866601a4cb52cf3a06ea650
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.gz
 	UCLIBC_DIR := $(BUILD_DIR)/uclibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/snapshot/uclibc-ng.config
