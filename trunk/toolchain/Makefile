@@ -258,11 +258,16 @@ define js_shrink_dir
 	done
 endef
 
-# optimizes png images from a given png-dir. all *.png files are reduced with pngout
+# optimizes png images from a given png-dir. all *.png files are reduced with zopflipng and/or pngout
 # usage: $(call png_shrink_dir, <png_dir>)
 define png_shrink_dir
 	for png_file in `$(FIND) $(1) -type f -iname '*.png' | $(SORT)` ; do \
-		$(PNGOUT_BIN) $$png_file -s0 -k0 -y ; \
+		if [ $(CONFIG_ZOPFLIPNG) == y ] ; then \
+			$(ZOPFLIPNG_BIN) -m -y --lossy_transparent --filters=0me $$png_file $$png_file ; \
+		fi; \
+		if [ $(CONFIG_PNGOUT) == y ] ; then \
+			$(PNGOUT_BIN) $$png_file -s0 -k0 -y ; \
+		fi; \
 	done
 endef
 

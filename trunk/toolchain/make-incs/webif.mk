@@ -32,6 +32,9 @@ endif
 ifeq ($(CONFIG_PNGOUT),y)
 	WEBIF_DEPS +=  $(PNGOUT_BIN)
 endif
+ifeq ($(CONFIG_ZOPFLIPNG),y)
+	WEBIF_DEPS +=  $(ZOPFLIPNG_BIN)
+endif
 
 WEBIF_DIR := $(BUILD_DIR)/webif
 WEBIF_BUILD_DIR := $(BUILD_DIR)/webif.build
@@ -82,7 +85,7 @@ ifeq ($(CONFIG_YUI_COMPRESSOR),y)
 	$(call css_shrink_dir, $(WEBIF_BUILD_DIR)/webapp/www/css)
 	$(call js_shrink_dir, $(WEBIF_BUILD_DIR)/webapp/www/js)
 endif
-ifeq ($(CONFIG_PNGOUT),y)
+ifeq ($(or $(CONFIG_PNGOUT),$(CONFIG_ZOPFLIPNG)),y)
 	$(call png_shrink_dir, $(WEBIF_BUILD_DIR)/webapp/www/css/images)
 endif
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_copied
@@ -123,7 +126,7 @@ $(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled $(LOGOS_DL
 	-$(RM) -rf $(WEBIF_CONF_DIR)/etc/webif/www/images
 	$(MKDIR) -p $(WEBIF_CONF_DIR)/etc/webif/www/images
 	$(TAR) -C $(WEBIF_CONF_DIR)/etc/webif/www/images -zf $(LOGOS_DLFILE)
-ifeq ($(CONFIG_PNGOUT),y)
+ifeq ($(or $(CONFIG_PNGOUT),$(CONFIG_ZOPFLIPNG)),y)
 	$(call png_shrink_dir, $(WEBIF_CONF_DIR)/etc/webif/www/images)
 endif
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_installed
