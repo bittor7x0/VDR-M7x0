@@ -186,6 +186,10 @@ CONFIG_O7O_FLASHER = y
 # URL: http://developer.yahoo.com/yui/compressor/
 CONFIG_YUI_COMPRESSOR = y
 
+# ZopfliPNG: Optimizes PNG images using Zopfli compression for the Deflate compression
+# URL: https://github.com/google/zopfli
+CONFIG_ZOPFLIPNG = y
+
 # PNGOUT: Optimizes the size of .PNG files losslessly
 # URL: http://www.jonof.id.au/kenutils
 CONFIG_PNGOUT = y

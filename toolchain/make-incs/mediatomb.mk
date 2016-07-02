@@ -65,6 +65,9 @@ endif
 ifeq ($(CONFIG_PNGOUT),y)
 	MEDIATOMB_DEPS +=  $(PNGOUT_BIN)
 endif
+ifeq ($(CONFIG_ZOPFLIPNG),y)
+	MEDIATOMB_DEPS +=  $(ZOPFLIPNG_BIN)
+endif
 
 MEDIATOMB_VERSION := 0.12.1-47-g7ab7616
 MEDIATOMB_PATCHES_DIR := $(PATCHES_DIR)/mediatomb/$(MEDIATOMB_VERSION)
@@ -178,7 +181,7 @@ ifeq ($(CONFIG_YUI_COMPRESSOR),y)
 	$(call js_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/js)
 	$(call js_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web/js)
 endif
-ifeq ($(CONFIG_PNGOUT),y)
+ifeq ($(or $(CONFIG_PNGOUT),$(CONFIG_ZOPFLIPNG)),y)
 	$(call png_shrink_dir, $(TARGET_ROOT)/etc/mediatomb/web/icons)
 endif
 	$(TOUCH) $(STAGEFILES_DIR)/.mediatomb_installed
