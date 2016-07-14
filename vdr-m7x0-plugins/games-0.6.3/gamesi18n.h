@@ -22,7 +22,7 @@ const tI18nPhrase Phrases[] =
     "", // Português
     "", // Français
     "", // Norsk
-    "Pelit (OSD)", // suomi
+    "", // suomi
     "", // Polski
     "Colección Juegos OSD", // Español
     "", // ÅëëçíéêÜ (Greek)
@@ -45,7 +45,7 @@ const tI18nPhrase Phrases[] =
     "", // TODO
     "", // TODO
     "", // TODO
-    "Pelit", // suomi
+    "", // suomi
     "", // TODO
     "Juegos", // Español
     "", // TODO
@@ -68,7 +68,7 @@ const tI18nPhrase Phrases[] =
     "", // TODO
     "", // TODO
     "", // TODO
-    "Vaakasijainti", // suomi
+    "", // suomi
     "", // TODO
     "Posición X", // Español
     "", // TODO
@@ -91,7 +91,7 @@ const tI18nPhrase Phrases[] =
     "", // TODO
     "", // TODO
     "", // TODO
-    "Pystysijainti", // suomi
+    "", // suomi
     "", // TODO
     "Posición Y", // Español
     "", // TODO
@@ -114,7 +114,7 @@ const tI18nPhrase Phrases[] =
     "", // TODO
     "", // TODO
     "", // TODO
-    "Vaikeustaso", // suomi
+    "", // suomi
     "", // TODO
     "Habilidad del ordenador", // Español
     "", // TODO
@@ -137,7 +137,7 @@ const tI18nPhrase Phrases[] =
     "", // TODO
     "", // TODO
     "", // TODO
-    "Näppäimen toisto", // suomi
+    "", // suomi
     "", // TODO
     "Botón repetir", // Español
     "", // TODO
@@ -160,7 +160,7 @@ const tI18nPhrase Phrases[] =
     "", // TODO
     "", // TODO
     "", // TODO
-    "Näytön koko", // suomi
+    "", // suomi
     "", // TODO
     "Tamaño OSD", // Español
     "", // TODO
@@ -183,7 +183,7 @@ const tI18nPhrase Phrases[] =
     "", // TODO
     "", // TODO
     "", // TODO
-    "päällä", // suomi
+    "", // suomi
     "", // TODO
     "Activar", // Español
     "", // TODO
@@ -206,7 +206,7 @@ const tI18nPhrase Phrases[] =
     "", // TODO
     "", // TODO
     "", // TODO
-    "pois", // suomi
+    "", // suomi
     "", // TODO
     "Desactivar", // Español
     "", // TODO

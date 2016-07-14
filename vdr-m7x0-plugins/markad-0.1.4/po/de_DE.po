@@ -10,11 +10,11 @@ msgstr ""
 "Language-Team: German <vdr@linuxtv.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "markad still running"
-msgstr "markad lÃ¤uft noch"
+msgstr "markad läuft noch"
 
 msgid "markad status"
 msgstr "markad Status"
@@ -53,28 +53,28 @@ msgid "after"
 msgstr "danach"
 
 msgid "during"
-msgstr "wÃ¤hrend"
+msgstr "während"
 
 msgid "execution"
-msgstr "AusfÃ¼hrung"
+msgstr "Ausführung"
 
 msgid "  during another recording"
-msgstr "  wÃ¤hrend einer anderen Aufnahme"
+msgstr "  während einer anderen Aufnahme"
 
 msgid "  while replaying"
-msgstr "  wÃ¤hrend einer Wiedergabe"
+msgstr "  während einer Wiedergabe"
 
 msgid "scan only channels with logo"
-msgstr "nur KanÃ¤le mit Logo scannen"
+msgstr "nur Kanäle mit Logo scannen"
 
 msgid "deferred shutdown"
-msgstr "Herunterfahren verzÃ¶gern?"
+msgstr "Herunterfahren verzögern?"
 
 msgid "ignore timer margins"
 msgstr "Timer Vor-/Nachlauf ignorieren"
 
 msgid "detect overlaps"
-msgstr "erkenne Ãœberlappungen"
+msgstr "erkenne Überlappungen"
 
 msgid "recreate index"
 msgstr "Erstelle Index"
@@ -86,13 +86,13 @@ msgid "OSD message"
 msgstr "OSD Meldung"
 
 msgid "verbose logging"
-msgstr "ausfÃ¼hrliches Logging"
+msgstr "ausführliches Logging"
 
 msgid "log to recording directory"
 msgstr "Log ins Aufnahmeverzeichnis"
 
 msgid "hide mainmenu entry"
-msgstr "HauptmenÃ¼eintrag verstecken"
+msgstr "Hauptmenüeintrag verstecken"
 
 msgid "show list"
 msgstr "zeige Liste"
@@ -101,7 +101,7 @@ msgid "list"
 msgstr "Liste"
 
 msgid "back"
-msgstr "zurÃ¼ck"
+msgstr "zurück"
 
 msgid "Mark advertisements"
 msgstr "Markiere Werbung"

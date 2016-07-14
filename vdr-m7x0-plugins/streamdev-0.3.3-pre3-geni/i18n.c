@@ -15,7 +15,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"VDR-suoratoistopalvelin",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Servidor Streaming VDR", // Español
 		"",											// Ellinika / Greek
@@ -35,7 +35,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"VTP-suoratoistoasiakas ",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Cliente Streaming VTP", // Español
 		"",											// Ellinika / Greek
@@ -50,12 +50,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Start VDR-to-VDR Server",// English
 		"VDR-zu-VDR Server starten",// Deutsch
 		"",											// Slovenski
-		"Avvia il Server VDR-toVDR",// Italiano
+		"",// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Käynnistä VDR-palvelin",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Iniciar Servidor VDR-a-VDR", // Español
 		"",											// Ellinika / Greek
@@ -70,12 +70,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Start HTTP Server",		// English
 		"HTTP Server starten",	// Deutsch
 		"",											// Slovenski
-		"Avvia il Server HTTP", // Italiano
+		"", // Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Käynnistä HTTP-palvelin",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Iniciar Servidor HTTP", // Español
 		"",											// Ellinika
@@ -90,12 +90,12 @@ const tI18nPhrase Phrases[] = {
 	{	"HTTP Streamtype",		  // English
 		"HTTP Streamtyp",	      // Deutsch
 		"",											// Slovenski
-		"Tipo di Stream HTTP",  // Italiano
+		"",  // Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"HTTP-lähetysmuoto",									// Suomi
+		"",									// Suomi
 		"",											// Polski
 		"Tipo de Stream HTTP", // Español
 		"",											// Ellinika
@@ -110,12 +110,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Start Client",					// English
 		"Client starten",				// Deutsch
 		"",											// Slovenski
-		"Avvia il Client",			// Italiano
+		"",			// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Käynnistä VDR-asiakas",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Iniciar Cliente", // Español
 		"",											// Ellinika
@@ -130,12 +130,12 @@ const tI18nPhrase Phrases[] = {
 	{	"VDR-to-VDR Server Port",// English
 		"Port des VDR-zu-VDR Servers",// Deutsch
 		"",											// Slovenski
-		"Porta del Server VDR-to-VDR",// Italiano
+		"",// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"VDR-palvelimen portti",								// Suomi
+		"",								// Suomi
 		"",											// Polski
 		"Puerto Servidor VDR-a-VDR", // Español
 		"",											// Ellinika
@@ -150,12 +150,12 @@ const tI18nPhrase Phrases[] = {
 	{	"HTTP Server Port",			// English
 		"Port des HTTP Servers",// Deutsch
 		"",											// Slovenski
-		"Porta del Server HTTP",// Italiano
+		"",// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"HTTP-palvelimen portti",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Puerto Servidor HTTP", // Español
 		"",											// Ellinika
@@ -170,12 +170,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Maximum Number of Clients",// English
 		"Maximalanzahl an Clients",// Deutsch
 		"",											// Slovenski
-		"Numero Massimo di Client",// Italiano
+		"",// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Suurin sallittu asiakkaiden määrä",							// suomi
+		"",							// suomi
 		"",											// Polski
 		"Número Máximo de Clientes", // Español
 		"",											// Ellinika
@@ -190,12 +190,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Remote IP",						// English
 		"IP der Gegenseite",		// Deutsch
 		"",											// Slovenski
-		"Indirizzo IP del Server",// Italiano
+		"",// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Etäkoneen IP-osoite",									// suomi
+		"",									// suomi
 		"",											// Polski
 		"IP Remota", // Español
 		"",											// Ellinika
@@ -210,12 +210,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Remote Port",					// English
 		"Port der Gegenseite",	// Deutsch
 		"",											// Slovenski
-		"Porta del Server Remoto",// Italiano
+		"",// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Etäkoneen portti",									// suomi
+		"",									// suomi
 		"",											// Polski
 		"Puerto Remoto", // Español
 		"",											// Ellinika
@@ -230,12 +230,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Remote Streamtype",		// English
 		"Streamtyp von Gegenseite",// Deutsch
 		"",											// Slovenski
-		"Tipo di Stream",       // Italiano (oppure Flusso ?)
+		"",       // Italiano (oppure Flusso ?)
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Etäkoneen lähetysmuoto",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Tipo de Stream Remoto", // Español
 		"",											// Ellinika
@@ -250,12 +250,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Common Settings",		  // English
 		"Allgemeines",          // Deutsch
 		"",											// Slovenski
-		"Settaggi Comuni",			// Italiano
+		"",			// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Yleiset asetukset",									// suomi
+		"",									// suomi
 		"",											// Polski
 		"Ajustes comunes", // Español
 		"",											// Ellinika
@@ -270,12 +270,12 @@ const tI18nPhrase Phrases[] = {
 	{	"VDR-to-VDR Server",		// English
 		"VDR-zu-VDR Server",    // Deutsch
 		"",											// Slovenski
-		"Server VDR-to-VDR",		// Italiano
+		"",		// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"VDR-palvelin",										// suomi
+		"",										// suomi
 		"",											// Polski
 		"Servidor VDR-a-VDR", // Español
 		"",											// Ellinika
@@ -290,12 +290,12 @@ const tI18nPhrase Phrases[] = {
 	{	"HTTP Server",		      // English
 		"HTTP Server",          // Deutsch
 		"",											// Slovenski
-		"Server HTTP",					// Italiano
+		"",					// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"HTTP-palvelin",									// suomi
+		"",									// suomi
 		"",											// Polski
 		"Servidor HTTP", // Español
 		"",											// Ellinika
@@ -310,12 +310,12 @@ const tI18nPhrase Phrases[] = {
 	{	"VDR-to-VDR Client",		// English
 		"VDR-zu-VDR Client",    // Deutsch
 		"",											// Slovenski
-		"Client VDR-to-VDR",		// Italiano
+		"",		// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"VDR-asiakas",										// suomi
+		"",										// suomi
 		"",											// Polski
 		"Cliente VDR-a-VDR", // Español
 		"",											// Ellinika
@@ -330,12 +330,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Please restart VDR to activate changes",// English
 		"Bitte starten Sie für die Änderungen VDR neu",// Deutsch
 		"",											// Slovenski
-		"Riavviare VDR per attivare i cambiamenti",// Italiano
+		"",// Italiano
 		"",											// Nederlands
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Aktivoi muutokset käynnistämällä VDR uudelleen",					// suomi
+		"",					// suomi
 		"",											// Polski
 		"Reinicie VDR para activar los cambios", // Español
 		"",											// Ellinika
@@ -355,7 +355,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Päivitä ohjelmaopas",									// suomi
+		"",									// suomi
 		"",											// Polski
 		"Sincronizar EPG", // Español
 		"",											// Ellinika
@@ -375,7 +375,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Pysäytä suora TV-lähetys",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Suspender TV-Directo", // Español
 		"",											// Ellinika
@@ -395,7 +395,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Pysäytystoiminto",									// suomi
+		"",									// suomi
 		"",											// Polski
 		"Suspender funcionamiento", // Español
 		"",											// Ellinika
@@ -415,7 +415,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"tyrkytä",										// suomi
+		"",										// suomi
 		"",											// Polski
 		"Ofrecer suspender", // Español
 		"",											// Ellinika
@@ -435,7 +435,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"aina",											// suomi
+		"",											// suomi
 		"",											// Polski
 		"Siempre suspendido", // Español
 		"",											// Ellinika
@@ -455,7 +455,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"ei koskaan",										// suomi
+		"",										// suomi
 		"",											// Polski
 		"Nunca suspendido", // Español
 		"",											// Ellinika
@@ -475,7 +475,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Suoratoiston hallinta",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Control Streaming", // Español
 		"",											// Ellinika
@@ -495,7 +495,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Haetaan tallenteita...",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Obtener grabaciones...", // Español
 		"",											// Ellinika
@@ -515,7 +515,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Etätallenteet",									// suomi
+		"",									// suomi
 		"",											// Polski
 		"Grabaciones Remotas", // Español
 		"",											// Ellinika
@@ -535,7 +535,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Etäajastimet",										// suomi
+		"",										// suomi
 		"",											// Polski
 		"Programaciones Remotas", // Español
 		"",											// Ellinika
@@ -555,7 +555,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Pysäytä palvelin",									// suomi
+		"",									// suomi
 		"",											// Polski
 		"Suspender Servidor", // Español
 		"",											// Ellinika
@@ -575,7 +575,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Palvelin on pysäytetty",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Servidor suspendido", // Español
 		"",											// Ellinika
@@ -595,7 +595,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Palvelinta ei onnistuttu pysäyttämään!",						// suomi
+		"",						// suomi
 		"",											// Polski
 		"¡No puede suspender el Servidor!", // Español
 		"",											// Ellinika
@@ -615,7 +615,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Muokkaa etäajastinta",									// suomi
+		"",									// suomi
 		"",											// Polski
 		"Editar programación remota", // Español
 		"",											// Ellinika
@@ -635,7 +635,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Ajastimet eivät täsmää! Yritä uudelleen...",						// suomi
+		"",						// suomi
 		"",											// Polski
 		"¡Programaciones desincronizadas! Pruebe otra vez...", // Español
 		"",											// Ellinika
@@ -655,7 +655,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Ajastimen tallennus epäonnistui! Yritä uudelleen...",					// suomi
+		"",					// suomi
 		"",											// Polski
 		"¡No puedo guardar programación! Pruebe otra vez...", // Español
 		"",											// Ellinika
@@ -675,7 +675,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Ajastimen poistaminen epäonnistui! Yritä uudelleen...",				// suomi
+		"",				// suomi
 		"",											// Polski
 		"¡No puedo borrar programación! Pruebe otra vez...", // Español
 		"",											// Ellinika
@@ -695,7 +695,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Palvelimessa virhe! Yritä uudelleen...",						// suomi
+		"",						// suomi
 		"",											// Polski
 		"¡Error Servidor! Pruebe otra vez...", // Español
 		"",											// Ellinika
@@ -715,7 +715,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Usean PID:in suoratoisto",								// suomi
+		"",								// suomi
 		"",											// Polski
 		"Streaming MultiPID", // Español
 		"",											// Ellinika
@@ -735,7 +735,7 @@ const tI18nPhrase Phrases[] = {
 		"",											// Português
 		"",											// Français
 		"",											// Norsk
-		"Asiakas saa pysäyttää palvelimen",							// suomi
+		"",							// suomi
 		"",											// Polski
 		"Debe suspender el cliente", // Español
 		"",											// Ellinika
@@ -755,7 +755,7 @@ const tI18nPhrase Phrases[] = {
                 "",                                                                                     // Português
                 "",                                                                                     // Français
                 "",                                                                                     // Norsk
-                "Sido osoitteeseen",                                                                    // suomi
+                "",                                                                    // suomi
                 "",                                                                                     // Polski
                 "Asociar a IP", // Español
                 "",                                                                                     // Ellinika
@@ -775,7 +775,7 @@ const tI18nPhrase Phrases[] = {
                 "",                                                                                     // Português
                 "",                                                                                     // Français
                 "",                                                                                     // Norsk
-                "Etäkoneen ohjelmaopas",                                                                // suomi
+                "",                                                                // suomi
                 "",                                                                                     // Polski
                 "Programado Remoto", // Español
                 "",                                                                                     // Ellinika
@@ -795,7 +795,7 @@ const tI18nPhrase Phrases[] = {
                 "",                                                                                     // Português
                 "",                                                                                     // Français
                 "",                                                                                     // Norsk
-                "Suodatetun tiedon suoratoisto",                                                        // suomi
+                "",                                                        // suomi
                 "",                                                                                     // Polski
                 "Filtro Streaming", // Español
                 "",                                                                                     // Ellinika
@@ -815,7 +815,7 @@ const tI18nPhrase Phrases[] = {
                 "",                                                                                     // Português
                 "",                                                                                     // Français
                 "",                                                                                     // Norsk
-                "Suoratoistopalvelin aktiivinen", // suomi
+                "", // suomi
                 "",                                                                                     // Polski
                 "Activar Streaming", // Español
                 "",                                                                                     // Ellinika

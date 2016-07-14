@@ -17,7 +17,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Prévision Météo-NG",
     "",// TODO
-    "Sääennuste",
+    "",
     "",// TODO
     "Previsión meteorológica",
     "",// TODO
@@ -35,7 +35,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Weather.com: Prévision météo",
     "",// TODO
-    "Weather.com:in sääennusteet",
+    "",
     "",// TODO
     "Weather.com: Previsión meteorológica",
     "",// TODO
@@ -53,7 +53,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Prévision",
     "",// TODO
-    "Sää",
+    "",
     "",// TODO
     "Previsión",
     "",// TODO
@@ -71,7 +71,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "Virhe: Säätietoja ei saatavilla!",
+    "",
     "",// TODO
     "Error: No hay datos",
     "",// TODO
@@ -125,7 +125,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "Paina 'OK' päivittääksesi sääennusteet ja tutkakartat",
+    "",
     "",// TODO
     "Pulsa OK para descargar información",
     "",// TODO
@@ -143,7 +143,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "Säätietojen sijainti:",
+    "",
     "",// TODO
     "La ruta a weatherdata es: ",
     "",// TODO
@@ -161,7 +161,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Coucher du soleil: ",
     "",// TODO
-    "Aurinko laskee: ",
+    "",
     "",// TODO
     "Puesta de sol: ",
     "",// TODO
@@ -179,7 +179,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Lever du soleil: ",
     "",// TODO
-    "Aurinko nousee:",
+    "",
     "",// TODO
     "Amanecer: ",
     "",// TODO
@@ -197,7 +197,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Prévision: ",
     "",// TODO
-    "Säätila: ",
+    "",
     "",// TODO
     "Previsión",
     "",// TODO
@@ -215,7 +215,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Temp. basse: ",
     "",// TODO
-    "Alin lämpötila: ",
+    "",
     "",// TODO
     "Mínima",
     "",// TODO
@@ -233,7 +233,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Temp. haute: ",
     "",// TODO
-    "Ylin lämpötila: ",
+    "",
     "",// TODO
     "Máxima",
     "",// TODO
@@ -251,7 +251,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Prévision pour: ",
     "",// TODO
-    "Sää: ",
+    "",
     "",// TODO
     "Previsión para: ",
     "",// TODO
@@ -269,7 +269,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Provenance du vent: ",
     "",// TODO
-    "Tuulen suunta: ",
+    "",
     "",// TODO
     "Dirección del viento:",
     "",// TODO
@@ -287,7 +287,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Vitesse du vent: ",
     "",// TODO
-    "Tuulen nopeus: ",
+    "",
     "",// TODO
     "Viento:",
     "",// TODO
@@ -305,7 +305,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     " km/h",
     "",// TODO
-    " km/h",
+    "",
     "",// TODO
     " km/h",
     "",// TODO
@@ -323,7 +323,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Taux d'humidité: ",
     "",// TODO
-    "Ilmankosteus: ",
+    "",
     "",// TODO
     "Humedad: ",
     "",// TODO
@@ -341,7 +341,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Précipitation: ",
     "",// TODO
-    "Sateen tod.näk.: ",
+    "",
     "",// TODO
     "Precipitación: ",
     "",// TODO
@@ -359,7 +359,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     " %",
     "",// TODO
-    " %",
+    "",
     "",// TODO
     " %",
     "",// TODO
@@ -377,7 +377,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "°C",
     "",// TODO
-    "°C",
+    "",
     "",// TODO
     "°C",
     "",// TODO
@@ -395,7 +395,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Gauche de la carte",
     "",// TODO
-    "Tutkakuvan vaakakeskitys",
+    "",
     "",// TODO
     "Posición imagen radar (izquierda)",
     "",// TODO
@@ -413,7 +413,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Haut de la carte",
     "",// TODO
-    "Tutkakuvan pystykeskitys",
+    "",
     "",// TODO
     "Posición imagen radar (arriba)",
     "",// TODO
@@ -431,7 +431,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Largeur de la carte",
     "",// TODO
-    "Tutkakuvan leveys",
+    "",
     "",// TODO
     "Ancho imagen de radar",
     "",// TODO
@@ -449,7 +449,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Hauteur de la carte",
     "",// TODO
-    "Tutkakuvan korkeus",
+    "",
     "",// TODO
     "Alto imagen de radar",
     "",// TODO
@@ -467,7 +467,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "Näytä tutkakuvat 256 värillä",
+    "",
     "",// TODO
     "Usar 256 colores para radarmaps",
     "",// TODO
@@ -485,7 +485,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Utiliser petite police",
     "",// TODO
-    "Käytä pieniä kirjasimia",
+    "",
     "",// TODO
     "Usar fuentes pequeñas",
     "",// TODO
@@ -503,7 +503,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Classic",
     "",// TODO
-    "Klassinen",
+    "",
     "",// TODO
     "Clásico",
     "",// TODO
@@ -521,7 +521,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "enElchi",
     "",// TODO
-    "enElchi",
+    "",
     "",// TODO
     "enElchi",
     "",// TODO
@@ -539,7 +539,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Moronimo",
     "",// TODO
-    "Moronimo",
+    "",
     "",// TODO
     "Moronimo",
     "",// TODO
@@ -557,7 +557,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "DeepBlue",
     "",// TODO
-    "DeepBlue",
+    "",
     "",// TODO
     "DeepBlue",
     "",// TODO
@@ -575,7 +575,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Enigma",
     "",// TODO
-    "Enigma",
+    "",
     "",// TODO
     "Enigma",
     "",// TODO
@@ -593,7 +593,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "SilverGreen",
     "",// TODO
-    "SilverGreen",
+    "",
     "",// TODO
     "SilverGreen",
     "",// TODO
@@ -611,7 +611,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "MoronimoMKII",
     "",// TODO
-    "MoronimoMKII",
+    "",
     "",// TODO
     "MoronimoMKII",
     "",// TODO
@@ -629,7 +629,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Thème",
     "",// TODO
-    "Teema",
+    "",
     "",// TODO
     "Tema",
     "",// TODO
@@ -647,7 +647,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Offset horizontal",
     "",// TODO
-    "Vaakakeskitys",
+    "",
     "",// TODO
     "Desplazamiento horizontal",
     "",// TODO
@@ -665,7 +665,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Offset vertical",
     "",// TODO
-    "Pystykeskitys",
+    "",
     "",// TODO
     "Desplazamiento vertical",
     "",// TODO
@@ -683,7 +683,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Symboles inversés",
     "",// TODO
-    "Näytä symbolit invertoituna",
+    "",
     "",// TODO
     "Invertir símbolos",
     "",// TODO
@@ -701,7 +701,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",
     "",// TODO
-    "Käytä pyöristettyjä kulmia",
+    "",
     "",// TODO
     "Bordes redondeados",
     "",// TODO
@@ -719,9 +719,9 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "JOUR",
     "",// TODO
-    "PÄIVÄ",
+    "",
     "",// TODO
-    "DIA",
+    "DÍA",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -737,7 +737,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "NUIT",
     "",// TODO
-    "YÖ",
+    "",
     "",// TODO
     "NOCHE",
     "",// TODO
@@ -755,7 +755,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Lundi",
     "",// TODO
-    "Maanantai",
+    "",
     "",// TODO
     "Lunes",
     "",// TODO
@@ -773,7 +773,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Mardi",
     "",// TODO
-    "Tiistai",
+    "",
     "",// TODO
     "Martes",
     "",// TODO
@@ -791,7 +791,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Mercredi",
     "",// TODO
-    "Keskiviikko",
+    "",
     "",// TODO
     "Miércoles",
     "",// TODO
@@ -809,7 +809,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Jeudi",
     "",// TODO
-    "Torstai",
+    "",
     "",// TODO
     "Jueves",
     "",// TODO
@@ -827,7 +827,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Vendredi",
     "",// TODO
-    "Perjantai",
+    "",
     "",// TODO
     "Viernes",
     "",// TODO
@@ -845,7 +845,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Samedi",
     "",// TODO
-    "Lauantai",
+    "",
     "",// TODO
     "Sábado",
     "",// TODO
@@ -863,7 +863,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Dimanche",
     "",// TODO
-    "Sunnuntai",
+    "",
     "",// TODO
     "Domingo",
     "",// TODO
@@ -881,7 +881,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Ensoleillé",
     "",// TODO
-    "aurinkoista",
+    "",
     "",// TODO
     "Soleado",
     "",// TODO
@@ -899,7 +899,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Pluie",
     "",// TODO
-    "sateista",
+    "",
     "",// TODO
     "Lluvia",
     "",// TODO
@@ -917,7 +917,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Tonnerre",
     "",// TODO
-    "ukkosta",
+    "",
     "",// TODO
     "Truenos",
     "",// TODO
@@ -935,7 +935,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Nuageux",
     "",// TODO
-    "pilvistä",
+    "",
     "",// TODO
     "Nublado",
     "",// TODO
@@ -953,7 +953,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Très nuageux",
     "",// TODO
-    "enimmäkseen pilvistä",
+    "",
     "",// TODO
     "Parcialmente nublado",
     "",// TODO
@@ -971,7 +971,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Orages en soirée",
     "",// TODO
-    "iltapäivällä ukkoskuuroja",
+    "",
     "",// TODO
     "Tormenta eléctrica nocturna",
     "",// TODO
@@ -989,7 +989,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Orages matinaux",
     "",// TODO
-    "aamupäivällä ukkoskuuroja",
+    "",
     "",// TODO
     "Tormenta eléctrica matinal",
     "",// TODO
@@ -1007,7 +1007,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Pluie légère",
     "",// TODO
-    "kevyttä sadetta",
+    "",
     "",// TODO
     "Lluvia ligera",
     "",// TODO
@@ -1025,7 +1025,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Neige",
     "",// TODO
-    "lumisadetta",
+    "",
     "",// TODO
     "Nieve",
     "",// TODO
@@ -1043,7 +1043,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Averses",
     "",// TODO
-    "sadekuuroja",
+    "",
     "",// TODO
     "Chubascos",
     "",// TODO
@@ -1061,7 +1061,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Averses matinales",
     "",// TODO
-    "aamupäivällä sadekuuroja",
+    "",
     "",// TODO
     "Chubascos matinales",
     "",// TODO
@@ -1079,7 +1079,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Averses en soirée",
     "",// TODO
-    "iltapäivällä sadekuuroja",
+    "",
     "",// TODO
     "Chubascos nocturnos",
     "",// TODO
@@ -1097,7 +1097,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Averses isolées",
     "",// TODO
-    "hajanaisia sadekuuroja",
+    "",
     "",// TODO
     "Chubascos dispersos",
     "",// TODO
@@ -1115,7 +1115,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Pluie / Orage",
     "",// TODO
-    "sadetta / ukkosta",
+    "",
     "",// TODO
     "Lluvia / Truenos",
     "",// TODO
@@ -1133,7 +1133,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Pluie / Vent",
     "",// TODO
-    "sadetta / tuulista",
+    "",
     "",// TODO
     "Lluvia / Viento",
     "",// TODO
@@ -1151,7 +1151,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Généralement dégagé",
     "",// TODO
-    "enimmäkseen selkeää",
+    "",
     "",// TODO
     "Parcialmente despejado",
     "",// TODO
@@ -1169,7 +1169,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Brume",
     "",// TODO
-    "utua",
+    "",
     "",// TODO
     "Bruma",
     "",// TODO
@@ -1187,7 +1187,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Brouillard",
     "",// TODO
-    "sumua",
+    "",
     "",// TODO
     "Niebla",
     "",// TODO
@@ -1205,7 +1205,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Vent",
     "",// TODO
-    "tuulista",
+    "",
     "",// TODO
     "Viento",
     "",// TODO
@@ -1223,7 +1223,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Sec",
     "",// TODO
-    "poutaa",
+    "",
     "",// TODO
     "Buen tiempo",
     "",// TODO
@@ -1241,7 +1241,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Dégagé",
     "",// TODO
-    "selkeää",
+    "",
     "",// TODO
     "Despejado",
     "",// TODO
@@ -1259,7 +1259,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Vents léger",
     "",// TODO
-    "tuulista",
+    "",
     "",// TODO
     "Ventoso",
     "",// TODO
@@ -1277,7 +1277,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Bruine",
     "",// TODO
-    "tihkua",
+    "",
     "",// TODO
     "Llovizna",
     "",// TODO
@@ -1295,7 +1295,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Froid",
     "",// TODO
-    "hallaa",
+    "",
     "",// TODO
     "Heladas",
     "",// TODO
@@ -1313,7 +1313,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Généralement nuageux",
     "",// TODO
-    "enimmäkseen pilvistä",
+    "",
     "",// TODO
     "Principalmente nublado",
     "",// TODO
@@ -1331,7 +1331,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Partiellement nuageux",
     "",// TODO
-    "osittain pilvistä",
+    "",
     "",// TODO
     "Parcialmente nublado",
     "",// TODO
@@ -1349,7 +1349,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Généralement dégagé",
     "",// TODO
-    "enimmäkseen selkeää",
+    "",
     "",// TODO
     "Principalmente despejado",
     "",// TODO
@@ -1367,7 +1367,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Non Disponible",
     "",// TODO
-    "ei tietoja",
+    "",
     "",// TODO
     "N/D",
     "",// TODO
@@ -1385,7 +1385,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Généralement ensoleillé",
     "",// TODO
-    "enimmäkseen aurinkoista",
+    "",
     "",// TODO
     "Principalmente soleado",
     "",// TODO
@@ -1403,7 +1403,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Partiellement nuageux",
     "",// TODO
-    "osittain pilvistä",
+    "",
     "",// TODO
     "Parcialmente nublado",
     "",// TODO
@@ -1421,7 +1421,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Averses en soirée",
     "",// TODO
-    "sadetta myöhemmin",
+    "",
     "",// TODO
     "Lluvia por la tarde",
     "",// TODO
@@ -1439,7 +1439,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Matin nuageux / Après-midi Soleil",
     "",// TODO
-    "aamupäivällä pilvistä / iltapäivällä aurinkoista",
+    "",
     "",// TODO
     "Mañana nubes / Tarde sol",
     "",// TODO
@@ -1458,7 +1458,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Orages isolés",
     "",// TODO
-    "hajanaisia ukkosmyrskyjä",
+    "",
     "",// TODO
     "Tormentas eléctricas dispersas",
     "",// TODO
@@ -1476,7 +1476,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Couvert",
     "",// TODO
-    "pilvistä",
+    "",
     "",// TODO
     "Encapotado",
     "",// TODO
@@ -1494,7 +1494,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Brouillard",
     "",// TODO
-    "sumua",
+    "",
     "",// TODO
     "Niebla",
     "",// TODO
@@ -1512,7 +1512,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Brume",
     "",// TODO
-    "usvaa",
+    "",
     "",// TODO
     "Niebla ligera",
     "",// TODO
@@ -1530,7 +1530,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "hernerokkasumua",
+    "",
     "",// TODO
     "Niebla densa (maze)",
     "",// TODO
@@ -1548,7 +1548,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Tempête",
     "",// TODO
-    "myrskyä",
+    "",
     "",// TODO
     "Tormenta",
     "",// TODO
@@ -1566,7 +1566,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Neige",
     "",// TODO
-    "lumisadetta",
+    "",
     "",// TODO
     "Nieve",
     "",// TODO
@@ -1584,7 +1584,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Pluie fine",
     "",// TODO
-    "kevyttä sadetta",
+    "",
     "",// TODO
     "Lluvia ligera",
     "",// TODO
@@ -1602,7 +1602,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Neige (leger)",
     "",// TODO
-    "kevyttä lumisadetta",
+    "",
     "",// TODO
     "Nieve ligera",
     "",// TODO
@@ -1620,7 +1620,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Neige abondante",
     "",// TODO
-    "heikkoa lumisadetta",
+    "",
     "",// TODO
     "Algo de nieve",
     "",// TODO
@@ -1638,7 +1638,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Dégagé",
     "",// TODO
-    "selkeää",
+    "",
     "",// TODO
     "Despejado",
     "",// TODO
@@ -1656,7 +1656,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Légère bruine",
     "",// TODO
-    "kevyttä tihkua",
+    "",
     "",// TODO
     "Llovizna",
     "",// TODO
@@ -1674,7 +1674,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Isolé",
     "",// TODO
-    "hajanaista",
+    "",
     "",// TODO
     "Nubes dispersas",
     "",// TODO
@@ -1692,7 +1692,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Brouillard dense",
     "",// TODO
-    "paksua sumua",
+    "",
     "",// TODO
     "Humo",
     "",// TODO
@@ -1710,7 +1710,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Forte neige",
     "",// TODO
-    "voimakasta lumisadetta",
+    "",
     "",// TODO
     "Nieve levantada por el viento",
     "",// TODO
@@ -1728,7 +1728,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Stable",
     "",// TODO
-    "tasaista",
+    "",
     "",// TODO
     "constante",
     "",// TODO
@@ -1746,7 +1746,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "augmentation",
     "",// TODO
-    "alkavaa",
+    "",
     "",// TODO
     "el aumento de ",
     "",// TODO
@@ -1764,7 +1764,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Chute",
     "",// TODO
-    "laantuvaa",
+    "",
     "",// TODO
     "caída",
     "",// TODO
@@ -1782,7 +1782,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Sans limites",
     "",// TODO
-    "määrittelemätöntä",
+    "",
     "",// TODO
     "Ilimitado",
     "",// TODO
@@ -1800,7 +1800,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Averses dans les environs",
     "",// TODO
-    "todennäköisesti sadekuuroja",
+    "",
     "",// TODO
     "Chubascos en los alrededores",
     "",// TODO
@@ -1818,7 +1818,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Diminution de croissant",
     "",// TODO
-    "väistyvä täysikuu",
+    "",
     "",// TODO
     "Nueva visible",
     "",// TODO
@@ -1836,7 +1836,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Augmentation de croissant",
     "",// TODO
-    "alkava täysikuu",
+    "",
     "",// TODO
     "Media luna creciente",
     "",// TODO
@@ -1854,7 +1854,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "väistyvä uusikuu",
+    "",
     "",// TODO
     "Gibada creciente",
     "",// TODO
@@ -1872,7 +1872,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "väistyvä täysikuu",
+    "",
     "",// TODO
     "Gibada menguante",
     "",// TODO
@@ -1890,7 +1890,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Orages",
     "",// TODO
-    "ukkosmyrskyjä",
+    "",
     "",// TODO
     "Tormentas eléctricas",
     "",// TODO
@@ -1908,7 +1908,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Orages matinaux",
     "",// TODO
-    "ukkosmyrskyjä aikaisin",
+    "",
     "",// TODO
     "Tormentas eléctricas tempranas",
     "",// TODO
@@ -1926,7 +1926,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Pluie fine tôt le matin",
     "",// TODO
-    "kevyttä sadetta aikaisin",
+    "",
     "",// TODO
     "Lluvia fina de mañana",
     "",// TODO
@@ -1944,7 +1944,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "Averses matinales",
     "",// TODO
-    "sadekuuroja aikaisin",
+    "",
     "",// TODO
     "Chubascos de mañana",
     "",// TODO
@@ -1962,7 +1962,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "pilvistä aikaisin",
+    "",
     "",// TODO
     "Nublado de mañana",
     "",// TODO
@@ -1980,7 +1980,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "iltapäivällä kevyttä sadetta",
+    "",
     "",// TODO
     "Lluvia ligera por la tarde",
     "",// TODO
@@ -1998,7 +1998,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "aamupäivällä kevyttä sadetta",
+    "",
     "",// TODO
     "Lluvia ligera por la mañana",
     "",// TODO
@@ -2016,7 +2016,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "kevyttä sadetta myöhään",
+    "",
     "",// TODO
     "Lluvia ligera por la tarde",
     "",// TODO
@@ -2034,7 +2034,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "ajoittaisia sadekuuroja",
+    "",
     "",// TODO
     "Algunos chubascos",
     "",// TODO

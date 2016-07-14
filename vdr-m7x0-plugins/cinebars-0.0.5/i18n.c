@@ -12,7 +12,7 @@ const tI18nPhrase Phrases[] = {
   { "Overlays \"cinebars\"",		// English
     "legt \"Kinobalken\" aufs Bild",	// Deutsch
     "",// Slovenski
-    "Sovrapponi \"cinebars\"",		// Italiano
+    "",// Italiano
     "",// Nederlands
     "",// Português
     "",// Français
@@ -32,7 +32,7 @@ const tI18nPhrase Phrases[] = {
   { "Cinebars",		// English
     "Kinobalken",	// Deutsch
     "",// Slovenski
-    "Cinebars",		// Italiano
+    "",// Italiano
     "",// Nederlands
     "",// Português
     "",// Français
@@ -52,12 +52,12 @@ const tI18nPhrase Phrases[] = {
   { "Hide mainmenu entry", 			// English
     "Hauptmenüeintrag verstecken", 		// Deutsch
     "", // Slovenski
-    "Nascondi voce nel menu principale", 	// Italiano
+    "", 	// Italiano
     "", // Nederlands
     "", // Português
     "", // Français
     "", // Norsk
-    "Piilota valinta päävalikosta", 		// suomi
+    "", 		// suomi
     "", // Polski
     "Ocultar entrada en menú principal",	// Español
     "", // ÅëëçíéêÜ
@@ -72,7 +72,7 @@ const tI18nPhrase Phrases[] = {
   { "Top Bar",
     "Balken Oben",
     "",// TODO
-    "Barra superiore",
+    "",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -92,7 +92,7 @@ const tI18nPhrase Phrases[] = {
   { "Top BarHeight",
     "Balkenhöhe Oben",
     "",// TODO
-    "Altezza barra superiore",
+    "",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -112,7 +112,7 @@ const tI18nPhrase Phrases[] = {
   { "Bottom Bar",
     "Balken Unten",
     "",// TODO
-    "Barra inferiore",
+    "",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -132,7 +132,7 @@ const tI18nPhrase Phrases[] = {
   { "Bottom BarHeight",
     "Balkenhöhe Unten",
     "",// TODO
-    "Altezza barra inferiore",
+    "",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -152,7 +152,7 @@ const tI18nPhrase Phrases[] = {
   { "StepHeight",
     "Schrittweite Höhe",
     "",// TODO
-    "Altezza bordo",
+    "",
     "",// TODO
     "",// TODO
     "",// TODO
@@ -172,7 +172,7 @@ const tI18nPhrase Phrases[] = {
   { "OSD-Mode",
     "OSD-Modus",
     "",// TODO
-    "Modalità OSD",
+    "",
     "",// TODO
     "",// TODO
     "",// TODO

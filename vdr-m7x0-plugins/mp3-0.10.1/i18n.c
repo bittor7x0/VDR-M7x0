@@ -42,122 +42,122 @@ const tI18nPhrase Phrases[] = {
 */
   { "Parent",
     "Zur¸ck",
-    "Nazaj",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Parent",
     "", // TODO
-    "Takaisin",
+    "",
     "", // TODO
     "Predecesor",
-    "Piso",
-    "Tillbaka",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Anterior",
+    "",
 #if APIVERSNUM >= 10302
-    "≤“’‡Â",
+    "",
 #endif
   },
   { "Select",
     "Ausw‰hlen",
-    "Izberi",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "SÈlectionner",
     "", // TODO
-    "Valitse",
+    "",
     "", // TODO
     "Seleccionar",
-    "Epilogi",
-    "V‰lj",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Escollir",
+    "",
 #if APIVERSNUM >= 10302
-    "≤Î—‡–‚Ï",
+    "",
 #endif
   },
   { "Error scanning directory!",
     "Fehler beim Lesen des Verzeichnisses!",
-    "Napaka pri pregledovanju direktorija!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Erreur de parcours du rÈpertoire!",
     "", // TODO
-    "Hakemiston avaaminen ep‰onnistui!",
+    "",
     "", // TODO
     "°Error al leer una carpeta!",
-    "Lathos stin sarosi tou fakelou!",
-    "Kunde inte l‰sa katalogen!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Error al llegir una carpeta!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– ·⁄–›ÿ‡ﬁ“–›ÿÔ ⁄–‚–€ﬁ”–!",
+    "",
 #endif
   },
   { "Source",
     "Datentr‰ger",
-    "Izvor",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Source",
     "", // TODO
-    "L‰hde",
+    "",
     "", // TODO
     "Origen",
-    "Pigi",
-    "K‰lla",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "OrÌgen",
+    "",
 #if APIVERSNUM >= 10302
-    "¥ÿ·⁄",
+    "",
 #endif
   },
   { "Mount",
     "Einbinden",
-    "Priklopi",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Monter",
     "", // TODO
-    "Kiinnit‰",
+    "",
     "", // TODO
     "Montar",
-    "Sindesi",
-    "Montera",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Mount",
+    "",
 #if APIVERSNUM >= 10302
-    "øﬁ‘⁄€ÓÁÿ‚Ï",
+    "",
 #endif
   },
   { "Unmount",
     "Aush‰ngen",
-    "Izklopi",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "DÈmonter",
     "", // TODO
-    "Irrota",
+    "",
     "", // TODO
     "Desmontar",
-    "Aposindesi",
-    "Avmontera",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Unmount",
+    "",
 #if APIVERSNUM >= 10302
-    "æ‚⁄€ÓÁÿ‚Ï",
+    "",
 #endif
   },
   { "Eject",
@@ -168,7 +168,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
     "", // TODO
-    "Avaa",
+    "",
     "", // TODO
     "Expulsar",
     "", // TODO
@@ -182,122 +182,122 @@ const tI18nPhrase Phrases[] = {
   },
   { "Selected source is not mounted!",
     "Ausgew‰hlte Datentr‰ger ist nicht eingebunden!",
-    "Izbran izvor ni prikljucen!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Source sÈlectionnÈe non montÈe!",
     "", // TODO
-    "Valittu l‰hde ei ole kiinnitetty!",
+    "",
     "", // TODO
     "°El origen deseado no est· montado!",
-    "Epilegmeni Pigi den ine sindemeni!",
-    "Den valda k‰llan ‰r inte monterad!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "l'Origen sel.leccionat no est‡ muntat!",
+    "",
 #if APIVERSNUM >= 10302
-    "≤Î—‡–››ÎŸ ‘ÿ·⁄ ›’ ﬂﬁ‘⁄€ÓÁ’›!",
+    "",
 #endif
   },
   { "Mount succeeded",
     "Einbinden erfolgreich",
-    "Priklop izveden",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Montage rÈussi",
     "", // TODO
-    "Kiinnitt‰minen onnistui",
+    "",
     "", // TODO
     "Montaje correcto",
-    "I sindesi petixe",
-    "Monteringen lyckades",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "mount correcte",
+    "",
 #if APIVERSNUM >= 10302
-    "¥ÿ·⁄ ﬂﬁ‘⁄€ÓÁ’›",
+    "",
 #endif
   },
   { "Mount failed!",
     "Einbinden fehlgeschlagen!",
-    "Napaka pri priklopu!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Echec du montage!",
     "", // TODO
-    "Kiinnitt‰minen ep‰onnistui!",
+    "",
     "", // TODO
     "°Montaje errÛneo!",
-    "I sindesi apetixe!",
-    "Monteringen misslyckades!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "No he pogut muntar!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– ﬂﬁ‘⁄€ÓÁ’›ÿÔ ‘ÿ·⁄–!",
+    "",
 #endif
   },
   { "Unmount succeeded",
     "Aush‰ngen erfolgreich",
-    "Izklop izveden",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "DÈmontage rÈussi",
     "", // TODO
-    "Irrottaminen onnistui",
+    "",
     "", // TODO
     "Desmontaje correcto",
-    "I aposindesi itan epitixisi",
-    "Avmonteringen lyckades",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "unmount amb Ëxit",
+    "",
 #if APIVERSNUM >= 10302
-    "¥ÿ·⁄ ﬁ‚⁄€ÓÁ’›",
+    "",
 #endif
   },
   { "Unmount failed!",
     "Aush‰ngen fehlgeschlagen!",
-    "Napaka pri izklopu!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Echec du dÈmontage!",
     "", // TODO
-    "Irrottaminen ep‰onnistui!",
+    "",
     "", // TODO
     "°Desmontaje errÛneo!",
-    "I aposindesi den itan epitixis!",
-    "Avmonteringen misslyckades!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "No puc desmontar!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– ﬁ‚⁄€ÓÁ’›ÿÔ ‘ÿ·⁄–!",
+    "",
 #endif
   },
   { "Eject failed!",
     "Auswerfen fehlgeschlagen!",
-    "Napaka pri izmetu!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Echec de l'Èjection!",
     "", // TODO
-    "Aseman avaaminen ep‰onnistui!",
+    "",
     "", // TODO
     "°ExpulsiÛn errÛnea!",
-    "I apovoli apetixe!",
-    "Mata ut!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "No puc expulsar!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– ÿ◊“€’Á’›ÿÔ ‘ÿ·⁄–!",
+    "",
 #endif
   },
   { "Hide mainmenu entry",
@@ -308,7 +308,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Cacher l entrÈe du menu",
     "", // TODO
-    "Piilota valinta p‰‰valikosta",
+    "",
     "", // TODO
     "Ocultar entrada en men˙ principal",
     "", // TODO
@@ -317,7 +317,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
 #if APIVERSNUM >= 10302
-    "¡⁄‡Î‚Ï ⁄ﬁ‹–›‘„ “ ‹’›Ó",
+    "",
 #endif
   },
 
@@ -325,22 +325,22 @@ const tI18nPhrase Phrases[] = {
 
   { "MP3",
     "MP3",
+    "",
+    "",
+    "",
+    "",
     "MP3",
+    "",
+    "",
+    "",
     "MP3",
-    "MP3",
-    "MP3",
-    "MP3",
-    "MP3",
-    "MP3-soitin",
-    "MP3",
-    "MP3",
-    "MP3",
-    "MP3",
-    "MP3",
-    "MP3",
-    "MP3",
+    "",
+    "",
+    "",
+    "",
+    "",
 #if APIVERSNUM >= 10302
-    "ø‡ﬁÿ”‡Î“–‚’€Ï MP3",
+    "",
 #endif
   },
   { "A versatile audio player",
@@ -351,7 +351,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Lecteur multiformats",
     "", // TODO
-    "Monipuolinen audiosoitin",
+    "",
     "", // TODO
     "Reproductor de audio",
     "", // TODO
@@ -360,307 +360,307 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
 #if APIVERSNUM >= 10302
-    "ø‡ﬁÿ”‡Î“–‚’€Ï –„‘ÿﬁ‰–Ÿ€ﬁ“",
+    "",
 #endif
   },
   { "Browse",
     "Bl‰ttern",
-    "Isci",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Parcourir",
     "", // TODO
-    "Selaa",
+    "",
     "", // TODO
     "Explorar",
-    "Selida",
-    "Bl‰ddra",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Explorar",
+    "",
 #if APIVERSNUM >= 10302
-    "∫–‚–€ﬁ”ÿ",
+    "",
 #endif
   },
   { "MP3 source",
     "MP3 Datentr‰ger",
-    "MP3 izvor",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Source MP3",
     "", // TODO
-    "MP3-l‰hde",
+    "",
     "", // TODO
     "Origen MP3",
-    "Pigi MP3",
-    "MP3 k‰lla",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "OrÌgen MP3",
+    "",
 #if APIVERSNUM >= 10302
-    "¥ÿ·⁄ MP3",
+    "",
 #endif
   },
   { "Rename",
     "Umbenennen",
-    "Preimenuj",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Renommer",
     "", // TODO
-    "Nime‰",
+    "",
     "", // TODO
     "Renombrar",
-    "Alagi Onomatos",
-    "Dˆp om",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Reanomenar",
+    "",
 #if APIVERSNUM >= 10302
-    "ø’‡’ÿ‹’›ﬁ“–‚Ï",
+    "",
 #endif
   },
   { "Add",
     "Hinzuf¸gen",
-    "Dodaj",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Ajouter",
     "", // TODO
-    "Lis‰‰",
+    "",
     "", // TODO
     "AÒadir",
-    "Prosthesi",
-    "L‰gg till",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Afegir",
+    "",
 #if APIVERSNUM >= 10302
-    "¥ﬁ—–“ÿ‚Ï",
+    "",
 #endif
   },
   { "Remove",
     "Entfernen",
-    "Odstrani",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Enlever",
     "", // TODO
-    "Poista",
+    "",
     "", // TODO
     "Borrar",
-    "Aferesi",
-    "Radera",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Esborrar",
+    "",
 #if APIVERSNUM >= 10302
-    "√‘–€ÿ‚Ï",
+    "",
 #endif
   },
   { "Play all",
     "Alle abspielen",
-    "Predvajaj vse",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Jouer tous",
     "", // TODO
-    "Soita kaikki",
+    "",
     "", // TODO
     "Reproducir todo",
-    "Peksimo olon",
-    "Spela alla",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Escoltar-ho tot",
+    "",
 #if APIVERSNUM >= 10302
-    "≤ﬁ·ﬂ‡ﬁÿ◊“’·‚ÿ “·Ò",
+    "",
 #endif
   },
   { "Add all",
     "Alle hinzuf¸gen",
-    "Dodaj vse",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Ajouter tous",
     "", // TODO
-    "Lis‰‰ kaikki",
+    "",
     "", // TODO
     "AÒadir todo",
-    "Prosthesi olon",
-    "L‰gg till alla",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Afegir-ho tot",
+    "",
 #if APIVERSNUM >= 10302
-    "¥ﬁ—–“ÿ‚Ï “·Ò",
+    "",
 #endif
   },
   { "Empty directory!",
     "Leeres Verzeichnis!",
-    "Direktorij prazen!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "RÈpertoire vide!",
     "", // TODO
-    "Hakemisto on tyhj‰!",
+    "",
     "", // TODO
     "°Carpeta vacÌa!",
-    "Adios fakelos!",
-    "Tom katalog!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Carpeta buida!",
+    "",
 #if APIVERSNUM >= 10302
-    "ø„·‚ﬁŸ ⁄–‚–€ﬁ”!",
+    "",
 #endif
   },
   { "Add recursivly?",
     "Recursiv hinzuf¸gen?",
-    "Rekurzivno dodaj?",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Ajouter rÈcursivement?",
     "", // TODO
-    "Lis‰‰ rekursiivisesti?",
+    "",
     "", // TODO
     "øAÒadir recursivamente?",
-    "Prosthesi recursiv?",
-    "L‰gg till rekursivt?",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Afegir recursivament?",
+    "",
 #if APIVERSNUM >= 10302
-    "¥ﬁ—–“ÿ‚Ï ‡’⁄„‡·ÿ“›ﬁ?",
+    "",
 #endif
   },
   { "Remove entry?",
     "Eintrag entfernen?",
-    "Odstrani izbrano?",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Enlever titre?",
     "", // TODO
-    "Poistetaanko merkint‰?",
+    "",
     "", // TODO
     "øBorrar entrada?",
-    "Aferesi simiou?",
-    "Radera post?",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Esborrar la entrada?",
+    "",
 #if APIVERSNUM >= 10302
-    "√‘–€ÿ‚Ï ◊–ﬂÿ·Ï?",
+    "",
 #endif
   },
   { "Playlist editor",
     "Abspielliste bearbeiten",
-    "Urejevalnik liste",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Editeur de liste de lecture",
     "", // TODO
-    "Soittolistan muokkaus",
+    "",
     "", // TODO
     "Editor de listas de reproducciÛn",
-    "Metatropes stin Playlista",
-    "Spellisteditor",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Editor de llistes de reproducciÛ",
+    "",
 #if APIVERSNUM >= 10302
-    "¿’‘–⁄‚ﬁ‡ ·ﬂÿ·⁄– ﬂ’·’›",
+    "",
 #endif
   },
   { "Directory browser",
     "Verzeichnisanzeige",
-    "Navigator",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Navigateur",
     "", // TODO
-    "Hakemistoselain",
+    "",
     "", // TODO
     "Explorar carpetas",
-    "Endiski fakelou",
-    "Katalogbl‰ddrare",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Navegar per les carpetes",
+    "",
 #if APIVERSNUM >= 10302
-    "ø‡ﬁ·‹ﬁ‚‡ ⁄–‚–€ﬁ”ﬁ“",
+    "",
 #endif
   },
   { "Delete playlist?",
     "Abspielliste lˆschen?",
-    "Odstrani listo?",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Effacer liste?",
     "", // TODO
-    "Poistetaanko soittolista?",
+    "",
     "", // TODO
     "øBorrar la lista?",
-    "Svisimo listas?",
-    "Radera spellista?",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Esborrar la Llista?",
+    "",
 #if APIVERSNUM >= 10302
-    "√‘–€ÿ‚Ï ·ﬂÿ·ﬁ⁄",
+    "",
 #endif
   },
   { "Are you sure?",
     "Wirklich lˆschen?",
-    "Ste prepricani?",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Etes-vous s˚r?",
     "", // TODO
-    "Oletko varma?",
+    "",
     "", // TODO
     "øEst· seguro?",
-    "Ise sigouros?",
-    "ƒr du s‰ker?",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "N'esteu segur?",
+    "",
 #if APIVERSNUM >= 10302
-    "≤Î „“’‡’›Î?",
+    "",
 #endif
   },
   { "unnamed",
     "unbenannt",
-    "neimenovan",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "sansnom",
     "", // TODO
-    "nimetˆn",
+    "",
     "", // TODO
     "sin nombre",
-    "xoris onoma",
-    "namnlˆs",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "sense nom",
+    "",
 #if APIVERSNUM >= 10302
-    "—’◊Î‹Ô››ÎŸ",
+    "",
 #endif
   },
   { "unknown",
@@ -671,116 +671,116 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "inconnu",
     "", // TODO
-    "tuntematon",
+    "",
     "", // TODO
     "desconocido",
     "", // TODO
-    "ok‰nd",
+    "",
     "", // TODO
     "", // TODO
-    "desconegut",
+    "",
 #if APIVERSNUM >= 10302
-    "›’ÿ◊“’·‚›ÎŸ",
+    "",
 #endif
   },
   { "Error scanning playlists!",
     "Fehler beim Einlesen der Abspiellisten!",
-    "Napaka pri pregledovanju liste!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Erreur de parcours de la liste!",
     "", // TODO
-    "Soittolistojen lukeminen ep‰onnistui!",
+    "",
     "", // TODO
     "°Error al leer las listas!",
-    "Lathos stin sarosi tis Playlistas!",
-    "Fel uppstod dÂ spellistorna l‰stes!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Error al llegir les llistes!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– ﬂﬁÿ·⁄– ·ﬂÿ·⁄ﬁ“ ﬂ’·’›!",
+    "",
 #endif
   },
   { "Error deleting playlist!",
     "Fehler beim Lˆschen der Abspielliste!",
-    "Napaka pri odstranjevanju liste!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Erreur d'effacement de la liste!",
     "", // TODO
-    "Soittolistan poistaminen ep‰onnistui!",
+    "",
     "", // TODO
     "°Error al borrar una lista!",
-    "Lathos stin akirosi tis Playlistas!",
-    "Fel uppstod dÂ spellistan raderades!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Error al esborrar una llista!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– „‘–€’›ÿÔ ·ﬂÿ·⁄– ﬂ’·’›!",
+    "",
 #endif
   },
   { "Error creating playlist!",
     "Fehler beim Erstellen der Abspielliste!",
-    "Napaka pri kreiranju liste!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Erreur de crÈation de la liste!",
     "", // TODO
-    "Soittolistan luominen ep‰onnistui!",
+    "",
     "", // TODO
     "°Error al crear una lista!",
-    "Lathos stin dimiourgia tis Playlistas!",
-    "Fel uppstod dÂ spellistan skapades!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Error al crear una llista!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– ·ﬁ◊‘–›ÿÔ ·ﬂÿ·⁄– ﬂ’·’›!",
+    "",
 #endif
   },
   { "Can't edit a WinAmp playlist!",
     "Editieren von WinAmp Abspiellisten nicht mˆglich!",
-    "Ne morem vnesti liste od WinAmp-a!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Ne peut pas Èditer une liste WinAmp!",
     "", // TODO
-    "WinAmp-soittolistaa ei voida muokata!",
+    "",
     "", // TODO
     "°No puedo editar una lista del WinAmp!",
-    "Den mporo na kano metatropes se WinAmp Playlista!",
-    "Kan inte redigera en WinAmp-spellista!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "No puc editar una llista del WinAmp!",
+    "",
 #if APIVERSNUM >= 10302
-    "Ω’“ﬁ◊‹ﬁ÷›ﬁ ‡’‘–⁄‚ÿ‡ﬁ“–‚Ï ·ﬂÿ·ﬁ⁄ WinAmp!",
+    "",
 #endif
   },
   { "Error renaming playlist!",
     "Fehler beim Umbenennen der Abspielliste!",
-    "Napaka pri preimenovanju liste!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Erreur pour renommer la liste!",
     "", // TODO
-    "Soittolistan uudelleennime‰minen ep‰onnistui!",
+    "",
     "", // TODO
     "°Error al renombrar la lista!",
-    "Latsos stin metonomasi tis Playlistas!",
-    "Fel uppstod dÂ spellistan dˆptes om!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Error al reanomenar la llista!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– ﬂ’‡’ÿ‹’›ﬁ“–›ÿÔ ·ﬂÿ·⁄–!",
+    "",
 #endif
   },
   { "Loading playlist...",
@@ -791,36 +791,36 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Chargement playlist...",
     "", // TODO
-    "Avataan soittolistaa...",
+    "",
     "", // TODO
     "Cargando la lista de reproducciÛn...",
     "", // TODO
-    "L‰ser in spellista...",
+    "",
     "", // TODO
     "", // TODO
-    "Carregant la llista de reproducciÛ...",
+    "",
 #if APIVERSNUM >= 10302
-    "«‚’›ÿ’ ·ﬂÿ·⁄– ﬂ’·’›...",
+    "",
 #endif
   },
   { "Error loading playlist!",
     "Fehler beim Lesen der Abspielliste!",
-    "Napaka pri nalaganju liste!",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Erreur de chargement de la playlist!",
     "", // TODO
-    "Soittolistan avaaminen ep‰onnistui!",
+    "",
     "", // TODO
     "°Error al cargar la lista de reproducciÛn!",
-    "Lathos sto fortoma tis Playlistas!",
-    "Fel uppstod dÂ spellistan l‰stes in!",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Error al carregar la llista de reproducciÛ!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– Á‚’›ÿÔ ·ﬂÿ·⁄– ﬂ’·’›!",
+    "",
 #endif
   },
   { "Scanning playlists...",
@@ -831,16 +831,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Scanne playlists...",
     "", // TODO
-    "Selataan soittolistoja...",
+    "",
     "", // TODO
     "Leyendo las listas de reproducciÛn...",
     "", // TODO
-    "Sˆker spellistor...",
+    "",
     "", // TODO
     "", // TODO
-    "Llegint les llistes de reproducciÛ...",
+    "",
 #if APIVERSNUM >= 10302
-    "øﬁÿ·⁄ ·ﬂÿ·⁄ﬁ“ ﬂ’·’›...",
+    "",
 #endif
   },
   { "Scanning directory...",
@@ -851,16 +851,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Scanne le repertoire...",
     "", // TODO
-    "Selataan hakemistoa...",
+    "",
     "", // TODO
     "Leyendo las carpetas...",
     "", // TODO
-    "Sˆker igenom katalog...",
+    "",
     "", // TODO
     "", // TODO
-    "Revisant les carpetes..",
+    "",
 #if APIVERSNUM >= 10302
-    "¡⁄–›ÿ‡ﬁ“–›ÿ’ ⁄–‚–€ﬁ”ﬁ“...",
+    "",
 #endif
   },
   { "Building playlist...",
@@ -871,16 +871,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Construit la playlist...",
     "", // TODO
-    "Muodostetaan soittolistaa...",
+    "",
     "", // TODO
     "Construyendo la lista de reproducciÛn...",
     "", // TODO
-    "Skapar en spellista...",
+    "",
     "", // TODO
     "", // TODO
-    "ConstruÔnt la llista de reproducciÛ...",
+    "",
 #if APIVERSNUM >= 10302
-    "øﬁ·‚‡ﬁ’›ÿ’ ·ﬂÿ·⁄– ﬂ’·’›...",
+    "",
 #endif
   },
   { "Error building playlist!",
@@ -891,16 +891,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Erreur construction playlist!",
     "", // TODO
-    "Soittolistan muodostaminen ep‰onnistui!",
+    "",
     "", // TODO
     "°Error al construir la lista de reproducciÛn!",
     "", // TODO
-    "Fel uppstod dÂ spellistan skapades!",
+    "",
     "", // TODO
     "", // TODO
-    "Error al consstruir la llista de reproducciÛ!",
+    "",
 #if APIVERSNUM >= 10302
-    "æËÿ—⁄– ﬂﬁ·‚‡ﬁ’›ÿÔ ·ﬂÿ·⁄– ﬂ’·’›!",
+    "",
 #endif
   },
   { "Remote CDDB lookup...",
@@ -911,16 +911,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Consultation CDDB...",
     "", // TODO
-    "Kysyt‰‰n CDDB-tietoja...",
+    "",
     "", // TODO
     "Consultando CDDB...",
     "", // TODO
-    "Fj‰rrfˆrfrÂgan till CDDB...",
+    "",
     "", // TODO
     "", // TODO
-    "Consultant CDDB...",
+    "",
 #if APIVERSNUM >= 10302
-    "∑–ﬂ‡ﬁ· ⁄ „‘–€Ò››ﬁŸ —–◊’ CDDB...",
+    "",
 #endif
   },
   { "Connecting to stream server ...",
@@ -931,356 +931,356 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Connexion au Serveur Stream...",
     "", // TODO
-    "Yhdistet‰‰n palvelimeen...",
+    "",
     "", // TODO
     "Conectando con el servidor...",
     "", // TODO
-    "Kontaktar stream-server...",
+    "",
     "", // TODO
     "", // TODO
-    "Connectant al servidor...",
+    "",
 #if APIVERSNUM >= 10302
-    "øﬁ‘⁄€ÓÁ’›ÿ’ ⁄ ·’‡“’‡„ ﬂﬁ‚ﬁ⁄ﬁ“...",
+    "",
 #endif
   },
   { "Rename playlist",
     "Abspielliste umbenennen",
-    "Preimenuj listo",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Renommer la liste",
     "", // TODO
-    "Nime‰ soittolista",
+    "",
     "", // TODO
     "Renombrar la lista de reproducciÛn",
-    "Metonomasi tis Playlistas",
-    "Dˆp om spellistan",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Reanomenar la llista de repr.",
+    "",
 #if APIVERSNUM >= 10302
-    "ø’‡’ÿ‹’›ﬁ“–‚Ï ·ﬂÿ·ﬁ⁄ ﬂ’·’›",
+    "",
 #endif
   },
   { "Old name:",
     "Alter Name:",
-    "Staro ime:",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Ancien nom:",
     "", // TODO
-    "Vanha nimi",
+    "",
     "", // TODO
     "Nombre anterior:",
-    "Palio onoma:",
-    "Gammalt namn:",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Nom anterior:",
+    "",
 #if APIVERSNUM >= 10302
-    "¡‚–‡ﬁ’ ÿ‹Ô:",
+    "",
 #endif
   },
   { "New name",
     "Neuer Name",
-    "Novo ime",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Nouveau nom",
     "", // TODO
-    "Uusi nimi",
+    "",
     "", // TODO
     "Nombre nuevo",
-    "Neo onoma",
-    "Nytt namn",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Nou nom",
+    "",
 #if APIVERSNUM >= 10302
-    "Ωﬁ“ﬁ’ ÿ‹Ô:",
+    "",
 #endif
   },
   { "Filenames",
     "Dateinamen",
-    "Imena datotek",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Noms de fichiers",
     "", // TODO
-    "tiedostonimet",
+    "",
     "", // TODO
     "Nombre de los archivos",
-    "Onomata arxeion",
-    "Filnamn",
+    "",
+    "",
     "", // TODO
     "",
-    "Nom dels arxius",
+    "",
 #if APIVERSNUM >= 10302
-    "ÿ‹’›– ‰–Ÿ€ﬁ“",
+    "",
 #endif
   },
   { "ID3 names",
     "ID3 Namen",
-    "ID3 imena",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Nom ID3",
     "", // TODO
-    "ID3-nimet",
+    "",
     "", // TODO
     "Nombres ID3",
-    "ID3 onomata",
-    "ID3 namn",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Nom ID3",
+    "",
 #if APIVERSNUM >= 10302
-    "ID3-ÿ‹’›–",
+    "",
 #endif
   },
   { "ID3 information",
     "ID3 Information",
-    "ID3 informacija",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Information ID3",
     "", // TODO
-    "ID3-informaatio",
+    "",
     "", // TODO
     "InformaciÛn ID3",
-    "Plirofories ID3",
-    "ID3 information",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "InformaciÛ ID3",
+    "",
 #if APIVERSNUM >= 10302
-    "ID3-‹’‚⁄ÿ",
+    "",
 #endif
   },
   { "ID3 info",
     "ID3 Info",
-    "ID3 info",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Info ID3",
     "", // TODO
-    "ID3-info",
+    "",
     "", // TODO
     "Info ID3",
-    "ID3 pliroforia",
-    "ID3 info",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "ID3 info",
+    "",
 #if APIVERSNUM >= 10302
-    "‘–››Î’ ID3",
+    "",
 #endif
   },
   { "Filename",
     "Dateiname",
-    "Ime datoteke",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Nom du fichier",
     "", // TODO
-    "Tiedostonimi",
+    "",
     "", // TODO
     "Nombre del archivo",
-    "Onoma arxeiou",
-    "Filnamn",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Nom de l'arxiu",
+    "",
 #if APIVERSNUM >= 10302
-    "∏‹Ô ‰–Ÿ€–",
+    "",
 #endif
   },
   { "Length",
     "L‰nge",
-    "Dolzina",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Longueur",
     "", // TODO
-    "Pituus",
+    "",
     "", // TODO
     "DuraciÛn",
-    "Megethos",
-    "L‰ngd",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Durada",
+    "",
 #if APIVERSNUM >= 10302
-    "¥€ÿ›–",
+    "",
 #endif
   },
   { "Title",
     "Titel",
-    "Naslov",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Titre",
     "", // TODO
-    "Kappale",
+    "",
     "", // TODO
     "TÌtulo",
-    "Titlos",
-    "Tittel",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "TÌtol",
+    "",
 #if APIVERSNUM >= 10302
-    "Ω–◊“–›ÿ’",
+    "",
 #endif
   },
   { "Artist",
     "Interpret",
-    "Avtor",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Artiste",
     "", // TODO
-    "Esitt‰j‰",
+    "",
     "", // TODO
     "Artista",
-    "Ermineftis",
-    "Artist",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "IntËrpret",
+    "",
 #if APIVERSNUM >= 10302
-    "∏·ﬂﬁ€›ÿ‚’€Ï",
+    "",
 #endif
   },
   { "Album",
     "Album",
-    "Album",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Album",
     "", // TODO
-    "Albumi",
+    "",
     "", // TODO
     "¡lbum",
-    "Album",
-    "Album",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "¿lbum",
+    "",
 #if APIVERSNUM >= 10302
-    "∞€Ï—ﬁ‹",
+    "",
 #endif
   },
   { "Year",
     "Jahr",
-    "Leto",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "AnnÈe",
     "", // TODO
-    "Vuosi",
+    "",
     "", // TODO
     "AÒo",
-    "Etos",
-    "≈r",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Any",
+    "",
 #if APIVERSNUM >= 10302
-    "≥ﬁ‘",
+    "",
 #endif
   },
   { "Samplerate",
     "Sample Rate",
-    "Vzorcenje",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "FrÈquence",
     "", // TODO
-    "N‰ytteenottotaajuus",
+    "",
     "", // TODO
     "Frecuencia",
-    "Sixnotita",
-    "Samplingshastighet",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Freq¸Ëncia",
+    "",
 #if APIVERSNUM >= 10302
-    "«–·‚ﬁ‚–",
+    "",
 #endif
   },
   { "Bitrate",
     "Bit Rate",
-    "Bitna hitrost",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Bitrate",
     "", // TODO
-    "Bittinopeus",
+    "",
     "", // TODO
     "Bitrate",
-    "Bitrate",
-    "Bithastighet",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Bitrate",
+    "",
 #if APIVERSNUM >= 10302
-    "øﬁ‚ﬁ⁄",
+    "",
 #endif
   },
   { "Setup.MP3$Initial loop mode",
     "Default Loop Modus",
-    "Osnovni nacin ponavljanje",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Mode de rÈpÈtition initial",
     "", // TODO
-    "Jatkuva soitto oletuksena",
+    "",
     "", // TODO
     "Modo de repeticiÛn inicial",
     "", // TODO
-    "Normalt upprepningsl‰ge",
+    "",
     "", // TODO
     "", // TODO
-    "Mode de repeticiÛ inicial",
+    "",
 #if APIVERSNUM >= 10302
-    "¿’÷ÿ‹ ﬂﬁ“‚ﬁ‡– ﬂﬁ „‹ﬁ€Á–›ÿÓ",
+    "",
 #endif
   },
   { "Setup.MP3$Initial shuffle mode",
     "Default Shuffle Modus",
-    "Osnovni nacin mesano",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Mode de lecture alÈatoire initial",
     "", // TODO
-    "Satunnaissoitto oletuksena",
+    "",
     "", // TODO
     "Lectura aleatoria inicial",
     "", // TODO
-    "Normalt blandl‰ge",
+    "",
     "", // TODO
     "", // TODO
-    "Lectura aleatÚria inicial",
+    "",
 #if APIVERSNUM >= 10302
-    "¿’÷ÿ‹ ·€„Á–Ÿ›. “Î—ﬁ‡– ﬂﬁ „‹ﬁ€Á–›ÿÓ",
+    "",
 #endif
   },
   { "Setup.MP3$Title/Artist order",
@@ -1291,7 +1291,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "",
     "", // TODO
-    "N‰yt‰ kappale ja esitt‰j‰",
+    "",
     "", // TODO
     "Orden TÌtulo/Artista",
     "", // TODO
@@ -1311,7 +1311,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "",
     "", // TODO
-    "normaalisti",
+    "",
     "", // TODO
     "Normal",
     "", // TODO
@@ -1331,7 +1331,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "",
     "", // TODO
-    "k‰‰nnettyn‰",
+    "",
     "", // TODO
     "Inversa",
     "", // TODO
@@ -1351,7 +1351,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Mode de sortie audio",
     "", // TODO
-    "ƒ‰nen ulostulomoodi",
+    "",
     "", // TODO
     "Modo de salida audio",
     "", // TODO
@@ -1360,27 +1360,27 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
 #if APIVERSNUM >= 10302
-    "¿’÷ÿ‹ “Î“ﬁ‘– ◊“„⁄–",
+    "",
 #endif
   },
   { "OSS",
     "OSS",
+    "",
+    "",
+    "",
+    "",
     "OSS",
+    "",
+    "",
+    "",
     "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
-    "OSS",
+    "",
+    "",
+    "",
+    "",
+    "",
 #if APIVERSNUM >= 10302
-    "OSS",
+    "",
 #endif
   },
   { "Setup.MP3$Background scan",
@@ -1391,7 +1391,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Scan en tache de fond",
     "", // TODO
-    "Taustaskannaus",
+    "",
     "", // TODO
     "Explorar en segundo plano",
     "", // TODO
@@ -1400,7 +1400,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "",
 #if APIVERSNUM >= 10302
-    "ƒﬁ›ﬁ“ﬁ’ ·⁄–›ÿ‡ﬁ“–›ÿ’",
+    "",
 #endif
   },
   { "ID3 tags",
@@ -1411,7 +1411,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Seulement ID3",
     "", // TODO
-    "vain ID3",
+    "",
     "", // TODO
     "Etiquetas ID3",
     "",
@@ -1420,47 +1420,47 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "",
 #if APIVERSNUM >= 10302
-    "¬ﬁ€Ï⁄ﬁ ID3",
+    "",
 #endif
   },
   { "Setup.MP3$Editor display mode",
     "Editor Anzeige Modus",
-    "Nacin prikaza urejevalnika",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Mode d'affichage de l'Èditeur",
     "", // TODO
-    "Muokkaustilan n‰yttˆmoodi",
+    "",
     "", // TODO
     "Modo de visualizaciÛn del editor",
     "", // TODO
-    "Redigerarens visuella l‰ge",
+    "",
     "", // TODO
     "", // TODO
-    "Mode de visualitzaciÛ del editor",
+    "",
 #if APIVERSNUM >= 10302
-    "¿’÷ÿ‹ ‡’‘–⁄‚ﬁ‡– ·ﬂÿ·⁄ﬁ“",
+    "",
 #endif
   },
   { "Setup.MP3$Display mode",
     "Anzeige Modus",
-    "Nacin prikaza",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Mode d'affichage",
     "", // TODO
-    "N‰yttˆmoodi",
+    "",
     "", // TODO
     "Modo de visualizaciÛn",
     "", // TODO
-    "Visuellt l‰ge",
+    "",
     "", // TODO
     "", // TODO
-    "Mode de visualitzaciÛ",
+    "",
 #if APIVERSNUM >= 10302
-    "¿’÷ÿ‹ ÿ›‚’‡‰’Ÿ·–",
+    "",
 #endif
   },
   { "title, artist",
@@ -1545,22 +1545,22 @@ const tI18nPhrase Phrases[] = {
   },
   { "Setup.MP3$Background mode",
     "Hintergrund Modus",
-    "Ozadje",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "ArriËre plan",
     "", // TODO
-    "Taustamoodi",
+    "",
     "", // TODO
     "Modo en segundo plano",
     "", // TODO
-    "Bakgrundsl‰ge",
+    "",
     "", // TODO
     "", // TODO
-    "ExecuciÛ de fons",
+    "",
 #if APIVERSNUM >= 10302
-    "¿’÷ÿ‹ ‰ﬁ›–",
+    "",
 #endif
   },
   { "Setup.MP3$CDDB for CD-Audio",
@@ -1571,16 +1571,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "CDDB pour CD-Audio",
     "", // TODO
-    "CDDB-tietokanta",
+    "",
     "", // TODO
     "CDDB para el Audio-CD",
     "", // TODO
-    "CDDB fˆr CD-audio",
+    "",
     "", // TODO
     "", // TODO
-    "CDDB per al Audio-CD",
+    "",
 #if APIVERSNUM >= 10302
-    "CDDB ‘€Ô –„‘ÿﬁ-CD",
+    "",
 #endif
   },
   { "disabled",
@@ -1591,16 +1591,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "dÈsactiver",
     "", // TODO
-    "pois",
+    "",
     "", // TODO
     "desactivado",
     "", // TODO
-    "avst‰ngd",
+    "",
     "", // TODO
     "", // TODO
-    "desactivat",
+    "",
 #if APIVERSNUM >= 10302
-    "“Î⁄€",
+    "",
 #endif
   },
   { "local only",
@@ -1611,16 +1611,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "local uniquement",
     "", // TODO
-    "vain paikallinen",
+    "",
     "", // TODO
     "solo local",
     "", // TODO
     "", // TODO
     "", // TODO
     "", // TODO
-    "solsament local",
+    "",
 #if APIVERSNUM >= 10302
-    "‚ﬁ€Ï⁄ﬁ €ﬁ⁄–€Ï›.",
+    "",
 #endif
   },
   { "local&remote",
@@ -1631,16 +1631,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "local et distant",
     "", // TODO
-    "paikallinen & et‰",
+    "",
     "", // TODO
     "local y remoto",
     "", // TODO
     "", // TODO
     "", // TODO
     "", // TODO
-    "local i remot",
+    "",
 #if APIVERSNUM >= 10302
-    "€ﬁ⁄–€Ï›. ÿ „‘–€Ò›.",
+    "",
 #endif
   },
   { "Setup.MP3$Use HTTP proxy",
@@ -1651,16 +1651,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Utiliser un Proxy HTTP",
     "", // TODO
-    "K‰yt‰ HTTP-v‰lityspalvelinta",
+    "",
     "", // TODO
     "Utilizar proxy HTTP",
     "", // TODO
-    "Anv‰nd en HTTP-proxy",
+    "",
     "", // TODO
     "", // TODO
-    "Util∑litzar proxy HTTP",
+    "",
 #if APIVERSNUM >= 10302
-    "∏·ﬂﬁ€Ï◊ﬁ“–‚Ï HTTP ﬂ‡ﬁ⁄·ÿ",
+    "",
 #endif
   },
   { "Setup.MP3$HTTP proxy host",
@@ -1671,16 +1671,16 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Nom du Proxy HTTP",
     "", // TODO
-    "HTTP-v‰lityspalvelimen osoite",
+    "",
     "", // TODO
     "Nombre del puerto HTTP",
     "", // TODO
-    "HTTP-proxyns namn",
+    "",
     "", // TODO
     "", // TODO
-    "Nom del proxy HTTP",
+    "",
 #if APIVERSNUM >= 10302
-    "¡’‡“’‡ HTTP ﬂ‡ﬁ⁄·ÿ",
+    "",
 #endif
   },
   { "Setup.MP3$HTTP proxy port",
@@ -1691,36 +1691,36 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Port du proxy HTTP",
     "", // TODO
-    "HTTP-v‰lityspalvelimen portti",
+    "",
     "", // TODO
     "Puerto del Proxy HTTP",
     "", // TODO
-    "HTTP-proxyns port",
+    "",
     "", // TODO
     "", // TODO
-    "Port del proxy HTTP",
+    "",
 #if APIVERSNUM >= 10302
-    "øﬁ‡‚ HTTP ﬂ‡ﬁ⁄·ÿ",
+    "",
 #endif
   },
   { "Black",
     "Schwarz",
-    "Crnina",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Noir",
     "", // TODO
-    "musta",
+    "",
     "", // TODO
     "Negra",
-    "Mavro",
-    "Svart",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Negre",
+    "",
 #if APIVERSNUM >= 10302
-    "ÁÒ‡›ÎŸ Ì⁄‡–›",
+    "",
 #endif
   },
   { "Images",
@@ -1731,7 +1731,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Images",
     "", // TODO
-    "kansikuva",
+    "",
     "", // TODO
     "Im·genes",
     "",
@@ -1745,62 +1745,62 @@ const tI18nPhrase Phrases[] = {
   },
   { "Setup.MP3$Mainmenu mode",
     "Hauptmenu Modus",
-    "Nacin glavnega menija",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Menu principal",
     "", // TODO
-    "P‰‰valikon tila",
+    "",
     "", // TODO
     "Men˙ Principal",
     "", // TODO
-    "Huvudmenyl‰ge",
+    "",
     "", // TODO
     "", // TODO
-    "Men˙ Principal",
+    "",
 #if APIVERSNUM >= 10302
-    "¿’÷ÿ‹ ”€–“›ﬁ”ﬁ ‹’›Ó",
+    "",
 #endif
   },
   { "Playlists",
     "Abspiellisten",
-    "Lista",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Playlists",
     "", // TODO
-    "soittolistat",
+    "",
     "", // TODO
     "Lista de reproducciÛn",
-    "Listes peksimatos",
-    "Spellistor",
+    "",
+    "",
     "", // TODO
     "", // TODO
-    "Llista a reproduÔr",
+    "",
 #if APIVERSNUM >= 10302
-    "·ﬂÿ·⁄ÿ ﬂ’·’›",
+    "",
 #endif
   },
   { "Browser",
     "Verz.anzeige",
-    "Navigator",
+    "",
     "", // TODO
     "", // TODO
     "", // TODO
     "Navigateur",
     "", // TODO
-    "selain",
+    "",
     "", // TODO
     "Navegador",
     "", // TODO
-    "Bl‰ddra",
+    "",
     "", // TODO
     "", // TODO
-    "Navegador",
+    "",
 #if APIVERSNUM >= 10302
-    "⁄–‚–€ﬁ”ÿ",
+    "",
 #endif
   },
   { "Setup.MP3$Abort player at end of list",
@@ -1811,7 +1811,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Stopper le lecteur ‡ la fin de la liste",
     "", // TODO
-    "Keskeyt‰ soittolistan loputtua",
+    "",
     "", // TODO
     "Parar reproductor al final de la lista",
     "", // TODO
@@ -1820,7 +1820,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
 #if APIVERSNUM >= 10302
-    "≤ÎÂﬁ‘ “ ⁄ﬁ›Ê’ ·ﬂÿ·⁄– ﬂ’·’›",
+    "",
 #endif
   },
   { "Setup.MP3$Replay display",
@@ -1831,7 +1831,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Affichage relecture",
     "", // TODO
-    "Toistotilan n‰yttˆmoodi",
+    "",
     "", // TODO
     "Pantalla de reproducciÛn",
     "", // TODO
@@ -1840,7 +1840,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
 #if APIVERSNUM >= 10302
-    "∏›‚’‡‰’Ÿ· “ ‡’÷ÿ‹’ “ﬁ·ﬂ‡ﬁÿ◊“’‘’›ÿÔ",
+    "",
 #endif
   },
   { "classic",
@@ -1851,7 +1851,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Classique",
     "", // TODO
-    "klassinen",
+    "",
     "", // TODO
     "cl·sica",
     "", // TODO
@@ -1860,7 +1860,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
 #if APIVERSNUM >= 10302
-    "⁄€–··ÿÁ’·⁄ÿŸ",
+    "",
 #endif
   },
   { "via skin",
@@ -1871,7 +1871,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "Par skin",
     "", // TODO
-    "ulkoasun mukaan",
+    "",
     "", // TODO
     "vÌa skin",
     "", // TODO
@@ -1880,7 +1880,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "", // TODO
 #if APIVERSNUM >= 10302
-    "·ﬁ”€–·›ﬁ ‚’‹’",
+    "",
 #endif
   },
   { "Setup.MP3$Keep selection menu",
@@ -1891,7 +1891,7 @@ const tI18nPhrase Phrases[] = {
     "", // TODO
     "",
     "", // TODO
-    "Pid‰ valintaikkunaa auki",
+    "",
     "", // TODO
     "Mantener men˙ de selecciÛn",
     "", // TODO

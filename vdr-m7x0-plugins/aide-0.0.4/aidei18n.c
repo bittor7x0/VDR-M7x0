@@ -12,7 +12,7 @@ const tI18nPhrase aidePhrases[] = {
   { "VDR Help", // English
     "VDR Hilfe", // Deutsch
     "", // Slovenski
-    "Aiuto VDR", // Italiano
+    "", // Italiano
     "", // Nederlands
     "", // Português
     "VDR Aide", // Français
@@ -25,13 +25,13 @@ const tI18nPhrase aidePhrases[] = {
     "", // Romaneste
     "", // Magyar
     "", // Català
-    "ÁßàĞÒÚĞ VDR", // ÀãááÚØÙ (Russian)
+    "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski (Croatian)
   },
   { "Help", // English
     "Hilfe", // Deutsch
     "", // Slovenski
-    "Aiuto", // Italiano
+    "", // Italiano
     "", // Nederlands
     "", // Português
     "Aide", // Français
@@ -44,13 +44,13 @@ const tI18nPhrase aidePhrases[] = {
     "", // Romaneste
     "", // Magyar
     "", // Català
-    "ÁßàĞÒÚĞ", // ÀãááÚØÙ (Russian)
+    "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski (Croatian)
   },
   { "Available help topics:", // English
     "Die zugänglichen Themen:", // Deutsch
     "", // Slovenski
-    "Argomenti aiuto disponibili", // Italiano
+    "", // Italiano
     "", // Nederlands
     "", // Português
     "Liste des aides disponibles:", // Français
@@ -63,13 +63,13 @@ const tI18nPhrase aidePhrases[] = {
     "", // Romaneste
     "", // Magyar
     "", // Català
-    "´ŞáâãßİëÕ âÕÜë:", // ÀãááÚØÙ (Russian)
+    "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski (Croatian)
   },
   { "StillImage", // English
     "Bild", // Deutsch
     "", // Slovenski
-    "Immagine", // Italiano
+    "", // Italiano
     "", // Nederlands
     "", // Português
     "", // Français
@@ -82,13 +82,13 @@ const tI18nPhrase aidePhrases[] = {
     "", // Romaneste
     "", // Magyar
     "", // Català
-    "ºĞàâØİÚĞ", // ÀãááÚØÙ (Russian)
+    "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski (Croatian)
   },
   { " %sPlugin : %s", // English
     "", // Deutsch
     "", // Slovenski
-    " %sPlugin : %s", // Italiano
+    "", // Italiano
     "", // Nederlands
     "", // Português
     "", // Français
@@ -101,13 +101,13 @@ const tI18nPhrase aidePhrases[] = {
     "", // Romaneste
     "", // Magyar
     "", // Català
-    " %s¼ŞÔãÛì: %s", // ÀãááÚØÙ (Russian)
+    "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski (Croatian)
   },
   { " %sVersion : %s", // English
     "", // Deutsch
     "", // Slovenski
-    " %sVersione : %s", // Italiano
+    "", // Italiano
     "", // Nederlands
     "", // Português
     "", // Français
@@ -120,13 +120,13 @@ const tI18nPhrase aidePhrases[] = {
     "", // Romaneste
     "", // Magyar
     "", // Català
-    " %s²ÕàáØï: %s", // ÀãááÚØÙ (Russian)
+    "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski (Croatian)
   },
   { " %sBy : %s", // English
     "", // Deutsch
     "", // Slovenski
-    " %sDa : %s", // Italiano
+    "", // Italiano
     "", // Nederlands
     "", // Português
     " %sPar : %s", // Français
@@ -139,7 +139,7 @@ const tI18nPhrase aidePhrases[] = {
     "", // Romaneste
     "", // Magyar
     "", // Català
-    " %s°ÒâŞà: %s", // ÀãááÚØÙ (Russian)
+    "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski (Croatian)
   },
   { "eng", // English

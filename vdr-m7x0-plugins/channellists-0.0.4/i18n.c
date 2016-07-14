@@ -98,25 +98,25 @@ const tI18nPhrase Phrases[] = {
   },
   { "Menu", // English
     "Menü", // Deutsch
-    "Meni", // Slovenski
-    "Menu", // Italiano
-    "Menu", // Nederlands
-    "Menu", // Português
+    "", // Slovenski
+    "", // Italiano
+    "", // Nederlands
+    "", // Português
     "Menu", // Français
-    "Meny", // Norsk
-    "Valikko", // suomi
-    "Menu", // Polski
+    "", // Norsk
+    "", // suomi
+    "", // Polski
     "Menú", // Español
-    "Måíïı", // ÅëëçíéêÜ (Greek)
-    "Meny", // Svenska
-    "Meniu", // Romaneste
-    "Menü", // Magyar
-    "Menú", // Català
-    "¼Õİî", // ÀãááÚØÙ (Russian)
-    "Izbor", // Hrvatski (Croatian)
-    "Menüü", // Eesti
-    "Menu", // Dansk
-    "Menu", // Èesky (Czech)
+    "", // ÅëëçíéêÜ (Greek)
+    "", // Svenska
+    "", // Romaneste
+    "", // Magyar
+    "", // Català
+    "", // ÀãááÚØÙ (Russian)
+    "", // Hrvatski (Croatian)
+    "", // Eesti
+    "", // Dansk
+    "", // Èesky (Czech)
   },
   { "close", // English
     "schliessen", // Deutsch
@@ -318,25 +318,25 @@ const tI18nPhrase Phrases[] = {
   },
   { "Name", // English
     "Name", // Deutsch
-    "Ime", // Slovenski
-    "Nome", // Italiano
-    "Naam", // Nederlands
-    "Nome",// Português
+    "", // Slovenski
+    "", // Italiano
+    "", // Nederlands
+    "",// Português
     "Nom", // Français
-    "Navn", // Norsk
-    "Nimi", // suomi
-    "Nazwa", // Polski
+    "", // Norsk
+    "", // suomi
+    "", // Polski
     "Nombre", // Español
-    "¼íïìá", // ÅëëçíéêÜ (Greek)
-    "Namn", // Svenska
-    "Nume", // Romaneste
-    "Név", // Magyar
-    "Nom", // Català
-    "½Ğ×ÒĞİØÕ", // ÀãááÚØÙ (Russian)
-    "Naziv", // Hrvatski (Croatian)
-    "Nimi", // Eesti
-    "Navn", // Dansk
-    "Název", // Èesky (Czech)
+    "", // ÅëëçíéêÜ (Greek)
+    "", // Svenska
+    "", // Romaneste
+    "", // Magyar
+    "", // Català
+    "", // ÀãááÚØÙ (Russian)
+    "", // Hrvatski (Croatian)
+    "", // Eesti
+    "", // Dansk
+    "", // Èesky (Czech)
   },
   { "Delete channellist?", // English
     "Kanalliste löschen?", // Deutsch
@@ -494,25 +494,25 @@ const tI18nPhrase Phrases[] = {
   },
   { "Button$Delete", // English
     "Löschen", // Deutsch
-    "Izbri¹i", // Slovenski
-    "Cancella", // Italiano
-    "Verwijder", // Nederlands
-    "Apagar", // Português
+    "", // Slovenski
+    "", // Italiano
+    "", // Nederlands
+    "", // Português
     "Supprimer", // Français
-    "Slett", // Norsk
-    "Poista", // suomi
-    "Usuñ", // Polski
+    "", // Norsk
+    "", // suomi
+    "", // Polski
     "Borrar", // Español
-    "ÄéáãñáöŞ", // ÅëëçíéêÜ (Greek)
-    "Ta bort", // Svenska
-    "ªterge", // Romaneste
-    "Törölni", // Magyar
-    "Esborrar", // Català
-    "ÃÔĞÛØâì", // ÀãááÚØÙ (Russian)
-    "Obri¹i", // Hrvatski (Croatian)
-    "Kustuta", // Eesti
-    "Slet", // Dansk
-    "Smazat", // Èesky (Czech)
+    "", // ÅëëçíéêÜ (Greek)
+    "", // Svenska
+    "", // Romaneste
+    "", // Magyar
+    "", // Català
+    "", // ÀãááÚØÙ (Russian)
+    "", // Hrvatski (Croatian)
+    "", // Eesti
+    "", // Dansk
+    "", // Èesky (Czech)
   },
   { "Button$Save", // English
     "Sichern", // Deutsch

@@ -12,12 +12,12 @@
   { "Search Transponders for DVB Channels", //EN
     "Durchsucht Transponder nach DVB Kanфlen.",// DE
     "", // Slovenski
-    "Ricerca Transponders di Canali DVB",// IT
-    "Doorzoek Transponders naar DVB kanalen", // Nederlands
+    "",// IT
+    "", // Nederlands
     "", // Portuguъs
     "", // Franчais
     "", // Norsk
-    "Kanavahaku DVB-transpondereille",// FI
+    "",// FI
     "", // Polski
     "Buscar transponders de canales DVB", // Espaёol
     "", // Хыычэщъм (Greek)
@@ -25,7 +25,7 @@
     "", // Romaneste
     "", // Magyar
     "", // Catalр
-    "Поиск каналов", // Русский (Russian)
+    "", // Русский (Russian)
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -34,12 +34,12 @@
   { "Search Mode",
     "Suchmodus",
     "",
-    "Modalita' di Ricerca",
-    "Zoek mode",
     "",
     "",
     "",
-    "Hakutapa",
+    "",
+    "",
+    "",
     "",
     "Modo bњsqueda",
     "",
@@ -47,7 +47,7 @@
     "",
     "",
     "",
-    "Режим поиска",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -56,12 +56,12 @@
   { "scanning on transponder",
     "Suche auf Transponder",
     "",
-    "Ricerca trasponder",
-    "Scan op transponder",
     "",
     "",
     "",
-    "haetaan transponderilta",
+    "",
+    "",
+    "",
     "",
     "buscando transponder",
     "",
@@ -69,7 +69,7 @@
     "",
     "",
     "",
-    "сканирование транспондера",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -92,7 +92,7 @@
     "",
     "",
     "",
-    "Сканирование настроенных спутников",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -100,21 +100,21 @@
   },
   { "DiSEqC",
     "DiSEqC",
-    "DiSEqC",
-    "DiSEqC",
-    "DiSEqC",
     "",
     "",
     "",
-    "DiSEqC-kytkin",
-    "",
-    "DiSEqC",
     "",
     "",
     "",
     "",
     "",
     "DiSEqC",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -124,20 +124,20 @@
   { "FEC",
     "FEC",
     "",
-    "FEC",
-    "FEC",
     "",
     "",
-    "",
-    "FEC",
-    "",
-    "FEC",
     "",
     "",
     "",
     "",
     "",
     "FEC",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -146,12 +146,12 @@
   { "None",
     "Keine",
     "",
-    "Nessun",
-    "Geen",
     "",
     "",
     "",
-    "ei",
+    "",
+    "",
+    "",
     "",
     "Ninguno",
     "",
@@ -159,7 +159,7 @@
     "",
     "",
     "",
-    "Нет",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -168,20 +168,20 @@
   { "Auto",
     "Auto",
     "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
     "Auto",
-    "Auto",
-    "",
-    "",
-    "",
-    "auto",
-    "",
-    "Auto",
     "",
     "",
     "",
     "",
     "",
-    "Авто",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -190,12 +190,12 @@
   { "SearchMode$Auto",
     "Automatisch",
     "",
-    "Ricerca automatica",
-    "Automatisch",
     "",
     "",
     "",
-    "automaattinen",
+    "",
+    "",
+    "",
     "",
     "Automсtica",
     "",
@@ -203,7 +203,7 @@
     "",
     "",
     "",
-    "Авто",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -212,12 +212,12 @@
   { "Manual",
     "Manuell",
     "",
-    "Manuale",
-    "Handmatig",
     "",
     "",
     "",
-    "manuaalinen",
+    "",
+    "",
+    "",
     "",
     "Manual",
     "",
@@ -225,7 +225,7 @@
     "",
     "",
     "",
-    "Ручной",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -234,12 +234,12 @@
   { "Channelscan",
     "Kanalsuche",
     "",
-    "Scansione canali",
-    "Kanaal scan",
     "",
     "",
     "",
-    "Kanavahaku",
+    "",
+    "",
+    "",
     "",
     "Buscar canales",
     "",
@@ -247,7 +247,7 @@
     "",
     "",
     "",
-    "Поиск каналов",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -269,7 +269,7 @@
     "",
     "",
     "",
-    "Полный поиск",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -278,12 +278,12 @@
   { "Position",
     "Position",
     "",
-    "Posizione",
-    "Positie",
     "",
     "",
     "",
-    "Sijainti",
+    "",
+    "",
+    "",
     "",
     "Posiciѓn",
     "",
@@ -291,7 +291,7 @@
     "",
     "",
     "",
-    "Позиция",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -313,7 +313,7 @@
     "",
     "",
     "",
-    "Ошибка тюнера",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -322,12 +322,12 @@
   { "Scanning on transponder",
     "Durchsuche Transponder",
     "",
-    "Ricerca Transponders",
-    "Scannen op transponder",
     "",
     "",
     "",
-    "Haetaan transponderilta",
+    "",
+    "",
+    "",
     "",
     "Buscando transponder",
     "",
@@ -335,7 +335,7 @@
     "",
     "",
     "",
-    "Сканирование транспондера",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -344,12 +344,12 @@
   { "channels in current list",
     "Kanфle in aktueller Liste",
     "",
-    "Canali presenti nella lista",
-    "Kanalen in huidige lijst",
     "",
     "",
     "",
-    "Tфmфnhetkiset kanavat",
+    "",
+    "",
+    "",
     "",
     "canales en lista actual",
     "",
@@ -357,7 +357,7 @@
     "",
     "",
     "",
-    "каналов в списке",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -366,12 +366,12 @@
   { "TV CHANNELS",
     "TV KANФLE",
     "",
-    "CANALI TV",
-    "TV KANALEN",
     "",
     "",
     "",
-    "TV-kanavat",
+    "",
+    "",
+    "",
     "",
     "CANALES TV",
     "",
@@ -379,7 +379,7 @@
     "",
     "",
     "",
-    "КАНАЛЫ ТВ",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -388,12 +388,12 @@
   { "No new channels found",
     "Keine neuen Kanфle gefunden",
     "",
-    "Non sono stati trovati nuovi canali",
-    "Geen nieuwe kanalen gevonden",
     "",
     "",
     "",
-    "Uusia kanavia ei lіydetty",
+    "",
+    "",
+    "",
     "",
     "Ningњn nuevo canal encontrado",
     "",
@@ -401,7 +401,7 @@
     "",
     "",
     "",
-    "Нет новых каналов",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -410,12 +410,12 @@
   { "Scanning aborted by User",
     "Suche abgebrochen",
     "",
-    "Ricerca interrotta dall'Utente",
-    "Scannen afgebroken door User",
     "",
     "",
     "",
-    "Haku keskeytetty",
+    "",
+    "",
+    "",
     "",
     "Bњsqueda cancelada por el usuario",
     "",
@@ -423,7 +423,7 @@
     "",
     "",
     "",
-    "Поиск прерван пользователем",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -433,12 +433,12 @@
   { "TV CHANNELS                     RADIO",
     "TV KANФLE                       RADIO",
     "",
-    "CANALI TV                       RADIO",
-    "TV KANALEN                      RADIO",
     "",
     "",
     "",
-    "TV-kanavat                      Radio",
+    "",
+    "",
+    "",
     "",
     "CANALES TV                      RADIO",
     "",
@@ -446,7 +446,7 @@
     "",
     "",
     "",
-    "КАНАЛЫ ТВ                       РАДИО",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -455,12 +455,12 @@
   { "Symbolrate",
     "Symbolrate",
     "",
-    "Symbolrate",
-    "Symbolrate",
     "",
     "",
     "",
-    "Symbolinopeus",
+    "",
+    "",
+    "",
     "",
     "Sэmbolo tipo",
     "",
@@ -468,7 +468,7 @@
     "",
     "",
     "",
-    "Симв.скорость",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -477,12 +477,12 @@
   { "Frequency",
     "Frequenz",
     "",
-    "Frequenza",
-    "Frequentie",
     "",
     "",
     "",
-    "Taajuus",
+    "",
+    "",
+    "",
     "",
     "Frequencia",
     "",
@@ -490,7 +490,7 @@
     "",
     "",
     "",
-    "Частота",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -504,7 +504,7 @@
     "",
     "",
     "",
-    "Haku kфynnissф %s.\tOdota hetkinen...",
+    "",
     "",
     "Buscando %s\tPor favor, espere",
     "",
@@ -512,7 +512,7 @@
     "",
     "",
     "",
-    "Производится поиск\tЖдите",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -526,7 +526,7 @@
     "",
     "",
     "",
-    "Haku kфynnissф %s.\tOdota hetkinen...",
+    "",
     "",
     "Buscando %s (%iMHz) \tPor favor, espere",
     "",
@@ -534,7 +534,7 @@
     "",
     "",
     "",
-    "Поиск %s (%iMHz) \tЖдите",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -548,7 +548,7 @@
     "",
     "",
     "",
-    "Haku kфynnissф %s.\tOdota hetkinen...",
+    "",
     "",
     "Buscando %s (%.3fMHz) \tPor favor, espere",
     "",
@@ -556,7 +556,7 @@
     "",
     "",
     "",
-    "Поиск %s (%.3fMHz) \tЖдите",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -578,7 +578,7 @@
     "",
     "",
     "",
-    "Выбрать",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -587,12 +587,12 @@
   { "Button$Start",
     "Start",
     "",
-    "Start",
-    "Start",
     "",
     "",
     "",
-    "Aloita",
+    "",
+    "",
+    "",
     "",
     "Iniciar",
     "",
@@ -600,7 +600,7 @@
     "",
     "",
     "",
-    "Пуск",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -622,7 +622,7 @@
     "",
     "",
     "",
-    "Сохранить",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -644,7 +644,7 @@
     "",
     "",
     "",
-    "Удалить",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -666,7 +666,7 @@
     "",
     "",
     "",
-    "Новый",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -675,12 +675,12 @@
   { "Radio only",
     "nur Radio",
     "",
-    "Solo radio",
-    "Alleen Radio",
     "",
     "",
     "",
-    "vain radio",
+    "",
+    "",
+    "",
     "",
     "Sѓlo radio",
     "",
@@ -688,7 +688,7 @@
     "",
     "",
     "",
-    "Только радио",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -697,12 +697,12 @@
   { "TV only",
     "nur TV",
     "",
-    "Solo TV",
-    "Alleen TV",
     "",
     "",
     "",
-    "vain TV",
+    "",
+    "",
+    "",
     "",
     "Sѓlo TV",
     "",
@@ -710,7 +710,7 @@
     "",
     "",
     "",
-    "Только ТВ",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -719,42 +719,20 @@
   { "Radio + TV",
     "Radio + TV",
     "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
     "Radio + TV",
-    "Radio + TV",
-    "",
-    "",
-    "",
-    "radio + TV",
-    "",
-    "Radio + TV",
     "",
     "",
     "",
     "",
     "",
-    "Радио + ТВ",
-    "", // Hrvatski (Croatian)
-    "", // Eesti
-    "", // Dansk
-    "", // Шesky (Czech)
-  },
-  { "Radio + TV + NVOD",
-    "Radio + TV + NVOD",
     "",
-    "Radio + TV + NVOD",
-    "Radio + TV + NVOD",
-    "",
-    "",
-    "",
-    "radio + TV + NVOD",
-    "",
-    "Radio + TV + NVOD",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "Радио + ТВ + NVOD",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -763,12 +741,12 @@
   { "Service Type",
     "Service Arten",
     "",
-    "Tipo servizio",
-    "Service type",
     "",
     "",
     "",
-    "Haettavat palvelut",
+    "",
+    "",
+    "",
     "",
     "Tipo de servicio",
     "",
@@ -776,7 +754,7 @@
     "",
     "",
     "",
-    "Виды сервисов",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -785,12 +763,12 @@
   { "enabled",
     "aktiviert",
     "",
-    "abilitato",
-    "ingeschakeld",
     "",
     "",
     "",
-    "pффllф",
+    "",
+    "",
+    "",
     "",
     "activado",
     "",
@@ -798,7 +776,7 @@
     "",
     "",
     "",
-    "включен",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -807,12 +785,12 @@
   { "disabled",
     "deaktiviert",
     "",
-    "disabilitato",
-    "uitgeschakeld",
     "",
     "",
     "",
-    "pois",
+    "",
+    "",
+    "",
     "",
     "desactivado",
     "",
@@ -820,7 +798,7 @@
     "",
     "",
     "",
-    "выключен",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -829,12 +807,12 @@
   { "Added new channels",
     "Neue Kanфle hinzugefќgt",
     "",
-    "Aggiunti nuovi canali",
-    "Nieuwe kanalen toegevoegd",
     "",
     "",
     "",
-    "Uudet kanavat lisфtty",
+    "",
+    "",
+    "",
     "",
     "Nuevos canales aёadidos",
     "",
@@ -842,7 +820,7 @@
     "",
     "",
     "",
-    "Добавлено новых каналов",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -864,7 +842,7 @@
     "",
     "",
     "",
-    "Частота (кГц)",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -886,7 +864,7 @@
     "",
     "",
     "",
-    "Частота (МГц)",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -895,8 +873,8 @@
   { "Expert",                                                                                               
     "Experten",                                                                                             
     "",                                                                                                     
-    "Esperto",                                                                                              
-    "Expert",                                                                                               
+    "",                                                                                              
+    "",                                                                                               
     "",                                                                                                     
     "",                                                                                                     
     "",                                                                                                     
@@ -908,7 +886,7 @@
     "",                                                                                                     
     "",                                                                                                     
     "",                                                                                                     
-    "Эксперт",                                                                                                     
+    "",                                                                                                     
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -930,7 +908,7 @@
     "",                                                                                                     
     "",                                                                                                     
     "",                                                                                                     
-    "Список каналов",                                                                                              
+    "",                                                                                              
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -953,7 +931,7 @@
     "",
     "",
     "",
-    "DVB-S - Спутник",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -975,7 +953,7 @@
     "",
     "",
     "",
-    "DVB-C - Кабель",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -998,7 +976,7 @@
     "",
     "",
     "",
-    "DVB-T - Эфир",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -1029,8 +1007,8 @@
   { "Press OK to proceede",
     "Drќcken Sie OK um fortzufahren",
     "",
-    "Premere OK per continuare",
-    "Druk OK om te vervolgen",
+    "",
+    "",
     "",
     "",
     "",
@@ -1042,7 +1020,7 @@
     "",
     "",
     "",
-    "Нажмите ОК чтобы продолжить",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -1064,7 +1042,7 @@
     "",
     "",
     "",
-    "Нажмите ОК чтобы закончить или для нового поиска",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -1073,12 +1051,12 @@
   { "Standard",
     "Standard",
     "",
-    "Standard", // Italiano
-    "Standaard",
+    "", // Italiano
+    "",
     "",
     "Standart",
     "",
-    "Vakio",
+    "",
     "",
     "Estсndar",
     "",
@@ -1086,7 +1064,7 @@
     "",
     "",
     "",
-    "Стандартный",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -1100,7 +1078,7 @@
     "",
     "Prщcision",
     "",
-    "Laaja",
+    "",
     "",
     "Ampliado",
     "",
@@ -1108,7 +1086,7 @@
     "",
     "",
     "",
-    "Расширенный",
+    "",
     "",
     "", // Eesti
     "", // Dansk
@@ -1130,7 +1108,7 @@
     "",
     "",
     "",
-    "Получаю список транспондеров от %s",
+    "",
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk
@@ -1152,7 +1130,7 @@
     "",
     "",
     "",
-    "Эфир",
+    "",
     "",
     "", // Eesti
     "", // Dansk
@@ -1175,7 +1153,7 @@
     "",
     "",
     "",
-    "Кабель",
+    "",
     "",
     "", // Eesti
     "", // Dansk
@@ -1198,7 +1176,7 @@
     "",
     "",
     "",
-    "Активные сервисы на транспондере: %i / %i",
+    "",
     "",
     "", // Eesti
     "", // Dansk
@@ -1220,7 +1198,7 @@
     "",
     "",
     "",
-    "Поиск %s (%iMHz)\t%s",
+    "",
     "",
     "", // Eesti
     "", // Dansk
@@ -1242,7 +1220,7 @@
     "",
     "",
     "",
-    "Поиск %s (%.3fMHz)\t%s",
+    "",
     "",
     "", // Eesti
     "", // Dansk
@@ -1264,7 +1242,7 @@
     "",
     "",
     "",
-    "Изменения сохранены",
+    "",
     "",
     "", // Eesti
     "", // Dansk
@@ -1286,7 +1264,7 @@
     "",
     "",
     "",
-    "Изменения не сохранены",
+    "",
     "",
     "", // Eesti
     "", // Dansk
@@ -1308,7 +1286,7 @@
     "",
     "",
     "",
-    "Списки каналов",
+    "",
     "",
     "", // Eesti
     "", // Dansk
@@ -1330,7 +1308,7 @@
     "",
     "",
     "",
-    "Проверьте пожалуйста таймеры!",
+    "",
     "",
     "", // Eesti
     "", // Dansk

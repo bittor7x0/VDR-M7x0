@@ -240,7 +240,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO Norsk
     "",// TODO suomi
     "",// TODO Polski
-    "si",
+    "sí",
     "",// TODO Ellinika
     "",// TODO Svenska
     "",// TODO Romaneste

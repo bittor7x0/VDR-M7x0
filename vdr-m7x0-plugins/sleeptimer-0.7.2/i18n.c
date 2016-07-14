@@ -17,7 +17,7 @@ const tI18nPhrase Phrases[] = {
     "",// Português
     "",// Francais
     "",// Norsk
-    "Ei aktiivinen",// Suomi
+    "",// Suomi
     "",// Polski
     "No activo",// Español
     "",// Greek
@@ -33,7 +33,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Peruuta %d minuutin ajastin?",// Suomi
+    "",// Suomi
     "",// TODO
     "Desactivar apagado automático en %d minutos",// Español
     "",// TODO
@@ -49,7 +49,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Keskeytä ajastin",// Suomi
+    "",// Suomi
     "",// TODO
     "¿Cancelar apagado automático?",// Español
     "",// TODO
@@ -65,7 +65,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Aktivoi ajastin %i:%02i?",// Suomi
+    "",// Suomi
     "",// TODO
     "¿Activar apagado automático a las %i:%02i?",// Español
     "",// TODO
@@ -81,7 +81,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Aktivoi %d minuutin ajastin?",// Suomi
+    "",// Suomi
     "",// TODO
     "¿Activar apagado automático en %d minutos?",// Español
     "",// TODO
@@ -97,7 +97,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Ajastin",// Suomi
+    "",// Suomi
     "",// TODO
     "Apagado automático",// Español
     "",// TODO
@@ -113,7 +113,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Toiminto",// Suomi
+    "",// Suomi
     "",// TODO
     "Acción",// Español
     "",// TODO
@@ -129,7 +129,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Ajastin aktivoituu %i minuutin kuluttua",// Suomi
+    "",// Suomi
     "",// TODO
     "Apagado automático en %i minuto(s)",// Español
     "",// TODO
@@ -145,7 +145,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    "Sammutusaika", // Suomi
+    "", // Suomi
     "",
     "Apagar-Hora",// Español
     "",
@@ -161,7 +161,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    "Sammutus minuutteina",
+    "",
     "",
     "Apagar-Minutos",// Español
     "",

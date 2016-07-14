@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "RSS item"
-msgstr "RSS-Articulo"
+msgstr "Artículo RSS"
 
 msgid "<no date available>"
 msgstr "<Fecha no disponible>"
@@ -27,23 +27,20 @@ msgstr "<Título no disponible>"
 msgid "<no description available>"
 msgstr "<Descripción no disponible>"
 
-#, fuzzy
 msgid "Select RSS item"
-msgstr "RSS-Articulo"
+msgstr "Seleccione artículo RSS"
 
 msgid "Select RSS stream"
-msgstr "Selecciona fuente RSS"
+msgstr "Seleccione fuente RSS"
 
-#, fuzzy
 msgid "Can't parse RSS stream!"
-msgstr "Error leyendo datos RSS!"
+msgstr "¡Error leyendo datos RSS!"
 
-#, fuzzy
 msgid "Can't download RSS stream!"
-msgstr "Error descargando datos RSS!"
+msgstr "¡Error descargando datos RSS!"
 
 msgid "Unknown error!"
-msgstr "Error desconocido!"
+msgstr "¡Error desconocido!"
 
 msgid "RSS Reader for OSD"
 msgstr "Lector RSS para OSD"
@@ -60,6 +57,8 @@ msgstr "Ocultar elementos vacíos"
 msgid "Use HTTP proxy server"
 msgstr "Usar servidor proxy HTTP"
 
-#, fuzzy
 msgid "HTTP proxy server"
-msgstr "Usar servidor proxy HTTP"
+msgstr "Servidor proxy HTTP"
+
+msgid "Loading RSS stream..."
+msgstr "Cargando elemento RSS..."
