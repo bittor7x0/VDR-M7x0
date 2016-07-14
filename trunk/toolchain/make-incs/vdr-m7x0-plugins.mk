@@ -158,12 +158,16 @@ $(STAGEFILES_DIR)/.vdr-plugins_compiled: $(STAGEFILES_DIR)/.vdr-plugins_configur
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
+		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
+		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) clean-plugins
 	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -Wl,--gc-sections -flto" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
+		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
+		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) plugins
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_compiled
@@ -177,6 +181,8 @@ $(STAGEFILES_DIR)/.vdr-plugins_installed: $(STAGEFILES_DIR)/.vdr-plugins_compile
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
+		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
+		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) PLUGINLIBDIR=$(TARGET_ROOT)/usr/lib/vdr install-plugins
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_installed
@@ -221,6 +227,8 @@ cppcheck-vdr-plugins:
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
+		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
+		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) cppcheck-plugins ; \
 	fi );
