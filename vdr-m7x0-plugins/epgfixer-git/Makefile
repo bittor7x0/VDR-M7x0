@@ -24,14 +24,14 @@ CXXFLAGS ?= -g -O3 -Wall -Werror=overloaded-virtual -Wno-parentheses
 
 VDRDIR ?= ../../..
 LIBDIR ?= ../../lib
-TMPDIR ?= /tmp
+TMPDIR = /tmp
 
 ### Regexp
-#ifeq (exists, $(shell pkg-config libpcre && echo exists))
+ifeq (exists, $(shell pkg-config libpcre && echo exists))
 	REGEXLIB = pcre
-#else
-#$(error PCRE library required)
-#endif
+else
+$(error PCRE library required)
+endif
 
 ### Make sure that necessary options are included:
 
@@ -62,7 +62,7 @@ endif
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o blacklist.o charset.o config.o epgclone.o epghandler.o regexp.o setup_menu.o tools.o
+OBJS = $(PLUGIN).o blacklist.o charset.o config.o compatibility.o epgclone.o epghandler.o i18n.o regexp.o setup_menu.o tools.o
 
 ifeq ($(REGEXLIB), pcre)
 LIBS += $(shell pcre-config --libs-posix)
@@ -99,8 +99,8 @@ I18Npot   = $(PODIR)/$(PLUGIN).pot
 %.mo: %.po
 	msgfmt -c -o $@ $<
 
-$(I18Npot): $(wildcard *.[ch])
-	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --package-name='vdr-$(PLUGIN)' --package-version='$(VERSION)' --msgid-bugs-address='<see README>' -o $@ `ls $(wildcard *.[ch])`
+$(I18Npot): $(wildcard *.c)
+	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --package-name='vdr-$(PLUGIN)' --package-version='$(VERSION)' --msgid-bugs-address='<see README>' -o $@ `ls $^`
 
 %.po: $(I18Npot)
 	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
