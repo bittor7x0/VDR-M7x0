@@ -29,7 +29,7 @@ const tI18nPhrase Phrases[] = {
   { "Clock",
     "Uhr",
     "",// TODO
-    "Orologio",
+    "",
     "",// TODO
     "",// TODO
     "Heure",
@@ -42,12 +42,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Часы",// TODO
+    "",// TODO
   },
   { "Offset",
     "Abstand vom linken Rand",
     "",// TODO
-    "Distanza dal bordo sinistro",
+    "",
     "",// TODO
     "",// TODO
     "Distance du bord gauche",
@@ -60,12 +60,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Растояние от левого края",// TODO
+    "",// TODO
   },
   { "Show Seconds",
     "Sekunden anzeigen",
     "",// TODO
-    "Mostra secondi",
+    "",
     "",// TODO
     "",// TODO
     "Afficher secondes",
@@ -78,12 +78,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Показать секунды",// TODO
+    "",// TODO
   },
   { "Type of the clock",
     "Art der Uhr",
     "",// TODO
-    "Tipo di orologio",
+    "",
     "",// TODO
     "",// TODO
     "Format d'affichage",
@@ -96,12 +96,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Вид часов",// TODO
+    "",// TODO
   },
   { "Length of sec arrow [%]",
     "Lфnge des Sekundenzeigers [%]",
     "",// TODO
-    "Lunghezza freccia secondi [%]",
+    "",
     "",// TODO
     "",// TODO
     "Longueur aiguille Sec [%]",
@@ -114,12 +114,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Длина секундной стрелки [%]",// TODO
+    "",// TODO
   },
   { "Length of min arrow [%]",
     "Lфnge des Minutenzeigers [%]",
     "",// TODO
-    "Lunghezza freccia minuti [%]",
+    "",
     "",// TODO
     "",// TODO
     "Longueur aiguille Min [%]",
@@ -132,12 +132,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Длина минутной стрелки [%]",// TODO
+    "",// TODO
   },
   { "Length of hour arrow [%]",
     "Lфnge des Stundenzeigers [%]",
     "",// TODO
-    "Lunghezza freccia ore [%]",
+    "",
     "",// TODO
     "",// TODO
     "Longueur aiguille Hr [%]",
@@ -150,12 +150,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Длина  часовой стрелки [%]",// TODO
+    "",// TODO
   },
   { "Width of sec arrow [%]",
     "Breite des Sekundenzeigers [%]",
     "",// TODO
-    "Larghezza freccia secondi [%]",
+    "",
     "",// TODO
     "",// TODO
     "Largeur des aiguilles Sec [%]",
@@ -168,12 +168,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Ширина секундной стрелки [%]",// TODO
+    "",// TODO
   },
   { "Width of min arrow [%]",
     "Breite des Minutenzeigers [%]",
     "",// TODO
-    "Larghezza freccia minuti [%]",
+    "",
     "",// TODO
     "",// TODO
     "Largeur des aiguilles Min [%]",
@@ -186,12 +186,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Ширина минутной стрелки [%]",// TODO
+    "",// TODO
   },
   { "Width of hour arrow [%]",
     "Breite des Stundenzeigers [%]",
     "",// TODO
-    "Larghezza freccia ore [%]",
+    "",
     "",// TODO
     "",// TODO
     "Largeur des aiguilles Hr [%]",
@@ -204,12 +204,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Ширина часовой стрелки [%]",// TODO
+    "",// TODO
   },
   { "Analog clock size",
     "Grіпe der Analogen Uhr",
     "",// TODO
-    "Dimensione orologio analogico",
+    "",
     "",// TODO
     "",// TODO
     "Taille de l'horloge analogique",
@@ -222,12 +222,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Размер стрелочных часов",// TODO
+    "",// TODO
   },
   { "Transparent",
     "Transparent",
     "",// TODO
-    "Trasparente",
+    "",
     "",// TODO
     "",// TODO
     "Transparent",
@@ -240,12 +240,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Прозрачные",// TODO
+    "",// TODO
   },
   { "White",
     "Weiss",
     "",// TODO
-    "Bianco",
+    "",
     "",// TODO
     "",// TODO
     "Blanc",
@@ -258,12 +258,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Белые",// TODO
+    "",// TODO
   },
   { "Background color",
     "Hintergrundfarbe",
     "",// TODO
-    "Colore sfondo",
+    "",
     "",// TODO
     "",// TODO
     "Couleur de fond",
@@ -276,12 +276,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Цвет заднего фона",// TODO
+    "",// TODO
   },
   { "Black",
     "Schwarz",
     "",// TODO
-    "Nero",
+    "",
     "",// TODO
     "",// TODO
     "Noir",
@@ -294,12 +294,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Чёрный",// TODO
+    "",// TODO
   },
   { "Hour arrow color",
     "Farbe des Stundenzeigers",
     "",// TODO
-    "Colore freccia ore",
+    "",
     "",// TODO
     "",// TODO
     "Couleur aiguille Hr",
@@ -312,12 +312,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Цвет часовой стрелки",// TODO
+    "",// TODO
   },
   { "Red",
     "Rot",
     "",// TODO
-    "Rosso",
+    "",
     "",// TODO
     "",// TODO
     "Rouge",
@@ -330,12 +330,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Красный",// TODO
+    "",// TODO
   },
   { "Green",
     "Grќn",
     "",// TODO
-    "Verde",
+    "",
     "",// TODO
     "",// TODO
     "Vert",// TODO
@@ -348,12 +348,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Зелёный",// TODO  
+    "",// TODO  
   },
   { "Yellow",
     "Gelb",
     "",// TODO
-    "Giallo",
+    "",
     "",// TODO
     "",// TODO
     "Jaune",
@@ -366,12 +366,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Жёлтый",// TODO
+    "",// TODO
   },
   { "Blue",
     "Blau",
     "",// TODO
-    "Blu",
+    "",
     "",// TODO
     "",// TODO
     "Bleu",
@@ -384,12 +384,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Синий",// TODO
+    "",// TODO
   },
   { "Seconds arrow color",
     "Farbe des Sekundenzeigers",
     "",// TODO
-    "Colore freccia secondi",
+    "",
     "",// TODO
     "",// TODO
     "Couleur aiguille Sec",
@@ -402,12 +402,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Цвет секундной стрелки",// TODO
+    "",// TODO
   },
   { "Minutes arrow color",
     "Farbe des Minutenzeigers",
     "",// TODO
-    "Colore freccia minuti",
+    "",
     "",// TODO
     "",// TODO
     "Couleur aiguille Min",
@@ -420,12 +420,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Цвет минутной стрелки",// TODO
+    "",// TODO
   },
   { "Foreground color",
     "Vordergrund Farbe",
     "",// TODO
-    "Colore primo piano",
+    "",
     "",// TODO
     "",// TODO
     "Couleur premier plan",
@@ -438,12 +438,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Цвет переднего фона",// TODO
+    "",// TODO
   },
   { "Arrow color",
     "Zeigerfarbe",
     "",// TODO
-    "Colore freccia",
+    "",
     "",// TODO
     "",// TODO
     "Couleur aiguilles",
@@ -456,12 +456,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Цвет стрелок",// TODO
+    "",// TODO
   },
   { "Digital",
     "Digital",
     "",// TODO
-    "Digitale",
+    "",
     "",// TODO
     "",// TODO
     "Digital",
@@ -474,12 +474,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Цыфровые",// TODO
+    "",// TODO
   },
   { "Analog",
     "Analog",
     "",// TODO
-    "Analogico",
+    "",
     "",// TODO
     "",// TODO
     "Analogique",
@@ -492,12 +492,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Стрелочные",// TODO
+    "",// TODO
   },
   { "Internet time",
     "Internet Zeit",
     "",// TODO
-    "Ora Internet",
+    "",
     "",// TODO
     "",// TODO
     "Temps internet",
@@ -510,12 +510,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Интернет время",// TODO
+    "",// TODO
   },
   { "Tea clock",
     "Teekocher",
     "",// TODO
-    "Pausa tш",
+    "",
     "",// TODO
     "",// TODO
     "Pause cafe",
@@ -528,12 +528,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Время для чая",// TODO
+    "",// TODO
   },
   { "It's tea time",
     "Es ist Tee Zeit!",
     "",// TODO
-    "E' l'ora del tш!",
+    "",
     "",// TODO
     "",// TODO
     "c'est l'heure de la pause cafe",
@@ -546,12 +546,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Время чая!",// TODO
+    "",// TODO
   },
   { "Time till tea",
     "Zeit bis der Tee fertig ist",
     "",// TODO
-    "Tempo restante per il tш",
+    "",
     "",// TODO
     "",// TODO
     "Temps restant jusqu'au cafe",
@@ -564,30 +564,30 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Время заварки чая",// TODO
+    "",// TODO
   },
   { "Show Countdown",
     "Countdown anzeigen",
     "",// TODO
-    "Mostra conto alla rovescia",
+    "",
     "",// TODO
     "",// TODO
     "Afficher le compte a rebours",
     "",// TODO
     "",// TODO
     "",// TODO
-    "Mostrar cuenta atras",// Espaёol
+    "Mostrar cuenta atrсs",// Espaёol
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
     "",// TODO
-    "Обратный отчёт времени",// TODO
+    "",// TODO
   },
   { "FullScreen",
     "FullScreen",
     "",// TODO
-    "Schermo intero",
+    "",
     "",// TODO
     "",// TODO
     "FullScreen",
@@ -600,12 +600,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "Весь размер",// TODO
+    "",// TODO
   },
   { "x Position",
     "x Position",
     "",// TODO
-    "Posizione x",
+    "",
     "",// TODO
     "",// TODO
     "x Position",
@@ -618,12 +618,12 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "x Позиция",// TODO
+    "",// TODO
   },
   { "y Position",
     "y Position",
     "",// TODO
-    "Posizione y",
+    "",
     "",// TODO
     "",// TODO
     "y Position",
@@ -636,7 +636,7 @@ const tI18nPhrase Phrases[] = {
     "",// TODO
     "",// TODO
     "",// TODO
-    "y Позиция",// TODO
+    "",// TODO
   },
   { NULL }
   };

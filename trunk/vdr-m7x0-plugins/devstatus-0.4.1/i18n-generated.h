@@ -36,12 +36,12 @@ const tI18nPhrase Phrases[] = {
   { "Status of dvb devices",
     "DVB-Ger�testatus",
     "",
-    "Stato schede DVB",
+    "",
     "",
     "",
     "Status d'enregistrement",
     "",
-    "Tallennusten tila",
+    "",
     "",
     "Estado de sintonizadores DVB",
     "",
@@ -50,7 +50,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Статус DVB устройств",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -71,12 +71,12 @@ const tI18nPhrase Phrases[] = {
   { "Device status",
     "Ger�testatus",
     "",
-    "Stato scheda",
+    "",
     "",
     "",
     "Carte",
     "",
-    "Kortti",
+    "",
     "",
     "Estado del sintonizador",
     "",
@@ -85,7 +85,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Статус устройства",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -106,7 +106,7 @@ const tI18nPhrase Phrases[] = {
   { "satellite card",
     "Satellitenkarte",
     "",
-    "Scheda satellite",
+    "",
     "",
     "",
     "",
@@ -120,7 +120,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "DVB-S карта",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -141,7 +141,7 @@ const tI18nPhrase Phrases[] = {
   { "cable card",
     "Kabelkarte",
     "",
-    "Scheda via cavo",
+    "",
     "",
     "",
     "",
@@ -155,7 +155,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "DVB-C карта",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -176,7 +176,7 @@ const tI18nPhrase Phrases[] = {
   { "terrestrial card",
     "Terristische Karte",
     "",
-    "Scheda terrestre",
+    "",
     "",
     "",
     "",
@@ -190,7 +190,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "DVB-T карта",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -211,7 +211,7 @@ const tI18nPhrase Phrases[] = {
   { "unknown cardtype",
     "unbekannter Kartentyp",
     "",
-    "Tipo scheda sconosciuta",
+    "",
     "",
     "",
     "",
@@ -225,7 +225,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "неизвестный тип",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -246,7 +246,7 @@ const tI18nPhrase Phrases[] = {
   { "frequency: %d MHz, signal: %d%%, s/n: %d%%",
     "Frequenz: %d MHz, Signalst�rke: %d%%, Rauschabstand %d%%",
     "",
-    "Frequenza: %d MHz, Segnale: %d%%, s/n: %d%%",
+    "",
     "",
     "",
     "",
@@ -260,7 +260,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "частота:·%d·МГц,·сигнал:·%d%%,·с/ш:·%d%%",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -281,7 +281,7 @@ const tI18nPhrase Phrases[] = {
   { "no signal information available (rc=%d)",
     "Keine Signalst�rkeninfo vorhanden (rc=%d)",
     "",
-    "Nessuna info di segnale disponibile (rc=%d)",
+    "",
     "",
     "",
     "",
@@ -295,7 +295,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "нет информации о сигнале (rc=%d)",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -316,12 +316,12 @@ const tI18nPhrase Phrases[] = {
   { "device with decoder",
     "Ger�t hat Dekoder",
     "",
-    "sch. con decoder",
+    "",
     "",
     "",
     "La carte a un d�codeur",
     "",
-    "dekooderi",
+    "",
     "",
     "sintonizador con decodificador",
     "",
@@ -330,7 +330,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "с декодером",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -351,12 +351,12 @@ const tI18nPhrase Phrases[] = {
   { "primary device",
     "Prim�rger�t",
     "",
-    "sch. primaria",
+    "",
     "",
     "",
     "Carte primaire",
     "",
-    "ensisijainen",
+    "",
     "",
     "sintonizador principal",
     "",
@@ -365,7 +365,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "первичная",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -386,12 +386,12 @@ const tI18nPhrase Phrases[] = {
   { "Device",
     "Ger�t",
     "",
-    "Scheda",
+    "",
     "",
     "",
     "Carte",
     "",
-    "Kortti",
+    "",
     "",
     "Sintonizador",
     "",
@@ -400,7 +400,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Карта",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -421,7 +421,7 @@ const tI18nPhrase Phrases[] = {
   { "-- Live",
     "-- Live",
     "",
-    "-- Dal vivo",
+    "",
     "",
     "",
     "",
@@ -435,7 +435,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "-- В режиме приёма",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -456,12 +456,12 @@ const tI18nPhrase Phrases[] = {
   { "currently no recordings",
     "keine laufenden Aufnahmen",
     "",
-    "Nessuna registrazione in corso",
+    "",
     "",
     "",
     "pas d'enregistrement actuellement",
     "",
-    "ei meneill��n olevia tallennuksia",
+    "",
     "",
     "actualmente no hay grabaciones",
     "",
@@ -470,7 +470,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "сейчас не записывает",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -491,7 +491,7 @@ const tI18nPhrase Phrases[] = {
   { "%5d  %s %s  %s  %s%s%s",
     "%5d  %s %s  %s  %s%s%s",
     "",
-    "%5d  %s %s  %s  %s%s%s",
+    "",
     "",
     "",
     "",
@@ -505,7 +505,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "%5d··%s·%s··%s··%s%s%s",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -526,7 +526,7 @@ const tI18nPhrase Phrases[] = {
   { "t",
     "",
     "",
-    "t",
+    "",
     "",
     "",
     "",
@@ -540,7 +540,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "t",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -561,7 +561,7 @@ const tI18nPhrase Phrases[] = {
   { "v",
     "",
     "",
-    "v",
+    "",
     "",
     "",
     "",
@@ -575,7 +575,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "v",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -596,7 +596,7 @@ const tI18nPhrase Phrases[] = {
   { "r",
     "",
     "",
-    "r",
+    "",
     "",
     "",
     "",
@@ -610,7 +610,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "r",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -631,7 +631,7 @@ const tI18nPhrase Phrases[] = {
   { "-",
     "",
     "",
-    "-",
+    "",
     "",
     "",
     "",
@@ -645,7 +645,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "-",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -666,7 +666,7 @@ const tI18nPhrase Phrases[] = {
   { "+",
     "",
     "",
-    "+",
+    "",
     "",
     "",
     "",
@@ -680,7 +680,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "+",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -701,7 +701,7 @@ const tI18nPhrase Phrases[] = {
   { "x",
     "",
     "",
-    "x",
+    "",
     "",
     "",
     "",
@@ -715,7 +715,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "x",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -736,7 +736,7 @@ const tI18nPhrase Phrases[] = {
   { " ",
     "",
     "",
-    " ",
+    "",
     "",
     "",
     "",
@@ -750,7 +750,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "F",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -771,12 +771,12 @@ const tI18nPhrase Phrases[] = {
   { "no recordings",
     "Aufn.verbergen",
     "",
-    "Nessuna registrazione",
+    "",
     "",
     "",
     "Status d'enregistrement",
     "",
-    "Tallennusten tila",
+    "",
     "",
     "sin grabaciones",
     "",
@@ -785,7 +785,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "без запис.",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -806,12 +806,12 @@ const tI18nPhrase Phrases[] = {
   { "recordings",
     "Aufn.zeigen",
     "",
-    "Registrazioni",
+    "",
     "",
     "",
     "Status d'enregistrement",
     "",
-    "Tallennusten tila",
+    "",
     "",
     "grabaciones",
     "",
@@ -820,7 +820,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "записи",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -841,7 +841,7 @@ const tI18nPhrase Phrases[] = {
   { "no strength",
     "Signal verbergen",
     "",
-    "Nessuna intensità",
+    "",
     "",
     "",
     "",
@@ -855,7 +855,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "список",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -876,7 +876,7 @@ const tI18nPhrase Phrases[] = {
   { "strength",
     "Signal zeigen",
     "",
-    "Intensità",
+    "",
     "",
     "",
     "",
@@ -890,7 +890,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "имеется",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -911,7 +911,7 @@ const tI18nPhrase Phrases[] = {
   { "channels",
     "Kan�le zeigen",
     "",
-    "Canali",
+    "",
     "",
     "",
     "",
@@ -925,7 +925,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "каналы",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -946,7 +946,7 @@ const tI18nPhrase Phrases[] = {
   { "no channels",
     "Kan�le verbergen",
     "",
-    "Nessun canale",
+    "",
     "",
     "",
     "",
@@ -960,7 +960,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "без кан-в",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -981,7 +981,7 @@ const tI18nPhrase Phrases[] = {
   { "Refresh display",
     "aktualisieren",
     "",
-    "Aggiorna visualizzazione",
+    "",
     "",
     "",
     "",
@@ -995,7 +995,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Сброс инфо",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -1016,12 +1016,12 @@ const tI18nPhrase Phrases[] = {
   { "Show recordings",
     "Aufnahmen zeigen",
     "",
-    "Mostra registrazioni",
+    "",
     "",
     "",
     "Status d'enregistrement",
     "",
-    "Tallennusten tila",
+    "",
     "",
     "Mostrar grabaciones",
     "",
@@ -1030,7 +1030,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Показ записей",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -1051,7 +1051,7 @@ const tI18nPhrase Phrases[] = {
   { "Show signals",
     "Signale zeigen",
     "",
-    "Mostra segnali",
+    "",
     "",
     "",
     "",
@@ -1065,7 +1065,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Показ сигнала",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -1086,7 +1086,7 @@ const tI18nPhrase Phrases[] = {
   { "Show channels",
     "Kan�le zeigen",
     "",
-    "Mostra canali",
+    "",
     "",
     "",
     "",
@@ -1100,7 +1100,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Показ каналов",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -1121,7 +1121,7 @@ const tI18nPhrase Phrases[] = {
   { "Show channel provider",
     "Kanalanbieter anzeigen",
     "",
-    "Mostra emittente",
+    "",
     "",
     "",
     "",
@@ -1135,7 +1135,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Показ провайдера",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -1156,12 +1156,12 @@ const tI18nPhrase Phrases[] = {
   { "List of DVB devices",
     "DVB-Ger�teliste",
     "",
-    "Elenco schede DVB",
     "",
     "",
     "",
     "",
-    "DVB-kortit",
+    "",
+    "",
     "",
     "Lista de sintonizadores DVB",
     "",
@@ -1170,7 +1170,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Список DVB карт",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",
@@ -1191,12 +1191,12 @@ const tI18nPhrase Phrases[] = {
   { "Number of concurrent recordings",
     "Anzahl der laufenden Aufnahmen pro Ger�t",
     "",
-    "Numero di registrazioni simultanee",
+    "",
     "",
     "",
     "pas d'enregistrement actuellement",
     "",
-    "Yht�aikaisia tallennuksia",
+    "",
     "",
     "N�mero de grabaciones concurrentes",
     "",
@@ -1205,7 +1205,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
 #if VDRVERSNUM >= 10302
-    "Кол-во одновременных записей",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
     "",

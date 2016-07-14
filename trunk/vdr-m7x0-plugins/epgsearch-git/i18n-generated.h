@@ -36,12 +36,12 @@ const tI18nPhrase Phrases[] = {
   { "Channel groups",
     "Kanalgruppen",
     "",
-    "Gruppi canali",
-    "Kanaal groepen",
     "",
-    "Groupe de chaînes",
     "",
-    "Kanavaryhmät",
+    "",
+    "Groupe de cha�nes",
+    "",
+    "",
     "",
     "Grupos de canales",
     "",
@@ -62,7 +62,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Skupiny stanic",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -71,12 +71,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Select",
     "Auswahl",
     "",
-    "Seleziona",
-    "Selecteer",
+    "",
+    "",
     "",
     "Selection",
     "",
-    "Valitse",
+    "",
     "",
     "Seleccionar",
     "",
@@ -97,7 +97,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vyber",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -106,12 +106,12 @@ const tI18nPhrase Phrases[] = {
   { "Channel group used by:",
     "Gruppe wird verwendet von:",
     "",
-    "Gruppo canali utilizzato da:",
-    "Kanaalgroep gebruikt door:",
     "",
-    "Groupe est utilisé par:",
     "",
-    "Kanavaryhmä käytössä:",
+    "",
+    "Groupe est utilis� par:",
+    "",
+    "",
     "",
     "Grupo de canales usado por:",
     "",
@@ -132,21 +132,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Skupina použitá v:",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Edit$Delete group?",
-    "Gruppe löschen?",
+    "Gruppe l�schen?",
     "",
-    "Eliminare il gruppo?",
-    "Groep wissen?",
+    "",
+    "",
     "",
     "Effacer groupe $Delete?",
     "",
-    "Poistetaanko kanavaryhmä?",
+    "",
     "",
     "�Borrar grupo?",
     "",
@@ -167,7 +167,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Smazat Skupinu stanic?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -176,12 +176,12 @@ const tI18nPhrase Phrases[] = {
   { "Edit channel group",
     "Kanalgruppe editieren",
     "",
-    "Modifica gruppo canali",
-    "Bewerk kanaalgroep",
     "",
-    "Editer groupe de chaînes",
     "",
-    "Muokkaa kanavaryhmää",
+    "",
+    "Editer groupe de cha�nes",
+    "",
+    "",
     "",
     "Editar grupo de canales",
     "",
@@ -202,7 +202,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Uravit Skupinu stanic",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -211,12 +211,12 @@ const tI18nPhrase Phrases[] = {
   { "Group name",
     "Gruppenname",
     "",
-    "Nome gruppo",
-    "Groep naam",
+    "",
+    "",
     "",
     "Nom de groupe",
     "",
-    "Kanavaryhmän nimi",
+    "",
     "",
     "Nombre del grupo",
     "",
@@ -237,7 +237,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Jméno skupiny",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -246,12 +246,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Invert selection",
     "Ausw. umdrehen",
     "",
-    "Inverti sel.",
-    "Selectie omdraaien",
+    "",
+    "",
     "",
     "Inversion de la selection",
     "",
-    "Päinvastoin",
+    "",
     "",
     "Invertir selecci�n",
     "",
@@ -272,7 +272,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Inverzní výběr",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -281,12 +281,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$All yes",
     "Alle ja",
     "",
-    "Tutti sì",
-    "Alles ja",
+    "",
+    "",
     "",
     "Tous oui",
     "",
-    "Kaikki",
+    "",
     "",
     "Todo s�",
     "",
@@ -307,7 +307,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Ano vše",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -316,12 +316,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$All no",
     "Alle nein",
     "",
-    "Tutti no",
-    "Alles nee",
+    "",
+    "",
     "",
     "Tous non",
     "",
-    "Ei yhtään",
+    "",
     "",
     "Todo no",
     "",
@@ -342,7 +342,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Ne vše",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -351,12 +351,12 @@ const tI18nPhrase Phrases[] = {
   { "Group name is empty!",
     "Gruppenname ist leer!",
     "",
-    "Il nome gruppo è vuoto!",
-    "Groep naam is leeg!",
+    "",
+    "",
     "",
     "Le nom est vide",
     "",
-    "Kanavaryhmältä puuttuu nimi!",
+    "",
     "",
     "�Nombre del grupo vac�o!",
     "",
@@ -377,7 +377,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Jméno nemůže být prázdné!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -386,12 +386,12 @@ const tI18nPhrase Phrases[] = {
   { "Group name already exists!",
     "Gruppe existiert bereits!",
     "",
-    "Nome gruppo già esistente!",
-    "Groep naam bestaat al!",
     "",
-    "Le groupe existe déjà!",
     "",
-    "Samanniminen kanavaryhmä on jo olemassa!",
+    "",
+    "Le groupe existe d�j�!",
+    "",
+    "",
     "",
     "�Ya existe el nombre del grupo!",
     "",
@@ -412,91 +412,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Jméno již použito!",
-#endif
-#if VDRVERSNUM >= 10502
     "",
-#endif
-  },
-  { "timer conflict at %s! Show it?",
-    "Timer-Konflikt am %s! Anzeigen?",
-    "",
-    "Conflitto timer alle %s! Mostrare?",
-    "Timerconflict op %s! Tonen?",
-    "",
-    "conflit de programmation le %s! Afficher?",
-    "",
-    "Päällekkäinen ajastin (%s)! Näytetäänkö?",
-    "",
-    "Conflicto de programaci�n a las %s! �Mostrarlo?",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Konflikt Nahrávání %s! Zobrazit?",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "%d timer conflicts! First at %s. Show them?",
-    "%d Timer-Konflikte! Erster am %s. Anzeigen?",
-    "",
-    "%d conflitto timer! Primo alle %s. Mostrarli?",
-    "%d timer conflicten! eerste op %s. Tonen?",
-    "",
-    "%d de conflits de programmation! Le premier le %s. Afficher?",
-    "",
-    "Päällekkäisiä ajastimia %d kpl (%s)! Näytetäänkö?",
-    "",
-    "�%d conflictos de programaci�n! El 1� a las %s. �Mostrarlos?",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Nahrávání - konflikty (%d)! Od %s. Zobrazit?",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Direct access to epgsearch's conflict check menu",
-    "Direkter Zugriff auf epgsearch's Konflikt-Prüfungs-Menü",
-    "",
-    "Accesso diretto al menu di verifica conflitti di epgsearch",
-    "Directe toegang tot epgsearch's conflict controle menu",
+    "Direkter Zugriff auf epgsearch's Konflikt-Pr�fungs-Men�",
     "",
     "",
     "",
-    "Suoratoiminto EPGSearch-laajennoksen ajastimien tarkistukselle",
+    "",
+    "",
+    "",
+    "",
     "",
     "Acceso directo al men� de conflictos EPGSearch",
     "",
@@ -517,7 +447,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přímý vstup do menu konfliktů epgsearch",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -526,12 +456,12 @@ const tI18nPhrase Phrases[] = {
   { "Timer conflicts",
     "Timer-Konflikte",
     "",
-    "Conflitti timer",
-    "Timer conflicten",
+    "",
+    "",
     "",
     "Conflits de programmation",
     "",
-    "Päällekkäiset ajastimet",
+    "",
     "",
     "Conflictos de programaci�n",
     "",
@@ -552,21 +482,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Konflikty v nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Conflict info in main menu",
-    "Konflikt-Info im Hauptmenü",
+    "Konflikt-Info im Hauptmen�",
     "",
-    "Informazioni conflitto nel menu principale",
-    "Conflict info tonen in hoofdmenu",
+    "",
+    "",
     "",
     "Conflits infos dans le menu principale",
     "",
-    "Näytä päällekkäisyydet päävalikossa",
+    "",
     "",
     "Mostrar conflictos en men� principal",
     "",
@@ -587,21 +517,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Konflikty do hlavního menu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "next",
-    "nächster",
+    "n�chster",
     "",
-    "prossimo",
-    "volgende",
+    "",
+    "",
     "",
     "prochain",
     "",
-    "seuraava",
+    "",
     "",
     "siguiente",
     "",
@@ -622,7 +552,77 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "další",
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "timer conflict at %s! Show it?",
+    "Timer-Konflikt am %s! Anzeigen?",
+    "",
+    "",
+    "",
+    "",
+    "conflit de programmation le %s! Afficher?",
+    "",
+    "",
+    "",
+    "Conflicto de programaci�n a las %s! �Mostrarlo?",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "%d timer conflicts! First at %s. Show them?",
+    "%d Timer-Konflikte! Erster am %s. Anzeigen?",
+    "",
+    "",
+    "",
+    "",
+    "%d de conflits de programmation! Le premier le %s. Afficher?",
+    "",
+    "",
+    "",
+    "�%d conflictos de programaci�n! El 1� a las %s. �Mostrarlos?",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -631,12 +631,12 @@ const tI18nPhrase Phrases[] = {
   { "search the EPG for repeats and more",
     "Suche im EPG nach Wiederholungen und anderem",
     "",
-    "Cerca nella guida EPG: per parole, repliche e altro",
-    "Zoek in de EPG naar herhalingen en meer",
     "",
-    "Recherche de répétition dans EPG",
     "",
-    "Monipuolinen ohjelmaopas hakutoiminnolla",
+    "",
+    "Recherche de r�p�tition dans EPG",
+    "",
+    "",
     "",
     "Buscar repeticiones en la EPG",
     "",
@@ -657,21 +657,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "hledat opakování v programu a další",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Program guide",
-    "Programmführer",
+    "Programmf�hrer",
     "",
-    "Guida programmi",
-    "Programmagids",
+    "",
+    "",
     "",
     "Guide du programme",
     "",
-    "Ohjelmaopas",
+    "",
     "",
     "Gu�a de programaci�n",
     "",
@@ -692,22 +692,22 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Průvodce programem (EPG)",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "search timer update running",
-    "Suchtimer-Update läuft",
+    "Suchtimer-Update l�uft",
     "",
-    "aggiornamento timer ricerca in esecuzione",
-    "Verversen zoektimer gereed!",
     "",
-    "La mise à jours de recherche est effectuée!",
     "",
-    "hakuajastimien päivitys käynnissä",
-    "/oui",
+    "",
+    "La mise � jours de recherche est effectu�e!",
+    "",
+    "",
+    "",
     "Actualizando programaci�n por b�squeda",
     "",
     "",
@@ -727,7 +727,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Probíhá aktualizace Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -736,12 +736,12 @@ const tI18nPhrase Phrases[] = {
   { "Direct access to epgsearch's search menu",
     "Direkter Zugriff auf epgsearch's Suchenmenu",
     "",
-    "Accesso diretto al menu di ricerca di epgsearch",
-    "Direct toegang tot epgsearch's zoek menu",
     "",
-    "Accès direct dans epgsearch dans le menu recherche",
     "",
-    "Suoratoiminto EPGSearch-laajennoksen haulle",
+    "",
+    "Acc�s direct dans epgsearch dans le menu recherche",
+    "",
+    "",
     "",
     "Acceso directo al men� de b�squedas en EPG",
     "",
@@ -762,7 +762,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přímý vstup do menu hledání epgsearch",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -771,12 +771,12 @@ const tI18nPhrase Phrases[] = {
   { "Search",
     "Suche",
     "",
-    "Cerca",
-    "Zoek",
+    "",
+    "",
     "",
     "Recherche",
     "",
-    "Etsi ohjelmaoppaasta",
+    "",
     "",
     "B�squedas en EPG",
     "",
@@ -797,21 +797,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Automatické nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "EpgSearch-Search in main menu",
-    "EpgSearch-Suche im Hauptmenü",
+    "EpgSearch-Suche im Hauptmen�",
     "",
-    "Ricerca EpgSearch nel menu principale",
-    "EpgSearch-Search in hoofdmenu",
+    "",
+    "",
     "",
     "EpgSearch-Recherche dans le menu proncipale",
     "",
-    "EpgSearch-laajennoksen hakutoiminto päävalikossa",
+    "",
     "",
     "B�squedas en EPG en men� principal",
     "",
@@ -832,7 +832,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "EpgSearch hledání do hlavního menu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -841,12 +841,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Help",
     "Hilfe",
     "",
-    "Aiuto",
-    "Help",
+    "",
+    "",
     "",
     "Aide",
     "",
-    "Opaste",
+    "",
     "",
     "Ayuda",
     "",
@@ -867,7 +867,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nápověda",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -876,12 +876,12 @@ const tI18nPhrase Phrases[] = {
   { "Standard",
     "Standard",
     "",
-    "Standard",
-    "Standaard",
+    "",
+    "",
     "",
     "Standart",
     "",
-    "Vakio",
+    "",
     "",
     "Est�ndar",
     "",
@@ -902,7 +902,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Výchozí",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -911,33 +911,33 @@ const tI18nPhrase Phrases[] = {
   { "Button$Commands",
     "Befehle",
     "",
-    "Comandi",
-    "Commando's",
+    "",
+    "",
     "",
     "Commandes",
     "",
-    "Komennot",
+    "",
     "",
     "�rdenes",
     "",
-    "Inspelning",
     "",
     "",
-    "Gravar",
+    "",
+    "",
 #if VDRVERSNUM >= 10302
     "",
 #endif
 #if VDRVERSNUM >= 10307
-    "Snimi",
+    "",
 #endif
 #if VDRVERSNUM >= 10313
-    "Salvesta",
+    "",
 #endif
 #if VDRVERSNUM >= 10316
-    "Optag",
+    "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Příkazy",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -946,12 +946,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Search",
     "Suche",
     "",
-    "Cerca",
-    "Zoek",
+    "",
+    "",
     "",
     "Recherche",
     "",
-    "Etsi",
+    "",
     "",
     "Buscar",
     "",
@@ -972,7 +972,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Hledat",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1051,12 +1051,12 @@ const tI18nPhrase Phrases[] = {
   { "never",
     "nie",
     "",
-    "mai",
-    "nooit",
+    "",
+    "",
     "",
     "jamais",
     "",
-    "ei koskaan",
+    "",
     "",
     "nunca",
     "",
@@ -1077,7 +1077,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "nikdy",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1086,12 +1086,12 @@ const tI18nPhrase Phrases[] = {
   { "always",
     "immer",
     "",
-    "sempre",
-    "altijd",
+    "",
+    "",
     "",
     "toujours",
     "",
-    "aina",
+    "",
     "",
     "siempre",
     "",
@@ -1112,7 +1112,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "vždy",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1121,12 +1121,12 @@ const tI18nPhrase Phrases[] = {
   { "smart",
     "intelligent",
     "",
-    "intelligente",
-    "slim",
+    "",
+    "",
     "",
     "intelligent",
     "",
-    "älykkäästi",
+    "",
     "",
     "inteligente",
     "",
@@ -1147,7 +1147,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "chytře",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1156,12 +1156,12 @@ const tI18nPhrase Phrases[] = {
   { "before user-def. times",
     "vor ben.-def. Zeiten",
     "",
-    "prima orari def. da utente",
-    "vóór gebruiker-gedef. tijden",
+    "",
+    "",
     "",
     "avant le temp utilisateur",
     "",
-    "ennen ajankohtia",
+    "",
     "",
     "antes hora-def.",
     "",
@@ -1182,7 +1182,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "před uživatelské časy",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1191,12 +1191,12 @@ const tI18nPhrase Phrases[] = {
   { "after user-def. times",
     "nach ben.-def. Zeiten",
     "",
-    "dopo orari def. da utente",
-    "ná gebruiker-gedef. tijden",
     "",
-    "après le temp utilisateur",
     "",
-    "ajankohtien jälkeen",
+    "",
+    "apr�s le temp utilisateur",
+    "",
+    "",
     "",
     "despu�s hora-def.",
     "",
@@ -1217,21 +1217,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "po uživatelských časech",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "before 'next'",
-    "vor 'Nächste'",
+    "vor 'N�chste'",
     "",
-    "prima 'prossimi'",
+    "",
     "",
     "",
     "avant 'le prochain'",
     "",
-    "ennen seuraavia",
+    "",
     "",
     "antes de 'Despu�s'",
     "",
@@ -1252,7 +1252,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "před 'Nyní'",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1261,12 +1261,12 @@ const tI18nPhrase Phrases[] = {
   { "General",
     "Allgemein",
     "",
-    "Generale",
-    "Algemeen",
     "",
-    "Général",
     "",
-    "Yleiset",
+    "",
+    "G�n�ral",
+    "",
+    "",
     "",
     "General",
     "",
@@ -1287,21 +1287,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Základní",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "EPG menus",
-    "EPG Menüs",
+    "EPG Men�s",
+    "",
+    "",
+    "",
     "",
     "Menu EPG",
-    "EPG menu's",
     "",
-    "Menu EPG",
     "",
-    "Valikot",
     "",
     "Men�s EPG",
     "",
@@ -1322,7 +1322,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Programový průvodce",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1331,12 +1331,12 @@ const tI18nPhrase Phrases[] = {
   { "User-defined EPG times",
     "Benutzerdef. EPG-Zeiten",
     "",
-    "Date EPG definite dall'utente",
-    "Gebruiker-gedefinieerde EPG tijden",
+    "",
+    "",
     "",
     "Date utilisateur pour la progammation",
     "",
-    "Käyttäjän määrittelemät ajankohdat",
+    "",
     "",
     "Horario EPG definido por el usuario",
     "",
@@ -1357,7 +1357,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nastavení času",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1366,12 +1366,12 @@ const tI18nPhrase Phrases[] = {
   { "Timer programming",
     "Timer-Programmierung",
     "",
-    "Programmazione",
-    "Timer programmering",
+    "",
+    "",
     "",
     "Programmation",
     "",
-    "Ajastimien luonti",
+    "",
     "",
     "Programaci�n",
     "",
@@ -1392,7 +1392,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nastavení nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1401,12 +1401,12 @@ const tI18nPhrase Phrases[] = {
   { "Search and search timers",
     "Suche und Suchtimer",
     "",
-    "Ricerca e timer ricerca",
-    "Zoek en zoektimers",
+    "",
+    "",
     "",
     "Recherche et progammation de recherche",
     "",
-    "Haut ja hakuajastimet",
+    "",
     "",
     "B�squeda y programaciones por b�squeda",
     "",
@@ -1427,21 +1427,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Hledání a Automatické nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Timer conflict checking",
-    "Timer-Konflikt-Prüfung",
+    "Timer-Konflikt-Pr�fung",
     "",
-    "Verifica conflitti timer",
-    "Timer conflict controle",
     "",
-    "Vérification-Conflits-Programmation",
     "",
-    "Päällekkäisten ajastimien tarkistus",
+    "",
+    "V�rification-Conflits-Programmation",
+    "",
+    "",
     "",
     "Comprobando conflictos de programaci�n",
     "",
@@ -1462,7 +1462,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Kontrola konfliktů nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1471,12 +1471,12 @@ const tI18nPhrase Phrases[] = {
   { "Email notification",
     "Email-Benachrichtigung",
     "",
-    "Notifica email",
-    "E-mail notificatie",
+    "",
+    "",
     "",
     "Notification par mail",
     "",
-    "Ilmoitukset sähköpostilla",
+    "",
     "",
     "Notificaci�n por correo",
     "",
@@ -1497,21 +1497,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Mailové zprávy",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Hide main menu entry",
-    "Hauptmenüeintrag verstecken",
+    "Hauptmen�eintrag verstecken",
     "",
-    "Nascondi voce menu principale",
-    "Verberg vermelding in hoofdmenu",
+    "",
+    "",
     "",
     "Invisible dans le menu principal",
     "",
-    "Piilota valinta päävalikosta",
+    "",
     "",
     "Ocultar entrada del men� principal",
     "",
@@ -1532,21 +1532,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Skrýt položku v hlavním menu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Hides the main menu entry and may be useful if this plugin is used to replace the original 'Schedule' entry.",
-    "Blendet den Hauptmenüeintrag aus. Das kann nützlich sein, falls dieses Plugin verwendet wird, um den originalen 'Programm'-Eintrag zu ersetzen.",
+    "Blendet den Hauptmen�eintrag aus. Das kann n�tzlich sein, falls dieses Plugin verwendet wird, um den originalen 'Programm'-Eintrag zu ersetzen.",
     "",
-    "Nascondere la voce nel menu può essere utile se questo plugin è usato per sostituire la voce originale 'Programmi'",
-    "Verbergt de vermelding in het hoofdmenu en kan van pas komen als deze plugin wordt gebruikt om de originele programmagids te vervangen.",
+    "",
+    "",
     "",
     "Rend le menu invisible. C'est utile lorsque le plugin remplace le menu programmme d'origine",
     "",
-    "Piilottaa valinnan päävalikosta. Suositellaan asetettavaksi päälle, jos laajennoksella korvataan alkuperäinen ohjelmaopas.",
+    "",
     "",
     "Oculta la entrada del men� principal y puede ser �til si este plugin sustituye a la entrada 'Gu�a de programaci�n' original.",
     "",
@@ -1567,21 +1567,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nezobrazovat v hlavním menu, používá se když tento plugin nahrazuje výchozího průvodce programem.",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Main menu entry",
-    "Hauptmenü-Eintrag",
+    "Hauptmen�-Eintrag",
     "",
-    "Voce nel menu principale",
-    "Hoofdmenu vermelding",
+    "",
+    "",
     "",
     "Visible dans le menu principal",
     "",
-    "Valinta päävalikossa",
+    "",
     "",
     "Entrada en el men� principal",
     "",
@@ -1602,21 +1602,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Název položky hlavního menu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$The name of the main menu entry which defaults to 'Programm guide'.",
-    "Der Name des Hauptmenüeintrags. Die Standard-Vorgabe ist 'Programmführer'.",
+    "Der Name des Hauptmen�eintrags. Die Standard-Vorgabe ist 'Programmf�hrer'.",
     "",
-    "Nome della voce menu che corrisponde a 'Guida programmazione'",
-    "De naam van de regel in het hoofdmenu welke gerelateerd is aan 'programmagids'",
     "",
-    "Le nom dans le menu principale. La prédéfinition est 'Guide du programme'. ",
     "",
-    "Päävalikossa sijaitsevan valinnan nimi, joka on oletuksena 'Ohjelmaopas'.",
+    "",
+    "Le nom dans le menu principale. La pr�d�finition est 'Guide du programme'. ",
+    "",
+    "",
     "",
     "El nombre de la entrada para el men� principal, que por defecto es 'Gu�a de programaci�n'.",
     "",
@@ -1637,21 +1637,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Jméno položky hlavního menu - výchozí název je Průvodce programem (EPG) ",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Replace original schedule",
-    "Originale Programmübersicht ersetzen",
+    "Originale Programm�bersicht ersetzen",
     "",
-    "Sostituisci Programmi originale",
-    "Originele 'Programmagids' vervangen",
+    "",
+    "",
     "",
     "Remplace le menu d'origine programme",
     "",
-    "Korvaa alkuperäinen ohjelmaopas",
+    "",
     "",
     "Sustituir gu�a de prog. original",
     "",
@@ -1672,7 +1672,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nahradit výchozího průvodce programem",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1681,12 +1681,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$When VDR is patched to allow this plugin to replace the original 'Schedule' entry, you can de/activate this replacement here.",
     "Falls VDR gepatched wurde, um dem Plugin zu erlauben, den originalen 'Programm'-Eintrag zu ersetzen, so kann hier diese Ersetzung de/aktiviert werden.",
     "",
-    "Quando VDR è patchato per permettere a questo plugin di sostituire la voce originale 'Programmi', puoi dis/attivare qui la sostituzione.",
-    "Als VDR gepatcht is om deze plugin de originele 'Programmagids' menu te laten vervangen dan kan dat hier ge(de)activeerd worden",
     "",
-    "Lorsque le VDR est muni du patch pour autoriser le remplacement du menu original 'Programme' , vous pouvez activer ou déactiver celui-ci.",
     "",
-    "Korvaa alkuperäisen ohjelmaoppaan päävalikossa tällä laajennoksella, jos VDR on paikattu asianmukaisesti.",
+    "",
+    "Lorsque le VDR est muni du patch pour autoriser le remplacement du menu original 'Programme' , vous pouvez activer ou d�activer celui-ci.",
+    "",
+    "",
     "",
     "Aqu� puede des/activar que �ste plugin sustituya la entrada original 'Gu�a de programaci�n', pero s�lo funciona cuando el VDR est� parcheado para permitirlo.",
     "",
@@ -1707,7 +1707,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Pokud je vdr upraveno, může tento plugin nahradit výchozí položku 'Program'",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1716,12 +1716,12 @@ const tI18nPhrase Phrases[] = {
   { "Start menu",
     "Starte mit",
     "",
-    "Menu avvio",
-    "Startmenu",
     "",
-    "Menue de départ",
     "",
-    "Oletusnäyttö",
+    "",
+    "Menue de d�part",
+    "",
+    "",
     "",
     "Men� de inicio",
     "",
@@ -1742,21 +1742,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Výchozí menu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Choose between 'Overview - Now' and 'Schedule' as start menu when this plugin is called.",
-    "Hier kann zwischen 'Übersicht - Jetzt' und 'Programm' als Start-Menü für das Plugin gewählt werden.",
+    "Hier kann zwischen '�bersicht - Jetzt' und 'Programm' als Start-Men� f�r das Plugin gew�hlt werden.",
     "",
-    "Scegli tra 'Sommario - Adesso' e 'Programmi' come menu iniziale quando questo plugin è chiamato.",
-    "Maak een keuze tussen 'Overzicht', 'Nu' en 'programmagids' als startmenu wanneer plugin wordt geactiveerd.",
     "",
-    "Ici vous pouvez choisir entre 'Maintenant' et 'Programme' comme menu de départ pour le plugin.",
     "",
-    "Valitsee oletusnäytöksi joko tämänhetkisen yleiskatsauksen tai valitun kanavan ohjelmiston.",
+    "",
+    "Ici vous pouvez choisir entre 'Maintenant' et 'Programme' comme menu de d�part pour le plugin.",
+    "",
+    "",
     "",
     "Elija entre 'Ahora' y 'Gu�a de programaci�n' como men� inicial cuando se llama a este plugin.",
     "",
@@ -1777,7 +1777,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Výběr mezi přehledem všech stanic - 'Nyní' a programem aktuální stanice - 'Program'",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -1786,12 +1786,12 @@ const tI18nPhrase Phrases[] = {
   { "Ok key",
     "Taste Ok",
     "",
-    "Tasto Ok",
-    "OK toets",
+    "",
+    "",
     "",
     "Touche Ok",
     "",
-    "OK-näppäin",
+    "",
     "",
     "Bot�n OK",
     "",
@@ -1812,21 +1812,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "OK tlačítko",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Choose here the behaviour of key 'Ok'. You can use it to display the summary or to switch to the corresponding channel.\nNote: the functionality of key 'blue' (Switch/Info/Search) depends on this setting.",
-    "Hier kann das Verhalten der 'Ok'-Taste bestimmt werden. Man kann damit die Inhaltsangabe anzeigen oder zum entsprechenden Sender wechseln.\nHinweis: Die Funktion der Taste 'Blau' (Umschalten/Info/Suche) hängt von dieser Einstellung ab.",
+    "Hier kann das Verhalten der 'Ok'-Taste bestimmt werden. Man kann damit die Inhaltsangabe anzeigen oder zum entsprechenden Sender wechseln.\nHinweis: Die Funktion der Taste 'Blau' (Umschalten/Info/Suche) h�ngt von dieser Einstellung ab.",
     "",
-    "Scegli il comportamento del tasto 'Ok'. Puoi usarlo per vedere il sommario o cambiare il canale corrispondente.\nNota: la funzionalità del tasto 'blu' (Cambia/Info/Cerca) dipende da questa impostazione.",
-    "Kies hier het gedrag van de 'OK' toets. Hij kan gebruikt worden om een samenvatting te tonen of om te schakelen naar het betreffende kanaal.\nLetop: de functionaliteit van de 'BLAUW' toets (Schakel/Info/Zoek) is afhankelijk van deze instelling.",
     "",
-    "Ici vous pouvez influencé le comportement de la touch 'Ok'. On peut afficher le continue d'information ou changer pour la chaînes proposée.\nIndice: La fonction de la touch 'bleu' (changer/Infos/Recherche) dépend de ce réglage.",
     "",
-    "Valitse toiminto OK-näppäimelle: näytä ohjelman tiedot tai vaihda kyseiselle kanavalle.\nHuomioi: sinisen näppäimen toiminto (Vaihda/Tiedot/Hae) riippuu tästä asetuksesta.",
+    "",
+    "Ici vous pouvez influenc� le comportement de la touch 'Ok'. On peut afficher le continue d'information ou changer pour la cha�nes propos�e.\nIndice: La fonction de la touch 'bleu' (changer/Infos/Recherche) d�pend de ce r�glage.",
+    "",
+    "",
     "",
     "Elija el comportamiento del bot�n 'OK'. Puede usarse para mostrar el resumen o cambiar al canal correspondiente.\nNota: la funcionalidad del bot�n 'azul' (Cambiar/Info/Buscar) depende de �sta configuraci�n.",
     "",
@@ -1856,12 +1856,12 @@ const tI18nPhrase Phrases[] = {
   { "Red key",
     "Taste Rot",
     "",
-    "Tasto rosso",
-    "Rode toets",
+    "",
+    "",
     "",
     "Touche rouge",
     "",
-    "Punainen näppäin",
+    "",
     "",
     "Bot�n rojo",
     "",
@@ -1882,21 +1882,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Červené tlačítko",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Choose which standard function ('Record' or 'Commands') you like to have on the red key.\n(Can be toggled with key '0')",
-    "Hier kann ausgewählt werden, welche Standardfunktion ('Aufnehmen' oder 'Befehle') auf der roten Taste liegen soll.\n(Umschalten auch mit Taste '0' möglich)",
+    "Hier kann ausgew�hlt werden, welche Standardfunktion ('Aufnehmen' oder 'Befehle') auf der roten Taste liegen soll.\n(Umschalten auch mit Taste '0' m�glich)",
     "",
-    "Scegli quale funzione standard ('Registrazione' o 'Comandi') vuoi avere nel tasto rosso.\n(Può essere impostata con il tasto '0')",
-    "Kies welke standaard functie (Opname of Commando's) aan de rode toets moet worden toegewezen.\n(Kan worden omgeschakeld met de '0' toets)",
+    "",
+    "",
     "",
     "Ici vous pouvez choisir entre la fonction standart 'Enregistrer' et 'Commande' comme menu de la touche rouge.\n(Changement possible avec la touch '0')",
     "",
-    "Valitsee oletustoiminnon ('Tallenna' tai 'Komennot') punaiselle näppäimelle.\nPunaisen näppäimen toimintoa voidaan vaihtaa myös lennossa painamalla näppäintä 0.",
+    "",
     "",
     "Elija la funci�n est�ndar ('Grabar' u '�rdenes') que desee tener en el bot�n rojo.\n(Puede alternarse con el bot�n '0')",
     "",
@@ -1926,12 +1926,12 @@ const tI18nPhrase Phrases[] = {
   { "Blue key",
     "Taste Blau",
     "",
-    "Tasto blu",
-    "Blauwe toets",
+    "",
+    "",
     "",
     "Touche bleu",
     "",
-    "Sininen näppäin",
+    "",
     "",
     "Bot�n azul",
     "",
@@ -1952,21 +1952,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Modré tlačítko",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Choose which standard function ('Switch'/'Info' or 'Search') you like to have on the blue key.\n(Can be toggled with key '0')",
-    "Hier kann ausgewählt werden, welche Standardfunktion ('Umschalten'/'Info' oder 'Suche') auf der blauen Taste liegen soll.\n(Umschalten auch mit Taste '0' möglich)",
+    "Hier kann ausgew�hlt werden, welche Standardfunktion ('Umschalten'/'Info' oder 'Suche') auf der blauen Taste liegen soll.\n(Umschalten auch mit Taste '0' m�glich)",
     "",
-    "Scegli quale funzione standard ('Cambia'/'Info' o 'Cerca') vuoi avere nel tasto blu.\n(Può essere impostata con il tasto '0')",
-    "Kies welke standaard functie ('Schakel'/'Info' of 'Zoek') aan de blauwe toets moet worden toegewezen.\n(Kan worden omgeschakeld met de '0' toets)",
+    "",
+    "",
     "",
     "Ici vous pouvez choisir entre la fonction standart 'Changer de chaine' et 'Recherche' comme menu de la touche bleu.\n(Changement possible avec la touch '0')",
     "",
-    "Valitsee oletustoiminnon ('Valitse' tai 'Etsi') siniselle näppäimelle.\nSinisen näppäimen toimintoa voidaan vaihtaa myös lennossa painamalla näppäintä 0.",
+    "",
     "",
     "Elija la funci�n est�ndar ('Cambiar'/'Info' o 'Buscar') que desee tener en el bot�n azul.\n(Puede alternarse con el bot�n '0')",
     "",
@@ -1996,12 +1996,12 @@ const tI18nPhrase Phrases[] = {
   { "Show progress in 'Now'",
     "Zeige Fortschritt in 'Jetzt'",
     "",
-    "Visualizza progresso in 'Adesso'",
-    "Toon voortgang in 'Nu'",
     "",
-    "Afficher le progrès dans 'Maintenant'",
     "",
-    "Näytä aikajana 'Nyt'-sivulla",
+    "",
+    "Afficher le progr�s dans 'Maintenant'",
+    "",
+    "",
     "",
     "Mostrar progreso en 'Ahora'",
     "",
@@ -2022,21 +2022,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit časové detaily v přehledu stanic 'Nyní'",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Shows a progressbar in 'Overview - Now' that informs about the remaining time of the current event.",
-    "Zeigt einen Fortschrittsbalken in 'Übersicht - Jetzt' an, der wiedergibt wieweit die Sendung bereits fortgeschritten ist.",
+    "Zeigt einen Fortschrittsbalken in '�bersicht - Jetzt' an, der wiedergibt wieweit die Sendung bereits fortgeschritten ist.",
     "",
-    "Mostra una barra d'avanzamento in 'Sommario - Adesso' che informa sul tempo rimanente dell'evento attuale.",
-    "Toont een voortschreidingsbalk in 'Overzicht - Nu' welke de resterende tijd van het huidige programma weergeeft.",
     "",
-    "Affiche la barre de progression dans le menu 'Maintenant', qui indique l'avancement de l'émission en cours.",
     "",
-    "Näyttää aikajanan tämänhetkisessä yleiskatsauksessa.",
+    "",
+    "Affiche la barre de progression dans le menu 'Maintenant', qui indique l'avancement de l'�mission en cours.",
+    "",
+    "",
     "",
     "Muestra una barra de progreso en la pantalla 'Ahora' que informa sobre el tiempo restante de la emisi�n actual.",
     "",
@@ -2066,12 +2066,12 @@ const tI18nPhrase Phrases[] = {
   { "Show channel numbers",
     "Zeige Kanalnummern",
     "",
-    "Visualizza i numeri dei canali",
-    "Toon kanaal nummers",
     "",
-    "Afficher le numéro de la chaîne",
     "",
-    "Näytä kanavien numerointi",
+    "",
+    "Afficher le num�ro de la cha�ne",
+    "",
+    "",
     "",
     "Mostrar el n�mero de los canales",
     "",
@@ -2092,21 +2092,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit čísla stanic",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Display channel numbers in 'Overview - Now'.\n\n(To completely define your own menu look please inspect the MANUAL)",
-    "Anzeige von Kanalnummern in 'Übersicht - Jetzt'.\n\n(Zur vollständigen Anpassung einer eigenen Menüdarstellung, bitte das MANUAL lesen)",
+    "Anzeige von Kanalnummern in '�bersicht - Jetzt'.\n\n(Zur vollst�ndigen Anpassung einer eigenen Men�darstellung, bitte das MANUAL lesen)",
     "",
-    "Visualizza i numeri dei canali in 'Sommario - Adesso'\n\n(Per definire completamente il tuo proprio look del menu leggi il file MANUAL)",
-    "Toon kanaal nummers in 'Overzicht - Nu.\n\n(Raadpleeg de MANUAL om het hele menu naar eigen inzicht te veranderen)",
     "",
-    "Affiche du numéro de chaîne dans la vue 'Maintenant'.\n\n(Pour les réglages de l'affichage menu propre à l'utilisateur, lire le MANUAL)",
     "",
-    "Näyttää kanavien numeroinnin tämänhetkisessä yleiskatsauksessa.\n\nLisätietoja valikon muokkauksesta löytyy MANUAL-tiedostosta.",
+    "",
+    "Affiche du num�ro de cha�ne dans la vue 'Maintenant'.\n\n(Pour les r�glages de l'affichage menu propre � l'utilisateur, lire le MANUAL)",
+    "",
+    "",
     "",
     "Muestra el n�mero de los canales en la pantalla 'Ahora'.\n\n(Para definir el men� totalmente a su gusto, por favor lea el MANUAL)",
     "",
@@ -2136,12 +2136,12 @@ const tI18nPhrase Phrases[] = {
   { "Show channel separators",
     "Zeige Kanal-Separatoren",
     "",
-    "Mostra separatori canali",
-    "Toon kanaal scheidingstekens",
     "",
-    "Afficher le separateur de chaînes",
     "",
-    "Näytä kanavaerottimet",
+    "",
+    "Afficher le separateur de cha�nes",
+    "",
+    "",
     "",
     "Mostrar separadores de canales",
     "",
@@ -2162,21 +2162,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit oddělení mezi stanicemi",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Display VDR channel groups as separators between your channels in 'Overview - Now'.",
-    "Anzeige von VDR-Kanalgruppen als Trennlinien zwischen den Programmen in 'Übersicht - Jetzt'.",
+    "Anzeige von VDR-Kanalgruppen als Trennlinien zwischen den Programmen in '�bersicht - Jetzt'.",
     "",
-    "Visualizza i gruppi canali come separatori tra i tuoi canali in 'Sommario - Adesso'.",
-    "Toon VDR kanaal groepen als scheidingstekens tussen de kanalen in 'Overzicht - Nu'.",
     "",
-    "Afficher les groupes de chaines avec une ligne de séparation dans la vue 'Maintenant'.",
     "",
-    "Näyttää erottimet yleiskatsauksessa kanaville.",
+    "",
+    "Afficher les groupes de chaines avec une ligne de s�paration dans la vue 'Maintenant'.",
+    "",
+    "",
     "",
     "Muestra los grupos de canales VDR como separadores entre sus canales en la pantalla 'Ahora'.",
     "",
@@ -2206,12 +2206,12 @@ const tI18nPhrase Phrases[] = {
   { "Show day separators",
     "Zeige Tages-Separatoren",
     "",
-    "Mostra separatori giorni",
-    "Toon schedingstekens tussen dagovergangen",
     "",
-    "Afficher les séparateur de jours",
     "",
-    "Näytä päiväerottimet",
+    "",
+    "Afficher les s�parateur de jours",
+    "",
+    "",
     "",
     "Mostrar separadores de d�a",
     "",
@@ -2232,21 +2232,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit oddělení mezi dny",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Display a separator line at day break in 'Schedule'.",
-    "Anzeige von Trennlinien beim Datumswechsel in der Programmübersicht.",
+    "Anzeige von Trennlinien beim Datumswechsel in der Programm�bersicht.",
     "",
-    "Visualizza una linea di separazione al cambio del giorno in 'Programmi'.",
-    "Toon een scheidingsteken tussen dagovergangen in 'Programmaoverzicht'",
     "",
-    "Afficher une ligne de séparation au changement de date dans la vue 'programme'.",
     "",
-    "Näyttää erottimet ohjelmistossa päivän vaihtuessa.",
+    "",
+    "Afficher une ligne de s�paration au changement de date dans la vue 'programme'.",
+    "",
+    "",
     "",
     "Muestra una l�nea de separaci�n al cambiar de d�a en la 'Gu�a de programaci�n'.",
     "",
@@ -2274,14 +2274,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Show radio channels",
-    "Zeige Radiokanäle",
+    "Zeige Radiokan�le",
     "",
-    "Mostra canali radio",
-    "Toon radiokanalen",
     "",
-    "Afficher les chaînes de radio",
     "",
-    "Näytä radiokanavat",
+    "",
+    "Afficher les cha�nes de radio",
+    "",
+    "",
     "",
     "Mostrar los canales de radio",
     "",
@@ -2302,21 +2302,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit radio stanice",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Show also radio channels.",
-    "Auch Radio-Kanäle anzeigen.",
+    "Auch Radio-Kan�le anzeigen.",
     "",
-    "Mostra anche i canali radio.",
-    "Toon ook radiokanalen",
     "",
-    "Afficher aussi les chaînes de radio.",
     "",
-    "Näyttää myös radiokanavat listauksessa.",
+    "",
+    "Afficher aussi les cha�nes de radio.",
+    "",
+    "",
     "",
     "Mostrar tambi�n los canales de radio",
     "",
@@ -2344,14 +2344,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Limit channels from 1 to",
-    "Kanäle begrenzen von 1 bis",
+    "Kan�le begrenzen von 1 bis",
     "",
-    "Limita canali da 1 a",
-    "Beperk aantal kanalenvan 1 tot",
     "",
-    "Limiter aux chaînes de 1 à",
     "",
-    "Näytettävien kanavien rajoitus",
+    "",
+    "Limiter aux cha�nes de 1 �",
+    "",
+    "",
     "",
     "Limitar canales de 1 a",
     "",
@@ -2372,21 +2372,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Omezit zobrazení stanic od 1 do",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$If you have a large channel set you can speed up things when you limit the displayed channels with this setting. Use '0' to disable the limit.",
-    "Bei einer sehr großen Kanalliste läßt sich der Menü-Aufbau mit dieser Einstellung durch eine Einschränkung der angezeigten Kanäle beschleunigen. Mit '0' wird das Limit aufgehoben.",
+    "Bei einer sehr gro�en Kanalliste l��t sich der Men�-Aufbau mit dieser Einstellung durch eine Einschr�nkung der angezeigten Kan�le beschleunigen. Mit '0' wird das Limit aufgehoben.",
     "",
-    "Se hai un gran numero di canali puoi velocizzarli limitando i canali visualizzati con questa impostazione. Utilizza '0' per disabilitare il limite.",
-    "Als er sprake is van een groot aantal kanalen dan kan de snelheid worden bevorderd als het aantal kanalen wordt beperkt. Gebruik '0' om de limitering op te heffen",
     "",
-    "Avec cette limite vous rendez l'affichage du menu plus rapide si vous avez une liste de chaînes très longue. Avec '0' vous enlevez la limitation.",
     "",
-    "Voit nopeuttaa toimintoja rajoittamalla näytettävien kanavien lukumäärää tällä asetuksella. Poistat rajoituksen asettamalla arvoksi nollan.",
+    "",
+    "Avec cette limite vous rendez l'affichage du menu plus rapide si vous avez une liste de cha�nes tr�s longue. Avec '0' vous enlevez la limitation.",
+    "",
+    "",
     "",
     "Si tiene un gran n�mero de canales, puede acelerar los men�s limitando los canales mostrados con �ste par�metro. Use '0' para desactivar el l�mite.",
     "",
@@ -2416,12 +2416,12 @@ const tI18nPhrase Phrases[] = {
   { "'One press' timer creation",
     "Timer mit 'Aufnehmen' sofort anlegen",
     "",
-    "Crea timer ad 'una pressione'",
-    "Maak met één toetsdruk een nieuwe timer aan",
     "",
-    "Programmation immédiate avec enregistrement",
     "",
-    "Luo ajastimet yhdellä painalluksella",
+    "",
+    "Programmation imm�diate avec enregistrement",
+    "",
+    "",
     "",
     "Crear programaci�n inmediata",
     "",
@@ -2442,21 +2442,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vytváření nahrávání 'Jedním stiskem'",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$When a timer is created with 'Record' you can choose between an immediate creation of the timer or the display of the timer edit menu.",
-    "Beim Erzeugen eines Timers mit 'Aufnehmen' kann hier zwischen dem sofortigen Anlegen des Timers oder der Anzeige des Timer-Edit-Menüs gewählt werden.",
+    "Beim Erzeugen eines Timers mit 'Aufnehmen' kann hier zwischen dem sofortigen Anlegen des Timers oder der Anzeige des Timer-Edit-Men�s gew�hlt werden.",
     "",
-    "Quando un timer è creato con 'Registra' puoi selezionare tra una creazione immediata del timer o la visualizzazione del menu modifica timer.",
-    "Als er een timer is gemaakt met 'Opname' dan kan er gekozen worden de timer direct aan te maken of eerst het 'Wijzig timer' menu te tonen.",
     "",
-    "Lors de la programmation avec 'Enregistrer' vous pouvez choisir entre créer directement ou consulter les détails de la programmation.",
     "",
-    "Valitsee oletustoiminnon ajastimen luonnille. Voit luoda ajastimen joko automaattisesti yhdellä painalluksella tai vaihtoehtoisesti avata ajastinvalikon.",
+    "",
+    "Lors de la programmation avec 'Enregistrer' vous pouvez choisir entre cr�er directement ou consulter les d�tails de la programmation.",
+    "",
+    "",
     "",
     "Cuando crea una programaci�n con 'Grabar', puede elegir entre crearla inmediatamente o mostrar el men� para editarla.",
     "",
@@ -2484,14 +2484,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Show channels without EPG",
-    "Zeige Kanäle ohne EPG",
+    "Zeige Kan�le ohne EPG",
     "",
-    "Mostra canali senza EPG",
-    "Toon kanalen zonder EPG",
     "",
-    "Afficher les chaînes sans EPG",
     "",
-    "Näytä ohjelmaoppaattomat kanavat",
+    "",
+    "Afficher les cha�nes sans EPG",
+    "",
+    "",
     "",
     "Mostrar canales sin EPG",
     "",
@@ -2512,21 +2512,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit stanice bez programu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Choose 'yes' here if you want to display channels without EPG in 'Overview - Now'. 'Ok' on these entries switches the channel.",
-    "Hier kann eingestellt werden, ob auch Programme ohne EPG in 'Übersicht - Jetzt' erscheinen sollen. Ein 'Ok' auf diesen Einträgen schaltet zu diesem Kanal um.",
+    "Hier kann eingestellt werden, ob auch Programme ohne EPG in '�bersicht - Jetzt' erscheinen sollen. Ein 'Ok' auf diesen Eintr�gen schaltet zu diesem Kanal um.",
     "",
-    "Scegli 'sì' se vuoi vedere i canali senza EPG in 'Sommario - Adesso'. 'Ok' in questi valori cambia il canale.",
-    "Kies 'ja' als er in 'Overzicht - Nu' kanalen zonder EPG moeten worden getoond. 'OK' op deze regels schakelt het kanaal in",
     "",
-    "Ici vous pouvez faire disparaitre ou non les chaines sans infos EPG dans la vue 'Maintenant'. Un 'Ok' sur le programme change sur cette chaînes.",
     "",
-    "Näyttää tämänhetkisessä yleiskatsauksessa myöskin kanavat, joilta ei löydy ohjelmatietoja. Voit vaihtaa tällaiselle kanavalle OK-näppäimellä.",
+    "",
+    "Ici vous pouvez faire disparaitre ou non les chaines sans infos EPG dans la vue 'Maintenant'. Un 'Ok' sur le programme change sur cette cha�nes.",
+    "",
+    "",
     "",
     "Elija 's�' cuando desee mostrar los canales sin EPG en la pantalla 'Ahora'. Pulse 'OK' sobre estas entradas para cambiar a ese canal.",
     "",
@@ -2554,14 +2554,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Time interval for FRew/FFwd [min]",
-    "Zeitintervall für FRew/FFwd [min]",
+    "Zeitintervall f�r FRew/FFwd [min]",
     "",
-    "Intervallo tempo FRew/FFwd [min]",
-    "Tijd interval voor FRew/FFwd [min]",
+    "",
+    "",
     "",
     "Interval pour FRew/FFwd [min]",
     "",
-    "Oletusaikasiirtymä [min]",
+    "",
     "",
     "Minutos para Rebobinar/Avanzar",
     "",
@@ -2582,21 +2582,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Posun v průvodci po FRew/FFwd [min]",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Choose here the time interval which should be used for jumping through the EPG by pressing FRew/FFwd.\n\n(If you don't have those keys, you can toggle to this functionality pressing '0' and get '<<' and '>>' on the keys green and yellow)",
-    "Hier kann die Zeitspanne eingestellt werden, die beim Drücken von FRew/FFwd als Sprung durch den EPG benutzt werden soll.\n\n(Falls diese Tasten nicht vorhanden sind, kann mit '0' ebenfalls diese Funktion erreicht werden. Man erhält dann '<<' und '>>' auf den Tasten Grün/Gelb)",
+    "Hier kann die Zeitspanne eingestellt werden, die beim Dr�cken von FRew/FFwd als Sprung durch den EPG benutzt werden soll.\n\n(Falls diese Tasten nicht vorhanden sind, kann mit '0' ebenfalls diese Funktion erreicht werden. Man erh�lt dann '<<' und '>>' auf den Tasten Gr�n/Gelb)",
     "",
-    "Scegli l'intervallo di tempo che dovrebbe essere usato per spostarsi attraverso l'EPG premendo FRew/FFwd.\n\n(Se non hai questi tasti, puoi impostare questa funzione premendo '0' ed avere '<<' e '>>' sui tasti verde e giallo)",
-    "Kies hier het tijdsinterval wat gebruikt wordt om met FRew/FFwd door de EPG te springen.\n\n(Als deze toetsen niet beschikbaar druk dan eerst op de '0' toets en daarna op 'Groen' en 'Geel' om heen en terug te springem",
     "",
-    "Ici vous règlez un laps de temps, qui est utilisé avec les touches '<<' et '>>' à travers les EPG.\n\n(Si vous n'avez pas ces touches sur votre télécommande, vous pouvez aussi atteindre ces fonctions par la touche '0' grâce à laquelle on obtient les fonctions '<<' et '>>' sur les touches Vert/Jaune)",
     "",
-    "Valitsee ohjelmaoppaan oletusaikasiirtymän pikakelausnäppäimille.\n\nJos sinulla ei ole kyseisiä näppäimiä käytössäsi, voit asettaa kyseiset toiminnot vihreälle ja keltaiselle näppäimelle painamalla näppäintä 0.",
+    "",
+    "Ici vous r�glez un laps de temps, qui est utilis� avec les touches '<<' et '>>' � travers les EPG.\n\n(Si vous n'avez pas ces touches sur votre t�l�commande, vous pouvez aussi atteindre ces fonctions par la touche '0' gr�ce � laquelle on obtient les fonctions '<<' et '>>' sur les touches Vert/Jaune)",
+    "",
+    "",
     "",
     "Elija el intervalo de tiempo que se usar� para saltar a trav�s de la EPG pulsando '<<' y '>>'.\n\n(Si no tiene estos botones en su mando a distancia, puede acceder a esta funcionalidad pulsando el bot�n '0' y tendr� las funciones '<<' y '>>' en los botones verde y amarillo)",
     "",
@@ -2624,14 +2624,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Toggle Green/Yellow",
-    "Grün/Gelb umschalten",
+    "Gr�n/Gelb umschalten",
     "",
-    "Alterna i tasti Verde/Giallo",
-    "Groen/Geel verwisselen",
+    "",
+    "",
     "",
     "Commuter vert/jaune",
     "",
-    "Käytä aikasiirtymää värinäppäimillä",
+    "",
     "",
     "Alternar Verde/Amarillo",
     "",
@@ -2652,21 +2652,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Prohodit Zelené/Žluté",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specify if green and yellow shall also be switched when pressing '0'.",
-    "Hiermit wird angegeben, ob die Tasten Grün/Gelb beim Drücken von '0' mitumgeschaltet werden sollen.",
+    "Hiermit wird angegeben, ob die Tasten Gr�n/Gelb beim Dr�cken von '0' mitumgeschaltet werden sollen.",
     "",
-    "Specifica se i tasti verde e giallo si scambieranno anche premendo '0'.",
-    "Geef aan of 'Groen' en 'Geel' ook moeten worden geschakeld als op '0' wordt gedrukt",
     "",
-    "Ici vous indiquez, si les touches Verte/Jaune sont commutées avec la touches '0'.",
     "",
-    "Määrittelee vaihdetaanko vihreän ja keltaisen näppäimen toimintoja painamalla näppäintä 0.",
+    "",
+    "Ici vous indiquez, si les touches Verte/Jaune sont commut�es avec la touches '0'.",
+    "",
+    "",
     "",
     "Especifique si los botones verde y amarillo tambi�n cambian al pulsar '0'.",
     "",
@@ -2694,14 +2694,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Show favorites menu",
-    "Zeige Favoriten-Menü",
+    "Zeige Favoriten-Men�",
     "",
-    "Mostra il menu preferiti",
-    "Toon favorieten menu",
+    "",
+    "",
     "",
     "Afficher le menu favoris",
     "",
-    "Näytä suosikkivalikko",
+    "",
     "",
     "Mostrar el men� favoritos",
     "",
@@ -2722,21 +2722,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazovat volbu Oblíbené",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$A favorites menu can display a list of your favorite broadcasts. Enable this if you want an additional menu besides 'Now' and 'Next'\nAny search can be used as a favorite. You only have to set the option 'Use in favorites menu' when editing a search.",
-    "Ein Favoriten-Menü kann eine Liste der Lieblingssendungen anzeigen. Hier auswählen, wenn neben 'Jetzt' und 'Nächste' ein solches Menü gewünscht wird.\nJede Suche kann als Favorit verwendet werden. Dazu einfach die Option 'In Favoritenmenü verw.' beim Editieren einer Suche setzen.",
+    "Ein Favoriten-Men� kann eine Liste der Lieblingssendungen anzeigen. Hier ausw�hlen, wenn neben 'Jetzt' und 'N�chste' ein solches Men� gew�nscht wird.\nJede Suche kann als Favorit verwendet werden. Dazu einfach die Option 'In Favoritenmen� verw.' beim Editieren einer Suche setzen.",
     "",
-    "Un menu preferiti può mostrare un elenco delle tue trasmissioni preferite. Abilitalo se vuoi un menu supplementare in 'Adesso' e 'Prossimi'\nQualsiasi ricerca può essere usata come preferita. Devi solo impostare l'opzione 'Utilizza nel menu preferiti' quando modifichi una ricerca.",
-    "Een favorieten menu kan een lijst van favoriete uitzendingen tonen. Activeer dit als er extra menu's naast 'Nu' en 'Next' gewenst zijn\nIedere willekeurige zoekactie kan ingezet worden als favoriet\nDaarvoor hoeft enkel de optie 'Gebruik in favorieten menu' geactiveerd te worden tijdens het aanmaken of wijzigen van een zoekactie.",
     "",
-    "Un menu favori peut contenir la liste de vos émission préférée. Faire le choix ici, si vous voulez avoir un menu favori à coté de 'Maintenant' et 'plus tard.\nChaque recherche peut être utilisé comme favori. Pour cela simplement utiliser l'option Favori lors de l'édition de recherche.",
     "",
-    "Suosikkivalikossa listataan suosikiksi merkityt ohjelmat. Jos tämä valinta on aktiivinen, suosikkivalikko löytyy 'Nyt'- ja 'Seuraavaksi'-valikkojen rinnalta. \nMikä tahansa haku voidaan merkitä suosikiksi aktivoimalla 'Käytä suosikkina'-valinta.",
+    "",
+    "Un menu favori peut contenir la liste de vos �mission pr�f�r�e. Faire le choix ici, si vous voulez avoir un menu favori � cot� de 'Maintenant' et 'plus tard.\nChaque recherche peut �tre utilis� comme favori. Pour cela simplement utiliser l'option Favori lors de l'�dition de recherche.",
+    "",
+    "",
     "",
     "Un men� de favoritos puede mostrar una lista de sus emisiones favoritas. Act�velo si desea un men� adicional a los existentes 'Ahora' y 'Despu�s'.\nAlgunas b�squedas pueden ser usadas como favoritos si activa la opci�n 'Usar en el men� favoritos' cuando edita una b�squeda.",
     "",
@@ -2764,14 +2764,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "for the next ... hours",
-    "für die nächsten ... Stunden",
+    "f�r die n�chsten ... Stunden",
     "",
-    "per le prossime ... ore",
-    "de komende ... uur",
+    "",
+    "",
     "",
     "pour les prochaines ... heures",
     "",
-    "seuraaville ... tunnille",
+    "",
     "",
     "para las pr�ximas ... horas",
     "",
@@ -2792,21 +2792,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "na příštích ... hodin",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$This value controls the timespan used to display your favorites.",
-    "Mit diesem Wert wird die Zeitspanne eingestellt, für die Favoriten angezeigt werden sollen.",
+    "Mit diesem Wert wird die Zeitspanne eingestellt, f�r die Favoriten angezeigt werden sollen.",
     "",
-    "Questo valore controlla il tipo di ora usata per visualizzare i tuoi preferiti.",
-    "Deze waarde regelt het interval dat wordt gebruikt voor het tonen van de favorieten",
     "",
-    "Avec cette valeur vous réglez un interval, pour afficher les favoris.",
     "",
-    "Tämä arvo määrittelee käytetyn ajanjakson suosikkien näyttämiselle.",
+    "",
+    "Avec cette valeur vous r�glez un interval, pour afficher les favoris.",
+    "",
+    "",
     "",
     "�ste valor controla el intervalo usado para mostrar sus favoritos.",
     "",
@@ -2836,12 +2836,12 @@ const tI18nPhrase Phrases[] = {
   { "Use user-defined time",
     "Verw. benutzerdef. Zeit",
     "",
-    "Utilizza ora utente",
-    "Gebruik gebruiker's tijd",
+    "",
+    "",
     "",
     "Utiliser le temps de l'utilisateur",
     "",
-    "Määrittele ajankohta",
+    "",
     "",
     "Usar horario definido por usuario",
     "",
@@ -2862,21 +2862,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Uživateské časy",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Besides 'Now' and 'Next' you can specify up to 4 other times in the EPG which can be used by repeatedly pressing the green key, e.g. 'prime time', 'late night',...",
-    "Neben 'Jetzt' und 'Nächste' können bis zu 4 weitere Zeiten im EPG angegeben werden, die durch wiederholtes Drücken der Taste Grün verwendet werden können, z.B. 'Abends', 'Spätabend',...",
+    "Neben 'Jetzt' und 'N�chste' k�nnen bis zu 4 weitere Zeiten im EPG angegeben werden, die durch wiederholtes Dr�cken der Taste Gr�n verwendet werden k�nnen, z.B. 'Abends', 'Sp�tabend',...",
     "",
-    "All'interno di 'Adesso' e 'Prossimi' puoi specificare fino ad altre 4 ore nell'EPG che può essere usato ripetutamente premendo il tasto verde, esempio 'prima serata', 'tarda sera',...",
-    "Naast 'Nu' en 'Straks' kunnen nog 4 andere tijden in de EPG worden gespeficiteerd. Deze kunnen worden benaderd door herhaaldelijk op de 'Groene'toets te drukken, bv 'prime time', 'late night'...",
     "",
-    "En plus de 'Maintenant' et 'Après' vous pouvez définir encore 4 autres crénaux comme 'Le soir', 'La nuit' ou 'encore plus tard' en appuyant plusieurs fois sur la touche verte...",
     "",
-    "Määrittelee käyttäjän muokattavissa olevat ajankohdat 'Nyt' ja 'Seuraavaksi' näyttöjen rinnalle ohjelmaoppaan yleiskatsaukseen.",
+    "",
+    "En plus de 'Maintenant' et 'Apr�s' vous pouvez d�finir encore 4 autres cr�naux comme 'Le soir', 'La nuit' ou 'encore plus tard' en appuyant plusieurs fois sur la touche verte...",
+    "",
+    "",
     "",
     "Adem�s de 'Ahora' y 'Despu�s' puede definir hasta 4 horarios distintos en la EPG, que pueden usarse pulsando varias veces el bot�n verde, p.e. 'hora de mayor audiencia', 'medianoche', ...",
     "",
@@ -2906,12 +2906,12 @@ const tI18nPhrase Phrases[] = {
   { "Description",
     "Beschreibung",
     "",
-    "Descrizione",
-    "Beschrijving",
+    "",
+    "",
     "",
     "Description",
     "",
-    "Kuvaus",
+    "",
     "",
     "Descripci�n",
     "",
@@ -2932,21 +2932,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Popis",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$This is the description for your user-defined time as it will appear as label on the green button.",
-    "Dies ist die Beschreibung für die benutzer-definierte Zeit, wie sie als Beschriftung für die Taste Grün verwendet werden soll.",
+    "Dies ist die Beschreibung f�r die benutzer-definierte Zeit, wie sie als Beschriftung f�r die Taste Gr�n verwendet werden soll.",
     "",
-    "Questa è la descrizione dell'ora definita dall'utente che apparirà come etichetta nel pulsante verde.",
-    "Dit is de beschrijving van de gebruiker-gedefinieerde tijd zoals het als label bij de toets 'Groen' verschijnt",
+    "",
+    "",
     "",
     "Ici la description des temps utilisateurs, accessible en appuyant plusieurs foix sur la touche verte",
     "",
-    "Asettaa kuvauksen vihreään näppäimeen käyttäjän muokkaamalle ajankohdalle.",
+    "",
     "",
     "�sta es la descripci�n de su horario definido que se mostrar� como etiqueta del bot�n verde.",
     "",
@@ -2976,12 +2976,12 @@ const tI18nPhrase Phrases[] = {
   { "Time",
     "Zeit",
     "",
-    "Orario",
-    "Tijd",
+    "",
+    "",
     "",
     "Temps",
     "",
-    "Kellonaika",
+    "",
     "",
     "Horario",
     "",
@@ -3002,7 +3002,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Čas",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -3011,12 +3011,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$Specify the user-defined time here in 'HH:MM'.",
     "Hier wird die benutzer-definierte Zeit im Format 'HH:MM' angegeben.",
     "",
-    "Specifica l'ora definita qui dall'utente in 'HH:MM'.",
-    "Specificeer hier de gebruiker-gedefinieerde tijd als 'HH:MM'",
     "",
-    "Ici vous définisez le temps utilisateur dans le format 'HH:MM' par exemple '20:45'",
     "",
-    "Asettaa kellonajan käyttäjän muokkaamalle ajankohdalle.",
+    "",
+    "Ici vous d�finisez le temps utilisateur dans le format 'HH:MM' par exemple '20:45'",
+    "",
+    "",
     "",
     "Especifique el horario definido en 'HH:MM'.",
     "",
@@ -3046,12 +3046,12 @@ const tI18nPhrase Phrases[] = {
   { "Use VDR's timer edit menu",
     "VDR's Timer-Edit-Menu verw.",
     "",
-    "Utilizza menu modifica timer VDR",
-    "Gebruik VDR's timer bewerkingsmenu",
     "",
-    "Utiliser le menu édition VDR-programme",
     "",
-    "Käytä alkuperäistä ajastinvalikkoa",
+    "",
+    "Utiliser le menu �dition VDR-programme",
+    "",
+    "",
     "",
     "Usar men� editar programaci�n VDR",
     "",
@@ -3072,21 +3072,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Použít výchozí menu pro nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$This plugin has its own timer edit menu extending the original one with some extra functionality like\n- an additional directory entry\n- user-defined days of week for repeating timers\n- adding an episode name\n- support for EPG variables (see MANUAL)",
-    "Diese Plugin hat sein eigenes Timer-Edit-Menü, das das orginale um einige zusätzliche Funktionen erweitert:\n\n- ein zusätzlicher Verzeichniseintrag\n- benutzerdef. Wochentage für Wiederh.-Timer\n- Ergänzung um Episodenname\n- Unterstützung von EPG-Variablen (s.MANUAL)",
+    "Diese Plugin hat sein eigenes Timer-Edit-Men�, das das orginale um einige zus�tzliche Funktionen erweitert:\n\n- ein zus�tzlicher Verzeichniseintrag\n- benutzerdef. Wochentage f�r Wiederh.-Timer\n- Erg�nzung um Episodenname\n- Unterst�tzung von EPG-Variablen (s.MANUAL)",
     "",
-    "Questo plugin ha il suo menu modifica timer che estende quello originale con alcune funzionalità extra come:\n- un voce directory supplementare\n- giorni della settimana definiti dall'utente per i timer ripetuti\n- aggiunta nome episodio\n- supporto per variabili EPG (vedi MANUAL)",
-    "Deze plugin beschikt over zijn eigen timer bewerkingsmenu die de originele uitbreid met extra functionaliteit zoals\n- een extra regel voor een map\n- gebruiker-gedefinieerde dagen van de week voor herhaal-timers\n- toevoegen van een 'episode naam'\n- ondersteuning voor EPG variabelen (see MANUAL)",
     "",
-    "Ce plugin a sont propre éditeur de programmation, qui enrichit l'originale avec beaucoup le fonctions interressantes:\n\n- une entrée de dossier supplèmentaire\n- des programmations hebdomadaires définies par l'utilisateur\n- l'utilisation de variable de l'EPG (voire MANUAL)",
     "",
-    "Tällä laajennoksella on oma laajennettu ajastinvalikko mm. seuraavilla lisätoiminnoilla:\n\n- hakemiston määritys\n- vapaasti määriteltävät viikonpäivät toistuville ajastimille\n- jakson nimen täydennys\n- erilaisten EPG-muuttujien tuki (ks. MANUAL-tiedostosta)",
+    "",
+    "Ce plugin a sont propre �diteur de programmation, qui enrichit l'originale avec beaucoup le fonctions interressantes:\n\n- une entr�e de dossier suppl�mentaire\n- des programmations hebdomadaires d�finies par l'utilisateur\n- l'utilisation de variable de l'EPG (voire MANUAL)",
+    "",
+    "",
     "",
     "Este plugin posee un editor de programaciones que ampl�a el original con ciertas funcionalidades adicionales como:\n- una entrada adicional de directorio\n- definir d�as de la semana para repetir programaciones\n- a�adir el nombre del episodio\n- soporte para variables EPG (ver el MANUAL)",
     "",
@@ -3116,12 +3116,12 @@ const tI18nPhrase Phrases[] = {
   { "Default recording dir",
     "Standard Aufn.-Verzeichnis",
     "",
-    "Dir. predefinita registrazione",
-    "Standaard map voor opnames",
+    "",
+    "",
     "",
     "Dossier d'enregistrement standart",
     "",
-    "Oletushakemisto tallenteille",
+    "",
     "",
     "Dir. de grabaci�n por defecto",
     "",
@@ -3142,7 +3142,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Výchozí adresář pro nahrávky",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -3151,12 +3151,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$When creating a timer you can specify here a default recording directory.",
     "Beim Anlegen eines Timers kann hier ein Standard-Aufnahmeverzeichnis vorgegeben werden.",
     "",
-    "Quando si crea un timer puoi specificare una directory di registrazione.",
-    "Bij het aanmaken van een timer kan hier de standaard opname map worden opgegeven",
     "",
-    "Lors de la programmation vous pouvez définir un dossier par défaut.",
     "",
-    "Määrittelee oletushakemiston tallenteille.",
+    "",
+    "Lors de la programmation vous pouvez d�finir un dossier par d�faut.",
+    "",
+    "",
     "",
     "Cuando crea una programaci�n, aqu� puede especificar un directorio por defecto para la grabaci�n.",
     "",
@@ -3186,12 +3186,12 @@ const tI18nPhrase Phrases[] = {
   { "Add episode to manual timers",
     "Untertitel in manuellen Timern",
     "",
-    "Aggiungi episodi ai timer manuali",
-    "Voeg episode toe aan handmatige timers",
+    "",
+    "",
     "",
     "Ajouter sous-titre dans la programmation manuel",
     "",
-    "Lisää jakson nimi norm. ajastimiin",
+    "",
     "",
     "A�adir episodio a prog. manual",
     "",
@@ -3212,21 +3212,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přidávat název dílu do Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$If you create a timer for a series, you can automatically add the episode name.\n\n- never: no addition\n- always: always add episode name if present\n- smart: add only if event lasts less than 80 mins.",
-    "Wenn man einen Timer für eine Serie erzeugt, kann mit dieser Option automatisch der Episodenname ergänzt werden.\n\n- niemals: keine Ergänzung\n- immer: immer ergänzen, falls Episodenname vorhanden.\n- intelligent: nur ergänzen, wenn Sendung weniger als 80 min dauert",
+    "Wenn man einen Timer f�r eine Serie erzeugt, kann mit dieser Option automatisch der Episodenname erg�nzt werden.\n\n- niemals: keine Erg�nzung\n- immer: immer erg�nzen, falls Episodenname vorhanden.\n- intelligent: nur erg�nzen, wenn Sendung weniger als 80 min dauert",
     "",
-    "Se crei un timer per le serie, puoi automaticamente aggiungere il nome episodio.\n\n- mai: nessuna aggiunta\n- sempre: aggiunge sempre un nome episodio se presente\n- veloce: lo aggiunge solo se l'evento termina in meno di 80 minuti",
-    "Als er een herhaaltimer wordt aangemaakt voor series, dan kan er automatisch de episode naam worden toegevoegd.\n\n- nooit: voeg niets toe\n- altijd: voeg altijd de episode naam toe indien aanwezig\n- smart: voeg alleen toe wanneer programma minder dan 80 min duurt.",
     "",
-    "Lorsque l'on créé une programmation d'une série, on peut voir automatiquement le nom de l'épisode.\n\n- Jamais: sans nom d'épisode\n- Toujours:Compléter toujours avec le noms de l'épisode, si existant.\n- intelligent: compléter, si l'épisode dure moins de 80 min",
     "",
-    "Asettaa toiminnon sarjatallennuksen jakson nimen lisäykselle:\n\n- ei koskaan: ei lisätä\n- aina: lisätään aina, jos olemassa\n- älykkäästi: lisätään vain, jos tapahtuman kesto on alle 80 min",
+    "",
+    "Lorsque l'on cr�� une programmation d'une s�rie, on peut voir automatiquement le nom de l'�pisode.\n\n- Jamais: sans nom d'�pisode\n- Toujours:Compl�ter toujours avec le noms de l'�pisode, si existant.\n- intelligent: compl�ter, si l'�pisode dure moins de 80 min",
+    "",
+    "",
     "",
     "Cuando crea una programaci�n en serie, puede a�adir autom�ticamente el nombre del episodio.\n\n- nunca: no a�adir\n- siempre: si existe, a�adir siempre el nombre del episodio\n- inteligente: a�adir solamente si la emisi�n dura menos de 80 minutos.",
     "",
@@ -3254,14 +3254,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Default timer check method",
-    "Standard-Timer-Prüfmethode",
+    "Standard-Timer-Pr�fmethode",
     "",
-    "Metodo verifica timer predefinito",
-    "Standaard timer controle methode",
     "",
-    "Méthode standart de vérification de programmation",
     "",
-    "Oletustapa ajastimen valvonnalle",
+    "",
+    "M�thode standart de v�rification de programmation",
+    "",
+    "",
     "",
     "M�todo de comprobaci�n por defecto",
     "",
@@ -3282,21 +3282,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Výchozí kontrola plán. Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Manual timers can be checked for EPG changes. Here you can setup the default check method for each channel. Choose between\n\n- no checking\n- by event ID: checks by an event ID supplied by the channel provider.\n- by channel and time: check by the duration match.",
-    "Manuelle Timer können hinsichtlich EPG-Änderungen überwacht werden. Hier kann die Standard-Prüfmethode für jeden Kanal hinterlegt werden. Zur Wahl stehen:\n\n- keine Prüfung\n- anhand Sendungskennung: geprüft wird anhand einer Kennung, die durch den Sender vergeben wird.\n- anhand Sender/Uhrzeit: geprüft wird anhand der Sendung, die am besten zur Dauer der ursprünglichen Sendung passt.",
+    "Manuelle Timer k�nnen hinsichtlich EPG-�nderungen �berwacht werden. Hier kann die Standard-Pr�fmethode f�r jeden Kanal hinterlegt werden. Zur Wahl stehen:\n\n- keine Pr�fung\n- anhand Sendungskennung: gepr�ft wird anhand einer Kennung, die durch den Sender vergeben wird.\n- anhand Sender/Uhrzeit: gepr�ft wird anhand der Sendung, die am besten zur Dauer der urspr�nglichen Sendung passt.",
     "",
-    "I timer manuali possono essere verificati con le modifiche EPG. Qui puoi impostare il metodo di verifica predefinito per ciascun canale. Scegli tra:\n\n- nessuna verifica\n- ID evento: verifica da un ID evento fornito dall'emittente del canale.\n- canale e ora: verifica la corrispondenza della durata.",
-    "Handmatige timers kunnen worden gecontroleerd op EPG veranderingen. Hier kan de standaard methode voor ieder kanaal ingesteld worden. Kies uit\n\n- geen controle\n- op event-ID: kontroleert m.b.v. een event-ID meegzonden door de TV Provider.\n- op kanaal an tijd: controleer of de tijdsduur overeenkomt.",
     "",
-    "Des programmations manuelles peuvent être surveillés par rapport au changement d'EPG. Ici vous pouvez définir une méthode de vérification standart pour chaque chaîne. Les choix:\n\n- pas de vérification\n- à partir du numéro d'émission: la vérification se fait à partir d'un numéro délivré par l'émetteur.\n- à partir de la chaîne/heure: vérification à partir de l'émission, qui est la mieux adaptée avec la durée de l'émission initiale.",
     "",
-    "Käsinluotuja ajastimia voidaan valvoa ohjelmaoppaan muutoksia vasten. Voit asettaa oletustavan jokaista kanavaa kohden:\n\n- ei valvontaa\n- tapahtuman tunniste: ohjelmisto-oppaassa lähetettävän tunnisteen mukaan\n- kanava ja aika: tapahtuman keston ja ajankohdan mukaan",
+    "",
+    "Des programmations manuelles peuvent �tre surveill�s par rapport au changement d'EPG. Ici vous pouvez d�finir une m�thode de v�rification standart pour chaque cha�ne. Les choix:\n\n- pas de v�rification\n- � partir du num�ro d'�mission: la v�rification se fait � partir d'un num�ro d�livr� par l'�metteur.\n- � partir de la cha�ne/heure: v�rification � partir de l'�mission, qui est la mieux adapt�e avec la dur�e de l'�mission initiale.",
+    "",
+    "",
     "",
     "Las programaciones manuales pueden comprobar cambios en la EPG. Aqu� puede establecer el m�todo de comprobaci�n por defecto para cada canal. Elija entre\n\n- sin comprobaci�n.\n- por ID de emisi�n: comprueba un ID de emisi�n suministrado por el emisor del canal.\n- por canal y hora: comprueba que coincida la duraci�n.",
     "",
@@ -3325,34 +3325,34 @@ const tI18nPhrase Phrases[] = {
   },
   { "Button$Setup",
     "Einstellungen",
-    "Nastavitve",
-    "Opzioni",
-    "Instellingen",
-    "Configurar",
+    "",
+    "",
+    "",
+    "",
     "Configuration",
-    "Konfigurasjon",
-    "Asetukset",
-    "Nastawy",
+    "",
+    "",
+    "",
     "Configuraci�n",
     "",
-    "Inställningar",
-    "Configuraţie",
-    "Beállítások",
-    "Configuració",
+    "",
+    "",
+    "",
+    "",
 #if VDRVERSNUM >= 10302
-    "Настройка",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
-    "Konfiguracija",
+    "",
 #endif
 #if VDRVERSNUM >= 10313
-    "Sätted",
+    "",
 #endif
 #if VDRVERSNUM >= 10316
-    "Indstillinger",
+    "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nastavení",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -3361,12 +3361,12 @@ const tI18nPhrase Phrases[] = {
   { "Use search timers",
     "Verwende Suchtimer",
     "",
-    "Utilizza timer di ricerca",
-    "Gebruik zoektimers",
+    "",
+    "",
     "",
     "Utiliser le programmeur de recherche",
     "",
-    "Käytä hakuajastimia",
+    "",
     "",
     "Usar programaciones por b�squeda",
     "",
@@ -3387,21 +3387,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Používat Automatické nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$'Search timers' can be used to automatically create timers for events that match your search criterions.",
-    "'Suchtimer' können verwendet werden um automatisch Timer für Sendungen zu erstellen, die von einer Suche gefunden werden.",
+    "'Suchtimer' k�nnen verwendet werden um automatisch Timer f�r Sendungen zu erstellen, die von einer Suche gefunden werden.",
     "",
-    "'Cerca timer' può essere usato per creare automaticamente timer per eventi che corrispondano a criteri di ricerca.",
-    "Zoektimers kunnen worden gebruikt om automatisch timers te maken o.b.v. programma's die voldoen aan bepaalde zoekcriteria.",
     "",
-    "'Programmation de recherche' peut être utilisé pour programmer automatiquement des émissions, qui sont trouvées par la recherche.",
     "",
-    "Hakuajastimilla luodaan automaattisesti ajastimia hakuehtoihin sopiviin tapahtumiin.",
+    "",
+    "'Programmation de recherche' peut �tre utilis� pour programmer automatiquement des �missions, qui sont trouv�es par la recherche.",
+    "",
+    "",
     "",
     "'Programaciones por b�squeda' se usa para crear autom�ticamente programaciones de emisiones que coincidan con los criterios de b�squeda.",
     "",
@@ -3431,12 +3431,12 @@ const tI18nPhrase Phrases[] = {
   { "  Update interval [min]",
     "  Aktualisierungsintervall [min]",
     "",
-    "  Intervallo aggiorn. [min]",
-    "  Update interval [min]",
+    "",
+    "",
     "",
     "  Interval d'actualisation [min]",
     "",
-    "  Päivitysväli [min]",
+    "",
     "",
     "  Intervalo de actualizaci�n [min]",
     "",
@@ -3457,7 +3457,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    " Interval mezi hledáním [min]",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -3466,12 +3466,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$Specify here the time intervall to be used when searching for events in the background.",
     "Hier kann das Zeitintervall angegeben werden, in dem im Hintergrund automatisch nach neuen Sendungen gesucht werden soll.",
     "",
-    "Specifica l'intervallo di tempo da usare durante la ricerca di eventi in sottofondo.",
-    "Geef hier het tijdsinterval op dat wordt gebruikt om op de achtergrond te zoeken naar programma's",
     "",
-    "Ici vous indiquez l'interval avec lequel de nouvelles émissions a programmer sont recherchées.",
     "",
-    "Määrittelee päivitysvälin hakuajastimien taustapäivitykselle.",
+    "",
+    "Ici vous indiquez l'interval avec lequel de nouvelles �missions a programmer sont recherch�es.",
+    "",
+    "",
     "",
     "Especifique el intervalo de tiempo con el que se buscar�n nuevas emisiones.",
     "",
@@ -3501,12 +3501,12 @@ const tI18nPhrase Phrases[] = {
   { "  SVDRP port",
     "  SVDRP Port",
     "",
-    "  Porta SVDRP",
-    "  SVDRP poort",
+    "",
+    "",
     "",
     "  SVDRP Port",
     "",
-    "  SVDRP-portti",
+    "",
     "",
     "  Puerto SVDRP",
     "",
@@ -3534,14 +3534,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$Programming of new timers or timer changes is done with SVDRP. The default value should be correct, so change it only if you know what you are doing.",
-    "Die Programmierung neuer Timer oder Timer-Änderungen erfolgt mit SVDRP. Der Vorgabewert hier sollte immer korrekt sein, also nur ändern, wenn man weiß, was man tut.",
+    "Die Programmierung neuer Timer oder Timer-�nderungen erfolgt mit SVDRP. Der Vorgabewert hier sollte immer korrekt sein, also nur �ndern, wenn man wei�, was man tut.",
     "",
-    "La programmazione di nuovi timer o la modifica dei timer viene fatta con SVDRP. Il valore predefinito dovrebbe essere corretto, quindi cambialo solo se sai cosa stai facendo.",
-    "Het programmeren of wijzigen van timers wordt gedaan met SVDRP. De standaard waarde moet goed staan, dus wijzig dit allen als er echt reden toe is.",
     "",
-    "La programmation de nouveaux enregistrements ou changements de programmation est réalisé avec SVDRP. La valeur par défaut doit absolument être correcte, ne la changez que si vous savez ce que vous faites.",
     "",
-    "Uusien ajastimien luonti ja olemassa olevien muokkaus on toteutettu SVDRP-protokollan kautta. Suositellaan käytettävän vain oletusarvoa.",
+    "",
+    "La programmation de nouveaux enregistrements ou changements de programmation est r�alis� avec SVDRP. La valeur par d�faut doit absolument �tre correcte, ne la changez que si vous savez ce que vous faites.",
+    "",
+    "",
     "",
     "Las nuevas programaciones o cambios de programaci�n se realizan con SVDRP. El valor por defecto debe ser correcto, s�lo modif�quelo si sabe lo que est� haciendo.",
     "",
@@ -3569,14 +3569,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$Specify here the default priority of timers created with this plugin. This value can also be adjusted for each search itself.",
-    "Hier wird die Standard-Priorität für Timer angegeben, die von diesem Plugin erzeugt werden. Dieser Wert kann aber auch bei jeder Suche einzeln gesetzt werden.",
+    "Hier wird die Standard-Priorit�t f�r Timer angegeben, die von diesem Plugin erzeugt werden. Dieser Wert kann aber auch bei jeder Suche einzeln gesetzt werden.",
     "",
-    "Specifica qui la priorità predefinita dei timer creati con questo plugin. Questo valore può anche essere adattato per ciascuna ricerca.",
-    "Bepaal hier de standaard prioriteit van timers aangemaakt met deze plugin. Deze waarde kan ook worden aangepast voor iedere afzonderlijke zoekactie",
     "",
-    "Ici vous définissez la priorité standard de la programmation crée par le plugin. Cette valeur peut être réglée de facon individuelle pour chaque recherche.",
     "",
-    "Määrittelee oletusprioriteetin tämän laajennoksen kautta luotaville ajastimille. Prioriteettia voidaan muokata ajastinkohtaisesti.",
+    "",
+    "Ici vous d�finissez la priorit� standard de la programmation cr�e par le plugin. Cette valeur peut �tre r�gl�e de facon individuelle pour chaque recherche.",
+    "",
+    "",
     "",
     "Especifique la prioridad por defecto de las programaciones creadas con este plugin. �ste valor tambi�n lo puede establecer para cada b�squeda.",
     "",
@@ -3604,14 +3604,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$Specify here the default lifetime of timers/recordings created with this plugin. This value can also be adjusted for each search itself.",
-    "Hier wird die Standard-Lebensdauer für Timer angegeben, die von diesem Plugin erzeugt werden. Dieser Wert kann aber auch bei jeder Suche einzeln gesetzt werden.",
+    "Hier wird die Standard-Lebensdauer f�r Timer angegeben, die von diesem Plugin erzeugt werden. Dieser Wert kann aber auch bei jeder Suche einzeln gesetzt werden.",
     "",
-    "Specifica qui la durata predefinita dei timer/registrazioni creati con questo plugin. Questo valore può anche essere adattato per ciascuna ricerca.",
-    "Bepaal hier de standaard levensduur van timers/opnames aangemaakt door deze plugin. Deze waarde kan ook worden aangepast voor iedere afzonderlijke zoekactie",
     "",
-    "Ici vous définissez la durée de vie de l'enregistrement crée par le plugin. Cette valeur pe        ut être réglée de facon individuelle pour chaque recherche.",
     "",
-    "Määrittelee oletuseliniän tämän laajennoksen kautta luotaville ajastimille. Elinaikaa voidaan muokata ajastinkohtaisesti.",
+    "",
+    "Ici vous d�finissez la dur�e de vie de l'enregistrement cr�e par le plugin. Cette valeur pe        ut �tre r�gl�e de facon individuelle pour chaque recherche.",
+    "",
+    "",
     "",
     "Especifique el tiempo de duraci�n por defecto de las programaciones/grabaciones creadas con este plugin. �ste valor tambi�n lo puede establecer para cada b�squeda.",
     "",
@@ -3639,14 +3639,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$Specify here the default start recording margin of timers/recordings created with this plugin. This value can also be adjusted for each search itself.",
-    "Hier wird die Standard-Vorlaufzeit für Timer angegeben, die von diesem Plugin erzeugt werden. Dieser Wert kann aber auch bei jeder Suche einzeln gesetzt werden.",
+    "Hier wird die Standard-Vorlaufzeit f�r Timer angegeben, die von diesem Plugin erzeugt werden. Dieser Wert kann aber auch bei jeder Suche einzeln gesetzt werden.",
     "",
-    "Specifica qui il margine predefinito di inizio della registrazione dei timer/registrazioni creati con questo plugin. Questo valore può anche essere adattato per ciascuna ricerca.",
-    "Bepaal hier de standaard start opname-marge van timers/opnames aangemaakt door deze plugin. Deze waarde kan ook worden aangepast voor iedere afzonderlijke zoekactie",
     "",
-    "Ici vous définissez la marge antérieure à la programmation crée par le plugin. Cette valeur peut être réglée de facon individuelle pour chaque recherche.",
     "",
-    "Määrittelee oletusmarginaalin tallennuksen aloitukselle tämän laajennoksen kautta luotaville ajastimille. Marginaaleja voidaan muokata ajastinkohtaisesti.",
+    "",
+    "Ici vous d�finissez la marge ant�rieure � la programmation cr�e par le plugin. Cette valeur peut �tre r�gl�e de facon individuelle pour chaque recherche.",
+    "",
+    "",
     "",
     "Especifique el margen de tiempo por defecto para el inicio de las programaciones/grabaciones creadas con este plugin. �ste valor tambi�n lo puede establecer para cada b�squeda.",
     "",
@@ -3674,14 +3674,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$Specify here the default stop recording margin of timers/recordings created with this plugin. This value can also be adjusted for each search itself.",
-    "Hier wird die Standard-Nachlaufzeit für Timer angegeben, die von diesem Plugin erzeugt werden. Dieser Wert kann aber auch bei jeder Suche einzeln gesetzt werden.",
+    "Hier wird die Standard-Nachlaufzeit f�r Timer angegeben, die von diesem Plugin erzeugt werden. Dieser Wert kann aber auch bei jeder Suche einzeln gesetzt werden.",
     "",
-    "Specifica qui il margine predefinito di fine registrazione dei timer/registrazioni creati con questo plugin. Questo valore può anche essere adattato per ciascuna ricerca.",
-    "Bepaal hier de standaard stop opname-marge van timers/opnames aangemaakt door deze plugin. Deze waarde kan ook worden aangepast voor iedere afzonderlijke zoekactie",
     "",
-    "Ici vous définissez la marge postérieure de la programmation crée par le plugin. Cette valeur peut être réglée de facon individuelle pour chaque recherche.",
     "",
-    "Määrittelee oletusmarginaalin tallennuksen lopetukselle tämän laajennoksen kautta luotaville ajastimille. Marginaaleja voidaan muokata ajastinkohtaisesti.",
+    "",
+    "Ici vous d�finissez la marge post�rieure de la programmation cr�e par le plugin. Cette valeur peut �tre r�gl�e de facon individuelle pour chaque recherche.",
+    "",
+    "",
     "",
     "Especifique el margen de tiempo por defecto para el final de las programaciones/grabaciones creadas con este plugin. �ste valor tambi�n lo puede establecer para cada b�squeda.",
     "",
@@ -3709,14 +3709,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "No announcements when replaying",
-    "Keine Ankündigungen bei Wiedergabe",
+    "Keine Ank�ndigungen bei Wiedergabe",
     "",
-    "Nessun annuncio durante riproduzione",
-    "Geen meldingen tijdens afspelen",
+    "",
+    "",
     "",
     "Pas d'annonces lors de la lecture",
     "",
-    "Älä muistuta toiston aikana",
+    "",
     "",
     "Sin avisos mientras se reproduce",
     "",
@@ -3737,21 +3737,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nezobrazovat infromace při přehrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if you don't like to get any announcements of broadcasts if you currently replay anything.",
-    "Bitte auf 'Ja' setzen, wenn während einer Wiedergabe keine Ankündigungen über Sendungen erwünscht sind.",
+    "Bitte auf 'Ja' setzen, wenn w�hrend einer Wiedergabe keine Ank�ndigungen �ber Sendungen erw�nscht sind.",
     "",
-    "Imposta 'sì' se non ti piace avere degli annunci dalle emittenti se stai attualmente riproducendo qualcosa.",
-    "Kies 'ja' indien er geen meldingen van toekomstige uitzendingen gewenst zijn als er op dat moment iets wordt afgespeeld",
     "",
-    "Mettez 'oui' si aucune annonce d'émission n'est voulue pendant la lecture.",
     "",
-    "Laittamalla tämän asetuksen päälle et saa ohjelmista muistutuksia toistettaessa tallenteita.",
+    "",
+    "Mettez 'oui' si aucune annonce d'�mission n'est voulue pendant la lecture.",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando no desee recibir ning�n aviso de emisiones durante una reproducci�n.",
     "",
@@ -3779,14 +3779,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Recreate timers after deletion",
-    "Timer nach Löschen neuprogrammieren",
+    "Timer nach L�schen neuprogrammieren",
     "",
-    "Ricrea timer dopo eliminazione",
-    "Maak timer opnieuw aan na verwijderen",
     "",
-    "Recrer la programmation après l'éffacement",
     "",
-    "Luo ajastimet uudelleen",
+    "",
+    "Recrer la programmation apr�s l'�ffacement",
+    "",
+    "",
     "",
     "Recrear programaciones tras borrar",
     "",
@@ -3807,21 +3807,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Znovu vytvořit Nahrávání i po smazání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if you want timers to be recreated with the next search timer update after deleting them.",
-    "Hier 'Ja' wählen, wenn gelöschte Timer mit dem nächsten Suchtimer-Update neu programmiert werden sollen.",
+    "Hier 'Ja' w�hlen, wenn gel�schte Timer mit dem n�chsten Suchtimer-Update neu programmiert werden sollen.",
     "",
-    "Imposta 'sì' se vuoi ricreare i timer con la successiva ricerca di aggiornamento timer dopo la loro eliminazione.",
-    "Kies 'ja' als timers na het verwijderen opnieuw moeten worden aangemaakt met een nieuwe zoek-timer update",
     "",
-    "Choisissez 'oui' pour refaire les programmations de recherche lorsque vous les avez effacés.",
     "",
-    "Laittamalla tämän asetuksen päälle saat luotua ajastimet uudelleen seuraava hakuajastin päivityksen yhteydessä, jos olet poistanut ne.",
+    "",
+    "Choisissez 'oui' pour refaire les programmations de recherche lorsque vous les avez effac�s.",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando desee que las programaciones se creen de nuevo con la siguiente actualizaci�n de programaci�n por b�squeda despu�s de borrarlas.",
     "",
@@ -3849,14 +3849,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Check if EPG exists for ... [h]",
-    "Prüfe ob EPG für ... [h] existiert",
-    "",
-    "Verifica se l'EPG esiste per ... [h]",
+    "Pr�fe ob EPG f�r ... [h] existiert",
     "",
     "",
     "",
     "",
-    "Tarkasta tulevat ohjelmatiedot... [h]",
+    "",
+    "",
+    "",
     "",
     "Comprobar si hay EPG durante ... [h]",
     "",
@@ -3877,21 +3877,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Kontrolvat zda je .. [h] programu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specify how many hours of future EPG there should be and get warned else after a search timer update.",
-    "Hier kann angeben werden wie viele Stunden zukünftigen EPGs existieren sollen und andernfalls nach einem Suchtimer Update gewarnt werden.",
+    "Hier kann angeben werden wie viele Stunden zuk�nftigen EPGs existieren sollen und andernfalls nach einem Suchtimer Update gewarnt werden.",
     "",
-    "Specifica quante ore degli EPG futuri dovrebbero essere notificati anche dopo un aggiornamento del timer di ricerca.",
-    "Kies 'ja' als de conflict controle moet worden uitgevoerd na het verversen van iedere zoek-timer",
     "",
-    "Avec 'Oui' vous impliquez la vérification de conflits à la mise à jours de la recherche.",
     "",
-    "Määrittelee vaadittavat tulevat ohjelmatiedot tunteina hakuajastimien päivityksen yhteydessä, jonka jälkeen käyttäjää varoitetaan.",
+    "",
+    "Avec 'Oui' vous impliquez la v�rification de conflits � la mise � jours de la recherche.",
+    "",
+    "",
     "",
     "Especifique el n�mero de horas futuras de EPG que deber�a haber y si no las hay ser� avisado despu�s de actualizar una programaci�n por b�squeda.",
     "",
@@ -3921,12 +3921,12 @@ const tI18nPhrase Phrases[] = {
   { "Warn by OSD",
     "per OSD warnen",
     "",
-    "Notifica tramite OSD",
-    "Alleen aankondigen (geen timer)",
     "",
-    "Annoncer seulement début d'une programme",
     "",
-    "Muistuta kuvaruutunäytöllä",
+    "",
+    "Annoncer seulement d�but d'une programme",
+    "",
+    "",
     "",
     "Avisar por el OSD",
     "",
@@ -3947,21 +3947,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Informovat na obrazovce",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if you want get warnings from the EPG check via OSD.",
-    "Hier mit 'Ja' auswählen, ob eine Warnung zum EPG Check per OSD gewünscht ist.",
+    "Hier mit 'Ja' ausw�hlen, ob eine Warnung zum EPG Check per OSD gew�nscht ist.",
     "",
-    "Imposta 'sì' se vuoi avere una notifica OSD sulle verifiche EPG.",
-    "Kies 'ja' indien er een notificatie e-mail verstuurd moet worden bij timer conflicten",
     "",
-    "Mettez 'oui',si les conflits de programmation doivent être notifiés.",
     "",
-    "Laittamalla tämän asetuksen päälle saat varoitukset ohjelmatietojen tarkastuksesta kuvaruutunäytölle.",
+    "",
+    "Mettez 'oui',si les conflits de programmation doivent �tre notifi�s.",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando desee recibir avisos de las comprobaciones EPG por el OSD.",
     "",
@@ -3991,12 +3991,12 @@ const tI18nPhrase Phrases[] = {
   { "Warn by mail",
     "per Mail warnen",
     "",
-    "Notifica tramite mail",
-    "Alleen aankondigen (geen timer)",
     "",
-    "Annoncer seulement début d'une programme",
     "",
-    "Muistuta sähköpostitse",
+    "",
+    "Annoncer seulement d�but d'une programme",
+    "",
+    "",
     "",
     "Avisar por correo",
     "",
@@ -4017,21 +4017,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Informovat mailem",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if you want get warnings from the EPG check by mail.",
-    "Hier mit 'Ja' auswählen, ob eine Warnung zum EPG Check per Mail gewünscht ist.",
+    "Hier mit 'Ja' ausw�hlen, ob eine Warnung zum EPG Check per Mail gew�nscht ist.",
     "",
-    "Imposta 'sì' se vuoi avere una notifica email sulle verifiche EPG.",
-    "kies 'ja' indien uw abonnement authenticatie vereist voor het verzenden van e-mails.",
+    "",
+    "",
     "",
     "Mettez 'oui',si le compte mail utilise l'authentification pour les mails sortants.",
     "",
-    "Laittamalla tämän asetuksen päälle saat varoitukset ohjelmatietojen tarkastuksesta sähköpostitse.",
+    "",
     "",
     "Establecer a 's�' cuando desee recibir avisos de las comprobaciones EPG por correo.",
     "",
@@ -4059,14 +4059,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Channel group to check",
-    "zu prüfende Kanalgruppe",
+    "zu pr�fende Kanalgruppe",
     "",
-    "Gruppo canali da verificare",
-    "Kanaal groep",
     "",
-    "Groupe de chaînes",
     "",
-    "Tarkastettava kanavaryhmä",
+    "",
+    "Groupe de cha�nes",
+    "",
+    "",
     "",
     "Grupo de canales a comprobar",
     "",
@@ -4087,21 +4087,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Skupina stanic ke hledání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specify the channel group to check.",
-    "Hier die zu prüfende Kanalgruppe auswählen.",
+    "Hier die zu pr�fende Kanalgruppe ausw�hlen.",
     "",
-    "Specifica il gruppo canali da verificare.",
-    "Geef de naam op van het sjabloon",
     "",
-    "Spécifier le nom du modèle.",
     "",
-    "Määrittelee tarkastettavan kanavaryhmän.",
+    "",
+    "Sp�cifier le nom du mod�le.",
+    "",
+    "",
     "",
     "Especifique el grupo de canales a comprobar.",
     "",
@@ -4131,12 +4131,12 @@ const tI18nPhrase Phrases[] = {
   { "Ignore PayTV channels",
     "PayTV-Sender ignorieren",
     "",
-    "Ignora i canali a pagamento",
-    "Negeer PayTV kanalen",
     "",
-    "Ignorer les chaînes payantes",
     "",
-    "Jätä salatut kanavat huomioimatta",
+    "",
+    "Ignorer les cha�nes payantes",
+    "",
+    "",
     "",
     "Ignorar los canales de pago",
     "",
@@ -4157,21 +4157,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Ignorovat placené stanice",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if don't want to see events on PayTV channels when searching for repeats.",
-    "Um bei der Suche nach Wiederholungen Sendungen von PayTV-Kanälen zu ignorieren, kann hier die Option auf 'Ja' gesetzt werden.",
+    "Um bei der Suche nach Wiederholungen Sendungen von PayTV-Kan�len zu ignorieren, kann hier die Option auf 'Ja' gesetzt werden.",
     "",
-    "Imposta 'sì' se non vuoi vedere gli eventi dei canali a pagamento durante la ricerca delle repliche.",
-    "Kies 'ja' als er geen programma's van payTV kanalen mogen worden getoond tijdens het zoeken naar herhalingen",
     "",
-    "Pour éviter les recherches sur les chaînes payantes, vous mettez l'option sur 'oui'",
     "",
-    "Piilottaa salatut kanavat haettaessa uusintoja.",
+    "",
+    "Pour �viter les recherches sur les cha�nes payantes, vous mettez l'option sur 'oui'",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando no desee buscar en los canales de pago.",
     "",
@@ -4201,12 +4201,12 @@ const tI18nPhrase Phrases[] = {
   { "Search templates",
     "Such-Vorlagen",
     "",
-    "Cerca modelli",
-    "Zoek sjabloon",
     "",
-    "Rechercher modèles",
     "",
-    "Mallipohjat hakuehdoille",
+    "",
+    "Rechercher mod�les",
+    "",
+    "",
     "",
     "Plantillas de b�squeda",
     "",
@@ -4227,21 +4227,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vzory pro hledání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Here you can setup templates for your searches.",
-    "Hier können Vorlagen für Suchen erstellt werden.",
+    "Hier k�nnen Vorlagen f�r Suchen erstellt werden.",
     "",
-    "Qui puoi impostare i modelli per le ricerche.",
-    "Hier kunnen sjablonen worden aangemaakt voor zoekacties.",
     "",
-    "Ici vous créer vos recherches comme modèles",
     "",
-    "Määrittele mallipohjia hakuehdoille.",
+    "",
+    "Ici vous cr�er vos recherches comme mod�les",
+    "",
+    "",
     "",
     "Aqu� puede configurar las plantillas de b�squeda.",
     "",
@@ -4271,12 +4271,12 @@ const tI18nPhrase Phrases[] = {
   { "Blacklists",
     "Ausschlusslisten",
     "",
-    "Lista esclusioni",
-    "Blacklists",
+    "",
+    "",
     "",
     "Listes des exclus",
     "",
-    "Mustat listat",
+    "",
     "",
     "Listas negras",
     "",
@@ -4297,21 +4297,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Černé listiny (blacklist)",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Here you can setup blacklists which can be used within a search to exclude events you don't like.",
-    "Hiermit können Ausschlusslisten erstellt werden, die innerhalb einer Suche verwendet werden können, um Sendungen auszuschließen, die man nicht haben will.",
+    "Hiermit k�nnen Ausschlusslisten erstellt werden, die innerhalb einer Suche verwendet werden k�nnen, um Sendungen auszuschlie�en, die man nicht haben will.",
     "",
-    "Qui puoi impostare le liste di esclusione che possono essere usate all'interno delle ricerche per escludere eventi che non ti piacciono.",
-    "Hier kunnen 'Blacklists' worden aangemaakt die kunnen worden gebruikt om programma's uit te sluiten van zoekactie's ",
     "",
-    "Avec ceci vous changez les listes d'exclusions, qui sont utilisées par la recherche automatique, pour éviter des emissions que vous ne voulez pas voir.",
     "",
-    "Määrittele mustia listoja hakuehdoille. Mustien listojen tapahtumia ei näytetä hakutuloksissa.",
+    "",
+    "Avec ceci vous changez les listes d'exclusions, qui sont utilis�es par la recherche automatique, pour �viter des emissions que vous ne voulez pas voir.",
+    "",
+    "",
     "",
     "Aqu� puede configurar las listas negras, que pueden ser usadas para excluir emisiones no deseadas.",
     "",
@@ -4339,14 +4339,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$Here you can setup channel groups which can be used within a search. These are different to VDR channel groups and represent a set of arbitrary channels, e.g. 'FreeTV'.",
-    "Hier können Kanalgruppen erstellt werden, die innerhalb einer Suche verwendet werden können. Die Kanalgruppen sind nicht mit den VDR-Kanalgruppen zu vergleichen, sondern stellen einfach eine Gruppe von beliebigen Sendern dar, z.B. 'FreeTV'.",
+    "Hier k�nnen Kanalgruppen erstellt werden, die innerhalb einer Suche verwendet werden k�nnen. Die Kanalgruppen sind nicht mit den VDR-Kanalgruppen zu vergleichen, sondern stellen einfach eine Gruppe von beliebigen Sendern dar, z.B. 'FreeTV'.",
     "",
-    "Qui puoi impostare i gruppi di canali che possono essere usati all'interno di una ricerca. Questi sono diversi dai gruppi canali di VDR e rappresentano un insieme arbitrario di canali, ad esempio 'Gratuiti'.",
-    "Hier kunnen groepen van kanalen worden opgegeven die kunnen worden gebruikt binnen een zoekactie. Deze groepen wijken af van de VDR kanaal groepen en bestaan uit willekeurig kanalen zoals 'FreeTV.",
     "",
-    "Ici vous définissez des groupes de chaînes qui sont utilisés par la recherche. Ce ne sont pas les groupes de chaînes définis dans VDR comme 'Cinéma', mais une sélection propre de l'utilisateur.",
     "",
-    "Määrittele kanavaryhmiä hakuehdoille. Tämän laajennoksen kanavaryhmät eivät ole yhteydessä VDR:n omiin kanavaryhmiin.",
+    "",
+    "Ici vous d�finissez des groupes de cha�nes qui sont utilis�s par la recherche. Ce ne sont pas les groupes de cha�nes d�finis dans VDR comme 'Cin�ma', mais une s�lection propre de l'utilisateur.",
+    "",
+    "",
     "",
     "Aqu� puede configurar los grupos de canales que pueden ser usados en una b�squeda. �stos son diferentes a los grupos de canales del VDR y representan un conjunto de canales arbitrario, p.e.: 'Cine'.",
     "",
@@ -4374,14 +4374,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Ignore below priority",
-    "Ignoriere unter Priorität",
+    "Ignoriere unter Priorit�t",
     "",
-    "Ignora priorità bassa",
-    "Negeer onder de prioriteit",
     "",
-    "Ignorer la priorité inférieure",
     "",
-    "Sivuuta alhaisemmat prioriteetit",
+    "",
+    "Ignorer la priorit� inf�rieure",
+    "",
+    "",
     "",
     "Ignorar la prioridad inferior",
     "",
@@ -4402,21 +4402,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Ignorovat prioritu pod",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$If a timer with priority below the given value will fail it will not be classified as important. Only important conflicts will produce an OSD message about the conflict after an automatic conflict check.",
-    "Falls ein Timer fehlschlagen wird, dessen Priorität unter dem angegeben Wert liegt, wird er als 'nicht wichtig' eingestuft. Nur bei wichtigen Konflikten erfolgt eine Nachricht per OSD bei der automatischen Konfliktprüfung.",
-    "",
-    "Se un timer con priorità più bassa di un dato valore fallirà esso non sarà classificato come importante. Solo i conflitti importanti genereranno un messaggio OSD sul conflitto dopo una verifica automatica del conflitto.",
-    "Als een timer met een prioriteit onder de gegeven waarde mislukt dan wordt hij niet gemerkt als 'belangrijk'. Alleen belangrijke conflicten zullen een OSD melding tot gevolg hebben.",
-    "Lorsqu'une programmation dont la prioritée est en dessous de la valeur définie, n'aboutit pas, alors elle est qualifiée de 'non-importante'. Seulement les conflits importants sont affichés à l'écran lors de la vérification automatique.",
+    "Falls ein Timer fehlschlagen wird, dessen Priorit�t unter dem angegeben Wert liegt, wird er als 'nicht wichtig' eingestuft. Nur bei wichtigen Konflikten erfolgt eine Nachricht per OSD bei der automatischen Konfliktpr�fung.",
     "",
     "",
-    "Asetusarvoa korkeammalla prioriteetilla olevat ajastimet ovat merkitseviä. Vain merkitsevät päällekkäisyydet aiheuttavat viestin kuvaruutunäytölle automaattisen tarkistuksen yhteydessä.",
+    "",
+    "",
+    "",
+    "",
+    "",
     "",
     "Si falla una programaci�n con una prioridad por debajo del valor dado, no ser� clasificada como importante. Despu�s de una comprobaci�n de conflictos, s�lo los conflictos importantes mostrar�n un mensaje OSD sobre el conflicto.",
     "",
@@ -4446,12 +4446,12 @@ const tI18nPhrase Phrases[] = {
   { "Ignore conflict duration less ... min.",
     "Ignoriere Konfliktdauer unter ... Min.",
     "",
-    "Ignora durata conflitto minore ... min.",
-    "Negeer conflictduur van minder dan ... min.",
     "",
-    "Ignorer les conflits inférieurs à ... min.",
     "",
-    "Sivuuta alle ... min. päällekkäisyydet",
+    "",
+    "Ignorer les conflits inf�rieurs � ... min.",
+    "",
+    "",
     "",
     "Ignorar conflicto inferior a ... min.",
     "",
@@ -4472,21 +4472,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vynechat konflikty kratší než ... min",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$If a conflicts duration is less then the given number of minutes it will not be classified as important. Only important conflicts will produce an OSD message about the conflict after an automatic conflict check.",
-    "Falls die Konfliktdauer unter der angegebenen Anzahl an Minuten liegt, wird er als 'nicht wichtig' eingestuft. Nur bei wichtigen Konflikten erfolgt eine Nachricht per OSD bei der automatischen Konfliktprüfung.",
+    "Falls die Konfliktdauer unter der angegebenen Anzahl an Minuten liegt, wird er als 'nicht wichtig' eingestuft. Nur bei wichtigen Konflikten erfolgt eine Nachricht per OSD bei der automatischen Konfliktpr�fung.",
     "",
-    "Se la durata di un conflitto è inferiore al numero di minuti dati non sarà classificato come importante. Solo i conflitti importanti genereranno un messaggio OSD sul conflitto dopo la verifica automatica di ciascun conflitto.",
-    "Indien de duur van conflict(en) kleiner is dan het gegeven aantal minuten dan worden deze niet gemerkt als 'belangrijk' Alleen belangrijke conflicten zullen een OSD melding tot gevolg hebben.",
     "",
-    "Lorsque le temps de conflit est sous le nombre de minutes indiqué, ceci est considéré comme 'non-important'. Uniquement les conflits importants sont affichés à l'écran lors de la vérification automatique de la programmation.",
     "",
-    "Jos ajastimien päällekkäisyys on alle asetetun minuuttimäärän, sitä ei pidetä merkitsevänä. Vain merkitsevät päällekkäisyydet aiheuttavat viestin kuvaruutunäytölle tarkistuksen yhteydessä.",
+    "",
+    "Lorsque le temps de conflit est sous le nombre de minutes indiqu�, ceci est consid�r� comme 'non-important'. Uniquement les conflits importants sont affich�s � l'�cran lors de la v�rification automatique de la programmation.",
+    "",
+    "",
     "",
     "Si la duraci�n de un conflicto es menor que el n�mero de minutos dado, no ser� clasificada como importante. S�lo los conflictos importantes mostrar�n un mensaje OSD sobre el conflicto despu�s de una comprobaci�n de conflictos autom�tica.",
     "",
@@ -4514,14 +4514,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Only check within next ... days",
-    "Prüfe nur die nächsten ... Tage",
+    "Pr�fe nur die n�chsten ... Tage",
     "",
-    "Verifica solo entro i prossimi ... giorni",
-    "Controleer alleen vóór de volgende ... dagen",
     "",
-    "Ne vérifier que les prochains ... jours",
     "",
-    "Tarkista vain seuraavat ... päivää",
+    "",
+    "Ne v�rifier que les prochains ... jours",
+    "",
+    "",
     "",
     "S�lo comprobar los pr�ximos ... d�as",
     "",
@@ -4542,21 +4542,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Kontrolovat pouze během dalších . dní",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$This value reduces the conflict check to the given range of days. All other conflicts are classified as 'not yet important'.",
-    "Mit diesem Wert kann der Zeitbereich der Konfliktprüfung eingestellt werden. Alle Konflikte ausserhalb des Bereichs werden als 'noch nicht wichtig' eingestuft.",
+    "Mit diesem Wert kann der Zeitbereich der Konfliktpr�fung eingestellt werden. Alle Konflikte ausserhalb des Bereichs werden als 'noch nicht wichtig' eingestuft.",
     "",
-    "Questo valore riduce la verifica del conflitto ad un dato range di giorni. Tutti gli altri conflitti sono classificati come 'non ancora importanti'.",
-    "Deze waarde beperkt de conflict controle tot het gegeven aantal dagen. Alle andere conflicten worden als 'nog niet belangrijk' bestempeld.",
     "",
-    "Avec cette valeur vous définissez l'interval de temps de la vérification de conflits. Tous ces conflits en dehors de cet interval sont qualifés comme 'pas encore importants.",
     "",
-    "Asettaa ajanjakson päivinä päällekkäisyyksien tarkistukselle. Muita päällekkäisyyksiä ei pidetä vielä merkitsevinä.",
+    "",
+    "Avec cette valeur vous d�finissez l'interval de temps de la v�rification de conflits. Tous ces conflits en dehors de cet interval sont qualif�s comme 'pas encore importants.",
+    "",
+    "",
     "",
     "Este valor reduce la comprobaci�n de conflictos al rango de d�as dados. El resto de conflictos son clasificados como 'no importantes'.",
     "",
@@ -4584,14 +4584,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "--- Automatic checking ---",
-    "--- Automatische Prüfung ---",
+    "--- Automatische Pr�fung ---",
     "",
-    "--- Verifica automatica ---",
-    "--- Automatische controle ---",
     "",
-    "--- Vérifications automatiques ---",
     "",
-    "--- Automaattinen tarkistus ---",
+    "",
+    "--- V�rifications automatiques ---",
+    "",
+    "",
     "",
     "--- Comprobaci�n autom�tica ---",
     "",
@@ -4612,7 +4612,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "--- Automatická kontrola ---",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -4621,12 +4621,12 @@ const tI18nPhrase Phrases[] = {
   { "After each timer programming",
     "Nach jeder Timer-Programmierung",
     "",
-    "Dopo program. di ciascun timer",
-    "Na iedere aangemaakte timer",
     "",
-    "Après chaque programmation",
     "",
-    "Jokaisen ajastimen luonnin jälkeen",
+    "",
+    "Apr�s chaque programmation",
+    "",
+    "",
     "",
     "Despu�s de cada programaci�n",
     "",
@@ -4647,21 +4647,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Po vytvoření Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if the conflict check should be performed after each manual timer programming. In the case of a conflict you get immediately a message that informs you about it. The message is only displayed if this timer is involved in any conflict.",
-    "Hier auf 'Ja' setzen, wenn die Konfliktprüfung nach jeder manuellen Timer-Programmierung erfolgen soll. Im Falle eines Konflikts wird dann sofort eine Nachricht angezeigt. Diese erscheint nur, wenn dieser Timer in einen Konflikt verwickelt ist.",
-    "",
-    "Imposta 'sì' se il controllo di conflitto dovrebbe essere eseguito dopo la programmazione di ciascun timer manuale. Nel caso di un conflitto avrai immediatamente un messaggio che ti informa di questo. Il messaggio viene visualizzato solo se questo timer è coinvolto in qualche conflitto.",
-    "Kies 'ja' als de conflict controle bij iedere handmatig aangemaakte timer moet worden uitgevoerd. In het geval van een conflict verschijnt er direct een waarschuwing. Deze waarschuwing wordt alleen getoond als de timer betrokken is bij een willekeurig conflict.",
+    "Hier auf 'Ja' setzen, wenn die Konfliktpr�fung nach jeder manuellen Timer-Programmierung erfolgen soll. Im Falle eines Konflikts wird dann sofort eine Nachricht angezeigt. Diese erscheint nur, wenn dieser Timer in einen Konflikt verwickelt ist.",
     "",
     "",
     "",
-    "Päällekkäisten ajastimien tarkistus suoritaan aina jokaisen ajastimen luonnin jälkeen. Jos luodulle ajastimelle löydetään päällekkäisyyksiä, niin siitä tiedotetaan käyttäjälle heti.",
+    "",
+    "",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando desee ejecutar la comprobaci�n de conflictos despu�s de cada programaci�n manual. En caso de existir un conflicto se mostrar� inmediatamente un mensaje que informe de ello. �ste mensaje s�lo se mostrar� si la programaci�n est� implicada en un conflicto.",
     "",
@@ -4691,12 +4691,12 @@ const tI18nPhrase Phrases[] = {
   { "When a recording starts",
     "Beim Beginn einer Aufnahme",
     "",
-    "Quando inizia una reg.",
-    "Wanneer een opname start",
     "",
     "",
     "",
-    "Tallennuksen alkaessa",
+    "",
+    "",
+    "",
     "",
     "Cuando empieza una grabaci�n",
     "",
@@ -4717,21 +4717,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Když začne nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if the conflict check should be performed when a recording starts. In the case of a conflict you get immediately a message that informs you about it. The message is only displayed if the conflict is within the next 2 hours.",
-    "Hier auf 'Ja' setzen, wenn die Konfliktprüfung beim Beginn jeder Aufnahme erfolgen soll. Im Falle eines Konflikts wird dann sofort eine Nachricht angezeigt. Diese erscheint nur, wenn der Konflikt innerhalb der nächsten 2 Stunden auftritt.",
-    "",
-    "Imposta 'sì' se il controllo di conflitto dovrebbe essere eseguito dopo l'inizio di una registrazione. Nel caso di un conflitto avrai immediatamente un messaggio che ti informa di questo. Il messaggio viene visualizzato solo se questo conflitto avviene nelle prossime 2 ore.",
-    "Kies 'ja' als de conflict controle moet worden uitgevoerd bij iedere startende opname. In het geval van een conflict verschijnt er direct een waarschuwing. Deze waarschuwing wordt alleen getoond als de timer betrokken is bij een willekeurig conflict.",
+    "Hier auf 'Ja' setzen, wenn die Konfliktpr�fung beim Beginn jeder Aufnahme erfolgen soll. Im Falle eines Konflikts wird dann sofort eine Nachricht angezeigt. Diese erscheint nur, wenn der Konflikt innerhalb der n�chsten 2 Stunden auftritt.",
     "",
     "",
     "",
-    "Päällekkäisten ajastimien tarkistus suoritaan aina tallennuksen alkaessa. Jos luodulle ajastimelle löydetään päällekkäisyyksiä seuraavan kahden tunnin aikana, niin siitä tiedotetaan käyttäjälle heti.",
+    "",
+    "",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando desee comprobar conflictos al iniciar una grabaci�n. En caso de existir un conflicto se mostrar� inmediatamente un mensaje que informe de ello. �ste mensaje s�lo se mostrar� si el conflicto se produce en las pr�ximas 2 horas.",
     "",
@@ -4761,12 +4761,12 @@ const tI18nPhrase Phrases[] = {
   { "After each search timer update",
     "Nach jedem Suchtimer-Update",
     "",
-    "Dopo ogni aggiorn. timer ricerca",
-    "Na het verversen van iedere zoek-timer",
     "",
-    "Mise à jours après chaque recherche",
     "",
-    "Päivitettäessä hakuajastimia",
+    "",
+    "Mise � jours apr�s chaque recherche",
+    "",
+    "",
     "",
     "Despu�s de actualizar programaci�n",
     "",
@@ -4787,21 +4787,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Po každém hledání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if the conflict check should be performed after each search timer update.",
-    "Hier auf 'Ja' setzen, wenn die Konfliktprüfung nach jedem Suchtimer-Update erfolgen soll.",
+    "Hier auf 'Ja' setzen, wenn die Konfliktpr�fung nach jedem Suchtimer-Update erfolgen soll.",
     "",
-    "Imposta 'sì' se la verifica del conflitto dovrebbe essere eseguita dopo ciascun aggiornamento del timer di ricerca.",
-    "Kies 'ja' als de conflict controle moet worden uitgevoerd na het verversen van iedere zoek-timer",
     "",
-    "Avec 'Oui' vous impliquez la vérification de conflits à la mise à jours de la recherche.",
     "",
-    "Suorittaa päällekkäisyyksien tarkistuksen jokaisen hakuajastimen päivityksen yhteydessä.",
+    "",
+    "Avec 'Oui' vous impliquez la v�rification de conflits � la mise � jours de la recherche.",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando desee comprobar conflictos despu�s de actualizar cada programaci�n por b�squeda.",
     "",
@@ -4831,12 +4831,12 @@ const tI18nPhrase Phrases[] = {
   { "every ... minutes",
     "alle ... Minuten",
     "",
-    "ogni ... minuti",
-    "iedere ... minuten",
+    "",
+    "",
     "",
     "toutes les ... minutes",
     "",
-    "joka ... minuutti",
+    "",
     "",
     "cada ... minutos",
     "",
@@ -4857,21 +4857,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "každých ... minut",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specify here the time intervall to be used for an automatic conflict check in the background.\n('0' disables an automatic check)",
-    "Hier kann das Zeitintervall angegeben werden, in dem eine automatische Konfliktprüfung im Hintergrund erfolgen soll.\n(mit '0' wird die automatsiche Prüfung deaktiviert.)",
+    "Hier kann das Zeitintervall angegeben werden, in dem eine automatische Konfliktpr�fung im Hintergrund erfolgen soll.\n(mit '0' wird die automatsiche Pr�fung deaktiviert.)",
     "",
-    "Specifica qui l'intervallo da usare per la verifica automatica di un conflitto in sottofondo.\n('0' disabilita la verifica automatica)",
-    "Bepaal hier de tijdsduur gebruikt voor de automatische conflict controle in de achtergrond",
     "",
-    "Ici vous indiquez l'interval de temps dans lequel la vérification de conflits est effectuée.\n(avec '0' vous déactivez la vérification.)",
     "",
-    "Määrittää aikajakson taustalla tehtävälle automaattiselle päällekkäisyyksien tarkistukselle.\nArvolla '0' saat asetettua automaattisen tarkistuksen pois päältä",
+    "",
+    "Ici vous indiquez l'interval de temps dans lequel la v�rification de conflits est effectu�e.\n(avec '0' vous d�activez la v�rification.)",
+    "",
+    "",
     "",
     "Especifique el intervalo de tiempo a usar para la comprobaci�n de conflictos autom�tica en segundo plano.\n('0' deshabilita la comprobaci�n autom�tica)",
     "",
@@ -4899,14 +4899,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "if conflicts within next ... minutes",
-    "Wenn nächster Konflikt in ... Minuten",
+    "Wenn n�chster Konflikt in ... Minuten",
     "",
-    "in conflitto entro i prossimi ... minuti",
-    "indien conflict optreed binnen ... minuten",
+    "",
+    "",
     "",
     "Si conflit dans ... minutes suivantes",
     "",
-    "jos päällekkäisyys ... min. kuluessa",
+    "",
     "",
     "si hay conflictos en pr�ximos ... min.",
     "",
@@ -4927,21 +4927,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "pokud je konflikt během dalších ... minut",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$If the next conflict will appear in the given number of minutes you can specify here a shorter check intervall to get more OSD notifications about it.",
-    "Wenn der nächste Konflikt innerhalb der angegebenen Anzahl von Minuten liegt, kann man hiermit ein kürzeres Prüfintervall angeben, damit man häufiger über den Konflikt per OSD benachrichtigt wird.",
+    "Wenn der n�chste Konflikt innerhalb der angegebenen Anzahl von Minuten liegt, kann man hiermit ein k�rzeres Pr�fintervall angeben, damit man h�ufiger �ber den Konflikt per OSD benachrichtigt wird.",
     "",
-    "Se il prossimo conflitto comparirà nel numero dato di minuti puoi specificare qui un intervallo di verifica più breve per avere più notifiche OSD su di esso.",
-    "Als het volgende conflict binnen het gegeven aantal minuten optreedt dan kan hier een korter interval worden gespecificeerd om meer OSD notificaties te verkrijgen.",
     "",
-    "Si le conflit à lieu dans l'interval de temp indiqué, alors il est possible de règler un interval de temps plus petit pour la vérification de conflits avec affichage à lécran.",
     "",
-    "Jos seuraava päällekkäisyys esiintyy asetetun ajan kuluessa, tällä asetuksella pystyt määrittämään lyhyemmän tarkistusvälin saadaksesi tarkempia kuvaruutuviestejä.",
+    "",
+    "Si le conflit � lieu dans l'interval de temp indiqu�, alors il est possible de r�gler un interval de temps plus petit pour la v�rification de conflits avec affichage � l�cran.",
+    "",
+    "",
     "",
     "Si el pr�ximo conflicto aparece en el n�mero de minutos indicado, puede especificar un intervalo de comprobaci�n menor para obtener m�s notificaciones OSD sobre �l.",
     "",
@@ -4971,12 +4971,12 @@ const tI18nPhrase Phrases[] = {
   { "Avoid notification when replaying",
     "Vermeide Nachricht bei Wiedergabe",
     "",
-    "Evita notifiche durante riprod.",
-    "Vermijdt notificatie tijdens afspelen",
+    "",
+    "",
     "",
     "Eviter les messages pendant la lecture",
     "",
-    "Älä näytä ilmoituksia toiston aikana",
+    "",
     "",
     "Evitar notificaci�n al reproducir",
     "",
@@ -4997,21 +4997,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Neinformaovat na obrazovce při přehrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if the don't want to get OSD messages about conflicts if you currently replay something. Nevertheless messages will be displayed if the first upcoming conflict is within the next 2 hours.",
-    "Bitte auf 'Ja' setzen, wenn während einer Wiedergabe keine OSD-Benachrichtigungen über Timer-Konflikte gewünscht sind. Die Benachrichtigung erfolgt trotzdem, wenn der nächste Konflikt innerhalb der nächsten 2 Stunden auftritt.",
+    "Bitte auf 'Ja' setzen, wenn w�hrend einer Wiedergabe keine OSD-Benachrichtigungen �ber Timer-Konflikte gew�nscht sind. Die Benachrichtigung erfolgt trotzdem, wenn der n�chste Konflikt innerhalb der n�chsten 2 Stunden auftritt.",
     "",
-    "Imposta 'sì' se non vuoi avere messaggi OSD sui conflitti se stai riproducendo qualcosa. Tuttavia i messaggi saranno visualizzati se il primo conflitto avviene entro le prossime 2 ore.",
-    "Kies 'ja' indien er geen OSD berichten mogen verschijnen tijdens het afspelen. Desondanks zullen berichten wel verschijnen indien het volgende conflict binnen 2 uur optreedt",
     "",
-    "Mettez sur 'oui', si pendant la lecture vous ne voulez pas être dérangé par les affichages des conflits de programmation. L'affichage est fait si les conflits on lieu dans le 2 heures à venir.",
     "",
-    "Laittamalla tämän asetuksen päälle saat estettyä kuvaruutuviestit päällekkäisistä ajastimista toiston aikana. Kuvaruutuviesti näytetään kuitenkin aina, jos päällekkäinen ajastin on alle kahden tunnin kuluttua.",
+    "",
+    "Mettez sur 'oui', si pendant la lecture vous ne voulez pas �tre d�rang� par les affichages des conflits de programmation. L'affichage est fait si les conflits on lieu dans le 2 heures � venir.",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando no desee mostrar mensajes OSD de conflictos mientras est� reproduciendo algo. Sin embargo, se mostrar�n mensajes si el primer conflicto se produce en las 2 horas siguientes.",
     "",
@@ -5041,13 +5041,13 @@ const tI18nPhrase Phrases[] = {
   { "Search timer notification",
     "Suchtimer-Benachrichtigung",
     "",
-    "Notifica timer di ricerca",
-    "Zoektimer notificatie",
+    "",
+    "",
     "",
     "Notification de recherche",
     "",
-    "Ilmoitukset hakuajastimista",
-    "/oui",
+    "",
+    "",
     "Notificar prog. por b�squeda",
     "",
     "",
@@ -5067,21 +5067,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Informovat o vytvoření Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if you want to get an email notification about the search timers that where programmed automatically in the background.",
-    "Hier mit 'Ja' auswählen, ob eine Email-Benachrichtigung über automatisch im Hintergrund programmierte Suchtimer versandt werden soll.",
+    "Hier mit 'Ja' ausw�hlen, ob eine Email-Benachrichtigung �ber automatisch im Hintergrund programmierte Suchtimer versandt werden soll.",
     "",
-    "Imposta 'sì' se vuoi avere una email di notifica sui timer di ricerca che sono stati programmati automaticamente dal sistema.",
-    "Kies 'ja' wanneer er een notificatie e-mail verstuurd moet worden over zoektimers die automatisch op de achtergrond werden aangenaakt.",
     "",
-    "Mettez 'oui',si vous voulez que les nouvelles programmations automatiques soient notifiées par mail.",
     "",
-    "Tällä asetuksella saat ilmoitukset automaattisesti lisätyistä hakuajastimista sähköpostiisi.",
+    "",
+    "Mettez 'oui',si vous voulez que les nouvelles programmations automatiques soient notifi�es par mail.",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando desee tener una notificaci�n por correo de las programaciones por b�squeda que fueron creadas autom�ticamente.",
     "",
@@ -5111,12 +5111,12 @@ const tI18nPhrase Phrases[] = {
   { "Time between mails [h]",
     "Zeit zwischen Mails [h]",
     "",
-    "Tempo tra le email [h]",
     "",
     "",
     "",
     "",
-    "Sähköpostin lähetysväli [h]",
+    "",
+    "",
     "",
     "Tiempo entre correos [h]",
     "",
@@ -5137,21 +5137,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Interval mezi maily [h]",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specifiy how much time in [h] you would\nlike to have atleast between two mails.\nWith '0' you get a new mail after each\nsearch timer update with new results.",
-    "Hier die gewünschte Zeit in [h] zwischen\nzwei Mails angeben. Mit '0' erhält man eine\nneue Mail nach jedem Suchtimer-Update\nmit neuen Ergebnissen.",
-    "",
-    "Specifica quanto tempo in [h]\nvuoi almeno avere tra due email.\nCon '0' hai una nuova email dopo ogni\naggiornamento del timer di ricerca\ncon nuovi risultati.",
+    "Hier die gew�nschte Zeit in [h] zwischen\nzwei Mails angeben. Mit '0' erh�lt man eine\nneue Mail nach jedem Suchtimer-Update\nmit neuen Ergebnissen.",
     "",
     "",
     "",
     "",
-    "Vähimmäisväliaika tunteina sähköpostien\nlähetykselle. Mikäli 0, uusi sähköposti\nlähetetään aina hakuajastimen päivittyessä\nuusilla tuloksilla.",
+    "",
+    "",
+    "",
     "",
     "Especifique cu�nto tiempo en [h] le gustar�a\ntener como m�nimo entre dos correos.\nCon '0' obtendr� un nuevo correo despu�s de cada\nprogramaci�n por b�squeda con nuevos resultados.",
     "",
@@ -5181,12 +5181,12 @@ const tI18nPhrase Phrases[] = {
   { "Timer conflict notification",
     "Timer-Konflikt-Benachrichtigung",
     "",
-    "Notifica timer in conflitto",
-    "Timer conflict notificatie",
+    "",
+    "",
     "",
     "Notification de conflit de programmation",
     "",
-    "Ilmoitukset päällekkäisistä ajastimista",
+    "",
     "",
     "Notificar conflicto en programaci�n",
     "",
@@ -5207,21 +5207,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Informovat o konfliktech Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if you want to get an email notification about the timer conflicts.",
-    "Hier mit 'Ja' auswählen, ob eine Email-Benachrichtigung über Timer-Konflikte versändet werden soll.",
+    "Hier mit 'Ja' ausw�hlen, ob eine Email-Benachrichtigung �ber Timer-Konflikte vers�ndet werden soll.",
     "",
-    "Imposta 'sì' se vuoi avere una notifica email sui timer in conflitto.",
-    "Kies 'ja' indien er een notificatie e-mail verstuurd moet worden bij timer conflicten",
     "",
-    "Mettez 'oui',si les conflits de programmation doivent être notifiés.",
     "",
-    "Tällä asetuksella saat ilmoitukset päällekkäisistä ajastimista sähköpostiisi.",
+    "",
+    "Mettez 'oui',si les conflits de programmation doivent �tre notifi�s.",
+    "",
+    "",
     "",
     "Establecer a 's�' cuando desee recibir una notificaci�n por correo sobre los conflictos de programaci�n.",
     "",
@@ -5251,12 +5251,12 @@ const tI18nPhrase Phrases[] = {
   { "Send to",
     "Senden an",
     "",
-    "Invia a",
-    "Zend naar",
     "",
-    "Envoyer à",
     "",
-    "Vastaanottaja",
+    "",
+    "Envoyer �",
+    "",
+    "",
     "",
     "Enviar a",
     "",
@@ -5277,7 +5277,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Adresát",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -5286,12 +5286,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$Specify the email address where notifications should be sent to.",
     "Hier wird die Email-Adresse angegeben, an welche die Benachrichtigungen versandt werden.",
     "",
-    "Specifica l'indirizzo di posta al quale le notifiche dovrebbero essere spedite.",
-    "Geef het e-mail adres op waar de notificaties naartoe gestuurd moeen worden",
     "",
-    "Ici vous indiquez l'adresse mail, a laquelle les notifications sont envoyées.",
     "",
-    "Määrittelee sähköpostiosoitteen, jonne ilmoitukset lähetetään.",
+    "",
+    "Ici vous indiquez l'adresse mail, a laquelle les notifications sont envoy�es.",
+    "",
+    "",
     "",
     "Especifique la direcci�n de correo donde deben enviarse las notificaciones.",
     "",
@@ -5321,12 +5321,12 @@ const tI18nPhrase Phrases[] = {
   { "Mail method",
     "Mail-Methode",
     "",
-    "Metodo email",
-    "Mail methode",
     "",
-    "Méthode de couriel",
     "",
-    "Lähetystapa",
+    "",
+    "M�thode de couriel",
+    "",
+    "",
     "",
     "M�todo de correo",
     "",
@@ -5347,21 +5347,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Způsob odeslání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specify here the method to use when sending mails.\nYou can choose between\n - 'sendmail': requires a properly configured email system\n - 'SendEmail.pl': simple script for mail delivery",
-    "Bitte hier die gewünschte Methode zum Emailversand auswählen. Verfügbar sind:\n - 'sendmail': erfordert ein korrekt konfiguriertes Mailsystem\n - 'SendEmail.pl': ein einfaches Skript zum Mailversand",
-    "",
-    "Specifica qui il metodo da usare per l'invio delle email.\nPuoi scegliere tra:\n- 'sendmail': richiede un proprio sistema email configurato\n- 'SendEmail.pl': semplice script per la consegna delle email",
+    "Bitte hier die gew�nschte Methode zum Emailversand ausw�hlen. Verf�gbar sind:\n - 'sendmail': erfordert ein korrekt konfiguriertes Mailsystem\n - 'SendEmail.pl': ein einfaches Skript zum Mailversand",
     "",
     "",
     "",
     "",
-    "Määrittelee lähetystavan sähköposteille.\nVoit valita kahden vaihtoehdon väliltä:\n - 'sendmail': vaatii oikein konfiguroidun sähköpostisysteemin\n - 'SendEmail.pl': yksinkertainen skriptitiedosto sähköpostin lähetykseen",
+    "",
+    "",
+    "",
     "",
     "Especifique el m�todo a usar para enviar correos.\nPuede elegir entre\n - 'sendmail': necesita un sistema de correo correctamente configurado\n - 'SendEmail.pl': script simple para la entrega de correo",
     "",
@@ -5391,12 +5391,12 @@ const tI18nPhrase Phrases[] = {
   { "--- Email account ---",
     "--- Email-Konto ---",
     "",
-    "--- Account email ---",
-    "--- E-mail gebruiker ---",
+    "",
+    "",
     "",
     "--- Compte courriel ---",
     "",
-    "--- Sähköposti ---",
+    "",
     "",
     "--- Cuenta de correo ---",
     "",
@@ -5417,7 +5417,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "--- Email účet ---",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -5426,12 +5426,12 @@ const tI18nPhrase Phrases[] = {
   { "Email address",
     "Email-Adresse",
     "",
-    "Indirizzo di posta",
-    "E-mail adres",
+    "",
+    "",
     "",
     "Adresse courriel",
     "",
-    "Sähköpostiosoite",
+    "",
     "",
     "Direcci�n de correo",
     "",
@@ -5452,7 +5452,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "adresa",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -5461,12 +5461,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$Specify the email address where notifications should be sent from.",
     "Hier wird die Email-Adresse angegeben, mit der die Benachrichtigungen versandt werden.",
     "",
-    "Specifica l'indirizzo di posta dal quale le notifiche dovrebbero essere spedite.",
-    "Geef het e-mail adres op waar vandaan de e-mail notificaties verzonden worden",
     "",
-    "Préciser l'adresse courriel de l'envoyeur des notifications",
     "",
-    "Määrittelee sähköpostiosoitteen, josta ilmoitukset lähetetään.",
+    "",
+    "Pr�ciser l'adresse courriel de l'envoyeur des notifications",
+    "",
+    "",
     "",
     "Especifique la direcci�n de correo desde donde se enviar�n las notificaciones.",
     "",
@@ -5496,12 +5496,12 @@ const tI18nPhrase Phrases[] = {
   { "SMTP server",
     "SMTP Server",
     "",
-    "Server SMTP",
-    "SMTP server",
+    "",
+    "",
     "",
     "Serveur SMTP",
     "",
-    "SMTP-palvelin",
+    "",
     "",
     "Servidor SMTP",
     "",
@@ -5522,21 +5522,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "SMTP server",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specify the SMTP server that should deliver the notifications. If it's using a port different from the default(25) append the port with \":port\".",
-    "Hier wird der SMTP Server hinterlegt, über den die Benachrichtigungen versandt werden. Falls dieser einen anderen Port als den Standard(25) verwendet, dann mit \":port\" anhängen.",
+    "Hier wird der SMTP Server hinterlegt, �ber den die Benachrichtigungen versandt werden. Falls dieser einen anderen Port als den Standard(25) verwendet, dann mit \":port\" anh�ngen.",
     "",
-    "Specifica il server SMTP che dovrebbe consegnare le notifiche. Se utilizza una porta diversa da quella di default (25) aggiungi la porta con \":porta\".",
-    "Geef de SMTP server voor het verzenden van de notificaties. Indien een andere dan de standaard poort (25) wordt gebruik voeg dan toe \":port\"",
     "",
-    "Ici vous indiquez le serveur de mail sortant SMTP, par lequel les notifications vont être envoyées. Si le port standart(25) n'est pas utilisé, alors ajoutez \":port\" par exemple smtp.orange.fr:2525. ",
     "",
-    "Määrittelee käytettävän SMTP-palvelimen. Portti voidaan määritellä erikseen lisäämällä palvelimen osoitteen loppuun \":portti\", jos se eroaa oletuksesta (25).",
+    "",
+    "Ici vous indiquez le serveur de mail sortant SMTP, par lequel les notifications vont �tre envoy�es. Si le port standart(25) n'est pas utilis�, alors ajoutez \":port\" par exemple smtp.orange.fr:2525. ",
+    "",
+    "",
     "",
     "Especifique el servidor SMTP que debe entregar las notificaciones. Si est� usando un puerto distinto al normal(25) a�ada el puerto con \":puerto\".",
     "",
@@ -5566,12 +5566,12 @@ const tI18nPhrase Phrases[] = {
   { "Use SMTP authentication",
     "Verw. SMTP-Authentifizierung",
     "",
-    "Utilizza autenticazione SMTP",
-    "Gebruik SMTP authenticatie",
+    "",
+    "",
     "",
     "Utiliser l'authentification SMTP",
     "",
-    "Käytä SMTP-autentikointia",
+    "",
     "",
     "Usar autenticaci�n SMTP",
     "",
@@ -5592,21 +5592,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Použít SMTP authentifikaci",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Set this to 'yes' if your account needs authentication to send mails.",
-    "Hier auf 'Ja' setzen, wenn das Emailkonto SMTP-Authentifizierung zum Emailversand benötigt.",
+    "Hier auf 'Ja' setzen, wenn das Emailkonto SMTP-Authentifizierung zum Emailversand ben�tigt.",
     "",
-    "Imposta 'sì' se il tuo account ha bisogno di autenticazione per inviare email.",
-    "kies 'ja' indien uw abonnement authenticatie vereist voor het verzenden van e-mails.",
+    "",
+    "",
     "",
     "Mettez 'oui',si le compte mail utilise l'authentification pour les mails sortants.",
     "",
-    "Asettaa SMTP-autentikoinnin päälle sähköpostin lähetystä varten.",
+    "",
     "",
     "Establecer a 's�' cuando su cuenta necesite autenticaci�n para enviar correos.",
     "",
@@ -5636,12 +5636,12 @@ const tI18nPhrase Phrases[] = {
   { "Auth user",
     "Auth-Benutzer",
     "",
-    "Autenticazione utente",
-    "Auth gebruiker",
+    "",
+    "",
     "",
     "Authentification: utilisateur",
     "",
-    "SMTP-käyttäjätunnus",
+    "",
     "",
     "Usuario",
     "",
@@ -5662,21 +5662,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "uživatel",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specify the auth user, if this account needs authentication for SMTP.",
-    "Hier wird der Auth-Benutzername angegeben, falls dieses Emailkonto eine Authentifizierung für SMTP benötigt.",
+    "Hier wird der Auth-Benutzername angegeben, falls dieses Emailkonto eine Authentifizierung f�r SMTP ben�tigt.",
     "",
-    "Specifica l'utente di autenticazione, se questo account ne ha bisogno per SMTP.",
-    "Geef de e-mail gebruikernaam op, indien SMTP authenticatie voor het abonnement vereist is.",
+    "",
+    "",
     "",
     "Ici vous indiquez l'utilisateur pour l'authentification, lorsque le compte mail sortant SMTP en a besoin.",
     "",
-    "Määrittelee käyttäjätunnuksen, jos SMTP-palvelimelle pitää autentikoitua.",
+    "",
     "",
     "Si esta cuenta necesita autenticaci�n SMTP, especifique el usuario.",
     "",
@@ -5706,12 +5706,12 @@ const tI18nPhrase Phrases[] = {
   { "Auth password",
     "Auth-Passwort",
     "",
-    "Password autenticazione",
-    "Auth wachtwoord",
+    "",
+    "",
     "",
     "Authentification: mot de passe",
     "",
-    "SMTP-salasana",
+    "",
     "",
     "Contrase�a",
     "",
@@ -5732,21 +5732,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "heslo",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specify the auth password, if this account needs authentication for SMTP.",
-    "Hier wird das Auth-Passwort angegeben, falls dieses Emailkonto eine Authentifizierung für SMTP benötigt.",
+    "Hier wird das Auth-Passwort angegeben, falls dieses Emailkonto eine Authentifizierung f�r SMTP ben�tigt.",
     "",
-    "Specifica la password di autenticazione, se quanto account ne ha bisogno per SMTP.",
-    "Geef het e-mail wachtwoord op, indien SMTP authenticatie voor het abonnement vereist is.",
+    "",
+    "",
     "",
     "Ici vous indiquez le mot de passe pour l'authentification, lorsque le compte mail sortant SMTP en a besoin.",
     "",
-    "Määrittelee salasanan, jos SMTP-palvelimelle pitää autentikoitua.",
+    "",
     "",
     "Si esta cuenta necesita autenticaci�n SMTP, especifique la contrase�a.",
     "",
@@ -5774,14 +5774,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Mail account check failed!",
-    "Mailkonto-Prüfung fehlgeschlagen!",
+    "Mailkonto-Pr�fung fehlgeschlagen!",
     "",
-    "Verifica account email fallita!",
-    "Mail abonnement verificatie mislukt!",
     "",
-    "La vérification du compte mail a échoué",
     "",
-    "Sähköpostilaatikon tarkistus epäonnistui!",
+    "",
+    "La v�rification du compte mail a �chou�",
+    "",
+    "",
     "",
     "�Fall� la prueba de cuenta de correo!",
     "",
@@ -5802,7 +5802,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Kontrola účtu selhala",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -5811,12 +5811,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Test",
     "Test",
     "",
-    "Prova",
-    "Test",
+    "",
+    "",
     "",
     "Test",
     "",
-    "Testaa",
+    "",
     "",
     "Probar",
     "",
@@ -5837,27 +5837,27 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Test",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "$ abcdefghijklmnopqrstuvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&_",
-    " aäbcdefghijklmnoöpqrsßtuüvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&_",
-    " abcdefghijklmnopqrstuvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&",
-    " aáàbcdeéèfghiíìjklmnoóòpqrstuúùvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&°_",
-    " abcdefghijklmnopqrstuvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&",
+    " a�bcdefghijklmno�pqrs�tu�vwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&_",
     "",
-    " aàbcçdeéèêfghiîjklmnoôpqrstuùûvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&_",
     "",
-    " abcdefghijklmnopqrstuvwxyzåäö0123456789-.,#~\\^$[]|()*+?{}/:%@&",
+    "",
+    "",
+    " a�bc�de���fghi�jklmno�pqrstu��vwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&_",
+    "",
+    "",
     "",
     " a��bc�de��fghi��jklmn�o��pqrstu��vwxyz0123456789-_.,#~\\^$[]|()*+?{}/:%@&_",
     "",
     "",
     "",
-    " aábcdeéfghiíjklmnoóöőpqrstuúüűvwxyz0123456789-.,#~\\^$[]|()*+?{}/:%@&_",
+    "",
     "",
 #if VDRVERSNUM >= 10302
     "",
@@ -5879,14 +5879,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Start/Stop time has changed",
-    "Start/Stop-Zeit hat sich geändert",
-    "",
-    "L'orario di Inizio/Fine è cambiato",
+    "Start/Stop-Zeit hat sich ge�ndert",
     "",
     "",
-    "Start/Stop date a changé",
     "",
-    "Ohjelman aloitus/lopetusaika muuttunut",
+    "",
+    "Start/Stop date a chang�",
+    "",
+    "",
     "",
     "Ha cambiado el tiempo inicial/final",
     "",
@@ -5907,21 +5907,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Změnil se čas Začátku/konce",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Title/episode has changed",
-    "Titel/Episode hat sich geändert",
-    "",
-    "Il Titolo/episodio è cambiato",
+    "Titel/Episode hat sich ge�ndert",
     "",
     "",
-    "Titre/épisode a changé",
     "",
-    "Ohjelman nimi/kuvaus muuttunut",
+    "",
+    "Titre/�pisode a chang�",
+    "",
+    "",
     "",
     "Ha cambiado el t�tulo/episodio",
     "",
@@ -5942,7 +5942,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Změnil se Název/název dílu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -5951,12 +5951,12 @@ const tI18nPhrase Phrases[] = {
   { "No new timers were added.",
     "Es wurden keine neuen Timer angelegt.",
     "",
-    "Nessun nuovo timer aggiunto.",
-    "Geen nieuwe timers aangemaakt",
+    "",
+    "",
     "",
     "Il n'y a pas eu de nouvelle programmation.",
     "",
-    "Yhtään uutta ajastinta ei lisätty.",
+    "",
     "",
     "No se a�adieron nuevas programaciones.",
     "",
@@ -5977,21 +5977,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nevytvořeno nové Nahrávání.",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "No timers were modified.",
-    "Es wurden keine Timer geändert.",
+    "Es wurden keine Timer ge�ndert.",
     "",
-    "Nessun timer modificato.",
-    "Er zijn geen timers aangepast",
     "",
-    "La programmation n'a pas été changée.",
     "",
-    "Yhtään ajastinta ei muokattu.",
+    "",
+    "La programmation n'a pas �t� chang�e.",
+    "",
+    "",
     "",
     "No se modificaron programaciones.",
     "",
@@ -6012,21 +6012,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Neupraveno žádné Nahrávání.",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "No timers were deleted.",
-    "Es wurden keine Timer gelöscht.",
+    "Es wurden keine Timer gel�scht.",
     "",
-    "Nessun timer eliminato.",
-    "Er zijn geen timers gewist",
     "",
-    "Aucune programmation n'a été effacée.",
     "",
-    "Yhtään ajastinta ei poistettu.",
+    "",
+    "Aucune programmation n'a �t� effac�e.",
+    "",
+    "",
     "",
     "No se borraron programaciones.",
     "",
@@ -6047,21 +6047,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Žádné nahrávání nebylo smazané.",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "No new events to announce.",
-    "Keine neuen Sendungen anzukündigen.",
-    "",
-    "Nessun nuovo evento da annunciare.",
+    "Keine neuen Sendungen anzuk�ndigen.",
     "",
     "",
     "",
     "",
-    "Ei uusia ilmoitettavia tapahtumia.",
+    "",
+    "",
+    "",
     "",
     "No hay nuevos eventos que avisar.",
     "",
@@ -6082,7 +6082,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zádné nová událost k oznámení. ",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6091,12 +6091,12 @@ const tI18nPhrase Phrases[] = {
   { "This version of EPGSearch does not support this service!",
     "",
     "",
-    "Questa versione di EPGSearch non supporta questo servizio!",
-    "Deze versie van EPGSearch ondersteunt deze mogelijkheid niet!",
+    "",
+    "",
     "",
     "Cette version de EPGSearch ne supporte pas ce service!",
     "",
-    "EPGSearch-laajennos ei tarjoa vaadittavaa palvelua!",
+    "",
     "",
     "�Esta versi�n de EPGSearch no soporta este servicio!",
     "",
@@ -6117,7 +6117,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Tato verze EPGsearch nepodporuje tuto službu!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6126,12 +6126,12 @@ const tI18nPhrase Phrases[] = {
   { "EPGSearch does not exist!",
     "",
     "",
-    "EPGSearch non esiste!",
-    "EPGsearch is niet aanwezig!",
+    "",
+    "",
     "",
     "EPGSearch n'existe pas!",
     "",
-    "EPGSearch-laajennosta ei löydy!",
+    "",
     "",
     "�No existe EPGSearch!",
     "",
@@ -6152,7 +6152,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "EPGsearch neexistuje!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6161,12 +6161,12 @@ const tI18nPhrase Phrases[] = {
   { "%d new broadcast",
     "%d neue Sendung(en)",
     "",
-    "%d nuova emittente",
-    "%d nieuwe uitzending",
     "",
-    "%d nouvelle(s) émission(s)",
     "",
-    "%d uutta lähetystä",
+    "",
+    "%d nouvelle(s) �mission(s)",
+    "",
+    "",
     "",
     "%d nuevas emisiones",
     "",
@@ -6187,7 +6187,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "%d nové vysílání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6196,12 +6196,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$by channel",
     "nach Programm",
     "",
-    "Per canale",
-    "per kanaal",
+    "",
+    "",
     "",
     "de programme",
     "",
-    "Kanavat",
+    "",
     "",
     "por canal",
     "",
@@ -6222,7 +6222,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Dle stanic",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6231,12 +6231,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$by time",
     "nach Beginn",
     "",
-    "Per orario",
-    "op tijd",
     "",
-    "de début",
     "",
-    "Kellonajat",
+    "",
+    "de d�but",
+    "",
+    "",
     "",
     "por horario",
     "",
@@ -6257,7 +6257,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Dle času",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6266,12 +6266,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Episode",
     "Episode",
     "",
-    "Episodio",
-    "Aflevering",
     "",
-    "Épisode",
     "",
-    "Jaksot",
+    "",
+    "�pisode",
+    "",
+    "",
     "",
     "Episodio",
     "",
@@ -6292,7 +6292,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Název dílu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6301,12 +6301,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Title",
     "Titel",
     "",
-    "Titolo",
-    "Titel",
+    "",
+    "",
     "",
     "Titre",
     "",
-    "Nimet",
+    "",
     "",
     "T�tulo",
     "",
@@ -6327,21 +6327,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Název",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "announce details",
-    "Ankündigungsdetails",
+    "Ank�ndigungsdetails",
     "",
-    "dettagli annuncio",
-    "vermeldt details",
     "",
-    "annoncer les détails",
     "",
-    "Muistutuksen tiedot",
+    "",
+    "annoncer les d�tails",
+    "",
+    "",
     "",
     "detalles del aviso",
     "",
@@ -6362,21 +6362,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "informovat o podrobostech",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "announce again",
-    "Erneut ankündigen",
+    "Erneut ank�ndigen",
     "",
-    "annuncia ancora",
-    "vermeldt nogmaals",
     "",
-    "Annoncer à nouveau",
     "",
-    "Muistuta uudelleen",
+    "",
+    "Annoncer � nouveau",
+    "",
+    "",
     "",
     "avisar otra vez",
     "",
@@ -6397,21 +6397,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "informovat znovu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "with next update",
-    "beim nächsten Update",
+    "beim n�chsten Update",
     "",
-    "con nuovo aggiornamento",
-    "bij volgende herziening",
     "",
-    "lors de la prochaine mise à jour",
     "",
-    "Seuraavassa päivityksessä",
+    "",
+    "lors de la prochaine mise � jour",
+    "",
+    "",
     "",
     "con la pr�xima actualizaci�n",
     "",
@@ -6432,7 +6432,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "při dalších změnách",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6441,12 +6441,12 @@ const tI18nPhrase Phrases[] = {
   { "again from",
     "erneut ab",
     "",
-    "ancora da",
-    "nogmaals vanaf",
     "",
-    "recommencer à partir de",
     "",
-    "Alkaen taas",
+    "",
+    "recommencer � partir de",
+    "",
+    "",
     "",
     "otra vez desde",
     "",
@@ -6467,7 +6467,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "znovu od",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6476,12 +6476,12 @@ const tI18nPhrase Phrases[] = {
   { "Search timer",
     "Suchtimer",
     "",
-    "Cerca timer",
-    "Zoektimer",
+    "",
+    "",
     "",
     "Programmation de recherche",
     "",
-    "Hakuajastin",
+    "",
     "",
     "Programaci�n por b�squeda",
     "",
@@ -6502,7 +6502,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Automatické nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6511,12 +6511,12 @@ const tI18nPhrase Phrases[] = {
   { "Edit blacklist",
     "Ausschlussliste editieren",
     "",
-    "Modifica lista esclusioni",
-    "Wijzig blacklist",
+    "",
+    "",
     "",
     "Editer la liste des exclus",
     "",
-    "Muokkaa mustaa listaa",
+    "",
     "",
     "Editar la lista negra",
     "",
@@ -6537,7 +6537,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Upravit blacklist",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6546,12 +6546,12 @@ const tI18nPhrase Phrases[] = {
   { "phrase",
     "Ausdruck",
     "",
-    "frase",
-    "uitdruk",
+    "",
+    "",
     "",
     "Phrase",
     "",
-    "fraasi",
+    "",
     "",
     "frase",
     "",
@@ -6572,7 +6572,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "fráze",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6581,12 +6581,12 @@ const tI18nPhrase Phrases[] = {
   { "all words",
     "alle Worte",
     "",
-    "tutte le parole",
-    "alle woorden",
+    "",
+    "",
     "",
     "tout les mots",
     "",
-    "kaikki sanat",
+    "",
     "",
     "palabra completa",
     "",
@@ -6607,7 +6607,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "všechna slova",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6616,12 +6616,12 @@ const tI18nPhrase Phrases[] = {
   { "at least one word",
     "ein Wort",
     "",
-    "almeno una parola",
-    "tenminste een woord",
+    "",
+    "",
     "",
     "un mot",
     "",
-    "yksi sana",
+    "",
     "",
     "m�nimo 1 palabra",
     "",
@@ -6642,7 +6642,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "alespoň jedno slovo",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6651,12 +6651,12 @@ const tI18nPhrase Phrases[] = {
   { "match exactly",
     "exakt",
     "",
-    "corrispondenza esatta",
-    "precies passend",
+    "",
+    "",
     "",
     "correspond exactement",
     "",
-    "täsmällinen",
+    "",
     "",
     "exacta",
     "",
@@ -6677,21 +6677,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "přesný výraz",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "regular expression",
-    "regulärer Ausdruck",
+    "regul�rer Ausdruck",
     "",
-    "espressione regolare",
-    "reguliere uitdrukking",
     "",
-    "expression réguliere",
     "",
-    "säännöllinen lauseke",
+    "",
+    "expression r�guliere",
+    "",
+    "",
     "",
     "expresi�n regular",
     "",
@@ -6712,7 +6712,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "regulární výraz",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6721,12 +6721,12 @@ const tI18nPhrase Phrases[] = {
   { "fuzzy",
     "unscharf",
     "",
-    "imprecisa",
-    "fuzzy",
     "",
-    "imprécis",
     "",
-    "sumea",
+    "",
+    "impr�cis",
+    "",
+    "",
     "",
     "imprecisa",
     "",
@@ -6756,12 +6756,12 @@ const tI18nPhrase Phrases[] = {
   { "user-defined",
     "benutzerdefiniert",
     "",
-    "definito dall'utente",
-    "gebruiker-gedefinieerd",
+    "",
+    "",
     "",
     "definition d'utilisateur",
     "",
-    "valitut",
+    "",
     "",
     "definido por usuario",
     "",
@@ -6782,7 +6782,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "více dní",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6791,12 +6791,12 @@ const tI18nPhrase Phrases[] = {
   { "interval",
     "Bereich",
     "",
-    "intervallo",
-    "interval",
+    "",
+    "",
     "",
     "interval",
     "",
-    "kyllä",
+    "",
     "",
     "intervalo",
     "",
@@ -6826,12 +6826,12 @@ const tI18nPhrase Phrases[] = {
   { "channel group",
     "Kanalgruppe",
     "",
-    "gruppo canali",
-    "kanaalgroep",
     "",
-    "Groupe de chaînes",
     "",
-    "kanavaryhmä",
+    "",
+    "Groupe de cha�nes",
+    "",
+    "",
     "",
     "grupo de canales",
     "",
@@ -6852,7 +6852,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "skupina kanálů",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6861,12 +6861,12 @@ const tI18nPhrase Phrases[] = {
   { "only FTA",
     "ohne PayTV",
     "",
-    "solo gratuiti",
-    "alleen FTA",
+    "",
+    "",
     "",
     "sans TV-Payante",
     "",
-    "vapaat kanavat",
+    "",
     "",
     "s�lo en abierto",
     "",
@@ -6887,7 +6887,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "jen volné",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6896,12 +6896,12 @@ const tI18nPhrase Phrases[] = {
   { "Search term",
     "Suche",
     "",
-    "Termine ricerca",
-    "Zoekterm",
+    "",
+    "",
     "",
     "Rechercher",
     "",
-    "Hakutermi",
+    "",
     "",
     "Buscar palabra",
     "",
@@ -6922,7 +6922,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vyhledej",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6931,12 +6931,12 @@ const tI18nPhrase Phrases[] = {
   { "Search mode",
     "Suchmodus",
     "",
-    "Modalità di ricerca",
-    "Zoekinstellingen",
+    "",
+    "",
     "",
     "Mode de recherche",
     "",
-    "Hakutapa",
+    "",
     "",
     "Modo de b�squeda",
     "",
@@ -6957,7 +6957,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vyhledávací režim",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -6966,12 +6966,12 @@ const tI18nPhrase Phrases[] = {
   { "Tolerance",
     "Toleranz",
     "",
-    "Tolleranza",
-    "Tolerantie",
     "",
-    "Tolérance",
     "",
-    "Toleranssi",
+    "",
+    "Tol�rance",
+    "",
+    "",
     "",
     "Tolerancia",
     "",
@@ -6999,14 +6999,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Match case",
-    "Groß/klein",
+    "Gro�/klein",
     "",
-    "Maiuscolo/Minuscolo",
-    "Case sensitive",
+    "",
+    "",
     "",
     "Maj/Minuscule",
     "",
-    "Huomioi kirjainkoko",
+    "",
     "",
     "May�scula/min�scula",
     "",
@@ -7027,7 +7027,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Velikost písmen",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7036,12 +7036,12 @@ const tI18nPhrase Phrases[] = {
   { "Use title",
     "Verw. Titel",
     "",
-    "Utilizza titolo",
-    "Gebruik titel",
+    "",
+    "",
     "",
     "Utiliser titre",
     "",
-    "Käytä ohjelmanimeä",
+    "",
     "",
     "Usar t�tulo",
     "",
@@ -7062,7 +7062,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Název",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7071,12 +7071,12 @@ const tI18nPhrase Phrases[] = {
   { "Use subtitle",
     "Verw. Untertitel",
     "",
-    "Utilizza sottotitolo",
-    "Gebruik ondertitel",
+    "",
+    "",
     "",
     "Utiliser sous-titre",
     "",
-    "Käytä lyhyttä ohjelmakuvausta",
+    "",
     "",
     "Usar subt�tulo",
     "",
@@ -7097,7 +7097,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Název dílu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7106,12 +7106,12 @@ const tI18nPhrase Phrases[] = {
   { "Use description",
     "Verw. Beschreibung",
     "",
-    "Utilizza descrizione",
-    "Gebruik beschrijving",
+    "",
+    "",
     "",
     "Utiliser la description",
     "",
-    "Käytä ohjelmakuvausta",
+    "",
     "",
     "Usar descripci�n",
     "",
@@ -7132,7 +7132,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Popis",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7141,12 +7141,12 @@ const tI18nPhrase Phrases[] = {
   { "Use extended EPG info",
     "Verw. erweiterte EPG Info",
     "",
-    "Utilizza informazioni EPG estesa",
-    "Gebruik uitgebreide EPG info",
     "",
-    "Utiliser les infos EPG avancées",
     "",
-    "Käytä laajennettua ohjelmaopasta",
+    "",
+    "Utiliser les infos EPG avanc�es",
+    "",
+    "",
     "",
     "Usar info ampliada de la EPG",
     "",
@@ -7167,7 +7167,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Použít rozšířené EPG informace",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7176,12 +7176,12 @@ const tI18nPhrase Phrases[] = {
   { "Ignore missing categories",
     "Ignoriere fehlende Kat.",
     "",
-    "Ignora categorie mancanti",
-    "Negeer ontbrekende categoriëen",
     "",
-    "Ignorer les catégories indisponible",
     "",
-    "Jätä puuttuvat kategoriat huomioimatta",
+    "",
+    "Ignorer les cat�gories indisponible",
+    "",
+    "",
     "",
     "Ignorar categor�as perdidas",
     "",
@@ -7202,7 +7202,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Ignorovat chybějící kategorie.",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7211,12 +7211,12 @@ const tI18nPhrase Phrases[] = {
   { "Use channel",
     "Verw. Kanal",
     "",
-    "Utilizza canale",
-    "Gebruik kanaal",
     "",
-    "Utiliser les chaînes",
     "",
-    "Käytä kanavaa",
+    "",
+    "Utiliser les cha�nes",
+    "",
+    "",
     "",
     "Usar canal",
     "",
@@ -7237,7 +7237,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Stanice",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7246,12 +7246,12 @@ const tI18nPhrase Phrases[] = {
   { "  from channel",
     "  von Kanal",
     "",
-    "  da canale",
-    "  van kanaal",
     "",
-    "  de la Chaîne",
     "",
-    "  Kanavasta",
+    "",
+    "  de la Cha�ne",
+    "",
+    "",
     "",
     "  desde el canal",
     "",
@@ -7272,7 +7272,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    " od",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7281,12 +7281,12 @@ const tI18nPhrase Phrases[] = {
   { "  to channel",
     "  bis Kanal",
     "",
-    "  a canale",
-    "  tot kanaal",
     "",
-    "  à la Chaîne",
     "",
-    "  Kanavaan",
+    "",
+    "  � la Cha�ne",
+    "",
+    "",
     "",
     "  hasta el canal",
     "",
@@ -7307,7 +7307,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    " do",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7316,12 +7316,12 @@ const tI18nPhrase Phrases[] = {
   { "Channel group",
     "Kanalgruppe",
     "",
-    "Gruppo canali",
-    "Kanaal groep",
     "",
-    "Groupe de chaînes",
     "",
-    "Kanavaryhmä",
+    "",
+    "Groupe de cha�nes",
+    "",
+    "",
     "",
     "Grupo de canales",
     "",
@@ -7342,7 +7342,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Skupina stanic",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7351,12 +7351,12 @@ const tI18nPhrase Phrases[] = {
   { "Use time",
     "Verw. Uhrzeit",
     "",
-    "Utilizza orario",
-    "Gebruik tijd",
+    "",
+    "",
     "",
     "Utiliser l'heure",
     "",
-    "Käytä aloitusaikaa",
+    "",
     "",
     "Usar horario",
     "",
@@ -7377,7 +7377,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Čas",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7386,12 +7386,12 @@ const tI18nPhrase Phrases[] = {
   { "  Start after",
     "  Start nach",
     "",
-    "  Inizia dopo",
-    "  Start na",
     "",
-    "  Départ après",
     "",
-    "  Aloitusaika aikaisintaan",
+    "",
+    "  D�part apr�s",
+    "",
+    "",
     "",
     "  Comenzar despu�s",
     "",
@@ -7412,7 +7412,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    " Začíná po",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7421,12 +7421,12 @@ const tI18nPhrase Phrases[] = {
   { "  Start before",
     "  Start vor",
     "",
-    "  Inizia prima",
-    "  Start voor",
     "",
-    "  Départ avant",
     "",
-    "  Aloitusaika viimeistään",
+    "",
+    "  D�part avant",
+    "",
+    "",
     "",
     "  Comenzar antes",
     "",
@@ -7447,7 +7447,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    " Začíná před",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7456,12 +7456,12 @@ const tI18nPhrase Phrases[] = {
   { "Use duration",
     "Verw. Dauer",
     "",
-    "Utilizza durata",
-    "Gebruik tijdsduur",
     "",
-    "Durée d'utilisation",
     "",
-    "Käytä kestoaikaa",
+    "",
+    "Dur�e d'utilisation",
+    "",
+    "",
     "",
     "Usar duraci�n",
     "",
@@ -7482,7 +7482,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Délka",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7491,12 +7491,12 @@ const tI18nPhrase Phrases[] = {
   { "  Min. duration",
     "  Min. Dauer",
     "",
-    "   Durata Minima",
-    "  Min. duur",
     "",
-    "  Durée min.",
     "",
-    "  Kestoaika vähintään",
+    "",
+    "  Dur�e min.",
+    "",
+    "",
     "",
     "  Duraci�n m�n.",
     "",
@@ -7517,7 +7517,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    " Min. délka",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7526,12 +7526,12 @@ const tI18nPhrase Phrases[] = {
   { "  Max. duration",
     "  Max. Dauer",
     "",
-    "   Durata Massima",
-    "  Max. tijdsduur",
     "",
-    "  Durée max.",
     "",
-    "  Kestoaika enintään",
+    "",
+    "  Dur�e max.",
+    "",
+    "",
     "",
     "  Duraci�n m�x.",
     "",
@@ -7552,7 +7552,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    " Max. délka",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7561,12 +7561,12 @@ const tI18nPhrase Phrases[] = {
   { "Use day of week",
     "Verw. Wochentag",
     "",
-    "Utilizza giorno settimana",
-    "Gebruik dag van de week",
+    "",
+    "",
     "",
     "Utiliser les jours de la semaine",
     "",
-    "Käytä viikonpäivää",
+    "",
     "",
     "Usar d�a de la semana",
     "",
@@ -7587,7 +7587,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Den v týdnu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7596,12 +7596,12 @@ const tI18nPhrase Phrases[] = {
   { "Day of week",
     "Wochentag",
     "",
-    "Giorno settimana",
-    "Dag van de week",
+    "",
+    "",
     "",
     "Jours de la semaine",
     "",
-    "Viikonpäivä",
+    "",
     "",
     "D�a de la semana",
     "",
@@ -7622,7 +7622,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Den",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7631,12 +7631,12 @@ const tI18nPhrase Phrases[] = {
   { "Use global",
     "Global verwenden",
     "",
-    "Utilizza globale",
     "",
     "",
     "",
     "",
-    "Käytä globaalina",
+    "",
+    "",
     "",
     "Usar global",
     "",
@@ -7657,7 +7657,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Použít globálně",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7666,12 +7666,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Templates",
     "Vorlagen",
     "",
-    "Modelli",
-    "Sjablonen",
     "",
-    "Modéles",
     "",
-    "Mallipohjat",
+    "",
+    "Mod�les",
+    "",
+    "",
     "",
     "Plantillas",
     "",
@@ -7692,7 +7692,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vzory",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7701,12 +7701,12 @@ const tI18nPhrase Phrases[] = {
   { "*** Invalid Channel ***",
     "",
     "",
-    "*** Canale NON valido ***",
-    "*** Ongeldig Kanaal ***",
     "",
-    "*** Chaîne indisponible ***",
     "",
-    "*** Virheellinen kanavavalinta ***",
+    "",
+    "*** Cha�ne indisponible ***",
+    "",
+    "",
     "",
     "*** Canal no v�lido ***",
     "",
@@ -7727,21 +7727,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "*** špatná stanice ***",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Please check channel criteria!",
-    "Bitte Senderkriterien prüfen!",
+    "Bitte Senderkriterien pr�fen!",
     "",
-    "Controlla i criteri del canale!",
-    "AUB kanaal criteria nakijken",
     "",
-    "Vérifier le critère de la chaîne!",
     "",
-    "Tarkasta hakuehdot!",
+    "",
+    "V�rifier le crit�re de la cha�ne!",
+    "",
+    "",
     "",
     "�Compruebe requisitos del canal!",
     "",
@@ -7762,21 +7762,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zkontrolujte nastavení stanic!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Edit$Delete blacklist?",
-    "Ausschlussliste löschen?",
+    "Ausschlussliste l�schen?",
     "",
-    "Eliminare lista esclusioni?",
-    "Verwijder blacklist?",
+    "",
+    "",
     "",
     "Effacer la liste des exclus",
     "",
-    "Poistetaanko musta lista?",
+    "",
     "",
     "�Borrar la lista negra?",
     "",
@@ -7797,7 +7797,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Smazat blacklist?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7806,12 +7806,12 @@ const tI18nPhrase Phrases[] = {
   { "Repeats",
     "Wiederholung",
     "",
-    "Repliche",
-    "Herhalingen",
     "",
-    "Répétitions",
     "",
-    "Toistuvat",
+    "",
+    "R�p�titions",
+    "",
+    "",
     "",
     "Repeticiones",
     "",
@@ -7832,7 +7832,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Opakování",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7841,12 +7841,12 @@ const tI18nPhrase Phrases[] = {
   { "Create search",
     "Suche anlegen",
     "",
-    "Crea ricerca",
-    "Maak een zoekactie aan",
     "",
-    "Créer une recherche",
     "",
-    "Luo haku",
+    "",
+    "Cr�er une recherche",
+    "",
+    "",
     "",
     "Crear una b�squeda",
     "",
@@ -7867,7 +7867,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vytvořit Hledání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7876,12 +7876,12 @@ const tI18nPhrase Phrases[] = {
   { "Search in recordings",
     "Suche in Aufnahmen",
     "",
-    "Cerca nelle registrazioni",
-    "Zoek in opname's",
+    "",
+    "",
     "",
     "Recherche dans enregistrement",
     "",
-    "Etsi tallenteista",
+    "",
     "",
     "Buscar en las grabaciones",
     "",
@@ -7902,7 +7902,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Hledat v nahrávkách?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7911,12 +7911,12 @@ const tI18nPhrase Phrases[] = {
   { "Mark as 'already recorded'?",
     "als 'bereits aufgezeichnet' markieren?",
     "",
-    "Segnare come 'già registrato'?",
-    "Markeer als 'reeds opgenomen'?",
     "",
-    "marquer comme 'déjà enregistré'?",
     "",
-    "Merkitse tallennetuksi",
+    "",
+    "marquer comme 'd�j� enregistr�'?",
+    "",
+    "",
     "",
     "�Marcar como 'ya grabado'?",
     "",
@@ -7937,7 +7937,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Označit jako 'již nahrané'",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7946,12 +7946,12 @@ const tI18nPhrase Phrases[] = {
   { "Add/Remove to/from switch list?",
     "In/Aus Umschaltliste?",
     "",
-    "Aggiungere/Rimuovere a/dalla lista modifiche?",
+    "",
     "",
     "",
     "Ajouter/Effacer de la liste de changement?",
     "",
-    "Lisää/poista kanavanvaihtolistalle",
+    "",
     "",
     "�A�adir/Borrar a/de la lista de cambio?",
     "",
@@ -7972,7 +7972,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Upravit seznam přepnutí?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -7981,12 +7981,12 @@ const tI18nPhrase Phrases[] = {
   { "Create blacklist",
     "Ausschlussliste anlegen",
     "",
-    "Crea lista esclusioni",
-    "Maak nieuwe blacklist",
     "",
-    "Créer la liste d'exclusions",
     "",
-    "Lisää mustalle listalle",
+    "",
+    "Cr�er la liste d'exclusions",
+    "",
+    "",
     "",
     "Crear lista negra",
     "",
@@ -8007,7 +8007,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vytvořit blacklist",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8016,12 +8016,12 @@ const tI18nPhrase Phrases[] = {
   { "EPG Commands",
     "EPG Befehle",
     "",
-    "Comandi EPG",
-    "EPG commando's",
+    "",
+    "",
     "",
     "Commande EPG",
     "",
-    "Komennot",
+    "",
     "",
     "�rdenes EPG",
     "",
@@ -8042,21 +8042,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "EPG příkazy",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Already running!",
-    "Läuft bereits!",
+    "L�uft bereits!",
     "",
-    "In esecuzione!",
-    "Reeds actief!",
     "",
-    "Est déjà en cours",
     "",
-    "Nyt menossa!",
+    "",
+    "Est d�j� en cours",
+    "",
+    "",
     "",
     "�Ya se est� ejecutando!",
     "",
@@ -8077,7 +8077,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Již běží!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8086,12 +8086,12 @@ const tI18nPhrase Phrases[] = {
   { "Add to switch list?",
     "In Umschaltliste aufnehmen?",
     "",
-    "Aggiungere alla lista modifiche?",
-    "Voeg toe aan schakellijst?",
     "",
-    "Ajouter à la liste de changement de chaine?",
     "",
-    "Lisätäänkö kanavanvaihtolistalle?",
+    "",
+    "Ajouter � la liste de changement de chaine?",
+    "",
+    "",
     "",
     "�A�adir a la lista de cambio?",
     "",
@@ -8112,7 +8112,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přidat do seznamu přepnutí?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8121,12 +8121,12 @@ const tI18nPhrase Phrases[] = {
   { "Delete from switch list?",
     "Aus Umschaltliste entfernen?",
     "",
-    "Eliminare dalla lista modifiche?",
-    "Verwijder van schakellijst?",
+    "",
+    "",
     "",
     "Effacer de la liste de changement?",
     "",
-    "Poistetaanko kanavanvaihtolistalta?",
+    "",
     "",
     "�Borrar de la lista de cambio?",
     "",
@@ -8147,7 +8147,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Smazat ze seznamu přepnutí?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8156,12 +8156,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Details",
     "Details",
     "",
-    "Dettagli",
-    "Details",
     "",
-    "Détails",
     "",
-    "Lisätiedot",
+    "",
+    "D�tails",
+    "",
+    "",
     "",
     "Detalles",
     "",
@@ -8182,7 +8182,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Detaily",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8191,12 +8191,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Filter",
     "Filter",
     "",
-    "Filtro",
-    "Filter",
+    "",
+    "",
+    "",
     "Filtre",
-    "Filtre",
-    "Suodata",
-    "Suodata",
+    "",
+    "",
     "",
     "Filtro",
     "",
@@ -8217,7 +8217,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Filtr",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8226,12 +8226,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Show all",
     "Zeige alle",
     "",
-    "Mostra tutti",
-    "Toon alles",
+    "",
+    "",
     "",
     "Montrer tous",
     "",
-    "Näytä kaikki",
+    "",
     "",
     "Mostrar todo",
     "",
@@ -8252,7 +8252,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit vše",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8261,12 +8261,12 @@ const tI18nPhrase Phrases[] = {
   { "conflicts",
     "Konflikte",
     "",
-    "conflitti",
-    "conflicten",
+    "",
+    "",
     "",
     "Conflits",
     "",
-    "päällekkäisyyttä",
+    "",
     "",
     "conflictos",
     "",
@@ -8287,7 +8287,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "konflikty",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8296,12 +8296,12 @@ const tI18nPhrase Phrases[] = {
   { "no conflicts!",
     "keine Konflikte!",
     "",
-    "nessun conflitto!",
-    "geen conflicten!",
+    "",
+    "",
     "",
     "pas de conflits",
     "",
-    "ei päällekkäisyyksiä!",
+    "",
     "",
     "�no hay conflictos!",
     "",
@@ -8322,7 +8322,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "žádné konflikty!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8331,12 +8331,12 @@ const tI18nPhrase Phrases[] = {
   { "no important conflicts!",
     "keine wichtigen Konflikte!",
     "",
-    "nessun conflitto importante!",
-    "geen belangrijke conflicten!",
+    "",
+    "",
     "",
     "pas de conflits importants!",
     "",
-    "ei merkitseviä päällekkäisyyksiä!",
+    "",
     "",
     "�no hay conflictos importantes!",
     "",
@@ -8357,7 +8357,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "zádné důležité konflikty!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8365,34 +8365,34 @@ const tI18nPhrase Phrases[] = {
   },
   { "C",
     "K",
+    "",
+    "",
+    "",
+    "",
     "C",
+    "",
+    "",
+    "",
     "C",
-    "C",
-    "C",
-    "C",
-    "C",
-    "C",
-    "C",
-    "C",
-    "C",
-    "C",
-    "C",
-    "C",
-    "C",
+    "",
+    "",
+    "",
+    "",
+    "",
 #if VDRVERSNUM >= 10302
-    "C",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
-    "C",
+    "",
 #endif
 #if VDRVERSNUM >= 10313
-    "C",
+    "",
 #endif
 #if VDRVERSNUM >= 10316
-    "C",
+    "",
 #endif
 #if VDRVERSNUM >= 10342
-    "C",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8401,12 +8401,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Repeats",
     "Wiederh.",
     "",
-    "Repliche",
-    "Herhalingen",
     "",
-    "Répétitions",
     "",
-    "Toistuvat",
+    "",
+    "R�p�titions",
+    "",
+    "",
     "",
     "Repeticiones",
     "",
@@ -8427,21 +8427,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Opakování",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "no check",
-    "ohne Überwachung",
+    "ohne �berwachung",
     "",
-    "nessuna verifica",
-    "geen controle",
+    "",
+    "",
     "",
     "sans surveillance",
     "",
-    "ei valvontaa",
+    "",
     "",
     "sin comprobaci�n",
     "",
@@ -8462,7 +8462,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "žádná kontrola",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8471,12 +8471,12 @@ const tI18nPhrase Phrases[] = {
   { "by channel and time",
     "anhand Sender/Uhrzeit",
     "",
-    "per canale e ora",
-    "op kanaal en tijd",
     "",
-    "à partir chaînes/heures",
     "",
-    "kanava ja aika",
+    "",
+    "� partir cha�nes/heures",
+    "",
+    "",
     "",
     "por canal y hora",
     "",
@@ -8497,7 +8497,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "dle stanice a času",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8506,12 +8506,12 @@ const tI18nPhrase Phrases[] = {
   { "by event ID",
     "anhand Sendungskennung",
     "",
-    "per ID evento",
-    "op event-ID",
     "",
-    "à partir du numéro d'émission",
     "",
-    "tapahtuman tunniste",
+    "",
+    "� partir du num�ro d'�mission",
+    "",
+    "",
     "",
     "por ID de emisi�n",
     "",
@@ -8532,21 +8532,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "dle ID události",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Select directory",
-    "Verzeichnis wählen",
+    "Verzeichnis w�hlen",
     "",
-    "Seleziona directory",
-    "Selecteer map",
+    "",
+    "",
     "",
     "Selectionner le dossier",
     "",
-    "Valitse hakemisto",
+    "",
     "",
     "Seleccionar directorio",
     "",
@@ -8567,7 +8567,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vyber adresář",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8576,12 +8576,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Level",
     "Ebene",
     "",
-    "Livello",
-    "Niveau",
+    "",
+    "",
     "",
     "Niveau",
     "",
-    "Taso",
+    "",
     "",
     "Nivel",
     "",
@@ -8602,7 +8602,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Úroveň",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8611,12 +8611,12 @@ const tI18nPhrase Phrases[] = {
   { "Event",
     "",
     "",
-    "Evento",
-    "Gebeurtenis",
     "",
-    "Événement",
     "",
-    "Tapahtuma",
+    "",
+    "�v�nement",
+    "",
+    "",
     "",
     "Emisi�n",
     "",
@@ -8637,7 +8637,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Událost",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8646,12 +8646,12 @@ const tI18nPhrase Phrases[] = {
   { "Favorites",
     "Favoriten",
     "",
-    "Preferiti",
-    "Favorieten",
+    "",
+    "",
     "",
     "Favoris",
     "",
-    "Suosikit",
+    "",
     "",
     "Favoritos",
     "",
@@ -8672,7 +8672,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Oblíbené",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8681,12 +8681,12 @@ const tI18nPhrase Phrases[] = {
   { "Search results",
     "Suchergebnisse",
     "",
-    "Risultati della ricerca",
-    "Zoekresultaten",
     "",
-    "Résultat de recherche",
     "",
-    "Hakutulokset",
+    "",
+    "R�sultat de recherche",
+    "",
+    "",
     "",
     "Resultados de la b�squeda",
     "",
@@ -8707,7 +8707,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Výsledky hledání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8716,12 +8716,12 @@ const tI18nPhrase Phrases[] = {
   { "Timer conflict! Show?",
     "Timer-Konflikt! Anzeigen?",
     "",
-    "Conflitto timer! Mostrare?",
-    "Timerconflict! Tonen?",
+    "",
+    "",
     "",
     "Afficher les conflits de programmation?",
     "",
-    "Päällekkäisiä ajastimia! Näytetäänkö?",
+    "",
     "",
     "�Mostrar conflicto de programaci�n?",
     "",
@@ -8742,7 +8742,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Konflikt Nahrávání! Zobrazit?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8751,12 +8751,12 @@ const tI18nPhrase Phrases[] = {
   { "Directory",
     "Verzeichnis",
     "",
-    "Directory",
-    "Map",
+    "",
+    "",
     "",
     "Dossier",
     "",
-    "Hakemisto",
+    "",
     "",
     "Directorio",
     "",
@@ -8777,7 +8777,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Adresář",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8786,12 +8786,12 @@ const tI18nPhrase Phrases[] = {
   { "Channel",
     "",
     "",
-    "Canale",
-    "Kanaal",
     "",
-    "Chaîne",
     "",
-    "Kanava",
+    "",
+    "Cha�ne",
+    "",
+    "",
     "",
     "Canal",
     "",
@@ -8812,7 +8812,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Stanice",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8821,12 +8821,12 @@ const tI18nPhrase Phrases[] = {
   { "Childlock",
     "Kindersicherung",
     "",
-    "Filtro famiglia",
-    "Kinderslot",
+    "",
+    "",
     "",
     "Adulte",
     "",
-    "Lapsilukko",
+    "",
     "",
     "Bloqueo ni�os",
     "",
@@ -8847,21 +8847,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Dětská pojistka",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Timer check",
-    "Überwachung",
+    "�berwachung",
     "",
-    "Verifica timer",
-    "Timercontrole",
+    "",
+    "",
     "",
     "surveiller",
     "",
-    "Valvontatapa",
+    "",
     "",
     "Comprobaci�n",
     "",
@@ -8882,21 +8882,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Kontrola Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "recording with device",
-    "Aufnahme mit Gerät",
+    "Aufnahme mit Ger�t",
     "",
-    "registra con scheda",
-    "neemt op met kaart",
+    "",
+    "",
     "",
     "Enregistrement avec appareil",
     "",
-    "Tallennetaan laitteella",
+    "",
     "",
     "grabaci�n con dispositivo",
     "",
@@ -8917,7 +8917,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "nahrávat zařízením",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8926,12 +8926,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$With subtitle",
     "Mit Untertitel",
     "",
-    "Con sottotitoli",
-    "Met ondertitel",
+    "",
+    "",
     "",
     "Avec les sous-titres",
     "",
-    "Kuvaus",
+    "",
     "",
     "Con subt�tulo",
     "",
@@ -8952,7 +8952,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "S Názvem dílu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8961,12 +8961,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Without subtitle",
     "Ohne Untertitel",
     "",
-    "Senza sottotitoli",
-    "Zonder ondertitel",
+    "",
+    "",
     "",
     "Sans sous-titres",
     "",
-    "Ei kuvausta",
+    "",
     "",
     "Sin subt�tulo",
     "",
@@ -8987,7 +8987,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Bez Názvu dílu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -8996,12 +8996,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Extended",
     "Erweitert",
     "",
-    "Esteso",
-    "Uitgebreid",
+    "",
+    "",
     "",
     "Extention",
     "",
-    "Laaja",
+    "",
     "",
     "Ampliado",
     "",
@@ -9022,7 +9022,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Rozšířené",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9031,12 +9031,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Simple",
     "Einfach",
     "",
-    "Semplice",
-    "Eenvoudig",
+    "",
+    "",
     "",
     "Simple",
     "",
-    "Suppea",
+    "",
     "",
     "Simple",
     "",
@@ -9057,7 +9057,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Výchozí",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9066,12 +9066,12 @@ const tI18nPhrase Phrases[] = {
   { "Use blacklists",
     "Verw. Ausschlusslisten",
     "",
-    "Utilizza lista esclusioni",
-    "Gebruik blacklists",
+    "",
+    "",
     "",
     "Utiliser la liste des exclus",
     "",
-    "Käytä mustia listoja",
+    "",
     "",
     "Usar listas negras",
     "",
@@ -9092,7 +9092,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Použít blacklist",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9101,12 +9101,12 @@ const tI18nPhrase Phrases[] = {
   { "Edit$Search text too short - use anyway?",
     "Suchtext zu kurz - trotzdem verwenden?",
     "",
-    "Il testo da cercare è troppo corto - continuare?",
-    "Zoektekst te kort - toch gebruiken?",
     "",
-    "Texte de recherche est trop court - l'utiliser comme même?",
     "",
-    "Liian suppea hakuehto - etsitäänkö silti?",
+    "",
+    "Texte de recherche est trop court - l'utiliser comme m�me?",
+    "",
+    "",
     "",
     "El texto a buscar es muy corto - �usar de todas formas?",
     "",
@@ -9127,7 +9127,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Text je příliš krátký - přesto použít?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9136,33 +9136,33 @@ const tI18nPhrase Phrases[] = {
   { "Button$Orphaned",
     "Verwaiste",
     "",
-    "Per canale",
-    "per kanaal",
+    "",
+    "",
     "",
     "de programme",
     "",
-    "Orvot",
+    "",
     "",
     "Hu�rfano",
     "",
-    "Inspelning",
     "",
     "",
-    "Gravar",
+    "",
+    "",
 #if VDRVERSNUM >= 10302
     "",
 #endif
 #if VDRVERSNUM >= 10307
-    "Snimi",
+    "",
 #endif
 #if VDRVERSNUM >= 10313
-    "Salvesta",
+    "",
 #endif
 #if VDRVERSNUM >= 10316
-    "Optag",
+    "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Dle stanic",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9171,12 +9171,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$by name",
     "nach Name",
     "",
-    "Per nome",
-    "op naam",
+    "",
+    "",
     "",
     "par nom",
     "",
-    "Nimi",
+    "",
     "",
     "por nombre",
     "",
@@ -9197,7 +9197,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "dle jména",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9206,12 +9206,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$by date",
     "nach Datum",
     "",
-    "Per data",
-    "op datum",
+    "",
+    "",
     "",
     "par la date",
     "",
-    "Päivämäärä",
+    "",
     "",
     "por fecha",
     "",
@@ -9232,21 +9232,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "dle data",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Button$Delete all",
-    "Alle löschen",
+    "Alle l�schen",
     "",
-    "Elimina tutti",
-    "Verwijder alles",
+    "",
+    "",
     "",
     "Effacer toutes",
     "",
-    "Poista kaikki",
+    "",
     "",
     "Borrar todo",
     "",
@@ -9267,7 +9267,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Smazat vše",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9276,12 +9276,12 @@ const tI18nPhrase Phrases[] = {
   { "Recordings",
     "",
     "",
-    "Registrazioni",
-    "Opnames",
+    "",
+    "",
     "",
     "Enregistrement",
     "",
-    "Tallenteet",
+    "",
     "",
     "Grabaciones",
     "",
@@ -9302,21 +9302,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nahrávky",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Edit$Delete entry?",
-    "Eintrag löschen?",
+    "Eintrag l�schen?",
     "",
-    "Eliminare voce?",
-    "Verwijder regel?",
     "",
-    "Effacer l'entrée",
     "",
-    "Poista hakutermi",
+    "",
+    "Effacer l'entr�e",
+    "",
+    "",
     "",
     "�Borrar entrada?",
     "",
@@ -9337,21 +9337,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Smazat?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Edit$Delete all entries?",
-    "Alle Einträge löschen?",
+    "Alle Eintr�ge l�schen?",
     "",
-    "Eliminare tutte le voci?",
-    "Verwijder alle regels?",
     "",
-    "Effacer toutes les entrées",
     "",
-    "Poista kaikki hakutermit",
+    "",
+    "Effacer toutes les entr�es",
+    "",
+    "",
     "",
     "�Borrar todas las entradas?",
     "",
@@ -9372,7 +9372,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Smazat vše?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9381,12 +9381,12 @@ const tI18nPhrase Phrases[] = {
   { "Summary",
     "Inhalt",
     "",
-    "Sommario",
-    "Samenvatting",
+    "",
+    "",
     "",
     "Contenu",
     "",
-    "Yhteenveto",
+    "",
     "",
     "Resumen",
     "",
@@ -9407,7 +9407,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Shrnutí",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9416,12 +9416,12 @@ const tI18nPhrase Phrases[] = {
   { "Auxiliary info",
     "Zusatzinfo",
     "",
-    "Informazioni ausiliarie",
-    "Reserve info",
     "",
-    "Informations supplémentaires",
     "",
-    "Lisätiedot",
+    "",
+    "Informations suppl�mentaires",
+    "",
+    "",
     "",
     "M�s informaci�n",
     "",
@@ -9442,7 +9442,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Pomocné info",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9451,12 +9451,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Aux info",
     "Zusatzinfo",
     "",
-    "Info ausiliarie",
-    "Res. info",
     "",
-    "Infos supplémentaires",
     "",
-    "Lisätiedot",
+    "",
+    "Infos suppl�mentaires",
+    "",
+    "",
     "",
     "M�s info",
     "",
@@ -9477,182 +9477,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Pom. info",
-#endif
-#if VDRVERSNUM >= 10502
     "",
-#endif
-  },
-  { "Button$Actions",
-    "Aktionen",
-    "",
-    "Azioni",
-    "Acties",
-    "",
-    "Actions",
-    "",
-    "Komennot",
-    "",
-    "Acciones",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Akce",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Search entries",
-    "Sucheinträge",
-    "",
-    "Valori ricerca",
-    "Zoekregels",
-    "",
-    "Entrée de recherche",
-    "",
-    "Hakutermit",
-    "",
-    "Entradas de b�squeda",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Vyhledat položky",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "active",
-    "aktiv",
-    "",
-    "attivo",
-    "actief",
-    "",
-    "actif",
-    "",
-    "aktiivista",
-    "",
-    "activa",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "povoleno",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Edit$Delete search?",
-    "Suche löschen?",
-    "",
-    "Eliminare criteri?",
-    "Zoekcriterium wissen?",
-    "",
-    "Effacer la recherche",
-    "",
-    "Poistetaanko haku?",
-    "",
-    "�Borrar la b�squeda?",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Smazat?",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Delete all timers created from this search?",
-    "Alle Timer löschen, die von dieser Suche erzeugt wurden?",
-    "",
-    "Eliminare tutti i timer creati da questa ricerca?",
-    "Verwijder alle timers aangemaakt door dit zoekcriterium?",
-    "",
-    "Effacer les programmations issues de cette recherche?",
-    "",
-    "Poistetaanko kaikki tällä haulla luodut ajastimet?",
-    "",
-    "�Borrar las programaciones creadas por esta b�squeda?",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "Smazat všechna Nahrávání z tohoto hledání?",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9661,12 +9486,12 @@ const tI18nPhrase Phrases[] = {
   { "Search actions",
     "Suchaktionen",
     "",
-    "Azioni ricerca",
-    "Zoekcriteria acties",
+    "",
+    "",
     "",
     "Actions de recherche",
     "",
-    "Hakukomennot",
+    "",
     "",
     "Acciones de b�squeda",
     "",
@@ -9687,21 +9512,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Akce hledání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Execute search",
-    "Suche ausführen",
+    "Suche ausf�hren",
     "",
-    "Esegui ricerca",
-    "Voer zoekcriterium uit",
+    "",
+    "",
     "",
     "Effectuer la recherche",
     "",
-    "Suorita haku",
+    "",
     "",
     "Realizar b�squeda",
     "",
@@ -9722,7 +9547,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Hledat",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9731,12 +9556,12 @@ const tI18nPhrase Phrases[] = {
   { "Use as search timer on/off",
     "Als Suchtimer verwenden an/aus",
     "",
-    "Utilizza come timer ricerca attivo/disattivo",
-    "Gebruik als zoek-timer aan/uit",
+    "",
+    "",
     "",
     "Utiliser comme recherche oui/non",
     "",
-    "Aseta/poista hakuajastintoiminto",
+    "",
     "",
     "Usar como prog. por b�squeda s�/no",
     "",
@@ -9757,7 +9582,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Povolit/Zakázat",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9766,12 +9591,12 @@ const tI18nPhrase Phrases[] = {
   { "Trigger search timer update",
     "Suchtimer jetzt aktualisieren",
     "",
-    "Attiva aggiornamento timer ricerca",
-    "Start verversen zoektimer",
+    "",
+    "",
     "",
     "Selection",
     "",
-    "Päivitä hakuajastimet",
+    "",
     "",
     "Actualizar prog. por b�squeda",
     "",
@@ -9792,7 +9617,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Hledat změny",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9801,12 +9626,12 @@ const tI18nPhrase Phrases[] = {
   { "Show recordings done",
     "Zeige erledigte Aufnahmen",
     "",
-    "Mostra registrazioni completate",
-    "Tonen opnames gereed",
     "",
-    "Afficher les enregistrements effectués",
     "",
-    "Näytä tehdyt tallennukset",
+    "",
+    "Afficher les enregistrements effectu�s",
+    "",
+    "",
     "",
     "Mostrar grabaciones realizadas",
     "",
@@ -9827,7 +9652,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit nahrávky",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9836,12 +9661,12 @@ const tI18nPhrase Phrases[] = {
   { "Show timers created",
     "Zeige erstellte Timer",
     "",
-    "Mostra timer creati",
-    "Toon aangemaakte timers",
     "",
-    "Afficher la programmation effectuée",
     "",
-    "Näytä luodut ajastimet",
+    "",
+    "Afficher la programmation effectu�e",
+    "",
+    "",
     "",
     "Mostrar programaciones creadas",
     "",
@@ -9862,7 +9687,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9871,12 +9696,12 @@ const tI18nPhrase Phrases[] = {
   { "Create a copy",
     "Kopie anlegen",
     "",
-    "Crea una copia",
-    "Maak een kopie",
     "",
-    "Créer une copie",
     "",
-    "Kopioi",
+    "",
+    "Cr�er une copie",
+    "",
+    "",
     "",
     "Crear una copia",
     "",
@@ -9897,7 +9722,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vytvořit kopii",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9906,12 +9731,12 @@ const tI18nPhrase Phrases[] = {
   { "Use as template",
     "Als Vorlage verwenden",
     "",
-    "Utilizza come modello",
-    "Gebruik als sjabloon",
     "",
-    "Utiliser comme modèles",
     "",
-    "Käytä mallipohjana",
+    "",
+    "Utiliser comme mod�les",
+    "",
+    "",
     "",
     "Usar como plantilla",
     "",
@@ -9932,7 +9757,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Použít jako vzor",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9941,12 +9766,12 @@ const tI18nPhrase Phrases[] = {
   { "Show switch list",
     "Zeige Umschaltliste",
     "",
-    "Mostra lista modifiche",
-    "Toon schakellijst",
+    "",
+    "",
     "",
     "Afficher liste de changement",
     "",
-    "Näytä kanavanvaihtolista",
+    "",
     "",
     "Mostrar lista de cambio",
     "",
@@ -9967,7 +9792,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit seznam přepnutí",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -9976,12 +9801,12 @@ const tI18nPhrase Phrases[] = {
   { "Show blacklists",
     "Zeige Ausschlusslisten",
     "",
-    "Mostra lista esclusioni",
-    "Toon blacklists",
+    "",
+    "",
     "",
     "Afficher la liste des exclus",
     "",
-    "Näytä mustat listat",
+    "",
     "",
     "Mostrar listas negras",
     "",
@@ -10002,21 +9827,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit blacklisty",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Delete created timers?",
-    "Erstellte Timer löschen?",
+    "Erstellte Timer l�schen?",
     "",
-    "Eliminare timer creati?",
-    "Verwijder aangemaakte timers?",
     "",
-    "Effacer les programmations crées",
     "",
-    "Poista haulla luodut ajastimet",
+    "",
+    "Effacer les programmations cr�es",
+    "",
+    "",
     "",
     "�Borrar las programaciones creadas?",
     "",
@@ -10037,21 +9862,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Smazat vytvorená Nahrávání?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Timer conflict check",
-    "Auf Timer-Konflikte prüfen",
+    "Auf Timer-Konflikte pr�fen",
     "",
-    "Verifica conflitti timer",
-    "Timerconflict controle",
     "",
-    "Vérifier les conflits de programmation",
     "",
-    "Tarkista päällekkäiset ajastimet",
+    "",
+    "V�rifier les conflits de programmation",
+    "",
+    "",
     "",
     "Comprobar conflictos de programaci�n",
     "",
@@ -10072,21 +9897,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Kontrola konfliktů",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Disable associated timers too?",
-    "Zugehörige Timer auch deaktivieren?",
+    "Zugeh�rige Timer auch deaktivieren?",
     "",
-    "Disabilitare anche i timer associati?",
-    "Schakel gemeenschappelijke timers ook uit?",
     "",
-    "Désactiver la programmation correspondante",
     "",
-    "Poistetaanko käytöstä myös assosioidut ajastimet?",
+    "",
+    "D�sactiver la programmation correspondante",
+    "",
+    "",
     "",
     "�Desactivar las programaciones asociadas?",
     "",
@@ -10107,21 +9932,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zakázat i vytvořená Nahrávání?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Activate associated timers too?",
-    "Zugehörige Timer auch aktivieren?",
+    "Zugeh�rige Timer auch aktivieren?",
     "",
-    "Attivare anche i timer associati?",
-    "Activeer gemeenschappelijke timers ook?",
+    "",
+    "",
     "",
     "Activer la progammation correspondante",
     "",
-    "Otetaanko käyttöön myös assosioidut ajastimet?",
+    "",
     "",
     "�Activar las programaciones asociadas?",
     "",
@@ -10142,7 +9967,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Povolit i již vytvořená Nahrávání?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10151,12 +9976,12 @@ const tI18nPhrase Phrases[] = {
   { "Search timers activated in setup.",
     "Suchtimer wurden im Setup aktiviert.",
     "",
-    "Timer di ricerca attivati nelle opzioni.",
-    "Zoektimers geactiveerd in instellingen",
     "",
-    "La recherche a été activée dans la configuration.",
     "",
-    "Hakuajastimet aktivoitu asetuksista",
+    "",
+    "La recherche a �t� activ�e dans la configuration.",
+    "",
+    "",
     "",
     "Progs. por b�squeda activas en la configuraci�n.",
     "",
@@ -10177,21 +10002,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Automatické nahrávání povoleno v nastavení.",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Run search timer update?",
-    "Suchtimer-Update ausführen?",
+    "Suchtimer-Update ausf�hren?",
     "",
-    "Eseguire aggiornamento ricerca timer?",
-    "Start verversen zoektimer? ",
     "",
-    "Mise à jours programmation de recherche?",
     "",
-    "Päivitetäänkö hakuajastimet?",
+    "",
+    "Mise � jours programmation de recherche?",
+    "",
+    "",
     "",
     "�Actualizar programaci�n por b�squeda?",
     "",
@@ -10212,7 +10037,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Aktualizovat automatické nahrávání?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10221,12 +10046,12 @@ const tI18nPhrase Phrases[] = {
   { "Copy this entry?",
     "Diesen Eintrag kopieren?",
     "",
-    "Copiare questo valore?",
-    "Kopiëer deze regel?",
     "",
-    "Copier cette entrée",
     "",
-    "Kopioidaanko tämä hakuajastin?",
+    "",
+    "Copier cette entr�e",
+    "",
+    "",
     "",
     "�Copiar esta entrada?",
     "",
@@ -10247,7 +10072,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Kopírovat položku?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10256,12 +10081,12 @@ const tI18nPhrase Phrases[] = {
   { "Copy",
     "Kopie",
     "",
-    "Copia",
-    "Kopiëer",
+    "",
+    "",
     "",
     "Copier",
     "",
-    "Kopio",
+    "",
     "",
     "Copiar",
     "",
@@ -10282,7 +10107,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Kopírovat",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10291,12 +10116,12 @@ const tI18nPhrase Phrases[] = {
   { "Copy this entry to templates?",
     "Diesen Eintrag in Vorlagen kopieren?",
     "",
-    "Copiare questo valore nei modelli?",
-    "Kopiëer deze regel naar sjablonen",
     "",
-    "Copier cette entrée dans modèles?",
     "",
-    "Kopioidaanko hakutermi mallipohjaksi?",
+    "",
+    "Copier cette entr�e dans mod�les?",
+    "",
+    "",
     "",
     "�Copiar esta entrada a plantillas?",
     "",
@@ -10317,7 +10142,182 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zkopírovat do vzorů?",
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Delete all timers created from this search?",
+    "Alle Timer l�schen, die von dieser Suche erzeugt wurden?",
+    "",
+    "",
+    "",
+    "",
+    "Effacer les programmations issues de cette recherche?",
+    "",
+    "",
+    "",
+    "�Borrar las programaciones creadas por esta b�squeda?",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Button$Actions",
+    "Aktionen",
+    "",
+    "",
+    "",
+    "",
+    "Actions",
+    "",
+    "",
+    "",
+    "Acciones",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Search entries",
+    "Sucheintr�ge",
+    "",
+    "",
+    "",
+    "",
+    "Entr�e de recherche",
+    "",
+    "",
+    "",
+    "Entradas de b�squeda",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "active",
+    "aktiv",
+    "",
+    "",
+    "",
+    "",
+    "actif",
+    "",
+    "",
+    "",
+    "activa",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Edit$Delete search?",
+    "Suche l�schen?",
+    "",
+    "",
+    "",
+    "",
+    "Effacer la recherche",
+    "",
+    "",
+    "",
+    "�Borrar la b�squeda?",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10326,12 +10326,12 @@ const tI18nPhrase Phrases[] = {
   { "Edit search",
     "Suche editieren",
     "",
-    "Modifica ricerca",
-    "Bewerk zoekcriteria",
+    "",
+    "",
     "",
     "Edition recherche",
     "",
-    "Muokkaa hakua",
+    "",
     "",
     "Editar b�squeda",
     "",
@@ -10352,7 +10352,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Upravit hledání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10360,48 +10360,48 @@ const tI18nPhrase Phrases[] = {
   },
   { "Record",
     "Aufnehmen",
-    "Posnemi",
-    "Registra",
-    "Opnemen",
-    "Gravar",
+    "",
+    "",
+    "",
+    "",
     "Enregistre",
-    "Ta opp",
-    "Tallenna",
-    "Nagraj",
+    "",
+    "",
+    "",
     "Grabar",
     "",
-    "Inspelning",
-    "Înregistr.",
-    "Felvenni",
-    "Gravar",
+    "",
+    "",
+    "",
+    "",
 #if VDRVERSNUM >= 10302
-    "Запись",
+    "",
 #endif
 #if VDRVERSNUM >= 10307
-    "Snimi",
+    "",
 #endif
 #if VDRVERSNUM >= 10313
-    "Salvesta",
+    "",
 #endif
 #if VDRVERSNUM >= 10316
-    "Optag",
+    "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nahrát",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Announce by OSD",
-    "per OSD ankündigen",
+    "per OSD ank�ndigen",
     "",
-    "Annuncia tramite OSD",
-    "Alleen aankondigen (geen timer)",
     "",
-    "Annoncer seulement début d'une programme",
     "",
-    "muistutus kuvaruutunäytölle",
+    "",
+    "Annoncer seulement d�but d'une programme",
+    "",
+    "",
     "",
     "Avisar por el OSD",
     "",
@@ -10422,7 +10422,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Informovat na obrazovce",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10431,12 +10431,12 @@ const tI18nPhrase Phrases[] = {
   { "Switch only",
     "Nur umschalten",
     "",
-    "Cambia soltanto",
-    "Alleen schakelen",
+    "",
+    "",
     "",
     "Seulement changer de chaine",
     "",
-    "kanavanvaihto",
+    "",
     "",
     "Cambiar de canal",
     "",
@@ -10457,21 +10457,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přepnout",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Announce and switch",
-    "Ankündigen und Umschalten",
+    "Ank�ndigen und Umschalten",
     "",
-    "Annuncia e cambia",
-    "Alleen aankondigen (geen timer)",
     "",
-    "Annoncer seulement début d'une programme",
     "",
-    "muistutus ja kanavanvaihto",
+    "",
+    "Annoncer seulement d�but d'une programme",
+    "",
+    "",
     "",
     "Avisar y cambiar",
     "",
@@ -10492,21 +10492,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Informovat a přepnout",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Announce by mail",
-    "per Mail ankündigen",
+    "per Mail ank�ndigen",
     "",
-    "Annuncia tramite email",
-    "Alleen aankondigen (geen timer)",
     "",
-    "Annoncer seulement début d'une programme",
     "",
-    "muistutus sähköpostitse",
+    "",
+    "Annoncer seulement d�but d'une programme",
+    "",
+    "",
     "",
     "Avisar por correo",
     "",
@@ -10527,7 +10527,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Informovat mailem",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10536,12 +10536,12 @@ const tI18nPhrase Phrases[] = {
   { "only globals",
     "nur globale",
     "",
-    "solo globali",
     "",
     "",
     "",
     "",
-    "vain globaalit",
+    "",
+    "",
     "",
     "s�lo globales",
     "",
@@ -10562,7 +10562,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "globální",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10571,12 +10571,12 @@ const tI18nPhrase Phrases[] = {
   { "Selection",
     "Auswahl",
     "",
-    "Selezione",
-    "Selectie",
+    "",
+    "",
     "",
     "Selection",
     "",
-    "valittu",
+    "",
     "",
     "selecci�n",
     "",
@@ -10597,7 +10597,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "výběr",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10606,12 +10606,12 @@ const tI18nPhrase Phrases[] = {
   { "all",
     "alle",
     "",
-    "tutti",
-    "alles",
+    "",
+    "",
     "",
     "tous",
     "",
-    "kaikki",
+    "",
     "",
     "todo",
     "",
@@ -10632,7 +10632,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "vše",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10641,12 +10641,12 @@ const tI18nPhrase Phrases[] = {
   { "count recordings",
     "Anzahl Aufnahmen",
     "",
-    "conteggia registrazioni",
-    "tel opnames",
+    "",
+    "",
     "",
     "compter enregistrements",
     "",
-    "lukumäärän mukaan",
+    "",
     "",
     "incluir grabaciones",
     "",
@@ -10667,7 +10667,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "počítat nahrávky",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10676,12 +10676,12 @@ const tI18nPhrase Phrases[] = {
   { "count days",
     "Anzahl Tage",
     "",
-    "conteggia giorni",
-    "tel dagen",
+    "",
+    "",
     "",
     "compter jours",
     "",
-    "päivien mukaan",
+    "",
     "",
     "incluir d�as",
     "",
@@ -10702,7 +10702,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "počítat dny",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10711,12 +10711,12 @@ const tI18nPhrase Phrases[] = {
   { "if present",
     "wenn vorhanden",
     "",
-    "se presente",
     "",
     "",
     "",
     "",
-    "jos olemassa",
+    "",
+    "",
     "",
     "si existe",
     "",
@@ -10737,7 +10737,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "pokud existuje",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10746,12 +10746,12 @@ const tI18nPhrase Phrases[] = {
   { "same day",
     "gleicher Tag",
     "",
-    "stesso giorno",
-    "Eerste dag",
+    "",
+    "",
     "",
     "Dernier jour",
     "",
-    "sama päivä",
+    "",
     "",
     "mismo d�a",
     "",
@@ -10772,7 +10772,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "stejný den",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10781,12 +10781,12 @@ const tI18nPhrase Phrases[] = {
   { "same week",
     "gleiche Woche",
     "",
-    "stessa settimana",
-    "Dag van de week",
+    "",
+    "",
     "",
     "Jours de la semaine",
     "",
-    "sama viikko",
+    "",
     "",
     "misma semana",
     "",
@@ -10807,7 +10807,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "stejný týden",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10816,12 +10816,12 @@ const tI18nPhrase Phrases[] = {
   { "same month",
     "gleicher Monat",
     "",
-    "stesso mese",
     "",
     "",
     "",
     "",
-    "sama kuukausi",
+    "",
+    "",
     "",
     "mismo mes",
     "",
@@ -10842,7 +10842,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "stejný měsíc",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -10851,12 +10851,12 @@ const tI18nPhrase Phrases[] = {
   { "Template name",
     "Vorlagenname",
     "",
-    "Nome modello",
-    "Naam van sjabloon",
     "",
-    "Nom du modèle",
     "",
-    "Mallipohjan nimi",
+    "",
+    "Nom du mod�le",
+    "",
+    "",
     "",
     "Nombre de la plantilla",
     "",
@@ -10877,21 +10877,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Jméno vzoru",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Help$Specify the name of the template.",
-    "Hier den Namen für die Vorlage angeben.",
+    "Hier den Namen f�r die Vorlage angeben.",
     "",
-    "Specifica il nome del modello.",
-    "Geef de naam op van het sjabloon",
     "",
-    "Spécifier le nom du modèle.",
     "",
-    "Määrittelee mallipohjan nimen.",
+    "",
+    "Sp�cifier le nom du mod�le.",
+    "",
+    "",
     "",
     "Especifique el nombre de la plantilla.",
     "",
@@ -10921,12 +10921,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$Specify here the term to search for.",
     "Hier den Begriff angeben, nach dem gesucht werden soll.",
     "",
-    "Specifica qui il termine da cercare.",
-    "Vul hier de zoekterm in.",
     "",
-    "Spécifier ici le term de la recherche.",
     "",
-    "Määrittelee käytettävän hakutermin.",
+    "",
+    "Sp�cifier ici le term de la recherche.",
+    "",
+    "",
     "",
     "Especifique la palabra a buscar.",
     "",
@@ -10954,14 +10954,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$The following search modes exist:\n\n- phrase: searches for sub terms\n- all words: all single words must appear\n- at least one word: at least one single word must appear\n- match exactly: must match exactly\n- regular expression: match a regular expression\n- fuzzy searching: searches approximately",
-    "Es gibt folgende Such-Modi:\n\n- Ausdruck: sucht nach einem Teil-Ausdruck\n- alle Worte: alle einzelnen Worte müssen auftauchen\n- ein Wort: nur ein Wort muss auftauchen\n- exakt: genaue Übereinstimmung\n- regulärer Ausdruck: sucht nach reg. Ausdruck\n- unscharf: sucht nach ungefährer Übereinstimmung",
-    "",
-    "Esistono i seguenti metodi di ricerca:\n\n- frase: ricerca per sotto termini\n- tutte le parole: tutte le singole parole presenti\n- almeno una parola: almeno una parola presente\n- esatta corrispondenza: deve corrispondere esattamente\n- espressione regolare: corrisponde a una espressione regolare\n- ricerca imprecisa: ricerca approssimativamente",
-    "Er kan gekozen worden uit de volgende zoekinstellingen:\n- alle woorden: alle los voorkomende woorden moeten gevonden worden\n- minstens één woord: minstens én woord moet worden gevonden\n- past precies: de hele zoekterm komt exact overeen\n- reguliere expressie: resultaat past bij uitkomst expressie\n- 'fuzzy' zoeken: zoek naar mogelijke matches",
+    "Es gibt folgende Such-Modi:\n\n- Ausdruck: sucht nach einem Teil-Ausdruck\n- alle Worte: alle einzelnen Worte m�ssen auftauchen\n- ein Wort: nur ein Wort muss auftauchen\n- exakt: genaue �bereinstimmung\n- regul�rer Ausdruck: sucht nach reg. Ausdruck\n- unscharf: sucht nach ungef�hrer �bereinstimmung",
     "",
     "",
     "",
-    "Käytössä ovat seuraavat hakutavat:\n\n- fraasi: määritelty fraasi pitää löytyä\n- kaikki sanat: kaikkien määriteltyjen sanojen pitää löytyä\n- yksi sana: yksi määritellyistä sanoista pitää löytyä\n- täsmällinen: ehdon pitää löytyä täsmällisesti\n- säännöllinen lauseke: määritellyn säännöllisen lausekkeen pitää löytyä\n- sumea: samankaltaisia pitää löytyä määriteltyyn ehtoon nähden",
+    "",
+    "",
+    "",
+    "",
     "",
     "Existen los siguientes modos de b�squeda:\n\n- frase: b�squedas por subpalabras\n- palabra completa: deben aparecer todas las palabras\n- m�nimo 1 palabra: debe aparecer al menos una palabra\n- exacta: debe coincidir exactamente\n- expresi�n regular: coincidir con una expresi�n regular\n- imprecisa: b�squedas por aproximaci�n",
     "",
@@ -10989,14 +10989,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$This sets the tolerance of fuzzy searching. The value represents the allowed errors.",
-    "Hiermit wird die Toleranz für die unscharfe Suche angegeben. Der Wert entspricht den erlaubten Fehlern.",
-    "",
-    "Questo imposta la tolleranza della ricerca imprecisa. Il valore rappresenta gli errori ammessi.",
-    "Hier wordt de tolerantie van de 'fuzzy'zoekactie opgegeven. De waarde vertegenwoordigd de toegestane fouten",
+    "Hiermit wird die Toleranz f�r die unscharfe Suche angegeben. Der Wert entspricht den erlaubten Fehlern.",
     "",
     "",
     "",
-    "Määrittelee toleranssin sumealle haulle. Arvo kertoo sallittujen virheiden lukumäärän.",
+    "",
+    "",
+    "",
+    "",
     "",
     "Establece la tolerancia de la b�squeda imprecisa. El valor representa los errores permitidos.",
     "",
@@ -11024,14 +11024,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$Set this to 'Yes' if your search should match the case.",
-    "Auf 'Ja' setzen, wenn die Suche die Groß-/Kleinschreibung beachtet soll.",
-    "",
-    "Imposta 'Sì' nel caso la ricerca dovesse corrispondere.",
-    "Kies 'ja' idien de zoekactie case-sensitive moet zijn",
+    "Auf 'Ja' setzen, wenn die Suche die Gro�-/Kleinschreibung beachtet soll.",
     "",
     "",
     "",
-    "Tällä asetuksella pystyt huomioimaan kirjainkoon vaikutuksen hakutulokseen.",
+    "",
+    "",
+    "",
+    "",
     "",
     "Establecer a 'S�' cuando la b�squeda deba coincidir con el valor dado.",
     "",
@@ -11061,12 +11061,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$Set this to 'Yes' if you like to search in the title of an event.",
     "Auf 'Ja' setzen, wenn die Suche im Titel einer Sendung stattfinden soll.",
     "",
-    "Imposta 'Sì' se vuoi cercare il titolo di un evento.",
-    "Kies 'ja' indien de zoekactie moet zoeken in de titel van het programma",
     "",
     "",
     "",
-    "Tällä asetuksella pystyt etsimään ohjelmanimestä.",
+    "",
+    "",
+    "",
     "",
     "Establecer a 'S�' cuando desee buscar en el t�tulo de una emisi�n.",
     "",
@@ -11096,12 +11096,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$Set this to 'Yes' if you like to search in the episode of an event.",
     "Auf 'Ja' setzen, wenn die Suche im Untertitel einer Sendung stattfinden soll.",
     "",
-    "Imposta 'Sì' se vuoi cercare l'episodio di un evento.",
-    "Kies 'ja' indien de zoakactie moet zoeken in de aflevering van een programma",
     "",
     "",
     "",
-    "Tällä asetuksella pystyt etsimään lyhyestä ohjelmakuvauksesta.",
+    "",
+    "",
+    "",
     "",
     "Establecer a 'S�' cuando desee buscar en el episodio de una emisi�n.",
     "",
@@ -11131,12 +11131,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$Set this to 'Yes' if you like to search in the summary of an event.",
     "Auf 'Ja' setzen, wenn die Suche in der Zusammenfassung einer Sendung stattfinden soll.",
     "",
-    "Imposta 'Sì' se vuoi cercare il sommario di un evento.",
-    "Kies 'ja' indien de zoekactie moet zoeken in de samenvatting van een programma.",
     "",
     "",
     "",
-    "Tällä asetuksella pystyt etsimään ohjelmakuvauksesta.",
+    "",
+    "",
+    "",
     "",
     "Establecer a 'S�' cuando desee buscar en el resumen de una emisi�n.",
     "",
@@ -11164,14 +11164,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Use content descriptor",
-    "Verw. Kennung für Inhalt",
+    "Verw. Kennung f�r Inhalt",
     "",
-    "Utilizza contenuto descrizione",
-    "Gebruik beschrijving",
+    "",
+    "",
     "",
     "Utiliser la description",
     "",
-    "Käytä sisältökuvausta",
+    "",
     "",
     "Usar tipo de contenido",
     "",
@@ -11192,7 +11192,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Použít popis obsahu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11201,12 +11201,12 @@ const tI18nPhrase Phrases[] = {
   { "Help$Set this to 'Yes' if you want to search the contents by a descriptor.",
     "Auf 'Ja' setzen, wenn die Suche anhand Kennungen zum Inhalt der Sendung stattfinden soll.",
     "",
-    "Imposta 'Sì' se vuoi cercare i contenuti per descrizione.",
-    "Kies 'ja' indien de zoekactie moet zoeken in de titel van het programma",
+    "",
+    "",
     "",
     "Mettez 'oui',si le compte mail utilise l'authentification pour les mails sortants.",
     "",
-    "Tällä asetuksella pystyt etsimään sisältökuvauksesta.",
+    "",
     "",
     "Establecer a 'S�' cuando desee buscar contenidos por un tipo.",
     "",
@@ -11234,14 +11234,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$The summary of an event, can contain additional information like 'Genre', 'Category', 'Year',... called 'EPG categories' within EPGSearch. External EPG providers often deliver this information. This allows refining a search and other nice things, like searching for the 'tip of the day'. To use it set this to 'Yes'.",
-    "Die Zusammenfassung einer Sendung kann Zusatz-Informationen wie 'Genre', 'Kategorie', 'Jahr', ... enthalten, welche in EPGSearch 'EPG-Kategorien' genannt werden. Externe EPG-Anbieter liefern diese Informationen häufig mit aus. Damit läßt sich eine Suche verfeinern und auch andere Dinge, wie die Suche nach dem Tagestipp, sind möglich. Zur Verwendung auf 'Ja' setzen.",
-    "",
-    "Il sommario di un evento, può contenere informazione addizionale come 'Genere', 'Categoria', 'Anno',... chiamata 'Categorie EPG' all'interno di EPGSearch. I fornitori di EPG esterni spesso inviano questa informazione. Questo ti permette di rifinire una ricerca e altre cosette, come la ricerca per il 'consiglio del giorno'. Per usarlo imposta 'Sì'.",
-    "De samenvatting van een programma kan extra informatie bevatten zoals 'Genre', 'Jaar',... binnen EPGsearch 'EPG categoriëen' genoemd.  ",
+    "Die Zusammenfassung einer Sendung kann Zusatz-Informationen wie 'Genre', 'Kategorie', 'Jahr', ... enthalten, welche in EPGSearch 'EPG-Kategorien' genannt werden. Externe EPG-Anbieter liefern diese Informationen h�ufig mit aus. Damit l��t sich eine Suche verfeinern und auch andere Dinge, wie die Suche nach dem Tagestipp, sind m�glich. Zur Verwendung auf 'Ja' setzen.",
     "",
     "",
     "",
-    "Ohjelmakuvaus voi sisältää ohjelmaoppaan kategoriatietoja ('lajityyppi', 'kategoria', 'valmistumisvuosi', ...), joita ulkoiset ohjelmaoppaat voivat tuottaa. Tällä asetuksella voit hakea myös niiden perusteella.",
+    "",
+    "",
+    "",
+    "",
     "",
     "El resumen de una emisi�n puede contener informaci�n adicional como 'G�nero', 'Categor�a', 'A�o', ... llamada 'categor�as EPG' en el EPGSearch. A menudo los proveedores EPG externos ofrecen esta informaci�n. Esto permite refinar una b�squeda y otras funcionalidades atractivas, como buscar por el 'consejo del d�a'. Para usarlo, establecer a 'S�'.",
     "",
@@ -11269,14 +11269,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$The file epgsearchcats.conf specifies the search mode for this entry. One can search by text or by value. You can also edit a list of predefined values in this file that can be selected here.",
-    "In der Datei epgsearchcats.conf kann der Suchmodus für diesen Eintrag festgelegt werden. Man kann textuell oder numerisch suchen. Ausserdem kann in dieser Datei eine Liste vordefinierter Werte angegeben werden, die hier zur Auswahl stehen.",
-    "",
-    "Il file epgsearchcats.conf specifica la modalità di ricerca per questo valore. Uno può cercare per testo o per valore. Puoi anche modificare un elenco di valori predefiniti in questo file che può essere qui selezionato.",
-    "Het bestand epgsearchcats.conf omschrijft de zoekinstellingen voor deze regel. Men kan zoeken op tekst of waarde. Er kan ook een lijst van voorgedefinieerde waarden geselecteerd en aangepast worden",
+    "In der Datei epgsearchcats.conf kann der Suchmodus f�r diesen Eintrag festgelegt werden. Man kann textuell oder numerisch suchen. Ausserdem kann in dieser Datei eine Liste vordefinierter Werte angegeben werden, die hier zur Auswahl stehen.",
     "",
     "",
     "",
-    "Tiedosto 'epgsearchcats.conf' määrittelee käytettävät hakutavat ja voit viitata niihin joko tekstinä tai pelkällä luvulla. Lisäksi pystyt myöskin muokkaamaan määriteltyjen kategorioiden listaa.",
+    "",
+    "",
+    "",
+    "",
     "",
     "El archivo epgsearchcats.conf especifica el modo de b�squeda de esta entrada. Se puede buscar por texto o por valor. Tambi�n puede editar una lista de valores predefinidos en este archivo que puede seleccionar aqu�.",
     "",
@@ -11304,14 +11304,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Help$If a selected category is not part of the summary of an event this normally excludes this event from the search results. To avoid this, set this option to 'Yes', but please handle this with care to avoid a huge amount of results.",
-    "Falls eine gewählte Kategorie nicht in der Zusammenfassung einer Sendung vorhanden ist, wird diese normalerweise aus den Suchergebnissen ausgeschlossen. Um das zu vermeiden, bitte die Option auf 'Ja' setzen. Aber bitte mit Vorsicht verwenden, um eine riesige Menge an Ergebnissen zu vermeiden.",
-    "",
-    "Se una categoria selezionata non è parte del sommario di un evento questo normalmente esclude questo evento dai risultati di ricerca. Per evitare ciò, imposta 'Sì' come opzione, ma gestiscilo con attenzione per evitare una grande quantità di risultati.",
-    "Als een gekozen categorie geen onderdeel is van een samenvatting van een programma, dan zal dit programma niet verschijnen in de zoekresultaten. Om dit te voorkomen kan deze optie worden ingesteld, maar het kan leiden tot heel veel resultaten!",
+    "Falls eine gew�hlte Kategorie nicht in der Zusammenfassung einer Sendung vorhanden ist, wird diese normalerweise aus den Suchergebnissen ausgeschlossen. Um das zu vermeiden, bitte die Option auf 'Ja' setzen. Aber bitte mit Vorsicht verwenden, um eine riesige Menge an Ergebnissen zu vermeiden.",
     "",
     "",
     "",
-    "Jos valittua kategoriaa ei löydy ohjelmakuvauksesta, ei ohjelmaa normaalisti myöskään löydy hakutuloksista. Tällä asetuksella voit estää sen, mutta samalla voit saada huomattavan määrän halutuloksia.",
+    "",
+    "",
+    "",
+    "",
     "",
     "Si una categor�a seleccionada no es parte del resumen de una emisi�n, normalmente �sta no incluye ese evento en los resultados de la b�squeda. Para evitarlo establezca esta opci�n a 'S�', pero maneje esto con cuidado para evitar una gran cantidad de resultados.",
     "",
@@ -11339,14 +11339,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Use in favorites menu",
-    "In Favoritenmenü verw.",
+    "In Favoritenmen� verw.",
     "",
-    "Utilizza nel menu preferiti",
-    "Gebruik in favorieten menu",
+    "",
+    "",
     "",
     "Utiliser dans le menu favoris",
     "",
-    "Käytä suosikkina",
+    "",
     "",
     "Usar en el men� favoritos",
     "",
@@ -11367,21 +11367,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit v Oblíbených",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Result menu layout",
-    "Layout des Ergebnismenüs",
+    "Layout des Ergebnismen�s",
     "",
-    "Disposizione menu risultati",
-    "Uiterlijk menu resultaten",
     "",
-    "Dispositon du menu de résultat",
     "",
-    "Hakutulosten ulkoasu",
+    "",
+    "Dispositon du menu de r�sultat",
+    "",
+    "",
     "",
     "Presentaci�n de resultados",
     "",
@@ -11402,7 +11402,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Způsob zobrazení výsledků",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11411,12 +11411,12 @@ const tI18nPhrase Phrases[] = {
   { "Use as search timer",
     "Als Suchtimer verwenden",
     "",
-    "Utilizza come timer di ricerca",
-    "Gebruik als zoektimer",
+    "",
+    "",
     "",
     "Utiliser la recherche",
     "",
-    "Käytä hakuajastimena",
+    "",
     "",
     "Usar como prog. por b�squeda",
     "",
@@ -11437,7 +11437,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Použít pro Automatické nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11446,12 +11446,12 @@ const tI18nPhrase Phrases[] = {
   { "Action",
     "Aktion",
     "",
-    "Azione",
-    "Actie",
+    "",
+    "",
     "",
     "Action",
     "",
-    "Toiminto",
+    "",
     "",
     "Acci�n",
     "",
@@ -11472,7 +11472,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Akce",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11481,12 +11481,12 @@ const tI18nPhrase Phrases[] = {
   { "Switch ... minutes before start",
     "Umschalten ... Minuten vor Start",
     "",
-    "Cambia ... minuti prima dell'inizio",
-    "Schakel ... minuten voor start",
     "",
-    "Changer ... minutes avant le début",
     "",
-    "Vaihda ... minuuttia ennen alkua",
+    "",
+    "Changer ... minutes avant le d�but",
+    "",
+    "",
     "",
     "Cambiar ... minutos antes del inicio",
     "",
@@ -11507,7 +11507,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přepnout ... minut před začátkem",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11516,12 +11516,12 @@ const tI18nPhrase Phrases[] = {
   { "Unmute sound",
     "Ton anschalten",
     "",
-    "Togli suono muto",
+    "",
     "",
     "",
     "Remettre le son",
     "",
-    "Ota mykistys pois päältä",
+    "",
     "",
     "Sonido quitar silencio",
     "",
@@ -11542,7 +11542,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zrušit ztišení",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11551,12 +11551,12 @@ const tI18nPhrase Phrases[] = {
   { "Ask ... minutes before start",
     "Nachfrage ... Minuten vor Start",
     "",
-    "Chiedi ... minuti prima dell'inizio",
-    "Schakel ... minuten voor start",
     "",
-    "Changer ... minutes avant le début",
     "",
-    "Kysy ... minuuttia ennen alkua",
+    "",
+    "Changer ... minutes avant le d�but",
+    "",
+    "",
     "",
     "Preguntar ... minutos antes del inicio",
     "",
@@ -11577,7 +11577,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zeptat se ... minut před začátkem",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11586,12 +11586,12 @@ const tI18nPhrase Phrases[] = {
   { "  Series recording",
     "  Serienaufnahme",
     "",
-    "  Registrazione di serie",
-    "  Serie's opnemen",
+    "",
+    "",
     "",
     "  Enregistrement de serie",
     "",
-    "  Sarjatallennus",
+    "",
     "",
     "  Grabaci�n en serie",
     "",
@@ -11612,21 +11612,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    " Nahrávání sériálu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Delete recordings after ... days",
-    "Aufn. nach ... Tagen löschen",
+    "Aufn. nach ... Tagen l�schen",
     "",
-    "Elimina registrazioni dopo ... giorni",
-    "Verwijder opnames na ... dagen",
     "",
-    "Effacer l'enregistrement après ... jours",
     "",
-    "Poista tallenteet ... päivän jälkeen",
+    "",
+    "Effacer l'enregistrement apr�s ... jours",
+    "",
+    "",
     "",
     "Borrar grabaci�n a los ... d�as",
     "",
@@ -11647,7 +11647,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Smazat nahrávku po ... dnech",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11656,12 +11656,12 @@ const tI18nPhrase Phrases[] = {
   { "Keep ... recordings",
     "Behalte ... Aufnahmen",
     "",
-    "Mantieni ... registrazioni",
-    "Bewaar ... opnames",
+    "",
+    "",
     "",
     "Garder .... enregistrements",
     "",
-    "Säilytä ... tallennetta",
+    "",
     "",
     "Mantener ... grabaciones",
     "",
@@ -11682,7 +11682,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Ponechat ... nahrávek",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11691,12 +11691,12 @@ const tI18nPhrase Phrases[] = {
   { "Pause when ... recordings exist",
     "Pause, wenn ... Aufnahmen exist.",
     "",
-    "Pausa, quando ... la registrazione esiste",
-    "Pauzeer wanneer ... opnames bestaan",
+    "",
+    "",
     "",
     "Pause, lorsque ... l'enregistrement existe.",
     "",
-    "Keskeytä ... tallenteen jälkeen",
+    "",
     "",
     "Pausar al tener ... grabaciones",
     "",
@@ -11717,7 +11717,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vynechat pokud uloženo ... nahrávek",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11726,12 +11726,12 @@ const tI18nPhrase Phrases[] = {
   { "Avoid repeats",
     "Vermeide Wiederholung",
     "",
-    "Evita repliche",
-    "Vermijdt herhalingen",
     "",
-    "Eviter les répétions",
     "",
-    "Estä uusinnat",
+    "",
+    "Eviter les r�p�tions",
+    "",
+    "",
     "",
     "Evitar repeticiones",
     "",
@@ -11752,7 +11752,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přeskočit opakování",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11761,12 +11761,12 @@ const tI18nPhrase Phrases[] = {
   { "Allowed repeats",
     "Erlaubte Wiederholungen",
     "",
-    "Permetti repliche",
-    "Toegestane herhalingen",
     "",
-    "Répétitions autorisées",
     "",
-    "Sallittujen uusintojen lukumäärä",
+    "",
+    "R�p�titions autoris�es",
+    "",
+    "",
     "",
     "Permitir repeticiones",
     "",
@@ -11787,7 +11787,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Povolených opakování",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11796,12 +11796,12 @@ const tI18nPhrase Phrases[] = {
   { "Only repeats within ... days",
     "Nur Wiederh. innerhalb ... Tagen",
     "",
-    "Solo repliche entro ... giorni",
-    "Alleen herhalingen binnen ... dagen",
     "",
-    "Que répétion, pendant ... jours",
     "",
-    "Vain uusinnat ... päivän sisällä",
+    "",
+    "Que r�p�tion, pendant ... jours",
+    "",
+    "",
     "",
     "S�lo repetidos dentro de ... d�as",
     "",
@@ -11822,7 +11822,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Opakovat po ... dnech",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11831,12 +11831,12 @@ const tI18nPhrase Phrases[] = {
   { "Compare title",
     "Vergleiche Titel",
     "",
-    "Confronta titolo",
-    "Vergelijk titel",
+    "",
+    "",
     "",
     "Comparer titres",
     "",
-    "Vertaa nimeä",
+    "",
     "",
     "Comparar t�tulo",
     "",
@@ -11857,7 +11857,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Porovnat název",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11866,12 +11866,12 @@ const tI18nPhrase Phrases[] = {
   { "Compare subtitle",
     "Vergleiche Untertitel",
     "",
-    "Confronta sottotitolo",
-    "Vergelijk ondertiteling",
+    "",
+    "",
     "",
     "Comparer les sous-titres",
     "",
-    "Vertaa jakson nimeä",
+    "",
     "",
     "Comparar subt�tulo",
     "",
@@ -11892,7 +11892,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Porovnat Název dílu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11901,12 +11901,12 @@ const tI18nPhrase Phrases[] = {
   { "Compare summary",
     "Vergleiche Beschreibung",
     "",
-    "Confronta sommario",
-    "Vergelijk samenvatting",
+    "",
+    "",
     "",
     "Comparer les descriptions",
     "",
-    "Vertaa kuvausta",
+    "",
     "",
     "Comparar resumen",
     "",
@@ -11927,21 +11927,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Porovnat popis",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Min. match in %",
-    "Min. Übereinstimmung in %",
+    "Min. �bereinstimmung in %",
     "",
-    "Corrispondenza min. in %",
-    "  Min. duur",
     "",
-    "  Durée min.",
     "",
-    "Vaadittava yhdenmukaisuus [%]",
+    "",
+    "  Dur�e min.",
+    "",
+    "",
     "",
     "  Coincidencia m�n. en %",
     "",
@@ -11962,7 +11962,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Odpovídá na ... %",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -11971,12 +11971,12 @@ const tI18nPhrase Phrases[] = {
   { "Compare date",
     "Vergleiche Zeitpunkt",
     "",
-    "Confronta date",
-    "Vergelijk titel",
+    "",
+    "",
     "",
     "Comparer titres",
     "",
-    "Vertaa päivämäärää",
+    "",
     "",
     "Comparar fecha",
     "",
@@ -11997,7 +11997,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Porovnat datum",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12006,12 +12006,12 @@ const tI18nPhrase Phrases[] = {
   { "Compare categories",
     "Vergl. Kategorien",
     "",
-    "Confronta categorie",
-    "vergelijk categoriëen",
+    "",
+    "",
     "",
     "Comparer categories",
     "",
-    "Vertaa kategorioita",
+    "",
     "",
     "Comparar categor�as",
     "",
@@ -12032,7 +12032,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Porovnat kategorii",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12041,12 +12041,12 @@ const tI18nPhrase Phrases[] = {
   { "VPS",
     "",
     "",
-    "VPS",
-    "VPS",
+    "",
+    "",
     "",
     "iVPS",
     "",
-    "VPS",
+    "",
     "",
     "VPS",
     "",
@@ -12074,14 +12074,14 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "Auto delete",
-    "automatisch löschen",
+    "automatisch l�schen",
     "",
-    "Auto elimina",
-    "Automatisch wissen",
+    "",
+    "",
     "",
     "Auto effacement",
     "",
-    "Poista automaattisesti",
+    "",
     "",
     "Auto borrar",
     "",
@@ -12102,7 +12102,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Automatické smazání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12111,12 +12111,12 @@ const tI18nPhrase Phrases[] = {
   { "after ... recordings",
     "nach ... Aufnahmen",
     "",
-    "dopo ... registrazioni",
-    "na ... opnames",
     "",
-    "après ... enregistrements",
     "",
-    "... tallenteen jälkeen",
+    "",
+    "apr�s ... enregistrements",
+    "",
+    "",
     "",
     "despu�s ... grabaciones",
     "",
@@ -12137,7 +12137,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "po ... nahrávkách",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12146,12 +12146,12 @@ const tI18nPhrase Phrases[] = {
   { "after ... days after first rec.",
     "nach ... Tagen nach erster Aufn.",
     "",
-    "dopo ... giorni dopo prima reg.",
-    "na ... dagen na eerste opname",
     "",
-    "après ... jours du premier enregistrement",
     "",
-    "... päivän jälkeen ensimmäisestä",
+    "",
+    "apr�s ... jours du premier enregistrement",
+    "",
+    "",
     "",
     "despu�s ... d�as de la 1� grab.",
     "",
@@ -12172,7 +12172,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "po ... dnech po první nahrávce",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12181,12 +12181,12 @@ const tI18nPhrase Phrases[] = {
   { "Edit user-defined days of week",
     "Benutzerdefinierte Wochentage editieren",
     "",
-    "Modifica giorni della settimana definiti dall'utente",
-    "Bewerk door gebruiker gedefinieerde dagen van de week",
     "",
-    "Edition des journées définit par l'utilisateur",
     "",
-    "Muokkaa valittuja viikonpäiviä",
+    "",
+    "Edition des journ�es d�finit par l'utilisateur",
+    "",
+    "",
     "",
     "Editar d�as de la semana definidos por el usuario",
     "",
@@ -12207,7 +12207,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Upravit použité dny",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12216,12 +12216,12 @@ const tI18nPhrase Phrases[] = {
   { "Compare",
     "Vergleiche",
     "",
-    "Confronta",
-    "Vergelijk",
+    "",
+    "",
     "",
     "Comparer",
     "",
-    "Vertaa",
+    "",
     "",
     "Comparar",
     "",
@@ -12242,21 +12242,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Porovnat",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Select blacklists",
-    "Ausschlusslisten auswählen",
+    "Ausschlusslisten ausw�hlen",
     "",
-    "Seleziona lista esclusioni",
-    "Kies blacklists",
+    "",
+    "",
     "",
     "Choisir la liste des exclus",
     "",
-    "Valitse mustat listat",
+    "",
     "",
     "Seleccionar las listas negras",
     "",
@@ -12277,21 +12277,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Vybrat blacklisty",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Values for EPG category",
-    "Werte für EPG-Kategorie",
-    "",
-    "Valori per la categoria EPG",
+    "Werte f�r EPG-Kategorie",
     "",
     "",
-    "Valeur pour la catégories EPG",
     "",
-    "Valinnat ohjelmaoppaan kategorioille",
+    "",
+    "Valeur pour la cat�gories EPG",
+    "",
+    "",
     "",
     "Valores para categor�as EPG",
     "",
@@ -12312,21 +12312,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "EPG kategorie",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Button$Apply",
-    "Übernehmen",
+    "�bernehmen",
     "",
-    "Applica",
-    "Toepassen",
+    "",
+    "",
     "",
     "Appliquer",
     "",
-    "Käytä",
+    "",
     "",
     "Aplicar",
     "",
@@ -12347,7 +12347,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Použít",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12356,12 +12356,12 @@ const tI18nPhrase Phrases[] = {
   { "less",
     "kleiner",
     "",
-    "minore",
-    "minder",
+    "",
+    "",
     "",
     "plus petit",
     "",
-    "pienempi",
+    "",
     "",
     "menor",
     "",
@@ -12382,7 +12382,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "menší",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12391,12 +12391,12 @@ const tI18nPhrase Phrases[] = {
   { "less or equal",
     "kleiner oder gleich",
     "",
-    "minore o uguale",
-    "minder of gelijk",
     "",
-    "plus petit ou égale",
     "",
-    "pienempi tai yhtä suuri",
+    "",
+    "plus petit ou �gale",
+    "",
+    "",
     "",
     "menor o igual",
     "",
@@ -12417,21 +12417,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "menší nebo stejný",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "greater",
-    "größer",
+    "gr��er",
     "",
-    "maggiore",
-    "meer",
+    "",
+    "",
     "",
     "plus grand",
     "",
-    "suurempi",
+    "",
     "",
     "mayor",
     "",
@@ -12452,21 +12452,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "větší",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "greater or equal",
-    "größer oder gleich",
+    "gr��er oder gleich",
     "",
-    "maggiore o uguale",
-    "meer of gelijk",
     "",
-    "plus grand ou égale",
     "",
-    "suurempi tai yhtä suuri",
+    "",
+    "plus grand ou �gale",
+    "",
+    "",
     "",
     "mayor o igual",
     "",
@@ -12487,7 +12487,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "větší nebo stejný",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12496,12 +12496,12 @@ const tI18nPhrase Phrases[] = {
   { "equal",
     "gleich",
     "",
-    "uguale",
-    "gelijk",
     "",
-    "égale",
     "",
-    "yhtä suuri",
+    "",
+    "�gale",
+    "",
+    "",
     "",
     "igual",
     "",
@@ -12522,7 +12522,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "stejný",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12531,12 +12531,12 @@ const tI18nPhrase Phrases[] = {
   { "not equal",
     "ungleich",
     "",
-    "non uguale",
-    "niet geljk",
     "",
-    "pas égale",
     "",
-    "erisuuri",
+    "",
+    "pas �gale",
+    "",
+    "",
     "",
     "distinto",
     "",
@@ -12557,7 +12557,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "jiný",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12566,12 +12566,12 @@ const tI18nPhrase Phrases[] = {
   { "Activation of search timer",
     "Aktivierung des Suchtimers",
     "",
-    "Attivazione timer ricerca",
-    "Activering van zoektimer",
+    "",
+    "",
     "",
     "Activation de la recherche de programmation",
     "",
-    "Hakuajastimien aktivointi",
+    "",
     "",
     "Activar prog. por b�squeda",
     "",
@@ -12592,7 +12592,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Povolit Automatické nahrávání?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12601,12 +12601,12 @@ const tI18nPhrase Phrases[] = {
   { "First day",
     "Erster Tag",
     "",
-    "Primo giorno",
+    "",
     "",
     "",
     "Premier jour",
     "",
-    "Aloituspäivä",
+    "",
     "",
     "Primer d�a",
     "",
@@ -12627,7 +12627,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "První den",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12636,12 +12636,12 @@ const tI18nPhrase Phrases[] = {
   { "Last day",
     "Letzter Tag",
     "",
-    "Ultimo giorno",
-    "Eerste dag",
+    "",
+    "",
     "",
     "Dernier jour",
     "",
-    "Lopetuspäivä",
+    "",
     "",
     "�ltimo d�a",
     "",
@@ -12662,7 +12662,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Poslední den",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12671,12 +12671,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$all channels",
     "mit PayTV",
     "",
-    "Tutti i canali",
-    "alle kanalen",
+    "",
+    "",
     "",
     "avec TV-Payante",
     "",
-    "Kaikki",
+    "",
     "",
     "todos los canales",
     "",
@@ -12697,7 +12697,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Všechny stanice",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12706,12 +12706,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$only FTA",
     "ohne PayTV",
     "",
-    "Solo gratuiti",
-    "alleen FTA",
+    "",
+    "",
     "",
     "sans TV-Payante",
     "",
-    "Vapaat",
+    "",
     "",
     "s�lo en abierto",
     "",
@@ -12732,7 +12732,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Jen volné",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12741,12 +12741,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Timer preview",
     "Timer-Vorsch.",
     "",
-    "Anteprima timer",
-    "Timer preview",
     "",
-    "Prévu de programmation",
     "",
-    "Esikatselu",
+    "",
+    "Pr�vu de programmation",
+    "",
+    "",
     "",
     "Previsualizar programaci�n",
     "",
@@ -12767,7 +12767,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Náhled Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12776,12 +12776,12 @@ const tI18nPhrase Phrases[] = {
   { "Blacklist results",
     "Ausschluss-Ergebnisse",
     "",
-    "Risultati lista esclusioni",
-    "Blacklists resultaten",
     "",
-    "Résultats de la liste des exclus",
     "",
-    "Mustan listan tulokset",
+    "",
+    "R�sultats de la liste des exclus",
+    "",
+    "",
     "",
     "Resultados de la lista negra",
     "",
@@ -12802,7 +12802,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Výsledky blacklist",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12811,12 +12811,12 @@ const tI18nPhrase Phrases[] = {
   { "found recordings",
     "gefundene Aufnahmen",
     "",
-    "registrazioni trovate",
-    "gevonden opname's",
     "",
-    "Enregistrements trouvées",
     "",
-    "löydetyt tallenteet",
+    "",
+    "Enregistrements trouv�es",
+    "",
+    "",
     "",
     "grabaciones encontradas",
     "",
@@ -12837,7 +12837,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "nalezených nahrávek",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12846,12 +12846,12 @@ const tI18nPhrase Phrases[] = {
   { "Error while accessing recording!",
     "",
     "",
-    "Errore durante l'accesso alla registrazione!",
-    "Fout tijdens benaderen opnames!",
     "",
-    "Erreur lors de l'accès à l'enregistrement",
     "",
-    "Tallenteen toistaminen epäonnistui!",
+    "",
+    "Erreur lors de l'acc�s � l'enregistrement",
+    "",
+    "",
     "",
     "�Error al acceder a grabaci�n!",
     "",
@@ -12872,7 +12872,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Chyba při přístupu k nahrávce!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12881,12 +12881,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Default",
     "Standard",
     "",
-    "Predefinito",
+    "",
     "",
     "",
     "Standart",
     "",
-    "Oletus",
+    "",
     "",
     "Por defecto",
     "",
@@ -12907,21 +12907,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Výchozí",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Edit$Delete template?",
-    "Vorlage löschen?",
+    "Vorlage l�schen?",
     "",
-    "Eliminare modello?",
-    "Verwijder sjabloon?",
     "",
-    "Effacer le modèle",
     "",
-    "Poistetaanko mallipohja?",
+    "",
+    "Effacer le mod�le",
+    "",
+    "",
     "",
     "�Borrar plantilla?",
     "",
@@ -12942,21 +12942,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Smazat vzor?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Overwrite existing entries?",
-    "Vorhandene Werte überschreiben?",
+    "Vorhandene Werte �berschreiben?",
     "",
-    "Sovrascrivere valori esistenti?",
-    "Overschrijf bestaande invoer?",
+    "",
+    "",
     "",
     "Ecraser les informations?",
     "",
-    "Kirjoitetaanko olemassa olevan päälle?",
+    "",
     "",
     "�Sobrescribir las entradas existentes?",
     "",
@@ -12977,7 +12977,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přepsat existující položky!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -12986,12 +12986,12 @@ const tI18nPhrase Phrases[] = {
   { "Edit entry",
     "Eintrag editieren",
     "",
-    "Modifica valore",
-    "Wijzig invoer",
     "",
-    "Editer l'entrée",
     "",
-    "Muokkaa valintaa",
+    "",
+    "Editer l'entr�e",
+    "",
+    "",
     "",
     "Editar entrada",
     "",
@@ -13012,7 +13012,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Upravit položku",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13021,12 +13021,12 @@ const tI18nPhrase Phrases[] = {
   { "Switch",
     "Nur umschalten",
     "",
-    "Cambia",
-    "Alleen schakelen",
+    "",
+    "",
     "",
     "Seulement changer de chaine",
     "",
-    "kanavanvaihto",
+    "",
     "",
     "Cambiar",
     "",
@@ -13047,21 +13047,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přepnout",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Announce only",
-    "Nur ankündigen",
+    "Nur ank�ndigen",
     "",
-    "Solo annuncio",
-    "Alleen aankondigen (geen timer)",
     "",
-    "Annoncer seulement début d'une programme",
     "",
-    "muistutus",
+    "",
+    "Annoncer seulement d�but d'une programme",
+    "",
+    "",
     "",
     "S�lo avisar",
     "",
@@ -13082,21 +13082,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Informovat",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Announce ... minutes before start",
-    "Ankündigen ... Minuten vor Start",
+    "Ank�ndigen ... Minuten vor Start",
     "",
-    "Annuncia ... minuti prima dell'inizio",
-    "Schakel ... minuten voor start",
     "",
-    "Changer ... minutes avant le début",
     "",
-    "Muistuta ... minuuttia ennen alkua",
+    "",
+    "Changer ... minutes avant le d�but",
+    "",
+    "",
     "",
     "Avisar ... minutos antes del inicio",
     "",
@@ -13117,21 +13117,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Informovat ... minut předem",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "action at",
-    "Ausführung um",
+    "Ausf�hrung um",
     "",
-    "azione alle",
-    "actie op",
     "",
-    "Effectuer à",
     "",
-    "Kellonaika kanavanvaihdolle",
+    "",
+    "Effectuer �",
+    "",
+    "",
     "",
     "ejecutar a las",
     "",
@@ -13152,7 +13152,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "v",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13161,12 +13161,12 @@ const tI18nPhrase Phrases[] = {
   { "Switch list",
     "Umschaltliste",
     "",
-    "Lista modifiche",
-    "Schakellijst",
+    "",
+    "",
     "",
     "Liste de changement de chaine",
     "",
-    "Kanavanvaihtolista",
+    "",
     "",
     "Lista de cambio",
     "",
@@ -13187,7 +13187,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Seznam přepnutí",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13196,12 +13196,12 @@ const tI18nPhrase Phrases[] = {
   { "Edit template",
     "Vorlage editieren",
     "",
-    "Modifica modello",
-    "Wijzig sjabloon",
     "",
-    "Editer modèles",
     "",
-    "Muokkaa mallipohjaa",
+    "",
+    "Editer mod�les",
+    "",
+    "",
     "",
     "Editar plantilla",
     "",
@@ -13222,7 +13222,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Upravit vzor",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13231,12 +13231,12 @@ const tI18nPhrase Phrases[] = {
   { "Timers",
     "",
     "",
-    "Timer",
-    "Timers",
+    "",
+    "",
     "",
     "Programmations",
     "",
-    "Ajastimet",
+    "",
     "",
     "Programaciones",
     "",
@@ -13257,7 +13257,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nahrávání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13266,12 +13266,12 @@ const tI18nPhrase Phrases[] = {
   { ">>> no info! <<<",
     ">>> keine Info! <<<",
     "",
-    ">>> nessuna informazione! <<<",
-    ">>> geen info! <<<",
+    "",
+    "",
     "",
     ">>> Pas d'information! <<<",
     "",
-    ">>> ei tietoja! <<<",
+    "",
     "",
     "   �sin informaci�n�  ",
     "",
@@ -13292,21 +13292,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    ">>> bez informací <<<",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Overview",
-    "Übersicht",
+    "�bersicht",
     "",
-    "Sommario",
-    "Overzicht",
+    "",
+    "",
     "",
     "Sommaire",
     "",
-    "Yleiskatsaus",
+    "",
     "",
     "Resumen",
     "",
@@ -13327,7 +13327,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přehled",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13336,12 +13336,12 @@ const tI18nPhrase Phrases[] = {
   { "Button$Favorites",
     "Favoriten",
     "",
-    "Preferiti",
-    "Favorieten",
+    "",
+    "",
     "",
     "Favoris",
     "",
-    "Suosikit",
+    "",
     "",
     "Favoritos",
     "",
@@ -13362,7 +13362,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Oblíbené",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13371,12 +13371,12 @@ const tI18nPhrase Phrases[] = {
   { "Quick search for broadcasts",
     "Schnelle Suche nach Sendungen",
     "",
-    "Ricerca veloce per emittenti",
-    "Snel zoeken naar uitzendingen",
+    "",
+    "",
     "",
     "Recherche rapide pour les radios",
     "",
-    "Pikahaku ohjelmaoppaalle",
+    "",
     "",
     "B�squeda r�pida de emisiones",
     "",
@@ -13397,7 +13397,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Rychlé hledání vysílání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13406,12 +13406,12 @@ const tI18nPhrase Phrases[] = {
   { "Quick search",
     "Schnellsuche",
     "",
-    "Ricerca veloce",
-    "Snel zoeken",
+    "",
+    "",
     "",
     "Recherche rapide",
     "",
-    "Pikahaku",
+    "",
     "",
     "B�squeda r�pida",
     "",
@@ -13432,21 +13432,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Rychlé hledání",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Show in main menu",
-    "Im Hauptmenü anzeigen",
+    "Im Hauptmen� anzeigen",
     "",
-    "Mostra nel menu principale",
-    "Toon vermelding in hoofdmenu",
+    "",
+    "",
     "",
     "Visible dans le menu principale",
     "",
-    "Näytä valinta päävalikossa",
+    "",
     "",
     "Mostrar en men� principal",
     "",
@@ -13467,7 +13467,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Zobrazit v hlavním menu",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13476,12 +13476,12 @@ const tI18nPhrase Phrases[] = {
   { "%d new broadcast(s) found! Show them?",
     "%d neue Sendung(en) gefunden! Anzeigen?",
     "",
-    "%d nuove emittenti trovate! Mostrarle?",
-    "%d nieuwe uitzending(en) gevonden! Tonen?",
     "",
-    "Afficher les %d nouvelles émissions trouvées?",
     "",
-    "Löydettiin %d uutta lähetystä! Näytetäänkö?",
+    "",
+    "Afficher les %d nouvelles �missions trouv�es?",
+    "",
+    "",
     "",
     "�%d nuevas emisiones encontradas! �Mostrarlas?",
     "",
@@ -13502,21 +13502,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nalezeno %d nových vysílání! Zobrazit?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "Search timer update done!",
-    "Suchtimer-Update durchgeführt!",
+    "Suchtimer-Update durchgef�hrt!",
     "",
-    "Aggiornamento timer ricerca completato!",
-    "Verversen zoektimer gereed!",
     "",
-    "La mise à jours de recherche est effectuée!",
     "",
-    "Hakuajastimet päivitetty!",
+    "",
+    "La mise � jours de recherche est effectu�e!",
+    "",
+    "",
     "",
     "�Programaci�n por b�squeda actualizada!",
     "",
@@ -13537,21 +13537,21 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Aktualizace Nahrávání dokončena!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
 #endif
   },
   { "small EPG content on:%s",
-    "wenig EPG Inhalt für:%s",
-    "",
-    "contenuto piccoli EPG su:%s",
+    "wenig EPG Inhalt f�r:%s",
     "",
     "",
     "",
     "",
-    "vajaat ohjelmatiedot: %s",
+    "",
+    "",
+    "",
     "",
     "poco contenido EPG en:%s",
     "",
@@ -13572,7 +13572,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "krátký EPG obsah: %s",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13581,12 +13581,12 @@ const tI18nPhrase Phrases[] = {
   { "VDR EPG check warning",
     "VDR EPG Check Warnung",
     "",
-    "Notifica verifica EPG di VDR",
     "",
     "",
     "",
     "",
-    "Varoitus VDR:n ohjelmatietojen tarkastuksesta",
+    "",
+    "",
     "",
     "VDR aviso al comprobar EPG",
     "",
@@ -13607,7 +13607,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Varování kontroly VDR EPG",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13616,12 +13616,12 @@ const tI18nPhrase Phrases[] = {
   { "Switch to (%d) '%s'?",
     "Umschalten zu (%d) '%s'?",
     "",
-    "Cambiare a (%d) '%s'?",
     "",
     "",
     "",
     "",
-    "Vaihdetaanko kanavalle (%d) '%s'?",
+    "",
+    "",
     "",
     "�Cambiar a (%d) '%s'?",
     "",
@@ -13642,7 +13642,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Přepnout na (%d) '%s'?",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13651,12 +13651,12 @@ const tI18nPhrase Phrases[] = {
   { "Programming timer failed!",
     "Timer-Programmierung fehlschlagen!",
     "",
-    "Programmazione timer fallito!",
-    "Programmeren timer mislukt!",
     "",
-    "La programmation a échoué",
     "",
-    "Ajastimen ohjelmointi epäonnistui!",
+    "",
+    "La programmation a �chou�",
+    "",
+    "",
     "",
     "�La programaci�n ha fallado!",
     "",
@@ -13677,7 +13677,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "Nastavení nahrávání selhalo!",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13686,12 +13686,12 @@ const tI18nPhrase Phrases[] = {
   { "in %02ldd",
     "in %02ldd",
     "",
-    "in %02ldd",
-    "in %02ldd",
+    "",
+    "",
     "",
     "en %02ldd",
     "",
-    "%02ldd",
+    "",
     "",
     "en %02ldd",
     "",
@@ -13712,7 +13712,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "%02ldd",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13721,12 +13721,12 @@ const tI18nPhrase Phrases[] = {
   { "in %02ldh",
     "in %02ldh",
     "",
-    "in %02ldh",
-    "in %02ldh",
+    "",
+    "",
     "",
     "en %02ldh",
     "",
-    "%02ldh",
+    "",
     "",
     "en %02ldh",
     "",
@@ -13747,7 +13747,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "%02ldh",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",
@@ -13756,12 +13756,12 @@ const tI18nPhrase Phrases[] = {
   { "in %02ldm",
     "in %02ldm",
     "",
-    "in %02ldm",
-    "in %02ldm",
+    "",
+    "",
     "",
     "en %02ldm",
     "",
-    "%02ldm",
+    "",
     "",
     "en %02ldm",
     "",
@@ -13782,7 +13782,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
 #if VDRVERSNUM >= 10342
-    "%02ldm",
+    "",
 #endif
 #if VDRVERSNUM >= 10502
     "",

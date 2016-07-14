@@ -17,13 +17,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Skin Soppalusikka", // Français
     "", // Norsk
-    "Soppalusikka-ulkoasu", // suomi (Finnish)
-    "Skin Soppalusikka", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Piel Soppalusikka", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Soppalusikka-temat", // Svenska
+    "", // Svenska
     "", // Românã
-    "Soppalussika-skin", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -39,13 +39,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Soppalusikka", // Français
     "", // Norsk
-    "Soppalusikka", // suomi (Finnish)
-    "Soppalusikka", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Soppalusikka", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Soppalusikka", // Svenska
+    "", // Svenska
     "", // Românã
-    "Soppalusikka", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -61,13 +61,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "min", // Français
     "", // Norsk
-    "min", // suomi (Finnish)
-    "min", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "min", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "min", // Svenska
+    "", // Svenska
     "", // Românã
-    "perc", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -83,13 +83,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Stéréo", // Français
     "", // Norsk
-    "Stereo", // suomi (Finnish)
-    "Stereo", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Estéreo", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Stereo", // Svenska
+    "", // Svenska
     "", // Românã
-    "Sztereó", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -105,13 +105,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Gauche", // Français
     "", // Norsk
-    "Vasen", // suomi (Finnish)
-    "W lewo", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Izquierda", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Vänster", // Svenska
+    "", // Svenska
     "", // Românã
-    "Bal", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -127,13 +127,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Droite", // Français
     "", // Norsk
-    "Oikea", // suomi (Finnish)
-    "W prawo", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Derecha", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Höger", // Svenska
+    "", // Svenska
     "", // Românã
-    "Jobb", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -149,13 +149,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Muet", // Français
     "", // Norsk
-    "Mykistetty", // suomi (Finnish)
-    "Wycisz", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Silenciar", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Dämpa", // Svenska
+    "", // Svenska
     "", // Românã
-    "Némít", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -171,13 +171,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Volume", // Français
     "", // Norsk
-    "Äänenvoimakkuus", // suomi (Finnish)
-    "G³o¶no¶æ", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Volumen", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Volym", // Svenska
+    "", // Svenska
     "", // Românã
-    "Hangerõ", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -193,13 +193,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Afficher logo des chaînes", // Français
     "", // Norsk
-    "Näytä kanavalogot", // suomi (Finnish)
-    "Pokazuj logo kana³u", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Mostrar los logos de los canales", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Visa kanallogotyper", // Svenska
+    "", // Svenska
     "", // Românã
-    "Csatornalogók megjelenítése", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -215,13 +215,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Identifier chaîne par", // Français
     "", // Norsk
-    "Tunnista kanava", // suomi (Finnish)
-    "Rozpoznaj kana³ po", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Identificar el canal por", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Identifiera kanal med", // Svenska
+    "", // Svenska
     "", // Românã
-    "Csatornák azonosítása", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -237,13 +237,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Nom", // Français
     "", // Norsk
-    "nimestä", // suomi (Finnish)
-    "nazwa", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Nombre", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "namn", // Svenska
+    "", // Svenska
     "", // Românã
-    "név szerint", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -259,13 +259,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Donnée", // Français
     "", // Norsk
-    "tiedoista", // suomi (Finnish)
-    "parametry", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Datos", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "data", // Svenska
+    "", // Svenska
     "", // Românã
-    "paraméterek szerint", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -281,13 +281,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Taille du cache des logo", // Français
     "", // Norsk
-    "Välimuistin koko kanavalogoille", // suomi (Finnish)
-    "Rozmiar cache dla logo kana³u", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Tamaño de la caché para logos", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Cachestorlek för logotyper", // Svenska
+    "", // Svenska
     "", // Românã
-    "Csatorna logó cache méret", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -303,13 +303,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Supprimer cache", // Français
     "", // Norsk
-    "Tyhjennä", // suomi (Finnish)
-    "Opró¿nij cache", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Limpiar la caché", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Töm cachen", // Svenska
+    "", // Svenska
     "", // Românã
-    "Cache ürítés", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -325,13 +325,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Suppression du cache...", // Français
     "", // Norsk
-    "Tyhjennetään välimuistia...", // suomi (Finnish)
-    "Opró¿niam cache logo kana³u...", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Limpiando caché de logos...", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Tömmer cachen...", // Svenska
+    "", // Svenska
     "", // Românã
-    "Csatornalogó cache ürítése...", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -347,13 +347,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Langues", // Français
     "", // Norsk
-    "Kielet", // suomi (Finnish)
-    "Jêzyki", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Idiomas", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Språk", // Svenska
+    "", // Svenska
     "", // Românã
-    "Nyelvek", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -369,13 +369,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Information auxiliare", // Français
     "", // Norsk
-    "Lisätiedot", // suomi (Finnish)
-    "Informacje pomocnicze", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Información auxiliar", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Extrainformation", // Svenska
+    "", // Svenska
     "", // Românã
-    "További információk", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -391,13 +391,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Afficher information auxiliaire", // Français
     "", // Norsk
-    "Näytä lisätiedot", // suomi (Finnish)
-    "Pokazuj informacje pomocnicze", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Mostrar información auxiliar", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Visa extrainformation", // Svenska
+    "", // Svenska
     "", // Românã
-    "További információk megjelenítése", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -413,13 +413,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Afficher barre de progression", // Français
     "", // Norsk
-    "Näytä aikajana", // suomi (Finnish)
-    "Pokazuj pasek postêpu", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Mostrar barra de progreso", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Visa framsteg", // Svenska
+    "", // Svenska
     "", // Românã
-    "Lejátszósáv megjelenítése", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -435,13 +435,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Afficher symbole", // Français
     "", // Norsk
-    "Näytä symbolit", // suomi (Finnish)
-    "Pokazuj symbole", // Polski
+    "", // suomi (Finnish)
+    "", // Polski
     "Mostrar símbolos", // Español
     "", // ÅëëçíéêÜ (Greek)
-    "Visa symboler", // Svenska
+    "", // Svenska
     "", // Românã
-    "Ikonok megjelenítése", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -457,13 +457,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "Afficher VPS dans l'info. de la chaîne", // Français
     "", // Norsk
-    "Näytä VPS kanavatiedossa", // suomi (Finnish)
+    "", // suomi (Finnish)
     "", // Polski
     "Mostrar VPS en info del canal", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Românã
-    "VPS információk megjelenítése", // Magyar
+    "", // Magyar
     "", // Català
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski
@@ -480,13 +480,13 @@ const tI18nPhrase Phrases[] = {
     "", // Português
     "", // Français
     "", // Norsk
-    "Käytä yksittäistä kuva-aluetta (8bpp)", // suomi (Finnish)
+    "", // suomi (Finnish)
     "", // Polski
     "Sólo usar un área (8bpp)", // Español
     "", // ÅëëçíéêÜ (Greek)
     "", // Svenska
     "", // Românã
-    "Egyetlen terület használata (8bpp)", // Magyar
+    "", // Magyar
     "", // Catalàe
     "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski

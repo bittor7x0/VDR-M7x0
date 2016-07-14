@@ -34,12 +34,12 @@
   { "Monitor signal of DVB Channels", //EN
     "Zeigt Empfangsqualität von DVB Kanälen an.",// DE
     "", // Slovenski
-    "Ricerca Transponders di Canali DVB",// IT
-    "Doorzoek Transponders naar DVB kanalen", // Nederlands
+    "",// IT
+    "", // Nederlands
     "", // Português
     "", // Français
     "", // Norsk
-    "Kanavahaku DVB-transpondereille",// FI
+    "",// FI
     "", // Polski
     "Monitor de señal para canales DVB", // Español
     "", // ÅëëçíéêÜ (Greek)
@@ -47,7 +47,7 @@
     "", // Romaneste
     "", // Magyar
     "", // Català
-    "¿ŞØáÚ ÚĞİĞÛŞÒ", // ÀãááÚØÙ (Russian)
+    "", // ÀãááÚØÙ (Russian)
     "", // Hrvatski (Croatian)
     "", // Eesti
     "", // Dansk

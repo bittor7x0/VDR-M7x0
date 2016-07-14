@@ -60,5 +60,5 @@ msgstr "HTTP Proxy benutzen"
 msgid "HTTP proxy server"
 msgstr "HTTP Proxy Name"
 
-#~ msgid "<no link available>"
-#~ msgstr "<kein Link vorhanden>"
+msgid "Loading RSS stream..."
+msgstr ""

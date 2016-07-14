@@ -12,380 +12,380 @@ const tI18nPhrase Phrases[] = {
   { "Page",       //English               
     "Seite",      //German
     "",           //Slovenian
-    "Pagina",     //Italian
+    "",     //Italian
     "",           //Dutch
     "",           //Portuguese
     "Page",       //French
     "",           //Norwegian
-    "Sivua",      //Finnish
+    "",      //Finnish
     "",           //Polish
     "P·gina",     //Spanish
     "",           //Greek
     "",           //Swedish
     "",           //Romanian
     "",           //Hugarian
-    "P‡gina",     //Catalan
-    "¡‚‡–›ÿÊ–",   //Russian
+    "",     //Catalan
+    "",   //Russian
   },              
   { "not found until now",      //English
     "noch nicht gefunden", //German
     "",               //Slovenian
-    "non trovata",    //Italian
+    "",    //Italian
     "",               //Dutch
     "",               //Portuguese
     "pas trouvÈ",     //French
     "",               //Norwegian
-    "ei lˆydy",       //Finnish
+    "",       //Finnish
     "",               //Polish
     "no encontrada",  //Spanish
     "",               //Greek
     "",               //Swedish
     "",               //Romanian
     "",               //Hugarian
-    "no trobada",     //Catalan
-    "›’ ›–Ÿ‘’›–",     //Russian
+    "",     //Catalan
+    "",     //Russian
   },
   { "Teletext (OSD)", //English
     "Videotext (OSD)", //German
     "",               //Slovenian
-    "Teletext (OSD)", //Italian
+    "", //Italian
     "",               //Dutch
     "",               //Portuguese
     "Teletext (OSD)", //French
     "",               //Norwegian
-    "Teksti-TV",      //Finnish
+    "",      //Finnish
     "",               //Polish
     "Teletexto (OSD)",//Spanish
     "",               //Greek
     "",               //Swedish
     "",               //Romanian
     "",               //Hugarian
-    "Teletext (OSD)", //Catalan
-    "¬’€’‚’⁄·‚",      //Russian
+    "", //Catalan
+    "",      //Russian
   },
   { "Zoom",           //English
     "Vergrˆﬂern",     //German
     "",               //Slovenian
-    "Zoom",           //Italian
+    "",           //Italian
     "",               //Dutch
     "",               //Portuguese
     "Zoom",           //French
     "",               //Norwegian
-    "Suurenna",       //Finnish
+    "",       //Finnish
     "",               //Polish
     "Zoom",           //Spanish
     "",               //Greek
     "",               //Swedish
     "",               //Romanian
     "",               //Hugarian
-    "Zoom",           //Catalan
-    "„“’€ÿÁÿ‚Ï",      //Russian
+    "",           //Catalan
+    "",      //Russian
   },
   { "Half page",      //English
     "Halbe Seite",    //German
     "",               //Slovenian
-    "Mezza pagina",   //Italian
+    "",   //Italian
     "",               //Dutch
     "",               //Portuguese
     "Demi-Page",      //French
     "",               //Norwegian
-    "Puolikas sivu",  //Finnish
+    "",  //Finnish
     "",               //Polish
     "Media p·gina",   //Spanish
     "",               //Greek
     "",               //Swedish
     "",               //Romanian
     "",               //Hugarian
-    "Mitja p‡gina",   //Catalan
-    "ﬂﬁ€-·‚‡–›ÿÊÎ",   //Russian   
+    "",   //Catalan
+    "",   //Russian   
   },
   { "Change channel",    //English
     "Kanal wechseln",    //German
     "",                  //Slovenian
-    "Cambio canale",     //Italian
+    "",     //Italian
     "",                  //Dutch
     "",                  //Portuguese
     "Changer la chaÓne", //French
     "",                  //Norwegian
-    "Vaihda kanavaa",    //Finnish
+    "",    //Finnish
     "",                  //Polish
     "Cambio cadena",     //Spanish
     "",                  //Greek
     "",                  //Swedish
     "",                  //Romanian
     "",                  //Hugarian
-    "Canvi cadena",      //Catalan
-    "ﬂ’‡’⁄€ÓÁÿ‚Ï ⁄–›–€", //Russian
+    "",      //Catalan
+    "", //Russian
   },
   { "Jump to...",        //English
     "Springe zu...",     //German
     "",                  //Slovenian
-    "Salta a...",        //Italian
+    "",        //Italian
     "",                  //Dutch
     "",                  //Portuguese
     "Aller ‡...",        //French
     "",                  //Norwegian
-    "Siirry sivulle...", //Finnish
+    "", //Finnish
     "",                  //Polish
     "Salta a...",        //Spanish
     "",                  //Greek
     "",                  //Swedish
     "",                  //Romanian
     "",                  //Hugarian
-    "Salta a...",        //Catalan
-    "ﬂ’‡’Ÿ‚ÿ ⁄...",      //Russian
+    "",        //Catalan
+    "",      //Russian
   },
   { "Background transparency",   //English
     "Hintergrund-Transparenz",   //German
     "",                          //Slovenian
-    "Trasparenza dello sfondo",  //Italian
+    "",  //Italian
     "",                          //Dutch
     "",                          //Portuguese
     "Fond transparent",          //French
     "",                          //Norwegian
-    "Taustan l‰pin‰kyvyys",      //Finnish
+    "",      //Finnish
     "",                          //Polish
     "Transparencia del fondo",   //Spanish
     "",                          //Greek
     "",                          //Swedish
     "",                          //Romanian
     "",                          //Hugarian
-    "TransparËncia del fons",    //Catalan
-    "¡‚’ﬂ’›Ï ﬂ‡ﬁ◊‡–Á›ﬁ·‚ÿ ‰ﬁ›–", //Russian
+    "",    //Catalan
+    "", //Russian
   },
   { "Red key",            //English
     "Rote Taste",         //German
     "",                   //Slovenian
-    "Tasto Rosso",        //Italian
+    "",        //Italian
     "",                   //Dutch
     "",                   //Portuguese
     "Touche rouge",       //French
     "",                   //Norwegian
-    "Punainen n‰pp‰in",   //Finnish
+    "",   //Finnish
     "",                   //Polish
     "Tecla roja",         //Spanish
     "",                   //Greek
     "",                   //Swedish
     "",                   //Romanian
     "",                   //Hugarian
-    "Tecla vermella",     //Catalan
-    "∫‡–·›–Ô ⁄›ﬁﬂ⁄–",     //Russian
+    "",     //Catalan
+    "",     //Russian
   },
   { "  Page number",      //English
     "  Seitenzahl",       //German
     "",                   //Slovenian
-    "  Numero di pagina", //Italian
+    "", //Italian
     "",                   //Dutch
     "",                   //Portuguese
     "  Nombre de pages",  //French
     "",                   //Norwegian
-    "  Sivunumero",       //Finnish
+    "",       //Finnish
     "",                   //Polish
     "  N˙mero de p·gina", //Spanish
     "",                   //Greek
     "",                   //Swedish
     "",                   //Romanian
     "",                   //Hugarian
-    "  Nombre de p‡gina", //Catalan
-    "  Ωﬁ‹’‡ ·‚‡–›ÿÊÎ",   //Russian
+    "", //Catalan
+    "",   //Russian
   },
   { "Green key",          //English
     "Gr¸ne Taste",        //German
     "",                   //Slovenian
-    "Tasto Verde",        //Italian
+    "",        //Italian
     "",                   //Dutch
     "",                   //Portuguese
     "Touche verte",       //French
     "",                   //Norwegian
-    "Vihre‰ n‰pp‰in",     //Finnish
+    "",     //Finnish
     "",                   //Polish
     "Tecla verde",        //Spanish
     "",                   //Greek
     "",                   //Swedish
     "",                   //Romanian
     "",                   //Hugarian
-    "Tecla verda",        //Catalan
-    "∑’€Ò›–Ô ⁄›ﬁﬂ⁄–",     //Russian
+    "",        //Catalan
+    "",     //Russian
   },
   { "Yellow key",         //English
     "Gelbe Taste",        //German
     "",                   //Slovenian
-    "Tasto Giallo",       //Italian
+    "",       //Italian
     "",                   //Dutch
     "",                   //Portuguese
     "Touche jaune",       //French
     "",                   //Norwegian
-    "Keltainen n‰pp‰in",  //Finnish
+    "",  //Finnish
     "",                   //Polish
     "Tecla amarilla",     //Spanish
     "",                   //Greek
     "",                   //Swedish
     "",                   //Romanian
     "",                   //Hugarian
-    "Tecla groga",        //Catalan
-    "∂Ò€‚–Ô ⁄›ﬁﬂ⁄–",      //Russian
+    "",        //Catalan
+    "",      //Russian
   },
   { "Blue key",           //English
     "Blaue Taste",        //German
     "",                   //Slovenian
-    "Tasto Blu",          //Italian
+    "",          //Italian
     "",                   //Dutch
     "",                   //Portuguese
     "Touche bleue",       //French
     "",                   //Norwegian
-    "Sininen n‰pp‰in",    //Finnish
+    "",    //Finnish
     "",                   //Polish
     "Tecla azul",         //Spanish
     "",                   //Greek
     "",                   //Swedish
     "",                   //Romanian
     "",                   //Hugarian
-    "Tecla blava",        //Catalan
-    "¡ÿ›ÔÔ ⁄›ﬁﬂ⁄–",       //Russian
+    "",        //Catalan
+    "",       //Russian
   },
   { "Channel (press OK): ",        //English
     "Sender (OK dr¸cken): ",       //German
     "",                            //Slovenian
-    "Canale (premere OK)",         //Italian
+    "",         //Italian
     "",                            //Dutch
     "",                            //Portuguese
     "Chaine (Appuyer sur OK): ",   //French
     "",                            //Norwegian
-    "Kanava (paina OK):",          //Finnish
+    "",          //Finnish
     "",                            //Polish
     "Canal (pulse OK):",           //Spanish
     "",                            //Greek
     "",                            //Swedish
     "",                            //Romanian
     "",                            //Hugarian
-    "Canal (premi OK):",           //Catalan
-    "∫–›–€ (Ω–÷‹ÿ‚’ æ∫)",          //Russian
+    "",           //Catalan
+    "",          //Russian
   },
   { "Show clock",            //English
     "Uhr anzeigen",          //German
     "",                      //Slovenian
-    "Visualizza la hora",   //Italian
+    "",   //Italian
     "",                      //Dutch
     "",                      //Portuguese
     "Afficher l'heure",      //French
     "",                      //Norwegian
-    "N‰yt‰ kello",           //Finnish
+    "",           //Finnish
     "",                      //Polish
     "Visualiza el reloj",    //Spanish
     "",                      //Greek
     "",                      //Swedish
     "",                      //Romanian
     "",                      //Hugarian
-    "Visualitza l'hora", //Catalan
-    "øﬁ⁄–◊Î“–‚Ï Á–·Î",       //Russian
+    "", //Catalan
+    "",       //Russian
   },
   { "Setup$Suspend receiving",    //English
     "Empfang unterbrechen",       //German
     "",                           //Slovenian
-    "Sospendi ricezione",         //Italian
+    "",         //Italian
     "",                           //Dutch
     "",                           //Portuguese
     "Suspension de la rÈception", //French
     "",                           //Norwegian
-    "Keskeyt‰ vastaanottaminen",  //Finnish
+    "",  //Finnish
     "",                           //Polish
     "Suspende la recepciÛn",      //Spanish
     "",                           //Greek
     "",                           //Swedish
     "",                           //Romanian
     "",                           //Hugarian
-    "SuspËn la recepciÛ",         //Catalan
-    "ø‡ÿﬁ·‚–›ﬁ“ÿ‚Ï ﬂ‡ÿÒ‹",        //Russian
+    "",         //Catalan
+    "",        //Russian
   },
   { "Suspend receiving",          //English
     "Empfang unterbrechen",       //German
     "",                           //Slovenian
-    "Sospendi ricezione",         //Italian
+    "",         //Italian
     "",                           //Dutch
     "",                           //Portuguese
     "Suspension de la rÈception", //French
     "",                           //Norwegian
-    "Keskeyt‰ vastaanottaminen",  //Finnish
+    "",  //Finnish
     "",                           //Polish
     "Suspende la recepciÛn",      //Spanish
     "",                           //Greek
     "",                           //Swedish
     "",                           //Romanian
     "",                           //Hugarian
-    "SuspËn la recepciÛ",         //Catalan
-    "ﬂ‡ÿﬁ·‚–›ﬁ“ÿ‚Ï ﬂ‡ÿÒ‹",        //Russian
+    "",         //Catalan
+    "",        //Russian
   },
   { "Switch background",        //English
     "Hintergrund ‰ndern",       //German
     "",                         //Slovenian
-    "Cambia sfondo",            //Italian
+    "",            //Italian
     "",                         //Dutch
     "",                         //Portuguese
     "Change le fond d'Ècran",   //French
     "",                         //Norwegian
-    "Vaihda tausta",            //Finnish
+    "",            //Finnish
     "",                         //Polish
     "Cambia el fondo",          //Spanish
     "",                         //Greek
     "",                         //Swedish
     "",                         //Romanian
     "",                         //Hugarian
-    "Canvia el fons",           //Catalan
-    "›’ﬂ‡ﬁ◊‡–Á›ÎŸ ‰ﬁ›",         //Russian
+    "",           //Catalan
+    "",         //Russian
   },
   { "Auto-update pages",                  //English
     "Seiten aktualisieren",               //German
     "",                                   //Slovenian
-    "Aggiornamento pagina automatico",    //Italian
+    "",    //Italian
     "",                                   //Dutch
     "",                                   //Portuguese
     "Mise a jour des pages",              //French
     "",                                   //Norwegian
-    "Automaattinen sivup‰ivitys",         //Finnish
-    "ActualizaciÛn p·ginas autom·tica",   //Polish
+    "",         //Finnish
+    "",   //Polish
     "",                                   //Spanish
     "",                                   //Greek
     "",                                   //Swedish
     "",                                   //Romanian
     "",                                   //Hugarian
-    "ActualitzaciÛ p‡gines autom‡tica",   //Catalan
-    "∞“‚ﬁﬁ—›ﬁ“€’›ÿ’ ·‚‡–›ÿÊ",             //Russian
+    "",   //Catalan
+    "",             //Russian
   },
   { "OSD height",       //English
     "OSD-Hˆhe",         //German
     "",                 //Slovenian
-    "Altezza OSD",      //Italian
+    "",      //Italian
     "",                 //Dutch
     "",                 //Portuguese
     "OSD Hauteur",      //French
     "",                 //Norwegian
-    "Korkeus",          //Finnish
+    "",          //Finnish
     "",                 //Polish
     "Altura OSD",       //Spanish
     "",                 //Greek
     "",                 //Swedish
     "",                 //Romanian
     "",                 //Hugarian
-    "Altura OSD",       //Catalan
-    "≤Î·ﬁ‚– ‹’›Ó",      //Russian
+    "",       //Catalan
+    "",      //Russian
   },
   { "OSD width",        //English
     "OSD-Breite",       //German
     "",                 //Slovenian
-    "Larghezza OSD",    //Italian
+    "",    //Italian
     "",                 //Dutch
     "",                 //Portuguese
     "OSD Largeur",      //French
     "",                 //Norwegian
-    "Leveys",           //Finnish
+    "",           //Finnish
     "",                 //Polish
     "Anchura OSD",      //Spanish
     "",                 //Greek
     "",                 //Swedish
     "",                 //Romanian
     "",                 //Hugarian
-    "Ampl‡ria OSD",     //Catalan
-    "»ÿ‡ÿ›– ‹’›Ó",      //Russian
+    "",     //Catalan
+    "",      //Russian
   },
   { "OSD horizontal align",      //English
     "OSD horizontale Anordnung", //German
@@ -395,7 +395,7 @@ const tI18nPhrase Phrases[] = {
     "",                          //Portuguese
     "",                          //French
     "",                          //Norwegian
-    "Pystykeskitys",             //Finnish
+    "",             //Finnish
     "",                          //Polish
     "",                          //Spanish
     "",                          //Greek
@@ -413,7 +413,7 @@ const tI18nPhrase Phrases[] = {
     "",                          //Portuguese
     "",                          //French
     "",                          //Norwegian
-    "Vaakakeskitys",             //Finnish
+    "",             //Finnish
     "",                          //Polish
     "",                          //Spanish
     "",                          //Greek
@@ -431,15 +431,15 @@ const tI18nPhrase Phrases[] = {
     "",                                       //Portuguese
     "",                                       //French
     "",                                       //Norwegian
-    "Teksti-TV (OSD)",                        //Finnish
+    "",                        //Finnish
     "",                                       //Polish
     "Visualiza el teletexto en el OSD",       //Spanish
     "",                                       //Greek
     "",                                       //Swedish
     "",                                       //Romanian
     "",                                       //Hugarian
-    "Visualitza el teletext en l'OSD",        //Catalan
-    "øﬁ⁄–◊ ‚’€’‚’⁄·‚– “ ‹’›Ó",                //Russian
+    "",        //Catalan
+    "",                //Russian
   },
   { NULL }
   };

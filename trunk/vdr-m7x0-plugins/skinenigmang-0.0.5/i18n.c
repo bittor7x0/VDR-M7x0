@@ -49,563 +49,563 @@ const tI18nPhrase Phrases[] = {
    },
   {"Monday",       // English  Patrice Staudt 21.06.2007 Alle Sprache umgesetzt von LC_TIME
    "Montag",       // Deutsch
-   "ponedeljek",   // Slovenski
-   "Lunedì",       // Italiano
-   "maandag",      // Nederlands
-   "Segunda",      // Português
+   "",   // Slovenski
+   "",       // Italiano
+   "",      // Nederlands
+   "",      // Português
    "Lundi",        // Français
-   "Manday",       // Norsk
-   "Maanantai",    // suomi (Finnish)
-   "poniedzia³ek", // Polski
+   "",       // Norsk
+   "",    // suomi (Finnish)
+   "", // Polski
    "Lunes",        // Español
-   "Äåõôİñá",      // ÅëëçíéêÜ (Greek)
-   "Måndag",       // Svenska
-   "Luni",         // Românã
-   "Hétfõ",        // Magyar
-   "Dilluns",      // Català
-   "¿ŞİÕÔÕÛìİØÚ",  // ÀãááÚØÙ (Russian)
-   "Ponedjeljak",  // Hrvatski
-   "Esmaspäev",    // Eesti
-   "Mandag",       // Dansk
-   "Pondìlí",      // Èesky (Czech)
+   "",      // ÅëëçíéêÜ (Greek)
+   "",       // Svenska
+   "",         // Românã
+   "",        // Magyar
+   "",      // Català
+   "",  // ÀãááÚØÙ (Russian)
+   "",  // Hrvatski
+   "",    // Eesti
+   "",       // Dansk
+   "",Pondìlí      // Èesky (Czech)
    },
   {"Tuesday",      // English
    "Dienstag",     // Deutsch
-   "Torek",        // Slovenski
-   "Martedì",      // Italiano
-   "Dinsdag",      // Nederlands
-   "Terça",        // Português
+   "",        // Slovenski
+   "",      // Italiano
+   "",      // Nederlands
+   "",        // Português
    "Mardi",        // Français
-   "Tirsday",      // Norsk
-   "Tiistai",      // suomi (Finnish)
-   "Wtorek",       // Polski
+   "",      // Norsk
+   "",      // suomi (Finnish)
+   "",       // Polski
    "Martes",       // Español
-   "Ôñßôç",        // ÅëëçíéêÜ (Greek)
-   "Tisdag",       // Svenska
-   "Marşi",        // Românã
-   "Kedd",         // Magyar
-   "Dimarts",      // Català
-   "²âŞàİØÚ",      // ÀãááÚØÙ (Russian)
-   "Utorak",       // Hrvatski
-   "Teisipäev",    // Eesti
-   "Tirsdag",      // Dansk
-   "Úterı",        // Èesky (Czech)
+   "",        // ÅëëçíéêÜ (Greek)
+   "",       // Svenska
+   "",        // Românã
+   "",         // Magyar
+   "",      // Català
+   "",      // ÀãááÚØÙ (Russian)
+   "",       // Hrvatski
+   "",    // Eesti
+   "",      // Dansk
+   "",Úterı        // Èesky (Czech)
    },
   {"Wednesday",    // English
    "Mittwoch",     // Deutsch
-   "sreda",        // Slovenski
-   "mercoledì",    // Italiano
-   "woensdag",     // Nederlands
-   "Quarta",       // Português
+   "",        // Slovenski
+   "",    // Italiano
+   "",     // Nederlands
+   "",       // Português
    "Mercredi",     // Français
-   "Onsday",       // Norsk
-   "Keskiviikko",  // suomi (Finnish)
-   "¶roda",        // Polski
+   "",       // Norsk
+   "",  // suomi (Finnish)
+   "",        // Polski
    "Miércoles",    // Español
-   "ÔåôÜñôç",      // ÅëëçíéêÜ (Greek)
-   "Onsdag",       // Svenska
-   "Miercuri",     // Românã
-   "Szerda",       // Magyar
-   "Dimecres",     // Català
-   "ÁàÕÔĞ",        // ÀãááÚØÙ (Russian)
-   "Srijeda",      // Hrvatski
-   "Kolmapäev",    // Eesti
-   "Onsdag",       // Dansk
-   "Støeda",       // Èesky (Czech)
+   "",      // ÅëëçíéêÜ (Greek)
+   "",       // Svenska
+   "",     // Românã
+   "",       // Magyar
+   "",     // Català
+   "",        // ÀãááÚØÙ (Russian)
+   "",      // Hrvatski
+   "",    // Eesti
+   "",       // Dansk
+   "",Støeda       // Èesky (Czech)
    },
   {"Thursday",     // English
    "Donnerstag",   // Deutsch
-   "èetrtek",      // Slovenski
-   "Giovedì",      // Italiano
-   "Donderdag",    // Nederlands
-   "Quinta",       // Português
+   "",      // Slovenski
+   "",      // Italiano
+   "",    // Nederlands
+   "",       // Português
    "Jeudi",        // Français
-   "Torsdag",      // Norsk
-   "Torstai",      // suomi (Finnish)
-   "Czwartek",     // Polski
+   "",      // Norsk
+   "",      // suomi (Finnish)
+   "",     // Polski
    "Jueves",       // Español
-   "Ğİìğôç",       // ÅëëçíéêÜ (Greek)
-   "Torsdag",      // Svenska
-   "Joi",          // Românã
-   "Csütörtök",    // Magyar
-   "Dijous",       // Català
-   "ÇÕâÒÕàÓ",      // ÀãááÚØÙ (Russian)
-   "Èetvrtak",     // Hrvatski
-   "Neljapäev",    // Eesti
-   "Torsdag",      // Dansk
-   "Ètvrtek",      // Èesky (Czech)
+   "",       // ÅëëçíéêÜ (Greek)
+   "",      // Svenska
+   "",          // Românã
+   "",    // Magyar
+   "",       // Català
+   "",      // ÀãááÚØÙ (Russian)
+   "",     // Hrvatski
+   "",    // Eesti
+   "",      // Dansk
+   "",Ètvrtek      // Èesky (Czech)
    },
   {"Friday",       // English
    "Freitag",      // Deutsch
-   "Petek",        // Slovenski
-   "Venerdì",      // Italiano
-   "Vrijdag",      // Nederlands
-   "Sexta",        // Português
+   "",        // Slovenski
+   "",      // Italiano
+   "",      // Nederlands
+   "",        // Português
    "Vendredi",     // Français
-   "Fredag",       // Norsk
-   "Perjantai",    // suomi (Finnish)
-   "Pi±tek",       // Polski
+   "",       // Norsk
+   "",    // suomi (Finnish)
+   "",       // Polski
    "Viernes",      // Español
-   "ĞáñáóêåõŞ",    // ÅëëçíéêÜ (Greek)
-   "Fredag",       // Svenska
-   "Vineri",       // Românã
-   "Péntek",       // Magyar
-   "Divendres",    // Català
-   "¿ïâİØæĞ",      // ÀãááÚØÙ (Russian)
-   "Petak",        // Hrvatski
-   "Reede",        // Eesti
-   "Fredag",       // Dansk
-   "Pátek",        // Èesky (Czech)
+   "",    // ÅëëçíéêÜ (Greek)
+   "",       // Svenska
+   "",       // Românã
+   "",       // Magyar
+   "",    // Català
+   "",      // ÀãááÚØÙ (Russian)
+   "",        // Hrvatski
+   "",        // Eesti
+   "",       // Dansk
+   "",Pátek        // Èesky (Czech)
    },
   {"Saturday",     // English
    "Samstag",      // Deutsch
-   "Sobota",       // Slovenski
-   "Sabato",       // Italiano
-   "Zaterdag",     // Nederlands
-   "Sábado",       // Português
+   "",       // Slovenski
+   "",       // Italiano
+   "",     // Nederlands
+   "",       // Português
    "Samedi",       // Français
-   "Lørdag",       // Norsk
-   "Lauantai",     // suomi (Finnish)
-   "Sobota",       // Polski
+   "",       // Norsk
+   "",     // suomi (Finnish)
+   "",       // Polski
    "Sábado",       // Español
-   "ÓÜââáôï",      // ÅëëçíéêÜ (Greek)
-   "Lördag",       // Svenska
-   "Sâmbãtã",      // Românã
-   "Szombat",      // Magyar
-   "Dissabte",     // Català
-   "ÁãÑÑŞâĞ",      // ÀãááÚØÙ (Russian)
-   "Subota",       // Hrvatski
-   "Laupäev",      // Eesti
-   "Lørdag",       // Dansk
-   "Sobota",       // Èesky (Czech)
+   "",      // ÅëëçíéêÜ (Greek)
+   "",       // Svenska
+   "",      // Românã
+   "",      // Magyar
+   "",     // Català
+   "",      // ÀãááÚØÙ (Russian)
+   "",       // Hrvatski
+   "",      // Eesti
+   "",       // Dansk
+   "",Sobota       // Èesky (Czech)
    },
   {"Sunday",       // English
    "Sonntag",      // Deutsch
-   "Nedelja",      // Slovenski
-   "Domenica",     // Italiano
-   "Zondag",       // Nederlands
-   "Domingo",      // Português
+   "",      // Slovenski
+   "",     // Italiano
+   "",       // Nederlands
+   "",      // Português
    "Dimanche",     // Français
-   "Søndag",       // Norsk
-   "Sunnuntai",    // suomi (Finnish)
-   "Niedziela",    // Polski
+   "",       // Norsk
+   "",    // suomi (Finnish)
+   "",    // Polski
    "Domingo",      // Español
-   "ÊõñéáêŞ",      // ÅëëçíéêÜ (Greek)
-   "Söndag",       // Svenska
-   "Duminicã",     // Românã
-   "Vasárnap",     // Magyar
-   "Diumenge",     // Català
-   "²ŞáÚàÕáÕİìÕ",  // ÀãááÚØÙ (Russian)
-   "Nedjelja",     // Hrvatski
-   "Pühapäev",     // Eesti
-   "Søndag",       // Dansk
-   "Nedìle",       // Èesky (Czech)
+   "",      // ÅëëçíéêÜ (Greek)
+   "",       // Svenska
+   "",     // Românã
+   "",     // Magyar
+   "",     // Català
+   "",  // ÀãááÚØÙ (Russian)
+   "",     // Hrvatski
+   "",     // Eesti
+   "",       // Dansk
+   "",Nedìle       // Èesky (Czech)
    },
   {"EnigmaNG skin",             // English
    "EnigmaNG Oberfläche",       // Deutsch
    "",                          // Slovenski
-   "Interfaccia EnigmaNG",      // Italiano
-   "EnigmaNG skin",             // Nederlands
+   "",      // Italiano
+   "",             // Nederlands
    "",                          // Português
    "Skin EnigmaNG",             // Français
    "",                          // Norsk
-   "EnigmaNG-ulkoasu",          // suomi (Finnish)
-   "Skin EnigmaNG",             // Polski
+   "",          // suomi (Finnish)
+   "",             // Polski
    "Piel EnigmaNG",             // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "EnigmaNG-temat",            // Svenska
+   "",            // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "EnigmaNG áÚØİ",             // ÀãááÚØÙ (Russian)
+   "",             // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "EnigmaNG kest",             // Eesti
+   "",             // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"EnigmaNG",                  // English
    "EnigmaNG",                  // Deutsch
    "",                          // Slovenski
-   "EnigmaNG",                  // Italiano
-   "EnigmaNG",                  // Nederlands
+   "",                  // Italiano
+   "",                  // Nederlands
    "",                          // Português
    "EnigmaNG",                  // Français
    "",                          // Norsk
-   "EnigmaNG",                  // suomi (Finnish)
-   "EnigmaNG",                  // Polski
+   "",                  // suomi (Finnish)
+   "",                  // Polski
    "EnigmaNG",                  // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "EnigmaNG",                  // Svenska
+   "",                  // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "EnigmaNG",                  // ÀãááÚØÙ (Russian)
+   "",                  // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "EnigmaNG",                  // Eesti
+   "",                  // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"min",                       // English
    "min",                       // Deutsch
    "",                          // Slovenski
-   "min",                       // Italiano
-   "min",                       // Nederlands
+   "",                       // Italiano
+   "",                       // Nederlands
    "",                          // Português
    "min",                       // Français
    "",                          // Norsk
-   "min",                       // suomi (Finnish)
-   "min",                       // Polski
+   "",                       // suomi (Finnish)
+   "",                       // Polski
    "min",                       // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "min",                       // Svenska
+   "",                       // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ÜØİ",                       // ÀãááÚØÙ (Russian)
+   "",                       // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "min",                       // Eesti
+   "",                       // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Stereo",                    // English
    "Stereo",                    // Deutsch
    "",                          // Slovenski
-   "Stereo",                    // Italiano
-   "Stereo",                    // Nederlands
+   "",                    // Italiano
+   "",                    // Nederlands
    "",                          // Português
    "Stéréo",                    // Français
    "",                          // Norsk
-   "Stereo",                    // suomi (Finnish)
-   "Stereo",                    // Polski
+   "",                    // suomi (Finnish)
+   "",                    // Polski
    "Estéreo",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Stereo",                    // Svenska
+   "",                    // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ÁâÕàÕŞ",                    // ÀãááÚØÙ (Russian)
+   "",                    // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Stereo",                    // Eesti
+   "",                    // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Left",                      // English
    "Links",                     // Deutsch
    "",                          // Slovenski
-   "Sinistra",                  // Italiano
-   "Links",                     // Nederlands
+   "",                  // Italiano
+   "",                     // Nederlands
    "",                          // Português
    "Gauche",                    // Français
    "",                          // Norsk
-   "Vasen",                     // suomi (Finnish)
-   "W lewo",                    // Polski
+   "",                     // suomi (Finnish)
+   "",                    // Polski
    "Izquierda",                 // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Vänster",                   // Svenska
+   "",                   // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "»ÕÒëÙ",                     // ÀãááÚØÙ (Russian)
+   "",                     // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Vasak",                     // Eesti
+   "",                     // Eesti
    "",                          // Danske
    "",                          // Èesky (Czech)
    },
   {"Right",                     // English
    "Rechts",                    // Deutsch
    "",                          // Slovenski
-   "Destra",                    // Italiano
-   "Rechts",                    // Nederlands
+   "",                    // Italiano
+   "",                    // Nederlands
    "",                          // Português
    "Droite",                    // Français
    "",                          // Norsk
-   "Oikea",                     // suomi (Finnish)
-   "W prawo",                   // Polski
+   "",                     // suomi (Finnish)
+   "",                   // Polski
    "Derecha",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Höger",                     // Svenska
+   "",                     // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿àĞÒëÙ",                    // ÀãááÚØÙ (Russian)
+   "",                    // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Parem",                     // Eesti
+   "",                     // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Mute",                      // English
    "Stumm",                     // Deutsch
    "",                          // Slovenski
-   "Muto",                      // Italiano
-   "Geluid uit",                // Nederlands
+   "",                      // Italiano
+   "",                // Nederlands
    "",                          // Português
    "Muet",                      // Français
    "",                          // Norsk
-   "Mykistetty",                // suomi (Finnish)
-   "Wycisz",                    // Polski
+   "",                // suomi (Finnish)
+   "",                    // Polski
    "Silenciar",                 // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Dämpa",                     // Svenska
+   "",                     // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "²ëÚÛ. ×ÒãÚ",                // ÀãááÚØÙ (Russian)
+   "",                // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Hääletu",                   // Eesti
+   "",                   // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Volume",                    // English
    "Lautstärke",                // Deutsch
    "",                          // Slovenski
-   "Volume",                    // Italiano
-   "Volume",                    // Nederlands
+   "",                    // Italiano
+   "",                    // Nederlands
    "",                          // Português
    "Volume",                    // Français
    "",                          // Norsk
-   "Äänenvoimakkuus",           // suomi (Finnish)
-   "G³o¶no¶æ",                  // Polski
+   "",           // suomi (Finnish)
+   "",                  // Polski
    "Volumen",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Volym",                     // Svenska
+   "",                     // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "³àŞÜÚŞáâì",                 // ÀãááÚØÙ (Russian)
+   "",                 // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Helitugevus",               // Eesti
+   "",               // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Show channel logos",        // English
    "Kanal-Logos anzeigen",      // Deutsch
    "",                          // Slovenski
-   "Mostra loghi canali",       // Italiano
-   "Toon kanaallogo's",         // Nederlands
+   "",       // Italiano
+   "",         // Nederlands
    "",                          // Português
    "Afficher logos des chaînes", // Français
    "",                          // Norsk
-   "Näytä kanavalogot",         // suomi (Finnish)
-   "Pokazuj logo kana³u",       // Polski
+   "",         // suomi (Finnish)
+   "",       // Polski
    "Mostrar los logos de los canales",  // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Visa kanallogotyper",       // Svenska
+   "",       // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì ÛŞÓŞ ÚĞİĞÛŞÒ",   // ÀãááÚØÙ (Russian)
+   "",   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Kanalilogo näitamine",      // Eesti
+   "",      // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"  Identify channel by",       // English
    "  Kanal-Identifikation durch",        // Deutsch
    "",                          // Slovenski
-   "  Identifica canale per",     // Italiano
-   "  Kanaalidentificatie door",  // Nederlands
+   "",     // Italiano
+   "",  // Nederlands
    "",                          // Português
    "  Identifier chaîne par",     // Français
    "",                          // Norsk
-   "  Tunnista kanava",           // suomi (Finnish)
-   "  Rozpoznaj kana³ po",        // Polski
+   "",           // suomi (Finnish)
+   "",        // Polski
    "  Identificar el canal por",       // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "  Identifiera kanal med",     // Svenska
+   "",     // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "  ¾ßàÕÔÕÛïâì ÚĞİĞÛ ßŞ",       // ÀãááÚØÙ (Russian)
+   "",       // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "  Kanali tuvastamise meetod", // Eesti
+   "", // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"name",                      // English
    "Name",                      // Deutsch
    "",                          // Slovenski
-   "nome",                      // Italiano
-   "naam",                      // Nederlands
+   "",                      // Italiano
+   "",                      // Nederlands
    "",                          // Português
    "Nom",                       // Français
    "",                          // Norsk
-   "nimestä",                   // suomi (Finnish)
-   "nazwa",                     // Polski
+   "",                   // suomi (Finnish)
+   "",                     // Polski
    "nombre",                    // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "namn",                      // Svenska
+   "",                      // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "İĞ×ÒĞİØî",                  // ÀãááÚØÙ (Russian)
+   "",                  // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "nimi",                      // Eesti
+   "",                      // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"data",                      // English
    "ID",                        // Deutsch
    "",                          // Slovenski
-   "dati",                      // Italiano
-   "data",                      // Nederlands
+   "",                      // Italiano
+   "",                      // Nederlands
    "",                          // Português
    "Donnée",                    // Français
    "",                          // Norsk
-   "tiedoista",                 // suomi (Finnish)
-   "parametry",                 // Polski
+   "",                 // suomi (Finnish)
+   "",                 // Polski
    "datos",                     // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "data",                      // Svenska
+   "",                      // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ÔĞİİëÜ",                    // ÀãááÚØÙ (Russian)
+   "",                    // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "andmed",                    // Eesti
+   "",                    // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Channel logo cache size",   // English
    "Größe des Logo-Caches",     // Deutsch
    "",                          // Slovenski
-   "Dimensione cache dei loghi",// Italiano
-   "Kanaallogo cache",          // Nederlands
+   "",// Italiano
+   "",          // Nederlands
    "",                          // Português
    "Taille du cache des logos",  // Français
    "",                          // Norsk
-   "Välimuistin koko kanavalogoille",   // suomi (Finnish)
-   "Rozmiar cache dla logo kana³u",     // Polski
+   "",   // suomi (Finnish)
+   "",     // Polski
    "Tamaño de caché para los logos",   // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Cachestorlek för logotyper",        // Svenska
+   "",        // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ÀĞ×ÜÕà ÚÕèĞ ÛŞÓoâØßŞÒ ÚĞİĞÛŞÒ",  // ÀãááÚØÙ (Russian)
+   "",  // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Kanalilogo vahemälu suurus",        // Eesti
+   "",        // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Button$Flush cache",        // English
    "Cache leeren",              // Deutsch
    "",                          // Slovenski
-   "Pulisci cache",             // Italiano
-   "Cache legen",               // Nederlands
+   "",             // Italiano
+   "",               // Nederlands
    "",                          // Português
    "Supprimer cache",           // Français
    "",                          // Norsk
-   "Tyhjennä",                  // suomi (Finnish)
-   "Opró¿nij cache",            // Polski
+   "",                  // suomi (Finnish)
+   "",            // Polski
    "Limpiar caché",             // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Töm cachen",                // Svenska
+   "",                // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¾çØáâØâì ÚÕè",              // ÀãááÚØÙ (Russian)
+   "",              // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Tühjenda",                  // Eesti
+   "",                  // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Flushing channel logo cache...",    // English
    "Logo-Cache wird geleert...",        // Deutsch
    "",                          // Slovenski
-   "Pulendo la cache...",       // Italiano
-   "Kanaallogo cache legen...", // Nederlands
+   "",       // Italiano
+   "", // Nederlands
    "",                          // Português
    "Suppression du cache...",   // Français
    "",                          // Norsk
-   "Tyhjennetään välimuistia...",       // suomi (Finnish)
-   "Opró¿niam cache logo kana³u...",    // Polski
+   "",       // suomi (Finnish)
+   "",    // Polski
    "Limpiando la caché...",     // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Tömmer cachen...",          // Svenska
+   "",          // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¾çØéĞî ÚÕè...",                          // ÀãááÚØÙ (Russian)
+   "",                          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Kanalilogo vahemälu tühjendamine...",       // Eesti
+   "",       // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Languages",                 // English
    "Sprachen",                  // Deutsch
    "",                          // Slovenski
-   "Lingue",                    // Italiano
-   "Talen",                     // Nederlands
+   "",                    // Italiano
+   "",                     // Nederlands
    "",                          // Português
    "Langues",                   // Français
    "",                          // Norsk
-   "Kielet",                    // suomi (Finnish)
-   "Jêzyki",                    // Polski
+   "",                    // suomi (Finnish)
+   "",                    // Polski
    "Idiomas",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Språk",                     // Svenska
+   "",                     // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "Ï×ëÚØ",                          // ÀãááÚØÙ (Russian)
+   "",                          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Keeled",                    // Eesti
+   "",                    // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Auxiliary information",     // English
    "Zusatzinformation",         // Deutsch
    "",                          // Slovenski
-   "Informazione ausiliare",    // Italiano
-   "Hulp informatie",           // Nederlands
+   "",    // Italiano
+   "",           // Nederlands
    "",                          // Português
    "Information auxiliare",     // Français
    "",                          // Norsk
-   "Lisätiedot",                // suomi (Finnish)
-   "Informacje pomocnicze",     // Polski
+   "",                // suomi (Finnish)
+   "",     // Polski
    "Información adicional",     // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Extrainformation",          // Svenska
+   "",          // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ÀĞáè. ØİäŞàÜĞæØï",          // ÀãááÚØÙ (Russian)
+   "",          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Lisainfo",                  // Eesti
+   "",                  // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Show auxiliary information",        // English
    "Zusatzinfo anzeigen",       // Deutsch
    "",                          // Slovenski
-   "Mostra informazione ausiliare",     // Italiano
-   "Toon hulp informatie",      // Nederlands
+   "",     // Italiano
+   "",      // Nederlands
    "",                          // Português
    "Afficher informations auxiliaires",   // Français
    "",                          // Norsk
-   "Näytä lisätiedot",          // suomi (Finnish)
-   "Pokazuj informacje pomocnicze",     // Polski
+   "",          // suomi (Finnish)
+   "",     // Polski
    "Mostrar información adicional",     // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Visa extrainformation",     // Svenska
+   "",     // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì àĞáè. ØİäŞàÜĞæØî",      // ÀãááÚØÙ (Russian)
+   "",      // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Lisainfo näitamine",        // Eesti
+   "",        // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Show remaining/elapsed time",          // English
    "Zeige abgel./restl. Zeit",             // Deutsch
    "",                          // Slovenski
-   "Mostra tempo rimasto/trascorso",       // Italiano
-   "Toon resterend/gedane tijd",  // Nederlands
+   "",       // Italiano
+   "",  // Nederlands
    "",                          // Português
    "Afficher le temps écoulé/restant", // Français
    "",                          // Norsk
-   "Näytä tapahtuman aika",     // suomi (Finnish)
+   "",     // suomi (Finnish)
    "",                          // Polski
    "Mostrar tiempo restante/transcurrido",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -613,7 +613,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì ŞáâĞÒ./ßàŞèÕÔ. ÒàÕÜï",     // ÀãááÚØÙ (Russian)
+   "",     // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -622,12 +622,12 @@ const tI18nPhrase Phrases[] = {
   {"remaining",                 // English
    "restliche",                 // Deutsch
    "",                          // Slovenski
-   "rimasto",                   // Italiano
-   "resterend",                   // Nederlands
+   "",                   // Italiano
+   "",                   // Nederlands
    "",                          // Português
    "restant",                   // Français
    "",                          // Norsk
-   "jäljellä oleva",            // suomi (Finnish)
+   "",            // suomi (Finnish)
    "",                          // Polski
    "restante",                  // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -635,7 +635,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ŞáâĞÛìİëÕ",                 // ÀãááÚØÙ (Russian)
+   "",                 // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -644,12 +644,12 @@ const tI18nPhrase Phrases[] = {
   {"elapsed",                   // English
    "abgelaufene",               // Deutsch
    "",                          // Slovenski
-   "trascorso",                 // Italiano
-   "gedane",                // Nederlands
+   "",                 // Italiano
+   "",                // Nederlands
    "",                          // Português
    "écoulé",                    // Français
    "",                          // Norsk
-   "kulunut",                   // suomi (Finnish)
+   "",                   // suomi (Finnish)
    "",                          // Polski
    "transcurrido",              // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -657,7 +657,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ØáâÕÚèØÕ",                  // ÀãááÚØÙ (Russian)
+   "",                  // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -666,12 +666,12 @@ const tI18nPhrase Phrases[] = {
   {"Show info area in main menu",            // English
    "Infobereich im Hauptmenü",               // Deutsch
    "",                          // Slovenski
-   "Mostra area info nel menu principale",   // Italiano
-   "Info in hoofdmenu",         // Nederlands
+   "",   // Italiano
+   "",         // Nederlands
    "",                          // Português
    "Surface d'infos dans le menu principal",  // Français
    "",                          // Norsk
-   "Näytä infoalue päävalikossa", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Mostrar info en menú principal",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -679,7 +679,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì Øİä. ŞÑÛĞáìâ Ò ÓÛ. ÜÕİî",   // ÀãááÚØÙ (Russian)
+   "",   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -688,12 +688,12 @@ const tI18nPhrase Phrases[] = {
   {"Show marker in lists",            // English
    "Symbol vor Listeneinträgen",      // Deutsch
    "",                          // Slovenski
-   "Mostra indicatore negli elenchi", // Italiano
-   "Markering in lijsten tonen", // Nederlands
+   "", // Italiano
+   "", // Nederlands
    "",                          // Português
    "Marque devant les listes",  // Français
    "",                          // Norsk
-   "Näytä valintasymboli",      // suomi (Finnish)
+   "",      // suomi (Finnish)
    "",                          // Polski
    "Mostrar marcador en listas",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -701,7 +701,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì ÜÕâÚã Ò áßØáÚĞå",                          // ÀãááÚØÙ (Russian)
+   "",                          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -710,56 +710,56 @@ const tI18nPhrase Phrases[] = {
   {"Show progressbar",          // English
    "Fortschrittbalken anzeigen",        // Deutsch
    "",                          // Slovenski
-   "Mostra barra avanzamento",  // Italiano
-   "Progressiebalk tonen",      // Nederlands
+   "",  // Italiano
+   "",      // Nederlands
    "",                          // Português
    "Afficher barre de progression",     // Français
    "",                          // Norsk
-   "Näytä aikajana",            // suomi (Finnish)
-   "Pokazuj pasek postêpu",     // Polski
+   "",            // suomi (Finnish)
+   "",     // Polski
    "Mostrar barra de progreso", // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Visa framsteg",             // Svenska
+   "",             // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì ØİÔØÚĞâŞà ßàŞÔÒØÖÕİØï",   // ÀãááÚØÙ (Russian)
+   "",   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Edenemisriba näitamine",    // Eesti
+   "",    // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Show symbols",              // English
    "Symbole anzeigen",          // Deutsch
    "",                          // Slovenski
-   "Mostra simboli",            // Italiano
-   "Symbolen tonen",            // Nederlands
+   "",            // Italiano
+   "",            // Nederlands
    "",                          // Português
    "Afficher symbole",          // Français
    "",                          // Norsk
-   "Näytä symbolit",            // suomi (Finnish)
-   "Pokazuj symbole",           // Polski
+   "",            // suomi (Finnish)
+   "",           // Polski
    "Mostrar símbolos",          // Español
    "",                          // ÅëëçíéêÜ (Greek)
-   "Visa symboler",             // Svenska
+   "",             // Svenska
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì áØÜÒŞÛë",                          // ÀãááÚØÙ (Russian)
+   "",                          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
-   "Sümbolite näitamine",       // Eesti
+   "",       // Eesti
    "",                          // Dansk
    "",                          // Èesky (Czech)
    },
   {"Show VPS",                  // English
    "VPS anzeigen",              // Deutsch
    "",                          // Slovenski
-   "Mostra VPS",                // Italiano
-   "VPS tonen",                 // Nederlands
+   "",                // Italiano
+   "",                 // Nederlands
    "",                          // Português
    "Afficher le VPS",           // Français
    "",                          // Norsk
-   "Näytä VPS-tieto",           // suomi (Finnish)
+   "",           // suomi (Finnish)
    "",                          // Polski
    "Mostrar VPS",               // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -767,7 +767,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì VPS",                          // ÀãááÚØÙ (Russian)
+   "",                          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -776,12 +776,12 @@ const tI18nPhrase Phrases[] = {
   {"WARNING",                   // English
    "WARNUNG",                   // Deutsch
    "",                          // Slovenski
-   "ATTENZIONE",                // Italiano
-   "WAARSCHUWING",              // Nederlands
+   "",                // Italiano
+   "",              // Nederlands
    "",                          // Português
    "ATTENTION",                 // Français
    "",                          // Norsk
-   "VAROITUS",                  // suomi (Finnish)
+   "",                  // suomi (Finnish)
    "",                          // Polski
    "AVISO",                     // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -789,7 +789,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿Àµ´Ã¿Àµ¶´µ½¸µ",                          // ÀãááÚØÙ (Russian)
+   "",                          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -798,12 +798,12 @@ const tI18nPhrase Phrases[] = {
   {"Timer conflict",            // English
    "Timerkonflikt",             // Deutsch
    "",                          // Slovenski
-   "Conflitto timer",           // Italiano
-   "Timerconflict",             // Nederlands
+   "",           // Italiano
+   "",             // Nederlands
    "",                          // Português
    "Conflit de programmation",  // Français
    "",                          // Norsk
-   "Päällekkäinen ajastin",     // suomi (Finnish)
+   "",     // suomi (Finnish)
    "",                          // Polski
    "Conflicto de programación", // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -811,7 +811,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ºŞİäÛØÚâ âĞÙÜÕàĞ",                          // ÀãááÚØÙ (Russian)
+   "",                          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -820,12 +820,12 @@ const tI18nPhrase Phrases[] = {
   {"Timer conflicts",           // English
    "Timerkonflikte",            // Deutsch
    "",                          // Slovenski
-   "Conflitti timer",           // Italiano
-   "Timerconflicten",                          // Nederlands
+   "",           // Italiano
+   "",                          // Nederlands
    "",                          // Português
    "Conflits de programmation", // Français
    "",                          // Norsk
-   "Päällekkäisiä ajastimia",   // suomi (Finnish)
+   "",   // suomi (Finnish)
    "",                          // Polski
    "Conflictos de programación",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -833,7 +833,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ºŞİäÛØÚâë âĞÙÜÕàŞÒ",        // ÀãááÚØÙ (Russian)
+   "",        // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -842,12 +842,12 @@ const tI18nPhrase Phrases[] = {
   {"TIMERS",                    // English
    "TIMER",                     // Deutsch
    "",                          // Slovenski
-   "TIMER",                     // Italiano
-   "TIMER",                     // Nederlands
+   "",                     // Italiano
+   "",                     // Nederlands
    "",                          // Português
    "PROGRAMMATION",             // Français
    "",                          // Norsk
-   "AJASTIMET",                 // suomi (Finnish)
+   "",                 // suomi (Finnish)
    "",                          // Polski
    "PROGRAMACIONES",            // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -855,7 +855,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "Â°¹¼µÀË",                   // ÀãááÚØÙ (Russian)
+   "",                   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -864,12 +864,12 @@ const tI18nPhrase Phrases[] = {
   {"RERUNS OF THIS SHOW",       // English
    "WIEDERHOLUNGEN",            // Deutsch
    "",                          // Slovenski
-   "RIPETI QUESTO SHOW",        // Italiano
-   "HERHALINGEN",               // Nederlands
+   "",        // Italiano
+   "",               // Nederlands
    "",                          // Português
    "REPETITION",                // Français
    "",                          // Norsk
-   "TOISTUVAT TAPAHTUMAT",      // suomi (Finnish)
+   "",      // suomi (Finnish)
    "",                          // Polski
    "REPETICIONES",              // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -877,7 +877,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿¾²Â¾Àµ½¸Ï",                // ÀãááÚØÙ (Russian)
+   "",                // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -886,12 +886,12 @@ const tI18nPhrase Phrases[] = {
   {"*** Invalid Channel ***",   // English
    "*** Ungültiger Kanal ***",  // Deutsch
    "",                          // Slovenski
-   "*** Canale non valido ***", // Italiano
-   "*** Ongeldig Kanaal ***",   // Nederlands
+   "", // Italiano
+   "",   // Nederlands
    "",                          // Português
    "*** Chaîne non valable ***",  // Français
    "",                          // Norsk
-   "*** Virheellinen kanava ***", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "*** Canal no válido ***",   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -899,7 +899,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "*** ½ÕßàĞÒØÛìİëÙ ÚĞİĞÛ ***",   // ÀãááÚØÙ (Russian)
+   "",   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -908,12 +908,12 @@ const tI18nPhrase Phrases[] = {
   {"Size",                      // English
    "Größe",                     // Deutsch
    "",                          // Slovenski
-   "Dimensione",                // Italiano
-   "Grootte",                   // Nederlands
+   "",                // Italiano
+   "",                   // Nederlands
    "",                          // Português
    "Taille",                    // Français
    "",                          // Norsk
-   "Koko",                      // suomi (Finnish)
+   "",                      // suomi (Finnish)
    "",                          // Polski
    "Tamaño",                    // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -921,7 +921,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ÀĞ×ÜÕà",                          // ÀãááÚØÙ (Russian)
+   "",                          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -930,12 +930,12 @@ const tI18nPhrase Phrases[] = {
   {"Mute",                      // English
    "Stumm",                     // Deutsch
    "",                          // Slovenski
-   "Muto",                      // Italiano
-   "Geluid uit",                // Nederlands
-   "Muet",                      // Português
+   "",                      // Italiano
+   "",                // Nederlands
+   "",                      // Português
    "",                          // Français
    "",                          // Norsk
-   "Mykistetty",                // suomi (Finnish)
+   "",                // suomi (Finnish)
    "",                          // Polski
    "Silenciar",                 // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -943,7 +943,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "²ëÚÛ.×ÒãÚ",                 // ÀãááÚØÙ (Russian)
+   "",                 // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -952,12 +952,12 @@ const tI18nPhrase Phrases[] = {
   {"Volume",                    // English
    "Lautstärke",                // Deutsch
    "",                          // Slovenski
-   "Volume",                    // Italiano
-   "Volume",                    // Nederlands
+   "",                    // Italiano
+   "",                    // Nederlands
    "",                          // Português
    "Volume",                    // Français
    "",                          // Norsk
-   "Äänenvoimakkuus",           // suomi (Finnish)
+   "",           // suomi (Finnish)
    "",                          // Polski
    "Volumen",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -965,7 +965,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "³àŞÜÚŞáâì",                          // ÀãááÚØÙ (Russian)
+   "",                          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -974,12 +974,12 @@ const tI18nPhrase Phrases[] = {
   {"Show symbols in lists",     // English
    "Symbole in Listen",         // Deutsch
    "",                          // Slovenski
-   "Mostra simboli negli elenchi",       // Italiano
-   "Symbolen in lijsten",       // Nederlands
+   "",       // Italiano
+   "",       // Nederlands
    "",                          // Português
    "Symboles dans les listes",   // Français
    "",                          // Norsk
-   "Näytä tapahtumien symbolit",// suomi (Finnish)
+   "",// suomi (Finnish)
    "",                          // Polski
    "Mostrar símbolos en listas",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -987,7 +987,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì áØÜÒŞÛë Ò áßØáÚĞå",      // ÀãááÚØÙ (Russian)
+   "",      // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -997,12 +997,12 @@ const tI18nPhrase Phrases[] = {
   {"Try 8bpp single area",      // English
    "Einen 8bpp Bereich versuchen", // Deutsch
    "",                          // Slovenski
-   "Prova area singola a 8bpp", // Italiano
-   "Op 8bpp bereik testen",     // Nederlands
+   "", // Italiano
+   "",     // Nederlands
    "",                          // Português
    "Essayer une surface à 8bpp",// Français
    "",                          // Norsk
-   "Suosi yhtä 8bpp kuva-aluetta", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Probar un área de 8bpp",    // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1020,12 +1020,12 @@ const tI18nPhrase Phrases[] = {
   {"Show flags",                // English
    "Fahnen anzeigen",           // Deutsch
    "",                          // Slovenski
-   "Mostra segni",              // Italiano
-   "Vlaggen tonen",             // Nederlands
+   "",              // Italiano
+   "",             // Nederlands
    "",                          // Português
    "Afficher drapeau",          // Français
    "",                          // Norsk
-   "Näytä liput",               // suomi (Finnish)
+   "",               // suomi (Finnish)
    "",                          // Polski
    "Mostrar banderas",          // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1033,7 +1033,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×Ğâì äÛĞÓØ",            // ÀãááÚØÙ (Russian)
+   "",            // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1042,12 +1042,12 @@ const tI18nPhrase Phrases[] = {
   {"Show symbols in menu",      // English
    "Symbole im Menü",           // Deutsch
    "",                          // Slovenski
-   "Mostra simboli nel menu",   // Italiano
-   "Symbolen in menu",          // Nederlands
+   "",   // Italiano
+   "",          // Nederlands
    "",                          // Português
    "Symboles dans le menu",     // Français
    "",                          // Norsk
-   "Näytä valikkosymbolit",     // suomi (Finnish)
+   "",     // suomi (Finnish)
    "",                          // Polski
    "Mostrar símbolos en menú",  // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1055,7 +1055,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×Ğâì áØÜÒŞÛë Ò ÜÕİî",   // ÀãááÚØÙ (Russian)
+   "",   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1064,12 +1064,12 @@ const tI18nPhrase Phrases[] = {
   {"never",                     // English
    "nie",                       // Deutsch
    "",                          // Slovenski
-   "mai",                       // Italiano
-   "nooit",                     // Nederlands
+   "",                       // Italiano
+   "",                     // Nederlands
    "",                          // Português
    "jamais",                    // Français
    "",                          // Norsk
-   "ei koskaan",                // suomi (Finnish)
+   "",                // suomi (Finnish)
    "",                          // Polski
    "nunca",                     // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1077,7 +1077,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "İØÚŞÓÔĞ",                   // ÀãááÚØÙ (Russian)
+   "",                   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1086,12 +1086,12 @@ const tI18nPhrase Phrases[] = {
   {"always",                    // English
    "immer",                     // Deutsch
    "",                          // Slovenski
-   "sempre",                    // Italiano
-   "Altijd",                    // Nederlands
+   "",                    // Italiano
+   "",                    // Nederlands
    "",                          // Português
    "toujours",                  // Français
    "",                          // Norsk
-   "aina",                      // suomi (Finnish)
+   "",                      // suomi (Finnish)
    "",                          // Polski
    "siempre",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1099,7 +1099,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ÒáÕÓÔĞ",                    // ÀãááÚØÙ (Russian)
+   "",                    // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1108,12 +1108,12 @@ const tI18nPhrase Phrases[] = {
   {"percent",                   // English
    "Prozent",                   // Deutsch
    "",                          // Slovenski
-   "percentuale",               // Italiano
-   "procent",                   // Nederlands
+   "",               // Italiano
+   "",                   // Nederlands
    "",                          // Português
    "Pourcentage",               // Français
    "",                          // Norsk
-   "prosentti",                 // suomi (Finnish)
+   "",                 // suomi (Finnish)
    "",                          // Polski
    "porcentaje",                // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1121,7 +1121,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ßàŞæÕİâ",                   // ÀãááÚØÙ (Russian)
+   "",                   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1130,12 +1130,12 @@ const tI18nPhrase Phrases[] = {
   {"if exists",                 // English
    "wenn vorhanden",            // Deutsch
    "",                          // Slovenski
-   "se esiste",                 // Italiano
-   "wanneer aanwezig",          // Nederlands
+   "",                 // Italiano
+   "",          // Nederlands
    "",                          // Português
    "si existant",               // Français
    "",                          // Norsk
-   "jos olemassa",              // suomi (Finnish)
+   "",              // suomi (Finnish)
    "",                          // Polski
    "si existe",                 // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1143,7 +1143,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ÕáÛØ Ò İĞÛØçØØ",            // ÀãááÚØÙ (Russian)
+   "",            // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1152,12 +1152,12 @@ const tI18nPhrase Phrases[] = {
   {"Number of Reruns",          // English
    "Anzahl Wiederholungen",     // Deutsch
    "",                          // Slovenski
-   "Numero di ripetizioni",     // Italiano
-   "aantal herhalingen",        // Nederlands
+   "",     // Italiano
+   "",        // Nederlands
    "",                          // Português
    "Nombre de répétitions",     // Français
    "",                          // Norsk
-   "Uusintojen lukumäärä",      // suomi (Finnish)
+   "",      // suomi (Finnish)
    "",                          // Polski
    "Número de repeticiones",    // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1165,7 +1165,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ºŞÛØçÕáâÒŞ ßŞÒâŞàÕİØÙ",     // ÀãááÚØÙ (Russian)
+   "",     // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1174,12 +1174,12 @@ const tI18nPhrase Phrases[] = {
   {"Use Subtitle for reruns",   // English
    "Verw. Untertitel für Wdh.", // Deutsch
    "",                          // Slovenski
-   "Usa sottotitolo per ripetizioni",         // Italiano
-   "Gebr. ondertitlel voor herh.", // Nederlands
+   "",         // Italiano
+   "", // Nederlands
    "",                          // Português
    "Utilise sous-titres pour les répétitions", // Français
    "",                          // Norsk
-   "Käytä lyhyttä kuvausta uusinnoille", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Usar subtítulo para repeticiones",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1187,7 +1187,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¸áßŞÛì×. ßŞÔ×ĞÓŞÛŞÒÚØ ÔÛï ßŞÒâŞàÕİØï",   // ÀãááÚØÙ (Russian)
+   "",   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1196,12 +1196,12 @@ const tI18nPhrase Phrases[] = {
   {"Show timer conflicts",      // English
    "Timerkonflikte anzeigen",   // Deutsch
    "",                          // Slovenski
-   "Mostra conflitti timer",    // Italiano
-   "Timerconflict tonen",       // Nederlands
+   "",    // Italiano
+   "",       // Nederlands
    "",                          // Português
    "Afficher les conflits de programmation", // Français
    "",                          // Norsk
-   "Näytä päällekkäiset ajastimet", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Mostrar conflictos de programación",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1209,7 +1209,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×Ğâì ÚŞİäÛØÚâë âĞÙÜÕàŞÒ",   // ÀãááÚØÙ (Russian)
+   "",   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1218,12 +1218,12 @@ const tI18nPhrase Phrases[] = {
   {"Timer check",               // English
    "Überwachung",               // Deutsch
    "",                          // Slovenski
-   "Verifica timer",            // Italiano
-   "Monitoren",                 // Nederlands
+   "",            // Italiano
+   "",                 // Nederlands
    "",                          // Português
    "Observation de la programmation", // Français
    "",                          // Norsk
-   "Ajastimien valvonta",       // suomi (Finnish)
+   "",       // suomi (Finnish)
    "",                          // Polski
    "Comprobar programación",    // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1231,7 +1231,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿àŞÒÕàÚĞ âĞÙÜÕàŞÒ",         // ÀãááÚØÙ (Russian)
+   "",         // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1240,12 +1240,12 @@ const tI18nPhrase Phrases[] = {
   {"EPGSearch",                 // English
    "EPGSearch",                 // Deutsch
    "",                          // Slovenski
-   "Ricerca EPG",               // Italiano
-   "EPGsearch",                 // Nederlands
+   "",               // Italiano
+   "",                 // Nederlands
    "",                          // Português
    "Recherche EPG",             // Français
    "",                          // Norsk
-   "EPGSearch",                 // suomi (Finnish)
+   "",                 // suomi (Finnish)
    "",                          // Polski
    "EPGSearch",                 // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1262,12 +1262,12 @@ const tI18nPhrase Phrases[] = {
   {"Logos & Symbols",           // English
    "Logos & Symbole",           // Deutsch
    "",                          // Slovenski
-   "Loghi e simboli",           // Italiano
-   "Logo's & Symbolen",         // Nederlands
+   "",           // Italiano
+   "",         // Nederlands
    "",                          // Português
    "Logos et symboles",         // Français
    "",                          // Norsk
-   "Logot ja symbolit",         // suomi (Finnish)
+   "",         // suomi (Finnish)
    "",                          // Polski
    "Logos y símbolos",          // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1275,7 +1275,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "»ŞÓŞâØßë & áØÜÒŞÛë",        // ÀãááÚØÙ (Russian)
+   "",        // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1284,12 +1284,12 @@ const tI18nPhrase Phrases[] = {
   {"use size.vdr only",         // English
    "nur size.vdr verwenden",    // Deutsch
    "",                          // Slovenski
-   "usa solo size.vdr",         // Italiano
-   "alleen size.vdr gebruiken", // Nederlands
+   "",         // Italiano
+   "", // Nederlands
    "",                          // Português
    "utiliser seulement size.vdr",  // Français Patrice Staudt 29.03.2007
    "",                          // Norsk
-   "vain jos size.vdr",         // suomi (Finnish)
+   "",         // suomi (Finnish)
    "",                          // Polski
    "sólo usar size.vdr",        // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1297,7 +1297,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ØáßŞÛì×ŞÒĞâì âŞÛìÚŞ size.vdr",  // ÀãááÚØÙ (Russian)
+   "",  // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1306,12 +1306,12 @@ const tI18nPhrase Phrases[] = {
   {"Show recording's size",     // English
    "Aufnahmengröße anzeigen",   // Deutsch
    "",                          // Slovenski
-   "Mostra dimensione delle registrazioni",      // Italiano
-   "Opnamegrootte tonen",       // Nederlands
+   "",      // Italiano
+   "",       // Nederlands
    "",                          // Português
    "Afficher la taille des enregistrements",   // Français
    "",                          // Norsk
-   "Näytä tallenteen koko",     // suomi (Finnish)
+   "",     // suomi (Finnish)
    "",                          // Polski
    "Mostrar tamaño de grabación",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1319,7 +1319,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×ëÒĞâì àĞ×ÜÕàë ×ĞßØáÕÙ",    // ÀãááÚØÙ (Russian)
+   "",    // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1328,12 +1328,12 @@ const tI18nPhrase Phrases[] = {
   {"pixel algo",                // English
    "Pixel-Algorithmus",         // Deutsch
    "",                          // Slovenski
-   "algoritmo pixel",           // Italiano
-   "pixelalgoritme",            // Nederlands
+   "",           // Italiano
+   "",            // Nederlands
    "",                          // Português
    "Algorithme pixel",          // Français
    "",                          // Norsk
-   "näytteistys",               // suomi (Finnish)
+   "",               // suomi (Finnish)
    "",                          // Polski
    "Algoritmo píxel",           // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1341,7 +1341,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ĞÛÓŞàØâÜ ßØÚáÕÛï",          // ÀãááÚØÙ (Russian)
+   "",          // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1350,12 +1350,12 @@ const tI18nPhrase Phrases[] = {
   {"ratio algo",                // English
    "Ratio-Algorithmus",         // Deutsch
    "",                          // Slovenski
-   "algoritmo ratio",           // Italiano
-   "algoritmeratio",            // Nederlands
+   "",           // Italiano
+   "",            // Nederlands
    "",                          // Português
    "Algorithme ratio",          // Français
    "",                          // Norsk
-   "skaalaus",                  // suomi (Finnish)
+   "",                  // suomi (Finnish)
    "",                          // Polski
    "Algoritmo ratio",           // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1363,7 +1363,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ĞÛÓŞàØâÜ áŞŞâİŞèÕİØï",      // ÀãááÚØÙ (Russian)
+   "",      // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1372,12 +1372,12 @@ const tI18nPhrase Phrases[] = {
   {"zoom image",                // English
    "Zoomen",                    // Deutsch
    "",                          // Slovenski
-   "ingrandisci immagine",      // Italiano
-   "zoomen",                    // Nederlands
+   "",      // Italiano
+   "",                    // Nederlands
    "",                          // Português
    "Agrandir image",            // Français
    "",                          // Norsk
-   "zoomaus",                   // suomi (Finnish)
+   "",                   // suomi (Finnish)
    "",                          // Polski
    "Aumentar imagen",           // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1385,7 +1385,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "ÃÒÕÛØçØâì",                 // ÀãááÚØÙ (Russian)
+   "",                 // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1394,12 +1394,12 @@ const tI18nPhrase Phrases[] = {
   {"Show event/recording images",     // English
    "Bilder in EPG/Aufnahmendetails",  // Deutsch
    "",                                // Slovenski
-   "Mostra immagini evento/registrazione",      // Italiano
-   "EPG/opnamedetails tonen",         // Nederlands
+   "",      // Italiano
+   "",         // Nederlands
    "",                                // Português
    "Images dans les EPG et détails d'enregistrements",     // Français
    "",                                // Norsk
-   "Näytä kuvat lisätietovalikossa",  // suomi (Finnish)
+   "",  // suomi (Finnish)
    "",                                // Polski
    "Mostrar imágenes grabación/suceso",// Español
    "",                                // ÅëëçíéêÜ (Greek)
@@ -1407,7 +1407,7 @@ const tI18nPhrase Phrases[] = {
    "",                                // Românã
    "",                                // Magyar
    "",                                // Català
-   "¸×ŞÑàĞÖÕİØï Ò EPG",               // ÀãááÚØÙ (Russian)
+   "",               // ÀãááÚØÙ (Russian)
    "",                                // Hrvatski
    "",                                // Eesti
    "",                                // Dansk
@@ -1416,12 +1416,12 @@ const tI18nPhrase Phrases[] = {
   {"  Resize images",           // English
    "  Bildberechnung benutzt",  // Deutsch
    "",                          // Slovenski
-   "  Ridimensiona immagini",   // Italiano
-   "  Aanpassen beeldgrootte",  // Nederlands
+   "",   // Italiano
+   "",  // Nederlands
    "",                          // Português
    "  Redimensionne les images",  // Français
    "",                          // Norsk
-   "  Muokkaa kuvien kokoa",    // suomi (Finnish)
+   "",    // suomi (Finnish)
    "",                          // Polski
    "  Redimensionar imágenes",  // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1429,7 +1429,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "  ¿ÕàÕàÕèĞâì ØáßŞÛì×ãï",    // ÀãááÚØÙ (Russian)
+   "",    // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1438,12 +1438,12 @@ const tI18nPhrase Phrases[] = {
   {"  Image width",             // English
    "  Bildbreite",              // Deutsch
    "",                          // Slovenski
-   "  Lunghezza immagine",      // Italiano
-   "  Beeldbreedte",            // Nederlands
+   "",      // Italiano
+   "",            // Nederlands
    "",                          // Português
    "  Largeur",                 // Français
    "",                          // Norsk
-   "  Kuvien leveys",           // suomi (Finnish)
+   "",           // suomi (Finnish)
    "",                          // Polski
    "  Anchura de imagen",       // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1451,7 +1451,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "  ÈØàØİĞ Ø×ŞÑàĞÖÕİØï",      // ÀãááÚØÙ (Russian)
+   "",      // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1460,12 +1460,12 @@ const tI18nPhrase Phrases[] = {
   {"  Image height",            // English
    "  Bildhöhe",                // Deutsch
    "",                          // Slovenski
-   "  Altezza immagine",        // Italiano
-   "  Beeldhoogte",             // Nederlands
+   "",        // Italiano
+   "",             // Nederlands
    "",                          // Português
    "  Hauteur",                 // Français
    "",                          // Norsk
-   "  Kuvien korkeus",          // suomi (Finnish)
+   "",          // suomi (Finnish)
    "",                          // Polski
    "  Altura de imagen",        // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1473,7 +1473,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "  ²ëáŞâĞ Ø×ŞÑàĞÖÕİØï",      // ÀãááÚØÙ (Russian)
+   "",      // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1482,12 +1482,12 @@ const tI18nPhrase Phrases[] = {
   {"  Image format",            // English
    "  Bildformat",              // Deutsch
    "",                          // Slovenski
-   "  Formato immagine",        // Italiano
-   "  Beeldformaat",            // Nederlands
+   "",        // Italiano
+   "",            // Nederlands
    "",                          // Português
    "  Format d'image",          // Français
    "",                          // Norsk
-   "  Kuvaformaatti",           // suomi (Finnish)
+   "",           // suomi (Finnish)
    "",                          // Polski
    "  Formato de imagen",       // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1495,7 +1495,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "  ÄŞàÜĞâ Ø×ŞÑàĞÖÕİØï",      // ÀãááÚØÙ (Russian)
+   "",      // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1504,12 +1504,12 @@ const tI18nPhrase Phrases[] = {
   {"Full title width",          // English
    "Volle Titelbreite",         // Deutsch
    "",                          // Slovenski
-   "Lunghezza titolo completo", // Italiano
-   "Volle titelbreedte",        // Nederlands
+   "", // Italiano
+   "",        // Nederlands
    "",                          // Português
    "Largeur totale pour le titre", // Français
    "",                          // Norsk
-   "Levitä otsikkopalkki",      // suomi (Finnish)
+   "",      // suomi (Finnish)
    "",                          // Polski
    "Ancho completo para título",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1517,7 +1517,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÛİĞï èØàØİĞ ×ĞÓŞÛŞÒÚĞ",   // ÀãááÚØÙ (Russian)
+   "",   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1527,12 +1527,12 @@ const tI18nPhrase Phrases[] = {
   {"Show mail icon",            // English
    "Zeige Mail-Icon",           // Deutsch
    "",                          // Slovenski
-   "Mostra icona email",        // Italiano
-   "Mail-ikoon tonen",          // Nederlands
+   "",        // Italiano
+   "",          // Nederlands
    "",                          // Português
    "Afficher l'icône courriel",  // Français
    "",                          // Norsk
-   "Näytä sähköpostikuvake",    // suomi (Finnish)
+   "",    // suomi (Finnish)
    "",                          // Polski
    "Mostrar icono correo",      // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1540,7 +1540,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "¿ŞÚĞ×Ğâì ×İĞçŞÚ íÛÕÚâ. ßŞçâë",   // ÀãááÚØÙ (Russian)
+   "",   // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1549,12 +1549,12 @@ const tI18nPhrase Phrases[] = {
   {"only if new mail present",  // English
    "nur bei neuer Mail",        // Deutsch
    "",                          // Slovenski
-   "solo se presenti nuove email",          // Italiano
-   "alleen bij nieuwe mail",    // Nederlands
+   "",          // Italiano
+   "",    // Nederlands
    "",                          // Português
    "juste lors d'un courriel",  // Français
    "",                          // Norsk
-   "jos uutta postia",          // suomi (Finnish)
+   "",          // suomi (Finnish)
    "",                          // Polski
    "sólo si hay nuevo correo",  // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1562,7 +1562,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Românã
    "",                          // Magyar
    "",                          // Català
-   "âŞÛìÚŞ ßàØ İŞÒŞÜ áŞŞÑéÕİØØ",  // ÀãááÚØÙ (Russian)
+   "",  // ÀãááÚØÙ (Russian)
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
@@ -1573,12 +1573,12 @@ const tI18nPhrase Phrases[] = {
   {"Animated Text",             // English
    "Bewegter Text",             // Deutsch
    "",                          // Slovenski
-   "Testo animato",             // Italiano
-   "Geanimeerde tekst",         // Nederlands
+   "",             // Italiano
+   "",         // Nederlands
    "",                          // Português
    "Texte défilant",            // Français
    "",                          // Norsk
-   "Tekstien elävöinti",        // suomi (Finnish)
+   "",        // suomi (Finnish)
    "",                          // Polski
    "Texto animado",             // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1595,12 +1595,12 @@ const tI18nPhrase Phrases[] = {
   {"Enable",                    // English
    "Verwenden",                 // Deutsch
    "",                          // Slovenski
-   "Abilita",                   // Italiano
-   "Toelaten",                  // Nederlands
+   "",                   // Italiano
+   "",                  // Nederlands
    "",                          // Português
    "Permettre",                 // Français
    "",                          // Norsk
-   "Käytä elävöintiä",          // suomi (Finnish)
+   "",          // suomi (Finnish)
    "",                          // Polski
    "Activar",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1617,12 +1617,12 @@ const tI18nPhrase Phrases[] = {
   {"  Scoll behaviour",         // English
    "  Scroll-Verhalten",        // Deutsch
    "",                          // Slovenski
-   "  Comportamento scorrimento",// Italiano
-   "  Scroll gedrag",            // Nederlands
+   "",// Italiano
+   "",            // Nederlands
    "",                          // Português
    "  Comportement de défilement", // Français
    "",                          // Norsk
-   "  Vieritystapa",            // suomi (Finnish)
+   "",            // suomi (Finnish)
    "",                          // Polski
    "  Comportamiento del scroll",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1639,12 +1639,12 @@ const tI18nPhrase Phrases[] = {
   {"to the left",               // English
    "nach links",                // Deutsch
    "",                          // Slovenski
-   "verso la sinistra",         // Italiano
-   "naar links",                // Nederlands
+   "",         // Italiano
+   "",                // Nederlands
    "",                          // Português
    "vers la gauche",            // Français
    "",                          // Norsk
-   "vasemmalle",                // suomi (Finnish)
+   "",                // suomi (Finnish)
    "",                          // Polski
    "a la izquierda",            // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1661,12 +1661,12 @@ const tI18nPhrase Phrases[] = {
   {"left and right",            // English
    "links und rechts",          // Deutsch
    "",                          // Slovenski
-   "sinistra e destra",         // Italiano
-   "links en rechts",           // Nederlands
+   "",         // Italiano
+   "",           // Nederlands
    "",                          // Português
    "gauche et droite",          // Français
    "",                          // Norsk
-   "edestakaisin",              // suomi (Finnish)
+   "",              // suomi (Finnish)
    "",                          // Polski
    "izquierda y derecha",       // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1683,12 +1683,12 @@ const tI18nPhrase Phrases[] = {
   {"  Scroll delay (ms)",       // English
    "  Scroll-Verzögerung (ms)", // Deutsch
    "",                          // Slovenski
-   "  Ritardo scorrimento (ms)",// Italiano
-   "  Scrollvertraging (ms)",   // Nederlands
+   "",// Italiano
+   "",   // Nederlands
    "",                          // Português
    "  Délai de défilement (ms)",// Français
    "",                          // Norsk
-   "  Vierityksen viive (ms)",  // suomi (Finnish)
+   "",  // suomi (Finnish)
    "",                          // Polski
    "  Retardo del scroll (ms)", // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1705,12 +1705,12 @@ const tI18nPhrase Phrases[] = {
   {"  Scroll pause (ms)",       // English
    "  Scroll-Pause (ms)",       // Deutsch
    "",                          // Slovenski
-   "  Pausa scorrimento (ms)",  // Italiano
-   "  Scrollpause (ms)",        // Nederlands
+   "",  // Italiano
+   "",        // Nederlands
    "",                          // Português
    "  Pause de défilement (ms)",// Français
    "",                          // Norsk
-   "  Vierityksen tauko (ms)",  // suomi (Finnish)
+   "",  // suomi (Finnish)
    "",                          // Polski
    "  Pausa del scroll (ms)",   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1727,12 +1727,12 @@ const tI18nPhrase Phrases[] = {
   {"  Blink pause (ms)",        // English
    "  Blink-Pause (ms)",        // Deutsch
    "",                          // Slovenski
-   "  Pausa lampeggiante (ms)", // Italiano
-   "  Blinkpauze (ms)",         // Nederlands
+   "", // Italiano
+   "",         // Nederlands
    "",                          // Português
    "  Pause de clignotement (ms)",// Français
    "",                          // Norsk
-   "  Vilkutuksen tauko (ms)",  // suomi (Finnish)
+   "",  // suomi (Finnish)
    "",                          // Polski
    "  Pausa del parpadeo (ms)", // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1749,12 +1749,12 @@ const tI18nPhrase Phrases[] = {
   {"  Scroll OSD title",        // English
    "  OSD Titel scrollen",      // Deutsch
    "",                          // Slovenski
-   "  Scorri titolo OSD",       // Italiano
-   "  OSD titel scrollen",      // Nederlands
+   "",       // Italiano
+   "",      // Nederlands
    "",                          // Português
    "  Défilement dans le titre du OSD",  // Français
    "",                          // Norsk
-   "  Vieritä valikon otsikkoa",// suomi (Finnish)
+   "",// suomi (Finnish)
    "",                          // Polski
    "  Título OSD del scroll",   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1771,12 +1771,12 @@ const tI18nPhrase Phrases[] = {
   {"  Scroll info area",        // English
    "  Infobereich scrollen",    // Deutsch
    "",                          // Slovenski
-   "  Scorri informazioni area",// Italiano
-   "  Infobereik scrollen",     // Nederlands
+   "",// Italiano
+   "",     // Nederlands
    "",                          // Português
    "  Barre de défilement dans la surface info",   // Français
    "",                          // Norsk
-   "  Vieritä infoaluetta",     // suomi (Finnish)
+   "",     // suomi (Finnish)
    "",                          // Polski
    "  Scroll para el área info",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1793,12 +1793,12 @@ const tI18nPhrase Phrases[] = {
   {"  Scroll active list items",  // English
    "  Aktive Listenzeile scrollen", // Deutsch
    "",                          // Slovenski
-   "  Scorri valori lista attivi",// Italiano
-   "  Lijst aktieve punten scrollen",  // Nederlands
+   "",// Italiano
+   "",  // Nederlands
    "",                          // Português
    "  Barre de défilement dans la liste active",  // Français
    "",                          // Norsk
-   "  Vieritä aktiivista valintaa", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "  Scroll para la lista activa",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1815,12 +1815,12 @@ const tI18nPhrase Phrases[] = {
   {"  Scroll other items",      // English
    "  Andere Bereiche scrollen", // Deutsch
    "",                          // Slovenski
-   "  Scorri altri valori",     // Italiano
-   "  Ander bereik scrollen",   // Nederlands
+   "",     // Italiano
+   "",   // Nederlands
    "",                          // Português
    "  Barre de défilement dans d'autres parties",  // Français
    "",                          // Norsk
-   "  Vieritä muita alueita",   // suomi (Finnish)
+   "",   // suomi (Finnish)
    "",                          // Polski
    "  Scroll para otros datos", // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1838,12 +1838,12 @@ const tI18nPhrase Phrases[] = {
   {"  Show symbols in menu",    // English
    "  Symbole im Menü",         // Deutsch
    "",                          // Slovenski
-   "  Mostra simboli nel menu", // Italiano
-   "  Symbolen in menu",   // Nederlands
+   "", // Italiano
+   "",   // Nederlands
    "",                          // Português
    "  dans le menu",  		// Français
    "",                          // Norsk
-   "  Näytä symbolit valikossa", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "  Mostrar símbolos en menú",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1860,12 +1860,12 @@ const tI18nPhrase Phrases[] = {
   {"  Show symbols in replay",  // English
    "  Symbole bei der Wiedergabe", // Deutsch
    "",                          // Slovenski
-   "  Mostra simboli in esecuzione",// Italiano
-   "  Symbolen bij weergave",   // Nederlands
+   "",// Italiano
+   "",   // Nederlands
    "",                          // Português
    "  dans lecture",		// Français
    "",                          // Norsk
-   "  Näytä symbolit toistettaessa", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "  Mostrar símbolos en reproducción",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1882,12 +1882,12 @@ const tI18nPhrase Phrases[] = {
   {"  Show symbols in messages",  // English
    "  Symbole bei den Meldungen", // Deutsch
    "",                          // Slovenski
-   "  Mostra simboli nei messaggi",// Italiano
-   "  Symbolen bij berichten",  // Nederlands
+   "",// Italiano
+   "",  // Nederlands
    "",                          // Português
    "  dans les messages", 	// Français
    "",                          // Norsk
-   "  Näytä symbolit viesteissä", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "  Mostrar símbolos en mensajes",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1904,12 +1904,12 @@ const tI18nPhrase Phrases[] = {
   {"  Show symbols in audio",   // English
    "  Symbole bei Audio",       // Deutsch
    "",                          // Slovenski
-   "  Mostra simboli in audio", // Italiano
-   "  Symbolen bij audio",      // Nederlands
+   "", // Italiano
+   "",      // Nederlands
    "",                          // Português
    "  dans audio",        	// Français
    "",                          // Norsk
-   "  Näytä symbolit äänivalikossa", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "  Mostrar símbolos en audio",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1926,12 +1926,12 @@ const tI18nPhrase Phrases[] = {
   {"Fonts",                     // English
    "Fonts",                     // Deutsch
    "",                          // Slovenski
-   "Caratteri",                 // Italiano
-   "Fonts",                     // Nederlands
+   "",                 // Italiano
+   "",                     // Nederlands
    "",                          // Português
    "Les polices",               // Français
    "",                          // Norsk
-   "Kirjasintyypit",            // suomi (Finnish)
+   "",            // suomi (Finnish)
    "",                          // Polski
    "Fuentes",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1948,12 +1948,12 @@ const tI18nPhrase Phrases[] = {
   {"OSD title",                 // English
    "OSD Titel",                 // Deutsch
    "",                          // Slovenski
-   "Titolo OSD",                // Italiano
-   "OSD titel",                 // Nederlands
+   "",                // Italiano
+   "",                 // Nederlands
    "",                          // Português
    "Titre OSD",                 // Français
    "",                          // Norsk
-   "Valikon otsikko",           // suomi (Finnish)
+   "",           // suomi (Finnish)
    "",                          // Polski
    "Título OSD",                // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1970,12 +1970,12 @@ const tI18nPhrase Phrases[] = {
   {"Date",                      // English
    "Datum",                     // Deutsch
    "",                          // Slovenski
-   "Data",                      // Italiano
-   "Datum",                     // Nederlands
+   "",                      // Italiano
+   "",                     // Nederlands
    "",                          // Português
    "Date",                      // Français
    "",                          // Norsk
-   "Päiväys",                   // suomi (Finnish)
+   "",                   // suomi (Finnish)
    "",                          // Polski
    "Fecha",                     // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -1992,12 +1992,12 @@ const tI18nPhrase Phrases[] = {
   {"Messages",                  // English
    "Meldungen",                 // Deutsch
    "",                          // Slovenski
-   "Messaggi",                  // Italiano
-   "Meldingen",                 // Nederlands
+   "",                  // Italiano
+   "",                 // Nederlands
    "",                          // Português
    "Message",                   // Français
    "",                          // Norsk
-   "Viestit",                   // suomi (Finnish)
+   "",                   // suomi (Finnish)
    "",                          // Polski
    "Mensajes",                  // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2014,12 +2014,12 @@ const tI18nPhrase Phrases[] = {
   {"Help keys",                 // English
    "Farb-Tasten",               // Deutsch
    "",                          // Slovenski
-   "Tasti d'aiuto",             // Italiano
-   "Help toetsen",              // Nederlands
+   "",             // Italiano
+   "",              // Nederlands
    "",                          // Português
    "Touche couleur",            // Français
    "",                          // Norsk
-   "Värinäppäimet",             // suomi (Finnish)
+   "",             // suomi (Finnish)
    "",                          // Polski
    "Botones de ayuda",          // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2036,12 +2036,12 @@ const tI18nPhrase Phrases[] = {
   {"Channelinfo: title",        // English
    "Kanalinfo: Titel",          // Deutsch
    "",                          // Slovenski
-   "Info canale: titolo",       // Italiano
-   "Kanaalinfo: titel",         // Nederlands
+   "",       // Italiano
+   "",         // Nederlands
    "",                          // Português
    "Chaîne info: titre ",        // Français
    "",                          // Norsk
-   "Kanavatieto: ohjelman nimi",// suomi (Finnish)
+   "",// suomi (Finnish)
    "",                          // Polski
    "Info canal: título",        // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2058,12 +2058,12 @@ const tI18nPhrase Phrases[] = {
   {"Channelinfo: subtitle",     // English
    "Kanalinfo: Untertitel",     // Deutsch
    "",                          // Slovenski
-   "Info canale: sottotitolo",  // Italiano
-   "Kanaalinfo: ondertitel",    // Nederlands
+   "",  // Italiano
+   "",    // Nederlands
    "",                          // Português
    "Chaîne info: sous-titres",    // Français
    "",                          // Norsk
-   "Kanavatieto: ohjelman kuvaus", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Info canal: subtítulo",     // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2080,12 +2080,12 @@ const tI18nPhrase Phrases[] = {
   {"Channelinfo: language",     // English
    "Kanalinfo: Sprache",        // Deutsch
    "",                          // Slovenski
-   "Info canale: lingua",       // Italiano
-   "Kanaalinfo: taal",          // Nederlands
+   "",       // Italiano
+   "",          // Nederlands
    "",                          // Português
    "Chaîne info: langue",       // Français
    "",                          // Norsk
-   "Kanavatieto: kieli",        // suomi (Finnish)
+   "",        // suomi (Finnish)
    "",                          // Polski
    "Info canal: idioma",        // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2102,12 +2102,12 @@ const tI18nPhrase Phrases[] = {
   {"List items",                // English
    "Listen",                    // Deutsch
    "",                          // Slovenski
-   "Elenco",                    // Italiano
-   "Lijsten",                   // Nederlands
+   "",                    // Italiano
+   "",                   // Nederlands
    "",                          // Português
    "Liste",                     // Français
    "",                          // Norsk
-   "Listat",                    // suomi (Finnish)
+   "",                    // suomi (Finnish)
    "",                          // Polski
    "Listado",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2124,12 +2124,12 @@ const tI18nPhrase Phrases[] = {
   {"Info area: timers title",   // English
    "Infobereich: Timer Titel",  // Deutsch
    "",                          // Slovenski
-   "Info area: titoli timer",   // Italiano
-   "Infobereik: Timertitel",    // Nederlands
+   "",   // Italiano
+   "",    // Nederlands
    "",                          // Português
    "Barre d'information: Titre Progammation",   // Français
    "",                          // Norsk
-   "Infoalue: ajastimen otsikko", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Área info: título programación",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2146,12 +2146,12 @@ const tI18nPhrase Phrases[] = {
   {"Info area: timers text",    // English
    "Infobereich: Timer Text",   // Deutsch
    "",                          // Slovenski
-   "Info area: testo timer",    // Italiano
-   "Infobereik: Timertekst",    // Nederlands
+   "",    // Italiano
+   "",    // Nederlands
    "",                          // Português
    "Barre d'information: Text programmation",   // Français
    "",                          // Norsk
-   "Infoalue: ajastimen leipäteksti", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Área info: texto programación",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2168,12 +2168,12 @@ const tI18nPhrase Phrases[] = {
   {"Info area: warning title",  // English
    "Infobereich: Warnung Titel", // Deutsch
    "",                          // Slovenski
-   "Info area: titolo avviso",  // Italiano
-   "Infobereik: waarschuwing titel", // Nederlands
+   "",  // Italiano
+   "", // Nederlands
    "",                          // Português
    "Barre d'information: avertissement titre",   // Français
    "",                          // Norsk
-   "Infoalue: varoituksen otsikko",  // suomi (Finnish)
+   "",  // suomi (Finnish)
    "",                          // Polski
    "Área info: título aviso",   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2190,12 +2190,12 @@ const tI18nPhrase Phrases[] = {
   {"Info area: warning text",   // English
    "Infobereich: Warnung Text", // Deutsch
    "",                          // Slovenski
-   "Info area: testo avviso",   // Italiano
-   "Infobereik: waarschuwing tekst",  // Nederlands
+   "",   // Italiano
+   "",  // Nederlands
    "",                          // Português
    "Barre d'information: texte d'avertissement",      // Français
    "",                          // Norsk
-   "Infoalue: varoituksen leipäteksti", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Área info: texto aviso",    // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2212,12 +2212,12 @@ const tI18nPhrase Phrases[] = {
   {"Details: title",            // English
    "Details: Titel",            // Deutsch
    "",                          // Slovenski
-   "Dettagli: titolo",          // Italiano
-   "Details: titel",            // Nederlands
+   "",          // Italiano
+   "",            // Nederlands
    "",                          // Português
    "Détails: Titre",            // Français
    "",                          // Norsk
-   "Lisätiedot: ohjelman nimi", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Detalles: título",          // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2234,12 +2234,12 @@ const tI18nPhrase Phrases[] = {
   {"Details: subtitle",         // English
    "Details: Untertitel",       // Deutsch
    "",                          // Slovenski
-   "Dettagli: sottotitolo",     // Italiano
-   "Details: ondertitel",       // Nederlands
+   "",     // Italiano
+   "",       // Nederlands
    "",                          // Português
    "Détails: Sous-titre",       // Français
    "",                          // Norsk
-   "Lisätiedot: ohjelman kuvaus", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Detalles: subtítulo",       // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2256,12 +2256,12 @@ const tI18nPhrase Phrases[] = {
   {"Details: date",             // English
    "Details: Datumszeile",      // Deutsch
    "",                          // Slovenski
-   "Dettagli: data",            // Italiano
-   "Details: datum",            // Nederlands
+   "",            // Italiano
+   "",            // Nederlands
    "",                          // Português
    "Détails: date",             // Français
    "",                          // Norsk
-   "Lisätiedot: päivämäärä",    // suomi (Finnish)
+   "",    // suomi (Finnish)
    "",                          // Polski
    "Detalles: fecha",           // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2278,12 +2278,12 @@ const tI18nPhrase Phrases[] = {
   {"Details: text",             // English
    "Details: Text",             // Deutsch
    "",                          // Slovenski
-   "Dettagli: testo",           // Italiano
-   "Details: tekst",            // Nederlands
+   "",           // Italiano
+   "",            // Nederlands
    "",                          // Português
    "Détails: Texte",             // Français
    "",                          // Norsk
-   "Lisätiedot: leipäteksti",   // suomi (Finnish)
+   "",   // suomi (Finnish)
    "",                          // Polski
    "Detalles: texto",           // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2300,12 +2300,12 @@ const tI18nPhrase Phrases[] = {
   {"Replay: times",             // English
    "Wiedergabe: Zeiten",        // Deutsch
    "",                          // Slovenski
-   "Esecuzione: volte",         // Italiano
-   "Weergave: tijden",          // Nederlands
+   "",         // Italiano
+   "",          // Nederlands
    "",                          // Português
    "Rejouer : périodes",        // Français
    "",                          // Norsk
-   "Toisto: kellonajat",        // suomi (Finnish)
+   "",        // suomi (Finnish)
    "",                          // Polski
    "Reproducir: veces",         // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2322,12 +2322,12 @@ const tI18nPhrase Phrases[] = {
   {"Default OSD Font",          // English
    "Std. OSD Font",             // Deutsch
    "",                          // Slovenski
-   "Carattere OSD predefinito", // Italiano
-   "Standaard OSDfont",         // Nederlands
+   "", // Italiano
+   "",         // Nederlands
    "",                          // Português
    "OSD standard",              // Français
    "",                          // Norsk
-   "oletuskirjasintyyppi",      // suomi (Finnish)
+   "",      // suomi (Finnish)
    "",                          // Polski
    "Fuente OSD por defecto",    // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2344,12 +2344,12 @@ const tI18nPhrase Phrases[] = {
   {"Default Fixed Size Font",   // English
    "Std. Schrift mit fester Breite", // Deutsch
    "",                          // Slovenski
-   "Carattere dimensione fissa pred.",// Italiano
-   "Standaardwaarde font",     // Nederlands
+   "",// Italiano
+   "",     // Nederlands
    "",                          // Português
    "Largeur fixe standard",     // Français
    "",                          // Norsk
-   "tasavälinen kirjasintyyppi", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Fuente tamaño fijo por defecto",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2366,12 +2366,12 @@ const tI18nPhrase Phrases[] = {
   {"Default Small Font",        // English
    "Std. kleine Schrift",       // Deutsch
    "",                          // Slovenski
-   "Carattere piccolo pred.",   // Italiano
-   "Standaard klein font",      // Nederlands
+   "",   // Italiano
+   "",      // Nederlands
    "",                          // Português
    "Petite police standard",           // Français
    "",                          // Norsk
-   "pieni kirjasintyyppi",      // suomi (Finnish)
+   "",      // suomi (Finnish)
    "",                          // Polski
    "Fuente pequeña por defecto",// Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2388,12 +2388,12 @@ const tI18nPhrase Phrases[] = {
   {"Channel:",                  // English
    "Kanal:",                    // Deutsch
    "",                          // Slovenski
-   "Canale:",                   // Italiano
-   "Kanaal:",                   // Nederlands
+   "",                   // Italiano
+   "",                   // Nederlands
    "",                          // Português
    "Chaîne:",                   // Français
    "",                          // Norsk
-   "Kanava:",                   // suomi (Finnish)
+   "",                   // suomi (Finnish)
    "",                          // Polski
    "Canal:",                    // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2410,12 +2410,12 @@ const tI18nPhrase Phrases[] = {
   {"Search pattern:",           // English
    "Suchmuster:",               // Deutsch
    "",                          // Slovenski
-   "Modello di ricerca:",       // Italiano
-   "Zoekpatroon:",              // Nederlands
+   "",       // Italiano
+   "",              // Nederlands
    "",                          // Português
    "Modèle de recherche",       // Français
    "",                          // Norsk
-   "Hakutapa:",                 // suomi (Finnish)
+   "",                 // suomi (Finnish)
    "",                          // Polski
    "Buscar patrón:",            // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2432,12 +2432,12 @@ const tI18nPhrase Phrases[] = {
   {"No timer check",            // English
    "Ohne Überwachung",          // Deutsch
    "",                          // Slovenski
-   "Nessun timer verifica",     // Italiano
-   "Geen controle",             // Nederlands
+   "",     // Italiano
+   "",             // Nederlands
    "",                          // Português
    "Sans surveillance",         // Français
    "",                          // Norsk
-   "Ei valvontaa",              // suomi (Finnish)
+   "",              // suomi (Finnish)
    "",                          // Polski
    "No comprobar programación", // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2454,12 +2454,12 @@ const tI18nPhrase Phrases[] = {
   {"General",                   // English
    "Allgemein",                 // Deutsch
    "",                          // Slovenski
-   "Generale",                  // Italiano
-   "Algemeen",                  // Nederlands
+   "",                  // Italiano
+   "",                  // Nederlands
    "",                          // Português
    "Généralité",                // Français
    "",                          // Norsk
-   "Yleiset",                   // suomi (Finnish)
+   "",                   // suomi (Finnish)
    "",                          // Polski
    "General",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2476,12 +2476,12 @@ const tI18nPhrase Phrases[] = {
   {"Name",                      // English
    "Name",                      // Deutsch
    "",                          // Slovenski
-   "Nome",                      // Italiano
-   "Naam",                      // Nederlands
+   "",                      // Italiano
+   "",                      // Nederlands
    "",                          // Português
    "Nom",                       // Français
    "",                          // Norsk
-   "Nimi",                      // suomi (Finnish)
+   "",                      // suomi (Finnish)
    "",                          // Polski
    "Nombre",                    // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2498,12 +2498,12 @@ const tI18nPhrase Phrases[] = {
   {"Width",                     // English
    "Weite",                     // Deutsch
    "",                          // Slovenski
-   "Larghezza",                 // Italiano
-   "Breedte",                   // Nederlands
+   "",                 // Italiano
+   "",                   // Nederlands
    "",                          // Português
    "Largeur",                   // Français
    "",                          // Norsk
-   "Leveys",                    // suomi (Finnish)
+   "",                    // suomi (Finnish)
    "",                          // Polski
    "Anchura",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2520,12 +2520,12 @@ const tI18nPhrase Phrases[] = {
   {"Button$Set",                // English
    "Ändern",                    // Deutsch
    "",                          // Slovenski
-   "Imposta",                   // Italiano
-   "Veranderen",                // Nederlands
+   "",                   // Italiano
+   "",                // Nederlands
    "",                          // Português
    "Changer",                   // Français
    "",                          // Norsk
-   "Aseta",                     // suomi (Finnish)
+   "",                     // suomi (Finnish)
    "",                          // Polski
    "Cambiar",                   // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2542,12 +2542,12 @@ const tI18nPhrase Phrases[] = {
   {"TrueType Font",             // English
    "TrueType Schrift",          // Deutsch
    "",                          // Slovenski
-   "Carattere TrueType",        // Italiano
-   "TrueType Font",             // Nederlands
+   "",        // Italiano
+   "",             // Nederlands
    "",                          // Português
    "TrueType",                  // Français
    "",                          // Norsk
-   "TrueType-kirjasin",         // suomi (Finnish)
+   "",         // suomi (Finnish)
    "",                          // Polski
    "Fuente TrueType",           // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2564,12 +2564,12 @@ const tI18nPhrase Phrases[] = {
   {"No TTF support!",            // English
    "TTF nicht unterstützt!",    // Deutsch
    "",                          // Slovenski
-   "Nessun supporto TTF!",      // Italiano
-   "TTF niet ondersteund!",   // Nederlands
+   "",      // Italiano
+   "",   // Nederlands
    "",                          // Português
    "Les polices TrueType ne sont pas supportées!", // Français
    "",                          // Norsk
-   "Ei TrueType-kirjasintyyppi tukea!", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "¡Sin soporte TTF!",         // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2586,12 +2586,12 @@ const tI18nPhrase Phrases[] = {
   {"Fixed Font",                // English
    "Schrift mit fester Breite", // Deutsch
    "",                          // Slovenski
-   "Carattere fisso",           // Italiano
-   "Vaste waarde font",         // Nederlands
+   "",           // Italiano
+   "",         // Nederlands
    "",                          // Português
    "Police avec une largeur fixe", // Français
    "",                          // Norsk
-   "Tasavälinen kirjasintyyppi", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Fuente Fija",               // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2609,12 +2609,12 @@ const tI18nPhrase Phrases[] = {
   {"Dynamic OSD size",          // English
    "Dynamische OSD-Größe",      // Deutsch
    "",                          // Slovenski
-   "Dimensione OSD dinamica",   // Italiano
-   "Dynamisch OSDgrootte",      // Nederlands
+   "",   // Italiano
+   "",      // Nederlands
    "",                          // Português
    "Taille OSD dynamique",      // Français
    "",                          // Norsk
-   "Vaihtuva kuvaruutunäytön koko", // suomi (Finnish)
+   "", // suomi (Finnish)
    "",                          // Polski
    "Tamaño OSD dinámico",       // Español
    "",                          // ÅëëçíéêÜ (Greek)
@@ -2632,12 +2632,12 @@ const tI18nPhrase Phrases[] = {
   {"No TrueType fonts installed!",          // English
    "Keine TrueType Schriften installiert!", // Deutsch
    "",                                      // Slovenski
-   "Nessun carattere TrueType installato!", // Italiano
-   "Geen TrueType fonten geinstalleerd!",   // Nederlands
+   "", // Italiano
+   "",   // Nederlands
    "",                                      // Português
    "Il n'y a pas de police TrueType d'installé!",  // Français
    "",                                      // Norsk
-   "TrueType-kirjasintyyppejä ei löydy!",   // suomi (Finnish)
+   "",   // suomi (Finnish)
    "",                                      // Polski
    "¡Ninguna fuente TrueType instalada!",   // Español
    "",                                      // ÅëëçíéêÜ (Greek)

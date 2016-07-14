@@ -10,12 +10,12 @@ const tI18nPhrase Phrases[] = {
 	{	"VDR Streaming Server",		// English
 		"VDR Streaming Server",		// Deutsch
 		"",		// Slovenski
-		"Server trasmissione VDR",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Serveur de streaming VDR",		// Français
 		"",		// Norsk
-		"VDR-suoratoistopalvelin",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika / Greek
@@ -23,7 +23,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"VDR Streaming áÕàÒÕà",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -35,12 +35,12 @@ const tI18nPhrase Phrases[] = {
 	{	"VTP Streaming Client",		// English
 		"VTP Streaming Client",		// Deutsch
 		"",		// Slovenski
-		"Client trasmissione VTP",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Client de streaming VTP",		// Français
 		"",		// Norsk
-		"VTP-suoratoistoasiakas ",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika / Greek
@@ -48,7 +48,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"VTP Streaming ÚÛØÕİâ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -60,12 +60,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Start VDR-to-VDR Server",		// English
 		"VDR-zu-VDR Server starten",		// Deutsch
 		"",		// Slovenski
-		"Avvia Server VDR-a-VDR",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Démarrer le serveur VDR-to-VDR",		// Français
 		"",		// Norsk
-		"Käynnistä VDR-palvelin",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika / Greek
@@ -73,7 +73,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÁâĞàâ VDR-to-VDR áÕàÒÕà",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -85,12 +85,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Start HTTP Server",		// English
 		"HTTP Server starten",		// Deutsch
 		"",		// Slovenski
-		"Avvia Server HTTP",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Démarrer le serveur HTTP",		// Français
 		"",		// Norsk
-		"Käynnistä HTTP-palvelin",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -98,7 +98,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÁâĞàâ HTTP áÕàÒÕàĞ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -110,12 +110,12 @@ const tI18nPhrase Phrases[] = {
 	{	"HTTP Streamtype",		// English
 		"HTTP Streamtyp",		// Deutsch
 		"",		// Slovenski
-		"Tipo flusso HTTP",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Type de Streaming HTTP",		// Français
 		"",		// Norsk
-		"HTTP-lähetysmuoto",		// Suomi
+		"",		// Suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -123,7 +123,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÂØß HTTP ßŞâŞÚĞ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -135,12 +135,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Start Client",		// English
 		"Client starten",		// Deutsch
 		"",		// Slovenski
-		"Avvia Client",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Démarrage du client",		// Français
 		"",		// Norsk
-		"Käynnistä VDR-asiakas",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -148,7 +148,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÁâĞàâ ÚÛØÕİâĞ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -160,12 +160,12 @@ const tI18nPhrase Phrases[] = {
 	{	"VDR-to-VDR Server Port",		// English
 		"Port des VDR-zu-VDR Servers",		// Deutsch
 		"",		// Slovenski
-		"Porta Server VDR-a-VDR",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Port du serveur VDR-to-VDR",		// Français
 		"",		// Norsk
-		"VDR-palvelimen portti",		// Suomi
+		"",		// Suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -173,7 +173,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"VDR-to-VDR ßŞàâ áÕàÒÕàĞ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -185,12 +185,12 @@ const tI18nPhrase Phrases[] = {
 	{	"HTTP Server Port",		// English
 		"Port des HTTP Servers",		// Deutsch
 		"",		// Slovenski
-		"Porta Server HTTP",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Port du serveur HTTP",		// Français
 		"",		// Norsk
-		"HTTP-palvelimen portti",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -198,7 +198,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"HTTP áÕàÒÕà ¿Şàâ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -210,12 +210,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Maximum Number of Clients",		// English
 		"Maximalanzahl an Clients",		// Deutsch
 		"",		// Slovenski
-		"Numero massimo di Client",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Nombre maximun de clients",		// Français
 		"",		// Norsk
-		"Suurin sallittu asiakkaiden määrä",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -223,7 +223,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"¼ĞÚá. ÚŞÛØçÕáâÒŞ ÚÛØÕİâŞÒ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -235,12 +235,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Remote IP",		// English
 		"IP der Gegenseite",		// Deutsch
 		"",		// Slovenski
-		"Indirizzo IP del Server",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Adresse IP du serveur",		// Français
 		"",		// Norsk
-		"Etäkoneen IP-osoite",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -248,7 +248,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÃÔĞÛÕİİëÙ IP",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -260,12 +260,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Remote Port",		// English
 		"Port der Gegenseite",		// Deutsch
 		"",		// Slovenski
-		"Porta Server Remoto",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Port du serveur",		// Français
 		"",		// Norsk
-		"Etäkoneen portti",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -273,7 +273,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÃÔĞÛÕİİëÙ ßŞàâ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -285,12 +285,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Common Settings",		// English
 		"Allgemeines",		// Deutsch
 		"",		// Slovenski
-		"Impostazioni comuni",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Paramètres communs",		// Français
 		"",		// Norsk
-		"Yleiset asetukset",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -298,7 +298,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"½ĞáâàŞÙÚØ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -310,12 +310,12 @@ const tI18nPhrase Phrases[] = {
 	{	"VDR-to-VDR Server",		// English
 		"VDR-zu-VDR Server",		// Deutsch
 		"",		// Slovenski
-		"Server VDR-a-VDR",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"VDR-to-VDR Serveur",		// Français
 		"",		// Norsk
-		"VDR-palvelin",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -323,7 +323,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"VDR-to-VDR áÕàÒÕà",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -335,12 +335,12 @@ const tI18nPhrase Phrases[] = {
 	{	"HTTP Server",		// English
 		"HTTP Server",		// Deutsch
 		"",		// Slovenski
-		"Server HTTP",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Serveur HTTP",		// Français
 		"",		// Norsk
-		"HTTP-palvelin",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -348,7 +348,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"HTTP áÕàÒÕà",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -360,12 +360,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Minimum Priority",		// English
 		"Minimale Priorität",		// Deutsch
 		"",		// Slovenski
-		"Priorità minima",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"",		// Français
 		"",		// Norsk
-		"Pienin prioriteetti",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -385,12 +385,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Maximum Priority",		// English
 		"Maximale Priorität",		// Deutsch
 		"",		// Slovenski
-		"Priorità massima",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"",		// Français
 		"",		// Norsk
-		"Suurin prioriteetti",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -410,12 +410,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Suspend Live TV",		// English
 		"Live-TV pausieren",		// Deutsch
 		"",		// Slovenski
-		"Sospendi TV dal vivo",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Suspendre Live TV",		// Français
 		"",		// Norsk
-		"Pysäytä suora TV-lähetys",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -423,7 +423,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"¾áâĞİŞÒÚĞ Live TV",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -435,12 +435,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Suspend behaviour",		// English
 		"Pausierverhalten",		// Deutsch
 		"",		// Slovenski
-		"Tipo sospensione",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Suspendre",		// Français
 		"",		// Norsk
-		"Pysäytystoiminto",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -448,7 +448,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"¿ŞÒÕÔÕİØÕ ŞáâĞİŞÒÚØ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -460,12 +460,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Offer suspend mode",		// English
 		"Pausieren anbieten",		// Deutsch
 		"",		// Slovenski
-		"Offri mod. sospensione",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Offrir le mode suspendre",		// Français
 		"",		// Norsk
-		"tyrkytä",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -473,7 +473,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"¿àÕÔÛĞÓĞâì ŞáâĞİŞÒÚã",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -485,12 +485,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Always suspended",		// English
 		"Immer pausiert",		// Deutsch
 		"",		// Slovenski
-		"Sempre sospeso",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Toujours suspendre",		// Français
 		"",		// Norsk
-		"aina",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -498,7 +498,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"²áÕÓÔĞ ŞáâĞİŞÒÛÕİ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -510,12 +510,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Never suspended",		// English
 		"Nie pausiert",		// Deutsch
 		"",		// Slovenski
-		"Mai sospeso",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Jamais suspendre",		// Français
 		"",		// Norsk
-		"ei koskaan",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -523,7 +523,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"½ØÚŞÓÔĞ İÕ ŞáâĞİŞÒÛÕİ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -535,12 +535,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Suspend Server",		// English
 		"Server pausieren",		// Deutsch
 		"",		// Slovenski
-		"Sospendi Server",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Suspendre le serveur",		// Français
 		"",		// Norsk
-		"Pysäytä palvelin",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -548,7 +548,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"¾áâĞİŞÒØâì áÕàÒÕà",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -560,12 +560,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Server is suspended",		// English
 		"Server ist pausiert",		// Deutsch
 		"",		// Slovenski
-		"Server sospeso",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Le serveur est suspendu",		// Français
 		"",		// Norsk
-		"Palvelin on pysäytetty",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -573,7 +573,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÁÕàÒÕà ŞáâĞİŞÒÛÕİ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -585,12 +585,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Couldn't suspend Server!",		// English
 		"Konnte Server nicht pausieren!",		// Deutsch
 		"",		// Slovenski
-		"Impossibile sospendere il server!",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Impossible de suspendre le serveur!",		// Français
 		"",		// Norsk
-		"Palvelinta ei onnistuttu pysäyttämään!",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -598,7 +598,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"İÕ ÜŞÓã ŞáâĞİŞÒØâì áÕàÒÕà",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -610,12 +610,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Client may suspend",		// English
 		"Client darf pausieren",		// Deutsch
 		"",		// Slovenski
-		"Permetti sospensione al Client",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Le client peut suspendre",		// Français
 		"",		// Norsk
-		"Asiakas saa pysäyttää palvelimen",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -623,7 +623,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ºÛØÕİâ ÜŞÖÕâ ŞáâĞİĞÒÛØÒĞâì",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -635,12 +635,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Bind to IP",		// English
 		"Binde an IP",		// Deutsch
 		"",		// Slovenski
-		"IP associati",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Attacher aux IP",		// Français
 		"",		// Norsk
-		"Sido osoitteeseen",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -648,7 +648,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"¿àØáŞÕÔØİØâìáï Ú IP",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -660,12 +660,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Filter Streaming",		// English
 		"Filter-Daten streamen",		// Deutsch
 		"",		// Slovenski
-		"Filtra trasmissione",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Filtre streaming",		// Français
 		"",		// Norsk
-		"Suodatetun tiedon suoratoisto",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -673,7 +673,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÄØÛìâà ßŞâŞÚĞ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -685,12 +685,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Streaming active",		// English
 		"Streamen im Gange",		// Deutsch
 		"",		// Slovenski
-		"Trasmissione attiva",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Streaming actif",		// Français
 		"",		// Norsk
-		"Suoratoistopalvelin aktiivinen",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -698,7 +698,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÁâàØÜØİÓ ĞÚâØÒÕİ",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -710,12 +710,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Hide Mainmenu Entry",		// English
 		"Hauptmenüeintrag verstecken",		// Deutsch
 		"",		// Slovenski
-		"Nascondi voce menu principale",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"Masquer dans le menu principal",		// Français
 		"",		// Norsk
-		"Piilota valinta päävalikosta",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -723,7 +723,7 @@ const tI18nPhrase Phrases[] = {
 		"",		// Romaneste
 		"",		// Magyar
 		"",		// Catala
-		"ÁßàïâĞâì Ò ÓÛĞÒİŞÜ ÜÕİî",		// Russian
+		"",		// Russian
 		"",		// Hrvatski
 		"",		// Eesti
 		"",		// Dansk
@@ -735,12 +735,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Multicast Streaming Server",		// English
 		"Multicast Streaming Server",		// Deutsch
 		"",		// Slovenski
-		"Server trasmissione Multicast",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"",		// Français
 		"",		// Norsk
-		"Multicast-suoratoistopalvelin",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -760,12 +760,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Start IGMP Server",		// English
 		"IGMP Server starten",		// Deutsch
 		"",		// Slovenski
-		"Avvia Server IGMP",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"",		// Français
 		"",		// Norsk
-		"Käynnistä IGMP-palvelin",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -785,12 +785,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Multicast Client Port",		// English
 		"Port des Multicast Clients",		// Deutsch
 		"",		// Slovenski
-		"Porta Client Multicast",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"",		// Français
 		"",		// Norsk
-		"Multicast-portti",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika
@@ -810,12 +810,12 @@ const tI18nPhrase Phrases[] = {
 	{	"Multicast Streamtype",		// English
 		"Multicast Streamtyp",		// Deutsch
 		"",		// Slovenski
-		"Tipo flusso Multicast",		// Italiano
+		"",		// Italiano
 		"",		// Nederlands
 		"",		// Português
 		"",		// Français
 		"",		// Norsk
-		"Multicast-lähetysmuoto",		// suomi
+		"",		// suomi
 		"",		// Polski
 		"",		// Español
 		"",		// Ellinika

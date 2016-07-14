@@ -19,7 +19,7 @@ const tI18nPhrase StreamplayerPhrases[] = {
     "",
     "<pas de date disponible>",
     "",
-    "<päivämäärä ei ole saatavilla>",
+    "",
     "",
     "<Fecha no disponible>",
     "",
@@ -54,7 +54,7 @@ const tI18nPhrase StreamplayerPhrases[] = {
     "",
     "<pas de déscriptif disponible>",
     "",
-    "<kuvaus ei ole saatavilla>",
+    "",
     "",
     "<Descripción no disponible>",
     "",
@@ -89,7 +89,7 @@ const tI18nPhrase StreamplayerPhrases[] = {
     "",
     "<pas de titre disponible>",
     "",
-    "<otsikko ei ole saatavilla>",
+    "",
     "",
     "<Título no disponible>",
     "",
@@ -124,7 +124,7 @@ const tI18nPhrase StreamplayerPhrases[] = {
     "",
     "Impossible de charger le flux!",
     "",
-    "RSS-virtaa ei pystytä vastaanottamaan!",
+    "",
     "",
     "¡Error descargando datos RSS!",
     "",
@@ -159,7 +159,7 @@ const tI18nPhrase StreamplayerPhrases[] = {
     "",
     "Impossible d'analyser le flux RSS!",
     "",
-    "RSS-virtaa ei pystytä tulkkaamaan!",
+    "",
     "",
     "¡Error leyendo datos RSS!",
     "",
@@ -194,7 +194,7 @@ const tI18nPhrase StreamplayerPhrases[] = {
     "",
     "Nom du proxy HTTP",
     "",
-    "HTTP-välityspalvelimen osoite",
+    "",
     "",
     "Servidor proxy HTTP",
     "",
@@ -229,7 +229,7 @@ const tI18nPhrase StreamplayerPhrases[] = {
     "",
     "Cacher le menu",
     "",
-    "Piilota valinta päävalikosta",
+    "",
     "",
     "Ocultar entrada en menú principal",
     "",
@@ -264,254 +264,9 @@ const tI18nPhrase StreamplayerPhrases[] = {
     "",
     "N'afficher que les éléments existants",
     "",
-    "Piilota tyhjät elementit",
+    "",
     "",
     "Ocultar elementos vacíos",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "RSS Reader",
-    "RSS-Reader",
-    "",
-    "",
-    "",
-    "",
-    "Lecteur de flux RSS",
-    "",
-    "RSS-lukija",
-    "",
-    "Lector RSS",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "RSS Reader for OSD",
-    "RSS-Reader für OSD",
-    "",
-    "",
-    "",
-    "",
-    "Lecteur RSS pour OSD",
-    "",
-    "RSS-lukija kuvaruutunäytölle",
-    "",
-    "Lector RSS para OSD",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "RSS item",
-    "RSS-Artikel",
-    "",
-    "",
-    "",
-    "",
-    "Article RSS",
-    "",
-    "RSS-artikkeli",
-    "",
-    "Artículo RSS",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Select RSS item",
-    "Auswahl RSS-Artikel",
-    "",
-    "",
-    "",
-    "",
-    "Choix de article RSS",
-    "",
-    "Valitse RSS-artikkeli",
-    "",
-    "Seleccione artículo RSS",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Select RSS stream",
-    "Auswahl RSS-Stream",
-    "",
-    "",
-    "",
-    "",
-    "Choix des flux RSS",
-    "",
-    "Valitse RSS-virta",
-    "",
-    "Seleccione fuente RSS",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Unknown error!",
-    "Unbekannt Fehler!",
-    "",
-    "",
-    "",
-    "",
-    "Erreur inconnue",
-    "",
-    "Tuntematon virhe!",
-    "",
-    "¡Error desconocido!",
-    "",
-    "",
-    "",
-    "",
-    "",
-#if VDRVERSNUM >= 10302
-    "",
-#endif
-#if VDRVERSNUM >= 10307
-    "",
-#endif
-#if VDRVERSNUM >= 10313
-    "",
-#endif
-#if VDRVERSNUM >= 10316
-    "",
-#endif
-#if VDRVERSNUM >= 10342
-    "",
-#endif
-#if VDRVERSNUM >= 10502
-    "",
-#endif
-  },
-  { "Use HTTP proxy server",
-    "HTTP Proxy benutzen",
-    "",
-    "",
-    "",
-    "",
-    "Utiliser le Proxy HTTP",
-    "",
-    "Käytä HTTP-välityspalvelinta",
-    "",
-    "Usar servidor proxy HTTP",
     "",
     "",
     "",
@@ -547,6 +302,251 @@ const tI18nPhrase StreamplayerPhrases[] = {
     "",
     "",
     "Cargando elemento RSS...",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "RSS Reader",
+    "RSS-Reader",
+    "",
+    "",
+    "",
+    "",
+    "Lecteur de flux RSS",
+    "",
+    "",
+    "",
+    "Lector RSS",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "RSS Reader for OSD",
+    "RSS-Reader für OSD",
+    "",
+    "",
+    "",
+    "",
+    "Lecteur RSS pour OSD",
+    "",
+    "",
+    "",
+    "Lector RSS para OSD",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "RSS item",
+    "RSS-Artikel",
+    "",
+    "",
+    "",
+    "",
+    "Article RSS",
+    "",
+    "",
+    "",
+    "Artículo RSS",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Select RSS item",
+    "Auswahl RSS-Artikel",
+    "",
+    "",
+    "",
+    "",
+    "Choix de article RSS",
+    "",
+    "",
+    "",
+    "Seleccione artículo RSS",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Select RSS stream",
+    "Auswahl RSS-Stream",
+    "",
+    "",
+    "",
+    "",
+    "Choix des flux RSS",
+    "",
+    "",
+    "",
+    "Seleccione fuente RSS",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Unknown error!",
+    "Unbekannt Fehler!",
+    "",
+    "",
+    "",
+    "",
+    "Erreur inconnue",
+    "",
+    "",
+    "",
+    "¡Error desconocido!",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Use HTTP proxy server",
+    "HTTP Proxy benutzen",
+    "",
+    "",
+    "",
+    "",
+    "Utiliser le Proxy HTTP",
+    "",
+    "",
+    "",
+    "Usar servidor proxy HTTP",
     "",
     "",
     "",

@@ -12,10 +12,10 @@ msgstr ""
 "Report-Msgid-Bugs-To: <nobody@nowhere.org>\n"
 "POT-Creation-Date: 2008-12-20 10:45+0100\n"
 "PO-Revision-Date: 2009-01-10 19:32+0100\n"
-"Last-Translator: Nival MichaÃ«l\n"
+"Last-Translator: Nival Michaël\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Channel (press OK): "
@@ -25,10 +25,10 @@ msgid "Page"
 msgstr "Page"
 
 msgid "not found until now, searching"
-msgstr "pas trouvÃ©"
+msgstr "pas trouvé"
 
 msgid "Displays teletext on the OSD"
-msgstr "Affiche le tÃ©lÃ©texte sur l'OSD"
+msgstr "Affiche le télétexte sur l'OSD"
 
 msgid "Teletext"
 msgstr "Teletexte"
@@ -40,13 +40,13 @@ msgid "Half page"
 msgstr "Demi-Page"
 
 msgid "Change channel"
-msgstr "Changer la chaÃ®ne"
+msgstr "Changer la chaîne"
 
 msgid "Switch background"
-msgstr "Change le fond d'Ã©cran"
+msgstr "Change le fond d'écran"
 
 msgid "Jump to..."
-msgstr "Aller Ã ..."
+msgstr "Aller à..."
 
 msgid "Background transparency"
 msgstr "Fond transparent"
@@ -55,7 +55,7 @@ msgid "Show clock"
 msgstr "Afficher l'heure"
 
 msgid "Auto-update pages"
-msgstr "Mise Ã  jour des pages"
+msgstr "Mise à jour des pages"
 
 msgid "OSD height"
 msgstr "Hauteur OSD"

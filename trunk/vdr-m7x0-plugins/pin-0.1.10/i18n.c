@@ -22,7 +22,7 @@ const tI18nPhrase Phrases[] = {
    {  "Childlock plugin",       // English
 		"Kindersicherung",        // Deutsch
 		"", // Slovenski
-		"Filtro famiglia", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Protection Parentale",   // Français
@@ -33,15 +33,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Gyerekzár", // Magyar
+		"", // Magyar
 		"", // Catala
-		"±ÛŞÚØàŞÒÚĞ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {  "Pin Code: ", // English
 		"Pin Eingabe: ", // Deutsch
 		"", // Slovenski
-		"Codice Pin", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Le code pin", // Français
@@ -52,15 +52,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Pin kód", // Magyar
+		"", // Magyar
 		"", // Catala
-		"¿Øİ ÚŞÔ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {  "Skip protected channel silent", // English
 		"Gesperrte Kanäle ohne Meldung überspringen", // Deutsch
 		"", // Slovenski
-		"Salta i canali protetti in modo silenzioso", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Les chaînes protégés seront ignorées sans infos", // Français
@@ -71,15 +71,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Zárolt csatornákat nem megjeleníteni", // Magyar
+		"", // Magyar
 		"", // Catala
-		"¿àŞßãáâØâì ×ĞéØéÕİİëÙ ÚĞİĞÛ âØåŞ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {  "Pin inactivity time [min]", // English
 		"Sperre aktivieren nach Inaktivität [min]", // Deutsch
 		"", // Slovenski
-		"Tempo inattività Pin [min]", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Protection après une inactivitées de [min]", // Français
@@ -90,15 +90,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Zár aktiválása [perc] inaktivitás után", // Magyar
+		"", // Magyar
 		"", // Catala
-		"ÂĞÙÜÕà İÕĞÚâØÒİŞáâØ ßØİ [ÜØİãâ]", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {  "Ignoring invalid pin", // English
 		"Ungültiger code", // Deutsch
 		"", // Slovenski
-		"Ignora pin non valido", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Le code est fau", // Français
@@ -109,15 +109,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Érvénytelen pin kód", // Magyar
+		"", // Magyar
 		"", // Catala
-		"¸ÓİŞàØàŞÒĞâì İÕÒÕàİëÙ ßØİ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Please enable pin protection first", // English
 		"Bitte zuerst Kindersicherung freischalten", // Deutsch
 		"", // Slovenski
-		"Per favore abilita prima la protezione pin", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Entrée le code de protection", // Français
@@ -128,15 +128,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Kérem oldja fel a gyerekzárat", // Magyar
+		"", // Magyar
 		"", // Catala
-		"¿ŞÖĞÛãÙáâĞ ÒÒÕÔØâÕ áİĞçĞÛĞ ßØİ ÚŞÔ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Recording protected, enter pin code first", // English
 		"Aufnahme gesperrt, bitte Kindersicherung freischalten", // Deutsch
 		"", // Slovenski
-		"Registrazione protetta, inserisci prima il codice pin", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Entrée le code de protection", // Français
@@ -147,15 +147,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Kérem oldja fel a gyerekzárat", // Magyar
+		"", // Magyar
 		"", // Catala
-		"¿ŞÖĞÛãÙáâĞ ÒÒÕÔØâÕ áİĞçĞÛĞ ßØİ ÚŞÔ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"already protected", // English
 		"bereits gesperrt", // Deutsch
 		"", // Slovenski
-		"già protetto", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Est déjà protégés", // Français
@@ -166,15 +166,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Korábban már zárolt", // Magyar
+		"", // Magyar
 		"", // Catala
-		"ãÖÕ ×ĞÑÛŞÚØàŞÒĞİŞ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"added to protection list", // English
 		"hinzugefügt", // Deutsch
 		"", // Slovenski
-		"aggiunto all'elenco protezione", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"ajouter", // Français
@@ -185,15 +185,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Zároltakhoz hozzáadva", // Magyar
+		"", // Magyar
 		"", // Catala
-		"ÔŞÑĞÒÛÕİŞ Ò áßØáŞÚ ÑÛŞÚØàŞÒÚØ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Recording protected", // English
 		"Aufnahme gesperrt", // Deutsch
 		"", // Slovenski
-		"Registrazione protetta", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Engeristrement protégés, d'abord mettre le code parental", // Français
@@ -204,15 +204,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Felvételhez fel kell oldja a gyerekzárat", // Magyar
+		"", // Magyar
 		"", // Catala
-		"·ĞßØáì ×ĞÑÛŞÚØàŞÒĞİĞ, ÒÒÕÔØâÕ áİĞçĞÛĞ ßØİ ÚŞÔ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"channel is protected", // English
 		"Kanal gesperrt", // Deutsch
 		"", // Slovenski
-		"Canale protetto", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Chaînes protégée", // Français
@@ -223,15 +223,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Csatorna zárolva", // Magyar
+		"", // Magyar
 		"", // Catala
-		"ÚĞİĞÛ ×ĞÑÛŞÚØàŞÒĞİ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"broadcast is protected", // English
 		"Sendung gesperrt", // Deutsch
 		"", // Slovenski
-		"Trasmissione protetta", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Emission protégée", // Français
@@ -242,15 +242,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Adás zárolva", // Magyar
+		"", // Magyar
 		"", // Catala
-		"àĞÔØŞßÕàÕÔĞçĞ ×ĞÑÛŞÚØàŞÒĞİĞ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Activated pin protection", // English
 		"Kindersicherung aktiviert", // Deutsch
 		"", // Slovenski
-		"Attivato filtro famiglia", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Activé la protection parentale", // Français
@@ -261,15 +261,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Gyerekzár aktiválva", // Magyar
+		"", // Magyar
 		"", // Catala
-		"°ÚâØÒØàŞÒĞâì ÑÛŞÚØàŞÒÚã", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Childlock",       // English
 		"Kindersicherung", // Deutsch
 		"", // Slovenski
-		"Filtro famiglia", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Protection parentale", // Français
@@ -280,15 +280,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Gyerekzár", // Magyar
+		"", // Magyar
 		"", // Catala
-		"±ÛŞÚØàŞÒÚĞ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Delete", // English
 		"Löschen", // Deutsch
 		"", // Slovenski
-		"Elimina", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Effacer", // Français
@@ -299,15 +299,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Törlés", // Magyar
+		"", // Magyar
 		"", // Catala
-		"ÃÔĞÛØâì", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Add", // English
 		"Hinzufügen", // Deutsch
 		"", // Slovenski
-		"Aggiungi", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Ajouter", // Français
@@ -318,15 +318,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Hozzáadás", // Magyar
+		"", // Magyar
 		"", // Catala
-		"´ŞÑĞÒØâì", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Protected channels", // English
 		"Gesperrte Kanäle", // Deutsch
 		"", // Slovenski
-		"Canali protetti", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Chaînes protégés", // Français
@@ -337,15 +337,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Lezárt csatornák", // Magyar
+		"", // Magyar
 		"", // Catala
-		"·ĞÑÛŞÚØàŞÒĞİİëÕ ÚĞİĞÛë", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Protected broadcasts", // English
 		"Gesperrte Sendungen", // Deutsch
 		"", // Slovenski
-		"Trasmissioni protette", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Emissions protégés", // Français
@@ -356,15 +356,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Lezárt adások", // Magyar
+		"", // Magyar
 		"", // Catala
-		"·ĞÑÛŞÚØàŞÒĞİİëÕ àĞÔØŞßÕàÕÔĞçØ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Plugin protections", // English
 		"Sperren / Entsperren", // Deutsch
 		"", // Slovenski
-		"Plugin di protezione", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Plugin sous protection", // Français
@@ -383,7 +383,7 @@ const tI18nPhrase Phrases[] = {
    {	"Add current channel to protection list", // English
 		"Aktuellen Kanal sperren", // Deutsch
 		"", // Slovenski
-		"Aggiungi canale attuale all'elenco protezione", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Ajouter la chaîne actuelle à la protection parentale", // Français
@@ -394,15 +394,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Aktuális csatorna zároltakhoz adása", // Magyar
+		"", // Magyar
 		"", // Catala
-		"´ŞÑĞÒØâì âÕÚãéØÙ ÚĞİĞÛ Ò ÑÛŞÚ.  áßØáŞÚ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Add current broadcast to protection list", // English
 		"Aktuelle Sendung sperren", // Deutsch
 		"", // Slovenski
-		"Aggiungi trasmissione attuale all'elenco protezione", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Ajouter l'émission actuelle dans la liste de protection parentale", // Français
@@ -413,15 +413,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Aktuális adás zároltakhoz adása", // Magyar
+		"", // Magyar
 		"", // Catala
-		"´ŞÑĞÒØâì âÕÚãéãî àĞÔØŞßÕàÕÔĞçã Ò ÑÛŞÚ. áßØáŞÚ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Edit channel locks", // English
 		"Gesperrte Kanäle bearbeiten", // Deutsch
 		"", // Slovenski
-		"Modifica protezioni canale", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Editer la liste de chaînes", // Français
@@ -432,15 +432,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Zárolt csatornák szerkesztése", // Magyar
+		"", // Magyar
 		"", // Catala
-		"ÀÕÔĞÚâØàŞÒĞâì ÑÛŞÚØàŞÒÚã ÚĞİĞÛĞ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Edit broadcast locks", // English
 		"Gesperrte Sendungen bearbeiten", // Deutsch
 		"", // Slovenski
-		"Modifica protezioni trasmissione", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Editer les émissions protégés", // Français
@@ -451,15 +451,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Zárolt adások szerkesztése", // Magyar
+		"", // Magyar
 		"", // Catala
-		"ÀÕÔĞÚâØàŞÒĞâì ÑÛŞÚØàŞÒÚã àĞÔØŞßÕàÕÔĞçØ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Edit plugin locks", // English
 		"Systemeinstellungen bearbeiten", // Deutsch
 		"", // Slovenski
-		"Modifica protezioni plugin", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"editer la protection de plugin", // Français
@@ -478,7 +478,7 @@ const tI18nPhrase Phrases[] = {
    {	"Edit menu locks", // English
 		"Menüsperren bearbeiten", // Deutsch
 		"", // Slovenski
-		"Modifica protezioni menu", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"", // Français
@@ -497,7 +497,7 @@ const tI18nPhrase Phrases[] = {
    {	"Lock setup", // English
 		"Setup sperren", // Deutsch
 		"", // Slovenski
-		"Blocca impostazioni", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"", // Français
@@ -516,7 +516,7 @@ const tI18nPhrase Phrases[] = {
    {	"Unlock setup", // English
 		"Setup entsperren", // Deutsch
 		"", // Slovenski
-		"Sblocca impostazioni", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"", // Français
@@ -535,7 +535,7 @@ const tI18nPhrase Phrases[] = {
    {	"Activate childlock", // English
 		"Kindersicherung aktivieren", // Deutsch
 		"", // Slovenski
-		"Attiva filtro famiglia", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Protection parentales activée", // Français
@@ -546,15 +546,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Gyerekzár aktiválása", // Magyar
+		"", // Magyar
 		"", // Catala
-		"°ÚâØÒØàŞÒĞâì ÑÛŞÚØàŞÒÚã", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Remove entry?", // English
 		"Eintrag entfernen?", // Deutsch
 		"", // Slovenski
-		"Rimuovere valore?", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Enlever?", // Français
@@ -565,15 +565,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Törlése?", // Magyar
+		"", // Magyar
 		"", // Catala
-		"ÚĞİĞÛ?", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Edit", // English
 		"Bearbeiten", // Deutsch
 		"", // Slovenski
-		"Modifica", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Editer", // Français
@@ -586,13 +586,13 @@ const tI18nPhrase Phrases[] = {
 		"", // Romaneste
 		"", // Magyar
 		"", // Catala
-		"ÀÕÔĞÚâØàŞÒĞâì", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Lock active", // English
 		"Sperre aktiv", // Deutsch
 		"", // Slovenski
-		"Protezione attiva", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Protection active", // Français
@@ -603,15 +603,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Zár aktiválva", // Magyar
+		"", // Magyar
 		"", // Catala
-		"±ÛŞÚØàŞÒÚĞ ĞÚâØÒİĞ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"already in list", // English
 		"bereits in der Liste", // Deutsch
 		"", // Slovenski
-		"già nell'elenco", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
  		"Toujours dans la liste", // Français
@@ -622,15 +622,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"mar a zaroltak között", // Magyar
+		"", // Magyar
 		"", // Catala
-		"ãÖÕ Ò áßØáÚÕ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Protected channels", // English
 		"Gesperrte Kanäle", // Deutsch
 		"", // Slovenski
-		"Canali protetti", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Protéger chaîne", // Français
@@ -641,15 +641,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Védett csatornák", // Magyar
+		"", // Magyar
 		"", // Catala
-		"·ĞÑÛŞÚØàŞÒĞİİëÕ ÚĞİĞÛë", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"Protected broadcasts", // English
 		"Gesperrte Sendungen", // Deutsch
 		"", // Slovenski
-		"Trasmissioni protette", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Proteger l'émission", // Français
@@ -660,15 +660,15 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Védett adások", // Magyar
+		"", // Magyar
 		"", // Catala
-		"·ĞÑÛŞÚØàŞÒĞİİëÕ àĞÔØŞßÕàÕÔĞçØ", // Russian
+		"", // Russian
 		"", // Croatian
 	},
    {	"regular expression", // English
 		"regulärer Ausdruck", // Deutsch
 		"", // Slovenski
-		"espressione regolare", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Expression régulière", // Français
@@ -679,7 +679,7 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"reguláris kifejezés", // Magyar
+		"", // Magyar
 		"", // Catala
 		"", // Russian
 		"", // Croatian
@@ -687,7 +687,7 @@ const tI18nPhrase Phrases[] = {
    {	"Keyword", // English
 		"Suchbegriff", // Deutsch
 		"", // Slovenski
-		"Parola chiave", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Expression de recherche", // Français
@@ -698,7 +698,7 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Kulcsszó", // Magyar
+		"", // Magyar
 		"", // Catala
 		"", // Russian
 		"", // Croatian
@@ -706,7 +706,7 @@ const tI18nPhrase Phrases[] = {
    {	"includes", // English
 		"enthält", // Deutsch
 		"", // Slovenski
-		"include", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"incluent", // Français
@@ -717,7 +717,7 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"tartalmazza", // Magyar
+		"", // Magyar
 		"", // Catala
 		"", // Russian
 		"", // Croatian
@@ -725,7 +725,7 @@ const tI18nPhrase Phrases[] = {
    {	"exact", // English
 		"entspricht", // Deutsch
 		"", // Slovenski
-		"esattamente", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"exactement", // Français
@@ -736,7 +736,7 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"megeggyezik", // Magyar
+		"", // Magyar
 		"", // Catala
 		"", // Russian
 		"", // Croatian
@@ -744,7 +744,7 @@ const tI18nPhrase Phrases[] = {
    {	"start with", // English
 		"beginnt mit", // Deutsch
 		"", // Slovenski
-		"inizia con", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"", // Français
@@ -763,7 +763,7 @@ const tI18nPhrase Phrases[] = {
    {	"Title", // English
 		"Titel", // Deutsch
 		"", // Slovenski
-		"Titolo", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Titre", // Français
@@ -774,7 +774,7 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Cím", // Magyar
+		"", // Magyar
 		"", // Catala
 		"", // Russian
 		"", // Croatian
@@ -782,7 +782,7 @@ const tI18nPhrase Phrases[] = {
    {	"always", // English
 		"immer", // Deutsch
 		"", // Slovenski
-		"sempre", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"toujours", // Français
@@ -793,7 +793,7 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Mindig", // Magyar
+		"", // Magyar
 		"", // Catala
 		"", // Russian
 		"", // Croatian
@@ -801,7 +801,7 @@ const tI18nPhrase Phrases[] = {
    {	"intelligent", // English
 		"intelligent", // Deutsch
 		"", // Slovenski
-		"intelligente", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"intelligent", // Français
@@ -812,7 +812,7 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"inteligens", // Magyar
+		"", // Magyar
 		"", // Catala
 		"", // Russian
 		"", // Croatian
@@ -820,7 +820,7 @@ const tI18nPhrase Phrases[] = {
    {	"never", // English
 		"nie", // Deutsch
 		"", // Slovenski
-		"mai", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"jamais", // Français
@@ -831,7 +831,7 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"soha", // Magyar
+		"", // Magyar
 		"", // Catala
 		"", // Russian
 		"", // Croatian
@@ -839,7 +839,7 @@ const tI18nPhrase Phrases[] = {
    {	"Autoprotection of recordings", // English
 		"Automatischer Schutz der Aufnahmen", // Deutsch
 		"", // Slovenski
-		"Protezione automatica registrazioni", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Protection automatique des enregistrement", // Français
@@ -850,7 +850,7 @@ const tI18nPhrase Phrases[] = {
 		"", // Ellinika
 		"", // Svenska
 		"", // Romaneste
-		"Automatikus védelem felvétel ellen", // Magyar
+		"", // Magyar
 		"", // Catala
 		"", // Russian
 		"", // Croatian
@@ -858,7 +858,7 @@ const tI18nPhrase Phrases[] = {
    {	"is protected", // English
 		"ist gesperrt", // Deutsch
 		"", // Slovenski
-		"è protetta", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"est protégé", // Français
@@ -877,7 +877,7 @@ const tI18nPhrase Phrases[] = {
    {	"Open menu after pin request", // English
 		"Menü nach Eingabe des Pin öffnen", // Deutsch
 		"", // Slovenski
-		"Apri menu dopo richiesta Pin", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Ouvrir le menu après la rentré de la cléed", // Français
@@ -896,7 +896,7 @@ const tI18nPhrase Phrases[] = {
    {	"Recording was already protected!", // English
 		"Aufnahme bereits gesperrt!", // Deutsch
 		"", // Slovenski
-		"La registrazione era già protetta!", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"L'enregeristrement est en protection parentale!", // Français
@@ -915,7 +915,7 @@ const tI18nPhrase Phrases[] = {
    {	"Recording now protected!", // English
 		"Sperre aktiviert!", // Deutsch
 		"", // Slovenski
-		"Ora la regitrazione è protetta!", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"L'enregeristrement est en protection parentale maintenant!", // Français
@@ -934,7 +934,7 @@ const tI18nPhrase Phrases[] = {
    {	"Recording was not protected!", // English
 		"Aufnahme ist nicht gesperrt!", // Deutsch
 		"", // Slovenski
-		"La registrazione non era protetta!", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"L'enregeristrement n'avait pas de protection parentale!", // Français
@@ -953,7 +953,7 @@ const tI18nPhrase Phrases[] = {
    {	"Removed protection of recording!", // English
 		"Sperre entfernt!", // Deutsch
 		"", // Slovenski
-		"Rimossa protezione di registrazione!", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"La protection parentale est enlever!", // Français
@@ -972,7 +972,7 @@ const tI18nPhrase Phrases[] = {
    {	"Please setup a pin code first!", // English
 		"Bitte konfigurieren zuerst einen Pin Code!", // Deutsch
 		"", // Slovenski
-		"Per favore imposta prima un codice Pin", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Entrer le code de protection d'abord!", // Français
@@ -991,7 +991,7 @@ const tI18nPhrase Phrases[] = {
    {	"Please enter pin code first", // English
 		"Bitte zuerst Pin Code eingeben", // Deutsch
 		"", // Slovenski
-		"Per favore inserisci prima un codice Pin", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Entré d'abord le code", // Français
@@ -1010,7 +1010,7 @@ const tI18nPhrase Phrases[] = {
    {	"locked", // English
 		"gesperrt", // Deutsch
 		"", // Slovenski
-		"protetto", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"protégé", // Français
@@ -1029,7 +1029,7 @@ const tI18nPhrase Phrases[] = {
    {	"unlocked", // English
 		"entsperrt", // Deutsch
 		"", // Slovenski
-		"sprotetto", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"libéré", // Français
@@ -1048,7 +1048,7 @@ const tI18nPhrase Phrases[] = {
    {	"On/Off", // English
 		"An/Aus", // Deutsch
 		"", // Slovenski
-		"Attivo/Disattivo", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Enclencher/déclencher", // Français
@@ -1067,7 +1067,7 @@ const tI18nPhrase Phrases[] = {
    {	"Invalid Code !", // English
 		"Falsche Eingabe !", // Deutsch
 		"", // Slovenski
-		"Codice non valido !", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Le code est faux!", // Français
@@ -1086,7 +1086,7 @@ const tI18nPhrase Phrases[] = {
    {	"Code accepted", // English
 		"Eingabe angenommen", // Deutsch
 		"", // Slovenski
-		"Codice accettato", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Le code est accepté", // Français
@@ -1105,7 +1105,7 @@ const tI18nPhrase Phrases[] = {
    {	"Setup your pin code: ", // English
 		"Bitte Pin Code festlegen: ", // Deutsch
 		"", // Slovenski
-		"Imposta il codice pin:", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Introduisez le code d'accès:", // Français
@@ -1124,7 +1124,7 @@ const tI18nPhrase Phrases[] = {
    {	"Pin code successfully setup", // English
 		"Pin Code erfolgreich festgelegt.", // Deutsch
 		"", // Slovenski
-		"Codice pin impostato con successo", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Le code d'accès est accepté", // Français
@@ -1143,7 +1143,7 @@ const tI18nPhrase Phrases[] = {
    {	"Menu protections", // English
 		"Menü sperren", // Deutsch
 		"", // Slovenski
-		"Protezioni menu", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Protégier des menus", // Français
@@ -1162,7 +1162,7 @@ const tI18nPhrase Phrases[] = {
    {	"Hide protected menus", // English
 		"Gesperrte Menüs verstecken", // Deutsch
 		"", // Slovenski
-		"Nascondi menu protetti", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Menu protégés sont invisibles", // Français
@@ -1181,7 +1181,7 @@ const tI18nPhrase Phrases[] = {
    {	"Hide protected plugins", // English
 		"Gesperrte Plugins verstecken", // Deutsch
 		"", // Slovenski
-		"Nascondi plugin protetti", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Plugins protégés sont invisibles", // Français
@@ -1200,7 +1200,7 @@ const tI18nPhrase Phrases[] = {
    {	"Hide protected recordings", // English
 		"Gesperrte Aufnahmen verstecken", // Deutsch
 		"", // Slovenski
-		"Nascondi registrazioni protette", // Italiano
+		"", // Italiano
 		"", // Nederlands
 		"", // Português
 		"Enregistrements protégés sont invisibles", // Français
