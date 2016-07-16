@@ -11,6 +11,7 @@
  */
 
 #include "eit.h"
+#include <sys/time.h>
 #include "epg.h"
 //M7X0 BEGIN AK
 #include "epgmode.h"
@@ -323,31 +324,35 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
 
 // --- cTDT ------------------------------------------------------------------
 
+#define MAX_TIME_DIFF   1 // number of seconds the local time may differ from dvb time before making any corrections
+#define MAX_ADJ_DIFF   10 // number of seconds the local time may differ from dvb time to allow smooth adjustment
+#define ADJ_DELTA     300 // number of seconds between calls for smooth time adjustment
+
 class cTDT : public SI::TDT {
 private:
   static cMutex mutex;
-  static int lastDiff;
+  static time_t lastAdj;
 public:
   cTDT(const u_char *Data);
   };
 
 cMutex cTDT::mutex;
-int cTDT::lastDiff = 0;
+time_t cTDT::lastAdj = 0;
 
 cTDT::cTDT(const u_char *Data)
 :SI::TDT(Data, false)
 {
   CheckParse();
 
-  time_t sattim = getTime();
+  time_t dvbtim = getTime();
   time_t loctim = time(NULL);
 
-  int diff = abs(sattim - loctim);
-  if (diff > 5) {
+  int diff = dvbtim - loctim;
+  if (abs(diff) > MAX_TIME_DIFF) {
      mutex.Lock();
-     if (abs(diff - lastDiff) < 3) {
-        if (stime(&sattim) == 0)
-           isyslog("system time changed from %s (%ld) to %s (%ld)", *TimeToString(loctim), loctim, *TimeToString(sattim), sattim);
+     if (abs(diff) > MAX_ADJ_DIFF) {
+        if (stime(&dvbtim) == 0)
+           isyslog("system time changed from %s (%ld) to %s (%ld)", *TimeToString(loctim), loctim, *TimeToString(dvbtim), dvbtim);
         else {
 				char __errorstr[256];
 				strerror_r(errno,__errorstr,256);
@@ -355,7 +360,20 @@ cTDT::cTDT(const u_char *Data)
            esyslog("ERROR while setting system time: %s",__errorstr);
 			  }
         }
-     lastDiff = diff;
+     else if (time(NULL) - lastAdj > ADJ_DELTA) {
+        lastAdj = time(NULL);
+        timeval delta;
+        delta.tv_sec = diff;
+        delta.tv_usec = 0;
+        if (adjtime(&delta, NULL) == 0)
+           isyslog("system time adjustment initiated from %s (%ld) to %s (%ld)", *TimeToString(loctim), loctim, *TimeToString(dvbtim), dvbtim);
+        else {
+				char __errorstr[256];
+				strerror_r(errno,__errorstr,256);
+				__errorstr[255]=0;
+           esyslog("ERROR while adjusting system time: %s",__errorstr);
+			  }
+        }
      mutex.Unlock();
      }
 }
@@ -404,7 +422,7 @@ void cEitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
          }
          break;
     case 0x14: {
-         if (Setup.SetSystemTime && Setup.TimeTransponder && ISTRANSPONDER(Transponder(), Setup.TimeTransponder))
+         if (Setup.SetSystemTime && Setup.TimeSource == Source() && Setup.TimeTransponder && ISTRANSPONDER(Transponder(), Setup.TimeTransponder))
             cTDT TDT(Data);
          }
          break;
