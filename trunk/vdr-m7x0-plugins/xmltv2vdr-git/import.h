@@ -15,6 +15,7 @@
 #include "event.h"
 #include "source.h"
 #include "maps.h"
+#include "compatibility.h"
 
 class cEPGSource;
 class cEPGExecutor;

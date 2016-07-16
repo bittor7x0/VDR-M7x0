@@ -20,7 +20,6 @@
 #include <libgen.h>
 #include <sys/vfs.h>
 
-#include "i18n.h"
 #include "setup.h"
 #include "xmltv2vdr.h"
 #include "debug.h"

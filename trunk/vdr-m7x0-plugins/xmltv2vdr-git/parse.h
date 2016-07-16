@@ -11,6 +11,7 @@
 #include <vdr/epg.h>
 #include <libxml/parser.h>
 #include <time.h>
+#include <iconv.h>
 
 #include "maps.h"
 #include "event.h"

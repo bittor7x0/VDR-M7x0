@@ -10,6 +10,7 @@
 
 #include <sqlite3.h>
 #include <vdr/plugin.h>
+#include "i18n.h"
 #include "maps.h"
 #include "parse.h"
 #include "import.h"

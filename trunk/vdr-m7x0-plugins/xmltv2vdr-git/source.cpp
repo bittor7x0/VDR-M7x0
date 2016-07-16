@@ -380,7 +380,11 @@ bool cEPGSource::ReadConfig()
             if (l_usepics==1) usepics=true;
             dsyslogs(this,"daysinadvance=%i",daysinadvance);
             dsyslogs(this,"using pics=%i",l_usepics);
+#if VDRVERSNUM < 10503
+            dsyslogs(this,"weekdays=%s",*cTimer::PrintDay(0,exec_weekday));
+#else
             dsyslogs(this,"weekdays=%s",*cTimer::PrintDay(0,exec_weekday,true));
+#endif
             time_t nrt=NextRunTime();
             dsyslogs(this,"nextrun on %s",ctime(&nrt));
         }
