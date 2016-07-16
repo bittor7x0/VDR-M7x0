@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 LIBXML2_DEPS = $(BASE_BUILD_STAGEFILE)
 
-LIBXML2_VERSION := 2.7.7
+LIBXML2_VERSION := 2.9.4
 LIBXML2_PATCHES_DIR := $(PATCHES_DIR)/libxml2/$(LIBXML2_VERSION)
 
 LIBXML2_FILE := libxml2-$(LIBXML2_VERSION).tar.gz
@@ -76,12 +76,15 @@ $(STAGEFILES_DIR)/.libxml2_patched: $(STAGEFILES_DIR)/.libxml2_unpacked
 #
 
 $(STAGEFILES_DIR)/.libxml2_configured: $(STAGEFILES_DIR)/.libxml2_patched
-	($(CD) $(LIBXML2_DIR) ; $(UCLIBC_ENV) \
+	($(CD) $(LIBXML2_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		$(LIBXML2_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--enable-shared \
 			--enable-static \
+			--enable-ipv6=no \
+			--disable-maintainer-mode \
+			--with-minimum \
 			--with-c14n \
 			--without-catalog \
 			--without-debug \
@@ -92,6 +95,7 @@ $(STAGEFILES_DIR)/.libxml2_configured: $(STAGEFILES_DIR)/.libxml2_patched
 			--without-ftp \
 			--without-http \
 			--without-iconv \
+			--without-icu \
 			--without-iso8859x \
 			--without-legacy \
 			--without-mem-debug \
@@ -116,6 +120,7 @@ $(STAGEFILES_DIR)/.libxml2_configured: $(STAGEFILES_DIR)/.libxml2_patched
 			--with-xptr \
 			--without-modules \
 			$(if $(CONFIG_ZLIB),--with-zlib,--without-zlib) \
+			--without-lzma \
 			--without-coverage)
 	$(TOUCH) $(STAGEFILES_DIR)/.libxml2_configured
 
@@ -124,7 +129,7 @@ $(STAGEFILES_DIR)/.libxml2_configured: $(STAGEFILES_DIR)/.libxml2_patched
 #
 
 $(STAGEFILES_DIR)/.libxml2_compiled: $(STAGEFILES_DIR)/.libxml2_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(LIBXML2_DIR)
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBXML2_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.libxml2_compiled
 
 #
@@ -132,7 +137,7 @@ $(STAGEFILES_DIR)/.libxml2_compiled: $(STAGEFILES_DIR)/.libxml2_configured
 #
 
 $(STAGEFILES_DIR)/.libxml2_installed: $(STAGEFILES_DIR)/.libxml2_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(LIBXML2_DIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBXML2_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.libxml2_installed
 
 

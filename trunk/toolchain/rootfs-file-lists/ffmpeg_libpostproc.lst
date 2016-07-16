@@ -1,4 +1,4 @@
-usr/lib/libpostproc.so.52.0.100  usr/lib/libpostproc.so.52.0.100  f 755 0 0 - - - - -
-usr/lib/libpostproc.so.52.0.100  -                                s   - - - - - - - -
-usr/lib/libpostproc.so.52        libpostproc.so.52.0.100          l 777 0 0 - - - - -
-usr/lib/libpostproc.so           libpostproc.so.52.0.100          l 777 0 0 - - - - -
+usr/lib/libpostproc.so.54.0.100  usr/lib/libpostproc.so.54.0.100  f 755 0 0 - - - - -
+usr/lib/libpostproc.so.54.0.100  -                                s   - - - - - - - -
+usr/lib/libpostproc.so.54        libpostproc.so.54.0.100          l 777 0 0 - - - - -
+usr/lib/libpostproc.so           libpostproc.so.54.0.100          l 777 0 0 - - - - -

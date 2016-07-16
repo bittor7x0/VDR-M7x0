@@ -1,6 +1,6 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
-# Copyright (C) 2012 VDR-NG-EM Project
+# Copyright (C) 2012, 2013, 2014, 2015, 2016 VDR-NG-EM Project
 #
 # More information can be found in the files COPYING and README.
 #
@@ -26,12 +26,12 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 LIBINTL-LITE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-LIBINTL-LITE_VERSION := 0.5
-LIBINTL-LITE_PATCHES_DIR := $(PATCHES_DIR)/libintl-lite/$(LIBINTL-LITE_VERSION)
+LIBINTL-LITE_VERSION := 4806f5c11f18ba77025cde2eacabca348f3172f3
+LIBINTL-LITE_PATCHES_DIR := $(PATCHES_DIR)/libintl-lite/snapshot
 
-LIBINTL-LITE_FILE := libintl-lite-$(LIBINTL-LITE_VERSION).tar.gz
+LIBINTL-LITE_FILE := libintl-lite-$(LIBINTL-LITE_VERSION).zip
 LIBINTL-LITE_DLFILE := $(DOWNLOAD_DIR)/$(LIBINTL-LITE_FILE)
-LIBINTL-LITE_URL := http://sourceforge.net/projects/libintl-lite/files/$(LIBINTL-LITE_FILE)/download
+LIBINTL-LITE_URL := https://github.com/j-jorge/libintl-lite/archive/$(LIBINTL-LITE_VERSION).zip
 LIBINTL-LITE_DIR := $(BUILD_DIR)/libintl-lite-$(LIBINTL-LITE_VERSION)
 
 LIBINTL-LITE_INSTALLED = $(STAGEFILES_DIR)/.libintl-lite_installed
@@ -60,7 +60,7 @@ $(STAGEFILES_DIR)/.libintl-lite_unpacked: $(LIBINTL-LITE_DLFILE) \
                                            $(wildcard $(LIBINTL-LITE_PATCHES_DIR)/*.patch) \
                                            $$(LIBINTL-LITE_DEPS)
 	-$(RM) -rf $(LIBINTL-LITE_DIR)
-	$(TAR) -C $(BUILD_DIR) -zf $(LIBINTL-LITE_DLFILE)
+	(cd $(BUILD_DIR) ; $(UNZIP) -x $(LIBINTL-LITE_DLFILE))
 	$(TOUCH) $(STAGEFILES_DIR)/.libintl-lite_unpacked
 
 #
@@ -76,8 +76,8 @@ $(STAGEFILES_DIR)/.libintl-lite_patched: $(STAGEFILES_DIR)/.libintl-lite_unpacke
 #
 
 $(STAGEFILES_DIR)/.libintl-lite_compiled: $(STAGEFILES_DIR)/.libintl-lite_patched
-	$(PREFIX_BIN)/$(UCLIBC_CXX) $(UCLIBC_CFLAGS) -Wall -fPIC -c $(LIBINTL-LITE_DIR)/internal/libintl.cpp -o $(LIBINTL-LITE_DIR)/libintl.o
-	$(PREFIX_BIN)/$(UCLIBC_CXX) $(UCLIBC_CFLAGS) -shared -Wl,-soname,libintl.so.1 -o $(LIBINTL-LITE_DIR)/libintl.so.1.0.0 $(LIBINTL-LITE_DIR)/libintl.o
+	$(PREFIX_BIN)/$(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_LTO_GC) -Wall -fPIC -c $(LIBINTL-LITE_DIR)/internal/libintl.cpp -o $(LIBINTL-LITE_DIR)/libintl.o
+	$(PREFIX_BIN)/$(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_LTO_GC) -Wall -fPIC -shared -Wl,-soname,libintl.so.1 -o $(LIBINTL-LITE_DIR)/libintl.so.1.0.0 $(LIBINTL-LITE_DIR)/libintl.o
 	$(TOUCH) $(STAGEFILES_DIR)/.libintl-lite_compiled
 
 #

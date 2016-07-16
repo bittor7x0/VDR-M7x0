@@ -1,4 +1,4 @@
-usr/lib/libavdevice.so.54.2.101  usr/lib/libavdevice.so.54.2.101  f 755 0 0 - - - - -
-usr/lib/libavdevice.so.54.2.101  -                                s   - - - - - - - -
-usr/lib/libavdevice.so.54        libavdevice.so.54.2.101          l 777 0 0 - - - - -
-usr/lib/libavdevice.so           libavdevice.so.54.2.101          l 777 0 0 - - - - -
+usr/lib/libavdevice.so.57.0.101  usr/lib/libavdevice.so.57.0.101  f 755 0 0 - - - - -
+usr/lib/libavdevice.so.57.0.101  -                                s   - - - - - - - -
+usr/lib/libavdevice.so.57        libavdevice.so.57.0.101          l 777 0 0 - - - - -
+usr/lib/libavdevice.so           libavdevice.so.57.0.101          l 777 0 0 - - - - -
