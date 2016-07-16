@@ -1,0 +1,12 @@
+diff -Naur a/Makefile.am b/Makefile.am
+--- a/Makefile.am	2016-04-08 23:42:04.000000000 +0200
++++ b/Makefile.am	2016-06-30 21:29:17.783095181 +0200
+@@ -40,8 +40,6 @@
+ 
+ if ENABLE_DEBUG
+     DEFAULT_CFLAGS = -DDEBUG -ggdb3 -O0
+-else
+-    DEFAULT_CFLAGS = -g -O2 -mtune=generic
+ endif
+ comskip_CFLAGS = $(DEFAULT_CFLAGS)
+ comskip_gui_CFLAGS = $(DEFAULT_CFLAGS)
