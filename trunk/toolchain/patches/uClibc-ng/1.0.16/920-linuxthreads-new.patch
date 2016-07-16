@@ -1,0 +1,171 @@
+linuxthreads.new was removed in this commit (post uClibc-ng 1.0.14):
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=6a8ccc95528f5e86a8770ed15ce89609b5b3dee9
+but our kernel doesn't support NPTL/TLS, so we use linuxthreads.new from parent revision:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=398a27a5b323956344b4f831d892fed3bd9813c7
+
+This patch is a minimum revert for use linuxthreads.new in current code.
+
+diff -Naur a/extra/Configs/Config.in b/extra/Configs/Config.in
+--- a/extra/Configs/Config.in	2016-05-18 18:41:24.000000000 +0200
++++ b/extra/Configs/Config.in	2016-05-24 11:05:00.965017500 +0200
+@@ -504,7 +504,6 @@
+ 		   !TARGET_arm && \
+ 		   !TARGET_i386 && \
+ 		   !TARGET_metag && \
+-		   !TARGET_mips && \
+ 		   !TARGET_powerpc && \
+ 		   !TARGET_sparc && \
+ 		   !TARGET_x86_64 && \
+@@ -531,6 +530,7 @@
+ 		   !TARGET_ia64 && \
+ 		   !TARGET_m68k && \
+ 		   !TARGET_microblaze && \
++		   !TARGET_mips && \
+ 		   !TARGET_nds32 && \
+ 		   !TARGET_nios2 && \
+ 		   !TARGET_or1k && \
+@@ -2293,7 +2293,7 @@
+ 
+ config DODEBUG_PT
+ 	bool "Build pthread with debugging output"
+-	depends on UCLIBC_HAS_THREADS && UCLIBC_HAS_LINUXTHREADS
++	depends on UCLIBC_HAS_THREADS && !UCLIBC_HAS_LINUXTHREADS
+ 	help
+ 	  Enable debug output in libpthread.  This is only useful when doing
+ 	  development in libpthread itself.
+diff -Naur a/include/cancel.h b/include/cancel.h
+--- a/include/cancel.h	2016-05-18 18:41:24.000000000 +0200
++++ b/include/cancel.h	2016-05-24 11:15:16.635685900 +0200
+@@ -48,7 +48,7 @@
+ #define __NC_PROTO(name) extern __typeof(name) __NC(name) attribute_hidden;
+ #define __NC_OLD_PROTO(name) extern __typeof(name) __NC_OLD(name);
+ 
+-#if defined __UCLIBC_HAS_THREADS__ && !defined __UCLIBC_HAS_LINUXTHREADS__
++#if defined __UCLIBC_HAS_THREADS__ && defined __UCLIBC_HAS_LINUXTHREADS__
+ # define __NEW_THREADS 1
+ #else
+ # define SINGLE_THREAD_P 1
+@@ -71,7 +71,7 @@
+ # define lt_strong_alias(name)
+ # define lt_libc_hidden(name) libc_hidden_def(name)
+ 
+-#elif defined __UCLIBC_HAS_LINUXTHREADS__
++#elif !defined __UCLIBC_HAS_LINUXTHREADS__
+ 
+ # define CANCELLABLE_SYSCALL(res_type, name, param_list, params)	\
+ weak_alias(__NC(name),name)						\
+diff -Naur a/libc/signal/allocrtsig.c b/libc/signal/allocrtsig.c
+--- a/libc/signal/allocrtsig.c	2016-05-18 18:41:24.000000000 +0200
++++ b/libc/signal/allocrtsig.c	2016-05-24 11:16:09.964498700 +0200
+@@ -32,7 +32,7 @@
+ #else
+ # ifdef __UCLIBC_HAS_THREADS_NATIVE__
+ static int current_rtmin = __SIGRTMIN + 2;
+-# elif defined __UCLIBC_HAS_THREADS__ && !defined __UCLIBC_HAS_LINUXTHREADS__
++# elif defined __UCLIBC_HAS_THREADS__ && defined __UCLIBC_HAS_LINUXTHREADS__
+ /* psm: might be good for LT old as well, do not want to break it for now */
+ /* Sanity check */
+ #  if !defined __SIGRTMIN || (__SIGRTMAX - __SIGRTMIN) < 3
+diff -Naur a/libc/stdlib/malloc/malloc.h b/libc/stdlib/malloc/malloc.h
+--- a/libc/stdlib/malloc/malloc.h	2016-05-18 18:41:24.000000000 +0200
++++ b/libc/stdlib/malloc/malloc.h	2016-05-24 11:18:16.922186700 +0200
+@@ -199,13 +199,13 @@
+ extern struct heap_free_area *__malloc_heap attribute_hidden;
+ #ifdef __UCLIBC_HAS_THREADS__
+ __UCLIBC_MUTEX_EXTERN(__malloc_heap_lock)
+-# ifndef __UCLIBC_HAS_LINUXTHREADS__
++# ifdef __UCLIBC_HAS_LINUXTHREADS__
+ 	attribute_hidden
+ # endif
+ 	;
+ # ifdef __UCLIBC_UCLINUX_BROKEN_MUNMAP__
+ __UCLIBC_MUTEX_EXTERN(__malloc_mmb_heap_lock)
+-#  ifndef __UCLIBC_HAS_LINUXTHREADS__
++#  ifdef __UCLIBC_HAS_LINUXTHREADS__
+ 	attribute_hidden
+ #  endif
+ 	;
+diff -Naur a/libc/stdlib/malloc-standard/malloc.h b/libc/stdlib/malloc-standard/malloc.h
+--- a/libc/stdlib/malloc-standard/malloc.h	2016-05-18 18:41:24.000000000 +0200
++++ b/libc/stdlib/malloc-standard/malloc.h	2016-05-24 11:18:40.426193400 +0200
+@@ -27,7 +27,7 @@
+ 
+ 
+ __UCLIBC_MUTEX_EXTERN(__malloc_lock)
+-#if defined __UCLIBC_HAS_THREADS__ && !defined __UCLIBC_HAS_LINUXTHREADS__
++#if defined __UCLIBC_HAS_THREADS__ && defined __UCLIBC_HAS_LINUXTHREADS__
+ 	attribute_hidden
+ #endif
+ 	;
+diff -Naur a/libc/sysdeps/linux/arm/clone.S b/libc/sysdeps/linux/arm/clone.S
+--- a/libc/sysdeps/linux/arm/clone.S	2016-05-18 18:41:24.000000000 +0200
++++ b/libc/sysdeps/linux/arm/clone.S	2016-05-24 11:20:03.392979600 +0200
+@@ -27,7 +27,7 @@
+ #include <bits/arm_asm.h>
+ #include <bits/arm_bx.h>
+ 
+-#if defined __UCLIBC_HAS_THREADS__ && !defined __UCLIBC_HAS_LINUXTHREADS__
++#if defined __UCLIBC_HAS_THREADS__ && defined __UCLIBC_HAS_LINUXTHREADS__
+ #include <sysdep-cancel.h>
+ #endif
+ 
+diff -Naur a/libc/sysdeps/linux/common/bits/uClibc_local_lim.h b/libc/sysdeps/linux/common/bits/uClibc_local_lim.h
+--- a/libc/sysdeps/linux/common/bits/uClibc_local_lim.h	2016-05-18 18:41:24.000000000 +0200
++++ b/libc/sysdeps/linux/common/bits/uClibc_local_lim.h	2016-05-24 11:20:36.166236400 +0200
+@@ -20,7 +20,7 @@
+ /* glibc uses 16384 */
+ # define PTHREAD_THREADS_MAX	1024
+ # define TIMER_MAX		256
+-# ifdef __UCLIBC_HAS_LINUXTHREADS__
++# ifndef __UCLIBC_HAS_LINUXTHREADS__
+ #  undef SEM_VALUE_MAX
+ #  define SEM_VALUE_MAX	((int) ((~0u) >> 1))
+ # endif
+diff -Naur a/libc/sysdeps/linux/common/pause.c b/libc/sysdeps/linux/common/pause.c
+--- a/libc/sysdeps/linux/common/pause.c	2016-05-18 18:41:24.000000000 +0200
++++ b/libc/sysdeps/linux/common/pause.c	2016-05-24 11:20:57.053817200 +0200
+@@ -22,7 +22,7 @@
+ # include <signal.h>
+ 
+ int
+-# ifdef __UCLIBC_HAS_LINUXTHREADS__
++# ifndef __UCLIBC_HAS_LINUXTHREADS__
+ weak_function
+ # endif
+ __NC(pause)(void)
+diff -Naur a/libc/sysdeps/linux/common/pread_write.c b/libc/sysdeps/linux/common/pread_write.c
+--- a/libc/sysdeps/linux/common/pread_write.c	2016-05-18 18:41:24.000000000 +0200
++++ b/libc/sysdeps/linux/common/pread_write.c	2016-05-24 11:21:15.946125800 +0200
+@@ -102,7 +102,7 @@
+ CANCELLABLE_SYSCALL(ssize_t, pwrite64, (int fd, const void *buf, size_t count, off64_t offset),
+ 		    (fd, buf, count, offset))
+ # else
+-#  ifdef __UCLIBC_HAS_LINUXTHREADS__
++#  ifndef __UCLIBC_HAS_LINUXTHREADS__
+ weak_alias(pread,pread64)
+ weak_alias(pwrite,pwrite64)
+ lt_strong_alias(pread64)
+diff -Naur a/libc/unistd/confstr.c b/libc/unistd/confstr.c
+--- a/libc/unistd/confstr.c	2016-05-18 18:41:24.000000000 +0200
++++ b/libc/unistd/confstr.c	2016-05-24 11:09:02.081733500 +0200
+@@ -44,7 +44,7 @@
+ #ifdef __UCLIBC_HAS_THREADS__
+     case _CS_GNU_LIBPTHREAD_VERSION:
+ # if defined __UCLIBC_HAS_LINUXTHREADS__
+-      string = "linuxthreads-0.01";
++      string = "linuxthreads-0.10";
+       string_len = sizeof("linuxthreads-x.xx");
+ # elif defined __UCLIBC_HAS_THREADS_NATIVE__
+ #  define __NPTL_VERSION ("NPTL " \
+diff -Naur a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2016-05-18 18:41:24.000000000 +0200
++++ b/Makefile.in	2016-05-24 11:07:29.482944700 +0200
+@@ -397,7 +397,7 @@
+ endif
+ 
+ ifeq ($(UCLIBC_HAS_THREADS),y)
+-ifneq ($(UCLIBC_HAS_LINUXTHREADS),y)
++ifeq ($(UCLIBC_HAS_LINUXTHREADS),y)
+ ifeq ($(HARDWIRED_ABSPATH),y)
+ 	if [ -f $(top_builddir)lib/libpthread.so -a -f $(PREFIX)$(RUNTIME_PREFIX)$(MULTILIB_DIR)/libpthread.so.$(ABI_VERSION) ] ; then \
+ 		$(RM) $(PREFIX)$(DEVEL_PREFIX)$(MULTILIB_DIR)/libpthread.so; \

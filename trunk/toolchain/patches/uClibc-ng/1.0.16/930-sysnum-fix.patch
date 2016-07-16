@@ -1,0 +1,12 @@
+diff -Naur a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2016-02-01 16:41:03.000000000 +0100
++++ b/Makefile.in	2016-02-26 18:26:04.625507999 +0100
+@@ -169,7 +169,7 @@
+ 	$(do_ln) $(call rel_srcdir)libc/sysdeps/linux/$(TARGET_ARCH)/sys/$(@F) $@
+ endif
+ 
+-$(target-headers-sysdep) $(pregen-headers-y): | $(top_builddir)include/bits $(top_builddir)include/sys $(top_builddir)include/bits/sysnum.h 
++$(target-headers-sysdep) $(pregen-headers-y): | $(top_builddir)include/bits $(top_builddir)include/sys 
+ 
+ HEADERCLEAN_common:
+ 	$(do_rm) $(ALL_HEADERS_COMMON)
