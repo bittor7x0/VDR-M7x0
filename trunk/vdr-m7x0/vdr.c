@@ -1543,6 +1543,7 @@ Exit:
      Setup.Save();
      }
   cDevice::Shutdown();
+  EpgHandlers.Clear();
   PluginManager.Shutdown(true);
   cSchedules::Cleanup(true);
   cSchedules::ClearAll();

@@ -114,7 +114,7 @@ cEvent::cEvent(tEventID EventID)
 {
   schedule = NULL;
   eventID = EventID;
-  tableID = 0;
+  tableID = 0xFF; // actual table ids are 0x4E..0x60
   version = 0xFF; // actual version numbers are 0..31
   runningStatus = SI::RunningStatusUndefined;
   title = NULL;
@@ -435,7 +435,7 @@ cString cEvent::GetVpsString(void) const
 {
   char buf[25];
   struct tm tm_r;
-  strftime(buf, sizeof(buf), "%d.%m %R", localtime_r(&vps, &tm_r));
+  strftime(buf, sizeof(buf), "%d.%m. %R", localtime_r(&vps, &tm_r));
   return buf;
 }
 
@@ -611,7 +611,7 @@ void ReportEpgBugFixStats(bool Reset)
      for (int i = 0; i < MAXEPGBUGFIXSTATS; i++) {
          tEpgBugFixStats *p = &EpgBugFixStats[i];
          if (p->hits) {
-            const char *delim = "\t";
+            const char *delim = " ";
             bool PrintedStats = false;
             char *q = buffer;
             *buffer = 0;
@@ -626,11 +626,11 @@ void ReportEpgBugFixStats(bool Reset)
                       dsyslog("CHANNELS READS THIS: PLEASE TAKE A LOOK AT THE FUNCTION cEvent::FixEpgBugs()");
                       dsyslog("IN VDR/epg.c TO LEARN WHAT'S WRONG WITH YOUR DATA, AND FIX IT!");
                       dsyslog("=====================");
-                      dsyslog("Fix\tHits\tChannels");
+                      dsyslog("Fix Hits Channels");
                       GotHits = true;
                       }
                    if (!PrintedStats) {
-                      q += snprintf(q, sizeof(buffer) - (q - buffer), "%d\t%d", i, p->hits);
+                      q += snprintf(q, sizeof(buffer) - (q - buffer), "%-3d %-4d", i, p->hits);
                       PrintedStats = true;
                       }
                    q += snprintf(q, sizeof(buffer) - (q - buffer), "%s%s", delim, channel->Name());
@@ -1403,7 +1403,6 @@ void cSchedulesReaderThread::ReadEPG(void)
         cCondWait::SleepMs(10);
 }
 
-#ifdef EPG_HANDLERS_ENABLED
 // --- cEpgHandler -----------------------------------------------------------
 
 cEpgHandler::cEpgHandler(void)
@@ -1596,4 +1595,3 @@ void cEpgHandlers::EndSegmentTransfer(bool Modified)
          return;
       }
 }
-#endif // EPG_HANDLERS_ENABLED
