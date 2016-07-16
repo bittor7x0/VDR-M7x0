@@ -9,6 +9,7 @@
 #ifndef __OSD_H
 #define __OSD_H
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdint.h>
 #include "font.h"
@@ -54,6 +55,7 @@ protected:
 public:
   cPalette(int Bpp = 8);
         ///< Initializes the palette with the given color depth.
+  virtual ~cPalette();
   inline int Bpp(void) const { return bpp; }
 //M7X0 BEGIN AK
   bool PaletteModified(void) { bool r = modified; modified = false; return r;}
@@ -64,7 +66,7 @@ public:
         ///< Returns the index of the given Color (the first color has index 0).
         ///< If Color is not yet contained in this palette, it will be added if
         ///< there is a free slot. If the color can't be added to this palette,
-        ///< 0 will be returned.
+        ///< the closest existing color will be returned.
   inline tColor Color(int Index) const { return Index < maxColors ? color[Index] : 0; }
         ///< Returns the color at the given Index. If Index is outside the valid
         ///< range, 0 will be returned.
@@ -90,6 +92,12 @@ public:
   void Replace(const cPalette &Palette);
         ///< Replaces the colors of this palette with the colors from the given
         ///< palette.
+  int ClosestColor(tColor Color, int MaxDiff = INT_MAX) const;
+        ///< Returns the index of a color in this palette that is closest to the given
+        ///< Color. MaxDiff can be used to control the maximum allowed color difference.
+        ///< If no color with a maximum difference of MaxDiff can be found, -1 will
+        ///< be returned. With the default value of INT_MAX, there will always be
+        ///< a valid color index returned, but the color may be completely different.
   };
 
 enum eTextAlignment { taCenter  = 0x00,

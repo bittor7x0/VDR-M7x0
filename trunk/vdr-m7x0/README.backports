@@ -263,3 +263,7 @@ VDR 2.3.1 backports applied in this patch:
 * The cRingBufferLinear::Read() function now returns -1 and sets errno to
   EAGAIN if the buffer is already full.
 * cSectionSyncer has been improved to better handle missed sections.
+* Added missing virtual destructor to cPalette.
+* cPalette::ClosestColor() now treats fully transparent colors as "equal"; improved
+  cDvbSpuBitmap::getMinBpp() (thanks to Matthieu Castet and Johann Friedrichs).
+* Added some missing member initializations in cBitmap.
