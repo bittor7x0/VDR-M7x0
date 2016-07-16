@@ -356,6 +356,9 @@ CONFIG_O7O_FLASHER = y
 # URL: http://www.pcre.org/
 # CONFIG_PCRE is not set
 
+# Add C++ support to PCRE library
+# CONFIG_PCRE_CPP is not set
+
 # libmagic: A library for the file utility that can classify files according to magic number tests
 # URL: http://www.darwinsys.com/file/
 # CONFIG_LIBMAGIC is not set

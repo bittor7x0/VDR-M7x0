@@ -37,7 +37,9 @@ PCRE_DIR := $(BUILD_DIR)/pcre-$(PCRE_VERSION)
 PCRE_INSTALLED = $(STAGEFILES_DIR)/.pcre_installed
 
 PACKS_RULES_$(CONFIG_PCRE) += $(PCRE_INSTALLED)
+
 FILE_LISTS_$(CONFIG_PCRE) += pcre.lst
+FILE_LISTS_$(CONFIG_PCRE_CPP) += pcre-cpp.lst
 
 CLEAN_RULES += clean-pcre
 DISTCLEAN_RULES += distclean-pcre
@@ -76,12 +78,12 @@ $(STAGEFILES_DIR)/.pcre_patched: $(STAGEFILES_DIR)/.pcre_unpacked
 #
 
 $(STAGEFILES_DIR)/.pcre_configured: $(STAGEFILES_DIR)/.pcre_patched
-	($(CD) $(PCRE_DIR) ; $(UCLIBC_ENV) \
+	($(CD) $(PCRE_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		$(PCRE_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--enable-jit \
-			--disable-cpp)
+			$(if $(CONFIG_PCRE_CPP),--enable-cpp,--disable-cpp))
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_configured
 
 #
@@ -89,7 +91,7 @@ $(STAGEFILES_DIR)/.pcre_configured: $(STAGEFILES_DIR)/.pcre_patched
 #
 
 $(STAGEFILES_DIR)/.pcre_compiled: $(STAGEFILES_DIR)/.pcre_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(PCRE_DIR)
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_compiled
 
 #
@@ -97,12 +99,16 @@ $(STAGEFILES_DIR)/.pcre_compiled: $(STAGEFILES_DIR)/.pcre_configured
 #
 
 $(STAGEFILES_DIR)/.pcre_installed: $(STAGEFILES_DIR)/.pcre_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(PCRE_DIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_installed
 
 
 $(FILELIST_DIR)/pcre.lst: $(STAGEFILES_DIR)/.pcre_installed
 	$(TOUCH) $(FILELIST_DIR)/pcre.lst
+
+$(FILELIST_DIR)/pcre-cpp.lst: $(STAGEFILES_DIR)/.pcre_installed
+	$(TOUCH) $(FILELIST_DIR)/pcre-cpp.lst
+
 
 .PHONY: clean-pcre distclean-pcre
 
