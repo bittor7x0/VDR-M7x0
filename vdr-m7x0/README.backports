@@ -274,3 +274,18 @@ VDR 2.3.1 backports applied in this patch:
   system time from the TDT, which avoids problems in case devices are tuned to the
   same transponder on different sources, and these broadcast different time data
   (reported by Torsten Lang).
+* Added a new plugin interface for implementing EPG handlers.
+  + A plugin can implement an EPG handler by creating an object derived from
+    cEpgHandler and implementing the necessary member functions.
+  + The special handling of events with table id 0x00 has been dropped.
+    For backwards compatibility EPG events with table ids lower than 0x4E will
+    be treated as if they had a table id of 0x4E, and the new plugin 'epgtableid0'
+    can be used to have them handled like in previous versions.
+  + The default table id for a newly created cEvent has been changed to 0xFF,
+    which is higher than any normal table id that is broadcast in the EIT data.
+* Removed DeleteEvent() from the EPG handler interface (turned out not to be useful)
+  and replaced it with HandledExternally() (thanks to Jörg Wendel).
+* Added SetComponents() to the EPG handler interface (thanks to Dirk Heiser).
+* No longer using tabs as delimiter in the EPG bugfix log (they were garbled in the
+  log file).
+* Added a missing '.' after the month in VPS strings.

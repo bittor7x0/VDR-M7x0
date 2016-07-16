@@ -80,13 +80,11 @@ $(STAGEFILES_DIR)/.vdr_compiled: $$(VDR_DEPS) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
-		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) clean
 	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -flto" \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
-		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_compiled
 
@@ -99,7 +97,6 @@ $(STAGEFILES_DIR)/.vdr_installed: $(STAGEFILES_DIR)/.vdr_compiled
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
-		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) BINDIR=$(TARGET_ROOT)/usr/bin install-bin
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_installed
 
@@ -131,6 +128,5 @@ cppcheck-vdr:
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)" LIBS="-lm") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
-		$(if $(filter epgfixer,$(CONFIG_VDR-PLUGINS)),EPG_HANDLERS=1) \
 		$(MAKE) -C $(VDR_DIR) cppcheck ; \
 	fi );

@@ -13,9 +13,7 @@
 #define __EPG_H
 
 #include "channels.h"
-#ifdef EPG_HANDLERS_ENABLED
 #include "libsi/section.h"
-#endif
 #include "thread.h"
 #include "tools.h"
 
@@ -242,7 +240,6 @@ public:
 
 void ReportEpgBugFixStats(bool Reset = false);
 
-#ifdef EPG_HANDLERS_ENABLED
 class cEpgHandler : public cListObject {
 public:
   cEpgHandler(void);
@@ -330,6 +327,5 @@ public:
   };
 
 extern cEpgHandlers EpgHandlers;
-#endif // EPG_HANDLERS_ENABLED
 
 #endif //__EPG_H

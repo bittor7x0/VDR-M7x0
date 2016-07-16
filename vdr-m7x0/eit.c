@@ -43,19 +43,19 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
      return;
 
   tChannelID channelID(Source, getOriginalNetworkId(), getTransportStreamId(), getServiceId());
-
-  cChannel *channel = Channels.GetByChannelID(channelID, true);
+  cChannel *Channel = Channels.GetByChannelID(channelID, true);
   eEpgMode em = EpgModes.GetModeByChannelID(&channelID)->GetMode();
-  if (!channel || ((em == emNone) | ((em == emNowNext) & (Tid != 0x4e) & (Tid != 0x4f)))) {
+  if (!Channel || EpgHandlers.IgnoreChannel(Channel) || ((em == emNone) | ((em == emNowNext) & (Tid != 0x4e) & (Tid != 0x4f)))) {
      Channels.Unlock();
      return;
      }
 
-  cSchedule *pSchedule = (cSchedule *)Schedules->GetSchedule(channel, true);
-
+  EpgHandlers.BeginSegmentTransfer(Channel);
+  bool handledExternally = EpgHandlers.HandledExternally(Channel);
+  cSchedule *pSchedule = (cSchedule *)Schedules->GetSchedule(Channel, true);
+ 
   bool Empty = true;
   bool Modified = false;
-  bool HasExternalData = false;
   time_t SegmentStart = 0;
   time_t SegmentEnd = 0;
   struct tm t = { 0 };
@@ -63,7 +63,8 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
 
   SI::EIT::Event SiEitEvent;
   for (SI::Loop::Iterator it; eventLoop.getNext(SiEitEvent, it); ) {
-      bool ExternalData = false;
+      if (EpgHandlers.HandleEitEvent(pSchedule, &SiEitEvent, Tid, getVersionNumber()))
+         continue; // an EPG handler has done all of the processing
       time_t StartTime = SiEitEvent.getStartTime();
       time_t Duration = SiEitEvent.getDuration();
       // Drop bogus events - but keep NVOD reference events, where all bits of the start time field are set to 1, resulting in a negative number.
@@ -74,35 +75,31 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
          SegmentStart = StartTime;
       if (StartTime + Duration > SegmentEnd)
          SegmentEnd = StartTime + Duration;
-
       cEvent *newEvent = NULL;
       cEvent *rEvent = NULL;
       cEvent *pEvent = (cEvent *)pSchedule->GetEvent(SiEitEvent.getEventId(), StartTime);
-      if (!pEvent) {
+      if (!pEvent || handledExternally) {
          bool outdated = (StartTime > 0) &
                (StartTime + Duration + Setup.EPGLinger * 60 + 3600 < Now);
          if (OnlyRunningStatus | (em == emForeign) | outdated)
             continue;
+         if (handledExternally && !EpgHandlers.IsUpdate(SiEitEvent.getEventId(), StartTime, Tid, getVersionNumber()))
+            continue; 
          // If we don't have that event yet, we create a new one.
          // Otherwise we copy the information into the existing event anyway, because the data might have changed.
          pEvent = newEvent = new cEvent(SiEitEvent.getEventId());
-         if (!pEvent)
-            continue;
+         newEvent->SetStartTime(StartTime);
+         newEvent->SetDuration(Duration);
+         if (!handledExternally)
+            pSchedule->AddEvent(newEvent);
          }
       else {
          // We have found an existing event, either through its event ID or its start time.
          pEvent->SetSeen();
-         // If the existing event has a zero table ID it was defined externally and shall
-         // not be overwritten.
-         uchar TableID = pEvent->TableID();
-         if (TableID == 0x00) {
-            if (pEvent->Version() == getVersionNumber())
-               continue;
-            HasExternalData = ExternalData = true;
-            }
+         uchar TableID = max(pEvent->TableID(), uchar(0x4E)); // for backwards compatibility, table ids less than 0x4E are treated as if they were "present"
          // If the new event has a higher table ID, let's skip it.
          // The lower the table ID, the more "current" the information.
-         else if (Tid > TableID)
+         if (Tid > TableID)
             continue;
          // If the new event comes from the same table and has the same version number
          // as the existing one, let's skip it to avoid unnecessary work.
@@ -112,21 +109,20 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
          // to the Sat.1/Pro7 transponder, events will keep toggling because of the bogus version numbers.
          else if (Tid == TableID && pEvent->Version() == getVersionNumber())
             continue;
+         EpgHandlers.SetEventID(pEvent, SiEitEvent.getEventId()); // unfortunately some stations use different event ids for the same event in different tables :-(
+         EpgHandlers.SetStartTime(pEvent, StartTime);
+         EpgHandlers.SetDuration(pEvent, Duration);
          }
-      if ((!ExternalData) & (!OnlyRunningStatus)) {
-         pEvent->SetEventID(SiEitEvent.getEventId()); // unfortunately some stations use different event ids for the same event in different tables :-(
+      if (pEvent->TableID() > 0x4E) // for backwards compatibility, table ids less than 0x4E are never overwritten
          pEvent->SetTableID(Tid);
-         pEvent->SetStartTime(StartTime);
-         pEvent->SetDuration(Duration);
-         }
-      if (newEvent)
-         pSchedule->AddEvent(newEvent);
       if (Tid == 0x4E) { // we trust only the present/following info on the actual TS
          if (SiEitEvent.getRunningStatus() >= SI::RunningStatusNotRunning)
-            pSchedule->SetRunningStatus(pEvent, SiEitEvent.getRunningStatus(), channel);
+            pSchedule->SetRunningStatus(pEvent, SiEitEvent.getRunningStatus(), Channel);
          }
-      if (OnlyRunningStatus)
+      if (OnlyRunningStatus) {
+         pEvent->SetVersion(0xFF); // we have already changed the table id above, so set the version to an invalid value to make sure the next full run will be executed
          continue; // do this before setting the version, so that the full update can be done later
+         }
       pEvent->SetVersion(getVersionNumber());
 
       int LanguagePreferenceShort = -1;
@@ -138,10 +134,6 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
       cLinkChannels *LinkChannels = NULL;
       cComponents *Components = NULL;
       for (SI::Loop::Iterator it2; (d = SiEitEvent.eventDescriptors.getNext(it2)); ) {
-          if (ExternalData && d->getDescriptorTag() != SI::ComponentDescriptorTag) {
-             delete d;
-             continue;
-             }
           switch (d->getDescriptorTag()) {
             case SI::ExtendedEventDescriptorTag: {
                  SI::ExtendedEventDescriptor *eed = (SI::ExtendedEventDescriptor *)d;
@@ -178,7 +170,7 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
                         NumContents++;
                         }
                      }
-                 pEvent->SetContents(Contents);
+                 EpgHandlers.SetContents(pEvent, Contents);
                  }
                  break;
             case SI::ParentalRatingDescriptorTag: {
@@ -197,7 +189,7 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
                           case 0x13:          ParentalRating = 16; break;
                           default:            ParentalRating = 0;
                           }
-                        pEvent->SetParentalRating(ParentalRating);
+                        EpgHandlers.SetParentalRating(pEvent, ParentalRating);
                         }
                      }
                  }
@@ -216,20 +208,20 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
                  else if (month == 0 && t.tm_mon == 11) // current month is jan, but event is in dec
                     t.tm_year--;
                  time_t vps = mktime(&t);
-                 pEvent->SetVps(vps);
+                 EpgHandlers.SetVps(pEvent, vps);
                  }
                  break;
             case SI::TimeShiftedEventDescriptorTag: {
                  SI::TimeShiftedEventDescriptor *tsed = (SI::TimeShiftedEventDescriptor *)d;
-                 cSchedule *rSchedule = (cSchedule *)Schedules->GetSchedule(tChannelID(Source, channel->Nid(), channel->Tid(), tsed->getReferenceServiceId()));
+                 cSchedule *rSchedule = (cSchedule *)Schedules->GetSchedule(tChannelID(Source, Channel->Nid(), Channel->Tid(), tsed->getReferenceServiceId()));
                  if (!rSchedule)
                     break;
                  rEvent = (cEvent *)rSchedule->GetEvent(tsed->getReferenceEventId());
                  if (!rEvent)
                     break;
-                 pEvent->SetTitle(rEvent->Title());
-                 pEvent->SetShortText(rEvent->ShortText());
-                 pEvent->SetDescription(rEvent->Description());
+                 EpgHandlers.SetTitle(pEvent, rEvent->Title());
+                 EpgHandlers.SetShortText(pEvent, rEvent->ShortText());
+                 EpgHandlers.SetDescription(pEvent, rEvent->Description());
                  }
                  break;
             case SI::LinkageDescriptorTag: {
@@ -242,13 +234,13 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
                        strn0cpy(linkName, (const char *)ld->privateData.getData(), sizeof(linkName));
                        // TODO is there a standard way to determine the character set of this string?
                        cChannel *link = Channels.GetByChannelID(linkID);
-                       if (link != channel) { // only link to other channels, not the same one
+                       if (link != Channel) { // only link to other channels, not the same one
                           if (link) {
                              if (Setup.UpdateChannels == 1 || Setup.UpdateChannels >= 3)
                                 link->SetName(linkName, "", "");
                              }
                           else if (Setup.UpdateChannels >= 4) {
-                             link = Channels.NewChannel(channel, linkName, "", "", ld->getOriginalNetworkId(), ld->getTransportStreamId(), ld->getServiceId());
+                             link = Channels.NewChannel(Channel, linkName, "", "", ld->getOriginalNetworkId(), ld->getTransportStreamId(), ld->getServiceId());
                              //XXX patFilter->Trigger();
                              }
                           if (link) {
@@ -258,7 +250,7 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
                              }
                           }
                        else
-                          channel->SetPortalName(linkName);
+                          Channel->SetPortalName(linkName);
                        }
                     }
                  }
@@ -283,43 +275,46 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
       if (!rEvent) {
          if (ShortEventDescriptor) {
             char buffer[256];
-            pEvent->SetTitle(ShortEventDescriptor->name.getText(buffer, sizeof(buffer)));
-            pEvent->SetShortText(ShortEventDescriptor->text.getText(buffer, sizeof(buffer)));
+            EpgHandlers.SetTitle(pEvent, ShortEventDescriptor->name.getText(buffer, sizeof(buffer)));
+            EpgHandlers.SetShortText(pEvent, ShortEventDescriptor->text.getText(buffer, sizeof(buffer)));
             }
-         else if (!HasExternalData) {
-            pEvent->SetTitle(NULL);
-            pEvent->SetShortText(NULL);
+         else {
+            EpgHandlers.SetTitle(pEvent, NULL);
+            EpgHandlers.SetShortText(pEvent, NULL);
             }
          if (ExtendedEventDescriptors) {
             char buffer[ExtendedEventDescriptors->getMaximumTextLength(": ") + 1];
-            pEvent->SetDescription(ExtendedEventDescriptors->getText(buffer, sizeof(buffer), ": "));
+            EpgHandlers.SetDescription(pEvent, ExtendedEventDescriptors->getText(buffer, sizeof(buffer), ": "));
             }
-         else if (!HasExternalData)
-            pEvent->SetDescription(NULL);
+         else
+            EpgHandlers.SetDescription(pEvent, NULL);
          }
       delete ExtendedEventDescriptors;
       delete ShortEventDescriptor;
 
-      pEvent->SetComponents(Components);
+      EpgHandlers.SetComponents(pEvent, Components);
 
-      if (!HasExternalData)
-         pEvent->FixEpgBugs();
+      EpgHandlers.FixEpgBugs(pEvent);
       if (LinkChannels)
-         channel->SetLinkChannels(LinkChannels);
+         Channel->SetLinkChannels(LinkChannels);
       Modified = true;
+      EpgHandlers.HandleEvent(pEvent);
+      if (handledExternally)
+         delete pEvent;
       }
   if (Tid == 0x4E) {
      if (Empty && getSectionNumber() == 0)
         // ETR 211: an empty entry in section 0 of table 0x4E means there is currently no event running
-        pSchedule->ClrRunningStatus(channel);
+        pSchedule->ClrRunningStatus(Channel);
      pSchedule->SetPresentSeen();
      }
   if (Modified && !OnlyRunningStatus) {
-     pSchedule->Sort();
-     pSchedule->DropOutdated(SegmentStart, SegmentEnd, Tid, getVersionNumber());
+     EpgHandlers.SortSchedule(pSchedule);
+     EpgHandlers.DropOutdated(pSchedule, SegmentStart, SegmentEnd, Tid, getVersionNumber());
      Schedules->SetModified(pSchedule);
      }
   Channels.Unlock();
+  EpgHandlers.EndSegmentTransfer(Modified);
 }
 
 // --- cTDT ------------------------------------------------------------------

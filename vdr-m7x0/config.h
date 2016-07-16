@@ -34,7 +34,7 @@
 // plugins to work with newer versions of the core VDR as long as no
 // VDR header files have changed.
 
-
+#define EPGHANDLER 1
 #define LIEMIKUUTIO  130
 
 // The MainMenuHook Patch's version number:
