@@ -3,7 +3,13 @@
 
 using namespace std;
 
-cTVScraperWorker::cTVScraperWorker(cTVScraperDB *db, cOverRides *overrides) : cThread("tvscraper", true) {
+cTVScraperWorker::cTVScraperWorker(cTVScraperDB *db, cOverRides *overrides) : 
+#if APIVERSNUM >= 10732
+    cThread("tvscraper", true)
+#else
+    cThread("tvscraper")
+#endif
+{
     startLoop = true;
     scanVideoDir = false;
     manualScan = false;
@@ -24,7 +30,11 @@ cTVScraperWorker::~cTVScraperWorker() {
 }
 
 void cTVScraperWorker::SetLanguage(void) {
+#if APIVERSNUM >= 10503
     string loc = setlocale(LC_NAME, NULL);
+#else
+    string loc = tr("en_US");
+#endif
     size_t index = loc.find_first_of("_");
     string langISO = "";
     if (index > 0) {

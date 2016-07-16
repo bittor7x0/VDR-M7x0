@@ -7,6 +7,7 @@
  */
 #include <getopt.h>
 #include <vdr/plugin.h>
+#include "i18n.h"
 #include "tools/curlfuncs.cpp"
 #include "tools/filesystem.c"
 #include "tools/fuzzy.c"
@@ -101,8 +102,15 @@ bool cPluginTvscraper::Initialize(void) {
 }
 
 bool cPluginTvscraper::Start(void) {
+#if APIVERSNUM < 10507
+    RegisterI18n(Phrases);
+#endif
     if (!cacheDirSet) {
+#if APIVERSNUM >= 10730
         config.SetBaseDir(cPlugin::CacheDirectory(PLUGIN_NAME_I18N));
+#else
+        config.SetBaseDir("/var/vdr/video0");
+#endif
     }
     db = new cTVScraperDB();
     if (!db->Connect()) {

@@ -1,3 +1,4 @@
+#include "i18n.h"
 #include "setup.h"
 
 using namespace std;
@@ -77,7 +78,9 @@ void cTVScraperSetup::Store(void) {
 
 cTVScraperChannelSetup ::cTVScraperChannelSetup (vector<int> *channelsScrap) : cOsdMenu(tr("Configure channels to be scraped"), 30) {
     this->channelsScrap = channelsScrap;
+#if APIVERSNUM >= 10734
     SetMenuCategory(mcSetupPlugins);
+#endif
     Setup();
 }
 

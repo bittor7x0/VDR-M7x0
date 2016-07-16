@@ -29,6 +29,27 @@ VDR-PLUGINS_DEPS = $(BASE_BUILD_STAGEFILE) $(VDR_INSTALLED) $(TOP_DIR)/.config
 ifeq ($(or $(filter y,$(CONFIG_ZLIB)),$(filter y,$(CONFIG_ZLIB_STATIC))),y)
 	VDR-PLUGINS_DEPS +=  $(ZLIB_INSTALLED)
 endif
+ifeq ($(or $(filter y,$(CONFIG_PCRE)),$(filter y,$(CONFIG_PCRE_CPP))),y)
+	VDR-PLUGINS_DEPS +=  $(PCRE_INSTALLED)
+endif
+ifeq ($(CONFIG_GRAPHICSMAGICK),y)
+	VDR-PLUGINS_DEPS +=  $(GRAPHICSMAGICK_INSTALLED)
+endif
+ifeq ($(CONFIG_FREETYPE),y)
+	VDR-PLUGINS_DEPS +=  $(FREETYPE_INSTALLED)
+endif
+ifeq ($(CONFIG_SQLITE),y)
+	VDR-PLUGINS_DEPS +=  $(SQLITE_INSTALLED)
+endif
+ifeq ($(CONFIG_CURL),y)
+	VDR-PLUGINS_DEPS +=  $(CURL_INSTALLED)
+endif
+ifeq ($(CONFIG_LIBXML2),y)
+	VDR-PLUGINS_DEPS +=  $(LIBXML2_INSTALLED)
+endif
+ifeq ($(CONFIG_JANSSON),y)
+	VDR-PLUGINS_DEPS +=  $(JANSSON_INSTALLED)
+endif
 
 VDR-PLUGINS_SVN_URL := http://svn.assembla.com/svn/VDR-M7x0/trunk/vdr-m7x0-plugins
 VDR-PLUGINS_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS
@@ -117,6 +138,38 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 	if [ -f $(VDR_DIR)/PLUGINS/src/markad/Makefile ]; then \
 		if [ X"$(CONFIG_MARKAD)" != X"y" ]; then \
 			$(ECHO) dependency error: markad plugin needs markad program enabled; \
+			exit 1; \
+		fi; \
+	fi; \
+	if [ -f $(VDR_DIR)/PLUGINS/src/skinenigmang/Makefile ]; then \
+		if [ X"$(CONFIG_GRAPHICSMAGICK)" = X"y" ]; then \
+			$(SED) -i -e 's,^#HAVE_IMAGEMAGICK = 1,HAVE_IMAGEMAGICK = GRAPHICS,g' \
+				$(VDR_DIR)/PLUGINS/src/skinenigmang/Makefile; \
+		else \
+			$(SED) -i -e 's,^HAVE_IMAGEMAGICK = GRAPHICS,#HAVE_IMAGEMAGICK = 1,g' \
+				$(VDR_DIR)/PLUGINS/src/skinenigmang/Makefile; \
+		fi; \
+		if [ X"$(CONFIG_FREETYPE)" = X"y" ]; then \
+			$(SED) -i -e 's,^#HAVE_FREETYPE = 1,HAVE_FREETYPE = 1,g' \
+				$(VDR_DIR)/PLUGINS/src/skinenigmang/Makefile; \
+			$(SED) -i -e 's,shell.*freetype-config"\?,shell \"$(TARGET_ROOT)/usr/bin/freetype-config\",g' \
+				$(VDR_DIR)/PLUGINS/src/skinenigmang/Makefile; \
+		else \
+			$(SED) -i -e 's,^HAVE_FREETYPE = 1,#HAVE_FREETYPE = 1,g' \
+				$(VDR_DIR)/PLUGINS/src/skinenigmang/Makefile; \
+		fi; \
+	fi; \
+	if [ -f $(VDR_DIR)/PLUGINS/src/tvscraper/Makefile ]; then \
+		if [ X"$(CONFIG_SQLITE)" != X"y" -o X"$(CONFIG_CURL)" != X"y" -o X"$(CONFIG_LIBXML2)" != X"y" -o X"$(CONFIG_JANSSON)" != X"y" ]; then \
+			$(ECHO) dependency error: tvscraper plugin needs libsqlite3, libcurl, libXML2 and libjansson enabled; \
+			exit 1; \
+		fi; \
+		$(SED) -i -e 's,shell.*xml2-config"\?,shell \"$(TARGET_ROOT)/usr/bin/xml2-config\",g' \
+			$(VDR_DIR)/PLUGINS/src/tvscraper/Makefile; \
+	fi; \
+	if [ -f $(VDR_DIR)/PLUGINS/src/xmltv2vdr/Makefile ]; then \
+		if [ X"$(CONFIG_SQLITE)" != X"y" -o X"$(CONFIG_LIBXML2)" != X"y" -o X"$(CONFIG_PCRE)" != X"y" -o X"$(CONFIG_PCRE_CPP)" != X"y" ]; then \
+			$(ECHO) dependency error: xmltv2vdr plugin needs libsqlite3, libXML2 and pcre library with C++ support enabled; \
 			exit 1; \
 		fi; \
 	fi; \
