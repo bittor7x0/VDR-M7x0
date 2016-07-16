@@ -104,7 +104,7 @@ using std::string;
 #define ICON_REC               0xF0
 #define ICON_RUNNING           0xFB
 #define ICON_CLOCK             0xFD
-#define ICON_CLOCK_HALF        0x74
+#define ICON_CLOCK_HALF        0xD4
 #define ICON_BAR_OPEN          0x82
 #define ICON_BAR_FULL          0x7F
 #define ICON_BAR_EMPTY         0x83

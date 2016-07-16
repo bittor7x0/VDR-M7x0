@@ -19,6 +19,7 @@
 #define ICON_NEU           char(226)
 #define ICON_RENNER        char(251)
 #define ICON_UHR           char(253)
+#define ICON_UHR_HALF      char(212)
 #define ICON_LAUTSPRECHER  char(254)
 #define ICON_PFEIL         char(255)
 //Iconpatch-Variablen - Ende
