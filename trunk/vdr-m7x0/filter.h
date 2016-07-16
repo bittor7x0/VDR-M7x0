@@ -14,11 +14,18 @@
 #define DEFAULT_FILTER_TIMEOUT 180
 class cSectionSyncer {
 private:
-  int lastVersion;
+  int currentVersion;
+  int currentSection;
   bool synced;
+  bool complete;
+  uchar sections[32]; // holds 32 * 8 = 256 bits, as flags for the sections
+  void SetSectionFlag(uchar Section, bool On) { if (On) sections[Section / 8] |= (1 << (Section % 8)); else sections[Section / 8] &= ~(1 << (Section % 8)); }
+  bool GetSectionFlag(uchar Section) { return sections[Section / 8] & (1 << (Section % 8)); }
 public:
   cSectionSyncer(void);
   void Reset(void);
+  void Repeat(void);
+  bool Complete(void) { return complete; }
   bool Sync(uchar Version, int Number, int LastNumber);
   };
 
