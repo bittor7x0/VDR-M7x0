@@ -30,7 +30,7 @@ ifeq ($(CONFIG_ZLIB),y)
    FFMPEG_DEPS += $(ZLIB_INSTALLED)
 endif
 
-FFMPEG_VERSION := 1.0
+FFMPEG_VERSION := 3.1
 FFMPEG_PATCHES_DIR := $(PATCHES_DIR)/ffmpeg/$(FFMPEG_VERSION)
 
 FFMPEG_FILE := ffmpeg-$(FFMPEG_VERSION).tar.bz2
@@ -106,10 +106,18 @@ $(STAGEFILES_DIR)/.ffmpeg_configured: $(STAGEFILES_DIR)/.ffmpeg_patched
 			--disable-manpages \
 			--disable-podpages \
 			--disable-txtpages \
-			--disable-dxva2 \
-			--disable-vaapi \
-			--disable-vda \
-			--disable-vdpau \
+			--disable-runtime-cpudetect \
+			--disable-vsx \
+			--disable-power8 \
+			--disable-aesni \
+			--disable-armv5te \
+			--disable-armv6 \
+			--disable-armv6t2 \
+			--disable-msa \
+			--disable-mmi \
+			--disable-altivec \
+			--disable-amd3dnow \
+			--disable-amd3dnowext \
 			--disable-mmx \
 			--disable-mmxext \
 			--disable-sse \
@@ -118,10 +126,24 @@ $(STAGEFILES_DIR)/.ffmpeg_configured: $(STAGEFILES_DIR)/.ffmpeg_patched
 			--disable-ssse3 \
 			--disable-sse4 \
 			--disable-sse42 \
+			--disable-avx \
+			--disable-xop \
+			--disable-fma3 \
+			--disable-fma4 \
+			--disable-avx2 \
+			--disable-vfp \
+			--disable-neon \
+			--disable-inline-asm \
+			--disable-yasm \
 			--disable-mips32r2 \
-			--disable-mipsdspr1 \
+			--disable-mipsdsp \
 			--disable-mipsdspr2 \
 			--disable-mipsfpu \
+			--disable-dxva2 \
+			--disable-lzma \
+			--disable-vaapi \
+			--disable-vda \
+			--disable-vdpau \
 			--disable-fast-unaligned \
 			--enable-pthreads \
 			--disable-stripping \
@@ -132,24 +154,22 @@ $(STAGEFILES_DIR)/.ffmpeg_configured: $(STAGEFILES_DIR)/.ffmpeg_patched
 			$(if $(CONFIG_FFMPEG_LIBAVFORMAT),--enable-avformat,--disable-avformat) \
 			$(if $(CONFIG_FFMPEG_LIBPOSTPROC),--enable-postproc,--disable-postproc) \
 			$(if $(CONFIG_FFMPEG_LIBSWSCALE),--enable-swscale,--disable-swscale) \
+			--disable-swresample \
 			--disable-bsfs \
 			--disable-devices \
 			--disable-encoders \
 			--disable-decoders \
+			--enable-decoder=aac \
 			--enable-decoder=ac3 \
 			--enable-decoder=h264 \
-			--enable-decoder=mpeg1video \
-			--enable-decoder=mpeg_xvmc \
-			--enable-decoder=mpeg2video \
-			--enable-decoder=h264 \
-			--enable-decoder=mpeg4 \
-			--enable-decoder=mpeg4aac \
 			--enable-decoder=mpegvideo \
-			--enable-decoder=pcm_s16be \
-			--enable-decoder=pcm_s16le \
+			--enable-decoder=mpeg1video \
+			--enable-decoder=mpeg2video \
+			--enable-decoder=mpeg4 \
 			$(if $(CONFIG_ZLIB),--enable-decoder=zlib,--disable-decoder=zlib) \
 			--disable-muxers \
 			--disable-demuxers \
+			--enable-demuxer=aac \
 			--enable-demuxer=ac3 \
 			--enable-demuxer=h264 \
 			--enable-demuxer=mpegps \
@@ -163,6 +183,7 @@ $(STAGEFILES_DIR)/.ffmpeg_configured: $(STAGEFILES_DIR)/.ffmpeg_patched
 			--enable-parser=mpegvideo \
 			--enable-parser=mpeg4video \
 			--disable-protocols \
+			--enable-protocol=file \
 			--disable-avfilter \
 			--disable-filters \
 			--disable-outdevs)
@@ -193,7 +214,7 @@ $(STAGEFILES_DIR)/.ffmpeg_installed: $(STAGEFILES_DIR)/.ffmpeg_compiled
 
 $(FILELIST_DIR)/ffmpeg.lst: $(STAGEFILES_DIR)/.ffmpeg_installed
 	-$(RM) -f $(FILELIST_DIR)/ffmpeg.lst
-	$(TOUCH) -f $(FILELIST_DIR)/ffmpeg.lst
+	$(TOUCH) $(FILELIST_DIR)/ffmpeg.lst
 ifeq ($(CONFIG_FFMPEG_LIBAVCODEC),y)
 	$(CAT) $(FILELIST_DIR)/ffmpeg_libavcodec.lst >> $(FILELIST_DIR)/ffmpeg.lst
 endif
@@ -212,7 +233,7 @@ endif
 ifeq ($(CONFIG_FFMPEG_LIBSWSCALE),y)
 	$(CAT) $(FILELIST_DIR)/ffmpeg_libswscale.lst >> $(FILELIST_DIR)/ffmpeg.lst
 endif
-	$(TOUCH) -f $(FILELIST_DIR)/ffmpeg.lst
+	$(TOUCH) $(FILELIST_DIR)/ffmpeg.lst
 
 .PHONY: clean-ffmpeg distclean-ffmpeg
 

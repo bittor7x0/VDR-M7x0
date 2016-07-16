@@ -1,4 +1,4 @@
-usr/lib/libswscale.so.2.1.101  usr/lib/libswscale.so.2.1.101  f 755 0 0 - - - - -
-usr/lib/libswscale.so.2.1.101  -                              s   - - - - - - - -
-usr/lib/libswscale.so.2        libswscale.so.2.1.101          l 777 0 0 - - - - -
-usr/lib/libswscale.so          libswscale.so.2.1.101          l 777 0 0 - - - - -
+usr/lib/libswscale.so.4.1.100  usr/lib/libswscale.so.4.1.100  f 755 0 0 - - - - -
+usr/lib/libswscale.so.4.1.100  -                              s   - - - - - - - -
+usr/lib/libswscale.so.4        libswscale.so.4.1.100          l 777 0 0 - - - - -
+usr/lib/libswscale.so          libswscale.so.4.1.100          l 777 0 0 - - - - -

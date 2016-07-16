@@ -30,7 +30,7 @@ ifeq ($(CONFIG_ZLIB),y)
 	CURL_DEPS +=  $(ZLIB_INSTALLED)
 endif
 
-CURL_VERSION := 7.19.6
+CURL_VERSION := 7.49.1
 CURL_PATCHES_DIR := $(PATCHES_DIR)/curl/$(CURL_VERSION)
 
 CURL_FILE := curl-$(CURL_VERSION).tar.bz2
@@ -80,43 +80,67 @@ $(STAGEFILES_DIR)/.curl_patched: $(STAGEFILES_DIR)/.curl_unpacked
 #
 
 $(STAGEFILES_DIR)/.curl_configured: $(STAGEFILES_DIR)/.curl_patched
-	($(CD) $(CURL_DIR) ; $(UCLIBC_ENV) \
-		LDFLAGS="$(UCLIBC_LDFLAGS) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib $(if $(CONFIG_ZLIB),-lz)" \
+	($(CD) $(CURL_DIR) ; $(UCLIBC_ENV_LTO) \
+		LDFLAGS="$(UCLIBC_LDFLAGS_LTO) -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib $(if $(CONFIG_ZLIB),-lz)" \
 		$(CURL_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--enable-shared \
 			--enable-static \
-			--disable-thread \
+			--enable-optimize \
+			--enable-libgcc \
+			--enable-symbol-hiding \
+			--disable-threaded-resolver \
+			--disable-largefile \
 			--enable-cookies \
 			--disable-crypto-auth \
-			--enable-nonblocking \
+			--disable-libcurl-option \
+			--disable-unix-sockets \
 			--disable-file \
 			--disable-ftp \
 			--enable-http \
 			--disable-ares \
 			--disable-debug \
+			--disable-curldebug \
 			--disable-dict \
 			--disable-gopher \
 			--disable-ipv6 \
+			--disable-imap \
 			--disable-ldap \
 			--disable-ldaps \
 			--disable-manual \
 			--disable-proxy \
 			--disable-sspi \
+			--disable-pop3 \
+			--disable-rtsp \
+			--disable-smb \
+			--disable-smtp \
 			--disable-telnet \
 			--disable-tftp \
 			--disable-verbose \
 			--with-random="/dev/urandom" \
+			--without-axtls \
+			--without-cyassl \
+			--without-polarssl \
+			--without-mbedtls \
 			--without-ssl \
+			--without-winssl \
+			--without-darwinssl \
+			--without-ca-path \
+			--without-ca-fallback \
+			--without-libpsl \
+			--without-winidn \
+			--without-nghttp2 \
+			--without-zsh-functions-dir \
 			--without-ca-bundle \
 			--without-gnutls \
-			--without-krb4 \
 			--without-libidn \
 			--without-nss \
-			--without-spnego \
-			--without-gssapi \
+			--disable-tls-srp \
+			--disable-ntlm-wb \
 			--without-libssh2 \
+			--without-libmetalink \
+			--without-librtmp \
 			$(if $(CONFIG_ZLIB),--with-zlib="$(TARGET_ROOT)/usr",--without-zlib))
 	$(TOUCH) $(STAGEFILES_DIR)/.curl_configured
 
@@ -125,7 +149,7 @@ $(STAGEFILES_DIR)/.curl_configured: $(STAGEFILES_DIR)/.curl_patched
 #
 
 $(STAGEFILES_DIR)/.curl_compiled: $(STAGEFILES_DIR)/.curl_configured
-	$(MAKE) -C $(CURL_DIR) $(UCLIBC_ENV)
+	$(MAKE) -C $(CURL_DIR) $(UCLIBC_ENV_LTO)
 	$(TOUCH) $(STAGEFILES_DIR)/.curl_compiled
 
 #
@@ -133,7 +157,7 @@ $(STAGEFILES_DIR)/.curl_compiled: $(STAGEFILES_DIR)/.curl_configured
 #
 
 $(STAGEFILES_DIR)/.curl_installed: $(STAGEFILES_DIR)/.curl_compiled
-	$(MAKE) -C $(CURL_DIR) $(UCLIBC_ENV) install
+	$(MAKE) -C $(CURL_DIR) $(UCLIBC_ENV_LTO) install
 	$(TOUCH) $(STAGEFILES_DIR)/.curl_installed
 
 
