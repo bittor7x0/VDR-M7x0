@@ -58,11 +58,11 @@ LIBS    += $(shell $(PKG-CONFIG) --libs $(PKG-LIBS))
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o i18n.o soundex.o extpipe.o parse.o source.o import.o event.o setup.o maps.o
+OBJS = $(PLUGIN).o i18n.o compatibility.o soundex.o extpipe.o parse.o source.o import.o event.o setup.o maps.o
 
 ### The main target:
 
-all: libvdr-$(PLUGIN).so i18n
+all: libvdr-$(PLUGIN).so
 
 ### Implicit rules:
 

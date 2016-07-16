@@ -250,7 +250,7 @@ char *cImport::Add2Description(char *description, const char *Name, const char *
 char *cImport::Add2Description(char *description, const char *Name, int Value)
 {
     char *value=NULL;
-    if (asprintf(&value,"%i",Value)==-1) return false;
+    if (asprintf(&value,"%i",Value)==-1) return NULL;
     description = strcatrealloc(description,Name);
     description = strcatrealloc(description,": ");
     description = strcatrealloc(description,value);
@@ -261,7 +261,7 @@ char *cImport::Add2Description(char *description, const char *Name, int Value)
 
 char *cImport::AddEOT2Description(char *description, bool checkutf8)
 {
-    const char nbspUTF8[]={0xc2,0xa0,0};
+    const char nbspUTF8[]={(char)0xc2,(char)0xa0,0};
 
     if (checkutf8)
     {
@@ -277,7 +277,7 @@ char *cImport::AddEOT2Description(char *description, bool checkutf8)
             }
             else
             {
-                const char nbsp[]={0xa0,0};
+                const char nbsp[]={(char)0xa0,0};
                 description=strcatrealloc(description,nbsp);
             }
         }

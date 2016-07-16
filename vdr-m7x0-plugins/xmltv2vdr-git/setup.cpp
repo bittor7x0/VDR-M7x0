@@ -413,16 +413,16 @@ cMenuSetupXmltv2vdrTextMap::cMenuSetupXmltv2vdrTextMap(cGlobals *Global)
     Add(NewTitle(tr("country and date")));
     settval(country);
     settval(year);
-    Add(new cMenuEditStrItem("country",country,sizeof(country)));
-    Add(new cMenuEditStrItem("year",year,sizeof(year)));
+    Add(new cMenuEditStrItem("country",country,sizeof(country),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("year",year,sizeof(year),tr(FileNameChars)));
 
     Add(NewTitle(tr("original title")));
     settval(originaltitle);
-    Add(new cMenuEditStrItem("originaltitle",originaltitle,sizeof(originaltitle)));
+    Add(new cMenuEditStrItem("originaltitle",originaltitle,sizeof(originaltitle),tr(FileNameChars)));
 
     Add(NewTitle(tr("category")));
     settval(category);
-    Add(new cMenuEditStrItem("category",category,sizeof(category)));
+    Add(new cMenuEditStrItem("category",category,sizeof(category),tr(FileNameChars)));
 
     Add(NewTitle(tr("credits")));
     settval(director);
@@ -435,48 +435,48 @@ cMenuSetupXmltv2vdrTextMap::cMenuSetupXmltv2vdrTextMap(cGlobals *Global)
     settval(presenter);
     settval(commentator);
     settval(guest);
-    Add(new cMenuEditStrItem("actor",actor,sizeof(actor)));
-    Add(new cMenuEditStrItem("guest",guest,sizeof(guest)));
-    Add(new cMenuEditStrItem("director",director,sizeof(director)));
-    Add(new cMenuEditStrItem("writer",writer,sizeof(writer)));
-    Add(new cMenuEditStrItem("composer",composer,sizeof(composer)));
-    Add(new cMenuEditStrItem("editor",editor,sizeof(editor)));
-    Add(new cMenuEditStrItem("producer",producer,sizeof(producer)));
-    Add(new cMenuEditStrItem("adapter",adapter,sizeof(adapter)));
-    Add(new cMenuEditStrItem("commentator",commentator,sizeof(commentator)));
-    Add(new cMenuEditStrItem("presenter",presenter,sizeof(presenter)));
+    Add(new cMenuEditStrItem("actor",actor,sizeof(actor),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("guest",guest,sizeof(guest),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("director",director,sizeof(director),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("writer",writer,sizeof(writer),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("composer",composer,sizeof(composer),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("editor",editor,sizeof(editor),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("producer",producer,sizeof(producer),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("adapter",adapter,sizeof(adapter),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("commentator",commentator,sizeof(commentator),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("presenter",presenter,sizeof(presenter),tr(FileNameChars)));
 
     Add(NewTitle(tr("video informations")));
     settval(video);
     settval(blacknwhite);
-    Add(new cMenuEditStrItem("video",video,sizeof(video)));
-    Add(new cMenuEditStrItem("blackandwhite",blacknwhite,sizeof(blacknwhite)));
+    Add(new cMenuEditStrItem("video",video,sizeof(video),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("blackandwhite",blacknwhite,sizeof(blacknwhite),tr(FileNameChars)));
 
     Add(NewTitle(tr("audio informations")));
     settval(audio);
     settval(dolby);
     settval(dolbydigital);
     settval(bilingual);
-    Add(new cMenuEditStrItem("audio",audio,sizeof(audio)));
-    Add(new cMenuEditStrItem("dolby",dolby,sizeof(dolby)));
-    Add(new cMenuEditStrItem("dolby digital",dolbydigital,sizeof(dolbydigital)));
-    Add(new cMenuEditStrItem("bilingual",bilingual,sizeof(bilingual)));
+    Add(new cMenuEditStrItem("audio",audio,sizeof(audio),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("dolby",dolby,sizeof(dolby),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("dolby digital",dolbydigital,sizeof(dolbydigital),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("bilingual",bilingual,sizeof(bilingual),tr(FileNameChars)));
 
     Add(NewTitle(tr("review")));
     settval(review);
-    Add(new cMenuEditStrItem("review",review,sizeof(review)));
+    Add(new cMenuEditStrItem("review",review,sizeof(review),tr(FileNameChars)));
 
     Add(NewTitle(tr("starrating")));
     settval(starrating);
-    Add(new cMenuEditStrItem("starrating",starrating,sizeof(starrating)));
+    Add(new cMenuEditStrItem("starrating",starrating,sizeof(starrating),tr(FileNameChars)));
 
     Add(NewTitle(tr("season and episode")));
     settval(season);
     settval(episode);
     settval(episodeoverall);
-    Add(new cMenuEditStrItem("season",season,sizeof(season)));
-    Add(new cMenuEditStrItem("episode",episode,sizeof(episode)));
-    Add(new cMenuEditStrItem("episodeoverall",episodeoverall,sizeof(episodeoverall)));
+    Add(new cMenuEditStrItem("season",season,sizeof(season),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("episode",episode,sizeof(episode),tr(FileNameChars)));
+    Add(new cMenuEditStrItem("episodeoverall",episodeoverall,sizeof(episodeoverall),tr(FileNameChars)));
 }
 
 void cMenuSetupXmltv2vdrTextMap::Store()
@@ -612,7 +612,7 @@ eOSState cMenuSetupXmltv2vdrOrder::ProcessKey(eKeys Key)
 
     if (state==osContinue)
     {
-        switch (Key)
+        switch (int(Key))
         {
         case kDown:
         case kUp:
@@ -939,7 +939,7 @@ void cMenuSetupXmltv2vdrChannelSource::output(void)
             strncpy(pin,epgsrc->Pin(),sizeof(pin)-1);
             pin[sizeof(pin)-1]=0;
         }
-        Add(new cMenuEditStrItem(tr("pin"),pin,sizeof(pin)));
+        Add(new cMenuEditStrItem(tr("pin"),pin,sizeof(pin),tr(FileNameChars)));
     }
     if (epgsrc->HasPics())
     {
@@ -1166,7 +1166,7 @@ eOSState cMenuSetupXmltv2vdrChannelMap::ProcessKey(eKeys Key)
     if (HasSubMenu()) return osContinue;
     if (state==osContinue)
     {
-        switch (Key)
+        switch (int(Key))
         {
         case kLeft:
         case kLeft|k_Repeat:
@@ -1190,7 +1190,7 @@ eOSState cMenuSetupXmltv2vdrChannelMap::ProcessKey(eKeys Key)
 
     if (state==osUnknown)
     {
-        switch (Key)
+        switch (int(Key))
         {
         case kOk:
             if ((Current()>=cm) && (!hasmaps))
