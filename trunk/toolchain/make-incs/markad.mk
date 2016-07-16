@@ -32,13 +32,13 @@ endif
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 MARKAD_DEPS = $(BASE_BUILD_STAGEFILE) $(FFMPEG_INSTALLED) $(LIBINTL-LITE_INSTALLED)
 
-MARKAD_VERSION := 0.1.4
-MARKAD_PATCHES_DIR := $(PATCHES_DIR)/markad/$(MARKAD_VERSION)
+MARKAD_VERSION := 74e2a8c5382fa8bfacd12274899112724a1e0d51
+MARKAD_PATCHES_DIR := $(PATCHES_DIR)/markad/snapshot
 
-MARKAD_FILE := vdr-markad-$(MARKAD_VERSION).tgz
+MARKAD_FILE := vdr-plugin-markad-$(MARKAD_VERSION).tar.bz2
 MARKAD_DLFILE := $(DOWNLOAD_DIR)/$(MARKAD_FILE)
-MARKAD_URL := http://projects.vdr-developer.org/attachments/download/1041/$(MARKAD_FILE)
-MARKAD_DIR := $(BUILD_DIR)/markad-$(MARKAD_VERSION)
+MARKAD_URL := https://projects.vdr-developer.org/git/vdr-plugin-markad.git/snapshot/$(MARKAD_FILE)
+MARKAD_DIR := $(BUILD_DIR)/vdr-plugin-markad-$(MARKAD_VERSION)
 
 MARKAD_INSTALLED = $(STAGEFILES_DIR)/.markad_installed
 
@@ -66,7 +66,7 @@ $(STAGEFILES_DIR)/.markad_unpacked: $(MARKAD_DLFILE) \
                                            $(wildcard $(MARKAD_PATCHES_DIR)/*.patch) \
                                            $$(MARKAD_DEPS)
 	-$(RM) -rf $(MARKAD_DIR)
-	$(TAR) -C $(BUILD_DIR) -zf $(MARKAD_DLFILE)
+	$(BZCAT) $(MARKAD_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.markad_unpacked
 
 #
@@ -76,7 +76,7 @@ $(STAGEFILES_DIR)/.markad_unpacked: $(MARKAD_DLFILE) \
 $(STAGEFILES_DIR)/.markad_patched: $(STAGEFILES_DIR)/.markad_unpacked
 	$(call patch_package, $(MARKAD_DIR), $(MARKAD_PATCHES_DIR))
 	(for file in `$(FIND) $(MARKAD_DIR) -type f -iname '*' | $(SORT)` ; do \
-		$(SED) -i -e  "s,var\/lib\/markad,etc\/markad,g" $$file ; \
+		$(SED) -i -e  "s,var\/lib\/markad,var\/vdr\/video0,g" $$file ; \
 	done)
 	$(TOUCH) $(STAGEFILES_DIR)/.markad_patched
 
@@ -87,7 +87,7 @@ $(STAGEFILES_DIR)/.markad_patched: $(STAGEFILES_DIR)/.markad_unpacked
 $(STAGEFILES_DIR)/.markad_compiled: $(STAGEFILES_DIR)/.markad_patched
 	$(UCLIBC_ENV) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
-		CFLAGS="$(UCLIBC_CFLAGS) $(UCLIBC_CFLAGS_LOOPS)" \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(UCLIBC_CFLAGS_LOOPS)" \
 		$(MAKE) -C $(MARKAD_DIR)/command \
 		PKG-CONFIG="pkg-config" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
@@ -101,7 +101,7 @@ $(STAGEFILES_DIR)/.markad_compiled: $(STAGEFILES_DIR)/.markad_patched
 $(STAGEFILES_DIR)/.markad_installed: $(STAGEFILES_DIR)/.markad_compiled
 	$(UCLIBC_ENV) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
-		CFLAGS="$(UCLIBC_CFLAGS) $(UCLIBC_CFLAGS_LOOPS)" \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(UCLIBC_CFLAGS_LOOPS)" \
 		$(MAKE) -C $(MARKAD_DIR)/command install \
 		PKG-CONFIG="pkg-config" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \

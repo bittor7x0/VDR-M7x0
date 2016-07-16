@@ -1,6 +1,5 @@
 usr/bin/markad                               usr/bin/markad                               f 755 0 0 - - - - -
 usr/bin/markad                               -                                            s   - - - - - - - -
-etc/markad                                   -                                            d 755 0 0 - - - - -
 usr/share/locale                             -                                            d 755 0 0 - - - - -
 usr/share/locale/de_DE                       -                                            d 755 0 0 - - - - -
 usr/share/locale/de_DE/LC_MESSAGES           -                                            d 755 0 0 - - - - -

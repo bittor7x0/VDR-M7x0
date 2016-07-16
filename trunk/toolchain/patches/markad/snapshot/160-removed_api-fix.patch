@@ -1,0 +1,17 @@
+diff --git a/command/decoder.cpp b/command/decoder.cpp
+index a75f08f..a2f6504 100644
+--- a/command/decoder.cpp
++++ b/command/decoder.cpp
+@@ -282,7 +282,12 @@ cMarkAdDecoder::cMarkAdDecoder(bool useH264, int Threads)
+                 }
+ #endif
+ 
++#if ((LIBAVCODEC_VERSION_MICRO >  100) && (LIBAVCODEC_VERSION_INT < ((55<<16)+(45<<8)+101))) || \
++    ((LIBAVCODEC_VERSION_MICRO <= 100) && (LIBAVCODEC_VERSION_INT < ((55<<16)+(28<<8)+1)))
+                 video_frame = avcodec_alloc_frame();
++#else
++                video_frame = av_frame_alloc();
++#endif
+                 if (!video_frame)
+                 {
+                     esyslog("could not allocate frame");
