@@ -1,0 +1,4 @@
+usr/lib/libjansson.so.4.7.0  usr/lib/libjansson.so.4.7.0  f 755 0 0 - - - - -
+usr/lib/libjansson.so.4.7.0  -                            s   - - - - - - - -
+usr/lib/libjansson.so.4      libjansson.so.4.7.0          l 777 0 0 - - - - -
+usr/lib/libjansson.so        libjansson.so.4.7.0          l 777 0 0 - - - - -
