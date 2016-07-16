@@ -1,0 +1,31 @@
+diff -Naur a/ldso/include/dl-syscall.h b/ldso/include/dl-syscall.h
+--- a/ldso/include/dl-syscall.h	2016-02-27 00:06:08.535402006 +0100
++++ b/ldso/include/dl-syscall.h	2016-02-26 22:15:16.000000000 +0100
+@@ -142,10 +142,14 @@
+ #define __NR__dl_getpid __NR_getpid
+ static __always_inline _syscall0(gid_t, _dl_getpid)
+ 
+-#if defined __NR_readlinkat
++#if defined __NR_readlinkat && !defined __NR_readlink
+ # define __NR__dl_readlink __NR_readlinkat
+ static __always_inline _syscall4(int, _dl_readlink, int, id, const char *, path,
+ 						char *, buf, size_t, bufsiz)
++#elif defined __NR_readlink
++# define __NR__dl_readlink __NR_readlink
++static __always_inline _syscall3(int, _dl_readlink, const char *, path, char *, buf,
++                        size_t, bufsiz)
+ #endif
+ 
+ #ifdef __NR_pread64
+diff -Naur a/ldso/ldso/ldso.c b/ldso/ldso/ldso.c
+--- a/ldso/ldso/ldso.c	2016-02-01 16:41:03.000000000 +0100
++++ b/ldso/ldso/ldso.c	2016-02-27 00:07:05.015401714 +0100
+@@ -408,7 +408,7 @@
+ 	char image[PATH_MAX];
+ 	ssize_t s;
+ 
+-	s = _dl_readlink(AT_FDCWD, "/proc/self/exe", image, sizeof(image));
++	s = _dl_readlink("/proc/self/exe", image, sizeof(image));
+ 	if (s > 0 && image[0] == '/') {
+ 		image[s] = 0;
+ 		_dl_progname = _dl_strdup(image);

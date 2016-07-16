@@ -1,0 +1,12 @@
+diff -Naur a/libc/sysdeps/linux/common/getdents.c b/libc/sysdeps/linux/common/getdents.c
+--- a/libc/sysdeps/linux/common/getdents.c	2014-02-18 23:30:28.000000000 +0100
++++ b/libc/sysdeps/linux/common/getdents.c	2014-02-26 15:09:34.812352077 +0100
+@@ -156,7 +156,7 @@
+     return (char *) dp - buf;
+ }
+ 
+-# elif __WORDSIZE == 32 && !defined __NR_getdents64
++# elif __WORDSIZE == 32
+ 
+ #  include <stddef.h>
+ 
