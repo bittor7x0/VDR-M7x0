@@ -277,17 +277,29 @@ void *cThread::StartThread(cThread *Thread)
   return NULL;
 }
 
+#define THREAD_STOP_TIMEOUT  3000 // ms to wait for a thread to stop before newly starting it
+#define THREAD_STOP_SLEEP      30 // ms to sleep while waiting for a thread to stop
+
 bool cThread::Start(void)
 {
-  if (!active) {
-     active = running = true;
-     if (pthread_create(&childTid, NULL, (void *(*) (void *))&StartThread, (void *)this) == 0) {
-        pthread_detach(childTid); // auto-reap
+  if (!running) {
+     if (active) {
+        // Wait until the previous incarnation of this thread has completely ended
+        // before starting it newly:
+        cTimeMs RestartTimeout;
+        while (!running && active && RestartTimeout.Elapsed() < THREAD_STOP_TIMEOUT)
+              cCondWait::SleepMs(THREAD_STOP_SLEEP);
         }
-     else {
-        LOG_ERROR;
-        active = running = false;
-        return false;
+     if (!active) {
+        active = running = true;
+        if (pthread_create(&childTid, NULL, (void *(*) (void *))&StartThread, (void *)this) == 0) {
+           pthread_detach(childTid); // auto-reap
+           }
+        else {
+           LOG_ERROR;
+           active = running = false;
+           return false;
+           }
         }
      }
   return true;
