@@ -23,8 +23,8 @@ PKG-CONFIG ?= pkg-config
 
 ### The directory environment:
 
-VDRDIR = ../../..
-LIBDIR = ../../lib
+VDRDIR ?= ../../..
+LIBDIR ?= ../../lib
 TMPDIR = /tmp
 
 ### Make sure that necessary options are included:
@@ -58,7 +58,7 @@ LIBS    += $(shell $(PKG-CONFIG) --libs $(PKG-LIBS))
 
 ### The object files (add further files here):
 
-OBJS = $(PLUGIN).o soundex.o extpipe.o parse.o source.o import.o event.o setup.o maps.o
+OBJS = $(PLUGIN).o i18n.o soundex.o extpipe.o parse.o source.o import.o event.o setup.o maps.o
 
 ### The main target:
 
@@ -103,15 +103,17 @@ $(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
 .PHONY: i18n
 i18n: $(I18Nmsgs) $(I18Npot)
 
+generate-i18n: i18n-template.h $(I18Npot) $(I18Npo) buildutil/pot2i18n.pl
+	@chmod +x buildutil/pot2i18n.pl
+	buildutil/pot2i18n.pl $(I18Npot) i18n-template.h > i18n-generated.h
+
 ### Targets:
 
 libvdr-$(PLUGIN).so: $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
 	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
 
-install:
-
-dist: clean
+dist: generate-i18n clean
 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
 	@mkdir $(TMPDIR)/$(ARCHIVE)
 	@cp -a *.cpp *.h HISTORY COPYING Makefile README po $(TMPDIR)/$(ARCHIVE)
@@ -124,4 +126,7 @@ dist: clean
 	@echo Distribution package created as $(PACKAGE).tgz
 
 clean:
-	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot 
+	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot pod2*.tmp
+
+cppcheck:
+	@cppcheck --enable=information,style,unusedFunction -v -f $(OBJS:%.o=%.cpp)

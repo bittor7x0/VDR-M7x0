@@ -5,286 +5,289 @@ msgstr ""
 "Project-Id-Version: vdr\n"
 "Report-Msgid-Bugs-To: <see README>\n"
 "POT-Creation-Date: 2012-09-01 13:18+0200\n"
-"PO-Revision-Date: 2010-12-23 23:59+0100\n"
-"Last-Translator: Jochen Dolze <vdr@dolze.de>\n"
-"Language-Team: <vdr@linuxtv.org>\n"
+"PO-Revision-Date: 2011-03-05 15:45+0100\n"
+"Last-Translator: Bittor Corl <bittor7x0 _at_ gmail.com>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Spanish\n"
+"X-Poedit-Country: SPAIN\n"
+"X-Poedit-SourceCharset: ISO-8859-15\n"
 
 msgid "options"
-msgstr "Optionen"
+msgstr "Opciones"
 
 msgid "add season/episode on all timers"
-msgstr "Staffel/Episode an alle Timer anhängen"
+msgstr "añadir temp./episodio a las programaciones"
 
 msgid " add shorttext/title from list"
-msgstr " Kurztext/Titel von Liste übernehmen"
+msgstr " añadir texto corto/título de la lista"
 
 msgid "automatic wakeup"
-msgstr "automatisch Aufwachen"
+msgstr "Despertar automático"
 
 msgid "delete pics after (days)"
-msgstr "Bilder löschen nach (Tagen)"
+msgstr "Borrar fotos después (días)"
 
 msgid "never"
-msgstr "nie"
+msgstr "nunca"
 
 msgid "text mapping"
-msgstr "Textzuordnungen"
+msgstr "Mapear texto"
 
 msgid "order of epg data"
-msgstr "Reihenfolge der EPG Daten"
+msgstr "Orden de los datos EPG"
 
 msgid "epg sources"
-msgstr "EPG Quellen"
+msgstr "Orígenes EPG"
 
 msgid "no epgsources installed"
-msgstr "Keine EPG Quellen installiert"
+msgstr "Ningún origen EPG instalado"
 
 msgid "disabled"
-msgstr "inaktiv"
+msgstr "desactivado"
 
 msgid "epg source channels"
-msgstr "EPG Quellkanäle"
+msgstr "Canales EPG de origen"
 
 msgid "mapped"
-msgstr "zugewiesen"
+msgstr "Mapeado"
 
 msgid "Button$Up"
-msgstr "hoch"
+msgstr "Arriba"
 
 msgid "Button$Down"
-msgstr "runter"
+msgstr "Abajo"
 
 msgid "Button$Log"
-msgstr "Log"
+msgstr "Registro"
 
 msgid "Button$Edit"
-msgstr "editieren"
+msgstr "Editar"
 
 msgid "texts"
-msgstr "Texte"
+msgstr "Textos"
 
 msgid "country and date"
-msgstr "Ort und Jahr"
+msgstr "País y fecha"
 
 msgid "original title"
-msgstr "Originaltitel"
+msgstr "Título original"
 
 msgid "category"
-msgstr "Kategorie"
+msgstr "Categoria"
 
 msgid "credits"
-msgstr "Mitwirkende"
+msgstr "Créditos"
 
 msgid "video informations"
-msgstr "Video Informationen"
+msgstr "Información de vídeo"
 
 msgid "audio informations"
-msgstr "Audio Informationen"
+msgstr "Información de audio"
 
 msgid "review"
-msgstr "Kritik"
+msgstr "Crítica"
 
 msgid "starrating"
-msgstr "Wertung"
+msgstr "Estrellas"
 
 msgid "season and episode"
-msgstr "Staffel und Episode"
+msgstr "Temporada y episodio"
 
 msgid "order"
-msgstr "Reihenfolge"
+msgstr "Orden"
 
 msgid "long text"
-msgstr "Langtext"
+msgstr "Texto completo"
 
 msgid "video"
-msgstr "Video"
+msgstr "Vídeo"
 
 msgid "audio"
 msgstr "Audio"
 
 msgid "rating"
-msgstr "Freigabe"
+msgstr "Valoración"
 
 msgid "overview"
-msgstr "Übersicht"
+msgstr "Resumen"
 
 msgid "next execution"
-msgstr "Nächste Ausführung"
+msgstr "Próxima ejecución"
 
 msgid "active"
-msgstr "aktiv"
+msgstr "Activo"
 
 msgid "log"
-msgstr "Logdatei"
+msgstr "Registro"
 
 msgid "Button$Errors"
-msgstr "Fehler"
+msgstr "Errores"
 
 msgid "Button$Info"
 msgstr "Info"
 
 msgid "Button$Debug"
-msgstr "Debug"
+msgstr "Depurar"
 
 msgid "update options"
-msgstr "Ausführungsoptionen"
+msgstr "Actualizar opciones"
 
 msgid "update on"
-msgstr "Ausführung am"
+msgstr "Actualizar activo"
 
 msgid "update at"
-msgstr "Ausführung um"
+msgstr "Actualizar a las"
 
 msgid "days in advance"
-msgstr "Anzahl Tage"
+msgstr "Días de antelación"
 
 msgid "pin"
 msgstr "Pin"
 
 msgid "download pics"
-msgstr "Bilder herunterladen"
+msgstr "Descargar fotos"
 
 msgid "channels provided"
-msgstr "Verfügbare Kanäle"
+msgstr "Canales proporcionados"
 
 msgid "selected"
-msgstr "ausgewählt"
+msgstr "Seleccionado"
 
 msgid "Button$Reset"
-msgstr "rücksetzen"
+msgstr "Reiniciar"
 
 msgid "Button$Copy"
-msgstr "kopieren"
+msgstr "Copiar"
 
 msgid "epg source channel options"
-msgstr "EPG Quellkanal Optionen"
+msgstr "Opciones del canal EPG de origen"
 
 msgid "type of processing"
-msgstr "Art der Bearbeitung"
+msgstr "Tipo de proceso"
 
 msgid "merge"
-msgstr "mischen"
+msgstr "Unir"
 
 msgid "create"
-msgstr "erstellen"
+msgstr "Crear"
 
 msgid "title"
-msgstr "Titel"
+msgstr "Título"
 
 msgid "short text"
-msgstr "Kurztext"
+msgstr "Texto corto"
 
 msgid "dvb content id"
-msgstr "DVB Inhalts-ID"
+msgstr "Id del contenido DVB"
 
 msgid " actors"
-msgstr " Darsteller"
+msgstr " Actores"
 
 msgid " director"
-msgstr " Regisseur"
+msgstr " Director"
 
 msgid " other crew"
-msgstr " Sonstige"
+msgstr " Otro grupo"
 
 msgid " output"
-msgstr " Ausgabe"
+msgstr " Salida"
 
 msgid "multiline"
-msgstr "mehrzeilig"
+msgstr "multilínea"
 
 msgid "singleline"
-msgstr "einzeilig"
+msgstr "una línea"
 
 msgid " rating in description"
-msgstr " Freigabe im Text"
+msgstr " Puntuación en descripción"
 
 msgid "epg source channel mappings"
-msgstr "EPG Quellkanalzuordnungen"
+msgstr "Mapeo canal EPG de origen"
 
 msgid "none"
-msgstr "keine"
+msgstr "Ninguno"
 
 msgid "Button$Unmap"
-msgstr "entfernen"
+msgstr "No mapear"
 
 msgid "Button$Map"
-msgstr "hinzufügen"
+msgstr "Mapear"
 
 msgid "Copy to all mapped channels?"
-msgstr "Auf zugewiesene Kanäle kopieren?"
+msgstr "¿Copiar todos los canales mapeados?"
 
 msgid "Reset all channel settings?"
-msgstr "Alle Kanaleinstellungen zurücksetzen?"
+msgstr "¿Reiniciar la configuración de los canales?"
 
 msgid "Button$Choose"
-msgstr "auswählen"
+msgstr "Seleccionar"
 
 msgid "country"
-msgstr "Land"
+msgstr "País"
 
 msgid "year"
-msgstr "Jahr"
+msgstr "Año"
 
 msgid "originaltitle"
-msgstr "Originaltitel"
+msgstr "Título original"
 
 msgid "actor"
-msgstr "Darsteller"
+msgstr "Actor"
 
 msgid "adapter"
-msgstr "Adapter"
+msgstr "Adaptador"
 
 msgid "commentator"
-msgstr "Bericht"
+msgstr "Comentarista"
 
 msgid "composer"
-msgstr "Musik"
+msgstr "Compositor"
 
 msgid "director"
-msgstr "Regie"
+msgstr "Director"
 
 msgid "editor"
-msgstr "Schnitt"
+msgstr "Editor"
 
 msgid "guest"
-msgstr "Gaststar"
+msgstr "Invitado"
 
 msgid "presenter"
-msgstr "Moderator"
+msgstr "Presentador"
 
 msgid "producer"
-msgstr "Produzent"
+msgstr "Productor"
 
 msgid "writer"
-msgstr "Drehbuch"
+msgstr "Escritor"
 
 msgid "blacknwhite"
-msgstr "s/w"
+msgstr "Blanco y negro"
 
 msgid "dolby"
-msgstr "DolbyDigital 2.0"
+msgstr "Dolby"
 
 msgid "dolbydigital"
-msgstr "DolbyDigital 5.1"
+msgstr "Dolby Digital"
 
 msgid "bilingual"
-msgstr "Zweikanalton"
+msgstr "Bilingüe"
 
 msgid "season"
-msgstr "Staffel"
+msgstr "Temporada"
 
 msgid "episode"
-msgstr "Episode"
+msgstr "Episodio"
 
 msgid "episodeoverall"
-msgstr "Folge"
+msgstr "Episodio general"
 
 msgid "xmltv2vdr plugin still working"
-msgstr "xmltv2vdr plugin ist noch aktiv"
+msgstr "Plugin xmltv2vdr en ejecución"
 
 msgid "Imports xmltv epg into vdr"
-msgstr "Importiert xmltv epg in den VDR"
+msgstr "Importar EPG del xmltv al VDR"

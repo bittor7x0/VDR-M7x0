@@ -20,6 +20,7 @@
 #include <libgen.h>
 #include <sys/vfs.h>
 
+#include "i18n.h"
 #include "setup.h"
 #include "xmltv2vdr.h"
 #include "debug.h"
@@ -1180,6 +1181,9 @@ bool cPluginXmltv2vdr::Initialize(void)
 
 bool cPluginXmltv2vdr::Start(void)
 {
+#if APIVERSNUM < 10507
+    RegisterI18n(Phrases);
+#endif
     // Start any background activities the plugin shall perform.
     g.SetConfDir(ConfigDirectory(PLUGIN_NAME_I18N));
 
