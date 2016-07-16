@@ -21,6 +21,10 @@ cPalette::cPalette(int Bpp)
   SetBpp(Bpp);
 }
 
+cPalette::~cPalette()
+{
+}
+
 void cPalette::Reset(void)
 {
   numColors = 0;
@@ -29,18 +33,23 @@ void cPalette::Reset(void)
 
 int cPalette::Index(tColor Color)
 {
+  // Check if color is already defined:
   for (int i = 0; i < numColors; i++) {
       if (color[i] == Color)
          return i;
       }
+  // No exact color, try a close one:
+  int i = ClosestColor(Color, 4);
+  if (i >= 0)
+     return i;
+  // No close one, try to define a new one:
   if (numColors < maxColors) {
      color[numColors++] = Color;
      modified = true;
      return numColors - 1;
      }
-  dsyslog("too many different colors used in palette");
-  //TODO: return the index of the "closest" color?
-  return 0;
+  // Out of colors, so any close color must do:
+  return ClosestColor(Color);
 }
 
 void cPalette::SetBpp(int Bpp)
@@ -110,6 +119,30 @@ void cPalette::Replace(const cPalette &Palette)
 }
 //M7X0 END AK
 
+int cPalette::ClosestColor(tColor Color, int MaxDiff) const
+{
+  int n = 0;
+  int d = INT_MAX;
+  int A1 = (Color & 0xFF000000) >> 24;
+  int R1 = (Color & 0x00FF0000) >> 16;
+  int G1 = (Color & 0x0000FF00) >>  8;
+  int B1 = (Color & 0x000000FF);
+  for (int i = 0; i < numColors && d > 0; i++) {
+      int A2 = (color[i] & 0xFF000000) >> 24;
+      int R2 = (color[i] & 0x00FF0000) >> 16;
+      int G2 = (color[i] & 0x0000FF00) >>  8;
+      int B2 = (color[i] & 0x000000FF);
+      int diff = 0;
+      if (A1 || A2) // fully transparent colors are considered equal
+         diff = (abs(A1 - A2) << 1) + (abs(R1 - R2) << 1) + (abs(G1 - G2) << 1) + (abs(B1 - B2) << 1); 
+      if (diff < d) {
+         d = diff;
+         n = i;
+         }
+      }
+  return d <= MaxDiff ? n : -1;
+ }
+
 // --- cBitmap ---------------------------------------------------------------
 
 cBitmap::cBitmap(int Width, int Height, int Bpp, int X0, int Y0)
@@ -118,6 +151,7 @@ cBitmap::cBitmap(int Width, int Height, int Bpp, int X0, int Y0)
   bitmap = NULL;
   x0 = X0;
   y0 = Y0;
+  width = height = 0;
   SetSize(Width, Height);
 }
 
@@ -126,6 +160,7 @@ cBitmap::cBitmap(const char *FileName)
   bitmap = NULL;
   x0 = 0;
   y0 = 0;
+  width = height = 0;
   LoadXpm(FileName);
 }
 
@@ -134,6 +169,7 @@ cBitmap::cBitmap(const char *const Xpm[])
   bitmap = NULL;
   x0 = 0;
   y0 = 0;
+  width = height = 0;
   SetXpm(Xpm);
 }
 
@@ -468,7 +504,6 @@ void cBitmap::DrawPixel(int x, int y, tColor Color)
   y -= y0;
   SetIndex(x, y, Index(Color));
 }
-
 
 void cBitmap::DrawBitmap(int x, int y, const cBitmap &Bitmap, tColor ColorFg, tColor ColorBg, bool ReplacePalette, bool Overlay)
 {
