@@ -1,0 +1,227 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+Written by:                  Stefan Braun <louis.braun@gmx.de>
+
+Project's homepage:          
+http://projects.vdr-developer.org/projects/plg-tvscraper
+
+Latest version available at: 
+http://projects.vdr-developer.org/projects/plg-tvscraper/files
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+See the file COPYING for more information.
+
+Description 
+-----------
+
+TVScraper runs in the background and collects metadata (posters, 
+banners, fanart, actor thumbs and roles, descriptions) for all 
+available EPG events on selectable channels and for recordings. 
+Additionally the plugin provides the collected metadata via the VDR 
+service interface to other plugins which deal with EPG information.
+
+TVScraper uses the thetvdb.com API for collecting series metadata and
+themoviedb.org API for movies. Check the websites of both services for
+the terms of use.
+
+Important: To avoid unnecessary traffic, only activate these channels 
+to be scrapped which are reasonable. After plugin installation all 
+channels are deactivated by default, so please consider this point when 
+you activate the channels you are interested in ;)
+
+Additionally you are invited to contribute to the used web services with
+providing missing data for your favorite movies and series.
+
+Requirements
+------------
+
+To run the plugin the following libaries have to be installed:
+- libsqlite3
+- libcurl
+- libXML2
+- libjansson
+
+Installation and configuration
+------------------------------
+
+Just install the plugin depending on your used distribution. During VDR
+startup the plugin base directory can be set with the following option:
+
+-d <CACHEDIR>, --dir=<CACHEDIR> Set directory where database and images 
+                                are stored
+
+If no directory is provided, the plugin uses VDRCACHEDIR as default. 
+Please care about that the user who runs VDR has full read/write access 
+to this directory, otherwise the plugin will not start.
+
+As already mentioned, after first installations no channels are activated
+to be scrapped. Please configure these channels in the plugin setup menu. 
+Additionally you can trigger that your already existing recordings are 
+scrapped, so that also for this recordings metadata is available.
+
+With a "make install" the file "override.conf" which provides the
+possibility to define scraping behaviour manually (see description
+below) is created in <PLGCFGDIR>. An existing override.conf will
+not be overwritten.
+
+The plugins uses a sqlite3 database to store the necessary information. 
+If /dev/shm/ is available, the database is kept in memory during runtime 
+which improves performance. In the configured plugin basedir only a 
+persistant backup of the database is stored then. If /dev/shm/ is not 
+available, only the database file in the plugin base directory is used.
+
+Usage
+-----
+
+After the initial configuration the plugin runs completely independent in
+the background, you don't have to care about anything. The plugins checks
+at least every 24 hours for new EPG events and collects the metadata for
+these events automatically. 
+
+Before each run the plugin performs a cleanup, all images for movies which 
+are not available in the current EPG are deleted. Series and actors thumbs 
+are kept to avoid unnecessary traffic for the web services, because the 
+propability that this data is needed in the future again is rather high. 
+
+If a running recording is detected, the plugin marks the corresponding movie 
+meta data so that the information for this movie will be kept permanentely.
+
+Usage of override.conf: even if tvscraper tries to do everything correct on
+it's own, in some cases scraping delivers wrong results. Some EPG Events are
+not reasonable to scrap, because they reoccur constantly but deliver wrong 
+results everytime, or tvscraper searchs for a movie instead of a series 
+(for instance german "Tatort"). In such cases it is possible to use 
+<PLGCFGDIR>/override.conf to adjust the scraping behaviour. Each line in
+this file has to start either with "ignore", "settype", "substitute" or
+"ignorePath":
+
+- Ignore specific EPG Events or recordings: just create a line in the format
+  ignore;string
+  to ignore "string". 
+- Set scrap type for specific EPG Event or recording: 
+  settype;string;type
+  "string" defines the name of the event or recording to set the type manually, 
+  "type" can be either "series" or "movie"
+- Substitute Search String:
+  substitute;string;substitution
+  "string" is replaced by "substitution" in every search.
+- Ignore all recordings in a deditcatd directory:
+  ignorePath;string
+  "string" can be any substring of a recording path, e.g. "music/" 
+
+Service Interface
+-----------------
+
+Other Plugins can request information about meta data from tvscraper via
+a call to the provided service interface. 
+
+In general each call expects a pointer to a cEvent object as input variable 
+inside the struct passed to the call . This event object can either originate 
+directly from EPG data or from a recording. In this case the event object can 
+be retreived by Recording->Info()->GetEvent()).
+
+As output variables tvscraper provides media info via the "tvMedia" struct:
+
+struct tvMedia {
+    std::string path;
+    int width
+    int height
+};
+
+and actors information via the "tvActor" struct:
+
+struct tvActor {
+    std::string name;
+    std::string role;
+    tvMedia thumb
+};
+
+The service interface offers the following calls:
+
+- TVScraperGetPosterOrBanner
+  
+  With this call, a poster for a movie or a banner for a series which belongs
+  to a specific event can be retreived. 
+  
+  // Data structure for service "TVScraper-GetPosterOrBanner"
+  struct TVScraperGetPosterOrBanner
+  {
+  // in
+  const cEvent *event;             // search image for this event
+  //out
+  tvMediaType type;                //typeSeries or typeMovie
+  tvMedia media;                   //banner or poster
+  };
+
+  Example:
+
+  static cPlugin *pTVScraper = cPluginManager::GetPlugin("tvscraper");
+  if (pTVScraper) {
+    TVScraperGetPosterOrBanner call;
+    call.event = Event;			//provide Event here
+    if (pTVScraper->Service("TVScraperGetPosterOrBanner", &call)) {
+    	... further processing of call.media and call.type
+    }
+  }
+
+- TVScraperGetPoster
+
+  Retreive poster for specified event.
+
+  // Data structure for service "TVScraper-GetPoster"
+  struct TVScraperGetPoster
+  {
+  // in
+  const cEvent *event;             // search image for this event
+  bool isRecording;                // search in current EPG or recordings
+  //out
+  tvMedia media;                   //poster
+  };
+
+    Example:
+
+    static cPlugin *pTVScraper = cPluginManager::GetPlugin("tvscraper");
+    if (pTVScraper) {
+      TVScraperGetPoster call;
+      call.event = Event;                 //provide Event here
+      call.isRecording = true/false	  //recording or live EPG
+      if (pTVScraper->Service("TVScraperGetPoster", &call)) {
+          ... further processing of call.media
+      }
+    }
+
+
+- TVScraperGetFullInformation
+
+  Retreive all available information about given event.
+
+  /* Data structure for service "TVScraper-GetFullEPGInformation"
+  if type == typeMovie a poster and a fanart image is delivered
+  if type == typeSeries a banner and up to three posters and fanarts are delivered
+  */
+  struct TVScraperGetFullInformation
+  {
+  // in
+  const cEvent *event;             // search all media for this event
+  bool isRecording;                // search in current EPG or recordings
+  //out
+  tvMediaType type;
+  tvMedia banner;
+  std::vector<tvMedia> posters;
+  std::vector<tvMedia> fanart;
+  std::vector<tvActor> actors;
+  std::string description;
+  };
+
+  static cPlugin *pTVScraper = cPluginManager::GetPlugin("tvscraper");
+  if (pTVScraper) {
+    TVScraperGetFullInformation call;
+    call.event = Event;                 //provide Event here
+    call.isRecording = true/false       //recording or live EP
+    if (pTVScraper->Service("TVScraperGetFullInformation", &call)) {
+        ... further processing ...
+    }
+

@@ -1,0 +1,50 @@
+VDR Plugin 'tvscraper' Revision History
+----------------------------------------
+
+2013-07-26: Version 0.0.1
+
+- Initial revision.
+
+2013-08-24: Version 0.0.2
+
+- renamed plugin to "tvscraper"
+- removed unnecessary string in ScrapRecordings
+- Correctly escaped select statements with movie 
+  or series titles
+- adapted detection of series/movies: duration of
+  series has to be between 10 and 75 minutes, movies 
+  have to be longer than 75 minutes
+
+Version 0.0.3
+- Implemented cache so that an already looked up 
+  series or movie will not be looked up again
+- Removed quotation marks around search strings
+
+Version 0.0.4
+- Scrap a running recording also if the corresponding
+  channel was not scraped already
+- do some more sophisticated search for recordings
+  first replace all "-" with " " in rec title
+  second remove everything behind "-" in rec title
+
+Version 0.0.5
+- Fixed a bug that banner is only filled with path if
+  image exists in Filesystem
+- str_cut removes ending space
+- modification of sophisticated movie search
+  also "(" are considered and text is cutted, depending
+  if "(" or "-" occur first in search string
+- introduced possibility to ignore titles, set scrap 
+  type and substitute search strings manually. See file 
+  "conf/override.conf" in source tree for explanation.
+- Fixed a crash if a recording without EPG is running
+- Fixed a crash if internet connection is not available
+
+Version 0.1.0
+- Fixed a crash if a configured channel to scrap does not
+  exist anymore
+
+Version 0.2.0
+- Removed old tvscraper service interface
+- Add scraper2vdr service interface
+- Fixed some compiler warnings
