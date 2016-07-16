@@ -101,6 +101,10 @@ CONFIG_SCSI-SPIN = y
 # URL: http://htop.sourceforge.net/
 # CONFIG_HTOP is not set
 
+# comskip: mpeg commercial detector
+# URL: http://www.kaashoek.com/comskip/
+# CONFIG_COMSKIP is not set
+
 # noad: Program for detecting commercials in VDR recordings
 # URL: http://git.gekrumbel.de/?p=noad.git
 # Note: It's very slow in M7x0, but is here in case someone wants to improve it. This new version isn't working
@@ -370,6 +374,10 @@ CONFIG_EXPAT = y
 # cURL: The multiprotocol file transfer library
 # URL: http://curl.haxx.se/
 # CONFIG_CURL is not set
+
+# argtable2: ANSI C command line parser
+# URL: http://argtable.sourceforge.net/
+# CONFIG_ARGTABLE2 is not set
 
 # libexif: A library that reads and writes EXIF metainformation from and to image files
 # URL: http://libexif.sourceforge.net/
