@@ -1,0 +1,71 @@
+diff -Naur a/command/marks.cpp b/command/marks.cpp
+--- a/command/marks.cpp	2015-10-16 18:29:35.000000000 +0200
++++ b/command/marks.cpp	2016-07-16 12:26:33.241442882 +0200
+@@ -14,6 +14,14 @@
+ #include <string.h>
+ #include <stdint.h>
+ #include <fcntl.h>
++#include <endian.h>
++#if __BYTE_ORDER == __BIG_ENDIAN
++#include <byteswap.h>
++// https://stackoverflow.com/a/38082429
++#define bswap_40(x) \
++     ((((x) & 0xFF)       << 32) | (((x) & 0xFF00)       << 16) | (((x) & 0xFF0000)) | \
++      (((x) & 0xFF000000) >> 16) | (((x) & 0xFF00000000) >> 32))
++#endif
+ 
+ #include "marks.h"
+ 
+@@ -406,8 +414,13 @@
+             }
+             if (IndexTS.independent)
+             {
++#if BYTE_ORDER == BIG_ENDIAN
++                *Offset=bswap_40(IndexTS.offset);
++                *Number=bswap_16(IndexTS.number);
++#else
+                 *Offset=IndexTS.offset;
+                 *Number=IndexTS.number;
++#endif
+                 pos=lseek(ifd,0,SEEK_CUR);
+                 *Frame=(int) (pos/sizeof(IndexTS))-1;
+             }
+@@ -447,7 +460,11 @@
+             }
+             if (IndexVDR.type==1)
+             {
++#if BYTE_ORDER == BIG_ENDIAN
++                *Offset=bswap_32(IndexVDR.offset);
++#else
+                 *Offset=IndexVDR.offset;
++#endif
+                 *Number=IndexVDR.number;
+                 pos=lseek(ifd,0,SEEK_CUR);
+                 *Frame=(int) (pos/sizeof(IndexVDR))-1;
+@@ -481,16 +498,25 @@
+     if (isTS)
+     {
+         struct tIndexTS IndexTS;
++#if BYTE_ORDER == BIG_ENDIAN
++        IndexTS.offset=bswap_40(Offset);
++        IndexTS.number=bswap_16((uint16_t) Number);
++#else
+         IndexTS.offset=Offset;
++        IndexTS.number=(uint16_t) Number;
++#endif
+         IndexTS.reserved=0;
+         IndexTS.independent=(FrameType==1);
+-        IndexTS.number=(uint16_t) Number;
+         if (write(indexfd,&IndexTS,sizeof(IndexTS))!=sizeof(IndexTS)) return;
+     }
+     else
+     {
+         struct tIndexVDR IndexVDR;
++#if BYTE_ORDER == BIG_ENDIAN
++        IndexVDR.offset=bswap_32((int) Offset);
++#else
+         IndexVDR.offset=(int) Offset;
++#endif
+         IndexVDR.type=(unsigned char) FrameType;
+         IndexVDR.number=(unsigned char) Number;
+         IndexVDR.reserved=0;
