@@ -67,7 +67,7 @@ const tI18nPhrase Phrases[] = {
    "",  // Hrvatski
    "",    // Eesti
    "",       // Dansk
-   "",Pondìlí      // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Tuesday",      // English
    "Dienstag",     // Deutsch
@@ -89,7 +89,7 @@ const tI18nPhrase Phrases[] = {
    "",       // Hrvatski
    "",    // Eesti
    "",      // Dansk
-   "",Úterý        // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Wednesday",    // English
    "Mittwoch",     // Deutsch
@@ -111,7 +111,7 @@ const tI18nPhrase Phrases[] = {
    "",      // Hrvatski
    "",    // Eesti
    "",       // Dansk
-   "",Støeda       // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Thursday",     // English
    "Donnerstag",   // Deutsch
@@ -133,7 +133,7 @@ const tI18nPhrase Phrases[] = {
    "",     // Hrvatski
    "",    // Eesti
    "",      // Dansk
-   "",Ètvrtek      // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Friday",       // English
    "Freitag",      // Deutsch
@@ -155,7 +155,7 @@ const tI18nPhrase Phrases[] = {
    "",        // Hrvatski
    "",        // Eesti
    "",       // Dansk
-   "",Pátek        // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Saturday",     // English
    "Samstag",      // Deutsch
@@ -177,7 +177,7 @@ const tI18nPhrase Phrases[] = {
    "",       // Hrvatski
    "",      // Eesti
    "",       // Dansk
-   "",Sobota       // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Sunday",       // English
    "Sonntag",      // Deutsch
@@ -199,7 +199,7 @@ const tI18nPhrase Phrases[] = {
    "",     // Hrvatski
    "",     // Eesti
    "",       // Dansk
-   "",Nedìle       // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"EnigmaNG skin",             // English
    "EnigmaNG Oberfläche",       // Deutsch
@@ -221,7 +221,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",             // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"EnigmaNG",                  // English
    "EnigmaNG",                  // Deutsch
@@ -243,7 +243,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                  // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"min",                       // English
    "min",                       // Deutsch
@@ -265,7 +265,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                       // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Stereo",                    // English
    "Stereo",                    // Deutsch
@@ -287,7 +287,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                    // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Left",                      // English
    "Links",                     // Deutsch
@@ -309,7 +309,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                     // Eesti
    "",                          // Danske
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Right",                     // English
    "Rechts",                    // Deutsch
@@ -331,7 +331,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                     // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Mute",                      // English
    "Stumm",                     // Deutsch
@@ -353,7 +353,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                   // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Volume",                    // English
    "Lautstärke",                // Deutsch
@@ -375,7 +375,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",               // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show channel logos",        // English
    "Kanal-Logos anzeigen",      // Deutsch
@@ -397,7 +397,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",      // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Identify channel by",       // English
    "  Kanal-Identifikation durch",        // Deutsch
@@ -419,7 +419,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "", // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"name",                      // English
    "Name",                      // Deutsch
@@ -441,7 +441,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                      // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"data",                      // English
    "ID",                        // Deutsch
@@ -463,7 +463,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                    // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Channel logo cache size",   // English
    "Größe des Logo-Caches",     // Deutsch
@@ -485,7 +485,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",        // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Button$Flush cache",        // English
    "Cache leeren",              // Deutsch
@@ -507,7 +507,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                  // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Flushing channel logo cache...",    // English
    "Logo-Cache wird geleert...",        // Deutsch
@@ -529,7 +529,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",       // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Languages",                 // English
    "Sprachen",                  // Deutsch
@@ -551,7 +551,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                    // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Auxiliary information",     // English
    "Zusatzinformation",         // Deutsch
@@ -573,7 +573,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                  // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show auxiliary information",        // English
    "Zusatzinfo anzeigen",       // Deutsch
@@ -595,7 +595,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",        // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show remaining/elapsed time",          // English
    "Zeige abgel./restl. Zeit",             // Deutsch
@@ -617,7 +617,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"remaining",                 // English
    "restliche",                 // Deutsch
@@ -639,7 +639,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"elapsed",                   // English
    "abgelaufene",               // Deutsch
@@ -661,7 +661,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show info area in main menu",            // English
    "Infobereich im Hauptmenü",               // Deutsch
@@ -683,7 +683,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show marker in lists",            // English
    "Symbol vor Listeneinträgen",      // Deutsch
@@ -705,7 +705,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show progressbar",          // English
    "Fortschrittbalken anzeigen",        // Deutsch
@@ -727,7 +727,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",    // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show symbols",              // English
    "Symbole anzeigen",          // Deutsch
@@ -749,7 +749,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",       // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show VPS",                  // English
    "VPS anzeigen",              // Deutsch
@@ -771,7 +771,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"WARNING",                   // English
    "WARNUNG",                   // Deutsch
@@ -793,7 +793,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Timer conflict",            // English
    "Timerkonflikt",             // Deutsch
@@ -815,7 +815,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Timer conflicts",           // English
    "Timerkonflikte",            // Deutsch
@@ -837,7 +837,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"TIMERS",                    // English
    "TIMER",                     // Deutsch
@@ -859,7 +859,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"RERUNS OF THIS SHOW",       // English
    "WIEDERHOLUNGEN",            // Deutsch
@@ -881,7 +881,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"*** Invalid Channel ***",   // English
    "*** Ungültiger Kanal ***",  // Deutsch
@@ -903,7 +903,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Size",                      // English
    "Größe",                     // Deutsch
@@ -925,7 +925,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Mute",                      // English
    "Stumm",                     // Deutsch
@@ -947,7 +947,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Volume",                    // English
    "Lautstärke",                // Deutsch
@@ -969,7 +969,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show symbols in lists",     // English
    "Symbole in Listen",         // Deutsch
@@ -991,7 +991,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
 #ifndef VDRO7OVERSION
   {"Try 8bpp single area",      // English
@@ -1014,7 +1014,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
 #endif
   {"Show flags",                // English
@@ -1037,7 +1037,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show symbols in menu",      // English
    "Symbole im Menü",           // Deutsch
@@ -1059,7 +1059,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"never",                     // English
    "nie",                       // Deutsch
@@ -1081,7 +1081,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"always",                    // English
    "immer",                     // Deutsch
@@ -1103,7 +1103,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"percent",                   // English
    "Prozent",                   // Deutsch
@@ -1125,7 +1125,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"if exists",                 // English
    "wenn vorhanden",            // Deutsch
@@ -1147,7 +1147,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Number of Reruns",          // English
    "Anzahl Wiederholungen",     // Deutsch
@@ -1169,7 +1169,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Use Subtitle for reruns",   // English
    "Verw. Untertitel für Wdh.", // Deutsch
@@ -1191,7 +1191,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show timer conflicts",      // English
    "Timerkonflikte anzeigen",   // Deutsch
@@ -1213,7 +1213,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Timer check",               // English
    "Überwachung",               // Deutsch
@@ -1235,7 +1235,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"EPGSearch",                 // English
    "EPGSearch",                 // Deutsch
@@ -1257,7 +1257,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Logos & Symbols",           // English
    "Logos & Symbole",           // Deutsch
@@ -1279,7 +1279,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"use size.vdr only",         // English
    "nur size.vdr verwenden",    // Deutsch
@@ -1301,7 +1301,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show recording's size",     // English
    "Aufnahmengröße anzeigen",   // Deutsch
@@ -1323,7 +1323,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"pixel algo",                // English
    "Pixel-Algorithmus",         // Deutsch
@@ -1345,7 +1345,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"ratio algo",                // English
    "Ratio-Algorithmus",         // Deutsch
@@ -1367,7 +1367,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"zoom image",                // English
    "Zoomen",                    // Deutsch
@@ -1389,7 +1389,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Show event/recording images",     // English
    "Bilder in EPG/Aufnahmendetails",  // Deutsch
@@ -1411,7 +1411,7 @@ const tI18nPhrase Phrases[] = {
    "",                                // Hrvatski
    "",                                // Eesti
    "",                                // Dansk
-   "",                                // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Resize images",           // English
    "  Bildberechnung benutzt",  // Deutsch
@@ -1433,7 +1433,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Image width",             // English
    "  Bildbreite",              // Deutsch
@@ -1455,7 +1455,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Image height",            // English
    "  Bildhöhe",                // Deutsch
@@ -1477,7 +1477,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Image format",            // English
    "  Bildformat",              // Deutsch
@@ -1499,7 +1499,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Full title width",          // English
    "Volle Titelbreite",         // Deutsch
@@ -1521,7 +1521,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
 #ifdef USE_PLUGIN_MAILBOX
   {"Show mail icon",            // English
@@ -1544,7 +1544,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"only if new mail present",  // English
    "nur bei neuer Mail",        // Deutsch
@@ -1566,7 +1566,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
 #endif
 #ifndef DISABLE_ANIMATED_TEXT
@@ -1590,7 +1590,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Enable",                    // English
    "Verwenden",                 // Deutsch
@@ -1612,7 +1612,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Scoll behaviour",         // English
    "  Scroll-Verhalten",        // Deutsch
@@ -1634,7 +1634,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"to the left",               // English
    "nach links",                // Deutsch
@@ -1656,7 +1656,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"left and right",            // English
    "links und rechts",          // Deutsch
@@ -1678,7 +1678,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Scroll delay (ms)",       // English
    "  Scroll-Verzögerung (ms)", // Deutsch
@@ -1700,7 +1700,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Scroll pause (ms)",       // English
    "  Scroll-Pause (ms)",       // Deutsch
@@ -1722,7 +1722,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Blink pause (ms)",        // English
    "  Blink-Pause (ms)",        // Deutsch
@@ -1744,7 +1744,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Scroll OSD title",        // English
    "  OSD Titel scrollen",      // Deutsch
@@ -1766,7 +1766,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Scroll info area",        // English
    "  Infobereich scrollen",    // Deutsch
@@ -1788,7 +1788,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Scroll active list items",  // English
    "  Aktive Listenzeile scrollen", // Deutsch
@@ -1810,7 +1810,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Scroll other items",      // English
    "  Andere Bereiche scrollen", // Deutsch
@@ -1832,7 +1832,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
 #endif
   {"  Show symbols in menu",    // English
@@ -1855,7 +1855,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Show symbols in replay",  // English
    "  Symbole bei der Wiedergabe", // Deutsch
@@ -1877,7 +1877,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Show symbols in messages",  // English
    "  Symbole bei den Meldungen", // Deutsch
@@ -1899,7 +1899,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"  Show symbols in audio",   // English
    "  Symbole bei Audio",       // Deutsch
@@ -1921,7 +1921,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Fonts",                     // English
    "Fonts",                     // Deutsch
@@ -1943,7 +1943,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"OSD title",                 // English
    "OSD Titel",                 // Deutsch
@@ -1965,7 +1965,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Date",                      // English
    "Datum",                     // Deutsch
@@ -1987,7 +1987,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Messages",                  // English
    "Meldungen",                 // Deutsch
@@ -2009,7 +2009,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Help keys",                 // English
    "Farb-Tasten",               // Deutsch
@@ -2031,7 +2031,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Channelinfo: title",        // English
    "Kanalinfo: Titel",          // Deutsch
@@ -2053,7 +2053,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Channelinfo: subtitle",     // English
    "Kanalinfo: Untertitel",     // Deutsch
@@ -2075,7 +2075,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Channelinfo: language",     // English
    "Kanalinfo: Sprache",        // Deutsch
@@ -2097,7 +2097,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"List items",                // English
    "Listen",                    // Deutsch
@@ -2119,7 +2119,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Info area: timers title",   // English
    "Infobereich: Timer Titel",  // Deutsch
@@ -2141,7 +2141,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Info area: timers text",    // English
    "Infobereich: Timer Text",   // Deutsch
@@ -2163,7 +2163,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Info area: warning title",  // English
    "Infobereich: Warnung Titel", // Deutsch
@@ -2185,7 +2185,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Info area: warning text",   // English
    "Infobereich: Warnung Text", // Deutsch
@@ -2207,7 +2207,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Details: title",            // English
    "Details: Titel",            // Deutsch
@@ -2229,7 +2229,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Details: subtitle",         // English
    "Details: Untertitel",       // Deutsch
@@ -2251,7 +2251,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Details: date",             // English
    "Details: Datumszeile",      // Deutsch
@@ -2273,7 +2273,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Details: text",             // English
    "Details: Text",             // Deutsch
@@ -2295,7 +2295,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Replay: times",             // English
    "Wiedergabe: Zeiten",        // Deutsch
@@ -2317,7 +2317,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Default OSD Font",          // English
    "Std. OSD Font",             // Deutsch
@@ -2339,7 +2339,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Default Fixed Size Font",   // English
    "Std. Schrift mit fester Breite", // Deutsch
@@ -2361,7 +2361,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Default Small Font",        // English
    "Std. kleine Schrift",       // Deutsch
@@ -2383,7 +2383,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Channel:",                  // English
    "Kanal:",                    // Deutsch
@@ -2405,7 +2405,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Search pattern:",           // English
    "Suchmuster:",               // Deutsch
@@ -2427,7 +2427,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"No timer check",            // English
    "Ohne Überwachung",          // Deutsch
@@ -2449,7 +2449,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"General",                   // English
    "Allgemein",                 // Deutsch
@@ -2471,7 +2471,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Name",                      // English
    "Name",                      // Deutsch
@@ -2493,7 +2493,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Width",                     // English
    "Weite",                     // Deutsch
@@ -2515,7 +2515,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Button$Set",                // English
    "Ändern",                    // Deutsch
@@ -2537,7 +2537,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"TrueType Font",             // English
    "TrueType Schrift",          // Deutsch
@@ -2559,7 +2559,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"No TTF support!",            // English
    "TTF nicht unterstützt!",    // Deutsch
@@ -2581,7 +2581,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Fixed Font",                // English
    "Schrift mit fester Breite", // Deutsch
@@ -2603,7 +2603,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
 #ifdef USE_PLUGIN_AVARDS
   {"Dynamic OSD size",          // English
@@ -2626,7 +2626,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Hrvatski
    "",                          // Eesti
    "",                          // Dansk
-   "",                          // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
 #endif
   {"No TrueType fonts installed!",          // English
@@ -2649,7 +2649,7 @@ const tI18nPhrase Phrases[] = {
    "",                                      // Hrvatski
    "",                                      // Eesti
    "",                                      // Dansk
-   "",                                      // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {"Content: ",                             // English
    "",                                      // Deutsch
@@ -2671,7 +2671,7 @@ const tI18nPhrase Phrases[] = {
    "",                                      // Hrvatski
    "",                                      // Eesti
    "",                                      // Dansk
-   "",                                      // Èesky (Czech)
+   "",      // Èesky (Czech)
    },
   {NULL}
 };

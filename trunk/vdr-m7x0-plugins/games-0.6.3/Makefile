@@ -64,7 +64,7 @@ all:
 	@echo
 
 libvdr-games.so: $(OBJS)
-	$(CXX) $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(OBJS) $(LFLAGS) $(ARCHIVES) -o $@ $(LDFLAGS)
 	@cp -f $@ $(LIBDIR)/$@.$(APIVERSION)
 
 sdl-games: $(OBJS)
