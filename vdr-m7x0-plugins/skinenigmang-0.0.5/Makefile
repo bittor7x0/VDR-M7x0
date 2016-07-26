@@ -14,8 +14,8 @@ SKINENIGMA_HAVE_EPGSEARCH = 1
 # Debugging on/off 
 #SKINENIGMA_DEBUG = 1
 
-# If you have installed ImageMagick and want to use
-# images in event's and recording's details.
+# If you have installed ImageMagick and want to use images in events'
+# and recordings' details.  Set to GRAPHICS to use GraphicsMagick.
 #HAVE_IMAGEMAGICK = 1
 
 # If you use the mailbox plugin this will include support for it.
@@ -132,7 +132,13 @@ OBJS = $(PLUGIN).o enigma.o config.o logo.o i18n.o tools.o status.o texteffects.
 
 ifdef HAVE_IMAGEMAGICK
 OBJS += bitmap.o
-LIBS += -lMagick++
+ifneq ($(HAVE_IMAGEMAGICK), GRAPHICS)
+LIBS += $(shell pkg-config --libs Magick++)
+INCLUDES += $(shell pkg-config --cflags-only-I Magick++)
+else
+LIBS += $(shell pkg-config --libs GraphicsMagick++)
+INCLUDES += $(shell pkg-config --cflags GraphicsMagick++)
+endif
 endif
 
 ifdef HAVE_FREETYPE
