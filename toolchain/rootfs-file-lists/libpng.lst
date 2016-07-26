@@ -1,5 +1,5 @@
-usr/lib/libpng15.so.15.14.0 usr/lib/libpng15.so.15.14.0 f 755 0 0 - - - - -
-usr/lib/libpng15.so.15.14.0 -                           s   - - - - - - - -
-usr/lib/libpng15.so.15      libpng15.so.15.14.0         l 777 0 0 - - - - -
-usr/lib/libpng15.so         libpng15.so.15.14.0         l 777 0 0 - - - - -
-usr/lib/libpng.so           libpng15.so.15.14.0         l 777 0 0 - - - - -
+usr/lib/libpng16.so.16.23.0 usr/lib/libpng16.so.16.23.0 f 755 0 0 - - - - -
+usr/lib/libpng16.so.16.23.0 -                           s   - - - - - - - -
+usr/lib/libpng16.so.16      libpng16.so.16.23.0         l 777 0 0 - - - - -
+usr/lib/libpng16.so         libpng16.so.16.23.0         l 777 0 0 - - - - -
+usr/lib/libpng.so           libpng16.so.16.23.0         l 777 0 0 - - - - -

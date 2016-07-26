@@ -26,12 +26,12 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 LIBPNG_DEPS = $(BASE_BUILD_STAGEFILE) $(ZLIB_INSTALLED)
 
-LIBPNG_VERSION := 1.5.14
+LIBPNG_VERSION := 1.6.23
 LIBPNG_PATCHES_DIR := $(PATCHES_DIR)/libpng/$(LIBPNG_VERSION)
 
-LIBPNG_FILE := libpng-$(LIBPNG_VERSION).tar.bz2
+LIBPNG_FILE := libpng-$(LIBPNG_VERSION).tar.xz
 LIBPNG_DLFILE := $(DOWNLOAD_DIR)/$(LIBPNG_FILE)
-LIBPNG_URL := http://sourceforge.net/projects/libpng/files/libpng15/$(LIBPNG_VERSION)/$(LIBPNG_FILE)/download
+LIBPNG_URL := http://sourceforge.net/projects/libpng/files/libpng16/$(LIBPNG_VERSION)/$(LIBPNG_FILE)/download
 LIBPNG_DIR := $(BUILD_DIR)/libpng-$(LIBPNG_VERSION)
 
 LIBPNG_INSTALLED = $(STAGEFILES_DIR)/.libpng_installed
@@ -60,7 +60,7 @@ $(STAGEFILES_DIR)/.libpng_unpacked: $(LIBPNG_DLFILE) \
                                            $(wildcard $(LIBPNG_PATCHES_DIR)/*.patch) \
                                            $$(LIBPNG_DEPS)
 	-$(RM) -rf $(LIBPNG_DIR)
-	$(BZCAT) $(LIBPNG_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(TAR) -C $(BUILD_DIR) -xJf $(LIBPNG_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.libpng_unpacked
 
 #
@@ -76,7 +76,7 @@ $(STAGEFILES_DIR)/.libpng_patched: $(STAGEFILES_DIR)/.libpng_unpacked
 #
 
 $(STAGEFILES_DIR)/.libpng_configured: $(STAGEFILES_DIR)/.libpng_patched
-	($(CD) $(LIBPNG_DIR) ; $(UCLIBC_ENV) \
+	($(CD) $(LIBPNG_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		$(LIBPNG_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
@@ -89,7 +89,7 @@ $(STAGEFILES_DIR)/.libpng_configured: $(STAGEFILES_DIR)/.libpng_patched
 #
 
 $(STAGEFILES_DIR)/.libpng_compiled: $(STAGEFILES_DIR)/.libpng_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(LIBPNG_DIR) all
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBPNG_DIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.libpng_compiled
 
 #
@@ -97,7 +97,7 @@ $(STAGEFILES_DIR)/.libpng_compiled: $(STAGEFILES_DIR)/.libpng_configured
 #
 
 $(STAGEFILES_DIR)/.libpng_installed: $(STAGEFILES_DIR)/.libpng_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(LIBPNG_DIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBPNG_DIR) install
 	$(LN) -sf $(TARGET_ROOT)/usr/include/libpng2/libpng $(TARGET_ROOT)/usr/include/libpng
 	$(TOUCH) $(STAGEFILES_DIR)/.libpng_installed
 
