@@ -143,8 +143,8 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
                     UseExtendedEventDescriptor = true;
                     }
                  if (UseExtendedEventDescriptor) {
-                    ExtendedEventDescriptors->Add(eed);
-                    d = NULL; // so that it is not deleted
+                    if (ExtendedEventDescriptors->Add(eed))
+                       d = NULL; // so that it is not deleted
                     }
                  if (eed->getDescriptorNumber() == eed->getLastDescriptorNumber())
                     UseExtendedEventDescriptor = false;

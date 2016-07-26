@@ -208,17 +208,18 @@ void DescriptorGroup::Delete() {
       }
 }
 
-void DescriptorGroup::Add(GroupDescriptor *d) {
+bool DescriptorGroup::Add(GroupDescriptor *d) {
    if (!array) {
       length=d->getLastDescriptorNumber()+1;
       array=new GroupDescriptor*[length]; //numbering is zero-based
       for (int i=0;i<length;i++)
          array[i]=0;
    } else if (length != d->getLastDescriptorNumber()+1)
-      return; //avoid crash in case of misuse
+      return false; //avoid crash in case of misuse
    if (length <= d->getDescriptorNumber())
-      return; // see http://www.vdr-portal.de/board60-linux/board14-betriebssystem/board69-c-t-vdr/p1025777-segfault-mit-vdr-1-7-21/#post1025777
+      return false; // see http://www.vdr-portal.de/board60-linux/board14-betriebssystem/board69-c-t-vdr/p1025777-segfault-mit-vdr-1-7-21/#post1025777
    array[d->getDescriptorNumber()]=d;
+   return true;
 }
 
 bool DescriptorGroup::isComplete() {
