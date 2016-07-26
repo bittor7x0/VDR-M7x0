@@ -48,9 +48,9 @@ PACKAGE = vdr-$(ARCHIVE)
 INCLUDES += -I$(VDRDIR)/include
 
 DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
-DEFINES += $(shell "/home/mangarran/Descargas/dev/vdr-snapshot2/m7x0_xtc_uclibc_Linux-i686/target_root/usr/bin/xml2-config" --cflags)
+DEFINES += $(shell xml2-config --cflags)
 
-LIBS += $(shell "/home/mangarran/Descargas/dev/vdr-snapshot2/m7x0_xtc_uclibc_Linux-i686/target_root/usr/bin/xml2-config" --libs)
+LIBS += $(shell xml2-config --libs)
 LIBS += $(shell pkg-config --libs libcurl)
 LIBS += $(shell pkg-config --libs sqlite3)
 LIBS += $(shell pkg-config --cflags --libs jansson)
