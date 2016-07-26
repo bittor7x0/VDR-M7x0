@@ -139,8 +139,8 @@ OBJS = $(PLUGIN).o enigma.o config.o i18n.o logo.o tools.o status.o texteffects.
 ifdef HAVE_IMAGEMAGICK
 OBJS += bitmap.o
 ifneq ($(HAVE_IMAGEMAGICK), GRAPHICS)
-LIBS += -lMagick++
-INCLUDES += -I/usr/include/ImageMagick -I/usr/local/include/ImageMagick
+LIBS += $(shell pkg-config --libs Magick++)
+INCLUDES += $(shell pkg-config --cflags-only-I Magick++)
 else
 LIBS += $(shell pkg-config --libs GraphicsMagick++)
 INCLUDES += $(shell pkg-config --cflags GraphicsMagick++)
