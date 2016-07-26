@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 LIBJPEG_DEPS = $(BASE_BUILD_STAGEFILE)
 
-LIBJPEG_VERSION := 8b
+LIBJPEG_VERSION := 9b
 LIBJPEG_PATCHES_DIR := $(PATCHES_DIR)/libjpeg/$(LIBJPEG_VERSION)
 
 LIBJPEG_FILE := jpegsrc.v$(LIBJPEG_VERSION).tar.gz
@@ -76,7 +76,7 @@ $(STAGEFILES_DIR)/.libjpeg_patched: $(STAGEFILES_DIR)/.libjpeg_unpacked
 #
 
 $(STAGEFILES_DIR)/.libjpeg_configured: $(STAGEFILES_DIR)/.libjpeg_patched
-	($(CD) $(LIBJPEG_DIR) ; $(UCLIBC_ENV) \
+	($(CD) $(LIBJPEG_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		$(LIBJPEG_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
@@ -89,7 +89,7 @@ $(STAGEFILES_DIR)/.libjpeg_configured: $(STAGEFILES_DIR)/.libjpeg_patched
 #
 
 $(STAGEFILES_DIR)/.libjpeg_compiled: $(STAGEFILES_DIR)/.libjpeg_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(LIBJPEG_DIR) all
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBJPEG_DIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.libjpeg_compiled
 
 #
@@ -97,7 +97,7 @@ $(STAGEFILES_DIR)/.libjpeg_compiled: $(STAGEFILES_DIR)/.libjpeg_configured
 #
 
 $(STAGEFILES_DIR)/.libjpeg_installed: $(STAGEFILES_DIR)/.libjpeg_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(LIBJPEG_DIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBJPEG_DIR) install
 	$(LN) -sf $(TARGET_ROOT)/usr/include/libjpeg2/libjpeg $(TARGET_ROOT)/usr/include/libjpeg
 	$(TOUCH) $(STAGEFILES_DIR)/.libjpeg_installed
 

@@ -42,7 +42,7 @@ ifeq ($(CONFIG_ZLIB),y)
    GRAPHICSMAGICK_DEPS += $(ZLIB_INSTALLED)
 endif
 
-GRAPHICSMAGICK_VERSION := 1.3.12
+GRAPHICSMAGICK_VERSION := 1.3.24
 GRAPHICSMAGICK_PATCHES_DIR := $(PATCHES_DIR)/graphicsmagick/$(GRAPHICSMAGICK_VERSION)
 
 GRAPHICSMAGICK_FILE := GraphicsMagick-$(GRAPHICSMAGICK_VERSION).tar.bz2
@@ -92,17 +92,27 @@ $(STAGEFILES_DIR)/.graphicsmagick_patched: $(STAGEFILES_DIR)/.graphicsmagick_unp
 #
 
 $(STAGEFILES_DIR)/.graphicsmagick_configured: $(STAGEFILES_DIR)/.graphicsmagick_patched
-	($(CD) $(GRAPHICSMAGICK_DIR) ; $(UCLIBC_ENV) \
+	($(CD) $(GRAPHICSMAGICK_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		$(GRAPHICSMAGICK_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
-			--with-modules \
 			--enable-shared \
 			--enable-static \
-			$(if $(CONFIG_LIBPNG),--with-png=yes,--with-png=no) \
-			$(if $(CONFIG_LIBJPEG),--with-jpeg=yes,--with-jpeg=no) \
-			$(if $(CONFIG_FREETYPE),--with-ttf=yes,--with-ttf=no) \
-			$(if $(CONFIG_ZLIB),--with-zlib=yes,--with-zlib=no) \
+			--disable-openmp \
+			$(if $(CONFIG_LIBPNG),--with-png,--without-png) \
+			$(if $(CONFIG_LIBJPEG),--with-jpeg,--without-jpeg) \
+			$(if $(CONFIG_FREETYPE),--with-ttf,--without-ttf) \
+			$(if $(CONFIG_ZLIB),--with-zlib,--without-zlib) \
+			--without-bzlib \
+			--without-dps \
+			--without-jbig \
+			--without-webp \
+			--without-jp2 \
+			--without-lcms2 \
+			--without-lzma \
+			--without-tiff \
+			--without-trio \
+			--without-wmf \
 			--without-xml \
 			--without-x)
 	$(TOUCH) $(STAGEFILES_DIR)/.graphicsmagick_configured
@@ -112,7 +122,7 @@ $(STAGEFILES_DIR)/.graphicsmagick_configured: $(STAGEFILES_DIR)/.graphicsmagick_
 #
 
 $(STAGEFILES_DIR)/.graphicsmagick_compiled: $(STAGEFILES_DIR)/.graphicsmagick_configured
-	$(UCLIBC_ENV) $(MAKE) -C $(GRAPHICSMAGICK_DIR) all
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(GRAPHICSMAGICK_DIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.graphicsmagick_compiled
 
 #
@@ -120,7 +130,7 @@ $(STAGEFILES_DIR)/.graphicsmagick_compiled: $(STAGEFILES_DIR)/.graphicsmagick_co
 #
 
 $(STAGEFILES_DIR)/.graphicsmagick_installed: $(STAGEFILES_DIR)/.graphicsmagick_compiled
-	$(UCLIBC_ENV) $(MAKE) -C $(GRAPHICSMAGICK_DIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(GRAPHICSMAGICK_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.graphicsmagick_installed
 
 
