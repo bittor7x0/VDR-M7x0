@@ -440,7 +440,7 @@ class DescriptorGroup {
 public:
    DescriptorGroup(bool deleteOnDesctruction=true);
    ~DescriptorGroup();
-   void Add(GroupDescriptor *d);
+   bool Add(GroupDescriptor *d);
    void Delete();
    int getLength() const { return length; }
    GroupDescriptor **getDescriptors() { return array; }

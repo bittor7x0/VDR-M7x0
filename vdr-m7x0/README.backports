@@ -289,3 +289,5 @@ VDR 2.3.1 backports applied in this patch:
 * No longer using tabs as delimiter in the EPG bugfix log (they were garbled in the
   log file).
 * Added a missing '.' after the month in VPS strings.
+* Fixed a memory leak in case of broken Extended Event Descriptors (thanks to Lars
+  Hanisch).
