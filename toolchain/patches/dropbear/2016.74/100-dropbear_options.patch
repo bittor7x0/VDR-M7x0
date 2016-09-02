@@ -1,0 +1,153 @@
+diff -Naur dropbear-2015.71-orig/options.h dropbear-2015.71/options.h
+--- dropbear-2015.71-orig/options.h	2013-10-16 16:34:53.000000000 +0200
++++ dropbear-2015.71/options.h	2013-10-18 19:54:20.837674723 +0200
+@@ -26,9 +26,9 @@
+ #ifndef RSA_PRIV_FILENAME
+ #define RSA_PRIV_FILENAME "/etc/dropbear/dropbear_rsa_host_key"
+ #endif
+-#ifndef ECDSA_PRIV_FILENAME
++/*#ifndef ECDSA_PRIV_FILENAME
+ #define ECDSA_PRIV_FILENAME "/etc/dropbear/dropbear_ecdsa_host_key"
+-#endif
++#endif*/
+ 
+ /* Set NON_INETD_MODE if you require daemon functionality (ie Dropbear listens
+  * on chosen ports and keeps accepting connections. This is the default.
+@@ -40,7 +40,7 @@
+  *
+  * Both of these flags can be defined at once, don't compile without at least
+  * one of them. */
+-#define NON_INETD_MODE
++/*#define NON_INETD_MODE*/
+ #define INETD_MODE
+ 
+ /* Setting this disables the fast exptmod bignum code. It saves ~5kB, but is
+@@ -55,7 +55,7 @@
+ #define DROPBEAR_SMALL_CODE
+ 
+ /* Enable X11 Forwarding - server only */
+-#define ENABLE_X11FWD
++/*#define ENABLE_X11FWD*/
+ 
+ /* Enable TCP Fowarding */
+ /* 'Local' is "-L" style (client listening port forwarded via server)
+@@ -81,10 +81,10 @@
+ 
+ /* Enable "Netcat mode" option. This will forward standard input/output
+  * to a remote TCP-forwarded connection */
+-#define ENABLE_CLI_NETCAT
++/*#define ENABLE_CLI_NETCAT*/
+ 
+ /* Whether to support "-c" and "-m" flags to choose ciphers/MACs at runtime */
+-#define ENABLE_USER_ALGO_LIST
++/*#define ENABLE_USER_ALGO_LIST*/
+ 
+ /* Encryption - at least one required.
+  * Protocol RFC requires 3DES and recommends AES128 for interoperability.
+@@ -92,7 +92,7 @@
+  * (eg AES256 as well as AES128) will result in a minimal size increase.*/
+ #define DROPBEAR_AES128
+ #define DROPBEAR_3DES
+-#define DROPBEAR_AES256
++/*#define DROPBEAR_AES256*/
+ /* Compiling in Blowfish will add ~6kB to runtime heap memory usage */
+ /*#define DROPBEAR_BLOWFISH*/
+ #define DROPBEAR_TWOFISH256
+@@ -131,10 +131,10 @@
+  * If you disable MD5, Dropbear will fall back to SHA1 fingerprints,
+  * which are not the standard form. */
+ #define DROPBEAR_SHA1_HMAC
+-#define DROPBEAR_SHA1_96_HMAC
++/*#define DROPBEAR_SHA1_96_HMAC
+ #define DROPBEAR_SHA2_256_HMAC
+ #define DROPBEAR_SHA2_512_HMAC
+-#define DROPBEAR_MD5_HMAC
++#define DROPBEAR_MD5_HMAC*/
+ 
+ /* You can also disable integrity. Don't bother disabling this if you're
+  * still using a cipher, it's relatively cheap. If you disable this it's dead
+@@ -150,7 +150,7 @@
+ /* ECDSA is significantly faster than RSA or DSS. Compiling in ECC
+  * code (either ECDSA or ECDH) increases binary size - around 30kB
+  * on x86-64 */
+-#define DROPBEAR_ECDSA
++/*#define DROPBEAR_ECDSA*/
+ 
+ /* Generate hostkeys as-needed when the first connection using that key type occurs.
+    This avoids the need to otherwise run "dropbearkey" and avoids some problems
+@@ -162,11 +162,11 @@
+ /* Enable Curve25519 for key exchange. This is another elliptic
+  * curve method with good security properties. Increases binary size
+  * by ~8kB on x86-64 */
+-#define DROPBEAR_CURVE25519
++/*#define DROPBEAR_CURVE25519*/
+ 
+ /* Enable elliptic curve Diffie Hellman key exchange, see note about
+  * ECDSA above */
+-#define DROPBEAR_ECDH
++/*#define DROPBEAR_ECDH*/
+ 
+ /* Control the memory/performance/compression tradeoff for zlib.
+  * Set windowBits=8 for least memory usage, see your system's
+@@ -189,7 +189,7 @@
+ 
+ /* Whether to print the message of the day (MOTD). This doesn't add much code
+  * size */
+-#define DO_MOTD
++/*#define DO_MOTD*/
+ 
+ /* The MOTD file path */
+ #ifndef MOTD_FILENAME
+@@ -223,7 +223,7 @@
+ /* This requires getpass. */
+ #ifdef HAVE_GETPASS
+ #define ENABLE_CLI_PASSWORD_AUTH
+-#define ENABLE_CLI_INTERACT_AUTH
++/*#define ENABLE_CLI_INTERACT_AUTH*/
+ #endif
+ #define ENABLE_CLI_PUBKEY_AUTH
+ 
+@@ -237,7 +237,7 @@
+  * note that it will be provided for all "hidden" client-interactive
+  * style prompts - if you want something more sophisticated, use 
+  * SSH_ASKPASS instead. Comment out this var to remove this functionality.*/
+-#define DROPBEAR_PASSWORD_ENV "DROPBEAR_PASSWORD"
++/*#define DROPBEAR_PASSWORD_ENV "DROPBEAR_PASSWORD"*/
+ 
+ /* Define this (as well as ENABLE_CLI_PASSWORD_AUTH) to allow the use of
+  * a helper program for the ssh client. The helper program should be
+@@ -271,7 +271,7 @@
+ /* And then a global limit to avoid chewing memory if connections 
+  * come from many IPs */
+ #ifndef MAX_UNAUTH_CLIENTS
+-#define MAX_UNAUTH_CLIENTS 30
++#define MAX_UNAUTH_CLIENTS 10
+ #endif
+ 
+ /* Maximum number of failed authentication tries (server option) */
+@@ -294,13 +294,13 @@
+ /* if you want to enable running an sftp server (such as the one included with
+  * OpenSSH), set the path below. If the path isn't defined, sftp will not
+  * be enabled */
+-#ifndef SFTPSERVER_PATH
++/*#ifndef SFTPSERVER_PATH
+ #define SFTPSERVER_PATH "/usr/libexec/sftp-server"
+-#endif
++#endif*/
+ 
+ /* This is used by the scp binary when used as a client binary. If you're
+  * not using the Dropbear client, you'll need to change it */
+-#define DROPBEAR_PATH_SSH_PROGRAM "/usr/bin/dbclient"
++#define DROPBEAR_PATH_SSH_PROGRAM "/usr/sbin/dbclient"
+ 
+ /* Whether to log commands executed by a client. This only logs the 
+  * (single) command sent to the server, not what a user did in a 
+@@ -342,7 +342,7 @@
+ #define DEFAULT_IDLE_TIMEOUT 0
+ 
+ /* The default path. This will often get replaced by the shell */
+-#define DEFAULT_PATH "/usr/bin:/bin"
++#define DEFAULT_PATH "/sbin:/usr/sbin:/bin:/usr/bin"
+ 
+ /* Some other defines (that mostly should be left alone) are defined
+  * in sysoptions.h */

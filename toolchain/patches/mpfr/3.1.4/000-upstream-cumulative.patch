@@ -1,10 +1,17 @@
 diff -Naur a/PATCHES b/PATCHES
 --- a/PATCHES	2016-03-06 12:33:06.000000000 +0100
-+++ b/PATCHES	2016-06-23 09:12:56.267321458 +0200
-@@ -0,0 +1,3 @@
++++ b/PATCHES	2016-08-09 15:59:10.120236392 +0200
+@@ -0,0 +1,4 @@
++c++11-compat
 +sub1-overflow
 +add-sub-ui-flags
 +unix-check
+diff -Naur a/VERSION b/VERSION
+--- a/VERSION	2016-03-06 12:33:04.000000000 +0100
++++ b/VERSION	2016-08-04 22:41:14.121592350 +0200
+@@ -1 +1 @@
+-3.1.4
++3.1.4-p4
 diff -Naur a/src/add_ui.c b/src/add_ui.c
 --- a/src/add_ui.c	2016-03-06 12:33:04.000000000 +0100
 +++ b/src/add_ui.c	2016-05-22 21:59:43.854399385 +0200
@@ -16,18 +23,6 @@ diff -Naur a/src/add_ui.c b/src/add_ui.c
        MPFR_SAVE_EXPO_FREE (expo);
        return mpfr_check_range(y, inex, rnd_mode);
      }
-diff -Naur a/src/mpfr.h b/src/mpfr.h
---- a/src/mpfr.h	2016-03-06 12:33:04.000000000 +0100
-+++ b/src/mpfr.h	2016-06-01 15:00:30.772711162 +0200
-@@ -27,7 +27,7 @@
- #define MPFR_VERSION_MAJOR 3
- #define MPFR_VERSION_MINOR 1
- #define MPFR_VERSION_PATCHLEVEL 4
--#define MPFR_VERSION_STRING "3.1.4"
-+#define MPFR_VERSION_STRING "3.1.4-p3"
- 
- /* Macros dealing with MPFR VERSION */
- #define MPFR_VERSION_NUM(a,b,c) (((a) << 16L) | ((b) << 8) | (c))
 diff -Naur a/src/mpfr-impl.h b/src/mpfr-impl.h
 --- a/src/mpfr-impl.h	2016-03-06 12:33:04.000000000 +0100
 +++ b/src/mpfr-impl.h	2016-04-13 23:22:23.736603789 +0200
@@ -51,6 +46,18 @@ diff -Naur a/src/mpfr-impl.h b/src/mpfr-impl.h
  #if defined(__MPFR_WITHIN_MPFR) || !defined(MPFR_WIN_THREAD_SAFE_DLL)
  extern MPFR_THREAD_ATTR unsigned int __gmpfr_flags;
  extern MPFR_THREAD_ATTR mpfr_exp_t   __gmpfr_emin;
+diff -Naur a/src/mpfr.h b/src/mpfr.h
+--- a/src/mpfr.h	2016-03-06 12:33:04.000000000 +0100
++++ b/src/mpfr.h	2016-08-04 22:41:14.121592350 +0200
+@@ -27,7 +27,7 @@
+ #define MPFR_VERSION_MAJOR 3
+ #define MPFR_VERSION_MINOR 1
+ #define MPFR_VERSION_PATCHLEVEL 4
+-#define MPFR_VERSION_STRING "3.1.4"
++#define MPFR_VERSION_STRING "3.1.4-p4"
+ 
+ /* Macros dealing with MPFR VERSION */
+ #define MPFR_VERSION_NUM(a,b,c) (((a) << 16L) | ((b) << 8) | (c))
 diff -Naur a/src/sub1.c b/src/sub1.c
 --- a/src/sub1.c	2016-03-06 12:33:05.000000000 +0100
 +++ b/src/sub1.c	2016-06-01 15:00:30.760711326 +0200
@@ -103,13 +110,13 @@ diff -Naur a/src/sub_ui.c b/src/sub_ui.c
      }
 diff -Naur a/src/version.c b/src/version.c
 --- a/src/version.c	2016-03-06 12:33:05.000000000 +0100
-+++ b/src/version.c	2016-06-01 15:00:30.772711162 +0200
++++ b/src/version.c	2016-08-04 22:41:14.121592350 +0200
 @@ -25,5 +25,5 @@
  const char *
  mpfr_get_version (void)
  {
 -  return "3.1.4";
-+  return "3.1.4-p3";
++  return "3.1.4-p4";
  }
 diff -Naur a/tests/tadd_ui.c b/tests/tadd_ui.c
 --- a/tests/tadd_ui.c	2016-03-06 12:33:03.000000000 +0100
@@ -124,6 +131,70 @@ diff -Naur a/tests/tadd_ui.c b/tests/tadd_ui.c
    MPFR_ASSERTN (mpfr_nan_p (y));
  
    /* +inf + 2394875 == +inf */
+diff -Naur a/tests/tpow_z.c b/tests/tpow_z.c
+--- a/tests/tpow_z.c	2016-03-06 12:33:03.000000000 +0100
++++ b/tests/tpow_z.c	2016-08-04 22:41:14.113592494 +0200
+@@ -26,7 +26,7 @@
+ 
+ #include "mpfr-test.h"
+ 
+-#define ERROR(str) do { printf("Error for "str"\n"); exit (1); } while (0)
++#define ERROR(str) do { printf ("Error for " str "\n"); exit (1); } while (0)
+ 
+ static void
+ check_special (void)
+diff -Naur a/tests/tset_si.c b/tests/tset_si.c
+--- a/tests/tset_si.c	2016-03-06 12:33:03.000000000 +0100
++++ b/tests/tset_si.c	2016-08-04 22:41:14.113592494 +0200
+@@ -26,7 +26,7 @@
+ 
+ #include "mpfr-test.h"
+ 
+-#define ERROR(str) {printf("Error for "str"\n"); exit(1);}
++#define ERROR(str) do { printf ("Error for " str "\n"); exit (1); } while (0)
+ 
+ static void
+ test_2exp (void)
+diff -Naur a/tests/tset_sj.c b/tests/tset_sj.c
+--- a/tests/tset_sj.c	2016-03-06 12:33:03.000000000 +0100
++++ b/tests/tset_sj.c	2016-08-04 22:41:14.113592494 +0200
+@@ -42,7 +42,7 @@
+ 
+ #else
+ 
+-#define ERROR(str) {printf("Error for "str"\n"); exit(1);}
++#define ERROR(str) do { printf ("Error for " str "\n"); exit (1); } while (0)
+ 
+ static int
+ inexact_sign (int x)
+diff -Naur a/tests/tsi_op.c b/tests/tsi_op.c
+--- a/tests/tsi_op.c	2016-03-06 12:33:03.000000000 +0100
++++ b/tests/tsi_op.c	2016-08-04 22:41:14.113592494 +0200
+@@ -26,14 +26,16 @@
+ 
+ #include "mpfr-test.h"
+ 
+-#define ERROR1(s, i, z, exp) \
+-{\
+-  printf("Error for "s" and i=%d\n", i);\
+-  printf("Expected %s\n", exp);\
+-  printf("Got      "); mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);\
+-  putchar ('\n');\
+-  exit(1);\
+-}
++#define ERROR1(s,i,z,exp)                                               \
++  do                                                                    \
++    {                                                                   \
++      printf ("Error for " s " and i=%d\n", i);                         \
++      printf ("Expected %s\n", exp);                                    \
++      printf ("Got      "); mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN); \
++      putchar ('\n');                                                   \
++      exit(1);                                                          \
++    }                                                                   \
++  while (0)
+ 
+ const struct {
+   const char * op1;
 diff -Naur a/tests/tsub.c b/tests/tsub.c
 --- a/tests/tsub.c	2016-03-06 12:33:03.000000000 +0100
 +++ b/tests/tsub.c	2016-06-01 15:00:30.760711326 +0200
@@ -284,9 +355,3 @@ diff -Naur a/tests/tsub_ui.c b/tests/tsub_ui.c
    MPFR_ASSERTN (mpfr_nan_p (y));
  
    /* +inf - 1 == +inf */
-diff -Naur a/VERSION b/VERSION
---- a/VERSION	2016-03-06 12:33:04.000000000 +0100
-+++ b/VERSION	2016-06-01 15:00:30.772711162 +0200
-@@ -1 +1 @@
--3.1.4
-+3.1.4-p3

@@ -28,10 +28,10 @@ diff -Naur a/Rules.mak b/Rules.mak
  # Use the gcc 3.4 -funit-at-a-time optimization when available
  $(eval $(call check-gcc-var,-funit-at-a-time))
  OPTIMIZATION-3.4 += $(CFLAG_-funit-at-a-time)
-@@ -406,7 +406,16 @@
- 	CPU_CFLAGS-$(CONFIG_MIPS_N64_ABI)+=-mabi=64
- 	CPU_CFLAGS-$(CONFIG_MIPS_O32_ABI)+=-mabi=32
+@@ -411,7 +411,16 @@
  	CPU_CFLAGS-$(CONFIG_MIPS_N32_ABI)+=-mabi=n32
+ 	CPU_CFLAGS-$(CONFIG_MIPS_NAN_LEGACY)+=-mnan=legacy
+ 	CPU_CFLAGS-$(CONFIG_MIPS_NAN_2008)+=-mnan=2008
 +	CPU_CFLAGS-y  +=-march=mips2 -mtune=vr4120 -mfix-vr4120 -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear
 +	CPU_CFLAGS-y  += $(call check_gcc,-ffunction-sections -fdata-sections,)
  	CPU_LDFLAGS-y += $(CPU_CFLAGS)
@@ -44,4 +44,4 @@ diff -Naur a/Rules.mak b/Rules.mak
 +	CPU_LDFLAGS-y += $(CFLAG_-Wl--gc-sections)
  endif
  
- ifeq ($(TARGET_ARCH),sh)
+ ifeq ($(TARGET_ARCH),nds32)

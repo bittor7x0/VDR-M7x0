@@ -76,7 +76,7 @@ $(STAGEFILES_DIR)/.lirc_patched: $(STAGEFILES_DIR)/.lirc_unpacked
 #			
 
 $(STAGEFILES_DIR)/.lirc_configured: $(STAGEFILES_DIR)/.lirc_patched
-	($(CD) $(LIRC_DIR) ; $(UCLIBC_ENV_LTO_GC) \
+	($(CD) $(LIRC_DIR) ; $(UCLIBC_ENV_GC_LOOPS) \
 		./configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--build=$(HOST_TARGET) \
@@ -95,7 +95,7 @@ $(STAGEFILES_DIR)/.lirc_configured: $(STAGEFILES_DIR)/.lirc_patched
 #
 
 $(STAGEFILES_DIR)/.lirc_compiled: $(STAGEFILES_DIR)/.lirc_configured
-	$(MAKE) -C $(LIRC_DIR) $(UCLIBC_ENV_LTO_GC) all
+	$(MAKE) -C $(LIRC_DIR) $(UCLIBC_ENV_GC_LOOPS) all
 	$(TOUCH) $(STAGEFILES_DIR)/.lirc_compiled
 
 #
@@ -103,7 +103,7 @@ $(STAGEFILES_DIR)/.lirc_compiled: $(STAGEFILES_DIR)/.lirc_configured
 #
 
 $(STAGEFILES_DIR)/.lirc_installed: $(STAGEFILES_DIR)/.lirc_compiled
-	$(MAKE) -C $(LIRC_DIR) $(UCLIBC_ENV_LTO_GC) install
+	$(MAKE) -C $(LIRC_DIR) $(UCLIBC_ENV_GC_LOOPS) install
 	$(TOUCH) $(STAGEFILES_DIR)/.lirc_installed
 
 
