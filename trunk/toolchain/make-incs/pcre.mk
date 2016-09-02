@@ -78,7 +78,7 @@ $(STAGEFILES_DIR)/.pcre_patched: $(STAGEFILES_DIR)/.pcre_unpacked
 #
 
 $(STAGEFILES_DIR)/.pcre_configured: $(STAGEFILES_DIR)/.pcre_patched
-	($(CD) $(PCRE_DIR) ; $(UCLIBC_ENV_LTO_GC) \
+	($(CD) $(PCRE_DIR) ; $(UCLIBC_ENV_LTO_GC_LOOPS) \
 		$(PCRE_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
@@ -91,7 +91,7 @@ $(STAGEFILES_DIR)/.pcre_configured: $(STAGEFILES_DIR)/.pcre_patched
 #
 
 $(STAGEFILES_DIR)/.pcre_compiled: $(STAGEFILES_DIR)/.pcre_configured
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR)
+	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(PCRE_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_compiled
 
 #
@@ -99,7 +99,7 @@ $(STAGEFILES_DIR)/.pcre_compiled: $(STAGEFILES_DIR)/.pcre_configured
 #
 
 $(STAGEFILES_DIR)/.pcre_installed: $(STAGEFILES_DIR)/.pcre_compiled
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR) install
+	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(PCRE_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_installed
 
 

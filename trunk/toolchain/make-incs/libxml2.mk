@@ -76,7 +76,7 @@ $(STAGEFILES_DIR)/.libxml2_patched: $(STAGEFILES_DIR)/.libxml2_unpacked
 #
 
 $(STAGEFILES_DIR)/.libxml2_configured: $(STAGEFILES_DIR)/.libxml2_patched
-	($(CD) $(LIBXML2_DIR) ; $(UCLIBC_ENV_LTO_GC) \
+	($(CD) $(LIBXML2_DIR) ; $(UCLIBC_ENV_LTO_GC_LOOPS) \
 		$(LIBXML2_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
@@ -129,7 +129,7 @@ $(STAGEFILES_DIR)/.libxml2_configured: $(STAGEFILES_DIR)/.libxml2_patched
 #
 
 $(STAGEFILES_DIR)/.libxml2_compiled: $(STAGEFILES_DIR)/.libxml2_configured
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBXML2_DIR)
+	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(LIBXML2_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.libxml2_compiled
 
 #
@@ -137,7 +137,7 @@ $(STAGEFILES_DIR)/.libxml2_compiled: $(STAGEFILES_DIR)/.libxml2_configured
 #
 
 $(STAGEFILES_DIR)/.libxml2_installed: $(STAGEFILES_DIR)/.libxml2_compiled
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBXML2_DIR) install
+	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(LIBXML2_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.libxml2_installed
 
 

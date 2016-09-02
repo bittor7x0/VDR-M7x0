@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SQLITE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-SQLITE_VERSION := 3130000
+SQLITE_VERSION := 3140100
 SQLITE_PATCHES_DIR := $(PATCHES_DIR)/sqlite/$(SQLITE_VERSION)
 
 SQLITE_FILE := sqlite-autoconf-$(SQLITE_VERSION).tar.gz
@@ -34,7 +34,7 @@ SQLITE_DLFILE := $(DOWNLOAD_DIR)/$(SQLITE_FILE)
 SQLITE_URL := https://www.sqlite.org/2016/sqlite-autoconf-$(SQLITE_VERSION).tar.gz
 SQLITE_DIR := $(BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
-SQLITE_CFLAGS_SIZE := $(filter-out -mno-shared,$(UCLIBC_CFLAGS_SIZE)) -flto
+# https://www.sqlite.org/footprint.html
 SQLITE_CFLAGS := -fno-fast-math -fno-exceptions \
                  -DNDEBUG=1 -DSQLITE_DISABLE_LFS=1 -DSQLITE_OMIT_PROGRESS_CALLBACK=1 \
                  -DSQLITE_OMIT_BUILTIN_TEST=1 -DSQLITE_OMIT_DEPRECATED=1 -DSQLITE_OMIT_UTF16=1 \
@@ -93,6 +93,7 @@ $(STAGEFILES_DIR)/.sqlite_host_configured: $(STAGEFILES_DIR)/.sqlite_patched
 			--disable-shared \
 			--enable-static \
 			--disable-readline \
+			--disable-largefile \
 			--enable-threadsafe \
 			--disable-dynamic-extensions)
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_configured
@@ -123,15 +124,15 @@ $(STAGEFILES_DIR)/.sqlite_host_installed: $(STAGEFILES_DIR)/.sqlite_host_compile
 
 $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 	($(CD) $(SQLITE_DIR) ; \
-		$(UCLIBC_ENV_SIZE) \
-		CFLAGS="$(SQLITE_CFLAGS_SIZE) $(SQLITE_CFLAGS)" \
-		LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto -fwhole-program" \
+		$(UCLIBC_ENV_LTO_LOOPS) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO) $(SQLITE_CFLAGS)" \
 		$(SQLITE_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--enable-shared \
 			--enable-static \
 			--disable-readline \
+			--disable-largefile \
 			--enable-threadsafe \
 			--disable-dynamic-extensions)
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_configured
@@ -142,9 +143,8 @@ $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 
 $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
 	$(MAKE) -C $(SQLITE_DIR) \
-		$(UCLIBC_ENV_SIZE) \
-		CFLAGS="$(SQLITE_CFLAGS_SIZE) $(SQLITE_CFLAGS)" \
-		LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto -fwhole-program" \
+		$(UCLIBC_ENV_LTO_LOOPS) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO) $(SQLITE_CFLAGS)" \
 		all
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_compiled
 
@@ -154,9 +154,8 @@ $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
 
 $(STAGEFILES_DIR)/.sqlite_installed: $(STAGEFILES_DIR)/.sqlite_compiled
 	$(MAKE) -C $(SQLITE_DIR) \
-		$(UCLIBC_ENV_SIZE) \
-		CFLAGS="$(SQLITE_CFLAGS_SIZE) $(SQLITE_CFLAGS)" \
-		LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto -fwhole-program" \
+		$(UCLIBC_ENV_LTO_LOOPS) \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO) $(SQLITE_CFLAGS)" \
 		install
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_installed
 

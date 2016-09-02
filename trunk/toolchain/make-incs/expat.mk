@@ -76,7 +76,7 @@ $(STAGEFILES_DIR)/.expat_patched: $(STAGEFILES_DIR)/.expat_unpacked
 #
 
 $(STAGEFILES_DIR)/.expat_configured: $(STAGEFILES_DIR)/.expat_patched
-	($(CD) $(EXPAT_DIR) ; $(UCLIBC_ENV_LTO_GC) \
+	($(CD) $(EXPAT_DIR) ; $(UCLIBC_ENV_LTO_GC_LOOPS) \
 		$(EXPAT_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
@@ -89,7 +89,7 @@ $(STAGEFILES_DIR)/.expat_configured: $(STAGEFILES_DIR)/.expat_patched
 #
 
 $(STAGEFILES_DIR)/.expat_compiled: $(STAGEFILES_DIR)/.expat_configured
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(EXPAT_DIR)
+	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(EXPAT_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.expat_compiled
 
 #
@@ -97,7 +97,7 @@ $(STAGEFILES_DIR)/.expat_compiled: $(STAGEFILES_DIR)/.expat_configured
 #
 
 $(STAGEFILES_DIR)/.expat_installed: $(STAGEFILES_DIR)/.expat_compiled
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(EXPAT_DIR) install
+	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(EXPAT_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.expat_installed
 
 
