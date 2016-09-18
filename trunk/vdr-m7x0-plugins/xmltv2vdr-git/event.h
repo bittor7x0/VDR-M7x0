@@ -10,6 +10,7 @@
 
 #include <time.h>
 #include <vdr/epg.h>
+#include "compatibility.h"
 
 class cXMLTVStringList : public cVector<char *>
 {

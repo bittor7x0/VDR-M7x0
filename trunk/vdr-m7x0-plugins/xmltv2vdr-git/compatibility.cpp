@@ -264,5 +264,28 @@ const char *cCharSetConv::Convert(const char *From, char *To, size_t ToLength)
   return From;
 }
 
+// --- cStringList -----------------------------------------------------------
+
+cStringList::~cStringList()
+{
+  Clear();
+}
+
+int cStringList::Find(const char *s) const
+{
+  for (int i = 0; i < Size(); i++) {
+      if (!strcmp(s, At(i)))
+         return i;
+      }
+  return -1;
+}
+
+void cStringList::Clear(void)
+{
+  for (int i = 0; i < Size(); i++)
+      free(At(i));
+  cVector<char *>::Clear();
+}
+
 #endif // VDRVERSNUM < 10500
 
