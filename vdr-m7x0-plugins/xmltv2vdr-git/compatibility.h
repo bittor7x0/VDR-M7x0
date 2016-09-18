@@ -1,5 +1,5 @@
-#ifndef __epgfixer_compatibility_h__
-#define __epgfixer_compatibility_h__
+#ifndef __xmltv2vdr_compatibility_h__
+#define __xmltv2vdr_compatibility_h__
 
 #if VDRVERSNUM < 10500
 
@@ -86,6 +86,31 @@ public:
   static void SetSystemCharacterTable(const char *CharacterTable);
   };
 
+inline int CompareStrings(const void *a, const void *b)
+{
+  return strcmp(*(const char **)a, *(const char **)b);
+}
+
+inline int CompareStringsIgnoreCase(const void *a, const void *b)
+{
+  return strcasecmp(*(const char **)a, *(const char **)b);
+}
+
+class cStringList : public cVector<char *> {
+public:
+  cStringList(int Allocated = 10): cVector<char *>(Allocated) {}
+  virtual ~cStringList();
+  int Find(const char *s) const;
+  void Sort(bool IgnoreCase = false)
+  {
+    if (IgnoreCase)
+       cVector<char *>::Sort(CompareStringsIgnoreCase);
+    else
+       cVector<char *>::Sort(CompareStrings);
+  }
+  virtual void Clear(void);
+  };
+
 #endif // VDRVERSNUM < 10500
 
-#endif // __epgfixer_compatibility_h__
+#endif // __xmltv2vdr_compatibility_h__
