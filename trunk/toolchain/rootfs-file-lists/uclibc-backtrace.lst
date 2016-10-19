@@ -1,4 +1,2 @@
-lib/libubacktrace-1.0.17.so   lib/libubacktrace-1.0.17.so   f 755 0 0 - - - - -
-lib/libubacktrace-1.0.17.so   -                             s   - - - - - - - -
-lib/libubacktrace.so.1        libubacktrace-1.0.17.so       l 777 0 0 - - - - -
-lib/libubacktrace.so.0        libubacktrace-1.0.17.so       l 777 0 0 - - - - -
+lib/libubacktrace.so.1        libuClibc-1.0.18.so        l 777 0 0 - - - - -
+lib/libubacktrace.so.0        libuClibc-1.0.18.so        l 777 0 0 - - - - -

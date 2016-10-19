@@ -39,9 +39,9 @@ ifeq ($(UCLIBC_IS_NG),y)
 	UCLIBC_LINUXTHREADS_NEW_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_LINUXTHREADS_NEW_VERSION_FULL).tar.gz
 	UCLIBC_LINUXTHREADS_NEW_DLFILE := $(DOWNLOAD_DIR)/uClibc-ng-$(UCLIBC_LINUXTHREADS_NEW_VERSION)-linuxthreads-new.tar.gz
   ifeq ($(UCLIBC_IS_SNAPSHOT),y)
-	# http://repo.or.cz/uclibc-ng.git/commit/939014ddce98bd07c774815a7f0cf379c8bde38d
-	UCLIBC_VERSION := 939014d
-	UCLIBC_VERSION_FULL := 939014ddce98bd07c774815a7f0cf379c8bde38d
+	# http://repo.or.cz/uclibc-ng.git/commit/6630ac965279ed2a76394fbad8fd861f275ed24c
+	UCLIBC_VERSION := 6630ac9
+	UCLIBC_VERSION_FULL := 6630ac965279ed2a76394fbad8fd861f275ed24c
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.gz
 	UCLIBC_DIR := $(BUILD_DIR)/uclibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/snapshot/uclibc-ng.config
@@ -49,7 +49,7 @@ ifeq ($(UCLIBC_IS_NG),y)
 	UCLIBC_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_VERSION_FULL).tar.gz
 	UCLIBC_FILE_LIST += uclibc-ng-snapshot.lst
   else
-	UCLIBC_VERSION := 1.0.17
+	UCLIBC_VERSION := 1.0.18
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.bz2
 	UCLIBC_DIR := $(BUILD_DIR)/uClibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/$(UCLIBC_VERSION)/uclibc-ng.config
@@ -202,6 +202,28 @@ $(STAGEFILES_DIR)/.uclibc_compiled:  $(STAGEFILES_DIR)/.uclibc_configured \
 #
 
 $(STAGEFILES_DIR)/.uclibc_installed: $(STAGEFILES_DIR)/.uclibc_compiled
+ifeq ($(UCLIBC_IS_NG),y)
+	$(LN) -sf libc.so.1 $(TARGET_ROOT)/lib/libcrypt.so.1
+	$(LN) -sf libc.so.0 $(TARGET_ROOT)/lib/libcrypt.so.0
+	$(LN) -sf libc.so.1 $(TARGET_ROOT)/lib/libdl.so.1
+	$(LN) -sf libc.so.0 $(TARGET_ROOT)/lib/libdl.so.0
+	$(LN) -sf libc.so.1 $(TARGET_ROOT)/lib/libm.so.1
+	$(LN) -sf libc.so.0 $(TARGET_ROOT)/lib/libm.so.0
+	$(LN) -sf libc.so.1 $(TARGET_ROOT)/lib/libnsl.so.1
+	$(LN) -sf libc.so.0 $(TARGET_ROOT)/lib/libnsl.so.0
+	$(LN) -sf libc.so.1 $(TARGET_ROOT)/lib/libpthread.so.1
+	$(LN) -sf libc.so.0 $(TARGET_ROOT)/lib/libpthread.so.0
+	$(LN) -sf libc.so.1 $(TARGET_ROOT)/lib/libresolv.so.1
+	$(LN) -sf libc.so.0 $(TARGET_ROOT)/lib/libresolv.so.0
+	$(LN) -sf libc.so.1 $(TARGET_ROOT)/lib/librt.so.1
+	$(LN) -sf libc.so.0 $(TARGET_ROOT)/lib/librt.so.0
+	$(LN) -sf libc.so.1 $(TARGET_ROOT)/lib/libutil.so.1
+	$(LN) -sf libc.so.0 $(TARGET_ROOT)/lib/libutil.so.0
+  ifeq ($(CONFIG_UCLIBC_WITH_BACKTRACE),y)
+	$(LN) -sf libc.so.1 $(TARGET_ROOT)/lib/libubacktrace.so.1
+	$(LN) -sf libc.so.0 $(TARGET_ROOT)/lib/libubacktrace.so.0
+  endif
+endif
 	PATH='$(GCC_STAGE1_PREFIX_BIN):$(PREFIX_BIN):$(PATH)' \
 		$(MAKE) -j1 -C $(UCLIBC_DIR) PREFIX=$(TARGET_ROOT) install
 	echo "#define O7OTOOLCHAINVERSION \"$(UCLIBC_VERSION)" \

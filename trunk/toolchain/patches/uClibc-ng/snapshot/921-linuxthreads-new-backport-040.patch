@@ -1,0 +1,937 @@
+Backport for linuxthreads.new from:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=29ff9055c80efe77a7130767a9fcb3ab8c67e8ce
+
+diff -Naur a/libpthread/linuxthreads/forward.c b/libpthread/linuxthreads/forward.c
+--- a/libpthread/linuxthreads/forward.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/forward.c	1970-01-01 01:00:00.000000000 +0100
+@@ -1,144 +0,0 @@
+-/* Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+-   This file is part of the GNU C Library.
+-   Contributed by Ulrich Drepper <drepper@redhat.com>, 2002.
+-
+-   The GNU C Library is free software; you can redistribute it and/or
+-   modify it under the terms of the GNU Lesser General Public
+-   License as published by the Free Software Foundation; either
+-   version 2.1 of the License, or (at your option) any later version.
+-
+-   The GNU C Library is distributed in the hope that it will be useful,
+-   but WITHOUT ANY WARRANTY; without even the implied warranty of
+-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-   Lesser General Public License for more details.
+-
+-   You should have received a copy of the GNU Lesser General Public
+-   License along with the GNU C Library; if not, see
+-   <http://www.gnu.org/licenses/>.  */
+-
+-#include <features.h>
+-#include <stdlib.h>
+-#include <dlfcn.h>
+-
+-/* psm: keep this before internals.h */
+-
+-#include "internals.h"
+-
+-/* Pointers to the libc functions.  */
+-struct pthread_functions __libc_pthread_functions;
+-
+-
+-# define FORWARD2(name, rettype, decl, params, defaction) \
+-rettype									      \
+-name decl								      \
+-{									      \
+-  if (__libc_pthread_functions.ptr_##name == NULL)			      \
+-    defaction;								      \
+-									      \
+-  return __libc_pthread_functions.ptr_##name params;			      \
+-}
+-
+-# define FORWARD(name, decl, params, defretval) \
+-  FORWARD2 (name, int, decl, params, return defretval)
+-
+-FORWARD (pthread_attr_destroy, (pthread_attr_t *attr), (attr), 0)
+-
+-FORWARD (pthread_attr_init, (pthread_attr_t *attr), (attr), 0)
+-
+-FORWARD (pthread_attr_getdetachstate,
+-	 (const pthread_attr_t *attr, int *detachstate), (attr, detachstate),
+-	 0)
+-FORWARD (pthread_attr_setdetachstate, (pthread_attr_t *attr, int detachstate),
+-	 (attr, detachstate), 0)
+-
+-FORWARD (pthread_attr_getinheritsched,
+-	 (const pthread_attr_t *attr, int *inherit), (attr, inherit), 0)
+-FORWARD (pthread_attr_setinheritsched, (pthread_attr_t *attr, int inherit),
+-	 (attr, inherit), 0)
+-
+-FORWARD (pthread_attr_getschedparam,
+-	 (const pthread_attr_t *attr, struct sched_param *param),
+-	 (attr, param), 0)
+-FORWARD (pthread_attr_setschedparam,
+-	 (pthread_attr_t *attr, const struct sched_param *param),
+-	 (attr, param), 0)
+-
+-FORWARD (pthread_attr_getschedpolicy,
+-	 (const pthread_attr_t *attr, int *policy), (attr, policy), 0)
+-FORWARD (pthread_attr_setschedpolicy, (pthread_attr_t *attr, int policy),
+-	 (attr, policy), 0)
+-
+-FORWARD (pthread_attr_getscope,
+-	 (const pthread_attr_t *attr, int *scope), (attr, scope), 0)
+-FORWARD (pthread_attr_setscope, (pthread_attr_t *attr, int scope),
+-	 (attr, scope), 0)
+-
+-
+-FORWARD (pthread_condattr_destroy, (pthread_condattr_t *attr), (attr), 0)
+-FORWARD (pthread_condattr_init, (pthread_condattr_t *attr), (attr), 0)
+-
+-
+-FORWARD (pthread_cond_broadcast, (pthread_cond_t *cond), (cond), 0)
+-
+-FORWARD (pthread_cond_destroy, (pthread_cond_t *cond), (cond), 0)
+-
+-FORWARD (pthread_cond_init,
+-	 (pthread_cond_t *cond, const pthread_condattr_t *cond_attr),
+-	 (cond, cond_attr), 0)
+-
+-FORWARD (pthread_cond_signal, (pthread_cond_t *cond), (cond), 0)
+-
+-FORWARD (pthread_cond_wait, (pthread_cond_t *cond, pthread_mutex_t *mutex),
+-	 (cond, mutex), 0)
+-
+-FORWARD (pthread_cond_timedwait,
+-	 (pthread_cond_t *cond, pthread_mutex_t *mutex,
+-	  const struct timespec *abstime), (cond, mutex, abstime), 0)
+-
+-
+-FORWARD (pthread_equal, (pthread_t thread1, pthread_t thread2),
+-	 (thread1, thread2), 1)
+-
+-
+-/* Use an alias to avoid warning, as pthread_exit is declared noreturn.  */
+-FORWARD2 (__pthread_exit, void, (void *retval), (retval), exit (EXIT_SUCCESS))
+-strong_alias (__pthread_exit, pthread_exit)
+-
+-
+-FORWARD (pthread_getschedparam,
+-	 (pthread_t target_thread, int *policy, struct sched_param *param),
+-	 (target_thread, policy, param), 0)
+-FORWARD (pthread_setschedparam,
+-	 (pthread_t target_thread, int policy,
+-	  const struct sched_param *param), (target_thread, policy, param), 0)
+-
+-
+-FORWARD (pthread_mutex_destroy, (pthread_mutex_t *mutex), (mutex), 0)
+-
+-FORWARD (pthread_mutex_init,
+-	 (pthread_mutex_t *mutex, const pthread_mutexattr_t *mutexattr),
+-	 (mutex, mutexattr), 0)
+-strong_alias(pthread_mutex_init, __pthread_mutex_init)
+-
+-FORWARD (pthread_mutex_lock, (pthread_mutex_t *mutex), (mutex), 0)
+-strong_alias(pthread_mutex_lock, __pthread_mutex_lock)
+-
+-FORWARD (pthread_mutex_trylock, (pthread_mutex_t *mutex), (mutex), 0)
+-strong_alias(pthread_mutex_trylock, __pthread_mutex_trylock)
+-
+-FORWARD (pthread_mutex_unlock, (pthread_mutex_t *mutex), (mutex), 0)
+-strong_alias(pthread_mutex_unlock, __pthread_mutex_unlock)
+-
+-FORWARD2 (pthread_self, pthread_t, (void), (), return 0)
+-
+-
+-FORWARD (pthread_setcancelstate, (int state, int *oldstate), (state, oldstate),
+-	 0)
+-
+-FORWARD (pthread_setcanceltype, (int type, int *oldtype), (type, oldtype), 0)
+-
+-FORWARD2 (_pthread_cleanup_push, void, (struct _pthread_cleanup_buffer * buffer, void (*routine)(void *), void * arg), (buffer, routine, arg), return)
+-FORWARD2 (_pthread_cleanup_push_defer, void, (struct _pthread_cleanup_buffer * buffer, void (*routine)(void *), void * arg), (buffer, routine, arg), return)
+-
+-FORWARD2 (_pthread_cleanup_pop, void, (struct _pthread_cleanup_buffer * buffer, int execute), (buffer, execute), return)
+-FORWARD2 (_pthread_cleanup_pop_restore, void, (struct _pthread_cleanup_buffer * buffer, int execute), (buffer, execute), return)
+diff -Naur a/libpthread/linuxthreads/internals.h b/libpthread/linuxthreads/internals.h
+--- a/libpthread/linuxthreads/internals.h	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/internals.h	2016-10-10 16:28:05.983189016 +0200
+@@ -36,7 +36,7 @@
+ #include "descr.h"
+ 
+ #include "semaphore.h"
+-#include <pthread-functions.h>
++extern int * __libc_pthread_init (void);
+ 
+ #ifndef THREAD_GETMEM
+ # define THREAD_GETMEM(descr, member) descr->member
+@@ -262,7 +262,6 @@
+ 
+ /* Defined and used in libc.so.  */
+ extern int __libc_multiple_threads attribute_hidden;
+-extern int __librt_multiple_threads;
+ 
+ /* Debugging */
+ 
+@@ -471,7 +470,9 @@
+ 
+ extern void __pthread_cleanup_upto (__jmp_buf target,
+ 				    char *targetframe) attribute_hidden;
++#if 0
+ extern pid_t __pthread_fork (struct fork_block *b) attribute_hidden;
++#endif
+ 
+ #define asm_handle(name) _asm_handle(name)
+ #define _asm_handle(name) #name
+@@ -509,13 +510,8 @@
+ #endif
+ 
+ #if !defined NOT_IN_libc && !defined FLOATING_STACKS
+-# ifdef SHARED
+-#  define thread_self() \
+-  (*__libc_pthread_functions.ptr_pthread_thread_self) ()
+-# else
+ weak_extern (__pthread_thread_self)
+ #  define thread_self() __pthread_thread_self ()
+-# endif
+ #endif
+ 
+ #ifndef __UCLIBC_HAS_TLS__
+diff -Naur a/libpthread/linuxthreads/libc_pthread_init.c b/libpthread/linuxthreads/libc_pthread_init.c
+--- a/libpthread/linuxthreads/libc_pthread_init.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/libc_pthread_init.c	2016-10-10 10:28:21.693587409 +0200
+@@ -29,16 +29,8 @@
+ strong_alias (__libc_multiple_threads, __librt_multiple_threads)
+ 
+ 
+-int *
+-__libc_pthread_init(const struct pthread_functions *functions)
++int * __libc_pthread_init (void)
+ {
+-#ifdef SHARED
+-  /* We copy the content of the variable pointed to by the FUNCTIONS
+-     parameter to one in libc.so since this means access to the array
+-     can be done with one memory access instead of two.  */
+-  memcpy (&__libc_pthread_functions, functions,
+-	  sizeof (__libc_pthread_functions));
+-#endif
+ 
+ #ifndef __UCLIBC_HAS_TLS__
+   /* Initialize thread-locale current locale to point to the global one.
+diff -Naur a/libpthread/linuxthreads/Makefile.in b/libpthread/linuxthreads/Makefile.in
+--- a/libpthread/linuxthreads/Makefile.in	2016-10-10 13:18:23.834746255 +0200
++++ b/libpthread/linuxthreads/Makefile.in	2016-10-10 13:00:17.522482363 +0200
+@@ -13,24 +13,6 @@
+ CFLAGS-dir_linuxthreads := -DNOT_IN_libc -DIS_IN_libpthread
+ CFLAGS-libpthread/linuxthreads := $(CFLAGS-dir_linuxthreads) $(SSP_ALL_CFLAGS)
+ 
+-# This stuff will not compile without at least -O1
+-# psm: can't handle this here, could maybe search for -O0 in CFLAGS
+-# and append -O1 if found
+-#CFLAGS:=$(CFLAGS:-O0=-O1)
+-
+-ifeq ($(PTHREADS_DEBUG_SUPPORT),y)
+-LDFLAGS-libpthread.so := $(LDFLAGS_NOSTRIP) -Wl,-z,defs
+-else
+-LDFLAGS-libpthread.so := $(LDFLAGS)
+-endif
+-
+-LIBS-libpthread.so := $(LIBS) $(ldso)
+-
+-START_FILE-libpthread.so := $(SHARED_START_FILES)
+-END_FILE-libpthread.so := $(SHARED_END_FILES)
+-
+-libpthread_FULL_NAME := libpthread-$(VERSION).so
+-
+ libpthread_DIR := $(top_srcdir)libpthread/linuxthreads
+ libpthread_OUT := $(top_builddir)libpthread/linuxthreads
+ 
+@@ -59,11 +41,10 @@
+ # Stuff that goes into libc.so, not libpthread.so
+ #
+ #CFLAGS-OMIT-alloca_cutoff.c := $(CFLAGS-dir_linuxthreads)
+-CFLAGS-OMIT-forward.c := $(CFLAGS-dir_linuxthreads)
+ CFLAGS-OMIT-libc-cancellation.c := $(CFLAGS-dir_linuxthreads)
+ CFLAGS-OMIT-libc_pthread_init.c := $(CFLAGS-dir_linuxthreads)
+ libpthread_libc_CSRC := \
+-	forward.c libc-cancellation.c libc_pthread_init.c # alloca_cutoff.c
++	libc-cancellation.c libc_pthread_init.c # alloca_cutoff.c
+ libpthread_libc_OBJ  := $(patsubst %.c, $(libpthread_OUT)/%.o,$(libpthread_libc_CSRC))
+ libc-static-y += $(libpthread_OUT)/libc_pthread_init.o $(libpthread_OUT)/libc-cancellation.o
+ libc-shared-y += $(libpthread_libc_OBJ:.o=.oS)
+@@ -79,28 +60,6 @@
+ endif
+ libpthread-so-y += $(libpthread_OBJ:.o=.oS)
+ 
+-lib-a-$(UCLIBC_HAS_THREADS) += $(top_builddir)lib/libpthread.a
+-lib-so-$(UCLIBC_HAS_THREADS) += $(top_builddir)lib/libpthread.so
+-
+-#ifeq ($(DOMULTI),n)
+-$(top_builddir)lib/libpthread.so: $(libpthread_OUT)/libpthread_so.a $(libc.depend) $(top_builddir)lib/libpthread_nonshared.a
+-	$(call link.so,$(libpthread_FULL_NAME),$(ABI_VERSION))
+-#else
+-#$(top_builddir)lib/libpthread.so: $(libpthread_OUT)/libpthread.oS | $(libc.depend) $(top_builddir)lib/libpthread_nonshared.a
+-#	$(call linkm.so,$(libpthread_FULL_NAME),$(ABI_VERSION))
+-#endif
+-	$(Q)$(RM) $@
+-	$(Q)cat $(top_srcdir)extra/scripts/format.lds > $@.tmp
+-	$(Q)echo "GROUP ( $(notdir $@).$(ABI_VERSION) libpthread_nonshared.a )" >> $@.tmp
+-	$(Q)mv $@.tmp $@
+-
+-ifeq ($(PTHREADS_DEBUG_SUPPORT),y)
+-$(libpthread_OUT)/libpthread_so.a: STRIP_FLAGS:=$(STRIP_FLAGS:-x=-X --strip-debug)
+-endif
+-$(libpthread_OUT)/libpthread_so.a: $(libpthread-so-y)
+-	$(Q)$(RM) $@
+-	$(do_ar)
+-
+ ifeq ($(PTHREADS_DEBUG_SUPPORT),y)
+ $(libpthread_OUT)/libpthread.oS: STRIP_FLAGS:=$(STRIP_FLAGS:-x=-X --strip-debug)
+ endif
+@@ -108,14 +67,6 @@
+ 	$(Q)$(RM) $@
+ 	$(compile-m)
+ 
+-ifeq ($(PTHREADS_DEBUG_SUPPORT),y)
+-$(top_builddir)lib/libpthread.a: STRIP_FLAGS:=$(STRIP_FLAGS:-x=-X --strip-debug)
+-endif
+-$(top_builddir)lib/libpthread.a: $(libpthread-a-y)
+-	$(Q)$(INSTALL) -d $(dir $@)
+-	$(Q)$(RM) $@
+-	$(do_ar)
+-
+ $(top_builddir)include/pthread.h:
+ 	$(do_ln) $(call rel_srcdir)$(PTDIR)/sysdeps/pthread/$(@F) $@
+ $(top_builddir)include/semaphore.h:
+diff -Naur a/libpthread/linuxthreads/ptfork.c b/libpthread/linuxthreads/ptfork.c
+--- a/libpthread/linuxthreads/ptfork.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/ptfork.c	2016-10-19 12:20:16.601656375 +0200
+@@ -23,6 +23,7 @@
+ #include <bits/libc-lock.h>
+ #include "fork.h"
+ 
++#if 0
+ pid_t __pthread_fork (struct fork_block *b)
+ {
+   pid_t pid;
+@@ -75,6 +76,7 @@
+ 
+   return pid;
+ }
++#endif
+ 
+ /* psm: have no idea why these are here, sjhill? */
+ #if 0 /*def SHARED*/
+diff -Naur a/libpthread/linuxthreads/pthread.c b/libpthread/linuxthreads/pthread.c
+--- a/libpthread/linuxthreads/pthread.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/pthread.c	2016-10-19 12:13:28.036442079 +0200
+@@ -181,8 +181,6 @@
+ int __pthread_sig_cancel = __SIGRTMIN + 1;
+ int __pthread_sig_debug = __SIGRTMIN + 2;
+ 
+-extern int __libc_current_sigrtmin_private (void);
+-
+ #if !__ASSUME_REALTIME_SIGNALS
+ static int rtsigs_initialized;
+ 
+@@ -192,18 +190,9 @@
+   if (rtsigs_initialized)
+     return;
+ 
+-  if (__libc_current_sigrtmin_private () == -1)
+-    {
+-      __pthread_sig_restart = SIGUSR1;
+-      __pthread_sig_cancel = SIGUSR2;
+-      __pthread_sig_debug = 0;
+-    }
+-  else
+-    {
+-      __pthread_restart = __pthread_restart_new;
+-      __pthread_suspend = __pthread_wait_for_restart_signal;
+-      __pthread_timedsuspend = __pthread_timedsuspend_new;
+-    }
++  __pthread_restart = __pthread_restart_new;
++  __pthread_suspend = __pthread_wait_for_restart_signal;
++  __pthread_timedsuspend = __pthread_timedsuspend_new;
+ 
+   rtsigs_initialized = 1;
+ }
+@@ -228,63 +217,6 @@
+ extern void __libc_setup_tls (size_t tcbsize, size_t tcbalign);
+ #endif
+ 
+-struct pthread_functions __pthread_functions =
+-  {
+-#if !defined __UCLIBC_HAS_TLS__ && defined __UCLIBC_HAS_RPC__
+-    .ptr_pthread_internal_tsd_set = __pthread_internal_tsd_set,
+-    .ptr_pthread_internal_tsd_get = __pthread_internal_tsd_get,
+-    .ptr_pthread_internal_tsd_address = __pthread_internal_tsd_address,
+-#endif
+-    .ptr_pthread_fork = __pthread_fork,
+-    .ptr_pthread_attr_destroy = __pthread_attr_destroy,
+-    .ptr_pthread_attr_init = __pthread_attr_init,
+-    .ptr_pthread_attr_getdetachstate = __pthread_attr_getdetachstate,
+-    .ptr_pthread_attr_setdetachstate = __pthread_attr_setdetachstate,
+-    .ptr_pthread_attr_getinheritsched = __pthread_attr_getinheritsched,
+-    .ptr_pthread_attr_setinheritsched = __pthread_attr_setinheritsched,
+-    .ptr_pthread_attr_getschedparam = __pthread_attr_getschedparam,
+-    .ptr_pthread_attr_setschedparam = __pthread_attr_setschedparam,
+-    .ptr_pthread_attr_getschedpolicy = __pthread_attr_getschedpolicy,
+-    .ptr_pthread_attr_setschedpolicy = __pthread_attr_setschedpolicy,
+-    .ptr_pthread_attr_getscope = __pthread_attr_getscope,
+-    .ptr_pthread_attr_setscope = __pthread_attr_setscope,
+-    .ptr_pthread_condattr_destroy = __pthread_condattr_destroy,
+-    .ptr_pthread_condattr_init = __pthread_condattr_init,
+-    .ptr_pthread_cond_broadcast = __pthread_cond_broadcast,
+-    .ptr_pthread_cond_destroy = __pthread_cond_destroy,
+-    .ptr_pthread_cond_init = __pthread_cond_init,
+-    .ptr_pthread_cond_signal = __pthread_cond_signal,
+-    .ptr_pthread_cond_wait = __pthread_cond_wait,
+-    .ptr_pthread_cond_timedwait = __pthread_cond_timedwait,
+-    .ptr_pthread_equal = __pthread_equal,
+-    .ptr___pthread_exit = __pthread_exit,
+-    .ptr_pthread_getschedparam = __pthread_getschedparam,
+-    .ptr_pthread_setschedparam = __pthread_setschedparam,
+-    .ptr_pthread_mutex_destroy = __pthread_mutex_destroy,
+-    .ptr_pthread_mutex_init = __pthread_mutex_init,
+-    .ptr_pthread_mutex_lock = __pthread_mutex_lock,
+-    .ptr_pthread_mutex_trylock = __pthread_mutex_trylock,
+-    .ptr_pthread_mutex_unlock = __pthread_mutex_unlock,
+-    .ptr_pthread_self = __pthread_self,
+-    .ptr_pthread_setcancelstate = __pthread_setcancelstate,
+-    .ptr_pthread_setcanceltype = __pthread_setcanceltype,
+-    .ptr_pthread_do_exit = __pthread_do_exit,
+-    .ptr_pthread_thread_self = __pthread_thread_self,
+-    .ptr_pthread_cleanup_upto = __pthread_cleanup_upto,
+-    .ptr_pthread_sigaction = __pthread_sigaction,
+-    .ptr_pthread_sigwait = __pthread_sigwait,
+-    .ptr_pthread_raise = __pthread_raise,
+-    .ptr__pthread_cleanup_push = _pthread_cleanup_push,
+-    .ptr__pthread_cleanup_push_defer = _pthread_cleanup_push_defer,
+-    .ptr__pthread_cleanup_pop = _pthread_cleanup_pop,
+-    .ptr__pthread_cleanup_pop_restore = _pthread_cleanup_pop_restore,
+-  };
+-#ifdef SHARED
+-# define ptr_pthread_functions &__pthread_functions
+-#else
+-# define ptr_pthread_functions NULL
+-#endif
+-
+ static int *__libc_multiple_threads_ptr;
+ 
+ /* Do some minimal initialization which has to be done during the
+@@ -402,7 +334,7 @@
+ # endif
+ #endif
+ 
+-  __libc_multiple_threads_ptr = __libc_pthread_init (ptr_pthread_functions);
++  __libc_multiple_threads_ptr = __libc_pthread_init ();
+ }
+ 
+ 
+diff -Naur a/libpthread/linuxthreads/sysdeps/pthread/bits/libc-lock.h b/libpthread/linuxthreads/sysdeps/pthread/bits/libc-lock.h
+--- a/libpthread/linuxthreads/sysdeps/pthread/bits/libc-lock.h	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/pthread/bits/libc-lock.h	2016-10-10 10:59:13.139486870 +0200
+@@ -105,13 +105,8 @@
+   (FUNC != NULL ? FUNC ARGS : ELSE)
+ # endif
+ #endif
+-#if defined _LIBC && !defined NOT_IN_libc && defined SHARED
+-# define __libc_maybe_call2(FUNC, ARGS, ELSE) \
+-  ({__builtin_expect (__libc_pthread_functions.ptr_##FUNC != NULL, 0) \
+-    ? __libc_pthread_functions.ptr_##FUNC ARGS : ELSE; })
+-#else
+-# define __libc_maybe_call2(FUNC, ARGS, ELSE) __libc_maybe_call (__##FUNC, ARGS, ELSE)
+-#endif
++
++#define __libc_maybe_call2(FUNC, ARGS, ELSE) __libc_maybe_call (__##FUNC, ARGS, ELSE)
+ 
+ /* Initialize the named lock variable, leaving it in a consistent, unlocked
+    state.  */
+@@ -342,65 +337,6 @@
+ 			     void (*__child) (void));
+ 
+ 
+-
+-/* Make the pthread functions weak so that we can elide them from
+-   single-threaded processes.  */
+-#ifndef __NO_WEAK_PTHREAD_ALIASES
+-# ifdef weak_extern
+-#   define BP_SYM(sym) sym
+-weak_extern (BP_SYM (__pthread_mutex_init))
+-weak_extern (BP_SYM (__pthread_mutex_destroy))
+-weak_extern (BP_SYM (__pthread_mutex_lock))
+-weak_extern (BP_SYM (__pthread_mutex_trylock))
+-weak_extern (BP_SYM (__pthread_mutex_unlock))
+-weak_extern (BP_SYM (__pthread_mutexattr_init))
+-weak_extern (BP_SYM (__pthread_mutexattr_destroy))
+-weak_extern (BP_SYM (__pthread_mutexattr_settype))
+-weak_extern (BP_SYM (__pthread_rwlock_init))
+-weak_extern (BP_SYM (__pthread_rwlock_destroy))
+-weak_extern (BP_SYM (__pthread_rwlock_rdlock))
+-weak_extern (BP_SYM (__pthread_rwlock_tryrdlock))
+-weak_extern (BP_SYM (__pthread_rwlock_wrlock))
+-weak_extern (BP_SYM (__pthread_rwlock_trywrlock))
+-weak_extern (BP_SYM (__pthread_rwlock_unlock))
+-weak_extern (BP_SYM (__pthread_key_create))
+-weak_extern (BP_SYM (__pthread_setspecific))
+-weak_extern (BP_SYM (__pthread_getspecific))
+-weak_extern (BP_SYM (__pthread_once))
+-weak_extern (__pthread_initialize)
+-weak_extern (__pthread_atfork)
+-weak_extern (BP_SYM (_pthread_cleanup_push))
+-weak_extern (BP_SYM (_pthread_cleanup_pop))
+-weak_extern (BP_SYM (_pthread_cleanup_push_defer))
+-weak_extern (BP_SYM (_pthread_cleanup_pop_restore))
+-# else
+-#  pragma weak __pthread_mutex_init
+-#  pragma weak __pthread_mutex_destroy
+-#  pragma weak __pthread_mutex_lock
+-#  pragma weak __pthread_mutex_trylock
+-#  pragma weak __pthread_mutex_unlock
+-#  pragma weak __pthread_mutexattr_init
+-#  pragma weak __pthread_mutexattr_destroy
+-#  pragma weak __pthread_mutexattr_settype
+-#  pragma weak __pthread_rwlock_destroy
+-#  pragma weak __pthread_rwlock_rdlock
+-#  pragma weak __pthread_rwlock_tryrdlock
+-#  pragma weak __pthread_rwlock_wrlock
+-#  pragma weak __pthread_rwlock_trywrlock
+-#  pragma weak __pthread_rwlock_unlock
+-#  pragma weak __pthread_key_create
+-#  pragma weak __pthread_setspecific
+-#  pragma weak __pthread_getspecific
+-#  pragma weak __pthread_once
+-#  pragma weak __pthread_initialize
+-#  pragma weak __pthread_atfork
+-#  pragma weak _pthread_cleanup_push_defer
+-#  pragma weak _pthread_cleanup_pop_restore
+-#  pragma weak _pthread_cleanup_push
+-#  pragma weak _pthread_cleanup_pop
+-# endif
+-#endif
+-
+ /* We need portable names for some functions.  E.g., when they are
+    used as argument to __libc_cleanup_region_start.  */
+ #define __libc_mutex_unlock __pthread_mutex_unlock
+diff -Naur a/libpthread/linuxthreads/sysdeps/pthread/pthread-functions.h b/libpthread/linuxthreads/sysdeps/pthread/pthread-functions.h
+--- a/libpthread/linuxthreads/sysdeps/pthread/pthread-functions.h	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/pthread/pthread-functions.h	1970-01-01 01:00:00.000000000 +0100
+@@ -1,101 +0,0 @@
+-/* Copyright (C) 2003 Free Software Foundation, Inc.
+-   This file is part of the GNU C Library.
+-   Contributed by Ulrich Drepper <drepper@redhat.com>, 2003.
+-
+-   The GNU C Library is free software; you can redistribute it and/or
+-   modify it under the terms of the GNU Lesser General Public
+-   License as published by the Free Software Foundation; either
+-   version 2.1 of the License, or (at your option) any later version.
+-
+-   The GNU C Library is distributed in the hope that it will be useful,
+-   but WITHOUT ANY WARRANTY; without even the implied warranty of
+-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-   Lesser General Public License for more details.
+-
+-   You should have received a copy of the GNU Lesser General Public
+-   License along with the GNU C Library; if not, see
+-   <http://www.gnu.org/licenses/>.  */
+-
+-#ifndef _PTHREAD_FUNCTIONS_H
+-#define _PTHREAD_FUNCTIONS_H	1
+-
+-#include <pthread.h>
+-#include <setjmp.h>
+-#include <linuxthreads/descr.h>
+-
+-struct fork_block;
+-
+-/* Data type shared with libc.  The libc uses it to pass on calls to
+-   the thread functions.  Wine pokes directly into this structure,
+-   so if possible avoid breaking it and append new hooks to the end.  */
+-struct pthread_functions
+-{
+-  pid_t (*ptr_pthread_fork) (struct fork_block *);
+-  int (*ptr_pthread_attr_destroy) (pthread_attr_t *);
+-  int (*ptr_pthread_attr_init) (pthread_attr_t *);
+-  int (*ptr_pthread_attr_getdetachstate) (const pthread_attr_t *, int *);
+-  int (*ptr_pthread_attr_setdetachstate) (pthread_attr_t *, int);
+-  int (*ptr_pthread_attr_getinheritsched) (const pthread_attr_t *, int *);
+-  int (*ptr_pthread_attr_setinheritsched) (pthread_attr_t *, int);
+-  int (*ptr_pthread_attr_getschedparam) (const pthread_attr_t *,
+-					 struct sched_param *);
+-  int (*ptr_pthread_attr_setschedparam) (pthread_attr_t *,
+-					 const struct sched_param *);
+-  int (*ptr_pthread_attr_getschedpolicy) (const pthread_attr_t *, int *);
+-  int (*ptr_pthread_attr_setschedpolicy) (pthread_attr_t *, int);
+-  int (*ptr_pthread_attr_getscope) (const pthread_attr_t *, int *);
+-  int (*ptr_pthread_attr_setscope) (pthread_attr_t *, int);
+-  int (*ptr_pthread_condattr_destroy) (pthread_condattr_t *);
+-  int (*ptr_pthread_condattr_init) (pthread_condattr_t *);
+-  int (*ptr_pthread_cond_broadcast) (pthread_cond_t *);
+-  int (*ptr_pthread_cond_destroy) (pthread_cond_t *);
+-  int (*ptr_pthread_cond_init) (pthread_cond_t *,
+-				  const pthread_condattr_t *);
+-  int (*ptr_pthread_cond_signal) (pthread_cond_t *);
+-  int (*ptr_pthread_cond_wait) (pthread_cond_t *, pthread_mutex_t *);
+-  int (*ptr_pthread_equal) (pthread_t, pthread_t);
+-  void (*ptr___pthread_exit) (void *);
+-  int (*ptr_pthread_getschedparam) (pthread_t, int *, struct sched_param *);
+-  int (*ptr_pthread_setschedparam) (pthread_t, int,
+-				    const struct sched_param *);
+-  int (*ptr_pthread_mutex_destroy) (pthread_mutex_t *);
+-  int (*ptr_pthread_mutex_init) (pthread_mutex_t *,
+-				 const pthread_mutexattr_t *);
+-  int (*ptr_pthread_mutex_lock) (pthread_mutex_t *);
+-  int (*ptr_pthread_mutex_trylock) (pthread_mutex_t *);
+-  int (*ptr_pthread_mutex_unlock) (pthread_mutex_t *);
+-  pthread_t (*ptr_pthread_self) (void);
+-  int (*ptr_pthread_setcancelstate) (int, int *);
+-  int (*ptr_pthread_setcanceltype) (int, int *);
+-  void (*ptr_pthread_do_exit) (void *retval, char *currentframe);
+-  void (*ptr_pthread_cleanup_upto) (__jmp_buf target,
+-				    char *targetframe);
+-  pthread_descr (*ptr_pthread_thread_self) (void);
+-#if !defined __UCLIBC_HAS_TLS__ && defined __UCLIBC_HAS_RPC__
+-  int (*ptr_pthread_internal_tsd_set) (int key, const void *pointer);
+-  void * (*ptr_pthread_internal_tsd_get) (int key);
+-  void ** __attribute__ ((__const__))
+-    (*ptr_pthread_internal_tsd_address) (int key);
+-#endif
+-  int (*ptr_pthread_sigaction) (int sig, const struct sigaction * act,
+-				struct sigaction *oact);
+-  int (*ptr_pthread_sigwait) (const sigset_t *set, int *sig);
+-  int (*ptr_pthread_raise) (int sig);
+-  int (*ptr_pthread_cond_timedwait) (pthread_cond_t *, pthread_mutex_t *,
+-				       const struct timespec *);
+-  void (*ptr__pthread_cleanup_push) (struct _pthread_cleanup_buffer * buffer,
+-				     void (*routine)(void *), void * arg);
+-  void (*ptr__pthread_cleanup_push_defer) (struct _pthread_cleanup_buffer * buffer,
+-					   void (*routine)(void *), void * arg);
+-  void (*ptr__pthread_cleanup_pop) (struct _pthread_cleanup_buffer * buffer,
+-				    int execute);
+-  void (*ptr__pthread_cleanup_pop_restore) (struct _pthread_cleanup_buffer * buffer,
+-					    int execute);
+-};
+-
+-/* Variable in libc.so.  */
+-extern struct pthread_functions __libc_pthread_functions attribute_hidden;
+-
+-extern int * __libc_pthread_init (const struct pthread_functions *functions);
+-
+-#endif	/* pthread-functions.h */
+diff -Naur a/libpthread/linuxthreads/sysdeps/pthread/uClibc-glue.h b/libpthread/linuxthreads/sysdeps/pthread/uClibc-glue.h
+--- a/libpthread/linuxthreads/sysdeps/pthread/uClibc-glue.h	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/pthread/uClibc-glue.h	2016-10-19 12:11:43.397843382 +0200
+@@ -26,7 +26,6 @@
+ #define __read read
+ #define __close close
+ #define __on_exit on_exit
+-#define __libc_current_sigrtmin_private __libc_current_sigrtmin
+ #define __clone clone
+ 
+ extern void *__libc_stack_end;
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/allocrtsig.c b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/allocrtsig.c
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/allocrtsig.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/allocrtsig.c	1970-01-01 01:00:00.000000000 +0100
+@@ -1,88 +0,0 @@
+-/* Handle real-time signal allocation.
+-   Copyright (C) 1997,98,99,2002 Free Software Foundation, Inc.
+-   This file is part of the GNU C Library.
+-   Contributed by Ulrich Drepper <drepper@cygnus.com>, 1997.
+-
+-   The GNU C Library is free software; you can redistribute it and/or
+-   modify it under the terms of the GNU Lesser General Public
+-   License as published by the Free Software Foundation; either
+-   version 2.1 of the License, or (at your option) any later version.
+-
+-   The GNU C Library is distributed in the hope that it will be useful,
+-   but WITHOUT ANY WARRANTY; without even the implied warranty of
+-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-   Lesser General Public License for more details.
+-
+-   You should have received a copy of the GNU Lesser General Public
+-   License along with the GNU C Library; if not, see
+-   <http://www.gnu.org/licenses/>.  */
+-
+-#include <signal.h>
+-
+-/* Sanity check.  */
+-#if !defined __SIGRTMIN || (__SIGRTMAX - __SIGRTMIN) < 3
+-# error "This must not happen"
+-#endif
+-
+-static int current_rtmin;
+-static int current_rtmax;
+-
+-static int initialized;
+-
+-#include <testrtsig.h>
+-
+-static void
+-init (void)
+-{
+-  if (!kernel_has_rtsig ())
+-    {
+-      current_rtmin = -1;
+-      current_rtmax = -1;
+-    }
+-  else
+-    {
+-      current_rtmin = __SIGRTMIN + 3;
+-      current_rtmax = __SIGRTMAX;
+-    }
+-  initialized = 1;
+-}
+-
+-/* Return number of available real-time signal with highest priority.  */
+-int
+-__libc_current_sigrtmin (void)
+-{
+-  if (!initialized)
+-    init ();
+-  return current_rtmin;
+-}
+-strong_alias (__libc_current_sigrtmin, __libc_current_sigrtmin_private)
+-libc_hidden_def (__libc_current_sigrtmin)
+-
+-/* Return number of available real-time signal with lowest priority.  */
+-int
+-__libc_current_sigrtmax (void)
+-{
+-  if (!initialized)
+-    init ();
+-  return current_rtmax;
+-}
+-strong_alias (__libc_current_sigrtmax, __libc_current_sigrtmax_private)
+-libc_hidden_def (__libc_current_sigrtmax)
+-
+-#if 0
+-/* Allocate real-time signal with highest/lowest available
+-   priority.  Please note that we don't use a lock since we assume
+-   this function to be called at program start.  */
+-int
+-__libc_allocate_rtsig (int high)
+-{
+-  if (!initialized)
+-    init ();
+-  if (current_rtmin == -1 || current_rtmin > current_rtmax)
+-    /* We don't have anymore signal available.  */
+-    return -1;
+-
+-  return high ? current_rtmin++ : current_rtmax--;
+-}
+-strong_alias (__libc_allocate_rtsig, __libc_allocate_rtsig_private)
+-#endif
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/alpha/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/alpha/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/alpha/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/alpha/vfork.S	2016-10-10 14:41:59.070844919 +0200
+@@ -27,14 +27,9 @@
+ 	ldgp	gp, 0(pv)
+ 	PSEUDO_PROF
+ 
+-#ifdef SHARED
+-	ldq	t0, __libc_pthread_functions(gp) !gprel
+-	bne	t0, HIDDEN_JUMPTARGET (fork) !samegp
+-#else
+ 	.weak	pthread_create
+ 	ldq	t0, pthread_create(gp) !literal
+ 	bne	t0, $do_fork
+-#endif
+ 
+ 	lda	v0, SYS_ify(vfork)
+ 	call_pal PAL_callsys
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/arm/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/arm/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/arm/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/arm/vfork.S	2016-10-10 14:41:42.540540029 +0200
+@@ -63,13 +63,8 @@
+ #endif
+     	b	PLTJMP(C_SYMBOL_NAME(__syscall_error))
+ 
+-#ifdef SHARED
+-1:	.word	_GLOBAL_OFFSET_TABLE_ - 3b - 8
+-2:	.word	__libc_pthread_functions(GOTOFF)
+-#else
+ 	.weak	pthread_create
+ 1:	.word	pthread_create
+-#endif
+ 
+ PSEUDO_END (__vfork)
+ libc_hidden_def (__vfork)
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/i386/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/i386/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/i386/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/i386/vfork.S	2016-10-10 14:43:28.302310041 +0200
+@@ -30,19 +30,9 @@
+ 
+ #ifdef __NR_vfork
+ 
+-# ifdef SHARED
+-#  if !defined HAVE_HIDDEN || !defined __UCLIBC_HAS_TLS__
+-	SETUP_PIC_REG (cx)
+-#  else
+-	call	__i686.get_pc_thunk.cx
+-#  endif
+-	addl	$_GLOBAL_OFFSET_TABLE_, %ecx
+-	cmpl	$0, __libc_pthread_functions@GOTOFF(%ecx)
+-# else
+ 	.weak	pthread_create
+ 	movl	$pthread_create, %eax
+ 	testl	%eax, %eax
+-# endif
+ 	jne	HIDDEN_JUMPTARGET (fork)
+ 
+ 	/* Pop the return PC value into ECX.  */
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/ia64/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/ia64/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/ia64/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/ia64/vfork.S	2016-10-10 14:41:29.333621028 +0200
+@@ -29,12 +29,8 @@
+ /* Implemented as __clone_syscall(CLONE_VFORK | CLONE_VM | SIGCHLD, 0)	*/
+ 
+ ENTRY(__vfork)
+-#ifdef SHARED
+-	addl r14 = @gprel(__libc_pthread_functions#), gp;;
+-#else
+ 	.weak	pthread_create
+ 	addl r14 = @ltoff(@fptr(pthread_create#)), gp;;
+-#endif
+ 	ld8 r14 = [r14];;
+ 	cmp.ne p6, p7 = 0, r14
+ (p6)	br.cond.spnt.few HIDDEN_JUMPTARGET (fork);;
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/m68k/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/m68k/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/m68k/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/m68k/vfork.S	2016-10-10 14:40:37.299209280 +0200
+@@ -28,12 +28,8 @@
+ 
+ ENTRY (__vfork)
+ 
+-#ifdef SHARED
+-	tstl	(__libc_pthread_functions@GOTPC, %pc)
+-#else
+ 	.weak	pthread_create
+ 	movel	#pthread_create, %d0
+-#endif
+ 	jbne	HIDDEN_JUMPTARGET (fork)
+ 
+ #ifdef __NR_vfork
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/mips/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/mips/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/mips/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/mips/vfork.S	2016-10-10 14:40:54.019571398 +0200
+@@ -53,12 +53,8 @@
+ #endif
+ 
+ 	/* If libpthread is loaded, we need to call fork instead.  */
+-#ifdef SHARED
+-	PTR_L		a0, __libc_pthread_functions
+-#else
+ 	.weak		pthread_create
+ 	PTR_LA		a0, pthread_create
+-#endif
+ 
+ 	PTR_ADDU	sp, FRAMESZ
+ 
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/powerpc/powerpc32/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/powerpc/powerpc32/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/powerpc/powerpc32/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/powerpc/powerpc32/vfork.S	2016-10-10 14:43:06.421976024 +0200
+@@ -28,26 +28,9 @@
+ ENTRY (__vfork)
+ 
+ #ifdef __NR_vfork
+-# ifdef SHARED
+-	mflr	9
+-#  ifdef HAVE_ASM_PPC_REL16
+-	bcl	20,31,1f
+-1:	mflr	10
+-	addis	10,10,__libc_pthread_functions-1b@ha
+-	lwz	10,__libc_pthread_functions-1b@l(10)
+-	mtlr	9
+-#  else
+-	bl	_GLOBAL_OFFSET_TABLE_@local-4
+-	mflr	10
+-	mtlr	9
+-	lwz	10,__libc_pthread_functions@got(10)
+-	lwz	10,0(10)
+-#  endif
+-# else
+ 	.weak	pthread_create
+ 	lis	10,pthread_create@ha
+ 	la	10,pthread_create@l(10)
+-# endif
+ 
+ 	cmpwi	10,0
+ 	bne-	.Lhidden_fork
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/powerpc/powerpc64/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/powerpc/powerpc64/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/powerpc/powerpc64/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/powerpc/powerpc64/vfork.S	2016-10-10 14:42:17.237833453 +0200
+@@ -25,14 +25,6 @@
+    replaced by a call to `execve'.  Return -1 for errors, 0 to the new process,
+    and the process ID of the new process to the old process.  */
+ 
+-#ifdef SHARED
+-	.section	".toc","aw"
+-.LC0:
+-	.tc __libc_pthread_functions[TC],__libc_pthread_functions
+-	.section	".text"
+-	.align 2
+-#endif
+-
+ ENTRY (__vfork)
+ 
+ #ifdef __NR_vfork
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/sh/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/sh/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/sh/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/sh/vfork.S	2016-10-10 14:42:32.671430063 +0200
+@@ -52,16 +52,9 @@
+ 	 nop
+ .L1:	.word	__NR_vfork
+ 	.align	2
+-#ifdef SHARED
+-.Lgot:
+-	.long	_GLOBAL_OFFSET_TABLE_
+-.Lpthread_func:
+-	.long	__libc_pthread_functions@GOTOFF
+-#else
+ .Lpthread_create:
+ 	.weak	pthread_create
+ 	.long	pthread_create
+-#endif
+ 
+ .Lhidden_fork:
+ 	mov.l	.L2, r1
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/sparc/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/sparc/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/sparc/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/sparc/vfork.S	2016-10-10 14:41:18.203402000 +0200
+@@ -25,22 +25,9 @@
+ 	 add	%o7, %o0, %o0
+ #endif
+ ENTRY(__vfork)
+-#ifdef SHARED
+-	mov	%o7, %o1
+-	sethi	%hi(_GLOBAL_OFFSET_TABLE_-4), %o0
+-	call	.LLGETPC0
+-	 add	%o0, %lo(_GLOBAL_OFFSET_TABLE_+4), %o0
+-	sethi	%hi(__libc_pthread_functions), %o2
+-	mov	%o1, %o7
+-	or	%o2, %lo(__libc_pthread_functions), %o2
+-	ld	[%o0 + %o2], %o2
+-	ld	[%o2], %o2
+-	cmp	%o2, 0
+-#else
+ 	.weak	pthread_create
+ 	sethi	%hi(pthread_create), %o0
+ 	orcc	%o0, %lo(pthread_create), %o0
+-#endif
+ #if defined SHARED && !defined BROKEN_SPARC_WDISP22
+ 	bne	HIDDEN_JUMPTARGET(fork)
+ #else
+diff -Naur a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/x86_64/vfork.S b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/x86_64/vfork.S
+--- a/libpthread/linuxthreads/sysdeps/unix/sysv/linux/x86_64/vfork.S	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/unix/sysv/linux/x86_64/vfork.S	2016-10-10 14:40:27.475655734 +0200
+@@ -26,13 +26,9 @@
+ 
+ ENTRY (__vfork)
+ 
+-#ifdef SHARED
+-	cmpq	$0, __libc_pthread_functions(%rip)
+-#else
+ 	.weak	pthread_create
+ 	movq	$pthread_create, %rax
+ 	testq	%rax, %rax
+-#endif
+ 	jne	HIDDEN_JUMPTARGET (fork)
+ 
+ 	/* Pop the return PC value into RDI.  We need a register that
