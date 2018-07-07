@@ -37,9 +37,10 @@ GCC_FOR_EGCS := $(firstword \
                              $(subst ., ,$(shell $(gcc) -dumpversion))) \
                        -le 6 && echo $(gcc))))
 
-ifeq ($(strip $(GCC_FOR_EGCS)),)
-  $(error egcs needs gcc version < 7.0)
-endif
+# Disabled because egcs is patched to compile with any gcc
+#ifeq ($(strip $(GCC_FOR_EGCS)),)
+#  $(error egcs needs gcc version < 7.0)
+#endif
 endif
 
 # egcs don't know x86_64
