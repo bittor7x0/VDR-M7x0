@@ -1,0 +1,15 @@
+diff -Naur a/configure b/configure
+--- a/configure	2018-07-06 20:38:29.000000000 +0200
++++ b/configure	2018-07-07 10:19:14.526099607 +0200
+@@ -203,6 +203,11 @@
+     exit 1;
+ fi
+ 
++# Disable SSL support
++makl_unset_var_mk "HAVE_LIBCYASSL"
++makl_unset_var_mk "ENABLE_CYASSL"
++makl_unset_var_mk "HAVE_LIBOPENSSL"
++makl_unset_var_mk "HAVE_LIBOPENSSL_PSK"
+ 
+ if [ "`makl_get_var_mk "HAVE_LIBCYASSL"`" -a "`makl_get_var_mk "ENABLE_CYASSL"`" ]; 
+ then

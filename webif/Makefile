@@ -33,6 +33,7 @@ KLONE_TARGET_PATCH_FILE = $(CURDIR)/klone-core-${KLONE_VERSION}-atinar.patch
 KLONE_TARGET_PATCH_FILE += $(CURDIR)/klone-core-${KLONE_VERSION}-gcc.patch
 KLONE_HOST_PATCH_FILE= $(KLONE_TARGET_PATCH_FILE)
 KLONE_HOST_PATCH_FILE += $(CURDIR)/klone-core-${KLONE_VERSION}-host-no_klone.patch
+KLONE_HOST_PATCH_FILE += $(CURDIR)/klone-core-${KLONE_VERSION}-host-disable_SSL_support.patch
 
 # cross-compiling (see build/makl/tc/* for the list of supported platforms)
 # MAKL_PLATFORM =
