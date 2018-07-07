@@ -74,7 +74,7 @@ MEDIATOMB_PATCHES_DIR := $(PATCHES_DIR)/mediatomb/$(MEDIATOMB_VERSION)
 
 MEDIATOMB_FILE := mediatomb_$(MEDIATOMB_VERSION).orig.tar.xz
 MEDIATOMB_DLFILE := $(DOWNLOAD_DIR)/$(MEDIATOMB_FILE)
-MEDIATOMB_URL := http://http.debian.net/debian/pool/main/m/mediatomb/$(MEDIATOMB_FILE)
+MEDIATOMB_URL := http://old-releases.ubuntu.com/ubuntu/pool/universe/m/mediatomb/$(MEDIATOMB_FILE)
 MEDIATOMB_DIR := $(BUILD_DIR)/mediatomb-$(MEDIATOMB_VERSION)
 MEDIATOMB_CONF_DIR := $(PRG_CONFIGS_DIR)/mediatomb
 
