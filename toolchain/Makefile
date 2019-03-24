@@ -1,7 +1,7 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
 # Copyright (C) 2006-2007 Andreas Koch - the open7x0.org group
-# Copyright (C) 2007-2018 VDR-NG-EM Project
+# Copyright (C) 2007-2019 VDR-NG-EM Project
 #
 # More information can be found in the file COPYING.
 #
