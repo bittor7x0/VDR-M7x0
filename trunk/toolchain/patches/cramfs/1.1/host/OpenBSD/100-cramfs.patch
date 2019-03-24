@@ -7,10 +7,10 @@ diff -Nru cramfs-1.1/cramfsck.c cramfs-1.1-openbsd/cramfsck.c
  #include <string.h>
 -#include <sys/sysmacros.h>
 +//#include <sys/sysmacros.h>
+ #ifndef __CYGWIN__
  #include <utime.h>
- #include <sys/ioctl.h>
- #define _LINUX_STRING_H_
-@@ -223,7 +223,7 @@
+ #endif /* __CYGWIN__ */
+@@ -229,7 +229,7 @@
  
  	buf = mmap(NULL, super.size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
  	if (buf == MAP_FAILED) {

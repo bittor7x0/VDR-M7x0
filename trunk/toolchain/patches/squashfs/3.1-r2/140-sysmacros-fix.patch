@@ -1,0 +1,10 @@
+--- a/squashfs-tools/mksquashfs.c
++++ b/squashfs-tools/mksquashfs.c
+@@ -35,6 +35,7 @@
+ #include <errno.h>
+ #include <dirent.h>
+ #include <string.h>
++#include <sys/sysmacros.h>
+ #include <zlib.h>
+ #include <stdlib.h>
+ #include <signal.h>

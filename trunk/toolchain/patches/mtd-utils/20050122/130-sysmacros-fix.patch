@@ -1,0 +1,10 @@
+--- a/util/mkfs.jffs2.c
++++ b/util/mkfs.jffs2.c
+@@ -57,6 +57,7 @@
+ #include <stdlib.h>
+ #include <errno.h>
+ #include <string.h>
++#include <sys/sysmacros.h>
+ #include <stdarg.h>
+ #include <stdint.h>
+ #include <libgen.h>
