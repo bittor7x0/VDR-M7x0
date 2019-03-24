@@ -1,6 +1,6 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
-# Copyright (C) 2016-2018 VDR-NG-EM Project
+# Copyright (C) 2016-2019 VDR-NG-EM Project
 #
 # More information can be found in the files COPYING and README.
 #
