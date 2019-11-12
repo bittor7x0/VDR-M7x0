@@ -26,7 +26,7 @@
 
 E2FSPROGS_DEPS = $(BASE_BUILD_STAGEFILE)
 
-E2FSPROGS_VERSION := 1.43.3
+E2FSPROGS_VERSION := 1.45.4
 E2FSPROGS_PATCHES_DIR := $(PATCHES_DIR)/e2fsprogs/$(E2FSPROGS_VERSION)
 
 E2FSPROGS_FILE := e2fsprogs-$(E2FSPROGS_VERSION).tar.gz
@@ -79,13 +79,14 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
                                          $$(E2FSPROGS_DEPS)
 	-$(RM) -rf $(E2FSPROGS_BUILD_DIR)
 	$(MKDIR) -p $(E2FSPROGS_BUILD_DIR)
-	($(CD) $(E2FSPROGS_BUILD_DIR) ; $(UCLIBC_ENV_SIZE) \
+	($(CD) $(E2FSPROGS_BUILD_DIR) ; $(UCLIBC_ENV_SIZE_LTO) \
 		$(E2FSPROGS_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--sbindir=$(TARGET_ROOT)/sbin \
 			--sysconfdir=$(TARGET_ROOT)/etc \
 			--host=$(TARGET)\
 			--disable-debugfs \
+			--disable-backtrace \
 			--disable-imager \
 			--disable-resizer \
 			--disable-fsck \
@@ -94,9 +95,13 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
 			--disable-testio-debug \
 			--disable-fuse2fs \
 			--disable-mmp \
+			--disable-tdb \
 			--disable-bmap-stats \
 			--disable-uuidd \
 			--disable-rpath \
+			--with-udev_rules_dir=no \
+			--with-crond-dir=no \
+			--with-systemd-unit-dir=no \
 			$(if $(CONFIG_LIBUUID),--enable-elf-shlibs) \
 			--disable-nls )
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_configured
@@ -106,7 +111,7 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
 #
 
 $(STAGEFILES_DIR)/.e2fsprogs_compiled: $(STAGEFILES_DIR)/.e2fsprogs_configured
-	$(UCLIBC_ENV_SIZE) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) all
+	$(UCLIBC_ENV_SIZE_LTO) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_compiled
 
 #
@@ -114,7 +119,7 @@ $(STAGEFILES_DIR)/.e2fsprogs_compiled: $(STAGEFILES_DIR)/.e2fsprogs_configured
 #
 
 $(STAGEFILES_DIR)/.e2fsprogs_installed: $(STAGEFILES_DIR)/.e2fsprogs_compiled
-	$(UCLIBC_ENV_SIZE) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) install
+	$(UCLIBC_ENV_SIZE_LTO) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_installed
 
 
