@@ -66,7 +66,7 @@ OFI-IMG_TIME_REF = $(firstword $(OFI-IMG_TIME_REF_all))
 GEN_OFI_CMD_LINE += -o $(OFI-IMG)
 
 POST_RULES_$(CONFIG_GENERATE_OFI-IMG) += $(OFI-IMG)
-DISTCLEAN_RULES += distclean-generate-wsw
+DISTCLEAN_RULES += distclean-generate-ofi
 
 $(OFI-IMG): $$(OFI-IMG_DEPS)
 	$(GEN_OFI_BIN) $(GEN_OFI_CMD_LINE) \
