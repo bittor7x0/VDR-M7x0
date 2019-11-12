@@ -161,10 +161,10 @@ CONFIG_VDR = y
 # CONFIG_VDR_LOCAL_PATH is not set
 
 # VDR-PLUGINS: Plugins for VDR included in firmware
-CONFIG_VDR-PLUGINS = epgsearch filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars cridplayer osdadjust scheduler zappilot fepg
+CONFIG_VDR-PLUGINS = epgsearch filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars osdadjust scheduler
 
 # VDR-PLUGINS-LIBS: Libraries of plugins for VDR
-CONFIG_VDR-PLUGINS-LIBS = epgsearch epgsearchonly conflictcheckonly filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars cridplayer osdadjust scheduler zappilot fepg
+CONFIG_VDR-PLUGINS-LIBS = epgsearch epgsearchonly conflictcheckonly filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars osdadjust scheduler
 
 # usbautomounter: Automounter for usb devices
 CONFIG_USBAUTOMOUNTER = y
