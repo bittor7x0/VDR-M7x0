@@ -26,10 +26,10 @@
 # Put dependencies here
 ISL_HOSTDEPS = $(GMP_HOSTINSTALLED)
 
-ISL_HOSTVERSION := 0.19
+ISL_HOSTVERSION := 0.21
 ISL_HOSTPATCHES_DIR := $(PATCHES_DIR)/isl/$(ISL_HOSTVERSION)
 
-ISL_HOSTFILE := isl-$(ISL_HOSTVERSION).tar.bz2
+ISL_HOSTFILE := isl-$(ISL_HOSTVERSION).tar.xz
 ISL_HOSTDLFILE := $(DOWNLOAD_DIR)/$(ISL_HOSTFILE)
 ISL_HOSTURL := http://isl.gforge.inria.fr/$(ISL_HOSTFILE)
 ISL_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/isl-$(ISL_HOSTVERSION)
@@ -59,7 +59,7 @@ $(STAGEFILES_DIR)/.isl_host_unpacked: $(ISL_HOSTDLFILE) \
                                            $(wildcard $(ISL_HOSTPATCHES_DIR)/*.patch) \
                                            $$(ISL_HOSTDEPS)
 	-$(RM) -rf $(ISL_HOSTDIR)
-	$(BZCAT) $(ISL_HOSTDLFILE) | $(TAR) -C $(HOSTUTILS_BUILD_DIR) -f -
+	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -xJf $(ISL_HOSTDLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.isl_host_unpacked
 
 #
