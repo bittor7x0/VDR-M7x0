@@ -26,14 +26,14 @@
 # Put dependencies here
 CLOOG_HOSTDEPS = $(ISL_HOSTINSTALLED) $(GMP_HOSTINSTALLED)
 
-CLOOG_HOSTVERSION := 0.19.0
+CLOOG_HOSTVERSION := 0.20.0
 CLOOG_HOSTPATCHES_DIR := $(PATCHES_DIR)/cloog/$(CLOOG_HOSTVERSION)
 
 CLOOG_HOSTFILE := cloog-$(CLOOG_HOSTVERSION).tar.gz
 CLOOG_HOSTDLFILE := $(DOWNLOAD_DIR)/$(CLOOG_HOSTFILE)
 # Old version (0.18.4) from official website
-#CLOOG_HOSTURL := http://www.bastoul.net/cloog/pages/download/count.php3?url=./$(CLOOG_HOSTFILE)
-# New version (0.19.0) from github with isl 0.19 support
+#CLOOG_HOSTURL := http://www.bastoul.net/cloog/pages/download/$(CLOOG_HOSTFILE)
+# New version (0.20.0) from github with isl 0.20 support
 CLOOG_HOSTURL := https://github.com/periscop/cloog/releases/download/cloog-$(CLOOG_HOSTVERSION)/$(CLOOG_HOSTFILE)
 CLOOG_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/cloog-$(CLOOG_HOSTVERSION)
 

@@ -29,7 +29,7 @@ PPL_HOSTDEPS = $(GMP_HOSTINSTALLED)
 PPL_HOSTVERSION := 1.2
 PPL_HOSTPATCHES_DIR := $(PATCHES_DIR)/ppl/$(PPL_HOSTVERSION)
 
-PPL_HOSTFILE := ppl-$(PPL_HOSTVERSION).tar.bz2
+PPL_HOSTFILE := ppl-$(PPL_HOSTVERSION).tar.xz
 PPL_HOSTDLFILE := $(DOWNLOAD_DIR)/$(PPL_HOSTFILE)
 PPL_HOSTURL := http://bugseng.com/products/ppl/download/ftp/releases/$(PPL_HOSTVERSION)/$(PPL_HOSTFILE)
 PPL_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/ppl-$(PPL_HOSTVERSION)
@@ -59,7 +59,7 @@ $(STAGEFILES_DIR)/.ppl_host_unpacked: $(PPL_HOSTDLFILE) \
                                            $(wildcard $(PPL_HOSTPATCHES_DIR)/*.patch) \
                                            $$(PPL_HOSTDEPS)
 	-$(RM) -rf $(PPL_HOSTDIR)
-	$(BZCAT) $(PPL_HOSTDLFILE) | $(TAR) -C $(HOSTUTILS_BUILD_DIR) -f -
+	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -xJf $(PPL_HOSTDLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.ppl_host_unpacked
 
 #
