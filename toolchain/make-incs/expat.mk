@@ -26,10 +26,10 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 EXPAT_DEPS = $(BASE_BUILD_STAGEFILE)
 
-EXPAT_VERSION := 2.2.0
+EXPAT_VERSION := 2.2.9
 EXPAT_PATCHES_DIR := $(PATCHES_DIR)/expat/$(EXPAT_VERSION)
 
-EXPAT_FILE := expat-$(EXPAT_VERSION).tar.bz2
+EXPAT_FILE := expat-$(EXPAT_VERSION).tar.xz
 EXPAT_DLFILE := $(DOWNLOAD_DIR)/$(EXPAT_FILE)
 EXPAT_URL := http://downloads.sourceforge.net/expat/$(EXPAT_FILE)
 EXPAT_DIR := $(BUILD_DIR)/expat-$(EXPAT_VERSION)
@@ -60,7 +60,7 @@ $(STAGEFILES_DIR)/.expat_unpacked: $(EXPAT_DLFILE) \
                                            $(wildcard $(EXPAT_PATCHES_DIR)/*.patch) \
                                            $$(EXPAT_DEPS)
 	-$(RM) -rf $(EXPAT_DIR)
-	$(TAR) -C $(BUILD_DIR) -jf $(EXPAT_DLFILE)
+	$(TAR) -C $(BUILD_DIR) -xJf $(EXPAT_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.expat_unpacked
 
 #
@@ -80,6 +80,10 @@ $(STAGEFILES_DIR)/.expat_configured: $(STAGEFILES_DIR)/.expat_patched
 		$(EXPAT_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
+			--without-xmlwf \
+			--without-examples \
+			--without-tests \
+			--without-docbook \
 			--enable-shared \
 			--enable-static)
 	$(TOUCH) $(STAGEFILES_DIR)/.expat_configured
