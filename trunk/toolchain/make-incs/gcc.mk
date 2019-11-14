@@ -27,13 +27,13 @@
 GCC_IS_SNAPSHOT := n
 
 ifeq ($(GCC_IS_SNAPSHOT),y)
-  GCC_VERSION := 7-20161016
-  GCC_FILE := gcc-$(GCC_VERSION).tar.bz2
+  GCC_VERSION := 10-20191110
+  GCC_FILE := gcc-$(GCC_VERSION).tar.xz
   GCC_URL := http://www.mirrorservice.org/sites/sourceware.org/pub/gcc/snapshots/$(GCC_VERSION)/$(GCC_FILE)
   GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/snapshot
   GCC_FILE_LIST += gcc-snapshot.lst
 else
-  GCC_VERSION := 6.4.0
+  GCC_VERSION := 9.2.0
   GCC_FILE := gcc-$(GCC_VERSION).tar.xz
   GCC_URL := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE)
   GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
@@ -71,11 +71,7 @@ $(GCC_DLFILE): $(TC_INIT_RULE)
 
 $(STAGEFILES_DIR)/.gcc_unpacked: $(GCC_DLFILE) $(wildcard $(GCC_PATCHES_DIR)/*.patch)
 	-$(RM) -rf $(GCC_DIR)
-ifeq ($(GCC_IS_SNAPSHOT),y)
-	$(BZCAT) $(GCC_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
-else
 	$(TAR) -C $(BUILD_DIR) -xJf $(GCC_DLFILE)
-endif
 	$(TOUCH) $(STAGEFILES_DIR)/.gcc_unpacked
 #
 # patch gcc
