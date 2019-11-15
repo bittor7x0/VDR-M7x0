@@ -198,6 +198,18 @@ CONFIG_ZOPFLIPNG = y
 # URL: http://www.jonof.id.au/kenutils
 CONFIG_PNGOUT = y
 
+# pngwolf-zopfli: A PNG optimizer using a genetic algorithm to find effective compression parameters that uses Zopfli for the final compression step
+# URL: https://github.com/jibsen/pngwolf-zopfli
+CONFIG_PNGWOLF-ZOPFLI = y
+
+# Efficient Compression Tool: PNG and JPEG file optimizer
+# URL: https://github.com/fhanau/Efficient-Compression-Tool
+CONFIG_ECT = y
+
+# pingo: An experimental, fast Web PNG/JPG optimizer with visually lossless or lossy compression
+# URL: https://www.css-ig.net/pingo
+CONFIG_PINGO = y
+
 
 #############
 #           #

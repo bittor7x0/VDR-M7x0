@@ -57,6 +57,7 @@ RM := rm
 CAT := cat
 CUT := cut
 SVN := svn
+GIT := git
 MV := mv
 FIND := find
 TEST := test
@@ -274,8 +275,8 @@ endef
 # usage: $(call css_shrink_dir, <css_dir>)
 define css_shrink_dir
 	for css_file in `$(FIND) $(1) -type f -iname '*.css' | $(SORT)` ; do \
-		$(SED) -i -e  "s,/\*\!,/\*,g" $$css_file ; \
-		$(shell which java) -jar $(YUI_COMPRESSOR_JAR) --type css $$css_file -o $$css_file ; \
+		$(SED) -i -e  "s,/\*\!,/\*,g" "$$css_file" ; \
+		$(shell which java) -jar $(YUI_COMPRESSOR_JAR) --type css "$$css_file" -o "$$css_file" ; \
 	done
 endef
 
@@ -283,20 +284,34 @@ endef
 # usage: $(call js_shrink_dir, <js_dir>)
 define js_shrink_dir
 	for js_file in `$(FIND) $(1) -type f -iname '*.js' | $(SORT)` ; do \
-		$(SED) -i -e  "s,/\*\!,/\*,g" $$js_file ; \
-		$(shell which java) -jar $(YUI_COMPRESSOR_JAR) --type js $$js_file -o $$js_file ; \
+		$(SED) -i -e  "s,/\*\!,/\*,g" "$$js_file" ; \
+		$(shell which java) -jar $(YUI_COMPRESSOR_JAR) --type js "$$js_file" -o "$$js_file" ; \
 	done
 endef
 
-# optimizes png images from a given png-dir. all *.png files are reduced with zopflipng and/or pngout
+# optimizes png images from a given png-dir. all *.png files are reduced with multiple tools
 # usage: $(call png_shrink_dir, <png_dir>)
 define png_shrink_dir
 	for png_file in `$(FIND) $(1) -type f -iname '*.png' | $(SORT)` ; do \
+		if [ $(CONFIG_PINGO) == y ] ; then \
+			$(ECHO) "--- pingo ---" ; \
+			($(CD) "$$(dirname $$png_file)"; $(PINGO_BIN) -sb "$$(basename $$png_file)") ; \
+		fi; \
+		if [ $(CONFIG_ECT) == y ] ; then \
+			$(ECHO) "--- Efficient Compression Tool ---" ; \
+			$(ECT_BIN) --allfilters-b -strip -9 "$$png_file" ; \
+		fi; \
+		if [ $(CONFIG_PNGWOLF-ZOPFLI) == y ] ; then \
+			$(ECHO) "--- pngwolf-zopfli ---" ; \
+			$(PNGWOLF-ZOPFLI_BIN) --out-deflate=zopfli,iter=30 --in="$$png_file" --out="$$png_file" ; \
+		fi; \
 		if [ $(CONFIG_ZOPFLIPNG) == y ] ; then \
-			$(ZOPFLIPNG_BIN) -m -y --lossy_transparent --filters=0me $$png_file $$png_file ; \
+			$(ECHO) "--- ZopfliPNG ---" ; \
+			$(ZOPFLIPNG_BIN) -m -y --lossy_transparent --filters=0me "$$png_file" "$$png_file" ; \
 		fi; \
 		if [ $(CONFIG_PNGOUT) == y ] ; then \
-			$(PNGOUT_BIN) $$png_file -s0 -k0 -y ; \
+			$(ECHO) "--- PNGOUT ---" ; \
+			$(PNGOUT_BIN) "$$png_file" -s0 -k0 -y ; \
 		fi; \
 	done
 endef

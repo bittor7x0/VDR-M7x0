@@ -198,6 +198,18 @@ CONFIG_O7O_FLASHER = y
 # URL: http://www.jonof.id.au/kenutils
 # CONFIG_PNGOUT is not set
 
+# pngwolf-zopfli: A PNG optimizer using a genetic algorithm to find effective compression parameters that uses Zopfli for the final compression step
+# URL: https://github.com/jibsen/pngwolf-zopfli
+# CONFIG_PNGWOLF-ZOPFLI is not set
+
+# Efficient Compression Tool: PNG and JPEG file optimizer
+# URL: https://github.com/fhanau/Efficient-Compression-Tool
+# CONFIG_ECT is not set
+
+# pingo: An experimental, fast Web PNG/JPG optimizer with visually lossless or lossy compression
+# URL: https://www.css-ig.net/pingo
+# CONFIG_PINGO is not set
+
 
 #############
 #           #
