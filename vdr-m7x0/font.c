@@ -17,22 +17,29 @@
 #include "fontosd-iso8859-1.c"
 #include "fontsml-iso8859-1.c"
 
-
+#ifndef DISABLE_ISO8859_2
 #include "fontfix-iso8859-2.c"
 #include "fontosd-iso8859-2.c"
 #include "fontsml-iso8859-2.c"
+#endif
 
+#ifndef DISABLE_ISO8859_5
 #include "fontfix-iso8859-5.c"
 #include "fontosd-iso8859-5.c"
 #include "fontsml-iso8859-5.c"
+#endif
 
+#ifndef DISABLE_ISO8859_7
 #include "fontfix-iso8859-7.c"
 #include "fontosd-iso8859-7.c"
 #include "fontsml-iso8859-7.c"
+#endif
 
+#ifndef DISABLE_ISO8859_13
 #include "fontfix-iso8859-13.c"
 #include "fontosd-iso8859-13.c"
 #include "fontsml-iso8859-13.c"
+#endif
 
 #include "fontfix-iso8859-15.c"
 #include "fontosd-iso8859-15.c"
@@ -44,19 +51,35 @@
 
 static const void *const FontData[eDvbCodeSize][eDvbFontSize] = {
   { FontOsd_iso8859_1,  FontFix_iso8859_1,  FontSml_iso8859_1,  FontSym },
+#ifndef DISABLE_ISO8859_2
   { FontOsd_iso8859_2,  FontFix_iso8859_2,  FontSml_iso8859_2,  FontSym },
+#endif
+#ifndef DISABLE_ISO8859_5
   { FontOsd_iso8859_5,  FontFix_iso8859_5,  FontSml_iso8859_5,  FontSym },
+#endif
+#ifndef DISABLE_ISO8859_7
   { FontOsd_iso8859_7,  FontFix_iso8859_7,  FontSml_iso8859_7,  FontSym },
+#endif
+#ifndef DISABLE_ISO8859_13
   { FontOsd_iso8859_13, FontFix_iso8859_13, FontSml_iso8859_13, FontSym },
+#endif
   { FontOsd_iso8859_15, FontFix_iso8859_15, FontSml_iso8859_15, FontSym },
   };
 
 static const char *FontCode[eDvbCodeSize] = {
   "iso8859-1",
+#ifndef DISABLE_ISO8859_2
   "iso8859-2",
+#endif
+#ifndef DISABLE_ISO8859_5
   "iso8859-5",
+#endif
+#ifndef DISABLE_ISO8859_7
   "iso8859-7",
+#endif
+#ifndef DISABLE_ISO8859_13
   "iso8859-13",
+#endif
   "iso8859-15",
   };
 

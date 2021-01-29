@@ -27,10 +27,18 @@ enum eDvbFont {
 
 enum eDvbCode {
   code_iso8859_1,
+#ifndef DISABLE_ISO8859_2
   code_iso8859_2,
+#endif
+#ifndef DISABLE_ISO8859_5
   code_iso8859_5,
+#endif
+#ifndef DISABLE_ISO8859_7
   code_iso8859_7,
+#endif
+#ifndef DISABLE_ISO8859_13
   code_iso8859_13,
+#endif
   code_iso8859_15,
 #define eDvbCodeSize (code_iso8859_15 + 1)
   };

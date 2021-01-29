@@ -105,25 +105,58 @@ const tI18nPhrase Phrases[] = {
   // The character set needed for this language (this MUST be the second phrase!):
   { "iso8859-15",
     "iso8859-15",
+#ifndef DISABLE_ISO8859_2
     "iso8859-2",
+#else
+    "iso8859-1",
+#endif
     "iso8859-15",
     "iso8859-15",
     "iso8859-1",
     "iso8859-1",
     "iso8859-1",
     "iso8859-15",
+#ifndef DISABLE_ISO8859_2
     "iso8859-2",
+#else
+    "iso8859-1",
+#endif
     "iso8859-15",
+#ifndef DISABLE_ISO8859_7
     "iso8859-7",
+#else
     "iso8859-1",
+#endif
+    "iso8859-1",
+#ifndef DISABLE_ISO8859_2
     "iso8859-2",
     "iso8859-2",
+#else
     "iso8859-1",
+    "iso8859-1",
+#endif
+    "iso8859-1",
+#ifndef DISABLE_ISO8859_5
     "iso8859-5",
+#else
+    "iso8859-1",
+#endif
+#ifndef DISABLE_ISO8859_2
     "iso8859-2",
+#else
+    "iso8859-1",
+#endif
+#ifndef DISABLE_ISO8859_13
     "iso8859-13",
+#else
+    "iso8859-1",
+#endif
     "iso8859-15",
+#ifndef DISABLE_ISO8859_2
     "iso8859-2",
+#else
+    "iso8859-1",
+#endif
   },
   // The 3-letter names of the language (this MUST be the third phrase!):
   { "eng,dos",
