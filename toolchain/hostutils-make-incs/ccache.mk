@@ -23,12 +23,12 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-CCACHE_HOSTVERSION := 3.2.2
-CCACHE_HOSTFILE := ccache-$(CCACHE_HOSTVERSION).tar.gz
+CCACHE_HOSTVERSION := 3.7.12
+CCACHE_HOSTFILE := ccache-$(CCACHE_HOSTVERSION).tar.xz
 CCACHE_HOSTDLFILE := $(DOWNLOAD_DIR)/$(CCACHE_HOSTFILE)
 
 CCACHE_HOSTPATCHES_DIR := $(PATCHES_DIR)/ccache/$(CCACHE_HOSTVERSION)
-CCACHE_HOSTURL := http://samba.org/ftp/ccache/$(CCACHE_HOSTFILE)
+CCACHE_HOSTURL := https://github.com/ccache/ccache/releases/download/v$(CCACHE_HOSTVERSION)/$(CCACHE_HOSTFILE)
 CCACHE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/ccache-$(CCACHE_HOSTVERSION)
 CCACHE_HOSTINSTALLED = $(STAGEFILES_DIR)/.ccache_host_installed
 
@@ -52,7 +52,7 @@ $(CCACHE_HOSTDLFILE): $(TC_INIT_RULE)
 $(STAGEFILES_DIR)/.ccache_host_unpacked: $(CCACHE_HOSTDLFILE) \
                                          	$(wildcard $(CCACHE_HOSTPATCHES_DIR)/*.patch)
 	-$(RM) -rf $(CCACHE_HOSTDIR)
-	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -zf $(CCACHE_HOSTDLFILE)
+	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -xJf $(CCACHE_HOSTDLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.ccache_host_unpacked
 
 #
@@ -89,7 +89,7 @@ $(STAGEFILES_DIR)/.ccache_host_compiled: $(STAGEFILES_DIR)/.ccache_host_configur
 
 $(STAGEFILES_DIR)/.ccache_host_installed: $(STAGEFILES_DIR)/.ccache_host_compiled
 	-$(RM) -rf $(PREFIX_BIN)/ccache
-	$(MKDIR) -p $(PREFIX_BIN)/ccache
+	$(MKDIR) -p $(PREFIX_BIN)/ccache $(STAGEFILES_DIR)/.ccache
 	$(CP) $(CCACHE_HOSTDIR)/ccache $(PREFIX_BIN)/ccache/ccache
 	$(LN) -sf $(PREFIX_BIN)/ccache/ccache $(PREFIX_BIN)/ccache/$(UCLIBC_CC)
 	$(LN) -sf $(PREFIX_BIN)/ccache/ccache $(PREFIX_BIN)/ccache/$(UCLIBC_CXX)
@@ -98,7 +98,7 @@ $(STAGEFILES_DIR)/.ccache_host_installed: $(STAGEFILES_DIR)/.ccache_host_compile
 .PHONY: clean-ccache-host distclean-ccache-host
 
 clean-ccache-host:
-	-$(RM) -rf $(CCACHE_HOSTDIR)
+	-$(RM) -rf $(CCACHE_HOSTDIR) $(PREFIX_BIN)/ccache
 
 distclean-ccache-host:
 	-$(RM) -f $(STAGEFILES_DIR)/.ccache_host_unpacked

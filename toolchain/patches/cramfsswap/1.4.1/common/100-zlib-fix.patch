@@ -1,0 +1,12 @@
+diff -Naur cramfsswap-1.3.1-orig/Makefile cramfsswap-1.3.1/Makefile
+--- cramfsswap-1.3.1-orig/Makefile	2005-01-04 12:48:51.000000000 +0100
++++ cramfsswap-1.3.1/Makefile	2012-02-11 11:40:37.419760112 +0100
+@@ -4,7 +4,7 @@
+ debian: cramfsswap
+ 
+ cramfsswap: cramfsswap.c
+-	gcc -Wall -g -O -o cramfsswap -lz cramfsswap.c
++	gcc -Wall -g -O -o cramfsswap cramfsswap.c -lz
+ 
+ strip:
+ 	strip cramfsswap
