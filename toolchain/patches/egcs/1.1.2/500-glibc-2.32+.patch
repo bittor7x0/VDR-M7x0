@@ -1,0 +1,70 @@
+From the release notes of glibc 2.32, https://sourceware.org/pipermail/libc-announce/2020/000029.html
+
+    The deprecated arrays sys_siglist, _sys_siglist, and sys_sigabbrev
+    are no longer available to newly linked binaries, and their declarations
+    have been removed from <string.h>. They are exported solely as
+    compatibility symbols to support old binaries. All programs should use
+    strsignal instead.
+
+
+diff -Naur a/gcc/collect2.c b/gcc/collect2.c
+--- a/gcc/collect2.c	1998-10-28 21:18:07.000000000 +0100
++++ b/gcc/collect2.c	2020-09-20 13:06:59.843082551 +0200
+@@ -1585,7 +1585,11 @@
+ 	  error ("%s terminated with signal %d [%s]%s",
+ 		 prog,
+ 		 sig,
++#ifdef HAVE_STRSIGNAL
++		 strsignal (sig),
++#else
+ 		 sys_siglist[sig],
++#endif
+ 		 (status & 0200) ? ", core dumped" : "");
+ #endif
+ 
+diff -Naur a/gcc/config.in b/gcc/config.in
+--- a/gcc/config.in	1998-07-09 02:28:12.000000000 +0200
++++ b/gcc/config.in	2020-09-20 12:31:18.691784307 +0200
+@@ -147,6 +147,9 @@
+ /* Define if you have the strrchr function.  */
+ #undef HAVE_STRRCHR
+ 
++/* Define if you have the strsignal function.  */
++#undef HAVE_STRSIGNAL
++
+ /* Define if you have the strtoul function.  */
+ #undef HAVE_STRTOUL
+ 
+diff -Naur a/gcc/configure b/gcc/configure
+--- a/gcc/configure	2020-09-20 12:13:51.079615216 +0200
++++ b/gcc/configure	2020-09-20 12:28:21.588652087 +0200
+@@ -1741,7 +1741,7 @@
+ fi
+ 
+ for ac_func in strtoul bsearch strerror putenv popen bcopy bzero bcmp \
+-	index rindex strchr strrchr kill getrlimit setrlimit atoll atoq \
++	index rindex strchr strrchr strsignal kill getrlimit setrlimit atoll atoq \
+ 	sysconf isascii gettimeofday
+ do
+ echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
+diff -Naur a/gcc/configure.in b/gcc/configure.in
+--- a/gcc/configure.in	2020-09-20 12:13:51.079615216 +0200
++++ b/gcc/configure.in	2020-09-20 12:23:02.062345315 +0200
+@@ -209,7 +209,7 @@
+ fi
+ 
+ AC_CHECK_FUNCS(strtoul bsearch strerror putenv popen bcopy bzero bcmp \
+-	index rindex strchr strrchr kill getrlimit setrlimit atoll atoq \
++	index rindex strchr strrchr strsignal kill getrlimit setrlimit atoll atoq \
+ 	sysconf isascii gettimeofday)
+ 
+ GCC_FUNC_VFPRINTF_DOPRNT
+@@ -225,8 +225,6 @@
+ #endif
+ ])
+ 
+-AC_DECL_SYS_SIGLIST
+-
+ # File extensions
+ manext='.1'
+ objext='.o'
