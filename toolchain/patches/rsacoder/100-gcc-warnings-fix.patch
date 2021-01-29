@@ -1,0 +1,47 @@
+Fix these gcc warnings:
+warning: implicit declaration of function ‘exit’
+warning: implicit declaration of function ‘abort’
+warning: implicit declaration of function ‘memcpy’
+
+--- a/arith.c
++++ b/arith.c
+@@ -21,6 +21,9 @@
+ *									       *
+ *******************************************************************************/
+ 
++#include	<stdlib.h>
++#include	<string.h>
++
+ #include	"arith.h"
+ 
+ /*
+--- a/nio.c
++++ b/nio.c
+@@ -22,6 +22,7 @@
+ *******************************************************************************/
+ 
+ #include	<stdio.h>
++#include	<stdlib.h>
+ #include	<ctype.h>
+ #include	<string.h>
+ 
+--- a/rsadecode.c
++++ b/rsadecode.c
+@@ -22,6 +22,7 @@
+ *******************************************************************************/
+ 
+ #include	<stdio.h>
++#include	<stdlib.h>
+ #include	<string.h>
+ #include	<memory.h>
+ 
+--- a/rsaencode.c
++++ b/rsaencode.c
+@@ -22,6 +22,7 @@
+ *******************************************************************************/
+ 
+ #include	<stdio.h>
++#include	<stdlib.h>
+ #include	<string.h>
+ #include	<memory.h>
+ 

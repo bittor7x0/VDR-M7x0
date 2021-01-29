@@ -29,6 +29,7 @@ RSADECODE_BIN := $(HOSTUTILS_PREFIX_BIN)/rsadecode
 
 RSACODER_HOSTFILE := rsacoder.tar.bz2
 RSACODER_HOSTDLFILE := $(DOWNLOAD_DIR)/$(RSACODER_HOSTFILE)
+RSACODER_HOSTPATCHES_DIR := $(PATCHES_DIR)/rsacoder
 
 RSACODER_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/rsacoder
 
@@ -48,12 +49,19 @@ $(STAGEFILES_DIR)/.rsacoder_host_unpacked: $(RSACODER_HOSTDLFILE) $(TC_INIT_RULE
 	$(BZCAT) $(RSACODER_HOSTDLFILE) | $(TAR) -C $(HOSTUTILS_BUILD_DIR) -f -
 	$(TOUCH) $(STAGEFILES_DIR)/.rsacoder_host_unpacked
 
+#
+# patch rsacoder
+#
+
+$(STAGEFILES_DIR)/.rsacoder_host_patched: $(STAGEFILES_DIR)/.rsacoder_host_unpacked
+	$(call patch_package, $(RSACODER_HOSTDIR), $(RSACODER_HOSTPATCHES_DIR))
+	$(TOUCH) $(STAGEFILES_DIR)/.rsacoder_host_patched
 
 #
 # compile rsacoder
 #
 
-$(STAGEFILES_DIR)/.rsacoder_host_compiled: $(STAGEFILES_DIR)/.rsacoder_host_unpacked
+$(STAGEFILES_DIR)/.rsacoder_host_compiled: $(STAGEFILES_DIR)/.rsacoder_host_patched
 	$(MAKE) -C $(RSACODER_HOSTDIR) all
 	$(TOUCH) $(STAGEFILES_DIR)/.rsacoder_host_compiled
 
@@ -79,5 +87,6 @@ clean-rsacoder-host:
 
 distclean-rsacoder-host:
 	-$(RM) -f $(STAGEFILES_DIR)/.rsacoder_host_unpacked
+	-$(RM) -f $(STAGEFILES_DIR)/.rsacoder_host_patched
 	-$(RM) -f $(STAGEFILES_DIR)/.rsacoder_host_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.rsacoder_host_installed

@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <string.h>
 #include <endian.h>
+#include <stdlib.h>
 #include <byteswap.h>
 
 #define BUFFER_SIZE     4096*128
