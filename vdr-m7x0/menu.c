@@ -995,7 +995,8 @@ eOSState cMenuFolder::ProcessKey(eKeys Key)
 cMenuEditTimer::cMenuEditTimer(cTimer *Timer, bool New)
 :cOsdMenu(tr("Edit timer"), 12)
 {
-  file = NULL;
+  fileItem = NULL;
+  folderItem = NULL;
   firstday = NULL;
   timer = Timer;
   addIfConfirmed = New;
@@ -1004,6 +1005,21 @@ cMenuEditTimer::cMenuEditTimer(cTimer *Timer, bool New)
      if (New)
         data.SetFlags(tfActive);
      channel = data.Channel()->Number();
+
+     path = data.file;
+     *DirList.folder = 0;
+     *name = 0;
+     const char *s = strrchr(path, FOLDERDELIMCHAR);
+     if (s) {
+        strn0cpy(DirList.folder, cString(path, s), sizeof(DirList.folder));
+        s++;
+        }
+     else
+        s = path;
+     strn0cpy(name, s, sizeof(name));
+
+     Add(fileItem   = new cMenuEditStrItem(tr("File"), name, sizeof(name), tr(FileNameChars)));
+     Add(folderItem = new cMenuEditStrItem(tr("Directory"), DirList.folder, sizeof(DirList.folder), tr(FileNameChars)));
      Add(new cMenuEditBitItem( tr("Active"),       &data.flags, tfActive));
      Add(new cMenuEditChanItem(tr("Channel"),      &channel));
      Add(new cMenuEditDateItem(tr("Day"),          &data.day, &data.weekdays));
@@ -1012,7 +1028,6 @@ cMenuEditTimer::cMenuEditTimer(cTimer *Timer, bool New)
      Add(new cMenuEditBitItem( tr("VPS"),          &data.flags, tfVps));
      Add(new cMenuEditIntItem( tr("Priority"),     &data.priority, 0, MAXPRIORITY));
      Add(new cMenuEditIntItem( tr("Lifetime"),     &data.lifetime, 0, MAXLIFETIME));
-     Add(file = new cMenuEditStrItem( tr("File"),  data.file, sizeof(data.file), tr(FileNameChars)));
 
 #ifdef USE_PINPLUGIN
      if (PinPatch::ChildLock::IsUnlocked())
@@ -1021,7 +1036,6 @@ cMenuEditTimer::cMenuEditTimer(cTimer *Timer, bool New)
 
      SetFirstDayItem();
      }
-  SetHelpKeys();
   Timers.IncBeingEdited();
 }
 
@@ -1032,9 +1046,15 @@ cMenuEditTimer::~cMenuEditTimer()
   Timers.DecBeingEdited();
 }
 
+// Menu folder position: 0=File, 1=Directory (Folder)
+#define MENU_FOLDER_POS 1
+
 void cMenuEditTimer::SetHelpKeys(void)
 {
-  SetHelp(tr("Button$Folder"));
+  if (Current() == MENU_FOLDER_POS)
+     SetHelp(NULL, NULL, NULL, tr("Button$Select"));
+  else
+     SetHelp(NULL, NULL, NULL, NULL);
 }
 
 void cMenuEditTimer::SetFirstDayItem(void)
@@ -1052,18 +1072,9 @@ void cMenuEditTimer::SetFirstDayItem(void)
 
 eOSState cMenuEditTimer::SetFolder(void)
 {
-  if (cMenuFolder *mf = (cMenuFolder *)SubMenu()) {
-     cString Folder = mf->GetFolder();
-     char *p = strrchr(data.file, FOLDERDELIMCHAR);
-     if (p)
-        p++;
-     else
-        p = data.file;
-     if (!isempty(*Folder))
-        strn0cpy(data.file, cString::sprintf("%s%c%s", *Folder, FOLDERDELIMCHAR, p), sizeof(data.file));
-     else if (p != data.file)
-        memmove(data.file, p, strlen(p) + 1);
-     SetCurrent(file);
+  if (cMenuFolder *mf = dynamic_cast<cMenuFolder *>(SubMenu())) {
+     strn0cpy(DirList.folder, mf->GetFolder(), sizeof(DirList.folder));
+     SetCurrent(folderItem);
      Display();
      }
   return CloseSubMenu();
@@ -1083,8 +1094,16 @@ eOSState cMenuEditTimer::ProcessKey(eKeys Key)
                           Skins.Message(mtError, tr("*** Invalid Channel ***"));
                           break;
                           }
+                       cString NewName;
+                       if (!*name) // name must not be empty!
+                          NewName = *DirList.folder ? cString::sprintf("%s%c%s", DirList.folder, FOLDERDELIMCHAR, strdup(data.Channel()->ShortName(true))) : strdup(data.Channel()->ShortName(true));
+                       else
+                          NewName = *DirList.folder ? cString::sprintf("%s%c%s", DirList.folder, FOLDERDELIMCHAR, name) : name;
+                       NewName.CompactChars(FOLDERDELIMCHAR);
                        if (!*data.file)
-                          strcpy(data.file, data.Channel()->ShortName(true));
+                          strcpy(data.file, NewName);
+                       else if (data.file != NewName)
+                          strn0cpy(data.file, NewName, sizeof(data.file));
                        if (timer) {
                           if (memcmp((void *)timer, &data, sizeof(data)) != 0)
                              *timer = data;
@@ -1098,17 +1117,25 @@ eOSState cMenuEditTimer::ProcessKey(eKeys Key)
                           }
                      }
                      return osBack;
-       case kRed:    return AddSubMenu(new cMenuFolder(tr("Select folder"), &Folders, data.file));
+       case kRed:
        case kGreen:
-       case kYellow:
-       case kBlue:   return osContinue;
+       case kYellow: return osContinue;
+       case kBlue:
+                     if (Current() != MENU_FOLDER_POS)
+                        return osContinue;
+                     if (cPluginManager::CallFirstService("EpgsearchDirectoryList-v1.0", &DirList))
+                        return AddSubMenu(DirList.Menu);
+                     return AddSubMenu(new cMenuFolder(tr("Select folder"), &Folders, name));
        default: break;
        }
      }
   else if (state == osEnd && HasSubMenu())
      state = SetFolder();
-  if (Key != kNone)
+  if (Key != kNone) {
      SetFirstDayItem();
+     if (!HasSubMenu() && !fileItem->InEditMode() && !folderItem->InEditMode())
+        SetHelpKeys();
+     }
   return state;
 }
 
@@ -2518,10 +2545,16 @@ void cMenuRecordingItem::IncrementCounter(bool New)
 
 class cMenuRenameRecording : public cOsdMenu {
 private:
+  // Data structure for service "EpgsearchDirectoryList-v1.0"
+  struct EpgSearchDirectoryList_v1_0 {
+    char folder[PATH_MAX];   // folder selected
+    cOsdMenu* Menu;          // pointer to the menu
+    } DirList;
   char name[NAME_MAX + 1];
   int priority;
   int lifetime;
-  cMenuEditStrItem *file;
+  cMenuEditStrItem *fileItem;
+  cMenuEditStrItem *folderItem;
   cOsdItem *marksItem, *resumeItem;
   bool isResume, isMarks;
   cRecording *recording;
@@ -2537,12 +2570,16 @@ cMenuRenameRecording::cMenuRenameRecording(cRecording *Recording)
 {
   cMarks marks;
 
-  file = NULL;
+  fileItem = NULL;
+  folderItem = NULL;
   recording = Recording;
   
   if (recording) {
-     strn0cpy(name, recording->Name(), sizeof(name));
-     Add(file = new cMenuEditStrItem(tr("File"), name, sizeof(name), tr(FileNameChars)));
+     strn0cpy(DirList.folder, recording->Folder(), sizeof(DirList.folder));
+     strn0cpy(name, recording->BaseName(), sizeof(name));
+
+     Add(fileItem   = new cMenuEditStrItem(tr("File"), name, sizeof(name), tr(FileNameChars)));
+     Add(folderItem = new cMenuEditStrItem(tr("Directory"), DirList.folder, sizeof(DirList.folder), tr(FileNameChars)));
 
      priority = recording->priority;
      lifetime = recording->lifetime;
@@ -2580,30 +2617,21 @@ cMenuRenameRecording::cMenuRenameRecording(cRecording *Recording)
      resumeItem = new cOsdItem(tr("Delete resume information?"), osUser2, isResume);
      Add(resumeItem);
      }
-
-  SetHelpKeys();
 }
 
 void cMenuRenameRecording::SetHelpKeys(void)
 {
-  SetHelp(tr("Button$Folder"));
+  if (Current() == MENU_FOLDER_POS)
+     SetHelp(NULL, NULL, NULL, tr("Button$Select"));
+  else
+     SetHelp(NULL, NULL, NULL, NULL);
 }
 
 eOSState cMenuRenameRecording::SetFolder(void)
 {
-  cMenuFolder *mf = (cMenuFolder *)SubMenu();
-  if (mf) {
-     cString Folder = mf->GetFolder();
-     char *p = strrchr(name, FOLDERDELIMCHAR);
-     if (p)
-        p++;
-     else
-        p = name;
-     if (!isempty(*Folder))
-        strn0cpy(name, cString::sprintf("%s%c%s", *Folder, FOLDERDELIMCHAR, p), sizeof(name));
-     else if (p != name)
-        memmove(name, p, strlen(p) + 1);
-     SetCurrent(file);
+  if (cMenuFolder *mf = dynamic_cast<cMenuFolder *>(SubMenu())) {
+     strn0cpy(DirList.folder, mf->GetFolder(), sizeof(DirList.folder));
+     SetCurrent(folderItem);
      Display();
      }
   return CloseSubMenu();
@@ -2615,23 +2643,29 @@ eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
 
   if (state == osUnknown) {
      switch (Key) {
-       case kOk:
-            if (recording->Rename(name, &priority, &lifetime)) {
+       case kOk: {
+            if (!*name)
+               *name = ' '; // name must not be empty!
+            cString NewName = *DirList.folder ? cString::sprintf("%s%c%s", DirList.folder, FOLDERDELIMCHAR, name) : name;
+            NewName.CompactChars(FOLDERDELIMCHAR);
+            if (recording->Rename(NewName, &priority, &lifetime)) {
                Recordings.ChangeState();
                Recordings.TouchUpdate();
                return osRecordings;
                }
             else
                Skins.Message(mtError, tr("Error while accessing recording!"));
+            }
             break;
-       case kRed:
-            return AddSubMenu(new cMenuFolder(tr("Select folder"), &Folders, name));
-            break;
+       case kBlue:
+            if (Current() != MENU_FOLDER_POS)
+               return osContinue;
+            if (cPluginManager::CallFirstService("EpgsearchDirectoryList-v1.0", &DirList))
+               return AddSubMenu(DirList.Menu);
+            return AddSubMenu(new cMenuFolder(tr("Select folder"), &Folders, recording->Name()));
        default:
             break;
        }
-     if (Key != kNone)
-        SetHelpKeys();
      return osContinue;
      }
   else if (state == osEnd && HasSubMenu())
@@ -2665,7 +2699,8 @@ eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
         }
      return osContinue;
      }
-
+  if (Key != kNone && !HasSubMenu() && !fileItem->InEditMode() && !folderItem->InEditMode())
+     SetHelpKeys();
   return state;
 }
 

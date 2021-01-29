@@ -116,8 +116,18 @@ public:
   cRecording(const char *FileName);
   virtual ~cRecording();
   virtual int Compare(const cListObject &ListObject) const;
+  cString Folder(void) const;
+       ///< Returns the name of the folder this recording is stored in (without the
+       ///< video directory). For use in menus etc.
+  cString BaseName(void) const;
+       ///< Returns the base name of this recording (without the
+       ///< video directory and folder). For use in menus etc.
   const char *Name(void) const { return name; }
+       ///< Returns the full name of the recording (without the video directory.
+       ///< For use in menus etc.
   const char *FileName(void) const;
+       ///< Returns the full path name to the recording directory, including the
+       ///< video directory and the actual '*.rec'. For disk file access use.
   const char *Title(char Delimiter = ' ', bool NewIndicator = false, int Level = -1, bool Original = true) const;
   const cRecordingInfo *Info(void) const { return info; }
   void SetStartTime(time_t Start);

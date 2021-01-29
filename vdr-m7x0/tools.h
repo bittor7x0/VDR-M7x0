@@ -153,11 +153,13 @@ private:
   char *s;
 public:
   cString(const char *S = NULL, bool TakePointer = false);
+  cString(const char *S, const char *To); ///< Copies S up to To (exclusive). To must be a valid pointer into S. If To is NULL, everything is copied.
   cString(const cString &String);
   virtual ~cString();
   operator const char * () const { return s; } // for use in (const char *) context
   const char * operator*() const { return s; } // for use in (const void *) context (printf() etc.)
   cString &operator=(const cString &String);
+  cString &CompactChars(char c); ///< Compact any sequence of characters 'c' to a single character, and strip all of them from the beginning and end of this string.
   static cString sprintf(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
   static cString sprintf(const char *fmt, va_list &ap);
   };
@@ -184,6 +186,7 @@ inline char *skipspace(const char *s)
 }
 char *stripspace(char *s);
 char *compactspace(char *s);
+char *compactchars(char *s, char c); ///< removes all occurrences of 'c' from the beginning an end of 's' and replaces sequences of multiple 'c's with a single 'c'.
 cString strescape(const char *s, const char *chars);
 bool startswith(const char *s, const char *p);
 bool endswith(const char *s, const char *p);

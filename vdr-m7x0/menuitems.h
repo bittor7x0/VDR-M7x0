@@ -91,9 +91,8 @@ private:
   void AdvancePos(void);
   virtual void Set(void);
   char Inc(char c, bool Up);
-protected:
-  bool InEditMode(void) { return pos >= 0; }
 public:
+  bool InEditMode(void) { return pos >= 0; }
   cMenuEditStrItem(const char *Name, char *Value, int Length, const char *Allowed);
   ~cMenuEditStrItem();
   virtual eOSState ProcessKey(eKeys Key);

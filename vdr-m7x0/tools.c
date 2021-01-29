@@ -223,6 +223,30 @@ char *compactspace(char *s)
   return s;
 }
 
+char *compactchars(char *s, char c)
+{
+  if (s && *s && c) {
+     char *t = s;
+     char *p = s;
+     int n = 0;
+     while (*p) {
+           if (*p != c) {
+              *t++ = *p;
+              n = 0;
+              }
+           else if (t != s && n == 0) {
+              *t++ = *p;
+              n++;
+              }
+           p++;
+           }
+     if (n)
+        t--; // the last character was c
+     *t = 0;
+     }
+  return s;
+}
+
 cString strescape(const char *s, const char *chars)
 {
   char *buffer;
@@ -646,6 +670,20 @@ cString::cString(const char *S, bool TakePointer)
   s = TakePointer ? (char *)S : S ? strdup(S) : NULL;
 }
 
+cString::cString(const char *S, const char *To)
+{
+  if (!S)
+     s = NULL;
+  else if (!To)
+     s = strdup(S);
+  else {
+     int l = To - S;
+     s = MALLOC(char, l + 1);
+     strncpy(s, S, l);
+     s[l] = 0;
+     }
+}
+
 cString::cString(const cString &String)
 {
   s = String.s ? strdup(String.s) : NULL;
@@ -662,6 +700,12 @@ cString &cString::operator=(const cString &String)
      return *this;
   free(s);
   s = String.s ? strdup(String.s) : NULL;
+  return *this;
+}
+
+cString &cString::CompactChars(char c)
+{
+  compactchars(s, c);
   return *this;
 }
 

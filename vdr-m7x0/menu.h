@@ -57,9 +57,17 @@ class cMenuEditTimer : public cOsdMenu {
 private:
   cTimer *timer;
   cTimer data;
+  cString path;
+  // Data structure for service "EpgsearchDirectoryList-v1.0"
+  struct EpgSearchDirectoryList_v1_0 {
+    char folder[PATH_MAX];   // folder selected
+    cOsdMenu* Menu;          // pointer to the menu
+    } DirList;
+  char name[NAME_MAX + 1];
   int channel;
   bool addIfConfirmed;
-  cMenuEditStrItem *file;
+  cMenuEditStrItem *fileItem;
+  cMenuEditStrItem *folderItem;
   cMenuEditDateItem *firstday;
   eOSState SetFolder(void);
   void SetFirstDayItem(void);

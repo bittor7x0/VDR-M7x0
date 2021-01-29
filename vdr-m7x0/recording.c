@@ -861,6 +861,20 @@ int cRecording::Compare(const cListObject &ListObject) const
   return Recordings.GetSortOrder() * strcasecmp(SortName(), r->SortName());
 }
 
+cString cRecording::Folder(void) const
+{
+  if (char *s = strrchr(name, FOLDERDELIMCHAR))
+     return cString(name, s);
+  return "";
+}
+
+cString cRecording::BaseName(void) const
+{
+  if (char *s = strrchr(name, FOLDERDELIMCHAR))
+     return cString(s + 1);
+  return name;
+}
+
 const char *cRecording::FileName(void) const
 {
   if (!fileName) {
