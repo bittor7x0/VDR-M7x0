@@ -115,7 +115,7 @@ void cPalette::Replace(const cPalette &Palette)
 {
   memcpy(color, Palette.color, sizeof(color[0]) *  Palette.numColors);
   modified = true;
-  numColors = min(Palette.numColors, maxColors);
+  numColors = std::min(Palette.numColors, maxColors);
 }
 //M7X0 END AK
 
@@ -643,10 +643,10 @@ void cBitmap::DrawRectangle(int x1, int y1, int x2, int y2, tColor Color)
      y1 -= y0;
      x2 -= x0;
      y2 -= y0;
-     x1 = max(x1, 0);
-     y1 = max(y1, 0);
-     x2 = min(x2, width - 1);
-     y2 = min(y2, height - 1);
+     x1 = std::max(x1, 0);
+     y1 = std::max(y1, 0);
+     x2 = std::min(x2, width - 1);
+     y2 = std::min(y2, height - 1);
      tIndex c = Index(Color);
      AddDirty(x1,y1,x2,y2);
      tIndex *bm=bitmap+y1*width+x1;
@@ -679,8 +679,8 @@ void cBitmap::DrawEllipse(int x1, int y1, int x2, int y2, tColor Color, int Quad
     case 8:          cy = y1; rx /= 2; break;
     default: ;
     }
-  int TwoASquare = max(1, 2 * rx * rx);
-  int TwoBSquare = max(1, 2 * ry * ry);
+  int TwoASquare = std::max(1, 2 * rx * rx);
+  int TwoBSquare = std::max(1, 2 * ry * ry);
   int x = rx;
   int y = 0;
   int XChange = ry * ry * (1 - 2 * rx);
@@ -856,8 +856,8 @@ eOsdError cOsd::SetAreas(const tArea *Areas, int NumAreas)
         width = height = 0;
         for (int i = 0; i < NumAreas; i++) {
             bitmaps[numBitmaps++] = new cBitmap(Areas[i].Width(), Areas[i].Height(), Areas[i].bpp, Areas[i].x1, Areas[i].y1);
-            width = max(width, Areas[i].x2 + 1);
-            height = max(height, Areas[i].y2 + 1);
+            width = std::max(width, Areas[i].x2 + 1);
+            height = std::max(height, Areas[i].y2 + 1);
             }
         }
      }
@@ -992,7 +992,7 @@ void cTextScroller::Set(cOsd *Osd, int Left, int Top, int Width, int Height, con
   colorBg = ColorBg;
   offset = 0;
   textWrapper.Set(Text, Font, Width);
-  shown = min(Total(), height / font->Height());
+  shown = std::min(Total(), height / font->Height());
   height = shown * font->Height(); // sets height to the actually used height, which may be less than Height
   DrawText();
 }

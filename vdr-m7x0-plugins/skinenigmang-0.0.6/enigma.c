@@ -1168,7 +1168,7 @@ cSkinEnigmaDisplayMenu::cSkinEnigmaDisplayMenu(void)
   }
 
   lineHeight = pFontList->Height();
-  nMarkerGap = min(MarkerGap, lineHeight / 2 - 1); //lineHeight - 2 * MarkerGap
+  nMarkerGap = std::min(MarkerGap, lineHeight / 2 - 1); //lineHeight - 2 * MarkerGap
   xItemLeft = xBodyLeft + (EnigmaConfig.showMarker ? lineHeight : ListHBorder);
 #if VDRVERSNUM >= 10515
   xItemRight = (fShowLogo || fShowInfo ? xBodyRight : xInfoRight) - ListHBorder - ScrollbarWidth - SmallGap - SmallGap;
@@ -3373,7 +3373,7 @@ cSkinEnigmaDisplayTracks::cSkinEnigmaDisplayTracks(const char *Title, int NumTra
   fShowSymbol = EnigmaConfig.showSymbols && EnigmaConfig.showSymbolsAudio;
 
   lineHeight = pFontListItem->Height();
-  nMarkerGap = min(MarkerGap, lineHeight / 2 - 1); //lineHeight - 2 * MarkerGap
+  nMarkerGap = std::min(MarkerGap, lineHeight / 2 - 1); //lineHeight - 2 * MarkerGap
   int LogoSize = IconHeight;
   LogoSize += (LogoSize % 2 ? 1 : 0);
   currentIndex = -1;

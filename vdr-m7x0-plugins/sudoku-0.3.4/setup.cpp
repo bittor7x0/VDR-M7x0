@@ -118,8 +118,8 @@ SetupPage::SetupPage(SetupData& setup) :
   cFont::GetAvailableFontNames(&mini_font_names);
   maxi_font_names.Insert(strdup(DefaultFontOsd));
   mini_font_names.Insert(strdup(DefaultFontOsd));
-  maxi_font_index = max(0, maxi_font_names.Find(data.maxi_font));
-  mini_font_index = max(0, mini_font_names.Find(data.mini_font));
+  maxi_font_index = std::max(0, maxi_font_names.Find(data.maxi_font));
+  mini_font_index = std::max(0, mini_font_names.Find(data.mini_font));
 #endif
 
   Add(new cMenuEditIntItem(tr("Givens count"), &data.givens_count, 26, 81));

@@ -1412,7 +1412,7 @@ void cMenuTimers::ActualiseDiskStatus(void)
   // search last start time
   time_t last = 0;
   for (entry = entries.First(); entry; entry = entries.Next(entry))
-     last = max(entry->startTime(), last);
+     last = std::max(entry->startTime(), last);
 
   // add entries for repeating timers
   for (entry = entries.First(); entry; entry = entries.Next(entry))
@@ -5393,7 +5393,7 @@ void cReplayControl::TimeSearchProcess(eKeys Key)
     case kRight: {
          int dir = ((Key == kRight || Key == kFastFwd) ? 1 : -1);
          if (dir > 0)
-            Seconds = min(Total - Current - STAY_SECONDS_OFF_END, Seconds);
+            Seconds = std::min(Total - Current - STAY_SECONDS_OFF_END, Seconds);
          SkipSeconds(Seconds * dir);
          timeSearchActive = false;
          }
@@ -5403,7 +5403,7 @@ void cReplayControl::TimeSearchProcess(eKeys Key)
     case kPause:
     case kDown:
     case kOk:
-         Seconds = min(Total - STAY_SECONDS_OFF_END, Seconds);
+         Seconds = std::min(Total - STAY_SECONDS_OFF_END, Seconds);
          Goto(Seconds * FRAMESPERSEC, Key == kDown || Key == kPause || Key == kOk);
          timeSearchActive = false;
          break;

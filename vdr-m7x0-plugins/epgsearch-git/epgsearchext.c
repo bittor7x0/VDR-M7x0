@@ -1498,7 +1498,7 @@ bool cSearchExts::Load(const char *FileName)
          int line = 0;
          char buffer[MAXPARSEBUFFER];
          result = true;
-         while (fgets(buffer, sizeof(buffer), f) > 0) {
+         while (fgets(buffer, sizeof(buffer), f)) {
             line++;
             char *p = strchr(buffer, '#');
             if (p == buffer) *p = 0;
@@ -1536,7 +1536,7 @@ int cSearchExts::GetNewID()
    int newID = -1;
    cSearchExt *l = (cSearchExt *)First();
    while (l) {
-      newID = max(newID, l->ID);
+      newID = std::max(newID, l->ID);
       l = (cSearchExt *)l->Next();
    }
    return newID+1;

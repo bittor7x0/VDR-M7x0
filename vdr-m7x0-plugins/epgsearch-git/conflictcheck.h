@@ -65,7 +65,7 @@ class cConflictCheckTimerObj : public cTimerObj
 class TimerObjSort
 {
 public:
-    bool operator() (cConflictCheckTimerObj* a, cConflictCheckTimerObj* b)
+    bool operator() (cConflictCheckTimerObj* a, cConflictCheckTimerObj* b) const
     {
         return (a->Compare(*b) < 0);
     }
@@ -108,7 +108,7 @@ class cConflictCheckDevice
 	{
 	    int prio = -1;
 	    for(std::set<cConflictCheckTimerObj*,TimerObjSort>::const_iterator it = recTimers.begin(); it != recTimers.end(); ++it)
-		prio = max(prio, (*it)->timer->Priority());
+		prio = std::max(prio, (*it)->timer->Priority());
 	    return prio;
 	};
     bool Receiving() const { return !recTimers.empty(); }
@@ -203,7 +203,7 @@ class cConflictCheckDevice
 	{
 	    int prio = -1;
 	    for(std::set<cConflictCheckTimerObj*,TimerObjSort>::iterator it = recTimers.begin(); it != recTimers.end(); ++it)
-		prio = max(prio, (*it)->timer->Priority());
+		prio = std::max(prio, (*it)->timer->Priority());
 	    return prio;
 	};
     int CardIndex(void) const { if (device) return device->CardIndex(); else return devicenr;}

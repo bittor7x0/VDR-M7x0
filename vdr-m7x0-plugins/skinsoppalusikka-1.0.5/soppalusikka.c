@@ -495,7 +495,7 @@ void cSkinSoppalusikkaDisplayChannel::SetEvents(const cEvent *Present, const cEv
      osd->DrawText(xb4, yb1, e->ShortText(), Theme.Color(clrChannelEpgShortText), Theme.Color(clrBackground), cFont::GetFont(fontSml), xb5 - xb4 - Gap, yb2 - yb1);
      // draw timebar
      int yc = yb0 + (int)(roundf((float)(now) / (float)(total) * (float)(yb5 - yb0)));
-     yc = min(yc, yb5);
+     yc = std::min(yc, yb5);
      osd->DrawRectangle(xb2 + SmallGap, yb0, xb3 - SmallGap - 1, yc - 1, Theme.Color(clrChannelTimeBarFg));
      free(s);
      }
@@ -1551,10 +1551,10 @@ cSkinSoppalusikkaDisplayTracks::cSkinSoppalusikkaDisplayTracks(const char *Title
   const cFont *font = cFont::GetFont(fontSml);
   int ItemsWidth = font->Width(Title);
   for (int i = 0; i < NumTracks; i++)
-      ItemsWidth = max(ItemsWidth, font->Width(Tracks[i]));
-  ItemsWidth = max(ItemsWidth, font->Width(tr("Stereo")));
-  ItemsWidth = max(ItemsWidth, font->Width(tr("Left")));
-  ItemsWidth = max(ItemsWidth, font->Width(tr("Right")));
+      ItemsWidth = std::max(ItemsWidth, font->Width(Tracks[i]));
+  ItemsWidth = std::max(ItemsWidth, font->Width(tr("Stereo")));
+  ItemsWidth = std::max(ItemsWidth, font->Width(tr("Left")));
+  ItemsWidth = std::max(ItemsWidth, font->Width(tr("Right")));
   ItemsWidth += 2 * BigGap + 2 * bmAudio.Width();
   x0 = 0;
   x1 = x0 + Roundness;

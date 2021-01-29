@@ -343,8 +343,8 @@ void cCridFmpgFile::UpdateNeedTime(int32_t start, int32_t end)
      needEndTimestamp = end;
      }
   else {
-    needStartTimestamp =  min(needStartTimestamp , start);
-    needEndTimestamp = needEndTimestamp && end ? max(needEndTimestamp, end) : 0;
+    needStartTimestamp =  std::min(needStartTimestamp , start);
+    needEndTimestamp = needEndTimestamp && end ? std::max(needEndTimestamp, end) : 0;
     }
 }
 // --- cCridCridFile ---------------------------------------------------------
@@ -1253,9 +1253,9 @@ void cCridMarks::Sort(void)
              break;
 
           if (m2->position < m1->position) {
-             swap(m1->position, m2->position);
-             swap(m1->realPosition, m2->realPosition);
-             swap(m1->comment, m2->comment);
+             std::swap(m1->position, m2->position);
+             std::swap(m1->realPosition, m2->realPosition);
+             std::swap(m1->comment, m2->comment);
              }
           }
       }

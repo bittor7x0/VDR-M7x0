@@ -291,7 +291,7 @@ void cCuttingThread::Action(void)
 
 	     // stay under max. absolute bandwidth
 	     if(elapsed < CUTTER_TIMESLICE) {
-	       sleep = max(CUTTER_TIMESLICE - elapsed, sleep);
+	       sleep = std::max(CUTTER_TIMESLICE - elapsed, sleep);
 	       //if(sleep) esyslog("cutter: absolute bandwidth limit, sleep %d ms (chunk %dk / %dms)", sleep, burst_size/1024, CUTTER_TIMESLICE);
 	     }
 

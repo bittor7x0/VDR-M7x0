@@ -213,7 +213,7 @@ bool cLockItem::MatchPattern(const char* aName)
    else if (searchMode == smExact)
       return strcmp(pattern, aName) == 0;
    else if (searchMode == smInclude)
-      return strstr(aName, pattern) > 0;
+      return strstr(aName, pattern);
    else if (searchMode == smStartWith)
       return strstr(aName, pattern) == aName;
 

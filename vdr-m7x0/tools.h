@@ -9,6 +9,7 @@
 #ifndef __TOOLS_H
 #define __TOOLS_H
 
+#include <algorithm>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>

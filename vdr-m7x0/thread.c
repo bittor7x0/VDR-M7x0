@@ -61,7 +61,7 @@ void cCondWait::SleepMs(int TimeoutMs)
   // Seems to be better this way for m7x0. the phread locking is based on a
   // kernel-level-emulation for atomic-operations, which naturally takes much time.
   // So locking via pthread should be avoided where possible on m7x0.
-  TimeoutMs = max(TimeoutMs, 3);
+  TimeoutMs = std::max(TimeoutMs, 3);
   struct timespec waittime,waitrem;
   waittime.tv_sec = TimeoutMs / 1000;
   waittime.tv_nsec = (TimeoutMs % 1000) * 1000000;
@@ -81,7 +81,7 @@ void cCondWait::SleepMs(int TimeoutMs)
      } while (true);
 #if 0
   cCondWait w;
-  w.Wait(max(TimeoutMs, 3)); // making sure the time is >2ms to avoid a possible busy wait
+  w.Wait(std::max(TimeoutMs, 3)); // making sure the time is >2ms to avoid a possible busy wait
 #endif
 //M7X0 END AK
 }

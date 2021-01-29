@@ -196,7 +196,7 @@ int cPesAssembler::Put(const uchar *Data, int Length)
      }
 
   if ((fragmentLength != 0) | (Length < packetLength)) {
-     int bite = min(packetLength - fragmentLength, Length);
+     int bite = std::min(packetLength - fragmentLength, Length);
      memcpy(fragmentData + fragmentLength, data, bite);
      fragmentLength += bite;
      return (data - Data + bite);
@@ -1723,7 +1723,7 @@ int cDevice::Priority(void) const
   for (int i = 0; i <= MAXRECEIVERS; i++) {
 //M7X0 END AK
       if (receiver[i])
-         priority = max(receiver[i]->priority, priority);
+         priority = std::max(receiver[i]->priority, priority);
       }
   return priority;
 }

@@ -203,8 +203,8 @@ public:
                                 index[endIndex].timestamp;
      }
   int GetMpegFileNumber(void) { return curFileNo; }
-  int GetRealIndex(int idx)  { return min(max(idx + preGapIndexes, 0), endIndex - startIndex + preGapIndexes); }
-  int GetIndexFromReal(int idx) { return min(max(idx - preGapIndexes, -preGapIndexes), endIndex - startIndex); }
+  int GetRealIndex(int idx)  { return std::min(std::max(idx + preGapIndexes, 0), endIndex - startIndex + preGapIndexes); }
+  int GetIndexFromReal(int idx) { return std::min(std::max(idx - preGapIndexes, -preGapIndexes), endIndex - startIndex); }
   int Last(void) { return endIndex - startIndex; }
   };
 

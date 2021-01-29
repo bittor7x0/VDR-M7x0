@@ -576,7 +576,7 @@ void cCridPlayer::Action(void)
 
   if (index->IndexOkay()) {
      readIndex = index->GetIndex(readIndex,fileNr,fileOffset,readGopLength);
-     lastReadLength = min(CRID_MAXGOPSIZE, readGopLength);
+     lastReadLength = std::min(CRID_MAXGOPSIZE, readGopLength);
      replayFile = index->GetMpegFile(fileNr);
      if (lastReadLength < 0) {
         esyslog("ERROR: illegale gop size %d", readGopLength);
@@ -670,7 +670,7 @@ void cCridPlayer::Action(void)
                     readGopLength = CRID_MAXGOPSIZE;
                     }
 
-                 lastReadLength = min(CRID_MAXGOPSIZE, readGopLength);
+                 lastReadLength = std::min(CRID_MAXGOPSIZE, readGopLength);
                  if (lastReadLength < 0) {
                     esyslog("ERROR: illegale gop size %d", readGopLength);
                     lastReadLength = readGopLength = CRID_MAXGOPSIZE;
@@ -704,7 +704,7 @@ void cCridPlayer::Action(void)
                     readGopLength = 0;
                     eof = true;
                     }
-                 lastReadLength = min(CRID_MAXGOPSIZE, readGopLength);
+                 lastReadLength = std::min(CRID_MAXGOPSIZE, readGopLength);
                  }
               }
 
@@ -1004,7 +1004,7 @@ bool cCridPlayer::CheckPesHeader(const uchar *Data, int &Offset,
   int length = 188 - Offset;
 
   if (HeaderLength < 7) {
-     int c = min (7 - HeaderLength, length);
+     int c = std::min(7 - HeaderLength, length);
      memcpy(Header + HeaderLength, data, c);
      data += c;
      HeaderLength += c;
@@ -1037,7 +1037,7 @@ bool cCridPlayer::CheckPesHeader(const uchar *Data, int &Offset,
         }
 
      if (HeaderLength < 9) {
-        int c = min(9 - HeaderLength, length);
+        int c = std::min(9 - HeaderLength, length);
         memcpy(Header + HeaderLength, data, c);
         data += c;
         HeaderLength += c;
@@ -1095,7 +1095,7 @@ bool cCridPlayer::CheckPesHeader(const uchar *Data, int &Offset,
   if ((Header[start] & 0xC0) == 0x40) {
      start += 2;
      if (start >= HeaderLength) {
-        int c = min (length, HeaderLength - start + 1);
+        int c = std::min(length, HeaderLength - start + 1);
         memcpy(Header + HeaderLength, data, c);
         data += c;
         HeaderLength += c;
@@ -1118,7 +1118,7 @@ bool cCridPlayer::CheckPesHeader(const uchar *Data, int &Offset,
      start++;
      }
 
-  int c = min(length, HeaderLength - start);
+  int c = std::min(length, HeaderLength - start);
   HeaderLength += c;
   PesDone += c;
   length -= c;
@@ -1150,7 +1150,7 @@ uchar *cCridPlayer::GetIFrameElementary(cFrameM7x0 *frame,
         currentPacket = NULL;
 
         if (tsTmpLength > 0) {
-           int c = min (188 - tsTmpLength, limit - data);
+           int c = std::min(188 - tsTmpLength, limit - data);
            memcpy(tsTmp + tsTmpLength, data, c);
            tsTmpLength += c;
            data += c;
@@ -1308,7 +1308,7 @@ void cCridPlayer::Goto(int Index, bool Still)
            }
         fileOffset += r;
         readGopLength -= r;
-        lastReadLength = min(CRID_MAXGOPSIZE, readGopLength);
+        lastReadLength = std::min(CRID_MAXGOPSIZE, readGopLength);
 
 
         int VideoPid = (FileNo == writeFileNr ? DeviceGetVideoPid() : 0 );

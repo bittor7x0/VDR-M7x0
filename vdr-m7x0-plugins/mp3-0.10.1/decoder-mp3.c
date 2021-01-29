@@ -750,8 +750,8 @@ bool cID3Reader::deunsync(int32_t &desync_count, int32_t unsync_count,
            return false;
            }
 
-        int32_t s = max(desync_count - desynced, unsync_count);
-        s = min(s, (int32_t)cur_length);
+        int32_t s = std::max(desync_count - desynced, unsync_count);
+        s = std::min(s, (int32_t)cur_length);
 
         int32_t copy = s;
         const char *p = (const char *)memchr(cur_buffer, 0xFF, s);
@@ -1221,7 +1221,7 @@ int cID3Reader::SearchTagHeader(bool search)
      if (tagFound != 0)
         return tagFound;
 
-     int skip = min(cur_length - 9, (unsigned int)ID3_MAX_SEARCH_TAG - 9);
+     int skip = std::min(cur_length - 9, (unsigned int)ID3_MAX_SEARCH_TAG - 9);
      cur_buffer += skip;
      cur_length -= skip;
      } while(search_skipped < ID3_MAX_SEARCH_TAG - 10);
@@ -1247,7 +1247,7 @@ int cID3Reader::SearchTagHeader(bool search)
      if (tagFound != 0)
         return tagFound;
 
-     int skip = min(cur_length - 9, (unsigned int)ID3_MAX_SEARCH_TAG - 9);
+     int skip = std::min(cur_length - 9, (unsigned int)ID3_MAX_SEARCH_TAG - 9);
      cur_buffer += skip;
      cur_length -= skip;
      } while(search_skipped < ID3_MAX_SEARCH_TAG - 10);

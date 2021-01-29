@@ -34,7 +34,7 @@ diff -Nru vdr-1.5.17-orig/skinclassic.c vdr-1.5.17-progressbar/skinclassic.c
 +            // define x coordinates of progressbar
 +            int px0 = xt;
 +            int px1 = (Tab(i + 1)?Tab(i+1):x1) - 5;
-+            int px = px0 + max((int)((float) now * (float) (px1 - px0) / (float) total), 1);
++            int px = px0 + std::max((int)((float) now * (float) (px1 - px0) / (float) total), 1);
 +            // define y coordinates of progressbar
 +            int py0 = y + 4;
 +            int py1 = y + lineHeight - 4;
@@ -87,7 +87,7 @@ diff -Nru vdr-1.5.17-orig/skinsttng.c vdr-1.5.17-progressbar/skinsttng.c
 +            // define x coordinates of progressbar
 +            int px0 = xt;
 +            int px1 = x3 + (Tab(i + 1)?Tab(i + 1):x4-x3-5) - 1;
-+            int px = px0 + max((int)((float) now * (float) (px1 - px0) / (float) total), 1);
++            int px = px0 + std::max((int)((float) now * (float) (px1 - px0) / (float) total), 1);
 +            // define y coordinates of progressbar
 +            int py0 = y + 4;
 +            int py1 = y + lineHeight - 4;

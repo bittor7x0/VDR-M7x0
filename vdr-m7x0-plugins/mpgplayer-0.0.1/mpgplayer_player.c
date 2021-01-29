@@ -171,7 +171,7 @@ cMpgUnbufferedFile *cMpgFileName::SetOffset(int Number, off64_t Offset)
 {
 
   Close();
-     if (Open() >= 0) {
+     if (Open()) {
         if (Offset >= 0 && file && file->Seek(Offset, SEEK_SET) != Offset) {
            LOG_ERROR_STR(fileName);
            return NULL;
@@ -1122,9 +1122,9 @@ bool cMpgPlayer::GetIndex(int &Current, int &Total, int &CurrentTime, int &Total
 /****
   if (index) {
      if (playMode == pmStill)
-        Current = max(readIndex, 0);
+        Current = std::max(readIndex, 0);
      else {
-        Current = max(writeIndex, 0);
+        Current = std::max(writeIndex, 0);
         if (playMode == pmPlay) {
            int backed = backTrace->Get(playDir == pdForward);
            if (backed >= 0)

@@ -27,10 +27,10 @@ char *strcatrealloc(char *dest, const char *src)
 char *strncatrealloc(char *dest, const char *src, size_t len)
 {
   if (src) {
-     size_t l = strlen(dest) + min(strlen(src), len) + 1;
+     size_t l = strlen(dest) + std::min(strlen(src), len) + 1;
      dest = (char *)realloc(dest, l);
      if (dest)
-        strncat(dest, src, min(strlen(src), len));
+        strncat(dest, src, std::min(strlen(src), len));
      else
         esyslog("ERROR: out of memory!");
   }

@@ -601,8 +601,8 @@ cSkinCursesDisplayTracks::cSkinCursesDisplayTracks(const char *Title, int NumTra
   currentIndex = -1;
   itemsWidth = Font.Width(Title);
   for (int i = 0; i < NumTracks; i++)
-      itemsWidth = max(itemsWidth, Font.Width(Tracks[i]));
-  itemsWidth = min(itemsWidth, OsdWidth);
+      itemsWidth = std::max(itemsWidth, Font.Width(Tracks[i]));
+  itemsWidth = std::min(itemsWidth, OsdWidth);
   osd = new cCursesOsd(0, 0);
   osd->DrawRectangle(0, 0, OsdWidth - 1, OsdHeight - 1, clrBackground);
   osd->DrawText(0, 0, Title, clrBlack, clrCyan, &Font, itemsWidth);

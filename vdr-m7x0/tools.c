@@ -138,7 +138,7 @@ int WriteAllOrNothing(int fd, const uchar *Data, int Length, int TimeoutMs, int 
 char *strcpyrealloc(char *dest, const char *src)
 {
   if (src) {
-     int l = max(dest ? strlen(dest) : 0, strlen(src)) + 1; // don't let the block get smaller!
+     int l = std::max(dest ? strlen(dest) : 0, strlen(src)) + 1; // don't let the block get smaller!
      dest = (char *)realloc(dest, l);
      if (dest)
         strcpy(dest, src);
@@ -1312,7 +1312,7 @@ ssize_t cUnbufferedFile::Read(void *Data, size_t Size)
         cachedstart = curpos;
         cachedend = curpos;
         }
-     cachedstart = min(cachedstart, curpos);
+     cachedstart = std::min(cachedstart, curpos);
 #endif
 #ifdef USE_DIRECT_IO
      ssize_t bytesRead = 0;
@@ -1350,7 +1350,7 @@ ssize_t cUnbufferedFile::Read(void *Data, size_t Size)
 #ifdef USE_FADVISE
      if (bytesRead > 0) {
         //curpos += bytesRead;
-        cachedend = max(cachedend, curpos);
+        cachedend = std::max(cachedend, curpos);
 
         // Read ahead:
         // no jump? (allow small forward jump still inside readahead window).
@@ -1361,7 +1361,7 @@ ssize_t cUnbufferedFile::Read(void *Data, size_t Size)
            if (ahead - curpos < (off_t)(readahead / 2)) {
               posix_fadvise(fd, curpos, readahead, POSIX_FADV_WILLNEED);
               ahead = curpos + readahead;
-              cachedend = max(cachedend, ahead);
+              cachedend = std::max(cachedend, ahead);
               }
            if (readahead < Size * 32) { // automagically tune readahead size.
               readahead = Size * 32;
@@ -1427,10 +1427,10 @@ ssize_t cUnbufferedFile::Write(const void *Data, size_t Size)
 #endif
 #ifdef USE_FADVISE
      if (bytesWritten > 0) {
-        begin = min(begin, curpos);
+        begin = std::min(begin, curpos);
         curpos += bytesWritten;
         written += bytesWritten;
-        lastpos = max(lastpos, curpos);
+        lastpos = std::max(lastpos, curpos);
         if (written > WRITE_BUFFER) {
            if (lastpos > begin) {
               // Now do three things:
@@ -1441,7 +1441,7 @@ ssize_t cUnbufferedFile::Write(const void *Data, size_t Size)
               //    last (partial) page might be skipped, writeback will start only after
               //    second call; the third call will still include this page and finally
               //    drop it from cache.
-              off_t headdrop = min(begin, off_t(WRITE_BUFFER * 2));
+              off_t headdrop = std::min(begin, off_t(WRITE_BUFFER * 2));
               posix_fadvise(fd, begin - headdrop, lastpos - begin + headdrop, POSIX_FADV_DONTNEED);
               }
            begin = lastpos = curpos;
@@ -1460,7 +1460,7 @@ ssize_t cUnbufferedFile::Write(const void *Data, size_t Size)
               // kind of write gathering enabled), but the syncs cause (io) load..
               // Uncomment the next line if you think you need them.
               //fdatasync(fd);
-              off_t headdrop = min(off_t(curpos - totwritten), off_t(totwritten * 2));
+              off_t headdrop = std::min(off_t(curpos - totwritten), off_t(totwritten * 2));
               posix_fadvise(fd, curpos - totwritten - headdrop, totwritten + headdrop, POSIX_FADV_DONTNEED);
               totwritten = 0;
               }

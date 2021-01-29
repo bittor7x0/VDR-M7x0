@@ -27,7 +27,7 @@
 GCC_IS_SNAPSHOT := n
 
 ifeq ($(GCC_IS_SNAPSHOT),y)
-  GCC_VERSION := 10-20191110
+  GCC_VERSION := 11-20210117
   GCC_FILE := gcc-$(GCC_VERSION).tar.xz
   GCC_URL := http://www.mirrorservice.org/sites/sourceware.org/pub/gcc/snapshots/$(GCC_VERSION)/$(GCC_FILE)
   GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/snapshot

@@ -165,7 +165,7 @@ void cRingBufferLinear::PrintDebugRBL(void)
          char buf[DEBUGRBLWIDTH + 10];
          memset(buf, '-', DEBUGRBLWIDTH);
          if (lt <= lh)
-            memset(buf + t, '*', max(h - t, 1));
+            memset(buf + t, '*', std::max(h - t, 1));
          else {
             memset(buf, '*', h);
             memset(buf + t, '*', DEBUGRBLWIDTH - t);

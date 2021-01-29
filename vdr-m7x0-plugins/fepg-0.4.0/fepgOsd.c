@@ -465,7 +465,7 @@ void cFEpgOsd::ShowInfoWindow(const cEvent* e)
   Text(X+2*B, Y+H-B-55, start, clrBlack, clrTransparent);
   Text(X+2*B, Y+H-B-30, end, clrBlack, clrTransparent);
   
-  int side = max(Width(duration), Width(channel));
+  int side = std::max(Width(duration), Width(channel));
   
 #ifdef VDR_RATINGS_PATCHED
 
@@ -499,7 +499,7 @@ void cFEpgOsd::ShowInfoWindow(const cEvent* e)
 
   Text(X+2*B, Y+H-B-80, parentalRating, clrBlack, clrTransparent);
   
-  side = max(side, Width(starRating));
+  side = std::max(side, Width(starRating));
   Text(X+W-2*B-side, Y+H-B-80, starRating, clrBlack, clrTransparent);
   
   free(starRating);

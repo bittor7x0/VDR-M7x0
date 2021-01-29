@@ -323,7 +323,7 @@ bool cPlayList::Load(void)
   if(f) {
     char buffer[512];
     result=true;
-    while(fgets(buffer,sizeof(buffer),f)>0) {
+    while(fgets(buffer,sizeof(buffer),f)) {
       if(buffer[0]=='#') {
         if(!strncmp(buffer,WINAMPEXT,strlen(WINAMPEXT))) {
           d(isyslog("mp3: detected WinAmp style playlist\n"))

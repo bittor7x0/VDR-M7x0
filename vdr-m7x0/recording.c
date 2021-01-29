@@ -1337,8 +1337,8 @@ void cMarks::Sort(void)
   for (cMark *m1 = First(); m1; m1 = Next(m1)) {
       for (cMark *m2 = Next(m1); m2; m2 = Next(m2)) {
           if (m2->position < m1->position) {
-             swap(m1->position, m2->position);
-             swap(m1->comment, m2->comment);
+             std::swap(m1->position, m2->position);
+             std::swap(m1->comment, m2->comment);
              }
           }
       }
@@ -1936,7 +1936,7 @@ cUnbufferedFile *cFileName::SetOffset(int Number, off_t Offset)
            }
         // found a non existing file suffix
         }
-     if (Open() >= 0) {
+     if (Open()) {
         if (!record && Offset >= 0 && file && file->Seek(Offset, SEEK_SET) != Offset) {
            LOG_ERROR_STR(fileName);
            return NULL;
@@ -1950,11 +1950,11 @@ cUnbufferedFile *cFileName::SetOffset(int Number, off_t Offset)
 
 off_t cFileName::MaxFileSize() {
   const int maxVideoFileSize = isPesRecording ? MAXVIDEOFILESIZEPES : MAXVIDEOFILESIZETS;
-  const int setupMaxVideoFileSize = min(maxVideoFileSize, Setup.MaxVideoFileSize);
+  const int setupMaxVideoFileSize = std::min(maxVideoFileSize, Setup.MaxVideoFileSize);
   const int maxFileNumber = isPesRecording ? MAXFILESPERRECORDINGPES : MAXFILESPERRECORDINGTS;
 
   const off_t smallFiles = (maxFileNumber * off_t(maxVideoFileSize) - 1024 * Setup.MaxRecordingSize)
-                           / max(maxVideoFileSize - setupMaxVideoFileSize, 1);
+                           / std::max(maxVideoFileSize - setupMaxVideoFileSize, 1);
 
   if (fileNumber <= smallFiles)
      return MEGABYTE(off_t(setupMaxVideoFileSize));

@@ -593,7 +593,7 @@ cSkinClassicDisplayTracks::cSkinClassicDisplayTracks(const char *Title, int NumT
   currentIndex = -1;
   int ItemsWidth = font->Width(Title);
   for (int i = 0; i < NumTracks; i++)
-      ItemsWidth = max(ItemsWidth, font->Width(Tracks[i]));
+      ItemsWidth = std::max(ItemsWidth, font->Width(Tracks[i]));
   ItemsWidth += 10;
   x0 = 0;
   x1 = Setup.OSDWidth;

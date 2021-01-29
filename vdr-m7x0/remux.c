@@ -379,7 +379,7 @@ void cRepacker::HandleInputPesData(uchar *Data, int Count, const bool PacketStar
      }
 
   if (inputPesHeaderBackupLen < 7) {
-     int c = min (7 - inputPesHeaderBackupLen, Count);
+     int c = std::min (7 - inputPesHeaderBackupLen, Count);
      memcpy(inputPesHeaderBackup + inputPesHeaderBackupLen, Data, c);
      inputPesHeaderBackupLen += c;
      Data += c;
@@ -409,7 +409,7 @@ void cRepacker::HandleInputPesData(uchar *Data, int Count, const bool PacketStar
   while ((mpegLevel = AnalyzePesHeader(inputPesHeaderBackup,
                     inputPesHeaderBackupLen, PayloadOffset,
                     &ContinuationHeader)) == phNeedMoreData && Count) {
-        int c = max(min(PayloadOffset - inputPesHeaderBackupLen, Count),1);
+        int c = std::max(std::min(PayloadOffset - inputPesHeaderBackupLen, Count),1);
         memcpy(inputPesHeaderBackup + inputPesHeaderBackupLen, Data, c);
         inputPesHeaderBackupLen += c;
         Count -= c;
@@ -1408,7 +1408,7 @@ void cAudioRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
 
   while (data < limit) {
         if (frameSize) {
-           const int bite = min(limit - data, min(frameTodo, packetTodo));
+           const int bite = std::min(limit - data, std::min(frameTodo, packetTodo));
            packetTodo -= bite;
            frameTodo -= bite;
 
@@ -1693,7 +1693,7 @@ void cDolbyRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
   while (data < limit) {
         // Have we a frame needs finishing?
         if (state == scanFrame) {
-           const int bite = min(limit - data, min(frameTodo, packetTodo));
+           const int bite = std::min(limit - data, std::min(frameTodo, packetTodo));
            packetTodo -= bite;
            frameTodo -= bite;
 
@@ -1849,7 +1849,7 @@ void cDolbyPlusRepacker::Repack(uchar *Data, int Count, const bool PacketStart)
   while (data < limit) {
         // Have we a frame needs finishing?
         if (state == scanFrame) {
-           const int bite = min(limit - data, min(frameTodo, packetTodo));
+           const int bite = std::min(limit - data, std::min(frameTodo, packetTodo));
            packetTodo -= bite;
            frameTodo -= bite;
 
@@ -2571,7 +2571,7 @@ void cTsToPes::PutTs(const uchar *Data, int Length)
      return; // skip everything before the first payload start
   Length = TsGetPayload(&Data);
   if (length + Length > size) {
-     int NewSize = max(KILOBYTE(2), length + Length);
+     int NewSize = std::max(KILOBYTE(2), length + Length);
      if (uchar *NewData = (uchar *)realloc(data, NewSize)) {
         data = NewData;
         size = NewSize;
@@ -2604,7 +2604,7 @@ const uchar *cTsToPes::GetPes(int &Length)
            p -= 3;
            memmove(p, data, 4);
            }
-        int l = min(length - offset, MAXPESLENGTH);
+        int l = std::min(length - offset, MAXPESLENGTH);
         offset += l;
         if (p != data) {
            l += 3;

@@ -376,7 +376,7 @@ bool cTimer::Matches(time_t t, bool Directly, int Margin) const
      }
   else {
      for (int i = -1; i <= 7; i++) {
-         time_t t0 = IncDay(day ? max(day, t) : t, i);
+         time_t t0 = IncDay(day ? std::max(day, t) : t, i);
          if (DayMatches(t0)) {
             time_t a = SetTime(t0, begin);
             time_t b = a + length;
@@ -428,7 +428,7 @@ int cTimer::Matches(const cEvent *Event, int *Overlap) const
         else if (stopTime <= Event->StartTime() || Event->EndTime() <= startTime)
            overlap = 0;
         else
-           overlap = (min(stopTime, Event->EndTime()) - max(startTime, Event->StartTime())) * FULLMATCH / max(Event->Duration(), 1);
+           overlap = (std::min(stopTime, Event->EndTime()) - std::max(startTime, Event->StartTime())) * FULLMATCH / std::max(Event->Duration(), 1);
         }
      startTime = stopTime = 0;
      if (Overlap)

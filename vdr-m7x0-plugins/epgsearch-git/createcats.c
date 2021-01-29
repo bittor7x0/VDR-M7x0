@@ -65,7 +65,7 @@ class cReadLine {
 
 char *cReadLine::Read(FILE *f)
 {
-    if (fgets(buffer, sizeof(buffer), f) > 0) {
+    if (fgets(buffer, sizeof(buffer), f)) {
 	int l = strlen(buffer) - 1;
 	if (l >= 0 && buffer[l] == '\n')
 	    buffer[l] = 0;

@@ -462,7 +462,7 @@ void cSkinSTTNGDisplayChannel::Flush(void)
      if (present) {
         time_t t = time(NULL);
         if (t > present->StartTime())
-           seen = min(y4 - y3 - 1, int((y4 - y3) * double(t - present->StartTime()) / present->Duration()));
+           seen = std::min(y4 - y3 - 1, int((y4 - y3) * double(t - present->StartTime()) / present->Duration()));
         }
      if (seen != lastSeen) {
         osd->DrawRectangle(x1 + Gap, y3, x1 + Gap + ScrollWidth - 1, y4 - 1, Theme.Color(clrChannelTimebarRest));
@@ -861,7 +861,7 @@ cSkinSTTNGDisplayReplay::cSkinSTTNGDisplayReplay(bool ModeOnly)
   lastCurrentWidth = 0;
   cBitmap bm(play_xpm);
   x0 = 0;
-  x1 = max(SymbolWidth, bm.Width());
+  x1 = std::max(SymbolWidth, bm.Width());
   x2 = x1 + Roundness;
   x3 = x2 + Gap;
   x7 = Setup.OSDWidth;
@@ -872,7 +872,7 @@ cSkinSTTNGDisplayReplay::cSkinSTTNGDisplayReplay(bool ModeOnly)
   y1 = lineHeight;
   y2 = y1 + Roundness;
   y3 = y2 + Gap;
-  y4 = y3 + max(SymbolHeight, bm.Height());
+  y4 = y3 + std::max(SymbolHeight, bm.Height());
   y5 = y4 + Gap;
   y6 = y5 + Roundness;
   y7 = y6 + font->Height();
@@ -1087,7 +1087,7 @@ cSkinSTTNGDisplayTracks::cSkinSTTNGDisplayTracks(const char *Title, int NumTrack
   currentIndex = -1;
   int ItemsWidth = font->Width(Title);
   for (int i = 0; i < NumTracks; i++)
-      ItemsWidth = max(ItemsWidth, font->Width(Tracks[i]));
+      ItemsWidth = std::max(ItemsWidth, font->Width(Tracks[i]));
   ItemsWidth += 10;
   x0 = 0;
   x1 = lineHeight / 2;

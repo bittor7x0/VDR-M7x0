@@ -963,7 +963,7 @@ void cDvbPlayer::SkipSeconds(int Seconds)
      Empty();
      int Index = writeIndex;
      if (Index >= 0) {
-        Index = max(Index + Seconds * FRAMESPERSEC, 0);
+        Index = std::max(Index + Seconds * FRAMESPERSEC, 0);
         if (Index > 0)
            Index = index->GetNextIFrame(Index, false, NULL, NULL, NULL, true);
         if (Index >= 0)
@@ -1054,9 +1054,9 @@ bool cDvbPlayer::GetIndex(int &Current, int &Total, bool SnapToIFrame)
 {
   if (index) {
      if (playMode == pmStill)
-        Current = max(readIndex, 0);
+        Current = std::max(readIndex, 0);
      else {
-        Current = max(writeIndex, 0);
+        Current = std::max(writeIndex, 0);
         if (playMode == pmPlay) {
            int backed = backTrace->Get(playDir == pdForward);
            if (backed >= 0)

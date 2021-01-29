@@ -29,7 +29,7 @@ const char *cCharSetConv::Convert(const char *From, char *To, size_t ToLength)
      size_t FromLength = strlen(From);
      char *ToPtr = To;
      if (!ToPtr) {
-        int NewLength = max(length, FromLength * 2); // some reserve to avoid later reallocations
+        int NewLength = std::max(length, FromLength * 2); // some reserve to avoid later reallocations
         if (char *NewBuffer = (char *)realloc(result, NewLength)) {
            length = NewLength;
            result = NewBuffer;

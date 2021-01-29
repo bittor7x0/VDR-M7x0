@@ -213,7 +213,7 @@ void cOsdMenu::Display(void)
          }
      if (current < 0)
         current = 0; // just for safety - there HAS to be a current item!
-     first = min(first, max(0, count - displayMenuItems)); // in case the menu size has changed
+     first = std::min(first, std::max(0, count - displayMenuItems)); // in case the menu size has changed
      if (current - first >= displayMenuItems || current < first) {
         first = current - displayMenuItems / 2;
         if (first + displayMenuItems > count)
@@ -303,11 +303,11 @@ void cOsdMenu::CursorUp(void)
      DisplayCurrent(false);
   current = tmpCurrent;
   if (current < first) {
-     first = Setup.MenuScrollPage ? max(0, current - displayMenuItems + 1) : current;
+     first = Setup.MenuScrollPage ? std::max(0, current - displayMenuItems + 1) : current;
      Display();
      }
   else if (current > lastOnScreen) {
-     first = max(0, current - displayMenuItems + 1);
+     first = std::max(0, current - displayMenuItems + 1);
      Display();
      }
   else
@@ -341,9 +341,9 @@ void cOsdMenu::CursorDown(void)
      DisplayCurrent(false);
   current = tmpCurrent;
   if (current > lastOnScreen) {
-     first = Setup.MenuScrollPage ? current : max(0, current - displayMenuItems + 1);
+     first = Setup.MenuScrollPage ? current : std::max(0, current - displayMenuItems + 1);
      if (first + displayMenuItems > last)
-        first = max(0, last - displayMenuItems + 1);
+        first = std::max(0, last - displayMenuItems + 1);
      Display();
      }
   else if (current < first) {
@@ -398,7 +398,7 @@ void cOsdMenu::PageDown(void)
   if (current > last)
      current = last;
   if (first + displayMenuItems > last)
-     first = max(0, last - displayMenuItems + 1);
+     first = std::max(0, last - displayMenuItems + 1);
   int tmpCurrent = current;
   while (!SelectableItem(tmpCurrent) && ++tmpCurrent <= last)
         ;
@@ -452,7 +452,7 @@ eOSState cOsdMenu::HotKey(eKeys Key)
       const char *s = item->Text();
       i = 0;
       item_nr = 0;
-      if (s && (s = skipspace(s)) != '\0' && '0' <= s[i] && s[i] <= '9') {
+      if (s && (s = skipspace(s)) != NULL && '0' <= s[i] && s[i] <= '9') {
          do {
             item_nr = item_nr * 10 + (s[i] - '0');
             }

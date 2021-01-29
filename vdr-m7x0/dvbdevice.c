@@ -292,7 +292,7 @@ bool cDvbTuner::SetFrontend(void)
                        if ((codes != NULL) & (diseqc_idx < 5)) {
                           qpsk_Frontend.diseqc[diseqc_idx].diseqc_mode = 2;
                           qpsk_Frontend.diseqc[diseqc_idx].msg_len =
-                             min(n, int(sizeof(qpsk_Frontend.diseqc[diseqc_idx].msg)));
+                             std::min(n, int(sizeof(qpsk_Frontend.diseqc[diseqc_idx].msg)));
                           memcpy(qpsk_Frontend.diseqc[diseqc_idx].msg, codes,
                                 qpsk_Frontend.diseqc[diseqc_idx].msg_len);
                           diseqc_idx++;
@@ -899,7 +899,7 @@ int c7x0TsReplayer::ScanDataForPacketStartCode(const uchar *&Data,const uchar *c
   register const uchar *const limit = Limit;
 
   if (fragmentLen) {
-     int c = min (188 - fragmentLen, limit - data);
+     int c = std::min (188 - fragmentLen, limit - data);
      memcpy(fragmentData + fragmentLen, data, c);
      data += c;
      fragmentLen += c;
@@ -1373,7 +1373,7 @@ bool c7x0TsReplayer::HandlePesTrickspeed(const uchar *&Data,
 
   const uchar *data = Data;
   if (pesHeaderLength < 7) {
-     int c = min (7 - pesHeaderLength, Limit - data);
+     int c = std::min (7 - pesHeaderLength, Limit - data);
      memcpy(pesHeader + pesHeaderLength,data, c);
      pesHeaderLength += c;
      data += c;
@@ -1443,7 +1443,7 @@ bool c7x0TsReplayer::HandlePesTrickspeed(const uchar *&Data,
            return true;
            }
 
-        int c = min(headerLen - pesHeaderLength, Limit - data);
+        int c = std::min(headerLen - pesHeaderLength, Limit - data);
         memcpy (pesHeader + pesHeaderLength, data, c);
         pesHeaderLength += c;
         data += c;
@@ -1499,7 +1499,7 @@ bool c7x0TsReplayer::HandlePesTrickspeed(const uchar *&Data,
        start++;
        }
 
-    int c = min(start - pesHeaderLength, Limit - data);
+    int c = std::min(start - pesHeaderLength, Limit - data);
     if (c > 0) {
        memcpy(pesHeader + pesHeaderLength, data, c);
        pesHeaderLength += c;
@@ -1677,7 +1677,7 @@ int c7x0TsReplayer::HandleTrickspeed(const uchar *Data)
            }
         }
 
-  int n = min (4, limit - data_save);
+  int n = std::min (4, limit - data_save);
   memcpy(&trickspeedScanner, limit - n, n);
 
   if (trickspeedState == syncing){
@@ -2095,7 +2095,7 @@ private:
   int ringBufferLeftLength;
   dvr_ring_buffer_state bufferState;
 
-  void updateStats() { maxFill = max (maxFill, bufferState.fill); }
+  void updateStats() { maxFill = std::max (maxFill, bufferState.fill); }
 public:
   c7x0TSBuffer(int File, int CardIndex);
   ~c7x0TSBuffer();
@@ -2295,7 +2295,7 @@ uchar *c7x0TSBuffer::Get(int &Length,int &Pid)
 
 #endif
   if (ringBufferLeftLength || bufferState.readable < TS_SIZE) {
-     int copy = min(TS_SIZE - ringBufferLeftLength, bufferState.readable);
+     int copy = std::min(TS_SIZE - ringBufferLeftLength, bufferState.readable);
      memcpy(ringBufferLeft+ringBufferLeftLength, dvrRingBuffer + bufferState.offset,copy);
 
      ringBufferLeftLength += copy;
@@ -2336,7 +2336,7 @@ uchar *c7x0TSBuffer::Get(int &Length,int &Pid)
   uint32_t pid = getIntUnaligned(p)&0xff1fff00;
   int l;
 #ifdef USE_HW_VIDEO_FRAME_EVENTS
-  const int maxreadable = curEventAvail? min(curEventOffset - 1, bufferState.readable - TS_SIZE): bufferState.readable - TS_SIZE;
+  const int maxreadable = curEventAvail? std::min(curEventOffset - 1, bufferState.readable - TS_SIZE): bufferState.readable - TS_SIZE;
 #else
   const int maxreadable =  bufferState.readable - TS_SIZE;
 #endif

@@ -514,7 +514,7 @@ void cSkinReelDisplayChannel::Flush()
      if (present) {
         time_t t = time(NULL);
         if (t > present->StartTime())
-           seen = min(y4 - y3 - 1, int((y4 - y3) * double(t - present->StartTime()) / present->Duration()));
+           seen = std::min(y4 - y3 - 1, int((y4 - y3) * double(t - present->StartTime()) / present->Duration()));
         }
      if (seen != lastSeen) {
         int x = (x1_2 + x1_3 - ScrollWidth) / 2;

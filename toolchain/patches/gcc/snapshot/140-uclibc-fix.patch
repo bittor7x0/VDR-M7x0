@@ -2,15 +2,13 @@ Patch to fix this linker error in uClibc:
  ldso/ldso/ld-uClibc_so.a(ldso.oS): In function `_dl_lookup_hash':
  ldso.c:(.text._dl_lookup_hash+0xe4): undefined reference to `__umodsi3'
 
-diff -Naur gcc-4.9.0-orig/libgcc/config/mips/t-mips gcc-4.9.0/libgcc/config/mips/t-mips
---- gcc-4.9.0-orig/libgcc/config/mips/t-mips
-+++ gcc-4.9.0/libgcc/config/mips/t-mips
-@@ -6,5 +6,8 @@
+diff -Naur a/libgcc/config/mips/t-mips b/libgcc/config/mips/t-mips
+--- a/libgcc/config/mips/t-mips
++++ b/libgcc/config/mips/t-mips
+@@ -6,5 +6,6 @@
  softfp_truncations :=
  softfp_exclude_libgcc2 := n
  
-+LIB2ADD_ST += $(srcdir)/udivmod.c \
-+	  $(srcdir)/udivmodsi4.c
-+
++LIB2ADD_ST += $(srcdir)/udivmod.c $(srcdir)/udivmodsi4.c
  LIB2ADD_ST += $(srcdir)/config/mips/vr4120-div.S
  LIB2ADD_ST += $(srcdir)/config/mips/lib2funcs.c

@@ -216,7 +216,7 @@ const char *cCharSetConv::Convert(const char *From, char *To, size_t ToLength)
      size_t FromLength = strlen(From);
      char *ToPtr = To;
      if (!ToPtr) {
-        length = max(length, FromLength * 2); // some reserve to avoid later reallocations
+        length = std::max(length, FromLength * 2); // some reserve to avoid later reallocations
         result = (char *)realloc(result, length);
         ToPtr = result;
         ToLength = length;

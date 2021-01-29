@@ -568,7 +568,7 @@ ssize_t cMpgUnbufferedFile::Read(void *Data, size_t Size)
         cachedstart = curpos;
         cachedend = curpos;
         }
-     cachedstart = min(cachedstart, curpos);
+     cachedstart = std::min(cachedstart, curpos);
 #endif
 #ifdef USE_DIRECT_IO
      ssize_t bytesRead = 0;
@@ -606,7 +606,7 @@ ssize_t cMpgUnbufferedFile::Read(void *Data, size_t Size)
 #ifdef USE_FADVISE
      if (bytesRead > 0) {
         //curpos += bytesRead;
-        cachedend = max(cachedend, curpos);
+        cachedend = std::max(cachedend, curpos);
 
         // Read ahead:
         // no jump? (allow small forward jump still inside readahead window).
@@ -617,7 +617,7 @@ ssize_t cMpgUnbufferedFile::Read(void *Data, size_t Size)
            if (ahead - curpos < (off_t)(readahead / 2)) {
               posix_fadvise(fd, curpos, readahead, POSIX_FADV_WILLNEED);
               ahead = curpos + readahead;
-              cachedend = max(cachedend, ahead);
+              cachedend = std::max(cachedend, ahead);
               }
            if (readahead < Size * 32) { // automagically tune readahead size.
               readahead = Size * 32;

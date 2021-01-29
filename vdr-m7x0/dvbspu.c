@@ -63,10 +63,10 @@ cDvbSpuBitmap::cDvbSpuBitmap(sDvbSpuRect size,
                              uint8_t * fodd, uint8_t * eodd,
                              uint8_t * feven, uint8_t * eeven)
 {
-    size.x1 = max(size.x1, 0);
-    size.y1 = max(size.y1, 0);
-    size.x2 = min(size.x2, spuXres - 1);
-    size.y2 = min(size.y2, spuYres - 1);
+    size.x1 = std::max(size.x1, 0);
+    size.y1 = std::max(size.y1, 0);
+    size.x2 = std::min(size.x2, spuXres - 1);
+    size.y2 = std::min(size.y2, spuYres - 1);
 
     bmpsize = size;
     revRect(minsize[0], size);
@@ -313,10 +313,10 @@ sDvbSpuRect cDvbSpuDecoder::CalcAreaSize(sDvbSpuRect fgsize, cBitmap *fgbmp, sDv
 {
     sDvbSpuRect size;
     if (fgbmp && bgbmp) {
-       size.x1 = min(fgsize.x1, bgsize.x1);
-       size.y1 = min(fgsize.y1, bgsize.y1);
-       size.x2 = max(fgsize.x2, bgsize.x2);
-       size.y2 = max(fgsize.y2, bgsize.y2);
+       size.x1 = std::min(fgsize.x1, bgsize.x1);
+       size.y1 = std::min(fgsize.y1, bgsize.y1);
+       size.x2 = std::max(fgsize.x2, bgsize.x2);
+       size.y2 = std::max(fgsize.y2, bgsize.y2);
        }
     else if (fgbmp) {
        size.x1 = fgsize.x1;

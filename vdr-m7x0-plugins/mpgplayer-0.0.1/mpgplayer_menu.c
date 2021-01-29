@@ -582,7 +582,7 @@ void cMpgReplayControl::TimeSearchProcess(eKeys Key)
     case kRight: {
          int dir = ((Key == kRight || Key == kFastFwd) ? 1 : -1);
          if (dir > 0)
-            Seconds = min(lastTotalTime - lastCurrentTime - MPG_STAY_SECONDS_OFF_END, Seconds);
+            Seconds = std::min(lastTotalTime - lastCurrentTime - MPG_STAY_SECONDS_OFF_END, Seconds);
          SkipSeconds(Seconds * dir);
          timeSearchActive = false;
          }
@@ -592,7 +592,7 @@ void cMpgReplayControl::TimeSearchProcess(eKeys Key)
     case kPause:
     case kDown:
     case kOk:
-         Seconds = min(lastTotalTime - MPG_STAY_SECONDS_OFF_END, Seconds);
+         Seconds = std::min(lastTotalTime - MPG_STAY_SECONDS_OFF_END, Seconds);
          // GotoTime(Seconds, Key == kDown || Key == kPause || Key == kOk);
          timeSearchActive = false;
          break;

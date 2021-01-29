@@ -53,12 +53,12 @@ void Bitmap::text(const char* text, bool centered)
   frame(0, 0, Width() - 1, Height() - 1, clrRed);
   const cFont* font = cFont::GetFont(fontOsd);
   cTextWrapper wrapper(text, font, Width() - 10);
-  int y = max((Height() - wrapper.Lines() * font->Height()) / 2, 0);
+  int y = std::max((Height() - wrapper.Lines() * font->Height()) / 2, 0);
   for (int l = 0; l < wrapper.Lines(); ++l, y += font->Height())
   {
     int x = 0;
     if (centered)
-      x = max((Width() - font->Width(wrapper.GetLine(l))) / 2, 0);
+      x = std::max((Width() - font->Width(wrapper.GetLine(l))) / 2, 0);
     DrawText(x, y, wrapper.GetLine(l), clrBlack, clrWhite, font);
   }
 }
