@@ -427,6 +427,7 @@ cSetup::cSetup(void)
   LircRepeatDelay = 350;
   LircRepeatFreq = 100;
   LircRepeatTimeout = 500;
+  CapitalizeFilenames = 0; // default = disabled
 }
 
 cSetup& cSetup::operator= (const cSetup &s)
@@ -643,6 +644,7 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "LircRepeatDelay"))     LircRepeatDelay    = atoi(Value);
   else if (!strcasecmp(Name, "LircRepeatFreq"))      LircRepeatFreq     = atoi(Value);
   else if (!strcasecmp(Name, "LircRepeatTimeout"))   LircRepeatTimeout  = atoi(Value);
+  else if (!strcasecmp(Name, "CapitalizeFilenames")) CapitalizeFilenames = atoi(Value);
   else
      return false;
   return true;
@@ -769,6 +771,7 @@ bool cSetup::Save(void)
   Store("LircRepeatDelay",    LircRepeatDelay);
   Store("LircRepeatFreq",     LircRepeatFreq);
   Store("LircRepeatTimeout",  LircRepeatTimeout);
+  Store("CapitalizeFilenames", CapitalizeFilenames);
 
   Sort();
 

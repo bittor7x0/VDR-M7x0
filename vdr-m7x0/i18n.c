@@ -5385,6 +5385,28 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
   },
+  { "Setup.Recording$Capitalize filenames",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "Capitalizar nombres de archivos",
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+    "",// TODO
+  },
   { "Setup.Recording$Delete timeshift recording",
     "Zeitversetzte Aufnahme löschen",
     "",

@@ -65,6 +65,8 @@
 
 bool VfatFileSystem = false;
 
+char *CapitalizeFilename(char **buffer);
+
 cRecordings DeletedRecordings(true);
 
 // --- cRemoveDeletedRecordingsThread ----------------------------------------
@@ -642,7 +644,7 @@ cRecording::cRecording(cTimer *Timer, const cEvent *Event)
               break;
            }
      if (Timer->IsSingleEvent()) {
-        Timer->SetFile(name); // this was an instant recording, so let's set the actual data
+        Timer->SetFile(Setup.CapitalizeFilenames ? CapitalizeFilename(&name) : name); // this was an instant recording, so let's set the actual data
         Timers.SetModified();
         }
      }
@@ -652,6 +654,8 @@ cRecording::cRecording(cTimer *Timer, const cEvent *Event)
      name = strdup(cString::sprintf("%s%c%s", Timer->File(), FOLDERDELIMCHAR, Subtitle));
   // substitute characters that would cause problems in file names:
   strreplace(name, '\n', ' ');
+  if(Setup.CapitalizeFilenames)
+     CapitalizeFilename(&name);
   if((Timer->Channel())&&(Setup.UseHDInRecordings))
      if(Timer->Channel()->Vtype()==0x1B)
         name = strdup(cString::sprintf("%s (HD)",(const char *)cString(name,true)));
@@ -2025,4 +2029,43 @@ int ReadFrame(cUnbufferedFile *f, uchar *b, int Length, int Max)
   if (r < 0)
      LOG_ERROR;
   return r;
+}
+
+char *CapitalizeFilename(char **buffer)
+{
+  if (buffer == NULL || *buffer == NULL)
+     return NULL;
+
+  char *tmp = MALLOC(char, strlen(*buffer) + 1);
+  if (!tmp) {
+     LOG_ERROR_STR("out of memory");
+     return *buffer;
+     }
+
+  bool uppernext = true;
+  char *buf = *buffer;
+  int ind;
+  for (ind = 0; buf[ind] != '\0'; ++ind) {
+     if (buf[ind] == ' ')
+        tmp[ind] = ' ';
+     else if (buf[ind] == FOLDERDELIMCHAR || (buf[ind + 1] == ' ' && (buf[ind] == ':' || buf[ind] == '.')) || (buf[ind - 1] == ' ' && buf[ind] == '\'')) {
+        uppernext = true;
+        tmp[ind] = buf[ind];
+        }
+     else if (uppernext) {
+        uppernext = false;
+        tmp[ind] = !isupper(buf[ind]) ? toupper(buf[ind]) : buf[ind];
+        }
+     else
+        tmp[ind] = !islower(buf[ind]) ? tolower(buf[ind]) : buf[ind];
+     }
+  tmp[ind] = '\0';
+  buf = 0;
+
+  dsyslog("Filename capitalized from '%s' to '%s'", *buffer, tmp);
+  free(*buffer);
+  *buffer = strdup(tmp);
+  free(tmp);
+
+  return *buffer;
 }

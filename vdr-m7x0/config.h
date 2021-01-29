@@ -327,6 +327,7 @@ public:
   int LircRepeatDelay;
   int LircRepeatFreq;
   int LircRepeatTimeout;
+  int CapitalizeFilenames;
   int __EndData__;
   cSetup(void);
   cSetup& operator= (const cSetup &s);
