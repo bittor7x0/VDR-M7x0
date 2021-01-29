@@ -596,10 +596,10 @@ bool cEPGHandler::IgnoreChannel(const cChannel* Channel)
     return maps->IgnoreChannel(Channel);
 }
 
-bool cEPGHandler::check4proc(cEvent *event, cTimer **timer, cEPGMapping **map)
+bool cEPGHandler::check4proc(cEvent *event, char **timerdescr, cEPGMapping **map)
 {
     if (map) *map=NULL;
-    if (timer) *timer=NULL;
+    if (timerdescr) *timerdescr=NULL;
     if (!event) return false;
     if (now>(event->StartTime()+event->Duration())) return false; // event in the past?
     if (!maps) return false;
@@ -610,19 +610,29 @@ bool cEPGHandler::check4proc(cEvent *event, cTimer **timer, cEPGMapping **map)
     {
         if (!epall) return false;
         if (!event->ShortText()) return false;
-        if (!timer) return false;
+        if (!timerdescr) return false;
 #if VDRVERSNUM <= 10732
         int TimerMatch = tmNone;
 #else
         eTimerMatch TimerMatch = tmNone;
 #endif
-        *timer=Timers.GetMatch(event,&TimerMatch);
-        if (!*timer) return false;
-        if (TimerMatch!=tmFull)
+
+#if VDRVERSNUM>=20301
+        cStateKey StateKey;
+        if (const cTimers *Timers=cTimers::GetTimersRead(StateKey))
         {
-            *timer=NULL;
-            return false;
+            const cTimer *Timer=Timers->GetMatch(event,&TimerMatch);
+            if ((Timer) && (TimerMatch==tmFull))
+            {
+                *timerdescr=strdup(Timer->ToDescr());
+            }
+            StateKey.Remove();
         }
+#else
+        cTimer *timer=Timers.GetMatch(event,&TimerMatch);
+        if ((!timer) || (TimerMatch!=tmFull)) return false;
+        *timerdescr=strdup(timer->ToDescr());
+#endif
     }
     if (map) *map=t_map;
     return true;
@@ -649,45 +659,70 @@ bool cEPGHandler::SetShortText(cEvent* Event, const char* ShortText)
 
 bool cEPGHandler::SetDescription(cEvent* Event, const char* Description)
 {
-    cTimer *timer;
-    if (!check4proc(Event,&timer,NULL)) return false;
+    //cTimer *timer;
+    char *timerdescr;
+    if (!check4proc(Event,&timerdescr,NULL))
+    {
+        if (timerdescr) free(timerdescr);
+        return false;
+    }
 
     if (import.WasChanged(Event))
     {
         // ok we already changed this event!
-        if (!Description) return true; // prevent setting nothing to description
+        if (!Description)
+        {
+            if (timerdescr) free(timerdescr);
+            return true; // prevent setting nothing to description
+        }
         int len=strlen(Description);
-        if (!len) return true; // prevent setting nothing to description
+        if (!len)
+        {
+            if (timerdescr) free(timerdescr);
+            return true; // prevent setting nothing to description
+        }
         if (!strcasestr(Event->Description(),Description))
         {
             // eit description changed -> set it
-            tsyslog("{%5i} %schanging descr of '%s'",Event->EventID(),timer ? "*" : "",
+            tsyslog("{%5i} %schanging descr of '%s'",Event->EventID(),timerdescr ? "*" : "",
                     Event->Title());
+            if (timerdescr) free(timerdescr);
             return false;
         }
 #ifdef VDRDEBUG
-        tsyslog("{%5i} %salready seen descr '%s'",Event->EventID(),timer ? "*" : "",
+        tsyslog("{%5i} %salready seen descr '%s'",Event->EventID(),timerdescr ? "*" : "",
                 Event->Title());
 #endif
+        if (timerdescr) free(timerdescr);
         return true;
     }
-    tsyslog("{%5i} %ssetting descr of '%s'",Event->EventID(),timer ? "*" : "",
+    tsyslog("{%5i} %ssetting descr of '%s'",Event->EventID(),timerdescr ? "*" : "",
             Event->Title());
+    if (timerdescr) free(timerdescr);
     return false;
 }
 
 
 bool cEPGHandler::HandleEvent(cEvent* Event)
 {
-    cTimer *timer;
+    //cTimer *timer;
+    char *timerdescr;
     cEPGMapping *map;
-    if (!check4proc(Event,&timer,&map)) return false;
+    if (!check4proc(Event,&timerdescr,&map))
+    {
+        if (timerdescr) free(timerdescr);
+        return false;
+    }
 
     int Flags=0;
     const char *ChannelID=strdup(*Event->ChannelID().ToString());
-    if (!ChannelID) return false;
+    if (!ChannelID)
+    {
+        if (timerdescr) free(timerdescr);
+        return false;
+    }
 
-    if (timer)
+    if (timerdescr)
     {
         Flags=USE_SEASON;
     }
@@ -704,16 +739,19 @@ bool cEPGHandler::HandleEvent(cEvent* Event)
         if (!epall)
         {
             free((void*)ChannelID);
+            if (timerdescr) free(timerdescr);
             return false;
         }
-        if (!timer)
+        if (!timerdescr)
         {
             free((void*)ChannelID);
+            if (timerdescr) free(timerdescr);
             return false;
         }
         if (db && sqlite3_errcode(db)!=SQLITE_OK)
         {
             free((void*)ChannelID);
+            if (timerdescr) free(timerdescr);
             return false;
         }
 
@@ -726,11 +764,12 @@ bool cEPGHandler::HandleEvent(cEvent* Event)
         if (!xevent)
         {
             free((void*)ChannelID);
+            if (timerdescr) free(timerdescr);
             return false;
         }
         else
         {
-            tsyslog("{%5i} *adding '%s'/'%s' (%s)",Event->EventID(),xevent->Title(),xevent->ShortText(),*timer->ToDescr());
+            tsyslog("{%5i} *adding '%s'/'%s' (%s)",Event->EventID(),xevent->Title(),xevent->ShortText(),timerdescr);
         }
     }
     else
@@ -738,6 +777,7 @@ bool cEPGHandler::HandleEvent(cEvent* Event)
         source=sources->GetSource(xevent->Source());
     }
     free((void*)ChannelID);
+    if (timerdescr) free(timerdescr);
     if (!source)
     {
         tsyslog("no source for %s",xevent->Source());
@@ -813,19 +853,29 @@ void cEPGTimer::Action()
 {
     if (!import.DBExists()) return; // no database? -> exit immediately
 
+#if VDRVERSNUM<20301
     cSchedulesLock schedulesLock(true,10); // wait 10ms for lock!
     const cSchedules *schedules = cSchedules::Schedules(schedulesLock);
     if (!schedules) return;
 
     if (Timers.BeingEdited()) return;
     Timers.IncBeingEdited();
+#endif
 
     sqlite3 *db=NULL;
     cEPGSource *source=sources->GetSource(EITSOURCE);
     bool useeptext=((epall & EPLIST_USE_STEXTITLE)==EPLIST_USE_STEXTITLE);
     int Flags=USE_SEASON;
     if (useeptext) Flags|=(USE_SHORTTEXT|OPT_SEASON_STEXTITLE);
+
+#if VDRVERSNUM<20301
     for (cTimer *Timer = Timers.First(); Timer; Timer = Timers.Next(Timer))
+#else
+    cStateKey StateKey;
+    if (const cTimers *Timers=cTimers::GetTimersRead(StateKey))
+    {
+        for (const cTimer *Timer=Timers->First(); Timer; Timer=Timers->Next(Timer))
+#endif
     {
         if (Timer->Recording()) continue; // to late ;)
         cEvent *event=(cEvent *) Timer->Event();
@@ -873,12 +923,19 @@ void cEPGTimer::Action()
         import.PutEvent(source,db,NULL,event,xevent,Flags);
         delete xevent;
     }
-    if (db)
-    {
-        import.Commit(source,db);
-        sqlite3_close(db);
-    }
-    Timers.DecBeingEdited();
+#if VDRVERSNUM>=20301
+    StateKey.Remove();
+}
+#endif
+if (db)
+{
+    import.Commit(source,db);
+    sqlite3_close(db);
+}
+
+#if VDRVERSNUM<20301
+Timers.DecBeingEdited();
+#endif
 }
 
 // -------------------------------------------------------------
@@ -895,11 +952,10 @@ void cHouseKeeping::checkdir(const char* imgdir, int age, int &cnt, int &lcnt)
     if (!dir) return;
     time_t tmin=time(NULL);
     tmin-=(age*86400);
-    struct dirent dirent_buf,*dirent;
+    struct dirent *dirent;
 
-    while (readdir_r(dir,&dirent_buf,&dirent)==0)
+    while (dirent=readdir(dir))
     {
-        if (!dirent) break;
         if (dirent->d_name[0]=='.') continue;
         if ((dirent->d_type==DT_LNK) || (dirent->d_type==DT_REG))
         {
@@ -969,9 +1025,11 @@ void cHouseKeeping::Action()
 
     if (!global->DBExists()) return;
 
+#if APIVERSNUM<20301
     cSchedulesLock schedulesLock(true,10); // wait 10ms for lock!
     const cSchedules *schedules = cSchedules::Schedules(schedulesLock);
     if (!schedules) return;
+#endif
 
     sqlite3 *db=NULL;
     if (sqlite3_open_v2(global->EPGFile(),&db,SQLITE_OPEN_READWRITE,NULL)==SQLITE_OK)

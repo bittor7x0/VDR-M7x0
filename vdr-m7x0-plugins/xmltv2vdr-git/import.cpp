@@ -103,7 +103,7 @@ cEvent *cImport::SearchVDREventByTitle(cEPGSource *source, cSchedule* schedule, 
     if (Duration && eventTimeDiff>=Duration) eventTimeDiff/=3;
     if (eventTimeDiff<100) eventTimeDiff=100;
 
-    for (cEvent *p = schedule->Events()->First(); p; p = schedule->Events()->Next(p))
+    for (cEvent *p =(cEvent *) schedule->Events()->First(); p; p = (cEvent *) schedule->Events()->Next(p))
     {
         int diff=abs((int) difftime(p->StartTime(),StartTime));
         if (diff<=eventTimeDiff)
@@ -208,9 +208,9 @@ cEvent *cImport::GetEventBefore(cSchedule* schedule, time_t start)
     if (!schedule) return NULL;
     if (!schedule->Events()) return NULL;
     if (!schedule->Events()->Count()) return NULL;
-    cEvent *last=schedule->Events()->Last();
+    cEvent *last=(cEvent *) schedule->Events()->Last();
     if ((last) && (last->StartTime()<start)) return last;
-    for (cEvent *p=schedule->Events()->First(); p; p=schedule->Events()->Next(p))
+    for (cEvent *p=(cEvent *) schedule->Events()->First(); p; p=(cEvent *) schedule->Events()->Next(p))
     {
         if (p->StartTime()>start)
         {
@@ -261,7 +261,7 @@ char *cImport::Add2Description(char *description, const char *Name, int Value)
 
 char *cImport::AddEOT2Description(char *description, bool checkutf8)
 {
-    const char nbspUTF8[]={(char)0xc2,(char)0xa0,0};
+    const char nbspUTF8[]={-62,-96,0};
 
     if (checkutf8)
     {
@@ -277,7 +277,7 @@ char *cImport::AddEOT2Description(char *description, bool checkutf8)
             }
             else
             {
-                const char nbsp[]={(char)0xa0,0};
+                const char nbsp[]={-96,0};
                 description=strcatrealloc(description,nbsp);
             }
         }
@@ -1401,7 +1401,7 @@ bool cImport::UpdateXMLTVEvent(cEPGSource *Source, sqlite3 *Db, cXMLTVEvent *xEv
             return false;
         }
 
-        string ed=shortdesc;
+        std::string ed=shortdesc;
 
         int reps;
         reps=pcrecpp::RE("'").GlobalReplace("''",&ed);
@@ -1511,7 +1511,7 @@ bool cImport::UpdateXMLTVEvent(cEPGSource *Source, sqlite3 *Db, const cEvent *Ev
             return false;
         }
 
-        string ed=eitdescription;
+        std::string ed=eitdescription;
 
         int reps;
         reps=pcrecpp::RE("'").GlobalReplace("''",&ed);
@@ -1649,7 +1649,7 @@ cXMLTVEvent *cImport::SearchXMLTVEvent(sqlite3 **Db,const char *ChannelID, const
             return NULL;
         }
 
-        string st=sqltitle;
+        std::string st=sqltitle;
 
         int reps;
         reps=pcrecpp::RE("'").GlobalReplace("''",&st);
@@ -1734,12 +1734,12 @@ int cImport::Process(cEPGSource *Source, cEPGExecutor &myExecutor)
     time_t endoneday=begin+86400;
 #endif
 
-    Timers.IncBeingEdited(); // prevent Timers.DeleteExpired() to execute
-
-    cSchedulesLock *schedulesLock=NULL;
     const cSchedules *schedules=NULL;
-
     int l=0;
+#if VDRVERSNUM<20301
+    Timers.IncBeingEdited(); // prevent Timers.DeleteExpired() to execute
+    cSchedulesLock *schedulesLock=NULL;
+
     while (l<300)
     {
         if (schedulesLock) delete schedulesLock;
@@ -1755,14 +1755,39 @@ int cImport::Process(cEPGSource *Source, cEPGExecutor &myExecutor)
         if (schedules) break;
         l++;
     }
+#else
+    cStateKey StateKey;
+    while (l<300)
+    {
+        schedules=cSchedules::GetSchedulesWrite(StateKey,200);
+        if (!myExecutor.StillRunning())
+        {
+            if (schedules) StateKey.Remove();
+            isyslogs(Source,"request to stop from vdr");
+            return 0;
+        }
+        if (schedules) break;
+        l++;
+    }
+#endif
+
+    if (!schedules)
+    {
+        esyslogs(Source,"failed to get schedules lock");
+        return 141;
+    }
 
     dsyslogs(Source,"importing from db");
     sqlite3 *db=NULL;
     if (sqlite3_open_v2(g->EPGFile(),&db,SQLITE_OPEN_READWRITE,NULL)!=SQLITE_OK)
     {
         esyslogs(Source,"failed to open %s",g->EPGFile());
+#if VDRVERSNUM<20301
         delete schedulesLock;
         Timers.DecBeingEdited();
+#else
+        StateKey.Remove();
+#endif
         return 141;
     }
 
@@ -1775,8 +1800,12 @@ int cImport::Process(cEPGSource *Source, cEPGExecutor &myExecutor)
     {
         sqlite3_close(db);
         esyslogs(Source,"out of memory");
+#if VDRVERSNUM<20301
         delete schedulesLock;
         Timers.DecBeingEdited();
+#else
+        StateKey.Remove();
+#endif
         return 134;
     }
 
@@ -1787,8 +1816,12 @@ int cImport::Process(cEPGSource *Source, cEPGExecutor &myExecutor)
         esyslogs(Source,"%i %s (p)",ret,sqlite3_errmsg(db));
         sqlite3_close(db);
         free(sql);
+#if VDRVERSNUM<20301
         delete schedulesLock;
         Timers.DecBeingEdited();
+#else
+        StateKey.Remove();
+#endif
         return 141;
     }
     free(sql);
@@ -1826,38 +1859,57 @@ int cImport::Process(cEPGSource *Source, cEPGExecutor &myExecutor)
                     bool addevents=false;
                     if ((flags & OPT_APPEND)==OPT_APPEND) addevents=true;
 
-                    cChannel *channel=Channels.GetByChannelID(tChannelID::FromString(xevent.ChannelID()));
-                    if (!channel)
+#if VDRVERSNUM>=20301
+                    cStateKey StateKeyChan;
+                    const cChannels *Channels=cChannels::GetChannelsRead(StateKeyChan);
+                    if (Channels)
                     {
-                        if (lerr!=IMPORT_NOCHANNEL)
-                            esyslogs(Source,"channel %s not found in channels.conf",
-                                     xevent.ChannelID());
-                        lerr=IMPORT_NOCHANNEL;
-                        if (lastChannelID)
-                        {
-                            free(lastChannelID);
-                            lastChannelID=NULL;
-                        }
-                        continue;
-                    }
+                        const cChannel *channel=Channels->GetByChannelID(tChannelID::FromString(xevent.ChannelID()));
+#else
 
-                    schedule = (cSchedule *) schedules->GetSchedule(channel,addevents);
-                    if (!schedule)
-                    {
-                        if (lerr!=IMPORT_NOSCHEDULE)
-                            esyslogs(Source,"cannot get schedule for channel %s%s",
-                                     channel->Name(),addevents ? "" : " - try add option");
-                        lerr=IMPORT_NOSCHEDULE;
-                        if (lastChannelID)
+                    cChannel *channel=Channels.GetByChannelID(tChannelID::FromString(xevent.ChannelID()));
+#endif
+                        if (!channel)
                         {
-                            free(lastChannelID);
-                            lastChannelID=NULL;
+                            if (lerr!=IMPORT_NOCHANNEL)
+                                esyslogs(Source,"channel %s not found in channels.conf",
+                                         xevent.ChannelID());
+                            lerr=IMPORT_NOCHANNEL;
+                            if (lastChannelID)
+                            {
+                                free(lastChannelID);
+                                lastChannelID=NULL;
+                            }
+#if VDRVERSNUM>=20301
+                            StateKeyChan.Remove();
+#endif
+                            continue;
                         }
-                        continue;
+
+                        schedule = (cSchedule *) schedules->GetSchedule(channel,addevents);
+                        if (!schedule)
+                        {
+                            if (lerr!=IMPORT_NOSCHEDULE)
+                                esyslogs(Source,"cannot get schedule for channel %s%s",
+                                         channel->Name(),addevents ? "" : " - try add option");
+                            lerr=IMPORT_NOSCHEDULE;
+                            if (lastChannelID)
+                            {
+                                free(lastChannelID);
+                                lastChannelID=NULL;
+                            }
+#if VDRVERSNUM>=20301
+                            StateKeyChan.Remove();
+#endif
+                            continue;
+                        }
+                        if (lastChannelID) free(lastChannelID);
+                        lastChannelID=strdup(xevent.ChannelID());
+                        hint=0;
+#if VDRVERSNUM>=20301
+                        StateKeyChan.Remove();
                     }
-                    if (lastChannelID) free(lastChannelID);
-                    lastChannelID=strdup(xevent.ChannelID());
-                    hint=0;
+#endif
                 }
 
                 cEvent *event=SearchVDREvent(Source, schedule, &xevent, addevents, hint);
@@ -1889,7 +1941,11 @@ int cImport::Process(cEPGSource *Source, cEPGExecutor &myExecutor)
 #endif
                 if (PutEvent(Source, db, schedule, event, &xevent, flags))
                 {
+#if VDRVERSNUM>=20301
+                    schedule->SetModified();
+#else
                     schedules->SetModified(schedule);
+#endif
                     cnt++;
                 }
             }
@@ -1928,9 +1984,13 @@ int cImport::Process(cEPGSource *Source, cEPGExecutor &myExecutor)
 
     sqlite3_finalize(stmt);
     sqlite3_close(db);
+#if VDRVERSNUM<20301
     delete schedulesLock;
     Timers.SetEvents();
     Timers.DecBeingEdited();
+#else
+    StateKey.Remove();
+#endif
     return 0;
 }
 

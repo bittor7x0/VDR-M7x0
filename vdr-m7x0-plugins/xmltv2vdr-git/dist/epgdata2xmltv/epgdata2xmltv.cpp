@@ -93,7 +93,7 @@ static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *da
     size_t realsize = size * nmemb;
     if (data->fd!=-1)
     {
-        write(data->fd,ptr,realsize);
+        if (write(data->fd,ptr,realsize)==-1) return -1;
         data->size+=realsize;
     }
     return realsize;
@@ -561,7 +561,7 @@ int cepgdata2xmltv::Process(int argc, char *argv[])
                 enca_analyser_free(analyser);
             }
 
-            string s = xmlmem;
+            std::string s = xmlmem;
             int reps=pcrecpp::RE("&(?![a-zA-Z]{1,8};)").GlobalReplace("%amp;",&s);
             if (reps) {
                 xmlmem = (char *)realloc(xmlmem, s.size()+1);

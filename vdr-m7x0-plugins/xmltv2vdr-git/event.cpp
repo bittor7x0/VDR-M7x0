@@ -528,7 +528,7 @@ void cXMLTVEvent::GetSQL(const char *Source, int SrcIdx, const char *ChannelID, 
         return;
     }
 
-    string si=sql_insert;
+    std::string si=sql_insert;
     int ireps;
     ireps=pcrecpp::RE("'").GlobalReplace("''",&si);
     ireps+=pcrecpp::RE("\\^").GlobalReplace("'",&si);
@@ -540,7 +540,7 @@ void cXMLTVEvent::GetSQL(const char *Source, int SrcIdx, const char *ChannelID, 
     }
     *Insert=sql_insert;
 
-    string su=sql_update;
+    std::string su=sql_update;
     int ureps;
     ureps=pcrecpp::RE("'").GlobalReplace("''",&su);
     ureps+=pcrecpp::RE("\\^").GlobalReplace("'",&su);

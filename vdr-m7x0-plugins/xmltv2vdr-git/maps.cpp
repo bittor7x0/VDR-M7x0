@@ -182,20 +182,40 @@ int cEPGMapping::compare(const void *a, const void *b)
     {
         num1=INT_MAX;
     }
-    else
-    {
-        cChannel *c1=Channels.GetByChannelID(*v1);
-        if (c1) num1=c1->Number();
-    }
     if (*v2==tChannelID::InvalidID)
     {
         num2=INT_MAX;
     }
-    else
+
+#if VDRVERSNUM>=20301
+    cStateKey StateKeyChan;
+    const cChannels *Channels=cChannels::GetChannelsRead(StateKeyChan);
+    if (Channels)
     {
-        cChannel *c2=Channels.GetByChannelID(*v2);
-        if (c2) num2=c2->Number();
+#endif
+
+        if (!num1)
+        {
+#if VDRVERSNUM>=20301
+            const cChannel *c1=Channels->GetByChannelID(*v1);
+#else
+            cChannel *c1=Channels.GetByChannelID(*v1);
+#endif
+            if (c1) num1=c1->Number();
+        }
+        if (!num2)
+        {
+#if VDRVERSNUM>=20301
+            const cChannel *c2=Channels->GetByChannelID(*v2);
+#else
+            cChannel *c2=Channels.GetByChannelID(*v2);
+#endif
+            if (c2) num2=c2->Number();
+        }
+#if VDRVERSNUM>=20301
+        StateKeyChan.Remove();
     }
+#endif
     if (num1>num2) return 1;
     else return -1;
 }
@@ -230,30 +250,42 @@ void cEPGMapping::addchannels(const char *channels)
 
 void cEPGMapping::AddChannel(int ChannelNumber)
 {
-    cChannel *chan=Channels.GetByNumber(ChannelNumber);
-    if (chan)
+#if VDRVERSNUM>=20301
+    cStateKey StateKeyChan;
+    const cChannels *Channels=cChannels::GetChannelsRead(StateKeyChan);
+    if (Channels)
     {
-        bool found=false;
-        for (int i=0; i<numchannelids; i++)
+        const cChannel *chan=Channels->GetByNumber(ChannelNumber);
+#else
+    cChannel *chan=Channels.GetByNumber(ChannelNumber);
+#endif
+        if (chan)
         {
-            if (channelids[i]==chan->GetChannelID())
+            bool found=false;
+            for (int i=0; i<numchannelids; i++)
             {
-                found=true;
-                break;
+                if (channelids[i]==chan->GetChannelID())
+                {
+                    found=true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                tChannelID *tmp_channelids=static_cast<tChannelID *>(realloc(channelids,(numchannelids+1)*sizeof(struct tChannelID)));
+                if (tmp_channelids)
+                {
+                    channelids=tmp_channelids;
+                    channelids[numchannelids]=chan->GetChannelID();
+                    numchannelids++;
+                    qsort(channelids,numchannelids,sizeof(tChannelID),compare);
+                }
             }
         }
-        if (!found)
-        {
-            tChannelID *tmp_channelids=static_cast<tChannelID *>(realloc(channelids,(numchannelids+1)*sizeof(struct tChannelID)));
-            if (tmp_channelids)
-            {
-                channelids=tmp_channelids;
-                channelids[numchannelids]=chan->GetChannelID();
-                numchannelids++;
-                qsort(channelids,numchannelids,sizeof(tChannelID),compare);
-            }
-        }
+#if VDRVERSNUM>=20301
+        StateKeyChan.Remove();
     }
+#endif
 }
 
 void cEPGMapping::ReplaceChannels(int NumChannelIDs, tChannelID *ChannelIDs)
@@ -316,26 +348,42 @@ void cEPGMapping::RemoveChannel(tChannelID ChannelID, bool MarkOnly)
 void cEPGMapping::RemoveChannel(int ChannelNumber, bool MarkOnly)
 {
     if (!ChannelNumber) return;
+#if VDRVERSNUM>=20301
+    cStateKey StateKeyChan;
+    const cChannels *Channels=cChannels::GetChannelsRead(StateKeyChan);
+    if (Channels)
+    {
+        const cChannel *chan=Channels->GetByNumber(ChannelNumber);
+        if (!chan)
+        {
+            StateKeyChan.Remove();
+            return;
+        }
+#else
     cChannel *chan=Channels.GetByNumber(ChannelNumber);
     if (!chan) return;
-
-    bool found=false;
-    int i;
-    for (i=0; i<numchannelids; i++)
-    {
-        if (channelids[i]==chan->GetChannelID())
+#endif
+        bool found=false;
+        int i;
+        for (i=0; i<numchannelids; i++)
         {
-            found=true;
-            break;
+            if (channelids[i]==chan->GetChannelID())
+            {
+                found=true;
+                break;
+            }
         }
-    }
-    if (found)
-    {
-        channelids[i]=tChannelID::InvalidID;
-        if (!MarkOnly)
+        if (found)
         {
-            qsort(channelids,numchannelids,sizeof(tChannelID),compare);
-            numchannelids--;
+            channelids[i]=tChannelID::InvalidID;
+            if (!MarkOnly)
+            {
+                qsort(channelids,numchannelids,sizeof(tChannelID),compare);
+                numchannelids--;
+            }
         }
+#if VDRVERSNUM>=20301
+        StateKeyChan.Remove();
     }
+#endif
 }

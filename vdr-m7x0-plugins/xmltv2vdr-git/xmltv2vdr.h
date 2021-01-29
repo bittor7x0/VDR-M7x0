@@ -22,7 +22,7 @@
 #define UNUSED(x) x
 #endif
 
-static const char *VERSION        = "0.2.0pre";
+static const char *VERSION        = "0.2.1";
 static const char *DESCRIPTION    = trNOOP("Imports xmltv epg into vdr");
 
 int ioprio_set(int which, int who, int ioprio);
@@ -118,7 +118,7 @@ private:
     int epall;
     sqlite3 *db;
     time_t now;
-    bool check4proc(cEvent *event, cTimer **timer, cEPGMapping **map);
+    bool check4proc(cEvent *event, char **timerdescr, cEPGMapping **map);
 public:
     cEPGHandler(cGlobals *Global);
     void SetEPAll(int Value)

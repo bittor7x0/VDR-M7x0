@@ -11,7 +11,11 @@
 #include <vdr/i18n.h>
 #include <time.h>
 
+#if VDRVERSNUM>=20301
+#define CHNUMWIDTH (numdigits(cChannels::MaxNumber())+1)
+#else
 #define CHNUMWIDTH (numdigits(Channels.MaxNumber())+1)
+#endif
 
 #define NewTitle(x) new cOsdItem(cString::sprintf("%s%s%s", "---- ",x," ----"),osUnknown,false)
 
@@ -149,16 +153,28 @@ void cMenuSetupXmltv2vdr::Output(void)
         {
             for (int x=0; x<map->NumChannelIDs(); x++)
             {
+#if VDRVERSNUM>=20301
+                cStateKey StateKeyChan;
+                const cChannels *Channels=cChannels::GetChannelsRead(StateKeyChan);
+                if (Channels)
+                {
+                    const cChannel *chan=Channels->GetByChannelID(map->ChannelIDs()[x]);
+#else
                 cChannel *chan=Channels.GetByChannelID(map->ChannelIDs()[x]);
-                if (chan)
-                {
-                    mapped=true;
+#endif
+                    if (chan)
+                    {
+                        mapped=true;
+                    }
+                    else
+                    {
+                        // invalid channelid? remove from list
+                        map->RemoveChannel(map->ChannelIDs()[x],true);
+                    }
+#if VDRVERSNUM>=20301
+                    StateKeyChan.Remove();
                 }
-                else
-                {
-                    // invalid channelid? remove from list
-                    map->RemoveChannel(map->ChannelIDs()[x],true);
-                }
+#endif
             }
         }
         cString buffer = cString::sprintf("%s:\t%s",channels[i],mapped ? tr("mapped") : "");
@@ -612,7 +628,7 @@ eOSState cMenuSetupXmltv2vdrOrder::ProcessKey(eKeys Key)
 
     if (state==osContinue)
     {
-        switch (int(Key))
+        switch ((int) Key)
         {
         case kDown:
         case kUp:
@@ -641,7 +657,7 @@ eOSState cMenuSetupXmltv2vdrOrder::ProcessKey(eKeys Key)
 
     if (state==osUnknown)
     {
-        switch (Key)
+        switch ((int) Key)
         {
         case kGreen:
             if (Current()>0)
@@ -1126,19 +1142,31 @@ void cMenuSetupXmltv2vdrChannelMap::output(void)
     Add(NewTitle(tr("epg source channel mappings")),true);
     for (int i=0; i<lmap->NumChannelIDs(); i++)
     {
+#if VDRVERSNUM>=20301
+        cStateKey StateKeyChan;
+        const cChannels *Channels=cChannels::GetChannelsRead(StateKeyChan);
+        if (Channels)
+        {
+            const cChannel *chan=Channels->GetByChannelID(lmap->ChannelIDs()[i]);
+#else
         cChannel *chan=Channels.GetByChannelID(lmap->ChannelIDs()[i]);
-        if (chan)
-        {
-            cString buffer = cString::sprintf("%-*i %s", CHNUMWIDTH, chan->Number(),chan->Name());
-            Add(new cOsdItem(buffer),true);
-            if (!hasmaps) cm=Current();
-            hasmaps=true;
+#endif
+            if (chan)
+            {
+                cString buffer = cString::sprintf("%-*i %s", CHNUMWIDTH, chan->Number(),chan->Name());
+                Add(new cOsdItem(buffer),true);
+                if (!hasmaps) cm=Current();
+                hasmaps=true;
+            }
+            else
+            {
+                // invalid channelid? remove from list
+                lmap->RemoveChannel(lmap->ChannelIDs()[i],true);
+            }
+#if VDRVERSNUM>=20301
+            StateKeyChan.Remove();
         }
-        else
-        {
-            // invalid channelid? remove from list
-            lmap->RemoveChannel(lmap->ChannelIDs()[i],true);
-        }
+#endif
     }
     lmap->RemoveInvalidChannels();
     if (!hasmaps)
@@ -1166,7 +1194,7 @@ eOSState cMenuSetupXmltv2vdrChannelMap::ProcessKey(eKeys Key)
     if (HasSubMenu()) return osContinue;
     if (state==osContinue)
     {
-        switch (int(Key))
+        switch ((int) Key)
         {
         case kLeft:
         case kLeft|k_Repeat:
@@ -1190,7 +1218,7 @@ eOSState cMenuSetupXmltv2vdrChannelMap::ProcessKey(eKeys Key)
 
     if (state==osUnknown)
     {
-        switch (int(Key))
+        switch ((int) Key)
         {
         case kOk:
             if ((Current()>=cm) && (!hasmaps))
@@ -1338,21 +1366,33 @@ cMenuSetupXmltv2vdrChannelsVDR::cMenuSetupXmltv2vdrChannelsVDR(cGlobals *Global,
     SetHelp(NULL,NULL,tr("Button$Choose"));
     SetTitle(Title);
 
-    for (cChannel *channel = Channels.First(); channel; channel=Channels.Next(channel))
+#if VDRVERSNUM>=20301
+    cStateKey StateKeyChan;
+    const cChannels *Channels=cChannels::GetChannelsRead(StateKeyChan);
+    if (Channels)
     {
-        if (!channel->GroupSep())
+        for (const cChannel *channel=Channels->First(); channel; channel=Channels->Next(channel))
+#else
+    for (cChannel *channel = Channels.First(); channel; channel=Channels.Next(channel))
+#endif
         {
-            cString buf= cString::sprintf("%d\t%s",channel->Number(),channel->Name());
-            if ((epgmappingexists(channel->GetChannelID(),Channel)) || (map->EPGMappingExists(channel->GetChannelID())))
+            if (!channel->GroupSep())
             {
-                Add(new cOsdItem(buf,osUnknown,false));
-            }
-            else
-            {
-                Add(new cOsdItem(buf));
+                cString buf= cString::sprintf("%d\t%s",channel->Number(),channel->Name());
+                if ((epgmappingexists(channel->GetChannelID(),Channel)) || (map->EPGMappingExists(channel->GetChannelID())))
+                {
+                    Add(new cOsdItem(buf,osUnknown,false));
+                }
+                else
+                {
+                    Add(new cOsdItem(buf));
+                }
             }
         }
+#if VDRVERSNUM>=20301
+        StateKeyChan.Remove();
     }
+#endif
 }
 
 bool cMenuSetupXmltv2vdrChannelsVDR::epgmappingexists(tChannelID channelid, const char *channel2ignore)
@@ -1377,7 +1417,7 @@ eOSState cMenuSetupXmltv2vdrChannelsVDR::ProcessKey(eKeys Key)
     if (HasSubMenu()) return osContinue;
     if (state==osUnknown)
     {
-        switch (Key)
+        switch ((int) Key)
         {
         case kBack:
             state=osBack;
