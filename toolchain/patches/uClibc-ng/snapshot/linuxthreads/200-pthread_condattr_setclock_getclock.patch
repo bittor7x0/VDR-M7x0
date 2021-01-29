@@ -1,0 +1,150 @@
+Backport for linuxthreads.new from:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=04a676f3c8d2443499f27612f69ee88e12089e61
+
+	linuxthreads: implement pthread_condattr_{s,g}etclock()
+
+	More applications are using pthread_condattr_setclock()/
+	pthread_condattr_getclock() in their code. Port these two
+	functions from NPTL over to be more compatible.
+
+diff -Naur a/libpthread/linuxthreads/condvar.c b/libpthread/linuxthreads/condvar.c
+--- a/libpthread/linuxthreads/condvar.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/condvar.c	2020-10-01 10:13:59.605574248 +0200
+@@ -275,6 +275,7 @@
+ 
+ int __pthread_condattr_init(pthread_condattr_t *attr)
+ {
++  memset (attr, '\0', sizeof (*attr));
+   return 0;
+ }
+ strong_alias (__pthread_condattr_init, pthread_condattr_init)
+@@ -302,3 +303,50 @@
+ 
+   return 0;
+ }
++
++int pthread_condattr_getclock (const pthread_condattr_t *attr, clockid_t *clock_id)
++{
++  *clock_id = (((((const struct pthread_condattr *) attr)->value) >> 1)
++	       & ((1 << COND_NWAITERS_SHIFT) - 1));
++  return 0;
++}
++
++int pthread_condattr_setclock (pthread_condattr_t *attr, clockid_t clock_id)
++{
++  /* Only a few clocks are allowed.  CLOCK_REALTIME is always allowed.
++     CLOCK_MONOTONIC only if the kernel has the necessary support.  */
++  if (clock_id == CLOCK_MONOTONIC)
++    {
++#ifndef __ASSUME_POSIX_TIMERS
++# ifdef __NR_clock_getres
++      /* Check whether the clock is available.  */
++      static int avail;
++
++      if (avail == 0)
++	{
++	  struct timespec ts;
++
++	  INTERNAL_SYSCALL_DECL (err);
++	  int val;
++	  val = INTERNAL_SYSCALL (clock_getres, err, 2, CLOCK_MONOTONIC, &ts);
++	  avail = INTERNAL_SYSCALL_ERROR_P (val, err) ? -1 : 1;
++	}
++
++      if (avail < 0)
++# endif
++	/* Not available.  */
++	return EINVAL;
++#endif
++    }
++  else if (clock_id != CLOCK_REALTIME)
++    /* If more clocks are allowed some day the storing of the clock ID
++       in the pthread_cond_t structure needs to be adjusted.  */
++    return EINVAL;
++
++  int *valuep = &((struct pthread_condattr *) attr)->value;
++
++  *valuep = ((*valuep & ~(((1 << COND_NWAITERS_SHIFT) - 1) << 1))
++	     | (clock_id << 1));
++
++  return 0;
++}
+diff -Naur a/libpthread/linuxthreads/internals.h b/libpthread/linuxthreads/internals.h
+--- a/libpthread/linuxthreads/internals.h	2020-09-29 12:26:04.000000000 +0200
++++ b/libpthread/linuxthreads/internals.h	2020-10-01 10:14:54.388811493 +0200
+@@ -67,6 +67,24 @@
+   destr_function destr;         /* destruction routine */
+ };
+ 
++/* Conditional variable attribute data structure.  */
++struct pthread_condattr
++{
++  /* Combination of values:
++
++     Bit 0  : flag whether coditional variable will be shareable between
++	      processes.
++
++     Bit 1-7: clock ID.  */
++  int value;
++};
++
++/* The __NWAITERS field is used as a counter and to house the number
++   of bits for other purposes.  COND_CLOCK_BITS is the number
++   of bits needed to represent the ID of the clock.  COND_NWAITERS_SHIFT
++   is the number of bits reserved for other purposes like the clock.  */
++#define COND_CLOCK_BITS		1
++#define COND_NWAITERS_SHIFT	1
+ 
+ #define PTHREAD_START_ARGS_INITIALIZER(fct) \
+   { (void *(*) (void *)) fct, NULL, {{0, }}, 0, { 0 } }
+diff -Naur a/libpthread/linuxthreads/sysdeps/pthread/bits/pthreadtypes.h b/libpthread/linuxthreads/sysdeps/pthread/bits/pthreadtypes.h
+--- a/libpthread/linuxthreads/sysdeps/pthread/bits/pthreadtypes.h	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/pthread/bits/pthreadtypes.h	2020-10-01 10:13:59.608907576 +0200
+@@ -25,6 +25,8 @@
+ #define __need_schedparam
+ #include <bits/sched.h>
+ 
++#define __SIZEOF_PTHREAD_CONDATTR_T 4
++
+ /* Fast locks (not abstract because mutexes and conditions aren't abstract). */
+ struct _pthread_fastlock
+ {
+@@ -73,12 +75,13 @@
+ } pthread_cond_t;
+ 
+ 
+-/* Attribute for conditionally variables.  */
+-typedef struct
++typedef union
+ {
+-  int __dummy;
++  char __size[__SIZEOF_PTHREAD_CONDATTR_T];
++  int __align;
+ } pthread_condattr_t;
+ 
++
+ /* Keys for thread-specific data */
+ typedef unsigned int pthread_key_t;
+ 
+diff -Naur a/libpthread/linuxthreads/sysdeps/pthread/pthread.h b/libpthread/linuxthreads/sysdeps/pthread/pthread.h
+--- a/libpthread/linuxthreads/sysdeps/pthread/pthread.h	2020-09-29 12:26:04.000000000 +0200
++++ b/libpthread/linuxthreads/sysdeps/pthread/pthread.h	2020-10-01 10:13:59.608907576 +0200
+@@ -423,6 +423,18 @@
+ extern int pthread_condattr_setpshared (pthread_condattr_t *__attr,
+ 					int __pshared) __THROW;
+ 
++#ifdef __USE_XOPEN2K
++/* Get the clock selected for the condition variable attribute ATTR.  */
++extern int pthread_condattr_getclock (const pthread_condattr_t *
++				      __restrict __attr,
++				      __clockid_t *__restrict __clock_id)
++     __THROW __nonnull ((1, 2));
++
++/* Set the clock selected for the condition variable attribute ATTR.  */
++extern int pthread_condattr_setclock (pthread_condattr_t *__attr,
++				      __clockid_t __clock_id)
++     __THROW __nonnull ((1));
++#endif
+ 
+ #if defined __USE_UNIX98 || defined __USE_XOPEN2K
+ /* Functions for handling read-write locks.  */

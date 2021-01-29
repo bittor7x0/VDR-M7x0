@@ -1,6 +1,10 @@
 Backport for linuxthreads.new from:
    http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=8fb9dbf08043e5783f1e0680655af04ecf9888cb
 
+	linuxthreads: use tkill syscall for raise
+
+	Seems better and more stable.
+
 diff -Naur a/libpthread/linuxthreads/signals.c b/libpthread/linuxthreads/signals.c
 --- a/libpthread/linuxthreads/signals.c	2016-05-07 19:49:06.000000000 +0200
 +++ b/libpthread/linuxthreads/signals.c	2016-10-18 14:41:55.000000000 +0200

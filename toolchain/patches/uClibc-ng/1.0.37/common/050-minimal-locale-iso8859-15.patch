@@ -1,7 +1,7 @@
 diff -Naur a/extra/locale/Makefile.in b/extra/locale/Makefile.in
 --- a/extra/locale/Makefile.in	2015-07-05 22:09:46.000000000 +0200
 +++ b/extra/locale/Makefile.in	2015-12-28 22:37:24.421487891 +0100
-@@ -107,6 +107,7 @@
+@@ -104,6 +104,7 @@
  ifeq ($(UCLIBC_BUILD_MINIMAL_LOCALE),y)
  	$(Q)echo "$(CURDIR)/$(locale_DIR)/charmaps/ASCII.pairs" > $@
  	$(Q)echo "$(CURDIR)/$(locale_DIR)/charmaps/ISO-8859-1.pairs" >> $@
@@ -9,7 +9,7 @@ diff -Naur a/extra/locale/Makefile.in b/extra/locale/Makefile.in
  else
  	$(Q)set -e; \
  		find $(CURDIR)/$(locale_DIR)/charmaps/ -name '*.pairs' | \
-@@ -126,9 +127,13 @@
+@@ -123,9 +124,13 @@
  	$(Q)echo "8-BIT yes" >> $@
  	$(Q)echo "#-" >> $@
  	$(Q)for locale in $(call qstrip,$(UCLIBC_BUILD_MINIMAL_LOCALES)); do \
@@ -26,14 +26,10 @@ diff -Naur a/extra/locale/Makefile.in b/extra/locale/Makefile.in
  else
  	$(Q)cat $< > $@
  endif
-@@ -169,9 +174,10 @@
- # Warning! Beware tr_TR toupper/tolower exceptions!
- $(locale_OUT)/wctables.h: $(locale_OUT)/gen_wctype
- 	@$(disp_gen)
--	$(Q)for locale in $(call qstrip,$(UCLIBC_BUILD_MINIMAL_LOCALES)) en_US en_GB; do \
-+	$(Q)for locale in $(call qstrip,$(UCLIBC_BUILD_MINIMAL_LOCALES)) en_US; do \
- 		$< $(FLAG-locale-verbose) $$locale > $@ || \
+@@ -169,6 +174,7 @@
+ 	$(Q)for locale in $(call qstrip,$(UCLIBC_BUILD_MINIMAL_LOCALES)) C; do \
  		$< $(FLAG-locale-verbose) $$locale.UTF-8 > $@ || \
+ 		$< $(FLAG-locale-verbose) $$locale > $@ || \
 +		$< $(FLAG-locale-verbose) $$locale.iso8859-15 > $@ || \
  		$< $(FLAG-locale-verbose) $$locale.iso8859-1 > $@ && break; \
  	done

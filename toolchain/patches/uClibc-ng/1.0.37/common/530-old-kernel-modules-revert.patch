@@ -1,6 +1,8 @@
 Our kernel is based on 2.4.21, so we revert this commit to load kernel modules:
    http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=6884573b944c79b7d0049334eaa78dae2692b874
 
+	remove linux kernel 2.4 modules support
+
 diff -Naur a/extra/Configs/Config.in b/extra/Configs/Config.in
 --- a/extra/Configs/Config.in	2016-10-05 01:21:46.000000000 +0200
 +++ b/extra/Configs/Config.in	2016-10-05 20:06:13.809501538 +0200
@@ -100,10 +102,10 @@ diff -Naur a/libc/sysdeps/linux/common/get_kernel_syms.c b/libc/sysdeps/linux/co
 diff -Naur a/libc/sysdeps/linux/common/Makefile.in b/libc/sysdeps/linux/common/Makefile.in
 --- a/libc/sysdeps/linux/common/Makefile.in	2016-10-05 01:21:46.000000000 +0200
 +++ b/libc/sysdeps/linux/common/Makefile.in	2016-10-05 20:06:13.809501538 +0200
-@@ -16,6 +16,8 @@
- CSRC-$(UCLIBC_HAS_LFS) += llseek.c $(CSRC_LFS)
- CSRC-$(findstring y,$(UCLIBC_HAS_SSP)$(UCLIBC_HAS_FORTIFY)) += ssp.c
- CSRC-$(UCLIBC_LINUX_MODULE_26) += delete_module.c init_module.c
+@@ -15,6 +15,8 @@
+ CSRC-y := $(filter-out llseek.c $(CSRC_LFS),$(CSRC-y))
+ CSRC-y += llseek.c $(CSRC_LFS)
+ CSRC-$(findstring y,$(UCLIBC_HAS_SSP)) += ssp.c
 +CSRC-$(UCLIBC_LINUX_MODULE_24) += create_module.c query_module.c \
 +	get_kernel_syms.c
  # we need these internally: fstatfs.c statfs.c
@@ -140,10 +142,10 @@ diff -Naur a/libc/sysdeps/linux/common/stubs.c b/libc/sysdeps/linux/common/stubs
 +make_stub(create_module)
 +#endif
 +
- #if !defined __NR_delete_module && defined __UCLIBC_LINUX_MODULE_26__
- make_stub(delete_module)
- #endif
-@@ -269,6 +273,10 @@
+ #if !defined __NR_epoll_create && defined __UCLIBC_HAS_EPOLL__ \
+ 	&& !defined __NR_epoll_create1
+ make_stub(epoll_create)
+@@ -259,6 +263,10 @@
  make_stub(prctl)
  #endif
  

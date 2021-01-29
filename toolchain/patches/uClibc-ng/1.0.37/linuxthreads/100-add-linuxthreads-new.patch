@@ -1,6 +1,16 @@
 linuxthreads.new was removed in this commit (post uClibc-ng 1.0.14):
    http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=6a8ccc95528f5e86a8770ed15ce89609b5b3dee9
-but our kernel doesn't support NPTL/TLS, so we use linuxthreads.new from parent revision:
+	remove linuxthreads.new, rename linuxthreads.old
+
+	Linuxthreads.new isn't really useful with the existence
+	of NPTL/TLS for well supported architectures. There is no
+	reason to use LT.new for ARM/MIPS or other architectures
+	supporting NPTL/TLS. It is not available for noMMU architectures
+	like Blackfin or FR-V. To simplify the live of the few uClibc-ng
+	developers, LT.new is removed and LT.old is renamed to LT.
+	LINUXTHREADS_OLD -> UCLIBC_HAS_LINUXTHREADS
+
+but our kernel is based on 2.4.21 and it doesn't support NPTL/TLS, so we use linuxthreads.new from parent revision:
    http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=398a27a5b323956344b4f831d892fed3bd9813c7
 
 This patch is a minimum revert for use linuxthreads.new in current code.
@@ -8,14 +18,14 @@ This patch is a minimum revert for use linuxthreads.new in current code.
 diff -Naur a/extra/Configs/Config.in b/extra/Configs/Config.in
 --- a/extra/Configs/Config.in	2016-05-18 18:41:24.000000000 +0200
 +++ b/extra/Configs/Config.in	2016-05-24 11:05:00.965017500 +0200
-@@ -531,6 +530,7 @@
+@@ -550,6 +550,7 @@
+ 		   !TARGET_h8300 && \
+ 		   !TARGET_hppa && \
  		   !TARGET_ia64 && \
- 		   !TARGET_m68k && \
- 		   !TARGET_microblaze && \
 +		   !TARGET_mips && \
- 		   !TARGET_nds32 && \
- 		   !TARGET_nios2 && \
- 		   !TARGET_or1k && \
+ 		   (ARCH_USE_MMU || TARGET_arm)
+ 	help
+ 	  If you want to compile uClibc with NPTL support, then answer Y.
 @@ -2293,7 +2293,7 @@
  
  config DODEBUG_PT
@@ -89,18 +99,6 @@ diff -Naur a/libc/stdlib/malloc-standard/malloc.h b/libc/stdlib/malloc-standard/
  	attribute_hidden
  #endif
  	;
-diff -Naur a/libc/sysdeps/linux/arm/clone.S b/libc/sysdeps/linux/arm/clone.S
---- a/libc/sysdeps/linux/arm/clone.S	2016-05-18 18:41:24.000000000 +0200
-+++ b/libc/sysdeps/linux/arm/clone.S	2016-05-24 11:20:03.392979600 +0200
-@@ -27,7 +27,7 @@
- #include <bits/arm_asm.h>
- #include <bits/arm_bx.h>
- 
--#if defined __UCLIBC_HAS_THREADS__ && !defined __UCLIBC_HAS_LINUXTHREADS__
-+#if defined __UCLIBC_HAS_THREADS__ && defined __UCLIBC_HAS_LINUXTHREADS__
- #include <sysdep-cancel.h>
- #endif
- 
 diff -Naur a/libc/sysdeps/linux/common/bits/uClibc_local_lim.h b/libc/sysdeps/linux/common/bits/uClibc_local_lim.h
 --- a/libc/sysdeps/linux/common/bits/uClibc_local_lim.h	2016-05-18 18:41:24.000000000 +0200
 +++ b/libc/sysdeps/linux/common/bits/uClibc_local_lim.h	2016-05-24 11:20:36.166236400 +0200
@@ -128,12 +126,12 @@ diff -Naur a/libc/sysdeps/linux/common/pause.c b/libc/sysdeps/linux/common/pause
 diff -Naur a/libc/sysdeps/linux/common/pread_write.c b/libc/sysdeps/linux/common/pread_write.c
 --- a/libc/sysdeps/linux/common/pread_write.c	2016-05-18 18:41:24.000000000 +0200
 +++ b/libc/sysdeps/linux/common/pread_write.c	2016-05-24 11:21:15.946125800 +0200
-@@ -102,7 +102,7 @@
+@@ -101,7 +101,7 @@
  CANCELLABLE_SYSCALL(ssize_t, pwrite64, (int fd, const void *buf, size_t count, off64_t offset),
  		    (fd, buf, count, offset))
- # else
--#  ifdef __UCLIBC_HAS_LINUXTHREADS__
-+#  ifndef __UCLIBC_HAS_LINUXTHREADS__
+ #else
+-# ifdef __UCLIBC_HAS_LINUXTHREADS__
++# ifndef __UCLIBC_HAS_LINUXTHREADS__
  weak_alias(pread,pread64)
  weak_alias(pwrite,pwrite64)
  lt_strong_alias(pread64)

@@ -30,18 +30,10 @@ UCLIBC_IS_SNAPSHOT := n
 UCLIBC_O7OVERSION_H := o7o-toolchain-version.h
 
 ifeq ($(UCLIBC_IS_NG),y)
-  	# linuxthreads.new was removed in this commit (post uClibc-ng 1.0.14):
-	#   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=6a8ccc95528f5e86a8770ed15ce89609b5b3dee9
-	# but our kernel doesn't support NPTL/TLS, so we use linuxthreads.new from parent revision:
-	#   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=398a27a5b323956344b4f831d892fed3bd9813c7
-	UCLIBC_LINUXTHREADS_NEW_VERSION := 398a27a
-	UCLIBC_LINUXTHREADS_NEW_VERSION_FULL := 398a27a5b323956344b4f831d892fed3bd9813c7
-	UCLIBC_LINUXTHREADS_NEW_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_LINUXTHREADS_NEW_VERSION_FULL).tar.gz
-	UCLIBC_LINUXTHREADS_NEW_DLFILE := $(DOWNLOAD_DIR)/uClibc-ng-$(UCLIBC_LINUXTHREADS_NEW_VERSION)-linuxthreads-new.tar.gz
   ifeq ($(UCLIBC_IS_SNAPSHOT),y)
-	# http://repo.or.cz/uclibc-ng.git/commit/6630ac965279ed2a76394fbad8fd861f275ed24c
-	UCLIBC_VERSION := 6630ac9
-	UCLIBC_VERSION_FULL := 6630ac965279ed2a76394fbad8fd861f275ed24c
+	# http://repo.or.cz/uclibc-ng.git/commit/a1e920215e46c487c4f2dacb973d225a6a435914
+	UCLIBC_VERSION := a1e9202
+	UCLIBC_VERSION_FULL := a1e920215e46c487c4f2dacb973d225a6a435914
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.gz
 	UCLIBC_DIR := $(BUILD_DIR)/uclibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/snapshot/uclibc-ng.config
@@ -49,7 +41,7 @@ ifeq ($(UCLIBC_IS_NG),y)
 	UCLIBC_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_VERSION_FULL).tar.gz
 	UCLIBC_FILE_LIST += uclibc-ng-snapshot.lst
   else
-	UCLIBC_VERSION := 1.0.18
+	UCLIBC_VERSION := 1.0.37
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.bz2
 	UCLIBC_DIR := $(BUILD_DIR)/uClibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/$(UCLIBC_VERSION)/uclibc-ng.config
@@ -101,11 +93,6 @@ $(UCLIBC_DLFILE): $(TC_INIT_RULE)
 	(if [ ! -f $(UCLIBC_DLFILE) ] ; then \
 	$(WGET) $(UCLIBC_URL) -O $(UCLIBC_DLFILE) ; \
 	fi );
-ifeq ($(UCLIBC_IS_NG),y)
-	(if [ ! -f $(UCLIBC_LINUXTHREADS_NEW_DLFILE) ] ; then \
-	$(WGET) $(UCLIBC_LINUXTHREADS_NEW_URL) -O $(UCLIBC_LINUXTHREADS_NEW_DLFILE) ; \
-	fi );
-endif
 	$(TOUCH) $(UCLIBC_DLFILE)
 
 #
@@ -127,10 +114,15 @@ else
 endif
 ifeq ($(UCLIBC_IS_NG),y)
 	-$(RM) -rf $(UCLIBC_DIR)/libpthread/linuxthreads $(UCLIBC_DIR)/libpthread/linuxthreads_db
-	$(TAR) -C $(UCLIBC_DIR) -zf $(UCLIBC_LINUXTHREADS_NEW_DLFILE) \
-		--strip-components=1 \
-		uclibc-ng-$(UCLIBC_LINUXTHREADS_NEW_VERSION)/libpthread/linuxthreads \
-		uclibc-ng-$(UCLIBC_LINUXTHREADS_NEW_VERSION)/libpthread/linuxthreads_db
+	$(TAR) -C $(UCLIBC_DIR) -xJf $(BUILDIN_DIR)/uClibc-ng/linuxthreads.new.tar.xz
+# Only NFS support requires an RPC implementation (BusyBox mount, nfs-utils and portmap/rpcbind packages)
+# If libtirpc isn't enabled, we'll use the RPC implementation removed in this commit:
+# http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=a1a8064169aeda79e3266a2db9cce25e361a86dc
+ifeq ($(CONFIG_FW_VERSION),pro)
+ifneq ($(CONFIG_LIBTIRPC),y)
+	$(TAR) -C $(UCLIBC_DIR) -xJf $(BUILDIN_DIR)/uClibc-ng/rpc.tar.xz
+endif
+endif
 endif
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_unpacked
 
@@ -139,7 +131,17 @@ endif
 #
 
 $(STAGEFILES_DIR)/.uclibc_patched: $(STAGEFILES_DIR)/.uclibc_unpacked
+ifeq ($(UCLIBC_IS_NG),y)
+	$(call patch_package, $(UCLIBC_DIR), $(UCLIBC_PATCHES_DIR)/common)
+	$(call patch_package, $(UCLIBC_DIR), $(UCLIBC_PATCHES_DIR)/linuxthreads)
+ifeq ($(CONFIG_FW_VERSION),pro)
+ifneq ($(CONFIG_LIBTIRPC),y)
+	$(call patch_package, $(UCLIBC_DIR), $(UCLIBC_PATCHES_DIR)/rpc)
+endif
+endif
+else
 	$(call patch_package, $(UCLIBC_DIR), $(UCLIBC_PATCHES_DIR))
+endif
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_patched
 
 #

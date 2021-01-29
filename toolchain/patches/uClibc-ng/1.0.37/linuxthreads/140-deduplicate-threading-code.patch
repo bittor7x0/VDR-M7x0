@@ -1,6 +1,17 @@
 Backport for linuxthreads.new from:
    http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=29ff9055c80efe77a7130767a9fcb3ab8c67e8ce
 
+	use a single libc and deduplicate threading code
+
+	Similar to musl libc a single libc has many benefits and solves
+	some open issues with uClibc-ng.
+
+	- no pthread_mutex_* weak symbols exported anymore
+	- applications no longer failing to link when either
+	  -lrt or -lpthread are missing for dynamic and static linking mode
+	- smaller C library
+	- slightly better runtime performance
+
 diff -Naur a/libpthread/linuxthreads/forward.c b/libpthread/linuxthreads/forward.c
 --- a/libpthread/linuxthreads/forward.c	2016-05-07 19:49:06.000000000 +0200
 +++ b/libpthread/linuxthreads/forward.c	1970-01-01 01:00:00.000000000 +0100

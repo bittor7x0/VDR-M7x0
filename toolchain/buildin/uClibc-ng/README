@@ -1,0 +1,38 @@
+linuxthreads.new.tar.xz
+=======================
+linuxthreads.new was removed in this commit (post uClibc-ng 1.0.14):
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=6a8ccc95528f5e86a8770ed15ce89609b5b3dee9
+	remove linuxthreads.new, rename linuxthreads.old
+
+	Linuxthreads.new isn't really useful with the existence
+	of NPTL/TLS for well supported architectures. There is no
+	reason to use LT.new for ARM/MIPS or other architectures
+	supporting NPTL/TLS. It is not available for noMMU architectures
+	like Blackfin or FR-V. To simplify the live of the few uClibc-ng
+	developers, LT.new is removed and LT.old is renamed to LT.
+	LINUXTHREADS_OLD -> UCLIBC_HAS_LINUXTHREADS
+
+but our kernel is based on 2.4.21 and it doesn't support NPTL/TLS, so we use linuxthreads.new from parent revision:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=398a27a5b323956344b4f831d892fed3bd9813c7
+
+
+rpc.tar.xz
+==========
+RPC was removed in this commit (post uClibc-ng 1.0.22):
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=a1a8064169aeda79e3266a2db9cce25e361a86dc
+	remove RPC implementation
+
+	The included RPC implementation is ipv4 only.
+	Other C library projects have either deprecated the internal
+	RPC implementation (GNU C Library) or never implemented such
+	functionality (musl C Library). The latest rpcbind release (0.2.4)
+	checks for libtirpc and does not allow to be build with uClibc-ng
+	RPC without patching. The common use case for RPC nowadays is to
+	use rpcbind together with nfs-utils to provide NFS server or client
+	support to a system.
+
+	The included RPC implementation does create issues with duplicate
+	symbol failures when statically compiling with RPC enabled.
+
+but NFS support requires it (BusyBox mount, nfs-utils and portmap/rpcbind) and if libtirpc isn't included in RootFS we use RPC from parent revision:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=2d8ea0524b016d29cf28615449b22b96dd5067b2

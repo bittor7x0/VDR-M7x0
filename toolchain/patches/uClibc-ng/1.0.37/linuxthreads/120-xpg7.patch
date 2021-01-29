@@ -1,6 +1,12 @@
 Backport for linuxthreads.new from:
    http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=f1d7505e40654a185843bdc8f1cf1fd00ab55c04
 
+	linuxthreads: Fix up pthread.h for XPG7.
+
+	[ glibc commit d3c7e68655 ]
+
+	Signed-off-by: Leonid Lisovskiy <lly.dev@gmail.com>
+
 diff -Naur a/libpthread/linuxthreads/sysdeps/pthread/pthread.h b/libpthread/linuxthreads/sysdeps/pthread/pthread.h
 --- a/libpthread/linuxthreads/sysdeps/pthread/pthread.h	2016-05-07 19:49:06.000000000 +0200
 +++ b/libpthread/linuxthreads/sysdeps/pthread/pthread.h	2016-10-05 18:53:42.223143859 +0200

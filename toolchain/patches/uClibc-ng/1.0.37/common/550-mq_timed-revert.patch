@@ -1,0 +1,239 @@
+Our kernel 2.4.21 doesn't support mq_timedsend/mq_timedreceive syscalls, so we revert this commit:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=ccc200d454c712f6e8bfadb4b7c3ee58086d8f2b
+
+	rt: convert mq_timedsend/mq_timedreceive to use cancel.h macros
+
+diff -Naur a/include/cancel.h b/include/cancel.h
+--- a/include/cancel.h	2020-09-26 11:17:45.000000000 +0200
++++ b/include/cancel.h	2020-09-26 11:55:30.056529182 +0200
+@@ -36,6 +36,8 @@
+ 
+ #include <features.h>
+ 
++#ifndef NOT_IN_libc
++
+ #define __NC(name) _NC(name)
+ #define _NC(name) __##name##_nocancel
+ 
+@@ -95,4 +97,6 @@
+ # undef LIBC_CANCEL_HANDLED
+ # define LIBC_CANCEL_HANDLED()
+ 
++#endif /* NOT_IN_libc */
++
+ #endif
+diff -Naur a/librt/Makefile.in b/librt/Makefile.in
+--- a/librt/Makefile.in	2020-09-26 11:17:45.000000000 +0200
++++ b/librt/Makefile.in	2020-09-26 11:55:30.056529182 +0200
+@@ -17,8 +17,11 @@
+ ifeq ($(UCLIBC_HAS_THREADS_NATIVE),y)
+ librt_filter_SRC += mq_notify.c timer_create.c timer_delete.c \
+ 	timer_getoverr.c timer_gettime.c timer_settime.c
++# these should really be guarded by ADVANCED_REALTIME, we use them in mq_send.c/mq_receive.c
++librt_SSRC := $(wildcard $(librt_DIR)/*.S)
+ else
+ librt_filter_SRC += clock_nanosleep.c clock_getcpuclockid.c clock_gettime.c
++librt_SSRC :=
+ endif
+ 
+ librt_filter_SRC += $(if $(UCLIBC_HAS_ADVANCED_REALTIME),, \
+@@ -33,13 +36,17 @@
+ 
+ librt_SRC := $(filter-out $(librt_filter_SRC),$(librt_SRC))
+ librt_OBJ := $(patsubst %.c,$(librt_OUT)/%.o,$(librt_SRC))
++librt_OBJ += $(patsubst $(librt_DIR)/%.S,$(librt_OUT)/%.o,$(librt_SSRC))
++
++ASFLAGS-mq_timedreceive.S = -D_LIBC_REENTRANT
++ASFLAGS-mq_timedsend.S = -D_LIBC_REENTRANT
+ 
+ ifeq ($(DOPIC),y)
+ librt-a-y += $(librt_OBJ:.o=.os)
+ else
+ librt-a-y += $(librt_OBJ)
+ endif
+-librt-so-y += $(librt_OBJ:.o=.os)
++librt-so-y += $(librt_OBJ:.o=.oS)
+ 
+ librt-dep-y := $(libc.depend)
+ 
+diff -Naur a/librt/mq_receive.c b/librt/mq_receive.c
+--- a/librt/mq_receive.c	2020-09-21 13:39:06.000000000 +0200
++++ b/librt/mq_receive.c	2020-09-26 11:55:30.056529182 +0200
+@@ -2,15 +2,52 @@
+  * mq_receive.c - functions for receiving from message queue.
+  */
+ 
+-#include <errno.h>
+-#include <stddef.h>
+ #include <sys/syscall.h>
+ 
++#ifdef __NR_mq_timedreceive
++
++#include <stddef.h>
+ #include <mqueue.h>
+ 
+-#ifdef __NR_mq_timedreceive
+-ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned int *msg_prio)
++#ifdef __UCLIBC_HAS_THREADS_NATIVE__
++# ifndef __UCLIBC_HAS_ADVANCED_REALTIME__
++extern ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
++			       unsigned int *msg_prio,
++			       const struct timespec *abs_timeout);
++# endif
++librt_hidden_proto(mq_timedreceive)
++#else
++
++# define __NR___syscall_mq_timedreceive __NR_mq_timedreceive
++static _syscall5(int, __syscall_mq_timedreceive, int, mqdes,
++		 char *, msg_ptr, size_t, msg_len, unsigned int *,
++		 msg_prio, const void *, abs_timeout)
++
++# ifdef __UCLIBC_HAS_ADVANCED_REALTIME__
++/*
++ * Receive the oldest from highest priority messages.
++ * Stop waiting if abs_timeout expires.
++ */
++ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
++			unsigned int *msg_prio,
++			const struct timespec *abs_timeout)
+ {
++	return __syscall_mq_timedreceive(mqdes, msg_ptr, msg_len, msg_prio,
++					 abs_timeout);
++}
++# endif
++
++#endif
++
++/* Receive the oldest from highest priority messages */
++ssize_t mq_receive(mqd_t mqdes, char *msg_ptr, size_t msg_len,
++		   unsigned int *msg_prio)
++{
++#ifdef __UCLIBC_HAS_THREADS_NATIVE__
+ 	return mq_timedreceive(mqdes, msg_ptr, msg_len, msg_prio, NULL);
++#else
++	return __syscall_mq_timedreceive(mqdes, msg_ptr, msg_len, msg_prio, NULL);
++#endif
+ }
++
+ #endif
+diff -Naur a/librt/mq_send.c b/librt/mq_send.c
+--- a/librt/mq_send.c	2020-09-21 13:39:06.000000000 +0200
++++ b/librt/mq_send.c	2020-09-26 11:55:30.056529182 +0200
+@@ -2,15 +2,49 @@
+  * mq_send.c - functions for sending to message queue.
+  */
+ 
+-#include <errno.h>
+-#include <stddef.h>
+ #include <sys/syscall.h>
+ 
++#ifdef __NR_mq_timedsend
++
++#include <stddef.h>
+ #include <mqueue.h>
+ 
+-#ifdef __NR_mq_timedsend
+-int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len, unsigned int msg_prio)
++#ifdef __UCLIBC_HAS_THREADS_NATIVE__
++# ifndef __UCLIBC_HAS_ADVANCED_REALTIME__
++extern int mq_timedsend(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
++			unsigned int msg_prio, const struct timespec *abs_timeout);
++# endif
++librt_hidden_proto(mq_timedsend)
++#else
++
++# define __NR___syscall_mq_timedsend __NR_mq_timedsend
++static _syscall5(int, __syscall_mq_timedsend, int, mqdes,
++		 const char *, msg_ptr, size_t, msg_len, unsigned int,
++		 msg_prio, const void *, abs_timeout)
++
++# ifdef __UCLIBC_HAS_ADVANCED_REALTIME__
++/*
++ * Add a message to queue. If O_NONBLOCK is set and queue is full, wait
++ * for sufficient room in the queue until abs_timeout expires.
++ */
++int mq_timedsend(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
++		 unsigned int msg_prio, const struct timespec *abs_timeout)
+ {
++	return __syscall_mq_timedsend(mqdes, msg_ptr, msg_len, msg_prio,
++				      abs_timeout);
++}
++# endif
++#endif
++
++/* Add a message to queue */
++int mq_send(mqd_t mqdes, const char *msg_ptr, size_t msg_len,
++	    unsigned int msg_prio)
++{
++#ifdef __UCLIBC_HAS_THREADS_NATIVE__
+ 	return mq_timedsend(mqdes, msg_ptr, msg_len, msg_prio, NULL);
++#else
++	return __syscall_mq_timedsend(mqdes, msg_ptr, msg_len, msg_prio, NULL);
++#endif
+ }
++
+ #endif
+diff -Naur a/librt/mq_timedreceive.c b/librt/mq_timedreceive.c
+--- a/librt/mq_timedreceive.c	2020-09-21 13:39:06.000000000 +0200
++++ b/librt/mq_timedreceive.c	1970-01-01 01:00:00.000000000 +0100
+@@ -1,16 +0,0 @@
+-/*
+- * Copyright (C) 2017 Waldemar Brodkorb <wbx@uclibc-ng.org>
+- * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
+- */
+-
+-#include <sys/syscall.h>
+-#include <mqueue.h>
+-#include <unistd.h>
+-#include <cancel.h>
+-
+-#define __NR___mq_timedreceive_nocancel __NR_mq_timedreceive
+-_syscall5(ssize_t, __NC(mq_timedreceive), mqd_t, mqdes, char *__restrict, msg_ptr, size_t, msg_len, unsigned int *__restrict, msq_prio, const struct timespec *__restrict, abs_timeout)
+-
+-CANCELLABLE_SYSCALL(ssize_t, mq_timedreceive, (mqd_t mqdes, char *__restrict msg_ptr, size_t msq_len, unsigned int *__restrict msq_prio, const struct timespec *__restrict abs_timeout),
+-		    (mqdes, msg_ptr, msq_len, msq_prio, abs_timeout))
+-lt_libc_hidden(mq_timedreceive)
+diff -Naur a/librt/mq_timedreceive.S b/librt/mq_timedreceive.S
+--- a/librt/mq_timedreceive.S	1970-01-01 01:00:00.000000000 +0100
++++ b/librt/mq_timedreceive.S	2020-09-26 11:55:30.056529182 +0200
+@@ -0,0 +1,8 @@
++#include <sysdep-cancel.h>
++#ifndef __NR_mq_timedreceive
++#error Missing definition of NR_timedreceive needed for cancellation.
++#endif
++PSEUDO(mq_timedreceive, mq_timedreceive, 5)
++ret_ERRVAL
++PSEUDO_END(mq_timedreceive)
++librt_hidden_def(mq_timedreceive)
+diff -Naur a/librt/mq_timedsend.c b/librt/mq_timedsend.c
+--- a/librt/mq_timedsend.c	2020-09-21 13:39:06.000000000 +0200
++++ b/librt/mq_timedsend.c	1970-01-01 01:00:00.000000000 +0100
+@@ -1,16 +0,0 @@
+-/*
+- * Copyright (C) 2017 Waldemar Brodkorb <wbx@uclibc-ng.org>
+- * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
+- */
+-
+-#include <sys/syscall.h>
+-#include <mqueue.h>
+-#include <unistd.h>
+-#include <cancel.h>
+-
+-#define __NR___mq_timedsend_nocancel __NR_mq_timedsend
+-_syscall5(int, __NC(mq_timedsend), mqd_t, mqdes, const char *, msg_ptr, size_t, msg_len, unsigned int, msq_prio, const struct timespec *, abs_timeout)
+-
+-CANCELLABLE_SYSCALL(int, mq_timedsend, (mqd_t mqdes, const char *msg_ptr, size_t msq_len, unsigned int msq_prio, const struct timespec *abs_timeout),
+-		    (mqdes, msg_ptr, msq_len, msq_prio, abs_timeout))
+-lt_libc_hidden(mq_timedsend)
+diff -Naur a/librt/mq_timedsend.S b/librt/mq_timedsend.S
+--- a/librt/mq_timedsend.S	1970-01-01 01:00:00.000000000 +0100
++++ b/librt/mq_timedsend.S	2020-09-26 11:55:30.056529182 +0200
+@@ -0,0 +1,8 @@
++#include <sysdep-cancel.h>
++#ifndef __NR_mq_timedsend
++#error Missing definition of NR_timedsend needed for cancellation.
++#endif
++PSEUDO(mq_timedsend, mq_timedsend, 5)
++ret_ERRVAL
++PSEUDO_END(mq_timedsend)
++librt_hidden_def(mq_timedsend)
