@@ -1,6 +1,6 @@
 # --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
 #
-# Copyright (C) 2019 VDR-NG-EM Projpngwolf-zopfli
+# Copyright (C) 2019-2021 VDR-NG-EM Project
 #
 # More information can be found in the files COPYING and README.
 #
@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The projpngwolf-zopfli's page is at http://www.assembla.com/spaces/VDR-M7x0
+# The project's page is at http://www.assembla.com/spaces/VDR-M7x0
 # Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
 # Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
 #
