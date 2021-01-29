@@ -89,7 +89,9 @@
 #include "timers.h"
 #include "tools.h"
 #include "transfer.h"
+#ifdef USE_PINPLUGIN
 #include "childlock.h"
+#endif
 #include "dummyplayer.h"
 #include "tshift.h"
 #include "videodir.h"
@@ -1088,7 +1090,9 @@ int main(int argc, char *argv[])
         eKeys key = Interface->GetKey((!Interact || !Interact->NeedsFastResponse()) && Now - LastCamMenu > LASTCAMMENUTIMEOUT);
 
         if (ISREALKEY(key)) {
+#ifdef USE_PINPLUGIN
            PinPatch::ChildLock::NotifyUserAction(key, Interact);
+#endif
            EITScanner.Activity();
            // Cancel shutdown countdown:
            if (ShutdownHandler.countdown)
@@ -1177,7 +1181,10 @@ int main(int argc, char *argv[])
                      cControl::Control()->Hide();
                   cPlugin *plugin = cPluginManager::GetPlugin(PluginName);
                   if (plugin) {
-                     if (!PinPatch::ChildLock::IsPluginProtected(plugin)) {
+#ifdef USE_PINPLUGIN
+                     if (!PinPatch::ChildLock::IsPluginProtected(plugin))
+#endif
+                     {
                      Menu = plugin->MainMenuAction();
                      if (Menu)
                         Menu->Show();
@@ -1419,7 +1426,10 @@ int main(int argc, char *argv[])
              // Instant resume of the last viewed recording:
              case kPlay:
                   if (cReplayControl::LastReplayed()) {
-                     if (!PinPatch::ChildLock::IsRecordingProtected(0, cReplayControl::LastReplayed(), 0, false)) {
+#ifdef USE_PINPLUGIN
+                     if (!PinPatch::ChildLock::IsRecordingProtected(0, cReplayControl::LastReplayed(), 0, false))
+#endif
+                     {
                      cControl::Shutdown();
                      cControl::Launch(new cReplayControl);
                      }

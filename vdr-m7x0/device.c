@@ -17,7 +17,9 @@
 #include "receiver.h"
 #include "status.h"
 #include "transfer.h"
+#ifdef USE_PINPLUGIN
 #include "childlock.h"
+#endif
 #include "tshift.h"
 
 bool scanning_on_receiving_device = false;
@@ -924,7 +926,9 @@ bool cDevice::SwitchChannel(int Direction)
      cChannel *channel;
      while ((channel = Channels.GetByNumber(n, Direction)) != NULL) {
            // try only channels which are currently available
+#ifdef USE_PINPLUGIN
            if (!PinPatch::ChildLock::IsChannelProtected(channel))
+#endif
            if (channel->Filtered() && (PrimaryDevice()->ProvidesChannel(channel, Setup.PrimaryLimit) || /* PrimaryDevice()->CanReplay() && */ GetDevice(channel, 0)))
               break;
            n = channel->Number() + Direction;
@@ -946,8 +950,10 @@ bool cDevice::SwitchChannel(int Direction)
 
 eSetChannelResult cDevice::SetChannel(const cChannel *Channel, bool LiveView)
 {
+#ifdef USE_PINPLUGIN
   if (LiveView && PinPatch::ChildLock::IsChannelProtected(Channel))
      return scrNotAvailable;
+#endif
 
   if (LiveView)
      StopReplay();

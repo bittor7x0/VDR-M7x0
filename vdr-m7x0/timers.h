@@ -19,7 +19,9 @@ enum eTimerFlags { tfNone      = 0x0000,
                    tfInstant   = 0x0002,
                    tfVps       = 0x0004,
                    tfRecording = 0x0008,
+#ifdef USE_PINPLUGIN
                    tfProtected = 0x8000,
+#endif
                    tfAll       = 0xFFFF,
                  };
 enum eTimerMatch { tmNone, tmPartial, tmFull };

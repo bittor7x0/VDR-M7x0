@@ -14,7 +14,9 @@
 #include "libsi/si.h"
 #include "remote.h"
 #include "status.h"
+#ifdef USE_PINPLUGIN
 #include "childlock.h"
+#endif
 
 // IMPORTANT NOTE: in the 'sscanf()' calls there is a blank after the '%d'
 // format characters in order to allow any number of blanks after a numeric
@@ -82,7 +84,9 @@ cTimer::cTimer(const cEvent *Event)
   if (!isempty(Title))
      strn0cpy(file, Event->Title(), sizeof(file));
   event = NULL; // let SetEvent() be called to get a log message
+#ifdef USE_PINPLUGIN
   PinPatch::ChildLock::NotifyTimerCreation(this, Event);
+#endif
 }
 
 cTimer::cTimer(const cTimer &Timer)
@@ -248,7 +252,9 @@ cString cTimer::PrintFirstDay(void) const
   return ""; // not NULL, so the caller can always use the result
 }
 
+#ifdef USE_PINPLUGIN
 #define AUX_STR_PROTECTED "<pin-plugin><protected>yes</protected></pin-plugin>"
+#endif
 
 bool cTimer::Parse(const char *s)
 {
@@ -292,8 +298,10 @@ bool cTimer::Parse(const char *s)
         result = false;
         }
      }
+#ifdef USE_PINPLUGIN
   if (aux && strstr(aux, AUX_STR_PROTECTED))
      SetFlags(tfProtected);
+#endif
   free(channelbuffer);
   free(daybuffer);
   free(filebuffer);
@@ -573,6 +581,7 @@ void cTimer::SetFlags(uint Flags)
 {
   flags |= Flags;
 
+#ifdef USE_PINPLUGIN
   char* tmp = NULL;
   char* position;
 
@@ -592,6 +601,7 @@ void cTimer::SetFlags(uint Flags)
      }
 
   free(tmp);
+#endif
 }
 
 void cTimer::ClrFlags(uint Flags)

@@ -33,7 +33,9 @@
 #include "timers.h"
 #include "transfer.h"
 #include "videodir.h"
+#ifdef USE_PINPLUGIN
 #include "childlock.h"
+#endif
 #include "tshift.h"
 
 #define MAXWAIT4EPGINFO   3 // seconds
@@ -1012,8 +1014,10 @@ cMenuEditTimer::cMenuEditTimer(cTimer *Timer, bool New)
      Add(new cMenuEditIntItem( tr("Lifetime"),     &data.lifetime, 0, MAXLIFETIME));
      Add(file = new cMenuEditStrItem( tr("File"),  data.file, sizeof(data.file), tr(FileNameChars)));
 
+#ifdef USE_PINPLUGIN
      if (PinPatch::ChildLock::IsUnlocked())
         Add(new cMenuEditBitItem(tr("Timer$Childlock"), &data.flags, tfProtected));
+#endif
 
      SetFirstDayItem();
      }
@@ -2736,7 +2740,10 @@ void cMenuRecordings::Set(bool Refresh)
       if (!base || (strstr(recording->Name(), base) == recording->Name() && recording->Name()[strlen(base)] == FOLDERDELIMCHAR)) {
          cMenuRecordingItem *Item = new cMenuRecordingItem(recording, level);
          if ((*Item->Text() && (!Item->IsDirectory() || (!LastItem || !LastItem->IsDirectory() || strcmp(Item->Text(), LastItemText) != 0)))
-            && (!PinPatch::ChildLock::IsRecordingHidden(GetRecording(Item), Item->Name(), base, Item->IsDirectory()))) {
+#ifdef USE_PINPLUGIN
+            && (!PinPatch::ChildLock::IsRecordingHidden(GetRecording(Item), Item->Name(), base, Item->IsDirectory()))
+#endif
+         ) {
             Add(Item);
             LastItem = Item;
             free(LastItemText);
@@ -2795,9 +2802,10 @@ eOSState cMenuRecordings::Play(void)
 {
   cMenuRecordingItem *ri = (cMenuRecordingItem *)Get(Current());
   if (ri) {
+#ifdef USE_PINPLUGIN
      if (PinPatch::ChildLock::IsRecordingProtected(GetRecording(ri), ri->Name(), base, ri->IsDirectory()))
         return osContinue;
-
+#endif
      if (ri->IsDirectory())
         Open();
      else {
@@ -3975,28 +3983,40 @@ void cMenuMain::Set(void)
   			{
   				// Basic menu items:
   				if( strcmp(submenu.subMenuItem[i].name,"Schedule") == 0 )
+#ifdef USE_PINPLUGIN
   					if (!PinPatch::ChildLock::IsMenuHidden("Schedule"))
+#endif
   					Add(new cOsdItem(hk(tr("Schedule")),   osSchedule));
 
   				if( strcmp(submenu.subMenuItem[i].name,"Channels") == 0 )
+#ifdef USE_PINPLUGIN
   					if (!PinPatch::ChildLock::IsMenuHidden("Channels"))
+#endif
   					Add(new cOsdItem(hk(tr("Channels setup")),   osChannels));
 
   				if( strcmp(submenu.subMenuItem[i].name,"Timers") == 0 )
+#ifdef USE_PINPLUGIN
   					if (!PinPatch::ChildLock::IsMenuHidden("Timers"))
+#endif
   					Add(new cOsdItem(hk(tr("Timers")),     osTimers));
 
   				if( strcmp(submenu.subMenuItem[i].name,"Recordings") == 0 )
+#ifdef USE_PINPLUGIN
   					if (!PinPatch::ChildLock::IsMenuHidden("Recordings"))
+#endif
   					Add(new cOsdItem(hk(tr("Recordings")), osRecordings));
 
-                if( strcmp(submenu.subMenuItem[i].name,"Setup") == 0 )
+  				if( strcmp(submenu.subMenuItem[i].name,"Setup") == 0 )
+#ifdef USE_PINPLUGIN
   					if (!PinPatch::ChildLock::IsMenuHidden("Setup"))
+#endif
   					Add(new cOsdItem(hk(tr("Setup")),      osSetup));
 
   				if( strcmp(submenu.subMenuItem[i].name,"Commands") == 0 )
   					if (Commands.Count())
+#ifdef USE_PINPLUGIN
   						if (!PinPatch::ChildLock::IsMenuHidden("Commands"))
+#endif
   						Add(new cOsdItem(hk(tr("System Utilities")),  osCommands));
 
   				// Plugins Item:
@@ -4006,7 +4026,9 @@ void cMenuMain::Set(void)
   					p = cPluginManager::GetPlugin(j);
   					if( p != NULL )
   					{
+#ifdef USE_PINPLUGIN
   					    if (!PinPatch::ChildLock::IsPluginHidden(p))
+#endif
   					    {
   						const char *item = p->MainMenuEntry();
   						if (item)
@@ -4057,14 +4079,21 @@ void cMenuMain::Set(void)
   else
   {
   // Basic menu items:
-
+#ifdef USE_PINPLUGIN
   if (!PinPatch::ChildLock::IsMenuHidden("Schedule"))
+#endif
   Add(new cOsdItem(hk(tr("Schedule")),   osSchedule));
+#ifdef USE_PINPLUGIN
   if (!PinPatch::ChildLock::IsMenuHidden("Channels"))
+#endif
   Add(new cOsdItem(hk(tr("Channels setup")),   osChannels));
+#ifdef USE_PINPLUGIN
   if (!PinPatch::ChildLock::IsMenuHidden("Timers"))
+#endif
   Add(new cOsdItem(hk(tr("Timers")),     osTimers));
+#ifdef USE_PINPLUGIN
   if (!PinPatch::ChildLock::IsMenuHidden("Recordings"))
+#endif
   Add(new cOsdItem(hk(tr("Recordings")), osRecordings));
 
   // Plugins:
@@ -4072,7 +4101,10 @@ void cMenuMain::Set(void)
   for (int i = 0; ; i++) {
       cPlugin *p = cPluginManager::GetPlugin(i);
       if (p) {
-         if (!PinPatch::ChildLock::IsPluginHidden(p)) {
+#ifdef USE_PINPLUGIN
+         if (!PinPatch::ChildLock::IsPluginHidden(p))
+#endif
+         {
          const char *item = p->MainMenuEntry();
          if (item)
             Add(new cMenuPluginItem(hk(item), i));
@@ -4083,11 +4115,14 @@ void cMenuMain::Set(void)
       }
 
   // More basic menu items:
-
+#ifdef USE_PINPLUGIN
   if (!PinPatch::ChildLock::IsMenuHidden("Setup"))
+#endif
   Add(new cOsdItem(hk(tr("Setup")),      osSetup));
   if (Commands.Count())
+#ifdef USE_PINPLUGIN
      if (!PinPatch::ChildLock::IsMenuHidden("Commands"))
+#endif
      Add(new cOsdItem(hk(tr("System Utilities")),  osCommands));
 }
 
@@ -4182,10 +4217,12 @@ eOSState cMenuMain::ProcessKey(eKeys Key)
   eOSState state = cOsdMenu::ProcessKey(Key);
   HadSubMenu |= HasSubMenu();
 
+#ifdef USE_PINPLUGIN
   cOsdItem* item = Get(Current());
   if (item && item->Text() && state != osContinue && state != osUnknown && state != osBack)
      if (PinPatch::ChildLock::IsMenuProtected(item->Text()))
         return osContinue;
+#endif
 
   cOsdObject *menu = NULL;
   switch (state) {
@@ -4251,7 +4288,10 @@ eOSState cMenuMain::ProcessKey(eKeys Key)
                          if (item) {
                             cPlugin *p = cPluginManager::GetPlugin(item->PluginIndex());
                             if (p) {
-                               if (!PinPatch::ChildLock::IsPluginProtected(p)) {
+#ifdef USE_PINPLUGIN
+                               if (!PinPatch::ChildLock::IsPluginProtected(p))
+#endif
+                               {
                                cOsdObject *menu = p->MainMenuAction();
                                if (menu) {
                                   if (menu->IsMenu())
@@ -4450,7 +4490,9 @@ cChannel *cDisplayChannel::NextAvailableChannel(cChannel *Channel, int Direction
               Current=NULL;
            }
      }
+#ifdef USE_PINPLUGIN
            if (!PinPatch::ChildLock::IsChannelProtected(Channel))
+#endif
            if (Channel && Channel->Filtered() && !Channel->GroupSep() && (cDevice::PrimaryDevice()->ProvidesChannel(Channel, Setup.PrimaryLimit, NULL, true) || cDevice::GetDevice(Channel, 0, NULL, true)))
               return Channel;
            }
@@ -5034,7 +5076,9 @@ bool cRecordControls::Start(cTimer *Timer, bool Pause)
            for (int i = 0; i < MAXRECORDCONTROLS; i++) {
                if (!RecordControls[i]) {
                   RecordControls[i] = new cRecordControl(device, Timer, Pause);
+#ifdef USE_PINPLUGIN
                   PinPatch::ChildLock::NotifyRecordingStart(RecordControls[i]->FileName());
+#endif
                   return RecordControls[i]->Process(time(NULL));
                   }
                }

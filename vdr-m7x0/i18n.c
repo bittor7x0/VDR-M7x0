@@ -10431,6 +10431,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
   },
+#ifdef USE_PINPLUGIN
   { "Timer$Childlock",                        // PIN PATCH
     "Kindersicherung",
     "",
@@ -10452,6 +10453,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
   },
+#endif
   { NULL }
   };
 
