@@ -69,7 +69,6 @@ void cSubMenu::LoadInfoSubMenu(void)
 			{
 				p = cPluginManager::GetPlugin(j);
 				if ( p != NULL && strcmp(p->Name(), "aide")
-                               && strcmp(p->Name(), "channellists")
                                && strcmp(p->Name(), "channelscan")
                                && strcmp(p->Name(), "conflictcheckonly")
                                && strcmp(p->Name(), "epgsearch")
@@ -95,8 +94,6 @@ void cSubMenu::LoadInfoSubMenu(void)
 			fprintf(fo, "%d:%d:%s\n", setup, current, tr("Channels"));
 			if (cPluginManager::GetPlugin("channelscan"))
 				fprintf(fo,"%d::channelscan\n", current);
-			if (cPluginManager::GetPlugin("channellists"))
-				fprintf(fo,"%d::channellists\n", current);
 			fprintf(fo,"%d::Channels\n", current);
 			fprintf(fo,"0::Commands\n");
 			if (cPluginManager::GetPlugin("aide"))

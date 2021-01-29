@@ -95,7 +95,6 @@ $$1 ~ /^\/?etc\/vdr\/plugins$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/epgsearch$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/epgfixer$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/filebrowser$$/ || \
-$$1 ~ /^\/?etc\/vdr\/plugins\/channellists$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/scheduler$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/streamdev$$/ || \
 $$1 ~ /^\/?etc\/vdr\/plugins\/tvscraper$$/ || \
