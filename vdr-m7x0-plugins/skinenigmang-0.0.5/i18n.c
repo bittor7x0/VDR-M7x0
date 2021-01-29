@@ -1061,6 +1061,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#if defined SKINENIGMA_HAVE_EPGSEARCH || defined USE_PLUGIN_MAILBOX
   {"never",                     // English
    "nie",                       // Deutsch
    "",                          // Slovenski
@@ -1105,6 +1106,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#endif
   {"percent",                   // English
    "Prozent",                   // Deutsch
    "",                          // Slovenski
@@ -1127,6 +1129,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#ifdef SKINENIGMA_HAVE_EPGSEARCH
   {"if exists",                 // English
    "wenn vorhanden",            // Deutsch
    "",                          // Slovenski
@@ -1215,6 +1218,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#endif
   {"Timer check",               // English
    "Überwachung",               // Deutsch
    "",                          // Slovenski
@@ -1237,6 +1241,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#ifdef SKINENIGMA_HAVE_EPGSEARCH
   {"EPGSearch",                 // English
    "EPGSearch",                 // Deutsch
    "",                          // Slovenski
@@ -1259,6 +1264,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#endif
   {"Logos & Symbols",           // English
    "Logos & Symbole",           // Deutsch
    "",                          // Slovenski
@@ -1325,6 +1331,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#ifndef SKINENIGMA_NO_MENULOGO
   {"pixel algo",                // English
    "Pixel-Algorithmus",         // Deutsch
    "",                          // Slovenski
@@ -1413,6 +1420,8 @@ const tI18nPhrase Phrases[] = {
    "",                                // Dansk
    "",      // Èesky (Czech)
    },
+#endif
+#ifdef HAVE_IMAGEMAGICK
   {"  Resize images",           // English
    "  Bildberechnung benutzt",  // Deutsch
    "",                          // Slovenski
@@ -1435,6 +1444,8 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#endif
+#ifndef SKINENIGMA_NO_MENULOGO
   {"  Image width",             // English
    "  Bildbreite",              // Deutsch
    "",                          // Slovenski
@@ -1479,6 +1490,8 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#endif
+#ifdef HAVE_IMAGEMAGICK
   {"  Image format",            // English
    "  Bildformat",              // Deutsch
    "",                          // Slovenski
@@ -1501,6 +1514,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#endif
   {"Full title width",          // English
    "Volle Titelbreite",         // Deutsch
    "",                          // Slovenski
@@ -1835,6 +1849,7 @@ const tI18nPhrase Phrases[] = {
    "",      // Èesky (Czech)
    },
 #endif
+#ifndef SKINENIGMA_NO_MENULOGO
   {"  Show symbols in menu",    // English
    "  Symbole im Menü",         // Deutsch
    "",                          // Slovenski
@@ -1857,6 +1872,7 @@ const tI18nPhrase Phrases[] = {
    "",                          // Dansk
    "",      // Èesky (Czech)
    },
+#endif
   {"  Show symbols in replay",  // English
    "  Symbole bei der Wiedergabe", // Deutsch
    "",                          // Slovenski
