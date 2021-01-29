@@ -160,16 +160,16 @@ CONFIG_VDR = y
 # CONFIG_VDR_LOCAL_PATH is not set
 
 # VDR-PLUGINS-ROOTFS: Plugins for VDR included in RootFS (faster than JFFS2) and added to /usr/lib/vdr
-CONFIG_VDR-PLUGINS-ROOTFS = epgfixer epgsearch filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev osdadjust scheduler
+CONFIG_VDR-PLUGINS-ROOTFS = epgfixer epgsearch filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars scheduler
 
 # VDR-PLUGINS-ROOTFS-LIBS: Libraries of plugins for VDR included in RootFS (faster than JFFS2) and added to /usr/lib/vdr
-CONFIG_VDR-PLUGINS-ROOTFS-LIBS = epgfixer epgsearch epgsearchonly conflictcheckonly filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev-server osdadjust scheduler
+CONFIG_VDR-PLUGINS-ROOTFS-LIBS = epgfixer epgsearch epgsearchonly conflictcheckonly filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars scheduler
 
 # VDR-PLUGINS-JFFS2: Plugins for VDR included in JFFS2 (slower than RootFS) and added to /etc/plugins-lib
-# CONFIG_VDR-PLUGINS-JFFS2 is not set
+CONFIG_VDR-PLUGINS-JFFS2 = xmltv2vdr streamdev osdadjust
 
 # VDR-PLUGINS-JFFS2-LIBS: Libraries of plugins for VDR included in JFFS2 (slower than RootFS) and added to /etc/plugins-lib
-# CONFIG_VDR-PLUGINS-JFFS2-LIBS is not set
+CONFIG_VDR-PLUGINS-JFFS2-LIBS = xmltv2vdr streamdev-server osdadjust
 
 # usbautomounter: Automounter for usb devices
 CONFIG_USBAUTOMOUNTER = y
@@ -378,7 +378,7 @@ CONFIG_SQLITE = y
 CONFIG_PCRE = y
 
 # Add C++ support to PCRE library
-# CONFIG_PCRE_CPP is not set
+CONFIG_PCRE_CPP = y
 
 # libmagic: A library for the file utility that can classify files according to magic number tests
 # URL: http://www.darwinsys.com/file/
