@@ -1,0 +1,2 @@
+usr/sbin/rpcbind  usr/sbin/rpcbind  f 755 0 0 - - - - -
+usr/sbin/rpcbind  -                 s   - - - - - - - -

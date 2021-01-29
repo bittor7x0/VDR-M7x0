@@ -1,0 +1,41 @@
+From: Frank Sorenson <sorenson@redhat.com>
+Date: Wed, 15 Feb 2017 10:36:47 -0500
+Subject: gssd: replace non-thread-safe strtok with strsep
+
+gssd uses the non-thread-safe strtok() function, which
+can lead to incorrect program behavior.
+
+Replace strtok() with the thread-safe strsep().
+
+Signed-off-by: Frank Sorenson <sorenson@redhat.com>
+Signed-off-by: Steve Dickson <steved@redhat.com>
+
+Origin: upstream, http://git.linux-nfs.org/?p=steved/nfs-utils.git;a=commitdiff;h=5ae8be8
+Bug: https://bugzilla.redhat.com/show_bug.cgi?id=1419280
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=895381
+Last-Update: 2019-04-05
+
+---
+ utils/gssd/gssd_proc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/utils/gssd/gssd_proc.c b/utils/gssd/gssd_proc.c
+index d74d3724..30c6aceb 100644
+--- a/utils/gssd/gssd_proc.c
++++ b/utils/gssd/gssd_proc.c
+@@ -729,10 +729,11 @@ handle_gssd_upcall(struct clnt_upcall_info *info)
+ 	char			*target = NULL;
+ 	char			*service = NULL;
+ 	char			*enctypes = NULL;
++	char			*pbuf = info->lbuf;
+ 
+ 	printerr(2, "\n%s: '%s' (%s)\n", __func__, info->lbuf, clp->relpath);
+ 
+-	for (p = strtok(info->lbuf, " "); p; p = strtok(NULL, " ")) {
++	while ((p = strsep(&pbuf, " "))) {
+ 		if (!strncmp(p, "mech=", strlen("mech=")))
+ 			mech = p + strlen("mech=");
+ 		else if (!strncmp(p, "uid=", strlen("uid=")))
+-- 
+2.20.1
+

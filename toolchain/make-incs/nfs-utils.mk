@@ -23,24 +23,26 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-ifeq ($(CONFIG_NFS-UTILS),y)
-ifneq ($(CONFIG_TCP_WRAPPERS),y)
-   $(error dependency error: nfs-utils needs tcp_wrappers enabled)
-endif
-endif
-
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-NFS-UTILS_DEPS = $(BASE_BUILD_STAGEFILE) $(TCP_WRAPPERS_INSTALLED)
+NFS-UTILS_DEPS = $(BASE_BUILD_STAGEFILE)
 
-NFS-UTILS_VERSION := 1.1.6
+ifeq ($(CONFIG_LIBTIRPC),y)
+	NFS-UTILS_DEPS +=  $(LIBTIRPC_INSTALLED)
+endif
+ifeq ($(CONFIG_TCP_WRAPPERS),y)
+	NFS-UTILS_DEPS +=  $(TCP_WRAPPERS_INSTALLED)
+endif
+
+NFS-UTILS_VERSION := 1.3.4
 NFS-UTILS_PATCHES_DIR := $(PATCHES_DIR)/nfs-utils/$(NFS-UTILS_VERSION)
 
 NFS-UTILS_FILE := nfs-utils-$(NFS-UTILS_VERSION).tar.bz2
 NFS-UTILS_DLFILE := $(DOWNLOAD_DIR)/$(NFS-UTILS_FILE)
 NFS-UTILS_URL := http://downloads.sourceforge.net/nfs/$(NFS-UTILS_FILE)
 NFS-UTILS_DIR := $(BUILD_DIR)/nfs-utils-$(NFS-UTILS_VERSION)
+NFS-UTILS_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/nfs-utils-$(NFS-UTILS_VERSION)
 
-NFS-UTILS_INSTALLED = $(STAGEFILES_DIR)/.nfs-utils_installed
+NFS-UTILS_INSTALLED = $(STAGEFILES_DIR)/.nfs-utils_host_installed $(STAGEFILES_DIR)/.nfs-utils_installed
 
 PACKS_RULES_$(CONFIG_NFS-UTILS) += $(NFS-UTILS_INSTALLED)
 FILE_LISTS_$(CONFIG_NFS-UTILS) += nfs-utils.lst
@@ -75,21 +77,70 @@ $(STAGEFILES_DIR)/.nfs-utils_unpacked: $(NFS-UTILS_DLFILE) \
 
 $(STAGEFILES_DIR)/.nfs-utils_patched: $(STAGEFILES_DIR)/.nfs-utils_unpacked
 	$(call patch_package, $(NFS-UTILS_DIR), $(NFS-UTILS_PATCHES_DIR))
+	-$(RM) -rf $(NFS-UTILS_HOSTDIR)
+	$(CP) -RPp $(NFS-UTILS_DIR) $(HOSTUTILS_BUILD_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.nfs-utils_patched
+
+#
+# configure nfs-utils in host
+#
+
+$(STAGEFILES_DIR)/.nfs-utils_host_configured: $(STAGEFILES_DIR)/.nfs-utils_patched
+	($(CD) $(NFS-UTILS_HOSTDIR) ; \
+		$(NFS-UTILS_HOSTDIR)/configure \
+			--prefix=$(HOSTUTILS_PREFIX) \
+			--disable-shared \
+			--enable-static \
+			--disable-uuid \
+			--disable-caps \
+			--disable-gss \
+			--disable-nfsdcltrack \
+			--disable-nfsv4 \
+			--disable-nfsv41 \
+			--disable-ipv6 \
+			--with-statduser=nobody \
+			--without-tcp-wrappers \
+			--with-rpcgen=internal)
+	$(TOUCH) $(STAGEFILES_DIR)/.nfs-utils_host_configured
+
+#
+# compile nfs-utils in host
+#
+
+$(STAGEFILES_DIR)/.nfs-utils_host_compiled: $(STAGEFILES_DIR)/.nfs-utils_host_configured
+	$(MAKE) -C $(NFS-UTILS_HOSTDIR)/tools/rpcgen all
+	$(TOUCH) $(STAGEFILES_DIR)/.nfs-utils_host_compiled
+
+#
+# install nfs-utils in host
+#
+
+$(STAGEFILES_DIR)/.nfs-utils_host_installed: $(STAGEFILES_DIR)/.nfs-utils_host_compiled
+	$(CP) -f $(NFS-UTILS_HOSTDIR)/tools/rpcgen/rpcgen $(HOSTUTILS_PREFIX_BIN)/rpcgen
+	$(TOUCH) $(STAGEFILES_DIR)/.nfs-utils_host_installed
 
 #
 # configure nfs-utils
 #
 
-$(STAGEFILES_DIR)/.nfs-utils_configured: $(STAGEFILES_DIR)/.nfs-utils_patched
+$(STAGEFILES_DIR)/.nfs-utils_configured: $(STAGEFILES_DIR)/.nfs-utils_host_installed
 	($(CD) $(NFS-UTILS_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		CC_FOR_BUILD=$(UCLIBC_CC) \
 		$(NFS-UTILS_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--disable-uuid \
+			--disable-caps \
 			--disable-gss \
+			--disable-nfsdcltrack \
 			--disable-nfsv4 \
+			--disable-nfsv41 \
+			--disable-ipv6 \
+			--with-statduser=nobody \
+			$(if $(CONFIG_LIBTIRPC),--enable-tirpc --with-tirpcinclude=${TARGET_ROOT}/usr/include/tirpc,--disable-tirpc) \
+			$(if $(CONFIG_TCP_WRAPPERS),--with-tcp-wrappers,--without-tcp-wrappers) \
+			--with-rpcgen=$(HOSTUTILS_PREFIX_BIN)/rpcgen \
+			--with-gnu-ld \
 			--enable-static \
 			--enable-shared)
 	$(TOUCH) $(STAGEFILES_DIR)/.nfs-utils_configured
@@ -112,21 +163,25 @@ $(STAGEFILES_DIR)/.nfs-utils_compiled: $(STAGEFILES_DIR)/.nfs-utils_configured
 #
 
 $(STAGEFILES_DIR)/.nfs-utils_installed: $(STAGEFILES_DIR)/.nfs-utils_compiled
-	$(CP) -f $(NFS-UTILS_DIR)/utils/statd/sm-notify $(TARGET_ROOT)/usr/sbin/sm-notify
+	#$(CP) -f $(NFS-UTILS_DIR)/utils/statd/sm-notify $(TARGET_ROOT)/usr/sbin/sm-notify
 	$(CP) -f $(NFS-UTILS_DIR)/utils/statd/statd $(TARGET_ROOT)/usr/sbin/rpc.statd
 	$(CP) -f $(NFS-UTILS_DIR)/utils/nfsd/nfsd $(TARGET_ROOT)/usr/sbin/rpc.nfsd
-	$(CP) -f $(NFS-UTILS_DIR)/utils/mount/mount.nfs $(TARGET_ROOT)/bin/mount.nfs
+	#$(CP) -f $(NFS-UTILS_DIR)/utils/mount/mount.nfs $(TARGET_ROOT)/bin/mount.nfs
 	$(CP) -f $(NFS-UTILS_DIR)/utils/mountd/mountd $(TARGET_ROOT)/usr/sbin/rpc.mountd
 	$(CP) -f $(NFS-UTILS_DIR)/utils/exportfs/exportfs $(TARGET_ROOT)/usr/sbin/exportfs
-	$(CP) -f $(NFS-UTILS_DIR)/utils/showmount/showmount $(TARGET_ROOT)/usr/sbin/showmount
-	$(CP) -f $(NFS-UTILS_DIR)/utils/nfsstat/nfsstat $(TARGET_ROOT)/usr/sbin/nfsstat
+	#$(CP) -f $(NFS-UTILS_DIR)/utils/showmount/showmount $(TARGET_ROOT)/usr/sbin/showmount
+	#$(CP) -f $(NFS-UTILS_DIR)/utils/nfsstat/nfsstat $(TARGET_ROOT)/usr/sbin/nfsstat
 	$(TOUCH) $(STAGEFILES_DIR)/.nfs-utils_installed
 
 
-$(FILELIST_DIR)/nfs-utils.lst: $(STAGEFILES_DIR)/.nfs-utils_installed
+$(FILELIST_DIR)/nfs-utils.lst: $(STAGEFILES_DIR)/.nfs-utils_host_installed \
+				$(STAGEFILES_DIR)/.nfs-utils_installed
 	$(TOUCH) $(FILELIST_DIR)/nfs-utils.lst
 
-.PHONY: clean-nfs-utils distclean-nfs-utils
+.PHONY: clean-nfs-utils-host distclean-nfs-utils-host clean-nfs-utils distclean-nfs-utils
+
+clean-nfs-utils-host:
+	-$(RM) -rf $(NFS-UTILS_HOSTDIR)
 
 clean-nfs-utils:
 	-$(RM) -rf $(NFS-UTILS_DIR)
@@ -134,6 +189,16 @@ clean-nfs-utils:
 #
 # clean everthing else
 #
+
+distclean-nfs-utils-host:
+	-$(RM) -f $(STAGEFILES_DIR)/.nfs-utils_unpacked
+	-$(RM) -f $(STAGEFILES_DIR)/.nfs-utils_patched
+	-$(RM) -f $(STAGEFILES_DIR)/.nfs-utils_host_configured
+	-$(RM) -f $(STAGEFILES_DIR)/.nfs-utils_host_compiled
+	-$(RM) -f $(STAGEFILES_DIR)/.nfs-utils_host_installed
+ifeq ($(DISTCLEAN_DLFILE),y)
+	-$(RM) -rf $(NFS-UTILS_DLFILE)
+endif
 
 distclean-nfs-utils:
 	-$(RM) -f $(STAGEFILES_DIR)/.nfs-utils_unpacked

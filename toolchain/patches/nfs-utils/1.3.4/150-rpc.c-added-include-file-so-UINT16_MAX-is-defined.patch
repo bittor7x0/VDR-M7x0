@@ -1,0 +1,25 @@
+From ba03a02c2fd912f370e1f55de921a403bf5f9247 Mon Sep 17 00:00:00 2001
+From: Steve Dickson <steved@redhat.com>
+Date: Thu, 22 Jun 2017 12:56:41 -0400
+Subject: rpc.c: added include file so UINT16_MAX is defined.
+
+Signed-off-by: Steve Dickson <steved@redhat.com>
+---
+ support/nsm/rpc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/support/nsm/rpc.c b/support/nsm/rpc.c
+index 4e5f40e..0a8e56f 100644
+--- a/support/nsm/rpc.c
++++ b/support/nsm/rpc.c
+@@ -38,6 +38,7 @@
+ #include <sys/socket.h>
+ #include <sys/time.h>
+ 
++#include <stdint.h>
+ #include <time.h>
+ #include <stdbool.h>
+ #include <string.h>
+-- 
+2.11.0
+

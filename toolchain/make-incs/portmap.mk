@@ -23,14 +23,19 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-ifeq ($(CONFIG_PORTMAP),y)
-ifneq ($(CONFIG_TCP_WRAPPERS),y)
-   $(error dependency error: portmap needs tcp_wrappers enabled)
-endif
+ifeq ($(and $(filter y,$(CONFIG_PORTMAP)),$(filter y,$(CONFIG_RPCBIND))),y)
+   $(error conflict error: portmap and rpcbind can't be enabled simultaneously)
 endif
 
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
-PORTMAP_DEPS = $(BASE_BUILD_STAGEFILE) $(TCP_WRAPPERS_INSTALLED)
+PORTMAP_DEPS = $(BASE_BUILD_STAGEFILE)
+
+ifeq ($(CONFIG_LIBTIRPC),y)
+	PORTMAP_DEPS +=  $(LIBTIRPC_INSTALLED)
+endif
+ifeq ($(CONFIG_TCP_WRAPPERS),y)
+	PORTMAP_DEPS +=  $(TCP_WRAPPERS_INSTALLED)
+endif
 
 PORTMAP_VERSION := 6.0
 PORTMAP_PATCHES_DIR := $(PATCHES_DIR)/portmap/$(PORTMAP_VERSION)
@@ -82,12 +87,15 @@ $(STAGEFILES_DIR)/.portmap_patched: $(STAGEFILES_DIR)/.portmap_unpacked
 #
 
 $(STAGEFILES_DIR)/.portmap_compiled: $(STAGEFILES_DIR)/.portmap_patched
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) \
+	$(UCLIBC_ENV_LTO_GC) \
+	$(MAKE) \
 		-C $(PORTMAP_DIR) \
-		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -I$(TARGET_ROOT)/usr/include -I$(TARGET_ROOT)/include -DHOSTS_ACCESS -DFACILITY=LOG_DAEMON -DIGNORE_SIGCHLD" \
+		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(if $(CONFIG_LIBTIRPC),-I${TARGET_ROOT}/usr/include/tirpc) -I$(TARGET_ROOT)/usr/include -I$(TARGET_ROOT)/include" \
 		RPCUSER="nobody" \
-		WRAP_LIB="-L$(TARGET_ROOT)/usr/lib -L$(TARGET_ROOT)/lib -lwrap" \
-		all
+		NO_PIE=1 \
+		LDLIBS="-L$(TARGET_ROOT)/usr/lib -L$(TARGET_ROOT)/lib$(if $(CONFIG_LIBTIRPC), -ltirpc)$(if $(CONFIG_TCP_WRAPPERS), -lwrap)" \
+		$(if $(CONFIG_TCP_WRAPPERS),,NO_TCP_WRAPPER=1) \
+		portmap
 	$(TOUCH) $(STAGEFILES_DIR)/.portmap_compiled
 
 #
@@ -96,6 +104,12 @@ $(STAGEFILES_DIR)/.portmap_compiled: $(STAGEFILES_DIR)/.portmap_patched
 
 $(STAGEFILES_DIR)/.portmap_installed: $(STAGEFILES_DIR)/.portmap_compiled
 	$(CP) -f $(PORTMAP_DIR)/portmap $(TARGET_ROOT)/usr/sbin/portmap
+	(if [ X"`$(GREP) portmap $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net`" = X"" ] ; then \
+		$(SED) -i 's,/usr/sbin/rpcbind -f -w,/usr/sbin/portmap,g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.net ; \
+	fi);
+	(if [ X"`$(GREP) portmap $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.halt`" = X"" ] ; then \
+		$(SED) -i 's,/usr/bin/killall -15 rpcbind,/usr/bin/killall -15 portmap,g' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.local.halt ; \
+	fi);
 	$(TOUCH) $(STAGEFILES_DIR)/.portmap_installed
 
 

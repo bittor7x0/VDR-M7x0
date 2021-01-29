@@ -173,6 +173,30 @@ $(STAGEFILES_DIR)/.uclibc_configured: $(STAGEFILES_DIR)/.uclibc_patched
 	$(SED) -i -e 's,^UCLIBC_HAS_BACKTRACE=y,# UCLIBC_HAS_BACKTRACE is not set,g' \
 		$(UCLIBC_DIR)/.config
   endif
+  # Enable/Disable RPC implementation
+  ifeq ($(or $(filter lite,$(CONFIG_FW_VERSION)),$(filter y,$(CONFIG_LIBTIRPC))),y)
+	$(SED) -i -e 's,^UCLIBC_HAS_RPC=y,# UCLIBC_HAS_RPC is not set,g' \
+		$(UCLIBC_DIR)/.config
+	$(SED) -i -e 's,^UCLIBC_HAS_FULL_RPC=y,# UCLIBC_HAS_FULL_RPC is not set,g' \
+		$(UCLIBC_DIR)/.config
+	$(SED) -i -e 's,^UCLIBC_HAS_REENTRANT_RPC=y,# UCLIBC_HAS_REENTRANT_RPC is not set,g' \
+		$(UCLIBC_DIR)/.config
+  else
+	$(SED) -i -e 's,^# UCLIBC_HAS_RPC is not set,UCLIBC_HAS_RPC=y,g' \
+		$(UCLIBC_DIR)/.config
+	$(SED) -i -e 's,^# UCLIBC_HAS_FULL_RPC is not set,UCLIBC_HAS_FULL_RPC=y,g' \
+		$(UCLIBC_DIR)/.config
+	$(SED) -i -e 's,^# UCLIBC_HAS_REENTRANT_RPC is not set,UCLIBC_HAS_REENTRANT_RPC=y,g' \
+		$(UCLIBC_DIR)/.config
+  endif
+  # libtirpc needs AI_ADDRCONFIG support
+  ifeq ($(CONFIG_LIBTIRPC),y)
+	$(SED) -i -e 's,^# UCLIBC_SUPPORT_AI_ADDRCONFIG is not set,UCLIBC_SUPPORT_AI_ADDRCONFIG=y,g' \
+		$(UCLIBC_DIR)/.config
+  else
+	$(SED) -i -e 's,^UCLIBC_SUPPORT_AI_ADDRCONFIG=y,# UCLIBC_SUPPORT_AI_ADDRCONFIG is not set,g' \
+		$(UCLIBC_DIR)/.config
+  endif
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibc_configured
 
 #

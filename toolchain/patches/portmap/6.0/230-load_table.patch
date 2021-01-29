@@ -1,0 +1,26 @@
+From 026c8f47bbaf401c93f5e14b560746ef724a8161 Mon Sep 17 00:00:00 2001
+From: Denis Zaitceff <zaitceff@gmail.com>
+Date: Sat, 24 May 2014 21:27:45 +0600
+Subject: [PATCH] Avoid list corruption in load_table()
+
+load_table() currently swallows the current - last in the list - (*ep) item.
+This may be a registration of the UDP port that portmap listens on.
+
+Signed-off-by: Neil Brown <neilb@suse.de>
+---
+ portmap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/portmap.c b/portmap.c
+index 5a935dc..ed8e50c 100644
+--- a/portmap.c
++++ b/portmap.c
+@@ -871,7 +871,7 @@ static void load_table(void)
+ 	struct flagged_pml fpml, *fpmlp;
+ 
+ 	ep = &pmaplist;
+-	while ((*ep)->pml_next)
++	while (*ep)
+ 		ep = & (*ep)->pml_next;
+ 
+ 	if (store_fd < 0)

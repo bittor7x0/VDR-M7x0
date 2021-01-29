@@ -1,0 +1,15 @@
+diff -Naur a/tirpc/rpc/svc.h b/tirpc/rpc/svc.h
+--- a/tirpc/rpc/svc.h	2020-04-07 15:24:34.000000000 +0200
++++ b/tirpc/rpc/svc.h	2020-09-30 10:32:39.803681889 +0200
+@@ -107,7 +107,11 @@
+ 	    void	(*xp_destroy)(struct __rpc_svcxprt *);
+ 	} *xp_ops;
+ 	int		xp_addrlen;	 /* length of remote address */
++#ifdef INET6
+ 	struct sockaddr_in6 xp_raddr;	 /* remote addr. (backward ABI compat) */
++#else
++	struct sockaddr_in xp_raddr;	 /* remote addr. (backward ABI compat) */
++#endif
+ 	/* XXX - fvdl stick this here for ABI backward compat reasons */
+ 	const struct xp_ops2 {
+ 		/* catch-all function */

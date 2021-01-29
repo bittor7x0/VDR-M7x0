@@ -1,0 +1,28 @@
+From 7847207aed1b44faf077eed14a9ac9c68244eba5 Mon Sep 17 00:00:00 2001
+From: Mike Frysinger <vapier@gentoo.org>
+Date: Sun, 13 May 2007 17:17:32 -0400
+Subject: [PATCH] fix building with tcpd support disabled
+
+Make sure pmap_check.c only includes tcpd.h when HOSTS_ACCESS is defined.
+
+Signed-off-by: Timothy Redaelli <drizzt@gentoo.org>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+Signed-off-by: Neil Brown <neilb@suse.de>
+---
+ pmap_check.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/pmap_check.c b/pmap_check.c
+index 84f2c12..443a822 100644
+--- a/pmap_check.c
++++ b/pmap_check.c
+@@ -44,7 +44,9 @@
+ #include <netinet/in.h>
+ #include <rpc/rpcent.h>
+ #endif
++#ifdef HOSTS_ACCESS
+ #include <tcpd.h>
++#endif
+ #include <arpa/inet.h>
+ #include <grp.h>
+ 

@@ -274,6 +274,14 @@ CONFIG_O7O_FLASHER = y
 # URL: http://linux.die.net/man/8/portmap
 # CONFIG_PORTMAP is not set
 
+# rpcbind: A server that converts RPC program numbers into universal addresses (it's a replacement for portmap).
+# URL: http://rpcbind.sourceforge.net/
+# CONFIG_RPCBIND is not set
+
+# Enable broadcast discovery support of rpc services.
+# Services such as Kodi (via libnfs) use this functionality to discover available NFS shares on the network.
+# CONFIG_RPCBIND_RMTCALLS is not set
+
 # TCP Wrappers: IP packet filtering facility
 # URL: http://es.wikipedia.org/wiki/TCP_Wrapper
 # CONFIG_TCP_WRAPPERS is not set
@@ -317,6 +325,10 @@ CONFIG_O7O_FLASHER = y
 # URL: http://www.zlib.net/
 # CONFIG_ZLIB is not set
 # CONFIG_ZLIB_STATIC is not set
+
+# libtirpc: Library TI RPC for RPC bindings
+# URL: http://libtirpc.sourceforge.net/
+# CONFIG_LIBTIRPC is not set
 
 # libintl-lite: A simple (but less powerful) GNU gettext libintl replacement 
 # URL: http://sourceforge.net/projects/libintl-lite/

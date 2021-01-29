@@ -1,0 +1,54 @@
+From bcd5ff6093b13291d4ac886231456db78fd2b878 Mon Sep 17 00:00:00 2001
+From: "Enrico Weigelt, metux IT service" <weigelt@metux.de>
+Date: Sun, 22 Feb 2009 20:09:11 +0100
+Subject: [PATCH] pmap_dump.c: protoname() now returning const char*
+
+This fixes a compiler-warning on returning string constants as non-const char*
+---
+ pmap_dump.c | 29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
+
+diff --git a/pmap_dump.c b/pmap_dump.c
+index 333f41d..de078c3 100644
+--- a/pmap_dump.c
++++ b/pmap_dump.c
+@@ -17,7 +17,20 @@
+ #include <rpc/pmap_clnt.h>
+ #include <rpc/pmap_prot.h>
+ 
+-static char *protoname(u_long proto);
++static const char *protoname(u_long proto)
++{
++    static char buf[BUFSIZ];
++
++    switch (proto) {
++    case IPPROTO_UDP:
++	return ("udp");
++    case IPPROTO_TCP:
++	return ("tcp");
++    default:
++	sprintf(buf, "%lu", proto);
++	return (buf);
++    }
++}
+ 
+ int
+ main(int argc, char **argv)
+@@ -43,17 +56,3 @@ main(int argc, char **argv)
+     return (fclose(stdout) ? (perror(argv[0]), 1) : 0);
+ }
+ 
+-static char *protoname(u_long proto)
+-{
+-    static char buf[BUFSIZ];
+-
+-    switch (proto) {
+-    case IPPROTO_UDP:
+-	return ("udp");
+-    case IPPROTO_TCP:
+-	return ("tcp");
+-    default:
+-	sprintf(buf, "%lu", proto);
+-	return (buf);
+-    }
+-}

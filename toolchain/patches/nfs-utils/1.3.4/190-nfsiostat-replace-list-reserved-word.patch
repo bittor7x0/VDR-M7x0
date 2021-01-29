@@ -1,0 +1,50 @@
+From: Matthew Ruffell <matthew.ruffell@canonical.com>
+Date: Thu, 28 Mar 2019 15:43:21 -0400
+Subject: nfsiostat: replace 'list' reserved word
+Origin: http://git.linux-nfs.org/?p=steved/nfs-utils.git;a=commitdiff;h=c4c14011b70375050d7bba7c57e2eaf4c715dc7c
+Bug-Debian: https://bugs.debian.org/925943
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/nfs-utils/+bug/1821261
+
+list is a reserved word in python and should not be used as a variable
+name. Changing list to devicelist for list_nfs_mounts()
+
+Fixes: https://bugs.launchpad.net/ubuntu/+source/nfs-utils/+bug/1821261
+
+Signed-off-by: Matthew Ruffell <matthew.ruffell@canonical.com>
+Signed-off-by: Steve Dickson <steved@redhat.com>
+---
+ tools/nfs-iostat/nfs-iostat.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tools/nfs-iostat/nfs-iostat.py b/tools/nfs-iostat/nfs-iostat.py
+index 7cbe543c9017..dec0e861999d 100644
+--- a/tools/nfs-iostat/nfs-iostat.py
++++ b/tools/nfs-iostat/nfs-iostat.py
+@@ -493,20 +493,20 @@ def list_nfs_mounts(givenlist, mountstats):
+        return a full list if the given list is empty -
+        may return an empty list if none found
+     """
+-    list = []
++    devicelist = []
+     if len(givenlist) > 0:
+         for device in givenlist:
+             stats = DeviceData()
+             stats.parse_stats(mountstats[device])
+             if stats.is_nfs_mountpoint():
+-                list += [device]
++                devicelist += [device]
+     else:
+         for device, descr in mountstats.items():
+             stats = DeviceData()
+             stats.parse_stats(descr)
+             if stats.is_nfs_mountpoint():
+-                list += [device]
+-    return list
++                devicelist += [device]
++    return devicelist
+ 
+ def iostat_command(name):
+     """iostat-like command for NFS mount points
+-- 
+2.20.1
+

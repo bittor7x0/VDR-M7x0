@@ -26,6 +26,10 @@
 
 BUSYBOX_DEPS = $(BASE_BUILD_STAGEFILE)
 
+ifeq ($(CONFIG_LIBTIRPC),y)
+	BUSYBOX_DEPS +=  $(LIBTIRPC_INSTALLED)
+endif
+
 BUSYBOX_IS_SNAPSHOT := n
 
 ifeq ($(BUSYBOX_IS_SNAPSHOT),y)
@@ -100,8 +104,9 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 		$(BUSYBOX_DIR)/.config
   endif
 	$(UCLIBC_ENV_LTO_GC) \
+		$(if $(CONFIG_LIBTIRPC),CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -I${TARGET_ROOT}/usr/include/tirpc" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -ltirpc") \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
-		LDLIBS="" \
+		$(if $(CONFIG_LIBTIRPC),LDLIBS="tirpc",LDLIBS="") \
 		LD="$(UCLIBC_CC)" \
 		PKG_CONFIG="pkg-config" \
 		SKIP_STRIP=y \
@@ -115,8 +120,9 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
 	$(UCLIBC_ENV_LTO_GC) \
+		$(if $(CONFIG_LIBTIRPC),CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -I${TARGET_ROOT}/usr/include/tirpc" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -ltirpc") \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
-		LDLIBS="" \
+		$(if $(CONFIG_LIBTIRPC),LDLIBS="tirpc",LDLIBS="") \
 		LD="$(UCLIBC_CC)" \
 		PKG_CONFIG="pkg-config" \
 		SKIP_STRIP=y \
@@ -132,8 +138,9 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed: $(STAGEFILES_DIR)/.bu
 	$(TOP_DIR)/.config
 	$(FIND) $(TARGET_ROOT) -lname "*busybox" -exec rm \{\} \;
 	$(UCLIBC_ENV_LTO_GC) \
+		$(if $(CONFIG_LIBTIRPC),CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -I${TARGET_ROOT}/usr/include/tirpc" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -ltirpc") \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
-		LDLIBS="" \
+		$(if $(CONFIG_LIBTIRPC),LDLIBS="tirpc",LDLIBS="") \
 		LD="$(UCLIBC_CC)" \
 		PKG_CONFIG="pkg-config" \
 		SKIP_STRIP=y \

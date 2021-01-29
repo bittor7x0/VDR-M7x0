@@ -1,0 +1,83 @@
+diff -Naur a/utils/mount/network.c b/utils/mount/network.c
+--- a/utils/mount/network.c	2016-08-03 20:25:15.000000000 +0200
++++ b/utils/mount/network.c	2020-11-04 16:49:05.894368493 +0100
+@@ -38,7 +38,9 @@
+ #include <sys/socket.h>
+ #include <sys/wait.h>
+ #include <sys/stat.h>
++#ifdef IPV6_SUPPORTED
+ #include <linux/in6.h>
++#endif /* IPV6_SUPPORTED */
+ #include <netinet/in.h>
+ #include <rpc/rpc.h>
+ #include <rpc/pmap_prot.h>
+@@ -228,7 +230,9 @@
+ 
+ 	switch (gai_results->ai_addr->sa_family) {
+ 	case AF_INET:
++#ifdef IPV6_SUPPORTED
+ 	case AF_INET6:
++#endif /* IPV6_SUPPORTED */
+ 		if (len >= gai_results->ai_addrlen) {
+ 			*salen = gai_results->ai_addrlen;
+ 			memcpy(sap, gai_results->ai_addr, *salen);
+@@ -291,7 +295,9 @@
+ 	if (getaddrinfo(address, NULL, &gai_hint, &gai_results) == 0) {
+ 		switch (gai_results->ai_addr->sa_family) {
+ 		case AF_INET:
++#ifdef IPV6_SUPPORTED
+ 		case AF_INET6:
++#endif /* IPV6_SUPPORTED */
+ 			if (len >= gai_results->ai_addrlen) {
+ 				*salen = gai_results->ai_addrlen;
+ 				memcpy(sap, gai_results->ai_addr, *salen);
+@@ -1109,10 +1115,12 @@
+ 		.sin_family		= AF_INET,
+ 		.sin_addr.s_addr	= htonl(INADDR_ANY),
+ 	};
++#ifdef IPV6_SUPPORTED
+ 	struct sockaddr_in6 sin6 = {
+ 		.sin6_family		= AF_INET6,
+ 		.sin6_addr		= IN6ADDR_ANY_INIT,
+ 	};
++#endif /* IPV6_SUPPORTED */
+ 	int sock, result = 0;
+ 	int val;
+ 
+@@ -1125,6 +1133,7 @@
+ 		if (bind(sock, SAFE_SOCKADDR(&sin), sizeof(sin)) < 0)
+ 			goto out;
+ 		break;
++#ifdef IPV6_SUPPORTED
+ 	case AF_INET6:
+ 		/* Make sure the call-back address is public/permanent */
+ 		val = IPV6_PREFER_SRC_PUBLIC;
+@@ -1132,6 +1141,7 @@
+ 		if (bind(sock, SAFE_SOCKADDR(&sin6), sizeof(sin6)) < 0)
+ 			goto out;
+ 		break;
++#endif /* IPV6_SUPPORTED */
+ 	default:
+ 		errno = EAFNOSUPPORT;
+ 		goto out;
+@@ -1190,7 +1200,9 @@
+ int nfs_callback_address(const struct sockaddr *sap, const socklen_t salen,
+ 			 struct sockaddr *buf, socklen_t *buflen)
+ {
++#ifdef IPV6_SUPPORTED
+ 	struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)buf;
++#endif /* IPV6_SUPPORTED */
+ 
+ 	if (nfs_ca_sockname(sap, salen, buf, buflen) == 0)
+ 		if (nfs_ca_gai(sap, buf, buflen) == 0)
+@@ -1200,8 +1212,10 @@
+ 	 * The server can't use an interface ID that was generated
+ 	 * here on the client, so always clear sin6_scope_id.
+ 	 */
++#ifdef IPV6_SUPPORTED
+ 	if (sin6->sin6_family == AF_INET6)
+ 		sin6->sin6_scope_id = 0;
++#endif /* IPV6_SUPPORTED */
+ 
+ 	return 1;
+ 

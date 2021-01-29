@@ -1,0 +1,34 @@
+From be191a073896a4e87384f857cb25cdc7e9047a6d Mon Sep 17 00:00:00 2001
+From: Neil Brown <neilb@suse.de>
+Date: Mon, 16 Jul 2007 09:18:55 +1000
+Subject: [PATCH] Treat ports below 512 as reserved ports.
+
+Though applications trying to bind a reserved port normally look in
+the range 512-1024 (because below there is very dense with well known
+ports), all ports 1-1024 are reserved in that only root can bind to them.
+So when checking if a port is 'reserved' we should allow it anywhere in
+the full range.
+
+This allows sunrpc.minresvport to be set low and portmap will still
+allow mappings made by the kernel.
+
+The status of 0 as a reserved port is doubtful, but
+check_privileged_port will never be called with a 0, so it doesn't
+matter.
+---
+ pmap_check.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pmap_check.c b/pmap_check.c
+index 443a822..6b3e490 100644
+--- a/pmap_check.c
++++ b/pmap_check.c
+@@ -71,7 +71,7 @@ int     deny_severity __attribute ((visibility ("hidden"))) = LOG_WARNING;
+ 
+ /* A handful of macros for "readability". */
+ 
+-#define reserved_port(p) (IPPORT_RESERVED/2 < (p) && (p) < IPPORT_RESERVED)
++#define reserved_port(p) ((p) < IPPORT_RESERVED)
+ 
+ #define unreserved_port(p) (IPPORT_RESERVED <= (p) && (p) != NFS_PORT)
+ 

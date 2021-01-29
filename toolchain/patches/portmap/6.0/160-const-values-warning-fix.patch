@@ -1,0 +1,38 @@
+From 5b8aaca1876171e0cd4536189ac2bd684353b646 Mon Sep 17 00:00:00 2001
+From: "Enrico Weigelt, metux IT service" <weigelt@metux.de>
+Date: Sun, 22 Feb 2009 20:19:39 +0100
+Subject: [PATCH] pmap_check.c: suppressed warning on const-values as non-const
+ parameters
+
+---
+ pmap_check.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/pmap_check.c b/pmap_check.c
+index 6b3e490..ffe6ffa 100644
+--- a/pmap_check.c
++++ b/pmap_check.c
+@@ -116,7 +116,7 @@ void check_startup(void)
+ static int
+ good_client(struct sockaddr_in *addr)
+ {
+-	if (hosts_ctl("portmap", "", inet_ntoa(addr->sin_addr), ""))
++	if (hosts_ctl((char*)("portmap"), (char*)(""), inet_ntoa(addr->sin_addr), (char*)("")))
+ 		return 1;
+ #ifdef ENABLE_DNS
+ {
+@@ -149,12 +149,12 @@ good_client(struct sockaddr_in *addr)
+ 		return 0;
+ 
+ 	/* Check the official name first. */
+-	if (hosts_ctl("portmap", "", hp->h_name, ""))
++	if (hosts_ctl((char*)("portmap"), (char*)(""), hp->h_name, (char*)("")))
+ 		return 1;
+ 
+ 	/* Check aliases. */
+ 	for (sp = hp->h_aliases; *sp ; sp++) {
+-		if (hosts_ctl("portmap", "", *sp, ""))
++		if (hosts_ctl((char*)("portmap"), (char*)(""), *sp, (char*)("")))
+ 			return 1;
+ 	}
+ }

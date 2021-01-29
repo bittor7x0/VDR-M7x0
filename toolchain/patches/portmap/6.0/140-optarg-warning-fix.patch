@@ -1,0 +1,23 @@
+From 93843c7a266b9c7aadb8b5f977f5f9be39d1f64a Mon Sep 17 00:00:00 2001
+From: "Enrico Weigelt, metux IT service" <weigelt@metux.de>
+Date: Sun, 22 Feb 2009 20:05:40 +0100
+Subject: [PATCH] portmap.c: suppressed warning on assigning an non-const value
+ to optarg
+
+---
+ portmap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/portmap.c b/portmap.c
+index 46bf7c5..40440d9 100644
+--- a/portmap.c
++++ b/portmap.c
+@@ -264,7 +264,7 @@ main(int argc, char **argv)
+ 			break;
+ 
+ 		case 'l':
+-			optarg = "127.0.0.1";
++			optarg = (char*)"127.0.0.1";
+ 			/* FALL THROUGH */
+ 		case 'i':
+ 			have_bindaddr = inet_aton(optarg, &bindaddr);

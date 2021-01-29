@@ -1,0 +1,92 @@
+From: Frank Sorenson <sorenson@redhat.com>
+Date: Wed, 15 Feb 2017 10:38:53 -0500
+Subject: gssd:  Duplicate the upcall string for error messages
+
+strsep() modifies the input string, so error messages
+may output only part of the upcall string.
+
+Make a copy of the upcall string, and use that in any
+error messages.
+
+Signed-off-by: Frank Sorenson <sorenson@redhat.com>
+Signed-off-by: Steve Dickson <steved@redhat.com>
+
+Origin: upstream, http://git.linux-nfs.org/?p=steved/nfs-utils.git;a=commitdiff;h=0a4f5e4
+Bug: https://bugzilla.redhat.com/show_bug.cgi?id=1419280
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=895381
+Last-Update: 2019-04-05
+
+---
+ utils/gssd/gssd_proc.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/utils/gssd/gssd_proc.c b/utils/gssd/gssd_proc.c
+index 30c6aceb..4fc81c30 100644
+--- a/utils/gssd/gssd_proc.c
++++ b/utils/gssd/gssd_proc.c
+@@ -729,10 +729,17 @@ handle_gssd_upcall(struct clnt_upcall_info *info)
+ 	char			*target = NULL;
+ 	char			*service = NULL;
+ 	char			*enctypes = NULL;
++	char			*upcall_str;
+ 	char			*pbuf = info->lbuf;
+ 
+ 	printerr(2, "\n%s: '%s' (%s)\n", __func__, info->lbuf, clp->relpath);
+ 
++	upcall_str = strdup(info->lbuf);
++	if (upcall_str == NULL) {
++		printerr(0, "ERROR: malloc failure\n");
++		goto out_nomem;
++	}
++
+ 	while ((p = strsep(&pbuf, " "))) {
+ 		if (!strncmp(p, "mech=", strlen("mech=")))
+ 			mech = p + strlen("mech=");
+@@ -749,7 +756,7 @@ handle_gssd_upcall(struct clnt_upcall_info *info)
+ 	if (!mech || strlen(mech) < 1) {
+ 		printerr(0, "WARNING: handle_gssd_upcall: "
+ 			    "failed to find gss mechanism name "
+-			    "in upcall string '%s'\n", info->lbuf);
++			    "in upcall string '%s'\n", upcall_str);
+ 		goto out;
+ 	}
+ 
+@@ -762,7 +769,7 @@ handle_gssd_upcall(struct clnt_upcall_info *info)
+ 	if (!uidstr) {
+ 		printerr(0, "WARNING: handle_gssd_upcall: "
+ 			    "failed to find uid "
+-			    "in upcall string '%s'\n", info->lbuf);
++			    "in upcall string '%s'\n", upcall_str);
+ 		goto out;
+ 	}
+ 
+@@ -775,7 +782,7 @@ handle_gssd_upcall(struct clnt_upcall_info *info)
+ 	if (target && strlen(target) < 1) {
+ 		printerr(0, "WARNING: handle_gssd_upcall: "
+ 			 "failed to parse target name "
+-			 "in upcall string '%s'\n", info->lbuf);
++			 "in upcall string '%s'\n", upcall_str);
+ 		goto out;
+ 	}
+ 
+@@ -790,7 +797,7 @@ handle_gssd_upcall(struct clnt_upcall_info *info)
+ 	if (service && strlen(service) < 1) {
+ 		printerr(0, "WARNING: handle_gssd_upcall: "
+ 			 "failed to parse service type "
+-			 "in upcall string '%s'\n", info->lbuf);
++			 "in upcall string '%s'\n", upcall_str);
+ 		goto out;
+ 	}
+ 
+@@ -803,6 +810,8 @@ handle_gssd_upcall(struct clnt_upcall_info *info)
+ 		do_error_downcall(clp->gssd_fd, uid, -EACCES);
+ 	}
+ out:
++	free(upcall_str);
++out_nomem:
+ 	free(info);
+ 	return;
+ }
+-- 
+2.20.1
+

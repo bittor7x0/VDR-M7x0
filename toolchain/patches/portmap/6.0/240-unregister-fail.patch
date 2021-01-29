@@ -1,0 +1,87 @@
+From 4836a4aa7cec4fe515a61b70d6cb24ed2348955a Mon Sep 17 00:00:00 2001
+From: Denis Zaitceff <zaitceff@gmail.com>
+Date: Fri, 20 Jun 2014 23:09:26 +0600
+Subject: [PATCH] Only fail an 'unregister' attempt if nothing can be
+ unregistered.
+
+It is possible that the registration for some protocol can be
+unregistered by a given request, but others cannot.
+Currently we abort if we find something that cannot be unregistered,
+even if we have already successfuly unregistered something else.
+It is better to unregister whatever we can, and return success if
+anything was successful.
+
+Original comment:
+
+There is some inconsistency(-alike?) in the portmap protocol:
+
+a) PMAPPROC_SET registers the only one program using the
+ (prog,vers,prot) key, while PMAPPROC_UNSET unregisters all the (two)
+ programs, as it uses just the (prog,vers) key.
+
+b) Then, it seems to be pretty legal, if two different processes SET
+ the same (prog,vers) tuples - one for TCP and another for UDP.
+
+And at the UNSET step, portmap can catch some security question: say,
+one process has been used the privileged port for registration, while
+another process has not.  And, considering b), portmap must refuse to
+UNSET the privileged port if it was asked by unprivileged port's
+process.  And this should not be considered as an error, while ever
+one port is UNSET.  But in the current implementation, that "mixed"
+cases are treated as just an error.  The patch fixes this behaviour.
+Please apply it, if my understanding is correct.
+
+Signed-off-by: Neil Brown <neilb@suse.de>
+---
+ from_local.c | 10 ++++++++++
+ portmap.c    | 13 +++++--------
+ 2 files changed, 15 insertions(+), 8 deletions(-)
+
+diff --git a/from_local.c b/from_local.c
+index da851c6..eb02a99 100644
+--- a/from_local.c
++++ b/from_local.c
+@@ -162,6 +162,16 @@ int from_local(struct sockaddr_in *addr)
+ 		   sizeof(struct in_addr)) == 0)
+ 	    return (TRUE);
+     }
++    /* maybe a new interface was added */
++    free(addrs);
++    addrs = NULL;
++    find_local();
++    for (i = 0; i < num_local; i++) {
++	if (memcmp((char *) &(addr->sin_addr), (char *) &(addrs[i]),
++		   sizeof(struct in_addr)) == 0)
++	    return (TRUE);
++    }
++
+     return (FALSE);
+ }
+ 
+diff --git a/portmap.c b/portmap.c
+index ed8e50c..6a7586f 100644
+--- a/portmap.c
++++ b/portmap.c
+@@ -568,17 +568,14 @@ static void reg_service(struct svc_req *rqstp, SVCXPRT *xprt)
+ 				if (!check_privileged_port(svc_getcaller(xprt), 
+ 				    rqstp->rq_proc, 
+ 				    reg.pm_prog, 
+-				    pml->pml_map.pm_port)) {
+-					ans = 0;
+-					break;
+-				}
++				    pml->pml_map.pm_port))
++					continue;
++
+ 				fpml = (struct flagged_pml*)pml;
+ 				if (fpml->priv &&
+ 				    (ntohs(svc_getcaller(xprt)->sin_port)
+-				     >= IPPORT_RESERVED)) {
+-					ans = 0;
+-					break;
+-				}
++				     >= IPPORT_RESERVED))
++					continue;
+ 
+ 				ans = 1;
+ 				t = (caddr_t)pml;

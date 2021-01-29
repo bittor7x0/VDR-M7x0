@@ -1,0 +1,12 @@
+Index: nfs-utils/utils/blkmapd/device-discovery.c
+===================================================================
+--- nfs-utils.orig/utils/blkmapd/device-discovery.c
++++ nfs-utils/utils/blkmapd/device-discovery.c
+@@ -49,6 +49,7 @@
+ #include <libgen.h>
+ #include <errno.h>
+ #include <libdevmapper.h>
++#include <sys/sysmacros.h>
+ 
+ #include "device-discovery.h"
+ #include "xcommon.h"

@@ -1,0 +1,5 @@
+usr/lib/libtirpc.so.3.0.0       usr/lib/libtirpc.so.3.0.0       f 755 0 0 - - - - -
+usr/lib/libtirpc.so.3.0.0       -                               s   - - - - - - - -
+usr/lib/libtirpc.so.3           libtirpc.so.3.0.0               l 777 0 0 - - - - -
+usr/lib/libtirpc.so             libtirpc.so.3.0.0               l 777 0 0 - - - - -
+etc/netconfig                   usr/etc/netconfig               f 664 0 0 - - - - -

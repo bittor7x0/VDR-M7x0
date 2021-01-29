@@ -1,0 +1,86 @@
+diff -Naur a/utils/nfsd/nfsd.c b/utils/nfsd/nfsd.c
+--- a/utils/nfsd/nfsd.c	2016-08-03 20:25:15.000000000 +0200
++++ b/utils/nfsd/nfsd.c	2020-11-04 17:49:57.212005349 +0100
+@@ -254,9 +254,6 @@
+ 		exit(1);
+ 	}
+ 
+-	/* make sure nfsdfs is mounted if it's available */
+-	nfssvc_mount_nfsdfs(progname);
+-
+ 	/* can only change number of threads if nfsd is already up */
+ 	if (nfssvc_inuse()) {
+ 		socket_up = 1;
+diff -Naur a/utils/nfsd/nfssvc.c b/utils/nfsd/nfssvc.c
+--- a/utils/nfsd/nfssvc.c	2016-08-03 20:25:15.000000000 +0200
++++ b/utils/nfsd/nfssvc.c	2020-11-04 17:50:42.965446138 +0100
+@@ -15,11 +15,9 @@
+ #include <netdb.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+-#include <sys/stat.h>
+ #include <unistd.h>
+ #include <fcntl.h>
+ #include <errno.h>
+-#include <stdlib.h>
+ #include <string.h>
+ 
+ #include "nfslib.h"
+@@ -43,46 +41,6 @@
+ char buf[128];
+ 
+ /*
+- * Using the "new" interfaces for nfsd requires that /proc/fs/nfsd is
+- * actually mounted. Make an attempt to mount it here if it doesn't appear
+- * to be. If the mount attempt fails, no big deal -- fall back to using nfsctl
+- * instead.
+- */
+-void
+-nfssvc_mount_nfsdfs(char *progname)
+-{
+-	int err;
+-	struct stat statbuf;
+-
+-	err = stat(NFSD_THREAD_FILE, &statbuf);
+-	if (err == 0)
+-		return;
+-
+-	if (errno != ENOENT) {
+-		xlog(L_ERROR, "Unable to stat %s: errno %d (%m)",
+-				NFSD_THREAD_FILE, errno);
+-		return;
+-	}
+-
+-	/*
+-	 * this call can return an error if modprobe is set up to automatically
+-	 * mount nfsdfs when nfsd.ko is plugged in. So, ignore the return
+-	 * code from it and just check for the "threads" file afterward.
+-	 */
+-	system("/bin/mount -t nfsd nfsd " NFSD_FS_DIR " >/dev/null 2>&1");
+-
+-	err = stat(NFSD_THREAD_FILE, &statbuf);
+-	if (err == 0)
+-		return;
+-
+-	xlog(L_WARNING, "Unable to access " NFSD_FS_DIR " errno %d (%m)." 
+-		"\nPlease try, as root, 'mount -t nfsd nfsd " NFSD_FS_DIR 
+-		"' and then restart %s to correct the problem", errno, progname);
+-
+-	return;
+-}
+-
+-/*
+  * Are there already sockets configured? If not, then it is safe to try to
+  * open some and pass them through.
+  *
+diff -Naur a/utils/nfsd/nfssvc.h b/utils/nfsd/nfssvc.h
+--- a/utils/nfsd/nfssvc.h	2016-08-03 20:25:15.000000000 +0200
++++ b/utils/nfsd/nfssvc.h	2020-11-04 17:50:50.892131848 +0100
+@@ -20,7 +20,6 @@
+  *
+  */
+ 
+-void	nfssvc_mount_nfsdfs(char *progname);
+ int	nfssvc_inuse(void);
+ int	nfssvc_set_sockets(const unsigned int protobits,
+ 			   const char *host, const char *port);

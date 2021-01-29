@@ -1,0 +1,114 @@
+diff -Naur a/Makefile.am b/Makefile.am
+--- a/Makefile.am	2018-08-15 16:51:19.000000000 +0200
++++ b/Makefile.am	2020-09-29 17:34:00.281347969 +0200
+@@ -5,7 +5,6 @@
+ 	-DPORTMAP \
+ 	-DFACILITY=LOG_MAIL \
+ 	-DSEVERITY=LOG_INFO \
+-	-DINET6 \
+ 	-DRPCBIND_STATEDIR="\"$(statedir)\"" \
+ 	-DRPCBIND_USER="\"$(rpcuser)\"" \
+ 	-DNSS_MODULES="\"$(nss_modules)\"" \
+diff -Naur a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2018-08-15 17:00:32.000000000 +0200
++++ b/Makefile.in	2020-09-29 17:34:08.161257145 +0200
+@@ -334,7 +334,7 @@
+ top_srcdir = @top_srcdir@
+ AUTOMAKE_OPTIONS = subdir-objects
+ AM_CPPFLAGS = -DCHECK_LOCAL -DPORTMAP -DFACILITY=LOG_MAIL \
+-	-DSEVERITY=LOG_INFO -DINET6 \
++	-DSEVERITY=LOG_INFO \
+ 	-DRPCBIND_STATEDIR="\"$(statedir)\"" \
+ 	-DRPCBIND_USER="\"$(rpcuser)\"" \
+ 	-DNSS_MODULES="\"$(nss_modules)\"" -D_GNU_SOURCE \
+diff -Naur a/src/rpcbind.c b/src/rpcbind.c
+--- a/src/rpcbind.c	2018-08-15 16:51:19.000000000 +0200
++++ b/src/rpcbind.c	2020-09-29 17:51:32.838248560 +0200
+@@ -415,8 +415,10 @@
+ 			goto error;
+ 		}
+ 
++#ifdef INET6
+ 		if (sa.sa.sa_family == AF_INET6 && handle_ipv6_socket(fd))
+ 		        goto error;
++#endif
+ 
+ 		/* Copy the address */
+ 		taddr.addr.maxlen = taddr.addr.len = addrlen;
+@@ -477,8 +479,10 @@
+ 		else {
+ 			if (hints.ai_family == AF_INET) {
+ 				hosts[nhostsbak - 1] = "127.0.0.1";
++#ifdef INET6
+ 			} else if (hints.ai_family == AF_INET6) {
+ 				hosts[nhostsbak - 1] = "::1";
++#endif
+ 			} else
+ 				return 1;
+ 		}
+@@ -504,6 +508,7 @@
+ 				if (inet_pton(AF_INET, hosts[nhostsbak],
+ 				    host_addr) == 1) {
+ 					hints.ai_flags |= AI_NUMERICHOST;
++#ifdef INET6
+ 				} else {
+ 					/*
+ 					 * Skip if we have an AF_INET6 adress.
+@@ -511,8 +516,10 @@
+ 					if (inet_pton(AF_INET6,
+ 					    hosts[nhostsbak], host_addr) == 1)
+ 						continue;
++#endif
+ 				}
+ 				break;
++#ifdef INET6
+ 			case AF_INET6:
+ 				if (inet_pton(AF_INET6, hosts[nhostsbak],
+ 				    host_addr) == 1) {
+@@ -526,6 +533,7 @@
+ 						continue;
+ 				}
+ 	        		break;
++#endif
+ 			default:
+ 				break;
+ 			}
+@@ -587,9 +595,11 @@
+ 				case AF_INET:
+ 				  sa_size = sizeof (struct sockaddr_in);
+ 				  break;
++#ifdef INET6
+ 				case AF_INET6:
+ 				  sa_size = sizeof (struct sockaddr_in6);				 
+ 				  break;
++#endif
+ 				}
+ 				nb.len = nb.maxlen = sa_size;
+ 				uaddr = taddr2uaddr(nconf, &nb);
+@@ -670,9 +680,11 @@
+ 			case AF_INET:
+ 			  sa_size2 = sizeof (struct sockaddr_in);
+ 			  break;
++#ifdef INET6
+ 			case AF_INET6:
+ 			  sa_size2 = sizeof (struct sockaddr_in6);				 
+ 			  break;
++#endif
+ 			}
+ 			nb.len = nb.maxlen = sa_size2;
+ 			uaddr = taddr2uaddr(nconf, &nb);
+diff -Naur a/src/rpcinfo.c b/src/rpcinfo.c
+--- a/src/rpcinfo.c	2018-08-15 16:51:19.000000000 +0200
++++ b/src/rpcinfo.c	2020-09-29 17:47:20.998006122 +0200
+@@ -656,9 +656,11 @@
+         case AF_INET:
+             salen = sizeof (struct sockaddr_in);
+             break;
++#ifdef INET6
+         case AF_INET6:
+             salen = sizeof (struct sockaddr_in6);
+             break;
++#endif
+         default:
+             salen = 0;
+             break;
