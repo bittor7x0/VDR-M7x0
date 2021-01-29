@@ -26,6 +26,9 @@
 
 VDR-PLUGINS_DEPS = $(BASE_BUILD_STAGEFILE) $(VDR_INSTALLED) $(TOP_DIR)/.config
 
+CONFIG_VDR-PLUGINS := $(CONFIG_VDR-PLUGINS-ROOTFS) $(CONFIG_VDR-PLUGINS-JFFS2)
+CONFIG_VDR-PLUGINS-LIBS := $(CONFIG_VDR-PLUGINS-ROOTFS-LIBS) $(CONFIG_VDR-PLUGINS-JFFS2-LIBS)
+
 ifeq ($(or $(filter y,$(CONFIG_ZLIB)),$(filter y,$(CONFIG_ZLIB_STATIC))),y)
 	VDR-PLUGINS_DEPS +=  $(ZLIB_INSTALLED)
 endif
@@ -67,11 +70,11 @@ vdr-plugins_touch_stagefiles = \
 
 VDR-PLUGINS_INSTALLED = $(call vdr-plugin_rules,installed)
 
-ifneq ($(CONFIG_VDR-PLUGINS),)
+ifneq ($(strip $(CONFIG_VDR-PLUGINS)),)
 ifneq ($(CONFIG_VDR),y)
    $(error dependency error: vdr plugins needs vdr enabled)
 endif
-ifeq ($(CONFIG_VDR-PLUGINS-LIBS),)
+ifeq ($(strip $(CONFIG_VDR-PLUGINS-LIBS)),)
    $(error dependency error: plugins given but no plugins libnames)
 endif
 PACKS_RULES_y += $(VDR-PLUGINS_INSTALLED)
@@ -90,7 +93,10 @@ DISTCLEAN_RULES += distclean-vdr-plugins
 VDR-PLUGINS_APIVERSION = \
    $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' $(VDR_DIR)/config.h)
 
-VDR-PLUGINS_LIBNAMES = $(foreach plug,$(CONFIG_VDR-PLUGINS-LIBS), \
+VDR-PLUGINS-ROOTFS_LIBNAMES = $(foreach plug,$(CONFIG_VDR-PLUGINS-ROOTFS-LIBS), \
+   libvdr-$(plug).so.$(VDR-PLUGINS_APIVERSION))
+
+VDR-PLUGINS-JFFS2_LIBNAMES = $(foreach plug,$(CONFIG_VDR-PLUGINS-JFFS2-LIBS), \
    libvdr-$(plug).so.$(VDR-PLUGINS_APIVERSION))
 
 ifneq ($(and $(CONFIG_VDR-PLUGINS), $(wildcard $(VDR-PLUGINS_DIR))),)
@@ -235,15 +241,24 @@ $(STAGEFILES_DIR)/.vdr-plugins_installed: $(STAGEFILES_DIR)/.vdr-plugins_compile
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(MAKE) -C $(VDR_DIR) PLUGINLIBDIR=$(TARGET_ROOT)/usr/lib/vdr install-plugins
+		-$(RM) -rf $(TARGET_ROOT)/etc/plugins-lib
+		-$(MKDIR) -p $(TARGET_ROOT)/etc/plugins-lib
+		for lib in $(VDR-PLUGINS-JFFS2_LIBNAMES) ; do \
+			$(MV) -f $(TARGET_ROOT)/usr/lib/vdr/$$lib $(TARGET_ROOT)/etc/plugins-lib; \
+		done
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_installed
 
 
 $(FILELIST_DIR)/vdr-plugins.lst: $(STAGEFILES_DIR)/.vdr-plugins_installed
 	($(ECHO)   "usr/lib/vdr       -                 d 755 0 0 - - - - -"; \
 	 $(ECHO)   "etc/plugins-lib   -                 d 755 0 0 - - - - -"; \
-	for lib in $(VDR-PLUGINS_LIBNAMES) ; do \
+	for lib in $(VDR-PLUGINS-ROOTFS_LIBNAMES) ; do \
 		$(ECHO) "usr/lib/vdr/$$lib usr/lib/vdr/$$lib f 755 0 0 - - - - -"; \
 		$(ECHO) "usr/lib/vdr/$$lib -                 s   - - - - - - - -"; \
+	done; \
+	for lib in $(VDR-PLUGINS-JFFS2_LIBNAMES) ; do \
+		$(ECHO) "etc/plugins-lib/$$lib etc/plugins-lib/$$lib f 755 0 0 - - - - -"; \
+		$(ECHO) "etc/plugins-lib/$$lib -                 s   - - - - - - - -"; \
 	done) > $(FILELIST_DIR)/vdr-plugins.lst
 
 $(foreach plugin,$(notdir $(CONFIG_VDR-PLUGINS)), \

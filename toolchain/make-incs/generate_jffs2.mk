@@ -82,7 +82,7 @@ $(TOP_DIR)/$(JFFS2_IMG): $$(MKJFFS2_BIN) $(JFFS2_FILE_COPY)
 ifneq ($(strip $(CONFIG_VDR)),)
 	$(ECHO) "SVN VDR `svnversion -c \"$(VDR_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
 endif
-ifneq ($(strip $(CONFIG_VDR-PLUGINS)),)
+ifneq ($(strip $(CONFIG_VDR-PLUGINS-ROOTFS))$(strip $(CONFIG_VDR-PLUGINS-JFFS2)),)
 	$(ECHO) "SVN VDR-plugins `svnversion -c \"$(VDR-PLUGINS_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
 endif
 ifneq ($(strip $(CONFIG_WEBIF)),)
