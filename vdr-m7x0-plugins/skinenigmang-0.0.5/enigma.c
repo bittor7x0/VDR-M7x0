@@ -267,7 +267,9 @@ private:
   char *strLastDate;
 #ifndef DISABLE_ANIMATED_TEXT
   bool fScrollTitle;
+  bool fScrollOther;
   bool fLocked;
+  bool fLockNeeded;
   int idTitle;
 #endif
 
@@ -321,6 +323,7 @@ cSkinEnigmaDisplayChannel::cSkinEnigmaDisplayChannel(bool WithInfo)
   strLastDate = NULL;
 #ifndef DISABLE_ANIMATED_TEXT
   fScrollTitle = EnigmaConfig.useTextEffects && EnigmaConfig.scrollTitle;
+  fScrollOther = EnigmaConfig.useTextEffects && EnigmaConfig.scrollOther;
   idTitle = -1;
 #endif
 
@@ -412,9 +415,10 @@ cSkinEnigmaDisplayChannel::cSkinEnigmaDisplayChannel(bool WithInfo)
   }
 
 #ifndef DISABLE_ANIMATED_TEXT
+  fLockNeeded = (fScrollTitle || fScrollOther);
   fLocked = false;
-  if (fScrollTitle) {
-    TE_START(osd);
+  TE_START(osd);
+  if (fLockNeeded) {
     fLocked = true;
   }
 #endif
@@ -425,10 +429,8 @@ cSkinEnigmaDisplayChannel::~cSkinEnigmaDisplayChannel()
   debug("cSkinEnigmaDisplayChannel::~cSkinEnigmaDisplayChannel()");
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle) {
-    if (!fLocked) TE_LOCK;
-    TE_STOP;
-  }
+  if (fLockNeeded && !fLocked) TE_LOCK;
+  TE_STOP;
 #endif
   free(strLastDate);
   delete osd;
@@ -696,8 +698,10 @@ void cSkinEnigmaDisplayChannel::SetChannel(const cChannel *Channel, int Number)
   debug("cSkinEnigmaDisplayChannel::SetChannel()");
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle && !fLocked)
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
     TE_LOCK;
+  }
 #endif
 
   xFirstSymbol = 0;
@@ -728,7 +732,7 @@ void cSkinEnigmaDisplayChannel::SetChannel(const cChannel *Channel, int Number)
   }
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle && !fLocked)
+  if (fLockNeeded && !fLocked)
     TE_UNLOCK;
 #endif
 }
@@ -744,8 +748,10 @@ void cSkinEnigmaDisplayChannel::SetEvents(const cEvent *Present,
   int lineHeightSubtitle = pFontSubtitle->Height();
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle && !fLocked)
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
     TE_LOCK;
+  }
 #endif
 
   // check epg datas
@@ -756,7 +762,7 @@ void cSkinEnigmaDisplayChannel::SetEvents(const cEvent *Present,
     int total = e->Duration();
     snprintf(sLen, sizeof(sLen), "%d'", total / 60);
 
-    int now = (time(NULL) - e->StartTime());
+    int now = std::max((int)(time(NULL) - e->StartTime()), 0);
     if ((now < total) && ((now / 60) > 0)) {
       switch (EnigmaConfig.showRemaining) {
         case 0:
@@ -864,7 +870,7 @@ void cSkinEnigmaDisplayChannel::SetEvents(const cEvent *Present,
   }
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle && !fLocked)
+  if (fLockNeeded && !fLocked)
     TE_UNLOCK;
 #endif
 }
@@ -874,8 +880,10 @@ void cSkinEnigmaDisplayChannel::SetMessage(eMessageType Type, const char *Text)
   debug("cSkinEnigmaDisplayChannel::SetMessage()");
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle && !fLocked)
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
     TE_LOCK;
+  }
 #endif
 
   // check if message
@@ -901,7 +909,7 @@ void cSkinEnigmaDisplayChannel::SetMessage(eMessageType Type, const char *Text)
   }
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle && !fLocked)
+  if (fLockNeeded && !fLocked)
     TE_UNLOCK;
 #endif
 }
@@ -911,7 +919,7 @@ void cSkinEnigmaDisplayChannel::Flush(void)
 //  debug("cSkinEnigmaDisplayChannel::Flush()");
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked && fScrollTitle)
+  if (fLockNeeded && !fLocked)
     TE_LOCK;
 #endif
 
@@ -998,7 +1006,7 @@ void cSkinEnigmaDisplayChannel::Flush(void)
   osd->Flush();
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle) {
+  if (fLockNeeded) {
     TE_UNLOCK;
     if (fLocked) {
       fLocked = false;
@@ -1046,6 +1054,7 @@ private:
   int idListItem[MaxTabs];
   int idTitle;
   bool fLocked;
+  bool fLockNeeded;
   bool fScrollTitle;
   bool fScrollInfo;
   bool fScrollListItem;
@@ -1217,9 +1226,10 @@ cSkinEnigmaDisplayMenu::cSkinEnigmaDisplayMenu(void)
   yItemTop = yBodyTop + (yBodyBottom - yBodyTop - numItems * lineHeight) / 2;
 
 #ifndef DISABLE_ANIMATED_TEXT
+  fLockNeeded = (fScrollTitle || fScrollInfo || fScrollListItem || fScrollOther);
   fLocked = false;
-  if (fScrollTitle || fScrollInfo || fScrollListItem || fScrollOther) {
-    TE_START(osd);
+  TE_START(osd);
+  if (fLockNeeded) {
     fLocked = true;
   }
 #endif
@@ -1492,10 +1502,8 @@ void cSkinEnigmaDisplayMenu::SetupAreas(void)
 cSkinEnigmaDisplayMenu::~cSkinEnigmaDisplayMenu()
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle || fScrollInfo || fScrollListItem || fScrollOther) {
-    if (!fLocked) TE_LOCK;
-    TE_STOP;
-  }
+  if (fLockNeeded && !fLocked) TE_LOCK;
+  TE_STOP;
 #endif
   free(strTheme);
   free(strTitle);
@@ -1536,12 +1544,15 @@ void cSkinEnigmaDisplayMenu::SetScrollbar(void)
 void cSkinEnigmaDisplayMenu::Scroll(bool Up, bool Page)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   cSkinDisplayMenu::Scroll(Up, Page);
   SetScrollbar();
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
@@ -1556,7 +1567,10 @@ void cSkinEnigmaDisplayMenu::Clear(void)
   debug("cSkinEnigmaDisplayMenu::Clear() %d %d %d", isMainMenu, fShowLogo, fShowInfo);
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
   pFontList = EnigmaConfig.GetFont(FONT_LISTITEM, pFontList); //TODO? get current font which might have been patched meanwhile
   nOldIndex = -1;
   for (int i = MaxTabs - 1; i >= 0; i--) {
@@ -1584,7 +1598,7 @@ void cSkinEnigmaDisplayMenu::Clear(void)
     }
   }
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 
 }
@@ -1617,14 +1631,17 @@ void cSkinEnigmaDisplayMenu::SetTitle(const char *Title)
 
   if ((Title == NULL) || (isMainMenu && strncmp(strTitlePrefix, Title, strlen(strTitlePrefix)) == 0)) {
 #ifndef DISABLE_ANIMATED_TEXT
-    if (!fLocked) TE_LOCK;
+    if (fLockNeeded && !fLocked) {
+      fLocked = true;
+      TE_LOCK;
+    }
     if (fScrollTitle) {
       idTitle = TE_TITLE(osd, idTitle, strTitle, xTitleRight - xTitleLeft - Roundness, this);
     } else
 #endif
       DrawTitle(Title);
 #ifndef DISABLE_ANIMATED_TEXT
-    if (!fLocked) TE_UNLOCK;
+    if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
   } else {
     bool old_isMainMenu = isMainMenu;
@@ -1643,13 +1660,16 @@ void cSkinEnigmaDisplayMenu::SetTitle(const char *Title)
 
 #ifndef DISABLE_ANIMATED_TEXT
     if (fTitleChanged) {
-      if (!fLocked) TE_LOCK;
+      if (fLockNeeded && !fLocked) {
+        fLocked = true;
+        TE_LOCK;
+      }
       EnigmaTextEffects.Clear();
       idTitle = -1;
       nOldIndex = -1;
       for (int i = 0; i < MaxTabs; i++)
         idListItem[i] = -1;
-      if (!fLocked) TE_UNLOCK;
+      if (fLockNeeded && !fLocked) TE_UNLOCK;
     }
 #endif
 
@@ -1659,22 +1679,28 @@ void cSkinEnigmaDisplayMenu::SetTitle(const char *Title)
         || old_fShowInfo != fShowInfo) {
 
 #ifndef DISABLE_ANIMATED_TEXT
-      if (!fLocked) TE_LOCK;
+      if (fLockNeeded && !fLocked) {
+        fLocked = true;
+        TE_LOCK;
+      }
 #endif
       SetupAreas();
 #ifndef DISABLE_ANIMATED_TEXT
-      if (!fLocked) TE_UNLOCK;
+      if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
     } else {
 #ifndef DISABLE_ANIMATED_TEXT
-      if (!fLocked) TE_LOCK;
+      if (fLockNeeded && !fLocked) {
+        fLocked = true;
+        TE_LOCK;
+      }
       if (fScrollTitle) {
         idTitle = TE_TITLE(osd, idTitle, strTitle, xTitleRight - xTitleLeft - Roundness, this);
       } else
 #endif
         DrawTitle(Title);
 #ifndef DISABLE_ANIMATED_TEXT
-      if (!fLocked) TE_UNLOCK;
+      if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
     }
   }
@@ -1717,7 +1743,10 @@ void cSkinEnigmaDisplayMenu::SetButtons(const char *Red, const char *Green, cons
   debug("cSkinEnigmaDisplayMenu::SetButtons(%s, %s, %s, %s)", Red, Green, Yellow, Blue);
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   const cFont *pFontHelpKeys = EnigmaConfig.GetFont(FONT_HELPKEYS);
   int w = (xButtonsRight - xButtonsLeft) / 4;
@@ -1758,14 +1787,17 @@ void cSkinEnigmaDisplayMenu::SetButtons(const char *Red, const char *Green, cons
                      xButtonsRight - 1, yButtonsBottom - 1, clrTransparent, -4);
   }
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
 void cSkinEnigmaDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   // check if message
   if (Text) {
@@ -1801,7 +1833,7 @@ void cSkinEnigmaDisplayMenu::SetMessage(eMessageType Type, const char *Text)
 #endif
   }
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
@@ -1828,7 +1860,10 @@ void cSkinEnigmaDisplayMenu::SetItem(const char *Text, int Index, bool Current, 
     return; //Don't draw above messages
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   tColor ColorFg, ColorBg;
   // select colors
@@ -2141,7 +2176,7 @@ void cSkinEnigmaDisplayMenu::SetItem(const char *Text, int Index, bool Current, 
 #endif
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
@@ -2187,7 +2222,10 @@ void cSkinEnigmaDisplayMenu::SetEvent(const cEvent *Event)
     return;
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   const cFont *pFontDetailsTitle = EnigmaConfig.GetFont(FONT_DETAILSTITLE);
   const cFont *pFontDetailsSubtitle = EnigmaConfig.GetFont(FONT_DETAILSSUBTITLE);
@@ -2405,7 +2443,7 @@ void cSkinEnigmaDisplayMenu::SetEvent(const cEvent *Event)
     strFirst = stringInfo.empty() ? NULL : stringInfo.c_str();
     strSecond = strDescr;
   }
-  if (strFirst || strSecond || strSecond) {
+  if (strFirst || strSecond || strThird) {
     y = yHeadlineBottom + SmallGap + 2 * pFontDetailsDate->Height();
     char *mytext;
     asprintf(&mytext, "%s%s%s%s%s", strFirst ? strFirst : "",
@@ -2436,7 +2474,7 @@ void cSkinEnigmaDisplayMenu::SetEvent(const cEvent *Event)
   }
 #endif
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
@@ -2475,7 +2513,10 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
   }
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   const cFont *pFontDetailsTitle = EnigmaConfig.GetFont(FONT_DETAILSTITLE);
   const cFont *pFontDetailsSubtitle = EnigmaConfig.GetFont(FONT_DETAILSSUBTITLE);
@@ -2643,14 +2684,17 @@ void cSkinEnigmaDisplayMenu::SetRecording(const cRecording *Recording)
   }
 #endif
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
 void cSkinEnigmaDisplayMenu::SetText(const char *Text, bool FixedFont)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   // draw text
   textScroller.Set(osd, xBodyLeft + Gap, yBodyTop + Gap,
@@ -2660,7 +2704,7 @@ void cSkinEnigmaDisplayMenu::SetText(const char *Text, bool FixedFont)
                    Theme.Color(clrMenuTxtFg), Theme.Color(clrBackground));
   SetScrollbar();
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
@@ -2700,7 +2744,7 @@ int cSkinEnigmaDisplayMenu::getDateWidth(const cFont *pFontDate)
 void cSkinEnigmaDisplayMenu::Flush(void)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) TE_LOCK;
 #endif
 debug("cSkinEnigmaDisplayMenu::Flush()");
 
@@ -2757,10 +2801,12 @@ debug("cSkinEnigmaDisplayMenu::Flush()");
   }
   osd->Flush();
 #ifndef DISABLE_ANIMATED_TEXT
-  TE_UNLOCK;
-  if (fLocked) {
-    fLocked = false;
-    TE_WAKEUP;
+  if (fLockNeeded) {
+    TE_UNLOCK;
+    if (fLocked) {
+      fLocked = false;
+      TE_WAKEUP;
+    }
   }
 #endif
 }
@@ -2789,6 +2835,7 @@ private:
   bool fShowSymbol;
 #ifndef DISABLE_ANIMATED_TEXT
   bool fLocked;
+  bool fLockNeeded;
   bool fScrollTitle;
   int idTitle;
 #endif
@@ -2917,9 +2964,10 @@ cSkinEnigmaDisplayReplay::cSkinEnigmaDisplayReplay(bool ModeOnly)
   }
 
 #ifndef DISABLE_ANIMATED_TEXT
+  fLockNeeded = fScrollTitle;
   fLocked = false;
-  if (fScrollTitle) {
-    TE_START(osd);
+  TE_START(osd);
+  if (fLockNeeded) {
     fLocked = true;
   }
 #endif
@@ -2928,10 +2976,8 @@ cSkinEnigmaDisplayReplay::cSkinEnigmaDisplayReplay(bool ModeOnly)
 cSkinEnigmaDisplayReplay::~cSkinEnigmaDisplayReplay()
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (fScrollTitle) {
-    if (!fLocked) TE_LOCK;
-    TE_STOP;
-  }
+  if (fLockNeeded && !fLocked) TE_LOCK;
+  TE_STOP;
 #endif
   free(strLastDate);
   delete osd;
@@ -2940,14 +2986,17 @@ cSkinEnigmaDisplayReplay::~cSkinEnigmaDisplayReplay()
 void cSkinEnigmaDisplayReplay::SetTitle(const char *Title)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
   if (fScrollTitle) {
     idTitle = TE_TITLE(osd, idTitle, Title, xTitleRight - Roundness - xTitleLeft - Roundness, this);
   } else
 #endif
     DrawTitle(Title);
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
@@ -2984,7 +3033,7 @@ void cSkinEnigmaDisplayReplay::DrawTitle(const char *Title)
 void cSkinEnigmaDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) TE_LOCK;
 #endif
 
   bool fFoundLogo = false;
@@ -3031,14 +3080,17 @@ void cSkinEnigmaDisplayReplay::SetMode(bool Play, bool Forward, int Speed)
                     EnigmaLogoCache.Get(), EnigmaLogoCache.Get().Color(1),
                     clrTransparent, false, true);
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
 void cSkinEnigmaDisplayReplay::SetProgress(int Current, int Total)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   // create progressbar
   cProgressBar pb(xProgressRight - xProgressLeft - 2 * BigGap,
@@ -3051,7 +3103,7 @@ void cSkinEnigmaDisplayReplay::SetProgress(int Current, int Total)
   // draw progressbar
   osd->DrawBitmap(xProgressLeft + BigGap, yProgressTop + BigGap, pb);
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
@@ -3063,7 +3115,10 @@ void cSkinEnigmaDisplayReplay::SetCurrent(const char *Current)
   // draw current time
   int w = pFontReplayTimes->Width(Current);
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   osd->DrawText(xTimeLeft + BigGap, yTimeTop, Current,
                 Theme.Color(clrReplayCurrent), Theme.Color(clrAltBackground), pFontReplayTimes,
@@ -3072,7 +3127,7 @@ void cSkinEnigmaDisplayReplay::SetCurrent(const char *Current)
     osd->DrawRectangle(xTimeLeft + BigGap + w, yTimeTop, xTimeLeft + BigGap + nCurrentWidth - 1, yTimeBottom - 1, Theme.Color(clrAltBackground));
   nCurrentWidth = w;
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
@@ -3084,20 +3139,26 @@ void cSkinEnigmaDisplayReplay::SetTotal(const char *Total)
   // draw total time
   int w = pFontReplayTimes->Width(Total);
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   osd->DrawText(xTimeRight - BigGap - w, yTimeTop, Total,
                 Theme.Color(clrReplayTotal), Theme.Color(clrAltBackground), pFontReplayTimes, w,
                 yTimeBottom - yTimeTop, taRight);
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
 void cSkinEnigmaDisplayReplay::SetJump(const char *Jump)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   if (Jump) {
     // draw jump prompt
@@ -3114,14 +3175,17 @@ void cSkinEnigmaDisplayReplay::SetJump(const char *Jump)
                        nJumpWidth - 1, yTimeBottom - 1, Theme.Color(clrAltBackground));
   }
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
 void cSkinEnigmaDisplayReplay::SetMessage(eMessageType Type, const char *Text)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
+    TE_LOCK;
+  }
 #endif
   if (Text) {
     // save current osd
@@ -3144,14 +3208,14 @@ void cSkinEnigmaDisplayReplay::SetMessage(eMessageType Type, const char *Text)
     osd->RestoreRegion();
   }
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_UNLOCK;
+  if (fLockNeeded && !fLocked) TE_UNLOCK;
 #endif
 }
 
 void cSkinEnigmaDisplayReplay::Flush(void)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) TE_LOCK;
 #endif
   // update date
   if (!modeonly) {
@@ -3168,10 +3232,12 @@ void cSkinEnigmaDisplayReplay::Flush(void)
   }
   osd->Flush();
 #ifndef DISABLE_ANIMATED_TEXT
-  TE_UNLOCK;
-  if (fLocked) {
-    fLocked = false;
-    TE_WAKEUP;
+  if (fLockNeeded) {
+    TE_UNLOCK;
+    if (fLocked) {
+      fLocked = false;
+      TE_WAKEUP;
+    }
   }
 #endif
 }
@@ -3621,7 +3687,9 @@ private:
   bool fShowSymbol;
 #ifndef DISABLE_ANIMATED_TEXT
   int idMessage;
+  bool fScrollOther;
   bool fLocked;
+  bool fLockNeeded;
 #endif
 
 public:
@@ -3643,6 +3711,7 @@ cSkinEnigmaDisplayMessage::cSkinEnigmaDisplayMessage()
   pFontDate = EnigmaConfig.GetFont(FONT_DATE);
 
 #ifndef DISABLE_ANIMATED_TEXT
+  fScrollOther = EnigmaConfig.useTextEffects && EnigmaConfig.scrollOther;
   idMessage = -1;
 #endif
   fShowSymbol = EnigmaConfig.showSymbols && EnigmaConfig.showSymbolsMsgs;
@@ -3713,9 +3782,10 @@ cSkinEnigmaDisplayMessage::cSkinEnigmaDisplayMessage()
   osd->DrawRectangle(0, 0, osd->Width(), osd->Height(), clrTransparent);
 
 #ifndef DISABLE_ANIMATED_TEXT
+  fLockNeeded = fScrollOther;
   fLocked = false;
-  if (EnigmaConfig.useTextEffects && EnigmaConfig.scrollOther) {
-    TE_START(osd);
+  TE_START(osd);
+  if (fLockNeeded) {
     fLocked = true;
   }
 #endif
@@ -3726,10 +3796,8 @@ cSkinEnigmaDisplayMessage::~cSkinEnigmaDisplayMessage()
   debug("cSkinEnigmaDisplayMessage::~cSkinEnigmaDisplayMessage");
 
 #ifndef DISABLE_ANIMATED_TEXT
-  if (EnigmaConfig.useTextEffects && EnigmaConfig.scrollOther) {
-    if (!fLocked) TE_LOCK;
-    TE_STOP;
-  }
+  if (fLockNeeded && !fLocked) TE_LOCK;
+  TE_STOP;
 #endif
   delete osd;
 }
@@ -3738,8 +3806,10 @@ void cSkinEnigmaDisplayMessage::SetMessage(eMessageType Type, const char *Text)
 {
   debug("cSkinEnigmaDisplayMessage::SetMessage");
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked && EnigmaConfig.useTextEffects && EnigmaConfig.scrollOther)
+  if (fLockNeeded && !fLocked) {
+    fLocked = true;
     TE_LOCK;
+  }
 #endif
   if (fShowSymbol) {
     // draw logo
@@ -3786,7 +3856,7 @@ void cSkinEnigmaDisplayMessage::SetMessage(eMessageType Type, const char *Text)
                      xBottomLeft + Roundness - 1, yBottomBottom - 1, clrTransparent, -3);
   }
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked && EnigmaConfig.useTextEffects && EnigmaConfig.scrollOther)
+  if (fLockNeeded && !fLocked)
     TE_UNLOCK;
 #endif
 }
@@ -3794,14 +3864,16 @@ void cSkinEnigmaDisplayMessage::SetMessage(eMessageType Type, const char *Text)
 void cSkinEnigmaDisplayMessage::Flush(void)
 {
 #ifndef DISABLE_ANIMATED_TEXT
-  if (!fLocked) TE_LOCK;
+  if (fLockNeeded && !fLocked) TE_LOCK;
 #endif
   osd->Flush();
 #ifndef DISABLE_ANIMATED_TEXT
-  TE_UNLOCK;
-  if (fLocked) {
-    fLocked = false;
-    TE_WAKEUP;
+  if (fLockNeeded) {
+    TE_UNLOCK;
+    if (fLocked) {
+      fLocked = false;
+      TE_WAKEUP;
+    }
   }
 #endif
 }

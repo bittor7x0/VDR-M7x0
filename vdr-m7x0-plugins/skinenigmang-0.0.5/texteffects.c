@@ -46,6 +46,7 @@ cEnigmaTextEffects::cEnigmaTextEffects(const char *Description) : cThread(Descri
 #endif
 {
 //  SetPriority(19);
+  sem_init(&sem_update, 0, 1);
 
 #ifdef HAVE_FREETYPE
   availTTFs = NULL;

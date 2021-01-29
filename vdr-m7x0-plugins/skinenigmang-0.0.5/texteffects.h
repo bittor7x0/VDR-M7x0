@@ -8,6 +8,8 @@
 #ifndef __TEXTEFFECTS_H
 #define __TEXTEFFECTS_H
 
+#include <semaphore.h>
+
 #include "common.h"
 #include "enigma.h"
 
@@ -83,6 +85,7 @@ private:
   cCondVar condSleep;
   cMutex mutexSleep;
   cMutex mutexRunning;
+  sem_t sem_update;
 
   void DoEffect(tEffect *e, uint64_t nNow = 0);
   void DoScroll(tEffect *e, uint64_t nNow, bool fDrawItem);
@@ -122,14 +125,14 @@ public:
   void UpdateLock(void)
   { 
 //    printf("LOCK1: %lu\n", pthread_self());
-    Lock();
+    sem_wait(&sem_update);
 //    printf("LOCK2: %lu\n", pthread_self());
   }
 
   void UpdateUnlock(void)
   { 
 //    printf("UNLOCK1: %lu\n", pthread_self());
-    Unlock();
+    sem_post(&sem_update);
 //    printf("UNLOCK2: %lu\n", pthread_self());
   }
 

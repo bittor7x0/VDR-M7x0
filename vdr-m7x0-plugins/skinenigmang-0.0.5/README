@@ -282,7 +282,7 @@ Setup Options
 
 * Fonts
   If you've set the VDR OSD option "Use small font" to "skin dependent" then
-  you can set your prefered fonts for various areas. If you've patched additional
+  you can set your preferred fonts for various areas. If you've patched additional
   fonts into VDR you need to set the SKINENIGMA_FONTS define (see above) to see
   them in the list of available fonts.
 
@@ -322,7 +322,7 @@ Setup Options
   If set to "if exists" it will use the subtitle to find reruns if the
   current event contains a subtitle. This will also require a full title match,
   e.g. if title is "Brisant" and subtitle is "Boulevard Magazin" it will find
-  only events with title and subtitle beeing exactly "Brisant" and "Boulevard
+  only events with title and subtitle being exactly "Brisant" and "Boulevard
   Magazin". It won't find events named "Brisant Classix" or "Brisant" without
   subtitle.
   If set to "always" it will always use the subtitle even if it's empty. As a
