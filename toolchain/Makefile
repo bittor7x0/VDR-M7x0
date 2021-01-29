@@ -379,6 +379,9 @@ define fix_fw_conf_files
 		(if [ -f $(1)/etc/vdr/plugins/epgsearch/epgsearchuservars.templ ] ; then \
 			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchuservars.templ ; \
 		fi); \
+		(if [ -f $(1)/usr/sbin/memwatch ] ; then \
+			$(RM) -f $(1)/usr/sbin/memwatch ; \
+		fi); \
 	fi);
 endef
 

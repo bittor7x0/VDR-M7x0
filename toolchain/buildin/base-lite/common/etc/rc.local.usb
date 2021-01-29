@@ -7,5 +7,3 @@ if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_time}" != X"NO" ] ; then
 		/usr/sbin/spindown -d ${hd_spindown_time} +${hd_sd_dev} &
 	done
 fi
-
-exec /bin/ash /etc/rc.local.post

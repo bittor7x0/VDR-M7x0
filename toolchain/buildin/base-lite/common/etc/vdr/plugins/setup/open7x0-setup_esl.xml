@@ -25,9 +25,6 @@
         <menu name="Depuración">
             <entry name="Activar servicio syslog" sysconfig="rc.conf--syslogd_flags" type="text" help="Registro del sistema. Dejarlo vacío para activarlo" />
             <entry name="Mostrar mensajes en OSD" sysconfig="rc.local.conf--osddebug" type="bool" help="Mostrar en el OSD la info de procesos al arrancar" />
-            <entry name="Monitor de memoria" sysconfig="rc.local.conf--memwatch" type="bool" help="Guardar registros del uso de memoria" />
-            <entry name="Mon. memoria - Intervalo" sysconfig="rc.local.conf--memwatch_interval" type="number" help="Intervalo de minutos en el que guardar registros de memoria" />
-            <entry name="Mon. memoria - Directorio" sysconfig="rc.local.conf--memwatch_dir" type="directory" help="Directorio donde guardar los registros de memoria" />
         </menu>
     </menus>
 </setup>
