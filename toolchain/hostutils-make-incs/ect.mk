@@ -28,7 +28,7 @@ ECT_HOSTDEPS = $(NASM_HOSTINSTALLED)
 
 ECT_BIN := $(HOSTUTILS_PREFIX_BIN)/ect
 
-ECT_HOSTVERSION := 0.8.2
+ECT_HOSTVERSION := 0.8.3
 
 ECT_HOSTPATCHES_DIR := $(PATCHES_DIR)/ect/$(ECT_HOSTVERSION)
 ECT_HOSTURL := https://github.com/fhanau/Efficient-Compression-Tool
@@ -53,7 +53,7 @@ $(STAGEFILES_DIR)/.ect_host_downloaded: $(TC_INIT_RULE)
 $(STAGEFILES_DIR)/.ect_host_prepared: $(STAGEFILES_DIR)/.ect_host_downloaded \
                                            $(wildcard $(ECT_HOSTPATCHES_DIR)/*.patch) \
                                            $$(ECT_HOSTDEPS)
-	(cd $(ECT_HOSTDIR)/src ; git submodule update --init --recursive --recommend-shallow ; cd mozjpeg ; autoreconf -i)
+	(cd $(ECT_HOSTDIR)/src ; git submodule update --init --recursive --recommend-shallow ; cd mozjpeg ; ASM_NASM=$(PREFIX_BIN)/nasm cmake -G"Unix Makefiles")
 	$(TOUCH) $(STAGEFILES_DIR)/.ect_host_prepared
 
 #

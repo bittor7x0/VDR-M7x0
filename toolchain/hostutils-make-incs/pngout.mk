@@ -25,12 +25,12 @@
 
 PNGOUT_BIN := $(HOSTUTILS_PREFIX_BIN)/pngout
 
-PNGOUT_HOSTVERSION := 20150319
-PNGOUT_HOSTFILE := pngout-$(PNGOUT_HOSTVERSION)-linux-static.tar.gz
+PNGOUT_HOSTVERSION := 20200115
+PNGOUT_HOSTFILE := pngout-$(PNGOUT_HOSTVERSION)-linux.tar.gz
 PNGOUT_HOSTDLFILE := $(DOWNLOAD_DIR)/$(PNGOUT_HOSTFILE)
 
-PNGOUT_HOSTURL := http://static.jonof.id.au/dl/kenutils/$(PNGOUT_HOSTFILE)
-PNGOUT_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/pngout-$(PNGOUT_HOSTVERSION)-linux-static
+PNGOUT_HOSTURL := http://www.jonof.id.au/files/kenutils/$(PNGOUT_HOSTFILE)
+PNGOUT_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/pngout-$(PNGOUT_HOSTVERSION)-linux
 
 CLEAN_RULES += clean-pngout-host
 DISTCLEAN_RULES += distclean-pngout-host
@@ -51,7 +51,8 @@ $(PNGOUT_HOSTDLFILE): $(TC_INIT_RULE)
 
 $(STAGEFILES_DIR)/.pngout_host_unpacked: $(PNGOUT_HOSTDLFILE)
 	-$(RM) -rf $(PNGOUT_HOSTDIR)
-	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -zf $(PNGOUT_HOSTDLFILE) 
+	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -zf $(PNGOUT_HOSTDLFILE)
+	$(MV) $(PNGOUT_HOSTDIR)/amd64 $(PNGOUT_HOSTDIR)/x86_64
 	$(TOUCH) $(STAGEFILES_DIR)/.pngout_host_unpacked
 
 #
@@ -61,10 +62,10 @@ $(STAGEFILES_DIR)/.pngout_host_unpacked: $(PNGOUT_HOSTDLFILE)
 $(HOSTUTILS_PREFIX_BIN)/pngout: $(STAGEFILES_DIR)/.pngout_host_unpacked
 	-$(RM) -f $(HOSTUTILS_PREFIX_BIN)/pngout
 	$(ECHO) "#!/bin/sh" > $(HOSTUTILS_PREFIX_BIN)/pngout
-	$(ECHO) "$(HOSTUTILS_PREFIX_BIN)/pngout-static-$(HOST_ARCH) \$$*" >> $(HOSTUTILS_PREFIX_BIN)/pngout
+	$(ECHO) "$(HOSTUTILS_PREFIX_BIN)/pngout-$(HOST_ARCH) \$$*" >> $(HOSTUTILS_PREFIX_BIN)/pngout
 	$(ECHO) "exit 0" >> $(HOSTUTILS_PREFIX_BIN)/pngout
 	chmod 755 $(HOSTUTILS_PREFIX_BIN)/pngout
-	$(CP) $(PNGOUT_HOSTDIR)/$(HOST_ARCH)/pngout-static $(HOSTUTILS_PREFIX_BIN)/pngout-static-$(HOST_ARCH)
+	$(CP) $(PNGOUT_HOSTDIR)/$(HOST_ARCH)/pngout $(HOSTUTILS_PREFIX_BIN)/pngout-$(HOST_ARCH)
 
 .PHONY: clean-pngout-host distclean-pngout-host
 
@@ -74,7 +75,7 @@ clean-pngout-host:
 distclean-pngout-host:
 	-$(RM) -f $(STAGEFILES_DIR)/.pngout_host_unpacked
 	-$(RM) -f $(HOSTUTILS_PREFIX_BIN)/pngout
-	-$(RM) -f $(HOSTUTILS_PREFIX_BIN)/pngout-static-$(HOST_ARCH)
+	-$(RM) -f $(HOSTUTILS_PREFIX_BIN)/pngout-$(HOST_ARCH)
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -rf $(PNGOUT_HOSTDLFILE)
 endif
