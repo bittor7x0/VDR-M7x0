@@ -777,8 +777,11 @@ void cEvent::FixEpgBugs(void)
   // would be normally used. Actually, "backticks" in normal text don't make
   // much sense, so let's replace them:
   strreplace(title, '`', '\'');
+  strreplace(title, '´', '\'');
   strreplace(shortText, '`', '\'');
+  strreplace(shortText, '´', '\'');
   strreplace(description, '`', '\'');
+  strreplace(description, '´', '\'');
   // The same applies to the ISO 8859-1 acute accent. Moreover, it is another
   // character when displayed in ISO 8859-15.
   strreplace(title, '\xB4', '\'');
