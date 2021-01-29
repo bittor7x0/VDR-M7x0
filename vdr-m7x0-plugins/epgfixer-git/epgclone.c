@@ -49,9 +49,16 @@ void cEpgClone::CloneEvent(cEvent *Source, cEvent *Dest) {
      Dest->SetSeen();
   tChannelID channelID;
   if (dest_num) {
+#if VDRVERSNUM >= 20301
+     LOCK_CHANNELS_READ;
+     const cChannel *dest_chan = Channels->GetByNumber(dest_num);
+     if (dest_chan)
+        channelID = Channels->GetByNumber(dest_num)->GetChannelID();
+#else
      cChannel *dest_chan = Channels.GetByNumber(dest_num);
      if (dest_chan)
         channelID = Channels.GetByNumber(dest_num)->GetChannelID();
+#endif
      else
         channelID = tChannelID::InvalidID;
      }

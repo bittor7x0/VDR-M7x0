@@ -15,6 +15,7 @@ class cEpgfixerEpgHandler : public cEpgHandler
 {
 public:
   cEpgfixerEpgHandler(void) {};
+  virtual bool BeginSegmentTransfer(const cChannel *Channel, bool Dummy) { return true; }
   virtual bool HandleEvent(cEvent *Event);
   virtual bool IgnoreChannel(const cChannel *Channel);
   virtual bool FixEpgBugs(cEvent *Event);

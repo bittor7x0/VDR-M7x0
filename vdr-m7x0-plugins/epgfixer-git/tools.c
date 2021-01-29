@@ -474,14 +474,26 @@ cAddEventThread::~cAddEventThread(void)
 void cAddEventThread::Action(void)
 {
   SetPriority(19);
-  while (Running() && !LastHandleEvent.TimedOut()) {
+  for (; Running() && !LastHandleEvent.TimedOut(); cCondWait::SleepMs(10)) {
+        if (list->First() == NULL)
+           continue;
         cAddEventListItem *e = NULL;
+#if VDRVERSNUM >= 20301
+        cStateKey StateKey;
+        cSchedules *schedules = cSchedules::GetSchedulesWrite(StateKey, 10);
+        LOCK_CHANNELS_READ;
+#else
         cSchedulesLock SchedulesLock(true, 10);
         cSchedules *schedules = (cSchedules *)cSchedules::Schedules(SchedulesLock);
+#endif
         Lock();
         while (schedules && (e = list->First()) != NULL) {
               tChannelID chanid = e->GetChannelID();
+#if VDRVERSNUM >= 20301
+              const cChannel *chan = Channels->GetByChannelID(chanid);
+#else
               cChannel *chan = Channels.GetByChannelID(chanid);
+#endif
               if (!chan) {
                  error("Destination channel %s not found for cloning!", *chanid.ToString());
                  }
@@ -496,7 +508,10 @@ void cAddEventThread::Action(void)
               list->Del(e);
               }
         Unlock();
-        cCondWait::SleepMs(10);
+#if VDRVERSNUM >= 20301
+        if (schedules)
+           StateKey.Remove();
+#endif
         }
 }
 
@@ -564,7 +579,12 @@ bool cListItem::IsActive(tChannelID ChannelID)
   bool active = false;
   if (numchannels > 0) {
      int i = 0;
+#if VDRVERSNUM >= 20301
+     LOCK_CHANNELS_READ;
+     int channel_number = Channels->GetByChannelID(ChannelID)->Number();
+#else
      int channel_number = Channels.GetByChannelID(ChannelID)->Number();
+#endif
      while (i < numchannels) {
            if ((channel_number == GetChannelNum(i)) ||
                (GetChannelID(i) && (ChannelID == *GetChannelID(i)))) {

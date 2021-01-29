@@ -265,9 +265,21 @@ eOSState cMenuSetupEpgfixer::ProcessKey(eKeys Key)
          break;
        case kBlue:
          Skins.Message(mtInfo, tr("Clearing EPG data..."));
+#if VDRVERSNUM >= 20301
+         {
+         LOCK_TIMERS_WRITE;
+         LOCK_SCHEDULES_WRITE;
+         for (cTimer *Timer = Timers->First(); Timer; Timer = Timers->Next(Timer))
+            Timer->SetEvent(NULL);
+         for (cSchedule *Schedule = Schedules->First(); Schedule; Schedule = Schedules->Next(Schedule))
+            Schedule->Cleanup(INT_MAX);
+         }
+         cEitFilter::SetDisableUntil(time(NULL) + 10);
+#else
          cEitFilter::SetDisableUntil(time(NULL) + 10);
          if (cSchedules::ClearAll())
             cEitFilter::SetDisableUntil(time(NULL) + 10);
+#endif
          Skins.Message(mtInfo, NULL);
          state = osContinue;
          break;
