@@ -164,7 +164,11 @@ class cServiceHandler
 struct Epgsearch_services_v1_0
 {
 // in/out
+#if __cplusplus < 201103L
       std::auto_ptr<cServiceHandler> handler;
+#else
+      std::unique_ptr<cServiceHandler> handler;
+#endif
 };
 
 // Data structures for service "Epgsearch-services-v1.1"
@@ -180,7 +184,11 @@ class cServiceHandler_v1_1 : public cServiceHandler
 struct Epgsearch_services_v1_1
 {
 // in/out
+#if __cplusplus < 201103L
       std::auto_ptr<cServiceHandler_v1_1> handler;
+#else
+      std::unique_ptr<cServiceHandler_v1_1> handler;
+#endif
 };
 
 // Data structures for service "Epgsearch-services-v1.2"
@@ -196,7 +204,11 @@ class cServiceHandler_v1_2 : public cServiceHandler_v1_1
 struct Epgsearch_services_v1_2
 {
 // in/out
+#if __cplusplus < 201103L
       std::auto_ptr<cServiceHandler_v1_2> handler;
+#else
+      std::unique_ptr<cServiceHandler_v1_2> handler;
+#endif
 };
 
 #endif

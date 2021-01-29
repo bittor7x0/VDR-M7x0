@@ -26,6 +26,7 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 
 #include <vdr/menuitems.h>
 #include "epgsearchcfg.h"
+#include "epgsearchtools.h"
 #include "templatefile.h"
 #include "menu_event.h"
 

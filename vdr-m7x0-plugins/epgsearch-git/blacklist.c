@@ -647,7 +647,7 @@ cSearchResults* cBlacklist::Run(cSearchResults* pSearchResults, int MarginStop)
 	cChannel* channel = Channels.GetByChannelID(Schedule->ChannelID(),true,true);
 	if (!channel)
 	{
-	    Schedule = (const cSchedule *)schedules->Next(Schedule);
+	    Schedule = schedules->Next(Schedule);
 	    continue;
 	}
 
@@ -655,7 +655,7 @@ cSearchResults* cBlacklist::Run(cSearchResults* pSearchResults, int MarginStop)
 	{
 	    if (channelMin->Number() > channel->Number() || channelMax->Number() < channel->Number())
 	    {
-		Schedule = (const cSchedule *)schedules->Next(Schedule);
+		Schedule = schedules->Next(Schedule);
 		continue;
 	    }
 	}
@@ -664,7 +664,7 @@ cSearchResults* cBlacklist::Run(cSearchResults* pSearchResults, int MarginStop)
 	    cChannelGroup* group = ChannelGroups.GetGroupByName(channelGroup);
 	    if (!group || !group->ChannelInGroup(channel))
 	    {
-		Schedule = (const cSchedule *)schedules->Next(Schedule);
+		Schedule = schedules->Next(Schedule);
 		continue;
 	    }
 	}
@@ -673,7 +673,7 @@ cSearchResults* cBlacklist::Run(cSearchResults* pSearchResults, int MarginStop)
 	{
 	    if (channel->Ca() >= CA_ENCRYPTED_MIN)
 	    {
-		Schedule = (const cSchedule *)schedules->Next(Schedule);
+		Schedule = schedules->Next(Schedule);
 		continue;
 	    }
 	}
@@ -688,7 +688,7 @@ cSearchResults* cBlacklist::Run(cSearchResults* pSearchResults, int MarginStop)
 		pSearchResults->Add(new cSearchResult(event, this));
 	    }
         } while(pPrevEvent);
-        Schedule = (const cSchedule *)schedules->Next(Schedule);
+        Schedule = schedules->Next(Schedule);
     }
     LogFile.Log(3,"found %d event(s) for blacklist '%s'", pSearchResults?pSearchResults->Count():0, search);
 

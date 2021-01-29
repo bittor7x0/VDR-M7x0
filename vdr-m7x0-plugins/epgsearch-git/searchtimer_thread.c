@@ -194,7 +194,7 @@ bool cSearchTimerThread::TimerWasModified(cTimer* t)
 
 void cSearchTimerThread::Action(void)
 {
-   if (EPGSearchConfig.useExternalSVDRP && !cSVDRPClient::SVDRPSendCmd)
+   if (EPGSearchConfig.useExternalSVDRP && !epgsSVDRP::cSVDRPClient::SVDRPSendCmd)
    {
       LogFile.eSysLog("ERROR - SVDRPSend script not specified or does not exist (use -f option)");
       return;
@@ -306,7 +306,7 @@ void cSearchTimerThread::Action(void)
                cTimer *t = GetTimer(searchExt, pEvent, bTimesMatchExactly);
 
                char* Summary = NULL;
-	       uint timerMod = tmNoChange;
+               uint timerMod = tmNoChange;
 
                if (t)
                { // already exists
@@ -675,7 +675,7 @@ bool cSearchTimerThread::AddModTimer(cTimer* Timer, int index, cSearchExt* searc
       stop = start + pEvent->Duration();
    }
    else
-      Flags = 1; // don't use VPS, if not set in this search
+      Flags &= ~tfVps; // don't use VPS, if not set in this search
 
    // already done the same timer?
    if (!EPGSearchConfig.TimerProgRepeat && index == 0 && TimersDone.InList(start, stop, pEvent, -1))

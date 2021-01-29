@@ -1,6 +1,60 @@
 VDR Plugin 'epgsearch' Revision History
 ---------------------------------------
 
+2018-04-16; Version 2.4.0
+neu:
+- Create man pages only once. by jasminj@vdr-portal.de
+- Remove useless member "useEpisode" from cBlacklist by jasminj@vdr-portal.de
+- Remove useless member "useEpisode" from cBlacklist by jasminj@vdr-portal.de
+- Remove useless "LOCK_CHANNELS_READ" in cBlacklist run by jasminj@vdr-portal.de
+- Change shell in docsrc2*.sh to /bin/bash, suggested by TomJoad@vdr-portal.de
+- Added operator to cListObject derived classes by jasminj@vdr-portal.de
+- Add patches/vdr.epgsearch-exttimeredit-2.3.5.diff by Dietmar Spingler <d_spingler@gmx.de>
+- Adapt new makefile style of VDR 2.3.6 by TomJoad@vdr-portal.de
+- Use vdr timerids instead of index by TomJoad@vdr-portal.de
+- Fix many lock sequences by TomJoad@vdr-portal.de
+- New vdr.epgsearch-exttimeredit-2.3.6.diff (thx to Claus Muus)
+- Add conflict check for remote timers by Johann Friedrichs <johann.friedrichs@web.de>
+- Search timers should create only local timers
+- Use namespace for svdrpclient
+- Add icon for inactive timer
+- Use separate thread for recdone processing
+- get rid of some casts
+- unified indentation
+- Preserve timerflags in searchtimerupdate
+
+2017-05-xx; Version 2.3.1 - development release
+neu:
+- Anwenden vdr-2.3.2-epgsearch-1.0.1.beta5~git20150715_v2.diff von fnu@vdr-portal.de
+  basierend auf Eingaben von kamel5, mini73 & TomJoad @ vdr-portal.de
+  => http://www.vdr-portal.de/board17-developer/board97-vdr-core/p1284612-produktive-problem-und-pluginl%C3%B6sungen-f%C3%BCr-vdr-2-3-2-und-h%C3%B6her/#post1284612
+- Anwenden 0004-Added-patches-vdr.epgsearch-exttimeredit-2.3.3.diff.diff von jasminj@vdr-portal.de
+  => http://www.vdr-portal.de/board17-developer/board21-vdr-plugins/p1289938-epgsearch-f%C3%BCr-vdr-2-3-x/#post1289938
+- Anwenden 0005-epgsearch-inactive-records-v2.diff von jasminj@vdr-portal.de
+  => http://www.vdr-portal.de/board17-developer/board21-vdr-plugins/p1289983-epgsearch-f%C3%BCr-vdr-2-3-x/#post1289983
+- Anwenden 0001-Fix-warning-in-pending_notifications.c.diff von jasminj@vdr-portal.de
+- Anwenden 0002-Fixed-warnings-in-man-page-generation.diff von jasminj@vdr-portal.de
+  => http://www.vdr-portal.de/board17-developer/board21-vdr-plugins/p1289704-epgsearch-f%C3%BCr-vdr-2-3-x/#post1289704
+- Anwenden 0003-Use-HandleRemoteTimerModifications-instead-of-Handle.diff von jasminj@vdr-portal.de
+  => http://www.vdr-portal.de/board17-developer/board21-vdr-plugins/p1289764-epgsearch-f%C3%BCr-vdr-2-3-x/#post1289764
+- Anwenden menu_category_recsdone.diff von tomas & louis @vdr-portal.de
+  http://www.vdr-portal.de/board1-news/board2-vdr-news/p1271995-skindesigner-1-0-0-neuer-default-skin-estuary4vdr/#post1271995
+- Anwenden 0001-revert-seperate-status-thread.diff von TomJoad@vdr-portal.de
+- Anwenden 0002-fix-incorrect-lock-sequences.diff von TomJoad@vdr-portal.de
+- Anwenden 0003-revert-now-obsolete-pointer-params.diff von TomJoad@vdr-portal.de
+- Anwenden 0004-some-small-fixes.diff von TomJoad@vdr-portal.de
+  http://www.vdr-portal.de/board17-developer/board21-vdr-plugins/p1291452-epgsearch-f%C3%BCr-vdr-2-3-x/#post1291452
+- Löschen Alt-Code vor VDR 2.3.x
+- Anwenden 0001-fixed-unresponsive-vdr.diff von TomJoad@vdr-portal.de
+- Anwenden 0002-removed-variableduplications.diff von TomJoad@vdr-portal.de
+- Anwenden 0003-more-cleanups.diff von TomJoad@vdr-portal.de
+- Anwenden 0004-Remote-timers-in-menu-myedittimer.diff von TomJoad@vdr-portal.de
+  http://www.vdr-portal.de/board17-developer/board21-vdr-plugins/p1291771-epgsearch-f%C3%BCr-vdr-2-3-x/#post1291771
+- Anwenden fixblacklist_handling.diff von TomJoad@vdr-portal.de
+  http://www.vdr-portal.de/board16-video-disk-recorder/board99-distributionen/board107-mld/p1292085-epgsearch-in-verbindung-mit-epgd-epg2vdr-live-absturz-unter-vdr-2-3-4/#post1292085
+- Anwenden epgsearch_min_max_from_stl.diff von jasminj@vdr-portal.de
+  http://www.vdr-portal.de/board17-developer/board21-vdr-plugins/p1292145-epgsearch-f%C3%BCr-vdr-2-3-x/#post1292145
+
 2013-03-xx: Version 1.0.1 - Maintenance Release
 neu:
 - neuer Stil für das Makefile wie in vdr-1.7.36 eingeführt. Das alte Makefile gibt es noch

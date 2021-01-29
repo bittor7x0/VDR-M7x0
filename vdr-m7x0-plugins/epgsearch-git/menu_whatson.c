@@ -34,7 +34,6 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 #include "menu_search.h"
 #include "menu_commands.h"
 #include "epgsearchcfg.h"
-#include "epgsearchtools.h"
 #include "switchtimer.h"
 #include "epgsearchcats.h"
 #include "conflictcheck.h"
@@ -201,7 +200,7 @@ bool cMenuMyScheduleItem::Update(bool Force)
       strreplace(buffer, '|', '\t');
 
       char* title = NULL;
-      title = strreplacei(strdup(event?event->Title():tr(">>> no info! <<<")), ":", "%colon%"); // assume a title has the form "a?b:c",
+      title = strreplacei(strdup((event && event->Title()) ? event->Title() : tr(">>> no info! <<<")), ":", "%colon%"); // assume a title has the form "a?b:c",
       // we need to replace the colon to avoid misinterpretation of the expression as a condition
       buffer = strreplacei(buffer, "%title%", title);
       free(title);
@@ -637,7 +636,7 @@ eOSState cMenuWhatsOnSearch::Record(void)
 #endif
          SetAux(timer, fullaux);
          Timers.Add(timer);
-	 gl_timerStatusMonitor->SetConflictCheckAdvised();
+         gl_timerStatusMonitor->SetConflictCheckAdvised();
          timer->Matches();
          Timers.SetModified();
          LogFile.iSysLog("timer %s added (active)", *timer->ToDescr());

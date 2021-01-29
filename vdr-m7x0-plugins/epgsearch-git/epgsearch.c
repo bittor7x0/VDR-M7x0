@@ -70,7 +70,7 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 #include "confdloader.h"
 #include "pending_notifications.h"
 
-static const char VERSION[]        = "1.0.1.beta5";
+static const char VERSION[]        = "2.4.0";
 static const char DESCRIPTION[]    =  trNOOP("search the EPG for repeats and more");
 
 // globals
@@ -86,7 +86,7 @@ int cLogFile::loglevellimit = 0;
 bool cPluginEpgsearch::VDR_readyafterStartup = false;
 
 // external SVDRPCommand
-const char *cSVDRPClient::SVDRPSendCmd = "svdrpsend";
+const char *epgsSVDRP::cSVDRPClient::SVDRPSendCmd = "svdrpsend";
 
 cPluginEpgsearch::cPluginEpgsearch(void)
 {
@@ -185,7 +185,7 @@ bool cPluginEpgsearch::ProcessArgs(int argc, char *argv[])
       switch (c) {
 
          case 'f':
-            cSVDRPClient::SVDRPSendCmd = optarg;
+            epgsSVDRP::cSVDRPClient::SVDRPSendCmd = optarg;
             EPGSearchConfig.useExternalSVDRP = 1;
             break;
          case 'c':
@@ -208,10 +208,10 @@ bool cPluginEpgsearch::ProcessArgs(int argc, char *argv[])
       }
    }
 
-   if (EPGSearchConfig.useExternalSVDRP && access(cSVDRPClient::SVDRPSendCmd, F_OK) != 0)
+   if (EPGSearchConfig.useExternalSVDRP && access(epgsSVDRP::cSVDRPClient::SVDRPSendCmd, F_OK) != 0)
    {
-      LogFile.eSysLog("ERROR - can't find svdrpsend script: '%s'", cSVDRPClient::SVDRPSendCmd);
-      cSVDRPClient::SVDRPSendCmd = NULL;
+      LogFile.eSysLog("ERROR - can't find svdrpsend script: '%s'", epgsSVDRP::cSVDRPClient::SVDRPSendCmd);
+      epgsSVDRP::cSVDRPClient::SVDRPSendCmd = NULL;
    }
 
    return true;
@@ -421,16 +421,26 @@ bool cPluginEpgsearch::Service(const char *Id, void *Data)
       if (Data == NULL)
          return true;
       Epgsearch_services_v1_0* serviceData = (Epgsearch_services_v1_0*) Data;
+#if __cplusplus < 201103L
       std::auto_ptr<cEpgsearchServiceHandler> autoHandler(new cEpgsearchServiceHandler);
       serviceData->handler = autoHandler;
+#else
+      std::unique_ptr<cEpgsearchServiceHandler> autoHandler(new cEpgsearchServiceHandler);
+      serviceData->handler = std::move(autoHandler);
+#endif
       return true;
    }
    if (strcmp(Id, "Epgsearch-services-v1.1") == 0) {
       if (Data == NULL)
          return true;
       Epgsearch_services_v1_1* serviceData = (Epgsearch_services_v1_1*) Data;
+#if __cplusplus < 201103L
       std::auto_ptr<cEpgsearchServiceHandler> autoHandler(new cEpgsearchServiceHandler);
       serviceData->handler = autoHandler;
+#else
+      std::unique_ptr<cEpgsearchServiceHandler> autoHandler(new cEpgsearchServiceHandler);
+      serviceData->handler = std::move(autoHandler);
+#endif
       return true;
    }
    return false;

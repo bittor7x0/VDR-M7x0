@@ -176,7 +176,7 @@ bool cMenuConflictCheckDetailsItem::Update(bool Force)
     if (Force || hasTimer != oldhasTimer)
     {
 	cTimer* timer = timerObj->timer;
-	char device[2]="";
+	char device[11]="";
 	if (hasTimer)
 	{
 	    if (!timerObj->conflCheckTime && timerObj->device > -1)

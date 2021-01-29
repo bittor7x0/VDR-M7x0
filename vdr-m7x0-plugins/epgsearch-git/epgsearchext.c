@@ -1041,7 +1041,7 @@ cSearchResults* cSearchExt::Run(int PayTVMode, bool inspectTimerMargin, int eval
       cChannel* channel = Channels.GetByChannelID(Schedule->ChannelID(),true,true);
       if (!channel)
       {
-         Schedule = (const cSchedule *)schedules->Next(Schedule);
+         Schedule = schedules->Next(Schedule);
          continue;
       }
 
@@ -1049,7 +1049,7 @@ cSearchResults* cSearchExt::Run(int PayTVMode, bool inspectTimerMargin, int eval
       {
          if (channelMin->Number() > channel->Number() || channelMax->Number() < channel->Number())
          {
-            Schedule = (const cSchedule *)schedules->Next(Schedule);
+            Schedule = schedules->Next(Schedule);
             continue;
          }
       }
@@ -1058,7 +1058,7 @@ cSearchResults* cSearchExt::Run(int PayTVMode, bool inspectTimerMargin, int eval
          cChannelGroup* group = ChannelGroups.GetGroupByName(channelGroup);
          if (!group || !group->ChannelInGroup(channel))
          {
-            Schedule = (const cSchedule *)schedules->Next(Schedule);
+            Schedule = schedules->Next(Schedule);
             continue;
          }
       }
@@ -1067,7 +1067,7 @@ cSearchResults* cSearchExt::Run(int PayTVMode, bool inspectTimerMargin, int eval
       {
          if (channel->Ca() >= CA_ENCRYPTED_MIN)
          {
-            Schedule = (const cSchedule *)schedules->Next(Schedule);
+            Schedule = schedules->Next(Schedule);
             continue;
          }
       }
@@ -1076,7 +1076,7 @@ cSearchResults* cSearchExt::Run(int PayTVMode, bool inspectTimerMargin, int eval
       {
          if (channel->Ca() >= CA_ENCRYPTED_MIN)
          {
-            Schedule = (const cSchedule *)schedules->Next(Schedule);
+            Schedule = schedules->Next(Schedule);
             continue;
          }
       }
@@ -1102,7 +1102,7 @@ cSearchResults* cSearchExt::Run(int PayTVMode, bool inspectTimerMargin, int eval
             counter++;
          }
       } while(pPrevEvent);
-      Schedule = (const cSchedule *)schedules->Next(Schedule);
+      Schedule = schedules->Next(Schedule);
    }
    LogFile.Log(3,"found %d event(s) for search timer '%s'", counter, search);
 
