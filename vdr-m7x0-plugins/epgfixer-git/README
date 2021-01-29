@@ -99,7 +99,7 @@ with:
 - OriginalCharSet is the real character set of EPG data.
 - BroadcastCharset is the optional incorrect character set received in data
   stream.
-- If no BroadcastCharset is defined ISO6937 is assumed.
+- If no BroadcastCharset is defined ISO-8859-1 is assumed.
 
 Syntax of blacklist.conf line is "Channel_list" with:
 - Only comma separated list of channel to be ignored.

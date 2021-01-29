@@ -27,11 +27,19 @@ cCharSet::~cCharSet(void)
 bool cCharSet::Apply(cEvent *Event)
 {
   if (enabled && IsActive(Event->ChannelID())) {
+#if APIVERSNUM >= 10503
      cCharSetConv backconv(cCharSetConv::SystemCharacterTable(), origcharset ? origcharset : "iso6937");
+#else
+     cCharSetConv backconv("ISO-8859-15", origcharset ? origcharset : "ISO-8859-1");
+#endif
      cString title(backconv.Convert(Event->Title()));
      cString shortText(backconv.Convert(Event->ShortText()));
      cString description(backconv.Convert(Event->Description()));
+#if APIVERSNUM >= 10503
      cCharSetConv conv(realcharset, cCharSetConv::SystemCharacterTable());
+#else
+     cCharSetConv conv(realcharset, "ISO-8859-15");
+#endif
      Event->SetTitle(conv.Convert(title));
      Event->SetShortText(conv.Convert(shortText));
      Event->SetDescription(conv.Convert(description));

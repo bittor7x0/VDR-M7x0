@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vdr/thread.h>
+#include <vdr/i18n.h>
 #include "charset.h"
 #include "config.h"
 #include "regexp.h"
@@ -44,7 +45,7 @@ void FixOriginalEpgBugs(cEvent *event)
 {
   // Copy event title, shorttext and description to temporary variables
   // we don't want any "(null)" titles
-  char *title = event->Title() ? strdup(event->Title()) : strdup("No title");
+  char *title = event->Title() ? strdup(event->Title()) : strdup(tr("No title"));
   char *shortText = event->ShortText() ? strdup(event->ShortText()) : NULL;
   char *description = event->Description() ? strdup(event->Description()) : NULL;
 
@@ -156,8 +157,16 @@ void FixOriginalEpgBugs(cEvent *event)
   // much sense, so let's replace them:
   if (EpgfixerSetup.nobackticks) {
      strreplace(title, '`', '\'');
+     strreplace(title, '´', '\'');
      strreplace(shortText, '`', '\'');
+     strreplace(shortText, '´', '\'');
      strreplace(description, '`', '\'');
+     strreplace(description, '´', '\'');
+     // The same applies to the ISO 8859-1 acute accent. Moreover, it is another
+     // character when displayed in ISO 8859-15.
+     strreplace(title, '\xB4', '\'');
+     strreplace(shortText, '\xB4', '\'');
+     strreplace(description, '\xB4', '\'');
      }
 
   // The stream components have a "description" field which some channels
