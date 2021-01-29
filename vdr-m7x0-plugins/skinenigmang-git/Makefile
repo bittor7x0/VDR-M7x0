@@ -5,7 +5,7 @@
 
 # This turns usage of logos in the main menu complete. This might also
 # improve the performance of the menus. EXPERIMENTAL!!!
-#SKINENIGMA_NO_MENULOGO = 1
+SKINENIGMA_NO_MENULOGO = 1
 
 # Debugging on/off 
 #SKINENIGMA_DEBUG = 1
@@ -16,7 +16,7 @@
 
 # If you are using the epgsearch plugin and want to see the number of
 # timer conflicts in the main menu's info area.
-SKINENIGMA_USE_PLUGIN_EPGSEARCH = 1
+#SKINENIGMA_USE_PLUGIN_EPGSEARCH = 1
 
 # If you use the mailbox plugin this will include support for it.
 #SKINENIGMA_USE_PLUGIN_MAILBOX = 1

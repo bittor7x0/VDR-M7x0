@@ -745,6 +745,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
+#ifndef VDRO7OVERSION
   { "Try 8bpp single area",
     "Einen 8bpp Bereich versuchen",
     "",
@@ -780,6 +781,7 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
+#endif // VDRO7OVERSION
   { "Round corners",
     "Ecken abrunden",
     "",
