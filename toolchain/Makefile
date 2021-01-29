@@ -383,6 +383,12 @@ define fix_fw_conf_files
 			$(RM) -f $(1)/usr/sbin/memwatch ; \
 		fi); \
 	fi);
+	(if [ ! -f $(VDR_DIR)/PLUGINS/src/epgsearch/Makefile ]; then \
+		$(SED) -i '/PLUG epgsearch/d' $(1)/etc/vdr/commands.conf ; \
+	fi);
+	(if [ ! -f $(VDR_DIR)/PLUGINS/src/xmltv2vdr/Makefile ]; then \
+		$(SED) -i '/PLUG xmltv2vdr/d' $(1)/etc/vdr/commands.conf ; \
+	fi);
 endef
 
 BASE_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.base_build
