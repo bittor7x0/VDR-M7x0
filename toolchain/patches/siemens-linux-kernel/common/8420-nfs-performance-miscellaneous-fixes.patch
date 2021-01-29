@@ -1,0 +1,505 @@
+From 6a4948c825d9fb5e10882168e4fe55caab68b2aa Mon Sep 17 00:00:00 2001
+From: lly <lly@sf.net>
+Date: Fri, 30 Jul 2010 22:22:24 -0400
+Subject: [PATCH] kernel 2.4: fixes from RedHat RHEL3 63.EL (patch from
+ wl500g.googlecode.com)
+
+Minor inet_check_attr fix
+NFS performance enhancements and miscellaneous fixes
+Check that the socket is still connected
+---
+
+diff --git a/fs/lockd/clntproc.c b/fs/lockd/clntproc.c
+index 57ade71987..1cb777faec 100644
+--- a/fs/lockd/clntproc.c
++++ b/fs/lockd/clntproc.c
+@@ -146,7 +146,7 @@ nlmclnt_proc(struct inode *inode, int cmd, struct file_lock *fl)
+ 	 * perform the RPC call asynchronously. */
+ 	if ((IS_SETLK(cmd) || IS_SETLKW(cmd))
+ 	    && fl->fl_type == F_UNLCK
+-	    && (current->flags & PF_EXITING)) {
++	    && ((current->flags & PF_EXITING) || signalled())) {
+ 		sigfillset(&current->blocked);	/* Mask all signals */
+ 		recalc_sigpending(current);
+ 		spin_unlock_irqrestore(&current->sigmask_lock, flags);
+diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
+index de022bd608..18c80dae3b 100644
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -398,34 +398,44 @@ static int nfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
+ {
+ 	struct dentry	*dentry = filp->f_dentry;
+ 	struct inode	*inode = dentry->d_inode;
+-	nfs_readdir_descriptor_t my_desc,
+-			*desc = &my_desc;
+-	struct nfs_entry my_entry;
+-	struct nfs_fh	fh;
+-	struct nfs_fattr fattr;
++	nfs_readdir_descriptor_t *desc;
++	struct nfs_entry *my_entry;
++	struct nfs_fh	*fh;
++	struct nfs_fattr *fattr;
+ 	long		res;
++	void *mem;
++	int error, memlen = sizeof(struct nfs_fh) +
++		sizeof(struct nfs_fattr) + sizeof(struct nfs_entry) +
++		sizeof(nfs_readdir_descriptor_t);
+ 
+ 	res = nfs_revalidate_inode(NFS_SERVER(inode), inode);
+ 	if (res < 0)
+ 		return res;
+ 
++	if ((mem = kmalloc(memlen, GFP_USER)) == NULL)
++		return -ENOMEM;
++	memset(mem, 0, memlen);
++	fattr = (struct nfs_fattr *)mem;
++	my_entry = (struct nfs_entry *)(mem + sizeof(struct nfs_fattr));
++	desc = (nfs_readdir_descriptor_t *)(mem + sizeof(struct nfs_fattr) +
++		sizeof(struct nfs_entry));
++	fh = (struct nfs_fh *)(mem + sizeof(struct nfs_fattr) +
++		sizeof(struct nfs_entry) + sizeof(nfs_readdir_descriptor_t));
++
+ 	/*
+ 	 * filp->f_pos points to the file offset in the page cache.
+ 	 * but if the cache has meanwhile been zapped, we need to
+ 	 * read from the last dirent to revalidate f_pos
+ 	 * itself.
+ 	 */
+-	memset(desc, 0, sizeof(*desc));
+ 	desc->file = filp;
+ 	desc->target = filp->f_pos;
+ 	desc->decode = NFS_PROTO(inode)->decode_dirent;
+ 	desc->plus = NFS_USE_READDIRPLUS(inode);
+ 
+-	my_entry.cookie = my_entry.prev_cookie = 0;
+-	my_entry.eof = 0;
+-	my_entry.fh = &fh;
+-	my_entry.fattr = &fattr;
+-	desc->entry = &my_entry;
++	my_entry->fh = fh;
++	my_entry->fattr = fattr;
++	desc->entry = my_entry;
+ 
+ 	while(!desc->entry->eof) {
+ 		res = readdir_search_pagecache(desc);
+@@ -448,8 +458,11 @@ static int nfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
+ 			break;
+ 		}
+ 	}
+-	if (desc->error < 0)
+-		return desc->error;
++
++	error = desc->error;
++	kfree(mem);
++	if (error < 0)
++		return error;
+ 	if (res < 0)
+ 		return res;
+ 	return 0;
+@@ -476,7 +489,7 @@ int nfs_check_verifier(struct inode *dir, struct dentry *dentry)
+ 		return 1;
+ 	if (nfs_revalidate_inode(NFS_SERVER(dir), dir))
+ 		return 0;
+-	return time_after(dentry->d_time, NFS_MTIME_UPDATE(dir));
++	return time_after_eq(dentry->d_time, NFS_MTIME_UPDATE(dir));
+ }
+ 
+ /*
+@@ -525,7 +538,7 @@ static int nfs_lookup_revalidate(struct dentry * dentry, int flags)
+ 	struct inode *inode;
+ 	int error;
+ 	struct nfs_fh fhandle;
+-	struct nfs_fattr fattr;
++	struct nfs_fattr *fattr = NULL;
+ 
+ 	lock_kernel();
+ 	dir = dentry->d_parent->d_inode;
+@@ -550,7 +563,11 @@ static int nfs_lookup_revalidate(struct dentry * dentry, int flags)
+ 		goto out_valid;
+ 	}
+ 
+-	error = nfs_cached_lookup(dir, dentry, &fhandle, &fattr);
++	fattr = kmalloc(sizeof(*fattr), GFP_KERNEL);
++	if (fattr == NULL)
++		goto out_bad;
++
++	error = nfs_cached_lookup(dir, dentry, &fhandle, fattr);
+ 	if (!error) {
+ 		if (memcmp(NFS_FH(inode), &fhandle, sizeof(struct nfs_fh))!= 0)
+ 			goto out_bad;
+@@ -562,20 +579,22 @@ static int nfs_lookup_revalidate(struct dentry * dentry, int flags)
+ 	if (NFS_STALE(inode))
+ 		goto out_bad;
+ 
+-	error = NFS_PROTO(dir)->lookup(dir, &dentry->d_name, &fhandle, &fattr);
++	error = NFS_PROTO(dir)->lookup(dir, &dentry->d_name, &fhandle, fattr);
+ 	if (error)
+ 		goto out_bad;
+ 	if (memcmp(NFS_FH(inode), &fhandle, sizeof(struct nfs_fh))!= 0)
+ 		goto out_bad;
+-	if ((error = nfs_refresh_inode(inode, &fattr)) != 0)
++	if ((error = nfs_refresh_inode(inode, fattr)) != 0)
+ 		goto out_bad;
+ 
+  out_valid_renew:
+ 	nfs_renew_times(dentry);
+  out_valid:
+ 	unlock_kernel();
++	if (fattr)
++		kfree(fattr);
+ 	return 1;
+-out_zap_parent:
++ out_zap_parent:
+ 	nfs_zap_caches(dir);
+  out_bad:
+ 	NFS_CACHEINV(dir);
+@@ -591,6 +610,8 @@ out_zap_parent:
+ 	}
+ 	d_drop(dentry);
+ 	unlock_kernel();
++	if (fattr)
++		kfree(fattr);
+ 	return 0;
+ }
+ 
+diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
+index a3c54104bd..d61ba75e24 100644
+--- a/fs/nfs/inode.c
++++ b/fs/nfs/inode.c
+@@ -845,7 +845,15 @@ int
+ nfs_revalidate(struct dentry *dentry)
+ {
+ 	struct inode *inode = dentry->d_inode;
+-	return nfs_revalidate_inode(NFS_SERVER(inode), inode);
++	int error;
++
++	error = nfs_revalidate_inode(NFS_SERVER(inode), inode);
++	if (error == -ESTALE) {
++		nfs_zap_caches(dentry->d_parent->d_inode);
++		d_drop(dentry);
++	}
++
++	return error;
+ }
+ 
+ /*
+@@ -912,7 +920,7 @@ int
+ __nfs_revalidate_inode(struct nfs_server *server, struct inode *inode)
+ {
+ 	int		 status = -ESTALE;
+-	struct nfs_fattr fattr;
++	struct nfs_fattr *fattr = NULL;
+ 
+ 	dfprintk(PAGECACHE, "NFS: revalidating (%x/%Ld)\n",
+ 		inode->i_dev, (long long)NFS_FILEID(inode));
+@@ -934,19 +942,20 @@ __nfs_revalidate_inode(struct nfs_server *server, struct inode *inode)
+ 	}
+ 	NFS_FLAGS(inode) |= NFS_INO_REVALIDATING;
+ 
+-	status = NFS_PROTO(inode)->getattr(inode, &fattr);
++	fattr = kmalloc(sizeof(*fattr), GFP_KERNEL);
++	if (fattr == NULL)
++		goto out;
++
++	status = NFS_PROTO(inode)->getattr(inode, fattr);
+ 	if (status) {
+ 		dfprintk(PAGECACHE, "nfs_revalidate_inode: (%x/%Ld) getattr failed, error=%d\n",
+ 			 inode->i_dev, (long long)NFS_FILEID(inode), status);
+-		if (status == -ESTALE) {
++		if (status == -ESTALE)
+ 			NFS_FLAGS(inode) |= NFS_INO_STALE;
+-			if (inode != inode->i_sb->s_root->d_inode)
+-				remove_inode_hash(inode);
+-		}
+ 		goto out;
+ 	}
+ 
+-	status = nfs_refresh_inode(inode, &fattr);
++	status = nfs_refresh_inode(inode, fattr);
+ 	if (status) {
+ 		dfprintk(PAGECACHE, "nfs_revalidate_inode: (%x/%Ld) refresh failed, error=%d\n",
+ 			 inode->i_dev, (long long)NFS_FILEID(inode), status);
+@@ -957,6 +966,8 @@ __nfs_revalidate_inode(struct nfs_server *server, struct inode *inode)
+ 
+ 	NFS_FLAGS(inode) &= ~NFS_INO_STALE;
+ out:
++	if (fattr)
++		kfree(fattr);
+ 	NFS_FLAGS(inode) &= ~NFS_INO_REVALIDATING;
+ 	wake_up(&inode->i_wait);
+  out_nowait:
+diff --git a/fs/nfs/nfs2xdr.c b/fs/nfs/nfs2xdr.c
+index f968f82750..bfb6b57dda 100644
+--- a/fs/nfs/nfs2xdr.c
++++ b/fs/nfs/nfs2xdr.c
+@@ -578,7 +578,7 @@
+ 	/* NULL terminate the string we got */
+ 	string = (char *)(strlen + 1);
+ 	string[len] = 0;
+-	kunmap(rcvbuf->pages[0]);
++	kunmap_atomic(strlen, KM_USER0);
+ 	return 0;
+ }
+ 
+diff --git a/fs/nfs/nfs3xdr.c b/fs/nfs/nfs3xdr.c
+index 92f3d2d119..ec9d23f550 100644
+--- a/fs/nfs/nfs3xdr.c
++++ b/fs/nfs/nfs3xdr.c
+@@ -783,7 +783,7 @@
+ 	/* NULL terminate the string we got */
+ 	string = (char *)(strlen + 1);
+ 	string[len] = 0;
+-	kunmap(rcvbuf->pages[0]);
++	kunmap_atomic(strlen, KM_USER0);
+ 	return 0;
+ }
+ 
+diff --git a/fs/open.c b/fs/open.c
+index ca470866e3..9a81bda2ad 100644
+--- a/fs/open.c
++++ b/fs/open.c
+@@ -812,6 +812,30 @@ asmlinkage long sys_open(const char * filename, int flags, int mode)
+ 		if (fd >= 0) {
+ 			struct file *f = filp_open(tmp, flags, mode);
+ 			error = PTR_ERR(f);
++
++			/*
++			 * ESTALE errors can be a pain.  On some
++			 * filesystems (e.g. NFS), ESTALE can often
++			 * be resolved by retry, as the ESTALE resulted
++			 * in a cache invalidation.  We perform this
++			 * retry here, once for every directory element
++			 * in the path to avoid the case where the removal
++			 * of the nth parent directory of the file we're
++			 * trying to open results in n ESTALE errors.
++			 */
++			if (error == -ESTALE) {
++				int nretries = 1;
++				char *cp;
++
++				for (cp = tmp; *cp; cp++) {
++					if (*cp == '/')
++						nretries++;
++				}
++				do {
++					f = filp_open(tmp, flags, mode);
++					error = PTR_ERR(f);
++				} while (error == -ESTALE && --nretries > 0);
++			}
+ 			if (IS_ERR(f))
+ 				goto out_error;
+ 			fd_install(fd, f);
+diff --git a/fs/stat.c b/fs/stat.c
+index 8392356a23..877eec3c2e 100644
+--- a/fs/stat.c
++++ b/fs/stat.c
+@@ -141,8 +141,9 @@ static int cp_new_stat(struct inode * inode, struct stat * statbuf)
+ asmlinkage long sys_stat(char * filename, struct __old_kernel_stat * statbuf)
+ {
+ 	struct nameidata nd;
+-	int error;
++	int error, errcnt = 0;
+ 
++again:
+ 	error = user_path_walk(filename, &nd);
+ 	if (!error) {
+ 		error = do_revalidate(nd.dentry);
+@@ -150,6 +151,10 @@ asmlinkage long sys_stat(char * filename, struct __old_kernel_stat * statbuf)
+ 			error = cp_old_stat(nd.dentry->d_inode, statbuf);
+ 		path_release(&nd);
+ 	}
++	if (error == -ESTALE && !errcnt) {
++		errcnt++;
++		goto again;
++	}
+ 	return error;
+ }
+ #endif
+@@ -157,8 +162,9 @@ asmlinkage long sys_stat(char * filename, struct __old_kernel_stat * statbuf)
+ asmlinkage long sys_newstat(char * filename, struct stat * statbuf)
+ {
+ 	struct nameidata nd;
+-	int error;
++	int error, errcnt = 0;
+ 
++again:
+ 	error = user_path_walk(filename, &nd);
+ 	if (!error) {
+ 		error = do_revalidate(nd.dentry);
+@@ -166,6 +172,11 @@ asmlinkage long sys_newstat(char * filename, struct stat * statbuf)
+ 			error = cp_new_stat(nd.dentry->d_inode, statbuf);
+ 		path_release(&nd);
+ 	}
++	if (error == -ESTALE && !errcnt) {
++		errcnt++;
++		goto again;
++	}
++
+ 	return error;
+ }
+ 
+@@ -178,8 +189,9 @@ asmlinkage long sys_newstat(char * filename, struct stat * statbuf)
+ asmlinkage long sys_lstat(char * filename, struct __old_kernel_stat * statbuf)
+ {
+ 	struct nameidata nd;
+-	int error;
++	int error, errcnt = 0;
+ 
++again:
+ 	error = user_path_walk_link(filename, &nd);
+ 	if (!error) {
+ 		error = do_revalidate(nd.dentry);
+@@ -187,6 +199,11 @@ asmlinkage long sys_lstat(char * filename, struct __old_kernel_stat * statbuf)
+ 			error = cp_old_stat(nd.dentry->d_inode, statbuf);
+ 		path_release(&nd);
+ 	}
++	if (error == -ESTALE && !errcnt) {
++		errcnt++;
++		goto again;
++	}
++
+ 	return error;
+ }
+ 
+@@ -195,8 +212,9 @@ asmlinkage long sys_lstat(char * filename, struct __old_kernel_stat * statbuf)
+ asmlinkage long sys_newlstat(char * filename, struct stat * statbuf)
+ {
+ 	struct nameidata nd;
+-	int error;
++	int error, errcnt = 0;
+ 
++again:
+ 	error = user_path_walk_link(filename, &nd);
+ 	if (!error) {
+ 		error = do_revalidate(nd.dentry);
+@@ -204,6 +222,12 @@ asmlinkage long sys_newlstat(char * filename, struct stat * statbuf)
+ 			error = cp_new_stat(nd.dentry->d_inode, statbuf);
+ 		path_release(&nd);
+ 	}
++
++	if (error == -ESTALE && !errcnt) {
++		errcnt++;
++		goto again;
++	}
++
+ 	return error;
+ }
+ 
+@@ -338,8 +362,9 @@ static long cp_new_stat64(struct inode * inode, struct stat64 * statbuf)
+ asmlinkage long sys_stat64(char * filename, struct stat64 * statbuf, long flags)
+ {
+ 	struct nameidata nd;
+-	int error;
++	int error, errcnt = 0;
+ 
++again:
+ 	error = user_path_walk(filename, &nd);
+ 	if (!error) {
+ 		error = do_revalidate(nd.dentry);
+@@ -347,14 +372,20 @@ asmlinkage long sys_stat64(char * filename, struct stat64 * statbuf, long flags)
+ 			error = cp_new_stat64(nd.dentry->d_inode, statbuf);
+ 		path_release(&nd);
+ 	}
++	if (error == -ESTALE && !errcnt) {
++		errcnt++;
++		goto again;
++	}
++
+ 	return error;
+ }
+ 
+ asmlinkage long sys_lstat64(char * filename, struct stat64 * statbuf, long flags)
+ {
+ 	struct nameidata nd;
+-	int error;
++	int error, errcnt = 0;
+ 
++again:
+ 	error = user_path_walk_link(filename, &nd);
+ 	if (!error) {
+ 		error = do_revalidate(nd.dentry);
+@@ -362,6 +393,11 @@ asmlinkage long sys_lstat64(char * filename, struct stat64 * statbuf, long flags
+ 			error = cp_new_stat64(nd.dentry->d_inode, statbuf);
+ 		path_release(&nd);
+ 	}
++	if (error == -ESTALE && !errcnt) {
++		errcnt++;
++		goto again;
++	}
++
+ 	return error;
+ }
+ 
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 76255f5035..5000be18cf 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -347,6 +347,9 @@ static int inet_check_attr(struct rtmsg *r, struct rtattr **rta)
+ {
+ 	int i;
+ 
++	if (r->rtm_type > RTN_MAX)
++		return -EINVAL;
++
+ 	for (i=1; i<=RTA_MAX; i++) {
+ 		struct rtattr *attr = rta[i-1];
+ 		if (attr) {
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index ef152eb9ff..ad155b5755 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -238,7 +238,7 @@ void rpc_clnt_sigunmask(struct rpc_clnt *clnt, sigset_t *oldset)
+  */
+ int rpc_call_sync(struct rpc_clnt *clnt, struct rpc_message *msg, int flags)
+ {
+-	struct rpc_task	my_task, *task = &my_task;
++	struct rpc_task	*task;
+ 	sigset_t	oldset;
+ 	int		status;
+ 
+@@ -251,10 +251,15 @@ int rpc_call_sync(struct rpc_clnt *clnt, struct rpc_message *msg, int flags)
+ 		flags &= ~RPC_TASK_ASYNC;
+ 	}
+ 
++	task = rpc_new_task(clnt, NULL, flags);
++	if (task == NULL) {
++		status = -ENOMEM;
++		goto out;
++	}
++
++	/* Mask signals on RPC calls _and_ GSS_AUTH upcalls */
+ 	rpc_clnt_sigmask(clnt, &oldset);		
+ 
+-	/* Create/initialize a new RPC task */
+-	rpc_init_task(task, clnt, NULL, flags);
+ 	rpc_call_setup(task, msg, 0);
+ 
+ 	/* Set up the call info struct and execute the task */
+@@ -267,6 +272,7 @@ int rpc_call_sync(struct rpc_clnt *clnt, struct rpc_message *msg, int flags)
+ 
+ 	rpc_clnt_sigunmask(clnt, &oldset);		
+ 
++out:
+ 	return status;
+ }
+ 
+diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+index fcafbf7ed2..e7f951e525 100644
+--- a/net/sunrpc/svcsock.c
++++ b/net/sunrpc/svcsock.c
+@@ -350,6 +350,12 @@ svc_sendto(struct svc_rqst *rqstp, struct iovec *iov, int nr)
+ 	 */
+ 	msg.msg_flags	= 0;
+ 
++	/* 
++	 * Make sure there is a socket before sending
++	 */
++	if (test_bit(SK_DEAD, &svsk->sk_flags))
++		return -ENOTCONN;
++
+ 	oldfs = get_fs(); set_fs(KERNEL_DS);
+ 	len = sock_sendmsg(sock, &msg, buflen);
+ 	set_fs(oldfs);
+-- 
+2.11.4.GIT
+

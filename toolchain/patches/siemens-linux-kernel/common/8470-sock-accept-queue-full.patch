@@ -1,0 +1,58 @@
+From c3a3d438f4994615e690df53358c13d363722012 Mon Sep 17 00:00:00 2001
+From: lly <lly@sf.net>
+Date: Sat, 25 Sep 2010 15:31:44 -0400
+Subject: [PATCH] kernel: Backport from 2.6 [NET]: fix bugs in 'Whether sock
+ accept queue' is full
+
+---
+ include/net/tcp.h  | 2 +-
+ net/unix/af_unix.c | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index b05217aee5..3f84ca5898 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1745,7 +1745,7 @@ static inline void tcp_acceptq_added(struct sock *sk)
+ 
+ static inline int tcp_acceptq_is_full(struct sock *sk)
+ {
+-	return sk->ack_backlog > sk->max_ack_backlog;
++	return sk->ack_backlog >= sk->max_ack_backlog;
+ }
+ 
+ static inline void tcp_acceptq_queue(struct sock *sk, struct open_request *req,
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 62f07a8b1d..8498957cd1 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -832,7 +832,7 @@ static long unix_wait_for_peer(unix_socket *other, long timeo)
+ 
+ 	sched = (!other->dead &&
+ 		 !(other->shutdown&RCV_SHUTDOWN) &&
+-		 skb_queue_len(&other->receive_queue) > other->max_ack_backlog);
++		 skb_queue_len(&other->receive_queue) >= other->max_ack_backlog);
+ 
+ 	unix_state_runlock(other);
+ 
+@@ -908,7 +908,7 @@ restart:
+ 	if (other->shutdown & RCV_SHUTDOWN)
+ 		goto out_unlock;
+ 
+-	if (skb_queue_len(&other->receive_queue) > other->max_ack_backlog) {
++	if (skb_queue_len(&other->receive_queue) >= other->max_ack_backlog) {
+ 		err = -EAGAIN;
+ 		if (!timeo)
+ 			goto out_unlock;
+@@ -1255,7 +1255,7 @@ restart:
+ 		goto out_unlock;
+ 
+ 	if (unix_peer(other) != sk &&
+-	    skb_queue_len(&other->receive_queue) > other->max_ack_backlog) {
++	    skb_queue_len(&other->receive_queue) >= other->max_ack_backlog) {
+ 		if (!timeo) {
+ 			err = -EAGAIN;
+ 			goto out_unlock;
+-- 
+2.11.4.GIT
+

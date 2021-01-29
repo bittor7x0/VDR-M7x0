@@ -1,0 +1,91 @@
+From c557ba97019fdef6b4df270acaa9aa7cd3fad245 Mon Sep 17 00:00:00 2001
+From: lly <lly@sf.net>
+Date: Fri, 22 Oct 2010 14:53:48 -0400
+Subject: [PATCH] [NET]: schedule_timeout() negative timeout message backports,
+ mips: implement simple dump_stack() wrapper
+
+Backport from kernel.org 2.6 commits
+9261c9b042547d01eeb206cf0e21ce72832245ec [NET]: Make sure l_linger is unsigned to avoid negative timeouts
+ba78073e6f70cd9c64a478a9bd901d7c8736cfbc [NET]: "wrong timeout value" in sk_wait_data()
+---
+ arch/mips/kernel/traps.c |  8 ++++++++
+ kernel/sched.c           |  4 ++--
+ net/core/sock.c          | 18 +++++++++++++++---
+ 3 files changed, 25 insertions(+), 5 deletions(-)
+
+diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
+index 74fe7413e4..28a71a714c 100644
+--- a/arch/mips/kernel/traps.c
++++ b/arch/mips/kernel/traps.c
+@@ -197,6 +197,14 @@ void show_trace(long *sp)
+ 	printk("\n");
+ }
+ 
++/*
++ * The architecture-independent backtrace generator
++ */
++void dump_stack(void)
++{
++	show_trace(0);
++}
++
+ void show_trace_task(struct task_struct *tsk)
+ {
+ 	show_trace((long *)tsk->thread.reg29);
+diff --git a/kernel/sched.c b/kernel/sched.c
+index 5ee0e7828c..fba39fb858 100644
+--- a/kernel/sched.c
++++ b/kernel/sched.c
+@@ -433,8 +433,8 @@ signed long fastcall schedule_timeout(signed long timeout)
+ 		if (timeout < 0)
+ 		{
+ 			printk(KERN_ERR "schedule_timeout: wrong timeout "
+-			       "value %lx from %p\n", timeout,
+-			       __builtin_return_address(0));
++			       "value %lx\n", timeout);
++			dump_stack();
+ 			current->state = TASK_RUNNING;
+ 			goto out;
+ 		}
+diff --git a/net/core/sock.c b/net/core/sock.c
+index c266cc3ee3..81c89e6355 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -155,7 +155,19 @@ static int sock_set_timeout(long *timeo_p, char *optval, int optlen)
+ 		return -EINVAL;
+ 	if (copy_from_user(&tv, optval, sizeof(tv)))
+ 		return -EFAULT;
+-
++	if (tv.tv_usec < 0 || tv.tv_usec >= 1000000L)
++		return -EDOM;
++
++	if (tv.tv_sec < 0) {
++		static int warned = 0;
++		*timeo_p = 0;
++		if (warned < 10 && net_ratelimit())
++			warned++;
++			printk(KERN_DEBUG "sock_set_timeout: `%s' (pid %d) "
++			       "tries to set negative timeout\n",
++			        current->comm, current->pid);
++		return 0;
++	}
+ 	*timeo_p = MAX_SCHEDULE_TIMEOUT;
+ 	if (tv.tv_sec == 0 && tv.tv_usec == 0)
+ 		return 0;
+@@ -304,11 +316,11 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 				sk->linger=0;
+ 			} else {
+ #if (BITS_PER_LONG == 32)
+-				if (ling.l_linger >= MAX_SCHEDULE_TIMEOUT/HZ)
++				if ((unsigned int)ling.l_linger >= MAX_SCHEDULE_TIMEOUT/HZ)
+ 					sk->lingertime=MAX_SCHEDULE_TIMEOUT;
+ 				else
+ #endif
+-					sk->lingertime=ling.l_linger*HZ;
++					sk->lingertime=(unsigned int)ling.l_linger*HZ;
+ 				sk->linger=1;
+ 			}
+ 			break;
+-- 
+2.11.4.GIT
+

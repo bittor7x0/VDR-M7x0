@@ -1,0 +1,34 @@
+From f645596220af151583a0b209ca2335cb8958ffa1 Mon Sep 17 00:00:00 2001
+From: Fedor <fedork@ubuntu.(none)>
+Date: Thu, 5 Mar 2009 22:57:11 -0500
+Subject: [PATCH] Relax usbcore reset timings (backport from 2.6.12)
+
+---
+ drivers/usb/hub.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/hub.c b/drivers/usb/hub.c
+index 4c7a8f2872..18cca5a334 100644
+--- a/drivers/usb/hub.c
++++ b/drivers/usb/hub.c
+@@ -142,14 +142,15 @@ static void hub_irq(struct urb *urb)
+ static void usb_hub_power_on(struct usb_hub *hub)
+ {
+ 	int i;
++	unsigned pgood_delay = hub->descriptor->bPwrOn2PwrGood * 2;
+ 
+ 	/* Enable power to the ports */
+ 	dbg("enabling power on all ports");
+ 	for (i = 0; i < hub->descriptor->bNbrPorts; i++)
+ 		usb_set_port_feature(hub->dev, i + 1, USB_PORT_FEAT_POWER);
+ 
+-	/* Wait for power to be enabled */
+-	wait_ms(hub->descriptor->bPwrOn2PwrGood * 2);
++	/* Wait at least 100 msec for power to become stable */
++	wait_ms(max(pgood_delay, (unsigned) 100));
+ }
+ 
+ static int usb_hub_configure(struct usb_hub *hub, struct usb_endpoint_descriptor *endpoint)
+-- 
+2.11.4.GIT
+

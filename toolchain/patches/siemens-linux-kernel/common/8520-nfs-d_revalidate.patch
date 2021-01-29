@@ -1,0 +1,27 @@
+From a053b6fab2f33c8202612bc04ecbc5d80be4b480 Mon Sep 17 00:00:00 2001
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Sun, 30 May 2010 08:49:39 -0400
+Subject: [PATCH] nfs d_revalidate() is too trigger-happy with d_drop()
+ kernel.org commit d9e80b7de91db05c1c4d2e5ebbfd70b3b3ba0e0f backported by lly
+ (wl500g.googlecode.com)
+
+---
+ fs/nfs/dir.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
+index 882d604eae..de022bd608 100644
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -585,6 +585,8 @@ out_zap_parent:
+ 		/* If we have submounts, don't unhash ! */
+ 		if (have_submounts(dentry))
+ 			goto out_valid;
++		if (dentry->d_flags & DCACHE_NFSD_DISCONNECTED)
++			goto out_valid;
+ 		shrink_dcache_parent(dentry);
+ 	}
+ 	d_drop(dentry);
+-- 
+2.11.4.GIT
+

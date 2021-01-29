@@ -1,0 +1,133 @@
+From f7305172f4117f4edd2b9ae36392231b7aec89df Mon Sep 17 00:00:00 2001
+From: Fedor <fedork@ubuntu.(none)>
+Date: Fri, 23 Jan 2009 16:48:49 -0500
+Subject: [PATCH] Additional patches to stabilize USB
+
+diff --git a/drivers/usb/host/ehci-hcd.c b/drivers/usb/host/ehci-hcd.c
+index 8df89ac55b..bf8f8f4c42 100644
+--- a/drivers/usb/host/ehci-hcd.c
++++ b/drivers/usb/host/ehci-hcd.c
+@@ -401,13 +401,13 @@ static int ehci_start (struct usb_hcd *hcd)
+ 	}
+ 
+ {
+-	int misc_reg;
++	u8 misc_reg;
+ 	u32 vendor_id;
+ 	
+ 	pci_read_config_dword (ehci->hcd.pdev, PCI_VENDOR_ID, &vendor_id);
+ 	if (vendor_id == 0x31041106) {
+ 		/* VIA 6212 */
+-		printk(KERN_INFO "EHCI: Enabling VIA 6212 workarounds\n", misc_reg);
++		printk(KERN_INFO "EHCI: Enabling VIA 6212 workarounds\n");
+ 		pci_read_config_byte(ehci->hcd.pdev, 0x49, &misc_reg);
+ 		misc_reg &= ~0x20;
+ 		pci_write_config_byte(ehci->hcd.pdev, 0x49, misc_reg);
+diff --git a/drivers/usb/hub.c b/drivers/usb/hub.c
+index 3a87b01608..59f2d1a062 100644
+--- a/drivers/usb/hub.c
++++ b/drivers/usb/hub.c
+@@ -601,6 +601,13 @@ static int usb_hub_port_reset(struct usb_device *hub, int port,
+ 
+ 		/* return on disconnect or reset */
+ 		status = usb_hub_port_wait_reset(hub, port, dev, delay);
++
++		// !!TB - dd-wrt fix for USB 2.0
++		if (status == 0) {
++			/* TRSTRCY = 10 ms; plus some extra */
++			wait_ms(10 + 40);
++		}
++
+ 		if (status != -1) {
+ 			usb_clear_port_feature(hub, port + 1, USB_PORT_FEAT_C_RESET);
+ 			return status;
+@@ -758,6 +765,13 @@ static void usb_hub_port_connect_change(struct usb_hub *hubstate, int port,
+ 		info("new USB device %s-%s, assigned address %d",
+ 			dev->bus->bus_name, dev->devpath, dev->devnum);
+ 
++		/* !!TB - fix by lly: check for devices running slower than they could */
++		if (dev->speed == USB_SPEED_FULL || dev->speed == USB_SPEED_LOW)
++		{
++			dbg("USB 1.1 device - waiting 20ms");
++			wait_ms(20);
++		}
++
+ 		/* Run it through the hoops (find a driver, etc) */
+ 		if (!usb_new_device(dev)) {
+ 			hub->children[port] = dev;
+diff --git a/drivers/usb/usb.c b/drivers/usb/usb.c
+index 695db60044..758e6936ef 100644
+--- a/drivers/usb/usb.c
++++ b/drivers/usb/usb.c
+@@ -2242,6 +2242,7 @@
+ int usb_new_device(struct usb_device *dev)
+ {
+ 	int err;
++	int wcnt;
+ 
+ 	/* USB v1.1 5.5.3 */
+ 	/* We read the first 8 bytes from the device descriptor to get to */
+@@ -2274,6 +2275,48 @@
+ 	dev->epmaxpacketin [0] = dev->descriptor.bMaxPacketSize0;
+ 	dev->epmaxpacketout[0] = dev->descriptor.bMaxPacketSize0;
+ 
++	if (dev->ttport) {
++		// !!TB - lly: This piece of code stolen from 2.6 tree
++		// Workaround for USB 1.1 device connected via high-speed USB 2.0 hub
++		// hub.c: hub_port_init()
++		struct usb_device_descriptor *buf;
++		int j, r = 0;
++
++		dbg("Device via USB hub");
++
++#define GET_DESCRIPTOR_BUFSIZE  64
++		buf = kmalloc(GET_DESCRIPTOR_BUFSIZE, GFP_NOIO);
++		if (!buf) {
++			return 1;
++		}
++
++		for (j = 0; j < 3; ++j) {
++			buf->bMaxPacketSize0 = 0;
++			r = usb_control_msg(dev, usb_rcvctrlpipe(dev, 0),
++				USB_REQ_GET_DESCRIPTOR, USB_DIR_IN,
++				USB_DT_DEVICE << 8, 0,
++				buf, GET_DESCRIPTOR_BUFSIZE,
++				HZ * GET_TIMEOUT);
++			switch (buf->bMaxPacketSize0) {
++				case 8: case 16: case 32: case 64: case 255:
++					if (buf->bDescriptorType == USB_DT_DEVICE) {
++						r = 0;
++						break;
++					}
++				/* FALL THROUGH */
++				default:
++					if (r == 0)
++					r = -EPROTO;
++					break;
++			}
++			if (r == 0) break;
++		}
++		dev->descriptor.bMaxPacketSize0 = buf->bMaxPacketSize0;
++		kfree(buf);
++#undef GET_DESCRIPTOR_BUFSIZE
++		// lly: End 2.6 code
++	}
++
+ 	err = usb_get_device_descriptor(dev);
+ 	if (err < (signed)sizeof(dev->descriptor)) {
+ 		if (err < 0)
+@@ -2287,6 +2330,11 @@
+ 		return 1;
+ 	}
+ 
++	// !!TB - added delay (wait for data)
++	for (wcnt = 0; wcnt < 20 && dev->descriptor.bNumConfigurations == 0; wcnt++) {
++		wait_ms(50);
++	}
++
+ 	err = usb_get_configuration(dev);
+ 	if (err < 0) {
+ 		err("unable to get device %d configuration (error=%d)",
+-- 
+2.11.4.GIT
+

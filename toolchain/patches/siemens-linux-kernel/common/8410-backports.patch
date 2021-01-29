@@ -1,0 +1,69 @@
+From 061e4603063640c18fbfda081f9b3f21a52187da Mon Sep 17 00:00:00 2001
+From: lly <lly@sf.net>
+Date: Fri, 23 Jul 2010 13:06:52 -0400
+Subject: [PATCH] kernel 2.4: backports from 2.6
+
+---
+ fs/select.c          |  2 +-
+ include/linux/list.h | 14 ++++++++++++++
+ mm/filemap.c         |  6 ++++++
+ 3 files changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/fs/select.c b/fs/select.c
+index 65ff400a89..533ed8139a 100644
+--- a/fs/select.c
++++ b/fs/select.c
+@@ -417,7 +417,7 @@ asmlinkage long sys_poll(struct pollfd * ufds, unsigned int nfds, long timeout)
+ 	int nchunks, nleft;
+ 
+ 	/* Do a sanity check on nfds ... */
+-	if (nfds > current->files->max_fdset && nfds > OPEN_MAX)
++	if (nfds > current->rlim[RLIMIT_NOFILE].rlim_cur)
+ 		return -EINVAL;
+ 
+ 	if (timeout) {
+diff --git a/include/linux/list.h b/include/linux/list.h
+index b0c4f30831..819b10e356 100644
+--- a/include/linux/list.h
++++ b/include/linux/list.h
+@@ -298,6 +298,20 @@ static inline void list_splice_tail_init(struct list_head *list,
+ #define list_for_each(pos, head) \
+ 	for (pos = (head)->next, prefetch(pos->next); pos != (head); \
+         	pos = pos->next, prefetch(pos->next))
++
++/**
++ * __list_for_each	-	iterate over a list
++ * @pos:	the &struct list_head to use as a loop counter.
++ * @head:	the head for your list.
++ *
++ * This variant differs from list_for_each() in that it's the
++ * simplest possible list iteration code, no prefetching is done.
++ * Use this for code that knows the list to be very short (empty
++ * or 1 entry) most of the time.
++ */
++#define __list_for_each(pos, head) \
++	for (pos = (head)->next; pos != (head); pos = pos->next)
++
+ /**
+  * list_for_each_prev	-	iterate over a list backwards
+  * @pos:	the &struct list_head to use as a loop counter.
+diff --git a/mm/filemap.c b/mm/filemap.c
+index deea1099d9..7b3742822f 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -1552,6 +1552,12 @@ page_not_up_to_date:
+ 		}
+ 
+ readpage:
++		/*
++		 * A previous I/O error may have been due to temporary
++		 * failures, eg. multipath errors.
++		 * PG_error will be set again if readpage fails.
++		 */
++		ClearPageError(page);
+ 		/* ... and start the actual read. The read will unlock the page. */
+ 		error = mapping->a_ops->readpage(filp, page);
+ 
+-- 
+2.11.4.GIT
+

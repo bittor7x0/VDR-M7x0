@@ -1,0 +1,60 @@
+From 387c2d913b261710265f28a38c7fcaf8d3c9fee4 Mon Sep 17 00:00:00 2001
+From: lly <lly@sf.net>
+Date: Wed, 29 Apr 2009 16:22:36 -0400
+Subject: [PATCH] USB: correct calculation for highspeed bit times.
+
+---
+ drivers/usb/hcd.h | 16 +++++++++-------
+ drivers/usb/usb.c |  4 ++--
+ 2 files changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/usb/hcd.h b/drivers/usb/hcd.h
+index 4328660bc0..be752babb2 100644
+--- a/drivers/usb/hcd.h
++++ b/drivers/usb/hcd.h
+@@ -239,17 +239,19 @@ extern void usb_release_bandwidth (struct usb_device *dev, struct urb *urb,
+ extern int usb_check_bandwidth (struct usb_device *dev, struct urb *urb);
+ 
+ /*
+- * Ceiling microseconds (typical) for that many bytes at high speed
++ * Ceiling [nano/micro]seconds (typical) for that many bytes at high speed
+  * ISO is a bit less, no ACK ... from USB 2.0 spec, 5.11.3 (and needed
+  * to preallocate bandwidth)
+  */
+ #define USB2_HOST_DELAY	5	/* nsec, guess */
+-#define HS_USECS(bytes) NS_TO_US ( ((55 * 8 * 2083)/1000) \
+-	+ ((2083UL * (3167 + BitTime (bytes)))/1000) \
+-	+ USB2_HOST_DELAY)
+-#define HS_USECS_ISO(bytes) NS_TO_US ( ((long)(38 * 8 * 2.083)) \
+-	+ ((2083UL * (3167 + BitTime (bytes)))/1000) \
+-	+ USB2_HOST_DELAY)
++#define HS_NSECS(bytes) (((55 * 8 * 2083) \
++        + (2083UL * (3 + BitTime(bytes))))/1000 \
++        + USB2_HOST_DELAY)
++#define HS_NSECS_ISO(bytes) (((38 * 8 * 2083) \
++        + (2083UL * (3 + BitTime(bytes))))/1000 \
++        + USB2_HOST_DELAY)
++#define HS_USECS(bytes) NS_TO_US (HS_NSECS(bytes))
++#define HS_USECS_ISO(bytes) NS_TO_US (HS_NSECS_ISO(bytes))
+ 
+ extern long usb_calc_bus_time (int speed, int is_input,
+ 			int isoc, int bytecount);
+diff --git a/drivers/usb/usb.c b/drivers/usb/usb.c
+index 16a7be4feb..cfa709995d 100644
+--- a/drivers/usb/usb.c
++++ b/drivers/usb/usb.c
+@@ -265,9 +265,9 @@ long usb_calc_bus_time (int speed, int is_input, int isoc, int bytecount)
+ 	case USB_SPEED_HIGH:	/* ISOC or INTR */
+ 		// FIXME adjust for input vs output
+ 		if (isoc)
+-			tmp = HS_USECS (bytecount);
++			tmp = HS_NSECS (bytecount);
+ 		else
+-			tmp = HS_USECS_ISO (bytecount);
++			tmp = HS_NSECS_ISO (bytecount);
+ 		return tmp;
+ 	default:
+ 		dbg ("bogus device speed!");
+-- 
+2.11.4.GIT
+

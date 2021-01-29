@@ -1,0 +1,89 @@
+From f8f07487e13763512350a6b3ca7f0a49684a6c9c Mon Sep 17 00:00:00 2001
+From: Fedor <fedork@ubuntu.(none)>
+Date: Sat, 7 Feb 2009 23:11:27 -0500
+Subject: [PATCH] Improvements for allow_restart flag implementation (from
+ wl500g.googlecode.com).
+
+---
+ drivers/scsi/scsi.h            |  2 +-
+ drivers/scsi/scsi_error.c      | 14 +++++++-------
+ drivers/usb/storage/scsiglue.c |  3 +--
+ 3 files changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/scsi/scsi.h b/drivers/scsi/scsi.h
+index d1846c19fd..09082d8d79 100644
+--- a/drivers/scsi/scsi.h
++++ b/drivers/scsi/scsi.h
+@@ -597,7 +597,7 @@ struct scsi_device {
+ 	unsigned remap:1;	/* support remapping  */
+ 	unsigned starved:1;	/* unable to process commands because
+ 				   host busy */
+- 	unsigned no_start_on_add:1;	/* do not issue start on add */
++	unsigned no_start_on_add:1;	/* do not issue start on add */
+ 	unsigned allow_restart:1; /* issue START_UNIT in error handler */
+ 	unsigned retry_hwerror:1; /* retry HARDWARE_ERROR */
+ 
+diff --git a/drivers/scsi/scsi_error.c b/drivers/scsi/scsi_error.c
+index 7b2369ebfc..548a71d0b2 100644
+--- a/drivers/scsi/scsi_error.c
++++ b/drivers/scsi/scsi_error.c
+@@ -830,11 +830,7 @@ STATIC int scsi_try_start_unit(Scsi_Cmnd * SCpnt)
+ 	if (SCpnt->device->allow_restart == 0)
+ 		return FAILED;
+ 
+-	SCpnt->eh_state = FAILED;	/* Until we come up with something better */
+-
+-	spin_lock_irqsave(&io_request_lock, flags);
+ 	rtn = scsi_send_stu(SCpnt);
+-	spin_unlock_irqrestore(&io_request_lock, flags);
+ 
+ 	if (rtn == SUCCESS)
+ 		SCpnt->eh_state = SUCCESS;
+@@ -1556,7 +1552,7 @@ STATIC int scsi_unjam_host(struct Scsi_Host *host)
+ 		if (SCloop == NULL) {
+ 			continue;
+ 		}
+-		
++
+ 		rtn = scsi_try_start_unit(SCloop);
+ 
+ 		if (rtn == SUCCESS) {
+@@ -1735,8 +1731,12 @@ STATIC int scsi_unjam_host(struct Scsi_Host *host)
+ 						    && SCloop->state != SCSI_STATE_TIMEOUT) {
+ 							continue;
+ 						}
+-						scsi_try_start_unit(SCloop);
+-						rtn = scsi_test_unit_ready(SCloop);
++
++						if ((scsi_try_start_unit(SCloop) == SUCCESS &&
++						     scsi_test_unit_ready(SCloop) == SUCCESS))
++							rtn = SUCCESS;
++						else
++							rtn = scsi_test_unit_ready(SCloop);
+ 
+ 						if (rtn == SUCCESS && scsi_unit_is_ready(SCloop)) {
+ 							rtn = scsi_eh_retry_command(SCloop);
+diff --git a/drivers/usb/storage/scsiglue.c b/drivers/usb/storage/scsiglue.c
+index a2d633f24c..400792fc8b 100644
+--- a/drivers/usb/storage/scsiglue.c
++++ b/drivers/usb/storage/scsiglue.c
+@@ -340,7 +340,7 @@ static int slave_configure( Scsi_Device *dev )
+ 	US_DEBUGP("slave_configure() called\n" );
+ 
+ 	if (dev->type == TYPE_DISK) {
+-	
++
+ 		/* USB-IDE bridges tend to report SK = 0x04 (Non-recoverable
+ 		 * Hardware Error) when any low-level error occurs,
+ 	         * recoverable or not.  Setting this flag tells the SCSI
+@@ -352,7 +352,6 @@ static int slave_configure( Scsi_Device *dev )
+ 		/* USB disks should allow restart. Some drives spin down
+ 		 * automatically, requiring a START-STOP UNIT command. */
+ 		dev->allow_restart = 1;
+-
+ 	}
+ 
+ 	return 1;
+-- 
+2.11.4.GIT
+
