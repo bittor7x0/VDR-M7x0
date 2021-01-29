@@ -29,29 +29,43 @@ VDR-PLUGINS_DEPS = $(BASE_BUILD_STAGEFILE) $(VDR_INSTALLED) $(TOP_DIR)/.config
 CONFIG_VDR-PLUGINS := $(CONFIG_VDR-PLUGINS-ROOTFS) $(CONFIG_VDR-PLUGINS-JFFS2)
 CONFIG_VDR-PLUGINS-LIBS := $(CONFIG_VDR-PLUGINS-ROOTFS-LIBS) $(CONFIG_VDR-PLUGINS-JFFS2-LIBS)
 
+ifeq ($(filter vdrmanager,$(CONFIG_VDR-PLUGINS)),y)
 ifeq ($(or $(filter y,$(CONFIG_ZLIB)),$(filter y,$(CONFIG_ZLIB_STATIC))),y)
 	VDR-PLUGINS_DEPS +=  $(ZLIB_INSTALLED)
 endif
-ifeq ($(or $(filter y,$(CONFIG_PCRE)),$(filter y,$(CONFIG_PCRE_CPP))),y)
-	VDR-PLUGINS_DEPS +=  $(PCRE_INSTALLED)
 endif
+
+ifeq ($(filter skinenigmang,$(CONFIG_VDR-PLUGINS)),y)
 ifeq ($(CONFIG_GRAPHICSMAGICK),y)
 	VDR-PLUGINS_DEPS +=  $(GRAPHICSMAGICK_INSTALLED)
 endif
 ifeq ($(CONFIG_FREETYPE),y)
 	VDR-PLUGINS_DEPS +=  $(FREETYPE_INSTALLED)
 endif
+endif
+
+ifeq ($(or $(filter xmltv2vdr,$(CONFIG_VDR-PLUGINS)),$(filter tvscraper,$(CONFIG_VDR-PLUGINS))),y)
 ifeq ($(CONFIG_SQLITE),y)
 	VDR-PLUGINS_DEPS +=  $(SQLITE_INSTALLED)
-endif
-ifeq ($(CONFIG_CURL),y)
-	VDR-PLUGINS_DEPS +=  $(CURL_INSTALLED)
 endif
 ifeq ($(CONFIG_LIBXML2),y)
 	VDR-PLUGINS_DEPS +=  $(LIBXML2_INSTALLED)
 endif
+endif
+
+ifeq ($(or $(filter xmltv2vdr,$(CONFIG_VDR-PLUGINS)),$(filter epgfixer,$(CONFIG_VDR-PLUGINS)),$(filter epgsearch,$(CONFIG_VDR-PLUGINS))),y)
+ifeq ($(or $(filter y,$(CONFIG_PCRE)),$(filter y,$(CONFIG_PCRE_CPP))),y)
+	VDR-PLUGINS_DEPS +=  $(PCRE_INSTALLED)
+endif
+endif
+
+ifeq ($(filter tvscraper,$(CONFIG_VDR-PLUGINS)),y)
+ifeq ($(CONFIG_CURL),y)
+	VDR-PLUGINS_DEPS +=  $(CURL_INSTALLED)
+endif
 ifeq ($(CONFIG_JANSSON),y)
 	VDR-PLUGINS_DEPS +=  $(JANSSON_INSTALLED)
+endif
 endif
 
 VDR-PLUGINS_SVN_URL := https://github.com/bittor7x0/VDR-M7x0/trunk/vdr-m7x0-plugins
@@ -136,9 +150,12 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 			$(VDR_DIR)/PLUGINS/src/pin/Makefile; \
 	fi; \
 	if [ -f $(VDR_DIR)/PLUGINS/src/vdrmanager/Makefile ]; then \
-		if [ X"$(CONFIG_ZLIB)" != X"y" -a X"$(CONFIG_ZLIB_STATIC)" != X"y" ]; then \
-			$(ECHO) dependency error: vdrmanager plugin needs zlib or zlib-static enabled; \
-			exit 1; \
+		if [ X"$(CONFIG_ZLIB)" = X"y" ] || [ X"$(CONFIG_ZLIB_STATIC)" = X"y" ]; then \
+			$(SED) -i -e 's,^VDRMANAGER_USE_ZLIB := .*,VDRMANAGER_USE_ZLIB := 1,g' \
+				$(VDR_DIR)/PLUGINS/src/vdrmanager/Makefile; \
+		else \
+			$(SED) -i -e 's,^VDRMANAGER_USE_ZLIB := .*,VDRMANAGER_USE_ZLIB := 0,g' \
+				$(VDR_DIR)/PLUGINS/src/vdrmanager/Makefile; \
 		fi; \
 	fi; \
 	if [ -f $(VDR_DIR)/PLUGINS/src/markad/Makefile ]; then \
