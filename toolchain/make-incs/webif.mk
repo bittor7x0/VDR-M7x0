@@ -89,6 +89,7 @@ $(STAGEFILES_DIR)/.webif_copied: $(STAGEFILES_DIR)/.webapp_downloaded $$(WEBIF_D
 	-$(RM) -rf $(WEBIF_BUILD_DIR)
 	$(MKDIR) -p $(WEBIF_BUILD_DIR)
 	$(CP) -RPp $(WEBIF_DIR)/* $(WEBIF_BUILD_DIR)
+	$(SED) -i -e 's/^[[:space:]]\+//g' $(WEBIF_BUILD_DIR)/webapp/etc/kloned.conf
 ifeq ($(CONFIG_YUI_COMPRESSOR),y)
 	$(call css_shrink_dir, $(WEBIF_BUILD_DIR)/webapp/www/css)
 	$(call js_shrink_dir, $(WEBIF_BUILD_DIR)/webapp/www/js)
@@ -109,8 +110,8 @@ endif
 #
 $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webif_copied
 	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
-	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) -flto -std=gnu90 >> $(WEBIF_TC_FILE)
-	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_SIZE) -flto >> $(WEBIF_TC_FILE)
+	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) -DIGNORE_TABS -flto -std=gnu90 >> $(WEBIF_TC_FILE)
+	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_SIZE) -DIGNORE_TABS -flto >> $(WEBIF_TC_FILE)
 	$(ECHO) AR = $(UCLIBC_AR) >> $(WEBIF_TC_FILE)
 	$(ECHO) RANLIB = $(UCLIBC_RANLIB) >> $(WEBIF_TC_FILE)
 	$(ECHO) LD = $(UCLIBC_LD) >> $(WEBIF_TC_FILE)
