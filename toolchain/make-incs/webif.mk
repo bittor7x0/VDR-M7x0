@@ -50,9 +50,6 @@ WEBIF_BUILD_DIR := $(BUILD_DIR)/webif.build
 WEBIF_SVN := https://github.com/bittor7x0/VDR-M7x0/trunk/webif
 WEBIF_TC_FILE := $(WEBIF_BUILD_DIR)/linux-mips-uclibc.tc
 WEBIF_CONF_DIR := $(PRG_CONFIGS_DIR)/webif
-LOGOS_FILE := logos-webif.tgz
-LOGOS_DLFILE := $(DOWNLOAD_DIR)/logos-webif.4.tgz
-LOGOS_URL := https://www.assembla.com/spaces/VDR-M7x0/documents/c6zJ780MGr36EzeJe5cbCb/download/$(LOGOS_FILE)
 
 PACKS_RULES_$(CONFIG_WEBIF) += $(STAGEFILES_DIR)/.webif_installed
 FILE_LISTS_$(CONFIG_WEBIF) += webif.lst webif-configs.lst
@@ -119,22 +116,10 @@ $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webif_copied
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_compiled
 
 #
-# download logos
-#
-$(LOGOS_DLFILE): $(TC_INIT_RULE)
-	(if [ ! -f $(LOGOS_DLFILE) ] ; then \
-	$(WGET) $(LOGOS_URL) -O $(LOGOS_DLFILE) ; \
-	fi );
-	$(TOUCH) $(LOGOS_DLFILE)
-
-#
 # install webif
 #
-$(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled $(LOGOS_DLFILE)
+$(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled
 	$(CP) $(WEBIF_BUILD_DIR)/kloned $(TARGET_ROOT)/usr/sbin/webifd
-	-$(RM) -rf $(WEBIF_CONF_DIR)/etc/webif/www/images
-	$(MKDIR) -p $(WEBIF_CONF_DIR)/etc/webif/www/images
-	$(TAR) -C $(WEBIF_CONF_DIR)/etc/webif/www/images -zf $(LOGOS_DLFILE)
 ifeq ($(or $(CONFIG_PNGOUT),$(CONFIG_ZOPFLIPNG),$(CONFIG_PNGWOLF-ZOPFLI),$(CONFIG_ECT),$(CONFIG_PINGO)),y)
 	$(call png_shrink_dir, $(WEBIF_CONF_DIR)/etc/webif/www/images)
 endif
@@ -158,8 +143,4 @@ distclean-webif:
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
 	-$(RM) -f $(FILELIST_DIR)/webif-configs.lst
-ifeq ($(DISTCLEAN_DLFILE),y)
-	-$(RM) -f $(LOGOS_DLFILE)
-endif
 	-$(RM) -rf $(WEBIF_BUILD_DIR)
-	-$(RM) -rf $(WEBIF_CONF_DIR)/etc/webif/www/images
