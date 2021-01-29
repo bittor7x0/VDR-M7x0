@@ -1,0 +1,13 @@
+#!/bin/ash
+
+source /etc/rc.local.conf
+[ -z "$1" -o ! -f "$1" -o X"$1" = X"${vdr_epgfile}" ] && echo "Error: incorrect parameter" && exit 1
+
+{           
+	/usr/bin/kill-vdr
+
+	/bin/rm -f "${vdr_epgfile}"
+	/bin/cp "$1" "${vdr_epgfile}"
+
+	/usr/bin/start-vdr
+} > /dev/null 2>&1 &
