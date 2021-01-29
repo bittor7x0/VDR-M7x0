@@ -23,10 +23,10 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-GMP_HOSTVERSION := 6.1.2
+GMP_HOSTVERSION := 6.2.1
 GMP_HOSTPATCHES_DIR := $(PATCHES_DIR)/gmp/$(GMP_HOSTVERSION)
 
-GMP_HOSTFILE := gmp-$(GMP_HOSTVERSION).tar.bz2
+GMP_HOSTFILE := gmp-$(GMP_HOSTVERSION).tar.xz
 GMP_HOSTDLFILE := $(DOWNLOAD_DIR)/$(GMP_HOSTFILE)
 GMP_HOSTURL := https://gmplib.org/download/gmp/$(GMP_HOSTFILE)
 GMP_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/gmp-$(GMP_HOSTVERSION)
@@ -55,7 +55,7 @@ $(GMP_HOSTDLFILE): $(TC_INIT_RULE)
 $(STAGEFILES_DIR)/.gmp_host_unpacked: $(GMP_HOSTDLFILE) \
                                            $(wildcard $(GMP_HOSTPATCHES_DIR)/*.patch)
 	-$(RM) -rf $(GMP_HOSTDIR)
-	$(BZCAT) $(GMP_HOSTDLFILE) | $(TAR) -C $(HOSTUTILS_BUILD_DIR) -f -
+	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -xJf $(GMP_HOSTDLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.gmp_host_unpacked
 
 #

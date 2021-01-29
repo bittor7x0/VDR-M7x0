@@ -1,7 +1,7 @@
 lib/libgcc_s.so.1        lib/libgcc_s.so.1        f 755 0 0 - - - - -
 lib/libgcc_s.so.1        -                        s   - - - - - - - -
 lib/libgcc_s.so          libgcc_s.so.1            l 777 0 0 - - - - -
-lib/libstdc++.so.6.0.27  lib/libstdc++.so.6.0.27  f 755 0 0 - - - - -
-lib/libstdc++.so.6.0.27  -                        s   - - - - - - - -
-lib/libstdc++.so.6       libstdc++.so.6.0.27      l 777 0 0 - - - - -
-lib/libstdc++.so         libstdc++.so.6.0.27      l 777 0 0 - - - - -
+lib/libstdc++.so.6.0.28  lib/libstdc++.so.6.0.28  f 755 0 0 - - - - -
+lib/libstdc++.so.6.0.28  -                        s   - - - - - - - -
+lib/libstdc++.so.6       libstdc++.so.6.0.28      l 777 0 0 - - - - -
+lib/libstdc++.so         libstdc++.so.6.0.28      l 777 0 0 - - - - -

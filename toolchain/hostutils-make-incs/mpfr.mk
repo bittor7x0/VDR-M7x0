@@ -26,10 +26,10 @@
 # Put dependencies here
 MPFR_HOSTDEPS = $(GMP_HOSTINSTALLED)
 
-MPFR_HOSTVERSION := 4.0.2
+MPFR_HOSTVERSION := 4.1.0
 MPFR_HOSTPATCHES_DIR := $(PATCHES_DIR)/mpfr/$(MPFR_HOSTVERSION)
 
-MPFR_HOSTFILE := mpfr-$(MPFR_HOSTVERSION).tar.bz2
+MPFR_HOSTFILE := mpfr-$(MPFR_HOSTVERSION).tar.xz
 MPFR_HOSTDLFILE := $(DOWNLOAD_DIR)/$(MPFR_HOSTFILE)
 MPFR_HOSTURL := http://www.mpfr.org/mpfr-$(MPFR_HOSTVERSION)/$(MPFR_HOSTFILE)
 MPFR_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/mpfr-$(MPFR_HOSTVERSION)
@@ -59,7 +59,7 @@ $(STAGEFILES_DIR)/.mpfr_host_unpacked: $(MPFR_HOSTDLFILE) \
                                            $(wildcard $(MPFR_HOSTPATCHES_DIR)/*.patch) \
                                            $$(MPFR_HOSTDEPS)
 	-$(RM) -rf $(MPFR_HOSTDIR)
-	$(BZCAT) $(MPFR_HOSTDLFILE) | $(TAR) -C $(HOSTUTILS_BUILD_DIR) -f -
+	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -xJf $(MPFR_HOSTDLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.mpfr_host_unpacked
 
 #

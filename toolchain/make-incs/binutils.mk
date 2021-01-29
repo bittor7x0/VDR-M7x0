@@ -27,11 +27,11 @@
 # Put dependencies here
 BINUTILS_DEPS = $(GMP_HOSTINSTALLED) $(MPFR_HOSTINSTALLED) $(MPC_HOSTINSTALLED) $(ISL_HOSTINSTALLED)
 
-BINUTILS_VERSION := 2.27
+BINUTILS_VERSION := 2.36
 BINUTILS_PATCHES_DIR := $(PATCHES_DIR)/binutils/$(BINUTILS_VERSION)
 
 BINUTILS_DIR := $(BUILD_DIR)/binutils-$(BINUTILS_VERSION)
-BINUTILS_FILE := binutils-$(BINUTILS_VERSION).tar.bz2
+BINUTILS_FILE := binutils-$(BINUTILS_VERSION).tar.xz
 BINUTILS_DLFILE := $(DOWNLOAD_DIR)/$(BINUTILS_FILE)
 BINUTILS_BUILD_DIR := $(BUILD_DIR)/binutils.build
 BINUTILS_URL := ftp://ftp.gnu.org/gnu/binutils/$(BINUTILS_FILE)
@@ -60,7 +60,7 @@ $(STAGEFILES_DIR)/.binutils_unpacked: $(BINUTILS_DLFILE) \
                                  $(wildcard $(BINUTILS_PATCHES_DIR)/*.patch) \
                                  $$(BINUTILS_DEPS)
 	-$(RM) -rf $(BINUTILS_DIR)
-	$(BZCAT) $(BINUTILS_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(TAR) -C $(BUILD_DIR) -xJf $(BINUTILS_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.binutils_unpacked
 
 #
@@ -80,19 +80,21 @@ $(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched
 	($(CD) $(BINUTILS_BUILD_DIR) ; \
 		$(BINUTILS_DIR)/configure \
 			--prefix=$(PREFIX) \
-			--with-sysroot=$(TARGET_ROOT) \
+			--build=$(HOST_TARGET) \
+			--host=$(HOST_TARGET) \
 			--target=$(UCLIBC_TARGET) \
+			--with-sysroot=$(TARGET_ROOT) \
 			--with-gmp=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-isl=$(PREFIX) \
-			--with-system-zlib \
+			--enable-plugins \
 			--enable-deterministic-archives \
 			--disable-sim \
 			--disable-gdb \
 			--disable-multilib \
 			--disable-werror \
-			--disable-nls )
+			--disable-nls)
 	$(TOUCH) $(STAGEFILES_DIR)/.binutils_configured
 
 #

@@ -33,7 +33,7 @@ ifeq ($(GCC_IS_SNAPSHOT),y)
   GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/snapshot
   GCC_FILE_LIST += gcc-snapshot.lst
 else
-  GCC_VERSION := 9.2.0
+  GCC_VERSION := 10.2.0
   GCC_FILE := gcc-$(GCC_VERSION).tar.xz
   GCC_URL := ftp://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/$(GCC_FILE)
   GCC_PATCHES_DIR := $(PATCHES_DIR)/gcc/$(GCC_VERSION)
@@ -91,16 +91,14 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                           $$(MPFR_HOSTINSTALLED) \
                                           $$(MPC_HOSTINSTALLED) \
                                           $$(ISL_HOSTINSTALLED) \
-                                          $$(PPL_HOSTINSTALLED) \
-                                          $$(CLOOG_HOSTINSTALLED) \
+                                          $$(ZSTD_HOSTINSTALLED) \
                                           $$(UCLIBC_PRE_ALL_GCC)
 	-$(RM) -rf $(GCC_STAGE1_BUILD_DIR)
 	$(MKDIR) -p $(GCC_STAGE1_BUILD_DIR)
 	($(CD) $(GCC_STAGE1_BUILD_DIR) ; \
 		export libgcc_cv_fixed_point=no ; \
-		export glibcxx_cv_c99_math_tr1=no ; \
+		$(if $(filter n,$(UCLIBC_IS_NG)),export glibcxx_cv_c99_math_tr1=no ;) \
 		PATH='$(PREFIX_BIN):$(PATH)' \
-		LDFLAGS='-lm $(LDFLAGS)' \
 		$(GCC_DIR)/configure \
 			--prefix=$(GCC_STAGE1_PREFIX) \
 			--with-sysroot=$(TARGET_ROOT) \
@@ -108,28 +106,23 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-gnu-as \
 			--with-ld=$(PREFIX_BIN)/$(UCLIBC_LD) \
 			--with-gnu-ld \
-			--with-system-zlib \
+			--with-newlib \
 			--target=$(UCLIBC_TARGET) \
 			--enable-languages=c \
-			--disable-__cxa_atexit \
+			--enable-__cxa_atexit \
 			--disable-shared \
 			--disable-threads \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
+			--with-zstd=$(PREFIX) \
 			--with-gmp=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
 			--with-isl=$(PREFIX) \
-			--with-ppl=$(PREFIX) \
-			--with-cloog=$(PREFIX) \
-			--enable-cloog-backend=isl \
-			--disable-ppl-version-check \
-			--disable-cloog-version-check \
 			--disable-isl-version-check \
 			--disable-decimal-float \
 			--disable-libgomp \
-			--disable-libmudflap \
 			--disable-libquadmath \
 			--disable-libssp \
 			--disable-libitm \
@@ -171,24 +164,20 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
                                    $$(GMP_HOSTINSTALLED) \
                                    $$(MPFR_HOSTINSTALLED) \
                                    $$(MPC_HOSTINSTALLED) \
-                                   $$(LIBELF_HOSTINSTALLED) \
                                    $$(ISL_HOSTINSTALLED) \
-                                   $$(PPL_HOSTINSTALLED) \
-                                   $$(CLOOG_HOSTINSTALLED) \
+                                   $$(ZSTD_HOSTINSTALLED) \
                                    $$(UCLIBC_INSTALLED)
 	-$(RM) -rf $(GCC_BUILD_DIR)
 	$(MKDIR) -p $(GCC_BUILD_DIR)
 	($(CD) $(GCC_BUILD_DIR) ; \
 		export libgcc_cv_fixed_point=no ; \
-		export glibcxx_cv_c99_math_tr1=no ; \
+		$(if $(filter n,$(UCLIBC_IS_NG)),export glibcxx_cv_c99_math_tr1=no ;) \
 		PATH='$(PREFIX_BIN):$(PATH)' \
-		LDFLAGS='-lm $(LDFLAGS)' \
 		$(GCC_DIR)/configure \
 			--prefix=$(PREFIX) \
 			--with-sysroot=$(TARGET_ROOT) \
 			--with-gnu-as \
 			--with-gnu-ld \
-			--with-system-zlib \
 			--target=$(UCLIBC_TARGET) \
 			--enable-languages=c,c++ \
 			--enable-__cxa_atexit \
@@ -198,21 +187,14 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
+			--with-zstd=$(PREFIX) \
 			--with-gmp=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
-			--with-libelf=$(PREFIX) \
 			--with-isl=$(PREFIX) \
-			--with-ppl=$(PREFIX) \
-			--with-cloog=$(PREFIX) \
-			--enable-cloog-backend=isl \
-			--with-host-libstdcxx='-lstdc++' \
-			--disable-ppl-version-check \
-			--disable-cloog-version-check \
 			--disable-isl-version-check \
 			--disable-decimal-float \
 			--disable-libgomp \
-			--disable-libmudflap \
 			--disable-libquadmath \
 			--disable-libssp \
 			--disable-libitm \
