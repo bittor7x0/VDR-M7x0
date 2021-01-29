@@ -84,7 +84,7 @@ fi
 if [ X"${osddebug}" != X"NO" ] ; then
     [ -f /rw-flash/.nodebug ] && /bin/rm /rw-flash/.nodebug
 else
-    /bin/touch /rw-flash/.nodebug
+    [ ! -f /rw-flash/.nodebug ] && /bin/touch /rw-flash/.nodebug
 fi
 
 echo ' '
