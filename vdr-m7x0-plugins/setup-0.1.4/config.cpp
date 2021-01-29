@@ -57,7 +57,7 @@ bool Config::LoadFile()
   XMLElement *root;
 
   //Load XML Config file
-  if(ok = (_xmlDoc.LoadFile(_filename) == XML_NO_ERROR))
+  if(ok = (_xmlDoc.LoadFile(_filename) == XML_SUCCESS))
   {
     if((root = _xmlDoc.FirstChildElement("setup")) != NULL)
     {
@@ -208,9 +208,8 @@ void Config::dumpXMLError(const char* myErrStr)
   {
     XMLError    errID   = _xmlDoc.ErrorID();
     const char *errName = _xmlDoc.ErrorName();
-    const char *errStr1 = _xmlDoc.GetErrorStr1();
-    const char *errStr2 = _xmlDoc.GetErrorStr2();
-    error("%s: XMLDocument error in %s id=%d '%s' str1=%s str2=%s", myErrStr, _filename, static_cast<int>( errID ), errName, errStr1, errStr2);
+    const char *errStr  = _xmlDoc.ErrorStr();
+    error("%s: XMLDocument error in %s id=%d '%s' str=%s", myErrStr, _filename, static_cast<int>( errID ), errName, errStr);
   }
 }
 
