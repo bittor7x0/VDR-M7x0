@@ -151,6 +151,7 @@ $(ROOTFS_FILE_TABLE): $(ROOTFS_DIR_DEPS)
 		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' $(ROOTFS_FILE_COPY)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(ROOTFS_DIR)/etc/systemtype`,g" $(ROOTFS_DIR)/etc/rc.mini
 	$(call set_lang, $(ROOTFS_DIR))
+	$(call fix_fw_conf_files, $(ROOTFS_DIR))
 ifeq ($(HOST_CYGWIN),y)
 	-$(RM) -rf $(CYGWIN_DIR_TMP_ABS)
 	$(MKDIR) -p $(CYGWIN_DIR_TMP_ABS)

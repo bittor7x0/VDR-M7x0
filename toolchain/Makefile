@@ -366,6 +366,22 @@ define set_lang
 	fi);
 endef
 
+define fix_fw_conf_files
+	(if [ $(CONFIG_FW_VERSION) == lite ] ; then \
+		$(SED) -i '/Montar unidades de red/d' $(1)/etc/vdr/commands.conf ; \
+		$(SED) -i '/Actualizar archivos en servidor DLNA/d' $(1)/etc/vdr/commands.conf ; \
+		(if [ -f $(1)/etc/vdr/plugins/epgsearch/epgsearchconflmail.templ ] ; then \
+			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchconflmail.templ ; \
+		fi); \
+		(if [ -f $(1)/etc/vdr/plugins/epgsearch/epgsearchupdmail.templ ] ; then \
+			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchupdmail.templ ; \
+		fi); \
+		(if [ -f $(1)/etc/vdr/plugins/epgsearch/epgsearchuservars.templ ] ; then \
+			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchuservars.templ ; \
+		fi); \
+	fi);
+endef
+
 BASE_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.base_build
 PACKS_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.packs_build
 POST_BUILD_STAGEFILE := $(STAGEFILES_DIR)/.post_build

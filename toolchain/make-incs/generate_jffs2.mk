@@ -77,6 +77,7 @@ $(TOP_DIR)/$(JFFS2_IMG): $$(MKJFFS2_BIN) $(JFFS2_FILE_COPY)
 		'$(PREFIX_BIN)/$(UCLIBC_STRIP)' $(JFFS2_FILE_COPY)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(JFFS2_DIR)/etc/systemtype`,g" $(JFFS2_DIR)/etc/rc.mini
 	$(call set_lang, $(JFFS2_DIR))
+	$(call fix_fw_conf_files, $(JFFS2_DIR))
 	$(ECHO) "SVN ToolChain `svnversion -c \"$(TOP_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
 ifneq ($(strip $(CONFIG_VDR)),)
 	$(ECHO) "SVN VDR `svnversion -c \"$(VDR_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
