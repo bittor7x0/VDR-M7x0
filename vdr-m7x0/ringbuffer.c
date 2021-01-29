@@ -229,9 +229,10 @@ int cRingBufferLinear::Available(void)
 
 void cRingBufferLinear::Clear(void)
 {
-  tail = head = margin;
+  int Head = head;
+  tail = Head;
 #ifdef DEBUGRINGBUFFERS
-  lastHead = head;
+  lastHead = Head;
   lastTail = tail;
   lastPut = lastGet = -1;
 #endif
@@ -576,7 +577,7 @@ cRingBufferResult::cRingBufferResult(int Size, bool IsRadio, bool Statistics,  c
   gotten = 0;
   headersGotten = 0;
 
-  void *tmp;
+  void *tmp = NULL;
   if (posix_memalign(&tmp, RESULT_BUFFER_ALIGNMENT, (Size + 2 * RESULT_BUFFER_ALIGNMENT - 1) & ~(RESULT_BUFFER_ALIGNMENT - 1)))
      esyslog("ERROR: can't allocate ring buffer (size=%d)", Size);
 
@@ -1018,7 +1019,7 @@ cRingBufferFrameM7x0::cRingBufferFrameM7x0(int Size, int Alignment, bool Statist
 :cRingBuffer((Size + 2 * Alignment - 1) & ~(Alignment - 1), Statistics,Description)
 {
   alignment = Alignment;
-  void *tmp;
+  void *tmp = NULL;
   if (posix_memalign(&tmp, Alignment, (Size + 2 * Alignment - 1) & ~(Alignment - 1)))
      esyslog("ERROR: can't allocate ring buffer (size=%d)", Size);
 

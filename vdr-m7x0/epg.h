@@ -81,9 +81,9 @@ private:
   char *shortText;         // Short description of this event (typically the episode name in case of a series)
   char *description;       // Description of this event
   cComponents *components; // The stream components of this event
-  uchar contents[MaxEventContents]; // Contents of this event
   time_t startTime;        // Start time of this event
   int duration;            // Duration of this event in seconds
+  uchar contents[MaxEventContents]; // Contents of this event
   time_t vps;              // Video Programming Service timestamp (VPS, aka "Programme Identification Label", PIL)
   time_t seen;             // When this event was last seen in the data stream
 //M7X0 BEGIN AK
@@ -141,7 +141,7 @@ public:
   cString ToDescr(void) const;
   void Dump(FILE *f, const char *Prefix = "", bool InfoOnly = false) const;
   bool Parse(char *s);
-  static bool Read(FILE *f, cSchedule *Schedule);
+  static bool Read(FILE *f, cSchedule *Schedule, int &Line);
   void FixEpgBugs(void);
   };
 
@@ -292,9 +292,12 @@ public:
   virtual bool DropOutdated(cSchedule *Schedule, time_t SegmentStart, time_t SegmentEnd, uchar TableID, uchar Version) { return false; }
           ///< Takes a look at all EPG events between SegmentStart and SegmentEnd and
           ///< drops outdated events.
-  virtual bool BeginSegmentTransfer(const cChannel *Channel, bool Dummy) { return false; } // TODO remove obsolete Dummy
+  virtual bool BeginSegmentTransfer(const cChannel *Channel, bool Dummy) { return true; } // TODO remove obsolete Dummy
           ///< Called directly after IgnoreChannel() before any other handler method is called.
           ///< Designed to give handlers the possibility to prepare a database transaction.
+          ///< If any EPG handler returns false in this function, it is assumed that
+          ///< the EPG for the given Channel has to be handled later due to some transaction problems,
+          ///> therefore the processing will aborted.
           ///< Dummy is for backward compatibility and may be removed in a future version.
   virtual bool EndSegmentTransfer(bool Modified, bool Dummy) { return false; } // TODO remove obsolete Dummy
           ///< Called after the segment data has been processed.
@@ -322,7 +325,7 @@ public:
   void HandleEvent(cEvent *Event);
   void SortSchedule(cSchedule *Schedule);
   void DropOutdated(cSchedule *Schedule, time_t SegmentStart, time_t SegmentEnd, uchar TableID, uchar Version);
-  void BeginSegmentTransfer(const cChannel *Channel);
+  bool BeginSegmentTransfer(const cChannel *Channel);
   void EndSegmentTransfer(bool Modified);
   };
 

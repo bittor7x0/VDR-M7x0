@@ -408,6 +408,7 @@ int main(int argc, char *argv[])
                             SysLogLevel = l;
                             if (!p)
                                break;
+                            *p = '.';
                             if (isnumber(p + 1)) {
                                int l = atoi(p + 1);
                                if (0 <= l && l <= 7) {
@@ -688,6 +689,7 @@ int main(int argc, char *argv[])
   bool IsInfoMenu = false;
   bool CheckHasProgramme = false;
   cSkin *CurrentSkin = NULL;
+  int OldPrimaryDVB = 0;
 
   // Load plugins:
 
@@ -781,6 +783,7 @@ int main(int argc, char *argv[])
            }
         }
      }
+  OldPrimaryDVB = Setup.PrimaryDVB;
 
   // Check for timers in automatic start time window:
 
@@ -1191,8 +1194,10 @@ int main(int argc, char *argv[])
           case kChanUp:
           case kChanDn|k_Repeat:
           case kChanDn:
-               if (!Interact)
+               if (!Interact) {
                   Menu = new cDisplayChannel(NORMALKEY(key));
+                  continue;
+                  }
                else if (cDisplayChannel::IsOpen() || cControl::Control()) {
                   Interact->ProcessKey(key);
                   continue;
@@ -1356,12 +1361,6 @@ int main(int argc, char *argv[])
                             DELETE_MENU;
                             cControl::Shutdown();
                             break;
-             case osSwitchDvb:
-                            DELETE_MENU;
-                            cControl::Shutdown();
-                            Skins.Message(mtInfo, tr("Switching primary DVB..."));
-                            cDevice::SetPrimaryDevice(Setup.PrimaryDVB);
-                            break;
              case osPlugin: DELETE_MENU;
                             Menu = cMenuMain::PluginOsdObject();
                             if (Menu)
@@ -1440,6 +1439,17 @@ int main(int argc, char *argv[])
                  Skins.Message(mtInfo, tr("Editing process finished"));
               }
            }
+
+         // Change primary device:
+         int NewPrimaryDVB = Setup.PrimaryDVB;
+         if (NewPrimaryDVB != OldPrimaryDVB) {
+            DELETE_MENU;
+            cControl::Shutdown();
+            Skins.QueueMessage(mtInfo, tr("Switching primary DVB..."));
+            cOsdProvider::Shutdown();
+            cDevice::SetPrimaryDevice(NewPrimaryDVB);
+            OldPrimaryDVB = NewPrimaryDVB;
+            }
 
          // SIGHUP shall cause a restart:
          if (LastSignal == SIGHUP) {
@@ -1526,8 +1536,8 @@ Exit:
   signal(SIGALRM, SIG_DFL);
 //M7X0 END AK
 
-  PluginManager.StopPlugins();
   cRecordControls::Shutdown();
+  PluginManager.StopPlugins();
   cCutter::Stop();
   delete Menu;
   cTShiftControl::ShutdownTShift();

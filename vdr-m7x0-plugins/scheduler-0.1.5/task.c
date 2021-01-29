@@ -76,6 +76,26 @@ cTask::cTask(const char* Name, const char* Cmd, int AnnounceMode)
   killAfterMins = 0;
 }
 
+cTask& cTask::operator= (const cTask &Task)
+{
+  this->id = Task.id;
+  strcpy(this->name, Task.name);
+  strcpy(this->cmd, Task.cmd);
+  strcpy(this->minute, Task.minute);
+  strcpy(this->hour, Task.hour);
+  strcpy(this->dayofmonth, Task.dayofmonth);
+  strcpy(this->month, Task.month);
+  strcpy(this->dayofweek, Task.dayofweek);
+  this->enabled = Task.enabled;
+  this->wakeup = Task.wakeup;
+  this->shutdown = Task.shutdown;
+  this->announceMode = Task.announceMode;
+  this->lastStart = Task.lastStart;
+  this->logging = Task.logging;
+  this->killAfterMins = Task.killAfterMins;
+  return *this;
+}
+
 bool cTask::Parse(const char *s)
 {
   char *line;

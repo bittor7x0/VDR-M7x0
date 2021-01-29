@@ -229,12 +229,14 @@ const char *HelpPages[] = {
   "HITK [ <key> ]\n"
   "    Hit the given remote control key. Without option a list of all\n"
   "    valid key names is given.",
-  "LSTC [ :groups | <number> | <name> ]\n"
+  "LSTC [ :ids ] [ :groups | <number> | <name> ]\n"
   "    List channels. Without option, all channels are listed. Otherwise\n"
   "    only the given channel is listed. If a name is given, all channels\n"
   "    containing the given string as part of their name are listed.\n"
   "    If ':groups' is given, all channels are listed including group\n"
-  "    separators. The channel number of a group separator is always 0.",
+  "    separators. The channel number of a group separator is always 0.\n"
+  "    With ':ids' the channel ids are listed following the channel numbers.\n"
+  "    The special number 0 can be given to list the current channel.",
   "LSTE [ <channel> ] [ now | next | nownext | at <time> | between <time> <time> | withid <number> ]\n"
   "    List EPG data. Without any parameters all data of all channels is\n"
   "    listed. If a channel is given (either by number or by channel ID),\n"
@@ -609,9 +611,13 @@ void cSVDRP::CmdCLRE(const char *Option)
       Reply(501, "Undefined channel \"%s\"", Option);
     }
   } else {
-    cSchedules::ClearAll();
     cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME);
-    Reply(250, "EPG data cleared");
+    if (cSchedules::ClearAll()) {
+       Reply(250, "EPG data cleared");
+       cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME);
+       }
+    else
+       Reply(451, "Error while clearing EPG data");
   }
 
 }
@@ -665,7 +671,7 @@ void cSVDRP::CmdDELC(const char *Option)
                  if (!cDevice::PrimaryDevice()->Replaying() || cDevice::PrimaryDevice()->Transferring())
                     Channels.SwitchTo(CurrentChannel->Number());
                  else
-                    cDevice::SetCurrentChannel(CurrentChannel);
+                    cDevice::SetCurrentChannel(CurrentChannel->Number());
                  }
               Reply(250, "Channel \"%s\" deleted", Option);
               }
@@ -1003,28 +1009,33 @@ void cSVDRP::CmdHITK(const char *Option)
 
 void cSVDRP::CmdLSTC(const char *Option)
 {
+  bool WithChannelIds = startswith(Option, ":ids") && (Option[4] == ' ' || Option[4] == 0);
+  if (WithChannelIds)
+     Option = skipspace(Option + 4);
   bool WithGroupSeps = strcasecmp(Option, ":groups") == 0;
   if (*Option && !WithGroupSeps) {
      if (isnumber(Option)) {
-        cChannel *channel = Channels.GetByNumber(strtol(Option, NULL, 10));
-        if (channel)
-           Reply(250, "%d %s", channel->Number(), *channel->ToText());
+        int n = strtol(Option, NULL, 10);
+        if (n == 0)
+           n = cDevice::CurrentChannel();
+        if (cChannel *channel = Channels.GetByNumber(n))
+           Reply(250, "%d%s%s %s", channel->Number(), WithChannelIds ? " " : "", WithChannelIds ? *channel->GetChannelID().ToString() : "", *channel->ToText());
         else
            Reply(501, "Channel \"%s\" not defined", Option);
         }
      else {
         cChannel *next = NULL;
         for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
-            if (!channel->GroupSep()) {
-               if (strcasestr(channel->Name(), Option)) {
-                  if (next)
-                     Reply(-250, "%d %s", next->Number(), *next->ToText());
-                  next = channel;
-                  }
-               }
-            }
+           if (!channel->GroupSep()) {
+              if (strcasestr(channel->Name(), Option)) {
+                 if (next)
+                     Reply(-250, "%d%s%s %s", next->Number(), WithChannelIds ? " " : "", WithChannelIds ? *next->GetChannelID().ToString() : "", *next->ToText());
+                 next = channel;
+                 }
+              }
+           }
         if (next)
-           Reply(250, "%d %s", next->Number(), *next->ToText());
+           Reply(250, "%d%s%s %s", next->Number(), WithChannelIds ? " " : "", WithChannelIds ? *next->GetChannelID().ToString() : "", *next->ToText());
         else
            Reply(501, "Channel \"%s\" not defined", Option);
         }
@@ -1032,9 +1043,9 @@ void cSVDRP::CmdLSTC(const char *Option)
   else if (Channels.MaxNumber() >= 1) {
      for (cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
          if (WithGroupSeps)
-            Reply(channel->Next() ? -250: 250, "%d %s", channel->GroupSep() ? 0 : channel->Number(), *channel->ToText());
+            Reply(channel->Next() ? -250: 250, "%d%s%s %s", channel->GroupSep() ? 0 : channel->Number(), (WithChannelIds && !channel->GroupSep()) ? " " : "", (WithChannelIds && !channel->GroupSep()) ? *channel->GetChannelID().ToString() : "", *channel->ToText());
          else if (!channel->GroupSep())
-            Reply(channel->Number() < Channels.MaxNumber() ? -250 : 250, "%d %s", channel->Number(), *channel->ToText());
+            Reply(channel->Number() < Channels.MaxNumber() ? -250 : 250, "%d%s%s %s", channel->Number(), WithChannelIds ? " " : "", WithChannelIds ? *channel->GetChannelID().ToString() : "", *channel->ToText());
          }
      }
   else
@@ -1310,7 +1321,7 @@ void cSVDRP::CmdMODC(const char *Option)
                     *channel = ch;
                     Channels.ReNumber();
                     Channels.SetModified(true);
-                    isyslog("modifed channel %d %s", channel->Number(), *channel->ToText());
+                    isyslog("modified channel %d %s", channel->Number(), *channel->ToText());
                     Reply(250, "%d %s", channel->Number(), *channel->ToText());
                     }
                  else
@@ -1395,7 +1406,7 @@ void cSVDRP::CmdMOVC(const char *Option)
                           if (!cDevice::PrimaryDevice()->Replaying() || cDevice::PrimaryDevice()->Transferring())
                              Channels.SwitchTo(CurrentChannel->Number());
                           else
-                             cDevice::SetCurrentChannel(CurrentChannel);
+                             cDevice::SetCurrentChannel(CurrentChannel->Number());
                           }
                        isyslog("channel %d moved to %d", FromNumber, ToNumber);
                        Reply(250,"Channel \"%d\" moved to \"%d\"", From, To);
@@ -1863,6 +1874,7 @@ void cSVDRP::Execute(char *Cmd)
         Reply(PUTEhandler->Status(), "%s", PUTEhandler->Message());
         DELETENULL(PUTEhandler);
         }
+     cEitFilter::SetDisableUntil(time(NULL) + EITDISABLETIME); // re-trigger the timeout, in case there is very much EPG data
      return;
      }
   // skip leading whitespace:

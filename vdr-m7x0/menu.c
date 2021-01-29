@@ -46,6 +46,7 @@
 #define MAXRECORDCONTROLS (MAXDEVICES * MAXRECEIVERS)
 #define MAXINSTANTRECTIME (24 * 60 - 1) // 23:59 hours
 #define MAXWAITFORCAMMENU 4 // seconds to wait for the CAM menu to open
+#define PROGRESSTIMEOUT   100 // milliseconds to wait before updating the replay progress display
 #define MINFREEDISK       300 // minimum free disk space (in MB) required to start recording
 #define NODISKSPACEDELTA  300 // seconds between "Not enough disk space to start recording!" messages
 
@@ -588,7 +589,7 @@ eOSState cMenuChannels::Delete(void)
            if (!cDevice::PrimaryDevice()->Replaying() || cDevice::PrimaryDevice()->Transferring())
               Channels.SwitchTo(CurrentChannel->Number());
            else
-              cDevice::SetCurrentChannel(CurrentChannel);
+              cDevice::SetCurrentChannel(CurrentChannel->Number());
            }
         }
      }
@@ -613,7 +614,7 @@ void cMenuChannels::Move(int From, int To)
         if (!cDevice::PrimaryDevice()->Replaying() || cDevice::PrimaryDevice()->Transferring())
            Channels.SwitchTo(CurrentChannel->Number());
         else
-           cDevice::SetCurrentChannel(CurrentChannel);
+           cDevice::SetCurrentChannel(CurrentChannel->Number());
         }
      }
 }
@@ -1869,7 +1870,7 @@ public:
   };
 
 cMenuSchedule::cMenuSchedule(void)
-:cOsdMenu(""), schedulesLock(false, 500)
+:cOsdMenu(tr("Schedule")), schedulesLock(false, 500)
 {
   now = next = false;
   otherChannel = 0;
@@ -2466,9 +2467,9 @@ public:
   cMenuRecordingItem(cRecording *Recording, int Level);
   ~cMenuRecordingItem();
   void IncrementCounter(bool New);
-  const char *Name(void) { return name; }
+  const char *Name(void) const { return name; }
   const char *FileName(void) { return fileName; }
-  bool IsDirectory(void) { return name != NULL; }
+  bool IsDirectory(void) const { return name != NULL; }
   };
 
 cMenuRecordingItem::cMenuRecordingItem(cRecording *Recording, int Level)
@@ -2925,7 +2926,7 @@ eOSState cMenuRecordings::ProcessKey(eKeys Key)
        case kGreen:  return Rewind();
        case kYellow: return Delete();
        case kInfo:   return Info();
-       case k0:      Setup.RecordingsSortMode = ++Setup.RecordingsSortMode % MAXSORTMODES;
+       case k0:      Setup.RecordingsSortMode = (Setup.RecordingsSortMode + 1) % MAXSORTMODES;
                      Set(true);
                      Skins.Message(mtStatus, cString::sprintf("%s %d: %s", tr("Sorting"), Setup.RecordingsSortMode, RecordingsSortModeTexts[Setup.RecordingsSortMode]));
                      return osContinue;
@@ -3334,7 +3335,6 @@ void cMenuSetupDVB::Setup(void)
 
 eOSState cMenuSetupDVB::ProcessKey(eKeys Key)
 {
-  int oldPrimaryDVB = ::Setup.PrimaryDVB;
   int oldVideoDisplayFormat = ::Setup.VideoDisplayFormat;
   int oldVideoFormat = ::Setup.VideoFormat;
   int newVideoFormat = data.VideoFormat;
@@ -3367,8 +3367,6 @@ eOSState cMenuSetupDVB::ProcessKey(eKeys Key)
         Setup();
      }
   if (state == osBack && Key == kOk) {
-     if (::Setup.PrimaryDVB != oldPrimaryDVB)
-        state = osSwitchDvb;
      if (::Setup.VideoDisplayFormat != oldVideoDisplayFormat)
         cDevice::PrimaryDevice()->SetVideoDisplayFormat(eVideoDisplayFormat(::Setup.VideoDisplayFormat));
      if (::Setup.VideoFormat != oldVideoFormat)
@@ -4394,8 +4392,8 @@ cDisplayChannel::cDisplayChannel(eKeys FirstKey)
 cDisplayChannel::~cDisplayChannel()
 {
   delete displayChannel;
-  cStatus::MsgOsdClear();
   currentDisplayChannel = NULL;
+  cStatus::MsgOsdClear();
 }
 
 void cDisplayChannel::DisplayChannel(void)
@@ -4403,6 +4401,7 @@ void cDisplayChannel::DisplayChannel(void)
   displayChannel->SetChannel(channel, number);
   cStatus::MsgOsdChannel(ChannelString(channel, number));
   lastPresent = lastFollowing = NULL;
+  lastTime.Set();
 }
 
 void cDisplayChannel::DisplayInfo(void)
@@ -4419,6 +4418,7 @@ void cDisplayChannel::DisplayInfo(void)
               cStatus::MsgOsdProgramme(Present ? Present->StartTime() : 0, Present ? Present->Title() : NULL, Present ? Present->ShortText() : NULL, Following ? Following->StartTime() : 0, Following ? Following->Title() : NULL, Following ? Following->ShortText() : NULL);
               lastPresent = Present;
               lastFollowing = Following;
+              lastTime.Set();
               }
            }
         }
@@ -5323,7 +5323,8 @@ void cReplayControl::ShowMode(void)
 bool cReplayControl::ShowProgress(bool Initial)
 {
   int Current, Total;
-
+  if (!(Initial || updateTimer.TimedOut()))
+     return visible;
   if (GetIndex(Current, Total) && Total > 0) {
      if (!visible) {
         displayReplay = Skins.Current()->DisplayReplay(modeOnly);
@@ -5350,6 +5351,7 @@ bool cReplayControl::ShowProgress(bool Initial)
         }
      lastTotal = Total;
      ShowMode();
+     updateTimer.Set(PROGRESSTIMEOUT);
      return true;
      }
   return false;

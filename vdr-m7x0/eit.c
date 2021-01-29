@@ -22,6 +22,8 @@
 
 #define VALID_TIME (31536000 * 2) // two years
 
+#define DBGEIT 0
+
 // --- cEIT ------------------------------------------------------------------
 
 class cEIT : public SI::EIT {
@@ -50,12 +52,15 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
      return;
      }
 
-  EpgHandlers.BeginSegmentTransfer(Channel);
+  if (!EpgHandlers.BeginSegmentTransfer(Channel))
+     return;
+
   bool handledExternally = EpgHandlers.HandledExternally(Channel);
   cSchedule *pSchedule = (cSchedule *)Schedules->GetSchedule(Channel, true);
  
   bool Empty = true;
   bool Modified = false;
+  time_t LingerLimit = Now - Setup.EPGLinger * 60;
   time_t SegmentStart = 0;
   time_t SegmentEnd = 0;
   struct tm t = { 0 };
@@ -71,6 +76,9 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
       if (StartTime == 0 || (StartTime > 0 && Duration == 0))
          continue;
       Empty = false;
+      // Ignore events that ended before the "EPG linger time":
+      if (StartTime + Duration < LingerLimit)
+         continue;
       if (((!SegmentStart) | (StartTime < SegmentStart)) & (StartTime > 0))
          SegmentStart = StartTime;
       if (StartTime + Duration > SegmentEnd)
@@ -116,8 +124,34 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
       if (pEvent->TableID() > 0x4E) // for backwards compatibility, table ids less than 0x4E are never overwritten
          pEvent->SetTableID(Tid);
       if (Tid == 0x4E) { // we trust only the present/following info on the actual TS
-         if (SiEitEvent.getRunningStatus() >= SI::RunningStatusNotRunning)
-            pSchedule->SetRunningStatus(pEvent, SiEitEvent.getRunningStatus(), Channel);
+         int RunningStatus = SiEitEvent.getRunningStatus();
+#if DBGEIT
+         if (Process)
+            dsyslog("channel %d (%s) event %s status %d (raw data from '%s' section)", Channel->Number(), Channel->Name(), *pEvent->ToDescr(), RunningStatus, getSectionNumber() ? "following" : "present");
+#endif
+         if (RunningStatus >= SI::RunningStatusNotRunning) {
+            // Workaround for broadcasters who set an event to status "not running" where
+            // this is inappropriate:
+            if (RunningStatus != pEvent->RunningStatus()) { // if the running status of the event has changed...
+               if (RunningStatus == SI::RunningStatusNotRunning) { // ...and the new status is "not running"...
+                  int OverrideStatus = -1;
+                  if (getSectionNumber() == 0) { // ...and if this the "present" event...
+                     if (pEvent->RunningStatus() == SI::RunningStatusPausing) // ...and if the event has already been set to "pausing"...
+                        OverrideStatus = SI::RunningStatusPausing; // ...then we ignore the faulty new status and stay with "pausing"
+                     }
+                  else // ...and if this is the "following" event...
+                     OverrideStatus = SI::RunningStatusUndefined; // ...then we ignore the faulty new status and fall back to "undefined"
+                  if (OverrideStatus >= 0) {
+#if DBGEIT
+                     if (Process)
+                        dsyslog("channel %d (%s) event %s status %d (ignored status %d from '%s' section)", Channel->Number(), Channel->Name(), *pEvent->ToDescr(), OverrideStatus, RunningStatus, getSectionNumber() ? "following" : "present");
+#endif
+                     RunningStatus = OverrideStatus;
+                     }
+                  }
+               }
+            pSchedule->SetRunningStatus(pEvent, RunningStatus, Channel);
+            }
          }
       if (OnlyRunningStatus) {
          pEvent->SetVersion(0xFF); // we have already changed the table id above, so set the version to an invalid value to make sure the next full run will be executed
@@ -346,7 +380,9 @@ cTDT::cTDT(const u_char *Data)
   if (abs(diff) > MAX_TIME_DIFF) {
      mutex.Lock();
      if (abs(diff) > MAX_ADJ_DIFF) {
-        if (stime(&dvbtim) == 0)
+        timespec ts = { 0 };
+        ts.tv_sec = dvbtim;
+        if (clock_settime(CLOCK_REALTIME, &ts) == 0)
            isyslog("system time changed from %s (%ld) to %s (%ld)", *TimeToString(loctim), loctim, *TimeToString(dvbtim), dvbtim);
         else {
 				char __errorstr[256];

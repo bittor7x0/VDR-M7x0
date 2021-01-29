@@ -18,6 +18,7 @@
 #include <o7o-toolchain-version.h>
 
 #define VDRPLUGINCREATOR(PluginClass) extern "C" void *VDRPluginCreator(void) { return new PluginClass; } \
+                                      extern "C" void VDRPluginDestroyer(PluginClass *p) { delete p; } \
                                       extern "C" int getVDRO7OAPIVersion(void) { return VDRO7OAPIVERSION; } \
                                       extern "C" const char* getO7OToolchainVersion(void) { return O7OTOOLCHAINVERSION; }
 
@@ -74,6 +75,8 @@ private:
   char *args;
   void *handle;
   cPlugin *plugin;
+  typedef void destroy_t(cPlugin *);
+  destroy_t *destroy;
 public:
   cDll(const char *FileName, const char *Args);
   virtual ~cDll();

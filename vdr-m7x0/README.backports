@@ -1,6 +1,6 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 2.3.1 backports applied in this patch:
+VDR 2.4.6 backports applied in this patch:
 * Implemented handling the "Content Descriptor" (based on a patch from Rolf
   Ahrenberg). The 'classic' and 'sttng' skins display the textual
   representation of the content descriptors as "genre". The epg.data file stores
@@ -291,3 +291,110 @@ VDR 2.3.1 backports applied in this patch:
 * Added a missing '.' after the month in VPS strings.
 * Fixed a memory leak in case of broken Extended Event Descriptors (thanks to Lars
   Hanisch).
+* Fixed a high CPU load during replay with active progress display (reported by Matthias
+  Senzel).
+* Added a short sleep to cTSBuffer::Action() to avoid high CPU usage (thanks to
+  Sergey Chernyavskiy).
+* Increased PLAYERBUFSIZE to (MAXFRAMESIZE * 5) to avoid stuttering replay under heavy
+  system load, and to better document that this buffer size is related to the maximum
+  frame size.
+* Added missing checks of 'player' in member functions of cControl, and setting
+  cControl::player to NULL in cDvbPlayerControl::Stop() to avoid a possible crash
+  with plugins that retrieve player information after a replay has been stopped, but
+  before the replay control has been destroyed (thanks to Johann Friedrich).
+* Made the cPlayer member functions GetIndex and GetReplayMode 'const' (thanks to
+  Thomas Reufer).
+* Added a 'const' version of cTimers::GetTimer() (thanks to Lars Hanisch).
+* Fixed an overflow of PIDs in a receiver (thanks to Robert Hannebauer).
+* Fixed truncated date/time strings in the skins on multi-byte UTF-8 systems
+  (reported by Sergey Chernyavskiy).
+* The function cRingBufferLinear::Clear() can now be called safely from the
+  reading thread, without additional locking.
+* Now stopping any ongoing recordings before stopping the plugins, to avoid
+  a crash when stopping VDR while recording.
+* The function cEpgHandlers::BeginSegmentTransfer() is now boolean (thanks to
+  Jörg Wendel). See the description in epg.h for the meaning of the return value.
+* Changed the default return value of cEpgHandler::BeginSegmentTransfer() to true, to
+  avoid problems with derived classes that don't implement this function (reported by
+  Frank Neumann).
+* The members of cEvent have been slightly rearranged to minimize the memory
+  requirements on both 32 and 64 bit systems.
+* Events in the EIT that end before the EPG linger time are now ignored in the incoming
+  data stream, because they would just be deleted in the next schedules cleanup anyway.
+* Fixed handling VPS events outside the LingerLimit, which could cause recordings to
+  stop prematurely (thanks to Johann Friedrichs).
+* Fixed handling line numbers in error messages when reading EPG data.
+* Fixed a double channel switch when pressing the Channel+/- keys while no menu
+  or channel display is open.
+* Fixed a possible invalid lock sequence if the main menu is open and the user
+  switches to a channel that is currently not available, using the Channel+/- keys.
+* The function SetCurrentChannel(const cChannel *Channel) is now deprecated and
+  may be removed in a future version. Use SetCurrentChannel(int ChannelNumber)
+  instead.
+* The timeout for the channel display is now reset whenever the channel or EPG data
+  changes.
+* Now setting currentDisplayChannel = NULL before calling cStatus::MsgOsdClear() in
+  ~cDisplayChannel(), to avoid possible problems in case a plugin calls IsOpen()
+  (reported by Thomas Reufer).
+* Fixed detecting the inclusion of STL header files in tools.h (thanks to Jasmin
+  Jessich).
+* Introduced the new macro DISABLE_TEMPLATES_COLLIDING_WITH_STL, which can be defined
+  before including tools.h in case some plugin needs to use the STL and gets error
+  messages regarding one of the template functions defined in tools.h.
+* Now skipping a leading '/' in AddDirectory(), to avoid double slashes (reported by
+  Chris Mayo).
+* OSD menus now try to keep the offset of the list cursor at a constant position on
+  the screen, even if the list is modified while being displayed.
+* Fixed keeping the offset of the list cursor in case it is at the very top of the
+  visible part of the list.
+* Switching the primary device is no longer done via osSwitchDvb (which has been
+  removed), but rather by the main program loop reacting to changes in Setup.PrimaryDVB.
+* Fixed a possible discrepancy of the primary device number in the LSTD and PRIM
+  commands, by setting Setup.PrimaryDVB in cDevice::SetPrimaryDevice() (reported by
+  Jürgen Schneider).
+* Fixed handling timers during the change from DST to winter time (thanks to Johann
+  Friedrichs).
+* Making sure the Schedules menu has a proper title, even if it is empty.
+* Fixed processing the last entry in the scan list of the EIT scanner (thanks to
+  Helmut Binder).
+* No longer logging tuning timeouts for transponders that are announced in the NIT but
+  are not currently broadcasting.
+* Now touching the .update file in the video directory after removing deleted
+  recordings, so that other VDRs that use the same video directory will update their
+  list of (deleted) recordings and thus won't display too much empty disk space.
+* Added a workaround for broadcasters who set an event to status "not running" where
+  this is inappropriate; implicitly setting events to "not running" is now also logged.
+* Fixed a wrong variable name in cFileName::cFileName().
+* Fixed compatibility with current versions of glibc (thanks to Manuel Reimer).
+* Added support for detecting new channels broadcast in HEVC (thanks to Helmut Binder).
+* Added support for detecting 'advanced codec digital radio sound service' (thanks to
+  Helmut Binder).
+* Improved deleting plugins in case the plugin uses its own memory management (thanks
+  to Winfried Köhler). Plugins that have been compiled with previous versions of VDR
+  do not need to be recompiled, they will silently be handled as before.
+* Fixed a possible 'invalid lock sequence' when switching to an unavailable channel
+  with the main menu open.
+* Added a comment about the semantics of cTimeMs::Set().
+* Fixed a typo in svdrp.c (thanks to Tobias Grimm).
+* Fixed a compiler warning (thanks to Winfried Köhler).
+* Fixed a compiler warning in ExchangeChars() (thanks to Helmut Binder).
+* Fixed a compiler warning and a possible buffer overflow in cCiMMI::SendAnswer().
+* Fixed some compiler warnings under gcc version 4.7.1.
+* Fixed some warnings from g++ 7.2.0 regarding fixed buffer sizes in cMenuEditTimeItem::Set()
+  and cCountdown::Update() (reported by Jörg Wendel).
+* Fixed "read incomplete section" errors (thanks to Helmut Binder).
+* Fixed parsing the '-l' command line option (reported by Harald Milz).
+* Fixed several typos (reported by Jens Schleusener).
+* Fixed checking the return value of the Open() call in cFileName::SetOffset() (reported
+  by Winfried Köhler).
+* cListObject now implements a private copy constructor and assignment operator, to keep
+  derived objects from calling them implicitly.
+* Fixed a possible race condition with the SVDRP commands CLRE and PUTE, where
+  EPG data from the transponder could be handled even though it shouldn't be
+  handled for 10 seconds.
+* The SVDRP command LSTC can now list the channels with channel ids if the option
+  ':ids' is given (suggested by Dietmar Spingler).
+* If 0 is given as the channel number in the SVDRP command LSTC, the data of the
+  current channel is listed.
+* Fixed error handling when loading a plugin (reported by Markus Ehrnsperger).
+* Improved handling missing VDRPluginDestroyer() (thanks to Winfried Köhler).

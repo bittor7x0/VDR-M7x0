@@ -514,16 +514,15 @@ bool cEvent::Parse(char *s)
   return true;
 }
 
-bool cEvent::Read(FILE *f, cSchedule *Schedule)
+bool cEvent::Read(FILE *f, cSchedule *Schedule, int &Line)
 {
   if (Schedule) {
      cEvent *Event = NULL;
      char *s;
-     int line = 0;
      time_t now = time(NULL);
      cReadLine ReadLine;
      while ((s = ReadLine.Read(f)) != NULL) {
-           line++;
+           Line++;
            char *t = skipspace(s + 1);
            switch (*s) {
              case 'E': if (!Event) {
@@ -567,7 +566,7 @@ bool cEvent::Read(FILE *f, cSchedule *Schedule)
              case 'c': // to keep things simple we react on 'c' here
                        return true;
              default:  if (Event && !Event->Parse(s)) {
-                          esyslog("ERROR: EPG data problem in line %d", line);
+                          esyslog("ERROR: EPG data problem in line %d", Line);
                           return false;
                           }
              }
@@ -986,7 +985,7 @@ void cSchedule::SetRunningStatus(cEvent *Event, int RunningStatus, cChannel *Cha
             }
          }
       else if (RunningStatus >= SI::RunningStatusPausing && p->StartTime() < Event->StartTime())
-         p->SetRunningStatus(SI::RunningStatusNotRunning);
+         p->SetRunningStatus(SI::RunningStatusNotRunning, Channel);
       if (p->RunningStatus() >= SI::RunningStatusPausing)
          hasRunning = true;
       }
@@ -1066,7 +1065,7 @@ void cSchedule::Cleanup(time_t Time)
 {
   cEvent *Event;
   while ((Event = events.First()) != NULL) {
-        if (!Event->HasTimer() && Event->EndTime() + Setup.EPGLinger * 60 + 3600 < Time) // adding one hour for safety
+        if (!Event->HasTimer() && Event->EndTime() + Setup.EPGLinger * 60 < Time)
            DelEvent(Event);
         else
            break;
@@ -1138,9 +1137,11 @@ void cSchedule::Dump(FILE *f, const char *Prefix, eDumpMode DumpMode, time_t AtT
 bool cSchedule::Read(FILE *f, cSchedules *Schedules)
 {
   if (Schedules) {
+     int Line = 0;
      cReadLine ReadLine;
      char *s;
      while ((s = ReadLine.Read(f)) != NULL) {
+           Line++;
            if (*s == 'C') {
               s = skipspace(s + 1);
               char *p = strchr(s, ' ');
@@ -1158,7 +1159,7 @@ bool cSchedule::Read(FILE *f, cSchedules *Schedules)
                        p = new cSchedule(channelID);
 
                     if (p) {
-                       if (!cEvent::Read(f, p)) {
+                       if (!cEvent::Read(f, p, Line)) {
                           if (em >= emNowNext)
                              delete p;
                           return false;
@@ -1180,7 +1181,7 @@ bool cSchedule::Read(FILE *f, cSchedules *Schedules)
                  }
               }
            else {
-              esyslog("ERROR: unexpected tag while reading EPG data: %s", s);
+              esyslog("ERROR: unexpected tag in line %d while reading EPG data: %s", Line, s);
               return false;
               }
            }
@@ -1583,12 +1584,13 @@ void cEpgHandlers::DropOutdated(cSchedule *Schedule, time_t SegmentStart, time_t
   Schedule->DropOutdated(SegmentStart, SegmentEnd, TableID, Version);
 }
 
-void cEpgHandlers::BeginSegmentTransfer(const cChannel *Channel)
+bool cEpgHandlers::BeginSegmentTransfer(const cChannel *Channel)
 {
   for (cEpgHandler *eh = First(); eh; eh = Next(eh)) {
-      if (eh->BeginSegmentTransfer(Channel, false))
-         return;
+      if (!eh->BeginSegmentTransfer(Channel, false))
+         return false;
       }
+  return true;
 }
 
 void cEpgHandlers::EndSegmentTransfer(bool Modified)

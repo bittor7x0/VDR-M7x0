@@ -244,7 +244,7 @@ bool cDvbTuner::SetFrontend(void)
          set_arg = &qpsk_Frontend;
 
          if (!Setup.DiSEqC) {
-            if (frequency < (unsigned int)Setup.LnbSLOF) {
+            if (frequency < Setup.LnbSLOF) {
                frequency -= Setup.LnbFrequLo;
                qpsk_Frontend.tone = SEC_TONE_OFF;
                }
@@ -388,7 +388,8 @@ void cDvbTuner::Action(void)
                if (Timer.TimedOut()) {
                   tunerStatus = tsSet;
                   if (time(NULL) - lastTimeoutReport > 60) { // let's not get too many of these
-                     isyslog("frontend %d timed out while tuning to channel %d, tp %d", cardIndex, channel.Number(), channel.Transponder());
+                     if (channel.Number()) // no need to log this for transponders that are announced in the NIT but are not currently broadcasting
+                        isyslog("frontend %d timed out while tuning to channel %d, tp %d", cardIndex, channel.Number(), channel.Transponder());
                      lastTimeoutReport = time(NULL);
                      }
                   continue;
@@ -1396,7 +1397,7 @@ bool c7x0TsReplayer::HandlePesTrickspeed(const uchar *&Data,
   pesPacketLen = *((uint16_t *) (pesHeader + 4));
 
   // Packet Length not bound ? (only allow in TS Video Packets)
-  // Define a maxium;
+  // Define a maximum;
   if (!pesPacketLen)
         pesPacketLen = (1<<24);
 
@@ -2950,11 +2951,17 @@ bool cDvbDevice::SetPid(cPidHandle *Handle, int Type, bool On)
 }
 //M7X0 END AK
 
+#define RB_NUM_SECTIONS 8 // default: 2 sections = 8192 bytes
+
 int cDvbDevice::OpenFilter(u_short Pid, u_char Tid, u_char Mask)
 {
    const char *FileName = *cDvbName(DEV_DVB_ADAPTER DEV_DVB_DEMUX, CardIndex());
   int f = open(FileName, O_RDWR | O_NONBLOCK);
   if (f >= 0) {
+     if (Pid == EITPID) { // increase ringbuffer size for EIT
+        if (ioctl(f, DMX_SET_BUFFER_SIZE, MAX_SECTION_SIZE * RB_NUM_SECTIONS) < 0)
+           dsyslog("OpenFilter (pid=%d, tid=%02X): ioctl DMX_SET_BUFFER_SIZE failed", Pid, Tid);
+        }
      dmx_sct_filter_params sctFilterParams;
      memset(&sctFilterParams, 0, sizeof(sctFilterParams));
      sctFilterParams.pid = Pid;

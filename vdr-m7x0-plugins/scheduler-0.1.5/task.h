@@ -96,6 +96,7 @@ class cTask : public cListObject, cMutex {
  public:
   cTask(void);
   cTask(const char* Name, const char* Cmd, int AnnounceMode = 0);
+  cTask& operator= (const cTask &Task);
 
   bool Parse(const char *s);
   const char *ToText(void);

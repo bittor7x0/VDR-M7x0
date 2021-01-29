@@ -89,24 +89,30 @@ void cRemoveDeletedRecordingsThread::Action(void)
   if (LockFile.Lock()) {
      time_t StartTime = time(NULL);
      bool deleted = false;
+     bool interrupted = false;
      cThreadLock DeletedRecordingsLock(&DeletedRecordings);
      for (cRecording *r = DeletedRecordings.First(); r; ) {
          if (time(NULL) - StartTime > MAXREMOVETIME)
-            return; // don't stay here too long
-         if (cRemote::HasKeys())
-            return; // react immediately on user input
+            interrupted = true; // don't stay here too long
+         else if (cRemote::HasKeys())
+            interrupted = true; // react immediately on user input
+         if (interrupted)
+            break;
          if (r->deleted && time(NULL) - r->deleted > DELETEDLIFETIME) {
             cRecording *next = DeletedRecordings.Next(r);
             r->Remove();
             DeletedRecordings.Del(r);
             r = next;
             deleted = true;
-            continue;
             }
-         r = DeletedRecordings.Next(r);
+         else
+            r = DeletedRecordings.Next(r);
          }
-     if (deleted)
-        RemoveEmptyVideoDirectories();
+     if (deleted) {
+        Recordings.TouchUpdate();
+        if (!interrupted)
+           RemoveEmptyVideoDirectories();
+         }
      }
 }
 
@@ -543,7 +549,7 @@ char *ExchangeChars(char *s, bool ToFileSystem)
                              char buf[4];
                              sprintf(buf, "#%02X", (unsigned char)*p);
                              memmove(p + 2, p, strlen(p) + 1);
-                             strncpy(p, buf, 3);
+                             memcpy(p, buf, 3);
                              p += 2;
                              }
                           else
@@ -1782,7 +1788,7 @@ cFileName::cFileName(const char *FileName, bool Record, bool Blocking, bool IsPe
   // Prepare the file name:
   fileName = MALLOC(char, strlen(FileName) + RECORDFILESUFFIXLEN);
   if (!fileName) {
-     esyslog("ERROR: can't copy file name '%s'", fileName);
+     esyslog("ERROR: can't copy file name '%s'", FileName);
      return;
      }
   strcpy(fileName, FileName);
@@ -1924,7 +1930,6 @@ cUnbufferedFile *cFileName::SetOffset(int Number, off_t Offset)
               }
 //M7X0 BEGIN AK
            else {
-
               LOG_ERROR_STR(fileName);
               return SetOffset(Number + 1); // error with fstat - should not happen, just to be on the safe side
               }
@@ -1937,7 +1942,7 @@ cUnbufferedFile *cFileName::SetOffset(int Number, off_t Offset)
         // found a non existing file suffix
         }
      if (Open()) {
-        if (!record && Offset >= 0 && file && file->Seek(Offset, SEEK_SET) != Offset) {
+        if (!record && Offset >= 0 && file->Seek(Offset, SEEK_SET) != Offset) {
            LOG_ERROR_STR(fileName);
            return NULL;
            }
@@ -1971,14 +1976,12 @@ cUnbufferedFile *cFileName::NextFile(void)
 
 cString IndexToHMSF(int Index, bool WithFrame)
 {
-  char buffer[16];
   int f = (Index % FRAMESPERSEC) + 1;
   int s = (Index / FRAMESPERSEC);
   int m = s / 60 % 60;
   int h = s / 3600;
   s %= 60;
-  snprintf(buffer, sizeof(buffer), WithFrame ? "%d:%02d:%02d.%02d" : "%d:%02d:%02d", h, m, s, f);
-  return buffer;
+  return cString::sprintf(WithFrame ? "%d:%02d:%02d.%02d" : "%d:%02d:%02d", h, m, s, f);
 }
 
 int HMSFToIndex(const char *HMSF)

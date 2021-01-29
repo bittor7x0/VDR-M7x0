@@ -189,7 +189,7 @@ void cEITScanner::Process(void)
                       }
                   }
                }
-           if (!scanList->Count() || !AnyDeviceSwitched) {
+           if (!AnyDeviceSwitched) {
               delete scanList;
               scanList = NULL;
 //M7X0 BEGIN AK

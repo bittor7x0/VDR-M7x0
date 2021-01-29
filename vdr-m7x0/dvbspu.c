@@ -38,7 +38,7 @@
 #ifdef SPUDEBUG
 #define DEBUG(format, args...) printf (format, ## args)
 #else
-#define DEBUG(format, args...)
+#define DEBUG(format, args...) void()
 #endif
 
 // --- cDvbSpuPalette---------------------------------------------------------

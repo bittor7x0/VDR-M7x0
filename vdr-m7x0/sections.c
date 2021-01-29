@@ -49,7 +49,6 @@ cSectionHandler::cSectionHandler(cDevice *Device)
   statusCount = 0;
   on = false;
   waitForLock = false;
-  lastIncompleteSection = 0;
   Start();
 }
 
@@ -231,10 +230,8 @@ void cSectionHandler::Action(void)
                                fi->Process(pid, tid, buf, len);
                             }
                         }
-                     else if (now - lastIncompleteSection > 10) { // log them only every 10 seconds
-                        dsyslog("read incomplete section - len = %d, r = %d", len, r);
-                        lastIncompleteSection = now;
-                        }
+                        else
+                           dsyslog("tp %d (%d/%02X) read incomplete section - len = %d, r = %d", Transponder(), fh->filterData.pid, buf[0], len, r);
                      }
                   }
                else if (on && fh->filterData.timeout + fh->lastData < now) {

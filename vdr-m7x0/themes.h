@@ -54,7 +54,7 @@ public:
   };
 
 // A helper macro that simplifies defining theme colors.
-#define THEME_CLR(Theme, Subject, Color) static const int Subject = Theme.AddColor(#Subject, Color)
+#define THEME_CLR(Theme, Subject, Color) static const tColor Subject = Theme.AddColor(#Subject, Color)
 
 class cThemes {
 private:

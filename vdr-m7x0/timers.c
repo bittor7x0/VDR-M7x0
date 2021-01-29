@@ -261,7 +261,7 @@ bool cTimer::Parse(const char *s)
   //XXX results in an empty string (this first occurred when the EIT gathering
   //XXX was put into a separate thread - don't know why this happens...
   //XXX As a cure we copy the original string and add a blank.
-  //XXX If anybody can shed some light on why sscanf() failes here, I'd love
+  //XXX If anybody can shed some light on why sscanf() fails here, I'd love
   //XXX to hear about that!
   char *s2 = NULL;
   int l2 = strlen(s);
@@ -366,20 +366,25 @@ bool cTimer::Matches(time_t t, bool Directly, int Margin) const
      t = time(NULL);
 
   int begin  = TimeToInt(start); // seconds from midnight
-  int length = TimeToInt(stop) - begin;
-  if (length < 0)
-     length += SECSINDAY;
+  int end    = TimeToInt(stop);
+  int length = end - begin;
 
   if (IsSingleEvent()) {
-     startTime = SetTime(day, begin);
-     stopTime = startTime + length;
+     time_t t0 = day;
+     startTime = SetTime(t0, begin);
+     if (length < 0)
+        t0 = IncDay(day, 1);
+     stopTime  = SetTime(t0, end);
      }
   else {
+     time_t d = day ? std::max(day, t) : t;
      for (int i = -1; i <= 7; i++) {
-         time_t t0 = IncDay(day ? std::max(day, t) : t, i);
+         time_t t0 = IncDay(d, i);
          if (DayMatches(t0)) {
             time_t a = SetTime(t0, begin);
-            time_t b = a + length;
+            if (length < 0)
+               t0 = IncDay(d, i + 1);
+            time_t b = SetTime(t0, end);
             if ((!day || a >= day) && t < b) {
                startTime = a;
                stopTime = b;
@@ -639,9 +644,9 @@ cTimers::cTimers(void)
   lastDeleteExpired = 0;
 }
 
-cTimer *cTimers::GetTimer(cTimer *Timer)
+const cTimer *cTimers::GetTimer(const cTimer *Timer) const
 {
-  for (cTimer *ti = First(); ti; ti = Next(ti)) {
+  for (const cTimer *ti = First(); ti; ti = Next(ti)) {
       if (ti->Channel() == Timer->Channel() &&
           ((ti->WeekDays() && ti->WeekDays() == Timer->WeekDays()) || (!ti->WeekDays() && ti->Day() == Timer->Day())) &&
           ti->Start() == Timer->Start() &&

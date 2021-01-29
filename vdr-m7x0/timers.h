@@ -105,7 +105,8 @@ private:
   time_t lastDeleteExpired;
 public:
   cTimers(void);
-  cTimer *GetTimer(cTimer *Timer);
+  const cTimer *GetTimer(const cTimer *Timer) const;
+  cTimer *GetTimer(const cTimer *Timer) { return const_cast<cTimer *>(static_cast<const cTimers *>(this)->GetTimer(Timer)); };
   cTimer *GetMatch(time_t t);
   cTimer *GetMatch(const cEvent *Event, int *Match = NULL);
   cTimer *GetNextActiveTimer(void);

@@ -96,8 +96,8 @@ public:
   virtual ~cControl();
   virtual void Hide(void) = 0;
   virtual cOsdObject *GetInfo(void);
-  bool GetIndex(int &Current, int &Total, bool SnapToIFrame = false) { return player->GetIndex(Current, Total, SnapToIFrame); }
-  bool GetReplayMode(bool &Play, bool &Forward, int &Speed) { return player->GetReplayMode(Play, Forward, Speed); }
+  bool GetIndex(int &Current, int &Total, bool SnapToIFrame = false) const { return player ? player->GetIndex(Current, Total, SnapToIFrame) : false; }
+  bool GetReplayMode(bool &Play, bool &Forward, int &Speed) const { return player ? player->GetReplayMode(Play, Forward, Speed) : false; }
   static void Launch(cControl *Control);
   static void Attach(void);
   static void Shutdown(void);

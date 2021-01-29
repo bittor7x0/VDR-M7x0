@@ -300,8 +300,7 @@ void cSkinClassicDisplayMenu::SetEvent(const cEvent *Event)
   int xl = x0 + 10;
   int y = y2;
   cTextScroller ts;
-  char t[32];
-  snprintf(t, sizeof(t), "%s  %s - %s", *Event->GetDateString(), *Event->GetTimeString(), *Event->GetEndTimeString());
+  cString t = cString::sprintf("%s  %s - %s", *Event->GetDateString(), *Event->GetTimeString(), *Event->GetEndTimeString());
   ts.Set(osd, xl, y, x1 - xl, y3 - y, t, font, Theme.Color(clrMenuEventTime), Theme.Color(clrBackground));
   if (Event->Vps() && Event->Vps() != Event->StartTime()) {
      cString buffer = cString::sprintf(" VPS: %s", *Event->GetVpsString());

@@ -72,6 +72,15 @@ cFilterData::cFilterData(u_short Pid, u_char Tid, u_char Mask, bool Sticky, int 
   timeout = Timeout;
 }
 
+cFilterData& cFilterData::operator= (const cFilterData &FilterData)
+{
+  pid = FilterData.pid;
+  tid = FilterData.tid;
+  mask = FilterData.mask;
+  sticky = FilterData.sticky;
+  return *this;
+}
+
 bool cFilterData::Is(u_short Pid, u_char Tid, u_char Mask)
 {
   return pid == Pid && tid == Tid && mask == Mask;

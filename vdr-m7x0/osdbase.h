@@ -29,7 +29,6 @@ enum eOSState { osUnknown,
                 osStopRecord,
                 osStopReplay,
                 osCancelEdit,
-                osSwitchDvb,
                 osBack,
                 osEnd,
                 os_User, // the following values can be used locally
@@ -91,6 +90,7 @@ private:
   char *title;
   int cols[cSkinDisplayMenu::MaxTabs];
   int first, current, marked;
+  int lastOffset;;
   cOsdMenu *subMenu;
   const char *helpRed, *helpGreen, *helpYellow, *helpBlue;
   char *status;

@@ -26,7 +26,6 @@ private:
   cDevice *device;
   int statusCount;
   bool on, waitForLock;
-  time_t lastIncompleteSection;
   cList<cFilter> filters;
   cList<cFilterHandle> filterHandles;
   void Add(const cFilterData *FilterData);

@@ -338,6 +338,7 @@ bool cDevice::SetPrimaryDevice(int n)
         primaryDevice->SetVideoFormat(eVideoFormat(Setup.VideoFormat));
         primaryDevice->SetVolumeDevice(Setup.CurrentVolume);
         }
+     Setup.PrimaryDVB = n + 1;
      return true;
      }
   esyslog("ERROR: invalid primary device number: %d", n + 1);
@@ -898,9 +899,9 @@ bool cDevice::SwitchChannel(const cChannel *Channel, bool LiveView)
   for (int i = 3; i--;) {
       switch (SetChannel(Channel, LiveView)) {
         case scrOk:           return true;
-        case scrNotAvailable: Skins.Message(mtInfo, tr("Channel not available!"));
+        case scrNotAvailable: Skins.QueueMessage(mtInfo, tr("Channel not available!"));
                               return false;
-        case scrNoTransfer:   Skins.Message(mtError, tr("Can't start Transfer Mode!"));
+        case scrNoTransfer:   Skins.QueueMessage(mtError, tr("Can't start Transfer Mode!"));
                               return false;
         case scrFailed:       break; // loop will retry
         default:              esyslog("ERROR: invalid return value from SetChannel");
@@ -938,7 +939,7 @@ bool cDevice::SwitchChannel(int Direction)
            result = true;
         }
      else if (n != first)
-        Skins.Message(mtError, tr("Channel not available!"));
+        Skins.QueueMessage(mtError, tr("Channel not available!"));
      }
   return result;
 }
@@ -2090,6 +2091,7 @@ void cTSBuffer::Action(void)
                     break;
                     }
                  }
+              cCondWait::SleepMs(10); // avoids small chunks of data, which cause high CPU usage, esp. on ARM CPUs
               }
            }
      }

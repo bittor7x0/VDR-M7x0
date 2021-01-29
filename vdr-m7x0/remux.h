@@ -122,6 +122,7 @@ public:
 #define TS_ADAPT_EXTENSION    0x01
 
 #define PATPID 0x0000 // PAT PID (constant 0)
+#define EITPID 0x0012 // EIT PID (constant 18)
 #define MAXPID 0x2000 // for arrays that use a PID as the index
 
 inline bool TsHasPayload(const uchar *p)

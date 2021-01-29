@@ -201,7 +201,6 @@ const char *OSStateName(eOSState OSState)
     case osStopRecord: return "osStopRecord";
     case osStopReplay: return "osStopReplay";
     case osCancelEdit: return "osCancelEdit";
-    case osSwitchDvb:  return "osSwitchDvb";
     case osBack:       return "osBack";
     case osEnd:        return "osEnd";
     case os_User:      return "os_User";

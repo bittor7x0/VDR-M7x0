@@ -270,7 +270,7 @@ bool cNonBlockingFileReader::WaitForDataMs(int msToWait)
 
 // --- cDvbPlayer ------------------------------------------------------------
 
-#define PLAYERBUFSIZE  MEGABYTE(1)
+#define PLAYERBUFSIZE  (MAXFRAMESIZE * 5)
 #define PLAYERBUFALIGNMENT KILOBYTE(64)
 #define SLEEPWAITTIME 3  // ms
 // The number of frames to back up when resuming an interrupted replay session:
@@ -1105,6 +1105,7 @@ bool cDvbPlayerControl::Active(void)
 
 void cDvbPlayerControl::Stop(void)
 {
+  cControl::player = NULL;
   delete player;
   player = NULL;
 }

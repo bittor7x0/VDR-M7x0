@@ -106,7 +106,7 @@ void cLircRemote::Action(void)
            int count;
            char KeyName[LIRC_KEY_BUF];
            if (sscanf(buf, "%*x %x %29s", &count, KeyName) != 2) { // '29' in '%29s' is LIRC_KEY_BUF-1!
-              esyslog("ERROR: unparseable lirc command: %s", buf);
+              esyslog("ERROR: unparsable lirc command: %s", buf);
               continue;
               }
            if (count == 0) {

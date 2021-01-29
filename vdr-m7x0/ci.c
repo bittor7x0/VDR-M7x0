@@ -1121,7 +1121,7 @@ bool cCiDateTime::SendDateTime(void)
 #pragma pack(1)
      struct tTime { uint16_t mjd; uint8_t h, m, s; short offset; };
 #pragma pack()
-     tTime T = { .mjd = htons(MJD), .h = DEC2BCD(tm_gmt.tm_hour), .m = DEC2BCD(tm_gmt.tm_min), .s = DEC2BCD(tm_gmt.tm_sec), .offset = short(htons(tm_loc.tm_gmtoff / 60)) };
+     tTime T = {}; T.mjd = htons(MJD); T.h = DEC2BCD(tm_gmt.tm_hour); T.m = DEC2BCD(tm_gmt.tm_min); T.s = DEC2BCD(tm_gmt.tm_sec); T.offset = short(htons(tm_loc.tm_gmtoff / 60));
      dbgprotocol("%d: ==> Date Time\n", SessionId());
      SendData(AOT_DATE_TIME, 7, (uint8_t*)&T);
      //XXX return value of all SendData() calls???
@@ -1262,7 +1262,7 @@ bool cCiMMI::Process(int Length, const uint8_t *Data)
                  case DCC_SET_MMI_MODE:
                       if (l == 2 && *++d == MM_HIGH_LEVEL) {
                          struct tDisplayReply { uint8_t id; uint8_t mode; };
-                         tDisplayReply dr = { .id = DRI_MMI_MODE_ACK, .mode = MM_HIGH_LEVEL };
+                         tDisplayReply dr = {}; dr.id = DRI_MMI_MODE_ACK; dr.mode = MM_HIGH_LEVEL;
                          dbgprotocol("%d: ==> Display Reply\n", SessionId());
                          SendData(AOT_DISPLAY_REPLY, 2, (uint8_t *)&dr);
                          }
@@ -1373,10 +1373,12 @@ bool cCiMMI::SendAnswer(const char *Text)
   struct tAnswer { uint8_t id; char text[256]; };//XXX
   tAnswer answer;
   answer.id = Text ? AI_ANSWER : AI_CANCEL;
-  if (Text)
-     strncpy(answer.text, Text, sizeof(answer.text) - 1);
-  SendData(AOT_ANSW, Text ? strlen(Text) + 1 : 1, (uint8_t *)&answer);
-  //XXX return value of all SendData() calls???
+  int len = 0;
+  if (Text) {
+     len = std::min(sizeof(answer.text), strlen(Text));
+     memcpy(answer.text, Text, len);
+     }
+  SendData(AOT_ANSW, len + 1, (uint8_t *)&answer);
   return true;
 }
 

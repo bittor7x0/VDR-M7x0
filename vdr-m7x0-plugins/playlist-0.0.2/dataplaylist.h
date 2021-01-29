@@ -55,6 +55,7 @@ public:
   cPlaylistRecord(void);
   cPlaylistRecord(cPlaylist *Playlist, char *Filename);
   cPlaylistRecord(cPlaylist *Playlist, cRecording *Recording, cPlaylistRecord *Parent);
+  cPlaylistRecord& operator= (const cPlaylistRecord &PlaylistRecord) { return *this; };
   virtual ~cPlaylistRecord(void);
   virtual bool operator< (const cListObject &ListObject);
   virtual bool operator!= (const cPlaylistRecord &PlaylistRecordObject);
@@ -116,6 +117,7 @@ private:
   cPlaylistRecordCol *recordcol;
 public:
   cPlaylist(void);
+  cPlaylist& operator= (const cPlaylist &Playlist) { return *this; };
   virtual ~cPlaylist(void);
   virtual bool operator!= (const cPlaylist &PlaylistObject);
   cPlaylistRecordCol *RecordCol2(void) { return recordcol; }

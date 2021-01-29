@@ -30,7 +30,7 @@ public:
   bool Wait(int TimeoutMs = 0);
        ///< Waits at most TimeoutMs milliseconds for a call to Signal(), or
        ///< forever if TimeoutMs is 0.
-       ///< Returns true if Signal() has been called, false it the given
+       ///< Returns true if Signal() has been called, false if the given
        ///< timeout has expired.
   void Signal(void);
        ///< Signals a caller of Wait() that the condition it is waiting for is met.

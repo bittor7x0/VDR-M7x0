@@ -65,8 +65,10 @@ cReceiver::~cReceiver()
 bool cReceiver::AddPid(int Pid)
 {
   if (Pid) {
-     if (numPids < MAXRECEIVEPIDS)
-        pids[numPids++] = Pid;
+     if (numPids < MAXRECEIVEPIDS) {
+        if (!WantsPid(Pid))
+           pids[numPids++] = Pid;
+        }
      else {
         dsyslog("too many PIDs in cReceiver (Pid = %d)", Pid);
         return false;

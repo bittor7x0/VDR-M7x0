@@ -294,6 +294,8 @@ bool isnumber(const char *s)
 
 cString AddDirectory(const char *DirName, const char *FileName)
 {
+  if (*FileName == '/')
+     FileName++;
   return cString::sprintf("%s/%s", DirName && *DirName ? DirName : ".", FileName);
 }
 

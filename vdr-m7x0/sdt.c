@@ -54,8 +54,11 @@ void cSdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                    case 0x02: // digital radio sound service
                    case 0x04: // NVOD reference service
                    case 0x05: // NVOD time-shifted service
+                   case 0x0A: // advanced codec digital radio sound service
                    case 0x16: // digital SD television service
                    case 0x19: // digital HD television service
+                   case 0x1F: // HEVC digital television service
+                   case 0x20: // HEVC UHD digital television service
                         {
                         char NameBuf[1024];
                         char ShortNameBuf[1024];

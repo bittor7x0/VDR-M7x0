@@ -156,11 +156,15 @@ cDll::cDll(const char *FileName, const char *Args)
   args = Args ? strdup(Args) : NULL;
   handle = NULL;
   plugin = NULL;
+  destroy = NULL;
 }
 
 cDll::~cDll()
 {
-  delete plugin;
+  if (destroy)
+     destroy(plugin);
+  else
+     delete plugin; // silently fall back for plugins compiled with VDR version <= 2.4.3
   if (handle)
      dlclose(handle);
   free(args);
@@ -213,10 +217,18 @@ bool cDll::Load(bool Log)
      }
 //M7X0 END AK
   if (!error) {
-     void *(*creator)(void);
-     creator = (void *(*)(void))dlsym(handle, "VDRPluginCreator");
-     if (!(error = dlerror()))
-        plugin = (cPlugin *)creator();
+     typedef cPlugin *create_t(void);
+     create_t *create = (create_t *)dlsym(handle, "VDRPluginCreator");
+     error = dlerror();
+     if (!error && create) {
+        plugin = create();
+        destroy = (destroy_t *)dlsym(handle, "VDRPluginDestroyer");
+        error = dlerror();
+        if (error) {
+           error = NULL;
+           isyslog("plugin %s: missing symbol VDRPluginDestroyer(), please rebuild", fileName);
+           }
+        }
      }
   if (!error) {
      if (plugin && args) {

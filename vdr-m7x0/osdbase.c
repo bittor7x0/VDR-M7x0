@@ -82,6 +82,7 @@ cOsdMenu::cOsdMenu(const char *Title, int c0, int c1, int c2, int c3, int c4)
   SetTitle(Title);
   SetCols(c0, c1, c2, c3, c4);
   first = 0;
+  lastOffset = -1;
   current = marked = -1;
   subMenu = NULL;
   helpRed = helpGreen = helpYellow = helpBlue = NULL;
@@ -213,7 +214,7 @@ void cOsdMenu::Display(void)
          }
      if (current < 0)
         current = 0; // just for safety - there HAS to be a current item!
-     first = std::min(first, std::max(0, count - displayMenuItems)); // in case the menu size has changed
+     first = std::max(0, std::min(first, std::max(0, count - displayMenuItems))); // in case the menu size has changed
      if (current - first >= displayMenuItems || current < first) {
         first = current - displayMenuItems / 2;
         if (first + displayMenuItems > count)
@@ -240,6 +241,9 @@ void cOsdMenu::Display(void)
 void cOsdMenu::SetCurrent(cOsdItem *Item)
 {
   current = Item ? Item->Index() : -1;
+  if (current >= 0 && lastOffset >= 0)
+     first = std::max(0, current - lastOffset);
+  lastOffset = -1;
 }
 
 void cOsdMenu::RefreshCurrent(void)
@@ -265,6 +269,7 @@ void cOsdMenu::Clear(void)
 {
   if (marked >= 0)
      SetStatus(NULL);
+  lastOffset = (current > first) ? current - first : 0;
   first = 0;
   current = marked = -1;
   cList<cOsdItem>::Clear();

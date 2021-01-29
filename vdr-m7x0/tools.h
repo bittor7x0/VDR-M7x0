@@ -104,12 +104,18 @@ template<class T> inline T swapBytes(const T a) {
     }
   }
 
-
-#ifndef __STL_CONFIG_H // in case some plugin needs to use the STL
+// In case some plugin needs to use the STL and gets an error message regarding one
+// of these functions, you can #define DISABLE_TEMPLATES_COLLIDING_WITH_STL before
+// including tools.h.
+#if !defined(__STL_CONFIG_H) // for old versions of the STL
+#if !defined(DISABLE_TEMPLATES_COLLIDING_WITH_STL) && !defined(_STL_ALGOBASE_H)
 template<class T> inline T min(const T a, const T b) { return a <= b ? a : b; }
 template<class T> inline T max(const T a, const T b) { return a >= b ? a : b; }
+#endif
 template<class T> inline int sgn(const T a) { return a < 0 ? -1 : a > 0 ? 1 : 0; }
+#if !defined(DISABLE_TEMPLATES_COLLIDING_WITH_STL) && !defined(_MOVE_H)
 template<class T> inline void swap(T &a, T &b) { T t = a; a = b; b = t; }
+#endif
 #endif
 
 void syslog_with_tid(int priority, const char *format, ...) __attribute__ ((format (printf, 2, 3)));
@@ -245,6 +251,12 @@ public:
   cTimeMs(void);
   static uint64_t Now(void);
   void Set(int Ms = 0);
+      ///< Sets the timer. If Ms is 0, call Elapsed() to get the number of milliseconds
+      ///< since the timer has been set. If Ms is greater than 0, TimedOut() returns
+      ///< true as soon as Ms milliseconds have passed since calling Set(). If Ms is
+      ///< negative, results are undefined.
+      ///< Depending on the value of Ms, an object of cTimeMs can handle either
+      ///< timeouts or elapsed times, not both at the same time.
   bool TimedOut(void) const;
   uint64_t Elapsed(void) const;
   };
@@ -374,6 +386,8 @@ public:
 class cListObject {
 private:
   cListObject *prev, *next;
+  cListObject(const cListObject &ListObject) { abort(); } // no copy constructor!
+  cListObject& operator= (const cListObject &ListObject) { abort(); return *this; } // no assignment operator!
 public:
   cListObject(void);
   virtual ~cListObject();

@@ -38,6 +38,7 @@ public:
   int timeout;
   cFilterData(void);
   cFilterData(u_short Pid, u_char Tid, u_char Mask, bool Sticky, int Timeout);
+  cFilterData& operator= (const cFilterData &FilterData);
   bool Is(u_short Pid, u_char Tid, u_char Mask);
   bool Matches(u_short Pid, u_char Tid);
   };

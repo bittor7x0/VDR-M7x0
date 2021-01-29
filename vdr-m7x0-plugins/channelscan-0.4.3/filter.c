@@ -557,16 +557,18 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                  switch (sd->getServiceType()) {
                    case 0x01: // digital television service
                    case 0x02: // digital radio sound service
-                   case 0x03: // DVB Subtitles
                    case 0x04: // NVOD reference service
                    case 0x05: // NVOD time-shifted service
+                   case 0x0A: // advanced codec digital radio sound service
                    case 0x16: // digital SD television service
                    case 0x19: // digital HD television service
+                   case 0x1F: // HEVC digital television service
+                   case 0x20: // HEVC UHD digital television service
                    case 0x11: // digital television service MPEG-2 HD 
                    case 0xC3: // some french channels like kiosk
                         {
                         // Add only radio 
-                          if ((sd->getServiceType()==1 || sd->getServiceType()==0x11 || sd->getServiceType()==0x16 || sd->getServiceType()==0x19 || sd->getServiceType()==0xC3) && AddServiceType == 1) 
+                          if ((sd->getServiceType()==1 || sd->getServiceType()==0x11 || sd->getServiceType()==0x16 || sd->getServiceType()==0x19 || sd->getServiceType()==0x1F || sd->getServiceType()==0x20 || sd->getServiceType()==0xC3) && AddServiceType==1)
                           {
 #ifdef DEBUG_CHANNELSCAN
                              printf(" Add nur Radio  aber nur TV Sender gefunden  SID skip %d \n",sd->getServiceType());  
@@ -574,7 +576,7 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                              break;
                           }
                           // Add only tv
-                          if (sd->getServiceType()==2 && (AddServiceType==0))
+                          if ((sd->getServiceType()==2 || sd->getServiceType()==0x0A) && AddServiceType==0)
                           {
 #ifdef DEBUG_CHANNELSCAN
                              printf(" Add nur TV  aber nur RadioSender gefunden  SID skip %d \n",sd->getServiceType());  
@@ -597,6 +599,8 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                              case 0x11:
                              case 0x16:
                              case 0x19:
+                             case 0x1F:
+                             case 0x20:
                              case 0xC3:
                                      tvChannelNames.push_back(NameBuf); // if service wanted 
                                      #ifdef DEBUG_CHANNELSCAN 
@@ -604,6 +608,7 @@ void SdtFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length)
                                      #endif
                                      break;
                              case 0x02:
+                             case 0x0A:
                                      radioChannelNames.push_back(NameBuf); // if service wanted 
                                      #ifdef DEBUG_CHANNELSCAN 
                                      radioChannelList.push_back(NameBuf);
