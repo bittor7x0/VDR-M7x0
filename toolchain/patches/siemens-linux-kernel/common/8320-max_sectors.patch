@@ -1,0 +1,12 @@
+diff -Naur -X dontdiff linux/include/linux/blkdev.h linux.new/include/linux/blkdev.h
+--- linux/include/linux/blkdev.h	Mon Nov 26 05:29:17 2001
++++ linux.new/include/linux/blkdev.h	Wed Feb 27 15:51:48 2002
+@@ -176,7 +176,7 @@
+ extern int * max_segments[MAX_BLKDEV];
+ 
+ #define MAX_SEGMENTS 128
+-#define MAX_SECTORS 255
++#define MAX_SECTORS 1024
+ 
+ #define PageAlignSize(size) (((size) + PAGE_SIZE -1) & PAGE_MASK)
+ 
