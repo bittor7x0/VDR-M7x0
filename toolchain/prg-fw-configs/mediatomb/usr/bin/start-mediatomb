@@ -2,44 +2,17 @@
 
 set -o nounset
 
-source /etc/rc.local.conf
+# Set "DISK_VOLUME" variable and create "mediatomb" subdir in hdd if it doesn't exist
+source /usr/bin/set-hdd-var.src mediatomb
 
-if [ X"${vdr_videodirs}" != X" " ] ; then
-    if [ X"${force_usb_mount}" == X"NO" ] ; then
-        /sbin/usbautomounter mount
-    fi
-
-    for i in {1..10}; do
-        for vdir in ${vdr_videodirs} ; do
-            if [ -d "${vdir}" ]; then
-                DISK_VOLUME=${vdir}
-                break
-            fi
-        done
-
-        if [ ! -z $DISK_VOLUME ]; then
-            break
-        fi
-
-        /bin/sleep 3
-    done
+if [ ! -f "${DISK_VOLUME}/mediatomb/mediatomb.db" ]; then
+    cp /etc/mediatomb/mediatomb.db "${DISK_VOLUME}/mediatomb/mediatomb.db"
 fi
 
-if [ -z $DISK_VOLUME ]; then
-    logger -s -p user.err Mediatomb necesita un disco para funcionar
-    exit 1
+if [ ! -f "${DISK_VOLUME}/mediatomb/config.xml" ]; then
+    cp /etc/mediatomb/config.xml "${DISK_VOLUME}/mediatomb/config.xml"
 fi
 
-if [ ! -d $DISK_VOLUME/mediatomb ]; then
-    mkdir $DISK_VOLUME/mediatomb || exit 2
-fi
+/usr/bin/mediatomb -p 49152 -m "${DISK_VOLUME}" -f mediatomb -P /var/run/mediatomb.pid &
 
-if [ ! -f $DISK_VOLUME/mediatomb/mediatomb.db ]; then
-    cp /etc/mediatomb/mediatomb.db $DISK_VOLUME/mediatomb/mediatomb.db
-fi
-
-if [ ! -f $DISK_VOLUME/mediatomb/config.xml ]; then
-    cp /etc/mediatomb/config.xml $DISK_VOLUME/mediatomb/config.xml
-fi
-
-/usr/bin/mediatomb -p 49152 -m $DISK_VOLUME -f mediatomb -P /var/run/mediatomb.pid &
+/usr/bin/logger -p user.info "mediatomb started"

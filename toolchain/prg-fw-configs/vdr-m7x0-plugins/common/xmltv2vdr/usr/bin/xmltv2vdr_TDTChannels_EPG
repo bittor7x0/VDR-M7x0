@@ -1,0 +1,6 @@
+#!/bin/ash
+
+epg_source="TDTChannels_EPG"
+epg_urls="https://raw.githubusercontent.com/HelmerLuzo/TDTChannels_EPG/master/TDTChannels_EPG.xml.gz https://raw.githubusercontent.com/HelmerLuzo/TDTChannels_EPG/master/TDTChannels_EPG.xml"
+
+source /usr/bin/xmltv2vdr_common.src $@

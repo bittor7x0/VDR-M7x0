@@ -1,0 +1,85 @@
+#
+# This file is sourced from script files
+#
+
+set -o nounset
+
+/usr/bin/logger "xmltv2vdr_${epg_source}: script started"
+
+#
+# Set variables
+#
+source /usr/bin/set-hdd-var.src xmltv2vdr # Set "DISK_VOLUME" variable and create "xmltv2vdr" subdir in hdd if it doesn't exist
+if [ ! -f "${vdr_confdir}/plugins/xmltv2vdr/epgsources/xmltv2vdr_${epg_source}" ]; then
+    /usr/bin/logger -p user.err "xmltv2vdr_${epg_source}: no mapping file (${vdr_confdir}/plugins/xmltv2vdr/epgsources/xmltv2vdr_${epg_source})"
+    exit 1
+fi
+epg_source_dir=/var/lib/epgsources
+epg_day=1
+epg_days=$1
+shift 2
+epg_channels_dst=$(echo $@ | /usr/bin/awk '{gsub(" ", ";|"); print $0";"}')
+epg_channels_src=$(/usr/bin/awk "/${epg_channels_dst}/ {print}" "${vdr_confdir}/plugins/xmltv2vdr/epgsources/xmltv2vdr_${epg_source}" | /usr/bin/awk -v FS=';' -v ORS='|' '{print $2}')
+# remove last '|'
+epg_channels_src="${epg_channels_src%?}"
+# full and empty stars are asterisks when they are converted to iso8859-15, so we remove empty stars
+epg_map_channels='gsub("☆", ""); '$(/usr/bin/awk "/${epg_channels_dst}/ {print}" "${vdr_confdir}/plugins/xmltv2vdr/epgsources/xmltv2vdr_${epg_source}" | /usr/bin/awk -v FS=';' '$1 != $2 {printf "gsub(\042\\\042%s\\\042\042, \042\\\042%s\\\042\042); ", $2, $1}')
+
+epg_dates="$(/bin/date +"%Y%m%d")"
+while [ ${epg_day} -le ${epg_days} ] ; do
+	epg_dates="${epg_dates}|$(/bin/date +"%Y%m%d" -d "@$(( $(/bin/date +%s) + 86400 * ${epg_day} ))")"
+	epg_day=$(( ${epg_day} + 1 ))
+done
+
+#
+# Download epg
+#
+/usr/bin/logger "xmltv2vdr_${epg_source}: downloading the epg data"
+
+for epg_url in ${epg_urls} ; do
+    epg_file_ext=${epg_url##*.}
+    /usr/bin/wget -q -O "${DISK_VOLUME}/xmltv2vdr/xmltv2vdr_${epg_source}_orig.xmltv" "${epg_url}" &> /dev/null
+    wget_exit=$?
+    if [ ${wget_exit} -eq 0 ] ; then
+        break
+    fi
+done
+
+if [ ${wget_exit} -ne 0 ]; then
+    /usr/bin/logger -p user.err "xmltv2vdr_${epg_source}: an error occurred while downloading the epg data"
+    exit 1
+fi
+
+#
+# Unpack downloaded epg
+#
+if [ X"${epg_file_ext}" = X"gz" ] ; then
+    cd "${DISK_VOLUME}/xmltv2vdr"
+    /bin/mv -f "xmltv2vdr_${epg_source}_orig.xmltv" "xmltv2vdr_${epg_source}_orig.xmltv.gz"
+    /bin/gzip -d "xmltv2vdr_${epg_source}_orig.xmltv.gz"
+    [ $? -ne 0 ] && /usr/bin/logger -p user.err "xmltv2vdr_${epg_source}: an error occurred while unpacking the downloaded epg data" && exit 3
+elif [ X"${epg_file_ext}" = X"xz" ]; then
+    cd "${DISK_VOLUME}/xmltv2vdr"
+    /bin/mv -f "xmltv2vdr_${epg_source}_orig.xmltv" "xmltv2vdr_${epg_source}_orig.xmltv.xz"
+    /usr/bin/unxz "xmltv2vdr_${epg_source}_orig.xmltv.xz"
+    [ $? -ne 0 ] && /usr/bin/logger -p user.err "xmltv2vdr_${epg_source}: an error occurred while unpacking the downloaded epg data" && exit 3
+fi
+
+#
+# Generate filtered xmltv
+#
+/usr/bin/logger "xmltv2vdr_${epg_source}: generating the xmltv file"
+[ -f "${epg_source_dir}/xmltv2vdr_${epg_source}.xmltv" ] && /bin/rm -f "${epg_source_dir}/xmltv2vdr_${epg_source}.xmltv"
+/usr/bin/awk "BEGIN {print \"<?xml version=\0421.0\042 encoding=\042UTF-8\042?>\n<tv generator-info-name=\042xmltv2vdr_${epg_source}\042>\"}; /(<channel.*?id=\"(${epg_channels_src})\"|<programme.*?start=\"(${epg_dates}).*?channel=\"(${epg_channels_src})\")/,/(<\/channel>|<\/programme>)/ {${epg_map_channels} print}; END {print \"</tv>\"}" "${DISK_VOLUME}/xmltv2vdr/xmltv2vdr_${epg_source}_orig.xmltv" > "${DISK_VOLUME}/xmltv2vdr/xmltv2vdr_${epg_source}.xmltv"
+if [ $([ -f "${DISK_VOLUME}/xmltv2vdr/xmltv2vdr_${epg_source}.xmltv" ] && /bin/stat -c %s "${DISK_VOLUME}/xmltv2vdr/xmltv2vdr_${epg_source}.xmltv" || echo 0) -lt 100 ]; then
+    /usr/bin/logger -p user.err "xmltv2vdr_${epg_source}: an error occurred while generating the xmltv file"
+    #/bin/rm -f "${DISK_VOLUME}/xmltv2vdr/xmltv2vdr_${epg_source}.xmltv"
+    exit 4
+fi
+/bin/ln -sf "${DISK_VOLUME}/xmltv2vdr/xmltv2vdr_${epg_source}.xmltv" "${epg_source_dir}/xmltv2vdr_${epg_source}.xmltv" || exit 5
+
+#
+# Exit with code 0; this tells xmltv2vdr that everything went ok and that it can import the data
+#
+/usr/bin/logger "xmltv2vdr_${epg_source}: ${epg_source}.xmltv is ready for import by xmltv2vdr"
+exit 0

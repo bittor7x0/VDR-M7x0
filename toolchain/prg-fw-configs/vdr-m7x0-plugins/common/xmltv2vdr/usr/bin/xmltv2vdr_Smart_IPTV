@@ -1,0 +1,6 @@
+#!/bin/ash
+
+epg_source="Smart_IPTV"
+epg_urls="https://raw.githubusercontent.com/dracohe/SMARTIPTV/master/guide.xml.gz https://raw.githubusercontent.com/dracohe/SMARTIPTV/master/guide.xml"
+
+source /usr/bin/xmltv2vdr_common.src $@

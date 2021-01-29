@@ -1,0 +1,6 @@
+#!/bin/ash
+
+epg_source="rytecES"
+epg_urls="http://www.xmltvepg.nl/rytecES_Basic.xz http://epgspot.com/rytec_epg/rytecES_Basic.xz http://rytecepg.wanwizard.eu/rytecES_Basic.xz http://rytecepg.dyndns.tv/epg_data/rytecES_Basic.xz http://www.vuplus-community.net/rytec/rytecES_Basic.xz"
+
+source /usr/bin/xmltv2vdr_common.src $@

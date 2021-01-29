@@ -1,0 +1,6 @@
+#!/bin/ash
+
+epg_source="Guide_IPTV"
+epg_urls="https://raw.githubusercontent.com/dracohe/CARLOS/master/guide_IPTV.xml.gz https://raw.githubusercontent.com/dracohe/CARLOS/master/guide_IPTV.xml"
+
+source /usr/bin/xmltv2vdr_common.src $@

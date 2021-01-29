@@ -1,0 +1,6 @@
+#!/bin/ash
+
+epg_source="EpgGratis"
+epg_urls="https://raw.githubusercontent.com/MPAndrew/EpgGratis/master/epgsinrex.xml.gz"
+
+source /usr/bin/xmltv2vdr_common.src $@

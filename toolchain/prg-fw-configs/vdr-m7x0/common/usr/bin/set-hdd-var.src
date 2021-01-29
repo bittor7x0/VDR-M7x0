@@ -1,0 +1,35 @@
+#
+# This file is sourced from script files
+#
+
+source /etc/rc.local.conf
+
+if [ X"${vdr_videodirs}" != X" " ] ; then
+    if [ X"${force_usb_mount}" == X"NO" ] ; then
+        /sbin/usbautomounter mount
+    fi
+
+    for i in {1..10}; do
+        for vdir in ${vdr_videodirs} ; do
+            if [ -d "${vdir}" ]; then
+                DISK_VOLUME=${vdir}
+                break
+            fi
+        done
+
+        if [ ! -z ${DISK_VOLUME} ]; then
+            break
+        fi
+
+        /bin/sleep 3
+    done
+fi
+
+if [ -z ${DISK_VOLUME} ]; then
+    /usr/bin/logger -p user.err "$1: no hard disk available"
+    exit 1
+fi
+
+if [ ! -d "${DISK_VOLUME}/$1" ]; then
+    /bin/mkdir -p "${DISK_VOLUME}/$1" || exit 2
+fi
