@@ -78,19 +78,37 @@ time_t cParse::ConvertXMLTVTime2UnixTime(char *xmltvtime)
         return (time_t) 0;
     }
     len-=2;
+#ifndef __UCLIBC__
     char fmt[]="%Y%m%d%H%M%S";
     fmt[len]=0;
+#endif
 
     struct tm tm;
     memset(&tm,0,sizeof(tm));
+
+#ifndef __UCLIBC__
     if (!strptime(xmltvtime,fmt,&tm))
+#else
+    if (sscanf(xmltvtime, "%04d%02d%02d%02d%02d%02d",
+	     &tm.tm_year, &tm.tm_mon, &tm.tm_mday,
+	     &tm.tm_hour, &tm.tm_min, &tm.tm_sec) < 5)
+#endif
     {
         unsetenv("TZ");
         tzset();
         return (time_t) 0;
     }
     if (tm.tm_mday==0) tm.tm_mday=1;
+
+#ifndef __UCLIBC__
     time_t ret=mktime(&tm);
+#else
+    tm.tm_mon  -= 1;
+    tm.tm_year -= 1900;
+    tm.tm_isdst = -1;
+    time_t ret=timegm(&tm);
+#endif
+
     ret-=offset;
     unsetenv("TZ");
     tzset();
@@ -509,15 +527,15 @@ bool cParse::FetchSeasonEpisode(iconv_t cEP2ASCII, iconv_t cUTF2ASCII, const cha
     return found;
 }
 
-bool cParse::FetchEvent(xmlNodePtr enode, bool useeptext)
+bool cParse::FetchEvent(pugi::xml_node enode, bool useeptext)
 {
     char *slang=getenv("LANG");
-    xmlNodePtr node=enode->xmlChildrenNode;
+    pugi::xml_node node=enode.first_child();
     while (node)
     {
-        if (node->type==XML_COMMENT_NODE)
+        if (node.type()==pugi::xml_node_type::node_comment)
         {
-            if (const xmlChar *pid=xmlStrstr(node->content,(const xmlChar *) "pid"))
+            if (const char *pid=strstr(node.value(),(const char *) "pid"))
             {
                 char *eq=strchr((char *) pid,'=');
                 if (eq)
@@ -525,7 +543,7 @@ bool cParse::FetchEvent(xmlNodePtr enode, bool useeptext)
                     xevent.SetEventID((tEventID) atol(eq+1));
                 }
             }
-            if (const xmlChar *content=xmlStrstr(node->content,(const xmlChar *) "content"))
+            if (const char *content=strstr(node.value(),(const char *) "content"))
             {
                 char *eq=strchr((char *) content,'=');
                 if (eq)
@@ -534,15 +552,15 @@ bool cParse::FetchEvent(xmlNodePtr enode, bool useeptext)
                 }
             }
         }
-        if (node->type==XML_ELEMENT_NODE)
+        if (node.type()==pugi::xml_node_type::node_element)
         {
-            if ((!xmlStrcasecmp(node->name, (const xmlChar *) "title")))
+            if ((!strcasecmp(node.name(), (const char *) "title")))
             {
-                xmlChar *lang=xmlGetProp(node,(const xmlChar *) "lang");
-                xmlChar *content=xmlNodeListGetString(node->doc,node->xmlChildrenNode,1);
+                const char *lang=node.attribute("lang").value();
+                const char *content=node.child_value();
                 if (content)
                 {
-                    if (lang && slang && !xmlStrncasecmp(lang, (const xmlChar *) slang,2))
+                    if (lang && slang && !strncasecmp(lang, (const char *) slang,2))
                     {
                         xevent.SetTitle((const char *) content);
                     }
@@ -557,74 +575,66 @@ bool cParse::FetchEvent(xmlNodePtr enode, bool useeptext)
                             xevent.SetOrigTitle((const char *) content);
                         }
                     }
-                    xmlFree(content);
                 }
-                if (lang) xmlFree(lang);
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "sub-title")))
+            else if ((!strcasecmp(node.name(), (const char *) "sub-title")))
             {
                 // what to do with attribute lang?
-                xmlChar *content=xmlNodeListGetString(node->doc,node->xmlChildrenNode,1);
+                const char *content=node.child_value();
                 if (content)
                 {
                     xevent.SetShortText((const char *) content);
-                    xmlFree(content);
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "desc")))
+            else if ((!strcasecmp(node.name(), (const char *) "desc")))
             {
                 // what to do with attribute lang?
-                xmlChar *content=xmlNodeListGetString(node->doc,node->xmlChildrenNode,1);
+                const char *content=node.child_value();
                 if (content)
                 {
                     xevent.AddDescription((const char *) content);
-                    xmlFree(content);
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "credits")))
+            else if ((!strcasecmp(node.name(), (const char *) "credits")))
             {
-                xmlNodePtr vnode=node->xmlChildrenNode;
+                pugi::xml_node vnode=node.first_child();
                 while (vnode)
                 {
-                    if (vnode->type==XML_ELEMENT_NODE)
+                    if (vnode.type()==pugi::xml_node_type::node_element)
                     {
-                        if ((!xmlStrcasecmp(vnode->name, (const xmlChar *) "actor")))
+                        if ((!strcasecmp(vnode.name(), (const char *) "actor")))
                         {
-                            xmlChar *content=xmlNodeListGetString(vnode->doc,vnode->xmlChildrenNode,1);
+                            const char *content=vnode.child_value();
                             if (content)
                             {
-                                xmlChar *arole=xmlGetProp(node,(const xmlChar *) "actor role");
-                                xevent.AddCredits((const char *) vnode->name,(const char *) content,(const char *) arole);
-                                if (arole) xmlFree(arole);
-                                xmlFree(content);
+                                const char *arole=node.attribute("actor role").value();
+                                xevent.AddCredits((const char *) vnode.name(),(const char *) content,(const char *) arole);
                             }
                         }
                         else
                         {
-                            xmlChar *content=xmlNodeListGetString(vnode->doc,vnode->xmlChildrenNode,1);
+                            const char *content=vnode.child_value();
                             if (content)
                             {
-                                xevent.AddCredits((const char *) vnode->name,(const char *) content);
-                                xmlFree(content);
+                                xevent.AddCredits((const char *) vnode.name(),(const char *) content);
                             }
                         }
                     }
-                    vnode=vnode->next;
+                    vnode=vnode.next_sibling();
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "date")))
+            else if ((!strcasecmp(node.name(), (const char *) "date")))
             {
-                xmlChar *content=xmlNodeListGetString(node->doc,node->xmlChildrenNode,1);
+                const char *content=node.child_value();
                 if (content)
                 {
                     xevent.SetYear(atoi((const char *) content));
-                    xmlFree(content);
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "category")))
+            else if ((!strcasecmp(node.name(), (const char *) "category")))
             {
                 // what to do with attribute lang?
-                xmlChar *content=xmlNodeListGetString(node->doc,node->xmlChildrenNode,1);
+                const char *content=node.child_value();
                 if (content)
                 {
                     if (isdigit(content[0]))
@@ -636,145 +646,133 @@ bool cParse::FetchEvent(xmlNodePtr enode, bool useeptext)
                     {
                         xevent.AddCategory((const char *) content);
                     }
-                    xmlFree(content);
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "country")))
+            else if ((!strcasecmp(node.name(), (const char *) "country")))
             {
-                xmlChar *content=xmlNodeListGetString(node->doc,node->xmlChildrenNode,1);
+                const char *content=node.child_value();
                 if (content)
                 {
                     xevent.SetCountry((const char *) content);
-                    xmlFree(content);
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "video")))
+            else if ((!strcasecmp(node.name(), (const char *) "video")))
             {
-                xmlNodePtr vnode=node->xmlChildrenNode;
+                pugi::xml_node vnode=node.first_child();
                 while (vnode)
                 {
-                    if (vnode->type==XML_ELEMENT_NODE)
+                    if (vnode.type()==pugi::xml_node_type::node_element)
                     {
-                        if ((!xmlStrcasecmp(vnode->name, (const xmlChar *) "colour")))
+                        if ((!strcasecmp(vnode.name(), (const char *) "colour")))
                         {
-                            xmlChar *content=xmlNodeListGetString(vnode->doc,vnode->xmlChildrenNode,1);
+                            const char *content=vnode.child_value();
                             if (content)
                             {
                                 xevent.AddVideo("colour",(const char *) content);
-                                xmlFree(content);
                             }
                         }
-                        if ((!xmlStrcasecmp(vnode->name, (const xmlChar *) "aspect")))
+                        if ((!strcasecmp(vnode.name(), (const char *) "aspect")))
                         {
-                            xmlChar *content=xmlNodeListGetString(vnode->doc,vnode->xmlChildrenNode,1);
+                            const char *content=vnode.child_value();
                             if (content)
                             {
                                 xevent.AddVideo("aspect",(const char *) content);
-                                xmlFree(content);
                             }
                         }
-                        if ((!xmlStrcasecmp(vnode->name, (const xmlChar *) "quality")))
+                        if ((!strcasecmp(vnode.name(), (const char *) "quality")))
                         {
-                            xmlChar *content=xmlNodeListGetString(vnode->doc,vnode->xmlChildrenNode,1);
+                            const char *content=vnode.child_value();
                             if (content)
                             {
                                 xevent.AddVideo("quality",(const char *) content);
-                                xmlFree(content);
                             }
                         }
 
                     }
-                    vnode=vnode->next;
+                    vnode=vnode.next_sibling();
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "audio")))
+            else if ((!strcasecmp(node.name(), (const char *) "audio")))
             {
-                xmlNodePtr vnode=node->xmlChildrenNode;
+                pugi::xml_node vnode=node.first_child();
                 while (vnode)
                 {
-                    if (vnode->type==XML_ELEMENT_NODE)
+                    if (vnode.type()==pugi::xml_node_type::node_element)
                     {
-                        if ((!xmlStrcasecmp(vnode->name, (const xmlChar *) "stereo")))
+                        if ((!strcasecmp(vnode.name(), (const char *) "stereo")))
                         {
-                            xmlChar *content=xmlNodeListGetString(vnode->doc,vnode->xmlChildrenNode,1);
+                            const char *content=vnode.child_value();
                             if (content)
                             {
-                                content=(xmlChar*)strreplace((char *)content," ","");
+                                content=(const char*)strreplace((char *)content," ","");
                                 xevent.SetAudio((const char *) content);
-                                xmlFree(content);
                             }
                         }
                     }
-                    vnode=vnode->next;
+                    vnode=vnode.next_sibling();
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "rating")))
+            else if ((!strcasecmp(node.name(), (const char *) "rating")))
             {
-                xmlChar *system=xmlGetProp(node,(const xmlChar *) "system");
+                const char *system=node.attribute("system").value();
                 if (system)
                 {
-                    xmlNodePtr vnode=node->xmlChildrenNode;
+                    pugi::xml_node vnode=node.first_child();
                     while (vnode)
                     {
-                        if (vnode->type==XML_ELEMENT_NODE)
+                        if (vnode.type()==pugi::xml_node_type::node_element)
                         {
-                            if ((!xmlStrcasecmp(vnode->name, (const xmlChar *) "value")))
+                            if ((!strcasecmp(vnode.name(), (const char *) "value")))
                             {
-                                xmlChar *content=xmlNodeListGetString(vnode->doc,vnode->xmlChildrenNode,1);
+                                const char *content=vnode.child_value();
                                 if (content)
                                 {
                                     xevent.AddRating((const char *) system,(const char *) content);
-                                    xmlFree(content);
                                 }
                             }
                         }
-                        vnode=vnode->next;
+                        vnode=vnode.next_sibling();
                     }
-                    xmlFree(system);
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "star-rating")))
+            else if ((!strcasecmp(node.name(), (const char *) "star-rating")))
             {
-                xmlChar *system=xmlGetProp(node,(const xmlChar *) "system");
-                xmlNodePtr vnode=node->xmlChildrenNode;
+                const char *system=node.attribute("system").value();
+                pugi::xml_node vnode=node.first_child();
                 while (vnode)
                 {
-                    if (vnode->type==XML_ELEMENT_NODE)
+                    if (vnode.type()==pugi::xml_node_type::node_element)
                     {
-                        if ((!xmlStrcasecmp(vnode->name, (const xmlChar *) "value")))
+                        if ((!strcasecmp(vnode.name(), (const char *) "value")))
                         {
-                            xmlChar *content=xmlNodeListGetString(vnode->doc,vnode->xmlChildrenNode,1);
+                            const char *content=vnode.child_value();
                             if (content)
                             {
                                 xevent.AddStarRating((const char *) system,(const char *) content);
-                                xmlFree(content);
                             }
                         }
                     }
-                    vnode=vnode->next;
+                    vnode=vnode.next_sibling();
                 }
-                if (system) xmlFree(system);
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "review")))
+            else if ((!strcasecmp(node.name(), (const char *) "review")))
             {
-                xmlChar *type=xmlGetProp(node,(const xmlChar *) "type");
-                if (type && !xmlStrcasecmp(type, (const xmlChar *) "text"))
+                const char *type=node.attribute("type").value();
+                if (type && !strcasecmp(type, (const char *) "text"))
                 {
-                    xmlChar *content=xmlNodeListGetString(node->doc,node->xmlChildrenNode,1);
+                    const char *content=node.child_value();
                     if (content)
                     {
                         xevent.AddReview((const char *) content);
-                        xmlFree(content);
                     }
-                    xmlFree(type);
                 }
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "icon")))
+            else if ((!strcasecmp(node.name(), (const char *) "icon")))
             {
-                xmlChar *src=xmlGetProp(node,(const xmlChar *) "src");
+                const char *src=node.attribute("src").value();
                 if (src)
                 {
-                    const xmlChar *f=xmlStrstr(src,(const xmlChar *) "://");
+                    const char *f=strstr(src,(const char *) "://");
                     if (f)
                     {
                         // url: skip scheme and scheme-specific-part
@@ -795,16 +793,15 @@ bool cParse::FetchEvent(xmlNodePtr enode, bool useeptext)
                             xevent.AddPics(file);
                         }
                     }
-                    xmlFree(src);
                 }
 
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "episode-num")))
+            else if ((!strcasecmp(node.name(), (const char *) "episode-num")))
             {
-                xmlChar *system=xmlGetProp(node,(const xmlChar *) "system");
-                if (system && !xmlStrcasecmp(system,(const xmlChar *) "xmltv_ns"))
+                const char *system=node.attribute("system").value();
+                if (system && !strcasecmp(system,(const char *) "xmltv_ns"))
                 {
-                    xmlChar *content=xmlNodeListGetString(node->doc,node->xmlChildrenNode,1);
+                    const char *content=node.child_value();
                     if (content)
                     {
                         // format is:  season[/max_season].episode[/max_episode_in_season].part[/max_part]
@@ -844,37 +841,35 @@ bool cParse::FetchEvent(xmlNodePtr enode, bool useeptext)
                             }
                             free(xmltv_ns);
                         }
-                        xmlFree(content);
                     }
                 }
-                if (system) xmlFree(system);
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "length")))
+            else if ((!strcasecmp(node.name(), (const char *) "length")))
             {
                 // length without advertisements -> just ignore
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "subtitles")))
+            else if ((!strcasecmp(node.name(), (const char *) "subtitles")))
             {
                 // info about subtitles -> just ignore (till now)
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "new")))
+            else if ((!strcasecmp(node.name(), (const char *) "new")))
             {
                 // info if it's new -> just ignore (till now)
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "premiere")))
+            else if ((!strcasecmp(node.name(), (const char *) "premiere")))
             {
                 // premiere info -> just ignore (till now)
             }
-            else if ((!xmlStrcasecmp(node->name, (const xmlChar *) "previously-shown")))
+            else if ((!strcasecmp(node.name(), (const char *) "previously-shown")))
             {
                 // info if it's old ;) -> just ignore (till now)
             }
             else
             {
-                esyslogs(source,"unknown element %s, please report!",node->name);
+                esyslogs(source,"unknown element %s, please report!",node.name());
             }
         }
-        node=node->next;
+        node=node.next_sibling();
     }
 
     int season=xevent.Season(),episode=xevent.Episode(),episodeoverall=0;
@@ -909,19 +904,19 @@ int cParse::Process(cEPGExecutor &myExecutor,char *buffer, int bufsize)
 
     dsyslogs(source,"parsing output");
 
-    xmlDocPtr xmltv;
-    xmltv=xmlReadMemory(buffer,bufsize,NULL,NULL,0);
-    if (!xmltv)
+    pugi::xml_document xmltv;
+    pugi::xml_parse_result xml_ret=xmltv.load_buffer(buffer, bufsize);
+    if (!xml_ret)
     {
-        esyslogs(source,"failed to parse xmltv");
+        esyslogs(source,"failed to parse xmltv (%s - offset: %s)",xml_ret.description(),xml_ret.offset);
         return 141;
     }
 
-    xmlNodePtr rootnode=xmlDocGetRootElement(xmltv);
+    pugi::xml_node rootnode=xmltv.child("tv");
     if (!rootnode)
     {
         esyslogs(source,"no rootnode in xmltv");
-        xmlFreeDoc(xmltv);
+        xmltv.reset();
         return 141;
     }
 
@@ -929,7 +924,7 @@ int cParse::Process(cEPGExecutor &myExecutor,char *buffer, int bufsize)
     if (sqlite3_open(g->EPGFile(),&db)!=SQLITE_OK)
     {
         esyslogs(source,"failed to open or create %s",g->EPGFile());
-        xmlFreeDoc(xmltv);
+        xmltv.reset();
         return 141;
     }
 
@@ -954,66 +949,64 @@ int cParse::Process(cEPGExecutor &myExecutor,char *buffer, int bufsize)
         esyslogs(source,"createdb: %s",errmsg);
         sqlite3_free(errmsg);
         sqlite3_close(db);
-        xmlFreeDoc(xmltv);
+        xmltv.reset();
         return 141;
     }
 
     time_t begin=time(NULL)-7200;
-    xmlNodePtr node=rootnode->xmlChildrenNode;
+    pugi::xml_node node=rootnode.first_child();
 
     int lerr=0,lweak=0;
-    xmlChar *lastchannelid=NULL;
+    const char *lastchannelid=NULL;
     int skipped=0;
     bool do_unlink=false;
     while (node)
     {
-        if (node->type!=XML_ELEMENT_NODE)
+        if (node.type()!=pugi::xml_node_type::node_element)
         {
-            node=node->next;
+            node=node.next_sibling();
             continue;
         }
-        if ((xmlStrcasecmp(node->name, (const xmlChar *) "programme")))
+        if ((strcasecmp(node.name(), (const char *) "programme")))
         {
-            node=node->next;
+            node=node.next_sibling();
             continue;
         }
-        xmlChar *channelid=xmlGetProp(node,(const xmlChar *) "channel");
+        const char *channelid=node.attribute("channel").value();
         if (!channelid)
         {
             if (lerr!=PARSE_NOCHANNELID)
                 esyslogs(source,"missing channelid in xmltv file");
             lerr=PARSE_NOCHANNELID;
-            node=node->next;
+            node=node.next_sibling();
             skipped++;
             continue;
         }
         cEPGMapping *map=g->EPGMappings()->GetMap((const char *) channelid);
         if (!map)
         {
-            if ((lerr!=PARSE_NOMAPPING) || (lastchannelid && xmlStrcmp(channelid,lastchannelid)))
+            if ((lerr!=PARSE_NOMAPPING) || (lastchannelid && strcmp(channelid,lastchannelid)))
                 esyslogs(source,"no mapping for channelid %s",channelid);
             lerr=PARSE_NOMAPPING;
-            if (lastchannelid) xmlFree(lastchannelid);
-            lastchannelid=xmlStrdup(channelid);
-            xmlFree(channelid);
-            node=node->next;
+            if (lastchannelid) free((void *) lastchannelid);
+            lastchannelid=strdup(channelid);
+            node=node.next_sibling();
             skipped++;
             continue;
         }
-        if (lastchannelid) xmlFree(lastchannelid);
-        lastchannelid=xmlStrdup(channelid);
-        xmlFree(channelid);
+        if (lastchannelid) free((void *) lastchannelid);
+        lastchannelid=strdup(channelid);
 
-        xmlChar *start=NULL,*stop=NULL;
+        const char *start=NULL,*stop=NULL;
         time_t starttime=(time_t) 0;
         time_t stoptime=(time_t) 0;
-        start=xmlGetProp(node,(const xmlChar *) "start");
+        start=node.attribute("start").value();
         if (start)
         {
             starttime=ConvertXMLTVTime2UnixTime((char *) start);
             if (starttime)
             {
-                stop=xmlGetProp(node,(const xmlChar *) "stop");
+                stop=node.attribute("stop").value();
                 if (stop)
                 {
                     stoptime=ConvertXMLTVTime2UnixTime((char *) stop);
@@ -1026,18 +1019,14 @@ int cParse::Process(cEPGExecutor &myExecutor,char *buffer, int bufsize)
             if (lerr!=PARSE_XMLTVERR)
                 esyslogs(source,"no starttime, check xmltv file");
             lerr=PARSE_XMLTVERR;
-            node=node->next;
+            node=node.next_sibling();
             skipped++;
-            if (start) xmlFree(start);
-            if (stop) xmlFree(stop);
             continue;
         }
 
         if (starttime<begin)
         {
-            node=node->next;
-            if (start) xmlFree(start);
-            if (stop) xmlFree(stop);
+            node=node.next_sibling();
             continue;
         }
         xevent.Clear();
@@ -1049,31 +1038,21 @@ int cParse::Process(cEPGExecutor &myExecutor,char *buffer, int bufsize)
                 if (lerr!=PARSE_XMLTVERR)
                     esyslogs(source,"stoptime (%s) < starttime(%s), check xmltv file", stop, start);
                 lerr=PARSE_XMLTVERR;
-                node=node->next;
+                node=node.next_sibling();
                 skipped++;
-                if (start) xmlFree(start);
-                if (stop) xmlFree(stop);
                 continue;
             }
             xevent.SetDuration(stoptime-starttime);
         }
-
-        if (start) xmlFree(start);
-        if (stop) xmlFree(stop);
 
         if (!FetchEvent(node,(map->Flags() & OPT_SEASON_STEXTITLE)==OPT_SEASON_STEXTITLE)) // sets xevent
         {
             if (lerr!=PARSE_FETCHERR)
                 esyslogs(source,"failed to fetch event");
             lerr=PARSE_FETCHERR;
-            node=node->next;
+            node=node.next_sibling();
             skipped++;
             continue;
-        }
-        xmlErrorPtr xmlerr=xmlGetLastError();
-        if (xmlerr && xmlerr->code)
-        {
-            esyslogs(source,"%s",xmlerr->message);
         }
 
         if (!xevent.EventID())
@@ -1113,13 +1092,13 @@ int cParse::Process(cEPGExecutor &myExecutor,char *buffer, int bufsize)
                             {
                                 if (!xevent.WeakID())
                                 {
-                                    esyslogs(source,"sqlite3: %s (%u@%i)",errmsg,xevent.EventID(),node->line);
+                                    esyslogs(source,"sqlite3: %s (%u@%i)",errmsg,xevent.EventID(),node.offset_debug());
                                     tsyslogs(source,"sqlite3: %s",isql);
                                     if (update_issued) tsyslogs(source,"sqlite3: %s",usql);
                                 }
                                 else
                                 {
-                                    esyslogs(source,"sqlite3: %s ('%s'@%i)",errmsg,xevent.Title(),node->line);
+                                    esyslogs(source,"sqlite3: %s ('%s'@%i)",errmsg,xevent.Title(),node.offset_debug());
                                     tsyslogs(source,"sqlite3: %s",isql);
                                     if (update_issued) tsyslogs(source,"sqlite3: %s",usql);
                                 }
@@ -1133,7 +1112,7 @@ int cParse::Process(cEPGExecutor &myExecutor,char *buffer, int bufsize)
                 }
             }
         }
-        node=node->next;
+        node=node.next_sibling();
         if (!myExecutor.StillRunning())
         {
             isyslogs(source,"request to stop from vdr");
@@ -1141,6 +1120,8 @@ int cParse::Process(cEPGExecutor &myExecutor,char *buffer, int bufsize)
         }
         if (do_unlink) break;
     }
+
+    if (lastchannelid) free((void *) lastchannelid);
 
     if (sqlite3_exec(db,"COMMIT",NULL,NULL,&errmsg)!=SQLITE_OK)
     {
@@ -1170,21 +1151,11 @@ int cParse::Process(cEPGExecutor &myExecutor,char *buffer, int bufsize)
 
     sqlite3_close(db);
 
-    xmlFreeDoc(xmltv);
+    xmltv.reset();
 
     if (do_unlink) unlink(g->EPGFile());
 
     return 0;
-}
-
-void cParse::InitLibXML()
-{
-    xmlInitParser();
-}
-
-void cParse::CleanupLibXML()
-{
-    xmlCleanupParser();
 }
 
 cParse::cParse(cEPGSource *Source, cGlobals *Global)

@@ -316,7 +316,11 @@ cGlobals::cGlobals()
         imgdir=NULL;
     }
 
+#if APIVERSNUM >= 10503
     if (setlocale(LC_CTYPE,""))
+#else
+    if (setlocale(LC_ALL,""))
+#endif
         codeset=strdup(nl_langinfo(CODESET));
     else
     {
@@ -1244,6 +1248,14 @@ bool cPluginXmltv2vdr::Start(void)
     // Start any background activities the plugin shall perform.
     g.SetConfDir(ConfigDirectory(PLUGIN_NAME_I18N));
 
+    // VDR-M7x0: Our /var directory is tmpfs, so we create the symlink /var/lib/epgsources -> /etc/vdr/xmltv2vdr/epgsources
+    if (!DirectoryOk(EPGSOURCES))
+    {
+        MakeDirs("/var/lib", true);
+        if (symlink(cString::sprintf("%s/epgsources", g.ConfDir()), EPGSOURCES) < 0)
+            LOG_ERROR_STR(EPGSOURCES);
+    }
+
     isyslog("using codeset '%s'",g.Codeset());
     isyslog("using file '%s' for epg database (storage)",g.EPGFileStore());
     isyslog("using file '%s' for epg database (runtime)",g.EPGFile());
@@ -1266,7 +1278,6 @@ bool cPluginXmltv2vdr::Start(void)
     GetSqliteCompileOptions();
     if (sqlite3_threadsafe()==0) esyslog("sqlite3 not threadsafe!");
     sqlite3_enable_shared_cache(0);
-    cParse::InitLibXML();
     return true;
 }
 
@@ -1275,7 +1286,6 @@ void cPluginXmltv2vdr::Stop(void)
     // Stop any background activities the plugin is performing.
     epgexecutor.Stop();
     housekeeping.Stop();
-    cParse::CleanupLibXML();
     if (logfile)
     {
         free(logfile);

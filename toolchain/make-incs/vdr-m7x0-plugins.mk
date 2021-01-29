@@ -48,9 +48,6 @@ ifeq ($(or $(filter xmltv2vdr,$(CONFIG_VDR-PLUGINS)),$(filter tvscraper,$(CONFIG
 ifeq ($(CONFIG_SQLITE),y)
 	VDR-PLUGINS_DEPS +=  $(SQLITE_INSTALLED)
 endif
-ifeq ($(CONFIG_LIBXML2),y)
-	VDR-PLUGINS_DEPS +=  $(LIBXML2_INSTALLED)
-endif
 endif
 
 ifeq ($(or $(filter xmltv2vdr,$(CONFIG_VDR-PLUGINS)),$(filter epgfixer,$(CONFIG_VDR-PLUGINS)),$(filter epgsearch,$(CONFIG_VDR-PLUGINS))),y)
@@ -62,6 +59,9 @@ endif
 ifeq ($(filter tvscraper,$(CONFIG_VDR-PLUGINS)),y)
 ifeq ($(CONFIG_CURL),y)
 	VDR-PLUGINS_DEPS +=  $(CURL_INSTALLED)
+endif
+ifeq ($(CONFIG_LIBXML2),y)
+	VDR-PLUGINS_DEPS +=  $(LIBXML2_INSTALLED)
 endif
 ifeq ($(CONFIG_JANSSON),y)
 	VDR-PLUGINS_DEPS +=  $(JANSSON_INSTALLED)
@@ -191,8 +191,8 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 			$(VDR_DIR)/PLUGINS/src/tvscraper/Makefile; \
 	fi; \
 	if [ -f $(VDR_DIR)/PLUGINS/src/xmltv2vdr/Makefile ]; then \
-		if [ X"$(CONFIG_SQLITE)" != X"y" -o X"$(CONFIG_LIBXML2)" != X"y" -o X"$(CONFIG_PCRE)" != X"y" -o X"$(CONFIG_PCRE_CPP)" != X"y" ]; then \
-			$(ECHO) dependency error: xmltv2vdr plugin needs libsqlite3, libXML2 and pcre library with C++ support enabled; \
+		if [ X"$(CONFIG_SQLITE)" != X"y" -o X"$(CONFIG_PCRE)" != X"y" -o X"$(CONFIG_PCRE_CPP)" != X"y" ]; then \
+			$(ECHO) dependency error: xmltv2vdr plugin needs libsqlite3 and pcre library with C++ support enabled; \
 			exit 1; \
 		fi; \
 	fi; \

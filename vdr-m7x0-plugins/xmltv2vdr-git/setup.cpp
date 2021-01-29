@@ -9,6 +9,7 @@
 
 #include <vdr/osdbase.h>
 #include <vdr/i18n.h>
+#include <vdr/remote.h>
 #include <time.h>
 
 #if VDRVERSNUM>=20301
@@ -1179,6 +1180,7 @@ void cMenuSetupXmltv2vdrChannelMap::output(void)
     {
         SetCurrent(first);
         CursorDown();
+        cRemote::Put(kUp); // this also refreshes the coloured buttons properly
     }
     else
     {

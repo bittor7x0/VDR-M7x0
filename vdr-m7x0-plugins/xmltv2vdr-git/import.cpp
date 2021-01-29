@@ -869,7 +869,7 @@ bool cImport::PutEvent(cEPGSource *Source, sqlite3 *Db, cSchedule* Schedule,
         if (!Event) return false;
         Event->SetStartTime(start);
         Event->SetDuration(xEvent->Duration());
-        Event->SetTitle(xEvent->Title());
+        Event->SetTitle(conv->Convert(xEvent->Title()));
         Event->SetVersion(0);
         Event->SetTableID(0);
         Schedule->AddEvent(Event);
@@ -1955,6 +1955,8 @@ int cImport::Process(cEPGSource *Source, cEPGExecutor &myExecutor)
             break;
         }
     }
+
+    if (lastChannelID) free(lastChannelID);
 
     if (Commit(Source,db))
     {

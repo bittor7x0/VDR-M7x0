@@ -9,7 +9,7 @@
 #define _PARSE_H
 
 #include <vdr/epg.h>
-#include <libxml/parser.h>
+#include "pugixml.hpp"
 #include <time.h>
 #include <iconv.h>
 
@@ -41,7 +41,7 @@ private:
     cEPGSource *source;
     cXMLTVEvent xevent;
     time_t ConvertXMLTVTime2UnixTime(char *xmltvtime);
-    bool FetchEvent(xmlNodePtr node, bool useeptext);
+    bool FetchEvent(pugi::xml_node node, bool useeptext);
 public:
     cParse(cEPGSource *Source, cGlobals *Global);
     ~cParse();
@@ -51,8 +51,6 @@ public:
                                    const char *Title, const char *ShortText, const char *Description,
                                    int &Season, int &Episode, int &EpisodeOverall, char **EPShortText,
                                    char **EPTitle);
-    static void InitLibXML();
-    static void CleanupLibXML();
 };
 
 #endif

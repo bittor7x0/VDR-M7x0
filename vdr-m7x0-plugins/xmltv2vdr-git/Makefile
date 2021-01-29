@@ -46,8 +46,8 @@ PACKAGE = vdr-$(ARCHIVE)
 
 ### Includes and Defines (add further entries here):
 
-PKG-LIBS += libxml-2.0 libpcrecpp sqlite3
-PKG-INCLUDES += libxml-2.0 libpcrecpp sqlite3
+PKG-LIBS += libpcrecpp sqlite3
+PKG-INCLUDES += libpcrecpp sqlite3
 
 INCLUDES += -I$(VDRDIR)/include
 
