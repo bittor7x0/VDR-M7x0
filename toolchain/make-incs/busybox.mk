@@ -26,16 +26,25 @@
 
 BUSYBOX_DEPS = $(BASE_BUILD_STAGEFILE)
 
-BUSYBOX_VERSION := 1.25.1
-BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/$(BUSYBOX_VERSION)
+BUSYBOX_IS_SNAPSHOT := n
 
-BUSYBOX_FILE := busybox-$(BUSYBOX_VERSION).tar.bz2
+ifeq ($(BUSYBOX_IS_SNAPSHOT),y)
+	BUSYBOX_VERSION := bd754746394a382e04d116df02547f61b2026da9
+	BUSYBOX_FILE := busybox-$(BUSYBOX_VERSION).tar.bz2
+	BUSYBOX_CONFIG := $(CONFIGS_DIR)/busybox/snapshot/busybox-$(CONFIG_FW_VERSION).config
+	BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/snapshot
+	BUSYBOX_URL := https://git.busybox.net/busybox/snapshot/$(BUSYBOX_FILE)
+else
+	BUSYBOX_VERSION := 1.31.1
+	BUSYBOX_FILE := busybox-$(BUSYBOX_VERSION).tar.bz2
+	BUSYBOX_CONFIG := $(CONFIGS_DIR)/busybox/$(BUSYBOX_VERSION)/busybox-$(CONFIG_FW_VERSION).config
+	BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/$(BUSYBOX_VERSION)
+	BUSYBOX_URL := http://busybox.net/downloads/$(BUSYBOX_FILE)
+endif
+
 BUSYBOX_DLFILE := $(DOWNLOAD_DIR)/$(BUSYBOX_FILE)
 BUSYBOX_DIR := $(BUILD_DIR)/busybox-$(BUSYBOX_VERSION)_$(CONFIG_FW_VERSION)
-BUSYBOX_URL := http://busybox.net/downloads/$(BUSYBOX_FILE)
 BUSYBOX_INSTALLED = $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed
-
-BUSYBOX_CONFIG := $(CONFIGS_DIR)/busybox/$(BUSYBOX_VERSION)/busybox-$(CONFIG_FW_VERSION).config
 
 PACKS_RULES_$(CONFIG_BUSYBOX) += $(BUSYBOX_INSTALLED)
 FILE_LISTS_$(CONFIG_BUSYBOX) += busybox_$(CONFIG_FW_VERSION).lst
@@ -92,9 +101,11 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
   endif
 	$(UCLIBC_ENV_LTO_GC) \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
-		LDLIBS="m" \
+		LDLIBS="" \
+		LD="$(UCLIBC_CC)" \
 		PKG_CONFIG="pkg-config" \
 		SKIP_STRIP=y \
+		KCONFIG_NOTIMESTAMP=1 \
 		ARCH=mips oldconfig
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
 
@@ -105,9 +116,11 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
 	$(UCLIBC_ENV_LTO_GC) \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
-		LDLIBS="m" \
+		LDLIBS="" \
+		LD="$(UCLIBC_CC)" \
 		PKG_CONFIG="pkg-config" \
 		SKIP_STRIP=y \
+		KCONFIG_NOTIMESTAMP=1 \
 		ARCH=mips all
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled
 
@@ -120,9 +133,11 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed: $(STAGEFILES_DIR)/.bu
 	$(FIND) $(TARGET_ROOT) -lname "*busybox" -exec rm \{\} \;
 	$(UCLIBC_ENV_LTO_GC) \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
-		LDLIBS="m" \
+		LDLIBS="" \
+		LD="$(UCLIBC_CC)" \
 		PKG_CONFIG="pkg-config" \
 		SKIP_STRIP=y \
+		KCONFIG_NOTIMESTAMP=1 \
 		ARCH=mips install
 	$(TOUCH) $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed
 

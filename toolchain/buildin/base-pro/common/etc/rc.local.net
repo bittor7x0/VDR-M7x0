@@ -51,6 +51,9 @@ if [ X"${inetd}" != X"NO" ]; then
     db_key=/etc/dropbear/dropbear_rsa_host_key
     [ ! -f $db_key ] && /usr/sbin/dropbearkey -t rsa -f $db_key
 
+    db_key=/etc/dropbear/dropbear_ecdsa_host_key
+    [ ! -f $db_key ] && /usr/sbin/dropbearkey -t ecdsa -f $db_key
+
     /usr/sbin/inetd /etc/inetd.conf &
 fi
 

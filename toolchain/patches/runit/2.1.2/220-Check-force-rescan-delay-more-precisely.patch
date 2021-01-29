@@ -1,0 +1,62 @@
+From: Dmitry Bogatov <KAction@debian.org>
+Date: Sun, 15 Sep 2019 23:42:50 +0000
+Subject: Check force-rescan delay more precisely
+
+Use `data +%s%N` in src/t/runtest.sh to check with nano-second precision
+how much time pass between SIGALRM sent and control pipe of new service
+appear.
+---
+ runit-2.1.2/src/t/runtest.sh    | 19 +++++++++----------
+ runit-2.1.2/src/t/timestamp/run |  4 ++--
+ 2 files changed, 11 insertions(+), 12 deletions(-)
+
+diff --git a/src/t/runtest.sh b/src/t/runtest.sh
+index c9fc5b3..4931a31 100755
+--- a/src/t/runtest.sh
++++ b/src/t/runtest.sh
+@@ -12,26 +12,25 @@ mkdir service
+ echo "pid = $!"
+ # Wait till runsvdir scans directory and concludes it is empty
+ sleep 1 
+-now=$(date +%s)
++now=$(date +%s%N)
+ echo "now = ${now}"
+ ln -sf ../timestamp service/
+ kill -ALRM $!
+-sleep 0.5
+-kill -0 $!
+ 
+ # Wait until runsvdir discovers "service/timestamp" symbolic link
+-# and executes "service/timestamp/run" script, which would create
+-# "./timestamp" file.
+-
+-while ! test -f ./timestamp.txt ; do
+-    sleep 0.01
++# and is ready to accept commands on control pipe.
++while ! test -e timestamp/supervise/control ; do
++    sleep 0.001
+ done
+ 
+-new=$(cat timestamp.txt)
++new=$(date +%s%N)
+ echo "new = ${new}"
+ kill -HUP $!
+ 
+-if [[ $((new - now)) -lt 2 ]] ; then
++diff=$((new - now))
++echo "diff = ${diff}"
++
++if [[ ${diff} -lt 1000000000 ]] ; then
+     echo "fine. forced-rescan seems to work"
+     exit 0
+ else
+diff --git a/src/t/timestamp/run b/src/t/timestamp/run
+index 4c13d68..eeb315f 100755
+--- a/src/t/timestamp/run
++++ b/src/t/timestamp/run
+@@ -1,3 +1,3 @@
+ #!/bin/sh
+-date +%s > ../timestamp.txt
+-sv down .
++date +%s%N >&2
++exec tail -f /dev/null

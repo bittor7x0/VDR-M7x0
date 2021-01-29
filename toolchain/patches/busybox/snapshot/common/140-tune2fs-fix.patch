@@ -1,0 +1,11 @@
+diff -Naur a/e2fsprogs/tune2fs.c b/e2fsprogs/tune2fs.c
+--- a/e2fsprogs/tune2fs.c	2020-11-02 16:57:15.000000000 +0100
++++ b/e2fsprogs/tune2fs.c	2020-11-02 16:59:51.692759378 +0100
+@@ -36,7 +36,6 @@
+ //usage:       "Adjust filesystem options on ext[23] filesystems"
+ 
+ #include "libbb.h"
+-#include <linux/fs.h>
+ #include "bb_e2fs_defs.h"
+ 
+ enum {

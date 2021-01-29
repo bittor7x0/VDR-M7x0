@@ -1,0 +1,39 @@
+From: Jan <cloux@rote.ch>
+Date: Wed, 6 Mar 2019 18:38:04 +0100
+Subject: fix: replace obsolete usleep with nanosleep
+
+ POSIX.1-2001 declares usleep obsolete,
+ POSIX.1-2008 removes the specification of usleep,
+ see https://linux.die.net/man/3/usleep
+---
+ runit-2.1.2/src/sv.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/sv.c b/src/sv.c
+index 6cc2a8b..f97c5a2 100644
+--- a/src/sv.c
++++ b/src/sv.c
+@@ -1,5 +1,6 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
++#include <time.h>
+ #include <unistd.h>
+ #include "str.h"
+ #include "strerr.h"
+@@ -271,6 +272,7 @@ int control(char *a) {
+ int main(int argc, char **argv) {
+   unsigned int i, done;
+   char *x;
++  const struct timespec sleeptime = {0, 420000000};
+ 
+   progname =*argv;
+   for (i =str_len(*argv); i; --i) if ((*argv)[i -1] == '/') break;
+@@ -388,7 +390,7 @@ int main(int argc, char **argv) {
+           fatal("unable to change to original directory");
+       }
+       if (done) break;
+-      usleep(420000);
++      nanosleep(&sleeptime, NULL);
+       taia_now(&tnow);
+     }
+   return(rc > 99 ? 99 : rc);

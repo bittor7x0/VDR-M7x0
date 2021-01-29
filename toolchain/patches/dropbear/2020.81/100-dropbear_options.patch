@@ -1,0 +1,49 @@
+diff -Naur a/localoptions.h b/localoptions.h
+--- a/localoptions.h	1970-01-01 01:00:00.000000000 +0100
++++ b/localoptions.h	2020-10-16 13:56:59.176906212 +0200
+@@ -0,0 +1,24 @@
++#define NON_INETD_MODE 0
++#define DROPBEAR_CLI_LOCALTCPFWD 0
++#define DROPBEAR_CLI_REMOTETCPFWD 0
++#define DROPBEAR_SVR_LOCALTCPFWD 0
++#define DROPBEAR_SVR_REMOTETCPFWD 0
++#define DROPBEAR_SVR_AGENTFWD 0
++#define DROPBEAR_CLI_AGENTFWD 0
++#define DROPBEAR_CLI_PROXYCMD 0
++#define DROPBEAR_CLI_NETCAT 0
++#define DROPBEAR_USER_ALGO_LIST 0
++#define DROPBEAR_AES256 0
++#define DROPBEAR_CHACHA20POLY1305 0
++#define DROPBEAR_SHA2_256_HMAC 0
++#define DROPBEAR_ED25519 0
++#define DROPBEAR_CURVE25519 0
++#define DROPBEAR_DH_GROUP1 0
++#define DO_MOTD 0
++#define DROPBEAR_USE_PASSWORD_ENV 0
++#define MAX_UNAUTH_PER_IP 3
++#define MAX_UNAUTH_CLIENTS 9
++#define MAX_AUTH_TRIES 3
++#define DROPBEAR_SFTPSERVER 0
++#define DROPBEAR_PATH_SSH_PROGRAM "/usr/sbin/dbclient"
++#define DEFAULT_PATH "/sbin:/usr/sbin:/bin:/usr/bin"
+diff -Naur a/sysoptions.h b/sysoptions.h
+--- a/sysoptions.h	2020-10-16 13:55:08.423703766 +0200
++++ b/sysoptions.h	2020-10-15 13:42:11.000000000 +0200
+@@ -283,7 +283,7 @@
+ 
+ /* client keyboard interactive authentication is often used for password auth.
+  rfc4256 */
+-#define DROPBEAR_CLI_INTERACT_AUTH (DROPBEAR_CLI_PASSWORD_AUTH)
++#define DROPBEAR_CLI_INTERACT_AUTH 0
+ 
+ /* We use dropbear_client and dropbear_server as shortcuts to avoid redundant
+  * code, if we're just compiling as client or server */
+@@ -333,7 +333,7 @@
+  * Currently server is enabled but client is disabled by default until there
+  * is further compatibility testing */
+ #ifdef __linux__
+-#define DROPBEAR_SERVER_TCP_FAST_OPEN 1
++#define DROPBEAR_SERVER_TCP_FAST_OPEN 0
+ #define DROPBEAR_CLIENT_TCP_FAST_OPEN 0
+ #else
+ #define DROPBEAR_SERVER_TCP_FAST_OPEN 0

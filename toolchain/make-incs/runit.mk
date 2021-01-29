@@ -60,9 +60,9 @@ $(STAGEFILES_DIR)/.runit_unpacked: $(RUNIT_DLFILE) \
                                            $(wildcard $(RUNIT_PATCHES_DIR)/*.patch) \
                                            $$(RUNIT_DEPS)
 	-$(RM) -rf $(RUNIT_DIR)
-	$(TAR) -C $(BUILD_DIR) -zf $(RUNIT_DLFILE)
-	$(MV) -f $(BUILD_DIR)/admin/* $(BUILD_DIR)
-	-$(RM) -rf $(BUILD_DIR)/admin
+	$(TAR) -C $(BUILD_DIR) -zf $(RUNIT_DLFILE) \
+		--strip-components=1 \
+		admin
 	$(TOUCH) $(STAGEFILES_DIR)/.runit_unpacked
 
 #
@@ -78,8 +78,20 @@ $(STAGEFILES_DIR)/.runit_patched: $(STAGEFILES_DIR)/.runit_unpacked
 #
 
 $(STAGEFILES_DIR)/.runit_compiled: $(STAGEFILES_DIR)/.runit_patched
-	$(UCLIBC_ENV) HOSTCC=$(CC) $(MAKE) \
-		-C $(RUNIT_DIR)/src
+	$(UCLIBC_ENV_LTO_GC_LOOPS) \
+		HOSTCC=$(CC) \
+		HOSTCFLAGS=$(CFLAGS) \
+		HOSTLDFLAGS=$(LDFLAGS) \
+		$(MAKE) \
+		-C $(RUNIT_DIR)/src \
+		chpst \
+		runit \
+		runit-init \
+		runsv \
+		runsvchdir \
+		runsvdir \
+		sv \
+		svlogd
 	$(TOUCH) $(STAGEFILES_DIR)/.runit_compiled
 
 #
@@ -95,7 +107,6 @@ $(STAGEFILES_DIR)/.runit_installed: $(STAGEFILES_DIR)/.runit_compiled
 	$(CP) $(RUNIT_DIR)/src/runsvdir $(TARGET_ROOT)/sbin/runsvdir
 	$(CP) $(RUNIT_DIR)/src/sv $(TARGET_ROOT)/sbin/sv
 	$(CP) $(RUNIT_DIR)/src/svlogd $(TARGET_ROOT)/sbin/svlogd
-	$(CP) $(RUNIT_DIR)/src/utmpset $(TARGET_ROOT)/sbin/utmpset
 	$(TOUCH) $(STAGEFILES_DIR)/.runit_installed
 
 

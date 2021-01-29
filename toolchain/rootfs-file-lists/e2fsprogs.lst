@@ -7,5 +7,7 @@ sbin/mke2fs           -                     s   - - - - - - - -
 sbin/mkfs.ext2        mke2fs                l 777 0 0 - - - - -
 sbin/mkfs.ext3        mke2fs                l 777 0 0 - - - - -
 etc/mke2fs.conf	      etc/mke2fs.conf       f 664 0 0 - - - - -
-sbin/tune2fs          sbin/tune2fs          f 755 0 0 - - - - -
-sbin/tune2fs          -                     s   - - - - - - - -
+etc/e2fsck.conf	      etc/e2fsck.conf       f 664 0 0 - - - - -
+# We use tune2fs from BusyBox
+#sbin/tune2fs          sbin/tune2fs          f 755 0 0 - - - - -
+#sbin/tune2fs          -                     s   - - - - - - - -

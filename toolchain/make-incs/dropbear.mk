@@ -30,7 +30,7 @@ ifeq ($(CONFIG_ZLIB),y)
 	DROPBEAR_DEPS +=  $(ZLIB_INSTALLED)
 endif 
 
-DROPBEAR_VERSION := 2016.74
+DROPBEAR_VERSION := 2020.81
 DROPBEAR_PATCHES_DIR := $(PATCHES_DIR)/dropbear/$(DROPBEAR_VERSION)
 
 DROPBEAR_FILE := dropbear-$(DROPBEAR_VERSION).tar.bz2
@@ -87,8 +87,10 @@ $(STAGEFILES_DIR)/.dropbear_configured: $(STAGEFILES_DIR)/.dropbear_patched
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--disable-pam \
+			--enable-openpty \
 			--enable-syslog \
 			--enable-bundled-libtom \
+			--disable-harden \
 			--disable-lastlog \
 			--disable-utmp \
 			--disable-utmpx \

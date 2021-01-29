@@ -1,0 +1,28 @@
+Description: Fix test failure on sbuild
+ The test fails in sbuild or in any other environment where runit is not installed
+ because runsvdir can't find runsv in PATH. The fix adds the build directory at the
+ beginning of PATH in order to make sure that runsvdir pick the right runsv when the
+ test is done on machine where runit is installed.
+Author: <Lorenzo Puliti plorenzo@disroot.org>
+Last-Update: 2020-04-11
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/t/runtest.sh
++++ b/src/t/runtest.sh
+@@ -2,13 +2,15 @@
+ set -eu
+ 
+ : "${runsvdir:=runsvdir}"
++runsvpath=$(dirname $PWD)
+ 
+ rm -rf timestamp/supervise/ service/
+ rm -f ./timestamp.txt
+ 
+ mkdir service
+ 
+-"${runsvdir}" ./service &
++#runsvdir need to know where to find runsv
++PATH=$runsvpath:$PATH "${runsvdir}" ./service &
+ echo "pid = $!"
+ # Wait till runsvdir scans directory and concludes it is empty
+ sleep 1 

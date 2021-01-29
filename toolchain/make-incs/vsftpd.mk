@@ -93,7 +93,7 @@ $(STAGEFILES_DIR)/.vsftpd_installed: $(STAGEFILES_DIR)/.vsftpd_compiled
 		$(SED) -i '$$anobody::3:3:ftp:/:/bin/ash' $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/passwd ; \
 	fi);
 	(if [ X"`$(GREP) vsftpd $(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.mini`" = X"" ] ; then \
-		$(SED) -i -e 's,^/bin/mkdir -p -m 755 /var/run /var/log /var/media /var/lock,/bin/mkdir -p -m 755 /var/run/vsftpd /var/log /var/media /var/lock,g' \
+		$(SED) -i -e 's,^/bin/mkdir -p -m 755 /var/run /var/log /var/media /var/lock,/bin/mkdir -p -m 755 /var/run/vsftpd/empty /var/log /var/media /var/lock,g' \
 			$(BUILDIN_DIR)/$(CONFIG_SCRIPT_BASE)/common/etc/rc.mini ; \
 	fi);
 	$(TOUCH) $(STAGEFILES_DIR)/.vsftpd_installed

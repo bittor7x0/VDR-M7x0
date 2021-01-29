@@ -26,7 +26,7 @@
 
 E2FSPROGS_DEPS = $(BASE_BUILD_STAGEFILE)
 
-E2FSPROGS_VERSION := 1.45.4
+E2FSPROGS_VERSION := 1.45.6
 E2FSPROGS_PATCHES_DIR := $(PATCHES_DIR)/e2fsprogs/$(E2FSPROGS_VERSION)
 
 E2FSPROGS_FILE := e2fsprogs-$(E2FSPROGS_VERSION).tar.gz
@@ -84,7 +84,8 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
 			--prefix=$(TARGET_ROOT)/usr \
 			--sbindir=$(TARGET_ROOT)/sbin \
 			--sysconfdir=$(TARGET_ROOT)/etc \
-			--host=$(TARGET)\
+			--host=$(TARGET) \
+			--enable-symlink-install \
 			--disable-debugfs \
 			--disable-backtrace \
 			--disable-imager \
@@ -102,7 +103,7 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
 			--with-udev_rules_dir=no \
 			--with-crond-dir=no \
 			--with-systemd-unit-dir=no \
-			$(if $(CONFIG_LIBUUID),--enable-elf-shlibs) \
+			$(if $(CONFIG_LIBUUID),--enable-elf-shlibs,--disable-elf-shlibs) \
 			--disable-nls )
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_configured
 
@@ -111,7 +112,10 @@ $(STAGEFILES_DIR)/.e2fsprogs_configured: $(STAGEFILES_DIR)/.e2fsprogs_patched \
 #
 
 $(STAGEFILES_DIR)/.e2fsprogs_compiled: $(STAGEFILES_DIR)/.e2fsprogs_configured
-	$(UCLIBC_ENV_SIZE_LTO) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) all
+	$(UCLIBC_ENV_SIZE_LTO) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) libs
+	$(UCLIBC_ENV_SIZE_LTO) $(MAKE) -C $(E2FSPROGS_BUILD_DIR)/e2fsck e2fsck
+	$(UCLIBC_ENV_SIZE_LTO) $(MAKE) -C $(E2FSPROGS_BUILD_DIR)/misc mke2fs
+	#$(UCLIBC_ENV_SIZE_LTO) $(MAKE) -C $(E2FSPROGS_BUILD_DIR)/misc tune2fs
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_compiled
 
 #
@@ -119,7 +123,11 @@ $(STAGEFILES_DIR)/.e2fsprogs_compiled: $(STAGEFILES_DIR)/.e2fsprogs_configured
 #
 
 $(STAGEFILES_DIR)/.e2fsprogs_installed: $(STAGEFILES_DIR)/.e2fsprogs_compiled
-	$(UCLIBC_ENV_SIZE_LTO) $(MAKE) -C $(E2FSPROGS_BUILD_DIR) install
+	$(CP) -f $(E2FSPROGS_BUILD_DIR)/e2fsck/e2fsck $(TARGET_ROOT)/sbin/e2fsck
+	$(CP) -f $(E2FSPROGS_BUILD_DIR)/misc/mke2fs $(TARGET_ROOT)/sbin/mke2fs
+	$(CP) -f $(E2FSPROGS_BUILD_DIR)/misc/mke2fs.conf $(TARGET_ROOT)/etc/mke2fs.conf
+	$(CP) -f $(E2FSPROGS_DIR)/e2fsck.conf $(TARGET_ROOT)/etc/e2fsck.conf
+	#$(CP) -f $(E2FSPROGS_BUILD_DIR)/misc/tune2fs $(TARGET_ROOT)/sbin/tune2fs
 	$(TOUCH) $(STAGEFILES_DIR)/.e2fsprogs_installed
 
 

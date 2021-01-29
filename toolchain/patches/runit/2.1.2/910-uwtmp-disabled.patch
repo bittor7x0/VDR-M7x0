@@ -1,0 +1,20 @@
+diff -Naur a/src/Makefile b/src/Makefile
+--- a/src/Makefile	2020-10-28 16:59:49.000000000 +0100
++++ b/src/Makefile	2020-10-28 17:03:04.245158777 +0100
+@@ -383,7 +383,7 @@
+ 
+ sysdeps: compile direntry.h hasflock.h hasmkffo.h hassgact.h \
+ hassgprm.h hasshsgr.h haswaitp.h iopause.h load select.h systype \
+-uint64.h reboot_system.h uw_tmp.h socket.lib
++uint64.h reboot_system.h socket.lib
+ 	rm -f sysdeps
+ 	cat systype compile load socket.lib >>sysdeps
+ 	grep sysdep direntry.h >>sysdeps
+@@ -397,7 +397,6 @@
+ 	grep sysdep hasflock.h >>sysdeps
+ 	grep sysdep hasshsgr.h >>sysdeps
+ 	grep sysdep reboot_system.h >>sysdeps
+-	grep sysdep uw_tmp.h >>sysdeps
+ 	cat sysdeps
+ 
+ systype: find-systype.sh trycpp.c x86cpuid.c

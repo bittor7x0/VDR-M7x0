@@ -1,0 +1,45 @@
+Description: Update runit manpage for runitdir env
+Author: <Lorenzo Puliti plorenzo@disroot.org>
+Last-Update: 2020-05-17
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/man/runit.8
++++ b/man/runit.8
+@@ -84,6 +84,37 @@
+ if
+ .B runit
+ receives an INT signal, a ctrl-alt-del keyboard request is triggered.
++.SH ENVIRONMENT
++When the
++.I runitdir=name
++variable is set and
++.B runit
++is init,
++.B runit
++will check if a directory named
++.I name
++exists in
++.I /etc/runit/runsvdir/
++and then will use
++.B runsvchdir
++to change the directory of
++.B runsvdir
++to
++.I name
++in place of the default.
++.P
++If
++.I runitdir
++is set to
++.I runitdir=solo
++.B runit
++will use the
++.I solo
++directory for
++.B runsvdir
++and it will also refrain from start any sysv service that is enabled in
++.I /etc/rc2.d/
++This is intended for use with containers that need to start only some selected services.
+ .SH SEE ALSO
+ runit-init(8),
+ runsvdir(8),

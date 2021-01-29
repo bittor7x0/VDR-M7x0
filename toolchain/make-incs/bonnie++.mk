@@ -26,10 +26,10 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 BONNIE++_DEPS = $(BASE_BUILD_STAGEFILE)
 
-BONNIE++_VERSION := 1.03e
+BONNIE++_VERSION := 1.04
 BONNIE++_PATCHES_DIR := $(PATCHES_DIR)/bonnie++/$(BONNIE++_VERSION)
 
-BONNIE++_FILE := bonnie++-$(BONNIE++_VERSION).tgz
+BONNIE++_FILE := bonnie++_$(BONNIE++_VERSION).tgz
 BONNIE++_DLFILE := $(DOWNLOAD_DIR)/$(BONNIE++_FILE)
 BONNIE++_URL := http://www.coker.com.au/bonnie++/$(BONNIE++_FILE)
 BONNIE++_DIR := $(BUILD_DIR)/bonnie++-$(BONNIE++_VERSION)

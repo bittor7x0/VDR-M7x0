@@ -69,7 +69,7 @@ for disk in ${disks} ; do
 		label="vdr${n_part}"
 		vdr_videodirs="${vdr_videodirs} /media/${label}"
 		echo "Comprobaciones mensuales y etiqueta ${label}"
-		/sbin/tune2fs -i 1m -c 0 -L ${label} ${dev_partition}
+		/sbin/tune2fs -i 30 -c 0 -L ${label} ${dev_partition}
 
 		# Optimize directories
 		echo "Optimizar directorios ${dev_partition}"

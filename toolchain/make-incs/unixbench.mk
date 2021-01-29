@@ -31,7 +31,7 @@ UNIXBENCH_PATCHES_DIR := $(PATCHES_DIR)/unixbench/$(UNIXBENCH_VERSION)
 
 UNIXBENCH_FILE := unixbench-$(UNIXBENCH_VERSION).tgz
 UNIXBENCH_DLFILE := $(DOWNLOAD_DIR)/$(UNIXBENCH_FILE)
-UNIXBENCH_URL := http://www.tux.org/pub/tux/niemi/unixbench/$(UNIXBENCH_FILE)
+UNIXBENCH_URL := https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/byte-unixbench/$(UNIXBENCH_FILE)
 UNIXBENCH_DIR := $(BUILD_DIR)/unixbench-$(UNIXBENCH_VERSION)
 
 UNIXBENCH_PACKED = $(STAGEFILES_DIR)/.unixbench_packed

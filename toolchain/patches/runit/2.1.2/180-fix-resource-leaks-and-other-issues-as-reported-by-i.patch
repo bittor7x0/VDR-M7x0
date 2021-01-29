@@ -1,0 +1,125 @@
+From: Jan <cloux@rote.ch>
+Date: Fri, 8 Mar 2019 21:18:35 +0100
+Subject: fix: resource leaks and other issues as reported by infer
+
+ to run infer static code analyzer (fbinfer.com):
+ cd src; infer run -- make
+
+ - fix: fd_move.c resource leak - close file handle
+ - fix: runit-init.c resource leak - close file handle
+ - fix: svlogd.c dead storage - value never used
+ - fix: x86cpuid.c uninitialized value read
+ - fix: package/install-man - do not use unreliable symlinks
+---
+ runit-2.1.2/package/install-man | 11 +++--------
+ runit-2.1.2/src/fd_move.c       |  5 ++++-
+ runit-2.1.2/src/runit-init.c    |  6 +++---
+ runit-2.1.2/src/svlogd.c        |  2 +-
+ runit-2.1.2/src/x86cpuid.c      |  4 ++++
+ 5 files changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/package/install-man b/package/install-man
+index cd49048..596104e 100755
+--- a/package/install-man
++++ b/package/install-man
+@@ -1,26 +1,21 @@
+ #!/bin/sh
+-set -e
+ 
+ umask 022
+ test -d package || sh -cx '! : Wrong working directory.'
+ test -d man || sh -cx '! : Wrong working directory.'
+ 
+-here=`env - PATH=$PATH pwd`
+-parent=`dirname $here`
+-
+ echo 'Compressing manpages...'
+ for i in man/*.[1-8]; do
+   gzip -c $i >${i}.gz
+ done
+ 
+-echo 'Making manpage links in /usr/local/man...'
++echo 'Installing into /usr/local/man...'
+ cd man
+ for i in 8; do
+   mkdir -p /usr/local/man/man$i
+   for j in *.$i; do
+-    rm -f /usr/local/man/man$i/$j.gz'{new}'
+-    ln -s $parent/runit/man/$j.gz /usr/local/man/man$i/$j.gz'{new}'
+-    mv -f /usr/local/man/man$i/$j.gz'{new}' /usr/local/man/man$i/$j.gz
++    mv -uv $j.gz /usr/local/man/man$i/$j.gz
++    rm -f $j.gz
+   done
+ done
+ cd ..
+diff --git a/src/fd_move.c b/src/fd_move.c
+index 49f723f..8f7420b 100644
+--- a/src/fd_move.c
++++ b/src/fd_move.c
+@@ -6,7 +6,10 @@
+ int fd_move(int to,int from)
+ {
+   if (to == from) return 0;
+-  if (fd_copy(to,from) == -1) return -1;
++  if (fd_copy(to,from) == -1) {
++    close(from);
++    return -1;
++  }
+   close(from);
+   return 0;
+ }
+diff --git a/src/runit-init.c b/src/runit-init.c
+index 00dc3c9..8a966df 100644
+--- a/src/runit-init.c
++++ b/src/runit-init.c
+@@ -17,7 +17,7 @@ const char *progname;
+ void usage(void) { strerr_die4x(0, "usage: ", progname, USAGE, "\n"); }
+ 
+ void runit_halt () {
+-  if (open_trunc(STOPIT) == -1)
++  if (close(open_trunc(STOPIT)) == -1)
+     strerr_die4sys(111, FATAL, "unable to create ", STOPIT, ": ");
+   if (chmod(STOPIT, 0100) == -1)
+     strerr_die4sys(111, FATAL, "unable to chmod ", STOPIT, ": ");
+@@ -29,11 +29,11 @@ void runit_halt () {
+ }
+ 
+ void runit_reboot () {
+-  if (open_trunc(STOPIT) == -1)
++  if (close(open_trunc(STOPIT)) == -1)
+     strerr_die4sys(111, FATAL, "unable to create ", STOPIT, ": ");
+   if (chmod(STOPIT, 0100) == -1)
+     strerr_die4sys(111, FATAL, "unable to chmod ", STOPIT, ": ");
+-  if (open_trunc(REBOOT) == -1)
++  if (close(open_trunc(REBOOT)) == -1)
+     strerr_die4sys(111, FATAL, "unable to create ", REBOOT, ": ");
+   if (chmod(REBOOT, 0100) == -1)
+     strerr_die4sys(111, FATAL, "unable to chmod ", REBOOT, ": ");
+diff --git a/src/svlogd.c b/src/svlogd.c
+index f433669..09ab402 100644
+--- a/src/svlogd.c
++++ b/src/svlogd.c
+@@ -407,7 +407,7 @@ unsigned int ip4_scan(const char *s,char ip[4])
+   ++s; ++len;
+   i = scan_ulong(s,&u);
+   if (!i) return 0;
+-  ip[3] = u; s += i; len += i;
++  ip[3] = u; len += i;
+   return len;
+ }
+ 
+diff --git a/src/x86cpuid.c b/src/x86cpuid.c
+index f81c593..ee9ab40 100644
+--- a/src/x86cpuid.c
++++ b/src/x86cpuid.c
+@@ -21,6 +21,10 @@ int main()
+   x[1] = 0;
+   x[2] = 0;
+   x[3] = 0;
++  y[0] = 0;
++  y[1] = 0;
++  y[2] = 0;
++  y[3] = 0;
+ 
+   asm volatile(".byte 15;.byte 162" : "=a"(x[0]),"=b"(x[1]),"=c"(x[3]),"=d"(x[2]) : "0"(0) );
+   if (!x[0]) return 0;

@@ -1,0 +1,22 @@
+Description: Keep From: header intact
+ This patch changes the behaviour of ssmtp when FromLineOverride=NO
+ to not modify the "From:" header.  This allows forwarded emails to
+ have the correct envelope sender as well as retaining the original
+ "From:" header.
+Author: <herbert@gondor.apana.org.au>
+Bug-Debian: https://bugs.debian.org/939298
+
+diff --git a/ssmtp.c b/ssmtp.c
+index 6b2b9d0..dbb1437 100644
+--- a/ssmtp.c
++++ b/ssmtp.c
+@@ -701,9 +701,6 @@ void header_save(char *str)
+ 		if(override_from == True) {
+ 			uad = from_strip(ht->string);
+ 		}
+-		else {
+-			return;
+-		}
+ #endif
+ 		have_from = True;
+ 	}

@@ -1,0 +1,146 @@
+From: Dmitry Bogatov <KAction@debian.org>
+Date: Tue, 12 Mar 2019 19:13:48 +0000
+Subject: Shutdown when runit-init receices SIGPWR
+
+---
+ runit-2.1.2/man/runit.8 |  6 ++++++
+ runit-2.1.2/src/runit.c | 17 +++++++++++++----
+ runit-2.1.2/src/sig.c   |  5 +++++
+ runit-2.1.2/src/sig.h   |  1 +
+ 4 files changed, 25 insertions(+), 4 deletions(-)
+
+diff --git a/man/runit.8 b/man/runit.8
+index 6c07cf8..d597fdd 100644
+--- a/man/runit.8
++++ b/man/runit.8
+@@ -75,6 +75,12 @@ exists and has the execute by owner permission set,
+ .B runit
+ is told to shutdown the system.
+ .P
++If
++.B runit
++receives a PWR signal,
++.B runit
++is told to shutdown the system.
++.P
+ if
+ .B runit
+ receives an INT signal, a ctrl-alt-del keyboard request is triggered.
+diff --git a/src/runit.c b/src/runit.c
+index 2bb4794..35cda0a 100644
+--- a/src/runit.c
++++ b/src/runit.c
+@@ -30,6 +30,7 @@ const char * const stage[3] ={
+ int selfpipe[2];
+ int sigc =0;
+ int sigi =0;
++int sigp =0;
+ 
+ void sig_cont_handler (void) {
+   sigc++;
+@@ -39,6 +40,10 @@ void sig_int_handler (void) {
+   sigi++;
+   write(selfpipe[1], "", 1);
+ }
++void sig_pwr_handler (void) {
++  sigp++;
++  write(selfpipe[1], "", 1);
++}
+ void sig_child_handler (void) { write(selfpipe[1], "", 1); }
+ 
+ void sync_if_needed() {
+@@ -71,6 +76,8 @@ int main (int argc, const char * const *argv, char * const *envp) {
+   sig_block(sig_hangup);
+   sig_block(sig_int);
+   sig_catch(sig_int, sig_int_handler);
++  sig_block(sig_pwr);
++  sig_catch(sig_pwr, sig_pwr_handler);
+   sig_block(sig_pipe);
+   sig_block(sig_term);
+ 
+@@ -150,6 +157,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+       sig_unblock(sig_child);
+       sig_unblock(sig_cont);
+       sig_unblock(sig_int);
++      sig_unblock(sig_pwr);
+ #ifdef IOPAUSE_POLL
+       poll(&x, 1, 14000);
+ #else
+@@ -161,6 +169,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+       sig_block(sig_cont);
+       sig_block(sig_child);
+       sig_block(sig_int);
++      sig_block(sig_pwr);
+       
+       while (read(selfpipe[0], &ch, 1) == 1) {}
+       while ((child =wait_nohang(&wstat)) > 0)
+@@ -211,7 +220,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+       }
+ 
+       /* sig? */
+-      if (!sigc  && !sigi) {
++      if (!sigc && !sigi && !sigp) {
+ #ifdef DEBUG
+         strerr_warn2(WARNING, "poll: ", &strerr_sys);
+ #endif
+@@ -244,7 +253,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+         sigi =0;
+         sigc++;
+       }
+-      if (sigc && (stat(STOPIT, &s) != -1) && (s.st_mode & S_IXUSR)) {
++      if ((sigp) || (sigc && (stat(STOPIT, &s) != -1) && (s.st_mode & S_IXUSR))) {
+         int i;
+         /* unlink(STOPIT); */
+         chmod(STOPIT, 0);
+@@ -286,7 +295,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+         /* enter stage 3 */
+         break;
+       }
+-      sigc =sigi =0;
++      sigc =sigi =sigp =0;
+ #ifdef DEBUG
+       strerr_warn2(WARNING, "no request.", 0);
+ #endif
+@@ -308,7 +317,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+   switch (pid) {
+   case  0:
+   case -1:
+-  if ((stat(REBOOT, &s) != -1) && (s.st_mode & S_IXUSR)) {
++  if ((!sigp) && ((stat(REBOOT, &s) != -1) && (s.st_mode & S_IXUSR))) {
+     strerr_warn2(INFO, "system reboot.", 0);
+     sync_if_needed();
+     reboot_system(RB_AUTOBOOT);
+diff --git a/src/sig.c b/src/sig.c
+index 423d18e..7db3f4a 100644
+--- a/src/sig.c
++++ b/src/sig.c
+@@ -3,12 +3,17 @@
+ #include <signal.h>
+ #include "sig.h"
+ 
++#ifndef SIGPWR
++#define SIGPWR SIGUSR2 /* as in sysvinit */
++#endif
++
+ int sig_alarm = SIGALRM;
+ int sig_child = SIGCHLD;
+ int sig_cont = SIGCONT;
+ int sig_hangup = SIGHUP;
+ int sig_int = SIGINT;
+ int sig_pipe = SIGPIPE;
++int sig_pwr = SIGPWR;
+ int sig_term = SIGTERM;
+ 
+ void (*sig_defaulthandler)() = SIG_DFL;
+diff --git a/src/sig.h b/src/sig.h
+index 2a3c780..0ced62d 100644
+--- a/src/sig.h
++++ b/src/sig.h
+@@ -9,6 +9,7 @@ extern int sig_cont;
+ extern int sig_hangup;
+ extern int sig_int;
+ extern int sig_pipe;
++extern int sig_pwr;
+ extern int sig_term;
+ 
+ extern void (*sig_defaulthandler)();

@@ -32,7 +32,7 @@ SSMTP_PATCHES_DIR := $(PATCHES_DIR)/ssmtp/$(SSMTP_VERSION)
 
 SSMTP_FILE := ssmtp_$(SSMTP_VERSION).orig.tar.bz2
 SSMTP_DLFILE := $(DOWNLOAD_DIR)/$(SSMTP_FILE)
-SSMTP_URL := http://ftp.de.debian.org/debian/pool/main/s/ssmtp/$(SSMTP_FILE)
+SSMTP_URL := http://ftp.es.debian.org/debian/pool/main/s/ssmtp/$(SSMTP_FILE)
 SSMTP_DIR := $(BUILD_DIR)/ssmtp-$(SSMTP_VERSION)
 
 SSMTP_INSTALLED = $(STAGEFILES_DIR)/.ssmtp_installed

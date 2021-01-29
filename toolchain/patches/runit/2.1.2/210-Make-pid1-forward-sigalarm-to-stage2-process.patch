@@ -1,0 +1,79 @@
+From: Dmitry Bogatov <KAction@debian.org>
+Date: Sun, 25 Aug 2019 19:02:46 +0000
+Subject: Make pid1 forward sigalarm to stage2 process
+
+---
+ runit-2.1.2/src/runit.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/src/runit.c b/src/runit.c
+index 35cda0a..e04a598 100644
+--- a/src/runit.c
++++ b/src/runit.c
+@@ -31,6 +31,7 @@ int selfpipe[2];
+ int sigc =0;
+ int sigi =0;
+ int sigp =0;
++int siga =0;
+ 
+ void sig_cont_handler (void) {
+   sigc++;
+@@ -44,6 +45,10 @@ void sig_pwr_handler (void) {
+   sigp++;
+   write(selfpipe[1], "", 1);
+ }
++void sig_alarm_handler (void) {
++  siga++;
++  write(selfpipe[1], "", 1);
++}
+ void sig_child_handler (void) { write(selfpipe[1], "", 1); }
+ 
+ void sync_if_needed() {
+@@ -69,6 +74,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+   setsid();
+ 
+   sig_block(sig_alarm);
++  sig_catch(sig_alarm, sig_alarm_handler);
+   sig_block(sig_child);
+   sig_catch(sig_child, sig_child_handler);
+   sig_block(sig_cont);
+@@ -154,6 +160,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+     for (;;) {
+       int child;
+ 
++      sig_unblock(sig_alarm);
+       sig_unblock(sig_child);
+       sig_unblock(sig_cont);
+       sig_unblock(sig_int);
+@@ -166,6 +173,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+       FD_SET(x.fd, &rfds);
+       select(x.fd +1, &rfds, (fd_set*)0, (fd_set*)0, &t);
+ #endif
++      sig_block(sig_alarm);
+       sig_block(sig_cont);
+       sig_block(sig_child);
+       sig_block(sig_int);
+@@ -220,7 +228,7 @@ int main (int argc, const char * const *argv, char * const *envp) {
+       }
+ 
+       /* sig? */
+-      if (!sigc && !sigi && !sigp) {
++      if (!sigc && !sigi && !sigp && !siga) {
+ #ifdef DEBUG
+         strerr_warn2(WARNING, "poll: ", &strerr_sys);
+ #endif
+@@ -295,7 +303,13 @@ int main (int argc, const char * const *argv, char * const *envp) {
+         /* enter stage 3 */
+         break;
+       }
+-      sigc =sigi =sigp =0;
++      /* Recenty patched version of {runsvdir} perform out-of-schedule rescan of service directory
++       * upon receiving SIGALRM. */
++      if (siga) {
++        kill(pid, sig_alarm);
++      }
++
++      sigc =sigi =sigp =siga =0;
+ #ifdef DEBUG
+       strerr_warn2(WARNING, "no request.", 0);
+ #endif

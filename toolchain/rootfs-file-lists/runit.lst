@@ -14,5 +14,3 @@ sbin/sv           sbin/sv           f 755 0 0 - - - - -
 sbin/sv           -                 s   - - - - - - - -
 sbin/svlogd       sbin/svlogd       f 755 0 0 - - - - -
 sbin/svlogd       -                 s   - - - - - - - -
-sbin/utmpset      sbin/utmpset      f 755 0 0 - - - - -
-sbin/utmpset      -                 s   - - - - - - - -

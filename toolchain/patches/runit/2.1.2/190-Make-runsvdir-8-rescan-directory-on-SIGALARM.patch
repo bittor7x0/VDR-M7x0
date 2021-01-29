@@ -1,0 +1,125 @@
+From: Dmitry Bogatov <KAction@debian.org>
+Date: Mon, 15 Jul 2019 23:51:43 +0000
+Subject: Make runsvdir(8) rescan directory on SIGALARM
+
+Generally runsvdir(8) rescans service directory every 5 seconds. This patch
+makes it possbile to force rescan by sending SIGALARM.
+
+This feature is wanted by maintainer scripts of packages that want to perform
+some action after service was started. Obliviously, hanging installation
+process for 5 seconds is sub-optimal in such situation.
+---
+ runit-2.1.2/src/Makefile   |  4 ++--
+ runit-2.1.2/src/runsvdir.c | 38 +++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 39 insertions(+), 3 deletions(-)
+
+diff --git a/src/Makefile b/src/Makefile
+index a5f3558..28db6fd 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -14,8 +14,8 @@ runit-init: load runit-init.o unix.a byte.a
+ runsv: load runsv.o unix.a byte.a time.a
+ 	./load runsv unix.a byte.a time.a
+ 
+-runsvdir: load runsvdir.o unix.a byte.a time.a
+-	./load runsvdir unix.a byte.a time.a
++runsvdir: load runsvdir.o unix.a fmt_ptime.o byte.a time.a byte.a
++	./load runsvdir unix.a fmt_ptime.o byte.a time.a byte.a
+ 
+ runsvstat: load runsvstat.o unix.a byte.a time.a
+ 	./load runsvstat unix.a byte.a time.a
+diff --git a/src/runsvdir.c b/src/runsvdir.c
+index c45b4ee..e98a4b5 100644
+--- a/src/runsvdir.c
++++ b/src/runsvdir.c
+@@ -15,10 +15,17 @@
+ #include "iopause.h"
+ #include "sig.h"
+ #include "ndelay.h"
++#include "fmt_ptime.h"
+ 
+ #define USAGE " [-P] dir"
+ #define VERSION "$Id: ecebd0a50510e91639c6a45dda8b0947aa8eb885 $"
+ 
++/*
++ * After rescan of {svdir} that was forced by sig_alarm (as opposed to regular
++ * rescan once every 5 seconds) is finished, timestamp is written to this path
++ * (relative to {svdir}).
++ */
++#define FORCED_RESCAN "./.forced-rescan"
+ #define MAXSERVICES 1000
+ 
+ char *progname;
+@@ -40,6 +47,7 @@ iopause_fd io[1];
+ struct taia stamplog;
+ int exitsoon =0;
+ int pgrp =0;
++int siga =0;
+ 
+ void usage () { strerr_die4x(1, "usage: ", progname, USAGE, "\n"); }
+ void fatal(char *m1, char *m2) {
+@@ -53,6 +61,28 @@ void warn3x(char *m1, char *m2, char *m3) {
+ } 
+ void s_term() { exitsoon =1; }
+ void s_hangup() { exitsoon =2; }
++void s_alarm() { siga = 1; }
++
++void report_forced_rescan() {
++  struct taia stamp;
++  char buf[26];
++  int fd;
++
++  taia_now(&stamp);
++  fmt_taia(buf, &stamp);
++  buf[25] =0;
++
++  fd =open_trunc(FORCED_RESCAN);
++  if (fd == -1) {
++    warn3x("failed to open", FORCED_RESCAN, buf);
++    return;
++  }
++
++  if (write(fd, buf, 25) != 25)
++    warn3x("failed to write", FORCED_RESCAN, buf);
++
++  close(fd);
++}
+ 
+ void runsv(int no, char *name) {
+   int pid;
+@@ -70,6 +100,7 @@ void runsv(int no, char *name) {
+     prog[2] =0;
+     sig_uncatch(sig_hangup);
+     sig_uncatch(sig_term);
++    sig_uncatch(sig_alarm);
+     if (pgrp) setsid();
+     pathexec_run(*prog, prog, (char * const *)environ);
+     fatal("unable to start runsv ", name);
+@@ -183,6 +214,7 @@ int main(int argc, char **argv) {
+ 
+   sig_catch(sig_term, s_term);
+   sig_catch(sig_hangup, s_hangup);
++  sig_catch(sig_alarm, s_alarm);
+   svdir =*argv++;
+   if (argv && *argv) {
+     rplog =*argv;
+@@ -225,7 +257,7 @@ int main(int argc, char **argv) {
+       taia_add(&stampcheck, &now, &deadline);
+       
+       if (stat(svdir, &s) != -1) {
+-        if (check || \
++        if (check || siga || \
+             s.st_mtime != mtime || s.st_ino != ino || s.st_dev != dev) {
+           /* svdir modified */
+           if (chdir(svdir) != -1) {
+@@ -236,6 +268,10 @@ int main(int argc, char **argv) {
+             if (now.sec.x <= (4611686018427387914ULL +(uint64)mtime))
+               sleep(1);
+             runsvdir();
++            if (siga) {
++              report_forced_rescan();
++              siga =0;
++            }
+             while (fchdir(curdir) == -1) {
+               warn("unable to change directory, pausing", 0);
+               sleep(5);

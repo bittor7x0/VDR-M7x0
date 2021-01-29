@@ -1,0 +1,44 @@
+diff -Naur a/libtomcrypt/makefile_include.mk b/libtomcrypt/makefile_include.mk
+--- a/libtomcrypt/makefile_include.mk	2020-10-06 17:20:05.000000000 +0200
++++ b/libtomcrypt/makefile_include.mk	2020-10-06 17:21:26.684057253 +0200
+@@ -107,12 +107,12 @@
+ 
+ ifdef LTC_SMALL
+ # optimize for SIZE
+-LTC_CFLAGS += -Os -DLTC_SMALL_CODE
++LTC_CFLAGS += -DLTC_SMALL_CODE
+ else
+ 
+ ifndef IGNORE_SPEED
+ # optimize for SPEED
+-LTC_CFLAGS += -O3 -funroll-loops
++LTC_CFLAGS += -funroll-loops
+ 
+ # add -fomit-frame-pointer.  hinders debugging!
+ LTC_CFLAGS += -fomit-frame-pointer
+diff -Naur a/libtommath/makefile_include.mk b/libtommath/makefile_include.mk
+--- a/libtommath/makefile_include.mk	2020-10-06 17:20:05.000000000 +0200
++++ b/libtommath/makefile_include.mk	2020-10-06 17:22:40.067479924 +0200
+@@ -75,21 +75,14 @@
+ LTM_CFLAGS += -g3
+ endif
+ 
+-ifdef COMPILE_SIZE
+-#for size
+-LTM_CFLAGS += -Os
+-else
+-
+ ifndef IGNORE_SPEED
+ #for speed
+-LTM_CFLAGS += -O3 -funroll-loops
++LTM_CFLAGS += -funroll-loops
+ 
+ #x86 optimizations [should be valid for any GCC install though]
+ LTM_CFLAGS  += -fomit-frame-pointer
+ endif
+ 
+-endif # COMPILE_SIZE
+-
+ ifneq ($(findstring clang,$(CC)),)
+ LTM_CFLAGS += -Wno-typedef-redefinition -Wno-tautological-compare -Wno-builtin-requires-header
+ endif
