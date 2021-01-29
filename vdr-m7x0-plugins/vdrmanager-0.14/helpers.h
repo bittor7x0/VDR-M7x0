@@ -5,7 +5,9 @@
 #include <time.h>
 #include <string>
 #include <vdr/epg.h>
+#if VDRMANAGER_USE_ZLIB
 #include <zlib.h>
+#endif
 #include <stdexcept>
 #include <string>
 #include <iostream>
@@ -50,7 +52,7 @@ private:
   static bool IsWantedTime(time_t when, const cEvent * event);
   static string MapSpecialChars(const char * text);
   static string MapSpecialChars(const cString text);
-  static string MapSpecialChars(const string text);
+  static string MapSpecialChars(const string& text);
   static string ToText(const cEvent * event);
   static string ToText(const cTimer * timer, set<string> conflicts);
   static string ToText(const cRecording * recording);

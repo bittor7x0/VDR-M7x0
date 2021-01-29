@@ -20,6 +20,9 @@
 #include <fstream>
 #include "epgsearch/services.h"
 
+// for TSPlay patch detection
+#include <vdr/device.h>
+
 #define TIMER_SEP		"#|#|#"
 // Taken from vdr-ive
 #define INDEXFILESUFFIX   "/index.vdr"
@@ -345,7 +348,7 @@ string cHelpers::DelRecording(cRecording * recording) {
 	cString FileName = recording->FileName();
 
 #if VDRVERSNUM < 20102
-	if (cCutter::Active(recording->FileName())) {
+	if (cCutter::Active()) {
 		cCutter::Stop();
 		recording = Recordings.GetByName(FileName); // cCutter::Stop() might have deleted it if it was the edited version
 		// we continue with the code below even if recording is NULL,
@@ -628,7 +631,7 @@ long cHelpers::Duration(const cRecording* recording) {
 	long RecLength = 0;
 	if (!recording->FileName())
 		return 0;
-#if VDRVERSNUM < 10704
+#if VDRVERSNUM < 10704 && !defined(TSPLAY_PATCH_VERSION)
 	cString filename = cString::sprintf("%s%s", recording->FileName(), INDEXFILESUFFIX);
 	if (*filename) {
 		if (access(filename, R_OK) == 0) {
@@ -648,7 +651,11 @@ long cHelpers::Duration(const cRecording* recording) {
 	// open index file for reading only
 	cIndexFile *index = new cIndexFile(recording->FileName(), false, recording->IsPesRecording());
 	if (index && index->Ok()) {
+#if defined(TSPLAY_PATCH_VERSION)
+		RecLength = (int) (index->Last() / SecondsToFrames(60));
+#else
 		RecLength = (int) (index->Last() / SecondsToFrames(60, recording->FramesPerSecond()));
+#endif
 	}
 	delete index;
 #else
@@ -667,9 +674,10 @@ long cHelpers::Duration(const cRecording* recording) {
 
 string cHelpers::ToText(const cRecording * recording) {
 	const cRecordingInfo * info = recording->Info();
-#if APIVERSNUM >= 10705
+// GetEvent() is backported in VDR-NG-EM
+//#if APIVERSNUM >= 10705
 	const cEvent * event = info->GetEvent();
-#endif
+//#endif
 	/**
 	 tChannelID ChannelID(void) const;
 	 const cSchedule *Schedule(void) const { return schedule; }
@@ -700,7 +708,6 @@ string cHelpers::ToText(const cRecording * recording) {
 	 */
 
 	char buf[100];
-	string result = "";
 
 #if VDRVERSNUM < 10726
 	time_t startTime = recording->start;
@@ -711,7 +718,7 @@ string cHelpers::ToText(const cRecording * recording) {
 	time_t endTime = startTime + RecordingLengthInSeconds(recording);
 
 	snprintf(buf, sizeof(buf) - 1, "%d", recording->Index());
-	result = buf;
+	string result = buf;
 	result += ":";
 
 	snprintf(buf, sizeof(buf) - 1, "%lu", startTime);
@@ -731,10 +738,10 @@ string cHelpers::ToText(const cRecording * recording) {
 
 	if(info->Title()){
 		result += MapSpecialChars(info->Title());
-#if APIVERSNUM >= 10705
+//#if APIVERSNUM >= 10705
 	} else if (event->Title()) {
 		result += MapSpecialChars(event->Title());
-#endif
+//#endif
 	} else {
 		result += MapSpecialChars(recording->Name());
 	}
@@ -1136,7 +1143,7 @@ string cHelpers::MapSpecialChars(cString text) {
 	return MapSpecialChars((const char *) text);
 }
 
-string cHelpers::MapSpecialChars(const string text) {
+string cHelpers::MapSpecialChars(const string &text) {
 	return MapSpecialChars(text.c_str());
 }
 
