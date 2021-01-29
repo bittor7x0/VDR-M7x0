@@ -103,8 +103,8 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 	$(SED) -i -e 's,^# CONFIG_FEATURE_SH_IS_NONE.*,CONFIG_FEATURE_SH_IS_NONE=y,g' \
 		$(BUSYBOX_DIR)/.config
   endif
-	$(UCLIBC_ENV_LTO_GC) \
-		$(if $(CONFIG_LIBTIRPC),CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -I${TARGET_ROOT}/usr/include/tirpc" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -ltirpc") \
+	$(UCLIBC_ENV_LTO_GC_LOOPS) \
+		$(if $(CONFIG_LIBTIRPC),CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(UCLIBC_CFLAGS_LOOPS) -I${TARGET_ROOT}/usr/include/tirpc" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -ltirpc") \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		$(if $(CONFIG_LIBTIRPC),LDLIBS="tirpc",LDLIBS="") \
 		LD="$(UCLIBC_CC)" \
@@ -119,8 +119,8 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured: $(STAGEFILES_DIR)/.b
 #
 
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_configured
-	$(UCLIBC_ENV_LTO_GC) \
-		$(if $(CONFIG_LIBTIRPC),CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -I${TARGET_ROOT}/usr/include/tirpc" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -ltirpc") \
+	$(UCLIBC_ENV_LTO_GC_LOOPS) \
+		$(if $(CONFIG_LIBTIRPC),CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(UCLIBC_CFLAGS_LOOPS) -I${TARGET_ROOT}/usr/include/tirpc" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -ltirpc") \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		$(if $(CONFIG_LIBTIRPC),LDLIBS="tirpc",LDLIBS="") \
 		LD="$(UCLIBC_CC)" \
@@ -137,8 +137,8 @@ $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled: $(STAGEFILES_DIR)/.bus
 $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_installed: $(STAGEFILES_DIR)/.busybox_$(CONFIG_FW_VERSION)_compiled \
 	$(TOP_DIR)/.config
 	$(FIND) $(TARGET_ROOT) -lname "*busybox" -exec rm \{\} \;
-	$(UCLIBC_ENV_LTO_GC) \
-		$(if $(CONFIG_LIBTIRPC),CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) -I${TARGET_ROOT}/usr/include/tirpc" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -ltirpc") \
+	$(UCLIBC_ENV_LTO_GC_LOOPS) \
+		$(if $(CONFIG_LIBTIRPC),CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(UCLIBC_CFLAGS_LOOPS) -I${TARGET_ROOT}/usr/include/tirpc" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC) -ltirpc") \
 		$(MAKE) -C $(BUSYBOX_DIR) CROSS_COMPILE=mips-linux-uclibc- \
 		$(if $(CONFIG_LIBTIRPC),LDLIBS="tirpc",LDLIBS="") \
 		LD="$(UCLIBC_CC)" \

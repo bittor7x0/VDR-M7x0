@@ -110,8 +110,8 @@ endif
 #
 $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webif_copied
 	$(ECHO) \# gcc is in $(PREFIX_BIN) > $(WEBIF_TC_FILE)
-	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) -DIGNORE_TABS -flto -std=gnu90 >> $(WEBIF_TC_FILE)
-	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_SIZE) -DIGNORE_TABS -flto >> $(WEBIF_TC_FILE)
+	$(ECHO) CC = $(UCLIBC_CC) $(UCLIBC_CFLAGS_SIZE) -DIGNORE_TABS -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections -std=gnu90 >> $(WEBIF_TC_FILE)
+	$(ECHO) CXX = $(UCLIBC_CXX) $(UCLIBC_CXXFLAGS_SIZE) -DIGNORE_TABS -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections >> $(WEBIF_TC_FILE)
 	$(ECHO) AR = $(UCLIBC_AR) >> $(WEBIF_TC_FILE)
 	$(ECHO) RANLIB = $(UCLIBC_RANLIB) >> $(WEBIF_TC_FILE)
 	$(ECHO) LD = $(UCLIBC_LD) >> $(WEBIF_TC_FILE)
@@ -121,7 +121,7 @@ $(STAGEFILES_DIR)/.webif_compiled: $(STAGEFILES_DIR)/.webif_copied
 	$(CD) $(WEBIF_BUILD_DIR) && \
 		env PATH="$(PREFIX_BIN):$(PATH)" $(MAKE) clean && \
 		env PATH="$(PREFIX_BIN):$(PATH)" KLONE_CUSTOM_TC=$(WEBIF_TC_FILE) \
-		WEBAPP_LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto -fwhole-program" $(MAKE)
+		WEBAPP_LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -fuse-linker-plugin -Wl,--gc-sections" $(MAKE)
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_compiled
 
 #

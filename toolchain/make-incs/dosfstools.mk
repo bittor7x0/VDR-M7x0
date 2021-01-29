@@ -77,8 +77,8 @@ $(STAGEFILES_DIR)/.dosfstools_patched: $(STAGEFILES_DIR)/.dosfstools_unpacked
 #
 
 $(STAGEFILES_DIR)/.dosfstools_compiled: $(STAGEFILES_DIR)/.dosfstools_patched
-	$(UCLIBC_ENV_SIZE) $(MAKE) -C $(DOSFSTOOLS_DIR) $(UCLIBC_ENV_SIZE) \
-		CFLAGS="$(UCLIBC_CFLAGS_SIZE) -D_FILE_OFFSET_BITS=64" \
+	$(UCLIBC_ENV_SIZE_LTO_GC) $(MAKE) -C $(DOSFSTOOLS_DIR) $(UCLIBC_ENV_SIZE_LTO_GC) \
+		CFLAGS="$(UCLIBC_CFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections -D_FILE_OFFSET_BITS=64" \
 		PREFIX=$(TARGET_ROOT) all
 	$(TOUCH) $(STAGEFILES_DIR)/.dosfstools_compiled
 
@@ -87,8 +87,8 @@ $(STAGEFILES_DIR)/.dosfstools_compiled: $(STAGEFILES_DIR)/.dosfstools_patched
 #
 
 $(STAGEFILES_DIR)/.dosfstools_installed: $(STAGEFILES_DIR)/.dosfstools_compiled
-	$(UCLIBC_ENV_SIZE) $(MAKE) -C $(DOSFSTOOLS_DIR) $(UCLIBC_ENV_SIZE) \
-		CFLAGS="$(UCLIBC_CFLAGS_SIZE) -D_FILE_OFFSET_BITS=64" \
+	$(UCLIBC_ENV_SIZE_LTO_GC) $(MAKE) -C $(DOSFSTOOLS_DIR) $(UCLIBC_ENV_SIZE_LTO_GC) \
+		CFLAGS="$(UCLIBC_CFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections -D_FILE_OFFSET_BITS=64" \
 		PREFIX=$(TARGET_ROOT) install
 	$(TOUCH) $(STAGEFILES_DIR)/.dosfstools_installed
 

@@ -34,7 +34,7 @@ SQLITE_DLFILE := $(DOWNLOAD_DIR)/$(SQLITE_FILE)
 SQLITE_URL := https://www.sqlite.org/2020/$(SQLITE_FILE)
 SQLITE_DIR := $(BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
-SQLITE_CFLAGS_SIZE := $(filter-out -mno-shared,$(UCLIBC_CFLAGS_SIZE)) -flto
+SQLITE_CFLAGS_SIZE := $(filter-out -mno-shared,$(UCLIBC_CFLAGS_SIZE)) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections
 # https://www.sqlite.org/footprint.html
 SQLITE_CFLAGS := -fno-fast-math -fno-exceptions \
                  -DNDEBUG=1 -DSQLITE_DISABLE_LFS=1 -DSQLITE_OMIT_PROGRESS_CALLBACK=1 \
@@ -137,9 +137,9 @@ $(STAGEFILES_DIR)/.sqlite_host_installed: $(STAGEFILES_DIR)/.sqlite_host_compile
 
 $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 	($(CD) $(SQLITE_DIR) ; \
-		$(UCLIBC_ENV_SIZE) \
+		$(UCLIBC_ENV_SIZE_LTO_GC) \
 		CFLAGS="$(SQLITE_CFLAGS_SIZE) $(SQLITE_CFLAGS)" \
-		LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto -fwhole-program" \
+		LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -fuse-linker-plugin -Wl,--gc-sections" \
 		$(SQLITE_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
@@ -164,9 +164,9 @@ $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 
 $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
 	$(MAKE) -C $(SQLITE_DIR) \
-		$(UCLIBC_ENV_SIZE) \
+		$(UCLIBC_ENV_SIZE_LTO_GC) \
 		CFLAGS="$(SQLITE_CFLAGS_SIZE) $(SQLITE_CFLAGS)" \
-		LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto -fwhole-program" \
+		LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -fuse-linker-plugin -Wl,--gc-sections" \
 		all
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_compiled
 
@@ -176,9 +176,9 @@ $(STAGEFILES_DIR)/.sqlite_compiled: $(STAGEFILES_DIR)/.sqlite_configured
 
 $(STAGEFILES_DIR)/.sqlite_installed: $(STAGEFILES_DIR)/.sqlite_compiled
 	$(MAKE) -C $(SQLITE_DIR) \
-		$(UCLIBC_ENV_SIZE) \
+		$(UCLIBC_ENV_SIZE_LTO_GC) \
 		CFLAGS="$(SQLITE_CFLAGS_SIZE) $(SQLITE_CFLAGS)" \
-		LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto -fwhole-program" \
+		LDFLAGS="$(UCLIBC_LDFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -fuse-linker-plugin -Wl,--gc-sections" \
 		install
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_installed
 

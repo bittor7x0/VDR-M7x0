@@ -33,9 +33,9 @@ MTD-UTILS_HOSTPATCHES_DIR := $(PATCHES_DIR)/mtd-utils/$(MTD-UTILS_HOSTVERSION)
 MTD-UTILS_HOSTURL := http://archive.debian.org/debian//pool/main/m/mtd/$(MTD-UTILS_HOSTFILE)
 MTD-UTILS_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/mtd-$(MTD-UTILS_HOSTVERSION).orig
 
-CFLAGS := $(CFLAGS) -I$(BUILDIN_DIR)/mtd-utils -I$(MTD-UTILS_HOSTDIR)/include
+MTD-UTILS_CFLAGS := $(CFLAGS) -I$(BUILDIN_DIR)/mtd-utils -I$(MTD-UTILS_HOSTDIR)/include
 ifneq ($(HOST_BS),Linux)
-CFLAGS += -Dloff_t=off_t -D__BYTE_ORDER=BYTE_ORDER -include getline.h -include endian.h
+MTD-UTILS_CFLAGS += -Dloff_t=off_t -D__BYTE_ORDER=BYTE_ORDER -include getline.h -include endian.h
 endif
 
 CLEAN_RULES += clean-mtd-utils-host
@@ -76,7 +76,7 @@ $(STAGEFILES_DIR)/.mtd-utils_host_patched: $(STAGEFILES_DIR)/.mtd-utils_host_unp
 $(STAGEFILES_DIR)/.mtd-utils_host_compiled: $(STAGEFILES_DIR)/.mtd-utils_host_patched
 	$(MAKE) -C $(MTD-UTILS_HOSTDIR)/util \
 		LINUXDIR="$(LINUX_HEADERS_DIR)" \
-		CFLAGS="$(CFLAGS)" \
+		CFLAGS="$(MTD-UTILS_CFLAGS)" \
 		TARGETS=mkfs.jffs2
 	$(TOUCH) $(STAGEFILES_DIR)/.mtd-utils_host_compiled
 

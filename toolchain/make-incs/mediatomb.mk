@@ -131,7 +131,7 @@ $(STAGEFILES_DIR)/.mediatomb_patched: $(STAGEFILES_DIR)/.mediatomb_unpacked
 $(STAGEFILES_DIR)/.mediatomb_configured: $(STAGEFILES_DIR)/.mediatomb_patched
 	($(CD) $(MEDIATOMB_DIR) ; autoreconf -i ; $(UCLIBC_ENV_LTO_GC) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
-		LDFLAGS="-flto -fwhole-program -Wl,--gc-sections -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
+		LDFLAGS="-flto=auto -fdevirtualize-at-ltrans -fuse-linker-plugin -Wl,--gc-sections -L$(TARGET_ROOT)/lib -L$(TARGET_ROOT)/usr/lib -Wl,-rpath-link=$(TARGET_ROOT)/usr/lib" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(MEDIATOMB_DIR)/configure \

@@ -230,14 +230,14 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 #
 
 $(STAGEFILES_DIR)/.vdr-plugins_compiled: $(STAGEFILES_DIR)/.vdr-plugins_configured
-	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -Wl,--gc-sections -flto" \
+	$(UCLIBC_ENV_LTO_GC_LOOPS) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		PKG_CONFIG_LIBDIR="$(TARGET_ROOT)/usr/lib/pkgconfig" \
 		$(MAKE) -C $(VDR_DIR) clean-plugins
-	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -Wl,--gc-sections -flto" \
+	$(UCLIBC_ENV_LTO_GC_LOOPS) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
@@ -251,7 +251,7 @@ $(STAGEFILES_DIR)/.vdr-plugins_compiled: $(STAGEFILES_DIR)/.vdr-plugins_configur
 #
 
 $(STAGEFILES_DIR)/.vdr-plugins_installed: $(STAGEFILES_DIR)/.vdr-plugins_compiled
-	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -Wl,--gc-sections -flto" \
+	$(UCLIBC_ENV_LTO_GC_LOOPS) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
@@ -305,7 +305,7 @@ cppcheck-vdr-plugins:
 	(if [ -d $(VDR_DIR)/PLUGINS/src ] ; then \
 	$(FIND) $(VDR_DIR)/PLUGINS/src -type l -exec $(RM) -f {} \; && \
 	$(FIND) $(VDR-PLUGINS_DIR) -maxdepth 1 -type l -exec sh -c '$(LN) -sf "$(VDR-PLUGINS_DIR)/$$(basename {})" "$(VDR_DIR)/PLUGINS/src/$$(basename {})"' \; && \
-	$(UCLIBC_ENV_LTO) LDFLAGS="-Wl,-O1 -Wl,--gc-sections -flto" \
+	$(UCLIBC_ENV_LTO_GC_LOOPS) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
 		$(if $(CONFIG_UCLIBC_WITH_BACKTRACE), CRASHLOG=1) \
 		$(if $(filter m750s,$(CONFIG_M7X0_TYPE)),M750S=1) \
