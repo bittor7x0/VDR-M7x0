@@ -5,7 +5,7 @@
 
 # This turns usage of logos in the main menu complete. This might also
 # improve the performance of the menus. EXPERIMENTAL!!!
-#SKINENIGMA_NO_MENULOGO = 1
+SKINENIGMA_NO_MENULOGO = 1
 
 # Debugging on/off 
 #SKINENIGMA_DEBUG = 1
@@ -16,15 +16,15 @@
 
 # If you are using the epgsearch plugin and want to see the number of
 # timer conflicts in the main menu's info area.
-SKINENIGMA_USE_PLUGIN_EPGSEARCH = 1
+#SKINENIGMA_USE_PLUGIN_EPGSEARCH = 1
 
 # If you use the mailbox plugin this will include support for it.
-SKINENIGMA_USE_PLUGIN_MAILBOX = 1
+#SKINENIGMA_USE_PLUGIN_MAILBOX = 1
 
 # Include code to support the Avards plugin:
 #  - Dynamic OSD size depending on current WSS mode.
 #  - Display current WSS mode in channel info and replay OSDs.
-SKINENIGMA_USE_PLUGIN_AVARDS = 1
+#SKINENIGMA_USE_PLUGIN_AVARDS = 1
 
 # Disable any code that is used for scrolling or blinking text.
 # NOTE: this is only useful if you want to save some bytes because you
