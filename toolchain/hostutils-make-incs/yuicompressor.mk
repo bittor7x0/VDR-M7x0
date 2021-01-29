@@ -23,8 +23,10 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
+ifeq ($(CONFIG_YUI_COMPRESSOR),y)
 ifeq ($(strip $(shell which java)),)
 	$(error dependency error: YUI Compressor needs Java Runtime Environment)
+endif
 endif
 
 YUI_COMPRESSOR_HOSTVERSION := 2.4.8
