@@ -42,6 +42,12 @@ ifneq ($(CONFIG_EGCS),y)
 endif
 endif
 
+ifeq ($(CONFIG_JFFS2_LZO),y)
+ifneq ($(and $(filter y,$(CONFIG_GENERATE_JFFS2_DIR)),$(filter y,$(CONFIG_GENERATE_JFFS2_IMAGE))),y)
+   $(error dependency error: generating kernel image with JFFS2-LZO support needs generate_jffs2_dir and generate_jffs2_image enabled)
+endif
+endif
+
 ifeq ($(CONFIG_GENERATE_SIEMENS-LINUX-KERNEL-IMG),y)
 ifneq ($(CONFIG_SIEMENS-LINUX-KERNEL),y)
    $(error dependency error: generating kernel image needs siemens-linux-kernel enabled)

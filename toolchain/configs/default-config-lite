@@ -40,7 +40,6 @@ CONFIG_GENERATE_JFFS2_DIR = y
 CONFIG_GENERATE_JFFS2_IMAGE = y
 # CONFIG_JFFS2_IMG is not set
 # Add LZO support (faster than zlib) to JFFS2, if you change this parameter run: make distclean-mtd-utils-host distclean-siemens-linux-kernel
-# WARNING: Set CONFIG_GENERATE_JFFS2_DIR and CONFIG_GENERATE_JFFS2_IMAGE to "y" for generate a firmware with a JFFS2-LZO image or your M7x0 will not start
 CONFIG_JFFS2_LZO = y
 CONFIG_EGCS = y
 CONFIG_M7X0-MODULES = y
