@@ -1,0 +1,25 @@
+Fixes the following build error with GCC 10:
+	/usr/bin/ld: read_fs.o:(.bss+0x0): multiple definition of `swap'; mksquashfs.o:(.bss+0x1b2a88): first defined here
+And a compile warning.
+
+--- a/squashfs-tools/mksquashfs.c
++++ b/squashfs-tools/mksquashfs.c
+@@ -345,6 +345,7 @@
+ struct file_info *duplicate(long long file_size, long long bytes, unsigned int **block_list, long long *start, struct fragment **fragment, struct file_buffer *file_buffer, struct buffer_list *buffer_list, int blocks, unsigned short checksum, unsigned short fragment_checksum, int checksum_flag);
+ struct dir_info *dir_scan1(char *, int (_readdir)(char *, char *, struct dir_info *));
+ struct file_info *add_non_dup(long long file_size, long long bytes, unsigned int *block_list, long long start, struct fragment *fragment, unsigned short checksum, unsigned short fragment_checksum, int checksum_flag);
++int dir_scan2(squashfs_inode *inode, struct dir_info *dir_info);
+ extern void generate_file_priorities(struct dir_info *dir, int priority, struct stat *buf);
+ extern struct priority_entry *priority_list[65536];
+ 
+--- a/squashfs-tools/read_fs.c
++++ b/squashfs-tools/read_fs.c
+@@ -63,7 +63,7 @@
+ 						fprintf(stderr, s, ## args); \
+ 					} while(0)
+ 
+-int swap;
++static int swap;
+ 
+ int read_block(int fd, long long start, long long *next, unsigned char *block, squashfs_super_block *sBlk)
+ {
