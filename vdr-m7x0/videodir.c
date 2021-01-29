@@ -38,6 +38,9 @@ public:
   bool Next(void);
   void Store(void);
   const char *Adjust(const char *FileName);
+  char *GetVidPath(int nVid);
+  bool GetPreferedVideoDir(void);
+  bool IsVidDirOK(int nVid, int *freeMB = NULL);
   };
 
 cVideoDirectory::cVideoDirectory(void)
@@ -119,6 +122,7 @@ cUnbufferedFile *OpenVideoFile(const char *FileName, int Flags)
   if ((Flags & O_CREAT) != 0) {
      cVideoDirectory Dir;
      if (Dir.IsDistributed()) {
+        if (Setup.UseVidPrefer == 0) {
         // Find the directory with the most free space:
         int MaxFree = Dir.FreeMB();
         while (Dir.Next()) {
@@ -128,11 +132,13 @@ cUnbufferedFile *OpenVideoFile(const char *FileName, int Flags)
                  MaxFree = Free;
                  }
               }
+        }
+          else Dir.GetPreferedVideoDir();
         if (Dir.Stored()) {
            ActualFileName = Dir.Adjust(FileName);
            if (!MakeDirs(ActualFileName, false))
               return NULL; // errno has been set by MakeDirs()
-           if (symlink(ActualFileName, FileName) < 0) {
+           if (strcmp(ActualFileName, FileName) != 0 && symlink(ActualFileName, FileName) < 0) {
               LOG_ERROR_STR(FileName);
               return NULL;
               }
@@ -381,3 +387,122 @@ void RemoveEmptyVideoDirectories(void)
      } while (Dir.Next());
 }
 
+// returns path to nVid'th video directory or NULL if not existing
+char *cVideoDirectory::GetVidPath(int nVid)
+{
+  char *b = strdup(VideoDirectory);
+  int l = strlen(b), di, n;
+
+  while (l-- > 0 && isdigit(b[ l ]));
+
+  l++;
+  di = strlen(b) - l;
+
+  // di == number of digits
+  n = atoi(&b[ l ]);
+  if (n != 0)
+     return NULL;
+
+  // add requested number to dir name
+  sprintf(&b[ l ], "%0*d", di, nVid);
+
+  if (DirectoryOk(b) == true)
+     return b;
+
+  free(b);
+  return NULL;
+}
+
+// checks if a video dir is 'valid'
+bool cVideoDirectory::IsVidDirOK(int nVid, int *freeMB)
+{
+  char *dn;
+  int fMB;
+
+  if (nVid >= Setup.nVidPrefer)
+     return false;
+
+  if (Setup.VidPreferSize[ nVid ] == -1)
+     return false;
+
+  dn = GetVidPath(nVid);
+  if (dn == NULL)
+     return false;
+
+  fMB = FreeDiskSpaceMB(dn, NULL);
+  if (freeMB != NULL)
+     *freeMB = fMB;
+
+  free(dn);
+
+  if (Setup.VidPreferSize[ nVid ] >= fMB)
+     return false;
+  return true;
+}
+
+// calculates which video dir to use
+bool cVideoDirectory::GetPreferedVideoDir(void)
+{
+  cVideoDirectory d;
+  int nDirs = 1,
+  vidUse = Setup.nVidPrefer;
+  int i, top, topFree, x;
+
+  if (name == NULL)
+     return(false);
+
+  // count available video dirs
+  while (d.Next() == true)
+        nDirs++;
+
+  if (vidUse > nDirs)
+     vidUse = nDirs;
+
+  // check for prefered video dir
+  for (i = 0, top = -1, topFree = 0; i < vidUse; i++) {
+      if (IsVidDirOK(i, &x) == true) {
+         if (top == -1) {
+            // nothing set yet, use first 'ok' dir
+            top = i;
+            topFree = x;
+            }
+         else {
+            // check if we got a higher priority
+            if (Setup.VidPreferPrio[ i ] >= Setup.VidPreferPrio[ top ]) {
+               top = i;
+               topFree = x;
+               }
+            // check if we got same priority but more space
+            else if (Setup.VidPreferPrio[ i ] == Setup.VidPreferPrio[ top ] && x >= topFree) {
+               top = i;
+               topFree = x;
+               }
+            }
+         }
+      }
+
+  if (top == -1) {
+     isyslog("VidPrefer: no prefered video directory could be determined!");
+
+     // something went wrong here...
+     // let VDR determine the video directory
+     int MaxFree = FreeMB();
+
+     while (Next()) {
+           int Free = FreeDiskSpaceMB(Name());
+
+           if (Free > MaxFree) {
+              Store();
+              MaxFree = Free;
+              }
+           }
+     }
+  else {
+     isyslog("VidPrefer: prefered video directory '%d' set.", top);
+     if (stored != NULL)
+        free(stored);
+     stored = GetVidPath(top);
+     }
+
+  return true;
+}

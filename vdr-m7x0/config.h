@@ -45,6 +45,8 @@
 #define MINPRIORITY (-MAXPRIORITY)
 #define MAXLIFETIME 99
 
+#define DVLVIDPREFER_MAX 12
+
 #define MINOSDWIDTH  480
 #define MAXOSDWIDTH  672
 #define MINOSDHEIGHT 324
@@ -328,6 +330,10 @@ public:
   int LircRepeatFreq;
   int LircRepeatTimeout;
   int CapitalizeFilenames;
+  int UseVidPrefer; // 0 = VDR's default, 1 = use
+  int nVidPrefer;
+  int VidPreferPrio[DVLVIDPREFER_MAX];
+  int VidPreferSize[DVLVIDPREFER_MAX];
   int __EndData__;
   cSetup(void);
   cSetup& operator= (const cSetup &s);

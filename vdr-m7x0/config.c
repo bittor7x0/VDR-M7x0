@@ -428,6 +428,14 @@ cSetup::cSetup(void)
   LircRepeatFreq = 100;
   LircRepeatTimeout = 500;
   CapitalizeFilenames = 0; // default = disabled
+  UseVidPrefer = 0;        // default = disabled
+  nVidPrefer = 1;
+  for (int zz = 1; zz < DVLVIDPREFER_MAX; zz++) {
+      VidPreferPrio[ zz ] = 50;
+      VidPreferSize[ zz ] = 100;
+      }
+  VidPreferSize[ 0 ] = 800;
+  VidPreferPrio[ 0 ] = 50;
 }
 
 cSetup& cSetup::operator= (const cSetup &s)
@@ -645,6 +653,32 @@ bool cSetup::Parse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "LircRepeatFreq"))      LircRepeatFreq     = atoi(Value);
   else if (!strcasecmp(Name, "LircRepeatTimeout"))   LircRepeatTimeout  = atoi(Value);
   else if (!strcasecmp(Name, "CapitalizeFilenames")) CapitalizeFilenames = atoi(Value);
+  else if (!strcasecmp(Name, "UseVidPrefer"))        UseVidPrefer       = atoi(Value);
+  else if (!strcasecmp(Name, "nVidPrefer"))          nVidPrefer         = atoi(Value);
+  else if (strstr(Name, "VidPrefer") == Name) {
+     char *x = (char *)&Name[ strlen(Name) - 1 ];
+     int vN;
+
+     if (isdigit(*x) != 0) {
+        while (isdigit(*x) != 0)
+              x--;
+        x++;
+        }
+
+     vN = atoi(x);
+     if (vN < DVLVIDPREFER_MAX) {
+        if (strstr(Name, "VidPreferPrio") == Name) {
+           VidPreferPrio[ vN ] = atoi(Value);
+           if (VidPreferPrio[ vN ] > 99)
+              VidPreferPrio[ vN ] = 99;
+           }
+        else if (strstr(Name, "VidPreferSize") == Name) {
+           VidPreferSize[ vN ] = atoi(Value);
+           }
+        else
+           return false;
+        }
+     }
   else
      return false;
   return true;
@@ -772,6 +806,16 @@ bool cSetup::Save(void)
   Store("LircRepeatFreq",     LircRepeatFreq);
   Store("LircRepeatTimeout",  LircRepeatTimeout);
   Store("CapitalizeFilenames", CapitalizeFilenames);
+  Store ("UseVidPrefer",      UseVidPrefer);
+  Store ("nVidPrefer",        nVidPrefer);
+
+  char vidBuf[32];
+  for (int zz = 0; zz < nVidPrefer; zz++) {
+      sprintf(vidBuf, "VidPreferPrio%d", zz);
+      Store (vidBuf, VidPreferPrio[zz]);
+      sprintf(vidBuf, "VidPreferSize%d", zz);
+      Store (vidBuf, VidPreferSize[zz]);
+      }
 
   Sort();
 

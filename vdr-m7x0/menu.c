@@ -3566,11 +3566,42 @@ private:
   const char *pauseKeyHandlingTexts[3];
   const char *delTimeshiftRecTexts[3];
   const char *RecordingsSortModeTexts[MAXSORTMODES];
+  void Set(void);
+  int tmpNVidPrefer,
+      tmpUseVidPrefer;
 public:
   cMenuSetupRecord(void);
+  eOSState ProcessKey(eKeys key);
   };
 
 cMenuSetupRecord::cMenuSetupRecord(void)
+{
+  Set();
+}
+
+eOSState cMenuSetupRecord::ProcessKey(eKeys key)
+{
+  eOSState s = cMenuSetupBase::ProcessKey(key);;
+
+  if (key != kNone) {
+     if (tmpNVidPrefer != data.nVidPrefer || tmpUseVidPrefer != data.UseVidPrefer) {
+        int cur = Current();
+        
+        tmpNVidPrefer = data.nVidPrefer;
+        tmpUseVidPrefer = data.UseVidPrefer;
+        
+        Clear();
+        Set();
+        SetCurrent(Get(cur));
+        Display();
+        cMenuSetupBase::ProcessKey(kNone);
+        return osContinue;
+        }
+     }
+  return s;
+}
+
+void cMenuSetupRecord::Set(void)
 {
   pauseKeyHandlingTexts[0] = tr("do not pause live video");
   pauseKeyHandlingTexts[1] = tr("confirm pause live video");
@@ -3592,6 +3623,20 @@ cMenuSetupRecord::cMenuSetupRecord(void)
   Add(new cMenuEditStraItem(tr("Setup.Recording$Pause key handling"),        &data.PauseKeyHandling, 3, pauseKeyHandlingTexts));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Pause priority"),            &data.PausePriority, 0, MAXPRIORITY));
   Add(new cMenuEditIntItem( tr("Setup.Recording$Pause lifetime (d)"),        &data.PauseLifetime, 0, MAXLIFETIME));
+  tmpNVidPrefer = data.nVidPrefer;
+  tmpUseVidPrefer = data.UseVidPrefer;
+
+  Add(new cMenuEditBoolItem(tr("Setup.Recording$Video directory policy"),    &data.UseVidPrefer));
+  if (data.UseVidPrefer != 0) {
+     char tmp[ 64 ];
+     Add(new cMenuEditIntItem(tr("Setup.Recording$ Number of video directories"), &data.nVidPrefer, 1, DVLVIDPREFER_MAX));
+     for (int zz = 0; zz < data.nVidPrefer; zz++) {
+         sprintf(tmp, tr("Setup.Recording$  Video %d - Priority"), zz);
+         Add(new cMenuEditIntItem(tmp, &data.VidPreferPrio[ zz ], 0, 99));
+         sprintf(tmp, tr("Setup.Recording$  Video %d - Min. free MB"), zz);
+         Add(new cMenuEditIntItem(tmp, &data.VidPreferSize[ zz ], -1, 99999));
+         }
+     }
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Use episode name"),          &data.UseSubtitle));
   Add(new cMenuEditBoolItem(tr("Setup.Recording$Capitalize filenames"),      &data.CapitalizeFilenames));
   Add(new cMenuEditStraItem(tr("Setup.Recording$Delete timeshift recording"),&data.DelTimeshiftRec, 3, delTimeshiftRecTexts));
