@@ -414,9 +414,7 @@ i18n_t i18n[] = {
         {
             "Add channel logos file (.tgz)",
             "Datei mit Kanallogos hinzufügen (.tgz)",
-            "Agregar archivo <a class=\"newWindow\" href=\"http://www.assembla.com/spaces/VDR-M7x0/documents/tag/webif\" title=\"Descargar aquí\">"
-            "logos-webif-*.tgz"
-            "</a>",
+            "Añadir archivo con logos de canales (.tgz)",
             ""
         }},
     { "cfgWi.max_depth",

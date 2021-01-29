@@ -2,7 +2,7 @@
  * tshift.c: Advanced timeshift by Posix.
  *
  * See the main source file 'vdr.c' for copyright information.
- * http://vdr-m7x0.foroactivo.com.es
+ * https://vdr-m7x0.foroactivo.com.es
  *
  */
 

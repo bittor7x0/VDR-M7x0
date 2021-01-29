@@ -17,9 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The project's page is at http://www.assembla.com/spaces/VDR-M7x0
-# Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
-# Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
+# The project's page is at https://github.com/bittor7x0/VDR-M7x0
+# Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  https://vdr-m7x0.foroactivo.com.es
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 

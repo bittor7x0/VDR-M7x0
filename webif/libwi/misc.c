@@ -687,7 +687,7 @@ void printMenu(wcontext_t *wctx) {
 
     WCTX_PRINTFT("<li><a href=\"#\">%s</a>\n", 1, tr("links"));
     WCTX_IPRINTT("<ul><li><a class=\"newWindow\" href=\"http://www.open7x0.org/\">open7x0.org</a>\n", 0, 1);
-    WCTX_IPRINTT("</li><li><a class=\"newWindow\" href=\"http://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a>\n", -1, 1);
+    WCTX_IPRINTT("</li><li><a class=\"newWindow\" href=\"https://vdr-m7x0.foroactivo.com.es/\">vdr-m7x0.foroactivo.com.es</a>\n", -1, 1);
     WCTX_IPRINTT("</li></ul>\n", -1, 0);
     WCTX_IPRINTT("</li></ul>\n", -1, 0);
 }

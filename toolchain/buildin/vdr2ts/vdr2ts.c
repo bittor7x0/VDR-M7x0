@@ -12,7 +12,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// The project's page is at http://www.assembla.com/wiki/show/VDR-M7x0
+// The project's page is at https://github.com/bittor7x0/VDR-M7x0
 //
 
 #define MAX_SCANNER ((1048576))

@@ -18,9 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The project's page is at http://www.assembla.com/spaces/VDR-M7x0
-# Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
-# Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
+# The project's page is at https://github.com/bittor7x0/VDR-M7x0
+# Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  https://vdr-m7x0.foroactivo.com.es
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
@@ -68,13 +68,13 @@ M7X0-MODULES_DEST_DIR := lib/modules/2.4.21-xfs/tainted
 
 M7X0-MODULES-FW-m740-VERSION := 2.4
 M7X0-MODULES-FW-m750s-VERSION := 2.4
-M7X0-MODULES_FILE := fw-siemens-$(CONFIG_M7X0_TYPE)-$(M7X0-MODULES-FW-$(CONFIG_M7X0_TYPE)-VERSION).zip
+M7X0-MODULES_FILE := fw-siemens-$(CONFIG_M7X0_TYPE)-$(M7X0-MODULES-FW-$(CONFIG_M7X0_TYPE)-VERSION).tar.xz
 M7X0-MODULES_DLFILE := $(DOWNLOAD_DIR)/$(M7X0-MODULES_FILE)
 
 ifeq ($(CONFIG_M7X0_TYPE),m740)
-M7X0-MODULES_URL := https://www.assembla.com/spaces/VDR-EM-NG_Test/documents/bYjC8MpCSr5yujacwqEsg8/download/bYjC8MpCSr5yujacwqEsg8?notinline=true
+M7X0-MODULES_URL := https://raw.githubusercontent.com/bittor7x0/VDR-M7x0/master/toolchain/downloads/fw-siemens-m740-2.4.tar.xz
 else ifeq ($(CONFIG_M7X0_TYPE),m750s)
-M7X0-MODULES_URL := https://www.assembla.com/spaces/VDR-EM-NG_Test/documents/d4X6yYhPir5PS3dmr6CpXy/download/d4X6yYhPir5PS3dmr6CpXy?notinline=true
+M7X0-MODULES_URL := https://raw.githubusercontent.com/bittor7x0/VDR-M7x0/master/toolchain/downloads/fw-siemens-m750s-2.4.tar.xz
 else
 $(error unknown system type given)
 endif
@@ -112,7 +112,7 @@ $(STAGEFILES_DIR)/.m7x0-modules-$(CONFIG_M7X0_TYPE)_unpacked: $(M7X0-MODULES_DLF
                                                               $$(M7X0-MODULES_DEPS)
 	-$(RM) -rf $(M7X0-MODULES_DIR)
 	$(MKDIR) -p $(M7X0-MODULES_DIR)
-	(cd $(M7X0-MODULES_DIR) ; $(UNZIP) -x $(M7X0-MODULES_DLFILE))
+	$(TAR) -C $(M7X0-MODULES_DIR) -xJf $(M7X0-MODULES_DLFILE)
 	$(DD) bs=1 if=$(M7X0-MODULES-FW-$(CONFIG_M7X0_TYPE)-WSW) \
 		of=$(M7X0-MODULES-FW-CRAM) skip=1416 count=$(CRAMFS_MAX_IMGSIZE)
 ifeq ($(CONFIG_CRAMFS_NEEDS_SWAP),y)

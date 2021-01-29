@@ -131,7 +131,7 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.h mediatomb-0.12.1/src/vdr_i
 +    vdr_io_handler.h - this file is derived from MediaTomb sources.
 +    
 +    Copyright (C) 2011 VDR for Siemens Gigaset M7x0 box
-+                       http://www.assembla.com/wiki/show/VDR-M7x0
++                       https://github.com/bittor7x0/VDR-M7x0
 +
 +    MediaTomb is free software; you can redistribute it and/or modify
 +    it under the terms of the GNU General Public License version 2
@@ -220,7 +220,7 @@ diff -Naur mediatomb-0.12.1-orig/src/vdr_io_handler.cc mediatomb-0.12.1/src/vdr_
 +    file_io_handler.cc - this file is derived from MediaTomb sources.
 +    
 +    Copyright (C) 2011 VDR for Siemens Gigaset M7x0 box
-+                       http://www.assembla.com/wiki/show/VDR-M7x0
++                       https://github.com/bittor7x0/VDR-M7x0
 +
 +    MediaTomb is free software; you can redistribute it and/or modify
 +    it under the terms of the GNU General Public License version 2

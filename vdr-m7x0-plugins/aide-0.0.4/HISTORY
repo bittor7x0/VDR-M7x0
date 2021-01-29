@@ -1,5 +1,5 @@
 v0.0.4.1: modified by Videre from VDR M7x0 Spanish project 
-  http://www.assembla.com/wiki/show/VDR-M7x0
+  https://github.com/bittor7x0/VDR-M7x0
   Fixed memory leaks.
   Used a text with scroll for help article contents instead of a list
   of selectable menu items. Now text is wrapped at Setup.OSDWidth/11

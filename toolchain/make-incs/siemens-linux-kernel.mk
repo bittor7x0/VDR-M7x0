@@ -18,9 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The project's page is at http://www.assembla.com/spaces/VDR-M7x0
-# Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
-# Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
+# The project's page is at https://github.com/bittor7x0/VDR-M7x0
+# Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  https://vdr-m7x0.foroactivo.com.es
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
@@ -50,9 +50,9 @@ endif
 SIEMENS-LINUX-KERNEL-IMG = $(TOP_DIR)/$(or $(notdir \
    $(CONFIG_SIEMENS-LINUX-KERNEL-IMG)),siemens-linux-kernel-$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION).img)
 
-SIEMENS-LINUX-KERNEL_FILE := siemens-linux-kernel.tar.bz2
+SIEMENS-LINUX-KERNEL_FILE := siemens-linux-kernel.tar.xz
 SIEMENS-LINUX-KERNEL_DLFILE := $(DOWNLOAD_DIR)/$(SIEMENS-LINUX-KERNEL_FILE)
-SIEMENS-LINUX-KERNEL_URL := https://www.assembla.com/spaces/VDR-M7x0/documents/brdidyGrar6jXVacwqjQXA/download/brdidyGrar6jXVacwqjQXA
+SIEMENS-LINUX-KERNEL_URL := https://raw.githubusercontent.com/bittor7x0/VDR-M7x0/master/toolchain/downloads/siemens-linux-kernel.tar.xz
 SIEMENS-LINUX-KERNEL_PATCHES_DIR := $(PATCHES_DIR)/siemens-linux-kernel
 SIEMENS-LINUX-KERNEL_BASEDIR := slin_$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION)
 SIEMENS-LINUX-KERNEL_DIR := $(BUILD_DIR)/$(SIEMENS-LINUX-KERNEL_BASEDIR)
@@ -151,7 +151,7 @@ $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION)
       $(if $(filter pro,$(CONFIG_FW_VERSION)),$(SIEMENS-LINUX-KERNEL_PATCHES_DIR)/pro/cifs-fs.tar.bz2) \
       $$(SIEMENS-LINUX-KERNEL_DEPS) $(SIEMENS-LINUX-KERNEL_CONFIG)
 	-$(RM) -rf $(SIEMENS-LINUX-KERNEL_DIR)
-	$(BZCAT) $(SIEMENS-LINUX-KERNEL_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(TAR) -C $(BUILD_DIR) -xJf $(SIEMENS-LINUX-KERNEL_DLFILE)
 	$(MV) $(SIEMENS-LINUX-KERNEL_ARCHDIR) $(SIEMENS-LINUX-KERNEL_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.siemens-linux-kernel_$(CONFIG_M7X0_TYPE)_$(CONFIG_FW_VERSION)_unpacked
 

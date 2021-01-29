@@ -18,9 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The project's page is at http://www.assembla.com/spaces/VDR-M7x0
-# Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
-# Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
+# The project's page is at https://github.com/bittor7x0/VDR-M7x0
+# Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  https://vdr-m7x0.foroactivo.com.es
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
@@ -54,7 +54,7 @@ $(STAGEFILES_DIR)/.linux_headers_unpacked: $(LINUX_HEADERS_DLFILE) $(TC_INIT_RUL
 
 $(STAGEFILES_DIR)/.linux_headers_installed: $(STAGEFILES_DIR)/.linux_headers_unpacked
 	$(MKDIR) -p $(LINUX_HEADERS_INSTALL_DIR) $(LINUX_HEADERS_DIR)/include/linux/dvb
-	($(CD) $(LINUX_HEADERS_DIR)/include/linux/dvb ; $(SVN) co http://svn.assembla.com/svn/VDR-M7x0/trunk/vdr-m7x0/m7x0_dvb .)
+	($(CD) $(LINUX_HEADERS_DIR)/include/linux/dvb ; $(SVN) co https://github.com/bittor7x0/VDR-M7x0/trunk/vdr-m7x0/m7x0_dvb .)
 	$(CP) -RPp $(LINUX_HEADERS_DIR)/include/* \
 		$(LINUX_HEADERS_INSTALL_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.linux_headers_installed

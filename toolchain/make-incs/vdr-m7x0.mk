@@ -18,9 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# The project's page is at http://www.assembla.com/spaces/VDR-M7x0
-# Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
-# Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
+# The project's page is at https://github.com/bittor7x0/VDR-M7x0
+# Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  https://vdr-m7x0.foroactivo.com.es
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
@@ -30,7 +30,7 @@ ifeq ($(CONFIG_UCLIBC++),y)
 	VDR_DEPS +=  $(UCLIBC++_INSTALLED)
 endif
 
-VDR_SVN_URL := http://svn.assembla.com/svn/VDR-M7x0/trunk/vdr-m7x0
+VDR_SVN_URL := https://github.com/bittor7x0/VDR-M7x0/trunk/vdr-m7x0
 VDR_DIR := $(BUILD_DIR)/vdr-m7x0
 VDR_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/common
 VDR_CONF_SYSTYPE_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/$(CONFIG_M7X0_TYPE)

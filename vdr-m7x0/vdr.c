@@ -3,9 +3,9 @@
  *
  * Copyright (C) 2007-2021 VDR-NG-EM Project
  * 
- * The project's page is at http://www.assembla.com/spaces/VDR-M7x0
- * Our English forum is at  http://vdr-m7x0.foroactivo.com.es/f19-international-forum
- * Our Spanish forum is at  http://vdr-m7x0.foroactivo.com.es
+ * The project's page is at https://github.com/bittor7x0/VDR-M7x0
+ * Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
+ * Our Spanish forum is at  https://vdr-m7x0.foroactivo.com.es
  *
  * Many things have been changed allover the source of the vdr, in
  * order to port it to Gigaset M7x0 Set-Top-Box.
