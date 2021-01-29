@@ -110,6 +110,7 @@ cEPGSearchConfig(void);
     char defrecdir[MaxFileName];
     cShowMode ShowModes[showModeMax];
     int useVDRTimerEditMenu;
+    int replaceOrgDirList;
     int showChannelGroups;
     int showDaySeparators;
     int showEmptyChannels;

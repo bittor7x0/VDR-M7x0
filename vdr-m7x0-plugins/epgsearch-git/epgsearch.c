@@ -63,6 +63,7 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 #include "svdrpclient.h"
 #include "noannounce.h"
 #include "menu_deftimercheckmethod.h"
+#include "menu_dirselect.h"
 #include "timerdone.h"
 #include "epgsearchservices.h"
 #include "menu_quicksearch.h"
@@ -301,6 +302,15 @@ bool cPluginEpgsearch::Service(const char *Id, void *Data)
 
       EpgSearchMenu_v1_0* serviceData = (EpgSearchMenu_v1_0*) Data;
       serviceData->Menu = new cMenuEPGSearchExt();
+
+      return true;
+   }
+   if (strcmp(Id, "EpgsearchDirectoryList-v1.0") == 0 && EPGSearchConfig.replaceOrgDirList) {
+      if (Data == NULL)
+         return true;
+
+      EpgSearchDirectoryList_v1_0* serviceData = (EpgSearchDirectoryList_v1_0*) Data;
+      serviceData->Menu = new cMenuDirSelect(serviceData->folder);
 
       return true;
    }
@@ -688,6 +698,7 @@ bool cPluginEpgsearch::SetupParse(const char *Name, const char *Value)
 
    if      (!strcasecmp(Name, "DefRecordingDir"))  strcpy(EPGSearchConfig.defrecdir, Value);
    if      (!strcasecmp(Name, "UseVDRTimerEditMenu"))  EPGSearchConfig.useVDRTimerEditMenu = atoi(Value);
+   if      (!strcasecmp(Name, "ReplaceOrgDirList"))  EPGSearchConfig.replaceOrgDirList = atoi(Value);
 
    if      (!strcasecmp(Name, "ShowChannelGroups"))  EPGSearchConfig.showChannelGroups = atoi(Value);
    if      (!strcasecmp(Name, "ShowDaySeparators"))  EPGSearchConfig.showDaySeparators = atoi(Value);

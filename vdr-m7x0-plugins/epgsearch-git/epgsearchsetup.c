@@ -251,6 +251,7 @@ void cMenuEPGSearchSetup::Store(void)
     SetupStore("IgnorePayTV",  EPGSearchConfig.ignorePayTV);
     SetupStore("DefRecordingDir",  EPGSearchConfig.defrecdir);
     SetupStore("UseVDRTimerEditMenu",  EPGSearchConfig.useVDRTimerEditMenu);
+    SetupStore("ReplaceOrgDirList",  EPGSearchConfig.replaceOrgDirList);
     SetupStore("ShowChannelGroups",  EPGSearchConfig.showChannelGroups);
     SetupStore("ShowDaySeparators",  EPGSearchConfig.showDaySeparators);
     SetupStore("ShowEmptyChannels",  EPGSearchConfig.showEmptyChannels);
@@ -369,6 +370,8 @@ void cMenuSetupGeneral::Set()
   }
   Add(new cMenuEditBoolItem(tr("Replace original schedule"),    &data->ReplaceOrgSchedule, trVDR("no"),      trVDR("yes")));
   AddHelp(tr("Help$When VDR is patched to allow this plugin to replace the original 'Schedule' entry, you can de/activate this replacement here."));
+  Add(new cMenuEditBoolItem(tr("Replace VDR's directory select menu"),    &data->replaceOrgDirList, trVDR("no"),      trVDR("yes")));
+  AddHelp(tr("Help$This plugin allows to replace the original directory select menu (which only shows entries in folders.conf) with its own menu showing some extra directories like\n- current timer directories\n- current recording directories\n- directories used in search timers\n- directories specified in epgsearchdirs.conf (see MANUAL)"));
   Add(new cMenuEditStraItem(tr("Start menu"), &data->StartMenu, 2, StartMenuMode));
   AddHelp(tr("Help$Choose between 'Overview - Now' and 'Schedule' as start menu when this plugin is called."));
 

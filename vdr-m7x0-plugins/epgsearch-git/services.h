@@ -85,6 +85,15 @@ struct EpgSearchMenu_v1_0
       cOsdMenu* Menu;   // pointer to the menu
 };
 
+// Data structure for service "EpgsearchDirectoryList-v1.0"
+struct EpgSearchDirectoryList_v1_0
+{
+// in
+      char folder[PATH_MAX];   // folder selected
+// out
+      cOsdMenu* Menu;          // pointer to the menu
+};
+
 // Data structure for service "Epgsearch-lastconflictinfo-v1.0"
 struct Epgsearch_lastconflictinfo_v1_0
 {

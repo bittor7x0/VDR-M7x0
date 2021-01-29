@@ -162,6 +162,17 @@ msgstr "Originale Programmübersicht ersetzen"
 msgid "Help$When VDR is patched to allow this plugin to replace the original 'Schedule' entry, you can de/activate this replacement here."
 msgstr "Falls VDR gepatched wurde, um dem Plugin zu erlauben, den originalen 'Programm'-Eintrag zu ersetzen, so kann hier diese Ersetzung de/aktiviert werden."
 
+msgid "Replace VDR's directory select menu"
+msgstr ""
+
+msgid ""
+"Help$This plugin allows to replace the original directory select menu (which only shows entries in folders.conf) with its own menu showing some extra directories like\n"
+"- current timer directories\n"
+"- current recording directories\n"
+"- directories used in search timers\n"
+"- directories specified in epgsearchdirs.conf (see MANUAL)"
+msgstr ""
+
 msgid "Start menu"
 msgstr "Starte mit"
 

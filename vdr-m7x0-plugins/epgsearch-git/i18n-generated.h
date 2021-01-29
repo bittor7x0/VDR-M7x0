@@ -1713,6 +1713,76 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
+  { "Replace VDR's directory select menu",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Sustituir selector de directorios VDR",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Help$This plugin allows to replace the original directory select menu (which only shows entries in folders.conf) with its own menu showing some extra directories like\n- current timer directories\n- current recording directories\n- directories used in search timers\n- directories specified in epgsearchdirs.conf (see MANUAL)",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Este plugin permite sustituir el selector de directorios original (el cual sólo muestra entradas de folders.conf) con su propio menú mostrando algunos directorios adicionales como:\n- directorios de programaciones actuales\n- directorios de grabaciones actuales\n- directorios usados en programaciones por búsqueda\n- directorios especificados en epgsearchdirs.conf (ver el MANUAL)",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
   { "Start menu",
     "Starte mit",
     "",

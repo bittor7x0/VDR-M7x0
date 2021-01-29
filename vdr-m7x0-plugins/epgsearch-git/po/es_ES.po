@@ -162,6 +162,22 @@ msgstr "Sustituir guía de prog. original"
 msgid "Help$When VDR is patched to allow this plugin to replace the original 'Schedule' entry, you can de/activate this replacement here."
 msgstr "Aquí puede des/activar que éste plugin sustituya la entrada original 'Guía de programación', pero sólo funciona cuando el VDR está parcheado para permitirlo."
 
+msgid "Replace VDR's directory select menu"
+msgstr "Sustituir selector de directorios VDR"
+
+msgid ""
+"Help$This plugin allows to replace the original directory select menu (which only shows entries in folders.conf) with its own menu showing some extra directories like\n"
+"- current timer directories\n"
+"- current recording directories\n"
+"- directories used in search timers\n"
+"- directories specified in epgsearchdirs.conf (see MANUAL)"
+msgstr ""
+"Este plugin permite sustituir el selector de directorios original (el cual sólo muestra entradas de folders.conf) con su propio menú mostrando algunos directorios adicionales como:\n"
+"- directorios de programaciones actuales\n"
+"- directorios de grabaciones actuales\n"
+"- directorios usados en programaciones por búsqueda\n"
+"- directorios especificados en epgsearchdirs.conf (ver el MANUAL)"
+
 msgid "Start menu"
 msgstr "Menú de inicio"
 
@@ -1297,6 +1313,3 @@ msgstr "en %02ldh"
 #, c-format
 msgid "in %02ldm"
 msgstr "en %02ldm"
-
-#~ msgid "Compare expression"
-#~ msgstr "Comparar expresión"

@@ -56,6 +56,7 @@ cEPGSearchConfig::cEPGSearchConfig(void)
   ignorePrimary = 0;
   strcpy(defrecdir,"");
   useVDRTimerEditMenu = 0;
+  replaceOrgDirList = 1;
   showChannelGroups = 0;
   showDaySeparators = 0;
   showEmptyChannels = 0;
