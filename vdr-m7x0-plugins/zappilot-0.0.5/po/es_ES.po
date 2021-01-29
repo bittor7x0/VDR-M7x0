@@ -1,7 +1,7 @@
 # VDR language source file.
 # Copyright (C) 2013 Klaus Schmidinger <vdr@tvdr.de>
 # This file is distributed under the same license as the VDR package.
-# Bittor Corl <bittor7x0 _at_ gmail.com> 2013
+# Bittor Corl <bittor7x0 _at_ protonmail.com> 2013
 #
 msgid ""
 msgstr ""
@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: <see README>\n"
 "POT-Creation-Date: 2013-03-29 16:11+0100\n"
 "PO-Revision-Date: 2007-08-21 23:24+0200\n"
-"Last-Translator: Bittor Corl <bittor7x0 _at_ gmail.com>\n"
+"Last-Translator: Bittor Corl <bittor7x0 _at_ protonmail.com>\n"
 "Language-Team: <vdr@linuxtv.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"

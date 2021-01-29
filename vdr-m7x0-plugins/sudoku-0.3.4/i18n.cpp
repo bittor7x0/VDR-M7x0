@@ -26,7 +26,7 @@
  * French      Patrice Staudt <patr.staudt@laposte.net>
  *             NIVAL Michaël <mnival@vdrbox.lautre.net>
  * Finnish     Ville Skyttä <ville.skytta@iki.fi>
- * Spanish     Bittor Corl <bittor7x0 _at_ gmail.com>
+ * Spanish     Bittor Corl <bittor7x0 _at_ protonmail.com>
  *
  */
 

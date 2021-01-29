@@ -12,7 +12,7 @@
  *  - Français:   Patrice Staudt <pat @vdr-portal.de>
  *  - Finnish:    Rolf Ahrenberg <rofafor @vdr-portal.de>
  *  - Polski:     ???
- *  - Español:    bittor from open7x0.org <bittor7x0 _at_ gmail.com>
+ *  - Español:    bittor from open7x0.org <bittor7x0 _at_ protonmail.com>
  *  - Svenska:    ???
  *  - Russian:    SergArb @vdr-portal.de / neptunvasja @vdr-portal.de
  *  - Eesti:      ???
