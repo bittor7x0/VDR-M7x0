@@ -32,12 +32,7 @@ if [ ${lazyumount} -ne 0 ] ; then
 fi
 
 if [ X"${hd_swap}" != X"NO" ] ; then
-        while read hd_swp_dev ignore ; do
-                if [ ${hd_swp_dev} != "Filename" ] ; then
-                        echo -n " setting down swap in ${hd_swp_dev}"
-                        /sbin/swapoff ${hd_swp_dev}
-                fi
-        done < /proc/swaps
+	/sbin/swapoff -a
 fi
 
 if [ X"${hd_spindown_dev}" != X"NO" -a X"${hd_spindown_shutdown}" != X"NO" ] ; then
