@@ -8,11 +8,6 @@ echo -n 'stopping local stuff:'
 
 # put optional stuff before
 
-for bpath in ${bind_paths} ; do
-        echo -n " Umount binding ${bpath}"
-        /bin/umount ${bpath} || /bin/umount -l ${bpath}
-done
-
 echo -n ' usb-umount nolazy'
 /bin/sync
 /sbin/usbautomounter umount nolazy
