@@ -1,0 +1,17 @@
+#!/bin/ash
+
+{
+	/usr/bin/kill-vdr
+
+	source /usr/bin/set-hdd-var.src epg
+	[ -f "${DISK_VOLUME}/epg/epg.data" ] && rm -f "${DISK_VOLUME}/epg/epg.data"
+
+	source /etc/rc.local.conf
+	/bin/mv "${vdr_epgfile}" "${DISK_VOLUME}/epg/epg.data"
+
+	/bin/sed -i -e "s,^force_usb_mount=.*,force_usb_mount=\"YES\",g" /etc/rc.local.conf
+	/bin/sed -i -e "s,^vdr_epgdirect=.*,vdr_epgdirect=\"YES\",g" /etc/rc.local.conf
+	/bin/sed -i -e "s,^vdr_epgfile=.*,vdr_epgfile=\"${DISK_VOLUME}/epg/epg.data\",g" /etc/rc.local.conf
+
+	/usr/bin/start-vdr
+} > /dev/null 2>&1 &
