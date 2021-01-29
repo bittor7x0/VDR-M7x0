@@ -50,6 +50,8 @@ WEBIF_BUILD_DIR := $(BUILD_DIR)/webif.build
 WEBIF_SVN := https://github.com/bittor7x0/VDR-M7x0/trunk/webif
 WEBIF_TC_FILE := $(WEBIF_BUILD_DIR)/linux-mips-uclibc.tc
 WEBIF_CONF_DIR := $(PRG_CONFIGS_DIR)/webif
+WEBIF_KLAPP_VERSION := 2.0.2
+WEBIF_KLONE_VERSION := 2.4.0
 
 PACKS_RULES_$(CONFIG_WEBIF) += $(STAGEFILES_DIR)/.webif_installed
 FILE_LISTS_$(CONFIG_WEBIF) += webif.lst webif-configs.lst
@@ -94,6 +96,12 @@ endif
 ifeq ($(or $(CONFIG_PNGOUT),$(CONFIG_ZOPFLIPNG),$(CONFIG_PNGWOLF-ZOPFLI),$(CONFIG_ECT),$(CONFIG_PINGO)),y)
 	$(call png_shrink_dir, $(WEBIF_BUILD_DIR)/webapp/www/css/images)
 endif
+	(if [ -f $(DOWNLOAD_DIR)/klapp-$(WEBIF_KLAPP_VERSION).mk ] ; then \
+		$(CP) -f $(DOWNLOAD_DIR)/klapp-$(WEBIF_KLAPP_VERSION).mk $(WEBIF_BUILD_DIR)/klapp.mk ; \
+	fi ); \
+	(if [ -f $(DOWNLOAD_DIR)/klone-$(WEBIF_KLONE_VERSION).tar.gz ] ; then \
+		$(CP) -f $(DOWNLOAD_DIR)/klone-$(WEBIF_KLONE_VERSION).tar.gz $(WEBIF_BUILD_DIR)/klone-$(WEBIF_KLONE_VERSION).tar.gz ; \
+	fi );
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_copied
 
 #
@@ -123,6 +131,12 @@ $(STAGEFILES_DIR)/.webif_installed: $(STAGEFILES_DIR)/.webif_compiled
 ifeq ($(or $(CONFIG_PNGOUT),$(CONFIG_ZOPFLIPNG),$(CONFIG_PNGWOLF-ZOPFLI),$(CONFIG_ECT),$(CONFIG_PINGO)),y)
 	$(call png_shrink_dir, $(WEBIF_CONF_DIR)/etc/webif/www/images)
 endif
+	(if [ ! -f $(DOWNLOAD_DIR)/klapp-$(WEBIF_KLAPP_VERSION).mk ] ; then \
+		$(CP) $(WEBIF_BUILD_DIR)/klapp.mk $(DOWNLOAD_DIR)/klapp-$(WEBIF_KLAPP_VERSION).mk ; \
+	fi );
+	(if [ ! -f $(DOWNLOAD_DIR)/klone-$(WEBIF_KLONE_VERSION).tar.gz ] ; then \
+		$(CP) $(WEBIF_BUILD_DIR)/klone-$(WEBIF_KLONE_VERSION).tar.gz $(DOWNLOAD_DIR)/klone-$(WEBIF_KLONE_VERSION).tar.gz ; \
+	fi );
 	$(TOUCH) $(STAGEFILES_DIR)/.webif_installed
 
 $(FILELIST_DIR)/webif.lst: $(STAGEFILES_DIR)/.webif_installed
@@ -136,6 +150,9 @@ clean-webif:
 	(if [ -f $(WEBIF_BUILD_DIR)/src ] ; then \
 		$(CD) $(WEBIF_BUILD_DIR) && env PATH="$(PREFIX_BIN):$(PATH)" $(MAKE) clean ; \
 	fi );
+	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
+	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
+	-$(RM) -f $(FILELIST_DIR)/webif-configs.lst
 
 distclean-webif:
 	-$(RM) -f $(STAGEFILES_DIR)/.webapp_downloaded
