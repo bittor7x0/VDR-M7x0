@@ -67,8 +67,7 @@ $(STAGEFILES_DIR)/.lirc_unpacked: $(LIRC_DLFILE) \
 #
 
 $(STAGEFILES_DIR)/.lirc_patched: $(STAGEFILES_DIR)/.lirc_unpacked
-	$(call patch_package, $(LIRC_DIR), $(LIRC_PATCHES_DIR)/common)
-	$(call patch_package, $(LIRC_DIR), $(LIRC_PATCHES_DIR)/host/$(HOST_BS))
+	$(call patch_package, $(LIRC_DIR), $(LIRC_PATCHES_DIR))
 	$(TOUCH) $(STAGEFILES_DIR)/.lirc_patched
 
 #

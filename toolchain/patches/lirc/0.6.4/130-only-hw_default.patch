@@ -1,0 +1,143 @@
+diff -Naur a/configure b/configure
+--- a/configure	2020-10-30 13:16:20.884041805 +0100
++++ b/configure	2020-10-30 13:19:11.836994422 +0100
+@@ -3925,8 +3925,6 @@
+ EOF
+ 
+   lirc_driver="none"
+-  #include creative driver
+-  hw_module="${hw_module} hw_creative.o serial.o"
+   
+   any_possible_drivers=`echo ${possible_drivers} | sed -e's/ /-/g' \
+ 			  -e's/)-(/ /g'  -e's/(//g' -e's/)//g' \
+@@ -3934,24 +3932,18 @@
+   for any_driver in ${any_possible_drivers}; do
+   case ${any_driver} in
+ 	  remotemaster)
+-	  hw_module="${hw_module} hw_pixelview.o serial.o"
+ 	  ;;
+ 	  pctv)
+-	  hw_module="${hw_module} hw_pinsys.o serial.o"
+ 	  ;;
+ 	  logitech)
+-	  hw_module="${hw_module} hw_logitech.o serial.o"
+ 	  ;;
+ 	  slinke)
+-	  hw_module="${hw_module} hw_slinke.o serial.o receive.o"
+ 	  ;;
+ 	  silitek)
+-	  hw_module="${hw_module} hw_silitek.o serial.o"
+ 	  ;;
+ 	  mediafocusI)
+ 	  ;;
+ 	  irreal)
+-	  #hw_module="${hw_module} hw_irreal.o serial.o receive.o transmit.o"
+ 	  ;;
+ 	  lirc_serial)
+ 	  ;;
+@@ -3972,14 +3964,11 @@
+ 	  #lirc_driver="${lirc_driver} lirc_dev lirc_gpio"
+ 	  ;;
+ 	  caraca)
+-	  hw_module="${hw_module} hw_caraca.o"
+ 	  caraca_lib=-lcaraca_client
+ 	  ;;
+ 	  irman)
+-	  hw_module="${hw_module} hw_irman.o serial.o"
+ 	  ;;
+ 	  irman_sw)
+-	  hw_module="${hw_module} hw_irman.o serial.o"
+ 	  ;;
+   esac
+   done
+diff -Naur a/daemons/hw-types.c b/daemons/hw-types.c
+--- a/daemons/hw-types.c	2001-07-21 12:19:22.000000000 +0200
++++ b/daemons/hw-types.c	2020-10-30 13:21:03.523394759 +0100
+@@ -7,13 +7,6 @@
+ #include "hw-types.h"
+ /* Hardware types */
+ extern struct hardware hw_default;
+-extern struct hardware hw_creative;
+-extern struct hardware hw_irman;
+-extern struct hardware hw_logitech;
+-extern struct hardware hw_pinsys;
+-extern struct hardware hw_pixelview;
+-extern struct hardware hw_silitek;
+-extern struct hardware hw_slinke;
+ 
+ #ifndef HW_DEFAULT
+ # define HW_DEFAULT hw_default
+@@ -24,13 +17,6 @@
+ {
+ #ifdef LIRC_DRIVER_ANY
+ 	&hw_default,
+-	&hw_creative,
+-	//&hw_irman,
+-	&hw_logitech,
+-	&hw_pinsys,
+-	&hw_pixelview,
+-	&hw_silitek,
+-	&hw_slinke,
+ #else
+ #ifndef LIRC_NETWORK_ONLY
+ 	&HW_DEFAULT,
+diff -Naur a/daemons/Makefile.am b/daemons/Makefile.am
+--- a/daemons/Makefile.am	2001-07-05 19:01:06.000000000 +0200
++++ b/daemons/Makefile.am	2020-10-30 13:37:54.331316963 +0100
+@@ -15,16 +15,8 @@
+ lircd_LDADD = @hw_module@ @irman_lib@ @caraca_lib@ @daemon@
+ lircd_DEPENDENCIES = @hw_module@
+ EXTRA_lircd_SOURCES = hw_default.c hw_default.h \
+-			hw_pixelview.c hw_pixelview.h \
+-			hw_pinsys.c hw_pinsys.h \
+-			hw_logitech.c hw_logitech.h \
+-			hw_slinke.c hw_slinke.h \
+-			hw_irman.c hw_irman.h \
+-			hw_creative.c hw_creative.h \
+-			hw_silitek.c hw_silitek.h \
+ 			receive.c receive.h \
+-			transmit.c transmit.h \
+-			serial.c serial.h
++			transmit.c transmit.h
+ 
+ lircmd_SOURCES = lircmd.c
+ lircmd_LDADD = @daemon@
+@@ -37,16 +29,8 @@
+ irrecord_LDADD = @hw_module@ @irman_lib@ @caraca_lib@
+ irrecord_DEPENDENCIES = @hw_module@
+ EXTRA_irrecord_SOURCES = hw_default.c hw_default.h \
+-			hw_pixelview.c hw_pixelview.h \
+-			hw_pinsys.c hw_pinsys.h \
+-			hw_logitech.c hw_logitech.h \
+-			hw_slinke.c hw_slinke.h \
+-			hw_irman.c hw_irman.h \
+-			hw_creative.c hw_creative.h \
+-			hw_silitek.c hw_silitek.h \
+ 			receive.c receive.h \
+-			transmit.c transmit.h \
+-			serial.c serial.h
++			transmit.c transmit.h
+ 
+ ## maintainer mode stuff
+ EXTRA_PROGRAMS = lircd.simsend lircd.simrec slinke
+diff -Naur a/daemons/Makefile.in b/daemons/Makefile.in
+--- a/daemons/Makefile.in	2020-10-30 13:16:16.104051887 +0100
++++ b/daemons/Makefile.in	2020-10-30 13:42:03.181055920 +0100
+@@ -101,7 +101,7 @@
+ 
+ lircd_LDADD = @hw_module@ @irman_lib@ @caraca_lib@ @daemon@
+ lircd_DEPENDENCIES = @hw_module@
+-EXTRA_lircd_SOURCES = hw_default.c hw_default.h 			hw_pixelview.c hw_pixelview.h 			hw_pinsys.c hw_pinsys.h 			hw_logitech.c hw_logitech.h 			hw_slinke.c hw_slinke.h 			hw_irman.c hw_irman.h 			hw_creative.c hw_creative.h 			hw_silitek.c hw_silitek.h 			receive.c receive.h 			transmit.c transmit.h 			serial.c serial.h
++EXTRA_lircd_SOURCES = hw_default.c hw_default.h 			receive.c receive.h 			transmit.c transmit.h
+ 
+ 
+ lircmd_SOURCES = lircmd.c
+@@ -113,7 +113,7 @@
+ 
+ irrecord_LDADD = @hw_module@ @irman_lib@ @caraca_lib@
+ irrecord_DEPENDENCIES = @hw_module@
+-EXTRA_irrecord_SOURCES = hw_default.c hw_default.h 			hw_pixelview.c hw_pixelview.h 			hw_pinsys.c hw_pinsys.h 			hw_logitech.c hw_logitech.h 			hw_slinke.c hw_slinke.h 			hw_irman.c hw_irman.h 			hw_creative.c hw_creative.h 			hw_silitek.c hw_silitek.h 			receive.c receive.h 			transmit.c transmit.h 			serial.c serial.h
++EXTRA_irrecord_SOURCES = hw_default.c hw_default.h 			receive.c receive.h 			transmit.c transmit.h
+ 
+ 
+ EXTRA_PROGRAMS = lircd.simsend lircd.simrec slinke
