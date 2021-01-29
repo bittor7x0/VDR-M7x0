@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 PCRE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-PCRE_VERSION := 8.39
+PCRE_VERSION := 8.44
 PCRE_PATCHES_DIR := $(PATCHES_DIR)/pcre/$(PCRE_VERSION)
 
 PCRE_FILE := pcre-$(PCRE_VERSION).tar.bz2
@@ -78,11 +78,12 @@ $(STAGEFILES_DIR)/.pcre_patched: $(STAGEFILES_DIR)/.pcre_unpacked
 #
 
 $(STAGEFILES_DIR)/.pcre_configured: $(STAGEFILES_DIR)/.pcre_patched
-	($(CD) $(PCRE_DIR) ; $(UCLIBC_ENV_LTO_GC_LOOPS) \
+	($(CD) $(PCRE_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		$(PCRE_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
 			--enable-jit \
+			--with-match-limit-recursion=16000 \
 			$(if $(CONFIG_PCRE_CPP),--enable-cpp,--disable-cpp))
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_configured
 
@@ -91,7 +92,7 @@ $(STAGEFILES_DIR)/.pcre_configured: $(STAGEFILES_DIR)/.pcre_patched
 #
 
 $(STAGEFILES_DIR)/.pcre_compiled: $(STAGEFILES_DIR)/.pcre_configured
-	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(PCRE_DIR)
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_compiled
 
 #
@@ -99,7 +100,7 @@ $(STAGEFILES_DIR)/.pcre_compiled: $(STAGEFILES_DIR)/.pcre_configured
 #
 
 $(STAGEFILES_DIR)/.pcre_installed: $(STAGEFILES_DIR)/.pcre_compiled
-	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(PCRE_DIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR) install
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_installed
 
 

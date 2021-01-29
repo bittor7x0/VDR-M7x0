@@ -30,10 +30,10 @@ ifeq ($(CONFIG_ZLIB),y)
 	CURL_DEPS +=  $(ZLIB_INSTALLED)
 endif
 
-CURL_VERSION := 7.50.3
+CURL_VERSION := 7.74.0
 CURL_PATCHES_DIR := $(PATCHES_DIR)/curl/$(CURL_VERSION)
 
-CURL_FILE := curl-$(CURL_VERSION).tar.bz2
+CURL_FILE := curl-$(CURL_VERSION).tar.xz
 CURL_DLFILE := $(DOWNLOAD_DIR)/$(CURL_FILE)
 CURL_URL := http://curl.haxx.se/download/$(CURL_FILE)
 CURL_DIR := $(BUILD_DIR)/curl-$(CURL_VERSION)
@@ -64,7 +64,7 @@ $(STAGEFILES_DIR)/.curl_unpacked: $(CURL_DLFILE) \
                                            $(wildcard $(CURL_PATCHES_DIR)/*.patch) \
                                            $$(CURL_DEPS)
 	-$(RM) -rf $(CURL_DIR)
-	$(BZCAT) $(CURL_DLFILE) | $(TAR) -C $(BUILD_DIR) -f -
+	$(TAR) -C $(BUILD_DIR) -xJf $(CURL_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.curl_unpacked
 
 #
@@ -88,6 +88,7 @@ $(STAGEFILES_DIR)/.curl_configured: $(STAGEFILES_DIR)/.curl_patched
 			--enable-shared \
 			--enable-static \
 			--enable-optimize \
+			--enable-pthreads \
 			--enable-libgcc \
 			--enable-symbol-hiding \
 			--disable-threaded-resolver \
@@ -102,13 +103,16 @@ $(STAGEFILES_DIR)/.curl_configured: $(STAGEFILES_DIR)/.curl_patched
 			--disable-ares \
 			--disable-debug \
 			--disable-curldebug \
+			--disable-cookies \
 			--disable-dict \
+			--disable-ech \
 			--disable-gopher \
 			--disable-ipv6 \
 			--disable-imap \
 			--disable-ldap \
 			--disable-ldaps \
 			--disable-manual \
+			--disable-mqtt \
 			--disable-proxy \
 			--disable-sspi \
 			--disable-pop3 \
@@ -118,10 +122,20 @@ $(STAGEFILES_DIR)/.curl_configured: $(STAGEFILES_DIR)/.curl_patched
 			--disable-telnet \
 			--disable-tftp \
 			--disable-verbose \
+			--disable-openssl-auto-load-config \
+			--disable-socketpair \
+			--disable-http-auth \
+			--disable-doh \
+			--disable-mime \
+			--disable-dateparse \
+			--disable-netrc \
+			--disable-progress-meter \
+			--disable-dnsshuffle \
+			--disable-get-easy-options \
+			--disable-alt-svc \
 			--with-random="/dev/urandom" \
-			--without-axtls \
-			--without-cyassl \
-			--without-polarssl \
+			--without-default-ssl-backend \
+			--without-wolfssl \
 			--without-mbedtls \
 			--without-ssl \
 			--without-winssl \
@@ -134,8 +148,19 @@ $(STAGEFILES_DIR)/.curl_configured: $(STAGEFILES_DIR)/.curl_patched
 			--without-zsh-functions-dir \
 			--without-ca-bundle \
 			--without-gnutls \
-			--without-libidn \
+			--without-libidn2 \
 			--without-nss \
+			--without-brotli \
+			--without-zstd \
+			--without-schannel \
+			--without-secure-transport \
+			--without-amissl \
+			--without-mesalink \
+			--without-bearssl \
+			--without-ngtcp2 \
+			--without-nghttp3 \
+			--without-quiche \
+			--without-fish-functions-dir \
 			--disable-tls-srp \
 			--disable-ntlm-wb \
 			--without-libssh2 \

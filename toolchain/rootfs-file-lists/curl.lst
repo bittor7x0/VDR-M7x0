@@ -1,4 +1,4 @@
-usr/lib/libcurl.so.5.4.0  usr/lib/libcurl.so.5.4.0  f 755 0 0 - - - - -
-usr/lib/libcurl.so.5.4.0  -                         s   - - - - - - - -
-usr/lib/libcurl.so.5      libcurl.so.5.4.0          l 777 0 0 - - - - -
-usr/lib/libcurl.so        libcurl.so.5.4.0          l 777 0 0 - - - - -
+usr/lib/libcurl.so.4.7.0  usr/lib/libcurl.so.4.7.0  f 755 0 0 - - - - -
+usr/lib/libcurl.so.4.7.0  -                         s   - - - - - - - -
+usr/lib/libcurl.so.4      libcurl.so.4.7.0          l 777 0 0 - - - - -
+usr/lib/libcurl.so        libcurl.so.4.7.0          l 777 0 0 - - - - -

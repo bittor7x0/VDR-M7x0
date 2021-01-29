@@ -26,7 +26,11 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 LIBXML2_DEPS = $(BASE_BUILD_STAGEFILE)
 
-LIBXML2_VERSION := 2.9.4
+ifeq ($(CONFIG_ZLIB),y)
+	LIBXML2_DEPS +=  $(ZLIB_INSTALLED)
+endif 
+
+LIBXML2_VERSION := 2.9.10
 LIBXML2_PATCHES_DIR := $(PATCHES_DIR)/libxml2/$(LIBXML2_VERSION)
 
 LIBXML2_FILE := libxml2-$(LIBXML2_VERSION).tar.gz
@@ -85,13 +89,14 @@ $(STAGEFILES_DIR)/.libxml2_configured: $(STAGEFILES_DIR)/.libxml2_patched
 			--enable-ipv6=no \
 			--disable-maintainer-mode \
 			--with-minimum \
-			--with-c14n \
+			--without-c14n \
+			--with-gnu-ld \
 			--without-catalog \
 			--without-debug \
 			--without-docbook \
 			--without-fexceptions \
 			--without-history \
-			--with-html \
+			--without-html \
 			--without-ftp \
 			--without-http \
 			--without-iconv \
@@ -99,25 +104,25 @@ $(STAGEFILES_DIR)/.libxml2_configured: $(STAGEFILES_DIR)/.libxml2_patched
 			--without-iso8859x \
 			--without-legacy \
 			--without-mem-debug \
-			--with-output \
+			--without-output \
 			--without-pattern \
 			--without-push \
 			--without-python \
-			--with-reader \
+			--without-reader \
 			--without-readline \
 			--without-regexps \
 			--without-run-debug \
-			--with-sax1 \
-			--with-schemas \
+			--without-sax1 \
+			--without-schemas \
 			--without-schematron \
 			--with-threads \
 			--without-thread-alloc \
-			--with-tree \
-			--with-valid \
-			--with-writer \
-			--with-xinclude \
-			--with-xpath \
-			--with-xptr \
+			--without-tree \
+			--without-valid \
+			--without-writer \
+			--without-xinclude \
+			--without-xpath \
+			--without-xptr \
 			--without-modules \
 			$(if $(CONFIG_ZLIB),--with-zlib,--without-zlib) \
 			--without-lzma \

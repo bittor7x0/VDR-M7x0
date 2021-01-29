@@ -26,12 +26,12 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SQLITE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-SQLITE_VERSION := 3150000
+SQLITE_VERSION := 3340000
 SQLITE_PATCHES_DIR := $(PATCHES_DIR)/sqlite/$(SQLITE_VERSION)
 
 SQLITE_FILE := sqlite-autoconf-$(SQLITE_VERSION).tar.gz
 SQLITE_DLFILE := $(DOWNLOAD_DIR)/$(SQLITE_FILE)
-SQLITE_URL := https://www.sqlite.org/2016/sqlite-autoconf-$(SQLITE_VERSION).tar.gz
+SQLITE_URL := https://www.sqlite.org/2020/$(SQLITE_FILE)
 SQLITE_DIR := $(BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_CFLAGS_SIZE := $(filter-out -mno-shared,$(UCLIBC_CFLAGS_SIZE)) -flto
@@ -40,8 +40,13 @@ SQLITE_CFLAGS := -fno-fast-math -fno-exceptions \
                  -DNDEBUG=1 -DSQLITE_DISABLE_LFS=1 -DSQLITE_OMIT_PROGRESS_CALLBACK=1 \
                  -DSQLITE_OMIT_BUILTIN_TEST=1 -DSQLITE_OMIT_DEPRECATED=1 -DSQLITE_OMIT_UTF16=1 \
                  -DSQLITE_OMIT_EXPLAIN=1 -DSQLITE_OMIT_FOREIGN_KEY=1 -DSQLITE_OMIT_LOAD_EXTENSION=1 \
-                 -DSQLITE_OMIT_TCL_VARIABLE=1 -DSQLITE_OMIT_TRACE=1 \
-                 -DHAVE_POSIX_FALLOCATE=0
+                 -DSQLITE_OMIT_TCL_VARIABLE=1 -DSQLITE_OMIT_TRACE=1  -DSQLITE_OMIT_DECLTYPE=1 \
+                 -DSQLITE_ENABLE_GEOPOLY=0 -DSQLITE_DEFAULT_MEMSTATUS=0 -DSQLITE_DEFAULT_WAL_SYNCHRONOUS=1 \
+                 -DSQLITE_USE_ALLOCA=1 -DSQLITE_LIKE_DOESNT_MATCH_BLOBS=1 -DSQLITE_MAX_EXPR_DEPTH=0 \
+                 -DSQLITE_OMIT_AUTOINCREMENT=1 -DSQLITE_OMIT_CAST=1 -DSQLITE_OMIT_TEMPDB=1
+                 -DSQLITE_OMIT_COMPOUND_SELECT=1 -DSQLITE_OMIT_LOCALTIME=1 \
+                 -DSQLITE_OMIT_SCHEMA_VERSION_PRAGMAS=1 -DSQLITE_OMIT_SUBQUERY=1 \
+                 -DSQLITE_DISABLE_DIRSYNC=1 -DSQLITE_OMIT_VACUUM=1
 
 SQLITE_INSTALLED = $(STAGEFILES_DIR)/.sqlite_host_installed $(STAGEFILES_DIR)/.sqlite_installed
 
@@ -93,8 +98,15 @@ $(STAGEFILES_DIR)/.sqlite_host_configured: $(STAGEFILES_DIR)/.sqlite_patched
 			--prefix=$(HOSTUTILS_PREFIX) \
 			--disable-shared \
 			--enable-static \
+			--with-gnu-ld \
 			--disable-readline \
+			--disable-editline \
 			--disable-largefile \
+			--disable-fts3 \
+			--disable-fts4 \
+			--disable-fts5 \
+			--disable-json1 \
+			--disable-rtree \
 			--enable-threadsafe \
 			--disable-dynamic-extensions)
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_host_configured
@@ -133,8 +145,15 @@ $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 			--host=$(TARGET) \
 			--enable-shared \
 			--enable-static \
+			--with-gnu-ld \
 			--disable-readline \
+			--disable-editline \
 			--disable-largefile \
+			--disable-fts3 \
+			--disable-fts4 \
+			--disable-fts5 \
+			--disable-json1 \
+			--disable-rtree \
 			--enable-threadsafe \
 			--disable-dynamic-extensions)
 	$(TOUCH) $(STAGEFILES_DIR)/.sqlite_configured
@@ -189,7 +208,6 @@ distclean-sqlite-host:
 ifeq ($(DISTCLEAN_DLFILE),y)
 	-$(RM) -rf $(SQLITE_DLFILE)
 endif
-
 
 distclean-sqlite:
 	-$(RM) -f $(STAGEFILES_DIR)/.sqlite_unpacked

@@ -1,4 +1,4 @@
-usr/lib/libz.so.1.2.8 usr/lib/libz.so.1.2.8 f 755 0 0 - - - - -
-usr/lib/libz.so.1.2.8 -                     s   - - - - - - - -
-usr/lib/libz.so.1     libz.so.1.2.8         l 777 0 0 - - - - -
-usr/lib/libz.so       libz.so.1.2.8         l 777 0 0 - - - - -
+usr/lib/libz.so.1.2.11 usr/lib/libz.so.1.2.11 f 755 0 0 - - - - -
+usr/lib/libz.so.1.2.11 -                      s   - - - - - - - -
+usr/lib/libz.so.1      libz.so.1.2.11         l 777 0 0 - - - - -
+usr/lib/libz.so        libz.so.1.2.11         l 777 0 0 - - - - -
