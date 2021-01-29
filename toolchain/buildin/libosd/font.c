@@ -24,10 +24,18 @@
 #include <string.h>
 #include "font.h"
 #include "font-iso8859-1.c"
+#ifndef DISABLE_ISO8859_2
 #include "font-iso8859-2.c"
+#endif
+#ifndef DISABLE_ISO8859_5
 #include "font-iso8859-5.c"
+#endif
+#ifndef DISABLE_ISO8859_7
 #include "font-iso8859-7.c"
+#endif
+#ifndef DISABLE_ISO8859_13
 #include "font-iso8859-13.c"
+#endif
 #include "font-iso8859-15.c"
 
 #define FONT_COUNT 6
@@ -36,10 +44,18 @@ static const struct {
 	const uint32_t *data;
 } fonts[FONT_COUNT] = {
 	{"iso-8859-1", (const uint32_t *) font_iso8859_1},
+#ifndef DISABLE_ISO8859_2
 	{"iso-8859-2", (const uint32_t *) font_iso8859_2},
+#endif
+#ifndef DISABLE_ISO8859_5
 	{"iso-8859-5", (const uint32_t *) font_iso8859_5},
+#endif
+#ifndef DISABLE_ISO8859_7
 	{"iso-8859-7", (const uint32_t *) font_iso8859_7},
+#endif
+#ifndef DISABLE_ISO8859_13
 	{"iso-8859-13", (const uint32_t *) font_iso8859_13},
+#endif
 	{"iso-8859-15", (const uint32_t *) font_iso8859_15}
 };
 

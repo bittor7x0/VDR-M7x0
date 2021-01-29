@@ -25,6 +25,12 @@ CC := gcc
 CFLAGS := -Wall -O2
 CFLAGS_SHARED := $(CFLAGS) -fpic
 CPPFLAGS := -D_GNU_SOURCE
+# Disable unused character set fonts.
+# We only need iso8859-15 (English, German and Spanish) and iso8859-1 (French).
+CPPFLAGS += -DDISABLE_ISO8859_2
+CPPFLAGS += -DDISABLE_ISO8859_5
+CPPFLAGS += -DDISABLE_ISO8859_7
+CPPFLAGS += -DDISABLE_ISO8859_13
 LDFLAGS :=
 TEST_PRGS := osd_test
 LIBS := libosd
