@@ -160,10 +160,10 @@ CONFIG_VDR = y
 # CONFIG_VDR_LOCAL_PATH is not set
 
 # VDR-PLUGINS-ROOTFS: Plugins for VDR included in RootFS (faster than JFFS2) and added to /usr/lib/vdr
-CONFIG_VDR-PLUGINS-ROOTFS = epgsearch filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev osdadjust scheduler
+CONFIG_VDR-PLUGINS-ROOTFS = epgfixer epgsearch filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev osdadjust scheduler
 
 # VDR-PLUGINS-ROOTFS-LIBS: Libraries of plugins for VDR included in RootFS (faster than JFFS2) and added to /usr/lib/vdr
-CONFIG_VDR-PLUGINS-ROOTFS-LIBS = epgsearch epgsearchonly conflictcheckonly filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev-server osdadjust scheduler
+CONFIG_VDR-PLUGINS-ROOTFS-LIBS = epgfixer epgsearch epgsearchonly conflictcheckonly filebrowser skinenigmang blink channelscan osdteletext setup aide cinebars streamdev-server osdadjust scheduler
 
 # VDR-PLUGINS-JFFS2: Plugins for VDR included in JFFS2 (slower than RootFS) and added to /etc/plugins-lib
 # CONFIG_VDR-PLUGINS-JFFS2 is not set
@@ -375,7 +375,7 @@ CONFIG_SQLITE = y
 
 # PCRE: Library that implement regular expression pattern matching using the same syntax and semantics as Perl 5
 # URL: http://www.pcre.org/
-# CONFIG_PCRE is not set
+CONFIG_PCRE = y
 
 # Add C++ support to PCRE library
 # CONFIG_PCRE_CPP is not set
