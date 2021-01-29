@@ -1,0 +1,74 @@
+VDR Plugin 'vdrmanager' Revision History
+------------------------------------
+2014-05-31: Version 0.12 (http://projects.vdr-developer.org/versions/show/342)
+- Feature #1687: Enable compression as default
+- Feature #1688: Send VPS Time if presend on an schedule
+- Feature #1700: send flag IsNew to android
+
+2014-01-02: Version 0.11 (http://projects.vdr-developer.org/versions/show/339)
+- Bug #1661: Link libz (Makefile)
+
+2013-12-25: Version 0.10 (http://projects.vdr-developer.org/versions/show/328)
+- Bug #1314: -f has not function, remove it. Deleting timers is always beeing forced
+- Bug #1325: Response stream is blocked until client sends new data
+- Bug #1532: Streaming Recordings issues
+- Feature #790: use some compression (zlib, gzip) to compress responses server sides
+- Feature #1319: Recording Folders
+- Feature #1386: Add Content Flags as found in svdrp to the event line
+- Feature #1570: Support for VDR >= 2.1.2
+- Feature #1571: Transfer Recording Space Information wit recordings listing command
+
+
+2013-01-xx: Version 0.9 (http://projects.vdr-developer.org/versions/show/312)
+- Improved Timer/Recording deletion
+- Improved recording information (recordings command)
+- Free alocated memory after search
+- Group by Satellite(Source) in the channel list(channels command delivers now also the Source)
+- support streamdev recording streaming.
+- Audio Tracks in Event infos
+- adopt vdr 1.7.34 Makfile for plugins
+
+
+2012-11-27: Version 0.8
+-Bug #1145: forceCheckSvdrp is initializied randomly if not initialized via getopt's -s
+-Feature #1146: More info on command line options
+
+2012-06-21: Version 0.7
+-Bug #861: Escape Channelnames too, because some channels have (sky select?) ":" in names and it is used as separator
+-Bug #869: Error on Timer Mofiication should be wellformed (add START/END)
+-Bug #950: Bugfix in getting recording length
+-Bug #1008: Plugin does not listen on socket
+-Feature #870: make vdr-plugin compatibel for vdr < 10721
+-Feature #914: Support VPS and Recurring Timers
+-Feature #916: If not timer->Event() then find over all timer's channel events
+-Feature #951: Switch Channel Support
+
+2011-12-28: Version 0.6
+-Bug fix on checking recording's event title
+
+2011-11-13: Version 0.5
+-Fixed dereferencing of a null pointer in recordings handler, http://projects.vdr-developer.org/issues/765
+-Switched to safe sprintf, http://projects.vdr-developer.org/issues/801
+-Log to syslog if a method call fails http://projects.vdr-developer.org/issues/802
+
+2011-11-12: Version 0.4
+-Delete recordings properly
+-Timers CRUD should be bugfree now
+
+2011-11-06: Version 0.3
+- Check against svdrphosts.conf file only if a) forced via command
+  line argument -s or no password was specified via -P
+- arguments parsing by getopts
+
+2011-10-12: Version 0.2
+- Recording Info via recordings command
+- Delete a recording via drecord <recording index> commmand
+- shortText delivery with event commands
+- Timer Modification flow rewritten
+- Search for event for a timer
+- bug fixes
+
+
+2011-03-19: Version 0.1
+
+- Initial revision.

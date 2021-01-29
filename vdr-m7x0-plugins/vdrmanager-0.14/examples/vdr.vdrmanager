@@ -1,0 +1,11 @@
+# Command line parameters for vdr-plugin-vdrmanager
+#
+#   For more details see:
+#   http://projects.vdr-developer.org/projects/vdr-manager/wiki
+# -p port                port number to listen to"
+# -P password            password (none if not given). No password forces check against svdrphosts.conf."
+# -s                     force check against svdrphosts.conf, even if a password was given"
+# -c compression         selects the compression mode to use ('z' for zlib or 'g' for gzip and 'n' for none)."
+#                        Zlib compression is enabled as default or is default compression if youf specify -c without arguments";
+# -k certfile[,keyfile]  cert and key file for SSL (or one file for both)";
+_EXTRAOPTS="-p 6420 -P change -c"

@@ -1,0 +1,18 @@
+This is a "plugin" for the Video Disk Recorder (VDR).
+
+See the file COPYING for license information.
+
+This software is released under the GPL, version 2 (see COPYING).
+Additionally, compiling, linking, and/or using the OpenSSL toolkit in
+conjunction with this software is allowed.
+
+Description:
+
+This helper plugin allows remote programming VDR using
+VDR-Manager running on Android devices.
+
+Installation:
+http://www.vdr-wiki.de/wiki/index.php/Plugin_Installation
+
+If you use a vdr version lower then 1.7.36, use Makefile.pre.1.7.36
+
