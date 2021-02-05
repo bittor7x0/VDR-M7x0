@@ -1,0 +1,1 @@
+@bin\RunHiddenConsole.exe bin\gen_fw_log.cmd

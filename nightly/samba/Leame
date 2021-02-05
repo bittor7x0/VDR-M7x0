@@ -1,0 +1,31 @@
+Instalación:
+
+- Copiar VDR-NG-EM-nightly-SAMBA.zip a un directorio accesible en el Gigaset.
+	Se puede usar un lápiz de memoria o conectar el disco duro a un PC.
+
+- Entrar por ssh/telnet al Gigaset y desde el directorio donde hemos dejado
+	el archivo ejecutar:
+
+		unzip VDR-NG-EM-nightly-SAMBA.zip "samba/*" -d /etc
+
+	y después:
+
+		/etc/samba/install
+
+- Confirmar en la configuración del firmware que los servicios inet
+	están activados y reiniciar el Gigaset.
+
+Otras consideraciones:
+
+- Los ejecutables smbd y nmbd pueden situarse en cualquier directorio
+	siempre que se ajuste su path exacto en el fichero inetd.conf.
+
+- Los ficheros no ejecutables (smb.conf y directorio codepages) deben
+	estar situados siempre en /etc/samba
+
+- El acceso a los recursos se realiza con contraseña en blanco.
+
+- Editando el fichero smb.conf, se puede validar el acceso por usuario.
+	Existen unas líneas comentadas que indican cómo realizar el cambio.
+	Para que un usuario pueda acceder en esta configuración, será necesario
+	generar una clave de acceso mediante la utilidad smbpasswd.

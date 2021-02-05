@@ -1,0 +1,1 @@
+bin\gen_fw.cmd > firmware-builder.log 2>&1

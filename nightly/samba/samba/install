@@ -1,0 +1,28 @@
+#!/bin/ash
+
+textexist=`grep netbios-ns /etc/services`
+if [ X"${textexist}" == X"" ]; then
+     sed -i '$anetbios-ns 137/udp' /etc/services
+fi
+textexist=`grep netbios-ns /etc/inetd.conf`
+if [ X"${textexist}" == X"" ]; then
+     sed -i '$anetbios-ns dgram udp wait root /etc/samba/nmbd nmbd' /etc/inetd.conf
+fi
+textexist=`grep netbios-ssn /etc/services`
+if [ X"${textexist}" == X"" ]; then
+     sed -i '$anetbios-ssn 139/tcp' /etc/services
+fi
+textexist=`grep netbios-ssn /etc/inetd.conf`
+if [ X"${textexist}" == X"" ]; then
+     sed -i '$anetbios-ssn stream tcp nowait root /etc/samba/smbd smbd' /etc/inetd.conf
+fi
+textexist=`grep microsoft-ds /etc/services`
+if [ X"${textexist}" == X"" ]; then
+     sed -i '$amicrosoft-ds 445/tcp' /etc/services
+fi
+textexist=`grep microsoft-ds /etc/inetd.conf`
+if [ X"${textexist}" == X"" ]; then
+     sed -i '$amicrosoft-ds stream tcp nowait root /etc/samba/smbd smbd' /etc/inetd.conf
+fi
+
+
