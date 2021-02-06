@@ -389,8 +389,8 @@ define fix_fw_conf_files
 		(if [ -f $(1)/etc/vdr/plugins/epgsearch/epgsearchupdmail.templ ] ; then \
 			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchupdmail.templ ; \
 		fi); \
-		(if [ -f $(1)/etc/vdr/plugins/epgsearch/epgsearchuservars.templ ] ; then \
-			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchuservars.templ ; \
+		(if [ -f $(1)/etc/vdr/plugins/epgsearch/epgsearchuservars.conf ] ; then \
+			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchuservars.conf ; \
 		fi); \
 		(if [ -f $(1)/usr/sbin/memwatch ] ; then \
 			$(RM) -f $(1)/usr/sbin/memwatch ; \
