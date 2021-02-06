@@ -234,7 +234,7 @@ bool cDvbTuner::SetFrontend(void)
     case FE_QPSK: { // DVB-S
 //M7x0 BEGIN AK
          memset(&qpsk_Frontend, 0, sizeof(qpsk_Frontend));
-         unsigned int frequency = channel.Frequency();
+         int frequency = channel.Frequency();
          tuneTimeout = DVBS_TUNE_TIMEOUT;
          lockTimeout = DVBS_LOCK_TIMEOUT;
 
