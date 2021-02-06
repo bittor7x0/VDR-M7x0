@@ -1,5 +1,7 @@
 #!/bin/ash
 
+chmod +x /etc/samba/nmbd /etc/samba/smbd
+
 textexist=`grep netbios-ns /etc/services`
 if [ X"${textexist}" == X"" ]; then
      sed -i '$anetbios-ns 137/udp' /etc/services
@@ -24,5 +26,3 @@ textexist=`grep microsoft-ds /etc/inetd.conf`
 if [ X"${textexist}" == X"" ]; then
      sed -i '$amicrosoft-ds stream tcp nowait root /etc/samba/smbd smbd' /etc/inetd.conf
 fi
-
-

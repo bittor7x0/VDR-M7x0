@@ -10,7 +10,7 @@ Instalación:
 
 	y después:
 
-		/etc/samba/install
+		ash /etc/samba/install
 
 - Confirmar en la configuración del firmware que los servicios inet
 	están activados y reiniciar el Gigaset.
