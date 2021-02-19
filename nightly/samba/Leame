@@ -1,16 +1,16 @@
 Instalación:
 
-- Copiar VDR-NG-EM-nightly-SAMBA.zip a un directorio accesible en el Gigaset.
+- Copiar samba-VDR-NG-EM-nightly.tar.gz a un directorio accesible en el Gigaset.
 	Se puede usar un lápiz de memoria o conectar el disco duro a un PC.
 
 - Entrar por ssh/telnet al Gigaset y desde el directorio donde hemos dejado
 	el archivo ejecutar:
 
-		unzip VDR-NG-EM-nightly-SAMBA.zip "samba/*" -d /etc
+		tar -xvf samba-VDR-NG-EM-nightly.tar.gz -C /etc samba
 
 	y después:
 
-		ash /etc/samba/install
+		/etc/samba/install
 
 - Confirmar en la configuración del firmware que los servicios inet
 	están activados y reiniciar el Gigaset.

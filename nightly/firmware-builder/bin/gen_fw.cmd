@@ -19,20 +19,20 @@ rem Disable scary warning that DOS paths shouldn't be used.
 set CYGWIN=nodosfilewarning
 
 rem Firmware version number
-echo.
-echo Getting Firmware latest version number
-if not exist temp md temp
-if exist temp\latest.txt del /f /q temp\latest.txt
-bin\wget.exe --no-check-certificate -P temp https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/latest.txt
+rem echo.
+rem echo Getting Firmware latest version number
+rem if not exist temp md temp
+rem if exist temp\latest.txt del /f /q temp\latest.txt
+rem bin\wget.exe --no-check-certificate --secure-protocol=tlsv1_3 -P temp https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/latest.txt
 rem for /f "tokens=* delims=" %%A in (temp\latest.txt) do set fw_version=%%A
 rem if "%fw_version%"=="" set fw_version=0.8
+rem if exist temp\latest.txt del /f /q temp\latest.txt
 rem Force nightly-build
 set fw_version=nightly
-del /f /q temp\latest.txt
 
 rem The Wizard starts here.
 rem This is a useful set to reduce typing
-set wizapp=start /w bin/WizApp.exe
+set wizapp=start /w bin\WizApp.exe
 
 rem Set the bitmap and the return batch file for this wizard,
 rem and initialise all ather wa variables in case any old values are
@@ -140,6 +140,7 @@ if exist temp rd /q /s temp
 set page=:page3
 if not exist downloads\%fw_version% md downloads\%fw_version%
 if not exist temp\%fw_version% md temp\%fw_version%
+echo Copying nightly files to downloads
 copy /Y nightly-files\*.* downloads\%fw_version%
 
 if %language%==1 (
@@ -282,42 +283,42 @@ rem NOTE: Progress bar is a rough amount.
 IF NOT EXIST downloads\%fw_file% (
 	echo.
 	echo Download orig firmware
-	bin\wget.exe --no-check-certificate %fw_url% -O downloads/%fw_file%
+	bin\wget.exe --no-check-certificate --secure-protocol=tlsv1_3 %fw_url% -O downloads\%fw_file%
 )
 %wizapp% PB UPDATE 7
 
 IF NOT EXIST downloads\%fw_up_file% (
 	echo.
 	echo Unpack orig firmware
-    bin\7z.exe x -so downloads\%fw_file% | bin\7z.exe x -si -ttar -odownloads
+	bin\xz.exe -cd downloads\%fw_file% | bin\tar.exe xvf - -C downloads
 )
 %wizapp% PB UPDATE 10
 
 IF NOT EXIST downloads\%fw_version%\o7o_flasher (
 	echo.
 	echo Download o7o-flasher
-	bin\wget.exe --no-check-certificate -P downloads/%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/o7o_flasher
+	bin\wget.exe --no-check-certificate --secure-protocol=tlsv1_3 -P downloads\%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/o7o_flasher
 )
 %wizapp% PB UPDATE 15
 
 IF NOT EXIST downloads\%fw_version%\siemens-linux-kernel-%type%_%version%.img (
 	echo.
 	echo Download m7x0-kernel-%type%_%version%
-	bin\wget.exe --no-check-certificate -P downloads/%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/siemens-linux-kernel-%type%_%version%.img
+	bin\wget.exe --no-check-certificate --secure-protocol=tlsv1_3 -P downloads\%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/siemens-linux-kernel-%type%_%version%.img
 )
 %wizapp% PB UPDATE 25
 
 IF NOT EXIST downloads\%fw_version%\file_tab.%rfs%.lst (
 	echo.
 	echo Download list file
-	bin\wget.exe --no-check-certificate -P downloads/%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/file_tab.%rfs%.lst
+	bin\wget.exe --no-check-certificate --secure-protocol=tlsv1_3 -P downloads\%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/file_tab.%rfs%.lst
 )
 %wizapp% PB UPDATE 30
 
-IF NOT EXIST downloads\%fw_version%\%rfs%.tgz (
+IF NOT EXIST downloads\%fw_version%\%rfs%.tar.xz (
 	echo.
 	echo Download %rfs%
-	bin\wget.exe --no-check-certificate -P downloads/%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/%rfs%.tgz
+	bin\wget.exe --no-check-certificate --secure-protocol=tlsv1_3 -P downloads\%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/%rfs%.tar.xz
 )
 %wizapp% PB UPDATE 40
 
@@ -329,14 +330,13 @@ IF EXIST temp\%fw_version%\%rfs% (
 
 echo.
 echo Unpack m7x0-rootfs
-bin\7z.exe x -so downloads/%fw_version%/%rfs%.tgz | bin\7z.exe x -si -ttar -otemp/%fw_version%
-
+bin\xz.exe -cd downloads/%fw_version%/%rfs%.tar.xz | bin\tar.exe xvf - -C temp/%fw_version%/
 %wizapp% PB UPDATE 50
 
 IF NOT EXIST downloads\%fw_version%\jffs2-%type%_%version%.img (
 	echo.
 	echo Download jffs2-%type%_%version%
-	bin\wget.exe --no-check-certificate -P downloads/%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/jffs2-%type%_%version%.img
+	bin\wget.exe --no-check-certificate --secure-protocol=tlsv1_3 -P downloads\%fw_version% https://github.com/bittor7x0/VDR-M7x0/raw/firmware-builder-files/%fw_version%/jffs2-%type%_%version%.img
 )
 %wizapp% PB UPDATE 55
 
@@ -368,7 +368,7 @@ if %type%==m750s (
 IF NOT EXIST temp\unpacked_%type% (
 	echo.
 	echo Extract orig rootfs files
-	bin\cramfsck.exe -r -x temp/unpacked_%type% temp/%fw_up_file%_orig_fw.le.cram
+	bin\cramfsck.exe -r -x temp\unpacked_%type% temp\%fw_up_file%_orig_fw.le.cram
 )
 %wizapp% PB UPDATE 80
 

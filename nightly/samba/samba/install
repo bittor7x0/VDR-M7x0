@@ -1,7 +1,5 @@
 #!/bin/ash
 
-chmod +x /etc/samba/nmbd /etc/samba/smbd
-
 textexist=`grep netbios-ns /etc/services`
 if [ X"${textexist}" == X"" ]; then
      sed -i '$anetbios-ns 137/udp' /etc/services
