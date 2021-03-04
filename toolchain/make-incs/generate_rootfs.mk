@@ -132,7 +132,8 @@ $(ROOTFS_FILE_TABLE): $(ROOTFS_DIR_DEPS)
 	-$(RM) -rf $(ROOTFS_DIR)
 	-$(RM) -f $(ROOTFS_FILE_TABLE)
 	$(MKDIR) -p $(ROOTFS_DIR)
-	($(FIND) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/lib/modules -type f -a -exec file {} \; | \
+	(if [ -d $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/lib/modules ] ; then \
+	$(FIND) $(TARGET_ROOT)/$(M7X0_KERNEL_DIR)/lib/modules -type f -a -exec file {} \; | \
 		$(SED) -n -e 's/^\(.*\):.*ELF.*\(executable\|relocatable\|shared object\).*,.* stripped/\1:\2/p' | \
 		( \
 			IFS=":" ; \
@@ -144,7 +145,7 @@ $(ROOTFS_FILE_TABLE): $(ROOTFS_DIR_DEPS)
 			done ; \
 			true ; \
 		) \
-	)
+	fi )
 	$(CAT) $(FQ_FILE_LISTS) | $(AWK) $(AWK_LST_TRANS_PRG_COPY) > \
 		$(ROOTFS_FILE_COPY)
 	$(COPY_LISTS_BIN) -s '$(ROOTFS_DIR)' '$(TARGET_ROOT)' \
@@ -164,17 +165,17 @@ ifeq ($(HOST_CYGWIN),y)
 	$(CP) $(HOSTUTILS_PREFIX_BIN)/rsaencode.exe $(CYGWIN_DIR_TMP_ABS)/rsaencode.exe
 	$(CP) $(shell which cat.exe) $(CYGWIN_DIR_TMP_ABS)/cat.exe
 	$(CP) $(shell which dd.exe) $(CYGWIN_DIR_TMP_ABS)/dd.exe
-	$(CP) $(shell which gzip.exe) $(CYGWIN_DIR_TMP_ABS)/gzip.exe
 	$(CP) $(shell which md5sum.exe) $(CYGWIN_DIR_TMP_ABS)/md5sum.exe	
 	$(CP) $(shell which sed.exe) $(CYGWIN_DIR_TMP_ABS)/sed.exe
 	$(CP) $(shell which sha1sum.exe) $(CYGWIN_DIR_TMP_ABS)/sha1sum.exe
 	$(CP) $(shell which tar.exe) $(CYGWIN_DIR_TMP_ABS)/tar.exe
-	$(CP) $(shell which unzip.exe) $(CYGWIN_DIR_TMP_ABS)/unzip.exe
+	$(CP) $(shell which wget.exe) $(CYGWIN_DIR_TMP_ABS)/wget.exe
+	$(CP) $(shell which xz.exe) $(CYGWIN_DIR_TMP_ABS)/xz.exe
 	for exe_file in `$(FIND) $(CYGWIN_DIR_TMP_ABS) -type f -iname '*.exe' | $(SORT)` ; do \
 		for exe_dep in `ldd.exe $$exe_file | grep.exe --invert-match Windows | cut.exe -d " " -f3` ; do \
 			[ ! -f $(CYGWIN_DIR_TMP_ABS)/$$(basename $$exe_dep) ] && \
-				$(CP) $$exe_dep $(CYGWIN_DIR_TMP_ABS)/$$(basename $$exe_dep) && \
-				strip.exe $(CYGWIN_DIR_TMP_ABS)/$$(basename $$exe_dep) ; \
+				[[ $$(basename $$exe_dep) == cyg* ]] && \
+				$(CP) $$exe_dep $(CYGWIN_DIR_TMP_ABS)/$$(basename $$exe_dep) ; \
 		done ; \
 		strip.exe $$exe_file ; \
 	done
@@ -291,6 +292,9 @@ distclean-generate-rootfs:
 	-$(RM) -f $(ROOTFS_FILE_TABLE)
 	-$(RM) -f $(ROOTFS_FILE_COPY)
 	-$(RM) -rf $(ROOTFS_DIR)
+ifeq ($(HOST_CYGWIN),y)
+	-$(RM) -rf $(CYGWIN_DIR_TMP_ABS)
+endif
 	-$(RM) -f $(TOP_DIR)/$(EXT2_ROOTFS_IMG)
 	-$(RM) -f $(TOP_DIR)/$(CRAM_ROOTFS_IMG)
 	-$(RM) -f $(TOP_DIR)/$(SQUASH_ROOTFS_IMG)

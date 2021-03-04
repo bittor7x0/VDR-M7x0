@@ -263,12 +263,12 @@ gen_copy_lst_dirs = \
 # should be called
 # $(call gen_copy_file_lst,<path_of_files>,<path in root fs>,<user id>,<group id>,<lst filename>,check|nocheck)
 define gen_copy_file_lst
-$(FILELIST_DIR)/$(5): $(shell if [ -d "$(1)" ] ; then $(FIND) $(1) \! -path "*.svn*" \! -name "*~" ; else [ "$(6)" != "nocheck" ] && echo $(1) ; fi)
+$(FILELIST_DIR)/$(5): $(shell if [ -d "$(1)" ] ; then $(FIND) $(1) \! -path "*.svn*" \! -path "*.git*" \! -name "*~" ; else [ "$(6)" != "nocheck" ] && echo $(1) ; fi)
 	if [ -d "$(1)" ] ; then \
 	( $(call gen_copy_lst_dirs,$(2)) \
-		$(FIND) "$(1)" -type d \! -path "$(1)" \! -path "*.svn*" \
+		$(FIND) "$(1)" -type d \! -path "$(1)" \! -path "*.svn*" \! -path "*.git*" \
 			-printf "$(2)/%-20P - d %m $(3) $(4) - - - - -\n" ; \
-		$(FIND) "$(1)" -type f \! -path "*.svn*" \! -name "*~" \
+		$(FIND) "$(1)" -type f \! -path "*.svn*" \! -path "*.git*" \! -name "*~" \
 			-printf "$(2)/%-20P %-20p f %m $(3) $(4) - - - - -\n" ; \
 		$(FIND) $(1) -type l -printf "$(2)/%-20P %-20l l %m $(3) $(4) - - - - -\n" ; ) \
 	> $(FILELIST_DIR)/$(5) ; \
@@ -288,7 +288,7 @@ endef
 # usage: $(call css_shrink_dir, <css_dir>)
 define css_shrink_dir
 	for css_file in `$(FIND) $(1) -type f -iname '*.css' | $(SORT)` ; do \
-		$(SED) -i -e  "s,/\*\!,/\*,g" "$$css_file" ; \
+		$(SED) -i -e "s,/\*\!,/\*,g" "$$css_file" ; \
 		$(shell which java) -jar $(YUI_COMPRESSOR_JAR) --type css "$$css_file" -o "$$css_file" ; \
 	done
 endef
@@ -297,7 +297,7 @@ endef
 # usage: $(call js_shrink_dir, <js_dir>)
 define js_shrink_dir
 	for js_file in `$(FIND) $(1) -type f -iname '*.js' | $(SORT)` ; do \
-		$(SED) -i -e  "s,/\*\!,/\*,g" "$$js_file" ; \
+		$(SED) -i -e "s,/\*\!,/\*,g" "$$js_file" ; \
 		$(shell which java) -jar $(YUI_COMPRESSOR_JAR) --type js "$$js_file" -o "$$js_file" ; \
 	done
 endef
@@ -381,8 +381,10 @@ endef
 
 define fix_fw_conf_files
 	(if [ $(CONFIG_FW_VERSION) == lite ] ; then \
-		$(SED) -i '/Montar unidades de red/d' $(1)/etc/vdr/commands.conf ; \
-		$(SED) -i '/Actualizar archivos en servidor DLNA/d' $(1)/etc/vdr/commands.conf ; \
+		(if [ -f $(1)/etc/vdr/commands.conf ] ; then \
+			$(SED) -i '/Montar unidades de red/d' $(1)/etc/vdr/commands.conf ; \
+			$(SED) -i '/Actualizar archivos en servidor DLNA/d' $(1)/etc/vdr/commands.conf ; \
+		fi); \
 		(if [ -f $(1)/etc/vdr/plugins/epgsearch/epgsearchconflmail.templ ] ; then \
 			$(RM) -f $(1)/etc/vdr/plugins/epgsearch/epgsearchconflmail.templ ; \
 		fi); \
@@ -396,10 +398,10 @@ define fix_fw_conf_files
 			$(RM) -f $(1)/usr/sbin/memwatch ; \
 		fi); \
 	fi);
-	(if [ ! -f $(VDR_DIR)/PLUGINS/src/epgsearch/Makefile ]; then \
+	(if [ ! -f $(VDR_DIR)/PLUGINS/src/epgsearch/Makefile -a -f $(1)/etc/vdr/commands.conf ]; then \
 		$(SED) -i '/PLUG epgsearch/d' $(1)/etc/vdr/commands.conf ; \
 	fi);
-	(if [ ! -f $(VDR_DIR)/PLUGINS/src/xmltv2vdr/Makefile ]; then \
+	(if [ ! -f $(VDR_DIR)/PLUGINS/src/xmltv2vdr/Makefile -a -f $(1)/etc/vdr/commands.conf ]; then \
 		$(SED) -i '/PLUG xmltv2vdr/d' $(1)/etc/vdr/commands.conf ; \
 	fi);
 endef
@@ -468,6 +470,10 @@ endif
 	-$(MKDIR) -p $(STAGEFILES_DIR)
 	-$(MKDIR) -p $(HOSTUTILS_BUILD_DIR)
 	-$(MKDIR) -p $(HOSTUTILS_PREFIX_BIN)
+ifeq ($(HOST_CYGWIN),y)
+	# Fix incorrect Cygwin permissions
+	$(FIND) $(BUILDIN_DIR) $(PRG_CONFIGS_DIR) -type d -exec chmod 0755 {} \;
+endif
 	$(TOUCH) $(STAGEFILES_DIR)/.uclibctoolchaindirs
 
 $(BASE_BUILD_STAGEFILE): $(BASE_RULES)

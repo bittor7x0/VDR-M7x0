@@ -24,8 +24,8 @@ KLONE_CONF_ARGS += --enable_fs --enable_hooks
 # KLONE_CONF_ARGS += --enable_debug --enable_libu_debug
 # KLONE_CONF_ARGS += --prefix=$(DESTDIR) --libs=$(DESTDIR) --disable_libu_mini --disable_shared
 
-# exclude svn control files
-KLONE_IMPORT_ARGS = -x */.svn/* -x *.*~
+# exclude svn and git control files
+KLONE_IMPORT_ARGS = -x */.svn/* -x */.git/* -x *.*~
 #KLONE_IMPORT_ARGS += -x */css/* -x */js/*
 
 # patch klone to include partial content responses and some fixes for gcc
