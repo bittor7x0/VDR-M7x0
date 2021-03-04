@@ -1,0 +1,142 @@
+# --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
+#
+# Copyright (C) 2021 VDR-NG-EM Project
+#
+# More information can be found in the files COPYING and README.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# The project's page is at https://github.com/bittor7x0/VDR-M7x0
+# Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  https://vdr-m7x0.foroactivo.com.es
+#
+# --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
+
+name: Coverity Scan
+
+on:
+  # Triggers the workflow on push events but only for the coverity_scan branch
+  push:
+    branches:
+      - coverity_scan
+
+  # Manual trigger
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  coverity-scan:
+    runs-on: ubuntu-18.04
+
+    env:
+      COVERITY_SCAN_PROJECT_NAME: bittor7x0%2FVDR-M7x0
+      COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+      COVERITY_SCAN_NOTIFICATION_EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y build-essential pkg-config m4 automake libz-dev libsqlite3-dev libcurl4-openssl-dev libpcre3-dev libpcre++-dev
+
+      - name: Set Coverity Build Tool MD5 hash
+        id: coverity_scan_md5
+        run: |
+          echo "::set-output name=coverity_scan_md5sum::$(curl --silent https://scan.coverity.com/download/linux64 --data "token=${COVERITY_SCAN_TOKEN}&project=${COVERITY_SCAN_PROJECT_NAME}&md5=1")"
+
+      - name: Cache Coverity Build Tool
+        id: coverity_scan_cache
+        uses: actions/cache@v2
+        with:
+          path: cov-analysis-linux64.tar.gz
+          key: cov-analysis-linux64-${{ steps.coverity_scan_md5.outputs.coverity_scan_md5sum }}
+
+      - name: Download Coverity Build Tool
+        if: steps.coverity_scan_cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fs --show-error https://scan.coverity.com/download/linux64 --data "token=${COVERITY_SCAN_TOKEN}&project=${COVERITY_SCAN_PROJECT_NAME}" -o cov-analysis-linux64.tar.gz
+
+      - name: Extract Coverity Build Tool
+        run: |
+          mkdir cov-analysis-linux64
+          tar xzf cov-analysis-linux64.tar.gz --strip-components=1 -C cov-analysis-linux64
+
+      - name: Prepare code to compile without Toolchain
+        run: |
+          mkdir m7x0-linux-headers
+          tar xvf toolchain/downloads/m7x0-linux-headers.tar.bz2 --strip 1 -C m7x0-linux-headers
+          rm -rf vdr-m7x0/PLUGINS/src
+          rm -rf vdr-m7x0-plugins/markad vdr-m7x0-plugins/submenu vdr-m7x0-plugins/tvscraper vdr-m7x0-plugins/weatherng vdr-m7x0-plugins/xvdr
+          ln -sf $(pwd)/vdr-m7x0-plugins vdr-m7x0/PLUGINS/src
+          ln -sf $(pwd)/vdr-m7x0 m7x0-linux-headers/include/vdr
+          echo '#define O7OTOOLCHAINVERSION "9.9.9 Coverity Scan"' > m7x0-linux-headers/include/o7o-toolchain-version.h
+          sed -i -e 's,$(CC) -M,$(CC) $(CFLAGS) $(CPPFLAGS) -M,g' toolchain/buildin/tool-box/Makefile
+          sed -i '/@$(STRIP) $@/d' vdr-m7x0-plugins/pin/Makefile
+          sed -i '/@cp -f $@ $(FSKCHKDIR)/d' vdr-m7x0-plugins/pin/Makefile
+          sed -i -e 's,std::min,std::min<long int>,g' vdr-m7x0/dvbdevice.c
+          sed -i -e 's,std::min,std::min<long int>,g' vdr-m7x0/remux.c
+          sed -i -e 's,std::max,std::max<long int>,g' vdr-m7x0/remux.c
+          sed -i -e 's,strrchr(recording->FileName(),(char *) strrchr(recording->FileName(),' vdr-m7x0/recording.c
+          sed -i -e 's,strrchr(,(char *) strrchr(,' vdr-m7x0-plugins/filebrowser/menu-filebrowser.c
+          sed -i -e 's,strrchr(,(char *) strrchr(,' vdr-m7x0-plugins/filebrowser/commands.c
+          sed -i -e 's,index(Include,(char *) index(Include,' vdr-m7x0-plugins/mp3/data.c
+          sed -i -e 's,index(buff,(char *) index(buff,g' vdr-m7x0-plugins/mp3/stream.c
+          sed -i -e 's,strchr(host,(char *) strchr(host,' vdr-m7x0-plugins/rssreader/http_fetcher.c
+          sed -i -e 's,strstr(str,(char *) strstr(str,' vdr-m7x0-plugins/rssreader/parser.c
+          sed -i -e 's,strrchr(Filename,(char *) strrchr(Filename,' vdr-m7x0-plugins/setup/commands.cpp
+          sed -i -e 's,strrchr(,(char *) strrchr(,g' vdr-m7x0-plugins/setup/menu-filebrowser.cpp
+          sed -i -e 's,strrchr(font,(char *) strrchr(font,' vdr-m7x0-plugins/skinenigmang/config.c
+          sed -i -e 's,strcasestr(aux,(char *) strcasestr(aux,g' vdr-m7x0-plugins/skinenigmang/tools.c
+          sed -i -e 's,strrchr(NewName,(char *) strrchr(NewName,' vdr-m7x0-plugins/undelete/undelete.c
+          sed -i -e 's,std::min,std::min<long int>,g' vdr-m7x0-plugins/cridplayer/cridplayer_player.c
+          sed -i -e 's,strrchr(filename,(char *) strrchr(filename,' vdr-m7x0-plugins/mp3/stream.c
+          sed -i -e 's,strrchr(filename,(char *) strrchr(filename,' vdr-m7x0-plugins/mp3/decoder.c
+          cat <<EOF > cov-int-make.sh
+          #!/bin/bash
+          make -C toolchain/buildin/libosd
+          make -C toolchain/buildin/fw-utils
+          make -C toolchain/buildin/sstrip
+          make -C toolchain/buildin/tool-box CFLAGS="-I$(pwd)/toolchain/buildin -I$(pwd)/m7x0-linux-headers/include" LDFLAGS="-L$(pwd)/toolchain/buildin/libosd"
+          make -C toolchain/buildin/o7o_flasher CFLAGS="-I$(pwd)/toolchain/buildin -I$(pwd)/m7x0-linux-headers/include -D__MIPSEL__" LDFLAGS="-L$(pwd)/toolchain/buildin/libosd"
+          make -C toolchain/buildin/usbautomounter CPPFLAGS="-I$(pwd)/toolchain/buildin -D_FILE_OFFSET_BITS=64 -DO_LARGEFILE=0x2000" LDFLAGS="-L$(pwd)/toolchain/buildin/libosd"
+          make -C vdr-m7x0 all CXXFLAGS="-I$(pwd)/m7x0-linux-headers/include" USE_PINPLUGIN=1
+          make -C vdr-m7x0 plugins CFLAGS="-fPIC" CXXFLAGS="-I$(pwd)/m7x0-linux-headers/include -I$(pwd)/m7x0-linux-headers/include/vdr -D__UCLIBC__ -D__UCLIBC_MAJOR__=1 -D__UCLIBC_MINOR__=0 -D__UCLIBC_SUBLEVEL__=37 -fPIC" USE_PINPLUGIN=1
+          EOF
+          chmod +x cov-int-make.sh
+
+      - name: Build with cov-build
+        run: |
+          export PATH="$(pwd)/cov-analysis-linux64/bin:$PATH"
+          cov-build --dir cov-int ./cov-int-make.sh
+
+      - name: Submit the result to Coverity Scan
+        run: |
+          tar jcvf VDR-M7x0.tar.bz2 cov-int
+          curl \
+            --silent --show-error \
+            --output coverity_scan_submit.txt \
+            --form project=VDR-M7x0 \
+            --form token=${COVERITY_SCAN_TOKEN} \
+            --form email=${COVERITY_SCAN_NOTIFICATION_EMAIL} \
+            --form file=@VDR-M7x0.tar.bz2 \
+            --form version=${GITHUB_SHA} \
+            --form description="Automatic Coverity Scan build for ${GITHUB_REF} - $(vdr-m7x0/vdr --version)" \
+            https://scan.coverity.com/builds?project=${COVERITY_SCAN_PROJECT_NAME}
+          cat ./coverity_scan_submit.txt
