@@ -1,0 +1,81 @@
+# --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
+#
+# Copyright (C) 2021 VDR-NG-EM Project
+#
+# More information can be found in the files COPYING and README.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# The project's page is at https://github.com/bittor7x0/VDR-M7x0
+# Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  https://vdr-m7x0.foroactivo.com.es
+#
+# --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
+
+name: Cygwin Build
+
+on:
+  # Only manual trigger
+  workflow_dispatch:
+
+jobs:
+  cygwin-build:
+    runs-on: windows-latest
+
+    env:
+      CCACHE_DIR: ${{ GITHUB.WORKSPACE }}\.ccache
+
+    steps:
+      - name: Cache ccache objects
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-${{ github.sha }}
+          restore-keys: |
+            ccache-
+
+      - name: Install Cygwin packages
+        shell: cmd
+        run: |
+          choco config get cacheLocation
+          choco install -y --no-progress cygwin
+          C:\tools\cygwin\cygwinsetup.exe -qgnNdO -R C:/tools/cygwin -s http://mirrors.kernel.org/sourceware/cygwin/ -P autoconf,bison,curl,wget,flex,gcc-g++,make,automake,patch,git,subversion,zlib-devel,ccache
+
+      - name: Set git to use LF and symlinks
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+          git config --global core.symlinks true
+
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup ccache
+        run: |
+          C:\tools\cygwin\bin\bash.exe -l -x -c 'export PATH=/usr/local/bin:/usr/bin && ccache --max-size 400M && mkdir -p /usr/lib/ccache/bin ${{ env.CCACHE_DIR }} && for compiler in c++ cc g++ gcc mips-linux-uclibc-g++ mips-linux-uclibc-gcc; do ln -sf /usr/bin/ccache /usr/lib/ccache/bin/${compiler}; done'
+
+      - name: Compile Toolchain
+        continue-on-error: true
+        run: |
+          C:\tools\cygwin\bin\bash.exe -l -x -c 'export PATH=/usr/lib/ccache/bin:/usr/local/bin:/usr/bin && cd $(cygpath -u "${GITHUB_WORKSPACE}")/toolchain && cp configs/default-config-cygwin .config && make'
+
+      - name: Show ccache stats
+        run: |
+          C:\tools\cygwin\bin\bash.exe -l -x -c 'ccache --show-stats && ccache --zero-stats'
+
+      - name: Upload Cygwin artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: cygwin_binaries
+          path: toolchain/cygwin_dir_m740_lite/
