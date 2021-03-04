@@ -1,0 +1,265 @@
+# --- VDR-NG-EM-COPYRIGHT-NOTE-BEGIN ---
+#
+# Copyright (C) 2021 VDR-NG-EM Project
+#
+# More information can be found in the files COPYING and README.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# The project's page is at https://github.com/bittor7x0/VDR-M7x0
+# Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
+# Our Spanish forum is at  https://vdr-m7x0.foroactivo.com.es
+#
+# --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
+
+name: VDR-NG-EM Nightly Build
+
+on:
+  # Triggers the workflow on push events but only for the master branch
+  push:
+    branches:
+      - master
+
+    # except for these files
+    paths-ignore:
+      - '.github/**'
+      - '!.github/workflows/nightly-build.yml'
+      - '.gitignore'
+      - '.gitattributes'
+      - '.keep'
+      - '**/COPYING'
+      - '**/LICENSE'
+      - '**/HISTORY'
+      - '**/README*'
+      - '**.md'
+      - '**.jpg'
+      - '**.png'
+      - '**.xpm'
+      - '**.txt'
+      - '**.conf'
+      - '**.po'
+
+  # Manual trigger
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  nightly-build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Download nightly files
+        run: |
+          svn export https://github.com/bittor7x0/VDR-M7x0/branches/firmware-builder-files/nightly toolchain/firmware-builder-files
+
+      - name: Cache ccache objects
+        uses: actions/cache@v2
+        with:
+          path: ${{ GITHUB.WORKSPACE }}/.ccache
+          key: ccache-${{ github.sha }}
+          restore-keys: |
+            ccache-
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y build-essential pkg-config m4 automake libtirpc-dev libz-dev subversion default-jre ccache
+
+      - name: Setup ccache
+        run: |
+          ccache -o cache_dir=${{ GITHUB.WORKSPACE }}/.ccache
+          ccache --max-size 400M
+          sudo ln -s /usr/bin/ccache /usr/bin/mips-linux-uclibc-gcc
+          sudo ln -s /usr/bin/ccache /usr/bin/mips-linux-uclibc-g++
+
+      - name: Create Firmware Windows Builder directory
+        working-directory: toolchain
+        run: |
+          mkdir -p VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          cp -af firmware-builder-files/firmware-builder/* VDR-NG-EM-nightly-Firmware-Windows-Builder
+
+      - name: Compile Firmware Pro (M740AV-M750T)
+        working-directory: toolchain
+        run: |
+          export PATH="/usr/lib/ccache:${PATH}"
+          cp configs/default-config-pro .config
+          sed -i '/^CONFIG_VDR-PLUGINS-JFFS2/d' .config
+          cat <<EOF >> .config
+          CONFIG_VDR-PLUGINS-JFFS2 = xmltv2vdr streamdev osdadjust clock cridplayer devstatus dvbmon fepg games hdspace mlist mp3 mpgplayer osdserver pictures pin playlist prefermenu rssreader skinreel skinsoppalusikka sleeptimer streamplayer sudoku undelete vdrmanager weatherng zappilot
+          CONFIG_VDR-PLUGINS-JFFS2-LIBS = xmltv2vdr streamdev-server osdadjust clock cridplayer devstatus dvbmon fepg games hdspace mlist mp3 mpgplayer osdserver pictures pin playlist prefermenu rssreader skinreel skinsoppalusikka sleeptimer streamplayer sudoku undelete vdrmanager weatherng zappilot
+          EOF
+          make
+          mkdir VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro
+          mv vdr-ng-em-m740-pro.wsw vdr-ng-em-m740-m750t-pro.wsw
+          md5sum vdr-ng-em-m740-m750t-pro.wsw > VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro/vdr-ng-em-m740-m750t-pro.wsw.md5
+          mv vdr-ng-em-m740-m750t-pro.wsw VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro
+          make distclean-generate-jffs2
+          sed -i 's/^# CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN is not set/CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN = y/' .config
+          make
+          mv m7x0_xtc_uclibc_Linux-x86_64/stagefiles/file_tab.rootfs_dir_m740_pro.lst VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          mv jffs2-m740_pro.img VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          rm -f rootfs_dir_m740_pro/lib/modules/2.4.21-xfs/tainted/*
+          tar cfJ rootfs_dir_m740_pro.tar.xz rootfs_dir_m740_pro
+          mv rootfs_dir_m740_pro.tar.xz VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          mv siemens-linux-kernel-m740_pro.img VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          ./m7x0_xtc_uclibc_Linux-x86_64/bin/sstrip m7x0_xtc_uclibc_Linux-x86_64/target_root/usr/sbin/o7o_flasher
+          cp m7x0_xtc_uclibc_Linux-x86_64/target_root/usr/sbin/o7o_flasher VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+
+      - name: Compile Firmware Pro (M750S)
+        working-directory: toolchain
+        run: |
+          export PATH="/usr/lib/ccache:${PATH}"
+          make recompile-vdr recompile-vdr-plugins clean-siemens-linux-kernel distclean-siemens-linux-kernel
+          sed -i 's/^CONFIG_M7X0_TYPE = m740/CONFIG_M7X0_TYPE = m750s/' .config
+          sed -i 's/^CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN = y/# CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN is not set/' .config
+          sed -i '/^CONFIG_VDR-PLUGINS-JFFS2/d' .config
+          cat <<EOF >> .config
+          CONFIG_VDR-PLUGINS-JFFS2 = xmltv2vdr streamdev osdadjust clock devstatus dvbmon fepg games hdspace mlist mp3 mpgplayer pictures pin playlist prefermenu rssreader sleeptimer streamplayer undelete vdrmanager zappilot
+          CONFIG_VDR-PLUGINS-JFFS2-LIBS = xmltv2vdr streamdev-server osdadjust clock devstatus dvbmon fepg games hdspace mlist mp3 mpgplayer pictures pin playlist prefermenu rssreader sleeptimer streamplayer undelete vdrmanager zappilot
+          EOF
+          make
+          mkdir VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro
+          md5sum vdr-ng-em-m750s-pro.wsw > VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro/vdr-ng-em-m750s-pro.wsw.md5
+          mv vdr-ng-em-m750s-pro.wsw VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro
+          make distclean-generate-jffs2
+          sed -i 's/^# CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN is not set/CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN = y/' .config
+          make
+          mv m7x0_xtc_uclibc_Linux-x86_64/stagefiles/file_tab.rootfs_dir_m750s_pro.lst VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          mv jffs2-m750s_pro.img VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          rm -f rootfs_dir_m750s_pro/lib/modules/2.4.21-xfs/tainted/*
+          tar cfJ rootfs_dir_m750s_pro.tar.xz rootfs_dir_m750s_pro
+          mv rootfs_dir_m750s_pro.tar.xz VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          mv siemens-linux-kernel-m750s_pro.img VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+
+      - name: Compile Firmware Lite (M740AV-M750T)
+        working-directory: toolchain
+        run: |
+          export PATH="/usr/lib/ccache:${PATH}"
+          make recompile-vdr recompile-vdr-plugins clean-busybox distclean-busybox clean-siemens-linux-kernel distclean-siemens-linux-kernel clean-uclibc distclean-uclibc
+          rm -f .config
+          cp configs/default-config-lite .config
+          sed -i '/^CONFIG_VDR-PLUGINS-JFFS2/d' .config
+          cat <<EOF >> .config
+          CONFIG_VDR-PLUGINS-JFFS2 = clock cridplayer devstatus dvbmon fepg games hdspace mlist mp3 mpgplayer pictures pin playlist prefermenu skinreel skinsoppalusikka sleeptimer sudoku undelete zappilot
+          CONFIG_VDR-PLUGINS-JFFS2-LIBS = clock cridplayer devstatus dvbmon fepg games hdspace mlist mp3 mpgplayer pictures pin playlist prefermenu skinreel skinsoppalusikka sleeptimer sudoku undelete zappilot
+          EOF
+          make
+          mkdir VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite
+          mv vdr-ng-em-m740-lite.wsw vdr-ng-em-m740-m750t-lite.wsw
+          md5sum vdr-ng-em-m740-m750t-lite.wsw > VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite/vdr-ng-em-m740-m750t-lite.wsw.md5
+          mv vdr-ng-em-m740-m750t-lite.wsw VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite
+          make distclean-generate-jffs2
+          sed -i 's/^# CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN is not set/CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN = y/' .config
+          make
+          mv m7x0_xtc_uclibc_Linux-x86_64/stagefiles/file_tab.rootfs_dir_m740_lite.lst VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          mv jffs2-m740_lite.img VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          rm -f rootfs_dir_m740_lite/lib/modules/2.4.21-xfs/tainted/*
+          tar cfJ rootfs_dir_m740_lite.tar.xz rootfs_dir_m740_lite
+          mv rootfs_dir_m740_lite.tar.xz VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          mv siemens-linux-kernel-m740_lite.img VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+
+      - name: Compile Firmware Lite (M750S)
+        working-directory: toolchain
+        run: |
+          export PATH="/usr/lib/ccache:${PATH}"
+          make recompile-vdr recompile-vdr-plugins clean-siemens-linux-kernel distclean-siemens-linux-kernel
+          sed -i 's/^CONFIG_M7X0_TYPE = m740/CONFIG_M7X0_TYPE = m750s/' .config
+          sed -i 's/^CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN = y/# CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN is not set/' .config
+          sed -i '/^CONFIG_VDR-PLUGINS-JFFS2/d' .config
+          cat <<EOF >> .config
+          CONFIG_VDR-PLUGINS-JFFS2 = clock devstatus dvbmon fepg games hdspace mlist mp3 mpgplayer pictures pin playlist prefermenu sleeptimer undelete zappilot
+          CONFIG_VDR-PLUGINS-JFFS2-LIBS = clock devstatus dvbmon fepg games hdspace mlist mp3 mpgplayer pictures pin playlist prefermenu sleeptimer undelete zappilot
+          EOF
+          make
+          mkdir VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite
+          md5sum vdr-ng-em-m750s-lite.wsw > VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite/vdr-ng-em-m750s-lite.wsw.md5
+          mv vdr-ng-em-m750s-lite.wsw VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite
+          make distclean-generate-jffs2
+          sed -i 's/^# CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN is not set/CONFIG_COPY_ROOTFS_TO_JFFS2_FIRST_RUN = y/' .config
+          make
+          mv m7x0_xtc_uclibc_Linux-x86_64/stagefiles/file_tab.rootfs_dir_m750s_lite.lst VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          mv jffs2-m750s_lite.img VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          rm -f rootfs_dir_m750s_lite/lib/modules/2.4.21-xfs/tainted/*
+          tar cfJ rootfs_dir_m750s_lite.tar.xz rootfs_dir_m750s_lite
+          mv rootfs_dir_m750s_lite.tar.xz VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+          mv siemens-linux-kernel-m750s_lite.img VDR-NG-EM-nightly-Firmware-Windows-Builder/nightly-files
+
+      - name: Compile SAMBA
+        working-directory: toolchain
+        run: |
+          export PATH="/usr/lib/ccache:${PATH}"
+          make clean-siemens-linux-kernel distclean-siemens-linux-kernel
+          sed -i 's/^# CONFIG_SAMBA is not set/CONFIG_SAMBA = y/' .config
+          sed -i 's/^CONFIG_SCRIPT_BASE = base-lite/CONFIG_SCRIPT_BASE = base-pro/' .config
+          make
+          mkdir -p VDR-NG-EM-nightly-SAMBA/samba/codepages
+          cp -af firmware-builder-files/samba/* VDR-NG-EM-nightly-SAMBA
+          chmod 755 rootfs_dir_m750s_lite/usr/sbin/nmbd
+          mv rootfs_dir_m750s_lite/usr/sbin/nmbd VDR-NG-EM-nightly-SAMBA/samba
+          chmod 755 rootfs_dir_m750s_lite/usr/sbin/smbd
+          mv rootfs_dir_m750s_lite/usr/sbin/smbd VDR-NG-EM-nightly-SAMBA/samba
+          mv rootfs_dir_m750s_lite/etc/samba/smb.conf VDR-NG-EM-nightly-SAMBA/samba
+          mv rootfs_dir_m750s_lite/usr/share/samba/codepages/codepage.850 VDR-NG-EM-nightly-SAMBA/samba/codepages
+          mv rootfs_dir_m750s_lite/usr/share/samba/codepages/unicode_map.850 VDR-NG-EM-nightly-SAMBA/samba/codepages
+          mv rootfs_dir_m750s_lite/usr/share/samba/codepages/unicode_map.ISO8859-15 VDR-NG-EM-nightly-SAMBA/samba/codepages
+          cd VDR-NG-EM-nightly-SAMBA
+          tar cfvz samba-VDR-NG-EM-nightly.tar.gz samba
+          rm -rf samba
+
+      - name: Show ccache stats
+        run: |
+          ccache --show-stats
+          ccache --zero-stats
+
+      - name: Upload Firmware Pro (M740AV-M750T) artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro
+          path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro/
+
+      - name: Upload Firmware Pro (M750S) artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro
+          path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro/
+
+      - name: Upload Firmware Lite (M740AV-M750T) artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite
+          path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite/
+
+      - name: Upload Firmware Lite (M750S) artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite
+          path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite/
+
+      - name: Upload SAMBA artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: VDR-NG-EM-nightly-SAMBA
+          path: toolchain/VDR-NG-EM-nightly-SAMBA/
+
+      - name: Upload Firmware Windows Builder artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: VDR-NG-EM-nightly-Firmware-Windows-Builder
+          path: toolchain/VDR-NG-EM-nightly-Firmware-Windows-Builder/
