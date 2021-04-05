@@ -1,7 +1,8 @@
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](COPYING "License: GPL v3")
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](COPYING "Read License GPL v3")
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/bittor7x0/VDR-M7x0/commits/master "View commits")
-[![Coverity Scan Build Status](https://img.shields.io/coverity/scan/22406.svg)](https://scan.coverity.com/projects/bittor7x0-vdr-m7x0 "Coverity Scan Build Status")
-[![GitHub release](https://img.shields.io/github/release/bittor7x0/VDR-M7x0.svg)](https://GitHub.com/bittor7x0/VDR-M7x0/releases/ "GitHub release")
+[![Build Status](https://img.shields.io/github/workflow/status/bittor7x0/VDR-M7x0/VDR-NG-EM%20Nightly%20Build?label=Build)](https://github.com/bittor7x0/VDR-M7x0/actions/workflows/nightly-build.yml "Download nightly builds")
+[![Coverity Scan Status](https://img.shields.io/coverity/scan/22406.svg)](https://scan.coverity.com/projects/bittor7x0-vdr-m7x0 "View Coverity Scan Status")
+[![GitHub release](https://img.shields.io/github/release/bittor7x0/VDR-M7x0.svg)](https://github.com/bittor7x0/VDR-M7x0/releases/latest "Download latest release")
 [![Forum](https://img.shields.io/static/v1?label=&labelColor=gray&message=Forum&color=blue&style=flat&logo=homeadvisor&logoColor=ffffff)](https://vdr-m7x0.foroactivo.com.es/ "VDR-NG-EM Forum")
 
 
@@ -15,7 +16,7 @@ In 2021, the **VDR-NG-EM** project was migrated from Assembla to GitHub (Wiki, T
 
 ## Main features
 * Backports from VDR 2.4.x with a lot of fixes and improvements.
-* Many VDR plugins available (e.g. epgsearch, epgfixer, scheduler, osdteletext, rssreader, vdrmanager, xmltv2vdr, parental control with PIN plugin, etc.). [See complete list](vdr-m7x0-plugins "VDR-NG-EM Plugins").
+* Many VDR plugins available (e.g. epgsearch, epgfixer, scheduler, osdteletext, rssreader, vdrmanager, xmltv2vdr, parental control with PIN plugin, etc.). [See complete list](https://github.com/bittor7x0/VDR-M7x0/wiki/Plugins_para_el_VDR-NG-EM "VDR-NG-EM Plugins").
 * Permanent TimeShift very configurable.
 * Record HD channels using MPEG-TS files (including DVB and Teletext subtitles).
 * Edit recordings ultrafast using hard links.
@@ -26,21 +27,35 @@ In 2021, the **VDR-NG-EM** project was migrated from Assembla to GitHub (Wiki, T
 * Two versions of the firmware are provided: **Pro** is a full version with network support and **Lite** is a smaller version without network packages and minimal Kernel and BusyBox.
 * You can compile extra programs (Bash shell, BitTorrent client, VPN, SAMBA server, dvbsnoop, htop, lynx, smartmontools, etc.) enabling them in ```.config``` file.
 
-You can read the [complete list of features in Wiki](https://github.com/bittor7x0/VDR-M7x0/wiki/Mejoras-del-VDR-NG-EM "VDR-NG-EM ChangeLog") (only in Spanish).
+You can read the [complete list of features in Wiki](https://github.com/bittor7x0/VDR-M7x0/wiki/Mejoras_del_VDR-NG-EM "VDR-NG-EM ChangeLog") (only in Spanish).
+
+
+## Download Nightly Builds
+
+**GitHub Actions Artifacts ONLY can be downloaded by GitHub logged users.**
+
+Nightly builds are built automatically by GitHub Actions (GitHub's integrated CI/CD tool) every time a new commit is pushed to the _master_ branch.\
+The latest nightly build is always up-to-date with the latest version of the code, but is less stable and may contain bugs.\
+\
+To download the latest nightly build, go to the [GitHub Actions](https://github.com/bittor7x0/VDR-M7x0/actions/workflows/nightly-build.yml) tab, enter the last run of workflow **VDR-NG-EM Nightly Build**, and download the artifacts generated from the run.\
+\
+You can download WSW firmwares for each hardware (M740, M750T and M750s) and each version (Pro and Lite), a Windows Builder to customize the firmware and the SAMBA binaries.
 
 
 ## Generate firmware on Windows
-Download the latest ```VDR-NG-EM-<version>-Firmware-builder.rar``` file from [releases](https://github.com/bittor7x0/VDR-M7x0/releases), extract it, run ```firmware-builder.bat``` and follow the steps on the wizard.\
+Download the latest ```VDR-NG-EM-<version>-Firmware-builder.rar``` file from [releases](https://github.com/bittor7x0/VDR-M7x0/releases/latest), extract it, run ```firmware-builder.bat``` and follow the steps on the wizard.\
 \
-If the firmware isn't generated, check the ```firmware-builder.log``` file to detect the problem and if you can't fix it, [open a new issue](https://github.com/bittor7x0/VDR-M7x0/issues/new?assignees=&labels=bug&template=bug_report.md&title=) attaching the log file.
+If the firmware isn't generated, check the ```firmware-builder.log``` file to detect the problem and if you can't fix it, [open a new issue](https://github.com/bittor7x0/VDR-M7x0/issues/new?assignees=&labels=bug&template=bug_report.md&title=) attaching the log file.\
+\
+This builder uses precompiled binaries and Kernel, so it generates the firmware very fast, but it doesn't include latest changes (like nightly builds).
 
 
-## Generate firmware on Linux
+## Compile firmware on Linux
 
 #### 1. Install dependencies
 
-You need to have installed gcc, binutils, patch, flex, make, automake, autoconf, autotools-dev, pkg-config, bison, gettext, genext2fs, bzip2, unzip and libz-dev.\
-If you want network support (Pro version) you also need the java binary (jre-openjdk).
+You need to have installed gcc, binutils, patch, flex, make, automake, autoconf, autotools-dev, pkg-config, bison, gettext, genext2fs, bzip2, unzip, subversion and libz-dev.\
+If you want network support (Pro version) you also need libtirpc-dev and the java binary (jre-openjdk).
 
 ![Arch Linux](https://img.shields.io/badge/-Arch%20Linux-333?style=for-the-badge&labelColor=1793D1&logo=arch%20linux&logoColor=white)
 ![Manjaro](https://img.shields.io/badge/-Manjaro-333?style=for-the-badge&labelColor=35bf5c&logo=manjaro&logoColor=white)
@@ -52,7 +67,7 @@ $ sudo pacman -Sy base-devel subversion unzip jre-openjdk
 ![Ubuntu](https://img.shields.io/badge/-Ubuntu-333?style=for-the-badge&labelColor=dd4814&logo=ubuntu&logoColor=white)
 ![Linux Mint](https://img.shields.io/badge/-Linux%20Mint-333?style=for-the-badge&labelColor=87CF3E&logo=linux%20mint&logoColor=white)
 ```
-$ sudo apt-get install -y build-essential pkg-config m4 automake libz-dev subversion default-jre
+$ sudo apt-get install -y build-essential pkg-config m4 automake libtirpc-dev libz-dev subversion default-jre
 ```
 \
 ![Fedora](https://img.shields.io/badge/-Fedora-333?style=for-the-badge&labelColor=0b57a4&logo=fedora&logoColor=white)
@@ -100,7 +115,7 @@ If you have any problems or doubts you can send them in English to our [internat
 
 ## License
 **VDR-NG-EM** is licensed under the [GPL v3 license](COPYING "License: GPL v3").
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](COPYING "License: GPL v3")\
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](COPYING "Read License GPL v3")\
 This license covers all **VDR-NG-EM** specific parts like Makefiles, configuration files, scripts, patches and other files and it doesn't cover the packages **VDR-NG-EM** is based on or **VDR-NG-EM** is able to build, because they may, of course, be used on their own under their own terms.
 
 
