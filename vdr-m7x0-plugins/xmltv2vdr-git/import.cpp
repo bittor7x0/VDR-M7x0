@@ -1774,6 +1774,12 @@ int cImport::Process(cEPGSource *Source, cEPGExecutor &myExecutor)
     if (!schedules)
     {
         esyslogs(Source,"failed to get schedules lock");
+#if VDRVERSNUM<20301
+        delete schedulesLock;
+        Timers.DecBeingEdited();
+#else
+        StateKey.Remove();
+#endif
         return 141;
     }
 

@@ -749,7 +749,6 @@ bool cEPGHandler::HandleEvent(cEvent* Event)
         if (!timerdescr)
         {
             free((void*)ChannelID);
-            if (timerdescr) free(timerdescr);
             return false;
         }
         if (db && sqlite3_errcode(db)!=SQLITE_OK)
@@ -1223,6 +1222,7 @@ bool cPluginXmltv2vdr::ProcessArgs(int argc, char *argv[])
             break;
         case 'i':
             g.SetImgDir(optarg);
+            break;
         case 'l':
             if (logfile) free(logfile);
             logfile=strdup(optarg);
