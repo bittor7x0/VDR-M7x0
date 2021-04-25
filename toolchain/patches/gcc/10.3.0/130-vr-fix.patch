@@ -1,0 +1,9 @@
+diff -Naur gcc-4.9.0-orig/libgcc/config/mips/t-mips gcc-4.9.0/libgcc/config/mips/t-mips
+--- gcc-4.9.0-orig/libgcc/config/mips/t-mips
++++ gcc-4.9.0/libgcc/config/mips/t-mips
+@@ -6,4 +6,5 @@
+ softfp_truncations :=
+ softfp_exclude_libgcc2 := n
+ 
++LIB2ADD_ST += $(srcdir)/config/mips/vr4120-div.S
+ LIB2ADD_ST += $(srcdir)/config/mips/lib2funcs.c

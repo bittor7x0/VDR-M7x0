@@ -1,0 +1,12 @@
+diff -Naur a/lib/ext2fs/unix_io.c b/lib/ext2fs/unix_io.c
+--- a/lib/ext2fs/unix_io.c	2016-03-27 04:26:02.000000000 +0200
++++ b/lib/ext2fs/unix_io.c	2016-05-26 20:50:58.068357035 +0200
+@@ -844,7 +844,7 @@
+ 				      unsigned long long block,
+ 				      unsigned long long count)
+ {
+-#ifdef POSIX_FADV_WILLNEED
++#if defined(POSIX_FADV_WILLNEED) && (defined(HAVE_POSIX_FADVISE64) || defined(HAVE_FADVISE64) || defined(HAVE_POSIX_FADVISE))
+ 	struct unix_private_data *data;
+ 
+ 	data = (struct unix_private_data *)channel->private_data;

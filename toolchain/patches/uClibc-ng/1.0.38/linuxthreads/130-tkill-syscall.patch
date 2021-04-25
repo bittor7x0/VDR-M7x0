@@ -1,0 +1,48 @@
+Backport for linuxthreads.new from:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=8fb9dbf08043e5783f1e0680655af04ecf9888cb
+
+	linuxthreads: use tkill syscall for raise
+
+	Seems better and more stable.
+
+diff -Naur a/libpthread/linuxthreads/signals.c b/libpthread/linuxthreads/signals.c
+--- a/libpthread/linuxthreads/signals.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/signals.c	2016-10-18 14:41:55.000000000 +0200
+@@ -16,6 +16,7 @@
+ 
+ #include <errno.h>
+ #include <signal.h>
++#include <sys/syscall.h>
+ #include "pthread.h"
+ #include "internals.h"
+ #include "spinlock.h"
+@@ -193,19 +194,17 @@
+ 
+ /* Redefine raise() to send signal to calling thread only,
+    as per POSIX 1003.1c */
+-int __pthread_raise (int sig)
+-{
+-  int retcode = pthread_kill(pthread_self(), sig);
+-  if (retcode == 0)
+-    return 0;
+-  else {
+-    errno = retcode;
+-    return -1;
+-  }
++libpthread_hidden_proto(raise)
++int raise (int sig) {
++  int ret;
++  pid_t tid;
++
++  tid = INLINE_SYSCALL(gettid, 0);
++  ret = INLINE_SYSCALL(tkill, 2, tid, sig);
++
++  return ret;
+ }
+-#ifdef SHARED
+-strong_alias (__pthread_raise, raise)
+-#endif
++libpthread_hidden_def(raise)
+ 
+ /* This files handles cancellation internally.  */
+ LIBC_CANCEL_HANDLED ();
