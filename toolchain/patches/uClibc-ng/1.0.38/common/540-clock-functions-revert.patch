@@ -1,0 +1,315 @@
+Our kernel 2.4.21 doesn't support clock_* syscalls, so we revert this commit:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=8ff62fe8dcefc3a0766ae2cac03033d9cf64e7fa
+
+	rt: cleanup and allow to build for linuxthreads
+
+	It seems there is no real dependency to NPTL for these clock_*
+	functions when UCLIBC_ADVANCED_REALTIME is enabled.
+
+	No regressions found.
+
+	Reported-by: Baruch Siach <baruch@tkos.co.il>
+
+diff -Naur a/libc/sysdeps/linux/common/Makefile.in b/libc/sysdeps/linux/common/Makefile.in
+--- a/libc/sysdeps/linux/common/Makefile.in	2020-09-26 10:50:32.000000000 +0200
++++ b/libc/sysdeps/linux/common/Makefile.in	2020-09-26 11:15:18.451425832 +0200
+@@ -100,8 +100,8 @@
+ 	nanosleep.c __rt_sigtimedwait.c __rt_sigwaitinfo.c sched_getparam.c \
+ 	sched_get_priority_max.c sched_get_priority_min.c sched_getscheduler.c \
+ 	sched_rr_get_interval.c sched_setparam.c sched_setscheduler.c sigqueue.c
+-# use clock_gettime.c from librt
+-ifeq ($(UCLIBC_HAS_ADVANCED_REALTIME),y)
++# use clock_gettime.c from librt only for NPTL
++ifeq ($(UCLIBC_HAS_REALTIME)$(UCLIBC_HAS_THREADS_NATIVE),yy)
+ CSRC- += clock_gettime.c
+ endif
+ # clock_getcpuclockid|clock_nanosleep|mq_timedreceive|mq_timedsend|posix_fadvise|posix_fallocate|posix_madvise|posix_memalign|posix_mem_offset|posix_spawnattr_destroy|posix_spawnattr_init|posix_spawnattr_getflags|posix_spawnattr_setflags|posix_spawnattr_getpgroup|posix_spawnattr_setpgroup|posix_spawnattr_getschedparam|posix_spawnattr_setschedparam|posix_spawnattr_getschedpolicy|posix_spawnattr_setschedpolicy|posix_spawnattr_getsigdefault|posix_spawnattr_setsigdefault|posix_spawnattr_getsigmask|posix_spawnattr_setsigmask|posix_spawnattr_init|posix_spawnattr_setflags|posix_spawnattr_setpgroup|posix_spawnattr_setschedparam|posix_spawnattr_setschedpolicy|posix_spawnattr_setsigdefault|posix_spawnattr_setsigmask|posix_spawn_file_actions_addclose|posix_spawn_file_actions_addopen|posix_spawn_file_actions_adddup2|posix_spawn_file_actions_addopen|posix_spawn_file_actions_destroy|posix_spawn_file_actions_init|posix_spawn_file_actions_init|posix_spawn|posix_spawnp|posix_spawnp|posix_typed_mem_get_info|pthread_mutex_timedlock|sem_timedwait
+diff -Naur a/librt/clock_gettime.c b/librt/clock_gettime.c
+--- a/librt/clock_gettime.c	2020-09-21 13:39:06.000000000 +0200
++++ b/librt/clock_gettime.c	2020-09-26 11:15:18.454759162 +0200
+@@ -16,30 +16,176 @@
+    License along with the GNU C Library; if not, see
+    <http://www.gnu.org/licenses/>.  */
+ 
+-#include <errno.h>
+ #include <sysdep.h>
++#include <errno.h>
+ #include <time.h>
+-#include <sys/time.h>
+ #include "kernel-posix-cpu-timers.h"
++#include <bits/kernel-features.h>
+ 
+ 
+ #define SYSCALL_GETTIME \
+   retval = INLINE_SYSCALL (clock_gettime, 2, clock_id, tp); \
+   break
+ 
+-/* The REALTIME and MONOTONIC clock are definitely supported in the kernel.  */
+-#define SYSDEP_GETTIME							      \
++#ifdef __ASSUME_POSIX_TIMERS
++
++/* This means the REALTIME and MONOTONIC clock are definitely
++   supported in the kernel.  */
++# define SYSDEP_GETTIME							      \
+   SYSDEP_GETTIME_CPUTIME						      \
+   case CLOCK_REALTIME:							      \
+   case CLOCK_MONOTONIC:							      \
+     SYSCALL_GETTIME
+ 
++# define __libc_missing_posix_timers 0
++#elif defined __NR_clock_gettime
++/* Is the syscall known to exist?  */
++int __libc_missing_posix_timers attribute_hidden;
++
++static inline int
++maybe_syscall_gettime (clockid_t clock_id, struct timespec *tp)
++{
++  int e = EINVAL;
++
++  if (!__libc_missing_posix_timers)
++    {
++      INTERNAL_SYSCALL_DECL (err);
++      int r = INTERNAL_SYSCALL (clock_gettime, err, 2, clock_id, tp);
++      if (!INTERNAL_SYSCALL_ERROR_P (r, err))
++	return 0;
++
++      e = INTERNAL_SYSCALL_ERRNO (r, err);
++      if (e == ENOSYS)
++	{
++	  __libc_missing_posix_timers = 1;
++	  e = EINVAL;
++	}
++    }
++
++  return e;
++}
++
++/* The REALTIME and MONOTONIC clock might be available.  Try the
++   syscall first.  */
++# define SYSDEP_GETTIME							      \
++  SYSDEP_GETTIME_CPUTIME						      \
++  case CLOCK_REALTIME:							      \
++  case CLOCK_MONOTONIC:							      \
++    retval = maybe_syscall_gettime (clock_id, tp);			      \
++    if (retval == 0)							      \
++      break;								      \
++    /* Fallback code.  */						      \
++    if (retval == EINVAL && clock_id == CLOCK_REALTIME)			      \
++      retval = realtime_gettime (tp);					      \
++    else 								      \
++      {									      \
++	__set_errno (retval);						      \
++	retval = -1;							      \
++      }									      \
++    break;
++#endif
++
++#ifdef __NR_clock_gettime
+ /* We handled the REALTIME clock here.  */
+-#define HANDLED_REALTIME	1
+-#define HANDLED_CPUTIME	1
++# define HANDLED_REALTIME	1
++# define HANDLED_CPUTIME	1
++
++# if __ASSUME_POSIX_CPU_TIMERS > 0
++
++#  define SYSDEP_GETTIME_CPU SYSCALL_GETTIME
++#  define SYSDEP_GETTIME_CPUTIME	/* Default catches them too.  */
++
++# else
+ 
+-#define SYSDEP_GETTIME_CPU SYSCALL_GETTIME
+-#define SYSDEP_GETTIME_CPUTIME	/* Default catches them too.  */
++int __libc_missing_posix_cpu_timers attribute_hidden;
++
++static int
++maybe_syscall_gettime_cpu (clockid_t clock_id, struct timespec *tp)
++{
++  int e = EINVAL;
++
++  if (!__libc_missing_posix_cpu_timers)
++    {
++      INTERNAL_SYSCALL_DECL (err);
++      int r = INTERNAL_SYSCALL (clock_gettime, err, 2, clock_id, tp);
++      if (!INTERNAL_SYSCALL_ERROR_P (r, err))
++	return 0;
++
++      e = INTERNAL_SYSCALL_ERRNO (r, err);
++# ifndef __ASSUME_POSIX_TIMERS
++      if (e == ENOSYS)
++	{
++	  __libc_missing_posix_timers = 1;
++	  __libc_missing_posix_cpu_timers = 1;
++	  e = EINVAL;
++	}
++      else
++# endif
++	{
++	  if (e == EINVAL)
++	    {
++	      /* Check whether the kernel supports CPU clocks at all.
++		 If not, record it for the future.  */
++	      r = INTERNAL_SYSCALL (clock_getres, err, 2,
++				    MAKE_PROCESS_CPUCLOCK (0, CPUCLOCK_SCHED),
++				    NULL);
++	      if (INTERNAL_SYSCALL_ERROR_P (r, err))
++		__libc_missing_posix_cpu_timers = 1;
++	    }
++	}
++    }
++
++  return e;
++}
++
++#  define SYSDEP_GETTIME_CPU						      \
++  retval = maybe_syscall_gettime_cpu (clock_id, tp);			      \
++  if (retval == 0)							      \
++    break;								      \
++  if (retval != EINVAL || !__libc_missing_posix_cpu_timers)		      \
++    {									      \
++      __set_errno (retval);						      \
++      retval = -1;							      \
++      break;								      \
++    }									      \
++  retval = -1 /* Otherwise continue on to the HP_TIMING version.  */;
++
++static inline int
++maybe_syscall_gettime_cputime (clockid_t clock_id, struct timespec *tp)
++{
++  return maybe_syscall_gettime_cpu
++    (clock_id == CLOCK_THREAD_CPUTIME_ID
++     ? MAKE_THREAD_CPUCLOCK (0, CPUCLOCK_SCHED)
++     : MAKE_PROCESS_CPUCLOCK (0, CPUCLOCK_SCHED),
++     tp);
++}
++
++#  define SYSDEP_GETTIME_CPUTIME					      \
++    case CLOCK_PROCESS_CPUTIME_ID:					      \
++    case CLOCK_THREAD_CPUTIME_ID:					      \
++      retval = maybe_syscall_gettime_cputime (clock_id, tp);		      \
++      if (retval == 0)							      \
++	break;								      \
++      if (retval != EINVAL || !__libc_missing_posix_cpu_timers)		      \
++	{								      \
++	  __set_errno (retval);						      \
++	  retval = -1;							      \
++	  break;							      \
++	}								      \
++      retval = hp_timing_gettime (clock_id, tp);			      \
++      break;
++#  if !HP_TIMING_AVAIL
++#   define hp_timing_gettime(clock_id, tp) (__set_errno (EINVAL), -1)
++#  endif
++
++# endif
++#endif
++
++#include <errno.h>
++#include <stdint.h>
++#include <time.h>
++#include <sys/time.h>
++#include <ldsodefs.h>
+ 
+ static inline int
+ realtime_gettime (struct timespec *tp)
+@@ -52,6 +198,7 @@
+   return retval;
+ }
+ 
++librt_hidden_proto (clock_gettime)
+ /* Get current value of CLOCK and store it in TP.  */
+ int
+ clock_gettime (clockid_t clock_id, struct timespec *tp)
+@@ -85,3 +232,4 @@
+ 
+   return retval;
+ }
++librt_hidden_def (clock_gettime)
+diff -Naur a/librt/clock_nanosleep.c b/librt/clock_nanosleep.c
+--- a/librt/clock_nanosleep.c	2020-09-21 13:39:06.000000000 +0200
++++ b/librt/clock_nanosleep.c	2020-09-26 11:15:18.454759162 +0200
+@@ -1,4 +1,5 @@
+-/* Copyright (C) 2003-2018 Free Software Foundation, Inc.
++/* Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
+ 
+    The GNU C Library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+@@ -16,17 +17,18 @@
+ 
+ #include <time.h>
+ #include <errno.h>
+-#include <cancel.h>
+-#include <sys/syscall.h>
+ 
++#include <sysdep-cancel.h>
++#include <bits/kernel-features.h>
+ #include "kernel-posix-cpu-timers.h"
+ 
+ 
++#ifdef __ASSUME_POSIX_TIMERS
+ /* We can simply use the syscall.  The CPU clocks are not supported
+    with this function.  */
+ int
+ clock_nanosleep (clockid_t clock_id, int flags, const struct timespec *req,
+-		   struct timespec *rem)
++		 struct timespec *rem)
+ {
+   INTERNAL_SYSCALL_DECL (err);
+   int r;
+@@ -52,3 +54,43 @@
+   return (INTERNAL_SYSCALL_ERROR_P (r, err)
+ 	  ? INTERNAL_SYSCALL_ERRNO (r, err) : 0);
+ }
++
++#else
++# ifdef __NR_clock_nanosleep
++/* Is the syscall known to exist?  */
++extern int __libc_missing_posix_timers attribute_hidden;
++
++/* The REALTIME and MONOTONIC clock might be available.  Try the
++   syscall first.  */
++#  define SYSDEP_NANOSLEEP \
++  if (!__libc_missing_posix_timers)					      \
++    {									      \
++      clockid_t syscall_clockid;					      \
++      INTERNAL_SYSCALL_DECL (err);					      \
++									      \
++      if (clock_id == CLOCK_THREAD_CPUTIME_ID)				      \
++	return EINVAL;							      \
++      if (clock_id == CLOCK_PROCESS_CPUTIME_ID)				      \
++	syscall_clockid = MAKE_PROCESS_CPUCLOCK (0, CPUCLOCK_SCHED);	      \
++      else								      \
++	syscall_clockid = clock_id;					      \
++									      \
++      int oldstate = LIBC_CANCEL_ASYNC ();				      \
++									      \
++      int r = INTERNAL_SYSCALL (clock_nanosleep, err, 4,		      \
++				syscall_clockid, flags, req, rem);	      \
++									      \
++      LIBC_CANCEL_RESET (oldstate);					      \
++									      \
++      if (!INTERNAL_SYSCALL_ERROR_P (r, err))				      \
++	return 0;							      \
++									      \
++      if (INTERNAL_SYSCALL_ERRNO (r, err) != ENOSYS)			      \
++	return INTERNAL_SYSCALL_ERRNO (r, err);				      \
++									      \
++      __libc_missing_posix_timers = 1;					      \
++    }
++# endif
++
++# include <sysdeps/unix/clock_nanosleep.c>
++#endif
+diff -Naur a/librt/Makefile.in b/librt/Makefile.in
+--- a/librt/Makefile.in	2020-09-21 13:39:06.000000000 +0200
++++ b/librt/Makefile.in	2020-09-26 11:15:18.451425832 +0200
+@@ -17,6 +17,8 @@
+ ifeq ($(UCLIBC_HAS_THREADS_NATIVE),y)
+ librt_filter_SRC += mq_notify.c timer_create.c timer_delete.c \
+ 	timer_getoverr.c timer_gettime.c timer_settime.c
++else
++librt_filter_SRC += clock_nanosleep.c clock_getcpuclockid.c clock_gettime.c
+ endif
+ 
+ librt_filter_SRC += $(if $(UCLIBC_HAS_ADVANCED_REALTIME),, \

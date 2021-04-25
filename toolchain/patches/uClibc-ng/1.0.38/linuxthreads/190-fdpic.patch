@@ -1,0 +1,25 @@
+Backport for linuxthreads.new from:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=fed9ddae48ce54ebd8f7064426400297cfb2b6bd
+
+	fdpic: fix ld.so crashing
+
+	Newer binutils is creating a section INIT_ARRAY from any .init_array
+	and .ctors in the code. When ld.so runs initialization functions for
+	loaded objects with _dl_run_init_array() it crashes on Bfin FDPIC
+	system. It is trying to execute the function in pthread.c, which is
+	no longer useful with the combined C library approach.
+	Gcc -Wl,-M debugging output was very useful to find the reason for
+	the INIT_ARRAY section.
+
+diff -Naur a/libpthread/linuxthreads/pthread.c b/libpthread/linuxthreads/pthread.c
+--- a/libpthread/linuxthreads/pthread.c	2020-09-26 12:01:28.000000000 +0200
++++ b/libpthread/linuxthreads/pthread.c	2020-09-26 12:23:00.753165040 +0200
+@@ -206,7 +206,7 @@
+       mask with e.g. sigsetjmp before creating the first thread);
+    - a regular function called from pthread_create when needed. */
+ 
+-static void pthread_initialize(void) __attribute__((constructor));
++static void pthread_initialize(void);
+ 
+ #ifndef HAVE_Z_NODELETE
+ extern void *__dso_handle __attribute__ ((weak));
