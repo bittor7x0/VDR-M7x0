@@ -1,0 +1,31 @@
+Our kernel 2.4.21 doesn't support renameat syscalls, so we revert this commit:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=aca82e0ebadc48cc63fba4f71664b9b297733db2
+
+	use renameat2 syscall, when renameat isn't available
+
+diff -Naur a/libc/sysdeps/linux/common/renameat.c b/libc/sysdeps/linux/common/renameat.c
+--- a/libc/sysdeps/linux/common/renameat.c	2021-03-27 15:58:25.000000000 +0100
++++ b/libc/sysdeps/linux/common/renameat.c	2021-04-24 20:46:47.446080629 +0200
+@@ -6,18 +6,12 @@
+  * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
+  */
+ 
++#include <sys/syscall.h>
+ #include <stdio.h>
+-#include <fcntl.h>
+-#include <sysdep.h>
+-#include <errno.h>
+ 
+-int
+-renameat (int oldfd, const char *old, int newfd, const char *new)
+-{
+ #ifdef __NR_renameat
+-  return INLINE_SYSCALL (renameat, 4, oldfd, old, newfd, new);
++_syscall4(int, renameat, int, oldfd, const char *, old, int, newfd, const char *, new)
++libc_hidden_def(renameat)
+ #else
+-  return INLINE_SYSCALL (renameat2, 5, oldfd, old, newfd, new, 0);
++/* should add emulation with rename() and /proc/self/fd/ ... */
+ #endif
+-}
+-libc_hidden_def (renameat)
