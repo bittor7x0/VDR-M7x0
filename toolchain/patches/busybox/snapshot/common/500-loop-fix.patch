@@ -1,0 +1,13 @@
+diff -Naur a/libbb/loop.c b/libbb/loop.c
+--- a/libbb/loop.c
++++ b/libbb/loop.c
+@@ -192,7 +192,8 @@
+ 			memset(&loopinfo, 0, sizeof(loopinfo));
+ 			safe_strncpy((char *)loopinfo.lo_file_name, file, LO_NAME_SIZE);
+ 			loopinfo.lo_offset = offset;
+-			loopinfo.lo_sizelimit = sizelimit;
++			/* Our kernel does not support lo_sizelimit */
++			//loopinfo.lo_sizelimit = sizelimit;
+ 			/*
+ 			 * Used by mount to set LO_FLAGS_AUTOCLEAR.
+ 			 * LO_FLAGS_READ_ONLY is not set because RO is controlled by open type of the file.

@@ -1,0 +1,16 @@
+diff -Naur a/coreutils/touch.c b/coreutils/touch.c
+--- a/coreutils/touch.c
++++ b/coreutils/touch.c
+@@ -167,8 +167,10 @@
+ 
+ 	argv += optind;
+ 	do {
+-		int result = utimensat(AT_FDCWD, *argv, timebuf,
+-				(opts & OPT_h) ? AT_SYMLINK_NOFOLLOW : 0);
++		/* Our kernel does not support utimensat() */
++		/* int result = utimensat(AT_FDCWD, *argv, timebuf,
++				(opts & OPT_h) ? AT_SYMLINK_NOFOLLOW : 0); */
++		int result = utimes(*argv, timebuf);
+ 		if (result != 0) {
+ 			if (errno == ENOENT) { /* no such file? */
+ 				if (opts & OPT_c) {
