@@ -26,6 +26,9 @@ private:
   cDevice *device;
   int statusCount;
   bool on, waitForLock;
+  bool flush;
+  bool startFilters;
+  cTimeMs flushTimer;
   cList<cFilter> filters;
   cList<cFilterHandle> filterHandles;
   void Add(const cFilterData *FilterData);

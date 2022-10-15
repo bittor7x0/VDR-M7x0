@@ -172,6 +172,8 @@ char *strreplace(char *s, char c1, char c2)
 
 char *strreplace(char *s, const char *s1, const char *s2)
 {
+  if (!s || !s1 || !s2)
+     return s;
   char *p = strstr(s, s1);
   if (p) {
      int of = p - s;
@@ -189,7 +191,7 @@ char *strreplace(char *s, const char *s1, const char *s2)
      char *sof = s + of;
      if (l2 != l1)
         memmove(sof + l2, sof + l1, l - of - l1 + 1);
-     strncpy(sof, s2, l2);
+     memcpy(sof, s2, l2);
      }
   return s;
 }

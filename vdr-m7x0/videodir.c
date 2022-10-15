@@ -356,7 +356,7 @@ int VideoDiskSpace(int *FreeMB, int *UsedMB)
      *FreeMB = free;
   if (UsedMB)
      *UsedMB = used;
-  return (free + used) ? used * 100 / (free + used) : 0;
+  return (free + used) ? round(double(used) * 100 / (free + used)) : 0;
 }
 
 cString PrefixVideoFileName(const char *FileName, char Prefix)

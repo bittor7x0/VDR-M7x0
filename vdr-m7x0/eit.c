@@ -60,7 +60,7 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
  
   bool Empty = true;
   bool Modified = false;
-  time_t LingerLimit = Now - Setup.EPGLinger * 60;
+  time_t LingerLimit = Now - EPG_LINGER_TIME;
   time_t SegmentStart = 0;
   time_t SegmentEnd = 0;
   struct tm t = { 0 };
@@ -347,8 +347,8 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
      EpgHandlers.DropOutdated(pSchedule, SegmentStart, SegmentEnd, Tid, getVersionNumber());
      Schedules->SetModified(pSchedule);
      }
-  Channels.Unlock();
   EpgHandlers.EndSegmentTransfer(Modified);
+  Channels.Unlock();
 }
 
 // --- cTDT ------------------------------------------------------------------

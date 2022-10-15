@@ -19,6 +19,8 @@
 
 #define MAXEPGBUGFIXLEVEL 3
 
+#define EPG_LINGER_TIME (max(Setup.EPGLinger, 180) * 60) // seconds to keep old EPG data (internal, must be at least Setup.EPGLinger)
+
 enum { MaxEventContents = 4 };
 
 enum eEventContentGroup {

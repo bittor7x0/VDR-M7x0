@@ -271,7 +271,7 @@ inline void swap_bytes(u_int32_t &crc)
 
 u_int32_t CRC32::crc32 (const char *d, int len, u_int32_t crc)
 {
-   register int i;
+   int i;
    const unsigned char *u=(unsigned char*)d; // Saves '& 0xff'
 
    swap_bytes(crc);
