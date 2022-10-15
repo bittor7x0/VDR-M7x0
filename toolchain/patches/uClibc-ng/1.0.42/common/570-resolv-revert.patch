@@ -1,0 +1,336 @@
+These commits ONLY work if UCLIBC_HAS_RESOLVER_SUPPORT is enabled, which isn't our case, so we revert them:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=8d9634346817a65f4ec927f3bc87a2dded7791bf
+	Minimal-invasive change: just ifdeffing away the older code.
+
+	There is no reason to have two different sets of functions doing
+	the same thing, one used in half the code and another, doing less
+	escaping, in the other half; just use one.
+
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=dc68c2fce026e91f56636dd65b732509f6af29a5
+	actually remove the ifdeffed-out code from the previous commit
+
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=e966cf302aa3b7fc0748d5cdb510d2757bbff4a5
+	make __{en,de}code_dotted into macros
+	they merely call dn_{comp,expand} slightly rearranging the arguments
+
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=0f822af0445e5348ce7b7bd8ce1204244f31d174
+	libc/inet/resolv.c: add __hnbad to check DNS entries for validity using the same rules glibc does
+	also call __hnbad in some places to check answers
+
+diff -Naur a/libc/inet/decoded.c b/libc/inet/decoded.c
+--- a/libc/inet/decoded.c	1970-01-01 01:00:00.000000000 +0100
++++ b/libc/inet/decoded.c	2022-05-15 13:20:45.611763908 +0200
+@@ -0,0 +1,8 @@
++/*
++ * Copyright (C) 2000-2006 Erik Andersen <andersen@uclibc.org>
++ *
++ * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
++ */
++
++#define L_decoded
++#include RESOLVER
+diff -Naur a/libc/inet/encoded.c b/libc/inet/encoded.c
+--- a/libc/inet/encoded.c	1970-01-01 01:00:00.000000000 +0100
++++ b/libc/inet/encoded.c	2022-05-15 13:20:45.611763908 +0200
+@@ -0,0 +1,8 @@
++/*
++ * Copyright (C) 2000-2006 Erik Andersen <andersen@uclibc.org>
++ *
++ * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
++ */
++
++#define L_encoded
++#include RESOLVER
+diff -Naur a/libc/inet/Makefile.in b/libc/inet/Makefile.in
+--- a/libc/inet/Makefile.in	2021-10-06 19:55:58.000000000 +0200
++++ b/libc/inet/Makefile.in	2022-05-15 13:20:45.611763908 +0200
+@@ -26,7 +26,7 @@
+ 	inet_lnaof.c inet_netof.c
+ # multi source resolv.c
+ CSRC-$(V4_OR_V6) += \
+-	encodeh.c decodeh.c \
++	encodeh.c decodeh.c encoded.c decoded.c \
+ 	encodeq.c encodea.c \
+ 	read_etc_hosts_r.c \
+ 	dnslookup.c opennameservers.c closenameservers.c \
+diff -Naur a/libc/inet/resolv.c b/libc/inet/resolv.c
+--- a/libc/inet/resolv.c	2021-10-06 19:55:58.000000000 +0200
++++ b/libc/inet/resolv.c	2022-05-15 13:21:16.883866598 +0200
+@@ -11,7 +11,6 @@
+ /*
+  * Portions Copyright (c) 1985, 1993
+  *    The Regents of the University of California.  All rights reserved.
+- * Portions Copyright © 2021 mirabilos <m@mirbsd.org>
+  *
+  * Redistribution and use in source and binary forms, with or without
+  * modification, are permitted provided that the following conditions
+@@ -396,6 +395,14 @@
+ 		int type,
+ 		unsigned char **outpacket,
+ 		struct resolv_answer *a) attribute_hidden;
++extern int __encode_dotted(const char *dotted,
++		unsigned char *dest,
++		int maxlen) attribute_hidden;
++extern int __decode_dotted(const unsigned char *packet,
++		int offset,
++		int packet_len,
++		char *dest,
++		int dest_len) attribute_hidden;
+ extern int __encode_header(struct resolv_header *h,
+ 		unsigned char *dest,
+ 		int maxlen) attribute_hidden;
+@@ -409,13 +416,6 @@
+ 		int maxlen) attribute_hidden;
+ extern void __open_nameservers(void) attribute_hidden;
+ extern void __close_nameservers(void) attribute_hidden;
+-extern int __hnbad(const char *dotted) attribute_hidden;
+-
+-#define __encode_dotted(dotted,dest,maxlen) \
+-	dn_comp((dotted), (dest), (maxlen), NULL, NULL)
+-#define __decode_dotted(packet,offset,packet_len,dest,dest_len) \
+-	dn_expand((packet), (packet) + (packet_len), (packet) + (offset), \
+-	    (dest), (dest_len))
+ 
+ /*
+  * Theory of operation.
+@@ -552,6 +552,116 @@
+ #endif /* L_decodeh */
+ 
+ 
++#ifdef L_encoded
++
++/* Encode a dotted string into nameserver transport-level encoding.
++   This routine is fairly dumb, and doesn't attempt to compress
++   the data */
++int __encode_dotted(const char *dotted, unsigned char *dest, int maxlen)
++{
++	unsigned used = 0;
++
++	while (dotted && *dotted) {
++		char *c = strchr(dotted, '.');
++		int l = c ? c - dotted : strlen(dotted);
++
++		/* two consecutive dots are not valid */
++		if (l == 0)
++			return -1;
++
++		if (l >= (maxlen - used - 1))
++			return -1;
++
++		dest[used++] = l;
++		memcpy(dest + used, dotted, l);
++		used += l;
++
++		if (!c)
++			break;
++		dotted = c + 1;
++	}
++
++	if (maxlen < 1)
++		return -1;
++
++	dest[used++] = 0;
++
++	return used;
++}
++#endif /* L_encoded */
++
++
++#ifdef L_decoded
++
++/* Decode a dotted string from nameserver transport-level encoding.
++   This routine understands compressed data. */
++int __decode_dotted(const unsigned char *packet,
++		int offset,
++		int packet_len,
++		char *dest,
++		int dest_len)
++{
++	unsigned b;
++	bool measure = 1;
++	unsigned total = 0;
++	unsigned used = 0;
++	unsigned maxiter = 256;
++
++	if (!packet)
++		return -1;
++
++	dest[0] = '\0';
++	while (--maxiter) {
++		if (offset >= packet_len)
++			return -1;
++		b = packet[offset++];
++		if (b == 0)
++			break;
++
++		if (measure)
++			total++;
++
++		if ((b & 0xc0) == 0xc0) {
++			if (offset >= packet_len)
++				return -1;
++			if (measure)
++				total++;
++			/* compressed item, redirect */
++			offset = ((b & 0x3f) << 8) | packet[offset];
++			measure = 0;
++			continue;
++		}
++
++		if (used + b + 1 >= dest_len)
++			return -1;
++		if (offset + b >= packet_len)
++			return -1;
++		memcpy(dest + used, packet + offset, b);
++		offset += b;
++		used += b;
++
++		if (measure)
++			total += b;
++
++		if (packet[offset] != 0)
++			dest[used++] = '.';
++		else
++			dest[used++] = '\0';
++	}
++	if (!maxiter)
++		return -1;
++
++	/* The null byte must be counted too */
++	if (measure)
++		total++;
++
++	DPRINTF("Total decode len = %d\n", total);
++
++	return total;
++}
++#endif /* L_decoded */
++
++
+ #ifdef L_encodeq
+ 
+ int __encode_question(const struct resolv_question *q,
+@@ -1094,7 +1204,6 @@
+ 	bool ends_with_dot;
+ 	bool contains_dot;
+ 	sockaddr46_t sa;
+-	int num_answers;
+ 
+ 	fd = -1;
+ 	lookup = NULL;
+@@ -1337,7 +1446,6 @@
+ 			goto fail1;
+ 		}
+ 		pos = HFIXEDSZ;
+-		/*XXX TODO: check that question matches query (and qdcount==1?) */
+ 		for (j = 0; j < h.qdcount; j++) {
+ 			DPRINTF("Skipping question %d at %d\n", j, pos);
+ 			i = __length_question(packet + pos, packet_len - pos);
+@@ -1352,7 +1460,6 @@
+ 		DPRINTF("Decoding answer at pos %d\n", pos);
+ 
+ 		first_answer = 1;
+-		num_answers = 0;
+ 		a->dotted = NULL;
+ 		for (j = 0; j < h.ancount; j++) {
+ 			i = __decode_answer(packet, pos, packet_len, &ma);
+@@ -1360,15 +1467,12 @@
+ 				DPRINTF("failed decode %d\n", i);
+ 				/* If the message was truncated but we have
+ 				 * decoded some answers, pretend it's OK */
+-				if (num_answers && h.tc)
++				if (j && h.tc)
+ 					break;
+ 				goto try_next_server;
+ 			}
+ 			pos += i;
+ 
+-			if (__hnbad(ma.dotted))
+-				break;
+-			++num_answers;
+ 			if (first_answer) {
+ 				ma.buf = a->buf;
+ 				ma.buflen = a->buflen;
+@@ -1398,10 +1502,6 @@
+ 				++a->add_count;
+ 			}
+ 		}
+-		if (!num_answers) {
+-			h_errno = NO_RECOVERY;
+-			goto fail1;
+-		}
+ 
+ 		/* Success! */
+ 		DPRINTF("Answer name = |%s|\n", a->dotted);
+@@ -2368,7 +2468,7 @@
+ 		/* Decode CNAME into buf, feed it to __dns_lookup() again */
+ 		i = __decode_dotted(packet, a.rdoffset, packet_len, buf, buflen);
+ 		free(packet);
+-		if (i < 0 || __hnbad(buf)) {
++		if (i < 0) {
+ 			*h_errnop = NO_RECOVERY;
+ 			return -1;
+ 		}
+@@ -2377,10 +2477,6 @@
+ 	if (a.atype == T_PTR) {	/* ADDRESS */
+ 		i = __decode_dotted(packet, a.rdoffset, packet_len, buf, buflen);
+ 		free(packet);
+-		if (__hnbad(buf)) {
+-			*h_errnop = NO_RECOVERY;
+-			return -1;
+-		}
+ 		result_buf->h_name = buf;
+ 		result_buf->h_addrtype = type;
+ 		result_buf->h_length = addrlen;
+@@ -2946,51 +3042,6 @@
+ libc_hidden_def(ns_name_pton)
+ 
+ /*
+- * __hnbad(dotted)
+- *	Check whether a name is valid enough for DNS. The rules, as
+- *	laid down by glibc, are:
+- *	- printable input string
+- *	- converts to label notation
+- *	- each label only contains [0-9a-zA-Z_-], up to 63 octets
+- *	- first label doesn’t begin with ‘-’
+- *	This both is weaker than Unix hostnames (e.g. it allows
+- *	underscores and leading/trailing hyphen-minus) and stronger
+- *	than general (e.g. a leading “*.” is valid sometimes), take care.
+- * return:
+- *	0 if the name is ok
+- */
+-int __hnbad(const char *dotted)
+-{
+-	unsigned char c, n, *cp;
+-	unsigned char buf[NS_MAXCDNAME];
+-
+-	cp = (unsigned char *)dotted;
+-	while ((c = *cp++))
+-		if (c < 0x21 || c > 0x7E)
+-			return (1);
+-	if (ns_name_pton(dotted, buf, sizeof(buf)) < 0)
+-		return (2);
+-	if (buf[0] > 0 && buf[1] == '-')
+-		return (3);
+-	cp = buf;
+-	while ((n = *cp++)) {
+-		if (n > 63)
+-			return (4);
+-		while (n--) {
+-			c = *cp++;
+-			if (c < '-' ||
+-			    (c > '-' && c < '0') ||
+-			    (c > '9' && c < 'A') ||
+-			    (c > 'Z' && c < '_') ||
+-			    (c > '_' && c < 'a') ||
+-			    c > 'z')
+-				return (5);
+-		}
+-	}
+-	return (0);
+-}
+-
+-/*
+  * ns_name_unpack(msg, eom, src, dst, dstsiz)
+  *      Unpack a domain name from a message, source may be compressed.
+  * return:

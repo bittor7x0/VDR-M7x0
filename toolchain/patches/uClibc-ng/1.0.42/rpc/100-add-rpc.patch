@@ -1,0 +1,204 @@
+RPC was removed in this commit (post uClibc-ng 1.0.22):
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=a1a8064169aeda79e3266a2db9cce25e361a86dc
+	remove RPC implementation
+
+	The included RPC implementation is ipv4 only.
+	Other C library projects have either deprecated the internal
+	RPC implementation (GNU C Library) or never implemented such
+	functionality (musl C Library). The latest rpcbind release (0.2.4)
+	checks for libtirpc and does not allow to be build with uClibc-ng
+	RPC without patching. The common use case for RPC nowadays is to
+	use rpcbind together with nfs-utils to provide NFS server or client
+	support to a system.
+
+	The included RPC implementation does create issues with duplicate
+	symbol failures when statically compiling with RPC enabled.
+
+but NFS support requires it (BusyBox mount, nfs-utils and portmap/rpcbind) and if libtirpc isn't included in RootFS we use RPC from parent revision:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=2d8ea0524b016d29cf28615449b22b96dd5067b2
+
+This patch returns the RPC implementation removed.
+
+diff -Naur a/extra/Configs/Config.in b/extra/Configs/Config.in
+--- a/extra/Configs/Config.in	2020-09-28 16:07:31.027088086 +0200
++++ b/extra/Configs/Config.in	2020-09-28 13:56:21.000000000 +0200
+@@ -1282,6 +1282,36 @@
+ 
+ 	  Most people should answer N.
+ 
++config UCLIBC_HAS_RPC
++	bool "Remote Procedure Call (RPC) support"
++	# RPC+socket-ipvX doesn't currently work.
++	depends on UCLIBC_HAS_IPV4 || UCLIBC_HAS_IPV6
++	help
++	  If you want to include RPC support, enable this.  RPC is rarely used
++	  for anything except for the NFS filesystem.  Unless you plan to use
++	  NFS, you can probably leave this set to N and save some space.
++
++	  If you need to use NFS then you should answer Y.
++
++config UCLIBC_HAS_FULL_RPC
++	bool "Full RPC support"
++	depends on UCLIBC_HAS_RPC
++	default y if !HAVE_SHARED
++	help
++	  Normally we enable just enough RPC support for things like rshd and
++	  nfs mounts to work.  If you find you need the rest of the RPC stuff,
++	  then enable this option.  Most people can safely answer N.
++
++config UCLIBC_HAS_REENTRANT_RPC
++	bool "Reentrant RPC support"
++	depends on UCLIBC_HAS_RPC
++	default y if !HAVE_SHARED
++	help
++	  Most packages utilize the normal (non-reentrant) RPC functions, but
++	  some (like exportfs from nfs-utils) need these reentrant versions.
++
++	  Most people can safely answer N.
++
+ config UCLIBC_USE_NETLINK
+ 	bool "Use netlink to query interfaces"
+ 	depends on UCLIBC_HAS_SOCKET
+diff -Naur a/include/netdb.h b/include/netdb.h
+--- a/include/netdb.h	2020-09-28 16:07:31.027088086 +0200
++++ b/include/netdb.h	2020-09-28 13:56:21.000000000 +0200
+@@ -26,6 +26,11 @@
+ 
+ #include <netinet/in.h>
+ #include <stdint.h>
++#if defined __USE_MISC && defined __UCLIBC_HAS_RPC__
++/* This is necessary to make this include file properly replace the
++   Sun version.  */
++# include <rpc/netdb.h>
++#endif
+ 
+ #ifdef __USE_GNU
+ # define __need_sigevent_t
+diff -Naur a/include/protocols/timed.h b/include/protocols/timed.h
+--- a/include/protocols/timed.h	2020-09-28 16:07:31.027088086 +0200
++++ b/include/protocols/timed.h	2020-09-28 13:56:21.000000000 +0200
+@@ -33,6 +33,9 @@
+ #define	_PROTOCOLS_TIMED_H 1
+ 
+ #include <features.h>
++#ifdef __UCLIBC_HAS_RPC__
++#include <rpc/types.h>
++#endif
+ 
+ /*
+  * Time Synchronization Protocol
+diff -Naur a/libc/inet/Makefile.in b/libc/inet/Makefile.in
+--- a/libc/inet/Makefile.in	2020-09-28 16:07:31.027088086 +0200
++++ b/libc/inet/Makefile.in	2020-09-28 13:56:21.000000000 +0200
+@@ -7,6 +7,8 @@
+ 
+ subdirs += libc/inet
+ 
++include $(top_srcdir)libc/inet/rpc/Makefile.in
++
+ INET_DIR := $(top_srcdir)libc/inet
+ INET_OUT := $(top_builddir)libc/inet
+ V4_OR_V6 := $(findstring y,$(UCLIBC_HAS_IPV4)$(UCLIBC_HAS_IPV6))
+diff -Naur a/libpthread/linuxthreads/cancel.c b/libpthread/linuxthreads/cancel.c
+--- a/libpthread/linuxthreads/cancel.c	2020-09-28 16:07:31.027088086 +0200
++++ b/libpthread/linuxthreads/cancel.c	2020-09-28 13:56:21.000000000 +0200
+@@ -228,4 +228,10 @@
+       if (FRAME_LEFT (last, c))
+ 	break;
+     }
++
++#ifdef __UCLIBC_HAS_RPC__
++  /* And the TSD which needs special help.  */
++  if (THREAD_GETMEM(self, p_libc_specific[_LIBC_TSD_KEY_RPC_VARS]) != NULL)
++      __rpc_thread_destroy ();
++#endif
+ }
+diff -Naur a/libpthread/linuxthreads/internals.h b/libpthread/linuxthreads/internals.h
+--- a/libpthread/linuxthreads/internals.h	2020-09-28 13:56:21.000000000 +0200
++++ b/libpthread/linuxthreads/internals.h	2020-09-28 16:06:53.433767535 +0200
+@@ -436,6 +436,14 @@
+ /* This function is called to initialize the pthread library.  */
+ extern void __pthread_initialize (void);
+ 
++/* TSD.  */
++#if !defined __UCLIBC_HAS_TLS__ && defined __UCLIBC_HAS_RPC__
++extern int __pthread_internal_tsd_set (int key, const void * pointer);
++extern void * __pthread_internal_tsd_get (int key);
++extern void ** __attribute__ ((__const__))
++  __pthread_internal_tsd_address (int key);
++#endif
++
+ /* Sighandler wrappers.  */
+ extern void __pthread_sighandler(int signo, SIGCONTEXT ctx);
+ extern void __pthread_sighandler_rt(int signo, struct siginfo *si,
+diff -Naur a/libpthread/linuxthreads/libc-cancellation.c b/libpthread/linuxthreads/libc-cancellation.c
+--- a/libpthread/linuxthreads/libc-cancellation.c	2020-09-28 13:56:21.000000000 +0200
++++ b/libpthread/linuxthreads/libc-cancellation.c	2020-09-28 16:06:53.433767535 +0200
+@@ -17,6 +17,7 @@
+    <http://www.gnu.org/licenses/>.  */
+ 
+ #include <errno.h>
++#include <rpc/rpc.h>
+ #include "pthread.h"
+ #include "internals.h"
+ #include "spinlock.h"
+diff -Naur a/libpthread/linuxthreads/specific.c b/libpthread/linuxthreads/specific.c
+--- a/libpthread/linuxthreads/specific.c	2020-09-28 16:07:31.027088086 +0200
++++ b/libpthread/linuxthreads/specific.c	2020-09-28 13:56:21.000000000 +0200
+@@ -211,3 +211,33 @@
+   }
+   __pthread_unlock(THREAD_GETMEM(self, p_lock));
+ }
++
++#if !defined __UCLIBC_HAS_TLS__ && defined __UCLIBC_HAS_RPC__
++
++/* Thread-specific data for libc. */
++
++int
++__pthread_internal_tsd_set (int key, const void * pointer)
++{
++  pthread_descr self = thread_self();
++
++  THREAD_SETMEM_NC(self, p_libc_specific[key], (void *) pointer);
++  return 0;
++}
++
++void *
++__pthread_internal_tsd_get (int key)
++{
++  pthread_descr self = thread_self();
++
++  return THREAD_GETMEM_NC(self, p_libc_specific[key]);
++}
++
++void ** __attribute__ ((__const__))
++__pthread_internal_tsd_address (int key)
++{
++  pthread_descr self = thread_self();
++  return &self->p_libc_specific[key];
++}
++
++#endif
+diff -Naur a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2020-09-28 16:07:31.027088086 +0200
++++ b/Makefile.in	2020-09-28 13:56:21.000000000 +0200
+@@ -252,7 +252,10 @@
+ 	bits/stackinfo.h \
+ 	atomic.h \
+ 	bits/atomic.h \
+-	tls.h
++	tls.h \
++	rpc/des_crypt.h \
++	rpc/key_prot.h \
++	rpc/rpc_des.h
+ ifeq ($(UCLIBC_STRICT_HEADERS),y)
+ HEADERS_RM- += sgtty.h
+ endif
+@@ -283,6 +286,7 @@
+ 	bits/sched.h \
+ 	semaphore.h
+ HEADERS_RM-$(UCLIBC_HAS_REGEX)               += regex.h regexp.h
++HEADERS_RM-$(UCLIBC_HAS_RPC)                 += rpc
+ HEADERS_RM-$(UCLIBC_HAS_SHADOW)              += shadow.h
+ HEADERS_RM-$(UCLIBC_HAS_SOCKET)              += sys/socket.h bits/socket.h sys/socketvar.h bits/socket_type.h
+ HEADERS_RM-$(UCLIBC_HAS_SYSLOG)              += syslog.h sys/syslog.h bits/syslog*.h
