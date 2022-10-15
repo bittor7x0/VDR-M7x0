@@ -19,8 +19,14 @@ disks=`grep -v "[0-9]$" /proc/partitions \
 
 echo -n "Formateando discos duros"
 
+n_label=1
 for disk in ${disks} ; do
 	dev_disk="/dev/${disk}"
+
+	# Create a new empty DOS partition table erasing former (required to get correct size with BusyBox fdisk and hard disks using GPT)
+	/bin/dd if=/dev/zero of=${dev_disk} bs=512 count=1
+	/bin/echo -e "o\nw" | fdisk ${dev_disk} >/dev/null 2>/dev/null
+
 	size_MiB=`fdisk -l ${dev_disk} | grep  "^Disk ${dev_disk}:" | awk '{OFMT = "%.0f" ; print $5/1048576}'`
 	partitions=$((${size_MiB}/${size_part_max}+1))
 	new_size_MiB=$((${size_MiB}/${partitions}))
@@ -28,8 +34,6 @@ for disk in ${disks} ; do
 	echo ""
 	echo "Encontrado disco ${dev_disk} de ${size_MiB} MiB"
 	echo "Se crearán ${partitions} particiones de ${new_size_MiB} MiB"
-	echo "Eliminando particiones anteriores"
-	/bin/echo -e "d\n1\nd\n2\nd\n3\nd\n4\nw" | fdisk ${dev_disk} >/dev/null 2>/dev/null
 
 	n_part=1
 	vdr_videodirs=""
@@ -66,7 +70,7 @@ for disk in ${disks} ; do
 		/sbin/mke2fs -b 4096 -i 65536 -I 128 -m 1 ${dev_partition}
 
 		# Set 1 month interval check and label
-		label="vdr${n_part}"
+		label="vdr${n_label}"
 		vdr_videodirs="${vdr_videodirs} /media/${label}"
 		echo "Comprobaciones mensuales y etiqueta ${label}"
 		/sbin/tune2fs -i 30 -c 0 -L ${label} ${dev_partition}
@@ -76,6 +80,7 @@ for disk in ${disks} ; do
 		/sbin/e2fsck -fD ${dev_partition}
 
 		n_part=$(( ${n_part} + 1 ))
+		n_label=$(( ${n_label} + 1 ))
 	done
 done
 
