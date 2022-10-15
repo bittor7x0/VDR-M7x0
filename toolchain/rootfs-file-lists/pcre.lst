@@ -1,7 +1,7 @@
-usr/lib/libpcre.so.1.2.12      usr/lib/libpcre.so.1.2.12      f 755 0 0 - - - - -
-usr/lib/libpcre.so.1.2.12      -                              s   - - - - - - - -
-usr/lib/libpcre.so.1           libpcre.so.1.2.12              l 777 0 0 - - - - -
-usr/lib/libpcre.so             libpcre.so.1.2.12              l 777 0 0 - - - - -
+usr/lib/libpcre.so.1.2.13      usr/lib/libpcre.so.1.2.13      f 755 0 0 - - - - -
+usr/lib/libpcre.so.1.2.13      -                              s   - - - - - - - -
+usr/lib/libpcre.so.1           libpcre.so.1.2.13              l 777 0 0 - - - - -
+usr/lib/libpcre.so             libpcre.so.1.2.13              l 777 0 0 - - - - -
 usr/lib/libpcreposix.so.0.0.7  usr/lib/libpcreposix.so.0.0.7  f 755 0 0 - - - - -
 usr/lib/libpcreposix.so.0.0.7  -                              s   - - - - - - - -
 usr/lib/libpcreposix.so.0      libpcreposix.so.0.0.7          l 777 0 0 - - - - -

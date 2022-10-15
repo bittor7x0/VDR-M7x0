@@ -26,7 +26,7 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 PCRE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-PCRE_VERSION := 8.44
+PCRE_VERSION := 8.45
 PCRE_PATCHES_DIR := $(PATCHES_DIR)/pcre/$(PCRE_VERSION)
 
 PCRE_FILE := pcre-$(PCRE_VERSION).tar.bz2
