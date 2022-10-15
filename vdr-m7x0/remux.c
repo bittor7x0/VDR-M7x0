@@ -724,8 +724,8 @@ bool cVideoRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *const
 {
   // Scanner is saved at Data - 4, 4 bytes are always free,
   // TS-Header is at least 4 bytes long.
-  register const uchar *data = Data;
-  register const uchar *const limit = Limit - 1;
+  const uchar *data = Data;
+  const uchar *const limit = Limit - 1;
   while (data < limit)
         if (data[0] > 1)
            data += 3;
@@ -733,7 +733,7 @@ bool cVideoRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *const
            data++;
         else {
            if (!(data[-2] | data[-1])) {
-              register const uchar code = *++data;
+              const uchar code = *++data;
               if (code == 0 || code == 0xB3 || code == 0xB8) {
                  Data = data;
                  return true;
@@ -1015,8 +1015,8 @@ bool cHDVideoRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *con
 {
   // Scanner is saved at Data - 4, 4 bytes are always free,
   // TS-Header is at least 4 bytes long.
-  register const uchar *data = Data;
-  register const uchar *const limit = Limit - 1;
+  const uchar *data = Data;
+  const uchar *const limit = Limit - 1;
   while (data < limit)
         if (data[0] > 1)
            data += 3;
@@ -1024,7 +1024,7 @@ bool cHDVideoRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *con
            data++;
         else {
            if (!(data[-2] | data[-1])) {
-              register const uchar code = *++data;
+              const uchar code = *++data;
               if (code == 9) {
                  Data = data;
                  return true;
@@ -1371,7 +1371,7 @@ int cAudioRepacker::slotsMult[2][3] = {
 
 bool cAudioRepacker::ScanDataForStartCode (const uchar *&Data, const uchar *const Limit)
 {
-  register const uchar *data = Data;
+  const uchar *data = Data;
   if (!frameTodo && Limit - data >= 4) {
      scanner = getIntUnaligned(data);
      data += 4;
@@ -1636,7 +1636,7 @@ void cDolbyRepacker::AppendSubStreamHeader(bool ContinuationFrame)
 
 bool cDolbyRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *const Limit)
 {
-  register const uchar *data = Data;
+  const uchar *data = Data;
   if (!skippedBytes && Limit - data >= 5) {
         scanner = BE2HOST(get_unaligned((uint32_t *)data));
         data += 4;
@@ -1790,7 +1790,7 @@ void cDolbyPlusRepacker::AppendSubStreamHeader(bool ContinuationFrame)
 
 bool cDolbyPlusRepacker::ScanDataForStartCode(const uchar *&Data, const uchar *const Limit)
 {
-  register const uchar *data = Data;
+  const uchar *data = Data;
   if (!skippedBytes && Limit - data >= 4) {
         scanner = BE2HOST(get_unaligned((uint32_t *)data));
         data += 4;

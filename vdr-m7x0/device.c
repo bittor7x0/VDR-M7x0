@@ -79,7 +79,7 @@ const uchar *cPesAssembler::Packet(int &Length) const
 
 bool cPesAssembler::ScanForStartCode(const uchar *&Data,int Length)
 {
-  register const uchar *data = Data;
+  const uchar *data = Data;
 
   // Normal case - No need to sync
   // I think this hit in 99% of cases.
@@ -112,7 +112,7 @@ bool cPesAssembler::ScanForStartCode(const uchar *&Data,int Length)
      return false;
      }
 
-  register const uchar *const limit = data + Length - 1;
+  const uchar *const limit = data + Length - 1;
   data += 2;
 
   while (data < limit)
@@ -122,7 +122,7 @@ bool cPesAssembler::ScanForStartCode(const uchar *&Data,int Length)
            data++;
         else {
            if (!(data[-2] | data[-1])) {
-              register const uchar code = *++data;
+              const uchar code = *++data;
               if (code >= 0xBA && code <= 0xEF) {
                  scanner = 0xFFFFFFFF;
                  packetLength = 0;

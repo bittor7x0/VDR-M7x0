@@ -896,8 +896,8 @@ void c7x0TsReplayer::CloseDvr()
 
 int c7x0TsReplayer::ScanDataForPacketStartCode(const uchar *&Data,const uchar *const Limit)
 {
-  register const uchar *data = Data;
-  register const uchar *const limit = Limit;
+  const uchar *data = Data;
+  const uchar *const limit = Limit;
 
   if (fragmentLen) {
      int c = std::min (188 - fragmentLen, limit - data);
@@ -1328,8 +1328,8 @@ void c7x0TsReplayer::HandlePmt(const uchar *Data)
 
 bool c7x0TsReplayer::ScanDataTrickspeed(const uchar *&Data, const uchar *Limit)
 {
-  register const uchar *data = Data;
-  register const uchar *limit = Limit - 1;
+  const uchar *data = Data;
+  const uchar *limit = Limit - 1;
 
   while (data < limit)
         if (data[0] > 1)
@@ -1338,7 +1338,7 @@ bool c7x0TsReplayer::ScanDataTrickspeed(const uchar *&Data, const uchar *Limit)
            data++;
         else {
            if (!(data[-2] | data[-1])) {
-              register const uchar code = *++data;
+              const uchar code = *++data;
               if (code == 0 || code == 0xB3 || code == 0xB8) {
                  Data = data;
                  return true;

@@ -393,11 +393,11 @@ cRecordingInfo::~cRecordingInfo()
 
 void cRecordingInfo::SetData(const char *Title, const char *ShortText, const char *Description)
 {
-  if (!isempty(Title))
+  if (Title)
      ((cEvent *)event)->SetTitle(Title);
-  if (!isempty(ShortText))
+  if (ShortText)
      ((cEvent *)event)->SetShortText(ShortText);
-  if (!isempty(Description))
+  if (Description)
      ((cEvent *)event)->SetDescription(Description);
 }
 

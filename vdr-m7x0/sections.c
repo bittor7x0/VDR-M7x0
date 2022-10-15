@@ -49,6 +49,8 @@ cSectionHandler::cSectionHandler(cDevice *Device)
   statusCount = 0;
   on = false;
   waitForLock = false;
+  flush = false;
+  startFilters = false;
   Start();
 }
 
@@ -151,13 +153,16 @@ void cSectionHandler::SetStatus(bool On)
 // M7X0 BEGIN AK
   if (on != On) {
      Lock();
-     if (!On || device->HasLock()) {
+     if (!On || (device->HasLock() && startFilters)) {
         statusCount++;
         for (cFilter *fi = filters.First(); fi; fi = filters.Next(fi)) {
             fi->SetStatus(false);
             if (On)
                fi->SetStatus(true);
             }
+        flush = On;
+        if (flush)
+           flushTimer.Set();
         on = On;
         waitForLock = false;
         }
@@ -168,14 +173,19 @@ void cSectionHandler::SetStatus(bool On)
 // M7X0 END AK
 }
 
+#define FLUSH_TIME 100 // ms
+
 void cSectionHandler::Action(void)
 {
   SetPriority(19);
   while (Running()) {
 
         Lock();
-        if (waitForLock)
+        if (waitForLock) {
+           startFilters = true;
            SetStatus(true);
+           startFilters = false;
+           }
         int NumFilters = filterHandles.Count();
         pollfd pfd[NumFilters];
         for (cFilterHandle *fh = filterHandles.First(); fh; fh = filterHandles.Next(fh)) {
@@ -189,10 +199,7 @@ void cSectionHandler::Action(void)
         int oldStatusCount = statusCount;
         Unlock();
 
-        if (poll(pfd, NumFilters, 1000) > 0) {
-           bool DeviceHasLock = device->HasLock();
-           if (!DeviceHasLock)
-              cCondWait::SleepMs(100);
+        if (poll(pfd, NumFilters, (!on || waitForLock) ? 100 : 1000) > 0) {
 //M7X0 BEGIN AK
               time_t now = time(NULL);
            for (int i = 0; i < NumFilters; i++) {
@@ -217,7 +224,7 @@ void cSectionHandler::Action(void)
                   int r = safe_read(fh->handle, buf, sizeof(buf)) ;
                   fh->lastData = now;
 
-                  if (!DeviceHasLock)
+                  if (flush)
                      continue; // we do the read anyway, to flush any data that might have come from a different transponder
                   if (r > 3) { // minimum number of bytes necessary to get section length
                      int len = (((buf[1] & 0x0F) << 8) | (buf[2] & 0xFF)) + 3;
@@ -242,6 +249,8 @@ void cSectionHandler::Action(void)
                      fh->lastData = time(NULL);
                   }
                }
+           if (flush)
+              flush = flushTimer.Elapsed() <= FLUSH_TIME;
            }
         }
 }

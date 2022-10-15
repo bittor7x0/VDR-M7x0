@@ -441,7 +441,7 @@ cString cEvent::GetVpsString(void) const
 
 void cEvent::Dump(FILE *f, const char *Prefix, bool InfoOnly) const
 {
-  if (InfoOnly || startTime + duration + Setup.EPGLinger * 60 >= time(NULL)) {
+  if (InfoOnly || startTime + duration + EPG_LINGER_TIME >= time(NULL)) {
      fprintf(f, "%sE %u %ld %d %X %X\n", Prefix, eventID, startTime, duration, tableID, version);
      if (!isempty(title))
         fprintf(f, "%sT %s\n", Prefix, title);
@@ -1065,7 +1065,7 @@ void cSchedule::Cleanup(time_t Time)
 {
   cEvent *Event;
   while ((Event = events.First()) != NULL) {
-        if (!Event->HasTimer() && Event->EndTime() + Setup.EPGLinger * 60 < Time)
+        if (!Event->HasTimer() && Event->EndTime() + EPG_LINGER_TIME < Time)
            DelEvent(Event);
         else
            break;
@@ -1365,6 +1365,8 @@ const cSchedule *cSchedules::GetSchedule(const cChannel *Channel, bool AddIfMiss
 {
   // This is not very beautiful, but it dramatically speeds up the
   // "What's on now/next?" menus.
+  if (!Channel)
+     return NULL;
   static cSchedule DummySchedule(tChannelID::InvalidID);
   if (!Channel->schedule)
      Channel->schedule = GetSchedule(Channel->GetChannelID());

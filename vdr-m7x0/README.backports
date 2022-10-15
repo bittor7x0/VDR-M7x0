@@ -1,6 +1,29 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 2.4.6 backports applied in this patch:
+VDR 2.6.1 backports applied in this patch:
+* Now using a separate fixed value for internal EPG linger time. This fixes problems with
+  spawned timers jumping to the next event in case Setup.EPGLinger is very small. (reported
+  by Jürgen Schneider).
+* Fixed a possible crash in the Schedule menu, in case Setup.EPGLinger is 0.
+* Fixed flushing old data from the section handler (thanks to Helmut Binder).
+* Improved responsiveness in cSectionHandler::Action() (thanks to Helmut Binder).
+* Clarified some potentially mistakable code in cSectionHandler::SetStatus() (pointed
+  out by Onur Sentürk).
+* Fixed unlocking vs. call to EpgHandlers.EndSegmentTransfer() (reported by Christoph
+  Haubrich).
+* Fixed calculating the disk use percentage if there's more than 20TB of recordings
+  (reported by Timo Weingärtner).
+* Made the functions cRecordingInfo::SetData() and cRecordingInfo::SetAux() public
+  (thanks to Peter Bieringer).
+* Fixed strreplace() to handle NULL strings (reported by Jürgen Schneider).
+* Replaced strncpy() with memcpy() in strreplace() to avoid a compiler warning
+  (reported by Marco Mäkelä).
+* Removed 'register' from libsi/util.c to avoid a warning with ISO-C++17.
+* Removed the macros __STL_CONFIG_H, _STL_ALGOBASE_H and _MOVE_H from tools.h. If your
+  plugin insists in using "using namespace std;" you can still define
+  DISABLE_TEMPLATES_COLLIDING_WITH_STL before including any VDR header files.
+* Now using __cplusplus instead of DISABLE_TEMPLATES_COLLIDING_WITH_STL, and using
+  std::min(), std::max() and std::swap() if available (thanks to Winfried Köhler).
 * Implemented handling the "Content Descriptor" (based on a patch from Rolf
   Ahrenberg). The 'classic' and 'sttng' skins display the textual
   representation of the content descriptors as "genre". The epg.data file stores

@@ -68,8 +68,6 @@ private:
   int lifetime;
   char *fileName;
   cRecordingInfo(const cChannel *Channel = NULL, const cEvent *Event = NULL);
-  void SetData(const char *Title, const char *ShortText, const char *Description);
-  void SetAux(const char *Aux);
 public:
   cRecordingInfo(const char *FileName);
   ~cRecordingInfo();
@@ -85,6 +83,8 @@ public:
   bool Write(FILE *f, const char *Prefix = "") const;
   bool Read(void);
   bool Write(void) const;
+  void SetData(const char *Title, const char *ShortText, const char *Description);
+  void SetAux(const char *Aux);
   };
 
 #define SORTRECORDINGSVERSNUM 3
@@ -129,7 +129,7 @@ public:
        ///< Returns the full path name to the recording directory, including the
        ///< video directory and the actual '*.rec'. For disk file access use.
   const char *Title(char Delimiter = ' ', bool NewIndicator = false, int Level = -1, bool Original = true) const;
-  const cRecordingInfo *Info(void) const { return info; }
+  cRecordingInfo *Info(void) const { return info; }
   void SetStartTime(time_t Start);
   const char *PrefixFileName(char Prefix);
   int HierarchyLevels(void) const;
