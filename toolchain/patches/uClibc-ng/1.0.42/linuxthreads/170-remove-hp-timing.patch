@@ -1,0 +1,221 @@
+Backport for linuxthreads.new from:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=4d466d8adaa02bd45c3d36cb910046c23c83a6f9
+
+	remove unused HP_TIMING_AVAIL and header
+
+	cleanup unused and unsupported code.
+
+diff -Naur a/libpthread/linuxthreads/Makefile.in b/libpthread/linuxthreads/Makefile.in
+--- a/libpthread/linuxthreads/Makefile.in	2020-09-25 19:29:44.000000000 +0200
++++ b/libpthread/linuxthreads/Makefile.in	2020-09-26 09:24:29.809334693 +0200
+@@ -26,8 +26,7 @@
+ pthread_sysdep_SRC := $(patsubst %,$(libpthread_DIR)/sysdeps/pthread/%.c,$(pthread_sysdep_SRC))
+ pthread_SRC := \
+ 	attr barrier cancel condvar errno events join pthread \
+-	lockfile manager mutex pt-machine ptcleanup \
+-	ptclock_gettime ptclock_settime ptfork pthandles \
++	lockfile manager mutex pt-machine ptcleanup ptfork pthandles \
+ 	pthread_setegid pthread_seteuid pthread_setgid pthread_setregid \
+ 	pthread_setresgid pthread_setresuid pthread_setreuid pthread_setuid \
+ 	rwlock semaphore sighandler signals specific spinlock
+diff -Naur a/libpthread/linuxthreads/descr.h b/libpthread/linuxthreads/descr.h
+--- a/libpthread/linuxthreads/descr.h	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/descr.h	2020-09-25 20:53:30.993754758 +0200
+@@ -22,7 +22,6 @@
+ #include <signal.h>
+ #include <stdint.h>
+ #include <sys/types.h>
+-#include <hp-timing.h>
+ #ifdef __UCLIBC_HAS_TLS__
+ #include <tls.h>
+ #endif
+@@ -182,9 +181,6 @@
+   pthread_readlock_info *p_readlock_free;  /* Free list of structs */
+   int p_untracked_readlock_count;	/* Readlocks not tracked by list */
+   int p_inheritsched;           /* copied from the thread attribute */
+-#if HP_TIMING_AVAIL
+-  hp_timing_t p_cpuclock_offset; /* Initial CPU clock for thread.  */
+-#endif
+ #ifdef __UCLIBC_HAS_TLS__
+   char *p_stackaddr;		/* Stack address.  */
+ #endif
+diff -Naur a/libpthread/linuxthreads/manager.c b/libpthread/linuxthreads/manager.c
+--- a/libpthread/linuxthreads/manager.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/manager.c	2020-09-25 20:53:41.833740667 +0200
+@@ -257,17 +257,10 @@
+   pthread_descr self = (pthread_descr) arg;
+   struct pthread_request request;
+   void * outcome;
+-#if HP_TIMING_AVAIL
+-  hp_timing_t tmpclock;
+-#endif
+   /* Initialize special thread_self processing, if any.  */
+ #ifdef INIT_THREAD_SELF
+   INIT_THREAD_SELF(self, self->p_nr);
+ #endif
+-#if HP_TIMING_AVAIL
+-  HP_TIMING_NOW (tmpclock);
+-  THREAD_SETMEM (self, p_cpuclock_offset, tmpclock);
+-#endif
+   /* Make sure our pid field is initialized, just in case we get there
+      before our father has initialized it. */
+   THREAD_SETMEM(self, p_pid, __getpid());
+diff -Naur a/libpthread/linuxthreads/ptclock_gettime.c b/libpthread/linuxthreads/ptclock_gettime.c
+--- a/libpthread/linuxthreads/ptclock_gettime.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/ptclock_gettime.c	1970-01-01 01:00:00.000000000 +0100
+@@ -1,67 +0,0 @@
+-/* Copyright (C) 2001, 2004 Free Software Foundation, Inc.
+-   This file is part of the GNU C Library.
+-
+-   The GNU C Library is free software; you can redistribute it and/or
+-   modify it under the terms of the GNU Lesser General Public License as
+-   published by the Free Software Foundation; either version 2.1 of the
+-   License, or (at your option) any later version.
+-
+-   The GNU C Library is distributed in the hope that it will be useful,
+-   but WITHOUT ANY WARRANTY; without even the implied warranty of
+-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-   Lesser General Public License for more details.
+-
+-   You should have received a copy of the GNU Lesser General Public
+-   License along with the GNU C Library; see the file COPYING.LIB.  If
+-   not, see <http://www.gnu.org/licenses/>.  */
+-
+-#include <errno.h>
+-#include <time.h>
+-#include "internals.h"
+-#include "spinlock.h"
+-
+-
+-#if HP_TIMING_AVAIL
+-int
+-__pthread_clock_gettime (clockid_t clock_id, hp_timing_t freq,
+-			 struct timespec *tp)
+-{
+-  hp_timing_t tsc, cpuclock_offset;
+-  pthread_descr self = thread_self ();
+-  pthread_t thread = ((unsigned int) clock_id) >> CLOCK_IDFIELD_SIZE;
+-  const unsigned int mask = ~0U >> CLOCK_IDFIELD_SIZE;
+-
+-  if (thread == 0 || (THREAD_GETMEM (self, p_tid) & mask) == thread)
+-    cpuclock_offset = THREAD_GETMEM (self, p_cpuclock_offset);
+-  else
+-    {
+-      pthread_descr th;
+-      pthread_handle handle = thread_handle (thread);
+-      __pthread_lock (&handle->h_lock, NULL);
+-      th = handle->h_descr;
+-      if (th == NULL || (th->p_tid & mask) != thread || th->p_terminated)
+-	{
+-	  __pthread_unlock (&handle->h_lock);
+-	  __set_errno (EINVAL);
+-	  return -1;
+-	}
+-      cpuclock_offset = th->p_cpuclock_offset;
+-      __pthread_unlock (&handle->h_lock);
+-   }
+-
+-  /* Get the current counter.  */
+-  HP_TIMING_NOW (tsc);
+-
+-  /* Compute the offset since the start time of the process.  */
+-  tsc -= cpuclock_offset;
+-
+-  /* Compute the seconds.  */
+-  tp->tv_sec = tsc / freq;
+-
+-  /* And the nanoseconds.  This computation should be stable until
+-     we get machines with about 16GHz frequency.  */
+-  tp->tv_nsec = ((tsc % freq) * 1000000000ull) / freq;
+-
+-  return 0;
+-}
+-#endif
+diff -Naur a/libpthread/linuxthreads/ptclock_settime.c b/libpthread/linuxthreads/ptclock_settime.c
+--- a/libpthread/linuxthreads/ptclock_settime.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/ptclock_settime.c	1970-01-01 01:00:00.000000000 +0100
+@@ -1,53 +0,0 @@
+-/* Copyright (C) 2001, 2004 Free Software Foundation, Inc.
+-   This file is part of the GNU C Library.
+-
+-   The GNU C Library is free software; you can redistribute it and/or
+-   modify it under the terms of the GNU Lesser General Public License as
+-   published by the Free Software Foundation; either version 2.1 of the
+-   License, or (at your option) any later version.
+-
+-   The GNU C Library is distributed in the hope that it will be useful,
+-   but WITHOUT ANY WARRANTY; without even the implied warranty of
+-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-   Lesser General Public License for more details.
+-
+-   You should have received a copy of the GNU Lesser General Public
+-   License along with the GNU C Library; see the file COPYING.LIB.  If
+-   not, see <http://www.gnu.org/licenses/>.  */
+-
+-#include <errno.h>
+-#include <time.h>
+-#include "internals.h"
+-#include "spinlock.h"
+-
+-
+-#if HP_TIMING_AVAIL
+-int
+-__pthread_clock_settime (clockid_t clock_id, hp_timing_t offset)
+-{
+-  pthread_descr self = thread_self ();
+-  pthread_t thread = ((unsigned int) clock_id) >> CLOCK_IDFIELD_SIZE;
+-  const unsigned int mask = ~0U >> CLOCK_IDFIELD_SIZE;
+-
+-  if (thread == 0 || (THREAD_GETMEM (self, p_tid) & mask) == thread)
+-    /* Our own clock.  */
+-    THREAD_SETMEM (self, p_cpuclock_offset, offset);
+-  else
+-    {
+-      pthread_descr th;
+-      pthread_handle handle = thread_handle (thread);
+-      __pthread_lock (&handle->h_lock, NULL);
+-      th = handle->h_descr;
+-      if (th == NULL || (th->p_tid & mask) != thread || th->p_terminated)
+-	{
+-	  __pthread_unlock (&handle->h_lock);
+-	  __set_errno (EINVAL);
+-	  return -1;
+-	}
+-      th->p_cpuclock_offset = offset;
+-      __pthread_unlock (&handle->h_lock);
+-   }
+-
+-  return 0;
+-}
+-#endif
+diff -Naur a/libpthread/linuxthreads/pthread.c b/libpthread/linuxthreads/pthread.c
+--- a/libpthread/linuxthreads/pthread.c	2020-09-25 19:29:44.000000000 +0200
++++ b/libpthread/linuxthreads/pthread.c	2020-09-25 20:54:53.793644176 +0200
+@@ -326,14 +326,6 @@
+ # endif
+ #endif
+ 
+-#if HP_TIMING_AVAIL
+-# ifdef __UCLIBC_HAS_TLS__
+-  self->p_cpuclock_offset = GL(dl_cpuclock_offset);
+-# else
+-  __pthread_initial_thread.p_cpuclock_offset = GL(dl_cpuclock_offset);
+-# endif
+-#endif
+-
+   __libc_multiple_threads_ptr = __libc_pthread_init ();
+ }
+ 
+diff -Naur a/librt/clock_gettime.c b/librt/clock_gettime.c
+--- a/librt/clock_gettime.c	2020-09-29 12:26:04.000000000 +0200
++++ b/librt/clock_gettime.c	2020-10-01 17:19:48.714449591 +0200
+@@ -174,9 +174,6 @@
+ 	}								      \
+       retval = hp_timing_gettime (clock_id, tp);			      \
+       break;
+-#  if !HP_TIMING_AVAIL
+-#   define hp_timing_gettime(clock_id, tp) (__set_errno (EINVAL), -1)
+-#  endif
+ 
+ # endif
+ #endif
