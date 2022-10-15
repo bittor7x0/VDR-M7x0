@@ -2044,11 +2044,14 @@ char *CapitalizeFilename(char **buffer)
 
   bool uppernext = true;
   char *buf = *buffer;
-  int ind;
-  for (ind = 0; buf[ind] != '\0'; ++ind) {
+  // Only capitalize filename excluding folder
+  int ind, ind_dir = strrchr(buf, FOLDERDELIMCHAR) - buf + 1;
+  for (ind = 0; ind != ind_dir; ++ind)
+     tmp[ind] = buf[ind];
+  for (ind = ind_dir; buf[ind] != '\0'; ++ind) {
      if (buf[ind] == ' ')
         tmp[ind] = ' ';
-     else if (buf[ind] == FOLDERDELIMCHAR || (buf[ind + 1] == ' ' && (buf[ind] == ':' || buf[ind] == '.')) || (buf[ind - 1] == ' ' && buf[ind] == '\'')) {
+     else if ((buf[ind + 1] == ' ' && (buf[ind] == ':' || buf[ind] == '.')) || (buf[ind - 1] == ' ' && buf[ind] == '\'')) {
         uppernext = true;
         tmp[ind] = buf[ind];
         }
