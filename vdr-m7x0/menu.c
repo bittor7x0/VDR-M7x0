@@ -2644,14 +2644,16 @@ eOSState cMenuRenameRecording::ProcessKey(eKeys Key)
   if (state == osUnknown) {
      switch (Key) {
        case kOk: {
-            if (!*name)
+            if (!*name) {
                *name = ' '; // name must not be empty!
+               name[1] = 0;
+               }
             cString NewName = *DirList.folder ? cString::sprintf("%s%c%s", DirList.folder, FOLDERDELIMCHAR, name) : name;
             NewName.CompactChars(FOLDERDELIMCHAR);
             if (recording->Rename(NewName, &priority, &lifetime)) {
                Recordings.ChangeState();
                Recordings.TouchUpdate();
-               return osRecordings;
+               return osUser1;
                }
             else
                Skins.Message(mtError, tr("Error while accessing recording!"));
@@ -2984,6 +2986,16 @@ eOSState cMenuRecordings::ProcessKey(eKeys Key)
                      break;
        default: break;
        }
+     }
+  else if (state == osUser1) {
+     // a recording or path was renamed, so let's refresh the menu
+     CloseSubMenu(false); // this is the cMenuRenameRecording or the now empty submenu if the subfolder became empty
+     Set(); // in case a recording was moved into a new subfolder of this folder
+     if (base && !Count()) // base: don't go up beyond the top level Recordings menu
+        return state;
+     Open(true); // open any necessary submenus to show the original folder
+     Display();
+     state = osContinue;
      }
   if (Key == kYellow && HadSubMenu && !HasSubMenu()) {
      // the last recording in a subdirectory was deleted, so let's go back up
