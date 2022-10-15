@@ -834,7 +834,7 @@ cMenuEditDaysOfWeek::cMenuEditDaysOfWeek(int* DaysOfWeek, int Offset, bool Negat
       *pDaysOfWeek = -*pDaysOfWeek;
 
    for(i=0; i<7; i++)
-      Days[(i+offset)%7]=((*pDaysOfWeek) & (int)pow(2,i))?1:0;
+      Days[(i+offset)%7]=((*pDaysOfWeek) & (int)round(pow(2,i)))?1:0;
    for(i=0; i<7; i++)
       Add(new cMenuEditBoolItem( WeekDayName((i+1)%7), &Days[(i+1)%7], trVDR("no"), trVDR("yes")));
 
@@ -853,7 +853,7 @@ eOSState cMenuEditDaysOfWeek::ProcessKey(eKeys Key)
          case kOk:
             *pDaysOfWeek = 0;
             for(int i=0; i<7; i++)
-               *pDaysOfWeek += Days[i]?(int)pow(2,(i+7-offset)%7):0;
+               *pDaysOfWeek += Days[i]?(int)round(pow(2,(i+7-offset)%7)):0;
             if (negate)
                *pDaysOfWeek = -*pDaysOfWeek;
             state = osBack;
