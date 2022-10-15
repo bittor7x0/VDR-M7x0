@@ -1,0 +1,6 @@
+--- a/e2fsck.conf
++++ b/e2fsck.conf
+@@ -0,0 +1,3 @@
++[options]
++broken_system_clock = true
++
