@@ -116,7 +116,7 @@ protected:
   void Mark(void);
   eOSState HotKey(eKeys Key);
   eOSState AddSubMenu(cOsdMenu *SubMenu);
-  eOSState CloseSubMenu();
+  eOSState CloseSubMenu(bool ReDisplay = true);
   bool HasSubMenu(void) { return subMenu; }
   cOsdMenu *SubMenu(void) { return subMenu; }
   void SetStatus(const char *s);

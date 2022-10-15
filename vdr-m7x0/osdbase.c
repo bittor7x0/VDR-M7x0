@@ -500,12 +500,14 @@ eOSState cOsdMenu::AddSubMenu(cOsdMenu *SubMenu)
   return osContinue; // convenience return value
 }
 
-eOSState cOsdMenu::CloseSubMenu()
+eOSState cOsdMenu::CloseSubMenu(bool ReDisplay)
 {
   delete subMenu;
   subMenu = NULL;
-  RefreshCurrent();
-  Display();
+  if (ReDisplay) {
+     RefreshCurrent();
+     Display();
+     }
   return osContinue; // convenience return value
 }
 
