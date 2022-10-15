@@ -3638,6 +3638,76 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
+  { "Delay internal threads ... seconds",
+    "Verzögerung der internen threads um ... Sekunden",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Retraso de hilos internos ... segundos",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
+  { "Help$This value delays starting the searchtimer update thread for the given range of seconds",
+    "Dieser Wert verzögert das Starten des Suchtimerthreads nach VDR-Start um die angegebenen Sekunden",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Este valor retrasa el inicio del hilo de actualización de la programación por búsqueda durante el rango de segundos dado",
+    "",
+    "",
+    "",
+    "",
+    "",
+#if VDRVERSNUM >= 10302
+    "",
+#endif
+#if VDRVERSNUM >= 10307
+    "",
+#endif
+#if VDRVERSNUM >= 10313
+    "",
+#endif
+#if VDRVERSNUM >= 10316
+    "",
+#endif
+#if VDRVERSNUM >= 10342
+    "",
+#endif
+#if VDRVERSNUM >= 10502
+    "",
+#endif
+  },
   { "Help$Specify here the default priority of timers created with this plugin. This value can also be adjusted for each search itself.",
     "Hier wird die Standard-Priorität für Timer angegeben, die von diesem Plugin erzeugt werden. Dieser Wert kann aber auch bei jeder Suche einzeln gesetzt werden.",
     "",
@@ -10778,8 +10848,8 @@ const tI18nPhrase Phrases[] = {
     "",
 #endif
   },
-  { "if present",
-    "wenn vorhanden",
+  { "allow empty",
+    "erlaube leere",
     "",
     "",
     "",
@@ -10788,7 +10858,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    "si existe",
+    "permitir vacío",
     "",
     "",
     "",

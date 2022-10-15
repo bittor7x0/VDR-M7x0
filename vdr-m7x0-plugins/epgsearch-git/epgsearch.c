@@ -26,6 +26,7 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
  *
  */
 
+#define DISABLE_TEMPLATES_COLLIDING_WITH_STL
 #include <vector>
 #include <vdr/plugin.h>
 #include <vdr/status.h>
@@ -71,7 +72,7 @@ The project's page is at http://winni.vdr-developer.org/epgsearch
 #include "confdloader.h"
 #include "pending_notifications.h"
 
-static const char VERSION[]        = "2.4.0";
+static const char VERSION[]        = "2.4.1";
 static const char DESCRIPTION[]    =  trNOOP("search the EPG for repeats and more");
 
 // globals
@@ -667,6 +668,7 @@ bool cPluginEpgsearch::SetupParse(const char *Name, const char *Value)
    if      (!strcasecmp(Name, "UseSearchTimers"))  EPGSearchConfig.useSearchTimers = atoi(Value);
    if      (!strcasecmp(Name, "UpdateIntervall"))  EPGSearchConfig.UpdateIntervall = atoi(Value);
    if      (!strcasecmp(Name, "SVDRPPort"))  EPGSearchConfig.SVDRPPort = atoi(Value);
+   if      (!strcasecmp(Name, "DelayThreads"))  EPGSearchConfig.delayThreads = atoi(Value);
    if      (!strcasecmp(Name, "CheckTimerConflicts"))  EPGSearchConfig.checkTimerConflictsAfterUpdate = atoi(Value);
    if      (!strcasecmp(Name, "CheckTimerConflictsPriority"))  EPGSearchConfig.checkMinPriority = atoi(Value);
    if      (!strcasecmp(Name, "CheckTimerConflictsDays"))  EPGSearchConfig.checkMaxDays = atoi(Value);

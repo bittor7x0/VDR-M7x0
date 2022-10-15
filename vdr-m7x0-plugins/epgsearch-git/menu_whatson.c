@@ -249,7 +249,7 @@ void cMenuMyScheduleItem::SetMenuItem(cSkinDisplayMenu *DisplayMenu, int Index, 
 {
 #if APIVERSNUM >= 10733
   bool withDate = (channel == NULL); // search for a better way to determine this
-  if (!DisplayMenu->SetItemEvent(event, Index, Current, Selectable, channel, withDate, timerMatch))
+  if (!DisplayMenu->SetItemEvent(event, Index, Current, Selectable, channel, withDate, timerMatch, timerActive))
      DisplayMenu->SetItem(Text(), Index, Current, Selectable);
 #endif
 }
@@ -288,7 +288,7 @@ void cMenuMyScheduleSepItem::SetMenuItem(cSkinDisplayMenu *DisplayMenu, int Inde
 {
 #if APIVERSNUM >= 10733
   bool withDate = (channel == NULL); // search for a better way to determine this
-  if (!DisplayMenu->SetItemEvent(dummyEvent, Index, Current, Selectable, channel, withDate, timerMatch))
+  if (!DisplayMenu->SetItemEvent(dummyEvent, Index, Current, Selectable, channel, withDate, timerMatch, timerActive))
      DisplayMenu->SetItem(Text(), Index, Current, Selectable);
 #endif
 }

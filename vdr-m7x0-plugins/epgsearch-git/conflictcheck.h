@@ -65,7 +65,7 @@ class cConflictCheckTimerObj : public cTimerObj
 class TimerObjSort
 {
 public:
-    bool operator() (cConflictCheckTimerObj* a, cConflictCheckTimerObj* b) const
+    bool operator() (const cConflictCheckTimerObj* a, const cConflictCheckTimerObj* b) const
     {
         return (a->Compare(*b) < 0);
     }
@@ -206,6 +206,14 @@ class cConflictCheckDevice
 		prio = std::max(prio, (*it)->timer->Priority());
 	    return prio;
 	};
+    bool HasInternalCam(void) {
+        if (device) return device->HasInternalCam();
+        else return false;
+    }
+    int NumProvidedSystems(void) const {
+        if (device) return device->NumProvidedSystems();
+        else return 1;
+    }
     int CardIndex(void) const { if (device) return device->CardIndex(); else return devicenr;}
     bool Receiving() const { return !recTimers.empty(); }
     bool IsTunedTo (const cChannel* Channel) const

@@ -562,12 +562,13 @@ int cConflictCheck::GetDevice(cConflictCheckTimerObj* TimerObj, bool* NeedsDetac
     int NumCamSlots = CamSlots.Count();
     int SlotPriority[NumCamSlots];
     int NumUsableSlots = 0;
+    bool InternalCamNeeded = false;
     if (Channel->Ca() >= CA_ENCRYPTED_MIN) {
 	for (cCamSlot *CamSlot = CamSlots.First(); CamSlot; CamSlot = CamSlots.Next(CamSlot)) {
 	    SlotPriority[CamSlot->Index()] = MAXPRIORITY + 1; // assumes it can't be used
 	    if (CamSlotModuleStatus(CamSlot) == msReady) {
 		if (CamSlot->ProvidesCa(Channel->Caids())) {
-		    if (!ChannelCamRelations.CamChecked(Channel->GetChannelID(), CamSlot->SlotNumber())) {
+		    if (!ChannelCamRelations.CamChecked(Channel->GetChannelID(), CamSlot->MasterSlotNumber())) {
 			SlotPriority[CamSlot->Index()] = CamSlot->Priority();
 			NumUsableSlots++;
 		    }
@@ -578,7 +579,7 @@ int cConflictCheck::GetDevice(cConflictCheckTimerObj* TimerObj, bool* NeedsDetac
 	int NumUsableSlots = 1;
 #endif
 	if (!NumUsableSlots)
-	    return selDevice; // no CAM is able to decrypt this channel
+	    InternalCamNeeded = true; // no CAM is able to decrypt this channel
      }
 
     if (NeedsDetachReceivers)
@@ -591,11 +592,14 @@ int cConflictCheck::GetDevice(cConflictCheckTimerObj* TimerObj, bool* NeedsDetac
       for (int i = 0; i < numDevices; i++) {
           if (Channel->Ca() && Channel->Ca() <= CA_DVB_MAX && Channel->Ca() != devices[i].CardIndex() + 1)
              continue; // a specific card was requested, but not this one
-          if (NumUsableSlots && !CamSlots.Get(j)->Assign(devices[i].device, true))
+          bool HasInternalCam = devices[i].HasInternalCam();
+          if (InternalCamNeeded && !HasInternalCam)
+             continue; // no CAM is able to decrypt this channel and the device uses vdr handled CAMs
+          if (NumUsableSlots && !HasInternalCam && !CamSlots.Get(j)->Assign(devices[i].device, true))
              continue; // CAM slot can't be used with this device
           bool ndr;
           if (devices[i].ProvidesChannel(Channel, Priority, &ndr)) { // this device is basically able to do the job
-             if (NumUsableSlots && devices[i].CamSlot() && devices[i].CamSlot() != CamSlots.Get(j))
+             if (NumUsableSlots && !HasInternalCam && devices[i].CamSlot() && devices[i].CamSlot() != CamSlots.Get(j))
                 ndr = true; // using a different CAM slot requires detaching receivers
              // Put together an integer number that reflects the "impact" using
              // this device would have on the overall system. Each condition is represented
@@ -606,10 +610,17 @@ int cConflictCheck::GetDevice(cConflictCheckTimerObj* TimerObj, bool* NeedsDetac
              uint32_t imp = 0;
 	     // prefer the primary device for live viewing if we don't need to detach existing receivers
              imp <<= 1; ;
-             // use receiving devices if we don't need to detach existing receivers
+         // use receiving devices if we don't need to detach existing receivers
              imp <<= 1; imp |= !devices[i].Receiving() || ndr;
 	     // avoid devices that are receiving
              imp <<= 1; imp |= devices[i].Receiving();
+         // do we have GetClippedNumProvidedSystems ???  uses MaxNumProvidedSystems in vdr since V1.7 !!
+         // but should not be needed
+             imp <<= 5; // headroom for 31 Systems
+             int ProvidedSystems=devices[i].NumProvidedSystems();
+             if (ProvidedSystems <= 0)  // invalid return
+                 ProvidedSystems = 1;
+             imp |= std::min(ProvidedSystems,31); // avoid cards which support multiple delivery systems
 	     // use the device with the lowest priority (+MAXPRIORITY to assure that values -99..99 can be used)
              imp <<= 8; imp |= std::min(std::max(devices[i].Priority() + MAXPRIORITY, 0), 0xFF);
 	     // use the CAM slot with the lowest priority (+MAXPRIORITY to assure that values -99..99 can be used)
@@ -620,12 +631,14 @@ int cConflictCheck::GetDevice(cConflictCheckTimerObj* TimerObj, bool* NeedsDetac
              imp <<= 1; imp |= devices[i].IsPrimaryDevice();
 	     // avoid cards with Common Interface for FTA channels
 #if APIVERSNUM >= 10501
-	     imp <<= 1; imp |= NumUsableSlots ? 0 : devices[i].HasCi();
+	     imp <<= 1;
+	     imp |= (NumUsableSlots || InternalCamNeeded) ? 0 : devices[i].HasCi();
 #endif
 	     // avoid full featured cards
              imp <<= 1; imp |= devices[i].HasDecoder();
 	     // prefer CAMs that are known to decrypt this channel
-             imp <<= 1; imp |= NumUsableSlots ? !ChannelCamRelations.CamDecrypt(Channel->GetChannelID(), j + 1) : 0;
+             imp <<= 1;
+             imp |= (NumUsableSlots && !HasInternalCam) ? !ChannelCamRelations.CamDecrypt(Channel->GetChannelID(), CamSlots.Get(j)->MasterSlotNumber()) : 0;
              if (imp < Impact) {
                 // This device has less impact than any previous one, so we take it.
                 Impact = imp;
