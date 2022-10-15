@@ -940,7 +940,7 @@ cEvent * cSearchExt::GetEventBySearchExt(const cSchedule *schedules, const cEven
                   int iFound = 0;
                   for(int i=0; i<7; i++)
                   {
-                     if ((abs(DayOfWeek) & (int)pow(2,i)) && ((i == tmEvent.tm_wday && eventStart >= searchStart) ||
+                     if ((abs(DayOfWeek) & (int)round(pow(2,i))) && ((i == tmEvent.tm_wday && eventStart >= searchStart) ||
                                                               ((i+1)%7 == tmEvent.tm_wday && eventStart2 < searchStop)))
                      {
                         iFound = 1;
@@ -970,7 +970,7 @@ cEvent * cSearchExt::GetEventBySearchExt(const cSchedule *schedules, const cEven
             {
                int iFound = 0;
                for(int i=0; i<7; i++)
-                  if (abs(DayOfWeek) & (int)pow(2,i) && i == tmEvent.tm_wday)
+                  if (abs(DayOfWeek) & (int)round(pow(2,i)) && i == tmEvent.tm_wday)
                   {
                      iFound = 1;
                      break;
