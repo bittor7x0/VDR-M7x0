@@ -1,6 +1,6 @@
 diff -Naur a/doc/mpfr.info b/doc/mpfr.info
---- a/doc/mpfr.info	2020-07-10 13:59:13.000000000 +0200
-+++ b/doc/mpfr.info	2021-03-09 14:55:51.167071327 +0100
+--- a/doc/mpfr.info	2020-07-10 11:59:13.000000000 +0200
++++ b/doc/mpfr.info	2022-03-20 12:24:57.890009098 +0100
 @@ -3217,7 +3217,11 @@
  
     Each function in this interface is also implemented as a macro for
@@ -69,8 +69,8 @@ diff -Naur a/doc/mpfr.info b/doc/mpfr.info
  End Tag Table
  
 diff -Naur a/doc/mpfr.texi b/doc/mpfr.texi
---- a/doc/mpfr.texi	2020-07-10 13:52:33.000000000 +0200
-+++ b/doc/mpfr.texi	2021-03-09 14:55:43.211158639 +0100
+--- a/doc/mpfr.texi	2020-07-10 11:52:33.000000000 +0200
++++ b/doc/mpfr.texi	2022-03-20 12:24:57.890009098 +0100
 @@ -3817,6 +3817,12 @@
  Each function in this interface is also implemented as a macro for
  efficiency reasons: for example @code{mpfr_custom_init (s, p)}
@@ -85,9 +85,10 @@ diff -Naur a/doc/mpfr.texi b/doc/mpfr.texi
  Note 1: MPFR functions may still initialize temporary floating-point numbers
  using @code{mpfr_init} and similar functions. See Custom Allocation (GNU MP)@.
 diff -Naur a/PATCHES b/PATCHES
---- a/PATCHES	2011-06-30 02:17:40.000000000 +0200
-+++ b/PATCHES	2021-04-24 18:50:33.788701722 +0200
-@@ -0,0 +1,12 @@
+--- a/PATCHES	2011-06-30 00:17:40.000000000 +0200
++++ b/PATCHES	2022-03-20 12:24:57.898009084 +0100
+@@ -0,0 +1,13 @@
++vasprintf-prec-zero
 +get_str_ndigits
 +tset_sij
 +macros
@@ -101,8 +102,8 @@ diff -Naur a/PATCHES b/PATCHES
 +random_deviate
 +decimal128-conv
 diff -Naur a/src/atan.c b/src/atan.c
---- a/src/atan.c	2020-04-22 17:27:07.000000000 +0200
-+++ b/src/atan.c	2021-02-11 13:48:27.354242922 +0100
+--- a/src/atan.c	2020-04-22 15:27:07.000000000 +0200
++++ b/src/atan.c	2022-03-20 12:24:57.868009137 +0100
 @@ -56,7 +56,7 @@
    };
  
@@ -113,8 +114,8 @@ diff -Naur a/src/atan.c b/src/atan.c
    mpfr_prec_t p = MPFR_PREC(y);
    mp_size_t n = MPFR_PREC2LIMBS(p);
 diff -Naur a/src/const_euler.c b/src/const_euler.c
---- a/src/const_euler.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/const_euler.c	2021-04-24 18:50:33.762035104 +0200
+--- a/src/const_euler.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/const_euler.c	2022-03-20 12:24:57.868009137 +0100
 @@ -181,7 +181,7 @@
  }
  
@@ -125,8 +126,8 @@ diff -Naur a/src/const_euler.c b/src/const_euler.c
    mpfr_const_euler_bs_t sum;
    mpz_t t, u, v;
 diff -Naur a/src/digamma.c b/src/digamma.c
---- a/src/digamma.c	2020-06-18 19:17:18.000000000 +0200
-+++ b/src/digamma.c	2021-02-17 18:22:34.690972226 +0100
+--- a/src/digamma.c	2020-06-18 17:17:18.000000000 +0200
++++ b/src/digamma.c	2022-03-20 12:24:57.886009105 +0100
 @@ -173,16 +173,19 @@
        mpfr_digamma (v, u, MPFR_RNDN);   /* error <= 1/2 ulp */
        expv = MPFR_GET_EXP (v);
@@ -273,8 +274,8 @@ diff -Naur a/src/digamma.c b/src/digamma.c
    else
      inex = mpfr_digamma_positive (y, x, rnd_mode);
 diff -Naur a/src/eint.c b/src/eint.c
---- a/src/eint.c	2020-03-09 17:31:45.000000000 +0100
-+++ b/src/eint.c	2021-04-24 18:50:33.762035104 +0200
+--- a/src/eint.c	2020-03-09 15:31:45.000000000 +0100
++++ b/src/eint.c	2022-03-20 12:24:57.868009137 +0100
 @@ -36,7 +36,7 @@
     Return PREC(y) when the truncated series does not converge.
  */
@@ -285,8 +286,8 @@ diff -Naur a/src/eint.c b/src/eint.c
    mpfr_t eps; /* dynamic (absolute) error bound on t */
    mpfr_t erru, errs;
 diff -Naur a/src/erandom.c b/src/erandom.c
---- a/src/erandom.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/erandom.c	2021-04-24 18:50:33.762035104 +0200
+--- a/src/erandom.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/erandom.c	2022-03-20 12:24:57.868009137 +0100
 @@ -80,7 +80,7 @@
  
  /* return an exponential random deviate with mean 1 as a MPFR  */
@@ -297,8 +298,8 @@ diff -Naur a/src/erandom.c b/src/erandom.c
    mpfr_random_deviate_t x, p, q;
    int inex;
 diff -Naur a/src/fpif.c b/src/fpif.c
---- a/src/fpif.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/fpif.c	2021-04-24 18:50:33.762035104 +0200
+--- a/src/fpif.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/fpif.c	2022-03-20 12:24:57.870009133 +0100
 @@ -291,7 +291,8 @@
   *   until one has integer types larger than 128 bits).
   */
@@ -355,8 +356,8 @@ diff -Naur a/src/fpif.c b/src/fpif.c
    int status;
    mpfr_prec_t precision;
 diff -Naur a/src/get_d128.c b/src/get_d128.c
---- a/src/get_d128.c	2020-04-09 00:39:35.000000000 +0200
-+++ b/src/get_d128.c	2021-02-11 13:40:40.103363216 +0100
+--- a/src/get_d128.c	2020-04-08 22:39:35.000000000 +0200
++++ b/src/get_d128.c	2022-03-20 12:24:57.864009144 +0100
 @@ -40,22 +40,21 @@
  static _Decimal128
  get_decimal128_nan (void)
@@ -384,8 +385,8 @@ diff -Naur a/src/get_d128.c b/src/get_d128.c
  
  /* construct the decimal128 smallest non-zero with given sign:
 diff -Naur a/src/get_str.c b/src/get_str.c
---- a/src/get_str.c	2020-06-18 19:17:18.000000000 +0200
-+++ b/src/get_str.c	2021-04-23 11:49:34.680281710 +0200
+--- a/src/get_str.c	2020-06-18 17:17:18.000000000 +0200
++++ b/src/get_str.c	2022-03-20 12:24:57.898009084 +0100
 @@ -2484,6 +2484,8 @@
  size_t
  mpfr_get_str_ndigits (int b, mpfr_prec_t p)
@@ -434,8 +435,8 @@ diff -Naur a/src/get_str.c b/src/get_str.c
    }
  }
 diff -Naur a/src/jyn_asympt.c b/src/jyn_asympt.c
---- a/src/jyn_asympt.c	2020-07-10 12:33:32.000000000 +0200
-+++ b/src/jyn_asympt.c	2021-02-17 18:25:46.424981219 +0100
+--- a/src/jyn_asympt.c	2020-07-10 10:33:32.000000000 +0200
++++ b/src/jyn_asympt.c	2022-03-20 12:24:57.888009101 +0100
 @@ -69,6 +69,8 @@
    MPFR_ZIV_INIT (loop, w);
    for (;;)
@@ -487,8 +488,8 @@ diff -Naur a/src/jyn_asympt.c b/src/jyn_asympt.c
        if (diverge != 0)
          {
 diff -Naur a/src/li2.c b/src/li2.c
---- a/src/li2.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/li2.c	2021-04-24 18:50:33.762035104 +0200
+--- a/src/li2.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/li2.c	2022-03-20 12:24:57.870009133 +0100
 @@ -31,7 +31,7 @@
     for determinating the relative error.
  */
@@ -499,8 +500,8 @@ diff -Naur a/src/li2.c b/src/li2.c
    int i;
    mpfr_t s, u, v, w;
 diff -Naur a/src/lngamma.c b/src/lngamma.c
---- a/src/lngamma.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/lngamma.c	2021-04-24 18:50:33.762035104 +0200
+--- a/src/lngamma.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/lngamma.c	2022-03-20 12:24:57.870009133 +0100
 @@ -31,7 +31,7 @@
     precision should be >= 4.
  */
@@ -511,14 +512,14 @@ diff -Naur a/src/lngamma.c b/src/lngamma.c
    MPFR_LOG_FUNC
      (("p=%Pu", p),
 diff -Naur a/src/mpfr.h b/src/mpfr.h
---- a/src/mpfr.h	2020-07-10 13:52:33.000000000 +0200
-+++ b/src/mpfr.h	2021-04-23 11:49:34.692281639 +0200
+--- a/src/mpfr.h	2020-07-10 11:52:33.000000000 +0200
++++ b/src/mpfr.h	2022-03-20 12:24:57.898009084 +0100
 @@ -27,7 +27,7 @@
  #define MPFR_VERSION_MAJOR 4
  #define MPFR_VERSION_MINOR 1
  #define MPFR_VERSION_PATCHLEVEL 0
 -#define MPFR_VERSION_STRING "4.1.0"
-+#define MPFR_VERSION_STRING "4.1.0-p12"
++#define MPFR_VERSION_STRING "4.1.0-p13"
  
  /* User macros:
     MPFR_USE_FILE:        Define it to make MPFR define functions dealing
@@ -624,8 +625,8 @@ diff -Naur a/src/mpfr.h b/src/mpfr.h
  __MPFR_DECLSPEC uintmax_t mpfr_get_uj (mpfr_srcptr, mpfr_rnd_t);
  
 diff -Naur a/src/mpfr-impl.h b/src/mpfr-impl.h
---- a/src/mpfr-impl.h	2020-06-10 23:50:12.000000000 +0200
-+++ b/src/mpfr-impl.h	2021-02-11 13:48:27.354242922 +0100
+--- a/src/mpfr-impl.h	2020-06-10 21:50:12.000000000 +0200
++++ b/src/mpfr-impl.h	2022-03-20 12:24:57.870009133 +0100
 @@ -2474,7 +2474,8 @@
  __MPFR_DECLSPEC mpz_srcptr mpfr_bernoulli_cache (unsigned long);
  __MPFR_DECLSPEC void mpfr_bernoulli_freecache (void);
@@ -646,8 +647,8 @@ diff -Naur a/src/mpfr-impl.h b/src/mpfr-impl.h
  
  __MPFR_DECLSPEC int mpfr_odd_p (mpfr_srcptr);
 diff -Naur a/src/nrandom.c b/src/nrandom.c
---- a/src/nrandom.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/nrandom.c	2021-04-24 18:50:33.762035104 +0200
+--- a/src/nrandom.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/nrandom.c	2022-03-20 12:24:57.872009129 +0100
 @@ -155,7 +155,7 @@
  
  /* return a normal random deviate with mean 0 and variance 1 as a MPFR  */
@@ -658,8 +659,8 @@ diff -Naur a/src/nrandom.c b/src/nrandom.c
    mpfr_random_deviate_t x, p, q;
    int inex;
 diff -Naur a/src/pool.c b/src/pool.c
---- a/src/pool.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/pool.c	2021-04-24 18:50:33.765368431 +0200
+--- a/src/pool.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/pool.c	2022-03-20 12:24:57.872009129 +0100
 @@ -35,7 +35,7 @@
  static MPFR_THREAD_ATTR __mpz_struct mpz_tab[MPFR_POOL_NENTRIES];
  
@@ -688,8 +689,8 @@ diff -Naur a/src/pool.c b/src/pool.c
    /* We only put objects with at most MPFR_POOL_MAX_SIZE in the mpz_t pool,
       to avoid it takes too much memory (and anyway the speedup is mainly
 diff -Naur a/src/random_deviate.c b/src/random_deviate.c
---- a/src/random_deviate.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/random_deviate.c	2021-04-24 18:50:33.765368431 +0200
+--- a/src/random_deviate.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/random_deviate.c	2022-03-20 12:24:57.872009129 +0100
 @@ -64,7 +64,7 @@
  
  /* allocate and set to (0,1) */
@@ -806,8 +807,8 @@ diff -Naur a/src/random_deviate.c b/src/random_deviate.c
    return inex;
  }
 diff -Naur a/src/random_deviate.h b/src/random_deviate.h
---- a/src/random_deviate.h	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/random_deviate.h	2021-04-24 18:50:33.765368431 +0200
+--- a/src/random_deviate.h	2020-01-08 18:11:13.000000000 +0100
++++ b/src/random_deviate.h	2022-03-20 12:24:57.872009129 +0100
 @@ -76,7 +76,7 @@
  /* set mpfr_t z = (neg ? -1 : 1) * (n + x) */
  __MPFR_DECLSPEC int
@@ -818,8 +819,8 @@ diff -Naur a/src/random_deviate.h b/src/random_deviate.h
  
  #if defined(__cplusplus)
 diff -Naur a/src/rndna.c b/src/rndna.c
---- a/src/rndna.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/rndna.c	2021-04-24 18:50:33.765368431 +0200
+--- a/src/rndna.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/rndna.c	2022-03-20 12:24:57.872009129 +0100
 @@ -61,7 +61,7 @@
     and prepares rop to give it one more bit of precision
     and to save its old value within it. */
@@ -839,8 +840,8 @@ diff -Naur a/src/rndna.c b/src/rndna.c
    mpfr_t    tmp;
    mp_size_t xsize;
 diff -Naur a/src/set_sj.c b/src/set_sj.c
---- a/src/set_sj.c	2020-06-01 12:39:52.000000000 +0200
-+++ b/src/set_sj.c	2021-02-11 13:48:27.354242922 +0100
+--- a/src/set_sj.c	2020-06-01 10:39:52.000000000 +0200
++++ b/src/set_sj.c	2022-03-20 12:24:57.874009126 +0100
 @@ -26,13 +26,13 @@
  #ifdef _MPFR_H_HAVE_INTMAX_T
  
@@ -858,8 +859,8 @@ diff -Naur a/src/set_sj.c b/src/set_sj.c
    if (j >= 0)
      return mpfr_set_uj_2exp (x, j, e, rnd);
 diff -Naur a/src/set_str.c b/src/set_str.c
---- a/src/set_str.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/set_str.c	2021-04-24 18:50:33.765368431 +0200
+--- a/src/set_str.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/set_str.c	2022-03-20 12:24:57.874009126 +0100
 @@ -23,7 +23,7 @@
  #include "mpfr-impl.h"
  
@@ -870,8 +871,8 @@ diff -Naur a/src/set_str.c b/src/set_str.c
    char *p;
  
 diff -Naur a/src/set_uj.c b/src/set_uj.c
---- a/src/set_uj.c	2020-06-01 12:39:52.000000000 +0200
-+++ b/src/set_uj.c	2021-02-11 13:48:27.354242922 +0100
+--- a/src/set_uj.c	2020-06-01 10:39:52.000000000 +0200
++++ b/src/set_uj.c	2022-03-20 12:24:57.874009126 +0100
 @@ -29,13 +29,13 @@
  #define uintmaxpml (sizeof(uintmax_t) / sizeof(mp_limb_t))
  
@@ -889,8 +890,8 @@ diff -Naur a/src/set_uj.c b/src/set_uj.c
    int cnt, inex;
    mp_size_t i, k;
 diff -Naur a/src/set_z_exp.c b/src/set_z_exp.c
---- a/src/set_z_exp.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/set_z_exp.c	2021-04-24 18:50:33.758701777 +0200
+--- a/src/set_z_exp.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/set_z_exp.c	2022-03-20 12:24:57.866009140 +0100
 @@ -28,10 +28,11 @@
  int
  mpfr_set_z_2exp (mpfr_ptr f, mpz_srcptr z, mpfr_exp_t e, mpfr_rnd_t rnd_mode)
@@ -948,8 +949,8 @@ diff -Naur a/src/set_z_exp.c b/src/set_z_exp.c
      return mpfr_overflow (f, rnd_mode, sign_z);
    if (MPFR_UNLIKELY (exp + 1 < __gmpfr_emin))
 diff -Naur a/src/sin_cos.c b/src/sin_cos.c
---- a/src/sin_cos.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/sin_cos.c	2021-04-24 18:50:33.765368431 +0200
+--- a/src/sin_cos.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/sin_cos.c	2022-03-20 12:24:57.874009126 +0100
 @@ -463,7 +463,7 @@
     Return err such that the relative error is bounded by 2^err ulps.
  */
@@ -969,8 +970,8 @@ diff -Naur a/src/sin_cos.c b/src/sin_cos.c
    int inexs, inexc;
    mpfr_t x_red, ts, tc;
 diff -Naur a/src/strtofr.c b/src/strtofr.c
---- a/src/strtofr.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/strtofr.c	2021-04-24 18:50:33.765368431 +0200
+--- a/src/strtofr.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/strtofr.c	2022-03-20 12:24:57.874009126 +0100
 @@ -226,7 +226,7 @@
     BUT if it returns 0 (NAN or INF), the ternary value is also '0'
     (ie NAN and INF are exact) */
@@ -999,8 +1000,8 @@ diff -Naur a/src/strtofr.c b/src/strtofr.c
  {
    int res;
 diff -Naur a/src/ubf.c b/src/ubf.c
---- a/src/ubf.c	2020-02-12 03:38:57.000000000 +0100
-+++ b/src/ubf.c	2021-04-24 18:50:33.782035067 +0200
+--- a/src/ubf.c	2020-02-12 01:38:57.000000000 +0100
++++ b/src/ubf.c	2022-03-20 12:24:57.892009094 +0100
 @@ -78,7 +78,7 @@
        mpfr_get_prec (b), mpfr_log_prec, b,
        mpfr_get_prec (c), mpfr_log_prec, c),
@@ -1011,9 +1012,24 @@ diff -Naur a/src/ubf.c b/src/ubf.c
    MPFR_ASSERTD ((mpfr_ptr) a != b);
    MPFR_ASSERTD ((mpfr_ptr) a != c);
 diff -Naur a/src/vasprintf.c b/src/vasprintf.c
---- a/src/vasprintf.c	2020-06-01 12:39:52.000000000 +0200
-+++ b/src/vasprintf.c	2021-02-11 13:48:27.354242922 +0100
-@@ -963,7 +963,7 @@
+--- a/src/vasprintf.c	2020-06-01 10:39:52.000000000 +0200
++++ b/src/vasprintf.c	2022-03-20 12:24:57.900009080 +0100
+@@ -635,7 +635,13 @@
+ static int
+ buffer_cat (struct string_buffer *b, const char *s, size_t len)
+ {
+-  MPFR_ASSERTD (len > 0);
++  /* If len == 0, which is possible when outputting an integer 0
++     (either a native one or mpfr_prec_t) with precision field = 0,
++     do nothing. This test is not necessary since the code below is
++     valid for len == 0, but this is safer, just in case. */
++  if (len == 0)
++    return 0;
++
+   MPFR_ASSERTD (len <= strlen (s));
+ 
+   if (buffer_incr_len (b, len))
+@@ -963,7 +969,7 @@
  #define NDIGITS 8
  
  MPFR_RETURNS_NONNULL static char *
@@ -1023,18 +1039,18 @@ diff -Naur a/src/vasprintf.c b/src/vasprintf.c
  {
    size_t ndigits;
 diff -Naur a/src/version.c b/src/version.c
---- a/src/version.c	2020-07-10 13:52:33.000000000 +0200
-+++ b/src/version.c	2021-04-23 11:49:34.696281616 +0200
+--- a/src/version.c	2020-07-10 11:52:33.000000000 +0200
++++ b/src/version.c	2022-03-20 12:24:57.900009080 +0100
 @@ -25,5 +25,5 @@
  const char *
  mpfr_get_version (void)
  {
 -  return "4.1.0";
-+  return "4.1.0-p12";
++  return "4.1.0-p13";
  }
 diff -Naur a/src/zeta.c b/src/zeta.c
---- a/src/zeta.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/src/zeta.c	2021-04-24 18:50:33.765368431 +0200
+--- a/src/zeta.c	2020-01-08 18:11:13.000000000 +0100
++++ b/src/zeta.c	2022-03-20 12:24:57.876009122 +0100
 @@ -35,7 +35,7 @@
     sum(tc[i]*product((s+2j)*(s+2j-1)/n^2,j=1..i-1), i=1..p)*s*n^(-s-1)
  */
@@ -1083,8 +1099,8 @@ diff -Naur a/src/zeta.c b/src/zeta.c
    mpfr_t z_pre, s1, y, p;
    long add;
 diff -Naur a/tests/mpfr-test.h b/tests/mpfr-test.h
---- a/tests/mpfr-test.h	2020-06-29 15:57:32.000000000 +0200
-+++ b/tests/mpfr-test.h	2021-03-09 14:55:43.211158639 +0100
+--- a/tests/mpfr-test.h	2020-06-29 13:57:32.000000000 +0200
++++ b/tests/mpfr-test.h	2022-03-20 12:24:57.892009094 +0100
 @@ -92,6 +92,32 @@
  #define STRINGIZE(S) #S
  #define MAKE_STR(S) STRINGIZE(S)
@@ -1128,8 +1144,8 @@ diff -Naur a/tests/mpfr-test.h b/tests/mpfr-test.h
  /* define CHECK_EXTERNAL if you want to check mpfr against another library
     with correct rounding. You'll probably have to modify mpfr_print_raw()
 diff -Naur a/tests/tcmp2.c b/tests/tcmp2.c
---- a/tests/tcmp2.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tcmp2.c	2021-04-24 18:50:33.765368431 +0200
+--- a/tests/tcmp2.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tcmp2.c	2022-03-20 12:24:57.876009122 +0100
 @@ -24,7 +24,7 @@
  
  /* set bit n of x to b, where bit 0 is the most significant one */
@@ -1140,8 +1156,8 @@ diff -Naur a/tests/tcmp2.c b/tests/tcmp2.c
    unsigned l;
    mp_size_t xn;
 diff -Naur a/tests/tcopysign.c b/tests/tcopysign.c
---- a/tests/tcopysign.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tcopysign.c	2021-04-24 18:50:33.785368394 +0200
+--- a/tests/tcopysign.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tcopysign.c	2022-03-20 12:24:57.892009094 +0100
 @@ -26,26 +26,72 @@
  copysign_variant (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
                    mpfr_rnd_t rnd_mode, int k)
@@ -1231,8 +1247,8 @@ diff -Naur a/tests/tcopysign.c b/tests/tcopysign.c
            mpfr_set_nan (x);
            i ? MPFR_SET_NEG (x) : MPFR_SET_POS (x);
 diff -Naur a/tests/tdigamma.c b/tests/tdigamma.c
---- a/tests/tdigamma.c	2020-06-18 19:17:18.000000000 +0200
-+++ b/tests/tdigamma.c	2021-02-17 18:22:34.690972226 +0100
+--- a/tests/tdigamma.c	2020-06-18 17:17:18.000000000 +0200
++++ b/tests/tdigamma.c	2022-03-20 12:24:57.888009101 +0100
 @@ -49,12 +49,96 @@
    mpfr_clear (y);
  }
@@ -1331,8 +1347,8 @@ diff -Naur a/tests/tdigamma.c b/tests/tdigamma.c
    test_generic (MPFR_PREC_MIN, 200, 20);
  
 diff -Naur a/tests/tdiv.c b/tests/tdiv.c
---- a/tests/tdiv.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tdiv.c	2021-04-24 18:50:33.765368431 +0200
+--- a/tests/tdiv.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tdiv.c	2022-03-20 12:24:57.876009122 +0100
 @@ -369,7 +369,7 @@
  /* given y = o(x/u), x, u, find the inexact flag by
     multiplying y by u */
@@ -1343,8 +1359,8 @@ diff -Naur a/tests/tdiv.c b/tests/tdiv.c
    mpfr_t xx;
    int inex;
 diff -Naur a/tests/teq.c b/tests/teq.c
---- a/tests/teq.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/teq.c	2021-04-24 18:50:33.765368431 +0200
+--- a/tests/teq.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/teq.c	2022-03-20 12:24:57.876009122 +0100
 @@ -23,7 +23,7 @@
  #include "mpfr-test.h"
  
@@ -1355,8 +1371,8 @@ diff -Naur a/tests/teq.c b/tests/teq.c
    mpfr_t y;
    unsigned long k, px, mx;
 diff -Naur a/tests/terandom_chisq.c b/tests/terandom_chisq.c
---- a/tests/terandom_chisq.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/terandom_chisq.c	2021-04-24 18:50:33.768701758 +0200
+--- a/tests/terandom_chisq.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/terandom_chisq.c	2022-03-20 12:24:57.876009122 +0100
 @@ -26,7 +26,7 @@
   * exponential distribution.  We only take differences of this function so the
   * offset doesn't matter; here Phi(0) = 0. */
@@ -1385,8 +1401,8 @@ diff -Naur a/tests/terandom_chisq.c b/tests/terandom_chisq.c
    long expt, prec;
  
 diff -Naur a/tests/texceptions.c b/tests/texceptions.c
---- a/tests/texceptions.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/texceptions.c	2021-04-24 18:50:33.785368394 +0200
+--- a/tests/texceptions.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/texceptions.c	2022-03-20 12:24:57.892009094 +0100
 @@ -103,10 +103,26 @@
  check_get_prec (void)
  {
@@ -1416,8 +1432,8 @@ diff -Naur a/tests/texceptions.c b/tests/texceptions.c
  }
  
 diff -Naur a/tests/tfmma.c b/tests/tfmma.c
---- a/tests/tfmma.c	2020-03-24 15:47:38.000000000 +0100
-+++ b/tests/tfmma.c	2021-04-24 18:50:33.768701758 +0200
+--- a/tests/tfmma.c	2020-03-24 13:47:38.000000000 +0100
++++ b/tests/tfmma.c	2022-03-20 12:24:57.878009119 +0100
 @@ -24,7 +24,7 @@
  
  /* check both mpfr_fmma and mpfr_fmms */
@@ -1428,8 +1444,8 @@ diff -Naur a/tests/tfmma.c b/tests/tfmma.c
    mpfr_t ref, res, ab, cd;
    int inex_ref, inex_res;
 diff -Naur a/tests/tfmod.c b/tests/tfmod.c
---- a/tests/tfmod.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tfmod.c	2021-04-24 18:50:33.768701758 +0200
+--- a/tests/tfmod.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tfmod.c	2022-03-20 12:24:57.878009119 +0100
 @@ -62,8 +62,8 @@
  }
  
@@ -1451,8 +1467,8 @@ diff -Naur a/tests/tfmod.c b/tests/tfmod.c
    int inex0, inex1;
    mpfr_t r1;
 diff -Naur a/tests/tfprintf.c b/tests/tfprintf.c
---- a/tests/tfprintf.c	2020-06-01 12:39:52.000000000 +0200
-+++ b/tests/tfprintf.c	2021-02-11 13:48:27.350242965 +0100
+--- a/tests/tfprintf.c	2020-06-01 10:39:52.000000000 +0200
++++ b/tests/tfprintf.c	2022-03-20 12:24:57.878009119 +0100
 @@ -65,7 +65,7 @@
  const int prec_max_printf = 5000;
  
@@ -1463,8 +1479,8 @@ diff -Naur a/tests/tfprintf.c b/tests/tfprintf.c
    if (mpfr_fprintf (fout, fmt, x) == -1)
      {
 diff -Naur a/tests/tgamma.c b/tests/tgamma.c
---- a/tests/tgamma.c	2020-06-01 02:15:37.000000000 +0200
-+++ b/tests/tgamma.c	2021-02-11 13:48:27.350242965 +0100
+--- a/tests/tgamma.c	2020-06-01 00:15:37.000000000 +0200
++++ b/tests/tgamma.c	2022-03-20 12:24:57.878009119 +0100
 @@ -890,7 +890,7 @@
     computing with a working precision p2. Assume that x is not an
     integer <= 2. */
@@ -1475,8 +1491,8 @@ diff -Naur a/tests/tgamma.c b/tests/tgamma.c
    mpfr_t yd, yu, zd, zu;
    int inexd, inexu, sign;
 diff -Naur a/tests/tget_str.c b/tests/tget_str.c
---- a/tests/tget_str.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tget_str.c	2021-04-24 18:50:33.788701722 +0200
+--- a/tests/tget_str.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tget_str.c	2022-03-20 12:24:57.898009084 +0100
 @@ -1311,6 +1311,33 @@
    mpfr_clear (x);
  }
@@ -1591,8 +1607,8 @@ diff -Naur a/tests/tget_str.c b/tests/tget_str.c
  }
  
 diff -Naur a/tests/tisnan.c b/tests/tisnan.c
---- a/tests/tisnan.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tisnan.c	2021-04-24 18:50:33.785368394 +0200
+--- a/tests/tisnan.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tisnan.c	2022-03-20 12:24:57.892009094 +0100
 @@ -27,180 +27,235 @@
  main (void)
  {
@@ -1860,8 +1876,8 @@ diff -Naur a/tests/tisnan.c b/tests/tisnan.c
    mpfr_clear (x);
  
 diff -Naur a/tests/tj0.c b/tests/tj0.c
---- a/tests/tj0.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tj0.c	2021-04-24 18:50:33.775368413 +0200
+--- a/tests/tj0.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tj0.c	2022-03-20 12:24:57.886009105 +0100
 @@ -27,6 +27,25 @@
  #define REDUCE_EMAX 262143 /* otherwise arg. reduction is too expensive */
  #include "tgeneric.c"
@@ -1898,8 +1914,8 @@ diff -Naur a/tests/tj0.c b/tests/tj0.c
    mpfr_init (y);
  
 diff -Naur a/tests/tj1.c b/tests/tj1.c
---- a/tests/tj1.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tj1.c	2021-04-24 18:50:33.778701740 +0200
+--- a/tests/tj1.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tj1.c	2022-03-20 12:24:57.888009101 +0100
 @@ -55,14 +55,14 @@
                /* since |x| is just above 2^e, |j1(x)| is just above 2^(e-1),
                   thus y should be 2^(e-1) and the inexact flag should be
@@ -1954,8 +1970,8 @@ diff -Naur a/tests/tj1.c b/tests/tj1.c
  
    mpfr_init (x);
 diff -Naur a/tests/tnrandom_chisq.c b/tests/tnrandom_chisq.c
---- a/tests/tnrandom_chisq.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tnrandom_chisq.c	2021-04-24 18:50:33.768701758 +0200
+--- a/tests/tnrandom_chisq.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tnrandom_chisq.c	2022-03-20 12:24:57.878009119 +0100
 @@ -26,7 +26,7 @@
   * for the normal distribution.  We only take differences of this function so
   * the offset doesn't matter; here Phi(0) = 0. */
@@ -1984,8 +2000,8 @@ diff -Naur a/tests/tnrandom_chisq.c b/tests/tnrandom_chisq.c
    long expt, prec;
  
 diff -Naur a/tests/tprintf.c b/tests/tprintf.c
---- a/tests/tprintf.c	2020-06-01 12:39:52.000000000 +0200
-+++ b/tests/tprintf.c	2021-02-11 13:48:27.350242965 +0100
+--- a/tests/tprintf.c	2020-06-01 10:39:52.000000000 +0200
++++ b/tests/tprintf.c	2022-03-20 12:24:57.878009119 +0100
 @@ -74,7 +74,7 @@
  int stdout_redirect;
  
@@ -1996,8 +2012,8 @@ diff -Naur a/tests/tprintf.c b/tests/tprintf.c
    if (mpfr_printf (fmt, x) == -1)
      {
 diff -Naur a/tests/trint.c b/tests/trint.c
---- a/tests/trint.c	2020-02-12 15:04:50.000000000 +0100
-+++ b/tests/trint.c	2021-04-24 18:50:33.768701758 +0200
+--- a/tests/trint.c	2020-02-12 13:04:50.000000000 +0100
++++ b/tests/trint.c	2022-03-20 12:24:57.878009119 +0100
 @@ -367,7 +367,7 @@
  #endif
  
@@ -2008,8 +2024,8 @@ diff -Naur a/tests/trint.c b/tests/trint.c
  {
    printf ("Error: %s\ns = %u, p = %u, r = %s, trint = %d, inexact = %d\nx = ",
 diff -Naur a/tests/tset.c b/tests/tset.c
---- a/tests/tset.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tset.c	2021-04-24 18:50:33.785368394 +0200
+--- a/tests/tset.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tset.c	2022-03-20 12:24:57.892009094 +0100
 @@ -207,7 +207,7 @@
  static void
  check_ternary_value (void)
@@ -2087,8 +2103,8 @@ diff -Naur a/tests/tset.c b/tests/tset.c
              }
          }
 diff -Naur a/tests/tset_exp.c b/tests/tset_exp.c
---- a/tests/tset_exp.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tset_exp.c	2021-04-24 18:50:33.785368394 +0200
+--- a/tests/tset_exp.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tset_exp.c	2022-03-20 12:24:57.892009094 +0100
 @@ -28,6 +28,7 @@
    mpfr_t x;
    int ret;
@@ -2116,8 +2132,8 @@ diff -Naur a/tests/tset_exp.c b/tests/tset_exp.c
    MPFR_ASSERTN (ret == 0 && mpfr_cmp_ui_2exp (x, 1, -2) == 0);
  
 diff -Naur a/tests/tset_si.c b/tests/tset_si.c
---- a/tests/tset_si.c	2020-03-26 13:51:33.000000000 +0100
-+++ b/tests/tset_si.c	2021-04-24 18:50:33.788701722 +0200
+--- a/tests/tset_si.c	2020-03-26 11:51:33.000000000 +0100
++++ b/tests/tset_si.c	2022-03-20 12:24:57.894009091 +0100
 @@ -127,27 +127,29 @@
               power of 2 is exact, unless underflow/overflow occurs.
               The tests on the exponent below avoid integer overflows
@@ -2155,8 +2171,8 @@ diff -Naur a/tests/tset_si.c b/tests/tset_si.c
              }
  
 diff -Naur a/tests/tset_sj.c b/tests/tset_sj.c
---- a/tests/tset_sj.c	2020-06-01 12:39:52.000000000 +0200
-+++ b/tests/tset_sj.c	2021-03-09 14:58:00.917650467 +0100
+--- a/tests/tset_sj.c	2020-06-01 10:39:52.000000000 +0200
++++ b/tests/tset_sj.c	2022-03-20 12:24:57.896009087 +0100
 @@ -225,27 +225,29 @@
                   power of 2 is exact, unless underflow/overflow occurs.
                   The tests on the exponent below avoid integer overflows
@@ -2194,8 +2210,8 @@ diff -Naur a/tests/tset_sj.c b/tests/tset_sj.c
                  }
              }
 diff -Naur a/tests/tset_z_exp.c b/tests/tset_z_exp.c
---- a/tests/tset_z_exp.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tset_z_exp.c	2021-04-24 18:50:33.758701777 +0200
+--- a/tests/tset_z_exp.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tset_z_exp.c	2022-03-20 12:24:57.868009137 +0100
 @@ -97,49 +97,149 @@
     mpfr_get_si is a rather indirect test of a low level routine.  */
  
@@ -2386,8 +2402,8 @@ diff -Naur a/tests/tset_z_exp.c b/tests/tset_z_exp.c
  
    return 0;
 diff -Naur a/tests/tsinh_cosh.c b/tests/tsinh_cosh.c
---- a/tests/tsinh_cosh.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tsinh_cosh.c	2021-04-24 18:50:33.768701758 +0200
+--- a/tests/tsinh_cosh.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tsinh_cosh.c	2022-03-20 12:24:57.880009115 +0100
 @@ -23,7 +23,7 @@
  #include "mpfr-test.h"
  
@@ -2406,9 +2422,53 @@ diff -Naur a/tests/tsinh_cosh.c b/tests/tsinh_cosh.c
  {
    mpfr_t s, c, sx, cx;
    int isc, is, ic;
+diff -Naur a/tests/tsprintf.c b/tests/tsprintf.c
+--- a/tests/tsprintf.c	2020-04-08 22:39:35.000000000 +0200
++++ b/tests/tsprintf.c	2022-03-20 12:24:57.900009080 +0100
+@@ -193,6 +193,10 @@
+   sprintf (buf, "%d", i);
+   check_vsprintf (buf, "%d", i);
+ 
++  check_vsprintf ("0", "%d", 0);
++  check_vsprintf ("", "%.d", 0);
++  check_vsprintf ("", "%.0d", 0);
++
+   sprintf (buf, "%e", d);
+   check_vsprintf (buf, "%e", d);
+ 
+@@ -227,9 +231,6 @@
+   mpfr_prec_t p = 128;
+   mpfr_t x, y, z;
+ 
+-  mpfr_init (z);
+-  mpfr_init2 (x, p);
+-
+   /* specifier 'P' for precision */
+   check_vsprintf ("128", "%Pu", p);
+   check_vsprintf ("00128", "%.5Pu", p);
+@@ -247,9 +248,19 @@
+   check_vsprintf ("0200:", "%0#+ -Po:", p);
+   check_vsprintf ("+0000128 :", "%0+ *.*Pd:", -9, 7, p);
+   check_vsprintf ("+12345   :", "%0+ -*.*Pd:", -9, -3, (mpfr_prec_t) 12345);
++  check_vsprintf ("0", "%Pu", (mpfr_prec_t) 0);
+   /* Do not add a test like "%05.1Pd" as MS Windows is buggy: when
+      a precision is given, the '0' flag must be ignored. */
+ 
++  /* specifier 'P' with precision field 0 */
++  check_vsprintf ("128", "%.Pu", p);
++  check_vsprintf ("128", "%.0Pd", p);
++  /* check_vsprintf ("", "%.Pu", (mpfr_prec_t) 0); */
++  check_vsprintf ("", "%.0Pd", (mpfr_prec_t) 0);
++
++  mpfr_init (z);
++  mpfr_init2 (x, 128);
++
+   /* special numbers */
+   mpfr_set_inf (x, 1);
+   check_sprintf (pinf_str, "%Re", x);
 diff -Naur a/tests/tsqr.c b/tests/tsqr.c
---- a/tests/tsqr.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tsqr.c	2021-04-24 18:50:33.772035086 +0200
+--- a/tests/tsqr.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tsqr.c	2022-03-20 12:24:57.880009115 +0100
 @@ -33,7 +33,7 @@
  
  static void
@@ -2428,8 +2488,8 @@ diff -Naur a/tests/tsqr.c b/tests/tsqr.c
  {
    printf("ERROR: for %s and prec=%lu\nINPUT=", mpfr_print_rnd_mode(rnd),
 diff -Naur a/tests/tsum.c b/tests/tsum.c
---- a/tests/tsum.c	2020-01-08 20:11:13.000000000 +0100
-+++ b/tests/tsum.c	2021-04-24 18:50:33.772035086 +0200
+--- a/tests/tsum.c	2020-01-08 18:11:13.000000000 +0100
++++ b/tests/tsum.c	2022-03-20 12:24:57.880009115 +0100
 @@ -59,7 +59,7 @@
  }
  
@@ -2449,8 +2509,8 @@ diff -Naur a/tests/tsum.c b/tests/tsum.c
    int ret, i;
    switch (n)
 diff -Naur a/VERSION b/VERSION
---- a/VERSION	2020-07-10 13:52:33.000000000 +0200
-+++ b/VERSION	2021-04-23 11:49:34.696281616 +0200
+--- a/VERSION	2020-07-10 11:52:33.000000000 +0200
++++ b/VERSION	2022-03-20 12:24:57.898009084 +0100
 @@ -1 +1 @@
 -4.1.0
-+4.1.0-p12
++4.1.0-p13
