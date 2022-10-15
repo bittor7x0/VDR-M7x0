@@ -1,7 +1,7 @@
 /*
  * vdr.c: Video Disk Recorder main program
  *
- * Copyright (C) 2007-2021 VDR-NG-EM Project
+ * Copyright (C) 2007-2022 VDR-NG-EM Project
  * 
  * The project's page is at https://github.com/bittor7x0/VDR-M7x0
  * Our English forum is at  https://vdr-m7x0.foroactivo.com.es/f19-international-forum
