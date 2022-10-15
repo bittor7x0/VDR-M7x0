@@ -26,12 +26,12 @@
 # Put dependencies here all pack should depend on $$(BASE_BUILD_STAGEFILE)
 SQLITE_DEPS = $(BASE_BUILD_STAGEFILE)
 
-SQLITE_VERSION := 3350500
+SQLITE_VERSION := 3390400
 SQLITE_PATCHES_DIR := $(PATCHES_DIR)/sqlite/$(SQLITE_VERSION)
 
 SQLITE_FILE := sqlite-autoconf-$(SQLITE_VERSION).tar.gz
 SQLITE_DLFILE := $(DOWNLOAD_DIR)/$(SQLITE_FILE)
-SQLITE_URL := https://www.sqlite.org/2020/$(SQLITE_FILE)
+SQLITE_URL := https://www.sqlite.org/2022/$(SQLITE_FILE)
 SQLITE_DIR := $(BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/sqlite-autoconf-$(SQLITE_VERSION)
 SQLITE_CFLAGS_SIZE := $(filter-out -mno-shared,$(UCLIBC_CFLAGS_SIZE)) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections
@@ -46,7 +46,7 @@ SQLITE_CFLAGS := -fno-fast-math -fno-exceptions \
                  -DSQLITE_OMIT_AUTOINCREMENT=1 -DSQLITE_OMIT_CAST=1 -DSQLITE_OMIT_TEMPDB=1
                  -DSQLITE_OMIT_COMPOUND_SELECT=1 -DSQLITE_OMIT_LOCALTIME=1 \
                  -DSQLITE_OMIT_SCHEMA_VERSION_PRAGMAS=1 -DSQLITE_OMIT_SUBQUERY=1 \
-                 -DSQLITE_DISABLE_DIRSYNC=1 -DSQLITE_OMIT_VACUUM=1
+                 -DSQLITE_DISABLE_DIRSYNC=1 -DSQLITE_OMIT_VACUUM=1 -DSQLITE_OMIT_DESERIALIZE=1 -DSQLITE_OMIT_JSON=1
 
 SQLITE_INSTALLED = $(STAGEFILES_DIR)/.sqlite_host_installed $(STAGEFILES_DIR)/.sqlite_installed
 
@@ -105,7 +105,6 @@ $(STAGEFILES_DIR)/.sqlite_host_configured: $(STAGEFILES_DIR)/.sqlite_patched
 			--disable-fts3 \
 			--disable-fts4 \
 			--disable-fts5 \
-			--disable-json1 \
 			--disable-rtree \
 			--enable-threadsafe \
 			--disable-dynamic-extensions)
@@ -152,7 +151,6 @@ $(STAGEFILES_DIR)/.sqlite_configured: $(STAGEFILES_DIR)/.sqlite_patched
 			--disable-fts3 \
 			--disable-fts4 \
 			--disable-fts5 \
-			--disable-json1 \
 			--disable-rtree \
 			--enable-threadsafe \
 			--disable-dynamic-extensions)
