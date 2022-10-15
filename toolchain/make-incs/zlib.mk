@@ -26,7 +26,7 @@
 
 ZLIB_DEPS = $(BASE_BUILD_STAGEFILE)
 
-ZLIB_VERSION := 1.2.11
+ZLIB_VERSION := 1.2.12
 ZLIB_PATCHES_DIR := $(PATCHES_DIR)/zlib/$(ZLIB_VERSION)
 
 ZLIB_FILE := zlib-$(ZLIB_VERSION).tar.gz
@@ -83,7 +83,7 @@ $(STAGEFILES_DIR)/.zlib_configured: $(STAGEFILES_DIR)/.zlib_patched \
                                       $(filter y,$(CONFIG_ZLIB_STATIC)))
 	# -$(RM) -f $(STAGEFILES_DIR)/.zlib_static_configured
 	-$(UCLIBC_ENV) $(MAKE) -C $(ZLIB_DIR) distclean
-	($(CD) $(ZLIB_DIR) ; $(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fPIC" \
+	($(CD) $(ZLIB_DIR) ; $(UCLIBC_ENV) CFLAGS="$(UCLIBC_CFLAGS) -fPIC" LDSHARED="$(UCLIBC_CC) --shared" \
 		$(ZLIB_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--shared) # This is really needed otherwise _only_ static is build
