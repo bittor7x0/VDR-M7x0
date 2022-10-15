@@ -566,7 +566,7 @@ bool cSearchExt::Parse(const char *s)
                   break;
                case 31: compareTitle = atoi(value);
                   break;
-	       case 32: compareSubtitle = atoi(value)>0?1:0;
+	       case 32: compareSubtitle = atoi(value);
                   break;
                case 33: compareSummary = atoi(value);
                   break;
@@ -1498,7 +1498,7 @@ bool cSearchExts::Load(const char *FileName)
          int line = 0;
          char buffer[MAXPARSEBUFFER];
          result = true;
-         while (fgets(buffer, sizeof(buffer), f)) {
+         while (fgets(buffer, sizeof(buffer), f) != NULL) {
             line++;
             char *p = strchr(buffer, '#');
             if (p == buffer) *p = 0;

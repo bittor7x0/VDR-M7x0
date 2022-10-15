@@ -195,7 +195,7 @@ void cMenuSearchResultsItem::SetMenuItem(cSkinDisplayMenu *DisplayMenu, int Inde
   cChannel *channel = event?Channels.GetByChannelID(event->ChannelID(), true, true):NULL;
   if (!event)
      DisplayMenu->SetItem(Text(), Index, Current, Selectable);
-  else if (!DisplayMenu->SetItemEvent(event, Index, Current, Selectable, channel, true, timerMatch))
+  else if (!DisplayMenu->SetItemEvent(event, Index, Current, Selectable, channel, true, timerMatch, timerActive))
      DisplayMenu->SetItem(Text(), Index, Current, Selectable);
 #endif
 }

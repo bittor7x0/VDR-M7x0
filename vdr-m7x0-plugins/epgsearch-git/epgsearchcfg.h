@@ -93,6 +93,7 @@ cEPGSearchConfig(void);
     int useSearchTimers;
     int UpdateIntervall;
     int SVDRPPort;
+    int delayThreads;
     int timeShiftValue;
     int toggleGreenYellow;
     int StartMenu;
