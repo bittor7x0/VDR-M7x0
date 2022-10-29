@@ -405,6 +405,7 @@ string cHelpers::DelRecordingIntern(string args) {
 		return cHelpers::DelRecording(recording);
 	}
 
+#ifdef VDRMANAGER_DEADCODE
 	/**
 	 * this should come as a parameter later
 	 */
@@ -414,6 +415,7 @@ string cHelpers::DelRecordingIntern(string args) {
 	if (forceDelete == false) {
 		return Error("Recording is in use by a timer");
 	}
+#endif
 
 	cTimer *timer = rc->Timer();
 	if (timer) {
@@ -484,18 +486,24 @@ string cHelpers::SetTimerIntern(char op, string param) {
 			return Error("Timer not defined");
 		}
 
+#ifdef VDRMANAGER_DEADCODE
 		/**
 		 * this should come lates as a command line parameter
 		 */
 		bool forceDelete = true;
+#endif
 
 		if (t->Recording()) {
+#ifdef VDRMANAGER_DEADCODE
 			if (forceDelete == true) {
+#endif
 				t->Skip();
 				RECORDING_CONTROLS_PROCESS;
+#ifdef VDRMANAGER_DEADCODE
 			} else {
 				return Error("Timer  is recording");
 			}
+#endif
 		}
 
 		dsyslog("[vdrmanager] deleting timer %s", *t->ToDescr());
