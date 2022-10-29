@@ -88,7 +88,7 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
       cEvent *pEvent = (cEvent *)pSchedule->GetEvent(SiEitEvent.getEventId(), StartTime);
       if (!pEvent || handledExternally) {
          bool outdated = (StartTime > 0) &
-               (StartTime + Duration + Setup.EPGLinger * 60 + 3600 < Now);
+               (StartTime + Duration + EPG_LINGER_TIME + 3600 < Now);
          if (OnlyRunningStatus | (em == emForeign) | outdated)
             continue;
          if (handledExternally && !EpgHandlers.IsUpdate(SiEitEvent.getEventId(), StartTime, Tid, getVersionNumber()))
