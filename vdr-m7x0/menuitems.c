@@ -299,6 +299,7 @@ void cMenuEditStrItem::Set(void)
 {
   if (InEditMode()) {
      // This is an ugly hack to make editing strings work with the 'skincurses' plugin.
+     /* coverity[var_deref_model] */
      const cFont *font = dynamic_cast<cSkinDisplayMenu *>(cSkinDisplay::Current())->GetTextAreaFont(false);
      if (!font || font->Width("W") != 1) // all characters have width == 1 in the font used by 'skincurses'
         font = cFont::GetFont(fontOsd);
@@ -591,6 +592,7 @@ eOSState cMenuEditChanItem::ProcessKey(eKeys Key)
   int delta = 1;
 
   switch (int(Key)) {
+    /* coverity[unterminated_case] */
     case kLeft|k_Repeat:
     case kLeft:  delta = -1;
     case kRight|k_Repeat:
