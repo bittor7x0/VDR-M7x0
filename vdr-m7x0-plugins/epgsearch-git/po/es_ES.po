@@ -51,7 +51,7 @@ msgstr "¡Ya existe el nombre del grupo!"
 
 #, c-format
 msgid "timer conflict at %s! Show it?"
-msgstr "Conflicto de programación a las %s! ¿Mostrarlo?"
+msgstr "¡Conflicto de programación a las %s! ¿Mostrarlo?"
 
 #, c-format
 msgid "%d timer conflicts! First at %s. Show them?"

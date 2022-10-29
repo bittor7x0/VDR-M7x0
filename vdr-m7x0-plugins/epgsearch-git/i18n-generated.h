@@ -568,7 +568,7 @@ const tI18nPhrase Phrases[] = {
     "",
     "",
     "",
-    "Conflicto de programación a las %s! ¿Mostrarlo?",
+    "¡Conflicto de programación a las %s! ¿Mostrarlo?",
     "",
     "",
     "",
