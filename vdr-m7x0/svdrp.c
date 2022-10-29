@@ -134,6 +134,7 @@ int cSocket::Accept(void)
 
 cPUTEhandler::cPUTEhandler(void)
 {
+  /* coverity[secure_temp] */
   if ((f = tmpfile()) != NULL) {
      status = 354;
      message = "Enter EPG data, end with \".\" on a line by itself";

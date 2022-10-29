@@ -4993,6 +4993,7 @@ cRecordControl::cRecordControl(cDevice *Device, cTimer *Timer, bool Pause)
   // We're going to manipulate an event here, so we need to prevent
   // others from modifying any EPG data:
   cSchedulesLock SchedulesLock;
+  /* coverity[side_effect_free] */
   cSchedules::Schedules(SchedulesLock);
 
   event = NULL;

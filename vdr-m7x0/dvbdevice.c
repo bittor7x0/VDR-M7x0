@@ -380,10 +380,12 @@ void cDvbTuner::Action(void)
         switch (tunerStatus) {
           case tsIdle:
                break;
+          /* coverity[unterminated_case] */
           case tsSet:
                tunerStatus = SetFrontend() ? tsTuned : tsIdle;
                Timer.Set(tuneTimeout);
                continue;
+          /* coverity[unterminated_case] */
           case tsTuned:
                if (Timer.TimedOut()) {
                   tunerStatus = tsSet;
