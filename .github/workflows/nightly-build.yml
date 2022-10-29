@@ -59,18 +59,18 @@ defaults:
 
 jobs:
   nightly-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Download nightly files
         run: |
           svn export https://github.com/bittor7x0/VDR-M7x0/branches/firmware-builder-files/nightly toolchain/firmware-builder-files
 
       - name: Cache ccache objects
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ GITHUB.WORKSPACE }}/.ccache
           key: ccache-${{ github.sha }}
@@ -229,37 +229,37 @@ jobs:
           ccache --zero-stats
 
       - name: Upload Firmware Pro (M740AV-M750T) artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro/
 
       - name: Upload Firmware Pro (M750S) artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro/
 
       - name: Upload Firmware Lite (M740AV-M750T) artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite/
 
       - name: Upload Firmware Lite (M750S) artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite/
 
       - name: Upload SAMBA artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: VDR-NG-EM-nightly-SAMBA
           path: toolchain/VDR-NG-EM-nightly-SAMBA/
 
       - name: Upload Firmware Windows Builder artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: VDR-NG-EM-nightly-Firmware-Windows-Builder
           path: toolchain/VDR-NG-EM-nightly-Firmware-Windows-Builder/

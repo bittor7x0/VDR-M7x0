@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Cache ccache objects
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ccache-${{ github.sha }}
@@ -50,7 +50,7 @@ jobs:
         run: |
           choco config get cacheLocation
           choco install -y --no-progress cygwin
-          C:\tools\cygwin\cygwinsetup.exe -qgnNdO -R C:/tools/cygwin -s http://mirrors.kernel.org/sourceware/cygwin/ -P autoconf,bison,curl,wget,flex,gcc-g++,make,automake,patch,git,subversion,zlib-devel,ccache
+          C:\tools\cygwin\cygwinsetup.exe -qgnNdO -R C:/tools/cygwin -s http://mirrors.kernel.org/sourceware/cygwin/ -P autoconf,bison,curl,wget,flex,gcc-g++,make,automake,patch,git,subversion,zlib-devel,ccache,libtool
 
       - name: Set git to use LF and symlinks
         run: |
@@ -59,7 +59,7 @@ jobs:
           git config --global core.symlinks true
 
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup ccache
         run: |
@@ -75,7 +75,7 @@ jobs:
           C:\tools\cygwin\bin\bash.exe -l -x -c 'ccache --show-stats && ccache --zero-stats'
 
       - name: Upload Cygwin artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: cygwin_binaries
           path: toolchain/cygwin_dir_m740_lite/
