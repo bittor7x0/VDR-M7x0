@@ -4050,11 +4050,15 @@ void cMenuMain::Set(void)
   SetHasHotkeys();
 
   // PIN PATCH + SubMenu Patch
+#ifdef SUBMENU_DEADCODE
   bool SubMenuActive=1;
   if (SubMenuActive)
+#endif
   submenu.offset = Count();
 
+#ifdef SUBMENU_DEADCODE
   if (SubMenuActive) // if ( SubmenuActive && !Plugin)
+#endif
   {
   cPlugin *p;
   /*
@@ -4169,6 +4173,7 @@ void cMenuMain::Set(void)
   	}
 
   }
+#ifdef SUBMENU_DEADCODE
   else
   {
   // Basic menu items:
@@ -4218,6 +4223,7 @@ void cMenuMain::Set(void)
 #endif
      Add(new cOsdItem(hk(tr("System Utilities")),  osCommands));
 }
+#endif // SUBMENU_DEADCODE
 
   Update(true);
 
