@@ -40,7 +40,7 @@ defaults:
 
 jobs:
   coverity-scan:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     env:
       COVERITY_SCAN_PROJECT_NAME: bittor7x0%2FVDR-M7x0
@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -59,11 +59,11 @@ jobs:
       - name: Set Coverity Build Tool MD5 hash
         id: coverity_scan_md5
         run: |
-          echo "::set-output name=coverity_scan_md5sum::$(curl --silent https://scan.coverity.com/download/linux64 --data "token=${COVERITY_SCAN_TOKEN}&project=${COVERITY_SCAN_PROJECT_NAME}&md5=1")"
+          echo "coverity_scan_md5sum=$(curl --silent https://scan.coverity.com/download/linux64 --data "token=${COVERITY_SCAN_TOKEN}&project=${COVERITY_SCAN_PROJECT_NAME}&md5=1")" >> ${GITHUB_OUTPUT}
 
       - name: Cache Coverity Build Tool
         id: coverity_scan_cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: cov-analysis-linux64.tar.gz
           key: cov-analysis-linux64-${{ steps.coverity_scan_md5.outputs.coverity_scan_md5sum }}
