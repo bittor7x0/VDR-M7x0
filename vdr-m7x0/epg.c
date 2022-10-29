@@ -535,7 +535,7 @@ bool cEvent::Read(FILE *f, cSchedule *Schedule, int &Line)
                           if (n >= 3 && n <= 5) {
                              Event = (cEvent *)Schedule->GetEvent(EventID, StartTime);
                              bool deleted = StartTime + Duration +
-                                            Setup.EPGLinger * 60 + 3600 < now;
+                                            EPG_LINGER_TIME + 3600 < now;
                              cEvent *newEvent = NULL;
                              if (Event) {
                                 DELETENULL(Event->components);
