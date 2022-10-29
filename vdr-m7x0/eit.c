@@ -52,8 +52,10 @@ cEIT::cEIT(cSchedules *Schedules, int Source, u_char Tid, const u_char *Data, bo
      return;
      }
 
-  if (!EpgHandlers.BeginSegmentTransfer(Channel))
+  if (!EpgHandlers.BeginSegmentTransfer(Channel)) {
+     Channels.Unlock();
      return;
+     }
 
   bool handledExternally = EpgHandlers.HandledExternally(Channel);
   cSchedule *pSchedule = (cSchedule *)Schedules->GetSchedule(Channel, true);

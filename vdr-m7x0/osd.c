@@ -273,12 +273,14 @@ bool cBitmap::LoadXpm(const char *FileName)
         int w, h, n, c;
         if (4 != sscanf(s, "%d %d %d %d", &w, &h, &n, &c)) {
            esyslog("ERROR: faulty 'values' line in XPM file '%s'", FileName);
-           return false;
+           Result = false;
+           goto FreeXpm;
            }
         char *q = strchr(s, '"');
         if (!q) {
            esyslog("ERROR: missing quotes in XPM file '%s'", FileName);
-           return false;
+           Result = false;
+           goto FreeXpm;
            }
         *q = 0;
 
@@ -289,8 +291,10 @@ bool cBitmap::LoadXpm(const char *FileName)
         index++;
         }
 
-  if (lines == 0)
-     return false;
+  if (lines == 0) {
+     Result = false;
+     goto FreeXpm;
+     }
 
   while ((s = ReadLine.Read(f)) != NULL) {
         s = skipspace(s);
@@ -318,6 +322,7 @@ bool cBitmap::LoadXpm(const char *FileName)
         esyslog("ERROR: too few lines in XPM file '%s'", FileName);
      }
 
+FreeXpm:
   if (Xpm) {
      for (int i = 0; i < index; i++)
          free(Xpm[i]);
