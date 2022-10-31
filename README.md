@@ -11,7 +11,7 @@
 
 **VDR-NG-EM** (*Video Disk Recorder - Next Generation - Edición Mejorada*) is a VDR-M7X0 [fork](https://en.wikipedia.org/wiki/Fork_(software_development) "Software fork") enhanced since 2007 by [Spanish developers](https://github.com/bittor7x0/VDR-M7x0/wiki/Colaboradores "VDR-NG-EM Contributors") from [vdr-m7x0.foroactivo.com.es](https://vdr-m7x0.foroactivo.com.es/ "VDR-NG-EM Forum") with many fixes, new features and better performance.
 
-In 2021, the **VDR-NG-EM** project was migrated from Assembla to GitHub (Wiki, Tickets and Repositories included the [unstable](https://github.com/bittor7x0/VDR-M7x0/tree/old-unstable-archived) branch for historical reasons).
+In 2021, the **VDR-NG-EM** project was migrated from Assembla to GitHub (Wiki, Tickets and Repositories included the [unstable](https://github.com/bittor7x0/VDR-M7x0-Assembla-Archived) branch for historical reasons).
 
 
 ## Main features
