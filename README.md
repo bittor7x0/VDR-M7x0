@@ -3,6 +3,7 @@
 [![Build Status](https://img.shields.io/github/workflow/status/bittor7x0/VDR-M7x0/VDR-NG-EM%20Nightly%20Build?label=Build)](https://github.com/bittor7x0/VDR-M7x0/actions/workflows/nightly-build.yml "Download nightly builds")
 [![Coverity Scan Status](https://img.shields.io/coverity/scan/22406.svg)](https://scan.coverity.com/projects/bittor7x0-vdr-m7x0 "View Coverity Scan Status")
 [![GitHub release](https://img.shields.io/github/release/bittor7x0/VDR-M7x0.svg)](https://github.com/bittor7x0/VDR-M7x0/releases/latest "Download latest release")
+[![GitHub pre-release](https://img.shields.io/github/release/bittor7x0/VDR-M7x0.svg?include_prereleases&label=pre-release&color=red)](https://github.com/bittor7x0/VDR-M7x0/releases "Download latest pre-release")
 [![Forum](https://img.shields.io/static/v1?label=&labelColor=gray&message=Forum&color=blue&style=flat&logo=homeadvisor&logoColor=ffffff)](https://vdr-m7x0.foroactivo.com.es/ "VDR-NG-EM Forum")
 
 
@@ -15,7 +16,7 @@ In 2021, the **VDR-NG-EM** project was migrated from Assembla to GitHub (Wiki, T
 
 
 ## Main features
-* Backports from VDR 2.4.x with a lot of fixes and improvements.
+* Backports from VDR 2.6.x with a lot of fixes and improvements.
 * Many VDR plugins available (e.g. epgsearch, epgfixer, scheduler, osdteletext, rssreader, vdrmanager, xmltv2vdr, parental control with PIN plugin, etc.). [See complete list](https://github.com/bittor7x0/VDR-M7x0/wiki/Plugins_para_el_VDR-NG-EM "VDR-NG-EM Plugins").
 * Permanent TimeShift very configurable.
 * Record HD channels using MPEG-TS files (including DVB and Teletext subtitles).
