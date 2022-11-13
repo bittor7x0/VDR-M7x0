@@ -26,13 +26,13 @@
 # Put dependencies here
 ISL_HOSTDEPS = $(GMP_HOSTINSTALLED)
 
-ISL_HOSTVERSION := 0.24
+ISL_HOSTVERSION := 0.25
 ISL_HOSTPATCHES_DIR := $(PATCHES_DIR)/isl/$(ISL_HOSTVERSION)
 
-ISL_HOSTFILE := isl-$(ISL_HOSTVERSION).tar.gz
+ISL_HOSTFILE := isl-$(ISL_HOSTVERSION).tar.xz
 ISL_HOSTDLFILE := $(DOWNLOAD_DIR)/$(ISL_HOSTFILE)
-ISL_HOSTURL := https://github.com/Meinersbur/isl/archive/refs/tags/$(ISL_HOSTFILE)
-ISL_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/isl-isl-$(ISL_HOSTVERSION)
+ISL_HOSTURL := https://libisl.sourceforge.io/$(ISL_HOSTFILE)
+ISL_HOSTDIR := $(HOSTUTILS_BUILD_DIR)/isl-$(ISL_HOSTVERSION)
 
 ISL_HOSTINSTALLED = $(STAGEFILES_DIR)/.isl_host_installed
 
@@ -59,7 +59,7 @@ $(STAGEFILES_DIR)/.isl_host_unpacked: $(ISL_HOSTDLFILE) \
                                            $(wildcard $(ISL_HOSTPATCHES_DIR)/*.patch) \
                                            $$(ISL_HOSTDEPS)
 	-$(RM) -rf $(ISL_HOSTDIR)
-	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -zf $(ISL_HOSTDLFILE)
+	$(TAR) -C $(HOSTUTILS_BUILD_DIR) -xJf $(ISL_HOSTDLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.isl_host_unpacked
 
 #
@@ -75,7 +75,7 @@ $(STAGEFILES_DIR)/.isl_host_patched: $(STAGEFILES_DIR)/.isl_host_unpacked
 #
 
 $(STAGEFILES_DIR)/.isl_host_configured: $(STAGEFILES_DIR)/.isl_host_patched
-	($(CD) $(ISL_HOSTDIR) ; $(ISL_HOSTDIR)/autogen.sh ; \
+	($(CD) $(ISL_HOSTDIR) ; \
 		$(ISL_HOSTDIR)/configure \
 			--prefix=$(PREFIX) \
 			--enable-static \
