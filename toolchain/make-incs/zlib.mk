@@ -26,10 +26,10 @@
 
 ZLIB_DEPS = $(BASE_BUILD_STAGEFILE)
 
-ZLIB_VERSION := 1.2.12
+ZLIB_VERSION := 1.2.13
 ZLIB_PATCHES_DIR := $(PATCHES_DIR)/zlib/$(ZLIB_VERSION)
 
-ZLIB_FILE := zlib-$(ZLIB_VERSION).tar.gz
+ZLIB_FILE := zlib-$(ZLIB_VERSION).tar.xz
 ZLIB_DLFILE := $(DOWNLOAD_DIR)/$(ZLIB_FILE)
 ZLIB_DIR := $(BUILD_DIR)/zlib-$(ZLIB_VERSION)
 ZLIB_URL := http://zlib.net/$(ZLIB_FILE)
@@ -62,7 +62,7 @@ $(STAGEFILES_DIR)/.zlib_unpacked: $(ZLIB_DLFILE) \
                                   $(wildcard $(ZLIB_PATCHES_DIR)/*.patch) \
                                   $$(ZLIB_DEPS)
 	-$(RM) -rf $(ZLIB_DIR)
-	$(TAR) -C $(BUILD_DIR) -zf $(ZLIB_DLFILE)
+	$(TAR) -C $(BUILD_DIR) -xJf $(ZLIB_DLFILE)
 	$(TOUCH) $(STAGEFILES_DIR)/.zlib_unpacked
 
 #
