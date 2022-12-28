@@ -1,6 +1,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](COPYING "Read License GPL v3")
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/bittor7x0/VDR-M7x0/commits/master "View commits")
-[![Build Status](https://img.shields.io/github/workflow/status/bittor7x0/VDR-M7x0/VDR-NG-EM%20Nightly%20Build?label=Build)](https://github.com/bittor7x0/VDR-M7x0/actions/workflows/nightly-build.yml "Download nightly builds")
+[![Build Status](https://img.shields.io/github/actions/workflow/status/bittor7x0/VDR-M7x0/nightly-build.yml?branch=master&label=Build)](https://github.com/bittor7x0/VDR-M7x0/actions/workflows/nightly-build.yml "Download nightly builds")
 [![Coverity Scan Status](https://img.shields.io/coverity/scan/22406.svg)](https://scan.coverity.com/projects/bittor7x0-vdr-m7x0 "View Coverity Scan Status")
 [![GitHub release](https://img.shields.io/github/release/bittor7x0/VDR-M7x0.svg)](https://github.com/bittor7x0/VDR-M7x0/releases/latest "Download latest release")
 [![GitHub pre-release](https://img.shields.io/github/release/bittor7x0/VDR-M7x0.svg?include_prereleases&label=pre-release&color=red)](https://github.com/bittor7x0/VDR-M7x0/releases "Download latest pre-release")
@@ -8,9 +8,9 @@
 
 
 ## Overview
-**VDR-M7X0** is a [VDR](http://www.tvdr.de/software.htm "The Video Disk Recorder") [port](https://en.wikipedia.org/wiki/Porting "Software port") for Siemens Gigaset M740AV, M750T EPG and M750S created in 2006 by German developers from **open7x0**.org (now defunct).
+**VDR-M7x0** is a [VDR](http://www.tvdr.de/software.htm "The Video Disk Recorder") [port](https://en.wikipedia.org/wiki/Porting "Software port") for Siemens Gigaset M740AV, M750T EPG and M750S created in 2006 by German developers from **open7x0**.org (now defunct).
 
-**VDR-NG-EM** (*Video Disk Recorder - Next Generation - Edición Mejorada*) is a VDR-M7X0 [fork](https://en.wikipedia.org/wiki/Fork_(software_development) "Software fork") enhanced since 2007 by [Spanish developers](https://github.com/bittor7x0/VDR-M7x0/wiki/Colaboradores "VDR-NG-EM Contributors") from [vdr-m7x0.foroactivo.com.es](https://vdr-m7x0.foroactivo.com.es/ "VDR-NG-EM Forum") with many fixes, new features and better performance.
+**VDR-NG-EM** (*Video Disk Recorder - Next Generation - Edición Mejorada*) is a VDR-M7x0 [fork](https://en.wikipedia.org/wiki/Fork_(software_development) "Software fork") enhanced since 2007 by [Spanish developers](https://github.com/bittor7x0/VDR-M7x0/wiki/Colaboradores "VDR-NG-EM Contributors") from [vdr-m7x0.foroactivo.com.es](https://vdr-m7x0.foroactivo.com.es/ "VDR-NG-EM Forum") with many fixes, new features and better performance.
 
 In 2021, the **VDR-NG-EM** project was migrated from Assembla to GitHub (Wiki, Tickets and Repositories included the [unstable](https://github.com/bittor7x0/VDR-M7x0-Assembla-Archived) branch for historical reasons).
 
