@@ -1,0 +1,31 @@
+--- a/programs/README.md
++++ b/programs/README.md
+@@ -174,7 +174,7 @@
+ --fast[=#]: switch to very fast compression levels (default: 1)
+ --adapt : dynamically adapt compression level to I/O conditions
+ --patch-from=FILE : specify the file to be used as a reference point for zstd's diff engine
+- -T#    : spawns # compression threads (default: 1, 0==# cores)
++ -T#    : spawns # compression threads (default: 0==# cores)
+  -B#    : select size of each job (default: 0==automatic)
+ --single-thread : use a single thread for both I/O and compression (result slightly different than -T1)
+ --rsyncable : compress using a rsync-friendly method (-B sets block size)
+--- a/programs/zstdcli.c
++++ b/programs/zstdcli.c
+@@ -21,7 +21,7 @@
+ #endif
+ 
+ #ifndef ZSTDCLI_NBTHREADS_DEFAULT
+-#  define ZSTDCLI_NBTHREADS_DEFAULT 1
++#  define ZSTDCLI_NBTHREADS_DEFAULT 0
+ #endif
+ 
+ /*-************************************
+@@ -233,7 +233,7 @@
+     DISPLAYOUT("  --long[=#]                    Enable long distance matching with window log #. [Default: %u]\n", g_defaultMaxWindowLog);
+     DISPLAYOUT("  --patch-from=REF              Use REF as the reference point for Zstandard's diff engine. \n\n");
+ # ifdef ZSTD_MULTITHREAD
+-    DISPLAYOUT("  -T#                           Spawn # compression threads. [Default: 1; pass 0 for core count.]\n");
++    DISPLAYOUT("  -T#                           Spawn # compression threads. [Default: 0 for core count.]\n");
+     DISPLAYOUT("  --single-thread               Share a single thread for I/O and compression (slightly different than `-T1`).\n");
+     DISPLAYOUT("  --auto-threads={physical|logical}\n");
+     DISPLAYOUT("                                Use physical/logical cores when using `-T0`. [Default: Physical]\n\n");

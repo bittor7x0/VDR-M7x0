@@ -1,0 +1,60 @@
+diff -Naur a/lib/Makefile b/lib/Makefile
+--- a/lib/Makefile	2020-12-19 01:39:42.000000000 +0100
++++ b/lib/Makefile	2021-02-13 16:59:22.894906229 +0100
+@@ -246,10 +246,6 @@
+ 	$(RM) -r obj/*
+ 	@echo Cleaning library completed
+ 
+-#-----------------------------------------------------------------------------
+-# make install is validated only for below listed environments
+-#-----------------------------------------------------------------------------
+-ifneq (,$(filter $(UNAME),Linux Darwin GNU/kFreeBSD GNU OpenBSD FreeBSD NetBSD DragonFly SunOS Haiku AIX))
+ 
+ lib: libzstd.pc
+ 
+@@ -354,4 +350,3 @@
+ 	$(RM) $(DESTDIR)$(INCLUDEDIR)/zdict.h
+ 	@echo zstd libraries successfully uninstalled
+ 
+-endif
+diff -Naur a/Makefile b/Makefile
+--- a/Makefile	2020-12-19 01:39:42.000000000 +0100
++++ b/Makefile	2021-02-13 15:39:51.107161885 +0100
+@@ -148,10 +148,6 @@
+ 	$(Q)$(RM) -r lz4
+ 	@echo Cleaning completed
+ 
+-#------------------------------------------------------------------------------
+-# make install is validated only for Linux, macOS, Hurd and some BSD targets
+-#------------------------------------------------------------------------------
+-ifneq (,$(filter $(shell uname),Linux Darwin GNU/kFreeBSD GNU OpenBSD FreeBSD DragonFly NetBSD MSYS_NT Haiku AIX))
+ 
+ HOST_OS = POSIX
+ 
+@@ -377,7 +373,6 @@
+ lz4install:
+ 	[ -e lz4 ] || git clone https://github.com/lz4/lz4 && sudo $(MAKE) -C lz4 install
+ 
+-endif
+ 
+ 
+ CMAKE_PARAMS = -DZSTD_BUILD_CONTRIB:BOOL=ON -DZSTD_BUILD_STATIC:BOOL=ON -DZSTD_BUILD_TESTS:BOOL=ON -DZSTD_ZLIB_SUPPORT:BOOL=ON -DZSTD_LZMA_SUPPORT:BOOL=ON -DCMAKE_BUILD_TYPE=Release
+diff -Naur a/programs/Makefile b/programs/Makefile
+--- a/programs/Makefile	2020-12-19 01:39:42.000000000 +0100
++++ b/programs/Makefile	2021-02-13 15:39:38.420451844 +0100
+@@ -343,10 +343,6 @@
+ 
+ 
+ 
+-#-----------------------------------------------------------------------------
+-# make install is validated only for Linux, macOS, BSD, Hurd and Solaris targets
+-#-----------------------------------------------------------------------------
+-ifneq (,$(filter $(UNAME),Linux Darwin GNU/kFreeBSD GNU OpenBSD FreeBSD NetBSD DragonFly SunOS Haiku AIX))
+ 
+ HAVE_COLORNEVER = $(shell echo a | egrep --color=never a > /dev/null 2> /dev/null && echo 1 || echo 0)
+ EGREP_OPTIONS ?=
+@@ -443,4 +439,3 @@
+ 	$(RM) $(DESTDIR)$(MAN1DIR)/zstd.1
+ 	@echo zstd programs successfully uninstalled
+ 
+-endif
