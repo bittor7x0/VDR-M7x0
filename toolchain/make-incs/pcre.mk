@@ -92,7 +92,7 @@ $(STAGEFILES_DIR)/.pcre_configured: $(STAGEFILES_DIR)/.pcre_patched
 #
 
 $(STAGEFILES_DIR)/.pcre_compiled: $(STAGEFILES_DIR)/.pcre_configured
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR)
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR) TESTS= bin_PROGRAMS= noinst_PROGRAMS= dist_html_DATA= dist_doc_DATA=
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_compiled
 
 #
@@ -100,7 +100,7 @@ $(STAGEFILES_DIR)/.pcre_compiled: $(STAGEFILES_DIR)/.pcre_configured
 #
 
 $(STAGEFILES_DIR)/.pcre_installed: $(STAGEFILES_DIR)/.pcre_compiled
-	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(PCRE_DIR) TESTS= bin_PROGRAMS= noinst_PROGRAMS= dist_html_DATA= dist_doc_DATA= install
 	$(TOUCH) $(STAGEFILES_DIR)/.pcre_installed
 
 
