@@ -78,19 +78,15 @@ $(TOP_DIR)/$(JFFS2_IMG): $$(MKJFFS2_BIN) $(JFFS2_FILE_COPY)
 	$(SED) -i -e "s,^export SYSTEMTYPE=.*,export SYSTEMTYPE=`$(CAT) $(JFFS2_DIR)/etc/systemtype`,g" $(JFFS2_DIR)/etc/rc.mini
 	$(call set_lang, $(JFFS2_DIR))
 	$(call fix_fw_conf_files, $(JFFS2_DIR))
-	(if [ ! -d .svn -a -d ../.git ] ; then \
-		$(ECHO) "Git ToolChain `git rev-parse --short HEAD`" >> $(JFFS2_DIR)/etc/fw-version ; \
-	else \
-		$(ECHO) "SVN ToolChain `svnversion -c \"$(TOP_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version ; \
-	fi );
+	$(ECHO) "Git ToolChain `git -c core.abbrev=7 rev-parse --short HEAD`" >> $(JFFS2_DIR)/etc/fw-version
 ifneq ($(strip $(CONFIG_VDR)),)
-	$(ECHO) "SVN VDR `svnversion -c \"$(VDR_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
+	$(ECHO) "Git VDR `git -C $(VDR_DIR)-git -c core.abbrev=7 log --pretty=format:'%h' --max-count=1 -- $(VDR_GIT_SUBDIR)`" >> $(JFFS2_DIR)/etc/fw-version
 endif
 ifneq ($(strip $(CONFIG_VDR-PLUGINS-ROOTFS))$(strip $(CONFIG_VDR-PLUGINS-JFFS2)),)
-	$(ECHO) "SVN VDR-plugins `svnversion -c \"$(VDR-PLUGINS_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
+	$(ECHO) "Git VDR-plugins `git -C $(VDR-PLUGINS_DIR)-git -c core.abbrev=7 log --pretty=format:'%h' --max-count=1 -- $(VDR-PLUGINS_GIT_SUBDIR)`" >> $(JFFS2_DIR)/etc/fw-version
 endif
 ifneq ($(strip $(CONFIG_WEBIF)),)
-	$(ECHO) "SVN webif `svnversion -c \"$(WEBIF_DIR)\" | cut -d \":\" -f 2`" >> $(JFFS2_DIR)/etc/fw-version
+	$(ECHO) "Git webif `git -C $(WEBIF_DIR)-git -c core.abbrev=7 log --pretty=format:'%h' --max-count=1 -- $(WEBIF_GIT_SUBDIR)`" >> $(JFFS2_DIR)/etc/fw-version
 endif
 	$(MKJFFS2_BIN) --big-endian --pad --squash \
 		$(JFFS2_OPTIONS) \

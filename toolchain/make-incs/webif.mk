@@ -45,11 +45,11 @@ ifeq ($(CONFIG_PINGO),y)
 	WEBIF_DEPS +=  $(PINGO_BIN)
 endif
 
-WEBIF_DIR := $(BUILD_DIR)/webif
-WEBIF_BUILD_DIR := $(BUILD_DIR)/webif.build
-WEBIF_SVN := https://github.com/bittor7x0/VDR-M7x0/trunk/webif
+WEBIF_GIT_SUBDIR := webif
+WEBIF_DIR := $(BUILD_DIR)/$(WEBIF_GIT_SUBDIR)
+WEBIF_CONF_DIR := $(PRG_CONFIGS_DIR)/$(WEBIF_GIT_SUBDIR)
+WEBIF_BUILD_DIR := $(BUILD_DIR)/$(WEBIF_GIT_SUBDIR).build
 WEBIF_TC_FILE := $(WEBIF_BUILD_DIR)/linux-mips-uclibc.tc
-WEBIF_CONF_DIR := $(PRG_CONFIGS_DIR)/webif
 WEBIF_KLAPP_VERSION := 2.0.2
 WEBIF_KLONE_VERSION := 2.4.0
 
@@ -61,12 +61,12 @@ DISTCLEAN_RULES += distclean-webif
 
 ifneq ($(and $(filter y,$(CONFIG_WEBIF)), $(wildcard $(WEBIF_DIR))),)
 $(info Updating webif download ...)
-webif_svn_changed := $(call svn_changed, $(WEBIF_DIR))
+webif_git_changed := $(call git_changed, $(WEBIF_DIR)-git)
 
-ifeq ($(webif_svn_changed),0)
+ifeq ($(webif_git_changed),0)
 $(info webif is up to date)
 else
-$(info $(webif_svn_changed) file(s) updated)
+$(info $(webif_git_changed) file(s) updated)
 webif_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded)
 endif
 endif
@@ -75,11 +75,8 @@ endif
 # download webapp
 #
 $(STAGEFILES_DIR)/.webapp_downloaded: $(TC_INIT_RULE)
-	(if [ ! -d $(WEBIF_DIR) ] ; then \
-		$(SVN) co $(WEBIF_SVN) $(WEBIF_DIR) ; \
-	else \
-		$(SVN) up $(WEBIF_DIR) ; \
-	fi );
+	$(call git_clone_subdir, $(GIT_VDR-M7x0_REPO_URL), /$(WEBIF_GIT_SUBDIR), $(WEBIF_DIR)-git)
+	$(LN) -sf $(WEBIF_DIR)-git/$(WEBIF_GIT_SUBDIR) $(WEBIF_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.webapp_downloaded
 
 #
@@ -161,4 +158,4 @@ distclean-webif:
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_compiled
 	-$(RM) -f $(STAGEFILES_DIR)/.webif_installed
 	-$(RM) -f $(FILELIST_DIR)/webif-configs.lst
-	-$(RM) -rf $(WEBIF_BUILD_DIR)
+	-$(RM) -rf $(WEBIF_BUILD_DIR) $(WEBIF_DIR){,-git}

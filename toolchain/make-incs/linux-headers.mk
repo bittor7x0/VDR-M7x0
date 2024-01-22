@@ -27,6 +27,7 @@
 LINUX_HEADERS_FILE := m7x0-linux-headers.tar.bz2
 LINUX_HEADERS_DLFILE := $(DOWNLOAD_DIR)/$(LINUX_HEADERS_FILE)
 LINUX_HEADERS_DIR := $(BUILD_DIR)/m7x0-linux-headers
+LINUX_HEADERS_GIT_SUBDIR := vdr-m7x0/m7x0_dvb
 LINUX_HEADERS_INSTALL_DIR = $(TARGET_ROOT)/usr/include
 
 LINUX_HEADERS_INSTALLED = $(STAGEFILES_DIR)/.linux_headers_installed
@@ -53,8 +54,10 @@ $(STAGEFILES_DIR)/.linux_headers_unpacked: $(LINUX_HEADERS_DLFILE) $(TC_INIT_RUL
 	$(TOUCH) $(STAGEFILES_DIR)/.linux_headers_unpacked
 
 $(STAGEFILES_DIR)/.linux_headers_installed: $(STAGEFILES_DIR)/.linux_headers_unpacked
-	$(MKDIR) -p $(LINUX_HEADERS_INSTALL_DIR) $(LINUX_HEADERS_DIR)/include/linux/dvb
-	($(CD) $(LINUX_HEADERS_DIR)/include/linux/dvb ; $(SVN) co https://github.com/bittor7x0/VDR-M7x0/trunk/vdr-m7x0/m7x0_dvb .)
+	$(MKDIR) -p $(LINUX_HEADERS_INSTALL_DIR) $(LINUX_HEADERS_DIR)/include/linux/dvb{,-git}
+	$(call git_clone_subdir, $(GIT_VDR-M7x0_REPO_URL), /$(LINUX_HEADERS_GIT_SUBDIR), $(LINUX_HEADERS_DIR)/include/linux/dvb-git)
+	$(MV) -f $(LINUX_HEADERS_DIR)/include/linux/dvb-git/$(LINUX_HEADERS_GIT_SUBDIR)/* $(LINUX_HEADERS_DIR)/include/linux/dvb
+	-$(RM) -rf $(LINUX_HEADERS_DIR)/include/linux/dvb-git
 	$(CP) -RPp $(LINUX_HEADERS_DIR)/include/* \
 		$(LINUX_HEADERS_INSTALL_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.linux_headers_installed

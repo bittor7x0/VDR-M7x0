@@ -50,7 +50,7 @@ jobs:
         run: |
           choco config get cacheLocation
           choco install -y --no-progress cygwin
-          C:\tools\cygwin\cygwinsetup.exe -qgnNdO -R C:/tools/cygwin -s http://mirrors.kernel.org/sourceware/cygwin/ -P autoconf,bison,curl,wget,flex,gcc-g++,make,automake,patch,git,subversion,zlib-devel,ccache,libtool
+          C:\tools\cygwin\cygwinsetup.exe -qgnNdO -R C:/tools/cygwin -s http://mirrors.kernel.org/sourceware/cygwin/ -P autoconf,bison,curl,wget,flex,gcc-g++,make,automake,patch,git,zlib-devel,ccache,libtool
 
       - name: Set git to use LF and symlinks
         run: |

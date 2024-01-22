@@ -67,7 +67,12 @@ jobs:
 
       - name: Download nightly files
         run: |
-          svn export https://github.com/bittor7x0/VDR-M7x0/branches/firmware-builder-files/nightly toolchain/firmware-builder-files
+          git clone --no-checkout --depth=1 --filter=tree:0 --branch firmware-builder-files https://github.com/bittor7x0/VDR-M7x0 toolchain/firmware-builder-files
+          cd toolchain/firmware-builder-files
+          git sparse-checkout set --no-cone '/nightly/*'
+          git checkout
+          mv nightly/* .
+          rm -rf .git nightly
 
       - name: Cache ccache objects
         uses: actions/cache@v3
@@ -80,7 +85,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y build-essential pkg-config m4 automake libtirpc-dev libz-dev subversion default-jre ccache
+          sudo apt-get install -y build-essential pkg-config m4 automake libtirpc-dev libz-dev default-jre ccache
 
       - name: Setup ccache
         run: |

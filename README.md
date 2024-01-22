@@ -55,40 +55,43 @@ This builder uses precompiled binaries and Kernel, so it generates the firmware 
 
 #### 1. Install dependencies
 
-You need to have installed gcc, binutils, patch, flex, make, automake, autoconf, autotools-dev, pkg-config, bison, gettext, genext2fs, bzip2, unzip, subversion and libz-dev.\
+You need to have installed gcc, binutils, patch, flex, make, automake, autoconf, autotools-dev, pkg-config, bison, gettext, genext2fs, bzip2, unzip and libz-dev.\
 If you want network support (Pro version) you also need libtirpc-dev and the java binary (jre-openjdk).
 
 ![Arch Linux](https://img.shields.io/badge/-Arch%20Linux-333?style=for-the-badge&labelColor=1793D1&logo=arch%20linux&logoColor=white)
 ![Manjaro](https://img.shields.io/badge/-Manjaro-333?style=for-the-badge&labelColor=35bf5c&logo=manjaro&logoColor=white)
 ```
-$ sudo pacman -Sy base-devel subversion unzip jre-openjdk
+$ sudo pacman -Sy base-devel unzip jre-openjdk
 ```
 \
 ![Debian](https://img.shields.io/badge/-Debian-333?style=for-the-badge&labelColor=A81D33&logo=debian&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/-Ubuntu-333?style=for-the-badge&labelColor=dd4814&logo=ubuntu&logoColor=white)
 ![Linux Mint](https://img.shields.io/badge/-Linux%20Mint-333?style=for-the-badge&labelColor=87CF3E&logo=linux%20mint&logoColor=white)
 ```
-$ sudo apt-get install -y build-essential pkg-config m4 automake libtirpc-dev libz-dev subversion default-jre
+$ sudo apt-get install -y build-essential pkg-config m4 automake libtirpc-dev libz-dev default-jre
 ```
 \
 ![Fedora](https://img.shields.io/badge/-Fedora-333?style=for-the-badge&labelColor=0b57a4&logo=fedora&logoColor=white)
 ![CentOS](https://img.shields.io/badge/-CentOS-333?style=for-the-badge&labelColor=212078&logo=centos&logoColor=white)
 ![Red Hat Enterprise Linux](https://img.shields.io/badge/-Red%20Hat%20Enterprise%20Linux-333?style=for-the-badge&labelColor=ee0000&logo=red%20hat&logoColor=white)
 ```
-$ sudo dnf install -y make automake gcc gcc-c++ flex subversion bzip2 zlib-devel libtirpc-devel java-latest-openjdk
+$ sudo dnf install -y make automake gcc gcc-c++ flex bzip2 zlib-devel libtirpc-devel java-latest-openjdk
 ```
 \
 ![OpenSUSE](https://img.shields.io/badge/-OpenSUSE-333?style=for-the-badge&labelColor=73ba25&logo=opensuse&logoColor=white)
 ![SUSE Linux Enterprise Server](https://img.shields.io/badge/-SUSE%20Linux%20Enterprise%20Server-333?style=for-the-badge&labelColor=73ba25&logo=opensuse&logoColor=white)
 ```
-$ sudo zypper install -y make automake gcc gcc-c++ flex subversion patch wget bzip2 unzip zlib-devel libtirpc-devel java-11-openjdk
+$ sudo zypper install -y make automake gcc gcc-c++ flex patch wget bzip2 unzip zlib-devel libtirpc-devel java-11-openjdk
 ```
 
 #### 2. Get Toolchain source code
 ```
 $ umask 022
-$ svn checkout https://github.com/bittor7x0/VDR-M7x0/trunk/toolchain vdr-ng-em
+$ git clone --no-checkout --depth=1 --filter=tree:0 https://github.com/bittor7x0/VDR-M7x0 vdr-ng-em
 $ cd vdr-ng-em
+$ git sparse-checkout set --no-cone /toolchain
+$ git checkout
+$ cd toolchain
 ```
 
 #### 3. Configuration

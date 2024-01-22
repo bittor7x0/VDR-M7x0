@@ -56,8 +56,8 @@ WGET := wget --passive-ftp --no-check-certificate
 RM := rm
 CAT := cat
 CUT := cut
-SVN := svn
 GIT := git
+GIT_VDR-M7x0_REPO_URL := $(shell $(GIT) config --get remote.origin.url)
 MV := mv
 FIND := find
 TEST := test
@@ -75,8 +75,10 @@ SHA1 := $(firstword $(wildcard $(addsuffix /sha1, $(subst :, ,$(PATH)))) \
 PATCH := patch
 SORT := sort
 
-svn_changed = $(shell $(SVN) up $(1) | $(GREP) -c \
-                       "^[[:space:]]*[A,D,U,C,G][[:space:]]")
+git_changed = $(shell $(GIT) -C $(1) pull --stat | \
+				$(GREP) -Eo '[0-9]+ files? changed' | \
+				$(GREP) -Eo '[0-9]+' || \
+				$(ECHO) '0')
 
 DOWNLOAD_DIR := $(TOP_DIR)/downloads
 SCRIPTS_DIR := $(TOP_DIR)/scripts
@@ -238,12 +240,12 @@ gen_copy_lst_dirs = \
 # should be called
 # $(call gen_copy_file_lst,<path_of_files>,<path in root fs>,<user id>,<group id>,<lst filename>,check|nocheck)
 define gen_copy_file_lst
-$(FILELIST_DIR)/$(5): $(shell if [ -d "$(1)" ] ; then $(FIND) $(1) \! -path "*.svn*" \! -path "*.git*" \! -name "*~" ; else [ "$(6)" != "nocheck" ] && echo $(1) ; fi)
+$(FILELIST_DIR)/$(5): $(shell if [ -d "$(1)" ] ; then $(FIND) $(1) \! -path "*.git*" \! -name "*~" ; else [ "$(6)" != "nocheck" ] && echo $(1) ; fi)
 	if [ -d "$(1)" ] ; then \
 	( $(call gen_copy_lst_dirs,$(2)) \
-		$(FIND) "$(1)" -type d \! -path "$(1)" \! -path "*.svn*" \! -path "*.git*" \
+		$(FIND) "$(1)" -type d \! -path "$(1)" \! -path "*.git*" \
 			-printf "$(2)/%-20P - d %m $(3) $(4) - - - - -\n" ; \
-		$(FIND) "$(1)" -type f \! -path "*.svn*" \! -path "*.git*" \! -name "*~" \
+		$(FIND) "$(1)" -type f \! -path "*.git*" \! -name "*~" \
 			-printf "$(2)/%-20P %-20p f %m $(3) $(4) - - - - -\n" ; \
 		$(FIND) $(1) -type l -printf "$(2)/%-20P %-20l l %m $(3) $(4) - - - - -\n" ; ) \
 	> $(FILELIST_DIR)/$(5) ; \
@@ -257,6 +259,16 @@ define patch_package
 	for patch_file in `$(FIND) $(2) -type f -iname '*.patch' | $(SORT)` ; do \
 		$(PATCH) -p1 -E -d $(1) < $$patch_file ; \
 	done
+endef
+
+# clones a subdirectory from a Git repository located at a given remote_subdir and git_repo_url.
+# usage: $(call git_clone_subdir, <git_repo_url>, <remote_subdir>, <dest_dir>)
+define git_clone_subdir
+	[ ! -d $(3) ] && $(MKDIR) -p $(3); \
+	$(CD) $(3); \
+	[ ! -d .git ] && $(GIT) clone --no-checkout --filter=tree:0 $(1) .; \
+	$(GIT) sparse-checkout set --no-cone $(2); \
+	$(GIT) checkout
 endef
 
 # optimizes CSS code from a given css-dir. all *.css files are reduced with YUI Compressor

@@ -31,7 +31,7 @@ ifneq ($(CONFIG_SIEMENS-LINUX-KERNEL),y)
 endif
 endif
 
-DVB-KERNEL_SVN_URL := https://github.com/bittor7x0/VDR-M7x0/trunk/dvb-kernel-m7x0
+DVB-KERNEL_GIT_SUBDIR := dvb-kernel-m7x0
 DVB-KERNEL_DIR := $(BUILD_DIR)/dvb-kernel-m7x0
 DVB-KERNEL_CONF_DIR := $(PRG_CONFIGS_DIR)/dvb-kernel
 DVB-KERNEL_INSTALLED = $(STAGEFILES_DIR)/.dvb-kernel_installed
@@ -72,12 +72,12 @@ DVB-KERNEL_DIRLST := \
 
 ifneq ($(and $(filter y,$(CONFIG_DVB-KERNEL)), $(wildcard $(DVB-KERNEL_DIR))),)
 $(info Updating dvb-kernel download ...)
-dvb-kernel_svn_changed := $(call svn_changed, $(DVB-KERNEL_DIR))
+dvb-kernel_git_changed := $(call git_changed, $(DVB-KERNEL_DIR)-git)
 
-ifeq ($(dvb-kernel_svn_changed),0)
+ifeq ($(dvb-kernel_git_changed),0)
 $(info dvb-kernel is up to date)
 else
-$(info $(dvb-kernel_svn_changed) file(s) updated)
+$(info $(dvb-kernel_git_changed) file(s) updated)
 dvb-kernel_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.dvb-kernel_downloaded)
 endif
 endif
@@ -87,7 +87,8 @@ endif
 #
 
 $(STAGEFILES_DIR)/.dvb-kernel_downloaded: $(TC_INIT_RULE)
-	$(SVN) co $(DVB-KERNEL_SVN_URL) $(DVB-KERNEL_DIR)
+	$(call git_clone_subdir, $(GIT_VDR-M7x0_REPO_URL), /$(DVB-KERNEL_GIT_SUBDIR), $(DVB-KERNEL_DIR)-git)
+	$(LN) -sf $(DVB-KERNEL_DIR)-git/$(DVB-KERNEL_GIT_SUBDIR) $(DVB-KERNEL_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.dvb-kernel_downloaded
 
 #
@@ -135,7 +136,7 @@ $(eval $(call gen_copy_file_lst,$(DVB-KERNEL_CONF_DIR),,0,0,dvb-kernel-configs.l
 .PHONY: clean-dvb-kernel distclean-dvb-kernel
 
 clean-dvb-kernel:
-	-$(RM) -rf $(DVB-KERNEL_DIR)
+	-$(RM) -rf $(DVB-KERNEL_DIR){,-git}
 
 distclean-dvb-kernel:
 	-$(RM) -f $(STAGEFILES_DIR)/.dvb-kernel_downloaded

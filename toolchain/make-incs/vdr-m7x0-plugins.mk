@@ -68,10 +68,10 @@ ifeq ($(CONFIG_JANSSON),y)
 endif
 endif
 
-VDR-PLUGINS_SVN_URL := https://github.com/bittor7x0/VDR-M7x0/trunk/vdr-m7x0-plugins
-VDR-PLUGINS_DIR := $(BUILD_DIR)/vdr-m7x0-PLUGINS
-VDR-PLUGINS_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/common
-VDR-PLUGINS_CONF_SYSTYPE_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0-plugins/$(CONFIG_M7X0_TYPE)
+VDR-PLUGINS_GIT_SUBDIR := vdr-m7x0-plugins
+VDR-PLUGINS_DIR := $(BUILD_DIR)/$(VDR-PLUGINS_GIT_SUBDIR)
+VDR-PLUGINS_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/$(VDR-PLUGINS_GIT_SUBDIR)/common
+VDR-PLUGINS_CONF_SYSTYPE_DIR := $(PRG_CONFIGS_DIR)/$(VDR-PLUGINS_GIT_SUBDIR)/$(CONFIG_M7X0_TYPE)
 
 vdr-plugins_rules = \
    $(foreach plugin,$(CONFIG_VDR-PLUGINS), \
@@ -115,12 +115,12 @@ VDR-PLUGINS-JFFS2_LIBNAMES = $(foreach plug,$(CONFIG_VDR-PLUGINS-JFFS2-LIBS), \
 
 ifneq ($(and $(CONFIG_VDR-PLUGINS), $(wildcard $(VDR-PLUGINS_DIR))),)
 $(info Updating vdr plugins download ...)
-vdr-plugins_svn_changed := $(call svn_changed,$(VDR-PLUGINS_DIR))
+vdr-plugins_git_changed := $(call git_changed, $(VDR-PLUGINS_DIR)-git)
 
-ifeq ($(vdr-plugins_svn_changed),0)
+ifeq ($(vdr-plugins_git_changed),0)
 $(info vdr plugins are up to date)
 else
-$(info $(vdr-plugins_svn_changed) file(s) updated)
+$(info $(vdr-plugins_git_changed) file(s) updated)
 vdr-plugins_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_downloaded)
 endif
 endif
@@ -129,7 +129,8 @@ endif
 # download vdr-plugins
 #
 $(STAGEFILES_DIR)/.vdr-plugins_downloaded: $(TC_INIT_RULE)
-	$(SVN) co $(VDR-PLUGINS_SVN_URL) $(VDR-PLUGINS_DIR)
+	$(call git_clone_subdir, $(GIT_VDR-M7x0_REPO_URL), /$(VDR-PLUGINS_GIT_SUBDIR), $(VDR-PLUGINS_DIR)-git)
+	$(LN) -sf $(VDR-PLUGINS_DIR)-git/$(VDR-PLUGINS_GIT_SUBDIR) $(VDR-PLUGINS_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr-plugins_downloaded
 
 #
@@ -146,7 +147,7 @@ $(STAGEFILES_DIR)/.vdr-plugins_configured: $$(VDR-PLUGINS_DEPS) \
 		$(LN) -sf $(VDR-PLUGINS_DIR)/$(plugin) \
 		$(VDR_DIR)/PLUGINS/src/$(lastword $(subst /, ,$(plugin)));) \
 	(if [ -f $(VDR_DIR)/PLUGINS/src/pin/Makefile ]; then \
-		$(SED) -i -e 's,^FSKCHKDIR = .*,FSKCHKDIR = \"$(TOP_DIR)\/prg-fw-configs\/vdr-m7x0-plugins\/common\/pin\/usr\/bin\",g' \
+		$(SED) -i -e 's,^FSKCHKDIR = .*,FSKCHKDIR = \"$(TOP_DIR)\/prg-fw-configs\/$(VDR-PLUGINS_GIT_SUBDIR)\/common\/pin\/usr\/bin\",g' \
 			$(VDR_DIR)/PLUGINS/src/pin/Makefile; \
 	fi; \
 	if [ -f $(VDR_DIR)/PLUGINS/src/vdrmanager/Makefile ]; then \
@@ -292,7 +293,7 @@ $(foreach plugin,$(notdir $(CONFIG_VDR-PLUGINS)), \
 .PHONY: clean-vdr-plugins distclean-vdr-plugins
 
 clean-vdr-plugins:
-	-$(RM) -rf $(VDR-PLUGINS_DIR)
+	-$(RM) -rf $(VDR-PLUGINS_DIR){,-git}
 
 distclean-vdr-plugins:
 	-$(RM) -f $(STAGEFILES_DIR)/.vdr-plugins_*

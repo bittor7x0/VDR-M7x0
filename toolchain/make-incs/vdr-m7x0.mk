@@ -30,10 +30,10 @@ ifeq ($(CONFIG_UCLIBC++),y)
 	VDR_DEPS +=  $(UCLIBC++_INSTALLED)
 endif
 
-VDR_SVN_URL := https://github.com/bittor7x0/VDR-M7x0/trunk/vdr-m7x0
-VDR_DIR := $(BUILD_DIR)/vdr-m7x0
-VDR_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/common
-VDR_CONF_SYSTYPE_DIR := $(PRG_CONFIGS_DIR)/vdr-m7x0/$(CONFIG_M7X0_TYPE)
+VDR_GIT_SUBDIR := vdr-m7x0
+VDR_DIR := $(BUILD_DIR)/$(VDR_GIT_SUBDIR)
+VDR_CONF_COMMON_DIR := $(PRG_CONFIGS_DIR)/$(VDR_GIT_SUBDIR)/common
+VDR_CONF_SYSTYPE_DIR := $(PRG_CONFIGS_DIR)/$(VDR_GIT_SUBDIR)/$(CONFIG_M7X0_TYPE)
 VDR_INSTALLED = $(STAGEFILES_DIR)/.vdr_installed
 
 PACKS_RULES_$(CONFIG_VDR) += $(VDR_INSTALLED)
@@ -44,12 +44,12 @@ DISTCLEAN_RULES += distclean-vdr
 
 ifneq ($(and $(filter y,$(CONFIG_VDR)), $(wildcard $(VDR_DIR))),)
 $(info Updating vdr download ...)
-vdr_svn_changed := $(call svn_changed, $(VDR_DIR))
+vdr_git_changed := $(call git_changed, $(VDR_DIR)-git)
 
-ifeq ($(vdr_svn_changed),0)
+ifeq ($(vdr_git_changed),0)
 $(info vdr is up to date)
 else
-$(info $(vdr_svn_changed) file(s) updated)
+$(info $(vdr_git_changed) file(s) updated)
 vdr_tmp := $(shell $(TOUCH) $(STAGEFILES_DIR)/.vdr_downloaded)
 endif
 endif
@@ -59,7 +59,8 @@ endif
 #
 
 $(STAGEFILES_DIR)/.vdr_downloaded: $(TC_INIT_RULE)
-	$(SVN) co $(VDR_SVN_URL) $(VDR_DIR)
+	$(call git_clone_subdir, $(GIT_VDR-M7x0_REPO_URL), /$(VDR_GIT_SUBDIR), $(VDR_DIR)-git)
+	$(LN) -sf $(VDR_DIR)-git/$(VDR_GIT_SUBDIR) $(VDR_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.vdr_downloaded
 
 $(STAGEFILES_DIR)/.vdr_local_downloaded: $(CONFIG_VDR_LOCAL_PATH)/*.c \
@@ -114,7 +115,7 @@ $(eval $(call gen_copy_file_lst,$(VDR_CONF_SYSTYPE_DIR),,0,0,vdr-configs-$(CONFI
 .PHONY: clean-vdr distclean-vdr
 
 clean-vdr:
-	-$(RM) -rf $(VDR_DIR)
+	-$(RM) -rf $(VDR_DIR){,-git}
 	-$(RM) -f $(STAGEFILES_DIR)/.vdr_downloaded
 
 distclean-vdr:
