@@ -1,2 +1,2 @@
-lib/libubacktrace.so.1        libuClibc-1.0.42.so        l 777 0 0 - - - - -
-lib/libubacktrace.so.0        libuClibc-1.0.42.so        l 777 0 0 - - - - -
+lib/libubacktrace.so.1        libuClibc-1.0.45.so        l 777 0 0 - - - - -
+lib/libubacktrace.so.0        libuClibc-1.0.45.so        l 777 0 0 - - - - -

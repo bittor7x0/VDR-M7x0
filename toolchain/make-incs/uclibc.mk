@@ -41,12 +41,12 @@ ifeq ($(UCLIBC_IS_NG),y)
 	UCLIBC_URL := http://repo.or.cz/uclibc-ng.git/snapshot/$(UCLIBC_VERSION_FULL).tar.gz
 	UCLIBC_FILE_LIST += uclibc-ng-snapshot.lst
   else
-	UCLIBC_VERSION := 1.0.42
+	UCLIBC_VERSION := 1.0.45
 	UCLIBC_FILE := uClibc-ng-$(UCLIBC_VERSION).tar.bz2
 	UCLIBC_DIR := $(BUILD_DIR)/uClibc-ng-$(UCLIBC_VERSION)
 	UCLIBC_CONFIG := $(CONFIGS_DIR)/uClibc-ng/$(UCLIBC_VERSION)/uclibc-ng.config
 	UCLIBC_PATCHES_DIR := $(PATCHES_DIR)/uClibc-ng/$(UCLIBC_VERSION)
-	UCLIBC_URL := http://downloads.uclibc-ng.org/releases/$(UCLIBC_VERSION)/$(UCLIBC_FILE)
+	UCLIBC_URL := https://downloads.uclibc-ng.org/releases/$(UCLIBC_VERSION)/$(UCLIBC_FILE)
 	UCLIBC_FILE_LIST += uclibc-ng.lst
   endif
 else

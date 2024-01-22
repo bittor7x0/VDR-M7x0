@@ -1,0 +1,19 @@
+--- a/Rules.mak
++++ b/Rules.mak
+@@ -584,6 +584,16 @@
+ $(foreach w,$(WARNING_FLAGS),$(eval $(call check-gcc-var,$(w))))
+ XWARNINGS = $(call qstrip,$(WARNINGS)) $(foreach w,$(WARNING_FLAGS),$(CFLAG_$(w)))
+ 
++$(eval $(call check-gcc-var,-Wunused-but-set-variable))
++ifneq ($(CFLAG_-Wunused-but-set-variable),)
++XWARNINGS += -Wno-unused-but-set-variable
++endif
++
++$(eval $(call check-gcc-var,-Wint-conversion))
++ifneq ($(CFLAG_-Wint-conversion),)
++XWARNINGS += -Wno-int-conversion
++endif
++
+ CPU_CFLAGS=$(call qstrip,$(CPU_CFLAGS-y))
+ 
+ # Save the tested flag in a single variable and force it to be

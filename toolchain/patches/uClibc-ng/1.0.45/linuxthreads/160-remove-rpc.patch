@@ -1,0 +1,97 @@
+Backport for linuxthreads.new from:
+   http://cgit.uclibc-ng.org/cgi/cgit/uclibc-ng.git/commit/?id=a1a8064169aeda79e3266a2db9cce25e361a86dc
+
+	remove RPC implementation
+
+	The included RPC implementation is ipv4 only.
+	Other C library projects have either deprecated the internal
+	RPC implementation (GNU C Library) or never implemented such
+	functionality (musl C Library). The latest rpcbind release (0.2.4)
+	checks for libtirpc and does not allow to be build with uClibc-ng
+	RPC without patching. The common use case for RPC nowadays is to
+	use rpcbind together with nfs-utils to provide NFS server or client
+	support to a system.
+
+	The included RPC implementation does create issues with duplicate
+	symbol failures when statically compiling with RPC enabled.
+
+diff -Naur a/libpthread/linuxthreads/cancel.c b/libpthread/linuxthreads/cancel.c
+--- a/libpthread/linuxthreads/cancel.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/cancel.c	2020-09-26 09:04:54.639469362 +0200
+@@ -228,10 +228,4 @@
+       if (FRAME_LEFT (last, c))
+ 	break;
+     }
+-
+-#ifdef __UCLIBC_HAS_RPC__
+-  /* And the TSD which needs special help.  */
+-  if (THREAD_GETMEM(self, p_libc_specific[_LIBC_TSD_KEY_RPC_VARS]) != NULL)
+-      __rpc_thread_destroy ();
+-#endif
+ }
+diff -Naur a/libpthread/linuxthreads/internals.h b/libpthread/linuxthreads/internals.h
+--- a/libpthread/linuxthreads/internals.h	2020-09-25 19:29:44.000000000 +0200
++++ b/libpthread/linuxthreads/internals.h	2020-09-26 09:06:07.465039089 +0200
+@@ -436,14 +436,6 @@
+ /* This function is called to initialize the pthread library.  */
+ extern void __pthread_initialize (void);
+ 
+-/* TSD.  */
+-#if !defined __UCLIBC_HAS_TLS__ && defined __UCLIBC_HAS_RPC__
+-extern int __pthread_internal_tsd_set (int key, const void * pointer);
+-extern void * __pthread_internal_tsd_get (int key);
+-extern void ** __attribute__ ((__const__))
+-  __pthread_internal_tsd_address (int key);
+-#endif
+-
+ /* Sighandler wrappers.  */
+ extern void __pthread_sighandler(int signo, SIGCONTEXT ctx);
+ extern void __pthread_sighandler_rt(int signo, struct siginfo *si,
+diff -Naur a/libpthread/linuxthreads/libc-cancellation.c b/libpthread/linuxthreads/libc-cancellation.c
+--- a/libpthread/linuxthreads/libc-cancellation.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/libc-cancellation.c	2020-09-26 09:06:48.411195763 +0200
+@@ -17,7 +17,6 @@
+    <http://www.gnu.org/licenses/>.  */
+ 
+ #include <errno.h>
+-#include <rpc/rpc.h>
+ #include "pthread.h"
+ #include "internals.h"
+ #include "spinlock.h"
+diff -Naur a/libpthread/linuxthreads/specific.c b/libpthread/linuxthreads/specific.c
+--- a/libpthread/linuxthreads/specific.c	2016-05-07 19:49:06.000000000 +0200
++++ b/libpthread/linuxthreads/specific.c	2020-09-26 09:05:40.075505225 +0200
+@@ -211,33 +211,3 @@
+   }
+   __pthread_unlock(THREAD_GETMEM(self, p_lock));
+ }
+-
+-#if !defined __UCLIBC_HAS_TLS__ && defined __UCLIBC_HAS_RPC__
+-
+-/* Thread-specific data for libc. */
+-
+-int
+-__pthread_internal_tsd_set (int key, const void * pointer)
+-{
+-  pthread_descr self = thread_self();
+-
+-  THREAD_SETMEM_NC(self, p_libc_specific[key], (void *) pointer);
+-  return 0;
+-}
+-
+-void *
+-__pthread_internal_tsd_get (int key)
+-{
+-  pthread_descr self = thread_self();
+-
+-  return THREAD_GETMEM_NC(self, p_libc_specific[key]);
+-}
+-
+-void ** __attribute__ ((__const__))
+-__pthread_internal_tsd_address (int key)
+-{
+-  pthread_descr self = thread_self();
+-  return &self->p_libc_specific[key];
+-}
+-
+-#endif
