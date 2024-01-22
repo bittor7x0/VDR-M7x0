@@ -175,7 +175,7 @@ UCLIBC_ENV_LTO_GC = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    CFLAGS="$(UCLIBC_CFLAGS_LTO_GC)" CXXFLAGS="$(UCLIBC_CXXFLAGS_LTO_GC)" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC)"
 
 # Flags for shrink size
-UCLIBC_CFLAGS_SIZE := $(filter-out -Ofast,$(UCLIBC_CFLAGS_GC)) -Os -mplt -mno-shared -mabicalls -fno-reorder-blocks -fno-tree-ch -fno-caller-saves -fno-inline-small-functions -fno-reorder-functions
+UCLIBC_CFLAGS_SIZE := $(filter-out -Ofast,$(UCLIBC_CFLAGS_GC)) -Os -mno-shared -mabicalls -fno-reorder-blocks -fno-tree-ch -fno-caller-saves -fno-inline-small-functions -fno-reorder-functions
 UCLIBC_CXXFLAGS_SIZE := $(UCLIBC_CFLAGS_SIZE) -fvisibility-inlines-hidden
 UCLIBC_LDFLAGS_SIZE := $(UCLIBC_LDFLAGS_GC)
 
