@@ -74,7 +74,8 @@ $(STAGEFILES_DIR)/.binutils_patched: $(STAGEFILES_DIR)/.binutils_unpacked
 # configure binutils
 #
 
-$(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched
+$(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched \
+                                        $$(ZSTD_HOSTINSTALLED)
 	-$(RM) -rf $(BINUTILS_BUILD_DIR)
 	$(MKDIR) -p $(BINUTILS_BUILD_DIR)
 	($(CD) $(BINUTILS_BUILD_DIR) ; \
@@ -88,6 +89,9 @@ $(STAGEFILES_DIR)/.binutils_configured: $(STAGEFILES_DIR)/.binutils_patched
 			--with-mpfr=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-isl=$(PREFIX) \
+			--with-zstd=$(PREFIX) \
+			--enable-compressed-debug-sections=all \
+			--enable-default-compressed-debug-sections-algorithm=zstd \
 			--enable-plugins \
 			--enable-deterministic-archives \
 			--disable-sim \
