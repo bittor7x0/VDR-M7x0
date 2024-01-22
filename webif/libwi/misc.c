@@ -576,7 +576,7 @@ void finishHtmlPage(wcontext_t *wctx) {
             WCTX_IPRINTT("</div>" HTMLCOMENT("page") "\n", -1, 0);
             WCTX_IPRINTT("<div id=\"pageFoot\" class=\"level1Foot\">\n", 0, 1);
             printCssThemeSelector(wctx, "cssThemeSelector");
-            WCTX_IPRINTF("<p>(C) 2008-2022 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n");
+            WCTX_IPRINTF("<p>(C) 2008-2024 <a href=\"mailto:atinar1@hotmail.com\">atinar</a></p>\n");
             WCTX_IPRINTF("<p>(C) 2006 open7x0-team</p>\n");
             WCTX_IPRINT("<p>");
             WCTX_PRINTF(tr("version_%s"), webifConf.version);
