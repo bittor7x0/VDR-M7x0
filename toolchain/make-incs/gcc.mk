@@ -98,6 +98,7 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 	-$(RM) -rf $(GCC_STAGE1_BUILD_DIR)
 	$(MKDIR) -p $(GCC_STAGE1_BUILD_DIR)
 	($(CD) $(GCC_STAGE1_BUILD_DIR) ; \
+		export ac_cv_search_ZSTD_compress="$(PREFIX)/lib/libzstd.a -pthread" ; \
 		export libgcc_cv_fixed_point=no ; \
 		$(if $(filter n,$(UCLIBC_IS_NG)),export glibcxx_cv_c99_math_tr1=no ;) \
 		PATH='$(PREFIX_BIN):$(PATH)' \
@@ -109,6 +110,8 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-ld=$(PREFIX_BIN)/$(UCLIBC_LD) \
 			--with-gnu-ld \
 			--with-newlib \
+			--build=$(HOST_TARGET) \
+			--host=$(HOST_TARGET) \
 			--target=$(UCLIBC_TARGET) \
 			--enable-languages=c \
 			--enable-__cxa_atexit \
@@ -117,11 +120,13 @@ $(STAGEFILES_DIR)/.gcc_stage1_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
-			--with-zstd=$(PREFIX) \
 			--with-gmp=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
 			--with-isl=$(PREFIX) \
+			--with-zstd=$(PREFIX) \
+			--enable-compressed-debug-sections=all \
+			--enable-default-compressed-debug-sections-algorithm=zstd \
 			--disable-isl-version-check \
 			--disable-decimal-float \
 			--disable-libgomp \
@@ -172,14 +177,19 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 	-$(RM) -rf $(GCC_BUILD_DIR)
 	$(MKDIR) -p $(GCC_BUILD_DIR)
 	($(CD) $(GCC_BUILD_DIR) ; \
+		export ac_cv_search_ZSTD_compress="$(PREFIX)/lib/libzstd.a -pthread" ; \
 		export libgcc_cv_fixed_point=no ; \
 		$(if $(filter n,$(UCLIBC_IS_NG)),export glibcxx_cv_c99_math_tr1=no ;) \
 		PATH='$(PREFIX_BIN):$(PATH)' \
 		$(GCC_DIR)/configure \
 			--prefix=$(PREFIX) \
 			--with-sysroot=$(TARGET_ROOT) \
+			--with-as=$(PREFIX_BIN)/$(UCLIBC_AS) \
 			--with-gnu-as \
+			--with-ld=$(PREFIX_BIN)/$(UCLIBC_LD) \
 			--with-gnu-ld \
+			--build=$(HOST_TARGET) \
+			--host=$(HOST_TARGET) \
 			--target=$(UCLIBC_TARGET) \
 			--enable-languages=c,c++ \
 			--enable-__cxa_atexit \
@@ -189,11 +199,13 @@ $(STAGEFILES_DIR)/.gcc_configured: $(STAGEFILES_DIR)/.gcc_patched \
 			--with-arch=mips2 \
 			--with-tune=vr4120 \
 			--with-float=soft \
-			--with-zstd=$(PREFIX) \
 			--with-gmp=$(PREFIX) \
 			--with-mpc=$(PREFIX) \
 			--with-mpfr=$(PREFIX) \
 			--with-isl=$(PREFIX) \
+			--with-zstd=$(PREFIX) \
+			--enable-compressed-debug-sections=all \
+			--enable-default-compressed-debug-sections-algorithm=zstd \
 			--disable-isl-version-check \
 			--disable-decimal-float \
 			--disable-libgomp \
