@@ -1,0 +1,11 @@
+--- a/configure
++++ b/configure
+@@ -4548,7 +4548,7 @@
+ s,@am__tar@,$am__tar,;t t
+ s,@am__untar@,$am__untar,;t t
+ s,@CC@,$CC,;t t
+-s,@CFLAGS@,$CFLAGS,;t t
++s,@CFLAGS@,$CFLAGS -Wno-implicit-function-declaration,;t t
+ s,@LDFLAGS@,$LDFLAGS,;t t
+ s,@CPPFLAGS@,$CPPFLAGS,;t t
+ s,@ac_ct_CC@,$ac_ct_CC,;t t

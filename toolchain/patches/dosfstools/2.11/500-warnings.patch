@@ -1,0 +1,24 @@
+diff -Naur a/dosfsck/Makefile b/dosfsck/Makefile
+--- a/dosfsck/Makefile
++++ b/dosfsck/Makefile
+@@ -7,7 +7,7 @@
+ 	$(CC) -o $@ $(LDFLAGS) $^
+ 
+ .c.o:
+-	$(CC) -c $(CFLAGS) $*.c
++	$(CC) -c $(CFLAGS) -Wno-implicit-function-declaration $*.c
+ 
+ install: dosfsck
+ 	mkdir -p $(SBINDIR) $(MANDIR)
+diff -Naur a/mkdosfs/Makefile b/mkdosfs/Makefile
+--- a/mkdosfs/Makefile
++++ b/mkdosfs/Makefile
+@@ -7,7 +7,7 @@
+ 	$(CC) $(LDFLAGS) $^ -o $@
+ 
+ .c.o:
+-	$(CC) $(CFLAGS) -c $< -o $@
++	$(CC) $(CFLAGS) -Wno-implicit-function-declaration -c $< -o $@
+ 
+ install: mkdosfs
+ 	mkdir -p $(SBINDIR) $(MANDIR)

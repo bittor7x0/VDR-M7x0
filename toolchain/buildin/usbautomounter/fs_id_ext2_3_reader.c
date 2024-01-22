@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
 #include "tools.h"
 #include "fs_id_ext2_3_reader.h"
 
