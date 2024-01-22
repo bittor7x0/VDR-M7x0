@@ -85,9 +85,8 @@ $(STAGEFILES_DIR)/.markad_patched: $(STAGEFILES_DIR)/.markad_unpacked
 #
 
 $(STAGEFILES_DIR)/.markad_compiled: $(STAGEFILES_DIR)/.markad_patched
-	$(UCLIBC_ENV) \
+	$(UCLIBC_ENV_LTO_GC) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
-		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(UCLIBC_CFLAGS_LOOPS)" \
 		$(MAKE) -C $(MARKAD_DIR)/command \
 		PKG-CONFIG="pkg-config" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \
@@ -99,9 +98,8 @@ $(STAGEFILES_DIR)/.markad_compiled: $(STAGEFILES_DIR)/.markad_patched
 #
 
 $(STAGEFILES_DIR)/.markad_installed: $(STAGEFILES_DIR)/.markad_compiled
-	$(UCLIBC_ENV) \
+	$(UCLIBC_ENV_LTO_GC) \
 		$(if $(CONFIG_UCLIBC++), CXX="$(UCLIBC++_CXX)") \
-		CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(UCLIBC_CFLAGS_LOOPS)" \
 		$(MAKE) -C $(MARKAD_DIR)/command install \
 		PKG-CONFIG="pkg-config" \
 		PKG_CONFIG_PATH="$(TARGET_ROOT)/usr/lib/pkgconfig" \

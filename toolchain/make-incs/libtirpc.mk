@@ -77,7 +77,7 @@ $(STAGEFILES_DIR)/.libtirpc_patched: $(STAGEFILES_DIR)/.libtirpc_unpacked
 #
 
 $(STAGEFILES_DIR)/.libtirpc_configured: $(STAGEFILES_DIR)/.libtirpc_patched
-	($(CD) $(LIBTIRPC_DIR) ; $(UCLIBC_ENV_LTO_GC_LOOPS) \
+	($(CD) $(LIBTIRPC_DIR) ; $(UCLIBC_ENV_LTO_GC) \
 		$(LIBTIRPC_DIR)/configure \
 			--prefix=$(TARGET_ROOT)/usr \
 			--host=$(TARGET) \
@@ -91,7 +91,7 @@ $(STAGEFILES_DIR)/.libtirpc_configured: $(STAGEFILES_DIR)/.libtirpc_patched
 #
 
 $(STAGEFILES_DIR)/.libtirpc_compiled: $(STAGEFILES_DIR)/.libtirpc_configured
-	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(LIBTIRPC_DIR)
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBTIRPC_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.libtirpc_compiled
 
 #
@@ -99,7 +99,7 @@ $(STAGEFILES_DIR)/.libtirpc_compiled: $(STAGEFILES_DIR)/.libtirpc_configured
 #
 
 $(STAGEFILES_DIR)/.libtirpc_installed: $(STAGEFILES_DIR)/.libtirpc_compiled
-	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(LIBTIRPC_DIR) install
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBTIRPC_DIR) install
 	$(SED) -i -e '/^udp6/d' $(TARGET_ROOT)/usr/etc/netconfig
 	$(SED) -i -e '/^tcp6/d' $(TARGET_ROOT)/usr/etc/netconfig
 	$(TOUCH) $(STAGEFILES_DIR)/.libtirpc_installed

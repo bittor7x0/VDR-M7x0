@@ -48,7 +48,7 @@ $(STAGEFILES_DIR)/.libosd_copied: $(wildcard $(LIBOSD_DIR)/*) \
 #
 
 $(STAGEFILES_DIR)/.libosd_compiled: $(STAGEFILES_DIR)/.libosd_copied
-	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(LIBOSD_BUILDDIR) $(UCLIBC_ENV_LTO_GC_LOOPS) \
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBOSD_BUILDDIR) $(UCLIBC_ENV_LTO_GC) \
 		PREFIX=$(TARGET_ROOT)/usr all
 	$(TOUCH) $(STAGEFILES_DIR)/.libosd_compiled
 
@@ -57,7 +57,7 @@ $(STAGEFILES_DIR)/.libosd_compiled: $(STAGEFILES_DIR)/.libosd_copied
 #
 
 $(STAGEFILES_DIR)/.libosd_installed: $(STAGEFILES_DIR)/.libosd_compiled
-	$(UCLIBC_ENV_LTO_GC_LOOPS) $(MAKE) -C $(LIBOSD_BUILDDIR) $(UCLIBC_ENV_LTO_GC_LOOPS) \
+	$(UCLIBC_ENV_LTO_GC) $(MAKE) -C $(LIBOSD_BUILDDIR) $(UCLIBC_ENV_LTO_GC) \
 		PREFIX=$(TARGET_ROOT)/usr install
 	$(TOUCH) $(STAGEFILES_DIR)/.libosd_installed
 

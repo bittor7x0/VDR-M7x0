@@ -132,7 +132,7 @@ UCLIBC_OBJCOPY := $(UCLIBC_TARGET)-objcopy
 UCLIBC_CFLAGS_LOOPS := -fgraphite-identity -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear -ftree-loop-distribution -floop-parallelize-all -floop-nest-optimize
 
 # Standard flags for any program
-UCLIBC_CFLAGS := -DNDEBUG -march=mips2 -mtune=vr4120 -mfix-vr4120 -Ofast -msoft-float -fipa-pta -fno-semantic-interposition
+UCLIBC_CFLAGS := -DNDEBUG -march=mips2 -mtune=vr4120 -mfix-vr4120 -Ofast -msoft-float -fipa-pta -fno-semantic-interposition $(UCLIBC_CFLAGS_LOOPS)
 UCLIBC_CXXFLAGS := $(UCLIBC_CFLAGS) -fvisibility-inlines-hidden
 UCLIBC_LDFLAGS := -Wl,-O1 -Wl,--as-needed -Wl,--relax -Wl,--sort-common -Wl,--sort-section,alignment
 
@@ -140,11 +140,6 @@ UCLIBC_ENV = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
    RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
    CFLAGS="$(UCLIBC_CFLAGS)" CXXFLAGS="$(UCLIBC_CXXFLAGS)" LDFLAGS="$(UCLIBC_LDFLAGS)"
-
-UCLIBC_ENV_LOOPS = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
-   CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
-   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
-   CFLAGS="$(UCLIBC_CFLAGS) $(UCLIBC_CFLAGS_LOOPS)" CXXFLAGS="$(UCLIBC_CXXFLAGS) $(UCLIBC_CFLAGS_LOOPS)" LDFLAGS="$(UCLIBC_LDFLAGS)"
 
 # Flags for remove unused sections
 UCLIBC_CFLAGS_GC := $(UCLIBC_CFLAGS) -ffunction-sections -fdata-sections
@@ -155,11 +150,6 @@ UCLIBC_ENV_GC = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
    RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
    CFLAGS="$(UCLIBC_CFLAGS_GC)" CXXFLAGS="$(UCLIBC_CXXFLAGS_GC)" LDFLAGS="$(UCLIBC_LDFLAGS_GC)"
-
-UCLIBC_ENV_GC_LOOPS = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
-   CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
-   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
-   CFLAGS="$(UCLIBC_CFLAGS_GC) $(UCLIBC_CFLAGS_LOOPS)" CXXFLAGS="$(UCLIBC_CXXFLAGS_GC) $(UCLIBC_CFLAGS_LOOPS)" LDFLAGS="$(UCLIBC_LDFLAGS_GC)"
 
 # Flags for use Link Time Optimization
 # https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
@@ -174,11 +164,6 @@ UCLIBC_ENV_LTO = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
    CFLAGS="$(UCLIBC_CFLAGS_LTO)" CXXFLAGS="$(UCLIBC_CXXFLAGS_LTO)" LDFLAGS="$(UCLIBC_LDFLAGS_LTO)"
 
-UCLIBC_ENV_LTO_LOOPS = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
-   CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
-   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
-   CFLAGS="$(UCLIBC_CFLAGS_LTO) $(UCLIBC_CFLAGS_LOOPS)" CXXFLAGS="$(UCLIBC_CXXFLAGS_LTO) $(UCLIBC_CFLAGS_LOOPS)" LDFLAGS="$(UCLIBC_LDFLAGS_LTO)"
-
 # Flags for use Link Time Optimization and remove unused sections
 UCLIBC_CFLAGS_LTO_GC := $(UCLIBC_CFLAGS) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections
 UCLIBC_CXXFLAGS_LTO_GC := $(UCLIBC_CXXFLAGS) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections
@@ -188,11 +173,6 @@ UCLIBC_ENV_LTO_GC = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
    RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
    CFLAGS="$(UCLIBC_CFLAGS_LTO_GC)" CXXFLAGS="$(UCLIBC_CXXFLAGS_LTO_GC)" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC)"
-
-UCLIBC_ENV_LTO_GC_LOOPS = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
-   CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
-   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
-   CFLAGS="$(UCLIBC_CFLAGS_LTO_GC) $(UCLIBC_CFLAGS_LOOPS)" CXXFLAGS="$(UCLIBC_CXXFLAGS_LTO_GC) $(UCLIBC_CFLAGS_LOOPS)" LDFLAGS="$(UCLIBC_LDFLAGS_LTO_GC)"
 
 # Flags for shrink size
 UCLIBC_CFLAGS_SIZE := $(filter-out -Ofast,$(UCLIBC_CFLAGS_GC)) -Os -mplt -mno-shared -mabicalls -fno-reorder-blocks -fno-tree-ch -fno-caller-saves -fno-inline-small-functions -fno-reorder-functions
@@ -218,11 +198,6 @@ UCLIBC_ENV_SIZE_LTO_GC = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
    CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
    RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
    CFLAGS="$(UCLIBC_CFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections" CXXFLAGS="$(UCLIBC_CXXFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections" LDFLAGS="$(UCLIBC_CFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -fuse-linker-plugin -Wl,--gc-sections $(UCLIBC_LDFLAGS_SIZE)"
-
-UCLIBC_ENV_SIZE_LTO_GC_LOOPS = PATH="$(UCLIBC_PATH)" CC="$(UCLIBC_CC)" \
-   CXX="$(UCLIBC_CXX)" AS="$(UCLIBC_AS)" AR="$(UCLIBC_AR)" CPP="$(UCLIBC_CPP)" \
-   RANLIB="$(UCLIBC_RANLIB)" LD="$(UCLIBC_LD)" NM="$(UCLIBC_NM)" STRIP="$(UCLIBC_STRIP)" \
-   CFLAGS="$(UCLIBC_CFLAGS_SIZE) $(UCLIBC_CFLAGS_LOOPS) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections" CXXFLAGS="$(UCLIBC_CXXFLAGS_SIZE) $(UCLIBC_CFLAGS_LOOPS) -flto=auto -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections" LDFLAGS="$(UCLIBC_CFLAGS_SIZE) -flto=auto -fdevirtualize-at-ltrans -fuse-linker-plugin -Wl,--gc-sections $(UCLIBC_LDFLAGS_SIZE)"
 
 .SECONDEXPANSION:
 .PHONY: all

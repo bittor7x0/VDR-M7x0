@@ -78,10 +78,11 @@ $(STAGEFILES_DIR)/.runit_patched: $(STAGEFILES_DIR)/.runit_unpacked
 #
 
 $(STAGEFILES_DIR)/.runit_compiled: $(STAGEFILES_DIR)/.runit_patched
-	$(UCLIBC_ENV_LTO_GC_LOOPS) \
-		HOSTCC=$(CC) \
-		HOSTCFLAGS=$(CFLAGS) \
-		HOSTLDFLAGS=$(LDFLAGS) \
+	$(UCLIBC_ENV_GC) \
+		CFLAGS="$(UCLIBC_CFLAGS_GC) -DHASSIGPROCMASK" \
+		HOSTCC="$(CC)" \
+		HOSTCFLAGS="$(CFLAGS)" \
+		HOSTLDFLAGS="$(LDFLAGS)" \
 		$(MAKE) \
 		-C $(RUNIT_DIR)/src \
 		chpst \
