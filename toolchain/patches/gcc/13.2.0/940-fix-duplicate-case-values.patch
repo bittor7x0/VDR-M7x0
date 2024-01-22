@@ -1,0 +1,20 @@
+--- a/libstdc++-v3/src/c++11/system_error.cc
++++ b/libstdc++-v3/src/c++11/system_error.cc
+@@ -245,7 +245,7 @@
+       // AIX sometimes uses the same value for EEXIST and ENOTEMPTY
+       case ENOTEMPTY:
+ #endif
+-#ifdef ENOTRECOVERABLE
++#if defined ENOTRECOVERABLE && (!defined ECONNRESET || ENOTRECOVERABLE != ECONNRESET)
+       case ENOTRECOVERABLE:
+ #endif
+ #ifdef ENOTSOCK
+@@ -266,7 +266,7 @@
+ #ifdef EOVERFLOW
+       case EOVERFLOW:
+ #endif
+-#ifdef EOWNERDEAD
++#if defined EOWNERDEAD && (!defined ECONNABORTED || EOWNERDEAD != ECONNABORTED)
+       case EOWNERDEAD:
+ #endif
+ #ifdef EPERM
