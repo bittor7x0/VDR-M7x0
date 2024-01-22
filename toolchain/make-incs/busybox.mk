@@ -39,7 +39,7 @@ ifeq ($(BUSYBOX_IS_SNAPSHOT),y)
 	BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/snapshot
 	BUSYBOX_URL := https://git.busybox.net/busybox/snapshot/$(BUSYBOX_FILE)
 else
-	BUSYBOX_VERSION := 1.36.0
+	BUSYBOX_VERSION := 1.36.1
 	BUSYBOX_FILE := busybox-$(BUSYBOX_VERSION).tar.bz2
 	BUSYBOX_CONFIG := $(CONFIGS_DIR)/busybox/$(BUSYBOX_VERSION)/busybox-$(CONFIG_FW_VERSION).config
 	BUSYBOX_PATCHES_DIR := $(PATCHES_DIR)/busybox/$(BUSYBOX_VERSION)
