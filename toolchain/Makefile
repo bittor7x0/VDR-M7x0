@@ -129,7 +129,7 @@ UCLIBC_STRIP := sstrip
 UCLIBC_OBJCOPY := $(UCLIBC_TARGET)-objcopy
 
 # Flags for optimize loops
-UCLIBC_CFLAGS_LOOPS := -fgraphite-identity -funroll-loops -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear -ftree-loop-distribution -floop-parallelize-all -floop-nest-optimize
+UCLIBC_CFLAGS_LOOPS := -fgraphite-identity -floop-interchange -floop-strip-mine -floop-block -ftree-loop-linear -ftree-loop-distribution -floop-parallelize-all -floop-nest-optimize
 
 # Standard flags for any program
 UCLIBC_CFLAGS := -DNDEBUG -march=mips2 -mtune=vr4120 -mfix-vr4120 -Ofast -msoft-float -fipa-pta -fno-semantic-interposition
