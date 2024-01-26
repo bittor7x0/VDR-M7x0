@@ -61,6 +61,11 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      # 'git config --get remote.origin.url' isn't working with Cygwin, so we replace default Git Repo URL
+      - name: Set git repository url in Toolchain
+        run: |
+          sed -i -e "s,^GIT_VDR-M7x0_REPO_URL :=.*,GIT_VDR-M7x0_REPO_URL := $env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY,g" toolchain\Makefile
+
       - name: Setup ccache
         run: |
           C:\tools\cygwin\bin\bash.exe -l -x -c 'export PATH=/usr/local/bin:/usr/bin && ccache --max-size 400M && mkdir -p /usr/lib/ccache/bin ${{ env.CCACHE_DIR }} && for compiler in c++ cc g++ gcc mips-linux-uclibc-g++ mips-linux-uclibc-gcc; do ln -sf /usr/bin/ccache /usr/lib/ccache/bin/${compiler}; done'
