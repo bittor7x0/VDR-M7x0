@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -63,7 +63,7 @@ jobs:
 
       - name: Cache Coverity Build Tool
         id: coverity_scan_cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: cov-analysis-linux64.tar.gz
           key: cov-analysis-linux64-${{ steps.coverity_scan_md5.outputs.coverity_scan_md5sum }}

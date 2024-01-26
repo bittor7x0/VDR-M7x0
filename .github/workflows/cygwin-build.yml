@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Cache ccache objects
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ccache-${{ github.sha }}
@@ -59,7 +59,7 @@ jobs:
           git config --global core.symlinks true
 
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup ccache
         run: |
@@ -75,7 +75,7 @@ jobs:
           C:\tools\cygwin\bin\bash.exe -l -x -c 'ccache --show-stats && ccache --zero-stats'
 
       - name: Upload Cygwin artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cygwin_binaries
           path: toolchain/cygwin_dir_m740_lite/

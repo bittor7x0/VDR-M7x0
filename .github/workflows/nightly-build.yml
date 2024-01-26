@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download nightly files
         run: |
@@ -75,7 +75,7 @@ jobs:
           rm -rf .git nightly
 
       - name: Cache ccache objects
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ GITHUB.WORKSPACE }}/.ccache
           key: ccache-${{ github.sha }}
@@ -234,37 +234,37 @@ jobs:
           ccache --zero-stats
 
       - name: Upload Firmware Pro (M740AV-M750T) artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro/
 
       - name: Upload Firmware Pro (M750S) artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro/
 
       - name: Upload Firmware Lite (M740AV-M750T) artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite/
 
       - name: Upload Firmware Lite (M750S) artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite/
 
       - name: Upload SAMBA artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: VDR-NG-EM-nightly-SAMBA
           path: toolchain/VDR-NG-EM-nightly-SAMBA/
 
       - name: Upload Firmware Windows Builder artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: VDR-NG-EM-nightly-Firmware-Windows-Builder
           path: toolchain/VDR-NG-EM-nightly-Firmware-Windows-Builder/
