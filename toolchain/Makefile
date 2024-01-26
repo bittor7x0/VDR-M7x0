@@ -265,10 +265,9 @@ endef
 # usage: $(call git_clone_subdir, <git_repo_url>, <remote_subdir>, <dest_dir>)
 define git_clone_subdir
 	[ ! -d $(3) ] && $(MKDIR) -p $(3); \
-	$(CD) $(3); \
-	[ ! -d .git ] && $(GIT) clone --no-checkout --filter=tree:0 $(1) .; \
-	$(GIT) sparse-checkout set --no-cone $(2); \
-	$(GIT) checkout
+	[ ! -d .git ] && $(GIT) -C $(3) clone --no-checkout --filter=tree:0 $(1) .; \
+	$(GIT) -C $(3) sparse-checkout set --no-cone $(2); \
+	$(GIT) -C $(3) checkout
 endef
 
 # optimizes CSS code from a given css-dir. all *.css files are reduced with YUI Compressor

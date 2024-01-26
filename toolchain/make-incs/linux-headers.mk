@@ -54,10 +54,9 @@ $(STAGEFILES_DIR)/.linux_headers_unpacked: $(LINUX_HEADERS_DLFILE) $(TC_INIT_RUL
 	$(TOUCH) $(STAGEFILES_DIR)/.linux_headers_unpacked
 
 $(STAGEFILES_DIR)/.linux_headers_installed: $(STAGEFILES_DIR)/.linux_headers_unpacked
-	$(MKDIR) -p $(LINUX_HEADERS_INSTALL_DIR) $(LINUX_HEADERS_DIR)/include/linux/dvb{,-git}
+	$(MKDIR) -p $(LINUX_HEADERS_INSTALL_DIR)
 	$(call git_clone_subdir, $(GIT_VDR-M7x0_REPO_URL), /$(LINUX_HEADERS_GIT_SUBDIR), $(LINUX_HEADERS_DIR)/include/linux/dvb-git)
-	$(MV) -f $(LINUX_HEADERS_DIR)/include/linux/dvb-git/$(LINUX_HEADERS_GIT_SUBDIR)/* $(LINUX_HEADERS_DIR)/include/linux/dvb
-	-$(RM) -rf $(LINUX_HEADERS_DIR)/include/linux/dvb-git
+	$(LN) -sf $(LINUX_HEADERS_DIR)/include/linux/dvb-git/$(LINUX_HEADERS_GIT_SUBDIR) $(LINUX_HEADERS_DIR)/include/linux/dvb
 	$(CP) -RPp $(LINUX_HEADERS_DIR)/include/* \
 		$(LINUX_HEADERS_INSTALL_DIR)
 	$(TOUCH) $(STAGEFILES_DIR)/.linux_headers_installed
