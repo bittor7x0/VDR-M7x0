@@ -45,13 +45,6 @@ jobs:
           restore-keys: |
             ccache-
 
-      - name: Install Cygwin packages
-        shell: cmd
-        run: |
-          choco config get cacheLocation
-          choco install -y --no-progress cygwin
-          C:\tools\cygwin\cygwinsetup.exe -qgnNdO -R C:/tools/cygwin -s http://mirrors.kernel.org/sourceware/cygwin/ -P autoconf,bison,curl,wget,flex,gcc-g++,make,automake,patch,git,zlib-devel,ccache,libtool
-
       - name: Set git to use LF and symlinks
         run: |
           git config --global core.autocrlf false
@@ -65,6 +58,13 @@ jobs:
       - name: Set git repository url in Toolchain
         run: |
           sed -i -e "s,^GIT_VDR-M7x0_REPO_URL :=.*,GIT_VDR-M7x0_REPO_URL := $env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY,g" toolchain\Makefile
+
+      - name: Install Cygwin packages
+        uses: cygwin/cygwin-install-action@v4
+        with:
+          platform: x86_64
+          install-dir: 'C:\tools\cygwin'
+          packages: autoconf bison curl wget flex gcc-g++ make automake patch git zlib-devel ccache libtool
 
       - name: Setup ccache
         run: |
