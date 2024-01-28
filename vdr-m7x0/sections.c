@@ -187,6 +187,11 @@ void cSectionHandler::Action(void)
            startFilters = false;
            }
         int NumFilters = filterHandles.Count();
+        if (NumFilters == 0) {
+           Unlock();
+           cCondWait::SleepMs(100);
+           continue;
+           }
         pollfd pfd[NumFilters];
         for (cFilterHandle *fh = filterHandles.First(); fh; fh = filterHandles.Next(fh)) {
             int i = fh->Index();

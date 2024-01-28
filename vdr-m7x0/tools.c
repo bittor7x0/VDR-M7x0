@@ -605,7 +605,7 @@ time_t LastModifiedTime(const char *FileName)
         {
            LastUpdateFileTime=0;
            FirstUpdateFileTime=time(NULL);
-           isyslog("VideoDirectory detected %s %ld file(%ld)",FileName,FirstUpdateFileTime,fs.st_mtime);
+           isyslog("VideoDirectory detected %s %jd file(%jd)",FileName,intmax_t(FirstUpdateFileTime),intmax_t(fs.st_mtime));
         }
         if(FirstUpdateFileTime>fs.st_mtime)
            return FirstUpdateFileTime;
@@ -620,7 +620,7 @@ time_t LastModifiedTime(const char *FileName)
         {
            LastUpdateFileTime=0;
            FirstUpdateFileTime=time(NULL);
-           isyslog("VideoDirectory detected %s %ld",FileName,FirstUpdateFileTime);
+           isyslog("VideoDirectory detected %s %jd",FileName,intmax_t(FirstUpdateFileTime));
         }
         return FirstUpdateFileTime;
      }
@@ -628,7 +628,7 @@ time_t LastModifiedTime(const char *FileName)
      {
         FirstUpdateFileTime=0;
         LastUpdateFileTime=time(NULL);
-        isyslog("VideoDirectory lost %s %ld",FileName,LastUpdateFileTime);
+        isyslog("VideoDirectory lost %s %jd",FileName,intmax_t(LastUpdateFileTime));
      }
      return LastUpdateFileTime;
   }
@@ -1588,6 +1588,10 @@ bool cLockFile::Lock(int WaitSeconds)
               }
            else {
               LOG_ERROR_STR(fileName);
+              if (errno == ENOSPC) {
+                 esyslog("ERROR: can't create lock file '%s' - assuming lock anyway!", fileName);
+                 return true;
+                 }
               break;
               }
            if (WaitSeconds)

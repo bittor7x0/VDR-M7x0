@@ -690,7 +690,7 @@ tab (@);
 l l.
 <channel id>   @is the "channel ID", made up from the parameters defined in 'channels.conf'
 <channel name> @is the "name" as in 'channels.conf' (for information only, may be left out)
-<event id>     @is a 32 bit unsigned int, uniquely identifying this event
+<event id>     @is a 32 bit unsigned int, uniquely identifying this event (see note)
 <start time>   @is the time (as a time_t integer) in UTC when this event starts
 <duration>     @is the time (in seconds) that this event will take
 <table id>     @is a hex number that indicates the table this event is contained in (if this is left empty or 0 this event will not be overwritten or modified by data that comes from the DVB stream)
@@ -712,6 +712,8 @@ Note that the \fBevent id\fR that comes from the DVB data stream is actually
 just 16 bit wide. The internal representation in VDR allows for 32 bit to
 be used, so that external tools can generate EPG data that is guaranteed
 not to collide with the ids of existing data.
+Also note that some broadcasters change the \fBevent id\fR when an event is moved
+from one table to another.
 .SH SEE ALSO
 .BR vdr (1)
 .SH AUTHOR

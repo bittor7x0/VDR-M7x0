@@ -385,7 +385,7 @@ cTDT::cTDT(const u_char *Data)
         timespec ts = { 0 };
         ts.tv_sec = dvbtim;
         if (clock_settime(CLOCK_REALTIME, &ts) == 0)
-           isyslog("system time changed from %s (%ld) to %s (%ld)", *TimeToString(loctim), loctim, *TimeToString(dvbtim), dvbtim);
+           isyslog("system time changed from %s (%jd) to %s (%jd)", *TimeToString(loctim), intmax_t(loctim), *TimeToString(dvbtim), intmax_t(dvbtim));
         else {
 				char __errorstr[256];
 				strerror_r(errno,__errorstr,256);
@@ -399,7 +399,7 @@ cTDT::cTDT(const u_char *Data)
         delta.tv_sec = diff;
         delta.tv_usec = 0;
         if (adjtime(&delta, NULL) == 0)
-           isyslog("system time adjustment initiated from %s (%ld) to %s (%ld)", *TimeToString(loctim), loctim, *TimeToString(dvbtim), dvbtim);
+           isyslog("system time adjustment initiated from %s (%jd) to %s (%jd)", *TimeToString(loctim), intmax_t(loctim), *TimeToString(dvbtim), intmax_t(dvbtim));
         else {
 				char __errorstr[256];
 				strerror_r(errno,__errorstr,256);

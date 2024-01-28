@@ -45,6 +45,7 @@
 #include <getopt.h>
 #include <grp.h>
 #include <locale.h>
+#include <malloc.h>
 #include <pwd.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -102,6 +103,7 @@
 
 #define MINCHANNELWAIT        10 // seconds to wait between failed channel switchings
 #define ACTIVITYTIMEOUT       60 // seconds before starting housekeeping
+#define MEMCLEANUPDELTA     3600 // seconds between memory cleanups
 #define SHUTDOWNWAIT         300 // seconds to wait in user prompt before automatic shutdown
 #define SHUTDOWNRETRY        360 // seconds before trying again to shut down
 #define SHUTDOWNFORCEPROMPT    5 // seconds to wait in user prompt to allow forcing shutdown
@@ -854,10 +856,12 @@ int main(int argc, char *argv[])
   if (Setup.InitialVolume >= 0)
      Setup.CurrentVolume = Setup.InitialVolume;
   Channels.SwitchTo(Setup.CurrentChannel);
+
+  // Restore volume:
+
+  cDevice::PrimaryDevice()->SetVolume(Setup.CurrentVolume, true);
   if (MuteAudio)
      cDevice::PrimaryDevice()->ToggleMute();
-  else
-     cDevice::PrimaryDevice()->SetVolume(Setup.CurrentVolume, true);
 
   // Signal handlers:
 
@@ -1522,6 +1526,12 @@ int main(int argc, char *argv[])
             cSchedules::Cleanup();
             // Plugins housekeeping:
             PluginManager.Housekeeping();
+            // Memory cleanup:
+            static time_t LastMemoryCleanup = 0;
+            if ((Now - LastMemoryCleanup) > MEMCLEANUPDELTA) {
+               malloc_trim(0);
+               LastMemoryCleanup = Now;
+               }
             }
 
          // Main thread hooks of plugins:

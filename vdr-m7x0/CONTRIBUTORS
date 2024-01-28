@@ -1747,7 +1747,7 @@ Hardy Flor <HFlor@web.de>
 Harald Milz <hm@seneca.muc.de>
  for his CUTR patch, which was used as a base to implement the SVDRP command EDIT
 
-Marko Mäkelä <marko.makela@hut.fi>
+Marko Mäkelä <marko.makela@iki.fi>
  for making repeat keys be ignored when waiting for a keypress to cancel an operation
  for reporting that a menu was automatically closed when a replay ends
  for suggesting to ignore k_Repeat when deciding whether the same key has been

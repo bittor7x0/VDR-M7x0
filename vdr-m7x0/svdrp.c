@@ -1497,9 +1497,9 @@ void cSVDRP::CmdNEXT(const char *Option)
      if (!*Option)
         Reply(250, "%d %s", Number, *TimeToString(Start));
      else if (strcasecmp(Option, "ABS") == 0)
-        Reply(250, "%d %ld", Number, Start);
+        Reply(250, "%d %jd", Number, intmax_t(Start));
      else if (strcasecmp(Option, "REL") == 0)
-        Reply(250, "%d %ld", Number, Start - time(NULL));
+        Reply(250, "%d %jd", Number, intmax_t(Start - time(NULL)));
      else
         Reply(501, "Unknown option: \"%s\"", Option);
      }

@@ -1,6 +1,21 @@
 Speed-ups from VDR-Extensions-Patch-72 for VDR 1.7.7 (http://www.zulu-entertainment.de).
 
-VDR 2.6.1 backports applied in this patch:
+VDR 2.6.4 backports applied in this patch:
+* Fixed unnecessary interruption of ongoing recordings if timers avoided the transfer
+  mode receiver device (thanks to Markus Ehrnsperger).
+* Added a note to vdr.5 about event ids possibly changing when an event moves from
+  one table to another.
+* Added a note to epg.h about not messing with event ids (suggested by Winfried Köhler).
+* Fixed restoring the volume at program start (thanks to Matthias Senzel).
+* Added periodic calls to malloc_trim(0) to reduce memory consumption (thanks to
+  Onur Sentürk).
+* Added missing rounding when dividing frequencies in processing the NIT (thanks to
+  Winfried Köhler).
+* Now avoiding calling poll() in cSectionHandler::Action() if there are no filters
+  (reported by Marko Mäkelä).
+* Now assuming the lock when removing deleted recordings even if the disk is full
+  (reported by Claus Muus).
+* Fixed printing/scanning values for systems where %ld doesn't work for time_t.
 * Now using a separate fixed value for internal EPG linger time. This fixes problems with
   spawned timers jumping to the next event in case Setup.EPGLinger is very small. (reported
   by Jürgen Schneider).
@@ -17,7 +32,7 @@ VDR 2.6.1 backports applied in this patch:
   (thanks to Peter Bieringer).
 * Fixed strreplace() to handle NULL strings (reported by Jürgen Schneider).
 * Replaced strncpy() with memcpy() in strreplace() to avoid a compiler warning
-  (reported by Marco Mäkelä).
+  (reported by Marko Mäkelä).
 * Removed 'register' from libsi/util.c to avoid a warning with ISO-C++17.
 * Removed the macros __STL_CONFIG_H, _STL_ALGOBASE_H and _MOVE_H from tools.h. If your
   plugin insists in using "using namespace std;" you can still define

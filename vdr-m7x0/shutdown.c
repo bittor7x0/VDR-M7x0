@@ -152,7 +152,7 @@ void cShutdownHandler::SetShutdownCommand(const char *ShutdownCommand)
 void cShutdownHandler::CallShutdownCommand(time_t WakeupTime, int Channel, const char *File, bool UserShutdown)
 {
   time_t Delta = WakeupTime ? WakeupTime - time(NULL) : 0;
-  cString cmd = cString::sprintf("%s %ld %ld %d \"%s\" %d", shutdownCommand, WakeupTime, Delta, Channel, *strescape(File, "\\\"$"), UserShutdown);
+  cString cmd = cString::sprintf("%s %jd %jd %d \"%s\" %d", shutdownCommand, intmax_t(WakeupTime), intmax_t(Delta), Channel, *strescape(File, "\\\"$"), UserShutdown);
   isyslog("executing '%s'", *cmd);
   int Status = SystemExec(cmd, true);
   if (!WIFEXITED(Status) || WEXITSTATUS(Status))
@@ -217,7 +217,7 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
      if (!Interactive)
         return false;
 /*
-     cString buf = cString::sprintf(tr("Recording in %ld minutes, shut down anyway?"), Delta / 60);
+     cString buf = cString::sprintf(tr("Recording in %jd minutes, shut down anyway?"), intmax_t(Delta / 60));
      if (!Interface->Confirm(buf))
         return false;
 */
@@ -238,7 +238,7 @@ bool cShutdownHandler::ConfirmShutdown(bool Interactive)
            }
         return false;
         }
-     //cString buf = cString::sprintf(tr("Plugin %s wakes up in %ld min, continue?"), Plugin->Name(), Delta / 60);
+     //cString buf = cString::sprintf(tr("Plugin %s wakes up in %jd min, continue?"), Plugin->Name(), intmax_t(Delta / 60));
      //if (!Interface->Confirm(buf))
      //   return false;
      }

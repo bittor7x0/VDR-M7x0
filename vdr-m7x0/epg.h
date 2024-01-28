@@ -275,6 +275,7 @@ public:
           ///< therefore the EPG handlers have to take care of this. Otherwise the parsing of
           ///< non-updates will waste a lot of resources.
   virtual bool SetEventID(cEvent *Event, tEventID EventID) { return false; }
+          ///< Important note: if you want VPS to work, do not mess with the event ids!
   virtual bool SetTitle(cEvent *Event, const char *Title) { return false; }
   virtual bool SetShortText(cEvent *Event, const char *ShortText) { return false; }
   virtual bool SetDescription(cEvent *Event, const char *Description) { return false; }
@@ -299,7 +300,7 @@ public:
           ///< Designed to give handlers the possibility to prepare a database transaction.
           ///< If any EPG handler returns false in this function, it is assumed that
           ///< the EPG for the given Channel has to be handled later due to some transaction problems,
-          ///> therefore the processing will aborted.
+          ///> therefore the processing will be aborted.
           ///< Dummy is for backward compatibility and may be removed in a future version.
   virtual bool EndSegmentTransfer(bool Modified, bool Dummy) { return false; } // TODO remove obsolete Dummy
           ///< Called after the segment data has been processed.

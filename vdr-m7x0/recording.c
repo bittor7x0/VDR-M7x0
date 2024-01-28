@@ -430,11 +430,11 @@ bool cRecordingInfo::Read(FILE *f)
                        break;
              case 'E': {
                          unsigned int EventID;
-                         time_t StartTime;
+                         intmax_t StartTime; // actually time_t, but intmax_t for scanning with "%jd"
                          int Duration;
                          unsigned int TableID = 0;
                          unsigned int Version = 0xFF;
-                         int n = sscanf(t, "%u %ld %d %X %X", &EventID, &StartTime, &Duration, &TableID, &Version);
+                         int n = sscanf(t, "%u %jd %d %X %X", &EventID, &StartTime, &Duration, &TableID, &Version);
                          if (n >= 3 && n <= 5) {
                             ownEvent->SetEventID(EventID);
                             ownEvent->SetStartTime(StartTime);

@@ -407,9 +407,9 @@ cDevice *cDevice::GetDevice(const cChannel *Channel, int Priority, bool *NeedsDe
          uint imp = 0;
          imp <<= 1; imp |= !device[i]->Receiving() || ndr;                         // use receiving devices if we don't need to detach existing receivers
          imp <<= 1; imp |= device[i]->Receiving();                                 // avoid devices that are receiving
+         imp <<= 8; imp |= constrain(device[i]->Priority() + MAXPRIORITY, 0, 0xFF);// use the device with the lowest priority (+MAXPRIORITY to assure that values -99..99 can be used)
          imp <<= 1; imp |= device[i] == cTransferControl::ReceiverDevice();        // avoid the Transfer Mode receiver device
-         imp <<= 8; imp |= constrain(device[i]->Priority() + MAXPRIORITY, 0, 0xFF); // use the device with the lowest priority (+MAXPRIORITY to assure that values -99..99 can be used)
-         imp <<= 8; imp |= constrain(device[i]->ProvidesCa(Channel), 0, 0xFF);      // use the device that provides the lowest number of conditional access methods
+         imp <<= 8; imp |= constrain(device[i]->ProvidesCa(Channel), 0, 0xFF);     // use the device that provides the lowest number of conditional access methods
          imp <<= 1; imp |= ndr;                                                    // avoid detach receivers
          imp <<= 1; imp |= cTShiftControl::Impact(device[i],ndr);                  // avoid last TShift device
          imp <<= 1; imp |= device[i]->IsPrimaryDevice();                           // avoid the primary device

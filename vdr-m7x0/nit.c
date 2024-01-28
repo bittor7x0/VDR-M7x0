@@ -108,8 +108,8 @@ void cNitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
             for (SI::Loop::Iterator it3; fld->frequencies.hasNext(it3); ) {
                 int f = fld->frequencies.getNext(it3);
                 switch (ct) {
-                  case 1: f = BCD2INT(f) / 100; break;
-                  case 2: f = BCD2INT(f) / 10; break;
+                  case 1: f = round(BCD2INT(f) / 100.0); break;
+                  case 2: f = round(BCD2INT(f) / 10.0); break;
                   case 3: f = f * 10;  break;
                   default: ;
                   }
@@ -127,7 +127,7 @@ void cNitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
             case SI::SatelliteDeliverySystemDescriptorTag: {
                  SI::SatelliteDeliverySystemDescriptor *sd = (SI::SatelliteDeliverySystemDescriptor *)d;
                  int Source = cSource::FromData(cSource::stSat, BCD2INT(sd->getOrbitalPosition()), sd->getWestEastFlag());
-                 int Frequency = Frequencies[0] = BCD2INT(sd->getFrequency()) / 100;
+                 int Frequency = Frequencies[0] = round(BCD2INT(sd->getFrequency()) / 100.0);
                  static char Polarizations[] = { 'h', 'v', 'l', 'r' };
                  char Polarization = Polarizations[sd->getPolarization()];
                  static int CodeRates[] = { FEC_NONE, FEC_1_2, FEC_2_3, FEC_3_4, FEC_5_6, FEC_7_8, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_NONE };
@@ -176,7 +176,7 @@ void cNitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
             case SI::CableDeliverySystemDescriptorTag: {
                  SI::CableDeliverySystemDescriptor *sd = (SI::CableDeliverySystemDescriptor *)d;
                  int Source = cSource::FromData(cSource::stCable);
-                 int Frequency = Frequencies[0] = BCD2INT(sd->getFrequency()) / 10;
+                 int Frequency = Frequencies[0] = round(BCD2INT(sd->getFrequency()) / 10.0);
                  //XXX FEC_outer???
                  static int CodeRates[] = { FEC_NONE, FEC_1_2, FEC_2_3, FEC_3_4, FEC_5_6, FEC_7_8, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_AUTO, FEC_NONE };
                  int CodeRate = CodeRates[sd->getFecInner()];
