@@ -1,5 +1,25 @@
 VDR Plugin 'epgsearch' Revision History
 ---------------------------------------
+2023-06-08
+fixes:
+- Begrenzung Untertitellänge aufgehoben (firefly)
+- Titel kann mehrere : enthalten (firefly)
+
+2023-05-28
+fixes:
+- deutsche Messages Satzanfang gross
+- Vermeide Division durch Null wenn Stopzeit-Startzeit=0
+
+2023-01-09; Version 2.4.2
+neu:
+- Nutze perlregex-library pcre2 falls installiert
+fixes:
+- timer wieder als done markiert wenn 2 Aufnahmen gleichzeitig aufhören
+- toten Code entfernt
+- Update spanische Übersetzung
+- Speicherlecks gestopft
+- Ausreichend Zeitpuffer für Aufnahmen ohne VPS bei Umstellung
+  auf Winterzeit (kfb77)
 
 2022-02-01
 neu:

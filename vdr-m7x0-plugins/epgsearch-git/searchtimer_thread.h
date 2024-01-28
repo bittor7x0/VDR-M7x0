@@ -57,6 +57,8 @@ class cSearchTimerThread: public cThread {
     void Stop(void);
     bool NeedUpdate();
     bool TimerWasModified(cTimer* t);
+    static void FixSummerWinterStartTime(const char* text, time_t* time);
+    static void FixSummerWinterStopTime(const char* text, time_t* time);
  public:
     static cSearchResults announceList;
     static char* SummaryExtended(cSearchExt* searchExt, cTimer* Timer, const cEvent* pEvent);

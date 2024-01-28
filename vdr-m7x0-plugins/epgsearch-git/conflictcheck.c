@@ -266,6 +266,7 @@ cList<cConflictCheckTimerObj>* cConflictCheck::CreateCurrentTimerList()
     for (ti = Timers.First(); ti; ti = Timers.Next(ti))
     {
 	tMax = std::max(tMax, ti->StartTime());
+	if (ti->StopTime() - ti->StartTime() == 0) continue; // avoid division by zero in computing recPart
 	if (!ti->IsSingleEvent()) continue;
         // already recording?
 	int deviceNr = gl_recStatusMonitor->TimerRecDevice(ti)-1;

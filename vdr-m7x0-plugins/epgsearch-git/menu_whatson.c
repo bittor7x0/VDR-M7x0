@@ -200,7 +200,10 @@ bool cMenuMyScheduleItem::Update(bool Force)
       strreplace(buffer, '|', '\t');
 
       char* title = NULL;
-      title = strreplacei(strdup((event && event->Title()) ? event->Title() : tr(">>> no info! <<<")), ":", "%colon%"); // assume a title has the form "a?b:c",
+      title = strdup((event && event->Title()) ? event->Title() : tr(">>> no info! <<<"));
+
+      while ( strchr(title, ':') != NULL )
+         title = strreplacei(title, ":", "%colon%"); // assume a title has the form "a?b:c",
       // we need to replace the colon to avoid misinterpretation of the expression as a condition
       buffer = strreplacei(buffer, "%title%", title);
       free(title);

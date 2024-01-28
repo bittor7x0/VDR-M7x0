@@ -13684,7 +13684,7 @@ const tI18nPhrase Phrases[] = {
 #endif
   },
   { "small EPG content on:%s",
-    "wenig EPG Inhalt für:%s",
+    "Wenig EPG Inhalt für:%s",
     "",
     "",
     "",
