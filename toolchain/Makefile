@@ -264,8 +264,8 @@ endef
 # clones a subdirectory from a Git repository located at a given remote_subdir and git_repo_url.
 # usage: $(call git_clone_subdir, <git_repo_url>, <remote_subdir>, <dest_dir>)
 define git_clone_subdir
-	[ ! -d $(3) ] && $(MKDIR) -p $(3); \
-	[ ! -d .git ] && $(GIT) -C $(3) clone --no-checkout --filter=tree:0 $(1) .; \
+	[ -d $(3) ] && $(RM) -rf $(3); \
+	$(GIT) clone --no-checkout --filter=tree:0 $(1) $(3); \
 	$(GIT) -C $(3) sparse-checkout set --no-cone $(2); \
 	$(GIT) -C $(3) checkout
 endef
