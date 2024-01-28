@@ -75,7 +75,7 @@ SHA1 := $(firstword $(wildcard $(addsuffix /sha1, $(subst :, ,$(PATH)))) \
 PATCH := patch
 SORT := sort
 
-git_changed = $(shell $(GIT) -C $(1) pull --stat | \
+git_changed = $(shell $(GIT) -C $(1) pull --stat |& \
 				$(GREP) -Eo '[0-9]+ files? changed' | \
 				$(GREP) -Eo '[0-9]+' || \
 				$(ECHO) '0')
