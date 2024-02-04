@@ -75,10 +75,10 @@ SHA1 := $(firstword $(wildcard $(addsuffix /sha1, $(subst :, ,$(PATH)))) \
 PATCH := patch
 SORT := sort
 
-git_changed = $(shell $(GIT) -C $(1) pull --stat |& \
-				$(GREP) -Eo '[0-9]+ files? changed' | \
-				$(GREP) -Eo '[0-9]+' || \
-				$(ECHO) '0')
+git_changed = $(shell GIT_CURRENT_SHA=$$($(GIT) -C $(1) rev-parse HEAD); \
+                      $(GIT) -C $(1) pull --autostash --quiet &> /dev/null; \
+                      $(GIT) -C $(1) diff --name-only $${GIT_CURRENT_SHA} HEAD | \
+                      $(GREP) -c "^$$($(GIT) -C $(1) sparse-checkout list | $(CUT) -c2-)/")
 
 DOWNLOAD_DIR := $(TOP_DIR)/downloads
 SCRIPTS_DIR := $(TOP_DIR)/scripts
