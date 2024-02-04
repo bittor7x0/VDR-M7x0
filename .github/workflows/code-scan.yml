@@ -23,13 +23,13 @@
 #
 # --- VDR-NG-EM-COPYRIGHT-NOTE-END ---
 
-name: Coverity Scan
+name: C/C++ Code Scan
 
 on:
-  # Triggers the workflow on push events but only for the coverity_scan branch
+  # Triggers the workflow on push events but only for the code_scan branch
   push:
     branches:
-      - coverity_scan
+      - code_scan
 
   # Manual trigger
   workflow_dispatch:
@@ -39,17 +39,73 @@ defaults:
     shell: bash
 
 jobs:
-  coverity-scan:
+  code-scan:
     runs-on: ubuntu-latest
 
     env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       COVERITY_SCAN_PROJECT_NAME: bittor7x0%2FVDR-M7x0
       COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
       COVERITY_SCAN_NOTIFICATION_EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
+      BUILD_WRAPPER_OUT_DIR: cov-int # Directory where cov-build and build-wrapper output will be placed
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Prepare code to compile without Toolchain
+        run: |
+          mkdir m7x0-linux-headers
+          tar xvf toolchain/downloads/m7x0-linux-headers.tar.bz2 --strip 1 -C m7x0-linux-headers
+          rm -rf vdr-m7x0/PLUGINS/src
+          rm -rf vdr-m7x0-plugins/markad vdr-m7x0-plugins/submenu vdr-m7x0-plugins/tvscraper vdr-m7x0-plugins/weatherng vdr-m7x0-plugins/xvdr
+          ln -sf $(pwd)/vdr-m7x0-plugins vdr-m7x0/PLUGINS/src
+          ln -sf $(pwd)/vdr-m7x0 m7x0-linux-headers/include/vdr
+          echo '#define O7OTOOLCHAINVERSION "9.9.9 Code Scan"' > m7x0-linux-headers/include/o7o-toolchain-version.h
+          sed -i -e 's,$(CC) -M,$(CC) $(CFLAGS) $(CPPFLAGS) -M,g' toolchain/buildin/tool-box/Makefile
+          sed -i '/@$(STRIP) $@/d' vdr-m7x0-plugins/pin/Makefile
+          sed -i '/@cp -f $@ $(FSKCHKDIR)/d' vdr-m7x0-plugins/pin/Makefile
+          sed -i -e 's,std::min,std::min<long int>,g' vdr-m7x0/dvbdevice.c
+          sed -i -e 's,std::min,std::min<long int>,g' vdr-m7x0/remux.c
+          sed -i -e 's,std::max,std::max<long int>,g' vdr-m7x0/remux.c
+          sed -i -e 's,strrchr(recording->FileName(),(char *) strrchr(recording->FileName(),' vdr-m7x0/recording.c
+          sed -i -e 's,strrchr(,(char *) strrchr(,' vdr-m7x0-plugins/filebrowser/menu-filebrowser.c
+          sed -i -e 's,strrchr(,(char *) strrchr(,' vdr-m7x0-plugins/filebrowser/commands.c
+          sed -i -e 's,index(Include,(char *) index(Include,' vdr-m7x0-plugins/mp3/data.c
+          sed -i -e 's,index(buff,(char *) index(buff,g' vdr-m7x0-plugins/mp3/stream.c
+          sed -i -e 's,strchr(host,(char *) strchr(host,' vdr-m7x0-plugins/rssreader/http_fetcher.c
+          sed -i -e 's,strstr(str,(char *) strstr(str,' vdr-m7x0-plugins/rssreader/parser.c
+          sed -i -e 's,strrchr(Filename,(char *) strrchr(Filename,' vdr-m7x0-plugins/setup/commands.cpp
+          sed -i -e 's,strrchr(,(char *) strrchr(,g' vdr-m7x0-plugins/setup/menu-filebrowser.cpp
+          sed -i -e 's,strrchr(font,(char *) strrchr(font,' vdr-m7x0-plugins/skinenigmang/config.c
+          sed -i -e 's,strcasestr(aux,(char *) strcasestr(aux,g' vdr-m7x0-plugins/skinenigmang/tools.c
+          sed -i -e 's,strrchr(NewName,(char *) strrchr(NewName,' vdr-m7x0-plugins/undelete/undelete.c
+          sed -i -e 's,std::min,std::min<long int>,g' vdr-m7x0-plugins/cridplayer/cridplayer_player.c
+          sed -i -e 's,strrchr(filename,(char *) strrchr(filename,' vdr-m7x0-plugins/mp3/stream.c
+          sed -i -e 's,strrchr(filename,(char *) strrchr(filename,' vdr-m7x0-plugins/mp3/decoder.c
+          cat <<EOF > run-make.sh
+          #!/bin/bash
+          make -C toolchain/buildin/libosd
+          make -C toolchain/buildin/fw-utils
+          make -C toolchain/buildin/sstrip
+          make -C toolchain/buildin/tool-box CFLAGS="-I$(pwd)/toolchain/buildin -I$(pwd)/m7x0-linux-headers/include" LDFLAGS="-L$(pwd)/toolchain/buildin/libosd"
+          make -C toolchain/buildin/o7o_flasher CFLAGS="-I$(pwd)/toolchain/buildin -I$(pwd)/m7x0-linux-headers/include -D__MIPSEL__" LDFLAGS="-L$(pwd)/toolchain/buildin/libosd"
+          make -C toolchain/buildin/usbautomounter CPPFLAGS="-I$(pwd)/toolchain/buildin -D_FILE_OFFSET_BITS=64 -DO_LARGEFILE=0x2000" LDFLAGS="-L$(pwd)/toolchain/buildin/libosd"
+          make -C vdr-m7x0 all CXXFLAGS="-I$(pwd)/m7x0-linux-headers/include" USE_PINPLUGIN=1
+          make -C vdr-m7x0 plugins CFLAGS="-fPIC" CXXFLAGS="-I$(pwd)/m7x0-linux-headers/include -I$(pwd)/m7x0-linux-headers/include/vdr -D__UCLIBC__ -D__UCLIBC_MAJOR__=1 -D__UCLIBC_MINOR__=0 -D__UCLIBC_SUBLEVEL__=37 -fPIC" USE_PINPLUGIN=1
+          EOF
+          chmod +x run-make.sh
+
+        # "Clean workspace" step will revert all Git changes, but we want to keep "Compile without Toolchain" changes after completing that step
+      - name: Add changes in Git to compile without Toolchain
+        run: |
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git config --global user.name "${GITHUB_ACTOR}"
+          git add -A .
+          git commit -m "Compile without Toolchain"
 
       - name: Install dependencies
         run: |
@@ -78,57 +134,15 @@ jobs:
           mkdir cov-analysis-linux64
           tar xzf cov-analysis-linux64.tar.gz --strip-components=1 -C cov-analysis-linux64
 
-      - name: Prepare code to compile without Toolchain
-        run: |
-          mkdir m7x0-linux-headers
-          tar xvf toolchain/downloads/m7x0-linux-headers.tar.bz2 --strip 1 -C m7x0-linux-headers
-          rm -rf vdr-m7x0/PLUGINS/src
-          rm -rf vdr-m7x0-plugins/markad vdr-m7x0-plugins/submenu vdr-m7x0-plugins/tvscraper vdr-m7x0-plugins/weatherng vdr-m7x0-plugins/xvdr
-          ln -sf $(pwd)/vdr-m7x0-plugins vdr-m7x0/PLUGINS/src
-          ln -sf $(pwd)/vdr-m7x0 m7x0-linux-headers/include/vdr
-          echo '#define O7OTOOLCHAINVERSION "9.9.9 Coverity Scan"' > m7x0-linux-headers/include/o7o-toolchain-version.h
-          sed -i -e 's,$(CC) -M,$(CC) $(CFLAGS) $(CPPFLAGS) -M,g' toolchain/buildin/tool-box/Makefile
-          sed -i '/@$(STRIP) $@/d' vdr-m7x0-plugins/pin/Makefile
-          sed -i '/@cp -f $@ $(FSKCHKDIR)/d' vdr-m7x0-plugins/pin/Makefile
-          sed -i -e 's,std::min,std::min<long int>,g' vdr-m7x0/dvbdevice.c
-          sed -i -e 's,std::min,std::min<long int>,g' vdr-m7x0/remux.c
-          sed -i -e 's,std::max,std::max<long int>,g' vdr-m7x0/remux.c
-          sed -i -e 's,strrchr(recording->FileName(),(char *) strrchr(recording->FileName(),' vdr-m7x0/recording.c
-          sed -i -e 's,strrchr(,(char *) strrchr(,' vdr-m7x0-plugins/filebrowser/menu-filebrowser.c
-          sed -i -e 's,strrchr(,(char *) strrchr(,' vdr-m7x0-plugins/filebrowser/commands.c
-          sed -i -e 's,index(Include,(char *) index(Include,' vdr-m7x0-plugins/mp3/data.c
-          sed -i -e 's,index(buff,(char *) index(buff,g' vdr-m7x0-plugins/mp3/stream.c
-          sed -i -e 's,strchr(host,(char *) strchr(host,' vdr-m7x0-plugins/rssreader/http_fetcher.c
-          sed -i -e 's,strstr(str,(char *) strstr(str,' vdr-m7x0-plugins/rssreader/parser.c
-          sed -i -e 's,strrchr(Filename,(char *) strrchr(Filename,' vdr-m7x0-plugins/setup/commands.cpp
-          sed -i -e 's,strrchr(,(char *) strrchr(,g' vdr-m7x0-plugins/setup/menu-filebrowser.cpp
-          sed -i -e 's,strrchr(font,(char *) strrchr(font,' vdr-m7x0-plugins/skinenigmang/config.c
-          sed -i -e 's,strcasestr(aux,(char *) strcasestr(aux,g' vdr-m7x0-plugins/skinenigmang/tools.c
-          sed -i -e 's,strrchr(NewName,(char *) strrchr(NewName,' vdr-m7x0-plugins/undelete/undelete.c
-          sed -i -e 's,std::min,std::min<long int>,g' vdr-m7x0-plugins/cridplayer/cridplayer_player.c
-          sed -i -e 's,strrchr(filename,(char *) strrchr(filename,' vdr-m7x0-plugins/mp3/stream.c
-          sed -i -e 's,strrchr(filename,(char *) strrchr(filename,' vdr-m7x0-plugins/mp3/decoder.c
-          cat <<EOF > cov-int-make.sh
-          #!/bin/bash
-          make -C toolchain/buildin/libosd
-          make -C toolchain/buildin/fw-utils
-          make -C toolchain/buildin/sstrip
-          make -C toolchain/buildin/tool-box CFLAGS="-I$(pwd)/toolchain/buildin -I$(pwd)/m7x0-linux-headers/include" LDFLAGS="-L$(pwd)/toolchain/buildin/libosd"
-          make -C toolchain/buildin/o7o_flasher CFLAGS="-I$(pwd)/toolchain/buildin -I$(pwd)/m7x0-linux-headers/include -D__MIPSEL__" LDFLAGS="-L$(pwd)/toolchain/buildin/libosd"
-          make -C toolchain/buildin/usbautomounter CPPFLAGS="-I$(pwd)/toolchain/buildin -D_FILE_OFFSET_BITS=64 -DO_LARGEFILE=0x2000" LDFLAGS="-L$(pwd)/toolchain/buildin/libosd"
-          make -C vdr-m7x0 all CXXFLAGS="-I$(pwd)/m7x0-linux-headers/include" USE_PINPLUGIN=1
-          make -C vdr-m7x0 plugins CFLAGS="-fPIC" CXXFLAGS="-I$(pwd)/m7x0-linux-headers/include -I$(pwd)/m7x0-linux-headers/include/vdr -D__UCLIBC__ -D__UCLIBC_MAJOR__=1 -D__UCLIBC_MINOR__=0 -D__UCLIBC_SUBLEVEL__=37 -fPIC" USE_PINPLUGIN=1
-          EOF
-          chmod +x cov-int-make.sh
-
       - name: Build with cov-build
         run: |
           export PATH="$(pwd)/cov-analysis-linux64/bin:$PATH"
-          cov-build --dir cov-int ./cov-int-make.sh
+          cov-build --dir ${{ env.BUILD_WRAPPER_OUT_DIR }} ./run-make.sh
 
       - name: Submit the result to Coverity Scan
+        continue-on-error: true
         run: |
-          tar jcvf VDR-M7x0.tar.bz2 cov-int
+          tar jcvf VDR-M7x0.tar.bz2 ${{ env.BUILD_WRAPPER_OUT_DIR }}
           curl \
             --silent --show-error \
             --output coverity_scan_submit.txt \
@@ -140,3 +154,25 @@ jobs:
             --form description="Automatic Coverity Scan build for ${GITHUB_REF} - $(vdr-m7x0/vdr --version)" \
             https://scan.coverity.com/builds?project=${COVERITY_SCAN_PROJECT_NAME}
           cat ./coverity_scan_submit.txt
+
+      - name: Clean workspace
+        run: |
+          git reset --hard
+          git clean -fdx
+
+      - name: Install sonar-scanner and build-wrapper
+        uses: SonarSource/sonarcloud-github-c-cpp@v2
+
+      - name: Build with build-wrapper
+        run: |
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} ./run-make.sh
+
+      - name: Run sonar-scanner and submit the result to SonarCloud
+        continue-on-error: true
+        run: |
+          sonar-scanner \
+            -Dsonar.organization=bittor7x0 \
+            -Dsonar.projectKey=bittor7x0_vdr-m7x0 \
+            -Dsonar.sources=. \
+            -Dsonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}" \
+            -Dsonar.host.url=https://sonarcloud.io
