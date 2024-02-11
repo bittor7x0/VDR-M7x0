@@ -31,6 +31,10 @@ on:
     branches:
       - master
 
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v4.3.0
+
     # except for these files
     paths-ignore:
       - '.github/**'
@@ -236,35 +240,77 @@ jobs:
       - name: Upload Firmware Pro (M740AV-M750T) artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro
+          name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro.zip
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro/
 
       - name: Upload Firmware Pro (M750S) artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro
+          name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro.zip
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M750s-Pro/
 
       - name: Upload Firmware Lite (M740AV-M750T) artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite
+          name: VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite.zip
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite/
 
       - name: Upload Firmware Lite (M750S) artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite
+          name: VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite.zip
           path: toolchain/VDR-NG-EM-nightly-Firmware-WSW-M750s-Lite/
 
       - name: Upload SAMBA artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: VDR-NG-EM-nightly-SAMBA
+          name: VDR-NG-EM-nightly-SAMBA.zip
           path: toolchain/VDR-NG-EM-nightly-SAMBA/
 
       - name: Upload Firmware Windows Builder artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: VDR-NG-EM-nightly-Firmware-Windows-Builder
+          name: VDR-NG-EM-nightly-Firmware-Windows-Builder.zip
           path: toolchain/VDR-NG-EM-nightly-Firmware-Windows-Builder/
+
+      - name: Prepare Release files
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          cd "${GITHUB_WORKSPACE}/toolchain/VDR-NG-EM-nightly-Firmware-Windows-Builder" && \
+            zip -9 -y -r ../../VDR-NG-EM-${{ github.ref_name }}-Firmware-Windows-Builder.zip .
+          cd "${GITHUB_WORKSPACE}/toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Lite" && \
+            zip -9 -y -r ../../VDR-NG-EM-${{ github.ref_name }}-Firmware-WSW-M740-M750T-Lite.zip .
+          cd "${GITHUB_WORKSPACE}/toolchain/VDR-NG-EM-nightly-Firmware-WSW-M740-M750T-Pro" && \
+            zip -9 -y -r ../../VDR-NG-EM-${{ github.ref_name }}-Firmware-WSW-M740-M750T-Pro.zip .
+          cd "${GITHUB_WORKSPACE}/toolchain/VDR-NG-EM-nightly-SAMBA" && \
+            zip -9 -y -r ../../VDR-NG-EM-${{ github.ref_name }}-SAMBA.zip .
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: ncipollo/release-action@v1
+        with:
+          name: Firmware VDR-NG-EM ${{ github.ref_name }}
+          tag: ${{ github.ref_name }}
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+          body: |
+            Lite and Pro versions in WSW format for M740AV and M750T EPG devices, which include all available plugins.
+
+            They can be installed from the menu of the 4 shutdowns or from Menu -> System Utilities -> Start rescue menu.
+
+            It also includes the SAMBA server and the Firmware Windows Builder to customize the configuration.
+
+            ---
+
+            Versiones Lite y Pro en formato WSW para equipos M740AV y M750T EPG, que incluyen todos los plugins disponibles.
+
+            Pueden instalarse desde el menú de los 4 apagados o desde Menú -> Utilidades del sistema -> Iniciar menú de rescate.
+
+            También se incluye el servidor SAMBA y el generador del Firmware desde Windows para personalizar la configuración.
+
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: VDR-NG-EM-${{ github.ref_name }}-Firmware-WSW-M740-M750T-Pro.zip,
+                     VDR-NG-EM-${{ github.ref_name }}-Firmware-WSW-M740-M750T-Lite.zip,
+                     VDR-NG-EM-${{ github.ref_name }}-Firmware-Windows-Builder.zip,
+                     VDR-NG-EM-${{ github.ref_name }}-SAMBA.zip
+          artifactContentType: application/zip
+          artifactErrorsFailBuild: true
